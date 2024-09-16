@@ -25,7 +25,6 @@ for sufficiently large `n` there exists a smooth embedding `M → ℝ^n`.
 partition of unity, smooth bump function, whitney theorem
 -/
 
-
 universe uι uE uH uM
 
 variable {ι : Type uι} {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -33,8 +32,7 @@ variable {ι : Type uι} {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E
   {M : Type uM} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
 
 open Function Filter FiniteDimensional Set
-
-open scoped Topology Manifold Classical Filter
+open scoped Manifold
 
 noncomputable section
 

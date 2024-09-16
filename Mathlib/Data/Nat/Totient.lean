@@ -8,6 +8,7 @@ import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Factorization.Induction
 import Mathlib.Data.Nat.Periodic
 import Mathlib.Data.ZMod.Basic
+import Mathlib.NumberTheory.Divisors
 
 /-!
 # Euler's totient function
@@ -76,7 +77,7 @@ theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
   induction' n / a with i ih
   · rw [← filter_coprime_Ico_eq_totient a k]
     simp only [add_zero, mul_one, mul_zero, le_of_lt (mod_lt n a_pos),
-      Nat.zero_eq, zero_add]
+      zero_add]
     gcongr
     exact Ico_subset_Ico rfl.le (add_le_add_left (le_of_lt (mod_lt n a_pos)) k)
   simp only [mul_succ]
@@ -228,7 +229,7 @@ theorem prime_iff_card_units (p : ℕ) [Fintype (ZMod p)ˣ] :
     p.Prime ↔ Fintype.card (ZMod p)ˣ = p - 1 := by
   cases' eq_zero_or_neZero p with hp hp
   · subst hp
-    simp only [ZMod, not_prime_zero, false_iff_iff, zero_tsub]
+    simp only [ZMod, not_prime_zero, false_iff, zero_tsub]
     -- the subst created a non-defeq but subsingleton instance diamond; resolve it
     suffices Fintype.card ℤˣ ≠ 0 by convert this
     simp
@@ -244,7 +245,7 @@ theorem totient_eq_one_iff : ∀ {n : ℕ}, n.totient = 1 ↔ n = 1 ∨ n = 2
   | 2 => by simp
   | n + 3 => by
     have : 3 ≤ n + 3 := le_add_self
-    simp only [succ_succ_ne_one, false_or_iff]
+    simp only [succ_succ_ne_one, false_or]
     exact ⟨fun h => not_even_one.elim <| h ▸ totient_even this, by rintro ⟨⟩⟩
 
 theorem dvd_two_of_totient_le_one {a : ℕ} (han : 0 < a) (ha : a.totient ≤ 1) : a ∣ 2 := by

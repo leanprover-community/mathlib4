@@ -35,7 +35,7 @@ lemma AnalyticAt.meromorphicAt {f : 𝕜 → E} {x : 𝕜} (hf : AnalyticAt 𝕜
 
 namespace MeromorphicAt
 
-lemma id (x : 𝕜) : MeromorphicAt id x := (analyticAt_id 𝕜 x).meromorphicAt
+lemma id (x : 𝕜) : MeromorphicAt id x := analyticAt_id.meromorphicAt
 
 lemma const (e : E) (x : 𝕜) : MeromorphicAt (fun _ ↦ e) x :=
   analyticAt_const.meromorphicAt
@@ -50,8 +50,8 @@ lemma add {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hg : Meromorph
     simp_rw [← mul_smul, ← pow_add, Nat.sub_add_cancel (Nat.le_max_left _ _),
       Nat.sub_add_cancel (Nat.le_max_right _ _), Pi.add_apply, smul_add]
   rw [this]
-  exact ((((analyticAt_id 𝕜 x).sub analyticAt_const).pow _).smul hf).add
-   ((((analyticAt_id 𝕜 x).sub analyticAt_const).pow _).smul hg)
+  exact (((analyticAt_id.sub analyticAt_const).pow _).smul hf).add
+   (((analyticAt_id.sub analyticAt_const).pow _).smul hg)
 
 lemma smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f • g) x := by
@@ -88,7 +88,7 @@ lemma congr {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hfg : f =ᶠ
     MeromorphicAt g x := by
   rcases hf with ⟨m, hf⟩
   refine ⟨m + 1, ?_⟩
-  have : AnalyticAt 𝕜 (fun z ↦ z - x) x := (analyticAt_id 𝕜 x).sub analyticAt_const
+  have : AnalyticAt 𝕜 (fun z ↦ z - x) x := analyticAt_id.sub analyticAt_const
   refine (this.smul hf).congr ?_
   rw [eventuallyEq_nhdsWithin_iff] at hfg
   filter_upwards [hfg] with z hz
@@ -108,7 +108,7 @@ lemma inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicA
   · -- interesting case: use local formula for `f`
     obtain ⟨n, g, hg_an, hg_ne, hg_eq⟩ := hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h_eq
     have : AnalyticAt 𝕜 (fun z ↦ (z - x) ^ (m + 1)) x :=
-      ((analyticAt_id 𝕜 x).sub analyticAt_const).pow _
+      (analyticAt_id.sub analyticAt_const).pow _
     -- use `m + 1` rather than `m` to damp out any silly issues with the value at `z = x`
     refine ⟨n + 1, (this.smul <| hg_an.inv hg_ne).congr ?_⟩
     filter_upwards [hg_eq, hg_an.continuousAt.eventually_ne hg_ne] with z hfg hg_ne'
@@ -133,14 +133,31 @@ lemma div {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg : Meromo
   (div_eq_mul_inv f g).symm ▸ (hf.mul hg.inv)
 
 lemma pow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℕ) : MeromorphicAt (f ^ n) x := by
-  induction' n with m hm
-  · simpa only [Nat.zero_eq, pow_zero] using MeromorphicAt.const 1 x
-  · simpa only [pow_succ] using hm.mul hf
+  induction n with
+  | zero => simpa only [pow_zero] using MeromorphicAt.const 1 x
+  | succ m hm => simpa only [pow_succ] using hm.mul hf
 
 lemma zpow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℤ) : MeromorphicAt (f ^ n) x := by
-  induction' n with m m
-  · simpa only [Int.ofNat_eq_coe, zpow_natCast] using hf.pow m
-  · simpa only [zpow_negSucc, inv_iff] using hf.pow (m + 1)
+  induction n with
+  | ofNat m => simpa only [Int.ofNat_eq_coe, zpow_natCast] using hf.pow m
+  | negSucc m => simpa only [zpow_negSucc, inv_iff] using hf.pow (m + 1)
+
+theorem eventually_analyticAt [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜}
+    (h : MeromorphicAt f x) : ∀ᶠ y in 𝓝[≠] x, AnalyticAt 𝕜 f y := by
+  rw [MeromorphicAt] at h
+  obtain ⟨n, h⟩ := h
+  apply AnalyticAt.eventually_analyticAt at h
+  refine (h.filter_mono ?_).mp ?_
+  · simp [nhdsWithin]
+  · rw [eventually_nhdsWithin_iff]
+    apply Filter.Eventually.of_forall
+    intro y hy hf
+    rw [Set.mem_compl_iff, Set.mem_singleton_iff] at hy
+    have := ((analyticAt_id (𝕜 := 𝕜).sub analyticAt_const).pow n).inv
+      (pow_ne_zero _ (sub_ne_zero_of_ne hy))
+    apply (this.smul hf).congr ∘ (eventually_ne_nhds hy).mono
+    intro z hz
+    simp [smul_smul, hz, sub_eq_zero]
 
 /-- The order of vanishing of a meromorphic function, as an element of `ℤ ∪ ∞` (to include the
 case of functions identically 0 near `x`). -/
@@ -280,5 +297,15 @@ include hf in
 lemma congr (h_eq : Set.EqOn f g U) (hu : IsOpen U) : MeromorphicOn g U := by
   refine fun x hx ↦ (hf x hx).congr (EventuallyEq.filter_mono ?_ nhdsWithin_le_nhds)
   exact eventually_of_mem (hu.mem_nhds hx) h_eq
+
+theorem eventually_codiscreteWithin_analyticAt
+    [CompleteSpace E] (f : 𝕜 → E) (h : MeromorphicOn f U) :
+    ∀ᶠ (y : 𝕜) in codiscreteWithin U, AnalyticAt 𝕜 f y := by
+  rw [eventually_iff, mem_codiscreteWithin]
+  intro x hx
+  rw [disjoint_principal_right]
+  apply Filter.mem_of_superset ((h x hx).eventually_analyticAt)
+  intro x hx
+  simp [hx]
 
 end MeromorphicOn

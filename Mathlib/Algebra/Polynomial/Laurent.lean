@@ -366,7 +366,7 @@ theorem reduce_to_polynomial_of_mul_T (f : R[T;T⁻¹]) {Q : R[T;T⁻¹] → Pro
     (Qf : ∀ f : R[X], Q (toLaurent f)) (QT : ∀ f, Q (f * T 1) → Q f) : Q f := by
   induction' f using LaurentPolynomial.induction_on_mul_T with f n
   induction n with
-  | zero => simpa only [Nat.zero_eq, Nat.cast_zero, neg_zero, T_zero, mul_one] using Qf _
+  | zero => simpa only [Nat.cast_zero, neg_zero, T_zero, mul_one] using Qf _
   | succ n hn => convert QT _ _; simpa using hn
 
 section Support
@@ -542,10 +542,10 @@ lemma involutive_invert : Involutive (invert (R := R)) := fun _ ↦ by ext; simp
 lemma toLaurent_reverse (p : R[X]) :
     toLaurent p.reverse = invert (toLaurent p) * (T p.natDegree) := by
   nontriviality R
-  induction' p using Polynomial.recOnHorner with p t _ _ ih p hp ih
-  · simp
-  · simp [add_mul, ← ih]
-  · simpa [natDegree_mul_X hp]
+  induction p using Polynomial.recOnHorner with
+  | M0 => simp
+  | MC _ _ _ _ ih => simp [add_mul, ← ih]
+  | MX _ hp => simpa [natDegree_mul_X hp]
 
 end Inversion
 

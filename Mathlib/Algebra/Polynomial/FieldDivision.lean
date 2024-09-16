@@ -95,7 +95,7 @@ theorem lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors'
   clear hroot
   induction n with
   | zero =>
-    simp only [Nat.zero_eq, Nat.factorial_zero, Nat.cast_one]
+    simp only [Nat.factorial_zero, Nat.cast_one]
     exact Submonoid.one_mem _
   | succ n ih =>
     rw [Nat.factorial_succ, Nat.cast_mul, mul_mem_nonZeroDivisors]
@@ -334,7 +334,7 @@ theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
     rw [mod_def, modByMonic, dif_pos (monic_mul_leadingCoeff_inv hq0)]
     unfold divModByMonicAux
     dsimp
-    simp only [this, false_and_iff, if_false]⟩
+    simp only [this, false_and, if_false]⟩
 
 theorem div_eq_zero_iff (hq0 : q ≠ 0) : p / q = 0 ↔ degree p < degree q :=
   ⟨fun h => by

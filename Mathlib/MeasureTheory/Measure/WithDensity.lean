@@ -3,6 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
+import Mathlib.MeasureTheory.Decomposition.Exhaustion
 import Mathlib.MeasureTheory.Integral.Lebesgue
 
 /-!
@@ -234,14 +235,14 @@ theorem withDensity_apply_eq_zero' {f : α → ℝ≥0∞} {s : Set α} (hf : AE
     simp only [Pi.zero_apply, mem_setOf_eq, Filter.mem_mk] at A
     convert A using 2
     ext x
-    simp only [and_comm, exists_prop, mem_inter_iff, iff_self_iff, mem_setOf_eq,
+    simp only [and_comm, exists_prop, mem_inter_iff, mem_setOf_eq,
       mem_compl_iff, not_forall]
   · intro hs
     let t := toMeasurable μ ({ x | f x ≠ 0 } ∩ s)
     have A : s ⊆ t ∪ { x | f x = 0 } := by
       intro x hx
       rcases eq_or_ne (f x) 0 with (fx | fx)
-      · simp only [fx, mem_union, mem_setOf_eq, eq_self_iff_true, or_true_iff]
+      · simp only [fx, mem_union, mem_setOf_eq, eq_self_iff_true, or_true]
       · left
         apply subset_toMeasurable _ _
         exact ⟨fx, hx⟩
@@ -270,7 +271,7 @@ theorem ae_withDensity_iff' {p : α → Prop} {f : α → ℝ≥0∞} (hf : AEMe
   rw [ae_iff, ae_iff, withDensity_apply_eq_zero' hf, iff_iff_eq]
   congr
   ext x
-  simp only [exists_prop, mem_inter_iff, iff_self_iff, mem_setOf_eq, not_forall]
+  simp only [exists_prop, mem_inter_iff, mem_setOf_eq, not_forall]
 
 theorem ae_withDensity_iff {p : α → Prop} {f : α → ℝ≥0∞} (hf : Measurable f) :
     (∀ᵐ x ∂μ.withDensity f, p x) ↔ ∀ᵐ x ∂μ, f x ≠ 0 → p x :=
@@ -648,6 +649,17 @@ lemma sFinite_withDensity_of_measurable (μ : Measure α) [SFinite μ]
     {f : α → ℝ≥0∞} (_hf : Measurable f) :
     SFinite (μ.withDensity f) :=
   inferInstance
+
+instance [SFinite μ] (c : ℝ≥0∞) : SFinite (c • μ) := by
+  rw [← withDensity_const]
+  infer_instance
+
+/-- If `μ ≪ ν` and `ν` is s-finite, then `μ` is s-finite. -/
+theorem sFinite_of_absolutelyContinuous {ν : Measure α} [SFinite ν] (hμν : μ ≪ ν) :
+    SFinite μ := by
+  rw [← Measure.restrict_add_restrict_compl (μ := μ) measurableSet_sigmaFiniteSetWRT,
+    restrict_compl_sigmaFiniteSetWRT hμν]
+  infer_instance
 
 end SFinite
 

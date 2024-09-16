@@ -70,7 +70,7 @@ theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
   refine ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦ ?_
   choose f hf using Quotient.mk_surjective M'
   simpa [add_comm] using (LinearIndependent.sum_elim_of_quotient ht (fun (i : s) ↦ f i)
-    (by simpa [Function.comp, hf] using hs)).cardinal_le_rank
+    (by simpa [Function.comp_def, hf] using hs)).cardinal_le_rank
 
 theorem rank_quotient_le (p : Submodule R M) : Module.rank R (M ⧸ p) ≤ Module.rank R M :=
   (mkQ p).rank_le_of_surjective (surjective_quot_mk _)
@@ -402,7 +402,7 @@ section Span
 variable [StrongRankCondition R]
 
 theorem rank_span_le (s : Set M) : Module.rank R (span R s) ≤ #s := by
-  rw [Finsupp.span_eq_range_total, ← lift_strictMono.le_iff_le]
+  rw [Finsupp.span_eq_range_linearCombination, ← lift_strictMono.le_iff_le]
   refine (lift_rank_range_le _).trans ?_
   rw [rank_finsupp_self]
   simp only [lift_lift, le_refl]

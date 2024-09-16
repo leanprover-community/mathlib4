@@ -195,7 +195,7 @@ section HasBiproduct
 
 variable {J : Type} [Fintype J] {f : J → C} [HasBiproduct f]
 
-/-- In any preadditive category, any biproduct satsifies
+/-- In any preadditive category, any biproduct satisfies
 `∑ j : J, biproduct.π f j ≫ biproduct.ι f j = 𝟙 (⨁ f)`
 -/
 @[simp]
@@ -415,7 +415,7 @@ section
 
 variable {X Y : C} [HasBinaryBiproduct X Y]
 
-/-- In any preadditive category, any binary biproduct satsifies
+/-- In any preadditive category, any binary biproduct satisfies
 `biprod.fst ≫ biprod.inl + biprod.snd ≫ biprod.inr = 𝟙 (X ⊞ Y)`.
 -/
 @[simp]

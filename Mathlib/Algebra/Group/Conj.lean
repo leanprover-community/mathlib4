@@ -99,7 +99,7 @@ theorem conj_pow {i : ℕ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻�
 
 @[simp]
 theorem conj_zpow {i : ℤ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻¹ := by
-  induction' i
+  induction i
   · change (a * b * a⁻¹) ^ (_ : ℤ) = a * b ^ (_ : ℤ) * a⁻¹
     simp [zpow_natCast]
   · simp only [zpow_negSucc, conj_pow, mul_inv_rev, inv_inv]

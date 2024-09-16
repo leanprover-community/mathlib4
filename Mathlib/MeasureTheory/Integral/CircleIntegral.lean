@@ -362,7 +362,7 @@ theorem norm_two_pi_i_inv_smul_integral_le_of_norm_le_const {f : ℂ → E} {c :
     (hR : 0 ≤ R) (hf : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) :
     ‖(2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), f z‖ ≤ R * C := by
   have : ‖(2 * π * I : ℂ)⁻¹‖ = (2 * π)⁻¹ := by simp [Real.pi_pos.le]
-  rw [norm_smul, this, ← div_eq_inv_mul, div_le_iff Real.two_pi_pos, mul_comm (R * C), ← mul_assoc]
+  rw [norm_smul, this, ← div_eq_inv_mul, div_le_iff₀ Real.two_pi_pos, mul_comm (R * C), ← mul_assoc]
   exact norm_integral_le_of_norm_le_const hR hf
 
 /-- If `f` is continuous on the circle `|z - c| = R`, `R > 0`, the `‖f z‖` is less than or equal to
@@ -532,10 +532,10 @@ theorem hasSum_two_pi_I_cauchyPowerSeries_integral {f : ℂ → E} {c : ℂ} {R 
     · fun_prop
     · fun_prop
   · simp [norm_smul, abs_of_pos hR, mul_left_comm R, inv_mul_cancel_left₀ hR.ne', mul_comm ‖_‖]
-  · exact eventually_of_forall fun _ _ => (summable_geometric_of_lt_one hwR.1 hwR.2).mul_left _
+  · exact Eventually.of_forall fun _ _ => (summable_geometric_of_lt_one hwR.1 hwR.2).mul_left _
   · simpa only [tsum_mul_left, tsum_geometric_of_lt_one hwR.1 hwR.2] using
       hf.norm.mul_continuousOn continuousOn_const
-  · refine eventually_of_forall fun θ _ => HasSum.const_smul _ ?_
+  · refine Eventually.of_forall fun θ _ => HasSum.const_smul _ ?_
     simp only [smul_smul]
     refine HasSum.smul_const ?_ _
     have : ‖w / (circleMap c R θ - c)‖ < 1 := by simpa [abs_of_pos hR] using hwR.2

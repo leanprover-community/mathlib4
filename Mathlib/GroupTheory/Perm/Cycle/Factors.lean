@@ -225,7 +225,7 @@ theorem mem_support_cycleOf_iff [DecidableEq α] [Fintype α] :
     simp [hx]
   · rw [mem_support, cycleOf_apply]
     split_ifs with hy
-    · simp only [hx, hy, iff_true_iff, Ne, not_false_iff, and_self_iff, mem_support]
+    · simp only [hx, hy, Ne, not_false_iff, and_self_iff, mem_support]
       rcases hy with ⟨k, rfl⟩
       rw [← not_mem_support]
       simpa using hx
@@ -281,7 +281,7 @@ theorem SameCycle.exists_pow_eq [DecidableEq α] [Fintype α] (f : Perm α) (h :
     · refine ⟨(f.cycleOf x).support.card, ?_, self_le_add_right _ _, ?_⟩
       · refine zero_lt_one.trans (one_lt_card_support_of_ne_one ?_)
         simpa using hx
-      · simp only [Nat.zero_eq, pow_zero, coe_one, id_eq] at hk'
+      · simp only [pow_zero, coe_one, id_eq] at hk'
         subst hk'
         rw [← (isCycle_cycleOf _ <| mem_support.1 hx).orderOf, ← cycleOf_pow_apply_self,
           pow_orderOf_eq_one, one_apply]
@@ -303,14 +303,12 @@ section cycleFactors
 open scoped List in
 /-- Given a list `l : List α` and a permutation `f : Perm α` whose nonfixed points are all in `l`,
   recursively factors `f` into cycles. -/
-def cycleFactorsAux [DecidableEq α] [Fintype α] :
-    ∀ (l : List α) (f : Perm α),
-      (∀ {x}, f x ≠ x → x ∈ l) →
-        { l : List (Perm α) // l.prod = f ∧ (∀ g ∈ l, IsCycle g) ∧ l.Pairwise Disjoint } := by
-  intro l f h
-  exact match l with
+def cycleFactorsAux [DecidableEq α] [Fintype α] (l : List α) (f : Perm α)
+    (h : ∀ {x}, f x ≠ x → x ∈ l) :
+    { l : List (Perm α) // l.prod = f ∧ (∀ g ∈ l, IsCycle g) ∧ l.Pairwise Disjoint } :=
+  match l with
   | [] => ⟨[], by
-      { simp only [imp_false, List.Pairwise.nil, List.not_mem_nil, forall_const, and_true_iff,
+      { simp only [imp_false, List.Pairwise.nil, List.not_mem_nil, forall_const, and_true,
           forall_prop_of_false, Classical.not_not, not_false_iff, List.prod_nil] at *
         ext
         simp [*]}⟩
@@ -318,7 +316,7 @@ def cycleFactorsAux [DecidableEq α] [Fintype α] :
     if hx : f x = x then cycleFactorsAux l f (by
         intro y hy; exact List.mem_of_ne_of_mem (fun h => hy (by rwa [h])) (h hy))
     else
-      let ⟨m, hm₁, hm₂, hm₃⟩ :=
+      let ⟨m, hm⟩ :=
         cycleFactorsAux l ((cycleOf f x)⁻¹ * f) (by
         intro y hy
         exact List.mem_of_ne_of_mem
@@ -328,10 +326,8 @@ def cycleFactorsAux [DecidableEq α] [Fintype α] :
             (h fun h : f y = y => by
               rw [mul_apply, h, Ne, inv_eq_iff_eq, cycleOf_apply] at hy
               split_ifs at hy <;> tauto))
-      ⟨cycleOf f x::m, by
-        rw [List.prod_cons, hm₁]
-        simp,
-        fun g hg ↦ ((List.mem_cons).1 hg).elim (fun hg => hg.symm ▸ isCycle_cycleOf _ hx) (hm₂ g),
+      ⟨cycleOf f x :: m, by simp [List.prod_cons, hm.1],
+        fun g hg ↦ ((List.mem_cons).1 hg).elim (fun hg => hg ▸ isCycle_cycleOf _ hx) (hm.2.1 g),
         List.pairwise_cons.2
           ⟨fun g hg y =>
             or_iff_not_imp_left.2 fun hfy =>
@@ -340,16 +336,17 @@ def cycleFactorsAux [DecidableEq α] [Fintype α] :
               have hgm : (g::m.erase g) ~ m :=
                 List.cons_perm_iff_perm_erase.2 ⟨hg, List.Perm.refl _⟩
               have : ∀ h ∈ m.erase g, Disjoint g h :=
-                (List.pairwise_cons.1 ((hgm.pairwise_iff Disjoint.symm).2 hm₃)).1
+                (List.pairwise_cons.1 ((hgm.pairwise_iff Disjoint.symm).2 hm.2.2)).1
               by_cases id fun hgy : g y ≠ y =>
                 (disjoint_prod_right _ this y).resolve_right <| by
                   have hsc : SameCycle f⁻¹ x (f y) := by
                     rwa [sameCycle_inv, sameCycle_apply_right]
-                  rw [disjoint_prod_perm hm₃ hgm.symm, List.prod_cons,
+                  have hm₁ := hm.1
+                  rw [disjoint_prod_perm hm.2.2 hgm.symm, List.prod_cons,
                       ← eq_inv_mul_iff_mul_eq] at hm₁
                   rwa [hm₁, mul_apply, mul_apply, cycleOf_inv, hsc.cycleOf_apply, inv_apply_self,
                     inv_eq_iff_eq, eq_comm],
-            hm₃⟩⟩
+            hm.2.2⟩⟩
 
 theorem mem_list_cycles_iff {α : Type*} [Finite α] {l : List (Perm α)}
     (h1 : ∀ σ : Perm α, σ ∈ l → σ.IsCycle) (h2 : l.Pairwise Disjoint) {σ : Perm α} :

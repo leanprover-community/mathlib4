@@ -3,14 +3,9 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.FiniteType
-import Mathlib.RingTheory.Localization.AtPrime
-import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.Localization.Integer
 import Mathlib.RingTheory.Localization.Submodule
-import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.RingHomProperties
-import Mathlib.Data.Set.Subsingleton
+import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 
 /-!
 # Local properties of commutative rings
@@ -540,7 +535,7 @@ theorem finite_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.Finite :
   obtain ⟨⟨_, n₂, rfl⟩, hn₂⟩ :=
     IsLocalization.smul_mem_finsetIntegerMultiple_span (Submonoid.powers (r : R))
       (Localization.Away (f r)) _ (s₁ r) hn₁
-  rw [Submonoid.smul_def, ← Algebra.smul_def, smul_smul, Subtype.coe_mk, ← pow_add] at hn₂
+  rw [Submonoid.smul_def, ← Algebra.smul_def, smul_smul, ← pow_add] at hn₂
   simp_rw [Submonoid.map_powers] at hn₂
   use n₂ + n₁
   exact le_iSup (fun x : s => Submodule.span R (sf x : Set S)) r hn₂
@@ -657,9 +652,18 @@ theorem finiteType_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.Fini
   rw [Submonoid.smul_def, Algebra.smul_def, IsScalarTower.algebraMap_apply R S, ← map_mul] at hn₁
   obtain ⟨⟨_, n₂, rfl⟩, hn₂⟩ :=
     IsLocalization.lift_mem_adjoin_finsetIntegerMultiple (Submonoid.powers (r : R)) _ (s₁ r) hn₁
-  rw [Submonoid.smul_def, ← Algebra.smul_def, smul_smul, Subtype.coe_mk, ← pow_add] at hn₂
+  rw [Submonoid.smul_def, ← Algebra.smul_def, smul_smul, ← pow_add] at hn₂
   simp_rw [Submonoid.map_powers] at hn₂
   use n₂ + n₁
   exact le_iSup (fun x : s => Algebra.adjoin R (sf x : Set S)) r hn₂
 
 end FiniteType
+
+section IsIntegallyClosed
+
+/-- `IsIntegrallyClosed` is a local property. -/
+theorem isIntegrallyClosed_ofLocalizationMaximal :
+    OfLocalizationMaximal fun R _ ↦ ([IsDomain R] → IsIntegrallyClosed R) :=
+  fun _ _ h _ ↦ IsIntegrallyClosed.of_localization_maximal fun p _ hpm ↦ h p hpm
+
+end IsIntegallyClosed

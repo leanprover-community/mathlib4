@@ -43,11 +43,10 @@ a `GroupWithZero` lemma instead.
 field, division ring, skew field, skew-field, skewfield
 -/
 
+assert_not_imported Mathlib.Tactic.Common
+
 -- `NeZero` should not be needed in the basic algebraic hierarchy.
 assert_not_exists NeZero
-
--- Check that we have not imported `Mathlib.Tactic.Common` yet.
-assert_not_exists Mathlib.Tactic.scopedNS
 
 assert_not_exists MonoidHom
 

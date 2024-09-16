@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yaël Dillies
 -/
 import Mathlib.Logic.Function.Iterate
-import Mathlib.Init.Data.Int.Order
+import Mathlib.Data.Int.Order.Basic
 import Mathlib.Order.Compare
 import Mathlib.Order.Max
 import Mathlib.Order.RelClasses
@@ -541,9 +541,10 @@ theorem StrictAnti.isMin_of_apply (hf : StrictAnti f) (ha : IsMax (f a)) : IsMin
 
 lemma StrictMono.add_le_nat {f : ℕ → ℕ} (hf : StrictMono f) (m n : ℕ) : m + f n ≤ f (m + n)  := by
   rw [Nat.add_comm m, Nat.add_comm m]
-  induction' m with m ih
-  · rw [Nat.add_zero, Nat.add_zero]
-  · rw [← Nat.add_assoc, ← Nat.add_assoc, Nat.succ_le]
+  induction m with
+  | zero => rw [Nat.add_zero, Nat.add_zero]
+  | succ m ih =>
+    rw [← Nat.add_assoc, ← Nat.add_assoc, Nat.succ_le]
     exact ih.trans_lt (hf (n + m).lt_succ_self)
 
 protected theorem StrictMono.ite' (hf : StrictMono f) (hg : StrictMono g) {p : α → Prop}
@@ -876,8 +877,9 @@ variable [Preorder α]
 theorem Nat.rel_of_forall_rel_succ_of_le_of_lt (r : β → β → Prop) [IsTrans β r] {f : ℕ → β} {a : ℕ}
     (h : ∀ n, a ≤ n → r (f n) (f (n + 1))) ⦃b c : ℕ⦄ (hab : a ≤ b) (hbc : b < c) :
     r (f b) (f c) := by
-  induction' hbc with k b_lt_k r_b_k
-  exacts [h _ hab, _root_.trans r_b_k (h _ (hab.trans_lt b_lt_k).le)]
+  induction hbc with
+  | refl => exact h _ hab
+  | step b_lt_k r_b_k => exact _root_.trans r_b_k (h _ (hab.trans_lt b_lt_k).le)
 
 theorem Nat.rel_of_forall_rel_succ_of_le_of_le (r : β → β → Prop) [IsRefl β r] [IsTrans β r]
     {f : ℕ → β} {a : ℕ} (h : ∀ n, a ≤ n → r (f n) (f (n + 1)))
@@ -937,11 +939,9 @@ theorem Int.rel_of_forall_rel_succ_of_lt (r : β → β → Prop) [IsTrans β r]
     (h : ∀ n, r (f n) (f (n + 1))) ⦃a b : ℤ⦄ (hab : a < b) : r (f a) (f b) := by
   rcases lt.dest hab with ⟨n, rfl⟩
   clear hab
-  induction' n with n ihn
-  · rw [Int.ofNat_one]
-    apply h
-  · rw [Int.ofNat_succ, ← Int.add_assoc]
-    exact _root_.trans ihn (h _)
+  induction n with
+  | zero => rw [Int.ofNat_one]; apply h
+  | succ n ihn => rw [Int.ofNat_succ, ← Int.add_assoc]; exact _root_.trans ihn (h _)
 
 theorem Int.rel_of_forall_rel_succ_of_le (r : β → β → Prop) [IsRefl β r] [IsTrans β r] {f : ℤ → β}
     (h : ∀ n, r (f n) (f (n + 1))) ⦃a b : ℤ⦄ (hab : a ≤ b) : r (f a) (f b) :=

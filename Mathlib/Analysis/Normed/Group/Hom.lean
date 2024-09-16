@@ -208,8 +208,8 @@ theorem le_opNorm (x : V₁) : ‖f x‖ ≤ ‖f‖ * ‖x‖ := by
   · rwa [h, mul_zero] at hC ⊢
   have hlt : 0 < ‖x‖ := lt_of_le_of_ne (norm_nonneg x) (Ne.symm h)
   exact
-    (div_le_iff hlt).mp
-      (le_csInf bounds_nonempty fun c ⟨_, hc⟩ => (div_le_iff hlt).mpr <| by apply hc)
+    (div_le_iff₀ hlt).mp
+      (le_csInf bounds_nonempty fun c ⟨_, hc⟩ => (div_le_iff₀ hlt).mpr <| by apply hc)
 
 theorem le_opNorm_of_le {c : ℝ} {x} (h : ‖x‖ ≤ c) : ‖f x‖ ≤ ‖f‖ * c :=
   le_trans (f.le_opNorm x) (by gcongr; exact f.opNorm_nonneg)
@@ -532,7 +532,7 @@ instance toNormedAddCommGroup {V₁ V₂ : Type*} [NormedAddCommGroup V₁] [Nor
       add_le' := opNorm_add_le
       eq_zero_of_map_eq_zero' := fun _f => opNorm_zero_iff.1 }
 
-/-- Coercion of a `NormedAddGroupHom` is an `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`.  -/
+/-- Coercion of a `NormedAddGroupHom` is an `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`. -/
 @[simps]
 def coeAddHom : NormedAddGroupHom V₁ V₂ →+ V₁ → V₂ where
   toFun := DFunLike.coe
@@ -656,7 +656,7 @@ theorem mem_ker (v : V₁) : v ∈ f.ker ↔ f v = 0 := by
 @[simps]
 def ker.lift (h : g.comp f = 0) : NormedAddGroupHom V₁ g.ker where
   toFun v := ⟨f v, by rw [g.mem_ker, ← comp_apply g f, h, zero_apply]⟩
-  map_add' v w := by simp only [map_add, AddSubmonoid.mk_add_mk]
+  map_add' v w := by simp only [map_add, AddMemClass.mk_add_mk]
   bound' := f.bound'
 
 @[simp]

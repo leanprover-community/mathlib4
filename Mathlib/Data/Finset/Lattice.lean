@@ -18,8 +18,7 @@ import Mathlib.Order.Nat
 # Lattice operations on finsets
 -/
 
--- TODO:
--- assert_not_exists OrderedCommMonoid
+assert_not_exists OrderedCommMonoid
 assert_not_exists MonoidWithZero
 
 open Function Multiset OrderDual
@@ -221,7 +220,7 @@ theorem sup_le_of_le_directed {α : Type*} [SemilatticeSup α] [OrderBot α] (s 
     (∀ x ∈ t, ∃ y ∈ s, x ≤ y) → ∃ x ∈ s, t.sup id ≤ x := by
   classical
     induction' t using Finset.induction_on with a r _ ih h
-    · simpa only [forall_prop_of_true, and_true_iff, forall_prop_of_false, bot_le, not_false_iff,
+    · simpa only [forall_prop_of_true, and_true, forall_prop_of_false, bot_le, not_false_iff,
         sup_empty, forall_true_iff, not_mem_empty]
     · intro h
       have incs : (r : Set α) ⊆ ↑(insert a r) := by
@@ -521,7 +520,7 @@ theorem inf_sup {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (
   -- Porting note: `simpa` doesn't support placeholders in proof terms
   have := h (fun j hj => if hji : j = i then cast (congr_arg κ hji.symm) a
       else g _ <| mem_of_mem_insert_of_ne hj hji) (fun j hj => ?_)
-  · simpa only [cast_eq, dif_pos, Function.comp, Subtype.coe_mk, dif_neg, aux] using this
+  · simpa only [cast_eq, dif_pos, Function.comp_def, Subtype.coe_mk, dif_neg, aux] using this
   rw [mem_insert] at hj
   obtain (rfl | hj) := hj
   · simpa
@@ -812,8 +811,9 @@ theorem _root_.map_finset_sup' [SemilatticeSup β] [FunLike F α β] [SupHomClas
     f (s.sup' hs g) = s.sup' hs (f ∘ g) := by
   refine hs.cons_induction ?_ ?_ <;> intros <;> simp [*]
 
-lemma nsmul_sup' {α'} [LinearOrderedAddCommMonoid β] {s : Finset α'}
-    (hs : s.Nonempty) (f : α' → β) (n : ℕ) :
+lemma nsmul_sup' {α β : Type*} [AddMonoid β] [LinearOrder β]
+    [CovariantClass β β (· + ·) (· ≤ ·)] [CovariantClass β β (swap (· + ·)) (· ≤ ·)]
+    {s : Finset α} (hs : s.Nonempty) (f : α → β) (n : ℕ) :
     s.sup' hs (fun a => n • f a) = n • s.sup' hs f :=
   let ns : SupHom β β := { toFun := (n • ·), map_sup' := fun _ _ => (nsmul_right_mono n).map_max }
   (map_finset_sup' ns hs _).symm
@@ -963,8 +963,9 @@ theorem _root_.map_finset_inf' [SemilatticeInf β] [FunLike F α β] [InfHomClas
     f (s.inf' hs g) = s.inf' hs (f ∘ g) := by
   refine hs.cons_induction ?_ ?_ <;> intros <;> simp [*]
 
-lemma nsmul_inf' {α'} [LinearOrderedAddCommMonoid β] {s : Finset α'}
-    (hs : s.Nonempty) (f : α' → β) (n : ℕ) :
+lemma nsmul_inf' {α β : Type*} [AddMonoid β] [LinearOrder β]
+    [CovariantClass β β (· + ·) (· ≤ ·)] [CovariantClass β β (swap (· + ·)) (· ≤ ·)]
+    {s : Finset α} (hs : s.Nonempty) (f : α → β) (n : ℕ) :
     s.inf' hs (fun a => n • f a) = n • s.inf' hs f :=
   let ns : InfHom β β := { toFun := (n • ·), map_inf' := fun _ _ => (nsmul_right_mono n).map_min }
   (map_finset_inf' ns hs _).symm
@@ -1304,14 +1305,14 @@ protected theorem le_min_iff {m : WithTop α} {s : Finset α} : m ≤ s.min ↔ 
 protected theorem min_eq_bot [OrderBot α] {s : Finset α} : s.min = ⊥ ↔ ⊥ ∈ s :=
   Finset.max_eq_top (α := αᵒᵈ)
 
-/-- Given a nonempty finset `s` in a linear order `α`, then `s.min' h` is its minimum, as an
-element of `α`, where `h` is a proof of nonemptiness. Without this assumption, use instead `s.min`,
+/-- Given a nonempty finset `s` in a linear order `α`, then `s.min' H` is its minimum, as an
+element of `α`, where `H` is a proof of nonemptiness. Without this assumption, use instead `s.min`,
 taking values in `WithTop α`. -/
 def min' (s : Finset α) (H : s.Nonempty) : α :=
   inf' s H id
 
-/-- Given a nonempty finset `s` in a linear order `α`, then `s.max' h` is its maximum, as an
-element of `α`, where `h` is a proof of nonemptiness. Without this assumption, use instead `s.max`,
+/-- Given a nonempty finset `s` in a linear order `α`, then `s.max' H` is its maximum, as an
+element of `α`, where `H` is a proof of nonemptiness. Without this assumption, use instead `s.max`,
 taking values in `WithBot α`. -/
 def max' (s : Finset α) (H : s.Nonempty) : α :=
   sup' s H id
@@ -1950,3 +1951,5 @@ theorem set_biInter_biUnion (s : Finset γ) (t : γ → Finset α) (f : α → S
   iInf_biUnion s t f
 
 end Finset
+
+set_option linter.style.longFile 2100

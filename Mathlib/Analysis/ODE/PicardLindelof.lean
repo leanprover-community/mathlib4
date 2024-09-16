@@ -80,7 +80,7 @@ instance : Inhabited (PicardLindelof E) :=
   ⟨⟨0, 0, 0, ⟨0, le_rfl, le_rfl⟩, 0, 0, 0, 0,
       { ht₀ := by rw [Subtype.coe_mk, Icc_self]; exact mem_singleton _
         hR := le_rfl
-        lipschitz := fun t _ => (LipschitzWith.const 0).lipschitzOnWith _
+        lipschitz := fun t _ => (LipschitzWith.const 0).lipschitzOnWith
         cont := fun _ _ => by simpa only [Pi.zero_apply] using continuousOn_const
         norm_le := fun t _ x _ => norm_zero.le
         C_mul_le_R := (zero_mul _).le }⟩⟩
@@ -265,10 +265,12 @@ theorem dist_next_apply_le_of_le {f₁ f₂ : FunSpace v} {n : ℕ} {d : ℝ}
 
 theorem dist_iterate_next_apply_le (f₁ f₂ : FunSpace v) (n : ℕ) (t : Icc v.tMin v.tMax) :
     dist (next^[n] f₁ t) (next^[n] f₂ t) ≤ (v.L * |t.1 - v.t₀|) ^ n / n ! * dist f₁ f₂ := by
-  induction' n with n ihn generalizing t
-  · rw [pow_zero, Nat.factorial_zero, Nat.cast_one, div_one, one_mul]
+  induction n generalizing t with
+  | zero =>
+    rw [pow_zero, Nat.factorial_zero, Nat.cast_one, div_one, one_mul]
     exact dist_apply_le_dist f₁ f₂ t
-  · rw [iterate_succ_apply', iterate_succ_apply']
+  | succ n ihn =>
+    rw [iterate_succ_apply', iterate_succ_apply']
     exact dist_next_apply_le_of_le ihn _
 
 theorem dist_iterate_next_le (f₁ f₂ : FunSpace v) (n : ℕ) :
@@ -282,7 +284,7 @@ variable [CompleteSpace E]
 theorem hasDerivWithinAt_next (t : Icc v.tMin v.tMax) :
     HasDerivWithinAt (f.next ∘ v.proj) (v t (f t)) (Icc v.tMin v.tMax) t := by
   haveI : Fact ((t : ℝ) ∈ Icc v.tMin v.tMax) := ⟨t.2⟩
-  simp only [(· ∘ ·), next_apply]
+  simp only [Function.comp_def, next_apply]
   refine HasDerivWithinAt.const_add _ ?_
   have : HasDerivWithinAt (∫ τ in v.t₀..·, f.vComp τ) (f.vComp t) (Icc v.tMin v.tMax) t :=
     integral_hasDerivWithinAt_right (f.intervalIntegrable_vComp _ _)

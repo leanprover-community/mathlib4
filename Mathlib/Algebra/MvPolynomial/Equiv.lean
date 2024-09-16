@@ -377,7 +377,7 @@ theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (
       (Polynomial.aeval y).comp (φ.comp (finSuccEquiv R n).toAlgHom) f
   congr 2
   apply MvPolynomial.algHom_ext
-  rw [Fin.forall_fin_succ]
+  rw [Fin.forall_iff_succ]
   simp only [φ, aeval_X, Fin.cons_zero, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp,
     Polynomial.coe_aeval_eq_eval, Polynomial.map_C, AlgHom.coe_mk, RingHom.toFun_eq_coe,
     Polynomial.coe_mapRingHom, comp_apply, finSuccEquiv_apply, eval₂Hom_X',
