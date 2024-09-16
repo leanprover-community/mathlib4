@@ -21,7 +21,7 @@ They are placed here in a separate file (rather than incorporated as a continuat
 `GroupTheory.Archimedean`) because they rely on some imports from pointwise lemmas.
 -/
 
-open Set
+open Multiplicative Set
 
 -- no earlier file imports the necessary requirements for the next two
 
@@ -215,7 +215,7 @@ lemma LinearOrderedCommGroup.discrete_or_denselyOrdered :
 either isomorphic (and order-isomorphic) to `ℤₘ₀`, or is densely ordered. -/
 lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
     [LinearOrderedCommGroupWithZero G] [Nontrivial Gˣ] [MulArchimedean G] :
-    Nonempty (G ≃*o WithZero (Multiplicative ℤ)) ∨ DenselyOrdered G := by
+    Nonempty (G ≃*o ℤₘ₀) ∨ DenselyOrdered G := by
   classical
   refine (LinearOrderedCommGroup.discrete_or_denselyOrdered Gˣ).imp ?_ ?_
   · intro ⟨f⟩
