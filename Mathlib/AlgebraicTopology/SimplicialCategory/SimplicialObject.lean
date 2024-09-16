@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Functor.FunctorHom
 In `CategoryTheory.Functor.FunctorHom`, it was shown that a category of functors
 `C ⥤ D` is enriched over a suitable category `C ⥤ Type _` of functors to types.
 
-In this file, we deduce that `SimplicialObject D` is enriched ober `SSet.{v} D`
+In this file, we deduce that `SimplicialObject D` is enriched over `SSet.{v} D`
 (when `D : Type u` and `[Category.{v} D]`) and that `SimplicialObject D`
 is actually a simplicial category. In particular, the category of simplicial
 sets is a simplicial category.
