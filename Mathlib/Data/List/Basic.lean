@@ -2201,7 +2201,7 @@ end Forall
 /-! ### Miscellaneous lemmas -/
 
 theorem get_attach (L : List α) (i) :
-    (L.attach.get i).1 = L.get ⟨i, length_attach L ▸ i.2⟩ := by simp
+    (L.attach.get i).1 = L.get ⟨i, length_attach (L := L) ▸ i.2⟩ := by simp
 
 #adaptation_note
 /--
