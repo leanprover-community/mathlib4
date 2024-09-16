@@ -30,7 +30,7 @@ namespace ProbabilityTheory
 
 section ParetoPDF
 
-/-- The pdf of the Pareto distribution depending on its scale and rate. -/
+/-- The pdf of the Pareto distribution depending on its scale `t` and rate `r`. -/
 noncomputable def paretoPDFReal (t r x : ℝ) : ℝ :=
   if t ≤ x then r * t ^ r * x ^ (-(r + 1)) else 0
 
@@ -64,9 +64,9 @@ lemma measurable_paretoPDFReal (t r : ℝ) : Measurable (paretoPDFReal t r) :=
 
 /-- The Pareto pdf is strongly measurable. -/
 @[measurability]
- lemma stronglyMeasurable_paretoPDFReal (t r : ℝ) :
-     StronglyMeasurable (paretoPDFReal t r) :=
-   (measurable_paretoPDFReal t r).stronglyMeasurable
+lemma stronglyMeasurable_paretoPDFReal (t r : ℝ) :
+    StronglyMeasurable (paretoPDFReal t r) :=
+  (measurable_paretoPDFReal t r).stronglyMeasurable
 
 /-- The Pareto pdf is positive for all reals `>= t`. -/
 lemma paretoPDFReal_pos {t r x : ℝ} (ht : 0 < t) (hr : 0 < r) (hx : t ≤ x) :
