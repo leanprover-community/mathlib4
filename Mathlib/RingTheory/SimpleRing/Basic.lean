@@ -41,12 +41,12 @@ lemma one_mem_of_ne_zero_mem {A : Type*} [NonAssocRing A] [IsSimpleRing A] (I : 
     {x : A} (hx : x ≠ 0) (hxI : x ∈ I) : (1 : A) ∈ I :=
   one_mem_of_ne_bot I (by rintro rfl; exact hx hxI)
 
-lemma of_eqBotOrEqTop [Nontrivial R] (h : ∀ I : TwoSidedIdeal R, I = ⊥ ∨ I = ⊤) :
+lemma of_eq_bot_or_eq_top [Nontrivial R] (h : ∀ I : TwoSidedIdeal R, I = ⊥ ∨ I = ⊤) :
     IsSimpleRing R where
   simple := { eq_bot_or_eq_top := h }
 
 instance _root_.DivisionRing.isSimpleRing (A : Type*) [DivisionRing A] : IsSimpleRing A :=
-  .of_eqBotOrEqTop <| fun I ↦ by
+  .of_eq_bot_or_eq_top <| fun I ↦ by
     rw [or_iff_not_imp_left, ← I.one_mem_iff]
     intro H
     obtain ⟨x, hx1, hx2 : x ≠ 0⟩ := SetLike.exists_of_lt (bot_lt_iff_ne_bot.mpr H : ⊥ < I)
