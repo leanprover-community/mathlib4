@@ -205,41 +205,6 @@ lemma mem_span_iff_mem_addSubgroup_closure {s : Set R} {z : R} :
     · rintro - x ⟨y, hy, r, -, rfl⟩
       exact ⟨y, hy, r * x, mem_univ _, (mul_assoc ..).symm⟩
 
-lemma mem_span_iff_exists {s : Set R} {x} :
-    x ∈ span s ↔
-    ∃ (ι : Type) (fin : Fintype ι) (xL : ι → R) (xR : ι → R) (y : ι → s),
-      x = ∑ i : ι, xL i * (y i : R) * xR i := by
-  let S : TwoSidedIdeal R := .mk'
-    {x | ∃ (ι : Type) (fin : Fintype ι) (xL : ι → R) (xR : ι → R) (y : ι → s),
-    x = ∑ i : ι, xL i * y i * xR i}
-    ⟨Empty, inferInstance, Empty.elim, Empty.elim, Empty.elim, by simp⟩
-    (by
-      rintro _ _ ⟨na, fina, xLa, xRa, ya, rfl⟩ ⟨nb, finb, xLb, xRb, yb, rfl⟩
-      refine ⟨na ⊕ nb, inferInstance, Sum.elim xLa xLb, Sum.elim xRa xRb, Sum.elim ya yb, by simp⟩)
-    (by
-      rintro _ ⟨n, finn, xL, xR, y, rfl⟩
-      exact ⟨n, finn, -xL, xR, y, by simp⟩)
-    (by
-      rintro a _ ⟨n, finn, xL, xR, y, rfl⟩
-      exact ⟨n, finn, a • xL, xR, y, by simp [Finset.mul_sum, mul_assoc]⟩)
-    (by
-      rintro _ b ⟨n, finn, xL, xR, y, rfl⟩
-      exact ⟨n, finn, xL, fun x ↦ xR x * b, y, by simp [Finset.sum_mul, mul_assoc]⟩)
-  suffices eq1 : span s = S by
-    rw [eq1]; simp [S, mem_mk']
-  rw [span, RingCon.ringConGen_eq]
-  refine ringCon_injective $ sInf_eq_of_forall_ge_of_forall_gt_exists_lt ?_ ?_
-  · rintro I (hI : ∀ a b, _ → _)
-    rw [← ringCon_le_iff, le_iff]
-    intro x h
-    simp only [SetLike.mem_coe, mem_mk', Set.mem_setOf_eq, S] at h
-    obtain ⟨n, finn, xL, xR, y, rfl⟩ := h
-    refine finsetSum_mem _ _ _ fun i _ => mul_mem_right _ _ _ $
-      mul_mem_left _ _ _ $  hI (y i) 0 (by simp)
-  · rintro I hI
-    exact ⟨S.ringCon, fun a b H ↦ ⟨PUnit, inferInstance, fun _ ↦ 1, fun _ ↦ 1,
-      fun _ ↦ ⟨a - b, by simp [H]⟩, by simp⟩, hI⟩
-
 /-- Given an ideal `I`, `span I` is the smallest two-sided-ideal containing `I`. -/
 def fromIdeal : Ideal R →o TwoSidedIdeal R where
   toFun I := span I
