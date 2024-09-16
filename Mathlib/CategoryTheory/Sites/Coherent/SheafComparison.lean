@@ -85,7 +85,8 @@ lemma eq_induced : haveI := F.reflects_precoherent
 
 instance : haveI := F.reflects_precoherent;
     F.IsDenseSubsite (coherentTopology C) (coherentTopology D) where
-  functorPushforward_mem_iff := by simp_rw [eq_induced F]; rfl
+  functorPushforward_mem_iff := by
+    rw [eq_induced F]; exact IsDenseSubsite.functorPushforward_mem_iff
 
 lemma coverPreserving : haveI := F.reflects_precoherent
     CoverPreserving (coherentTopology _) (coherentTopology _) F :=
@@ -181,7 +182,8 @@ lemma eq_induced : haveI := F.reflects_preregular
 
 instance : haveI := F.reflects_preregular;
     F.IsDenseSubsite (regularTopology C) (regularTopology D) where
-  functorPushforward_mem_iff := by simp_rw [eq_induced F]; rfl
+  functorPushforward_mem_iff := by
+    rw [eq_induced F]; exact IsDenseSubsite.functorPushforward_mem_iff
 
 lemma coverPreserving : haveI := F.reflects_preregular
     CoverPreserving (regularTopology _) (regularTopology _) F :=

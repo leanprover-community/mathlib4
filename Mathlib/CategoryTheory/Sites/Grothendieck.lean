@@ -263,7 +263,7 @@ instance : InfSet (GrothendieckTopology C) where
 /-- See <https://stacks.math.columbia.edu/tag/00Z7> -/
 theorem isGLB_sInf (s : Set (GrothendieckTopology C)) : IsGLB s (sInf s) := by
   refine @IsGLB.of_image _ _ _ _ sieves ?_ _ _ ?_
-  · rfl
+  · exact ge_iff_le
   · exact _root_.isGLB_sInf _
 
 /-- Construct a complete lattice from the `Inf`, but make the trivial and discrete topologies
