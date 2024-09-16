@@ -277,7 +277,7 @@ theorem small_of_bounded_birthday (o : Ordinal) : Small.{u} {x : Game.{u} // bir
   have H : Small.{u} S := @small_iUnion _ _ _ _ (fun i => IH _ i.2)
   obtain rfl | ⟨a, rfl⟩ | ho := zero_or_succ_or_limit o
   · simp_rw [Ordinal.not_lt_zero]
-    exact small_empty Game
+    exact small_empty
   · simp_rw [Order.lt_succ_iff, le_iff_lt_or_eq]
     convert @small_union.{u} _ {x | birthday x < a} {x | birthday x = a} _ _
     · exact IH _ (Order.lt_succ a)
@@ -286,7 +286,7 @@ theorem small_of_bounded_birthday (o : Ordinal) : Small.{u} {x : Game.{u} // bir
         (fun x ↦ ((equivShrink {y // (g y).2}).symm x).1.1.out)⟧
       suffices {x | x.birthday = a} ⊆ Set.range f from small_subset this
       intro x hx
-      obtain ⟨y, hy, hy'⟩ := birthday_eq_pGame_birthday x
+      obtain ⟨y, hy, hy'⟩ := birthday_eq_pGameBirthday x
       let g := fun z : S ↦ (∃ i, ⟦y.moveLeft i⟧ = z.1, ∃ j, ⟦y.moveRight j⟧ = z.1)
       use g
       rw [← hy]
@@ -302,14 +302,14 @@ theorem small_of_bounded_birthday (o : Ordinal) : Small.{u} {x : Game.{u} // bir
         · suffices ∃ b ≤ a, birthday ⟦y.moveLeft i⟧ < b from by simpa [S] using this
           refine ⟨_, le_of_eq hx, ?_⟩
           rw [← hy']
-          exact (birthday_le_pGame_birthday _).trans_lt (PGame.birthday_moveLeft_lt i)
+          exact (birthday_quot_le_pGameBirthday _).trans_lt (PGame.birthday_moveLeft_lt i)
         · rw [PGame.moveLeft_mk, Equiv.symm_apply_apply]
           exact Quotient.mk_out _
       · refine ⟨(equivShrink {y // (g y).2}) ⟨⟨⟦y.moveRight i⟧, ?_⟩, i, rfl⟩, ?_⟩
         · suffices ∃ b ≤ a, birthday ⟦y.moveRight i⟧ < b from by simpa [S] using this
           refine ⟨_, le_of_eq hx, ?_⟩
           rw [← hy']
-          exact (birthday_le_pGame_birthday _).trans_lt (PGame.birthday_moveRight_lt i)
+          exact (birthday_quot_le_pGameBirthday _).trans_lt (PGame.birthday_moveRight_lt i)
         · rw [PGame.moveRight_mk, Equiv.symm_apply_apply]
           exact Quotient.mk_out _
   · convert H
