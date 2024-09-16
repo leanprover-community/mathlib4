@@ -32,7 +32,7 @@ We relate in this file `CoverEntropy` and `NetEntropy`. This file is downstream 
 - `IsDynNetOf`: property that dynamical balls centered on a subset `s` of `F` are disjoint.
 - `netMaxcard`: maximal cardinal of a dynamical net. Takes values in `ℕ∞`.
 - `netEntropyInfEnt`/`netEntropyEnt`: exponential growth of `netMaxcard`. The former is
-defined with a `liminf`, the later with a `limsup`. Take values in `EReal`.
+defined with a `liminf`, the latter with a `limsup`. Take values in `EReal`.
 
 ## Implementation notes
 As when using covers, there are two competing definitions `netEntropyInfEnt` and
