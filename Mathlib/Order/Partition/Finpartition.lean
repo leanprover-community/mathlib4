@@ -257,6 +257,15 @@ theorem parts_top_subsingleton (a : α) [Decidable (a = ⊥)] :
     ((⊤ : Finpartition a).parts : Set α).Subsingleton :=
   Set.subsingleton_of_subset_singleton fun _ hb ↦ mem_singleton.1 <| parts_top_subset _ hb
 
+-- TODO: this instance takes double-exponential time to generate all partitions, find a faster way
+instance [DecidableEq α] {s : Finset α} : Fintype (Finpartition s) where
+  elems := s.powerset.powerset.image
+    fun ps ↦ if h : ps.sup id = s ∧ ⊥ ∉ ps ∧ ps.SupIndep id then ⟨ps, h.2.2, h.1, h.2.1⟩ else ⊤
+  complete P := by
+    refine mem_image.mpr ⟨P.parts, ?_, ?_⟩
+    · rw [mem_powerset]; intro p hp; rw [mem_powerset]; exact P.le hp
+    · simp only [P.supIndep, P.sup_parts, P.not_bot_mem]; rfl
+
 end Order
 
 end Lattice
@@ -610,15 +619,23 @@ lemma mem_detach_iff (P : Finpartition s.attach) :
     t ∈ P.detach.parts ↔ t ⊆ s ∧ t.subtype (· ∈ s) ∈ P.parts := by
   simp_rw [detach, mem_map, Embedding.coeFn_mk]
   refine ⟨fun ⟨p, mp, ap⟩ ↦ ⟨?_, ?_⟩, fun h ↦ ?_⟩
-  · have := P.le mp
-    sorry
+  · rw [← ap]; apply map_subtype_subset
   · rwa [← ap, map_subtype]
   · use t.subtype (· ∈ s), h.2, subtype_map_of_mem h.1
 
 lemma detach_attach : P.attach.detach = P := by
-  sorry
+  ext p; rw [mem_detach_iff, mem_attach_iff, subtype_map]
+  exact ⟨fun ⟨h₁, h₂⟩ ↦ (filter_true_of_mem h₁) ▸ h₂,
+    fun h ↦ ⟨P.le h, (filter_true_of_mem (P.le h)).symm ▸ h⟩⟩
 
-instance : Fintype (Finpartition s) := Fintype.ofSurjective _ (fun fp ↦ ⟨_, detach_attach fp⟩)
+lemma attach_detach (P : Finpartition s.attach) : P.detach.attach = P := by
+  ext p; rw [mem_attach_iff, mem_detach_iff, map_subtype, and_iff_right_iff_imp]
+  exact fun _ ↦ map_subtype_subset _
+
+/-- Equivalence between finpartitions of `s` and finpartitions of `s.attach`, the latter of which
+is guaranteed to have elements from a finite type. -/
+def attachEquiv : Finpartition s ≃ Finpartition s.attach :=
+  ⟨attach, detach, detach_attach, attach_detach⟩
 
 end Equiv
 
