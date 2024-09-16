@@ -138,6 +138,135 @@ theorem AnalyticOn.curry_right {f : E × F → G} {x : E} {s : Set (E × F)} (fa
 alias AnalyticOn.along_snd := AnalyticOn.curry_right
 
 /-!
+### Analyticity in Pi spaces
+
+In this section, `f : Π i, E → Fm i` is a family of functions, i.e., each `f i` is a function,
+from `E` to a space `Fm i`. We discuss whether the family as a whole is analytic as a function
+of `x : E`, i.e., whether `x ↦ (f 1 x, ..., f n x)` is analytic from `E` to the product space
+`Π i, Fm i`. This function is denoted either by `fun x ↦ (fun i ↦ f i x)`, or `fun x i ↦ f i x`,
+or `fun x ↦ (f ⬝ x)`. We use the latter spelling in the statements, for readability purposes.
+-/
+
+section
+
+variable {ι : Type*} [Fintype ι] {e : E} {Fm : ι → Type*}
+    [∀ i, NormedAddCommGroup (Fm i)] [∀ i, NormedSpace 𝕜 (Fm i)]
+    {f : Π i, E → Fm i} {s : Set E} {r : ℝ≥0∞}
+    {p : Π i, FormalMultilinearSeries 𝕜 E (Fm i)}
+
+lemma FormalMultilinearSeries.radius_pi_le (p : Π i, FormalMultilinearSeries 𝕜 E (Fm i)) (i : ι) :
+    (FormalMultilinearSeries.pi p).radius ≤ (p i).radius := by
+  apply le_of_forall_nnreal_lt (fun r' hr' ↦ ?_)
+  obtain ⟨C, -, hC⟩ :  ∃ C > 0, ∀ (n : ℕ),
+    ‖pi p n‖ * ↑r' ^ n ≤ C := norm_mul_pow_le_of_lt_radius _ hr'
+  apply le_radius_of_bound _ C (fun n ↦ ?_)
+  apply le_trans _ (hC n)
+  gcongr
+  rw [pi, ContinuousMultilinearMap.opNorm_pi]
+  exact norm_le_pi_norm (fun i ↦ p i n) i
+
+lemma FormalMultilinearSeries.le_radius_pi (h : ∀ i, r ≤ (p i).radius) :
+    r ≤ (FormalMultilinearSeries.pi p).radius := by
+  apply le_of_forall_nnreal_lt (fun r' hr' ↦ ?_)
+  have I i : ∃ C > 0, ∀ n, ‖p i n‖ * (r' : ℝ) ^ n ≤ C :=
+    norm_mul_pow_le_of_lt_radius _ (hr'.trans_le (h i))
+  choose C C_pos hC using I
+  obtain ⟨D, D_nonneg, hD⟩ : ∃ D ≥ 0, ∀ i, C i ≤ D :=
+    ⟨∑ i, C i, Finset.sum_nonneg (fun i _ ↦ (C_pos i).le),
+      fun i ↦ Finset.single_le_sum (fun j _ ↦ (C_pos j).le) (Finset.mem_univ _)⟩
+  apply le_radius_of_bound _ D (fun n ↦ ?_)
+  rcases le_or_lt ((r' : ℝ)^n) 0 with hr' | hr'
+  · exact le_trans (mul_nonpos_of_nonneg_of_nonpos (by positivity) hr') D_nonneg
+  · simp only [pi]
+    rw [← le_div_iff₀ hr', ContinuousMultilinearMap.opNorm_pi,
+      pi_norm_le_iff_of_nonneg (by positivity)]
+    intro i
+    exact (le_div_iff₀ hr').2 ((hC i n).trans (hD i))
+
+lemma FormalMultilinearSeries.radius_pi_eq_iInf :
+    (FormalMultilinearSeries.pi p).radius = ⨅ i, (p i).radius := by
+  refine le_antisymm (by simp [radius_pi_le]) ?_
+  apply le_of_forall_nnreal_lt (fun r' hr' ↦ ?_)
+  exact le_radius_pi (fun i ↦ le_iInf_iff.1 hr'.le i)
+
+/-- If each function in a finite family has a power series within a ball, then so does the
+family as a whole. Note that the positivity assumption on the radius is only needed when
+the family is empty. -/
+lemma HasFPowerSeriesWithinOnBall.pi
+    (hf : ∀ i, HasFPowerSeriesWithinOnBall (f i) (p i) s e r) (hr : 0 < r) :
+    HasFPowerSeriesWithinOnBall (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) s e r where
+  r_le := by
+    apply FormalMultilinearSeries.le_radius_pi (fun i ↦ ?_)
+    exact (hf i).r_le
+  r_pos := hr
+  hasSum {y} m hy := Pi.hasSum.2 (fun i ↦ (hf i).hasSum m hy)
+
+lemma hasFPowerSeriesWithinOnBall_pi_iff (hr : 0 < r) :
+    HasFPowerSeriesWithinOnBall (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) s e r
+      ↔ ∀ i, HasFPowerSeriesWithinOnBall (f i) (p i) s e r :=
+  ⟨fun h i ↦ ⟨h.r_le.trans (FormalMultilinearSeries.radius_pi_le _ _), hr,
+    fun m hy ↦ Pi.hasSum.1 (h.hasSum m hy) i⟩, fun h ↦ .pi h hr⟩
+
+lemma HasFPowerSeriesOnBall.pi
+    (hf : ∀ i, HasFPowerSeriesOnBall (f i) (p i) e r) (hr : 0 < r) :
+    HasFPowerSeriesOnBall (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) e r := by
+  simp_rw [← hasFPowerSeriesWithinOnBall_univ] at hf ⊢
+  exact HasFPowerSeriesWithinOnBall.pi hf hr
+
+lemma hasFPowerSeriesOnBall_pi_iff (hr : 0 < r) :
+    HasFPowerSeriesOnBall (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) e r
+      ↔ ∀ i, HasFPowerSeriesOnBall (f i) (p i) e r := by
+  simp_rw [← hasFPowerSeriesWithinOnBall_univ]
+  exact hasFPowerSeriesWithinOnBall_pi_iff hr
+
+lemma HasFPowerSeriesWithinAt.pi
+    (hf : ∀ i, HasFPowerSeriesWithinAt (f i) (p i) s e) :
+    HasFPowerSeriesWithinAt (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) s e := by
+  have : ∀ᶠ r in 𝓝[>] 0, ∀ i, HasFPowerSeriesWithinOnBall (f i) (p i) s e r :=
+    eventually_all.mpr (fun i ↦ (hf i).eventually)
+  obtain ⟨r, hr, r_pos⟩ := (this.and self_mem_nhdsWithin).exists
+  exact ⟨r, HasFPowerSeriesWithinOnBall.pi hr r_pos⟩
+
+lemma hasFPowerSeriesWithinAt_pi_iff :
+    HasFPowerSeriesWithinAt (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) s e
+      ↔ ∀ i, HasFPowerSeriesWithinAt (f i) (p i) s e := by
+  refine ⟨fun h i ↦ ?_, fun h ↦ .pi h⟩
+  obtain ⟨r, hr⟩ := h
+  exact ⟨r, (hasFPowerSeriesWithinOnBall_pi_iff hr.r_pos).1 hr i⟩
+
+lemma HasFPowerSeriesAt.pi
+    (hf : ∀ i, HasFPowerSeriesAt (f i) (p i) e) :
+    HasFPowerSeriesAt (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) e := by
+  simp_rw [← hasFPowerSeriesWithinAt_univ] at hf ⊢
+  exact HasFPowerSeriesWithinAt.pi hf
+
+lemma hasFPowerSeriesAt_pi_iff :
+    HasFPowerSeriesAt (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) e
+      ↔ ∀ i, HasFPowerSeriesAt (f i) (p i) e := by
+  simp_rw [← hasFPowerSeriesWithinAt_univ]
+  exact hasFPowerSeriesWithinAt_pi_iff
+
+lemma AnalyticWithinAt.pi (hf : ∀ i, AnalyticWithinAt 𝕜 (f i) s e) :
+    AnalyticWithinAt 𝕜 (fun x ↦ (f · x)) s e := by
+  choose p hp using hf
+  exact ⟨FormalMultilinearSeries.pi p, HasFPowerSeriesWithinAt.pi hp⟩
+
+lemma AnalyticAt.pi (hf : ∀ i, AnalyticAt 𝕜 (f i) e) :
+    AnalyticAt 𝕜 (fun x ↦ (f · x)) e := by
+  simp_rw [← analyticWithinAt_univ] at hf ⊢
+  exact AnalyticWithinAt.pi hf
+
+lemma AnalyticWithinOn.pi (hf : ∀ i, AnalyticWithinOn 𝕜 (f i) s) :
+    AnalyticWithinOn 𝕜 (fun x ↦ (f · x)) s :=
+  fun x hx ↦ AnalyticWithinAt.pi (fun i ↦ hf i x hx)
+
+lemma AnalyticOn.pi (hf : ∀ i, AnalyticOn 𝕜 (f i) s) :
+    AnalyticOn 𝕜 (fun x ↦ (f · x)) s :=
+  fun x hx ↦ AnalyticAt.pi (fun i ↦ hf i x hx)
+
+end
+
+/-!
 ### Arithmetic on analytic functions
 -/
 

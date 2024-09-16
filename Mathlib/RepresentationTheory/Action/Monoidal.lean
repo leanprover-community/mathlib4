@@ -35,90 +35,36 @@ open MonoidalCategory
 
 variable [MonoidalCategory V]
 
+@[simps! tensorUnit_V tensorObj_V tensorHom_hom whiskerLeft_hom whiskerRight_hom
+  associator_hom_hom associator_inv_hom leftUnitor_hom_hom leftUnitor_inv_hom
+  rightUnitor_hom_hom rightUnitor_inv_hom]
 instance instMonoidalCategory : MonoidalCategory (Action V G) :=
   Monoidal.transport (Action.functorCategoryEquivalence _ _).symm
 
+/- Adding this solves `simpNF` linter report at `tensorUnit_ρ` -/
 @[simp]
-theorem tensorUnit_v : (𝟙_ (Action V G)).V = 𝟙_ V :=
-  rfl
-
--- Porting note: removed @[simp] as the simpNF linter complains
-@[simp]
-theorem tensorUnit_rho {g : G} :
-    @DFunLike.coe (no_index G →* End (𝟙_ V)) G (no_index fun _ ↦ End (𝟙_ V)) _
-      (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) :=
+theorem tensorUnit_ρ' {g : G} :
+    @DFunLike.coe (G →* End (𝟙_ V)) _ _ _ (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) := by
   rfl
 
 @[simp]
-theorem tensor_v {X Y : Action V G} : (X ⊗ Y).V = X.V ⊗ Y.V :=
+theorem tensorUnit_ρ {g : G} : (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) :=
   rfl
 
--- Porting note: removed @[simp] as the simpNF linter complains
+/- Adding this solves `simpNF` linter report at `tensor_ρ` -/
 @[simp]
-theorem tensor_rho {X Y : Action V G} {g : G} :
-    @DFunLike.coe (no_index G →* End (X.V ⊗ Y.V)) G
-      (no_index fun _ ↦ End (X.V ⊗ Y.V)) _ (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
-  rfl
-
-@[simp]
-theorem tensor_hom {W X Y Z : Action V G} (f : W ⟶ X) (g : Y ⟶ Z) : (f ⊗ g).hom = f.hom ⊗ g.hom :=
+theorem tensor_ρ' {X Y : Action V G} {g : G} :
+    @DFunLike.coe (G →* End (X.V ⊗ Y.V)) _ _ _ (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
   rfl
 
 @[simp]
-theorem whiskerLeft_hom (X : Action V G) {Y Z : Action V G} (f : Y ⟶ Z) :
-    (X ◁ f).hom = X.V ◁ f.hom :=
+theorem tensor_ρ {X Y : Action V G} {g : G} : (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
   rfl
-
-@[simp]
-theorem whiskerRight_hom {X Y : Action V G} (f : X ⟶ Y) (Z : Action V G) :
-    (f ▷ Z).hom = f.hom ▷ Z.V :=
-  rfl
-
--- Porting note: removed @[simp] as the simpNF linter complains
-@[simp]
-theorem associator_hom_hom {X Y Z : Action V G} :
-    @Eq ((X.V ⊗ Y.V) ⊗ Z.V ⟶ X.V ⊗ Y.V ⊗ Z.V) (α_ X Y Z).hom.hom
-       (α_ X.V Y.V Z.V).hom := by
-  simp [Monoidal.transportStruct_associator]
-
-
--- Porting note: removed @[simp] as the simpNF linter complains
-@[simp]
-theorem associator_inv_hom {X Y Z : Action V G} :
-    @Eq (X.V ⊗ Y.V ⊗ Z.V ⟶ (X.V ⊗ Y.V) ⊗ Z.V) (α_ X Y Z).inv.hom
-       (α_ X.V Y.V Z.V).inv := by
-  simp [Monoidal.transportStruct_associator]
-
--- Porting note: removed @[simp] as the simpNF linter complains
-@[simp]
-theorem leftUnitor_hom_hom {X : Action V G} :
-    @Eq (𝟙_ V ⊗ X.V ⟶ X.V) (λ_ X).hom.hom (λ_ X.V).hom := by
-  simp [Monoidal.transportStruct_leftUnitor]
-
--- Porting note: removed @[simp] as the simpNF linter complains
-@[simp]
-theorem leftUnitor_inv_hom {X : Action V G} :
-    @Eq (X.V ⟶ 𝟙_ V ⊗ X.V) (λ_ X).inv.hom (λ_ X.V).inv := by
-  simp [Monoidal.transportStruct_leftUnitor]
-
--- Porting note: removed @[simp] as the simpNF linter complains
-@[simp]
-theorem rightUnitor_hom_hom {X : Action V G} :
-    @Eq (X.V ⊗ 𝟙_ V ⟶ X.V) (ρ_ X).hom.hom (ρ_ X.V).hom := by
-  simp [Monoidal.transportStruct_rightUnitor]
-
--- Porting note: removed @[simp] as the simpNF linter complains
-@[simp]
-theorem rightUnitor_inv_hom {X : Action V G} :
-    @Eq (X.V ⟶ X.V ⊗ 𝟙_ V) (ρ_ X).inv.hom (ρ_ X.V).inv := by
-  simp [Monoidal.transportStruct_rightUnitor]
 
 /-- Given an object `X` isomorphic to the tensor unit of `V`, `X` equipped with the trivial action
 is isomorphic to the tensor unit of `Action V G`. -/
 def tensorUnitIso {X : V} (f : 𝟙_ V ≅ X) : 𝟙_ (Action V G) ≅ Action.mk X 1 :=
-  Action.mkIso f fun _ => by
-    simp only [tensorUnit_v, tensorUnit_rho, Category.id_comp, MonoidHom.one_apply, End.one_def,
-      Category.comp_id]
+  Action.mkIso f
 
 variable (V G)
 
@@ -297,7 +243,7 @@ noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type 
       comm := fun (g : G) => by
         funext ⟨(x₁ : G), (x₂ : X.V)⟩
         refine Prod.ext rfl ?_
-        erw [tensor_rho, tensor_rho]
+        rw [tensor_ρ, tensor_ρ]
         dsimp
         -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
         erw [leftRegular_ρ_apply]
