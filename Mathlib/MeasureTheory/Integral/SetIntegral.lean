@@ -378,7 +378,7 @@ theorem setIntegral_eq_of_subset_of_ae_diff_eq_zero_aux (hts : s ⊆ t)
       intro h'x
       by_cases xs : x ∈ s
       · simp only [xs, hts xs]
-      · simp only [xs, iff_false_iff]
+      · simp only [xs, iff_false]
         intro xt
         exact h'x (hx ⟨xt, xs⟩)
     _ = ∫ x in s ∩ k, f x ∂μ + ∫ x in s \ k, f x ∂μ := by

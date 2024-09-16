@@ -45,12 +45,12 @@ theorem Chain.iff_mem {a : α} {l : List α} :
     Chain.imp fun a b h => h.2.2⟩
 
 theorem chain_singleton {a b : α} : Chain R a [b] ↔ R a b := by
-  simp only [chain_cons, Chain.nil, and_true_iff]
+  simp only [chain_cons, Chain.nil, and_true]
 
 theorem chain_split {a b : α} {l₁ l₂ : List α} :
     Chain R a (l₁ ++ b :: l₂) ↔ Chain R a (l₁ ++ [b]) ∧ Chain R b l₂ := by
   induction' l₁ with x l₁ IH generalizing a <;>
-    simp only [*, nil_append, cons_append, Chain.nil, chain_cons, and_true_iff, and_assoc]
+    simp only [*, nil_append, cons_append, Chain.nil, chain_cons, and_true, and_assoc]
 
 @[simp]
 theorem chain_append_cons_cons {a b c : α} {l₁ l₂ : List α} :
@@ -99,7 +99,7 @@ protected theorem Chain.pairwise [IsTrans α R] :
   | a, _, @Chain.cons _ _ _ b l h hb =>
     hb.pairwise.cons
       (by
-        simp only [mem_cons, forall_eq_or_imp, h, true_and_iff]
+        simp only [mem_cons, forall_eq_or_imp, h, true_and]
         exact fun c hc => _root_.trans h (rel_of_pairwise_cons hb.pairwise hc))
 
 theorem chain_iff_pairwise [IsTrans α R] {a : α} {l : List α} : Chain R a l ↔ Pairwise R (a :: l) :=
@@ -266,7 +266,7 @@ theorem Chain'.take (h : Chain' R l) (n : ℕ) : Chain' R (take n l) :=
   h.prefix (take_prefix _ _)
 
 theorem chain'_pair {x y} : Chain' R [x, y] ↔ R x y := by
-  simp only [chain'_singleton, chain'_cons, and_true_iff]
+  simp only [chain'_singleton, chain'_cons, and_true]
 
 theorem Chain'.imp_head {x y} (h : ∀ {z}, R x z → R y z) {l} (hl : Chain' R (x :: l)) :
     Chain' R (y :: l) :=
