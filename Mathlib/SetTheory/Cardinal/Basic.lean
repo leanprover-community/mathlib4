@@ -955,17 +955,15 @@ theorem prod_eq_zero {ι} (f : ι → Cardinal.{u}) : prod f = 0 ↔ ∃ i, f i 
 theorem prod_ne_zero {ι} (f : ι → Cardinal) : prod f ≠ 0 ↔ ∀ i, f i ≠ 0 := by simp [prod_eq_zero]
 
 theorem power_sum {ι} (a : Cardinal) (f : ι → Cardinal) :
-    a ^ sum f = prod fun i ↦ a ^ f i :=
-  inductionOn a fun α ↦ by
-    apply induction_on_pi f fun f ↦ ?_
-    rw [prod, sum]
-    simp_rw [power_def]
-    convert mk_sigma_arrow α f using 1
-    · exact mk_congr <| Equiv.arrowCongr
-        (Equiv.sigmaCongr (Equiv.cast rfl) (fun _ ↦ outMkEquiv)) (Equiv.refl α)
-    · apply mk_pi_congr
-      intro i
-      rw [mk_out]
+    a ^ sum f = prod fun i ↦ a ^ f i := by
+  induction a using Cardinal.inductionOn with | _ α =>
+  induction f using induction_on_pi with | _ f =>
+  simp_rw [prod, sum, power_def]
+  apply mk_congr
+  refine (Equiv.piCurry fun _ _ => α).trans ?_
+  refine Equiv.piCongrRight fun b => ?_
+  refine (Equiv.arrowCongr outMkEquiv (Equiv.refl α)).trans ?_
+  exact outMkEquiv.symm
 
 @[simp]
 theorem lift_prod {ι : Type u} (c : ι → Cardinal.{v}) :
