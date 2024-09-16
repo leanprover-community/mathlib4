@@ -17,7 +17,7 @@ This file provides the implementation of the normalization given in
 open Lean Meta Elab Qq
 open CategoryTheory Mathlib.Tactic.BicategoryLike MonoidalCategory
 
-namespace Mathlib.Tactic.Monoidal'
+namespace Mathlib.Tactic.Monoidal
 
 section
 
@@ -784,4 +784,4 @@ instance : MonadNormalExpr MonoidalM where
 instance : MkMor₂ MonoidalM where
   ofExpr := Mor₂OfExpr
 
-end Mathlib.Tactic.Monoidal'
+end Mathlib.Tactic.Monoidal

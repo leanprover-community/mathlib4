@@ -18,7 +18,7 @@ widgets.
 open Lean Meta Elab Qq
 open CategoryTheory Mathlib.Tactic.BicategoryLike MonoidalCategory
 
-namespace Mathlib.Tactic.Monoidal'
+namespace Mathlib.Tactic.Monoidal
 
 /-- The domain of a morphism. -/
 def srcExpr (η : Expr) : MetaM Expr := do
@@ -75,8 +75,8 @@ def mkContext? (e : Expr) : MetaM (Option Context) := do
     return some ⟨level₂, level₁, C, instCat, instMonoidal?⟩
   | _ => return none
 
-instance : BicategoryLike.Context Monoidal'.Context where
-  mkContext? := Monoidal'.mkContext?
+instance : BicategoryLike.Context Monoidal.Context where
+  mkContext? := Monoidal.mkContext?
 
 /-- The monad for the normalization of 2-morphisms. -/
 abbrev MonoidalM := CoherenceM Context
@@ -502,4 +502,4 @@ instance : BicategoryLike.MkMor₂ MonoidalM where
 instance : MonadCoherehnceHom MonoidalM where
   unfoldM α := Mor₂IsoOfExpr α.unfold
 
-end Mathlib.Tactic.Monoidal'
+end Mathlib.Tactic.Monoidal

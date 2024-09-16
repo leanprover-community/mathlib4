@@ -19,7 +19,7 @@ are equal.
 open Lean Meta Elab Qq
 open CategoryTheory Mathlib.Tactic.BicategoryLike MonoidalCategory
 
-namespace Mathlib.Tactic.Monoidal'
+namespace Mathlib.Tactic.Monoidal
 
 section
 
@@ -268,10 +268,10 @@ example {C : Type} [Category C] [MonoidalCategory C] :
 ```
 -/
 def pureCoherence (mvarId : MVarId) : MetaM (List MVarId) :=
-  BicategoryLike.pureCoherence Monoidal'.Context `monoidal mvarId
+  BicategoryLike.pureCoherence Monoidal.Context `monoidal mvarId
 
 @[inherit_doc pureCoherence]
 elab "monoidal_coherence" : tactic => withMainContext do
-  replaceMainGoal <| ← Monoidal'.pureCoherence <| ← getMainGoal
+  replaceMainGoal <| ← Monoidal.pureCoherence <| ← getMainGoal
 
-end Mathlib.Tactic.Monoidal'
+end Mathlib.Tactic.Monoidal

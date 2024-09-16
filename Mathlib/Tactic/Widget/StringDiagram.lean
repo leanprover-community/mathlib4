@@ -63,7 +63,7 @@ namespace Mathlib.Tactic
 open Lean Meta Elab
 open CategoryTheory
 
-open Mathlib.Tactic.Monoidal' BicategoryLike
+open BicategoryLike
 
 namespace Widget.StringDiagram
 
@@ -315,7 +315,7 @@ def mkKind (e : Expr) : MetaM Kind := do
   match ctx? with
   | .some _ => return .bicategory
   | .none =>
-    let ctx? ← BicategoryLike.mkContext? (ρ := Monoidal'.Context) e
+    let ctx? ← BicategoryLike.mkContext? (ρ := Monoidal.Context) e
     match ctx? with
     | .some _ => return .monoidal
     | .none => return .none
@@ -327,7 +327,7 @@ def stringM? (e : Expr) : MetaM (Option Html) := do
   let k ← mkKind e
   let x : Option (List (List Node) × List (List Strand)) ← (match k with
     | .monoidal => do
-      let .some ctx ← BicategoryLike.mkContext? (ρ := Monoidal'.Context) e | return .none
+      let .some ctx ← BicategoryLike.mkContext? (ρ := Monoidal.Context) e | return .none
       CoherenceM.run (ctx := ctx) do
         let e' := (← BicategoryLike.eval k.name (← MkMor₂.ofExpr e)).expr
         return .some (← e'.nodes, ← e'.strands)
