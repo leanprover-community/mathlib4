@@ -645,7 +645,7 @@ theorem HasStrictFDerivAt.list_prod' {l : List ι} {x : E}
         smulRight (f' l[i]) ((l.drop (.succ i)).map (f · x)).prod) x := by
   simp only [← List.finRange_map_get l, List.map_map]
   refine .congr_fderiv (hasStrictFDerivAt_list_prod_finRange'.comp x
-    (hasStrictFDerivAt_pi.mpr fun i ↦ h l[i] (l.getElem_mem ..))) ?_
+    (hasStrictFDerivAt_pi.mpr fun i ↦ h l[i] (List.getElem_mem ..))) ?_
   ext m
   simp [← List.map_map]
 
@@ -660,7 +660,7 @@ theorem HasFDerivAt.list_prod' {l : List ι} {x : E}
         smulRight (f' l[i]) ((l.drop (.succ i)).map (f · x)).prod) x := by
   simp only [← List.finRange_map_get l, List.map_map]
   refine .congr_fderiv (hasFDerivAt_list_prod_finRange'.comp x
-    (hasFDerivAt_pi.mpr fun i ↦ h l[i] (l.getElem_mem i i.isLt))) ?_
+    (hasFDerivAt_pi.mpr fun i ↦ h l[i] (List.getElem_mem i.isLt))) ?_
   ext m
   simp [← List.map_map]
 

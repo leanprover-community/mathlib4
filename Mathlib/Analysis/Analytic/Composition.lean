@@ -1011,7 +1011,7 @@ def sigmaCompositionAux (a : Composition n) (b : Composition a.length)
     a.blocks_pos
       (by
         rw [← a.blocks.join_splitWrtComposition b]
-        exact mem_join_of_mem (List.getElem_mem _ _ _) hi)
+        exact mem_join_of_mem (List.getElem_mem _) hi)
   blocks_sum := by simp [Composition.blocksFun, getElem_map, Composition.gather]
 
 theorem length_sigmaCompositionAux (a : Composition n) (b : Composition a.length)
