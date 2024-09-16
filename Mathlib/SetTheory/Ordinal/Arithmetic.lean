@@ -1222,6 +1222,12 @@ theorem bddAbove_iff_small {s : Set Ordinal.{u}} : BddAbove s ↔ Small.{u} s :=
 theorem bddAbove_of_small (s : Set Ordinal.{u}) [h : Small.{u} s] : BddAbove s :=
   bddAbove_iff_small.2 h
 
+theorem bddAbove_range_comp {ι : Type u} {f : ι → Ordinal.{v}} (hf : BddAbove (range f))
+    (g : Ordinal.{v} → Ordinal.{max v w}) : BddAbove (range (g ∘ f)) := by
+  rw [range_comp, bddAbove_iff_small]
+  rw [bddAbove_iff_small] at hf
+  exact small_lift _
+
 theorem sup_eq_sSup {s : Set Ordinal.{u}} (hs : Small.{u} s) :
     (sup.{u, u} fun x => (@equivShrink s hs).symm x) = sSup s :=
   let hs' := bddAbove_iff_small.2 hs
@@ -1262,6 +1268,14 @@ theorem sup_eq_sup {ι ι' : Type u} (r : ι → ι → Prop) (r' : ι' → ι' 
     (f : ∀ a < o, Ordinal.{max u v}) :
     sup.{_, v} (familyOfBFamily' r ho f) = sup.{_, v} (familyOfBFamily' r' ho' f) :=
   sup_eq_of_range_eq.{u, u, v} (by simp)
+
+theorem IsNormal.iSup {f : Ordinal.{u} → Ordinal.{max u v}} (H : IsNormal f) {ι : Type w}
+    (g : ι → Ordinal.{u}) (hg : BddAbove (range g)) [Nonempty ι] : f (iSup g) = iSup (f ∘ g) :=
+  eq_of_forall_ge_iff fun a ↦ by
+    rw [ciSup_le_iff (Ordinal.bddAbove_range_comp hg f)]
+    simp_all only [Function.comp]
+    rw [H.le_set' Set.univ Set.univ_nonempty g] <;>
+      simp [ciSup_le_iff hg]
 
 /-- The supremum of a family of ordinals indexed by the set of ordinals less than some
     `o : Ordinal.{u}`. This is a special case of `sup` over the family provided by
