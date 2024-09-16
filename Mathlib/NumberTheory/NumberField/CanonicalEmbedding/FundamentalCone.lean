@@ -24,7 +24,7 @@ for the action of `(𝓞 K)ˣ` up to roots of unity, see `exists_unit_smul_me` a
 
 ## Tags
 
-number field, canonical embedding, principal ideals
+number field, canonical embedding, units, principal ideals
 -/
 
 variable (K : Type*) [Field K]
@@ -47,6 +47,8 @@ instance : MulAction (𝓞 K)ˣ (mixedSpace K) where
 
 instance : SMulZeroClass (𝓞 K)ˣ (mixedSpace K) where
   smul_zero := fun _ ↦ by simp_rw [unitSMul_smul, mul_zero]
+
+variable {K}
 
 theorem unit_smul_eq_zero (u : (𝓞 K)ˣ) (x : mixedSpace K) :
     u • x = 0 ↔ x = 0 := by
@@ -78,26 +80,26 @@ open NumberField.Units NumberField.Units.dirichletUnitTheorem FiniteDimensional
 variable [NumberField K] {K}
 
 open Classical in
-/-- The map from the mixed space to `{w : InfinitePlace K // w ≠ w₀} → ℝ` (with `w₀` a fixed place)
-defined in such way that: 1) it factors the map `logEmbedding`, see `logMap_eq_logEmbedding`;
-2) it is constant on the set `{c • x | c ∈ ℝ, c ≠ 0}`, see `logMap_real_smul`. -/
+/-- The map from the mixed space to `{w : InfinitePlace K // w ≠ w₀} → ℝ` (with `w₀` the fixed
+place from the proof of Dirichlet Unit Theorem) defined in such way that: 1) it factors the map
+`logEmbedding`, see `logMap_eq_logEmbedding`; 2) it is constant on the sets
+`{c • x | c ∈ ℝ, c ≠ 0}` if `norm x ≠ 0`, see `logMap_real_smul`. -/
 def logMap (x : mixedSpace K) : {w : InfinitePlace K // w ≠ w₀} → ℝ := fun w ↦
   mult w.val * (Real.log (normAtPlace w.val x) -
     Real.log (mixedEmbedding.norm x) * (finrank ℚ K : ℝ)⁻¹)
 
+@[simp]
 theorem logMap_apply (x : mixedSpace K) (w : {w : InfinitePlace K // w ≠ w₀}) :
     logMap x w = mult w.val * (Real.log (normAtPlace w.val x) -
       Real.log (mixedEmbedding.norm x) * (finrank ℚ K : ℝ)⁻¹) := rfl
 
 @[simp]
 theorem logMap_zero : logMap (0 : mixedSpace K) = 0 := by
-  ext
-  simp_rw [logMap_apply, map_zero, Real.log_zero, zero_mul, sub_self, mul_zero, Pi.zero_apply]
+  ext; simp
 
 @[simp]
 theorem logMap_one : logMap (1 : mixedSpace K) = 0 := by
-  ext
-  rw [logMap_apply, map_one, map_one, Real.log_one, zero_mul, sub_self, mul_zero, Pi.zero_apply]
+  ext; simp
 
 theorem logMap_mul {x y : mixedSpace K} (hx : mixedEmbedding.norm x ≠ 0)
     (hy : mixedEmbedding.norm y ≠ 0) :
@@ -110,21 +112,20 @@ theorem logMap_mul {x y : mixedSpace K} (hx : mixedEmbedding.norm x ≠ 0)
   · exact mixedEmbedding.norm_ne_zero_iff.mp hy w
 
 theorem logMap_apply_of_norm_one {x : mixedSpace K} (hx : mixedEmbedding.norm x = 1)
-    {w : InfinitePlace K} (hw : w ≠ w₀) :
-    logMap x ⟨w, hw⟩ = mult w * Real.log (normAtPlace w x) := by
-  rw [logMap, hx, Real.log_one, zero_mul, sub_zero]
+    (w : {w : InfinitePlace K // w ≠ w₀}) :
+    logMap x w = mult w.val * Real.log (normAtPlace w x) := by
+  rw [logMap_apply, hx, Real.log_one, zero_mul, sub_zero]
 
+@[simp]
 theorem logMap_eq_logEmbedding (u : (𝓞 K)ˣ) :
     logMap (mixedEmbedding K u) = logEmbedding K u := by
-  ext
-  rw [logMap_apply_of_norm_one (mixedEmbedding.norm_unit _), logEmbedding_component,
-    normAtPlace_apply]
+  ext; simp
 
 theorem logMap_unit_smul (u : (𝓞 K)ˣ) {x : mixedSpace K} (hx : mixedEmbedding.norm x ≠ 0) :
     logMap (u • x) = logEmbedding K u + logMap x := by
   rw [unitSMul_smul, logMap_mul (by rw [norm_unit]; norm_num) hx, logMap_eq_logEmbedding]
 
-theorem logMap_torsion_unit_smul (x : mixedSpace K) {ζ : (𝓞 K)ˣ} (hζ : ζ ∈ torsion K) :
+theorem logMap_torsion_smul (x : mixedSpace K) {ζ : (𝓞 K)ˣ} (hζ : ζ ∈ torsion K) :
     logMap (ζ • x) = logMap x := by
   ext
   simp_rw [logMap_apply, unitSMul_smul, map_mul, norm_eq_norm, Units.norm, Rat.cast_one, one_mul,
@@ -161,7 +162,7 @@ variable [NumberField K]
 open Classical in
 /-- The fundamental cone is a cone in the mixed space, ie. a subset fixed by multiplication by
 a scalar, see `smul_mem_of_mem`, that is also a fundamental domain for the action of `(𝓞 K)ˣ` up
-to roots of unity, see `exists_unit_smul_mem` and `torsion_unit_smul_mem_of_mem`. -/
+to roots of unity, see `exists_unit_smul_mem` and `torsion_smul_mem_of_mem`. -/
 def fundamentalCone : Set (mixedSpace K) :=
   logMap⁻¹' (ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ _)) \
       {x | mixedEmbedding.norm x = 0}
@@ -210,11 +211,11 @@ theorem exists_unit_smul_mem {x : mixedSpace K} (hx : mixedEmbedding.norm x ≠ 
   · obtain ⟨⟨e, h₁⟩, h₂, -⟩ := ZSpan.exist_unique_vadd_mem_fundamentalDomain B (logMap x)
     exact ⟨⟨e, by rwa [← Basis.ofZLatticeBasis_span ℝ (unitLattice K)]⟩, h₂⟩
 
-theorem torsion_unit_smul_mem_of_mem {x : mixedSpace K} (hx : x ∈ fundamentalCone K) {ζ : (𝓞 K)ˣ}
+theorem torsion_smul_mem_of_mem {x : mixedSpace K} (hx : x ∈ fundamentalCone K) {ζ : (𝓞 K)ˣ}
     (hζ : ζ ∈ torsion K) :
     ζ • x ∈ fundamentalCone K := by
   refine ⟨?_, ?_⟩
-  · rw [Set.mem_preimage, logMap_torsion_unit_smul _ hζ]
+  · rw [Set.mem_preimage, logMap_torsion_smul _ hζ]
     exact hx.1
   · rw [Set.mem_setOf_eq, unitSMul_smul, map_mul, norm_unit, one_mul]
     exact hx.2
@@ -233,7 +234,7 @@ theorem unit_smul_mem_iff_mem_torsion {x : mixedSpace K} (hx : x ∈ fundamental
       exact h.1
     · rw [AddSubmonoid.mk_vadd, vadd_eq_add, zero_add]
       exact hx.1
-  · exact torsion_unit_smul_mem_of_mem hx h
+  · exact torsion_smul_mem_of_mem hx h
 
 end fundamentalCone
 
