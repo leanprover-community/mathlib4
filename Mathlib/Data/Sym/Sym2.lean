@@ -715,8 +715,7 @@ def pmap {P : α → Prop} (f : ∀ a, P a → β) (s : Sym2 α):
 "Attach" a proof `P a` that holds for all the elements of `s` to produce a new Sym2 object
   with the same elements but in the type `{x // P x}`.
 -/
-def attachWith (s : Sym2 α) (P : α → Prop) (f : ∀ a ∈ s, P a) :
-  Sym2 {a // P a} :=
+def attachWith (s : Sym2 α) (P : α → Prop) (f : ∀ a ∈ s, P a) : Sym2 {a // P a} :=
   pmap Subtype.mk s f
 
 end Sym2
