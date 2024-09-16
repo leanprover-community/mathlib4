@@ -739,7 +739,7 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter (LaurentSeries K)} (hℱ : C
       rw [Filter.eventually_iff] at this
       convert this
       ext
-      simp only [Set.mem_iInter, Set.mem_setOf_eq] ; rfl
+      simp only [Set.mem_iInter, Set.mem_setOf_eq]; rfl
     · have : ⋂ x, ⋂ (_ : hℱ.exists_lb_coeff_ne.choose ≤ x ∧ x < D), φ x =
         (⋂ (n : ℤ) (_ : n ∈ Set.Ico N D), φ n) := by
         rw [Set.iInter_congr]
