@@ -53,7 +53,7 @@ namespace PreGaloisCategory
 
 open Limits Functor
 
-variable {C : Type u₁} [Category.{u₂, u₁} C] (F : C ⥤ FintypeCat.{w})
+variable {C : Type u₁} [Category.{u₂} C] (F : C ⥤ FintypeCat.{w})
 
 section
 
@@ -97,6 +97,17 @@ variable {G} in
 @[simp]
 lemma toAut_hom_app_apply (g : G) {X : C} (x : F.obj X) : (toAut F G g).hom.app X x = g • x :=
   rfl
+
+/-- `toAut` is injective, if only the identity acts trivially on every fiber. -/
+lemma toAut_injective_of_non_trivial (h : ∀ (g : G), (∀ (X : C) (x : F.obj X), g • x = x) → g = 1) :
+    Function.Injective (toAut F G) := by
+  rw [← MonoidHom.ker_eq_bot_iff, eq_bot_iff]
+  intro g (hg : toAut F G g = 1)
+  refine h g (fun X x ↦ ?_)
+  have : (toAut F G g).hom.app X = 𝟙 (F.obj X) := by
+    rw [hg]
+    rfl
+  rw [← toAut_hom_app_apply, this, FintypeCat.id_apply]
 
 variable [GaloisCategory C] [FiberFunctor F]
 
@@ -241,14 +252,7 @@ instance : IsFundamentalGroup F (Aut F) where
 variable [TopologicalSpace G] [TopologicalGroup G] [CompactSpace G] [IsFundamentalGroup F G]
 
 lemma toAut_bijective : Function.Bijective (toAut F G) where
-  left := by
-    rw [← MonoidHom.ker_eq_bot_iff, eq_bot_iff]
-    intro g (hg : toAut F G g = 1)
-    refine IsFundamentalGroup.non_trivial F g (fun X x ↦ ?_)
-    have : (toAut F G g).hom.app X = 𝟙 (F.obj X) := by
-      rw [hg]
-      rfl
-    rw [← toAut_hom_app_apply, this, FintypeCat.id_apply]
+  left := toAut_injective_of_non_trivial F G IsFundamentalGroup.non_trivial'
   right := toAut_surjective_of_isPretransitive F G IsFundamentalGroup.transitive_of_isGalois
 
 instance (X : C) [IsConnected X] : MulAction.IsPretransitive G (F.obj X) :=

@@ -308,9 +308,10 @@ lemma exists_hom_from_galois_of_connected (X : C) [IsConnected X] :
     ∃ (A : C) (_ : A ⟶ X), IsGalois A :=
   exists_hom_from_galois_of_fiber_nonempty F X inferInstance
 
-/-- To check equality of  natural transformations `F ⟶ F`, it suffices to check it on
+/-- To check equality of natural transformations `F ⟶ G`, it suffices to check it on
 Galois objects. -/
-lemma natTrans_ext_of_isGalois {t s : F ⟶ F} (h : ∀ (X : C) [IsGalois X], t.app X = s.app X) :
+lemma natTrans_ext_of_isGalois {G : C ⥤ FintypeCat.{w}} {t s : F ⟶ G}
+    (h : ∀ (X : C) [IsGalois X], t.app X = s.app X) :
     t = s := by
   ext X x
   obtain ⟨A, f, a, _, rfl⟩ := exists_hom_from_galois_of_fiber F X x
