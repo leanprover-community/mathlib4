@@ -324,6 +324,13 @@ otherwise, it returns `none`. -/
   let (type, _, lhs, rhs) ← p.app4? ``LE.le
   return (type, lhs, rhs)
 
+/-- `Lean.Expr.lt? e` takes `e : Expr` as input.
+If `e` represents `a < b`, then it returns `some (t, a, b)`, where `t` is the Type of `a`,
+otherwise, it returns `none`. -/
+@[inline] def lt? (p : Expr) : Option (Expr × Expr × Expr) := do
+  let (type, _, lhs, rhs) ← p.app4? ``LT.lt
+  return (type, lhs, rhs)
+
 /-- Given a proposition `ty` that is an `Eq`, `Iff`, or `HEq`, returns `(tyLhs, lhs, tyRhs, rhs)`,
 where `lhs : tyLhs` and `rhs : tyRhs`,
 and where `lhs` is related to `rhs` by the respective relation.
