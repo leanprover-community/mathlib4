@@ -177,7 +177,7 @@ theorem AnalyticOn.iteratedFDeriv [CompleteSpace F] (h : AnalyticOn 𝕜 f s) (n
     case g => exact ↑(continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (n + 1) ↦ E) F).symm
     simp
 
-lemma AnalyticOn.hasFTaylorSeriesUpToOn [CompleteSpace F] (n : ℕ∞) (h : AnalyticOn 𝕜 f s) :
+lemma AnalyticOn.hasFTaylorSeriesUpToOn [CompleteSpace F] (n : WithTop ℕ∞) (h : AnalyticOn 𝕜 f s) :
     HasFTaylorSeriesUpToOn n f (ftaylorSeries 𝕜 f) s := by
   refine ⟨fun x _hx ↦ rfl, fun m _hm x hx ↦ ?_, fun m _hm x hx ↦ ?_⟩
   · apply HasFDerivAt.hasFDerivWithinAt
@@ -186,7 +186,7 @@ lemma AnalyticOn.hasFTaylorSeriesUpToOn [CompleteSpace F] (n : ℕ∞) (h : Anal
     exact (h.iteratedFDeriv m x hx).differentiableAt
 
 lemma AnalyticWithinAt.exists_hasFTaylorSeriesUpToOn [CompleteSpace F]
-    (n : ℕ∞) (h : AnalyticWithinAt 𝕜 f s x) :
+    (n : WithTop ℕ∞) (h : AnalyticWithinAt 𝕜 f s x) :
     ∃ u ∈ 𝓝[insert x s] x, ∃ (p : E → FormalMultilinearSeries 𝕜 E F),
     HasFTaylorSeriesUpToOn n f p u ∧ ∀ i, AnalyticWithinOn 𝕜 (fun x ↦ p x i) u := by
   rcases h.exists_analyticAt with ⟨g, -, fg, hg⟩

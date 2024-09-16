@@ -131,19 +131,22 @@ better, is `C^∞` at `0` within `univ`.
 def ContDiffWithinAt (n : WithTop ℕ∞) (f : E → F) (s : Set E) (x : E) : Prop :=
   match n with
   | ω => ∃ u ∈ 𝓝[insert x s] x, ∃ p : E → FormalMultilinearSeries 𝕜 E F,
-      HasFTaylorSeriesUpToOn ⊤ f p u ∧ ∀ i, AnalyticWithinOn 𝕜 (fun x ↦ p x i) u
+      HasFTaylorSeriesUpToOn ω f p u ∧ ∀ i, AnalyticWithinOn 𝕜 (fun x ↦ p x i) u
   | (n : ℕ∞) => ∀ m : ℕ, (m : ℕ∞) ≤ n → ∃ u ∈ 𝓝[insert x s] x,
       ∃ p : E → FormalMultilinearSeries 𝕜 E F, HasFTaylorSeriesUpToOn m f p u
+
+lemma HasFTaylorSeriesUpToOn.analyticWithinOn
+    (hf : HasFTaylorSeriesUpToOn ω f p s) (h : AnalyticWithinOn 𝕜 (fun x ↦ p x 0) s) :
+    AnalyticWithinOn 𝕜 f s := by
+  have : AnalyticWithinOn 𝕜 (fun x ↦ (continuousMultilinearCurryFin0 𝕜 E F) (p x 0)) s :=
+    (LinearIsometryEquiv.analyticOn _ _ ).comp_analyticWithinOn
+      h (Set.mapsTo_univ _ _)
+  exact this.congr (fun y hy ↦ (hf.zero_eq _ hy).symm)
 
 lemma ContDiffWithinAt.analyticWithinOn (h : ContDiffWithinAt 𝕜 ω f s x) :
     ∃ u ∈ 𝓝[insert x s] x, AnalyticWithinOn 𝕜 f u := by
   obtain ⟨u, hu, p, hp, h'p⟩ := h
-  refine ⟨insert x s ∩ u, inter_mem self_mem_nhdsWithin hu, ?_⟩
-  have : AnalyticWithinOn 𝕜 (fun x ↦ (continuousMultilinearCurryFin0 𝕜 E F) (p x 0))
-      (insert x s ∩ u) :=
-    (LinearIsometryEquiv.analyticOn _ _ ).comp_analyticWithinOn
-      ((h'p 0).mono inter_subset_right) (Set.mapsTo_univ _ _)
-  exact this.congr (fun y hy ↦ (hp.zero_eq _ hy.2).symm)
+  exact ⟨u, hu, hp.analyticWithinOn (h'p 0)⟩
 
 lemma ContDiffWithinAt.analyticWithinAt (h : ContDiffWithinAt 𝕜 ω f s x) :
     AnalyticWithinAt 𝕜 f s x := by
@@ -154,13 +157,25 @@ lemma ContDiffWithinAt.analyticWithinAt (h : ContDiffWithinAt 𝕜 ω f s x) :
 theorem contDiffWithinAt_omega_iff_analyticWithinAt [CompleteSpace F] :
     ContDiffWithinAt 𝕜 ω f s x ↔ AnalyticWithinAt 𝕜 f s x := by
   refine ⟨fun h ↦ h.analyticWithinAt, fun h ↦ ?_⟩
-  obtain ⟨u, hu, p, hp, h'p⟩ := h.exists_hasFTaylorSeriesUpToOn ⊤
+  obtain ⟨u, hu, p, hp, h'p⟩ := h.exists_hasFTaylorSeriesUpToOn ω
   exact ⟨u, hu, p, hp.of_le le_top, fun i ↦ h'p i⟩
 
 theorem contDiffWithinAt_nat {n : ℕ} :
     ContDiffWithinAt 𝕜 n f s x ↔ ∃ u ∈ 𝓝[insert x s] x,
       ∃ p : E → FormalMultilinearSeries 𝕜 E F, HasFTaylorSeriesUpToOn n f p u :=
-  ⟨fun H => H n le_rfl, fun ⟨u, hu, p, hp⟩ _m hm => ⟨u, hu, p, hp.of_le hm⟩⟩
+  ⟨fun H => H n le_rfl, fun ⟨u, hu, p, hp⟩ _m hm => ⟨u, hu, p, hp.of_le (by exact_mod_cast hm)⟩⟩
+
+/-- When `n` is either a natural number or `ω`, one can characterize the property of being `C^n`
+as the existence of a neighborhood on which there is a Taylor series up to order `n`,
+requiring in addition that its terms are analytic in the `ω` case. -/
+lemma contDiffWithinAt_iff_of_ne_infty (hn : n ≠ ∞) :
+    ContDiffWithinAt 𝕜 n f s x ↔ ∃ u ∈ 𝓝[insert x s] x,
+      ∃ p : E → FormalMultilinearSeries 𝕜 E F, HasFTaylorSeriesUpToOn n f p u ∧
+        (n = ω → ∀ i, AnalyticWithinOn 𝕜 (fun x ↦ p x i) u) := by
+  match n with
+  | ω => simp [ContDiffWithinAt]
+  | ∞ => simp at hn
+  | (n : ℕ) => simp [contDiffWithinAt_nat]
 
 theorem ContDiffWithinAt.of_le (h : ContDiffWithinAt 𝕜 n f s x) (hmn : m ≤ n) :
     ContDiffWithinAt 𝕜 m f s x := by
@@ -296,17 +311,25 @@ theorem ContDiffWithinAt.differentiableWithinAt (h : ContDiffWithinAt 𝕜 n f s
     DifferentiableWithinAt 𝕜 f s x :=
   (h.differentiable_within_at' hn).mono (subset_insert x s)
 
+
 /-- A function is `C^(n + 1)` on a domain iff locally, it has a derivative which is `C^n`. -/
-theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt {n : ℕ} :
-    ContDiffWithinAt 𝕜 (n + 1 : ℕ) f s x ↔ ∃ u ∈ 𝓝[insert x s] x, ∃ f' : E → E →L[𝕜] F,
+theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt (hn : n ≠ ∞) :
+    ContDiffWithinAt 𝕜 (n + 1) f s x ↔ ∃ u ∈ 𝓝[insert x s] x, (n = ω → AnalyticWithinOn 𝕜 f u) ∧
+      ∃ f' : E → E →L[𝕜] F,
       (∀ x ∈ u, HasFDerivWithinAt f (f' x) u x) ∧ ContDiffWithinAt 𝕜 n f' u x := by
   constructor
   · intro h
-    rcases h n.succ le_rfl with ⟨u, hu, p, Hp⟩
-    refine
-      ⟨u, hu, fun y => (continuousMultilinearCurryFin1 𝕜 E F) (p y 1), fun y hy =>
-        Hp.hasFDerivWithinAt (WithTop.coe_le_coe.2 (Nat.le_add_left 1 n)) hy, ?_⟩
-    intro m hm
+    have h'n : n + 1 ≠ ∞ := sorry
+    rcases (contDiffWithinAt_iff_of_ne_infty h'n).1 h with ⟨u, hu, p, Hp, H'p⟩
+
+
+    -- apply (contDiffWithinAt_iff_of_ne_infty hn).2
+
+    refine ⟨u, hu, ?_, fun y => (continuousMultilinearCurryFin1 𝕜 E F) (p y 1),
+        fun y hy => Hp.hasFDerivWithinAt le_add_self hy, ?_⟩
+    · rintro rfl
+      exact Hp.analyticWithinOn (H'p rfl 0)
+    apply (contDiffWithinAt_iff_of_ne_infty hn).2
     refine ⟨u, ?_, fun y : E => (p y).shift, ?_⟩
     · -- Porting note: without the explicit argument Lean is not sure of the type.
       convert @self_mem_nhdsWithin _ _ x u
@@ -344,6 +367,8 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt {n : ℕ} :
           change p' x k (init (@snoc k (fun _ : Fin k.succ => E) v y))
             (@snoc k (fun _ : Fin k.succ => E) v y (last k)) = p' x k v y
           rw [snoc_last, init_snoc]
+
+#exit
 
 /-- A version of `contDiffWithinAt_succ_iff_hasFDerivWithinAt` where all derivatives
   are taken within the same set. -/
