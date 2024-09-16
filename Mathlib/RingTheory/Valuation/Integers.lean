@@ -160,19 +160,19 @@ lemma isPrincipal_iff_exists_isGreatest (hv : Integers v O) {I : Ideal O} :
     refine ⟨a, ?_⟩
     ext b
     simp only [Ideal.submodule_span_eq, Ideal.mem_span_singleton]
-    exact ⟨fun hb ↦ dvd_of_le hv (hx.2 <| Set.mem_image_of_mem _ hb), fun hb ↦ I.mem_of_dvd hb ha⟩
+    exact ⟨fun hb ↦ dvd_of_le hv (hx.2 <| mem_image_of_mem _ hb), fun hb ↦ I.mem_of_dvd hb ha⟩
 
 lemma not_denselyOrdered_of_isPrincipalIdealRing [IsPrincipalIdealRing O] (hv : Integers v O) :
     ¬ DenselyOrdered (range v) := by
   intro H
   -- nonunits as an ideal isn't defined here, nor shown to be equivalent to `v x < 1`
   set I : Ideal O := {
-    carrier := v ∘ algebraMap O F ⁻¹' Set.Iio (1 : Γ₀)
+    carrier := v ∘ algebraMap O F ⁻¹' Iio (1 : Γ₀)
     add_mem' := fun {a b} ha hb ↦ by simpa using map_add_lt v ha hb
     zero_mem' := by simp
     smul_mem' := by
       intro c x
-      simp only [Set.mem_preimage, Function.comp_apply, Set.mem_Iio, smul_eq_mul, _root_.map_mul]
+      simp only [mem_preimage, Function.comp_apply, mem_Iio, smul_eq_mul, _root_.map_mul]
       intro hx
       exact Right.mul_lt_one_of_le_of_lt (hv.map_le_one c) hx
   }
@@ -183,7 +183,7 @@ lemma not_denselyOrdered_of_isPrincipalIdealRing [IsPrincipalIdealRing O] (hv : 
       using IsPrincipalIdealRing.principal I
   obtain ⟨y, hy, hy₁⟩ : ∃ y, v (algebraMap O F x) < v y ∧ v y < 1 := by
     simpa only [Subtype.exists, Subtype.mk_lt_mk, exists_range_iff, exists_prop]
-      using H.dense ⟨v (algebraMap O F x), Set.mem_range_self _⟩ ⟨1, 1, v.map_one⟩ hx₁
+      using H.dense ⟨v (algebraMap O F x), mem_range_self _⟩ ⟨1, 1, v.map_one⟩ hx₁
   obtain ⟨z, rfl⟩ := hv.exists_of_le_one hy₁.le
   exact hy.not_le <| hx ⟨hy₁, mem_range_self _⟩
 
