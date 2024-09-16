@@ -421,10 +421,6 @@ theorem norm_eq_zero_iff' {x : mixedSpace K} (hx : x ∈ Set.range (mixedEmbeddi
   rw [norm_eq_norm, Rat.cast_abs, abs_eq_zero, Rat.cast_eq_zero, Algebra.norm_eq_zero_iff,
     map_eq_zero]
 
-theorem norm_unit (u : (𝓞 K)ˣ) :
-    mixedEmbedding.norm (mixedEmbedding K u) = 1 := by
-  rw [norm_eq_norm, Units.norm, Rat.cast_one]
-
 variable (K) in
 protected theorem continuous_norm : Continuous (mixedEmbedding.norm : (mixedSpace K) → ℝ) := by
   refine continuous_finset_prod Finset.univ fun _ _ ↦ ?_
