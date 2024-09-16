@@ -172,8 +172,8 @@ theorem StrictMono.le_apply [WellFoundedLT β] {f : β → β} (hf : StrictMono 
 theorem StrictMono.id_le [WellFoundedLT β] {f : β → β} (hf : StrictMono f) : id ≤ f :=
   hf.le_apply
 
-theorem StrictMono.apply_le [WellFoundedGT β] {f : β → β} (hf : StrictMono f) (x) : f x ≤ x :=
-  StrictMono.le_apply (β := βᵒᵈ) hf.dual x
+theorem StrictMono.apply_le [WellFoundedGT β] {f : β → β} (hf : StrictMono f) : ∀ x, f x ≤ x :=
+  StrictMono.le_apply (β := βᵒᵈ) hf.dual
 
 /-- A strict monotonic function `f` on a dual well order satisfies `f x ≤ x` for all `x`. -/
 theorem StrictMono.le_id [WellFoundedGT β] {f : β → β} (hf : StrictMono f) : f ≤ id :=
