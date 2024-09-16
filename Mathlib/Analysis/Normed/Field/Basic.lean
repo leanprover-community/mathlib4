@@ -14,6 +14,9 @@ import Mathlib.Data.Set.Pointwise.Interval
 
 In this file we define (semi)normed rings and fields. We also prove some theorems about these
 definitions.
+
+Some useful results that relate the topology of the normed field to the discrete topology include:
+* `norm_eq_one_iff_ne_zero_of_discrete`
 -/
 
 -- Guard against import creep.
