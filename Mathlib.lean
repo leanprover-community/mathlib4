@@ -2462,7 +2462,6 @@ import Mathlib.Data.PNat.Xgcd
 import Mathlib.Data.PSigma.Order
 import Mathlib.Data.Part
 import Mathlib.Data.Pi.Interval
-import Mathlib.Data.Pi.Projections
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Prod.PProd
