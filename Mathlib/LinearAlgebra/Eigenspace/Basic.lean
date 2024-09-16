@@ -160,6 +160,7 @@ For `k = 1` this is the type of all eigenvalues of `f`. -/
 def UnifEigenvalues (f : End R M) (k : ENat) : Type _ :=
   { μ : R // f.HasUnifEigenvalue μ k }
 
+/-- The underlying value of a bundled eigenvalue. -/
 @[coe]
 def UnifEigenvalues.val (f : Module.End R M) (k : ENat) : UnifEigenvalues f k → R := Subtype.val
 
