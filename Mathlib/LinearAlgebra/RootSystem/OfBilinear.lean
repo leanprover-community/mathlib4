@@ -35,38 +35,46 @@ section Construction
 injective, and for any other vector `y`, there is a scalar that takes the norm of `x` to twice the
 inner product of `x` and `y`. These conditions are what we need when describing reflection as a map
 taking `y` to `y - 2 • (B x y) / (B x x) • x`. -/
-def IsReflective (B : M →ₗ[R] M →ₗ[R] R) (x : M) : Prop :=
-    IsRegular (B x x) ∧ ∀y : M, ∃r : R, B x x * r = 2 * B x y
+structure IsReflective (B : M →ₗ[R] M →ₗ[R] R) (x : M) : Prop :=
+  regular : IsRegular (B x x)
+  dvd_two_mul : ∀ y, B x x ∣ 2 * B x y
+
+variable (B : M →ₗ[R] M →ₗ[R] R) {x : M}
+
+lemma isReflective_of_dvd_two [IsDomain R] [NeZero (2 : R)] (hx : B x x ∣ 2) :
+    IsReflective B x where
+  regular := isRegular_of_ne_zero <| fun contra ↦ by simp [contra, two_ne_zero (α := R)] at hx
+  dvd_two_mul y := hx.mul_right (B x y)
 
 /-- The coroot attached to a reflective vector. -/
-def coroot_of_reflective (B : M →ₗ[R] M →ₗ[R] R) {x : M} (hx : IsReflective B x) :
+def coroot_of_reflective (hx : IsReflective B x) :
     M →ₗ[R] R where
   toFun y := (hx.2 y).choose
   map_add' a b := by
-    refine hx.1.1 ?_
+    refine hx.regular.left ?_
     simp only
-    rw [(hx.2 (a + b)).choose_spec, mul_add, (hx.2 a).choose_spec, (hx.2 b).choose_spec, map_add,
-      mul_add]
+    rw [← (hx.dvd_two_mul (a + b)).choose_spec, mul_add, ← (hx.2 a).choose_spec,
+      ← (hx.2 b).choose_spec, map_add, mul_add]
   map_smul' r a := by
     refine hx.1.1 ?_
     simp only [RingHom.id_apply]
-    rw [(hx.2 (r • a)).choose_spec, smul_eq_mul, mul_left_comm, (hx.2 a).choose_spec, map_smul,
+    rw [← (hx.2 (r • a)).choose_spec, smul_eq_mul, mul_left_comm, ← (hx.2 a).choose_spec, map_smul,
       two_mul, smul_eq_mul, two_mul, mul_add]
 
 @[simp]
-lemma coroot_of_reflective_apply (B : M →ₗ[R] M →ₗ[R] R) {x y : M} (hx : IsReflective B x) :
+lemma coroot_of_reflective_apply {y : M} (hx : IsReflective B x) :
     B x x * coroot_of_reflective B hx y = 2 * B x y := by
   dsimp [coroot_of_reflective]
-  rw [(hx.2 y).choose_spec]
+  rw [← (hx.2 y).choose_spec]
 
 @[simp]
-lemma coroot_of_reflective_apply_self (B : M →ₗ[R] M →ₗ[R] R) {x : M} (hx : IsReflective B x) :
+lemma coroot_of_reflective_apply_self (hx : IsReflective B x) :
     coroot_of_reflective B hx x = 2 := by
   refine hx.1.1 ?_
   dsimp only
   rw [coroot_of_reflective_apply B hx, mul_two, two_mul]
 
-lemma reflection_reflective_vector (B : M →ₗ[R] M →ₗ[R] R) {x y : M}
+lemma reflection_reflective_vector {y : M}
     (hx : IsReflective B x) : Module.reflection (coroot_of_reflective_apply_self B hx) y =
     y - (coroot_of_reflective B hx y) • x :=
   rfl
