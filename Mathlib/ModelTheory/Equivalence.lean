@@ -15,6 +15,9 @@ import Mathlib.ModelTheory.Satisfiability
 - `FirstOrder.Language.Theory.Formula`: `T.Formula α` is the quotient of `L.Formula α` by
   equivalence modulo a theory `T`.
 
+## Main Results
+- `T.Formula α` forms a boolean algebra, with `≤` corresponding to implication.
+
 -/
 
 universe u v w w'
@@ -283,8 +286,7 @@ instance : BooleanAlgebra (T.Formula α) where
   le_refl := Quot.ind Implies.refl
   le_trans := Quot.ind (fun _ => Quot.ind (fun _ => Quot.ind (fun _ => Implies.trans)))
   le_antisymm := Quot.ind (fun _ => Quot.ind (fun _ h₁ h₂ =>
-    (T.semanticallyEquivalentSetoid.iseqv.quot_mk_eq_iff _ _).2
-    (semanticallyEquivalent_iff_implies_and_implies.2 ⟨h₁, h₂⟩)))
+    (T.semanticallyEquivalentSetoid.iseqv.quot_mk_eq_iff _ _).2 (implies_antisymm h₁ h₂)))
   sup := Quot.map₂ (· ⊔ ·) (fun _ _ _ => (SemanticallyEquivalent.refl _).sup)
      (fun _ _ _ h => h.sup (refl _))
   le_sup_left := Quot.ind (fun _ => Quot.ind (fun _ => implies_sup_left))
