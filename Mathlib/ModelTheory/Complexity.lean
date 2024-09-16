@@ -1,14 +1,15 @@
 /-
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson
+Authors: Aaron Anderson, Metin Ersin Arıcan
 -/
 import Mathlib.ModelTheory.Equivalence
 
 /-!
 # Quantifier Complexity
 
-This file defines quantifier complexity of first-order formulas, and constructs prenex normal forms.
+This file defines quantifier complexity of first-order formulas, and constructs disjunctive normal
+forms, conjunctive normal forms and prenex normal forms.
 
 ## Main Definitions
 
