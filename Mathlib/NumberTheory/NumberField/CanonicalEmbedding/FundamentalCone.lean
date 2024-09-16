@@ -95,8 +95,9 @@ theorem logMap_zero : logMap (0 : mixedSpace K) = 0 := by
 theorem logMap_one : logMap (1 : mixedSpace K) = 0 := by
   ext; simp
 
-theorem logMap_mul {x y : mixedSpace K} (hx : mixedEmbedding.norm x ≠ 0)
-    (hy : mixedEmbedding.norm y ≠ 0) :
+variable {x y : mixedSpace K}
+
+theorem logMap_mul (hx : mixedEmbedding.norm x ≠ 0) (hy : mixedEmbedding.norm y ≠ 0) :
     logMap (x * y) = logMap x + logMap y := by
   ext w
   simp_rw [Pi.add_apply, logMap_apply]
@@ -105,7 +106,7 @@ theorem logMap_mul {x y : mixedSpace K} (hx : mixedEmbedding.norm x ≠ 0)
   · exact mixedEmbedding.norm_ne_zero_iff.mp hx w
   · exact mixedEmbedding.norm_ne_zero_iff.mp hy w
 
-theorem logMap_apply_of_norm_one {x : mixedSpace K} (hx : mixedEmbedding.norm x = 1)
+theorem logMap_apply_of_norm_one (hx : mixedEmbedding.norm x = 1)
     (w : {w : InfinitePlace K // w ≠ w₀}) :
     logMap x w = mult w.val * Real.log (normAtPlace w x) := by
   rw [logMap_apply, hx, Real.log_one, zero_mul, sub_zero]
@@ -115,11 +116,11 @@ theorem logMap_eq_logEmbedding (u : (𝓞 K)ˣ) :
     logMap (mixedEmbedding K u) = logEmbedding K u := by
   ext; simp
 
-theorem logMap_unit_smul (u : (𝓞 K)ˣ) {x : mixedSpace K} (hx : mixedEmbedding.norm x ≠ 0) :
+theorem logMap_unit_smul (u : (𝓞 K)ˣ) (hx : mixedEmbedding.norm x ≠ 0) :
     logMap (u • x) = logEmbedding K u + logMap x := by
   rw [unitSMul_smul, logMap_mul (by rw [norm_unit]; norm_num) hx, logMap_eq_logEmbedding]
 
-theorem logMap_torsion_smul (x : mixedSpace K) {ζ : (𝓞 K)ˣ} (hζ : ζ ∈ torsion K) :
+theorem logMap_torsion_smul {ζ : (𝓞 K)ˣ} (hζ : ζ ∈ torsion K) :
     logMap (ζ • x) = logMap x := by
   ext
   simp_rw [logMap_apply, unitSMul_smul, map_mul, norm_eq_norm, Units.norm, Rat.cast_one, one_mul,
@@ -132,15 +133,14 @@ theorem logMap_real (c : ℝ) :
     mul_comm (finrank ℚ K : ℝ) _, mul_assoc, mul_inv_cancel₀ (Nat.cast_ne_zero.mpr finrank_pos.ne'),
     mul_one, sub_self, mul_zero, Pi.zero_apply]
 
-theorem logMap_real_smul {x : mixedSpace K} (hx : mixedEmbedding.norm x ≠ 0) {c : ℝ} (hc : c ≠ 0) :
+theorem logMap_real_smul (hx : mixedEmbedding.norm x ≠ 0) {c : ℝ} (hc : c ≠ 0) :
     logMap (c • x) = logMap x := by
   have : mixedEmbedding.norm (c • (1 : mixedSpace K)) ≠ 0 := by
     rw [norm_smul, map_one, mul_one]
     exact pow_ne_zero _ (abs_ne_zero.mpr hc)
   rw [← smul_one_mul, logMap_mul this hx, logMap_real, zero_add]
 
-theorem logMap_eq_of_normAtPlace_eq {x y : mixedSpace K}
-    (h : ∀ w, normAtPlace w x = normAtPlace w y) :
+theorem logMap_eq_of_normAtPlace_eq (h : ∀ w, normAtPlace w x = normAtPlace w y) :
     logMap x = logMap y := by
   ext
   simp_rw [logMap_apply, h, norm_eq_of_normAtPlace_eq h]
