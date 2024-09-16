@@ -291,7 +291,7 @@ def limitRecOn {C : Ordinal → Sort*} (o : Ordinal) (H₁ : C 0) (H₂ : ∀ o,
 
 @[simp]
 theorem limitRecOn_zero {C} (H₁ H₂ H₃) : @limitRecOn C 0 H₁ H₂ H₃ = H₁ := by
-  rw [limitRecOn, SuccOrder.prelimitRecOn_limit _ _ isSuccPrelimit_zero, dif_pos rfl]
+  rw [limitRecOn, SuccOrder.prelimitRecOn_of_isSuccPrelimit _ _ isSuccPrelimit_zero, dif_pos rfl]
 
 @[simp]
 theorem limitRecOn_succ {C} (o H₁ H₂ H₃) :
@@ -301,7 +301,7 @@ theorem limitRecOn_succ {C} (o H₁ H₂ H₃) :
 @[simp]
 theorem limitRecOn_limit {C} (o H₁ H₂ H₃ h) :
     @limitRecOn C o H₁ H₂ H₃ = H₃ o h fun x _h => @limitRecOn C x H₁ H₂ H₃ := by
-  simp_rw [limitRecOn, SuccOrder.prelimitRecOn_limit _ _ h.isSuccPrelimit, dif_neg h.1]
+  simp_rw [limitRecOn, SuccOrder.prelimitRecOn_of_isSuccPrelimit _ _ h.isSuccPrelimit, dif_neg h.1]
 
 instance orderTopToTypeSucc (o : Ordinal) : OrderTop (succ o).toType :=
   @OrderTop.mk _ _ (Top.mk _) le_enum_succ
