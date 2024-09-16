@@ -64,6 +64,11 @@ theorem sort_empty : sort r ∅ = [] :=
 theorem sort_singleton (a : α) : sort r {a} = [a] :=
   Multiset.sort_singleton r a
 
+theorem sort_cons {a : α} {s : Finset α} (h₁ : ∀ b ∈ s, r a b) (h₂ : a ∉ s) :
+    sort r (cons a h₂) = cons a (mem_sort.2 h₂) := by
+  rw [sort, insert_val, ndinsert_of_not_mem h₂]
+  exact Multiset.sort_insert r a _ h₁
+
 theorem sort_insert [DecidableEq α] {a : α} {s : Finset α} (h₁ : ∀ b ∈ s, r a b) (h₂ : a ∉ s) :
     sort r (insert a s) = a :: sort r s := by
   rw [sort, insert_val, ndinsert_of_not_mem h₂]
