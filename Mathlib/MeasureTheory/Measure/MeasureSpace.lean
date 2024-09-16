@@ -505,7 +505,7 @@ theorem measure_iInter_eq_iInf' {α ι : Type*} [MeasurableSpace α] {μ : Measu
     · intro h i
       rcases directed_of (· ≤ ·) i i with ⟨j, rij, -⟩
       exact h j i rij
-  have ms : ∀ i, NullMeasurableSet (s i) μ := fun i ↦ .biInter (to_countable _) fun i _ ↦ h i
+  have ms (i) : NullMeasurableSet (s i) μ := .biInter (to_countable _) fun i _ ↦ h i
   have hd : Directed (· ⊇ ·) s := by
     intro i j
     rcases directed_of (· ≤ ·) i j with ⟨k, rik, rjk⟩
