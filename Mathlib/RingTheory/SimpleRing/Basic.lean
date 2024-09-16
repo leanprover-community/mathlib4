@@ -10,12 +10,12 @@ import Mathlib.Algebra.Ring.Subring.Basic
 
 /-! # Basic Properties of Simple rings
 
-A ring `R` is **simple** if it has only two two-sided ideals, namely `0` and `⟨1⟩`.
+A ring `R` is **simple** if it has only two two-sided ideals, namely `⊥` and `⊤`.
 
 ## Main results
 
 - `IsSimpleRing.nontrivial`: simple rings are non-trivial.
-- `IsSimpleRing.of_divisionRing`: division rings are simple.
+- `DivisionRing.IsSimpleRing`: division rings are simple.
 - `IsSimpleRing.center_isField`: the center of a simple ring is a field.
 
 -/
@@ -47,11 +47,10 @@ lemma of_eqBotOrEqTop [Nontrivial R] (h : ∀ I : TwoSidedIdeal R, I = ⊥ ∨ I
 
 instance _root_.DivisionRing.isSimpleRing (A : Type*) [DivisionRing A] : IsSimpleRing A :=
   .of_eqBotOrEqTop <| fun I ↦ by
-    rw [or_iff_not_imp_left]
+    rw [or_iff_not_imp_left, ← I.one_mem_iff]
     intro H
-    suffices mem : 1 ∈ I from eq_top_iff.2 <| fun x _ ↦ mul_one x ▸ I.mul_mem_left x _ mem
     obtain ⟨x, hx1, hx2 : x ≠ 0⟩ := SetLike.exists_of_lt (bot_lt_iff_ne_bot.mpr H : ⊥ < I)
-    simpa [inv_mul_cancel hx2] using I.mul_mem_left x⁻¹ _ hx1
+    simpa [inv_mul_cancel₀ hx2] using I.mul_mem_left x⁻¹ _ hx1
 
 open TwoSidedIdeal in
 lemma isField_center (A : Type*) [Ring A] [IsSimpleRing A] : IsField (Subring.center A) where

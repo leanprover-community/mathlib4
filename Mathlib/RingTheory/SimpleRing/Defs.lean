@@ -9,9 +9,9 @@ import Mathlib.Order.Atoms
 
 /-! # Simple rings
 
-A ring `R` is **simple** if it has only two two-sided ideals, namely `0` and `⟨1⟩`.
+A ring `R` is **simple** if it has only two two-sided ideals, namely `⊥` and `⊤`.
 
-## Main results
+## Main definitions
 
 - `IsSimpleRing`: a predicate expressing that a ring is simple.
 
@@ -19,7 +19,7 @@ A ring `R` is **simple** if it has only two two-sided ideals, namely `0` and `�
 
 
 /--
-A ring `R` is **simple** if it has only two two-sided ideals, namely `0` and `⟨1⟩`.
+A ring `R` is **simple** if it has only two two-sided ideals, namely `⊥` and `⊤`.
 -/
 class IsSimpleRing (R : Type*) [NonUnitalNonAssocRing R] : Prop where
   simple : IsSimpleOrder (TwoSidedIdeal R)
