@@ -383,10 +383,12 @@ theorem TendstoUniformlyOn.uniformCauchySeqOn (hF : TendstoUniformlyOn F f p s) 
     hF.tendstoUniformlyOnFilter.uniformCauchySeqOnFilter
 
 /-- A uniformly Cauchy sequence converges uniformly to its limit -/
-theorem UniformCauchySeqOnFilter.tendstoUniformlyOnFilter_of_tendsto [NeBot p]
+theorem UniformCauchySeqOnFilter.tendstoUniformlyOnFilter_of_tendsto
     (hF : UniformCauchySeqOnFilter F p p')
     (hF' : ∀ᶠ x : α in p', Tendsto (fun n => F n x) p (𝓝 (f x))) :
     TendstoUniformlyOnFilter F f p p' := by
+  rcases p.eq_or_neBot with rfl | _
+  · simp only [TendstoUniformlyOnFilter, bot_prod, eventually_bot, implies_true]
   -- Proof idea: |f_n(x) - f(x)| ≤ |f_n(x) - f_m(x)| + |f_m(x) - f(x)|. We choose `n`
   -- so that |f_n(x) - f_m(x)| is uniformly small across `s` whenever `m ≥ n`. Then for
   -- a fixed `x`, we choose `m` sufficiently large such that |f_m(x) - f(x)| is small.
@@ -412,7 +414,7 @@ theorem UniformCauchySeqOnFilter.tendstoUniformlyOnFilter_of_tendsto [NeBot p]
   exact ⟨F m x, ⟨hm.2, htsymm hm.1⟩⟩
 
 /-- A uniformly Cauchy sequence converges uniformly to its limit -/
-theorem UniformCauchySeqOn.tendstoUniformlyOn_of_tendsto [NeBot p] (hF : UniformCauchySeqOn F p s)
+theorem UniformCauchySeqOn.tendstoUniformlyOn_of_tendsto (hF : UniformCauchySeqOn F p s)
     (hF' : ∀ x : α, x ∈ s → Tendsto (fun n => F n x) p (𝓝 (f x))) : TendstoUniformlyOn F f p s :=
   tendstoUniformlyOn_iff_tendstoUniformlyOnFilter.mpr
     (hF.uniformCauchySeqOnFilter.tendstoUniformlyOnFilter_of_tendsto hF')
