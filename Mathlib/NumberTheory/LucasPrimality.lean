@@ -9,7 +9,7 @@ import Mathlib.Tactic.Zify
 import Mathlib.Data.Nat.Totient
 
 /-!
-# The Lucas test for primes.
+# The Lucas test for primes
 
 This file implements the Lucas test for primes (not to be confused with the Lucas-Lehmer test for
 Mersenne primes). A number `a` witnesses that `n` is prime if `a` has order `n-1` in the
@@ -27,7 +27,7 @@ certificate.
 ## Implementation notes
 
 Note that the proof for `lucas_primality` relies on analyzing the multiplicative group
-modulo `p`. Despite this, the theorem still holds vacuously for `p = 0` and `p = 1`: In these
+modulo `p`. Despite this, the theorem still holds vacuously for `p = 0` and `p = 1`. In these
 cases, we can take `q` to be any prime and see that `hd` does not hold, since `a^((p-1)/q)` reduces
 to `1`.
 -/
@@ -41,7 +41,7 @@ theorem lucas_primality (p : ℕ) (a : ZMod p) (ha : a ^ (p - 1) = 1)
     (hd : ∀ q : ℕ, q.Prime → q ∣ p - 1 → a ^ ((p - 1) / q) ≠ 1) : p.Prime := by
   have h : p ≠ 0 ∧ p ≠ 1 := by
     constructor <;> rintro rfl <;> exact hd 2 Nat.prime_two (dvd_zero _) (pow_zero _)
-  have hp1 : 1 < p := lt_of_le_of_ne h.1.bot_lt h.2.symm
+  have hp1 : 1 < p := Nat.one_lt_iff_ne_zero_and_ne_one.2 h
   have : NeZero p := ⟨h.1⟩
   rw [Nat.prime_iff_card_units]
   apply (Nat.card_units_zmod_lt_sub_one hp1).antisymm
