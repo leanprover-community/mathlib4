@@ -382,15 +382,18 @@ theorem IsNormal.le_iff {f} (H : IsNormal f) {a b} : f a ≤ f b ↔ a ≤ b :=
 theorem IsNormal.inj {f} (H : IsNormal f) {a b} : f a = f b ↔ a = b := by
   simp only [le_antisymm_iff, H.le_iff]
 
+theorem IsNormal.le_apply {f} (H : IsNormal f) (a) : a ≤ f a :=
+  H.strictMono.le_apply a
+
 theorem IsNormal.id_le {f} (H : IsNormal f) : id ≤ f :=
   H.strictMono.id_le
 
-@[deprecated IsNormal.id_le (since := "2024-09-11")]
+@[deprecated IsNormal.le_apply (since := "2024-09-11")]
 theorem IsNormal.self_le {f} (H : IsNormal f) (a) : a ≤ f a :=
-  H.strictMono.id_le a
+  H.strictMono.le_apply a
 
 theorem IsNormal.le_iff_eq {f} (H : IsNormal f) {a} : f a ≤ a ↔ f a = a :=
-  (H.id_le a).le_iff_eq
+  (H.le_apply a).le_iff_eq
 
 theorem IsNormal.le_set {f o} (H : IsNormal f) (p : Set Ordinal) (p0 : p.Nonempty) (b)
     (H₂ : ∀ o, b ≤ o ↔ ∀ a ∈ p, a ≤ o) : f b ≤ o ↔ ∀ a ∈ p, f a ≤ o :=
