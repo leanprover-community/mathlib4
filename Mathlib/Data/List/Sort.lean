@@ -149,7 +149,7 @@ theorem Sorted.rel_of_mem_take_of_mem_drop {l : List α} (h : List.Sorted r l) {
     (hx : x ∈ List.take k l) (hy : y ∈ List.drop k l) : r x y := by
   obtain ⟨iy, hiy, rfl⟩ := getElem_of_mem hy
   obtain ⟨ix, hix, rfl⟩ := getElem_of_mem hx
-  rw [getElem_take', getElem_drop]
+  rw [getElem_take, getElem_drop]
   rw [length_take] at hix
   exact h.rel_get_of_lt (Nat.lt_add_right _ (Nat.lt_min.mp hix).left)
 
