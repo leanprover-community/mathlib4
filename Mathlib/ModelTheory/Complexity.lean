@@ -71,8 +71,7 @@ namespace BoundedFormula
 
 /-- An auxilary definition to `FirstOrder.Language.BoundedFormula.simpleNot` and
   `FirstOrder.Language.BoundedFormula.simpleNot_semanticallyEquivalent_not`.-/
-def simpleNotAux
-    : {n : ℕ} → (φ : L.BoundedFormula α n) → {ψ : L.BoundedFormula α n // ψ ⇔[∅] ∼φ}
+def simpleNotAux : {n : ℕ} → (φ : L.BoundedFormula α n) → {ψ : L.BoundedFormula α n // ψ ⇔[∅] ∼φ}
   | _, ⊥ => .mk ⊤ (by rfl)
   | _, equal t₁ t₂ => .mk ∼(equal t₁ t₂) (by rfl)
   | _, rel r tv => .mk ∼(rel r tv) (by rfl)
@@ -145,14 +144,14 @@ theorem IsAtomic.liftAt {k m : ℕ} (h : IsAtomic φ) : (φ.liftAt k m).IsAtomic
 theorem IsAtomic.castLE {h : l ≤ n} (hφ : IsAtomic φ) : (φ.castLE h).IsAtomic :=
   IsAtomic.recOn hφ (fun _ _ => IsAtomic.equal _ _) fun _ _ => IsAtomic.rel _ _
 
-protected theorem IsAtomic.simpleNot_eq_not {φ : L.BoundedFormula α n} (hφ : φ.IsAtomic)
-    : φ.simpleNot = ∼φ := by
+protected theorem IsAtomic.simpleNot_eq_not {φ : L.BoundedFormula α n} (hφ : φ.IsAtomic) :
+    φ.simpleNot = ∼φ := by
   induction hφ with
   | equal t₁ t₂ => rfl
   | rel R ts => rfl
 
-protected theorem IsAtomic.simpleNot_of_not_eq {φ : L.BoundedFormula α n} (hφ : φ.IsAtomic)
-    : φ.not.simpleNot = φ := by
+protected theorem IsAtomic.simpleNot_of_not_eq {φ : L.BoundedFormula α n} (hφ : φ.IsAtomic) :
+    φ.not.simpleNot = φ := by
   induction hφ with
   | equal t₁ t₂ => rfl
   | rel R ts => rfl
@@ -167,8 +166,8 @@ inductive IsLiteral : L.BoundedFormula α n → Prop
 theorem IsAtomic.isLiteral {φ : L.BoundedFormula α n} (hφ : φ.IsAtomic) : IsLiteral φ :=
   IsLiteral.of_isAtomic hφ
 
-protected theorem IsLiteral.simpleNot {φ : L.BoundedFormula α n} (hφ : φ.IsLiteral)
-    : φ.simpleNot.IsLiteral := by
+protected theorem IsLiteral.simpleNot {φ : L.BoundedFormula α n} (hφ : φ.IsLiteral) :
+    φ.simpleNot.IsLiteral := by
   induction hφ with
   | falsum =>
     exact IsLiteral.not_falsum
@@ -184,8 +183,8 @@ protected theorem IsLiteral.simpleNot {φ : L.BoundedFormula α n} (hφ : φ.IsL
 /-- A conjunctive formula is a conjunction of literals. -/
 inductive IsConjunctive : L.BoundedFormula α n → Prop
   | of_isLiteral {φ : L.BoundedFormula α n} (h : φ.IsLiteral) : IsConjunctive φ
-  | inf {φ ψ : L.BoundedFormula α n} (hφ : IsConjunctive φ) (hψ : IsConjunctive ψ)
-      : IsConjunctive (φ ⊓ ψ)
+  | inf {φ ψ : L.BoundedFormula α n} (hφ : IsConjunctive φ) (hψ : IsConjunctive ψ) :
+    IsConjunctive (φ ⊓ ψ)
 
 theorem IsLiteral.isConjunctive {φ : L.BoundedFormula α n} (hφ : φ.IsLiteral) : IsConjunctive φ :=
   IsConjunctive.of_isLiteral hφ
@@ -196,8 +195,8 @@ theorem IsAtomic.isConjunctive {φ : L.BoundedFormula α n} (hφ : φ.IsAtomic) 
 /-- A disjunctive formula is a disjunction of literals. -/
 inductive IsDisjunctive : L.BoundedFormula α n → Prop
   | of_isLiteral {φ : L.BoundedFormula α n} (h : φ.IsLiteral) : IsDisjunctive φ
-  | sup {φ ψ : L.BoundedFormula α n} (hφ : IsDisjunctive φ) (hψ : IsDisjunctive ψ)
-      : IsDisjunctive (φ ⊔ ψ)
+  | sup {φ ψ : L.BoundedFormula α n} (hφ : IsDisjunctive φ) (hψ : IsDisjunctive ψ) :
+    IsDisjunctive (φ ⊔ ψ)
 
 theorem IsLiteral.isDisjunctive {φ : L.BoundedFormula α n} (hφ : φ.IsLiteral) : IsDisjunctive φ :=
   IsDisjunctive.of_isLiteral hφ
@@ -205,8 +204,8 @@ theorem IsLiteral.isDisjunctive {φ : L.BoundedFormula α n} (hφ : φ.IsLiteral
 theorem IsAtomic.isDisjunctive {φ : L.BoundedFormula α n} (hφ : φ.IsAtomic) : IsDisjunctive φ :=
   IsLiteral.isDisjunctive (IsAtomic.isLiteral hφ)
 
-protected theorem IsConjunctive.simpleNot {φ : L.BoundedFormula α n} (hφ : φ.IsConjunctive)
-    : φ.simpleNot.IsDisjunctive := by
+protected theorem IsConjunctive.simpleNot {φ : L.BoundedFormula α n} (hφ : φ.IsConjunctive) :
+    φ.simpleNot.IsDisjunctive := by
   induction hφ with
   | of_isLiteral hφ =>
     apply IsDisjunctive.of_isLiteral
@@ -215,8 +214,8 @@ protected theorem IsConjunctive.simpleNot {φ : L.BoundedFormula α n} (hφ : φ
     dsimp only [simpleNot, simpleNotAux]
     exact IsDisjunctive.sup hφ_ih hψ_ih
 
-protected theorem IsDisjunctive.simpleNot {φ : L.BoundedFormula α n} (hφ : φ.IsDisjunctive)
-    : φ.simpleNot.IsConjunctive := by
+protected theorem IsDisjunctive.simpleNot {φ : L.BoundedFormula α n} (hφ : φ.IsDisjunctive) :
+    φ.simpleNot.IsConjunctive := by
   induction hφ with
   | of_isLiteral hφ =>
     apply IsConjunctive.of_isLiteral
@@ -243,8 +242,8 @@ inductive IsCNF : L.BoundedFormula α n → Prop
 theorem IsDisjunctive.isCNF {φ : L.BoundedFormula α n} (hφ : φ.IsDisjunctive) : IsCNF φ :=
   IsCNF.of_isDisjunctive hφ
 
-protected theorem IsDNF.simpleNot {φ : L.BoundedFormula α n} (hφ : φ.IsDNF)
-    : φ.simpleNot.IsCNF := by
+protected theorem IsDNF.simpleNot {φ : L.BoundedFormula α n} (hφ : φ.IsDNF) :
+    φ.simpleNot.IsCNF := by
   induction hφ with
   | of_isConjunctive hφ =>
     apply IsCNF.of_isDisjunctive
@@ -295,8 +294,8 @@ protected def supAux (φ ψ : L.BoundedFormula α n) : {χ : L.BoundedFormula α
 protected def sup (φ ψ : L.BoundedFormula α n) : L.BoundedFormula α n :=
   (IsCNF.supAux φ ψ).1
 
-protected theorem sup_semanticallyEquivalent_sup (φ ψ : L.BoundedFormula α n)
-    : IsCNF.sup φ ψ ⇔[∅] φ ⊔ ψ :=
+protected theorem sup_semanticallyEquivalent_sup (φ ψ : L.BoundedFormula α n) :
+    IsCNF.sup φ ψ ⇔[∅] φ ⊔ ψ :=
   (IsCNF.supAux φ ψ).2
 
 protected lemma sup_of_isLiteral_eq {φ ψ : L.BoundedFormula α n} (hφ : φ.IsLiteral)
@@ -319,8 +318,8 @@ protected lemma sup_of_isDisjunctive_eq {φ ψ : L.BoundedFormula α n} (hφ : �
 
 /-- When `FirstOrder.Language.BoundedFormula.IsCNF.sup` is applied to formulas in CNF, the result
   is also a formula in CNF. -/
-protected theorem sup_isCNF {φ ψ : L.BoundedFormula α n} (hφ : φ.IsCNF) (hψ : ψ.IsCNF)
-    : (IsCNF.sup φ ψ).IsCNF := by
+protected theorem sup_isCNF {φ ψ : L.BoundedFormula α n} (hφ : φ.IsCNF) (hψ : ψ.IsCNF) :
+    (IsCNF.sup φ ψ).IsCNF := by
   induction hφ with
   | of_isDisjunctive hφ =>
       induction hψ with
@@ -434,14 +433,12 @@ theorem toCNF_semanticallyEquivalent (φ : L.BoundedFormula α n) : toCNF φ ⇔
 
 end
 
-protected theorem IsAtomic.toDNF_eq {φ : L.BoundedFormula α n} (h : φ.IsAtomic)
-    : toDNF φ = φ := by
+protected theorem IsAtomic.toDNF_eq {φ : L.BoundedFormula α n} (h : φ.IsAtomic) : toDNF φ = φ := by
   induction h with
   | equal t₁ t₂ => rfl
   | rel R ts => rfl
 
-protected theorem IsAtomic.toCNF_eq {φ : L.BoundedFormula α n} (h : φ.IsAtomic)
-    : toCNF φ = φ := by
+protected theorem IsAtomic.toCNF_eq {φ : L.BoundedFormula α n} (h : φ.IsAtomic) : toCNF φ = φ := by
   induction h with
   | equal t₁ t₂ => rfl
   | rel R ts => rfl
