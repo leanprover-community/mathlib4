@@ -193,7 +193,7 @@ lemma toAut_surjective_of_isPretransitive [TopologicalSpace G] [TopologicalGroup
 /-- If `toAut F G` is surjective, then `G` acts transitively on the fibers of connected objects.
 For a converse see `toAut_surjective`. -/
 lemma isPretransitive_of_surjective (h : Function.Surjective (toAut F G)) (X : C)
-     [IsConnected X] : MulAction.IsPretransitive G (F.obj X) where
+    [IsConnected X] : MulAction.IsPretransitive G (F.obj X) where
   exists_smul_eq x y := by
     obtain ⟨t, ht⟩ := MulAction.exists_smul_eq (Aut F) x y
     obtain ⟨g, rfl⟩ := h t
@@ -228,6 +228,16 @@ lemma non_trivial (g : G) (h : ∀ (X : C) (x : F.obj X), g • x = x) : g = 1 :
 end IsFundamentalGroup
 
 variable [FiberFunctor F]
+
+/-- `Aut F` is a fundamental group for `F`. -/
+instance : IsFundamentalGroup F (Aut F) where
+  naturality g X Y f x := (FunctorToFintypeCat.naturality F F g.hom f x).symm
+  transitive_of_isGalois X := FiberFunctor.isPretransitive_of_isConnected F X
+  continuous_smul X := continuousSMul_aut_fiber F X
+  non_trivial' g h := by
+    ext X x
+    exact h X x
+
 variable [TopologicalSpace G] [TopologicalGroup G] [CompactSpace G] [IsFundamentalGroup F G]
 
 lemma toAut_bijective : Function.Bijective (toAut F G) where
