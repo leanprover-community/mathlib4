@@ -39,23 +39,12 @@ group must itself have order `p-1`, which only happens when `p` is prime.
 -/
 theorem lucas_primality (p : ℕ) (a : ZMod p) (ha : a ^ (p - 1) = 1)
     (hd : ∀ q : ℕ, q.Prime → q ∣ p - 1 → a ^ ((p - 1) / q) ≠ 1) : p.Prime := by
-  have h0 : p ≠ 0 := by
-    rintro ⟨⟩
-    exact hd 2 Nat.prime_two (dvd_zero _) (pow_zero _)
-  have h1 : p ≠ 1 := by
-    rintro ⟨⟩
-    exact hd 2 Nat.prime_two (dvd_zero _) (pow_zero _)
-  have hp1 : 1 < p := lt_of_le_of_ne h0.bot_lt h1.symm
-  have order_of_a : orderOf a = p - 1 := by
-    apply orderOf_eq_of_pow_and_pow_div_prime _ ha hd
-    exact tsub_pos_of_lt hp1
-  haveI : NeZero p := ⟨h0⟩
+  have h : p ≠ 0 ∧ p ≠ 1 := by
+    constructor <;> rintro rfl <;> exact hd 2 Nat.prime_two (dvd_zero _) (pow_zero _)
+  have hp1 : 1 < p := lt_of_le_of_ne h.1.bot_lt h.2.symm
+  have : NeZero p := ⟨h.1⟩
   rw [Nat.prime_iff_card_units]
-  -- Prove cardinality of `Units` of `ZMod p` is both `≤ p-1` and `≥ p-1`
-  refine le_antisymm (Nat.card_units_zmod_lt_sub_one hp1) ?_
-  have hp' : p - 2 + 1 = p - 1 := tsub_add_eq_add_tsub hp1
-  let a' : (ZMod p)ˣ := Units.mkOfMulEqOne a (a ^ (p - 2)) (by rw [← pow_succ', hp', ha])
-  calc
-    p - 1 = orderOf a := order_of_a.symm
-    _ = orderOf a' := (orderOf_injective (Units.coeHom (ZMod p)) Units.ext a')
-    _ ≤ Fintype.card (ZMod p)ˣ := orderOf_le_card_univ
+  apply (Nat.card_units_zmod_lt_sub_one hp1).antisymm
+  let a' : (ZMod p)ˣ := Units.mkOfMulEqOne a _ (by rwa [← pow_succ', tsub_add_eq_add_tsub hp1])
+  rw [← orderOf_eq_of_pow_and_pow_div_prime (tsub_pos_of_lt hp1) ha hd]
+  exact (orderOf_injective (Units.coeHom _) Units.ext a').trans_le orderOf_le_card_univ
