@@ -437,9 +437,9 @@ theorem power_one (a : Cardinal.{u}) : a ^ (1 : Cardinal) = a :=
 theorem power_add (a b c : Cardinal) : a ^ (b + c) = a ^ b * a ^ c :=
   inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumArrowEquivProdArrow β γ α
 
-private theorem cast_succ (n : ℕ) : ((1 + n : ℕ) : Cardinal.{u}) = n + 1 := by
-  change #(ULift.{u} (Fin (1 + n))) = #(ULift.{u} (Fin n)) + 1
-  rw [add_comm, ← mk_option]
+private theorem cast_succ (n : ℕ) : ((n + 1 : ℕ) : Cardinal.{u}) = n + 1 := by
+  change #(ULift.{u} _) = #(ULift.{u} _) + 1
+  rw [← mk_option]
   simp
 
 instance commSemiring : CommSemiring Cardinal.{u} where
@@ -462,10 +462,10 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   nsmul := nsmulRec
   npow n c := c ^ (n : Cardinal)
   npow_zero := power_zero
-  npow_succ n c := by dsimp; rw [add_comm, cast_succ, power_add, power_one]
+  npow_succ n c := by dsimp; rw [cast_succ, power_add, power_one]
   natCast n := lift #(Fin n)
   natCast_zero := rfl
-  natCast_succ n := add_comm n 1 ▸ cast_succ n
+  natCast_succ n := cast_succ n
 
 @[simp]
 theorem one_power {a : Cardinal} : (1 : Cardinal) ^ a = 1 :=
