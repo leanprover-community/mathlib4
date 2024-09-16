@@ -706,17 +706,36 @@ lemma existence_omega_aux (n : ℕ) : ∀ (X : C) [IsLE X 0], Finset.card (suppo
     have h₃ : Finset.card (support T.obj₃) < n := sorry
     obtain ⟨Y₁, s₁, hY₁⟩ := existence_omega_support_singleton T.obj₁ h₁
     obtain ⟨Y₃, s₃, hY₃⟩ := hn _ h₃ T.obj₃ rfl
+    have : IsLE Y₁.1 0 := {le := Y₁.2.1}
+    have : IsLE Y₃.1 0 := {le := Y₃.2.1}
+    have : IsGE Y₁.1 0 := {ge := Y₁.2.2}
     have : IsGE Y₃.1 0 := {ge := Y₃.2.2}
     have := hY₃ (Y₁.1⟦(1 : ℤ)⟧) inferInstance
     set w : Y₃.obj ⟶ Y₁.obj⟦(1 : ℤ)⟧ := inv (((preadditiveYoneda.obj (Y₁.obj⟦(1 : ℤ)⟧)).map s₃.op))
       (T.mor₃ ≫ s₁⟦1⟧') with hwdef
     have hw : s₃ ≫ w = T.mor₃ ≫ s₁⟦1⟧' := by
+      change ((preadditiveYoneda.obj (Y₁.obj⟦(1 : ℤ)⟧)).map s₃.op) w = _
       rw [hwdef]
+      change (_ ≫ ((preadditiveYoneda.obj (Y₁.obj⟦(1 : ℤ)⟧)).map s₃.op)) _ = _
+      rw [IsIso.inv_hom_id]
       simp only [preadditiveYoneda_obj, Functor.comp_obj, preadditiveYonedaObj_obj,
-        ModuleCat.forget₂_obj, AddCommGrp.coe_of, Functor.comp_map, preadditiveYonedaObj_map,
-        Quiver.Hom.unop_op, ModuleCat.forget₂_map]
-      sorry
-    sorry
+        ModuleCat.forget₂_obj, AddCommGrp.coe_of, AddCommGrp.coe_id', id_eq]
+    obtain ⟨Y₂, u, v, dT'⟩ := distinguished_cocone_triangle₂ w
+    obtain ⟨s₂, hs₂⟩ := complete_distinguished_triangle_morphism₂ _ _ dT dT' s₁ s₃ hw.symm
+    simp only [triangleGELT_obj_obj₁, Triangle.mk_obj₂, triangleGELT_obj_obj₂,
+      triangleGELT_obj_mor₁, Triangle.mk_obj₁, Triangle.mk_mor₁, Triangle.mk_obj₃,
+      triangleGELT_obj_obj₃, triangleGELT_obj_mor₂, Triangle.mk_mor₂] at hs₂
+    have hY₂ : tCore.P Y₂ := by
+      constructor
+      · refine (@LE_ext₂ C _ _ _ _ _ _ _ _ dT' 0 ?_ ?_).le
+        simp only [Triangle.mk_obj₁]; infer_instance
+        simp only [Triangle.mk_obj₃]; infer_instance
+      · refine (@GE_ext₂ C _ _ _ _ _ _ _ _ dT' 0 ?_ ?_).ge
+        simp only [Triangle.mk_obj₁]; infer_instance
+        simp only [Triangle.mk_obj₃]; infer_instance
+    existsi ⟨Y₂, hY₂⟩, s₂
+    intro Z hZ
+    set R₁ : ComposableArrows AddCommGrp 4 := ComposableArrows.mk₄ sorry sorry sorry sorry 
 
   #exit
 
