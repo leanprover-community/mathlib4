@@ -71,7 +71,7 @@ theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.toType :=
 section aleph
 
 /-- The `aleph'` function gives the cardinals listed by their ordinal index. `aleph' n = n`,
-`aleph' ω = ω`, `aleph' (ω + 1) = succ ℵ₀`, etc.
+`aleph' ω = ℵ₀`, `aleph' (ω + 1) = succ ℵ₀`, etc.
 
 For the more common aleph function skipping over finite cardinals, see `Cardinal.aleph`. -/
 def aleph' : Ordinal.{u} ≃o Cardinal.{u} := by
