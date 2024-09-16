@@ -629,7 +629,7 @@ theorem uniformContinuous_coeff {uK : UniformSpace K} (h : uK = ⊥) (d : ℤ) :
   use {P | Valued.v (P.snd - P.fst) < ↑γ}
   refine ⟨(Valued.hasBasis_uniformity (LaurentSeries K) ℤₘ₀).mem_of_mem (by tauto), fun P hP ↦ ?_⟩
   rw [eq_coeff_of_valuation_sub_lt K (le_of_lt hP) (lt_add_one _)]
-  apply bot_uniformity ▸ h ▸ hS ; rfl
+  apply bot_uniformity ▸ h ▸ hS; rfl
 
 /- Since extracting coefficients is uniformly continuous, every Cauchy filter in
 `laurent_series K` gives rise to a Cauchy filter in `K` for every `d : ℤ`, and such Cauchy filter
