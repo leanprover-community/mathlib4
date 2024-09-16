@@ -6,7 +6,6 @@ Authors: Jung Tao Cheng, Christian Merten, Andrew Yang
 import Mathlib.Algebra.MvPolynomial.PDeriv
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.RingTheory.Presentation
-import Mathlib.RingTheory.RingHomProperties
 
 /-!
 # Standard smooth algebras
