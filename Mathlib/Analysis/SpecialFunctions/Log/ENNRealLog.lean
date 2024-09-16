@@ -164,7 +164,7 @@ theorem log_mul_add {x y : ℝ≥0∞} : log (x * y) = log x + log y := by
     · simp
     · simp [Ne.symm (ne_of_lt (ENNReal.toReal_pos_iff.1 x_real).1)]
     · rw_mod_cast [log_pos_real', log_pos_real' y_real, ENNReal.toReal_mul]
-      exact Real.log_mul (Ne.symm (ne_of_lt x_real)) (Ne.symm (ne_of_lt y_real))
+      · exact Real.log_mul (Ne.symm (ne_of_lt x_real)) (Ne.symm (ne_of_lt y_real))
       rw [toReal_mul]
       positivity
 

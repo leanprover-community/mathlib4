@@ -79,7 +79,7 @@ theorem mono_of_isLimitMkIdId (f : X ⟶ Y) (t : IsLimit (mk (𝟙 X) (𝟙 X) r
 /-- Suppose `f` and `g` are two morphisms with a common codomain and `s` is a limit cone over the
     diagram formed by `f` and `g`. Suppose `f` and `g` both factor through a monomorphism `h` via
     `x` and `y`, respectively.  Then `s` is also a limit cone over the diagram formed by `x` and
-    `y`.  -/
+    `y`. -/
 def isLimitOfFactors (f : X ⟶ Z) (g : Y ⟶ Z) (h : W ⟶ Z) [Mono h] (x : X ⟶ W) (y : Y ⟶ W)
     (hxh : x ≫ h = f) (hyh : y ≫ h = g) (s : PullbackCone f g) (hs : IsLimit s) :
     IsLimit
@@ -250,7 +250,7 @@ theorem epi_of_isColimitMkIdId (f : X ⟶ Y)
 /-- Suppose `f` and `g` are two morphisms with a common domain and `s` is a colimit cocone over the
     diagram formed by `f` and `g`. Suppose `f` and `g` both factor through an epimorphism `h` via
     `x` and `y`, respectively. Then `s` is also a colimit cocone over the diagram formed by `x` and
-    `y`.  -/
+    `y`. -/
 def isColimitOfFactors (f : X ⟶ Y) (g : X ⟶ Z) (h : X ⟶ W) [Epi h] (x : W ⟶ Y) (y : W ⟶ Z)
     (hhx : h ≫ x = f) (hhy : h ≫ y = g) (s : PushoutCocone f g) (hs : IsColimit s) :
     have reassoc₁ : h ≫ x ≫ inl s = f ≫ inl s := by  -- Porting note: working around reassoc

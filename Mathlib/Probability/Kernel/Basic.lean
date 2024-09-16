@@ -20,6 +20,8 @@ Classes of kernels:
 * `ProbabilityTheory.Kernel α β`: kernels from `α` to `β`.
 * `ProbabilityTheory.IsMarkovKernel κ`: a kernel from `α` to `β` is said to be a Markov kernel
   if for all `a : α`, `k a` is a probability measure.
+* `ProbabilityTheory.IsZeroOrMarkovKernel κ`: a kernel from `α` to `β` which is zero or
+  a Markov kernel.
 * `ProbabilityTheory.IsFiniteKernel κ`: a kernel from `α` to `β` is said to be finite if there
   exists `C : ℝ≥0∞` such that `C < ∞` and for all `a : α`, `κ a univ ≤ C`. This implies in
   particular that all measures in the image of `κ` are finite, but is stronger since it requires a
@@ -73,8 +75,6 @@ scoped notation "Kernel[" mα "]" α:arg β:arg => @Kernel α β mα _
 /-- Notation for `Kernel` with respect to a non-standard σ-algebra in the domain and codomain. -/
 scoped notation "Kernel[" mα ", " mβ "]" α:arg β:arg => @Kernel α β mα mβ
 
-initialize_simps_projections Kernel (toFun → apply)
-
 variable {α β ι : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
 namespace Kernel
@@ -84,6 +84,9 @@ instance instFunLike : FunLike (Kernel α β) α (Measure β) where
   coe_injective' f g h := by cases f; cases g; congr
 
 lemma measurable (κ : Kernel α β) : Measurable κ := κ.measurable'
+@[simp, norm_cast] lemma coe_mk (f : α → Measure β) (hf) : mk f hf = f := rfl
+
+initialize_simps_projections Kernel (toFun → apply)
 
 instance instZero : Zero (Kernel α β) where zero := ⟨0, measurable_zero⟩
 noncomputable instance instAdd : Add (Kernel α β) where add κ η := ⟨κ + η, κ.2.add η.2⟩
@@ -136,9 +139,18 @@ end Kernel
 class IsMarkovKernel (κ : Kernel α β) : Prop where
   isProbabilityMeasure : ∀ a, IsProbabilityMeasure (κ a)
 
+/-- A class for kernels which are zero or a Markov kernel. -/
+class IsZeroOrMarkovKernel (κ : Kernel α β) : Prop where
+  eq_zero_or_isMarkovKernel' : κ = 0 ∨ IsMarkovKernel κ
+
 /-- A kernel is finite if every measure in its image is finite, with a uniform bound. -/
 class IsFiniteKernel (κ : Kernel α β) : Prop where
   exists_univ_le : ∃ C : ℝ≥0∞, C < ∞ ∧ ∀ a, κ a Set.univ ≤ C
+
+theorem eq_zero_or_isMarkovKernel
+    (κ : Kernel α β) [h : IsZeroOrMarkovKernel κ] :
+    κ = 0 ∨ IsMarkovKernel κ :=
+  h.eq_zero_or_isMarkovKernel'
 
 /-- A constant `C : ℝ≥0∞` such that `C < ∞` (`ProbabilityTheory.IsFiniteKernel.bound_lt_top κ`) and
 for all `a : α` and `s : Set β`, `κ a s ≤ C` (`ProbabilityTheory.Kernel.measure_le_bound κ a s`).
@@ -183,12 +195,26 @@ instance IsMarkovKernel.is_probability_measure' [IsMarkovKernel κ] (a : α) :
     IsProbabilityMeasure (κ a) :=
   IsMarkovKernel.isProbabilityMeasure a
 
+instance : IsZeroOrMarkovKernel (0 : Kernel α β) := ⟨Or.inl rfl⟩
+
+instance (priority := 100) IsMarkovKernel.IsZeroOrMarkovKernel [h : IsMarkovKernel κ] :
+    IsZeroOrMarkovKernel κ := ⟨Or.inr h⟩
+
+instance (priority := 100) IsZeroOrMarkovKernel.isZeroOrProbabilityMeasure
+    [IsZeroOrMarkovKernel κ] (a : α) : IsZeroOrProbabilityMeasure (κ a) := by
+  rcases eq_zero_or_isMarkovKernel κ with rfl | h'
+  · simp only [Kernel.zero_apply]
+    infer_instance
+  · infer_instance
+
 instance IsFiniteKernel.isFiniteMeasure [IsFiniteKernel κ] (a : α) : IsFiniteMeasure (κ a) :=
   ⟨(Kernel.measure_le_bound κ a Set.univ).trans_lt (IsFiniteKernel.bound_lt_top κ)⟩
 
-instance (priority := 100) IsMarkovKernel.isFiniteKernel [IsMarkovKernel κ] :
-    IsFiniteKernel κ :=
-  ⟨⟨1, ENNReal.one_lt_top, fun _ => prob_le_one⟩⟩
+instance (priority := 100) IsZeroOrMarkovKernel.isFiniteKernel [h : IsZeroOrMarkovKernel κ] :
+    IsFiniteKernel κ := by
+  rcases eq_zero_or_isMarkovKernel κ with rfl | _h'
+  · infer_instance
+  · exact ⟨⟨1, ENNReal.one_lt_top, fun _ => prob_le_one⟩⟩
 
 namespace Kernel
 
@@ -477,6 +503,13 @@ instance const.instIsMarkovKernel {μβ : Measure β} [hμβ : IsProbabilityMeas
     IsMarkovKernel (const α μβ) :=
   ⟨fun _ => hμβ⟩
 
+instance const.instIsZeroOrMarkovKernel {μβ : Measure β} [hμβ : IsZeroOrProbabilityMeasure μβ] :
+    IsZeroOrMarkovKernel (const α μβ) := by
+  rcases eq_zero_or_isProbabilityMeasure μβ with rfl | h
+  · simp only [const_zero]
+    infer_instance
+  · infer_instance
+
 lemma isSFiniteKernel_const [Nonempty α] {μβ : Measure β} :
     IsSFiniteKernel (const α μβ) ↔ SFinite μβ :=
   ⟨fun h ↦ h.sFinite (Classical.arbitrary α), fun _ ↦ inferInstance⟩
@@ -698,5 +731,27 @@ theorem setIntegral_piecewise {E : Type*} [NormedAddCommGroup E] [NormedSpace �
 alias set_integral_piecewise := setIntegral_piecewise
 
 end Piecewise
+
+lemma exists_ae_eq_isMarkovKernel {μ : Measure α}
+    (h : ∀ᵐ a ∂μ, IsProbabilityMeasure (κ a)) (h' : μ ≠ 0) :
+    ∃ (η : Kernel α β), (κ =ᵐ[μ] η) ∧ IsMarkovKernel η := by
+  classical
+  obtain ⟨s, s_meas, μs, hs⟩ : ∃ s, MeasurableSet s ∧ μ s = 0
+      ∧ ∀ a ∉ s, IsProbabilityMeasure (κ a) := by
+    refine ⟨toMeasurable μ {a | ¬ IsProbabilityMeasure (κ a)}, measurableSet_toMeasurable _ _,
+      by simpa [measure_toMeasurable] using h, ?_⟩
+    intro a ha
+    contrapose! ha
+    exact subset_toMeasurable _ _ ha
+  obtain ⟨a, ha⟩ : sᶜ.Nonempty := by
+    contrapose! h'; simpa [μs, h'] using measure_univ_le_add_compl s (μ := μ)
+  refine ⟨Kernel.piecewise s_meas (Kernel.const _ (κ a)) κ, ?_, ?_⟩
+  · filter_upwards [measure_zero_iff_ae_nmem.1 μs] with b hb
+    simp [hb, piecewise]
+  · refine ⟨fun b ↦ ?_⟩
+    by_cases hb : b ∈ s
+    · simpa [hb, piecewise] using hs _ ha
+    · simpa [hb, piecewise] using hs _ hb
+
 end Kernel
 end ProbabilityTheory

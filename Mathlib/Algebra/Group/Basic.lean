@@ -90,7 +90,7 @@ section Semigroup
 variable [Semigroup α]
 
 @[to_additive]
-instance Semigroup.to_isAssociative : Std.Associative (α := α)  (· * ·) := ⟨mul_assoc⟩
+instance Semigroup.to_isAssociative : Std.Associative (α := α) (· * ·) := ⟨mul_assoc⟩
 
 /-- Composing two multiplications on the left by `y` then `x`
 is equal to a multiplication on the left by `x * y`.
@@ -148,12 +148,12 @@ section CommSemigroup
 variable [CommSemigroup G]
 
 @[to_additive]
-theorem mul_left_comm : ∀ a b c : G, a * (b * c) = b * (a * c) :=
-  left_comm Mul.mul mul_comm mul_assoc
+theorem mul_left_comm (a b c : G) : a * (b * c) = b * (a * c) := by
+  rw [← mul_assoc, mul_comm a, mul_assoc]
 
 @[to_additive]
-theorem mul_right_comm : ∀ a b c : G, a * b * c = a * c * b :=
-  right_comm Mul.mul mul_comm mul_assoc
+theorem mul_right_comm (a b c : G) : a * b * c = a * c * b := by
+  rw [mul_assoc, mul_comm b, mul_assoc]
 
 @[to_additive]
 theorem mul_mul_mul_comm (a b c d : G) : a * b * (c * d) = a * c * (b * d) := by
@@ -642,6 +642,16 @@ theorem mul_eq_one_iff_eq_inv : a * b = 1 ↔ a = b⁻¹ :=
 @[to_additive]
 theorem mul_eq_one_iff_inv_eq : a * b = 1 ↔ a⁻¹ = b := by
   rw [mul_eq_one_iff_eq_inv, inv_eq_iff_eq_inv]
+
+/-- Variant of `mul_eq_one_iff_eq_inv` with swapped equality. -/
+@[to_additive]
+theorem mul_eq_one_iff_eq_inv' : a * b = 1 ↔ b = a⁻¹ := by
+  rw [mul_eq_one_iff_inv_eq, eq_comm]
+
+/-- Variant of `mul_eq_one_iff_inv_eq` with swapped equality. -/
+@[to_additive]
+theorem mul_eq_one_iff_inv_eq' : a * b = 1 ↔ b⁻¹ = a := by
+  rw [mul_eq_one_iff_eq_inv, eq_comm]
 
 @[to_additive]
 theorem eq_inv_iff_mul_eq_one : a = b⁻¹ ↔ a * b = 1 :=

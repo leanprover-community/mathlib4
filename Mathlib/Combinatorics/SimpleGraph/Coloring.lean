@@ -13,11 +13,11 @@ import Mathlib.Data.Nat.Cast.Order.Ring
 /-!
 # Graph Coloring
 
-This module defines colorings of simple graphs (also known as proper
-colorings in the literature). A graph coloring is the attribution of
-"colors" to all of its vertices such that adjacent vertices have
-different colors. A coloring can be represented as a homomorphism into
-a complete graph, whose vertices represent the colors.
+This module defines colorings of simple graphs (also known as proper colorings in the literature).
+A graph coloring is the attribution of "colors" to all of its vertices such that adjacent vertices
+have different colors.
+A coloring can be represented as a homomorphism into a complete graph, whose vertices represent
+the colors.
 
 ## Main definitions
 
@@ -29,14 +29,12 @@ a complete graph, whose vertices represent the colors.
 * `G.Colorable n` is the proposition that `G` is `n`-colorable, which
   is whether there exists a coloring with at most *n* colors.
 
-* `G.chromaticNumber` is the minimal `n` such that `G` is
-  `n`-colorable, or `⊤` if it cannot be colored with finitely many
-  colors.
+* `G.chromaticNumber` is the minimal `n` such that `G` is `n`-colorable,
+  or `⊤` if it cannot be colored with finitely many colors.
   (Cardinal-valued chromatic numbers are more niche, so we stick to `ℕ∞`.)
   We write `G.chromaticNumber ≠ ⊤` to mean a graph is colorable with finitely many colors.
 
-* `C.colorClass c` is the set of vertices colored by `c : α` in the
-  coloring `C : G.Coloring α`.
+* `C.colorClass c` is the set of vertices colored by `c : α` in the coloring `C : G.Coloring α`.
 
 * `C.colorClasses` is the set containing all color classes.
 
@@ -371,7 +369,7 @@ lemma chromaticNumber_eq_iff_forall_surjective (hG : G.Colorable n) :
 
 theorem chromaticNumber_bot [Nonempty V] : (⊥ : SimpleGraph V).chromaticNumber = 1 := by
   have : (⊥ : SimpleGraph V).Colorable 1 := ⟨.mk 0 <| by simp⟩
-  exact this.chromaticNumber_le.antisymm <| ENat.one_le_iff_pos.2 <| chromaticNumber_pos this
+  exact this.chromaticNumber_le.antisymm <| Order.one_le_iff_pos.2 <| chromaticNumber_pos this
 
 @[simp]
 theorem chromaticNumber_top [Fintype V] : (⊤ : SimpleGraph V).chromaticNumber = Fintype.card V := by

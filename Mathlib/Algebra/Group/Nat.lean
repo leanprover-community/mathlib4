@@ -5,6 +5,7 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.Group.Units
+import Mathlib.Data.Nat.Sqrt
 
 /-!
 # The natural numbers form a monoid

@@ -79,7 +79,7 @@ and binary coproducts are universal. -/
 class FinitaryPreExtensive (C : Type u) [Category.{v} C] : Prop where
   [hasFiniteCoproducts : HasFiniteCoproducts C]
   [hasPullbacksOfInclusions : HasPullbacksOfInclusions C]
-  /-- In a finitary extensive category, all coproducts are van Kampen-/
+  /-- In a finitary extensive category, all coproducts are van Kampen -/
   universal' : ∀ {X Y : C} (c : BinaryCofan X Y), IsColimit c → IsUniversalColimit c
 
 attribute [instance] FinitaryPreExtensive.hasFiniteCoproducts
@@ -90,7 +90,7 @@ and binary coproducts are van Kampen. -/
 class FinitaryExtensive (C : Type u) [Category.{v} C] : Prop where
   [hasFiniteCoproducts : HasFiniteCoproducts C]
   [hasPullbacksOfInclusions : HasPullbacksOfInclusions C]
-  /-- In a finitary extensive category, all coproducts are van Kampen-/
+  /-- In a finitary extensive category, all coproducts are van Kampen -/
   van_kampen' : ∀ {X Y : C} (c : BinaryCofan X Y), IsColimit c → IsVanKampenColimit c
 
 attribute [instance] FinitaryExtensive.hasFiniteCoproducts
