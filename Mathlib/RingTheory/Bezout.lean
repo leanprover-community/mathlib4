@@ -50,14 +50,15 @@ theorem TFAE [IsBezout R] [IsDomain R] :
     List.TFAE
     [IsNoetherianRing R, IsPrincipalIdealRing R, UniqueFactorizationMonoid R, WfDvdMonoid R] := by
   classical
-    tfae_have 1 → 2
-    · intro H; exact ⟨fun I => isPrincipal_of_FG _ (IsNoetherian.noetherian _)⟩
-    tfae_have 2 → 3
-    · intro; infer_instance
-    tfae_have 3 → 4
-    · intro; infer_instance
-    tfae_have 4 → 1
-    · rintro ⟨h⟩
+  tfae
+    1 → 2
+    | H => ⟨fun I => isPrincipal_of_FG _ (IsNoetherian.noetherian _)⟩
+    2 → 3
+    | _ => inferInstance
+    3 → 4
+    | _ => inferInstance
+    4 → 1 := by
+      rintro ⟨h⟩
       rw [isNoetherianRing_iff, isNoetherian_iff_fg_wellFounded]
       refine ⟨RelEmbedding.wellFounded ?_ h⟩
       have : ∀ I : { J : Ideal R // J.FG }, ∃ x : R, (I : Ideal R) = Ideal.span {x} :=
@@ -71,6 +72,5 @@ theorem TFAE [IsBezout R] [IsDomain R] :
             intro a b
             rw [← Ideal.span_singleton_lt_span_singleton, ← hf, ← hf]
             rfl }
-    tfae_finish
 
 end IsBezout

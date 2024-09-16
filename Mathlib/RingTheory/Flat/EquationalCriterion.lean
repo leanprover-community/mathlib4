@@ -125,59 +125,57 @@ theorem tfae_equational_criterion : List.TFAE [
         ∃ (κ : Type u) (_ : Fintype κ) (a : N →ₗ[R] (κ →₀ R)) (y : (κ →₀ R) →ₗ[R] M),
           x = y ∘ₗ a ∧ a f = 0] := by
   classical
-  tfae_have 1 ↔ 2
-  · exact iff_rTensor_injective' R M
-  tfae_have 3 ↔ 2
-  · exact forall_vanishesTrivially_iff_forall_rTensor_injective R
-  tfae_have 3 ↔ 4
-  · simp [(TensorProduct.lid R M).injective.eq_iff.symm, isTrivialRelation_iff_vanishesTrivially]
-  tfae_have 4 → 5
-  · intro h₄ ι hι f x hfx
-    let f' : ι → R := f
-    let x' : ι → M := fun i ↦ x (single i 1)
-    have := calc
-      ∑ i, f' i • x' i
-      _ = ∑ i, f i • x (single i 1)         := rfl
-      _ = x (∑ i, f i • Finsupp.single i 1) := by simp_rw [map_sum, map_smul]
-      _ = x f                               := by
-        simp_rw [smul_single, smul_eq_mul, mul_one, univ_sum_single]
-      _ = 0                                 := hfx
-    obtain ⟨κ, hκ, a', y', ⟨ha'y', ha'⟩⟩ := h₄ this
-    use κ, hκ
-    use Finsupp.linearCombination R (fun i ↦ equivFunOnFinite.symm (a' i))
-    use Finsupp.linearCombination R y'
-    constructor
-    · apply Finsupp.basisSingleOne.ext
-      intro i
-      simpa [linearCombination_apply, sum_fintype, Finsupp.single_apply] using ha'y' i
-    · ext j
-      simp only [linearCombination_apply, zero_smul, implies_true, sum_fintype, finset_sum_apply]
-      exact ha' j
-  tfae_have 5 → 4
-  · intro h₅ ι hi f x hfx
-    let f' : ι →₀ R := equivFunOnFinite.symm f
-    let x' : (ι →₀ R) →ₗ[R] M := Finsupp.linearCombination R x
-    have : x' f' = 0 := by simpa [x', f', linearCombination_apply, sum_fintype] using hfx
-    obtain ⟨κ, hκ, a', y', ha'y', ha'⟩ := h₅ this
-    refine ⟨κ, hκ, fun i ↦ a' (single i 1), fun j ↦ y' (single j 1), fun i ↦ ?_, fun j ↦ ?_⟩
-    · simpa [x', ← map_smul, ← map_sum, smul_single] using
-        LinearMap.congr_fun ha'y' (Finsupp.single i 1)
-    · simp_rw [← smul_eq_mul, ← Finsupp.smul_apply, ← map_smul, ← finset_sum_apply, ← map_sum,
-        smul_single, smul_eq_mul, mul_one,
-        ← (fun _ ↦ equivFunOnFinite_symm_apply_toFun _ _ : ∀ x, f' x = f x), univ_sum_single]
-      simpa using DFunLike.congr_fun ha' j
-  tfae_have 5 → 6
-  · intro h₅ N _ _ _ _ f x hfx
-    have ϕ := Module.Free.repr R N
-    have : (x ∘ₗ ϕ.symm) (ϕ f) = 0 := by simpa
-    obtain ⟨κ, hκ, a', y, ha'y, ha'⟩ := h₅ this
-    refine ⟨κ, hκ, a' ∘ₗ ϕ, y, ?_, ?_⟩
-    · simpa [LinearMap.comp_assoc] using congrArg (fun g ↦ (g ∘ₗ ϕ : N →ₗ[R] M)) ha'y
-    · simpa using ha'
-  tfae_have 6 → 5
-  · intro h₆ _ _ _ _ hfx
-    exact h₆ hfx
-  tfae_finish
+  tfae
+    1 ↔ 2 := iff_rTensor_injective' R M
+    3 ↔ 2 := forall_vanishesTrivially_iff_forall_rTensor_injective R
+    3 ↔ 4 := by
+      simp [(TensorProduct.lid R M).injective.eq_iff.symm, isTrivialRelation_iff_vanishesTrivially]
+    4 → 5 := by
+      intro h₄ ι hι f x hfx
+      let f' : ι → R := f
+      let x' : ι → M := fun i ↦ x (single i 1)
+      have := calc
+        ∑ i, f' i • x' i
+        _ = ∑ i, f i • x (single i 1)         := rfl
+        _ = x (∑ i, f i • Finsupp.single i 1) := by simp_rw [map_sum, map_smul]
+        _ = x f                               := by
+          simp_rw [smul_single, smul_eq_mul, mul_one, univ_sum_single]
+        _ = 0                                 := hfx
+      obtain ⟨κ, hκ, a', y', ⟨ha'y', ha'⟩⟩ := h₄ this
+      use κ, hκ
+      use Finsupp.linearCombination R (fun i ↦ equivFunOnFinite.symm (a' i))
+      use Finsupp.linearCombination R y'
+      constructor
+      · apply Finsupp.basisSingleOne.ext
+        intro i
+        simpa [linearCombination_apply, sum_fintype, Finsupp.single_apply] using ha'y' i
+      · ext j
+        simp only [linearCombination_apply, zero_smul, implies_true, sum_fintype, finset_sum_apply]
+        exact ha' j
+    5 → 4 := by
+      intro h₅ ι hi f x hfx
+      let f' : ι →₀ R := equivFunOnFinite.symm f
+      let x' : (ι →₀ R) →ₗ[R] M := Finsupp.linearCombination R x
+      have : x' f' = 0 := by simpa [x', f', linearCombination_apply, sum_fintype] using hfx
+      obtain ⟨κ, hκ, a', y', ha'y', ha'⟩ := h₅ this
+      refine ⟨κ, hκ, fun i ↦ a' (single i 1), fun j ↦ y' (single j 1), fun i ↦ ?_, fun j ↦ ?_⟩
+      · simpa [x', ← map_smul, ← map_sum, smul_single] using
+          LinearMap.congr_fun ha'y' (Finsupp.single i 1)
+      · simp_rw [← smul_eq_mul, ← Finsupp.smul_apply, ← map_smul, ← finset_sum_apply, ← map_sum,
+          smul_single, smul_eq_mul, mul_one,
+          ← (fun _ ↦ equivFunOnFinite_symm_apply_toFun _ _ : ∀ x, f' x = f x), univ_sum_single]
+        simpa using DFunLike.congr_fun ha' j
+    5 → 6 := by
+      intro h₅ N _ _ _ _ f x hfx
+      have ϕ := Module.Free.repr R N
+      have : (x ∘ₗ ϕ.symm) (ϕ f) = 0 := by simpa
+      obtain ⟨κ, hκ, a', y, ha'y, ha'⟩ := h₅ this
+      refine ⟨κ, hκ, a' ∘ₗ ϕ, y, ?_, ?_⟩
+      · simpa [LinearMap.comp_assoc] using congrArg (fun g ↦ (g ∘ₗ ϕ : N →ₗ[R] M)) ha'y
+      · simpa using ha'
+    6 → 5 := by
+      intro h₆ _ _ _ _ hfx
+      exact h₆ hfx
 
 /-- **Equational criterion for flatness** [Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK).
 

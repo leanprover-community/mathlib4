@@ -41,13 +41,11 @@ theorem effectiveEpi_tfae
     , Epi π
     , Function.Surjective π
     ] := by
-  tfae_have 1 → 2
-  · intro; infer_instance
-  tfae_have 2 ↔ 3
-  · exact epi_iff_surjective π
-  tfae_have 3 → 1
-  · exact fun hπ ↦ ⟨⟨effectiveEpiStruct π hπ⟩⟩
-  tfae_finish
+  tfae
+    1 → 2
+    | _ => inferInstance
+    2 ↔ 3 := epi_iff_surjective π
+    3 → 1 := fun hπ ↦ ⟨⟨effectiveEpiStruct π hπ⟩⟩
 
 instance : Preregular CompHaus :=
   preregular fun _ _ _ ↦ ((effectiveEpi_tfae _).out 0 2).mp
@@ -64,39 +62,40 @@ theorem effectiveEpiFamily_tfae
     , Epi (Sigma.desc π)
     , ∀ b : B, ∃ (a : α) (x : X a), π a x = b
     ] := by
-  tfae_have 2 → 1
-  · intro
-    simpa [← effectiveEpi_desc_iff_effectiveEpiFamily, (effectiveEpi_tfae (Sigma.desc π)).out 0 1]
-  tfae_have 1 → 2
-  · intro; infer_instance
-  tfae_have 3 → 2
-  · intro e
-    rw [epi_iff_surjective]
-    intro b
-    obtain ⟨t, x, h⟩ := e b
-    refine ⟨Sigma.ι X t x, ?_⟩
-    change (Sigma.ι X t ≫ Sigma.desc π) x = _
-    simpa using h
-  tfae_have 2 → 3
-  · intro e; rw [epi_iff_surjective] at e
-    let i : ∐ X ≅ finiteCoproduct X :=
-      (colimit.isColimit _).coconePointUniqueUpToIso (finiteCoproduct.isColimit _)
-    intro b
-    obtain ⟨t, rfl⟩ := e b
-    let q := i.hom t
-    refine ⟨q.1,q.2,?_⟩
-    have : t = i.inv (i.hom t) := show t = (i.hom ≫ i.inv) t by simp only [i.hom_inv_id]; rfl
-    rw [this]
-    show _ = (i.inv ≫ Sigma.desc π) (i.hom t)
-    suffices i.inv ≫ Sigma.desc π = finiteCoproduct.desc X π by
-      rw [this]; rfl
-    rw [Iso.inv_comp_eq]
-    apply colimit.hom_ext
-    rintro ⟨a⟩
-    simp only [i, Discrete.functor_obj, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app,
-      colimit.comp_coconePointUniqueUpToIso_hom_assoc]
-    ext; rfl
-  tfae_finish
+  tfae
+    2 → 1
+    | _ => by
+      simpa [← effectiveEpi_desc_iff_effectiveEpiFamily, (effectiveEpi_tfae (Sigma.desc π)).out 0 1]
+    1 → 2
+    | _ => inferInstance
+    3 → 2
+    | e => by
+      rw [epi_iff_surjective]
+      intro b
+      obtain ⟨t, x, h⟩ := e b
+      refine ⟨Sigma.ι X t x, ?_⟩
+      change (Sigma.ι X t ≫ Sigma.desc π) x = _
+      simpa using h
+    2 → 3
+    | e => by
+      rw [epi_iff_surjective] at e
+      let i : ∐ X ≅ finiteCoproduct X :=
+        (colimit.isColimit _).coconePointUniqueUpToIso (finiteCoproduct.isColimit _)
+      intro b
+      obtain ⟨t, rfl⟩ := e b
+      let q := i.hom t
+      refine ⟨q.1,q.2,?_⟩
+      have : t = i.inv (i.hom t) := show t = (i.hom ≫ i.inv) t by simp only [i.hom_inv_id]; rfl
+      rw [this]
+      show _ = (i.inv ≫ Sigma.desc π) (i.hom t)
+      suffices i.inv ≫ Sigma.desc π = finiteCoproduct.desc X π by
+        rw [this]; rfl
+      rw [Iso.inv_comp_eq]
+      apply colimit.hom_ext
+      rintro ⟨a⟩
+      simp only [i, Discrete.functor_obj, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app,
+        colimit.comp_coconePointUniqueUpToIso_hom_assoc]
+      ext; rfl
 
 theorem effectiveEpiFamily_of_jointly_surjective
     {α : Type} [Finite α] {B : CompHaus.{u}}

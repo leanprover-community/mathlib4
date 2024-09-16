@@ -37,13 +37,11 @@ theorem effectiveEpi_tfae
     , Epi π
     , Function.Surjective π
     ] := by
-  tfae_have 1 → 2
-  · intro; infer_instance
-  tfae_have 2 ↔ 3
-  · exact epi_iff_surjective π
-  tfae_have 3 → 1
-  · exact fun hπ ↦ ⟨⟨CompHausLike.effectiveEpiStruct π hπ⟩⟩
-  tfae_finish
+  tfae
+    1 → 2
+    | _ => inferInstance
+    2 ↔ 3 := epi_iff_surjective π
+    3 → 1 := fun hπ ↦ ⟨⟨CompHausLike.effectiveEpiStruct π hπ⟩⟩
 
 instance : profiniteToCompHaus.PreservesEffectiveEpis where
   preserves f h :=
@@ -79,17 +77,18 @@ theorem effectiveEpiFamily_tfae
     , Epi (Sigma.desc π)
     , ∀ b : B, ∃ (a : α) (x : X a), π a x = b
     ] := by
-  tfae_have 2 → 1
-  · intro
-    simpa [← effectiveEpi_desc_iff_effectiveEpiFamily, (effectiveEpi_tfae (Sigma.desc π)).out 0 1]
-  tfae_have 1 → 2
-  · intro; infer_instance
-  tfae_have 3 ↔ 1
-  · erw [((CompHaus.effectiveEpiFamily_tfae
-      (fun a ↦ profiniteToCompHaus.obj (X a)) (fun a ↦ profiniteToCompHaus.map (π a))).out 2 0 : )]
-    exact ⟨fun h ↦ profiniteToCompHaus.finite_effectiveEpiFamily_of_map _ _ h,
-      fun _ ↦ inferInstance⟩
-  tfae_finish
+  tfae
+    2 → 1
+    | _ => by
+      simpa [← effectiveEpi_desc_iff_effectiveEpiFamily, (effectiveEpi_tfae (Sigma.desc π)).out 0 1]
+    1 → 2 := by
+      intro; infer_instance
+    3 ↔ 1 := by
+      erw [(CompHaus.effectiveEpiFamily_tfae
+        (fun a ↦ profiniteToCompHaus.obj (X a))
+        (fun a ↦ profiniteToCompHaus.map (π a)) |>.out 2 0 : )]
+      exact ⟨fun h ↦ profiniteToCompHaus.finite_effectiveEpiFamily_of_map _ _ h,
+        fun _ ↦ inferInstance⟩
 
 theorem effectiveEpiFamily_of_jointly_surjective
     {α : Type} [Finite α] {B : Profinite.{u}}

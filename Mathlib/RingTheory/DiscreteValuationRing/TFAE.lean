@@ -166,38 +166,32 @@ theorem tfae_of_isNoetherianRing_of_localRing_of_isDomain
         (maximalIdeal R).IsPrincipal,
         finrank (ResidueField R) (CotangentSpace R) ≤ 1,
         ∀ (I) (_ : I ≠ ⊥), ∃ n : ℕ, I = maximalIdeal R ^ n] := by
-  tfae_have 1 → 2
-  · exact fun _ ↦ inferInstance
-  tfae_have 2 → 1
-  · exact fun _ ↦ ((IsBezout.TFAE (R := R)).out 0 1).mp ‹_›
-  tfae_have 1 → 4
-  · intro H
-    exact ⟨inferInstance, fun P hP hP' ↦ eq_maximalIdeal (hP'.isMaximal hP)⟩
-  tfae_have 4 → 3
-  · exact fun ⟨h₁, h₂⟩ ↦ { h₁ with maximalOfPrime := (h₂ _ · · ▸ maximalIdeal.isMaximal R) }
-  tfae_have 3 → 5
-  · exact fun h ↦ maximalIdeal_isPrincipal_of_isDedekindDomain R
-  tfae_have 6 ↔ 5
-  · exact finrank_cotangentSpace_le_one_iff
-  tfae_have 5 → 7
-  · exact exists_maximalIdeal_pow_eq_of_principal R
-  tfae_have 7 → 2
-  · rw [ValuationRing.iff_ideal_total]
-    intro H
-    constructor
-    intro I J
-    -- `by_cases` should invoke `classical` by itself if it can't find a `Decidable` instance,
-    -- however the `tfae` hypotheses trigger a looping instance search.
-    -- See also:
-    -- https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/.60by_cases.60.20trying.20to.20find.20a.20weird.20instance
-    -- As a workaround, add the desired instance ourselves.
-    let _ := Classical.decEq (Ideal R)
-    by_cases hI : I = ⊥; · subst hI; left; exact bot_le
-    by_cases hJ : J = ⊥; · subst hJ; right; exact bot_le
-    obtain ⟨n, rfl⟩ := H I hI
-    obtain ⟨m, rfl⟩ := H J hJ
-    exact (le_total m n).imp Ideal.pow_le_pow_right Ideal.pow_le_pow_right
-  tfae_finish
+  tfae
+    1 → 2 := fun _ ↦ inferInstance
+    2 → 1 := fun _ ↦ ((IsBezout.TFAE (R := R)).out 0 1).mp ‹_›
+    1 → 4
+    | H => ⟨inferInstance, fun P hP hP' ↦ eq_maximalIdeal (hP'.isMaximal hP)⟩
+    4 → 3 :=
+      fun ⟨h₁, h₂⟩ ↦ { h₁ with maximalOfPrime := (h₂ _ · · ▸ maximalIdeal.isMaximal R) }
+    3 → 5 := fun h ↦ maximalIdeal_isPrincipal_of_isDedekindDomain R
+    6 ↔ 5 := finrank_cotangentSpace_le_one_iff
+    5 → 7 := exists_maximalIdeal_pow_eq_of_principal R
+    7 → 2 := by
+      rw [ValuationRing.iff_ideal_total]
+      intro H
+      constructor
+      intro I J
+      -- `by_cases` should invoke `classical` by itself if it can't find a `Decidable` instance,
+      -- however the `tfae` hypotheses trigger a looping instance search.
+      -- See also:
+      -- https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/.60by_cases.60.20trying.20to.20find.20a.20weird.20instance
+      -- As a workaround, add the desired instance ourselves.
+      let _ := Classical.decEq (Ideal R)
+      by_cases hI : I = ⊥; · subst hI; left; exact bot_le
+      by_cases hJ : J = ⊥; · subst hJ; right; exact bot_le
+      obtain ⟨n, rfl⟩ := H I hI
+      obtain ⟨m, rfl⟩ := H J hJ
+      exact (le_total m n).imp Ideal.pow_le_pow_right Ideal.pow_le_pow_right
 
 /--
 The following are equivalent for a
