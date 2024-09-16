@@ -233,7 +233,7 @@ theorem tendsto_setIntegral_of_monotone {ι : Type*} [Countable ι] [Semilattice
   rw [mem_closedBall_iff_norm', ← integral_diff (hsm i) hfi hsub, ← coe_nnnorm, NNReal.coe_le_coe, ←
     ENNReal.coe_le_coe]
   refine (ennnorm_integral_le_lintegral_ennnorm _).trans ?_
-  rw [← withDensity_apply _ (hSm.diff (hsm _)), ← hν, measure_diff hsub (hsm _)]
+  rw [← withDensity_apply _ (hSm.diff (hsm _)), ← hν, measure_diff hsub (hsm _).nullMeasurableSet]
   exacts [tsub_le_iff_tsub_le.mp hi.1,
     (hi.2.trans_lt <| ENNReal.add_lt_top.2 ⟨hfi', ENNReal.coe_lt_top⟩).ne]
 
@@ -255,14 +255,15 @@ theorem tendsto_setIntegral_of_antitone {ι : Type*} [Countable ι] [Semilattice
     simpa [hsm i₀, ν, ENNReal.ofReal, norm_toNNReal] using hi₀.norm.lintegral_lt_top.ne
   have νS : ν S ≠ ∞ := ((measure_mono (hsub i₀)).trans_lt νi₀.lt_top).ne
   have : ∀ᶠ i in atTop, ν (s i) ∈ Icc (ν S - ε) (ν S + ε) := by
-    apply tendsto_measure_iInter hsm h_anti ⟨i₀, νi₀⟩
+    apply tendsto_measure_iInter (fun i ↦ (hsm i).nullMeasurableSet) h_anti ⟨i₀, νi₀⟩
     apply ENNReal.Icc_mem_nhds νS (ENNReal.coe_pos.2 ε0).ne'
   filter_upwards [this, Ici_mem_atTop i₀] with i hi h'i
   rw [mem_closedBall_iff_norm, ← integral_diff hSm (hi₀.mono_set (h_anti h'i)) (hsub i),
     ← coe_nnnorm, NNReal.coe_le_coe, ← ENNReal.coe_le_coe]
   refine (ennnorm_integral_le_lintegral_ennnorm _).trans ?_
-  rw [← withDensity_apply _ ((hsm _).diff hSm), ← hν, measure_diff (hsub i) hSm νS]
-  exact tsub_le_iff_left.2 hi.2
+  rw [← withDensity_apply _ ((hsm _).diff hSm), ← hν,
+    measure_diff_le_iff_le_add hSm.nullMeasurableSet (hsub i) νS]
+  exact hi.2
 
 @[deprecated (since := "2024-04-17")]
 alias tendsto_set_integral_of_antitone := tendsto_setIntegral_of_antitone
@@ -377,7 +378,7 @@ theorem setIntegral_eq_of_subset_of_ae_diff_eq_zero_aux (hts : s ⊆ t)
       intro h'x
       by_cases xs : x ∈ s
       · simp only [xs, hts xs]
-      · simp only [xs, iff_false_iff]
+      · simp only [xs, iff_false]
         intro xt
         exact h'x (hx ⟨xt, xs⟩)
     _ = ∫ x in s ∩ k, f x ∂μ + ∫ x in s \ k, f x ∂μ := by
@@ -1615,3 +1616,5 @@ lemma continuousOn_integral_of_compact_support
     hk hf hfs (integrableOn_const.2 (Or.inr hk.measure_lt_top)) (μ := μ) (g := fun _ ↦ 1)
 
 end ParametricIntegral
+
+set_option linter.style.longFile 1700

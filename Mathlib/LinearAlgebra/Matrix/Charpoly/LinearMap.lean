@@ -28,7 +28,7 @@ variable (b : ι → M)
 open Polynomial Matrix
 
 /-- The composition of a matrix (as an endomorphism of `ι → R`) with the projection
-`(ι → R) →ₗ[R] M`.  -/
+`(ι → R) →ₗ[R] M`. -/
 def PiToModule.fromMatrix [DecidableEq ι] : Matrix ι ι R →ₗ[R] (ι → R) →ₗ[R] M :=
   (LinearMap.llcomp R _ _ _ (Fintype.linearCombination R R b)).comp algEquivMatrix'.symm.toLinearMap
 
@@ -71,7 +71,7 @@ section
 variable {R} [DecidableEq ι]
 
 /-- We say that a matrix represents an endomorphism of `M` if the matrix acting on `ι → R` is
-equal to `f` via the projection `(ι → R) →ₗ[R] M` given by a fixed (spanning) set.  -/
+equal to `f` via the projection `(ι → R) →ₗ[R] M` given by a fixed (spanning) set. -/
 def Matrix.Represents (A : Matrix ι ι R) (f : Module.End R M) : Prop :=
   PiToModule.fromMatrix R b A = PiToModule.fromEnd R b f
 

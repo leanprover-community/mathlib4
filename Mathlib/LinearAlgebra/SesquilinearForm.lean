@@ -460,7 +460,7 @@ end AddCommGroup
 
 end AdjointPair
 
-/-! ### Self-adjoint pairs-/
+/-! ### Self-adjoint pairs -/
 
 
 section SelfadjointPair

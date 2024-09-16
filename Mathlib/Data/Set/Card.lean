@@ -544,7 +544,7 @@ theorem nonempty_of_ncard_ne_zero (hs : s.ncard ≠ 0) : s.Nonempty := by
   rw [nonempty_iff_ne_empty]; rintro rfl; simp at hs
 
 @[simp] theorem ncard_singleton (a : α) : ({a} : Set α).ncard = 1 := by
-  simpa [ncard, encard_singleton] using ENat.toNat_coe 1
+  simp [ncard]
 
 theorem ncard_singleton_inter (a : α) (s : Set α) : ({a} ∩ s).ncard ≤ 1 := by
   rw [← Nat.cast_le (α := ℕ∞), (toFinite _).cast_ncard_eq, Nat.cast_one]
@@ -615,6 +615,15 @@ theorem ncard_exchange' {a b : α} (ha : a ∉ s) (hb : b ∈ s) :
     (insert a s \ {b}).ncard = s.ncard := by
   rw [← ncard_exchange ha hb, ← singleton_union, ← singleton_union, union_diff_distrib,
     @diff_singleton_eq_self _ b {a} fun h ↦ ha (by rwa [← mem_singleton_iff.mp h])]
+
+lemma odd_card_insert_iff {a : α} (hs : s.Finite := by toFinite_tac) (ha : a ∉ s) :
+    Odd (insert a s).ncard ↔ Even s.ncard := by
+  rw [ncard_insert_of_not_mem ha hs, Nat.odd_add]
+  simp only [Nat.odd_add, ← Nat.not_even_iff_odd, Nat.not_even_one, iff_false, Decidable.not_not]
+
+lemma even_card_insert_iff {a : α} (hs : s.Finite := by toFinite_tac) (ha : a ∉ s) :
+    Even (insert a s).ncard ↔ Odd s.ncard := by
+  rw [ncard_insert_of_not_mem ha hs, Nat.even_add_one, Nat.not_even_iff_odd]
 
 end InsertErase
 
@@ -753,7 +762,7 @@ theorem surj_on_of_inj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
   have hft := ht.fintype
   have hft' := Fintype.ofInjective f' finj
   set f'' : ∀ a, a ∈ s.toFinset → β := fun a h ↦ f a (by simpa using h)
-  convert @Finset.surj_on_of_inj_on_of_card_le _ _ _ t.toFinset f'' _ _ _ _ (by simpa)
+  convert @Finset.surj_on_of_inj_on_of_card_le _ _ _ t.toFinset f'' _ _ _ _ (by simpa) using 1
   · simp
   · simp [hf]
   · intros a₁ a₂ ha₁ ha₂ h
@@ -947,7 +956,8 @@ theorem exists_eq_insert_iff_ncard (hs : s.Finite := by toFinite_tac) :
     convert Iff.rfl using 2; simp only [Finite.mem_toFinset]
     ext x
     simp [Finset.ext_iff, Set.ext_iff]
-  simp only [ht.ncard, exists_prop, add_eq_zero, and_false, iff_false, not_exists, not_and]
+  simp only [ht.ncard, exists_prop, add_eq_zero, and_false, iff_false, not_exists, not_and,
+    reduceCtorEq]
   rintro x - rfl
   exact ht (hs.insert x)
 
@@ -990,6 +1000,12 @@ theorem one_lt_ncard_iff (hs : s.Finite := by toFinite_tac) :
     1 < s.ncard ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b := by
   rw [one_lt_ncard hs]
   simp only [exists_prop, exists_and_left]
+
+lemma one_lt_ncard_of_nonempty_of_even (hs : Set.Finite s) (hn : Set.Nonempty s := by toFinite_tac)
+    (he : Even (s.ncard)) : 1 < s.ncard := by
+  rw [← Set.ncard_pos hs] at hn
+  have : s.ncard ≠ 1 := fun h ↦ by simp [h] at he
+  omega
 
 theorem two_lt_ncard_iff (hs : s.Finite := by toFinite_tac) :
     2 < s.ncard ↔ ∃ a b c, a ∈ s ∧ b ∈ s ∧ c ∈ s ∧ a ≠ b ∧ a ≠ c ∧ b ≠ c := by

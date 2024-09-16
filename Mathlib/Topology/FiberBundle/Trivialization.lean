@@ -74,7 +74,7 @@ variable (e : Pretrivialization F proj) {x : Z}
 /-- Coercion of a pretrivialization to a function. We don't use `e.toFun` in the `CoeFun` instance
 because it is actually `e.toPartialEquiv.toFun`, so `simp` will apply lemmas about
 `toPartialEquiv`. While we may want to switch to this behavior later, doing it mid-port will break a
-lot of proofs.  -/
+lot of proofs. -/
 @[coe] def toFun' : Z → (B × F) := e.toFun
 
 instance : CoeFun (Pretrivialization F proj) fun _ => Z → B × F := ⟨toFun'⟩
@@ -168,7 +168,7 @@ theorem preimage_symm_proj_inter (s : Set B) :
     e.toPartialEquiv.symm ⁻¹' (proj ⁻¹' s) ∩ e.baseSet ×ˢ univ = (s ∩ e.baseSet) ×ˢ univ := by
   ext ⟨x, y⟩
   suffices x ∈ e.baseSet → (proj (e.toPartialEquiv.symm (x, y)) ∈ s ↔ x ∈ s) by
-    simpa only [prod_mk_mem_set_prod_eq, mem_inter_iff, and_true_iff, mem_univ, and_congr_left_iff]
+    simpa only [prod_mk_mem_set_prod_eq, mem_inter_iff, and_true, mem_univ, and_congr_left_iff]
   intro h
   rw [e.proj_symm_apply' h]
 
@@ -282,7 +282,7 @@ lemma ext' (e e' : Trivialization F proj) (h₁ : e.toPartialHomeomorph = e'.toP
 /-- Coercion of a trivialization to a function. We don't use `e.toFun` in the `CoeFun` instance
 because it is actually `e.toPartialEquiv.toFun`, so `simp` will apply lemmas about
 `toPartialEquiv`. While we may want to switch to this behavior later, doing it mid-port will break a
-lot of proofs.  -/
+lot of proofs. -/
 @[coe] def toFun' : Z → (B × F) := e.toFun
 
 /-- Natural identification as a `Pretrivialization`. -/
@@ -465,7 +465,7 @@ theorem preimageSingletonHomeomorph_symm_apply {b : B} (hb : b ∈ e.baseSet) (p
       ⟨e.symm (b, p), by rw [mem_preimage, e.proj_symm_apply' hb, mem_singleton_iff]⟩ :=
   rfl
 
-/-- In the domain of a bundle trivialization, the projection is continuous-/
+/-- In the domain of a bundle trivialization, the projection is continuous -/
 theorem continuousAt_proj (ex : x ∈ e.source) : ContinuousAt proj x :=
   (e.map_proj_nhds ex).le
 
@@ -475,7 +475,7 @@ protected def compHomeomorph {Z' : Type*} [TopologicalSpace Z'] (h : Z' ≃ₜ Z
   toPartialHomeomorph := h.toPartialHomeomorph.trans e.toPartialHomeomorph
   baseSet := e.baseSet
   open_baseSet := e.open_baseSet
-  source_eq := by simp [source_eq, preimage_preimage, (· ∘ ·)]
+  source_eq := by simp [source_eq, preimage_preimage, Function.comp_def]
   target_eq := by simp [target_eq]
   proj_toFun p hp := by
     have hp : h p ∈ e.source := by simpa using hp

@@ -82,7 +82,7 @@ class Inner (𝕜 E : Type*) where
 export Inner (inner)
 
 /-- The inner product with values in `𝕜`. -/
-notation3:max "⟪" x ", " y "⟫_" 𝕜:max => @inner 𝕜 _ _ x y
+scoped[InnerProductSpace] notation3:max "⟪" x ", " y "⟫_" 𝕜:max => @inner 𝕜 _ _ x y
 
 section Notations
 
@@ -447,7 +447,7 @@ theorem inner_self_eq_zero {x : F} : ⟪x, x⟫ = 0 ↔ x = 0 :=
 
 theorem normSq_eq_zero {x : F} : normSqF x = 0 ↔ x = 0 :=
   Iff.trans
-    (by simp only [normSq, ext_iff, map_zero, inner_self_im, eq_self_iff_true, and_true_iff])
+    (by simp only [normSq, ext_iff, map_zero, inner_self_im, eq_self_iff_true, and_true])
     (@inner_self_eq_zero 𝕜 _ _ _ _ _ x)
 
 theorem inner_self_ne_zero {x : F} : ⟪x, x⟫ ≠ 0 ↔ x ≠ 0 :=
@@ -508,8 +508,9 @@ end
 
 /-! ### Properties of inner product spaces -/
 
-
 section BasicProperties_Seminormed
+
+open scoped InnerProductSpace
 
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
@@ -754,6 +755,7 @@ variable {𝕜}
 theorem inner_self_nonpos {x : E} : re ⟪x, x⟫ ≤ 0 ↔ x = 0 := by
   rw [← norm_sq_eq_inner, (sq_nonneg _).le_iff_eq, sq_eq_zero_iff, norm_eq_zero]
 
+open scoped InnerProductSpace in
 theorem real_inner_self_nonpos {x : F} : ⟪x, x⟫_ℝ ≤ 0 ↔ x = 0 :=
   @inner_self_nonpos ℝ F _ _ _ x
 
@@ -1024,6 +1026,8 @@ theorem Orthonormal.ne_zero {v : ι → E} (hv : Orthonormal 𝕜 v) (i : ι) : 
 end OrthonormalSets
 
 section Norm_Seminormed
+
+open scoped InnerProductSpace
 
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
@@ -1576,6 +1580,8 @@ end Norm_Seminormed
 
 section Norm
 
+open scoped InnerProductSpace
+
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 variable {ι : Type*} {ι' : Type*} {ι'' : Type*}
@@ -1816,7 +1822,7 @@ theorem inner_sum_smul_sum_smul_of_sum_eq_zero {ι₁ : Type*} {s₁ : Finset ι
 variable (𝕜)
 
 /-- `innerSL` is an isometry. Note that the associated `LinearIsometry` is defined in
-`InnerProductSpace.Dual` as `toDualMap`.  -/
+`InnerProductSpace.Dual` as `toDualMap`. -/
 @[simp]
 theorem innerSL_apply_norm (x : E) : ‖innerSL 𝕜 x‖ = ‖x‖ := by
   refine
@@ -2196,6 +2202,8 @@ end OrthogonalFamily
 
 section RCLikeToReal
 
+open scoped InnerProductSpace
+
 variable {G : Type*}
 variable (𝕜 E)
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
@@ -2416,3 +2424,5 @@ instance innerProductSpace : InnerProductSpace 𝕜 (Completion E) where
 end UniformSpace.Completion
 
 end UniformSpace.Completion
+
+set_option linter.style.longFile 2500

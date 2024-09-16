@@ -595,7 +595,7 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
     · simp [lp.eq_zero' f]
     have hcf := lp.isLUB_norm (c • f)
     have hfc := (lp.isLUB_norm f).mul_left (norm_nonneg c)
-    simp_rw [← Set.range_comp, Function.comp] at hfc
+    simp_rw [← Set.range_comp, Function.comp_def] at hfc
     -- TODO: some `IsLUB` API should make it a one-liner from here.
     refine hcf.right ?_
     have := hfc.left

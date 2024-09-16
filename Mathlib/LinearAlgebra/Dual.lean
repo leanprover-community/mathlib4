@@ -1079,7 +1079,7 @@ theorem dualAnnihilator_dualAnnihilator_eq (W : Subspace K V) :
   rw [dualCoannihilator, ← Module.mapEvalEquiv_symm_apply] at this
   rwa [← OrderIso.symm_apply_eq]
 
-/-- The quotient by the dual is isomorphic to its dual annihilator.  -/
+/-- The quotient by the dual is isomorphic to its dual annihilator. -/
 -- Porting note (#11036): broken dot notation lean4#1910 LinearMap.range
 noncomputable def quotDualEquivAnnihilator (W : Subspace K V) :
     (Module.Dual K V ⧸ LinearMap.range W.dualLift) ≃ₗ[K] W.dualAnnihilator :=
@@ -1747,3 +1747,5 @@ noncomputable def dualDistribEquiv : Dual R M ⊗[R] Dual R N ≃ₗ[R] Dual R (
   dualDistribEquivOfBasis (Module.Free.chooseBasis R M) (Module.Free.chooseBasis R N)
 
 end TensorProduct
+
+set_option linter.style.longFile 1900

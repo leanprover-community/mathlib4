@@ -9,6 +9,7 @@ import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Subtype
 import Mathlib.Data.Sum.Basic
+import Mathlib.Init.Algebra.Classes
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Function.Conjugate
 import Mathlib.Tactic.Coe
@@ -380,8 +381,8 @@ def sumSumSumComm (α β γ δ) : (α ⊕ β) ⊕ γ ⊕ δ ≃ (α ⊕ γ) ⊕ 
       ∘ (Sum.map (Sum.map (@id α) (sumComm β γ).symm) (@id δ))
       ∘ (Sum.map (sumAssoc α γ β) (@id δ))
       ∘ (sumAssoc (α ⊕ γ) β δ).symm
-  left_inv x := by simp [Function.comp]
-  right_inv x := by simp [Function.comp]
+  left_inv x := by rcases x with ((a | b) | (c | d)) <;> simp
+  right_inv x := by rcases x with ((a | c) | (b | d)) <;> simp
 
 @[simp]
 theorem sumSumSumComm_symm (α β γ δ) : (sumSumSumComm α β γ δ).symm = sumSumSumComm α γ β δ :=
@@ -494,7 +495,7 @@ the sum of the two subtypes `{a // p a}` and its complement `{a // ¬ p a}`
 is naturally equivalent to `α`.
 
 See `subtypeOrEquiv` for sum types over subtypes `{x // p x}` and `{x // q x}`
-that are not necessarily `IsCompl p q`.  -/
+that are not necessarily `IsCompl p q`. -/
 def sumCompl {α : Type*} (p : α → Prop) [DecidablePred p] :
     { a // p a } ⊕ { a // ¬p a } ≃ α where
   toFun := Sum.elim Subtype.val Subtype.val
@@ -1733,9 +1734,13 @@ instance [Std.Associative f] : Std.Associative (e.arrowCongr (e.arrowCongr e) f)
 instance [Std.IdempotentOp f] : Std.IdempotentOp (e.arrowCongr (e.arrowCongr e) f) :=
   (e.semiconj₂_conj f).isIdempotent_right e.surjective
 
+set_option linter.deprecated false in
+@[deprecated (since := "2024-09-11")]
 instance [IsLeftCancel α₁ f] : IsLeftCancel β₁ (e.arrowCongr (e.arrowCongr e) f) :=
   ⟨e.surjective.forall₃.2 fun x y z => by simpa using @IsLeftCancel.left_cancel _ f _ x y z⟩
 
+set_option linter.deprecated false in
+@[deprecated (since := "2024-09-11")]
 instance [IsRightCancel α₁ f] : IsRightCancel β₁ (e.arrowCongr (e.arrowCongr e) f) :=
   ⟨e.surjective.forall₃.2 fun x y z => by simpa using @IsRightCancel.right_cancel _ f _ x y z⟩
 
@@ -1832,3 +1837,5 @@ theorem piCongrLeft'_symm_update [DecidableEq α] [DecidableEq β] (P : α → S
   simp [(e.piCongrLeft' P).symm_apply_eq, piCongrLeft'_update]
 
 end Function
+
+set_option linter.style.longFile 2000

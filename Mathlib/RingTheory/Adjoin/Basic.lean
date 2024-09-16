@@ -251,7 +251,7 @@ theorem adjoin_inl_union_inr_eq_prod (s) (t) :
     simpa [P] using Subalgebra.add_mem _ Ha Hb
 
 /-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a commutative
-semiring.  -/
+semiring. -/
 def adjoinCommSemiringOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
     CommSemiring (adjoin R s) :=
   { (adjoin R s).toSemiring with
@@ -403,7 +403,7 @@ theorem adjoin_eq_ring_closure (s : Set A) :
 variable (R)
 
 /-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a commutative
-ring.  -/
+ring. -/
 def adjoinCommRingOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
     CommRing (adjoin R s) :=
   { (adjoin R s).toRing, adjoinCommSemiringOfComm R hcomm with }

@@ -1560,7 +1560,7 @@ lemma div_right_distrib_of_nonneg {a b c : EReal} (h : 0 ≤ a) (h' : 0 ≤ b) :
     (a + b) / c = (a / c) + (b / c) :=
   EReal.right_distrib_of_nonneg h h'
 
-/-! #### Division and Order s-/
+/-! #### Division and Order s -/
 
 lemma monotone_div_right_of_nonneg {b : EReal} (h : 0 ≤ b) : Monotone fun a ↦ a / b :=
   fun _ _ h' ↦ mul_le_mul_of_nonneg_right h' (inv_nonneg_of_nonneg h)
@@ -1680,3 +1680,5 @@ unsafe def positivity_coe_ennreal_ereal : expr → tactic strictness
 
 end Tactic
 -/
+
+set_option linter.style.longFile 1800
