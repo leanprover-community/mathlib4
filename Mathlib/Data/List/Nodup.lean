@@ -253,7 +253,7 @@ theorem Nodup.erase_getElem [DecidableEq α] {l : List α} (hl : l.Nodup)
       · rw [beq_iff_eq]
         simp only [getElem_cons_succ]
         simp only [length_cons, Nat.succ_eq_add_one, Nat.add_lt_add_iff_right] at h
-        exact mt (· ▸ l.getElem_mem i h) hl.1
+        exact mt (· ▸ getElem_mem h) hl.1
 
 theorem Nodup.erase_get [DecidableEq α] {l : List α} (hl : l.Nodup) (i : Fin l.length) :
     l.erase (l.get i) = l.eraseIdx ↑i := by

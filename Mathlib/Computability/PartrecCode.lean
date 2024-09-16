@@ -624,8 +624,8 @@ theorem evaln_mono : ∀ {k₁ k₂ c n x}, k₁ ≤ k₂ → x ∈ evaln k₁ c
     iterate 4 exact h
     · -- pair cf cg
       simp? [Seq.seq, Option.bind_eq_some] at h ⊢ says
-        simp only [Seq.seq, Option.map_eq_map, Option.bind_map, Function.comp_apply,
-          Option.mem_def, Option.bind_eq_some, Option.map_eq_some'] at h ⊢
+        simp only [Seq.seq, Option.map_eq_map, Option.mem_def, Option.bind_eq_some,
+          Option.map_eq_some', exists_exists_and_eq_and] at h ⊢
       exact h.imp fun a => And.imp (hf _ _) <| Exists.imp fun b => And.imp_left (hg _ _)
     · -- comp cf cg
       simp? [Bind.bind, Option.bind_eq_some] at h ⊢ says
@@ -937,7 +937,7 @@ theorem evaln_prim : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.2 a
               (List.range n.unpair.1).map (evaln n.unpair.1 (ofNat Code n.unpair.2))) (k', c') n =
             evaln k' c' n := by
         intro k₁ c₁ n₁ hl
-        simp [lup, List.getElem?_range hl, evaln_map, Bind.bind]
+        simp [lup, List.getElem?_range hl, evaln_map, Bind.bind, Option.bind_map]
       cases' c with cf cg cf cg cf cg cf <;>
         simp [evaln, nk, Bind.bind, Functor.map, Seq.seq, pure]
       · cases' encode_lt_pair cf cg with lf lg
@@ -969,7 +969,7 @@ theorem evaln_prim : Primrec fun a : (ℕ × Code) × ℕ => evaln a.1.1 a.1.2 a
   (Primrec.option_bind
     (Primrec.list_get?.comp (this.comp (_root_.Primrec.const ())
       (Primrec.encode_iff.2 Primrec.fst)) Primrec.snd) Primrec.snd.to₂).of_eq
-    fun ⟨⟨k, c⟩, n⟩ => by simp [evaln_map]
+    fun ⟨⟨k, c⟩, n⟩ => by simp [evaln_map, Option.bind_map]
 
 end
 
