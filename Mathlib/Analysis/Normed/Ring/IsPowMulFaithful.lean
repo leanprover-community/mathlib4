@@ -13,12 +13,6 @@ In this file, we prove [BGR, Proposition 3.1.5/1][bosch-guntzer-remmert]: if `R`
 commutative ring and `f₁` and `f₂` are two power-multiplicative `R`-algebra norms on `S`, then if
 `f₁` and `f₂` are equivalent on every subring `R[y]` for `y : S`, it follows that `f₁ = f₂`.
 
-## Main Definitions
-* `AlgebraNorm.restriction`: The restriction of an algebra norm to a subalgebra.
-* `RingHom.IsBoundedWrt`: A ring homomorphism `f : α →+* β` is bounded with respect to the
-  functions `nα : α → ℝ` and `nβ : β → ℝ` if there exists a positive constant `C` such that for all
-  `x` in `α`, `nβ (f x) ≤ C * nα x`.
-
 ## Main Results
 * `eq_of_powMul_faithful` : the proof of [BGR, Proposition 3.1.5/1][bosch-guntzer-remmert].
 
