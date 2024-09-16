@@ -924,16 +924,6 @@ def prod {ι : Type u} (f : ι → Cardinal) : Cardinal :=
 theorem mk_pi {ι : Type u} (α : ι → Type v) : #(∀ i, α i) = prod fun i => #(α i) :=
   mk_congr <| Equiv.piCongrRight fun _ => outMkEquiv.symm
 
-theorem mk_pi_congr {ι : Type u} {f g : ι → Type v} (h : ∀ i, #(f i) = #(g i)) :
-    #(Π i, f i) = #(Π i, g i) := by
-  simp_all only [mk_pi]
-
-theorem mk_pi_congr_subtype {ι : Type u} {f g : ι → Type v} {S : Set ι}
-    (h : ∀ i ∈ S, #(f i) = #(g i)) : #(Π i ∈ S, f i) = #(Π i ∈ S, g i) :=
-  mk_congr <|
-    .piCongrRight fun i => .piCongrRight fun is =>
-      Classical.choice <| Cardinal.eq.mp (h i is)
-
 @[simp]
 theorem prod_const (ι : Type u) (a : Cardinal.{v}) :
     (prod fun _ : ι => a) = lift.{u} a ^ lift.{v} #ι :=
