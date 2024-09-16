@@ -285,7 +285,6 @@ lemma netEntropyInfEnt_antitone (T : X → X) (F : Set X) :
     fun n ↦ monotone_div_right_of_nonneg (Nat.cast_nonneg' n)
       (log_monotone (ENat.toENNReal_mono (netMaxcard_antitone T F n U_V))))
 
-
 lemma netEntropyEnt_antitone (T : X → X) (F : Set X) :
     Antitone (fun U : Set (X × X) ↦ netEntropyEnt T F U) :=
   fun _ _ U_V ↦ (limsup_le_limsup) (Eventually.of_forall
