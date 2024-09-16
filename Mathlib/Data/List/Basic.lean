@@ -59,9 +59,6 @@ instance : Std.Associative (α := List α) Append.append where
 
 theorem singleton_injective : Injective fun a : α => [a] := fun _ _ h => (cons_eq_cons.1 h).1
 
-theorem singleton_inj {a b : α} : [a] = [b] ↔ a = b :=
-  singleton_injective.eq_iff
-
 theorem set_of_mem_cons (l : List α) (a : α) : { x | x ∈ a :: l } = insert a { x | x ∈ l } :=
   Set.ext fun _ => mem_cons
 
