@@ -75,7 +75,7 @@ theorem span_le_of_C_coeff_mem (cf : ∀ i : ℕ, C (f.coeff i) ∈ I) :
 
 theorem mem_span_C_coeff : f ∈ Ideal.span { g : R[X] | ∃ i : ℕ, g = C (coeff f i) } := by
   let p := Ideal.span { g : R[X] | ∃ i : ℕ, g = C (coeff f i) }
-  nth_rw 1 [(sum_C_mul_X_pow_eq f).symm]
+  nth_rw 2 [(sum_C_mul_X_pow_eq f).symm]
   refine Submodule.sum_mem _ fun n _hn => ?_
   dsimp
   have : C (coeff f n) ∈ p := by

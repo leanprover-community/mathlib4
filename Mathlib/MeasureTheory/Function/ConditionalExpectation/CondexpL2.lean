@@ -347,7 +347,7 @@ theorem integrable_condexpL2_indicator (hm : m ≤ m0) [SigmaFinite (μ.trim hm)
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E') :
     Integrable (β := E') (condexpL2 E' 𝕜 hm (indicatorConstLp 2 hs hμs x)) μ := by
   refine integrable_of_forall_fin_meas_le' hm (μ s * ‖x‖₊)
-    (ENNReal.mul_lt_top hμs ENNReal.coe_ne_top) ?_ ?_
+    (ENNReal.mul_lt_top hμs.lt_top ENNReal.coe_lt_top) ?_ ?_
   · rw [lpMeas_coe]; exact Lp.aestronglyMeasurable _
   · refine fun t ht hμt =>
       (setLIntegral_nnnorm_condexpL2_indicator_le hm hs hμs x ht hμt).trans ?_
@@ -426,7 +426,7 @@ with finite measure is integrable. -/
 theorem integrable_condexpIndSMul (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hs : MeasurableSet s)
     (hμs : μ s ≠ ∞) (x : G) : Integrable (condexpIndSMul hm hs hμs x) μ := by
   refine integrable_of_forall_fin_meas_le' hm (μ s * ‖x‖₊)
-    (ENNReal.mul_lt_top hμs ENNReal.coe_ne_top) ?_ ?_
+    (ENNReal.mul_lt_top hμs.lt_top ENNReal.coe_lt_top) ?_ ?_
   · exact Lp.aestronglyMeasurable _
   · refine fun t ht hμt => (setLIntegral_nnnorm_condexpIndSMul_le hm hs hμs x ht hμt).trans ?_
     gcongr

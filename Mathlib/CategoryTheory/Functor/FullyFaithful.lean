@@ -171,6 +171,15 @@ lemma full : F.Full where
 lemma faithful : F.Faithful where
   map_injective := hF.map_injective
 
+instance : Subsingleton F.FullyFaithful where
+  allEq h₁ h₂ := by
+    have := h₁.faithful
+    cases h₁ with | mk f₁ hf₁ _ => cases h₂ with | mk f₂ hf₂ _ =>
+    simp only [Functor.FullyFaithful.mk.injEq]
+    ext
+    apply F.map_injective
+    rw [hf₁, hf₂]
+
 /-- The unique isomorphism `X ≅ Y` which induces an isomorphism `F.obj X ≅ F.obj Y`
 when `hF : F.FullyFaithful`. -/
 @[simps]

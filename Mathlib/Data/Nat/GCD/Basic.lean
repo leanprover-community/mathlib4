@@ -3,21 +3,21 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Order.Lattice
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.Nat
-import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Order.Basic
 
 /-!
-# Definitions and properties of `Nat.gcd`, `Nat.lcm`, and `Nat.coprime`
+# Properties of `Nat.gcd`, `Nat.lcm`, and `Nat.Coprime`
+
+Definitions are provided in batteries.
 
 Generalizations of these are provided in a later file as `GCDMonoid.gcd` and
 `GCDMonoid.lcm`.
 
-Note that the global `IsCoprime` is not a straightforward generalization of `Nat.coprime`, see
+Note that the global `IsCoprime` is not a straightforward generalization of `Nat.Coprime`, see
 `Nat.isCoprime_iff_coprime` for the connection between the two.
 
+Most of this file could be moved to batteries as well.
 -/
 
 assert_not_exists OrderedCommMonoid
@@ -132,8 +132,6 @@ theorem lcm_mul_right {m n k : ℕ} : (m * n).lcm (k * n) = m.lcm k * n := by
 See also `Nat.coprime_of_dvd` and `Nat.coprime_of_dvd'` to prove `Nat.Coprime m n`.
 -/
 
-instance (m n : ℕ) : Decidable (Coprime m n) := inferInstanceAs (Decidable (gcd m n = 1))
-
 theorem Coprime.lcm_eq_mul {m n : ℕ} (h : Coprime m n) : lcm m n = m * n := by
   rw [← one_mul (lcm m n), ← h.gcd_eq_one, gcd_mul_lcm]
 
@@ -212,7 +210,7 @@ theorem coprime_self_sub_right {m n : ℕ} (h : m ≤ n) : Coprime n (n - m) ↔
 @[simp]
 theorem coprime_pow_left_iff {n : ℕ} (hn : 0 < n) (a b : ℕ) :
     Nat.Coprime (a ^ n) b ↔ Nat.Coprime a b := by
-  obtain ⟨n, rfl⟩ := exists_eq_succ_of_ne_zero hn.ne'
+  obtain ⟨n, rfl⟩ := exists_eq_succ_of_ne_zero (Nat.ne_of_gt hn)
   rw [Nat.pow_succ, Nat.coprime_mul_iff_left]
   exact ⟨And.right, fun hab => ⟨hab.pow_left _, hab⟩⟩
 
@@ -236,7 +234,7 @@ theorem gcd_mul_of_coprime_of_dvd {a b c : ℕ} (hac : Coprime a c) (b_dvd_c : b
 
 theorem Coprime.eq_of_mul_eq_zero {m n : ℕ} (h : m.Coprime n) (hmn : m * n = 0) :
     m = 0 ∧ n = 1 ∨ m = 1 ∧ n = 0 :=
-  (Nat.eq_zero_of_mul_eq_zero hmn).imp (fun hm => ⟨hm, n.coprime_zero_left.mp <| hm ▸ h⟩) fun hn =>
+  (Nat.mul_eq_zero.mp hmn).imp (fun hm => ⟨hm, n.coprime_zero_left.mp <| hm ▸ h⟩) fun hn =>
     let eq := hn ▸ h.symm
     ⟨m.coprime_zero_left.mp <| eq, hn⟩
 

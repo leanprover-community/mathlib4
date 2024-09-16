@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Scott Morrison
 -/
 import Mathlib.Data.Opposite
-import Mathlib.Tactic.Cases
 
 /-!
 # Quivers
@@ -72,8 +71,8 @@ theorem ext {V : Type u} [Quiver.{v₁} V] {W : Type u₂} [Quiver.{v₂} W] {F 
     (h_obj : ∀ X, F.obj X = G.obj X)
     (h_map : ∀ (X Y : V) (f : X ⟶ Y),
       F.map f = Eq.recOn (h_obj Y).symm (Eq.recOn (h_obj X).symm (G.map f))) : F = G := by
-  cases' F with F_obj _
-  cases' G with G_obj _
+  obtain ⟨F_obj, _⟩ := F
+  obtain ⟨G_obj, _⟩ := G
   obtain rfl : F_obj = G_obj := by
     ext X
     apply h_obj

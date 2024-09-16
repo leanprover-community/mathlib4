@@ -99,7 +99,8 @@ open scoped uniformity Filter Topology
 
 section LimitsOfDerivatives
 
-variable {ι : Type*} {l : Filter ι} {E : Type*} [NormedAddCommGroup E] {𝕜 : Type*} [RCLike 𝕜]
+variable {ι : Type*} {l : Filter ι} {E : Type*} [NormedAddCommGroup E] {𝕜 : Type*}
+  [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
   [NormedSpace 𝕜 E] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] {f : ι → E → G}
   {g : E → G} {f' : ι → E → E →L[𝕜] G} {g' : E → E →L[𝕜] G} {x : E}
 
@@ -110,6 +111,7 @@ sequence in a neighborhood of `x`. -/
 theorem uniformCauchySeqOnFilter_of_fderiv (hf' : UniformCauchySeqOnFilter f' l (𝓝 x))
     (hf : ∀ᶠ n : ι × E in l ×ˢ 𝓝 x, HasFDerivAt (f n.1) (f' n.1 n.2) n.2)
     (hfg : Cauchy (map (fun n => f n x) l)) : UniformCauchySeqOnFilter f l (𝓝 x) := by
+  letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   letI : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
   rw [SeminormedAddGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_zero] at hf' ⊢
   suffices
@@ -173,6 +175,7 @@ convergence. See `cauchy_map_of_uniformCauchySeqOn_fderiv`.
 theorem uniformCauchySeqOn_ball_of_fderiv {r : ℝ} (hf' : UniformCauchySeqOn f' l (Metric.ball x r))
     (hf : ∀ n : ι, ∀ y : E, y ∈ Metric.ball x r → HasFDerivAt (f n) (f' n y) y)
     (hfg : Cauchy (map (fun n => f n x) l)) : UniformCauchySeqOn f l (Metric.ball x r) := by
+  letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   letI : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 _
   have : NeBot l := (cauchy_map_iff.1 hfg).1
   rcases le_or_lt r 0 with (hr | hr)
@@ -249,7 +252,11 @@ theorem cauchy_map_of_uniformCauchySeqOn_fderiv {s : Set E} (hs : IsOpen s) (h's
 /-- If `f_n → g` pointwise and the derivatives `(f_n)' → h` _uniformly_ converge, then
 in fact for a fixed `y`, the difference quotients `‖z - y‖⁻¹ • (f_n z - f_n y)` converge
 _uniformly_ to `‖z - y‖⁻¹ • (g z - g y)` -/
-theorem difference_quotients_converge_uniformly (hf' : TendstoUniformlyOnFilter f' g' l (𝓝 x))
+theorem difference_quotients_converge_uniformly
+    {E : Type*} [NormedAddCommGroup E] {𝕜 : Type*} [RCLike 𝕜]
+    [NormedSpace 𝕜 E] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] {f : ι → E → G}
+    {g : E → G} {f' : ι → E → E →L[𝕜] G} {g' : E → E →L[𝕜] G} {x : E}
+    (hf' : TendstoUniformlyOnFilter f' g' l (𝓝 x))
     (hf : ∀ᶠ n : ι × E in l ×ˢ 𝓝 x, HasFDerivAt (f n.1) (f' n.1 n.2) n.2)
     (hfg : ∀ᶠ y : E in 𝓝 x, Tendsto (fun n => f n y) l (𝓝 (g y))) :
     TendstoUniformlyOnFilter (fun n : ι => fun y : E => (‖y - x‖⁻¹ : 𝕜) • (f n y - f n x))
@@ -302,6 +309,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     (hf' : TendstoUniformlyOnFilter f' g' l (𝓝 x))
     (hf : ∀ᶠ n : ι × E in l ×ˢ 𝓝 x, HasFDerivAt (f n.1) (f' n.1 n.2) n.2)
     (hfg : ∀ᶠ y in 𝓝 x, Tendsto (fun n => f n y) l (𝓝 (g y))) : HasFDerivAt g (g' x) x := by
+  letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   -- The proof strategy follows several steps:
   --   1. The quantifiers in the definition of the derivative are
   --      `∀ ε > 0, ∃δ > 0, ∀y ∈ B_δ(x)`. We will introduce a quantifier in the middle:
@@ -436,7 +444,8 @@ In this section, we provide `deriv` equivalents of the `fderiv` lemmas in the pr
 -/
 
 
-variable {ι : Type*} {l : Filter ι} {𝕜 : Type*} [RCLike 𝕜] {G : Type*} [NormedAddCommGroup G]
+variable {ι : Type*} {l : Filter ι} {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {G : Type*} [NormedAddCommGroup G]
   [NormedSpace 𝕜 G] {f : ι → 𝕜 → G} {g : 𝕜 → G} {f' : ι → 𝕜 → G} {g' : 𝕜 → G} {x : 𝕜}
 
 /-- If our derivatives converge uniformly, then the Fréchet derivatives converge uniformly -/
@@ -460,6 +469,8 @@ theorem UniformCauchySeqOnFilter.one_smulRight {l' : Filter 𝕜}
     ContinuousLinearMap.one_apply]
   rw [← smul_sub, norm_smul, mul_comm]
   gcongr
+
+variable [IsRCLikeNormedField 𝕜]
 
 theorem uniformCauchySeqOnFilter_of_deriv (hf' : UniformCauchySeqOnFilter f' l (𝓝 x))
     (hf : ∀ᶠ n : ι × 𝕜 in l ×ˢ 𝓝 x, HasDerivAt (f n.1) (f' n.1 n.2) n.2)

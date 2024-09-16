@@ -291,7 +291,7 @@ theorem norm_eq_one [IsDomain L] [IsCyclotomicExtension {n} K L] (hn : n ≠ 2)
   · replace h1 : 2 ≤ n := by
       by_contra! h
       exact h1 (PNat.eq_one_of_lt_two h)
--- Porting note: specyfing the type of `cyclotomic_coeff_zero K h1` was not needed.
+-- Porting note: specifying the type of `cyclotomic_coeff_zero K h1` was not needed.
     rw [← hζ.powerBasis_gen K, PowerBasis.norm_gen_eq_coeff_zero_minpoly, hζ.powerBasis_gen K, ←
       hζ.minpoly_eq_cyclotomic_of_irreducible hirr,
       (cyclotomic_coeff_zero K h1 : coeff (cyclotomic n K) 0 = 1), mul_one,
@@ -411,7 +411,7 @@ theorem norm_pow_sub_one_of_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot 
         · simp only [Set.singleton_subset_iff, SetLike.mem_coe]
           exact Subalgebra.add_mem _ (subset_adjoin (mem_singleton η)) (Subalgebra.one_mem _)
         · simp only [Set.singleton_subset_iff, SetLike.mem_coe]
-          nth_rw 1 [← add_sub_cancel_right η 1]
+          nth_rw 2 [← add_sub_cancel_right η 1]
           exact Subalgebra.sub_mem _ (subset_adjoin (mem_singleton _)) (Subalgebra.one_mem _)
 -- Porting note: the previous proof was `rw [H] at this; exact this` but it now fails.
       exact IsCyclotomicExtension.equiv _ _ _ (Subalgebra.equivOfEq _ _ H)

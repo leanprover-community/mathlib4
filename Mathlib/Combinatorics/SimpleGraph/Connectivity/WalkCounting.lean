@@ -41,7 +41,7 @@ theorem set_walk_self_length_zero_eq (u : V) : {p : G.Walk u u | p.length = 0} =
 theorem set_walk_length_zero_eq_of_ne {u v : V} (h : u ≠ v) :
     {p : G.Walk u v | p.length = 0} = ∅ := by
   ext p
-  simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false_iff]
+  simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
   exact fun h' => absurd (Walk.eq_of_length_eq_zero h') h
 
 theorem set_walk_length_succ_eq (u v : V) (n : ℕ) :
@@ -139,7 +139,7 @@ instance fintypeSetPathLength (u v : V) (n : ℕ) :
 
 end LocallyFinite
 
-section Finite
+section Fintype
 
 variable [DecidableEq V] [Fintype V] [DecidableRel G.Adj]
 
@@ -170,7 +170,28 @@ instance instDecidableMemSupp (c : G.ConnectedComponent) (v : V) : Decidable (v 
   c.recOn (fun w ↦ decidable_of_iff (G.Reachable v w) <| by simp)
     (fun _ _ _ _ ↦ Subsingleton.elim _ _)
 
-end Finite
+variable {G} in
+lemma disjiUnion_supp_toFinset_eq_supp_toFinset {G' : SimpleGraph V} (h : G ≤ G')
+    (c' : ConnectedComponent G') [Fintype c'.supp]
+    [DecidablePred fun c : G.ConnectedComponent ↦ c.supp ⊆ c'.supp] :
+    .disjiUnion {c : ConnectedComponent G | c.supp ⊆ c'.supp} (fun c ↦ c.supp.toFinset)
+      (fun x _ y _ hxy ↦ by simpa using pairwise_disjoint_supp_connectedComponent _ hxy) =
+      c'.supp.toFinset :=
+  Finset.coe_injective <| by simpa using ConnectedComponent.biUnion_supp_eq_supp h _
+
+end Fintype
+
+lemma ConnectedComponent.odd_card_supp_iff_odd_subcomponents [Finite V] {G'}
+    (h : G ≤ G') (c' : ConnectedComponent G') :
+    Odd (Nat.card c'.supp) ↔ Odd (Nat.card
+    ({c : ConnectedComponent G | c.supp ⊆ c'.supp ∧ Odd (Nat.card c.supp) })) := by
+  classical
+  cases nonempty_fintype V
+  rw [Nat.card_eq_card_toFinset, ← disjiUnion_supp_toFinset_eq_supp_toFinset h]
+  simp only [Finset.card_disjiUnion, Set.toFinset_card]
+  rw [Finset.odd_sum_iff_odd_card_odd, Nat.card_eq_fintype_card, Fintype.card_ofFinset]
+  simp only [Nat.card_eq_fintype_card, Finset.filter_filter]
+  rfl
 
 lemma odd_card_iff_odd_components [Finite V] : Odd (Nat.card V) ↔
     Odd (Nat.card ({(c : ConnectedComponent G) | Odd (Nat.card c.supp)})) := by

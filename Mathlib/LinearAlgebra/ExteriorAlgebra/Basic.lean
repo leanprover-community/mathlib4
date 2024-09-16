@@ -132,7 +132,7 @@ theorem hom_ext {f g : ExteriorAlgebra R M →ₐ[R] A}
   CliffordAlgebra.hom_ext h
 
 /-- If `C` holds for the `algebraMap` of `r : R` into `ExteriorAlgebra R M`, the `ι` of `x : M`,
-and is preserved under addition and muliplication, then it holds for all of `ExteriorAlgebra R M`.
+and is preserved under addition and multiplication, then it holds for all of `ExteriorAlgebra R M`.
 -/
 @[elab_as_elim]
 theorem induction {C : ExteriorAlgebra R M → Prop}
@@ -372,7 +372,7 @@ theorem map_apply_ι (f : M →ₗ[R] N) (m : M) : map f (ι R m) = ι R (f m) :
 theorem map_apply_ιMulti {n : ℕ} (f : M →ₗ[R] N) (m : Fin n → M) :
     map f (ιMulti R n m) = ιMulti R n (f ∘ m) := by
   rw [ιMulti_apply, ιMulti_apply, map_list_prod]
-  simp only [List.map_ofFn, Function.comp, map_apply_ι]
+  simp only [List.map_ofFn, Function.comp_def, map_apply_ι]
 
 @[simp]
 theorem map_comp_ιMulti {n : ℕ} (f : M →ₗ[R] N) :

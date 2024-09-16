@@ -57,7 +57,6 @@ If ever someone extends `Valuation`, we should fully comply to the `DFunLike` by
 boilerplate lemmas to `ValuationClass`.
 -/
 
-
 open scoped Classical
 open Function Ideal
 
@@ -417,20 +416,10 @@ theorem isEquiv_of_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀)
     (h : ∀ {x : K}, v x ≤ 1 ↔ v' x ≤ 1) : v.IsEquiv v' := by
   intro x y
-  by_cases hy : y = 0; · simp [hy, zero_iff]
-  rw [show y = 1 * y by rw [one_mul]]
-  rw [← inv_mul_cancel_right₀ hy x]
-  iterate 2 rw [v.map_mul _ y, v'.map_mul _ y]
-  rw [v.map_one, v'.map_one]
-  constructor <;> intro H
-  · apply mul_le_mul_right'
-    replace hy := v.ne_zero_iff.mpr hy
-    replace H := le_of_le_mul_right hy H
-    rwa [h] at H
-  · apply mul_le_mul_right'
-    replace hy := v'.ne_zero_iff.mpr hy
-    replace H := le_of_le_mul_right hy H
-    rwa [h]
+  obtain rfl | hy := eq_or_ne y 0
+  · simp
+  · rw [← div_le_one₀, ← v.map_div, h, v'.map_div, div_le_one₀] <;>
+      rwa [zero_lt_iff, ne_zero_iff]
 
 theorem isEquiv_iff_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
