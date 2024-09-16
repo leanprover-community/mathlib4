@@ -10,7 +10,7 @@ import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
 
 Let `K` be a number field of signature `(r₁, r₂)`. We define an action of the units `(𝓞 K)ˣ` on
 the mixed space `ℝ^r₁ × ℂ^r₂` via the `mixedEmbedding`. The fundamental cone is a cone in the
-mixed space that is a fundamental domain for the action of `(𝓞 K)ˣ` up to roots of unity.
+mixed space that is a fundamental domain for the action of `(𝓞 K)ˣ` modulo torsion.
 
 ## Main definitions and results
 
@@ -19,7 +19,7 @@ mixed space that is a fundamental domain for the action of `(𝓞 K)ˣ` up to ro
 
 * `NumberField.mixedEmbedding.fundamentalCone`: a cone in the mixed space, ie. a subset stable
 by multiplication by a real number, see `smul_mem_of_mem`, that is also a fundamental domain
-for the action of `(𝓞 K)ˣ` up to roots of unity, see `exists_unit_smul_me` and
+for the action of `(𝓞 K)ˣ` modulo torsion, see `exists_unit_smul_me` and
 `torsion_unit_smul_mem_of_mem`.
 
 ## Tags
@@ -161,8 +161,8 @@ variable [NumberField K]
 
 open Classical in
 /-- The fundamental cone is a cone in the mixed space, ie. a subset fixed by multiplication by
-a scalar, see `smul_mem_of_mem`, that is also a fundamental domain for the action of `(𝓞 K)ˣ` up
-to roots of unity, see `exists_unit_smul_mem` and `torsion_smul_mem_of_mem`. -/
+a scalar, see `smul_mem_of_mem`, that is also a fundamental domain for the action of `(𝓞 K)ˣ` 
+modulo torsion, see `exists_unit_smul_mem` and `torsion_smul_mem_of_mem`. -/
 def fundamentalCone : Set (mixedSpace K) :=
   logMap⁻¹' (ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ _)) \
       {x | mixedEmbedding.norm x = 0}
