@@ -3,11 +3,7 @@ Copyright (c) 2022 Kyle Miller, Adam Topaz, Rémi Bottinelli, Junyan Xu. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Adam Topaz, Rémi Bottinelli, Junyan Xu
 -/
-import Mathlib.CategoryTheory.Filtered.Basic
-import Mathlib.Data.Set.Finite
-import Mathlib.Data.Set.Subsingleton
 import Mathlib.Topology.Category.TopCat.Limits.Konig
-import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Cofiltered systems
@@ -351,7 +347,7 @@ theorem eventually_injective [Nonempty J] [Finite F.sections] :
   refine ⟨fn.argmin Nat.lt_wfRel.wf,
     fun i f => ((Fintype.bijective_iff_surjective_and_card _).2
       ⟨Fsur f, le_antisymm ?_ (Fintype.card_le_of_surjective _ <| Fsur f)⟩).1⟩
-  rw [← Nat.sub_sub_self (card_le i), tsub_le_iff_tsub_le]
+  rw [← Nat.sub_le_sub_iff_left (card_le i)]
   apply fn.argmin_le
 
 end FiniteCofilteredSystem

@@ -560,7 +560,7 @@ theorem subset_support_append_left {V : Type u} {G : SimpleGraph V} {u v w : V}
 theorem subset_support_append_right {V : Type u} {G : SimpleGraph V} {u v w : V}
     (p : G.Walk u v) (q : G.Walk v w) : q.support ⊆ (p.append q).support := by
   intro h
-  simp (config := { contextual := true }) only [mem_support_append_iff, or_true_iff, imp_true_iff]
+  simp (config := { contextual := true }) only [mem_support_append_iff, or_true, imp_true_iff]
 
 theorem coe_support {u v : V} (p : G.Walk u v) :
     (p.support : Multiset V) = {u} + p.support.tail := by cases p <;> rfl
@@ -1201,7 +1201,7 @@ theorem map_injective_of_injective {f : G →g G'} (hinj : Function.Injective f)
     | cons _ _ =>
       simp only [map_cons, cons.injEq] at h
       cases hinj h.1
-      simp only [cons.injEq, heq_iff_eq, true_and_iff]
+      simp only [cons.injEq, heq_iff_eq, true_and]
       apply ih
       simpa using h.2
 

@@ -6,13 +6,13 @@ import Mathlib.Tactic.StacksAttribute
 
 namespace X
 
-@[stacks A04Q "A comment"]
+@[stacks A04Q "A comment", kerodon B15R "Also a comment"]
 theorem tagged : True := .intro
 
 end X
 
 #guard_msgs in
-@[stacks 0BR2, stacks 0X12]
+@[stacks 0BR2, kerodon 0X12]
 example : True := .intro
 
 @[stacks 0BR2, stacks 0X14 "I can also have a comment"]
@@ -36,9 +36,17 @@ True
 #guard_msgs in
 #stacks_tags!
 
+/--
+info:
+[Stacks Tag B15R](https://kerodon.net/tag/B15R) corresponds to declaration 'X.tagged'. (Also a comment)
+True
+-/
+#guard_msgs in
+#kerodon_tags!
+
 section errors
 
-open Lean Parser Mathlib.Stacks
+open Lean Parser Mathlib.StacksTag
 
 def captureException (env : Environment) (s : ParserFn) (input : String) : Except String Syntax :=
   let ictx := mkInputContext input "<input>"

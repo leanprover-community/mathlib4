@@ -200,7 +200,7 @@ termination_by (a, b)
 theorem toGame_nmul (a b : Ordinal) : (a ⨳ b).toGame = ⟦a.toPGame * b.toPGame⟧ :=
   Quot.sound (toPGame_nmul a b)
 
-@[simp]
+@[simp, norm_cast]
 theorem toGame_natCast : ∀ n : ℕ, toGame n = n
   | 0 => Quot.sound (zeroToPGameRelabelling).equiv
   | n + 1 => by
