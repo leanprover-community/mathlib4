@@ -8,7 +8,6 @@ import Lean.Elab.App
 import Mathlib.Tactic.Simps.NotationClass
 import Batteries.Data.String.Basic
 import Mathlib.Lean.Expr.Basic
-import Batteries.Data.List.Basic
 
 /-!
 # Simps attribute
