@@ -28,7 +28,7 @@ variable {R}
 
 instance [IsSimpleRing R] : IsSimpleOrder (TwoSidedIdeal R) := IsSimpleRing.simple
 
-instance nontrivial [simple : IsSimpleRing R] : Nontrivial R := by
+instance [simple : IsSimpleRing R] : Nontrivial R := by
   obtain ⟨x, hx⟩ := SetLike.exists_of_lt (bot_lt_top : (⊥ : TwoSidedIdeal R) < ⊤)
   have h (hx : x = 0) : False := by simp_all [TwoSidedIdeal.zero_mem]
   use x, 0, h
