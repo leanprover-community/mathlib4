@@ -3,7 +3,6 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
-import Mathlib.Data.Pi.Projections
 import Mathlib.MeasureTheory.PiSystem
 import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Topology.Constructions
@@ -151,11 +150,11 @@ section cylinder
 /-- Given a finite set `s` of indices, a cylinder is the preimage of a set `S` of `∀ i : s, α i` by
 the projection from `∀ i, α i` to `∀ i : s, α i`. -/
 def cylinder (s : Finset ι) (S : Set (∀ i : s, α i)) : Set (∀ i, α i) :=
-  fproj s ⁻¹' S
+  s.restrict ⁻¹' S
 
 @[simp]
 theorem mem_cylinder (s : Finset ι) (S : Set (∀ i : s, α i)) (f : ∀ i, α i) :
-    f ∈ cylinder s S ↔ fproj s f ∈ S :=
+    f ∈ cylinder s S ↔ s.restrict f ∈ S :=
   mem_preimage
 
 @[simp]
@@ -179,7 +178,8 @@ theorem cylinder_eq_empty_iff [h_nonempty : Nonempty (∀ i, α i)] (s : Finset 
   let f' : ∀ i, α i := fun i ↦ if hi : i ∈ s then f ⟨i, hi⟩ else h_nonempty.some i
   have hf' : f' ∈ cylinder s S := by
     rw [mem_cylinder]
-    simpa (config := { unfoldPartialApp := true }) only [fproj, Finset.coe_mem, dif_pos, f']
+    simpa (config := { unfoldPartialApp := true }) only
+      [Finset.restrict, Finset.coe_mem, dif_pos, f']
   rw [h] at hf'
   exact not_mem_empty _ hf'
 
@@ -187,8 +187,8 @@ theorem inter_cylinder (s₁ s₂ : Finset ι) (S₁ : Set (∀ i : s₁, α i))
     [DecidableEq ι] :
     cylinder s₁ S₁ ∩ cylinder s₂ S₂ =
       cylinder (s₁ ∪ s₂)
-        (fproj₂ Finset.subset_union_left ⁻¹' S₁ ∩
-          fproj₂ Finset.subset_union_right ⁻¹' S₂) := by
+        (Finset.restrict₂ Finset.subset_union_left ⁻¹' S₁ ∩
+          Finset.restrict₂ Finset.subset_union_right ⁻¹' S₂) := by
   ext1 f; simp only [mem_inter_iff, mem_cylinder, mem_setOf_eq]; rfl
 
 theorem inter_cylinder_same (s : Finset ι) (S₁ : Set (∀ i : s, α i)) (S₂ : Set (∀ i : s, α i)) :
@@ -199,8 +199,8 @@ theorem union_cylinder (s₁ s₂ : Finset ι) (S₁ : Set (∀ i : s₁, α i))
     [DecidableEq ι] :
     cylinder s₁ S₁ ∪ cylinder s₂ S₂ =
       cylinder (s₁ ∪ s₂)
-        (fproj₂ Finset.subset_union_left ⁻¹' S₁ ∪
-          fproj₂ Finset.subset_union_right ⁻¹' S₂) := by
+        (Finset.restrict₂ Finset.subset_union_left ⁻¹' S₁ ∪
+          Finset.restrict₂ Finset.subset_union_right ⁻¹' S₂) := by
   ext1 f; simp only [mem_union, mem_cylinder, mem_setOf_eq]; rfl
 
 theorem union_cylinder_same (s : Finset ι) (S₁ : Set (∀ i : s, α i)) (S₂ : Set (∀ i : s, α i)) :
@@ -218,7 +218,7 @@ theorem diff_cylinder_same (s : Finset ι) (S T : Set (∀ i : s, α i)) :
 theorem eq_of_cylinder_eq_of_subset [h_nonempty : Nonempty (∀ i, α i)] {I J : Finset ι}
     {S : Set (∀ i : I, α i)} {T : Set (∀ i : J, α i)} (h_eq : cylinder I S = cylinder J T)
     (hJI : J ⊆ I) :
-    S = fproj₂ hJI ⁻¹' T := by
+    S = Finset.restrict₂ hJI ⁻¹' T := by
   rw [Set.ext_iff] at h_eq
   simp only [mem_cylinder] at h_eq
   ext1 f
@@ -226,22 +226,22 @@ theorem eq_of_cylinder_eq_of_subset [h_nonempty : Nonempty (∀ i, α i)] {I J :
   classical
   specialize h_eq fun i ↦ if hi : i ∈ I then f ⟨i, hi⟩ else h_nonempty.some i
   have h_mem : ∀ j : J, ↑j ∈ I := fun j ↦ hJI j.prop
-  simpa (config := { unfoldPartialApp := true }) only [fproj, Finset.coe_mem, dite_true,
+  simpa (config := { unfoldPartialApp := true }) only [Finset.restrict, Finset.coe_mem, dite_true,
     h_mem] using h_eq
 
 theorem cylinder_eq_cylinder_union [DecidableEq ι] (I : Finset ι) (S : Set (∀ i : I, α i))
     (J : Finset ι) :
     cylinder I S =
-      cylinder (I ∪ J) (fproj₂ Finset.subset_union_left ⁻¹' S) := by
-  ext1 f; simp (config := { unfoldPartialApp := true }) only [mem_cylinder, fproj, fproj₂,
-    mem_preimage]
+      cylinder (I ∪ J) (Finset.restrict₂ Finset.subset_union_left ⁻¹' S) := by
+  ext1 f; simp (config := { unfoldPartialApp := true }) only [mem_cylinder, Finset.restrict,
+    Finset.restrict₂, mem_preimage]
 
 theorem disjoint_cylinder_iff [Nonempty (∀ i, α i)] {s t : Finset ι} {S : Set (∀ i : s, α i)}
     {T : Set (∀ i : t, α i)} [DecidableEq ι] :
     Disjoint (cylinder s S) (cylinder t T) ↔
       Disjoint
-        (fproj₂ Finset.subset_union_left ⁻¹' S)
-        (fproj₂ Finset.subset_union_right ⁻¹' T) := by
+        (Finset.restrict₂ Finset.subset_union_left ⁻¹' S)
+        (Finset.restrict₂ Finset.subset_union_right ⁻¹' T) := by
   simp_rw [Set.disjoint_iff, subset_empty_iff, inter_cylinder, cylinder_eq_empty_iff]
 
 theorem IsClosed.cylinder [∀ i, TopologicalSpace (α i)] (s : Finset ι) {S : Set (∀ i : s, α i)}
@@ -305,8 +305,8 @@ theorem inter_mem_measurableCylinders (hs : s ∈ measurableCylinders α)
   obtain ⟨s₂, S₂, hS₂, rfl⟩ := ht
   classical
   refine ⟨s₁ ∪ s₂,
-    fproj₂ Finset.subset_union_left ⁻¹' S₁ ∩
-      {f | fproj₂ Finset.subset_union_right f ∈ S₂}, ?_, ?_⟩
+    Finset.restrict₂ Finset.subset_union_left ⁻¹' S₁ ∩
+      {f | Finset.restrict₂ Finset.subset_union_right f ∈ S₂}, ?_, ?_⟩
   · refine MeasurableSet.inter ?_ ?_
     · exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _) hS₁
     · exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _) hS₂
@@ -354,7 +354,7 @@ theorem generateFrom_measurableCylinders :
     rintro t ht rfl
     refine ⟨{i}, {f | f ⟨i, Finset.mem_singleton_self i⟩ ∈ t i}, measurable_pi_apply _ (ht i), ?_⟩
     ext1 x
-    simp only [mem_preimage, eval, mem_cylinder, mem_setOf_eq, fproj]
+    simp only [mem_preimage, eval, mem_cylinder, mem_setOf_eq, Finset.restrict]
 
 end cylinders
 

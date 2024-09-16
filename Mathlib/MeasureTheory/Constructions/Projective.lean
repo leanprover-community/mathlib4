@@ -40,7 +40,7 @@ variable {ι : Type*} {α : ι → Type*} [∀ i, MeasurableSpace (α i)]
 the projection from `∀ i : I, α i` to `∀ i : J, α i` maps `P I` to `P J`. -/
 def IsProjectiveMeasureFamily (P : ∀ J : Finset ι, Measure (∀ j : J, α j)) : Prop :=
   ∀ (I J : Finset ι) (hJI : J ⊆ I),
-    P J = (P I).map (fproj₂ hJI)
+    P J = (P I).map (Finset.restrict₂ hJI)
 
 namespace IsProjectiveMeasureFamily
 
@@ -51,7 +51,7 @@ lemma measure_univ_eq_of_subset (hP : IsProjectiveMeasureFamily P) (hJI : J ⊆ 
     P I univ = P J univ := by
   classical
   have : (univ : Set (∀ i : I, α i)) =
-      fproj₂ hJI ⁻¹' (univ : Set (∀ i : J, α i)) := by
+      Finset.restrict₂ hJI ⁻¹' (univ : Set (∀ i : J, α i)) := by
     rw [preimage_univ]
   rw [this, ← Measure.map_apply _ MeasurableSet.univ]
   · rw [hP I J hJI]
@@ -79,7 +79,7 @@ lemma congr_cylinder_of_subset (hP : IsProjectiveMeasureFamily P)
     have : (univ : Set ((j : {x // x ∈ ({i} : Finset ι)}) → α j)) = ∅ := by simp [hi_empty]
     simp [this]
   | inr h =>
-    have : S = fproj₂ hJI ⁻¹' T :=
+    have : S = Finset.restrict₂ hJI ⁻¹' T :=
       eq_of_cylinder_eq_of_subset h_eq hJI
     rw [hP I J hJI, Measure.map_apply _ hT, this]
     exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)
@@ -89,8 +89,8 @@ lemma congr_cylinder (hP : IsProjectiveMeasureFamily P)
     (h_eq : cylinder I S = cylinder J T) :
     P I S = P J T := by
   classical
-  let U := fproj₂ Finset.subset_union_left ⁻¹' S ∩
-      fproj₂ Finset.subset_union_right ⁻¹' T
+  let U := Finset.restrict₂ Finset.subset_union_left ⁻¹' S ∩
+      Finset.restrict₂ Finset.subset_union_right ⁻¹' T
   suffices P (I ∪ J) U = P I S ∧ P (I ∪ J) U = P J T from this.1.symm.trans this.2
   constructor
   · have h_eq_union : cylinder I S = cylinder (I ∪ J) U := by
@@ -106,7 +106,7 @@ end IsProjectiveMeasureFamily
 for all `I : Finset ι`, the projection from `∀ i, α i` to `∀ i : I, α i` maps `μ` to `P I`. -/
 def IsProjectiveLimit (μ : Measure (∀ i, α i))
     (P : ∀ J : Finset ι, Measure (∀ j : J, α j)) : Prop :=
-  ∀ I : Finset ι, (μ.map (fproj I)) = P I
+  ∀ I : Finset ι, (μ.map I.restrict) = P I
 
 namespace IsProjectiveLimit
 
