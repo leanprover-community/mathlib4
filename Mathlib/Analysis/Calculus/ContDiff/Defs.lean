@@ -431,6 +431,27 @@ theorem contDiffWithinAt_omega_iff_hasFDerivWithinAt :
         apply AnalyticOn.comp_analyticWithinOn ?_ (hp' i) (Set.mapsTo_univ _ _)
         exact LinearIsometryEquiv.analyticOn _ _
 
+/-- A version of `contDiffWithinAt_omega_iff_hasFDerivWithinAt` where all derivatives
+  are taken within the same set. -/
+theorem contDiffWithinAt_omega_iff_hasFDerivWithinAt' :
+    ContDiffWithinAt 𝕜 ω f s x ↔
+      ∃ u ∈ 𝓝[insert x s] x, AnalyticWithinOn 𝕜 f u ∧ u ⊆ insert x s ∧ ∃ f' : E → E →L[𝕜] F,
+        (∀ x ∈ u, HasFDerivWithinAt f (f' x) s x) ∧ ContDiffWithinAt 𝕜 ω f' s x := by
+  refine ⟨fun hf => ?_, ?_⟩
+  · obtain ⟨u, hu, h'u, f', huf', hf'⟩ := contDiffWithinAt_omega_iff_hasFDerivWithinAt.mp hf
+    obtain ⟨w, hw, hxw, hwu⟩ := mem_nhdsWithin.mp hu
+    rw [inter_comm] at hwu
+    refine ⟨insert x s ∩ w, inter_mem_nhdsWithin _ (hw.mem_nhds hxw), h'u.mono hwu,
+      inter_subset_left, f', fun y hy => ?_, ?_⟩
+    · refine ((huf' y <| hwu hy).mono hwu).mono_of_mem ?_
+      refine mem_of_superset ?_ (inter_subset_inter_left _ (subset_insert _ _))
+      exact inter_mem_nhdsWithin _ (hw.mem_nhds hy.2)
+    · exact hf'.mono_of_mem (nhdsWithin_mono _ (subset_insert _ _) hu)
+  · rw [← contDiffWithinAt_insert, contDiffWithinAt_omega_iff_hasFDerivWithinAt,
+      insert_eq_of_mem (mem_insert _ _)]
+    rintro ⟨u, hu, h'u, hus, f', huf', hf'⟩
+    exact ⟨u, hu, h'u, f', fun y hy => (huf' y hy).insert'.mono hus, hf'.insert.mono hus⟩
+
 /-! ### Smooth functions within a set -/
 
 variable (𝕜) in
