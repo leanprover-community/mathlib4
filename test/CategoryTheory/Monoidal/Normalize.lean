@@ -11,7 +11,7 @@ open MonoidalCategory
 -/
 elab "normalize% " t:term:51 : term => do
   let e ← Lean.Elab.Term.elabTerm t none
-  let ctx : Monoidal'.Context ← BicategoryLike.mkContext e
+  let ctx : Monoidal.Context ← BicategoryLike.mkContext e
   CoherenceM.run (ctx := ctx) do
     return (← BicategoryLike.eval `monoidal (← MkMor₂.ofExpr e)).expr.e.e
 
