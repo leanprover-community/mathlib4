@@ -746,13 +746,22 @@ theorem le_sum {ι} (f : ι → Cardinal) (i) : f i ≤ sum f := by
 theorem mk_sigma {ι} (f : ι → Type*) : #(Σ i, f i) = sum fun i => #(f i) :=
   mk_congr <| Equiv.sigmaCongrRight fun _ => outMkEquiv.symm
 
+theorem mk_sigma_congrRight {ι ι'} {f : ι → Type v} {g : ι' → Type v} (e : ι ≃ ι')
+    (h : ∀ i, #(f i) = #(g (e i))) : #(Σ i, f i) = #(Σ i, g i) :=
+  mk_congr <| Equiv.sigmaCongr e fun i ↦ Classical.choice <| Cardinal.eq.mp (h i)
+
+theorem mk_sigma_congrRight' {ι : Type u} {ι' : Type v} {f : ι → Type max w (max u v)}
+    {g : ι' → Type max w (max u v)} (e : ι ≃ ι')
+    (h : ∀ i, #(f i) = #(g (e i))) : #(Σ i, f i) = #(Σ i, g i) :=
+  mk_congr <| Equiv.sigmaCongr e fun i ↦ Classical.choice <| Cardinal.eq.mp (h i)
+
 theorem mk_sigma_congr {ι} {f g : ι → Type v} (h : ∀ i, #(f i) = #(g i)) :
-    #(Σ i, f i) = #(Σ i, g i) := by
-  simp_all only [mk_sigma]
+    #(Σ i, f i) = #(Σ i, g i) :=
+  mk_sigma_congrRight (Equiv.refl ι) h
 
 theorem mk_sigma_congr_subtype {ι : Type u} {f g : ι → Type v} {S : Set ι}
-    (h : ∀ i ∈ S, #(f i) = #(g i)) : #(Σ i : S, f i) = #(Σ i : S, g i) := by
-  simp_all only [mk_sigma, Subtype.coe_prop]
+    (h : ∀ i ∈ S, #(f i) = #(g i)) : #(Σ i : S, f i) = #(Σ i : S, g i) :=
+  mk_sigma_congrRight (Equiv.refl S) (fun i ↦ h i.1 i.2)
 
 @[simp]
 theorem sum_const (ι : Type u) (a : Cardinal.{v}) :
