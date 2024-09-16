@@ -29,7 +29,7 @@ the projection from `∀ i, α i` to `∀ i : I, α i` maps `μ` to `P I`.
 
 -/
 
-open Set Function
+open Set
 
 namespace MeasureTheory
 
