@@ -145,7 +145,6 @@ lemma isStronglyCartesian_of_exists_isCartesian' (p : 𝒳 ⥤ 𝒮) (h : ∀ (a
   apply IsStronglyCartesian.map_uniq p (p.map φ) ψ rfl φ'
   simp [hπ_comp, Φ]
 
-
 /-- Alternate constructor for `IsFibered`, a functor `p : 𝒳 ⥤ 𝒴` is fibered if any diagram of the
 form
 ```
