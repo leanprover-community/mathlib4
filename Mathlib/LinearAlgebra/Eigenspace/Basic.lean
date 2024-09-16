@@ -63,9 +63,9 @@ lemma ker_pow_le_ker_pow_of_le (f : End R M) (k l : ℕ) (hkl : k ≤ l) :
   rw [← pow_sub_mul_pow _ hkl]
   exact LinearMap.ker_le_ker_comp _ _
 
-/-- The submodule `eigenspace f μ` for a linear map `f` and a scalar `μ` consists of all vectors `x`
-    such that `f x = μ • x`. (Def 5.36 of [axler2015])
-TODO: update -/
+/-- The submodule `unifEigenspace f μ k` for a linear map `f`, a scalar `μ`,
+and a number `k : ENat` is the kernel of `(f - μ • id) ^ k` if `k` is a natural number,
+or the union of all these kernels if `k = ∞`. -/
 def unifEigenspace (f : End R M) (μ : R) (k : ENat) : Submodule R M :=
   ⨆ l : ℕ, ⨆ _ : l ≤ k, LinearMap.ker ((f - μ • 1) ^ l)
 
@@ -135,12 +135,28 @@ lemma unifEigenspace_zero_nat (f : End R M) (k : ℕ) :
     f.unifEigenspace 0 k = LinearMap.ker (f ^ k) := by
   ext; simp [mem_unifEigenspace_nat]
 
+/-- Let `M` be an `R`-module, and `f` an `R`-linear endomorphism of `M`,
+and let `μ : R` and `k : ENat` be given.
+Then `x : M` satisfies `HasUnifEigenvector f μ k x` if
+`x ∈ f.unifEigenspace μ k` and `x ≠ 0`.
+
+For `k = 1`, this means that `x` is an eigenvector of `f` with eigenvalue `μ`. -/
 def HasUnifEigenvector (f : End R M) (μ : R) (k : ENat) (x : M) : Prop :=
   x ∈ f.unifEigenspace μ k ∧ x ≠ 0
 
+/-- Let `M` be an `R`-module, and `f` an `R`-linear endomorphism of `M`.
+Then `μ : R` and `k : ENat` satisfy `HasUnifEigenvalue f μ k` if
+`f.unifEigenspace μ k ≠ ⊥`.
+
+For `k = 1`, this means that `μ` is an eigenvalue of `f`. -/
 def HasUnifEigenvalue (f : End R M) (μ : R) (k : ENat) : Prop :=
   f.unifEigenspace μ k ≠ ⊥
 
+/-- Let `M` be an `R`-module, and `f` an `R`-linear endomorphism of `M`.
+For `k : ENat`, we define `UnifEigenvalues f k` to be the type of all
+`μ : R` that satisfy `f.HasUnifEigenvalue μ k`.
+
+For `k = 1` this is the type of all eigenvalues of `f`. -/
 def UnifEigenvalues (f : End R M) (k : ENat) : Type _ :=
   { μ : R // f.HasUnifEigenvalue μ k }
 
