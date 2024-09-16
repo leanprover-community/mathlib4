@@ -1880,7 +1880,7 @@ theorem erase_getElem [DecidableEq ι] {l : List ι} {i : ℕ} (hi : i < l.lengt
     | succ i =>
       have hi' : i < l.length := by simpa using hi
       if ha : a = l[i] then
-        simpa [ha] using .trans (perm_cons_erase (l.getElem_mem i _)) (.cons _ (IH hi'))
+        simpa [ha] using .trans (perm_cons_erase (getElem_mem _)) (.cons _ (IH hi'))
       else
         simpa [ha] using IH hi'
 
