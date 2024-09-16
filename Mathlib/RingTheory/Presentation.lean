@@ -173,7 +173,7 @@ end Localization
 
 section BaseChange
 
-variable {T} [CommRing T] [Algebra R T] (P : Presentation R S)
+variable (T) [CommRing T] [Algebra R T] (P : Presentation R S)
 
 private lemma span_range_relation_eq_ker_baseChange :
     Ideal.span (Set.range fun i ↦ (MvPolynomial.map (algebraMap R T)) (P.relation i)) =
@@ -232,7 +232,11 @@ def baseChange : Presentation T (T ⊗[R] S) where
   __ := Generators.baseChange P.toGenerators
   rels := P.rels
   relation i := MvPolynomial.map (algebraMap R T) (P.relation i)
-  span_range_relation_eq_ker := P.span_range_relation_eq_ker_baseChange
+  span_range_relation_eq_ker := P.span_range_relation_eq_ker_baseChange T
+
+instance baseChange_isFinite [P.IsFinite] : (P.baseChange T).IsFinite where
+  finite_vars := inferInstanceAs <| Finite (P.vars)
+  finite_rels := inferInstanceAs <| Finite (P.rels)
 
 end BaseChange
 
