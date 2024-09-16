@@ -26,82 +26,85 @@ variable {α : Type*} {m : List α}
 theorem groupBy_nil (r : α → α → Bool) : groupBy r [] = [] :=
   rfl
 
-private theorem join_groupBy_loop (r : α → α → Bool) (l : List α) (a : α) (g : List α)
-    (gs : List (List α)) :
-    (groupBy.loop r l a g gs).join = gs.reverse.join ++ g.reverse ++ a::l := by
-  revert a g gs
-  induction l with
+private theorem groupBy_loop_eq_append {r : α → α → Bool} {l : List α} {a : α} {g : List α}
+    (gs : List (List α)) : groupBy.loop r l a g gs = gs.reverse ++ groupBy.loop r l a g [] := by
+  induction l generalizing a g gs with
   | nil => simp [groupBy.loop]
   | cons b l IH =>
-    intro a g gs
-    rw [groupBy.loop]
+    simp_rw [groupBy.loop]
+    split <;> rw [IH]
+    conv_rhs => rw [IH]
+    simp
+
+private theorem join_groupBy_loop {r : α → α → Bool} {l : List α} {a : α} {g : List α} :
+    (groupBy.loop r l a g []).join = g.reverse ++ a :: l := by
+  induction l generalizing a g with
+  | nil => simp [groupBy.loop]
+  | cons b l IH =>
+    rw [groupBy.loop, groupBy_loop_eq_append [_]]
     split <;> simp [IH]
 
 @[simp]
 theorem join_groupBy (r : α → α → Bool) (l : List α) : (l.groupBy r).join = l :=
   match l with
   | nil => rfl
-  | cons _ _ => join_groupBy_loop _ _ _ _ _
+  | cons _ _ => join_groupBy_loop
 
-private theorem nil_not_mem_groupBy_loop (r : α → α → Bool) (l : List α) (a : α) (g : List α)
-    {gs : List (List α)} (h : [] ∉ gs) : [] ∉ groupBy.loop r l a g gs := by
-  induction l generalizing a g gs with
+private theorem nil_not_mem_groupBy_loop {r : α → α → Bool} {l : List α} {a : α} {g : List α} :
+    [] ∉ groupBy.loop r l a g [] := by
+  induction l generalizing a g with
   | nil =>
-    simpa [groupBy.loop]
+    simp [groupBy.loop]
   | cons b l IH =>
     rw [groupBy.loop]
     split
-    · exact IH _ _ h
-    · apply IH
-      simpa using h
+    · exact IH
+    · rw [groupBy_loop_eq_append, mem_append]
+      simpa using IH
 
 theorem nil_not_mem_groupBy (r : α → α → Bool) (l : List α) : [] ∉ l.groupBy r :=
   match l with
   | nil => not_mem_nil _
-  | cons _ _ => nil_not_mem_groupBy_loop _ _ _ _ <| not_mem_nil _
+  | cons _ _ => nil_not_mem_groupBy_loop
 
 theorem ne_nil_of_mem_groupBy (r : α → α → Bool) {l : List α} (h : m ∈ l.groupBy r) : m ≠ [] := by
   rintro rfl
   exact nil_not_mem_groupBy r l h
 
 private theorem chain'_of_mem_groupBy_loop {r : α → α → Bool} {l : List α} {a : α} {g : List α}
-    (hga : ∀ b ∈ g.head?, r b a) (hg : g.Chain' fun y x ↦ r x y) {gs : List (List α)}
-    (hgs : ∀ m ∈ gs, m.Chain' fun x y ↦ r x y) (h : m ∈ groupBy.loop r l a g gs) :
-    m.Chain' fun x y ↦ r x y := by
-  induction l generalizing a g gs with
+    (hga : ∀ b ∈ g.head?, r b a) (hg : g.Chain' fun y x ↦ r x y)
+    (h : m ∈ groupBy.loop r l a g []) : m.Chain' fun x y ↦ r x y := by
+  induction l generalizing a g with
   | nil =>
     rw [groupBy.loop, reverse_cons, mem_append, mem_reverse, mem_singleton] at h
     obtain hm | rfl := h
-    · exact hgs m hm
+    · exact (not_mem_nil m hm).elim
     · apply List.chain'_reverse.1
       rw [reverse_reverse]
       exact chain'_cons'.2 ⟨hga, hg⟩
   | cons b l IH =>
     simp [groupBy.loop] at h
     split at h
-    · apply IH _ (chain'_cons'.2 ⟨hga, hg⟩) hgs h
+    · apply IH _ (chain'_cons'.2 ⟨hga, hg⟩) h
       intro b hb
       rw [head?_cons, Option.mem_some_iff] at hb
       rwa [← hb]
-    · apply IH _ chain'_nil _ h
-      · rintro _ ⟨⟩
-      · intro m
-        rw [mem_cons]
-        rintro (rfl | hm)
-        · apply List.chain'_reverse.1
-          rw [reverse_append, reverse_cons, reverse_nil, nil_append, reverse_reverse]
-          exact chain'_cons'.2 ⟨hga, hg⟩
-        · exact hgs _ hm
+    · rw [groupBy_loop_eq_append, mem_append, reverse_singleton, mem_singleton] at h
+      obtain rfl | hm := h
+      · apply List.chain'_reverse.1
+        rw [reverse_append, reverse_cons, reverse_nil, nil_append, reverse_reverse]
+        exact chain'_cons'.2 ⟨hga, hg⟩
+      · apply IH _ chain'_nil hm
+        rintro _ ⟨⟩
 
 theorem chain'_of_mem_groupBy {r : α → α → Bool} {l : List α} (h : m ∈ l.groupBy r) :
     m.Chain' fun x y ↦ r x y := by
   cases l with
   | nil => cases h
   | cons a l =>
-    apply chain'_of_mem_groupBy_loop _ _ _ h
+    apply chain'_of_mem_groupBy_loop _ _ h
     · rintro _ ⟨⟩
     · exact chain'_nil
-    · rintro _ ⟨⟩
 
 private theorem chain'_last_head_groupBy_loop {r : α → α → Bool} (l : List α) {a : α}
     {g : List α} {gs : List (List α)} (hgs' : [] ∉ gs)
