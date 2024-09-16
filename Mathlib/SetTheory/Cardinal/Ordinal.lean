@@ -16,8 +16,7 @@ using ordinals.
 
 ## Main definitions
 
-* The function `Cardinal.aleph'` gives the cardinals listed by their ordinal
-  index, and is the inverse of `Cardinal.aleph/idx`.
+* The function `Cardinal.aleph'` gives the cardinals listed by their ordinal index.
   `aleph' n = n`, `aleph' ω = ℵ₀`, `aleph' (ω + 1) = succ ℵ₀`, etc.
   It is an order isomorphism between ordinals and cardinals.
 * The function `Cardinal.aleph` gives the infinite cardinals listed by their
@@ -29,13 +28,11 @@ using ordinals.
   `beth (succ o) = 2 ^ beth o`, and for a limit ordinal `o`, `beth o` is the supremum of `beth a`
   for `a < o`.
 
-## Main Statements
+## Main statements
 
 * `Cardinal.mul_eq_max` and `Cardinal.add_eq_max` state that the product (resp. sum) of two infinite
   cardinals is just their maximum. Several variations around this fact are also given.
 * `Cardinal.mk_list_eq_mk` : when `α` is infinite, `α` and `List α` have the same cardinality.
-* simp lemmas for inequalities between `bit0 a` and `bit1 b` are registered, making `simp`
-  able to prove inequalities about numeral cardinals.
 
 ## Tags
 
