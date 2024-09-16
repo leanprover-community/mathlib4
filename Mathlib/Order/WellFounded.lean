@@ -168,7 +168,7 @@ theorem StrictMono.le_apply [WellFoundedLT β] {f : β → β} (hf : StrictMono 
   obtain ⟨m, hm, hm'⟩ := wellFounded_lt.has_min _ H
   exact hm' _ (hf hm) hm
 
-/-- A strict monotonic function `f` on a well order satisfies `x ≤ f x` for all `x`. -/
+/-- A strictly monotone function `f` on a well-order satisfies `x ≤ f x` for all `x`. -/
 theorem StrictMono.id_le [WellFoundedLT β] {f : β → β} (hf : StrictMono f) : id ≤ f :=
   hf.le_apply
 
