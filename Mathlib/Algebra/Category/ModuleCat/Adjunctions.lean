@@ -7,7 +7,6 @@ import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 import Mathlib.CategoryTheory.Monoidal.Functorial
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
-import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
 The functor of forming finitely supported functions on a type with values in a `[Ring R]`

@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
 import Mathlib.Algebra.Category.ModuleCat.Sheaf
-import Mathlib.CategoryTheory.Sites.Limits
 
 /-! # Limits in categories of sheaves of modules
 

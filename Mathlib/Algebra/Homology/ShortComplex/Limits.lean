@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.ShortComplex.Basic
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
 /-!

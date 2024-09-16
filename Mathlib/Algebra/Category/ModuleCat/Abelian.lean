@@ -3,10 +3,10 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.Algebra.Category.ModuleCat.Kernels
 import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.CategoryTheory.Abelian.Basic
+import Mathlib.LinearAlgebra.Isomorphisms
 
 /-!
 # The category of left R-modules is abelian.

@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.Algebra.Category.Grp.Colimits
-import Mathlib.Algebra.Category.Grp.Limits
 import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 
 /-!
 # The category of abelian groups is abelian

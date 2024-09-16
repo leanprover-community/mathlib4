@@ -6,8 +6,6 @@ Authors: Joël Riou
 import Mathlib.Algebra.Homology.HomotopyCategory
 import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.CategoryTheory.Shift.Quotient
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.Tactic.Linarith
 
 /-!
 # The shift on cochain complexes and on the homotopy category

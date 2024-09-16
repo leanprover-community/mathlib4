@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Alex J. Best
 -/
 import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.Tactic.IntervalCases
 
 /-!
 # Polynomials of specific degree

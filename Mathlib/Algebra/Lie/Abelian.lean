@@ -3,8 +3,8 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.IdealOperations
+import Mathlib.Algebra.Lie.OfAssociative
 
 /-!
 # Trivial Lie modules and Abelian Lie algebras

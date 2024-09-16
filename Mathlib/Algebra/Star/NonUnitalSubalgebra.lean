@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
-import Mathlib.Algebra.Star.StarAlgHom
 import Mathlib.Algebra.Star.Center
+import Mathlib.Algebra.Star.StarAlgHom
 
 /-!
 # Non-unital Star Subalgebras

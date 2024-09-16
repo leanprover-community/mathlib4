@@ -3,10 +3,6 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Multiset.Basic
 import Mathlib.Algebra.BigOperators.Finprod
 
 /-!

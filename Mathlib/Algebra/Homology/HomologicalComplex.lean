@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison
 -/
 import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.CategoryTheory.Subobject.Limits
-import Mathlib.CategoryTheory.GradedObject
 import Mathlib.Algebra.Homology.ShortComplex.Basic
+import Mathlib.CategoryTheory.GradedObject
+import Mathlib.CategoryTheory.Subobject.Limits
 
 /-!
 # Homological complexes.

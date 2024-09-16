@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Lie.EngelSubalgebra
-import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Module.LinearMap.Polynomial
 import Mathlib.LinearAlgebra.Eigenspace.Zero
 

@@ -3,11 +3,11 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.CategoryTheory.Preadditive.Injective
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
-import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.CategoryTheory.Preadditive.Injective
 import Mathlib.LinearAlgebra.LinearPMap
 import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.RingTheory.Ideal.Basic
 
 /-!
 # Injective modules

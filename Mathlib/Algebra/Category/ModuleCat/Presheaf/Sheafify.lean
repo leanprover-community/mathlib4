@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Category.ModuleCat.Sheaf.ChangeOfRings
-import Mathlib.CategoryTheory.Sites.LocallySurjective
 
 /-!
 # The associated sheaf of a presheaf of modules

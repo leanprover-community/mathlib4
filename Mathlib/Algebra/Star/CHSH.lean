@@ -6,7 +6,7 @@ Authors: Scott Morrison
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Data.Real.Sqrt
-import Mathlib.Tactic.Polyrith
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # The Clauser-Horne-Shimony-Holt inequality and Tsirelson's inequality.

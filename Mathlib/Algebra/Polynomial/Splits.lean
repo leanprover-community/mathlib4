@@ -5,7 +5,6 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.Algebra.Polynomial.Lifts
-import Mathlib.Data.List.Prime
 import Mathlib.RingTheory.Polynomial.Tower
 
 /-!

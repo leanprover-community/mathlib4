@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
 import Mathlib.Algebra.Jordan.Basic
-import Mathlib.Algebra.Module.Defs
 
 /-!
 # Symmetrized algebra

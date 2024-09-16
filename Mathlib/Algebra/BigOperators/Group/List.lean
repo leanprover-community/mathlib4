@@ -5,14 +5,11 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Int
-import Mathlib.Algebra.Group.Nat
-import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.Group.Units
+import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Perm
 import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.List.Range
 import Mathlib.Data.List.Rotate
-import Mathlib.Data.List.Pairwise
 
 /-!
 # Sums and products from lists

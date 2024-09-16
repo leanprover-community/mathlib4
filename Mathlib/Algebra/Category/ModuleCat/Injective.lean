@@ -3,10 +3,8 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 import Mathlib.Algebra.Category.Grp.EnoughInjectives
-import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
-import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 
 /-!
 # Category of $R$-modules has enough injectives

@@ -7,11 +7,8 @@ import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Module.Synonym
-import Mathlib.Data.Prod.Lex
-import Mathlib.Data.Set.Image
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Order.Monotone.Monovary
-import Mathlib.Tactic.Abel
 
 /-!
 # Rearrangement inequality

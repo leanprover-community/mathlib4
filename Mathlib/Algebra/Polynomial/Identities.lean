@@ -5,7 +5,6 @@ Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Tactic.LinearCombination
-import Mathlib.Tactic.Ring
 
 /-!
 # Theory of univariate polynomials

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Louis Carlin, Mario Carneiro
 -/
 import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Order.RelClasses
 

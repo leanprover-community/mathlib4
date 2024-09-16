@@ -3,9 +3,7 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Lie.TensorProduct
-import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!

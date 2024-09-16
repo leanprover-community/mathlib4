@@ -6,7 +6,6 @@ Authors: Oliver Nash
 import Mathlib.Algebra.FreeNonUnitalNonAssocAlgebra
 import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
 import Mathlib.Algebra.Lie.UniversalEnveloping
-import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Free Lie algebras
