@@ -250,6 +250,39 @@ def restrict_monoidHom [MulOneClass M] (f : M →* K) (h : ∀ x, IsIntegral ℤ
   map_one' := by simp only [restrict, map_one, mk_one]
   map_mul' x y := by simp only [restrict, map_mul, mk_mul_mk _]
 
+/-- The ring homomorphism `(𝓞 K) →+* (𝓞 L)` given by restricting a ring homomorphism
+  `f : K →+* L` to `𝓞 K`. -/
+def mapRingHom {K L F : Type*} [Field K] [Field L] [FunLike F K L]
+    [RingHomClass F K L] (f : F) : (𝓞 K) →+* (𝓞 L) where
+  toFun k := ⟨f k, map_isIntegral_int f k.2⟩
+  map_zero' := by ext; simp only [map_mk, map_zero]
+  map_one' := by ext; simp only [map_mk, map_one]
+  map_add' x y:= by ext; simp only [map_mk, map_add]
+  map_mul' x y := by ext; simp only [map_mk, _root_.map_mul]
+
+/-- The ring isomorphsim `(𝓞 K) ≃+* (𝓞 L)` given by restricting
+  a ring isomorphsim `e : K ≃+* L` to `𝓞 K`. -/
+def mapRingEquiv {K L E : Type*} [Field K] [Field L] [EquivLike E K L]
+    [RingEquivClass E K L] (e : E) : (𝓞 K) ≃+* (𝓞 L) :=
+  RingEquiv.ofRingHom (mapRingHom e) (mapRingHom (e : K ≃+* L).symm)
+    (by ext x; simpa [mapRingHom] using EquivLike.right_inv e x.1)
+      (by ext x; simpa [mapRingHom] using EquivLike.left_inv e x.1)
+
+/-- The algebra homomorphism `(𝓞 K) →ₐ[𝓞 k] (𝓞 L)` given by restricting a algebra homomorphism
+  `f : K →ₐ[k] L` to `𝓞 K`. -/
+def mapAlgHom {k K L F : Type*} [Field k] [Field K] [Field L] [Algebra k K]
+    [Algebra k L] [FunLike F K L] [AlgHomClass F k K L] (f : F) : (𝓞 K) →ₐ[𝓞 k] (𝓞 L) where
+  toRingHom := mapRingHom f
+  commutes' x := SetCoe.ext (AlgHomClass.commutes ((f : K →ₐ[k] L).restrictScalars (𝓞 k)) x)
+
+/-- The isomorphism of algebras `(𝓞 K) ≃ₐ[𝓞 k] (𝓞 L)` given by restricting
+  an isomorphism of algebras `e : K ≃ₐ[k] L` to `𝓞 K`. -/
+def mapAlgEquiv {k K L E : Type*} [Field k] [Field K] [Field L] [Algebra k K]
+    [Algebra k L] [EquivLike E K L] [AlgEquivClass E k K L] (e : E) : (𝓞 K) ≃ₐ[𝓞 k] (𝓞 L) :=
+  AlgEquiv.ofAlgHom (mapAlgHom e) (mapAlgHom (e : K ≃ₐ[k] L).symm)
+    (by ext x; simpa [mapAlgHom, mapRingHom] using EquivLike.right_inv e x.1)
+      (by ext x; simpa [mapAlgHom, mapRingHom] using EquivLike.left_inv e x.1)
+
 end RingOfIntegers
 
 variable [NumberField K]
