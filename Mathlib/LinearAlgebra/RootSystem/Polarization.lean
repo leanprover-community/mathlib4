@@ -62,11 +62,22 @@ variable {ι R M N : Type*}
 theorem isSumSq_of_sum_of_squares [Mul R] [AddCommMonoid R] (s : Finset ι) (f : ι → R) :
     IsSumSq (∑ i ∈ s, f i * f i) := by
   induction s using Finset.cons_induction with
-  |empty =>
+  | empty =>
     simpa only [Finset.sum_empty] using IsSumSq.zero
   | cons i s his h =>
     simp only [Finset.sum_cons]
     exact IsSumSq.sq_add (f i) (∑ i ∈ s, f i * f i) h
+
+theorem sum_of_squares_eq_zero_iff [LinearOrderedCommRing R] (s : Finset ι) (f : ι → R) :
+    ∑ i ∈ s, f i * f i = 0 ↔ ∀ i ∈ s, f i = 0 := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons i s his h =>
+    simp only [Finset.sum_cons, Finset.mem_cons, forall_eq_or_imp]
+    refine ⟨fun hc => ?_, fun hz => by simpa [hz.1] using h.mpr hz.2⟩
+    have hhi : f i * f i = 0 := by
+      linarith [mul_self_nonneg (f i), IsSumSq.nonneg <| isSumSq_of_sum_of_squares s f]
+    exact ⟨zero_eq_mul_self.mp hhi.symm, h.mp (by linarith)⟩
 
 namespace RootPairing
 
@@ -146,7 +157,7 @@ theorem polInner_reflection_reflection_apply (i : ι) (x y : M) :
 -/
 
 /-- SGA3 XXI Lemma 1.2.1 (10) -/
-lemma PolInner_self_coroot (P : RootPairing ι R M N) (i : ι) :
+lemma polInner_self_coroot (P : RootPairing ι R M N) (i : ι) :
     (P.PolInner (P.root i) (P.root i)) • P.coroot i = 2 • P.Polarization (P.root i) := by
   have hP : P.Polarization (P.root i) =
       ∑ j : ι, P.pairing i (P.reflection_perm i j) • P.coroot (P.reflection_perm i j) := by
@@ -165,6 +176,18 @@ lemma PolInner_self_coroot (P : RootPairing ι R M N) (i : ι) :
   rw [Finset.sum_smul, add_neg_eq_zero.mpr rfl]
   exact sub_eq_zero_of_eq rfl
 
+lemma flip_polInner_self_root (P : RootPairing ι R M N) (i : ι) :
+    (P.flip.PolInner (P.coroot i) (P.coroot i)) • P.root i =
+      2 • P.flip.Polarization (P.coroot i) :=
+  polInner_self_coroot (P.flip) i
+
+lemma four_smul_flip_polarization_polarization (P : RootPairing ι R M N) (i : ι) :
+    4 • P.flip.Polarization (P.Polarization (P.root i)) =
+    (P.PolInner (P.root i) (P.root i)) •
+      (P.flip.PolInner (P.coroot i) (P.coroot i)) • P.root i := by
+  rw [show 4 = 2 • 2 by rfl, smul_assoc, ← map_nsmul, ← polInner_self_coroot, map_smul,
+    flip_polInner_self_root, smul_comm]
+
 end CommRing
 
 section LinearOrderedCommRing
@@ -172,11 +195,27 @@ section LinearOrderedCommRing
 variable [Fintype ι] [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N]
 [Module R N] (P : RootPairing ι R M N)
 
+--use IsSumSq.nonneg ?
 theorem polInner_self_non_neg (x : M) : 0 ≤ P.PolInner x x := by
   simp only [PolInner, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_comp, comp_apply,
     polarization_self, toLin_toPerfectPairing]
   exact Finset.sum_nonneg fun i _ =>
     (sq (P.toPerfectPairing x (P.coroot i))) ▸ sq_nonneg (P.toPerfectPairing x (P.coroot i))
+
+theorem polInner_self_zero_iff (x : M) :
+    P.PolInner x x = 0 ↔ ∀ i, P.toPerfectPairing x (P.coroot i) = 0 := by
+  simp only [PolInner_apply, PerfectPairing.toLin_apply, LinearMap.coe_comp, comp_apply,
+    Polarization_apply, map_sum, map_smul, smul_eq_mul]
+  convert sum_of_squares_eq_zero_iff Finset.univ fun i => (P.toPerfectPairing x) (P.coroot i)
+  constructor
+  · intro x _
+    exact x
+  · rename_i i
+    intro x
+    refine x ?_
+    exact Finset.mem_univ i
+
+-- Use four_smul_flip_polarization_polarization to get injectivity of Polarization.
 
 --lemma coxeter_weight_leq_4 :
 
