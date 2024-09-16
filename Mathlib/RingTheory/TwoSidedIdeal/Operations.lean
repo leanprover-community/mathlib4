@@ -177,13 +177,6 @@ lemma mem_span_iff_mem_addSubgroup_closure_nonunital {s : Set R} {z : R} :
       · refine .inr <| ⟨r' * y, ⟨r', mem_univ _, y, hy, rfl⟩, r * x, mem_univ _, ?_⟩
         simp [mul_assoc]
 
-proof_wanted mem_span_iff_exists_nonunital {s : Set R} {z : R} :
-    z ∈ span s ↔
-    ∃ (t : Finset R) (_ : (t : Set R) ⊆ s) (n : R → ℤ)
-      (α : R → R) (β : R → R) (xy : R → R →₀ (R × R)),
-      z = ∑ r ∈ t, (n r • r + α r * r + r * β r +
-        ∑ i ∈ (xy r).support, (xy r i).1 * r * (xy r i).2)
-
 end NonUnitalRing
 
 section Ring
