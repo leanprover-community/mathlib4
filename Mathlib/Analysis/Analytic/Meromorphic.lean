@@ -108,7 +108,7 @@ lemma inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicA
   · -- interesting case: use local formula for `f`
     obtain ⟨n, g, hg_an, hg_ne, hg_eq⟩ := hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h_eq
     have : AnalyticAt 𝕜 (fun z ↦ (z - x) ^ (m + 1)) x :=
-      ((analyticAt_id 𝕜 x).sub analyticAt_const).pow _
+      (analyticAt_id.sub analyticAt_const).pow _
     -- use `m + 1` rather than `m` to damp out any silly issues with the value at `z = x`
     refine ⟨n + 1, (this.smul <| hg_an.inv hg_ne).congr ?_⟩
     filter_upwards [hg_eq, hg_an.continuousAt.eventually_ne hg_ne] with z hfg hg_ne'
@@ -153,7 +153,7 @@ theorem eventually_analyticAt [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜}
     apply Filter.Eventually.of_forall
     intro y hy hf
     rw [Set.mem_compl_iff, Set.mem_singleton_iff] at hy
-    have := ((analyticAt_id.sub analyticAt_const).pow n).inv
+    have := ((analyticAt_id (𝕜 := 𝕜).sub analyticAt_const).pow n).inv
       (pow_ne_zero _ (sub_ne_zero_of_ne hy))
     apply (this.smul hf).congr ∘ (eventually_ne_nhds hy).mono
     intro z hz
