@@ -297,22 +297,3 @@ lemma AnalyticWithinOn.mono {f : E → F} {s t : Set E} (h : AnalyticWithinOn �
 @[simp] theorem analyticWithinAt_insert_self {f : E → F} {s : Set E} {x : E} :
     AnalyticWithinAt 𝕜 f (insert x s) x ↔ AnalyticWithinAt 𝕜 f s x := by
   simp [AnalyticWithinAt]
-
-
-/-!
-### Analyticity within implies smoothness
--/
-
-/-
-lemma AnalyticWithinAt.contDiffWithinAt [CompleteSpace F] {f : E → F} {s : Set E} {x : E}
-    (h : AnalyticWithinAt 𝕜 f s x) {n : ℕ∞} : ContDiffWithinAt 𝕜 n f s x := by
-  rcases h.exists_analyticAt with ⟨g, fx, fg, hg⟩
-  exact hg.contDiffAt.contDiffWithinAt.congr (fg.mono (subset_insert _ _)) fx
-
-lemma AnalyticWithinOn.contDiffOn [CompleteSpace F] {f : E → F} {s : Set E}
-    (h : AnalyticWithinOn 𝕜 f s) {n : ℕ∞} : ContDiffOn 𝕜 n f s :=
-  fun x m ↦ (h x m).contDiffWithinAt
-<<<<<<< HEAD
--/
-=======
->>>>>>> origin/master
