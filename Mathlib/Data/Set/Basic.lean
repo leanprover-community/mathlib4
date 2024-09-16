@@ -622,11 +622,11 @@ theorem union_self (a : Set α) : a ∪ a = a :=
 
 @[simp]
 theorem union_empty (a : Set α) : a ∪ ∅ = a :=
-  ext fun _ => or_false_iff _
+  ext fun _ => iff_of_eq (or_false _)
 
 @[simp]
 theorem empty_union (a : Set α) : ∅ ∪ a = a :=
-  ext fun _ => false_or_iff _
+  ext fun _ => iff_of_eq (false_or _)
 
 theorem union_comm (a b : Set α) : a ∪ b = b ∪ a :=
   ext fun _ => or_comm
@@ -740,11 +740,11 @@ theorem inter_self (a : Set α) : a ∩ a = a :=
 
 @[simp]
 theorem inter_empty (a : Set α) : a ∩ ∅ = ∅ :=
-  ext fun _ => and_false_iff _
+  ext fun _ => iff_of_eq (and_false _)
 
 @[simp]
 theorem empty_inter (a : Set α) : ∅ ∩ a = ∅ :=
-  ext fun _ => false_and_iff _
+  ext fun _ => iff_of_eq (false_and _)
 
 theorem inter_comm (a b : Set α) : a ∩ b = b ∩ a :=
   ext fun _ => and_comm
@@ -1134,7 +1134,7 @@ theorem sep_eq_self_iff_mem_true : { x ∈ s | p x } = s ↔ ∀ x ∈ s, p x :=
 
 @[simp]
 theorem sep_eq_empty_iff_mem_false : { x ∈ s | p x } = ∅ ↔ ∀ x ∈ s, ¬p x := by
-  simp_rw [Set.ext_iff, mem_sep_iff, mem_empty_iff_false, iff_false_iff, not_and]
+  simp_rw [Set.ext_iff, mem_sep_iff, mem_empty_iff_false, iff_false, not_and]
 
 --Porting note (#10618): removed `simp` attribute because `simp` can prove it
 theorem sep_true : { x ∈ s | True } = s :=
@@ -1187,7 +1187,7 @@ theorem Nonempty.subset_singleton_iff (h : s.Nonempty) : s ⊆ {a} ↔ s = {a} :
   subset_singleton_iff_eq.trans <| or_iff_right h.ne_empty
 
 theorem ssubset_singleton_iff {s : Set α} {x : α} : s ⊂ {x} ↔ s = ∅ := by
-  rw [ssubset_iff_subset_ne, subset_singleton_iff_eq, or_and_right, and_not_self_iff, or_false_iff,
+  rw [ssubset_iff_subset_ne, subset_singleton_iff_eq, or_and_right, and_not_self_iff, or_false,
     and_iff_left_iff_imp]
   exact fun h => h ▸ (singleton_ne_empty _).symm
 
@@ -1581,7 +1581,7 @@ theorem insert_diff_self_of_not_mem {a : α} {s : Set α} (h : a ∉ s) : insert
 theorem insert_diff_eq_singleton {a : α} {s : Set α} (h : a ∉ s) : insert a s \ s = {a} := by
   ext
   rw [Set.mem_diff, Set.mem_insert_iff, Set.mem_singleton_iff, or_and_right, and_not_self_iff,
-    or_false_iff, and_iff_left_iff_imp]
+    or_false, and_iff_left_iff_imp]
   rintro rfl
   exact h
 

@@ -208,8 +208,10 @@ theorem nim_add_fuzzy_zero_iff {o₁ o₂ : Ordinal} : nim o₁ + nim o₂ ‖ 0
 theorem nim_equiv_iff_eq {o₁ o₂ : Ordinal} : nim o₁ ≈ nim o₂ ↔ o₁ = o₂ := by
   rw [(impartial_nim o₂).equiv_iff_add_equiv_zero, nim_add_equiv_zero_iff]
 
-/-- The Grundy value of an impartial game, the ordinal which corresponds to the game of nim that the
-game is equivalent to. -/
+/-- The Grundy value of an impartial game is recursively defined as the minimum excluded value of
+the Grundy values of either its left or right options.
+
+This is the ordinal which corresponds to the game of nim that the game is equivalent to. -/
 noncomputable def grundyValue (G : PGame.{u}) : Ordinal.{u} :=
   Ordinal.mex.{u, u} fun i => grundyValue (G.moveLeft i)
 termination_by G
