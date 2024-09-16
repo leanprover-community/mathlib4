@@ -119,7 +119,7 @@ theorem finite_integral_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r)
     rw [setLIntegral_congr_fun measurableSet_Ioc (ae_of_all _ h_int'),
       lintegral_mul_const' _ _ measure_ball_lt_top.ne]
     exact ENNReal.mul_lt_top
-      (finite_integral_rpow_sub_one_pow_aux (finrank ℝ E) hnr).ne measure_ball_lt_top.ne
+      (finite_integral_rpow_sub_one_pow_aux (finrank ℝ E) hnr) measure_ball_lt_top
   · -- The integral from 1 to ∞ is zero:
     have h_int'' : ∀ t ∈ Ioi (1 : ℝ), f t = 0 := fun t ht => by
       simp only [f, closedBall_rpow_sub_one_eq_empty_aux E hr ht, measure_empty]

@@ -80,7 +80,7 @@ private theorem symm_gen : map Prod.swap ((𝓤 α).lift' gen) ≤ (𝓤 α).lif
         { p : CauchyFilter α × CauchyFilter α | s ∈ (p.2.val ×ˢ p.1.val : Filter (α × α)) }
   have h₁ : map Prod.swap ((𝓤 α).lift' gen) = (𝓤 α).lift' f := by
     delta gen
-    simp [map_lift'_eq, monotone_setOf, Filter.monotone_mem, Function.comp,
+    simp [map_lift'_eq, monotone_setOf, Filter.monotone_mem, Function.comp_def,
       image_swap_eq_preimage_swap]
   have h₂ : (𝓤 α).lift' f ≤ (𝓤 α).lift' gen :=
     uniformity_lift_le_swap

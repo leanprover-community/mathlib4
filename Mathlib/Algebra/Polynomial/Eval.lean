@@ -400,9 +400,9 @@ theorem eval_mul_X : (p * X).eval x = p.eval x * x := by
 
 @[simp]
 theorem eval_mul_X_pow {k : ℕ} : (p * X ^ k).eval x = p.eval x * x ^ k := by
-  induction' k with k ih
-  · simp
-  · simp [pow_succ, ← mul_assoc, ih]
+  induction k with
+  | zero => simp
+  | succ k ih => simp [pow_succ, ← mul_assoc, ih]
 
 theorem eval_sum (p : R[X]) (f : ℕ → R → R[X]) (x : R) :
     (p.sum f).eval x = p.sum fun n a => (f n a).eval x :=
@@ -511,15 +511,15 @@ theorem mul_X_comp : (p * X).comp r = p.comp r * r := by
 
 @[simp]
 theorem X_pow_comp {k : ℕ} : (X ^ k).comp p = p ^ k := by
-  induction' k with k ih
-  · simp
-  · simp [pow_succ, mul_X_comp, ih]
+  induction k with
+  | zero => simp
+  | succ k ih => simp [pow_succ, mul_X_comp, ih]
 
 @[simp]
 theorem mul_X_pow_comp {k : ℕ} : (p * X ^ k).comp r = p.comp r * r ^ k := by
-  induction' k with k ih
-  · simp
-  · simp [ih, pow_succ, ← mul_assoc, mul_X_comp]
+  induction k with
+  | zero => simp
+  | succ k ih => simp [ih, pow_succ, ← mul_assoc, mul_X_comp]
 
 @[simp]
 theorem C_mul_comp : (C a * p).comp r = C a * p.comp r := by
@@ -898,9 +898,9 @@ theorem eval₂_comp {x : S} : eval₂ f x (p.comp q) = eval₂ f (eval₂ f x q
 @[simp]
 theorem iterate_comp_eval₂ (k : ℕ) (t : S) :
     eval₂ f t (p.comp^[k] q) = (fun x => eval₂ f x p)^[k] (eval₂ f t q) := by
-  induction' k with k IH
-  · simp
-  · rw [Function.iterate_succ_apply', Function.iterate_succ_apply', eval₂_comp, IH]
+  induction k with
+  | zero => simp
+  | succ k IH => rw [Function.iterate_succ_apply', Function.iterate_succ_apply', eval₂_comp, IH]
 
 end
 

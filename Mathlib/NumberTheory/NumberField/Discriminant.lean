@@ -66,7 +66,7 @@ theorem discr_eq_discr_of_algEquiv {L : Type*} [Field L] [NumberField L] (f : K 
     Basis.map_apply]
   rfl
 
-open MeasureTheory MeasureTheory.Measure Zspan NumberField.mixedEmbedding
+open MeasureTheory MeasureTheory.Measure ZSpan NumberField.mixedEmbedding
   NumberField.InfinitePlace ENNReal NNReal Complex
 
 theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis :
@@ -95,7 +95,7 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
           coe_inv two_ne_zero, coe_ofNat, nnnorm_pow, NNReal.sqrt_sq]
       _ = (2 : ℝ≥0∞)⁻¹ ^ Fintype.card { w // IsComplex w } * NNReal.sqrt ‖discr K‖₊ := by
         rw [← Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two, Algebra.discr_reindex,
-          ← coe_discr, map_intCast, ← Complex.nnnorm_int]
+          ← coe_discr, map_intCast, ← Complex.nnnorm_intCast]
   ext : 2
   dsimp only [M]
   rw [Matrix.map_apply, Basis.toMatrix_apply, Basis.coe_reindex, Function.comp_apply,
@@ -194,7 +194,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
         convert_to _ ≤ (a m) * (1 + 1 / m : ℝ) ^ (2 * m) / (4 / π)
         · simp_rw [a, add_mul, one_mul, pow_succ, Nat.factorial_succ]
           field_simp; ring
-        · rw [_root_.le_div_iff (by positivity), pow_succ]
+        · rw [_root_.le_div_iff₀ (by positivity), pow_succ]
           convert (mul_le_mul h_m this (by positivity) (by positivity)) using 1
           field_simp; ring
       refine le_trans (le_of_eq (by field_simp; norm_num)) (one_add_mul_le_pow ?_ (2 * m))
@@ -233,7 +233,7 @@ Thus it follows from `mixedEmbedding.exists_primitive_element_lt_of_isComplex` a
 `x` of `K` such that `K = ℚ(x)` and the conjugates of `x` are all bounded by some quantity
 depending only on `N`.
 
-Since the primitive element `x` is constructed differently depending on wether `K` has a infinite
+Since the primitive element `x` is constructed differently depending on whether `K` has a infinite
 real place or not, the theorem is proved in two parts.
 -/
 
@@ -291,8 +291,8 @@ theorem rank_le_rankOfDiscrBdd :
       rw [Real.rpow_logb (lt_trans zero_lt_one h₂) (ne_of_gt h₂) (by positivity), ← mul_assoc,
             ← inv_div, inv_mul_cancel₀ (by norm_num), one_mul, Int.cast_natCast]
     · refine div_nonneg (Real.log_nonneg ?_) (Real.log_nonneg (le_of_lt h₂))
-      rw [mul_comm, ← mul_div_assoc, _root_.le_div_iff (by positivity), one_mul,
-        ← _root_.div_le_iff (by positivity)]
+      rw [mul_comm, ← mul_div_assoc, _root_.le_div_iff₀ (by positivity), one_mul,
+        ← _root_.div_le_iff₀ (by positivity)]
       exact le_trans (by norm_num) (Nat.one_le_cast.mpr (Nat.one_le_iff_ne_zero.mpr h_nz))
   · exact le_max_of_le_left h
 

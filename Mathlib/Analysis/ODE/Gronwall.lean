@@ -175,7 +175,7 @@ theorem dist_le_of_approx_trajectories_ODE
     (ha : dist (f a) (g a) ≤ δ) :
     ∀ t ∈ Icc a b, dist (f t) (g t) ≤ gronwallBound δ K (εf + εg) (t - a) :=
   have hfs : ∀ t ∈ Ico a b, f t ∈ @univ E := fun _ _ => trivial
-  dist_le_of_approx_trajectories_ODE_of_mem (fun t => (hv t).lipschitzOnWith _) hf hf'
+  dist_le_of_approx_trajectories_ODE_of_mem (fun t => (hv t).lipschitzOnWith) hf hf'
     f_bound hfs hg hg' g_bound (fun _ _ => trivial) ha
 
 include hv in
@@ -213,7 +213,7 @@ theorem dist_le_of_trajectories_ODE
     (ha : dist (f a) (g a) ≤ δ) :
     ∀ t ∈ Icc a b, dist (f t) (g t) ≤ δ * exp (K * (t - a)) :=
   have hfs : ∀ t ∈ Ico a b, f t ∈ @univ E := fun _ _ => trivial
-  dist_le_of_trajectories_ODE_of_mem (fun t => (hv t).lipschitzOnWith _) hf hf' hfs hg
+  dist_le_of_trajectories_ODE_of_mem (fun t => (hv t).lipschitzOnWith) hf hf' hfs hg
     hg' (fun _ _ => trivial) ha
 
 include hv in
@@ -354,5 +354,5 @@ theorem ODE_solution_unique
     (ha : f a = g a) :
     EqOn f g (Icc a b) :=
   have hfs : ∀ t ∈ Ico a b, f t ∈ @univ E := fun _ _ => trivial
-  ODE_solution_unique_of_mem_Icc_right (fun t => (hv t).lipschitzOnWith _) hf hf' hfs hg hg'
+  ODE_solution_unique_of_mem_Icc_right (fun t => (hv t).lipschitzOnWith) hf hf' hfs hg hg'
     (fun _ _ => trivial) ha

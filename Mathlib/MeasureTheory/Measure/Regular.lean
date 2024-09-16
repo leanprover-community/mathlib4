@@ -361,7 +361,7 @@ theorem _root_.MeasurableSet.exists_isOpen_diff_lt [OuterRegular μ] {A : Set α
     ∃ U, U ⊇ A ∧ IsOpen U ∧ μ U < ∞ ∧ μ (U \ A) < ε := by
   rcases A.exists_isOpen_lt_add hA' hε with ⟨U, hAU, hUo, hU⟩
   use U, hAU, hUo, hU.trans_le le_top
-  exact measure_diff_lt_of_lt_add hA hAU hA' hU
+  exact measure_diff_lt_of_lt_add hA.nullMeasurableSet hAU hA' hU
 
 protected theorem map [OpensMeasurableSpace α] [MeasurableSpace β] [TopologicalSpace β]
     [BorelSpace β] (f : α ≃ₜ β) (μ : Measure α) [OuterRegular μ] :
@@ -455,7 +455,7 @@ lemma of_restrict {μ : Measure α} {s : ℕ → Set α}
     (h : ∀ n, InnerRegularWRT (μ.restrict (s n)) p MeasurableSet)
     (hs : univ ⊆ ⋃ n, s n) (hmono : Monotone s) : InnerRegularWRT μ p MeasurableSet := by
   intro F hF r hr
-  have hBU : ⋃ n, F ∩ s n = F := by  rw [← inter_iUnion, univ_subset_iff.mp hs, inter_univ]
+  have hBU : ⋃ n, F ∩ s n = F := by rw [← inter_iUnion, univ_subset_iff.mp hs, inter_univ]
   have : μ F = ⨆ n, μ (F ∩ s n) := by
     rw [← measure_iUnion_eq_iSup, hBU]
     exact Monotone.directed_le fun m n h ↦ inter_subset_inter_right _ (hmono h)
@@ -574,7 +574,7 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
     refine
       ⟨Uᶜ, compl_subset_compl.2 hsU, Fᶜ, compl_subset_compl.2 hFs, hUo.isClosed_compl,
         hFc.isOpen_compl, ?_⟩
-    simp only [measure_compl_le_add_iff, *, hUo.measurableSet, hFc.measurableSet, true_and_iff]
+    simp only [measure_compl_le_add_iff, *, hUo.measurableSet, hFc.measurableSet, true_and]
   -- check for disjoint unions
   · intro s hsd hsm H ε ε0
     have ε0' : ε / 2 ≠ 0 := (ENNReal.half_pos ε0).ne'
@@ -667,7 +667,7 @@ lemma innerRegularWRT_isClosed_isOpen [R1Space α] [OpensMeasurableSpace α] [h 
 
 theorem exists_compact_not_null [InnerRegular μ] : (∃ K, IsCompact K ∧ μ K ≠ 0) ↔ μ ≠ 0 := by
   simp_rw [Ne, ← measure_univ_eq_zero, MeasurableSet.univ.measure_eq_iSup_isCompact,
-    ENNReal.iSup_eq_zero, not_forall, exists_prop, subset_univ, true_and_iff]
+    ENNReal.iSup_eq_zero, not_forall, exists_prop, subset_univ, true_and]
 
 /-- If `μ` is inner regular, then any measurable set can be approximated by a compact subset.
 See also `MeasurableSet.exists_isCompact_lt_add_of_ne_top`. -/
@@ -730,7 +730,7 @@ theorem _root_.MeasurableSet.exists_isCompact_diff_lt [OpensMeasurableSpace α] 
     {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ K, K ⊆ A ∧ IsCompact K ∧ μ (A \ K) < ε := by
   rcases hA.exists_isCompact_lt_add h'A hε with ⟨K, hKA, hKc, hK⟩
-  exact ⟨K, hKA, hKc, measure_diff_lt_of_lt_add hKc.measurableSet hKA
+  exact ⟨K, hKA, hKc, measure_diff_lt_of_lt_add hKc.nullMeasurableSet hKA
     (ne_top_of_le_ne_top h'A <| measure_mono hKA) hK⟩
 
 /-- If `μ` is inner regular for finite measure sets with respect to compact sets,
@@ -742,7 +742,7 @@ theorem _root_.MeasurableSet.exists_isCompact_isClosed_diff_lt [BorelSpace α] [
     {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ K, K ⊆ A ∧ IsCompact K ∧ IsClosed K ∧ μ (A \ K) < ε := by
   rcases hA.exists_isCompact_isClosed_lt_add h'A hε with ⟨K, hKA, hKco, hKcl, hK⟩
-  exact ⟨K, hKA, hKco, hKcl, measure_diff_lt_of_lt_add hKcl.measurableSet hKA
+  exact ⟨K, hKA, hKco, hKcl, measure_diff_lt_of_lt_add hKcl.nullMeasurableSet hKA
     (ne_top_of_le_ne_top h'A <| measure_mono hKA) hK⟩
 
 /-- If `μ` is inner regular for finite measure sets with respect to compact sets,
@@ -826,12 +826,12 @@ protected theorem _root_.MeasurableSet.exists_isOpen_symmDiff_lt [InnerRegularCo
   rcases hs.exists_isCompact_isClosed_diff_lt hμs this with ⟨K, hKs, hKco, hKcl, hμK⟩
   rcases hKco.exists_isOpen_lt_add (μ := μ) this with ⟨U, hKU, hUo, hμU⟩
   refine ⟨U, hUo, hμU.trans_le le_top, ?_⟩
-  rw [← ENNReal.add_halves ε, measure_symmDiff_eq hUo.measurableSet hs]
+  rw [← ENNReal.add_halves ε, measure_symmDiff_eq hUo.nullMeasurableSet hs.nullMeasurableSet]
   gcongr
   · calc
       μ (U \ s) ≤ μ (U \ K) := by gcongr
       _ < ε / 2 := by
-        apply measure_diff_lt_of_lt_add hKcl.measurableSet hKU _ hμU
+        apply measure_diff_lt_of_lt_add hKcl.nullMeasurableSet hKU _ hμU
         exact ne_top_of_le_ne_top hμs (by gcongr)
   · exact lt_of_le_of_lt (by gcongr) hμK
 
@@ -918,7 +918,7 @@ theorem _root_.MeasurableSet.exists_isClosed_diff_lt [OpensMeasurableSpace α] [
     ⦃A : Set α⦄ (hA : MeasurableSet A) (h'A : μ A ≠ ∞) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ F, F ⊆ A ∧ IsClosed F ∧ μ (A \ F) < ε := by
   rcases hA.exists_isClosed_lt_add h'A hε with ⟨F, hFA, hFc, hF⟩
-  exact ⟨F, hFA, hFc, measure_diff_lt_of_lt_add hFc.measurableSet hFA
+  exact ⟨F, hFA, hFc, measure_diff_lt_of_lt_add hFc.nullMeasurableSet hFA
     (ne_top_of_le_ne_top h'A <| measure_mono hFA) hF⟩
 
 /-- Given a weakly regular measure, any measurable set of finite mass can be approximated from
@@ -993,7 +993,7 @@ theorem _root_.IsOpen.measure_eq_iSup_isCompact ⦃U : Set α⦄ (hU : IsOpen U)
 
 theorem exists_compact_not_null [Regular μ] : (∃ K, IsCompact K ∧ μ K ≠ 0) ↔ μ ≠ 0 := by
   simp_rw [Ne, ← measure_univ_eq_zero, isOpen_univ.measure_eq_iSup_isCompact,
-    ENNReal.iSup_eq_zero, not_forall, exists_prop, subset_univ, true_and_iff]
+    ENNReal.iSup_eq_zero, not_forall, exists_prop, subset_univ, true_and]
 
 /-- If `μ` is a regular measure, then any measurable set of finite measure can be approximated by a
 compact subset. See also `MeasurableSet.exists_isCompact_lt_add` and

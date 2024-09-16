@@ -55,7 +55,7 @@ We also provide the instances `P.IsMultiplicative`, `P.IsStableUnderComposition`
 
 -/
 
--- Explicit universe annotations were used in this file to improve perfomance #12737
+-- Explicit universe annotations were used in this file to improve performance #12737
 
 universe u
 
@@ -281,7 +281,7 @@ instance : IsLocalAtSource P := by
   simp_rw [← HasAffineProperty.iff_of_isAffine (P := P),
     iff_of_source_openCover 𝒰.affineRefinement.openCover,
     fun i ↦ iff_of_source_openCover (P := P) (f := 𝒰.map i ≫ f) (𝒰.obj i).affineCover]
-  simp [Scheme.OpenCover.affineRefinement]
+  simp [Scheme.OpenCover.affineRefinement, Sigma.forall]
 
 instance : P.ContainsIdentities where
   id_mem X := by
