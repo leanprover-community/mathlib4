@@ -64,7 +64,7 @@ theorem measurable_kernel_prod_mk_left_of_finite {t : Set (α × β)} (ht : Meas
     have h_eq_sdiff : ∀ a, Prod.mk a ⁻¹' t'ᶜ = Set.univ \ Prod.mk a ⁻¹' t' := by
       intro a
       ext1 b
-      simp only [mem_compl_iff, mem_preimage, mem_diff, mem_univ, true_and_iff]
+      simp only [mem_compl_iff, mem_preimage, mem_diff, mem_univ, true_and]
     simp_rw [h_eq_sdiff]
     have :
       (fun a => κ a (Set.univ \ Prod.mk a ⁻¹' t')) = fun a =>
@@ -236,7 +236,7 @@ variable {E : Type*} [NormedAddCommGroup E] [IsSFiniteKernel κ] [IsSFiniteKerne
 
 theorem measurableSet_kernel_integrable ⦃f : α → β → E⦄ (hf : StronglyMeasurable (uncurry f)) :
     MeasurableSet {x | Integrable (f x) (κ x)} := by
-  simp_rw [Integrable, hf.of_uncurry_left.aestronglyMeasurable, true_and_iff]
+  simp_rw [Integrable, hf.of_uncurry_left.aestronglyMeasurable, true_and]
   exact measurableSet_lt (Measurable.lintegral_kernel_prod_right hf.ennnorm) measurable_const
 
 end ProbabilityTheory

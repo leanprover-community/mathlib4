@@ -428,7 +428,7 @@ private theorem card_orderOf_eq_totient_aux₁ :
     refine Finset.sum_congr rfl fun m hm => ?_
     simp only [mem_filter, mem_range, mem_properDivisors] at hm
     refine IH m hm.2 (hm.1.trans hd) (Finset.card_pos.2 ⟨a ^ (d / m), ?_⟩)
-    simp only [mem_filter, mem_univ, orderOf_pow a, ha, true_and_iff,
+    simp only [mem_filter, mem_univ, orderOf_pow a, ha, true_and,
       Nat.gcd_eq_right (div_dvd_of_dvd hm.1), Nat.div_div_self hm.1 hd0]
   have h2 :
     (∑ m ∈ d.divisors, (univ.filter fun a : α => orderOf a = m).card) =

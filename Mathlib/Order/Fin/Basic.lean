@@ -122,6 +122,7 @@ end FromFin
 /-! #### Monotonicity -/
 
 lemma val_strictMono : StrictMono (val : Fin n → ℕ) := fun _ _ ↦ id
+lemma cast_strictMono {k l : ℕ} (h : k = l) : StrictMono (cast h) := fun {_ _} h ↦ h
 
 lemma strictMono_succ : StrictMono (succ : Fin n → Fin (n + 1)) := fun _ _ ↦ succ_lt_succ
 lemma strictMono_castLE (h : n ≤ m) : StrictMono (castLE h : Fin n → Fin m) := fun _ _ ↦ id

@@ -390,7 +390,7 @@ instance [DecidableEq α] [DecidableEq β] : SemilatticeInf (α ≃. β) :=
           · contrapose! h2
             rw [h2]
             rw [← h1, hf, h2] at hg
-            simp only [mem_def, true_iff_iff, eq_self_iff_true] at hg
+            simp only [mem_def, true_iff, eq_self_iff_true] at hg
             rw [hg]
           · contrapose! h1
             rw [h1] at hf h2
