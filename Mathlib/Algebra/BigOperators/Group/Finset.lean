@@ -2074,7 +2074,7 @@ theorem disjoint_list_sum_left {a : Multiset α} {l : List (Multiset α)} :
     simp only [zero_disjoint, List.not_mem_nil, IsEmpty.forall_iff, forall_const, List.sum_nil]
   | cons b bs ih =>
     simp_rw [List.sum_cons, disjoint_add_left, List.mem_cons, forall_eq_or_imp]
-    simp [and_congr_left_iff, iff_self_iff, ih]
+    simp [and_congr_left_iff, ih]
 
 theorem disjoint_list_sum_right {a : Multiset α} {l : List (Multiset α)} :
     Multiset.Disjoint a l.sum ↔ ∀ b ∈ l, Multiset.Disjoint a b := by
@@ -2093,7 +2093,7 @@ theorem disjoint_sum_right {a : Multiset α} {i : Multiset (Multiset α)} :
 theorem disjoint_finset_sum_left {β : Type*} {i : Finset β} {f : β → Multiset α} {a : Multiset α} :
     Multiset.Disjoint (i.sum f) a ↔ ∀ b ∈ i, Multiset.Disjoint (f b) a := by
   convert @disjoint_sum_left _ a (map f i.val)
-  simp [and_congr_left_iff, iff_self_iff]
+  simp [and_congr_left_iff]
 
 theorem disjoint_finset_sum_right {β : Type*} {i : Finset β} {f : β → Multiset α}
     {a : Multiset α} : Multiset.Disjoint a (i.sum f) ↔ ∀ b ∈ i, Multiset.Disjoint a (f b) := by

@@ -220,7 +220,7 @@ theorem HasLines.card_le [HasLines P L] [Fintype P] [Fintype L] :
       _ < ∑ p, lineCount L p := by
         obtain ⟨p, hp⟩ := not_forall.mp (mt (Fintype.card_le_of_surjective f) hc₂)
         refine sum_lt_sum_of_subset (subset_univ _) (mem_univ p) ?_ ?_ fun p _ _ ↦ zero_le _
-        · simpa only [Finset.mem_map, exists_prop, Finset.mem_univ, true_and_iff]
+        · simpa only [Finset.mem_map, exists_prop, Finset.mem_univ, true_and]
         · rw [lineCount, Nat.card_eq_fintype_card, Fintype.card_pos_iff]
           obtain ⟨l, _⟩ := @exists_line P L _ _ p
           exact
@@ -261,7 +261,7 @@ theorem HasLines.lineCount_eq_pointCount [HasLines P L] [Fintype P] [Fintype L]
           simp_rw [hf2, sum_const, Set.toFinset_card, ← Nat.card_eq_fintype_card]
           change pointCount P l • _ = lineCount L (f l) • _
           rw [hf2]
-      all_goals simp_rw [s, Finset.mem_univ, true_and_iff, Set.mem_toFinset]; exact fun p => Iff.rfl
+      all_goals simp_rw [s, Finset.mem_univ, true_and, Set.mem_toFinset]; exact fun p => Iff.rfl
     have step3 : ∑ i ∈ sᶜ, lineCount L i.1 = ∑ i ∈ sᶜ, pointCount P i.2 := by
       rwa [← s.sum_add_sum_compl, ← s.sum_add_sum_compl, step2, add_left_cancel_iff] at step1
     rw [← Set.toFinset_compl] at step3

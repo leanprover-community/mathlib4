@@ -397,12 +397,12 @@ namespace IsComplete
 
 theorem models_not_iff (h : T.IsComplete) (φ : L.Sentence) : T ⊨ᵇ φ.not ↔ ¬T ⊨ᵇ φ := by
   cases' h.2 φ with hφ hφn
-  · simp only [hφ, not_true, iff_false_iff]
+  · simp only [hφ, not_true, iff_false]
     rw [models_sentence_iff, not_forall]
     refine ⟨h.1.some, ?_⟩
     simp only [Sentence.realize_not, Classical.not_not]
     exact models_sentence_iff.1 hφ _
-  · simp only [hφn, true_iff_iff]
+  · simp only [hφn, true_iff]
     intro hφ
     rw [models_sentence_iff] at *
     exact hφn h.1.some (hφ _)

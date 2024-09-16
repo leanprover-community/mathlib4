@@ -34,8 +34,7 @@ theorem chain'_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
   induction' n with n hn
   · simp
   · rw [range_succ]
-    simp only [append_assoc, singleton_append, chain'_append_cons_cons, chain'_singleton,
-      and_true_iff]
+    simp only [append_assoc, singleton_append, chain'_append_cons_cons, chain'_singleton, and_true]
     rw [hn, forall_lt_succ]
 
 theorem chain_range_succ (r : ℕ → ℕ → Prop) (n a : ℕ) :

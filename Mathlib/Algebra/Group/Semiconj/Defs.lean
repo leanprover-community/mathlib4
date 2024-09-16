@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 -- Some proofs and docs came from mathlib3 `src/algebra/commute.lean` (c) Neil Strickland
 
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Init.Logic
+import Mathlib.Order.Defs
 
 /-!
 # Semiconjugate elements of a semigroup

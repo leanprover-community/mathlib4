@@ -6,6 +6,7 @@ Authors: Michael Rothgang
 
 import Batteries.Data.String.Matcher
 import Mathlib.Data.Nat.Notation
+import Std.Data.HashMap.Basic
 
 /-!
 ## Text-based linters
@@ -64,6 +65,7 @@ inductive StyleError where
   | broadImport (module : BroadImports)
   /-- A line ends with windows line endings (\r\n) instead of unix ones (\n). -/
   | windowsLineEnding
+  | duplicateImport (importStatement: String) (alreadyImportedLine: ℕ)
 deriving BEq
 
 /-- How to format style errors -/
@@ -94,6 +96,8 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
       benchmark it. If this is fine, feel free to allow this linter."
   | windowsLineEnding => "This line ends with a windows line ending (\r\n): please use Unix line\
     endings (\n) instead"
+  | StyleError.duplicateImport (importStatement) (alreadyImportedLine) =>
+    s!"Duplicate imports: {importStatement} (already imported on line {alreadyImportedLine})"
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
 -- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
@@ -104,6 +108,7 @@ def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.adaptationNote => "ERR_ADN"
   | StyleError.broadImport _ => "ERR_IMP"
   | StyleError.windowsLineEnding => "ERR_WIN"
+  | StyleError.duplicateImport _ _ => "ERR_DIMP"
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
 and the path to the file. -/
@@ -190,6 +195,7 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
         | "ERR_AUT" => some (StyleError.authors)
         | "ERR_ADN" => some (StyleError.adaptationNote)
         | "ERR_WIN" => some (StyleError.windowsLineEnding)
+        | "ERR_DIMP" => some (StyleError.duplicateImport "" 0)
         | "ERR_IMP" =>
           -- XXX tweak exceptions messages to ease parsing?
           if (errorMessage.get! 0).containsSubstr "tactic" then
@@ -285,6 +291,26 @@ def adaptationNoteLinter : TextbasedLinter := fun lines ↦ Id.run do
     lineNumber := lineNumber + 1
   return (errors, none)
 
+/-- Lint on a collection of input strings if one of the is a duplicate import statement. -/
+def duplicateImportsLinter : TextbasedLinter := fun lines ↦ Id.run do
+  let mut lineNumber := 1
+  let mut errors := Array.mkEmpty 0
+  let mut importStatements : Std.HashMap String ℕ := {}
+  for line in lines do
+    if line.startsWith "import " then
+      let lineWithoutComment := (line.splitOn "--")[0]!
+      let importStatement := lineWithoutComment.trim
+      if importStatements.contains importStatement then
+        let alreadyImportedLine := importStatements[importStatement]!
+        errors := errors.push (
+          (StyleError.duplicateImport importStatement alreadyImportedLine),
+          lineNumber
+        )
+      else
+        importStatements := importStatements.insert importStatement lineNumber
+    lineNumber := lineNumber + 1
+  return (errors, none)
+
 /-- Lint a collection of input strings if one of them contains an unnecessarily broad import. -/
 def broadImportsLinter : TextbasedLinter := fun lines ↦ Id.run do
   let mut errors := Array.mkEmpty 0
@@ -325,7 +351,7 @@ end
 
 /-- All text-based linters registered in this file. -/
 def allLinters : Array TextbasedLinter := #[
-    copyrightHeaderLinter, adaptationNoteLinter, broadImportsLinter
+    copyrightHeaderLinter, adaptationNoteLinter, broadImportsLinter, duplicateImportsLinter
   ]
 
 

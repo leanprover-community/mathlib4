@@ -1842,7 +1842,7 @@ theorem tendsto_measure_Iic_atTop [SemilatticeSup α] [(atTop : Filter α).IsCou
   obtain ⟨xs, hxs_mono, hxs_tendsto⟩ := exists_seq_monotone_tendsto_atTop_atTop α
   have h_univ : (univ : Set α) = ⋃ n, Iic (xs n) := by
     ext1 x
-    simp only [mem_univ, mem_iUnion, mem_Iic, true_iff_iff]
+    simp only [mem_univ, mem_iUnion, mem_Iic, true_iff]
     obtain ⟨n, hn⟩ := tendsto_atTop_atTop.mp hxs_tendsto x
     exact ⟨n, hn n le_rfl⟩
   rw [h_univ, measure_iUnion_eq_iSup, iSup_eq_iSup_subseq_of_monotone h_mono hxs_tendsto]
