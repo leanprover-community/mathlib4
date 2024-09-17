@@ -55,7 +55,7 @@ open Filter
 
 open Topology
 
-variable {α 𝕜 𝕝 R E F M : Type*}
+variable {α 𝕜 𝕝 E F : Type*}
 
 section WeakTopology
 
