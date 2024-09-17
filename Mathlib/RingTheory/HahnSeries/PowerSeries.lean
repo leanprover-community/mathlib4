@@ -172,6 +172,8 @@ variable {σ : Type*} [Finite σ]
 theorem coeff_toMvPowerSeries {f : HahnSeries (σ →₀ ℕ) R} {n : σ →₀ ℕ} :
     MvPowerSeries.coeff R n (toMvPowerSeries f) = f.coeff n :=
   rfl
+
+theorem coeff_toMvPowerSeries_symm {f : MvPowerSeries σ R} {n : σ →₀ ℕ} :
     (HahnSeries.toMvPowerSeries.symm f).coeff n = MvPowerSeries.coeff R n f :=
   rfl
 

@@ -256,7 +256,7 @@ private theorem weightedOrder_add_of_weightedOrder_lt.aux {f g : MvPowerSeries �
     suffices ↑(weight w b) < weightedOrder w f by
       rw [(coeff _ _).map_add, coeff_eq_zero_of_lt_weightedOrder w f this,
         coeff_eq_zero_of_lt_weightedOrder w g (lt_trans this H), add_zero]
-    rw [← hn, ENat.some_eq_coe, Nat.cast_lt]
+    rw [← hn, Nat.cast_lt]
     exact hb
 
 /-- The weighted_order of the sum of two formal power series
