@@ -397,6 +397,12 @@ theorem induced_iInf {ι : Sort w} {t : ι → TopologicalSpace α} :
   (gc_coinduced_induced g).u_iInf
 
 @[simp]
+theorem induced_sInf {s : Set (TopologicalSpace α)} :
+    TopologicalSpace.induced g (sInf s) = sInf ((TopologicalSpace.induced g) '' s) := by
+  rw [sInf_eq_iInf', sInf_image']
+  exact induced_iInf
+
+@[simp]
 theorem coinduced_bot : (⊥ : TopologicalSpace α).coinduced f = ⊥ :=
   (gc_coinduced_induced f).l_bot
 
