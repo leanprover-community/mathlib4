@@ -139,7 +139,7 @@ theorem idRel_subset {s : Set (α × α)} : idRel ⊆ s ↔ ∀ a, (a, a) ∈ s 
 theorem prod_subset_idRel_Eq_singleton_left {X : Type _} {S T : Set X} (hS : S.Nonempty)
     (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, S = {x} := by
   rcases hS, hT with ⟨⟨s, hs⟩, ⟨t, ht⟩⟩
-  refine' ⟨s, eq_singleton_iff_nonempty_unique_mem.mpr ⟨⟨s, hs⟩, fun x hx ↦ ?_⟩⟩
+  refine ⟨s, eq_singleton_iff_nonempty_unique_mem.mpr ⟨⟨s, hs⟩, fun x hx ↦ ?_⟩⟩
   rw [prod_subset_iff] at h_diag
   replace hs := h_diag s hs t ht
   replace hx := h_diag x hx t ht
@@ -156,11 +156,10 @@ theorem prod_subset_idRel_Eq_singleton {X : Type _} {S T : Set X} (hS : S.Nonemp
     (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, S = {x} ∧ T = {x} := by
   obtain ⟨⟨x, hx⟩, ⟨y, hy⟩⟩ := prod_subset_idRel_Eq_singleton_left hS hT h_diag,
     prod_subset_idRel_Eq_singleton_right hS hT h_diag
-  refine' ⟨x, ⟨hx, _⟩⟩
+  refine ⟨x, ⟨hx, ?_⟩⟩
   rw [hy, Set.singleton_eq_singleton_iff]
-  exact
-    (Set.prod_subset_iff.mp h_diag x (by simp only [hx, Set.mem_singleton]) y
-        (by simp only [hy, Set.mem_singleton])).symm
+  exact (Set.prod_subset_iff.mp h_diag x (by simp only [hx, Set.mem_singleton]) y
+    (by simp only [hy, Set.mem_singleton])).symm
 
 /-- The composition of relations -/
 def compRel (r₁ r₂ : Set (α × α)) :=
