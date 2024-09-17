@@ -42,7 +42,7 @@ namespace Bimon_
 instance : Category (Bimon_ C) := inferInstanceAs (Category (Comon_ (Mon_ C)))
 
 @[ext] lemma ext {X Y : Bimon_ C} {f g : X ⟶ Y} (w : f.hom.hom = g.hom.hom) : f = g :=
-  Comon_.Hom.ext (Mon_ClassHom.ext w)
+  Comon_.Hom.ext (Mon_Hom.ext w)
 
 @[simp] theorem id_hom' (M : Bimon_ C) : Comon_.Hom.hom (𝟙 M) = 𝟙 M.X := rfl
 
@@ -87,11 +87,8 @@ attribute [simps!] toMon_Comon_obj -- We add this after the fact to avoid a time
 @[simps]
 def toMon_Comon_ : Bimon_ C ⥤ Mon_ (Comon_ C) where
   obj := toMon_Comon_obj C
-  map f := {
-    hom := (toComon_ C).map f
-    one_hom := Comon_.ext (Mon_ClassHom.one_hom f.hom)
-    mul_hom := Comon_.ext (Mon_ClassHom.mul_hom f.hom) }
-  -- { hom := (toComon_ C).map f }
+  map f :=
+  { hom := (toComon_ C).map f }
 
 @[simp]
 theorem Comon_forget_mapMon_obj_one  (M :  Mon_ (Comon_ C)) :
@@ -174,21 +171,21 @@ theorem mul_counit (M : Bimon_ C) :
       M.X.X ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv ≫
       (μ[M.X.X] ⊗ μ[M.X.X]) =
     μ[M.X.X] ≫ M.comul.hom := by
-  have := (Mon_ClassHom.mul_hom M.comul).symm
-  simpa [-Mon_ClassHom.mul_hom, tensor_μ] using this
+  have := (Mon_Hom.mul_hom M.comul).symm
+  simpa [-Mon_Hom.mul_hom, tensor_μ] using this
 
 @[reassoc (attr := simp)] theorem comul_counit_hom (M : Bimon_ C) :
     M.comul.hom ≫ (_ ◁ M.counit.hom) = (ρ_ _).inv := by
-  simpa [- Comon_.comul_counit] using congr_arg Mon_ClassHom.hom M.comul_counit
+  simpa [- Comon_.comul_counit] using congr_arg Mon_Hom.hom M.comul_counit
 
 @[reassoc (attr := simp)] theorem counit_comul_hom (M : Bimon_ C) :
     M.comul.hom ≫ (M.counit.hom ▷ _) = (λ_ _).inv := by
-  simpa [- Comon_.counit_comul] using congr_arg Mon_ClassHom.hom M.counit_comul
+  simpa [- Comon_.counit_comul] using congr_arg Mon_Hom.hom M.counit_comul
 
 @[reassoc (attr := simp)] theorem comul_assoc_hom (M : Bimon_ C) :
     M.comul.hom ≫ (M.X.X ◁ M.comul.hom) =
       M.comul.hom ≫ (M.comul.hom ▷ M.X.X) ≫ (α_ M.X.X M.X.X M.X.X).hom := by
-  simpa [- Comon_.comul_assoc] using congr_arg Mon_ClassHom.hom M.comul_assoc
+  simpa [- Comon_.comul_assoc] using congr_arg Mon_Hom.hom M.comul_assoc
 
 @[reassoc] theorem comul_assoc_flip_hom (M : Bimon_ C) :
     M.comul.hom ≫ (M.comul.hom ▷ M.X.X) =
@@ -197,10 +194,10 @@ theorem mul_counit (M : Bimon_ C) :
 
 @[reassoc] theorem hom_comul_hom {M N : Bimon_ C} (f : M ⟶ N) :
     f.hom.hom ≫ N.comul.hom = M.comul.hom ≫ (f.hom.hom ⊗ f.hom.hom) := by
-  simpa [- Comon_.Hom.hom_comul] using congr_arg Mon_ClassHom.hom f.hom_comul
+  simpa [- Comon_.Hom.hom_comul] using congr_arg Mon_Hom.hom f.hom_comul
 
 @[reassoc] theorem hom_counit_hom {M N : Bimon_ C} (f : M ⟶ N) :
     f.hom.hom ≫ N.counit.hom = M.counit.hom := by
-  simpa [- Comon_.Hom.hom_counit] using congr_arg Mon_ClassHom.hom f.hom_counit
+  simpa [- Comon_.Hom.hom_counit] using congr_arg Mon_Hom.hom f.hom_counit
 
 end Bimon_

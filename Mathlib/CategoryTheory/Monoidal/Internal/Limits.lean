@@ -74,7 +74,7 @@ def limitConeIsLimit (F : J ⥤ Mon_ C) : IsLimit (limitCone F) where
         dsimp
         ext
         simp only [Functor.comp_obj, forget_obj, Category.assoc, limit.lift_π, Functor.mapCone_pt,
-          Functor.mapCone_π_app, forget_map, Mon_ClassHom.mul_hom, limit.lift_map,
+          Functor.mapCone_π_app, forget_map, Mon_Hom.mul_hom, limit.lift_map,
           Cones.postcompose_obj_pt, Cones.postcompose_obj_π, NatTrans.comp_app,
           Functor.const_obj_obj, tensorObj_obj,
           MonFunctorCategoryEquivalence.instMon_ClassFunctorCompMon_Forget_mul_app]
@@ -85,7 +85,7 @@ def limitConeIsLimit (F : J ⥤ Mon_ C) : IsLimit (limitCone F) where
     ext1
     refine limit.hom_ext (fun j => ?_)
     dsimp; simp only [Mon_.forget_map, limit.lift_π, Functor.mapCone_π_app]
-    exact congr_arg Mon_ClassHom.hom (w j)
+    exact congr_arg Mon_Hom.hom (w j)
 
 instance hasLimitsOfShape [HasLimitsOfShape J C] : HasLimitsOfShape J (Mon_ C) where
   has_limit := fun F => HasLimit.mk
