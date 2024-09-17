@@ -198,7 +198,6 @@ instance fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) wher
     { rightAdj := FullSubcategory.lift P (fullSubcategoryInclusion P ⋙ ihom X.1)
         fun Y => prop_ihom X.2 Y.2
       adj :=
-        Adjunction.mkOfUnitCounit
         { unit :=
           { app := fun Y => { hom := (ihom.coev X.1).app Y.1 }
             naturality := fun Y Z f => by ext; exact ihom.coev_naturality X.1 f.hom }

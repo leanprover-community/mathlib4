@@ -245,18 +245,18 @@ lemma variableChange_comp (C C' : VariableChange R) (W : WeierstrassCurve R) :
     W.variableChange (C.comp C') = (W.variableChange C').variableChange C := by
   simp only [VariableChange.comp, variableChange]
   ext <;> simp only [mul_inv, Units.val_mul]
-  · linear_combination (norm := ring1) C.u⁻¹ * C.s * 2 * C'.u.inv_mul
+  · linear_combination (norm := ring1) ↑C.u⁻¹ * C.s * 2 * C'.u.inv_mul
   · linear_combination (norm := ring1)
-      C.s * (-C'.s * 2 - W.a₁) * C.u⁻¹ ^ 2 * C'.u⁻¹ * C'.u.inv_mul
+      C.s * (-C'.s * 2 - W.a₁) * C.u⁻¹ ^ 2 * ↑C'.u⁻¹ * C'.u.inv_mul
         + (C.r * 3 - C.s ^ 2) * C.u⁻¹ ^ 2 * pow_mul_pow_eq_one 2 C'.u.inv_mul
   · linear_combination (norm := ring1)
-      C.r * (C'.s * 2 + W.a₁) * C.u⁻¹ ^ 3 * C'.u⁻¹ * pow_mul_pow_eq_one 2 C'.u.inv_mul
+      C.r * (C'.s * 2 + W.a₁) * C.u⁻¹ ^ 3 * ↑C'.u⁻¹ * pow_mul_pow_eq_one 2 C'.u.inv_mul
         + C.t * 2 * C.u⁻¹ ^ 3 * pow_mul_pow_eq_one 3 C'.u.inv_mul
   · linear_combination (norm := ring1)
       C.s * (-W.a₃ - C'.r * W.a₁ - C'.t * 2) * C.u⁻¹ ^ 4 * C'.u⁻¹ ^ 3 * C'.u.inv_mul
         + C.u⁻¹ ^ 4 * C'.u⁻¹ ^ 2 * (C.r * C'.r * 6 + C.r * W.a₂ * 2 - C'.s * C.r * W.a₁ * 2
           - C'.s ^ 2 * C.r * 2) * pow_mul_pow_eq_one 2 C'.u.inv_mul
-        - C.u⁻¹ ^ 4 * C'.u⁻¹ * (C.s * C'.s * C.r * 2 + C.s * C.r * W.a₁ + C'.s * C.t * 2
+        - C.u⁻¹ ^ 4 * ↑C'.u⁻¹ * (C.s * C'.s * C.r * 2 + C.s * C.r * W.a₁ + C'.s * C.t * 2
           + C.t * W.a₁) * pow_mul_pow_eq_one 3 C'.u.inv_mul
         + C.u⁻¹ ^ 4 * (C.r ^ 2 * 3 - C.s * C.t * 2) * pow_mul_pow_eq_one 4 C'.u.inv_mul
   · linear_combination (norm := ring1)
@@ -266,7 +266,7 @@ lemma variableChange_comp (C C' : VariableChange R) (W : WeierstrassCurve R) :
           * pow_mul_pow_eq_one 3 C'.u.inv_mul
         + C.r ^ 2 * C.u⁻¹ ^ 6 * C'.u⁻¹ ^ 2 * (C'.r * 3 + W.a₂ - C'.s * W.a₁ - C'.s ^ 2)
           * pow_mul_pow_eq_one 4 C'.u.inv_mul
-        - C.r * C.t * C.u⁻¹ ^ 6 * C'.u⁻¹ * (C'.s * 2 + W.a₁) * pow_mul_pow_eq_one 5 C'.u.inv_mul
+        - C.r * C.t * C.u⁻¹ ^ 6 * ↑C'.u⁻¹ * (C'.s * 2 + W.a₁) * pow_mul_pow_eq_one 5 C'.u.inv_mul
         + C.u⁻¹ ^ 6 * (C.r ^ 3 - C.t ^ 2) * pow_mul_pow_eq_one 6 C'.u.inv_mul
 
 instance instMulActionVariableChange : MulAction (VariableChange R) (WeierstrassCurve R) where
@@ -526,7 +526,6 @@ end WeierstrassCurve
 
 /-- An elliptic curve over a commutative ring. Note that this definition is only mathematically
 accurate for certain rings whose Picard group has trivial 12-torsion, such as a field or a PID. -/
-@[ext]
 structure EllipticCurve (R : Type u) [CommRing R] extends WeierstrassCurve R where
   /-- The discriminant `Δ'` of an elliptic curve over `R`, which is given as a unit in `R`. -/
   Δ' : Rˣ
@@ -535,7 +534,20 @@ structure EllipticCurve (R : Type u) [CommRing R] extends WeierstrassCurve R whe
 
 namespace EllipticCurve
 
-variable {R : Type u} [CommRing R] (E : EllipticCurve R)
+variable {R : Type u} [CommRing R]
+
+theorem toWeierstrassCurve_injective : Function.Injective (toWeierstrassCurve (R := R))
+  | ⟨x1, _, x3⟩, ⟨y1, _, y3⟩, h => by
+    change x1 = y1 at h
+    congr
+    exact Units.ext (by rw [x3, y3, h])
+
+@[ext]
+theorem ext {x y : EllipticCurve R} (h₁ : x.a₁ = y.a₁) (h₂ : x.a₂ = y.a₂) (h₃ : x.a₃ = y.a₃)
+    (h₄ : x.a₄ = y.a₄) (h₆ : x.a₆ = y.a₆) : x = y :=
+  toWeierstrassCurve_injective (WeierstrassCurve.ext h₁ h₂ h₃ h₄ h₆)
+
+variable (E : EllipticCurve R)
 
 -- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The j-invariant `j` of an elliptic curve, which is invariant under isomorphisms over `R`. -/
@@ -623,8 +635,7 @@ lemma map_j : (E.map φ).j = φ E.j := by
 
 lemma map_injective {φ : R →+* A} (hφ : Function.Injective φ) :
     Function.Injective <| map (φ := φ) := fun _ _ h => by
-  rcases mk.inj h with ⟨h1, h2⟩
-  replace h2 := (Units.mk.inj h2).left
+  rcases mk.inj h with ⟨h1, _⟩
   rcases WeierstrassCurve.mk.inj h1 with ⟨_, _, _, _, _⟩
   ext <;> apply_fun _ using hφ <;> assumption
 

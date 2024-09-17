@@ -6,6 +6,7 @@ Authors: Yuma Mizuno
 import ProofWidgets.Component.PenroseDiagram
 import ProofWidgets.Component.Panel.Basic
 import ProofWidgets.Presentation.Expr
+import ProofWidgets.Component.HtmlDisplay
 import Mathlib.Tactic.CategoryTheory.Monoidal
 
 /-!
@@ -20,6 +21,12 @@ open Mathlib.Tactic.Widget
 show_panel_widgets [local StringDiagram]
 ```
 to enable the string diagram widget in the current section.
+
+We also have the `#string_diagram` command. For example,
+```lean
+#string_diagram MonoidalCategory.whisker_exchange
+```
+displays the string diagram for the exchange law of the left and right whiskerings.
 
 String diagrams are graphical representations of morphisms in monoidal categories, which are
 useful for rewriting computations. More precisely, objects in a monoidal category is represented
@@ -58,6 +65,8 @@ open CategoryTheory
 open Mathlib.Tactic.Monoidal
 
 namespace Widget.StringDiagram
+
+initialize registerTraceClass `string_diagram
 
 /-! ## Objects in string diagrams -/
 
@@ -277,6 +286,7 @@ def fromExpr (e : Expr) : MonoidalM Html := do
   let e' := (← eval e).expr
   DiagramBuilderM.run do
     mkStringDiagram e'
+    trace[string_diagram] "Penrose substance: \n{(← get).sub}"
     match ← DiagramBuilderM.buildDiagram dsl sty with
     | some html => return html
     | none => return <span>No non-structural morphisms found.</span>
@@ -315,12 +325,13 @@ def stringEqM? (e : Expr) : MetaM (Option Html) := do
 /-- Given an 2-morphism or equality between 2-morphisms, return a string diagram.
 Otherwise `none`. -/
 def stringMorOrEqM? (e : Expr) : MetaM (Option Html) := do
-  if let some html ← stringM? e then
-    return some html
-  else if let some html ← stringEqM? e then
-    return some html
-  else
-    return none
+  forallTelescopeReducing (← inferType e) fun xs a => do
+    if let some html ← stringM? (mkAppN e xs) then
+      return some html
+    else if let some html ← stringEqM? a then
+      return some html
+    else
+      return none
 
 /-- The `Expr` presenter for displaying string diagrams. -/
 @[expr_presenter]
@@ -357,5 +368,37 @@ open ProofWidgets
 @[widget_module]
 def StringDiagram : Component PanelWidgetProps :=
   mk_rpc_widget% StringDiagram.rpc
+
+open Command
+
+/--
+Display the string diagram for a given term.
+
+Example usage:
+```
+/- String diagram for the equality theorem. -/
+#string_diagram MonoidalCategory.whisker_exchange
+
+/- String diagram for the morphism. -/
+variable {C : Type u} [Category.{v} C] [MonoidalCategory C] {X Y : C} (f : 𝟙_ C ⟶ X ⊗ Y) in
+#string_diagram f
+```
+-/
+syntax (name := stringDiagram) "#string_diagram " term : command
+
+@[command_elab stringDiagram, inherit_doc stringDiagram]
+def elabStringDiagramCmd : CommandElab := fun
+  | stx@`(#string_diagram $t:term) => do
+    let html ← runTermElabM fun _ => do
+      let e ← try mkConstWithFreshMVarLevels (← realizeGlobalConstNoOverloadWithInfo t)
+        catch _ => Term.levelMVarToParam (← instantiateMVars (← Term.elabTerm t none))
+      match ← StringDiagram.stringMorOrEqM? e with
+      | .some html => return html
+      | .none => throwError "could not find a morphism or equality: {e}"
+    liftCoreM <| Widget.savePanelWidgetInfo
+      (hash HtmlDisplay.javascript)
+      (return json% { html: $(← Server.RpcEncodable.rpcEncode html) })
+      stx
+  | stx => throwError "Unexpected syntax {stx}."
 
 end Mathlib.Tactic.Widget

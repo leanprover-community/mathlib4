@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Adam Topaz
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.FullSubcategory
+import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.Skeletal
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Finite.Basic
 
 /-!
 # The category of finite types.
@@ -64,6 +64,15 @@ instance : (forget FintypeCat).Full := inferInstanceAs <| FintypeCat.incl.Full
 
 attribute [local instance] ConcreteCategory.instFunLike
 
+/-- Constructor ffor morphisms in `FintypeCat`. -/
+@[simps]
+def homMk {X Y : FintypeCat} (f : X → Y) : X ⟶ Y where
+  hom := f
+
+@[simp]
+lemma homMk_apply {X Y : FintypeCat} (f : X → Y) (x : X) :
+    homMk f x = f x := rfl
+
 @[simp]
 theorem id_apply (X : FintypeCat) (x : X) :
     (𝟙 X) x = x :=
@@ -101,6 +110,16 @@ def equivEquivIso {A B : FintypeCat} : A ≃ B ≃ (A ≅ B) where
       right_inv := by aesop_cat }
   left_inv := by aesop_cat
   right_inv := by aesop_cat
+
+instance (X Y : FintypeCat) : Finite (X ⟶ Y) :=
+  Finite.of_injective (show _ → (X → Y) from fun f x ↦ f x)
+    (fun _ _ h ↦ by ext x; apply congr_fun h)
+
+instance (X Y : FintypeCat) : Finite (X ≅ Y) :=
+  Finite.of_injective _ (fun _ _ h ↦ Iso.ext h)
+
+instance (X : FintypeCat) : Finite (Aut X) :=
+  inferInstanceAs <| Finite (X ≅ X)
 
 universe u
 
@@ -193,4 +212,81 @@ lemma isSkeleton : IsSkeletonOf FintypeCat Skeleton Skeleton.incl where
   skel := Skeleton.is_skeletal
   eqv := by infer_instance
 
+section Universes
+
+universe v
+
+/-- If `u` and `v` are two arbitrary universes, we may construct a functor
+`uSwitch.{u, v} : FintypeCat.{u} ⥤ FintypeCat.{v}` by sending
+`X : FintypeCat.{u}` to `ULift.{v} (Fin (Fintype.card X))`. -/
+noncomputable def uSwitch : FintypeCat.{u} ⥤ FintypeCat.{v} where
+  obj X := FintypeCat.of <| ULift.{v} (Fin (Fintype.card X))
+  map {X Y} f := homMk (fun x ↦ ULift.up <| (Fintype.equivFin Y)
+    (f ((Fintype.equivFin X).symm x.down)))
+  map_comp {X Y Z} f g := by ext; simp
+
+/-- Switching the universe of an object `X : FintypeCat.{u}` does not change `X` up to equivalence
+of types. This is natural in the sense that it commutes with `uSwitch.map f` for
+any `f : X ⟶ Y` in `FintypeCat.{u}`. -/
+noncomputable def uSwitchEquiv (X : FintypeCat.{u}) :
+    uSwitch.{u, v}.obj X ≃ X :=
+  Equiv.ulift.trans (Fintype.equivFin X).symm
+
+lemma uSwitchEquiv_naturality {X Y : FintypeCat.{u}} (f : X ⟶ Y)
+    (x : uSwitch.{u, v}.obj X) :
+    f (X.uSwitchEquiv x) = Y.uSwitchEquiv (uSwitch.map f x) := by
+  simp only [uSwitch, uSwitchEquiv, Equiv.trans_apply]
+  erw [Equiv.ulift_apply, Equiv.ulift_apply]
+  simp only [homMk_apply, Equiv.symm_apply_apply]
+
+lemma uSwitchEquiv_symm_naturality {X Y : FintypeCat.{u}} (f : X ⟶ Y) (x : X) :
+    uSwitch.map f (X.uSwitchEquiv.symm x) = Y.uSwitchEquiv.symm (f x) := by
+  erw [← Equiv.apply_eq_iff_eq_symm_apply, ← uSwitchEquiv_naturality f,
+    Equiv.apply_symm_apply]
+
+lemma uSwitch_map_uSwitch_map {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
+    uSwitch.map (uSwitch.map f) =
+    (equivEquivIso ((uSwitch.obj X).uSwitchEquiv.trans X.uSwitchEquiv)).hom ≫
+      f ≫ (equivEquivIso ((uSwitch.obj Y).uSwitchEquiv.trans
+      Y.uSwitchEquiv)).inv := by
+  ext x
+  sorry
+  --simp only [comp_apply, equivEquivIso_apply_hom, Equiv.trans_apply]
+  --rw [uSwitchEquiv_naturality f, ← uSwitchEquiv_naturality]
+  --rfl
+
+/-- `uSwitch.{u, v}` is an equivalence of categories with quasi-inverse `uSwitch.{v, u}`. -/
+noncomputable def uSwitchEquivalence : FintypeCat.{u} ≌ FintypeCat.{v} where
+  functor := uSwitch
+  inverse := uSwitch
+  unitIso := NatIso.ofComponents (fun X ↦ (equivEquivIso <|
+    (uSwitch.obj X).uSwitchEquiv.trans X.uSwitchEquiv).symm) <| by
+    simp [uSwitch_map_uSwitch_map]
+  counitIso := NatIso.ofComponents (fun X ↦ equivEquivIso <|
+    (uSwitch.obj X).uSwitchEquiv.trans X.uSwitchEquiv) <| by
+    simp [uSwitch_map_uSwitch_map]
+  functor_unitIso_comp X := by
+    ext x
+    sorry
+    --simp [← uSwitchEquiv_naturality]
+
+instance : uSwitch.IsEquivalence :=
+  uSwitchEquivalence.isEquivalence_functor
+
+end Universes
+
 end FintypeCat
+
+namespace FunctorToFintypeCat
+
+universe u v w
+
+variable {C : Type u} [Category.{v} C] (F G : C ⥤ FintypeCat.{w}) {X Y : C}
+
+attribute [local instance] ConcreteCategory.instFunLike
+
+lemma naturality (σ : F ⟶ G) (f : X ⟶ Y) (x : F.obj X) :
+    σ.app Y (F.map f x) = G.map f (σ.app X x) :=
+  NatTrans.naturality_apply σ _ _
+
+end FunctorToFintypeCat
