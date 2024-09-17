@@ -119,11 +119,11 @@ theorem logMap_apply_of_norm_one (hx : mixedEmbedding.norm x = 1)
 
 @[simp]
 theorem logMap_eq_logEmbedding (u : (𝓞 K)ˣ) :
-    logMap (mixedEmbedding K u) = logEmbedding K u := by
+    logMap (mixedEmbedding K u) = logEmbedding K (Additive.ofMul u) := by
   ext; simp
 
 theorem logMap_unit_smul (u : (𝓞 K)ˣ) (hx : mixedEmbedding.norm x ≠ 0) :
-    logMap (u • x) = logEmbedding K u + logMap x := by
+    logMap (u • x) = logEmbedding K (Additive.ofMul u) + logMap x := by
   rw [unitSMul_smul, logMap_mul (by rw [norm_unit]; norm_num) hx, logMap_eq_logEmbedding]
 
 variable (x) in
