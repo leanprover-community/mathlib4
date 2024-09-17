@@ -162,7 +162,7 @@ variable [NumberField K]
 
 open Classical in
 /-- The fundamental cone is a cone in the mixed space, ie. a subset fixed by multiplication by
-a nonzero real number, see `smul_mem_of_mem`, that is also a fundamental domain for the action 
+a nonzero real number, see `smul_mem_of_mem`, that is also a fundamental domain for the action
 of `(𝓞 K)ˣ` modulo torsion, see `exists_unit_smul_mem` and `torsion_smul_mem_of_mem`. -/
 def fundamentalCone : Set (mixedSpace K) :=
   logMap⁻¹' (ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ _)) \
