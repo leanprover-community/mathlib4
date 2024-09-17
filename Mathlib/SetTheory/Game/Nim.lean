@@ -347,7 +347,7 @@ theorem grundyValue_nim_add_nim (n m : ℕ) : grundyValue (nim.{u} n + nim.{u} m
       have := hj -- The termination checker doesn't work without this.
     · rwa [add_moveLeft_inl, moveLeft_nim', ne_eq, hk, grundyValue_nim_add_nim, Nat.cast_inj,
         Nat.xor_left_inj]
-    · rwa [add_moveLeft_inr, moveLeft_nim', ne_eq, hk, grundyValue_nim_add_nim n, Nat.cast_inj,
+    · rwa [add_moveLeft_inr, moveLeft_nim', ne_eq, hk, grundyValue_nim_add_nim, Nat.cast_inj,
         Nat.xor_right_inj]
   -- For any `k < n ^^^ m`, either `nim (k ^^^ m) + nim m` or `nim n + nim (k ^^^ n)` is a left
   -- option with Grundy value `k`.
