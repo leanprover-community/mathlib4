@@ -209,19 +209,33 @@ def algebra : Algebra (R[S⁻¹]) (A[S⁻¹]) where
       OneHom.coe_mk, liftExpand_of, RingHom.coe_mk, MonoidHom.coe_mk,
       OreLocalization.smul_def, Algebra.smul_def, OreLocalization.mul_def]
 
+attribute [ext] Algebra
+
 -- If `algebra` were an instance then this would be a diamond:
-/-
 example : (algebra R R S : Algebra R[S⁻¹] R[S⁻¹]) =
-    (inferInstance : Algebra R[S⁻¹] R[S⁻¹]) := rfl -- fails
+    (inferInstance : Algebra R[S⁻¹] R[S⁻¹]) := by
+  apply Algebra.ext
+  · rfl
+  · ext rs
+    unfold OneHom.toFun
+    dsimp
+    unfold Algebra.toRingHom
+    unfold algebra
+    unfold inferInstance
+    dsimp
+    unfold Algebra.id oreDiv
+    dsimp
+    unfold liftExpand
+    dsimp
+    cases rs
+    rfl
 
 -- how far is this from `rfl`?
 example : (algebra R R S : Algebra R[S⁻¹] R[S⁻¹]) =
     (inferInstance : Algebra R[S⁻¹] R[S⁻¹]) := by
   refine Algebra.algebra_ext (algebra R R S) inferInstance fun r ↦ ?_
-  refine Quotient.inductionOn r ?_
-  rintro ⟨r, s⟩
+  refine Quotient.inductionOn r fun rs ↦ ?_
   rfl
--/
 
 end Algebra
 
