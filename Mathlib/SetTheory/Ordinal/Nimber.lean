@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
 import Mathlib.SetTheory.Ordinal.Arithmetic
+import Mathlib.Tactic.Abel
 
 /-!
 # Nimbers
@@ -47,13 +48,14 @@ noncomputable section
 
 /-- A type synonym for ordinals with natural addition and multiplication. -/
 def Nimber : Type _ :=
-  Ordinal deriving Zero, Inhabited, One, WellFoundedRelation
+  Ordinal deriving Zero, Inhabited, One, Nontrivial, WellFoundedRelation
 
 instance Nimber.linearOrder : LinearOrder Nimber := {Ordinal.linearOrder with}
 instance Nimber.succOrder : SuccOrder Nimber := {Ordinal.instSuccOrder with}
 instance Nimber.orderBot : OrderBot Nimber := {Ordinal.orderBot with}
 instance Nimber.noMaxOrder : NoMaxOrder Nimber := {Ordinal.noMaxOrder with}
 instance Nimber.zeroLEOneClass : ZeroLEOneClass Nimber := {Ordinal.zeroLEOneClass with}
+instance Nimber.NeZero.one : NeZero (1 : Nimber) := Ordinal.NeZero.one
 
 /-- The identity function between `Ordinal` and `Nimber`. -/
 @[match_pattern]
@@ -83,8 +85,7 @@ theorem lt_wf : @WellFounded Nimber (· < ·) :=
 instance : WellFoundedLT Nimber :=
   Ordinal.wellFoundedLT
 
-instance : IsWellOrder Nimber (· < ·) :=
-  { }
+instance : IsWellOrder Nimber (· < ·) where
 
 instance : ConditionallyCompleteLinearOrderBot Nimber :=
   WellFoundedLT.conditionallyCompleteLinearOrderBot _
@@ -138,11 +139,17 @@ protected theorem not_lt_zero (a : Nimber) : ¬ a < 0 :=
 protected theorem pos_iff_ne_zero {a : Nimber} : 0 < a ↔ a ≠ 0 :=
   Ordinal.pos_iff_ne_zero
 
+theorem lt_one_iff_zero {a : Nimber} : a < 1 ↔ a = 0 :=
+  Ordinal.lt_one_iff_zero
+
 instance (a : Nimber.{u}) : Small.{u} (Set.Iio a) :=
   Ordinal.small_Iio a
 
 instance (a : Nimber.{u}) : Small.{u} (Set.Iic a) :=
   Ordinal.small_Iic a
+
+theorem compl_nonempty_of_small (s : Set Nimber.{u}) [Small.{u} s] : Set.Nonempty sᶜ :=
+  Ordinal.compl_nonempty_of_small s
 
 end Nimber
 
@@ -216,10 +223,8 @@ theorem add_def (a b : Nimber) :
 /-- The set in the definition of `Nimber.add` is nonempty. -/
 private theorem add_nonempty (a b : Nimber.{u}) :
     {x | (∃ a' < a, a' + b = x) ∨ ∃ b' < b, a + b' = x}ᶜ.Nonempty := by
-  simp_rw [Set.nonempty_compl, Set.setOf_or, ← Set.mem_Iio, ← Set.image.eq_1]
-  apply_fun (fun a : Set Nimber ↦ Small.{u} a)
   have : Small.{u} ↑((· + b) '' Set.Iio a ∪ (a + ·) '' Set.Iio b) := inferInstance
-  simpa [this, small_congr (Equiv.Set.univ _)] using not_small_nimber
+  exact @compl_nonempty_of_small _ this
 
 theorem exists_of_lt_add (h : c < a + b) : (∃ a' < a, a' + b = c) ∨ ∃ b' < b, a + b' = c := by
   rw [add_def] at h
@@ -363,33 +368,13 @@ theorem two_nsmul (a : Nimber) : 2 • a = 0 := by
 theorem two_zsmul (a : Nimber) : (2 : ℤ) • a = 0 :=
   two_nsmul a
 
-theorem add_cancel_right (a b : Nimber) : a + b + b = a := by
-  rw [add_assoc, add_self, add_zero]
-
-theorem add_cancel_left (a b : Nimber) : a + (a + b) = b := by
-  rw [← add_assoc, add_self, zero_add]
-
 theorem add_eq_iff_eq_add : a + b = c ↔ a = c + b :=
   sub_eq_iff_eq_add
 
 theorem eq_add_iff_add_eq : a = b + c ↔ a + c = b :=
   eq_sub_iff_add_eq
 
-theorem add_trichotomy (h : a ≠ b + c) : b + c < a ∨ a + c < b ∨ a + b < c := by
-  rw [← add_ne_zero_iff, ← Nimber.pos_iff_ne_zero] at h
-  obtain ⟨x, hx, hx'⟩ | ⟨x, hx, hx'⟩ := exists_of_lt_add h <;>
-  rw [add_eq_zero_iff] at hx'
-  · exact Or.inl (hx' ▸ hx)
-  · rw [← hx'] at hx
-    obtain ⟨x, hx, hx'⟩ | ⟨x, hx, hx'⟩ := exists_of_lt_add hx
-    · rw [← hx', add_cancel_right]
-      exact Or.inr <| Or.inl hx
-    · rw [add_comm] at hx'
-      rw [← hx', add_cancel_right]
-      exact Or.inr <| Or.inr hx
-
 /-! ### Nimber multiplication -/
-
 
 /-- Nimber multiplication is recursively defined so that `a * b` is the smallest nimber not equal to
 `a' * b + a * b' + a' * b'` for `a' < a` and `b' < b`. -/
@@ -409,16 +394,15 @@ theorem mul_def (a b : Nimber) :
   simp_rw [exists_prop]
   rfl
 
-open Ordinal in
 /-- The set in the definition of `Nimber.mul` is nonempty. -/
-private theorem mul_nonempty (a b : Nimber) :
+private theorem mul_nonempty (a b : Nimber.{u}) :
     {x | ∃ a' < a, ∃ b' < b, a' * b + a * b' + a' * b' = x}ᶜ.Nonempty := by
-  use Ordinal.blsub₂ a b @fun x _ y _ =>
-    toNimber x * b + a * toNimber y + toNimber x * toNimber y
-  simp only [Set.mem_compl_iff, Set.mem_setOf_eq, not_exists, not_and]
-  intro x hx y hy
-  apply ne_of_lt
-  exact lt_blsub₂ _ hx hy
+  have : Small.{u} ((fun x ↦ x.1 * b + a * x.2 + x.1 * x.2) '' Set.Iio a ×ˢ Set.Iio b) :=
+    inferInstance
+  convert @compl_nonempty_of_small _ this
+  ext
+  simp
+  tauto
 
 theorem exists_of_lt_mul (h : c < a * b) : ∃ a' < a, ∃ b' < b, a' * b + a * b' + a' * b' = c := by
   rw [mul_def] at h
@@ -548,11 +532,11 @@ termination_by (a, b, c)
 
 instance : IsCancelMulZero Nimber where
   mul_left_cancel_of_ne_zero ha h := by
-    rw [← add_eq_zero_iff, ← Nimber.mul_add, mul_eq_zero] at h
-    exact add_eq_zero_iff.1 (h.resolve_left ha)
+    rw [← add_eq_zero, ← Nimber.mul_add, mul_eq_zero] at h
+    exact add_eq_zero.1 (h.resolve_left ha)
   mul_right_cancel_of_ne_zero ha h := by
-    rw [← add_eq_zero_iff, ← Nimber.add_mul, mul_eq_zero] at h
-    exact add_eq_zero_iff.1 (h.resolve_right ha)
+    rw [← add_eq_zero, ← Nimber.add_mul, mul_eq_zero] at h
+    exact add_eq_zero.1 (h.resolve_right ha)
 
 protected theorem one_mul (a : Nimber) : 1 * a = a := by
   apply le_antisymm
@@ -582,10 +566,7 @@ instance : CommRing Nimber where
   zsmul := zsmulRec
   neg_add_cancel := add_self
 
-instance : IsDomain Nimber :=
-  { }
-
-instance : CancelMonoidWithZero Nimber :=
-  { }
+instance : IsDomain Nimber where
+instance : CancelMonoidWithZero Nimber where
 
 end Nimber
