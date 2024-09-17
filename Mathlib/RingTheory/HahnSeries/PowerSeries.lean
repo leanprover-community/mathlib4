@@ -176,7 +176,7 @@ variable {σ : Type*} [Finite σ]
 /-- If R has no zero divisors and `σ` is finite,
 then `HahnSeries (σ →₀ ℕ) R` has no zero divisors -/
 instance [NoZeroDivisors R] : NoZeroDivisors (HahnSeries (σ →₀ ℕ) R) :=
-  toMvPowerSeries.toMulEquiv.noZeroDivisors (A := HahnSeries (σ →₀ ℕ) R) (MvPowerSeries σ R) 
+  toMvPowerSeries.toMulEquiv.noZeroDivisors (A := HahnSeries (σ →₀ ℕ) R) (MvPowerSeries σ R)
 
 theorem coeff_toMvPowerSeries {f : HahnSeries (σ →₀ ℕ) R} {n : σ →₀ ℕ} :
     MvPowerSeries.coeff R n (toMvPowerSeries f) = f.coeff n :=
