@@ -82,16 +82,20 @@ theorem multiplicity.Finite.emultiplicity_eq_multiplicity (h : Finite a b) :
   · simp [h] at hm
   rw [multiplicity_eq_of_emultiplicity_eq_some hm]
 
-theorem multiplicity.Finite.emultiplicity_eq_iff_natDegree_eq {n : ℕ} (h : Finite a b) :
+theorem multiplicity.Finite.emultiplicity_eq_iff_multiplicity_eq {n : ℕ} (h : Finite a b) :
     emultiplicity a b = n ↔ multiplicity a b = n := by
   simp [h.emultiplicity_eq_multiplicity]
 
-theorem emultiplicity_eq_iff_natDegree_of_ne_one {n : ℕ} (h : n ≠ 1) :
+theorem emultiplicity_eq_iff_multiplicity_eq_of_ne_one {n : ℕ} (h : n ≠ 1) :
     emultiplicity a b = n ↔ multiplicity a b = n := by
   constructor
   · exact multiplicity_eq_of_emultiplicity_eq_some
   · intro h₂
     simpa [multiplicity, WithTop.untop'_eq_iff, h] using h₂
+
+theorem emultiplicity_eq_zero_iff_multiplicity_eq_zero :
+    emultiplicity a b = 0 ↔ multiplicity a b = 0 :=
+  emultiplicity_eq_iff_multiplicity_eq_of_ne_one zero_ne_one
 
 @[simp]
 theorem multiplicity_eq_one_of_not_finite (h : ¬Finite a b) :
@@ -149,10 +153,7 @@ theorem multiplicity.Finite.lt_multiplicity_of_lt_emultiplicity (hfin : Finite a
 
 theorem emultiplicity_pos_iff :
     0 < emultiplicity a b ↔ 0 < multiplicity a b := by
-  rw [pos_iff_ne_zero, pos_iff_ne_zero]
-  apply Iff.not
-  apply emultiplicity_eq_iff_natDegree_of_ne_one
-  nofun
+  simp [pos_iff_ne_zero, pos_iff_ne_zero, emultiplicity_eq_zero_iff_multiplicity_eq_zero]
 
 theorem multiplicity.Finite.def : Finite a b ↔ ∃ n : ℕ, ¬a ^ (n + 1) ∣ b :=
   Iff.rfl
@@ -305,7 +306,7 @@ theorem emultiplicity_eq_zero :
 
 theorem multiplicity_eq_zero :
     multiplicity a b = 0 ↔ ¬a ∣ b :=
-  (emultiplicity_eq_iff_natDegree_of_ne_one zero_ne_one).symm.trans emultiplicity_eq_zero
+  (emultiplicity_eq_iff_multiplicity_eq_of_ne_one zero_ne_one).symm.trans emultiplicity_eq_zero
 
 theorem emultiplicity_ne_zero :
     emultiplicity a b ≠ 0 ↔ a ∣ b := by
