@@ -176,7 +176,8 @@ def toMvPowerSeries {σ : Type*} [Finite σ] : HahnSeries (σ →₀ ℕ) R ≃+
 variable {σ : Type*} [Finite σ]
 
 -- TODO : generalize to all (?) rings of Hahn Series
-/-- If R has no zero divisors, then `HahnSeries (σ →₀ ℕ) R` has no zero divisors, for finite `σ` -/
+/-- If R has no zero divisors and `σ` is finite,
+then `HahnSeries (σ →₀ ℕ) R` has no zero divisors -/
 instance [NoZeroDivisors R] : NoZeroDivisors (HahnSeries (σ →₀ ℕ) R) :=
   MulEquiv.noZeroDivisors (A := HahnSeries (σ →₀ ℕ) R) (MvPowerSeries σ R) toMvPowerSeries.toMulEquiv
 
