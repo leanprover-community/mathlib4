@@ -163,8 +163,10 @@ theorem finitePresentation_ofLocalizationSpanTarget :
 /-- Being finitely-presented is a local property of rings. -/
 theorem finitePresentation_isLocal : PropertyIsLocal @FinitePresentation :=
   ⟨finitePresentation_localizationPreserves,
-    finitePresentation_ofLocalizationSpanTarget, finitePresentation_stableUnderComposition,
-    finitePresentation_holdsForLocalizationAway⟩
+    finitePresentation_ofLocalizationSpanTarget,
+    finitePresentation_stableUnderComposition.stableUnderCompositionWithLocalizationAway
+      finitePresentation_holdsForLocalizationAway,
+    finitePresentation_holdsForLocalizationAway.containsIdentities⟩
 
 /-- Being finitely-presented respects isomorphisms. -/
 theorem finitePresentation_respectsIso : RingHom.RespectsIso @RingHom.FinitePresentation :=

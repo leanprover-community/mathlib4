@@ -228,9 +228,8 @@ theorem of_source_openCover [IsAffine Y]
   | basicOpen U r H =>
     simp_rw [Scheme.affineBasicOpen_coe,
       ← f.appLE_map (U := ⊤) le_top (homOfLE (X.basicOpen_le r)).op]
-    apply (isLocal_ringHomProperty P).StableUnderComposition _ _ H
     have := U.2.isLocalization_basicOpen r
-    apply (isLocal_ringHomProperty P).HoldsForLocalizationAway _ r
+    exact (isLocal_ringHomProperty P).StableUnderCompositionWithLocalizationAway.left _ r _ H
   | openCover U s hs H =>
     apply (isLocal_ringHomProperty P).OfLocalizationSpanTarget.ofIsLocalization
       (isLocal_ringHomProperty P).respectsIso _ _ hs
@@ -292,7 +291,8 @@ instance : P.ContainsIdentities where
     exact (isLocal_ringHomProperty P).HoldsForLocalizationAway.of_bijective _ _
       Function.bijective_id
 
-instance : P.IsStableUnderComposition where
+lemma stableUnderComposition (hP : RingHom.StableUnderComposition Q) :
+    P.IsStableUnderComposition where
   comp_mem {X Y Z} f g hf hg := by
     wlog hZ : IsAffine Z generalizing X Y Z
     · rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
@@ -311,7 +311,7 @@ instance : P.IsStableUnderComposition where
       rw [← Category.assoc]
       exact this _ (comp_of_isOpenImmersion _ _ _ hf) inferInstance
     rw [iff_of_isAffine (P := P)] at hf hg ⊢
-    exact (isLocal_ringHomProperty P).StableUnderComposition _ _ hg hf
+    exact hP _ _ hg hf
 
 theorem of_comp
     (H : ∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T],
@@ -339,7 +339,8 @@ theorem of_comp
   rw [iff_of_isAffine (P := P)] at h ⊢
   exact H _ _ h
 
-instance : P.IsMultiplicative where
+lemma isMultiplicative (hP : RingHom.StableUnderComposition Q) : P.IsMultiplicative where
+  comp_mem := (stableUnderComposition hP).comp_mem
 
 include Q in
 lemma of_isOpenImmersion [IsOpenImmersion f] : P f := IsLocalAtSource.of_isOpenImmersion f
