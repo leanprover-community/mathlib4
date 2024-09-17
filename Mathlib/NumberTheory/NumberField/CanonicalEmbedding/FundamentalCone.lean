@@ -170,26 +170,25 @@ def fundamentalCone : Set (mixedSpace K) :=
 
 namespace fundamentalCone
 
-variable {K}
+variable {K} {x y : mixedSpace K}
 
-theorem norm_pos_of_mem {x : mixedSpace K} (hx : x ∈ fundamentalCone K) :
+theorem norm_pos_of_mem (hx : x ∈ fundamentalCone K) :
     0 < mixedEmbedding.norm x :=
   lt_of_le_of_ne (mixedEmbedding.norm_nonneg _) (Ne.symm hx.2)
 
-theorem normAtPlace_pos_of_mem {x : mixedSpace K} (hx : x ∈ fundamentalCone K)
-    (w : InfinitePlace K) :
+theorem normAtPlace_pos_of_mem (hx : x ∈ fundamentalCone K) (w : InfinitePlace K) :
     0 < normAtPlace w x :=
   lt_of_le_of_ne (normAtPlace_nonneg _ _)
     (mixedEmbedding.norm_ne_zero_iff.mp (norm_pos_of_mem hx).ne' w).symm
 
-theorem mem_of_normAtPlace_eq {x y : mixedSpace K} (hx : x ∈ fundamentalCone K)
+theorem mem_of_normAtPlace_eq (hx : x ∈ fundamentalCone K)
     (hy : ∀ w, normAtPlace w y = normAtPlace w x) :
     y ∈ fundamentalCone K := by
   refine ⟨?_, by simpa [norm_eq_of_normAtPlace_eq hy] using hx.2⟩
   rw [Set.mem_preimage, logMap_eq_of_normAtPlace_eq hy]
   exact hx.1
 
-theorem smul_mem_of_mem {x : mixedSpace K} (hx : x ∈ fundamentalCone K) {c : ℝ} (hc : c ≠ 0) :
+theorem smul_mem_of_mem (hx : x ∈ fundamentalCone K) {c : ℝ} (hc : c ≠ 0) :
     c • x ∈ fundamentalCone K := by
   refine ⟨?_, ?_⟩
   · rw [Set.mem_preimage, logMap_real_smul hx.2 hc]
@@ -197,13 +196,13 @@ theorem smul_mem_of_mem {x : mixedSpace K} (hx : x ∈ fundamentalCone K) {c : �
   · rw [Set.mem_setOf_eq, mixedEmbedding.norm_smul, mul_eq_zero, not_or]
     exact ⟨pow_ne_zero _ (abs_ne_zero.mpr hc), hx.2⟩
 
-theorem smul_mem_iff_mem {x : mixedSpace K} {c : ℝ} (hc : c ≠ 0) :
+theorem smul_mem_iff_mem {c : ℝ} (hc : c ≠ 0) :
     c • x ∈ fundamentalCone K ↔ x ∈ fundamentalCone K := by
   refine ⟨fun h ↦ ?_, fun h ↦ smul_mem_of_mem h hc⟩
   convert smul_mem_of_mem h (inv_ne_zero hc)
   rw [eq_inv_smul_iff₀ hc]
 
-theorem exists_unit_smul_mem {x : mixedSpace K} (hx : mixedEmbedding.norm x ≠ 0) :
+theorem exists_unit_smul_mem (hx : mixedEmbedding.norm x ≠ 0) :
     ∃ u : (𝓞 K)ˣ, u • x ∈ fundamentalCone K := by
   classical
   let B := (basisUnitLattice K).ofZLatticeBasis ℝ
@@ -212,7 +211,7 @@ theorem exists_unit_smul_mem {x : mixedSpace K} (hx : mixedEmbedding.norm x ≠ 
   · obtain ⟨⟨e, h₁⟩, h₂, -⟩ := ZSpan.exist_unique_vadd_mem_fundamentalDomain B (logMap x)
     exact ⟨⟨e, by rwa [← Basis.ofZLatticeBasis_span ℝ (unitLattice K)]⟩, h₂⟩
 
-theorem torsion_smul_mem_of_mem {x : mixedSpace K} (hx : x ∈ fundamentalCone K) {ζ : (𝓞 K)ˣ}
+theorem torsion_smul_mem_of_mem (hx : x ∈ fundamentalCone K) {ζ : (𝓞 K)ˣ}
     (hζ : ζ ∈ torsion K) :
     ζ • x ∈ fundamentalCone K := by
   refine ⟨?_, ?_⟩
@@ -221,7 +220,7 @@ theorem torsion_smul_mem_of_mem {x : mixedSpace K} (hx : x ∈ fundamentalCone K
   · rw [Set.mem_setOf_eq, unitSMul_smul, map_mul, norm_unit, one_mul]
     exact hx.2
 
-theorem unit_smul_mem_iff_mem_torsion {x : mixedSpace K} (hx : x ∈ fundamentalCone K) (u : (𝓞 K)ˣ) :
+theorem unit_smul_mem_iff_mem_torsion (hx : x ∈ fundamentalCone K) (u : (𝓞 K)ˣ) :
     u • x ∈ fundamentalCone K ↔ u ∈ torsion K := by
   classical
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
