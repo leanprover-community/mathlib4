@@ -16,7 +16,7 @@ non-negative integer values. Also, for all m, n
 $f (m + n) - f(m) - f(n) = 0 \text{ or } 1$
 $f(2) = 0, f(3) > 0, and f(9999) = 3333.$
 
-Determine f(1982).
+Determine $f(1982)$.
 
 The solution is based on the one at the
 [Art of Problem Solving](https://artofproblemsolving.com/wiki/index.php/1982_IMO_Problems/Problem_1)
