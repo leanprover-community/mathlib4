@@ -28,7 +28,7 @@ interacting with the arithmetic in any nice way.
 
 To reduce API duplication, we opt not to implement operations on `Nimber` on `Ordinal`. The order
 isomorphisms `Ordinal.toNimber` and `Nimber.toOrdinal` allow us to cast between them whenever
-needed. We define notation `∗o` for `Ordinal.toNimber o` in the `Nimber` namespace.
+needed. We also define notation `∗o` for `Ordinal.toNimber o` in the `Nimber` namespace.
 
 ## Todo
 
