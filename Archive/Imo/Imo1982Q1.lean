@@ -11,12 +11,12 @@ import Mathlib.Data.PNat.Basic
 # IMO 1982 Q1
 
 The function $f(n)$ is defined for all postive integers $n$ and takes on
-non-negative integer values. Also, for all m, n
+non-negative integer values. Also, for all $m$, $n$
 
 $f (m + n) - f(m) - f(n) = 0 \text{ or } 1$
 $f(2) = 0, f(3) > 0, and f(9999) = 3333.$
 
-Determine f(1982).
+Determine $f(1982)$.
 
 The solution is based on the one at the
 [Art of Problem Solving](https://artofproblemsolving.com/wiki/index.php/1982_IMO_Problems/Problem_1)
@@ -29,7 +29,7 @@ structure IsGood (f : ℕ+ → ℕ) : Prop where
   /-- Satisfies the functional relation-/
   rel: ∀ m n : ℕ+, f (m + n) = f m + f n ∨ f (m + n) = f m + f n + 1
   f₂ : f 2 = 0
-  hf₃ : f 3 > 0
+  hf₃ : 0 < f 3
   f_9999 : f 9999 = 3333
 
 namespace IsGood
@@ -38,18 +38,12 @@ variable {f : ℕ+ → ℕ} (hf : IsGood f)
 include hf
 
 lemma f₁ : f 1 = 0 := by
-  have h : f 2 = 2 * f 1 ∨ f 2 = 2 * f 1 + 1 := by rw [two_mul]; apply hf.rel 1 1
-  rw [hf.f₂] at h
-  by_contra hf
-  rw [← ne_eq] at hf
-  have f1_pos : 0 < f 1 := by rw [lt_iff_le_and_ne]; exact ⟨zero_le (f 1), hf.symm⟩
-  rcases h with ( h₁ | h₂ )
-  · have : 2 * f 1 > 0 := by apply mul_pos (by norm_num) f1_pos
-    rw [← h₁] at this
-    exact lt_irrefl 0 this
-  · have : 2 * f 1 + 1 > 0 := by apply add_pos (mul_pos (by norm_num) f1_pos) (by norm_num)
-    rw [← h₂] at this
-    exact lt_irrefl 0 this
+  have h : f 2 = 2 * f 1 ∨ f 2 = 2 * f 1 + 1 := by rw [two_mul]; exact hf.rel 1 1
+  obtain h₁ | h₂ := hf.f₂ ▸ h
+  · rw [eq_comm, mul_eq_zero] at h₁
+    apply h₁.resolve_left
+    norm_num
+  · cases Nat.succ_ne_zero _ h₂.symm
 
 lemma f₃ : f 3 = 1 := by
     have h : f 3 = f 2 + f 1 ∨ f 3  = f 2 + f 1 + 1 := by apply hf.rel 2 1
@@ -92,28 +86,25 @@ lemma part_2 : f 1980 ≤ 660 := by
     calc (5 : ℕ+) * f 1980 + (33 : ℕ+) * f 3 ≤  f (5 * 1980 + 33 * 3) := by apply hf.superlinear
     _ = f 9999 := by rfl
     _ = 5 * 660 + 33 := by rw [hf.f_9999]
-  rw [hf.f₃, mul_one] at *
+  rw [hf.f₃, mul_one] at h
   -- from 5 * f 1980 + 33 ≤ 5 * 660 + 33 we show f 1980 ≤ 660
-  apply le_of_mul_le_mul_left (a := 5) (a0 := by norm_num)
-  apply le_of_add_le_add_right (a := 33)
-  exact h
+  exact le_of_mul_le_mul_left (le_of_add_le_add_right h) (Nat.succ_pos 4)
 
 lemma main : f 1982 = 660 := by
-  have f_1980: f 1980 = 660 := le_antisymm hf.part_2 hf.part_1
+  have f_1980 := hf.part_2.antisymm hf.part_1
   have h : f 1982 = f 1980 + f 2 ∨ f 1982 = f 1980 + f 2 + 1 := hf.rel 1980 2
   rw [f_1980, hf.f₂, add_zero] at h
-  rcases h with ( hl | hr)
-  · exact hl
-  · have h : 5 * f 1982 + 29 * f 3 + f 2 ≤ 3333 := by
-      calc
-      (5 : ℕ+) * f 1982 + (29 : ℕ+) * f 3 + f 2 ≤ f (5 * 1982 + 29 * 3) + f 2 := by
-        apply add_le_add_right hf.superlinear
-      _ ≤ f (5 * 1982 + 29 * 3 + 2) := by apply hf.superadditive
-      _ = f 9999 := rfl
-      _ = 3333 := by rw [hf.f_9999]
-    rw [hf.f₃, hf.f₂, hr, add_zero, mul_one] at h
-    -- 3334 ≤ 3333 a contradiction
-    simp at h
+  apply h.resolve_right
+  intro hr
+  have h : 5 * f 1982 + 29 * f 3 + f 2 ≤ 3333 := by
+    calc
+      (5 : ℕ+) * f 1982 + (29 : ℕ+) * f 3 + f 2 ≤ f (5 * 1982 + 29 * 3) + f 2 :=
+        add_le_add_right hf.superlinear _
+      _ ≤ f (5 * 1982 + 29 * 3 + 2) := hf.superadditive
+      _ = 3333 := hf.f_9999
+  rw [hf.f₃, hf.f₂, hr, add_zero, mul_one] at h
+  -- 3334 ≤ 3333 a contradiction
+  norm_num at h
 
 end IsGood
 
