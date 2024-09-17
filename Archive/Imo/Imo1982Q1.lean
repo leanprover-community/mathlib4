@@ -11,7 +11,7 @@ import Mathlib.Data.PNat.Basic
 # IMO 1982 Q1
 
 The function $f(n)$ is defined for all postive integers $n$ and takes on
-non-negative integer values. Also, for all m, n
+non-negative integer values. Also, for all $m$, $n$
 
 $f (m + n) - f(m) - f(n) = 0 \text{ or } 1$
 $f(2) = 0, f(3) > 0, and f(9999) = 3333.$
