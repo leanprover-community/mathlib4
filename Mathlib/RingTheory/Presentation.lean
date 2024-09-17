@@ -56,7 +56,7 @@ each relation to a polynomial in the generators.
 -/
 @[nolint checkUnivs]
 structure Algebra.Presentation extends Algebra.Generators.{w} R S where
-  /-- The type of relations.  -/
+  /-- The type of relations. -/
   rels : Type t
   /-- The assignment of each relation to a polynomial in the generators. -/
   relation : rels → toGenerators.Ring
@@ -200,13 +200,13 @@ private lemma span_range_relation_eq_ker_baseChange :
           id.map_eq_id, RingHom.id_apply, e]
         erw [← MvPolynomial.algebraMap_eq, AlgEquiv.commutes]
         simp only [TensorProduct.algebraMap_apply, id.map_eq_id, RingHom.id_apply,
-          TensorProduct.map_tmul, AlgHom.coe_id, id_eq, _root_.map_one, algebraMap_eq]
+          TensorProduct.map_tmul, AlgHom.coe_id, id_eq, map_one, algebraMap_eq]
         erw [aeval_C]
         simp
       | h_add p q hp hq => simp only [map_add, hp, hq]
       | h_X p i hp =>
-        simp only [_root_.map_mul, algebraTensorAlgEquiv_symm_X, hp, TensorProduct.map_tmul,
-          _root_.map_one, IsScalarTower.coe_toAlgHom', Generators.algebraMap_apply, aeval_X, e]
+        simp only [map_mul, algebraTensorAlgEquiv_symm_X, hp, TensorProduct.map_tmul, map_one,
+          IsScalarTower.coe_toAlgHom', Generators.algebraMap_apply, aeval_X, e]
         congr
         erw [aeval_X]
         rw [Generators.baseChange_val]
@@ -216,8 +216,7 @@ private lemma span_range_relation_eq_ker_baseChange :
       Ideal.map_map, Ideal.map_span, ← Set.range_comp] at H'
     convert H'
     simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
-      TensorProduct.includeRight_apply, TensorProduct.lift_tmul, _root_.map_one, mapAlgHom_apply,
-      one_mul]
+      TensorProduct.includeRight_apply, TensorProduct.lift_tmul, map_one, mapAlgHom_apply, one_mul]
     rfl
 
 /-- If `P` is a presentation of `S` over `R` and `T` is an `R`-algebra, we

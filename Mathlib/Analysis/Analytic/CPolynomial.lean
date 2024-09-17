@@ -34,18 +34,20 @@ We develop the basic properties of these notions, notably:
 * If a function admits a finite power series in a ball, then it is continuously polynomial at
   any point `y` of this ball, and the power series there can be expressed in terms of the initial
   power series `p` as `p.changeOrigin y`, which is finite (with the same bound as `p`) by
-  `changeOrigin_finite_of_finite`. See `HasFiniteFPowerSeriesOnBall.changeOrigin `. It follows in
+  `changeOrigin_finite_of_finite`. See `HasFiniteFPowerSeriesOnBall.changeOrigin`. It follows in
   particular that the set of points at which a given function is continuously polynomial is open,
   see `isOpen_cPolynomialAt`.
+
+We prove in particular that continuous multilinear maps are continuously polynomial, and so
+are continuous linear maps into continuous multilinear maps. In particular, such maps are
+analytic.
 -/
 
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
-open scoped Classical
-open Topology NNReal Filter ENNReal
-
-open Set Filter Asymptotics
+open scoped Classical Topology
+open Set Filter Asymptotics NNReal ENNReal
 
 variable {f g : E → F} {p pf pg : FormalMultilinearSeries 𝕜 E F} {x : E} {r r' : ℝ≥0∞} {n m : ℕ}
 
@@ -347,7 +349,8 @@ protected theorem FormalMultilinearSeries.sum_of_finite (p : FormalMultilinearSe
 protected theorem FormalMultilinearSeries.hasSum_of_finite (p : FormalMultilinearSeries 𝕜 E F)
     {n : ℕ} (hn : ∀ m, n ≤ m → p m = 0) (x : E) :
     HasSum (fun n : ℕ => p n fun _ => x) (p.sum x) :=
-  summable_of_ne_finset_zero (fun m hm ↦ by rw [Finset.mem_range, not_lt] at hm; rw [hn m hm]; rfl)
+  summable_of_ne_finset_zero (s := .range n)
+    (fun m hm ↦ by rw [Finset.mem_range, not_lt] at hm; rw [hn m hm]; rfl)
     |>.hasSum
 
 /-- The sum of a finite power series `p` admits `p` as a power series. -/
@@ -382,7 +385,7 @@ main point is that the new series `p.changeOrigin x` is still finite, with the s
 variable (p : FormalMultilinearSeries 𝕜 E F) {x y : E} {r R : ℝ≥0}
 
 /-- If `p` is a formal multilinear series such that `p m = 0` for `n ≤ m`, then
-`p.changeOriginSeriesTerm k l = 0` for `n ≤ k + l`.  -/
+`p.changeOriginSeriesTerm k l = 0` for `n ≤ k + l`. -/
 lemma changeOriginSeriesTerm_bound (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
     (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (k l : ℕ) {s : Finset (Fin (k + l))}
     (hs : s.card = l) (hkl : n ≤ k + l) :
@@ -394,7 +397,7 @@ lemma changeOriginSeriesTerm_bound (p : FormalMultilinearSeries 𝕜 E F) {n : �
 
 /-- If `p` is a finite formal multilinear series, then so is `p.changeOriginSeries k` for every
 `k` in `ℕ`. More precisely, if `p m = 0` for `n ≤ m`, then `p.changeOriginSeries k m = 0` for
-`n ≤ k + m`.  -/
+`n ≤ k + m`. -/
 lemma changeOriginSeries_finite_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
     (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (k : ℕ) : ∀ {m : ℕ}, n ≤ k + m →
     p.changeOriginSeries k m = 0 := by
@@ -414,7 +417,7 @@ lemma changeOriginSeries_sum_eq_partialSum_of_finite (p : FormalMultilinearSerie
     ContinuousMultilinearMap.zero_apply]
 
 /-- If `p` is a formal multilinear series such that `p m = 0` for `n ≤ m`, then
-`p.changeOrigin x k = 0` for `n ≤ k`.  -/
+`p.changeOrigin x k = 0` for `n ≤ k`. -/
 lemma changeOrigin_finite_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
     (hn : ∀ (m : ℕ), n ≤ m → p m = 0) {k : ℕ} (hk : n ≤ k) :
     p.changeOrigin x k = 0 := by
@@ -540,3 +543,114 @@ theorem CPolynomialAt.exists_ball_cPolynomialOn {f : E → F} {x : E} (h : CPoly
   Metric.isOpen_iff.mp (isOpen_cPolynomialAt _ _) _ h
 
 end
+
+/-!
+### Continuous multilinear maps
+
+We show that continuous multilinear maps are continuously polynomial, and therefore analytic.
+-/
+
+namespace ContinuousMultilinearMap
+
+variable {ι : Type*} {Em : ι → Type*} [∀ i, NormedAddCommGroup (Em i)] [∀ i, NormedSpace 𝕜 (Em i)]
+  [Fintype ι] (f : ContinuousMultilinearMap 𝕜 Em F) {x : Π i, Em i} {s : Set (Π i, Em i)}
+
+open FormalMultilinearSeries
+
+protected theorem hasFiniteFPowerSeriesOnBall :
+    HasFiniteFPowerSeriesOnBall f f.toFormalMultilinearSeries 0 (Fintype.card ι + 1) ⊤ :=
+  .mk' (fun m hm ↦ dif_neg (Nat.succ_le_iff.mp hm).ne) ENNReal.zero_lt_top fun y _ ↦ by
+    rw [Finset.sum_eq_single_of_mem _ (Finset.self_mem_range_succ _), zero_add]
+    · rw [toFormalMultilinearSeries, dif_pos rfl]; rfl
+    · intro m _ ne; rw [toFormalMultilinearSeries, dif_neg ne.symm]; rfl
+
+lemma cpolynomialAt  : CPolynomialAt 𝕜 f x :=
+  f.hasFiniteFPowerSeriesOnBall.cPolynomialAt_of_mem
+    (by simp only [Metric.emetric_ball_top, Set.mem_univ])
+
+lemma cpolyomialOn : CPolynomialOn 𝕜 f s := fun _ _ ↦ f.cpolynomialAt
+
+lemma analyticOn : AnalyticOn 𝕜 f s := f.cpolyomialOn.analyticOn
+
+lemma analyticWithinOn : AnalyticWithinOn 𝕜 f s :=
+  f.analyticOn.analyticWithinOn
+
+lemma analyticAt : AnalyticAt 𝕜 f x := f.cpolynomialAt.analyticAt
+
+lemma analyticWithinAt : AnalyticWithinAt 𝕜 f s x := f.analyticAt.analyticWithinAt
+
+end ContinuousMultilinearMap
+
+
+/-!
+### Continuous linear maps into continuous multilinear maps
+
+We show that a continuous linear map into continuous multilinear maps is continuously polynomial
+(as a function of two variables, i.e., uncurried). Therefore, it is also analytic.
+-/
+
+namespace ContinuousLinearMap
+
+variable {ι : Type*} {Em : ι → Type*} [∀ i, NormedAddCommGroup (Em i)] [∀ i, NormedSpace 𝕜 (Em i)]
+  [Fintype ι] (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 Em F)
+  {s : Set (G × (Π i, Em i))} {x : G × (Π i, Em i)}
+
+/-- Formal multilinear series associated to a linear map into multilinear maps. -/
+noncomputable def toFormalMultilinearSeriesOfMultilinear :
+    FormalMultilinearSeries 𝕜 (G × (Π i, Em i)) F :=
+  fun n ↦ if h : Fintype.card (Option ι) = n then
+    (f.continuousMultilinearMapOption).domDomCongr (Fintype.equivFinOfCardEq h)
+  else 0
+
+protected theorem hasFiniteFPowerSeriesOnBall_uncurry_of_multilinear :
+    HasFiniteFPowerSeriesOnBall (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2)
+      f.toFormalMultilinearSeriesOfMultilinear 0 (Fintype.card (Option ι) + 1) ⊤ := by
+  apply HasFiniteFPowerSeriesOnBall.mk' ?_ ENNReal.zero_lt_top  ?_
+  · intro m hm
+    apply dif_neg
+    exact Nat.ne_of_lt hm
+  · intro y _
+    rw [Finset.sum_eq_single_of_mem _ (Finset.self_mem_range_succ _), zero_add]
+    · rw [toFormalMultilinearSeriesOfMultilinear, dif_pos rfl]; rfl
+    · intro m _ ne; rw [toFormalMultilinearSeriesOfMultilinear, dif_neg ne.symm]; rfl
+
+lemma cpolynomialAt_uncurry_of_multilinear :
+    CPolynomialAt 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) x :=
+  f.hasFiniteFPowerSeriesOnBall_uncurry_of_multilinear.cPolynomialAt_of_mem
+    (by simp only [Metric.emetric_ball_top, Set.mem_univ])
+
+lemma cpolyomialOn_uncurry_of_multilinear :
+    CPolynomialOn 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s :=
+  fun _ _ ↦ f.cpolynomialAt_uncurry_of_multilinear
+
+lemma analyticOn_uncurry_of_multilinear : AnalyticOn 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s :=
+  f.cpolyomialOn_uncurry_of_multilinear.analyticOn
+
+lemma analyticWithinOn_uncurry_of_multilinear :
+    AnalyticWithinOn 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s :=
+  f.analyticOn_uncurry_of_multilinear.analyticWithinOn
+
+lemma analyticAt_uncurry_of_multilinear : AnalyticAt 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) x :=
+  f.cpolynomialAt_uncurry_of_multilinear.analyticAt
+
+lemma analyticWithinAt_uncurry_of_multilinear :
+    AnalyticWithinAt 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s x :=
+  f.analyticAt_uncurry_of_multilinear.analyticWithinAt
+
+lemma continuousOn_uncurry_of_multilinear :
+    ContinuousOn (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s :=
+  f.analyticOn_uncurry_of_multilinear.continuousOn
+
+lemma continuous_uncurry_of_multilinear :
+    Continuous (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) :=
+  f.analyticOn_uncurry_of_multilinear.continuous
+
+lemma continuousAt_uncurry_of_multilinear :
+    ContinuousAt (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) x :=
+  f.analyticAt_uncurry_of_multilinear.continuousAt
+
+lemma continuousWithinAt_uncurry_of_multilinear :
+    ContinuousWithinAt (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s x :=
+  f.analyticWithinAt_uncurry_of_multilinear.continuousWithinAt
+
+end ContinuousLinearMap

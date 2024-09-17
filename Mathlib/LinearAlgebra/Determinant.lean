@@ -484,6 +484,11 @@ theorem Basis.det_isEmpty [IsEmpty ι] : e.det = AlternatingMap.constOfIsEmpty R
 /-- `Basis.det` is not the zero map. -/
 theorem Basis.det_ne_zero [Nontrivial R] : e.det ≠ 0 := fun h => by simpa [h] using e.det_self
 
+theorem Basis.smul_det {G} [Group G] [DistribMulAction G M] [SMulCommClass G R M]
+    (g : G) (v : ι → M) :
+    (g • e).det v = e.det (g⁻¹ • v) := by
+  simp_rw [det_apply, toMatrix_smul_left]
+
 theorem is_basis_iff_det {v : ι → M} :
     LinearIndependent R v ∧ span R (Set.range v) = ⊤ ↔ IsUnit (e.det v) := by
   constructor

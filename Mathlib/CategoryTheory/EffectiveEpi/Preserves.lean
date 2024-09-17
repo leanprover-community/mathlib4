@@ -29,7 +29,7 @@ noncomputable section Equivalence
 
 variable {D : Type*} [Category D] (e : C ≌ D) {B : C}
 
-variable {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpiFamily X π]
+variable {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
 
 theorem effectiveEpiFamilyStructOfEquivalence_aux {W : D} (ε : (a : α) → e.functor.obj (X a) ⟶ W)
     (h : ∀ {Z : D} (a₁ a₂ : α) (g₁ : Z ⟶ e.functor.obj (X a₁)) (g₂ : Z ⟶ e.functor.obj (X a₂)),
@@ -40,6 +40,8 @@ theorem effectiveEpiFamilyStructOfEquivalence_aux {W : D} (ε : (a : α) → e.f
   have := h a₁ a₂ (e.functor.map g₁) (e.functor.map g₂)
   simp only [← Functor.map_comp, hg] at this
   simpa using congrArg e.inverse.map (this (by trivial))
+
+variable [EffectiveEpiFamily X π]
 
 /-- Equivalences preserve effective epimorphic families -/
 def effectiveEpiFamilyStructOfEquivalence : EffectiveEpiFamilyStruct (fun a ↦ e.functor.obj (X a))

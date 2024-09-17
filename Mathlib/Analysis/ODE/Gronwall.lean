@@ -27,13 +27,11 @@ Sec. 4.5][HubbardWest-ode], where `norm_le_gronwallBound_of_norm_deriv_right_le`
   of `K x` and `f x`.
 -/
 
+open Metric Set Asymptotics Filter Real
+open scoped Topology NNReal
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {F : Type*} [NormedAddCommGroup F]
   [NormedSpace ℝ F]
-
-open Metric Set Asymptotics Filter Real
-
-open scoped Classical Topology NNReal
 
 /-! ### Technical lemmas about `gronwallBound` -/
 
@@ -132,6 +130,7 @@ theorem norm_le_gronwallBound_of_norm_deriv_right_le {f f' : ℝ → E} {δ K ε
 variable {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0} {f g f' g' : ℝ → E} {a b t₀ : ℝ} {εf εg δ : ℝ}
   (hv : ∀ t, LipschitzOnWith K (v t) (s t))
 
+include hv in
 /-- If `f` and `g` are two approximate solutions of the same ODE, then the distance between them
 can't grow faster than exponentially. This is a simple corollary of Grönwall's inequality, and some
 people call this Grönwall's inequality too.
@@ -176,9 +175,10 @@ theorem dist_le_of_approx_trajectories_ODE
     (ha : dist (f a) (g a) ≤ δ) :
     ∀ t ∈ Icc a b, dist (f t) (g t) ≤ gronwallBound δ K (εf + εg) (t - a) :=
   have hfs : ∀ t ∈ Ico a b, f t ∈ @univ E := fun _ _ => trivial
-  dist_le_of_approx_trajectories_ODE_of_mem (fun t => (hv t).lipschitzOnWith _) hf hf'
+  dist_le_of_approx_trajectories_ODE_of_mem (fun t => (hv t).lipschitzOnWith) hf hf'
     f_bound hfs hg hg' g_bound (fun _ _ => trivial) ha
 
+include hv in
 /-- If `f` and `g` are two exact solutions of the same ODE, then the distance between them
 can't grow faster than exponentially. This is a simple corollary of Grönwall's inequality, and some
 people call this Grönwall's inequality too.
@@ -213,9 +213,10 @@ theorem dist_le_of_trajectories_ODE
     (ha : dist (f a) (g a) ≤ δ) :
     ∀ t ∈ Icc a b, dist (f t) (g t) ≤ δ * exp (K * (t - a)) :=
   have hfs : ∀ t ∈ Ico a b, f t ∈ @univ E := fun _ _ => trivial
-  dist_le_of_trajectories_ODE_of_mem (fun t => (hv t).lipschitzOnWith _) hf hf' hfs hg
+  dist_le_of_trajectories_ODE_of_mem (fun t => (hv t).lipschitzOnWith) hf hf' hfs hg
     hg' (fun _ _ => trivial) ha
 
+include hv in
 /-- There exists only one solution of an ODE \(\dot x=v(t, x)\) in a set `s ⊆ ℝ × E` with
 a given initial value provided that the RHS is Lipschitz continuous in `x` within `s`,
 and we consider only solutions included in `s`.
@@ -233,6 +234,7 @@ theorem ODE_solution_unique_of_mem_Icc_right
   have := dist_le_of_trajectories_ODE_of_mem hv hf hf' hfs hg hg' hgs (dist_le_zero.2 ha) t ht
   rwa [zero_mul, dist_le_zero] at this
 
+include hv in
 /-- A time-reversed version of `ODE_solution_unique_of_mem_Icc_right`. Uniqueness is shown in a
 closed interval `Icc a b`, where `b` is the "initial" time. -/
 theorem ODE_solution_unique_of_mem_Icc_left
@@ -269,6 +271,7 @@ theorem ODE_solution_unique_of_mem_Icc_left
       (hasDerivAt_neg t).hasDerivWithinAt (hmt3 t)
     simp
 
+include hv in
 /-- A version of `ODE_solution_unique_of_mem_Icc_right` for uniqueness in a closed interval whose
 interior contains the initial time. -/
 theorem ODE_solution_unique_of_mem_Icc
@@ -296,6 +299,7 @@ theorem ODE_solution_unique_of_mem_Icc
       (hg.mono <| Icc_subset_Icc_left <| le_of_lt ht.1)
       (fun _ ht' ↦ (hg' _ (hss ht')).hasDerivWithinAt) (fun _ ht' ↦ (hgs _ (hss ht'))) heq
 
+include hv in
 /-- A version of `ODE_solution_unique_of_mem_Icc` for uniqueness in an open interval. -/
 theorem ODE_solution_unique_of_mem_Ioo
     (ht : t₀ ∈ Ioo a b)
@@ -326,6 +330,7 @@ theorem ODE_solution_unique_of_mem_Ioo
       (fun _ ht'' ↦ (hg _ <| hss <| Ico_subset_Icc_self ht'').2) heq
       ⟨h, le_rfl⟩
 
+include hv in
 /-- Local unqueness of ODE solutions. -/
 theorem ODE_solution_unique_of_eventually
     (hf : ∀ᶠ t in 𝓝 t₀, HasDerivAt f (v t (f t)) t ∧ f t ∈ s t)
@@ -349,5 +354,5 @@ theorem ODE_solution_unique
     (ha : f a = g a) :
     EqOn f g (Icc a b) :=
   have hfs : ∀ t ∈ Ico a b, f t ∈ @univ E := fun _ _ => trivial
-  ODE_solution_unique_of_mem_Icc_right (fun t => (hv t).lipschitzOnWith _) hf hf' hfs hg hg'
+  ODE_solution_unique_of_mem_Icc_right (fun t => (hv t).lipschitzOnWith) hf hf' hfs hg hg'
     (fun _ _ => trivial) ha

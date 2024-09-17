@@ -50,7 +50,8 @@ theorem cosZeta_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc 0 1) :
     cosZeta x (2 * k) = (-1) ^ (k + 1) * (2 * π) ^ (2 * k) / 2 / (2 * k)! *
       ((Polynomial.bernoulli (2 * k)).map (algebraMap ℚ ℂ)).eval (x : ℂ) := by
   rw [← (hasSum_nat_cosZeta x (?_ : 1 < re (2 * k))).tsum_eq]
-  · refine Eq.trans ?_ <| (congr_arg ofReal' (hasSum_one_div_nat_pow_mul_cos hk hx).tsum_eq).trans ?_
+  · refine Eq.trans ?_ <|
+      (congr_arg ofReal' (hasSum_one_div_nat_pow_mul_cos hk hx).tsum_eq).trans ?_
     · rw [ofReal_tsum]
       refine tsum_congr fun n ↦ ?_
       rw [mul_comm (1 / _), mul_one_div, ofReal_div, mul_assoc (2 * π), mul_comm x n, ← mul_assoc,
@@ -77,7 +78,8 @@ theorem sinZeta_two_mul_nat_add_one (hk : k ≠ 0) (hx : x ∈ Icc 0 1) :
     sinZeta x (2 * k + 1) = (-1) ^ (k + 1) * (2 * π) ^ (2 * k + 1) / 2 / (2 * k + 1)! *
       ((Polynomial.bernoulli (2 * k + 1)).map (algebraMap ℚ ℂ)).eval (x : ℂ) := by
   rw [← (hasSum_nat_sinZeta x (?_ : 1 < re (2 * k + 1))).tsum_eq]
-  · refine Eq.trans ?_ <| (congr_arg ofReal' (hasSum_one_div_nat_pow_mul_sin hk hx).tsum_eq).trans ?_
+  · refine Eq.trans ?_ <|
+      (congr_arg ofReal' (hasSum_one_div_nat_pow_mul_sin hk hx).tsum_eq).trans ?_
     · rw [ofReal_tsum]
       refine tsum_congr fun n ↦ ?_
       rw [mul_comm (1 / _), mul_one_div, ofReal_div, mul_assoc (2 * π), mul_comm x n, ← mul_assoc]

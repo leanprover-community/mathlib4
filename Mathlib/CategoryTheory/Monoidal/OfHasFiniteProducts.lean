@@ -51,8 +51,8 @@ def monoidalOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : Monoidal
     tensorHom := fun f g ↦ Limits.prod.map f g
     tensorUnit := ⊤_ C
     associator := prod.associator
-    leftUnitor := fun P ↦ prod.leftUnitor P
-    rightUnitor := fun P ↦ prod.rightUnitor P
+    leftUnitor := fun P ↦ Limits.prod.leftUnitor P
+    rightUnitor := fun P ↦ Limits.prod.rightUnitor P
   }
   .ofTensorHom
     (pentagon := prod.pentagon)

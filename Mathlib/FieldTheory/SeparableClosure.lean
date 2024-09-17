@@ -59,8 +59,6 @@ separable degree, degree, separable closure
 
 -/
 
-open scoped Classical Polynomial
-
 open FiniteDimensional Polynomial IntermediateField Field
 
 noncomputable section

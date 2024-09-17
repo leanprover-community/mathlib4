@@ -36,7 +36,7 @@ This is often called 'finitely complete'.
 -/
 class HasFiniteLimits : Prop where
   /-- `C` has all limits over any type `J` whose objects and morphisms lie in the same universe
-  and which has `FinType` objects and morphisms-/
+  and which has `FinType` objects and morphisms -/
   out (J : Type) [𝒥 : SmallCategory J] [@FinCategory J 𝒥] : @HasLimitsOfShape J 𝒥 C _
 
 instance (priority := 100) hasLimitsOfShape_of_hasFiniteLimits (J : Type w) [SmallCategory J]
@@ -85,7 +85,7 @@ This is often called 'finitely cocomplete'.
 -/
 class HasFiniteColimits : Prop where
   /-- `C` has all colimits over any type `J` whose objects and morphisms lie in the same universe
-  and which has `Fintype` objects and morphisms-/
+  and which has `Fintype` objects and morphisms -/
   out (J : Type) [𝒥 : SmallCategory J] [@FinCategory J 𝒥] : @HasColimitsOfShape J 𝒥 C _
 
 instance (priority := 100) hasColimitsOfShape_of_hasFiniteColimits (J : Type w) [SmallCategory J]

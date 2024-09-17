@@ -81,7 +81,7 @@ theorem abs_tendsto_atTop (hdeg : 0 < P.degree) :
 
 theorem abs_isBoundedUnder_iff :
     (IsBoundedUnder (· ≤ ·) atTop fun x => |eval x P|) ↔ P.degree ≤ 0 := by
-  refine ⟨fun h => ?_, fun h => ⟨|P.coeff 0|, eventually_map.mpr (eventually_of_forall
+  refine ⟨fun h => ?_, fun h => ⟨|P.coeff 0|, eventually_map.mpr (Eventually.of_forall
     (forall_imp (fun _ => le_of_eq) fun x => congr_arg abs <| _root_.trans (congr_arg (eval x)
     (eq_C_of_degree_le_zero h)) eval_C))⟩⟩
   contrapose! h

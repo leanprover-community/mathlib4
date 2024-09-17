@@ -370,7 +370,7 @@ private theorem le_antisymm {d₁ d₂ : ManyOneDegree} : d₁ ≤ d₂ → d₂
   induction d₁ using ManyOneDegree.ind_on
   induction d₂ using ManyOneDegree.ind_on
   intro hp hq
-  simp_all only [ManyOneEquiv, of_le_of, of_eq_of, true_and_iff]
+  simp_all only [ManyOneEquiv, of_le_of, of_eq_of, true_and]
 
 private theorem le_trans {d₁ d₂ d₃ : ManyOneDegree} : d₁ ≤ d₂ → d₂ ≤ d₃ → d₁ ≤ d₃ := by
   induction d₁ using ManyOneDegree.ind_on
@@ -416,11 +416,11 @@ protected theorem add_le {d₁ d₂ d₃ : ManyOneDegree} : d₁ + d₂ ≤ d₃
 
 @[simp]
 protected theorem le_add_left (d₁ d₂ : ManyOneDegree) : d₁ ≤ d₁ + d₂ :=
-  (ManyOneDegree.add_le.1 (by rfl)).1
+  (ManyOneDegree.add_le.1 (le_refl _)).1
 
 @[simp]
 protected theorem le_add_right (d₁ d₂ : ManyOneDegree) : d₂ ≤ d₁ + d₂ :=
-  (ManyOneDegree.add_le.1 (by rfl)).2
+  (ManyOneDegree.add_le.1 (le_refl _)).2
 
 instance instSemilatticeSup : SemilatticeSup ManyOneDegree :=
   { ManyOneDegree.instPartialOrder with

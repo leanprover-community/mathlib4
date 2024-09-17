@@ -5,9 +5,10 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl, Dami
 Yuyang Zhao
 -/
 import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
-import Mathlib.Init.Data.Ordering.Basic
+import Mathlib.Data.Ordering.Basic
 import Mathlib.Order.MinMax
 import Mathlib.Tactic.Contrapose
+import Mathlib.Tactic.Use
 
 /-!
 # Ordered monoids
@@ -359,24 +360,24 @@ theorem mul_le_of_le_one_left' [CovariantClass α α (swap (· * ·)) (· ≤ ·
 @[to_additive]
 theorem one_le_of_le_mul_right [ContravariantClass α α (· * ·) (· ≤ ·)] {a b : α} (h : a ≤ a * b) :
     1 ≤ b :=
-  le_of_mul_le_mul_left' <| by simpa only [mul_one]
+  le_of_mul_le_mul_left' (a := a) <| by simpa only [mul_one]
 
 @[to_additive]
 theorem le_one_of_mul_le_right [ContravariantClass α α (· * ·) (· ≤ ·)] {a b : α} (h : a * b ≤ a) :
     b ≤ 1 :=
-  le_of_mul_le_mul_left' <| by simpa only [mul_one]
+  le_of_mul_le_mul_left' (a := a) <| by simpa only [mul_one]
 
 @[to_additive]
 theorem one_le_of_le_mul_left [ContravariantClass α α (swap (· * ·)) (· ≤ ·)] {a b : α}
     (h : b ≤ a * b) :
     1 ≤ a :=
-  le_of_mul_le_mul_right' <| by simpa only [one_mul]
+  le_of_mul_le_mul_right' (a := b) <| by simpa only [one_mul]
 
 @[to_additive]
 theorem le_one_of_mul_le_left [ContravariantClass α α (swap (· * ·)) (· ≤ ·)] {a b : α}
     (h : a * b ≤ b) :
     a ≤ 1 :=
-  le_of_mul_le_mul_right' <| by simpa only [one_mul]
+  le_of_mul_le_mul_right' (a := b) <| by simpa only [one_mul]
 
 @[to_additive (attr := simp) le_add_iff_nonneg_right]
 theorem le_mul_iff_one_le_right' [CovariantClass α α (· * ·) (· ≤ ·)]
@@ -441,24 +442,24 @@ theorem mul_lt_of_lt_one_left' [CovariantClass α α (swap (· * ·)) (· < ·)]
 @[to_additive]
 theorem one_lt_of_lt_mul_right [ContravariantClass α α (· * ·) (· < ·)] {a b : α} (h : a < a * b) :
     1 < b :=
-  lt_of_mul_lt_mul_left' <| by simpa only [mul_one]
+  lt_of_mul_lt_mul_left' (a := a) <| by simpa only [mul_one]
 
 @[to_additive]
 theorem lt_one_of_mul_lt_right [ContravariantClass α α (· * ·) (· < ·)] {a b : α} (h : a * b < a) :
     b < 1 :=
-  lt_of_mul_lt_mul_left' <| by simpa only [mul_one]
+  lt_of_mul_lt_mul_left' (a := a) <| by simpa only [mul_one]
 
 @[to_additive]
 theorem one_lt_of_lt_mul_left [ContravariantClass α α (swap (· * ·)) (· < ·)] {a b : α}
     (h : b < a * b) :
     1 < a :=
-  lt_of_mul_lt_mul_right' <| by simpa only [one_mul]
+  lt_of_mul_lt_mul_right' (a := b) <| by simpa only [one_mul]
 
 @[to_additive]
 theorem lt_one_of_mul_lt_left [ContravariantClass α α (swap (· * ·)) (· < ·)] {a b : α}
     (h : a * b < b) :
     a < 1 :=
-  lt_of_mul_lt_mul_right' <| by simpa only [one_mul]
+  lt_of_mul_lt_mul_right' (a := b) <| by simpa only [one_mul]
 
 @[to_additive (attr := simp) lt_add_iff_pos_right]
 theorem lt_mul_iff_one_lt_right' [CovariantClass α α (· * ·) (· < ·)]
@@ -953,7 +954,7 @@ section PartialOrder
 variable [PartialOrder α]
 
 @[to_additive]
-theorem mul_eq_one_iff' [CovariantClass α α (· * ·) (· ≤ ·)]
+theorem mul_eq_one_iff_of_one_le [CovariantClass α α (· * ·) (· ≤ ·)]
     [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b : α} (ha : 1 ≤ a) (hb : 1 ≤ b) :
     a * b = 1 ↔ a = 1 ∧ b = 1 :=
   Iff.intro
@@ -964,9 +965,9 @@ theorem mul_eq_one_iff' [CovariantClass α α (· * ·) (· ≤ ·)]
       have : b = 1 := le_antisymm this hb
       And.intro ‹a = 1› ‹b = 1›)
     (by rintro ⟨rfl, rfl⟩; rw [mul_one])
-    -- Porting note: original proof of the second implication,
-    -- `fun ⟨ha', hb'⟩ => by rw [ha', hb', mul_one]`,
-    -- had its `to_additive`-ization fail due to some bug
+
+@[deprecated (since := "2024-07-24")] alias mul_eq_one_iff' := mul_eq_one_iff_of_one_le
+@[deprecated (since := "2024-07-24")] alias add_eq_zero_iff' := add_eq_zero_iff_of_nonneg
 
 section Left
 
@@ -1305,12 +1306,12 @@ protected theorem inj [Mul α] [PartialOrder α] {a b c : α} (ha : MulLECancell
   ha.Injective.eq_iff
 
 @[to_additive]
-protected theorem injective_left [Mul α] [i : IsSymmOp α α (· * ·)] [PartialOrder α] {a : α}
+protected theorem injective_left [Mul α] [i : @Std.Commutative α (· * ·)] [PartialOrder α] {a : α}
     (ha : MulLECancellable a) :
-    Injective (· * a) := fun b c h => ha.Injective <| by dsimp; rwa [i.symm_op a, i.symm_op a]
+    Injective (· * a) := fun b c h => ha.Injective <| by dsimp; rwa [i.comm a, i.comm a]
 
 @[to_additive]
-protected theorem inj_left [Mul α] [IsSymmOp α α (· * ·)] [PartialOrder α] {a b c : α}
+protected theorem inj_left [Mul α] [@Std.Commutative α (· * ·)] [PartialOrder α] {a b c : α}
     (hc : MulLECancellable c) :
     a * c = b * c ↔ a = b :=
   hc.injective_left.eq_iff
@@ -1323,9 +1324,9 @@ protected theorem mul_le_mul_iff_left [Mul α] [CovariantClass α α (· * ·) (
   ⟨fun h => ha h, fun h => mul_le_mul_left' h a⟩
 
 @[to_additive]
-protected theorem mul_le_mul_iff_right [Mul α] [i : IsSymmOp α α (· * ·)]
+protected theorem mul_le_mul_iff_right [Mul α] [i : @Std.Commutative α (· * ·)]
     [CovariantClass α α (· * ·) (· ≤ ·)] {a b c : α} (ha : MulLECancellable a) :
-    b * a ≤ c * a ↔ b ≤ c := by rw [i.symm_op b, i.symm_op c, ha.mul_le_mul_iff_left]
+    b * a ≤ c * a ↔ b ≤ c := by rw [i.comm b, i.comm c, ha.mul_le_mul_iff_left]
 
 @[to_additive]
 protected theorem le_mul_iff_one_le_right [MulOneClass α] [CovariantClass α α (· * ·) (· ≤ ·)]
@@ -1340,13 +1341,13 @@ protected theorem mul_le_iff_le_one_right [MulOneClass α] [CovariantClass α α
   Iff.trans (by rw [mul_one]) ha.mul_le_mul_iff_left
 
 @[to_additive]
-protected theorem le_mul_iff_one_le_left [MulOneClass α] [i : IsSymmOp α α (· * ·)]
+protected theorem le_mul_iff_one_le_left [MulOneClass α] [i : @Std.Commutative α (· * ·)]
     [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α} (ha : MulLECancellable a) :
-    a ≤ b * a ↔ 1 ≤ b := by rw [i.symm_op, ha.le_mul_iff_one_le_right]
+    a ≤ b * a ↔ 1 ≤ b := by rw [i.comm, ha.le_mul_iff_one_le_right]
 
 @[to_additive]
-protected theorem mul_le_iff_le_one_left [MulOneClass α] [i : IsSymmOp α α (· * ·)]
+protected theorem mul_le_iff_le_one_left [MulOneClass α] [i : @Std.Commutative α (· * ·)]
     [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α} (ha : MulLECancellable a) :
-    b * a ≤ a ↔ b ≤ 1 := by rw [i.symm_op, ha.mul_le_iff_le_one_right]
+    b * a ≤ a ↔ b ≤ 1 := by rw [i.comm, ha.mul_le_iff_le_one_right]
 
 end MulLECancellable

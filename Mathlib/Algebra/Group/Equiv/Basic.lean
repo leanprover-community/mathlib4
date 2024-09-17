@@ -213,7 +213,10 @@ theorem coe_toMulHom {f : M ≃* N} : (f.toMulHom : M → N) = f := rfl
 /-- A multiplicative isomorphism preserves multiplication. -/
 @[to_additive "An additive isomorphism preserves addition."]
 protected theorem map_mul (f : M ≃* N) : ∀ x y, f (x * y) = f x * f y :=
-  _root_.map_mul f
+  map_mul f
+
+attribute [deprecated map_mul (since := "2024-08-08")] MulEquiv.map_mul
+attribute [deprecated map_add (since := "2024-08-08")] AddEquiv.map_add
 
 /-- Makes a multiplicative isomorphism from a bijection which preserves multiplication. -/
 @[to_additive "Makes an additive isomorphism from a bijection which preserves addition."]
@@ -245,7 +248,7 @@ https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/!4.234183.
 @[to_additive]
 lemma symm_map_mul {M N : Type*} [Mul M] [Mul N] (h : M ≃* N) (x y : N) :
     h.symm (x * y) = h.symm x * h.symm y :=
-  (h.toMulHom.inverse h.toEquiv.symm h.left_inv h.right_inv).map_mul x y
+  map_mul (h.toMulHom.inverse h.toEquiv.symm h.left_inv h.right_inv) x y
 
 /-- The inverse of an isomorphism is an isomorphism. -/
 @[to_additive (attr := symm) "The inverse of an isomorphism is an isomorphism."]
@@ -301,7 +304,7 @@ theorem refl_symm : (refl M).symm = refl M := rfl
 def trans (h1 : M ≃* N) (h2 : N ≃* P) : M ≃* P :=
   { h1.toEquiv.trans h2.toEquiv with
     map_mul' := fun x y => show h2 (h1 (x * y)) = h2 (h1 x) * h2 (h1 y) by
-      rw [h1.map_mul, h2.map_mul] }
+      rw [map_mul, map_mul] }
 
 /-- `e.symm` is a right inverse of `e`, written as `e (e.symm y) = y`. -/
 @[to_additive (attr := simp) "`e.symm` is a right inverse of `e`, written as `e (e.symm y) = y`."]
@@ -389,10 +392,6 @@ same underlying function. -/
 theorem ext {f g : MulEquiv M N} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 
-@[to_additive]
-theorem ext_iff {f g : MulEquiv M N} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
-
 @[to_additive (attr := simp)]
 theorem mk_coe (e : M ≃* N) (e' h₁ h₂ h₃) : (⟨⟨e, e', h₁, h₂⟩, h₃⟩ : M ≃* N) = e :=
   ext fun _ => rfl
@@ -459,7 +458,7 @@ lemma comp_right_injective (e : M ≃* N) : Injective fun f : P →* M ↦ (e : 
 @[to_additive
   "An additive isomorphism of additive monoids sends `0` to `0`
   (and is hence an additive monoid isomorphism)."]
-protected theorem map_one (h : M ≃* N) : h 1 = 1 := _root_.map_one h
+protected theorem map_one (h : M ≃* N) : h 1 = 1 := map_one h
 
 @[to_additive]
 protected theorem map_eq_one_iff (h : M ≃* N) {x : M} : h x = 1 ↔ x = 1 :=
@@ -547,7 +546,7 @@ def piCongrRight {η : Type*} {Ms Ns : η → Type*} [∀ j, Mul (Ms j)] [∀ j,
   { Equiv.piCongrRight fun j => (es j).toEquiv with
     toFun := fun x j => es j (x j),
     invFun := fun x j => (es j).symm (x j),
-    map_mul' := fun x y => funext fun j => (es j).map_mul (x j) (y j) }
+    map_mul' := fun x y => funext fun j => map_mul (es j) (x j) (y j) }
 
 @[to_additive (attr := simp)]
 theorem piCongrRight_refl {η : Type*} {Ms : η → Type*} [∀ j, Mul (Ms j)] :
@@ -579,13 +578,13 @@ def piUnique {ι : Type*} (M : ι → Type*) [∀ j, Mul (M j)] [Unique ι] :
 @[to_additive "An additive equivalence of additive groups preserves negation."]
 protected theorem map_inv [Group G] [DivisionMonoid H] (h : G ≃* H) (x : G) :
     h x⁻¹ = (h x)⁻¹ :=
-  _root_.map_inv h x
+  map_inv h x
 
 /-- A multiplicative equivalence of groups preserves division. -/
 @[to_additive "An additive equivalence of additive groups preserves subtractions."]
 protected theorem map_div [Group G] [DivisionMonoid H] (h : G ≃* H) (x y : G) :
     h (x / y) = h x / h y :=
-  _root_.map_div h x y
+  map_div h x y
 
 end MulEquiv
 
