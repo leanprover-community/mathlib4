@@ -44,6 +44,9 @@ instance small_image2 (f : α → β → γ) (s : Set α) (t : Set β) [Small.{u
 theorem small_univ_iff : Small.{u} (@Set.univ α) ↔ Small.{u} α :=
   small_congr <| Equiv.Set.univ α
 
+instance small_univ [h : Small.{u} α] : Small.{u} (@Set.univ α) :=
+  small_univ_iff.2 h
+
 instance small_union (s t : Set α) [Small.{u} s] [Small.{u} t] :
     Small.{u} (s ∪ t : Set α) := by
   rw [← Subtype.range_val (s := s), ← Subtype.range_val (s := t), ← Set.Sum.elim_range]

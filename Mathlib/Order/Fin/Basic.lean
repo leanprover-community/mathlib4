@@ -279,25 +279,16 @@ map. In this lemma we state that for each `i : Fin n` we have `(e i : ℕ) = (i 
     simpa using h _ this (e.symm _).is_lt
   · rwa [← h j hj (hj.trans hi), ← lt_iff_val_lt_val, e.lt_iff_lt]
 
-instance orderIso_subsingleton : Subsingleton (Fin n ≃o α) :=
-  ⟨fun e e' => by
-    ext i
-    rw [← e.symm.apply_eq_iff_eq, e.symm_apply_apply, ← e'.trans_apply, Fin.ext_iff,
-      coe_orderIso_apply]⟩
-
-instance orderIso_subsingleton' : Subsingleton (α ≃o Fin n) := OrderIso.symm_injective.subsingleton
-
-instance orderIsoUnique : Unique (Fin n ≃o Fin n) := Unique.mk' _
-
 /-- Two strictly monotone functions from `Fin n` are equal provided that their ranges
 are equal. -/
+@[deprecated StrictMono.range_inj (since := "2024-09-17")]
 lemma strictMono_unique {f g : Fin n → α} (hf : StrictMono f) (hg : StrictMono g)
     (h : range f = range g) : f = g :=
-  have : (hf.orderIso f).trans (OrderIso.setCongr _ _ h) = hg.orderIso g := Subsingleton.elim _ _
-  congr_arg (Function.comp (Subtype.val : range g → α)) (funext <| RelIso.ext_iff.1 this)
+  (hf.range_inj hg).1 h
 
 /-- Two order embeddings of `Fin n` are equal provided that their ranges are equal. -/
+@[deprecated OrderEmbedding.range_inj (since := "2024-09-17")]
 lemma orderEmbedding_eq {f g : Fin n ↪o α} (h : range f = range g) : f = g :=
-  RelEmbedding.ext <| funext_iff.1 <| strictMono_unique f.strictMono g.strictMono h
+  OrderEmbedding.range_inj.1 h
 
 end Fin
