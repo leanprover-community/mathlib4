@@ -678,8 +678,8 @@ private def nhdsSideCore [TopologicalSpace G]  [TopologicalGroup G]
   symmCore (nhdsSide WOpen einW w)
 
 private lemma nhdsSideCore_open [TopologicalSpace G]  [TopologicalGroup G]
-    {W : Set G} (WOpen : IsOpen W) (einW : 1 ∈ W) (w : W) : IsOpen (nhdsSideCore WOpen einW w)
-    := by
+    {W : Set G} (WOpen : IsOpen W) (einW : 1 ∈ W) (w : W) :
+    IsOpen (nhdsSideCore WOpen einW w) := by
   simp only [nhdsSideCore, symmCore]
   apply IsOpen.inter (nhdsSide_open WOpen einW w)
     (IsOpen.inv (nhdsSide_open WOpen einW w))
