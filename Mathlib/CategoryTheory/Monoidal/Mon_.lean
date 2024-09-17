@@ -58,6 +58,7 @@ theorem mul_one' (X : C) [Mon_Class X] : (X ◁ η) ≫ μ = (ρ_ X).hom := mul_
 -- We prove a more general `@[simp]` lemma below.
 theorem mul_assoc' (X : C) [Mon_Class X] : (μ ▷ X) ≫ μ = (α_ X X X).hom ≫ (X ◁ μ) ≫ μ := mul_assoc
 
+variable (C) in
 /-- The trivial monoid object. We later show this is initial in `Mon_ C`.
 -/
 @[simps]
@@ -68,7 +69,7 @@ instance trivial : Mon_Class (𝟙_ C) where
   mul_one := by coherence
 
 instance : Inhabited (Mon_Class (𝟙_ C)) :=
-  ⟨trivial⟩
+  ⟨trivial C⟩
 
 variable {M : C}
 variable [Mon_Class M]
@@ -131,8 +132,7 @@ def Mon_ClassIso.symm {M N : C} [Mon_Class M] [Mon_Class N] (f : Mon_ClassIso M 
   one_hom := by simp [Iso.comp_inv_eq]
   mul_hom := by simp [Iso.comp_inv_eq]
 
-variable (C)
-
+variable (C) in
 /-- A monoid object internal to a monoidal category.
 
 When the monoidal category is preadditive, this is also sometimes called an "algebra object".
@@ -153,6 +153,7 @@ attribute [instance] Mon_.isMon_Class
 instance : Inhabited (Mon_ C) :=
   ⟨⟨𝟙_ C⟩⟩
 
+variable (C) in
 /-- The trivial monoid object. -/
 @[simps!]
 def trivial : Mon_ C where
@@ -162,8 +163,6 @@ instance : Category.{v₁} (Mon_ C) where
   Hom M N := Mon_Hom M.X N.X
   id M := Mon_Hom.id M.X
   comp f g := Mon_Hom.comp f g
-
-variable {C}
 
 /-- Construct a morphism in `Mon_ C` . -/
 def mkHom {X Y : C} [Mon_Class X] [Mon_Class Y] (f : Mon_Hom X Y) :
