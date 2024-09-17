@@ -401,7 +401,7 @@ private theorem mul_nonempty (a b : Nimber.{u}) :
     inferInstance
   convert @compl_nonempty_of_small _ this
   ext
-  simp
+  simp_rw [Set.mem_setOf_eq, Set.mem_image, Set.mem_prod, Set.mem_Iio, Prod.exists]
   tauto
 
 theorem exists_of_lt_mul (h : c < a * b) : ∃ a' < a, ∃ b' < b, a' * b + a * b' + a' * b' = c := by
