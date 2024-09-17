@@ -146,7 +146,7 @@ theorem summable_measure_toReal [hμ : IsFiniteMeasure μ] {f : ℕ → Set α}
 theorem ae_eq_univ_iff_measure_eq [IsFiniteMeasure μ] (hs : NullMeasurableSet s μ) :
     s =ᵐ[μ] univ ↔ μ s = μ univ :=
   ⟨measure_congr, fun h ↦
-    (ae_eq_of_subset_of_measure_ge (subset_univ s) h.ge hs (measure_ne_top μ univ))⟩
+    ae_eq_of_subset_of_measure_ge (subset_univ _) h.ge hs (measure_ne_top _ _)⟩
 
 theorem ae_iff_measure_eq [IsFiniteMeasure μ] {p : α → Prop}
     (hp : NullMeasurableSet { a | p a } μ) : (∀ᵐ a ∂μ, p a) ↔ μ { a | p a } = μ univ := by
