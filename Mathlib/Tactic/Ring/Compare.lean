@@ -39,18 +39,33 @@ open Lean Qq Meta
 inductive ExceptType | tooSmall | notComparable
 export ExceptType (tooSmall notComparable)
 
+abbrev tc₁ (α : Type*) [OrderedCommSemiring α] : CommSemiring α := inferInstance
+abbrev tc₂ (α : Type*) [OrderedCommSemiring α] : AddMonoidWithOne α := inferInstance
+abbrev tc₃ (α : Type*) [OrderedCommSemiring α] : LE α := inferInstance
+
+theorem add_le_add_right' {α : Type*} [OrderedCommSemiring α] {b c : α} (bc : b ≤ c) (a : α) :
+    b + a ≤ c + a :=
+  _root_.add_le_add_right bc a
+
+theorem add_le_of_nonpos_left' {α : Type*} [OrderedCommSemiring α] (a : α) {b : α} (h : b ≤ 0) :
+    b + a ≤ a :=
+  _root_.add_le_of_nonpos_left h
+
+theorem le_add_of_nonneg_left' {α : Type*} [OrderedCommSemiring α] (a : α) {b : α} (h : 0 ≤ b) :
+    a ≤ b + a :=
+  _root_.le_add_of_nonneg_left h
+
 /-- In a commutative semiring, given `Ring.ExSum` objects `va`, `vb` which differ by a positive
 constant, construct a proof of `$a < $b`, where `a` (resp. `b`) is the expression in the semiring to
 which `va` (resp. `vb`) evaluates. -/
-def evalLE {v : Level} {α : Q(Type v)} (sα : Q(CommSemiring $α)) (lα : Q(LE $α)) {a b : Q($α)}
-    (va : Ring.ExSum sα a) (vb : Ring.ExSum sα b) : MetaM (Except ExceptType Q($a ≤ $b)) := do
-  let mα ← synthInstanceQ q(AddMonoidWithOne $α)
-  let _i ← synthInstanceQ q(CovariantClass $α $α (Function.swap (· + ·)) (· ≤ ·))
-  let _i ← synthInstanceQ q(Preorder $α)
+def evalLE {v : Level} {α : Q(Type v)} (_ : Q(OrderedCommSemiring $α)) {a b : Q($α)}
+    (va : Ring.ExSum q(tc₁ $α) a) (vb : Ring.ExSum q(tc₁ $α) b) :
+    MetaM (Except ExceptType Q($a ≤ $b)) := do
+  let lα : Q(LE $α) := q(tc₃ $α)
   assumeInstancesCommute
-  let ⟨_, pz⟩ ← NormNum.mkOfNat α mα (mkRawNatLit 0)
+  let ⟨_, pz⟩ ← NormNum.mkOfNat α q(tc₂ $α) (mkRawNatLit 0)
   let rz : NormNum.Result q((0:$α)) :=
-    NormNum.Result.isNat mα (mkRawNatLit 0) (q(NormNum.isNat_ofNat $α $pz):)
+    NormNum.Result.isNat q(tc₂ $α) (mkRawNatLit 0) (q(NormNum.isNat_ofNat $α $pz):)
   match va, vb with
   /- `0 ≤ 0` -/
   | .zero, .zero => pure <| .ok (q(le_refl (0:$α)):)
@@ -60,33 +75,48 @@ def evalLE {v : Level} {α : Q(Type v)} (sα : Q(CommSemiring $α)) (lα : Q(LE 
     let rxa := NormNum.Result.ofRawRat ca xa hypa
     let rxb := NormNum.Result.ofRawRat cb xb hypb
     let NormNum.Result.isTrue pf ← NormNum.evalLE.core lα rxa rxb | return .error tooSmall
-    pure <| .ok (q(add_le_add_right (a := $a') $pf):)
+    pure <| .ok (q(add_le_add_right' (a := $a') $pf):)
   /- For a numeral `c ≤ 0`, `c + x ≤ x` -/
   | .add (.const (e := xa) ca hypa) va', _ => do
     unless va'.eq vb do return .error notComparable
     let rxa := NormNum.Result.ofRawRat ca xa hypa
     let NormNum.Result.isTrue pf ← NormNum.evalLE.core lα rxa rz | return .error tooSmall
-    pure <| .ok (q(add_le_of_nonpos_left (a := $b) $pf):)
+    pure <| .ok (q(add_le_of_nonpos_left' (a := $b) $pf):)
   /- For a numeral `0 ≤ c`, `x ≤ c + x` -/
   | _, .add (.const (e := xb) cb hypb) vb' => do
     unless va.eq vb' do return .error notComparable
     let rxb := NormNum.Result.ofRawRat cb xb hypb
     let NormNum.Result.isTrue pf ← NormNum.evalLE.core lα rz rxb | return .error tooSmall
-    pure <| .ok (q(le_add_of_nonneg_left (a := $a) $pf):)
+    pure <| .ok (q(le_add_of_nonneg_left' (a := $a) $pf):)
   | _, _ => return .error notComparable
+
+abbrev tc₄ (α : Type*) [StrictOrderedCommSemiring α] : CommSemiring α := inferInstance
+abbrev tc₅ (α : Type*) [StrictOrderedCommSemiring α] : AddMonoidWithOne α := inferInstance
+abbrev tc₆ (α : Type*) [StrictOrderedCommSemiring α] : LT α := inferInstance
+
+theorem add_lt_add_right' {α : Type*} [StrictOrderedCommSemiring α] {b c : α} (bc : b < c) (a : α) :
+    b + a < c + a :=
+  _root_.add_lt_add_right bc a
+
+theorem add_lt_of_neg_left' {α : Type*} [StrictOrderedCommSemiring α] (a : α) {b : α} (h : b < 0) :
+    b + a < a :=
+  _root_.add_lt_of_neg_left a h
+
+theorem lt_add_of_pos_left' {α : Type*} [StrictOrderedCommSemiring α] (a : α) {b : α} (h : 0 < b) :
+    a < b + a :=
+  _root_.lt_add_of_pos_left a h
 
 /-- In a commutative semiring, given `Ring.ExSum` objects `va`, `vb` which differ by a positive
 constant, construct a proof of `$a < $b`, where `a` (resp. `b`) is the expression in the semiring to
 which `va` (resp. `vb`) evaluates. -/
-def evalLT {v : Level} {α : Q(Type v)} (sα : Q(CommSemiring $α)) (lα : Q(LT $α)) {a b : Q($α)}
-    (va : Ring.ExSum sα a) (vb : Ring.ExSum sα b) : MetaM (Except ExceptType Q($a < $b)) := do
-  let mα ← synthInstanceQ q(AddMonoidWithOne $α)
-  let _i ← synthInstanceQ q(CovariantClass $α $α (Function.swap (· + ·)) (· < ·))
-  let _i ← synthInstanceQ q(Preorder $α)
+def evalLT {v : Level} {α : Q(Type v)} (_ : Q(StrictOrderedCommSemiring $α)) {a b : Q($α)}
+    (va : Ring.ExSum q(tc₄ $α) a) (vb : Ring.ExSum q(tc₄ $α) b) :
+    MetaM (Except ExceptType Q($a < $b)) := do
+  let lα : Q(LT $α) := q(tc₆ $α)
   assumeInstancesCommute
-  let ⟨_, pz⟩ ← NormNum.mkOfNat α mα (mkRawNatLit 0)
+  let ⟨_, pz⟩ ← NormNum.mkOfNat α q(tc₅ $α) (mkRawNatLit 0)
   let rz : NormNum.Result q((0:$α)) :=
-    NormNum.Result.isNat mα (mkRawNatLit 0) (q(NormNum.isNat_ofNat $α $pz):)
+    NormNum.Result.isNat q(tc₅ $α) (mkRawNatLit 0) (q(NormNum.isNat_ofNat $α $pz):)
   match va, vb with
   /- `0 < 0` -/
   | .zero, .zero => return .error tooSmall
@@ -96,19 +126,20 @@ def evalLT {v : Level} {α : Q(Type v)} (sα : Q(CommSemiring $α)) (lα : Q(LT 
     let rxa := NormNum.Result.ofRawRat ca xa hypa
     let rxb := NormNum.Result.ofRawRat cb xb hypb
     let NormNum.Result.isTrue pf ← NormNum.evalLT.core lα rxa rxb | return .error tooSmall
-    pure <| .ok (q(add_lt_add_right (a := $a') $pf):)
+    pure <| .ok (q(add_lt_add_right' $pf $a'):)
   /- For a numeral `c < 0`, `c + x < x` -/
   | .add (.const (e := xa) ca hypa) va', _ => do
     unless va'.eq vb do return .error notComparable
     let rxa := NormNum.Result.ofRawRat ca xa hypa
     let NormNum.Result.isTrue pf ← NormNum.evalLT.core lα rxa rz | return .error tooSmall
-    pure <| .ok (q(add_lt_of_neg_left (a := $b) $pf):)
+    have pf : Q($xa < 0) := pf
+    pure <| .ok (q(add_lt_of_neg_left' $b $pf):)
   /- For a numeral `0 < c`, `x < c + x` -/
   | _, .add (.const (e := xb) cb hypb) vb' => do
     unless va.eq vb' do return .error notComparable
     let rxb := NormNum.Result.ofRawRat cb xb hypb
     let NormNum.Result.isTrue pf ← NormNum.evalLT.core lα rz rxb | return .error tooSmall
-    pure <| .ok (q(lt_add_of_pos_left (a := $a) $pf):)
+    pure <| .ok (q(lt_add_of_pos_left' $a $pf):)
   | _, _ => return .error notComparable
 
 theorem le_congr {α : Type*} [LE α] {a b c d : α} (h1 : a = b) (h2 : b ≤ c) (h3 : d = c) :
@@ -127,13 +158,13 @@ def proveLE (g : MVarId) : MetaM Unit := do
   let .sort u ← whnf (← inferType α) | unreachable!
   let v ← try u.dec catch _ => throwError "not a type{indentExpr α}"
   have α : Q(Type v) := α
-  let sα ← synthInstanceQ q(CommSemiring $α)
-  let lα ← synthInstanceQ q(LE $α)
+  let sα ← synthInstanceQ q(OrderedCommSemiring $α)
   assumeInstancesCommute
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
-  let c ← mkCache sα
-  let (⟨a, va, pa⟩, ⟨b, vb, pb⟩) ← AtomM.run .instances do pure (← eval sα c e₁, ← eval sα c e₂)
-  match ← evalLE sα lα va vb with
+  let c ← mkCache q(tc₁ $α)
+  let (⟨a, va, pa⟩, ⟨b, vb, pb⟩)
+    ← AtomM.run .instances do pure (← eval q(tc₁ $α) c e₁, ← eval q(tc₁ $α) c e₂)
+  match ← evalLE sα va vb with
   | .ok p => g.assign q(le_congr $pa $p $pb)
   | .error e =>
     let g' ← mkFreshExprMVar (← (← ringCleanupRef.get) q($a ≤ $b))
@@ -150,13 +181,13 @@ def proveLT (g : MVarId) : MetaM Unit := do
   let .sort u ← whnf (← inferType α) | unreachable!
   let v ← try u.dec catch _ => throwError "not a type{indentExpr α}"
   have α : Q(Type v) := α
-  let sα ← synthInstanceQ q(CommSemiring $α)
-  let lα ← synthInstanceQ q(LT $α)
+  let sα ← synthInstanceQ q(StrictOrderedCommSemiring $α)
   assumeInstancesCommute
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
-  let c ← mkCache sα
-  let (⟨a, va, pa⟩, ⟨b, vb, pb⟩) ← AtomM.run .instances do pure (← eval sα c e₁, ← eval sα c e₂)
-  match ← evalLT sα lα va vb with
+  let c ← mkCache q(tc₄ $α)
+  let (⟨a, va, pa⟩, ⟨b, vb, pb⟩)
+    ← AtomM.run .instances do pure (← eval q(tc₄ $α) c e₁, ← eval q(tc₄ $α) c e₂)
+  match ← evalLT sα va vb with
   | .ok p => g.assign q(lt_congr $pa $p $pb)
   | .error e =>
     let g' ← mkFreshExprMVar (← (← ringCleanupRef.get) q($a < $b))
