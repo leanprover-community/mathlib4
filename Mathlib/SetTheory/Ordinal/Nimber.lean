@@ -110,19 +110,19 @@ theorem toOrdinal_one : toOrdinal 1 = 1 :=
   rfl
 
 @[simp]
-theorem toOrdinal_eq_zero (a) : toOrdinal a = 0 ↔ a = 0 :=
+theorem toOrdinal_eq_zero {a} : toOrdinal a = 0 ↔ a = 0 :=
   Iff.rfl
 
 @[simp]
-theorem toOrdinal_eq_one (a) : toOrdinal a = 1 ↔ a = 1 :=
+theorem toOrdinal_eq_one {a} : toOrdinal a = 1 ↔ a = 1 :=
   Iff.rfl
 
 @[simp]
-theorem toOrdinal_max {a b : Nimber} : toOrdinal (max a b) = max (toOrdinal a) (toOrdinal b) :=
+theorem toOrdinal_max (a b : Nimber) : toOrdinal (max a b) = max (toOrdinal a) (toOrdinal b) :=
   rfl
 
 @[simp]
-theorem toOrdinal_min {a b : Nimber} : toOrdinal (min a b) = min (toOrdinal a) (toOrdinal b) :=
+theorem toOrdinal_min (a b : Nimber) : toOrdinal (min a b) = min (toOrdinal a) (toOrdinal b) :=
   rfl
 
 theorem succ_def (a : Nimber) : succ a = ∗(toOrdinal a + 1) :=
@@ -161,8 +161,6 @@ open Nimber
 
 namespace Ordinal
 
-variable {a b c : Ordinal.{u}}
-
 @[simp]
 theorem toNimber_symm_eq : toNimber.symm = Nimber.toOrdinal :=
   rfl
@@ -180,11 +178,11 @@ theorem toNimber_one : ∗1 = 1 :=
   rfl
 
 @[simp]
-theorem toNimber_eq_zero (a) : ∗a = 0 ↔ a = 0 :=
+theorem toNimber_eq_zero {a} : ∗a = 0 ↔ a = 0 :=
   Iff.rfl
 
 @[simp]
-theorem toNimber_eq_one (a) : ∗a = 1 ↔ a = 1 :=
+theorem toNimber_eq_one {a} : ∗a = 1 ↔ a = 1 :=
   Iff.rfl
 
 @[simp]
