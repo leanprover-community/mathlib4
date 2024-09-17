@@ -215,15 +215,14 @@ theorem RingHom.LocalizationPreserves.away (H : RingHom.LocalizationPreserves @P
   have : IsLocalization ((Submonoid.powers r).map f) S' := by rw [Submonoid.map_powers]; assumption
   exact H f (Submonoid.powers r) R' S' hf
 
-/-
-lemma RingHom.PropertyIsLocal.HoldsForLocalizationAway (hP : RingHom.PropertyIsLocal @P) :
+lemma RingHom.PropertyIsLocal.HoldsForLocalizationAway (hP : RingHom.PropertyIsLocal @P)
+    (hPi : ContainsIdentities P) :
     RingHom.HoldsForLocalizationAway @P := by
   introv R _
   have : algebraMap R S = (algebraMap R S).comp (RingHom.id R) := by simp
   rw [this]
   apply (hP.StableUnderCompositionWithLocalizationAway).left S r
-  apply hP.ContainsIdentities
--/
+  apply hPi
 
 theorem RingHom.PropertyIsLocal.ofLocalizationSpan (hP : RingHom.PropertyIsLocal @P) :
     RingHom.OfLocalizationSpan @P := by
