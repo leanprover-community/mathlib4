@@ -94,13 +94,12 @@ def toMon_Comon_ : Bimon_ C ⥤ Mon_ (Comon_ C) where
   -- { hom := (toComon_ C).map f }
 
 @[simp]
-theorem ClassComon_ObjToComon__one_hom  (M :  Mon_ (Comon_ C)) :
-  η[((Comon_.forgetMonoidal C).mapMon.obj M).X] = 𝟙 _ ≫ η[M.X].hom := rfl
+theorem Comon_forget_mapMon_obj_one  (M :  Mon_ (Comon_ C)) :
+    η[((Comon_.forgetMonoidal C).mapMon.obj M).X] = 𝟙 _ ≫ η[M.X].hom := rfl
 
 @[simp]
-theorem fff  (M :  Mon_ (Comon_ C)) :
-  μ[((Comon_.forgetMonoidal C).mapMon.obj M).X] = 𝟙 _ ≫ μ[M.X].hom := rfl
-
+theorem Comon_forget_mapMon_obj_mul  (M :  Mon_ (Comon_ C)) :
+    μ[((Comon_.forgetMonoidal C).mapMon.obj M).X] = 𝟙 _ ≫ μ[M.X].hom := rfl
 
 /-- The object level part of the backward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
 @[simps]
