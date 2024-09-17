@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Order.Hom.Basic
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Data.Set.Image
+import Mathlib.Order.WellFounded
 
 /-!
 # Order homomorphisms and sets
@@ -118,6 +119,11 @@ theorem orderIsoOfSurjective_self_symm_apply (b : β) :
   (orderIsoOfSurjective f h_mono h_surj).apply_symm_apply _
 
 end StrictMono
+
+/-- Two order embeddings on a well-order are equal provided that their ranges are equal. -/
+lemma OrderEmbedding.range_inj [LinearOrder α] [WellFoundedLT α] [PartialOrder β] {f g : α ↪o β} :
+    Set.range f = Set.range g ↔ f = g := by
+  rw [f.strictMono.range_inj g.strictMono, DFunLike.coe_fn_eq]
 
 section BooleanAlgebra
 
