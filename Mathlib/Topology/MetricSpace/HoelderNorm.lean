@@ -21,7 +21,7 @@ for which `WithHoelder C r f` is true.
 
 ## Main results
 
-* `eHoelderNorm_eq_zero_iff`: the Hölder norm of a function is zero if and only if it is constant.
+* `eHoelderNorm_eq_zero`: the Hölder norm of a function is zero if and only if it is constant.
 * `MemHoelder.holderWith`: The Hölder norm of a Hölder function `f` is a Hölder constant of `f`.
 
 ## Tags
@@ -167,8 +167,8 @@ lemma HolderWith.nnhoelderNorm_le {C r : ℝ≥0} {f : X → Y} (hf : HolderWith
   rw [← ENNReal.coe_le_coe, hf.coe_nnHoelderNorm_eq_eHoelderNorm]
   exact hf.eHoelderNorm_le
 
-lemma MemHoelder.comp {r : ℝ≥0} {Z : Type*} [MetricSpace Z] {f : Z → X} {g : X → Y}
-    (hf : MemHoelder r f) (hg : MemHoelder r g) : MemHoelder (r * r) (g ∘ f) :=
+lemma MemHoelder.comp {r s : ℝ≥0} {Z : Type*} [MetricSpace Z] {f : Z → X} {g : X → Y}
+    (hf : MemHoelder r f) (hg : MemHoelder s g) : MemHoelder (s * r) (g ∘ f) :=
   (hg.holderWith.comp hf.holderWith).memHoelder
 
 end MetricSpace
