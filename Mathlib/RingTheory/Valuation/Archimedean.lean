@@ -91,8 +91,8 @@ lemma isPrincipalIdealRing_iff_not_denselyOrdered [MulArchimedean Γ₀] (hv : I
       Equiv.coe_fn_symm_mk, map_eq_zero, WithZero.coe_ne_zero, ↓reduceDIte, WithZero.unzero_coe,
       MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe, ← Units.val_le_val]
     rw [← map_le_map_iff e, ← WithZero.coe_le_coe, WithZero.coe_unzero, WithZero.coe_unzero]⟩
-  let _ : SuccOrder (MonoidHom.mrange v)ˣ := OrderIsoClass.SuccOrder e'.symm
-  have : IsSuccArchimedean (MonoidHom.mrange v)ˣ := OrderIsoClass.IsSuccArchimedean e'.symm
+  let _ : SuccOrder (MonoidHom.mrange v)ˣ := .ofOrderIso e'.symm
+  have : IsSuccArchimedean (MonoidHom.mrange v)ˣ := .of_orderIso e'.symm
   set T : Set (MonoidHom.mrange v)ˣ := {y | ∃ (x : O) (h : x ≠ 0), x ∈ S ∧
       y = Units.mk0 ⟨v (algebraMap O F x), by simp⟩
       (by simp [map_ne_zero_iff, Subtype.ext_iff, h0, map_eq_zero_iff _ hv.hom_inj, h])} with hT

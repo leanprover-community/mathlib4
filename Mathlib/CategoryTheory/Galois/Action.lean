@@ -26,7 +26,7 @@ namespace PreGaloisCategory
 
 open Limits Functor
 
-variable {C : Type u} [Category.{u} C] (F : C ⥤ FintypeCat.{u})
+variable {C : Type u} [Category.{v} C] (F : C ⥤ FintypeCat.{u})
 
 /-- Any (fiber) functor `F : C ⥤ FintypeCat` naturally factors via
 the forgetful functor from `Action FintypeCat (MonCat.of (Aut F))` to `FintypeCat`. -/
@@ -76,7 +76,7 @@ noncomputable instance : PreservesFiniteProducts (functorToAction F) :=
   ⟨fun J _ ↦ Action.preservesLimitsOfShapeOfPreserves (functorToAction F)
     (inferInstanceAs <| PreservesLimitsOfShape (Discrete J) F)⟩
 
-noncomputable instance (G : Type u) [Group G] [Finite G] :
+noncomputable instance (G : Type*) [Group G] [Finite G] :
     PreservesColimitsOfShape (SingleObj G) (functorToAction F) :=
   Action.preservesColimitsOfShapeOfPreserves _ <|
     inferInstanceAs <| PreservesColimitsOfShape (SingleObj G) F
