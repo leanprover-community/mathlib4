@@ -1037,8 +1037,7 @@ theorem IsCycle.commute_iff' {g c : Perm α} (hc : c.IsCycle) :
     rw [← zpow_add, add_comm i j, zpow_add]
     simp only [mul_apply, EmbeddingLike.apply_eq_iff_eq]
     exact hi
-  · rintro ⟨hc', h⟩
-    obtain ⟨i, hi⟩ := h
+  · rintro ⟨hc', ⟨i, hi⟩⟩
     ext x
     simp only [coe_mul, Function.comp_apply]
     by_cases hx : x ∈ c.support
