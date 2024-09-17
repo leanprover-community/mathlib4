@@ -914,7 +914,7 @@ lemma exists_eq_of_iSup_eq_of_not_isSuccLimit
   exact (le_ciSup hf _).trans h
 
 set_option linter.deprecated false in
-@[deprecated exists_eq_of_iSup_eq_of_not_isSuccPrelimit (since := "2024-09-17")]
+@[deprecated exists_eq_of_iSup_eq_of_not_isSuccLimit (since := "2024-09-17")]
 lemma exists_eq_of_iSup_eq_of_not_isLimit
     {ι : Type u} [hι : Nonempty ι] (f : ι → Cardinal.{v}) (hf : BddAbove (range f))
     (ω : Cardinal.{v}) (hω : ¬ ω.IsLimit)
@@ -1392,10 +1392,13 @@ lemma not_isSuccLimit_natCast : (n : ℕ) → ¬ IsSuccLimit (n : Cardinal.{u})
   | 0, e => e.1 isMin_bot
   | Nat.succ n, e => Order.not_isSuccPrelimit_succ _ (nat_succ n ▸ e.2)
 
+theorem not_isSuccLimit_of_lt_aleph0 {c : Cardinal} (h : c < ℵ₀) : ¬ IsSuccLimit c := by
+  obtain ⟨n, rfl⟩ := lt_aleph0.1 h
+  exact not_isSuccLimit_natCast n
+
 theorem aleph0_le_of_isSuccLimit {c : Cardinal} (h : IsSuccLimit c) : ℵ₀ ≤ c := by
-  by_contra! h'
-  rcases lt_aleph0.1 h' with ⟨n, rfl⟩
-  exact not_isSuccLimit_natCast n h
+  contrapose! h
+  exact not_isSuccLimit_of_lt_aleph0 h
 
 section deprecated
 
