@@ -117,33 +117,33 @@ universe u
 
 variable {n m : Type u}
 
+open Submodule
+
 /-- The indexed infimum of eigenspaces of a commuting family of linear operators is
 invariant under each operator. -/
-theorem iInf_eigenspace_invariant_of_commute (T : n → (E →ₗ[𝕜] E))
-    (hC : (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i))) (i : n) :
-    ∀ γ : {x // x ≠ i} → 𝕜, ∀ v ∈ (⨅ (j : {x // x ≠ i}),
-    eigenspace ((Subtype.restrict (fun x ↦ x ≠ i) T) j) (γ j)), (T i) v ∈ (⨅ (j : {x // x ≠ i}),
-    eigenspace ((Subtype.restrict (fun x ↦ x ≠ i) T) j) (γ j)) := by
-  intro γ v hv
-  simp only [Submodule.mem_iInf] at *
-  exact fun i_1 ↦ eigenspace_invariant_of_commute (hC (↑i_1) i) (γ i_1) v (hv i_1)
+theorem iInf_eigenspace_invariant_of_commute {T : n → E →ₗ[𝕜] E}
+    (hC : ∀ i j, T i ∘ₗ T j = T j ∘ₗ T i) (i : n) (γ : {x // x ≠ i} → 𝕜) {v : E}
+    (hv : v ∈ ⨅ j, eigenspace (Subtype.restrict (· ≠ i) T j) (γ j)) :
+    T i v ∈ ⨅ j, eigenspace (Subtype.restrict (· ≠ i) T j) (γ j) := by
+  simp only [mem_iInf] at hv ⊢
+  exact fun j ↦ eigenspace_invariant_of_commute (hC j i) (γ j) v (hv j)
 
-/-- Simultaneous eigenspaces of a symmetric linear operator on a finite dimensional inner product
-space restricted to an invariant subspace exhaust that subspace. -/
-theorem iSup_simultaneous_eigenspaces_eq_top [FiniteDimensional 𝕜 E] {F : Submodule 𝕜 E}
-    (S : E →ₗ[𝕜] E) (hS: IsSymmetric S) (hInv : ∀ v ∈ F, S v ∈ F) : ⨆ μ, Submodule.map F.subtype
-    (eigenspace (S.restrict hInv) μ)  = F := by
- conv_lhs => rw [← Submodule.map_iSup]
- conv_rhs => rw [← Submodule.map_subtype_top F]
- congr!
- have H : IsSymmetric (S.restrict hInv) := fun x y ↦ hS (F.subtype x) ↑y
- apply Submodule.orthogonal_eq_bot_iff.mp (H.orthogonalComplement_iSup_eigenspaces_eq_bot)
+/-- If `F` is an invariant subspace of a symmetric operator `S`, then `F` is the supremum of the
+eigenspaces of the restriction of `S` to `F`. -/
+theorem iSup_eigenspace_restrict [FiniteDimensional 𝕜 E] {F : Submodule 𝕜 E}
+    (S : E →ₗ[𝕜] E) (hS : IsSymmetric S) (hInv : ∀ v ∈ F, S v ∈ F) :
+    ⨆ μ, map F.subtype (eigenspace (S.restrict hInv) μ) = F := by
+  conv_lhs => rw [← Submodule.map_iSup]
+  conv_rhs => rw [← map_subtype_top F]
+  congr!
+  have H : IsSymmetric (S.restrict hInv) := fun x y ↦ hS (F.subtype x) y
+  apply orthogonal_eq_bot_iff.mp (H.orthogonalComplement_iSup_eigenspaces_eq_bot)
 
 /-- Given an invariant subspace for an operator, its intersection with an eigenspace is
 the eigenspace of the restriction the operator to the invariant subspace. -/
 theorem invariant_subspace_inf_eigenspace_eq_restrict {F : Submodule 𝕜 E} (S : E →ₗ[𝕜] E)
     (μ : 𝕜) (hInv : ∀ v ∈ F, S v ∈ F) : (eigenspace S μ) ⊓ F =
-    Submodule.map (Submodule.subtype F)
+    map (Submodule.subtype F)
     (eigenspace (S.restrict (hInv)) μ) := by
   ext v
   constructor
