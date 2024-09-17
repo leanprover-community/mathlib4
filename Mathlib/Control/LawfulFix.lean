@@ -80,7 +80,7 @@ theorem mem_iff (a : α) (b : β a) : b ∈ Part.fix f a ↔ ∃ i, b ∈ approx
     · rcases le_total i j with H | H <;> [skip; symm] <;> apply_assumption <;> assumption
     replace hh := approx_mono f case _ _ hh
     apply Part.mem_unique h₁ hh
-  · simp only [fix_def' (⇑f) h₀, not_exists, false_iff_iff, not_mem_none]
+  · simp only [fix_def' (⇑f) h₀, not_exists, false_iff, not_mem_none]
     simp only [dom_iff_mem, not_exists] at h₀
     intro; apply h₀
 

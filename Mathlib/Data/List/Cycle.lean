@@ -528,7 +528,7 @@ theorem Subsingleton.congr {s : Cycle α} (h : Subsingleton s) :
     ∀ ⦃x⦄ (_hx : x ∈ s) ⦃y⦄ (_hy : y ∈ s), x = y := by
   induction' s using Quot.inductionOn with l
   simp only [length_subsingleton_iff, length_coe, mk_eq_coe, le_iff_lt_or_eq, Nat.lt_add_one_iff,
-    length_eq_zero, length_eq_one, Nat.not_lt_zero, false_or_iff] at h
+    length_eq_zero, length_eq_one, Nat.not_lt_zero, false_or] at h
   rcases h with (rfl | ⟨z, rfl⟩) <;> simp
 
 /-- A `s : Cycle α` that is made up of at least two unique elements. -/
@@ -543,7 +543,7 @@ theorem nontrivial_coe_nodup_iff {l : List α} (hl : l.Nodup) :
   · simp
   · simp
   · simp only [mem_cons, exists_prop, mem_coe_iff, List.length, Ne, Nat.succ_le_succ_iff,
-      Nat.zero_le, iff_true_iff]
+      Nat.zero_le, iff_true]
     refine ⟨hd, hd', ?_, by simp⟩
     simp only [not_or, mem_cons, nodup_cons] at hl
     exact hl.left.left
@@ -880,7 +880,7 @@ theorem chain_iff_pairwise [IsTrans α r] : Chain r s ↔ ∀ a ∈ s, ∀ b ∈
     intro hs b hb c hc
     rw [Cycle.chain_coe_cons, List.chain_iff_pairwise] at hs
     simp only [pairwise_append, pairwise_cons, mem_append, mem_singleton, List.not_mem_nil,
-      IsEmpty.forall_iff, imp_true_iff, Pairwise.nil, forall_eq, true_and_iff] at hs
+      IsEmpty.forall_iff, imp_true_iff, Pairwise.nil, forall_eq, true_and] at hs
     simp only [mem_coe_iff, mem_cons] at hb hc
     rcases hb with (rfl | hb) <;> rcases hc with (rfl | hc)
     · exact hs.1 c (Or.inr rfl)

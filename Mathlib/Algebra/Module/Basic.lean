@@ -135,7 +135,7 @@ lemma support_smul_subset_right [Zero M] [SMulZeroClass R M] (f : α → R) (g :
 
 lemma support_const_smul_of_ne_zero [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M]
     (c : R) (g : α → M) (hc : c ≠ 0) : support (c • g) = support g :=
-  ext fun x ↦ by simp only [hc, mem_support, Pi.smul_apply, Ne, smul_eq_zero, false_or_iff]
+  ext fun x ↦ by simp only [hc, mem_support, Pi.smul_apply, Ne, smul_eq_zero, false_or]
 
 lemma support_smul [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M] (f : α → R)
     (g : α → M) : support (f • g) = support f ∩ support g :=
