@@ -292,13 +292,13 @@ theorem iterated_kk (h₁ : (𝒜 : Set (Finset (Fin n))).Sized r) (h₂ : 𝒞.
   · refine ih h₁.shadow (kruskal_katona h₁ h₂ h₃) ?_
     convert h₃.shadow
 
-/-- A special case of the **Kruskal-Katona theorem** which is sometimes easier to work with.
+/-- The **Lovasz formulation of the Kruskal-Katona theorem**.
 
 If `|𝒜| ≥ k choose r`, (and everything in `𝒜` has size `r`) then the initial segment we compare to
 is just all the subsets of `{0, ..., k - 1}` of size `r`. The `i`-th iterated shadow of this is all
 the subsets of `{0, ..., k - 1}` of size `r - i`, so the `i`-th iterated shadow of `𝒜` has at least
 `k.choose (r - i)` elements. -/
-theorem lovasz_form (hir : i ≤ r) (hrk : r ≤ k) (hkn : k ≤ n)
+theorem kruskal_katona_lovasz_form (hir : i ≤ r) (hrk : r ≤ k) (hkn : k ≤ n)
     (h₁ : (𝒜 : Set (Finset (Fin n))).Sized r) (h₂ : k.choose r ≤ 𝒜.card) :
     k.choose (r - i) ≤ (∂^[i] 𝒜).card := by
   set range'k : Finset (Fin n) :=
@@ -378,8 +378,8 @@ theorem erdos_ko_rado {𝒜 : Finset (Finset (Fin n))} {r : ℕ}
     rw [tsub_le_tsub_iff_left ‹r ≤ n›]
     exact Nat.le_mul_of_pos_left _ zero_lt_two
   -- We can use the Lovasz form of Kruskal-Katona to get |∂^[n-2k] 𝒜ᶜˢ| ≥ (n-1) choose r
-  have kk :=
-    lovasz_form ‹n - 2 * r ≤ n - r› ((tsub_le_tsub_iff_left ‹1 ≤ n›).2 h1r) tsub_le_self h𝒜bar z.le
+  have kk := kruskal_katona_lovasz_form ‹n - 2 * r ≤ n - r› ((tsub_le_tsub_iff_left ‹1 ≤ n›).2 h1r)
+      tsub_le_self h𝒜bar z.le
   have q : n - r - (n - 2 * r) = r := by
     rw [tsub_right_comm, Nat.sub_sub_self, two_mul]
     apply Nat.add_sub_cancel
