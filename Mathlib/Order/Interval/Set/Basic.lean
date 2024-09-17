@@ -1651,4 +1651,48 @@ instance : NoMaxOrder (Set.Iio x) :=
 
 end Dense
 
+/-!
+### Intervals in `Prop`
+-/
+
+namespace Set
+
+lemma Iio_False : Iio False = ∅ := by aesop
+
+lemma Iio_True : Iio True = {False} := by
+  apply le_antisymm
+  · aesop
+  · intro x hx
+    rw [mem_singleton_iff, eq_iff_iff, iff_false] at hx
+    rw [mem_Iio]
+    exact not_mem_Ici.mp fun a ↦ hx (a trivial)
+
+lemma Iic_False : Iic False = {False} := by
+  aesop
+
+lemma Iic_True : Iic True = univ := IsTop.Iic_eq fun _ _ ↦ trivial
+
+lemma Ici_False : Ici False = univ := by aesop
+
+lemma Ici_True : Ici True = {True} := by aesop
+
+lemma Ioi_False : Ioi False = {True} := by
+  apply le_antisymm
+  · intro x hx
+    by_contra hf
+    aesop
+  · exact disjoint_compl_left_iff.mp fun ⦃x⦄ a a ↦ a
+
+lemma Ioi_True : Ioi True = ∅ := Ioi_eq_empty_iff.mpr fun ⦃_⦄ _ _ ↦ trivial
+
+lemma Iic_False_compl : (Iic False)ᶜ = {True} := by
+  rw [compl_eq_comm, Prop.compl_singleton, not_true_eq_false]
+  aesop
+
+lemma Iic_True_compl : (Iic True)ᶜ = ∅ := by
+  rw [compl_eq_comm, compl_empty]
+  aesop
+
+end Set
+
 set_option linter.style.longFile 1800
