@@ -219,4 +219,8 @@ lemma eHoelderNorm_smul {α} [NormedDivisionRing α] [Module α Y] [BoundedSMul 
     rw [inv_smul_smul₀ hc] at this
     exact this.eHoelderNorm_lt_top.ne hf
 
+lemma eHoelderNorm_nsmul [Module ℝ Y] [BoundedSMul ℝ Y] (n : ℕ) :
+    eHoelderNorm r (n • f) = n • eHoelderNorm r f := by
+  simp [← Nat.cast_smul_eq_nsmul (R := ℝ), eHoelderNorm_smul]
+
 end SeminormedAddCommGroup
