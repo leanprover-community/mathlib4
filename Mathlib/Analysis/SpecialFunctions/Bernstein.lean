@@ -43,10 +43,9 @@ This result proves Weierstrass' theorem that polynomials are dense in `C([0,1], 
 although we defer an abstract statement of this until later.
 -/
 
-
 noncomputable section
 
-open scoped Classical BoundedContinuousFunction unitInterval
+open scoped BoundedContinuousFunction unitInterval
 
 /-- The Bernstein polynomials, as continuous functions on `[0,1]`.
 -/
@@ -93,7 +92,7 @@ def z {n : ℕ} (k : Fin (n + 1)) : I :=
     · norm_num
     · have h₁ : 0 < (n.succ : ℝ) := mod_cast Nat.succ_pos _
       have h₂ : ↑k ≤ n.succ := mod_cast Fin.le_last k
-      rw [Set.mem_Icc, le_div_iff h₁, div_le_iff h₁]
+      rw [Set.mem_Icc, le_div_iff₀ h₁, div_le_iff₀ h₁]
       norm_cast
       simp [h₂]⟩
 
@@ -102,8 +101,8 @@ local postfix:90 "/ₙ" => z
 theorem probability (n : ℕ) (x : I) : (∑ k : Fin (n + 1), bernstein n k x) = 1 := by
   have := bernsteinPolynomial.sum ℝ n
   apply_fun fun p => Polynomial.aeval (x : ℝ) p at this
-  simp? [AlgHom.map_sum, Finset.sum_range] at this says
-    simp only [Finset.sum_range, map_sum, Polynomial.coe_aeval_eq_eval, map_one] at this
+  simp? [map_sum, Finset.sum_range] at this says
+    simp only [Finset.sum_range, map_sum, Polynomial.coe_aeval_eq_eval, Polynomial.eval_one] at this
   exact this
 
 theorem variance {n : ℕ} (h : 0 < (n : ℝ)) (x : I) :
@@ -116,9 +115,10 @@ theorem variance {n : ℕ} (h : 0 < (n : ℝ)) (x : I) :
   conv_rhs => rw [div_mul_cancel₀ _ h']
   have := bernsteinPolynomial.variance ℝ n
   apply_fun fun p => Polynomial.aeval (x : ℝ) p at this
-  simp? [AlgHom.map_sum, Finset.sum_range, ← Polynomial.natCast_mul] at this says
-    simp only [nsmul_eq_mul, Finset.sum_range, map_sum, map_mul, map_pow, map_sub, map_natCast,
-      Polynomial.aeval_X, Polynomial.coe_aeval_eq_eval, map_one] at this
+  simp? [map_sum, Finset.sum_range, ← Polynomial.natCast_mul] at this says
+    simp only [nsmul_eq_mul, Finset.sum_range, map_sum, Polynomial.coe_aeval_eq_eval,
+      Polynomial.eval_mul, Polynomial.eval_pow, Polynomial.eval_sub, Polynomial.eval_natCast,
+      Polynomial.eval_X, Polynomial.eval_one] at this
   convert this using 1
   · congr 1; funext k
     rw [mul_comm _ (n : ℝ), mul_comm _ (n : ℝ), ← mul_assoc, ← mul_assoc]

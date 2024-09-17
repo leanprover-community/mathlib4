@@ -19,7 +19,7 @@ suppress_compilation
 
 open Bornology
 open Filter hiding map_smul
-open scoped Classical NNReal Topology Uniformity
+open scoped NNReal Topology Uniformity
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
 variable {𝕜 𝕜₂ 𝕜₃ E Eₗ F Fₗ G Gₗ 𝓕 : Type*}
@@ -84,13 +84,13 @@ end ContinuousLinearMap
 
 namespace LinearMap
 
-variable [RingHomIsometric σ₂₃]
-
 lemma norm_mkContinuous₂_aux (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G) (C : ℝ)
     (h : ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) (x : E) :
     ‖(f x).mkContinuous (C * ‖x‖) (h x)‖ ≤ max C 0 * ‖x‖ :=
   (mkContinuous_norm_le' (f x) (h x)).trans_eq <| by
     rw [max_mul_of_nonneg _ _ (norm_nonneg x), zero_mul]
+
+variable [RingHomIsometric σ₂₃]
 
 /-- Create a bilinear map (represented as a map `E →L[𝕜] F →L[𝕜] G`) from the corresponding linear
 map and existence of a bound on the norm of the image. The linear map can be constructed using
@@ -382,7 +382,7 @@ variable {𝕜₁' : Type*} {𝕜₂' : Type*} [NontriviallyNormedField 𝕜₁'
   [RingHomIsometric σ₂₃] [RingHomIsometric σ₁₃'] [RingHomIsometric σ₂₃']
 
 /-- Compose a bilinear map `E →SL[σ₁₃] F →SL[σ₂₃] G` with two linear maps
-`E' →SL[σ₁'] E` and `F' →SL[σ₂'] F`.  -/
+`E' →SL[σ₁'] E` and `F' →SL[σ₂'] F`. -/
 def bilinearComp (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (gE : E' →SL[σ₁'] E) (gF : F' →SL[σ₂'] F) :
     E' →SL[σ₁₃'] F' →SL[σ₂₃'] G :=
   ((f.comp gE).flip.comp gF).flip

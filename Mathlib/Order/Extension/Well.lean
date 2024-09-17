@@ -60,6 +60,7 @@ instance wellOrderExtension.isWellFounded_lt : IsWellFounded α hwf.wellOrderExt
   ⟨InvImage.wf (fun a : α => (hwf.rank a, embeddingToCardinal a)) <|
     Ordinal.lt_wf.prod_lex Cardinal.lt_wf⟩
 
+include hwf in
 /-- Any well-founded relation can be extended to a well-ordering on that type. -/
 theorem exists_well_order_ge : ∃ s, r ≤ s ∧ IsWellOrder α s :=
   ⟨hwf.wellOrderExtension.lt, fun _ _ h => Prod.Lex.left _ _ (hwf.rank_lt_of_rel h), ⟨⟩⟩

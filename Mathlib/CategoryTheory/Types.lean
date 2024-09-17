@@ -6,7 +6,7 @@ Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.Tactic.PPWithUniv
-import Mathlib.Data.Set.Defs
+import Mathlib.Data.Set.Operations
 
 /-!
 # The category `Type`.

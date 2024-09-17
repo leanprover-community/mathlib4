@@ -98,7 +98,7 @@ derivative, manifold
 
 noncomputable section
 
-open scoped Classical Topology Manifold
+open scoped Topology
 open Set ChartedSpace
 
 section DerivativesDefinitions
@@ -296,6 +296,7 @@ def HasMFDerivAt (f : M → M') (x : M) (f' : TangentSpace I x →L[𝕜] Tangen
   ContinuousAt f x ∧
     HasFDerivWithinAt (writtenInExtChartAt I I' x f : E → E') f' (range I) ((extChartAt I x) x)
 
+open Classical in
 /-- Let `f` be a function between two smooth manifolds. Then `mfderivWithin I I' f s x` is the
 derivative of `f` at `x` within `s`, as a continuous linear map from the tangent space at `x` to the
 tangent space at `f x`. -/
@@ -306,6 +307,7 @@ def mfderivWithin (f : M → M') (s : Set M) (x : M) : TangentSpace I x →L[�
       _)
   else 0
 
+open Classical in
 /-- Let `f` be a function between two smooth manifolds. Then `mfderiv I I' f x` is the derivative of
 `f` at `x`, as a continuous linear map from the tangent space at `x` to the tangent space at
 `f x`. -/

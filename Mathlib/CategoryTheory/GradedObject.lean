@@ -315,6 +315,7 @@ lemma hasMap_of_iso (e : X ≅ Y) (p: I → J) [HasMap X p] : HasMap Y p := fun 
     Discrete.natIso (fun ⟨i, _⟩ => (GradedObject.eval i).mapIso e)
   exact hasColimitOfIso α.symm
 
+section
 variable [X.HasMap p] [Y.HasMap p] [Z.HasMap p]
 
 /-- Given `X : GradedObject I C` and `p : I → J`, `X.mapObj p` is the graded object by `J`
@@ -367,13 +368,15 @@ lemma ι_descMapObj {A : C} {j : J}
     X.ιMapObj p i j hi ≫ X.descMapObj p φ = φ i hi := by
   apply Cofan.IsColimit.fac
 
+end
 namespace CofanMapObjFun
 
 lemma hasMap (c : ∀ j, CofanMapObjFun X p j) (hc : ∀ j, IsColimit (c j)) :
     X.HasMap p := fun j => ⟨_, hc j⟩
 
 variable {j X p}
-variable {c : CofanMapObjFun X p j} (hc : IsColimit c) [X.HasMap p]
+variable [X.HasMap p]
+variable {c : CofanMapObjFun X p j} (hc : IsColimit c)
 
 /-- If `c : CofanMapObjFun X p j` is a colimit cofan, this is the induced
 isomorphism `c.pt ≅ X.mapObj p j`. -/
@@ -393,6 +396,7 @@ lemma ιMapObj_iso_inv (i : I) (hi : p i = j) :
 end CofanMapObjFun
 
 variable {X Y}
+variable [X.HasMap p] [Y.HasMap p]
 
 /-- The canonical morphism of `J`-graded objects `X.mapObj p ⟶ Y.mapObj p` induced by
 a morphism `X ⟶ Y` of `I`-graded objects and a map `p : I → J`. -/
@@ -416,7 +420,7 @@ lemma mapMap_id : mapMap (𝟙 X) p = 𝟙 _ := by aesop_cat
 variable {X Z}
 
 @[simp, reassoc]
-lemma mapMap_comp : mapMap (φ ≫ ψ) p = mapMap φ p ≫ mapMap ψ p := by aesop_cat
+lemma mapMap_comp [Z.HasMap p] : mapMap (φ ≫ ψ) p = mapMap φ p ≫ mapMap ψ p := by aesop_cat
 
 /-- The isomorphism of `J`-graded objects `X.mapObj p ≅ Y.mapObj p` induced by an
 isomorphism `X ≅ Y` of graded objects and a map `p : I → J`. -/
@@ -481,7 +485,8 @@ def isColimitCofanMapObjComp :
       dsimp
       rw [assoc])
 
-lemma hasMap_comp [X.HasMap p] [(X.mapObj p).HasMap q] : X.HasMap r :=
+include hpqr in
+lemma hasMap_comp [(X.mapObj p).HasMap q] : X.HasMap r :=
   fun k => ⟨_, isColimitCofanMapObjComp X p q r hpqr k _
     (fun j _ => X.isColimitCofanMapObj p j) _ ((X.mapObj p).isColimitCofanMapObj q k)⟩
 
