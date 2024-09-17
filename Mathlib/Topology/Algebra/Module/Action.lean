@@ -132,7 +132,7 @@ ring, and `A` is an `R` module with the action topology. -/
 theorem ActionTopology.continuousAdd : @ContinuousAdd A (actionTopology R A) _ :=
   continuousAdd_sInf <| fun _ _ ↦ by simp_all only [Set.mem_setOf_eq]
 
-instance instisActionTopology_continuousSMul [TopologicalSpace A] [IsActionTopology R A] :
+instance IsActionTopology.toContinuousSMul [TopologicalSpace A] [IsActionTopology R A] :
     ContinuousSMul R A := isActionTopology R A ▸ ActionTopology.continuousSMul R A
 
 -- this can't be an instance because typclass inference can't be expected to find `R`.
