@@ -204,8 +204,6 @@ lemma not_denselyOrdered_of_isPrincipalIdealRing [IsPrincipalIdealRing O] (hv : 
   · obtain ⟨a, rfl⟩ := hv.exists_of_le_one (by simpa using hz'.le)
     simp
 
--- TODO: isPrincipalIdealRing_iff_not_denselyOrdered when MulArchimedean
-
 end Integers
 
 end Field
