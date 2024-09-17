@@ -104,19 +104,14 @@ abbrev equiv_mixedSpace :
 @[simp]
 theorem equiv_mixedSpace_apply (x : InfiniteAdeleRing K) :
     equiv_mixedSpace K x =
-      (fun (v : {w : InfinitePlace K // IsReal w}) => equiv_real_of_isReal v.2 (x v),
-       fun (v : {w : InfinitePlace K // IsComplex w}) => equiv_complex_of_isComplex v.2 (x v)) := by
-  simp only [equiv_mixedSpace, RingEquiv.piEquivPiSubtypeProd, RingEquiv.prodCongr,
-    RingEquiv.piCongrLeft, RingEquiv.coe_trans, Equiv.prodCongr_apply, EquivLike.coe_coe,
-    Function.comp_apply, Prod.map_apply, RingEquiv.piCongrRight, Equiv.piEquivPiSubtypeProd,
-    RingEquiv.piCongrLeft', Equiv.piCongrLeft', RingEquiv.symm_mk, RingEquiv.coe_mk,
-    Equiv.coe_fn_mk, Equiv.subtypeEquivRight_symm_apply_coe]
+      (fun (v : {w : InfinitePlace K // IsReal w}) => extensionEmbedding_of_isReal v.2 (x v),
+       fun (v : {w : InfinitePlace K // IsComplex w}) => extensionEmbedding v.1 (x v)) := rfl
 
 /-- Transfers the global embedding of `x ↦ (x)ᵥ` of the number field `K` into its infinite adele
 ring to the mixed embedding `x ↦ (φᵢ(x))ᵢ` of `K` into the space `ℝ ^ r₁ × ℂ ^ r₂`, where
 `(r₁, r₂)` is the signature of `K` and `φᵢ` are the complex embeddings of `K`. -/
 theorem mixedEmbedding_eq_globalEmbedding_comp {x : K} :
-    mixedEmbedding K x = equiv_mixedSpace K (algebraMap K _ x) := by
+    mixedEmbedding K x = equiv_mixedSpace K (globalEmbedding K x) := by
   ext ⟨v, hv⟩ <;> simp only [equiv_mixedSpace_apply, globalEmbedding_apply,
     equiv_real_of_isReal, equiv_complex_of_isComplex, extensionEmbedding,
     extensionEmbedding_of_isReal, extensionEmbedding_of_comp, RingEquiv.coe_ofBijective,
