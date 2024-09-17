@@ -10,6 +10,7 @@ import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
 import Mathlib.Analysis.Calculus.FDeriv.Add
 import Mathlib.Analysis.Calculus.FDeriv.Prod
+import Mathlib.Analysis.Normed.Module.Completion
 
 /-!
 # Frechet derivatives of analytic functions.
@@ -83,13 +84,29 @@ theorem AnalyticAt.differentiableAt : AnalyticAt 𝕜 f x → DifferentiableAt �
 theorem AnalyticAt.differentiableWithinAt (h : AnalyticAt 𝕜 f x) : DifferentiableWithinAt 𝕜 f s x :=
   h.differentiableAt.differentiableWithinAt
 
+theorem HasFPowerSeriesWithinAt.fderivWithin_eq
+    (h : HasFPowerSeriesWithinAt f p s x) (hu : UniqueDiffWithinAt 𝕜 (insert x s) x) :
+    fderivWithin 𝕜 f (insert x s) x = continuousMultilinearCurryFin1 𝕜 E F (p 1) :=
+  h.hasFDerivWithinAt.fderivWithin hu
+
 theorem HasFPowerSeriesAt.fderiv_eq (h : HasFPowerSeriesAt f p x) :
     fderiv 𝕜 f x = continuousMultilinearCurryFin1 𝕜 E F (p 1) :=
   h.hasFDerivAt.fderiv
 
+theorem HasFPowerSeriesWithinOnBall.differentiableOn [CompleteSpace F]
+    (h : HasFPowerSeriesWithinOnBall f p s x r) : DifferentiableOn 𝕜 f (s ∩ EMetric.ball x r) := by
+  have Z := h.analyticWithinAt
+
+  -- (h.analyticAt_of_mem hy).differentiableWithinAt
+
+
+
 theorem HasFPowerSeriesOnBall.differentiableOn [CompleteSpace F]
     (h : HasFPowerSeriesOnBall f p x r) : DifferentiableOn 𝕜 f (EMetric.ball x r) := fun _ hy =>
   (h.analyticAt_of_mem hy).differentiableWithinAt
+
+
+#exit
 
 theorem AnalyticWithinOn.differentiableOn (h : AnalyticWithinOn 𝕜 f s) : DifferentiableOn 𝕜 f s :=
   fun y hy => (h y hy).differentiableWithinAt.mono (by simp)
@@ -119,6 +136,76 @@ theorem HasFPowerSeriesOnBall.fderiv [CompleteSpace F] (h : HasFPowerSeriesOnBal
   dsimp only
   rw [← h.fderiv_eq, add_sub_cancel]
   simpa only [edist_eq_coe_nnnorm_sub, EMetric.mem_ball] using hz
+
+#check HasFPowerSeriesOnBall.congr
+
+#check HasFPowerSeriesWithinOnBall.congr
+
+
+/-- If a function has a power series on a ball, then so does its derivative. -/
+theorem HasFPowerSeriesWithinOnBall.fderivWithin [CompleteSpace F]
+    (h : HasFPowerSeriesWithinOnBall f p s x r) (hu : UniqueDiffOn 𝕜 (insert x s)) :
+    HasFPowerSeriesWithinOnBall (fderivWithin 𝕜 f (insert x s)) p.derivSeries s x r := by
+  refine .congr (f := fun z ↦ continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin (z - x) 1)) ?_
+    (fun z hz ↦ ?_) ?_
+  · refine continuousMultilinearCurryFin1 𝕜 E F
+      |>.toContinuousLinearEquiv.toContinuousLinearMap.comp_hasFPowerSeriesWithinOnBall ?_
+    apply HasFPowerSeriesOnBall.hasFPowerSeriesWithinOnBall
+    simpa using ((p.hasFPowerSeriesOnBall_changeOrigin 1
+      (h.r_pos.trans_le h.r_le)).mono h.r_pos h.r_le).comp_sub x
+  · sorry
+  · sorry
+
+
+def LinearIsometry.postcomp {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] (a : F →ₗᵢ[𝕜] G) :
+    (E →L[𝕜] F) →ₗᵢ[𝕜] (E →L[𝕜] G) where
+  toFun f := a.toContinuousLinearMap ∘L f
+  map_add' f g := by simp
+  map_smul' c f := by simp
+  norm_map' f := by simp [a.norm_toContinuousLinearMap_comp]
+
+lemma LinearIsometry.embedding (a : E →ₗᵢ[𝕜] F) : Embedding a := a.isometry.embedding
+
+theorem HasFPowerSeriesOnBall.hasSum_derivSeries_of_hasFDerivWithinAt
+    (h : HasFPowerSeriesWithinOnBall f p s x r)
+    {f' : E →L[𝕜] F}
+    {y : E} (hy : (‖y‖₊ : ℝ≥0∞) < r) (h'y : x + y ∈ insert x s)
+    (hf' : HasFDerivWithinAt f f' (insert x s) (x + y))
+    (hu : UniqueDiffOn 𝕜 (insert x s)) :
+    HasSum (fun n ↦ p.derivSeries n (fun _ ↦ y)) f' := by
+  let F' := UniformSpace.Completion F
+  let a : F →L[𝕜] F' := UniformSpace.Completion.toComplL
+  let b : (E →L[𝕜] F) →ₗᵢ[𝕜] (E →L[𝕜] F') := UniformSpace.Completion.toComplₗᵢ.postcomp
+  rw [← b.embedding.hasSum_iff]
+  have : HasFPowerSeriesWithinOnBall (a ∘ f) (a.compFormalMultilinearSeries p) s x r :=
+    a.comp_hasFPowerSeriesWithinOnBall h
+  have Z := (this.fderivWithin hu).hasSum h'y (by simpa [edist_eq_coe_nnnorm] using hy)
+  have : fderivWithin 𝕜 (a ∘ f) (insert x s) (x + y) = a ∘L f' := by
+    apply HasFDerivWithinAt.fderivWithin _ (hu _ h'y)
+    exact a.hasFDerivAt.comp_hasFDerivWithinAt (x + y) hf'
+  rw [this] at Z
+  convert Z with n
+  ext v
+  simp only [FormalMultilinearSeries.derivSeries,
+    ContinuousLinearMap.compFormalMultilinearSeries_apply,
+    FormalMultilinearSeries.changeOriginSeries,
+    ContinuousLinearMap.compContinuousMultilinearMap_coe, ContinuousLinearEquiv.coe_coe,
+    LinearIsometryEquiv.coe_coe, Function.comp_apply, ContinuousMultilinearMap.sum_apply, map_sum,
+    ContinuousLinearMap.coe_sum', Finset.sum_apply,
+    Matrix.zero_empty]
+  rfl
+
+
+
+
+
+
+#exit
+
+--Inducing.hasSum_iff
+
+--ContinuousLinearMap.comp_hasFPowerSeriesOnBall
+
 
 /-- If a function is analytic on a set `s`, so is its Fréchet derivative. -/
 theorem AnalyticAt.fderiv [CompleteSpace F] (h : AnalyticAt 𝕜 f x) :

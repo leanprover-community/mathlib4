@@ -759,17 +759,33 @@ theorem HasFPowerSeriesAt.coeff_zero (hf : HasFPowerSeriesAt f pf x) (v : Fin 0 
   let ⟨_, hrf⟩ := hf
   hrf.coeff_zero v
 
+/-- If a function `f` has a power series `p` on a ball within a set and `g` is linear,
+then `g ∘ f` has the power series `g ∘ p` on the same ball. -/
+theorem ContinuousLinearMap.comp_hasFPowerSeriesWithinOnBall (g : F →L[𝕜] G)
+    (h : HasFPowerSeriesWithinOnBall f p s x r) :
+    HasFPowerSeriesWithinOnBall (g ∘ f) (g.compFormalMultilinearSeries p) s x r where
+  r_le := h.r_le.trans (p.radius_le_radius_continuousLinearMap_comp _)
+  r_pos := h.r_pos
+  hasSum := fun hy h'y => by
+    simpa only [ContinuousLinearMap.compFormalMultilinearSeries_apply,
+      ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply] using
+      g.hasSum (h.hasSum hy h'y)
+
 /-- If a function `f` has a power series `p` on a ball and `g` is linear, then `g ∘ f` has the
 power series `g ∘ p` on the same ball. -/
 theorem ContinuousLinearMap.comp_hasFPowerSeriesOnBall (g : F →L[𝕜] G)
     (h : HasFPowerSeriesOnBall f p x r) :
-    HasFPowerSeriesOnBall (g ∘ f) (g.compFormalMultilinearSeries p) x r :=
-  { r_le := h.r_le.trans (p.radius_le_radius_continuousLinearMap_comp _)
-    r_pos := h.r_pos
-    hasSum := fun hy => by
-      simpa only [ContinuousLinearMap.compFormalMultilinearSeries_apply,
-        ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply] using
-        g.hasSum (h.hasSum hy) }
+    HasFPowerSeriesOnBall (g ∘ f) (g.compFormalMultilinearSeries p) x r := by
+  rw [← hasFPowerSeriesWithinOnBall_univ] at h ⊢
+  exact g.comp_hasFPowerSeriesWithinOnBall h
+
+/-- If a function `f` is analytic on a set `s` and `g` is linear, then `g ∘ f` is analytic
+on `s`. -/
+theorem ContinuousLinearMap.comp_analyticWithinOn (g : F →L[𝕜] G) (h : AnalyticWithinOn 𝕜 f s) :
+    AnalyticWithinOn 𝕜 (g ∘ f) s := by
+  rintro x hx
+  rcases h x hx with ⟨p, r, hp⟩
+  exact ⟨g.compFormalMultilinearSeries p, r, g.comp_hasFPowerSeriesWithinOnBall hp⟩
 
 /-- If a function `f` is analytic on a set `s` and `g` is linear, then `g ∘ f` is analytic
 on `s`. -/
@@ -1260,6 +1276,10 @@ protected theorem FormalMultilinearSeries.hasFPowerSeriesOnBall [CompleteSpace F
       rw [zero_add]
       exact p.hasSum hy }
 
+theorem HasFPowerSeriesWithinOnBall.sum (h : HasFPowerSeriesWithinOnBall f p s x r) {y : E}
+    (h'y : x + y ∈ insert x s) (hy : y ∈ EMetric.ball (0 : E) r) : f (x + y) = p.sum y :=
+  (h.hasSum h'y hy).tsum_eq.symm
+
 theorem HasFPowerSeriesOnBall.sum (h : HasFPowerSeriesOnBall f p x r) {y : E}
     (hy : y ∈ EMetric.ball (0 : E) r) : f (x + y) = p.sum y :=
   (h.hasSum hy).tsum_eq.symm
@@ -1668,39 +1688,118 @@ theorem analyticAt_changeOrigin (p : FormalMultilinearSeries 𝕜 E F) (rp : p.r
 
 end FormalMultilinearSeries
 
+/-!
+### Monotonicity w.r.t. the set we're analytic within
+-/
+
+theorem HasFPowerSeriesWithinAt.mono_of_mem {f : E → F} {p : FormalMultilinearSeries 𝕜 E F}
+    {s t : Set E} {x : E} (h : HasFPowerSeriesWithinAt f p s x) (hst : s ∈ 𝓝[t] x) :
+    HasFPowerSeriesWithinAt f p t x := by
+  rcases h with ⟨r, hr⟩
+  rcases EMetric.mem_nhdsWithin_iff.1 hst with ⟨r', r'_pos, hr'⟩
+  refine ⟨min r r', ?_⟩
+  have Z := hr.of_le (by simp [r'_pos, hr.r_pos]) (min_le_left r r')
+  refine ⟨Z.r_le, Z.r_pos, fun {y} hy h'y ↦ ?_⟩
+  apply Z.hasSum ?_ h'y
+  simp only [mem_insert_iff, add_right_eq_self] at hy
+  rcases hy with rfl | hy
+  · simp
+  apply mem_insert_of_mem _ (hr' ?_)
+  simp only [EMetric.mem_ball, edist_eq_coe_nnnorm_sub, sub_zero, lt_min_iff, mem_inter_iff,
+    add_sub_cancel_left, hy, and_true] at h'y ⊢
+  exact h'y.2
+
+theorem AnalyticWithinAt.mono_of_mem {f : E → F} {s t : Set E} {x : E}
+    (h : AnalyticWithinAt 𝕜 f s x) (hst : s ∈ 𝓝[t] x) : AnalyticWithinAt 𝕜 f t x := by
+  rcases h with ⟨p, hp⟩
+  exact ⟨p, hp.mono_of_mem hst⟩
+
+lemma AnalyticWithinOn.mono {f : E → F} {s t : Set E} (h : AnalyticWithinOn 𝕜 f t)
+    (hs : s ⊆ t) : AnalyticWithinOn 𝕜 f s :=
+  fun _ m ↦ (h _ (hs m)).mono hs
+
+@[simp] lemma hasFPowerSeriesWithinOnBall_insert_self {f : E → F}
+    {p : FormalMultilinearSeries 𝕜 E F} {s : Set E} {x : E} {r : ℝ≥0∞} :
+    HasFPowerSeriesWithinOnBall f p (insert x s) x r ↔ HasFPowerSeriesWithinOnBall f p s x r := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩  <;>
+  exact ⟨h.r_le, h.r_pos, fun {y} ↦ by simpa only [insert_idem] using h.hasSum (y := y)⟩
+
+@[simp] theorem hasFPowerSeriesAt_insert {f : E → F} {p : FormalMultilinearSeries 𝕜 E F}
+    {s : Set E} {x y : E} :
+    HasFPowerSeriesWithinAt f p (insert y s) x ↔ HasFPowerSeriesWithinAt f p s x := by
+  rcases eq_or_ne x y with rfl | hy
+  · simp [HasFPowerSeriesWithinAt]
+  · refine ⟨fun h ↦ h.mono (subset_insert _ _), fun h ↦ ?_⟩
+    apply HasFPowerSeriesWithinAt.mono_of_mem h
+    rw [nhdsWithin_insert_of_ne hy]
+    exact self_mem_nhdsWithin
+
+@[simp] theorem analyticWithinAt_insert {f : E → F} {s : Set E} {x y : E} :
+    AnalyticWithinAt 𝕜 f (insert y s) x ↔ AnalyticWithinAt 𝕜 f s x := by
+  simp [AnalyticWithinAt]
+
 section
 
-variable [CompleteSpace F] {f : E → F} {p : FormalMultilinearSeries 𝕜 E F} {x y : E} {r : ℝ≥0∞}
+variable [CompleteSpace F] {f : E → F} {p : FormalMultilinearSeries 𝕜 E F} {s : Set E}
+  {x y : E} {r : ℝ≥0∞}
+
+/-- If a function admits a power series expansion `p` within a set `s` on a ball `B (x, r)`, then
+it  also admits a power series on any subball of this ball (even with a different center provided
+it belongs to `s`), given by `p.changeOrigin`. -/
+theorem HasFPowerSeriesWithinOnBall.changeOrigin (hf : HasFPowerSeriesWithinOnBall f p s x r)
+    (h : (‖y‖₊ : ℝ≥0∞) < r) (hy : x + y ∈ insert x s) :
+    HasFPowerSeriesWithinOnBall f (p.changeOrigin y) s (x + y) (r - ‖y‖₊) where
+  r_le := by
+    apply le_trans _ p.changeOrigin_radius
+    exact tsub_le_tsub hf.r_le le_rfl
+  r_pos := by simp [h]
+  hasSum := fun {z} h'z hz => by
+    have : f (x + y + z) =
+        FormalMultilinearSeries.sum (FormalMultilinearSeries.changeOrigin p y) z := by
+      rw [mem_emetric_ball_zero_iff, lt_tsub_iff_right, add_comm] at hz
+      rw [p.changeOrigin_eval (hz.trans_le hf.r_le), add_assoc, hf.sum]
+      · have : insert (x + y) s ⊆ insert (x + y) (insert x s) := by
+          apply insert_subset_insert (subset_insert _ _)
+        rw [insert_eq_of_mem hy] at this
+        apply this
+        simpa [add_assoc] using h'z
+      refine mem_emetric_ball_zero_iff.2 (lt_of_le_of_lt ?_ hz)
+      exact mod_cast nnnorm_add_le y z
+    rw [this]
+    apply (p.changeOrigin y).hasSum
+    refine EMetric.ball_subset_ball (le_trans ?_ p.changeOrigin_radius) hz
+    exact tsub_le_tsub hf.r_le le_rfl
 
 /-- If a function admits a power series expansion `p` on a ball `B (x, r)`, then it also admits a
 power series on any subball of this ball (even with a different center), given by `p.changeOrigin`.
 -/
 theorem HasFPowerSeriesOnBall.changeOrigin (hf : HasFPowerSeriesOnBall f p x r)
-    (h : (‖y‖₊ : ℝ≥0∞) < r) : HasFPowerSeriesOnBall f (p.changeOrigin y) (x + y) (r - ‖y‖₊) :=
-  { r_le := by
-      apply le_trans _ p.changeOrigin_radius
-      exact tsub_le_tsub hf.r_le le_rfl
-    r_pos := by simp [h]
-    hasSum := fun {z} hz => by
-      have : f (x + y + z) =
-          FormalMultilinearSeries.sum (FormalMultilinearSeries.changeOrigin p y) z := by
-        rw [mem_emetric_ball_zero_iff, lt_tsub_iff_right, add_comm] at hz
-        rw [p.changeOrigin_eval (hz.trans_le hf.r_le), add_assoc, hf.sum]
-        refine mem_emetric_ball_zero_iff.2 (lt_of_le_of_lt ?_ hz)
-        exact mod_cast nnnorm_add_le y z
-      rw [this]
-      apply (p.changeOrigin y).hasSum
-      refine EMetric.ball_subset_ball (le_trans ?_ p.changeOrigin_radius) hz
-      exact tsub_le_tsub hf.r_le le_rfl }
+    (h : (‖y‖₊ : ℝ≥0∞) < r) : HasFPowerSeriesOnBall f (p.changeOrigin y) (x + y) (r - ‖y‖₊) := by
+  rw [← hasFPowerSeriesWithinOnBall_univ] at hf ⊢
+  exact hf.changeOrigin h (by simp)
+
+/-- If a function admits a power series expansion `p` on an open ball `B (x, r)`, then
+it is analytic at every point of this ball. -/
+theorem HasFPowerSeriesWithinOnBall.analyticWithinAt_of_mem
+    (hf : HasFPowerSeriesWithinOnBall f p s x r)
+    (h : y ∈ insert x s ∩ EMetric.ball x r) : AnalyticWithinAt 𝕜 f s y := by
+  have : (‖y - x‖₊ : ℝ≥0∞) < r := by simpa [edist_eq_coe_nnnorm_sub] using h.2
+  have := hf.changeOrigin this (by simpa using h.1)
+  rw [add_sub_cancel] at this
+  exact this.analyticWithinAt
 
 /-- If a function admits a power series expansion `p` on an open ball `B (x, r)`, then
 it is analytic at every point of this ball. -/
 theorem HasFPowerSeriesOnBall.analyticAt_of_mem (hf : HasFPowerSeriesOnBall f p x r)
     (h : y ∈ EMetric.ball x r) : AnalyticAt 𝕜 f y := by
-  have : (‖y - x‖₊ : ℝ≥0∞) < r := by simpa [edist_eq_coe_nnnorm_sub] using h
-  have := hf.changeOrigin this
-  rw [add_sub_cancel] at this
-  exact this.analyticAt
+  rw [← hasFPowerSeriesWithinOnBall_univ] at hf
+  rw [← analyticWithinAt_univ]
+  exact hf.analyticWithinAt_of_mem (by simpa using h)
+
+theorem HasFPowerSeriesWithinOnBall.analyticWithinOn (hf : HasFPowerSeriesWithinOnBall f p s x r) :
+    AnalyticWithinOn 𝕜 f (insert x s ∩ EMetric.ball x r) :=
+  fun _ hy ↦ ((analyticWithinAt_insert (y := x)).2 (hf.analyticWithinAt_of_mem hy)).mono
+    inter_subset_left
 
 theorem HasFPowerSeriesOnBall.analyticOn (hf : HasFPowerSeriesOnBall f p x r) :
     AnalyticOn 𝕜 f (EMetric.ball x r) :=
@@ -1771,4 +1870,4 @@ theorem hasFPowerSeriesAt_iff' :
 end
 
 /- TODO: move the part on `ChangeOrigin` to another file. -/
-set_option linter.style.longFile 1800
+set_option linter.style.longFile 2000
