@@ -369,7 +369,7 @@ end Ideal
 /-!
 # Open normal subgroups of a topological groups
 
-This files builds the lattice `OpenNormalSubgroup G` of open subgroups in a topological group `G`,
+This section builds the lattice `OpenNormalSubgroup G` of open subgroups in a topological group `G`,
 and its additive version `OpenNormalAddSubgroup`.
 -/
 
@@ -451,6 +451,26 @@ instance [ContinuousMul G] : Lattice (OpenNormalSubgroup G) :=
     toPartialOrder := instPartialOrderOpenNormalSubgroup}
 
 end OpenNormalSubgroup
+
+end
+
+/-!
+# Closed subgroups of a topological groups
+
+This section builds the SemilatticeInf `ClosedSubgroup G` of closed subgroups in a
+topological group `G`, and its additive version `ClosedAddSubgroup`.
+
+# Main definitions and results
+
+* `normalCore_isClosed` : The `normalCore` of a closed subgroup is closed.
+
+*  `finiteindex_closedSubgroup_isOpen` : A closed subgroup with finite index is open.
+
+-/
+
+section
+
+universe u v
 
 /-- The type of open subgroups of a topological group. -/
 @[ext]
