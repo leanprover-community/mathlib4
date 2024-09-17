@@ -27,6 +27,10 @@ import Mathlib.Topology.UniformSpace.Cauchy
 * Embedding of rational functions into Laurent series, provided as a coercion, utilizing
 the underlying `RatFunc.coeAlgHom`.
 * Study of the `X`-Adic valuation on the ring of Laurent series over a field
+* In `uniformContinuous_coeff` we show that sending a Laurent series to its `d`th coefficient in
+uniformly continuous, ensuring that it sends Cauchy filters in `LaurentSeries K` to Cauchy filters
+in `K`: since this latter is given the discrete topology, this provides an element in `K` that
+serves as `d`th coefficient of the Laurent series to which the Cauchy filter converges.
 
 ## Main Results
 * Basic properties of Hasse derivatives
@@ -37,6 +41,7 @@ the underlying `RatFunc.coeAlgHom`.
 `valuation_le_iff_coeff_lt_eq_zero`.
 * Every Laurent series of valuation less than `(1 : ℤₘ₀)` comes from a power series, see
 `val_le_one_iff_eq_coe`.
+* The uniform space of `LaurentSeries` over a field is complete.
 
 ## Implementation details
 * Since `LaurentSeries` is just an abbreviation of `HahnSeries ℤ _`, the definition of the
@@ -614,10 +619,9 @@ end AdicValuation
 namespace LaurentSeries
 section Complete
 
--- **ToDo** Check these `open` and `open scoped` + add doc
-open Polynomial  Filter TopologicalSpace
+open Filter
 
-open scoped Filter BigOperators Topology DiscreteValuation
+open scoped DiscreteValuation
 
 variable {K : Type*} [Field K]
 
@@ -753,6 +757,8 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter (LaurentSeries K)} (hℱ : C
       intro _ _
       apply coeff_tendsto hℱ
       simp only [principal_singleton, mem_pure]; rfl
+
+open scoped Topology
 
 /- The main result showing that the Cauchy filter tends to the `hℱ.mk_LaurentSeries`-/
 theorem Cauchy.eventually_mem_nhds {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ)
