@@ -387,7 +387,7 @@ theorem nnnorm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ≥0}
     · simp [hμ, nnnorm_def, Real.zero_rpow hp]
   rw [← ENNReal.coe_le_coe, nnnorm_def, ENNReal.coe_toNNReal (eLpNorm_ne_top _)]
   refine (eLpNorm_le_of_ae_nnnorm_bound hfC).trans_eq ?_
-  rw [← coe_measureUnivNNReal μ, ENNReal.coe_rpow_of_ne_zero (measureUnivNNReal_pos hμ).ne',
+  rw [← coe_measureUnivNNReal μ, ← ENNReal.coe_rpow_of_ne_zero (measureUnivNNReal_pos hμ).ne',
     ENNReal.coe_mul, mul_comm, ENNReal.smul_def, smul_eq_mul]
 
 theorem norm_le_of_ae_bound [IsFiniteMeasure μ] {f : Lp E p μ} {C : ℝ} (hC : 0 ≤ C)
@@ -677,7 +677,7 @@ theorem exists_eLpNorm_indicator_le (hp : p ≠ ∞) (c : E) {ε : ℝ≥0∞} (
       NNReal.nhds_zero_basis.eventually_iff.mp (eventually_le_of_tendsto_lt hε' this)
     obtain ⟨η, hη, hηδ⟩ := exists_between hδ
     refine ⟨η, hη, ?_⟩
-    rw [ENNReal.coe_rpow_of_nonneg _ hp₀', ← ENNReal.coe_mul]
+    rw [← ENNReal.coe_rpow_of_nonneg _ hp₀', ← ENNReal.coe_mul]
     exact hδε' hηδ
   refine ⟨η, hη_pos, fun s hs => ?_⟩
   refine (eLpNorm_indicator_const_le _ _).trans (le_trans ?_ hη_le)
@@ -802,7 +802,7 @@ theorem nnnorm_indicatorConstLp_le :
 theorem ennnorm_indicatorConstLp_le :
     (‖indicatorConstLp p hs hμs c‖₊ : ℝ≥0∞) ≤ ‖c‖₊ * (μ s) ^ (1 / p.toReal) := by
   refine (ENNReal.coe_le_coe.mpr nnnorm_indicatorConstLp_le).trans_eq ?_
-  simp [← ENNReal.coe_rpow_of_nonneg, ENNReal.coe_toNNReal hμs]
+  simp [ENNReal.coe_rpow_of_nonneg, ENNReal.coe_toNNReal hμs]
 
 theorem edist_indicatorConstLp_eq_nnnorm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
     edist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
@@ -1300,7 +1300,6 @@ end Composition
 We show that `L^p` is a complete space for `1 ≤ p`.
 -/
 
-
 section CompleteSpace
 
 namespace MeasureTheory
@@ -1317,7 +1316,7 @@ theorem eLpNorm'_lim_eq_lintegral_liminf {ι} [Nonempty ι] [LinearOrder ι] {f 
   refine lintegral_congr_ae (h_lim.mono fun a ha => ?_)
   dsimp only
   rw [Tendsto.liminf_eq]
-  simp_rw [ENNReal.coe_rpow_of_nonneg _ hp_nonneg, ENNReal.tendsto_coe]
+  simp_rw [← ENNReal.coe_rpow_of_nonneg _ hp_nonneg, ENNReal.tendsto_coe]
   refine ((NNReal.continuous_rpow_const hp_nonneg).tendsto ‖f_lim a‖₊).comp ?_
   exact (continuous_nnnorm.tendsto (f_lim a)).comp ha
 

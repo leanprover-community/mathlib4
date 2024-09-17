@@ -127,6 +127,10 @@ lemma cfcₙHom_closedEmbedding :
     ClosedEmbedding <| (cfcₙHom ha : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) :=
   (NonUnitalContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.1
 
+@[fun_prop]
+lemma cfcₙHom_continuous : Continuous (cfcₙHom ha : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) :=
+  cfcₙHom_closedEmbedding ha |>.continuous
+
 lemma cfcₙHom_id :
     cfcₙHom ha ⟨(ContinuousMap.id R).restrict <| σₙ R a, rfl⟩ = a :=
   (NonUnitalContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.1

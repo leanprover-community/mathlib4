@@ -146,7 +146,7 @@ instance [Encodable α] [Encodable (Σi, L.Functions i)] : Encodable (L.Term α)
 
 instance [h1 : Countable α] [h2 : Countable (Σl, L.Functions l)] : Countable (L.Term α) := by
   refine mk_le_aleph0_iff.1 (card_le.trans (max_le_iff.2 ?_))
-  simp only [le_refl, mk_sum, add_le_aleph0, lift_le_aleph0, true_and_iff]
+  simp only [le_refl, mk_sum, add_le_aleph0, lift_le_aleph0, true_and]
   exact ⟨Cardinal.mk_le_aleph0, Cardinal.mk_le_aleph0⟩
 
 instance small [Small.{u} α] : Small.{u} (L.Term α) :=

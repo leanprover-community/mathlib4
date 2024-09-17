@@ -1120,7 +1120,7 @@ theorem pair_injective : Function.Injective2 pair := fun x x' y y' H => by
       rw [mem_singleton.mp m]
   have he : x = y → y = y' := by
     rintro rfl
-    cases' (ae {x, y'}).2 (by simp only [eq_self_iff_true, or_true_iff]) with xy'x xy'xx
+    cases' (ae {x, y'}).2 (by simp only [eq_self_iff_true, or_true]) with xy'x xy'xx
     · rw [eq_comm, ← mem_singleton, ← xy'x, mem_pair]
       exact Or.inr rfl
     · simpa [eq_comm] using (ZFSet.ext_iff.1 xy'xx y').1 (by simp)
@@ -1282,7 +1282,7 @@ theorem not_empty_hom (x : ZFSet.{u}) : ¬(∅ : Class.{u}) x :=
 
 @[simp]
 theorem mem_univ {A : Class.{u}} : A ∈ univ.{u} ↔ ∃ x : ZFSet.{u}, ↑x = A :=
-  exists_congr fun _ => and_true_iff _
+  exists_congr fun _ => iff_of_eq (and_true _)
 
 @[simp]
 theorem mem_univ_hom (x : ZFSet.{u}) : univ.{u} x :=
@@ -1333,7 +1333,7 @@ def congToClass (x : Set Class.{u}) : Class.{u} :=
 @[simp]
 theorem congToClass_empty : congToClass ∅ = ∅ := by
   ext z
-  simp only [congToClass, not_empty_hom, iff_false_iff]
+  simp only [congToClass, not_empty_hom, iff_false]
   exact Set.not_mem_empty z
 
 /-- Convert a class into a conglomerate (a collection of classes) -/
@@ -1391,7 +1391,7 @@ theorem coe_sep (p : Class.{u}) (x : ZFSet.{u}) :
 
 @[simp, norm_cast]
 theorem coe_empty : ↑(∅ : ZFSet.{u}) = (∅ : Class.{u}) :=
-  ext fun y => iff_false_iff.2 <| ZFSet.not_mem_empty y
+  ext fun y => iff_false _ ▸ ZFSet.not_mem_empty y
 
 @[simp, norm_cast]
 theorem coe_insert (x y : ZFSet.{u}) : ↑(insert x y) = @insert ZFSet.{u} Class.{u} _ x y :=
