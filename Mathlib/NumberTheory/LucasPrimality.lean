@@ -75,7 +75,6 @@ theorem reverse_lucas_primality (p : ℕ) (hP : p.Prime):
   replace hq := hq.one_lt
   exact h1.2 _ (Nat.div_lt_self h2 hq) (Nat.div_pos (Nat.le_of_dvd h2 hqd) (zero_lt_one.trans hq))
 
-
 /-- A number `p` is prime if and only if there exists an `a` such that
 `a^(p-1) = 1 mod p` and `a^((p-1)/q) ≠ 1 mod p` for all prime factors `q` of `p-1`
 -/
