@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
 -/
 
+import Mathlib.Algebra.Order.Antidiagonal.Prod
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Ring.Defs
@@ -163,6 +164,25 @@ theorem weight_eq_zero_iff_eq_zero
     exact le_weight_of_ne_zero' w hs
   · intro h
     rw [h, map_zero]
+
+theorem finite_of_weight_le [Finite σ] (hw : ∀ x, w x ≠ 0) (n : ℕ) :
+    {d : σ →₀ ℕ | weight w d ≤ n}.Finite := by
+  classical
+  set fg := Finset.antidiagonal (Finsupp.equivFunOnFinite.symm (Function.const σ n)) with hfg
+  suffices {d : σ →₀ ℕ | weight w d ≤ n} ⊆ ↑(fg.image fun uv => uv.fst) by
+    exact Set.Finite.subset (Finset.finite_toSet _) this
+  intro d hd
+  rw [hfg]
+  simp only [Finset.coe_image, Set.mem_image, Finset.mem_coe,
+    Finset.mem_antidiagonal, Prod.exists, exists_and_right, exists_eq_right]
+  use Finsupp.equivFunOnFinite.symm (Function.const σ n) - d
+  ext x
+  simp only [Finsupp.coe_add, Finsupp.coe_tsub, Pi.add_apply, Pi.sub_apply,
+    Finsupp.equivFunOnFinite_symm_apply_toFun, Function.const_apply]
+  rw [add_comm]
+  apply Nat.sub_add_cancel
+  apply le_trans (le_weight w (hw x) d)
+  simpa only [Set.mem_setOf_eq] using hd
 
 end CanonicallyOrderedAddCommMonoid
 

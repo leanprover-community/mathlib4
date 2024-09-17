@@ -127,7 +127,7 @@ section WeightedOrder
 
 variable (w : σ → ℕ) (f : MvPowerSeries σ R)
 
-theorem _root_.Finsupp.finite_of_weight_le [Finite σ] (hw : ∀ x, w x ≠ 0) (n : ℕ) :
+/- theorem _root_.Finsupp.finite_of_weight_le [Finite σ] (hw : ∀ x, w x ≠ 0) (n : ℕ) :
     {d : σ →₀ ℕ | weight w d ≤ n}.Finite := by
   classical
   set fg := Finset.antidiagonal (Finsupp.equivFunOnFinite.symm (Function.const σ n)) with hfg
@@ -145,6 +145,7 @@ theorem _root_.Finsupp.finite_of_weight_le [Finite σ] (hw : ∀ x, w x ≠ 0) (
   apply Nat.sub_add_cancel
   apply le_trans (le_weight w (hw x) d)
   simpa only [Set.mem_setOf_eq] using hd
+-/
 
 theorem ne_zero_iff_exists_coeff_ne_zero_and_weight
     (f : MvPowerSeries σ R):
