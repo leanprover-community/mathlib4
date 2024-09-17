@@ -153,6 +153,8 @@ jobs:
           then
             echo "Not all lean files are in the import all files"
             echo "mk_all=false" >> "${GITHUB_OUTPUT}"
+          else
+            echo "mk_all=true" >> "${GITHUB_OUTPUT}"
           fi
 
       - name: build mathlib
@@ -217,7 +219,7 @@ jobs:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
           MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
-      - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
+      - name: Check {Mathlib, Tactic, Counterexamples, Archive}.lean
         run: |
           if [ ${{ steps.mk_all.outputs.mk_all }} == "false" ]
           then
