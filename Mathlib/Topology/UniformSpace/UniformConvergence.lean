@@ -62,7 +62,7 @@ Uniform limit, uniform convergence, tends uniformly to
 
 noncomputable section
 
-open Topology Uniformity Filter Set
+open Topology Uniformity Filter Set Uniform
 
 universe u v w x
 variable {α : Type u} {β : Type v} {γ : Type w} {ι : Type x} [UniformSpace β]
@@ -522,6 +522,31 @@ theorem tendstoUniformly_iff_seq_tendstoUniformly {l : Filter ι} [l.IsCountably
   exact tendstoUniformlyOn_iff_seq_tendstoUniformlyOn
 
 end SeqTendsto
+
+section
+
+variable [NeBot p] {L : ι → β} {ℓ : β}
+
+theorem TendstoUniformlyOnFilter.tendsto_of_eventually_tendsto
+    (h1 : TendstoUniformlyOnFilter F f p p') (h2 : ∀ᶠ i in p, Tendsto (F i) p' (𝓝 (L i)))
+    (h3 : Tendsto L p (𝓝 ℓ)) : Tendsto f p' (𝓝 ℓ) := by
+  rw [tendsto_nhds_left]
+  intro s hs
+  rw [mem_map, Set.preimage, ← eventually_iff]
+  obtain ⟨t, ht, hts⟩ := comp3_mem_uniformity hs
+  have p1 : ∀ᶠ i in p, (L i, ℓ) ∈ t := tendsto_nhds_left.mp h3 ht
+  have p2 : ∀ᶠ i in p, ∀ᶠ x in p', (F i x, L i) ∈ t := by
+    filter_upwards [h2] with i h2 using tendsto_nhds_left.mp h2 ht
+  have p3 : ∀ᶠ i in p, ∀ᶠ x in p', (f x, F i x) ∈ t := (h1 t ht).curry
+  obtain ⟨i, p4, p5, p6⟩ := (p1.and (p2.and p3)).exists
+  filter_upwards [p5, p6] with x p5 p6 using hts ⟨F i x, p6, L i, p5, p4⟩
+
+theorem TendstoUniformly.tendsto_of_eventually_tendsto
+    (h1 : TendstoUniformly F f p) (h2 : ∀ᶠ i in p, Tendsto (F i) p' (𝓝 (L i)))
+    (h3 : Tendsto L p (𝓝 ℓ)) : Tendsto f p' (𝓝 ℓ) :=
+  (h1.tendstoUniformlyOnFilter.mono_right le_top).tendsto_of_eventually_tendsto h2 h3
+
+end
 
 variable [TopologicalSpace α]
 

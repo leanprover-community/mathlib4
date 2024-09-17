@@ -16,17 +16,27 @@ Nontrivially normed fields are `ProperSpaces` when they are `WeaklyLocallyCompac
 ## Main results
 
 * `ProperSpace.of_nontriviallyNormedField_of_weaklyLocallyCompactSpace`
+
+## Implementation details
+
+This is a special case of `ProperSpace.of_locallyCompactSpace` from
+`Mathlib.Analysis.Normed.Module.FiniteDimension`, specialized to be on the field itself
+with a proof that requires fewer imports.
 -/
+
+assert_not_exists FiniteDimensional
 
 open Metric Filter
 
-/-- A weakly locally compact normed field is proper. -/
+/-- A weakly locally compact normed field is proper.
+This is a specialization of `ProperSpace.of_locallyCompactSpace`
+which holds for `NormedSpace`s but requires more imports. -/
 lemma ProperSpace.of_nontriviallyNormedField_of_weaklyLocallyCompactSpace
     (𝕜 : Type*) [NontriviallyNormedField 𝕜] [WeaklyLocallyCompactSpace 𝕜] :
     ProperSpace 𝕜 := by
   rcases exists_isCompact_closedBall (0 : 𝕜) with ⟨r, rpos, hr⟩
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
-  have hC : ∀ n, IsCompact (closedBall (0 : 𝕜) (‖c‖^n * r)) := fun n ↦ by
+  have hC n : IsCompact (closedBall (0 : 𝕜) (‖c‖^n * r)) := by
     have : c ^ n ≠ 0 := pow_ne_zero _ <| fun h ↦ by simp [h, zero_le_one.not_lt] at hc
     convert hr.smul (c ^ n)
     ext

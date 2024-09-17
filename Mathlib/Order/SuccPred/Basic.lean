@@ -1211,31 +1211,31 @@ end Succ
 
 end WithBot
 
-namespace OrderIsoClass
+section OrderIso
 
-variable {X Y F : Type*} [EquivLike F X Y] [Preorder X] [Preorder Y] [OrderIsoClass F X Y]
+variable {X Y : Type*} [Preorder X] [Preorder Y]
 
+-- See note [reducible non instances]
 /-- `SuccOrder` transfers across equivalences between orders. -/
-@[reducible] protected def SuccOrder [SuccOrder X] (f : F) : SuccOrder Y where
-  succ y := f (Order.succ (EquivLike.inv f y))
-  le_succ y := by
-    obtain ⟨x, rfl⟩ := EquivLike.surjective f y
-    simpa using (map_le_map_iff f).mpr (Order.le_succ x)
-  max_of_succ_le {y} hy := by
-    obtain ⟨x, rfl⟩ := EquivLike.surjective f y
-    simp only [EquivLike.inv_apply_apply, map_le_map_iff] at hy
-    have := Order.max_of_succ_le hy
-    exact (OrderIso.isMax_apply (f : X ≃o Y)).mpr this
-  succ_le_of_lt {a b} h := by
-    obtain ⟨x, rfl⟩ := EquivLike.surjective f b
-    simp only [map_le_map_iff]
-    refine Order.succ_le_of_lt ?_
-    simp [← map_lt_map_iff, h]
+protected abbrev SuccOrder.ofOrderIso [SuccOrder X] (f : X ≃o Y) : SuccOrder Y where
+  succ y := f (succ (f.symm y))
+  le_succ y := by rw [← map_inv_le_iff f]; exact le_succ (f.symm y)
+  max_of_succ_le h := by
+    rw [← f.symm.isMax_apply]
+    refine max_of_succ_le ?_
+    simp [f.le_symm_apply, h]
+  succ_le_of_lt h := by rw [← le_map_inv_iff]; exact succ_le_of_lt (by simp [h])
 
+-- See note [reducible non instances]
 /-- `PredOrder` transfers across equivalences between orders. -/
-@[reducible] protected def PredOrder [PredOrder X] (f : F) : PredOrder Y := by
-  let _ := OrderIsoClass.SuccOrder (X := Xᵒᵈ) (Y := Yᵒᵈ) f
-  let e : PredOrder Yᵒᵈᵒᵈ := by infer_instance
-  exact e
+protected abbrev PredOrder.ofOrderIso [PredOrder X] (f : X ≃o Y) :
+    PredOrder Y where
+  pred y := f (pred (f.symm y))
+  pred_le y := by rw [← le_map_inv_iff f]; exact pred_le (f.symm y)
+  min_of_le_pred h := by
+    rw [← f.symm.isMin_apply]
+    refine min_of_le_pred ?_
+    simp [f.symm_apply_le, h]
+  le_pred_of_lt h := by rw [← map_inv_le_iff]; exact le_pred_of_lt (by simp [h])
 
-end OrderIsoClass
+end OrderIso

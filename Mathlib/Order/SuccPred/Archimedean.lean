@@ -252,36 +252,34 @@ lemma BddBelow.exists_isLeast_of_nonempty {X : Type*} [LinearOrder X] [PredOrder
 
 end IsLeast
 
-namespace OrderIsoClass
+section OrderIso
 
-variable {X Y F : Type*} [EquivLike F X Y] [PartialOrder X] [PartialOrder Y] [OrderIsoClass F X Y]
+variable {X Y : Type*} [PartialOrder X] [PartialOrder Y]
 
 /-- `IsSuccArchimedean` transfers across equivalences between `SuccOrder`s. -/
-protected theorem IsSuccArchimedean [SuccOrder X] [SuccOrder Y] [IsSuccArchimedean X] (f : F) :
-    IsSuccArchimedean Y where
+protected lemma IsSuccArchimedean.of_orderIso [SuccOrder X] [IsSuccArchimedean X] [SuccOrder Y]
+    (f : X ≃o Y) : IsSuccArchimedean Y where
   exists_succ_iterate_of_le {a b} h := by
-    have : ∀ x, Order.succ (f x) = f (Order.succ x) := by
-      have ho : (Order.succ : Y → Y) = (OrderIsoClass.SuccOrder f).succ := by
-        simp only [(Order.instSubsingletonSuccOrder (α := Y)).elim]
-        rfl
-      have : ∀ y, (OrderIsoClass.SuccOrder f).succ y = f (Order.succ (EquivLike.inv f y)) :=
-        fun _ ↦ rfl
-      simp [ho, this]
-    obtain ⟨x, rfl⟩ := EquivLike.surjective f a
-    obtain ⟨y, rfl⟩ := EquivLike.surjective f b
-    obtain ⟨n, rfl⟩ := exists_succ_iterate_of_le ((map_le_map_iff f).mp h)
+    refine (exists_succ_iterate_of_le ((map_inv_le_map_inv_iff f).mpr h)).imp ?_
+    intro n
+    rw [← f.apply_eq_iff_eq, EquivLike.apply_inv_apply]
+    rintro rfl
     clear h
-    refine ⟨n, ?_⟩
-    induction n with
+    induction n generalizing a with
     | zero => simp
-    | succ n IH => rw [Function.iterate_succ', Function.comp_apply, IH, Function.iterate_succ',
-                       Function.comp_apply, this]
+    | succ n IH => simp only [Function.iterate_succ', Function.comp_apply, IH, f.map_succ]
 
 /-- `IsPredArchimedean` transfers across equivalences between `PredOrder`s. -/
-protected theorem IsPredArchimedean [PredOrder X] [PredOrder Y] [IsPredArchimedean X] (f : F) :
-    IsPredArchimedean Y := by
-  let _ := OrderIsoClass.IsSuccArchimedean (X := Xᵒᵈ) (Y := Yᵒᵈ) f
-  let e : IsPredArchimedean Yᵒᵈᵒᵈ := by infer_instance
-  exact e
+protected lemma IsPredArchimedean.of_orderIso [PredOrder X] [IsPredArchimedean X] [PredOrder Y]
+    (f : X ≃o Y) : IsPredArchimedean Y where
+  exists_pred_iterate_of_le {a b} h := by
+    refine (exists_pred_iterate_of_le ((map_inv_le_map_inv_iff f).mpr h)).imp ?_
+    intro n
+    rw [← f.apply_eq_iff_eq, EquivLike.apply_inv_apply]
+    rintro rfl
+    clear h
+    induction n generalizing b with
+    | zero => simp
+    | succ n IH => simp only [Function.iterate_succ', Function.comp_apply, IH, f.map_pred]
 
-end OrderIsoClass
+end OrderIso

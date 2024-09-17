@@ -28,6 +28,9 @@ and that `ℚ_[p]` is proper.
 Gouvêa, F. Q. (2020) p-adic Numbers An Introduction. 3rd edition.
   Cham, Springer International Publishing
 -/
+
+assert_not_exists FiniteDimensional
+
 open Metric Topology
 
 variable (p : ℕ) [Fact (Nat.Prime p)]

@@ -160,8 +160,8 @@ variable (K)
 
 /-- The lattice formed by the image of the logarithmic embedding. -/
 noncomputable def _root_.NumberField.Units.unitLattice :
-    AddSubgroup ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
-  AddSubgroup.map (logEmbedding K) ⊤
+    Submodule ℤ ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
+  Submodule.map (logEmbedding K).toIntLinearMap ⊤
 
 theorem unitLattice_inter_ball_finite (r : ℝ) :
     ((unitLattice K : Set ({ w : InfinitePlace K // w ≠ w₀} → ℝ)) ∩
@@ -325,8 +325,7 @@ theorem unitLattice_span_eq_top :
   suffices B.det v ≠ 0 by
     rw [← isUnit_iff_ne_zero, ← is_basis_iff_det] at this
     rw [← this.2]
-    exact Submodule.span_monotone (fun _ ⟨w, hw⟩ =>
-      ⟨(exists_unit K w).choose, trivial, by rw [← hw]⟩)
+    refine  Submodule.span_monotone fun _ ⟨w, hw⟩ ↦ ⟨(exists_unit K w).choose, trivial, hw⟩
   rw [Basis.det_apply]
   -- We use a specific lemma to prove that this determinant is nonzero
   refine det_ne_zero_of_sum_col_lt_diag (fun w => ?_)
@@ -420,11 +419,13 @@ set_option maxSynthPendingDepth 2 -- Note this is active for the remainder of th
 `unitLattice` . -/
 def logEmbeddingEquiv :
     Additive ((𝓞 K)ˣ ⧸ (torsion K)) ≃ₗ[ℤ] (unitLattice K) :=
-  (AddEquiv.ofBijective (AddMonoidHom.codRestrict (logEmbeddingQuot K) _
-  (Quotient.ind fun x ↦ logEmbeddingQuot_apply K _ ▸ AddSubgroup.mem_map_of_mem _ trivial))
-  ⟨fun _ _ ↦ by
-    rw [AddMonoidHom.codRestrict_apply, AddMonoidHom.codRestrict_apply, Subtype.mk.injEq]
-    apply logEmbeddingQuot_injective K, fun ⟨a, ⟨b, _, ha⟩⟩ ↦ ⟨⟦b⟧, by simp [ha]⟩⟩).toIntLinearEquiv
+  LinearEquiv.ofBijective ((logEmbeddingQuot K).codRestrict (unitLattice K)
+    (Quotient.ind fun x ↦ logEmbeddingQuot_apply K _ ▸
+      Submodule.mem_map_of_mem trivial)).toIntLinearMap
+    ⟨fun _ _ ↦ by
+      rw [AddMonoidHom.coe_toIntLinearMap, AddMonoidHom.codRestrict_apply,
+        AddMonoidHom.codRestrict_apply, Subtype.mk.injEq]
+      apply logEmbeddingQuot_injective K, fun ⟨a, ⟨b, _, ha⟩⟩ ↦ ⟨⟦b⟧, by simpa using ha⟩⟩
 
 @[simp]
 theorem logEmbeddingEquiv_apply (x : (𝓞 K)ˣ) :
