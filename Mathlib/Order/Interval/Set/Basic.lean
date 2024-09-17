@@ -1662,7 +1662,7 @@ lemma Iio_False : Iio False = ∅ := by aesop
 
 @[simp]
 lemma Iio_True : Iio True = {False} := le_antisymm
-  (fun _ => by aesop)
+  (by aesop)
   (fun x hx => by
     rw [mem_singleton_iff, eq_iff_iff, iff_false] at hx
     rw [mem_Iio]
