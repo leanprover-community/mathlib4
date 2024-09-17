@@ -7,7 +7,7 @@ import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.Topology.Sheaves.SheafCondition.Sites
 import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.RingTheory.LocalProperties
+import Mathlib.RingTheory.LocalProperties.Properties
 
 /-!
 # Basic properties of schemes

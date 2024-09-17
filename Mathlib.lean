@@ -3903,7 +3903,8 @@ import Mathlib.RingTheory.Kaehler.CotangentComplex
 import Mathlib.RingTheory.Kaehler.Polynomial
 import Mathlib.RingTheory.LaurentSeries
 import Mathlib.RingTheory.LittleWedderburn
-import Mathlib.RingTheory.LocalProperties
+import Mathlib.RingTheory.LocalProperties.Basic
+import Mathlib.RingTheory.LocalProperties.Properties
 import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.RingTheory.LocalRing.Defs
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
