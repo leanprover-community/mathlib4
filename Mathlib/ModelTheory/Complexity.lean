@@ -17,6 +17,10 @@ prenex normal forms.
   constructed only from terms and relations.
 - `FirstOrder.Language.BoundedFormula.IsLiteral` defines literals - those which are `⊥`, `⊤`,
   atomic formulas or negation of atomic formulas.
+- `FirstOrder.Language.BoundedFormula.IsConjunctive` defines conjunctive formulas - those which are
+  constructed only from literals and conjunctions.
+- `FirstOrder.Language.BoundedFormula.IsDisjunctive` defines disjunctive formulas - those which are
+  constructed only from literals and disjunctions.
 - `FirstOrder.Language.BoundedFormula.IsQF` defines quantifier-free formulas - those which are
   constructed only from atomic formulas and boolean operations.
 - `FirstOrder.Language.BoundedFormula.IsPrenex` defines when a formula is in prenex normal form -
@@ -31,18 +35,14 @@ prenex normal forms.
 
 ## TODO
 
-- `FirstOrder.Language.BoundedFormula.toDNF` constructs a disjunctive normal form of a given
-  quantifier-free formula.
-- `FirstOrder.Language.BoundedFormula.toCNF` constructs a conjunctive normal form of a given
-  quantifier-free formula.
-- `FirstOrder.Language.BoundedFormula.IsConjunctive` defines conjunctive formulas - those which are
-  constructed only from literals and conjunctions.
-- `FirstOrder.Language.BoundedFormula.IsDisjunctive` defines disjunctive formulas - those which are
-  constructed only from literals and disjunctions.
 - `FirstOrder.Language.BoundedFormula.IsDNF` defines formulas in disjunctive normal form - those
   which are disjunctions of conjunctive formulas.
 - `FirstOrder.Language.BoundedFormula.IsCNF` defines formulas in conjunctive normal form - those
   which are conjunctions of disjunctive formulas.
+- `FirstOrder.Language.BoundedFormula.toDNF` constructs a disjunctive normal form of a given
+  quantifier-free formula.
+- `FirstOrder.Language.BoundedFormula.toCNF` constructs a conjunctive normal form of a given
+  quantifier-free formula.
 - `FirstOrder.Language.BoundedFormula.toDNF_semanticallyEquivalent` shows that the disjunctive
   normal form of a formula is semantically equivalent to the original formula.
 - `FirstOrder.Language.BoundedFormula.toCNF_semanticallyEquivalent` shows that the conjunctive
