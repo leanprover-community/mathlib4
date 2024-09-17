@@ -107,6 +107,7 @@ lemma lt_sub_one_iff {k : Fin (n + 2)} : k < k - 1 ↔ k = 0 := by
 lemma sub_one_lt_iff {k : Fin (n + 1)} : k - 1 < k ↔ 0 < k :=
   not_iff_not.1 <| by simp only [lt_def, not_lt, val_fin_le, le_sub_one_iff, le_zero_iff]
 
+@[simp]
 lemma lt_sub_iff {n : ℕ} {a b : Fin n} : a < a - b ↔ a < b := by
   cases' n with n
   · exact a.elim0
@@ -127,12 +128,13 @@ lemma lt_sub_iff {n : ℕ} {a b : Fin n} : a < a - b ↔ a < b := by
     rw [this, Nat.mod_eq_of_lt (hk.ge.trans_lt' ?_), Nat.lt_add_left_iff_pos] <;>
     omega
 
+@[simp]
 lemma sub_le_iff {n : ℕ} {a b : Fin n} : a - b ≤ a ↔ b ≤ a := by
   rw [← not_iff_not, Fin.not_le, Fin.not_le, lt_sub_iff]
 
 @[simp]
 lemma lt_one_iff {n : ℕ} (x : Fin (n + 2)) : x < 1 ↔ x = 0 := by
-  simp [Fin.lt_iff_val_lt_val, Fin.ext_iff]
+  simp [lt_iff_val_lt_val, Fin.ext_iff]
 
 @[simp] lemma neg_last (n : ℕ) : -Fin.last n = 1 := by simp [neg_eq_iff_add_eq_zero]
 
@@ -145,13 +147,9 @@ lemma rev_add (a b : Fin n) : rev (a + b) = rev a - b := by
   rw [← last_sub, ← last_sub, sub_add_eq_sub_sub]
 
 lemma rev_sub (a b : Fin n) : rev (a - b) = rev a + b := by
-  cases' n
-  · exact a.elim0
-  rw [← last_sub, ← last_sub, sub_sub_eq_add_sub, add_sub_right_comm]
+  rw [rev_eq_iff, rev_add, rev_rev]
 
 lemma add_lt_left_iff {n : ℕ} {a b : Fin n} : a + b < a ↔ rev b < a := by
-  cases' n
-  · exact a.elim0
-  rw [← Fin.rev_lt_rev, Iff.comm, ← Fin.rev_lt_rev, rev_add, lt_sub_iff, rev_rev]
+  rw [← rev_lt_rev, Iff.comm, ← rev_lt_rev, rev_add, lt_sub_iff, rev_rev]
 
 end Fin
