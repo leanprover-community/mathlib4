@@ -28,17 +28,26 @@ variable {p : ℕ}
 
 /-- For `p ≠ 1`, the `p`-adic valuation of a natural `n ≠ 0` is the largest natural number `k` such
 that `p^k` divides `n`. If `n = 0` or `p = 1`, then `padicValNat p q` defaults to `0`. -/
-noncomputable def padicValNat (p : ℕ) (n : ℕ) : ℕ :=
-  if p ≠ 1 ∧ 0 < n then multiplicity p n else 0
+def padicValNat (p : ℕ) (n : ℕ) : ℕ :=
+  if h : p ≠ 1 ∧ 0 < n then Nat.find (multiplicity_finite_iff.2 h) else 0
+
+theorem padicValNat_def' {n : ℕ} (hp : p ≠ 1) (hn : 0 < n) :
+    padicValNat p n = multiplicity p n := by
+  simp [padicValNat, hp, hn, multiplicity, emultiplicity, multiplicity_finite_iff.2 ⟨hp, hn⟩]
+  convert (WithTop.untop'_coe ..).symm
 
 /-- A simplification of `padicValNat` when one input is prime, by analogy with
 `padicValRat_def`. -/
 theorem padicValNat_def [hp : Fact p.Prime] {n : ℕ} (hn : 0 < n) :
     padicValNat p n = multiplicity p n :=
-  dif_pos ⟨hp.out.ne_one, hn⟩
+  padicValNat_def' hp.out.ne_one hn
 
-theorem padicValNat_def' {n : ℕ} (hp : p ≠ 1) (hn : 0 < n) :
-    ↑(padicValNat p n) = multiplicity p n := by simp [padicValNat, hp, hn]
+/-- A simplification of `padicValNat` when one input is prime, by analogy with
+`padicValRat_def`. -/
+theorem padicValNat_eq_emultiplicity [hp : Fact p.Prime] {n : ℕ} (hn : 0 < n) :
+    padicValNat p n = emultiplicity p n := by
+  rw [(multiplicity_finite_iff.2 ⟨hp.out.ne_one, hn⟩).emultiplicity_eq_multiplicity]
+  exact_mod_cast padicValNat_def hn
 
 namespace padicValNat
 
@@ -55,13 +64,13 @@ protected theorem zero : padicValNat p 0 = 0 := by simp [padicValNat]
 protected theorem one : padicValNat p 1 = 0 := by
   unfold padicValNat
   split_ifs with h
-  · simp [Nat.multiplicity_finite_iff.2 h]
+  · simp [h]
   · rfl
 
 @[simp]
 theorem eq_zero_iff {n : ℕ} : padicValNat p n = 0 ↔ p = 1 ∨ n = 0 ∨ ¬p ∣ n := by
-  simp only [padicValNat, ne_eq, pos_iff_ne_zero, ite_eq_else, multiplicity_eq_zero, and_imp, ←
-    or_iff_not_imp_left]
+  simp only [padicValNat, ne_eq, pos_iff_ne_zero, dite_eq_else, find_eq_zero, zero_add, pow_one,
+    and_imp, ← or_iff_not_imp_left]
 
 end padicValNat
 

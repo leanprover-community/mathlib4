@@ -316,7 +316,7 @@ theorem multiplicity_ne_zero :
     multiplicity a b ≠ 0 ↔ a ∣ b := by
   simp [multiplicity_eq_zero]
 
-theorem exists_eq_pow_mul_and_not_dvd (hfin : Finite a b) :
+theorem multiplicity.Finite.exists_eq_pow_mul_and_not_dvd (hfin : Finite a b) :
     ∃ c : α, b = a ^ multiplicity a b * c ∧ ¬a ∣ c := by
   obtain ⟨c, hc⟩ := pow_multiplicity_dvd a b
   refine ⟨c, hc, ?_⟩
