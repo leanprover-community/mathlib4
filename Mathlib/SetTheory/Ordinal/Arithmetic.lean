@@ -1207,24 +1207,6 @@ theorem sup_eq_zero_iff {ι : Type u} {f : ι → Ordinal.{max u v}} :
   rw [← Ordinal.le_zero, ← h]
   exact le_sup f i
 
--- TODO: generalize universes, make sSup version.
-theorem IsNormal.map_iSup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNormal f) {ι : Type u}
-    (g : ι → Ordinal.{max u v}) [Nonempty ι] : f (⨆ i, g i) = ⨆ i, f (g i) := by
-  apply eq_of_forall_ge_iff
-  intro a
-  rw [H.le_set' Set.univ Set.univ_nonempty g]
-  · rw [Ordinal.iSup_le_iff]
-    simp
-  · intro o
-    rw [Ordinal.iSup_le_iff]
-    simp
-
-set_option linter.deprecated false in
-@[deprecated IsNormal.map_iSup (since := "2024-08-27")]
-theorem IsNormal.sup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNormal f) {ι : Type u}
-    (g : ι → Ordinal.{max u v}) [Nonempty ι] : f (sup.{_, v} g) = sup.{_, w} (f ∘ g) :=
-  H.map_iSup g
-
 set_option linter.deprecated false in
 @[deprecated ciSup_of_empty (since := "2024-08-27")]
 theorem sup_empty {ι} [IsEmpty ι] (f : ι → Ordinal) : sup f = 0 :=
@@ -1337,6 +1319,52 @@ theorem bddAbove_range_comp {ι : Type u} {f : ι → Ordinal.{v}} (hf : BddAbov
   rw [bddAbove_iff_small] at hf
   exact small_lift _
 
+  -- TODO: generalize universes, make sSup version.
+theorem IsNormal.map_iSup {f : Ordinal.{u} → Ordinal.{max u v}} (H : IsNormal f) {ι : Type w}
+    (g : ι → Ordinal.{u}) [Nonempty ι] [Small.{u} ι] : f (⨆ i, g i) = ⨆ i, f (g i) :=
+  eq_of_forall_ge_iff fun a ↦ by
+    change f (⨆ i, g i) ≤ a ↔ ⨆ i, (f ∘ g) i ≤ a
+    rw [ciSup_le_iff (Ordinal.bddAbove_range_comp (bddAbove_of_small _) f)]
+    simp_all only [Function.comp]
+    rw [H.le_set' Set.univ Set.univ_nonempty g] <;>
+      simp [ciSup_le_iff (bddAbove_of_small _)]
+
+
+-- "most general universes", with [Small.{v} (range (f ∘ g))] assumption.
+theorem IsNormal.map_iSup' {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f) {ι : Type w}
+    (g : ι → Ordinal.{u}) [Nonempty ι] [Small.{u} ι] [Small.{v} (range (f ∘ g))] :
+    f (⨆ i, g i) = ⨆ i, f (g i) := eq_of_forall_ge_iff fun a ↦ by
+  change f (⨆ i, g i) ≤ a ↔ ⨆ i, (f ∘ g) i ≤ a
+  rw [ciSup_le_iff (bddAbove_iff_small.mpr (by infer_instance))]
+  simp_all only [Function.comp]
+  rw [H.le_set' Set.univ Set.univ_nonempty g] <;>
+    simp [ciSup_le_iff (bddAbove_of_small _)]
+
+
+
+theorem IsNormal.map_iSup_bddAbove {f : Ordinal.{u} → Ordinal.{max u v}} (H : IsNormal f)
+    {ι : Type w} (g : ι → Ordinal.{u}) (hg : BddAbove (range g)) [Nonempty ι] :
+    f (⨆ i, g i) = ⨆ i, f (g i) := eq_of_forall_ge_iff fun a ↦ by
+  change f (⨆ i, g i) ≤ a ↔ ⨆ i, (f ∘ g) i ≤ a
+  rw [ciSup_le_iff (Ordinal.bddAbove_range_comp hg f)]
+  simp_all only [Function.comp]
+  rw [H.le_set' Set.univ Set.univ_nonempty g] <;>
+    simp [ciSup_le_iff hg]
+
+set_option linter.deprecated false in
+@[deprecated IsNormal.map_iSup (since := "2024-08-27")]
+theorem IsNormal.sup {f : Ordinal.{max u v} → Ordinal.{max u w}} (H : IsNormal f) {ι : Type u}
+    (g : ι → Ordinal.{max u v}) [Nonempty ι] : f (sup.{_, v} g) = sup.{_, w} (f ∘ g) := by
+  rw [Ordinal.sup, Ordinal.sup]
+  apply eq_of_forall_ge_iff
+  intro a
+  rw [H.le_set' Set.univ Set.univ_nonempty g]
+  · rw [Ordinal.iSup_le_iff]
+    simp
+  · intro o
+    rw [Ordinal.iSup_le_iff]
+    simp
+
 set_option linter.deprecated false in
 @[deprecated (since := "2024-08-27")]
 theorem sup_eq_sSup {s : Set Ordinal.{u}} (hs : Small.{u} s) :
@@ -1384,14 +1412,6 @@ theorem sup_eq_sup {ι ι' : Type u} (r : ι → ι → Prop) (r' : ι' → ι' 
     (f : ∀ a < o, Ordinal.{max u v}) :
     sup.{_, v} (familyOfBFamily' r ho f) = sup.{_, v} (familyOfBFamily' r' ho' f) :=
   sup_eq_of_range_eq.{u, u, v} (by simp)
-
-theorem IsNormal.iSup {f : Ordinal.{u} → Ordinal.{max u v}} (H : IsNormal f) {ι : Type w}
-    (g : ι → Ordinal.{u}) (hg : BddAbove (range g)) [Nonempty ι] : f (iSup g) = iSup (f ∘ g) :=
-  eq_of_forall_ge_iff fun a ↦ by
-    rw [ciSup_le_iff (Ordinal.bddAbove_range_comp hg f)]
-    simp_all only [Function.comp]
-    rw [H.le_set' Set.univ Set.univ_nonempty g] <;>
-      simp [ciSup_le_iff hg]
 
 /-- The supremum of a family of ordinals indexed by the set of ordinals less than some
     `o : Ordinal.{u}`. This is a special case of `sup` over the family provided by
@@ -2398,7 +2418,7 @@ theorem add_le_of_forall_add_lt {a b c : Ordinal} (hb : 0 < b) (h : ∀ d < b, a
   exact (h _ hb).ne H
 
 theorem IsNormal.apply_omega {f : Ordinal.{u} → Ordinal.{v}} (hf : IsNormal f) :
-    ⨆ n : ℕ, f n = f ω := by rw [← iSup_natCast, hf.map_iSup]
+    ⨆ n : ℕ, f n = f ω := by rw [← iSup_natCast, hf.map_iSup']
 
 @[simp]
 theorem iSup_add_nat (o : Ordinal) : ⨆ n : ℕ, o + n = o + ω :=
