@@ -111,9 +111,9 @@ the action topology. See `actionTopology` for more discussion of the action topo
 class IsActionTopology [τA : TopologicalSpace A] : Prop where
   eq_actionTopology' : τA = actionTopology R A
 
-theorem isActionTopology [τA : TopologicalSpace A] [IsActionTopology R A] :
+theorem eq_ActionTopology [τA : TopologicalSpace A] [IsActionTopology R A] :
     τA = actionTopology R A :=
-  IsActionTopology.isActionTopology' (R := R) (A := A)
+  IsActionTopology.eq_actionTopology' (R := R) (A := A)
 
 /-- Scalar multiplication `• : R × A → A` is continuous if `R` is a topological
 ring, and `A` is an `R` module with the action topology. -/
@@ -133,11 +133,11 @@ theorem ActionTopology.continuousAdd : @ContinuousAdd A (actionTopology R A) _ :
   continuousAdd_sInf <| fun _ _ ↦ by simp_all only [Set.mem_setOf_eq]
 
 instance IsActionTopology.toContinuousSMul [TopologicalSpace A] [IsActionTopology R A] :
-    ContinuousSMul R A := isActionTopology R A ▸ ActionTopology.continuousSMul R A
+    ContinuousSMul R A := eq_ActionTopology R A ▸ ActionTopology.continuousSMul R A
 
 -- this can't be an instance because typclass inference can't be expected to find `R`.
 theorem IsActionTopology.toContinuousAdd [TopologicalSpace A] [IsActionTopology R A] :
-    ContinuousAdd A := isActionTopology R A ▸ ActionTopology.continuousAdd R A
+    ContinuousAdd A := eq_ActionTopology R A ▸ ActionTopology.continuousAdd R A
 
 /-- The action topology is `≤` any topology making `A` into a topological module. -/
 theorem actionTopology_le [τA : TopologicalSpace A] [ContinuousSMul R A] [ContinuousAdd A] :
@@ -151,7 +151,7 @@ section zero
 
 instance instSubsingleton (R : Type*) [TopologicalSpace R] (A : Type*) [Add A] [SMul R A]
     [Subsingleton A] [TopologicalSpace A] : IsActionTopology R A where
-  isActionTopology' := by
+  eq_actionTopology' := by
     ext U
     simp only [isOpen_discrete]
 
@@ -213,13 +213,13 @@ variable {B : Type*} [AddCommMonoid B] [Module R B] [τB : TopologicalSpace B]
 /-- If `A` and `B` are homeomorphic via a homeomorphism which is also `R`-linear, and if
 `A` has the action topology, then so does `B`. -/
 theorem iso (e : A ≃L[R] B) : IsActionTopology R B where
-  isActionTopology' := by
+  eq_actionTopology' := by
     -- get these in before I start putting new topologies on A and B and have to use `@`
     let g : A →ₗ[R] B := e.toLinearMap
     let g' : B →ₗ[R] A := e.symm.toLinearMap
     let h : A →+ B := e
     let h' : B →+ A := e.symm
-    simp_rw [e.toHomeomorph.symm.inducing.1, isActionTopology R A, actionTopology, induced_sInf]
+    simp_rw [e.toHomeomorph.symm.inducing.1, eq_ActionTopology R A, actionTopology, induced_sInf]
     apply congr_arg
     ext τ
     rw [Set.mem_image]
