@@ -441,3 +441,13 @@ instance Units.linearOrderedCommGroup_of_linearOrderedCommGroupWithZero
     [LinearOrderedCommGroupWithZero α] : LinearOrderedCommGroup αˣ where
   __ := Units.instLinearOrder
   mul_le_mul_left _ _ := mul_le_mul_left'
+
+section MultiplicativeNotation
+
+/-- Notation for `WithZero (Multiplicative ℕ)` -/
+scoped[Multiplicative] notation "ℕₘ₀" => WithZero (Multiplicative ℕ)
+
+/-- Notation for `WithZero (Multiplicative ℤ)` -/
+scoped[Multiplicative] notation "ℤₘ₀" => WithZero (Multiplicative ℤ)
+
+end MultiplicativeNotation
