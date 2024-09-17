@@ -49,12 +49,12 @@ theorem _root_.Squarefree.natFactorization_le_one {n : ℕ} (p : ℕ) (hn : Squa
     n.factorization p ≤ 1 := by
   rcases eq_or_ne n 0 with (rfl | hn')
   · simp
-  rw [multiplicity.squarefree_iff_multiplicity_le_one] at hn
+  rw [multiplicity.squarefree_iff_emultiplicity_le_one] at hn
   by_cases hp : p.Prime
   · have := hn p
-    simp only [multiplicity_eq_factorization hp hn', Nat.isUnit_iff, hp.ne_one, or_false]
-      at this
-    exact mod_cast this
+    rw [← multiplicity_eq_factorization hp hn']
+    simp only [Nat.isUnit_iff, hp.ne_one, or_false] at this
+    exact multiplicity_le_of_emultiplicity_le this
   · rw [factorization_eq_zero_of_non_prime _ hp]
     exact zero_le_one
 
