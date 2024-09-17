@@ -221,7 +221,8 @@ theorem add_def (a b : Nimber) :
 /-- The set in the definition of `Nimber.add` is nonempty. -/
 private theorem add_nonempty (a b : Nimber.{u}) :
     {x | (∃ a' < a, a' + b = x) ∨ ∃ b' < b, a + b' = x}ᶜ.Nonempty :=
-  nonempty_of_not_bddAbove <| compl_nonempty_of_small ((· + b) '' Set.Iio a ∪ (a + ·) '' Set.Iio b)
+  nonempty_of_not_bddAbove <| not_bddAbove_compl_of_small
+    ((· + b) '' Set.Iio a ∪ (a + ·) '' Set.Iio b)
 
 theorem exists_of_lt_add (h : c < a + b) : (∃ a' < a, a' + b = c) ∨ ∃ b' < b, a + b' = c := by
   rw [add_def] at h
@@ -394,8 +395,7 @@ theorem mul_def (a b : Nimber) :
 /-- The set in the definition of `Nimber.mul` is nonempty. -/
 private theorem mul_nonempty (a b : Nimber.{u}) :
     {x | ∃ a' < a, ∃ b' < b, a' * b + a * b' + a' * b' = x}ᶜ.Nonempty := by
-  apply nonempty_of_not_bddAbove
-  convert compl_nonempty_of_small
+  convert nonempty_of_not_bddAbove <| not_bddAbove_compl_of_small
     ((fun x ↦ x.1 * b + a * x.2 + x.1 * x.2) '' Set.Iio a ×ˢ Set.Iio b)
   ext
   simp_rw [Set.mem_setOf_eq, Set.mem_image, Set.mem_prod, Set.mem_Iio, Prod.exists]
