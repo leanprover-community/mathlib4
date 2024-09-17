@@ -356,7 +356,7 @@ def matchRings (l₁ : qNF R₁ M) (l₂ : qNF R₂ M) (r : Q($R₂)) (x : Q($M)
       (Σ l₁' : qNF R M, Q(NF.eval $(l₁'.toNF) = NF.eval $(l₁.toNF)))
       × (Σ l₂' : qNF R M, Q(NF.eval $(l₂'.toNF) = NF.eval $(l₂.toNF)))
       × (Σ r' : Q($R), Q($r' • $x = $r • $x)) := do
-  if ← isDefEq R₁ R₂ then
+  if ← withReducible <| isDefEq R₁ R₂ then
   -- the case when `R₁ = R₂` is handled separately, so as not to require commutativity of that ring
     pure ⟨u₁, R₁, iR₁, iRM₁, ⟨l₁, q(rfl)⟩, ⟨l₂, (q(@rfl _ (NF.eval $(l₂.toNF))):)⟩,
       r, (q(@rfl _ ($r • $x)):)⟩
