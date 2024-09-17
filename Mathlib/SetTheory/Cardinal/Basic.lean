@@ -130,6 +130,10 @@ theorem inductionOn₃ {p : Cardinal → Cardinal → Cardinal → Prop} (c₁ :
     (c₃ : Cardinal) (h : ∀ α β γ, p #α #β #γ) : p c₁ c₂ c₃ :=
   Quotient.inductionOn₃ c₁ c₂ c₃ h
 
+theorem induction_on_pi {ι : Type u} {p : (ι → Cardinal.{v}) → Prop}
+    (f : ι → Cardinal.{v}) (h : ∀ f : ι → Type v, p fun i ↦ #(f i)) : p f :=
+  Quotient.induction_on_pi f h
+
 protected theorem eq : #α = #β ↔ Nonempty (α ≃ β) :=
   Quotient.eq'
 
@@ -763,6 +767,9 @@ theorem mk_sigma_congr_subtype {ι : Type u} {f g : ι → Type v} {S : Set ι}
     (h : ∀ i ∈ S, #(f i) = #(g i)) : #(Σ i : S, f i) = #(Σ i : S, g i) :=
   mk_sigma_congr (Equiv.refl S) (fun i ↦ h i.1 i.2)
 
+theorem mk_sigma_arrow {ι} (α : Type*) (f : ι → Type*) :
+    #(Sigma f → α) = #(Π i, f i → α) := mk_congr <| Equiv.piCurry fun _ _ ↦ α
+
 @[simp]
 theorem sum_const (ι : Type u) (a : Cardinal.{v}) :
     (sum fun _ : ι => a) = lift.{v} #ι * lift.{u} a :=
@@ -971,6 +978,17 @@ theorem prod_eq_zero {ι} (f : ι → Cardinal.{u}) : prod f = 0 ↔ ∃ i, f i 
   simp only [mk_eq_zero_iff, ← mk_pi, isEmpty_pi]
 
 theorem prod_ne_zero {ι} (f : ι → Cardinal) : prod f ≠ 0 ↔ ∀ i, f i ≠ 0 := by simp [prod_eq_zero]
+
+theorem power_sum {ι} (a : Cardinal) (f : ι → Cardinal) :
+    a ^ sum f = prod fun i ↦ a ^ f i := by
+  induction a using Cardinal.inductionOn with | _ α =>
+  induction f using induction_on_pi with | _ f =>
+  simp_rw [prod, sum, power_def]
+  apply mk_congr
+  refine (Equiv.piCurry fun _ _ => α).trans ?_
+  refine Equiv.piCongrRight fun b => ?_
+  refine (Equiv.arrowCongr outMkEquiv (Equiv.refl α)).trans ?_
+  exact outMkEquiv.symm
 
 @[simp]
 theorem lift_prod {ι : Type u} (c : ι → Cardinal.{v}) :
