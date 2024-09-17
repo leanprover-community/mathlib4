@@ -720,7 +720,8 @@ variable {K : ℝ≥0} {f : X → Y} {s t : Set X}
 /-- If `f : X → Y` is `K`-Lipschitz on `s`, then `μH[d] (f '' s) ≤ K ^ d * μH[d] s`. -/
 theorem hausdorffMeasure_image_le (h : LipschitzOnWith K f s) {d : ℝ} (hd : 0 ≤ d) :
     μH[d] (f '' s) ≤ (K : ℝ≥0∞) ^ d * μH[d] s := by
-  simpa only [NNReal.coe_one, one_mul] using h.HoelderOnWith.hausdorffMeasure_image_le zero_lt_one hd
+  simpa only [NNReal.coe_one, one_mul]
+    using h.HoelderOnWith.hausdorffMeasure_image_le zero_lt_one hd
 
 end LipschitzOnWith
 

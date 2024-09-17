@@ -41,7 +41,8 @@ open NNReal ENNReal Topology
 
 section Emetric
 
-variable [PseudoEMetricSpace X] [PseudoEMetricSpace Y] [PseudoEMetricSpace Z]
+variable [PseudoEMetricSpace X] [PseudoEMetricSpace Y] [PseudoEMetricSpace Z] {C r : ℝ≥0}
+  {f : X → Y}
 
 /-- A function `f : X → Y` between two `PseudoEMetricSpace`s is Hölder continuous with constant
 `C : ℝ≥0` and exponent `r : ℝ≥0`, if `edist (f x) (f y) ≤ C * edist x y ^ r` for all `x y : X`. -/
@@ -67,7 +68,7 @@ theorem Set.Subsingleton.HoelderOnWith {s : Set X} (hs : s.Subsingleton) (C r : 
     HoelderOnWith C r f s :=
   hs.induction_on (HoelderOnWith_empty C r f) (HoelderOnWith_singleton C r f)
 
-theorem HoelderOnWith_univ {C r : ℝ≥0} {f : X → Y} : HoelderOnWith C r f univ ↔ HoelderWith C r f := by
+lemma HoelderOnWith_univ : HoelderOnWith C r f univ ↔ HoelderWith C r f := by
   simp only [HoelderOnWith, HoelderWith, mem_univ, true_imp_iff]
 
 @[simp]
