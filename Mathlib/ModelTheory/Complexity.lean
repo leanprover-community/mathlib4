@@ -180,6 +180,49 @@ protected theorem IsLiteral.simpleNot {φ : L.BoundedFormula α n} (hφ : φ.IsL
     rw [hφ.simpleNot_of_not_eq]
     exact hφ.isLiteral
 
+/-- A conjunctive formula is a conjunction of literals. -/
+inductive IsConjunctive : L.BoundedFormula α n → Prop
+  | of_isLiteral {φ : L.BoundedFormula α n} (h : φ.IsLiteral) : IsConjunctive φ
+  | inf {φ ψ : L.BoundedFormula α n} (hφ : IsConjunctive φ) (hψ : IsConjunctive ψ) :
+    IsConjunctive (φ ⊓ ψ)
+
+theorem IsLiteral.isConjunctive {φ : L.BoundedFormula α n} (hφ : φ.IsLiteral) : IsConjunctive φ :=
+  IsConjunctive.of_isLiteral hφ
+
+theorem IsAtomic.isConjunctive {φ : L.BoundedFormula α n} (hφ : φ.IsAtomic) : IsConjunctive φ :=
+  IsLiteral.isConjunctive (IsAtomic.isLiteral hφ)
+
+/-- A disjunctive formula is a disjunction of literals. -/
+inductive IsDisjunctive : L.BoundedFormula α n → Prop
+  | of_isLiteral {φ : L.BoundedFormula α n} (h : φ.IsLiteral) : IsDisjunctive φ
+  | sup {φ ψ : L.BoundedFormula α n} (hφ : IsDisjunctive φ) (hψ : IsDisjunctive ψ) :
+    IsDisjunctive (φ ⊔ ψ)
+
+theorem IsLiteral.isDisjunctive {φ : L.BoundedFormula α n} (hφ : φ.IsLiteral) : IsDisjunctive φ :=
+  IsDisjunctive.of_isLiteral hφ
+
+theorem IsAtomic.isDisjunctive {φ : L.BoundedFormula α n} (hφ : φ.IsAtomic) : IsDisjunctive φ :=
+  IsLiteral.isDisjunctive (IsAtomic.isLiteral hφ)
+
+protected theorem IsConjunctive.simpleNot {φ : L.BoundedFormula α n} (hφ : φ.IsConjunctive) :
+    φ.simpleNot.IsDisjunctive := by
+  induction hφ with
+  | of_isLiteral hφ =>
+    apply IsDisjunctive.of_isLiteral
+    exact IsLiteral.simpleNot hφ
+  | inf hφ hψ hφ_ih hψ_ih =>
+    dsimp only [simpleNot, simpleNotAux]
+    exact IsDisjunctive.sup hφ_ih hψ_ih
+
+protected theorem IsDisjunctive.simpleNot {φ : L.BoundedFormula α n} (hφ : φ.IsDisjunctive) :
+    φ.simpleNot.IsConjunctive := by
+  induction hφ with
+  | of_isLiteral hφ =>
+    apply IsConjunctive.of_isLiteral
+    exact IsLiteral.simpleNot hφ
+  | sup hφ hψ hφ_ih hψ_ih =>
+    dsimp only [simpleNot, simpleNotAux]
+    exact IsConjunctive.inf hφ_ih hψ_ih
 /-- A quantifier-free formula is a formula defined without quantifiers. These are all equivalent
 to boolean combinations of atomic formulas. -/
 inductive IsQF : L.BoundedFormula α n → Prop
