@@ -194,6 +194,20 @@ protected theorem imp {φ ψ φ' ψ' : L.BoundedFormula α n} (h : φ ⇔[T] ψ)
     BoundedFormula.realize_imp]
   exact fun M v xs => imp_congr h.realize_bd_iff h'.realize_bd_iff
 
+protected theorem sup {φ ψ φ' ψ' : L.BoundedFormula α n}
+    (h : φ ⇔[T] ψ) (h' : φ' ⇔[T] ψ') :
+    (φ ⊔ φ') ⇔[T] (ψ ⊔ ψ') := by
+  simp_rw [SemanticallyEquivalent, ModelsBoundedFormula, BoundedFormula.realize_iff,
+    BoundedFormula.realize_sup]
+  exact fun M v xs => or_congr h.realize_bd_iff h'.realize_bd_iff
+
+protected theorem inf {φ ψ φ' ψ' : L.BoundedFormula α n}
+    (h : φ ⇔[T] ψ) (h' : φ' ⇔[T] ψ') :
+    (φ ⊓ φ') ⇔[T] (ψ ⊓ ψ') := by
+  simp_rw [SemanticallyEquivalent, ModelsBoundedFormula, BoundedFormula.realize_iff,
+    BoundedFormula.realize_inf]
+  exact fun M v xs => and_congr h.realize_bd_iff h'.realize_bd_iff
+
 end SemanticallyEquivalent
 
 /-- Semantic equivalence forms an equivalence relation on formulas. -/
@@ -205,7 +219,7 @@ end Theory
 
 namespace BoundedFormula
 
-variable (φ ψ : L.BoundedFormula α n)
+variable (φ ψ χ : L.BoundedFormula α n)
 
 theorem semanticallyEquivalent_not_not : φ ⇔[T] φ.not.not := fun M v xs => by
   simp
@@ -216,14 +230,38 @@ theorem imp_semanticallyEquivalent_not_sup : (φ.imp ψ) ⇔[T] (φ.not ⊔ ψ) 
 theorem sup_semanticallyEquivalent_not_inf_not : (φ ⊔ ψ) ⇔[T] (φ.not ⊓ ψ.not).not :=
   fun M v xs => by simp [imp_iff_not_or]
 
+theorem not_sup_semanticallyEquivalent_inf_not : (φ ⊔ ψ).not ⇔[T] (φ.not ⊓ ψ.not) :=
+  fun M v xs => by simp [imp_iff_not_or]
+
 theorem inf_semanticallyEquivalent_not_sup_not : (φ ⊓ ψ) ⇔[T] (φ.not ⊔ ψ.not).not :=
   fun M v xs => by simp
+
+theorem not_inf_semanticallyEquivalent_sup_not : (φ ⊓ ψ).not ⇔[T] (φ.not ⊔ ψ.not) :=
+  fun M v xs => by simp [imp_iff_not_or]
+
+theorem inf_sup_left_semanticallyEquivalent : χ ⊓ (φ ⊔ ψ) ⇔[T] (χ ⊓ φ) ⊔ (χ ⊓ ψ) :=
+  fun M v xs => by simp [and_or_left]
+
+theorem sup_inf_right_semanticallyEquivalent : (φ ⊔ ψ) ⊓ χ ⇔[T] (φ ⊓ χ) ⊔ (ψ ⊓ χ) :=
+  fun M v xs => by simp [or_and_right]
+
+theorem inf_sup_right_semanticallyEquivalent : (φ ⊓ ψ) ⊔ χ ⇔[T] (φ ⊔ χ) ⊓ (ψ ⊔ χ) :=
+  fun M v xs => by simp [and_or_right]
+
+theorem sup_inf_left_semanticallyEquivalent : χ ⊔ (φ ⊓ ψ) ⇔[T] (χ ⊔ φ) ⊓ (χ ⊔ ψ) :=
+  fun M v xs => by simp [or_and_left]
 
 theorem all_semanticallyEquivalent_not_ex_not (φ : L.BoundedFormula α (n + 1)) :
     φ.all ⇔[T] φ.not.ex.not := fun M v xs => by simp
 
+theorem not_all_semanticallyEquivalent_ex_not (φ : L.BoundedFormula α (n + 1)) :
+    φ.all.not ⇔[T] φ.not.ex := fun M v xs => by simp
+
 theorem ex_semanticallyEquivalent_not_all_not (φ : L.BoundedFormula α (n + 1)) :
     φ.ex ⇔[T] φ.not.all.not := fun M v xs => by simp
+
+theorem not_ex_semanticallyEquivalent_all_not (φ : L.BoundedFormula α (n + 1)) :
+    φ.ex.not ⇔[T] φ.not.all := fun M v xs => by simp
 
 theorem semanticallyEquivalent_all_liftAt : φ ⇔[T] (φ.liftAt 1 n).all :=
   fun M v xs => by
