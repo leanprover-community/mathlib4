@@ -103,19 +103,19 @@ theorem toOrdinal_one : toOrdinal 1 = 1 :=
   rfl
 
 @[simp]
-theorem toOrdinal_eq_zero (a) : toOrdinal a = 0 ↔ a = 0 :=
+theorem toOrdinal_eq_zero {a} : toOrdinal a = 0 ↔ a = 0 :=
   Iff.rfl
 
 @[simp]
-theorem toOrdinal_eq_one (a) : toOrdinal a = 1 ↔ a = 1 :=
+theorem toOrdinal_eq_one {a} : toOrdinal a = 1 ↔ a = 1 :=
   Iff.rfl
 
 @[simp]
-theorem toOrdinal_max {a b : Nimber} : toOrdinal (max a b) = max (toOrdinal a) (toOrdinal b) :=
+theorem toOrdinal_max (a b : Nimber) : toOrdinal (max a b) = max (toOrdinal a) (toOrdinal b) :=
   rfl
 
 @[simp]
-theorem toOrdinal_min {a b : Nimber} : toOrdinal (min a b) = min (toOrdinal a) (toOrdinal b) :=
+theorem toOrdinal_min (a b : Nimber) : toOrdinal (min a b) = min (toOrdinal a) (toOrdinal b) :=
   rfl
 
 theorem succ_def (a : Nimber) : succ a = toNimber (toOrdinal a + 1) :=
@@ -148,8 +148,8 @@ instance (a : Nimber.{u}) : Small.{u} (Set.Iio a) :=
 instance (a : Nimber.{u}) : Small.{u} (Set.Iic a) :=
   Ordinal.small_Iic a
 
-theorem compl_nonempty_of_small (s : Set Nimber.{u}) [Small.{u} s] : Set.Nonempty sᶜ :=
-  Ordinal.compl_nonempty_of_small s
+theorem not_bddAbove_compl_of_small (s : Set Nimber.{u}) [Small.{u} s] : ¬ BddAbove sᶜ :=
+  Ordinal.not_bddAbove_compl_of_small s
 
 end Nimber
 
@@ -157,8 +157,6 @@ theorem not_small_nimber : ¬ Small.{u} Nimber.{max u v} :=
   not_small_ordinal
 
 namespace Ordinal
-
-variable {a b c : Ordinal.{u}}
 
 @[simp]
 theorem toNimber_symm_eq : toNimber.symm = Nimber.toOrdinal :=
@@ -177,11 +175,11 @@ theorem toNimber_one : toNimber 1 = 1 :=
   rfl
 
 @[simp]
-theorem toNimber_eq_zero (a) : toNimber a = 0 ↔ a = 0 :=
+theorem toNimber_eq_zero {a} : toNimber a = 0 ↔ a = 0 :=
   Iff.rfl
 
 @[simp]
-theorem toNimber_eq_one (a) : toNimber a = 1 ↔ a = 1 :=
+theorem toNimber_eq_one {a} : toNimber a = 1 ↔ a = 1 :=
   Iff.rfl
 
 @[simp]
@@ -202,7 +200,7 @@ namespace Nimber
 
 variable {a b c : Nimber.{u}}
 
-/-- Nimber addition is recursively defined so that `a + b` is the smallest number not equal to
+/-- Nimber addition is recursively defined so that `a + b` is the smallest nimber not equal to
 `a' + b` or `a + b'` for `a' < a` and `b' < b`. -/
 -- We write the binders like this so that the termination checker works.
 protected def add (a b : Nimber.{u}) : Nimber.{u} :=
@@ -223,11 +221,11 @@ theorem add_def (a b : Nimber) :
 /-- The set in the definition of `Nimber.add` is nonempty. -/
 private theorem add_nonempty (a b : Nimber.{u}) :
     {x | (∃ a' < a, a' + b = x) ∨ ∃ b' < b, a + b' = x}ᶜ.Nonempty :=
-  compl_nonempty_of_small ((· + b) '' Set.Iio a ∪ (a + ·) '' Set.Iio b)
+  nonempty_of_not_bddAbove <| compl_nonempty_of_small ((· + b) '' Set.Iio a ∪ (a + ·) '' Set.Iio b)
 
 theorem exists_of_lt_add (h : c < a + b) : (∃ a' < a, a' + b = c) ∨ ∃ b' < b, a + b' = c := by
   rw [add_def] at h
-  have := not_mem_of_lt_csInf h ⟨_, bot_mem_lowerBounds _⟩
+  have := not_mem_of_lt_csInf' h
   rwa [Set.mem_compl_iff, not_not] at this
 
 theorem add_le_of_forall_ne (h₁ : ∀ a' < a, a' + b ≠ c) (h₂ : ∀ b' < b, a + b' ≠ c) :
@@ -396,6 +394,7 @@ theorem mul_def (a b : Nimber) :
 /-- The set in the definition of `Nimber.mul` is nonempty. -/
 private theorem mul_nonempty (a b : Nimber.{u}) :
     {x | ∃ a' < a, ∃ b' < b, a' * b + a * b' + a' * b' = x}ᶜ.Nonempty := by
+  apply nonempty_of_not_bddAbove
   convert compl_nonempty_of_small
     ((fun x ↦ x.1 * b + a * x.2 + x.1 * x.2) '' Set.Iio a ×ˢ Set.Iio b)
   ext
@@ -404,7 +403,7 @@ private theorem mul_nonempty (a b : Nimber.{u}) :
 
 theorem exists_of_lt_mul (h : c < a * b) : ∃ a' < a, ∃ b' < b, a' * b + a * b' + a' * b' = c := by
   rw [mul_def] at h
-  have := not_mem_of_lt_csInf h ⟨_, bot_mem_lowerBounds _⟩
+  have := not_mem_of_lt_csInf' h
   rwa [Set.not_mem_compl_iff] at this
 
 theorem mul_le_of_forall_ne (h : ∀ a' < a, ∀ b' < b, a' * b + a * b' + a' * b' ≠ c) :
@@ -461,8 +460,8 @@ protected theorem mul_add (a b c : Nimber) : a * (b + c) = a * b + a * c := by
       rw [← add_assoc]
       exact mul_ne_of_lt _ ha _ h
   · apply add_le_of_forall_ne <;>
-    intro x' hx' <;>
-    obtain ⟨x, hx, y, hy, rfl⟩ := exists_of_lt_mul hx'
+      intro x' hx' <;>
+      obtain ⟨x, hx, y, hy, rfl⟩ := exists_of_lt_mul hx'
     · obtain h | h | h := lt_trichotomy (y + c) (b + c)
       · have H := mul_ne_of_lt _ hx _ h
         rw [Nimber.mul_add x, Nimber.mul_add a, Nimber.mul_add x] at H
