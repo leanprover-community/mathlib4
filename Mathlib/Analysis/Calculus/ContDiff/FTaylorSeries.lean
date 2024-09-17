@@ -345,8 +345,6 @@ theorem hasFTaylorSeriesUpToOn_succ_nat_iff_right {n : ℕ} :
         rw [Nat.cast_le] at hm ⊢
         exact Nat.lt_succ_iff.mp hm
 
-#exit
-
 /-- `p` is a Taylor series of `f` up to `⊤` if and only if `p.shift` is a Taylor series up to `⊤`
 for `p 1`, which is a derivative of `f`. -/
 theorem hasFTaylorSeriesUpToOn_top_iff_right (hN : ∞ ≤ N) :
