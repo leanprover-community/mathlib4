@@ -131,7 +131,7 @@ theorem coe_finsetWalkLengthLT_eq (n : ℕ) (u v : V) :
 
 variable {G}
 
-theorem mem_finsetWalkLengthLT_iff_length_lt {n : ℕ} {u v : V} {p : G.Walk u v} :
+theorem mem_finsetWalkLengthLT_iff {n : ℕ} {u v : V} {p : G.Walk u v} :
     p ∈ G.finsetWalkLengthLT n u v ↔ p.length < n :=
   Set.ext_iff.mp (G.coe_finsetWalkLengthLT_eq n u v) p
 
@@ -175,7 +175,7 @@ instance fintypeSubtypePathLength (u v : V) (n : ℕ) :
 instance fintypeSetPathLengthLT (u v : V) (n : ℕ) :
     Fintype {p : G.Walk u v | p.IsPath ∧ p.length < n} :=
   Fintype.ofFinset ((G.finsetWalkLengthLT n u v).filter Walk.IsPath) <| by
-    simp [mem_finsetWalkLengthLT_iff_length_lt, and_comm]
+    simp [mem_finsetWalkLengthLT_iff, and_comm]
 
 instance fintypeSubtypePathLengthLT (u v : V) (n : ℕ) :
     Fintype {p : G.Walk u v // p.IsPath ∧ p.length < n} :=
