@@ -237,7 +237,7 @@ theorem wellFounded_lt_exact_sequence {β γ : Type*} [PartialOrder β] [Preorde
     (InvImage.wf _ (h₁.wf.prod_lex h₂.wf))⟩
 
 /-- A generalization of the theorem that if `N` is a submodule of `M` and
-  `N` and `M / N` are both Noetherian, then `M` is Noetherian.  -/
+  `N` and `M / N` are both Noetherian, then `M` is Noetherian. -/
 theorem wellFounded_gt_exact_sequence {β γ : Type*} [Preorder β] [PartialOrder γ]
     [WellFoundedGT β] [WellFoundedGT γ] (K : α)
     (f₁ : β → α) (f₂ : α → β) (g₁ : γ → α) (g₂ : α → γ) (gci : GaloisCoinsertion f₁ f₂)
@@ -262,7 +262,7 @@ def infIccOrderIsoIccSup (a b : α) : Set.Icc (a ⊓ b) a ≃o Set.Icc b (a ⊔ 
         change a ⊓ ↑x ⊔ b = ↑x
         rw [inf_comm, inf_sup_assoc_of_le _ x.prop.1, inf_eq_left.2 x.prop.2])
   map_rel_iff' := @fun x y => by
-    simp only [Subtype.mk_le_mk, Equiv.coe_fn_mk, and_true_iff, le_sup_right]
+    simp only [Subtype.mk_le_mk, Equiv.coe_fn_mk, le_sup_right]
     rw [← Subtype.coe_le_coe]
     refine ⟨fun h => ?_, fun h => sup_le_sup_right h _⟩
     rw [← sup_eq_right.2 x.prop.1, inf_sup_assoc_of_le _ x.prop.2, sup_comm, ←

@@ -139,7 +139,7 @@ theorem coe_inv_coe' {c d : S.objs} (p : c ⟶ d) :
     (CategoryTheory.inv p).val = CategoryTheory.inv p.val := by
   simp only [← inv_eq_inv, coe_inv_coe]
 
-/-- The embedding of the coerced subgroupoid to its parent-/
+/-- The embedding of the coerced subgroupoid to its parent -/
 def hom : S.objs ⥤ C where
   obj c := c.val
   map f := f.val
@@ -292,7 +292,7 @@ theorem IsWide.id_mem {S : Subgroupoid C} (Sw : S.IsWide) (c : C) : 𝟙 c ∈ S
 theorem IsWide.eqToHom_mem {S : Subgroupoid C} (Sw : S.IsWide) {c d : C} (h : c = d) :
     eqToHom h ∈ S.arrows c d := by cases h; simp only [eqToHom_refl]; apply Sw.id_mem c
 
-/-- A subgroupoid is normal if it is wide and satisfies the expected stability under conjugacy. -/
+/-- A subgroupoid is normal if it is wide and satisfies the expected stability under conjugacy. -/
 structure IsNormal extends IsWide S : Prop where
   conj : ∀ {c d} (p : c ⟶ d) {γ : c ⟶ c}, γ ∈ S.arrows c c → Groupoid.inv p ≫ γ ≫ p ∈ S.arrows d d
 
@@ -540,8 +540,7 @@ theorem isTotallyDisconnected_iff :
     S.IsTotallyDisconnected ↔ ∀ c d, (S.arrows c d).Nonempty → c = d := by
   constructor
   · rintro h c d ⟨f, fS⟩
-    have := h ⟨c, mem_objs_of_src S fS⟩ ⟨d, mem_objs_of_tgt S fS⟩ ⟨f, fS⟩
-    exact congr_arg Subtype.val this
+    exact congr_arg Subtype.val <| h ⟨c, mem_objs_of_src S fS⟩ ⟨d, mem_objs_of_tgt S fS⟩ ⟨f, fS⟩
   · rintro h ⟨c, hc⟩ ⟨d, hd⟩ ⟨f, fS⟩
     simp only [Subtype.mk_eq_mk]
     exact h c d ⟨f, fS⟩

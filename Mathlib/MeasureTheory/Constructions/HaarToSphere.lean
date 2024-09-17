@@ -74,8 +74,8 @@ theorem toSphere_apply_univ : μ.toSphere univ = dim E * μ (ball 0 1) := by
 instance : IsFiniteMeasure μ.toSphere where
   measure_univ_lt_top := by
     rw [toSphere_apply_univ']
-    exact ENNReal.mul_lt_top (ENNReal.natCast_ne_top _) <|
-      ne_top_of_le_ne_top measure_ball_lt_top.ne <| measure_mono diff_subset
+    exact ENNReal.mul_lt_top (ENNReal.natCast_lt_top _) <|
+      measure_ball_lt_top.trans_le' <| measure_mono diff_subset
 
 /-- The measure on `(0, +∞)` that has density `(· ^ n)` with respect to the Lebesgue measure. -/
 def volumeIoiPow (n : ℕ) : Measure (Ioi (0 : ℝ)) :=

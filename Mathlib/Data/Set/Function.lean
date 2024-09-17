@@ -110,6 +110,17 @@ theorem restrict_extend_compl_range (f : α → β) (g : α → γ) (g' : β →
   classical
   exact restrict_dite_compl _ _
 
+/-- If a function `f` is restricted to a set `t`, and `s ⊆ t`, this is the restriction to `s`. -/
+@[simp]
+def restrict₂ {s t : Set α} (hst : s ⊆ t) (f : ∀ a : t, π a) : ∀ a : s, π a :=
+  fun x => f ⟨x.1, hst x.2⟩
+
+theorem restrict₂_comp_restrict {s t : Set α} (hst : s ⊆ t) :
+    (restrict₂ (π := π) hst) ∘ t.restrict = s.restrict := rfl
+
+theorem restrict₂_comp_restrict₂ {s t u : Set α} (hst : s ⊆ t) (htu : t ⊆ u) :
+    (restrict₂ (π := π) hst) ∘ (restrict₂ htu) = restrict₂ (hst.trans htu) := rfl
+
 theorem range_extend_subset (f : α → β) (g : α → γ) (g' : β → γ) :
     range (extend f g g') ⊆ range g ∪ g' '' (range f)ᶜ := by
   classical
@@ -253,7 +264,7 @@ theorem EqOn.congr_strictAntiOn (h : s.EqOn f₁ f₂) : StrictAntiOn f₁ s ↔
 
 end Order
 
-/-! ### Monotonicity lemmas-/
+/-! ### Monotonicity lemmas -/
 section Mono
 
 variable {s s₁ s₂ : Set α} {f f₁ f₂ : α → β} [Preorder α] [Preorder β]
@@ -303,8 +314,9 @@ theorem MapsTo.val_restrict_apply (h : MapsTo f s t) (x : s) : (h.restrict f s t
 
 theorem MapsTo.coe_iterate_restrict {f : α → α} (h : MapsTo f s s) (x : s) (k : ℕ) :
     h.restrict^[k] x = f^[k] x := by
-  induction' k with k ih; · simp
-  simp only [iterate_succ', comp_apply, val_restrict_apply, ih]
+  induction k with
+  | zero => simp
+  | succ k ih => simp only [iterate_succ', comp_apply, val_restrict_apply, ih]
 
 /-- Restricting the domain and then the codomain is the same as `MapsTo.restrict`. -/
 @[simp]
@@ -379,9 +391,9 @@ theorem MapsTo.iterate_restrict {f : α → α} {s : Set α} (h : MapsTo f s s) 
     (h.restrict f s s)^[n] = (h.iterate n).restrict _ _ _ := by
   funext x
   rw [Subtype.ext_iff, MapsTo.val_restrict_apply]
-  induction' n with n ihn generalizing x
-  · rfl
-  · simp [Nat.iterate, ihn]
+  induction n generalizing x with
+  | zero => rfl
+  | succ n ihn => simp [Nat.iterate, ihn]
 
 lemma mapsTo_of_subsingleton' [Subsingleton β] (f : α → β) (h : s.Nonempty → t.Nonempty) :
     MapsTo f s t :=
@@ -415,6 +427,9 @@ theorem mapsTo_union : MapsTo f (s₁ ∪ s₂) t ↔ MapsTo f s₁ t ∧ MapsTo
 
 theorem MapsTo.inter (h₁ : MapsTo f s t₁) (h₂ : MapsTo f s t₂) : MapsTo f s (t₁ ∩ t₂) := fun _ hx =>
   ⟨h₁ hx, h₂ hx⟩
+
+lemma MapsTo.insert (h : MapsTo f s t) (x : α) : MapsTo f (insert x s) (insert (f x) t) := by
+  simpa [← singleton_union] using h.mono_right subset_union_right
 
 theorem MapsTo.inter_inter (h₁ : MapsTo f s₁ t₁) (h₂ : MapsTo f s₂ t₂) :
     MapsTo f (s₁ ∩ s₂) (t₁ ∩ t₂) := fun _ hx => ⟨h₁ hx.1, h₂ hx.2⟩
@@ -1636,6 +1651,10 @@ theorem antitoneOn_of_rightInvOn_of_mapsTo [PartialOrder α] [LinearOrder β]
     (φψs : Set.RightInvOn ψ φ s) (ψts : Set.MapsTo ψ s t) : AntitoneOn ψ s :=
   (monotoneOn_of_rightInvOn_of_mapsTo hφ.dual_left φψs ψts).dual_right
 
+lemma apply_eq_of_range_eq_singleton {f : α → β} {b : β} (h : range f = {b}) (a : α) :
+    f a = b := by
+  simpa only [h, mem_singleton_iff] using mem_range_self (f := f) a
+
 end Function
 
 /-! ### Equivalences, permutations -/
@@ -1740,3 +1759,5 @@ lemma bijOn_swap (ha : a ∈ s) (hb : b ∈ s) : BijOn (swap a b) s s :=
     simp [*, swap_apply_of_ne_of_ne]
 
 end Equiv
+
+set_option linter.style.longFile 1900

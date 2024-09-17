@@ -39,7 +39,7 @@ attribute [nolint docBlame] BialgEquiv.toCoalgEquiv
 notation:50 A " ≃ₐc[" R "] " B => BialgEquiv R A B
 
 /-- `BialgEquivClass F R A B` asserts `F` is a type of bundled bialgebra equivalences
-from `A` to `B`.  -/
+from `A` to `B`. -/
 class BialgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R]
     [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] [EquivLike F A B]

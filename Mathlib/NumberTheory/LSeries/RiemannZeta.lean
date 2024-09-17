@@ -158,7 +158,7 @@ def RiemannHypothesis : Prop :=
   ∀ (s : ℂ) (_ : riemannZeta s = 0) (_ : ¬∃ n : ℕ, s = -2 * (n + 1)) (_ : s ≠ 1), s.re = 1 / 2
 
 /-!
-## Relating the Mellin transform to the Dirichlet series
+## Relating the Mellin transform to the Dirichlet series
 -/
 
 theorem completedZeta_eq_tsum_of_one_lt_re {s : ℂ} (hs : 1 < re s) :
@@ -182,7 +182,7 @@ theorem zeta_eq_tsum_one_div_nat_cpow {s : ℂ} (hs : 1 < re s) :
     ofReal_one] using (hasSum_nat_cosZeta 0 hs).tsum_eq.symm
 
 /-- Alternate formulation of `zeta_eq_tsum_one_div_nat_cpow` with a `+ 1` (to avoid relying
-on mathlib's conventions for `0 ^ s`).  -/
+on mathlib's conventions for `0 ^ s`). -/
 theorem zeta_eq_tsum_one_div_nat_add_one_cpow {s : ℂ} (hs : 1 < re s) :
     riemannZeta s = ∑' n : ℕ, 1 / (n + 1 : ℂ) ^ s := by
   have := zeta_eq_tsum_one_div_nat_cpow hs

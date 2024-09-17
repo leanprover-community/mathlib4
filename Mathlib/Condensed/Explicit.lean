@@ -19,9 +19,9 @@ We give the following three explicit descriptions of condensed objects:
 * `Condensed.ofSheafStonean`: A finite-product-preserving presheaf on `CompHaus`, satisfying
   `EqualizerCondition`.
 
-The property `EqualizerCondition` is defined in `Mathlib/CategoryTheory/Sites/RegularSheaves.lean`
+The property `EqualizerCondition` is defined in `Mathlib/CategoryTheory/Sites/RegularSheaves.lean`
 and it says that for any effective epi `X ⟶ B` (in this case that is equivalent to being a
-continuous surjection), the presheaf `F` exhibits `F(B)` as the equalizer of the two maps
+continuous surjection), the presheaf `F` exhibits `F(B)` as the equalizer of the two maps
 `F(X) ⇉ F(X ×_B X)`
 
 We also give variants for condensed objects in concrete categories whose forgetful functor
@@ -150,17 +150,17 @@ end Condensed
 
 namespace CondensedSet
 
-/-- A `CondensedSet` version of `Condensed.ofSheafStonean`. -/
+/-- A `CondensedSet` version of `Condensed.ofSheafStonean`. -/
 noncomputable abbrev ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ Type (u+1)) [PreservesFiniteProducts F] :
     CondensedSet :=
   Condensed.ofSheafStonean F
 
-/-- A `CondensedSet` version of `Condensed.ofSheafProfinite`. -/
+/-- A `CondensedSet` version of `Condensed.ofSheafProfinite`. -/
 noncomputable abbrev ofSheafProfinite (F : Profinite.{u}ᵒᵖ ⥤ Type (u+1))
     [PreservesFiniteProducts F] (hF : EqualizerCondition F) : CondensedSet :=
   Condensed.ofSheafProfinite F hF
 
-/-- A `CondensedSet` version of `Condensed.ofSheafCompHaus`. -/
+/-- A `CondensedSet` version of `Condensed.ofSheafCompHaus`. -/
 noncomputable abbrev ofSheafCompHaus (F : CompHaus.{u}ᵒᵖ ⥤ Type (u+1))
     [PreservesFiniteProducts F] (hF : EqualizerCondition F) : CondensedSet :=
   Condensed.ofSheafCompHaus F hF
@@ -171,19 +171,19 @@ namespace CondensedMod
 
 variable (R : Type (u+1)) [Ring R]
 
-/-- A `CondensedMod` version of `Condensed.ofSheafStonean`. -/
+/-- A `CondensedMod` version of `Condensed.ofSheafStonean`. -/
 noncomputable abbrev ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ ModuleCat.{u+1} R)
     [PreservesFiniteProducts F] : CondensedMod R :=
   haveI : HasLimitsOfSize.{u, u+1} (ModuleCat R) := hasLimitsOfSizeShrink.{u, u+1, u+1, u+1} _
   Condensed.ofSheafStonean F
 
-/-- A `CondensedMod` version of `Condensed.ofSheafProfinite`. -/
+/-- A `CondensedMod` version of `Condensed.ofSheafProfinite`. -/
 noncomputable abbrev ofSheafProfinite (F : Profinite.{u}ᵒᵖ ⥤ ModuleCat.{u+1} R)
     [PreservesFiniteProducts F] (hF : EqualizerCondition F) : CondensedMod R :=
   haveI : HasLimitsOfSize.{u, u+1} (ModuleCat R) := hasLimitsOfSizeShrink.{u, u+1, u+1, u+1} _
   Condensed.ofSheafProfinite F hF
 
-/-- A `CondensedMod` version of `Condensed.ofSheafCompHaus`. -/
+/-- A `CondensedMod` version of `Condensed.ofSheafCompHaus`. -/
 noncomputable abbrev ofSheafCompHaus (F : CompHaus.{u}ᵒᵖ ⥤ ModuleCat.{u+1} R)
     [PreservesFiniteProducts F] (hF : EqualizerCondition F) : CondensedMod R :=
   Condensed.ofSheafCompHaus F hF

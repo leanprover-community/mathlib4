@@ -1802,3 +1802,5 @@ theorem lowerClosure_prod (s : Set α) (t : Set β) :
   simp [Prod.le_def, @and_and_and_comm _ (_ ∈ t)]
 
 end Preorder
+
+set_option linter.style.longFile 1900

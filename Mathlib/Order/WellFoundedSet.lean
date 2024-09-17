@@ -167,10 +167,10 @@ theorem wellFoundedOn_iff_no_descending_seq :
   · rintro ⟨⟨f, hf⟩⟩
     have H : ∀ n, f n ∈ s := fun n => (hf.2 n.lt_succ_self).2.2
     refine ⟨⟨f, ?_⟩, H⟩
-    simpa only [H, and_true_iff] using @hf
+    simpa only [H, and_true] using @hf
   · rintro ⟨⟨f, hf⟩, hfs : ∀ n, f n ∈ s⟩
     refine ⟨⟨f, ?_⟩⟩
-    simpa only [hfs, and_true_iff] using @hf
+    simpa only [hfs, and_true] using @hf
 
 theorem WellFoundedOn.union (hs : s.WellFoundedOn r) (ht : t.WellFoundedOn r) :
     (s ∪ t).WellFoundedOn r := by
@@ -310,7 +310,7 @@ theorem Subsingleton.partiallyWellOrderedOn (hs : s.Subsingleton) : PartiallyWel
 theorem partiallyWellOrderedOn_insert :
     PartiallyWellOrderedOn (insert a s) r ↔ PartiallyWellOrderedOn s r := by
   simp only [← singleton_union, partiallyWellOrderedOn_union,
-    partiallyWellOrderedOn_singleton, true_and_iff]
+    partiallyWellOrderedOn_singleton, true_and]
 
 protected theorem PartiallyWellOrderedOn.insert (h : PartiallyWellOrderedOn s r) (a : α) :
     PartiallyWellOrderedOn (insert a s) r :=
@@ -431,7 +431,7 @@ protected theorem Subsingleton.isPWO (hs : s.Subsingleton) : IsPWO s := hs.finit
 
 @[simp]
 theorem isPWO_insert {a} : IsPWO (insert a s) ↔ IsPWO s := by
-  simp only [← singleton_union, isPWO_union, isPWO_singleton, true_and_iff]
+  simp only [← singleton_union, isPWO_union, isPWO_singleton, true_and]
 
 protected theorem IsPWO.insert (h : IsPWO s) (a : α) : IsPWO (insert a s) :=
   isPWO_insert.2 h
@@ -444,7 +444,7 @@ protected theorem Subsingleton.isWF (hs : s.Subsingleton) : IsWF s := hs.isPWO.i
 
 @[simp]
 theorem isWF_insert {a} : IsWF (insert a s) ↔ IsWF s := by
-  simp only [← singleton_union, isWF_union, isWF_singleton, true_and_iff]
+  simp only [← singleton_union, isWF_union, isWF_singleton, true_and]
 
 protected theorem IsWF.insert (h : IsWF s) (a : α) : IsWF (insert a s) :=
   isWF_insert.2 h
@@ -468,7 +468,7 @@ protected theorem Subsingleton.wellFoundedOn (hs : s.Subsingleton) : s.WellFound
 
 @[simp]
 theorem wellFoundedOn_insert : WellFoundedOn (insert a s) r ↔ WellFoundedOn s r := by
-  simp only [← singleton_union, wellFoundedOn_union, wellFoundedOn_singleton, true_and_iff]
+  simp only [← singleton_union, wellFoundedOn_union, wellFoundedOn_singleton, true_and]
 
 protected theorem WellFoundedOn.insert (h : WellFoundedOn s r) (a : α) :
     WellFoundedOn (insert a s) r :=
@@ -695,7 +695,7 @@ theorem iff_not_exists_isMinBadSeq (rk : α → ℕ) {s : Set α} :
 /-- Higman's Lemma, which states that for any reflexive, transitive relation `r` which is
   partially well-ordered on a set `s`, the relation `List.SublistForall₂ r` is partially
   well-ordered on the set of lists of elements of `s`. That relation is defined so that
-  `List.SublistForall₂ r l₁ l₂` whenever `l₁` related pointwise by `r` to a sublist of `l₂`.  -/
+  `List.SublistForall₂ r l₁ l₂` whenever `l₁` related pointwise by `r` to a sublist of `l₂`. -/
 theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsRefl α r] [IsTrans α r]
     {s : Set α} (h : s.PartiallyWellOrderedOn r) :
     { l : List α | ∀ x, x ∈ l → x ∈ s }.PartiallyWellOrderedOn (List.SublistForall₂ r) := by

@@ -111,7 +111,7 @@ def homMk {f f' : StructuredArrow S T} (g : f.right ⟶ f'.right)
     simpa using w.symm
 
 /- Porting note: it appears the simp lemma is not getting generated but the linter
-picks up on it (seems like a bug). Either way simp solves it.  -/
+picks up on it (seems like a bug). Either way simp solves it. -/
 attribute [-simp, nolint simpNF] homMk_left
 
 theorem homMk_surjective {f f' : StructuredArrow S T} (φ : f ⟶ f') :
@@ -120,7 +120,7 @@ theorem homMk_surjective {f f' : StructuredArrow S T} (φ : f ⟶ f') :
   ⟨φ.right, StructuredArrow.w φ, rfl⟩
 
 /-- Given a structured arrow `X ⟶ T(Y)`, and an arrow `Y ⟶ Y'`, we can construct a morphism of
-    structured arrows given by `(X ⟶ T(Y)) ⟶ (X ⟶ T(Y) ⟶ T(Y'))`.  -/
+    structured arrows given by `(X ⟶ T(Y)) ⟶ (X ⟶ T(Y) ⟶ T(Y'))`. -/
 @[simps]
 def homMk' (f : StructuredArrow S T) (g : f.right ⟶ Y') : f ⟶ mk (f.hom ≫ T.map g) where
   left := 𝟙 _
