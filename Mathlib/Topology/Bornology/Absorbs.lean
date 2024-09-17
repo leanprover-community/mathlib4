@@ -22,6 +22,9 @@ We formulate it in a more general settings for two reasons:
 - some proofs look nicer with this definition than with something like
   `∃ r : ℝ, ∀ a : R, r ≤ ‖a‖ → B ⊆ a • A`.
 
+If `M` is a `GroupWithZero` (e.g., a division ring),
+the sets absorbing a given set form a filter, see `Filter.absorbing`.
+
 ## Implementation notes
 
 For now, all theorems assume that we deal with (a generalization of) a module over a division ring.
