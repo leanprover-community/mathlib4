@@ -468,7 +468,7 @@ def basisModTorsion : Basis (Fin (rank K)) ℤ (Additive ((𝓞 K)ˣ ⧸ (torsio
 
 /-- The basis of the `unitLattice` obtained by mapping `basisModTorsion` via `logEmbedding`. -/
 def basisUnitLattice : Basis (Fin (rank K)) ℤ (unitLattice K) :=
-  Basis.map (basisModTorsion K) (logEmbeddingEquiv K)
+  (basisModTorsion K).map (logEmbeddingEquiv K)
 
 /-- A fundamental system of units of `K`. The units of `fundSystem` are arbitrary lifts of the
 units in `basisModTorsion`. -/
@@ -479,7 +479,7 @@ def fundSystem : Fin (rank K) → (𝓞 K)ˣ :=
 theorem fundSystem_mk (i : Fin (rank K)) :
     Additive.ofMul ⟦fundSystem K i⟧ = (basisModTorsion K i) := by
   rw [fundSystem, Equiv.apply_eq_iff_eq_symm_apply, @Quotient.mk_eq_iff_out,
-    Quotient.out', Quotient.out_equiv_out]
+    Quotient.out', Quotient.out_equiv_out, Additive.ofMul_symm_eq]
   rfl
 
 theorem logEmbedding_fundSystem (i : Fin (rank K)) :
