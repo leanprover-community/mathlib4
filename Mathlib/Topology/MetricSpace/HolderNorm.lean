@@ -57,22 +57,20 @@ def MemHolder (r : ℝ≥0) (f : X → Y) : Prop := ∃ C, HolderWith C r f
 
 lemma HolderWith.memHolder {C : ℝ≥0} (hf : HolderWith C r f) : MemHolder r f := ⟨C, hf⟩
 
-lemma MemHolder.eHolderNorm_lt_top (hf : MemHolder r f) : eHolderNorm r f < ∞ :=
-  let ⟨C, hC⟩ := hf; iInf_lt_top.2 ⟨C, iInf_lt_top.2 ⟨hC, coe_lt_top⟩⟩
-
-@[simp] lemma eLHolderNorm_lt_top : eHolderNorm r f < ∞ ↔ MemHolder r f := by
-  refine ⟨MemHolder.eHolderNorm_lt_top, fun h => ?_⟩
+@[simp] lemma eHolderNorm_lt_top_iff : eHolderNorm r f < ∞ ↔ MemHolder r f := by
+  refine ⟨fun h => ?_,
+    fun hf => let ⟨C, hC⟩ := hf; iInf_lt_top.2 ⟨C, iInf_lt_top.2 ⟨hC, coe_lt_top⟩⟩⟩
   simp_rw [eHolderNorm, iInf_lt_top] at h
   exact let ⟨C, hC, _⟩ := h; ⟨C, hC⟩
 
-lemma eHolderNorm_ne_top : eHolderNorm r f ≠ ∞ ↔ MemHolder r f := by
-  rw [memHolder_iff, lt_top_iff_ne_top]
+lemma eHolderNorm_ne_top_iff : eHolderNorm r f ≠ ∞ ↔ MemHolder r f := by
+  rw [← eHolderNorm_lt_top_iff, lt_top_iff_ne_top]
 
 @[simp] lemma eHolderNorm_eq_top : eHolderNorm r f = ∞ ↔ ¬ MemHolder r f := by
-  rw [memHolder_iff', not_not]
+  rw [← eHolderNorm_ne_top_iff, not_not]
 
-protected alias ⟨_, MemHolder.eHolderNorm_lt_top⟩ := eHolderNorm_lt_top
-protected alias ⟨_, MemHolder.eHolderNorm_ne_top⟩ := eHolderNorm_ne_top
+protected alias ⟨_, MemHolder.eHolderNorm_lt_top⟩ := eHolderNorm_lt_top_iff
+protected alias ⟨_, MemHolder.eHolderNorm_ne_top⟩ := eHolderNorm_ne_top_iff
 
 variable (X) in
 lemma eHolderNorm_const (r : ℝ≥0) (c : Y) : eHolderNorm r (Function.const X c) = 0 := by
@@ -100,7 +98,7 @@ lemma memHolder_const {c : Y} : MemHolder r (Function.const X c) :=
 
 @[simp]
 lemma memHolder_zero [Zero Y] : MemHolder r (0 : X → Y) :=
-  memHolder_const X
+  memHolder_const
 
 end PseudoEMetricSpace
 
@@ -194,7 +192,7 @@ lemma eHolderNorm_add_le :
     rw [← hf.coe_nnHolderNorm_eq_eHolderNorm, ← hg.coe_nnHolderNorm_eq_eHolderNorm, ← coe_add]
     exact (hf.add hg).holderWith.eHolderNorm_le.trans <|
       coe_le_coe.2 (hf.holderWith.add hg.holderWith).nnholderNorm_le
-  · rw [Classical.not_and_iff_or_not_not, not_memHolder, not_memHolder] at hfg
+  · rw [Classical.not_and_iff_or_not_not, ← eHolderNorm_eq_top, ← eHolderNorm_eq_top] at hfg
     obtain (h | h) := hfg
     all_goals simp [h]
 
@@ -212,12 +210,12 @@ lemma eHolderNorm_smul {α} [NormedDivisionRing α] [Module α Y] [BoundedSMul �
         ENNReal.le_div_iff_mul_le (Or.inl <| coe_ne_zero.2 hc) <| Or.inl coe_ne_top,
         mul_comm, ← smul_eq_mul, ← ENNReal.smul_def, ← edist_smul₀, ← Pi.smul_apply,
         ← Pi.smul_apply]
-      exact (hf.smul c).holderWith x₁ x₂
-  · rw [not_memHolder] at hf
-    rw [hf, mul_top <| coe_ne_zero.2 hc, ← not_memHolder]
+      exact hf.smul.holderWith x₁ x₂
+  · rw [← eHolderNorm_eq_top] at hf
+    rw [hf, mul_top <| coe_ne_zero.2 hc, eHolderNorm_eq_top]
     rw [nnnorm_eq_zero] at hc
     intro h
-    have := h.smul c⁻¹
+    have := h.smul (c := c⁻¹)
     rw [inv_smul_smul₀ hc] at this
     exact this.eHolderNorm_lt_top.ne hf
 
