@@ -13,7 +13,7 @@ require "leanprover-community" / "aesop" @ git "master"
 require "leanprover-community" / "proofwidgets" @ git "v0.0.42"
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
-  from git "https://github.com/leanprover-community/LeanSearchClient" @ "main"
+  from git "https://github.com/leanprover-community/LeanSearchClient" @ "5f3c33d7f641d26bd013d8bb4cafcb5ccce53dc4"
 
 /-!
 ## Options for building mathlib
