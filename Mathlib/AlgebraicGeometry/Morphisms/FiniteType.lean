@@ -47,6 +47,9 @@ instance (priority := 900) locallyOfFiniteType_of_isOpenImmersion [IsOpenImmersi
     LocallyOfFiniteType f :=
   HasRingHomProperty.of_isOpenImmersion
 
+instance : MorphismProperty.IsStableUnderComposition @LocallyOfFiniteType :=
+  HasRingHomProperty.stableUnderComposition RingHom.finiteType_stableUnderComposition
+
 instance locallyOfFiniteType_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [hf : LocallyOfFiniteType f] [hg : LocallyOfFiniteType g] : LocallyOfFiniteType (f ≫ g) :=
   MorphismProperty.comp_mem _ f g hf hg
