@@ -60,22 +60,19 @@ lemma HolderWith.memHolder {C : ℝ≥0} (hf : HolderWith C r f) : MemHolder r f
 lemma MemHolder.eHolderNorm_lt_top (hf : MemHolder r f) : eHolderNorm r f < ∞ :=
   let ⟨C, hC⟩ := hf; iInf_lt_top.2 ⟨C, iInf_lt_top.2 ⟨hC, coe_lt_top⟩⟩
 
-lemma memHolder_iff : MemHolder r f ↔ eHolderNorm r f < ∞ := by
+@[simp] lemma eLHolderNorm_lt_top : eHolderNorm r f < ∞ ↔ MemHolder r f := by
   refine ⟨MemHolder.eHolderNorm_lt_top, fun h => ?_⟩
   simp_rw [eHolderNorm, iInf_lt_top] at h
   exact let ⟨C, hC, _⟩ := h; ⟨C, hC⟩
 
-lemma memHolder_iff' : MemHolder r f ↔ eHolderNorm r f ≠ ∞ := by
+lemma eHolderNorm_ne_top : eHolderNorm r f ≠ ∞ ↔ MemHolder r f := by
   rw [memHolder_iff, lt_top_iff_ne_top]
 
-lemma not_memHolder : ¬ MemHolder r f ↔ eHolderNorm r f = ∞ := by
+@[simp] lemma eHolderNorm_eq_top : eHolderNorm r f = ∞ ↔ ¬ MemHolder r f := by
   rw [memHolder_iff', not_not]
 
-lemma MemHolder.lt_top (hf : MemHolder r f) : eHolderNorm r f < ∞ :=
-  hf.eHolderNorm_lt_top
-
-lemma MemHolder.ne_top (hf : MemHolder r f) : eHolderNorm r f ≠ ∞ :=
-  hf.eHolderNorm_lt_top.ne
+protected alias ⟨_, MemHolder.eHolderNorm_lt_top⟩ := eHolderNorm_lt_top
+protected alias ⟨_, MemHolder.eHolderNorm_ne_top⟩ := eHolderNorm_ne_top
 
 variable (X) in
 lemma eHolderNorm_const (r : ℝ≥0) (c : Y) : eHolderNorm r (Function.const X c) = 0 := by
@@ -97,11 +94,11 @@ lemma HolderWith.eHolderNorm_le {C : ℝ≥0} (hf : HolderWith C r f) :
     eHolderNorm r f ≤ C :=
   iInf₂_le C hf
 
-variable (X) in
+@[simp]
 lemma memHolder_const {c : Y} : MemHolder r (Function.const X c) :=
   (HolderWith.const (C := 0)).memHolder
 
-variable (X) in
+@[simp]
 lemma memHolder_zero [Zero Y] : MemHolder r (0 : X → Y) :=
   memHolder_const X
 
@@ -111,7 +108,7 @@ section MetricSpace
 
 variable [MetricSpace X] [EMetricSpace Y]
 
-lemma eHolderNorm_eq_zero_iff {r : ℝ≥0} {f : X → Y} :
+lemma eHolderNorm_eq_zero {r : ℝ≥0} {f : X → Y} :
     eHolderNorm r f = 0 ↔ ∀ x₁ x₂, f x₁ = f x₂ := by
   constructor
   · refine fun h x₁ x₂ => ?_
@@ -186,12 +183,11 @@ variable {C r : ℝ≥0} {f g : X → Y}
 lemma MemHolder.add (hf : MemHolder r f) (hg : MemHolder r g) : MemHolder r (f + g) :=
   (hf.holderWith.add hg.holderWith).memHolder
 
-lemma MemHolder.smul {α} [NormedDivisionRing α] [Module α Y] [BoundedSMul α Y]
-    (c : α) (hf : MemHolder r f) : MemHolder r (c • f) :=
+lemma MemHolder.smul {𝕜} [NormedDivisionRing 𝕜] [Module 𝕜 Y] [BoundedSMul 𝕜 Y]
+    {c : 𝕜} (hf : MemHolder r f) : MemHolder r (c • f) :=
   (hf.holderWith.smul c).memHolder
 
-variable (r f g) in
-lemma eHolderNorm_add :
+lemma eHolderNorm_add_le :
     eHolderNorm r (f + g) ≤ eHolderNorm r f + eHolderNorm r g := by
   by_cases hfg : MemHolder r f  ∧ MemHolder r g
   · obtain ⟨hf, hg⟩ := hfg
