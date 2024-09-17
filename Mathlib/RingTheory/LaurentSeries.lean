@@ -28,9 +28,10 @@ import Mathlib.Topology.UniformSpace.Cauchy
 the underlying `RatFunc.coeAlgHom`.
 * Study of the `X`-Adic valuation on the ring of Laurent series over a field
 * In `uniformContinuous_coeff` we show that sending a Laurent series to its `d`th coefficient in
-uniformly continuous, ensuring that it sends Cauchy filters in `LaurentSeries K` to Cauchy filters
-in `K`: since this latter is given the discrete topology, this provides an element in `K` that
-serves as `d`th coefficient of the Laurent series to which the Cauchy filter converges.
+uniformly continuous, ensuring that it sends a Cauchy filter `ℱ` in `LaurentSeries K` to a Cauchy
+filter in `K`: since this latter is given the discrete topology, this provides an element
+`Cauchy.coeff ℱ d` in `K` that serves as `d`th coefficient of the Laurent series to which the
+`ℱ` converges.
 
 ## Main Results
 * Basic properties of Hasse derivatives
@@ -641,8 +642,6 @@ theorem uniformContinuous_coeff {uK : UniformSpace K} (h : uK = ⊥) (d : ℤ) :
 in `K` converges to a principal filter -/
 def Cauchy.coeff {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) : ℤ → K :=
   let _ : UniformSpace K := ⊥
-  -- fun d ↦ cauchy_discrete_is_constant rfl (hℱ.map (uniformContinuous_coeff rfl d))
-  -- let 𝒦 (d : ℤ):= hℱ.map (uniformContinuous_coeff rfl d)
   fun d ↦ UniformSpace.DiscreteUnif.cauchy_const rfl <| hℱ.map (uniformContinuous_coeff rfl d)
 
 theorem Cauchy.coeff_tendsto {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) (D : ℤ) :
