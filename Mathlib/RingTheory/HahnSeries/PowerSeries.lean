@@ -174,7 +174,7 @@ theorem coeff_toMvPowerSeries {f : HahnSeries (σ →₀ ℕ) R} {n : σ →₀ 
   rfl
     (HahnSeries.toMvPowerSeries.symm f).coeff n = MvPowerSeries.coeff R n f :=
   rfl
- 
+
 end Semiring
 
 section Algebra

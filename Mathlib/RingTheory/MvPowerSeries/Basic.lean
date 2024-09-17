@@ -158,7 +158,7 @@ theorem coeff_zero (n : σ →₀ ℕ) : coeff R n (0 : MvPowerSeries σ R) = 0 
   rfl
 
 theorem eq_zero_iff_forall_coeff_zero (f : MvPowerSeries σ R) :
-    f = 0 ↔ (∀ d : σ →₀ ℕ, coeff R d f = 0) := 
+    f = 0 ↔ (∀ d : σ →₀ ℕ, coeff R d f = 0) :=
   ext_iff
 
 theorem ne_zero_iff_exists_coeff_ne_zero (f : MvPowerSeries σ R) :
