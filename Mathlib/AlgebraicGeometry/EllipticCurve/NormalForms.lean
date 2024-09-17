@@ -27,49 +27,47 @@ elliptic curve, weierstrass equation, normal form
 
 universe u
 
-variable {R : Type u}
+variable {R : Type u} [CommRing R]
 
 namespace WeierstrassCurve
 
 variable (W : WeierstrassCurve R)
 
-/-! ### Normal forms of characteristic ≠ 2
--/
+/-! ### Normal forms of characteristic different from two -/
 
-/-- A `WeierstrassCurve` is in normal form of characteristic ≠ 2, if its `a₁` and `a₃` are zero.
-In other words it is $Y^2 = X^3 + a_2X^2 + a_4X + a_6$. -/
+/-- A `WeierstrassCurve` is in normal form of characteristic ≠ 2, if its $a_1$ and $a_3$
+coefficients are zero. In other words it is $Y^2 = X^3 + a_2X^2 + a_4X + a_6$. -/
 @[mk_iff]
-structure IsNormalFormOfCharNeTwo [Zero R] : Prop where
+structure IsCharNeTwoNF : Prop where
   a₁ : W.a₁ = 0
   a₃ : W.a₃ = 0
 
 section VariableChange
 
-variable [CommRing R] [Invertible (2 : R)]
+variable [Invertible (2 : R)]
 
 /-- This is an explicit change of variables of a `WeierstrassCurve` to
 a normal form of characteristic ≠ 2, provided that 2 is invertible in the ring. -/
 @[simps]
-def variableChangeToNormalFormOfCharNeTwo : VariableChange R where
+def vcToCharNeTwoNF : VariableChange R where
   u := 1
   r := 0
   s := ⅟2 * -W.a₁
   t := ⅟2 * -W.a₃
 
-theorem variableChangeToNormalFormOfCharNeTwo_spec :
-    (W.variableChange (W.variableChangeToNormalFormOfCharNeTwo)).IsNormalFormOfCharNeTwo := by
+theorem vcToCharNeTwoNF_spec :
+    (W.variableChange W.vcToCharNeTwoNF).IsCharNeTwoNF := by
   constructor <;> simp [← mul_assoc]
 
-theorem exists_variableChange_isNormalFormOfCharNeTwo :
-    ∃ C : VariableChange R, (W.variableChange C).IsNormalFormOfCharNeTwo :=
-  ⟨_, W.variableChangeToNormalFormOfCharNeTwo_spec⟩
+theorem exists_variableChange_isCharNeTwoNF :
+    ∃ C : VariableChange R, (W.variableChange C).IsCharNeTwoNF :=
+  ⟨_, W.vcToCharNeTwoNF_spec⟩
 
 end VariableChange
 
-namespace IsNormalFormOfCharNeTwo
+namespace IsCharNeTwoNF
 
-variable {W}
-variable [CommRing R] (self : W.IsNormalFormOfCharNeTwo)
+variable {W} (self : W.IsCharNeTwoNF)
 include self
 
 theorem b₂ : W.b₂ = 4 * W.a₂ := by
@@ -101,6 +99,6 @@ theorem Δ : W.Δ = -64 * W.a₂ ^ 3 * W.a₆ + 16 * W.a₂ ^ 2 * W.a₄ ^ 2 - 6
   simp_rw [WeierstrassCurve.Δ, self.b₂, self.b₄, self.b₆, self.b₈]
   ring1
 
-end IsNormalFormOfCharNeTwo
+end IsCharNeTwoNF
 
 end WeierstrassCurve
