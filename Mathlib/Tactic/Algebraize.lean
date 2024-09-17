@@ -17,7 +17,7 @@ automatically add `Algebra` instances given `RingHom`s. For example, `algebraize
 
 ## Further functionality
 
-When given a composition of `RingHom`s, e.g. `algebraize g.comp f`, the tactic will also try to
+When given a composition of `RingHom`s, e.g. `algebraize (g.comp f)`, the tactic will also try to
 add the instance `IsScalarTower A B C` if possible.
 
 After having added suitable `Algebra` and `IsScalarTower` instances, the tactic will search through
@@ -53,7 +53,7 @@ def RingHom.FiniteType (f : A →+* B) : Prop :=
 An example when the `Name` is provided (as the `Algebra` does not have the expected name):
 ```
 @[algebraize Module.Finite]
-def Module.Finite (f : A →+* B) : Prop :=
+def RingHom.Finite (f : A →+* B) : Prop :=
   letI : Algebra A B := f.toAlgebra
   Module.Finite A B
 ```
