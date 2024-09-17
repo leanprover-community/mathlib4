@@ -277,7 +277,8 @@ protected lemma conjExponent (hp : 1 ≤ p) : p.IsConjExponent (conjExponent p) 
   · simp
   calc
     1 + (p - 1)⁻¹ = (p - 1 + 1) / (p - 1) := by
-      rw [ENNReal.add_div, ENNReal.div_self ((tsub_pos_of_lt hp₁).ne') (sub_ne_top hp), one_div]
+      rw [ENNReal.add_div, ENNReal.div_self ((tsub_pos_of_lt hp₁).ne')
+        (ne_top_of_le_ne_top hp tsub_le_self), one_div]
     _ = (1 - p⁻¹)⁻¹ := by
       rw [tsub_add_cancel_of_le, ← inv_eq_iff_eq_inv, div_eq_mul_inv, ENNReal.mul_inv, inv_inv,
         ENNReal.mul_sub, ENNReal.inv_mul_cancel, mul_one] <;> simp [*]
