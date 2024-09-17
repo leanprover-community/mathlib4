@@ -5,6 +5,9 @@ Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Polynomial.Degree.Definitions
 import Mathlib.Algebra.Polynomial.Induction
+import Mathlib.Algebra.Ring.Subsemiring.Basic
+import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.Ring.Subring.Basic
 
 /-!
 # Theory of univariate polynomials

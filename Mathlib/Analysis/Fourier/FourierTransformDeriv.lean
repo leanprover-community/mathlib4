@@ -447,7 +447,7 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
       (fun w n ↦ fourierIntegral 𝐞 μ L.toLinearMap₂ (fun v ↦ fourierPowSMulRight L f v n) w) := by
   constructor
   · intro w
-    rw [uncurry0_apply, Matrix.zero_empty, fourierIntegral_continuousMultilinearMap_apply'
+    rw [curry0_apply, Matrix.zero_empty, fourierIntegral_continuousMultilinearMap_apply'
       (integrable_fourierPowSMulRight L (hf 0 bot_le) h'f)]
     simp only [fourierPowSMulRight_apply, pow_zero, Finset.univ_eq_empty, Finset.prod_empty,
       one_smul]
