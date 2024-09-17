@@ -130,6 +130,10 @@ theorem inductionOn₃ {p : Cardinal → Cardinal → Cardinal → Prop} (c₁ :
     (c₃ : Cardinal) (h : ∀ α β γ, p #α #β #γ) : p c₁ c₂ c₃ :=
   Quotient.inductionOn₃ c₁ c₂ c₃ h
 
+theorem induction_on_pi {ι : Type u} {p : (ι → Cardinal.{v}) → Prop}
+    (f : ι → Cardinal.{v}) (h : ∀ f : ι → Type v, p fun i ↦ #(f i)) : p f :=
+  Quotient.induction_on_pi f h
+
 protected theorem eq : #α = #β ↔ Nonempty (α ≃ β) :=
   Quotient.eq'
 
@@ -711,7 +715,7 @@ theorem add_one_le_succ (c : Cardinal.{u}) : c + 1 ≤ succ c := by
 /-- A cardinal is a limit if it is not zero or a successor cardinal. Note that `ℵ₀` is a limit
   cardinal by this definition, but `0` isn't.
 
-  Use `IsSuccPrelimit` if you want to include the `c = 0` case. -/
+TODO: deprecate this in favor of `Order.IsSuccLimit`. -/
 def IsLimit (c : Cardinal) : Prop :=
   c ≠ 0 ∧ IsSuccPrelimit c
 
@@ -745,6 +749,9 @@ theorem le_sum {ι} (f : ι → Cardinal) (i) : f i ≤ sum f := by
 @[simp]
 theorem mk_sigma {ι} (f : ι → Type*) : #(Σ i, f i) = sum fun i => #(f i) :=
   mk_congr <| Equiv.sigmaCongrRight fun _ => outMkEquiv.symm
+
+theorem mk_sigma_arrow {ι} (α : Type*) (f : ι → Type*) :
+    #(Sigma f → α) = #(Π i, f i → α) := mk_congr <| Equiv.piCurry fun _ _ ↦ α
 
 @[simp]
 theorem sum_const (ι : Type u) (a : Cardinal.{v}) :
@@ -871,7 +878,7 @@ protected theorem iSup_of_empty {ι} (f : ι → Cardinal) [IsEmpty ι] : iSup f
 
 lemma exists_eq_of_iSup_eq_of_not_isSuccPrelimit
     {ι : Type u} (f : ι → Cardinal.{v}) (ω : Cardinal.{v})
-    (hω : ¬ Order.IsSuccPrelimit ω)
+    (hω : ¬ IsSuccPrelimit ω)
     (h : ⨆ i : ι, f i = ω) : ∃ i, f i = ω := by
   subst h
   refine (isLUB_csSup' ?_).exists_of_not_isSuccPrelimit hω
@@ -936,6 +943,17 @@ theorem prod_eq_zero {ι} (f : ι → Cardinal.{u}) : prod f = 0 ↔ ∃ i, f i 
   simp only [mk_eq_zero_iff, ← mk_pi, isEmpty_pi]
 
 theorem prod_ne_zero {ι} (f : ι → Cardinal) : prod f ≠ 0 ↔ ∀ i, f i ≠ 0 := by simp [prod_eq_zero]
+
+theorem power_sum {ι} (a : Cardinal) (f : ι → Cardinal) :
+    a ^ sum f = prod fun i ↦ a ^ f i := by
+  induction a using Cardinal.inductionOn with | _ α =>
+  induction f using induction_on_pi with | _ f =>
+  simp_rw [prod, sum, power_def]
+  apply mk_congr
+  refine (Equiv.piCurry fun _ _ => α).trans ?_
+  refine Equiv.piCongrRight fun b => ?_
+  refine (Equiv.arrowCongr outMkEquiv (Equiv.refl α)).trans ?_
+  exact outMkEquiv.symm
 
 @[simp]
 theorem lift_prod {ι : Type u} (c : ι → Cardinal.{v}) :
@@ -1425,7 +1443,7 @@ theorem nsmul_lt_aleph0_iff {n : ℕ} {a : Cardinal} : n • a < ℵ₀ ↔ n = 
   cases n with
   | zero => simpa using nat_lt_aleph0 0
   | succ n =>
-      simp only [Nat.succ_ne_zero, false_or_iff]
+      simp only [Nat.succ_ne_zero, false_or]
       induction' n with n ih
       · simp
       rw [succ_nsmul, add_lt_aleph0_iff, ih, and_self_iff]

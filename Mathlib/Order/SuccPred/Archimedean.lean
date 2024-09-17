@@ -251,3 +251,35 @@ lemma BddBelow.exists_isLeast_of_nonempty {X : Type*} [LinearOrder X] [PredOrder
   BddAbove.exists_isGreatest_of_nonempty (X := Xᵒᵈ) hS hS'
 
 end IsLeast
+
+section OrderIso
+
+variable {X Y : Type*} [PartialOrder X] [PartialOrder Y]
+
+/-- `IsSuccArchimedean` transfers across equivalences between `SuccOrder`s. -/
+protected lemma IsSuccArchimedean.of_orderIso [SuccOrder X] [IsSuccArchimedean X] [SuccOrder Y]
+    (f : X ≃o Y) : IsSuccArchimedean Y where
+  exists_succ_iterate_of_le {a b} h := by
+    refine (exists_succ_iterate_of_le ((map_inv_le_map_inv_iff f).mpr h)).imp ?_
+    intro n
+    rw [← f.apply_eq_iff_eq, EquivLike.apply_inv_apply]
+    rintro rfl
+    clear h
+    induction n generalizing a with
+    | zero => simp
+    | succ n IH => simp only [Function.iterate_succ', Function.comp_apply, IH, f.map_succ]
+
+/-- `IsPredArchimedean` transfers across equivalences between `PredOrder`s. -/
+protected lemma IsPredArchimedean.of_orderIso [PredOrder X] [IsPredArchimedean X] [PredOrder Y]
+    (f : X ≃o Y) : IsPredArchimedean Y where
+  exists_pred_iterate_of_le {a b} h := by
+    refine (exists_pred_iterate_of_le ((map_inv_le_map_inv_iff f).mpr h)).imp ?_
+    intro n
+    rw [← f.apply_eq_iff_eq, EquivLike.apply_inv_apply]
+    rintro rfl
+    clear h
+    induction n generalizing b with
+    | zero => simp
+    | succ n IH => simp only [Function.iterate_succ', Function.comp_apply, IH, f.map_pred]
+
+end OrderIso
