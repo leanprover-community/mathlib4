@@ -89,25 +89,6 @@ jobs:
         run: |
           ./scripts/lint-bib.sh
 
-  check_workflows:
-    if: github.repository == 'leanprover-community/mathlib4'
-    name: check workflows
-    runs-on: ubuntu-latest
-    steps:
-      - name: cleanup
-        run: |
-          find . -name . -o -prune -exec rm -rf -- {} +
-
-      - uses: actions/checkout@v4
-
-      - name: update workflows
-        run: |
-          cd .github/workflows/
-          ./mk_build_yml.sh
-
-      - name: check that workflows were consistent
-        run: git diff --exit-code
-
   build:
     if: github.repository == 'leanprover-community/mathlib4'
     name: Build

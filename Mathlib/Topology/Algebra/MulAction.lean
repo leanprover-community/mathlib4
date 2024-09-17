@@ -223,6 +223,12 @@ variable [Group M] [MulAction M X] [ContinuousSMul M X]
 instance Subgroup.continuousSMul {S : Subgroup M} : ContinuousSMul S X :=
   S.toSubmonoid.continuousSMul
 
+variable (M)
+
+/-- The stabilizer of a continuous group action on a discrete space is an open subgroup. -/
+lemma stabilizer_isOpen [DiscreteTopology X] (x : X) : IsOpen (MulAction.stabilizer M x : Set M) :=
+  IsOpen.preimage (f := fun g ↦ g • x) (by fun_prop) (isOpen_discrete {x})
+
 end Group
 
 @[to_additive]
