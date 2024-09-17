@@ -8,8 +8,8 @@ import Mathlib.ModelTheory.Equivalence
 /-!
 # Quantifier Complexity
 
-This file defines quantifier complexity of first-order formulas, defines literals, and constructs
-prenex normal forms.
+This file defines quantifier complexity of first-order formulas, and constructs disjunctive normal
+forms, conjunctive normal forms and prenex normal forms.
 
 ## Main Definitions
 
