@@ -116,7 +116,7 @@ def Hom.reflection (P : RootPairing ι R M N) (i : ι) : Hom P P where
       PerfectPairing.toDualRight_apply, LinearMap.dualMap_apply, PerfectPairing.flip_apply_apply,
       LinearEquiv.comp_coe, LinearEquiv.trans_apply]
     rw [RootPairing.reflection_apply, RootPairing.coreflection_apply]
-    simp [← PerfectPairing.toLin_apply, mul_comm]
+    simp [map_sub, ← PerfectPairing.toLin_apply, mul_comm]
   root_weightMap := by ext; simp
   coroot_coweightMap := by ext; simp
 

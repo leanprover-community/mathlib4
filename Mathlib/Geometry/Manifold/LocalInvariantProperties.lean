@@ -302,7 +302,7 @@ theorem liftPropWithinAt_indep_chart_target [HasGroupoid M' G'] (hf : f ∈ G'.m
     LiftPropWithinAt P g s x ↔ ContinuousWithinAt g s x ∧ LiftPropWithinAt P (f ∘ g) s x := by
   rw [liftPropWithinAt_self_target, liftPropWithinAt_iff', and_congr_right_iff]
   intro hg
-  simp_rw [(f.continuousAt xf).comp_continuousWithinAt hg, true_and_iff]
+  simp_rw [(f.continuousAt xf).comp_continuousWithinAt hg, true_and]
   exact hG.liftPropWithinAt_indep_chart_target_aux (mem_chart_source _ _)
     (chart_mem_maximalAtlas _ _) (mem_chart_source _ _) hf xf hg
 
@@ -430,7 +430,7 @@ theorem liftPropOn_of_liftProp (mono : ∀ ⦃s x t⦄ ⦃f : H → H'⦄, t ⊆
 theorem liftPropAt_of_mem_maximalAtlas [HasGroupoid M G] (hG : G.LocalInvariantProp G Q)
     (hQ : ∀ y, Q id univ y) (he : e ∈ maximalAtlas M G) (hx : x ∈ e.source) : LiftPropAt Q e x := by
   simp_rw [LiftPropAt, hG.liftPropWithinAt_indep_chart he hx G.id_mem_maximalAtlas (mem_univ _),
-    (e.continuousAt hx).continuousWithinAt, true_and_iff]
+    (e.continuousAt hx).continuousWithinAt, true_and]
   exact hG.congr' (e.eventually_right_inverse' hx) (hQ _)
 
 theorem liftPropOn_of_mem_maximalAtlas [HasGroupoid M G] (hG : G.LocalInvariantProp G Q)
@@ -482,7 +482,7 @@ theorem liftPropOn_of_mem_groupoid (hG : G.LocalInvariantProp G Q) (hQ : ∀ y, 
 
 theorem liftProp_id (hG : G.LocalInvariantProp G Q) (hQ : ∀ y, Q id univ y) :
     LiftProp Q (id : M → M) := by
-  simp_rw [liftProp_iff, continuous_id, true_and_iff]
+  simp_rw [liftProp_iff, continuous_id, true_and]
   exact fun x ↦ hG.congr' ((chartAt H x).eventually_right_inverse <| mem_chart_target H x) (hQ _)
 
 theorem liftPropAt_iff_comp_subtype_val (hG : LocalInvariantProp G G' P) {U : Opens M}

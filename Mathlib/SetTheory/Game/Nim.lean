@@ -206,56 +206,48 @@ theorem nim_add_fuzzy_zero_iff {o₁ o₂ : Ordinal} : nim o₁ + nim o₂ ‖ 0
 theorem nim_equiv_iff_eq {o₁ o₂ : Ordinal} : (nim o₁ ≈ nim o₂) ↔ o₁ = o₂ := by
   rw [Impartial.equiv_iff_add_equiv_zero, nim_add_equiv_zero_iff]
 
-/-- The Grundy value of an impartial game, the ordinal which corresponds to the game of nim that the
- game is equivalent to -/
-noncomputable def grundyValue : PGame.{u} → Ordinal.{u}
-  | G => Ordinal.mex.{u, u} fun i => grundyValue (G.moveLeft i)
-termination_by G => G
+/-- The Grundy value of an impartial game is recursively defined as the minimum excluded value of
+the Grundy values of either its left or right options.
+
+This is the ordinal which corresponds to the game of nim that the game is equivalent to. -/
+noncomputable def grundyValue (G : PGame.{u}) : Ordinal.{u} :=
+  Ordinal.mex.{u, u} fun i => grundyValue (G.moveLeft i)
+termination_by G
 
 theorem grundyValue_eq_mex_left (G : PGame) :
-    grundyValue G = Ordinal.mex.{u, u} fun i => grundyValue (G.moveLeft i) := by rw [grundyValue]
+    grundyValue G = Ordinal.mex.{u, u} fun i => grundyValue (G.moveLeft i) := by
+  rw [grundyValue]
 
-/-- The Sprague-Grundy theorem which states that every impartial game is equivalent to a game of
- nim, namely the game of nim corresponding to the games Grundy value -/
-theorem equiv_nim_grundyValue : ∀ (G : PGame.{u}) [G.Impartial], G ≈ nim (grundyValue G)
-  | G => by
-    rw [Impartial.equiv_iff_add_equiv_zero, ← Impartial.forall_leftMoves_fuzzy_iff_equiv_zero]
-    intro i
-    apply leftMoves_add_cases i
-    · intro i₁
-      rw [add_moveLeft_inl]
-      apply
-        (fuzzy_congr_left (add_congr_left (Equiv.symm (equiv_nim_grundyValue (G.moveLeft i₁))))).1
-      rw [nim_add_fuzzy_zero_iff]
-      intro heq
-      rw [eq_comm, grundyValue_eq_mex_left G] at heq
-      -- Porting note: added universe annotation, argument
-      have h := Ordinal.ne_mex.{u, u} (fun i ↦ grundyValue (moveLeft G i))
-      rw [heq] at h
-      exact (h i₁).irrefl
-    · intro i₂
-      rw [add_moveLeft_inr, ← Impartial.exists_left_move_equiv_iff_fuzzy_zero]
-      revert i₂
-      rw [nim_def]
-      intro i₂
-      have h' :
-        ∃ i : G.LeftMoves,
-          grundyValue (G.moveLeft i) = Ordinal.typein (α := toType (grundyValue G)) (· < ·) i₂ := by
-        revert i₂
-        rw [grundyValue_eq_mex_left]
-        intro i₂
-        have hnotin : _ ∉ _ := fun hin => not_le_of_lt (Ordinal.typein_lt_self i₂) (csInf_le' hin)
-        simpa using hnotin
-      cases' h' with i hi
-      use toLeftMovesAdd (Sum.inl i)
-      rw [add_moveLeft_inl, moveLeft_mk]
-      apply Equiv.trans (add_congr_left (equiv_nim_grundyValue (G.moveLeft i)))
-      simpa only [hi] using Impartial.add_self (nim (grundyValue (G.moveLeft i)))
-termination_by G => G
-decreasing_by all_goals pgame_wf_tac
+theorem grundyValue_ne_left {G : PGame} (i : G.LeftMoves) :
+    grundyValue (G.moveLeft i) ≠ grundyValue G := by
+  conv_rhs => rw [grundyValue_eq_mex_left]
+  apply ne_mex _ i
+
+theorem exists_grundyValue_left_of_lt {G : PGame} {o : Ordinal} (h : o < grundyValue G) :
+    ∃ i, grundyValue (G.moveLeft i) = o := by
+  rw [grundyValue_eq_mex_left] at h
+  exact exists_of_lt_mex h
+
+/-- The **Sprague-Grundy theorem** states that every impartial game is equivalent to a game of nim,
+namely the game of nim corresponding to the game's Grundy value -/
+theorem equiv_nim_grundyValue (G : PGame.{u}) [G.Impartial] : G ≈ nim (grundyValue G) := by
+  rw [Impartial.equiv_iff_add_equiv_zero, ← Impartial.forall_leftMoves_fuzzy_iff_equiv_zero]
+  intro x
+  apply leftMoves_add_cases x <;>
+  intro i
+  · rw [add_moveLeft_inl,
+      ← fuzzy_congr_left (add_congr_left (Equiv.symm (equiv_nim_grundyValue _))),
+      nim_add_fuzzy_zero_iff]
+    exact grundyValue_ne_left i
+  · rw [add_moveLeft_inr, ← Impartial.exists_left_move_equiv_iff_fuzzy_zero]
+    obtain ⟨j, hj⟩ := exists_grundyValue_left_of_lt <| toLeftMovesNim_symm_lt i
+    use toLeftMovesAdd (Sum.inl j)
+    rw [add_moveLeft_inl, moveLeft_nim']
+    exact Equiv.trans (add_congr_left (equiv_nim_grundyValue _)) (hj ▸ Impartial.add_self _)
+termination_by G
 
 theorem grundyValue_eq_iff_equiv_nim {G : PGame} [G.Impartial] {o : Ordinal} :
-    grundyValue G = o ↔ (G ≈ nim o) :=
+    grundyValue G = o ↔ G ≈ nim o :=
   ⟨by rintro rfl; exact equiv_nim_grundyValue G,
    by intro h; rw [← nim_equiv_iff_eq]; exact Equiv.trans (Equiv.symm (equiv_nim_grundyValue G)) h⟩
 
@@ -282,15 +274,23 @@ theorem grundyValue_star : grundyValue star = 1 :=
 theorem grundyValue_neg (G : PGame) [G.Impartial] : grundyValue (-G) = grundyValue G := by
   rw [grundyValue_eq_iff_equiv_nim, neg_equiv_iff, neg_nim, ← grundyValue_eq_iff_equiv_nim]
 
-theorem grundyValue_eq_mex_right :
-    ∀ (G : PGame) [G.Impartial],
-      grundyValue G = Ordinal.mex.{u, u} fun i => grundyValue (G.moveRight i)
-   | ⟨l, r, L, R⟩, _ => by
-    rw [← grundyValue_neg, grundyValue_eq_mex_left]
-    congr
-    ext i
-    haveI : (R i).Impartial := @Impartial.moveRight_impartial ⟨l, r, L, R⟩ _ i
-    apply grundyValue_neg
+theorem grundyValue_eq_mex_right (G : PGame) [G.Impartial] :
+    grundyValue G = Ordinal.mex.{u, u} fun i => grundyValue (G.moveRight i) := by
+  obtain ⟨l, r, L, R⟩ := G
+  rw [← grundyValue_neg, grundyValue_eq_mex_left]
+  congr
+  ext i
+  exact @grundyValue_neg _ (@Impartial.moveRight_impartial ⟨l, r, L, R⟩ _ _)
+
+theorem grundyValue_ne_right {G : PGame} [G.Impartial] (i : G.RightMoves) :
+    grundyValue (G.moveRight i) ≠ grundyValue G := by
+  conv_rhs => rw [grundyValue_eq_mex_right]
+  apply ne_mex _ i
+
+theorem exists_grundyValue_right_of_lt {G : PGame} [G.Impartial] {o : Ordinal}
+    (h : o < grundyValue G) : ∃ i, grundyValue (G.moveRight i) = o := by
+  rw [grundyValue_eq_mex_right] at h
+  exact exists_of_lt_mex h
 
 -- Todo: this actually generalizes to all ordinals, by defining `Ordinal.lxor` as the pairwise
 -- `Nat.xor` of base `ω` Cantor normal forms.

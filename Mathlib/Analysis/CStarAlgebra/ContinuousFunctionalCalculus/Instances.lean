@@ -23,7 +23,7 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
   elements in an `ℝ`-algebra with a continuous functional calculus for selfadjoint elements,
   where every element has compact spectrum, and where nonnegative elements have nonnegative
   spectrum. In particular, this includes unital C⋆-algebras over `ℝ`.
-* `CStarRing.instNonnegSpectrumClass`: In a unital C⋆-algebra over `ℂ` which is also a
+* `CStarAlgebra.instNonnegSpectrumClass`: In a unital C⋆-algebra over `ℂ` which is also a
   `StarOrderedRing`, the spectrum of a nonnegative element is nonnegative.
 
 ## Tags
@@ -495,7 +495,7 @@ variable {A : Type*} [NormedRing A] [CompleteSpace A]
 variable [PartialOrder A] [StarRing A] [StarOrderedRing A] [CStarRing A]
 variable [NormedAlgebra ℂ A] [StarModule ℂ A]
 
-instance CStarRing.instNonnegSpectrumClass : NonnegSpectrumClass ℝ A :=
+instance CStarAlgebra.instNonnegSpectrumClass : NonnegSpectrumClass ℝ A :=
   .of_spectrum_nonneg fun a ha ↦ by
     rw [StarOrderedRing.nonneg_iff] at ha
     induction ha using AddSubmonoid.closure_induction' with
@@ -511,7 +511,7 @@ instance CStarRing.instNonnegSpectrumClass : NonnegSpectrumClass ℝ A :=
       exact hx.nnreal_add (.of_nonneg x_mem) (.of_nonneg y_mem) hy
 
 open ComplexOrder in
-instance CStarRing.instNonnegSpectrumClassComplexUnital : NonnegSpectrumClass ℂ A where
+instance CStarAlgebra.instNonnegSpectrumClassComplexUnital : NonnegSpectrumClass ℂ A where
   quasispectrum_nonneg_of_nonneg a ha x := by
     rw [mem_quasispectrum_iff]
     refine (Or.elim · ge_of_eq fun hx ↦ ?_)
@@ -531,7 +531,7 @@ selfadjoint and has nonnegative spectrum.
 This is not declared as an instance because one may already have a partial order with better
 definitional properties. However, it can be useful to invoke this as an instance in proofs. -/
 @[reducible]
-def CStarRing.spectralOrder : PartialOrder A where
+def CStarAlgebra.spectralOrder : PartialOrder A where
   le x y := IsSelfAdjoint (y - x) ∧ SpectrumRestricts (y - x) ContinuousMap.realToNNReal
   le_refl := by
     simp only [sub_self, IsSelfAdjoint.zero, true_and, forall_const]
@@ -544,9 +544,9 @@ def CStarRing.spectralOrder : PartialOrder A where
   le_trans x y z hxy hyz :=
     ⟨by simpa using hyz.1.add hxy.1, by simpa using hyz.2.nnreal_add hyz.1 hxy.1 hxy.2⟩
 
-/-- The `CStarRing.spectralOrder` on a unital C⋆-algebra is a `StarOrderedRing`. -/
-lemma CStarRing.spectralOrderedRing : @StarOrderedRing A _ (CStarRing.spectralOrder A) _ :=
-  let _ := CStarRing.spectralOrder A
+/-- The `CStarAlgebra.spectralOrder` on a unital C⋆-algebra is a `StarOrderedRing`. -/
+lemma CStarAlgebra.spectralOrderedRing : @StarOrderedRing A _ (CStarAlgebra.spectralOrder A) _ :=
+  let _ := CStarAlgebra.spectralOrder A
   { le_iff := by
       intro x y
       constructor
@@ -578,12 +578,12 @@ variable {A : Type*} [NonUnitalNormedRing A] [CompleteSpace A]
 variable [PartialOrder A] [StarRing A] [StarOrderedRing A] [CStarRing A]
 variable [NormedSpace ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [StarModule ℂ A]
 
-instance CStarRing.instNonnegSpectrumClass' : NonnegSpectrumClass ℝ A where
+instance CStarAlgebra.instNonnegSpectrumClass' : NonnegSpectrumClass ℝ A where
   quasispectrum_nonneg_of_nonneg a ha := by
     rw [Unitization.quasispectrum_eq_spectrum_inr' _ ℂ]
     -- should this actually be an instance on the `Unitization`? (probably scoped)
-    let _ := CStarRing.spectralOrder (Unitization ℂ A)
-    have := CStarRing.spectralOrderedRing (Unitization ℂ A)
+    let _ := CStarAlgebra.spectralOrder (Unitization ℂ A)
+    have := CStarAlgebra.spectralOrderedRing (Unitization ℂ A)
     apply spectrum_nonneg_of_nonneg
     rw [StarOrderedRing.nonneg_iff] at ha ⊢
     have := AddSubmonoid.mem_map_of_mem (Unitization.inrNonUnitalStarAlgHom ℂ A) ha
