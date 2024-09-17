@@ -4,8 +4,8 @@ import Mathlib.Tactic.Ring.RingNF
 
 open Lean Elab Tactic
 
-elab "ring_le" : tactic => do liftMetaFinishingTactic <| Mathlib.Tactic.Ring.proveLE
-elab "ring_lt" : tactic => do liftMetaFinishingTactic <| Mathlib.Tactic.Ring.proveLT
+elab "ring_le" : tactic => liftMetaFinishingTactic Mathlib.Tactic.Ring.proveLE
+elab "ring_lt" : tactic => liftMetaFinishingTactic Mathlib.Tactic.Ring.proveLT
 
 section Nat
 variable {x y : ℕ}
