@@ -577,7 +577,7 @@ def postprocess (mvarId : MVarId) : MetaM MVarId := do
 RHS of the goal as linear combinations of `M`-atoms over some semiring `R`, and reduce the goal to
 the respective equalities of the `R`-coefficients of each atom. -/
 def matchScalars (g : MVarId) : MetaM (List MVarId) := do
-  let mvars ← AtomM.run .default (matchScalarsAux g)
+  let mvars ← AtomM.run .instances (matchScalarsAux g)
   mvars.mapM postprocess
 
 /-- Given a goal which is an equality in a type `M` (with `M` an `AddCommMonoid`), parse the LHS and
@@ -635,6 +635,6 @@ use the tactic `match_scalars` instead, and then prove coefficient-wise equality
 -/
 elab "module" : tactic => Tactic.liftMetaFinishingTactic fun g ↦ do
   let l ← matchScalars g
-  discard <| l.mapM fun mvar ↦ AtomM.run .default (Ring.proveEq mvar)
+  discard <| l.mapM fun mvar ↦ AtomM.run .instances (Ring.proveEq mvar)
 
 end Mathlib.Tactic.Module
