@@ -226,7 +226,8 @@ theorem grundyValue_eq_mex_left (G : PGame) :
 theorem grundyValue_ne_moveLeft {G : PGame} (i : G.LeftMoves) :
     grundyValue (G.moveLeft i) ≠ grundyValue G := by
   conv_rhs => rw [grundyValue_eq_sInf_moveLeft]
-  have := csInf_mem (compl_nonempty_of_small (Set.range fun i => grundyValue (G.moveLeft i)))
+  have := csInf_mem (nonempty_of_not_bddAbove <|
+    not_bddAbove_compl_of_small (Set.range fun i => grundyValue (G.moveLeft i)))
   rw [Set.mem_compl_iff, Set.mem_range, not_exists] at this
   exact this _
 
