@@ -127,26 +127,6 @@ section WeightedOrder
 
 variable (w : σ → ℕ) (f : MvPowerSeries σ R)
 
-/- theorem _root_.Finsupp.finite_of_weight_le [Finite σ] (hw : ∀ x, w x ≠ 0) (n : ℕ) :
-    {d : σ →₀ ℕ | weight w d ≤ n}.Finite := by
-  classical
-  set fg := Finset.antidiagonal (Finsupp.equivFunOnFinite.symm (Function.const σ n)) with hfg
-  suffices {d : σ →₀ ℕ | weight w d ≤ n} ⊆ ↑(fg.image fun uv => uv.fst) by
-    exact Set.Finite.subset (Finset.finite_toSet _) this
-  intro d hd
-  rw [hfg]
-  simp only [Finset.coe_image, Set.mem_image, Finset.mem_coe,
-    Finset.mem_antidiagonal, Prod.exists, exists_and_right, exists_eq_right]
-  use Finsupp.equivFunOnFinite.symm (Function.const σ n) - d
-  ext x
-  simp only [Finsupp.coe_add, Finsupp.coe_tsub, Pi.add_apply, Pi.sub_apply,
-    Finsupp.equivFunOnFinite_symm_apply_toFun, Function.const_apply]
-  rw [add_comm]
-  apply Nat.sub_add_cancel
-  apply le_trans (le_weight w (hw x) d)
-  simpa only [Set.mem_setOf_eq] using hd
--/
-
 theorem ne_zero_iff_exists_coeff_ne_zero_and_weight
     (f : MvPowerSeries σ R):
     f ≠ 0 ↔ (∃ n : ℕ, ∃ d : σ →₀ ℕ, coeff R d f ≠ 0 ∧ weight w d = n) := by
@@ -349,13 +329,6 @@ end WeightedOrder
 section Order
 
 variable (f : MvPowerSeries σ R)
-
-theorem _root_.Finsupp.finite_of_degree_le [Finite σ] (n : ℕ) :
-    {f : σ →₀ ℕ | degree f ≤ n}.Finite := by
-  simp_rw [degree_eq_weight_one]
-  refine finite_of_weight_le (Function.const σ 1) ?_ n
-  intro _
-  simp only [Function.const_apply, ne_eq, one_ne_zero, not_false_eq_true]
 
 theorem ne_zero_iff_exists_coeff_ne_zero_and_degree :
     f ≠ 0 ↔ (∃ n : ℕ, ∃ d : σ →₀ ℕ, coeff R d f ≠ 0 ∧ degree d = n) := by
