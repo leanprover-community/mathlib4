@@ -1657,8 +1657,10 @@ end Dense
 
 namespace Set
 
+@[simp]
 lemma Iio_False : Iio False = ∅ := by aesop
 
+@[simp]
 lemma Iio_True : Iio True = {False} := by
   apply le_antisymm
   · aesop
@@ -1667,15 +1669,20 @@ lemma Iio_True : Iio True = {False} := by
     rw [mem_Iio]
     exact not_mem_Ici.mp fun a ↦ hx (a trivial)
 
+@[simp]
 lemma Iic_False : Iic False = {False} := by
   aesop
 
+@[simp]
 lemma Iic_True : Iic True = univ := IsTop.Iic_eq fun _ _ ↦ trivial
 
+@[simp]
 lemma Ici_False : Ici False = univ := by aesop
 
+@[simp]
 lemma Ici_True : Ici True = {True} := by aesop
 
+@[simp]
 lemma Ioi_False : Ioi False = {True} := by
   apply le_antisymm
   · intro x hx
@@ -1685,15 +1692,8 @@ lemma Ioi_False : Ioi False = {True} := by
     rw [mem_Ioi, hx]
     exact not_mem_Ici.mp fun a ↦ a trivial
 
+@[simp]
 lemma Ioi_True : Ioi True = ∅ := Ioi_eq_empty_iff.mpr fun ⦃_⦄ _ _ ↦ trivial
-
-lemma Iic_False_compl : (Iic False)ᶜ = {True} := by
-  rw [compl_eq_comm, Prop.compl_singleton, not_true_eq_false]
-  aesop
-
-lemma Iic_True_compl : (Iic True)ᶜ = ∅ := by
-  rw [compl_eq_comm, compl_empty]
-  aesop
 
 end Set
 
