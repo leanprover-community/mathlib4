@@ -161,7 +161,7 @@ theorem eq_or_principal [IsWellOrder β s] (f : r ≼i s) :
             ⟨IH _, fun ⟨a, e⟩ => by
               rw [← e]
               exact (trichotomous _ _).resolve_right
-                (not_or_of_not (hn a) fun hl => not_exists.2 hn (f.init hl))⟩⟩
+                (not_or_intro (hn a) fun hl => not_exists.2 hn (f.init hl))⟩⟩
 
 /-- Restrict the codomain of an initial segment -/
 def codRestrict (p : Set β) (f : r ≼i s) (H : ∀ a, f a ∈ p) : r ≼i Subrel s p :=
