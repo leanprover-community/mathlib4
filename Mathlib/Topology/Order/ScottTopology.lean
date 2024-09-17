@@ -387,19 +387,19 @@ instance [TopologicalSpace α] [IsUpper α] : IsScott α univ where
     rw [scott_eq_upper_of_completeLinearOrder]
     exact IsUpper.topology_eq α
 
-instance : Topology.IsScott Prop univ := Topology.IsScott.instUnivSetOfIsUpper
+instance : IsScott Prop univ := Topology.IsScott.instUnivSetOfIsUpper
 
 /- The upper topology on a complete linear order is the Scott topology -/
-instance [TopologicalSpace α] [IsUpper α] : IsScott α where
+instance [TopologicalSpace α] [IsUpper α] : IsScott α univ where
   topology_eq_scott := by
     rw [scott_eq_upper_of_completeLinearOrder]
     exact IsUpper.topology_eq α
 
 end CompleteLinearOrder
 
-lemma isOpen_iff_scottContinuous_mem [Preorder α] {s : Set α} [TopologicalSpace α] [IsScott α] :
-    IsOpen s ↔ ScottContinuous fun x ↦ x ∈ s := by
-  rw [scottContinuous_iff_continuous]
+lemma isOpen_iff_scottContinuous_mem [Preorder α] {s : Set α} [TopologicalSpace α]
+    [IsScott α univ] : IsOpen s ↔ ScottContinuous fun x ↦ x ∈ s := by
+  rw [scottContinuous_iff_continuous (E := univ) (fun _ ↦ trivial)]
   exact isOpen_iff_continuous_mem
 
 end IsScott
