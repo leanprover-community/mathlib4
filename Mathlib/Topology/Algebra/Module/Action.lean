@@ -64,7 +64,7 @@ is isomorphism-invariant.
 
 ## Main theorems
 
-* `ActionTopology.instSelf: isActionTopology R R`. The action topology on `R` is `R`'s topology.
+* `ActionTopology.instSelf : IsActionTopology R R`. The action topology on `R` is `R`'s topology.
 * `ActionTopology.iso [IsActionTopology R A] (e : A ≃L[R] B) : IsActionTopology R B`. If `A` and
     `B` are `R`-modules with topologies, if `e` is a topological isomorphism between them,
     and if `A` has the action topology, then `B` has the action topology.
