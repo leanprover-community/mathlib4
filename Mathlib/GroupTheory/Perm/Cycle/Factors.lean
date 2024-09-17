@@ -602,8 +602,7 @@ theorem mem_cycleFactorsFinset_conj (g k c : Perm α) :
     k * c * k⁻¹ ∈ (k * g * k⁻¹).cycleFactorsFinset ↔ c ∈ g.cycleFactorsFinset := by
   suffices imp_lemma : ∀ {g k c : Perm α},
       c ∈ g.cycleFactorsFinset → k * c * k⁻¹ ∈ (k * g * k⁻¹).cycleFactorsFinset by
-    refine ⟨?_, imp_lemma⟩
-    intro h
+    refine ⟨fun h ↦ _, imp_lemma⟩
     have aux : ∀ h : Perm α, h = k⁻¹ * (k * h * k⁻¹) * k := fun _ ↦ by group
     rw [aux g, aux c]
     exact imp_lemma h
