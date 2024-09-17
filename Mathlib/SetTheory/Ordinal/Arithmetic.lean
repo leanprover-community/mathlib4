@@ -2009,11 +2009,13 @@ the Burali-Forti paradox. -/
 theorem not_small_ordinal : ¬Small.{u} Ordinal.{max u v} := fun h =>
   @not_injective_of_ordinal_of_small _ h _ fun _a _b => Ordinal.lift_inj.{v, u}.1
 
-theorem Ordinal.compl_nonempty_of_small (s : Set Ordinal.{u}) [hs : Small.{u} s] :
-    Set.Nonempty sᶜ := by
-  by_contra! h
-  rw [compl_empty_iff.1 h, small_univ_iff] at hs
-  exact not_small_ordinal hs
+theorem Ordinal.not_bddAbove_compl_of_small (s : Set Ordinal.{u}) [hs : Small.{u} s] :
+    ¬BddAbove sᶜ := by
+  rw [bddAbove_iff_small]
+  intro h
+  have := small_union s sᶜ
+  rw [union_compl_self, small_univ_iff] at this
+  exact not_small_ordinal this
 
 /-! ### Enumerating unbounded sets of ordinals with ordinals -/
 
