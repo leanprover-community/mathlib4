@@ -127,6 +127,9 @@ lemma OrderEmbedding.range_inj [LinearOrder α] [WellFoundedLT α] [Preorder β]
 
 namespace OrderIso
 
+-- These results are also true whenever β is well-founded instead of α.
+-- You can use `RelEmbedding.isWellFounded` to transfer the instance over.
+
 instance subsingleton_of_wellFoundedLT [LinearOrder α] [WellFoundedLT α] [Preorder β] :
     Subsingleton (α ≃o β) := by
   refine ⟨fun f g ↦ ?_⟩

@@ -138,13 +138,13 @@ theorem Set.range_injOn_strictMono [WellFoundedLT β] :
   obtain ⟨b, hb⟩ := hfg ▸ mem_range_self a
   obtain h | rfl | h := lt_trichotomy b a
   · rw [← IH b h] at hb
-    exact ((hf.injective hb).not_lt h).elim
+    cases (hf.injective hb).not_lt h
   · rw [hb]
   · obtain ⟨c, hc⟩ := hfg.symm ▸ mem_range_self a
     have := hg h
     rw [hb, ← hc, hf.lt_iff_lt] at this
     rw [IH c this] at hc
-    exact ((hg.injective hc).not_lt this).elim
+    cases (hg.injective hc).not_lt this
 
 theorem Set.range_injOn_strictAnti [WellFoundedGT β] :
     Set.InjOn Set.range { f : β → γ | StrictAnti f } :=
