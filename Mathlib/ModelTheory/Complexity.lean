@@ -21,6 +21,10 @@ prenex normal forms.
   constructed only from literals and conjunctions.
 - `FirstOrder.Language.BoundedFormula.IsDisjunctive` defines disjunctive formulas - those which are
   constructed only from literals and disjunctions.
+- `FirstOrder.Language.BoundedFormula.IsDNF` defines formulas in disjunctive normal form - those
+  which are disjunctions of conjunctive formulas.
+- `FirstOrder.Language.BoundedFormula.IsCNF` defines formulas in conjunctive normal form - those
+  which are conjunctions of disjunctive formulas.
 - `FirstOrder.Language.BoundedFormula.IsQF` defines quantifier-free formulas - those which are
   constructed only from atomic formulas and boolean operations.
 - `FirstOrder.Language.BoundedFormula.IsPrenex` defines when a formula is in prenex normal form -
@@ -35,10 +39,6 @@ prenex normal forms.
 
 ## TODO
 
-- `FirstOrder.Language.BoundedFormula.IsDNF` defines formulas in disjunctive normal form - those
-  which are disjunctions of conjunctive formulas.
-- `FirstOrder.Language.BoundedFormula.IsCNF` defines formulas in conjunctive normal form - those
-  which are conjunctions of disjunctive formulas.
 - `FirstOrder.Language.BoundedFormula.toDNF` constructs a disjunctive normal form of a given
   quantifier-free formula.
 - `FirstOrder.Language.BoundedFormula.toCNF` constructs a conjunctive normal form of a given
@@ -223,6 +223,121 @@ protected theorem IsDisjunctive.simpleNot {φ : L.BoundedFormula α n} (hφ : φ
   | sup hφ hψ hφ_ih hψ_ih =>
     dsimp only [simpleNot, simpleNotAux]
     exact IsConjunctive.inf hφ_ih hψ_ih
+
+/-- A DNF formula is a disjunction of conjunctive formulas i.e., it is a formula in disjunctive
+  normal form. -/
+inductive IsDNF : L.BoundedFormula α n → Prop
+  | of_isConjunctive {φ : L.BoundedFormula α n} (h : φ.IsConjunctive) : IsDNF φ
+  | sup {φ ψ : L.BoundedFormula α n} (hφ : IsDNF φ) (hψ : IsDNF ψ) : IsDNF (φ ⊔ ψ)
+
+theorem IsConjunctive.isDNF {φ : L.BoundedFormula α n} (hφ : φ.IsConjunctive) : IsDNF φ :=
+  IsDNF.of_isConjunctive hφ
+
+/-- A CNF formula is a conjunction of disjunctive formulas i.e., it is a formula in conjunctive
+  normal form. -/
+inductive IsCNF : L.BoundedFormula α n → Prop
+  | of_isDisjunctive {φ : L.BoundedFormula α n} (h : φ.IsDisjunctive) : IsCNF φ
+  | inf {φ ψ : L.BoundedFormula α n} (hφ : IsCNF φ) (hψ : IsCNF ψ) : IsCNF (φ ⊓ ψ)
+
+theorem IsDisjunctive.isCNF {φ : L.BoundedFormula α n} (hφ : φ.IsDisjunctive) : IsCNF φ :=
+  IsCNF.of_isDisjunctive hφ
+
+protected theorem IsDNF.simpleNot {φ : L.BoundedFormula α n} (hφ : φ.IsDNF) :
+    φ.simpleNot.IsCNF := by
+  induction hφ with
+  | of_isConjunctive hφ =>
+    apply IsCNF.of_isDisjunctive
+    exact IsConjunctive.simpleNot hφ
+  | sup hφ hψ hφ_ih hψ_ih =>
+    dsimp only [simpleNot, simpleNotAux]
+    exact IsCNF.inf hφ_ih hψ_ih
+
+namespace IsCNF
+
+protected theorem simpleNot {φ : L.BoundedFormula α n} (hφ : φ.IsCNF) : φ.simpleNot.IsDNF := by
+  induction hφ with
+  | of_isDisjunctive hφ =>
+    apply IsDNF.of_isConjunctive
+    exact IsDisjunctive.simpleNot hφ
+  | inf hφ hψ hφ_ih hψ_ih =>
+    dsimp only [simpleNot, simpleNotAux]
+    exact IsDNF.sup hφ_ih hψ_ih
+
+/-- An auxilary definition to `FirstOrder.Language.BoundedFormula.IsCNF.sup` and
+  `FirstOrder.Language.BoundedFormula.IsCNF.sup_semanticallyEquivalent_sup`. -/
+protected def supAux (φ ψ : L.BoundedFormula α n) : {χ : L.BoundedFormula α n // χ ⇔[∅] φ ⊔ ψ} :=
+  match φ with
+  | BoundedFormula.inf φ₁ φ₂ =>
+    .mk ((IsCNF.supAux φ₁ ψ).1 ⊓ (IsCNF.supAux φ₂ ψ).1) (by
+      trans; exact Theory.SemanticallyEquivalent.inf (IsCNF.supAux φ₁ ψ).2 (IsCNF.supAux φ₂ ψ).2
+      dsimp only [Theory.SemanticallyEquivalent, Theory.ModelsBoundedFormula, BoundedFormula.inf]
+      intros
+      simp only [realize_iff, realize_not, realize_inf, realize_sup, realize_imp]
+      tauto
+    )
+  | φ =>
+    match ψ with
+    | BoundedFormula.inf ψ₁ ψ₂ =>
+      .mk ((IsCNF.supAux φ ψ₁).1 ⊓ (IsCNF.supAux φ ψ₂).1) (by
+        trans; exact Theory.SemanticallyEquivalent.inf (IsCNF.supAux φ ψ₁).2 (IsCNF.supAux φ ψ₂).2
+        dsimp only [Theory.SemanticallyEquivalent, Theory.ModelsBoundedFormula, BoundedFormula.inf]
+        intros
+        simp only [realize_iff, realize_not, realize_inf, realize_sup, realize_imp]
+        tauto
+      )
+    | ψ => .mk (φ ⊔ ψ) (by rfl)
+
+/-- An auxilary operation which is semantically equivalent to
+  `FirstOrder.Language.BoundedFormula.sup`. It takes bounded formulas `φ` and `ψ`, assuming that any
+  negation symbol inside them occurs in front of an atomic formula or `⊥`, it applies `⊔` and
+  pushes it inwards by distributing it over `⊓`. -/
+protected def sup (φ ψ : L.BoundedFormula α n) : L.BoundedFormula α n :=
+  (IsCNF.supAux φ ψ).1
+
+protected theorem sup_semanticallyEquivalent_sup (φ ψ : L.BoundedFormula α n) :
+    IsCNF.sup φ ψ ⇔[∅] φ ⊔ ψ :=
+  (IsCNF.supAux φ ψ).2
+
+protected lemma sup_of_isLiteral_eq {φ ψ : L.BoundedFormula α n} (hφ : φ.IsLiteral)
+    (hψ : ψ.IsLiteral) : IsCNF.sup φ ψ = φ ⊔ ψ := by
+  unfold IsCNF.sup IsCNF.supAux
+  split
+  · contradiction
+  · split
+    · contradiction
+    · rfl
+
+protected lemma sup_of_isDisjunctive_eq {φ ψ : L.BoundedFormula α n} (hφ : φ.IsDisjunctive)
+    (hψ : ψ.IsDisjunctive) : IsCNF.sup φ ψ = φ ⊔ ψ := by
+  unfold IsCNF.sup IsCNF.supAux
+  split
+  · contradiction
+  · split
+    · contradiction
+    · rfl
+
+/-- When `FirstOrder.Language.BoundedFormula.IsCNF.sup` is applied to formulas in CNF, the result
+  is also a formula in CNF. -/
+protected theorem sup_isCNF {φ ψ : L.BoundedFormula α n} (hφ : φ.IsCNF) (hψ : ψ.IsCNF) :
+    (IsCNF.sup φ ψ).IsCNF := by
+  induction hφ with
+  | of_isDisjunctive hφ =>
+      induction hψ with
+      | of_isDisjunctive hψ =>
+        rw [IsCNF.sup_of_isDisjunctive_eq hφ hψ]
+        apply IsCNF.of_isDisjunctive
+        exact IsDisjunctive.sup hφ hψ
+      | inf _ _ hψ₁_ih hψ₂_ih =>
+        unfold IsCNF.sup IsCNF.supAux
+        split
+        · contradiction
+        · exact IsCNF.inf hψ₁_ih hψ₂_ih
+  | inf _ _ hφ₁_ih hφ₂_ih =>
+      unfold IsCNF.sup IsCNF.supAux
+      exact IsCNF.inf hφ₁_ih hφ₂_ih
+
+end IsCNF
+
 /-- A quantifier-free formula is a formula defined without quantifiers. These are all equivalent
 to boolean combinations of atomic formulas. -/
 inductive IsQF : L.BoundedFormula α n → Prop
