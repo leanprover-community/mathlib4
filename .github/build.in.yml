@@ -135,8 +135,8 @@ jobs:
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
         id: mk_all
         run: |
-          lake exe mk_all --check
-          if [ $? -ne 0 ]
+
+          if ! lake exe mk_all --check
           then
             echo "Not all lean files are in the import all files"
             echo "mk_all=false" >> "${GITHUB_OUTPUT}"
