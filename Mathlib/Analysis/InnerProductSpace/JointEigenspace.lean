@@ -9,10 +9,10 @@ import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Order.CompleteLattice
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 
-/-! # Joint eigenspaces of a commuting finite tuple of symmetric operators
+/-! # Joint eigenspaces of commuting symmetric operators
 
-This file collects various decomposition results for joint eigenspaces of a commuting finite tuples
-of symmetric operators on a finite-dimensional inner product space.
+This file collects various decomposition results for joint eigenspaces of commuting
+symmetric operators on a finite-dimensional inner product space.
 
 # Main Result
 
@@ -20,7 +20,7 @@ of symmetric operators on a finite-dimensional inner product space.
    if `{A B : E →ₗ[𝕜] E}`, then `IsSymmetric A`, `IsSymmetric B` and `A ∘ₗ B = B ∘ₗ A` imply that
    `E` decomposes as an internal direct sum of the pairwise orthogonal spaces
    `eigenspace B μ ⊓ eigenspace A ν`
-* `DirectSum.IsInternal_of_simultaneous_eigenspaces_of_commuting_symmetric_tuple` establishes the
+* `LinearMap.IsSymmetric.directSum_isInternal_of_commute_of_fintype` establishes the
    analogous result to `LinearMap.IsSymmetric.directSum_isInternal_of_commute` for finite commuting
    tuples of symmetric operators.
 
@@ -31,7 +31,7 @@ and a proof obligation that the basis vectors are eigenvectors.
 
 ## Tags
 
-self-adjoint operator, symmetric operator, simultaneous eigenspaces, joint eigenspaces
+symmetric operator, simultaneous eigenspaces, joint eigenspaces
 
 -/
 
@@ -48,15 +48,15 @@ section Pair
 
 variable {α : 𝕜} {A B : E →ₗ[𝕜] E}
 
-/--If a pair of operators commute, then the eigenspaces of one are invariant under the other.-/
+/-- If a pair of operators commute, then the eigenspaces of one are invariant under the other. -/
 theorem eigenspace_invariant_of_commute
     (hAB : A ∘ₗ B = B ∘ₗ A) (α : 𝕜) : ∀ v ∈ (eigenspace A α), (B v ∈ eigenspace A α) := by
   intro v hv
   rw [eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply, ← comp_apply A B v, hAB,
     comp_apply B A v, ← map_smul, ← map_sub, hv, map_zero] at *
 
-/--The simultaneous eigenspaces of a pair of commuting symmetric operators form an
-`OrthogonalFamily`.-/
+/-- The simultaneous eigenspaces of a pair of commuting symmetric operators form an
+`OrthogonalFamily`. -/
 theorem orthogonalFamily_eigenspace_inf_eigenspace (hA : A.IsSymmetric) (hB : B.IsSymmetric) :
     OrthogonalFamily 𝕜 (fun (i : 𝕜 × 𝕜) => (eigenspace A i.2 ⊓ eigenspace B i.1 : Submodule 𝕜 E))
     (fun i => (eigenspace A i.2 ⊓ eigenspace B i.1).subtypeₗᵢ) :=
@@ -80,7 +80,7 @@ theorem eigenspace_inf_eigenspace
 variable [FiniteDimensional 𝕜 E]
 
 /-- If A and B are commuting symmetric operators on a finite dimensional inner product space
-then the eigenspaces of the restriction of B to any eigenspace of A exhaust that eigenspace.-/
+then the eigenspaces of the restriction of B to any eigenspace of A exhaust that eigenspace. -/
 theorem iSup_eigenspace_inf_eigenspace (hB : B.IsSymmetric)
     (hAB : A ∘ₗ B = B ∘ₗ A):
     (⨆ γ, eigenspace A α ⊓ eigenspace B γ) = eigenspace A α := by
@@ -117,8 +117,8 @@ universe u
 
 variable {n m : Type u}
 
-/--The indexed infimum of eigenspaces of a commuting family of linear operators is
-invariant under each operator-/
+/-- The indexed infimum of eigenspaces of a commuting family of linear operators is
+invariant under each operator. -/
 theorem iInf_eigenspace_invariant_of_commute (T : n → (E →ₗ[𝕜] E))
     (hC : (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i))) (i : n) :
     ∀ γ : {x // x ≠ i} → 𝕜, ∀ v ∈ (⨅ (j : {x // x ≠ i}),
@@ -128,8 +128,8 @@ theorem iInf_eigenspace_invariant_of_commute (T : n → (E →ₗ[𝕜] E))
   simp only [Submodule.mem_iInf] at *
   exact fun i_1 ↦ eigenspace_invariant_of_commute (hC (↑i_1) i) (γ i_1) v (hv i_1)
 
-/--Simultaneous eigenspaces of a symmetric linear operator on a finite dimensional inner product
-space restricted to an invariant subspace exhaust that subspace-/
+/-- Simultaneous eigenspaces of a symmetric linear operator on a finite dimensional inner product
+space restricted to an invariant subspace exhaust that subspace. -/
 theorem iSup_simultaneous_eigenspaces_eq_top [FiniteDimensional 𝕜 E] {F : Submodule 𝕜 E}
     (S : E →ₗ[𝕜] E) (hS: IsSymmetric S) (hInv : ∀ v ∈ F, S v ∈ F) : ⨆ μ, Submodule.map F.subtype
     (eigenspace (S.restrict hInv) μ)  = F := by
@@ -139,7 +139,7 @@ theorem iSup_simultaneous_eigenspaces_eq_top [FiniteDimensional 𝕜 E] {F : Sub
  have H : IsSymmetric (S.restrict hInv) := fun x y ↦ hS (F.subtype x) ↑y
  apply Submodule.orthogonal_eq_bot_iff.mp (H.orthogonalComplement_iSup_eigenspaces_eq_bot)
 
-/--Given an invariant subspace for an operator, its intersection with an eigenspace is
+/-- Given an invariant subspace for an operator, its intersection with an eigenspace is
 the eigenspace of the restriction the operator to the invariant subspace. -/
 theorem invariant_subspace_inf_eigenspace_eq_restrict {F : Submodule 𝕜 E} (S : E →ₗ[𝕜] E)
     (μ : 𝕜) (hInv : ∀ v ∈ F, S v ∈ F) : (eigenspace S μ) ⊓ F =
@@ -165,7 +165,7 @@ theorem invariant_subspace_inf_eigenspace_eq_restrict {F : Submodule 𝕜 E} (S 
 
 open Classical
 
-/--The orthocomplement of the indexed supremum of joint eigenspaces of a finite commuting tuple of
+/-- The orthocomplement of the indexed supremum of joint eigenspaces of a finite commuting tuple of
 symmetric operators is trivial. -/
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Fintype n] [FiniteDimensional 𝕜 E]
     (T : n → (E →ₗ[𝕜] E)) (hT :(∀ (i : n), ((T i).IsSymmetric)))
@@ -210,7 +210,7 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Fintype n] [FiniteDim
     rw [H1 i (fun _ ↦ (fun μ ↦ (eigenspace (T _) μ )))]
     exact D
 
-/--Given a finite commuting family of symmetric linear operators, the family of joint eigenspaces
+/-- Given a finite commuting family of symmetric linear operators, the family of joint eigenspaces
 is an orthogonal family. -/
 theorem orthogonalFamily_iInf_eigenspaces (T : n → (E →ₗ[𝕜] E))
     (hT :(∀ (i : n), ((T i).IsSymmetric))) : OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) =>
@@ -226,7 +226,7 @@ theorem orthogonalFamily_iInf_eigenspaces (T : n → (E →ₗ[𝕜] E))
 
 /-- Given a finite commuting family of symmetric linear operators, the inner product space on which
 they act decomposes as an internal direct sum of simultaneous eigenspaces. -/
-theorem DirectSum.IsInternal_of_simultaneous_eigenspaces_of_commuting_symmetric_tuple [Fintype n]
+theorem LinearMap.IsSymmetric.directSum_isInternal_of_commute_of_fintype [Fintype n]
     [FiniteDimensional 𝕜 E] (T : n → (E →ₗ[𝕜] E)) (hT :(∀ (i : n), ((T i).IsSymmetric)))
     (hC : (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i))) :
     DirectSum.IsInternal (fun (α : n → 𝕜) ↦ ⨅ (j : n), (eigenspace (T j) (α j))) := by
