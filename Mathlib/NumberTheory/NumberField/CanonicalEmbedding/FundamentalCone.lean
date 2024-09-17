@@ -170,7 +170,7 @@ def fundamentalCone : Set (mixedSpace K) :=
 
 namespace fundamentalCone
 
-variable {K} {x y : mixedSpace K}
+variable {K} {x y : mixedSpace K} {c : ℝ}
 
 theorem norm_pos_of_mem (hx : x ∈ fundamentalCone K) :
     0 < mixedEmbedding.norm x :=
@@ -188,7 +188,7 @@ theorem mem_of_normAtPlace_eq (hx : x ∈ fundamentalCone K)
   rw [Set.mem_preimage, logMap_eq_of_normAtPlace_eq hy]
   exact hx.1
 
-theorem smul_mem_of_mem (hx : x ∈ fundamentalCone K) {c : ℝ} (hc : c ≠ 0) :
+theorem smul_mem_of_mem (hx : x ∈ fundamentalCone K) (hc : c ≠ 0) :
     c • x ∈ fundamentalCone K := by
   refine ⟨?_, ?_⟩
   · rw [Set.mem_preimage, logMap_real_smul hx.2 hc]
@@ -196,7 +196,7 @@ theorem smul_mem_of_mem (hx : x ∈ fundamentalCone K) {c : ℝ} (hc : c ≠ 0) 
   · rw [Set.mem_setOf_eq, mixedEmbedding.norm_smul, mul_eq_zero, not_or]
     exact ⟨pow_ne_zero _ (abs_ne_zero.mpr hc), hx.2⟩
 
-theorem smul_mem_iff_mem {c : ℝ} (hc : c ≠ 0) :
+theorem smul_mem_iff_mem (hc : c ≠ 0) :
     c • x ∈ fundamentalCone K ↔ x ∈ fundamentalCone K := by
   refine ⟨fun h ↦ ?_, fun h ↦ smul_mem_of_mem h hc⟩
   convert smul_mem_of_mem h (inv_ne_zero hc)
@@ -211,10 +211,9 @@ theorem exists_unit_smul_mem (hx : mixedEmbedding.norm x ≠ 0) :
   · obtain ⟨⟨e, h₁⟩, h₂, -⟩ := ZSpan.exist_unique_vadd_mem_fundamentalDomain B (logMap x)
     exact ⟨⟨e, by rwa [← Basis.ofZLatticeBasis_span ℝ (unitLattice K)]⟩, h₂⟩
 
-theorem torsion_smul_mem_of_mem (hx : x ∈ fundamentalCone K) {ζ : (𝓞 K)ˣ}
-    (hζ : ζ ∈ torsion K) :
+theorem torsion_smul_mem_of_mem (hx : x ∈ fundamentalCone K) {ζ : (𝓞 K)ˣ} (hζ : ζ ∈ torsion K) :
     ζ • x ∈ fundamentalCone K := by
-  refine ⟨?_, ?_⟩
+  constructor
   · rw [Set.mem_preimage, logMap_torsion_smul _ hζ]
     exact hx.1
   · rw [Set.mem_setOf_eq, unitSMul_smul, map_mul, norm_unit, one_mul]
@@ -223,18 +222,17 @@ theorem torsion_smul_mem_of_mem (hx : x ∈ fundamentalCone K) {ζ : (𝓞 K)ˣ}
 theorem unit_smul_mem_iff_mem_torsion (hx : x ∈ fundamentalCone K) (u : (𝓞 K)ˣ) :
     u • x ∈ fundamentalCone K ↔ u ∈ torsion K := by
   classical
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [← logEmbedding_eq_zero_iff]
-    let B := (basisUnitLattice K).ofZLatticeBasis ℝ
-    refine (Subtype.mk_eq_mk (h := ?_) (h' := Submodule.zero_mem _)).mp <|
-      (ZSpan.exist_unique_vadd_mem_fundamentalDomain B (logMap x)).unique ?_ ?_
-    · rw [Basis.ofZLatticeBasis_span ℝ (unitLattice K)]
-      exact ⟨u, trivial, rfl⟩
-    · rw [AddSubmonoid.mk_vadd, vadd_eq_add, ← logMap_unit_smul _ hx.2]
-      exact h.1
-    · rw [AddSubmonoid.mk_vadd, vadd_eq_add, zero_add]
-      exact hx.1
-  · exact torsion_smul_mem_of_mem hx h
+  refine ⟨fun h ↦ ?_, fun h ↦ torsion_smul_mem_of_mem hx h⟩
+  rw [← logEmbedding_eq_zero_iff]
+  let B := (basisUnitLattice K).ofZLatticeBasis ℝ
+  refine (Subtype.mk_eq_mk (h := ?_) (h' := Submodule.zero_mem _)).mp <|
+    (ZSpan.exist_unique_vadd_mem_fundamentalDomain B (logMap x)).unique ?_ ?_
+  · rw [Basis.ofZLatticeBasis_span ℝ (unitLattice K)]
+    exact ⟨u, trivial, rfl⟩
+  · rw [AddSubmonoid.mk_vadd, vadd_eq_add, ← logMap_unit_smul _ hx.2]
+    exact h.1
+  · rw [AddSubmonoid.mk_vadd, vadd_eq_add, zero_add]
+    exact hx.1
 
 end fundamentalCone
 
