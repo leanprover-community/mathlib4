@@ -114,14 +114,6 @@ theorem toOrdinal_eq_one (a) : toOrdinal a = 1 ↔ a = 1 :=
   Iff.rfl
 
 @[simp]
-theorem toOrdinal_lt_iff {a b : Nimber} : toOrdinal a < toOrdinal b ↔ a < b :=
-  Iff.rfl
-
-@[simp]
-theorem toOrdinal_le_iff {a b : Nimber} : toOrdinal a ≤ toOrdinal b ↔ a ≤ b :=
-  Iff.rfl
-
-@[simp]
 theorem toOrdinal_max {a b : Nimber} : toOrdinal (max a b) = max (toOrdinal a) (toOrdinal b) :=
   rfl
 
@@ -189,14 +181,6 @@ theorem toNimber_eq_zero (a) : ∗a = 0 ↔ a = 0 :=
 
 @[simp]
 theorem toNimber_eq_one (a) : ∗a = 1 ↔ a = 1 :=
-  Iff.rfl
-
-@[simp]
-theorem toNimber_lt_iff {a b : Ordinal} : ∗a < ∗b ↔ a < b :=
-  Iff.rfl
-
-@[simp]
-theorem toNimber_le_iff {a b : Ordinal} : ∗a ≤ ∗b ↔ a ≤ b :=
   Iff.rfl
 
 @[simp]
@@ -382,7 +366,7 @@ theorem add_nat (a b : ℕ) : ∗a + ∗b = ∗(a ^^^ b) := by
   · apply add_le_of_forall_ne
     all_goals
       refine Nimber.rec (fun c hc ↦ ?_)
-      rw [Ordinal.toNimber_lt_iff] at hc
+      rw [OrderIso.lt_iff_lt] at hc
       obtain ⟨c, rfl⟩ := Ordinal.lt_omega.1 (hc.trans (Ordinal.nat_lt_omega _))
       replace hc := Nat.cast_lt.1 hc
       rw [add_nat, ne_eq, EmbeddingLike.apply_eq_iff_eq, Nat.cast_inj]
@@ -391,7 +375,7 @@ theorem add_nat (a b : ℕ) : ∗a + ∗b = ∗(a ^^^ b) := by
     · rwa [Nat.xor_right_inj]
   · apply le_of_not_lt
     intro hc
-    rw [← toOrdinal_lt_iff, Ordinal.toNimber_toOrdinal] at hc
+    rw [← toOrdinal.lt_iff_lt, Ordinal.toNimber_toOrdinal] at hc
     obtain ⟨c, hc'⟩ := Ordinal.lt_omega.1 (hc.trans (Ordinal.nat_lt_omega _))
     rw [hc', Nat.cast_lt] at hc
     obtain h | h := Nat.lt_xor_cases hc
