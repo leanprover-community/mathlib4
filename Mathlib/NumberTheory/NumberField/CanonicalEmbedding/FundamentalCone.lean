@@ -11,7 +11,7 @@ import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
 
 Let `K` be a number field of signature `(r₁, r₂)`. We define an action of the units `(𝓞 K)ˣ` on
 the mixed space `ℝ^r₁ × ℂ^r₂` via the `mixedEmbedding`. The fundamental cone is a cone in the
-mixed space that is a fundamental domain for the action of `(𝓞 K)ˣ` up to roots of unity.
+mixed space that is a fundamental domain for the action of `(𝓞 K)ˣ` modulo torsion.
 
 ## Main definitions and results
 
@@ -20,7 +20,7 @@ mixed space that is a fundamental domain for the action of `(𝓞 K)ˣ` up to ro
 
 * `NumberField.mixedEmbedding.fundamentalCone`: a cone in the mixed space, ie. a subset stable
 by multiplication by a real number, see `smul_mem_of_mem`, that is also a fundamental domain
-for the action of `(𝓞 K)ˣ` up to roots of unity, see `exists_unit_smul_me` and
+for the action of `(𝓞 K)ˣ` modulo torsion, see `exists_unit_smul_me` and
 `torsion_unit_smul_mem_of_mem`.
 
 * `NumberField.mixedEmbedding.fundamentalCone.integralPoint`: the subset of elements of the
@@ -31,7 +31,7 @@ fundamental cone that are images of algebraic integers of `K`.
 torsion of `K`.
 
 * `NumberField.mixedEmbedding.fundamentalCone.card_isPrincipal_norm_eq`: the number of principal
-non-zero ideals in `𝓞 K` of norm `n` multiplied by the number of roots of unity is
+non-zero ideals in `𝓞 K` of norm `n` multiplied by the order of the torsion of `K` is
 equal to the number of `fundamentalCone.integralPoint K` of norm `n`.
 
 ## Tags
@@ -174,7 +174,7 @@ variable [NumberField K]
 open Classical in
 /-- The fundamental cone is a cone in the mixed space, ie. a subset fixed by multiplication by
 a scalar, see `smul_mem_of_mem`, that is also a fundamental domain for the action of `(𝓞 K)ˣ` up
-to roots of unity, see `exists_unit_smul_mem` and `torsion_smul_mem_of_mem`. -/
+to torsion, see `exists_unit_smul_mem` and `torsion_smul_mem_of_mem`. -/
 def fundamentalCone : Set (mixedSpace K) :=
   logMap⁻¹' (ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ _)) \
       {x | mixedEmbedding.norm x = 0}
@@ -252,15 +252,12 @@ variable (K) in
 /-- The set of images by `mixedEmbedding` of algebraic integers of `K` contained in the
 fundamental cone. -/
 def integralPoint : Set (mixedSpace K) :=
-  fundamentalCone K ∩ mixedEmbedding K '' (Set.range (algebraMap (𝓞 K) K))
+  fundamentalCone K ∩ (mixedEmbedding.integerLattice K)
 
 theorem mem_integralPoint {a : mixedSpace K} :
     a ∈ integralPoint K ↔ a ∈ fundamentalCone K ∧ ∃ x : (𝓞 K), mixedEmbedding K x = a:= by
-  refine ⟨?_, ?_⟩
-  · rintro ⟨h, ⟨_, ⟨x, rfl⟩, rfl⟩⟩
-    exact ⟨h, x, rfl⟩
-  · rintro ⟨h, ⟨x, rfl⟩⟩
-    exact ⟨h, ⟨x, ⟨x, rfl⟩, rfl⟩⟩
+  simp only [integralPoint, Set.mem_inter_iff, SetLike.mem_coe, LinearMap.mem_range,
+    AlgHom.toLinearMap_apply, RingHom.toIntAlgHom_coe, RingHom.coe_comp, Function.comp_apply]
 
 /-- If `a` is an integral point, then there is a *unique* algebraic integer in `𝓞 K` such
 that `mixedEmbedding K x = a`. -/
@@ -302,14 +299,14 @@ theorem exists_unitSMul_mem_integralPoint {x : mixedSpace K} (hx : x ≠ 0)
       (norm_eq_zero_iff' (Set.mem_range_of_mem_image (mixedEmbedding K) _ hx')).not.mpr hx
   obtain ⟨u, hu⟩ := exists_unit_smul_mem hx
   obtain ⟨_, ⟨⟨x, rfl⟩, ⟨_, rfl⟩⟩⟩ := hx'
-  exact ⟨u, hu, (u * x : K), ⟨u * x, rfl⟩, by simp_rw [unitSMul_smul, ← map_mul]⟩
+  exact ⟨u, mem_integralPoint.mpr ⟨hu, ⟨u * x, by simp_rw [unitSMul_smul, ← map_mul]⟩⟩⟩
 
-/-- The set `integralPoint K` is stable under the action of roots of unity. -/
+/-- The set `integralPoint K` is stable under the action of the torsion. -/
 theorem torsion_unitSMul_mem_integralPoint {x : mixedSpace K} {ζ : (𝓞 K)ˣ} (hζ : ζ ∈ torsion K)
     (hx : x ∈ integralPoint K) :
     ζ • x ∈ integralPoint K := by
-  obtain ⟨_, ⟨a, rfl⟩, rfl⟩ := hx.2
-  exact ⟨torsion_smul_mem_of_mem hx.1 hζ, ⟨ζ * a, ⟨ζ * a, rfl⟩, by rw [unitSMul_smul, map_mul]⟩⟩
+  obtain ⟨a, ⟨_, rfl⟩, rfl⟩ := (mem_integralPoint.mp hx).2
+  refine mem_integralPoint.mpr ⟨torsion_smul_mem_of_mem hx.1 hζ, ⟨ζ * a, by simp⟩⟩
 
 /-- The action of `torsion K` on `integralPoint K`. -/
 @[simps]
@@ -344,8 +341,8 @@ theorem quotIntNorm_apply (a : integralPoint K) : quotIntNorm ⟦a⟧ = intNorm 
 
 variable (K) in
 /-- The map that sends an element of `a : integralPoint K` to the associates class
-of its preimage in `(𝓞 K)⁰`. By quotienting by the kernel of the map, which is equal to the group
-of roots of unity, we get the equivalence `integralPointQuotEquivAssociates`. -/
+of its preimage in `(𝓞 K)⁰`. By quotienting by the kernel of the map, which is equal to the
+subgroup of torsion, we get the equivalence `integralPointQuotEquivAssociates`. -/
 def integralPointToAssociates (a : integralPoint K) : Associates (𝓞 K)⁰ :=
   ⟦preimageOfIntegralPoint a⟧
 
@@ -458,8 +455,8 @@ theorem integralPointEquivNorm_apply_fst {n : ℕ} {a : integralPoint K} (ha : i
 
 variable (K)
 
-/-- For `n` positive, the number of principal ideals in `𝓞 K` of norm `n` multiplied by the number
-of roots of unity in `K` is equal to the number of `integralPoint K` of norm `n`. -/
+/-- For `n` positive, the number of principal ideals in `𝓞 K` of norm `n` multiplied by the order
+of the torsion of `K` is equal to the number of `integralPoint K` of norm `n`. -/
 theorem card_isPrincipal_norm_eq (n : ℕ) :
     Nat.card {I : (Ideal (𝓞 K))⁰ | IsPrincipal (I : Ideal (𝓞 K)) ∧
       absNorm (I : Ideal (𝓞 K)) = n} * torsionOrder K =
@@ -468,7 +465,7 @@ theorem card_isPrincipal_norm_eq (n : ℕ) :
   exact Nat.card_congr (integralPointEquivNorm K n).symm
 
 /-- For `s : ℝ`, the number of principal nonzero ideals in `𝓞 K` of norm `≤ s` multiplied by the
-number of roots of unity in `K` is equal to the number of `integralPoint K` of norm `≤ s`. -/
+order of the torsion of `K` is equal to the number of `integralPoint K` of norm `≤ s`. -/
 theorem card_isPrincipal_norm_le (s : ℝ) :
     Nat.card {I : (Ideal (𝓞 K))⁰ | IsPrincipal (I : Ideal (𝓞 K)) ∧
       absNorm (I : Ideal (𝓞 K)) ≤ s} * torsionOrder K =
