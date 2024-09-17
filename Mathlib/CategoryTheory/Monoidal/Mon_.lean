@@ -180,7 +180,7 @@ lemma ext' {X Y : Mon_ C} {f g : X ⟶ Y} (w : f.hom = g.hom) : f = g :=
   Mon_Hom.ext w
 
 @[simp]
-theorem id_hom' {M : Mon_ C} : (𝟙 M : Mon_Hom M.X M.X).hom = 𝟙 M.X :=
+theorem id_hom' (M : Mon_ C) : (𝟙 M : Mon_Hom M.X M.X).hom = 𝟙 M.X :=
   rfl
 
 @[simp]
