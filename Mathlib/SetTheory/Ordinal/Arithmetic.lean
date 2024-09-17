@@ -2009,7 +2009,8 @@ the Burali-Forti paradox. -/
 theorem not_small_ordinal : ¬Small.{u} Ordinal.{max u v} := fun h =>
   @not_injective_of_ordinal_of_small _ h _ fun _a _b => Ordinal.lift_inj.{v, u}.1
 
-theorem compl_nonempty_of_small (s : Set Ordinal.{u}) [hs : Small.{u} s] : Set.Nonempty sᶜ := by
+theorem Ordinal.compl_nonempty_of_small (s : Set Ordinal.{u}) [hs : Small.{u} s] :
+    Set.Nonempty sᶜ := by
   by_contra! h
   rw [compl_empty_iff.1 h, small_univ_iff] at hs
   exact not_small_ordinal hs
