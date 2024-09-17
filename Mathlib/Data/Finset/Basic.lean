@@ -2498,6 +2498,8 @@ theorem filter_union_filter_neg_eq [∀ x, Decidable (¬p x)] (s : Finset α) :
 
 end
 
+variable {p q}
+
 lemma filter_inj : s.filter p = t.filter p ↔ ∀ ⦃a⦄, p a → (a ∈ s ↔ a ∈ t) := by
   simp [Finset.ext_iff]
 

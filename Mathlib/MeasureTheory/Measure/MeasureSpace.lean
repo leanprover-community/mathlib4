@@ -485,12 +485,11 @@ theorem measure_iInter_eq_iInf [Countable ι] {s : ι → Set α} (h : ∀ i, Nu
     measure_diff (iInter_subset _ k) (.iInter h) (this _ (iInter_subset _ k)),
     diff_iInter, measure_iUnion_eq_iSup]
   · congr 1
-    refine le_antisymm (iSup_mono' fun i => ?_) (iSup_mono fun i => ?_)
-    · rcases hd i k with ⟨j, hji, hjk⟩
-      use j
-      rw [← measure_diff hjk (h _) (this _ hjk)]
-      gcongr
-    · apply le_measure_diff
+    refine le_antisymm (iSup_mono' fun i => ?_) (iSup_mono fun i => le_measure_diff)
+    rcases hd i k with ⟨j, hji, hjk⟩
+    use j
+    rw [← measure_diff hjk (h _) (this _ hjk)]
+    gcongr
   · exact hd.mono_comp _ fun _ _ => diff_subset_diff_right
 
 /-- Continuity from above: the measure of the intersection of a sequence of
@@ -506,8 +505,7 @@ theorem measure_iInter_eq_iInf' {α ι : Type*} [MeasurableSpace α] {μ : Measu
     · intro h i
       rcases directed_of (· ≤ ·) i i with ⟨j, rij, -⟩
       exact h j i rij
-  have ms : ∀ i, NullMeasurableSet (s i) μ :=
-    fun i ↦ .biInter (to_countable _) fun i _ ↦ h i
+  have ms (i) : NullMeasurableSet (s i) μ := .biInter (to_countable _) fun i _ ↦ h i
   have hd : Directed (· ⊇ ·) s := by
     intro i j
     rcases directed_of (· ≤ ·) i j with ⟨k, rik, rjk⟩

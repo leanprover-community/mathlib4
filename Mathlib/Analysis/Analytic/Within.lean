@@ -3,7 +3,6 @@ Copyright (c) 2024 Geoffrey Irving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving
 -/
-import Mathlib.Analysis.Analytic.Constructions
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 
 /-!
@@ -261,31 +260,6 @@ lemma AnalyticWithinOn.mono {f : E → F} {s t : Set E} (h : AnalyticWithinOn �
   fun _ m ↦ (h _ (hs m)).mono hs
 
 /-!
-### Analyticity within respects composition
-
-Currently we require `CompleteSpace`s to use equivalence to local extensions, but this is not
-essential.
--/
-
-lemma AnalyticWithinAt.comp [CompleteSpace F] [CompleteSpace G] {f : F → G} {g : E → F} {s : Set F}
-    {t : Set E} {x : E} (hf : AnalyticWithinAt 𝕜 f s (g x)) (hg : AnalyticWithinAt 𝕜 g t x)
-    (h : MapsTo g t s) : AnalyticWithinAt 𝕜 (f ∘ g) t x := by
-  rcases hf.exists_analyticAt with ⟨f', _, ef, hf'⟩
-  rcases hg.exists_analyticAt with ⟨g', gx, eg, hg'⟩
-  refine analyticWithinAt_iff_exists_analyticAt.mpr ⟨f' ∘ g', ?_, ?_⟩
-  · have h' : MapsTo g (insert x t) (insert (g x) s) := h.insert x
-    have gt := hg.continuousWithinAt_insert.tendsto_nhdsWithin h'
-    filter_upwards [self_mem_nhdsWithin, gt.eventually self_mem_nhdsWithin]
-    intro y gy (fgy : g y ∈ insert (g x) s)
-    simp [Function.comp_apply, ← eg gy, ef fgy]
-  · exact hf'.comp_of_eq hg' gx.symm
-
-lemma AnalyticWithinOn.comp [CompleteSpace F] [CompleteSpace G] {f : F → G} {g : E → F} {s : Set F}
-    {t : Set E} (hf : AnalyticWithinOn 𝕜 f s) (hg : AnalyticWithinOn 𝕜 g t) (h : MapsTo g t s) :
-    AnalyticWithinOn 𝕜 (f ∘ g) t :=
-  fun x m ↦ (hf _ (h m)).comp (hg x m) h
-
-/-!
 ### Analyticity within implies smoothness
 -/
 
@@ -297,42 +271,3 @@ lemma AnalyticWithinAt.contDiffWithinAt [CompleteSpace F] {f : E → F} {s : Set
 lemma AnalyticWithinOn.contDiffOn [CompleteSpace F] {f : E → F} {s : Set E}
     (h : AnalyticWithinOn 𝕜 f s) {n : ℕ∞} : ContDiffOn 𝕜 n f s :=
   fun x m ↦ (h x m).contDiffWithinAt
-
-/-!
-### Analyticity within respects products
--/
-
-lemma HasFPowerSeriesWithinOnBall.prod {e : E} {f : E → F} {g : E → G} {s : Set E} {r t : ℝ≥0∞}
-    {p : FormalMultilinearSeries 𝕜 E F} {q : FormalMultilinearSeries 𝕜 E G}
-    (hf : HasFPowerSeriesWithinOnBall f p s e r) (hg : HasFPowerSeriesWithinOnBall g q s e t) :
-    HasFPowerSeriesWithinOnBall (fun x ↦ (f x, g x)) (p.prod q) s e (min r t) where
-  r_le := by
-    rw [p.radius_prod_eq_min]
-    exact min_le_min hf.r_le hg.r_le
-  r_pos := lt_min hf.r_pos hg.r_pos
-  hasSum := by
-    intro y m hy
-    simp_rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.prod_apply]
-    refine (hf.hasSum m ?_).prod_mk (hg.hasSum m ?_)
-    · exact EMetric.mem_ball.mpr (lt_of_lt_of_le hy (min_le_left _ _))
-    · exact EMetric.mem_ball.mpr (lt_of_lt_of_le hy (min_le_right _ _))
-
-lemma HasFPowerSeriesWithinAt.prod {e : E} {f : E → F} {g : E → G} {s : Set E}
-    {p : FormalMultilinearSeries 𝕜 E F} {q : FormalMultilinearSeries 𝕜 E G}
-    (hf : HasFPowerSeriesWithinAt f p s e) (hg : HasFPowerSeriesWithinAt g q s e) :
-    HasFPowerSeriesWithinAt (fun x ↦ (f x, g x)) (p.prod q) s e := by
-  rcases hf with ⟨_, hf⟩
-  rcases hg with ⟨_, hg⟩
-  exact ⟨_, hf.prod hg⟩
-
-lemma AnalyticWithinAt.prod {e : E} {f : E → F} {g : E → G} {s : Set E}
-    (hf : AnalyticWithinAt 𝕜 f s e) (hg : AnalyticWithinAt 𝕜 g s e) :
-    AnalyticWithinAt 𝕜 (fun x ↦ (f x, g x)) s e := by
-  rcases hf with ⟨_, hf⟩
-  rcases hg with ⟨_, hg⟩
-  exact ⟨_, hf.prod hg⟩
-
-lemma AnalyticWithinOn.prod {f : E → F} {g : E → G} {s : Set E}
-    (hf : AnalyticWithinOn 𝕜 f s) (hg : AnalyticWithinOn 𝕜 g s) :
-    AnalyticWithinOn 𝕜 (fun x ↦ (f x, g x)) s :=
-  fun x hx ↦ (hf x hx).prod (hg x hx)
