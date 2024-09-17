@@ -450,9 +450,9 @@ theorem rootMultiplicity_eq_rootMultiplicity {p : R[X]} {t : R} :
     p.rootMultiplicity t = (p.comp (X + C t)).rootMultiplicity 0 := by
   classical
   simp_rw [rootMultiplicity_eq_multiplicity, comp_X_add_C_eq_zero_iff]
-  congr; ext; congr 1
+  congr; ext;
   rw [C_0, sub_zero]
-  convert (multiplicity.multiplicity_map_eq <| algEquivAevalXAddC t).symm using 2
+  convert (multiplicity_map_eq <| algEquivAevalXAddC t).symm using 2
   simp [C_eq_algebraMap]
 
 theorem rootMultiplicity_eq_natTrailingDegree' {p : R[X]} :
@@ -718,7 +718,7 @@ theorem rootMultiplicity_mul {p q : R[X]} {x : R} (hpq : p * q ≠ 0) :
   have hq : q ≠ 0 := right_ne_zero_of_mul hpq
   rw [rootMultiplicity_eq_multiplicity (p * q), dif_neg hpq, rootMultiplicity_eq_multiplicity p,
     dif_neg hp, rootMultiplicity_eq_multiplicity q, dif_neg hq,
-    multiplicity.mul' (prime_X_sub_C x)]
+    multiplicity_mul (prime_X_sub_C x) (multiplicity_X_sub_C_finite _ hpq)]
 
 open Multiset in
 theorem exists_multiset_roots [DecidableEq R] :

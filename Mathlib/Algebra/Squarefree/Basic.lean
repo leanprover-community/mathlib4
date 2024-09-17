@@ -101,15 +101,15 @@ namespace multiplicity
 
 section CommMonoid
 
-variable [CommMonoid R] [DecidableRel (Dvd.dvd : R → R → Prop)]
+variable [CommMonoid R]
 
 theorem squarefree_iff_multiplicity_le_one (r : R) :
-    Squarefree r ↔ ∀ x : R, multiplicity x r ≤ 1 ∨ IsUnit x := by
+    Squarefree r ↔ ∀ x : R, emultiplicity x r ≤ 1 ∨ IsUnit x := by
   refine forall_congr' fun a => ?_
-  rw [← sq, pow_dvd_iff_le_multiplicity, or_iff_not_imp_left, not_le, imp_congr _ Iff.rfl]
+  rw [← sq, pow_dvd_iff_le_emultiplicity, or_iff_not_imp_left, not_le, imp_congr _ Iff.rfl]
   norm_cast
   rw [← one_add_one_eq_two]
-  simpa using PartENat.add_one_le_iff_lt (PartENat.natCast_ne_top 1)
+  exact Order.add_one_le_iff_of_not_isMax (by simp)
 
 end CommMonoid
 
@@ -267,7 +267,7 @@ theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] {x : R}
     · have ha := irreducible_of_normalized_factor _ hmem
       rcases h a with (h | h)
       · rw [← normalize_normalized_factor _ hmem]
-        rw [multiplicity_eq_count_normalizedFactors ha x0] at h
+        rw [emultiplicity_eq_count_normalizedFactors ha x0] at h
         assumption_mod_cast
       · have := ha.1
         contradiction
@@ -277,8 +277,8 @@ theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] {x : R}
     rcases eq_or_ne a 0 with rfl | h0
     · simp [x0]
     rcases WfDvdMonoid.exists_irreducible_factor hu h0 with ⟨b, hib, hdvd⟩
-    apply le_trans (multiplicity.multiplicity_le_multiplicity_of_dvd_left hdvd)
-    rw [multiplicity_eq_count_normalizedFactors hib x0]
+    apply le_trans (emultiplicity_le_emultiplicity_of_dvd_left hdvd)
+    rw [emultiplicity_eq_count_normalizedFactors hib x0]
     exact_mod_cast h (normalize b)
 
 end UniqueFactorizationMonoid

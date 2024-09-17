@@ -344,6 +344,12 @@ theorem emultiplicity_le_emultiplicity_iff {c d : β} :
       simp_all only [not_exists, Decidable.not_not, not_true_eq_false, top_le_iff, dite_eq_else,
         ENat.coe_ne_top, imp_false, not_false_eq_true, implies_true]
 
+theorem multiplicity.Finite.multiplicity_le_multiplicity_iff {c d : β} (hab : Finite a b)
+    (hcd : Finite c d) : multiplicity a b ≤ multiplicity c d ↔ ∀ n : ℕ, a ^ n ∣ b → c ^ n ∣ d := by
+  rw [← WithTop.coe_le_coe, ENat.some_eq_coe, ← hab.emultiplicity_eq_multiplicity,
+    ← hcd.emultiplicity_eq_multiplicity]
+  apply emultiplicity_le_emultiplicity_iff
+
 theorem emultiplicity_eq_emultiplicity_iff {c d : β} :
     emultiplicity a b = emultiplicity c d ↔ ∀ n : ℕ, a ^ n ∣ b ↔ c ^ n ∣ d :=
   ⟨fun h n =>
@@ -359,6 +365,10 @@ theorem le_emultiplicity_map {F : Type*} [FunLike F α β] [MonoidHomClass F α 
 theorem emultiplicity_map_eq {F : Type*} [EquivLike F α β] [MulEquivClass F α β]
     (f : F) {a b : α} : emultiplicity (f a) (f b) = emultiplicity a b := by
   simp [emultiplicity_eq_emultiplicity_iff, ← map_pow, map_dvd_iff]
+
+theorem multiplicity_map_eq {F : Type*} [EquivLike F α β] [MulEquivClass F α β]
+    (f : F) {a b : α} : multiplicity (f a) (f b) = multiplicity a b :=
+  multiplicity_eq_of_emultiplicity_eq (emultiplicity_map_eq f)
 
 theorem emultiplicity_le_emultiplicity_of_dvd_right {a b c : α} (h : b ∣ c) :
     emultiplicity a b ≤ emultiplicity a c :=
@@ -734,6 +744,12 @@ theorem Int.multiplicity_finite_iff_natAbs_finite {a b : ℤ} :
     Finite a b ↔ Finite a.natAbs b.natAbs := by
   simp only [Finite.def, ← Int.natAbs_dvd_natAbs, Int.natAbs_pow]
 
-theorem Int.multiplicity_finite_int_iff {a b : ℤ} : Finite a b ↔ a.natAbs ≠ 1 ∧ b ≠ 0 := by
+theorem Int.multiplicity_finite_iff {a b : ℤ} : Finite a b ↔ a.natAbs ≠ 1 ∧ b ≠ 0 := by
   rw [multiplicity_finite_iff_natAbs_finite, Nat.multiplicity_finite_iff,
     pos_iff_ne_zero, Int.natAbs_ne_zero]
+
+instance Nat.decidableMultiplicityFinite : DecidableRel fun a b : ℕ => Finite a b := fun _ _ =>
+  decidable_of_iff' _ Nat.multiplicity_finite_iff
+
+instance Int.decidableMultiplicityFinite : DecidableRel fun a b : ℤ => Finite a b := fun _ _ =>
+  decidable_of_iff' _ Int.multiplicity_finite_iff
