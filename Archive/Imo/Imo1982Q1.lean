@@ -93,21 +93,20 @@ lemma part_2 : f 1980 ≤ 660 := by
   exact h
 
 lemma main : f 1982 = 660 := by
-  have f_1980: f 1980 = 660 := le_antisymm hf.part_2 hf.part_1
+  have f_1980 := hf.part_2.antisymm hf.part_1
   have h : f 1982 = f 1980 + f 2 ∨ f 1982 = f 1980 + f 2 + 1 := hf.rel 1980 2
   rw [f_1980, hf.f₂, add_zero] at h
-  rcases h with ( hl | hr)
-  · exact hl
-  · have h : 5 * f 1982 + 29 * f 3 + f 2 ≤ 3333 := by
-      calc
-      (5 : ℕ+) * f 1982 + (29 : ℕ+) * f 3 + f 2 ≤ f (5 * 1982 + 29 * 3) + f 2 := by
-        apply add_le_add_right hf.superlinear
-      _ ≤ f (5 * 1982 + 29 * 3 + 2) := by apply hf.superadditive
-      _ = f 9999 := rfl
-      _ = 3333 := by rw [hf.f_9999]
-    rw [hf.f₃, hf.f₂, hr, add_zero, mul_one] at h
-    -- 3334 ≤ 3333 a contradiction
-    simp at h
+  apply h.resolve_right
+  intro hr
+  have h : 5 * f 1982 + 29 * f 3 + f 2 ≤ 3333 := by
+    calc
+      (5 : ℕ+) * f 1982 + (29 : ℕ+) * f 3 + f 2 ≤ f (5 * 1982 + 29 * 3) + f 2 :=
+        add_le_add_right hf.superlinear _
+      _ ≤ f (5 * 1982 + 29 * 3 + 2) := hf.superadditive
+      _ = 3333 := hf.f_9999
+  rw [hf.f₃, hf.f₂, hr, add_zero, mul_one] at h
+  -- 3334 ≤ 3333 a contradiction
+  norm_num at h
 
 end IsGood
 
