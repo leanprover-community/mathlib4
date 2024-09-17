@@ -328,7 +328,7 @@ section Order
 variable (f : MvPowerSeries σ R)
 
 theorem eq_zero_iff_forall_coeff_eq_zero_and :
-    f = 0 ↔ (∀ d : σ →₀ ℕ, coeff R d f = 0) := 
+    f = 0 ↔ (∀ d : σ →₀ ℕ, coeff R d f = 0) :=
   ext_iff
 
 theorem ne_zero_iff_exists_coeff_ne_zero_and_degree :
