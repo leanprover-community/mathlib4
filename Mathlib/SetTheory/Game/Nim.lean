@@ -214,38 +214,38 @@ noncomputable def grundyValue (G : PGame.{u}) : Ordinal.{u} :=
   sInf (Set.range fun i => grundyValue (G.moveLeft i))ᶜ
 termination_by G
 
-theorem grundyValue_eq_sInf_left (G : PGame) :
+theorem grundyValue_eq_sInf_moveLeft (G : PGame) :
     grundyValue G = sInf (Set.range (grundyValue ∘ G.moveLeft))ᶜ := by
   rw [grundyValue]; rfl
 
-@[deprecated grundyValue_eq_sInf_left (since := "2024-09-16")]
+@[deprecated grundyValue_eq_sInf_moveLeft (since := "2024-09-16")]
 theorem grundyValue_eq_mex_left (G : PGame) :
     grundyValue G = Ordinal.mex fun i => grundyValue (G.moveLeft i) :=
-  grundyValue_eq_sInf_left G
+  grundyValue_eq_sInf_moveLeft G
 
-theorem grundyValue_ne_left {G : PGame} (i : G.LeftMoves) :
+theorem grundyValue_ne_moveLeft {G : PGame} (i : G.LeftMoves) :
     grundyValue (G.moveLeft i) ≠ grundyValue G := by
-  conv_rhs => rw [grundyValue_eq_sInf_left]
+  conv_rhs => rw [grundyValue_eq_sInf_moveLeft]
   have := csInf_mem (compl_nonempty_of_small (Set.range fun i => grundyValue (G.moveLeft i)))
   rw [Set.mem_compl_iff, Set.mem_range, not_exists] at this
   exact this _
 
-theorem le_grundyValue_of_subset_left {G : PGame} {o : Ordinal}
+theorem le_grundyValue_of_Iio_subset_moveLeft {G : PGame} {o : Ordinal}
     (h : Set.Iio o ⊆ Set.range (grundyValue ∘ G.moveLeft)) : o ≤ grundyValue G := by
   by_contra! ho
   obtain ⟨i, hi⟩ := h ho
-  exact grundyValue_ne_left i hi
+  exact grundyValue_ne_moveLeft i hi
 
-theorem exists_grundyValue_left_of_lt {G : PGame} {o : Ordinal} (h : o < grundyValue G) :
+theorem exists_grundyValue_moveLeft_of_lt {G : PGame} {o : Ordinal} (h : o < grundyValue G) :
     ∃ i, grundyValue (G.moveLeft i) = o := by
-  rw [grundyValue_eq_sInf_left] at h
+  rw [grundyValue_eq_sInf_moveLeft] at h
   by_contra ha
   exact h.not_le (csInf_le' ha)
 
-theorem grundyValue_le_of_forall_left {G : PGame} {o : Ordinal}
+theorem grundyValue_le_of_forall_moveLeft {G : PGame} {o : Ordinal}
     (h : ∀ i, grundyValue (G.moveLeft i) ≠ o) : G.grundyValue ≤ o := by
   contrapose! h
-  exact exists_grundyValue_left_of_lt h
+  exact exists_grundyValue_moveLeft_of_lt h
 
 /-- The **Sprague-Grundy theorem** states that every impartial game is equivalent to a game of nim,
 namely the game of nim corresponding to the game's Grundy value. -/
@@ -257,9 +257,9 @@ theorem equiv_nim_grundyValue (G : PGame.{u}) [G.Impartial] : G ≈ nim (grundyV
   · rw [add_moveLeft_inl,
       ← fuzzy_congr_left (add_congr_left (Equiv.symm (equiv_nim_grundyValue _))),
       nim_add_fuzzy_zero_iff]
-    exact grundyValue_ne_left i
+    exact grundyValue_ne_moveLeft i
   · rw [add_moveLeft_inr, ← Impartial.exists_left_move_equiv_iff_fuzzy_zero]
-    obtain ⟨j, hj⟩ := exists_grundyValue_left_of_lt <| toLeftMovesNim_symm_lt i
+    obtain ⟨j, hj⟩ := exists_grundyValue_moveLeft_of_lt <| toLeftMovesNim_symm_lt i
     use toLeftMovesAdd (Sum.inl j)
     rw [add_moveLeft_inl, moveLeft_nim']
     exact Equiv.trans (add_congr_left (equiv_nim_grundyValue _)) (hj ▸ Impartial.add_self _)
@@ -293,48 +293,49 @@ theorem grundyValue_star : grundyValue star = 1 :=
 theorem grundyValue_neg (G : PGame) [G.Impartial] : grundyValue (-G) = grundyValue G := by
   rw [grundyValue_eq_iff_equiv_nim, neg_equiv_iff, neg_nim, ← grundyValue_eq_iff_equiv_nim]
 
-theorem grundyValue_eq_sInf_right (G : PGame) [G.Impartial] :
+theorem grundyValue_eq_sInf_moveRight (G : PGame) [G.Impartial] :
     grundyValue G = sInf (Set.range (grundyValue ∘ G.moveRight))ᶜ := by
   obtain ⟨l, r, L, R⟩ := G
-  rw [← grundyValue_neg, grundyValue_eq_sInf_left]
+  rw [← grundyValue_neg, grundyValue_eq_sInf_moveLeft]
   iterate 3 apply congr_arg
   ext i
   exact @grundyValue_neg _ (@Impartial.moveRight_impartial ⟨l, r, L, R⟩ _ _)
 
-@[deprecated grundyValue_eq_sInf_right (since := "2024-09-16")]
+@[deprecated grundyValue_eq_sInf_moveRight (since := "2024-09-16")]
 theorem grundyValue_eq_mex_right (G : PGame) [G.Impartial] :
     grundyValue G = Ordinal.mex.{u, u} fun i => grundyValue (G.moveRight i) :=
-  grundyValue_eq_sInf_right G
+  grundyValue_eq_sInf_moveRight G
 
-theorem grundyValue_ne_right {G : PGame} [G.Impartial] (i : G.RightMoves) :
+theorem grundyValue_ne_moveRight {G : PGame} [G.Impartial] (i : G.RightMoves) :
     grundyValue (G.moveRight i) ≠ grundyValue G := by
-  convert grundyValue_ne_left (toLeftMovesNeg i) using 1 <;> simp
+  convert grundyValue_ne_moveLeft (toLeftMovesNeg i) using 1 <;> simp
 
-theorem le_grundyValue_of_subset_right {G : PGame} [G.Impartial] {o : Ordinal}
+theorem le_grundyValue_of_Iio_subset_moveRight {G : PGame} [G.Impartial] {o : Ordinal}
     (h : Set.Iio o ⊆ Set.range (grundyValue ∘ G.moveRight)) : o ≤ grundyValue G := by
   by_contra! ho
   obtain ⟨i, hi⟩ := h ho
-  exact grundyValue_ne_right i hi
+  exact grundyValue_ne_moveRight i hi
 
-theorem exists_grundyValue_right_of_lt {G : PGame} [G.Impartial] {o : Ordinal}
+theorem exists_grundyValue_moveRight_of_lt {G : PGame} [G.Impartial] {o : Ordinal}
     (h : o < grundyValue G) : ∃ i, grundyValue (G.moveRight i) = o := by
   rw [← grundyValue_neg] at h
-  obtain ⟨i, hi⟩ := exists_grundyValue_left_of_lt h
+  obtain ⟨i, hi⟩ := exists_grundyValue_moveLeft_of_lt h
   use toLeftMovesNeg.symm i
   rwa [← grundyValue_neg, ← moveLeft_neg']
 
-theorem grundyValue_le_of_forall_right {G : PGame} [G.Impartial] {o : Ordinal}
+theorem grundyValue_le_of_forall_moveRight {G : PGame} [G.Impartial] {o : Ordinal}
     (h : ∀ i, grundyValue (G.moveRight i) ≠ o) : G.grundyValue ≤ o := by
   contrapose! h
-  exact exists_grundyValue_right_of_lt h
+  exact exists_grundyValue_moveRight_of_lt h
 
 -- Todo: redefine `grundyValue` as a nimber, and prove `grundyValue (nim a + nim b) = a + b` for all
 -- nimbers.
+
 /-- The Grundy value of the sum of two nim games with natural numbers of piles equals their bitwise
 xor. -/
 @[simp]
 theorem grundyValue_nim_add_nim (n m : ℕ) : grundyValue (nim.{u} n + nim.{u} m) = n ^^^ m := by
-  apply (grundyValue_le_of_forall_left _).antisymm (le_grundyValue_of_subset_left _)
+  apply (grundyValue_le_of_forall_moveLeft _).antisymm (le_grundyValue_of_Iio_subset_moveLeft _)
   -- Since XOR is injective, no left moves of `nim n + nim m` will have `n ^^^ m` as a Grundy value.
   · intro i
     apply leftMoves_add_cases i
