@@ -9,16 +9,22 @@ import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
 # Fundamental Cone
 
 Let `K` be a number field of signature `(r₁, r₂)`. We define an action of the units `(𝓞 K)ˣ` on
-the mixed space `ℝ^r₁ × ℂ^r₂` via the `mixedEmbedding`.
+the mixed space `ℝ^r₁ × ℂ^r₂` via the `mixedEmbedding`. The fundamental cone is a cone in the
+mixed space that is a fundamental domain for the action of `(𝓞 K)ˣ` modulo torsion.
 
 ## Main definitions and results
 
 * `NumberField.mixedEmbedding.unitSMul`: the action of `(𝓞 K)ˣ` on the mixed space defined, for
 `u : (𝓞 K)ˣ`, by multiplication component by component with `mixedEmbedding K u`.
 
+* `NumberField.mixedEmbedding.fundamentalCone`: a cone in the mixed space, ie. a subset stable
+by multiplication by a nonzero real number, see `smul_mem_of_mem`, that is also a fundamental
+domain for the action of `(𝓞 K)ˣ` modulo torsion, see `exists_unit_smul_mem` and
+`torsion_unit_smul_mem_of_mem`.
+
 ## Tags
 
-number field, canonical embedding, units
+number field, canonical embedding, units, principal ideals
 -/
 
 variable (K : Type*) [Field K]
@@ -113,13 +119,14 @@ theorem logMap_apply_of_norm_one (hx : mixedEmbedding.norm x = 1)
 
 @[simp]
 theorem logMap_eq_logEmbedding (u : (𝓞 K)ˣ) :
-    logMap (mixedEmbedding K u) = logEmbedding K u := by
+    logMap (mixedEmbedding K u) = logEmbedding K (Additive.ofMul u) := by
   ext; simp
 
 theorem logMap_unit_smul (u : (𝓞 K)ˣ) (hx : mixedEmbedding.norm x ≠ 0) :
-    logMap (u • x) = logEmbedding K u + logMap x := by
+    logMap (u • x) = logEmbedding K (Additive.ofMul u) + logMap x := by
   rw [unitSMul_smul, logMap_mul (by rw [norm_unit]; norm_num) hx, logMap_eq_logEmbedding]
 
+variable (x) in
 theorem logMap_torsion_smul {ζ : (𝓞 K)ˣ} (hζ : ζ ∈ torsion K) :
     logMap (ζ • x) = logMap x := by
   ext
@@ -146,5 +153,89 @@ theorem logMap_eq_of_normAtPlace_eq (h : ∀ w, normAtPlace w x = normAtPlace w 
   simp_rw [logMap_apply, h, norm_eq_of_normAtPlace_eq h]
 
 end logMap
+
+noncomputable section
+
+open NumberField.Units NumberField.Units.dirichletUnitTheorem
+
+variable [NumberField K]
+
+open Classical in
+/-- The fundamental cone is a cone in the mixed space, ie. a subset fixed by multiplication by
+a nonzero real number, see `smul_mem_of_mem`, that is also a fundamental domain for the action
+of `(𝓞 K)ˣ` modulo torsion, see `exists_unit_smul_mem` and `torsion_smul_mem_of_mem`. -/
+def fundamentalCone : Set (mixedSpace K) :=
+  logMap⁻¹' (ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ _)) \
+      {x | mixedEmbedding.norm x = 0}
+
+namespace fundamentalCone
+
+variable {K} {x y : mixedSpace K} {c : ℝ}
+
+theorem norm_pos_of_mem (hx : x ∈ fundamentalCone K) :
+    0 < mixedEmbedding.norm x :=
+  lt_of_le_of_ne (mixedEmbedding.norm_nonneg _) (Ne.symm hx.2)
+
+theorem normAtPlace_pos_of_mem (hx : x ∈ fundamentalCone K) (w : InfinitePlace K) :
+    0 < normAtPlace w x :=
+  lt_of_le_of_ne (normAtPlace_nonneg _ _)
+    (mixedEmbedding.norm_ne_zero_iff.mp (norm_pos_of_mem hx).ne' w).symm
+
+theorem mem_of_normAtPlace_eq (hx : x ∈ fundamentalCone K)
+    (hy : ∀ w, normAtPlace w y = normAtPlace w x) :
+    y ∈ fundamentalCone K := by
+  refine ⟨?_, by simpa [norm_eq_of_normAtPlace_eq hy] using hx.2⟩
+  rw [Set.mem_preimage, logMap_eq_of_normAtPlace_eq hy]
+  exact hx.1
+
+theorem smul_mem_of_mem (hx : x ∈ fundamentalCone K) (hc : c ≠ 0) :
+    c • x ∈ fundamentalCone K := by
+  refine ⟨?_, ?_⟩
+  · rw [Set.mem_preimage, logMap_real_smul hx.2 hc]
+    exact hx.1
+  · rw [Set.mem_setOf_eq, mixedEmbedding.norm_smul, mul_eq_zero, not_or]
+    exact ⟨pow_ne_zero _ (abs_ne_zero.mpr hc), hx.2⟩
+
+theorem smul_mem_iff_mem (hc : c ≠ 0) :
+    c • x ∈ fundamentalCone K ↔ x ∈ fundamentalCone K := by
+  refine ⟨fun h ↦ ?_, fun h ↦ smul_mem_of_mem h hc⟩
+  convert smul_mem_of_mem h (inv_ne_zero hc)
+  rw [eq_inv_smul_iff₀ hc]
+
+theorem exists_unit_smul_mem (hx : mixedEmbedding.norm x ≠ 0) :
+    ∃ u : (𝓞 K)ˣ, u • x ∈ fundamentalCone K := by
+  classical
+  let B := (basisUnitLattice K).ofZLatticeBasis ℝ
+  rsuffices ⟨⟨_, ⟨u, _, rfl⟩⟩, hu⟩ : ∃ e : unitLattice K, e + logMap x ∈ ZSpan.fundamentalDomain B
+  · exact ⟨u, by rwa [Set.mem_preimage, logMap_unit_smul u hx], by simp [hx]⟩
+  · obtain ⟨⟨e, h₁⟩, h₂, -⟩ := ZSpan.exist_unique_vadd_mem_fundamentalDomain B (logMap x)
+    exact ⟨⟨e, by rwa [← Basis.ofZLatticeBasis_span ℝ (unitLattice K)]⟩, h₂⟩
+
+theorem torsion_smul_mem_of_mem (hx : x ∈ fundamentalCone K) {ζ : (𝓞 K)ˣ} (hζ : ζ ∈ torsion K) :
+    ζ • x ∈ fundamentalCone K := by
+  constructor
+  · rw [Set.mem_preimage, logMap_torsion_smul _ hζ]
+    exact hx.1
+  · rw [Set.mem_setOf_eq, unitSMul_smul, map_mul, norm_unit, one_mul]
+    exact hx.2
+
+theorem unit_smul_mem_iff_mem_torsion (hx : x ∈ fundamentalCone K) (u : (𝓞 K)ˣ) :
+    u • x ∈ fundamentalCone K ↔ u ∈ torsion K := by
+  classical
+  refine ⟨fun h ↦ ?_, fun h ↦ torsion_smul_mem_of_mem hx h⟩
+  rw [← logEmbedding_eq_zero_iff]
+  let B := (basisUnitLattice K).ofZLatticeBasis ℝ
+  refine (Subtype.mk_eq_mk (h := ?_) (h' := Submodule.zero_mem _)).mp <|
+    (ZSpan.exist_unique_vadd_mem_fundamentalDomain B (logMap x)).unique ?_ ?_
+  · rw [Basis.ofZLatticeBasis_span ℝ (unitLattice K)]
+    exact ⟨u, trivial, rfl⟩
+  · rw [AddSubmonoid.mk_vadd, vadd_eq_add, ← logMap_unit_smul _ hx.2]
+    exact h.1
+  · rw [AddSubmonoid.mk_vadd, vadd_eq_add, zero_add]
+    exact hx.1
+
+end fundamentalCone
+
+end
 
 end NumberField.mixedEmbedding
