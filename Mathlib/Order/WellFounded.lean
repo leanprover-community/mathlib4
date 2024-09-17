@@ -123,27 +123,28 @@ end WellFounded
 
 section LinearOrder
 
-variable [LinearOrder β] [PartialOrder γ]
+variable [LinearOrder β] [Preorder γ]
 
 theorem WellFounded.min_le (h : WellFounded ((· < ·) : β → β → Prop))
     {x : β} {s : Set β} (hx : x ∈ s) (hne : s.Nonempty := ⟨x, hx⟩) : h.min s hne ≤ x :=
   not_lt.1 <| h.not_lt_min _ _ hx
-
-private theorem range_injOn_strictMono_aux {f g : β → γ} (hf : StrictMono f) (hg : StrictMono g)
-    (hfg : Set.range f = Set.range g) {b : β} (H : ∀ a < b, f a = g a) : f b ≤ g b := by
-  obtain ⟨c, hc⟩ : g b ∈ Set.range f := hfg ▸ Set.mem_range_self b
-  rcases lt_or_le c b with hcb | hbc
-  · rw [H c hcb, hg.injective.eq_iff] at hc
-    exact (hc.not_lt hcb).elim
-  · rwa [← hc, hf.le_iff_le]
 
 theorem Set.range_injOn_strictMono [WellFoundedLT β] :
     Set.InjOn Set.range { f : β → γ | StrictMono f } := by
   intro f hf g hg hfg
   ext a
   apply WellFoundedLT.induction a
-  exact fun b IH => (range_injOn_strictMono_aux hf hg hfg IH).antisymm
-    (range_injOn_strictMono_aux hg hf hfg.symm fun a hab => (IH a hab).symm)
+  intro a IH
+  obtain ⟨b, hb⟩ := hfg ▸ mem_range_self a
+  obtain h | rfl | h := lt_trichotomy b a
+  · rw [← IH b h] at hb
+    cases (hf.injective hb).not_lt h
+  · rw [hb]
+  · obtain ⟨c, hc⟩ := hfg.symm ▸ mem_range_self a
+    have := hg h
+    rw [hb, ← hc, hf.lt_iff_lt] at this
+    rw [IH c this] at hc
+    cases (hg.injective hc).not_lt this
 
 theorem Set.range_injOn_strictAnti [WellFoundedGT β] :
     Set.InjOn Set.range { f : β → γ | StrictAnti f } :=
