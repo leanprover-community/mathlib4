@@ -1661,13 +1661,12 @@ namespace Set
 lemma Iio_False : Iio False = ∅ := by aesop
 
 @[simp]
-lemma Iio_True : Iio True = {False} := by
-  apply le_antisymm
-  · aesop
-  · intro x hx
+lemma Iio_True : Iio True = {False} := le_antisymm
+  (fun _ => by aesop)
+  (fun x hx => by
     rw [mem_singleton_iff, eq_iff_iff, iff_false] at hx
     rw [mem_Iio]
-    exact not_mem_Ici.mp fun a ↦ hx (a trivial)
+    exact not_mem_Ici.mp fun a ↦ hx (a trivial))
 
 @[simp]
 lemma Iic_False : Iic False = {False} := by
@@ -1683,14 +1682,9 @@ lemma Ici_False : Ici False = univ := by aesop
 lemma Ici_True : Ici True = {True} := by aesop
 
 @[simp]
-lemma Ioi_False : Ioi False = {True} := by
-  apply le_antisymm
-  · intro x hx
-    by_contra hf
-    aesop
-  · intro x hx
-    rw [mem_Ioi, hx]
-    exact not_mem_Ici.mp fun a ↦ a trivial
+lemma Ioi_False : Ioi False = {True} := le_antisymm
+  (fun x hx => by by_contra hf; aesop)
+  (fun x hx => by rw [mem_Ioi, hx]; exact not_mem_Ici.mp fun a ↦ a trivial)
 
 @[simp]
 lemma Ioi_True : Ioi True = ∅ := Ioi_eq_empty_iff.mpr fun ⦃_⦄ _ _ ↦ trivial
