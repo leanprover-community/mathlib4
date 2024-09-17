@@ -1681,7 +1681,9 @@ lemma Ioi_False : Ioi False = {True} := by
   · intro x hx
     by_contra hf
     aesop
-  · exact disjoint_compl_left_iff.mp fun ⦃x⦄ a a ↦ a
+  · intro x hx
+    rw [mem_Ioi, hx]
+    exact not_mem_Ici.mp fun a ↦ a trivial
 
 lemma Ioi_True : Ioi True = ∅ := Ioi_eq_empty_iff.mpr fun ⦃_⦄ _ _ ↦ trivial
 
