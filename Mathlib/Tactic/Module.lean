@@ -633,9 +633,8 @@ example [AddCommGroup M] [CommRing R] [Module R M] (a b μ ν : R) (x y : M) :
 If the proofs of coefficient-wise equality will require more reasoning than just ring-normalization,
 use the tactic `match_scalars` instead, and then prove coefficient-wise equality by hand.
 -/
-elab "module" : tactic => Tactic.liftMetaTactic fun g ↦ do
+elab "module" : tactic => Tactic.liftMetaFinishingTactic fun g ↦ do
   let l ← matchScalars g
-  let _ ← l.mapM <| fun mvar ↦ AtomM.run .default (Ring.proveEq mvar)
-  pure []
+  discard <| l.mapM fun mvar ↦ AtomM.run .default (Ring.proveEq mvar)
 
 end Mathlib.Tactic.Module
