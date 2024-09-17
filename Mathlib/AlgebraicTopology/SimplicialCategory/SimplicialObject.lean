@@ -27,31 +27,11 @@ variable {D : Type u} [Category.{v} D]
 
 namespace SimplicialObject
 
-open Simplicial
-
 noncomputable instance : EnrichedCategory SSet.{v} (SimplicialObject D)  :=
-  inferInstanceAs (EnrichedCategory (SimplexCategoryᵒᵖ ⥤ Type v) (SimplexCategoryᵒᵖ ⥤ D))
-
-/-- If `K` and `L` are simplicial objects, the zero-simplices of the simplicial
-hom from `K` to `L` identify to `K ⟶ L`. -/
-def sHom₀Equiv (K L : SimplicialObject D) :
-    EnrichedCategory.Hom (V := SSet.{v}) K L _[0] ≃ (K ⟶ L) where
-  toFun x :=
-    { app := fun Δ ↦ x.app Δ (SimplexCategory.const _ _ 0).op
-      naturality := fun Δ Δ' f ↦ by rw [← x.naturality f]; rfl }
-  invFun φ :=
-    { app := fun Δ _ ↦ φ.app Δ
-      naturality := fun {Δ Δ'} f ⟨s⟩ ↦ by
-        obtain rfl := Subsingleton.elim s (SimplexCategory.const _ _ 0)
-        simp only [NatTrans.naturality] }
-  left_inv x := Functor.functorHom_ext (fun Δ ⟨s⟩ ↦ by
-    obtain rfl := Subsingleton.elim s (SimplexCategory.const _ _ 0)
-    rfl)
-  right_inv _ := rfl
+  inferInstanceAs (EnrichedCategory (_ ⥤ Type v) (_ ⥤ D))
 
 noncomputable instance : SimplicialCategory (SimplicialObject D) where
-  homEquiv K L :=
-    (sHom₀Equiv K L).symm.trans (SSet.unitHomEquiv (EnrichedCategory.Hom K L)).symm
+  homEquiv K L := Functor.natTransEquiv.symm
 
 noncomputable instance : SimplicialCategory SSet.{v} :=
   inferInstanceAs (SimplicialCategory (SimplicialObject (Type v)))
