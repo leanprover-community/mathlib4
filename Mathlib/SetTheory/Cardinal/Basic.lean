@@ -746,7 +746,7 @@ theorem le_sum {ι} (f : ι → Cardinal) (i) : f i ≤ sum f := by
 theorem mk_sigma {ι} (f : ι → Type*) : #(Σ i, f i) = sum fun i => #(f i) :=
   mk_congr <| Equiv.sigmaCongrRight fun _ => outMkEquiv.symm
 
-theorem mk_sigma_congr {ι ι'} {f : ι → Type v} {g : ι' → Type v} (e : ι ≃ ι')
+theorem mk_sigma_congr {ι ι' : Type u} {f : ι → Type v} {g : ι' → Type v} (e : ι ≃ ι')
     (h : ∀ i, #(f i) = #(g (e i))) : #(Σ i, f i) = #(Σ i, g i) :=
   mk_congr <| Equiv.sigmaCongr e fun i ↦ Classical.choice <| Cardinal.eq.mp (h i)
 
@@ -755,7 +755,7 @@ theorem mk_sigma_congr' {ι : Type u} {ι' : Type v} {f : ι → Type max w (max
     (h : ∀ i, #(f i) = #(g (e i))) : #(Σ i, f i) = #(Σ i, g i) :=
   mk_congr <| Equiv.sigmaCongr e fun i ↦ Classical.choice <| Cardinal.eq.mp (h i)
 
-theorem mk_sigma_congrRight {ι} {f g : ι → Type v} (h : ∀ i, #(f i) = #(g i)) :
+theorem mk_sigma_congrRight {ι : Type u} {f g : ι → Type v} (h : ∀ i, #(f i) = #(g i)) :
     #(Σ i, f i) = #(Σ i, g i) :=
   mk_sigma_congr (Equiv.refl ι) h
 
@@ -933,6 +933,24 @@ def prod {ι : Type u} (f : ι → Cardinal) : Cardinal :=
 @[simp]
 theorem mk_pi {ι : Type u} (α : ι → Type v) : #(∀ i, α i) = prod fun i => #(α i) :=
   mk_congr <| Equiv.piCongrRight fun _ => outMkEquiv.symm
+
+theorem mk_pi_congr {ι ι' : Type u} {f : ι → Type v} {g : ι' → Type v} (e : ι ≃ ι')
+    (h : ∀ i, #(f i) = #(g (e i))) : #(Π i, f i) = #(Π i, g i) :=
+  mk_congr <| Equiv.piCongr e fun i ↦ Classical.choice <| Cardinal.eq.mp (h i)
+
+theorem mk_pi_congr' {ι : Type u} {ι' : Type v} {f : ι → Type max w (max u v)}
+    {g : ι' → Type max w (max u v)} (e : ι ≃ ι')
+    (h : ∀ i, #(f i) = #(g (e i))) : #(Π i, f i) = #(Π i, g i) :=
+  mk_congr <| Equiv.piCongr e fun i ↦ Classical.choice <| Cardinal.eq.mp (h i)
+
+theorem mk_pi_congrRight {ι : Type u} {f g : ι → Type v} (h : ∀ i, #(f i) = #(g i)) :
+    #(Π i, f i) = #(Π i, g i) :=
+  mk_pi_congr (Equiv.refl ι) h
+
+theorem mk_pi_congr_subtype {ι : Type u} {f g : ι → Type v} {S : Set ι}
+    (h : ∀ i ∈ S, #(f i) = #(g i)) : #(Π i ∈ S, f i) = #(Π i ∈ S, g i) := mk_congr <|
+  Equiv.piCongr (Equiv.refl ι)
+    fun i ↦ Equiv.piCongr (.refl _) (fun hi ↦ Classical.choice <| Cardinal.eq.mp (h i hi))
 
 @[simp]
 theorem prod_const (ι : Type u) (a : Cardinal.{v}) :
