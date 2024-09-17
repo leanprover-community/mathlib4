@@ -39,8 +39,16 @@ open Lean Qq Meta
 inductive ExceptType | tooSmall | notComparable
 export ExceptType (tooSmall notComparable)
 
+/-- For use in `Mathlib.Tactic.Ring.proveLE` (to short-circuit typeclass inference):
+`OrderedCommSemiring` implies `CommSemiring`. -/
 abbrev tc₁ (α : Type*) [OrderedCommSemiring α] : CommSemiring α := inferInstance
+
+/-- For use in `Mathlib.Tactic.Ring.proveLE` (to short-circuit typeclass inference):
+`OrderedCommSemiring` implies `AddMonoidWithOne`. -/
 abbrev tc₂ (α : Type*) [OrderedCommSemiring α] : AddMonoidWithOne α := inferInstance
+
+/-- For use in `Mathlib.Tactic.Ring.proveLE` (to short-circuit typeclass inference):
+`OrderedCommSemiring` implies `LE`. -/
 abbrev tc₃ (α : Type*) [OrderedCommSemiring α] : LE α := inferInstance
 
 theorem add_le_add_right' {α : Type*} [OrderedCommSemiring α] {b c : α} (bc : b ≤ c) (a : α) :
@@ -90,8 +98,16 @@ def evalLE {v : Level} {α : Q(Type v)} (_ : Q(OrderedCommSemiring $α)) {a b : 
     pure <| .ok (q(le_add_of_nonneg_left' (a := $a) $pf):)
   | _, _ => return .error notComparable
 
+/-- For use in `Mathlib.Tactic.Ring.proveLT` (to short-circuit typeclass inference):
+`StrictOrderedCommSemiring` implies `CommSemiring`. -/
 abbrev tc₄ (α : Type*) [StrictOrderedCommSemiring α] : CommSemiring α := inferInstance
+
+/-- For use in `Mathlib.Tactic.Ring.proveLT` (to short-circuit typeclass inference):
+`StrictOrderedCommSemiring` implies `AddMonoidWithOne`. -/
 abbrev tc₅ (α : Type*) [StrictOrderedCommSemiring α] : AddMonoidWithOne α := inferInstance
+
+/-- For use in `Mathlib.Tactic.Ring.proveLT` (to short-circuit typeclass inference):
+`StrictOrderedCommSemiring` implies `LT`. -/
 abbrev tc₆ (α : Type*) [StrictOrderedCommSemiring α] : LT α := inferInstance
 
 theorem add_lt_add_right' {α : Type*} [StrictOrderedCommSemiring α] {b c : α} (bc : b < c) (a : α) :
