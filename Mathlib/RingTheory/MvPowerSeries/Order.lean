@@ -106,7 +106,7 @@ Under `Finite σ`, one can use `Finsupp.finite_of_degree_le` and `Finsupp.finite
 show that they have finite support, hence correspond to `MvPolynomial`.
 
 However, when `σ` is finite, this is not necessarily an `MvPolynomial`.
-(For example : the homogeneous components of degree 1 of the multivariate power
+(For example: the homogeneous components of degree 1 of the multivariate power
 series, all of which coefficients are `1`, is the sum of all indeterminates.)
 
 TODO: Define a coercion to MvPolynomial.
@@ -119,23 +119,20 @@ noncomputable section
 
 open ENat WithTop Finsupp
 
-open scoped BigOperators
-
 variable {σ R : Type*} [Semiring R]
 
 section WeightedOrder
 
 variable (w : σ → ℕ) (f : MvPowerSeries σ R)
 
-theorem ne_zero_iff_exists_coeff_ne_zero_and_weight
-    (f : MvPowerSeries σ R):
+theorem ne_zero_iff_exists_coeff_ne_zero_and_weight :
     f ≠ 0 ↔ (∃ n : ℕ, ∃ d : σ →₀ ℕ, coeff R d f ≠ 0 ∧ weight w d = n) := by
   refine not_iff_not.mp ?_
   simp only [ne_eq, not_not, not_exists, not_and, forall_apply_eq_imp_iff₂, imp_false]
   exact ext_iff
 
 /-- The weighted order of a mv_power_series -/
-def weightedOrder (f : MvPowerSeries σ R) : ℕ∞ := by
+def weightedOrder : ℕ∞ := by
   classical
   exact dite (f = 0) (fun _ => ⊤) fun h =>
     Nat.find ((ne_zero_iff_exists_coeff_ne_zero_and_weight w f).mp h)
@@ -157,8 +154,8 @@ theorem weightedOrder_eq_top_iff {f : MvPowerSeries σ R} :
 /-- If the order of a formal power series `f` is finite,
 then some coefficient of weight equal to the order of `f` is nonzero.-/
 theorem exists_coeff_ne_zero_and_weightedOrder
-    (h : ↑(toNat (f.weightedOrder w)) = f.weightedOrder w) :
-    ∃ d, coeff R d f ≠ 0 ∧ ↑(weight w d) = f.weightedOrder w := by
+    (h : (toNat (f.weightedOrder w) : ℕ∞) = f.weightedOrder w) :
+    ∃ d, coeff R d f ≠ 0 ∧ weight w d = f.weightedOrder w := by
   classical
   simp_rw [weightedOrder, dif_neg ((ne_zero_iff_weightedOrder_finite w f).mpr h), Nat.cast_inj]
   generalize_proofs h1
@@ -184,7 +181,7 @@ theorem coeff_eq_zero_of_lt_weightedOrder {d : σ →₀ ℕ} (h : ↑(weight w 
 the `d`th coefficient is `0` for all `d` such that `weight w d < n`.-/
 theorem nat_le_weightedOrder {f : MvPowerSeries σ R} {n : ℕ}
     (h : ∀ d, weight w d < n → coeff R d f = 0) : ↑n ≤ f.weightedOrder w := by
-  by_contra H; rw [not_le] at H
+  by_contra! H
   have : ↑(toNat (f.weightedOrder w)) = f.weightedOrder w := by
     rw [coe_toNat_eq_self]; exact ne_top_of_lt H
   obtain ⟨d, hfd, hd⟩ := exists_coeff_ne_zero_and_weightedOrder w f this
@@ -247,8 +244,8 @@ theorem min_weightedOrder_le_add (f g : MvPowerSeries σ R) :
 private theorem weightedOrder_add_of_weightedOrder_lt.aux {f g : MvPowerSeries σ R}
     (H : f.weightedOrder w < g.weightedOrder w) :
     (f + g).weightedOrder w = f.weightedOrder w := by
-  obtain ⟨n, hn⟩ := ne_top_iff_exists.mp (ne_top_of_lt H)
-  erw [← hn, weightedOrder_eq_nat]
+  obtain ⟨n, hn : (n : ℕ∞) = _⟩ := ne_top_iff_exists.mp (ne_top_of_lt H)
+  rw [← hn, weightedOrder_eq_nat]
   obtain ⟨d, hd', hd⟩ := ((weightedOrder_eq_nat w).mp hn.symm).1
   constructor
   · refine ⟨d, ?_, hd⟩
@@ -329,6 +326,10 @@ end WeightedOrder
 section Order
 
 variable (f : MvPowerSeries σ R)
+
+theorem eq_zero_iff_forall_coeff_eq_zero_and :
+    f = 0 ↔ (∀ d : σ →₀ ℕ, coeff R d f = 0) := 
+  ext_iff
 
 theorem ne_zero_iff_exists_coeff_ne_zero_and_degree :
     f ≠ 0 ↔ (∃ n : ℕ, ∃ d : σ →₀ ℕ, coeff R d f ≠ 0 ∧ degree d = n) := by
