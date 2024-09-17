@@ -535,10 +535,10 @@ theorem image_eq_iff_implicitFunOfBivariate {f : X × Y → Z} {p₀ : X × Y}
 theorem image_implicitFunOfBivariate {f : X × Y → Z} {x₀ : X} {y₀ : Y}
     {fx : X →L[𝕜] Z} {fy : Y ≃L[𝕜] Z} (hf₀ : HasStrictFDerivAt f (fx.coprod fy) (x₀, y₀)) :
     ∀ᶠ x in 𝓝 x₀, f (x, hf₀.implicitFunOfBivariate x) = f (x₀, y₀) := by
+  have hψ := hf₀.implicitFunOfBivariate_hasStrictFDerivAt.continuousAt.tendsto
   set ψ := hf₀.implicitFunOfBivariate
   suffices ∀ᶠ x in 𝓝 x₀, f (x, ψ x) = f (x₀, y₀) ↔ ψ x = ψ x by simpa
-  have := hf₀.implicitFunOfBivariate_hasStrictFDerivAt.continuousAt.tendsto
-  apply this.eventually_image_of_prod (r := fun x y => f (x, y) = f (x₀, y₀) ↔ ψ x = y)
+  apply hψ.eventually_image_of_prod (r := fun x y => f (x, y) = f (x₀, y₀) ↔ ψ x = y)
   rw [← nhds_prod_eq]
   convert hf₀.image_eq_iff_implicitFunOfBivariate
   rw [← hf₀.image_eq_iff_implicitFunOfBivariate.self_of_nhds]
