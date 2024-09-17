@@ -43,14 +43,22 @@ lemma HasFPowerSeriesWithinOnBall.congr {f g : E → F} {p : FormalMultilinearSe
     (h' : EqOn g f (s ∩ EMetric.ball x r)) (h'' : g x = f x) :
     HasFPowerSeriesWithinOnBall g p s x r := by
   refine ⟨h.r_le, h.r_pos, ?_⟩
-  · intro y hy h'y
-    convert h.hasSum hy h'y using 1
-    simp only [mem_insert_iff, add_right_eq_self] at hy
-    rcases hy with rfl | hy
-    · simpa using h''
-    · apply h'
-      refine ⟨hy, ?_⟩
-      simpa [edist_eq_coe_nnnorm_sub] using h'y
+  intro y hy h'y
+  convert h.hasSum hy h'y using 1
+  simp only [mem_insert_iff, add_right_eq_self] at hy
+  rcases hy with rfl | hy
+  · simpa using h''
+  · apply h'
+    refine ⟨hy, ?_⟩
+    simpa [edist_eq_coe_nnnorm_sub] using h'y
+
+lemma HasFPowerSeriesWithinOnBall.congr' {f g : E → F} {p : FormalMultilinearSeries 𝕜 E F}
+    {s : Set E} {x : E} {r : ℝ≥0∞} (h : HasFPowerSeriesWithinOnBall f p s x r)
+    (h' : EqOn g f (insert x s ∩ EMetric.ball x r)) :
+    HasFPowerSeriesWithinOnBall g p s x r := by
+  refine ⟨h.r_le, h.r_pos, fun {y} hy h'y ↦ ?_⟩
+  convert h.hasSum hy h'y using 1
+  exact h' ⟨hy, by simpa [edist_eq_coe_nnnorm_sub] using h'y⟩
 
 lemma HasFPowerSeriesWithinAt.congr {f g : E → F} {p : FormalMultilinearSeries 𝕜 E F} {s : Set E}
     {x : E} (h : HasFPowerSeriesWithinAt f p s x) (h' : g =ᶠ[𝓝[s] x] f) (h'' : g x = f x) :

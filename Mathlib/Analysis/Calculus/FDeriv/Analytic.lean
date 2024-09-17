@@ -22,7 +22,7 @@ As an application, we show that continuous multilinear maps are smooth. We also 
 iterated derivatives, in `ContinuousMultilinearMap.iteratedFDeriv_eq`.
 -/
 
-open Filter Asymptotics
+open Filter Asymptotics Set
 
 open scoped ENNReal Topology
 
@@ -94,19 +94,20 @@ theorem HasFPowerSeriesAt.fderiv_eq (h : HasFPowerSeriesAt f p x) :
   h.hasFDerivAt.fderiv
 
 theorem HasFPowerSeriesWithinOnBall.differentiableOn [CompleteSpace F]
-    (h : HasFPowerSeriesWithinOnBall f p s x r) : DifferentiableOn 𝕜 f (s ∩ EMetric.ball x r) := by
-  have Z := h.analyticWithinAt
-
-  -- (h.analyticAt_of_mem hy).differentiableWithinAt
-
-
+    (h : HasFPowerSeriesWithinOnBall f p s x r) :
+    DifferentiableOn 𝕜 f (insert x s ∩ EMetric.ball x r) := by
+  intro y hy
+  have Z := (h.analyticWithinAt_of_mem hy).differentiableWithinAt
+  rcases eq_or_ne y x with rfl | hy
+  · exact Z.mono inter_subset_left
+  · apply (Z.mono (subset_insert _ _)).mono_of_mem
+    suffices s ∈ 𝓝[insert x s] y from nhdsWithin_mono _ inter_subset_left this
+    rw [nhdsWithin_insert_of_ne hy]
+    exact self_mem_nhdsWithin
 
 theorem HasFPowerSeriesOnBall.differentiableOn [CompleteSpace F]
     (h : HasFPowerSeriesOnBall f p x r) : DifferentiableOn 𝕜 f (EMetric.ball x r) := fun _ hy =>
   (h.analyticAt_of_mem hy).differentiableWithinAt
-
-
-#exit
 
 theorem AnalyticWithinOn.differentiableOn (h : AnalyticWithinOn 𝕜 f s) : DifferentiableOn 𝕜 f s :=
   fun y hy => (h y hy).differentiableWithinAt.mono (by simp)
@@ -114,10 +115,31 @@ theorem AnalyticWithinOn.differentiableOn (h : AnalyticWithinOn 𝕜 f s) : Diff
 theorem AnalyticOn.differentiableOn (h : AnalyticOn 𝕜 f s) : DifferentiableOn 𝕜 f s := fun y hy =>
   (h y hy).differentiableWithinAt
 
+theorem HasFPowerSeriesWithinOnBall.hasFDerivWithinAt [CompleteSpace F]
+    (h : HasFPowerSeriesWithinOnBall f p s x r)
+    {y : E} (hy : (‖y‖₊ : ℝ≥0∞) < r) (h'y : x + y ∈ insert x s) :
+    HasFDerivWithinAt f (continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin y 1))
+      (insert x s) (x + y) := by
+  rcases eq_or_ne y 0 with rfl | h''y
+  · convert (h.changeOrigin hy h'y).hasFPowerSeriesWithinAt.hasFDerivWithinAt
+    simp
+  · have Z := (h.changeOrigin hy h'y).hasFPowerSeriesWithinAt.hasFDerivWithinAt
+    apply (Z.mono (subset_insert _ _)).mono_of_mem
+    rw [nhdsWithin_insert_of_ne]
+    · exact self_mem_nhdsWithin
+    · simpa using h''y
+
 theorem HasFPowerSeriesOnBall.hasFDerivAt [CompleteSpace F] (h : HasFPowerSeriesOnBall f p x r)
     {y : E} (hy : (‖y‖₊ : ℝ≥0∞) < r) :
     HasFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin y 1)) (x + y) :=
   (h.changeOrigin hy).hasFPowerSeriesAt.hasFDerivAt
+
+theorem HasFPowerSeriesWithinOnBall.fderivWithin_eq [CompleteSpace F]
+    (h : HasFPowerSeriesWithinOnBall f p s x r)
+    {y : E} (hy : (‖y‖₊ : ℝ≥0∞) < r) (h'y : x + y ∈ insert x s) (hu : UniqueDiffOn 𝕜 (insert x s)) :
+    fderivWithin 𝕜 f (insert x s) (x + y) =
+      continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin y 1) :=
+  (h.hasFDerivWithinAt hy h'y).fderivWithin (hu _ h'y)
 
 theorem HasFPowerSeriesOnBall.fderiv_eq [CompleteSpace F] (h : HasFPowerSeriesOnBall f p x r)
     {y : E} (hy : (‖y‖₊ : ℝ≥0∞) < r) :
@@ -137,25 +159,21 @@ theorem HasFPowerSeriesOnBall.fderiv [CompleteSpace F] (h : HasFPowerSeriesOnBal
   rw [← h.fderiv_eq, add_sub_cancel]
   simpa only [edist_eq_coe_nnnorm_sub, EMetric.mem_ball] using hz
 
-#check HasFPowerSeriesOnBall.congr
-
-#check HasFPowerSeriesWithinOnBall.congr
-
-
-/-- If a function has a power series on a ball, then so does its derivative. -/
+/-- If a function has a power series within a set on a ball, then so does its derivative. -/
 theorem HasFPowerSeriesWithinOnBall.fderivWithin [CompleteSpace F]
     (h : HasFPowerSeriesWithinOnBall f p s x r) (hu : UniqueDiffOn 𝕜 (insert x s)) :
     HasFPowerSeriesWithinOnBall (fderivWithin 𝕜 f (insert x s)) p.derivSeries s x r := by
-  refine .congr (f := fun z ↦ continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin (z - x) 1)) ?_
-    (fun z hz ↦ ?_) ?_
+  refine .congr' (f := fun z ↦ continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin (z - x) 1)) ?_
+    (fun z hz ↦ ?_)
   · refine continuousMultilinearCurryFin1 𝕜 E F
       |>.toContinuousLinearEquiv.toContinuousLinearMap.comp_hasFPowerSeriesWithinOnBall ?_
     apply HasFPowerSeriesOnBall.hasFPowerSeriesWithinOnBall
     simpa using ((p.hasFPowerSeriesOnBall_changeOrigin 1
       (h.r_pos.trans_le h.r_le)).mono h.r_pos h.r_le).comp_sub x
-  · sorry
-  · sorry
-
+  · dsimp only
+    rw [← h.fderivWithin_eq _ _ hu, add_sub_cancel]
+    · simpa only [edist_eq_coe_nnnorm_sub, EMetric.mem_ball] using hz.2
+    · simpa using hz.1
 
 def LinearIsometry.postcomp {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] (a : F →ₗᵢ[𝕜] G) :
     (E →L[𝕜] F) →ₗᵢ[𝕜] (E →L[𝕜] G) where
@@ -163,8 +181,6 @@ def LinearIsometry.postcomp {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜
   map_add' f g := by simp
   map_smul' c f := by simp
   norm_map' f := by simp [a.norm_toContinuousLinearMap_comp]
-
-lemma LinearIsometry.embedding (a : E →ₗᵢ[𝕜] F) : Embedding a := a.isometry.embedding
 
 theorem HasFPowerSeriesOnBall.hasSum_derivSeries_of_hasFDerivWithinAt
     (h : HasFPowerSeriesWithinOnBall f p s x r)
