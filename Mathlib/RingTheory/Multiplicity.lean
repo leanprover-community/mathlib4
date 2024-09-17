@@ -33,12 +33,12 @@ abbrev multiplicity.Finite [Monoid α] (a b : α) : Prop :=
   ∃ n : ℕ, ¬a ^ (n + 1) ∣ b
 
 open scoped Classical in
-/-- `multiplicity a b` returns the largest natural number `n` such that
-  `a ^ n ∣ b`, as a `ℕ`. If `∀ n, a ^ n ∣ b`,
-  then it returns the junk value of 1. -/
+/-- `emultiplicity a b` returns the largest natural number `n` such that
+  `a ^ n ∣ b`, as a `ℕ`. If `∀ n, a ^ n ∣ b` then it returns `⊤`. -/
 noncomputable def emultiplicity [Monoid α] (a b : α) : ℕ∞ :=
   if h : multiplicity.Finite a b then Nat.find h else ⊤
 
+/-- A `ℕ`-valued version of `emultiplicity`, returning `1` instead of `⊤`. -/
 noncomputable def multiplicity [Monoid α] (a b : α) : ℕ :=
   (emultiplicity a b).untop' 1
 
@@ -52,6 +52,9 @@ variable [Monoid α] [Monoid β] {a b : α}
 theorem emultiplicity_eq_top :
     emultiplicity a b = ⊤ ↔ ¬Finite a b := by
   simp [emultiplicity]
+
+theorem emultiplicity_lt_top {a b : α} : emultiplicity a b < ⊤ ↔ Finite a b := by
+  simp [lt_top_iff_ne_top, emultiplicity_eq_top]
 
 theorem finite_iff_emultiplicity_ne_top :
     Finite a b ↔ emultiplicity a b ≠ ⊤ := by simp
@@ -154,7 +157,7 @@ theorem emultiplicity_pos_iff :
 theorem multiplicity.Finite.def : Finite a b ↔ ∃ n : ℕ, ¬a ^ (n + 1) ∣ b :=
   Iff.rfl
 
-theorem not_dvd_one_of_finite_one_right : Finite a 1 → ¬a ∣ 1 := fun ⟨n, hn⟩ ⟨d, hd⟩ =>
+theorem multiplicity.Finite.not_dvd_of_one_right : Finite a 1 → ¬a ∣ 1 := fun ⟨n, hn⟩ ⟨d, hd⟩ =>
   hn ⟨d ^ (n + 1), (pow_mul_pow_eq_one (n + 1) hd.symm).symm⟩
 
 @[norm_cast]
@@ -277,7 +280,7 @@ theorem multiplicity.Finite.multiplicity_eq_iff (hf : Finite a b) {n : ℕ} :
   simp [← emultiplicity_eq_coe, hf.emultiplicity_eq_multiplicity]
 
 @[simp]
-theorem isUnit_left (b : α) (ha : IsUnit a) : ¬Finite a b :=
+theorem multiplicity.Finite.not_of_isUnit_left (b : α) (ha : IsUnit a) : ¬Finite a b :=
   (·.not_unit ha)
 
 theorem multiplicity.Finite.not_of_one_left (b : α) : ¬ Finite 1 b := by simp
@@ -288,10 +291,10 @@ theorem emultiplicity_one_left (b : α) : emultiplicity 1 b = ⊤ :=
 
 @[simp]
 theorem multiplicity.Finite.one_right (ha : Finite a 1) : multiplicity a 1 = 0 := by
-  simp [ha.multiplicity_eq_iff, not_dvd_one_of_finite_one_right ha]
+  simp [ha.multiplicity_eq_iff, ha.not_dvd_of_one_right]
 
 theorem multiplicity.Finite.not_of_unit_left (a : α) (u : αˣ) : ¬ Finite (u : α) a :=
-  isUnit_left a u.isUnit
+  Finite.not_of_isUnit_left a u.isUnit
 
 theorem emultiplicity_eq_zero :
     emultiplicity a b = 0 ↔ ¬a ∣ b := by
@@ -381,7 +384,7 @@ theorem dvd_iff_multiplicity_pos {a b : α} : 0 < multiplicity a b ↔ a ∣ b :
 theorem dvd_iff_emultiplicity_pos {a b : α} : 0 < emultiplicity a b ↔ a ∣ b :=
   emultiplicity_pos_iff.trans dvd_iff_multiplicity_pos
 
-theorem multiplicity.finite_nat_iff {a b : ℕ} : Finite a b ↔ a ≠ 1 ∧ 0 < b := by
+theorem Nat.multiplicity_finite_iff {a b : ℕ} : Finite a b ↔ a ≠ 1 ∧ 0 < b := by
   rw [← not_iff_not, Finite.not_iff_forall, not_and_or, Ne, Classical.not_not, not_lt,
     Nat.le_zero]
   exact
@@ -459,6 +462,10 @@ theorem multiplicity.Finite.ne_zero {a b : α} (h : Finite a b) : b ≠ 0 :=
 @[simp]
 theorem emultiplicity_zero (a : α) : emultiplicity a 0 = ⊤ :=
   emultiplicity_eq_top.2 (fun v ↦ v.ne_zero rfl)
+
+@[simp]
+theorem emultiplicity_zero_eq_zero_of_ne_zero (a : α) (ha : a ≠ 0) : emultiplicity 0 a = 0 :=
+  emultiplicity_eq_zero.2 <| mt zero_dvd_iff.1 ha
 
 @[simp]
 theorem multiplicity_zero_eq_zero_of_ne_zero (a : α) (ha : a ≠ 0) : multiplicity 0 a = 0 :=
@@ -612,7 +619,8 @@ theorem Prime.multiplicity_finite_mul {p a b : α} (hp : Prime p) :
     Finite p a → Finite p b → Finite p (a * b) :=
   fun ⟨n, hn⟩ ⟨m, hm⟩ => ⟨n + m, finite_mul_aux hp hn hm⟩
 
-theorem finite_mul_iff {p a b : α} (hp : Prime p) : Finite p (a * b) ↔ Finite p a ∧ Finite p b :=
+theorem multiplicity.Finite.mul_iff {p a b : α} (hp : Prime p) :
+    Finite p (a * b) ↔ Finite p a ∧ Finite p b :=
   ⟨fun h => ⟨h.mul_left, h.mul_right⟩, fun h =>
     hp.multiplicity_finite_mul h.1 h.2⟩
 
@@ -664,7 +672,7 @@ theorem emultiplicity_mul {p a b : α} (hp : Prime p) :
     exact multiplicity_mul hp hfin
   · rw [emultiplicity_eq_top.2 hfin, eq_comm, WithTop.add_eq_top, emultiplicity_eq_top,
       emultiplicity_eq_top]
-    simpa only [finite_mul_iff hp, not_and_or] using hfin
+    simpa only [Finite.mul_iff hp, not_and_or] using hfin
 
 theorem Finset.emultiplicity_prod {β : Type*} {p : α} (hp : Prime p) (s : Finset β) (f : β → α) :
     emultiplicity p (∏ x ∈ s, f x) = ∑ x ∈ s, emultiplicity p (f x) := by classical
@@ -726,4 +734,5 @@ theorem Int.multiplicity_finite_iff_natAbs_finite {a b : ℤ} :
   simp only [Finite.def, ← Int.natAbs_dvd_natAbs, Int.natAbs_pow]
 
 theorem Int.multiplicity_finite_int_iff {a b : ℤ} : Finite a b ↔ a.natAbs ≠ 1 ∧ b ≠ 0 := by
-  rw [multiplicity_finite_iff_natAbs_finite, finite_nat_iff, pos_iff_ne_zero, Int.natAbs_ne_zero]
+  rw [multiplicity_finite_iff_natAbs_finite, Nat.multiplicity_finite_iff,
+    pos_iff_ne_zero, Int.natAbs_ne_zero]
