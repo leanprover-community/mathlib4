@@ -63,20 +63,15 @@ theorem hasDerivWithinAt_inv (x_ne_zero : x ≠ 0) (s : Set 𝕜) :
     HasDerivWithinAt (fun x => x⁻¹) (-(x ^ 2)⁻¹) s x :=
   (hasDerivAt_inv x_ne_zero).hasDerivWithinAt
 
-theorem differentiableAt_inv : DifferentiableAt 𝕜 (fun x => x⁻¹) x ↔ x ≠ 0 :=
+#check differentiableAt_inv
+
+theorem differentiableAt_inv_iff : DifferentiableAt 𝕜 (fun x => x⁻¹) x ↔ x ≠ 0 :=
   ⟨fun H => NormedField.continuousAt_inv.1 H.continuousAt, fun H =>
     (hasDerivAt_inv H).differentiableAt⟩
 
-theorem differentiableWithinAt_inv (x_ne_zero : x ≠ 0) :
-    DifferentiableWithinAt 𝕜 (fun x => x⁻¹) s x :=
-  (differentiableAt_inv.2 x_ne_zero).differentiableWithinAt
-
-theorem differentiableOn_inv : DifferentiableOn 𝕜 (fun x : 𝕜 => x⁻¹) { x | x ≠ 0 } := fun _x hx =>
-  differentiableWithinAt_inv hx
-
 theorem deriv_inv : deriv (fun x => x⁻¹) x = -(x ^ 2)⁻¹ := by
   rcases eq_or_ne x 0 with (rfl | hne)
-  · simp [deriv_zero_of_not_differentiableAt (mt differentiableAt_inv.1 (not_not.2 rfl))]
+  · simp [deriv_zero_of_not_differentiableAt (mt differentiableAt_inv_iff.1 (not_not.2 rfl))]
   · exact (hasDerivAt_inv hne).deriv
 
 @[simp]
@@ -85,7 +80,7 @@ theorem deriv_inv' : (deriv fun x : 𝕜 => x⁻¹) = fun x => -(x ^ 2)⁻¹ :=
 
 theorem derivWithin_inv (x_ne_zero : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     derivWithin (fun x => x⁻¹) s x = -(x ^ 2)⁻¹ := by
-  rw [DifferentiableAt.derivWithin (differentiableAt_inv.2 x_ne_zero) hxs]
+  rw [DifferentiableAt.derivWithin (differentiableAt_inv x_ne_zero) hxs]
   exact deriv_inv
 
 theorem hasFDerivAt_inv (x_ne_zero : x ≠ 0) :
@@ -101,7 +96,7 @@ theorem fderiv_inv : fderiv 𝕜 (fun x => x⁻¹) x = smulRight (1 : 𝕜 →L[
 
 theorem fderivWithin_inv (x_ne_zero : x ≠ 0) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (fun x => x⁻¹) s x = smulRight (1 : 𝕜 →L[𝕜] 𝕜) (-(x ^ 2)⁻¹) := by
-  rw [DifferentiableAt.fderivWithin (differentiableAt_inv.2 x_ne_zero) hxs]
+  rw [DifferentiableAt.fderivWithin (differentiableAt_inv x_ne_zero) hxs]
   exact fderiv_inv
 
 variable {c : 𝕜 → 𝕜} {h : E → 𝕜} {c' : 𝕜} {z : E} {S : Set E}
