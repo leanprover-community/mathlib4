@@ -720,8 +720,8 @@ theorem Cauchy.exists_lb_coeff_ne {ℱ : Filter (LaurentSeries K)} (hℱ : Cauch
 the coefficients below `D` coincide with `Caucy.coeff`-/
 theorem Cauchy.coeff_eventually_equal {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) {D : ℤ}
     : ∀ᶠ f : LaurentSeries K in ℱ, ∀ d, d < D → coeff hℱ d = f.coeff d := by
-  -- `φ` sends `d` to the set of Laurent Series having `d`th coefficient equal to `ℱ.coeff`.
   let φ : ℤ → Set (LaurentSeries K) := fun d ↦ {f | coeff hℱ d = f.coeff d}
+  -- `φ` sends `d` to the set of Laurent Series having `d`th coefficient equal to `ℱ.coeff`.
   have intersec :
     (⋂ n ∈ Set.Iio D, φ n) ⊆ {x : LaurentSeries K | ∀ d : ℤ, d < D → coeff hℱ d = x.coeff d} := by
     intro _ hf
