@@ -59,9 +59,8 @@ lemma isPrincipalIdealRing_iff_not_denselyOrdered [MulArchimedean Γ₀] (hv : I
       constructor
       intro I
       rcases this I with rfl|rfl
-      -- TODO
-      · exact ⟨0, by ext; simp [Ideal.mem_span_singleton', eq_comm]⟩
-      · exact ⟨1, by simp only [Ideal.submodule_span_eq, Ideal.span_singleton_one]⟩
+      · exact ⟨0, Ideal.span_zero.symm⟩
+      · exact ⟨1, Ideal.span_one.symm⟩
     intro I
     rcases eq_or_ne I ⊤ with rfl|hI
     · simp
