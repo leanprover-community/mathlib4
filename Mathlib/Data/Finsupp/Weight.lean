@@ -40,8 +40,8 @@ for `OrderedAddCommMonoid M`, when `f s ≠ 0` and all `w i` are nonnegative.
 - `Finsupp.weight_eq_zero_iff_eq_zero` says that `f.weight w = 0` iff
 `f = 0` for `NonTorsion Weight w` and `CanonicallyOrderedAddCommMonoid M`.
 
--- For `w : σ → ℕ` and `Finite σ`, `Finsupp.finite_of_nat_weight_le` proves that 
-there are finitely many `f : σ →₀ ℕ` of bounded weight. 
+-- For `w : σ → ℕ` and `Finite σ`, `Finsupp.finite_of_nat_weight_le` proves that
+there are finitely many `f : σ →₀ ℕ` of bounded weight.
 
 ## Degree
 
@@ -55,8 +55,8 @@ The present choice is to have it defined as a plain function.
 - `Finsupp.degree_eq_weight_one` says `f.degree = f.weight 1`.
 This is useful to access the additivity properties of `Finsupp.degree`
 
--- For `Finite σ`, `Finsupp.finite_of_degree_le` proves that 
-there are finitely many `f : σ →₀ ℕ` of bounded degree. 
+-- For `Finite σ`, `Finsupp.finite_of_degree_le` proves that
+there are finitely many `f : σ →₀ ℕ` of bounded degree.
 
 
 
