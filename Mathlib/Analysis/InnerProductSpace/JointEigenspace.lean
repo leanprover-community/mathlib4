@@ -140,30 +140,18 @@ theorem iSup_eigenspace_restrict [FiniteDimensional 𝕜 E] {F : Submodule 𝕜 
   apply orthogonal_eq_bot_iff.mp (H.orthogonalComplement_iSup_eigenspaces_eq_bot)
 
 /-- Given an invariant subspace for an operator, its intersection with an eigenspace is
-the eigenspace of the restriction the operator to the invariant subspace. -/
-theorem invariant_subspace_inf_eigenspace_eq_restrict {F : Submodule 𝕜 E} (S : E →ₗ[𝕜] E)
-    (μ : 𝕜) (hInv : ∀ v ∈ F, S v ∈ F) : (eigenspace S μ) ⊓ F =
-    map (Submodule.subtype F)
-    (eigenspace (S.restrict (hInv)) μ) := by
-  ext v
-  constructor
-  · intro h
-    simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
-      exists_eq_right, mem_eigenspace_iff]; use h.2
-    exact Eq.symm (SetCoe.ext (_root_.id (Eq.symm (mem_eigenspace_iff.mp h.1))))
-  · intro h
-    simp only [Submodule.mem_inf]
-    constructor
-    · simp only [Submodule.mem_map, Submodule.coeSubtype, Subtype.exists, exists_and_right,
-      exists_eq_right, mem_eigenspace_iff, SetLike.mk_smul_mk, restrict_apply,
-      Subtype.mk.injEq] at h
-      obtain ⟨_, hy⟩ := h
-      simpa [mem_eigenspace_iff]
-    · simp only [Submodule.coeSubtype] at h
-      obtain ⟨_, hy⟩ := h
-      simp only [← hy.2, Submodule.coeSubtype, SetLike.coe_mem]
+the eigenspace of the restriction of the operator to the invariant subspace. -/
+theorem invariant_submodule_inf_eigenspace {F : Submodule 𝕜 E} (S : E →ₗ[𝕜] E)
+    (μ : 𝕜) (hInv : ∀ v ∈ F, S v ∈ F) :
+    F ⊓ eigenspace S μ = map (Submodule.subtype F) (eigenspace (S.restrict (hInv)) μ) :=
+  F.inf_genEigenspace _ _ (k := 1)
 
 open Classical
+
+@[simp]
+theorem Module.End.genEigenspace_one {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+    (f : Module.End R M) (μ : R) : (f.genEigenspace μ) 1 = f.eigenspace μ :=
+  rfl
 
 /-- The orthocomplement of the indexed supremum of joint eigenspaces of a finite commuting tuple of
 symmetric operators is trivial. -/
@@ -172,67 +160,26 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Fintype n] [FiniteDim
     (hC : (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i))) :
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
   revert T
-  refine Fintype.induction_subsingleton_or_nontrivial n ?_ ?_
-  · intro m _ hhm T hT _
-    simp only [Submodule.orthogonal_eq_bot_iff]
-    by_cases case : Nonempty m
-    · have i := choice case
-      have := uniqueOfSubsingleton i
-      conv => lhs; rhs; ext γ; rw [ciInf_subsingleton i]
-      rw [← (Equiv.funUnique m 𝕜).symm.iSup_comp]
-      apply Submodule.orthogonal_eq_bot_iff.mp ((hT i).orthogonalComplement_iSup_eigenspaces_eq_bot)
-    · simp only [not_nonempty_iff] at case
-      simp only [iInf_of_empty, ciSup_unique]
-  · intro m hm hmm H T hT hC
-    obtain ⟨w, i , h⟩ := exists_pair_ne m
-    simp only [ne_eq] at h
-    have D := H {x // x ≠ i} (Fintype.card_subtype_lt (p := fun (x : m) ↦ ¬x = i) (x := i)
-      (by simp only [not_true_eq_false, not_false_eq_true])) (Subtype.restrict (fun x ↦ x ≠ i) T)
-        (fun (i_1 : {x // x ≠ i}) ↦ hT ↑i_1) (fun (i_1 j : { x // x ≠ i }) ↦ hC ↑i_1 ↑j)
+  refine Fintype.induction_subsingleton_or_nontrivial n (fun m _ hhm T hT _ ↦ ?_)
+    (fun m hm hmm H T hT hC ↦ ?_)
+  · obtain (hm | hm) := isEmpty_or_nonempty m
+    · simp
+    · have := uniqueOfSubsingleton (choice hm)
+      simpa only [ciInf_unique, ← (Equiv.funUnique m 𝕜).symm.iSup_comp]
+        using hT default |>.orthogonalComplement_iSup_eigenspaces_eq_bot
+  · have i := Classical.arbitrary m
+    specialize H {x // x ≠ i} (Fintype.card_subtype_lt (x := i) (by simp))
+      (Subtype.restrict (· ≠ i) T) (hT ·) (hC · ·)
     simp only [Submodule.orthogonal_eq_bot_iff] at *
-    have G : (⨆ (γ : {x // x ≠ i} → 𝕜), (⨆ μ : 𝕜, (eigenspace (T i) μ ⊓ (⨅ (j : {x // x ≠ i}),
-    eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j))))) = ⨆ (γ : {x // x ≠ i} → 𝕜),
-    (⨅ (j : {x // x ≠ i}), eigenspace (Subtype.restrict (fun x ↦ x ≠ i) T j) (γ j)) := by
-      conv => lhs; rhs; ext γ; rhs; ext μ; rw [invariant_subspace_inf_eigenspace_eq_restrict (T i) μ
-        (iInf_eigenspace_invariant_of_commute T hC i γ)]
-      conv => lhs; rhs; ext γ; rw [iSup_simultaneous_eigenspaces_eq_top (T i) (hT i)
-        (iInf_eigenspace_invariant_of_commute T hC i γ)]
-    have H1 : ∀ (i : m), ∀ (s : m → 𝕜 → Submodule 𝕜 E), (⨆ f : m → 𝕜, ⨅ x, s x (f x)) =
-        ⨆ f' : {y // y ≠ i} → 𝕜, ⨆ y : 𝕜, s i y ⊓ ⨅ x' : {y // y ≠ i}, (s x' (f' x')) := by
-      intro i s
-      rw [← (Equiv.funSplitAt i 𝕜).symm.iSup_comp, iSup_prod, iSup_comm]
-      congr! with f' y
-      rw [iInf_split_single _ i, iInf_subtype]
-      congr! with x hx
-      · simp
-      · simp [dif_neg hx]
-    rw [← G] at D
-    rw [H1 i (fun _ ↦ (fun μ ↦ (eigenspace (T _) μ )))]
-    exact D
-
-/-- Given a finite commuting family of symmetric linear operators, the family of joint eigenspaces
-is an orthogonal family. -/
-theorem orthogonalFamily_iInf_eigenspaces (T : n → (E →ₗ[𝕜] E))
-    (hT :(∀ (i : n), ((T i).IsSymmetric))) : OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) =>
-    (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))
-    (fun (γ : n → 𝕜) => (⨅ (j : n), (eigenspace (T j) (γ j))).subtypeₗᵢ) := by
-  intro f g hfg Ef Eg
-  obtain ⟨a , ha⟩ := Function.ne_iff.mp hfg
-  have H := (orthogonalFamily_eigenspaces (hT a) ha)
-  simp only [Submodule.coe_subtypeₗᵢ, Submodule.coeSubtype, Subtype.forall] at H
-  apply H
-  · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T _) (f _)).mp Ef.2 _
-  · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T _) (g _)).mp Eg.2 _
-
-/-- Given a finite commuting family of symmetric linear operators, the inner product space on which
-they act decomposes as an internal direct sum of simultaneous eigenspaces. -/
-theorem LinearMap.IsSymmetric.directSum_isInternal_of_commute_of_fintype [Fintype n]
-    [FiniteDimensional 𝕜 E] (T : n → (E →ₗ[𝕜] E)) (hT :(∀ (i : n), ((T i).IsSymmetric)))
-    (hC : (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i))) :
-    DirectSum.IsInternal (fun (α : n → 𝕜) ↦ ⨅ (j : n), (eigenspace (T j) (α j))) := by
-  rw [OrthogonalFamily.isInternal_iff]
-  · exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot T hT hC
-  · exact orthogonalFamily_iInf_eigenspaces T hT
+    rw [← (Equiv.funSplitAt i 𝕜).symm.iSup_comp, iSup_prod, iSup_comm]
+    convert H with γ
+    rw [← iSup_eigenspace_restrict (T i) (hT i) (iInf_eigenspace_invariant_of_commute hC i γ)]
+    congr! with μ
+    rw [← Module.End.genEigenspace_one, ← Submodule.inf_genEigenspace _ _ _ (k := 1), inf_comm,
+      iInf_split_single _ i, iInf_subtype]
+    congr! with x hx
+    · simp
+    · simp [dif_neg hx]
 
 end Tuple
 
