@@ -38,18 +38,12 @@ variable {f : ℕ+ → ℕ} (hf : IsGood f)
 include hf
 
 lemma f₁ : f 1 = 0 := by
-  have h : f 2 = 2 * f 1 ∨ f 2 = 2 * f 1 + 1 := by rw [two_mul]; apply hf.rel 1 1
-  rw [hf.f₂] at h
-  by_contra hf
-  rw [← ne_eq] at hf
-  have f1_pos : 0 < f 1 := by rw [lt_iff_le_and_ne]; exact ⟨zero_le (f 1), hf.symm⟩
-  rcases h with ( h₁ | h₂ )
-  · have : 2 * f 1 > 0 := by apply mul_pos (by norm_num) f1_pos
-    rw [← h₁] at this
-    exact lt_irrefl 0 this
-  · have : 2 * f 1 + 1 > 0 := by apply add_pos (mul_pos (by norm_num) f1_pos) (by norm_num)
-    rw [← h₂] at this
-    exact lt_irrefl 0 this
+  have h : f 2 = 2 * f 1 ∨ f 2 = 2 * f 1 + 1 := by rw [two_mul]; exact hf.rel 1 1
+  obtain h₁ | h₂ := hf.f₂ ▸ h
+  · rw [eq_comm, mul_eq_zero] at h₁
+    apply h₁.resolve_left
+    norm_num
+  · cases Nat.succ_ne_zero _ h₂.symm
 
 lemma f₃ : f 3 = 1 := by
     have h : f 3 = f 2 + f 1 ∨ f 3  = f 2 + f 1 + 1 := by apply hf.rel 2 1
