@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 import Mathlib.SetTheory.Ordinal.Basic
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.SetTheory.Cardinal.UnivLE
 
 /-!
 # Ordinal arithmetic
@@ -1323,13 +1324,19 @@ theorem iSup_le_iff_of_small {ι : Type u} {f : ι → Ordinal.{v}} [Small.{v} �
     iSup f ≤ a ↔ ∀ i, f i ≤ a :=
   ciSup_le_iff' (Ordinal.bddAbove_iff_small.mpr (small_range f))
 
+theorem small_of_exists_injection {f : Ordinal.{u} → Ordinal.{v}} (h : f.Injective)
+    {S : Set Ordinal.{u}} [hs : Small.{u} S] : Small.{v} S := by
+  rcases hs.equiv_small with ⟨α, ⟨hα⟩⟩
+  rcases univLE_of_injective h α with ⟨β, ⟨hβ⟩⟩
+  rw [small_iff]
+  exact ⟨β, ⟨hα.trans hβ⟩⟩
+
 theorem IsNormal.map_iSup {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
     {ι : Type w} (g : ι → Ordinal.{u}) [Small.{u} ι] [Nonempty ι] :
     f (⨆ i, g i) = ⨆ i, f (g i) := eq_of_forall_ge_iff fun a ↦ by
-  haveI : Small.{v, u + 1} (range g) := sorry -- prove from H (injection)
+  haveI : Small.{v} (range g) := small_of_exists_injection H.strictMono.injective
   rw [H.le_set' Set.univ Set.univ_nonempty g]
-  · rw [← iSup_range']
-    rw [Ordinal.iSup_le_iff_of_small]
+  · rw [← iSup_range', Ordinal.iSup_le_iff_of_small]
     simp
   · intro o
     rw [Ordinal.iSup_le_iff_of_small]
@@ -1338,7 +1345,11 @@ theorem IsNormal.map_iSup {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
 theorem IsNormal.map_iSup_bddAbove {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
     {ι : Type w} (g : ι → Ordinal.{u}) (hg : BddAbove (range g))
     [Nonempty ι] : f (⨆ i, g i) = ⨆ i, f (g i) := eq_of_forall_ge_iff fun a ↦ by
-  have hfg : BddAbove (range (f ∘ g)) := sorry -- prove from H (injection)
+  haveI : Small.{u} (range g) := bddAbove_iff_small.mp hg
+  haveI : Small.{v} (range g) := small_of_exists_injection H.strictMono.injective
+  have hfg : BddAbove (range (f ∘ g)) := bddAbove_iff_small.mpr <| by
+    rw [range_comp]
+    exact small_image f (range g)
   change f (⨆ i, g i) ≤ a ↔ ⨆ i, (f ∘ g) i ≤ a
   rw [ciSup_le_iff hfg]
   simp_all only [Function.comp]
