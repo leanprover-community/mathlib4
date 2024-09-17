@@ -144,7 +144,6 @@ structure RingHom.PropertyIsLocal : Prop where
   LocalizationPreserves : RingHom.LocalizationPreserves @P
   OfLocalizationSpanTarget : RingHom.OfLocalizationSpanTarget @P
   StableUnderCompositionWithLocalizationAway : RingHom.StableUnderCompositionWithLocalizationAway @P
-  ContainsIdentities : RingHom.ContainsIdentities @P
 
 theorem RingHom.ofLocalizationSpan_iff_finite :
     RingHom.OfLocalizationSpan @P ↔ RingHom.OfLocalizationFiniteSpan @P := by
@@ -216,6 +215,7 @@ theorem RingHom.LocalizationPreserves.away (H : RingHom.LocalizationPreserves @P
   have : IsLocalization ((Submonoid.powers r).map f) S' := by rw [Submonoid.map_powers]; assumption
   exact H f (Submonoid.powers r) R' S' hf
 
+/-
 lemma RingHom.PropertyIsLocal.HoldsForLocalizationAway (hP : RingHom.PropertyIsLocal @P) :
     RingHom.HoldsForLocalizationAway @P := by
   introv R _
@@ -223,6 +223,7 @@ lemma RingHom.PropertyIsLocal.HoldsForLocalizationAway (hP : RingHom.PropertyIsL
   rw [this]
   apply (hP.StableUnderCompositionWithLocalizationAway).left S r
   apply hP.ContainsIdentities
+-/
 
 theorem RingHom.PropertyIsLocal.ofLocalizationSpan (hP : RingHom.PropertyIsLocal @P) :
     RingHom.OfLocalizationSpan @P := by

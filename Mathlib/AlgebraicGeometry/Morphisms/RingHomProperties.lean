@@ -282,14 +282,13 @@ instance : IsLocalAtSource P := by
     fun i ↦ iff_of_source_openCover (P := P) (f := 𝒰.map i ≫ f) (𝒰.obj i).affineCover]
   simp [Scheme.OpenCover.affineRefinement, Sigma.forall]
 
-instance : P.ContainsIdentities where
+lemma containsIdentities (hP : RingHom.ContainsIdentities Q) : P.ContainsIdentities where
   id_mem X := by
     rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
     intro U
     have : IsAffine (𝟙 X ⁻¹ᵁ U.1) := U.2
     rw [morphismRestrict_id, iff_of_isAffine (P := P), Scheme.id_app]
-    exact (isLocal_ringHomProperty P).HoldsForLocalizationAway.of_bijective _ _
-      Function.bijective_id
+    apply hP
 
 lemma stableUnderComposition (hP : RingHom.StableUnderComposition Q) :
     P.IsStableUnderComposition where
@@ -339,11 +338,16 @@ theorem of_comp
   rw [iff_of_isAffine (P := P)] at h ⊢
   exact H _ _ h
 
-lemma isMultiplicative (hP : RingHom.StableUnderComposition Q) : P.IsMultiplicative where
-  comp_mem := (stableUnderComposition hP).comp_mem
+lemma isMultiplicative (hPc : RingHom.StableUnderComposition Q)
+    (hPi : RingHom.ContainsIdentities Q) :
+    P.IsMultiplicative where
+  comp_mem := (stableUnderComposition hPc).comp_mem
+  id_mem := (containsIdentities hPi).id_mem
 
 include Q in
-lemma of_isOpenImmersion [IsOpenImmersion f] : P f := IsLocalAtSource.of_isOpenImmersion f
+lemma of_isOpenImmersion (hP : RingHom.ContainsIdentities Q) [IsOpenImmersion f] : P f :=
+  haveI : P.ContainsIdentities := containsIdentities hP
+  IsLocalAtSource.of_isOpenImmersion f
 
 lemma stableUnderBaseChange (hP : RingHom.StableUnderBaseChange Q) : P.StableUnderBaseChange := by
   apply HasAffineProperty.stableUnderBaseChange
