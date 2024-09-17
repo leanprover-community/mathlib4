@@ -151,7 +151,7 @@ theorem left_le_opow (a : Ordinal) {b : Ordinal} (b1 : 0 < b) : a ≤ a ^ b := b
   rwa [opow_le_opow_iff_right a1, one_le_iff_pos]
 
 theorem right_le_opow {a : Ordinal} (b : Ordinal) (a1 : 1 < a) : b ≤ a ^ b :=
-  (opow_isNormal a1).self_le _
+  (opow_isNormal a1).id_le _
 
 theorem opow_lt_opow_left_of_succ {a b c : Ordinal} (ab : a < b) : a ^ succ c < b ^ succ c := by
   rw [opow_succ, opow_succ]
