@@ -122,7 +122,7 @@ open Submodule
 /-- The indexed infimum of eigenspaces of a commuting family of linear operators is
 invariant under each operator. -/
 theorem iInf_eigenspace_invariant_of_commute {T : n → E →ₗ[𝕜] E}
-    (hC : ∀ i j, T i ∘ₗ T j = T j ∘ₗ T i) (i : n) (γ : {x // x ≠ i} → 𝕜) {v : E}
+    (hC : ∀ i j, T i ∘ₗ T j = T j ∘ₗ T i) (i : n) (γ : {x // x ≠ i} → 𝕜) (v : E)
     (hv : v ∈ ⨅ j, eigenspace (Subtype.restrict (· ≠ i) T j) (γ j)) :
     T i v ∈ ⨅ j, eigenspace (Subtype.restrict (· ≠ i) T j) (γ j) := by
   simp only [mem_iInf] at hv ⊢
