@@ -107,7 +107,7 @@ theorem coe_finsetWalkLength_eq (n : ℕ) (u v : V) :
 
 variable {G}
 
-theorem Walk.mem_finsetWalkLength_iff_length_eq {n : ℕ} {u v : V} (p : G.Walk u v) :
+theorem mem_finsetWalkLength_iff {n : ℕ} {u v : V} {p : G.Walk u v} :
     p ∈ G.finsetWalkLength n u v ↔ p.length = n :=
   Set.ext_iff.mp (G.coe_finsetWalkLength_eq n u v) p
 
@@ -119,15 +119,15 @@ def finsetWalkLengthLT (n : ℕ) (u v : V) : Finset (G.Walk u v) :=
   (Finset.range n).disjiUnion
     (fun l ↦ G.finsetWalkLength l u v)
     (fun l _ l' _ hne _ hsl hsl' p hp ↦
-      have hl : p.length = l := p.mem_finsetWalkLength_iff_length_eq.mp (hsl hp)
-      have hl' : p.length = l' := p.mem_finsetWalkLength_iff_length_eq.mp (hsl' hp)
+      have hl : p.length = l := mem_finsetWalkLength_iff.mp (hsl hp)
+      have hl' : p.length = l' := mem_finsetWalkLength_iff.mp (hsl' hp)
       False.elim <| hne <| hl.symm.trans hl')
 
 open Finset in
 theorem coe_finsetWalkLengthLT_eq (n : ℕ) (u v : V) :
     (G.finsetWalkLengthLT n u v : Set (G.Walk u v)) = {p : G.Walk u v | p.length < n} := by
   ext p
-  simp [finsetWalkLengthLT, mem_coe, mem_disjiUnion, Walk.mem_finsetWalkLength_iff_length_eq]
+  simp [finsetWalkLengthLT, mem_coe, mem_disjiUnion, mem_finsetWalkLength_iff]
 
 variable {G}
 
@@ -166,7 +166,7 @@ instance fintypeSubtypeWalkLengthLT (u v : V) (n : ℕ) : Fintype {p : G.Walk u 
 instance fintypeSetPathLength (u v : V) (n : ℕ) :
     Fintype {p : G.Walk u v | p.IsPath ∧ p.length = n} :=
   Fintype.ofFinset ((G.finsetWalkLength n u v).filter Walk.IsPath) <| by
-    simp [Walk.mem_finsetWalkLength_iff_length_eq, and_comm]
+    simp [mem_finsetWalkLength_iff, and_comm]
 
 instance fintypeSubtypePathLength (u v : V) (n : ℕ) :
     Fintype {p : G.Walk u v // p.IsPath ∧ p.length = n} :=
@@ -193,7 +193,7 @@ theorem reachable_iff_exists_finsetWalkLength_nonempty (u v : V) :
   · intro r
     refine r.elim_path fun p => ?_
     refine ⟨⟨_, p.isPath.length_lt⟩, p, ?_⟩
-    simp [Walk.mem_finsetWalkLength_iff_length_eq]
+    simp [mem_finsetWalkLength_iff]
   · rintro ⟨_, p, _⟩
     exact ⟨p⟩
 
