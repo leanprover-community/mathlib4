@@ -430,13 +430,12 @@ private theorem mul_ne_of_lt : ∀ a' < a, ∀ b' < b, a' * b + a * b' + a' * b'
   rw [← mul_def] at H
   simpa using H
 
-instance : NoZeroDivisors Nimber := by
-  constructor
-  intro a b h
-  by_contra! hab
-  iterate 2 rw [← Nimber.pos_iff_ne_zero] at hab
-  apply (mul_ne_of_lt _ hab.1 _ hab.2).symm
-  simpa only [zero_add, mul_zero, zero_mul]
+instance : NoZeroDivisors Nimber where
+  eq_zero_or_eq_zero_of_mul_eq_zero {a b} h := by
+    by_contra! hab
+    iterate 2 rw [← Nimber.pos_iff_ne_zero] at hab
+    apply (mul_ne_of_lt _ hab.1 _ hab.2).symm
+    simpa only [zero_add, mul_zero, zero_mul]
 
 protected theorem mul_comm (a b : Nimber) : a * b = b * a := by
   apply le_antisymm <;>
@@ -561,8 +560,8 @@ instance : CommRing Nimber where
   mul_comm := Nimber.mul_comm
   one_mul := Nimber.one_mul
   mul_one := Nimber.mul_one
-  zsmul := zsmulRec
   neg_add_cancel := add_self
+  __ : AddCommGroupWithOne Nimber := inferInstance
 
 instance : IsDomain Nimber where
 instance : CancelMonoidWithZero Nimber where
