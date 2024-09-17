@@ -3,6 +3,7 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
+import Mathlib.Data.Nat.Bitwise
 import Mathlib.SetTheory.Ordinal.Arithmetic
 
 /-!
@@ -27,7 +28,7 @@ interacting with the arithmetic in any nice way.
 
 To reduce API duplication, we opt not to implement operations on `Nimber` on `Ordinal`. The order
 isomorphisms `Ordinal.toNimber` and `Nimber.toOrdinal` allow us to cast between them whenever
-needed.
+needed. We define notation `∗o` for `Ordinal.toNimber o` in the `Nimber` namespace.
 
 ## Todo
 
@@ -65,6 +66,9 @@ def Ordinal.toNimber : Ordinal ≃o Nimber :=
 def Nimber.toOrdinal : Nimber ≃o Ordinal :=
   OrderIso.refl _
 
+@[inherit_doc]
+scoped[Nimber] prefix:75 "∗" => Ordinal.toNimber
+
 namespace Nimber
 
 open Ordinal
@@ -74,8 +78,8 @@ theorem toOrdinal_symm_eq : Nimber.toOrdinal.symm = Ordinal.toNimber :=
   rfl
 
 @[simp]
-theorem toOrdinal_toNimber (a : Nimber) :
-    Ordinal.toNimber (Nimber.toOrdinal a) = a := rfl
+theorem toOrdinal_toNimber (a : Nimber) : ∗(Nimber.toOrdinal a) = a :=
+  rfl
 
 theorem lt_wf : @WellFounded Nimber (· < ·) :=
   Ordinal.lt_wf
@@ -110,6 +114,14 @@ theorem toOrdinal_eq_one (a) : toOrdinal a = 1 ↔ a = 1 :=
   Iff.rfl
 
 @[simp]
+theorem toOrdinal_lt_iff {a b : Nimber} : toOrdinal a < toOrdinal b ↔ a < b :=
+  Iff.rfl
+
+@[simp]
+theorem toOrdinal_le_iff {a b : Nimber} : toOrdinal a ≤ toOrdinal b ↔ a ≤ b :=
+  Iff.rfl
+
+@[simp]
 theorem toOrdinal_max {a b : Nimber} : toOrdinal (max a b) = max (toOrdinal a) (toOrdinal b) :=
   rfl
 
@@ -117,12 +129,12 @@ theorem toOrdinal_max {a b : Nimber} : toOrdinal (max a b) = max (toOrdinal a) (
 theorem toOrdinal_min {a b : Nimber} : toOrdinal (min a b) = min (toOrdinal a) (toOrdinal b) :=
   rfl
 
-theorem succ_def (a : Nimber) : succ a = toNimber (toOrdinal a + 1) :=
+theorem succ_def (a : Nimber) : succ a = ∗(toOrdinal a + 1) :=
   rfl
 
 /-- A recursor for `Nimber`. Use as `induction x`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
-protected def rec {β : Nimber → Sort*} (h : ∀ a, β (toNimber a)) : ∀ a, β a := fun a =>
+protected def rec {β : Nimber → Sort*} (h : ∀ a, β (∗a)) : ∀ a, β a := fun a =>
   h (toOrdinal a)
 
 /-- `Ordinal.induction` but for `Nimber`. -/
@@ -149,6 +161,8 @@ end Nimber
 theorem not_small_nimber : ¬ Small.{u} Nimber.{max u v} :=
   not_small_ordinal
 
+open Nimber
+
 namespace Ordinal
 
 variable {a b c : Ordinal.{u}}
@@ -158,33 +172,39 @@ theorem toNimber_symm_eq : toNimber.symm = Nimber.toOrdinal :=
   rfl
 
 @[simp]
-theorem toNimber_toOrdinal (a : Ordinal) :  Nimber.toOrdinal (toNimber a) = a :=
+theorem toNimber_toOrdinal (a : Ordinal) :  Nimber.toOrdinal (∗a) = a :=
   rfl
 
 @[simp]
-theorem toNimber_zero : toNimber 0 = 0 :=
+theorem toNimber_zero : ∗0 = 0 :=
   rfl
 
 @[simp]
-theorem toNimber_one : toNimber 1 = 1 :=
+theorem toNimber_one : ∗1 = 1 :=
   rfl
 
 @[simp]
-theorem toNimber_eq_zero (a) : toNimber a = 0 ↔ a = 0 :=
+theorem toNimber_eq_zero (a) : ∗a = 0 ↔ a = 0 :=
   Iff.rfl
 
 @[simp]
-theorem toNimber_eq_one (a) : toNimber a = 1 ↔ a = 1 :=
+theorem toNimber_eq_one (a) : ∗a = 1 ↔ a = 1 :=
   Iff.rfl
 
 @[simp]
-theorem toNimber_max (a b : Ordinal) :
-    toNimber (max a b) = max (toNimber a) (toNimber b) :=
+theorem toNimber_lt_iff {a b : Ordinal} : ∗a < ∗b ↔ a < b :=
+  Iff.rfl
+
+@[simp]
+theorem toNimber_le_iff {a b : Ordinal} : ∗a ≤ ∗b ↔ a ≤ b :=
+  Iff.rfl
+
+@[simp]
+theorem toNimber_max (a b : Ordinal) : ∗(max a b) = max (∗a) (∗b) :=
   rfl
 
 @[simp]
-theorem toNimber_min (a b : Ordinal) :
-    toNimber (min a b) = min (toNimber a) (toNimber b) :=
+theorem toNimber_min (a b : Ordinal) : ∗(min a b) = min (∗a) (∗b) :=
   rfl
 
 end Ordinal
@@ -356,5 +376,33 @@ theorem add_trichotomy {a b c : Nimber} (h : a + b + c ≠ 0) :
       exact Or.inr <| Or.inl hx
   · rw [← hx'] at hx
     exact Or.inr <| Or.inr hx
+
+theorem add_nat (a b : ℕ) : ∗a + ∗b = ∗(a ^^^ b) := by
+  apply le_antisymm
+  · apply add_le_of_forall_ne
+    all_goals
+      refine Nimber.rec (fun c hc ↦ ?_)
+      rw [Ordinal.toNimber_lt_iff] at hc
+      obtain ⟨c, rfl⟩ := Ordinal.lt_omega.1 (hc.trans (Ordinal.nat_lt_omega _))
+      replace hc := Nat.cast_lt.1 hc
+      have := hc.ne
+      rw [add_nat, ne_eq, EmbeddingLike.apply_eq_iff_eq, Nat.cast_inj]
+    · rwa [Nat.xor_left_inj]
+    · rwa [Nat.xor_right_inj]
+  · apply le_of_not_lt
+    intro hc
+    rw [← toOrdinal_lt_iff, Ordinal.toNimber_toOrdinal] at hc
+    obtain ⟨c, hc'⟩ := Ordinal.lt_omega.1 (hc.trans (Ordinal.nat_lt_omega _))
+    rw [hc', Nat.cast_lt] at hc
+    obtain h | h := Nat.lt_xor_cases hc
+    · have := add_nat (c ^^^ b) b
+      rw [Nat.xor_cancel_right, ← hc', toOrdinal_toNimber, add_left_inj,
+        EquivLike.apply_eq_iff_eq, Nat.cast_inj] at this
+      exact h.ne this
+    · have := add_nat a (c ^^^ a)
+      rw [Nat.xor_comm, Nat.xor_cancel_left, ← hc', toOrdinal_toNimber, add_right_inj,
+        EquivLike.apply_eq_iff_eq, Nat.cast_inj, Nat.xor_comm] at this
+      exact h.ne this
+termination_by (a, b)
 
 end Nimber
