@@ -66,8 +66,8 @@ def of (G : Type u) [Group G] [Finite G] : FiniteGrp where
   toGrp := Grp.of G
   isFinite := ‹_›
 
-/-- The morphism in `FiniteGrp`, induced from morphism of the category `Grp`. -/
-@[to_additive "The morphism in `FiniteAddGrp`, induced from morphism of the category `AddGrp`"]
+/-- The morphism in `FiniteGrp`, induced from a morphism of the category `Grp`. -/
+@[to_additive "The morphism in `FiniteAddGrp`, induced from a morphism of the category `AddGrp`"]
 def ofHom {X Y : Type u} [Group X] [Finite X] [Group Y] [Finite Y] (f : X →* Y) : of X ⟶ of Y :=
   Grp.ofHom f
 

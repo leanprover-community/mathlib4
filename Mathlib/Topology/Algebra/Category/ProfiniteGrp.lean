@@ -18,7 +18,10 @@ disconnected.
 
 * `ProfiniteGrp` is the category of profinite groups.
 
-* `ProfiniteGrp.pi` : The product of profinite groups is also a profinite group.
+* `ProfiniteGrp.pi` : The pi-type of profinite groups is also a profinite group.
+
+* `ofFiniteGrp` : A `FiniteGrp` when given the discrete topology can be considered as a
+  profinite group.
 
 * `ofContinuousMulEquivProfiniteGrp` : If a topological group have a two-sided continuous
   isomorphism to a profinite group then it is profinite as well.
@@ -26,8 +29,6 @@ disconnected.
 * `ofClosedSubgroup` : The closed subgroup of a profinite group is profinite.
 
 -/
-
-suppress_compilation
 
 universe u v
 
@@ -99,10 +100,13 @@ instance : ConcreteCategory ProfiniteGrp where
         exact DFunLike.ext _ _ <| fun x => congr_fun h x }
 
 /-- Construct a term of `ProfiniteGrp` from a type endowed with the structure of a
-compact and totally disconnected (implies Hausdorff in topological group) topological group. -/
+compact and totally disconnected topological group.
+(The condition of being Hausdorff can be omitted here because totally disconnected implies that {1}
+is a closed set, thus implying Hausdorff in a topological group.)-/
 @[to_additive "Construct a term of `ProfiniteAddGrp` from a type endowed with the structure of a
-compact and totally disconnected (implies Hausdorff in topological additive group)
-topological additive group."]
+compact and totally disconnected topological additive group.
+(The condition of being Hausdorff can be omitted here because totally disconnected implies that {0}
+is a closed set, thus implying Hausdorff in a topological additive group.)"]
 def of (G : Type u) [Group G] [TopologicalSpace G] [TopologicalGroup G]
     [CompactSpace G] [TotallyDisconnectedSpace G] : ProfiniteGrp where
   toProfinite := .of G
