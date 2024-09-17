@@ -224,7 +224,7 @@ theorem Fintype.prod_sum_type (f : α₁ ⊕ α₂ → M) :
     ∏ x, f x = (∏ a₁, f (Sum.inl a₁)) * ∏ a₂, f (Sum.inr a₂) :=
   prod_disj_sum _ _ _
 
-@[to_additive (attr := simp) Fintype.sum_prod_type]
+@[to_additive Fintype.sum_prod_type]
 theorem Fintype.prod_prod_type [CommMonoid γ] (f : α₁ × α₂ → γ) :
     ∏ x, f x = ∏ x, ∏ y, f (x, y) :=
   Finset.prod_product
