@@ -385,8 +385,8 @@ theorem add_nat (a b : ℕ) : ∗a + ∗b = ∗(a ^^^ b) := by
       rw [Ordinal.toNimber_lt_iff] at hc
       obtain ⟨c, rfl⟩ := Ordinal.lt_omega.1 (hc.trans (Ordinal.nat_lt_omega _))
       replace hc := Nat.cast_lt.1 hc
-      have := hc.ne
       rw [add_nat, ne_eq, EmbeddingLike.apply_eq_iff_eq, Nat.cast_inj]
+      have := hc.ne
     · rwa [Nat.xor_left_inj]
     · rwa [Nat.xor_right_inj]
   · apply le_of_not_lt
