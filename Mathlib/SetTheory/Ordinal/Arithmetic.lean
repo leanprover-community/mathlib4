@@ -2501,4 +2501,4 @@ theorem rank_strictAnti [Preorder α] [WellFoundedGT α] :
 
 end WellFounded
 
-set_option linter.style.longFile 2500
+set_option linter.style.longFile 2600
