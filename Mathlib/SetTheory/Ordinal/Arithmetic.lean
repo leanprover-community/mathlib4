@@ -384,18 +384,18 @@ theorem IsNormal.le_iff {f} (H : IsNormal f) {a b} : f a ≤ f b ↔ a ≤ b :=
 theorem IsNormal.inj {f} (H : IsNormal f) {a b} : f a = f b ↔ a = b := by
   simp only [le_antisymm_iff, H.le_iff]
 
-theorem IsNormal.le_apply {f} (H : IsNormal f) (a) : a ≤ f a :=
-  H.strictMono.le_apply a
-
 theorem IsNormal.id_le {f} (H : IsNormal f) : id ≤ f :=
   H.strictMono.id_le
 
+theorem IsNormal.le_apply {f} (H : IsNormal f) {a} : a ≤ f a :=
+  H.strictMono.le_apply
+
 @[deprecated IsNormal.le_apply (since := "2024-09-11")]
 theorem IsNormal.self_le {f} (H : IsNormal f) (a) : a ≤ f a :=
-  H.strictMono.le_apply a
+  H.strictMono.le_apply
 
 theorem IsNormal.le_iff_eq {f} (H : IsNormal f) {a} : f a ≤ a ↔ f a = a :=
-  (H.le_apply a).le_iff_eq
+  H.le_apply.le_iff_eq
 
 theorem IsNormal.le_set {f o} (H : IsNormal f) (p : Set Ordinal) (p0 : p.Nonempty) (b)
     (H₂ : ∀ o, b ≤ o ↔ ∀ a ∈ p, a ≤ o) : f b ≤ o ↔ ∀ a ∈ p, f a ≤ o :=
@@ -2135,7 +2135,7 @@ theorem eq_enumOrd (f : Ordinal → Ordinal) (hS : Unbounded (· < ·) S) :
     StrictMono f ∧ range f = S ↔ f = enumOrd S := by
   constructor
   · rintro ⟨h₁, h₂⟩
-    rwa [← StrictMono.range_inj h₁ (enumOrd_strictMono hS), range_enumOrd hS]
+    rwa [← h₁.range_inj (enumOrd_strictMono hS), range_enumOrd hS]
   · rintro rfl
     exact ⟨enumOrd_strictMono hS, range_enumOrd hS⟩
 

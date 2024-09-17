@@ -163,21 +163,22 @@ theorem WellFounded.eq_strictMono_iff_eq_range (h : WellFounded ((· < ·) : β 
     Set.range f = Set.range g ↔ f = g :=
   @StrictMono.range_inj β γ _ _ ⟨h⟩ f g hf hg
 
-theorem StrictMono.le_apply [WellFoundedLT β] {f : β → β} (hf : StrictMono f) : ∀ x, x ≤ f x := by
+/-- A strictly monotone function `f` on a well-order satisfies `x ≤ f x` for all `x`. -/
+theorem StrictMono.id_le [WellFoundedLT β] {f : β → β} (hf : StrictMono f) : id ≤ f := by
+  rw [Pi.le_def]
   by_contra! H
   obtain ⟨m, hm, hm'⟩ := wellFounded_lt.has_min _ H
   exact hm' _ (hf hm) hm
 
-/-- A strictly monotone function `f` on a well-order satisfies `x ≤ f x` for all `x`. -/
-theorem StrictMono.id_le [WellFoundedLT β] {f : β → β} (hf : StrictMono f) : id ≤ f :=
-  hf.le_apply
-
-theorem StrictMono.apply_le [WellFoundedGT β] {f : β → β} (hf : StrictMono f) : ∀ x, f x ≤ x :=
-  StrictMono.le_apply (β := βᵒᵈ) hf.dual
+theorem StrictMono.le_apply [WellFoundedLT β] {f : β → β} (hf : StrictMono f) {x} : x ≤ f x :=
+  hf.id_le x
 
 /-- A strictly monotone function `f` on a cowell-order satisfies `f x ≤ x` for all `x`. -/
 theorem StrictMono.le_id [WellFoundedGT β] {f : β → β} (hf : StrictMono f) : f ≤ id :=
   StrictMono.id_le (β := βᵒᵈ) hf.dual
+
+theorem StrictMono.apply_le [WellFoundedGT β] {f : β → β} (hf : StrictMono f) {x} : f x ≤ x :=
+  StrictMono.le_apply (β := βᵒᵈ) hf.dual
 
 @[deprecated StrictMono.le_apply (since := "2024-09-11")]
 theorem WellFounded.self_le_of_strictMono (h : WellFounded ((· < ·) : β → β → Prop))

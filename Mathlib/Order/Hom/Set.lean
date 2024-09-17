@@ -123,7 +123,7 @@ end StrictMono
 /-- Two order embeddings on a well-order are equal provided that their ranges are equal. -/
 lemma OrderEmbedding.range_inj [LinearOrder α] [WellFoundedLT α] [PartialOrder β] {f g : α ↪o β} :
     Set.range f = Set.range g ↔ f = g := by
-  rw [StrictMono.range_inj f.strictMono g.strictMono, DFunLike.coe_fn_eq]
+  rw [f.strictMono.range_inj g.strictMono, DFunLike.coe_fn_eq]
 
 section BooleanAlgebra
 
