@@ -384,7 +384,7 @@ theorem unitLattice_rank :
   rw [← Units.finrank_eq_rank, ZLattice.rank ℝ]
 
 /-- The map obtained by quotienting by the kernel of `logEmbedding`. -/
-abbrev logEmbeddingQuot :
+def logEmbeddingQuot :
     Additive ((𝓞 K)ˣ ⧸ (torsion K)) →+ ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
   MonoidHom.toAdditive' <|
     (QuotientGroup.kerLift (AddMonoidHom.toMultiplicative' (logEmbedding K))).comp
@@ -520,7 +520,7 @@ theorem exist_unique_eq_mul_prod (x : (𝓞 K)ˣ) : ∃! ζe : torsion K × (Fin
   · rintro ⟨⟨ζ', h_tors'⟩, η⟩ hf
     simp only [ζ, ← fun_eq_repr K h_tors' hf, Prod.mk.injEq, Subtype.mk.injEq, and_true]
     nth_rewrite 1 [hf]
-    with_reducible rw [_root_.mul_inv_cancel_right]
+    rw [_root_.mul_inv_cancel_right]
 
 end statements
 
