@@ -86,11 +86,9 @@ lemma part_2 : f 1980 ≤ 660 := by
     calc (5 : ℕ+) * f 1980 + (33 : ℕ+) * f 3 ≤  f (5 * 1980 + 33 * 3) := by apply hf.superlinear
     _ = f 9999 := by rfl
     _ = 5 * 660 + 33 := by rw [hf.f_9999]
-  rw [hf.f₃, mul_one] at *
+  rw [hf.f₃, mul_one] at h
   -- from 5 * f 1980 + 33 ≤ 5 * 660 + 33 we show f 1980 ≤ 660
-  apply le_of_mul_le_mul_left (a := 5) (a0 := by norm_num)
-  apply le_of_add_le_add_right (a := 33)
-  exact h
+  exact le_of_mul_le_mul_left (le_of_add_le_add_right h) (Nat.succ_pos 4)
 
 lemma main : f 1982 = 660 := by
   have f_1980 := hf.part_2.antisymm hf.part_1
