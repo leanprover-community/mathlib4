@@ -36,7 +36,7 @@ variable (W : WeierstrassCurve R)
 /-! ### Normal forms of characteristic ≠ 2
 -/
 
-/-- A `WeierstrassCurve` is of normal form of characteristic ≠ 2, if its a₁ and a₃ are zero.
+/-- A `WeierstrassCurve` is in normal form of characteristic ≠ 2, if its `a₁` and `a₃` are zero.
 In other words it is $Y^2 = X^3 + a_2X^2 + a_4X + a_6$. -/
 @[mk_iff]
 structure IsNormalFormOfCharNeTwo [Zero R] : Prop where
