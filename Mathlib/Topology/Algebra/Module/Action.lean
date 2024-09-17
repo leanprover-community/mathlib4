@@ -136,7 +136,7 @@ instance IsActionTopology.toContinuousSMul [TopologicalSpace A] [IsActionTopolog
     ContinuousSMul R A := isActionTopology R A ▸ ActionTopology.continuousSMul R A
 
 -- this can't be an instance because typclass inference can't be expected to find `R`.
-theorem isActionTopology_continuousAdd [TopologicalSpace A] [IsActionTopology R A] :
+theorem IsActionTopology.toContinuousAdd [TopologicalSpace A] [IsActionTopology R A] :
     ContinuousAdd A := isActionTopology R A ▸ ActionTopology.continuousAdd R A
 
 /-- The action topology is `≤` any topology making `A` into a topological module. -/
