@@ -31,7 +31,7 @@ section
 
 variable [Monoid α] [Monoid β] [MulDistribMulAction α β]
 
-theorem List.smul_prod {r : α} {l : List β} : r • l.prod = (l.map (r • ·)).prod :=
+theorem List.smul_prod' {r : α} {l : List β} : r • l.prod = (l.map (r • ·)).prod :=
   map_list_prod (MulDistribMulAction.toMonoidHom β r) l
 
 end
@@ -53,17 +53,17 @@ section
 
 variable [Monoid α] [CommMonoid β] [MulDistribMulAction α β]
 
-theorem Multiset.smul_prod {r : α} {s : Multiset β} : r • s.prod = (s.map (r • ·)).prod :=
+theorem Multiset.smul_prod' {r : α} {s : Multiset β} : r • s.prod = (s.map (r • ·)).prod :=
   (MulDistribMulAction.toMonoidHom β r).map_multiset_prod s
 
-theorem Finset.smul_prod {r : α} {f : γ → β} {s : Finset γ} :
+theorem Finset.smul_prod' {r : α} {f : γ → β} {s : Finset γ} :
     (r • ∏ x ∈ s, f x) = ∏ x ∈ s, r • f x :=
   map_prod (MulDistribMulAction.toMonoidHom β r) f s
 
-theorem smul_finprod {ι : Sort*} [Finite ι] {f : ι → β} (r : α) :
+theorem smul_finprod' {ι : Sort*} [Finite ι] {f : ι → β} (r : α) :
     r • ∏ᶠ x : ι, f x = ∏ᶠ x : ι, r • (f x) := by
   cases nonempty_fintype (PLift ι)
   simp only [finprod_eq_prod_plift_of_mulSupport_subset (s := Finset.univ) (by simp),
-    finprod_eq_prod_of_fintype, Finset.smul_prod]
+    finprod_eq_prod_of_fintype, Finset.smul_prod']
 
 end
