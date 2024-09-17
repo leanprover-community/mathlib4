@@ -215,13 +215,11 @@ end
 
 instance forget_faithful : (forget C).Faithful where
 
-instance {A B : C} [Mon_Class A] [Mon_Class B]
-    (f : Mon_Hom A B) [e : IsIso ((forget C).map (Mon_.mkHom f))] :
-    IsIso f.hom :=
+instance {A B : C} [Mon_Class A] [Mon_Class B] (f : Mon_Hom A B)
+    [e : IsIso ((forget C).map (Mon_.mkHom f))] : IsIso f.hom :=
   e
 
-instance {A B : Mon_ C} (f : A ⟶ B) [e : IsIso ((forget C).map f)] :
-    IsIso f.hom :=
+instance {A B : Mon_ C} (f : A ⟶ B) [e : IsIso ((forget C).map f)] : IsIso f.hom :=
   e
 
 /-- The forgetful functor from monoid objects to the ambient category reflects isomorphisms. -/
@@ -232,13 +230,12 @@ instance : (forget C).ReflectsIsomorphisms where
 instance uniqueHomFromTrivial (A : Mon_ C) : Unique (trivial C ⟶ A) where
   default :=
   { hom := η
-    mul_hom := by dsimp; simp [Mon_Class.one_mul, unitors_equal] }
+    mul_hom := by simp [Mon_Class.one_mul, unitors_equal] }
   uniq f := by
     ext
-    dsimp only [trivial_mul]
-    rw [← Category.id_comp f.hom]
     dsimp only [trivial_X]
-    rw [← trivial_one, f.one_hom]
+    rw [← Category.id_comp f.hom]
+    erw [f.one_hom]
 
 open CategoryTheory.Limits
 
@@ -276,7 +273,7 @@ That is, a lax monoidal functor `F : C ⥤ D` induces a functor `Mon_ C ⥤ Mon_
 @[simps!]
 def mapMon (F : LaxMonoidalFunctor C D) : Mon_ C ⥤ Mon_ D where
   obj A := Mon_.mk (F.obj A.X)
-  map {A B} f := Mon_.mkHom
+  map f := Mon_.mkHom
     { hom := F.map f.hom
       one_hom := by dsimp; rw [Category.assoc, ← F.toFunctor.map_comp, f.one_hom]
       mul_hom := by

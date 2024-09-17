@@ -28,9 +28,9 @@ namespace MonTypeEquivalenceMon
 instance monMonoid (A : Type u) [Mon_Class A] : Monoid A where
   one := η[A] PUnit.unit
   mul x y := μ[A] (x, y)
-  one_mul x := by convert congr_fun (Mon_Class.one_mul (X := A)) (PUnit.unit, x)
-  mul_one x := by convert congr_fun (Mon_Class.mul_one (X := A)) (x, PUnit.unit)
-  mul_assoc x y z := by convert congr_fun (Mon_Class.mul_assoc (X := A)) ((x, y), z)
+  one_mul x := by convert congr_fun (Mon_Class.one_mul' A) (PUnit.unit, x)
+  mul_one x := by convert congr_fun (Mon_Class.mul_one' A) (x, PUnit.unit)
+  mul_assoc x y z := by convert congr_fun (Mon_Class.mul_assoc' A) ((x, y), z)
 
 /-- Converting a monoid object in `Type` to a bundled monoid.
 -/
