@@ -167,16 +167,14 @@ theorem isUnit_of_self_mul_dvd_separable {p q : R[X]} (hp : p.Separable) (hq : q
     ring
   exact IsCoprime.of_mul_right_left (IsCoprime.of_mul_left_left this)
 
-theorem multiplicity_le_one_of_separable [DecidableRel fun (x : R[X]) x_1 ↦ x ∣ x_1]
+theorem emultiplicity_le_one_of_separable [DecidableRel fun (x : R[X]) x_1 ↦ x ∣ x_1]
     {p q : R[X]} (hq : ¬IsUnit q) (hsep : Separable p) :
-    multiplicity q p ≤ 1 := by
+    emultiplicity q p ≤ 1 := by
   contrapose! hq
   apply isUnit_of_self_mul_dvd_separable hsep
   rw [← sq]
-  apply multiplicity.pow_dvd_of_le_multiplicity
-  have h : ⟨Part.Dom 1 ∧ Part.Dom 1, fun _ ↦ 2⟩ ≤ multiplicity q p := PartENat.add_one_le_of_lt hq
-  rw [and_self] at h
-  exact h
+  apply pow_dvd_of_le_emultiplicity
+  exact Order.add_one_le_of_lt hq
 
 /-- A separable polynomial is square-free.
 
@@ -185,7 +183,7 @@ field. -/
 theorem Separable.squarefree {p : R[X]} (hsep : Separable p) : Squarefree p := by
   classical
   rw [multiplicity.squarefree_iff_emultiplicity_le_one p]
-  exact fun f => or_iff_not_imp_right.mpr fun hunit => multiplicity_le_one_of_separable hunit hsep
+  exact fun f => or_iff_not_imp_right.mpr fun hunit => emultiplicity_le_one_of_separable hunit hsep
 
 end CommSemiring
 
@@ -261,9 +259,9 @@ theorem rootMultiplicity_le_one_of_separable [Nontrivial R] {p : R[X]} (hsep : S
   classical
   by_cases hp : p = 0
   · simp [hp]
-  rw [rootMultiplicity_eq_multiplicity, dif_neg hp, ← PartENat.coe_le_coe, PartENat.natCast_get,
-    Nat.cast_one]
-  exact multiplicity_le_one_of_separable (not_isUnit_X_sub_C _) hsep
+  rw [rootMultiplicity_eq_multiplicity, dif_neg hp, ← Nat.cast_le (α := ℕ∞),
+    Nat.cast_one, ← (multiplicity_X_sub_C_finite x hp).emultiplicity_eq_multiplicity]
+  apply emultiplicity_le_one_of_separable (not_isUnit_X_sub_C _) hsep
 
 end CommRing
 
