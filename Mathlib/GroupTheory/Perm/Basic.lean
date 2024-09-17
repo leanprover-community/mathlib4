@@ -405,12 +405,12 @@ theorem subtypePerm_ofSubtype (f : Perm (Subtype p)) :
   Equiv.ext fun x => Subtype.coe_injective (ofSubtype_apply_coe f x)
 
 theorem ofSubtype_subtypePerm_of_mem {p : α → Prop} [DecidablePred p]
-    {g : Perm α} {hg : ∀ (x : α), p x ↔ p (g x)}
+    {g : Perm α} (hg : ∀ (x : α), p x ↔ p (g x))
     {a : α} (ha : p a) : (ofSubtype (g.subtypePerm hg)) a = g a :=
   ofSubtype_apply_of_mem (g.subtypePerm hg) ha
 
 theorem ofSubtype_subtypePerm_of_not_mem {p : α → Prop} [DecidablePred p]
-    {g : Perm α} {hg : ∀ (x : α), p x ↔ p (g x)}
+    {g : Perm α} (hg : ∀ (x : α), p x ↔ p (g x))
     {a : α} (ha : ¬ p a) : (ofSubtype (g.subtypePerm hg)) a = a :=
   ofSubtype_apply_of_not_mem (g.subtypePerm hg) ha
 
