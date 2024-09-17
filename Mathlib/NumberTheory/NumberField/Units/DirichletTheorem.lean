@@ -432,7 +432,7 @@ def logEmbeddingEquiv :
 
 @[simp]
 theorem logEmbeddingEquiv_apply (x : (𝓞 K)ˣ) :
-    logEmbeddingEquiv K (Additive.ofMul (QuotientGroup.mk x))=
+    logEmbeddingEquiv K (Additive.ofMul (QuotientGroup.mk x)) =
       logEmbedding K (Additive.ofMul x) := rfl
 
 instance : Module.Free ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
