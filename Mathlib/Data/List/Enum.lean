@@ -10,7 +10,7 @@ import Mathlib.Data.List.Basic
 
 ## Deprecation note
 
-Most lemmas in this file has been replaced by theorems in Lean4,
+Many lemmas in this file have been replaced by theorems in Lean4,
 in terms of `xs[i]?` and `xs[i]` rather than `get` and `get?`.
 
 The deprecated results here are unused in Mathlib.
