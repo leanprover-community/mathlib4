@@ -261,20 +261,20 @@ lemma LFunction_def_odd (hΦ : Φ.Odd) (s : ℂ) :
   simp only [Equiv.neg_apply, hΦ i, map_neg, hurwitzZetaEven_neg, neg_mul]
 
 /-- Explicit formula for `LFunction Φ 0` when `Φ` is even. -/
-lemma LFunction_apply_zero_of_even (hΦ : Φ.Even) :
+@[simp] lemma LFunction_apply_zero_of_even (hΦ : Φ.Even) :
     LFunction Φ 0 = -Φ 0 / 2 := by
   simp only [LFunction_def_even hΦ, neg_zero, cpow_zero, hurwitzZetaEven_apply_zero,
     toAddCircle_eq_zero, mul_ite, mul_div, mul_neg_one, mul_zero, sum_ite_eq', Finset.mem_univ,
     ↓reduceIte, one_mul]
 
 /-- The L-function of an even function vanishes at negative even integers. -/
-lemma LFunction_neg_two_mul_nat_add_one (hΦ : Φ.Even) (n : ℕ) :
+@[simp] lemma LFunction_neg_two_mul_nat_add_one (hΦ : Φ.Even) (n : ℕ) :
     LFunction Φ (-2 * (n + 1)) = 0 := by
   simp only [LFunction_def_even hΦ, hurwitzZetaEven_neg_two_mul_nat_add_one, mul_zero,
     sum_const_zero]
 
 /-- The L-function of an odd function vanishes at negative odd integers. -/
-lemma LFunction_neg_two_mul_nat_sub_one (hΦ : Φ.Odd) (n : ℕ) :
+@[simp] lemma LFunction_neg_two_mul_nat_sub_one (hΦ : Φ.Odd) (n : ℕ) :
     LFunction Φ (-2 * n - 1) = 0 := by
   simp only [LFunction_def_odd hΦ, hurwitzZetaOdd_neg_two_mul_nat_sub_one, mul_zero, sum_const_zero]
 
@@ -290,7 +290,7 @@ noncomputable def completedLFunction (s : ℂ) : ℂ :=
   if Φ.Even then N ^ (-s) * ∑ j, Φ j * completedHurwitzZetaEven (toAddCircle j) s
   else N ^ (-s) * ∑ j, Φ j * completedHurwitzZetaOdd (toAddCircle j) s
 
-lemma completedLFunction_zero (s : ℂ) : completedLFunction (0 : ZMod N → ℂ) s = 0 := by
+@[simp] lemma completedLFunction_zero (s : ℂ) : completedLFunction (0 : ZMod N → ℂ) s = 0 := by
   simp only [completedLFunction, Pi.zero_apply, zero_mul, sum_const_zero, mul_zero, ite_self]
 
 lemma completedLFunction_def_even (hΦ : Φ.Even) (s : ℂ) :
@@ -306,8 +306,8 @@ lemma completedLFunction_def_odd (hΦ : Φ.Odd) (s : ℂ) :
   · simp only [completedLFunction, hΦ', ↓reduceIte]
 
 /--
-The completed L-function of a function mod 1 is a scalar multiple of the completed Riemann zeta
-function.
+The completed L-function of a function `ZMod 1 → ℂ` is a scalar multiple of the completed Riemann
+zeta function.
 -/
 lemma completedLFunction_modOne_eq {Φ : ZMod 1 → ℂ} (s : ℂ) :
     completedLFunction Φ s = Φ 1 * completedRiemannZeta s := by
