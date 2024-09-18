@@ -251,7 +251,7 @@ namespace ProfiniteGrp
 /-- Making the direct limit of `FiniteGrp` into a `ProfiniteGrp`. -/
 def ofFiniteGrpLimit : ProfiniteGrp := .of (FiniteGrp.limit F)
 
-/-- Verify that the limit constructed above has projections to the `FiniteGrps`
+/-- Verify that the limit constructed above has projections to the `FiniteGrp`s
 that are compatible with the morphisms between them. -/
 def ofFiniteGrpLimitCone : Limits.Cone (F ⋙ forget₂ FiniteGrp ProfiniteGrp) where
   pt := ofFiniteGrpLimit F
