@@ -6,7 +6,8 @@ Authors: Jujian Zhang, Nailin Guan, Yuyang Zhao
 import Mathlib.FieldTheory.KrullTopology
 import Mathlib.FieldTheory.NormalClosure
 import Mathlib.FieldTheory.SeparableClosure
-import Mathlib.Topology.Algebra.Category.ProfiniteGrp
+import Mathlib.CategoryTheory.Category.Preorder
+import Mathlib.Algebra.Category.Grp.FiniteGrp
 
 /-!
 

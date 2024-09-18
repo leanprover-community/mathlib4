@@ -297,7 +297,7 @@ lemma normal_map {F L : Type*} [Field F] [Field L] [Algebra F L] [Normal F L]
 
 @[simp]
 theorem normalClosure_le_iff_of_normal {k K : Type*} [Field k] [Field K]
-  [Algebra k K] {L₁ L₂ : IntermediateField k K} [Normal k L₂] [Normal k K] :
+    [Algebra k K] {L₁ L₂ : IntermediateField k K} [Normal k L₂] [Normal k K] :
     normalClosure k L₁ K ≤ L₂ ↔ L₁ ≤ L₂ := by
   constructor
   all_goals intro h
