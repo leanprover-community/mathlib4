@@ -301,7 +301,7 @@ class WeaklyRegular (μ : Measure α) extends OuterRegular μ : Prop where
 /-- A measure `μ` is inner regular if, for any measurable set `s`, then
 `μ(s) = sup {μ(K) | K ⊆ s compact}`. -/
 class InnerRegular (μ : Measure α) : Prop where
-  protected innerRegular : InnerRegularWRT μ IsCompact (fun s ↦ MeasurableSet s)
+  protected innerRegular : InnerRegularWRT μ IsCompact MeasurableSet
 
 /-- A measure `μ` is inner regular for finite measure sets with respect to compact sets:
 for any measurable set `s` with finite measure, then `μ(s) = sup {μ(K) | K ⊆ s compact}`.
