@@ -126,12 +126,6 @@ def getManyGoals : InfoTree → Array (Syntax × Nat)
   | .context _ t => getManyGoals t
   | _ => default
 
-/-- The linter only considers files whose name begins with a component in `libraries`. -/
-abbrev libraries : HashSet Name := HashSet.empty
-  |>.insert `Mathlib
-  |>.insert `Archive
-  |>.insert `Counterexamples
-
 @[inherit_doc Mathlib.Linter.linter.style.multiGoal]
 def multiGoalLinter : Linter where
   run := withSetOptionIn fun _stx => do
