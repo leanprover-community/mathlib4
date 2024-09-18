@@ -258,8 +258,8 @@ lemma LFunction_def_signed (hΦ : Φ.Even ∨ Φ.Odd) (s : ℂ) :
 lemma LFunction_apply_zero_of_even (hΦ : Φ.Even) :
     LFunction Φ 0 = -Φ 0 / 2 := by
   simp only [LFunction_def_signed (Or.inl hΦ), hΦ, ↓reduceIte, neg_zero, cpow_zero,
-    hurwitzZetaEven_apply_zero, toAddCircle_eq_zero, mul_ite, mul_zero, sum_ite_eq', mem_univ,
-    one_mul, mul_div, mul_neg_one]
+    hurwitzZetaEven_apply_zero, toAddCircle_eq_zero, mul_ite, mul_div, mul_neg_one, mul_zero,
+    sum_ite_eq', Finset.mem_univ, one_mul]
 
 /-- The L-function of an even function vanishes at negative even integers. -/
 lemma LFunction_neg_two_mul_nat_add_one (hΦ : Φ.Even) (n : ℕ) :
@@ -328,7 +328,7 @@ lemma completedLFunction_eq (hΦ : Φ.Even ∨ Φ.Odd) (s : ℂ) :
   · simp only [completedHurwitzZetaEven_eq, mul_sub, sum_sub_distrib]
     congr 1
     · simp only [toAddCircle_eq_zero, div_eq_mul_inv, ite_mul, one_mul, zero_mul, mul_ite,
-        mul_zero, sum_ite_eq', mem_univ, ↓reduceIte, mul_assoc]
+        mul_zero, sum_ite_eq', Finset.mem_univ, ↓reduceIte, mul_assoc]
     · rw [← sum_mul, mul_one_div, mul_div_assoc]
   · replace hΦ : Function.Odd Φ := by tauto
     have : Φ 0 = 0 := by rw [← neg_eq_self ℂ, ← hΦ 0, neg_zero]
