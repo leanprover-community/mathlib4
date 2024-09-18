@@ -106,7 +106,7 @@ lemma normalCore_isClosed (H : Subgroup G) (h : IsClosed (H : Set G)) :
   exact Set.ext (fun t => Set.mem_smul_set_iff_inv_smul_mem)
 
 @[to_additive]
-lemma finindex_closedSubgroup_isOpen (H : Subgroup G) [H.FiniteIndex]
+lemma finiteindex_closedSubgroup_isOpen (H : Subgroup G) [H.FiniteIndex]
   (h : IsClosed (H : Set G)) : IsOpen (H : Set G) := by
   apply isClosed_compl_iff.mp
   convert isClosed_iUnion_of_finite <| fun (x : {x : (G ⧸ H) // x ≠ QuotientGroup.mk 1})
