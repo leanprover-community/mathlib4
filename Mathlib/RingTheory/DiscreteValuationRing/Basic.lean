@@ -3,10 +3,10 @@ Copyright (c) 2020 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
-import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.RingTheory.Valuation.PrimeMultiplicity
 import Mathlib.RingTheory.AdicCompletion.Basic
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+import Mathlib.RingTheory.Valuation.PrimeMultiplicity
+import Mathlib.RingTheory.Valuation.ValuationRing
 
 /-!
 # Discrete valuation rings
@@ -193,7 +193,7 @@ theorem toUniqueFactorizationMonoid (hR : HasUnitMulPowIrreducibleFactorization 
       intro a b h
       by_cases ha : a = 0
       · rw [ha]
-        simp only [true_or_iff, dvd_zero]
+        simp only [true_or, dvd_zero]
       obtain ⟨m, u, rfl⟩ := spec.2 ha
       rw [mul_assoc, mul_left_comm, Units.dvd_mul_left] at h
       rw [Units.dvd_mul_right]
@@ -222,8 +222,7 @@ theorem of_ufd_of_unique_irreducible [UniqueFactorizationMonoid R] (h₁ : ∃ p
   congr 1
   symm
   rw [Multiset.eq_replicate]
-  simp only [true_and_iff, and_imp, Multiset.card_map, eq_self_iff_true, Multiset.mem_map,
-    exists_imp]
+  simp only [true_and, and_imp, Multiset.card_map, eq_self_iff_true, Multiset.mem_map, exists_imp]
   rintro _ q hq rfl
   rw [Associates.mk_eq_mk_iff_associated]
   apply h₂ (hfx.1 _ hq) hp
@@ -311,8 +310,7 @@ theorem associated_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irred
   rw [← H, ← Associates.prod_mk, Associates.mk_pow, ← Multiset.prod_replicate]
   congr 1
   rw [Multiset.eq_replicate]
-  simp only [true_and_iff, and_imp, Multiset.card_map, eq_self_iff_true, Multiset.mem_map,
-    exists_imp]
+  simp only [true_and, and_imp, Multiset.card_map, eq_self_iff_true, Multiset.mem_map, exists_imp]
   rintro _ _ _ rfl
   rw [Associates.mk_eq_mk_iff_associated]
   refine associated_of_irreducible _ ?_ hirr
@@ -452,3 +450,31 @@ instance (R : Type*) [CommRing R] [IsDomain R] [DiscreteValuationRing R] :
     rwa [← addVal_eq_top_iff, PartENat.eq_top_iff_forall_le]
 
 end DiscreteValuationRing
+
+
+section
+
+variable (A : Type u) [CommRing A] [IsDomain A] [DiscreteValuationRing A]
+
+/-- A DVR is a valuation ring. -/
+instance (priority := 100) of_discreteValuationRing : ValuationRing A := by
+  constructor
+  intro a b
+  by_cases ha : a = 0; · use 0; right; simp [ha]
+  by_cases hb : b = 0; · use 0; left; simp [hb]
+  obtain ⟨ϖ, hϖ⟩ := DiscreteValuationRing.exists_irreducible A
+  obtain ⟨m, u, rfl⟩ := DiscreteValuationRing.eq_unit_mul_pow_irreducible ha hϖ
+  obtain ⟨n, v, rfl⟩ := DiscreteValuationRing.eq_unit_mul_pow_irreducible hb hϖ
+  rcases le_total m n with h | h
+  · use (u⁻¹ * v : Aˣ) * ϖ ^ (n - m); left
+    simp_rw [mul_comm (u : A), Units.val_mul, ← mul_assoc, mul_assoc _ (u : A)]
+    simp only [Units.mul_inv, mul_one, mul_comm _ (v : A), mul_assoc, ← pow_add]
+    congr 2
+    exact Nat.add_sub_of_le h
+  · use (v⁻¹ * u : Aˣ) * ϖ ^ (m - n); right
+    simp_rw [mul_comm (v : A), Units.val_mul, ← mul_assoc, mul_assoc _ (v : A)]
+    simp only [Units.mul_inv, mul_one, mul_comm _ (u : A), mul_assoc, ← pow_add]
+    congr 2
+    exact Nat.add_sub_of_le h
+
+end

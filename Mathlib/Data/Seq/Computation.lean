@@ -2,8 +2,6 @@
 Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-Coinductive formalization of unbounded computations.
 -/
 import Mathlib.Data.Nat.Find
 import Mathlib.Data.Stream.Init
@@ -246,6 +244,7 @@ def BisimO : α ⊕ (Computation α) → α ⊕ (Computation α) → Prop
   | _, _ => False
 
 attribute [simp] BisimO
+attribute [nolint simpNF] BisimO.eq_3
 
 /-- Attribute expressing bisimilarity over two `Computation`s -/
 def IsBisimulation :=
@@ -279,8 +278,8 @@ end Bisim
 
 -- It's more of a stretch to use ∈ for this relation, but it
 -- asserts that the computation limits to the given value.
-/-- Assertion that a `Computation` limits to a given value -/
-protected def Mem (a : α) (s : Computation α) :=
+/-- Assertion that a `Computation` limits to a given value-/
+protected def Mem (s : Computation α) (a : α) :=
   some a ∈ s.1
 
 instance : Membership α (Computation α) :=
@@ -504,7 +503,8 @@ theorem length_thinkN (s : Computation α) [_h : Terminates s] (n) :
 
 theorem eq_thinkN {s : Computation α} {a n} (h : Results s a n) : s = thinkN (pure a) n := by
   revert s
-  induction' n with n IH <;> intro s <;> apply recOn s (fun a' => _) fun s => _ <;> intro a h
+  induction n with | zero => _ | succ n IH => _
+  all_goals intro s; apply recOn s (fun a' => _) fun s => _ <;> intro a h
   · rw [← eq_of_pure_mem h.mem]
     rfl
   · cases' of_results_think h with n h
@@ -694,7 +694,8 @@ theorem length_bind (s : Computation α) (f : α → Computation β) [_T1 : Term
 
 theorem of_results_bind {s : Computation α} {f : α → Computation β} {b k} :
     Results (bind s f) b k → ∃ a m n, Results s a m ∧ Results (f a) b n ∧ k = n + m := by
-  induction' k with n IH generalizing s <;> apply recOn s (fun a => _) fun s' => _ <;> intro e h
+  induction k generalizing s with | zero => _ | succ n IH => _
+  all_goals apply recOn s (fun a => _) fun s' => _ <;> intro e h
   · simp only [ret_bind] at h
     exact ⟨e, _, _, results_pure _, h, rfl⟩
   · have := congr_arg head (eq_thinkN h)
@@ -753,7 +754,7 @@ theorem exists_of_mem_map {f : α → β} {b : β} {s : Computation α} (h : b �
   exact ⟨a, as, mem_unique (ret_mem _) fb⟩
 
 instance terminates_map (f : α → β) (s : Computation α) [Terminates s] : Terminates (map f s) := by
-  rw [← bind_pure]; exact terminates_of_mem (mem_bind (get_mem s) (get_mem (f (get s))))
+  rw [← bind_pure]; exact terminates_of_mem (mem_bind (get_mem s) (get_mem (α := β) (f (get s))))
 
 theorem terminates_map_iff (f : α → β) (s : Computation α) : Terminates (map f s) ↔ Terminates s :=
   ⟨fun ⟨⟨_, h⟩⟩ =>

@@ -249,7 +249,7 @@ theorem of_s_head_aux (v : K) : (of v).s.get? 0 = (IntFractPair.stream v 1).bind
   rw [of, IntFractPair.seq1]
   simp only [of, Stream'.Seq.map_tail, Stream'.Seq.map, Stream'.Seq.tail, Stream'.Seq.head,
     Stream'.Seq.get?, Stream'.map]
-  rw [← Stream'.get_succ, Stream'.get, Option.map]
+  rw [← Stream'.get_succ, Stream'.get, Option.map.eq_def]
   split <;> simp_all only [Option.some_bind, Option.none_bind, Function.comp_apply]
 
 /-- This gives the first pair of coefficients of the continued fraction of a non-integer `v`.

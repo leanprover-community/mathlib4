@@ -166,7 +166,7 @@ theorem ENNReal.tendsto_rpow_at_top {y : ℝ} (hy : 0 < y) :
   lift a to ℝ≥0 using ha'
   -- Porting note: reduced defeq abuse
   simp only [Set.mem_Ioi, coe_lt_coe] at ha hc
-  rw [ENNReal.coe_rpow_of_nonneg _ hy.le]
+  rw [← ENNReal.coe_rpow_of_nonneg _ hy.le]
   exact mod_cast hc a ha
 
 end Limits

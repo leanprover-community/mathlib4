@@ -656,10 +656,10 @@ def domDomCongrEquiv (σ : ι ≃ ι') : M [⋀^ι]→ₗ[R] N ≃+ M [⋀^ι']�
   invFun := domDomCongr σ.symm
   left_inv f := by
     ext
-    simp [Function.comp]
+    simp [Function.comp_def]
   right_inv m := by
     ext
-    simp [Function.comp]
+    simp [Function.comp_def]
   map_add' := domDomCongr_add σ
 
 section DomDomLcongr
@@ -671,8 +671,8 @@ variable (S : Type*) [Semiring S] [Module S N] [SMulCommClass R S N]
 def domDomCongrₗ (σ : ι ≃ ι') : M [⋀^ι]→ₗ[R] N ≃ₗ[S] M [⋀^ι']→ₗ[R] N where
   toFun := domDomCongr σ
   invFun := domDomCongr σ.symm
-  left_inv f := by ext; simp [Function.comp]
-  right_inv m := by ext; simp [Function.comp]
+  left_inv f := by ext; simp [Function.comp_def]
+  right_inv m := by ext; simp [Function.comp_def]
   map_add' := domDomCongr_add σ
   map_smul' := domDomCongr_smul σ
 

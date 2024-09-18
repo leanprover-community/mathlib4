@@ -88,9 +88,32 @@ protected def ofFunction (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0) : Out
 
 variable (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0)
 
+/-- `ofFunction` of a set `s` is the infimum of `∑ᵢ, m (tᵢ)` for all collections of sets
+`tᵢ` that cover `s`. -/
 theorem ofFunction_apply (s : Set α) :
     OuterMeasure.ofFunction m m_empty s = ⨅ (t : ℕ → Set α) (_ : s ⊆ iUnion t), ∑' n, m (t n) :=
   rfl
+
+/-- `ofFunction` of a set `s` is the infimum of `∑ᵢ, m (tᵢ)` for all collections of sets
+`tᵢ` that cover `s`, with all `tᵢ` satisfying a predicate `P` such that `m` is infinite for sets
+that don't satisfy `P`.
+This is similar to `ofFunction_apply`, except that the sets `tᵢ` satisfy `P`.
+The hypothesis `m_top` applies in particular to a function of the form `extend m'`. -/
+theorem ofFunction_eq_iInf_mem {P : Set α → Prop} (m_top : ∀ s, ¬ P s → m s = ∞) (s : Set α) :
+    OuterMeasure.ofFunction m m_empty s =
+      ⨅ (t : ℕ → Set α) (_ : ∀ i, P (t i)) (_ : s ⊆ ⋃ i, t i), ∑' i, m (t i) := by
+  rw [OuterMeasure.ofFunction_apply]
+  apply le_antisymm
+  · exact le_iInf fun t ↦ le_iInf fun _ ↦ le_iInf fun h ↦ iInf₂_le _ (by exact h)
+  · simp_rw [le_iInf_iff]
+    refine fun t ht_subset ↦ iInf_le_of_le t ?_
+    by_cases ht : ∀ i, P (t i)
+    · exact iInf_le_of_le ht (iInf_le_of_le ht_subset le_rfl)
+    · simp only [ht, not_false_eq_true, iInf_neg, top_le_iff]
+      push_neg at ht
+      obtain ⟨i, hti_not_mem⟩ := ht
+      have hfi_top : m (t i) = ∞ := m_top _ hti_not_mem
+      exact ENNReal.tsum_eq_top_of_eq_top ⟨i, hfi_top⟩
 
 variable {m m_empty}
 

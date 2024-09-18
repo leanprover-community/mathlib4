@@ -86,10 +86,15 @@ theorem prod_univ_get' [CommMonoid β] (l : List α) (f : α → β) :
     ∏ i : Fin l.length, f l[i.1] = (l.map f).prod := by
   simp [Finset.prod_eq_multiset_prod]
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem prod_cons [CommMonoid β] {n : ℕ} (x : β) (f : Fin n → β) :
     (∏ i : Fin n.succ, (cons x f : Fin n.succ → β) i) = x * ∏ i : Fin n, f i := by
   simp_rw [prod_univ_succ, cons_zero, cons_succ]
+
+@[to_additive (attr := simp)]
+theorem prod_snoc [CommMonoid β] {n : ℕ} (x : β) (f : Fin n → β) :
+    (∏ i : Fin n.succ, (snoc f x : Fin n.succ → β) i) = (∏ i : Fin n, f i) * x := by
+  simp [prod_univ_castSucc]
 
 @[to_additive sum_univ_one]
 theorem prod_univ_one [CommMonoid β] (f : Fin 1 → β) : ∏ i, f i = f 0 := by simp

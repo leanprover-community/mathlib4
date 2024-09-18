@@ -233,7 +233,7 @@ theorem coeff_coe (i : ℤ) :
   · rw [ofPowerSeries_apply, embDomain_notin_image_support, if_pos (Int.negSucc_lt_zero _)]
     simp only [not_exists, RelEmbedding.coe_mk, Set.mem_image, not_and, Function.Embedding.coeFn_mk,
       Ne, toPowerSeries_symm_apply_coeff, mem_support, imp_true_iff,
-      not_false_iff]
+      not_false_iff, reduceCtorEq]
 
 -- Porting note (#10618): simp can prove this
 -- Porting note: removed norm_cast attribute
@@ -396,7 +396,7 @@ instance : IsScalarTower F[X] (RatFunc F) (LaurentSeries F) :=
 end RatFunc
 section AdicValuation
 
-open scoped DiscreteValuation
+open scoped Multiplicative
 
 variable (K : Type*) [Field K]
 namespace PowerSeries
@@ -601,7 +601,7 @@ theorem val_le_one_iff_eq_coe (f : LaurentSeries K) : Valued.v f ≤ (1 : ℤₘ
   all_goals
     apply HahnSeries.embDomain_notin_range
     simp only [Nat.coe_castAddMonoidHom, RelEmbedding.coe_mk, Function.Embedding.coeFn_mk,
-      Set.mem_range, not_exists, Int.negSucc_lt_zero,]
+      Set.mem_range, not_exists, Int.negSucc_lt_zero, reduceCtorEq]
     intro
   · simp only [not_false_eq_true]
   · linarith

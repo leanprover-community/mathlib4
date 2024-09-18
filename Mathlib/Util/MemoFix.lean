@@ -3,8 +3,8 @@ Copyright (c) 2022 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Edward Ayers
 -/
+import Std.Data.HashMap.Basic
 import Mathlib.Init
-import Lean.Data.HashMap
 
 /-!
 # Fixpoint function with memoisation
@@ -12,15 +12,15 @@ import Lean.Data.HashMap
 -/
 
 universe u v
-open ShareCommon
+open ShareCommon Std
 
-private unsafe abbrev ObjectMap := @Lean.HashMap Object Object ⟨Object.ptrEq⟩ ⟨Object.hash⟩
+private unsafe abbrev ObjectMap := @Std.HashMap Object Object ⟨Object.ptrEq⟩ ⟨Object.hash⟩
 
 private unsafe def memoFixImplObj (f : (Object → Object) → (Object → Object)) (a : Object) :
     Object := unsafeBaseIO do
   let cache : IO.Ref ObjectMap ← ST.mkRef ∅
   let rec fix (a) := unsafeBaseIO do
-    if let some b := (← cache.get).find? a then
+    if let some b := (← cache.get)[a]? then
       return b
     let b := f fix a
     cache.modify (·.insert a b)

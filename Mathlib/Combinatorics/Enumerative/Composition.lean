@@ -54,7 +54,7 @@ of `n`.
   blocks of `c`.
 * `join_splitWrtComposition` states that splitting a list and then joining it gives back the
   original list.
-* `joinSplitWrtComposition_join` states that joining a list of lists, and then splitting it back
+* `splitWrtComposition_join` states that joining a list of lists, and then splitting it back
   according to the right composition, gives back the original list of lists.
 
 We turn to the second viewpoint on compositions, that we realize as a finset of `Fin (n+1)`.
@@ -759,7 +759,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
       exact (zero_le i.val).trans_lt (i.2.trans_le (Nat.sub_le n 1))
     simp only [add_comm, Fin.ext_iff, Fin.val_zero, Fin.val_last, exists_prop, Set.toFinset_setOf,
       Finset.mem_univ, forall_true_left, Finset.mem_filter, add_eq_zero, and_false,
-      add_left_inj, false_or, true_and]
+      add_left_inj, false_or, true_and, reduceCtorEq]
     erw [Set.mem_setOf_eq]
     simp only [Finset.mem_val]
     constructor
