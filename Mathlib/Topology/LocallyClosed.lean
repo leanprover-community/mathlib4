@@ -61,6 +61,17 @@ lemma coborder_eq_compl_frontier_iff :
   simp_rw [coborder_eq_union_frontier_compl, union_eq_right, subset_compl_iff_disjoint_left,
     disjoint_frontier_iff_isOpen]
 
+theorem coborder_eq_union_closure_compl {s : Set X} : coborder s = s ∪ (closure s)ᶜ := by
+  rw [coborder, compl_eq_comm, compl_union, compl_compl, inter_comm]
+  rfl
+
+/-- The coborder of any set is dense -/
+theorem dense_coborder {s : Set X} :
+    Dense (coborder s) := by
+  rw [dense_iff_closure_eq, coborder_eq_union_closure_compl, closure_union, ← univ_subset_iff]
+  refine _root_.subset_trans ?_ (union_subset_union_right _ (subset_closure))
+  simp
+
 alias ⟨_, IsOpen.coborder_eq⟩ := coborder_eq_compl_frontier_iff
 
 lemma IsOpenMap.coborder_preimage_subset (hf : IsOpenMap f) (s : Set Y) :
