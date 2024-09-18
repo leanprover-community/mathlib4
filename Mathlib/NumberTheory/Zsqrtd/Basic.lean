@@ -664,13 +664,12 @@ theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
     match -a with
     | ⟨Int.ofNat x, Int.ofNat y⟩ => ⟨0, 0, by trivial⟩
     | ⟨Int.ofNat x, -[y+1]⟩ => ⟨0, y + 1, by simp [add_def, Int.negSucc_coe, add_assoc]; trivial⟩
-    | ⟨-[x+1], Int.ofNat y⟩ => ⟨x + 1, 0, by simp [Int.negSucc_coe, add_assoc]; trivial⟩
-    | ⟨-[x+1], -[y+1]⟩ => ⟨x + 1, y + 1, by simp [Int.negSucc_coe, add_assoc]; trivial⟩
+    | ⟨-[x+1], Int.ofNat y⟩ => ⟨x + 1, 0, by simpa [Int.negSucc_coe, add_assoc] using by trivial⟩
+    | ⟨-[x+1], -[y+1]⟩ => ⟨x + 1, y + 1, by simpa [Int.negSucc_coe, add_assoc] using by trivial⟩
   refine ⟨x + d * y, h.trans ?_⟩
   change Nonneg ⟨↑x + d * y - ↑x, 0 - ↑y⟩
   cases' y with y
-  · simp
-    trivial
+  · simpa using by trivial
   have h : ∀ y, SqLe y d (d * y) 1 := fun y => by
     simpa [SqLe, mul_comm, mul_left_comm] using Nat.mul_le_mul_right (y * y) (Nat.le_mul_self d)
   rw [show (x : ℤ) + d * Nat.succ y - x = d * Nat.succ y by simp]

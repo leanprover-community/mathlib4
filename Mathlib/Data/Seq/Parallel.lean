@@ -82,7 +82,7 @@ theorem terminates_parallel.aux :
   · intro s IH l S m
     have H1 : ∀ l', parallel.aux2 l = Sum.inr l' → s ∈ l' := by
       induction' l with c l IH' <;> intro l' e' <;> simp at m
-      cases' m with e m <;> simp [parallel.aux2] at e'
+      cases' m with e m <;> simp only [parallel.aux2, rmap, List.foldr_cons] at e'
       · rw [← e] at e'
         -- Porting note: `revert e'` & `intro e'` are required.
         revert e'
@@ -111,7 +111,7 @@ theorem terminates_parallel.aux :
       rw [H2]
       refine @Computation.think_terminates _ _ ?_
       have := H1 _ h
-      rcases Seq.destruct S with (_ | ⟨_ | c, S'⟩) <;> simp [parallel.aux1] <;> apply IH <;>
+      rcases Seq.destruct S with (_ | ⟨_ | c, S'⟩) <;> apply IH <;>
         simp [this]
 
 theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : Terminates c] :
@@ -237,14 +237,14 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
         let ⟨c, cl, ac⟩ := this a ⟨d, o.resolve_right (WSeq.not_mem_nil _), ad⟩
         ⟨c, Or.inl cl, ac⟩
     · cases' a with o S'
-      cases' o with c <;> simp [parallel.aux1] at h' <;> rcases IH _ _ h' with ⟨d, dl | dS', ad⟩
+      cases' o with c <;> simp only at h' <;> rcases IH _ _ h' with ⟨d, dl | dS', ad⟩
       · exact
           let ⟨c, cl, ac⟩ := this a ⟨d, dl, ad⟩
           ⟨c, Or.inl cl, ac⟩
       · refine ⟨d, Or.inr ?_, ad⟩
         rw [Seq.destruct_eq_cons e]
         exact Seq.mem_cons_of_mem _ dS'
-      · simp at dl
+      · simp only [List.mem_cons] at dl
         cases' dl with dc dl
         · rw [dc] at ad
           refine ⟨c, Or.inr ?_, ad⟩

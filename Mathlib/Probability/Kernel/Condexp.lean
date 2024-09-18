@@ -85,7 +85,7 @@ lemma condexpKernel_apply_eq_condDistrib [Nonempty Ω] {ω : Ω} :
 instance : IsMarkovKernel (condexpKernel μ m) := by
   rcases isEmpty_or_nonempty Ω with h | h
   · exact ⟨fun a ↦ (IsEmpty.false a).elim⟩
-  · simp [condexpKernel, h]; infer_instance
+  · simp only [condexpKernel, h, ↓reduceDIte]; infer_instance
 
 section Measurability
 

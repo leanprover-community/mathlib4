@@ -1853,7 +1853,7 @@ theorem takeWhile_eq_nil_iff : takeWhile p l = [] ↔ ∀ hl : 0 < l.length, ¬p
   · by_cases hp : p x <;> simp [hp, IH]
 
 theorem mem_takeWhile_imp {x : α} (hx : x ∈ takeWhile p l) : p x := by
-  induction l with simp [takeWhile] at hx
+  induction l with simp only [takeWhile, not_mem_nil] at hx
   | cons hd tl IH =>
     cases hp : p hd
     · simp [hp] at hx

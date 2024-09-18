@@ -371,7 +371,8 @@ theorem ex_dioph {S : Set (α ⊕ β → ℕ)} : Dioph S → Dioph {v | ∃ x, v
       ⟨fun ⟨x, hx⟩ =>
         let ⟨t, ht⟩ := (pe _).1 hx
         ⟨x ⊗ t, by
-          simp; rw [show (v ⊗ x ⊗ t) ∘ ((inl ⊗ inr ∘ inl) ⊗ inr ∘ inr) = (v ⊗ x) ⊗ t from
+          simp only [Poly.map_apply]
+          rw [show (v ⊗ x ⊗ t) ∘ ((inl ⊗ inr ∘ inl) ⊗ inr ∘ inr) = (v ⊗ x) ⊗ t from
             funext fun s => by cases' s with a b <;> try { cases a <;> rfl }; rfl]
           exact ht⟩,
         fun ⟨t, ht⟩ =>
