@@ -51,11 +51,12 @@ noncomputable section
 
 /-- Type synonym equipping a semiring with an absolute value. -/
 @[nolint unusedArguments]
-def WithAbs {R S} [Semiring R] [OrderedSemiring S] : AbsoluteValue R S → Type _ := fun _ => R
+def WithAbs {R S : Type*} [Semiring R] [OrderedSemiring S] :
+    AbsoluteValue R S → Type _ := fun _ => R
 
 namespace WithAbs
 
-instance {R} [Ring R] (v : AbsoluteValue R ℝ) : NormedRing (WithAbs v) where
+instance {R : Type*} [Ring R] (v : AbsoluteValue R ℝ) : NormedRing (WithAbs v) where
   toRing := inferInstanceAs (Ring R)
   norm := v
   dist_eq _ _ := rfl
@@ -67,12 +68,13 @@ instance {R} [Ring R] (v : AbsoluteValue R ℝ) : NormedRing (WithAbs v) where
   eq_of_dist_eq_zero := by simp only [MulHom.toFun_eq_coe, AbsoluteValue.coe_toMulHom,
     AbsoluteValue.map_sub_eq_zero_iff, imp_self, implies_true]
 
-instance {R} [Ring R] [Nontrivial R] (v : AbsoluteValue R ℝ) : NormOneClass (WithAbs v) where
+instance {R : Type*} [Ring R] [Nontrivial R] (v : AbsoluteValue R ℝ) :
+    NormOneClass (WithAbs v) where
   norm_one := v.map_one
 
-variable {K} [Field K] (v : AbsoluteValue K ℝ)
+variable {K : Type*} [Field K] (v : AbsoluteValue K ℝ)
 
-instance instNormedFieldWithAbs : NormedField (WithAbs v) where
+instance normedField : NormedField (WithAbs v) where
   toField := inferInstanceAs (Field K)
   dist_eq := (inferInstanceAs (NormedRing (WithAbs v))).dist_eq
   norm_mul' := v.map_mul
@@ -85,7 +87,7 @@ theorem dist_of_comp
     (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : L → ℝ)).comp f.injective)
     (x y : WithAbs v) :
     dist x y = dist (f x) (f y) := by
-  rw [(instNormedFieldWithAbs v).dist_eq, (inferInstanceAs <| NormedField L).dist_eq,
+  rw [(normedField v).dist_eq, (inferInstanceAs <| NormedField L).dist_eq,
     ← f.map_sub, h]
   rfl
 
@@ -96,7 +98,7 @@ the pseudo metric space associated to the absolute value is the same as the pseu
 induced by `f`. -/
 theorem pseudoMetricSpace_induced_of_comp
     (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : L → ℝ)).comp f.injective) :
-    (instNormedFieldWithAbs v).toPseudoMetricSpace = PseudoMetricSpace.induced f inferInstance := by
+    (normedField v).toPseudoMetricSpace = PseudoMetricSpace.induced f inferInstance := by
   ext
   exact dist_of_comp h _ _
 
@@ -105,7 +107,7 @@ the uniform structure associated to the absolute value is the same as the unifor
 induced by `f`. -/
 theorem uniformSpace_eq_comap_of_comp
     (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : L → ℝ)).comp f.injective) :
-    (instNormedFieldWithAbs v).toUniformSpace = UniformSpace.comap f inferInstance := by
+    (normedField v).toUniformSpace = UniformSpace.comap f inferInstance := by
   rw [pseudoMetricSpace_induced_of_comp h]
   rfl
 
@@ -132,7 +134,7 @@ open WithAbs
 variable {K : Type*} [Field K] (v : AbsoluteValue K ℝ)
 
 /-- The completion of a field with respect to a real absolute value. -/
-def completion := UniformSpace.Completion (WithAbs v)
+abbrev completion := UniformSpace.Completion (WithAbs v)
 
 namespace Completion
 
@@ -228,7 +230,7 @@ theorem abs_of_isReal_eq_comp {v : InfinitePlace K} (hv : IsReal v) :
   rfl
 
 /-- The completion of a number field at an infinite place. -/
-def completion := v.1.completion
+abbrev completion := v.1.completion
 
 namespace Completion
 
