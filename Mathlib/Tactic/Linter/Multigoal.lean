@@ -38,7 +38,7 @@ namespace Mathlib.Linter
 
 /-- The "multiGoal" linter emits a warning when there are multiple active goals. -/
 register_option linter.style.multiGoal : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the multiGoal linter"
 }
 
@@ -130,16 +130,10 @@ abbrev libraries : HashSet Name := HashSet.empty
   |>.insert `Archive
   |>.insert `Counterexamples
 
-/-- Gets the value of the `linter.style.multiGoal` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.style.multiGoal o
-
 @[inherit_doc Mathlib.Linter.linter.style.multiGoal]
 def multiGoalLinter : Linter where
   run := withSetOptionIn fun _stx => do
-    let mod ← getMainModule
-    unless getLinterHash (← getOptions) &&
-        -- the linter only runs on `Mathlib`, `Archive`, `Counterexamples` and its own test file
-        (libraries.contains (mod.components.getD 0 default) || mod == `test.Multigoal) do
+    unless Linter.getLinterValue linter.style.multiGoal (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
