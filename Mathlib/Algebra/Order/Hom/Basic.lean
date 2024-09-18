@@ -73,7 +73,7 @@ variable {ι F α β γ δ : Type*}
 /-! ### Basics -/
 
 /-- `NonnegHomClass F α β` states that `F` is a type of nonnegative morphisms. -/
-class NonnegHomClass (F α β : Type*) [Zero β] [LE β] [FunLike F α β] : Prop where
+class NonnegHomClass (F α : Type*) (β : outParam Type*) [Zero β] [LE β] [FunLike F α β] : Prop where
   /-- the image of any element is non negative. -/
   apply_nonneg (f : F) : ∀ a, 0 ≤ f a
 
@@ -84,13 +84,15 @@ class SubadditiveHomClass (F α β : Type*) [Add α] [Add β] [LE β] [FunLike F
 
 /-- `SubmultiplicativeHomClass F α β` states that `F` is a type of submultiplicative morphisms. -/
 @[to_additive SubadditiveHomClass]
-class SubmultiplicativeHomClass (F α β : Type*) [Mul α] [Mul β] [LE β] [FunLike F α β] : Prop where
+class SubmultiplicativeHomClass (F α : Type*) (β : outParam (Type*)) [Mul α] [Mul β] [LE β]
+    [FunLike F α β] : Prop where
   /-- the image of a product is less or equal than the product of the images. -/
   map_mul_le_mul (f : F) : ∀ a b, f (a * b) ≤ f a * f b
 
 /-- `MulLEAddHomClass F α β` states that `F` is a type of subadditive morphisms. -/
 @[to_additive SubadditiveHomClass]
-class MulLEAddHomClass (F α β : Type*) [Mul α] [Add β] [LE β] [FunLike F α β] : Prop where
+class MulLEAddHomClass (F α : Type*) (β : outParam Type*) [Mul α] [Add β] [LE β] [FunLike F α β] :
+    Prop where
   /-- the image of a product is less or equal than the sum of the images. -/
   map_mul_le_add (f : F) : ∀ a b, f (a * b) ≤ f a + f b
 
@@ -165,7 +167,8 @@ class AddGroupSeminormClass (F α β : Type*) [AddGroup α] [OrderedAddCommMonoi
 
 You should extend this class when you extend `GroupSeminorm`. -/
 @[to_additive]
-class GroupSeminormClass (F α β : Type*) [Group α] [OrderedAddCommMonoid β] [FunLike F α β]
+class GroupSeminormClass (F : Type*) (α : outParam Type*) (β : Type*)
+    [Group α] [OrderedAddCommMonoid β] [FunLike F α β]
   extends MulLEAddHomClass F α β : Prop where
   /-- The image of one is zero. -/
   map_one_eq_zero (f : F) : f 1 = 0
