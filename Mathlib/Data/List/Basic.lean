@@ -1702,6 +1702,9 @@ theorem filterMap_congr {f g : α → Option β} {l : List α}
   · have : g a = some b := Eq.symm (by simpa [hfa] using h a (by simp))
     simp [this]
 
+-- Needs more thought: simp acts on multiple goals, with different medium-sized
+-- simp sets
+set_option linter.flexible false in
 theorem filterMap_eq_map_iff_forall_eq_some {f : α → Option β} {g : α → β} {l : List α} :
     l.filterMap f = l.map g ↔ ∀ x ∈ l, f x = some (g x) where
   mp := by

@@ -113,6 +113,8 @@ lemma height_eq_iSup_last_eq (a : α) :
   intro n
   rw [height_le_iff', iSup₂_le_iff]
 
+-- Needs thought: simp set is medium size
+set_option linter.flexible false in
 lemma length_le_height {p : LTSeries α} {x : α} (hlast : p.last ≤ x) :
     p.length ≤ height x := by
   by_cases hlen0 : p.length ≠ 0

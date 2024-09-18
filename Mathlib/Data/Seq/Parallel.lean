@@ -48,6 +48,8 @@ def parallel.aux1 :
 def parallel (S : WSeq (Computation α)) : Computation α :=
   corec parallel.aux1 ([], S)
 
+-- Needs thought: simp acts on multiple goals, with different (short) simp sets
+set_option linter.flexible false in
 theorem terminates_parallel.aux :
     ∀ {l : List (Computation α)} {S c},
       c ∈ l → Terminates c → Terminates (corec parallel.aux1 (l, S)) := by
@@ -255,6 +257,8 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
         rw [Seq.destruct_eq_cons e]
         exact Seq.mem_cons_of_mem _ dS'
 
+-- Needs thought: simp acts on multiple goals, with different medium-sized simp sets
+set_option linter.flexible false in
 theorem map_parallel (f : α → β) (S) : map f (parallel S) = parallel (S.map (map f)) := by
   refine
     eq_of_bisim

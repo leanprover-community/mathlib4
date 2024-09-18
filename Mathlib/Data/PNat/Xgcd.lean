@@ -130,6 +130,8 @@ def IsSpecial : Prop :=
 def IsSpecial' : Prop :=
   u.w * u.z = succPNat (u.x * u.y)
 
+-- Needs thought: simp followed by rw, with medium-large simp set
+set_option linter.flexible false in
 theorem isSpecial_iff : u.IsSpecial ↔ u.IsSpecial' := by
   dsimp [IsSpecial, IsSpecial']
   let ⟨wp, x, y, zp, ap, bp⟩ := u

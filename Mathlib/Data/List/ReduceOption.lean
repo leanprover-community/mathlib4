@@ -58,6 +58,9 @@ theorem reduceOption_length_eq_iff {l : List (Option α)} :
     l.reduceOption.length = l.length ↔ ∀ x ∈ l, Option.isSome x := by
   rw [reduceOption_length_eq, List.filter_length_eq_length]
 
+-- Needs more thought: simp acts on multiple goals, with different medium-sized simp sets;
+-- in the second case, adding the `rw` calls to the simp errors
+set_option linter.flexible false in
 theorem reduceOption_length_lt_iff {l : List (Option α)} :
     l.reduceOption.length < l.length ↔ none ∈ l := by
   rw [Nat.lt_iff_le_and_ne, and_iff_right (reduceOption_length_le l), Ne,

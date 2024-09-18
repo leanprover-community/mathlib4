@@ -134,6 +134,8 @@ theorem map_mk_sublist_sym2 (x : α) (xs : List α) (h : x ∈ xs) :
       rw [singleton_sublist, mem_map]
       exact ⟨_, h, Sym2.eq_swap⟩
 
+-- Needs thought: simp set is medium large
+set_option linter.flexible false in
 theorem map_mk_disjoint_sym2 (x : α) (xs : List α) (h : x ∉ xs) :
     (map (fun y ↦ s(x, y)) xs).Disjoint xs.sym2 := by
   induction xs with

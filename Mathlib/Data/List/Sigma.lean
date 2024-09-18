@@ -680,6 +680,8 @@ theorem Perm.kunion {l₁ l₂ l₃ l₄ : List (Sigma β)} (nd₃ : l₃.NodupK
     (p₃₄ : l₃ ~ l₄) : kunion l₁ l₃ ~ kunion l₂ l₄ :=
   (p₁₂.kunion_right l₃).trans (p₃₄.kunion_left l₂ nd₃)
 
+-- Needs thought: simp acts on multiple goals, with different simp sets
+set_option linter.flexible false in
 @[simp]
 theorem dlookup_kunion_left {a} {l₁ l₂ : List (Sigma β)} (h : a ∈ l₁.keys) :
     dlookup a (kunion l₁ l₂) = dlookup a l₁ := by

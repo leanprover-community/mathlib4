@@ -347,6 +347,8 @@ theorem node3L_size {l x m y r} : size (@node3L α l x m y r) = size l + size m 
 theorem node3R_size {l x m y r} : size (@node3R α l x m y r) = size l + size m + size r + 2 := by
   dsimp [node3R, node', size]; rw [← add_assoc, ← add_assoc]
 
+-- Needs thought: simp acts on multiple goals, with different simp sets
+set_option linter.flexible false in
 theorem node4L_size {l x m y r} (hm : Sized m) :
     size (@node4L α l x m y r) = size l + size m + size r + 2 := by
   cases m <;> simp [node4L, node3L, node'] <;> [abel; (simp [size, hm.1]; abel)]
@@ -575,7 +577,8 @@ theorem dual_insert [Preorder α] [IsTotal α (· ≤ ·)] [@DecidableRel α (·
 
 /-! ### `balance` properties -/
 
-
+-- Needs thought: simp set is medium large
+set_option linter.flexible false in
 theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Sized l)
     (sr : Sized r) : @balance α l x r = balance' l x r := by
   cases' l with ls ll lx lr
