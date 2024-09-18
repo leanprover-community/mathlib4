@@ -68,8 +68,8 @@ variable {α β : Type*} {D : Set (Set α)}
 section Preorder
 variable [Preorder α] {s t : Set α}
 
-/-- A set `s` is said to be inaccessible by directed joins if, when the least upper bound of a
-directed set `d` lies in `s` then `d` has non-empty intersection with `s`. -/
+/-- A set `s` is said to be inaccessible by directed joins on `D` if, when the least upper bound of
+a directed set `d` in `D` lies in `s` then `d` has non-empty intersection with `s`. -/
 def DirSupInaccOn (D : Set (Set α)) (s : Set α) : Prop :=
   ∀ ⦃d⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → a ∈ s → (d ∩ s).Nonempty
 
@@ -85,8 +85,8 @@ def DirSupInacc (s : Set α) : Prop :=
     DirSupInacc s → DirSupInaccOn D s := fun h _ _ d₂ d₃ _ hda => h d₂ d₃ hda
 
 /--
-A set `s` is said to be closed under directed joins on `D` if, whenever a directed set `d` has a least
-upper bound `a` and is a subset of `s` then `a` also lies in `s`.
+A set `s` is said to be closed under directed joins on `D` if, whenever a directed set `d` in `D`
+has a least upper bound `a` and is a subset of `s` then `a` also lies in `s`.
 -/
 def DirSupClosedOn (D : Set (Set α)) (s : Set α) : Prop :=
   ∀ ⦃d⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → d ⊆ s → a ∈ s
@@ -165,7 +165,7 @@ variable [Preorder α] {s : Set α}
 /-- The Scott-Hausdorff topology.
 
 A set `u` is open in the Scott-Hausdorff topology iff when the least upper bound of a directed set
-`d` lies in `u` then there is a tail of `d` which is a subset of `u`. -/
+`d` in `D` lies in `u` then there is a tail of `d` which is a subset of `u`. -/
 def scottHausdorff (α : Type*) (D : Set (Set α)) [Preorder α] : TopologicalSpace α where
   IsOpen u := ∀ ⦃d⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
     a ∈ u → ∃ b ∈ d, Ici b ∩ d ⊆ u
@@ -184,7 +184,7 @@ variable (α) [TopologicalSpace α] (D)
 /-- Predicate for an ordered topological space to be equipped with its Scott-Hausdorff topology.
 
 A set `u` is open in the Scott-Hausdorff topology iff when the least upper bound of a directed set
-`d` lies in `u` then there is a tail of `d` which is a subset of `u`. -/
+`d` in `D` lies in `u` then there is a tail of `d` which is a subset of `u`. -/
 class IsScottHausdorff : Prop where
   topology_eq_scottHausdorff : ‹TopologicalSpace α› = scottHausdorff α D
 
@@ -241,8 +241,6 @@ def scott (α : Type*) (D : Set (Set α)) [Preorder α] : TopologicalSpace α :=
 lemma upperSet_le_scott : upperSet α ≤ scott α D := le_sup_left
 
 lemma scottHausdorff_le_scott : scottHausdorff α D ≤ scott α D := le_sup_right
-
---lemma test : IsOpen[upperSet α] := sorry
 
 variable (α) [TopologicalSpace α] (D)
 
@@ -372,7 +370,7 @@ lemma isOpen_iff_Iic_compl_or_univ [TopologicalSpace α] [Topology.IsScott α un
     · exact isOpen_univ
     · exact (isClosed_Iic (D := univ)).isOpen_compl
 
--- N.B. A number of conditions equivalent to `scott α = upper α` are given in Gierz _et al_,
+-- N.B. A number of conditions equivalent to `scott α univ = upper α` are given in Gierz _et al_,
 -- Chapter III, Exercise 3.23.
 lemma scott_eq_upper_of_completeLinearOrder : scott α univ = upper α := by
   letI := upper α
