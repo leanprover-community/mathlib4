@@ -45,13 +45,6 @@ section Pair
 
 variable {α : 𝕜} {A B : E →ₗ[𝕜] E}
 
-/--If a pair of operators commute, then the eigenspaces of one are invariant under the other.-/
-theorem eigenspace_invariant_of_commute
-    (hAB : A ∘ₗ B = B ∘ₗ A) (α : 𝕜) : ∀ v ∈ (eigenspace A α), (B v ∈ eigenspace A α) := by
-  intro v hv
-  rw [eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply, ← comp_apply A B v, hAB,
-    comp_apply B A v, ← map_smul, ← map_sub, hv, map_zero] at *
-
 /--The simultaneous eigenspaces of a pair of commuting symmetric operators form an
 `OrthogonalFamily`.-/
 theorem orthogonalFamily_eigenspace_inf_eigenspace (hA : A.IsSymmetric) (hB : B.IsSymmetric) :
@@ -71,7 +64,7 @@ operators commute. -/
 theorem eigenspace_inf_eigenspace
     (hAB : A ∘ₗ B = B ∘ₗ A) (γ : 𝕜) :
     eigenspace A α ⊓ eigenspace B γ = map (Submodule.subtype (eigenspace A α))
-      (eigenspace (B.restrict (eigenspace_invariant_of_commute hAB α)) γ) :=
+      (eigenspace (B.restrict (mapsTo_genEigenspace_of_comm hAB α 1)) γ) :=
   (eigenspace A α).inf_genEigenspace _ _ (k := 1)
 
 variable [FiniteDimensional 𝕜 E]
@@ -86,7 +79,7 @@ theorem iSup_eigenspace_inf_eigenspace (hB : B.IsSymmetric)
   congr 1
   rw [← Submodule.orthogonal_eq_bot_iff]
   exact orthogonalComplement_iSup_eigenspaces_eq_bot <|
-    hB.restrict_invariant <| eigenspace_invariant_of_commute hAB α
+    hB.restrict_invariant <| mapsTo_genEigenspace_of_comm hAB α 1
 
 /-- If A and B are commuting symmetric operators acting on a finite dimensional inner product space,
 then the simultaneous eigenspaces of A and B exhaust the space. -/
