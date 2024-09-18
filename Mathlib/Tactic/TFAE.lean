@@ -258,8 +258,7 @@ def elabTFAEType (tfaeList : List Q(Prop)) : TSyntax ``tfaeType → TermElabM Ex
   | _ => throwUnsupportedSyntax
 
 /- Convert `tfae_have i <arr> j ...` to `tfae_have tfae_i_arr_j : i <arr> j ...`. See
-`expandHave`, which is responsible for inserting `this` in `have : A := ...`. Note that we
-require some extra help for `tfaeHave'` (Mathlib `have`). -/
+`expandHave`, which is responsible for inserting `this` in `have : A := ...`. -/
 macro_rules
 | `(tfaeHave|tfae_have $hy:hygieneInfo $t:tfaeType := $val) => do
   let id := HygieneInfo.mkIdent hy (← mkTFAEId t) (canonical := true)
