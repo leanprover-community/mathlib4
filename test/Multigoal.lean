@@ -51,6 +51,7 @@ example {n : Nat} (hn : n = 0) : n + 0 = 0 := by
   assumption
   assumption
 
+set_option linter.unusedTactic false in
 #guard_msgs(drop warning) in
 set_option linter.style.multiGoal true in
 /--
