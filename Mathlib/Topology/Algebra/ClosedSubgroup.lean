@@ -48,7 +48,7 @@ variable (G : Type u) [Group G] [TopologicalSpace G]
 variable {G} in
 @[to_additive]
 theorem toSubgroup_injective : Function.Injective
-  (ClosedSubgroup.toSubgroup : ClosedSubgroup G → Subgroup G) :=
+    (ClosedSubgroup.toSubgroup : ClosedSubgroup G → Subgroup G) :=
   fun A B h => by
   ext
   rw [h]
@@ -88,7 +88,7 @@ namespace TopologicalGroup
 variable {G : Type u} [Group G] [TopologicalSpace G] [ContinuousMul G]
 
 lemma normalCore_isClosed (H : Subgroup G) (h : IsClosed (H : Set G)) :
-  IsClosed (H.normalCore : Set G) := by
+    IsClosed (H.normalCore : Set G) := by
   have : H.normalCore = ⨅ (g : ConjAct G), g • H := by
     ext g
     simp [Subgroup.normalCore, Subgroup.mem_iInf, Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
@@ -106,8 +106,8 @@ lemma normalCore_isClosed (H : Subgroup G) (h : IsClosed (H : Set G)) :
   exact Set.ext (fun t => Set.mem_smul_set_iff_inv_smul_mem)
 
 @[to_additive]
-lemma finindex_closedSubgroup_isOpen (H : Subgroup G) [H.FiniteIndex]
-  (h : IsClosed (H : Set G)) : IsOpen (H : Set G) := by
+lemma finiteindex_closedSubgroup_isOpen (H : Subgroup G) [H.FiniteIndex]
+    (h : IsClosed (H : Set G)) : IsOpen (H : Set G) := by
   apply isClosed_compl_iff.mp
   convert isClosed_iUnion_of_finite <| fun (x : {x : (G ⧸ H) // x ≠ QuotientGroup.mk 1})
     => IsClosed.smul h (Quotient.out' x.1)
