@@ -311,10 +311,9 @@ zeta function.
 -/
 lemma completedLFunction_modOne_eq {Φ : ZMod 1 → ℂ} (s : ℂ) :
     completedLFunction Φ s = Φ 1 * completedRiemannZeta s := by
-  have : Φ.Even := fun j ↦ congr_arg Φ <| (Unique.eq_default (-j)).trans (Unique.eq_default j).symm
-  simp [completedLFunction, this]
-  change Φ 1 * completedHurwitzZetaEven (toAddCircle 0) s = _
-  rw [map_zero, completedHurwitzZetaEven_zero]
+  rw [completedLFunction_def_even (show Φ.Even from fun _ ↦ congr_arg Φ (Subsingleton.elim ..)),
+    Nat.cast_one, one_cpow, one_mul, ← singleton_eq_univ 0, sum_singleton, map_zero,
+    completedHurwitzZetaEven_zero, Subsingleton.elim 0 1]
 
 variable (Φ) in
 /--
