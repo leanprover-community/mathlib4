@@ -1331,6 +1331,7 @@ theorem small_of_exists_injection {f : Ordinal.{u} → Ordinal.{v}} (h : f.Injec
   rw [small_iff]
   exact ⟨β, ⟨hα.trans hβ⟩⟩
 
+-- TODO: make sSup version.
 theorem IsNormal.map_iSup {f : Ordinal.{u} → Ordinal.{v}} (H : IsNormal f)
     {ι : Type w} (g : ι → Ordinal.{u}) [Small.{u} ι] [Nonempty ι] :
     f (⨆ i, g i) = ⨆ i, f (g i) := eq_of_forall_ge_iff fun a ↦ by
