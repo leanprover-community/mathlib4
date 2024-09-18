@@ -763,7 +763,7 @@ theorem mk_sigma_congrRight {ι : Type u} {f g : ι → Type v} (h : ∀ i, #(f 
     #(Σ i, f i) = #(Σ i, g i) :=
   mk_sigma_congr (Equiv.refl ι) h
 
-theorem mk_sigma_congr_subtype {ι : Type u} {f g : ι → Type v} {p : ι → Prop}
+theorem mk_sigma_congrRight_prop {ι : Type u} {f g : ι → Type v} {p : ι → Prop}
     (h : ∀ i, p i → #(f i) = #(g i)) : #(Σ i, p i → f i) = #(Σ i, p i → g i) := mk_congr <|
   .sigmaCongr (.refl _) <| fun i ↦ .piCongr (.refl _)
     (fun hp ↦ Classical.choice <| Cardinal.eq.mp (h i hp))
@@ -955,7 +955,7 @@ theorem mk_pi_congrRight {ι : Type u} {f g : ι → Type v} (h : ∀ i, #(f i) 
     #(Π i, f i) = #(Π i, g i) :=
   mk_pi_congr (Equiv.refl ι) h
 
-theorem mk_pi_congr_subtype {ι : Type u} {f g : ι → Type v} {p : ι → Prop}
+theorem mk_pi_congrRight_prop {ι : Type u} {f g : ι → Type v} {p : ι → Prop}
     (h : ∀ i, p i → #(f i) = #(g i)) : #(Π i, p i → f i) = #(Π i, p i → g i) := mk_congr <|
   Equiv.piCongr (Equiv.refl ι)
     fun i ↦ Equiv.piCongr (.refl _) (fun hi ↦ Classical.choice <| Cardinal.eq.mp (h i hi))
