@@ -133,11 +133,23 @@ lemma DirSupInaccOn.union (hs : DirSupInaccOn D s) (ht : DirSupInaccOn D t) :
 lemma IsUpperSet.dirSupClosedOn (hs : IsUpperSet s) : DirSupClosedOn D s :=
   fun _d _ ⟨_b, hb⟩ _ _a ha hds ↦ hs (ha.1 hb) <| hds hb
 
+lemma IsUpperSet.dirSupClosed (hs : IsUpperSet s) : DirSupClosed s := by
+  rw [← dirSupClosedOn_univ]
+  exact dirSupClosedOn hs
+
 lemma IsLowerSet.dirSupInaccOn (hs : IsLowerSet s) : DirSupInaccOn D s :=
   hs.compl.dirSupClosedOn.of_compl
 
+lemma IsLowerSet.dirSupInacc (hs : IsLowerSet s) : DirSupInacc s := by
+  rw [← dirSupInaccOn_univ]
+  exact dirSupInaccOn hs
+
 lemma dirSupClosedOn_Iic (a : α) : DirSupClosedOn D (Iic a) :=
   fun _d _ _ _ _a ha ↦ (isLUB_le_iff ha).2
+
+lemma dirSupClosed_Iic (a : α) : DirSupClosed (Iic a) := by
+  rw [← dirSupClosedOn_univ]
+  exact dirSupClosedOn_Iic _
 
 end Preorder
 
@@ -149,9 +161,19 @@ lemma dirSupInaccOn_iff_forall_sSup :
     (d ∩ s).Nonempty := by
   simp [DirSupInaccOn, isLUB_iff_sSup_eq]
 
+lemma dirSupInacc_iff_forall_sSup :
+    DirSupInacc s ↔ ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ s → (d ∩ s).Nonempty := by
+  rw [← dirSupInaccOn_univ, dirSupInaccOn_iff_forall_sSup]
+  aesop
+
 lemma dirSupClosedOn_iff_forall_sSup :
     DirSupClosedOn D s ↔ ∀ ⦃d⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → d ⊆ s → sSup d ∈ s := by
   simp [DirSupClosedOn, isLUB_iff_sSup_eq]
+
+lemma dirSupClosed_iff_forall_sSup :
+    DirSupClosed s ↔ ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → d ⊆ s → sSup d ∈ s := by
+  rw [← dirSupClosedOn_univ, dirSupClosedOn_iff_forall_sSup]
+  aesop
 
 end CompleteLattice
 
