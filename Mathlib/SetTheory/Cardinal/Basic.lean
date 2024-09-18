@@ -904,7 +904,7 @@ lemma exists_eq_of_iSup_eq_of_not_isSuccPrelimit
 lemma exists_eq_of_iSup_eq_of_not_isSuccLimit
     {ι : Type u} [hι : Nonempty ι] (f : ι → Cardinal.{v}) (hf : BddAbove (range f))
     {c : Cardinal.{v}} (hc : ¬ IsSuccLimit c)
-    (h : ⨆ i : ι, f i = c) : ∃ i, f i = c := by
+    (h : ⨆ i, f i = c) : ∃ i, f i = c := by
   rw [Cardinal.isSuccLimit_iff] at hc
   refine (not_and_or.mp hc).elim (fun e ↦ ⟨hι.some, ?_⟩)
     (Cardinal.exists_eq_of_iSup_eq_of_not_isSuccPrelimit.{u, v} f c · h)
