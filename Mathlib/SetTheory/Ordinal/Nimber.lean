@@ -361,7 +361,7 @@ theorem add_trichotomy {a b c : Nimber} (h : a + b + c ≠ 0) :
     exact Or.inr <| Or.inr hx
 
 theorem two_nsmul (a : Nimber) : 2 • a = 0 := by
-  rw [succ_nsmul, one_nsmul, add_self]
+  rw [_root_.two_nsmul, add_self]
 
 theorem two_zsmul (a : Nimber) : (2 : ℤ) • a = 0 :=
   two_nsmul a
