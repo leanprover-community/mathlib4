@@ -344,6 +344,9 @@ theorem mk_Iio_ordinal (o : Ordinal.{u}) :
   rw [lift_card, ← type_subrel_lt, card_type]
   rfl
 
+@[deprecated mk_Iio_ordinal (since := "2024-09-18")]
+alias mk_initialSeg := mk_Iio_ordinal
+
 /-! ### Normal ordinal functions -/
 
 
