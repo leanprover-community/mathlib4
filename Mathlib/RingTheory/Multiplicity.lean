@@ -244,7 +244,7 @@ theorem le_emultiplicity_of_pow_dvd {k : ℕ} (hk : a ^ k ∣ b) :
     k ≤ emultiplicity a b :=
   le_of_not_gt fun hk' => not_pow_dvd_of_emultiplicity_lt hk' hk
 
-theorem Finite.le_multiplicity_of_pow_dvd (hf : Finite a b) {k : ℕ} (hk : a ^ k ∣ b) :
+theorem multiplicity.Finite.le_multiplicity_of_pow_dvd (hf : Finite a b) {k : ℕ} (hk : a ^ k ∣ b) :
     k ≤ multiplicity a b :=
   hf.le_multiplicity_of_le_emultiplicity (le_emultiplicity_of_pow_dvd hk)
 
