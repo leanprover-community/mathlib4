@@ -184,7 +184,7 @@ end ProfiniteGrp
 /-!
 # The projective limit of finite groups is profinite
 
-* `FiniteGrp.limit` : the concretely constructed limit of finite group as a subgroup of the product
+* `FiniteGrp.limit` : the concretely constructed limit of finite group as a subgroup of the pi-type
 
 * `ofFiniteGrpLimit`: direct limit of finite groups is a profinite group
 
@@ -209,7 +209,7 @@ instance (j : J) : TopologicalGroup (F.obj j) := {}
 
 namespace FiniteGrp
 
-/-- Concretely constructing the limit of topological group as a subgroup of the product group. -/
+/-- Concretely constructing the limit of topological group as a subgroup of the  pi-type. -/
 def limit : Subgroup (Π j : J, F.obj j) where
   carrier := {x | ∀ ⦃i j : J⦄ (π : i ⟶ j), F.map π (x i) = x j}
   mul_mem' hx hy _ _ π := by simp only [Pi.mul_apply, map_mul, hx π, hy π]
@@ -220,7 +220,7 @@ def limit : Subgroup (Π j : J, F.obj j) where
 lemma mem_limit (x : Π j : J, F.obj j) : x ∈ limit F ↔
     ∀ ⦃i j : J⦄ (π : i ⟶ j), F.map π (x i) = x j := Iff.rfl
 
-lemma limit_closed_in_product : IsClosed ((limit F) : Set (Π j : J, F.obj j)) := by
+lemma limit_closed_in_pi_type : IsClosed ((limit F) : Set (Π j : J, F.obj j)) := by
   classical
   let S ⦃i j : J⦄ (π : i ⟶ j) : Set (Π j : J, F.obj j) := {x | F.map π (x i) = x j}
   have hS ⦃i j : J⦄ (π : i ⟶ j) : IsClosed (S π) := by
@@ -242,7 +242,7 @@ lemma limit_closed_in_product : IsClosed ((limit F) : Set (Π j : J, F.obj j)) :
   exact eq ▸ isClosed_iInter fun i => isClosed_iInter fun j => isClosed_iInter fun π => hS π
 
 instance : CompactSpace (limit F) := isCompact_iff_compactSpace.mp <|
-  IsClosed.isCompact <| limit_closed_in_product F
+  IsClosed.isCompact <| limit_closed_in_pi_type F
 
 end FiniteGrp
 
