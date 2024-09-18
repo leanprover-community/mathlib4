@@ -153,7 +153,8 @@ noncomputable def counitAppApp (S : CompHausLike.{u} P) (Y : (CompHausLike.{u} P
 -- This is the key lemma to prove naturality of the counit:
 /--
 To check equality of two elements of `X(S)`, it suffices to check equality after composing with
-each `X(S) → X(Sᵢ)`. -/
+each `X(S) → X(Sᵢ)`.
+-/
 lemma presheaf_ext (X : (CompHausLike.{u} P)ᵒᵖ ⥤ Type max u w)
     [PreservesFiniteProducts X] (x y : X.obj ⟨S⟩)
     [HasExplicitFiniteCoproducts.{u} P]
@@ -339,38 +340,38 @@ noncomputable def unitIso : 𝟭 (Type max u w) ≅ functor.{u, w} P hs ⋙
 -/
 -- Note: adding `@[simps]` makes the linter complain.
 noncomputable def adjunction [HasExplicitFiniteCoproducts.{u} P] :
-    functor.{u, w} P hs ⊣ (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u+1}⟩ :=
-  Adjunction.mkOfUnitCounit {
-    unit := unit P hs
-    counit := counit P hs
-    left_triangle := by
-      ext X : 2
-      simp only [Functor.comp_obj, Functor.id_obj, NatTrans.comp_app, Functor.flip_obj_obj,
-        sheafToPresheaf_obj, functor_obj_val, functorToPresheaves_obj_obj, coe_of, whiskerRight_app,
-        Functor.associator_hom_app, whiskerLeft_app, Category.id_comp, NatTrans.id_app']
-      apply Sheaf.hom_ext
-      rw [Sheaf.instCategorySheaf_comp_val, Sheaf.instCategorySheaf_id_val]
-      exact locallyConstantAdjunction_left_triangle P hs X
-    right_triangle := by
-      ext X (x : X.val.obj _)
-      simp only [Functor.comp_obj, Functor.id_obj, Functor.flip_obj_obj, sheafToPresheaf_obj,
-        FunctorToTypes.comp, whiskerLeft_app, unit_app, coe_of, Functor.associator_inv_app,
-        functor_obj_val, functorToPresheaves_obj_obj, types_id_apply, whiskerRight_app,
-        Functor.flip_obj_map, sheafToPresheaf_map, counit_app_val, counitApp_app, NatTrans.id_app']
-      have := CompHausLike.preregular hs
-      let _ : PreservesFiniteProducts
-          ((sheafToPresheaf (coherentTopology (CompHausLike P)) (Type (max u w))).obj X) :=
-        inferInstanceAs (PreservesFiniteProducts (Sheaf.val _))
-      apply presheaf_ext ((unit P hs).app _ x)
-      intro a
-      erw [incl_of_counitAppApp]
-      simp only [sheafToPresheaf_obj, unit_app, coe_of, counitAppAppImage,
-        LocallyConstant.coe_const]
-      have := map_eq_image _ a ⟨PUnit.unit, by
-        simp [mem_iff_eq_image (a := a), ← map_preimage_eq_image]⟩
-      erw [← this]
-      simp only [coe_of, unit_app, LocallyConstant.coe_const, Function.const_apply]
-      congr }
+    functor.{u, w} P hs ⊣ (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u+1}⟩ where
+  unit := unit P hs
+  counit := counit P hs
+  left_triangle_components := by
+    intro X
+    simp only [Functor.comp_obj, Functor.id_obj, NatTrans.comp_app, Functor.flip_obj_obj,
+      sheafToPresheaf_obj, functor_obj_val, functorToPresheaves_obj_obj, coe_of, whiskerRight_app,
+      Functor.associator_hom_app, whiskerLeft_app, Category.id_comp, NatTrans.id_app']
+    apply Sheaf.hom_ext
+    rw [Sheaf.instCategorySheaf_comp_val, Sheaf.instCategorySheaf_id_val]
+    exact locallyConstantAdjunction_left_triangle P hs X
+  right_triangle_components := by
+    intro X
+    ext (x : X.val.obj _)
+    simp only [Functor.comp_obj, Functor.id_obj, Functor.flip_obj_obj, sheafToPresheaf_obj,
+      FunctorToTypes.comp, whiskerLeft_app, unit_app, coe_of, Functor.associator_inv_app,
+      functor_obj_val, functorToPresheaves_obj_obj, types_id_apply, whiskerRight_app,
+      Functor.flip_obj_map, sheafToPresheaf_map, counit_app_val, counitApp_app, NatTrans.id_app']
+    have := CompHausLike.preregular hs
+    let _ : PreservesFiniteProducts
+        ((sheafToPresheaf (coherentTopology (CompHausLike P)) (Type (max u w))).obj X) :=
+      inferInstanceAs (PreservesFiniteProducts (Sheaf.val _))
+    apply presheaf_ext ((unit P hs).app _ x)
+    intro a
+    erw [incl_of_counitAppApp]
+    simp only [sheafToPresheaf_obj, unit_app, coe_of, counitAppAppImage,
+      LocallyConstant.coe_const]
+    have := map_eq_image _ a ⟨PUnit.unit, by
+      simp [mem_iff_eq_image (a := a), ← map_preimage_eq_image]⟩
+    erw [← this]
+    simp only [coe_of, unit_app, LocallyConstant.coe_const, Function.const_apply]
+    congr
 
 instance [HasExplicitFiniteCoproducts.{u} P] : IsIso (adjunction P hs).unit :=
   inferInstanceAs (IsIso (unitIso P hs).hom)
