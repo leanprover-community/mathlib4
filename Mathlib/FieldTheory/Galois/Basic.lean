@@ -287,29 +287,7 @@ variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 
 open IntermediateField
 
-namespace Normal
-
-private lemma of_intermediateField_mem_invariant_under_embedding [Normal K L]
-    (E : IntermediateField K L) (h₀ : ∀ σ : L ≃ₐ[K] L, ∀ x : E, σ x.1 ∈ E) : Normal K E := by
-  apply normal_iff_forall_map_le'.mpr
-  intro σ h hy
-  have : h ∈ (IntermediateField.map σ.toAlgHom E : Set L) := hy
-  rcases this with ⟨x,hx⟩
-  rw [← hx.2]
-  convert h₀ σ ⟨x,hx.1⟩
-
-end Normal
-
 open scoped Pointwise
-
-private theorem Subgroup.Normal.of_conjugate_fixed {G : Type*} [Group G] {H : Subgroup G}
-    (h : ∀ g : G, (MulAut.conj g) • H = H) : H.Normal := by
-  constructor
-  intro n hn g
-  rw [← h g, Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← map_inv, MulAut.smul_def,
-    MulAut.conj_apply, inv_inv, mul_assoc, mul_assoc, inv_mul_cancel, mul_one,
-    ← mul_assoc, inv_mul_cancel, one_mul]
-  exact hn
 
 namespace IsGalois
 
@@ -320,10 +298,11 @@ instance of_fixedField_normal_subgroup [IsGalois K L]
     (H : Subgroup (L ≃ₐ[K] L)) [hn : Subgroup.Normal H] : IsGalois K (fixedField H) where
   to_isSeparable := Algebra.isSeparable_tower_bot_of_isSeparable K (fixedField H) L
   to_normal := by
-    apply Normal.of_intermediateField_mem_invariant_under_embedding (fixedField H)
-    intro σ x τ
-    calc _ = (σ * σ⁻¹ * τ.1 * σ) x.1 := by rw [mul_inv_cancel]; rfl
-      _ = _ := by nth_rw 2 [← x.2 ⟨_ , (Subgroup.Normal.conj_mem hn τ.1 τ.2 σ⁻¹)⟩]; rfl
+    apply normal_iff_forall_map_le'.mpr
+    intro σ x ⟨a, ha, hax⟩ τ
+    rw [← hax]
+    calc _ = (σ * σ⁻¹ * τ.1 * σ) a := by rw [mul_inv_cancel]; rfl
+      _ = _ := by nth_rw 2 [← ha ⟨_ , (Subgroup.Normal.conj_mem hn τ.1 τ.2 σ⁻¹)⟩]; rfl
 
 /-- If `H` is a normal Subgroup of `Gal(L / K)`, then `Gal(fixedField H / K)` is isomorphic to
 `Gal(L / K) ⧸ H`. -/
