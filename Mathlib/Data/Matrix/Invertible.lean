@@ -107,9 +107,9 @@ section Ring
 variable [Ring α] (A : Matrix n n α)
 
 lemma add_mul_mul_invOf_mul_eq_one [Fintype m] [DecidableEq m]
-  (U : Matrix n m α) (C : Matrix m m α) (V : Matrix m n α)
-  [Invertible A] [Invertible C] [Invertible (⅟C + V * ⅟A* U)]:
-  (A + U*C*V)*(⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A) = 1 := by
+    (U : Matrix n m α) (C : Matrix m m α) (V : Matrix m n α)
+    [Invertible A] [Invertible C] [Invertible (⅟C + V * ⅟A* U)]:
+    (A + U*C*V)*(⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A) = 1 := by
   calc
       (A + U*C*V)*(⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A)
       _ = A*⅟A - A*⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A + U*C*V*⅟A - U*C*V*⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A := by
