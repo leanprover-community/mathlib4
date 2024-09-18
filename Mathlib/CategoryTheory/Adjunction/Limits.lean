@@ -90,6 +90,11 @@ def leftAdjointPreservesColimits : PreservesColimitsOfSize.{v, u} F where
               @Equiv.unique _ _ (IsColimit.isoUniqueCoconeMorphism.hom hc _)
                 ((adj.functorialityAdjunction _).homEquiv _ _) } }
 
+noncomputable
+instance colimPreservesColimits [HasColimitsOfShape J C] :
+    PreservesColimits (colim (J := J) (C := C)) :=
+  colimConstAdj.leftAdjointPreservesColimits
+
 -- see Note [lower instance priority]
 noncomputable instance (priority := 100) isEquivalencePreservesColimits
     (E : C ⥤ D) [E.IsEquivalence] :
@@ -192,6 +197,11 @@ def rightAdjointPreservesLimits : PreservesLimitsOfSize.{v, u} G where
             IsLimit.isoUniqueConeMorphism.inv fun _ =>
               @Equiv.unique _ _ (IsLimit.isoUniqueConeMorphism.hom hc _)
                 ((adj.functorialityAdjunction' _).homEquiv _ _).symm } }
+
+noncomputable
+instance limPreservesLimits [HasLimitsOfShape J C] :
+    PreservesLimits (lim (J := J) (C := C)) :=
+  constLimAdj.rightAdjointPreservesLimits
 
 -- see Note [lower instance priority]
 noncomputable instance (priority := 100) isEquivalencePreservesLimits
