@@ -3,6 +3,7 @@ Copyright (c) 2023 Michael Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Lee, Geoffrey Irving
 -/
+import Mathlib.Analysis.Analytic.Constructions
 import Mathlib.Analysis.Analytic.Within
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 
@@ -53,7 +54,7 @@ def analyticPregroupoid : Pregroupoid H where
     · rintro x ⟨hx1, _⟩
       simpa only [mfld_simps] using hx1.2
   id_mem := by
-    apply (analyticOn_id 𝕜).analyticWithinOn.congr
+    apply analyticWithinOn_id.congr
     rintro x ⟨_, hx2⟩
     obtain ⟨y, hy⟩ := mem_range.1 hx2
     simp only [mfld_simps, ← hy]
@@ -85,7 +86,7 @@ theorem ofSet_mem_analyticGroupoid {s : Set H} (hs : IsOpen s) :
   rw [analyticGroupoid, mem_groupoid_of_pregroupoid]
   suffices h : AnalyticWithinOn 𝕜 (I ∘ I.symm) (I.symm ⁻¹' s ∩ range I) by
     simp [h, analyticPregroupoid]
-  have hi : AnalyticWithinOn 𝕜 id (univ : Set E) := (analyticOn_id _).analyticWithinOn
+  have hi : AnalyticWithinOn 𝕜 id (univ : Set E) := analyticWithinOn_id
   exact (hi.mono (subset_univ _)).congr (fun x hx ↦ I.right_inv hx.2)
 
 /-- The composition of a partial homeomorphism from `H` to `M` and its inverse belongs to
@@ -131,11 +132,11 @@ theorem analyticGroupoid_prod {E A : Type} [NormedAddCommGroup E] [NormedSpace �
   have pe : range (I.prod J) = (range I).prod (range J) := I.range_prod
   simp only [mem_analyticGroupoid, Function.comp, image_subset_iff] at fa ga ⊢
   exact ⟨AnalyticWithinOn.prod
-      (fa.1.comp (analyticOn_fst _).analyticWithinOn fun _ m ↦ ⟨m.1.1, (pe ▸ m.2).1⟩)
-      (ga.1.comp (analyticOn_snd _).analyticWithinOn fun _ m ↦ ⟨m.1.2, (pe ▸ m.2).2⟩),
+      (fa.1.comp analyticWithinOn_fst fun _ m ↦ ⟨m.1.1, (pe ▸ m.2).1⟩)
+      (ga.1.comp analyticWithinOn_snd fun _ m ↦ ⟨m.1.2, (pe ▸ m.2).2⟩),
     AnalyticWithinOn.prod
-      (fa.2.comp (analyticOn_fst _).analyticWithinOn fun _ m ↦ ⟨m.1.1, (pe ▸ m.2).1⟩)
-      (ga.2.comp (analyticOn_snd _).analyticWithinOn fun _ m ↦ ⟨m.1.2, (pe ▸ m.2).2⟩)⟩
+      (fa.2.comp analyticWithinOn_fst fun _ m ↦ ⟨m.1.1, (pe ▸ m.2).1⟩)
+      (ga.2.comp analyticWithinOn_snd fun _ m ↦ ⟨m.1.2, (pe ▸ m.2).2⟩)⟩
 
 end analyticGroupoid
 
