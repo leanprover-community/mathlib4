@@ -69,9 +69,6 @@ instance : Coe (ClosedSubgroup G) (Subgroup G) where
   coe := toSubgroup
 
 @[to_additive]
-instance : PartialOrder (ClosedSubgroup G) := inferInstance
-
-@[to_additive]
 instance instInfClosedSubgroup : Inf (ClosedSubgroup G) :=
   ⟨fun U V => ⟨U ⊓ V, U.isClosed'.inter V.isClosed'⟩⟩
 
@@ -96,8 +93,7 @@ lemma normalCore_isClosed (H : Subgroup G) (h : IsClosed (H : Set G)) :
     <;> intro h x
     <;> specialize h (x⁻¹)
     · exact h
-    · simp only [ConjAct.toConjAct_inv, inv_inv] at h
-      exact h
+    · simpa only [ConjAct.toConjAct_inv, inv_inv] using h
   rw [this]
   push_cast
   apply isClosed_iInter
