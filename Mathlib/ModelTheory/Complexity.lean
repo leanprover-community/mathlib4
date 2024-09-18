@@ -70,17 +70,17 @@ open FirstOrder Structure Fin
 namespace BoundedFormula
 
 def simpleNot : {n : ℕ} → L.BoundedFormula α n → L.BoundedFormula α n
-| _, falsum => ⊤
-| _, equal t₁ t₂ => ∼(t₁.bdEqual t₂)
-| _, rel R ts => ∼(rel R ts)
-| _, ⊤ => ⊥
-| _, ∼(equal t₁ t₂) => t₁.bdEqual t₂
-| _, ∼(rel R ts) => rel R ts
-| _, ∀' φ => ∃' φ.simpleNot
-| _, ∃' φ => ∀' φ.simpleNot
-| _, BoundedFormula.inf φ ψ => φ.simpleNot ⊔ ψ.simpleNot
-| _, BoundedFormula.sup φ ψ => φ.simpleNot ⊓ ψ.simpleNot
-| _, φ => ∼φ
+  | _, falsum => ⊤
+  | _, equal t₁ t₂ => ∼(t₁.bdEqual t₂)
+  | _, rel R ts => ∼(rel R ts)
+  | _, ⊤ => ⊥
+  | _, ∼(equal t₁ t₂) => t₁.bdEqual t₂
+  | _, ∼(rel R ts) => rel R ts
+  | _, ∀' φ => ∃' φ.simpleNot
+  | _, ∃' φ => ∀' φ.simpleNot
+  | _, BoundedFormula.inf φ ψ => φ.simpleNot ⊔ ψ.simpleNot
+  | _, BoundedFormula.sup φ ψ => φ.simpleNot ⊓ ψ.simpleNot
+  | _, φ => ∼φ
 
 @[simp]
 theorem realize_simpleNot {n : ℕ} (φ : L.BoundedFormula α n) {v : α → M} {xs : Fin n → M} :
@@ -107,7 +107,7 @@ theorem realize_simpleNot {n : ℕ} (φ : L.BoundedFormula α n) {v : α → M} 
       realize_falsum, imp_false, imp_iff_not_or, not_or, not_not]
   · rfl
 
-def simpleNot_semanticallyEquivalent_not {T : L.Theory} {n : ℕ} (φ : L.BoundedFormula α n) :
+theorem simpleNot_semanticallyEquivalent_not {T : L.Theory} {n : ℕ} (φ : L.BoundedFormula α n) :
     (φ.simpleNot ⇔[T] φ.not) := by
   simp only [Theory.SemanticallyEquivalent, Theory.ModelsBoundedFormula, realize_iff,
     realize_simpleNot, realize_not, implies_true]
