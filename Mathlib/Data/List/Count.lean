@@ -13,9 +13,10 @@ elements of a list satisfying a predicate and equal to a given element respectiv
 definitions can be found in `Batteries.Data.List.Basic`.
 -/
 
-assert_not_exists Set.range
-assert_not_exists GroupWithZero
-assert_not_exists Ring
+assert_not_exists
+  Set.range
+  GroupWithZero
+  Ring
 
 open Nat
 

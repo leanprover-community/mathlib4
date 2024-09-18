@@ -20,8 +20,9 @@ If this file needs to be split, please create an `Algebra.Ring.Int` folder and m
 be `Algebra.Ring.Int.Basic`.
 -/
 
-assert_not_exists DenselyOrdered
-assert_not_exists Set.Subsingleton
+assert_not_exists
+  DenselyOrdered
+  Set.Subsingleton
 
 namespace Int
 

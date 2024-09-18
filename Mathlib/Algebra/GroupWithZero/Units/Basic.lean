@@ -20,8 +20,9 @@ We also define `Ring.inverse`, a globally defined function on any ring
 -/
 
 -- Guard against import creep
-assert_not_exists Multiplicative
-assert_not_exists DenselyOrdered
+assert_not_exists
+  Multiplicative
+  DenselyOrdered
 
 variable {α M₀ G₀ M₀' G₀' F F' : Type*}
 variable [MonoidWithZero M₀]

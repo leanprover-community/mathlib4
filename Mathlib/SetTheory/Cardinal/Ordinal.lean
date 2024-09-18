@@ -39,8 +39,9 @@ using ordinals.
 cardinal arithmetic (for infinite cardinals)
 -/
 
-assert_not_exists Module
-assert_not_exists Finsupp
+assert_not_exists
+  Module
+  Finsupp
 
 noncomputable section
 

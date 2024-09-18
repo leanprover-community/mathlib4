@@ -81,8 +81,9 @@ the second approach only when you need to weaken a condition on either `R` or `A
 
 -/
 
-assert_not_exists Field
-assert_not_exists Module.End
+assert_not_exists
+  Field
+  Module.End
 
 universe u v w u₁ v₁
 
