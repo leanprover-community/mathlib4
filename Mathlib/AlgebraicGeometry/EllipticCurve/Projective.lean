@@ -109,8 +109,8 @@ lemma fin3_def (P : Fin 3 → R) : ![P x, P y, P z] = P := by
 lemma fin3_def_ext (X Y Z : R) : ![X, Y, Z] x = X ∧ ![X, Y, Z] y = Y ∧ ![X, Y, Z] z = Z :=
   ⟨rfl, rfl, rfl⟩
 
-lemma comp_fin3 {S} (f : R → S) (X Y Z : R) : f ∘ ![X, Y, Z] = ![f X, f Y, f Z] :=
-  (FinVec.map_eq _ _).symm
+lemma comp_fin3 {S : Type v} (f : R → S) (X Y Z : R) : f ∘ ![X, Y, Z] = ![f X, f Y, f Z] :=
+  (FinVec.map_eq ..).symm
 
 variable [CommRing R]
 
@@ -455,7 +455,7 @@ section Negation
 /-! ### Negation formulae -/
 
 variable (W') in
-/-- The $Y$-coordinate of the negation of a point representative. -/
+/-- The $Y$-coordinate of a representative of `-P` for a point `P`. -/
 def negY (P : Fin 3 → R) : R :=
   -P y - W'.a₁ * P x - W'.a₃ * P z
 
@@ -497,7 +497,7 @@ lemma Y_eq_iff' {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) :
     P y * Q z = W.negY Q * P z ↔ P y / P z = W.toAffine.negY (Q x / Q z) (Q y / Q z) :=
   negY_of_Z_ne_zero hQz ▸ (div_eq_div_iff hPz hQz).symm
 
-lemma Y_sub_Y_add_Y_sub_negY (P Q : Fin 3 → R) (hx : P x * Q z = Q x * P z) :
+lemma Y_sub_Y_add_Y_sub_negY {P Q : Fin 3 → R} (hx : P x * Q z = Q x * P z) :
     (P y * Q z - Q y * P z) + (P y * Q z - W'.negY Q * P z) = (P y - W'.negY P) * Q z := by
   linear_combination (norm := (rw [negY, negY]; ring1)) -W'.a₁ * hx
 
@@ -506,20 +506,20 @@ lemma Y_ne_negY_of_Y_ne [NoZeroDivisors R] {P Q : Fin 3 → R} (hP : W'.Equation
     (hy : P y * Q z ≠ Q y * P z) : P y ≠ W'.negY P := by
   have hy' : P y * Q z - W'.negY Q * P z = 0 := sub_eq_zero.mpr <| Y_eq_of_Y_ne hP hQ hPz hQz hx hy
   contrapose! hy
-  linear_combination (norm := ring1) Y_sub_Y_add_Y_sub_negY P Q hx + Q z * hy - hy'
+  linear_combination (norm := ring1) Y_sub_Y_add_Y_sub_negY hx + Q z * hy - hy'
 
 lemma Y_ne_negY_of_Y_ne' [NoZeroDivisors R] {P Q : Fin 3 → R} (hP : W'.Equation P)
     (hQ : W'.Equation Q) (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z)
     (hy : P y * Q z ≠ W'.negY Q * P z) : P y ≠ W'.negY P := by
   have hy' : P y * Q z - Q y * P z = 0 := sub_eq_zero.mpr <| Y_eq_of_Y_ne' hP hQ hPz hQz hx hy
   contrapose! hy
-  linear_combination (norm := ring1) Y_sub_Y_add_Y_sub_negY P Q hx + Q z * hy - hy'
+  linear_combination (norm := ring1) Y_sub_Y_add_Y_sub_negY hx + Q z * hy - hy'
 
 lemma Y_eq_negY_of_Y_eq [NoZeroDivisors R] {P Q : Fin 3 → R} (hQz : Q z ≠ 0)
     (hx : P x * Q z = Q x * P z) (hy : P y * Q z = Q y * P z) (hy' : P y * Q z = W'.negY Q * P z) :
     P y = W'.negY P :=
   mul_left_injective₀ hQz <| by
-    linear_combination (norm := ring1) -Y_sub_Y_add_Y_sub_negY P Q hx + hy + hy'
+    linear_combination (norm := ring1) -Y_sub_Y_add_Y_sub_negY hx + hy + hy'
 
 lemma nonsingular_iff_of_Y_eq_negY {P : Fin 3 → F} (hPz : P z ≠ 0) (hy : P y = W.negY P) :
     W.Nonsingular P ↔ W.Equation P ∧ eval P W.polynomialX ≠ 0 := by
@@ -533,7 +533,7 @@ section Doubling
 /-! ### Doubling formulae -/
 
 variable (W) in
-/-- The unit associated to the doubling of a 2-torsion point.
+/-- The unit associated to the doubling of a 2-torsion point `P`.
 More specifically, the unit `u` such that `W.add P P = u • ![0, 1, 0]` where `P = W.neg P`. -/
 noncomputable def dblU (P : Fin 3 → F) : F :=
   eval P W.polynomialX ^ 3 / P z ^ 2
@@ -542,7 +542,7 @@ lemma dblU_eq (P : Fin 3 → F) : W.dblU P =
     (W.a₁ * P y * P z - (3 * P x ^ 2 + 2 * W.a₂ * P x * P z + W.a₄ * P z ^ 2)) ^ 3 / P z ^ 2 := by
   rw [dblU, eval_polynomialX]
 
-lemma dblU_smul (P : Fin 3 → F) (hPz : P z ≠ 0) {u : F} (hu : u ≠ 0) :
+lemma dblU_smul {P : Fin 3 → F} (hPz : P z ≠ 0) {u : F} (hu : u ≠ 0) :
     W.dblU (u • P) = u ^ 4 * W.dblU P := by
   field_simp [dblU_eq, smul_fin3_ext]
   ring1
@@ -563,7 +563,7 @@ lemma isUnit_dblU_of_Y_eq {P Q : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P z 
   (dblU_ne_zero_of_Y_eq hP hPz hQz hx hy hy').isUnit
 
 variable (W') in
-/-- The $Z$-coordinate of the doubling of a point representative. -/
+/-- The $Z$-coordinate of a representative of `2 • P` for a point `P`. -/
 def dblZ (P : Fin 3 → R) : R :=
   P z * (P y - W'.negY P) ^ 3
 
@@ -608,7 +608,7 @@ private lemma toAffine_slope_of_eq {P Q : Fin 3 → F} (hP : W.Equation P) (hQ :
   ring1
 
 variable (W') in
-/-- The $X$-coordinate of the doubling of a point representative. -/
+/-- The $X$-coordinate of a representative of `2 • P` for a point `P`. -/
 noncomputable def dblX (P : Fin 3 → R) : R :=
   2 * P x * P y ^ 3 + 3 * W'.a₁ * P x ^ 2 * P y ^ 2 + 6 * W'.a₂ * P x ^ 3 * P y
     - 8 * W'.a₂ * P y ^ 3 * P z + 9 * W'.a₃ * P x ^ 4 - 6 * W'.a₃ * P x * P y ^ 2 * P z
@@ -678,7 +678,7 @@ lemma dblX_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation
     toAffine_addX_of_eq hPz <| sub_ne_zero.mpr <| Y_ne_negY_of_Y_ne' hP hQ hPz hQz hx hy]
 
 variable (W') in
-/-- The $Y$-coordinate of the negated doubling of a point representative. -/
+/-- The $Y$-coordinate of a representative of `-(2 • P)` for a point `P`. -/
 noncomputable def negDblY (P : Fin 3 → R) : R :=
   -P y ^ 4 - 3 * W'.a₁ * P x * P y ^ 3 - 9 * W'.a₃ * P x ^ 3 * P y + 3 * W'.a₃ * P y ^ 3 * P z
     - 3 * W'.a₄ * P x * P y ^ 2 * P z - 27 * W'.a₆ * P x ^ 3 * P z + 9 * W'.a₆ * P y ^ 2 * P z ^ 2
@@ -763,7 +763,7 @@ lemma negDblY_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equat
     toAffine_negAddY_of_eq hPz <| sub_ne_zero.mpr <| Y_ne_negY_of_Y_ne' hP hQ hPz hQz hx hy]
 
 variable (W') in
-/-- The $Y$-coordinate of the doubling of a point representative. -/
+/-- The $Y$-coordinate of a representative of `2 • P` for a point `P`. -/
 noncomputable def dblY (P : Fin 3 → R) : R :=
   W'.negY ![W'.dblX P, W'.negDblY P, W'.dblZ P]
 
@@ -795,7 +795,7 @@ lemma dblY_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation
     dblX_of_Z_ne_zero hP hQ hPz hQz hx hy, negDblY_of_Z_ne_zero hP hQ hPz hQz hx hy, Affine.addY]
 
 variable (W') in
-/-- The coordinates of the doubling of a point representative. -/
+/-- The coordinates of a representative of `2 • P` for a point `P`. -/
 noncomputable def dblXYZ (P : Fin 3 → R) : Fin 3 → R :=
   ![W'.dblX P, W'.dblY P, W'.dblZ P]
 
@@ -839,7 +839,7 @@ section Addition
 
 /-! ### Addition formulae -/
 
-/-- The unit associated to the addition of a non-2-torsion point with its negation.
+/-- The unit associated to the addition of a non-2-torsion point `P` with its negation.
 More specifically, the unit `u` such that `W.add P Q = u • ![0, 1, 0]` where `P x / P z = Q x / Q z`
 but `P ≠ W.neg P`. -/
 def addU (P Q : Fin 3 → F) : F :=
@@ -865,7 +865,8 @@ lemma isUnit_addU_of_Y_ne {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0
   (addU_ne_zero_of_Y_ne hPz hQz hy).isUnit
 
 variable (W') in
-/-- The $Z$-coordinate of the addition of two distinct point representatives. -/
+/-- The $Z$-coordinate of a representative of `P + Q` for two distinct points `P` and `Q`.
+Note that this returns the value 0 if the representatives of `P` and `Q` are equal. -/
 def addZ (P Q : Fin 3 → R) : R :=
   -3 * P x ^ 2 * Q x * Q z + 3 * P x * Q x ^ 2 * P z + P y ^ 2 * Q z ^ 2 - Q y ^ 2 * P z ^ 2
     + W'.a₁ * P x * P y * Q z ^ 2 - W'.a₁ * Q x * Q y * P z ^ 2 - W'.a₂ * P x ^ 2 * Q z ^ 2
@@ -886,7 +887,7 @@ lemma addZ_smul (P Q : Fin 3 → R) (u v : R) :
   simp only [addZ, smul_fin3_ext]
   ring1
 
-lemma addZ_self {P : Fin 3 → R} : W'.addZ P P = 0 := by
+lemma addZ_self (P : Fin 3 → R) : W'.addZ P P = 0 := by
   rw [addZ]
   ring1
 
@@ -902,7 +903,7 @@ lemma addZ_of_Z_eq_zero_right [NoZeroDivisors R] {P Q : Fin 3 → R} (hQ : W'.Eq
 
 lemma addZ_of_X_eq [NoZeroDivisors R] {P Q : Fin 3 → R} (hP : W'.Equation P) (hQ : W'.Equation Q)
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) : W'.addZ P Q = 0 := by
-  apply eq_zero_of_ne_zero_of_mul_right_eq_zero (mul_ne_zero hPz hQz)
+  apply eq_zero_of_ne_zero_of_mul_right_eq_zero <| mul_ne_zero hPz hQz
   rw [addZ_eq' hP hQ, hx, sub_self, zero_pow three_ne_zero]
 
 lemma addZ_ne_zero_of_X_ne [NoZeroDivisors R] {P Q : Fin 3 → R} (hP : W'.Equation P)
@@ -921,7 +922,8 @@ private lemma toAffine_slope_of_ne {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : 
   ring1
 
 variable (W') in
-/-- The $X$-coordinate of the addition of two distinct point representatives. -/
+/-- The $X$-coordinate of a representative of `P + Q` for two distinct points `P` and `Q`.
+Note that this returns the value 0 if the representatives of `P` and `Q` are equal. -/
 def addX (P Q : Fin 3 → R) : R :=
   -P x * Q y ^ 2 * P z + Q x * P y ^ 2 * Q z - 2 * P x * P y * Q y * Q z + 2 * Q x * P y * Q y * P z
     - W'.a₁ * P x ^ 2 * Q y * Q z + W'.a₁ * Q x ^ 2 * P y * P z + W'.a₂ * P x ^ 2 * Q x * Q z
@@ -953,7 +955,7 @@ lemma addX_smul (P Q : Fin 3 → R) (u v : R) :
   simp only [addX, smul_fin3_ext]
   ring1
 
-lemma addX_self {P : Fin 3 → R} : W'.addX P P = 0 := by
+lemma addX_self (P : Fin 3 → R) : W'.addX P P = 0 := by
   rw [addX]
   ring1
 
@@ -969,7 +971,7 @@ lemma addX_of_Z_eq_zero_right [NoZeroDivisors R] {P Q : Fin 3 → R} (hQ : W'.Eq
 
 lemma addX_of_X_eq [NoZeroDivisors R] {P Q : Fin 3 → R} (hP : W'.Equation P) (hQ : W'.Equation Q)
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) : W'.addX P Q = 0 := by
-  apply eq_zero_of_ne_zero_of_mul_right_eq_zero (pow_ne_zero 2 <| mul_ne_zero hPz hQz)
+  apply eq_zero_of_ne_zero_of_mul_right_eq_zero <| pow_ne_zero 2 <| mul_ne_zero hPz hQz
   rw [addX_eq' hP hQ, hx]
   ring1
 
@@ -988,7 +990,8 @@ lemma addX_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation
     toAffine_addX_of_ne hPz hQz <| sub_ne_zero.mpr hx]
 
 variable (W') in
-/-- The $Y$-coordinate of the negated addition of two distinct point representatives. -/
+/-- The $Y$-coordinate of a representative of `-(P + Q)` for two distinct points `P` and `Q`.
+Note that this returns the value 0 if the representatives of `P` and `Q` are equal. -/
 def negAddY (P Q : Fin 3 → R) : R :=
   -3 * P x ^ 2 * Q x * Q y + 3 * P x * Q x ^ 2 * P y - P y ^ 2 * Q y * Q z + P y * Q y ^ 2 * P z
     + W'.a₁ * P x * Q y ^ 2 * P z - W'.a₁ * Q x * P y ^ 2 * Q z - W'.a₂ * P x ^ 2 * Q y * Q z
@@ -1023,7 +1026,7 @@ lemma negAddY_smul (P Q : Fin 3 → R) (u v : R) :
   simp only [negAddY, smul_fin3_ext]
   ring1
 
-lemma negAddY_self {P : Fin 3 → R} : W'.negAddY P P = 0 := by
+lemma negAddY_self (P : Fin 3 → R) : W'.negAddY P P = 0 := by
   rw [negAddY]
   ring1
 
@@ -1066,7 +1069,8 @@ lemma negAddY_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equat
     toAffine_negAddY_of_ne hPz hQz <| sub_ne_zero.mpr hx]
 
 variable (W') in
-/-- The $Y$-coordinate of the addition of two distinct point representatives. -/
+/-- The $Y$-coordinate of a representative of `P + Q` for two distinct points `P` and `Q`.
+Note that this returns the value 0 if the representatives of `P` and `Q` are equal. -/
 def addY (P Q : Fin 3 → R) : R :=
   W'.negY ![W'.addX P Q, W'.negAddY P Q, W'.addZ P Q]
 
@@ -1075,7 +1079,7 @@ lemma addY_smul (P Q : Fin 3 → R) (u v : R) :
   simp only [addY, negY_eq, negAddY_smul, addX_smul, addZ_smul]
   ring1
 
-lemma addY_self {P : Fin 3 → R} : W'.addY P P = 0 := by
+lemma addY_self (P : Fin 3 → R) : W'.addY P P = 0 := by
   simp only [addY, negY_eq, negAddY_self, addX_self, addZ_self, neg_zero, mul_zero, sub_zero]
 
 lemma addY_of_Z_eq_zero_left [NoZeroDivisors R] {P Q : Fin 3 → R} (hP : W'.Equation P)
@@ -1103,14 +1107,15 @@ lemma addY_of_X_eq {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (
     mul_div_cancel_right₀ _ <| pow_ne_zero 3 <| mul_ne_zero hPz hQz]
 
 lemma addY_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
-    (hQz : Q z ≠ 0) (hx : P x * Q z ≠ Q x * P z) :
-    W.addY P Q / W.addZ P Q = W.toAffine.addY (P x / P z) (Q x / Q z) (P y / P z)
-      (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)) := by
+    (hQz : Q z ≠ 0) (hx : P x * Q z ≠ Q x * P z) : W.addY P Q / W.addZ P Q =
+      W.toAffine.addY (P x / P z) (Q x / Q z) (P y / P z)
+        (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)) := by
   erw [addY, negY_of_Z_ne_zero <| addZ_ne_zero_of_X_ne hP hQ hx, addX_of_Z_ne_zero hP hQ hPz hQz hx,
     negAddY_of_Z_ne_zero hP hQ hPz hQz hx, Affine.addY]
 
 variable (W') in
-/-- The coordinates of the addition of two distinct point representatives. -/
+/-- The coordinates of a representative of `P + Q` for two distinct points `P` and `Q`.
+Note that this returns the value `![0, 0, 0]` if the representatives of `P` and `Q` are equal. -/
 noncomputable def addXYZ (P Q : Fin 3 → R) : Fin 3 → R :=
   ![W'.addX P Q, W'.addY P Q, W'.addZ P Q]
 
@@ -1127,7 +1132,7 @@ lemma addXYZ_smul (P Q : Fin 3 → R) (u v : R) :
     W'.addXYZ (u • P) (v • Q) = (u * v) ^ 2 • W'.addXYZ P Q := by
   rw [addXYZ, addX_smul, addY_smul, addZ_smul, smul_fin3, addXYZ_X, addXYZ_Y, addXYZ_Z]
 
-lemma addXYZ_self {P : Fin 3 → R} : W'.addXYZ P P = ![0, 0, 0] := by
+lemma addXYZ_self (P : Fin 3 → R) : W'.addXYZ P P = ![0, 0, 0] := by
   rw [addXYZ, addX_self, addY_self, addZ_self]
 
 lemma addXYZ_of_Z_eq_zero_left [NoZeroDivisors R] {P Q : Fin 3 → R} (hP : W'.Equation P)
