@@ -451,7 +451,7 @@ protected theorem ContDiffOn.ftaylorSeriesWithin (h : ContDiffOn 𝕜 n f s) (hs
     HasFTaylorSeriesUpToOn n f (ftaylorSeriesWithin 𝕜 f s) s := by
   constructor
   · intro x _
-    simp only [ftaylorSeriesWithin, ContinuousMultilinearMap.uncurry0_apply,
+    simp only [ftaylorSeriesWithin, ContinuousMultilinearMap.curry0_apply,
       iteratedFDerivWithin_zero_apply]
   · intro m hm x hx
     rcases (h x hx) m.succ (Order.add_one_le_of_lt hm) with ⟨u, hu, p, Hp⟩
@@ -498,7 +498,7 @@ theorem contDiffOn_of_continuousOn_differentiableOn
   refine ⟨s, self_mem_nhdsWithin, ftaylorSeriesWithin 𝕜 f s, ?_⟩
   constructor
   · intro y _
-    simp only [ftaylorSeriesWithin, ContinuousMultilinearMap.uncurry0_apply,
+    simp only [ftaylorSeriesWithin, ContinuousMultilinearMap.curry0_apply,
       iteratedFDerivWithin_zero_apply]
   · intro k hk y hy
     convert (Hdiff k (lt_of_lt_of_le hk hm) y hy).hasFDerivWithinAt
