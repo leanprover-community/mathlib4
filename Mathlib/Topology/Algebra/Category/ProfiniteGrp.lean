@@ -23,10 +23,10 @@ disconnected.
 * `ofFiniteGrp` : A `FiniteGrp` when given the discrete topology can be considered as a
   profinite group.
 
-* `ofContinuousMulEquivProfiniteGrp` : If a topological group have a two-sided continuous
+* `ofContinuousMulEquivProfiniteGrp` : If a topological group has a two-sided continuous
   isomorphism to a profinite group then it is profinite as well.
 
-* `ofClosedSubgroup` : The closed subgroup of a profinite group is profinite.
+* `ofClosedSubgroup` : A closed subgroup of a profinite group is profinite.
 
 -/
 
@@ -173,7 +173,7 @@ def ofContinuousMulEquivProfiniteGrp {G : ProfiniteGrp.{u}} {H : Type v} [Topolo
   letI : TotallyDisconnectedSpace H := Homeomorph.totallyDisconnectedSpace e.toHomeomorph
   .of H
 
-/-- The closed subgroup of a profinite group is profinite -/
+/-- A closed subgroup of a profinite group is profinite -/
 def ofClosedSubgroup {G : ProfiniteGrp}
     (H : Subgroup G) (hH : IsClosed (H : Set G)) : ProfiniteGrp :=
   letI : CompactSpace H := isCompact_iff_compactSpace.mp (IsClosed.isCompact hH)
@@ -251,7 +251,7 @@ namespace ProfiniteGrp
 /-- Making the direct limit of `FiniteGrp` into a `ProfiniteGrp`. -/
 def ofFiniteGrpLimit : ProfiniteGrp := .of (FiniteGrp.limit F)
 
-/-- Verify that the limit constructed above exist projections to the `FiniteGrps`
+/-- Verify that the limit constructed above has projections to the `FiniteGrps`
 that are compatible with the morphisms between them. -/
 def ofFiniteGrpLimitCone : Limits.Cone (F ⋙ forget₂ FiniteGrp ProfiniteGrp) where
   pt := ofFiniteGrpLimit F
