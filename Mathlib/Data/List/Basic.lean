@@ -59,9 +59,6 @@ instance : Std.Associative (α := List α) Append.append where
 
 theorem singleton_injective : Injective fun a : α => [a] := fun _ _ h => (cons_eq_cons.1 h).1
 
-theorem singleton_inj {a b : α} : [a] = [b] ↔ a = b :=
-  singleton_injective.eq_iff
-
 theorem set_of_mem_cons (l : List α) (a : α) : { x | x ∈ a :: l } = insert a { x | x ∈ l } :=
   Set.ext fun _ => mem_cons
 
@@ -1233,7 +1230,7 @@ theorem getElem_succ_scanl {i : ℕ} (h : i + 1 < (scanl f b l).length) :
     · simp only [length] at h
       exact absurd h (by omega)
     · simp_rw [scanl_cons]
-      rw [getElem_append_right']
+      rw [getElem_append_right]
       · simp only [length, Nat.zero_add 1, succ_add_sub_one, hi]; rfl
       · simp only [length_singleton]; omega
 
@@ -1883,7 +1880,7 @@ theorem erase_getElem [DecidableEq ι] {l : List ι} {i : ℕ} (hi : i < l.lengt
     | succ i =>
       have hi' : i < l.length := by simpa using hi
       if ha : a = l[i] then
-        simpa [ha] using .trans (perm_cons_erase (l.getElem_mem i _)) (.cons _ (IH hi'))
+        simpa [ha] using .trans (perm_cons_erase (getElem_mem _)) (.cons _ (IH hi'))
       else
         simpa [ha] using IH hi'
 
@@ -2204,7 +2201,7 @@ end Forall
 /-! ### Miscellaneous lemmas -/
 
 theorem get_attach (L : List α) (i) :
-    (L.attach.get i).1 = L.get ⟨i, length_attach L ▸ i.2⟩ := by simp
+    (L.attach.get i).1 = L.get ⟨i, length_attach (L := L) ▸ i.2⟩ := by simp
 
 #adaptation_note
 /--

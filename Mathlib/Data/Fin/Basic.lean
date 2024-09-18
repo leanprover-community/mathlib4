@@ -363,12 +363,6 @@ protected theorem add_zero [NeZero n] (k : Fin n) : k + 0 = k := by
 protected theorem zero_add [NeZero n] (k : Fin n) : 0 + k = k := by
   simp [Fin.ext_iff, add_def, mod_eq_of_lt (is_lt k)]
 
-instance {a : ℕ} [NeZero n] : OfNat (Fin n) a where
-  ofNat := Fin.ofNat' a n.pos_of_neZero
-
-instance inhabited (n : ℕ) [NeZero n] : Inhabited (Fin n) :=
-  ⟨0⟩
-
 instance inhabitedFinOneAdd (n : ℕ) : Inhabited (Fin (1 + n)) :=
   haveI : NeZero (1 + n) := by rw [Nat.add_comm]; infer_instance
   inferInstance
@@ -379,8 +373,8 @@ theorem default_eq_zero (n : ℕ) [NeZero n] : (default : Fin n) = 0 :=
 
 section from_ad_hoc
 
-@[simp] lemma ofNat'_zero {h : 0 < n} [NeZero n] : (Fin.ofNat' 0 h : Fin n) = 0 := rfl
-@[simp] lemma ofNat'_one {h : 0 < n} [NeZero n] : (Fin.ofNat' 1 h : Fin n) = 1 := rfl
+@[simp] lemma ofNat'_zero [NeZero n] : (Fin.ofNat' n 0) = 0 := rfl
+@[simp] lemma ofNat'_one [NeZero n] : (Fin.ofNat' n 1) = 1 := rfl
 
 end from_ad_hoc
 
