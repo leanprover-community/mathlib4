@@ -139,13 +139,6 @@ theorem iSup_eigenspace_restrict [FiniteDimensional 𝕜 E] {F : Submodule 𝕜 
   have H : IsSymmetric (S.restrict hInv) := fun x y ↦ hS (F.subtype x) y
   apply orthogonal_eq_bot_iff.mp (H.orthogonalComplement_iSup_eigenspaces_eq_bot)
 
-/-- Given an invariant subspace for an operator, its intersection with an eigenspace is
-the eigenspace of the restriction of the operator to the invariant subspace. -/
-theorem invariant_submodule_inf_eigenspace {F : Submodule 𝕜 E} (S : E →ₗ[𝕜] E)
-    (μ : 𝕜) (hInv : ∀ v ∈ F, S v ∈ F) :
-    F ⊓ eigenspace S μ = map (Submodule.subtype F) (eigenspace (S.restrict (hInv)) μ) :=
-  F.inf_genEigenspace _ _ (k := 1)
-
 open Classical
 
 @[simp]
