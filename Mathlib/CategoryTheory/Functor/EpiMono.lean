@@ -268,7 +268,7 @@ instance (adj : F ⊣ F') {X : C} {Y : D} (f : F.obj X ⟶ Y) [hf : Mono f] [F.R
     Mono (adj.homEquiv _ _ f) :=
   F.mono_of_mono_map <| by
     rw [← (homEquiv adj X Y).symm_apply_apply f] at hf
-    exact mono_of_mono_fac adj.homEquiv_counit.symm
+    exact mono_of_mono_fac (adj.homEquiv_counit _ _ _).symm
 
 end CategoryTheory.Adjunction
 

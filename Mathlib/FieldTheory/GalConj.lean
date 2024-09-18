@@ -14,21 +14,6 @@ open Polynomial
 
 open scoped Polynomial BigOperators IntermediateField
 
-namespace AlgEquiv
-
-variable {R : Type*} [CommSemiring R] {A₁ A₂ : Type*}
-
-variable [Semiring A₁] [Semiring A₂]
-
-variable [Algebra R A₁] [Algebra R A₂]
-
-variable (e : A₁ ≃ₐ[R] A₂)
-
-theorem symm_apply_eq {x y} : e.symm x = y ↔ x = e y :=
-  e.toEquiv.symm_apply_eq
-
-end AlgEquiv
-
 namespace IntermediateField
 
 variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] {α : E}
