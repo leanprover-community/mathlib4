@@ -40,7 +40,7 @@ for `OrderedAddCommMonoid M`, when `f s ≠ 0` and all `w i` are nonnegative.
 - `Finsupp.weight_eq_zero_iff_eq_zero` says that `f.weight w = 0` iff
 `f = 0` for `NonTorsion Weight w` and `CanonicallyOrderedAddCommMonoid M`.
 
--- For `w : σ → ℕ` and `Finite σ`, `Finsupp.finite_of_nat_weight_le` proves that
+- For `w : σ → ℕ` and `Finite σ`, `Finsupp.finite_of_nat_weight_le` proves that
 there are finitely many `f : σ →₀ ℕ` of bounded weight.
 
 ## Degree
