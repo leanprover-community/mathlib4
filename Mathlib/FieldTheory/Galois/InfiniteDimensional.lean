@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jujian Zhang, Nailin Guan, Yuyang Zhao
+Authors: Nailin Guan, Yuyang Zhao, Jujian Zhang
 -/
 import Mathlib.FieldTheory.KrullTopology
 import Mathlib.FieldTheory.NormalClosure
