@@ -5,6 +5,7 @@ Authors: Violeta Hernández Palacios, Mario Carneiro
 -/
 import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.SetTheory.Ordinal.Exponential
+import Mathlib.Logic.UnivLE
 
 /-!
 # Fixed points of normal functions

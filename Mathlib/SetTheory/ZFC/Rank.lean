@@ -117,7 +117,7 @@ theorem rank_eq_wfRank : lift.{u + 1, u} (rank x) = mem_wf.rank x := by
   apply (le_of_forall_lt _).antisymm (Ordinal.iSup_le.{u + 1, u} _) <;> intro h
   · rw [lt_lift_iff]
     rintro ⟨o, rfl, h⟩
-    simpa [Ordinal.lt_iSup.{u + 1, u}] using lt_rank_iff.1 h
+    simpa [Ordinal.lt_iSup] using lt_rank_iff.1 h
   · simpa using rank_lt_of_mem h.2
 
 end PSet
@@ -203,7 +203,7 @@ theorem rank_eq_wfRank : lift.{u + 1, u} (rank x) = mem_wf.rank x := by
   apply (le_of_forall_lt _).antisymm (Ordinal.iSup_le.{u + 1, u} _) <;> intro h
   · rw [lt_lift_iff]
     rintro ⟨o, rfl, h⟩
-    simpa [Ordinal.lt_iSup.{u + 1, u}] using lt_rank_iff.1 h
+    simpa [Ordinal.lt_iSup] using lt_rank_iff.1 h
   · simpa using rank_lt_of_mem h.2
 
 end ZFSet

@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 import Mathlib.SetTheory.Ordinal.Basic
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Logic.UnivLE
 
 /-!
 # Ordinal arithmetic
@@ -1123,6 +1124,31 @@ theorem bddAbove_range {ι : Type u} (f : ι → Ordinal.{max u v}) : BddAbove (
     exact le_of_lt (Cardinal.lt_ord.2 ((lt_succ _).trans_le
       (le_ciSup (Cardinal.bddAbove_range.{_, v} _) _)))⟩
 
+instance small_Iio (o : Ordinal.{u}) : Small.{u} (Set.Iio o) :=
+  let f : o.toType → Set.Iio o :=
+    fun x => ⟨typein (α := o.toType) (· < ·) x, typein_lt_self x⟩
+  let hf : Surjective f := fun b =>
+    ⟨enum (α := o.toType) (· < ·) ⟨b.val,
+        by
+          rw [type_lt]
+          exact b.prop⟩,
+      Subtype.ext (typein_enum _ _)⟩
+  small_of_surjective hf
+
+instance small_Iic (o : Ordinal.{u}) : Small.{u} (Set.Iic o) := by
+  rw [← Iio_succ]
+  infer_instance
+
+theorem bddAbove_of_small (s : Set Ordinal.{u}) [h : Small.{u} s] : BddAbove s := by
+  obtain ⟨a, ha⟩ := bddAbove_range (fun x => ((@equivShrink s h).symm x).val)
+  use a
+  intro b hb
+  simpa using ha (mem_range_self (equivShrink s ⟨b, hb⟩))
+
+theorem bddAbove_iff_small {s : Set Ordinal.{u}} : BddAbove s ↔ Small.{u} s :=
+  ⟨fun ⟨a, h⟩ => small_subset <| show s ⊆ Iic a from fun _ hx => h hx, fun _ =>
+    bddAbove_of_small _⟩
+
 /-- `le_ciSup` whenever the outputs live in a higher universe than the inputs. -/
 protected theorem le_iSup {ι : Type u} (f : ι → Ordinal.{max u v}) : ∀ i, f i ≤ iSup f :=
   le_ciSup (bddAbove_range f)
@@ -1133,9 +1159,9 @@ theorem le_sup {ι : Type u} (f : ι → Ordinal.{max u v}) : ∀ i, f i ≤ sup
   Ordinal.le_iSup f i
 
 /-- `ciSup_le_iff'` whenever the outputs live in a higher universe than the inputs. -/
-protected theorem iSup_le_iff {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
+theorem iSup_le_iff {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
     iSup f ≤ a ↔ ∀ i, f i ≤ a :=
-  ciSup_le_iff' (bddAbove_range f)
+  ciSup_le_iff' (bddAbove_iff_small.mpr (small_range f))
 
 set_option linter.deprecated false in
 @[deprecated Ordinal.iSup_le_iff (since := "2024-08-27")]
@@ -1153,7 +1179,7 @@ theorem sup_le {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : (∀ i, f i �
   Ordinal.iSup_le
 
 -- TODO: generalize to conditionally complete linear orders.
-protected theorem lt_iSup {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
+theorem lt_iSup {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
     a < iSup f ↔ ∃ i, a < f i := by
   rw [← not_iff_not]
   simpa using Ordinal.iSup_le_iff
@@ -1303,33 +1329,6 @@ theorem le_sup_shrink_equiv {s : Set Ordinal.{u}} (hs : Small.{u} s) (a) (ha : a
     a ≤ sup.{u, u} fun x => ((@equivShrink s hs).symm x).val := by
   convert le_sup.{u, u} (fun x => ((@equivShrink s hs).symm x).val) ((@equivShrink s hs) ⟨a, ha⟩)
   rw [symm_apply_apply]
-
--- TODO: move this together with `bddAbove_range`.
-
-instance small_Iio (o : Ordinal.{u}) : Small.{u} (Set.Iio o) :=
-  let f : o.toType → Set.Iio o :=
-    fun x => ⟨typein (α := o.toType) (· < ·) x, typein_lt_self x⟩
-  let hf : Surjective f := fun b =>
-    ⟨enum (α := o.toType) (· < ·) ⟨b.val,
-        by
-          rw [type_lt]
-          exact b.prop⟩,
-      Subtype.ext (typein_enum _ _)⟩
-  small_of_surjective hf
-
-instance small_Iic (o : Ordinal.{u}) : Small.{u} (Set.Iic o) := by
-  rw [← Iio_succ]
-  infer_instance
-
-theorem bddAbove_of_small (s : Set Ordinal.{u}) [h : Small.{u} s] : BddAbove s := by
-  obtain ⟨a, ha⟩ := bddAbove_range (fun x => ((@equivShrink s h).symm x).val)
-  use a
-  intro b hb
-  simpa using ha (mem_range_self (equivShrink s ⟨b, hb⟩))
-
-theorem bddAbove_iff_small {s : Set Ordinal.{u}} : BddAbove s ↔ Small.{u} s :=
-  ⟨fun ⟨a, h⟩ => small_subset <| show s ⊆ Iic a from fun _ hx => h hx, fun _ =>
-    bddAbove_of_small _⟩
 
 set_option linter.deprecated false in
 @[deprecated (since := "2024-08-27")]
