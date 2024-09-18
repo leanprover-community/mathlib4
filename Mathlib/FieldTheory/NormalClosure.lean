@@ -282,4 +282,28 @@ lemma normal_iff_forall_map_eq : Normal F K ↔ ∀ σ : L →ₐ[F] L, K.map σ
 lemma normal_iff_forall_map_eq' : Normal F K ↔ ∀ σ : L ≃ₐ[F] L, K.map ↑σ = K :=
 ⟨fun h σ ↦ normal_iff_forall_map_eq.1 h σ, fun h ↦ normal_iff_forall_map_le'.2 (fun σ ↦ (h σ).le)⟩
 
+instance instSMulMemClass : SMulMemClass (IntermediateField F L) F L :=
+  ⟨fun _ _ hx ↦ smul_mem _ hx⟩
+
+@[simp]
+lemma normal_map {F L : Type*} [Field F] [Field L] [Algebra F L] [Normal F L]
+    (K : IntermediateField F L) (σ : L →ₐ[F] L) :
+    normalClosure F (K.map σ) L = normalClosure F K L := by
+  have (σ : L ≃ₐ[F] L) : normalClosure F (K.map (σ : L →ₐ[F] L)) L = normalClosure F K L := by
+    simp_rw [normalClosure_def'', map_map]
+    exact (Equiv.mulRight σ).iSup_congr fun _ ↦ rfl
+  simpa only [Algebra.IsAlgebraic.algEquivEquivAlgHom_symm_apply] using
+    this ((Algebra.IsAlgebraic.algEquivEquivAlgHom _ _).symm σ)
+
+@[simp]
+theorem normalClosure_le_iff_of_normal {k K : Type*} [Field k] [Field K]
+  [Algebra k K] {L₁ L₂ : IntermediateField k K} [Normal k L₂] [Normal k K] :
+    normalClosure k L₁ K ≤ L₂ ↔ L₁ ≤ L₂ := by
+  constructor
+  all_goals intro h
+  · rw [normalClosure_le_iff] at h
+    simpa only [fieldRange_val] using h L₁.val
+  · rw [← normalClosure_of_normal L₂]
+    exact normalClosure_mono L₁ L₂ h
+
 end IntermediateField
