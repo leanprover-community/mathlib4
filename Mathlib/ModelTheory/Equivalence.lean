@@ -33,9 +33,7 @@ variable {M : Type*} [Nonempty M] [L.Structure M] [M ⊨ T]
 
 namespace Theory
 
-/-- Two (bounded) formulas are semantically equivalent over a theory `T` when they have the same
-interpretation in every model of `T`. (This is also known as logical equivalence, which also has a
-proof-theoretic definition.) -/
+/-- `φ ⟹[T] ψ` indicates that `φ` implies `ψ` in models of `T`. -/
 def Implies (T : L.Theory) (φ ψ : L.BoundedFormula α n) : Prop :=
   T ⊨ᵇ φ.imp ψ
 
@@ -125,8 +123,11 @@ theorem implies_antisymm {φ ψ : L.BoundedFormula α n} (h₁ : φ ⟹[T] ψ) (
 
 namespace SemanticallyEquivalent
 
-protected theorem implies {φ ψ : L.BoundedFormula α n} (h : φ ⇔[T] ψ) :
+protected theorem mp {φ ψ : L.BoundedFormula α n} (h : φ ⇔[T] ψ) :
     φ ⟹[T] ψ := (semanticallyEquivalent_iff_implies_and_implies.1 h).1
+
+protected theorem mpr {φ ψ : L.BoundedFormula α n} (h : φ ⇔[T] ψ) :
+    ψ ⟹[T] φ := (semanticallyEquivalent_iff_implies_and_implies.1 h).2
 
 @[refl]
 protected theorem refl (φ : L.BoundedFormula α n) : φ ⇔[T] φ :=
