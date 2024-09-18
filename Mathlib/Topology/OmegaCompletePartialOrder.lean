@@ -6,6 +6,7 @@ Authors: Simon Hudon
 import Mathlib.Topology.Basic
 import Mathlib.Order.UpperLower.Basic
 import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Topology.Order.ScottTopology
 
 /-!
 # Scott Topological Spaces
@@ -22,6 +23,33 @@ of continuity is equivalent to continuity in ωCPOs.
 open Set OmegaCompletePartialOrder
 
 universe u
+
+/-
+TODO - Generalise `Topology.IsScott.scottContinuous_iff_continuous` to encompase this result
+-/
+open Topology.IsScott in
+@[simp] lemma Topology.IsScott.ωscottContinuous_iff_continuous {α : Type*}
+    [OmegaCompletePartialOrder α] [TopologicalSpace α]
+    [Topology.IsScott α (Set.range fun c : Chain α => Set.range c)] {f : α → Prop} :
+    ωScottContinuous f ↔ Continuous f := by
+  refine ⟨fun h ↦ continuous_def.2 fun u hu ↦ ?_, ?_⟩
+  · rw [isOpen_iff_isUpperSet_and_dirSupInacc (D := (Set.range fun c : Chain α => Set.range c))]
+    exact ⟨(isUpperSet_of_isOpen (D := univ) hu).preimage h.monotone, fun t h₀ hd₁ hd₂ a hd₃ ha ↦
+      image_inter_nonempty_iff.mp <| ((isOpen_iff_isUpperSet_and_dirSupInacc (D := univ)).mp hu).2
+        trivial (hd₁.image f) (directedOn_image.mpr (hd₂.mono @(h.monotone))) (h h₀ hd₁ hd₂ hd₃) ha⟩
+  · refine fun hf t h₀ d₁ d₂ a d₃ ↦
+      ⟨(monotone_of_continuous (D := (Set.range fun c : Chain α => Set.range c))
+        (E := univ) hf).mem_upperBounds_image d₃.1, fun b hb ↦ ?_⟩
+    by_contra h
+    let u := (Iic b)ᶜ
+    have hu : IsOpen (f ⁻¹' u) := (isOpen_compl_iff.2 (isClosed_Iic (D := univ))).preimage hf
+    rw [isOpen_iff_isUpperSet_and_dirSupInacc
+      (D := (Set.range fun c : Chain α => Set.range c))] at hu
+    obtain ⟨c, hcd, hfcb⟩ := hu.2 h₀ d₁ d₂ d₃ h
+    simp [upperBounds] at hb
+    apply hfcb _
+    apply (hb _ hcd)
+    rfl
 
 -- "Scott", "ωSup"
 namespace Scott
@@ -66,6 +94,9 @@ instance Scott.topologicalSpace (α : Type u) [OmegaCompletePartialOrder α] :
   isOpen_univ := Scott.isOpen_univ α
   isOpen_inter := Scott.IsOpen.inter α
   isOpen_sUnion := Scott.isOpen_sUnion α
+
+lemma isOpen_iff_scottContinuous_mem {α} [OmegaCompletePartialOrder α] {s : Set (Scott α)}
+    : IsOpen s ↔ ωScottContinuous fun x ↦ x ∈ s := by rfl
 
 section notBelow
 
