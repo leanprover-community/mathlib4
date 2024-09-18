@@ -71,32 +71,19 @@ theorem orthogonalFamily_eigenspace_inf_eigenspace (hA : A.IsSymmetric) (hB : B.
     · exact hB.orthogonalFamily_eigenspaces.pairwise h₁ hv2 w hw2
     · exact hA.orthogonalFamily_eigenspaces.pairwise h₂ hv1 w hw1
 
-open Submodule in
-
-/-- The intersection of eigenspaces of commuting selfadjoint operators is equal to the eigenspace of
-one operator restricted to the eigenspace of the other, which is an invariant subspace because the
-operators commute. -/
-theorem eigenspace_inf_eigenspace
-    (hAB : A ∘ₗ B = B ∘ₗ A) (γ : 𝕜) :
-    eigenspace A α ⊓ eigenspace B γ = map (Submodule.subtype (eigenspace A α))
-      (eigenspace (B.restrict (eigenspace_invariant_of_commute hAB α)) γ) :=
-  (eigenspace A α).inf_genEigenspace _ _ (k := 1)
-
 variable [FiniteDimensional 𝕜 E]
 
 /-- If A and B are commuting symmetric operators on a finite dimensional inner product space
 then the eigenspaces of the restriction of B to any eigenspace of A exhaust that eigenspace. -/
-theorem iSup_eigenspace_inf_eigenspace (hB : B.IsSymmetric)
-    (hAB : A ∘ₗ B = B ∘ₗ A):
+theorem iSup_eigenspace_inf_eigenspace (hB : B.IsSymmetric) (hAB : A ∘ₗ B = B ∘ₗ A) :
     (⨆ γ, eigenspace A α ⊓ eigenspace B γ) = eigenspace A α := by
   conv_rhs => rw [← (eigenspace A α).map_subtype_top]
-  have L := fun γ ↦ (eigenspace A α).inf_genEigenspace _ (eigenspace_invariant_of_commute hAB _) (k := 1) (μ := γ)
-  simp only [Module.End.genEigenspace_one] at L
-  simp only [L, Submodule.map_top, Submodule.range_subtype]
+  simp only [← Module.End.genEigenspace_one B, ← Submodule.map_iSup,
+    (eigenspace A α).inf_genEigenspace _ (eigenspace_invariant_of_commute hAB _)]
   congr 1
-  rw [← Submodule.orthogonal_eq_bot_iff]
-  exact orthogonalComplement_iSup_eigenspaces_eq_bot <|
-    hB.restrict_invariant <| eigenspace_invariant_of_commute hAB α
+  simpa only [Module.End.genEigenspace_one, Submodule.orthogonal_eq_bot_iff]
+    using orthogonalComplement_iSup_eigenspaces_eq_bot <|
+      hB.restrict_invariant <| eigenspace_invariant_of_commute hAB α
 
 /-- If A and B are commuting symmetric operators acting on a finite dimensional inner product space,
 then the simultaneous eigenspaces of A and B exhaust the space. -/
