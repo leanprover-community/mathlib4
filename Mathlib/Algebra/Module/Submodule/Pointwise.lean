@@ -530,11 +530,12 @@ lemma coe_span_smul {R' M' : Type*} [CommSemiring R'] [AddCommMonoid M'] [Module
     (Ideal.span s : Set R') • N = s • N :=
   set_smul_eq_of_le _ _ _
     (by rintro r n hr hn
-        induction' hr using Submodule.span_induction' with r h _ _ _ _ ihr ihs r r' hr hr'
-        · exact mem_set_smul_of_mem_mem h hn
-        · rw [zero_smul]; exact Submodule.zero_mem _
-        · rw [add_smul]; exact Submodule.add_mem _ ihr ihs
-        · rw [mem_span_set] at hr
+        induction hr using Submodule.span_induction' with
+        | mem _ h => exact mem_set_smul_of_mem_mem h hn
+        | zero => rw [zero_smul]; exact Submodule.zero_mem _
+        | add _ _ _ _ ihr ihs => rw [add_smul]; exact Submodule.add_mem _ ihr ihs
+        | smul _ _ hr =>
+          rw [mem_span_set] at hr
           obtain ⟨c, hc, rfl⟩ := hr
           rw [Finsupp.sum, Finset.smul_sum, Finset.sum_smul]
           refine Submodule.sum_mem _ fun i hi => ?_

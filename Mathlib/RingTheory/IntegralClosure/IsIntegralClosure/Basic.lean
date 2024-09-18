@@ -7,6 +7,7 @@ import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
 import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Polynomial.ScaleRoots
+import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 
 /-!
 # # Integral closure as a characteristic predicate

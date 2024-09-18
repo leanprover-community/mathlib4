@@ -1020,6 +1020,10 @@ theorem mem_closure_singleton {x y : G} : y ∈ closure ({x} : Set G) ↔ ∃ n 
 theorem closure_singleton_one : closure ({1} : Set G) = ⊥ := by
   simp [eq_bot_iff_forall, mem_closure_singleton]
 
+@[to_additive (attr := simp)]
+lemma mem_closure_singleton_self (x : G) : x ∈ closure ({x} : Set G) := by
+  simpa [-subset_closure] using subset_closure (k := {x})
+
 @[to_additive]
 theorem le_closure_toSubmonoid (S : Set G) : Submonoid.closure S ≤ (closure S).toSubmonoid :=
   Submonoid.closure_le.2 subset_closure
@@ -1713,7 +1717,7 @@ This may be easier to work with, as it avoids inequalities and negations. -/
 theorem _root_.normalizerCondition_iff_only_full_group_self_normalizing :
     NormalizerCondition G ↔ ∀ H : Subgroup G, H.normalizer = H → H = ⊤ := by
   apply forall_congr'; intro H
-  simp only [lt_iff_le_and_ne, le_normalizer, true_and_iff, le_top, Ne]
+  simp only [lt_iff_le_and_ne, le_normalizer, le_top, Ne]
   tauto
 
 variable (H)
@@ -2125,6 +2129,10 @@ theorem mem_ker (f : G →* M) {x : G} : x ∈ f.ker ↔ f x = 1 :=
   Iff.rfl
 
 @[to_additive]
+theorem div_mem_ker_iff (f : G →* N) {x y : G} : x / y ∈ ker f ↔ f x = f y := by
+  rw [mem_ker, map_div, div_eq_one]
+
+@[to_additive]
 theorem coe_ker (f : G →* M) : (f.ker : Set G) = (f : G → M) ⁻¹' {1} :=
   rfl
 
@@ -2211,10 +2219,10 @@ instance (priority := 100) normal_ker (f : G →* M) : f.ker.Normal :=
     rw [mem_ker, map_mul, map_mul, f.mem_ker.1 hx, mul_one, map_mul_eq_one f (mul_inv_cancel y)]⟩
 
 @[to_additive (attr := simp)]
-lemma ker_fst : ker (fst G G') = .prod ⊥ ⊤ := SetLike.ext fun _ => (and_true_iff _).symm
+lemma ker_fst : ker (fst G G') = .prod ⊥ ⊤ := SetLike.ext fun _ => (iff_of_eq (and_true _)).symm
 
 @[to_additive (attr := simp)]
-lemma ker_snd : ker (snd G G') = .prod ⊤ ⊥ := SetLike.ext fun _ => (true_and_iff _).symm
+lemma ker_snd : ker (snd G G') = .prod ⊤ ⊥ := SetLike.ext fun _ => (iff_of_eq (true_and _)).symm
 
 @[simp]
 theorem coe_toAdditive_ker (f : G →* G') :
@@ -2376,7 +2384,7 @@ theorem map_le_map_iff {f : G →* N} {H K : Subgroup G} : H.map f ≤ K.map f �
 @[to_additive]
 theorem map_le_map_iff' {f : G →* N} {H K : Subgroup G} :
     H.map f ≤ K.map f ↔ H ⊔ f.ker ≤ K ⊔ f.ker := by
-  simp only [map_le_map_iff, sup_le_iff, le_sup_right, and_true_iff]
+  simp only [map_le_map_iff, sup_le_iff, le_sup_right, and_true]
 
 @[to_additive]
 theorem map_eq_map_iff {f : G →* N} {H K : Subgroup G} :
