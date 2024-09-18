@@ -321,7 +321,7 @@ theorem nontrivial_rangeGroup_iff :
 instance : LinearOrderedCommGroup v.rangeGroup where
   one_mul := by simp
   mul_one := by simp
-  mul_left_inv := by simp
+  inv_mul_cancel := by simp
   mul_comm := fun a b ↦ mul_comm _ _
   le_refl := _
   le_trans := fun _ _ _ h1 h2 ↦ le_trans h1 h2
@@ -461,7 +461,7 @@ theorem inv_mem_range₀ {b : B} (hb : b ∈ range₀ f) : b⁻¹ ∈ range₀ f
   constructor
   · simp only [ne_eq, mul_eq_zero, not_or]
     exact ⟨ha, h⟩
-  · rw [mul_assoc, mul_inv_cancel h, mul_one]
+  · rw [mul_assoc, mul_inv_cancel₀ h, mul_one]
 
 theorem inv_mem_range₀_iff {b : B} : b⁻¹ ∈ range₀ f ↔ b ∈ range₀ f := by
   constructor
@@ -489,7 +489,7 @@ instance : CommGroupWithZero (range₀ f) where
   mul_inv_cancel b hb := by
     obtain ⟨a, c, ha, hc⟩ := mem_range₀_iff.mpr b.prop
     rw [← Subtype.coe_inj, Submonoid.coe_mul]
-    apply mul_inv_cancel
+    apply mul_inv_cancel₀
     rwa [ne_eq, ← Subtype.coe_inj] at hb
 
 theorem range₀_coe_zero : ((0 : range₀ f) : B) = 0 := rfl

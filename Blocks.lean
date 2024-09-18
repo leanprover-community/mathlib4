@@ -151,7 +151,8 @@ theorem IsBlock.def_one {B : Set X} :
     rw [Set.disjoint_iff] at h ⊢
     rintro x hx
     suffices g'⁻¹ • x ∈ (g'⁻¹ * g) • B ∩ B by apply h this
-    simp only [Set.mem_inter_iff, ← Set.mem_smul_set_iff_inv_smul_mem, ← smul_smul, smul_inv_smul]
+    simp only [Set.mem_inter_iff, ← Set.mem_smul_set_iff_inv_smul_mem, ← smul_smul, smul_inv_smul,
+      Set.smul_set_inter, smul_inv_smul]
     exact hx
 
 theorem IsBlock.mk_notempty_one {B : Set X} :
@@ -372,12 +373,14 @@ lemma smul_orbit_eq_orbit_smul (N : Subgroup G) [nN : N.Normal] (a : X) (g : G) 
   constructor
   · rintro ⟨⟨k, hk⟩, rfl⟩
     use ⟨g * k * g⁻¹, nN.conj_mem k hk g⟩
-    simp only [Submonoid.mk_smul]
+    rw [Submonoid.mk_smul]
     rw [smul_smul, inv_mul_cancel_right, ← smul_smul]
+    rfl
   · rintro ⟨⟨k, hk⟩, rfl⟩
     use ⟨g⁻¹ * k * g, nN.conj_mem' k hk g⟩
-    simp only [Submonoid.mk_smul]
+    rw [Submonoid.mk_smul]
     simp only [← mul_assoc, ← smul_smul, smul_inv_smul, inv_inv]
+    rfl
 
 /-- An orbit of a normal subgroup is a block -/
 theorem orbit.isBlock_of_normal {N : Subgroup G} [N.Normal] (a : X) :
@@ -434,10 +437,10 @@ theorem IsBlock.orbit_stabilizer_eq
     MulAction.orbit (stabilizer G B) a = B := by
   ext x
   constructor
-  · rintro ⟨⟨k, k_mem⟩, rfl⟩
-    simp only [Submonoid.mk_smul]
-    rw [← k_mem, Set.smul_mem_smul_set_iff]
-    exact ha
+  · rintro ⟨⟨k, k_mem⟩, hx⟩
+    rw [← k_mem, ← hx]
+    simp only
+    rwa [Submonoid.mk_smul, Set.smul_mem_smul_set_iff]
   · intro hx
     obtain ⟨k, rfl⟩ := exists_smul_eq G a x
     exact ⟨⟨k, hB.def_mem ha hx⟩, rfl⟩
@@ -454,7 +457,7 @@ theorem stabilizer_orbit_eq {a : X} {H : Subgroup G} (hH : stabilizer G a ≤ H)
     exact (mul_mem_cancel_right b.2).mp (hH h)
   · intro hg
     rw [mem_stabilizer_iff, ← Subgroup.coe_mk H g hg, ← Submonoid.smul_def]
-    apply smul_orbit
+    sorry--apply smul_orbit
 
 variable (G)
 

@@ -152,7 +152,9 @@ theorem unit_mem_rangeGroup : unit v ∈ v.rangeGroup := by
 theorem rangeGroup_ne_one : v.rangeGroup ≠ ⊥ := by
   simp only [Subgroup.ne_bot_iff_exists_ne_one, ne_eq, Subtype.exists, Submonoid.mk_eq_one,
     exists_prop]
-  exact ⟨unit v, unit_mem_rangeGroup v, unit_ne_one v⟩
+  refine ⟨unit v, unit_mem_rangeGroup v, ?_⟩--, unit_ne_one v⟩
+  rw [Subgroup.mk_eq_one]
+  exact unit_ne_one v
 
 /-- Nontriviality of `v.rangeGroup` for valuations of rank 1 -/
 @[nontriviality]

@@ -93,7 +93,8 @@ instance (priority := 100) Valued.topologicalDivisionRing [Valued K Γ₀] :
       apply Valuation.inversion_estimate _ x_ne
       convert y_in
       simp only [lt_min_iff, mul_assoc, v.rangeGroup_min, Submonoid.coe_mul,
-        Subgroup.coe_toSubmonoid, Units.val_mul, Units.val_mk0, mem_setOf_eq]
+        Subgroup.coe_toSubmonoid, Units.val_mul, Units.val_mk0, mem_setOf_eq,
+        Subgroup.coe_mul, Units.val_mul, Units.val_mk0]
         }
 
 /-- A valued division ring is separated. -/
