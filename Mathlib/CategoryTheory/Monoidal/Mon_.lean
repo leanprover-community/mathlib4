@@ -57,8 +57,8 @@ def trivial : Mon_ C where
   X := 𝟙_ C
   one := 𝟙 _
   mul := (λ_ _).hom
-  mul_assoc := by coherence
-  mul_one := by coherence
+  mul_assoc := by monoidal_coherence
+  mul_one := by monoidal_coherence
 
 instance : Inhabited (Mon_ C) :=
   ⟨trivial C⟩
@@ -514,7 +514,7 @@ variable {C}
 theorem one_braiding {X Y : Mon_ C} : (X ⊗ Y).one ≫ (β_ X.X Y.X).hom = (Y ⊗ X).one := by
   simp only [monMonoidalStruct_tensorObj_X, tensor_one, Category.assoc,
     BraidedCategory.braiding_naturality, braiding_tensorUnit_right, Iso.cancel_iso_inv_left]
-  coherence
+  monoidal
 
 end BraidedCategory
 

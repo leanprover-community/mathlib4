@@ -146,5 +146,25 @@ def piDiag (s : Finset α) (ι : Type*) [DecidableEq (ι → α)] : Finset (ι �
 @[simp] lemma card_piDiag (s : Finset α) (ι : Type*) [DecidableEq (ι → α)] [Nonempty ι] :
     (s.piDiag ι).card = s.card := by rw [piDiag, card_image_of_injective _ const_injective]
 
+/-! ### Restriction -/
+
+variable {π : ι → Type*}
+
+/-- Restrict domain of a function `f` to a finite set `s`. -/
+@[simp]
+def restrict (s : Finset ι) (f : (i : ι) → π i) : (i : s) → π i := fun x ↦ f x
+
+/-- If a function `f` is restricted to a finite set `t`, and `s ⊆ t`,
+this is the restriction to `s`. -/
+@[simp]
+def restrict₂ {s t : Finset ι} (hst : s ⊆ t) (f : (i : t) → π i) : (i : s) → π i :=
+  fun x ↦ f ⟨x.1, hst x.2⟩
+
+theorem restrict₂_comp_restrict {s t : Finset ι} (hst : s ⊆ t) :
+    (restrict₂ (π := π) hst) ∘ t.restrict = s.restrict := rfl
+
+theorem restrict₂_comp_restrict₂ {s t u : Finset ι} (hst : s ⊆ t) (htu : t ⊆ u) :
+    (restrict₂ (π := π) hst) ∘ (restrict₂ htu) = restrict₂ (hst.trans htu) := rfl
+
 end Pi
 end Finset
