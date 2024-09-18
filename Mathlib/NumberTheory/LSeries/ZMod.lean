@@ -269,14 +269,15 @@ lemma LFunction_def_odd (hΦ : Φ.Odd) (s : ℂ) :
 
 /-- The L-function of an even function vanishes at negative even integers. -/
 @[simp] lemma LFunction_neg_two_mul_nat_add_one (hΦ : Φ.Even) (n : ℕ) :
-    LFunction Φ (-2 * (n + 1)) = 0 := by
+    LFunction Φ (-(2 * (n + 1))) = 0 := by
   simp only [LFunction_def_even hΦ, hurwitzZetaEven_neg_two_mul_nat_add_one, mul_zero,
-    sum_const_zero]
+    sum_const_zero, ← neg_mul]
 
 /-- The L-function of an odd function vanishes at negative odd integers. -/
 @[simp] lemma LFunction_neg_two_mul_nat_sub_one (hΦ : Φ.Odd) (n : ℕ) :
-    LFunction Φ (-2 * n - 1) = 0 := by
-  simp only [LFunction_def_odd hΦ, hurwitzZetaOdd_neg_two_mul_nat_sub_one, mul_zero, sum_const_zero]
+    LFunction Φ (-(2 * n) - 1) = 0 := by
+  simp only [LFunction_def_odd hΦ, hurwitzZetaOdd_neg_two_mul_nat_sub_one, mul_zero,
+    ← neg_mul, sum_const_zero]
 
 variable (Φ) in
 /--
