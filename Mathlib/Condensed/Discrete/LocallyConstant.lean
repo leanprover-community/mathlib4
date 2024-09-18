@@ -67,7 +67,7 @@ naturality proofs in this file (both lemmas are in the `CompHausLike.LocallyCons
 
 universe u w
 
-open CategoryTheory Limits LocallyConstant TopologicalSpace.Fibers Opposite Function Fibers
+open CategoryTheory Limits LocallyConstant TopologicalSpace.Fiber Opposite Function Fiber
 
 attribute [local instance] ConcreteCategory.instFunLike
 
@@ -104,7 +104,7 @@ variable [∀ (S : CompHausLike.{u} P) (p : S → Prop), HasProp P (Subtype p)]
 
 section
 
-variable {Q : CompHausLike.{u} P} {Z : Type max u w} (r : LocallyConstant Q Z) (a : Fibers r)
+variable {Q : CompHausLike.{u} P} {Z : Type max u w} (r : LocallyConstant Q Z) (a : Fiber r)
 
 /-- A fiber of a locally constant map as a `CompHausLike P`. -/
 def fiber : CompHausLike.{u} P := CompHausLike.of P a.val
@@ -112,7 +112,7 @@ def fiber : CompHausLike.{u} P := CompHausLike.of P a.val
 instance : HasProp P (fiber r a) := inferInstanceAs (HasProp P (Subtype _))
 
 /-- The inclusion map from a component of the coproduct induced by `f` into `S`. -/
-def sigmaIncl : fiber r a ⟶ Q := TopologicalSpace.Fibers.sigmaIncl _ a
+def sigmaIncl : fiber r a ⟶ Q := TopologicalSpace.Fiber.sigmaIncl _ a
 
 /-- The canonical map from the coproduct induced by `f` to `S` as an isomorphism in
 `CompHausLike P`. -/
@@ -134,7 +134,7 @@ variable {S : CompHausLike.{u} P} {Y : (CompHausLike.{u} P)ᵒᵖ ⥤ Type max u
   [HasProp P PUnit.{u+1}] (f : LocallyConstant S (Y.obj (op (CompHausLike.of P PUnit.{u+1}))))
 
 /-- The projection of the counit. -/
-noncomputable def counitAppAppImage : (a : Fibers f) → Y.obj ⟨fiber f a⟩ :=
+noncomputable def counitAppAppImage : (a : Fiber f) → Y.obj ⟨fiber f a⟩ :=
   fun a ↦ Y.map (CompHausLike.isTerminalPUnit.from _).op a.image
 
 /--
@@ -157,7 +157,7 @@ each `X(S) → X(Sᵢ)`. -/
 lemma presheaf_ext (X : (CompHausLike.{u} P)ᵒᵖ ⥤ Type max u w)
     [PreservesFiniteProducts X] (x y : X.obj ⟨S⟩)
     [HasExplicitFiniteCoproducts.{u} P]
-    (h : ∀ (a : Fibers f), X.map (sigmaIncl f a).op x = X.map (sigmaIncl f a).op y) : x = y := by
+    (h : ∀ (a : Fiber f), X.map (sigmaIncl f a).op x = X.map (sigmaIncl f a).op y) : x = y := by
   apply injective_of_mono (X.mapIso (sigmaIso f).op).hom
   apply injective_of_mono (sigmaComparison X (fun a ↦ (fiber f a).1))
   ext a
@@ -166,7 +166,7 @@ lemma presheaf_ext (X : (CompHausLike.{u} P)ᵒᵖ ⥤ Type max u w)
   exact h
 
 lemma incl_of_counitAppApp [PreservesFiniteProducts Y] [HasExplicitFiniteCoproducts.{u} P]
-    (a : Fibers f) : Y.map (sigmaIncl f a).op (counitAppApp S Y f) = counitAppAppImage f a := by
+    (a : Fiber f) : Y.map (sigmaIncl f a).op (counitAppApp S Y f) = counitAppAppImage f a := by
   rw [← sigmaComparison_comp_sigmaIso, Functor.mapIso_hom, Iso.op_hom, types_comp_apply]
   simp only [counitAppApp, Functor.mapIso_inv, ← Iso.op_hom, types_comp_apply,
     ← FunctorToTypes.map_comp_apply, Iso.inv_hom_id, FunctorToTypes.map_id_apply]
@@ -179,10 +179,10 @@ variable {T : CompHausLike.{u} P} (g : T ⟶ S)
 This is an auxiliary definition, the details do not matter. What's important is that this map exists
 so that the lemma `incl_comap` works.
 -/
-def componentHom (a : Fibers (f.comap g)) :
-    fiber _ a ⟶ fiber _ (Fibers.mk f (g a.preimage)) where
+def componentHom (a : Fiber (f.comap g)) :
+    fiber _ a ⟶ fiber _ (Fiber.mk f (g a.preimage)) where
   toFun x := ⟨g x.val, by
-    simp only [Fibers.mk, Set.mem_preimage, Set.mem_singleton_iff]
+    simp only [Fiber.mk, Set.mem_preimage, Set.mem_singleton_iff]
     erw [map_eq_image _ _ x, map_preimage_eq_image_map _ _ a]
     rfl⟩
   continuous_toFun := by
@@ -191,7 +191,7 @@ def componentHom (a : Fibers (f.comap g)) :
 
 lemma incl_comap {S T : (CompHausLike P)ᵒᵖ}
     (f : LocallyConstant S.unop (Y.obj (op (CompHausLike.of P PUnit.{u+1}))))
-      (g : S ⟶ T) (a : Fibers (f.comap g.unop)) :
+      (g : S ⟶ T) (a : Fiber (f.comap g.unop)) :
         g ≫ (sigmaIncl (f.comap g.unop) a).op =
           (sigmaIncl f _).op ≫ (componentHom f g.unop a).op := by
   rfl
@@ -218,7 +218,7 @@ noncomputable def counitApp [HasExplicitFiniteCoproducts.{u} P]
 lemma hom_apply_counitAppApp [HasExplicitFiniteCoproducts.{u} P] [PreservesFiniteProducts Y]
     (X : (CompHausLike.{u} P)ᵒᵖ ⥤ Type max u w)
     [PreservesFiniteProducts X] (g : Y ⟶ X)
-    (a : Fibers (f.map (g.app (op (CompHausLike.of P PUnit.{u+1}))))) :
+    (a : Fiber (f.map (g.app (op (CompHausLike.of P PUnit.{u+1}))))) :
       X.map (sigmaIncl (map (g.app (op (CompHausLike.of P PUnit.{u+1}))) f) a).op
         (g.app ⟨S⟩ (counitAppApp S Y f)) =
           counitAppAppImage (map (g.app (op (CompHausLike.of P PUnit.{u+1}))) f) a := by
@@ -230,7 +230,7 @@ lemma hom_apply_counitAppApp [HasExplicitFiniteCoproducts.{u} P] [PreservesFinit
   change (_ ≫ X.map _) _ = (_ ≫ X.map _) _
   simp only [← g.naturality,
     show sigmaIncl (f.comap (sigmaIncl (f.map _) a)) b ≫ sigmaIncl (f.map _) a =
-      (sigmaInclIncl f _ a b) ≫ sigmaIncl f (Fibers.mk f _) from rfl]
+      (sigmaInclIncl f _ a b) ≫ sigmaIncl f (Fiber.mk f _) from rfl]
   simp only [op_comp, Functor.map_comp, types_comp_apply, incl_of_counitAppApp]
   simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp, terminal.comp_from]
   rw [mk_image]
