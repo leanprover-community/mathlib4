@@ -594,7 +594,7 @@ namespace InfiniteGalois
 open Pointwise
 
 lemma fixingSubgroup_IsClosed (L : IntermediateField k K) [IsGalois k K] :
-  IsClosed (L.fixingSubgroup : Set (K ≃ₐ[k] K)) where
+    IsClosed (L.fixingSubgroup : Set (K ≃ₐ[k] K)) where
     isOpen_compl := isOpen_iff_mem_nhds.mpr fun σ h => by
       apply mem_nhds_iff.mpr
       have := (mem_fixingSubgroup_iff (K ≃ₐ[k] K)).not.mp h
@@ -615,8 +615,8 @@ lemma fixingSubgroup_IsClosed (L : IntermediateField k K) [IsGalois k K] :
         rw [this]
         exact ne
       · constructor
-        · have : IsOpen ((FiniteGaloisIntermediateField.adjoin k {y}).1.fixingSubgroup
-            : Set (K ≃ₐ[k] K)) := by
+        · have : IsOpen ((FiniteGaloisIntermediateField.adjoin k {y}).1.fixingSubgroup :
+            Set (K ≃ₐ[k] K)) := by
             apply IntermediateField.fixingSubgroup_isOpen
           exact IsOpen.smul this σ
         · apply Set.mem_smul_set.mpr
