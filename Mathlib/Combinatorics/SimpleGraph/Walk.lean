@@ -665,8 +665,8 @@ theorem getLast_darts_snd {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p
     (p.darts.getLast hp).snd = b := by
   rw [← List.getLast_map (f := fun x : G.Dart ↦ x.snd)]
   simp_rw [p.map_snd_darts, List.getLast_tail]
-  exact p.getLast_support
-  simpa
+  · exact p.getLast_support
+  · simpa
 
 @[simp]
 theorem edges_nil {u : V} : (nil : G.Walk u u).edges = [] := rfl

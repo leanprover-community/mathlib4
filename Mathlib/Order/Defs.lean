@@ -527,8 +527,9 @@ lemma max_assoc (a b c : α) : max (max a b) c = max a (max b c) := by
   apply eq_max
   · apply le_trans; apply le_max_left a b; apply le_max_left
   · apply max_le; apply le_trans; apply le_max_right a b; apply le_max_left; apply le_max_right
-  · intro d h₁ h₂; apply max_le; apply max_le h₁; apply le_trans (le_max_left _ _) h₂
-    apply le_trans (le_max_right _ _) h₂
+  · intro d h₁ h₂; apply max_le
+    · apply max_le h₁; apply le_trans (le_max_left _ _) h₂
+    · apply le_trans (le_max_right _ _) h₂
 
 lemma max_left_comm (a b c : α) : max a (max b c) = max b (max a c) := by
   rw [← max_assoc, max_comm a, max_assoc]
