@@ -258,16 +258,16 @@ noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMa
 open Classical in
 /-- The second half of the **Kummer-Dedekind Theorem** in the monogenic case, stating that the
     bijection `FactorsEquiv'` defined in the first half preserves multiplicities. -/
-theorem multiplicity_factors_map_eq_multiplicity
+theorem emultiplicity_factors_map_eq_emultiplicity
     (hI : IsMaximal I) (hI' : I ≠ ⊥)
     (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤) (hx' : IsIntegral R x) {J : Ideal S}
     (hJ : J ∈ normalizedFactors (I.map (algebraMap R S))) :
-    multiplicity J (I.map (algebraMap R S)) =
-      multiplicity (↑(normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx' ⟨J, hJ⟩))
+    emultiplicity J (I.map (algebraMap R S)) =
+      emultiplicity (↑(normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx' ⟨J, hJ⟩))
         (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x)) := by
   rw [normalizedFactorsMapEquivNormalizedFactorsMinPolyMk, Equiv.coe_trans, Function.comp_apply,
-    multiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_multiplicity,
-    normalizedFactorsEquivOfQuotEquiv_multiplicity_eq_multiplicity]
+    emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_emultiplicity,
+    normalizedFactorsEquivOfQuotEquiv_emultiplicity_eq_emultiplicity]
 
 open Classical in
 /-- The **Kummer-Dedekind Theorem**. -/
@@ -288,10 +288,10 @@ theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : I
     exact
       hJ ((normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx').symm J').prop
   -- Then we just have to compare the multiplicities, which we already proved are equal.
-  have := multiplicity_factors_map_eq_multiplicity hI hI' hx hx' hJ
-  rw [multiplicity_eq_count_normalizedFactors, multiplicity_eq_count_normalizedFactors,
+  have := emultiplicity_factors_map_eq_emultiplicity hI hI' hx hx' hJ
+  rw [emultiplicity_eq_count_normalizedFactors, emultiplicity_eq_count_normalizedFactors,
     UniqueFactorizationMonoid.normalize_normalized_factor _ hJ,
-    UniqueFactorizationMonoid.normalize_normalized_factor, PartENat.natCast_inj] at this
+    UniqueFactorizationMonoid.normalize_normalized_factor, Nat.cast_inj] at this
   · refine this.trans ?_
     -- Get rid of the `map` by applying the equiv to both sides.
     generalize hJ' :
