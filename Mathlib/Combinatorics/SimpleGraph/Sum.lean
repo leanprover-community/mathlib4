@@ -39,8 +39,8 @@ protected def Sum (G : SimpleGraph α) (H : SimpleGraph β) : SimpleGraph (α �
     | Sum.inl _, Sum.inr _ | Sum.inr _, Sum.inl _ => id
   loopless u := by cases u <;> simp
 
-/-- Disjoint sum of `G` and `H`. -/
-infixl:60 " + " => SimpleGraph.Sum
+@[simps]
+instance : HAdd (SimpleGraph α) (SimpleGraph β) (SimpleGraph (α ⊕ β)) := ⟨SimpleGraph.Sum⟩
 
 variable {G : SimpleGraph α} {H : SimpleGraph β}
 
