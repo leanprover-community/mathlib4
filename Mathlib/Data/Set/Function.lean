@@ -42,6 +42,7 @@ section restrict
 
 /-- Restrict domain of a function `f` to a set `s`. Same as `Subtype.restrict` but this version
 takes an argument `↥s` instead of `Subtype s`. -/
+@[simp]
 def restrict (s : Set α) (f : ∀ a : α, π a) : ∀ a : s, π a := fun x => f x
 
 theorem restrict_def (s : Set α) : s.restrict (π := π) = fun f x ↦ f x := rfl
