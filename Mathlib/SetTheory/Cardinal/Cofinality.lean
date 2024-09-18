@@ -941,6 +941,12 @@ theorem isRegular_aleph_succ (o : Ordinal) : IsRegular (aleph (succ o)) := by
   rw [aleph_succ]
   exact isRegular_succ (aleph0_le_aleph o)
 
+theorem aleph0_le_cof_of_not_isRegular {o : Ordinal} (h : ¬(aleph o).IsRegular) : ℵ₀ ≤ o.cof := by
+  have op : o ≠ 0 := fun ho ↦ (aleph_zero ▸ ho ▸ h) isRegular_aleph0
+  apply aleph0_le_cof.mpr
+  refine (o.zero_or_succ_or_limit.resolve_left op).resolve_left (fun ⟨p, hp⟩ ↦ ?_)
+  exact h (hp ▸ isRegular_aleph_succ p)
+
 /-- A function whose codomain's cardinality is infinite but strictly smaller than its domain's
 has a fiber with cardinality strictly great than the codomain.
 -/
