@@ -1179,7 +1179,7 @@ theorem sup_le {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : (∀ i, f i �
   Ordinal.iSup_le
 
 -- TODO: generalize to conditionally complete linear orders.
-theorem lt_iSup {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
+protected theorem lt_iSup {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
     a < iSup f ↔ ∃ i, a < f i := by
   rw [← not_iff_not]
   simpa using Ordinal.iSup_le_iff
