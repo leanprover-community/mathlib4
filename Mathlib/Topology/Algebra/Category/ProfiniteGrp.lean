@@ -166,7 +166,7 @@ instance : HasForget₂ ProfiniteGrp Grp where
     map := fun f => f.toMonoidHom
   }
 
-/-- A topological group that has a ContinuousMulEquivProfinite to a profinite group is profinite -/
+/-- A topological group that has a ContinuousMulEquiv to a profinite group is profinite -/
 def ofContinuousMulEquivProfiniteGrp {G : ProfiniteGrp.{u}} {H : Type v} [TopologicalSpace H]
     [Group H] [TopologicalGroup H] (e : ContinuousMulEquiv G H) : ProfiniteGrp.{v} :=
   letI : CompactSpace H := Homeomorph.compactSpace e.toHomeomorph
@@ -499,4 +499,3 @@ end
 end ProfiniteGrp
 
 end limitofProfinite
-
