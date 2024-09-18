@@ -6,7 +6,6 @@ Authors: Jeremy Avigad
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Nodup
 import Mathlib.Order.Fin.Basic
-import Batteries.Data.List.Perm
 
 /-!
 # Sorting algorithms on lists
