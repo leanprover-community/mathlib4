@@ -48,7 +48,7 @@ theorem IsOpen.inter (s t : Set α) : IsOpen α s → IsOpen α t → IsOpen α 
 
 theorem isOpen_sUnion (s : Set (Set α)) (hs : ∀ t ∈ s, IsOpen α t) : IsOpen α (⋃₀ s) := by
   simp only [IsOpen] at hs ⊢
-  convert CompleteLattice.ωScottContinuous.sSup  hs
+  convert CompleteLattice.ωScottContinuous.sSup hs
   aesop
 
 theorem IsOpen.isUpperSet {s : Set α} (hs : IsOpen α s) : IsUpperSet s := hs.monotone
@@ -78,7 +78,7 @@ def notBelow :=
 
 theorem notBelow_isOpen : IsOpen (notBelow y) := by
   have h : Monotone (notBelow y) := fun x z hle ↦ mt hle.trans
-  change ωScottContinuous fun x ↦ x ∈ notBelow y
+  dsimp only [IsOpen, TopologicalSpace.IsOpen, Scott.IsOpen]
   rw [ωScottContinuous_iff_monotone_map_ωSup]
   refine ⟨h, fun c ↦ eq_of_forall_ge_iff fun z ↦ ?_⟩
   simp only [ωSup_le_iff, notBelow, mem_setOf_eq, le_Prop_eq, OrderHom.coe_mk, Chain.map_coe,
@@ -117,5 +117,6 @@ theorem continuous_of_scottContinuous {α β} [OmegaCompletePartialOrder α]
     (hf : ωScottContinuous f) : Continuous f := by
   rw [continuous_def]
   intro s hs
-  change ωScottContinuous (s ∘ f)
+  dsimp only [IsOpen, TopologicalSpace.IsOpen, Scott.IsOpen]
+  simp_rw [mem_preimage, mem_def, ← Function.comp_def]
   apply ωScottContinuous.comp hs hf

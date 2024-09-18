@@ -725,7 +725,7 @@ theorem coe_zero {_m : MeasurableSpace α} : ⇑(0 : Measure α) = 0 :=
   rfl
 
 @[simp] lemma _root_.MeasureTheory.OuterMeasure.toMeasure_zero
-    [ms : MeasurableSpace α](h : ms ≤ (0 : OuterMeasure α).caratheodory) :
+    [ms : MeasurableSpace α] (h : ms ≤ (0 : OuterMeasure α).caratheodory) :
     (0 : OuterMeasure α).toMeasure h = 0 := by
   ext s hs
   simp [hs]
