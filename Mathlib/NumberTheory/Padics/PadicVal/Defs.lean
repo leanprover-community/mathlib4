@@ -61,11 +61,7 @@ protected theorem zero : padicValNat p 0 = 0 := by simp [padicValNat]
 
 /-- `padicValNat p 1` is `0` for any `p`. -/
 @[simp]
-protected theorem one : padicValNat p 1 = 0 := by
-  unfold padicValNat
-  split_ifs with h
-  · simp [h]
-  · rfl
+protected theorem one : padicValNat p 1 = 0 := by simp [padicValNat]
 
 @[simp]
 theorem eq_zero_iff {n : ℕ} : padicValNat p n = 0 ↔ p = 1 ∨ n = 0 ∨ ¬p ∣ n := by
