@@ -272,8 +272,6 @@ namespace Nat.Partrec'
 
 open Mathlib.Vector Partrec Computable
 
-open Nat (Partrec')
-
 open Nat.Partrec'
 
 theorem to_part {n f} (pf : @Partrec' n f) : _root_.Partrec f := by
