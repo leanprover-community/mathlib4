@@ -232,21 +232,6 @@ theorem IsSeparable.of_algHom' {x : E} (h : IsSeparable F (f x)) : IsSeparable F
 
 end IsSeparable
 
-section Valuation.IsEquiv
-
-theorem Valuation.isEquiv_iff_val_lt_val {K : Type*} [DivisionRing K] {Γ₀ Γ'₀: Type*}
-    [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ'₀]
-    (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
-  v.IsEquiv v' ↔ ∀ {x y : K}, v x < v y ↔ v' x < v' y := by
-  constructor
-  · intro h x y
-    simpa only [not_le] using (h y x).not
-  · intro h x y
-    simpa only [not_lt] using h.not
-
-end Valuation.IsEquiv
-
-
 open Algebra
 open IntermediateField
 
