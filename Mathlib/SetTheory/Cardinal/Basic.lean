@@ -714,8 +714,7 @@ theorem add_one_le_succ (c : Cardinal.{u}) : c + 1 ≤ succ c := by
 
 /-- A cardinal is a limit if it is not zero or a successor cardinal. Note that `ℵ₀` is a limit
   cardinal by this definition, but `0` isn't.
-
-TODO: deprecate this in favor of `Order.IsSuccLimit`. -/
+Deprecated. Use `Order.IsSuccLimit` instead. -/
 @[deprecated IsSuccLimit (since := "2024-09-17")]
 def IsLimit (c : Cardinal) : Prop :=
   c ≠ 0 ∧ IsSuccPrelimit c
