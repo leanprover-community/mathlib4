@@ -44,6 +44,11 @@ namespace LinearMap
 
 namespace IsSymmetric
 
+@[simp]
+theorem Module.End.genEigenspace_one {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+    (f : Module.End R M) (μ : R) : (f.genEigenspace μ) 1 = f.eigenspace μ :=
+  rfl
+
 section Pair
 
 variable {α : 𝕜} {A B : E →ₗ[𝕜] E}
@@ -85,7 +90,9 @@ theorem iSup_eigenspace_inf_eigenspace (hB : B.IsSymmetric)
     (hAB : A ∘ₗ B = B ∘ₗ A):
     (⨆ γ, eigenspace A α ⊓ eigenspace B γ) = eigenspace A α := by
   conv_rhs => rw [← (eigenspace A α).map_subtype_top]
-  simp only [eigenspace_inf_eigenspace hAB, ← Submodule.map_iSup]
+  have L := fun γ ↦ (eigenspace A α).inf_genEigenspace _ (eigenspace_invariant_of_commute hAB _) (k := 1) (μ := γ)
+  simp only [Module.End.genEigenspace_one] at L
+  simp only [L, Submodule.map_top, Submodule.range_subtype]
   congr 1
   rw [← Submodule.orthogonal_eq_bot_iff]
   exact orthogonalComplement_iSup_eigenspaces_eq_bot <|
@@ -140,11 +147,6 @@ theorem iSup_eigenspace_restrict [FiniteDimensional 𝕜 E] {F : Submodule 𝕜 
   apply orthogonal_eq_bot_iff.mp (H.orthogonalComplement_iSup_eigenspaces_eq_bot)
 
 open Classical
-
-@[simp]
-theorem Module.End.genEigenspace_one {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
-    (f : Module.End R M) (μ : R) : (f.genEigenspace μ) 1 = f.eigenspace μ :=
-  rfl
 
 /-- The orthocomplement of the indexed supremum of joint eigenspaces of a finite commuting tuple of
 symmetric operators is trivial. -/
