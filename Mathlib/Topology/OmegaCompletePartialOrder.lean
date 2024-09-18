@@ -25,7 +25,7 @@ open Set OmegaCompletePartialOrder
 universe u
 
 /-
-TODO - Generalise `Topology.IsScott.scottContinuous_iff_continuous` to encompase this result
+TODO - Generalise `Topology.IsScott.scottContinuous_iff_continuous` to encompass this result
 -/
 open Topology.IsScott in
 @[simp] lemma Topology.IsScott.ωscottContinuous_iff_continuous {α : Type*}
