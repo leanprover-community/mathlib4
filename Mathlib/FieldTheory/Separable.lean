@@ -609,7 +609,7 @@ section Field
 
 variable (F : Type*) [Field F] {K E E' : Type*}
 
-section FiniteDimensional
+section IsIntegral
 
 variable [Ring K] [Algebra F K]
 
@@ -621,18 +621,18 @@ theorem isSeparable_algebraMap (x : F) : IsSeparable F (algebraMap F K x) :=
 instance Algebra.isSeparable_self : Algebra.IsSeparable F F :=
   ⟨isSeparable_algebraMap⟩
 
-variable [IsDomain K] [FiniteDimensional F K] [CharZero F]
+variable [IsDomain K] [Algebra.IsIntegral F K] [CharZero F]
 
-theorem IsSeparable.of_finite (x : K) : IsSeparable F x :=
-  (minpoly.irreducible <| .of_finite F x).separable
+theorem IsSeparable.of_integral (x : K) : IsSeparable F x :=
+  (minpoly.irreducible <| Algebra.IsIntegral.isIntegral x).separable
 
 -- See note [lower instance priority]
 variable (K) in
-/-- A finite field extension in characteristic 0 is separable. -/
-protected instance (priority := 100) Algebra.IsSeparable.of_finite : Algebra.IsSeparable F K :=
-  ⟨_root_.IsSeparable.of_finite _⟩
+/-- A integral field extension in characteristic 0 is separable. -/
+protected instance (priority := 100) Algebra.IsSeparable.of_integral : Algebra.IsSeparable F K :=
+  ⟨_root_.IsSeparable.of_integral _⟩
 
-end FiniteDimensional
+end IsIntegral
 
 section IsScalarTower
 
