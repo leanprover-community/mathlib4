@@ -163,7 +163,7 @@ def restrict₂ {s t : Finset ι} (hst : s ⊆ t) (f : (i : t) → π i) : (i : 
   fun x ↦ f ⟨x.1, hst x.2⟩
 
 theorem restrict₂_def {s t : Finset ι} (hst : s ⊆ t) :
-  restrict₂ (π := π) hst = fun f x ↦ f ⟨x.1, hst x.2⟩ := rfl
+    restrict₂ (π := π) hst = fun f x ↦ f ⟨x.1, hst x.2⟩ := rfl
 
 theorem restrict₂_comp_restrict {s t : Finset ι} (hst : s ⊆ t) :
     (restrict₂ (π := π) hst) ∘ t.restrict = s.restrict := rfl
