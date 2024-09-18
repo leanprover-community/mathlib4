@@ -380,14 +380,15 @@ theorem cauchySeq_prod_of_eventually_eq {u v : ℕ → E} {N : ℕ} (huv : ∀ n
   simp [huv m (le_of_lt hm)]
 
 @[to_additive CauchySeq.norm_bddAbove]
-lemma CauchySeq.mul_norm_bddAbove {G : Type*} [SeminormedCommGroup G] {u : ℕ → G}
+lemma CauchySeq.mul_norm_bddAbove {G : Type*} [SeminormedGroup G] {u : ℕ → G}
     (hu : CauchySeq u) : BddAbove (Set.range (fun n ↦ ‖u n‖)) := by
   obtain ⟨C, -, hC⟩ := cauchySeq_bdd hu
   simp_rw [SeminormedGroup.dist_eq] at hC
   have : ∀ n, ‖u n‖ ≤ C + ‖u 0‖ := by
     intro n
-    rw [← mul_div_cancel (u 0) (u n), mul_comm]
-    exact (norm_mul_le' _ _).trans (add_le_add_right (hC _ _).le _)
+    rw [add_comm]
+    refine (norm_le_norm_add_norm_div' (u n) (u 0)).trans ?_
+    simp [(hC _ _).le]
   rw [bddAbove_def]
   exact ⟨C + ‖u 0‖, by simpa using this⟩
 

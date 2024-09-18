@@ -17,6 +17,11 @@ import Mathlib.Topology.MetricSpace.DilationEquiv
 # Normed fields
 
 In this file we continue building the theory of (semi)normed rings and fields.
+
+Some useful results that relate the topology of the normed field to the discrete topology include:
+* `discreteTopology_or_nontriviallyNormedField`
+* `discreteTopology_of_bddAbove_range_norm`
+
 -/
 
 -- Guard against import creep.
@@ -291,6 +296,11 @@ end NormedDivisionRing
 
 namespace NormedField
 
+/-- A normed field is either nontrivially normed or has a discrete topology.
+In the discrete topology case, all the norms are 1, by `norm_eq_one_iff_ne_zero_of_discrete`.
+The nontrivially normed field instance is provided by a subtype with a proof that the
+forgetful inheritance to the existing `NormedField` instance is definitionally true.
+This allows one to have the new `NontriviallyNormedField` instance without data clashes. -/
 lemma discreteTopology_or_nontriviallyNormedField (𝕜 : Type*) [h : NormedField 𝕜] :
     DiscreteTopology 𝕜 ∨ Nonempty ({h' : NontriviallyNormedField 𝕜 // h'.toNormedField = h}) := by
   by_cases H : ∃ x : 𝕜, x ≠ 0 ∧ ‖x‖ ≠ 1
@@ -300,6 +310,7 @@ lemma discreteTopology_or_nontriviallyNormedField (𝕜 : Type*) [h : NormedFiel
     refine Or.inl ⟨1, zero_lt_one, ?_⟩
     contrapose! H
     refine H.imp ?_
+    -- contextual to reuse the `a ≠ 0` hypothesis in the proof of `a ≠ 0 ∧ ‖a‖ ≠ 1`
     simp (config := {contextual := true}) [add_comm, ne_of_lt]
 
 lemma discreteTopology_of_bddAbove_range_norm {𝕜 : Type*} [NormedField 𝕜]
