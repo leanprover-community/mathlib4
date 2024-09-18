@@ -51,58 +51,60 @@ Reasons for admitting a kind in `exclusions` include
 * the tactic is creating new goals, e.g. `constructor`, `cases`, `induction`, ....
 Tactic combinators like `repeat` or `try` are a mix of both.
 -/
-abbrev exclusions : HashSet SyntaxNodeKind := HashSet.empty
-  -- structuring a proof
-  |>.insert ``Lean.Parser.Term.cdot
-  |>.insert ``cdot
-  |>.insert ``cdotTk
-  |>.insert ``Lean.Parser.Tactic.tacticSeqBracketed
-  |>.insert `«;»
-  |>.insert `«<;>»
-  |>.insert ``Lean.Parser.Tactic.«tactic_<;>_»
-  |>.insert `«{»
-  |>.insert `«]»
-  |>.insert `null
-  |>.insert `then
-  |>.insert `else
-  |>.insert ``Lean.Parser.Tactic.«tacticNext_=>_»
-  |>.insert ``Lean.Parser.Tactic.tacticSeq1Indented
-  |>.insert ``Lean.Parser.Tactic.tacticSeq
-  -- re-ordering goals
-  |>.insert `Batteries.Tactic.tacticSwap
-  |>.insert ``Lean.Parser.Tactic.rotateLeft
-  |>.insert ``Lean.Parser.Tactic.rotateRight
-  |>.insert ``Lean.Parser.Tactic.skip
-  |>.insert `Batteries.Tactic.«tacticOn_goal-_=>_»
-  |>.insert `Mathlib.Tactic.«tacticSwap_var__,,»
-  -- tactic combinators
-  |>.insert ``Lean.Parser.Tactic.tacticRepeat_
-  |>.insert ``Lean.Parser.Tactic.tacticTry_
-  -- creating new goals
-  |>.insert ``Lean.Parser.Tactic.paren
-  |>.insert ``Lean.Parser.Tactic.case
-  |>.insert ``Lean.Parser.Tactic.constructor
-  |>.insert `Mathlib.Tactic.tacticAssumption'
-  |>.insert ``Lean.Parser.Tactic.induction
-  |>.insert ``Lean.Parser.Tactic.cases
-  |>.insert ``Lean.Parser.Tactic.intros
-  |>.insert ``Lean.Parser.Tactic.injections
-  |>.insert ``Lean.Parser.Tactic.substVars
-  |>.insert `Batteries.Tactic.«tacticPick_goal-_»
-  |>.insert ``Lean.Parser.Tactic.case'
-  |>.insert `«tactic#adaptation_note_»
+abbrev exclusions : Std.HashSet SyntaxNodeKind := .ofList [
+    -- structuring a proof
+    ``Lean.Parser.Term.cdot,
+    ``cdot,
+    ``cdotTk,
+    ``Lean.Parser.Tactic.tacticSeqBracketed,
+    `«;»,
+    `«<;>»,
+    ``Lean.Parser.Tactic.«tactic_<;>_»,
+    `«{»,
+    `«]»,
+    `null,
+    `then,
+    `else,
+    ``Lean.Parser.Tactic.«tacticNext_=>_»,
+    ``Lean.Parser.Tactic.tacticSeq1Indented,
+    ``Lean.Parser.Tactic.tacticSeq,
+    -- re-ordering goals
+    `Batteries.Tactic.tacticSwap,
+    ``Lean.Parser.Tactic.rotateLeft,
+    ``Lean.Parser.Tactic.rotateRight,
+    ``Lean.Parser.Tactic.skip,
+    `Batteries.Tactic.«tacticOn_goal-_=>_»,
+    `Mathlib.Tactic.«tacticSwap_var__,,»,
+    -- tactic combinators
+    ``Lean.Parser.Tactic.tacticRepeat_,
+    ``Lean.Parser.Tactic.tacticTry_,
+    -- creating new goals
+    ``Lean.Parser.Tactic.paren,
+    ``Lean.Parser.Tactic.case,
+    ``Lean.Parser.Tactic.constructor,
+    `Mathlib.Tactic.tacticAssumption',
+    ``Lean.Parser.Tactic.induction,
+    ``Lean.Parser.Tactic.cases,
+    ``Lean.Parser.Tactic.intros,
+    ``Lean.Parser.Tactic.injections,
+    ``Lean.Parser.Tactic.substVars,
+    `Batteries.Tactic.«tacticPick_goal-_»,
+    ``Lean.Parser.Tactic.case',
+    `«tactic#adaptation_note_»
+  ]
 
 /-- these are `SyntaxNodeKind`s that block the linter. -/
-abbrev ignoreBranch : HashSet SyntaxNodeKind := HashSet.empty
-  |>.insert ``Lean.Parser.Tactic.Conv.conv
-  |>.insert `Mathlib.Tactic.Conv.convLHS
-  |>.insert `Mathlib.Tactic.Conv.convRHS
-  |>.insert ``Lean.Parser.Tactic.first
-  |>.insert ``Lean.Parser.Tactic.repeat'
-  |>.insert ``Lean.Parser.Tactic.tacticIterate____
-  |>.insert ``Lean.Parser.Tactic.anyGoals
-  |>.insert ``Lean.Parser.Tactic.allGoals
-  |>.insert ``Lean.Parser.Tactic.focus
+abbrev ignoreBranch : Std.HashSet SyntaxNodeKind := .ofList [
+    ``Lean.Parser.Tactic.Conv.conv,
+    `Mathlib.Tactic.Conv.convLHS,
+    `Mathlib.Tactic.Conv.convRHS,
+    ``Lean.Parser.Tactic.first,
+    ``Lean.Parser.Tactic.repeat',
+    ``Lean.Parser.Tactic.tacticIterate____,
+    ``Lean.Parser.Tactic.anyGoals,
+    ``Lean.Parser.Tactic.allGoals,
+    ``Lean.Parser.Tactic.focus
+  ]
 
 /-- `getManyGoals` returns the syntax nodes where the tactic leaves at least one goal that
 was not present before it ran,
