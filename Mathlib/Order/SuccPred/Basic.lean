@@ -223,15 +223,13 @@ lemma le_succ_of_wcovBy (h : a ⩿ b) : b ≤ succ a := by
 
 alias _root_.WCovBy.le_succ := le_succ_of_wcovBy
 
-theorem le_succ_iterate (k : ℕ) (x : α) : x ≤ succ^[k] x := by
-  conv_lhs => rw [(by simp only [Function.iterate_id, id] : x = id^[k] x)]
-  exact Monotone.le_iterate_of_le succ_mono le_succ k x
+theorem le_succ_iterate (k : ℕ) (x : α) : x ≤ succ^[k] x :=
+  id_le_iterate_of_id_le le_succ _ _
 
 theorem isMax_iterate_succ_of_eq_of_lt {n m : ℕ} (h_eq : succ^[n] a = succ^[m] a)
     (h_lt : n < m) : IsMax (succ^[n] a) := by
   refine max_of_succ_le (le_trans ?_ h_eq.symm.le)
-  have : succ (succ^[n] a) = succ^[n + 1] a := by rw [Function.iterate_succ', comp]
-  rw [this]
+  rw [← iterate_succ_apply' succ]
   have h_le : n + 1 ≤ m := Nat.succ_le_of_lt h_lt
   exact Monotone.monotone_iterate_of_le_map succ_mono (le_succ a) h_le
 
