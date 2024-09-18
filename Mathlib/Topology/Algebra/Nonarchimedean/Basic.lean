@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Ashwin Iyengar, Patrick Massot
 -/
 import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Topology.Algebra.OpenSubgroup
+import Mathlib.Topology.Algebra.Subgroup
 import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
