@@ -5,7 +5,7 @@ Authors: Sebastian Monnet
 -/
 import Mathlib.FieldTheory.Galois
 import Mathlib.Topology.Algebra.FilterBasis
-import Mathlib.Topology.Algebra.Subgroup
+import Mathlib.Topology.Algebra.OpenSubgroup
 import Mathlib.Tactic.ByContra
 
 /-!
