@@ -39,7 +39,7 @@ protected def Sum (G : SimpleGraph α) (H : SimpleGraph β) : SimpleGraph (α �
     | Sum.inl _, Sum.inr _ | Sum.inr _, Sum.inl _ => id
   loopless u := by cases u <;> simp
 
-@[simps]
+@[simps!]
 instance : HAdd (SimpleGraph α) (SimpleGraph β) (SimpleGraph (α ⊕ β)) := ⟨SimpleGraph.Sum⟩
 
 variable {G : SimpleGraph α} {H : SimpleGraph β}
@@ -62,15 +62,15 @@ def SumAssoc {I : SimpleGraph γ} : (G + H) + I ≃g G + (H + I) := ⟨Equiv.sum
 
 /-- The embedding of `G` into `G + H`. -/
 @[simps]
-def SumLeft : G ↪g G + H where
-  toFun u := Sum.inl u
+protected def Sum.inl : G ↪g G + H where
+  toFun u := _root_.Sum.inl u
   inj' u v := by simp
   map_rel_iff' := by simp
 
 /-- The embedding of `H` into `G + H`. -/
 @[simps]
-def SumRight : H ↪g G + H where
-  toFun u := Sum.inr u
+protected def Sum.inr : H ↪g G + H where
+  toFun u := _root_.Sum.inr u
   inj' u v := by simp
   map_rel_iff' := by simp
 
