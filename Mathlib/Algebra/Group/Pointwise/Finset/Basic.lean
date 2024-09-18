@@ -1621,6 +1621,9 @@ variable [Group α] [DecidableEq α] {s t : Finset α}
 @[to_additive] lemma card_le_card_div_right (ht : t.Nonempty) : s.card ≤ (s / t).card :=
   card_le_card_image₂_right _ ht fun _ ↦ div_left_injective
 
+@[to_additive] lemma card_le_card_div_self : s.card ≤ (s / s).card := by
+  cases s.eq_empty_or_nonempty <;> simp [card_le_card_div_left, *]
+
 end Group
 
 open Pointwise

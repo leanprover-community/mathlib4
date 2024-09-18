@@ -30,9 +30,8 @@ variable {α : Type*} [MeasurableSpace α] {μ ν : Measure α}
 
 /-- **Hahn decomposition theorem** -/
 theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-    ∃ s,
-      MeasurableSet s ∧
-        (∀ t, MeasurableSet t → t ⊆ s → ν t ≤ μ t) ∧ ∀ t, MeasurableSet t → t ⊆ sᶜ → μ t ≤ ν t := by
+    ∃ s, MeasurableSet s ∧ (∀ t, MeasurableSet t → t ⊆ s → ν t ≤ μ t) ∧
+      ∀ t, MeasurableSet t → t ⊆ sᶜ → μ t ≤ ν t := by
   let d : Set α → ℝ := fun s => ((μ s).toNNReal : ℝ) - (ν s).toNNReal
   let c : Set ℝ := d '' { s | MeasurableSet s }
   let γ : ℝ := sSup c
