@@ -8,6 +8,7 @@ import Mathlib.Data.Nat.Count
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Order.OrderIsoNat
+import Mathlib.Order.WellFounded
 
 /-!
 # The `n`th Number Satisfying a Predicate
