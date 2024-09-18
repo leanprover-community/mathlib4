@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jujian Zhang, Nailin Guan, Yuyang Zhao
+Authors: Jujian Zhang, Nailin Guan, Youle Fang, Yuyang Zhao
 -/
 import Mathlib.Algebra.Category.Grp.FiniteGrp
 import Mathlib.Topology.Algebra.ContinuousMonoidHom
@@ -332,6 +332,33 @@ instance : Limits.HasLimit (F ⋙ forget₂ FiniteGrp ProfiniteGrp) where
 end ProfiniteGrp
 
 end Profiniteoflimit
+
+/-!
+
+# A profinite group is the projective limit of finite groups
+
+In a profinite group `P` :
+
+* `QuotientOpenNormalSubgroup` : The functor that maps open normal subgroup of `P` to
+  the quotient group of it (which is finite, as shown by previous lemmas).
+
+* `CanonicalQuotientMap` : The continuous homomorphism from `P` to the limit of the quotient group
+  of open normal subgroup ordered by inclusion of the open normal subgroup.
+
+* `canonicalQuotientMap_surjective` : The `CanonicalQuotientMap` is surjective, proven by
+  demonstrating that its range is dense and closed.
+
+* `OpenNormalSubgroupSubClopenNhdsOfOne` : For any open neighborhood of `1` there is an
+  open normal subgroup contained within it.
+
+* `canonicalQuotientMap_injective` : The `CanonicalQuotientMap` is injective. This is proven by
+  showing that for any element not equal to one, the image of it on the coordinate of
+  the open normal subgroup that doesn't contain it is not equal to 1, thus not in the kernel.
+
+* `ContinuousMulEquivLimitQuotientOpenNormalSubgroup` : The `CanonicalQuotientMap` can serve as a
+  `ContinuousMulEquiv`, with the continuity of other side given by
+  `Continuous.homeoOfEquivCompactToT2`.
+-/
 
 section limitofProfinite
 
