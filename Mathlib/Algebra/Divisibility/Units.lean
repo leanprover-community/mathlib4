@@ -180,6 +180,8 @@ section IsUnit
 
 variable (hu : IsUnit x)
 
+include hu
+
 theorem isRelPrime_mul_unit_left_left : IsRelPrime (x * y) z ↔ IsRelPrime y z :=
   ⟨IsRelPrime.of_mul_left_right, fun H _ h ↦ H (hu.dvd_mul_left.mp h)⟩
 

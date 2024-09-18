@@ -124,7 +124,7 @@ lemma leOnePart_eq_one : a⁻ᵐ = 1 ↔ 1 ≤ a := by simp [leOnePart_eq_one']
 
 -- Bourbaki A.VI.12 Prop 9 a)
 @[to_additive (attr := simp)] lemma oneLePart_div_leOnePart (a : α) : a⁺ᵐ / a⁻ᵐ = a := by
-  rw [div_eq_mul_inv, mul_inv_eq_iff_eq_mul, leOnePart, mul_sup, mul_one, mul_right_inv, sup_comm,
+  rw [div_eq_mul_inv, mul_inv_eq_iff_eq_mul, leOnePart, mul_sup, mul_one, mul_inv_cancel, sup_comm,
     oneLePart]
 
 @[to_additive (attr := simp)] lemma leOnePart_div_oneLePart (a : α) : a⁻ᵐ / a⁺ᵐ = a⁻¹ := by
@@ -142,19 +142,19 @@ lemma leOnePart_eq_inv_inf_one (a : α) : a⁻ᵐ = (a ⊓ 1)⁻¹ := by
 
 -- Bourbaki A.VI.12 Prop 9 d)
 @[to_additive] lemma oneLePart_mul_leOnePart (a : α) : a⁺ᵐ * a⁻ᵐ = |a|ₘ := by
-  rw [oneLePart, sup_mul, one_mul, leOnePart, mul_sup, mul_one, mul_inv_self, sup_assoc,
+  rw [oneLePart, sup_mul, one_mul, leOnePart, mul_sup, mul_one, mul_inv_cancel, sup_assoc,
     ← sup_assoc a, sup_eq_right.2 le_sup_right]
   exact sup_eq_left.2 <| one_le_mabs a
 
 @[to_additive] lemma leOnePart_mul_oneLePart (a : α) : a⁻ᵐ * a⁺ᵐ = |a|ₘ := by
-  rw [oneLePart, mul_sup, mul_one, leOnePart, sup_mul, one_mul, inv_mul_self, sup_assoc,
+  rw [oneLePart, mul_sup, mul_one, leOnePart, sup_mul, one_mul, inv_mul_cancel, sup_assoc,
     ← @sup_assoc _ _ a, sup_eq_right.2 le_sup_right]
   exact sup_eq_left.2 <| one_le_mabs a
 
 -- Bourbaki A.VI.12 Prop 9 a)
 -- a⁺ᵐ ⊓ a⁻ᵐ = 0 (`a⁺` and `a⁻` are co-prime, and, since they are positive, disjoint)
 @[to_additive] lemma oneLePart_inf_leOnePart_eq_one (a : α) : a⁺ᵐ ⊓ a⁻ᵐ = 1 := by
-  rw [← mul_left_inj a⁻ᵐ⁻¹, inf_mul, one_mul, mul_right_inv, ← div_eq_mul_inv,
+  rw [← mul_left_inj a⁻ᵐ⁻¹, inf_mul, one_mul, mul_inv_cancel, ← div_eq_mul_inv,
     oneLePart_div_leOnePart, leOnePart_eq_inv_inf_one, inv_inv]
 
 end covariantmulop
@@ -206,7 +206,7 @@ variable [LinearOrder α] [Group α] {a : α}
   rw [oneLePart, ← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]
 
 @[to_additive (attr := simp) posPart_pos_iff] lemma one_lt_oneLePart_iff : 1 < a⁺ᵐ ↔ 1 < a :=
-  lt_iff_lt_of_le_iff_le $ (one_le_oneLePart _).le_iff_eq.trans oneLePart_eq_one
+  lt_iff_lt_of_le_iff_le <| (one_le_oneLePart _).le_iff_eq.trans oneLePart_eq_one
 
 @[to_additive posPart_eq_of_posPart_pos]
 lemma oneLePart_of_one_lt_oneLePart (ha : 1 < a⁺ᵐ) : a⁺ᵐ = a := by
@@ -219,7 +219,7 @@ variable [CovariantClass α α (· * ·) (· ≤ ·)]
   simp_rw [← one_le_inv']; rw [leOnePart, ← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]
 
 @[to_additive (attr := simp) negPart_pos_iff] lemma one_lt_ltOnePart_iff : 1 < a⁻ᵐ ↔ a < 1 :=
-  lt_iff_lt_of_le_iff_le $ (one_le_leOnePart _).le_iff_eq.trans leOnePart_eq_one
+  lt_iff_lt_of_le_iff_le <| (one_le_leOnePart _).le_iff_eq.trans leOnePart_eq_one
 
 end covariantmul
 end LinearOrder

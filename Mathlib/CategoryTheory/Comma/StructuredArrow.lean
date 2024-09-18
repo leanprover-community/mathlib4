@@ -111,7 +111,7 @@ def homMk {f f' : StructuredArrow S T} (g : f.right ⟶ f'.right)
     simpa using w.symm
 
 /- Porting note: it appears the simp lemma is not getting generated but the linter
-picks up on it (seems like a bug). Either way simp solves it.  -/
+picks up on it (seems like a bug). Either way simp solves it. -/
 attribute [-simp, nolint simpNF] homMk_left
 
 theorem homMk_surjective {f f' : StructuredArrow S T} (φ : f ⟶ f') :
@@ -120,7 +120,7 @@ theorem homMk_surjective {f f' : StructuredArrow S T} (φ : f ⟶ f') :
   ⟨φ.right, StructuredArrow.w φ, rfl⟩
 
 /-- Given a structured arrow `X ⟶ T(Y)`, and an arrow `Y ⟶ Y'`, we can construct a morphism of
-    structured arrows given by `(X ⟶ T(Y)) ⟶ (X ⟶ T(Y) ⟶ T(Y'))`.  -/
+    structured arrows given by `(X ⟶ T(Y)) ⟶ (X ⟶ T(Y) ⟶ T(Y'))`. -/
 @[simps]
 def homMk' (f : StructuredArrow S T) (g : f.right ⟶ Y') : f ⟶ mk (f.hom ≫ T.map g) where
   left := 𝟙 _
@@ -856,37 +856,37 @@ end CostructuredArrow
 is contravariantly equivalent to the category of costructured arrows `F.op.obj c ⟶ op d`.
 -/
 def structuredArrowOpEquivalence (F : C ⥤ D) (d : D) :
-    (StructuredArrow d F)ᵒᵖ ≌ CostructuredArrow F.op (op d) :=
-  Equivalence.mk (StructuredArrow.toCostructuredArrow F d)
-    (CostructuredArrow.toStructuredArrow' F d).rightOp
-    (NatIso.ofComponents
+    (StructuredArrow d F)ᵒᵖ ≌ CostructuredArrow F.op (op d) where
+  functor := StructuredArrow.toCostructuredArrow F d
+  inverse := (CostructuredArrow.toStructuredArrow' F d).rightOp
+  unitIso := NatIso.ofComponents
       (fun X => (StructuredArrow.isoMk (Iso.refl _)).op)
       fun {X Y} f => Quiver.Hom.unop_inj <| by
         apply CommaMorphism.ext <;>
-          dsimp [StructuredArrow.isoMk, Comma.isoMk,StructuredArrow.homMk]; simp)
-    (NatIso.ofComponents
+          dsimp [StructuredArrow.isoMk, Comma.isoMk,StructuredArrow.homMk]; simp
+  counitIso := NatIso.ofComponents
       (fun X => CostructuredArrow.isoMk (Iso.refl _))
       fun {X Y} f => by
         apply CommaMorphism.ext <;>
-          dsimp [CostructuredArrow.isoMk, Comma.isoMk, CostructuredArrow.homMk]; simp)
+          dsimp [CostructuredArrow.isoMk, Comma.isoMk, CostructuredArrow.homMk]; simp
 
 /-- For a functor `F : C ⥤ D` and an object `d : D`, the category of costructured arrows
 `F.obj c ⟶ d` is contravariantly equivalent to the category of structured arrows
 `op d ⟶ F.op.obj c`.
 -/
 def costructuredArrowOpEquivalence (F : C ⥤ D) (d : D) :
-    (CostructuredArrow F d)ᵒᵖ ≌ StructuredArrow (op d) F.op :=
-  Equivalence.mk (CostructuredArrow.toStructuredArrow F d)
-    (StructuredArrow.toCostructuredArrow' F d).rightOp
-    (NatIso.ofComponents
+    (CostructuredArrow F d)ᵒᵖ ≌ StructuredArrow (op d) F.op where
+  functor := CostructuredArrow.toStructuredArrow F d
+  inverse := (StructuredArrow.toCostructuredArrow' F d).rightOp
+  unitIso := NatIso.ofComponents
       (fun X => (CostructuredArrow.isoMk (Iso.refl _)).op)
       fun {X Y} f => Quiver.Hom.unop_inj <| by
         apply CommaMorphism.ext <;>
-          dsimp [CostructuredArrow.isoMk, CostructuredArrow.homMk, Comma.isoMk]; simp)
-    (NatIso.ofComponents
+          dsimp [CostructuredArrow.isoMk, CostructuredArrow.homMk, Comma.isoMk]; simp
+  counitIso := NatIso.ofComponents
       (fun X => StructuredArrow.isoMk (Iso.refl _))
       fun {X Y} f => by
         apply CommaMorphism.ext <;>
-          dsimp [StructuredArrow.isoMk, StructuredArrow.homMk, Comma.isoMk]; simp)
+          dsimp [StructuredArrow.isoMk, StructuredArrow.homMk, Comma.isoMk]; simp
 
 end CategoryTheory

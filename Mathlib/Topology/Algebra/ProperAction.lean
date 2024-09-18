@@ -14,8 +14,8 @@ import Mathlib.Topology.Sequences
 In this file we define proper action of a group on a topological space, and we prove that in this
 case the quotient space is T2. We also give equivalent definitions of proper action using
 ultrafilters and show the transfer of proper action to a closed subgroup.
-We give sufficent conditions on the topological space such that the action is properly discontinuous
-(see `ProperlyDiscontinuousSMul`) if and only if it is continuous in
+We give sufficient conditions on the topological space such that the action is properly
+discontinuous (see `ProperlyDiscontinuousSMul`) if and only if it is continuous in
 the first variable (see `ContinuousConstSMul`) and proper in the sense defined here.
 
 ## Main definitions

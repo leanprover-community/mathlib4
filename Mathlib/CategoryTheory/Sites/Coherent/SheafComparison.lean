@@ -14,15 +14,15 @@ import Mathlib.CategoryTheory.Sites.Whiskering
 # Categories of coherent sheaves
 
 Given a fully faithful functor `F : C ⥤ D` into a precoherent category, which preserves and reflects
-finite effective epi families, and satisfies the property `F.EffectivelyEnough` (meaning that to
+finite effective epi families, and satisfies the property `F.EffectivelyEnough` (meaning that to
 every object in `C` there is an effective epi from an object in the image of `F`), the categories
-of coherent sheaves on `C` and `D` are equivalent (see
+of coherent sheaves on `C` and `D` are equivalent (see
 `CategoryTheory.coherentTopology.equivalence`).
 
 The main application of this equivalence is the characterisation of condensed sets as coherent
 sheaves on either `CompHaus`, `Profinite` or `Stonean`. See the file `Condensed/Equivalence.lean`
 
-We give the corresonding result for the regular topology as well (see
+We give the corresponding result for the regular topology as well (see
 `CategoryTheory.regularTopology.equivalence`).
 -/
 
@@ -101,7 +101,7 @@ variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
 
 /--
 The equivalence from coherent sheaves on `C` to coherent sheaves on `D`, given a fully faithful
-functor `F : C ⥤ D` to a precoherent category, which preserves and reflects effective epimorphic
+functor `F : C ⥤ D` to a precoherent category, which preserves and reflects effective epimorphic
 families, and satisfies `F.EffectivelyEnough`.
 -/
 noncomputable
@@ -124,7 +124,7 @@ variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
 
 /--
 The equivalence from coherent sheaves on `C` to coherent sheaves on `D`, given a fully faithful
-functor `F : C ⥤ D` to an extensive preregular category, which preserves and reflects effective
+functor `F : C ⥤ D` to an extensive preregular category, which preserves and reflects effective
 epimorphisms and satisfies `F.EffectivelyEnough`.
 -/
 noncomputable
@@ -197,7 +197,7 @@ variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
 
 /--
 The equivalence from regular sheaves on `C` to regular sheaves on `D`, given a fully faithful
-functor `F : C ⥤ D` to a preregular category, which preserves and reflects effective
+functor `F : C ⥤ D` to a preregular category, which preserves and reflects effective
 epimorphisms and satisfies `F.EffectivelyEnough`.
 -/
 noncomputable
@@ -246,7 +246,7 @@ theorem isSheaf_iff_extensiveSheaf_of_projective [Preregular C] [FinitaryExtensi
   rw [isSheaf_iff_preservesFiniteProducts_of_projective, isSheaf_iff_preservesFiniteProducts]
 
 /--
-The categories of coherent sheaves and extensive sheaves on `C` are equivalent if `C` is
+The categories of coherent sheaves and extensive sheaves on `C` are equivalent if `C` is
 preregular, finitary extensive, and every object is projective.
 -/
 @[simps]

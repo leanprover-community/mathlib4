@@ -244,9 +244,9 @@ instance : Neg (HahnSeries Γ R) where
 instance : AddGroup (HahnSeries Γ R) :=
   { inferInstanceAs (AddMonoid (HahnSeries Γ R)) with
     zsmul := zsmulRec
-    add_left_neg := fun x => by
+    neg_add_cancel := fun x => by
       ext
-      apply add_left_neg }
+      apply neg_add_cancel }
 
 @[simp]
 theorem neg_coeff' {x : HahnSeries Γ R} : (-x).coeff = -x.coeff :=

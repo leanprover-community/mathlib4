@@ -12,7 +12,7 @@ import Mathlib.Probability.Kernel.Disintegration.MeasurableStieltjes
 
 Let `κ : Kernel α (β × ℝ)` and `ν : Kernel α β` be two finite kernels.
 A function `f : α × β → StieltjesFunction` is called a conditional kernel CDF of `κ` with respect
-to `ν` if it is measurable, tends to to 0 at -∞ and to 1 at +∞ for all `p : α × β`,
+to `ν` if it is measurable, tends to 0 at -∞ and to 1 at +∞ for all `p : α × β`,
 `fun b ↦ f (a, b) x` is `(ν a)`-integrable for all `a : α` and `x : ℝ` and for all measurable
 sets `s : Set β`, `∫ b in s, f (a, b) x ∂(ν a) = (κ a (s ×ˢ Iic x)).toReal`.
 
@@ -24,7 +24,7 @@ denoted by `hf.toKernel f` such that `κ = ν ⊗ₖ hf.toKernel f`.
 Let `κ : Kernel α (β × ℝ)` and `ν : Kernel α β`.
 
 * `ProbabilityTheory.IsCondKernelCDF`: a function `f : α × β → StieltjesFunction` is called
-  a conditional kernel CDF of `κ` with respect to `ν` if it is measurable, tends to to 0 at -∞ and
+  a conditional kernel CDF of `κ` with respect to `ν` if it is measurable, tends to 0 at -∞ and
   to 1 at +∞ for all `p : α × β`, if `fun b ↦ f (a, b) x` is `(ν a)`-integrable for all `a : α` and
   `x : ℝ` and for all measurable sets `s : Set β`,
   `∫ b in s, f (a, b) x ∂(ν a) = (κ a (s ×ˢ Iic x)).toReal`.
@@ -147,7 +147,7 @@ lemma setLIntegral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCondK
       · exact mod_cast ha.le
       · refine le_of_forall_lt_rat_imp_le fun q hq ↦ h q ?_
         exact mod_cast hq
-    · exact fun _ ↦ measurableSet_Iic
+    · exact fun _ ↦ nullMeasurableSet_Iic
     · refine Monotone.directed_ge fun r r' hrr' ↦ Iic_subset_Iic.mpr ?_
       exact mod_cast hrr'
     · obtain ⟨q, hq⟩ := exists_rat_gt x
@@ -172,7 +172,7 @@ lemma setLIntegral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCondK
     congr with y
     simp only [mem_iInter, mem_Iic, Subtype.forall, Subtype.coe_mk]
     exact ⟨le_of_forall_lt_rat_imp_le, fun hyx q hq ↦ hyx.trans hq.le⟩
-  · exact fun i ↦ hs.prod measurableSet_Iic
+  · exact fun i ↦ (hs.prod measurableSet_Iic).nullMeasurableSet
   · refine Monotone.directed_ge fun i j hij ↦ ?_
     refine prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, Iic_subset_Iic.mpr ?_⟩)
     exact mod_cast hij
@@ -355,7 +355,7 @@ lemma _root_.MeasureTheory.Measure.iInf_rat_gt_prod_Iic {ρ : Measure (α × ℝ
     · refine le_of_forall_lt_rat_imp_le fun q htq ↦ h q ?_
       exact mod_cast htq
     · exact mod_cast hta.le
-  · exact fun _ => hs.prod measurableSet_Iic
+  · exact fun _ => (hs.prod measurableSet_Iic).nullMeasurableSet
   · refine Monotone.directed_ge fun r r' hrr' ↦ prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, ?_⟩)
     refine Iic_subset_Iic.mpr ?_
     exact mod_cast hrr'
@@ -420,7 +420,7 @@ section IsCondKernelCDF
 variable {f : α × β → StieltjesFunction}
 
 /-- A function `f : α × β → StieltjesFunction` is called a conditional kernel CDF of `κ` with
-respect to `ν` if it is measurable, tends to to 0 at -∞ and to 1 at +∞ for all `p : α × β`,
+respect to `ν` if it is measurable, tends to 0 at -∞ and to 1 at +∞ for all `p : α × β`,
 `fun b ↦ f (a, b) x` is `(ν a)`-integrable for all `a : α` and `x : ℝ` and for all
 measurable sets `s : Set β`, `∫ b in s, f (a, b) x ∂(ν a) = (κ a (s ×ˢ Iic x)).toReal`. -/
 structure IsCondKernelCDF (f : α × β → StieltjesFunction) (κ : Kernel α (β × ℝ)) (ν : Kernel α β) :
@@ -585,11 +585,11 @@ lemma setLIntegral_toKernel_prod [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ 
         · exact (Kernel.measurable_coe (hf.toKernel f) ht).comp measurable_prod_mk_left
         · rw [ht_lintegral]
           exact measure_ne_top _ _
-        · exact eventually_of_forall fun a ↦ measure_mono (subset_univ _)
+        · exact Eventually.of_forall fun a ↦ measure_mono (subset_univ _)
     _ = κ a (s ×ˢ univ) - κ a (s ×ˢ t) := by
         rw [setLIntegral_toKernel_univ hf a hs, ht_lintegral]
     _ = κ a (s ×ˢ tᶜ) := by
-        rw [← measure_diff _ (hs.prod ht) (measure_ne_top _ _)]
+        rw [← measure_diff _ (hs.prod ht).nullMeasurableSet (measure_ne_top _ _)]
         · rw [prod_diff_prod, compl_eq_univ_diff]
           simp only [diff_self, empty_prod, union_empty]
         · rw [prod_subset_prod_iff]
@@ -621,21 +621,21 @@ lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
     simp only [mem_setOf_eq] at ht₁ ht₂
     have h_prod_eq_snd : ∀ a ∈ t₁, {x : ℝ | (a, x) ∈ t₁ ×ˢ t₂} = t₂ := by
       intro a ha
-      simp only [ha, prod_mk_mem_set_prod_eq, true_and_iff, setOf_mem_eq]
+      simp only [ha, prod_mk_mem_set_prod_eq, true_and, setOf_mem_eq]
     rw [← lintegral_add_compl _ ht₁]
     have h_eq1 : ∫⁻ x in t₁, hf.toKernel f (a, x) {y : ℝ | (x, y) ∈ t₁ ×ˢ t₂} ∂(ν a)
         = ∫⁻ x in t₁, hf.toKernel f (a, x) t₂ ∂(ν a) := by
-      refine setLIntegral_congr_fun ht₁ (eventually_of_forall fun a ha ↦ ?_)
+      refine setLIntegral_congr_fun ht₁ (Eventually.of_forall fun a ha ↦ ?_)
       rw [h_prod_eq_snd a ha]
     have h_eq2 :
         ∫⁻ x in t₁ᶜ, hf.toKernel f (a, x) {y : ℝ | (x, y) ∈ t₁ ×ˢ t₂} ∂(ν a) = 0 := by
       suffices h_eq_zero :
           ∀ x ∈ t₁ᶜ, hf.toKernel f (a, x) {y : ℝ | (x, y) ∈ t₁ ×ˢ t₂} = 0 by
-        rw [setLIntegral_congr_fun ht₁.compl (eventually_of_forall h_eq_zero)]
+        rw [setLIntegral_congr_fun ht₁.compl (Eventually.of_forall h_eq_zero)]
         simp only [lintegral_const, zero_mul]
       intro a hat₁
       rw [mem_compl_iff] at hat₁
-      simp only [hat₁, prod_mk_mem_set_prod_eq, false_and_iff, setOf_false, measure_empty]
+      simp only [hat₁, prod_mk_mem_set_prod_eq, false_and, setOf_false, measure_empty]
     rw [h_eq1, h_eq2, add_zero]
     exact setLIntegral_toKernel_prod hf a ht₁ ht₂
   · intro t ht ht_eq
@@ -650,7 +650,7 @@ lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
           ∫⁻ x, hf.toKernel f (a, x) {y : ℝ | (x, y) ∈ t} ∂(ν a) := by
         have h_le : (fun x ↦ hf.toKernel f (a, x) {y : ℝ | (x, y) ∈ t})
               ≤ᵐ[ν a] fun x ↦ hf.toKernel f (a, x) univ :=
-          eventually_of_forall fun _ ↦ measure_mono (subset_univ _)
+          Eventually.of_forall fun _ ↦ measure_mono (subset_univ _)
         rw [lintegral_sub _ _ h_le]
         · exact Kernel.measurable_kernel_prod_mk_left' ht a
         refine ((lintegral_mono_ae h_le).trans_lt ?_).ne
@@ -667,7 +667,7 @@ lemma lintegral_toKernel_mem [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ ν)
       have h_disj := hf_disj hij
       rw [Function.onFun, disjoint_iff_inter_eq_empty] at h_disj ⊢
       ext1 x
-      simp only [mem_inter_iff, mem_setOf_eq, mem_empty_iff_false, iff_false_iff]
+      simp only [mem_inter_iff, mem_setOf_eq, mem_empty_iff_false, iff_false]
       intro h_mem_both
       suffices (a, x) ∈ ∅ by rwa [mem_empty_iff_false] at this
       rwa [← h_disj, mem_inter_iff]

@@ -151,7 +151,7 @@ theorem rel_mk {s : Setoid M} {h a b} : Con.mk s h a b ↔ r a b :=
 @[to_additive "Given a type `M` with an addition, `x, y ∈ M`, and an additive congruence relation
 `c` on `M`, `(x, y) ∈ M × M` iff `x` is related to `y` by `c`."]
 instance : Membership (M × M) (Con M) :=
-  ⟨fun x c => c x.1 x.2⟩
+  ⟨fun c x => c x.1 x.2⟩
 
 variable {c}
 
@@ -377,7 +377,7 @@ theorem coe_sInf (S : Set (Con M)) :
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_iInf {ι : Sort*} (f : ι → Con M) : ⇑(iInf f) = ⨅ i, ⇑(f i) := by
-  rw [iInf, coe_sInf, ← Set.range_comp, sInf_range, Function.comp]
+  rw [iInf, coe_sInf, ← Set.range_comp, sInf_range, Function.comp_def]
 
 @[to_additive]
 instance : PartialOrder (Con M) where
@@ -1040,7 +1040,7 @@ variable [Group M] [Group N] [Group P] (c : Con M)
 /-- Multiplicative congruence relations preserve inversion. -/
 @[to_additive "Additive congruence relations preserve negation."]
 protected theorem inv {x y} (h : c x y) : c x⁻¹ y⁻¹ :=
-  c.map_of_mul_left_rel_one Inv.inv (fun x => by simp only [mul_left_inv, c.refl 1]) h
+  c.map_of_mul_left_rel_one Inv.inv (fun x => by simp only [inv_mul_cancel, c.refl 1]) h
 
 /-- Multiplicative congruence relations preserve division. -/
 @[to_additive "Additive congruence relations preserve subtraction."]

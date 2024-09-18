@@ -25,7 +25,7 @@ universe u v
 
 /-- If a set `t` is eventually covered by a countable family of sets, all with cardinality at
 most `a`, then the cardinality of `t` is also bounded by `a`.
-Supersed by `mk_le_of_countable_eventually_mem` which does not assume
+Superseded by `mk_le_of_countable_eventually_mem` which does not assume
 that the indexing set lives in the same universe. -/
 lemma mk_subtype_le_of_countable_eventually_mem_aux {α ι : Type u} {a : Cardinal}
     [Countable ι] {f : ι → Set α} {l : Filter ι} [NeBot l]

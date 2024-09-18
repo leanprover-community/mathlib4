@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Normed.Module.Basic
 
@@ -182,7 +182,7 @@ def finiteSubspace : Subspace 𝕜 V where
   smul_mem' c x (hx : _ < _) :=
     calc
       e (c • x) = ‖c‖₊ * e x := e.map_smul c x
-      _ < ⊤ := ENNReal.mul_lt_top ENNReal.coe_ne_top hx.ne
+      _ < ⊤ := ENNReal.mul_lt_top ENNReal.coe_lt_top hx
 
 /-- Metric space structure on `e.finiteSubspace`. We use `EMetricSpace.toMetricSpace`
 to ensure that this definition agrees with `e.emetricSpace`. -/

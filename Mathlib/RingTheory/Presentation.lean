@@ -56,7 +56,7 @@ each relation to a polynomial in the generators.
 -/
 @[nolint checkUnivs]
 structure Algebra.Presentation extends Algebra.Generators.{w} R S where
-  /-- The type of relations.  -/
+  /-- The type of relations. -/
   rels : Type t
   /-- The assignment of each relation to a polynomial in the generators. -/
   relation : rels → toGenerators.Ring
@@ -122,6 +122,39 @@ lemma finitePresentation_of_isFinite [P.IsFinite] :
   FinitePresentation.equiv (P.quotientEquiv.restrictScalars R)
 
 section Construction
+
+/-- If `algebraMap R S` is bijective, the empty generators are a presentation with no relations. -/
+noncomputable def ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)) :
+    Presentation.{t, w} R S where
+  __ := Generators.ofSurjectiveAlgebraMap h.surjective
+  rels := PEmpty
+  relation := PEmpty.elim
+  span_range_relation_eq_ker := by
+    simp only [Set.range_eq_empty, Ideal.span_empty]
+    symm
+    rw [← RingHom.injective_iff_ker_eq_bot]
+    show Function.Injective (aeval PEmpty.elim)
+    rw [aeval_injective_iff_of_isEmpty]
+    exact h.injective
+
+instance ofBijectiveAlgebraMap_isFinite (h : Function.Bijective (algebraMap R S)) :
+    (ofBijectiveAlgebraMap.{t, w} h).IsFinite where
+  finite_vars := inferInstanceAs (Finite PEmpty.{w + 1})
+  finite_rels := inferInstanceAs (Finite PEmpty.{t + 1})
+
+lemma ofBijectiveAlgebraMap_dimension (h : Function.Bijective (algebraMap R S)) :
+    (ofBijectiveAlgebraMap h).dimension = 0 := by
+  show Nat.card PEmpty - Nat.card PEmpty = 0
+  simp only [Nat.card_eq_fintype_card, Fintype.card_ofIsEmpty, le_refl, tsub_eq_zero_of_le]
+
+variable (R) in
+/-- The canonical `R`-presentation of `R` with no generators and no relations. -/
+noncomputable def id : Presentation.{t, w} R R := ofBijectiveAlgebraMap Function.bijective_id
+
+instance : (id R).IsFinite := ofBijectiveAlgebraMap_isFinite (R := R) Function.bijective_id
+
+lemma id_dimension : (Presentation.id R).dimension = 0 :=
+  ofBijectiveAlgebraMap_dimension (R := R) Function.bijective_id
 
 section Localization
 
@@ -200,13 +233,13 @@ private lemma span_range_relation_eq_ker_baseChange :
           id.map_eq_id, RingHom.id_apply, e]
         erw [← MvPolynomial.algebraMap_eq, AlgEquiv.commutes]
         simp only [TensorProduct.algebraMap_apply, id.map_eq_id, RingHom.id_apply,
-          TensorProduct.map_tmul, AlgHom.coe_id, id_eq, _root_.map_one, algebraMap_eq]
+          TensorProduct.map_tmul, AlgHom.coe_id, id_eq, map_one, algebraMap_eq]
         erw [aeval_C]
         simp
       | h_add p q hp hq => simp only [map_add, hp, hq]
       | h_X p i hp =>
-        simp only [_root_.map_mul, algebraTensorAlgEquiv_symm_X, hp, TensorProduct.map_tmul,
-          _root_.map_one, IsScalarTower.coe_toAlgHom', Generators.algebraMap_apply, aeval_X, e]
+        simp only [map_mul, algebraTensorAlgEquiv_symm_X, hp, TensorProduct.map_tmul, map_one,
+          IsScalarTower.coe_toAlgHom', Generators.algebraMap_apply, aeval_X, e]
         congr
         erw [aeval_X]
         rw [Generators.baseChange_val]
@@ -216,8 +249,7 @@ private lemma span_range_relation_eq_ker_baseChange :
       Ideal.map_map, Ideal.map_span, ← Set.range_comp] at H'
     convert H'
     simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
-      TensorProduct.includeRight_apply, TensorProduct.lift_tmul, _root_.map_one, mapAlgHom_apply,
-      one_mul]
+      TensorProduct.includeRight_apply, TensorProduct.lift_tmul, map_one, mapAlgHom_apply, one_mul]
     rfl
 
 /-- If `P` is a presentation of `S` over `R` and `T` is an `R`-algebra, we

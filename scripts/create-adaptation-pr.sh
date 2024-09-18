@@ -16,7 +16,7 @@ set -e # abort whenever a command in the script fails
 
 if [ $# -ne 2 ]; then
   echo "Usage: $0 <BUMPVERSION> <NIGHTLYDATE>"
-  echo "BUMPVERSION: The upcoming release that we are targetting, e.g., 'v4.10.0'"
+  echo "BUMPVERSION: The upcoming release that we are targeting, e.g., 'v4.10.0'"
   echo "NIGHTLYDATE: The date of the nightly toolchain currently used on 'nightly-testing'"
   exit 1
 fi
@@ -61,7 +61,7 @@ echo "### [auto] checkout 'bump/$BUMPVERSION' and merge the latest changes from 
 
 git checkout "bump/$BUMPVERSION"
 git pull
-git merge origin/master
+git merge origin/master || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
@@ -70,26 +70,36 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   echo "### Automatically choosing 'lean-toolchain' and 'lake-manifest.json' from the newer branch"
   echo "### In this case, the newer branch is 'bump/$BUMPVERSION'"
   git checkout bump/$BUMPVERSION -- lean-toolchain lake-manifest.json
+  git add lean-toolchain lake-manifest.json
+  
+  # Check if there are more merge conflicts after auto-resolution
+  if ! git diff --name-only --diff-filter=U | grep -q .; then
+    # Auto-commit the resolved conflicts if no other conflicts remain
+    git commit -m "Auto-resolved conflicts in lean-toolchain and lake-manifest.json"
+  fi
 fi
 
-# Check if there are more merge conflicts
-if git diff --name-only --diff-filter=U | grep -q .; then
+# Loop until all conflicts are resolved and committed
+while git diff --name-only --diff-filter=U | grep -q . || ! git diff-index --quiet HEAD --; do
   echo
   echo "### [user] Conflict resolution"
   echo "We are merging the latest changes from 'origin/master' into 'bump/$BUMPVERSION'"
-  echo "There seem to be conflicts: please resolve them"
-  echo "Open `pwd` in a new terminal and run 'git status'"
-  echo "Make sure to commit the resolved conflicts, but do not push them"
-  read -p "Press enter to continue, when you are done"
-fi
+  echo "There seem to be conflicts or uncommitted files"
+  echo ""
+  echo "  1) Open `pwd` in a new terminal and run 'git status'"
+  echo "  2) Make sure to commit the resolved conflicts, but do not push them"
+  read -p "  3) Press enter to continue, when you are done"
+done
 
+echo "All conflicts resolved and committed."
+echo "Proceeding with git push..."
 git push
 
 echo
 echo "### [auto] create a new branch 'bump/nightly-$NIGHTLYDATE' and merge the latest changes from 'origin/nightly-testing'"
 
 git checkout -b "bump/nightly-$NIGHTLYDATE"
-git merge origin/nightly-testing
+git merge origin/nightly-testing || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
@@ -98,6 +108,7 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   echo "### Automatically choosing 'lean-toolchain' and 'lake-manifest.json' from the newer branch"
   echo "### In this case, the newer branch is 'origin/nightly-testing'"
   git checkout origin/nightly-testing -- lean-toolchain lake-manifest.json
+  git add lean-toolchain lake-manifest.json
 fi
 
 # Check if there are more merge conflicts
@@ -106,16 +117,21 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   echo "### [user] Conflict resolution"
   echo "We are merging the latest changes from 'origin/nightly-testing' into 'bump/nightly-$NIGHTLYDATE'"
   echo "There seem to be conflicts: please resolve them"
-  echo "Open `pwd` in a new terminal and run 'git status'"
-  echo "Run 'git add' on the resolved files, but do not commit"
-  read -p "Press enter to continue, when you are done"
+  echo ""
+  echo "  1) Open `pwd` in a new terminal and run 'git status'"
+  echo "  2) Run 'git add' on the resolved files, but do not commit"
+  read -p "  3) Press enter to continue, when you are done"
 fi
 
 echo
 echo "### [auto] commit the changes and push the branch"
 
 pr_title="chore: adaptations for nightly-$NIGHTLYDATE"
-git commit -m "$pr_title"
+# Create a commit with the PR title
+# We allow an empty commit,
+# as the user might have inadvertently already committed changes
+# In general, we do not want this command to fail.
+git commit --allow-empty -m "$pr_title"
 git push --set-upstream origin "bump/nightly-$NIGHTLYDATE"
 
 # Check if there is a diff between bump/nightly-$NIGHTLYDATE and bump/$BUMPVERSION
@@ -161,7 +177,7 @@ echo "### [auto] checkout the 'nightly-testing' branch and merge the new branch 
 
 git checkout nightly-testing
 git pull
-git merge "bump/nightly-$NIGHTLYDATE"
+git merge "bump/nightly-$NIGHTLYDATE" || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
@@ -170,19 +186,29 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   echo "### Automatically choosing lean-toolchain and lake-manifest.json from the newer branch"
   echo "### In this case, the newer branch is 'bump/nightly-$NIGHTLYDATE'"
   git checkout bump/nightly-$NIGHTLYDATE -- lean-toolchain lake-manifest.json
+  git add lean-toolchain lake-manifest.json
+  
+  # Check if there are more merge conflicts after auto-resolution
+  if ! git diff --name-only --diff-filter=U | grep -q .; then
+    # Auto-commit the resolved conflicts if no other conflicts remain
+    git commit -m "Auto-resolved conflicts in lean-toolchain and lake-manifest.json"
+  fi
 fi
 
-# Check if there are more merge conflicts
-if git diff --name-only --diff-filter=U | grep -q .; then
+# Loop until all conflicts are resolved and committed
+while git diff --name-only --diff-filter=U | grep -q . || ! git diff-index --quiet HEAD --; do
   echo
   echo "### [user] Conflict resolution"
   echo "We are merging the new PR "bump/nightly-$NIGHTLYDATE" into 'nightly-testing'"
-  echo "There seem to be conflicts: please resolve them"
-  echo "Open `pwd` in a new terminal and run 'git status'"
-  echo "Make sure to commit the resolved conflicts, but do not push them"
-  read -p "Press enter to continue, when you are done"
-fi
+  echo "There seem to be conflicts or uncommitted files"
+  echo ""
+  echo "  1) Open `pwd` in a new terminal and run 'git status'"
+  echo "  2) Make sure to commit the resolved conflicts, but do not push them"
+  read -p "  3) Press enter to continue, when you are done"
+done
 
+echo "All conflicts resolved and committed."
+echo "Proceeding with git push..."
 git push
 
 echo

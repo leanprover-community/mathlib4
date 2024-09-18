@@ -8,11 +8,12 @@ import Mathlib.Data.Nat.Count
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Order.OrderIsoNat
+import Mathlib.Order.WellFounded
 
 /-!
 # The `n`th Number Satisfying a Predicate
 
-This file defines a function for "what is the `n`th number that satisifies a given predicate `p`",
+This file defines a function for "what is the `n`th number that satisfies a given predicate `p`",
 and provides lemmas that deal with this function and its connection to `Nat.count`.
 
 ## Main definitions
@@ -66,7 +67,7 @@ theorem nth_eq_getD_sort (h : (setOf p).Finite) (n : ℕ) :
 
 theorem nth_eq_orderEmbOfFin (hf : (setOf p).Finite) {n : ℕ} (hn : n < hf.toFinset.card) :
     nth p n = hf.toFinset.orderEmbOfFin rfl ⟨n, hn⟩ := by
-  rw [nth_eq_getD_sort hf, Finset.orderEmbOfFin_apply, List.getD_eq_get]
+  rw [nth_eq_getD_sort hf, Finset.orderEmbOfFin_apply, List.getD_eq_getElem, Fin.getElem_fin]
 
 theorem nth_strictMonoOn (hf : (setOf p).Finite) :
     StrictMonoOn (nth p) (Set.Iio hf.toFinset.card) := by
@@ -237,7 +238,7 @@ theorem nth_eq_zero {n} :
     exacts [nth_zero_of_zero h₀, nth_of_card_le hf hle]
 
 theorem nth_eq_zero_mono (h₀ : ¬p 0) {a b : ℕ} (hab : a ≤ b) (ha : nth p a = 0) : nth p b = 0 := by
-  simp only [nth_eq_zero, h₀, false_and_iff, false_or_iff] at ha ⊢
+  simp only [nth_eq_zero, h₀, false_and, false_or] at ha ⊢
   exact ha.imp fun hf hle => hle.trans hab
 
 theorem le_nth_of_lt_nth_succ {k a : ℕ} (h : a < nth p (k + 1)) (ha : p a) : a ≤ nth p k := by

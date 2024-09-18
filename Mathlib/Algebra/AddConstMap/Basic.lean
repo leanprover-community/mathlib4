@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Order.Archimedean
+import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Logic.Function.Iterate
 
@@ -21,7 +21,7 @@ such that $\tilde f(x + 1) = \tilde f(x)+1$ for all `x`.
 In this file we define a structure and a typeclass
 for bundled maps satisfying `f (x + a) = f x + b`.
 
-We use parameters `a` and `b` instead of `1` to accomodate for two use cases:
+We use parameters `a` and `b` instead of `1` to accommodate for two use cases:
 
 - maps between circles of different lengths;
 - self-maps $f\colon S^1\to  S^1$ of degree other than one,

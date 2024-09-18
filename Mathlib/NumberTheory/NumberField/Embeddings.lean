@@ -478,10 +478,12 @@ theorem mkReal_coe (φ : { φ : K →+* ℂ // ComplexEmbedding.IsReal φ }) :
 theorem mkComplex_coe (φ : { φ : K →+* ℂ // ¬ComplexEmbedding.IsReal φ }) :
     (mkComplex φ : InfinitePlace K) = mk (φ : K →+* ℂ) := rfl
 
+section NumberField
+
 variable [NumberField K]
 
 /-- The infinite part of the product formula : for `x ∈ K`, we have `Π_w ‖x‖_w = |norm(x)|` where
-`‖·‖_w` is the normalized absolute value for `w`.  -/
+`‖·‖_w` is the normalized absolute value for `w`. -/
 theorem prod_eq_abs_norm (x : K) :
     ∏ w : InfinitePlace K, w x ^ mult w = abs (Algebra.norm ℚ x) := by
   convert (congr_arg Complex.abs (@Algebra.norm_eq_prod_embeddings ℚ _ _ _ _ ℂ _ _ _ _ _ x)).symm
@@ -542,9 +544,15 @@ theorem _root_.NumberField.adjoin_eq_top_of_infinitePlace_lt {x : 𝓞 K} {w : I
   exact congr_arg IntermediateField.toSubalgebra <|
     NumberField.is_primitive_element_of_infinitePlace_lt h₁ h₂ h₃
 
+end NumberField
+
 open Fintype FiniteDimensional
 
 variable (K)
+
+section NumberField
+
+variable [NumberField K]
 
 /-- The number of infinite real places of the number field `K`. -/
 noncomputable abbrev NrRealPlaces := card { w : InfinitePlace K // IsReal w }
@@ -599,6 +607,10 @@ def comap (w : InfinitePlace K) (f : k →+* K) : InfinitePlace k :=
   ⟨w.1.comp f.injective, w.embedding.comp f,
     by { ext x; show _ = w.1 (f x); rw [← w.2.choose_spec]; rfl }⟩
 
+end NumberField
+
+variable {K}
+
 @[simp]
 lemma comap_mk (φ : K →+* ℂ) (f : k →+* K) : (mk φ).comap f = mk (φ.comp f) := rfl
 
@@ -630,8 +642,7 @@ lemma mult_comap_le (f : k →+* K) (w : InfinitePlace K) : mult (w.comap f) ≤
   · exact (h₁ (h₂.comap _)).elim
   all_goals decide
 
-variable [Algebra k K] [Algebra k F] [Algebra K F] [IsScalarTower k K F]
-variable (σ : K ≃ₐ[k] K) (w : InfinitePlace K)
+variable [Algebra k K] (σ : K ≃ₐ[k] K) (w : InfinitePlace K)
 variable (k K)
 
 lemma card_mono [NumberField k] [NumberField K] :
@@ -663,7 +674,7 @@ lemma isReal_smul_iff : IsReal (σ • w) ↔ IsReal w := isReal_comap_iff (f :=
 lemma isComplex_smul_iff : IsComplex (σ • w) ↔ IsComplex w := by
   rw [← not_isReal_iff_isComplex, ← not_isReal_iff_isComplex, isReal_smul_iff]
 
-lemma ComplexEmbedding.exists_comp_symm_eq_of_comp_eq [Algebra k K] [IsGalois k K] (φ ψ : K →+* ℂ)
+lemma ComplexEmbedding.exists_comp_symm_eq_of_comp_eq [IsGalois k K] (φ ψ : K →+* ℂ)
     (h : φ.comp (algebraMap k K) = ψ.comp (algebraMap k K)) :
     ∃ σ : K ≃ₐ[k] K, φ.comp σ.symm = ψ := by
   letI := (φ.comp (algebraMap k K)).toAlgebra
@@ -674,7 +685,7 @@ lemma ComplexEmbedding.exists_comp_symm_eq_of_comp_eq [Algebra k K] [IsGalois k 
   ext1 x
   exact AlgHom.restrictNormal_commutes ψ' K x
 
-lemma exists_smul_eq_of_comap_eq [Algebra k K] [IsGalois k K] {w w' : InfinitePlace K}
+lemma exists_smul_eq_of_comap_eq [IsGalois k K] {w w' : InfinitePlace K}
     (h : w.comap (algebraMap k K) = w'.comap (algebraMap k K)) : ∃ σ : K ≃ₐ[k] K, σ • w = w' := by
   rw [← mk_embedding w, ← mk_embedding w', comap_mk, comap_mk, mk_eq_iff] at h
   cases h with
@@ -732,12 +743,15 @@ lemma isUnramified_iff_mult_le :
   rw [IsUnramified, le_antisymm_iff, and_iff_right]
   exact mult_comap_le _ _
 
+variable [Algebra k F]
+
 lemma IsUnramified.comap_algHom {w : InfinitePlace F} (h : IsUnramified k w) (f : K →ₐ[k] F) :
     IsUnramified k (w.comap (f : K →+* F)) := by
   rw [InfinitePlace.isUnramified_iff_mult_le, ← InfinitePlace.comap_comp, f.comp_algebraMap, h.eq]
   exact InfinitePlace.mult_comap_le _ _
 
 variable (K)
+variable [Algebra K F] [IsScalarTower k K F]
 
 lemma IsUnramified.of_restrictScalars {w : InfinitePlace F} (h : IsUnramified k w) :
     IsUnramified K w := by
@@ -912,6 +926,7 @@ lemma even_finrank_of_not_isUnramifiedIn
   exact even_finrank_of_not_isUnramified hw
 
 variable (k K)
+variable [NumberField K]
 
 open Finset in
 lemma card_isUnramified [NumberField k] [IsGalois k K] :
@@ -1006,11 +1021,11 @@ variable {K}
 
 lemma IsUnramifiedAtInfinitePlaces_of_odd_card_aut [IsGalois k K] [FiniteDimensional k K]
     (h : Odd (Fintype.card <| K ≃ₐ[k] K)) : IsUnramifiedAtInfinitePlaces k K :=
-  ⟨fun _ ↦ not_not.mp (Nat.odd_iff_not_even.mp h ∘ InfinitePlace.even_card_aut_of_not_isUnramified)⟩
+  ⟨fun _ ↦ not_not.mp (Nat.not_even_iff_odd.2 h ∘ InfinitePlace.even_card_aut_of_not_isUnramified)⟩
 
 lemma IsUnramifiedAtInfinitePlaces_of_odd_finrank [IsGalois k K]
     (h : Odd (FiniteDimensional.finrank k K)) : IsUnramifiedAtInfinitePlaces k K :=
-  ⟨fun _ ↦ not_not.mp (Nat.odd_iff_not_even.mp h ∘ InfinitePlace.even_finrank_of_not_isUnramified)⟩
+  ⟨fun _ ↦ not_not.mp (Nat.not_even_iff_odd.2 h ∘ InfinitePlace.even_finrank_of_not_isUnramified)⟩
 
 variable (k K)
 

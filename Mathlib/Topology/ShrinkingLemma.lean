@@ -206,13 +206,12 @@ theorem exists_subset_iUnion_closure_subset (hs : IsClosed s) (uo : ∀ i, IsOpe
   have : ∀ c : Set (PartialRefinement u s),
       IsChain (· ≤ ·) c → c.Nonempty → ∃ ub, ∀ v ∈ c, v ≤ ub :=
     fun c hc ne => ⟨.chainSup c hc ne uf us, fun v hv => PartialRefinement.le_chainSup _ _ _ _ hv⟩
-  rcases zorn_nonempty_partialOrder this with ⟨v, hv⟩
+  rcases zorn_le_nonempty this with ⟨v, hv⟩
   suffices ∀ i, i ∈ v.carrier from
     ⟨v, v.subset_iUnion, fun i => v.isOpen _, fun i => v.closure_subset (this i)⟩
-  contrapose! hv
-  rcases hv with ⟨i, hi⟩
+  refine fun i ↦ by_contra fun hi ↦ ?_
   rcases v.exists_gt hs i hi with ⟨v', hlt⟩
-  exact ⟨v', hlt.le, hlt.ne'⟩
+  exact hv.not_lt hlt
 
 /-- **Shrinking lemma**. A point-finite open cover of a closed subset of a normal space can be
 "shrunk" to a new closed cover so that each new closed set is contained in the corresponding

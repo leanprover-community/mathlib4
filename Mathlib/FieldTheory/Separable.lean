@@ -382,8 +382,6 @@ theorem unique_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : 0 
     (g₁ : F[X]) (hg₁ : g₁.Separable) (hgf₁ : expand F (p ^ n₁) g₁ = f) (n₂ : ℕ) (g₂ : F[X])
     (hg₂ : g₂.Separable) (hgf₂ : expand F (p ^ n₂) g₂ = f) : n₁ = n₂ ∧ g₁ = g₂ := by
   revert g₁ g₂
-  -- Porting note: the variable `K` affects the `wlog` tactic.
-  clear! K
   wlog hn : n₁ ≤ n₂
   · intro g₁ hg₁ Hg₁ g₂ hg₂ Hg₂
     simpa only [eq_comm] using this p hf hp n₂ n₁ (le_of_not_le hn) g₂ hg₂ Hg₂ g₁ hg₁ Hg₁
@@ -557,6 +555,7 @@ theorem Algebra.isSeparable_iff :
     fun h => ⟨fun x => (h x).2⟩⟩
 
 variable {E : Type*} [Ring E] [Algebra F E] (e : K ≃ₐ[F] E)
+include e
 
 /-- Transfer `Algebra.IsSeparable` across an `AlgEquiv`. -/
 theorem AlgEquiv.isSeparable [Algebra.IsSeparable F K] : Algebra.IsSeparable F E :=
@@ -580,10 +579,10 @@ instance Algebra.isSeparable_self (F : Type*) [Field F] : Algebra.IsSeparable F 
     exact separable_X_sub_C⟩
 
 -- See note [lower instance priority]
-/-- A finite field extension in characteristic 0 is separable. -/
-instance (priority := 100) Algebra.IsSeparable.of_finite (F K : Type*) [Field F] [Field K]
-    [Algebra F K] [FiniteDimensional F K] [CharZero F] : Algebra.IsSeparable F K :=
-  ⟨fun x => (minpoly.irreducible <| .of_finite F x).separable⟩
+/-- An integral extension in characteristic 0 is separable. -/
+instance (priority := 100) Algebra.IsSeparable.of_integral (F K : Type*) [Field F] [Ring K]
+    [IsDomain K] [Algebra F K] [Algebra.IsIntegral F K] [CharZero F] : Algebra.IsSeparable F K :=
+  ⟨fun x => (minpoly.irreducible <| Algebra.IsIntegral.isIntegral x).separable⟩
 
 section IsSeparableTower
 
