@@ -1277,6 +1277,9 @@ theorem ord_injective : Injective ord := by
   intro c c' h
   rw [← card_ord c, ← card_ord c', h]
 
+theorem ord_zero_iff {a : Cardinal} : a.ord = 0 ↔ a = 0 :=
+  ⟨fun h ↦ ord_injective (h ▸ ord_zero.symm), fun h ↦ h ▸ ord_zero⟩
+
 /-- The ordinal corresponding to a cardinal `c` is the least ordinal
   whose cardinal is `c`. This is the order-embedding version. For the regular function, see `ord`.
 -/
