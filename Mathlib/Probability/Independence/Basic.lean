@@ -64,6 +64,8 @@ when defining `μ` in the example above, the measurable space used is the last o
 Part A, Chapter 4.
 -/
 
+assert_not_exists MeasureTheory.Integrable
+
 open MeasureTheory MeasurableSpace Set
 
 open scoped MeasureTheory ENNReal
