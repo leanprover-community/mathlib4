@@ -226,6 +226,11 @@ def derivSeries : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F) :=
   (continuousMultilinearCurryFin1 𝕜 E F : (E[×1]→L[𝕜] F) →L[𝕜] E →L[𝕜] F)
     |>.compFormalMultilinearSeries (p.changeOriginSeries 1)
 
+theorem le_fderivSeries_radius : p.radius ≤ p.derivSeries.radius := by
+  apply (p.le_changeOriginSeries_radius 1).trans_eq ?_
+  apply radius_le_of_le
+
+
 end
 
 -- From this point on, assume that the space is complete, to make sure that series that converge
