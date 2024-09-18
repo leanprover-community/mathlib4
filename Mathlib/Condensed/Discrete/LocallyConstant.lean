@@ -338,7 +338,7 @@ noncomputable def unitIso : 𝟭 (Type max u w) ≅ functor.{u, w} P hs ⋙
 /--
 `CompHausLike.LocallyConstant.functor` is left adjoint to the forgetful functor.
 -/
--- Note: adding `@[simps]` makes the linter complain.
+@[simps]
 noncomputable def adjunction [HasExplicitFiniteCoproducts.{u} P] :
     functor.{u, w} P hs ⊣ (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u+1}⟩ where
   unit := unit P hs
