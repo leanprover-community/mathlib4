@@ -776,26 +776,26 @@ lemma prod_mul_prod_comm (f g h i : α → β) :
   simp_rw [prod_mul_distrib, mul_mul_mul_comm]
 
 @[to_additive]
-theorem prod_product {s : Finset γ} {t : Finset α} {f : γ × α → β} :
+theorem prod_product (s : Finset γ) (t : Finset α) (f : γ × α → β) :
     ∏ x ∈ s ×ˢ t, f x = ∏ x ∈ s, ∏ y ∈ t, f (x, y) :=
   prod_finset_product (s ×ˢ t) s (fun _a => t) fun _p => mem_product
 
 /-- An uncurried version of `Finset.prod_product`. -/
 @[to_additive "An uncurried version of `Finset.sum_product`"]
-theorem prod_product' {s : Finset γ} {t : Finset α} {f : γ → α → β} :
+theorem prod_product' (s : Finset γ) (t : Finset α) (f : γ → α → β) :
     ∏ x ∈ s ×ˢ t, f x.1 x.2 = ∏ x ∈ s, ∏ y ∈ t, f x y :=
-  prod_product
+  prod_product ..
 
 @[to_additive]
-theorem prod_product_right {s : Finset γ} {t : Finset α} {f : γ × α → β} :
+theorem prod_product_right (s : Finset γ) (t : Finset α) (f : γ × α → β) :
     ∏ x ∈ s ×ˢ t, f x = ∏ y ∈ t, ∏ x ∈ s, f (x, y) :=
   prod_finset_product_right (s ×ˢ t) t (fun _a => s) fun _p => mem_product.trans and_comm
 
 /-- An uncurried version of `Finset.prod_product_right`. -/
 @[to_additive "An uncurried version of `Finset.sum_product_right`"]
-theorem prod_product_right' {s : Finset γ} {t : Finset α} {f : γ → α → β} :
+theorem prod_product_right' (s : Finset γ) (t : Finset α) (f : γ → α → β) :
     ∏ x ∈ s ×ˢ t, f x.1 x.2 = ∏ y ∈ t, ∏ x ∈ s, f x y :=
-  prod_product_right
+  prod_product_right ..
 
 /-- Generalization of `Finset.prod_comm` to the case when the inner `Finset`s depend on the outer
 variable. -/

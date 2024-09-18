@@ -374,10 +374,16 @@
   ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.CategoryTheory.Sites.IsSheafFor":
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono"],
+  "Mathlib.CategoryTheory.Monoidal.Rigid.Basic":
+  ["Mathlib.Tactic.CategoryTheory.Monoidal.Basic"],
+  "Mathlib.CategoryTheory.Monoidal.Braided.Basic":
+  ["Mathlib.Tactic.CategoryTheory.Monoidal.Basic"],
   "Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits":
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback",
    "Mathlib.CategoryTheory.Limits.Shapes.Pullbacks"],
   "Mathlib.CategoryTheory.Limits.IsLimit": ["Batteries.Tactic.Congr"],
+  "Mathlib.CategoryTheory.Bicategory.Adjunction":
+  ["Mathlib.Tactic.CategoryTheory.Bicategory.Basic"],
   "Mathlib.CategoryTheory.Bicategory.Functor.Oplax":
   ["Mathlib.Tactic.CategoryTheory.ToApp"],
   "Mathlib.CategoryTheory.Bicategory.Functor.Lax":
