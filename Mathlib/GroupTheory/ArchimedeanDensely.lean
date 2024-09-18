@@ -245,37 +245,9 @@ lemma denselyOrdered_units_iff {G₀ : Type*} [LinearOrderedCommGroupWithZero G�
   · intro H
     refine ⟨fun x y h ↦ ?_⟩
     rcases (zero_le' (a := x)).eq_or_lt with rfl|hx
-    · let y' := Units.mk0 y h.ne'
-      have hy' : y = y' := rfl
-      rw [hy']
+    · lift y to G₀ˣ using h.ne'.isUnit
       obtain ⟨z, hz⟩ := exists_ne (1 : G₀ˣ)
-      refine ⟨(y' * |z|ₘ⁻¹ : G₀ˣ), ?_, ?_⟩
-
-/-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
-either isomorphic (and order-isomorphic) to `ℤₘ₀`, or is densely ordered. -/
-lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
-    [LinearOrderedCommGroupWithZero G] [Nontrivial Gˣ] [MulArchimedean G] :
-    Nonempty (G ≃*o ℤₘ₀) ∨ DenselyOrdered G := by
-  classical
-  refine (LinearOrderedCommGroup.discrete_or_denselyOrdered Gˣ).imp ?_ ?_
-  · intro ⟨f⟩
-    refine ⟨OrderMonoidIso.trans
-      ⟨WithZero.withZeroUnitsEquiv.symm, ?_⟩ ⟨f.withZero, ?_⟩⟩
-    · intro
-      simp only [WithZero.withZeroUnitsEquiv, MulEquiv.symm_mk,
-        MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe, MulEquiv.coe_mk,
-        Equiv.coe_fn_symm_mk ]
-      split_ifs <;>
-      simp_all [← Units.val_le_val]
-    · intro a b
-      induction a <;> induction b <;>
-      simp [MulEquiv.withZero]
-  · intro H
-    refine ⟨fun x y h ↦ ?_⟩
-    rcases (zero_le' (a := x)).eq_or_lt with rfl|hx
-    · lift y to Gˣ using h.ne'.isUnit
-      obtain ⟨z, hz⟩ := exists_ne (1 : Gˣ)
-      refine ⟨(y * |z|ₘ⁻¹ : Gˣ), ?_, ?_⟩
+      refine ⟨(y * |z|ₘ⁻¹ : G₀ˣ), ?_, ?_⟩
       · simp [zero_lt_iff]
       · rw [Units.val_lt_val]
         simp [hz]
