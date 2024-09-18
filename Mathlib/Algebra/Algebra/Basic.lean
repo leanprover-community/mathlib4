@@ -524,22 +524,18 @@ lemma LinearEquiv.extendScalarsOfSurjective_symm (f : M ≃ₗ[R] N) :
 end surjective
 
 namespace algebraMap
+
 section CommSemiringCommSemiring
 
-variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
-   {ι : Type*} {s : Finset ι} (a : ι → R)
+variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] {ι : Type*} {s : Finset ι}
 
--- direct to_additive fails because of some mix-up with polynomials
 @[norm_cast]
-theorem coe_prod : (↑(∏ i ∈ s, a i : R) : A) = ∏ i ∈ s, (↑(a i) : A) :=
+theorem coe_prod (a : ι → R) : (↑(∏ i ∈ s, a i : R) : A) = ∏ i ∈ s, (↑(a i) : A) :=
   map_prod (algebraMap R A) a s
 
--- to_additive fails for some reason
 @[norm_cast]
-theorem coe_sum : ↑(∑ i ∈ s, a i) = ∑ i ∈ s, (↑(a i) : A) :=
+theorem coe_sum (a : ι → R) : ↑(∑ i ∈ s, a i) = ∑ i ∈ s, (↑(a i) : A) :=
   map_sum (algebraMap R A) a s
-
--- Porting note: removed attribute [to_additive] coe_prod; why should this be a `to_additive`?
 
 end CommSemiringCommSemiring
 
