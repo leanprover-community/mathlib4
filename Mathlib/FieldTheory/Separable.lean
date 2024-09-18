@@ -167,8 +167,7 @@ theorem isUnit_of_self_mul_dvd_separable {p q : R[X]} (hp : p.Separable) (hq : q
     ring
   exact IsCoprime.of_mul_right_left (IsCoprime.of_mul_left_left this)
 
-theorem emultiplicity_le_one_of_separable [DecidableRel fun (x : R[X]) x_1 ↦ x ∣ x_1]
-    {p q : R[X]} (hq : ¬IsUnit q) (hsep : Separable p) :
+theorem emultiplicity_le_one_of_separable {p q : R[X]} (hq : ¬IsUnit q) (hsep : Separable p) :
     emultiplicity q p ≤ 1 := by
   contrapose! hq
   apply isUnit_of_self_mul_dvd_separable hsep

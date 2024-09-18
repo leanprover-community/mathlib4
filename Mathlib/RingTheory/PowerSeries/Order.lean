@@ -250,7 +250,7 @@ theorem X_pow_order_dvd (h : (order φ).Dom) : X ^ (order φ).get h ∣ φ := by
     refine coeff_of_lt_order _ ?_
     simpa [PartENat.coe_lt_iff] using fun _ => hn
 
-theorem order_eq_emultiplicity_X {R : Type*} [Semiring R] [@DecidableRel R⟦X⟧ (· ∣ ·)] (φ : R⟦X⟧) :
+theorem order_eq_emultiplicity_X {R : Type*} [Semiring R] (φ : R⟦X⟧) :
     order φ = emultiplicity X φ := by
   classical
   rcases eq_or_ne φ 0 with (rfl | hφ)
