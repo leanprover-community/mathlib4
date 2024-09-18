@@ -44,6 +44,8 @@ section restrict
 takes an argument `↥s` instead of `Subtype s`. -/
 def restrict (s : Set α) (f : ∀ a : α, π a) : ∀ a : s, π a := fun x => f x
 
+theorem restrict_def (s : Set α) : s.restrict (π := π) = fun f x ↦ f x := rfl
+
 theorem restrict_eq (f : α → β) (s : Set α) : s.restrict f = f ∘ Subtype.val :=
   rfl
 
@@ -114,6 +116,9 @@ theorem restrict_extend_compl_range (f : α → β) (g : α → γ) (g' : β →
 @[simp]
 def restrict₂ {s t : Set α} (hst : s ⊆ t) (f : ∀ a : t, π a) : ∀ a : s, π a :=
   fun x => f ⟨x.1, hst x.2⟩
+
+theorem restrict₂_def {s t : Set α} (hst : s ⊆ t) :
+    restrict₂ (π := π) hst = fun f x ↦ f ⟨x.1, hst x.2⟩ := rfl
 
 theorem restrict₂_comp_restrict {s t : Set α} (hst : s ⊆ t) :
     (restrict₂ (π := π) hst) ∘ t.restrict = s.restrict := rfl
