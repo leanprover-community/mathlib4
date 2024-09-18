@@ -69,6 +69,10 @@ open FirstOrder Structure Fin
 
 namespace BoundedFormula
 
+/-- An auxilary operation which is semantically equivalent to
+  `FirstOrder.Language.BoundedFormula.not`. It takes a bounded formula `φ`, assuming any negation
+  symbol inside `φ` occurs in front of an atomic formula or `⊥`, it applies negation to `φ`, pushes
+  the negation inwards through `⊓`, `⊔`, `∀'`, `∃'`, and eliminates double negations. -/
 def simpleNot : {n : ℕ} → L.BoundedFormula α n → L.BoundedFormula α n
   | _, falsum => ⊤
   | _, equal t₁ t₂ => ∼(t₁.bdEqual t₂)
