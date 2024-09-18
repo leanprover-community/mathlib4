@@ -61,7 +61,7 @@ theorem mapClusterPt_atTop_pow_tfae (x y : G) :
       x ∈ closure (range (y ^ · : ℕ → G)),
       x ∈ closure (range (y ^ · : ℤ → G)),
     ] := by
-  tfae_have 2 ↔ 1; exact mapClusterPt_atTop_zpow_iff_pow
+  tfae_have 2 ↔ 1; on_goal 1 => exact mapClusterPt_atTop_zpow_iff_pow
   tfae_have 3 → 4
   · refine fun h ↦ closure_mono (range_subset_iff.2 fun n ↦ ?_) h
     exact ⟨n, zpow_natCast _ _⟩
