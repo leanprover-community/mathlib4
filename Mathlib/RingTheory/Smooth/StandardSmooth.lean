@@ -89,7 +89,7 @@ in June 2024.
 
 universe t t' w w' u v
 
-open TensorProduct
+open TensorProduct Classical
 
 variable (n : ℕ)
 
@@ -167,6 +167,33 @@ lemma jacobiMatrix_apply (i j : P.rels) :
 
 end Matrix
 
+section Constructions
+
+/-- If `algebraMap R S` is bijective, the empty generators are a pre-submersive
+presentation with no relations. -/
+noncomputable def ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)) :
+    PreSubmersivePresentation.{t, w} R S where
+  toPresentation := Presentation.ofBijectiveAlgebraMap.{t, w} h
+  map := PEmpty.elim
+  map_inj (a b : PEmpty) h := by contradiction
+  relations_finite := inferInstanceAs (Finite PEmpty.{t + 1})
+
+instance (h : Function.Bijective (algebraMap R S)) : Fintype (ofBijectiveAlgebraMap h).vars :=
+  inferInstanceAs (Fintype PEmpty)
+
+instance (h : Function.Bijective (algebraMap R S)) : Fintype (ofBijectiveAlgebraMap h).rels :=
+  inferInstanceAs (Fintype PEmpty)
+
+lemma ofBijectiveAlgebraMap_jacobian (h : Function.Bijective (algebraMap R S)) :
+    (ofBijectiveAlgebraMap h).jacobian = 1 := by
+  have : (algebraMap (ofBijectiveAlgebraMap h).Ring S).mapMatrix
+      (ofBijectiveAlgebraMap h).jacobiMatrix = 1 := by
+    ext (i j : PEmpty)
+    contradiction
+  rw [jacobian_eq_jacobiMatrix_det, RingHom.map_det, this, Matrix.det_one]
+
+end Constructions
+
 end PreSubmersivePresentation
 
 /--
@@ -179,6 +206,31 @@ structure SubmersivePresentation extends PreSubmersivePresentation.{t, w} R S wh
   isFinite : toPreSubmersivePresentation.IsFinite := by infer_instance
 
 attribute [instance] SubmersivePresentation.isFinite
+
+namespace SubmersivePresentation
+
+open PreSubmersivePresentation
+
+section Constructions
+
+variable {R S} in
+/-- If `algebraMap R S` is bijective, the empty generators are a submersive
+presentation with no relations. -/
+noncomputable def ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)) :
+    SubmersivePresentation.{t, w} R S where
+  __ := PreSubmersivePresentation.ofBijectiveAlgebraMap.{t, w} h
+  jacobian_isUnit := by
+    rw [ofBijectiveAlgebraMap_jacobian]
+    exact isUnit_one
+  isFinite := Presentation.ofBijectiveAlgebraMap_isFinite h
+
+/-- The canonical submersive `R`-presentation of `R` with no generators and no relations. -/
+noncomputable def id : SubmersivePresentation.{t, w} R R :=
+  ofBijectiveAlgebraMap Function.bijective_id
+
+end Constructions
+
+end SubmersivePresentation
 
 /--
 An `R`-algebra `S` is called standard smooth, if there
@@ -210,6 +262,16 @@ lemma IsStandardSmoothOfRelativeDimension.isStandardSmooth
     [IsStandardSmoothOfRelativeDimension.{t, w} n R S] :
     IsStandardSmooth.{t, w} R S :=
   ⟨‹IsStandardSmoothOfRelativeDimension n R S›.out.nonempty⟩
+
+lemma IsStandardSmoothOfRelativeDimension.of_algebraMap_bijective
+    (h : Function.Bijective (algebraMap R S)) :
+    IsStandardSmoothOfRelativeDimension.{t, w} 0 R S :=
+  ⟨SubmersivePresentation.ofBijectiveAlgebraMap h, Presentation.ofBijectiveAlgebraMap_dimension h⟩
+
+variable (R) in
+instance IsStandardSmoothOfRelativeDimension.id :
+    IsStandardSmoothOfRelativeDimension.{t, w} 0 R R :=
+  IsStandardSmoothOfRelativeDimension.of_algebraMap_bijective Function.bijective_id
 
 end Algebra
 

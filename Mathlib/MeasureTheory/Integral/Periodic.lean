@@ -35,7 +35,7 @@ protected theorem AddCircle.measurable_mk' {a : ℝ} :
 theorem isAddFundamentalDomain_Ioc {T : ℝ} (hT : 0 < T) (t : ℝ)
     (μ : Measure ℝ := by volume_tac) :
     IsAddFundamentalDomain (AddSubgroup.zmultiples T) (Ioc t (t + T)) μ := by
-  refine IsAddFundamentalDomain.mk' measurableSet_Ioc.nullMeasurableSet fun x => ?_
+  refine IsAddFundamentalDomain.mk' nullMeasurableSet_Ioc fun x => ?_
   have : Bijective (codRestrict (fun n : ℤ => n • T) (AddSubgroup.zmultiples T) _) :=
     (Equiv.ofInjective (fun n : ℤ => n • T) (zsmul_strictMono_left hT).injective).bijective
   refine this.existsUnique_iff.2 ?_
@@ -43,7 +43,7 @@ theorem isAddFundamentalDomain_Ioc {T : ℝ} (hT : 0 < T) (t : ℝ)
 
 theorem isAddFundamentalDomain_Ioc' {T : ℝ} (hT : 0 < T) (t : ℝ) (μ : Measure ℝ := by volume_tac) :
     IsAddFundamentalDomain (AddSubgroup.op <| .zmultiples T) (Ioc t (t + T)) μ := by
-  refine IsAddFundamentalDomain.mk' measurableSet_Ioc.nullMeasurableSet fun x => ?_
+  refine IsAddFundamentalDomain.mk' nullMeasurableSet_Ioc fun x => ?_
   have : Bijective (codRestrict (fun n : ℤ => n • T) (AddSubgroup.zmultiples T) _) :=
     (Equiv.ofInjective (fun n : ℤ => n • T) (zsmul_strictMono_left hT).injective).bijective
   refine (AddSubgroup.equivOp _).bijective.comp this |>.existsUnique_iff.2 ?_
