@@ -120,7 +120,7 @@ lemma finiteindex_closedSubgroup_isOpen (H : Subgroup G) [H.FiniteIndex]
     exact QuotientGroup.eq.mp <| QuotientGroup.out_eq' (QuotientGroup.mk (s := H) x)
   · rcases h with ⟨S,⟨y,hS⟩,mem⟩
     simp only [← hS] at mem
-    rcases mem with ⟨h,hh,eq⟩
+    rcases mem with ⟨h, hh, eq⟩
     simp only [Set.mem_compl_iff, SetLike.mem_coe]
     by_contra mH
     simp only [← eq, ne_eq, smul_eq_mul] at mH
