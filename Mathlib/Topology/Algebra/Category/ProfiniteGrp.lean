@@ -5,7 +5,7 @@ Authors: Jujian Zhang, Nailin Guan, Youle Fang, Yuyang Zhao
 -/
 import Mathlib.Algebra.Category.Grp.FiniteGrp
 import Mathlib.Topology.Algebra.ContinuousMonoidHom
-import Mathlib.Topology.Algebra.Subgroup
+import Mathlib.Topology.Algebra.OpenSubgroup
 import Mathlib.Topology.Category.Profinite.Basic
 
 /-!
