@@ -35,7 +35,7 @@ symmetric operator, simultaneous eigenspaces, joint eigenspaces
 
 -/
 
-variable {𝕜 E : Type*} [RCLike 𝕜]
+variable {𝕜 E n m: Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 open Module.End

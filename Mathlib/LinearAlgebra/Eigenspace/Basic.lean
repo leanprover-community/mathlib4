@@ -170,6 +170,11 @@ theorem genEigenspace_zero (f : End R M) (k : ℕ) :
     f.genEigenspace 0 k = LinearMap.ker (f ^ k) := by
   simp [Module.End.genEigenspace]
 
+@[simp]
+theorem Module.End.genEigenspace_one {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+    (f : Module.End R M) (μ : R) : (f.genEigenspace μ) 1 = f.eigenspace μ :=
+  rfl
+
 /-- A nonzero element of a generalized eigenspace is a generalized eigenvector.
     (Def 8.9 of [axler2015])-/
 def HasGenEigenvector (f : End R M) (μ : R) (k : ℕ) (x : M) : Prop :=
