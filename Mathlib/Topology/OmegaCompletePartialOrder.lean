@@ -95,8 +95,16 @@ instance Scott.topologicalSpace (α : Type u) [OmegaCompletePartialOrder α] :
   isOpen_inter := Scott.IsOpen.inter α
   isOpen_sUnion := Scott.isOpen_sUnion α
 
-lemma isOpen_iff_scottContinuous_mem {α} [OmegaCompletePartialOrder α] {s : Set (Scott α)}
-    : IsOpen s ↔ ωScottContinuous fun x ↦ x ∈ s := by rfl
+lemma isOpen_iff_scottContinuous_mem {α} [OmegaCompletePartialOrder α] {s : Set (Scott α)} :
+    IsOpen s ↔ ωScottContinuous fun x ↦ x ∈ s := by rfl
+
+lemma scott_eq_Scott {α} [OmegaCompletePartialOrder α] :
+    Topology.scott α (Set.range fun c : Chain α => Set.range c) = Scott.topologicalSpace α := by
+  ext U
+  letI := Topology.scott α (Set.range fun c : Chain α => Set.range c)
+  rw [isOpen_iff_scottContinuous_mem, @isOpen_iff_continuous_mem,
+    @Topology.IsScott.ωscottContinuous_iff_continuous _ _
+      (Topology.scott α (Set.range fun c : Chain α => Set.range c)) ({ topology_eq_scott := rfl })]
 
 section notBelow
 
@@ -150,12 +158,3 @@ theorem continuous_of_scottContinuous {α β} [OmegaCompletePartialOrder α]
   intro s hs
   change ωScottContinuous (s ∘ f)
   apply ωScottContinuous.comp hs hf
-
-lemma scott_eq_Scott {α} [OmegaCompletePartialOrder α] :
-  Topology.scott α (Set.range fun c : Chain α => Set.range c) =
-    Scott.topologicalSpace α := by
-  ext U
-  letI := Topology.scott α (Set.range fun c : Chain α => Set.range c)
-  rw [isOpen_iff_scottContinuous_mem, @isOpen_iff_continuous_mem,
-    @Topology.IsScott.ωscottContinuous_iff_continuous _ _
-      (Topology.scott α (Set.range fun c : Chain α => Set.range c)) ({ topology_eq_scott := rfl })]
