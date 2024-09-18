@@ -69,58 +69,48 @@ open FirstOrder Structure Fin
 
 namespace BoundedFormula
 
-/-- An auxilary definition to `FirstOrder.Language.BoundedFormula.simpleNot` and
-  `FirstOrder.Language.BoundedFormula.simpleNot_semanticallyEquivalent_not`.-/
-def simpleNotAux : {n : ℕ} → (φ : L.BoundedFormula α n) → {ψ : L.BoundedFormula α n // ψ ⇔[∅] ∼φ}
-  | _, ⊥ => .mk ⊤ (by rfl)
-  | _, equal t₁ t₂ => .mk ∼(equal t₁ t₂) (by rfl)
-  | _, rel r tv => .mk ∼(rel r tv) (by rfl)
+def simpleNot : {n : ℕ} → L.BoundedFormula α n → L.BoundedFormula α n
+| _, ⊥ => ⊤
+| _, equal t₁ t₂ => ∼(t₁.bdEqual t₂)
+| _, rel R ts => ∼(rel R ts)
+| _, ⊤ => ⊥
+| _, ∼(equal t₁ t₂) => t₁.bdEqual t₂
+| _, ∼(rel R ts) => rel R ts
+| _, ∀' φ => ∃' φ.simpleNot
+| _, ∃' φ => ∀' φ.simpleNot
+| _, BoundedFormula.inf φ ψ => φ.simpleNot ⊔ ψ.simpleNot
+| _, BoundedFormula.sup φ ψ => φ.simpleNot ⊓ ψ.simpleNot
+| _, φ => ∼φ
 
-  | _, ⊤ => .mk ⊥ (by apply semanticallyEquivalent_not_not)
-  | _, ∼(equal t₁ t₂) => .mk (equal t₁ t₂) (by apply semanticallyEquivalent_not_not)
-  | _, ∼(rel r tv) => .mk (rel r tv) (by apply semanticallyEquivalent_not_not)
+@[simp]
+theorem realize_simpleNot {n : ℕ} (φ : L.BoundedFormula α n) {v : α → M} {xs : Fin n → M} :
+    φ.simpleNot.Realize v xs ↔ φ.not.Realize v xs := by
+  unfold simpleNot
+  split
+  · rfl
+  · rfl
+  · rfl
+  · simp
+  · simp only [realize_not, realize_imp, realize_falsum, imp_false, not_not]
+    rfl
+  · simp only [realize_not, realize_imp, realize_falsum, imp_false, not_not]
+  · rename_i φ
+    simp only [realize_ex, realize_simpleNot φ, realize_not, realize_all, not_forall]
+  · rename_i φ
+    simp only [realize_all, realize_simpleNot φ, realize_not, realize_imp, realize_falsum,
+      imp_false, not_not]
+  · rename_i φ ψ
+    simp only [realize_sup, realize_simpleNot φ, realize_not, realize_simpleNot ψ, realize_imp,
+      realize_falsum, imp_false, imp_iff_not_or, not_not]
+  · rename_i φ ψ
+    simp only [realize_inf, realize_simpleNot φ, realize_not, realize_simpleNot ψ, realize_imp,
+      realize_falsum, imp_false, imp_iff_not_or, not_or, not_not]
+  · rfl
 
-  | _, BoundedFormula.inf φ ψ =>
-    .mk (φ.simpleNotAux ⊔ ψ.simpleNotAux) (by
-      symm
-      trans
-      · exact not_inf_semanticallyEquivalent_sup_not φ ψ
-      · exact Theory.SemanticallyEquivalent.sup φ.simpleNotAux.2.symm ψ.simpleNotAux.2.symm
-    )
-  | _, BoundedFormula.sup φ ψ =>
-    .mk (φ.simpleNotAux ⊓ ψ.simpleNotAux) (by
-      symm
-      trans
-      · exact not_sup_semanticallyEquivalent_inf_not φ ψ
-      · exact Theory.SemanticallyEquivalent.inf φ.simpleNotAux.2.symm ψ.simpleNotAux.2.symm
-    )
-
-  | _, ∀' φ =>
-    .mk (∃' φ.simpleNotAux) (by
-      symm
-      trans
-      · exact not_all_semanticallyEquivalent_ex_not φ
-      · exact Theory.SemanticallyEquivalent.ex φ.simpleNotAux.2.symm
-    )
-  | _, ∃' φ =>
-    .mk (∀' φ.simpleNotAux) (by
-      symm
-      trans
-      · exact not_ex_semanticallyEquivalent_all_not φ
-      · exact Theory.SemanticallyEquivalent.all φ.simpleNotAux.2.symm
-    )
-
-  | _, φ => .mk ∼φ (by rfl)
-
-/-- An auxilary operation which is semantically equivalent to
-  `FirstOrder.Language.BoundedFormula.not`. It takes a bounded formula `φ`, assuming that any
-  negation symbol inside `φ` occurs in front of an atomic formula or `⊥`, it applies negation to
-  `φ`, pushes the negation inwards through `⊓`, `⊔`, `∀'`, `∃'`, and eliminates double negations.-/
-def simpleNot (φ : L.BoundedFormula α n) : L.BoundedFormula α n :=
-  φ.simpleNotAux.1
-
-theorem simpleNot_semanticallyEquivalent_not (φ : L.BoundedFormula α n) : simpleNot φ ⇔[∅] ∼φ :=
-  φ.simpleNotAux.2
+def simpleNot_semanticallyEquivalent_not {T : L.Theory} {n : ℕ} (φ : L.BoundedFormula α n) :
+    (φ.simpleNot ⇔[T] φ.not) := by
+  simp only [Theory.SemanticallyEquivalent, Theory.ModelsBoundedFormula, realize_iff,
+    realize_simpleNot, realize_not, implies_true]
 
 /-- An atomic formula is either equality or a relation symbol applied to terms.
 Note that `⊥` and `⊤` are not considered atomic in this convention. -/
