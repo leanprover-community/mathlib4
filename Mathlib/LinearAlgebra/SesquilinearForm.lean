@@ -471,7 +471,7 @@ def IsOrthogonal : Prop :=
 variable {B f}
 
 @[simp]
-lemma LinearEquiv.isAdjointPair_symm_iff {f : M ≃ₗ[R] M} :
+lemma _root_.LinearEquiv.isAdjointPair_symm_iff {f : M ≃ₗ[R] M} :
     LinearMap.IsAdjointPair B B f f.symm ↔ B.IsOrthogonal f :=
   ⟨fun hf x y ↦ by simpa using hf x (f y), fun hf x y ↦ by simpa using hf x (f.symm y)⟩
 
