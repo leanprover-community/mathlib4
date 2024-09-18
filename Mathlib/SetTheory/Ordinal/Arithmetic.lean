@@ -1159,7 +1159,7 @@ theorem le_sup {ι : Type u} (f : ι → Ordinal.{max u v}) : ∀ i, f i ≤ sup
   Ordinal.le_iSup f i
 
 /-- `ciSup_le_iff'` whenever the outputs live in a higher universe than the inputs. -/
-theorem iSup_le_iff {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
+protected theorem iSup_le_iff {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
     iSup f ≤ a ↔ ∀ i, f i ≤ a :=
   ciSup_le_iff' (bddAbove_iff_small.mpr (small_range f))
 
