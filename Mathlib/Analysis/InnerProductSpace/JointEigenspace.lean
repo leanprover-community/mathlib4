@@ -133,8 +133,6 @@ theorem iSup_eigenspace_restrict [FiniteDimensional 𝕜 E] {F : Submodule 𝕜 
   have H : IsSymmetric (S.restrict hInv) := fun x y ↦ hS (F.subtype x) y
   apply orthogonal_eq_bot_iff.mp (H.orthogonalComplement_iSup_eigenspaces_eq_bot)
 
-open Classical
-
 /-- The orthocomplement of the indexed supremum of joint eigenspaces of a finite commuting tuple of
 symmetric operators is trivial. -/
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Fintype n] [FiniteDimensional 𝕜 E]
@@ -146,10 +144,11 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Fintype n] [FiniteDim
     (fun m hm hmm H T hT hC ↦ ?_)
   · obtain (hm | hm) := isEmpty_or_nonempty m
     · simp
-    · have := uniqueOfSubsingleton (choice hm)
+    · have := uniqueOfSubsingleton (Classical.choice hm)
       simpa only [ciInf_unique, ← (Equiv.funUnique m 𝕜).symm.iSup_comp]
         using hT default |>.orthogonalComplement_iSup_eigenspaces_eq_bot
   · have i := Classical.arbitrary m
+    classical
     specialize H {x // x ≠ i} (Fintype.card_subtype_lt (x := i) (by simp))
       (Subtype.restrict (· ≠ i) T) (hT ·) (hC · ·)
     simp only [Submodule.orthogonal_eq_bot_iff] at *
