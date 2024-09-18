@@ -139,7 +139,7 @@ instance fintypeSetPathLength (u v : V) (n : ℕ) :
 
 end LocallyFinite
 
-section Finite
+section Fintype
 
 variable [DecidableEq V] [Fintype V] [DecidableRel G.Adj]
 
@@ -179,18 +179,19 @@ lemma disjiUnion_supp_toFinset_eq_supp_toFinset {G' : SimpleGraph V} (h : G ≤ 
       c'.supp.toFinset :=
   Finset.coe_injective <| by simpa using ConnectedComponent.biUnion_supp_eq_supp h _
 
-lemma ConnectedComponent.odd_card_supp_iff_odd_subcomponents {G'}
+end Fintype
+
+lemma ConnectedComponent.odd_card_supp_iff_odd_subcomponents [Finite V] {G'}
     (h : G ≤ G') (c' : ConnectedComponent G') :
     Odd (Nat.card c'.supp) ↔ Odd (Nat.card
     ({c : ConnectedComponent G | c.supp ⊆ c'.supp ∧ Odd (Nat.card c.supp) })) := by
   classical
+  cases nonempty_fintype V
   rw [Nat.card_eq_card_toFinset, ← disjiUnion_supp_toFinset_eq_supp_toFinset h]
   simp only [Finset.card_disjiUnion, Set.toFinset_card]
   rw [Finset.odd_sum_iff_odd_card_odd, Nat.card_eq_fintype_card, Fintype.card_ofFinset]
   simp only [Nat.card_eq_fintype_card, Finset.filter_filter]
   rfl
-
-end Finite
 
 lemma odd_card_iff_odd_components [Finite V] : Odd (Nat.card V) ↔
     Odd (Nat.card ({(c : ConnectedComponent G) | Odd (Nat.card c.supp)})) := by
