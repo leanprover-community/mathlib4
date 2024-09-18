@@ -362,7 +362,7 @@ lemma bnot_comp_isSome : (! ·) ∘ @Option.isSome α = Option.isNone := by
   funext
   simp
 
-set_option linter.multiGoal false in
+set_option linter.style.multiGoal false in
 @[simp]
 lemma bnot_isNone (a : Option α) : (! a.isNone) = a.isSome := by
   cases a <;> simp

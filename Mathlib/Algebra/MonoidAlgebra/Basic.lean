@@ -204,7 +204,7 @@ section Semigroup
 
 variable [Semiring k] [Semigroup G] [Semiring R]
 
-set_option linter.multiGoal false in
+set_option linter.style.multiGoal false in
 instance nonUnitalSemiring : NonUnitalSemiring (MonoidAlgebra k G) :=
   { MonoidAlgebra.nonUnitalNonAssocSemiring with
     mul_assoc := fun f g h => by
@@ -1271,7 +1271,7 @@ section Semigroup
 
 variable [Semiring k] [AddSemigroup G]
 
-set_option linter.multiGoal false in
+set_option linter.style.multiGoal false in
 instance nonUnitalSemiring : NonUnitalSemiring k[G] :=
   { AddMonoidAlgebra.nonUnitalNonAssocSemiring with
     mul_assoc := fun f g h => by

@@ -37,12 +37,12 @@ open Lean Elab
 namespace Mathlib.Linter
 
 /-- The "multiGoal" linter emits a warning when there are multiple active goals. -/
-register_option linter.multiGoal : Bool := {
+register_option linter.style.multiGoal : Bool := {
   defValue := true
   descr := "enable the multiGoal linter"
 }
 
-namespace multiGoal
+namespace Style.multiGoal
 
 /-- These are the `SyntaxNodeKind`s of tactics that we allow to have "inactive" goals.
 Reasons for admitting a kind in `exclusions` include
@@ -124,22 +124,16 @@ def getManyGoals : InfoTree → Array (Syntax × Nat)
   | .context _ t => getManyGoals t
   | _ => default
 
-end multiGoal
-
-end Mathlib.Linter
-
-namespace Mathlib.Linter.multiGoal
-
 /-- The linter only considers files whose name begins with a component in `libraries`. -/
 abbrev libraries : HashSet Name := HashSet.empty
   |>.insert `Mathlib
   |>.insert `Archive
   |>.insert `Counterexamples
 
-/-- Gets the value of the `linter.multiGoal` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.multiGoal o
+/-- Gets the value of the `linter.style.multiGoal` option. -/
+def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.style.multiGoal o
 
-@[inherit_doc Mathlib.Linter.linter.multiGoal]
+@[inherit_doc Mathlib.Linter.linter.style.multiGoal]
 def multiGoalLinter : Linter where
   run := withSetOptionIn fun _stx => do
     let mod ← getMainModule
@@ -153,6 +147,10 @@ def multiGoalLinter : Linter where
     for t in trees.toArray do
       for (s, n) in getManyGoals t do
         let gl := if n == 1 then "goal" else "goals"
-        Linter.logLint linter.multiGoal s (m!"'{s}' leaves {n} {gl} '{s.getKind}'")
+        Linter.logLint linter.style.multiGoal s (m!"'{s}' leaves {n} {gl} '{s.getKind}'")
 
 initialize addLinter multiGoalLinter
+
+end Style.multiGoal
+
+end Mathlib.Linter
