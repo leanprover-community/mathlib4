@@ -44,11 +44,6 @@ namespace LinearMap
 
 namespace IsSymmetric
 
-@[simp]
-theorem Module.End.genEigenspace_one {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
-    (f : Module.End R M) (μ : R) : (f.genEigenspace μ) 1 = f.eigenspace μ :=
-  rfl
-
 section Pair
 
 variable {α : 𝕜} {A B : E →ₗ[𝕜] E}
