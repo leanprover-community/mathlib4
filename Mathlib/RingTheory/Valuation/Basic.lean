@@ -414,9 +414,8 @@ theorem isEquiv_of_map_strictMono [LinearOrderedCommMonoidWithZero Γ₀]
 
 theorem isEquiv_iff_val_lt_val [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
-    v.IsEquiv v' ↔ ∀ {x y : K}, v x < v y ↔ v' x < v' y :=
-  ⟨fun h x y => by simpa only [not_le] using (h y x).not,
-    fun h _ _ => by simpa only [not_lt] using h.not⟩
+    v.IsEquiv v' ↔ ∀ {x y : K}, v x < v y ↔ v' x < v' y := by
+  simp only [IsEquiv, le_iff_le_iff_lt_iff_lt]
 
 theorem isEquiv_of_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀)
