@@ -16,9 +16,11 @@ several basic results on it.
 
 ## Main definitions
 
-* `multiplicity a b`: for two elements `a` and `b` of a commutative monoid returns the largest
+* `emultiplicity a b`: for two elements `a` and `b` of a commutative monoid returns the largest
   number `n` such that `a ^ n ∣ b` or infinity, written `⊤`, if `a ^ n ∣ b` for all natural numbers
   `n`.
+* `multiplicity a b`: a `ℕ`-valued version of `multiplicity`, defaulting for `1` instead of `⊤`.
+  The reason for using `1` as a default value instead of `0` is to have `multiplicity_eq_zero_iff`.
 * `multiplicity.Finite a b`: a predicate denoting that the multiplicity of `a` in `b` is finite.
 -/
 
@@ -33,7 +35,7 @@ abbrev multiplicity.Finite [Monoid α] (a b : α) : Prop :=
 
 open scoped Classical in
 /-- `emultiplicity a b` returns the largest natural number `n` such that
-  `a ^ n ∣ b`, as a `ℕ`. If `∀ n, a ^ n ∣ b` then it returns `⊤`. -/
+  `a ^ n ∣ b`, as an `ℕ∞`. If `∀ n, a ^ n ∣ b` then it returns `⊤`. -/
 noncomputable def emultiplicity [Monoid α] (a b : α) : ℕ∞ :=
   if h : multiplicity.Finite a b then Nat.find h else ⊤
 

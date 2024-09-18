@@ -367,7 +367,7 @@ theorem unit_mul_pow_congr_unit {ϖ : R} (hirr : Irreducible ϖ) (u v : Rˣ) (m 
 -/
 
 open Classical in
-/-- The `PartENat`-valued additive valuation on a DVR. -/
+/-- The `ℕ∞`-valued additive valuation on a DVR. -/
 noncomputable def addVal (R : Type u) [CommRing R] [IsDomain R] [DiscreteValuationRing R] :
     AddValuation R ℕ∞ :=
   multiplicity_addValuation (Classical.choose_spec (exists_prime R))

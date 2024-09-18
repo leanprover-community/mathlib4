@@ -505,7 +505,7 @@ theorem rootMultiplicity_eq_nat_find_of_nonzero [DecidableEq R] {p : R[X]} (p0 :
 theorem rootMultiplicity_eq_multiplicity [DecidableEq R]
     (p : R[X]) (a : R) :
     rootMultiplicity a p =
-      if _ : p = 0 then 0 else multiplicity (X - C a) p := by
+      if p = 0 then 0 else multiplicity (X - C a) p := by
   simp only [rootMultiplicity, multiplicity, emultiplicity]
   split
   · rfl
@@ -534,7 +534,7 @@ theorem pow_rootMultiplicity_dvd (p : R[X]) (a : R) : (X - C a) ^ rootMultiplici
   if h : p = 0 then by simp [h]
   else by
     classical
-    rw [rootMultiplicity_eq_multiplicity, dif_neg h]; apply pow_multiplicity_dvd
+    rw [rootMultiplicity_eq_multiplicity, if_neg h]; apply pow_multiplicity_dvd
 
 theorem pow_mul_divByMonic_rootMultiplicity_eq (p : R[X]) (a : R) :
     (X - C a) ^ rootMultiplicity a p * (p /ₘ (X - C a) ^ rootMultiplicity a p) = p := by
@@ -547,7 +547,7 @@ theorem pow_mul_divByMonic_rootMultiplicity_eq (p : R[X]) (a : R) :
 theorem exists_eq_pow_rootMultiplicity_mul_and_not_dvd (p : R[X]) (hp : p ≠ 0) (a : R) :
     ∃ q : R[X], p = (X - C a) ^ p.rootMultiplicity a * q ∧ ¬ (X - C a) ∣ q := by
   classical
-  rw [rootMultiplicity_eq_multiplicity, dif_neg hp]
+  rw [rootMultiplicity_eq_multiplicity, if_neg hp]
   apply (multiplicity_X_sub_C_finite a hp).exists_eq_pow_mul_and_not_dvd
 
 end multiplicity
@@ -623,7 +623,7 @@ theorem ker_evalRingHom (x : R) : RingHom.ker (evalRingHom x) = Ideal.span {X - 
 theorem rootMultiplicity_eq_zero_iff {p : R[X]} {x : R} :
     rootMultiplicity x p = 0 ↔ IsRoot p x → p = 0 := by
   classical
-  simp only [rootMultiplicity_eq_multiplicity, dite_eq_left_iff,
+  simp only [rootMultiplicity_eq_multiplicity, ite_eq_left_iff,
     Nat.cast_zero, multiplicity_eq_zero, dvd_iff_isRoot, not_imp_not]
 
 theorem rootMultiplicity_eq_zero {p : R[X]} {x : R} (h : ¬IsRoot p x) : rootMultiplicity x p = 0 :=
@@ -645,7 +645,7 @@ theorem eval_divByMonic_pow_rootMultiplicity_ne_zero {p : R[X]} (a : R) (hp : p 
   rw [Ne, ← IsRoot, ← dvd_iff_isRoot]
   rintro ⟨q, hq⟩
   have := pow_mul_divByMonic_rootMultiplicity_eq p a
-  rw [hq, ← mul_assoc, ← pow_succ, rootMultiplicity_eq_multiplicity, dif_neg hp] at this
+  rw [hq, ← mul_assoc, ← pow_succ, rootMultiplicity_eq_multiplicity, if_neg hp] at this
   exact
     (multiplicity_finite_of_degree_pos_of_monic
       (show (0 : WithBot ℕ) < degree (X - C a) by rw [degree_X_sub_C]; decide)
