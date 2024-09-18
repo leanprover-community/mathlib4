@@ -107,10 +107,6 @@ end Pair
 
 section Tuple
 
-universe u
-
-variable {n m : Type u}
-
 open Submodule
 
 /-- The indexed infimum of eigenspaces of a commuting family of linear operators is
