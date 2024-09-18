@@ -187,6 +187,16 @@ noncomputable def _root_.NumberField.mixedEmbedding : K →+* (mixedSpace K) :=
   RingHom.prod (Pi.ringHom fun w => embedding_of_isReal w.prop)
     (Pi.ringHom fun w => w.val.embedding)
 
+@[simp]
+theorem mixedEmbedding_apply_ofIsReal (x : K) (w : {w // IsReal w}) :
+    (mixedEmbedding K x).1 w = embedding_of_isReal w.prop x := by
+  simp_rw [mixedEmbedding, RingHom.prod_apply, Pi.ringHom_apply]
+
+@[simp]
+theorem mixedEmbedding_apply_ofIsComplex (x : K) (w : {w // IsComplex w}) :
+    (mixedEmbedding K x).2 w = w.val.embedding x := by
+  simp_rw [mixedEmbedding, RingHom.prod_apply, Pi.ringHom_apply]
+
 instance [NumberField K] : Nontrivial (mixedSpace K) := by
   obtain ⟨w⟩ := (inferInstance : Nonempty (InfinitePlace K))
   obtain hw | hw := w.isReal_or_isComplex
