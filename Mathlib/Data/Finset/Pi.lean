@@ -154,11 +154,16 @@ variable {π : ι → Type*}
 @[simp]
 def restrict (s : Finset ι) (f : (i : ι) → π i) : (i : s) → π i := fun x ↦ f x
 
+theorem restrict_def (s : Finset ι) : s.restrict (π := π) = fun f x ↦ f x := rfl
+
 /-- If a function `f` is restricted to a finite set `t`, and `s ⊆ t`,
 this is the restriction to `s`. -/
 @[simp]
 def restrict₂ {s t : Finset ι} (hst : s ⊆ t) (f : (i : t) → π i) : (i : s) → π i :=
   fun x ↦ f ⟨x.1, hst x.2⟩
+
+theorem restrict₂_def {s t : Finset ι} (hst : s ⊆ t) :
+    restrict₂ (π := π) hst = fun f x ↦ f ⟨x.1, hst x.2⟩ := rfl
 
 theorem restrict₂_comp_restrict {s t : Finset ι} (hst : s ⊆ t) :
     (restrict₂ (π := π) hst) ∘ t.restrict = s.restrict := rfl
