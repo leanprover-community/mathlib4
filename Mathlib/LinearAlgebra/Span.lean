@@ -398,7 +398,7 @@ theorem codisjoint_iff_exists_add_eq :
   rw [codisjoint_iff, eq_top_iff']
   exact forall_congr' (fun z => mem_sup.trans <| by simp)
 
-@[deprecated codisjoint_iff_exists_add_eq (since := "2024-09-15")]
+@[deprecated codisjoint_iff_exists_add_eq (since := "2024-09-18")]
 lemma exists_add_eq_of_codisjoint (h : Codisjoint p p') (x : M) :
     ∃ y ∈ p, ∃ z ∈ p', y + z = x := by
   suffices x ∈ p ⊔ p' by exact Submodule.mem_sup.mp this

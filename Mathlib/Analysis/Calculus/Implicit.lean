@@ -14,7 +14,7 @@ import Mathlib.Analysis.Normed.Module.Complemented
 We prove four versions of the implicit function theorem. First we define a structure
 `ImplicitFunctionData` that holds arguments for the most general version of the implicit function
 theorem, see `ImplicitFunctionData.implicitFunction` and
-`ImplicitFunctionData.implicitFunction_hasStrictFDerivAt`. This version allows a user to choose a
+`ImplicitFunctionData.hasStrictFDerivAt_implicitFunction`. This version allows a user to choose a
 specific implicit function but provides only a little convenience over the inverse function theorem.
 
 Then we define `HasStrictFDerivAt.implicitFunctionDataOfComplemented`: implicit function defined by
@@ -198,7 +198,7 @@ theorem map_nhds_eq : map φ.leftFun (𝓝 φ.pt) = 𝓝 (φ.leftFun φ.pt) :=
   show map (Prod.fst ∘ φ.prodFun) (𝓝 φ.pt) = 𝓝 (φ.prodFun φ.pt).1 by
     rw [← map_map, φ.hasStrictFDerivAt.map_nhds_eq_of_equiv, map_fst_nhds]
 
-theorem implicitFunction_hasStrictFDerivAt (g'inv : G →L[𝕜] E)
+theorem hasStrictFDerivAt_implicitFunction (g'inv : G →L[𝕜] E)
     (hg'inv : φ.rightDeriv.comp g'inv = ContinuousLinearMap.id 𝕜 G)
     (hg'invf : φ.leftDeriv.comp g'inv = 0) :
     HasStrictFDerivAt (φ.implicitFunction (φ.leftFun φ.pt)) g'inv (φ.rightFun φ.pt) := by
@@ -212,6 +212,9 @@ theorem implicitFunction_hasStrictFDerivAt (g'inv : G →L[𝕜] E)
   intro x
   erw [ContinuousLinearEquiv.eq_symm_apply]
   simp [*]
+
+@[deprecated (since := "2024-09-18")]
+alias implicitFunction_hasStrictFDerivAt := hasStrictFDerivAt_implicitFunction
 
 end ImplicitFunctionData
 
@@ -337,7 +340,7 @@ theorem to_implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' :
     (hker : (ker f').ClosedComplemented) :
     HasStrictFDerivAt (hf.implicitFunctionOfComplemented f f' hf' hker (f a))
       (ker f').subtypeL 0 := by
-  convert (implicitFunctionDataOfComplemented f f' hf hf' hker).implicitFunction_hasStrictFDerivAt
+  convert (implicitFunctionDataOfComplemented f f' hf hf' hker).hasStrictFDerivAt_implicitFunction
     (ker f').subtypeL _ _
   swap
   · ext
@@ -515,12 +518,12 @@ def implicitFunOfBivariate {f : X × Y → Z} {p₀ : X × Y}
     X → Y :=
   fun x => (hf₀.implicitFunDataOfBivariate.implicitFunction (f p₀) x).2
 
-theorem implicitFunOfBivariate_hasStrictFDerivAt {f : X × Y → Z} {x₀ : X} {y₀ : Y}
+theorem hasStrictFDerivAt_implicitFunOfBivariate {f : X × Y → Z} {x₀ : X} {y₀ : Y}
     {fx : X →L[𝕜] Z} {fy : Y ≃L[𝕜] Z} (hf₀ : HasStrictFDerivAt f (fx.coprod fy) (x₀, y₀)) :
     HasStrictFDerivAt hf₀.implicitFunOfBivariate (-fy.symm ∘L fx) x₀ := by
   set ψ' : X →L[𝕜] Y := -fy.symm ∘L fx
   apply HasStrictFDerivAt.snd (f₂' := (ContinuousLinearMap.id 𝕜 X).prod ψ')
-  apply hf₀.implicitFunDataOfBivariate.implicitFunction_hasStrictFDerivAt
+  apply hf₀.implicitFunDataOfBivariate.hasStrictFDerivAt_implicitFunction
   · apply ContinuousLinearMap.fst_comp_prod
   · change fx + fy ∘L ψ' = 0
     simp [ψ', ← ContinuousLinearMap.comp_assoc]
@@ -532,16 +535,21 @@ theorem image_eq_iff_implicitFunOfBivariate {f : X × Y → Z} {p₀ : X × Y}
   filter_upwards [φ.leftFun_eq_iff_implicitFun, φ.rightFun_implicitFun_mixed_args] with p h h'
   exact Iff.trans h ⟨congrArg _, by aesop⟩
 
+theorem tendsto_implicitFunOfBivariate {f : X × Y → Z} {x₀ : X} {y₀ : Y}
+    {fx : X →L[𝕜] Z} {fy : Y ≃L[𝕜] Z} (hf₀ : HasStrictFDerivAt f (fx.coprod fy) (x₀, y₀)) :
+    Tendsto hf₀.implicitFunOfBivariate (𝓝 x₀) (𝓝 y₀) := by
+  convert hf₀.hasStrictFDerivAt_implicitFunOfBivariate.continuousAt.tendsto
+  rw [hf₀.image_eq_iff_implicitFunOfBivariate.self_of_nhds.mp rfl]
+
 theorem image_implicitFunOfBivariate {f : X × Y → Z} {x₀ : X} {y₀ : Y}
     {fx : X →L[𝕜] Z} {fy : Y ≃L[𝕜] Z} (hf₀ : HasStrictFDerivAt f (fx.coprod fy) (x₀, y₀)) :
     ∀ᶠ x in 𝓝 x₀, f (x, hf₀.implicitFunOfBivariate x) = f (x₀, y₀) := by
-  have hψ := hf₀.implicitFunOfBivariate_hasStrictFDerivAt.continuousAt.tendsto
+  have hψ := hf₀.tendsto_implicitFunOfBivariate
   set ψ := hf₀.implicitFunOfBivariate
   suffices ∀ᶠ x in 𝓝 x₀, f (x, ψ x) = f (x₀, y₀) ↔ ψ x = ψ x by simpa
   apply hψ.eventually_image_of_prod (r := fun x y => f (x, y) = f (x₀, y₀) ↔ ψ x = y)
   rw [← nhds_prod_eq]
-  convert hf₀.image_eq_iff_implicitFunOfBivariate
-  rw [← hf₀.image_eq_iff_implicitFunOfBivariate.self_of_nhds]
+  exact hf₀.image_eq_iff_implicitFunOfBivariate
 
 end Bivariate
 
