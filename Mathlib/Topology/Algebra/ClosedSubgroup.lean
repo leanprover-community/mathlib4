@@ -118,7 +118,7 @@ lemma finiteindex_closedSubgroup_isOpen (H : Subgroup G) [H.FiniteIndex]
       (Quotient.out' (QuotientGroup.mk (s := H) x))⁻¹ * x
     simp only [SetLike.mem_coe, smul_eq_mul, mul_inv_cancel_left, and_true]
     exact QuotientGroup.eq.mp <| QuotientGroup.out_eq' (QuotientGroup.mk (s := H) x)
-  · rcases h with ⟨S,⟨y,hS⟩,mem⟩
+  · rcases h with ⟨S, ⟨y, hS⟩, mem⟩
     simp only [← hS] at mem
     rcases mem with ⟨h, hh, eq⟩
     simp only [Set.mem_compl_iff, SetLike.mem_coe]
