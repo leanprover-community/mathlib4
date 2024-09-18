@@ -352,8 +352,7 @@ theorem HasFPowerSeriesOnBall.analyticOn (hf : HasFPowerSeriesOnBall f p x r) :
     AnalyticOn 𝕜 f (EMetric.ball x r) :=
   fun _y hy => hf.analyticAt_of_mem hy
 
-variable (𝕜 f)
-
+variable (𝕜 f) in
 /-- For any function `f` from a normed vector space to a Banach space, the set of points `x` such
 that `f` is analytic at `x` is open. -/
 theorem isOpen_analyticAt : IsOpen { x | AnalyticAt 𝕜 f x } := by
@@ -361,18 +360,16 @@ theorem isOpen_analyticAt : IsOpen { x | AnalyticAt 𝕜 f x } := by
   rintro x ⟨p, r, hr⟩
   exact mem_of_superset (EMetric.ball_mem_nhds _ hr.r_pos) fun y hy => hr.analyticAt_of_mem hy
 
-variable {𝕜}
-
-theorem AnalyticAt.eventually_analyticAt {f : E → F} {x : E} (h : AnalyticAt 𝕜 f x) :
+theorem AnalyticAt.eventually_analyticAt (h : AnalyticAt 𝕜 f x) :
     ∀ᶠ y in 𝓝 x, AnalyticAt 𝕜 f y :=
   (isOpen_analyticAt 𝕜 f).mem_nhds h
 
-theorem AnalyticAt.exists_mem_nhds_analyticOn {f : E → F} {x : E} (h : AnalyticAt 𝕜 f x) :
+theorem AnalyticAt.exists_mem_nhds_analyticOn (h : AnalyticAt 𝕜 f x) :
     ∃ s ∈ 𝓝 x, AnalyticOn 𝕜 f s :=
   h.eventually_analyticAt.exists_mem
 
 /-- If we're analytic at a point, we're analytic in a nonempty ball -/
-theorem AnalyticAt.exists_ball_analyticOn {f : E → F} {x : E} (h : AnalyticAt 𝕜 f x) :
+theorem AnalyticAt.exists_ball_analyticOn (h : AnalyticAt 𝕜 f x) :
     ∃ r : ℝ, 0 < r ∧ AnalyticOn 𝕜 f (Metric.ball x r) :=
   Metric.isOpen_iff.mp (isOpen_analyticAt _ _) _ h
 

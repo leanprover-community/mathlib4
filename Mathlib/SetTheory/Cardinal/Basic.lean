@@ -405,11 +405,6 @@ theorem mk_psum (α : Type u) (β : Type v) : #(α ⊕' β) = lift.{v} #α + lif
 theorem mk_fintype (α : Type u) [h : Fintype α] : #α = Fintype.card α :=
   mk_congr (Fintype.equivOfCardEq (by simp))
 
-protected theorem cast_succ (n : ℕ) : ((n + 1 : ℕ) : Cardinal.{u}) = n + 1 := by
-  change #(ULift.{u} (Fin (n+1))) = # (ULift.{u} (Fin n)) + 1
-  rw [← mk_option, mk_fintype, mk_fintype]
-  simp only [Fintype.card_ulift, Fintype.card_fin, Fintype.card_option]
-
 instance : Mul Cardinal.{u} :=
   ⟨map₂ Prod fun _ _ _ _ => Equiv.prodCongr⟩
 
@@ -419,9 +414,6 @@ theorem mul_def (α β : Type u) : #α * #β = #(α × β) :=
 @[simp]
 theorem mk_prod (α : Type u) (β : Type v) : #(α × β) = lift.{v, u} #α * lift.{u, v} #β :=
   mk_congr (Equiv.ulift.symm.prodCongr Equiv.ulift.symm)
-
-private theorem mul_comm' (a b : Cardinal.{u}) : a * b = b * a :=
-  inductionOn₂ a b fun α β => mk_congr <| Equiv.prodComm α β
 
 /-- The cardinal exponential. `#α ^ #β` is the cardinal of `β → α`. -/
 instance instPowCardinal : Pow Cardinal.{u} Cardinal.{u} :=
@@ -439,41 +431,45 @@ theorem lift_power (a b : Cardinal.{u}) : lift.{v} (a ^ b) = lift.{v} a ^ lift.{
     mk_congr <| Equiv.ulift.trans (Equiv.ulift.arrowCongr Equiv.ulift).symm
 
 @[simp]
-theorem power_zero {a : Cardinal} : a ^ (0 : Cardinal) = 1 :=
+theorem power_zero (a : Cardinal) : a ^ (0 : Cardinal) = 1 :=
   inductionOn a fun _ => mk_eq_one _
 
 @[simp]
-theorem power_one {a : Cardinal.{u}} : a ^ (1 : Cardinal) = a :=
+theorem power_one (a : Cardinal.{u}) : a ^ (1 : Cardinal) = a :=
   inductionOn a fun α => mk_congr (Equiv.funUnique (ULift.{u} (Fin 1)) α)
 
-theorem power_add {a b c : Cardinal} : a ^ (b + c) = a ^ b * a ^ c :=
+theorem power_add (a b c : Cardinal) : a ^ (b + c) = a ^ b * a ^ c :=
   inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumArrowEquivProdArrow β γ α
+
+private theorem cast_succ (n : ℕ) : ((n + 1 : ℕ) : Cardinal.{u}) = n + 1 := by
+  change #(ULift.{u} _) = #(ULift.{u} _) + 1
+  rw [← mk_option]
+  simp
 
 instance commSemiring : CommSemiring Cardinal.{u} where
   zero := 0
   one := 1
   add := (· + ·)
   mul := (· * ·)
-  zero_add a := inductionOn a fun α => mk_congr <| Equiv.emptySum (ULift (Fin 0)) α
-  add_zero a := inductionOn a fun α => mk_congr <| Equiv.sumEmpty α (ULift (Fin 0))
+  zero_add a := inductionOn a fun α => mk_congr <| Equiv.emptySum _ α
+  add_zero a := inductionOn a fun α => mk_congr <| Equiv.sumEmpty α _
   add_assoc a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumAssoc α β γ
   add_comm a b := inductionOn₂ a b fun α β => mk_congr <| Equiv.sumComm α β
   zero_mul a := inductionOn a fun α => mk_eq_zero _
   mul_zero a := inductionOn a fun α => mk_eq_zero _
-  one_mul a := inductionOn a fun α => mk_congr <| Equiv.uniqueProd α (ULift (Fin 1))
-  mul_one a := inductionOn a fun α => mk_congr <| Equiv.prodUnique α (ULift (Fin 1))
+  one_mul a := inductionOn a fun α => mk_congr <| Equiv.uniqueProd α _
+  mul_one a := inductionOn a fun α => mk_congr <| Equiv.prodUnique α _
   mul_assoc a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.prodAssoc α β γ
-  mul_comm := mul_comm'
+  mul_comm a b := inductionOn₂ a b fun α β => mk_congr <| Equiv.prodComm α β
   left_distrib a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.prodSumDistrib α β γ
   right_distrib a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumProdDistrib α β γ
   nsmul := nsmulRec
   npow n c := c ^ (n : Cardinal)
-  npow_zero := @power_zero
-  npow_succ n c := show c ^ (↑(n + 1) : Cardinal) = c ^ (↑n : Cardinal) * c
-    by rw [Cardinal.cast_succ, power_add, power_one, mul_comm']
-  natCast := (fun n => lift.{u} #(Fin n) : ℕ → Cardinal.{u})
+  npow_zero := power_zero
+  npow_succ n c := by dsimp; rw [cast_succ, power_add, power_one]
+  natCast n := lift #(Fin n)
   natCast_zero := rfl
-  natCast_succ := Cardinal.cast_succ
+  natCast_succ n := cast_succ n
 
 @[simp]
 theorem one_power {a : Cardinal} : (1 : Cardinal) ^ a = 1 :=
@@ -614,7 +610,7 @@ theorem self_le_power (a : Cardinal) {b : Cardinal} (hb : 1 ≤ b) : a ≤ a ^ b
   rcases eq_or_ne a 0 with (rfl | ha)
   · exact zero_le _
   · convert power_le_power_left ha hb
-    exact power_one.symm
+    exact (power_one a).symm
 
 /-- **Cantor's theorem** -/
 theorem cantor (a : Cardinal.{u}) : a < 2 ^ a := by

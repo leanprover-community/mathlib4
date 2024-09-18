@@ -1508,5 +1508,8 @@ theorem hasFPowerSeriesAt_iff' :
   simp_rw [add_sub_cancel_left]
 
 end
+<<<<<<< HEAD
 
 set_option linter.style.longFile 1700
+=======
+>>>>>>> origin/master
