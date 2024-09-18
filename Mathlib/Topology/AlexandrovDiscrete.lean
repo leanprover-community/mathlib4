@@ -174,8 +174,20 @@ theorem mem_exterior_iff_specializes : a ∈ exterior s ↔ ∃ b ∈ s, a ⤳ b
 @[mono] lemma exterior_mono : Monotone (exterior : Set α → Set α) :=
   fun _s _t h ↦ ker_mono <| nhdsSet_mono h
 
-@[gcongr] lemma exterior_subset_exterior (h : s ⊆ t) : exterior s ⊆ exterior t :=
-  exterior_mono h
+/-- This name was used to be used for the `Iff` version,
+see `exterior_subset_exterior_iff_nhdsSet`.
+-/
+@[gcongr] lemma exterior_subset_exterior (h : s ⊆ t) : exterior s ⊆ exterior t := exterior_mono h
+
+@[simp] lemma exterior_subset_exterior_iff_nhdsSet : exterior s ⊆ exterior t ↔ 𝓝ˢ s ≤ 𝓝ˢ t := by
+  simp (config := {contextual := true}) only [subset_exterior_iff, (hasBasis_nhdsSet _).ge_iff,
+    and_imp, IsOpen.mem_nhdsSet, IsOpen.exterior_subset]
+
+theorem exterior_eq_exterior_iff_nhdsSet : exterior s = exterior t ↔ 𝓝ˢ s = 𝓝ˢ t := by
+  simp [le_antisymm_iff]
+
+lemma specializes_iff_exterior_subset : x ⤳ y ↔ exterior {x} ⊆ exterior {y} := by
+  simp [Specializes]
 
 @[simp] lemma exterior_empty : exterior (∅ : Set α) = ∅ := isOpen_empty.exterior_eq
 @[simp] lemma exterior_univ : exterior (univ : Set α) = univ := isOpen_univ.exterior_eq
@@ -186,6 +198,9 @@ theorem mem_exterior_iff_specializes : a ∈ exterior s ↔ ∃ b ∈ s, a ⤳ b
 @[simp] lemma nhdsSet_exterior (s : Set α) : 𝓝ˢ (exterior s) = 𝓝ˢ s := by
   refine le_antisymm ((hasBasis_nhdsSet _).ge_iff.2 ?_) (nhdsSet_mono subset_exterior)
   exact fun U ⟨hUo, hsU⟩ ↦ hUo.mem_nhdsSet.2 <| hUo.exterior_subset.2 hsU
+
+@[simp] lemma exterior_exterior (s : Set α) : exterior (exterior s) = exterior s := by
+  simp only [exterior_eq_exterior_iff_nhdsSet, nhdsSet_exterior]
 
 lemma Inducing.alexandrovDiscrete [AlexandrovDiscrete α] {f : β → α} (h : Inducing f) :
     AlexandrovDiscrete β where
@@ -250,33 +265,17 @@ lemma exterior_singleton_subset_iff_mem_nhds : exterior {a} ⊆ t ↔ t ∈ 𝓝
 lemma gc_exterior_interior : GaloisConnection (exterior : Set α → Set α) interior :=
   fun s t ↦ by simp [exterior_subset_iff, subset_interior_iff]
 
-@[simp] lemma exterior_exterior (s : Set α) : exterior (exterior s) = exterior s :=
-  isOpen_exterior.exterior_eq
-
 @[simp] lemma principal_exterior (s : Set α) : 𝓟 (exterior s) = 𝓝ˢ s := by
   rw [← nhdsSet_exterior, isOpen_exterior.nhdsSet_eq]
 
-@[simp] lemma exterior_subset_exterior : exterior s ⊆ exterior t ↔ 𝓝ˢ s ≤ 𝓝ˢ t := by
-  refine ⟨?_, fun h ↦ ker_mono h⟩
-  simp_rw [le_def, ← exterior_subset_iff_mem_nhdsSet]
-  exact fun h u ↦ h.trans
-
-lemma specializes_iff_exterior_subset : x ⤳ y ↔ exterior {x} ⊆ exterior {y} := by
-  simp [Specializes]
-
 lemma isOpen_iff_forall_specializes : IsOpen s ↔ ∀ x y, x ⤳ y → y ∈ s → x ∈ s := by
-  refine ⟨fun hs x y hxy ↦ hxy.mem_open hs, fun hs ↦ ?_⟩
-  simp_rw [specializes_iff_exterior_subset] at hs
-  simp_rw [isOpen_iff_mem_nhds, mem_nhds_iff]
-  rintro a ha
-  refine ⟨_, fun b hb ↦ hs _ _ ?_ ha, isOpen_exterior, subset_exterior <| mem_singleton _⟩
-  rwa [isOpen_exterior.exterior_subset, singleton_subset_iff]
+  simp only [← exterior_subset_iff_isOpen, Set.subset_def, mem_exterior_iff_specializes, exists_imp,
+    and_imp, @forall_swap (_ ⤳ _)]
 
 lemma alexandrovDiscrete_coinduced {β : Type*} {f : α → β} :
     @AlexandrovDiscrete β (coinduced f ‹_›) :=
   @AlexandrovDiscrete.mk β (coinduced f ‹_›) fun S hS ↦ by
     rw [isOpen_coinduced, preimage_sInter]; exact isOpen_iInter₂ hS
-
 
 instance AlexandrovDiscrete.toFirstCountable : FirstCountableTopology α where
   nhds_generated_countable a := ⟨{exterior {a}}, countable_singleton _, by simp⟩
