@@ -421,6 +421,12 @@ theorem norm_eq_zero_iff' {x : mixedSpace K} (hx : x ∈ Set.range (mixedEmbeddi
   rw [norm_eq_norm, Rat.cast_abs, abs_eq_zero, Rat.cast_eq_zero, Algebra.norm_eq_zero_iff,
     map_eq_zero]
 
+variable (K) in
+protected theorem continuous_norm : Continuous (mixedEmbedding.norm : (mixedSpace K) → ℝ) := by
+  refine continuous_finset_prod Finset.univ fun _ _ ↦ ?_
+  simp_rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, dite_pow]
+  split_ifs <;> fun_prop
+
 end norm
 
 noncomputable section stdBasis
@@ -573,6 +579,10 @@ open Module.Free
 
 open scoped nonZeroDivisors
 
+/-- The image of the ring of integers of `K` in the mixed space. -/
+protected abbrev integerLattice : Submodule ℤ (mixedSpace K) :=
+  LinearMap.range ((mixedEmbedding K).comp (algebraMap (𝓞 K) K)).toIntAlgHom.toLinearMap
+
 /-- A `ℝ`-basis of the mixed space that is also a `ℤ`-basis of the image of `𝓞 K`. -/
 def latticeBasis :
     Basis (ChooseBasisIndex ℤ (𝓞 K)) ℝ (mixedSpace K) := by
@@ -607,6 +617,20 @@ theorem mem_span_latticeBasis (x : (mixedSpace K)) :
   simp only [Set.mem_image, SetLike.mem_coe, mem_span_integralBasis K,
     RingHom.mem_range, exists_exists_eq_and]
   rfl
+
+theorem span_latticeBasis :
+    (Submodule.span ℤ (Set.range (latticeBasis K))) = (mixedEmbedding.integerLattice K) :=
+  Submodule.ext_iff.mpr (mem_span_latticeBasis K)
+
+instance : DiscreteTopology (mixedEmbedding.integerLattice K) := by
+  classical
+  rw [← span_latticeBasis]
+  infer_instance
+
+open Classical in
+instance : IsZLattice ℝ (mixedEmbedding.integerLattice K) := by
+  simp_rw [← span_latticeBasis]
+  exact ZSpan.isZLattice (latticeBasis K)
 
 theorem mem_rat_span_latticeBasis (x : K) :
     mixedEmbedding K x ∈ Submodule.span ℚ (Set.range (latticeBasis K)) := by
