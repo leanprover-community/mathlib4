@@ -262,10 +262,7 @@ called `OrderedFinPartion.extendEquiv`.
 def extendLeft (c : OrderedFinpartition n) : OrderedFinpartition (n + 1) where
   length := c.length + 1
   partSize := Fin.cons 1 c.partSize
-  partSize_pos := by
-    apply Fin.cases
-    simp
-    simp [c.partSize_pos]
+  partSize_pos := Fin.cases (by simp) (by simp [c.partSize_pos])
   emb := Fin.cases (fun _ ↦ 0) (fun m ↦ Fin.succ ∘ (c.emb m))
   emb_strictMono := by
     refine Fin.cases ?_ (fun i ↦ ?_)
@@ -598,7 +595,7 @@ open Classical in
 /-- Extending the ordered partitions of `Fin n` bijects with the ordered partitions
 of `Fin (n+1)`. -/
 def extendEquiv (n : ℕ) :
-     ((c : OrderedFinpartition n) × Option (Fin c.length)) ≃ OrderedFinpartition (n + 1) where
+    ((c : OrderedFinpartition n) × Option (Fin c.length)) ≃ OrderedFinpartition (n + 1) where
   toFun c := c.1.extend c.2
   invFun c := if h : range (c.emb 0) = {0} then ⟨c.eraseLeft h, none⟩ else
     ⟨c.eraseMiddle h, some (c.index 0)⟩
@@ -924,8 +921,8 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
         (∑ i : Option (Fin c.length),
           ((q (f x)).compAlongOrderedFinpartition (p x) (c.extend i)).curryLeft) s x
       have cm : (c.length : WithTop ℕ∞) ≤ m := by exact_mod_cast OrderedFinpartition.length_le c
-      have cp i : (c.partSize i : WithTop ℕ∞) ≤ m :=
-        by exact_mod_cast OrderedFinpartition.partSize_le c i
+      have cp i : (c.partSize i : WithTop ℕ∞) ≤ m := by
+        exact_mod_cast OrderedFinpartition.partSize_le c i
       have I i : HasFDerivWithinAt (fun x ↦ p x (c.partSize i))
           (p x (c.partSize i).succ).curryLeft s x :=
         hf.fderivWithin (c.partSize i) ((cp i).trans_lt hm) x hx
