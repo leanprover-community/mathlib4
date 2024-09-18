@@ -314,6 +314,7 @@ def ringEquiv_complex_of_isComplex {v : InfinitePlace K} (hv : IsComplex v) :
     v.completion ≃+* ℂ :=
   RingEquiv.ofBijective _ (bijective_extensionEmbedding_of_isComplex hv)
 
+/-- If the infinite place `v` is complex, then `v.completion` is isometric to `ℂ`. -/
 def isometryEquiv_complex_of_isComplex {v : InfinitePlace K} (hv : IsComplex v) :
     v.completion ≃ᵢ ℂ where
   toEquiv := ringEquiv_complex_of_isComplex hv
@@ -335,6 +336,7 @@ theorem bijective_extensionEmbedding_of_isReal {v : InfinitePlace K} (hv : IsRea
 def ringEquiv_real_of_isReal {v : InfinitePlace K} (hv : IsReal v) : v.completion ≃+* ℝ :=
   RingEquiv.ofBijective _ (bijective_extensionEmbedding_of_isReal hv)
 
+/-- If the infinite place `v` is real, then `v.completion` is isometric to `ℝ`. -/
 def isometryEquiv_real_of_isReal {v : InfinitePlace K} (hv : IsReal v) : v.completion ≃ᵢ ℝ where
   toEquiv := ringEquiv_real_of_isReal hv
   isometry_toFun := isometry_extensionEmbedding_of_isReal hv
