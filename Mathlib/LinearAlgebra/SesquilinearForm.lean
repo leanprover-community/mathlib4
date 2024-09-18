@@ -480,7 +480,6 @@ lemma isOrthogonal_of_forall_apply_same
     B.IsOrthogonal f := by
   intro x y
   suffices 2 * B (f x) (f y) = 2 * B x y from h this
-  -- Would this be better as a `calc` proof? (not sure)
   have := hf (x + y)
   simp only [map_add, add_apply, hf x, hf y, show B y x = B x y from hB.eq y x] at this
   rw [show B (f y) (f x) = B (f x) (f y) from hB.eq (f y) (f x)] at this
