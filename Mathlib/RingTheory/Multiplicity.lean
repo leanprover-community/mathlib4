@@ -5,7 +5,6 @@ Authors: Robert Y. Lewis, Chris Hughes, Daniel Weber
 -/
 import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Algebra.SMulWithZero
 import Mathlib.Tactic.Linarith
 import Mathlib.Data.ENat.Basic
 
