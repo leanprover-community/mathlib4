@@ -149,7 +149,7 @@ The below witnesses were generated using the following Mathematica script:
 bound[a_, Iters -> n_, Rounding -> extra_, Precision -> prec_] := Module[{r0, r, r2, diff, sign},
   On[Assert];
   sign = If[a >= \[Pi], Print["upper"]; 1, Print["lower"]; -1];
-  r0 = 2 - ((a - If[a >= \[Pi], 1/4^n, 0])/2^(n + 1))^2;
+  r0 = 2 - ((a - (sign + 1)/2/4^n)/2^(n + 1))^2;
   r = Log[2 - NestList[#^2 - 2 &, N[r0, prec], n - 1]];
   diff = (r[[-1]] - Log[2 - Sqrt[2]])/(Length[r] + 1);
   If[sign diff <= 0, Return["insufficient iterations"]];
