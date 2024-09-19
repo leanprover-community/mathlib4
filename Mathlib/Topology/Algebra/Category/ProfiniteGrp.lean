@@ -402,12 +402,12 @@ def CanonicalQuotientMap (P : ProfiniteGrp.{u}) : P ⟶
     convert IsOpen.leftCoset H.toOpenSubgroup.isOpen' (Quotient.out' i)
     ext x
     simp only [Set.mem_preimage, Set.mem_singleton_iff]
-    nth_rw 1 [←QuotientGroup.out_eq' i, eq_comm, QuotientGroup.eq]
+    nth_rw 1 [← QuotientGroup.out_eq' i, eq_comm, QuotientGroup.eq]
     symm
     apply Set.mem_smul_set_iff_inv_smul_mem
 
 theorem canonicalQuotientMap_dense (P : ProfiniteGrp.{u}) : Dense <|
-     Set.range (CanonicalQuotientMap P) :=
+    Set.range (CanonicalQuotientMap P) :=
   dense_iff_inter_open.mpr
     fun U ⟨s, hsO, hsv⟩ ⟨⟨spc, hspc⟩, uDefaultSpec⟩ => (by
       let uMemPiOpen := isOpen_pi_iff.mp hsO
@@ -424,7 +424,7 @@ theorem canonicalQuotientMap_dense (P : ProfiniteGrp.{u}) : Dense <|
       rcases QuotientGroup.mk'_surjective M (spc m) with ⟨origin, horigin⟩
       use (CanonicalQuotientMap P).toFun origin
       constructor
-      · rw [←hsv]
+      · rw [← hsv]
         apply h_ok_and_in_s.2
         exact fun a a_in_J => by
           let M_to_Na : m ⟶ a := (iInf_le (fun (j : J) => j.1.1.1) ⟨a, a_in_J⟩).hom
