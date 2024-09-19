@@ -144,10 +144,11 @@ theorem iSup_eigenspace_restrict {F : Submodule 𝕜 E}
 /-- The orthocomplement of the indexed supremum of joint eigenspaces of a finite commuting tuple of
 symmetric operators is trivial. -/
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Fintype n]
-    (T : n → E →ₗ[𝕜] E) (hT : ∀ i, (T i).IsSymmetric)
+    (hT : ∀ i, (T i).IsSymmetric)
     (hC : ∀ i j, T i ∘ₗ T j = T j ∘ₗ T i) :
     (⨆ γ : n → 𝕜, ⨅ j, eigenspace (T j) (γ j))ᗮ = ⊥ := by
   revert T
+  change ∀ T, _
   refine Fintype.induction_subsingleton_or_nontrivial n (fun m _ hhm T hT _ ↦ ?_)
     (fun m hm hmm H T hT hC ↦ ?_)
   · obtain (hm | hm) := isEmpty_or_nonempty m
@@ -176,7 +177,7 @@ theorem LinearMap.IsSymmetric.directSum_isInternal_of_commute_of_fintype [Fintyp
     (hT :(∀ (i : n), ((T i).IsSymmetric))) (hC : (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i))) :
     DirectSum.IsInternal (fun (α : n → 𝕜) ↦ ⨅ (j : n), (eigenspace (T j) (α j))) := by
   rw [OrthogonalFamily.isInternal_iff]
-  · exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot T hT hC
+  · exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot hT hC
   · exact orthogonalFamily_iInf_eigenspaces hT
 
 end RCLike
