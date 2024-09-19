@@ -248,8 +248,9 @@ a uniformity which is equal to the original one, but maybe not defeq.
 This is useful if one wants to construct a pseudoemetric space with a
 specified uniformity. See Note [forgetful inheritance] explaining why having definitionally
 the right uniformity is often important.
+See note [reducible non-instances].
 -/
-def PseudoEMetricSpace.replaceUniformity {α} [U : UniformSpace α] (m : PseudoEMetricSpace α)
+abbrev PseudoEMetricSpace.replaceUniformity {α} [U : UniformSpace α] (m : PseudoEMetricSpace α)
     (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : PseudoEMetricSpace α where
   edist := @edist _ m.toEDist
   edist_self := edist_self
@@ -258,8 +259,9 @@ def PseudoEMetricSpace.replaceUniformity {α} [U : UniformSpace α] (m : PseudoE
   toUniformSpace := U
   uniformity_edist := H.trans (@PseudoEMetricSpace.uniformity_edist α _)
 
-/-- The extended pseudometric induced by a function taking values in a pseudoemetric space. -/
-def PseudoEMetricSpace.induced {α β} (f : α → β) (m : PseudoEMetricSpace β) :
+/-- The extended pseudometric induced by a function taking values in a pseudoemetric space.
+See note [reducible non-instances]. -/
+abbrev PseudoEMetricSpace.induced {α β} (f : α → β) (m : PseudoEMetricSpace β) :
     PseudoEMetricSpace α where
   edist x y := edist (f x) (f y)
   edist_self _ := edist_self _
@@ -445,7 +447,7 @@ theorem tendsto_nhdsWithin_nhds {a b} :
     Tendsto f (𝓝[s] a) (𝓝 b) ↔
       ∀ ε > 0, ∃ δ > 0, ∀ {x : α}, x ∈ s → edist x a < δ → edist (f x) b < ε := by
   rw [← nhdsWithin_univ b, tendsto_nhdsWithin_nhdsWithin]
-  simp only [mem_univ, true_and_iff]
+  simp only [mem_univ, true_and]
 
 theorem tendsto_nhds_nhds {a b} :
     Tendsto f (𝓝 a) (𝓝 b) ↔ ∀ ε > 0, ∃ δ > 0, ∀ ⦃x⦄, edist x a < δ → edist (f x) b < ε :=
@@ -489,7 +491,7 @@ theorem tendsto_nhds {f : Filter β} {u : β → α} {a : α} :
 theorem tendsto_atTop [Nonempty β] [SemilatticeSup β] {u : β → α} {a : α} :
     Tendsto u atTop (𝓝 a) ↔ ∀ ε > 0, ∃ N, ∀ n ≥ N, edist (u n) a < ε :=
   (atTop_basis.tendsto_iff nhds_basis_eball).trans <| by
-    simp only [exists_prop, true_and_iff, mem_Ici, mem_ball]
+    simp only [exists_prop, true_and, mem_Ici, mem_ball]
 
 section Compact
 
@@ -593,8 +595,9 @@ a uniformity which is equal to the original one, but maybe not defeq.
 This is useful if one wants to construct an emetric space with a
 specified uniformity. See Note [forgetful inheritance] explaining why having definitionally
 the right uniformity is often important.
+See note [reducible non-instances].
 -/
-def EMetricSpace.replaceUniformity {γ} [U : UniformSpace γ] (m : EMetricSpace γ)
+abbrev EMetricSpace.replaceUniformity {γ} [U : UniformSpace γ] (m : EMetricSpace γ)
     (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : EMetricSpace γ where
   edist := @edist _ m.toEDist
   edist_self := edist_self
@@ -604,8 +607,9 @@ def EMetricSpace.replaceUniformity {γ} [U : UniformSpace γ] (m : EMetricSpace 
   toUniformSpace := U
   uniformity_edist := H.trans (@PseudoEMetricSpace.uniformity_edist γ _)
 
-/-- The extended metric induced by an injective function taking values in an emetric space. -/
-def EMetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (m : EMetricSpace β) :
+/-- The extended metric induced by an injective function taking values in an emetric space.
+See Note [reducible non-instances]. -/
+abbrev EMetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (m : EMetricSpace β) :
     EMetricSpace γ :=
   { PseudoEMetricSpace.induced f m.toPseudoEMetricSpace with
     eq_of_edist_eq_zero := fun h => hf (edist_eq_zero.1 h) }

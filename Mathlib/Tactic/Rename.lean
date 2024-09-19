@@ -38,3 +38,5 @@ elab_rules : tactic
     withMainContext do
       for fvar in ids, tgt in bs do
         Elab.Term.addTermInfo' tgt (mkFVar fvar)
+
+end Mathlib.Tactic

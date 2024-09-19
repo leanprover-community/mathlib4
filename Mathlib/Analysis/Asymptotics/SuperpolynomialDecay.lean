@@ -159,7 +159,7 @@ theorem SuperpolynomialDecay.trans_eventually_abs_le (hf : SuperpolynomialDecay 
   rw [superpolynomialDecay_iff_abs_tendsto_zero] at hf ⊢
   refine fun z =>
     tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds (hf z)
-      (eventually_of_forall fun x => abs_nonneg _) (hfg.mono fun x hx => ?_)
+      (Eventually.of_forall fun x => abs_nonneg _) (hfg.mono fun x hx => ?_)
   calc
     |k x ^ z * g x| = |k x ^ z| * |g x| := abs_mul (k x ^ z) (g x)
     _ ≤ |k x ^ z| * |f x| := by gcongr _ * ?_; exact hx
@@ -167,7 +167,7 @@ theorem SuperpolynomialDecay.trans_eventually_abs_le (hf : SuperpolynomialDecay 
 
 theorem SuperpolynomialDecay.trans_abs_le (hf : SuperpolynomialDecay l k f)
     (hfg : ∀ x, |g x| ≤ |f x|) : SuperpolynomialDecay l k g :=
-  hf.trans_eventually_abs_le (eventually_of_forall hfg)
+  hf.trans_eventually_abs_le (Eventually.of_forall hfg)
 
 end LinearOrderedCommRing
 
@@ -206,7 +206,7 @@ theorem superpolynomialDecay_iff_abs_isBoundedUnder (hk : Tendsto k l atTop) :
     zero_mul m ▸
       Tendsto.mul_const m ((tendsto_zero_iff_abs_tendsto_zero _).1 hk.inv_tendsto_atTop)
   refine
-    tendsto_of_tendsto_of_tendsto_of_le_of_le' h1 h2 (eventually_of_forall fun x => abs_nonneg _)
+    tendsto_of_tendsto_of_tendsto_of_le_of_le' h1 h2 (Eventually.of_forall fun x => abs_nonneg _)
       ((eventually_map.1 hm).mp ?_)
   refine (hk.eventually_ne_atTop 0).mono fun x hk0 hx => ?_
   refine Eq.trans_le ?_ (mul_le_mul_of_nonneg_left hx <| abs_nonneg (k x)⁻¹)

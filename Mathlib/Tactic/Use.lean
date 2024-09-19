@@ -202,3 +202,5 @@ elab (name := useSyntax)
 @[inherit_doc useSyntax]
 elab "use!" discharger?:(Parser.Tactic.discharger)? ppSpace args:term,+ : tactic => do
   runUse true (← mkUseDischarger discharger?) args.getElems.toList
+
+end Mathlib.Tactic

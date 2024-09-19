@@ -60,9 +60,6 @@ structure IsLimit (t : Cone F) where
   uniq : ∀ (s : Cone F) (m : s.pt ⟶ t.pt) (_ : ∀ j : J, m ≫ t.π.app j = s.π.app j), m = lift s := by
     aesop_cat
 
--- Porting note (#10618):  simp can prove this. Linter complains it still exists
-attribute [-simp, nolint simpNF] IsLimit.mk.injEq
-
 attribute [reassoc (attr := simp)] IsLimit.fac
 
 namespace IsLimit
@@ -515,9 +512,6 @@ structure IsColimit (t : Cocone F) where
     aesop_cat
 
 attribute [reassoc (attr := simp)] IsColimit.fac
-
--- Porting note (#10618): simp can prove this. Linter claims it still is tagged with simp
-attribute [-simp, nolint simpNF] IsColimit.mk.injEq
 
 namespace IsColimit
 

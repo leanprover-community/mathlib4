@@ -105,7 +105,7 @@ theorem locally_ne_zero (hp : HasFPowerSeriesAt f p z₀) (h : p ≠ 0) : ∀ᶠ
   simpa [e1, e2, e3] using pow_ne_zero p.order (sub_ne_zero.mpr e3)
 
 theorem locally_zero_iff (hp : HasFPowerSeriesAt f p z₀) : (∀ᶠ z in 𝓝 z₀, f z = 0) ↔ p = 0 :=
-  ⟨fun hf => hp.eq_zero_of_eventually hf, fun h => eventually_eq_zero (by rwa [h] at hp)⟩
+  ⟨fun hf => hp.eq_zero_of_eventually hf, fun h => eventually_eq_zero (𝕜 := 𝕜) (by rwa [h] at hp)⟩
 
 end HasFPowerSeriesAt
 
@@ -157,7 +157,7 @@ lemma unique_eventuallyEq_zpow_smul_nonzero {m n : ℤ}
   rw [frequently_eq_iff_eventually_eq hj_an] at this
   · rw [EventuallyEq.eq_of_nhds this, sub_self, zero_zpow _ (sub_ne_zero.mpr hj_ne), zero_smul]
   conv => enter [2, z, 1]; rw [← Int.toNat_sub_of_le h_le, zpow_natCast]
-  exact (((analyticAt_id _ _).sub analyticAt_const).pow _).smul hg_an
+  exact ((analyticAt_id.sub analyticAt_const).pow _).smul hg_an
 
 /-- For a function `f` on `𝕜`, and `z₀ ∈ 𝕜`, there exists at most one `n` such that on a
 neighbourhood of `z₀` we have `f z = (z - z₀) ^ n • g z`, with `g` analytic and nonvanishing at

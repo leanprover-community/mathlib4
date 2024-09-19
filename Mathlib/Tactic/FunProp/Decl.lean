@@ -152,3 +152,7 @@ def tacticToDischarge (tacticCode : TSyntax `tactic) : Expr → MetaM (Option Ex
     let (result?, _) ← runTac?.run {} {}
 
     return result?
+
+end Meta.FunProp
+
+end Mathlib

@@ -22,7 +22,7 @@ namespace PresheafOfModules
 variable {C : Type u₁} [Category.{v₁} C] (R : Cᵒᵖ ⥤ RingCat.{u})
 
 noncomputable instance : NormalEpiCategory (PresheafOfModules.{v} R) where
-  normalEpiOfEpi p _ := NormalEpi.mk _ (kernel.ι p)  (kernel.condition _)
+  normalEpiOfEpi p _ := NormalEpi.mk _ (kernel.ι p) (kernel.condition _)
     (evaluationJointlyReflectsColimits _ _ (fun _ =>
       Abelian.isColimitMapCoconeOfCokernelCoforkOfπ _ _))
 

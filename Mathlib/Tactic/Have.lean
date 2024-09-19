@@ -101,3 +101,5 @@ elab_rules : tactic
 | `(tactic| let $n:optBinderIdent $bs* $[: $t:term]?) => withMainContext do
   let (goal1, goal2) ← haveLetCore (← getMainGoal) n bs t true
   replaceMainGoal [goal1, goal2]
+
+end Mathlib.Tactic

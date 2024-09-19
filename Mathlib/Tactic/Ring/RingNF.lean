@@ -275,6 +275,4 @@ macro (name := ringConv) "ring" : conv =>
 
 end RingNF
 
-end Tactic
-
-end Mathlib
+end Mathlib.Tactic

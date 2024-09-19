@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
-import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 # Monomorphisms and epimorphisms in `Group`

@@ -511,7 +511,7 @@ theorem IsClosed.isLindelof [LindelofSpace X] (h : IsClosed s) : IsLindelof s :=
 theorem IsCompact.isLindelof (hs : IsCompact s) :
     IsLindelof s := by tauto
 
-/-- A σ-compact set `s` is Lindelöf-/
+/-- A σ-compact set `s` is Lindelöf -/
 theorem IsSigmaCompact.isLindelof (hs : IsSigmaCompact s) :
     IsLindelof s := by
   rw [IsSigmaCompact] at hs
@@ -564,7 +564,7 @@ theorem Filter.coLindelof_neBot_iff : NeBot (Filter.coLindelof X) ↔ NonLindelo
 theorem not_LindelofSpace_iff : ¬LindelofSpace X ↔ NonLindelofSpace X :=
   ⟨fun h₁ => ⟨fun h₂ => h₁ ⟨h₂⟩⟩, fun ⟨h₁⟩ ⟨h₂⟩ => h₁ h₂⟩
 
-/-- A compact space `X` is Lindelöf.  -/
+/-- A compact space `X` is Lindelöf. -/
 instance (priority := 100) [CompactSpace X] : LindelofSpace X :=
   { isLindelof_univ := isCompact_univ.isLindelof}
 
@@ -594,7 +594,7 @@ theorem Filter.comap_coLindelof_le {f : X → Y} (hf : Continuous f) :
   simpa using t.subset_preimage_image f
 
 theorem isLindelof_range [LindelofSpace X] {f : X → Y} (hf : Continuous f) :
-    IsLindelof (range f) := by  rw [← image_univ]; exact isLindelof_univ.image hf
+    IsLindelof (range f) := by rw [← image_univ]; exact isLindelof_univ.image hf
 
 theorem isLindelof_diagonal [LindelofSpace X] : IsLindelof (diagonal X) :=
   @range_diag X ▸ isLindelof_range (continuous_id.prod_mk continuous_id)
@@ -692,7 +692,7 @@ for open sets in the definition, and then conclude that this holds for all sets 
 def IsHereditarilyLindelof (s : Set X) :=
   ∀ t ⊆ s, IsLindelof t
 
-/-- Type class for Hereditarily Lindelöf spaces.  -/
+/-- Type class for Hereditarily Lindelöf spaces. -/
 class HereditarilyLindelofSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- In a Hereditarily Lindelöf space, `Set.univ` is a Hereditarily Lindelöf set. -/
   isHereditarilyLindelof_univ : IsHereditarilyLindelof (univ : Set X)

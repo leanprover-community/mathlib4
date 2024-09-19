@@ -32,3 +32,5 @@ def _root_.Lean.Expr.relSidesIfSymm? (e : Expr) : MetaM (Option (Name × Expr ×
       | some n => return some (n, lhs, rhs)
       | none => return none
   return none
+
+end Mathlib.Tactic

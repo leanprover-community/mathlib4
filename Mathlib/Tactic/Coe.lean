@@ -61,3 +61,5 @@ elab "(" "↥" ")" : term <= expectedType =>
       ensureHasType b ty
     else
       throwError "cannot coerce to sort{indentExpr x}"
+
+end Lean.Elab.Term.CoeImpl

@@ -79,12 +79,12 @@ theorem tendsto_measure_symmDiff_preimage_nhds_zero
   obtain ⟨K, hKg, hKco, hKcl, hKμ⟩ :
       ∃ K, MapsTo g K s ∧ IsCompact K ∧ IsClosed K ∧ μ (g ⁻¹' s \ K) < ε / 2 :=
     (hg.measurable hso.measurableSet).exists_isCompact_isClosed_diff_lt hνs' <| by simp [hε.ne']
-  have hKm : MeasurableSet K := hKcl.measurableSet
+  have hKm : NullMeasurableSet K μ := hKcl.nullMeasurableSet
   -- Take `a` such that `f a` is measure preserving and maps `K` to `s`.
   -- This is possible, because `K` is a compact set and `s` is an open set.
   filter_upwards [hf, ContinuousMap.tendsto_nhds_compactOpen.mp hfg K hKco s hso hKg] with a hfa ha
   -- Then each of the sets `g ⁻¹' s ∆ K = g ⁻¹' s \ K` and `f a ⁻¹' s ∆ K = f a ⁻¹' s \ K`
-  -- have measure at most `ε / 2`, thus `f a ⁻¹' s ∆ g ⁻¹' s` has measure at  most `ε`.
+  -- have measure at most `ε / 2`, thus `f a ⁻¹' s ∆ g ⁻¹' s` has measure at most `ε`.
   rw [← ENNReal.add_halves ε]
   refine (measure_symmDiff_le _ K _).trans ?_
   rw [symmDiff_of_ge ha.subset_preimage, symmDiff_of_le hKg.subset_preimage]
@@ -113,7 +113,7 @@ theorem isClosed_setOf_preimage_ae_eq {f : Z → C(X, Y)} (hf : Continuous f)
     apply gt_mem_nhds
     rwa [pos_iff_ne_zero, ne_eq, measure_symmDiff_eq_zero_iff]
   filter_upwards [(tendsto_measure_symmDiff_preimage_nhds_zero (hf.tendsto z)
-    (eventually_of_forall hfm) (hfm z) htm ht).eventually hz] with w hw
+    (.of_forall hfm) (hfm z) htm ht).eventually hz] with w hw
   intro (hw' : f w ⁻¹' t =ᵐ[μ] s)
   rw [measure_congr (hw'.symmDiff (ae_eq_refl _)), symmDiff_comm] at hw
   exact hw.false

@@ -72,3 +72,5 @@ exist in the local context of `mvarId`, nothing happens.
 def modifyLocalDecl [MonadMCtx m] (mvarId : MVarId) (fvarId : FVarId)
     (f : LocalDecl → LocalDecl) : m Unit :=
   modifyLocalContext mvarId fun lctx ↦ lctx.modifyLocalDecl fvarId f
+
+end Mathlib.Tactic

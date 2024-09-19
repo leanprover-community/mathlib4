@@ -77,3 +77,5 @@ elab_rules : command
       else
         unless binders.getNumArgs == 0 do
           throwError "expected type after ':'"
+
+end Mathlib.Tactic.Recall

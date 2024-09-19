@@ -614,13 +614,21 @@ theorem degree_add_eq_left_of_degree_lt (h : degree q < degree p) : degree (p + 
 theorem degree_add_eq_right_of_degree_lt (h : degree p < degree q) : degree (p + q) = degree q := by
   rw [add_comm, degree_add_eq_left_of_degree_lt h]
 
+theorem natDegree_add_eq_left_of_degree_lt (h : degree q < degree p) :
+    natDegree (p + q) = natDegree p :=
+  natDegree_eq_of_degree_eq (degree_add_eq_left_of_degree_lt h)
+
 theorem natDegree_add_eq_left_of_natDegree_lt (h : natDegree q < natDegree p) :
     natDegree (p + q) = natDegree p :=
-  natDegree_eq_of_degree_eq (degree_add_eq_left_of_degree_lt (degree_lt_degree h))
+  natDegree_add_eq_left_of_degree_lt (degree_lt_degree h)
+
+theorem natDegree_add_eq_right_of_degree_lt (h : degree p < degree q) :
+    natDegree (p + q) = natDegree q :=
+  natDegree_eq_of_degree_eq (degree_add_eq_right_of_degree_lt h)
 
 theorem natDegree_add_eq_right_of_natDegree_lt (h : natDegree p < natDegree q) :
     natDegree (p + q) = natDegree q :=
-  natDegree_eq_of_degree_eq (degree_add_eq_right_of_degree_lt (degree_lt_degree h))
+  natDegree_add_eq_right_of_degree_lt (degree_lt_degree h)
 
 theorem degree_add_C (hp : 0 < degree p) : degree (p + C a) = degree p :=
   add_comm (C a) p ▸ degree_add_eq_right_of_degree_lt <| lt_of_le_of_lt degree_C_le hp

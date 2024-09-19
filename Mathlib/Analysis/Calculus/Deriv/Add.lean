@@ -23,9 +23,9 @@ derivative
 universe u v w
 
 open scoped Classical
-open Topology Filter ENNReal
+open scoped Topology Filter ENNReal
 
-open Filter Asymptotics Set
+open Asymptotics Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]

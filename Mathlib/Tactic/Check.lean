@@ -55,3 +55,5 @@ Like the `#check` command, the `#check` tactic allows stuck typeclass instance p
 These become metavariables in the output.
 -/
 elab tk:"#check " colGt term:term : tactic => elabCheckTactic tk true term
+
+end Mathlib.Tactic

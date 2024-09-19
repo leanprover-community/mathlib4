@@ -195,3 +195,20 @@ instance (priority := 100) completableTopField_of_complete (L : Type*) [Field L]
       calc
         map (fun x => x⁻¹) F ≤ map (fun x => x⁻¹) (𝓝 x) := map_mono hx
         _ ≤ 𝓝 x⁻¹ := continuousAt_inv₀ hx'
+
+variable {α β : Type*} [Field β] [b : UniformSpace β] [CompletableTopField β]
+  [Field α]
+
+/-- The pullback of a completable topological field along a uniform inducing
+ring homomorphism is a completable topological field. -/
+theorem UniformInducing.completableTopField
+    [UniformSpace α] [T0Space α]
+    {f : α →+* β} (hf : UniformInducing f) :
+    CompletableTopField α := by
+  refine CompletableTopField.mk (fun F F_cau inf_F => ?_)
+  rw [← UniformInducing.cauchy_map_iff hf] at F_cau ⊢
+  have h_comm : (f ∘ fun x => x⁻¹) = (fun x => x⁻¹) ∘ f := by
+    ext; simp only [Function.comp_apply, map_inv₀, Subfield.coe_inv]
+  rw [Filter.map_comm h_comm]
+  apply CompletableTopField.nice _ F_cau
+  rw [← Filter.push_pull', ← map_zero f, ← hf.inducing.nhds_eq_comap, inf_F, Filter.map_bot]

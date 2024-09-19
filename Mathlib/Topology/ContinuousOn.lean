@@ -3,6 +3,7 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Algebra.Group.Indicator
 import Mathlib.Topology.Constructions
 
 /-!
@@ -384,7 +385,7 @@ theorem tendsto_nhdsWithin_iff {a : α} {l : Filter β} {s : Set α} {f : β →
 theorem tendsto_nhdsWithin_range {a : α} {l : Filter β} {f : β → α} :
     Tendsto f l (𝓝[range f] a) ↔ Tendsto f l (𝓝 a) :=
   ⟨fun h => h.mono_right inf_le_left, fun h =>
-    tendsto_inf.2 ⟨h, tendsto_principal.2 <| eventually_of_forall mem_range_self⟩⟩
+    tendsto_inf.2 ⟨h, tendsto_principal.2 <| Eventually.of_forall mem_range_self⟩⟩
 
 theorem Filter.EventuallyEq.eq_of_nhdsWithin {s : Set α} {f g : α → β} {a : α} (h : f =ᶠ[𝓝[s] a] g)
     (hmem : a ∈ s) : f a = g a :=
@@ -684,8 +685,7 @@ theorem continuousWithinAt_singleton {f : α → β} {x : α} : ContinuousWithin
 @[simp]
 theorem continuousWithinAt_insert_self {f : α → β} {x : α} {s : Set α} :
     ContinuousWithinAt f (insert x s) x ↔ ContinuousWithinAt f s x := by
-  simp only [← singleton_union, continuousWithinAt_union, continuousWithinAt_singleton,
-    true_and_iff]
+  simp only [← singleton_union, continuousWithinAt_union, continuousWithinAt_singleton, true_and]
 
 alias ⟨_, ContinuousWithinAt.insert_self⟩ := continuousWithinAt_insert_self
 
@@ -711,7 +711,7 @@ theorem continuousWithinAt_update_same [DecidableEq α] {f : α → β} {s : Set
     ContinuousWithinAt (update f x y) s x ↔ Tendsto (update f x y) (𝓝[s \ {x}] x) (𝓝 y) := by
     { rw [← continuousWithinAt_diff_self, ContinuousWithinAt, update_same] }
     _ ↔ Tendsto f (𝓝[s \ {x}] x) (𝓝 y) :=
-      tendsto_congr' <| eventually_nhdsWithin_iff.2 <| eventually_of_forall
+      tendsto_congr' <| eventually_nhdsWithin_iff.2 <| Eventually.of_forall
         fun z hz => update_noteq hz.2 _ _
 
 @[simp]
@@ -1138,7 +1138,8 @@ theorem IsOpen.ite' {s s' t : Set α} (hs : IsOpen s) (hs' : IsOpen s')
     (ht : ∀ x ∈ frontier t, x ∈ s ↔ x ∈ s') : IsOpen (t.ite s s') := by
   classical
     simp only [isOpen_iff_continuous_mem, Set.ite] at *
-    convert continuous_piecewise (fun x hx => propext (ht x hx)) hs.continuousOn hs'.continuousOn
+    convert
+      continuous_piecewise (fun x hx => propext (ht x hx)) hs.continuousOn hs'.continuousOn using 2
     rename_i x
     by_cases hx : x ∈ t <;> simp [hx]
 
