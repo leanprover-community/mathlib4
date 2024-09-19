@@ -139,14 +139,31 @@ end setOption
 section unicodeLinter
 
 open Mathlib.Linter.TextBased
+open Mathlib.Linter.TextBased.unicodeLinter
 
 #guard let errContext : ErrorContext := {
     error := .unwantedUnicode 'Z', lineNumber := 4, path:="./MYFILE.lean"}
   (parse?_errorContext <| outputMessage errContext .exceptionsFile) == some errContext
 
--- The list `othersInMathlib` should only contain characters not present in another list.
-#guard unicodeLinter.othersInMathlib.toList ∩ unicodeLinter.withVSCodeAbbrev.toList = ∅
-#guard unicodeLinter.othersInMathlib.toList ∩ unicodeLinter.emojis.toList = ∅
-#guard unicodeLinter.othersInMathlib.toList ∩ unicodeLinter.nonEmojis.toList = ∅
+-- lists of special characters should not have allowed ASCII.
+#guard List.all [
+  othersInMathlib,
+  withVSCodeAbbrev,
+  emojis,
+  nonEmojis
+  ] fun arr ↦ arr.all (!ASCII.allowed ·)
+
+
+-- The lists of special characters should be disjoint.
+#guard othersInMathlib.toList ∩ withVSCodeAbbrev.toList = ∅
+#guard othersInMathlib.toList ∩ emojis.toList = ∅
+#guard othersInMathlib.toList ∩ nonEmojis.toList = ∅
+
+#guard withVSCodeAbbrev.toList ∩ emojis.toList = ∅
+#guard withVSCodeAbbrev.toList ∩ nonEmojis.toList = ∅
+
+#guard emojis.toList ∩ nonEmojis.toList = ∅
+
+
 
 end unicodeLinter
