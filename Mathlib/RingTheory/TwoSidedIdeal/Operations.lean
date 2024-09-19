@@ -5,7 +5,6 @@ Authors: Jujian Zhang, Jireh Loreaux
 -/
 
 import Mathlib.RingTheory.TwoSidedIdeal.Lattice
-import Mathlib.RingTheory.TwoSidedIdeal.BigOperators
 import Mathlib.RingTheory.Congruence.Opposite
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Data.Fintype.BigOperators
