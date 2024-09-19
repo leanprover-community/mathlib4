@@ -35,17 +35,15 @@ symmetric operator, simultaneous eigenspaces, joint eigenspaces
 
 -/
 
-variable {𝕜 E n m: Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-
 open Module.End
 
 namespace LinearMap
 
 namespace IsSymmetric
 
-section Pair
+section CommRing
 
+variable {𝕜 E n m: Type*} [CommRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable {α : 𝕜} {A B : E →ₗ[𝕜] E}
 
 /-- If a pair of operators commute, then the eigenspaces of one are invariant under the other. -/
@@ -54,6 +52,24 @@ theorem eigenspace_invariant_of_commute
   intro v hv
   rw [eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply, ← comp_apply A B v, hAB,
     comp_apply B A v, ← map_smul, ← map_sub, hv, map_zero] at *
+
+/-- The indexed infimum of eigenspaces of a commuting family of linear operators is
+invariant under each operator. -/
+theorem iInf_eigenspace_invariant_of_commute {T : n → E →ₗ[𝕜] E}
+    (hC : ∀ i j, T i ∘ₗ T j = T j ∘ₗ T i) (i : n) (γ : {x // x ≠ i} → 𝕜) ⦃v : E⦄
+    (hv : v ∈ ⨅ j, eigenspace (Subtype.restrict (· ≠ i) T j) (γ j)) :
+    T i v ∈ ⨅ j, eigenspace (Subtype.restrict (· ≠ i) T j) (γ j) := by
+  simp only [Submodule.mem_iInf] at hv ⊢
+  exact fun j ↦ eigenspace_invariant_of_commute (hC j i) (γ j) v (hv j)
+
+end CommRing
+
+open Submodule
+
+section RCLike
+
+variable {𝕜 E n m: Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable {α : 𝕜} {A B : E →ₗ[𝕜] E}
 
 /-- The simultaneous eigenspaces of a pair of commuting symmetric operators form an
 `OrthogonalFamily`. -/
@@ -98,24 +114,9 @@ theorem directSum_isInternal_of_commute (hA : A.IsSymmetric) (hB : B.IsSymmetric
   rw [Submodule.orthogonal_eq_bot_iff, iSup_prod, iSup_comm]
   exact iSup_iSup_eigenspace_inf_eigenspace_eq_top hA hB hAB
 
-end Pair
-
-section Tuple
-
-open Submodule
-
-/-- The indexed infimum of eigenspaces of a commuting family of linear operators is
-invariant under each operator. -/
-theorem iInf_eigenspace_invariant_of_commute {T : n → E →ₗ[𝕜] E}
-    (hC : ∀ i j, T i ∘ₗ T j = T j ∘ₗ T i) (i : n) (γ : {x // x ≠ i} → 𝕜) ⦃v : E⦄
-    (hv : v ∈ ⨅ j, eigenspace (Subtype.restrict (· ≠ i) T j) (γ j)) :
-    T i v ∈ ⨅ j, eigenspace (Subtype.restrict (· ≠ i) T j) (γ j) := by
-  simp only [mem_iInf] at hv ⊢
-  exact fun j ↦ eigenspace_invariant_of_commute (hC j i) (γ j) v (hv j)
-
 /-- If `F` is an invariant subspace of a symmetric operator `S`, then `F` is the supremum of the
 eigenspaces of the restriction of `S` to `F`. -/
-theorem iSup_eigenspace_restrict [FiniteDimensional 𝕜 E] {F : Submodule 𝕜 E}
+theorem iSup_eigenspace_restrict {F : Submodule 𝕜 E}
     (S : E →ₗ[𝕜] E) (hS : IsSymmetric S) (hInv : ∀ v ∈ F, S v ∈ F) :
     ⨆ μ, map F.subtype (eigenspace (S.restrict hInv) μ) = F := by
   conv_lhs => rw [← Submodule.map_iSup]
@@ -126,7 +127,7 @@ theorem iSup_eigenspace_restrict [FiniteDimensional 𝕜 E] {F : Submodule 𝕜 
 
 /-- The orthocomplement of the indexed supremum of joint eigenspaces of a finite commuting tuple of
 symmetric operators is trivial. -/
-theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Fintype n] [FiniteDimensional 𝕜 E]
+theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Fintype n]
     (T : n → (E →ₗ[𝕜] E)) (hT :(∀ (i : n), ((T i).IsSymmetric)))
     (hC : (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i))) :
     (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
@@ -153,7 +154,15 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Fintype n] [FiniteDim
     · simp
     · simp [dif_neg hx]
 
-end Tuple
+/-- Given a finite commuting family of symmetric linear operators, the Hilbert space on which they
+act decomposes as an internal direct sum of simultaneous eigenspaces. -/
+theorem DirectSum.IsInternal_of_simultaneous_eigenspaces_of_commuting_symmetric_tuple :
+    DirectSum.IsInternal (fun (α : n → 𝕜) ↦ ⨅ (j : n), (eigenspace (T j) (α j))) := by
+  rw [OrthogonalFamily.isInternal_iff]
+  · exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot T hT hC
+  · exact orthogonalFamily_iInf_eigenspaces T hT
+
+end RCLike
 
 end IsSymmetric
 

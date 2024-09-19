@@ -171,8 +171,8 @@ theorem genEigenspace_zero (f : End R M) (k : ℕ) :
   simp [Module.End.genEigenspace]
 
 @[simp]
-theorem Module.End.genEigenspace_one {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
-    (f : Module.End R M) (μ : R) : (f.genEigenspace μ) 1 = f.eigenspace μ :=
+theorem genEigenspace_one (f : End R M) (μ : R) :
+    f.genEigenspace μ 1 = f.eigenspace μ :=
   rfl
 
 /-- A nonzero element of a generalized eigenspace is a generalized eigenvector.
