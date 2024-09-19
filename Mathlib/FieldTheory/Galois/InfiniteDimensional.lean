@@ -423,8 +423,8 @@ lemma limtoGalContinuous [IsGalois k K] : Continuous (mulEquivtoLimit k K).symm 
     (K ≃ₐ[k] K)).mpr (fun y hy => ((mem_fixingSubgroup_iff (K ≃ₐ[k] K)).mp h) y (lecl hy))
   have le1 : (mulEquivtoLimit k K).symm ⁻¹' L.fixingSubgroup ⊆ (mulEquivtoLimit k K).symm ⁻¹' H :=
     fun ⦃a⦄ => fun b => hO2 b
-  have le : (mulEquivtoLimit k K).symm ⁻¹' L'.val.fixingSubgroup ⊆ (mulEquivtoLimit k K).symm ⁻¹' H
-    := fun ⦃a⦄ b ↦ le1 (this b)
+  have le : (mulEquivtoLimit k K).symm ⁻¹' L'.val.fixingSubgroup ⊆
+    (mulEquivtoLimit k K).symm ⁻¹' H := fun ⦃a⦄ b ↦ le1 (this b)
   apply mem_nhds_iff.mpr
   use (mulEquivtoLimit k K).symm ⁻¹' L'.val.fixingSubgroup
   simp only [le, true_and]
