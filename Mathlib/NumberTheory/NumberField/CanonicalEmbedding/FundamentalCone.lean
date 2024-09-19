@@ -290,7 +290,7 @@ theorem exists_unitSMul_mem_integralPoint {x : mixedSpace K} (hx : x ≠ 0)
       (norm_eq_zero_iff' (Set.mem_range_of_mem_image (mixedEmbedding K) _ hx')).not.mpr hx
   obtain ⟨u, hu⟩ := exists_unit_smul_mem hx
   obtain ⟨_, ⟨x, rfl⟩, _, rfl⟩ := hx'
-  exact ⟨u, mem_integralPoint.mpr ⟨hu, ⟨u * x, by simp_rw [unitSMul_smul, ← map_mul]⟩⟩⟩
+  exact ⟨u, mem_integralPoint.mpr ⟨hu, u * x, by simp_rw [unitSMul_smul, ← map_mul]⟩⟩
 
 /-- The set `integralPoint K` is stable under the action of the torsion. -/
 theorem torsion_unitSMul_mem_integralPoint {x : mixedSpace K} {ζ : (𝓞 K)ˣ} (hζ : ζ ∈ torsion K)
