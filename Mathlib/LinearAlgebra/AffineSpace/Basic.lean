@@ -5,8 +5,6 @@ Authors: Joseph Myers
 -/
 import Mathlib.Algebra.AddTorsor
 
-#align_import linear_algebra.affine_space.basic from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
-
 /-!
 # Affine space
 
@@ -40,4 +38,4 @@ Some key definitions are not yet present.
  -/
 
 
-scoped[Affine] notation "AffineSpace" => AddTorsor
+@[inherit_doc] scoped[Affine] notation "AffineSpace" => AddTorsor

@@ -105,7 +105,8 @@ def maybeProveInjective (ginj : Expr) (using? : Option Expr) : MetaM Bool := do
       let err ← mkHasTypeButIsExpectedMsg (← inferType u) (← inferType ginj)
       throwError "Using clause {err}"
   -- Try an assumption
-  try ginj.mvarId!.assumption; return true catch _ => pure ()
+  if ← ginj.mvarId!.assumptionCore then
+    return true
   -- Try using that this is an equivalence
   -- Note: if `f` is itself a metavariable, this can cause it to become an equivalence;
   -- perhaps making sure `f` is an equivalence would be correct, but maybe users
@@ -213,3 +214,5 @@ elab_rules : tactic | `(tactic| apply_fun $f $[$loc]? $[using $P]?) => do
     (atTarget := withMainContext do
       replaceMainGoal <| ← applyFunTarget f P (← getMainGoal))
     (failed := fun _ ↦ throwError "apply_fun failed")
+
+end Mathlib.Tactic

@@ -30,8 +30,8 @@ def getMemType {m : Type → Type} [Monad m] [MonadError m] (e : Expr) : m (Opti
     | (``List, #[α])     => return α
     | (``Multiset, #[α]) => return α
     | (``Finset, #[α])   => return α
-    | _ => throwError ("Hypothesis must be of type `x ∈ (A : List α)`, `x ∈ (A : Finset α)`,"
-        ++ " or `x ∈ (A : Multiset α)`")
+    | _ => throwError "Hypothesis must be of type `x ∈ (A : List α)`, `x ∈ (A : Finset α)`, \
+                       or `x ∈ (A : Multiset α)`"
   | _ => return none
 
 /--
@@ -60,7 +60,7 @@ partial def finCasesAt (g : MVarId) (hyp : FVarId) : MetaM (List MVarId) := g.wi
     -- Deal with `x : A`, where `[Fintype A]` is available:
     let inst ← synthInstance (← mkAppM ``Fintype #[type])
     let elems ← mkAppOptM ``Fintype.elems #[type, inst]
-    let t ← mkAppM ``Membership.mem #[.fvar hyp, elems]
+    let t ← mkAppM ``Membership.mem #[elems, .fvar hyp]
     let v ← mkAppOptM ``Fintype.complete #[type, inst, Expr.fvar hyp]
     let (fvar, g) ← (← g.assert `this t v).intro1P
     finCasesAt g fvar
@@ -123,3 +123,9 @@ produces three goals with hypotheses
   | `(tactic| fin_cases $[$hyps:ident],*) => withMainContext <| focus do
     for h in hyps do
       allGoals <| liftMetaTactic (finCasesAt · (← getFVarId h))
+
+end Tactic
+
+end Elab
+
+end Lean

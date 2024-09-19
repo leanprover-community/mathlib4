@@ -42,7 +42,7 @@ def HNNExtension.con (G : Type*) [Group G] (A B : Subgroup G) (φ : A ≃* B) :
 /-- The HNN Extension of a group `G`, `HNNExtension G A B φ`. Given a group `G`, subgroups `A` and
 `B` and an isomorphism `φ` of `A` and `B`, we adjoin a letter `t` to `G`, such that for
 any `a ∈ A`, the conjugate of `of a` by `t` is `of (φ a)`, where `of` is the canonical
-map from `G` into the `HNNExtension`.  -/
+map from `G` into the `HNNExtension`. -/
 def HNNExtension (G : Type*) [Group G] (A B : Subgroup G) (φ : A ≃* B) : Type _ :=
   (HNNExtension.con G A B φ).Quotient
 
@@ -123,7 +123,7 @@ theorem induction_on {motive : HNNExtension G A B φ → Prop}
     lift (HNNExtension.of.codRestrict S of)
       ⟨HNNExtension.t, t⟩ (by intro a; ext; simp [equiv_eq_conj, mul_assoc])
   have hf : S.subtype.comp f = MonoidHom.id _ :=
-    hom_ext (by ext; simp) (by simp)
+    hom_ext (by ext; simp [f]) (by simp [f])
   show motive (MonoidHom.id _ x)
   rw [← hf]
   exact (f x).2
@@ -164,7 +164,8 @@ theorem toSubgroupEquiv_neg_one : toSubgroupEquiv φ (-1) = φ.symm := rfl
 theorem toSubgroupEquiv_neg_apply (u : ℤˣ) (a : toSubgroup A B u) :
     (toSubgroupEquiv φ (-u) (toSubgroupEquiv φ u a) : G) = a := by
   rcases Int.units_eq_one_or u with rfl | rfl
-  · simp
+  · -- This used to be `simp` before leanprover/lean4#2644
+    simp; erw [MulEquiv.symm_apply_apply]
   · simp only [toSubgroup_neg_one, toSubgroupEquiv_neg_one, SetLike.coe_eq_coe]
     exact φ.apply_symm_apply a
 
@@ -180,13 +181,8 @@ structure TransversalPair : Type _ :=
   compl : ∀ u, IsComplement (toSubgroup A B u : Subgroup G) (set u)
 
 instance TransversalPair.nonempty : Nonempty (TransversalPair G A B) := by
-  have := fun u => exists_right_transversal (H := toSubgroup A B u) (1 : G)
-  simp only [Classical.skolem] at this
-  rcases this with ⟨t, ht⟩
-  apply Nonempty.intro
-  exact
-    { set := t
-      compl := fun i => (ht i).1 }
+  choose t ht using fun u ↦ (toSubgroup A B u).exists_right_transversal 1
+  exact ⟨⟨t, fun i ↦ (ht i).1⟩⟩
 
 /-- A reduced word is a `head`, which is an element of `G`, followed by the product list of pairs.
 There should also be no sequences of the form `t^u * g * t^-u`, where `g` is in
@@ -227,7 +223,7 @@ variable {d : TransversalPair G A B}
 
 @[ext]
 theorem ext {w w' : NormalWord d}
-    (h1 : w.head = w'.head) (h2 : w.toList = w'.toList): w = w' := by
+    (h1 : w.head = w'.head) (h2 : w.toList = w'.toList) : w = w' := by
   rcases w with ⟨⟨⟩, _⟩; cases w'; simp_all
 
 /-- The empty word -/
@@ -285,7 +281,7 @@ def cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
       rintro ⟨u', g'⟩ hu' hw1
       exact h2 _ (by simp_all) hw1 }
 
-/-- A recursor to induct on a `NormalWord`, by proving the propert is preserved under `cons` -/
+/-- A recursor to induct on a `NormalWord`, by proving the property is preserved under `cons` -/
 @[elab_as_elim]
 def consRecOn {motive : NormalWord d → Sort*} (w : NormalWord d)
     (ofGroup : ∀g, motive (ofGroup g))
@@ -349,10 +345,10 @@ theorem unitsSMulGroup_snd (u : ℤˣ) (g : G) :
     (unitsSMulGroup φ d u g).2 = ((d.compl u).equiv g).2 := by
   rcases Int.units_eq_one_or u with rfl | rfl <;> rfl
 
-variable {d} [DecidableEq G]
+variable {d}
 
-/-- `Cancels u w` is a predicate expressing whether `t^u` cancels with some occurence
-of `t^-u` when when we multiply `t^u` by `w`. -/
+/-- `Cancels u w` is a predicate expressing whether `t^u` cancels with some occurrence
+of `t^-u` when we multiply `t^u` by `w`. -/
 def Cancels (u : ℤˣ) (w : NormalWord d) : Prop :=
   (w.head ∈ (toSubgroup A B u : Subgroup G)) ∧ w.toList.head?.map Prod.fst = some (-u)
 
@@ -372,7 +368,7 @@ noncomputable def unitsSMul (u : ℤˣ) (w : NormalWord d) : NormalWord d :=
     cons g'.1 u ((g'.2 * w.head⁻¹ : G) • w)
       (by simp)
       (by
-        simp only [group_smul_toList, Option.mem_def, Option.map_eq_some', Prod.exists,
+        simp only [g', group_smul_toList, Option.mem_def, Option.map_eq_some', Prod.exists,
           exists_and_right, exists_eq_right, group_smul_head, inv_mul_cancel_right,
           forall_exists_index, unitsSMulGroup]
         simp only [Cancels, Option.map_eq_some', Prod.exists, exists_and_right, exists_eq_right,
@@ -399,7 +395,7 @@ theorem not_cancels_of_cons_hyp (u : ℤˣ) (w : NormalWord d)
 theorem unitsSMul_cancels_iff (u : ℤˣ) (w : NormalWord d) :
     Cancels (-u) (unitsSMul φ u w) ↔ ¬ Cancels u w := by
   by_cases h : Cancels u w
-  · simp only [unitsSMul, dif_pos trivial, h, iff_false]
+  · simp only [unitsSMul, h, dite_true, not_true_eq_false, iff_false]
     induction w using consRecOn with
     | ofGroup => simp [Cancels, unitsSMulWithCancel]
     | cons g u' w h1 h2 _ =>
@@ -421,6 +417,9 @@ theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
     unfold unitsSMul
     simp only [dif_neg hncan]
     simp [unitsSMulWithCancel, unitsSMulGroup, (d.compl u).equiv_snd_eq_inv_mul]
+    -- This used to be the end of the proof before leanprover/lean4#2644
+    erw [(d.compl u).equiv_snd_eq_inv_mul]
+    simp
   · have hcan2 : Cancels u w := not_not.1 (mt (unitsSMul_cancels_iff _ _ _).2 hcan)
     unfold unitsSMul at hcan ⊢
     simp only [dif_pos hcan2] at hcan ⊢
@@ -428,13 +427,25 @@ theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
     | ofGroup => simp [Cancels] at hcan2
     | cons g u' w h1 h2 ih =>
       clear ih
-      simp [unitsSMulWithCancel, unitsSMulGroup]
+      simp only [unitsSMulGroup, SetLike.coe_sort_coe, unitsSMulWithCancel, id_eq, consRecOn_cons,
+        group_smul_head, IsComplement.equiv_mul_left, map_mul, Submonoid.coe_mul, coe_toSubmonoid,
+        toSubgroupEquiv_neg_apply, mul_inv_rev]
       cases hcan2.2
       have : ((d.compl (-u)).equiv w.head).1 = 1 :=
         (d.compl (-u)).equiv_fst_eq_one_of_mem_of_one_mem _ h1
       apply NormalWord.ext
-      · simp [this]
-      · simp [mul_assoc, Units.ext_iff, (d.compl (-u)).equiv_snd_eq_inv_mul, this]
+      · -- This used to `simp [this]` before leanprover/lean4#2644
+        dsimp
+        conv_lhs => erw [IsComplement.equiv_mul_left]
+        rw [map_mul, Submonoid.coe_mul, toSubgroupEquiv_neg_apply, this]
+        simp
+      · -- The next two lines were not needed before leanprover/lean4#2644
+        dsimp
+        conv_lhs => erw [IsComplement.equiv_mul_left]
+        simp [mul_assoc, Units.ext_iff, (d.compl (-u)).equiv_snd_eq_inv_mul, this]
+        -- The next two lines were not needed before leanprover/lean4#2644
+        erw [(d.compl (-u)).equiv_snd_eq_inv_mul, this]
+        simp
 
 /-- the equivalence given by multiplication on the left by `t`  -/
 @[simps]
@@ -458,6 +469,14 @@ theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
       rfl
   · rw [dif_neg (mt this.1 hcan), dif_neg hcan]
     simp [← mul_smul, mul_assoc, unitsSMulGroup]
+    -- This used to be the end of the proof before leanprover/lean4#2644
+    dsimp
+    congr 1
+    · conv_lhs => erw [IsComplement.equiv_mul_left]
+      simp_rw [toSubgroup_one]
+      simp only [SetLike.coe_sort_coe, map_mul, Subgroup.coe_mul]
+    conv_lhs => erw [IsComplement.equiv_mul_left]
+    rfl
 
 noncomputable instance : MulAction (HNNExtension G A B φ) (NormalWord d) :=
   MulAction.ofEndHom <| (MulAction.toEndHom (M := Equiv.Perm (NormalWord d))).comp
@@ -502,10 +521,19 @@ theorem prod_unitsSMul (u : ℤˣ) (w : NormalWord d) :
       rcases Int.units_eq_one_or u with (rfl | rfl)
       · simp [equiv_eq_conj, mul_assoc]
       · simp [equiv_symm_eq_conj, mul_assoc]
+        -- This used to be the end of the proof before leanprover/lean4#2644
+        erw [equiv_symm_eq_conj]
+        simp [equiv_symm_eq_conj, mul_assoc]
   · simp [unitsSMulGroup]
     rcases Int.units_eq_one_or u with (rfl | rfl)
     · simp [equiv_eq_conj, mul_assoc, (d.compl _).equiv_snd_eq_inv_mul]
+      -- This used to be the end of the proof before leanprover/lean4#2644
+      erw [(d.compl 1).equiv_snd_eq_inv_mul]
+      simp [equiv_eq_conj, mul_assoc, (d.compl _).equiv_snd_eq_inv_mul]
     · simp [equiv_symm_eq_conj, mul_assoc, (d.compl _).equiv_snd_eq_inv_mul]
+      -- This used to be the end of the proof before leanprover/lean4#2644
+      erw [equiv_symm_eq_conj, (d.compl (-1)).equiv_snd_eq_inv_mul]
+      simp [equiv_symm_eq_conj, mul_assoc, (d.compl _).equiv_snd_eq_inv_mul]
 
 @[simp]
 theorem prod_empty : (empty : NormalWord d).prod φ = 1 := by
@@ -531,9 +559,16 @@ theorem prod_smul_empty (w : NormalWord d) :
     rw [prod_cons, ← mul_assoc, mul_smul, ih, mul_smul, t_pow_smul_eq_unitsSMul,
       of_smul_eq_smul, unitsSMul]
     rw [dif_neg (not_cancels_of_cons_hyp u w h2)]
-    simp [unitsSMulGroup, (d.compl u).equiv_snd_eq_inv_mul, mul_assoc,
-      (d.compl _).equiv_fst_eq_one_of_mem_of_one_mem (one_mem _) h1]
+    -- The next 3 lines were a single `simp [...]` before leanprover/lean4#2644
+    simp only [unitsSMulGroup]
+    simp_rw [SetLike.coe_sort_coe]
+    erw [(d.compl _).equiv_fst_eq_one_of_mem_of_one_mem (one_mem _) h1]
     ext <;> simp
+    -- The next 4 were not needed before leanprover/lean4#2644
+    erw [(d.compl _).equiv_snd_eq_inv_mul]
+    simp_rw [SetLike.coe_sort_coe]
+    erw [(d.compl _).equiv_fst_eq_one_of_mem_of_one_mem (one_mem _) h1]
+    simp
 
 variable (d)
 /-- The equivalence between elements of the HNN extension and words in normal form. -/
@@ -557,7 +592,7 @@ open NormalWord
 theorem of_injective : Function.Injective (of : G → HNNExtension G A B φ) := by
   rcases TransversalPair.nonempty G A B with ⟨d⟩
   refine Function.Injective.of_comp
-    (f := ((. • .) : HNNExtension G A B φ → NormalWord d → NormalWord d)) ?_
+    (f := ((· • ·) : HNNExtension G A B φ → NormalWord d → NormalWord d)) ?_
   intros _ _ h
   exact eq_of_smul_eq_smul (fun w : NormalWord d =>
     by simp_all [Function.funext_iff, of_smul_eq_smul])
@@ -570,12 +605,12 @@ theorem exists_normalWord_prod_eq
       w'.toList.map Prod.fst = w.toList.map Prod.fst ∧
       ∀ u ∈ w.toList.head?.map Prod.fst,
       w'.head⁻¹ * w.head ∈ toSubgroup A B (-u) := by
-  suffices : ∀ w : ReducedWord G A B,
+  suffices ∀ w : ReducedWord G A B,
       w.head = 1 → ∃ w' : NormalWord d, w'.prod φ = w.prod φ ∧
       w'.toList.map Prod.fst = w.toList.map Prod.fst ∧
       ∀ u ∈ w.toList.head?.map Prod.fst,
-      w'.head ∈ toSubgroup A B (-u)
-  · by_cases hw1 : w.head = 1
+      w'.head ∈ toSubgroup A B (-u) by
+    by_cases hw1 : w.head = 1
     · simp only [hw1, inv_mem_iff, mul_one]
       exact this w hw1
     · rcases this ⟨1, w.toList, w.chain⟩ rfl with ⟨w', hw'⟩
@@ -609,17 +644,17 @@ theorem exists_normalWord_prod_eq
         have : a.fst = -a.fst := by
           have hl : l ≠ [] := by rintro rfl; simp_all
           have : a.fst = (l.head hl).fst := (List.chain'_cons'.1 chain).1 (l.head hl)
-            (List.head?_eq_head _ _) hS
-          rwa [List.head?_eq_head _ hl, Option.map_some', ← this, Option.some_inj] at hx'
+            (List.head?_eq_head _) hS
+          rwa [List.head?_eq_head hl, Option.map_some', ← this, Option.some_inj] at hx'
         simp at this
       erw [List.map_cons, mul_smul, of_smul_eq_smul, NormalWord.group_smul_def,
         t_pow_smul_eq_unitsSMul, unitsSMul, dif_neg this, ← hw'2]
       simp [mul_assoc, unitsSMulGroup, (d.compl _).coe_equiv_snd_eq_one_iff_mem]
 
 /-- Two reduced words representing the same element of the `HNNExtension G A B φ` have the same
-length corresponding list, with the same pattern of occurences of `t^1` and `t^(-1)`,
+length corresponding list, with the same pattern of occurrences of `t^1` and `t^(-1)`,
 and also the `head` is in the same left coset of `toSubgroup A B (-u)`, where `u : ℤˣ`
-is the exponent of the first occurence of `t` in the word. -/
+is the exponent of the first occurrence of `t` in the word. -/
 theorem map_fst_eq_and_of_prod_eq {w₁ w₂ : ReducedWord G A B}
     (hprod : w₁.prod φ = w₂.prod φ) :
     w₁.toList.map Prod.fst = w₂.toList.map Prod.fst ∧
@@ -638,7 +673,7 @@ theorem map_fst_eq_and_of_prod_eq {w₁ w₂ : ReducedWord G A B}
   rwa [← List.head?_map, ← hw₂'2, hw₁'2, List.head?_map]
 
 /-- **Britton's Lemma**. Any reduced word whose product is an element of `G`, has no
-occurences of `t`.  -/
+occurrences of `t`. -/
 theorem toList_eq_nil_of_mem_of_range (w : ReducedWord G A B)
     (hw : w.prod φ ∈ (of.range : Subgroup (HNNExtension G A B φ))) :
     w.toList = [] := by
