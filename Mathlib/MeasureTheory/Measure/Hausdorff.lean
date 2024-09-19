@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Analysis.Convex.Between
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.Topology.MetricSpace.Holder
+import Mathlib.Topology.MetricSpace.Hoelder
 import Mathlib.Topology.MetricSpace.MetricSeparated
 
 /-!
@@ -574,7 +574,7 @@ theorem hausdorffMeasure_zero_or_top {d₁ d₂ : ℝ} (h : d₁ < d₂) (s : Se
   intro c hc
   refine le_iff'.1 (mkMetric_mono_smul ENNReal.coe_ne_top (mod_cast hc) ?_) s
   have : 0 < ((c : ℝ≥0∞) ^ (d₂ - d₁)⁻¹) := by
-    rw [ENNReal.coe_rpow_of_ne_zero hc, pos_iff_ne_zero, Ne, ENNReal.coe_eq_zero,
+    rw [← ENNReal.coe_rpow_of_ne_zero hc, pos_iff_ne_zero, Ne, ENNReal.coe_eq_zero,
       NNReal.rpow_eq_zero_iff]
     exact mt And.left hc
   filter_upwards [Ico_mem_nhdsWithin_Ici ⟨le_rfl, this⟩]
@@ -667,13 +667,13 @@ open MeasureTheory MeasureTheory.Measure
 
 variable [MeasurableSpace X] [BorelSpace X] [MeasurableSpace Y] [BorelSpace Y]
 
-namespace HolderOnWith
+namespace HoelderOnWith
 
 variable {C r : ℝ≥0} {f : X → Y} {s t : Set X}
 
 /-- If `f : X → Y` is Hölder continuous on `s` with a positive exponent `r`, then
 `μH[d] (f '' s) ≤ C ^ d * μH[r * d] s`. -/
-theorem hausdorffMeasure_image_le (h : HolderOnWith C r f s) (hr : 0 < r) {d : ℝ} (hd : 0 ≤ d) :
+theorem hausdorffMeasure_image_le (h : HoelderOnWith C r f s) (hr : 0 < r) {d : ℝ} (hd : 0 ≤ d) :
     μH[d] (f '' s) ≤ (C : ℝ≥0∞) ^ d * μH[r * d] s := by
   -- We start with the trivial case `C = 0`
   rcases (zero_le C).eq_or_lt with (rfl | hC0)
@@ -711,7 +711,7 @@ theorem hausdorffMeasure_image_le (h : HolderOnWith C r f s) (hr : 0 < r) {d : �
       rw [ENNReal.rpow_mul, ← ENNReal.mul_rpow_of_nonneg _ _ hd]
       exact ENNReal.rpow_le_rpow (h.ediam_image_inter_le _) hd
 
-end HolderOnWith
+end HoelderOnWith
 
 namespace LipschitzOnWith
 
@@ -720,7 +720,8 @@ variable {K : ℝ≥0} {f : X → Y} {s t : Set X}
 /-- If `f : X → Y` is `K`-Lipschitz on `s`, then `μH[d] (f '' s) ≤ K ^ d * μH[d] s`. -/
 theorem hausdorffMeasure_image_le (h : LipschitzOnWith K f s) {d : ℝ} (hd : 0 ≤ d) :
     μH[d] (f '' s) ≤ (K : ℝ≥0∞) ^ d * μH[d] s := by
-  simpa only [NNReal.coe_one, one_mul] using h.holderOnWith.hausdorffMeasure_image_le zero_lt_one hd
+  simpa only [NNReal.coe_one, one_mul]
+    using h.HoelderOnWith.hausdorffMeasure_image_le zero_lt_one hd
 
 end LipschitzOnWith
 
@@ -741,17 +742,16 @@ open scoped Pointwise
 theorem MeasureTheory.Measure.hausdorffMeasure_smul₀ {𝕜 E : Type*} [NormedAddCommGroup E]
     [NormedField 𝕜] [NormedSpace 𝕜 E] [MeasurableSpace E] [BorelSpace E] {d : ℝ} (hd : 0 ≤ d)
     {r : 𝕜} (hr : r ≠ 0) (s : Set E) : μH[d] (r • s) = ‖r‖₊ ^ d • μH[d] s := by
-  suffices ∀ {r : 𝕜}, r ≠ 0 → ∀ s : Set E, μH[d] (r • s) ≤ ‖r‖₊ ^ d • μH[d] s by
-    refine le_antisymm (this hr s) ?_
-    rw [← le_inv_smul_iff_of_pos]
-    · dsimp
-      rw [← NNReal.inv_rpow, ← nnnorm_inv]
-      · refine Eq.trans_le ?_ (this (inv_ne_zero hr) (r • s))
-        rw [inv_smul_smul₀ hr]
-    · simp [pos_iff_ne_zero, hr]
-  intro r _ s
-  simp only [NNReal.rpow_eq_pow, ENNReal.smul_def, ← ENNReal.coe_rpow_of_nonneg _ hd, smul_eq_mul]
-  exact (lipschitzWith_smul (β := E) r).hausdorffMeasure_image_le hd s
+  have {r : 𝕜} (s : Set E) : μH[d] (r • s) ≤ ‖r‖₊ ^ d • μH[d] s := by
+    simpa [ENNReal.coe_rpow_of_nonneg, hd]
+      using (lipschitzWith_smul r).hausdorffMeasure_image_le hd s
+  refine le_antisymm (this s) ?_
+  rw [← le_inv_smul_iff_of_pos]
+  · dsimp
+    rw [← NNReal.inv_rpow, ← nnnorm_inv]
+    · refine Eq.trans_le ?_ (this (r • s))
+      rw [inv_smul_smul₀ hr]
+  · simp [pos_iff_ne_zero, hr]
 
 /-!
 ### Antilipschitz maps do not decrease Hausdorff measures and dimension
@@ -957,6 +957,30 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
         simp only [ENNReal.ofReal_div_of_pos (Nat.cast_pos.mpr hn), comp_apply,
           ENNReal.ofReal_natCast]
       · simp only [ENNReal.ofReal_ne_top, Ne, not_false_iff]
+
+instance isAddHaarMeasure_hausdorffMeasure {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+    [MeasurableSpace E] [BorelSpace E] :
+    IsAddHaarMeasure (G := E) μH[finrank ℝ E] where
+  lt_top_of_isCompact K hK := by
+    set e : E ≃L[ℝ] Fin (finrank ℝ E) → ℝ := ContinuousLinearEquiv.ofFinrankEq (by simp)
+    suffices μH[finrank ℝ E] (e '' K) < ⊤ by
+      rw [← e.symm_image_image K]
+      apply lt_of_le_of_lt <| e.symm.lipschitz.hausdorffMeasure_image_le (by simp) (e '' K)
+      rw [ENNReal.rpow_natCast]
+      exact ENNReal.mul_lt_top (ENNReal.pow_lt_top ENNReal.coe_lt_top _) this
+    conv_lhs => congr; congr; rw [← Fintype.card_fin (finrank ℝ E)]
+    rw [hausdorffMeasure_pi_real]
+    exact (hK.image e.continuous).measure_lt_top
+  open_pos U hU hU' := by
+    set e : E ≃L[ℝ] Fin (finrank ℝ E) → ℝ := ContinuousLinearEquiv.ofFinrankEq (by simp)
+    suffices 0 < μH[finrank ℝ E] (e '' U) from
+      (ENNReal.mul_pos_iff.mp (lt_of_lt_of_le this <|
+        e.lipschitz.hausdorffMeasure_image_le (by simp) _)).2.ne'
+    conv_rhs => congr; congr; rw [← Fintype.card_fin (finrank ℝ E)]
+    rw [hausdorffMeasure_pi_real]
+    apply (e.isOpenMap U hU).measure_pos (μ := volume)
+    simpa
 
 variable (ι X)
 

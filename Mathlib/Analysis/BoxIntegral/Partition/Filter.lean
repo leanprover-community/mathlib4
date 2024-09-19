@@ -223,7 +223,7 @@ instance : Inhabited IntegrationParams :=
   ⟨⊥⟩
 
 instance : DecidableRel ((· ≤ ·) : IntegrationParams → IntegrationParams → Prop) :=
-  fun _ _ => And.decidable
+  fun _ _ => inferInstanceAs (Decidable (_ ∧ _))
 
 instance : DecidableEq IntegrationParams :=
   fun _ _ => decidable_of_iff _ IntegrationParams.ext_iff.symm

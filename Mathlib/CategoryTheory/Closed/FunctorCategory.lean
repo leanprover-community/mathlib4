@@ -62,9 +62,8 @@ closed in the functor category `F : D ⥤ C` with the pointwise monoidal structu
 instance closed (F : D ⥤ C) : Closed F where
   rightAdj := closedIhom F
   adj :=
-    Adjunction.mkOfUnitCounit
-      { unit := closedUnit F
-        counit := closedCounit F }
+    { unit := closedUnit F
+      counit := closedCounit F }
 
 /-- If `C` is a monoidal closed category and `D` is groupoid, then the functor category `D ⥤ C`,
 with the pointwise monoidal structure, is monoidal closed. -/

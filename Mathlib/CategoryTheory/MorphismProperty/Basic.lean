@@ -331,7 +331,7 @@ instance RespectsIso.isomorphisms : RespectsIso (isomorphisms C) := by
     · intro X Y Z e f
       simp only [isomorphisms.iff]
       intro
-      infer_instance
+      exact IsIso.comp_isIso
 
 @[deprecated (since := "2024-07-02")] alias RespectsIso.cancel_left_isIso :=
   cancel_left_of_respectsIso
