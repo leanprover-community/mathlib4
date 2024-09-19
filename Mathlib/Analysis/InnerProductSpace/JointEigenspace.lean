@@ -71,7 +71,7 @@ section RCLike
 variable {𝕜 E n m: Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable {α : 𝕜} {A B : E →ₗ[𝕜] E}
 
-/-- The simultaneous eigenspaces of a pair of commuting symmetric operators form an
+/-- The joint eigenspaces of a pair of commuting symmetric operators form an
 `OrthogonalFamily`. -/
 theorem orthogonalFamily_eigenspace_inf_eigenspace (hA : A.IsSymmetric) (hB : B.IsSymmetric) :
     OrthogonalFamily 𝕜 (fun (i : 𝕜 × 𝕜) => (eigenspace A i.2 ⊓ eigenspace B i.1 : Submodule 𝕜 E))
@@ -81,6 +81,20 @@ theorem orthogonalFamily_eigenspace_inf_eigenspace (hA : A.IsSymmetric) (hB : B.
     all_goals intro w ⟨hw1, hw2⟩
     · exact hB.orthogonalFamily_eigenspaces.pairwise h₁ hv2 w hw2
     · exact hA.orthogonalFamily_eigenspaces.pairwise h₂ hv1 w hw1
+
+/-- The joint eigenspaces of finitely many commuting symmetric operators form an
+`OrthogonalFamily`. -/
+theorem orthogonalFamily_iInf_eigenspaces [Fintype n]
+    (T : n → (E →ₗ[𝕜] E)) (hT :(∀ (i : n), ((T i).IsSymmetric)))
+    : OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) => (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))
+    (fun (γ : n → 𝕜) => (⨅ (j : n), (eigenspace (T j) (γ j))).subtypeₗᵢ) := by
+  intro f g hfg Ef Eg
+  obtain ⟨a , ha⟩ := Function.ne_iff.mp hfg
+  have H := (orthogonalFamily_eigenspaces (hT a) ha)
+  simp only [Submodule.coe_subtypeₗᵢ, Submodule.coeSubtype, Subtype.forall] at H
+  apply H
+  · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T _) (f _)).mp Ef.2 _
+  · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T _) (g _)).mp Eg.2 _
 
 variable [FiniteDimensional 𝕜 E]
 
@@ -156,7 +170,9 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Fintype n]
 
 /-- Given a finite commuting family of symmetric linear operators, the Hilbert space on which they
 act decomposes as an internal direct sum of simultaneous eigenspaces. -/
-theorem DirectSum.IsInternal_of_simultaneous_eigenspaces_of_commuting_symmetric_tuple :
+theorem LinearMap.IsSymmetric.directSum_isInternal_of_commute_of_fintype [Fintype n]
+    (T : n → (E →ₗ[𝕜] E)) (hT :(∀ (i : n), ((T i).IsSymmetric)))
+    (hC : (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i))) :
     DirectSum.IsInternal (fun (α : n → 𝕜) ↦ ⨅ (j : n), (eigenspace (T j) (α j))) := by
   rw [OrthogonalFamily.isInternal_iff]
   · exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot T hT hC
