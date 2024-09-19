@@ -41,7 +41,7 @@ namespace LinearMap
 
 namespace IsSymmetric
 
-variable {𝕜 E n m: Type*}
+variable {𝕜 E n m : Type*}
 
 section CommRing
 
@@ -50,7 +50,7 @@ variable {α : 𝕜} {A B : E →ₗ[𝕜] E}
 
 /-- If a pair of operators commute, then the eigenspaces of one are invariant under the other. -/
 theorem eigenspace_invariant_of_commute
-    (hAB : A ∘ₗ B = B ∘ₗ A) (α : 𝕜) : ∀ v ∈ (eigenspace A α), (B v ∈ eigenspace A α) := by
+    (hAB : A ∘ₗ B = B ∘ₗ A) (α : 𝕜) : ∀ v ∈ eigenspace A α, B v ∈ eigenspace A α := by
   intro v hv
   rw [eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply, ← comp_apply A B v, hAB,
     comp_apply B A v, ← map_smul, ← map_sub, hv, map_zero] at *
@@ -87,9 +87,9 @@ theorem orthogonalFamily_eigenspace_inf_eigenspace (hA : A.IsSymmetric) (hB : B.
 /-- The joint eigenspaces of a tuple of commuting symmetric operators form an
 `OrthogonalFamily`. -/
 theorem orthogonalFamily_iInf_eigenspaces
-    (hT :(∀ (i : n), ((T i).IsSymmetric))) :
-    OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) => (⨅ j, eigenspace (T j) (γ j) : Submodule 𝕜 E))
-    (fun (γ : n → 𝕜) => (⨅ j, eigenspace (T j) (γ j)).subtypeₗᵢ) := by
+    (hT : ∀ i, (T i).IsSymmetric) :
+    OrthogonalFamily 𝕜 (fun γ : n → 𝕜 ↦ (⨅ j, eigenspace (T j) (γ j) : Submodule 𝕜 E))
+      fun γ : n → 𝕜 ↦ (⨅ j, eigenspace (T j) (γ j)).subtypeₗᵢ := by
   intro f g hfg Ef Eg
   obtain ⟨a , ha⟩ := Function.ne_iff.mp hfg
   have H := (orthogonalFamily_eigenspaces (hT a) ha)
@@ -144,8 +144,7 @@ theorem iSup_eigenspace_restrict {F : Submodule 𝕜 E}
 /-- The orthocomplement of the indexed supremum of joint eigenspaces of a finite commuting tuple of
 symmetric operators is trivial. -/
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Finite n]
-    (hT : ∀ i, (T i).IsSymmetric)
-    (hC : ∀ i j, T i ∘ₗ T j = T j ∘ₗ T i) :
+    (hT : ∀ i, (T i).IsSymmetric) (hC : ∀ i j, T i ∘ₗ T j = T j ∘ₗ T i) :
     (⨆ γ : n → 𝕜, ⨅ j, eigenspace (T j) (γ j))ᗮ = ⊥ := by
   have _ := Fintype.ofFinite n
   revert T
@@ -177,7 +176,7 @@ act decomposes as an internal direct sum of simultaneous eigenspaces. -/
 theorem LinearMap.IsSymmetric.directSum_isInternal_of_commute_of_fintype [Finite n]
     [DecidableEq (n → 𝕜)] (hT :∀ i, (T i).IsSymmetric)
     (hC : ∀ i j, T i ∘ₗ T j = T j ∘ₗ T i) :
-    DirectSum.IsInternal (fun (α : n → 𝕜) ↦ ⨅ j, eigenspace (T j) (α j)) := by
+    DirectSum.IsInternal (fun α : n → 𝕜 ↦ ⨅ j, eigenspace (T j) (α j)) := by
   rw [OrthogonalFamily.isInternal_iff]
   · exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot hT hC
   · exact orthogonalFamily_iInf_eigenspaces hT
