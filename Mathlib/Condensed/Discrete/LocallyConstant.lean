@@ -253,12 +253,10 @@ noncomputable def functorIsoTopCatToSheafCompHausLike :
 /-- The counit is natural in both `S : CompHausLike P` and
 `Y : Sheaf (coherentTopology (CompHausLike P)) (Type (max u w))` -/
 @[simps]
-noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] :
-    have := CompHausLike.preregular hs
+noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHausLike.preregular hs
     (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u+1}⟩ ⋙ functor.{u, w} P hs ⟶
         𝟭 (Sheaf (coherentTopology (CompHausLike.{u} P)) (Type (max u w))) where
-  app X :=
-    have := CompHausLike.preregular hs
+  app X := haveI := CompHausLike.preregular hs
     ⟨counitApp X.val⟩
   naturality X Y g := by
     have := CompHausLike.preregular hs
