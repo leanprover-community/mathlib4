@@ -18,7 +18,7 @@ namespace Mathlib.Linter
 
 /--
 The "docPrime" linter emits a warning on declarations that have no doc-string and whose
-name contains a `'`.
+name ends with a `'`.
 
 The file `scripts/no_lints_prime_decls.txt` records the list of exceptions at the moment in
 which the linter was written.
