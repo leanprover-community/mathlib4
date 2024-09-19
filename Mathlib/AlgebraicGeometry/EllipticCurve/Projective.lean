@@ -7,6 +7,7 @@ import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.MvPolynomial.PDeriv
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
 import Mathlib.Data.Fin.Tuple.Reflection
+import Mathlib.Tactic.LinearCombination'
 
 /-!
 # Projective coordinates for Weierstrass curves
