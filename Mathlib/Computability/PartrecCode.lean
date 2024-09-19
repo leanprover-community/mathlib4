@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Bjørn Kjos-Hanssen
+Authors: Mario Carneiro
 -/
 import Mathlib.Computability.Partrec
 import Mathlib.Data.Option.Basic
@@ -1016,18 +1016,16 @@ theorem fixed_point₂ {f : Code → ℕ →. ℕ} (hf : Partrec₂ f) : ∃ c :
 end
 
 /-- There are only countably many partial recursive functions ℕ → ℕ. -/
-instance : Countable {f : ℕ →. ℕ | Nat.Partrec f} := by
-  rw [Set.ext <| fun f => @Nat.Partrec.Code.exists_code f]
-  apply @Function.Injective.countable
-    ({f | ∃ c, Nat.Partrec.Code.eval c = f}) Nat.Partrec.Code _ (fun f => Classical.choose f.2)
+instance : Countable {f : ℕ →. ℕ // Nat.Partrec f} := by
+  choose v hv using fun x : {f : ℕ →. ℕ // Nat.Partrec f} ↦ Nat.Partrec.Code.exists_code.1 x.2
+  suffices v.Injective from this.countable
   intro f g h
-  apply SetCoe.ext
-  rw [← Classical.choose_spec f.2,← Classical.choose_spec g.2]
-  tauto
+  ext
+  simp [h, ← hv]
 
 /-- There are only countably many computable functions ℕ → ℕ. -/
-instance : Countable {f : ℕ → ℕ | Computable f} :=
-  @Function.Injective.countable {f : ℕ → ℕ | Computable f} {f : ℕ →. ℕ | Nat.Partrec f} _
+instance : Countable {f : ℕ → ℕ // Computable f} :=
+  @Function.Injective.countable {f : ℕ → ℕ // Computable f} {f : ℕ →. ℕ // Nat.Partrec f} _
     (fun f => ⟨f.val, Partrec.nat_iff.mp f.2⟩)
     fun _ _ h => SetCoe.ext <| PFun.lift_injective <| (Subtype.mk.injEq _ _ _ _) ▸ h
 
