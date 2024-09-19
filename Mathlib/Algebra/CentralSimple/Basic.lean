@@ -17,7 +17,9 @@ In this file, we prove some basic results about central simple algebras over a f
 - `Algebra.IsCentralSimple.center_eq_bot`: the center of a central simple algebra over a field `K`
   is equal to `K`.
 - `Algebra.IsCentralSimple.self`: a field is a central simple algebra over itself.
-
+- `Algebra.IsCentralSimple.tower`: being central simple is stable under field extensions, i.e. if
+  `K/k` is a field extension and `D` is a central simple algebra over `k`, then `D` is a central
+  simple algebra over `K`.
 -/
 
 universe u v
