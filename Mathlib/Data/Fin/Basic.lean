@@ -359,10 +359,6 @@ section Monoid
 protected theorem add_zero [NeZero n] (k : Fin n) : k + 0 = k := by
   simp only [add_def, val_zero', Nat.add_zero, mod_eq_of_lt (is_lt k)]
 
--- Porting note (#10618): removing `simp`, `simp` can prove it with AddCommMonoid instance
-protected theorem zero_add [NeZero n] (k : Fin n) : 0 + k = k := by
-  simp [Fin.ext_iff, add_def, mod_eq_of_lt (is_lt k)]
-
 instance inhabitedFinOneAdd (n : ℕ) : Inhabited (Fin (1 + n)) :=
   haveI : NeZero (1 + n) := by rw [Nat.add_comm]; infer_instance
   inferInstance
@@ -454,13 +450,6 @@ lemma natCast_strictMono (hbn : b ≤ n) (hab : a < b) : (a : Fin (n + 1)) < b :
 
 end OfNatCoe
 
-@[simp]
-theorem one_eq_zero_iff [NeZero n] : (1 : Fin n) = 0 ↔ n = 1 := by
-  obtain _ | _ | n := n <;> simp [Fin.ext_iff]
-
-@[simp]
-theorem zero_eq_one_iff [NeZero n] : (0 : Fin n) = 1 ↔ n = 1 := by rw [eq_comm, one_eq_zero_iff]
-
 end Add
 
 section Succ
@@ -515,10 +504,6 @@ This one instead uses a `NeZero n` typeclass hypothesis.
 @[simp]
 theorem le_zero_iff' {n : ℕ} [NeZero n] {k : Fin n} : k ≤ 0 ↔ k = 0 :=
   ⟨fun h => Fin.ext <| by rw [Nat.eq_zero_of_le_zero h]; rfl, by rintro rfl; exact Nat.le_refl _⟩
-
--- Move to Batteries?
-@[simp] theorem cast_refl {n : Nat} (h : n = n) :
-    Fin.cast h = id := rfl
 
 -- TODO: Move to Batteries
 @[simp] lemma castLE_inj {hmn : m ≤ n} {a b : Fin m} : castLE hmn a = castLE hmn b ↔ a = b := by
