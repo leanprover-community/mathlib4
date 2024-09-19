@@ -59,7 +59,7 @@ section
 /-- `TopHomClass F α β` states that `F` is a type of `⊤`-preserving morphisms.
 
 You should extend this class when you extend `TopHom`. -/
-class TopHomClass (F : Type*) (α β : Type*) [Top α] [Top β] [FunLike F α β] :
+class TopHomClass (F : Type*) (α : outParam Type*) (β : Type*) [Top α] [Top β] [FunLike F α β] :
     Prop where
   /-- A `TopHomClass` morphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
@@ -67,7 +67,7 @@ class TopHomClass (F : Type*) (α β : Type*) [Top α] [Top β] [FunLike F α β
 /-- `BotHomClass F α β` states that `F` is a type of `⊥`-preserving morphisms.
 
 You should extend this class when you extend `BotHom`. -/
-class BotHomClass (F : Type*) (α β : Type*) [Bot α] [Bot β] [FunLike F α β] :
+class BotHomClass (F : Type*) (α : outParam Type*) (β : Type*) [Bot α] [Bot β] [FunLike F α β] :
     Prop where
   /-- A `BotHomClass` morphism preserves the bottom element. -/
   map_bot (f : F) : f ⊥ = ⊥
