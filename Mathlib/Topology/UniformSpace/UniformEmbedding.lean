@@ -275,7 +275,7 @@ theorem UniformInducing.isComplete_iff {f : α → β} {s : Set α} (hf : Unifor
 theorem UniformEmbedding.isComplete_iff {f : α → β} {s : Set α} (hf : UniformEmbedding f) :
     IsComplete (f '' s) ↔ IsComplete s := hf.toUniformInducing.isComplete_iff
 
-/-- Sets of subtype are complete iff the image under a coercion is. -/
+/-- Sets of a subtype are complete iff their image under the coercion is complete. -/
 theorem Subtype.isComplete_iff {p : α → Prop} {s : Set { x // p x }} :
     IsComplete s ↔ IsComplete ((↑) '' s : Set α) :=
   uniformEmbedding_subtype_val.isComplete_iff.symm
