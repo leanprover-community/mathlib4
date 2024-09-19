@@ -63,11 +63,11 @@ lemma bot_implies (φ : L.BoundedFormula α n) : ⊥ ⟹[T] φ := fun M v xs => 
 lemma implies_top (φ : L.BoundedFormula α n) : φ ⟹[T] ⊤ := fun M v xs => by
   simp only [BoundedFormula.realize_imp, BoundedFormula.realize_top, implies_true]
 
-lemma implies_sup_left {φ ψ : L.BoundedFormula α n} : φ ⟹[T] φ ⊔ ψ := fun M v xs => by
+lemma implies_sup_left (φ ψ : L.BoundedFormula α n) : φ ⟹[T] φ ⊔ ψ := fun M v xs => by
   simp only [BoundedFormula.realize_imp, BoundedFormula.realize_sup]
   exact Or.inl
 
-lemma implies_sup_right {φ ψ : L.BoundedFormula α n} : ψ ⟹[T] φ ⊔ ψ := fun M v xs => by
+lemma implies_sup_right (φ ψ : L.BoundedFormula α n) : ψ ⟹[T] φ ⊔ ψ := fun M v xs => by
   simp only [BoundedFormula.realize_imp, BoundedFormula.realize_sup]
   exact Or.inr
 
@@ -76,11 +76,16 @@ lemma sup_implies {φ ψ θ : L.BoundedFormula α n} (h₁ : φ ⟹[T] θ) (h₂
   simp only [BoundedFormula.realize_imp, BoundedFormula.realize_sup]
   exact fun h => h.elim (h₁ M v xs) (h₂ M v xs)
 
-lemma inf_implies_left {φ ψ : L.BoundedFormula α n} : φ ⊓ ψ ⟹[T] φ := fun M v xs => by
+lemma sup_implies_iff {φ ψ θ : L.BoundedFormula α n} :
+    (φ ⊔ ψ ⟹[T] θ) ↔ (φ ⟹[T] θ) ∧ (ψ ⟹[T] θ) :=
+  ⟨fun h => ⟨(implies_sup_left _ _).trans h, (implies_sup_right _ _).trans h⟩,
+    fun ⟨h₁, h₂⟩ => sup_implies h₁ h₂⟩
+
+lemma inf_implies_left (φ ψ : L.BoundedFormula α n) : φ ⊓ ψ ⟹[T] φ := fun M v xs => by
   simp only [BoundedFormula.realize_imp, BoundedFormula.realize_inf]
   exact And.left
 
-lemma inf_implies_right {φ ψ : L.BoundedFormula α n} : φ ⊓ ψ ⟹[T] ψ := fun M v xs => by
+lemma inf_implies_right (φ ψ : L.BoundedFormula α n) : φ ⊓ ψ ⟹[T] ψ := fun M v xs => by
   simp only [BoundedFormula.realize_imp, BoundedFormula.realize_inf]
   exact And.right
 
@@ -88,6 +93,11 @@ lemma implies_inf {φ ψ θ : L.BoundedFormula α n} (h₁ : φ ⟹[T] ψ) (h₂
     φ ⟹[T] ψ ⊓ θ := fun M v xs => by
   simp only [BoundedFormula.realize_imp, BoundedFormula.realize_inf]
   exact fun h => ⟨h₁ M v xs h, h₂ M v xs h⟩
+
+lemma implies_inf_iff {φ ψ θ : L.BoundedFormula α n} :
+    (φ ⟹[T] ψ ⊓ θ) ↔ (φ ⟹[T] ψ) ∧ (φ ⟹[T] θ) :=
+  ⟨fun h => ⟨h.trans (inf_implies_left _ _), h.trans (inf_implies_right _ _)⟩,
+    fun ⟨h₁, h₂⟩ => implies_inf h₁ h₂⟩
 
 lemma inf_not_implies_bot (φ : L.BoundedFormula α n) :
     φ ⊓ ∼φ ⟹[T] ⊥ := fun M v xs => by simp only [BoundedFormula.realize_imp,
