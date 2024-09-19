@@ -383,6 +383,8 @@ theorem volume_fundamentalDomain [Fintype ι] [DecidableEq ι] (b : Basis ι ℝ
   rw [measure_fundamentalDomain b volume (b₀ := Pi.basisFun ℝ ι), fundamentalDomain_pi_basisFun,
     volume_pi, Measure.pi_pi, Real.volume_Ico, sub_zero, ENNReal.ofReal_one, Finset.prod_const_one,
     mul_one, ← Matrix.det_transpose]
+  simp only [Pi.basisFun_det, Matrix.det_transpose, abs_nonneg, ENNReal.ofReal_eq_ofReal_iff]
+  -- TODO Basis.toMatrix .of
   rfl
 
 @[simp]
