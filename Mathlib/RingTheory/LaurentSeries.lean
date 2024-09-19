@@ -642,12 +642,12 @@ theorem uniformContinuous_coeff {uK : UniformSpace K} (h : uK = ⊥) (d : ℤ) :
 in `K` converges to a principal filter -/
 def Cauchy.coeff {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) : ℤ → K :=
   let _ : UniformSpace K := ⊥
-  fun d ↦ UniformSpace.DiscreteUnif.cauchy_const rfl <| hℱ.map (uniformContinuous_coeff rfl d)
+  fun d ↦ UniformSpace.DiscreteUnif.cauchyConst rfl <| hℱ.map (uniformContinuous_coeff rfl d)
 
 theorem Cauchy.coeff_tendsto {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) (D : ℤ) :
     Tendsto (fun f : LaurentSeries K ↦ f.coeff D) ℱ (𝓟 {coeff hℱ D}) :=
   let _ : UniformSpace K := ⊥
-  le_of_eq <| UniformSpace.DiscreteUnif.cauchy_const_eq (by rfl)
+  le_of_eq <| UniformSpace.DiscreteUnif.eq_const_of_cauchy (by rfl)
     (hℱ.map (uniformContinuous_coeff rfl D)) ▸ (principal_singleton _).symm
 
 /- For every Cauchy filter of Laurent series, there is a `N` such that the `n`-th coefficient

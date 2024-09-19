@@ -136,7 +136,7 @@ theorem mem_idRel {a b : α} : (a, b) ∈ @idRel α ↔ a = b :=
 theorem idRel_subset {s : Set (α × α)} : idRel ⊆ s ↔ ∀ a, (a, a) ∈ s := by
   simp [subset_def]
 
-theorem prod_subset_idRel_Eq_singleton_left {X : Type _} {S T : Set X} (hS : S.Nonempty)
+theorem eq_singleton_left_of_prod_subset_idRel {X : Type _} {S T : Set X} (hS : S.Nonempty)
     (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, S = {x} := by
   rcases hS, hT with ⟨⟨s, hs⟩, ⟨t, ht⟩⟩
   refine ⟨s, eq_singleton_iff_nonempty_unique_mem.mpr ⟨⟨s, hs⟩, fun x hx ↦ ?_⟩⟩
@@ -146,16 +146,16 @@ theorem prod_subset_idRel_Eq_singleton_left {X : Type _} {S T : Set X} (hS : S.N
   simp only [idRel, mem_setOf_eq] at hx hs
   rwa [← hs] at hx
 
-theorem prod_subset_idRel_Eq_singleton_right {X : Type _} {S T : Set X} (hS : S.Nonempty)
+theorem eq_singleton_right_prod_subset_idRel {X : Type _} {S T : Set X} (hS : S.Nonempty)
     (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, T = {x} := by
   rw [Set.prod_subset_iff] at h_diag
   replace h_diag := fun x hx y hy => (h_diag y hy x hx).symm
-  exact prod_subset_idRel_Eq_singleton_left hT hS (prod_subset_iff.mpr h_diag)
+  exact eq_singleton_left_of_prod_subset_idRel hT hS (prod_subset_iff.mpr h_diag)
 
-theorem prod_subset_idRel_Eq_singleton {X : Type _} {S T : Set X} (hS : S.Nonempty)
+theorem eq_singleton_prod_subset_idRel {X : Type _} {S T : Set X} (hS : S.Nonempty)
     (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, S = {x} ∧ T = {x} := by
-  obtain ⟨⟨x, hx⟩, ⟨y, hy⟩⟩ := prod_subset_idRel_Eq_singleton_left hS hT h_diag,
-    prod_subset_idRel_Eq_singleton_right hS hT h_diag
+  obtain ⟨⟨x, hx⟩, ⟨y, hy⟩⟩ := eq_singleton_left_of_prod_subset_idRel hS hT h_diag,
+    eq_singleton_right_prod_subset_idRel hS hT h_diag
   refine ⟨x, ⟨hx, ?_⟩⟩
   rw [hy, Set.singleton_eq_singleton_iff]
   exact (Set.prod_subset_iff.mp h_diag x (by simp only [hx, Set.mem_singleton]) y
