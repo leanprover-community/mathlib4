@@ -3,8 +3,6 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 -/
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.Relation.Trans
 import Batteries.Tactic.Alias
 
 /-!
@@ -21,15 +19,41 @@ set_option linter.deprecated false
 universe u v
 variable {α : Sort u}
 
-/- Eq, Ne, HEq -/
+section Binary
 
-attribute [symm] Eq.symm
-attribute [symm] Ne.symm
--- FIXME This is still rejected after #857
--- attribute [refl] HEq.refl
-attribute [symm] HEq.symm
-attribute [trans] HEq.trans
-attribute [trans] heq_of_eq_of_heq
+variable {α : Type u} {β : Type v} (f : α → α → α) (inv : α → α) (one : α)
+
+/-- Local notation for `f`, high priority to avoid ambiguity with `HMul.hMul`. -/
+local infix:70 (priority := high) " * " => f
+
+/-- Local notation for `inv`, high priority to avoid ambiguity with `Inv.inv`. -/
+local postfix:100 (priority := high) "⁻¹" => inv
+
+variable (g : α → α → α)
+
+/-- Local notation for `g`, high priority to avoid ambiguity with `HAdd.hAdd`. -/
+local infix:65 (priority := high) " + " => g
+
+@[deprecated Std.Commutative (since := "2024-09-13")]
+def Commutative       := ∀ a b, a * b = b * a
+@[deprecated Std.Associative (since := "2024-09-13")]
+def Associative       := ∀ a b c, (a * b) * c = a * (b * c)
+@[deprecated (since := "2024-09-03")] -- unused in Mathlib
+def LeftIdentity      := ∀ a, one * a = a
+@[deprecated (since := "2024-09-03")] -- unused in Mathlib
+def RightIdentity     := ∀ a, a * one = a
+@[deprecated (since := "2024-09-03")] -- unused in Mathlib
+def RightInverse      := ∀ a, a * a⁻¹ = one
+@[deprecated (since := "2024-09-03")] -- unused in Mathlib
+def LeftCancelative   := ∀ a b c, a * b = a * c → b = c
+@[deprecated (since := "2024-09-03")] -- unused in Mathlib
+def RightCancelative  := ∀ a b c, a * b = c * b → a = c
+@[deprecated (since := "2024-09-03")] -- unused in Mathlib
+def LeftDistributive  := ∀ a b c, a * (b + c) = a * b + a * c
+@[deprecated (since := "2024-09-03")] -- unused in Mathlib
+def RightDistributive := ∀ a b c, (a + b) * c = a * c + b * c
+
+end Binary
 
 @[deprecated (since := "2024-09-03")] alias not_of_eq_false := of_eq_false
 @[deprecated (since := "2024-09-03")] -- unused in Mathlib
@@ -56,130 +80,38 @@ theorem eq_rec_compose {α β φ : Sort u} :
       (Eq.recOn p₁ (Eq.recOn p₂ a : β) : φ) = Eq.recOn (Eq.trans p₂ p₁) a
   | rfl, rfl, _ => rfl
 
-/- xor -/
+-- unused in Mathlib
+@[deprecated (since := "2024-09-11")] alias ⟨not_of_not_not_not, _⟩ := not_not_not
 
-variable {a b c d : Prop}
+variable {a : Prop} (p : Prop)
 
-def Xor' (a b : Prop) := (a ∧ ¬ b) ∨ (b ∧ ¬ a)
-
-/- iff -/
-
-attribute [refl] Iff.refl
-attribute [trans] Iff.trans
-attribute [symm] Iff.symm
-
-alias ⟨not_of_not_not_not, _⟩ := not_not_not
-
-variable (p)
-
--- FIXME: remove _iff and add _eq for the lean 4 core versions
+@[deprecated and_true (since := "2024-09-12")]
 theorem and_true_iff : p ∧ True ↔ p := iff_of_eq (and_true _)
+@[deprecated true_and (since := "2024-09-12")]
 theorem true_and_iff : True ∧ p ↔ p := iff_of_eq (true_and _)
+@[deprecated and_false (since := "2024-09-12")]
 theorem and_false_iff : p ∧ False ↔ False := iff_of_eq (and_false _)
+@[deprecated false_and (since := "2024-09-12")]
 theorem false_and_iff : False ∧ p ↔ False := iff_of_eq (false_and _)
-
-theorem true_or_iff : True ∨ p ↔ True := iff_of_eq (true_or _)
+@[deprecated or_true (since := "2024-09-12")]
 theorem or_true_iff : p ∨ True ↔ True := iff_of_eq (or_true _)
-theorem false_or_iff : False ∨ p ↔ p := iff_of_eq (false_or _)
+@[deprecated true_or (since := "2024-09-12")]
+theorem true_or_iff : True ∨ p ↔ True := iff_of_eq (true_or _)
+@[deprecated or_false (since := "2024-09-12")]
 theorem or_false_iff : p ∨ False ↔ p := iff_of_eq (or_false _)
-
-theorem not_or_of_not : ¬a → ¬b → ¬(a ∨ b) := fun h1 h2 ↦ not_or.2 ⟨h1, h2⟩
-
+@[deprecated false_or (since := "2024-09-12")]
+theorem false_or_iff : False ∨ p ↔ p := iff_of_eq (false_or _)
+@[deprecated iff_true (since := "2024-09-12")]
 theorem iff_true_iff : (a ↔ True) ↔ a := iff_of_eq (iff_true _)
+@[deprecated true_iff (since := "2024-09-12")]
 theorem true_iff_iff : (True ↔ a) ↔ a := iff_of_eq (true_iff _)
-
+@[deprecated iff_false (since := "2024-09-12")]
 theorem iff_false_iff : (a ↔ False) ↔ ¬a := iff_of_eq (iff_false _)
-
+@[deprecated false_iff (since := "2024-09-12")]
 theorem false_iff_iff : (False ↔ a) ↔ ¬a := iff_of_eq (false_iff _)
-
+@[deprecated iff_self (since := "2024-09-12")]
 theorem iff_self_iff (a : Prop) : (a ↔ a) ↔ True := iff_of_eq (iff_self _)
-
-/- exists unique -/
-
-def ExistsUnique (p : α → Prop) := ∃ x, p x ∧ ∀ y, p y → y = x
-
-namespace Mathlib.Notation
-open Lean
-
-/--
-Checks to see that `xs` has only one binder.
--/
-def isExplicitBinderSingular (xs : TSyntax ``explicitBinders) : Bool :=
-  match xs with
-  | `(explicitBinders| $_:binderIdent $[: $_]?) => true
-  | `(explicitBinders| ($_:binderIdent : $_)) => true
-  | _ => false
-
-open TSyntax.Compat in
-/--
-`∃! x : α, p x` means that there exists a unique `x` in `α` such that `p x`.
-This is notation for `ExistsUnique (fun (x : α) ↦ p x)`.
-
-This notation does not allow multiple binders like `∃! (x : α) (y : β), p x y`
-as a shorthand for `∃! (x : α), ∃! (y : β), p x y` since it is liable to be misunderstood.
-Often, the intended meaning is instead `∃! q : α × β, p q.1 q.2`.
--/
-macro "∃!" xs:explicitBinders ", " b:term : term => do
-  if !isExplicitBinderSingular xs then
-    Macro.throwErrorAt xs "\
-      The `ExistsUnique` notation should not be used with more than one binder.\n\
-      \n\
-      The reason for this is that `∃! (x : α), ∃! (y : β), p x y` has a completely different \
-      meaning from `∃! q : α × β, p q.1 q.2`. \
-      To prevent confusion, this notation requires that you be explicit \
-      and use one with the correct interpretation."
-  expandExplicitBinders ``ExistsUnique xs b
-
-/--
-Pretty-printing for `ExistsUnique`, following the same pattern as pretty printing for `Exists`.
-However, it does *not* merge binders.
--/
-@[app_unexpander ExistsUnique] def unexpandExistsUnique : Lean.PrettyPrinter.Unexpander
-  | `($(_) fun $x:ident ↦ $b)                      => `(∃! $x:ident, $b)
-  | `($(_) fun ($x:ident : $t) ↦ $b)               => `(∃! $x:ident : $t, $b)
-  | _                                               => throw ()
-
-/--
-`∃! x ∈ s, p x` means `∃! x, x ∈ s ∧ p x`, which is to say that there exists a unique `x ∈ s`
-such that `p x`.
-Similarly, notations such as `∃! x ≤ n, p n` are supported,
-using any relation defined using the `binder_predicate` command.
--/
-syntax "∃! " binderIdent binderPred ", " term : term
-
-macro_rules
-  | `(∃! $x:ident $p:binderPred, $b) => `(∃! $x:ident, satisfies_binder_pred% $x $p ∧ $b)
-  | `(∃! _ $p:binderPred, $b) => `(∃! x, satisfies_binder_pred% x $p ∧ $b)
-
-end Mathlib.Notation
-
--- @[intro] -- TODO
-theorem ExistsUnique.intro {p : α → Prop} (w : α)
-    (h₁ : p w) (h₂ : ∀ y, p y → y = w) : ∃! x, p x := ⟨w, h₁, h₂⟩
-
-theorem ExistsUnique.elim {α : Sort u} {p : α → Prop} {b : Prop}
-    (h₂ : ∃! x, p x) (h₁ : ∀ x, p x → (∀ y, p y → y = x) → b) : b :=
-  Exists.elim h₂ (fun w hw ↦ h₁ w (And.left hw) (And.right hw))
-
-theorem exists_unique_of_exists_of_unique {α : Sort u} {p : α → Prop}
-    (hex : ∃ x, p x) (hunique : ∀ y₁ y₂, p y₁ → p y₂ → y₁ = y₂) : ∃! x, p x :=
-  Exists.elim hex (fun x px ↦ ExistsUnique.intro x px (fun y (h : p y) ↦ hunique y x h px))
-
-theorem ExistsUnique.exists {p : α → Prop} : (∃! x, p x) → ∃ x, p x | ⟨x, h, _⟩ => ⟨x, h⟩
-
-theorem ExistsUnique.unique {α : Sort u} {p : α → Prop}
-    (h : ∃! x, p x) {y₁ y₂ : α} (py₁ : p y₁) (py₂ : p y₂) : y₁ = y₂ :=
-  let ⟨_, _, hy⟩ := h; (hy _ py₁).trans (hy _ py₂).symm
-
-/- exists, forall, exists unique congruences -/
-
--- TODO
--- attribute [congr] forall_congr'
--- attribute [congr] exists_congr'
-
--- @[congr]
-theorem existsUnique_congr {p q : α → Prop} (h : ∀ a, p a ↔ q a) : (∃! a, p a) ↔ ∃! a, q a :=
-  exists_congr fun _ ↦ and_congr (h _) <| forall_congr' fun _ ↦ imp_congr_left (h _)
+@[deprecated (since := "2024-09-12")] alias not_or_of_not := not_or_intro
 
 /- decidable -/
 
@@ -213,9 +145,6 @@ end Decidable
 @[deprecated (since := "2024-09-03")] alias Iff.decidable := instDecidableIff
 @[deprecated (since := "2024-09-03")] alias decidableTrue := instDecidableTrue
 @[deprecated (since := "2024-09-03")] alias decidableFalse := instDecidableFalse
-
-instance {q : Prop} [Decidable p] [Decidable q] : Decidable (Xor' p q) :=
-    inferInstanceAs (Decidable (Or ..))
 
 @[deprecated (since := "2024-09-03")] -- unused in Mathlib
 def IsDecEq {α : Sort u} (p : α → α → Bool) : Prop := ∀ ⦃x y : α⦄, p x y = true → x = y
@@ -259,19 +188,7 @@ theorem imp_of_if_pos {c t e : Prop} [Decidable c] (h : ite c t e) (hc : c) : t 
 theorem imp_of_if_neg {c t e : Prop} [Decidable c] (h : ite c t e) (hnc : ¬c) : e :=
   (if_neg hnc ▸ h :)
 
-theorem if_ctx_congr {α : Sort u} {b c : Prop} [dec_b : Decidable b] [dec_c : Decidable c]
-    {x y u v : α} (h_c : b ↔ c) (h_t : c → x = u) (h_e : ¬c → y = v) : ite b x y = ite c u v :=
-  match dec_b, dec_c with
-  | isFalse _,  isFalse h₂ => h_e h₂
-  | isTrue _,   isTrue h₂  => h_t h₂
-  | isFalse h₁, isTrue h₂  => absurd h₂ (Iff.mp (not_congr h_c) h₁)
-  | isTrue h₁,  isFalse h₂ => absurd h₁ (Iff.mpr (not_congr h_c) h₂)
-
-theorem if_congr {α : Sort u} {b c : Prop} [Decidable b] [Decidable c]
-    {x y u v : α} (h_c : b ↔ c) (h_t : x = u) (h_e : y = v) : ite b x y = ite c u v :=
-  if_ctx_congr h_c (fun _ ↦ h_t) (fun _ ↦ h_e)
-
--- @[congr]
+@[deprecated (since := "2024-09-11")]
 theorem dif_ctx_congr {α : Sort u} {b c : Prop} [dec_b : Decidable b] [dec_c : Decidable c]
     {x : b → α} {u : c → α} {y : ¬b → α} {v : ¬c → α}
     (h_c : b ↔ c) (h_t : ∀ h : c, x (Iff.mpr h_c h) = u h)
@@ -353,98 +270,3 @@ theorem let_body_eq {α : Sort v} {β : α → Sort u} (a : α) {b₁ b₂ : ∀
 theorem let_eq {α : Sort v} {β : Sort u} {a₁ a₂ : α} {b₁ b₂ : α → β}
     (h₁ : a₁ = a₂) (h₂ : ∀ x, b₁ x = b₂ x) :
     (let x : α := a₁; b₁ x) = (let x : α := a₂; b₂ x) := by simp [h₁, h₂]
-
-section Relation
-
-variable {α : Sort u} {β : Sort v} (r : β → β → Prop)
-
-/-- Local notation for an arbitrary binary relation `r`. -/
-local infix:50 " ≺ " => r
-
-/-- A reflexive relation relates every element to itself. -/
-def Reflexive := ∀ x, x ≺ x
-
-/-- A relation is symmetric if `x ≺ y` implies `y ≺ x`. -/
-def Symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x
-
-/-- A relation is transitive if `x ≺ y` and `y ≺ z` together imply `x ≺ z`. -/
-def Transitive := ∀ ⦃x y z⦄, x ≺ y → y ≺ z → x ≺ z
-
-lemma Equivalence.reflexive {r : β → β → Prop} (h : Equivalence r) : Reflexive r := h.refl
-
-lemma Equivalence.symmetric {r : β → β → Prop} (h : Equivalence r) : Symmetric r := fun _ _ ↦ h.symm
-
-lemma Equivalence.transitive {r : β → β → Prop} (h : Equivalence r) : Transitive r :=
-  fun _ _ _ ↦ h.trans
-
-/-- A relation is total if for all `x` and `y`, either `x ≺ y` or `y ≺ x`. -/
-def Total := ∀ x y, x ≺ y ∨ y ≺ x
-
-/-- Irreflexive means "not reflexive". -/
-def Irreflexive := ∀ x, ¬ x ≺ x
-
-/-- A relation is antisymmetric if `x ≺ y` and `y ≺ x` together imply that `x = y`. -/
-def AntiSymmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x → x = y
-
-/-- An empty relation does not relate any elements. -/
-@[nolint unusedArguments]
-def EmptyRelation := fun _ _ : α ↦ False
-
-theorem InvImage.trans (f : α → β) (h : Transitive r) : Transitive (InvImage r f) :=
-  fun (a₁ a₂ a₃ : α) (h₁ : InvImage r f a₁ a₂) (h₂ : InvImage r f a₂ a₃) ↦ h h₁ h₂
-
-theorem InvImage.irreflexive (f : α → β) (h : Irreflexive r) : Irreflexive (InvImage r f) :=
-  fun (a : α) (h₁ : InvImage r f a a) ↦ h (f a) h₁
-
-end Relation
-
-section Binary
-
-variable {α : Type u} {β : Type v} (f : α → α → α) (inv : α → α) (one : α)
-
-/-- Local notation for `f`, high priority to avoid ambiguity with `HMul.hMul`. -/
-local infix:70 (priority := high) " * " => f
-
-/-- Local notation for `inv`, high priority to avoid ambiguity with `Inv.inv`. -/
-local postfix:100 (priority := high) "⁻¹" => inv
-
-variable (g : α → α → α)
-
-/-- Local notation for `g`, high priority to avoid ambiguity with `HAdd.hAdd`. -/
-local infix:65 (priority := high) " + " => g
-
-@[deprecated (since := "2024-09-03")] -- unused in Mathlib
-def LeftIdentity      := ∀ a, one * a = a
-@[deprecated (since := "2024-09-03")] -- unused in Mathlib
-def RightIdentity     := ∀ a, a * one = a
-@[deprecated (since := "2024-09-03")] -- unused in Mathlib
-def RightInverse      := ∀ a, a * a⁻¹ = one
-@[deprecated (since := "2024-09-03")] -- unused in Mathlib
-def LeftCancelative   := ∀ a b c, a * b = a * c → b = c
-@[deprecated (since := "2024-09-03")] -- unused in Mathlib
-def RightCancelative  := ∀ a b c, a * b = c * b → a = c
-@[deprecated (since := "2024-09-03")] -- unused in Mathlib
-def LeftDistributive  := ∀ a b c, a * (b + c) = a * b + a * c
-@[deprecated (since := "2024-09-03")] -- unused in Mathlib
-def RightDistributive := ∀ a b c, (a + b) * c = a * c + b * c
-
-def Commutative       := ∀ a b, a * b = b * a
-def Associative       := ∀ a b c, (a * b) * c = a * (b * c)
-def RightCommutative (h : β → α → β) := ∀ b a₁ a₂, h (h b a₁) a₂ = h (h b a₂) a₁
-def LeftCommutative (h : α → β → β) := ∀ a₁ a₂ b, h a₁ (h a₂ b) = h a₂ (h a₁ b)
-
-theorem left_comm : Commutative f → Associative f → LeftCommutative f :=
-  fun hcomm hassoc a b c ↦
-    calc  a*(b*c)
-      _ = (a*b)*c := Eq.symm (hassoc a b c)
-      _ = (b*a)*c := hcomm a b ▸ rfl
-      _ = b*(a*c) := hassoc b a c
-
-theorem right_comm : Commutative f → Associative f → RightCommutative f :=
-  fun hcomm hassoc a b c ↦
-    calc (a*b)*c
-      _ = a*(b*c) := hassoc a b c
-      _ = a*(c*b) := hcomm b c ▸ rfl
-      _ = (a*c)*b := Eq.symm (hassoc a c b)
-
-end Binary

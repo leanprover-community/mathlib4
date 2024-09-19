@@ -1216,9 +1216,9 @@ theorem prod_mono : ∀ {a b : FactorSet α}, a ≤ b → a.prod ≤ b.prod
 theorem FactorSet.prod_eq_zero_iff [Nontrivial α] (p : FactorSet α) : p.prod = 0 ↔ p = ⊤ := by
   unfold FactorSet at p
   induction p  -- TODO: `induction_eliminator` doesn't work with `abbrev`
-  · simp only [iff_self_iff, eq_self_iff_true, Associates.prod_top]
+  · simp only [eq_self_iff_true, Associates.prod_top]
   · rw [prod_coe, Multiset.prod_eq_zero_iff, Multiset.mem_map, eq_false WithTop.coe_ne_top,
-      iff_false_iff, not_exists]
+      iff_false, not_exists]
     exact fun a => not_and_of_not_right _ a.prop.ne_zero
 
 section count
@@ -1871,7 +1871,7 @@ noncomputable def fintypeSubtypeDvd {M : Type*} [CancelCommMonoidWithZero M]
       (((normalizedFactors y).powerset.toFinset ×ˢ (Finset.univ : Finset Mˣ)).image fun s =>
         (s.snd : M) * s.fst.prod)
       fun x => ?_
-  simp only [exists_prop, Finset.mem_image, Finset.mem_product, Finset.mem_univ, and_true_iff,
+  simp only [exists_prop, Finset.mem_image, Finset.mem_product, Finset.mem_univ, and_true,
     Multiset.mem_toFinset, Multiset.mem_powerset, exists_eq_right, Multiset.mem_map]
   constructor
   · rintro ⟨s, hs, rfl⟩
