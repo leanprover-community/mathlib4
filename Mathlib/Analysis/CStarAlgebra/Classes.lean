@@ -51,38 +51,26 @@ instance (priority := 100) NonUnitalCommCStarAlgebra.toNonUnitalNormedCommRing
     (A : Type*) [NonUnitalCommCStarAlgebra A] : NonUnitalNormedCommRing A where
   mul_comm := mul_comm
 
-/-- This is not registered as an instance to avoid Lean searching for `IsClosed (s : Set A)`
-instances frequently. -/
-@[reducible]
-noncomputable def StarSubalgebra.cstarAlgebra {S A : Type*} [CStarAlgebra A]
+noncomputable instance StarSubalgebra.cstarAlgebra {S A : Type*} [CStarAlgebra A]
     [SetLike S A] [SubringClass S A] [SMulMemClass S ℂ A] [StarMemClass S A]
     (s : S) (h_closed : IsClosed (s : Set A)) : CStarAlgebra s where
   toCompleteSpace := h_closed.completeSpace_coe
   norm_mul_self_le x := CStarRing.norm_star_mul_self (x := (x : A)) |>.symm.le
 
-/-- This is not registered as an instance to avoid Lean searching for `IsClosed (s : Set A)`
-instances frequently. -/
-@[reducible]
-noncomputable def StarSubalgebra.commCStarAlgebra {S A : Type*} [CommCStarAlgebra A]
+noncomputable instance StarSubalgebra.commCStarAlgebra {S A : Type*} [CommCStarAlgebra A]
     [SetLike S A] [SubringClass S A] [SMulMemClass S ℂ A] [StarMemClass S A]
     (s : S) (h_closed : IsClosed (s : Set A)) : CommCStarAlgebra s where
   toCompleteSpace := h_closed.completeSpace_coe
   norm_mul_self_le x := CStarRing.norm_star_mul_self (x := (x : A)) |>.symm.le
   mul_comm _ _ := Subtype.ext <| mul_comm _ _
 
-/-- This is not registered as an instance to avoid Lean searching for `IsClosed (s : Set A)`
-instances frequently. -/
-@[reducible]
-noncomputable def NonUnitalStarSubalgebra.nonUnitalCStarAlgebra {S A : Type*}
+noncomputable instance NonUnitalStarSubalgebra.nonUnitalCStarAlgebra {S A : Type*}
     [NonUnitalCStarAlgebra A] [SetLike S A] [NonUnitalSubringClass S A] [SMulMemClass S ℂ A]
     [StarMemClass S A] (s : S) (h_closed : IsClosed (s : Set A)) : NonUnitalCStarAlgebra s where
   toCompleteSpace := h_closed.completeSpace_coe
   norm_mul_self_le x := CStarRing.norm_star_mul_self (x := (x : A)) |>.symm.le
 
-/-- This is not registered as an instance to avoid Lean searching for `IsClosed (s : Set A)`
-instances frequently. -/
-@[reducible]
-noncomputable def NonUnitalStarSubalgebra.nonUnitalCommCStarAlgebra {S A : Type*}
+noncomputable instance NonUnitalStarSubalgebra.nonUnitalCommCStarAlgebra {S A : Type*}
     [NonUnitalCommCStarAlgebra A] [SetLike S A] [NonUnitalSubringClass S A] [SMulMemClass S ℂ A]
     [StarMemClass S A] (s : S) (h_closed : IsClosed (s : Set A)) : NonUnitalCommCStarAlgebra s where
   toCompleteSpace := h_closed.completeSpace_coe
