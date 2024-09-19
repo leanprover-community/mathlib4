@@ -219,7 +219,7 @@ lemma mem_asIdeal {I : TwoSidedIdeal R} {x : R} :
     x ∈ TwoSidedIdeal.asIdeal I ↔ x ∈ I := by simp [asIdeal]
 
 /-- Every two-sided-ideal is also a right ideal. -/
-def asIdealMop : TwoSidedIdeal R →o Ideal Rᵐᵒᵖ where
+def asIdealOpposite : TwoSidedIdeal R →o Ideal Rᵐᵒᵖ where
   toFun I := asIdeal $ ⟨I.ringCon.op⟩
   monotone' I J h x h' := by
     simp only [mem_asIdeal, mem_iff, RingCon.op_iff, MulOpposite.unop_zero] at h' ⊢
