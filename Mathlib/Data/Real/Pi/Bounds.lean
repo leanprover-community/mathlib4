@@ -11,7 +11,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 This file contains lemmas which establish bounds on `Real.pi`.
 Notably, these include `pi_gt_sqrtTwoAddSeries` and `pi_lt_sqrtTwoAddSeries`,
 which bound `π` using series;
-numerical bounds on `π` such as `pi_gt_314`and `pi_lt_315` (more precise versions are given, too).
+numerical bounds on `π` such as `pi_gt_d2` and `pi_lt_d2` (more precise versions are given, too).
 
 See also `Mathlib/Data/Real/Pi/Leibniz.lean` and `Mathlib/Data/Real/Pi/Wallis.lean` for infinite
 formulas for `π`.
@@ -80,26 +80,6 @@ theorem sqrtTwoAddSeries_step_up (c d : ℕ) {a b n : ℕ} {z : ℝ} (hz : sqrtT
     add_div_eq_mul_add_div _ _ (ne_of_gt hb'), div_le_div_iff hb' (pow_pos hd' _)]
   exact mod_cast h
 
-section Tactic
-
-open Lean Elab Tactic
-
-/-- Create a proof of `a < π` for a fixed rational number `a`, given a witness, which is a
-sequence of rational numbers `√2 < r 1 < r 2 < ... < r n < 2` satisfying the property that
-`√(2 + r i) ≤ r(i+1)`, where `r 0 = 0` and `√(2 - r n) ≥ a/2^(n+1)`. -/
-elab "pi_lower_bound " "[" l:term,* "]" : tactic => do
-  have els := l.getElems
-  let n := quote els.size
-  evalTactic (← `(tactic| apply pi_lower_bound_start $n))
-  for l in els do
-    let Q := .const ``_root_.Rat []
-    let {num, den, ..} ← unsafe Meta.evalExpr ℚ Q (← Term.elabTermAndSynthesize l (some Q))
-    evalTactic (← `(tactic| apply sqrtTwoAddSeries_step_up $(quote num.toNat) $(quote den)))
-  evalTactic (← `(tactic| simp [sqrtTwoAddSeries]))
-  allGoals <| evalTactic (← `(tactic| norm_num1))
-
-end Tactic
-
 /-- From a lower bound on `sqrtTwoAddSeries 0 n = 2 cos (π / 2 ^ (n+1))` of the form
 `2 - ((a - 1 / 4 ^ n) / 2 ^ (n + 1)) ^ 2 ≤ sqrtTwoAddSeries 0 n`, one can deduce the upper bound
 `π < a` thanks to basic trigonometric formulas as expressed in `pi_lt_sqrtTwoAddSeries`. -/
@@ -125,7 +105,20 @@ theorem sqrtTwoAddSeries_step_down (a b : ℕ) {c d n : ℕ} {z : ℝ}
 
 section Tactic
 
-open Lean Elab Tactic
+open Lean Elab Tactic Qq
+
+/-- Create a proof of `a < π` for a fixed rational number `a`, given a witness, which is a
+sequence of rational numbers `√2 < r 1 < r 2 < ... < r n < 2` satisfying the property that
+`√(2 + r i) ≤ r(i+1)`, where `r 0 = 0` and `√(2 - r n) ≥ a/2^(n+1)`. -/
+elab "pi_lower_bound " "[" l:term,* "]" : tactic => do
+  have els := l.getElems
+  let n := quote els.size
+  evalTactic (← `(tactic| apply pi_lower_bound_start $n))
+  for l in els do
+    let {num, den, ..} ← unsafe Meta.evalExpr ℚ q(ℚ) (← Term.elabTermAndSynthesize l (some q(ℚ)))
+    evalTactic (← `(tactic| apply sqrtTwoAddSeries_step_up $(quote num.toNat) $(quote den)))
+  evalTactic (← `(tactic| simp [sqrtTwoAddSeries]))
+  allGoals <| evalTactic (← `(tactic| norm_num1))
 
 /-- Create a proof of `π < a` for a fixed rational number `a`, given a witness, which is a
 sequence of rational numbers `√2 < r 1 < r 2 < ... < r n < 2` satisfying the property that
@@ -135,8 +128,7 @@ elab "pi_upper_bound " "[" l:term,* "]" : tactic => do
   let n := quote els.size
   evalTactic (← `(tactic| apply pi_upper_bound_start $n))
   for l in els do
-    let Q := .const ``_root_.Rat []
-    let {num, den, ..} ← unsafe Meta.evalExpr ℚ Q (← Term.elabTermAndSynthesize l (some Q))
+    let {num, den, ..} ← unsafe Meta.evalExpr ℚ q(ℚ) (← Term.elabTermAndSynthesize l (some q(ℚ)))
     evalTactic (← `(tactic| apply sqrtTwoAddSeries_step_down $(quote num.toNat) $(quote den)))
   evalTactic (← `(tactic| simp [sqrtTwoAddSeries]))
   allGoals <| evalTactic (← `(tactic| norm_num1))
