@@ -7,6 +7,9 @@ set_option linter.docPrime true
 /-- X' has a doc-string -/
 def X' := 0
 
+-- no warning on a declaration whose name contains a `'` *and does not end with it*
+def X'X := 0
+
 namespace X
 /--
 warning: `thm_no_doc1'` is missing a doc-string, please add one.
