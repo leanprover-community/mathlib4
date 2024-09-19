@@ -776,26 +776,26 @@ lemma prod_mul_prod_comm (f g h i : α → β) :
   simp_rw [prod_mul_distrib, mul_mul_mul_comm]
 
 @[to_additive]
-theorem prod_product {s : Finset γ} {t : Finset α} {f : γ × α → β} :
+theorem prod_product (s : Finset γ) (t : Finset α) (f : γ × α → β) :
     ∏ x ∈ s ×ˢ t, f x = ∏ x ∈ s, ∏ y ∈ t, f (x, y) :=
   prod_finset_product (s ×ˢ t) s (fun _a => t) fun _p => mem_product
 
 /-- An uncurried version of `Finset.prod_product`. -/
 @[to_additive "An uncurried version of `Finset.sum_product`"]
-theorem prod_product' {s : Finset γ} {t : Finset α} {f : γ → α → β} :
+theorem prod_product' (s : Finset γ) (t : Finset α) (f : γ → α → β) :
     ∏ x ∈ s ×ˢ t, f x.1 x.2 = ∏ x ∈ s, ∏ y ∈ t, f x y :=
-  prod_product
+  prod_product ..
 
 @[to_additive]
-theorem prod_product_right {s : Finset γ} {t : Finset α} {f : γ × α → β} :
+theorem prod_product_right (s : Finset γ) (t : Finset α) (f : γ × α → β) :
     ∏ x ∈ s ×ˢ t, f x = ∏ y ∈ t, ∏ x ∈ s, f (x, y) :=
   prod_finset_product_right (s ×ˢ t) t (fun _a => s) fun _p => mem_product.trans and_comm
 
 /-- An uncurried version of `Finset.prod_product_right`. -/
 @[to_additive "An uncurried version of `Finset.sum_product_right`"]
-theorem prod_product_right' {s : Finset γ} {t : Finset α} {f : γ → α → β} :
+theorem prod_product_right' (s : Finset γ) (t : Finset α) (f : γ → α → β) :
     ∏ x ∈ s ×ˢ t, f x.1 x.2 = ∏ y ∈ t, ∏ x ∈ s, f x y :=
-  prod_product_right
+  prod_product_right ..
 
 /-- Generalization of `Finset.prod_comm` to the case when the inner `Finset`s depend on the outer
 variable. -/
@@ -2074,7 +2074,7 @@ theorem disjoint_list_sum_left {a : Multiset α} {l : List (Multiset α)} :
     simp only [zero_disjoint, List.not_mem_nil, IsEmpty.forall_iff, forall_const, List.sum_nil]
   | cons b bs ih =>
     simp_rw [List.sum_cons, disjoint_add_left, List.mem_cons, forall_eq_or_imp]
-    simp [and_congr_left_iff, iff_self_iff, ih]
+    simp [and_congr_left_iff, ih]
 
 theorem disjoint_list_sum_right {a : Multiset α} {l : List (Multiset α)} :
     Multiset.Disjoint a l.sum ↔ ∀ b ∈ l, Multiset.Disjoint a b := by
@@ -2093,7 +2093,7 @@ theorem disjoint_sum_right {a : Multiset α} {i : Multiset (Multiset α)} :
 theorem disjoint_finset_sum_left {β : Type*} {i : Finset β} {f : β → Multiset α} {a : Multiset α} :
     Multiset.Disjoint (i.sum f) a ↔ ∀ b ∈ i, Multiset.Disjoint (f b) a := by
   convert @disjoint_sum_left _ a (map f i.val)
-  simp [and_congr_left_iff, iff_self_iff]
+  simp [and_congr_left_iff]
 
 theorem disjoint_finset_sum_right {β : Type*} {i : Finset β} {f : β → Multiset α}
     {a : Multiset α} : Multiset.Disjoint a (i.sum f) ↔ ∀ b ∈ i, Multiset.Disjoint a (f b) := by

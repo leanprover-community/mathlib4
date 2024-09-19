@@ -55,9 +55,7 @@ variable [Semiring R] [Fintype I] [Fintype J] [DecidableEq I] [DecidableEq J]
 @[simps!]
 def compRingEquiv : Matrix I I (Matrix J J R) ≃+* Matrix (I × J) (I × J) R where
   __ := Matrix.compAddEquiv I I J J R
-  map_mul' _ _ := by
-    ext _ _
-    exact (Matrix.sum_apply _ _ _ _).trans <| Eq.symm Fintype.sum_prod_type
+  map_mul' _ _ := by ext; exact (Matrix.sum_apply ..).trans <| .symm <| Fintype.sum_prod_type ..
 
 end Semiring
 

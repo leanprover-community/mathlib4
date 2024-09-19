@@ -306,7 +306,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
         · exact ⟨[], [], by tauto⟩
         · cases' t' with b t
           · simp only [forall_eq_or_imp, List.mem_cons] at helem
-            simp only [eq_self_iff_true, not_true, Ne, false_and_iff] at helem
+            simp only [eq_self_iff_true, not_true, Ne, false_and] at helem
           simp only [List.join, List.cons_append, List.cons_eq_cons] at hsum
           refine ⟨t, U.join, hsum.2, ?_, ?_⟩
           · specialize helem (b :: t) (by simp)

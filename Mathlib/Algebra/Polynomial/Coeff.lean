@@ -220,7 +220,7 @@ theorem card_support_trinomial {k m n : ℕ} (hkm : k < m) (hmn : m < n) {x y z 
     (hy : y ≠ 0) (hz : z ≠ 0) : card (support (C x * X ^ k + C y * X ^ m + C z * X ^ n)) = 3 := by
   rw [support_trinomial hkm hmn hx hy hz,
     card_insert_of_not_mem
-      (mt mem_insert.mp (not_or_of_not hkm.ne (mt mem_singleton.mp (hkm.trans hmn).ne))),
+      (mt mem_insert.mp (not_or_intro hkm.ne (mt mem_singleton.mp (hkm.trans hmn).ne))),
     card_insert_of_not_mem (mt mem_singleton.mp hmn.ne), card_singleton]
 
 end Fewnomials

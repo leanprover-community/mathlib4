@@ -84,9 +84,10 @@ end
 section
 
 -- Initial issue: https://github.com/leanprover-community/mathlib4/issues/12232
+-- reduced from 9000 to 1000 after `@[simp low] map_zero` in #16679 (only 10 needed)
 
 open Equiv in
-set_option synthInstance.maxHeartbeats 9000 in
+set_option synthInstance.maxHeartbeats 1000 in
 example {n : ℕ} (p : Fin (n + 1)) (e : Perm (Fin n)) :
     Equiv.Perm.decomposeFin.symm (p, e) 0 = p := by simp
 

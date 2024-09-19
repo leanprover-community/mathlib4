@@ -147,7 +147,7 @@ theorem eval_one_cyclotomic_not_prime_pow {R : Type*} [Ring R] {n : ℕ}
     rw [← Finset.prod_sdiff <| show {n} ⊆ _ from _] at this
     swap
     · simp only [singleton_subset_iff, mem_sdiff, mem_erase, Ne, mem_divisors, dvd_refl,
-        true_and_iff, mem_image, mem_range, exists_prop, not_exists, not_and]
+        true_and, mem_image, mem_range, exists_prop, not_exists, not_and]
       exact ⟨⟨hn.ne', hn'.ne'⟩, fun t _ => h hp _⟩
     rw [← Int.natAbs_ofNat p, Int.natAbs_dvd_natAbs] at hpe
     obtain ⟨t, ht⟩ := hpe
@@ -203,7 +203,7 @@ theorem sub_one_pow_totient_lt_cyclotomic_eval {n : ℕ} {q : ℝ} (hn' : 2 ≤ 
       Units.val_le_val, ← NNReal.coe_le_coe, Complex.abs.nonneg, hq'.le, Units.val_mk0,
       Real.coe_toNNReal', coe_nnnorm, Complex.norm_eq_abs, max_le_iff, tsub_le_iff_right]
     intro x hx
-    simpa only [and_true_iff, tsub_le_iff_right] using hfor x hx
+    simpa only [and_true, tsub_le_iff_right] using hfor x hx
   · simp only [Subtype.coe_mk, Finset.mem_attach, exists_true_left, Subtype.exists, ←
       NNReal.coe_lt_coe, ← Units.val_lt_val, Units.val_mk0 _, coe_nnnorm]
     simpa [hq'.le, Real.coe_toNNReal', max_eq_left, sub_nonneg] using hex

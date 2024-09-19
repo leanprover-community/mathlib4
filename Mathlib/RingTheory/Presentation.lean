@@ -122,6 +122,39 @@ lemma finitePresentation_of_isFinite [P.IsFinite] :
 
 section Construction
 
+/-- If `algebraMap R S` is bijective, the empty generators are a presentation with no relations. -/
+noncomputable def ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)) :
+    Presentation.{t, w} R S where
+  __ := Generators.ofSurjectiveAlgebraMap h.surjective
+  rels := PEmpty
+  relation := PEmpty.elim
+  span_range_relation_eq_ker := by
+    simp only [Set.range_eq_empty, Ideal.span_empty]
+    symm
+    rw [← RingHom.injective_iff_ker_eq_bot]
+    show Function.Injective (aeval PEmpty.elim)
+    rw [aeval_injective_iff_of_isEmpty]
+    exact h.injective
+
+instance ofBijectiveAlgebraMap_isFinite (h : Function.Bijective (algebraMap R S)) :
+    (ofBijectiveAlgebraMap.{t, w} h).IsFinite where
+  finite_vars := inferInstanceAs (Finite PEmpty.{w + 1})
+  finite_rels := inferInstanceAs (Finite PEmpty.{t + 1})
+
+lemma ofBijectiveAlgebraMap_dimension (h : Function.Bijective (algebraMap R S)) :
+    (ofBijectiveAlgebraMap h).dimension = 0 := by
+  show Nat.card PEmpty - Nat.card PEmpty = 0
+  simp only [Nat.card_eq_fintype_card, Fintype.card_ofIsEmpty, le_refl, tsub_eq_zero_of_le]
+
+variable (R) in
+/-- The canonical `R`-presentation of `R` with no generators and no relations. -/
+noncomputable def id : Presentation.{t, w} R R := ofBijectiveAlgebraMap Function.bijective_id
+
+instance : (id R).IsFinite := ofBijectiveAlgebraMap_isFinite (R := R) Function.bijective_id
+
+lemma id_dimension : (Presentation.id R).dimension = 0 :=
+  ofBijectiveAlgebraMap_dimension (R := R) Function.bijective_id
+
 section Localization
 
 variable (r : R) [IsLocalization.Away r S]
@@ -169,7 +202,7 @@ end Localization
 
 section BaseChange
 
-variable {T} [CommRing T] [Algebra R T] (P : Presentation R S)
+variable (T) [CommRing T] [Algebra R T] (P : Presentation R S)
 
 private lemma span_range_relation_eq_ker_baseChange :
     Ideal.span (Set.range fun i ↦ (MvPolynomial.map (algebraMap R T)) (P.relation i)) =
@@ -228,7 +261,11 @@ def baseChange : Presentation T (T ⊗[R] S) where
   __ := Generators.baseChange P.toGenerators
   rels := P.rels
   relation i := MvPolynomial.map (algebraMap R T) (P.relation i)
-  span_range_relation_eq_ker := P.span_range_relation_eq_ker_baseChange
+  span_range_relation_eq_ker := P.span_range_relation_eq_ker_baseChange T
+
+instance baseChange_isFinite [P.IsFinite] : (P.baseChange T).IsFinite where
+  finite_vars := inferInstanceAs <| Finite (P.vars)
+  finite_rels := inferInstanceAs <| Finite (P.rels)
 
 end BaseChange
 
