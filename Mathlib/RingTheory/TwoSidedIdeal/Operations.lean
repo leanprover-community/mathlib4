@@ -110,7 +110,7 @@ variable {R : Type*} [NonUnitalRing R]
 
 open AddSubgroup in
 /-- If `s : Set R` is absorbing under multiplication, then its `TwoSidedIdeal.span` coincides with
-it's `AddSubgroup.closure`, as sets. -/
+its `AddSubgroup.closure`, as sets. -/
 lemma mem_span_iff_mem_addSubgroup_closure_absorbing {s : Set R}
     (h_left : ∀ x y, y ∈ s → x * y ∈ s) (h_right : ∀ y x, y ∈ s → y * x ∈ s) {z : R} :
     z ∈ span s ↔ z ∈ closure s := by
