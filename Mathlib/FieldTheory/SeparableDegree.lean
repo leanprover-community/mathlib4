@@ -731,7 +731,7 @@ theorem finSepDegree_eq_finrank_of_isSeparable [Algebra.IsSeparable F E] :
   simp only at h ⊢
   have heq : _ * _ = _ * _ := congr_arg₂ (· * ·) h <|
     (finSepDegree_adjoin_simple_eq_finrank_iff L E x (IsAlgebraic.of_finite L x)).2 <|
-      IsSeparable.of_isScalarTower L (Algebra.IsSeparable.isSeparable F x)
+      IsSeparable.tower_top L (Algebra.IsSeparable.isSeparable F x)
   set M := L⟮x⟯
   have := Algebra.IsAlgebraic.of_finite L M
   rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M,
@@ -813,7 +813,7 @@ theorem IntermediateField.isSeparable_adjoin_pair_of_isSeparable {x y : E}
     (hx : IsSeparable F x) (hy : IsSeparable F y) :
     Algebra.IsSeparable F F⟮x, y⟯ := by
   rw [← adjoin_simple_adjoin_simple]
-  replace hy := IsSeparable.of_isScalarTower F⟮x⟯ hy
+  replace hy := IsSeparable.tower_top F⟮x⟯ hy
   rw [← isSeparable_adjoin_simple_iff_isSeparable] at hx hy
   exact Algebra.IsSeparable.trans F F⟮x⟯ F⟮x⟯⟮y⟯
 
@@ -840,6 +840,19 @@ theorem isSeparable_add {x y : E} (hx : IsSeparable F x) (hy : IsSeparable F y) 
     IsSeparable F (x + y) :=
   haveI := isSeparable_adjoin_pair_of_isSeparable F E hx hy
   isSeparable_of_mem_isSeparable F E <| F⟮x, y⟯.add_mem (subset_adjoin F _ (.inl rfl))
+    (subset_adjoin F _ (.inr rfl))
+
+/-- If `x` is a separable elements, then `-x` is also a separable element. -/
+theorem isSeparable_neg {x : E} (hx : IsSeparable F x) :
+    IsSeparable F (-x) :=
+  haveI := (isSeparable_adjoin_simple_iff_isSeparable F E).2 hx
+  isSeparable_of_mem_isSeparable F E <| F⟮x⟯.neg_mem <| mem_adjoin_simple_self F x
+
+/-- If `x` and `y` are both separable elements, then `x - y` is also a separable element. -/
+theorem isSeparable_sub {x y : E} (hx : IsSeparable F x) (hy : IsSeparable F y) :
+    IsSeparable F (x - y) :=
+  haveI := isSeparable_adjoin_pair_of_isSeparable F E hx hy
+  isSeparable_of_mem_isSeparable F E <| F⟮x, y⟯.sub_mem (subset_adjoin F _ (.inl rfl))
     (subset_adjoin F _ (.inr rfl))
 
 /-- If `x` is a separable element, then `x⁻¹` is also a separable element. -/
