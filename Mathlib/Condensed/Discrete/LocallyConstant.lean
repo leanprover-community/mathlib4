@@ -194,7 +194,7 @@ lemma incl_comap {S T : (CompHausLike P)ᵒᵖ}
     (f : LocallyConstant S.unop (Y.obj (op (CompHausLike.of P PUnit.{u+1}))))
       (g : S ⟶ T) (a : Fiber (f.comap g.unop)) :
         g ≫ (sigmaIncl (f.comap g.unop) a).op =
-          (sigmaIncl f _).op ≫ (componentHom f g.unop a).op := by
+          (sigmaIncl f _).op ≫ (componentHom f g.unop a).op :=
   rfl
 
 /-- The counit is natural in `S : CompHausLike P` -/
@@ -213,7 +213,7 @@ noncomputable def counitApp [HasExplicitFiniteCoproducts.{u} P]
     simp only [FunctorToTypes.map_comp_apply, incl_of_counitAppApp]
     simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp,
       terminal.comp_from]
-    erw [image_eq_image_mk (g := g.unop.toFun), ]
+    erw [image_eq_image_mk (g := g.unop.toFun)]
     rfl
 
 lemma hom_apply_counitAppApp [HasExplicitFiniteCoproducts.{u} P] [PreservesFiniteProducts Y]
@@ -287,7 +287,7 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] :
         𝟭 (Sheaf (coherentTopology (CompHausLike.{u} P)) (Type (max u w))) where
   app X :=
     have := CompHausLike.preregular hs
-    ⟨counitApp.{u, w} X.val⟩
+    ⟨counitApp X.val⟩
   naturality X Y g := by
     have := CompHausLike.preregular hs
     apply Sheaf.hom_ext
@@ -296,11 +296,11 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] :
       sheafToPresheaf_map, Sheaf.instCategorySheaf_comp_val, Functor.id_map]
     ext S (f : LocallyConstant _ _)
     simp only [FunctorToTypes.comp, counitApp_app]
-    apply presheaf_ext.{u, w} (f.map (g.val.app (op
-      (CompHausLike.of P PUnit.{u+1}))))
+    apply presheaf_ext (f.map (g.val.app (op (CompHausLike.of P PUnit.{u+1}))))
     intro a
     simp only [op_unop, functorToPresheaves_map_app]
-    rw [incl_of_counitAppApp, ← hom_apply_counitAppApp]
+    rw [incl_of_counitAppApp]
+    rw [hom_apply_counitAppApp]
 
 /--
 The unit of the adjunciton is given by mapping each element to the corresponding constant map.
@@ -311,8 +311,7 @@ def unit : 𝟭 _ ⟶ functor P hs ⋙ (sheafSections _ _).obj ⟨CompHausLike.o
 
 lemma locallyConstantAdjunction_left_triangle [HasExplicitFiniteCoproducts.{u} P]
     (X : Type max u w) : functorToPresheaves.{u, w}.map ((unit P hs).app X) ≫
-      ((counit P hs).app ((functor P hs).obj X)).val =
-    𝟙 (functorToPresheaves.obj X) := by
+      ((counit P hs).app ((functor P hs).obj X)).val = 𝟙 (functorToPresheaves.obj X) := by
   ext ⟨S⟩ (f : LocallyConstant _ X)
   simp only [Functor.id_obj, Functor.comp_obj, FunctorToTypes.comp, NatTrans.id_app,
     functorToPresheaves_obj_obj, types_id_apply]
