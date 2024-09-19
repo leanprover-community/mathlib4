@@ -271,12 +271,14 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
     simp only [op_unop, functorToPresheaves_map_app, incl_of_counitAppApp]
     apply presheaf_ext (f.comap (sigmaIncl _ _))
     intro b
-    simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp,
-      CompHausLike.coe_of, map_apply, IsTerminal.comp_from,
+    simp only [counitAppAppImage]
+    simp only [← FunctorToTypes.map_comp_apply, ← op_comp,
+      CompHausLike.coe_of, map_apply]
+    simp only [IsTerminal.comp_from,
       ← map_preimage_eq_image_map f (g.val.app (op (CompHausLike.of P PUnit.{u+1})))]
     change (_ ≫ Y.val.map _) _ = (_ ≫ Y.val.map _) _
-    simp only [← g.val.naturality,
-      show sigmaIncl (f.comap (sigmaIncl (f.map _) a)) b ≫ sigmaIncl (f.map _) a =
+    simp only [← g.val.naturality]
+    rw [show sigmaIncl (f.comap (sigmaIncl (f.map _) a)) b ≫ sigmaIncl (f.map _) a =
         (sigmaInclIncl f _ a b) ≫ sigmaIncl f (Fiber.mk f _) from rfl]
     simp only [op_comp, Functor.map_comp, types_comp_apply, incl_of_counitAppApp]
     simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp, terminal.comp_from]
