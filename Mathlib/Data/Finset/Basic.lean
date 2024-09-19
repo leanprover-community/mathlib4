@@ -2093,8 +2093,8 @@ theorem attach_empty : attach (∅ : Finset α) = ∅ :=
 theorem attach_nonempty_iff {s : Finset α} : s.attach.Nonempty ↔ s.Nonempty := by
   simp [Finset.Nonempty]
 
+@[aesop safe apply (rule_sets := [finsetNonempty])]
 protected alias ⟨_, Nonempty.attach⟩ := attach_nonempty_iff
-attribute [aesop safe apply (rule_sets := [finsetNonempty])] Nonempty.attach
 
 @[simp]
 theorem attach_eq_empty_iff {s : Finset α} : s.attach = ∅ ↔ s = ∅ := by
@@ -2576,6 +2576,9 @@ theorem nonempty_range_iff : (range n).Nonempty ↔ n ≠ 0 :=
   ⟨fun ⟨k, hk⟩ => (k.zero_le.trans_lt <| mem_range.1 hk).ne',
    fun h => ⟨0, mem_range.2 <| Nat.pos_iff_ne_zero.2 h⟩⟩
 
+@[aesop safe apply (rule_sets := [finsetNonempty])]
+protected alias ⟨_, Aesop.range_nonempty⟩ := nonempty_range_iff
+
 @[simp]
 theorem range_eq_empty_iff : range n = ∅ ↔ n = 0 := by
   rw [← not_nonempty_iff_eq_empty, nonempty_range_iff, not_not]
@@ -2716,9 +2719,12 @@ theorem toFinset_union (s t : Multiset α) : (s ∪ t).toFinset = s.toFinset ∪
 theorem toFinset_eq_empty {m : Multiset α} : m.toFinset = ∅ ↔ m = 0 :=
   Finset.val_inj.symm.trans Multiset.dedup_eq_zero
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem toFinset_nonempty : s.toFinset.Nonempty ↔ s ≠ 0 := by
   simp only [toFinset_eq_empty, Ne, Finset.nonempty_iff_ne_empty]
+
+@[aesop safe apply (rule_sets := [finsetNonempty])]
+alias ⟨_, toFinset_nonempty_of_ne⟩ := toFinset_nonempty
 
 @[simp]
 theorem toFinset_subset : s.toFinset ⊆ t.toFinset ↔ s ⊆ t := by
@@ -2849,9 +2855,12 @@ theorem toFinset_inter (l l' : List α) : (l ∩ l').toFinset = l.toFinset ∩ l
 theorem toFinset_eq_empty_iff (l : List α) : l.toFinset = ∅ ↔ l = nil := by
   cases l <;> simp
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem toFinset_nonempty_iff (l : List α) : l.toFinset.Nonempty ↔ l ≠ [] := by
   simp [Finset.nonempty_iff_ne_empty]
+
+@[aesop safe apply (rule_sets := [finsetNonempty])]
+alias ⟨_, toFinset_nonempty_of_ne⟩ := toFinset_nonempty_iff
 
 @[simp]
 theorem toFinset_filter (s : List α) (p : α → Bool) :
@@ -3050,6 +3059,8 @@ You can add lemmas to the rule-set by tagging them with either:
 * `aesop safe apply (rule_sets := [finsetNonempty])` if they are always a good idea to follow or
 * `aesop unsafe apply (rule_sets := [finsetNonempty])` if they risk directing the search to a blind
   alley.
+
+TODO: should some of the lemmas be `aesop safe simp` instead?
 -/
 def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
     MetaM (Option Q(Finset.Nonempty $s)) := do

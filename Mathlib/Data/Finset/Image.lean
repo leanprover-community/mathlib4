@@ -246,8 +246,8 @@ theorem map_eq_empty : s.map f = ∅ ↔ s = ∅ := (map_injective f).eq_iff' (m
 theorem map_nonempty : (s.map f).Nonempty ↔ s.Nonempty :=
   mod_cast Set.image_nonempty (f := f) (s := s)
 
+@[aesop safe apply (rule_sets := [finsetNonempty])]
 protected alias ⟨_, Nonempty.map⟩ := map_nonempty
-attribute [aesop safe apply (rule_sets := [finsetNonempty])] Nonempty.map
 
 @[simp]
 theorem map_nontrivial : (s.map f).Nontrivial ↔ s.Nontrivial :=
@@ -354,11 +354,11 @@ theorem coe_image : ↑(s.image f) = f '' ↑s :=
 lemma image_nonempty : (s.image f).Nonempty ↔ s.Nonempty :=
   mod_cast Set.image_nonempty (f := f) (s := (s : Set α))
 
+@[aesop safe apply (rule_sets := [finsetNonempty])]
 protected theorem Nonempty.image (h : s.Nonempty) (f : α → β) : (s.image f).Nonempty :=
   image_nonempty.2 h
 
 alias ⟨Nonempty.of_image, _⟩ := image_nonempty
-attribute [aesop safe apply (rule_sets := [finsetNonempty])] Nonempty.image
 
 @[deprecated image_nonempty (since := "2023-12-29")]
 theorem Nonempty.image_iff (f : α → β) : (s.image f).Nonempty ↔ s.Nonempty :=
