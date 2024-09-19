@@ -52,7 +52,7 @@ lemma listProd_mem {ι : Type*} (l : List ι) (f : ι → R) (hl : ∃ x ∈ l, 
     simp only [List.mem_cons, exists_eq_or_imp] at hl
     rcases hl with h|⟨y, ⟨hy₁, hy₂⟩⟩
     · simpa only [List.map_cons, List.prod_cons] using I.mul_mem_right _ _ h
-    · simpa only [List.map_cons, List.prod_cons] using I.mul_mem_left _ _ $ ih ⟨y, hy₁, hy₂⟩
+    · simpa only [List.map_cons, List.prod_cons] using I.mul_mem_left _ _ <| ih ⟨y, hy₁, hy₂⟩
 
 end ring
 
