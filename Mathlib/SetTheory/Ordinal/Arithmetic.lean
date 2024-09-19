@@ -345,7 +345,9 @@ theorem mk_Iio_ordinal (o : Ordinal.{u}) :
   rfl
 
 @[deprecated mk_Iio_ordinal (since := "2024-09-18")]
-alias mk_initialSeg := mk_Iio_ordinal
+theorem mk_initialSeg (o : Ordinal.{u}) :
+    #{ o' : Ordinal | o' < o } = Cardinal.lift.{u + 1} o.card := mk_Iio_ordinal o
+
 
 /-! ### Normal ordinal functions -/
 
