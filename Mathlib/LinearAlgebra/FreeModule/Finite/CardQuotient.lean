@@ -122,7 +122,7 @@ theorem AddSubgroup.relIndex_eq_abs_det {E : Type*} [AddCommGroup E] [Module ℚ
     (b₂.addSubgroupOfClosure L₂ h₂), Nat.cast_natAbs, Int.cast_abs]
   change |algebraMap ℤ ℚ _| = _
   rw [Basis.det_apply, Basis.det_apply, RingHom.map_det]
-  congr; ext
+  congr 2; ext
   simp [Basis.toMatrix_apply]
 
 @[deprecated (since := "2025-08-12")]
