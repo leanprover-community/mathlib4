@@ -301,7 +301,7 @@ class WeaklyRegular (μ : Measure α) extends OuterRegular μ : Prop where
 /-- A measure `μ` is inner regular if, for any measurable set `s`, then
 `μ(s) = sup {μ(K) | K ⊆ s compact}`. -/
 class InnerRegular (μ : Measure α) : Prop where
-  protected innerRegular : InnerRegularWRT μ IsCompact (fun s ↦ MeasurableSet s)
+  protected innerRegular : InnerRegularWRT μ IsCompact MeasurableSet
 
 /-- A measure `μ` is inner regular for finite measure sets with respect to compact sets:
 for any measurable set `s` with finite measure, then `μ(s) = sup {μ(K) | K ⊆ s compact}`.
@@ -457,8 +457,7 @@ lemma of_restrict {μ : Measure α} {s : ℕ → Set α}
   intro F hF r hr
   have hBU : ⋃ n, F ∩ s n = F := by rw [← inter_iUnion, univ_subset_iff.mp hs, inter_univ]
   have : μ F = ⨆ n, μ (F ∩ s n) := by
-    rw [← measure_iUnion_eq_iSup, hBU]
-    exact Monotone.directed_le fun m n h ↦ inter_subset_inter_right _ (hmono h)
+    rw [← (monotone_const.inter hmono).measure_iUnion, hBU]
   rw [this] at hr
   rcases lt_iSup_iff.1 hr with ⟨n, hn⟩
   rw [← restrict_apply hF] at hn
@@ -509,8 +508,7 @@ lemma of_sigmaFinite [SigmaFinite μ] :
   set B : ℕ → Set α := spanningSets μ
   have hBU : ⋃ n, s ∩ B n = s := by rw [← inter_iUnion, iUnion_spanningSets, inter_univ]
   have : μ s = ⨆ n, μ (s ∩ B n) := by
-    rw [← measure_iUnion_eq_iSup, hBU]
-    exact Monotone.directed_le fun m n h => inter_subset_inter_right _ (monotone_spanningSets μ h)
+    rw [← (monotone_const.inter (monotone_spanningSets μ)).measure_iUnion, hBU]
   rw [this] at hr
   rcases lt_iSup_iff.1 hr with ⟨n, hn⟩
   refine ⟨s ∩ B n, inter_subset_left, ⟨hs.inter (measurable_spanningSets μ n), ?_⟩, hn⟩
@@ -574,7 +572,7 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
     refine
       ⟨Uᶜ, compl_subset_compl.2 hsU, Fᶜ, compl_subset_compl.2 hFs, hUo.isClosed_compl,
         hFc.isOpen_compl, ?_⟩
-    simp only [measure_compl_le_add_iff, *, hUo.measurableSet, hFc.measurableSet, true_and_iff]
+    simp only [measure_compl_le_add_iff, *, hUo.measurableSet, hFc.measurableSet, true_and]
   -- check for disjoint unions
   · intro s hsd hsm H ε ε0
     have ε0' : ε / 2 ≠ 0 := (ENNReal.half_pos ε0).ne'
@@ -617,7 +615,7 @@ theorem of_pseudoMetrizableSpace {X : Type*} [TopologicalSpace X] [PseudoMetriza
   let A : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X
   intro U hU r hr
   rcases hU.exists_iUnion_isClosed with ⟨F, F_closed, -, rfl, F_mono⟩
-  rw [measure_iUnion_eq_iSup F_mono.directed_le] at hr
+  rw [F_mono.measure_iUnion] at hr
   rcases lt_iSup_iff.1 hr with ⟨n, hn⟩
   exact ⟨F n, subset_iUnion _ _, F_closed n, hn⟩
 
@@ -629,8 +627,8 @@ theorem isCompact_isClosed {X : Type*} [TopologicalSpace X] [SigmaCompactSpace X
   have hBc : ∀ n, IsCompact (F ∩ B n) := fun n => (isCompact_compactCovering X n).inter_left hF
   have hBU : ⋃ n, F ∩ B n = F := by rw [← inter_iUnion, iUnion_compactCovering, Set.inter_univ]
   have : μ F = ⨆ n, μ (F ∩ B n) := by
-    rw [← measure_iUnion_eq_iSup, hBU]
-    exact Monotone.directed_le fun m n h => inter_subset_inter_right _ (compactCovering_subset _ h)
+    rw [← Monotone.measure_iUnion, hBU]
+    exact monotone_const.inter monotone_accumulate
   rw [this] at hr
   rcases lt_iSup_iff.1 hr with ⟨n, hn⟩
   exact ⟨_, inter_subset_left, hBc n, hn⟩
@@ -667,7 +665,7 @@ lemma innerRegularWRT_isClosed_isOpen [R1Space α] [OpensMeasurableSpace α] [h 
 
 theorem exists_compact_not_null [InnerRegular μ] : (∃ K, IsCompact K ∧ μ K ≠ 0) ↔ μ ≠ 0 := by
   simp_rw [Ne, ← measure_univ_eq_zero, MeasurableSet.univ.measure_eq_iSup_isCompact,
-    ENNReal.iSup_eq_zero, not_forall, exists_prop, subset_univ, true_and_iff]
+    ENNReal.iSup_eq_zero, not_forall, exists_prop, subset_univ, true_and]
 
 /-- If `μ` is inner regular, then any measurable set can be approximated by a compact subset.
 See also `MeasurableSet.exists_isCompact_lt_add_of_ne_top`. -/
@@ -993,7 +991,7 @@ theorem _root_.IsOpen.measure_eq_iSup_isCompact ⦃U : Set α⦄ (hU : IsOpen U)
 
 theorem exists_compact_not_null [Regular μ] : (∃ K, IsCompact K ∧ μ K ≠ 0) ↔ μ ≠ 0 := by
   simp_rw [Ne, ← measure_univ_eq_zero, isOpen_univ.measure_eq_iSup_isCompact,
-    ENNReal.iSup_eq_zero, not_forall, exists_prop, subset_univ, true_and_iff]
+    ENNReal.iSup_eq_zero, not_forall, exists_prop, subset_univ, true_and]
 
 /-- If `μ` is a regular measure, then any measurable set of finite measure can be approximated by a
 compact subset. See also `MeasurableSet.exists_isCompact_lt_add` and
@@ -1051,8 +1049,8 @@ instance (priority := 100) {X : Type*}
     [TopologicalSpace X] [PseudoMetrizableSpace X] [SigmaCompactSpace X] [MeasurableSpace X]
     [BorelSpace X] (μ : Measure X) [SigmaFinite μ] : InnerRegular μ := by
   refine ⟨(InnerRegularWRT.isCompact_isClosed μ).trans ?_⟩
-  refine InnerRegularWRT.of_restrict (fun n ↦ ?_)
-    (univ_subset_iff.2 (iUnion_spanningSets μ)) (monotone_spanningSets μ)
+  refine InnerRegularWRT.of_restrict (fun n ↦ ?_) (iUnion_spanningSets μ).superset
+    (monotone_spanningSets μ)
   have : Fact (μ (spanningSets μ n) < ∞) := ⟨measure_spanningSets_lt_top μ n⟩
   exact WeaklyRegular.innerRegular_measurable.trans InnerRegularWRT.of_sigmaFinite
 

@@ -64,7 +64,7 @@ info: Unfolds for 1 + 1:
 
 /--
 info: Unfolds for 3 ∈ {1, 2, 3}:
-· Set.Mem 3 {1, 2, 3}
+· {1, 2, 3}.Mem 3
 · {1, 2, 3} 3
 · Set.insert 1 {2, 3} 3
 · {b | b = 1 ∨ b ∈ {2, 3}} 3
@@ -85,7 +85,7 @@ variable (A B : Set Nat) (n : Nat)
 
 /--
 info: Unfolds for 1 ∈ A ∪ B:
-· Set.Mem 1 (A ∪ B)
+· (A ∪ B).Mem 1
 · (A ∪ B) 1
 · A.union B 1
 · {a | a ∈ A ∨ a ∈ B} 1

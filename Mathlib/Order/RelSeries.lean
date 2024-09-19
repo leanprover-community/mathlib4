@@ -169,7 +169,7 @@ lemma nonempty_of_infiniteDimensional [r.InfiniteDimensional] : Nonempty α :=
   ⟨RelSeries.withLength r 0 0⟩
 
 instance membership : Membership α (RelSeries r) :=
-  ⟨(· ∈ Set.range ·)⟩
+  ⟨Function.swap (· ∈ Set.range ·)⟩
 
 theorem mem_def : x ∈ s ↔ x ∈ Set.range s := Iff.rfl
 
@@ -734,6 +734,66 @@ noncomputable def comap (p : LTSeries β) (f : α → β)
   LTSeries α := mk p.length (fun i ↦ (surjective (p i)).choose)
     (fun i j h ↦ comap (by simpa only [(surjective _).choose_spec] using p.strictMono h))
 
+/-- The strict series `0 < … < n` in `ℕ`. -/
+def range (n : ℕ) : LTSeries ℕ where
+  length := n
+  toFun := fun i => i
+  step i := Nat.lt_add_one i
+
+@[simp] lemma length_range (n : ℕ) : (range n).length = n := rfl
+
+@[simp] lemma range_apply (n : ℕ) (i : Fin (n+1)) : (range n) i = i := rfl
+
+@[simp] lemma head_range (n : ℕ) : (range n).head = 0 := rfl
+
+@[simp] lemma last_range (n : ℕ) : (range n).last = n := rfl
+
+/--
+In ℕ, two entries in an `LTSeries` differ by at least the difference of their indices.
+(Expressed in a way that avoids subtraction).
+ -/
+lemma apply_add_index_le_apply_add_index_nat (p : LTSeries ℕ) (i j : Fin (p.length + 1))
+    (hij : i ≤ j) : p i + j ≤ p j + i := by
+  have ⟨i, hi⟩ := i
+  have ⟨j, hj⟩ := j
+  simp only [Fin.mk_le_mk] at hij
+  simp only at *
+  induction j, hij using Nat.le_induction with
+  | base => simp
+  | succ j _hij ih =>
+    specialize ih (Nat.lt_of_succ_lt hj)
+    have step : p ⟨j, _⟩ < p ⟨j + 1, _⟩ := p.step ⟨j, by omega⟩
+    norm_cast at *; omega
+
+/--
+In ℤ, two entries in an `LTSeries` differ by at least the difference of their indices.
+(Expressed in a way that avoids subtraction).
+-/
+lemma apply_add_index_le_apply_add_index_int (p : LTSeries ℤ) (i j : Fin (p.length + 1))
+    (hij : i ≤ j) : p i + j ≤ p j + i := by
+  -- The proof is identical to `LTSeries.apply_add_index_le_apply_add_index_nat`, but seemed easier
+  -- to copy rather than to abstract
+  have ⟨i, hi⟩ := i
+  have ⟨j, hj⟩ := j
+  simp only [Fin.mk_le_mk] at hij
+  simp only at *
+  induction j, hij using Nat.le_induction with
+  | base => simp
+  | succ j _hij ih =>
+    specialize ih (Nat.lt_of_succ_lt hj)
+    have step : p ⟨j, _⟩ < p ⟨j + 1, _⟩:= p.step ⟨j, by omega⟩
+    norm_cast at *; omega
+
+/-- In ℕ, the head and tail of an `LTSeries` differ at least by the length of the series -/
+lemma head_add_length_le_nat (p : LTSeries ℕ) : p.head + p.length ≤ p.last :=
+  LTSeries.apply_add_index_le_apply_add_index_nat _ _ (Fin.last _) (Fin.zero_le _)
+
+/-- In ℤ, the head and tail of an `LTSeries` differ at least by the length of the series -/
+lemma head_add_length_le_int (p : LTSeries ℤ) : p.head + p.length ≤ p.last := by
+  simpa using LTSeries.apply_add_index_le_apply_add_index_int _ _ (Fin.last _) (Fin.zero_le _)
+
+section Fintype
+
 variable [Fintype α]
 
 lemma length_lt_card (s : LTSeries α) : s.length < Fintype.card α := by
@@ -750,6 +810,8 @@ instance [DecidableRel ((· < ·) : α → α → Prop)] : Fintype (LTSeries α)
     obtain ⟨l, f, mf⟩ := s
     simp_rw [Finset.mem_map, Finset.mem_univ, true_and, Subtype.exists]
     use ⟨⟨l, bl⟩, f⟩, Fin.strictMono_iff_lt_succ.mpr mf; rfl
+
+end Fintype
 
 end LTSeries
 

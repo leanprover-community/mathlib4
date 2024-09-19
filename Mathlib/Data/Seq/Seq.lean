@@ -126,7 +126,7 @@ def tail (s : Seq α) : Seq α :=
     exact al n'⟩
 
 /-- member definition for `Seq`-/
-protected def Mem (a : α) (s : Seq α) :=
+protected def Mem (s : Seq α) (a : α) :=
   some a ∈ s.1
 
 instance : Membership α (Seq α) :=
@@ -315,6 +315,7 @@ def BisimO : Option (Seq1 α) → Option (Seq1 α) → Prop
   | _, _ => False
 
 attribute [simp] BisimO
+attribute [nolint simpNF] BisimO.eq_3
 
 /-- a relation is bisimilar if it meets the `BisimO` test -/
 def IsBisimulation :=

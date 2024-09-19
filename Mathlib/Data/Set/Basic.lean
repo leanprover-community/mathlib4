@@ -435,6 +435,11 @@ theorem Nonempty.to_type : s.Nonempty → Nonempty α := fun ⟨x, _⟩ => ⟨x�
 instance univ.nonempty [Nonempty α] : Nonempty (↥(Set.univ : Set α)) :=
   Set.univ_nonempty.to_subtype
 
+-- Redeclare for refined keys
+-- `Nonempty (@Subtype _ (@Membership.mem _ (Set _) _ (@Top.top (Set _) _)))`
+instance instNonemptyTop [Nonempty α] : Nonempty (⊤ : Set α) :=
+  inferInstanceAs (Nonempty (univ : Set α))
+
 theorem nonempty_of_nonempty_subtype [Nonempty (↥s)] : s.Nonempty :=
   nonempty_subtype.mp ‹_›
 
@@ -617,11 +622,11 @@ theorem union_self (a : Set α) : a ∪ a = a :=
 
 @[simp]
 theorem union_empty (a : Set α) : a ∪ ∅ = a :=
-  ext fun _ => or_false_iff _
+  ext fun _ => iff_of_eq (or_false _)
 
 @[simp]
 theorem empty_union (a : Set α) : ∅ ∪ a = a :=
-  ext fun _ => false_or_iff _
+  ext fun _ => iff_of_eq (false_or _)
 
 theorem union_comm (a b : Set α) : a ∪ b = b ∪ a :=
   ext fun _ => or_comm
@@ -735,11 +740,11 @@ theorem inter_self (a : Set α) : a ∩ a = a :=
 
 @[simp]
 theorem inter_empty (a : Set α) : a ∩ ∅ = ∅ :=
-  ext fun _ => and_false_iff _
+  ext fun _ => iff_of_eq (and_false _)
 
 @[simp]
 theorem empty_inter (a : Set α) : ∅ ∩ a = ∅ :=
-  ext fun _ => false_and_iff _
+  ext fun _ => iff_of_eq (false_and _)
 
 theorem inter_comm (a b : Set α) : a ∩ b = b ∩ a :=
   ext fun _ => and_comm
@@ -962,7 +967,7 @@ theorem insert_union_distrib (a : α) (s t : Set α) : insert a (s ∪ t) = inse
   ext fun _ => or_or_distrib_left
 
 theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
-  ⟨fun h => eq_of_not_mem_of_mem_insert (h.subst <| mem_insert a s) ha,
+  ⟨fun h => eq_of_not_mem_of_mem_insert (h ▸ mem_insert a s) ha,
     congr_arg (fun x => insert x s)⟩
 
 -- useful in proofs by induction
@@ -1129,7 +1134,7 @@ theorem sep_eq_self_iff_mem_true : { x ∈ s | p x } = s ↔ ∀ x ∈ s, p x :=
 
 @[simp]
 theorem sep_eq_empty_iff_mem_false : { x ∈ s | p x } = ∅ ↔ ∀ x ∈ s, ¬p x := by
-  simp_rw [Set.ext_iff, mem_sep_iff, mem_empty_iff_false, iff_false_iff, not_and]
+  simp_rw [Set.ext_iff, mem_sep_iff, mem_empty_iff_false, iff_false, not_and]
 
 --Porting note (#10618): removed `simp` attribute because `simp` can prove it
 theorem sep_true : { x ∈ s | True } = s :=
@@ -1182,7 +1187,7 @@ theorem Nonempty.subset_singleton_iff (h : s.Nonempty) : s ⊆ {a} ↔ s = {a} :
   subset_singleton_iff_eq.trans <| or_iff_right h.ne_empty
 
 theorem ssubset_singleton_iff {s : Set α} {x : α} : s ⊂ {x} ↔ s = ∅ := by
-  rw [ssubset_iff_subset_ne, subset_singleton_iff_eq, or_and_right, and_not_self_iff, or_false_iff,
+  rw [ssubset_iff_subset_ne, subset_singleton_iff_eq, or_and_right, and_not_self_iff, or_false,
     and_iff_left_iff_imp]
   exact fun h => h ▸ (singleton_ne_empty _).symm
 
@@ -1576,7 +1581,7 @@ theorem insert_diff_self_of_not_mem {a : α} {s : Set α} (h : a ∉ s) : insert
 theorem insert_diff_eq_singleton {a : α} {s : Set α} (h : a ∉ s) : insert a s \ s = {a} := by
   ext
   rw [Set.mem_diff, Set.mem_insert_iff, Set.mem_singleton_iff, or_and_right, and_not_self_iff,
-    or_false_iff, and_iff_left_iff_imp]
+    or_false, and_iff_left_iff_imp]
   rintro rfl
   exact h
 
@@ -1973,9 +1978,8 @@ section Inclusion
 variable {α : Type*} {s t u : Set α}
 
 /-- `inclusion` is the "identity" function between two subsets `s` and `t`, where `s ⊆ t` -/
-def inclusion (h : s ⊆ t) : s → t := fun x : s => (⟨x, h x.2⟩ : t)
+abbrev inclusion (h : s ⊆ t) : s → t := fun x : s => (⟨x, h x.2⟩ : t)
 
-@[simp]
 theorem inclusion_self (x : s) : inclusion Subset.rfl x = x := by
   cases x
   rfl
@@ -2012,7 +2016,6 @@ theorem val_comp_inclusion (h : s ⊆ t) : Subtype.val ∘ inclusion h = Subtype
 theorem inclusion_injective (h : s ⊆ t) : Injective (inclusion h)
   | ⟨_, _⟩, ⟨_, _⟩ => Subtype.ext_iff_val.2 ∘ Subtype.ext_iff_val.1
 
-@[simp]
 theorem inclusion_inj (h : s ⊆ t) {x y : s} : inclusion h x = inclusion h y ↔ x = y :=
   (inclusion_injective h).eq_iff
 
@@ -2022,11 +2025,9 @@ theorem eq_of_inclusion_surjective {s t : Set α} {h : s ⊆ t}
   obtain ⟨y, hy⟩ := h_surj ⟨x, hx⟩
   exact mem_of_eq_of_mem (congr_arg Subtype.val hy).symm y.prop
 
-@[simp]
 theorem inclusion_le_inclusion [Preorder α] {s t : Set α} (h : s ⊆ t) {x y : s} :
     inclusion h x ≤ inclusion h y ↔ x ≤ y := Iff.rfl
 
-@[simp]
 theorem inclusion_lt_inclusion [Preorder α] {s t : Set α} (h : s ⊆ t) {x y : s} :
     inclusion h x < inclusion h y ↔ x < y := Iff.rfl
 

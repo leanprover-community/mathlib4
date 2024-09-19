@@ -312,11 +312,13 @@ theorem fg_induction (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
     (h₂ : ∀ M₁ M₂, P M₁ → P M₂ → P (M₁ ⊔ M₂)) (N : Submodule R M) (hN : N.FG) : P N := by
   classical
     obtain ⟨s, rfl⟩ := hN
-    induction s using Finset.induction
-    · rw [Finset.coe_empty, Submodule.span_empty, ← Submodule.span_zero_singleton]
-      apply h₁
-    · rw [Finset.coe_insert, Submodule.span_insert]
-      apply h₂ <;> apply_assumption
+    induction s using Finset.induction with
+    | empty =>
+      rw [Finset.coe_empty, Submodule.span_empty, ← Submodule.span_zero_singleton]
+      exact h₁ _
+    | insert _ ih =>
+      rw [Finset.coe_insert, Submodule.span_insert]
+      exact h₂ _ _ (h₁ _) ih
 
 /-- The kernel of the composition of two linear maps is finitely generated if both kernels are and
 the first morphism is surjective. -/
@@ -700,7 +702,7 @@ instance Module.Finite.tensorProduct [CommSemiring R] [AddCommMonoid M] [Module 
   out := (TensorProduct.map₂_mk_top_top_eq_top R M N).subst (hM.out.map₂ _ hN.out)
 
 /-- If a free module is finite, then any arbitrary basis is finite. -/
-lemma Module.Finite.finite_basis {R M} [Ring R] [Nontrivial R] [AddCommGroup M] [Module R M]
+lemma Module.Finite.finite_basis {R M} [Semiring R] [Nontrivial R] [AddCommGroup M] [Module R M]
     {ι} [Module.Finite R M] (b : Basis ι R M) :
     _root_.Finite ι :=
   let ⟨s, hs⟩ := ‹Module.Finite R M›

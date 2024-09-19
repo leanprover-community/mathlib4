@@ -745,7 +745,7 @@ end Finite
 variable [Fintype G] {x : G}
 
 @[to_additive]
-lemma orderOf_eq_card_powers : orderOf x = Fintype.card (powers x : Set G) :=
+lemma orderOf_eq_card_powers : orderOf x = Fintype.card (powers x : Submonoid G) :=
   (Fintype.card_fin (orderOf x)).symm.trans <|
     Fintype.card_eq.2 ⟨finEquivPowers x <| isOfFinOrder_of_finite _⟩
 
@@ -821,6 +821,7 @@ variable [Fintype G] {x : G} {n : ℕ}
 /-- See also `Nat.card_addSubgroupZPowers`. -/
 @[to_additive "See also `Nat.card_subgroup`."]
 theorem Fintype.card_zpowers : Fintype.card (zpowers x) = orderOf x :=
+  letI : Fintype (zpowers x) := (Subgroup.zpowers x).instFintypeSubtypeMemOfDecidablePred
   (Fintype.card_eq.2 ⟨finEquivZPowers x <| isOfFinOrder_of_finite _⟩).symm.trans <|
     Fintype.card_fin (orderOf x)
 
@@ -948,7 +949,9 @@ theorem inf_eq_bot_of_coprime {G : Type*} [Group G] {H K : Subgroup G}
 /- TODO: Generalise to `Submonoid.powers`. -/
 @[to_additive]
 theorem image_range_orderOf [DecidableEq G] :
+    letI : Fintype (zpowers x) := (Subgroup.zpowers x).instFintypeSubtypeMemOfDecidablePred
     Finset.image (fun i => x ^ i) (Finset.range (orderOf x)) = (zpowers x : Set G).toFinset := by
+  letI : Fintype (zpowers x) := (Subgroup.zpowers x).instFintypeSubtypeMemOfDecidablePred
   ext x
   rw [Set.mem_toFinset, SetLike.mem_coe, mem_zpowers_iff_mem_range_orderOf]
 

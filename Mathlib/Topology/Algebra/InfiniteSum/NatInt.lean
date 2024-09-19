@@ -74,7 +74,7 @@ theorem even_mul_odd {f : ℕ → M} (he : HasProd (fun k ↦ f (2 * k)) m)
   have := mul_right_injective₀ (two_ne_zero' ℕ)
   replace ho := ((add_left_injective 1).comp this).hasProd_range_iff.2 ho
   refine (this.hasProd_range_iff.2 he).mul_isCompl ?_ ho
-  simpa [(· ∘ ·)] using Nat.isCompl_even_odd
+  simpa [Function.comp_def] using Nat.isCompl_even_odd
 
 end ContinuousMul
 
@@ -324,7 +324,7 @@ lemma HasProd.nat_mul_neg_add_one {f : ℤ → M} (hf : HasProd f m) :
   · rw [prod_union, prod_image Nat.cast_injective.injOn, prod_image this.injOn,
       prod_mul_distrib]
     simp only [disjoint_iff_ne, mem_image, ne_eq, forall_exists_index, and_imp,
-      forall_apply_eq_imp_iff₂, not_false_eq_true, implies_true, forall_const]
+      forall_apply_eq_imp_iff₂, not_false_eq_true, implies_true, forall_const, reduceCtorEq]
 
 @[to_additive Summable.nat_add_neg_add_one]
 lemma Multipliable.nat_mul_neg_add_one {f : ℤ → M} (hf : Multipliable f) :

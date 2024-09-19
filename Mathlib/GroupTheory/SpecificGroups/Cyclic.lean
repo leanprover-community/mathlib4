@@ -109,7 +109,7 @@ theorem isCyclic_of_orderOf_eq_card [Fintype α] (x : α) (hx : orderOf x = Fint
   use x
   rw [← Set.range_iff_surjective, ← coe_zpowers]
   rw [← Fintype.card_congr (Equiv.Set.univ α), ← Fintype.card_zpowers] at hx
-  exact Set.eq_of_subset_of_card_le (Set.subset_univ _) (ge_of_eq hx)
+  convert Set.eq_of_subset_of_card_le (Set.subset_univ _) (ge_of_eq hx)
 @[deprecated (since := "2024-02-21")]
 alias isAddCyclic_of_orderOf_eq_card := isAddCyclic_of_addOrderOf_eq_card
 
@@ -428,7 +428,7 @@ private theorem card_orderOf_eq_totient_aux₁ :
     refine Finset.sum_congr rfl fun m hm => ?_
     simp only [mem_filter, mem_range, mem_properDivisors] at hm
     refine IH m hm.2 (hm.1.trans hd) (Finset.card_pos.2 ⟨a ^ (d / m), ?_⟩)
-    simp only [mem_filter, mem_univ, orderOf_pow a, ha, true_and_iff,
+    simp only [mem_filter, mem_univ, orderOf_pow a, ha, true_and,
       Nat.gcd_eq_right (div_dvd_of_dvd hm.1), Nat.div_div_self hm.1 hd0]
   have h2 :
     (∑ m ∈ d.divisors, (univ.filter fun a : α => orderOf a = m).card) =
@@ -512,10 +512,10 @@ open Subgroup
 variable {G : Type*} {H : Type*} [Group G] [Group H]
 
 /-- A group is commutative if the quotient by the center is cyclic.
-  Also see `commGroup_of_cycle_center_quotient` for the `CommGroup` instance. -/
+  Also see `commGroupOfCyclicCenterQuotient` for the `CommGroup` instance. -/
 @[to_additive
       "A group is commutative if the quotient by the center is cyclic.
-      Also see `addCommGroup_of_cycle_center_quotient` for the `AddCommGroup` instance."]
+      Also see `addCommGroupOfCyclicCenterQuotient` for the `AddCommGroup` instance."]
 theorem commutative_of_cyclic_center_quotient [IsCyclic H] (f : G →* H) (hf : f.ker ≤ center G)
     (a b : G) : a * b = b * a :=
   let ⟨⟨x, y, (hxy : f y = x)⟩, (hx : ∀ a : f.range, a ∈ zpowers _)⟩ :=
@@ -539,9 +539,9 @@ theorem commutative_of_cyclic_center_quotient [IsCyclic H] (f : G →* H) (hf : 
 alias commutative_of_add_cyclic_center_quotient := commutative_of_addCyclic_center_quotient
 
 /-- A group is commutative if the quotient by the center is cyclic. -/
-@[to_additive commutativeOfAddCycleCenterQuotient
+@[to_additive
       "A group is commutative if the quotient by the center is cyclic."]
-def commGroupOfCycleCenterQuotient [IsCyclic H] (f : G →* H) (hf : f.ker ≤ center G) :
+def commGroupOfCyclicCenterQuotient [IsCyclic H] (f : G →* H) (hf : f.ker ≤ center G) :
     CommGroup G :=
   { show Group G by infer_instance with mul_comm := commutative_of_cyclic_center_quotient f hf }
 
