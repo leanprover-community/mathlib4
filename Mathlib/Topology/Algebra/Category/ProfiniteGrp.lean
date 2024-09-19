@@ -353,26 +353,35 @@ theorem openNormalSubgroupSubOpenNhdsOfOne_spec {G : Type*} [Group G] [Topologic
 
 section
 
+instance (P : ProfiniteGrp) : SmallCategory (OpenNormalSubgroup P) :=
+  Preorder.smallCategory (OpenNormalSubgroup ↑P.toProfinite.toTop)
+
 /-- Define the functor from OpenNormalSubgroup of a profinite group to the quotient group of it as
   a `FiniteGrp` -/
 def QuotientOpenNormalSubgroup (P : ProfiniteGrp) :
-    OpenNormalSubgroup P ⥤ FiniteGrp := {
-    obj := fun H => FiniteGrp.of (P ⧸ H.toSubgroup)
-    map := fun {H K} fHK => QuotientGroup.map H.toSubgroup K.toSubgroup (.id _) <|
-        Subgroup.comap_id (N := P) K ▸ leOfHom fHK
+    OpenNormalSubgroup P ⥤ ProfiniteGrp := {
+    obj := fun H => ProfiniteGrp.ofFiniteGrp <| FiniteGrp.of (P ⧸ H.toSubgroup)
+    map := fun {H K} fHK => {
+      QuotientGroup.map H.toSubgroup K.toSubgroup (.id _) <|
+        Subgroup.comap_id (N := P) K ▸ leOfHom fHK with
+      continuous_toFun := by continuity
+      }
     map_id := fun H => by
       simp only [QuotientGroup.map_id]
       rfl
-    map_comp := fun {X Y Z} f g => (QuotientGroup.map_comp_map
-      X.toSubgroup Y.toSubgroup Z.toSubgroup (.id _) (.id _)
-      (Subgroup.comap_id Y.toSubgroup ▸ leOfHom f)
-      (Subgroup.comap_id Z.toSubgroup ▸ leOfHom g)).symm
+    map_comp := fun {X Y Z} f g => by
+      dsimp
+      congr 1
+      exact (QuotientGroup.map_comp_map X.toSubgroup Y.toSubgroup Z.toSubgroup (.id _) (.id _)
+        (Subgroup.comap_id Y.toSubgroup ▸ leOfHom f)
+        (Subgroup.comap_id Z.toSubgroup ▸ leOfHom g)).symm
   }
 
-/-- Defining the canonical projection from a profinite group to the
-  limit of the quotient groups as a subgroup of the pi-type -/
+
+/-- Defining the canonical projection from a profinite group to the limit of the quotient groups
+as a subgroup of the product space -/
 def CanonicalQuotientMap (P : ProfiniteGrp.{u}) : P ⟶
-    ofFiniteGrpLimit (QuotientOpenNormalSubgroup P) where
+    ofLimit (QuotientOpenNormalSubgroup P) where
   toFun := fun p => {
     val := fun H => QuotientGroup.mk p
     property := fun A B _ => rfl
@@ -393,12 +402,12 @@ def CanonicalQuotientMap (P : ProfiniteGrp.{u}) : P ⟶
     convert IsOpen.leftCoset H.toOpenSubgroup.isOpen' (Quotient.out' i)
     ext x
     simp only [Set.mem_preimage, Set.mem_singleton_iff]
-    nth_rw 1 [← QuotientGroup.out_eq' i, eq_comm, QuotientGroup.eq]
+    nth_rw 1 [←QuotientGroup.out_eq' i, eq_comm, QuotientGroup.eq]
     symm
     apply Set.mem_smul_set_iff_inv_smul_mem
 
 theorem canonicalQuotientMap_dense (P : ProfiniteGrp.{u}) : Dense <|
-    Set.range (CanonicalQuotientMap P) :=
+     Set.range (CanonicalQuotientMap P) :=
   dense_iff_inter_open.mpr
     fun U ⟨s, hsO, hsv⟩ ⟨⟨spc, hspc⟩, uDefaultSpec⟩ => (by
       let uMemPiOpen := isOpen_pi_iff.mp hsO
@@ -415,7 +424,7 @@ theorem canonicalQuotientMap_dense (P : ProfiniteGrp.{u}) : Dense <|
       rcases QuotientGroup.mk'_surjective M (spc m) with ⟨origin, horigin⟩
       use (CanonicalQuotientMap P).toFun origin
       constructor
-      · rw [← hsv]
+      · rw [←hsv]
         apply h_ok_and_in_s.2
         exact fun a a_in_J => by
           let M_to_Na : m ⟶ a := (iInf_le (fun (j : J) => j.1.1.1) ⟨a, a_in_J⟩).hom
@@ -454,7 +463,7 @@ theorem canonicalQuotientMap_injective (P : ProfiniteGrp.{u}) :
 
 /-- Make the equivilence into a ContinuousMulEquiv -/
 noncomputable def ContinuousMulEquivLimitQuotientOpenNormalSubgroup (P : ProfiniteGrp.{u}) :
-    ContinuousMulEquiv P (ofFiniteGrpLimit (QuotientOpenNormalSubgroup P)) := {
+    ContinuousMulEquiv P (ofLimit (QuotientOpenNormalSubgroup P)) := {
   (Continuous.homeoOfEquivCompactToT2
     (f := Equiv.ofBijective _ ⟨canonicalQuotientMap_injective P, canonicalQuotientMap_surjective P⟩)
     P.CanonicalQuotientMap.continuous_toFun)
