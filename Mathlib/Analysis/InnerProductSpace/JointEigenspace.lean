@@ -175,9 +175,9 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Finite n]
 /-- Given a finite commuting family of symmetric linear operators, the Hilbert space on which they
 act decomposes as an internal direct sum of simultaneous eigenspaces. -/
 theorem LinearMap.IsSymmetric.directSum_isInternal_of_commute_of_fintype [Finite n]
-    [DecidableEq (n → 𝕜)] (hT :(∀ (i : n), ((T i).IsSymmetric)))
-    (hC : (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i))) :
-    DirectSum.IsInternal (fun (α : n → 𝕜) ↦ ⨅ (j : n), (eigenspace (T j) (α j))) := by
+    [DecidableEq (n → 𝕜)] (hT :∀ i, (T i).IsSymmetric)
+    (hC : ∀ i j, T i ∘ₗ T j = T j ∘ₗ T i) :
+    DirectSum.IsInternal (fun (α : n → 𝕜) ↦ ⨅ j, eigenspace (T j) (α j)) := by
   rw [OrthogonalFamily.isInternal_iff]
   · exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot hT hC
   · exact orthogonalFamily_iInf_eigenspaces hT
