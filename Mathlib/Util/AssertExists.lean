@@ -137,4 +137,3 @@ elab "assert_not_imported " ids:ident+ : command => do
       Mathlib.AssertNotExist.addDeclEntry false id.getId (← getMainModule)
 
 end
-#check commandAssert_not_exists_
