@@ -23,21 +23,21 @@ The solution is based on the one at the
 website.
 
 We prove the helper lemmas:
-1. $nf(m) \leq f(mn)$
-2. $f(m) + f(n) \leq f(m + n)$
-3. $a f(a) + c f(d) \leq f(a \cdot b + c \cdot d)$ (derived from 1. and 2.)
+1. $nf(m) \leq f(mn)$.
+2. $f(m) + f(n) \leq f(m + n)$.
+3. $a f(a) + c f(d) \leq f(a \cdot b + c \cdot d)$ (derived from 1. and 2.).
 
 So we can establish on the one hand that $f(1980) \leq 660$,
 by observing that $660\cdot 1 = 660 f(3) \leq f(1980) = f(660\cdot 3)$.
 
 On the other hand, we establish that $f(1980) \geq 660$
-from $5 \cdot f(1980) + 33\cdot f(3) \leq  f(5\cdot 1980 + 33\cdot 1) = f(9999) = 3333 $
+from $5 \cdot f(1980) + 33\cdot f(3) \leq  f(5\cdot 1980 + 33\cdot 1) = f(9999) = 3333$.
 
 We then conclude $f(1980) = 660$ and then eventually determine that either
 $f(1982) = 660$ or $f(1982) = 661$.
 
 In the latter case we derive a contradiction, because if $f(1982) = 661$ then
-$3334 = 5\cdot f(1982) + 29\cdot f(3) + f(2) \leq f(5\cdot 1982 + 29\cdot 3 + 2) = f(9999) = 3333$
+$3334 = 5\cdot f(1982) + 29\cdot f(3) + f(2) \leq f(5\cdot 1982 + 29\cdot 3 + 2) = f(9999) = 3333$.
 -/
 
 namespace Imo1982Q1
