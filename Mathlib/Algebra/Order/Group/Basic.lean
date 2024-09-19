@@ -88,7 +88,6 @@ section LinearOrderedCommGroup
 
 variable [LinearOrderedCommGroup α] {n : ℤ} {a b : α}
 
-
 @[to_additive] lemma zpow_le_zpow_iff' (hn : 0 < n) : a ^ n ≤ b ^ n ↔ a ≤ b :=
   (zpow_strictMono_left α hn).le_iff_le
 
