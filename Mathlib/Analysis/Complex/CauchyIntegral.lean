@@ -3,15 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
-import Mathlib.MeasureTheory.Integral.DivergenceTheorem
-import Mathlib.MeasureTheory.Integral.CircleIntegral
-import Mathlib.Analysis.Calculus.Dslope
-import Mathlib.Analysis.Analytic.Basic
-import Mathlib.Analysis.Complex.ReImTopology
 import Mathlib.Analysis.Calculus.DiffContOnCl
+import Mathlib.Analysis.Calculus.Dslope
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Data.Real.Cardinality
+import Mathlib.Analysis.Complex.ReImTopology
+import Mathlib.MeasureTheory.Integral.CircleIntegral
+import Mathlib.MeasureTheory.Integral.DivergenceTheorem
+import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 
 /-!
 # Cauchy integral formula

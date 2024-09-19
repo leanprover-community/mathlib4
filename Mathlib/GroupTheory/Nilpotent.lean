@@ -285,7 +285,7 @@ instance lowerCentralSeries_normal (n : ℕ) : Normal (lowerCentralSeries G n) :
 theorem lowerCentralSeries_antitone : Antitone (lowerCentralSeries G) := by
   refine antitone_nat_of_succ_le fun n x hx => ?_
   simp only [mem_lowerCentralSeries_succ_iff, exists_prop, mem_top, exists_true_left,
-    true_and_iff] at hx
+    true_and] at hx
   refine
     closure_induction hx ?_ (Subgroup.one_mem _) (@Subgroup.mul_mem _ _ _) (@Subgroup.inv_mem _ _ _)
   rintro y ⟨z, hz, a, ha⟩

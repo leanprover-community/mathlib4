@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Joël Riou, Ravi Vakil
 -/
 
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 
@@ -32,9 +32,9 @@ representable in the classical case will then be given by `yoneda.relativelyRepr
 ## Main definitions
 Throughout this file, `F : C ⥤ D` is a functor between categories `C` and `D`.
 
-* We define `relativelyRepresentable` as a `MorphsimProperty`. A morphism `f : X ⟶ Y` in `D` is
-  said to be relatively representable if for any `g : F.obj a ⟶ Y`, there exists a pullback square
-  of the following form
+* We define `relativelyRepresentable` as a `MorphismProperty`. A morphism `f : X ⟶ Y` in `D` is
+  said to be relatively representable with respect to `F`, if for any `g : F.obj a ⟶ Y`, there
+  exists a pullback square of the following form
 ```
   F.obj b --F.map snd--> F.obj a
       |                     |
@@ -59,11 +59,19 @@ which is the preimage under `F` of `hf.fst g`.
 * `symmetry` and `symmetryIso` are variants of the fact that pullbacks are symmetric for
   representable morphisms, formulated internally to `C`. We assume that `F` is fully faithful here.
 
+## Main results
+
+* `relativelyRepresentable.isMultiplicative`: The class of relatively representable morphisms is
+  multiplicative.
+* `relativelyRepresentable.stableUnderBaseChange`: Being relatively representable is stable under
+  base change.
+* `relativelyRepresentable.of_isIso`: Isomorphisms are relatively representable.
+
 -/
 
 namespace CategoryTheory
 
-open Category Limits
+open Category Limits MorphismProperty
 
 universe v₁ v₂ u₁ u₂
 
@@ -248,6 +256,35 @@ instance [Full F] [Faithful F] : IsIso (hf'.symmetry hg) :=
   (hf'.symmetryIso hg).isIso_hom
 
 end
+
+/-- When `C` has pullbacks, then `F.map f` is representable with respect to `F` for any
+`f : a ⟶ b` in `C`. -/
+lemma map [Full F] [PreservesLimitsOfShape WalkingCospan F] [HasPullbacks C] {a b : C} (f : a ⟶ b) :
+    F.relativelyRepresentable (F.map f) := fun c g ↦ by
+  obtain ⟨g, rfl⟩ := F.map_surjective g
+  refine ⟨Limits.pullback f g, Limits.pullback.snd f g, F.map (Limits.pullback.fst f g), ?_⟩
+  apply F.map_isPullback <| IsPullback.of_hasPullback f g
+
+lemma of_isIso {X Y : D} (f : X ⟶ Y) [IsIso f] : F.relativelyRepresentable f :=
+  fun a g ↦ ⟨a, 𝟙 a, g ≫ CategoryTheory.inv f, IsPullback.of_vert_isIso ⟨by simp⟩⟩
+
+lemma isomorphisms_le : MorphismProperty.isomorphisms D ≤ F.relativelyRepresentable :=
+  fun _ _ f hf ↦ letI : IsIso f := hf; of_isIso F f
+
+instance isMultiplicative : IsMultiplicative F.relativelyRepresentable where
+  id_mem _ := of_isIso F _
+  comp_mem {F G H} f g hf hg := fun X h ↦
+    ⟨hf.pullback (hg.fst h), hf.snd (hg.fst h) ≫ hg.snd h, hf.fst (hg.fst h),
+      by simpa using IsPullback.paste_vert (hf.isPullback (hg.fst h)) (hg.isPullback h)⟩
+
+lemma stableUnderBaseChange : StableUnderBaseChange F.relativelyRepresentable := by
+  intro X Y Y' X' f g f' g' P₁ hg a h
+  refine ⟨hg.pullback (h ≫ f), hg.snd (h ≫ f), ?_, ?_⟩
+  apply P₁.lift (hg.fst (h ≫ f)) (F.map (hg.snd (h ≫ f)) ≫ h) (by simpa using hg.w (h ≫ f))
+  apply IsPullback.of_right' (hg.isPullback (h ≫ f)) P₁
+
+instance respectsIso : RespectsIso F.relativelyRepresentable :=
+  (stableUnderBaseChange F).respectsIso
 
 end Functor.relativelyRepresentable
 
