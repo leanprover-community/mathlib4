@@ -757,8 +757,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
           · rw [← not_le]
             intro hnj
             exact (add_lt_add_of_lt_of_le hmi hnj).ne hij.2.symm
-          · simp only [eq_self_iff_true, not_true, false_or_iff, add_right_inj,
-              not_and_self_iff] at hij
+          · simp only [eq_self_iff_true, not_true, false_or, add_right_inj, not_and_self_iff] at hij
         · rw [mul_comm]
           apply P.mul_mem_left
           exact Classical.not_not.1 (Nat.find_min hf hi)

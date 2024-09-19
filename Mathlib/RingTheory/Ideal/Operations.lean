@@ -1017,7 +1017,7 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
     rw [Finset.card_eq_zero] at hn
     subst hn
     rw [Finset.coe_empty, Set.biUnion_empty, Set.union_empty, subset_union] at h
-    simpa only [exists_prop, Finset.not_mem_empty, false_and_iff, exists_false, or_false_iff]
+    simpa only [exists_prop, Finset.not_mem_empty, false_and, exists_false, or_false]
   classical
     replace hn : ∃ (i : ι) (t : Finset ι), i ∉ t ∧ insert i t = s ∧ t.card = n :=
       Finset.card_eq_succ.1 hn

@@ -1011,7 +1011,7 @@ theorem Finset.mulSupport_of_fiberwise_prod_subset_image [DecidableEq β] (s : F
   simp only [Finset.coe_image, Set.mem_image, Finset.mem_coe, Function.support_subset_iff]
   intro b h
   suffices (s.filter fun a : α => g a = b).Nonempty by
-    simpa only [s.fiber_nonempty_iff_mem_image g b, Finset.mem_image, exists_prop]
+    simpa only [fiber_nonempty_iff_mem_image, Finset.mem_image, exists_prop]
   exact Finset.nonempty_of_prod_ne_one h
 
 /-- Note that `b ∈ (s.filter (fun ab => Prod.fst ab = a)).image Prod.snd` iff `(a, b) ∈ s` so

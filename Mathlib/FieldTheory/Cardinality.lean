@@ -75,5 +75,5 @@ theorem Field.nonempty_iff {α : Type u} : Nonempty (Field α) ↔ IsPrimePow #�
   rw [Cardinal.isPrimePow_iff]
   cases' fintypeOrInfinite α with h h
   · simpa only [Cardinal.mk_fintype, Nat.cast_inj, exists_eq_left',
-      (Cardinal.nat_lt_aleph0 _).not_le, false_or_iff] using Fintype.nonempty_field_iff
-  · simpa only [← Cardinal.infinite_iff, h, true_or_iff, iff_true_iff] using Infinite.nonempty_field
+      (Cardinal.nat_lt_aleph0 _).not_le, false_or] using Fintype.nonempty_field_iff
+  · simpa only [← Cardinal.infinite_iff, h, true_or, iff_true] using Infinite.nonempty_field

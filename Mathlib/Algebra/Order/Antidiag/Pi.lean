@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, Bhavik Mehta,
   Yaël Dillies
 -/
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Data.Finset.Pointwise.Basic
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 
 /-!

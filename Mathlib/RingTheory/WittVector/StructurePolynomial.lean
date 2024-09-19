@@ -370,7 +370,7 @@ theorem wittStructureRat_vars [Fintype idx] (Φ : MvPolynomial idx ℚ) (n : ℕ
     (wittStructureRat p Φ n).vars ⊆ Finset.univ ×ˢ Finset.range (n + 1) := by
   rw [wittStructureRat]
   intro x hx
-  simp only [Finset.mem_product, true_and_iff, Finset.mem_univ, Finset.mem_range]
+  simp only [Finset.mem_product, true_and, Finset.mem_univ, Finset.mem_range]
   obtain ⟨k, hk, hx'⟩ := mem_vars_bind₁ _ _ hx
   obtain ⟨i, -, hx''⟩ := mem_vars_bind₁ _ _ hx'
   obtain ⟨j, hj, rfl⟩ := mem_vars_rename _ _ hx''
