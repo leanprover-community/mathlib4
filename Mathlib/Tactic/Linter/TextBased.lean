@@ -601,7 +601,6 @@ def findBadUnicodeAux (s : String) (pos : String.Pos) (c : Char)
       -- okay
       findBadUnicodeAux s posₙ cₙ err
   -- emojis/non-emojis should not be the last character in the line
-  -- in practise, the last char is `\n`, so this is in theory superfluous.
   else if emojis.contains c || nonEmojis.contains c then
     err.push (.unicodeVariant ⟨[c, '\uFFFD']⟩ none pos)
   else
