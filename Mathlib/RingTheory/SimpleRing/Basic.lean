@@ -79,11 +79,11 @@ lemma isField_center (A : Type*) [Ring A] [IsSimpleRing A] : IsField (Subring.ce
       _ = y * (a * (x * y)) := by rw [mul_assoc a x y]
       _ = y * a := by rw [hy, mul_one]
 
-lemma iff_isField_of_commutative (A : Type*) [CommRing A] : IsSimpleRing A ↔ IsField A :=
+end IsSimpleRing
+
+lemma isSimpleRing_iff_isField (A : Type*) [CommRing A] : IsSimpleRing A ↔ IsField A :=
   ⟨fun _ ↦ by
     apply Subring.topEquiv.symm.toMulEquiv.isField
     rw [← Subring.center_eq_top A]
     exact isField_center A,
   fun h ↦ letI := h.toField; inferInstance⟩
-
-end IsSimpleRing
