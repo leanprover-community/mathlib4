@@ -33,19 +33,9 @@ variable {α β γ : Type*}
 
 namespace Prod.Lex
 
+open Batteries
+
 @[inherit_doc] notation:35 α " ×ₗ " β:34 => Lex (Prod α β)
-
-instance (α β : Type*) [BEq α] [BEq β] : BEq (α ×ₗ β) where
-  beq a b := ofLex a == ofLex b
-
-instance (α β : Type*) [BEq α] [BEq β] [LawfulBEq α] [LawfulBEq β] : LawfulBEq (α ×ₗ β) :=
-  inferInstanceAs (LawfulBEq (α × β))
-
-instance decidableEq (α β : Type*) [DecidableEq α] [DecidableEq β] : DecidableEq (α ×ₗ β) :=
-  instDecidableEqProd
-
-instance inhabited (α β : Type*) [Inhabited α] [Inhabited β] : Inhabited (α ×ₗ β) :=
-  instInhabitedProd
 
 /-- Dictionary / lexicographic ordering on pairs. -/
 instance instLE (α β : Type*) [LT α] [LE β] : LE (α ×ₗ β) where le := Prod.Lex (· < ·) (· ≤ ·)
@@ -130,19 +120,20 @@ instance partialOrder (α β : Type*) [PartialOrder α] [PartialOrder β] : Part
     haveI : IsAntisymm β (· ≤ ·) := ⟨fun _ _ => le_antisymm⟩
     exact antisymm (r := Prod.Lex _ _)
 
-instance instOrdLexProd [Ord α] [Ord β] : Ord (α ×ₗ β) where
-  compare := compareLex (compareOn fun x => (ofLex x).1) (compareOn fun x => (ofLex x).2)
+instance instOrdLexProd [Ord α] [Ord β] : Ord (α ×ₗ β) := lexOrd
 
-theorem _root_.lexOrd_eq [Ord α] [Ord β] : @lexOrd α β _ _ = instOrdLexProd :=
-  congrArg Ord.mk lexOrd_def
+theorem compare_def [Ord α] [Ord β] : @compare (α ×ₗ β) _ =
+    compareLex (compareOn fun x => (ofLex x).1) (compareOn fun x => (ofLex x).2) := rfl
 
-theorem _root_.Ord.lex_eq [oα : Ord α] [oβ : Ord β] : Ord.lex oα oβ = instOrdLexProd := lexOrd_eq
+theorem _root_.lexOrd_eq [Ord α] [Ord β] : @lexOrd α β _ _ = instOrdLexProd := rfl
 
-instance [Ord α] [Ord β] [Std.OrientedOrd α] [Std.OrientedOrd β] : Std.OrientedOrd (α ×ₗ β) :=
-  inferInstanceAs (Std.OrientedCmp (compareLex _ _))
+theorem _root_.Ord.lex_eq [oα : Ord α] [oβ : Ord β] : Ord.lex oα oβ = instOrdLexProd := rfl
 
-instance [Ord α] [Ord β] [Std.TransOrd α] [Std.TransOrd β] : Std.TransOrd (α ×ₗ β) :=
-  inferInstanceAs (Std.TransCmp (compareLex _ _))
+instance [Ord α] [Ord β] [OrientedOrd α] [OrientedOrd β] : OrientedOrd (α ×ₗ β) :=
+  inferInstanceAs (OrientedCmp (compareLex _ _))
+
+instance [Ord α] [Ord β] [TransOrd α] [TransOrd β] : TransOrd (α ×ₗ β) :=
+  inferInstanceAs (TransCmp (compareLex _ _))
 
 /-- Dictionary / lexicographic linear order for pairs. -/
 instance linearOrder (α β : Type*) [LinearOrder α] [LinearOrder β] : LinearOrder (α ×ₗ β) :=
@@ -150,15 +141,15 @@ instance linearOrder (α β : Type*) [LinearOrder α] [LinearOrder β] : LinearO
     le_total := total_of (Prod.Lex _ _)
     decidableLE := Prod.Lex.decidable _ _
     decidableLT := Prod.Lex.decidable _ _
-    decidableEq := Lex.decidableEq _ _
+    decidableEq := instDecidableEqLex _
     compare_eq_compareOfLessAndEq := fun a b => by
       have : DecidableRel (· < · : α ×ₗ β → α ×ₗ β → Prop) := Prod.Lex.decidable _ _
-      have : Std.BEqOrd (α ×ₗ β) := ⟨by
-        simp [compare, compareLex, compareOn, Ordering.then_eq_eq, compare_eq_iff_eq]⟩
-      have : Std.LTOrd (α ×ₗ β) := ⟨by
-        simp [compare, compareLex, compareOn, Ordering.then_eq_lt, lt_iff,
+      have : BEqOrd (α ×ₗ β) := ⟨by
+        simp [compare_def, compareLex, compareOn, Ordering.then_eq_eq, compare_eq_iff_eq]⟩
+      have : LTOrd (α ×ₗ β) := ⟨by
+        simp [compare_def, compareLex, compareOn, Ordering.then_eq_lt, lt_iff,
           compare_lt_iff_lt, compare_eq_iff_eq]⟩
-      convert Std.LTCmp.eq_compareOfLessAndEq (cmp := compare) a b }
+      convert LTCmp.eq_compareOfLessAndEq (cmp := compare) a b }
 
 instance orderBot [PartialOrder α] [Preorder β] [OrderBot α] [OrderBot β] : OrderBot (α ×ₗ β) where
   bot := toLex ⊥

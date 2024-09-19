@@ -600,7 +600,7 @@ theorem cmp_eq_compare (a b : α) : cmp a b = compare a b := by
 theorem cmp_eq_compareOfLessAndEq (a b : α) : cmp a b = compareOfLessAndEq a b :=
   (cmp_eq_compare ..).trans (LinearOrder.compare_eq_compareOfLessAndEq ..)
 
-instance : Std.LawfulCmp (compare (α := α)) where
+instance : Batteries.LawfulCmp (compare (α := α)) where
   symm a b := by
     cases h : compare a b <;>
     simp only [Ordering.swap] <;> symm

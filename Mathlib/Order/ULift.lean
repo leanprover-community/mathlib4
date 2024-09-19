@@ -14,6 +14,8 @@ the corresponding `Prod` instances.
 
 namespace ULift
 
+open Batteries
+
 universe v u
 
 variable {α : Type u}
@@ -59,22 +61,22 @@ instance [HasCompl α] : HasCompl (ULift.{v} α) where compl x := up <| x.down�
 @[simp] theorem up_compl [HasCompl α] (a : α) : up (aᶜ) = (up a)ᶜ := rfl
 @[simp] theorem down_compl [HasCompl α] (a : ULift α) : down aᶜ = (down a)ᶜ := rfl
 
-instance [Ord α] [inst : Std.OrientedOrd α] : Std.OrientedOrd (ULift.{v} α) where
+instance [Ord α] [inst : OrientedOrd α] : OrientedOrd (ULift.{v} α) where
   symm _ _ := inst.symm ..
 
-instance [Ord α] [inst : Std.TransOrd α] : Std.TransOrd (ULift.{v} α) where
+instance [Ord α] [inst : TransOrd α] : TransOrd (ULift.{v} α) where
   le_trans := inst.le_trans
 
-instance [BEq α] [Ord α] [inst : Std.BEqOrd α] : Std.BEqOrd (ULift.{v} α) where
+instance [BEq α] [Ord α] [inst : BEqOrd α] : BEqOrd (ULift.{v} α) where
   cmp_iff_beq := inst.cmp_iff_beq
 
-instance [LT α] [Ord α] [inst : Std.LTOrd α] : Std.LTOrd (ULift.{v} α) where
+instance [LT α] [Ord α] [inst : LTOrd α] : LTOrd (ULift.{v} α) where
   cmp_iff_lt := inst.cmp_iff_lt
 
-instance [LE α] [Ord α] [inst : Std.LEOrd α] : Std.LEOrd (ULift.{v} α) where
+instance [LE α] [Ord α] [inst : LEOrd α] : LEOrd (ULift.{v} α) where
   cmp_iff_le := inst.cmp_iff_le
 
-instance [LE α] [LT α] [BEq α] [Ord α] [inst : Std.LawfulOrd α] : Std.LawfulOrd (ULift.{v} α) where
+instance [LE α] [LT α] [BEq α] [Ord α] [inst : LawfulOrd α] : LawfulOrd (ULift.{v} α) where
   cmp_iff_lt := inst.cmp_iff_lt
   cmp_iff_le := inst.cmp_iff_le
 

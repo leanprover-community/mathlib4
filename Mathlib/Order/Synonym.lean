@@ -170,6 +170,18 @@ theorem toLex_inj {a b : α} : toLex a = toLex b ↔ a = b :=
 theorem ofLex_inj {a b : Lex α} : ofLex a = ofLex b ↔ a = b :=
   Iff.rfl
 
+instance (α : Type*) [BEq α] : BEq (Lex α) where
+  beq a b := ofLex a == ofLex b
+
+instance (α : Type*) [BEq α] [LawfulBEq α] : LawfulBEq (Lex α) :=
+  inferInstanceAs (LawfulBEq α)
+
+instance (α : Type*) [DecidableEq α] : DecidableEq (Lex α) :=
+  inferInstanceAs (DecidableEq α)
+
+instance (α : Type*) [Inhabited α] : Inhabited (Lex α) :=
+  inferInstanceAs (Inhabited α)
+
 /-- A recursor for `Lex`. Use as `induction x`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
 protected def Lex.rec {β : Lex α → Sort*} (h : ∀ a, β (toLex a)) : ∀ a, β a := fun a => h (ofLex a)
