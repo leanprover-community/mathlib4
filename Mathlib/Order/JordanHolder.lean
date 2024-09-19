@@ -42,7 +42,7 @@ Two `CompositionSeries X`, `s₁` and `s₂` are equivalent if there is a biject
 
 ## Main theorems
 
-The main theorem is `CompositionSeries.jordan_holder`, which says that if two composition
+The main theorem is `CompositionSeries.jordan_hoelder`, which says that if two composition
 series have the same least element and the same largest element,
 then they are `Equivalent`.
 
@@ -409,7 +409,7 @@ theorem exists_last_eq_snoc_equivalent (s : CompositionSeries X) (x : X) (hm : I
 
 /-- The **Jordan-Hölder** theorem, stated for any `JordanHoelderLattice`.
 If two composition series start and finish at the same place, they are equivalent. -/
-theorem jordan_holder (s₁ s₂ : CompositionSeries X)
+theorem jordan_hoelder (s₁ s₂ : CompositionSeries X)
     (hb : s₁.head = s₂.head) (ht : s₁.last = s₂.last) :
     Equivalent s₁ s₂ := by
   induction' hle : s₁.length with n ih generalizing s₁ s₂

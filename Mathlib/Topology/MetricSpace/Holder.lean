@@ -56,35 +56,35 @@ def HoelderOnWith (C r : ℝ≥0) (f : X → Y) (s : Set X) : Prop :=
   ∀ x ∈ s, ∀ y ∈ s, edist (f x) (f y) ≤ (C : ℝ≥0∞) * edist x y ^ (r : ℝ)
 
 @[simp]
-theorem HoelderOnWith_empty (C r : ℝ≥0) (f : X → Y) : HoelderOnWith C r f ∅ := fun _ hx => hx.elim
+theorem hoelderOnWith_empty (C r : ℝ≥0) (f : X → Y) : HoelderOnWith C r f ∅ := fun _ hx => hx.elim
 
 @[simp]
-theorem HoelderOnWith_singleton (C r : ℝ≥0) (f : X → Y) (x : X) : HoelderOnWith C r f {x} := by
+theorem hoelderOnWith_singleton (C r : ℝ≥0) (f : X → Y) (x : X) : HoelderOnWith C r f {x} := by
   rintro a (rfl : a = x) b (rfl : b = a)
   rw [edist_self]
   exact zero_le _
 
 theorem Set.Subsingleton.HoelderOnWith {s : Set X} (hs : s.Subsingleton) (C r : ℝ≥0) (f : X → Y) :
     HoelderOnWith C r f s :=
-  hs.induction_on (HoelderOnWith_empty C r f) (HoelderOnWith_singleton C r f)
+  hs.induction_on (hoelderOnWith_empty C r f) (hoelderOnWith_singleton C r f)
 
-lemma HoelderOnWith_univ : HoelderOnWith C r f univ ↔ HoelderWith C r f := by
+lemma hoelderOnWith_univ : HoelderOnWith C r f univ ↔ HoelderWith C r f := by
   simp only [HoelderOnWith, HoelderWith, mem_univ, true_imp_iff]
 
 @[simp]
-theorem HoelderOnWith_one {C : ℝ≥0} {f : X → Y} {s : Set X} :
+theorem hoelderOnWith_one {C : ℝ≥0} {f : X → Y} {s : Set X} :
     HoelderOnWith C 1 f s ↔ LipschitzOnWith C f s := by
   simp only [HoelderOnWith, LipschitzOnWith, NNReal.coe_one, ENNReal.rpow_one]
 
-alias ⟨_, LipschitzOnWith.HoelderOnWith⟩ := HoelderOnWith_one
+alias ⟨_, LipschitzOnWith.HoelderOnWith⟩ := hoelderOnWith_one
 
 @[simp]
-theorem HoelderWith_one {C : ℝ≥0} {f : X → Y} : HoelderWith C 1 f ↔ LipschitzWith C f :=
-  HoelderOnWith_univ.symm.trans <| HoelderOnWith_one.trans lipschitzOnWith_univ
+theorem hoelderWith_one {C : ℝ≥0} {f : X → Y} : HoelderWith C 1 f ↔ LipschitzWith C f :=
+  hoelderOnWith_univ.symm.trans <| hoelderOnWith_one.trans lipschitzOnWith_univ
 
-alias ⟨_, LipschitzWith.HoelderWith⟩ := HoelderWith_one
+alias ⟨_, LipschitzWith.HoelderWith⟩ := hoelderWith_one
 
-theorem HoelderWith_id : HoelderWith 1 1 (id : X → X) :=
+theorem hoelderWith_id : HoelderWith 1 1 (id : X → X) :=
   LipschitzWith.id.HoelderWith
 
 protected theorem HoelderWith.HoelderOnWith {C r : ℝ≥0} {f : X → Y} (h : HoelderWith C r f)
@@ -113,7 +113,7 @@ theorem comp {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : HoelderOnWith Cg 
 theorem comp_HoelderWith {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : HoelderOnWith Cg rg g t)
     {Cf rf : ℝ≥0} {f : X → Y} (hf : HoelderWith Cf rf f) (ht : ∀ x, f x ∈ t) :
     HoelderWith (Cg * Cf ^ (rg : ℝ)) (rg * rf) (g ∘ f) :=
-  HoelderOnWith_univ.mp <| hg.comp (hf.HoelderOnWith univ) fun x _ => ht x
+  hoelderOnWith_univ.mp <| hg.comp (hf.HoelderOnWith univ) fun x _ => ht x
 
 /-- A Hölder continuous function is uniformly continuous -/
 protected theorem uniformContinuousOn (hf : HoelderOnWith C r f s) (h0 : 0 < r) :
@@ -243,7 +243,7 @@ section Metric
 variable [PseudoMetricSpace X] [MetricSpace Y] {C r : ℝ≥0} {f : X → Y}
 
 @[simp]
-lemma HoelderWith_zero_iff : HoelderWith 0 r f ↔ ∀ x₁ x₂, f x₁ = f x₂ := by
+lemma hoelderWith_zero_iff : HoelderWith 0 r f ↔ ∀ x₁ x₂, f x₁ = f x₂ := by
   refine ⟨fun h x₁ x₂ => ?_, fun h x₁ x₂ => h x₁ x₂ ▸ ?_⟩
   · specialize h x₁ x₂
     simp [ENNReal.coe_zero, zero_mul, nonpos_iff_eq_zero, edist_eq_zero] at h
