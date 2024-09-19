@@ -41,9 +41,11 @@ namespace LinearMap
 
 namespace IsSymmetric
 
+variable {𝕜 E n m: Type*}
+
 section CommRing
 
-variable {𝕜 E n : Type*} [CommRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [CommRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable {α : 𝕜} {A B : E →ₗ[𝕜] E}
 
 /-- If a pair of operators commute, then the eigenspaces of one are invariant under the other. -/
@@ -68,7 +70,7 @@ open Submodule
 
 section RCLike
 
-variable {𝕜 E n m: Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable {α : 𝕜} {A B : E →ₗ[𝕜] E}
 
 /-- The joint eigenspaces of a pair of commuting symmetric operators form an
@@ -85,8 +87,8 @@ theorem orthogonalFamily_eigenspace_inf_eigenspace (hA : A.IsSymmetric) (hB : B.
 /-- The joint eigenspaces of a tuple of commuting symmetric operators form an
 `OrthogonalFamily`. -/
 theorem orthogonalFamily_iInf_eigenspaces
-    (T : n → (E →ₗ[𝕜] E)) (hT :(∀ (i : n), ((T i).IsSymmetric)))
-    : OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) => (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))
+    (T : n → (E →ₗ[𝕜] E)) (hT :(∀ (i : n), ((T i).IsSymmetric))) :
+    OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) => (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))
     (fun (γ : n → 𝕜) => (⨅ (j : n), (eigenspace (T j) (γ j))).subtypeₗᵢ) := by
   intro f g hfg Ef Eg
   obtain ⟨a , ha⟩ := Function.ne_iff.mp hfg
@@ -142,9 +144,9 @@ theorem iSup_eigenspace_restrict {F : Submodule 𝕜 E}
 /-- The orthocomplement of the indexed supremum of joint eigenspaces of a finite commuting tuple of
 symmetric operators is trivial. -/
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Fintype n]
-    (T : n → (E →ₗ[𝕜] E)) (hT :(∀ (i : n), ((T i).IsSymmetric)))
-    (hC : (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i))) :
-    (⨆ (γ : n → 𝕜), (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))ᗮ = ⊥ := by
+    (T : n → E →ₗ[𝕜] E) (hT : ∀ i, (T i).IsSymmetric)
+    (hC : ∀ i j, T i ∘ₗ T j = T j ∘ₗ T i) :
+    (⨆ γ : n → 𝕜, ⨅ j, eigenspace (T j) (γ j))ᗮ = ⊥ := by
   revert T
   refine Fintype.induction_subsingleton_or_nontrivial n (fun m _ hhm T hT _ ↦ ?_)
     (fun m hm hmm H T hT hC ↦ ?_)
