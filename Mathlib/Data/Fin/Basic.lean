@@ -1414,7 +1414,7 @@ theorem eq_zero (n : Fin 1) : n = 0 := Subsingleton.elim _ _
 instance uniqueFinOne : Unique (Fin 1) where
   uniq _ := Subsingleton.elim _ _
 
-@[simp]
+@[deprecated val_eq_zero (since := "2024-09-18")]
 theorem coe_fin_one (a : Fin 1) : (a : ℕ) = 0 := by simp [Subsingleton.elim a 0]
 
 lemma eq_one_of_neq_zero (i : Fin 2) (hi : i ≠ 0) : i = 1 :=
