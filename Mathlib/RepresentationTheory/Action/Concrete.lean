@@ -97,7 +97,7 @@ variable {G : Type*} [Group G] (H N : Subgroup G) [Fintype (G ⧸ N)]
 /-- If `N` is a normal subgroup of `G`, then this is the group homomorphism
 sending an element `g` of `G` to the `G`-endomorphism of `G ⧸ₐ N` given by
 multiplication with `g⁻¹` on the right. -/
-def toEndMul [N.Normal] : G →* End (G ⧸ₐ N) where
+def toEndHom [N.Normal] : G →* End (G ⧸ₐ N) where
   toFun v := {
     hom := Quotient.lift (fun σ ↦ ⟦σ * v⁻¹⟧) <| fun a b h ↦ Quotient.sound <| by
       apply (QuotientGroup.leftRel_apply).mpr
@@ -125,17 +125,21 @@ def toEndMul [N.Normal] : G →* End (G ⧸ₐ N) where
     show ⟦x * (σ * τ)⁻¹⟧ = ⟦x * τ⁻¹ * σ⁻¹⟧
     rw [mul_inv_rev, mul_assoc]
 
-/-- If `H` and `N` are subgroups of a group `G` with `N` normal, there is a canonical
-group homomorphism `H ⧸ N ⊓ H` to the `G`-endomorphisms of `G ⧸ N`. -/
-def quotientToEndHom [N.Normal] : H ⧸ Subgroup.subgroupOf N H →* End (G ⧸ₐ N) :=
-  let φ' : H →* End (G ⧸ₐ N) := (toEndMul N).comp H.subtype
-  QuotientGroup.lift (Subgroup.subgroupOf N H) φ' <| fun u uinU' ↦ by
+@[simp]
+lemma toEndHom_apply [N.Normal] (g h : G) : (toEndHom N g).hom ⟦h⟧ = ⟦h * g⁻¹⟧ := rfl
+
+variable {N} in
+lemma toEndHom_trivial_of_mem [N.Normal] {n : G} (hn : n ∈ N) : toEndHom N n = 𝟙 (G ⧸ₐ N) := by
   apply Action.hom_ext
   ext (x : G ⧸ N)
   induction' x using Quotient.inductionOn with μ
-  apply Quotient.sound
-  apply (QuotientGroup.leftRel_apply).mpr
-  simpa
+  exact Quotient.sound ((QuotientGroup.leftRel_apply).mpr <| by simpa)
+
+/-- If `H` and `N` are subgroups of a group `G` with `N` normal, there is a canonical
+group homomorphism `H ⧸ N ⊓ H` to the `G`-endomorphisms of `G ⧸ N`. -/
+def quotientToEndHom [N.Normal] : H ⧸ Subgroup.subgroupOf N H →* End (G ⧸ₐ N) :=
+  QuotientGroup.lift (Subgroup.subgroupOf N H) ((toEndHom N).comp H.subtype) <| fun _ uinU' ↦
+    toEndHom_trivial_of_mem uinU'
 
 @[simp]
 lemma quotientToEndHom_mk [N.Normal] (x : H) (g : G) :
