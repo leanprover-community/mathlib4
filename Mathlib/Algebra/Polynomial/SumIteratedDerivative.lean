@@ -25,7 +25,7 @@ section Semiring
 
 variable [Semiring R]
 
-theorem sum_ideriv_apply_of_lt' {p : R[X]} {n : ℕ} (hn : p.natDegree < n) :
+theorem sum_iterate_derivative_apply_of_lt {p : R[X]} {n : ℕ} (hn : p.natDegree < n) :
     ∑ i in range (p.natDegree + 1), derivative^[i] p = ∑ i in range n, derivative^[i] p := by
   obtain ⟨m, rfl⟩ := Nat.exists_eq_add_of_lt hn
   rw [add_right_comm, sum_range_add _ _ m]
@@ -35,9 +35,9 @@ theorem sum_ideriv_apply_of_lt' {p : R[X]} {n : ℕ} (hn : p.natDegree < n) :
   rw [add_comm, Function.iterate_add_apply, iterate_derivative_eq_zero (lt_add_one _),
     iterate_derivative_zero]
 
-theorem sum_ideriv_apply_of_le' {p : R[X]} {n : ℕ} (hn : p.natDegree ≤ n) :
+theorem sum_iterate_derivative_apply_of_le {p : R[X]} {n : ℕ} (hn : p.natDegree ≤ n) :
     ∑ i in range (p.natDegree + 1), derivative^[i] p = ∑ i in range (n + 1), derivative^[i] p :=
-  sum_ideriv_apply_of_lt' (Nat.lt_add_one_iff.mpr hn)
+  sum_iterate_derivative_apply_of_lt (Nat.lt_add_one_iff.mpr hn)
 
 /-- Sum of iterated derivatives of a polynomial, as a linear map -/
 noncomputable def sumIderiv : R[X] →ₗ[R] R[X] where
@@ -49,11 +49,11 @@ noncomputable def sumIderiv : R[X] →ₗ[R] R[X] where
     have hp : p.natDegree + 1 ≤ x := (le_max_left _ _).trans (le_max_right _ _)
     have hq : q.natDegree + 1 ≤ x := (le_max_right _ _).trans (le_max_right _ _)
     rw [Nat.add_one_le_iff] at hpq hp hq
-    simp_rw [sum_ideriv_apply_of_lt' hpq, sum_ideriv_apply_of_lt' hp, sum_ideriv_apply_of_lt' hq,
-      ← sum_add_distrib, iterate_map_add]
+    simp_rw [sum_iterate_derivative_apply_of_lt hpq, sum_iterate_derivative_apply_of_lt hp,
+      sum_iterate_derivative_apply_of_lt hq, ← sum_add_distrib, iterate_map_add]
   map_smul' a p := by
     dsimp only
-    simp_rw [RingHom.id_apply, sum_ideriv_apply_of_le' (natDegree_smul_le _ _),
+    simp_rw [RingHom.id_apply, sum_iterate_derivative_apply_of_le (natDegree_smul_le _ _),
       iterate_derivative_smul, smul_sum]
 
 theorem sumIderiv_apply (p : R[X]) :
@@ -62,11 +62,11 @@ theorem sumIderiv_apply (p : R[X]) :
 
 theorem sumIderiv_apply_of_lt {p : R[X]} {n : ℕ} (hn : p.natDegree < n) :
     sumIderiv p = ∑ i in range n, derivative^[i] p :=
-  sum_ideriv_apply_of_lt' hn
+  sum_iterate_derivative_apply_of_lt hn
 
 theorem sumIderiv_apply_of_le {p : R[X]} {n : ℕ} (hn : p.natDegree ≤ n) :
     sumIderiv p = ∑ i in range (n + 1), derivative^[i] p :=
-  sum_ideriv_apply_of_le' hn
+  sum_iterate_derivative_apply_of_le hn
 
 theorem sumIderiv_C (a : R) : sumIderiv (C a) = C a := by
   rw [sumIderiv_apply, natDegree_C, zero_add, sum_range_one, Function.iterate_zero_apply]
@@ -91,6 +91,20 @@ theorem sumIderiv_eq_self_add (p : R[X]) : sumIderiv p = p + sumIderiv (derivati
     Function.iterate_zero_apply, iterate_derivative_eq_zero (Nat.lt_succ_self _)]
 
 theorem iterate_derivative_eq_factorial_mul (p : R[X]) (k : ℕ) :
+    derivative^[k] p = k ! •
+      (∑ x : ℕ in (derivative^[k] p).support, (x + k).choose k • C (p.coeff (x + k)) * X ^ x) := by
+  conv_lhs => rw [(derivative^[k] p).as_sum_support_C_mul_X_pow]
+  rw [smul_sum]; congr; funext i
+  calc
+    C ((derivative^[k] p).coeff i) * X ^ i =
+        C ((i + k).descFactorial k • p.coeff (i + k)) * X ^ i := by rw [coeff_iterate_derivative]
+    _ = C ((k ! * (i + k).choose k) • p.coeff (i + k)) * X ^ i := by
+      rw [Nat.descFactorial_eq_factorial_mul_choose]
+    _ = (k ! * (i + k).choose k) • C (p.coeff (i + k)) * X ^ i := by rw [smul_C]
+    _ = k ! • (i + k).choose k • C (p.coeff (i + k)) * X ^ i := by rw [mul_smul]
+    _ = k ! • ((i + k).choose k • C (p.coeff (i + k)) * X ^ i) := by rw [smul_mul_assoc]
+
+theorem exists_iterate_derivative_eq_factorial_mul (p : R[X]) (k : ℕ) :
     ∃ gp : R[X], gp.natDegree ≤ p.natDegree - k ∧ derivative^[k] p = k ! • gp := by
   use ∑ x : ℕ in (derivative^[k] p).support, (x + k).choose k • C (p.coeff (x + k)) * X ^ x
   constructor
@@ -102,16 +116,7 @@ theorem iterate_derivative_eq_factorial_mul (p : R[X]) (k : ℕ) :
     refine (natDegree_X_pow_le _).trans ?_
     refine hi.trans ?_
     exact natDegree_iterate_derivative _ _
-  conv_lhs => rw [(derivative^[k] p).as_sum_support_C_mul_X_pow]
-  rw [smul_sum]; congr; funext i
-  calc
-    C ((derivative^[k] p).coeff i) * X ^ i =
-        C ((i + k).descFactorial k • p.coeff (i + k)) * X ^ i := by rw [coeff_iterate_derivative]
-    _ = C ((k ! * (i + k).choose k) • p.coeff (i + k)) * X ^ i := by
-      rw [Nat.descFactorial_eq_factorial_mul_choose]
-    _ = (k ! * (i + k).choose k) • C (p.coeff (i + k)) * X ^ i := by rw [smul_C]
-    _ = k ! • (i + k).choose k • C (p.coeff (i + k)) * X ^ i := by rw [mul_smul]
-    _ = k ! • ((i + k).choose k • C (p.coeff (i + k)) * X ^ i) := by rw [smul_mul_assoc]
+  · exact iterate_derivative_eq_factorial_mul p k
 
 end Semiring
 
@@ -155,7 +160,7 @@ variable (A)
 theorem iterate_derivative_large (p : R[X]) (q : ℕ) {k : ℕ} (hk : q ≤ k) :
     ∃ gp : R[X], gp.natDegree ≤ p.natDegree - k ∧
       ∀ r : A, aeval r (derivative^[k] p) = q ! • aeval r gp := by
-  obtain ⟨p', p'_le, hp'⟩ := iterate_derivative_eq_factorial_mul p k
+  obtain ⟨p', p'_le, hp'⟩ := exists_iterate_derivative_eq_factorial_mul p k
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hk
   refine ⟨((q + k).descFactorial k : R[X]) * p', (natDegree_C_mul_le _ _).trans p'_le, fun r => ?_⟩
   simp_rw [hp', nsmul_eq_mul, map_mul, map_natCast, ← mul_assoc, ← Nat.cast_mul,
