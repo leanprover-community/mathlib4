@@ -166,7 +166,7 @@ theorem toNimber_symm_eq : toNimber.symm = Nimber.toOrdinal :=
   rfl
 
 @[simp]
-theorem toNimber_toOrdinal (a : Ordinal) :  Nimber.toOrdinal (∗a) = a :=
+theorem toNimber_toOrdinal (a : Ordinal) : Nimber.toOrdinal (∗a) = a :=
   rfl
 
 @[simp]
