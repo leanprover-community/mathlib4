@@ -88,8 +88,8 @@ theorem decomp (f : Equidecomp X G) : DecompOn f f.source f.elements := f.decomp
 theorem map_source {f : Equidecomp X G} {x : X} (h : x ∈ f.source) :
     f x ∈ f.target := f.toPartialEquiv.map_source h
 
-private theorem ext' {f f' : Equidecomp X G} (h_equiv : f.toPartialEquiv = f'.toPartialEquiv)
-    : f = f' := by
+private theorem ext' {f f' : Equidecomp X G} (h_equiv : f.toPartialEquiv = f'.toPartialEquiv) :
+    f = f' := by
   let ⟨_, _, _⟩ := f
   congr
 
