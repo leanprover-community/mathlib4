@@ -486,8 +486,7 @@ section Subobjects
 variable {R : Type*}
 
 /-- A version of `GradedMonoid.GOne` for internally graded objects. -/
-class SetLike.GradedOne {S : Type*}
-    [One R] [Zero ι] [SetLike S R] (A : ι → S) : Prop where
+class SetLike.GradedOne {S : Type*} [SetLike S R] [One R] [Zero ι] (A : ι → S) : Prop where
   /-- One has grade zero -/
   one_mem : (1 : R) ∈ A 0
 
