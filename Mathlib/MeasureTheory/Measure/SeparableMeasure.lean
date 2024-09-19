@@ -120,16 +120,13 @@ variable (p) in
 with constant `c` whose underlying set is in `𝒜` is dense in the set of constant indicators
 which are in `Lp E p μ` when `1 ≤ p < ∞`. -/
 theorem Measure.MeasureDense.indicatorConstLp_subset_closure (h𝒜 : μ.MeasureDense 𝒜) (c : E) :
-    {f : Lp E p μ |
-      ∃ (s : Set X) (hs : MeasurableSet s) (hμs : μ s ≠ ∞),
-        f = indicatorConstLp p hs hμs c} ⊆
-    closure {f : Lp E p μ |
-      ∃ (s : Set X) (hs : s ∈ 𝒜) (hμs : μ s ≠ ∞),
-        f = indicatorConstLp p (h𝒜.measurable s hs) hμs c} := by
-  rcases eq_or_ne c 0 with rfl | hc
+    {indicatorConstLp p hs hμs c | (s : Set X) (hs : MeasurableSet s) (hμs : μ s ≠ ∞)} ⊆
+    closure {indicatorConstLp p (h𝒜.measurable s hs) hμs c |
+      (s : Set X) (hs : s ∈ 𝒜) (hμs : μ s ≠ ∞)} := by
+  obtain rfl | hc := eq_or_ne c 0
   · refine Subset.trans ?_ subset_closure
     rintro - ⟨s, ms, hμs, rfl⟩
-    rcases h𝒜.nonempty' with ⟨t, ht, hμt⟩
+    obtain ⟨t, ht, hμt⟩ := h𝒜.nonempty'
     refine ⟨t, ht, hμt, ?_⟩
     simp_rw [indicatorConstLp]
     congr
@@ -138,7 +135,7 @@ theorem Measure.MeasureDense.indicatorConstLp_subset_closure (h𝒜 : μ.Measure
     rintro - ⟨s, ms, hμs, rfl⟩
     refine Metric.mem_closure_iff.2 fun ε hε ↦ ?_
     have aux : 0 < (ε / ‖c‖) ^ p.toReal := rpow_pos_of_pos (div_pos hε (norm_pos_iff.2 hc)) _
-    rcases h𝒜.fin_meas_approx ms hμs ((ε / ‖c‖) ^ p.toReal) aux with ⟨t, ht, hμt, hμst⟩
+    obtain ⟨t, ht, hμt, hμst⟩ := h𝒜.fin_meas_approx ms hμs ((ε / ‖c‖) ^ p.toReal) aux
     refine ⟨indicatorConstLp p (h𝒜.measurable t ht) hμt c,
       ⟨t, ht, hμt, rfl⟩, ?_⟩
     rw [dist_indicatorConstLp_eq_norm, norm_indicatorConstLp p_pos.ne.symm p_ne_top.elim]
