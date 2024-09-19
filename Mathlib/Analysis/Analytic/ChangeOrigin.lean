@@ -226,10 +226,11 @@ def derivSeries : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F) :=
   (continuousMultilinearCurryFin1 𝕜 E F : (E[×1]→L[𝕜] F) →L[𝕜] E →L[𝕜] F)
     |>.compFormalMultilinearSeries (p.changeOriginSeries 1)
 
-theorem le_fderivSeries_radius : p.radius ≤ p.derivSeries.radius := by
-  apply (p.le_changeOriginSeries_radius 1).trans_eq ?_
-  apply radius_le_of_le
-
+theorem radius_le_radius_derivSeries : p.radius ≤ p.derivSeries.radius := by
+  apply (p.le_changeOriginSeries_radius 1).trans (radius_le_of_le (fun n ↦ ?_))
+  apply (ContinuousLinearMap.norm_compContinuousMultilinearMap_le _ _).trans
+  apply mul_le_of_le_one_left (norm_nonneg  _)
+  exact ContinuousLinearMap.opNorm_le_bound _ zero_le_one (by simp)
 
 end
 

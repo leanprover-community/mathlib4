@@ -301,8 +301,11 @@ theorem le_mul_pow_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F) (h : 0 <
   rw [inv_pow, ← div_eq_mul_inv]
   exact hCp n
 
-lemma radius_le_of_le (p q : FormalMultilinearSeries 𝕜 E F) (h : ∀ n, ‖p n‖ ≤ ‖q n‖) :
-    q.radius ≤ p.radius := by
+lemma radius_le_of_le {𝕜' E' F' : Type*}
+    [NontriviallyNormedField 𝕜'] [NormedAddCommGroup E'] [NormedSpace 𝕜' E']
+    [NormedAddCommGroup F'] [NormedSpace 𝕜' F']
+    {p : FormalMultilinearSeries 𝕜 E F} {q : FormalMultilinearSeries 𝕜' E' F'}
+    (h : ∀ n, ‖p n‖ ≤ ‖q n‖) : q.radius ≤ p.radius := by
   apply le_of_forall_nnreal_lt (fun r hr ↦ ?_)
   rcases norm_mul_pow_le_of_lt_radius _ hr with ⟨C, -, hC⟩
   apply le_radius_of_bound _ C (fun n ↦ ?_)
