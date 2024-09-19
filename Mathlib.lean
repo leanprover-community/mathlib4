@@ -1176,6 +1176,7 @@ import Mathlib.Analysis.LocallyConvex.ContinuousOfBounded
 import Mathlib.Analysis.LocallyConvex.Polar
 import Mathlib.Analysis.LocallyConvex.StrongTopology
 import Mathlib.Analysis.LocallyConvex.WeakDual
+import Mathlib.Analysis.LocallyConvex.WeakSpace
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.Matrix
 import Mathlib.Analysis.MeanInequalities
@@ -1532,6 +1533,7 @@ import Mathlib.CategoryTheory.Galois.Decomposition
 import Mathlib.CategoryTheory.Galois.Examples
 import Mathlib.CategoryTheory.Galois.Full
 import Mathlib.CategoryTheory.Galois.GaloisObjects
+import Mathlib.CategoryTheory.Galois.IsFundamentalgroup
 import Mathlib.CategoryTheory.Galois.Prorepresentability
 import Mathlib.CategoryTheory.Galois.Topology
 import Mathlib.CategoryTheory.Generator
@@ -3961,6 +3963,7 @@ import Mathlib.RingTheory.MvPolynomial.Tower
 import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
 import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.RingTheory.MvPowerSeries.Inverse
+import Mathlib.RingTheory.MvPowerSeries.LexOrder
 import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 import Mathlib.RingTheory.MvPowerSeries.Trunc
 import Mathlib.RingTheory.Nakayama
