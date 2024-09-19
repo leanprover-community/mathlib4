@@ -446,21 +446,13 @@ theorem single_prod_apply_zero_ne_zero_iff (x : GalConjClasses ℚ (K s)) {a : F
     (y : GalConjClasses ℚ (K s)) {b : F} (hb : b ≠ 0) :
     (Finsupp.single x a * Finsupp.single y b) 0 ≠ 0 ↔ x = -y := by
   simp_rw [Finsupp.GalConjClasses.mul_def, toConjLinearEquiv_apply, toConjLinearEquiv_symm_apply,
-    toConjEquiv_apply_zero_eq]
-  simp_rw [toConjEquiv_symm_single, MulMemClass.mk_mul_mk]
+    toConjEquiv_apply_zero_eq, toConjEquiv_symm_single, MulMemClass.mk_mul_mk]
   haveI := Nat.noZeroSMulDivisors ℚ F
-  simp_rw [Finsupp.indicator_eq_sum_single, sum_mul, mul_sum,
-    AddMonoidAlgebra.single_mul_single]
-  -- Porting note: next four lines were `simp_rw [Finsupp.coe_finset_sum, sum_apply]`
-  rw [Finsupp.coe_finset_sum, sum_apply]
-  conv =>
-    enter [1, 1, 2, c]
-    rw [Finsupp.coe_finset_sum, sum_apply]
-  simp_rw [Finsupp.single_apply, ←
-    sum_product', sum_ite, sum_const_zero, add_zero, sum_const, smul_ne_zero_iff, mul_ne_zero_iff,
-    iff_true_intro ha, iff_true_intro hb, and_true_iff, Ne, card_eq_zero, filter_eq_empty_iff]
-  push_neg
-  simp_rw [Prod.exists, mem_product, Set.mem_toFinset]
+  simp_rw [Finsupp.indicator_eq_sum_single, sum_mul, mul_sum, AddMonoidAlgebra.single_mul_single,
+    (Finsupp.coe_finset_sum), sum_apply, Finsupp.single_apply, ← sum_product', sum_ite,
+    sum_const_zero, add_zero, sum_const, smul_ne_zero_iff, mul_ne_zero_iff, iff_true_intro ha,
+    iff_true_intro hb, and_true, Ne, card_eq_zero, filter_eq_empty_iff, not_forall, not_not,
+    exists_prop', nonempty_prop, Prod.exists, mem_product, Set.mem_toFinset]
   exact GalConjClasses.exist_mem_orbit_add_eq_zero x y
 
 theorem single_prod_apply_zero_eq_zero_iff (x : GalConjClasses ℚ (K s)) {a : F} (ha : a ≠ 0)
