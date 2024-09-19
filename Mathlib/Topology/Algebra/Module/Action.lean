@@ -80,7 +80,7 @@ equipped with the action topology and if furthermore `M` is finite as an `R`-mod
 then any bilinear map `M × N → P` is continuous.
 
 As a consequence of this, we deduce that if `R` is a commutative topological ring
-and `A` is an `R`-algebra of finite type as `R`-module, then `A` with its module
+and `A` is an `R`-algebra of finite type as `R`-module, then `A` with its action
 topology becomes a topological ring (i.e., multiplication is continuous).
 
 Other TODOs (not done in the FLT repo):
