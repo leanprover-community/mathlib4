@@ -683,15 +683,13 @@ lemma exists_of_one_lt_card_pi {ι : Type*} {α : ι → Type*} [∀ i, Decidabl
   obtain rfl | hne := eq_or_ne (a2 i) ai
   exacts [⟨a1, h1, hne⟩, ⟨a2, h2, hne⟩]
 
-theorem card_eq_succ' :
-    s.card = n + 1 ↔ ∃ (a t : _) (h : a ∉ t), cons a t h = s ∧ t.card = n :=
-  ⟨fun h =>
-    let ⟨a, has⟩ := card_pos.mp (h ▸ n.zero_lt_succ : 0 < s.card)
-    _
-    -- ⟨a, s.erase a, s.not_mem_erase a, insert_erase has, by
-    --   simp only [h, card_erase_of_mem has, add_tsub_cancel_right]⟩
-      ,
-    fun ⟨a, t, hat, s_eq, n_eq⟩ => s_eq ▸ n_eq ▸ card_cons hat⟩
+theorem card_eq_succ_iff_cons :
+    s.card = n + 1 ↔ ∃ a t, ∃ (h : a ∉ t), cons a t h = s ∧ t.card = n := by
+  induction s using Finset.cons_induction_on generalizing n
+  case h₁ => simp
+  case h₂ a s has _ =>
+    exact ⟨fun h => ⟨a, s, by simpa [*] using h⟩,
+           fun ⟨_, _, _, h, r⟩ => by simpa [r] using (congrArg card h).symm⟩
 
 section DecidableEq
 variable [DecidableEq α]
