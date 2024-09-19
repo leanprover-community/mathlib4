@@ -34,6 +34,13 @@ lemma zpow_right_strictMono (ha : 1 < a) : StrictMono fun n : ℤ ↦ a ^ n := f
     _ < a ^ m * a ^ (n - m) := mul_lt_mul_left' (one_lt_zpow' ha <| Int.sub_pos_of_lt h) _
     _ = a ^ n := by simp [← zpow_add, m.add_comm]
 
+@[to_additive zsmul_strictAnti_left]
+lemma zpow_right_strictAnti (ha : a < 1) : StrictAnti fun n : ℤ ↦ a ^ n := fun m n h ↦ calc
+  a ^ n < a ^ n * a⁻¹ ^ (n - m) :=
+    lt_mul_of_one_lt_right' _ <| one_lt_zpow' (one_lt_inv'.2 ha) <| Int.sub_pos.2 h
+  _ = a ^ m := by
+    rw [inv_zpow', Int.neg_sub, ← zpow_add, Int.add_comm, Int.sub_add_cancel]
+
 @[to_additive zsmul_left_inj]
 lemma zpow_right_inj (ha : 1 < a) {m n : ℤ} : a ^ m = a ^ n ↔ m = n :=
   (zpow_right_strictMono ha).injective.eq_iff
