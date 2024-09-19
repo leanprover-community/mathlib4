@@ -37,4 +37,15 @@ lemma mem_center_iff {x : D} : x ∈ Subalgebra.center K D ↔ ∃ (a : K), x = 
 instance self : IsCentralSimple K K where
   is_central x := by simp [Algebra.mem_bot]
 
+lemma tower {k K D : Type*} [Field k] [Field K] [Ring D]
+    [Algebra k K] [Algebra K D] [Algebra k D] [IsScalarTower k K D] [IsCentralSimple k D] :
+    IsCentralSimple K D where
+  is_central x := by
+    change x ∈ Subalgebra.center k D → _
+    rw [center_eq_bot k D, Algebra.mem_bot, Algebra.mem_bot]
+    simp only [Set.mem_range, forall_exists_index]
+    rintro x rfl
+    refine ⟨algebraMap k K x, by simp only [algebraMap_eq_smul_one, smul_assoc, one_smul]⟩
+  is_simple := IsCentralSimple.is_simple k
+
 end Algebra.IsCentralSimple
