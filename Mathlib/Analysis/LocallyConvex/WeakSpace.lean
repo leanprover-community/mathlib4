@@ -12,8 +12,7 @@ import Mathlib.Topology.Algebra.Module.WeakDual
 This file contains the standard result that if `E` is a vector space with two locally convex
 topologies, then the closure of a convex set is the same in either topology, provided they have the
 same collection of continuous linear functionals. In particular, the weak closure of a convex set
-in locally convex space coincides with the closure in the original topology.
-
+in a locally convex space coincides with the closure in the original topology.
 Of course, we phrase this in terms of linear maps between locally convex spaces, rather than
 creating two separate topologies on the same space.
 -/
