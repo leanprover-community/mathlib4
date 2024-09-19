@@ -381,11 +381,14 @@ end
 
 namespace unicodeLinter
 
-/-- Allowed whitespace characters -/
+/-- Allowed (by the linter) whitespace characters -/
 def ASCII.allowedWhitespace (c : Char) := #[' ', '\n'].contains c
 
 /-- Printable ASCII characters, not including whitespace. -/
 def ASCII.printable (c : Char) := 0x21 ≤ c.toNat && c.toNat ≤ 0x7e
+
+/-- Allowed (by the linter) ASCII characters -/
+def ASCII.allowed (c : Char) := ASCII.allowedWhitespace c || ASCII.printable c
 
 /--
 Symbols with VSCode extension abbreviation as of Aug. 28, 2024
@@ -538,7 +541,7 @@ Other unicode characters present in Mathlib (as of Aug. 28, 2024)
 not present in any of the above lists.
 -/
 def othersInMathlib := #[
-'▼', 'c', 'ō', '⏩', '❓',
+'▼', 'ō', '⏩', '❓',
 '🆕', 'š', 'ř', '⚬', '│', '├', '┌', 'ő',
 '⟍', '̂', 'ᘁ', 'ń', 'ć', '⟋', 'ỳ', 'ầ', '⥥',
 'ł', '◿', '◹', '－', '＼', '◥', '／', '◢', 'Ž', 'ă',
@@ -558,8 +561,7 @@ Consider adding it to one of the whitelists.
 Note: if `true`, character might still not be allowed in some contexts
 (e.g. misplaced variant selectors) -/
 def isAllowedCharacter (c : Char) : Bool :=
-  ASCII.allowedWhitespace c
-  || ASCII.printable c
+  ASCII.allowed c
   || withVSCodeAbbrev.contains c
   || emojis.contains c
   || nonEmojis.contains c
