@@ -189,7 +189,7 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_finite [IsFiniteMeasur
       · -- Let `(fₙ)` be a sequence of measurable sets and `ε > 0`.
         refine fun f hf ↦ ⟨MeasurableSet.iUnion (fun n ↦ (hf n).1), fun ε ε_pos ↦ ?_⟩
         -- We have  `μ (⋃ n ≤ N, fₙ) ⟶ μ (⋃ n, fₙ)`.
-        have := tendsto_measure_iUnion' (μ := μ) (f := f)
+        have := tendsto_measure_iUnion_accumulate (μ := μ) (f := f)
         rw [← tendsto_toReal_iff (fun _ ↦ measure_ne_top _ _) (measure_ne_top _ _)] at this
         -- So there exists `N` such that `μ (⋃ n, fₙ) - μ (⋃ n ≤ N, fₙ) < ε/2`.
         rcases Metric.tendsto_atTop.1 this (ε / 2) (by linarith [ε_pos]) with ⟨N, hN⟩
@@ -228,7 +228,7 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_finite [IsFiniteMeasur
                     fun i ↦ iUnion_subset (fun _ ↦ subset_iUnion f i))
                   exact iUnion_subset <| fun i ↦ iUnion_subset (fun _ ↦ subset_iUnion f i)
                   exact MeasurableSet.biUnion (countable_coe_iff.1 inferInstance)
-                    (fun n _ ↦ (hf n).1)
+                    (fun n _ ↦ (hf n).1.nullMeasurableSet)
                 · calc
                     (μ ((⋃ n ∈ (Finset.range (N + 1)), f n) ∆
                     (⋃ n ∈ (Finset.range (N + 1)), g ↑n))).toReal
@@ -236,7 +236,7 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_finite [IsFiniteMeasur
                           toReal_mono (measure_ne_top _ _) (measure_mono biSup_symmDiff_biSup_le)
                     _ ≤ ∑ n in (Finset.range (N + 1)), (μ (f n ∆ g n)).toReal := by
                           rw [← toReal_sum (fun _ _ ↦ measure_ne_top _ _)]
-                          exact toReal_mono (ne_of_lt <| sum_lt_top fun _ _ ↦ measure_ne_top μ _)
+                          exact toReal_mono (ne_of_lt <| sum_lt_top.2 fun _ _ ↦ measure_lt_top μ _)
                             (measure_biUnion_finset_le _ _)
                     _ < ∑ n in (Finset.range (N + 1)), (ε / (2 * (N + 1))) :=
                           Finset.sum_lt_sum (fun i _ ↦ le_of_lt (hg i)) ⟨0, by simp, hg 0⟩
@@ -265,14 +265,14 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_sigmaFinite (h𝒜 : I
       simpa using h𝒜.biUnion_mem {k | k ≤ n}.toFinset (fun k _ ↦ S.set_mem k)
     have T_finite : ∀ n, μ (T n) < ∞ := fun n ↦ by
       simpa using measure_biUnion_lt_top {k | k ≤ n}.toFinset.finite_toSet
-        (fun k _ ↦ ne_of_lt (S.finite k))
+        (fun k _ ↦ S.finite k)
     have T_spanning : ⋃ n, T n = univ := S.spanning ▸ iUnion_accumulate
     -- We use the fact that we already know this is true for finite measures. As `⋃ n, T n = X`,
     -- we have that `μ ((T n) ∩ s) ⟶ μ s`.
     intro s ms hμs ε ε_pos
     have mono : Monotone (fun n ↦ (T n) ∩ s) := fun m n hmn ↦ inter_subset_inter_left s
         (biUnion_subset_biUnion_left fun k hkm ↦ Nat.le_trans hkm hmn)
-    have := tendsto_measure_iUnion (μ := μ) mono
+    have := tendsto_measure_iUnion_atTop (μ := μ) mono
     rw [← tendsto_toReal_iff] at this
     · -- We can therefore choose `N` such that `μ s - μ ((S N) ∩ s) < ε/2`.
       rcases Metric.tendsto_atTop.1 this (ε / 2) (by linarith [ε_pos]) with ⟨N, hN⟩
@@ -299,7 +299,7 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_sigmaFinite (h𝒜 : I
               apply ENNReal.add_lt_add
               · rw [measure_diff
                     (inter_subset_left ..)
-                    (ms.inter (hgen ▸ measurableSet_generateFrom (T_mem N)))
+                    (ms.inter (hgen ▸ measurableSet_generateFrom (T_mem N))).nullMeasurableSet
                     (ne_top_of_le_ne_top hμs (measure_mono (inter_subset_left ..))),
                   lt_ofReal_iff_toReal_lt (sub_ne_top hμs),
                   toReal_sub_of_le (measure_mono (inter_subset_left ..)) hμs]
@@ -372,14 +372,14 @@ instance [CountablyGenerated X] [SFinite μ] : IsSeparable μ where
     let ℬ := {s ∩ μ.sigmaFiniteSet | s ∈ 𝒜}
     refine ⟨ℬ, count_𝒜.image (fun s ↦ s ∩ μ.sigmaFiniteSet), ?_, ?_⟩
     · rintro - ⟨s, s_mem, rfl⟩
-      exact (h𝒜.measurable s s_mem).inter (measurableSet_sigmaFiniteSet μ)
+      exact (h𝒜.measurable s s_mem).inter measurableSet_sigmaFiniteSet
     · intro s ms hμs ε ε_pos
       rcases restrict_compl_sigmaFiniteSet_eq_zero_or_top μ s with hs | hs
       · have : (μ.restrict μ.sigmaFiniteSet) s ≠ ∞ :=
           ne_top_of_le_ne_top hμs <| μ.restrict_le_self _
         rcases h𝒜.approx s ms this ε ε_pos with ⟨t, t_mem, ht⟩
         refine ⟨t ∩ μ.sigmaFiniteSet, ⟨t, t_mem, rfl⟩, ?_⟩
-        rw [← measure_inter_add_diff _ (measurableSet_sigmaFiniteSet μ)]
+        rw [← measure_inter_add_diff _ measurableSet_sigmaFiniteSet]
         have : μ (s ∆ (t ∩ μ.sigmaFiniteSet) \ μ.sigmaFiniteSet) = 0 := by
           rw [diff_eq_compl_inter, inter_symmDiff_distrib_left, ← ENNReal.bot_eq_zero, eq_bot_iff]
           calc
@@ -392,7 +392,7 @@ instance [CountablyGenerated X] [SFinite μ] : IsSeparable μ where
                 rw [inter_comm, ← μ.restrict_apply ms, hs, ← inter_assoc, inter_comm, ← inter_assoc,
                   inter_compl_self, empty_inter, measure_empty, zero_add]
         rwa [this, add_zero, inter_symmDiff_distrib_right, inter_assoc, inter_self,
-          ← inter_symmDiff_distrib_right, ← μ.restrict_apply' (measurableSet_sigmaFiniteSet μ)]
+          ← inter_symmDiff_distrib_right, ← μ.restrict_apply' measurableSet_sigmaFiniteSet]
       · refine False.elim <| hμs ?_
         rw [eq_top_iff, ← hs]
         exact μ.restrict_le_self _
