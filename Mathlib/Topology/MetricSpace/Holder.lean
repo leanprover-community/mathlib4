@@ -110,7 +110,7 @@ theorem comp {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : HoelderOnWith Cg 
     ENNReal.coe_rpow_of_nonneg _ rg.coe_nonneg, ← ENNReal.mul_rpow_of_nonneg _ _ rg.coe_nonneg]
   exact hg.edist_le_of_le (hst hx) (hst hy) (hf.edist_le hx hy)
 
-theorem comp_HoelderWith {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : HoelderOnWith Cg rg g t)
+theorem comp_hoelderWith {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : HoelderOnWith Cg rg g t)
     {Cf rf : ℝ≥0} {f : X → Y} (hf : HoelderWith Cf rf f) (ht : ∀ x, f x ∈ t) :
     HoelderWith (Cg * Cf ^ (rg : ℝ)) (rg * rf) (g ∘ f) :=
   hoelderOnWith_univ.mp <| hg.comp (hf.HoelderOnWith univ) fun x _ => ht x
@@ -172,9 +172,9 @@ theorem edist_le_of_le (h : HoelderWith C r f) {x y : X} {d : ℝ≥0∞} (hd : 
 
 theorem comp {Cg rg : ℝ≥0} {g : Y → Z} (hg : HoelderWith Cg rg g) {Cf rf : ℝ≥0} {f : X → Y}
     (hf : HoelderWith Cf rf f) : HoelderWith (Cg * Cf ^ (rg : ℝ)) (rg * rf) (g ∘ f) :=
-  (hg.HoelderOnWith univ).comp_HoelderWith hf fun _ => trivial
+  (hg.HoelderOnWith univ).comp_hoelderWith hf fun _ => trivial
 
-theorem comp_HoelderOnWith {Cg rg : ℝ≥0} {g : Y → Z} (hg : HoelderWith Cg rg g) {Cf rf : ℝ≥0}
+theorem comp_hoelderOnWith {Cg rg : ℝ≥0} {g : Y → Z} (hg : HoelderWith Cg rg g) {Cf rf : ℝ≥0}
     {f : X → Y} {s : Set X} (hf : HoelderOnWith Cf rf f s) :
     HoelderOnWith (Cg * Cf ^ (rg : ℝ)) (rg * rf) (g ∘ f) s :=
   (hg.HoelderOnWith univ).comp hf fun _ _ => trivial
