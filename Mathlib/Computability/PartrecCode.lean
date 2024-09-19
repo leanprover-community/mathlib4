@@ -1015,8 +1015,6 @@ theorem fixed_point₂ {f : Code → ℕ →. ℕ} (hf : Partrec₂ f) : ∃ c :
 
 end
 
-end Nat.Partrec.Code
-
 /-- There are only countably many partial recursive functions ℕ → ℕ. -/
 instance : Countable {f : ℕ →. ℕ | Nat.Partrec f} := by
   rw [Set.ext <| fun f => @Nat.Partrec.Code.exists_code f]
@@ -1032,3 +1030,5 @@ instance : Countable {f : ℕ → ℕ | Computable f} :=
   @Function.Injective.countable {f : ℕ → ℕ | Computable f} {f : ℕ →. ℕ | Nat.Partrec f} _
     (fun f => ⟨f.val, Partrec.nat_iff.mp f.2⟩)
     fun _ _ h => SetCoe.ext <| PFun.lift_injective <| (Subtype.mk.injEq _ _ _ _) ▸ h
+
+end Nat.Partrec.Code
