@@ -272,8 +272,10 @@ theorem integralPoint_ne_zero (a : integralPoint K) :
 
 open scoped nonZeroDivisors
 
-/-- For `a : fundamentalCone K`, the unique non-zero algebraic integer which image by
-`mixedEmbedding` is equal to `a`. -/
+/-- For `a : fundamentalCone K`, the unique non-zero algebraic integer `x` which image by
+`mixedEmbedding` is equal to `a`. Note that we state the fact that `x ≠ 0` by saying that `x` is
+a nonzero divisors since we will use later on the isomorphism
+`Ideal.associatesNonZeroDivisorsEquivIsPrincipal`, see `integralPointEquiv`. -/
 def preimageOfIntegralPoint (a : integralPoint K) : (𝓞 K)⁰ := by
   refine ⟨(mem_integralPoint.mp a.prop).2.choose, mem_nonZeroDivisors_of_ne_zero ?_⟩
   simp_rw [ne_eq, ← RingOfIntegers.coe_injective.eq_iff, ← (mixedEmbedding_injective K).eq_iff,
