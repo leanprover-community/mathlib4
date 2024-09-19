@@ -449,7 +449,7 @@ lemma limtoGalContinuous [IsGalois k K] : Continuous (mulEquivtoLimit k K).symm 
       ext x
       constructor
       · rintro ⟨α, hα1, hα2⟩
-        simp only [Set.mem_preimage,←hα2, fix1, Set.mem_setOf_eq, mulEquivtoLimit, homtoLimit,
+        simp only [Set.mem_preimage,← hα2, fix1, Set.mem_setOf_eq, mulEquivtoLimit, homtoLimit,
           MonoidHom.coe_mk, OneHom.coe_mk, MulEquiv.coe_mk, Equiv.coe_fn_mk]
         apply AlgEquiv.ext
         intro x
