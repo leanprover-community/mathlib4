@@ -381,12 +381,8 @@ end
 
 namespace unicodeLinter
 
-/-- Hashable instance for use with the unicodeLinter -/
-local instance instHashableChar : Hashable Char where
-  hash c := c.val.toUInt64
-
 /-- Allowed whitespace characters -/
-def ASCII.whitespace (c : Char) := #[' ', '\n'].contains c
+def ASCII.allowedWhitespace (c : Char) := #[' ', '\n'].contains c
 
 /-- Printable ASCII characters, not including whitespace. -/
 def ASCII.printable (c : Char) := 0x21 ≤ c.toNat && c.toNat ≤ 0x7e
@@ -558,9 +554,11 @@ https://en.wikipedia.org/wiki/Mathematical_operators_and_symbols_in_Unicode
 -/
 
 /-- If `false` the character is not allowed in Mathlib.
-Consider adding it to one of the whitelists. -/
+Consider adding it to one of the whitelists.
+Note: if `true`, character might still not be allowed in some contexts
+(e.g. misplaced variant selectors) -/
 def isAllowedCharacter (c : Char) : Bool :=
-  ASCII.whitespace c
+  ASCII.allowedWhitespace c
   || ASCII.printable c
   || withVSCodeAbbrev.contains c
   || emojis.contains c
@@ -570,12 +568,14 @@ def isAllowedCharacter (c : Char) : Bool :=
   || othersInMathlib.contains c
 
 /-- Creates `StyleError`s for non-whitelisted unicode characters as well as
-bad usage of (emoji/text)-variant-selectors. -/
+bad usage of (emoji/text)-variant-selectors.
+Note: if `pos` is not a valid position, the result is unspecified. -/
 def findBadUnicodeAux (s : String) (pos : String.Pos) (c : Char)
     (err : Array StyleError := #[]) : Array StyleError :=
   if h : pos < s.endPos then
     have := Nat.sub_lt_sub_left h (String.lt_next s pos)
-    let posₙ := s.next pos
+    let posₙ := s.next pos -- `pos` is valid by assumption. `pos` is not `endPos` by check above.
+    -- `posₙ` is valid, might be `endPos`.
     let cₙ := s.get? posₙ |>.getD '\uFFFD' -- �
     if cₙ == UnicodeVariant.emoji && !(emojis.contains c) then
       -- bad: unwanted emoji-variant-selector
@@ -610,11 +610,12 @@ termination_by s.endPos.1 - pos.1
 
 @[inline, inherit_doc findBadUnicodeAux]
 def findBadUnicode (s : String) : Array StyleError :=
+  if s == "" then #[] else
   let c := s.get 0
   -- edge case: variant-selector as first char of the line
   let initalErrors := if #[UnicodeVariant.emoji, UnicodeVariant.text].contains c then
     #[(.unicodeVariant s!"\uFFFD{c}" none 0)] else #[]
-  findBadUnicodeAux s 0 (s.get 0) initalErrors
+  findBadUnicodeAux s 0 c initalErrors -- result specified since 0 is a valid position.
 
 end unicodeLinter
 
