@@ -216,35 +216,6 @@ noncomputable def counitApp [HasExplicitFiniteCoproducts.{u} P]
     erw [image_eq_image_mk (g := g.unop.toFun)]
     rfl
 
-lemma counit_naturality_aux [HasExplicitFiniteCoproducts.{u} P] [PreservesFiniteProducts Y]
-    (X : (CompHausLike.{u} P)ᵒᵖ ⥤ Type max u w)
-    [PreservesFiniteProducts X] (g : Y ⟶ X)
-    (a : Fiber (f.map (g.app (op (CompHausLike.of P PUnit.{u+1}))))) :
-      X.map (sigmaIncl (map (g.app (op (CompHausLike.of P PUnit.{u+1}))) f) a).op
-        (g.app ⟨S⟩ (counitAppApp S Y f)) =
-          counitAppAppImage (map (g.app (op (CompHausLike.of P PUnit.{u+1}))) f) a := by
-  apply presheaf_ext (f.comap (sigmaIncl _ _))
-  intro b
-  simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp,
-    CompHausLike.coe_of, map_apply, IsTerminal.comp_from,
-    ← map_preimage_eq_image_map f (g.app (op (CompHausLike.of P PUnit.{u+1})))]
-  change (_ ≫ X.map _) _ = (_ ≫ X.map _) _
-  simp only [← g.naturality,
-    show sigmaIncl (f.comap (sigmaIncl (f.map _) a)) b ≫ sigmaIncl (f.map _) a =
-      (sigmaInclIncl f _ a b) ≫ sigmaIncl f (Fiber.mk f _) from rfl]
-  simp only [op_comp, Functor.map_comp, types_comp_apply, incl_of_counitAppApp]
-  simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp, terminal.comp_from]
-  rw [mk_image]
-  change (Y.map _ ≫ _) _ = (Y.map _ ≫ _) _
-  simp only [g.naturality]
-  simp only [types_comp_apply]
-  have := map_preimage_eq_image (f := g.app _ ∘ f) (a := a)
-  simp only [Function.comp_apply] at this
-  rw [this]
-  apply congrArg
-  erw [← mem_iff_eq_image (f := g.app _ ∘ f)]
-  exact (b.preimage).prop
-
 variable (P) (X : TopCat.{max u w})
     [HasExplicitFiniteCoproducts.{0} P] [HasExplicitPullbacks P]
     (hs : ∀ ⦃X Y : CompHausLike P⦄ (f : X ⟶ Y), EffectiveEpi f → Function.Surjective f)
@@ -299,7 +270,29 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] :
     apply presheaf_ext (f.map (g.val.app (op (CompHausLike.of P PUnit.{u+1}))))
     intro a
     simp only [op_unop, functorToPresheaves_map_app, incl_of_counitAppApp]
-    exact (counit_naturality_aux f Y.val g.val a).symm
+    -- symm
+    apply presheaf_ext (f.comap (sigmaIncl _ _))
+    intro b
+    simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp,
+      CompHausLike.coe_of, map_apply, IsTerminal.comp_from,
+      ← map_preimage_eq_image_map f (g.val.app (op (CompHausLike.of P PUnit.{u+1})))]
+    change (_ ≫ Y.val.map _) _ = (_ ≫ Y.val.map _) _
+    simp only [← g.val.naturality,
+      show sigmaIncl (f.comap (sigmaIncl (f.map _) a)) b ≫ sigmaIncl (f.map _) a =
+        (sigmaInclIncl f _ a b) ≫ sigmaIncl f (Fiber.mk f _) from rfl]
+    simp only [op_comp, Functor.map_comp, types_comp_apply, incl_of_counitAppApp]
+    simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp, terminal.comp_from]
+    rw [mk_image]
+    change (X.val.map _ ≫ _) _ = (X.val.map _ ≫ _) _
+    simp only [g.val.naturality]
+    simp only [types_comp_apply]
+    have := map_preimage_eq_image (f := g.val.app _ ∘ f) (a := a)
+    simp only [Function.comp_apply] at this
+    rw [this]
+    apply congrArg
+    symm
+    erw [← mem_iff_eq_image (f := g.val.app _ ∘ f)]
+    exact (b.preimage).prop
 
 /--
 The unit of the adjunciton is given by mapping each element to the corresponding constant map.
