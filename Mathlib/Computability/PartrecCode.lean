@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro
+Authors: Mario Carneiro, Bjørn Kjos-Hanssen
 -/
 import Mathlib.Computability.Partrec
 import Mathlib.Data.Option.Basic
@@ -1026,3 +1026,19 @@ instance : Countable {f : ℕ → ℕ // Computable f} :=
     (fun _ _ h => Subtype.val_inj.1 (PFun.lift_injective (by simpa using h)))
 
 end Nat.Partrec.Code
+
+/-- There are only countably many partial recursive functions ℕ → ℕ. -/
+instance : Countable {f : ℕ →. ℕ | Nat.Partrec f} := by
+  rw [Set.ext <| fun f => @Nat.Partrec.Code.exists_code f]
+  apply @Function.Injective.countable
+    ({f | ∃ c, Nat.Partrec.Code.eval c = f}) Nat.Partrec.Code _ (fun f => Classical.choose f.2)
+  intro f g h
+  apply SetCoe.ext
+  rw [← Classical.choose_spec f.2,← Classical.choose_spec g.2]
+  tauto
+
+/-- There are only countably many computable functions ℕ → ℕ. -/
+instance : Countable {f : ℕ → ℕ | Computable f} :=
+  @Function.Injective.countable {f : ℕ → ℕ | Computable f} {f : ℕ →. ℕ | Nat.Partrec f} _
+    (fun f => ⟨f.val, Partrec.nat_iff.mp f.2⟩)
+    fun _ _ h => SetCoe.ext <| PFun.lift_injective <| (Subtype.mk.injEq _ _ _ _) ▸ h
