@@ -235,7 +235,6 @@ lemma nnnorm_apply_le (φ : F) (a : A) : ‖φ a‖₊ ≤ ‖a‖₊ := by
       exact this <| .star_mul_self x
     intro s hs
     suffices this : spectralRadius ℂ (ψ s) ≤ spectralRadius ℂ s by
-      -- changing the order of `rw`s below runs into https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/weird.20type.20class.20synthesis.20error/near/421224482
       rwa [(hs.map ψ).spectralRadius_eq_nnnorm, hs.spectralRadius_eq_nnnorm, coe_le_coe]
         at this
     exact iSup_le_iSup_of_subset (AlgHom.spectrum_apply_subset ψ s)

@@ -171,10 +171,10 @@ instance Unitization.instCStarRing : CStarRing (Unitization 𝕜 E) where
     · replace h := (not_le.mp h).le
       rw [sq, sq, sup_eq_left.mpr h, sup_eq_left.mpr (mul_self_le_mul_self (norm_nonneg _) h)]
 
-noncomputable instance Unitization.instCStarAlgebra {A : Type*} [CStarAlgebra A] :
+noncomputable instance Unitization.instCStarAlgebra {A : Type*} [NonUnitalCStarAlgebra A] :
     CStarAlgebra (Unitization ℂ A) where
 
-noncomputable instance Unitization.instCommCStarAlgebra {A : Type*} [CommCStarAlgebra A] :
+noncomputable instance Unitization.instCommCStarAlgebra {A : Type*} [NonUnitalCommCStarAlgebra A] :
     CommCStarAlgebra (Unitization ℂ A) where
   mul_comm := mul_comm
 
