@@ -51,7 +51,7 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
       (((p j).aroots K).map fun x => f (algebraMap K ℂ x)) =
         (((p j).aroots ℂ).map f) := by
     have : (p j).aroots ℂ = ((p j).aroots K).map (algebraMap K ℂ) := by
-      rw [← aroots_map (S := K), ← roots_map _ (splits_p j)]
+      rw [← aroots_map ℂ K, ← roots_map _ (splits_p j)]
     rw [this, Multiset.map_map]
     simp_rw [Function.comp_def]
 
