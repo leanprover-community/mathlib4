@@ -18,7 +18,7 @@ topological group `G`, and its additive version `ClosedAddSubgroup`.
 
 * `normalCore_isClosed` : The `normalCore` of a closed subgroup is closed.
 
-*  `finindex_closedSubgroup_isOpen` : A closed subgroup with finite index is open.
+* `finindex_closedSubgroup_isOpen` : A closed subgroup with finite index is open.
 
 -/
 

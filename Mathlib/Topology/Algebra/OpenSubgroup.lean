@@ -421,9 +421,6 @@ instance : Coe (OpenNormalSubgroup G) (Subgroup G) where
   coe := fun H => H.toOpenSubgroup.toSubgroup
 
 @[to_additive]
-instance instPartialOrderOpenNormalSubgroup : PartialOrder (OpenNormalSubgroup G) := inferInstance
-
-@[to_additive]
 instance instInfOpenNormalSubgroup : Inf (OpenNormalSubgroup G) :=
   ⟨fun U V => ⟨U.toOpenSubgroup ⊓ V.toOpenSubgroup,
     Subgroup.normal_inf_normal U.toSubgroup V.toSubgroup⟩⟩
@@ -447,7 +444,7 @@ instance instSemilatticeSupOpenNormalSubgroup [ContinuousMul G] :
 instance [ContinuousMul G] : Lattice (OpenNormalSubgroup G) :=
   { instSemilatticeInfOpenNormalSubgroup,
     instSemilatticeSupOpenNormalSubgroup with
-    toPartialOrder := instPartialOrderOpenNormalSubgroup}
+    toPartialOrder := inferInstance}
 
 end OpenNormalSubgroup
 
