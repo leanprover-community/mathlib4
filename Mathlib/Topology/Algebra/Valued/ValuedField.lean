@@ -116,7 +116,10 @@ open Valued
 
 lemma continuous_iff_restrictionRangeGroup_continuous [Valued K Γ₀] :
     Continuous (Valued.v : K → Γ₀) ↔
-      Continuous (Valued.v.restrictionRangeGroup (R :=K) ) := by
+      Continuous (Valued.v.restrictionRangeGroup (R := K) ) := by
+  -- set H := v.rangeGroup (R := K) with rfl--this needs to change, it shows outParams are needed
+  -- have := @continuous_coinduced_dom K (v.rangeGroupWithZero (R := K)) Γ₀
+  --   (Valued.v.restrictionRangeGroup (R := K)) ?_ ?_ ?_
   sorry
 
 theorem Valued.continuous_valuation [Valued K Γ₀] : Continuous (v : K → Γ₀) := by
