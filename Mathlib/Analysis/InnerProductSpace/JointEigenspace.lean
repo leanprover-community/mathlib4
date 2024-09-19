@@ -71,7 +71,7 @@ open Submodule
 section RCLike
 
 variable [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable {α : 𝕜} {A B : E →ₗ[𝕜] E}
+variable {α : 𝕜} {A B : E →ₗ[𝕜] E} {T : n → E →ₗ[𝕜] E}
 
 /-- The joint eigenspaces of a pair of commuting symmetric operators form an
 `OrthogonalFamily`. -/
@@ -87,7 +87,7 @@ theorem orthogonalFamily_eigenspace_inf_eigenspace (hA : A.IsSymmetric) (hB : B.
 /-- The joint eigenspaces of a tuple of commuting symmetric operators form an
 `OrthogonalFamily`. -/
 theorem orthogonalFamily_iInf_eigenspaces
-    (T : n → (E →ₗ[𝕜] E)) (hT :(∀ (i : n), ((T i).IsSymmetric))) :
+    (hT :(∀ (i : n), ((T i).IsSymmetric))) :
     OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) => (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))
     (fun (γ : n → 𝕜) => (⨅ (j : n), (eigenspace (T j) (γ j))).subtypeₗᵢ) := by
   intro f g hfg Ef Eg
@@ -173,12 +173,11 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Fintype n]
 /-- Given a finite commuting family of symmetric linear operators, the Hilbert space on which they
 act decomposes as an internal direct sum of simultaneous eigenspaces. -/
 theorem LinearMap.IsSymmetric.directSum_isInternal_of_commute_of_fintype [Fintype n]
-    (T : n → (E →ₗ[𝕜] E)) (hT :(∀ (i : n), ((T i).IsSymmetric)))
-    (hC : (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i))) :
+    (hT :(∀ (i : n), ((T i).IsSymmetric))) (hC : (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i))) :
     DirectSum.IsInternal (fun (α : n → 𝕜) ↦ ⨅ (j : n), (eigenspace (T j) (α j))) := by
   rw [OrthogonalFamily.isInternal_iff]
   · exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot T hT hC
-  · exact orthogonalFamily_iInf_eigenspaces T hT
+  · exact orthogonalFamily_iInf_eigenspaces hT
 
 end RCLike
 
