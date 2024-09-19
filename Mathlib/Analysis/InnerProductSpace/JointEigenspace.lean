@@ -143,10 +143,11 @@ theorem iSup_eigenspace_restrict {F : Submodule 𝕜 E}
 
 /-- The orthocomplement of the indexed supremum of joint eigenspaces of a finite commuting tuple of
 symmetric operators is trivial. -/
-theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Fintype n]
+theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Finite n]
     (hT : ∀ i, (T i).IsSymmetric)
     (hC : ∀ i j, T i ∘ₗ T j = T j ∘ₗ T i) :
     (⨆ γ : n → 𝕜, ⨅ j, eigenspace (T j) (γ j))ᗮ = ⊥ := by
+  have _ := Fintype.ofFinite n
   revert T
   change ∀ T, _
   refine Fintype.induction_subsingleton_or_nontrivial n (fun m _ hhm T hT _ ↦ ?_)
@@ -173,8 +174,9 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Fintype n]
 
 /-- Given a finite commuting family of symmetric linear operators, the Hilbert space on which they
 act decomposes as an internal direct sum of simultaneous eigenspaces. -/
-theorem LinearMap.IsSymmetric.directSum_isInternal_of_commute_of_fintype [Fintype n]
-    (hT :(∀ (i : n), ((T i).IsSymmetric))) (hC : (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i))) :
+theorem LinearMap.IsSymmetric.directSum_isInternal_of_commute_of_fintype [Finite n]
+    [DecidableEq (n → 𝕜)] (hT :(∀ (i : n), ((T i).IsSymmetric)))
+    (hC : (∀ (i j : n), (T i) ∘ₗ (T j) = (T j) ∘ₗ (T i))) :
     DirectSum.IsInternal (fun (α : n → 𝕜) ↦ ⨅ (j : n), (eigenspace (T j) (α j))) := by
   rw [OrthogonalFamily.isInternal_iff]
   · exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot hT hC
