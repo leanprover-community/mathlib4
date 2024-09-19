@@ -216,7 +216,7 @@ noncomputable def counitApp [HasExplicitFiniteCoproducts.{u} P]
     erw [image_eq_image_mk (g := g.unop.toFun)]
     rfl
 
-lemma hom_apply_counitAppApp [HasExplicitFiniteCoproducts.{u} P] [PreservesFiniteProducts Y]
+lemma counit_naturality_aux [HasExplicitFiniteCoproducts.{u} P] [PreservesFiniteProducts Y]
     (X : (CompHausLike.{u} P)ᵒᵖ ⥤ Type max u w)
     [PreservesFiniteProducts X] (g : Y ⟶ X)
     (a : Fiber (f.map (g.app (op (CompHausLike.of P PUnit.{u+1}))))) :
@@ -298,9 +298,8 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] :
     simp only [FunctorToTypes.comp, counitApp_app]
     apply presheaf_ext (f.map (g.val.app (op (CompHausLike.of P PUnit.{u+1}))))
     intro a
-    simp only [op_unop, functorToPresheaves_map_app]
-    rw [incl_of_counitAppApp]
-    rw [hom_apply_counitAppApp]
+    simp only [op_unop, functorToPresheaves_map_app, incl_of_counitAppApp]
+    exact (counit_naturality_aux f Y.val g.val a).symm
 
 /--
 The unit of the adjunciton is given by mapping each element to the corresponding constant map.
