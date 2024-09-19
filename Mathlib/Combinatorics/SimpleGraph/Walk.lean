@@ -189,10 +189,8 @@ lemma getVert_cons_succ {u v w n} (p : G.Walk v w) (h : G.Adj u v) :
 
 lemma getVert_cons {u v w n} (p : G.Walk v w) (h : G.Adj u v) (hn : n ≠ 0) :
     (p.cons h).getVert n = p.getVert (n - 1) := by
-  obtain ⟨i, hi⟩ : ∃ (i : ℕ), i.succ = n := by
-    use n - 1; exact Nat.succ_pred_eq_of_ne_zero hn
-  rw [← hi]
-  simp only [Nat.succ_eq_add_one, getVert_cons_succ, Nat.add_sub_cancel]
+  obtain ⟨n, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero hn
+  rw [getVert_cons_succ, Nat.add_sub_cancel]
 
 @[simp]
 theorem cons_append {u v w x : V} (h : G.Adj u v) (p : G.Walk v w) (q : G.Walk w x) :
@@ -203,22 +201,20 @@ theorem cons_nil_append {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
     (cons h nil).append p = cons h p := rfl
 
 @[simp]
-theorem append_nil {u v : V} (p : G.Walk u v) : p.append nil = p := by
-  induction p with
-  | nil => rfl
-  | cons _ _ ih => rw [cons_append, ih]
-
-@[simp]
 theorem nil_append {u v : V} (p : G.Walk u v) : nil.append p = p :=
   rfl
+
+@[simp]
+theorem append_nil {u v : V} (p : G.Walk u v) : p.append nil = p := by
+  induction p with
+  | nil => rw [nil_append]
+  | cons _ _ ih => rw [cons_append, ih]
 
 theorem append_assoc {u v w x : V} (p : G.Walk u v) (q : G.Walk v w) (r : G.Walk w x) :
     p.append (q.append r) = (p.append q).append r := by
   induction p with
-  | nil => rfl
-  | cons h p' ih =>
-    dsimp only [append]
-    rw [ih]
+  | nil => rw [nil_append, nil_append]
+  | cons h p' ih => rw [cons_append, cons_append, cons_append, ih]
 
 @[simp]
 theorem append_copy_copy {u v w u' v' w'} (p : G.Walk u v) (q : G.Walk v w)
@@ -664,9 +660,8 @@ theorem head_darts_fst {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.da
 theorem getLast_darts_snd {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.darts ≠ []) :
     (p.darts.getLast hp).snd = b := by
   rw [← List.getLast_map (f := fun x : G.Dart ↦ x.snd)]
-  simp_rw [p.map_snd_darts, List.getLast_tail]
-  exact p.getLast_support
-  simpa
+  · simp_rw [p.map_snd_darts, List.getLast_tail, p.getLast_support]
+  · simpa
 
 @[simp]
 theorem edges_nil {u : V} : (nil : G.Walk u u).edges = [] := rfl

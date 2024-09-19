@@ -168,6 +168,12 @@ theorem blocks_pos' (i : ℕ) (h : i < c.length) : 0 < c.blocks[i] :=
 theorem one_le_blocksFun (i : Fin c.length) : 1 ≤ c.blocksFun i :=
   c.one_le_blocks (c.blocksFun_mem_blocks i)
 
+theorem blocksFun_le {n} (c : Composition n) (i : Fin c.length) :
+    c.blocksFun i ≤ n := by
+  have := c.blocks_sum
+  have := List.le_sum_of_mem (c.blocksFun_mem_blocks i)
+  simp_all
+
 theorem length_le : c.length ≤ n := by
   conv_rhs => rw [← c.blocks_sum]
   exact length_le_sum_of_one_le _ fun i hi => c.one_le_blocks hi
