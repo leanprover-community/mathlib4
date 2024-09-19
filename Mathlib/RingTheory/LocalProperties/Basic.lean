@@ -63,6 +63,10 @@ section RingHom
 
 variable (P : ∀ {R S : Type u} [CommRing R] [CommRing S] (_ : R →+* S), Prop)
 
+/-- A property `P` of ring homs is said to contain identities if `P` holds
+for the identity homomorphism of every ring. -/
+def RingHom.ContainsIdentities := ∀ (R : Type u) [CommRing R], P (RingHom.id R)
+
 /-- A property `P` of ring homs is said to be preserved by localization
  if `P` holds for `M⁻¹R →+* M⁻¹S` whenever `P` holds for `R →+* S`. -/
 def RingHom.LocalizationPreserves :=
@@ -81,7 +85,7 @@ def RingHom.OfLocalizationFiniteSpan :=
   ∀ ⦃R S : Type u⦄ [CommRing R] [CommRing S] (f : R →+* S) (s : Finset R)
     (_ : Ideal.span (s : Set R) = ⊤) (_ : ∀ r : s, P (Localization.awayMap f r)), P f
 
-/-- A property `P` of ring homs satisfies `RingHom.OfLocalizationSpan`
+/-- A property `P` of ring homs satisfies `RingHom.OfLocalizationFiniteSpan`
 if `P` holds for `R →+* S` whenever there exists a set `{ r }` that spans `R` such that
 `P` holds for `Rᵣ →+* Sᵣ`.
 
@@ -96,6 +100,15 @@ def RingHom.OfLocalizationSpan :=
 def RingHom.HoldsForLocalizationAway : Prop :=
   ∀ ⦃R : Type u⦄ (S : Type u) [CommRing R] [CommRing S] [Algebra R S] (r : R)
     [IsLocalization.Away r S], P (algebraMap R S)
+
+/-- A property `P` of ring homs satisfies `RingHom.StableUnderCompositionWithLocalizationAway`
+if whenever `P` holds for `f` it also holds for the composition with
+localization maps on the left and on the right. -/
+def RingHom.StableUnderCompositionWithLocalizationAway : Prop :=
+  (∀ ⦃R S : Type u⦄ (T : Type u) [CommRing R] [CommRing S] [CommRing T] [Algebra S T] (s : S)
+    [IsLocalization.Away s T] (f : R →+* S), P f → P ((algebraMap S T).comp f)) ∧
+    ∀ ⦃R : Type u⦄ (S : Type u) ⦃T : Type u⦄ [CommRing R] [CommRing S] [CommRing T] [Algebra R S]
+      (r : R) [IsLocalization.Away r S] (f : S →+* T), P f → P (f.comp (algebraMap R S))
 
 /-- A property `P` of ring homs satisfies `RingHom.OfLocalizationFiniteSpanTarget`
 if `P` holds for `R →+* S` whenever there exists a finite set `{ r }` that spans `S` such that
@@ -129,8 +142,7 @@ each `{ r }` that spans `S`, we have `P (R →+* S) ↔ ∀ r, P (R →+* Sᵣ)`
 structure RingHom.PropertyIsLocal : Prop where
   LocalizationPreserves : RingHom.LocalizationPreserves @P
   OfLocalizationSpanTarget : RingHom.OfLocalizationSpanTarget @P
-  StableUnderComposition : RingHom.StableUnderComposition @P
-  HoldsForLocalizationAway : RingHom.HoldsForLocalizationAway @P
+  StableUnderCompositionWithLocalizationAway : RingHom.StableUnderCompositionWithLocalizationAway @P
 
 theorem RingHom.ofLocalizationSpan_iff_finite :
     RingHom.OfLocalizationSpan @P ↔ RingHom.OfLocalizationFiniteSpan @P := by
@@ -167,15 +179,33 @@ theorem RingHom.HoldsForLocalizationAway.of_bijective
 
 variable {P f R' S'}
 
+lemma RingHom.StableUnderComposition.stableUnderCompositionWithLocalizationAway
+    (hPc : RingHom.StableUnderComposition P) (hPl : HoldsForLocalizationAway P) :
+    StableUnderCompositionWithLocalizationAway P := by
+  constructor
+  · introv _ hf
+    exact hPc _ _ hf (hPl T s)
+  · introv _ hf
+    exact hPc _ _ (hPl S r) hf
+
+lemma RingHom.HoldsForLocalizationAway.containsIdentities (hPl : HoldsForLocalizationAway P) :
+    ContainsIdentities P := by
+  introv R
+  exact hPl.of_bijective _ _ Function.bijective_id
+
 theorem RingHom.PropertyIsLocal.respectsIso (hP : RingHom.PropertyIsLocal @P) :
     RingHom.RespectsIso @P := by
-  apply hP.StableUnderComposition.respectsIso
-  introv
-  letI := e.toRingHom.toAlgebra
-  -- Porting note: was `apply_with hP.holds_for_localization_away { instances := ff }`
-  have : IsLocalization.Away (1 : R) S := by
-    apply IsLocalization.away_of_isUnit_of_bijective _ isUnit_one e.bijective
-  exact RingHom.PropertyIsLocal.HoldsForLocalizationAway hP S (1 : R)
+  constructor
+  · intro R S T _ _ _ f e hf
+    letI := e.toRingHom.toAlgebra
+    have : IsLocalization.Away (1 : S) T :=
+      IsLocalization.away_of_isUnit_of_bijective _ isUnit_one e.bijective
+    exact hP.StableUnderCompositionWithLocalizationAway.left T (1 : S) f hf
+  · intro R S T _ _ _ f e hf
+    letI := e.toRingHom.toAlgebra
+    have : IsLocalization.Away (1 : R) S :=
+      IsLocalization.away_of_isUnit_of_bijective _ isUnit_one e.bijective
+    exact hP.StableUnderCompositionWithLocalizationAway.right S (1 : R) f hf
 
 -- Almost all arguments are implicit since this is not intended to use mid-proof.
 theorem RingHom.LocalizationPreserves.away (H : RingHom.LocalizationPreserves @P) (r : R)
@@ -184,6 +214,15 @@ theorem RingHom.LocalizationPreserves.away (H : RingHom.LocalizationPreserves @P
   have : IsLocalization ((Submonoid.powers r).map f) S' := by rw [Submonoid.map_powers]; assumption
   exact H f (Submonoid.powers r) R' S' hf
 
+lemma RingHom.PropertyIsLocal.HoldsForLocalizationAway (hP : RingHom.PropertyIsLocal @P)
+    (hPi : ContainsIdentities P) :
+    RingHom.HoldsForLocalizationAway @P := by
+  introv R _
+  have : algebraMap R S = (algebraMap R S).comp (RingHom.id R) := by simp
+  rw [this]
+  apply (hP.StableUnderCompositionWithLocalizationAway).left S r
+  apply hPi
+
 theorem RingHom.PropertyIsLocal.ofLocalizationSpan (hP : RingHom.PropertyIsLocal @P) :
     RingHom.OfLocalizationSpan @P := by
   introv R hs hs'
@@ -191,9 +230,10 @@ theorem RingHom.PropertyIsLocal.ofLocalizationSpan (hP : RingHom.PropertyIsLocal
   rw [Ideal.map_span, Ideal.map_top] at hs
   apply hP.OfLocalizationSpanTarget _ _ hs
   rintro ⟨_, r, hr, rfl⟩
-  convert hP.StableUnderComposition
-    _ _ (hP.HoldsForLocalizationAway (Localization.Away r) r) (hs' ⟨r, hr⟩) using 1
-  exact (IsLocalization.map_comp _).symm
+  rw [← IsLocalization.map_comp (M := Submonoid.powers r) (S := Localization.Away r)
+    (T := Submonoid.powers (f r))]
+  apply hP.StableUnderCompositionWithLocalizationAway.right _ r
+  exact hs' ⟨r, hr⟩
 
 lemma RingHom.OfLocalizationSpanTarget.ofIsLocalization
     (hP : RingHom.OfLocalizationSpanTarget P) (hP' : RingHom.RespectsIso P)
