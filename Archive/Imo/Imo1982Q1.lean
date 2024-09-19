@@ -22,10 +22,22 @@ The solution is based on the one at the
 [Art of Problem Solving](https://artofproblemsolving.com/wiki/index.php/1982_IMO_Problems/Problem_1)
 website.
 
-We prove that $f(mn) \geq nf(m)$ and $f(m) + f(n) ≤ f(m + n)$
-to establish both that $f(1980) ≤ 660$ and that these properties added with $f(9999) = 3333$
-to establish that $f(1980) ≥ 660$.
-Both these together allow to conclude $f(1980) = 660$ and then eventually determine $f(1982) = 660$.
+We prove the helper lemmas:
+1. $nf(m) \leq f(mn)$
+2. $f(m) + f(n) \leq f(m + n)$
+3. $a f(a) + c f(d) \leq f(a \cdot b + c \cdot d)$ (derived from 1. and 2.)
+
+So we can establish on the one hand that $f(1980) \leq 660$,
+by observing that $660\cdot 1 = 660 f(3) \leq f(1980) = f(660\cdot 3)$.
+
+On the other hand, we establish that $f(1980) \geq 660$
+from $5 \cdot f(1980) + 33\cdot f(3) \leq  f(5\cdot 1980 + 33\cdot 1) = f(9999) = 3333 $
+
+We then conclude $f(1980) = 660$ and then eventually determine that either
+$f(1982) = 660$ or $f(1982) = 661$.
+
+In the latter case we derive a contradiction, because if $f(1982) = 661$ then
+$3334 = 5\cdot f(1982) + 29\cdot f(3) + f(2) \leq f(5\cdot 1982 + 29\cdot 3 + 2) = f(9999) = 3333$
 -/
 
 namespace Imo1982Q1
@@ -57,7 +69,7 @@ lemma f₃ : f 3 = 1 := by
     rw [or_iff_right (not_left)] at h
     exact h
 
-lemma superhomogeneity {m n : ℕ+} : ↑n * f m ≤ f (n * m) := by
+lemma superhomogenous {m n : ℕ+} : ↑n * f m ≤ f (n * m) := by
   induction n using PNat.recOn
   case p1 => simp
   case hp n' ih =>
@@ -79,10 +91,10 @@ lemma superadditive {m n : ℕ+} : f m + f n ≤ f (m + n) := by
   · rw [hr]; nth_rewrite 1 [← add_zero (f n), ← add_assoc]; apply add_le_add_right (by norm_num)
 
 lemma superlinear {a b c d : ℕ+} : a * f b + c * f d ≤ f (a * b + c * d) :=
-  (add_le_add hf.superhomogeneity hf.superhomogeneity).trans hf.superadditive
+  (add_le_add hf.superhomogenous hf.superhomogenous).trans hf.superadditive
 
 lemma part_1 : 660 ≤ f (1980) := by
-  rw [← mul_one (660), ← PNat.val_ofNat 660, ← hf.f₃]; apply hf.superhomogeneity
+  rw [← mul_one (660), ← PNat.val_ofNat 660, ← hf.f₃]; apply hf.superhomogenous
 
 lemma part_2 : f 1980 ≤ 660 := by
   have h : 5 * f 1980 + 33 * f 3 ≤ 5 * 660 + 33 := by
