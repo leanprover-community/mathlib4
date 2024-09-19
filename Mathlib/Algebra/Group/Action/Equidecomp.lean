@@ -5,6 +5,7 @@ Authors: Felix Weilacher
 -/
 import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Data.Finset.Pointwise.Basic
+import Mathlib.Logic.Equiv.PartialEquiv
 
 /-!
 # Equidecompositions
@@ -24,129 +25,106 @@ Let `G` be a group acting on a space `X`, and `A B : Set X`.
   (up to the choice of group elements) definition: an *Equidecomposition* of `A` and `B` is a
   bijection `f : A ≃ B` such that for some `S : Finset G`, `f a ∈ S • a` for all `a`.
 
-  We take this as our definition as it is easier to work with. `Equidecomp G A B` is the
-  type of such equidecompositions. TODO: Prove this equivalence
-
-  Finally, we define the notation `A ≃ₑ[G] B` for `Equidecomp G A B`.
-
-* An *Embeddidecomposition* of `A` into `B` is an equidecomposition of `A` with a subset of `B`.
-  Equivalently, it is an injection `A ↪ B` with the property above.
-
-  We take this as our definition. `Embeddidecomp G A B` is the type of such equidecompositions.
-  For the less trivial direction of the equivalence, see `Embeddidecomp.equidecompRange`.
-
-  Finally, we define the notation `A ↪ₑ[G] B` for `Embeddidecomp G A B`.
+  We take this as our definition as it is easier to work with. It is implemented as an element
+  `PartialEquiv X X` with source `A` and target `B`.
 
 ## Implementation Notes
 
+* Equidecompositions are implemented as elements of `PartialEquiv X X` together with a
+  `Finset` of elements of the acting group and a proof that every point in the source is moved
+  by an element in the finset.
+
 * The requirement that `G` be a group is relaxed where possible.
 
-* We introduce a non-standard predicate, `Decomp`, to state that a function satisfies the main
-  combinatorial property of equidecompositions, even if it is not injective/surjective. This helps
-  unify lemmas about Equi- and Embeddi- decompositions.
+* We introduce a non-standard predicate, `DecompOn`, to state that a function satisfies the main
+  combinatorial property of equidecompositions, even if it is not injective or surjective.
 
 -/
 
 variable {X G : Type*} {A B C: Set X}
 
-open Function Set Pointwise
+open Function Set Pointwise PartialEquiv
+
+namespace Equidecomp
 
 section SMul
 
 variable [SMul G X]
 
 --Should this be private?
-/-- Let `G` act on a space `X` and `A B : Set X`. We say `f : A → B` is a `Decomp` function
+/-- Let `G` act on a space `X` and `A : Set X`. We say `f : X → X` is a `DecompOn` `A`
 as witnessed by some `S : Finset G` if for all `a ∈ A`, the value `f a` can be obtained
 by applying some element of `S` to `a` instead.
 
-More familiarly, `f` is the result of paritioning `A` into finitely many pieces, then
-applying a single element of `G` to each piece. -/
-def Decomp (f : A → B) (S : Finset G) : Prop :=  ∀ a : A, ∃ g ∈ S, f a = g • (a : X)
+More familiarly, the restriction of `f` to `A` is the result of paritioning `A` into finitely many
+pieces, then applying a single element of `G` to each piece. -/
+def DecompOn (f : X → X) (A : Set X) (S : Finset G) : Prop :=  ∀ a ∈ A, ∃ g ∈ S, f a = g • a
 
-variable (G)
+variable (X G)
 
-/-- Let `G` act on a space `X` and `A B : Set X`. We say an injective function `f : A → B`
-is an *embeddidecomposition* if for some `S : Finset G`, for all `a ∈ A`, the value `f a` can be
-obtained by applying some element of `S` to `a` instead.
+/-- Let `G` act on a space `X`. An `Equidecomposition` with respect to `X` and `G` is a partial
+bijection `f : PartialEquiv X X` with the property that for some set `elements : Finset G`,
+(which we record), for each `a ∈ f.source`, `f a` can be obtained by applying some `g ∈ elements`
+instead. We call `f` an equidecomposition of `f.source` with `f.target`.
 
-Equivalently, `f` is an equidecomposition between `A` and a subset of `B`.
-See `Embeddidecomp.equidecompRange`. -/
-structure Embeddidecomp (A B : Set X) where
-  /-- The underlying function-/
-  toFun : A → B
-  injective' : Injective toFun
-  decomp : ∃ S : Finset G, Decomp toFun S
-
-/-- Let `G` act on a space `X` and `A B : Set X`. We say a bijection `f : A → B`
-is an *equidecomposition* if for some `S : Finset G`, for all `a ∈ A`, the value `f a` can be
-obtained by applying some element of `S` to `a` instead.
-
-More familiarly, `f` is the result of paritioning `A` into finitely many pieces, then applying
-a single elementof `G` to each piece to obtain a partition of `B`. TODO: Prove this equivalence.
+More familiarly, `f` is the result of partitioning `f.source` into finitely many pieces,
+then applying a single element of `G` to each to get a partition of `f.target`.
 -/
-structure Equidecomp (A B : Set X) extends A ≃ B where
-  decomp : ∃ S : Finset G, Decomp toFun S
+structure _root_.Equidecomp extends PartialEquiv X X where
+  decomp' : ∃ S : Finset G, DecompOn toFun source S
 
-/-- The type of embeddidecompositions from `A` to `B` with respect to the action by `G`.-/
-notation:50 A " ↪ₑ[" G:50 "] " B:50 => Embeddidecomp G A B
+variable {X G}
 
-/-- The type of equidecompositions from `A` to `B` with respect to the action by `G`.-/
-notation:50 A " ≃ₑ[" G:50 "] " B:50 => Equidecomp G A B
+/-- Note that `Equidecomp X G` is not `FunLike`. -/
+instance : CoeFun (Equidecomp X G) fun _ => X → X := ⟨fun f => f.toFun⟩
 
-variable {G}
+/-- A finite set of group elements witnessing that `f` is an equidecomposition. -/
+noncomputable
+def elements (f : Equidecomp X G) := f.decomp'.choose
 
-instance Embeddidecomp.instFunLike : FunLike (A ↪ₑ[G] B) A B where
-  coe f := f.toFun
-  coe_injective' f g h := by cases f; cases g; congr;
+theorem decomp (f : Equidecomp X G) : DecompOn f f.source f.elements := f.decomp'.choose_spec
 
-@[ext] theorem Embeddidecomp.ext {f g : A ↪ₑ[G] B} (h : ∀ x, f x = g x) : f = g :=
-  DFunLike.ext f g h
+@[simp]
+theorem toFun_eq_coe (f : Equidecomp X G) : f.toFun = f := rfl
 
-instance Embeddidecomp.instEmbeddingLike : EmbeddingLike (A ↪ₑ[G] B) A B where
-  injective' f := f.injective'
+@[simp]
+theorem map_source {f : Equidecomp X G} {x : X} (h : x ∈ f.source) :
+    f x ∈ f.target := f.toPartialEquiv.map_source h
 
-instance Equidecomp.instEquivLike : EquivLike (A ≃ₑ[G] B) A B where
-  coe f := f.toEquiv
-  inv f := f.toEquiv.symm
-  left_inv f := f.toEquiv.left_inv
-  right_inv f := f.toEquiv.right_inv
-  coe_injective' f g h₁ h₂ := by cases f; cases g; congr; exact EquivLike.coe_injective' _ _ h₁ h₂
+private theorem ext' {f f' : Equidecomp X G} (h_equiv : f.toPartialEquiv = f'.toPartialEquiv)
+    : f = f' := by
+  let ⟨_, _, _⟩ := f
+  congr
 
-@[ext] theorem Equidecomp.ext {f g : A ≃ₑ[G] B} (h : ∀ x, f x = g x) : f = g := DFunLike.ext f g h
+theorem DecompOn.mono {f f' : X → X} {A A' : Set X} {S : Finset G} (h : DecompOn f A S)
+    (hA' : A' ⊆ A) (hf' : EqOn f f' A') : DecompOn f' A' S := by
+  intro a ha
+  rcases h _ (hA' ha) with ⟨γ, γ_mem, hγ⟩
+  use γ, γ_mem
+  rwa [← hf' ha]
 
-theorem Embeddidecomp.def (f : A ↪ₑ[G] B) : ∃ S : Finset G, Decomp f S := f.decomp
+/-- The restriction of an equidecomposition is an equidecomposition. -/
+def restr (f : Equidecomp X G) (A : Set X) : Equidecomp X G where
+  toPartialEquiv := f.toPartialEquiv.restr A
+  decomp' := ⟨f.elements,
+    f.decomp.mono (restr_source_subset_source _ _) (by exact fun ⦃x⦄ ↦ congrFun rfl)⟩
 
-theorem Equidecomp.def (f : A ≃ₑ[G] B) : ∃ S : Finset G, Decomp f S := f.decomp
+@[simp]
+theorem restr_toPartialEquiv (f : Equidecomp X G) (A : Set X) :
+    (f.restr A).toPartialEquiv = f.toPartialEquiv.restr A := rfl
 
-/-- An equidecomposition is an embeddidecomposition-/
-def Equidecomp.embeddidecomp (f : A ≃ₑ[G] B) : A ↪ₑ[G] B where
-  toFun := f.toFun
-  injective' := EquivLike.injective f
-  decomp := f.decomp
+theorem restr_source (f : Equidecomp X G) (A : Set X) : (f.restr A).source = f.source ∩ A := rfl
 
-theorem Decomp.mono {f : A → B} {S : Finset G} (h : Decomp f S)
-    {A' B': Set X} (hA' : A' ⊆ A) (hB' : B' ⊆ B) (f' : A' → B')
-    (hf' : ∀ a : A', (inclusion hB') (f' a) = f (inclusion hA' a)) : Decomp f' S := by
-  intro a
-  rcases h (inclusion hA' a) with ⟨g, gmem, hg⟩
-  use g, gmem
-  rw [coe_inclusion] at hg
-  rw [← hg, ← hf', coe_inclusion]
+theorem restr_source_of_subset (f : Equidecomp X G) {A : Set X} (hA : A ⊆ f.source) :
+    (f.restr A).source = A := by rw [restr_source, inter_eq_self_of_subset_right hA]
 
-/-- An embeddidecomposition is an equidecomposition with its range. -/
-noncomputable def Embeddidecomp.equidecompRange (f : A ↪ₑ[G] B) :
-    A ≃ₑ[G] (range <| Subtype.val ∘ f) where
-  toEquiv := Equiv.ofInjective (Subtype.val ∘ f) (Subtype.val_injective.comp f.injective')
-  decomp := by
-    rcases f.decomp with ⟨S, hS⟩
-    refine ⟨S, hS.mono ?_ ?_ _ ?_⟩
-    · rfl
-    · refine (range_comp_subset_range _ _).trans ?_
-      rw [Subtype.range_val]
-    intro a
-    simp only [Equiv.toFun_as_coe, Equiv.ofInjective_apply, comp_apply, Subtype.map_id, id_eq]
-    rfl
+theorem restr_eq_of_source_subset {f : Equidecomp X G} {A : Set X} (hA : f.source ⊆ A) :
+    f.restr A = f :=
+  Equidecomp.ext' (by rw [restr_toPartialEquiv, PartialEquiv.restr_eq_of_source_subset hA])
+
+@[simp]
+theorem restr_univ (f : Equidecomp X G) : f.restr univ = f :=
+  restr_eq_of_source_subset <| subset_univ _
 
 end SMul
 
@@ -156,43 +134,60 @@ section Monoid
 
 variable [Monoid G] [MulAction G X]
 
+variable (X G)
+
+/-- The identity function is an equidecomposition of the space with itself. -/
+def refl : Equidecomp X G where
+  toPartialEquiv := PartialEquiv.refl _
+  decomp' := ⟨{1}, by simp [DecompOn]⟩
+
+@[simp]
+theorem refl_toPartialEquiv : (Equidecomp.refl X G).toPartialEquiv = PartialEquiv.refl X := rfl
+
+variable {X}
+
 /-- The identity function is an equidecomposition of any set with itself. -/
-def Equidecomp.refl (A : Set X) : A ≃ₑ[G] A where
-  toEquiv := Equiv.refl A
-  decomp := ⟨{1}, by simp [Decomp]⟩
+def reflSet (A : Set X) : Equidecomp X G := (Equidecomp.refl X G).restr A
 
-@[simp] theorem Equidecomp.coe_refl (A : Set X) : ↑(Equidecomp.refl A (G := G)) = id := rfl
+theorem reflSet_source (A : Set X) : (reflSet G A).source = A :=
+  restr_source_of_subset _ <| subset_univ _
 
-theorem Decomp.comp  {g : B → C} {f : A → B} {T S : Finset G}
-    (hg : Decomp g T) (hf : Decomp f S) : Decomp (g ∘ f) (T * S) := by
-  intro a
-  rcases hf a with ⟨γ, γ_mem, hγ⟩
-  rcases hg (f a) with ⟨δ, δ_mem, hδ⟩
+@[simp]
+theorem reflSet_toPartialEquiv (A : Set X) :
+    (reflSet G A).toPartialEquiv = PartialEquiv.ofSet A := by
+  ext ; rfl ; rfl ; rw [reflSet_source, ofSet_source]
+
+theorem reflSet_target (A : Set X) : (reflSet G A).target = A := by
+  rw [reflSet_toPartialEquiv, ofSet_target]
+
+variable {G}
+
+theorem DecompOn.comp' {g f : X → X} {B A : Set X} {T S : Finset G}
+    (hg : DecompOn g B T) (hf : DecompOn f A S) : DecompOn (g ∘ f) (A ∩ f ⁻¹' B) (T * S)  := by
+  intro _ ⟨aA, aB⟩
+  rcases hf _ aA with ⟨γ, γ_mem, hγ⟩
+  rcases hg _ aB with ⟨δ, δ_mem, hδ⟩
   use δ * γ, Finset.mul_mem_mul δ_mem γ_mem
-  rw [mul_smul, ← hγ, ← hδ]
-  rfl
+  rwa [mul_smul, ← hγ]
 
-/-- The composition of two embeddidecompositions is an embeddidecomposition.-/
-def Embeddidecomp.trans (f : A ↪ₑ[G] B) (g : B ↪ₑ[G] C) : A ↪ₑ[G] C where
-  toFun := g ∘ f
-  injective' := g.injective'.comp f.injective'
-  decomp := by
-    rcases f.decomp with ⟨S, hS⟩
-    rcases g.decomp with ⟨T, hT⟩
-    exact ⟨T * S, hT.comp hS⟩
+theorem DecompOn.comp {g f : X → X} {B A : Set X} {T S : Finset G}
+    (hg : DecompOn g B T) (hf : DecompOn f A S) (h : MapsTo f A B) :
+    DecompOn (g ∘ f) A (T * S)  := by
+  rw [left_eq_inter.mpr h]
+  exact hg.comp' hf
 
 /-- The composition of two equidecompositions is an equidecomposition.-/
-def Equidecomp.trans (f : A ≃ₑ[G] B) (g : B ≃ₑ[G] C) : A ≃ₑ[G] C where
-  toEquiv := f.toEquiv.trans g.toEquiv
-  decomp := by
-    rcases f.decomp with ⟨S, hS⟩
-    rcases g.decomp with ⟨T, hT⟩
-    exact ⟨T * S, hT.comp hS⟩
+@[trans]
+noncomputable def trans (f g : Equidecomp X G) : Equidecomp X G where
+  toPartialEquiv := f.toPartialEquiv.trans g.toPartialEquiv
+  decomp' := ⟨g.elements * f.elements, g.decomp.comp' f.decomp⟩
 
-@[simp] theorem Embeddidecomp.coe_trans (f : A ↪ₑ[G] B) (g : B ↪ₑ[G] C) :
-    ↑(f.trans g) = g ∘ f := rfl
+@[simp] theorem trans_toPartialEquiv (f g : Equidecomp X G) :
+    (f.trans g).toPartialEquiv = f.toPartialEquiv.trans g.toPartialEquiv := rfl
 
-@[simp] theorem Equidecomp.coe_trans (f : A ≃ₑ[G] B) (g : B ≃ₑ[G] C) : ↑(f.trans g) = g ∘ f := rfl
+@[simp] theorem coe_trans (f g : Equidecomp X G) : ↑(f.trans g) = g ∘ f := rfl
+
+theorem trans_apply (f g : Equidecomp X G) (x : X) : (f.trans g) x = g (f x) := rfl
 
 end Monoid
 
@@ -200,19 +195,50 @@ section Group
 
 variable [Group G] [MulAction G X]
 
-theorem Decomp.of_rightInverse {f : A → B} {g : B → A} {S : Finset G}
-    (hf : Decomp f S) (h : RightInverse g f) : Decomp g S⁻¹ := by
-  intro b
-  rcases hf (g b) with ⟨γ, γ_mem, hγ⟩
+theorem DecompOn.of_leftInvOn {f g : X → X} {A : Set X} {S : Finset G}
+    (hf : DecompOn f A S) (h : LeftInvOn g f A) : DecompOn g (f '' A) S⁻¹ := by
+  rintro _ ⟨a, ha, rfl⟩
+  rcases hf a ha with ⟨γ, γ_mem, hγ⟩
   use γ⁻¹, Finset.inv_mem_inv γ_mem
-  apply smul_left_cancel γ
-  rw [smul_inv_smul, ← hγ, h]
+  rw [hγ, inv_smul_smul, ← hγ, h ha]
+
 
 /-- The inverse function of an equidecomposition is an equidecomposition.-/
-def Equidecomp.symm (f : A ≃ₑ[G] B) : B ≃ₑ[G] A where
-  toEquiv := f.toEquiv.symm
-  decomp := by
-    rcases f.decomp with ⟨S, hS⟩
-    refine ⟨S⁻¹, hS.of_rightInverse <| Equiv.right_inv' _⟩
+@[symm]
+noncomputable def symm (f : Equidecomp X G) : Equidecomp X G where
+  toPartialEquiv := f.toPartialEquiv.symm
+  decomp' := ⟨f.elements⁻¹, by
+    convert f.decomp.of_leftInvOn f.leftInvOn
+    rw [image_source_eq_target, symm_source]⟩
+
+@[simp]
+theorem invFun_eq_coe (f : Equidecomp X G) : f.invFun = f.symm := rfl
+
+@[simp]
+theorem map_target {f : Equidecomp X G} {x : X} (h : x ∈ f.target) :
+    f.symm x ∈ f.source := f.toPartialEquiv.map_target h
+
+@[simp]
+theorem left_inv {f : Equidecomp X G} {x : X} (h : x ∈ f.source) :
+    f.symm (f x) = x := f.toPartialEquiv.left_inv h
+
+@[simp]
+theorem right_inv {f : Equidecomp X G} {x : X} (h : x ∈ f.target) :
+    f (f.symm x) = x := f.toPartialEquiv.right_inv h
+
+@[simp]
+theorem symm_toPartialEquiv (f : Equidecomp X G) :
+    f.symm.toPartialEquiv = f.toPartialEquiv.symm := rfl
+
+@[simp]
+theorem symm_symm (f : Equidecomp X G) : f.symm.symm = f := rfl
+
+@[simp]
+theorem refl_symm : (refl X G).symm = refl X G := rfl
+
+@[simp]
+theorem reflSet_symm (A : Set X) : (reflSet G A).symm = reflSet G A := rfl
 
 end Group
+
+end Equidecomp
