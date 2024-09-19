@@ -264,6 +264,7 @@ variable {k K : Type*} [Field k] [Field K] [Algebra k K]
 namespace InfiniteGalois
 
 variable (k K) in
+/--`finGalFunctor` composite with the forgetful functor from `FiniteGrp` to `ProfiniteGrp`-/
 noncomputable abbrev profinGalFunctor : (FiniteGaloisIntermediateField k K)ᵒᵖ ⥤ ProfiniteGrp :=
     (finGalFunctor k K) ⋙ forget₂ FiniteGrp ProfiniteGrp
 
