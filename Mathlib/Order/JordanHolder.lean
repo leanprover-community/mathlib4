@@ -13,16 +13,16 @@ import Mathlib.Order.RelSeries
 /-!
 # Jordan-Hölder Theorem
 
-This file proves the Jordan Hölder theorem for a `JordanHolderLattice`, a class also defined in
-this file. Examples of `JordanHolderLattice` include `Subgroup G` if `G` is a group, and
+This file proves the Jordan Hölder theorem for a `JordanHoelderLattice`, a class also defined in
+this file. Examples of `JordanHoelderLattice` include `Subgroup G` if `G` is a group, and
 `Submodule R M` if `M` is an `R`-module. Using this approach the theorem need not be proved
 separately for both groups and modules, the proof in this file can be applied to both.
 
 ## Main definitions
-The main definitions in this file are `JordanHolderLattice` and `CompositionSeries`,
+The main definitions in this file are `JordanHoelderLattice` and `CompositionSeries`,
 and the relation `Equivalent` on `CompositionSeries`
 
-A `JordanHolderLattice` is the class for which the Jordan Hölder theorem is proved. A
+A `JordanHoelderLattice` is the class for which the Jordan Hölder theorem is proved. A
 Jordan Hölder lattice is a lattice equipped with a notion of maximality, `IsMaximal`, and a notion
 of isomorphism of pairs `Iso`. In the example of subgroups of a group, `IsMaximal H K` means that
 `H` is a maximal normal subgroup of `K`, and `Iso (H₁, K₁) (H₂, K₂)` means that the quotient
@@ -42,30 +42,30 @@ Two `CompositionSeries X`, `s₁` and `s₂` are equivalent if there is a biject
 
 ## Main theorems
 
-The main theorem is `CompositionSeries.jordan_holder`, which says that if two composition
+The main theorem is `CompositionSeries.jordan_hoelder`, which says that if two composition
 series have the same least element and the same largest element,
 then they are `Equivalent`.
 
 ## TODO
 
-Provide instances of `JordanHolderLattice` for subgroups, and potentially for modular lattices.
+Provide instances of `JordanHoelderLattice` for subgroups, and potentially for modular lattices.
 
 It is not entirely clear how this should be done. Possibly there should be no global instances
-of `JordanHolderLattice`, and the instances should only be defined locally in order to prove
+of `JordanHoelderLattice`, and the instances should only be defined locally in order to prove
 the Jordan-Hölder theorem for modules/groups and the API should be transferred because many of the
 theorems in this file will have stronger versions for modules. There will also need to be an API for
 mapping composition series across homomorphisms. It is also probably possible to
-provide an instance of `JordanHolderLattice` for any `ModularLattice`, and in this case the
+provide an instance of `JordanHoelderLattice` for any `ModularLattice`, and in this case the
 Jordan-Hölder theorem will say that there is a well defined notion of length of a modular lattice.
-However an instance of `JordanHolderLattice` for a modular lattice will not be able to contain
+However an instance of `JordanHoelderLattice` for a modular lattice will not be able to contain
 the correct notion of isomorphism for modules, so a separate instance for modules will still be
 required and this will clash with the instance for modular lattices, and so at least one of these
 instances should not be a global instance.
 
 > [!NOTE]
-> The previous paragraph indicates that the instance of `JordanHolderLattice` for submodules should
+> The previous paragraph indicates that the instance of `JordanHoelderLattice` for submodules should
 > be obtained via `ModularLattice`. This is not the case in `mathlib4`.
-> See `JordanHolderModule.instJordanHolderLattice`.
+> See `JordanHolderModule.instJordanHoelderLattice`.
 -/
 
 
@@ -73,7 +73,7 @@ universe u
 
 open Set RelSeries
 
-/-- A `JordanHolderLattice` is the class for which the Jordan Hölder theorem is proved. A
+/-- A `JordanHoelderLattice` is the class for which the Jordan Hölder theorem is proved. A
 Jordan Hölder lattice is a lattice equipped with a notion of maximality, `IsMaximal`, and a notion
 of isomorphism of pairs `Iso`. In the example of subgroups of a group, `IsMaximal H K` means that
 `H` is a maximal normal subgroup of `K`, and `Iso (H₁, K₁) (H₂, K₂)` means that the quotient
@@ -81,7 +81,7 @@ of isomorphism of pairs `Iso`. In the example of subgroups of a group, `IsMaxima
 satisfy the second isomorphism theorem `Iso (H, H ⊔ K) (H ⊓ K, K)`.
 Examples include `Subgroup G` if `G` is a group, and `Submodule R M` if `M` is an `R`-module.
 -/
-class JordanHolderLattice (X : Type u) [Lattice X] where
+class JordanHoelderLattice (X : Type u) [Lattice X] where
   IsMaximal : X → X → Prop
   lt_of_isMaximal : ∀ {x y}, IsMaximal x y → x < y
   sup_eq_of_isMaximal : ∀ {x y z}, IsMaximal x z → IsMaximal y z → x ≠ y → x ⊔ y = z
@@ -92,9 +92,9 @@ class JordanHolderLattice (X : Type u) [Lattice X] where
   iso_trans : ∀ {x y z}, Iso x y → Iso y z → Iso x z
   second_iso : ∀ {x y}, IsMaximal x (x ⊔ y) → Iso (x, x ⊔ y) (x ⊓ y, y)
 
-namespace JordanHolderLattice
+namespace JordanHoelderLattice
 
-variable {X : Type u} [Lattice X] [JordanHolderLattice X]
+variable {X : Type u} [Lattice X] [JordanHoelderLattice X]
 
 theorem isMaximal_inf_right_of_isMaximal_sup {x y : X} (hxz : IsMaximal x (x ⊔ y))
     (hyz : IsMaximal y (x ⊔ y)) : IsMaximal (x ⊓ y) y := by
@@ -115,27 +115,27 @@ theorem IsMaximal.iso_refl {x y : X} (h : IsMaximal x y) : Iso (x, y) (x, y) :=
   second_iso_of_eq h (sup_eq_right.2 (le_of_lt (lt_of_isMaximal h)))
     (inf_eq_left.2 (le_of_lt (lt_of_isMaximal h)))
 
-end JordanHolderLattice
+end JordanHoelderLattice
 
-open JordanHolderLattice
+open JordanHoelderLattice
 
 attribute [symm] iso_symm
 
 attribute [trans] iso_trans
 
 /-- A `CompositionSeries X` is a finite nonempty series of elements of a
-`JordanHolderLattice` such that each element is maximal inside the next. The length of a
+`JordanHoelderLattice` such that each element is maximal inside the next. The length of a
 `CompositionSeries X` is one less than the number of elements in the series.
 Note that there is no stipulation that a series start from the bottom of the lattice and finish at
 the top. For a composition series `s`, `s.last` is the largest element of the series,
 and `s.head` is the least element.
 -/
-abbrev CompositionSeries (X : Type u) [Lattice X] [JordanHolderLattice X] : Type u :=
+abbrev CompositionSeries (X : Type u) [Lattice X] [JordanHoelderLattice X] : Type u :=
   RelSeries (IsMaximal (X := X))
 
 namespace CompositionSeries
 
-variable {X : Type u} [Lattice X] [JordanHolderLattice X]
+variable {X : Type u} [Lattice X] [JordanHoelderLattice X]
 
 theorem lt_succ (s : CompositionSeries X) (i : Fin s.length) :
     s (Fin.castSucc i) < s (Fin.succ i) :=
@@ -407,9 +407,9 @@ theorem exists_last_eq_snoc_equivalent (s : CompositionSeries X) (x : X) (hm : I
         (second_iso_of_eq (isMaximal_eraseLast_last h0s)
             (sup_eq_of_isMaximal (isMaximal_eraseLast_last h0s) hm hetx) (by rw [inf_comm, htt]))
 
-/-- The **Jordan-Hölder** theorem, stated for any `JordanHolderLattice`.
+/-- The **Jordan-Hölder** theorem, stated for any `JordanHoelderLattice`.
 If two composition series start and finish at the same place, they are equivalent. -/
-theorem jordan_holder (s₁ s₂ : CompositionSeries X)
+theorem jordan_hoelder (s₁ s₂ : CompositionSeries X)
     (hb : s₁.head = s₂.head) (ht : s₁.last = s₂.last) :
     Equivalent s₁ s₂ := by
   induction' hle : s₁.length with n ih generalizing s₁ s₂

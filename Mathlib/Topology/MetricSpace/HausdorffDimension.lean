@@ -40,9 +40,9 @@ properties of Hausdorff dimension.
 
 ### (Pre)images under (anti)lipschitz and Hölder continuous maps
 
-* `HolderWith.dimH_image_le` etc: if `f : X → Y` is Hölder continuous with exponent `r > 0`, then
-  for any `s`, `dimH (f '' s) ≤ dimH s / r`. We prove versions of this statement for `HolderWith`,
-  `HolderOnWith`, and locally Hölder maps, as well as for `Set.image` and `Set.range`.
+* `HoelderWith.dimH_image_le` etc: if `f : X → Y` is Hölder continuous with exponent `r > 0`, then
+  for any `s`, `dimH (f '' s) ≤ dimH s / r`. We prove versions of this statement for `HoelderWith`,
+  `HoelderOnWith`, and locally Hölder maps, as well as for `Set.image` and `Set.range`.
 * `LipschitzWith.dimH_image_le` etc: Lipschitz continuous maps do not increase the Hausdorff
   dimension of sets.
 * for a map that is known to be both Lipschitz and antilipschitz (e.g., for an `Isometry` or
@@ -257,7 +257,7 @@ end
 variable {C K r : ℝ≥0} {f : X → Y} {s t : Set X}
 
 /-- If `f` is a Hölder continuous map with exponent `r > 0`, then `dimH (f '' s) ≤ dimH s / r`. -/
-theorem HolderOnWith.dimH_image_le (h : HolderOnWith C r f s) (hr : 0 < r) :
+theorem HoelderOnWith.dimH_image_le (h : HoelderOnWith C r f s) (hr : 0 < r) :
     dimH (f '' s) ≤ dimH s / r := by
   borelize X Y
   refine dimH_le fun d hd => ?_
@@ -270,28 +270,28 @@ theorem HolderOnWith.dimH_image_le (h : HolderOnWith C r f s) (hr : 0 < r) :
   exacts [le_dimH_of_hausdorffMeasure_eq_top Hrd, Or.inl (mt ENNReal.coe_eq_zero.1 hr.ne'),
     Or.inl ENNReal.coe_ne_top]
 
-namespace HolderWith
+namespace HoelderWith
 
 /-- If `f : X → Y` is Hölder continuous with a positive exponent `r`, then the Hausdorff dimension
 of the image of a set `s` is at most `dimH s / r`. -/
-theorem dimH_image_le (h : HolderWith C r f) (hr : 0 < r) (s : Set X) :
+theorem dimH_image_le (h : HoelderWith C r f) (hr : 0 < r) (s : Set X) :
     dimH (f '' s) ≤ dimH s / r :=
-  (h.holderOnWith s).dimH_image_le hr
+  (h.HoelderOnWith s).dimH_image_le hr
 
 /-- If `f` is a Hölder continuous map with exponent `r > 0`, then the Hausdorff dimension of its
 range is at most the Hausdorff dimension of its domain divided by `r`. -/
-theorem dimH_range_le (h : HolderWith C r f) (hr : 0 < r) :
+theorem dimH_range_le (h : HoelderWith C r f) (hr : 0 < r) :
     dimH (range f) ≤ dimH (univ : Set X) / r :=
   @image_univ _ _ f ▸ h.dimH_image_le hr univ
 
-end HolderWith
+end HoelderWith
 
 /-- If `s` is a set in a space `X` with second countable topology and `f : X → Y` is Hölder
 continuous in a neighborhood within `s` of every point `x ∈ s` with the same positive exponent `r`
 but possibly different coefficients, then the Hausdorff dimension of the image `f '' s` is at most
 the Hausdorff dimension of `s` divided by `r`. -/
 theorem dimH_image_le_of_locally_holder_on [SecondCountableTopology X] {r : ℝ≥0} {f : X → Y}
-    (hr : 0 < r) {s : Set X} (hf : ∀ x ∈ s, ∃ C : ℝ≥0, ∃ t ∈ 𝓝[s] x, HolderOnWith C r f t) :
+    (hr : 0 < r) {s : Set X} (hf : ∀ x ∈ s, ∃ C : ℝ≥0, ∃ t ∈ 𝓝[s] x, HoelderOnWith C r f t) :
     dimH (f '' s) ≤ dimH s / r := by
   choose! C t htn hC using hf
   rcases countable_cover_nhdsWithin htn with ⟨u, hus, huc, huU⟩
@@ -303,7 +303,7 @@ theorem dimH_image_le_of_locally_holder_on [SecondCountableTopology X] {r : ℝ�
 positive exponent `r` but possibly different coefficients, then the Hausdorff dimension of the range
 of `f` is at most the Hausdorff dimension of `X` divided by `r`. -/
 theorem dimH_range_le_of_locally_holder_on [SecondCountableTopology X] {r : ℝ≥0} {f : X → Y}
-    (hr : 0 < r) (hf : ∀ x : X, ∃ C : ℝ≥0, ∃ s ∈ 𝓝 x, HolderOnWith C r f s) :
+    (hr : 0 < r) (hf : ∀ x : X, ∃ C : ℝ≥0, ∃ s ∈ 𝓝 x, HoelderOnWith C r f s) :
     dimH (range f) ≤ dimH (univ : Set X) / r := by
   rw [← image_univ]
   refine dimH_image_le_of_locally_holder_on hr fun x _ => ?_
@@ -316,7 +316,7 @@ theorem dimH_range_le_of_locally_holder_on [SecondCountableTopology X] {r : ℝ�
 
 /-- If `f : X → Y` is Lipschitz continuous on `s`, then `dimH (f '' s) ≤ dimH s`. -/
 theorem LipschitzOnWith.dimH_image_le (h : LipschitzOnWith K f s) : dimH (f '' s) ≤ dimH s := by
-  simpa using h.holderOnWith.dimH_image_le zero_lt_one
+  simpa using h.HoelderOnWith.dimH_image_le zero_lt_one
 
 namespace LipschitzWith
 
@@ -336,8 +336,8 @@ is Lipschitz in a neighborhood within `s` of every point `x ∈ s`, then the Hau
 the image `f '' s` is at most the Hausdorff dimension of `s`. -/
 theorem dimH_image_le_of_locally_lipschitzOn [SecondCountableTopology X] {f : X → Y} {s : Set X}
     (hf : ∀ x ∈ s, ∃ C : ℝ≥0, ∃ t ∈ 𝓝[s] x, LipschitzOnWith C f t) : dimH (f '' s) ≤ dimH s := by
-  have : ∀ x ∈ s, ∃ C : ℝ≥0, ∃ t ∈ 𝓝[s] x, HolderOnWith C 1 f t := by
-    simpa only [holderOnWith_one] using hf
+  have : ∀ x ∈ s, ∃ C : ℝ≥0, ∃ t ∈ 𝓝[s] x, HoelderOnWith C 1 f t := by
+    simpa only [hoelderOnWith_one] using hf
   simpa only [ENNReal.coe_one, div_one] using dimH_image_le_of_locally_holder_on zero_lt_one this
 
 /-- If `f : X → Y` is Lipschitz in a neighborhood of each point `x : X`, then the Hausdorff

@@ -181,6 +181,8 @@ protected theorem heq_fun₂_iff {α : Sort*} {k l k' l' : ℕ} (h : k = l) (h' 
   subst h'
   simp [Function.funext_iff]
 
+/-- Two elements of `Fin k` and `Fin l` are heq iff their values in `ℕ` coincide. This requires
+`k = l`. For the left implication without this assumption, see `val_eq_val_of_heq`. -/
 protected theorem heq_ext_iff {k l : ℕ} (h : k = l) {i : Fin k} {j : Fin l} :
     HEq i j ↔ (i : ℕ) = (j : ℕ) := by
   subst h
@@ -269,6 +271,12 @@ theorem pos_iff_ne_zero' [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
   rw [← val_fin_lt, val_zero', Nat.pos_iff_ne_zero, Ne, Ne, Fin.ext_iff, val_zero']
 
 @[simp] lemma cast_eq_self (a : Fin n) : cast rfl a = a := rfl
+
+@[simp] theorem cast_eq_zero {k l : ℕ} [NeZero k] [NeZero l]
+    (h : k = l) (x : Fin k) : Fin.cast h x = 0 ↔ x = 0 := by simp [← val_eq_val]
+
+lemma cast_injective {k l : ℕ} (h : k = l) : Injective (Fin.cast h) :=
+  fun a b hab ↦ by simpa [← val_eq_val] using hab
 
 theorem rev_involutive : Involutive (rev : Fin n → Fin n) := rev_rev
 
@@ -1515,16 +1523,6 @@ protected theorem zero_mul' [NeZero n] (k : Fin n) : (0 : Fin n) * k = 0 := by
   simp [Fin.ext_iff, mul_def]
 
 end Mul
-
-open Qq in
-instance toExpr (n : ℕ) : Lean.ToExpr (Fin n) where
-  toTypeExpr := q(Fin $n)
-  toExpr := match n with
-    | 0 => finZeroElim
-    | k + 1 => fun i => show Q(Fin $n) from
-      have i : Q(Nat) := Lean.mkRawNatLit i -- raw literal to avoid ofNat-double-wrapping
-      have : Q(NeZero $n) := haveI : $n =Q $k + 1 := ⟨⟩; by exact q(NeZero.succ)
-      q(OfNat.ofNat $i)
 
 end Fin
 
