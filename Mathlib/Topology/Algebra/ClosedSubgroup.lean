@@ -18,7 +18,7 @@ topological group `G`, and its additive version `ClosedAddSubgroup`.
 
 * `normalCore_isClosed` : The `normalCore` of a closed subgroup is closed.
 
-*  `finindex_closedSubgroup_isOpen` : A closed subgroup with finite index is open.
+* `finindex_closedSubgroup_isOpen` : A closed subgroup with finite index is open.
 
 -/
 
@@ -118,9 +118,9 @@ lemma finiteindex_closedSubgroup_isOpen (H : Subgroup G) [H.FiniteIndex]
       (Quotient.out' (QuotientGroup.mk (s := H) x))⁻¹ * x
     simp only [SetLike.mem_coe, smul_eq_mul, mul_inv_cancel_left, and_true]
     exact QuotientGroup.eq.mp <| QuotientGroup.out_eq' (QuotientGroup.mk (s := H) x)
-  · rcases h with ⟨S,⟨y,hS⟩,mem⟩
+  · rcases h with ⟨S, ⟨y, hS⟩, mem⟩
     simp only [← hS] at mem
-    rcases mem with ⟨h,hh,eq⟩
+    rcases mem with ⟨h, hh, eq⟩
     simp only [Set.mem_compl_iff, SetLike.mem_coe]
     by_contra mH
     simp only [← eq, ne_eq, smul_eq_mul] at mH
