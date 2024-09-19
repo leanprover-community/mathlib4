@@ -438,6 +438,7 @@ theorem aroots_monomial [CommRing S] [IsDomain S] [Algebra T S]
   rw [← C_mul_X_pow_eq_monomial, aroots_C_mul_X_pow ha]
 
 variable (R S) in
+@[simp]
 theorem aroots_map (p : T[X]) [CommRing S] [Algebra T S] [Algebra S R] [Algebra T R]
     [IsScalarTower T S R] :
     (p.map (algebraMap T S)).aroots R = p.aroots R := by
