@@ -332,10 +332,8 @@ private lemma comp_relation_aux_map (r : Q.rels) :
   conv_rhs => rw [← Finsupp.sum_single (Q.relation r)]
   congr
   ext u s m
-  show _ = coeff m (monomial u s)
-  simp only [aeval, AlgHom.coe_mk, coe_eval₂Hom]
-  rw [monomial_eq, IsScalarTower.algebraMap_eq R S, algebraMap_eq, ← eval₂_comp_left, ← aeval_def,
-    P.aeval_val_σ]
+  simp only [MvPolynomial.single_eq_monomial, aeval, AlgHom.coe_mk, coe_eval₂Hom]
+  rw [monomial_eq, IsScalarTower.algebraMap_eq R S, algebraMap_eq, ← eval₂_comp_left, ← aeval_def]
   simp [Finsupp.prod_mapDomain_index_inj (Sum.inl_injective)]
 
 private lemma aux_surjective : Function.Surjective (Q.aux P) := fun p ↦ by
