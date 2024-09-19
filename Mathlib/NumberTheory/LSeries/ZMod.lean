@@ -6,9 +6,7 @@ Authors: David Loeffler
 
 import Mathlib.Analysis.Fourier.ZMod
 import Mathlib.Analysis.NormedSpace.Connected
-import Mathlib.LinearAlgebra.Dimension.DivisionRing
 import Mathlib.NumberTheory.LSeries.RiemannZeta
-import Mathlib.Topology.Algebra.Module.Cardinality
 
 /-!
 # L-series of functions on `ZMod N`
@@ -34,7 +32,7 @@ for general functions; for the specific case of Dirichlet characters see
   `LFunction (𝓕 Φ) s`, where `𝓕` is the Fourier transform.
 -/
 
-open HurwitzZeta Complex ZMod Finset Classical Topology Filter
+open HurwitzZeta Complex ZMod Finset Classical Topology Filter Set
 
 open scoped Real
 
@@ -70,7 +68,7 @@ lemma LFunction_eq_LSeries (Φ : ZMod N → ℂ) {s : ℂ} (hs : 1 < re s) :
     LFunction Φ s = LSeries (Φ ·) s := by
   rw [LFunction, LSeries, mul_sum, Nat.sumByResidueClasses (LSeriesSummable_of_one_lt_re Φ hs) N]
   congr 1 with j
-  have : (j.val / N : ℝ) ∈ Set.Icc 0 1 := Set.mem_Icc.mpr ⟨by positivity,
+  have : (j.val / N : ℝ) ∈ Set.Icc 0 1 := mem_Icc.mpr ⟨by positivity,
     (div_le_one (Nat.cast_pos.mpr <| NeZero.pos _)).mpr <| Nat.cast_le.mpr (val_lt j).le⟩
   rw [toAddCircle_apply, ← (hasSum_hurwitzZeta_of_one_lt_re this hs).tsum_eq, ← mul_assoc,
     ← tsum_mul_left]
@@ -119,6 +117,24 @@ lemma LFunction_residue_one (Φ : ZMod N → ℂ) :
   exact ((continuous_neg.const_cpow (Or.inl <| NeZero.ne _)).tendsto _).mono_left
     nhdsWithin_le_nhds
 
+local notation "𝕖" => stdAddChar
+
+/--
+The `LFunction` of the function `x ↦ e (j * x)`, where `e : ZMod N → ℂ` is the standard additive
+character, agrees with `expZeta (j / N)` on `1 < re s`. Private since it is a stepping-stone to
+the more general result `LFunction_stdAddChar_eq_expZeta` below.
+-/
+private lemma LFunction_stdAddChar_eq_expZeta_of_one_lt_re (j : ZMod N) {s : ℂ} (hs : 1 < s.re) :
+    LFunction (fun k ↦ 𝕖 (j * k)) s = expZeta (ZMod.toAddCircle j) s := by
+  rw [toAddCircle_apply, ← (hasSum_expZeta_of_one_lt_re (j.val / N) hs).tsum_eq,
+    LFunction_eq_LSeries _ hs, LSeries]
+  congr 1 with n
+  rw [LSeries.term_of_ne_zero' (ne_zero_of_one_lt_re hs), ofReal_div, ofReal_natCast,
+    ofReal_natCast, mul_assoc, div_mul_eq_mul_div, stdAddChar_apply]
+  have := ZMod.toCircle_intCast (N := N) (j.val * n)
+  conv_rhs at this => rw [Int.cast_mul, Int.cast_natCast, Int.cast_natCast, mul_div_assoc]
+  rw [← this, Int.cast_mul, Int.cast_natCast, Int.cast_natCast, natCast_zmod_val]
+
 /--
 The `LFunction` of the function `x ↦ e (j * x)`, where `e : ZMod N → ℂ` is the standard additive
 character, is `expZeta (j / N)`.
@@ -127,8 +143,8 @@ Note this is not at all obvious from the definitions, and we prove it by analyti
 from the convergence range.
 -/
 lemma LFunction_stdAddChar_eq_expZeta (j : ZMod N) (s : ℂ) (hjs : j ≠ 0 ∨ s ≠ 1) :
-    LFunction (fun k ↦ stdAddChar (j * k)) s = expZeta (ZMod.toAddCircle j) s := by
-  let U := if j = 0 then {z : ℂ | z ≠ 1} else Set.univ -- region of analyticity of both functions
+    LFunction (fun k ↦ 𝕖 (j * k)) s = expZeta (ZMod.toAddCircle j) s := by
+  let U := if j = 0 then {z : ℂ | z ≠ 1} else univ -- region of analyticity of both functions
   let V := {z : ℂ | 1 < re z} -- convergence region
   have hUo : IsOpen U := by
     by_cases h : j = 0
@@ -136,7 +152,7 @@ lemma LFunction_stdAddChar_eq_expZeta (j : ZMod N) (s : ℂ) (hjs : j ≠ 0 ∨ 
     · simp only [h, ↓reduceIte, isOpen_univ, U]
   let f := LFunction (fun k ↦ stdAddChar (j * k))
   let g := expZeta (toAddCircle j)
-  have hU {u} : u ∈ U ↔ u ≠ 1 ∨ j ≠ 0 := by simp only [Set.mem_ite_univ_right, U]; tauto
+  have hU {u} : u ∈ U ↔ u ≠ 1 ∨ j ≠ 0 := by simp only [mem_ite_univ_right, U]; tauto
   -- hypotheses for uniqueness of analytic continuation
   have hf : AnalyticOn ℂ f U := by
     refine DifferentiableOn.analyticOn (fun u hu ↦ ?_) hUo
@@ -158,41 +174,47 @@ lemma LFunction_stdAddChar_eq_expZeta (j : ZMod N) (s : ℂ) (hjs : j ≠ 0 ∨ 
   -- apply uniqueness result
   refine hf.eqOn_of_preconnected_of_eventuallyEq hg hUc hUmem ?_ hUmem'
   -- now remains to prove equality on `1 < re s`
-  filter_upwards [hV] with z hz
-  dsimp only [f, g]
-  rw [toAddCircle_apply, ← (hasSum_expZeta_of_one_lt_re (j.val / N) hz).tsum_eq,
-    LFunction_eq_LSeries _ hz, LSeries]
-  congr 1 with n
-  rw [LSeries.term_of_ne_zero' (ne_zero_of_one_lt_re hz), ofReal_div, ofReal_natCast,
-    ofReal_natCast, mul_assoc, div_mul_eq_mul_div, stdAddChar_apply]
-  have := ZMod.toCircle_intCast (N := N) (j.val * n)
-  conv_rhs at this => rw [Int.cast_mul, Int.cast_natCast, Int.cast_natCast, mul_div_assoc]
-  rw [← this, Int.cast_mul, Int.cast_natCast, Int.cast_natCast, natCast_zmod_val]
+  filter_upwards [hV] with z using LFunction_stdAddChar_eq_expZeta_of_one_lt_re _
 
 /-- Explicit formula for the L-function of `𝓕 Φ`, where `𝓕` is the discrete Fourier transform. -/
-lemma LFunction_dft (Φ : ZMod N → ℂ) {s : ℂ} (hs : s ≠ 1) :
+lemma LFunction_dft (Φ : ZMod N → ℂ) {s : ℂ} (hs : Φ 0 = 0 ∨ s ≠ 1) :
     LFunction (𝓕 Φ) s = ∑ j : ZMod N, Φ j * expZeta (toAddCircle (-j)) s := by
-  simp only [← LFunction_stdAddChar_eq_expZeta _ _ (Or.inr hs), LFunction, mul_sum]
-  rw [sum_comm, dft_def]
+  have (j : ZMod N) : Φ j * LFunction (fun k ↦ 𝕖 (-j * k)) s =
+      Φ j * expZeta (toAddCircle (-j)) s := by
+    by_cases h : -j ≠ 0 ∨ s ≠ 1
+    · rw [LFunction_stdAddChar_eq_expZeta _ _ h]
+    · simp only [neg_ne_zero, not_or, not_not] at h
+      rw [h.1, show Φ 0 = 0 by tauto, zero_mul, zero_mul]
+  simp only [LFunction, ← this, mul_sum]
+  rw [dft_def, sum_comm]
   simp only [sum_mul, mul_sum, Circle.smul_def, smul_eq_mul, stdAddChar_apply, ← mul_assoc]
   congr 1 with j
   congr 1 with k
   rw [mul_assoc (Φ _), mul_comm (Φ _), neg_mul]
 
 /-- Functional equation for `ZMod` L-functions, in terms of discrete Fourier transform. -/
-theorem LFunction_one_sub (Φ : ZMod N → ℂ) {s : ℂ} (hs : ∀ (n : ℕ), s ≠ -↑n) (hs' : s ≠ 1) :
+theorem LFunction_one_sub (Φ : ZMod N → ℂ) {s : ℂ}
+    (hs : ∀ (n : ℕ), s ≠ -n) (hs' : Φ 0 = 0 ∨ s ≠ 1) :
     LFunction Φ (1 - s) = N ^ (s - 1) * (2 * π) ^ (-s) * Gamma s *
       (cexp (π * I * s / 2) * LFunction (𝓕 Φ) s
        + cexp (-π * I * s / 2) * LFunction (𝓕 fun x ↦ Φ (-x)) s) := by
   rw [LFunction]
-  simp only [hurwitzZeta_one_sub _ hs (Or.inr hs'), mul_assoc _ _ (Gamma s)]
+  have (j : ZMod N) :  Φ j * hurwitzZeta (toAddCircle j) (1 - s) = Φ j *
+      ((2 * π) ^ (-s) * Gamma s * (cexp (-π * I * s / 2) *
+      expZeta (toAddCircle j) s + cexp (π * I * s / 2) * expZeta (-toAddCircle j) s)) := by
+    rcases eq_or_ne j 0 with rfl | hj
+    · rcases hs' with hΦ | hs'
+      · simp only [hΦ, zero_mul]
+      · rw [hurwitzZeta_one_sub _ hs (Or.inr hs')]
+    · rw [hurwitzZeta_one_sub _ hs (Or.inl <| toAddCircle_eq_zero.not.mpr hj)]
+  simp only [this, mul_assoc _ _ (Gamma s)]
   -- get rid of Gamma terms and power of N
   generalize (2 * π) ^ (-s) * Gamma s = C
   simp_rw [← mul_assoc, mul_comm _ C, mul_assoc, ← mul_sum, ← mul_assoc, mul_comm _ C, mul_assoc,
     neg_sub]
   congr 2
   -- now gather sum terms
-  rw [LFunction_dft _ hs', LFunction_dft _ hs']
+  rw [LFunction_dft _ hs', LFunction_dft _ (hs'.imp_left <| by simp only [neg_zero, imp_self])]
   conv_rhs => enter [2, 2]; rw [← (Equiv.neg _).sum_comp _ _ (by simp), Equiv.neg_apply]
   simp_rw [neg_neg, mul_sum, ← sum_add_distrib, ← mul_assoc, mul_comm _ (Φ _), mul_assoc,
     ← mul_add, map_neg, add_comm]

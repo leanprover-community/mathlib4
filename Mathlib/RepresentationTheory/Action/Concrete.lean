@@ -94,44 +94,52 @@ notation:10 G:10 " ⧸ₐ " H:10 => Action.FintypeCat.ofMulAction G (FintypeCat.
 
 variable {G : Type*} [Group G] (H N : Subgroup G) [Fintype (G ⧸ N)]
 
-/-- If `H` and `N` are subgroups of a group `G` with `N` normal, there is a canonical
-group homomorphism `H ⧸ N ⊓ H` to the `G`-endomorphisms of `G ⧸ N`. -/
-def quotientToEndHom [N.Normal] : H ⧸ Subgroup.subgroupOf N H →* End (G ⧸ₐ N) :=
-  let φ' : H →* End (G ⧸ₐ N) := {
-    toFun := fun ⟨v, _⟩ ↦ {
-      hom := Quotient.lift (fun σ ↦ ⟦σ * v⁻¹⟧) <| fun a b h ↦ Quotient.sound <| by
-        apply (QuotientGroup.leftRel_apply).mpr
-        simp only [mul_inv_rev, inv_inv]
-        convert_to v * (a⁻¹ * b) * v⁻¹ ∈ N
-        · group
-        · exact Subgroup.Normal.conj_mem ‹_› _ (QuotientGroup.leftRel_apply.mp h) _
-      comm := fun (g : G) ↦ by
-        ext (x : G ⧸ N)
-        induction' x using Quotient.inductionOn with x
-        simp only [FintypeCat.comp_apply, Action.FintypeCat.ofMulAction_apply, Quotient.lift_mk]
-        show Quotient.lift (fun σ ↦ ⟦σ * v⁻¹⟧) _ (⟦g • x⟧) = _
-        simp only [smul_eq_mul, Quotient.lift_mk, mul_assoc]
-        rfl
-    }
-    map_one' := by
-      apply Action.hom_ext
+/-- If `N` is a normal subgroup of `G`, then this is the group homomorphism
+sending an element `g` of `G` to the `G`-endomorphism of `G ⧸ₐ N` given by
+multiplication with `g⁻¹` on the right. -/
+def toEndHom [N.Normal] : G →* End (G ⧸ₐ N) where
+  toFun v := {
+    hom := Quotient.lift (fun σ ↦ ⟦σ * v⁻¹⟧) <| fun a b h ↦ Quotient.sound <| by
+      apply (QuotientGroup.leftRel_apply).mpr
+      simp only [mul_inv_rev, inv_inv]
+      convert_to v * (a⁻¹ * b) * v⁻¹ ∈ N
+      · group
+      · exact Subgroup.Normal.conj_mem ‹_› _ (QuotientGroup.leftRel_apply.mp h) _
+    comm := fun (g : G) ↦ by
       ext (x : G ⧸ N)
       induction' x using Quotient.inductionOn with x
-      simp
-    map_mul' := fun σ τ ↦ by
-      apply Action.hom_ext
-      ext (x : G ⧸ N)
-      induction' x using Quotient.inductionOn with x
-      show ⟦x * (σ * τ)⁻¹⟧ = ⟦x * τ⁻¹ * σ⁻¹⟧
-      rw [mul_inv_rev, mul_assoc, Subgroup.coe_mul]
+      simp only [FintypeCat.comp_apply, Action.FintypeCat.ofMulAction_apply, Quotient.lift_mk]
+      show Quotient.lift (fun σ ↦ ⟦σ * v⁻¹⟧) _ (⟦g • x⟧) = _
+      simp only [smul_eq_mul, Quotient.lift_mk, mul_assoc]
+      rfl
   }
-  QuotientGroup.lift (Subgroup.subgroupOf N H) φ' <| fun u uinU' ↦ by
+  map_one' := by
+    apply Action.hom_ext
+    ext (x : G ⧸ N)
+    induction' x using Quotient.inductionOn with x
+    simp
+  map_mul' σ τ := by
+    apply Action.hom_ext
+    ext (x : G ⧸ N)
+    induction' x using Quotient.inductionOn with x
+    show ⟦x * (σ * τ)⁻¹⟧ = ⟦x * τ⁻¹ * σ⁻¹⟧
+    rw [mul_inv_rev, mul_assoc]
+
+@[simp]
+lemma toEndHom_apply [N.Normal] (g h : G) : (toEndHom N g).hom ⟦h⟧ = ⟦h * g⁻¹⟧ := rfl
+
+variable {N} in
+lemma toEndHom_trivial_of_mem [N.Normal] {n : G} (hn : n ∈ N) : toEndHom N n = 𝟙 (G ⧸ₐ N) := by
   apply Action.hom_ext
   ext (x : G ⧸ N)
   induction' x using Quotient.inductionOn with μ
-  apply Quotient.sound
-  apply (QuotientGroup.leftRel_apply).mpr
-  simpa
+  exact Quotient.sound ((QuotientGroup.leftRel_apply).mpr <| by simpa)
+
+/-- If `H` and `N` are subgroups of a group `G` with `N` normal, there is a canonical
+group homomorphism `H ⧸ N ⊓ H` to the `G`-endomorphisms of `G ⧸ N`. -/
+def quotientToEndHom [N.Normal] : H ⧸ Subgroup.subgroupOf N H →* End (G ⧸ₐ N) :=
+  QuotientGroup.lift (Subgroup.subgroupOf N H) ((toEndHom N).comp H.subtype) <| fun _ uinU' ↦
+    toEndHom_trivial_of_mem uinU'
 
 @[simp]
 lemma quotientToEndHom_mk [N.Normal] (x : H) (g : G) :

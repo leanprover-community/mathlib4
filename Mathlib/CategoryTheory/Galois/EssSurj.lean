@@ -35,13 +35,13 @@ For the case `Y = Aut F ⧸ U` we closely follow the second part of Stacks Proje
 
 -/
 
-universe u
+universe u₁ u₂
 
 namespace CategoryTheory
 
 namespace PreGaloisCategory
 
-variable {C : Type u} [Category.{u} C] {F : C ⥤ FintypeCat.{u}}
+variable {C : Type u₁} [Category.{u₂} C] {F : C ⥤ FintypeCat.{u₁}}
 
 open Limits Functor
 
