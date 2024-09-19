@@ -282,8 +282,8 @@ instance : Coe (L.Formula α) (T.Formula α) := ⟨Quot.mk _⟩
 @[simps]
 instance : BooleanAlgebra (T.Formula α) where
   le := Quot.lift₂ T.Implies
-    (fun _ _ _ h => iff_eq_eq.mp ⟨fun h' => h'.trans h.implies, fun h' => h'.trans h.symm.implies⟩)
-    (fun _ _ _ h => iff_eq_eq.mp ⟨h.symm.implies.trans, h.implies.trans⟩)
+    (fun _ _ _ h => iff_eq_eq.mp ⟨fun h' => h'.trans h.mp, fun h' => h'.trans h.mpr⟩)
+    (fun _ _ _ h => iff_eq_eq.mp ⟨h.mpr.trans, h.mp.trans⟩)
   le_refl := Quot.ind Implies.refl
   le_trans := Quot.ind (fun _ => Quot.ind (fun _ => Quot.ind (fun _ => Implies.trans)))
   le_antisymm := Quot.ind (fun _ => Quot.ind (fun _ h₁ h₂ =>
