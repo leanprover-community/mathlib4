@@ -238,7 +238,7 @@ theorem isTheta_const_const_iff [NeBot l] {c₁ : E''} {c₂ : F''} :
 
 @[simp]
 theorem isTheta_zero_left : (fun _ ↦ (0 : E')) =Θ[l] g'' ↔ g'' =ᶠ[l] 0 := by
-  simp only [IsTheta, isBigO_zero, isBigO_zero_right_iff, true_and_iff]
+  simp only [IsTheta, isBigO_zero, isBigO_zero_right_iff, true_and]
 
 @[simp]
 theorem isTheta_zero_right : (f'' =Θ[l] fun _ ↦ (0 : F')) ↔ f'' =ᶠ[l] 0 :=
