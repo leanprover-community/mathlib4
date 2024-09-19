@@ -88,8 +88,8 @@ theorem orthogonalFamily_eigenspace_inf_eigenspace (hA : A.IsSymmetric) (hB : B.
 `OrthogonalFamily`. -/
 theorem orthogonalFamily_iInf_eigenspaces
     (hT :(∀ (i : n), ((T i).IsSymmetric))) :
-    OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) => (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))
-    (fun (γ : n → 𝕜) => (⨅ (j : n), (eigenspace (T j) (γ j))).subtypeₗᵢ) := by
+    OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) => (⨅ j, eigenspace (T j) (γ j) : Submodule 𝕜 E))
+    (fun (γ : n → 𝕜) => (⨅ j, eigenspace (T j) (γ j)).subtypeₗᵢ) := by
   intro f g hfg Ef Eg
   obtain ⟨a , ha⟩ := Function.ne_iff.mp hfg
   have H := (orthogonalFamily_eigenspaces (hT a) ha)
