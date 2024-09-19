@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
 import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
-import Mathlib.MeasureTheory.Measure.WithDensityFinite
 import Mathlib.MeasureTheory.SetAlgebra
 
 /-!
