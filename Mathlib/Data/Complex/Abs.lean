@@ -134,11 +134,13 @@ by `simp only [@map_zpow₀]` -/
 theorem abs_zpow (z : ℂ) (n : ℤ) : Complex.abs (z ^ n) = Complex.abs z ^ n :=
   map_zpow₀ Complex.abs z n
 
+@[bound]
 theorem abs_re_le_abs (z : ℂ) : |z.re| ≤ Complex.abs z :=
   Real.abs_le_sqrt <| by
     rw [normSq_apply, ← sq]
     exact le_add_of_nonneg_right (mul_self_nonneg _)
 
+@[bound]
 theorem abs_im_le_abs (z : ℂ) : |z.im| ≤ Complex.abs z :=
   Real.abs_le_sqrt <| by
     rw [normSq_apply, ← sq, ← sq]
@@ -200,12 +202,12 @@ theorem abs_le_sqrt_two_mul_max (z : ℂ) : Complex.abs z ≤ Real.sqrt 2 * max 
 theorem abs_re_div_abs_le_one (z : ℂ) : |z.re / Complex.abs z| ≤ 1 :=
   if hz : z = 0 then by simp [hz, zero_le_one]
   else by simp_rw [_root_.abs_div, abs_abs,
-    div_le_iff (AbsoluteValue.pos Complex.abs hz), one_mul, abs_re_le_abs]
+    div_le_iff₀ (AbsoluteValue.pos Complex.abs hz), one_mul, abs_re_le_abs]
 
 theorem abs_im_div_abs_le_one (z : ℂ) : |z.im / Complex.abs z| ≤ 1 :=
   if hz : z = 0 then by simp [hz, zero_le_one]
   else by simp_rw [_root_.abs_div, abs_abs,
-    div_le_iff (AbsoluteValue.pos Complex.abs hz), one_mul, abs_im_le_abs]
+    div_le_iff₀ (AbsoluteValue.pos Complex.abs hz), one_mul, abs_im_le_abs]
 
 @[simp, norm_cast] lemma abs_intCast (n : ℤ) : abs n = |↑n| := by rw [← ofReal_intCast, abs_ofReal]
 
@@ -230,7 +232,7 @@ theorem isCauSeq_re (f : CauSeq ℂ Complex.abs) : IsCauSeq abs' fun n => (f n).
 
 theorem isCauSeq_im (f : CauSeq ℂ Complex.abs) : IsCauSeq abs' fun n => (f n).im := fun ε ε0 =>
   (f.cauchy ε0).imp fun i H j ij ↦ by
-    simpa only [← ofReal_sub, abs_ofReal, sub_re] using (abs_im_le_abs _).trans_lt $ H _ ij
+    simpa only [← ofReal_sub, abs_ofReal, sub_re] using (abs_im_le_abs _).trans_lt <| H _ ij
 
 /-- The real part of a complex Cauchy sequence, as a real Cauchy sequence. -/
 noncomputable def cauSeqRe (f : CauSeq ℂ Complex.abs) : CauSeq ℝ abs' :=

@@ -23,13 +23,13 @@ variable {K : Type*} [DivisionRing K] [TopologicalSpace K]
 inverse images of compact sets are compact. -/
 theorem Filter.tendsto_cocompact_mul_left₀ [ContinuousMul K] {a : K} (ha : a ≠ 0) :
     Filter.Tendsto (fun x : K => a * x) (Filter.cocompact K) (Filter.cocompact K) :=
-  Filter.tendsto_cocompact_mul_left (inv_mul_cancel ha)
+  Filter.tendsto_cocompact_mul_left (inv_mul_cancel₀ ha)
 
 /-- Right-multiplication by a nonzero element of a topological division ring is proper, i.e.,
 inverse images of compact sets are compact. -/
 theorem Filter.tendsto_cocompact_mul_right₀ [ContinuousMul K] {a : K} (ha : a ≠ 0) :
     Filter.Tendsto (fun x : K => x * a) (Filter.cocompact K) (Filter.cocompact K) :=
-  Filter.tendsto_cocompact_mul_right (mul_inv_cancel ha)
+  Filter.tendsto_cocompact_mul_right (mul_inv_cancel₀ ha)
 
 variable (K)
 
@@ -146,6 +146,6 @@ theorem IsPreconnected.eq_of_sq_eq [Field 𝕜] [HasContinuousInv₀ 𝕜] [Cont
   rcases hS.eq_or_eq_neg_of_sq_eq hf hg @hsq @hg_ne with (h | h)
   · exact h hx
   · rw [h _, Pi.neg_apply, neg_eq_iff_add_eq_zero, ← two_mul, mul_eq_zero,
-      iff_false_iff.2 (hg_ne _)] at hy' ⊢ <;> assumption
+      (iff_of_eq (iff_false _)).2 (hg_ne _)] at hy' ⊢ <;> assumption
 
 end Preconnected

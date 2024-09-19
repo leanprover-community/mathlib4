@@ -123,9 +123,10 @@ theorem mul_sub_algebraMap_commutes [Ring A] [Algebra R A] (x : A) (r : R) :
 
 theorem mul_sub_algebraMap_pow_commutes [Ring A] [Algebra R A] (x : A) (r : R) (n : ℕ) :
     x * (x - algebraMap R A r) ^ n = (x - algebraMap R A r) ^ n * x := by
-  induction' n with n ih
-  · simp
-  · rw [pow_succ', ← mul_assoc, mul_sub_algebraMap_commutes, mul_assoc, ih, ← mul_assoc]
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [pow_succ', ← mul_assoc, mul_sub_algebraMap_commutes, mul_assoc, ih, ← mul_assoc]
 
 end CommSemiring
 
@@ -223,10 +224,10 @@ section Nat
 variable {R : Type*} [Semiring R]
 
 -- Lower the priority so that `Algebra.id` is picked most of the time when working with
--- `ℕ`-algebras. This is only an issue since `Algebra.id` and `algebraNat` are not yet defeq.
--- TODO: fix this by adding an `ofNat` field to semirings.
+-- `ℕ`-algebras.
+-- TODO: is this still needed?
 /-- Semiring ⥤ ℕ-Alg -/
-instance (priority := 99) algebraNat : Algebra ℕ R where
+instance (priority := 99) Semiring.toNatAlgebra : Algebra ℕ R where
   commutes' := Nat.cast_commute
   smul_def' _ _ := nsmul_eq_mul _ _
   toRingHom := Nat.castRingHom R
@@ -241,10 +242,10 @@ section Int
 variable (R : Type*) [Ring R]
 
 -- Lower the priority so that `Algebra.id` is picked most of the time when working with
--- `ℤ`-algebras. This is only an issue since `Algebra.id ℤ` and `algebraInt ℤ` are not yet defeq.
--- TODO: fix this by adding an `ofInt` field to rings.
+-- `ℤ`-algebras.
+-- TODO: is this still needed?
 /-- Ring ⥤ ℤ-Alg -/
-instance (priority := 99) algebraInt : Algebra ℤ R where
+instance (priority := 99) Ring.toIntAlgebra : Algebra ℤ R where
   commutes' := Int.cast_commute
   smul_def' _ _ := zsmul_eq_mul _ _
   toRingHom := Int.castRingHom R
@@ -282,6 +283,16 @@ variable (R A)
 theorem algebraMap_injective [CommRing R] [Ring A] [Nontrivial A] [Algebra R A]
     [NoZeroSMulDivisors R A] : Function.Injective (algebraMap R A) := by
   simpa only [algebraMap_eq_smul_one'] using smul_left_injective R one_ne_zero
+
+@[simp]
+lemma algebraMap_eq_zero_iff [CommRing R] [Ring A] [Nontrivial A] [Algebra R A]
+    [NoZeroSMulDivisors R A] {r : R} : algebraMap R A r = 0 ↔ r = 0 :=
+  map_eq_zero_iff _ <| algebraMap_injective R A
+
+@[simp]
+lemma algebraMap_eq_one_iff [CommRing R] [Ring A] [Nontrivial A] [Algebra R A]
+    [NoZeroSMulDivisors R A] {r : R} : algebraMap R A r = 1 ↔ r = 1 :=
+  map_eq_one_iff _ <| algebraMap_injective R A
 
 theorem _root_.NeZero.of_noZeroSMulDivisors (n : ℕ) [CommRing R] [NeZero (n : R)] [Ring A]
     [Nontrivial A] [Algebra R A] [NoZeroSMulDivisors R A] : NeZero (n : A) :=
@@ -330,16 +341,12 @@ theorem algebra_compatible_smul (r : R) (m : M) : r • m = (algebraMap R A) r �
 theorem algebraMap_smul (r : R) (m : M) : (algebraMap R A) r • m = r • m :=
   (algebra_compatible_smul A r m).symm
 
-theorem intCast_smul {k V : Type*} [CommRing k] [AddCommGroup V] [Module k V] (r : ℤ) (x : V) :
-    (r : k) • x = r • x :=
-  algebraMap_smul k r x
-
 theorem NoZeroSMulDivisors.trans (R A M : Type*) [CommRing R] [Ring A] [IsDomain A] [Algebra R A]
     [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M] [NoZeroSMulDivisors R A]
     [NoZeroSMulDivisors A M] : NoZeroSMulDivisors R M := by
   refine ⟨fun {r m} h => ?_⟩
   rw [algebra_compatible_smul A r m] at h
-  cases' smul_eq_zero.1 h with H H
+  rcases smul_eq_zero.1 h with H | H
   · have : Function.Injective (algebraMap R A) :=
       NoZeroSMulDivisors.iff_algebraMap_injective.1 inferInstance
     left
@@ -476,12 +483,12 @@ end algebraMap
 section surjective
 
 variable {R S} [CommSemiring R] [Semiring S] [Algebra R S]
-variable (h : Function.Surjective (algebraMap R S))
 variable {M N} [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module S M] [IsScalarTower R S M]
 variable [Module R N] [Module S N] [IsScalarTower R S N]
 
 /-- If `R →+* S` is surjective, then `S`-linear maps between modules are exactly `R`-linear maps. -/
-def LinearMap.extendScalarsOfSurjectiveEquiv : (M →ₗ[R] N) ≃ₗ[R] (M →ₗ[S] N) where
+def LinearMap.extendScalarsOfSurjectiveEquiv (h : Function.Surjective (algebraMap R S)) :
+    (M →ₗ[R] N) ≃ₗ[R] (M →ₗ[S] N) where
   toFun f := { __ := f, map_smul' := fun r x ↦ by obtain ⟨r, rfl⟩ := h r; simp }
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -490,17 +497,21 @@ def LinearMap.extendScalarsOfSurjectiveEquiv : (M →ₗ[R] N) ≃ₗ[R] (M →�
   right_inv f := rfl
 
 /-- If `R →+* S` is surjective, then `R`-linear maps are also `S`-linear. -/
-abbrev LinearMap.extendScalarsOfSurjective (l : M →ₗ[R] N) : M →ₗ[S] N :=
+abbrev LinearMap.extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
+    (l : M →ₗ[R] N) : M →ₗ[S] N :=
   extendScalarsOfSurjectiveEquiv h l
+
+/-- If `R →+* S` is surjective, then `R`-linear isomorphisms are also `S`-linear. -/
+def LinearEquiv.extendScalarsOfSurjective (h : Function.Surjective (algebraMap R S))
+    (f : M ≃ₗ[R] N) : M ≃ₗ[S] N where
+  __ := f
+  map_smul' r x := by obtain ⟨r, rfl⟩ := h r; simp
+
+variable (h : Function.Surjective (algebraMap R S))
 
 @[simp]
 lemma LinearMap.extendScalarsOfSurjective_apply (l : M →ₗ[R] N) (x) :
     l.extendScalarsOfSurjective h x = l x := rfl
-
-/-- If `R →+* S` is surjective, then `R`-linear isomorphisms are also `S`-linear. -/
-def LinearEquiv.extendScalarsOfSurjective (f : M ≃ₗ[R] N) : M ≃ₗ[S] N where
-  __ := f
-  map_smul' r x := by obtain ⟨r, rfl⟩ := h r; simp
 
 @[simp]
 lemma LinearEquiv.extendScalarsOfSurjective_apply (f : M ≃ₗ[R] N) (x) :
@@ -511,3 +522,21 @@ lemma LinearEquiv.extendScalarsOfSurjective_symm (f : M ≃ₗ[R] N) :
     (f.extendScalarsOfSurjective h).symm = f.symm.extendScalarsOfSurjective h := rfl
 
 end surjective
+
+namespace algebraMap
+
+section CommSemiringCommSemiring
+
+variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] {ι : Type*} {s : Finset ι}
+
+@[norm_cast]
+theorem coe_prod (a : ι → R) : (↑(∏ i ∈ s, a i : R) : A) = ∏ i ∈ s, (↑(a i) : A) :=
+  map_prod (algebraMap R A) a s
+
+@[norm_cast]
+theorem coe_sum (a : ι → R) : ↑(∑ i ∈ s, a i) = ∑ i ∈ s, (↑(a i) : A) :=
+  map_sum (algebraMap R A) a s
+
+end CommSemiringCommSemiring
+
+end algebraMap

@@ -63,7 +63,7 @@ theorem isUnit_or_isUnit_of_isUnit_add {a b : R} (h : IsUnit (a + b)) : IsUnit a
   apply Or.imp _ _ (isUnit_or_isUnit_of_add_one hu) <;> exact isUnit_of_mul_isUnit_right
 
 theorem nonunits_add {a b : R} (ha : a ∈ nonunits R) (hb : b ∈ nonunits R) : a + b ∈ nonunits R :=
-  fun H => not_or_of_not ha hb (isUnit_or_isUnit_of_isUnit_add H)
+  fun H => not_or_intro ha hb (isUnit_or_isUnit_of_isUnit_add H)
 
 end LocalRing
 
@@ -103,11 +103,9 @@ namespace Field
 
 variable (K : Type*) [Field K]
 
-open scoped Classical
-
 -- see Note [lower instance priority]
-instance (priority := 100) : LocalRing K :=
-  LocalRing.of_isUnit_or_isUnit_one_sub_self fun a =>
+instance (priority := 100) : LocalRing K := by
+  classical exact LocalRing.of_isUnit_or_isUnit_one_sub_self fun a =>
     if h : a = 0 then Or.inr (by rw [h, sub_zero]; exact isUnit_one)
     else Or.inl <| IsUnit.mk0 a h
 

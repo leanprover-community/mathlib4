@@ -61,6 +61,9 @@ instance : Sup G.Finsubgraph :=
 instance : Inf G.Finsubgraph :=
   ⟨fun G₁ G₂ => ⟨G₁ ⊓ G₂, G₁.2.subset inter_subset_left⟩⟩
 
+instance instSDiff : SDiff G.Finsubgraph where
+  sdiff G₁ G₂ := ⟨G₁ \ G₂, G₁.2.subset (Subgraph.verts_mono sdiff_le)⟩
+
 @[simp, norm_cast] lemma coe_bot : (⊥ : G.Finsubgraph) = (⊥ : G.Subgraph) := rfl
 
 @[simp, norm_cast]
@@ -69,17 +72,28 @@ lemma coe_sup (G₁ G₂ : G.Finsubgraph) : ↑(G₁ ⊔ G₂) = (G₁ ⊔ G₂ 
 @[simp, norm_cast]
 lemma coe_inf (G₁ G₂ : G.Finsubgraph) : ↑(G₁ ⊓ G₂) = (G₁ ⊓ G₂ : G.Subgraph) := rfl
 
-instance : DistribLattice G.Finsubgraph :=
-  Subtype.coe_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl
+@[simp, norm_cast]
+lemma coe_sdiff (G₁ G₂ : G.Finsubgraph) : ↑(G₁ \ G₂) = (G₁ \ G₂ : G.Subgraph) := rfl
+
+instance instGeneralizedCoheytingAlgebra : GeneralizedCoheytingAlgebra G.Finsubgraph :=
+  Subtype.coe_injective.generalizedCoheytingAlgebra _ coe_sup coe_inf coe_bot coe_sdiff
 
 section Finite
 variable [Finite V]
 
 instance instTop : Top G.Finsubgraph where top := ⟨⊤, finite_univ⟩
+instance instHasCompl : HasCompl G.Finsubgraph where compl G' := ⟨G'ᶜ, Set.toFinite _⟩
+instance instHNot : HNot G.Finsubgraph where hnot G' := ⟨￢G', Set.toFinite _⟩
+instance instHImp : HImp G.Finsubgraph where himp G₁ G₂ := ⟨G₁ ⇨ G₂, Set.toFinite _⟩
 instance instSupSet : SupSet G.Finsubgraph where sSup s := ⟨⨆ G ∈ s, ↑G, Set.toFinite _⟩
 instance instInfSet : InfSet G.Finsubgraph where sInf s := ⟨⨅ G ∈ s, ↑G, Set.toFinite _⟩
 
-@[simp, norm_cast] lemma coe_top : ↑(⊤ : G.Finsubgraph) = (⊤ : G.Subgraph) := rfl
+@[simp, norm_cast] lemma coe_top : (⊤ : G.Finsubgraph) = (⊤ : G.Subgraph) := rfl
+@[simp, norm_cast] lemma coe_compl (G' : G.Finsubgraph) : ↑(G'ᶜ) = (G'ᶜ : G.Subgraph) := rfl
+@[simp, norm_cast] lemma coe_hnot (G' : G.Finsubgraph) : ↑(￢G') = (￢G' : G.Subgraph) := rfl
+
+@[simp, norm_cast]
+lemma coe_himp (G₁ G₂ : G.Finsubgraph) : ↑(G₁ ⇨ G₂) = (G₁ ⇨ G₂ : G.Subgraph) := rfl
 
 @[simp, norm_cast]
 lemma coe_sSup (s : Set G.Finsubgraph) : sSup s = (⨆ G ∈ s, G : G.Subgraph) := rfl
@@ -97,6 +111,7 @@ lemma coe_iInf {ι : Sort*} (f : ι → G.Finsubgraph) : ⨅ i, f i = (⨅ i, f 
 
 instance instCompletelyDistribLattice : CompletelyDistribLattice G.Finsubgraph :=
   Subtype.coe_injective.completelyDistribLattice _ coe_sup coe_inf coe_sSup coe_sInf coe_top coe_bot
+    coe_compl coe_himp coe_hnot coe_sdiff
 
 end Finite
 end Finsubgraph

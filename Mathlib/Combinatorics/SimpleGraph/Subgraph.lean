@@ -245,7 +245,7 @@ def copy (G' : Subgraph G) (V'' : Set V) (hV : V'' = G'.verts)
 
 theorem copy_eq (G' : Subgraph G) (V'' : Set V) (hV : V'' = G'.verts)
     (adj' : V → V → Prop) (hadj : adj' = G'.Adj) : G'.copy V'' hV adj' hadj = G' :=
-  Subgraph.ext _ _ hV hadj
+  Subgraph.ext hV hadj
 
 /-- The union of two subgraphs. -/
 instance : Sup G.Subgraph where
@@ -381,7 +381,7 @@ theorem verts_spanningCoe_injective :
     (fun G' : Subgraph G => (G'.verts, G'.spanningCoe)).Injective := by
   intro G₁ G₂ h
   rw [Prod.ext_iff] at h
-  exact Subgraph.ext _ _ h.1 (spanningCoe_inj.1 h.2)
+  exact Subgraph.ext h.1 (spanningCoe_inj.1 h.2)
 
 /-- For subgraphs `G₁`, `G₂`, `G₁ ≤ G₂` iff `G₁.verts ⊆ G₂.verts` and
 `∀ a b, G₁.adj a b → G₂.adj a b`. -/
@@ -397,8 +397,8 @@ instance : BoundedOrder (Subgraph G) where
   le_top x := ⟨Set.subset_univ _, fun _ _ => x.adj_sub⟩
   bot_le _ := ⟨Set.empty_subset _, fun _ _ => False.elim⟩
 
--- Note that subgraphs do not form a Boolean algebra, because of `verts`.
-instance : CompletelyDistribLattice G.Subgraph :=
+/-- Note that subgraphs do not form a Boolean algebra, because of `verts`. -/
+def completelyDistribLatticeMinimalAxioms : CompletelyDistribLattice.MinimalAxioms G.Subgraph :=
   { Subgraph.distribLattice with
     le := (· ≤ ·)
     sup := (· ⊔ ·)
@@ -419,8 +419,11 @@ instance : CompletelyDistribLattice G.Subgraph :=
     le_sInf := fun s G' hG' =>
       ⟨Set.subset_iInter₂ fun H hH => (hG' _ hH).1, fun a b hab =>
         ⟨fun H hH => (hG' _ hH).2 hab, G'.adj_sub hab⟩⟩
-    iInf_iSup_eq := fun f => Subgraph.ext _ _ (by simpa using iInf_iSup_eq)
+    iInf_iSup_eq := fun f => Subgraph.ext (by simpa using iInf_iSup_eq)
       (by ext; simp [Classical.skolem]) }
+
+instance : CompletelyDistribLattice G.Subgraph :=
+  .ofMinimalAxioms completelyDistribLatticeMinimalAxioms
 
 @[gcongr] lemma verts_mono {H H' : G.Subgraph} (h : H ≤ H') : H.verts ⊆ H'.verts := h.1
 lemma verts_monotone : Monotone (verts : G.Subgraph → Set V) := fun _ _ h ↦ h.1
@@ -603,7 +606,7 @@ theorem comap_monotone {G' : SimpleGraph W} (f : G →g G') : Monotone (Subgraph
     simp only [comap_verts, Set.mem_preimage]
     apply h.1
   · intro v w
-    simp (config := { contextual := true }) only [comap_adj, and_imp, true_and_iff]
+    simp (config := { contextual := true }) only [comap_adj, and_imp, true_and]
     intro
     apply h.2
 
@@ -612,7 +615,7 @@ theorem map_le_iff_le_comap {G' : SimpleGraph W} (f : G →g G') (H : G.Subgraph
   refine ⟨fun h ↦ ⟨fun v hv ↦ ?_, fun v w hvw ↦ ?_⟩, fun h ↦ ⟨fun v ↦ ?_, fun v w ↦ ?_⟩⟩
   · simp only [comap_verts, Set.mem_preimage]
     exact h.1 ⟨v, hv, rfl⟩
-  · simp only [H.adj_sub hvw, comap_adj, true_and_iff]
+  · simp only [H.adj_sub hvw, comap_adj, true_and]
     exact h.2 ⟨v, w, hvw, rfl, rfl⟩
   · simp only [map_verts, Set.mem_image, forall_exists_index, and_imp]
     rintro w hw rfl
@@ -764,7 +767,7 @@ theorem eq_singletonSubgraph_iff_verts_eq (H : G.Subgraph) {v : V} :
   refine ⟨fun h ↦ by rw [h, singletonSubgraph_verts], fun h ↦ ?_⟩
   ext
   · rw [h, singletonSubgraph_verts]
-  · simp only [Prop.bot_eq_false, singletonSubgraph_adj, Pi.bot_apply, iff_false_iff]
+  · simp only [Prop.bot_eq_false, singletonSubgraph_adj, Pi.bot_apply, iff_false]
     intro ha
     have ha1 := ha.fst_mem
     have ha2 := ha.snd_mem
@@ -781,7 +784,7 @@ theorem edgeSet_subgraphOfAdj {v w : V} (hvw : G.Adj v w) :
     (G.subgraphOfAdj hvw).edgeSet = {s(v, w)} := by
   ext e
   refine e.ind ?_
-  simp only [eq_comm, Set.mem_singleton_iff, Subgraph.mem_edgeSet, subgraphOfAdj_adj, iff_self_iff,
+  simp only [eq_comm, Set.mem_singleton_iff, Subgraph.mem_edgeSet, subgraphOfAdj_adj,
     forall₂_true_iff]
 
 lemma subgraphOfAdj_le_of_adj {v w : V} (H : G.Subgraph) (h : H.Adj v w) :
@@ -844,7 +847,7 @@ theorem neighborSet_subgraphOfAdj_of_ne_of_ne {u v w : V} (hvw : G.Adj v w) (hv 
 theorem neighborSet_subgraphOfAdj [DecidableEq V] {u v w : V} (hvw : G.Adj v w) :
     (G.subgraphOfAdj hvw).neighborSet u =
     (if u = v then {w} else ∅) ∪ if u = w then {v} else ∅ := by
-  split_ifs <;> subst_vars <;> simp [*, Set.singleton_def]
+  split_ifs <;> subst_vars <;> simp [*]
 
 theorem singletonSubgraph_fst_le_subgraphOfAdj {u v : V} {h : G.Adj u v} :
     G.singletonSubgraph u ≤ G.subgraphOfAdj h := by
@@ -989,7 +992,7 @@ theorem deleteEdges_le : G'.deleteEdges s ≤ G' := by
 theorem deleteEdges_le_of_le {s s' : Set (Sym2 V)} (h : s ⊆ s') :
     G'.deleteEdges s' ≤ G'.deleteEdges s := by
   constructor <;> simp (config := { contextual := true }) only [deleteEdges_verts, deleteEdges_adj,
-    true_and_iff, and_imp, subset_rfl]
+    true_and, and_imp, subset_rfl]
   exact fun _ _ _ hs' hs ↦ hs' (h hs)
 
 @[simp]
@@ -1041,7 +1044,7 @@ variable {G' G'' : G.Subgraph} {s s' : Set V}
 theorem induce_mono (hg : G' ≤ G'') (hs : s ⊆ s') : G'.induce s ≤ G''.induce s' := by
   constructor
   · simp [hs]
-  · simp (config := { contextual := true }) only [induce_adj, true_and_iff, and_imp]
+  · simp (config := { contextual := true }) only [induce_adj, and_imp]
     intro v w hv hw ha
     exact ⟨hs hv, hs hw, hg.2 ha⟩
 
@@ -1062,7 +1065,7 @@ theorem induce_self_verts : G'.induce G'.verts = G' := by
   ext
   · simp
   · constructor <;>
-      simp (config := { contextual := true }) only [induce_adj, imp_true_iff, and_true_iff]
+      simp (config := { contextual := true }) only [induce_adj, imp_true_iff, and_true]
     exact fun ha ↦ ⟨G'.edge_vert ha, G'.edge_vert ha.symm⟩
 
 lemma le_induce_top_verts : G' ≤ (⊤ : G.Subgraph).induce G'.verts :=

@@ -63,6 +63,9 @@ theorem coe_mk (s : Set α) (h) : (mk s h : Set α) = s :=
 protected def closure (s : Set α) : Closeds α :=
   ⟨closure s, isClosed_closure⟩
 
+@[simp]
+theorem mem_closure {s : Set α} {x : α} : x ∈ Closeds.closure s ↔ x ∈ closure s := .rfl
+
 theorem gc : GaloisConnection Closeds.closure ((↑) : Closeds α → Set α) := fun _ U =>
   ⟨subset_closure.trans, fun h => closure_minimal h U.closed⟩
 
@@ -162,11 +165,12 @@ theorem iInf_mk {ι} (s : ι → Set α) (h : ∀ i, IsClosed (s i)) :
     (⨅ i, ⟨s i, h i⟩ : Closeds α) = ⟨⋂ i, s i, isClosed_iInter h⟩ :=
   iInf_def _
 
-instance : Coframe (Closeds α) :=
-  { inferInstanceAs (CompleteLattice (Closeds α)) with
-    sInf := sInf
-    iInf_sup_le_sup_sInf := fun a s =>
-      (SetLike.coe_injective <| by simp only [coe_sup, coe_iInf, coe_sInf, Set.union_iInter₂]).le }
+/-- Closed sets in a topological space form a coframe. -/
+def coframeMinimalAxioms : Coframe.MinimalAxioms (Closeds α) where
+  iInf_sup_le_sup_sInf a s :=
+    (SetLike.coe_injective <| by simp only [coe_sup, coe_iInf, coe_sInf, Set.union_iInter₂]).le
+
+instance instCoframe : Coframe (Closeds α) := .ofMinimalAxioms coframeMinimalAxioms
 
 /-- The term of `TopologicalSpace.Closeds α` corresponding to a singleton. -/
 @[simps]
@@ -305,10 +309,9 @@ instance : HasCompl (Clopens α) := ⟨fun s => ⟨sᶜ, s.isClopen.compl⟩⟩
 
 instance : BooleanAlgebra (Clopens α) :=
   SetLike.coe_injective.booleanAlgebra _ coe_sup coe_inf coe_top coe_bot coe_compl coe_sdiff
+    coe_himp
 
 instance : Inhabited (Clopens α) := ⟨⊥⟩
-
-variable [TopologicalSpace β]
 
 instance : SProd (Clopens α) (Clopens β) (Clopens (α × β)) where
   sprod s t := ⟨s ×ˢ t, s.2.prod t.2⟩

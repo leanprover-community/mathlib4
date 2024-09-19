@@ -176,7 +176,7 @@ def isColimitMapCoconeEquiv :
 
 /-- A colimit cokernel cofork is mapped to a colimit cokernel cofork by a functor `G`
 when this functor preserves the corresponding colimit. -/
-def mapIsColimit  (hc : IsColimit c) (G : C ⥤ D)
+def mapIsColimit (hc : IsColimit c) (G : C ⥤ D)
     [Functor.PreservesZeroMorphisms G] [PreservesColimit (parallelPair f 0) G] :
     IsColimit (c.map G) :=
   c.isColimitMapCoconeEquiv G (isColimitOfPreserves G hc)

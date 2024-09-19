@@ -3,6 +3,7 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Mathlib.Init
 import Lean.Meta.DiscrTree
 
 /-!
@@ -44,6 +45,6 @@ Check if a `keys : Array DiscTree.Key` is "specific",
 i.e. something other than `[*]` or `[=, *, *, *]`.
 -/
 def keysSpecific (keys : Array DiscrTree.Key) : Bool :=
-  keys != #[Key.star] && keys != #[Key.const `Eq 3, Key.star, Key.star, Key.star]
+  keys != #[Key.star] && keys != #[Key.const ``Eq 3, Key.star, Key.star, Key.star]
 
 end Lean.Meta.DiscrTree
