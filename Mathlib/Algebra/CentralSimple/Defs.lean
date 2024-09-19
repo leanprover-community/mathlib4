@@ -35,4 +35,4 @@ of `D` is exactly `K` and that `D` is a simple ring.
 class Algebra.IsCentralSimple
     (K : Type u) [Field K] (D : Type v) [Ring D] [Algebra K D] : Prop where
   is_central : Subalgebra.center K D ≤ ⊥
-  [is_simple : IsSimpleOrder (TwoSidedIdeal D)]
+  [is_simple : IsSimpleRing D]
