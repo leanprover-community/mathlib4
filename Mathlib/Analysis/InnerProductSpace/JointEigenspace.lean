@@ -82,9 +82,9 @@ theorem orthogonalFamily_eigenspace_inf_eigenspace (hA : A.IsSymmetric) (hB : B.
     · exact hB.orthogonalFamily_eigenspaces.pairwise h₁ hv2 w hw2
     · exact hA.orthogonalFamily_eigenspaces.pairwise h₂ hv1 w hw1
 
-/-- The joint eigenspaces of finitely many commuting symmetric operators form an
+/-- The joint eigenspaces of a tuple of commuting symmetric operators form an
 `OrthogonalFamily`. -/
-theorem orthogonalFamily_iInf_eigenspaces [Fintype n]
+theorem orthogonalFamily_iInf_eigenspaces
     (T : n → (E →ₗ[𝕜] E)) (hT :(∀ (i : n), ((T i).IsSymmetric)))
     : OrthogonalFamily 𝕜 (fun (γ : n → 𝕜) => (⨅ (j : n), (eigenspace (T j) (γ j)) : Submodule 𝕜 E))
     (fun (γ : n → 𝕜) => (⨅ (j : n), (eigenspace (T j) (γ j))).subtypeₗᵢ) := by
