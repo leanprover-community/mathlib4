@@ -773,12 +773,10 @@ theorem mk_cons {s : Multiset α} (h : (a ::ₘ s).Nodup) :
 theorem cons_empty (a : α) : cons a ∅ (not_mem_empty _) = {a} := rfl
 
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
-theorem cons_nonempty (h : a ∉ s) : (cons a s h).Nonempty :=
+theorem nonempty_cons (h : a ∉ s) : (cons a s h).Nonempty :=
   ⟨a, mem_cons.2 <| Or.inl rfl⟩
 
-@[deprecated (since := "2024-09-19")] alias nonempty_cons := cons_nonempty
-
-@[simp] theorem cons_ne_empty (h : a ∉ s) : cons a s h ≠ ∅ := (cons_nonempty _).ne_empty
+@[simp] theorem cons_ne_empty (h : a ∉ s) : cons a s h ≠ ∅ := (nonempty_cons _).ne_empty
 
 @[simp]
 theorem nonempty_mk {m : Multiset α} {hm} : (⟨m, hm⟩ : Finset α).Nonempty ↔ m ≠ 0 := by
