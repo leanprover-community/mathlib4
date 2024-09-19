@@ -36,7 +36,7 @@ namespace TwoSidedIdeal
 section NonUnitalNonAssocRing
 
 variable {R S : Type*} [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
-variable {F : Type*} [FunLike F R S] [AddMonoidHomClass F R S] [MulHomClass F R S]
+variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
 variable (f : F)
 
 /--
