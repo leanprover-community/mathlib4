@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Functor.FullyFaithful
 Given a category `D` and a function `F : C → D `from a type `C` to the
 objects of `D`, there is an essentially unique way to give `C` a
 category structure such that `F` becomes a fully faithful functor,
-namely by taking $$ Hom_C(X, Y) = Hom_D(FX, FY) $$. We call this the
+namely by taking $$ Hom_C(X, Y) ≃ Hom_D(FX, FY) $$. We call this the
 category induced from `D` along `F`.
 
 As a special case, if `C` is a subtype of `D`,
@@ -20,6 +20,11 @@ In general the induced category is equivalent to the full subcategory of `D` on 
 image of `F`.
 
 ## Implementation notes
+
+The type of morphisms in the induced category (or the full subcategory)
+is 1-field structure so as to avoid defeq abuse (which may sometimes
+confuse Lean about whether we consider a morphism in `D` or
+a morphism in the induced category by `F`).
 
 It looks odd to make `D` an explicit argument of `InducedCategory`,
 when it is determined by the argument `F` anyways. The reason to make `D`
@@ -54,14 +59,39 @@ def InducedCategory (_F : C → D) : Type u₁ :=
 
 variable {D}
 
-instance InducedCategory.hasCoeToSort {α : Sort*} [CoeSort D α] :
+namespace InducedCategory
+
+instance hasCoeToSort {α : Sort*} [CoeSort D α] :
     CoeSort (InducedCategory D F) α :=
   ⟨fun c => F c⟩
 
-instance InducedCategory.category : Category.{v} (InducedCategory D F) where
-  Hom X Y := F X ⟶ F Y
-  id X := 𝟙 (F X)
-  comp f g := f ≫ g
+variable {F}
+
+/-- A morphism in `InducedCategory D F` consists of a morphism `F X ⟶ F Y`. -/
+@[ext]
+structure Hom (X Y : InducedCategory D F) where
+  /-- the underlying morphism in the target category -/
+  hom : F X ⟶ F Y
+
+variable (F) in
+@[simps]
+instance category : Category.{v} (InducedCategory D F) where
+  Hom := Hom
+  id X := { hom := 𝟙 _ }
+  comp f g := { hom := f.hom ≫ g.hom }
+
+@[ext]
+lemma hom_ext {X Y : InducedCategory D F} {f g : X ⟶ Y} (h : f.hom = g.hom) :
+    f = g :=
+  Hom.ext h
+
+/-- Constructor for isomorphisms in the category `InducedCategory D F`. -/
+@[simps]
+def isoMk {X Y : InducedCategory D F} (e : F X ≅ F Y) : X ≅ Y where
+  hom := { hom := e.hom }
+  inv := { hom := e.inv }
+
+end InducedCategory
 
 /-- The forgetful functor from an induced category to the original category,
 forgetting the extra data.
@@ -69,11 +99,11 @@ forgetting the extra data.
 @[simps]
 def inducedFunctor : InducedCategory D F ⥤ D where
   obj := F
-  map f := f
+  map f := f.hom
 
 /-- The induced functor `inducedFunctor F : InducedCategory D F ⥤ D` is fully faithful. -/
 def fullyFaithfulInducedFunctor : (inducedFunctor F).FullyFaithful where
-  preimage f := f
+  preimage f := { hom := f }
 
 instance InducedCategory.full : (inducedFunctor F).Full :=
   (fullyFaithfulInducedFunctor F).full
@@ -105,12 +135,27 @@ structure FullSubcategory where
 instance FullSubcategory.category : Category.{v} (FullSubcategory Z) :=
   InducedCategory.category FullSubcategory.obj
 
--- these lemmas are not particularly well-typed, so would probably be dangerous as simp lemmas
+variable {Z}
 
-lemma FullSubcategory.id_def (X : FullSubcategory Z) : 𝟙 X = 𝟙 X.obj := rfl
+@[ext]
+lemma FullSubcategory.hom_ext {X Y : FullSubcategory Z} {f g : X ⟶ Y} (h : f.hom = g.hom) :
+    f = g :=
+  InducedCategory.hom_ext h
 
-lemma FullSubcategory.comp_def {X Y Z : FullSubcategory Z} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    f ≫ g = (f ≫ g : X.obj ⟶ Z.obj) := rfl
+@[simp]
+lemma FullSubcategory.id_hom (X : FullSubcategory Z) :
+    InducedCategory.Hom.hom (𝟙 X) = 𝟙 X.obj := rfl
+
+@[simp]
+lemma FullSubcategory.comp_hom {X Y Z : FullSubcategory Z} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).hom = f.hom ≫ g.hom := rfl
+
+/-- Constructor for isomorphisms in the category `FullSubcategory Z`. -/
+@[simps!]
+def FullSubcategory.isoMk {X Y : FullSubcategory Z} (e : X.obj ≅ Y.obj) : X ≅ Y :=
+  InducedCategory.isoMk e
+
+variable (Z)
 
 /-- The forgetful functor from a full subcategory into the original category
 ("forgetting" the condition).
@@ -123,7 +168,8 @@ theorem fullSubcategoryInclusion.obj {X} : (fullSubcategoryInclusion Z).obj X = 
   rfl
 
 @[simp]
-theorem fullSubcategoryInclusion.map {X Y} {f : X ⟶ Y} : (fullSubcategoryInclusion Z).map f = f :=
+theorem fullSubcategoryInclusion.map {X Y} {f : X ⟶ Y} :
+    (fullSubcategoryInclusion Z).map f = f.hom :=
   rfl
 
 /-- The inclusion of a full subcategory is fully faithful. -/
@@ -143,13 +189,17 @@ variable {Z} {Z' : C → Prop}
 @[simps]
 def FullSubcategory.map (h : ∀ ⦃X⦄, Z X → Z' X) : FullSubcategory Z ⥤ FullSubcategory Z' where
   obj X := ⟨X.1, h X.2⟩
-  map f := f
+  map f := { hom := f.hom }
+
+def FullSubcategory.fullyFaithfulMap (h : ∀ ⦃X⦄, Z X → Z' X) :
+    (FullSubcategory.map h).FullyFaithful where
+  preimage f := { hom := f.hom }
 
 instance FullSubcategory.full_map (h : ∀ ⦃X⦄, Z X → Z' X) :
-  (FullSubcategory.map h).Full where map_surjective f := ⟨f, rfl⟩
+  (FullSubcategory.map h).Full := (fullyFaithfulMap h).full
 
 instance FullSubcategory.faithful_map (h : ∀ ⦃X⦄, Z X → Z' X) :
-  (FullSubcategory.map h).Faithful where
+  (FullSubcategory.map h).Faithful := (fullyFaithfulMap h).faithful
 
 @[simp]
 theorem FullSubcategory.map_inclusion (h : ∀ ⦃X⦄, Z X → Z' X) :
@@ -165,7 +215,7 @@ variable {D : Type u₂} [Category.{v₂} D] (P Q : D → Prop)
 @[simps]
 def FullSubcategory.lift (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) : C ⥤ FullSubcategory P where
   obj X := ⟨F.obj X, hF X⟩
-  map f := F.map f
+  map f := { hom := F.map f }
 
 @[simp]
 theorem FullSubcategory.lift_comp_inclusion_eq (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) :

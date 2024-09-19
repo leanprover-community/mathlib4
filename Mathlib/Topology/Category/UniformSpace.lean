@@ -146,8 +146,9 @@ open CpltSepUniformSpace
 noncomputable def completionFunctor : UniformSpaceCat ⥤ CpltSepUniformSpace where
   obj X := CpltSepUniformSpace.of (Completion X)
   map f := ⟨Completion.map f.1, Completion.uniformContinuous_map⟩
-  map_id _ := Subtype.eq Completion.map_id
-  map_comp f g := Subtype.eq (Completion.map_comp g.property f.property).symm
+  map_id _ := InducedCategory.hom_ext (Subtype.eq Completion.map_id)
+  map_comp f g := InducedCategory.hom_ext
+    (Subtype.eq (Completion.map_comp g.property f.property).symm)
 
 /-- The inclusion of a uniform space into its completion. -/
 def completionHom (X : UniformSpaceCat) :
@@ -163,8 +164,9 @@ theorem completionHom_val (X : UniformSpaceCat) (x) : (completionHom X) x = (x :
 noncomputable def extensionHom {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
     (f : X ⟶ (forget₂ CpltSepUniformSpace UniformSpaceCat).obj Y) :
     completionFunctor.obj X ⟶ Y where
-  val := Completion.extension f
-  property := Completion.uniformContinuous_extension
+  hom :=
+    { val := Completion.extension f
+      property := Completion.uniformContinuous_extension }
 
 -- Porting note (#10754): added this instance to make things compile
 instance (X : UniformSpaceCat) : UniformSpace ((forget _).obj X) :=
@@ -180,7 +182,7 @@ theorem extensionHom_val {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
 @[simp]
 theorem extension_comp_coe {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
     (f : toUniformSpace (CpltSepUniformSpace.of (Completion X)) ⟶ toUniformSpace Y) :
-    extensionHom (completionHom X ≫ f) = f := by
+    (extensionHom (completionHom X ≫ f)).hom = f := by
   apply Subtype.eq
   funext x
   exact congr_fun (Completion.extension_comp_coe f.property) x
@@ -189,14 +191,15 @@ theorem extension_comp_coe {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
 noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace UniformSpaceCat :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X Y =>
-        { toFun := fun f => completionHom X ≫ f
+        { toFun := fun f => completionHom X ≫ f.hom
           invFun := fun f => extensionHom f
-          left_inv := fun f => by dsimp; erw [extension_comp_coe]
+          left_inv := fun f => InducedCategory.hom_ext (extension_comp_coe f.hom)
           right_inv := fun f => by
             apply Subtype.eq; funext x; cases f
             exact @Completion.extension_coe _ _ _ _ _ (CpltSepUniformSpace.t0Space _)
               ‹_› _ }
       homEquiv_naturality_left_symm := fun {X' X Y} f g => by
+        apply InducedCategory.hom_ext
         apply hom_ext; funext x; dsimp
         erw [coe_comp]
         -- Porting note: used to be `erw [← Completion.extension_map]`
@@ -207,7 +210,7 @@ noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace Unif
 
 noncomputable instance : Reflective (forget₂ CpltSepUniformSpace UniformSpaceCat) where
   adj := adj
-  map_surjective f := ⟨f, rfl⟩
+  map_surjective f := ⟨{ hom := f }, rfl⟩
 
 open CategoryTheory.Limits
 

@@ -100,11 +100,11 @@ def conesEquivSieveCompatibleFamily :
     ⟨fun Y f h => π.app (op ⟨Over.mk f, h⟩), fun X Y f g hf => by
       apply (id_comp _).symm.trans
       dsimp
-      exact π.naturality (Quiver.Hom.op (Over.homMk _ (by rfl)))⟩
+      exact π.naturality (Quiver.Hom.op { hom := (Over.homMk _ (by rfl)) })⟩
   invFun x :=
     { app := fun f => x.1 f.unop.1.hom f.unop.2
       naturality := fun f f' g => by
-        refine Eq.trans ?_ (x.2 f.unop.1.hom g.unop.left f.unop.2)
+        refine Eq.trans ?_ (x.2 f.unop.1.hom g.unop.hom.left f.unop.2)
         dsimp
         rw [id_comp]
         convert rfl

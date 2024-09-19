@@ -66,7 +66,7 @@ instance {X Y : HeytAlg.{u}} : HeytingHomClass (X ⟶ Y) ↑X ↑Y :=
 instance hasForgetToLat : HasForget₂ HeytAlg BddDistLat where
   forget₂ :=
     { obj := fun X => BddDistLat.of X
-      map := fun {X Y} f => (f : BoundedLatticeHom X Y) }
+      map := fun {X Y} f => { hom := (f : BoundedLatticeHom X Y) } }
 
 /-- Constructs an isomorphism of Heyting algebras from an order isomorphism between them. -/
 @[simps]

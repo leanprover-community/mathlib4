@@ -48,15 +48,13 @@ variable [MonoidalPredicate P]
 @[simps]
 instance : MonoidalCategoryStruct (FullSubcategory P) where
   tensorObj X Y := ⟨X.1 ⊗ Y.1, prop_tensor X.2 Y.2⟩
-  whiskerLeft X _ _ f := X.1 ◁ f
-  whiskerRight {X₁ X₂} (f : X₁.1 ⟶ X₂.1) Y := (f ▷ Y.1 :)
-  tensorHom f g := f ⊗ g
+  whiskerLeft X _ _ f := { hom := X.1 ◁ f.hom }
+  whiskerRight f Y := { hom := f.hom ▷ Y.1 }
+  tensorHom f g := { hom := f.hom ⊗ g.hom }
   tensorUnit := ⟨𝟙_ C, prop_id⟩
-  associator X Y Z :=
-    ⟨(α_ X.1 Y.1 Z.1).hom, (α_ X.1 Y.1 Z.1).inv, hom_inv_id (α_ X.1 Y.1 Z.1),
-      inv_hom_id (α_ X.1 Y.1 Z.1)⟩
-  leftUnitor X := ⟨(λ_ X.1).hom, (λ_ X.1).inv, hom_inv_id (λ_ X.1), inv_hom_id (λ_ X.1)⟩
-  rightUnitor X := ⟨(ρ_ X.1).hom, (ρ_ X.1).inv, hom_inv_id (ρ_ X.1), inv_hom_id (ρ_ X.1)⟩
+  associator _ _ _ := FullSubcategory.isoMk (α_ _ _ _)
+  leftUnitor _ := FullSubcategory.isoMk (λ_ _)
+  rightUnitor _ := FullSubcategory.isoMk (ρ_ _)
 
 /--
 When `P` is a monoidal predicate, the full subcategory for `P` inherits the monoidal structure of
@@ -64,8 +62,8 @@ When `P` is a monoidal predicate, the full subcategory for `P` inherits the mono
 -/
 instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) :=
   Monoidal.induced (fullSubcategoryInclusion P)
-    { μIso := fun X Y => eqToIso rfl
-      εIso := eqToIso rfl }
+    { μIso := fun X Y => Iso.refl _
+      εIso := Iso.refl _ }
 
 /-- The forgetful monoidal functor from a full monoidal subcategory into the original category
 ("forgetting" the condition).
@@ -107,8 +105,6 @@ end
 
 variable {P} {P' : C → Prop} [MonoidalPredicate P']
 
--- needed for `aesop_cat`
-attribute [local simp] FullSubcategory.comp_def FullSubcategory.id_def in
 /-- An implication of predicates `P → P'` induces a monoidal functor between full monoidal
 subcategories. -/
 @[simps]
@@ -118,12 +114,18 @@ def fullMonoidalSubcategory.map (h : ∀ ⦃X⦄, P X → P' X) :
   ε := 𝟙 _
   μ X Y := 𝟙 _
 
+/-- The inclusion functor between two full monoidal subcategories is fully faithful. -/
+def fullMonoidalSubcategory.fullyFaithfulMap (h : ∀ ⦃X⦄, P X → P' X) :
+    (fullMonoidalSubcategory.map h).FullyFaithful :=
+  FullSubcategory.fullyFaithfulMap _
+
 instance fullMonoidalSubcategory.map_full (h : ∀ ⦃X⦄, P X → P' X) :
-    (fullMonoidalSubcategory.map h).Full where
-  map_surjective f := ⟨f, rfl⟩
+    (fullMonoidalSubcategory.map h).Full :=
+  (fullyFaithfulMap h).full
 
 instance fullMonoidalSubcategory.map_faithful (h : ∀ ⦃X⦄, P X → P' X) :
-    (fullMonoidalSubcategory.map h).Faithful where
+    (fullMonoidalSubcategory.map h).Faithful :=
+  (fullyFaithfulMap h).faithful
 
 section Braided
 
@@ -133,9 +135,7 @@ variable (P) [BraidedCategory C]
 -/
 instance fullBraidedSubcategory : BraidedCategory (FullSubcategory P) :=
   braidedCategoryOfFaithful (fullMonoidalSubcategoryInclusion P)
-    (fun X Y =>
-      ⟨(β_ X.1 Y.1).hom, (β_ X.1 Y.1).inv, (β_ X.1 Y.1).hom_inv_id, (β_ X.1 Y.1).inv_hom_id⟩)
-    fun X Y => by aesop_cat
+    (fun X Y ↦ FullSubcategory.isoMk (β_ _ _)) (by aesop_cat)
 
 /-- The forgetful braided functor from a full braided subcategory into the original category
 ("forgetting" the condition).
@@ -199,15 +199,11 @@ instance fullMonoidalClosedSubcategory : MonoidalClosed (FullSubcategory P) wher
         fun Y => prop_ihom X.2 Y.2
       adj :=
         { unit :=
-          { app := fun Y => (ihom.coev X.1).app Y.1
-            naturality := fun Y Z f => ihom.coev_naturality X.1 f }
+          { app := fun Y => { hom := (ihom.coev X.1).app Y.1 }
+            naturality := fun Y Z f => by ext; exact ihom.coev_naturality X.1 f.hom }
           counit :=
-          { app := fun Y => (ihom.ev X.1).app Y.1
-            naturality := fun Y Z f => ihom.ev_naturality X.1 f }
-          left_triangle_components := fun X ↦
-            by simp [FullSubcategory.comp_def, FullSubcategory.id_def]
-          right_triangle_components := fun Y ↦
-            by simp [FullSubcategory.comp_def, FullSubcategory.id_def] } }
+          { app := fun Y => { hom := (ihom.ev X.1).app Y.1 }
+            naturality := fun Y Z f => by ext; exact ihom.ev_naturality X.1 f.hom } } }
 
 @[simp]
 theorem fullMonoidalClosedSubcategory_ihom_obj (X Y : FullSubcategory P) :
@@ -215,8 +211,9 @@ theorem fullMonoidalClosedSubcategory_ihom_obj (X Y : FullSubcategory P) :
   rfl
 
 @[simp]
-theorem fullMonoidalClosedSubcategory_ihom_map (X : FullSubcategory P) {Y Z : FullSubcategory P}
-    (f : Y ⟶ Z) : (ihom X).map f = (ihom X.obj).map f :=
+theorem fullMonoidalClosedSubcategory_ihom_map_hom
+    (X : FullSubcategory P) {Y Z : FullSubcategory P} (f : Y ⟶ Z) :
+    ((ihom X).map f).hom = (ihom X.obj).map f.hom :=
   rfl
 
 end Closed

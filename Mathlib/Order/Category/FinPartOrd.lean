@@ -61,17 +61,24 @@ instance concreteCategory : ConcreteCategory FinPartOrd :=
 instance hasForgetToPartOrd : HasForget₂ FinPartOrd PartOrd :=
   InducedCategory.hasForget₂ FinPartOrd.toPartOrd
 
+attribute [local instance] ConcreteCategory.instFunLike
+
 instance hasForgetToFintype : HasForget₂ FinPartOrd FintypeCat where
   forget₂ :=
     { obj := fun X => ⟨X, inferInstance⟩
       -- Porting note: Originally `map := fun X Y => coeFn`
-      map := fun {X Y} (f : OrderHom X Y) => ⇑f }
+      map := fun f ↦ { hom := ⇑f } }
+
+/-- Construct a morphism of finite partial orders from an order morphism between them. -/
+@[simps]
+def Hom.mk {α β : FinPartOrd.{u}} (f : α →o β) : α ⟶ β where
+  hom := f
 
 /-- Constructs an isomorphism of finite partial orders from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : FinPartOrd.{u}} (e : α ≃o β) : α ≅ β where
-  hom := (e : OrderHom _ _)
-  inv := (e.symm : OrderHom _ _)
+  hom := Hom.mk e
+  inv := Hom.mk e.symm
   hom_inv_id := by
     ext
     exact e.symm_apply_apply _
@@ -83,7 +90,7 @@ def Iso.mk {α β : FinPartOrd.{u}} (e : α ≃o β) : α ≅ β where
 @[simps]
 def dual : FinPartOrd ⥤ FinPartOrd where
   obj X := of Xᵒᵈ
-  map {X Y} := OrderHom.dual
+  map f := { hom := by apply OrderHom.dual f.hom }
 
 /-- The equivalence between `FinPartOrd` and itself induced by `OrderDual` both ways. -/
 @[simps]

@@ -125,13 +125,13 @@ theorem RightExactFunctor.ofExact_obj (F : C ⥤ₑ D) :
   rfl
 
 @[simp]
-theorem LeftExactFunctor.ofExact_map {F G : C ⥤ₑ D} (α : F ⟶ G) :
-    (LeftExactFunctor.ofExact C D).map α = α :=
+theorem LeftExactFunctor.ofExact_map_hom {F G : C ⥤ₑ D} (α : F ⟶ G) :
+    ((LeftExactFunctor.ofExact C D).map α).hom = α.hom :=
   rfl
 
 @[simp]
-theorem RightExactFunctor.ofExact_map {F G : C ⥤ₑ D} (α : F ⟶ G) :
-    (RightExactFunctor.ofExact C D).map α = α :=
+theorem RightExactFunctor.ofExact_map_hom {F G : C ⥤ₑ D} (α : F ⟶ G) :
+    ((RightExactFunctor.ofExact C D).map α).hom = α.hom :=
   rfl
 
 @[simp]
@@ -148,16 +148,17 @@ theorem ExactFunctor.forget_obj (F : C ⥤ₑ D) : (ExactFunctor.forget C D).obj
 
 @[simp]
 theorem LeftExactFunctor.forget_map {F G : C ⥤ₗ D} (α : F ⟶ G) :
-    (LeftExactFunctor.forget C D).map α = α :=
+    (LeftExactFunctor.forget C D).map α = α.hom :=
   rfl
 
 @[simp]
 theorem RightExactFunctor.forget_map {F G : C ⥤ᵣ D} (α : F ⟶ G) :
-    (RightExactFunctor.forget C D).map α = α :=
+    (RightExactFunctor.forget C D).map α = α.hom :=
   rfl
 
 @[simp]
-theorem ExactFunctor.forget_map {F G : C ⥤ₑ D} (α : F ⟶ G) : (ExactFunctor.forget C D).map α = α :=
+theorem ExactFunctor.forget_map {F G : C ⥤ₑ D} (α : F ⟶ G) :
+    (ExactFunctor.forget C D).map α = α.hom :=
   rfl
 
 /-- Turn a left exact functor into an object of the category `LeftExactFunctor C D`. -/

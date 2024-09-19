@@ -38,9 +38,11 @@ inductive FilteredClosure : C → Prop
 /-- The full subcategory induced by the filtered closure of a family of objects is filtered. -/
 instance : IsFilteredOrEmpty (FullSubcategory (FilteredClosure f)) where
   cocone_objs j j' :=
-    ⟨⟨max j.1 j'.1, FilteredClosure.max j.2 j'.2⟩, leftToMax _ _, rightToMax _ _, trivial⟩
+    ⟨⟨max j.1 j'.1, FilteredClosure.max j.2 j'.2⟩, { hom := leftToMax _ _},
+      { hom := rightToMax _ _ }, trivial⟩
   cocone_maps {j j'} f f' :=
-    ⟨⟨coeq f f', FilteredClosure.coeq j.2 j'.2 f f'⟩, coeqHom (C := C) f f', coeq_condition _ _⟩
+    ⟨⟨coeq f.hom f'.hom, FilteredClosure.coeq j.2 j'.2 f.hom f'.hom⟩,
+      { hom := coeqHom (C := C) f.hom f'.hom }, by ext; apply coeq_condition⟩
 
 namespace FilteredClosureSmall
 /-! Our goal for this section is to show that the size of the filtered closure of an `α`-indexed
@@ -186,9 +188,11 @@ inductive CofilteredClosure : C → Prop
 /-- The full subcategory induced by the cofiltered closure of a family is cofiltered. -/
 instance : IsCofilteredOrEmpty (FullSubcategory (CofilteredClosure f)) where
   cone_objs j j' :=
-    ⟨⟨min j.1 j'.1, CofilteredClosure.min j.2 j'.2⟩, minToLeft _ _, minToRight _ _, trivial⟩
+    ⟨⟨min j.1 j'.1, CofilteredClosure.min j.2 j'.2⟩, { hom := minToLeft _ _ },
+      { hom := minToRight _ _ }, trivial⟩
   cone_maps {j j'} f f' :=
-    ⟨⟨eq f f', CofilteredClosure.eq j.2 j'.2 f f'⟩, eqHom (C := C) f f', eq_condition _ _⟩
+    ⟨⟨eq f.hom f'.hom, CofilteredClosure.eq j.2 j'.2 f.hom f'.hom⟩,
+      { hom := eqHom f.hom f'.hom }, by ext; apply eq_condition ⟩
 
 namespace CofilteredClosureSmall
 

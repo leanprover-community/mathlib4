@@ -69,22 +69,25 @@ instance largeCategory : LargeCategory FinBoolAlg :=
 instance concreteCategory : ConcreteCategory FinBoolAlg :=
   InducedCategory.concreteCategory FinBoolAlg.toBoolAlg
 
-instance instFunLike {X Y : FinBoolAlg} : FunLike (X ⟶ Y) X Y :=
-  BoundedLatticeHom.instFunLike
+instance instFunLike {X Y : FinBoolAlg} : FunLike (X ⟶ Y) X Y := ConcreteCategory.instFunLike
 
 -- Porting note: added
 -- TODO: in all of the earlier bundled order categories,
 -- we should be constructing instances analogous to this,
 -- rather than directly coercions to functions.
-instance instBoundedLatticeHomClass {X Y : FinBoolAlg} : BoundedLatticeHomClass (X ⟶ Y) X Y :=
-  BoundedLatticeHom.instBoundedLatticeHomClass
+instance instBoundedLatticeHomClass {X Y : FinBoolAlg} :
+    BoundedLatticeHomClass (X ⟶ Y) X Y where
+  map_sup f := f.hom.hom.hom.map_sup'
+  map_inf f := f.hom.hom.hom.map_inf'
+  map_top f := f.hom.hom.hom.map_top'
+  map_bot f := f.hom.hom.hom.map_bot'
 
 instance hasForgetToBoolAlg : HasForget₂ FinBoolAlg BoolAlg :=
   InducedCategory.hasForget₂ FinBoolAlg.toBoolAlg
 
 instance hasForgetToFinBddDistLat : HasForget₂ FinBoolAlg FinBddDistLat where
   forget₂.obj X := FinBddDistLat.of X
-  forget₂.map f := f
+  forget₂.map f := FinBddDistLat.Hom.mk f.hom.hom.hom
   forget_comp := rfl
 
 instance forgetToBoolAlg_full : (forget₂ FinBoolAlg BoolAlg).Full :=
@@ -96,7 +99,8 @@ instance forgetToBoolAlgFaithful : (forget₂ FinBoolAlg BoolAlg).Faithful :=
 @[simps]
 instance hasForgetToFinPartOrd : HasForget₂ FinBoolAlg FinPartOrd where
   forget₂.obj X := FinPartOrd.of X
-  forget₂.map {X Y} f := show OrderHom X Y from ↑(show BoundedLatticeHom X Y from f)
+  forget₂.map {X Y} f := FinPartOrd.Hom.mk
+    (show OrderHom X Y from ↑(show BoundedLatticeHom X Y from f))
 
 instance forgetToFinPartOrdFaithful : (forget₂ FinBoolAlg FinPartOrd).Faithful :=
   -- Porting note: original code
@@ -110,15 +114,20 @@ instance forgetToFinPartOrdFaithful : (forget₂ FinBoolAlg FinPartOrd).Faithful
     apply DFunLike.coe_injective
     dsimp
     ext x
-    apply_fun (fun f => f x) at h
-    exact h ⟩
+    exact congr_fun ((forget _).congr_map h) x⟩
+
+/-- Constructs a morphism between finite Boolean algebras from a bounded lattice homomorphism
+between them. -/
+@[simps]
+def Hom.mk {α β : FinBoolAlg.{u}} (f : BoundedLatticeHom α β) : α ⟶ β where
+  hom := BoolAlg.Hom.mk f
 
 /-- Constructs an equivalence between finite Boolean algebras from an order isomorphism between
 them. -/
 @[simps]
 def Iso.mk {α β : FinBoolAlg.{u}} (e : α ≃o β) : α ≅ β where
-  hom := (e : BoundedLatticeHom α β)
-  inv := (e.symm : BoundedLatticeHom β α)
+  hom := Hom.mk e
+  inv := Hom.mk e.symm
   hom_inv_id := by ext; exact e.symm_apply_apply _
   inv_hom_id := by ext; exact e.apply_symm_apply _
 
@@ -126,7 +135,7 @@ def Iso.mk {α β : FinBoolAlg.{u}} (e : α ≃o β) : α ≅ β where
 @[simps]
 def dual : FinBoolAlg ⥤ FinBoolAlg where
   obj X := of Xᵒᵈ
-  map {X Y} := BoundedLatticeHom.dual
+  map {X Y} f := Hom.mk (by apply BoundedLatticeHom.dual f.hom.hom.hom)
 
 /-- The equivalence between `FinBoolAlg` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]
@@ -148,4 +157,5 @@ theorem finBoolAlg_dual_comp_forget_to_finBddDistLat :
 def fintypeToFinBoolAlgOp : FintypeCat ⥤ FinBoolAlgᵒᵖ where
   obj X := op <| FinBoolAlg.of (Set X)
   map {X Y} f :=
-    Quiver.Hom.op <| (CompleteLatticeHom.setPreimage f : BoundedLatticeHom (Set Y) (Set X))
+    Quiver.Hom.op <| FinBoolAlg.Hom.mk <|
+      (CompleteLatticeHom.setPreimage f.hom : BoundedLatticeHom (Set Y) (Set X))

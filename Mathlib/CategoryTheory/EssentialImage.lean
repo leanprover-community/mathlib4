@@ -81,17 +81,21 @@ instance : Category (EssImageSubcategory F) :=
 def essImageInclusion (F : C ⥤ D) : F.EssImageSubcategory ⥤ D :=
   fullSubcategoryInclusion _
 
+/-- The inclusion of the essential image of a functor is fully faithful. -/
+def fullyFaithfulEssImageInclusion (F : C ⥤ D) : F.essImageInclusion.FullyFaithful :=
+  fullyFaithfulFullSubcategoryInclusion _
+
 -- Porting note: `deriving Full` is not able to derive this instance
 instance : Full (essImageInclusion F) :=
-  (inferInstance : Full (fullSubcategoryInclusion _))
+  F.fullyFaithfulEssImageInclusion.full
 
 -- Porting note: `deriving Faithful` is not able to derive this instance
 instance : Faithful (essImageInclusion F) :=
-  (inferInstance : Faithful (fullSubcategoryInclusion _))
+  F.fullyFaithfulEssImageInclusion.faithful
 
 lemma essImage_ext (F : C ⥤ D) {X Y : F.EssImageSubcategory} (f g : X ⟶ Y)
-    (h : F.essImageInclusion.map f = F.essImageInclusion.map g) : f = g := by
-  simpa using h
+    (h : F.essImageInclusion.map f = F.essImageInclusion.map g) : f = g :=
+  FullSubcategory.hom_ext (by simpa using h)
 
 /--
 Given a functor `F : C ⥤ D`, we have an (essentially surjective) functor from `C` to the essential
@@ -119,7 +123,7 @@ class EssSurj (F : C ⥤ D) : Prop where
 
 instance EssSurj.toEssImage : EssSurj F.toEssImage where
   mem_essImage := fun ⟨_, hY⟩ =>
-    ⟨_, ⟨⟨_, _, hY.getIso.hom_inv_id, hY.getIso.inv_hom_id⟩⟩⟩
+    ⟨_, ⟨FullSubcategory.isoMk (essImage.getIso hY)⟩⟩
 
 theorem essSurj_of_surj (h : Function.Surjective F.obj) : EssSurj F where
   mem_essImage Y := by

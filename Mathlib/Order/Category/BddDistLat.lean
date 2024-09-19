@@ -68,7 +68,7 @@ instance hasForgetToDistLat : HasForget₂ BddDistLat DistLat where
     -- Porting note: was `⟨X⟩`
     -- see https://github.com/leanprover-community/mathlib4/issues/4998
     { obj := fun X => { α := X }
-      map := fun {X Y} => BoundedLatticeHom.toLatticeHom }
+      map := fun f ↦ by exact BoundedLatticeHom.toLatticeHom f.hom }
 
 instance hasForgetToBddLat : HasForget₂ BddDistLat BddLat :=
   InducedCategory.hasForget₂ toBddLat
@@ -82,8 +82,8 @@ theorem forget_bddLat_lat_eq_forget_distLat_lat :
 between them. -/
 @[simps]
 def Iso.mk {α β : BddDistLat.{u}} (e : α ≃o β) : α ≅ β where
-  hom := (e : BoundedLatticeHom α β)
-  inv := (e.symm : BoundedLatticeHom β α)
+  hom := { hom := (e : BoundedLatticeHom α β) }
+  inv := { hom := (e.symm : BoundedLatticeHom β α) }
   hom_inv_id := by ext; exact e.symm_apply_apply _
   inv_hom_id := by ext; exact e.apply_symm_apply _
 
@@ -91,7 +91,7 @@ def Iso.mk {α β : BddDistLat.{u}} (e : α ≃o β) : α ≅ β where
 @[simps]
 def dual : BddDistLat ⥤ BddDistLat where
   obj X := of Xᵒᵈ
-  map {X Y} := BoundedLatticeHom.dual
+  map {X Y} f := { hom := by apply BoundedLatticeHom.dual f.hom }
 
 /-- The equivalence between `BddDistLat` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]

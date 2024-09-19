@@ -39,7 +39,7 @@ instance : CoeSort Sequential Type* :=
 
 attribute [instance] is_sequential
 
-instance : Category.{u, u+1} Sequential.{u} :=
+instance category : Category.{u, u+1} Sequential.{u} :=
   InducedCategory.category toTop
 
 instance : ConcreteCategory.{u} Sequential.{u} :=
@@ -82,12 +82,12 @@ def isoOfHomeo {X Y : Sequential.{u}} (f : X ≃ₜ Y) : X ≅ Y where
 /-- Construct a homeomorphism from an isomorphism. -/
 @[simps]
 def homeoOfIso {X Y : Sequential.{u}} (f : X ≅ Y) : X ≃ₜ Y where
-  toFun := f.hom
-  invFun := f.inv
-  left_inv x := by simp
-  right_inv x := by simp
-  continuous_toFun := f.hom.continuous
-  continuous_invFun := f.inv.continuous
+  toFun := f.hom.hom
+  invFun := f.inv.hom
+  left_inv := congr_fun ((forget _).congr_map f.hom_inv_id)
+  right_inv := congr_fun ((forget _).congr_map f.inv_hom_id)
+  continuous_toFun := f.hom.hom.continuous
+  continuous_invFun := f.inv.hom.continuous
 
 /-- The equivalence between isomorphisms in `Sequential` and homeomorphisms
 of topological spaces. -/

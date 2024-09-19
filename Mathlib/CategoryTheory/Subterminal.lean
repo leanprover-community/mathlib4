@@ -131,7 +131,7 @@ instance (C : Type u₁) [Category.{v₁} C] : (subterminalInclusion C).Faithful
   FullSubcategory.faithful _
 
 instance subterminals_thin (X Y : Subterminals C) : Subsingleton (X ⟶ Y) :=
-  ⟨fun f g => Y.2 f g⟩
+  ⟨fun f g => FullSubcategory.hom_ext (Y.2 f.hom g.hom)⟩
 
 /--
 The category of subterminal objects is equivalent to the category of monomorphisms to the terminal
@@ -141,7 +141,7 @@ object (which is in turn equivalent to the subobjects of the terminal object).
 def subterminalsEquivMonoOverTerminal [HasTerminal C] : Subterminals C ≌ MonoOver (⊤_ C) where
   functor :=
     { obj := fun X => ⟨Over.mk (terminal.from X.1), X.2.mono_terminal_from⟩
-      map := fun f => MonoOver.homMk f (by ext1 ⟨⟨⟩⟩)
+      map := fun f => MonoOver.homMk f.hom (by ext1 ⟨⟨⟩⟩)
       map_id := fun X => rfl
       map_comp := fun f g => rfl }
   inverse :=
@@ -149,7 +149,7 @@ def subterminalsEquivMonoOverTerminal [HasTerminal C] : Subterminals C ≌ MonoO
         ⟨X.obj.left, fun Z f g => by
           rw [← cancel_mono X.arrow]
           subsingleton⟩
-      map := fun f => f.1
+      map := fun f => { hom := f.hom.left }
       map_id := fun X => rfl
       map_comp := fun f g => rfl }
   -- Porting note: the original definition was triggering a timeout, using `NatIso.ofComponents`

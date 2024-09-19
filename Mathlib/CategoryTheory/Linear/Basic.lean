@@ -93,16 +93,14 @@ universe u'
 variable {D : Type u'} (F : D → C)
 
 instance inducedCategory : Linear.{w, v} R (InducedCategory C F) where
-  homModule X Y := @Linear.homModule R _ C _ _ _ (F X) (F Y)
-  smul_comp _ _ _ _ _ _ := smul_comp _ _ _ _ _ _
-  comp_smul _ _ _ _ _ _ := comp_smul _ _ _ _ _ _
+  homModule X Y := (fullyFaithfulInducedFunctor _).homEquiv.module _
+  smul_comp := by intros; ext; apply smul_comp
+  comp_smul := by intros; ext; apply comp_smul
 
 end InducedCategory
 
-instance fullSubcategory (Z : C → Prop) : Linear.{w, v} R (FullSubcategory Z) where
-  homModule X Y := @Linear.homModule R _ C _ _ _ X.obj Y.obj
-  smul_comp _ _ _ _ _ _ := smul_comp _ _ _ _ _ _
-  comp_smul _ _ _ _ _ _ := comp_smul _ _ _ _ _ _
+instance fullSubcategory (Z : C → Prop) : Linear.{w, v} R (FullSubcategory Z) :=
+  inducedCategory _
 
 variable (R)
 

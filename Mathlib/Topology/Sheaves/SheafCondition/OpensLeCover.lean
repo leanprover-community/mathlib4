@@ -114,7 +114,7 @@ def generateEquivalenceOpensLe_functor' (hY : Y = iSup U) :
     ⟨f.1.left,
       let ⟨_, h, _, ⟨i, hY⟩, _⟩ := f.2
       ⟨i, hY ▸ h.le⟩⟩
-  map := fun {_ _} g => g.left }
+  map := fun {_ _} g => { hom := g.hom.left } }
 
 -- Porting note: split it out to prevent timeout
 /-- Given a family of opens `U` and an open `Y` equal to the union of opens in `U`, we may
@@ -130,12 +130,14 @@ def generateEquivalenceOpensLe_inverse' (hY : Y = iSup U) :
   obj := fun V => ⟨⟨V.obj, ⟨⟨⟩⟩, homOfLE <| hY ▸ (V.2.choose_spec.trans (le_iSup U (V.2.choose)))⟩,
     ⟨U V.2.choose, V.2.choose_spec.hom, homOfLE <| hY ▸ le_iSup U V.2.choose,
       ⟨V.2.choose, rfl⟩, rfl⟩⟩
-  map {_ _} g := Over.homMk g
+  map {_ _} g := { hom := Over.homMk g.hom }
   map_id _ := by
+    apply FullSubcategory.hom_ext
     refine Over.OverMorphism.ext ?_
     simp only [Functor.id_obj, Sieve.generate_apply, Functor.const_obj_obj, Over.homMk_left,
       eq_iff_true_of_subsingleton]
   map_comp {_ _ _} f g := by
+    apply FullSubcategory.hom_ext
     refine Over.OverMorphism.ext ?_
     simp only [Functor.id_obj, Sieve.generate_apply, Functor.const_obj_obj, Over.homMk_left,
       eq_iff_true_of_subsingleton]
@@ -154,7 +156,7 @@ def generateEquivalenceOpensLe (hY : Y = iSup U) :
   inverse := generateEquivalenceOpensLe_inverse' _ hY
   unitIso := eqToIso <| CategoryTheory.Functor.ext
     (by rintro ⟨⟨_, _⟩, _⟩; dsimp; congr)
-    (by intros; refine Over.OverMorphism.ext ?_; aesop_cat)
+    (by intros; apply FullSubcategory.hom_ext; refine Over.OverMorphism.ext ?_; aesop_cat)
   counitIso := eqToIso <| CategoryTheory.Functor.hext
     (by intro; refine FullSubcategory.ext ?_; rfl) (by intros; rfl)
 

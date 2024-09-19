@@ -50,6 +50,4 @@ def topToLocale : TopCat ⥤ Locale :=
 
 -- Note, `CompHaus` is too strong. We only need `T0Space`.
 instance CompHausToLocale.faithful : (compHausToTop ⋙ topToLocale.{u}).Faithful :=
-  ⟨fun h => by
-    dsimp at h
-    exact Opens.comap_injective (Quiver.Hom.op_inj h)⟩
+  ⟨fun h => CompHausLike.hom_ext (Opens.comap_injective (Quiver.Hom.op_inj h))⟩

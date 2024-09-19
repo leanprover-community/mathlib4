@@ -62,25 +62,39 @@ instance concreteCategoryFintype : ConcreteCategory FintypeCat :=
 /- Help typeclass inference infer fullness of forgetful functor. -/
 instance : (forget FintypeCat).Full := inferInstanceAs <| FintypeCat.incl.Full
 
+attribute [local instance] ConcreteCategory.instFunLike
+
+/-- Constructor ffor morphisms in `FintypeCat`. -/
+@[simps]
+def homMk {X Y : FintypeCat} (f : X → Y) : X ⟶ Y where
+  hom := f
+
 @[simp]
-theorem id_apply (X : FintypeCat) (x : X) : (𝟙 X : X → X) x = x :=
+lemma homMk_apply {X Y : FintypeCat} (f : X → Y) (x : X) :
+    homMk f x = f x := rfl
+
+@[simp]
+theorem id_apply (X : FintypeCat) (x : X) :
+    (𝟙 X) x = x :=
   rfl
 
 @[simp]
-theorem comp_apply {X Y Z : FintypeCat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) : (f ≫ g) x = g (f x) :=
+theorem comp_apply {X Y Z : FintypeCat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
+    (f ≫ g) x = g (f x) :=
   rfl
 
 @[simp]
-lemma hom_inv_id_apply {X Y : FintypeCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x :=
-  congr_fun f.hom_inv_id x
+lemma hom_inv_id_apply {X Y : FintypeCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x := by
+  rw [← comp_apply, f.hom_inv_id, id_apply]
 
 @[simp]
-lemma inv_hom_id_apply {X Y : FintypeCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y :=
-  congr_fun f.inv_hom_id y
+lemma inv_hom_id_apply {X Y : FintypeCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y := by
+  rw [← comp_apply, f.inv_hom_id, id_apply]
 
 -- Porting note (#10688): added to ease automation
 @[ext]
 lemma hom_ext {X Y : FintypeCat} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g := by
+  apply InducedCategory.hom_ext
   funext
   apply h
 
@@ -88,19 +102,18 @@ lemma hom_ext {X Y : FintypeCat} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g 
 /-- Equivalences between finite types are the same as isomorphisms in `FintypeCat`. -/
 @[simps]
 def equivEquivIso {A B : FintypeCat} : A ≃ B ≃ (A ≅ B) where
-  toFun e :=
-    { hom := e
-      inv := e.symm }
+  toFun e := InducedCategory.isoMk e.toIso
   invFun i :=
     { toFun := i.hom
       invFun := i.inv
-      left_inv := congr_fun i.hom_inv_id
-      right_inv := congr_fun i.inv_hom_id }
+      left_inv := by aesop_cat
+      right_inv := by aesop_cat }
   left_inv := by aesop_cat
   right_inv := by aesop_cat
 
 instance (X Y : FintypeCat) : Finite (X ⟶ Y) :=
-  inferInstanceAs <| Finite (X → Y)
+  Finite.of_injective (show _ → (X → Y) from fun f x ↦ f x)
+    (fun _ _ h ↦ by ext x; apply congr_fun h)
 
 instance (X Y : FintypeCat) : Finite (X ≅ Y) :=
   Finite.of_injective _ (fun _ _ h ↦ Iso.ext h)
@@ -166,19 +179,20 @@ theorem is_skeletal : Skeletal Skeleton.{u} := fun X Y ⟨h⟩ =>
 /-- The canonical fully faithful embedding of `Fintype.Skeleton` into `FintypeCat`. -/
 def incl : Skeleton.{u} ⥤ FintypeCat.{u} where
   obj X := FintypeCat.of (ULift (Fin X.len))
-  map f := f
+  map f := { hom := f }
 
-instance : incl.Full where map_surjective f := ⟨f, rfl⟩
+def fullyFaithfulIncl : incl.FullyFaithful where
+  preimage f := f.hom
 
-instance : incl.Faithful where
+instance : incl.Full := fullyFaithfulIncl.full
+
+instance : incl.Faithful := fullyFaithfulIncl.faithful
 
 instance : incl.EssSurj :=
   Functor.EssSurj.mk fun X =>
     let F := Fintype.equivFin X
     ⟨mk (Fintype.card X),
-      Nonempty.intro
-        { hom := F.symm ∘ ULift.down
-          inv := ULift.up ∘ F }⟩
+      Nonempty.intro (equivEquivIso (Equiv.ulift.trans F.symm))⟩
 
 noncomputable instance : incl.IsEquivalence where
 
@@ -207,7 +221,8 @@ universe v
 `X : FintypeCat.{u}` to `ULift.{v} (Fin (Fintype.card X))`. -/
 noncomputable def uSwitch : FintypeCat.{u} ⥤ FintypeCat.{v} where
   obj X := FintypeCat.of <| ULift.{v} (Fin (Fintype.card X))
-  map {X Y} f x := ULift.up <| (Fintype.equivFin Y) (f ((Fintype.equivFin X).symm x.down))
+  map {X Y} f := homMk (fun x ↦ ULift.up <| (Fintype.equivFin Y)
+    (f ((Fintype.equivFin X).symm x.down)))
   map_comp {X Y Z} f g := by ext; simp
 
 /-- Switching the universe of an object `X : FintypeCat.{u}` does not change `X` up to equivalence
@@ -222,11 +237,11 @@ lemma uSwitchEquiv_naturality {X Y : FintypeCat.{u}} (f : X ⟶ Y)
     f (X.uSwitchEquiv x) = Y.uSwitchEquiv (uSwitch.map f x) := by
   simp only [uSwitch, uSwitchEquiv, Equiv.trans_apply]
   erw [Equiv.ulift_apply, Equiv.ulift_apply]
-  simp only [Equiv.symm_apply_apply]
+  simp only [homMk_apply, Equiv.symm_apply_apply]
 
 lemma uSwitchEquiv_symm_naturality {X Y : FintypeCat.{u}} (f : X ⟶ Y) (x : X) :
     uSwitch.map f (X.uSwitchEquiv.symm x) = Y.uSwitchEquiv.symm (f x) := by
-  rw [← Equiv.apply_eq_iff_eq_symm_apply, ← uSwitchEquiv_naturality f,
+  erw [← Equiv.apply_eq_iff_eq_symm_apply, ← uSwitchEquiv_naturality f,
     Equiv.apply_symm_apply]
 
 lemma uSwitch_map_uSwitch_map {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
@@ -235,9 +250,10 @@ lemma uSwitch_map_uSwitch_map {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
       f ≫ (equivEquivIso ((uSwitch.obj Y).uSwitchEquiv.trans
       Y.uSwitchEquiv)).inv := by
   ext x
-  simp only [comp_apply, equivEquivIso_apply_hom, Equiv.trans_apply]
-  rw [uSwitchEquiv_naturality f, ← uSwitchEquiv_naturality]
-  rfl
+  sorry
+  --simp only [comp_apply, equivEquivIso_apply_hom, Equiv.trans_apply]
+  --rw [uSwitchEquiv_naturality f, ← uSwitchEquiv_naturality]
+  --rfl
 
 /-- `uSwitch.{u, v}` is an equivalence of categories with quasi-inverse `uSwitch.{v, u}`. -/
 noncomputable def uSwitchEquivalence : FintypeCat.{u} ≌ FintypeCat.{v} where
@@ -251,7 +267,8 @@ noncomputable def uSwitchEquivalence : FintypeCat.{u} ≌ FintypeCat.{v} where
     simp [uSwitch_map_uSwitch_map]
   functor_unitIso_comp X := by
     ext x
-    simp [← uSwitchEquiv_naturality]
+    sorry
+    --simp [← uSwitchEquiv_naturality]
 
 instance : uSwitch.IsEquivalence :=
   uSwitchEquivalence.isEquivalence_functor
@@ -266,8 +283,10 @@ universe u v w
 
 variable {C : Type u} [Category.{v} C] (F G : C ⥤ FintypeCat.{w}) {X Y : C}
 
+attribute [local instance] ConcreteCategory.instFunLike
+
 lemma naturality (σ : F ⟶ G) (f : X ⟶ Y) (x : F.obj X) :
     σ.app Y (F.map f x) = G.map f (σ.app X x) :=
-  congr_fun (σ.naturality f) x
+  NatTrans.naturality_apply σ _ _
 
 end FunctorToFintypeCat

@@ -161,18 +161,18 @@ theorem parallelPair_pullback_initial {X B : C} (π : X ⟶ B)
     (parallelPair (C := (Sieve.ofArrows (fun (_ : Unit) => X) (fun _ => π)).arrows.categoryᵒᵖ)
     (Y := op ((Presieve.categoryMk _ (c.fst ≫ π) ⟨_, c.fst, π, ofArrows.mk (), rfl⟩)))
     (X := op ((Presieve.categoryMk _ π (Sieve.ofArrows_mk _ _ Unit.unit))))
-    (Quiver.Hom.op (Over.homMk c.fst))
-    (Quiver.Hom.op (Over.homMk c.snd c.condition.symm))).Initial := by
+    (Quiver.Hom.op { hom := Over.homMk c.fst })
+    (Quiver.Hom.op { hom := Over.homMk c.snd c.condition.symm })).Initial := by
   apply Limits.parallelPair_initial_mk
   · intro ⟨Z⟩
     obtain ⟨_, f, g, ⟨⟩, hh⟩ := Z.property
     let X' : (Presieve.ofArrows (fun () ↦ X) (fun () ↦ π)).category :=
       Presieve.categoryMk _ π (ofArrows.mk ())
     let f' : Z.obj.left ⟶ X'.obj.left := f
-    exact ⟨(Over.homMk f').op⟩
-  · intro ⟨Z⟩ ⟨i⟩ ⟨j⟩
+    exact ⟨Quiver.Hom.op { hom := Over.homMk f' }⟩
+  · intro ⟨Z⟩ ⟨⟨i⟩⟩ ⟨⟨j⟩⟩
     let ij := PullbackCone.IsLimit.lift hc i.left j.left (by erw [i.w, j.w]; rfl)
-    refine ⟨Quiver.Hom.op (Over.homMk ij (by simpa [ij] using i.w)), ?_, ?_⟩
+    refine ⟨Quiver.Hom.op { hom := Over.homMk ij (by simpa [ij] using i.w)}, ?_, ?_⟩
     all_goals congr
     all_goals exact Comma.hom_ext _ _ (by erw [Over.comp_left]; simp [ij]) rfl
 
@@ -187,8 +187,8 @@ noncomputable def isLimit_forkOfι_equiv (P : Cᵒᵖ ⥤ D) {X B : C} (π : X �
   let S := (Sieve.ofArrows (fun (_ : Unit) => X) (fun _ => π)).arrows
   let X' := S.categoryMk π ⟨_, 𝟙 _, π, ofArrows.mk (), Category.id_comp _⟩
   let P' := S.categoryMk (c.fst ≫ π) ⟨_, c.fst, π, ofArrows.mk (), rfl⟩
-  let fst : P' ⟶ X' := Over.homMk c.fst
-  let snd : P' ⟶ X' := Over.homMk c.snd c.condition.symm
+  let fst : P' ⟶ X' := { hom := Over.homMk c.fst }
+  let snd : P' ⟶ X' := { hom := Over.homMk c.snd c.condition.symm }
   let F : S.categoryᵒᵖ ⥤ D := S.diagram.op ⋙ P
   let G := parallelPair (P.map c.fst.op) (P.map c.snd.op)
   let H := parallelPair fst.op snd.op
