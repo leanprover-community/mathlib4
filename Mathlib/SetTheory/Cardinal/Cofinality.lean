@@ -1212,6 +1212,12 @@ lemma sup_sequence_lt_omega1 {α} [Countable α] (o : α → Ordinal) (ho : ∀ 
   rw [Cardinal.isRegular_aleph_one.cof_eq]
   exact lt_of_le_of_lt mk_le_aleph0 aleph0_lt_aleph_one
 
+end Ordinal
+
+end Omega1
+
+namespace Ordinal
+
 theorem isLimit_of_not_isRegular_aleph {o : Ordinal} (h : ¬((aleph o).IsRegular)) :
     o.IsLimit := by
   have ho : o ≠ 0 := fun h0 ↦ False.elim <| (aleph_zero ▸ h0 ▸ h) isRegular_aleph0
@@ -1225,5 +1231,3 @@ theorem ord_cof_pos_of_isLimit {o : Ordinal} (h : IsLimit o) : 0 < o.cof.ord :=
     exact h.pos.ne.symm ho
 
 end Ordinal
-
-end Omega1
