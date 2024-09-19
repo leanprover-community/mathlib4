@@ -295,6 +295,10 @@ equality of types, using it should be avoided if possible. -/
 theorem fin_injective : Function.Injective Fin := fun m n h =>
   (Fintype.card_fin m).symm.trans <| (Fintype.card_congr <| Equiv.cast h).trans (Fintype.card_fin n)
 
+theorem Fin.val_eq_val_of_heq {k l : ℕ} {i : Fin k} {j : Fin l} (h : HEq i j) :
+    (i : ℕ) = (j : ℕ) :=
+  (Fin.heq_ext_iff (fin_injective (type_eq_of_heq h))).1 h
+
 /-- A reversed version of `Fin.cast_eq_cast` that is easier to rewrite with. -/
 theorem Fin.cast_eq_cast' {n m : ℕ} (h : Fin n = Fin m) :
     _root_.cast h = Fin.cast (fin_injective h) := by
@@ -542,7 +546,7 @@ theorem one_lt_card_iff : 1 < card α ↔ ∃ a b : α, a ≠ b :=
   one_lt_card_iff_nontrivial.trans nontrivial_iff
 
 nonrec theorem two_lt_card_iff : 2 < card α ↔ ∃ a b c : α, a ≠ b ∧ a ≠ c ∧ b ≠ c := by
-  simp_rw [← Finset.card_univ, two_lt_card_iff, mem_univ, true_and_iff]
+  simp_rw [← Finset.card_univ, two_lt_card_iff, mem_univ, true_and]
 
 theorem card_of_bijective {f : α → β} (hf : Bijective f) : card α = card β :=
   card_congr (Equiv.ofBijective f hf)
@@ -815,7 +819,7 @@ theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [
     fun x y hxy =>
     Finset.card_lt_card <| by
       simp only [Finset.lt_iff_ssubset.symm, lt_iff_le_not_le, Finset.le_iff_subset,
-          Finset.subset_iff, mem_filter, true_and_iff, mem_univ, hxy]
+          Finset.subset_iff, mem_filter, true_and, mem_univ, hxy]
       exact
         ⟨fun z hzx => _root_.trans hzx hxy,
           not_forall_of_exists_not ⟨x, Classical.not_imp.2 ⟨hxy, irrefl x⟩⟩⟩

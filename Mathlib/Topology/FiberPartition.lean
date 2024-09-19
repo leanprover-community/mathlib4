@@ -7,7 +7,7 @@ import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.Logic.Function.FiberPartition
 /-!
 
-This file provides some API surrounding `Function.Fibers` (see
+This file provides some API surrounding `Function.Fiber` (see
 `Mathlib.Logic.Function.FiberPartition`) in the presence of a topology on the domain of the
 function.
 
@@ -22,13 +22,13 @@ open Function
 
 variable {S Y : Type*} (f : S → Y)
 
-namespace TopologicalSpace.Fibers
+namespace TopologicalSpace.Fiber
 
 variable [TopologicalSpace S]
 
 /-- The canonical map from the disjoint union induced by `f` to `S`. -/
 @[simps apply]
-def sigmaIsoHom : C((x : Fibers f) × x.val, S) where
+def sigmaIsoHom : C((x : Fiber f) × x.val, S) where
   toFun := fun ⟨a, x⟩ ↦ x.val
 
 lemma sigmaIsoHom_inj : Function.Injective (sigmaIsoHom f) := by
@@ -42,28 +42,28 @@ lemma sigmaIsoHom_surj : Function.Surjective (sigmaIsoHom f) :=
   fun _ ↦ ⟨⟨⟨_, ⟨⟨_, Set.mem_range_self _⟩, rfl⟩⟩, ⟨_, rfl⟩⟩, rfl⟩
 
 /-- The inclusion map from a component of the disjoint union induced by `f` into `S`. -/
-def sigmaIncl (a : Fibers f) : C(a.val, S) where
+def sigmaIncl (a : Fiber f) : C(a.val, S) where
   toFun := fun x ↦ x.val
 
 /-- The inclusion map from a fiber of a composition into the intermediate fiber. -/
-def sigmaInclIncl {X : Type*} (g : Y → X) (a : Fibers (g ∘ f))
-    (b : Fibers (f ∘ (sigmaIncl (g ∘ f) a))) :
-    C(b.val, (Fibers.mk f (b.preimage).val).val) where
+def sigmaInclIncl {X : Type*} (g : Y → X) (a : Fiber (g ∘ f))
+    (b : Fiber (f ∘ (sigmaIncl (g ∘ f) a))) :
+    C(b.val, (Fiber.mk f (b.preimage).val).val) where
   toFun x := ⟨x.val.val, by
     have := x.prop
-    simp only [sigmaIncl, ContinuousMap.coe_mk, Fibers.mem_iff_eq_image, comp_apply] at this
-    rw [Fibers.mem_iff_eq_image, Fibers.mk_image, this, ← Fibers.map_preimage_eq_image]
+    simp only [sigmaIncl, ContinuousMap.coe_mk, Fiber.mem_iff_eq_image, comp_apply] at this
+    rw [Fiber.mem_iff_eq_image, Fiber.mk_image, this, ← Fiber.map_preimage_eq_image]
     rfl⟩
 
 variable (l : LocallyConstant S Y) [CompactSpace S]
 
-instance (x : Fibers l) : CompactSpace x.val := by
+instance (x : Fiber l) : CompactSpace x.val := by
   obtain ⟨y, hy⟩ := x.prop
   rw [← isCompact_iff_compactSpace, ← hy]
   exact (l.2.isClosed_fiber _).isCompact
 
-instance : Finite (Fibers l) :=
+instance : Finite (Fiber l) :=
   have : Finite (Set.range l) := l.range_finite
   Finite.Set.finite_range _
 
-end TopologicalSpace.Fibers
+end TopologicalSpace.Fiber

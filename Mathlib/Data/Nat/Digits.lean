@@ -256,9 +256,9 @@ theorem ofDigits_digits (b n : ℕ) : ofDigits b (digits b n) = n := by
         rw [Nat.mod_add_div]
 
 theorem ofDigits_one (L : List ℕ) : ofDigits 1 L = L.sum := by
-  induction' L with _ _ ih
-  · rfl
-  · simp [ofDigits, List.sum_cons, ih]
+  induction L with
+  | nil => rfl
+  | cons _ _ ih => simp [ofDigits, List.sum_cons, ih]
 
 /-!
 ### Properties
@@ -438,9 +438,10 @@ theorem le_digits_len_le (b n m : ℕ) (h : n ≤ m) : (digits b n).length ≤ (
 
 @[mono]
 theorem ofDigits_monotone {p q : ℕ} (L : List ℕ) (h : p ≤ q) : ofDigits p L ≤ ofDigits q L := by
-  induction' L with _ _ hi
-  · rfl
-  · simp only [ofDigits, cast_id, add_le_add_iff_left]
+  induction L with
+  | nil => rfl
+  | cons _ _ hi =>
+    simp only [ofDigits, cast_id, add_le_add_iff_left]
     exact Nat.mul_le_mul h hi
 
 theorem sum_le_ofDigits {p : ℕ} (L : List ℕ) (h : 1 ≤ p) : L.sum ≤ ofDigits p L :=

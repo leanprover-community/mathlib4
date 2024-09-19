@@ -177,10 +177,11 @@ noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :
     map_smul' := fun r x => by
       dsimp
       rw [← RingEquiv.coe_toEquiv_symm, RingEquiv.coe_toEquiv]
-      induction' x using induction_linear with _ _ hp hq n a
-      · rw [smul_zero, map_zero, mul_zero]
-      · rw [smul_add, map_add, map_add, mul_add, hp, hq]
-      · ext i
+      induction x using induction_linear with
+      | h0 => rw [smul_zero, map_zero, mul_zero]
+      | hadd _ _ hp hq => rw [smul_add, map_add, map_add, mul_add, hp, hq]
+      | hsingle n a =>
+        ext i
         simp only [coeff_ofFinsupp, smul_single_apply, toFinsuppIso_symm_apply, coeff_ofFinsupp,
         single_apply, smul_eq_mul, Polynomial.coeff_mul, mul_ite, mul_zero]
         split_ifs with hn
@@ -240,10 +241,10 @@ theorem map_smul (f : M →ₗ[R] M') (p : R[X]) (q : PolynomialModule R M) :
   · intro f g e₁ e₂
     rw [smul_add, map_add, e₁, e₂, map_add, smul_add]
   intro i m
-  induction' p using Polynomial.induction_on' with _ _ e₁ e₂
-  · rw [add_smul, map_add, e₁, e₂, Polynomial.map_add, add_smul]
-  · rw [monomial_smul_single, map_single, Polynomial.map_monomial, map_single, monomial_smul_single,
-      f.map_smul, algebraMap_smul]
+  induction p using Polynomial.induction_on' with
+  | h_add _ _ e₁ e₂ => rw [add_smul, map_add, e₁, e₂, Polynomial.map_add, add_smul]
+  | h_monomial => rw [monomial_smul_single, map_single, Polynomial.map_monomial, map_single,
+      monomial_smul_single, f.map_smul, algebraMap_smul]
 
 /-- Evaluate a polynomial `p : PolynomialModule R M` at `r : R`. -/
 @[simps! (config := .lemmasOnly)]
@@ -273,10 +274,10 @@ theorem eval_smul (p : R[X]) (q : PolynomialModule R M) (r : R) :
   · intro f g e₁ e₂
     rw [smul_add, map_add, e₁, e₂, map_add, smul_add]
   intro i m
-  induction' p using Polynomial.induction_on' with _ _ e₁ e₂
-  · rw [add_smul, map_add, Polynomial.eval_add, e₁, e₂, add_smul]
-  · rw [monomial_smul_single, eval_single, Polynomial.eval_monomial, eval_single, smul_comm, ←
-      smul_smul, pow_add, mul_smul]
+  induction p using Polynomial.induction_on' with
+  | h_add _ _ e₁ e₂ => rw [add_smul, map_add, Polynomial.eval_add, e₁, e₂, add_smul]
+  | h_monomial => rw [monomial_smul_single, eval_single, Polynomial.eval_monomial, eval_single,
+      smul_comm, ← smul_smul, pow_add, mul_smul]
 
 @[simp]
 theorem eval_map (f : M →ₗ[R] M') (q : PolynomialModule R M) (r : R) :
