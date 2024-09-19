@@ -258,8 +258,7 @@ theorem strongEpi_map_of_strongEpi (adj : F ⊣ F') (f : A ⟶ B) [h₁ : F'.Pre
   ⟨inferInstance, fun X Y Z => by
     intro
     rw [adj.hasLiftingProperty_iff]
-    sorry -- infer_instance
-    ⟩
+    infer_instance⟩
 
 instance strongEpi_map_of_isEquivalence [F.IsEquivalence] (f : A ⟶ B) [_h : StrongEpi f] :
     StrongEpi (F.map f) :=

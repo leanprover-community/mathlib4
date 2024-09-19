@@ -795,7 +795,6 @@ instance strongEpiMonoFactorisationInhabited {X Y : C} (f : X ⟶ Y) [StrongEpi 
     Inhabited (StrongEpiMonoFactorisation f) :=
   ⟨⟨⟨Y, 𝟙 Y, f, by simp⟩⟩⟩
 
-set_option trace.Meta.synthInstance true in
 /-- A mono factorisation coming from a strong epi-mono factorisation always has the universal
     property of the image. -/
 def StrongEpiMonoFactorisation.toMonoIsImage {X Y : C} {f : X ⟶ Y}

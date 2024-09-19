@@ -90,16 +90,14 @@ theorem strongEpi_comp [StrongEpi f] [StrongEpi g] : StrongEpi (f ≫ g) :=
   { epi := epi_comp _ _
     llp := by
       intros
-      sorry -- infer_instance
-      }
+      infer_instance }
 
 /-- The composition of two strong monomorphisms is a strong monomorphism. -/
 theorem strongMono_comp [StrongMono f] [StrongMono g] : StrongMono (f ≫ g) :=
   { mono := mono_comp _ _
     rlp := by
       intros
-      sorry -- infer_instance
-      }
+      infer_instance }
 
 /-- If `f ≫ g` is a strong epimorphism, then so is `g`. -/
 theorem strongEpi_of_strongEpi [StrongEpi (f ≫ g)] : StrongEpi g :=
@@ -110,9 +108,8 @@ theorem strongEpi_of_strongEpi [StrongEpi (f ≫ g)] : StrongEpi g :=
       have h₀ : (f ≫ u) ≫ z = (f ≫ g) ≫ v := by simp only [Category.assoc, sq.w]
       exact
         CommSq.HasLift.mk'
-          sorry -- ⟨(CommSq.mk h₀).lift, by
-            -- simp only [← cancel_mono z, Category.assoc, CommSq.fac_right, sq.w], by simp⟩
-  }
+          ⟨(CommSq.mk h₀).lift, by
+            simp only [← cancel_mono z, Category.assoc, CommSq.fac_right, sq.w], by simp⟩ }
 
 /-- If `f ≫ g` is a strong monomorphism, then so is `f`. -/
 theorem strongMono_of_strongMono [StrongMono (f ≫ g)] : StrongMono f :=
@@ -123,8 +120,7 @@ theorem strongMono_of_strongMono [StrongMono (f ≫ g)] : StrongMono f :=
       intro u v sq
       have h₀ : u ≫ f ≫ g = z ≫ v ≫ g := by
         rw [← Category.assoc, eq_whisker sq.w, Category.assoc]
-      sorry -- exact CommSq.HasLift.mk' ⟨(CommSq.mk h₀).lift, by simp, by simp [← cancel_epi z, sq.w]⟩
-  }
+      exact CommSq.HasLift.mk' ⟨(CommSq.mk h₀).lift, by simp, by simp [← cancel_epi z, sq.w]⟩ }
 
 /-- An isomorphism is in particular a strong epimorphism. -/
 instance (priority := 100) strongEpi_of_isIso [IsIso f] : StrongEpi f where
@@ -143,8 +139,7 @@ theorem StrongEpi.of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
       infer_instance
     llp := fun {X Y} z => by
       intro
-      sorry -- apply HasLiftingProperty.of_arrow_iso_left e z
-  }
+      apply HasLiftingProperty.of_arrow_iso_left e z }
 
 theorem StrongMono.of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
     (e : Arrow.mk f ≅ Arrow.mk g) [h : StrongMono f] : StrongMono g :=
@@ -153,8 +148,7 @@ theorem StrongMono.of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
       infer_instance
     rlp := fun {X Y} z => by
       intro
-      sorry -- apply HasLiftingProperty.of_arrow_iso_right z e
-  }
+      apply HasLiftingProperty.of_arrow_iso_right z e }
 
 theorem StrongEpi.iff_of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
     (e : Arrow.mk f ≅ Arrow.mk g) : StrongEpi f ↔ StrongEpi g := by
@@ -170,11 +164,11 @@ end
 
 /-- A strong epimorphism that is a monomorphism is an isomorphism. -/
 theorem isIso_of_mono_of_strongEpi (f : P ⟶ Q) [Mono f] [StrongEpi f] : IsIso f :=
-  sorry -- ⟨⟨(CommSq.mk (show 𝟙 P ≫ f = f ≫ 𝟙 Q by simp)).lift, by aesop_cat⟩⟩
+  ⟨⟨(CommSq.mk (show 𝟙 P ≫ f = f ≫ 𝟙 Q by simp)).lift, by aesop_cat⟩⟩
 
 /-- A strong monomorphism that is an epimorphism is an isomorphism. -/
 theorem isIso_of_epi_of_strongMono (f : P ⟶ Q) [Epi f] [StrongMono f] : IsIso f :=
-  sorry -- ⟨⟨(CommSq.mk (show 𝟙 P ≫ f = f ≫ 𝟙 Q by simp)).lift, by aesop_cat⟩⟩
+  ⟨⟨(CommSq.mk (show 𝟙 P ≫ f = f ≫ 𝟙 Q by simp)).lift, by aesop_cat⟩⟩
 
 section
 
