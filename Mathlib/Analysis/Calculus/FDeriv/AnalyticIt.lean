@@ -106,16 +106,6 @@ variable {ι : Type*} {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] [∀ 
 
 open FormalMultilinearSeries
 
-theorem iteratedFDeriv_eq (n : ℕ) :
-    iteratedFDeriv 𝕜 n f = f.iteratedFDeriv n :=
-  funext fun x ↦ (f.hasFTaylorSeriesUpTo_iteratedFDeriv.eq_iteratedFDeriv (m := n) le_top x).symm
-
-theorem norm_iteratedFDeriv_le (n : ℕ) (x : (i : ι) → E i) :
-    ‖iteratedFDeriv 𝕜 n f x‖
-      ≤ Nat.descFactorial (Fintype.card ι) n * ‖f‖ * ‖x‖ ^ (Fintype.card ι - n) := by
-  rw [f.iteratedFDeriv_eq]
-  exact f.norm_iteratedFDeriv_le' n x
-
 lemma contDiffAt : ContDiffAt 𝕜 n f x := (f.cPolynomialAt x).contDiffAt
 
 lemma contDiff : ContDiff 𝕜 n f := contDiff_iff_contDiffAt.mpr f.contDiffAt

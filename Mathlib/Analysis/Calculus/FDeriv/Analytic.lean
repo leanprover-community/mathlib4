@@ -201,7 +201,6 @@ protected theorem AnalyticOn.iteratedFDeriv [CompleteSpace F] (h : AnalyticOn �
     case g => exact ↑(continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (n + 1) ↦ E) F).symm
     simp
 
-/-
 lemma AnalyticOn.hasFTaylorSeriesUpToOn [CompleteSpace F] (n : WithTop ℕ∞) (h : AnalyticOn 𝕜 f s) :
     HasFTaylorSeriesUpToOn n f (ftaylorSeries 𝕜 f) s := by
   refine ⟨fun x _hx ↦ rfl, fun m _hm x hx ↦ ?_, fun m _hm x hx ↦ ?_⟩
@@ -209,7 +208,18 @@ lemma AnalyticOn.hasFTaylorSeriesUpToOn [CompleteSpace F] (n : WithTop ℕ∞) (
     exact ((h.iteratedFDeriv m x hx).differentiableAt).hasFDerivAt
   · apply (DifferentiableAt.continuousAt (𝕜 := 𝕜) ?_).continuousWithinAt
     exact (h.iteratedFDeriv m x hx).differentiableAt
--/
+
+lemma AnalyticWithinAt.exists_hasFTaylorSeriesUpToOn [CompleteSpace F]
+    (n : WithTop ℕ∞) (h : AnalyticWithinAt 𝕜 f s x) :
+    ∃ u ∈ 𝓝[insert x s] x, ∃ (p : E → FormalMultilinearSeries 𝕜 E F),
+    HasFTaylorSeriesUpToOn n f p u ∧ ∀ i, AnalyticWithinOn 𝕜 (fun x ↦ p x i) u := by
+  rcases h.exists_analyticAt with ⟨g, -, fg, hg⟩
+  rcases hg.exists_mem_nhds_analyticOn with ⟨v, vx, hv⟩
+  refine ⟨insert x s ∩ v, inter_mem_nhdsWithin _ vx, ftaylorSeries 𝕜 g, ?_, fun i ↦ ?_⟩
+  · suffices HasFTaylorSeriesUpToOn n g (ftaylorSeries 𝕜 g) (insert x s ∩ v) from
+      this.congr (fun y hy ↦ fg hy.1)
+    exact AnalyticOn.hasFTaylorSeriesUpToOn _ (hv.mono Set.inter_subset_right)
+  · exact (hv.iteratedFDeriv i).analyticWithinOn.mono Set.inter_subset_right
 
 /-- If a function has a power series `p` within a set of unique differentiability, inside a ball,
 and is differentiable at a point, then the derivative series of `p` is summable at a point, with
@@ -254,14 +264,12 @@ theorem AnalyticWithinOn.fderivWithin (h : AnalyticWithinOn 𝕜 f s) (hu : Uniq
   intro x hx
   rcases h x hx with ⟨p, r, hr⟩
   refine ⟨p.derivSeries, r, ?_⟩
-  refine ⟨?_, hr.r_pos, ?_⟩
-  · sorry
-  · intro y hy h'y
-    apply hr.hasSum_derivSeries_of_hasFDerivWithinAt (by simpa [edist_eq_coe_nnnorm] using h'y) hy
-    rw [insert_eq_of_mem hx] at hy ⊢
-    apply DifferentiableWithinAt.hasFDerivWithinAt
-    · exact h.differentiableOn _ hy
-    · rwa [insert_eq_of_mem hx]
+  refine ⟨hr.r_le.trans p.radius_le_radius_derivSeries, hr.r_pos, fun {y} hy h'y ↦ ?_⟩
+  apply hr.hasSum_derivSeries_of_hasFDerivWithinAt (by simpa [edist_eq_coe_nnnorm] using h'y) hy
+  rw [insert_eq_of_mem hx] at hy ⊢
+  apply DifferentiableWithinAt.hasFDerivWithinAt
+  · exact h.differentiableOn _ hy
+  · rwa [insert_eq_of_mem hx]
 
 /-- If a function is analytic on a set `s`, so are its successive Fréchet derivative within this
 set. Note that this theorem does not require completeness of the space. -/
@@ -279,25 +287,15 @@ theorem AnalyticWithinOn.iteratedFDerivWithin (h : AnalyticWithinOn 𝕜 f s)
     apply LinearIsometryEquiv.analyticOn
 
 theorem AnalyticOn.fderiv_of_isOpen (h : AnalyticOn 𝕜 f s) (hs : IsOpen s) :
-    AnalyticOn 𝕜 (fderiv 𝕜 f) s :=
-  sorry
+    AnalyticOn 𝕜 (fderiv 𝕜 f) s := by
+  rw [← hs.analyticWithinOn_iff_analyticOn] at h ⊢
+  exact (h.fderivWithin hs.uniqueDiffOn).congr (fun x hx ↦ (fderivWithin_of_isOpen hs hx).symm)
 
-
-#exit
-
-/-
-lemma AnalyticWithinAt.exists_hasFTaylorSeriesUpToOn [CompleteSpace F]
-    (n : WithTop ℕ∞) (h : AnalyticWithinAt 𝕜 f s x) :
-    ∃ u ∈ 𝓝[insert x s] x, ∃ (p : E → FormalMultilinearSeries 𝕜 E F),
-    HasFTaylorSeriesUpToOn n f p u ∧ ∀ i, AnalyticWithinOn 𝕜 (fun x ↦ p x i) u := by
-  rcases h.exists_analyticAt with ⟨g, -, fg, hg⟩
-  rcases hg.exists_mem_nhds_analyticOn with ⟨v, vx, hv⟩
-  refine ⟨insert x s ∩ v, inter_mem_nhdsWithin _ vx, ftaylorSeries 𝕜 g, ?_, fun i ↦ ?_⟩
-  · suffices HasFTaylorSeriesUpToOn n g (ftaylorSeries 𝕜 g) (insert x s ∩ v) from
-      this.congr (fun y hy ↦ fg hy.1)
-    exact AnalyticOn.hasFTaylorSeriesUpToOn _ (hv.mono Set.inter_subset_right)
-  · exact (hv.iteratedFDeriv i).analyticWithinOn.mono Set.inter_subset_right
--/
+theorem AnalyticOn.iteratedFDeriv_of_isOpen (h : AnalyticOn 𝕜 f s) (hs : IsOpen s) (n : ℕ) :
+    AnalyticOn 𝕜 (iteratedFDeriv 𝕜 n f) s := by
+  rw [← hs.analyticWithinOn_iff_analyticOn] at h ⊢
+  exact (h.iteratedFDerivWithin hs.uniqueDiffOn n).congr
+    (fun x hx ↦ (iteratedFDerivWithin_of_isOpen n hs hx).symm)
 
 end fderiv
 
@@ -559,6 +557,16 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
   · rintro n -
     apply continuous_finset_sum _ (fun e _ ↦ ?_)
     exact (ContinuousMultilinearMap.coe_continuous _).comp (ContinuousLinearMap.continuous _)
+
+theorem iteratedFDeriv_eq (n : ℕ) :
+    iteratedFDeriv 𝕜 n f = f.iteratedFDeriv n :=
+  funext fun x ↦ (f.hasFTaylorSeriesUpTo_iteratedFDeriv.eq_iteratedFDeriv (m := n) le_top x).symm
+
+theorem norm_iteratedFDeriv_le (n : ℕ) (x : (i : ι) → E i) :
+    ‖iteratedFDeriv 𝕜 n f x‖
+      ≤ Nat.descFactorial (Fintype.card ι) n * ‖f‖ * ‖x‖ ^ (Fintype.card ι - n) := by
+  rw [f.iteratedFDeriv_eq]
+  exact f.norm_iteratedFDeriv_le' n x
 
 end ContinuousMultilinearMap
 
