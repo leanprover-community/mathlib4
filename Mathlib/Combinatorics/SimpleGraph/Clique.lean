@@ -10,8 +10,8 @@ import Mathlib.Data.Finset.Pairwise
 /-!
 # Graph cliques
 
-This file defines cliques in simple graphs. A clique is a set of vertices that are pairwise
-adjacent.
+This file defines cliques in simple graphs.
+A clique is a set of vertices that are pairwise adjacent.
 
 ## Main declarations
 
