@@ -21,28 +21,13 @@ namespace Lean
 
 attribute [-instance] Lean.instToExprOption
 
-universe u in
-instance {α : Type u} [ToExpr α] [ToLevel.{u}] : ToExpr (Option α) :=
-  let type := toTypeExpr α
-  { toExpr     := fun o => match o with
-      | none   => mkApp (mkConst ``Option.none [toLevel.{u}]) type
-      | some a => mkApp2 (mkConst ``Option.some [toLevel.{u}]) type (toExpr a),
-    toTypeExpr := mkApp (mkConst ``Option [toLevel.{u}]) type }
+set_option autoImplicit true in
+deriving instance ToExpr for Option
 
 attribute [-instance] Lean.instToExprList
 
-universe u in
-private def List.toExprAux {α : Type u} [ToExpr α] (nilFn : Expr) (consFn : Expr) : List α → Expr
-  | []    => nilFn
-  | a::as => mkApp2 consFn (toExpr a) (toExprAux nilFn consFn as)
-
-universe u in
-instance {α : Type u} [ToExpr α] [ToLevel.{u}] : ToExpr (List α) :=
-  let type := toTypeExpr α
-  let nil  := mkApp (mkConst ``List.nil [toLevel.{u}]) type
-  let cons := mkApp (mkConst ``List.cons [toLevel.{u}]) type
-  { toExpr     := List.toExprAux nil cons,
-    toTypeExpr := mkApp (mkConst ``List [toLevel.{u}]) type }
+set_option autoImplicit true in
+deriving instance ToExpr for List
 
 attribute [-instance] Lean.instToExprArray
 
@@ -54,14 +39,8 @@ instance {α : Type u} [ToExpr α] [ToLevel.{u}] : ToExpr (Array α) :=
 
 attribute [-instance] Lean.instToExprProd
 
-universe u v in
-instance {α : Type u} {β : Type v} [ToExpr α] [ToExpr β] [ToLevel.{u}] [ToLevel.{v}] :
-    ToExpr (α × β) :=
-  let αType := toTypeExpr α
-  let βType := toTypeExpr β
-  { toExpr     := fun ⟨a, b⟩ =>
-      mkApp4 (mkConst ``Prod.mk [toLevel.{u}, toLevel.{v}]) αType βType (toExpr a) (toExpr b),
-    toTypeExpr := mkApp2 (mkConst ``Prod [toLevel.{u}, toLevel.{v}]) αType βType }
+set_option autoImplicit true in
+deriving instance ToExpr for Prod
 
 deriving instance ToExpr for System.FilePath
 
@@ -73,11 +52,8 @@ open Lean
 
 deriving instance ToExpr for Int
 
-universe u v in
-instance {α : Type u} [ToExpr α] [ToLevel.{v}] [ToLevel.{u}] : ToExpr (ULift.{v, u} α) :=
-  let type := toTypeExpr α
-  { toExpr     := fun _ => type
-    toTypeExpr := mkApp (mkConst ``ULift [toLevel.{v}, toLevel.{u}]) type }
+set_option autoImplicit true in
+deriving instance ToExpr for ULift
 
 universe u in
 /-- Hand-written instance since `PUnit` is a `Sort` rather than a `Type`. -/
