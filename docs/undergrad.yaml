@@ -517,7 +517,7 @@ Measures and integral calculus:
     differentiability of integrals with respect to parameters: ''
     $\mathrm{L}^p$ spaces where $1 ≤ p ≤ ∞$: 'MeasureTheory.Lp'
     Completeness of $\mathrm{L}^p$ spaces: 'MeasureTheory.Lp.instCompleteSpace'
-    Holder's inequality: 'NNReal.lintegral_mul_le_Lp_mul_Lq'
+    Hölder's inequality: 'NNReal.lintegral_mul_le_Lp_mul_Lq'
     Fubini's theorem: 'MeasureTheory.integral_prod'
     change of variables for multiple integrals: 'MeasureTheory.integral_image_eq_integral_abs_det_fderiv_smul'
     change of variables to polar co-ordinates: 'integral_comp_polarCoord_symm'
