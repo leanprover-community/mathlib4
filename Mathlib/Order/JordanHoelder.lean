@@ -65,7 +65,7 @@ instances should not be a global instance.
 > [!NOTE]
 > The previous paragraph indicates that the instance of `JordanHoelderLattice` for submodules should
 > be obtained via `ModularLattice`. This is not the case in `mathlib4`.
-> See `JordanHolderModule.instJordanHoelderLattice`.
+> See `JordanHoelderModule.instJordanHoelderLattice`.
 -/
 
 

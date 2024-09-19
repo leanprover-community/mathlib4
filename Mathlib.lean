@@ -3656,7 +3656,7 @@ import Mathlib.Order.Interval.Set.WithBotTop
 import Mathlib.Order.Irreducible
 import Mathlib.Order.IsWellOrderLimitElement
 import Mathlib.Order.Iterate
-import Mathlib.Order.JordanHolder
+import Mathlib.Order.JordanHoelder
 import Mathlib.Order.KonigLemma
 import Mathlib.Order.KrullDimension
 import Mathlib.Order.Lattice
@@ -4655,7 +4655,7 @@ import Mathlib.Topology.MetricSpace.GromovHausdorff
 import Mathlib.Topology.MetricSpace.GromovHausdorffRealized
 import Mathlib.Topology.MetricSpace.HausdorffDimension
 import Mathlib.Topology.MetricSpace.HausdorffDistance
-import Mathlib.Topology.MetricSpace.Holder
+import Mathlib.Topology.MetricSpace.Hoelder
 import Mathlib.Topology.MetricSpace.Infsep
 import Mathlib.Topology.MetricSpace.IsometricSMul
 import Mathlib.Topology.MetricSpace.Isometry
