@@ -85,9 +85,6 @@ def elements (f : Equidecomp X G) := f.decomp'.choose
 theorem decomp (f : Equidecomp X G) : DecompOn f f.source f.elements := f.decomp'.choose_spec
 
 @[simp]
-theorem toFun_eq_coe (f : Equidecomp X G) : f.toFun = f := rfl
-
-@[simp]
 theorem map_source {f : Equidecomp X G} {x : X} (h : x ∈ f.source) :
     f x ∈ f.target := f.toPartialEquiv.map_source h
 
@@ -215,20 +212,19 @@ noncomputable def symm (f : Equidecomp X G) : Equidecomp X G where
 theorem invFun_eq_coe (f : Equidecomp X G) : f.invFun = f.symm := rfl
 
 @[simp]
+theorem symm_toPartialEquiv (f : Equidecomp X G) :
+    f.symm.toPartialEquiv = f.toPartialEquiv.symm := rfl
+
 theorem map_target {f : Equidecomp X G} {x : X} (h : x ∈ f.target) :
     f.symm x ∈ f.source := f.toPartialEquiv.map_target h
 
 @[simp]
 theorem left_inv {f : Equidecomp X G} {x : X} (h : x ∈ f.source) :
-    f.symm (f x) = x := f.toPartialEquiv.left_inv h
+    f.toPartialEquiv.symm (f x) = x := f.toPartialEquiv.left_inv h
 
 @[simp]
 theorem right_inv {f : Equidecomp X G} {x : X} (h : x ∈ f.target) :
-    f (f.symm x) = x := f.toPartialEquiv.right_inv h
-
-@[simp]
-theorem symm_toPartialEquiv (f : Equidecomp X G) :
-    f.symm.toPartialEquiv = f.toPartialEquiv.symm := rfl
+    f (f.toPartialEquiv.symm x) = x := f.toPartialEquiv.right_inv h
 
 @[simp]
 theorem symm_symm (f : Equidecomp X G) : f.symm.symm = f := rfl
