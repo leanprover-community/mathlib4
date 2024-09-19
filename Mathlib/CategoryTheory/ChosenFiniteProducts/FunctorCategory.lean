@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.ChosenFiniteProducts
-import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-!
 # Functor categories have chosen finite products
@@ -22,7 +22,7 @@ variable (J C : Type*) [Category J] [Category C] [ChosenFiniteProducts C]
 namespace Functor
 
 /-- The chosen terminal object in `J ⥤ C`. -/
-abbrev chosenTerminal : J ⥤ C := ((Functor.const J).obj (𝟙_ C))
+abbrev chosenTerminal : J ⥤ C := (Functor.const J).obj (𝟙_ C)
 
 /-- The chosen terminal object in `J ⥤ C` is terminal. -/
 def chosenTerminalIsTerminal : IsTerminal (chosenTerminal J C) :=

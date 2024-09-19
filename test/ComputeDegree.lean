@@ -78,14 +78,15 @@ example : natDegree (X + X ^ 2 : ℕ[X]) = 0 := by compute_degree!
 
 /--
 error: 'compute_degree' inapplicable. The goal
-  natDegree X ≠ 0
+  X.natDegree ≠ 0
 is expected to be '≤' or '='.
 -/
 #guard_msgs in
 example : natDegree (X : ℕ[X]) ≠ 0 := by compute_degree!
 
 /--
-error: 'compute_degree' inapplicable. The LHS must be an application of 'natDegree', 'degree', or 'coeff'.
+error:
+'compute_degree' inapplicable. The LHS must be an application of 'natDegree', 'degree', or 'coeff'.
 -/
 #guard_msgs in
 example : 0 ≤ 0 := by compute_degree!
@@ -229,6 +230,6 @@ example {a : R} (a0 : a ≠ 0) : natDegree (a • X ^ 5 + X : R[X]) = 5 := by
   compute_degree!
 
 example {a : R} (a0 : a ≠ 0) : degree (a • X ^ 5 + X ^ 2 : R[X]) = 5 := by
-  compute_degree!
+  compute_degree!; rfl
 
 end tests_from_mathlib3

@@ -21,7 +21,7 @@ attribute [aesop (rule_sets := [Measurable]) unfold norm] Function.comp
 attribute [aesop (rule_sets := [Measurable]) norm] npowRec
 
 /--
-The `measurability` attribute used to tag continuity statements for the `measurability` tactic. -/
+The `measurability` attribute used to tag measurability statements for the `measurability` tactic.-/
 macro "measurability" : attr =>
   `(attr|aesop safe apply (rule_sets := [$(Lean.mkIdent `Measurable):ident]))
 

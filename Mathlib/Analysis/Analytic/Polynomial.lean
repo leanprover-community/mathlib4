@@ -3,9 +3,9 @@ Copyright (c) 2023 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
+import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.MvPolynomial.Basic
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
@@ -35,7 +35,7 @@ theorem AnalyticOn.aeval_polynomial (hf : AnalyticOn 𝕜 f s) (p : A[X]) :
     AnalyticOn 𝕜 (fun x ↦ aeval (f x) p) s := fun x hx ↦ (hf x hx).aeval_polynomial p
 
 theorem AnalyticOn.eval_polynomial {A} [NormedCommRing A] [NormedAlgebra 𝕜 A] (p : A[X]) :
-    AnalyticOn 𝕜 (eval · p) Set.univ := (analyticOn_id 𝕜).aeval_polynomial p
+    AnalyticOn 𝕜 (eval · p) Set.univ := analyticOn_id.aeval_polynomial p
 
 end Polynomial
 

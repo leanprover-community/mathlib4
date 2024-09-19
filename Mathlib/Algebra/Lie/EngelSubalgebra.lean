@@ -30,7 +30,7 @@ and minimal ones are nilpotent (TODO), hence Cartan subalgebras.
   if it is contained in the Engel subalgebra of all its elements.
 -/
 
-open BigOperators LieAlgebra LieModule
+open LieAlgebra LieModule
 
 variable {R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
@@ -46,10 +46,10 @@ Engel subalgebras are self-normalizing (`LieSubalgebra.normalizer_engel`),
 and minimal ones are nilpotent, hence Cartan subalgebras. -/
 @[simps!]
 def engel (x : L) : LieSubalgebra R L :=
-  { (ad R L x).maximalGeneralizedEigenspace 0 with
+  { (ad R L x).maxGenEigenspace 0 with
     lie_mem' := by
       simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
-        Submodule.mem_toAddSubmonoid, Module.End.mem_maximalGeneralizedEigenspace, zero_smul,
+        Submodule.mem_toAddSubmonoid, Module.End.mem_maxGenEigenspace, zero_smul,
         sub_zero, forall_exists_index]
       intro y z m hm n hn
       refine ⟨m + n, ?_⟩
@@ -61,11 +61,19 @@ def engel (x : L) : LieSubalgebra R L :=
 
 lemma mem_engel_iff (x y : L) :
     y ∈ engel R x ↔ ∃ n : ℕ, ((ad R L x) ^ n) y = 0 :=
-  (Module.End.mem_maximalGeneralizedEigenspace _ _ _).trans <| by simp only [zero_smul, sub_zero]
+  (Module.End.mem_maxGenEigenspace _ _ _).trans <| by simp only [zero_smul, sub_zero]
 
 lemma self_mem_engel (x : L) : x ∈ engel R x := by
   simp only [mem_engel_iff]
   exact ⟨1, by simp⟩
+
+@[simp]
+lemma engel_zero : engel R (0 : L) = ⊤ := by
+  rw [eq_top_iff]
+  rintro x -
+  rw [mem_engel_iff, LieHom.map_zero]
+  use 1
+  simp only [pow_one, LinearMap.zero_apply]
 
 /-- Engel subalgebras are self-normalizing.
 See `LieSubalgebra.normalizer_eq_self_of_engel_le` for a proof that Lie-subalgebras
@@ -105,6 +113,12 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     rwa [← lie_skew, neg_mem_iff (G := L)]
   have aux₂ : ∀ n ∈ N, ⁅x, n⁆ ∈ N := fun n hn ↦ le_normalizer H (aux₁ _ hn)
   let dx : N →ₗ[R] N := (ad R L x).restrict aux₂
+  #adaptation_note
+  /--
+  After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
+  See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
+  -/
+  have : IsArtinian R { x // x ∈ N } := isArtinian_submodule' _
   obtain ⟨k, hk⟩ : ∃ a, ∀ b ≥ a, Codisjoint (LinearMap.ker (dx ^ b)) (LinearMap.range (dx ^ b)) :=
     eventually_atTop.mp <| dx.eventually_codisjoint_ker_pow_range_pow
   specialize hk (k+1) (Nat.le_add_right k 1)
@@ -115,11 +129,13 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     rw [Submodule.map_le_iff_le_comap]
     intro y hy
     simp only [Submodule.mem_comap, mem_engel_iff, mem_coe_submodule]
-    use (k+1)
+    use k+1
     clear hk; revert hy
     generalize k+1 = k
     induction k generalizing y with
-    | zero => cases y; intro hy; simpa using hy
+    | zero =>
+      cases y; intro hy; simp only [pow_zero, LinearMap.one_apply]
+      exact (AddSubmonoid.mk_eq_zero N.toAddSubmonoid).mp hy
     | succ k ih => simp only [pow_succ, LinearMap.mem_ker, LinearMap.mul_apply] at ih ⊢; apply ih
   · rw [← Submodule.map_le_iff_le_comap]
     apply le_sup_of_le_right

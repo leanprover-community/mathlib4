@@ -3,9 +3,9 @@ Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Parity
+import Mathlib.Data.Finset.Lattice
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.SuccessIfFailWithMsg
@@ -14,7 +14,7 @@ import Mathlib.Tactic.NormNum.OfScientific
 private axiom test_sorry : ∀ {α}, α
 /-! # Inequality tests for the `gcongr` tactic -/
 
-open Nat Finset BigOperators
+open Nat Finset
 
 -- We deliberately mock `ℝ` here so that we don't have to import the dependencies
 axiom Real : Type
@@ -155,7 +155,7 @@ example {F : ℕ → ℕ} (le_sum: ∀ {N : ℕ}, 6 ≤ N → 15 ≤ F N) {n' : 
   exact le_sum hn'
 
 example {a : ℤ} {n : ℕ} (ha : ∀ i < n, 2 ^ i ≤ a) :
-    ∏ i in range n, (a - 2 ^ i) ≤ ∏ _i in range n, a := by
+    ∏ i ∈ range n, (a - 2 ^ i) ≤ ∏ _i ∈ range n, a := by
   gcongr with i
   · intro i hi
     simp only [mem_range] at hi
@@ -170,16 +170,22 @@ example {a b c d e : ℝ} (_h1 : 0 ≤ b) (_h2 : 0 ≤ c) (hac : a * b + 1 ≤ c
   guard_target =ₛ a * b ≤ c * d
   linarith
 
+-- test big operators
+example (f g : ℕ → ℕ) (s : Finset ℕ) (h : ∀ i ∈ s, f i ≤ g i) :
+    ∑ i ∈ s, (3 + f i ^ 2) ≤ ∑ i ∈ s, (3 + g i ^ 2) := by
+  gcongr with i hi
+  exact h i hi
+
 -- this tests templates with binders
 example (f g : ℕ → ℕ) (s : Finset ℕ) (h : ∀ i ∈ s, f i ^ 2 + 1 ≤ g i ^ 2 + 1) :
-    ∑ i in s, f i ^ 2 ≤ ∑ i in s, g i ^ 2 := by
-  gcongr ∑ _i in s, ?_ with i hi
+    ∑ i ∈ s, f i ^ 2 ≤ ∑ i ∈ s, g i ^ 2 := by
+  gcongr ∑ _i ∈ s, ?_ with i hi
   linarith [h i hi]
 
 -- this tests templates with binders
 example (f g : ℕ → ℕ) (s : Finset ℕ) (h : ∀ i ∈ s, f i ^ 2 + 1 ≤ g i ^ 2 + 1) :
-    ∑ i in s, (3 + f i ^ 2) ≤ ∑ i in s, (3 + g i ^ 2) := by
-  gcongr ∑ _i in s, (3 + ?_) with i hi
+    ∑ i ∈ s, (3 + f i ^ 2) ≤ ∑ i ∈ s, (3 + g i ^ 2) := by
+  gcongr ∑ _i ∈ s, (3 + ?_) with i hi
   linarith [h i hi]
 
 axiom f : ℕ → ℕ
@@ -196,7 +202,7 @@ example {x y : ℕ} (h : f x ≤ f y) : f x ^ 2 ≤ f y ^ 2 := by
     (gcongr (f ?a) ^ 2)
   gcongr
 
-example (s : Finset ℕ) (h : ∀ i ∈ s, f i ≤ f (2 * i)) : ∑ i in s, f i ≤ ∑ i in s, f (2 * i) := by
+example (s : Finset ℕ) (h : ∀ i ∈ s, f i ≤ f (2 * i)) : ∑ i ∈ s, f i ≤ ∑ i ∈ s, f (2 * i) := by
   gcongr
   apply h
   assumption
@@ -210,3 +216,25 @@ example {x y : ℕ} (h : x ≤ y) (l) : dontUnfoldMe 14 l + x ≤ 0 + y := by
   gcongr
   guard_target = dontUnfoldMe 14 l ≤ 0
   apply test_sorry
+
+/-! Test that `gcongr` works well with proof arguments -/
+
+example {α β : Type*}  [SemilatticeSup α] (f : β → α)
+    {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonempty) :
+    s₁.sup' h₁ f ≤ s₂.sup' (h₁.mono h) f := by
+  gcongr
+
+example {α β : Type*}  [SemilatticeSup α] (f : β → α)
+    {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonempty) (h₂ : s₂.Nonempty) :
+    s₁.sup' h₁ f ≤ s₂.sup' h₂ f := by
+  gcongr
+
+/-! Test that `gcongr` can solve side goals of the form `∀ i, f i` when `f i` is in scope for
+`positivity` -/
+
+example {ι : Type*} [Fintype ι] {f g : ι → ℝ} : ∏ i, f i ^ 2 ≤ ∏ i, g i ^ 2 := by
+  gcongr with i _ i _
+  · guard_target = 0 ≤ f i
+    exact test_sorry
+  · guard_target = f i ≤ g i
+    exact test_sorry

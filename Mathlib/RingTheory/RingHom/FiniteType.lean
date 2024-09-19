@@ -3,10 +3,9 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.RingTheory.FiniteStability
 import Mathlib.RingTheory.LocalProperties
 import Mathlib.RingTheory.Localization.InvSubmonoid
-
-#align_import ring_theory.ring_hom.finite_type from "leanprover-community/mathlib"@"64fc7238fb41b1a4f12ff05e3d5edfa360dd768c"
 
 /-!
 
@@ -19,24 +18,22 @@ The main result is `RingHom.finiteType_is_local`.
 
 namespace RingHom
 
-open scoped Pointwise
+open scoped Pointwise TensorProduct
 
 theorem finiteType_stableUnderComposition : StableUnderComposition @FiniteType := by
   introv R hf hg
   exact hg.comp hf
-#align ring_hom.finite_type_stable_under_composition RingHom.finiteType_stableUnderComposition
 
 theorem finiteType_holdsForLocalizationAway : HoldsForLocalizationAway @FiniteType := by
   introv R _
   suffices Algebra.FiniteType R S by
     rw [RingHom.FiniteType]
-    convert this; ext;
+    convert this; ext
     rw [Algebra.smul_def]; rfl
   exact IsLocalization.finiteType_of_monoid_fg (Submonoid.powers r) S
-#align ring_hom.finite_type_holds_for_localization_away RingHom.finiteType_holdsForLocalizationAway
 
 theorem finiteType_ofLocalizationSpanTarget : OfLocalizationSpanTarget @FiniteType := by
-  -- Setup algebra intances.
+  -- Setup algebra instances.
   rw [ofLocalizationSpanTarget_iff_finite]
   introv R hs H
   classical
@@ -50,7 +47,7 @@ theorem finiteType_ofLocalizationSpanTarget : OfLocalizationSpanTarget @FiniteTy
   -- `∑ lᵢ * sᵢ = 1`. I claim that all `s` and `l` and the numerators of `t` and generates `S`.
   choose t ht using H
   obtain ⟨l, hl⟩ :=
-    (Finsupp.mem_span_iff_total S (s : Set S) 1).mp
+    (Finsupp.mem_span_iff_linearCombination S (s : Set S) 1).mp
       (show (1 : S) ∈ Ideal.span (s : Set S) by rw [hs]; trivial)
   let sf := fun x : s => IsLocalization.finsetIntegerMultiple (Submonoid.powers (x : S)) (t x)
   use s.attach.biUnion sf ∪ s ∪ l.support.image l
@@ -89,15 +86,23 @@ theorem finiteType_ofLocalizationSpanTarget : OfLocalizationSpanTarget @FiniteTy
       apply Algebra.subset_adjoin
       exact Or.inl (Or.inr r.2)
     · rw [ht]; trivial
-#align ring_hom.finite_type_of_localization_span_target RingHom.finiteType_ofLocalizationSpanTarget
 
 theorem finiteType_is_local : PropertyIsLocal @FiniteType :=
-  ⟨localization_finiteType, finiteType_ofLocalizationSpanTarget, finiteType_stableUnderComposition,
-    finiteType_holdsForLocalizationAway⟩
-#align ring_hom.finite_type_is_local RingHom.finiteType_is_local
+  ⟨localization_finiteType, finiteType_ofLocalizationSpanTarget,
+    finiteType_stableUnderComposition.stableUnderCompositionWithLocalizationAway
+      finiteType_holdsForLocalizationAway⟩
 
 theorem finiteType_respectsIso : RingHom.RespectsIso @RingHom.FiniteType :=
   RingHom.finiteType_is_local.respectsIso
-#align ring_hom.finite_type_respects_iso RingHom.finiteType_respectsIso
+
+theorem finiteType_stableUnderBaseChange : StableUnderBaseChange @FiniteType := by
+  apply StableUnderBaseChange.mk
+  · exact finiteType_respectsIso
+  · introv h
+    replace h : Algebra.FiniteType R T := by
+      rw [RingHom.FiniteType] at h; convert h; ext; simp_rw [Algebra.smul_def]; rfl
+    suffices Algebra.FiniteType S (S ⊗[R] T) by
+      rw [RingHom.FiniteType]; convert this; ext; simp_rw [Algebra.smul_def]; rfl
+    infer_instance
 
 end RingHom
