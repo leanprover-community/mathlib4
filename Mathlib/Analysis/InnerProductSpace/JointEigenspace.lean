@@ -43,7 +43,7 @@ namespace IsSymmetric
 
 section CommRing
 
-variable {𝕜 E n m: Type*} [CommRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable {𝕜 E n : Type*} [CommRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable {α : 𝕜} {A B : E →ₗ[𝕜] E}
 
 /-- If a pair of operators commute, then the eigenspaces of one are invariant under the other. -/
