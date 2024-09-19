@@ -184,9 +184,10 @@ end ProfiniteGrp
 /-!
 # The projective limit of finite groups is profinite
 
-* `FiniteGrp.limit` : the concretely constructed limit of finite groups as a subgroup of the pi-type
+* `ProfiniteGrp.limit` : the concretely constructed projective limit of finite groups
+  as a subgroup of the pi-type
 
-* `ofFiniteGrpLimit`: direct limit of finite groups is a profinite group
+* `ofLimit`: projective limit of finite groups is a profinite group
 
 * Verify that the constructed limit satisfies the universal property.
 -/
@@ -282,7 +283,7 @@ def LimitConeIsLimit : Limits.IsLimit (LimitCone F) where
     ext pt
     refine Subtype.ext <| funext fun j => ?_
     show _ = cone.π.app _ _
-    rw [←hyp j]
+    rw [← hyp j]
     rfl
 
 @[simp, nolint simpNF]
