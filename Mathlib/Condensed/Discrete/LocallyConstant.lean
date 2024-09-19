@@ -184,8 +184,8 @@ def componentHom (a : Fiber (f.comap g)) :
     fiber _ a ⟶ fiber _ (Fiber.mk f (g a.preimage)) where
   toFun x := ⟨g x.val, by
     simp only [Fiber.mk, Set.mem_preimage, Set.mem_singleton_iff]
-    erw [map_eq_image _ _ x, map_preimage_eq_image_map _ _ a]
-    rfl⟩
+    convert map_eq_image _ _ x
+    exact map_preimage_eq_image_map _ _ a⟩
   continuous_toFun := by
     exact Continuous.subtype_mk (Continuous.comp g.continuous continuous_subtype_val) _
     -- term mode gives "unknown free variable" error.
@@ -213,8 +213,9 @@ noncomputable def counitApp [HasExplicitFiniteCoproducts.{u} P]
     simp only [FunctorToTypes.map_comp_apply, incl_of_counitAppApp]
     simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp,
       terminal.comp_from]
-    erw [image_eq_image_mk (g := g.unop.toFun)]
-    rfl
+    dsimp
+    apply congrArg
+    exact image_eq_image_mk (g := g.unop) (a := a)
 
 variable (P) (X : TopCat.{max u w})
     [HasExplicitFiniteCoproducts.{0} P] [HasExplicitPullbacks P]
@@ -270,7 +271,6 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] :
     apply presheaf_ext (f.map (g.val.app (op (CompHausLike.of P PUnit.{u+1}))))
     intro a
     simp only [op_unop, functorToPresheaves_map_app, incl_of_counitAppApp]
-    -- symm
     apply presheaf_ext (f.comap (sigmaIncl _ _))
     intro b
     simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp,
@@ -291,8 +291,8 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] :
     rw [this]
     apply congrArg
     symm
-    erw [← mem_iff_eq_image (f := g.val.app _ ∘ f)]
-    exact (b.preimage).prop
+    convert (b.preimage).prop
+    exact (mem_iff_eq_image (g.val.app _ ∘ f) _ _).symm
 
 /--
 The unit of the adjunciton is given by mapping each element to the corresponding constant map.
