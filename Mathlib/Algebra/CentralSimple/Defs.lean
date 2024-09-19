@@ -24,6 +24,12 @@ algebras in this case according to our definition.
 - `Algebra.IsCentralSimple K D` : `D` is a central simple algebra over `K` iff the center of `D`
   is exactly `K` and `D` is a simple ring.
 
+## Implementation notes
+
+We require the `K`-center of `D` to be smaller than or equal to the smallest subalgebra so that when
+we prove something is central simple, there we don't need to prove `⊥ ≤ center K D` though this
+direction is trivial.
+
 -/
 
 universe u v

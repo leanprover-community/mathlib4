@@ -7,6 +7,19 @@ Authors: Yunzhou Xie, Jujian Zhang, Kevin Buzzard
 import Mathlib.Algebra.CentralSimple.Defs
 import Mathlib.RingTheory.SimpleRing.Basic
 
+/-!
+# Central Simple Algebras
+
+In this file, we prove some basic results about central simple algebras over a field.
+
+## Main results
+
+- `Algebra.IsCentralSimple.center_eq_bot`: the center of a central simple algebra over a field `K`
+  is equal to `K`.
+- `Algebra.IsCentralSimple.self`: a field is a central simple algebra over itself.
+
+-/
+
 universe u v
 
 namespace Algebra.IsCentralSimple
