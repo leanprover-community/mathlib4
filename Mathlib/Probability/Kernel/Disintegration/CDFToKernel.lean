@@ -550,7 +550,7 @@ lemma setLIntegral_toKernel_univ [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ 
     refine Monotone.directed_le fun i j hij ↦ ?_
     refine prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, Iic_subset_Iic.mpr ?_⟩)
     exact mod_cast hij
-  simp_rw [measure_iUnion_eq_iSup h_dir, measure_iUnion_eq_iSup h_dir_prod]
+  simp_rw [h_dir.measure_iUnion, h_dir_prod.measure_iUnion]
   rw [lintegral_iSup_directed]
   · simp_rw [setLIntegral_toKernel_Iic hf _ _ hs]
   · refine fun q ↦ Measurable.aemeasurable ?_
