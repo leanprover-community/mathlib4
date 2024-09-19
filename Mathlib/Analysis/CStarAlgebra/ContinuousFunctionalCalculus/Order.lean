@@ -39,9 +39,7 @@ open scoped NNReal
 
 namespace Unitization
 
-variable {A : Type*} [NonUnitalNormedRing A] [CompleteSpace A]
-  [PartialOrder A] [StarRing A] [StarOrderedRing A] [CStarRing A] [NormedSpace ℂ A] [StarModule ℂ A]
-  [SMulCommClass ℂ A A] [IsScalarTower ℂ A A]
+variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 instance instPartialOrder : PartialOrder (Unitization ℂ A) := CStarRing.spectralOrder _
 
@@ -101,8 +99,7 @@ lemma CFC.exists_pos_algebraMap_le_iff {A : Type*} [TopologicalSpace A] [Ring A]
 
 section CStar_unital
 
-variable {A : Type*} [NormedRing A] [StarRing A] [CStarRing A] [CompleteSpace A]
-variable [NormedAlgebra ℂ A] [StarModule ℂ A]
+variable {A : Type*} [CStarAlgebra ℂ A]
 
 section StarOrderedRing
 
@@ -311,9 +308,7 @@ end CStar_unital
 
 section CStar_nonunital
 
-variable {A : Type*} [NonUnitalNormedRing A] [CompleteSpace A] [PartialOrder A] [StarRing A]
-  [StarOrderedRing A] [CStarRing A] [NormedSpace ℂ A] [StarModule ℂ A]
-  [SMulCommClass ℂ A A] [IsScalarTower ℂ A A]
+variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 namespace CStarRing
 

@@ -90,8 +90,7 @@ section ComplexScalars
 
 open Complex
 
-variable {A : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
-  [CStarRing A]
+variable {A : Type*} [CStarAlgebra A]
 
 local notation "↑ₐ" => algebraMap ℂ A
 
@@ -221,11 +220,7 @@ end ComplexScalars
 
 namespace NonUnitalStarAlgHom
 
-variable {F A B : Type*}
-variable [NonUnitalNormedRing A] [CompleteSpace A] [StarRing A] [CStarRing A]
-variable [NormedSpace ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [StarModule ℂ A]
-variable [NonUnitalNormedRing B] [CompleteSpace B] [StarRing B] [CStarRing B]
-variable [NormedSpace ℂ B] [IsScalarTower ℂ B B] [SMulCommClass ℂ B B] [StarModule ℂ B]
+variable {F A B : Type*} [NonUnitalCStarAlgebra A] [NonUnitalCStarAlgebra B]
 variable [FunLike F A B] [NonUnitalAlgHomClass F ℂ A B] [StarHomClass F A B]
 
 open Unitization
@@ -263,10 +258,7 @@ end NonUnitalStarAlgHom
 
 namespace StarAlgEquiv
 
-variable {F A B : Type*} [NormedRing A] [NormedSpace ℂ A] [SMulCommClass ℂ A A]
-variable [IsScalarTower ℂ A A] [CompleteSpace A] [StarRing A] [CStarRing A] [StarModule ℂ A]
-variable [NormedRing B] [NormedSpace ℂ B] [SMulCommClass ℂ B B] [IsScalarTower ℂ B B]
-variable [CompleteSpace B] [StarRing B] [CStarRing B] [StarModule ℂ B] [EquivLike F A B]
+variable {F A B : Type*} [NonUnitalCStarAlgebra A] [NonUnitalCStarAlgebra B] [EquivLike F A B]
 variable [NonUnitalAlgEquivClass F ℂ A B] [StarHomClass F A B]
 
 lemma nnnorm_map (φ : F) (a : A) : ‖φ a‖₊ = ‖a‖₊ :=
@@ -289,8 +281,7 @@ open ContinuousMap Complex
 
 open scoped ComplexStarModule
 
-variable {F A : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
-  [CStarRing A] [StarModule ℂ A] [FunLike F A ℂ] [hF : AlgHomClass F ℂ A ℂ]
+variable {F A : Type*} [CStarAlgebra A] [FunLike F A ℂ] [hF : AlgHomClass F ℂ A ℂ]
 
 /-- This instance is provided instead of `StarHomClass` to avoid type class inference loops.
 See note [lower instance priority] -/
