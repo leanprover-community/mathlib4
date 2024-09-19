@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.CStarAlgebra.Spectrum
+import Mathlib.Analysis.CStarAlgebra.ContinuousMap
 import Mathlib.Analysis.Normed.Group.Quotient
 import Mathlib.Analysis.Normed.Algebra.Basic
 import Mathlib.Topology.ContinuousFunction.Units
