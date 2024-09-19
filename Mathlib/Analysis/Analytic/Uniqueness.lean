@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.Analytic.Linear
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Normed.Module.Completion
+import Mathlib.Analysis.Analytic.ChangeOrigin
 
 /-!
 # Uniqueness principle for analytic functions

@@ -15,13 +15,13 @@ This module defines simple graphs on a vertex type `V` as an irreflexive symmetr
 
 ## Main definitions
 
-* `SimpleGraph` is a structure for symmetric, irreflexive relations
+* `SimpleGraph` is a structure for symmetric, irreflexive relations.
 
-* `SimpleGraph.neighborSet` is the `Set` of vertices adjacent to a given vertex
+* `SimpleGraph.neighborSet` is the `Set` of vertices adjacent to a given vertex.
 
-* `SimpleGraph.commonNeighbors` is the intersection of the neighbor sets of two given vertices
+* `SimpleGraph.commonNeighbors` is the intersection of the neighbor sets of two given vertices.
 
-* `SimpleGraph.incidenceSet` is the `Set` of edges containing a given vertex
+* `SimpleGraph.incidenceSet` is the `Set` of edges containing a given vertex.
 
 * `CompleteAtomicBooleanAlgebra` instance: Under the subgraph relation, `SimpleGraph` forms a
   `CompleteAtomicBooleanAlgebra`. In other words, this is the complete lattice of spanning subgraphs
@@ -29,10 +29,10 @@ This module defines simple graphs on a vertex type `V` as an irreflexive symmetr
 
 ## TODO
 
-* This is the simplest notion of an unoriented graph.  This should
-  eventually fit into a more complete combinatorics hierarchy which
-  includes multigraphs and directed graphs.  We begin with simple graphs
-  in order to start learning what the combinatorics hierarchy should
+* This is the simplest notion of an unoriented graph.
+  This should eventually fit into a more complete combinatorics hierarchy which includes
+  multigraphs and directed graphs.
+  We begin with simple graphs in order to start learning what the combinatorics hierarchy should
   look like.
 -/
 
@@ -68,9 +68,8 @@ macro (name := aesop_graph?) "aesop_graph?" c:Aesop.tactic_clause* : tactic =>
       (rule_sets := [$(Lean.mkIdent `SimpleGraph):ident]))
 
 /--
-A variant of `aesop_graph` which does not fail if it is unable to solve the
-goal. Use this only for exploration! Nonterminal Aesop is even worse than
-nonterminal `simp`.
+A variant of `aesop_graph` which does not fail if it is unable to solve the goal.
+Use this only for exploration! Nonterminal Aesop is even worse than nonterminal `simp`.
 -/
 macro (name := aesop_graph_nonterminal) "aesop_graph_nonterminal" c:Aesop.tactic_clause* : tactic =>
   `(tactic|
@@ -122,6 +121,10 @@ instance {V : Type u} [Fintype V] [DecidableEq V] : Fintype (SimpleGraph V) wher
     · intro v; simp [hi v]
     · ext
       simp
+
+/-- There are finitely many simple graphs on a given finite type. -/
+instance SimpleGraph.instFinite {V : Type u} [Finite V] : Finite (SimpleGraph V) :=
+  .of_injective SimpleGraph.Adj fun _ _ ↦ SimpleGraph.ext
 
 /-- Construct the simple graph induced by the given relation. It
 symmetrizes the relation and makes it irreflexive. -/
@@ -573,12 +576,12 @@ theorem fromEdgeSet_edgeSet : fromEdgeSet G.edgeSet = G := by
 @[simp]
 theorem fromEdgeSet_empty : fromEdgeSet (∅ : Set (Sym2 V)) = ⊥ := by
   ext v w
-  simp only [fromEdgeSet_adj, Set.mem_empty_iff_false, false_and_iff, bot_adj]
+  simp only [fromEdgeSet_adj, Set.mem_empty_iff_false, false_and, bot_adj]
 
 @[simp]
 theorem fromEdgeSet_univ : fromEdgeSet (Set.univ : Set (Sym2 V)) = ⊤ := by
   ext v w
-  simp only [fromEdgeSet_adj, Set.mem_univ, true_and_iff, top_adj]
+  simp only [fromEdgeSet_adj, Set.mem_univ, true_and, top_adj]
 
 @[simp]
 theorem fromEdgeSet_inter (s t : Set (Sym2 V)) :
@@ -603,7 +606,7 @@ theorem fromEdgeSet_sdiff (s t : Set (Sym2 V)) :
 theorem fromEdgeSet_mono {s t : Set (Sym2 V)} (h : s ⊆ t) : fromEdgeSet s ≤ fromEdgeSet t := by
   rintro v w
   simp (config := { contextual := true }) only [fromEdgeSet_adj, Ne, not_false_iff,
-    and_true_iff, and_imp]
+    and_true, and_imp]
   exact fun vws _ => h vws
 
 @[simp] lemma disjoint_fromEdgeSet : Disjoint G (fromEdgeSet s) ↔ Disjoint G.edgeSet s := by
