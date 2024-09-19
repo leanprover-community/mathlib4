@@ -345,9 +345,8 @@ lemma completedLFunction_eq (Φ : ZMod N → ℂ) (s : ℂ) :
 The completed L-function of a function `ZMod N → ℂ` is differentiable, with the following
 exceptions: at `s = 1` if `∑ j, Φ j ≠ 0`; and at `s = 0` if `Φ 0 ≠ 0`.
 -/
-lemma differentiableAt_completedLFunction (Φ : ZMod N → ℂ) (s : ℂ)
-    (hs₀ : s ≠ 0 ∨ Φ 0 = 0) (hs₁ : s ≠ 1 ∨ ∑ j, Φ j = 0) :
-    DifferentiableAt ℂ (completedLFunction Φ) s := by
+lemma differentiableAt_completedLFunction (Φ : ZMod N → ℂ) (s : ℂ) (hs₀ : s ≠ 0 ∨ Φ 0 = 0)
+    (hs₁ : s ≠ 1 ∨ ∑ j, Φ j = 0) : DifferentiableAt ℂ (completedLFunction Φ) s := by
   simp only [funext (completedLFunction_eq Φ), mul_div_assoc]
   -- We know `completedLFunction₀` is differentiable everywhere, so it suffices to show that the
   -- correction terms from `completedLFunction_eq` are differentiable at `s`.
