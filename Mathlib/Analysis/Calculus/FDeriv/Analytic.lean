@@ -286,29 +286,16 @@ theorem AnalyticWithinOn.iteratedFDerivWithin (h : AnalyticWithinOn 𝕜 f s)
     apply AnalyticOn.comp_analyticWithinOn _ (IH.fderivWithin hu) (mapsTo_univ _ _)
     apply LinearIsometryEquiv.analyticOn
 
-
-lemma AnalyticOn.hasFTaylorSeriesUpToOn [CompleteSpace F] (n : WithTop ℕ∞) (h : AnalyticOn 𝕜 f s) :
-    HasFTaylorSeriesUpToOn n f (ftaylorSeries 𝕜 f) s := by
-  refine ⟨fun x _hx ↦ rfl, fun m _hm x hx ↦ ?_, fun m _hm x hx ↦ ?_⟩
-  · apply HasFDerivAt.hasFDerivWithinAt
-    exact ((h.iteratedFDeriv m x hx).differentiableAt).hasFDerivAt
-  · apply (DifferentiableAt.continuousAt (𝕜 := 𝕜) ?_).continuousWithinAt
-    exact (h.iteratedFDeriv m x hx).differentiableAt
-
-
 lemma AnalyticWithinOn.exists_hasFTaylorSeriesUpToOn
     (h : AnalyticWithinOn 𝕜 f s) (hu : UniqueDiffOn 𝕜 s) :
     ∃ (p : E → FormalMultilinearSeries 𝕜 E F),
     HasFTaylorSeriesUpToOn ⊤ f p s ∧ ∀ i, AnalyticWithinOn 𝕜 (fun x ↦ p x i) s := by
-
-
-  rcases h.exists_analyticAt with ⟨g, -, fg, hg⟩
-  rcases hg.exists_mem_nhds_analyticOn with ⟨v, vx, hv⟩
-  refine ⟨insert x s ∩ v, inter_mem_nhdsWithin _ vx, ftaylorSeries 𝕜 g, ?_, fun i ↦ ?_⟩
-  · suffices HasFTaylorSeriesUpToOn n g (ftaylorSeries 𝕜 g) (insert x s ∩ v) from
-      this.congr (fun y hy ↦ fg hy.1)
-    exact AnalyticOn.hasFTaylorSeriesUpToOn _ (hv.mono Set.inter_subset_right)
-  · exact (hv.iteratedFDeriv i).analyticWithinOn.mono Set.inter_subset_right
+  refine ⟨ftaylorSeriesWithin 𝕜 f s, ?_, fun i ↦ ?_⟩
+  · refine ⟨fun x _hx ↦ rfl, fun m _hm x hx ↦ ?_, fun m _hm x hx ↦ ?_⟩
+    · have := (h.iteratedFDerivWithin hu m x hx).differentiableWithinAt.hasFDerivWithinAt
+      rwa [insert_eq_of_mem hx] at this
+    · exact (h.iteratedFDerivWithin hu m x hx).continuousWithinAt
+  · apply h.iteratedFDerivWithin hu
 
 theorem AnalyticOn.fderiv_of_isOpen (h : AnalyticOn 𝕜 f s) (hs : IsOpen s) :
     AnalyticOn 𝕜 (fderiv 𝕜 f) s := by
