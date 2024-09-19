@@ -14,21 +14,21 @@ import Mathlib.Order.GaloisConnection
 
 
 /-!
-# Operations on Two-Sided-Ideals
+# Operations on two-sided ideals
 
-This file defines operations on two-sided-ideals of a ring `R`.
+This file defines operations on two-sided ideals of a ring `R`.
 
 ## Main definitions and results
-- `TwoSidedIdeal.span`: the span of `s ⊆ R` is the smallest two-sided-ideal containing the set.
+- `TwoSidedIdeal.span`: the span of `s ⊆ R` is the smallest two-sided ideal containing the set.
 - `TwoSidedIdeal.mem_span_iff_exists`: in a unital and associative ring, an element `x` is in the
   span of `s` if and only if it can be written as a finite sum of the form `∑ i, xL i * y i * xR i`
   where `xL i ∈ s`, `y i ∈ R`, and `xR i ∈ s`.
 
-- `TwoSidedIdeal.comap`: pullback of a two-sided-ideal; defined as the preimage of a
-  two-sided-ideal.
-- `TwoSidedIdeal.map`: pushforward of a two-sided-ideal; defined as the span of the image of a
-  two-sided-ideal.
-- `TwoSidedIdeal.ker`: the kernel of a ring homomorphism as a two-sided-ideal.
+- `TwoSidedIdeal.comap`: pullback of a two-sided ideal; defined as the preimage of a
+  two-sided ideal.
+- `TwoSidedIdeal.map`: pushforward of a two-sided ideal; defined as the span of the image of a
+  two-sided ideal.
+- `TwoSidedIdeal.ker`: the kernel of a ring homomorphism as a two-sided ideal.
 -/
 
 namespace TwoSidedIdeal
@@ -40,7 +40,7 @@ variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
 variable (f : F)
 
 /--
-The smallest two-sided-ideal containing a set.
+The smallest two-sided ideal containing a set.
 -/
 abbrev span (s : Set R) : TwoSidedIdeal R :=
   { ringCon := ringConGen (fun a b ↦ a - b ∈ s) }
@@ -67,7 +67,7 @@ lemma span_mono {s t : Set R} (h : s ⊆ t) : span s ≤ span t := by
   exact fun I hI => hx I $ h.trans hI
 
 /--
-preimage of a two-sided-ideal is still two-sided -/
+preimage of a two-sided ideal is still two-sided -/
 def comap (I : TwoSidedIdeal S) : TwoSidedIdeal R :=
 { ringCon := I.ringCon.comap f }
 
@@ -76,7 +76,7 @@ lemma mem_comap {I : TwoSidedIdeal S} {x : R} :
   simp [comap, RingCon.comap, mem_iff]
 
 /--
-pushout of a two-sided-ideal defined as the span of the image of a two-sided-ideal under some ring
+pushout of a two-sided ideal defined as the span of the image of a two-sided ideal under some ring
 homomorphism.
 -/
 def map (I : TwoSidedIdeal R) : TwoSidedIdeal S :=
@@ -87,7 +87,7 @@ lemma map_mono {I J : TwoSidedIdeal R} (h : I ≤ J) :
   span_mono $ Set.image_mono h
 
 /--
-kernel of a ring homomorphism as a two-sided-ideal.
+kernel of a ring homomorphism as a two-sided ideal.
 -/
 def ker : TwoSidedIdeal R :=
   .mk'
@@ -198,7 +198,7 @@ lemma mem_span_iff_mem_addSubgroup_closure {s : Set R} {z : R} :
     · rintro - x ⟨y, hy, r, -, rfl⟩
       exact ⟨y, hy, r * x, mem_univ _, (mul_assoc ..).symm⟩
 
-/-- Given an ideal `I`, `span I` is the smallest two-sided-ideal containing `I`. -/
+/-- Given an ideal `I`, `span I` is the smallest two-sided ideal containing `I`. -/
 def fromIdeal : Ideal R →o TwoSidedIdeal R where
   toFun I := span I
   monotone' _ _ := span_mono
@@ -206,7 +206,7 @@ def fromIdeal : Ideal R →o TwoSidedIdeal R where
 lemma mem_fromIdeal {I : Ideal R} {x : R} :
     x ∈ fromIdeal I ↔ x ∈ span I := by simp [fromIdeal]
 
-/-- Every two-sided-ideal is also a left-ideal. -/
+/-- Every two-sided ideal is also a left ideal. -/
 def asIdeal : TwoSidedIdeal R →o Ideal R where
   toFun I :=
   { carrier := I
@@ -218,14 +218,14 @@ def asIdeal : TwoSidedIdeal R →o Ideal R where
 lemma mem_asIdeal {I : TwoSidedIdeal R} {x : R} :
     x ∈ TwoSidedIdeal.asIdeal I ↔ x ∈ I := by simp [asIdeal]
 
-/-- Every two-sided-ideal is also a right ideal. -/
+/-- Every two-sided ideal is also a right ideal. -/
 def asIdealOpposite : TwoSidedIdeal R →o Ideal Rᵐᵒᵖ where
   toFun I := asIdeal $ ⟨I.ringCon.op⟩
   monotone' I J h x h' := by
     simp only [mem_asIdeal, mem_iff, RingCon.op_iff, MulOpposite.unop_zero] at h' ⊢
     exact J.rel_iff _ _ |>.2 $ h $ I.rel_iff 0 x.unop |>.1 h'
 
-lemma mem_asIdealMop {I : TwoSidedIdeal R} {x : Rᵐᵒᵖ} :
+lemma mem_asIdealOpposite {I : TwoSidedIdeal R} {x : Rᵐᵒᵖ} :
     x ∈ asIdealMop I ↔ x.unop ∈ I := by
   simpa [asIdealMop, asIdeal, TwoSidedIdeal.mem_iff, RingCon.op_iff] using
     ⟨I.ringCon.symm, I.ringCon.symm⟩
@@ -237,13 +237,11 @@ section CommRing
 variable {R : Type*} [CommRing R]
 
 /--
-When the ring is commutative, two-sided-ideals are exactly the same as left ideals.
+When the ring is commutative, two-sided ideals are exactly the same as left ideals.
 -/
 def orderIsoIdeal : TwoSidedIdeal R ≃o Ideal R where
   toFun := asIdeal
-  invFun := fun I => .mk' I I.zero_mem I.add_mem I.neg_mem
-    (fun _ {_} h => I.mul_mem_left _ h )
-    (fun {x y} h => I.mul_mem_right y h )
+  invFun := fromIdeal
   map_rel_iff' {I J} := by
     constructor
     · intro h x hx
