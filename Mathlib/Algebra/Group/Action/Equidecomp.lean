@@ -152,7 +152,7 @@ theorem reflSet_source (A : Set X) : (reflSet G A).source = A :=
 @[simp]
 theorem reflSet_toPartialEquiv (A : Set X) :
     (reflSet G A).toPartialEquiv = PartialEquiv.ofSet A := by
-  ext ; rfl ; rfl ; rw [reflSet_source, ofSet_source]
+  ext; rfl; rfl; rw [reflSet_source, ofSet_source]
 
 theorem reflSet_target (A : Set X) : (reflSet G A).target = A := by
   rw [reflSet_toPartialEquiv, ofSet_target]
