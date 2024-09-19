@@ -20,9 +20,13 @@ This file defines operations on two-sided ideals of a ring `R`.
 
 ## Main definitions and results
 - `TwoSidedIdeal.span`: the span of `s ⊆ R` is the smallest two-sided ideal containing the set.
-- `TwoSidedIdeal.mem_span_iff_exists`: in a unital and associative ring, an element `x` is in the
-  span of `s` if and only if it can be written as a finite sum of the form `∑ i, xL i * y i * xR i`
-  where `xL i ∈ s`, `y i ∈ R`, and `xR i ∈ s`.
+- `TwoSidedIdeal.mem_span_iff_mem_addSubgroup_closure_nonunital`: in a associative but non-unital
+  ring, an element `x` is in the two-sided ideal spanned by `s` if and only if `x` is in the closure
+  of `s ∪ {y * a | y ∈ s, a ∈ R} ∪ {a * y | y ∈ s, a ∈ R} ∪ {a * y * b | y ∈ s, a, b ∈ R}`.
+- `TwoSidedIdeal.mem_span_iff_mem_addSubgroup_closure`: in a unital and associative ring, an
+  element  `x` is in the two-sided ideal spanned by `s` if and only if `x` is in the closure of
+  `{a*y*b | a, b ∈ R, y ∈ s}` as an additive subgroup.
+
 
 - `TwoSidedIdeal.comap`: pullback of a two-sided ideal; defined as the preimage of a
   two-sided ideal.
