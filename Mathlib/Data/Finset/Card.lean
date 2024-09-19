@@ -684,12 +684,9 @@ lemma exists_of_one_lt_card_pi {ι : Type*} {α : ι → Type*} [∀ i, Decidabl
   exacts [⟨a1, h1, hne⟩, ⟨a2, h2, hne⟩]
 
 theorem card_eq_succ_iff_cons :
-    s.card = n + 1 ↔ ∃ a t, ∃ (h : a ∉ t), cons a t h = s ∧ t.card = n := by
-  induction s using Finset.cons_induction_on generalizing n
-  case h₁ => simp
-  case h₂ a s has _ =>
-    exact ⟨fun h => ⟨a, s, by simpa [*] using h⟩,
-           fun ⟨_, _, _, h, r⟩ => by simpa [r] using (congrArg card h).symm⟩
+    s.card = n + 1 ↔ ∃ a t, ∃ (h : a ∉ t), cons a t h = s ∧ t.card = n :=
+  ⟨cons_induction_on s (by simp) fun a s _ _ _ => ⟨a, s, by simp_all⟩,
+   fun ⟨a, t, _, hs, _⟩ => by simpa [← hs]⟩
 
 section DecidableEq
 variable [DecidableEq α]
