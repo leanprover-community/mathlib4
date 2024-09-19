@@ -3137,6 +3137,7 @@ import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Function.CompTypeclasses
 import Mathlib.Logic.Function.Conjugate
 import Mathlib.Logic.Function.Defs
+import Mathlib.Logic.Function.FiberPartition
 import Mathlib.Logic.Function.FromTypes
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Logic.Function.OfArity
@@ -3655,7 +3656,7 @@ import Mathlib.Order.Interval.Set.WithBotTop
 import Mathlib.Order.Irreducible
 import Mathlib.Order.IsWellOrderLimitElement
 import Mathlib.Order.Iterate
-import Mathlib.Order.JordanHolder
+import Mathlib.Order.JordanHoelder
 import Mathlib.Order.KonigLemma
 import Mathlib.Order.KrullDimension
 import Mathlib.Order.Lattice
@@ -4586,6 +4587,7 @@ import Mathlib.Topology.FiberBundle.Basic
 import Mathlib.Topology.FiberBundle.Constructions
 import Mathlib.Topology.FiberBundle.IsHomeomorphicTrivialBundle
 import Mathlib.Topology.FiberBundle.Trivialization
+import Mathlib.Topology.FiberPartition
 import Mathlib.Topology.Filter
 import Mathlib.Topology.GDelta
 import Mathlib.Topology.Germ
@@ -4653,7 +4655,7 @@ import Mathlib.Topology.MetricSpace.GromovHausdorff
 import Mathlib.Topology.MetricSpace.GromovHausdorffRealized
 import Mathlib.Topology.MetricSpace.HausdorffDimension
 import Mathlib.Topology.MetricSpace.HausdorffDistance
-import Mathlib.Topology.MetricSpace.Holder
+import Mathlib.Topology.MetricSpace.Hoelder
 import Mathlib.Topology.MetricSpace.Infsep
 import Mathlib.Topology.MetricSpace.IsometricSMul
 import Mathlib.Topology.MetricSpace.Isometry
