@@ -18,6 +18,7 @@ namespace IntermediateField
 
 variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] {α : E}
 
+@[simp]
 theorem adjoinRootEquivAdjoin_symm_apply_gen (h : IsIntegral F α) :
     (adjoinRootEquivAdjoin F h).symm (AdjoinSimple.gen F α) = AdjoinRoot.root (minpoly F α) := by
   rw [AlgEquiv.symm_apply_eq, adjoinRootEquivAdjoin_apply_root]
