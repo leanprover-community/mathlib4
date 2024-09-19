@@ -364,7 +364,7 @@ theorem hasFTaylorSeriesUpToOn_top_iff_right (hN : ∞ ≤ N) :
     exact ⟨h.1, h.2.1, (h.2.2).of_le (m := n) (nat_le_of_infty_le hN n)⟩
 
 /-- `p` is a Taylor series of `f` up to `n+1` if and only if `p.shift` is a Taylor series up to `n`
-for `p 1`, which is a derivative of `f`. Version for `n : ℕ∞`. -/
+for `p 1`, which is a derivative of `f`. Version for `n : WithTop ℕ∞`. -/
 theorem hasFTaylorSeriesUpToOn_succ_iff_right :
     HasFTaylorSeriesUpToOn (n + 1) f p s ↔
       (∀ x ∈ s, (p x 0).curry0 = f x) ∧

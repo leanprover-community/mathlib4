@@ -317,14 +317,10 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt (hn : n ≠ ∞) :
     ContDiffWithinAt 𝕜 (n + 1) f s x ↔ ∃ u ∈ 𝓝[insert x s] x, (n = ω → AnalyticWithinOn 𝕜 f u) ∧
       ∃ f' : E → E →L[𝕜] F,
       (∀ x ∈ u, HasFDerivWithinAt f (f' x) u x) ∧ ContDiffWithinAt 𝕜 n f' u x := by
+  have h'n : n + 1 ≠ ∞ := sorry
   constructor
   · intro h
-    have h'n : n + 1 ≠ ∞ := sorry
     rcases (contDiffWithinAt_iff_of_ne_infty h'n).1 h with ⟨u, hu, p, Hp, H'p⟩
-
-
-    -- apply (contDiffWithinAt_iff_of_ne_infty hn).2
-
     refine ⟨u, hu, ?_, fun y => (continuousMultilinearCurryFin1 𝕜 E F) (p y 1),
         fun y hy => Hp.hasFDerivWithinAt le_add_self hy, ?_⟩
     · rintro rfl
@@ -335,10 +331,17 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt (hn : n ≠ ∞) :
       convert @self_mem_nhdsWithin _ _ x u
       have : x ∈ insert x s := by simp
       exact insert_eq_of_mem (mem_of_mem_nhdsWithin this hu)
-    · rw [hasFTaylorSeriesUpToOn_succ_nat_iff_right] at Hp
-      exact Hp.2.2.of_le hm
+    · rw [hasFTaylorSeriesUpToOn_succ_iff_right] at Hp
+      refine ⟨Hp.2.2, ?_⟩
+      rintro rfl i
+      change AnalyticWithinOn 𝕜
+        (fun x ↦ (continuousMultilinearCurryRightEquiv' 𝕜 i E F) (p x (i + 1))) u
+      apply (LinearIsometryEquiv.analyticOn _ _).comp_analyticWithinOn
+        ?_ (Set.mapsTo_univ _ _)
+      exact H'p rfl _
   · rintro ⟨u, hu, f', f'_eq_deriv, Hf'⟩
-    rw [contDiffWithinAt_nat]
+    rw [contDiffWithinAt_iff_of_ne_infty h'n]
+    refine ⟨insert x s ∩ u, inter_mem self_mem_nhdsWithin hu, ?_⟩
     rcases Hf' n le_rfl with ⟨v, hv, p', Hp'⟩
     refine ⟨v ∩ u, ?_, fun x => (p' x).unshift (f x), ?_⟩
     · apply Filter.inter_mem _ hu
