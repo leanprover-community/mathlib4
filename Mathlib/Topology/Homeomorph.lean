@@ -308,16 +308,13 @@ protected theorem t2Space [T2Space X] (h : X ≃ₜ Y) : T2Space Y :=
 protected theorem t3Space [T3Space X] (h : X ≃ₜ Y) : T3Space Y :=
   h.symm.embedding.t3Space
 
+protected lemma totallyDisconnectedSpace (h : X ≃ₜ Y) [tdc : TotallyDisconnectedSpace X] :
+    TotallyDisconnectedSpace Y :=
+  (totallyDisconnectedSpace_iff Y).mpr
+    (h.range_coe ▸ ((Embedding.isTotallyDisconnected_range h.embedding).mpr tdc))
+
 protected theorem denseEmbedding (h : X ≃ₜ Y) : DenseEmbedding h :=
   { h.embedding with dense := h.surjective.denseRange }
-
-universe u v in
-protected lemma totallyDisconnectedSpace {A : Type u} [TopologicalSpace A]
-    {B : Type v} [TopologicalSpace B] (e : Homeomorph A B) [tdc : TotallyDisconnectedSpace A] :
-  TotallyDisconnectedSpace B :=
-  (totallyDisconnectedSpace_iff B).mpr
-    ((Homeomorph.range_coe e) ▸
-      ((Embedding.isTotallyDisconnected_range (Homeomorph.embedding e)).mpr tdc))
 
 @[simp]
 theorem isOpen_preimage (h : X ≃ₜ Y) {s : Set Y} : IsOpen (h ⁻¹' s) ↔ IsOpen s :=
