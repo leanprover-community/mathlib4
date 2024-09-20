@@ -1175,6 +1175,7 @@ import Mathlib.Analysis.LocallyConvex.ContinuousOfBounded
 import Mathlib.Analysis.LocallyConvex.Polar
 import Mathlib.Analysis.LocallyConvex.StrongTopology
 import Mathlib.Analysis.LocallyConvex.WeakDual
+import Mathlib.Analysis.LocallyConvex.WeakSpace
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.Matrix
 import Mathlib.Analysis.MeanInequalities
@@ -1531,6 +1532,7 @@ import Mathlib.CategoryTheory.Galois.Decomposition
 import Mathlib.CategoryTheory.Galois.Examples
 import Mathlib.CategoryTheory.Galois.Full
 import Mathlib.CategoryTheory.Galois.GaloisObjects
+import Mathlib.CategoryTheory.Galois.IsFundamentalgroup
 import Mathlib.CategoryTheory.Galois.Prorepresentability
 import Mathlib.CategoryTheory.Galois.Topology
 import Mathlib.CategoryTheory.Generator
@@ -2830,6 +2832,7 @@ import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.GroupTheory.Perm.Closure
 import Mathlib.GroupTheory.Perm.ClosureSwap
+import Mathlib.GroupTheory.Perm.ConjAct
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 import Mathlib.GroupTheory.Perm.Cycle.Concrete
 import Mathlib.GroupTheory.Perm.Cycle.Factors
@@ -3077,6 +3080,7 @@ import Mathlib.LinearAlgebra.Reflection
 import Mathlib.LinearAlgebra.RootSystem.Basic
 import Mathlib.LinearAlgebra.RootSystem.Defs
 import Mathlib.LinearAlgebra.RootSystem.Hom
+import Mathlib.LinearAlgebra.RootSystem.OfBilinear
 import Mathlib.LinearAlgebra.RootSystem.RootPairingCat
 import Mathlib.LinearAlgebra.RootSystem.RootPositive
 import Mathlib.LinearAlgebra.SModEq
@@ -3133,6 +3137,7 @@ import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Function.CompTypeclasses
 import Mathlib.Logic.Function.Conjugate
 import Mathlib.Logic.Function.Defs
+import Mathlib.Logic.Function.FiberPartition
 import Mathlib.Logic.Function.FromTypes
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Logic.Function.OfArity
@@ -3651,7 +3656,7 @@ import Mathlib.Order.Interval.Set.WithBotTop
 import Mathlib.Order.Irreducible
 import Mathlib.Order.IsWellOrderLimitElement
 import Mathlib.Order.Iterate
-import Mathlib.Order.JordanHolder
+import Mathlib.Order.JordanHoelder
 import Mathlib.Order.KonigLemma
 import Mathlib.Order.KrullDimension
 import Mathlib.Order.Lattice
@@ -3728,6 +3733,7 @@ import Mathlib.Probability.Distributions.Uniform
 import Mathlib.Probability.IdentDistrib
 import Mathlib.Probability.Independence.Basic
 import Mathlib.Probability.Independence.Conditional
+import Mathlib.Probability.Independence.Integrable
 import Mathlib.Probability.Independence.Kernel
 import Mathlib.Probability.Independence.ZeroOne
 import Mathlib.Probability.Integration
@@ -3735,6 +3741,7 @@ import Mathlib.Probability.Kernel.Basic
 import Mathlib.Probability.Kernel.Composition
 import Mathlib.Probability.Kernel.CondDistrib
 import Mathlib.Probability.Kernel.Condexp
+import Mathlib.Probability.Kernel.Defs
 import Mathlib.Probability.Kernel.Disintegration.Basic
 import Mathlib.Probability.Kernel.Disintegration.CDFToKernel
 import Mathlib.Probability.Kernel.Disintegration.CondCDF
@@ -3743,6 +3750,7 @@ import Mathlib.Probability.Kernel.Disintegration.Integral
 import Mathlib.Probability.Kernel.Disintegration.MeasurableStieltjes
 import Mathlib.Probability.Kernel.Disintegration.StandardBorel
 import Mathlib.Probability.Kernel.Disintegration.Unique
+import Mathlib.Probability.Kernel.Integral
 import Mathlib.Probability.Kernel.IntegralCompProd
 import Mathlib.Probability.Kernel.Invariance
 import Mathlib.Probability.Kernel.MeasurableIntegral
@@ -3952,6 +3960,7 @@ import Mathlib.RingTheory.MvPolynomial.Tower
 import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
 import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.RingTheory.MvPowerSeries.Inverse
+import Mathlib.RingTheory.MvPowerSeries.LexOrder
 import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 import Mathlib.RingTheory.MvPowerSeries.Trunc
 import Mathlib.RingTheory.Nakayama
@@ -4029,6 +4038,8 @@ import Mathlib.RingTheory.RootsOfUnity.Complex
 import Mathlib.RingTheory.RootsOfUnity.Lemmas
 import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.RingTheory.SimpleModule
+import Mathlib.RingTheory.SimpleRing.Basic
+import Mathlib.RingTheory.SimpleRing.Defs
 import Mathlib.RingTheory.Smooth.Basic
 import Mathlib.RingTheory.Smooth.Kaehler
 import Mathlib.RingTheory.Smooth.StandardSmooth
@@ -4143,10 +4154,21 @@ import Mathlib.Tactic.CancelDenoms.Core
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.CategoryTheory.BicategoricalComp
+import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
+import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
+import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
+import Mathlib.Tactic.CategoryTheory.Bicategory.PureCoherence
 import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
 import Mathlib.Tactic.CategoryTheory.Coherence
+import Mathlib.Tactic.CategoryTheory.Coherence.Basic
+import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
+import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
+import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
 import Mathlib.Tactic.CategoryTheory.Elementwise
-import Mathlib.Tactic.CategoryTheory.Monoidal
+import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
+import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
+import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
+import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
 import Mathlib.Tactic.CategoryTheory.MonoidalComp
 import Mathlib.Tactic.CategoryTheory.Reassoc
 import Mathlib.Tactic.CategoryTheory.Slice
@@ -4570,6 +4592,7 @@ import Mathlib.Topology.FiberBundle.Basic
 import Mathlib.Topology.FiberBundle.Constructions
 import Mathlib.Topology.FiberBundle.IsHomeomorphicTrivialBundle
 import Mathlib.Topology.FiberBundle.Trivialization
+import Mathlib.Topology.FiberPartition
 import Mathlib.Topology.Filter
 import Mathlib.Topology.GDelta
 import Mathlib.Topology.Germ
@@ -4637,7 +4660,7 @@ import Mathlib.Topology.MetricSpace.GromovHausdorff
 import Mathlib.Topology.MetricSpace.GromovHausdorffRealized
 import Mathlib.Topology.MetricSpace.HausdorffDimension
 import Mathlib.Topology.MetricSpace.HausdorffDistance
-import Mathlib.Topology.MetricSpace.Holder
+import Mathlib.Topology.MetricSpace.Hoelder
 import Mathlib.Topology.MetricSpace.Infsep
 import Mathlib.Topology.MetricSpace.IsometricSMul
 import Mathlib.Topology.MetricSpace.Isometry

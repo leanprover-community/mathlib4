@@ -49,7 +49,8 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
   have d_Union (s : ℕ → Set α) (hm : Monotone s) :
     Tendsto (fun n => d (s n)) atTop (𝓝 (d (⋃ n, s n))) := by
     refine Tendsto.sub ?_ ?_ <;>
-      refine NNReal.tendsto_coe.2 <| (ENNReal.tendsto_toNNReal ?_).comp <| tendsto_measure_iUnion hm
+      refine NNReal.tendsto_coe.2 <| (ENNReal.tendsto_toNNReal ?_).comp <|
+        tendsto_measure_iUnion_atTop hm
     · exact hμ _
     · exact hν _
   have d_Inter (s : ℕ → Set α) (hs : ∀ n, MeasurableSet (s n)) (hm : ∀ n m, n ≤ m → s m ⊆ s n) :

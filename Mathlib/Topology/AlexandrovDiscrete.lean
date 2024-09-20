@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Data.Set.Image
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Exterior
+import Mathlib.Tactic.Peel
 import Mathlib.Topology.Inseparable
 import Mathlib.Topology.Compactness.Compact
 
@@ -125,17 +126,18 @@ lemma Inducing.alexandrovDiscrete [AlexandrovDiscrete α] {f : β → α} (h : I
     refine ⟨_, isOpen_iInter₂ hU, ?_⟩
     simp_rw [preimage_iInter, htU, sInter_eq_biInter]
 
-lemma Set.Finite.isCompact_exterior (hs : s.Finite) : IsCompact (exterior s) := by
-  classical
-  refine isCompact_of_finite_subcover fun f hf hsf ↦ ?_
-  choose g hg using fun a (ha : a ∈ exterior s) ↦ mem_iUnion.1 (hsf ha)
-  refine ⟨hs.toFinset.attach.image fun a ↦
-    g a.1 <| subset_exterior <| (Finite.mem_toFinset _).1 a.2,
-    (isOpen_iUnion fun i ↦ isOpen_iUnion ?_).exterior_subset.2 ?_⟩
-  · exact fun _ ↦ hf _
-  refine fun a ha ↦ mem_iUnion₂.2 ⟨_, ?_, hg _ <| subset_exterior ha⟩
-  simp only [Finset.mem_image, Finset.mem_attach, true_and, Subtype.exists, Finite.mem_toFinset]
-  exact ⟨a, ha, rfl⟩
+theorem IsCompact.exterior_iff : IsCompact (exterior s) ↔ IsCompact s := by
+  simp only [isCompact_iff_finite_subcover]
+  peel with ι U hUo
+  simp only [(isOpen_iUnion hUo).exterior_subset,
+    (isOpen_iUnion fun i ↦ isOpen_iUnion fun _ ↦ hUo i).exterior_subset]
+
+protected alias ⟨IsCompact.of_exterior, IsCompact.exterior⟩ := IsCompact.exterior_iff
+
+@[deprecated IsCompact.exterior (since := "2024-09-18")]
+lemma Set.Finite.isCompact_exterior (hs : s.Finite) : IsCompact (exterior s) :=
+  hs.isCompact.exterior
+
 end
 
 lemma AlexandrovDiscrete.sup {t₁ t₂ : TopologicalSpace α} (_ : @AlexandrovDiscrete α t₁)
@@ -179,30 +181,12 @@ lemma exterior_singleton_subset_iff_mem_nhds : exterior {a} ⊆ t ↔ t ∈ 𝓝
 lemma gc_exterior_interior : GaloisConnection (exterior : Set α → Set α) interior :=
   fun s t ↦ by simp [exterior_subset_iff, subset_interior_iff]
 
-@[simp] lemma exterior_exterior (s : Set α) : exterior (exterior s) = exterior s :=
-  isOpen_exterior.exterior_eq
-
-@[simp] lemma exterior_union (s t : Set α) : exterior (s ∪ t) = exterior s ∪ exterior t :=
-  gc_exterior_interior.l_sup
-
-@[simp] lemma nhdsSet_exterior (s : Set α) : 𝓝ˢ (exterior s) = 𝓝ˢ s := by
-  ext t; simp_rw [← exterior_subset_iff_mem_nhdsSet, exterior_exterior]
-
 @[simp] lemma principal_exterior (s : Set α) : 𝓟 (exterior s) = 𝓝ˢ s := by
   rw [← nhdsSet_exterior, isOpen_exterior.nhdsSet_eq]
 
-@[simp] lemma exterior_subset_exterior : exterior s ⊆ exterior t ↔ 𝓝ˢ s ≤ 𝓝ˢ t := by
-  refine ⟨?_, fun h ↦ ker_mono h⟩
-  simp_rw [le_def, ← exterior_subset_iff_mem_nhdsSet]
-  exact fun h u ↦ h.trans
-
 lemma isOpen_iff_forall_specializes : IsOpen s ↔ ∀ x y, x ⤳ y → y ∈ s → x ∈ s := by
-  refine ⟨fun hs x y hxy ↦ hxy.mem_open hs, fun hs ↦ ?_⟩
-  simp_rw [specializes_iff_exterior_subset] at hs
-  simp_rw [isOpen_iff_mem_nhds, mem_nhds_iff]
-  rintro a ha
-  refine ⟨_, fun b hb ↦ hs _ _ ?_ ha, isOpen_exterior, subset_exterior <| mem_singleton _⟩
-  rwa [isOpen_exterior.exterior_subset, singleton_subset_iff]
+  simp only [← exterior_subset_iff_isOpen, Set.subset_def, mem_exterior_iff_specializes, exists_imp,
+    and_imp, @forall_swap (_ ⤳ _)]
 
 lemma alexandrovDiscrete_coinduced {β : Type*} {f : α → β} :
     @AlexandrovDiscrete β (coinduced f ‹_›) :=
@@ -215,7 +199,7 @@ instance AlexandrovDiscrete.toFirstCountable : FirstCountableTopology α where
 instance AlexandrovDiscrete.toLocallyCompactSpace : LocallyCompactSpace α where
   local_compact_nhds a _U hU := ⟨exterior {a},
     isOpen_exterior.mem_nhds <| subset_exterior <| mem_singleton _,
-      exterior_singleton_subset_iff_mem_nhds.2 hU, (finite_singleton _).isCompact_exterior⟩
+      exterior_singleton_subset_iff_mem_nhds.2 hU, (finite_singleton _).isCompact.exterior⟩
 
 instance Subtype.instAlexandrovDiscrete {p : α → Prop} : AlexandrovDiscrete {a // p a} :=
   inducing_subtype_val.alexandrovDiscrete
