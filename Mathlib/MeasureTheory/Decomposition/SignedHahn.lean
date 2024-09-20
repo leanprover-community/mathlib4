@@ -229,7 +229,7 @@ private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ 
   have hmeas : MeasurableSet (⋃ (l : ℕ) (_ : l < k), restrictNonposSeq s i l) :=
     MeasurableSet.iUnion fun _ => MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _
   refine ⟨i \ ⋃ l < k, restrictNonposSeq s i l, hi₁.diff hmeas, Set.diff_subset, hk₂, ?_⟩
-  rw [of_diff hmeas hi₁, s.of_disjoint_iUnion_nat]
+  rw [of_diff hmeas hi₁, s.of_disjoint_iUnion]
   · have h₁ : ∀ l < k, 0 ≤ s (restrictNonposSeq s i l) := by
       intro l hl
       refine le_of_lt (measure_of_restrictNonposSeq h _ ?_)
@@ -276,7 +276,7 @@ theorem exists_subset_restrict_nonpos (hi : s i < 0) :
         simp only [exists_prop, Set.mem_iUnion, and_congr_left_iff]
         exact fun _ => Nat.lt_succ_iff.symm
   have h₁ : s i = s A + ∑' l, s (restrictNonposSeq s i l) := by
-    rw [hA, ← s.of_disjoint_iUnion_nat, add_comm, of_add_of_diff]
+    rw [hA, ← s.of_disjoint_iUnion, add_comm, of_add_of_diff]
     · exact MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _
     exacts [hi₁, Set.iUnion_subset fun _ => restrictNonposSeq_subset _, fun _ =>
       restrictNonposSeq_measurableSet _, restrictNonposSeq_disjoint]
