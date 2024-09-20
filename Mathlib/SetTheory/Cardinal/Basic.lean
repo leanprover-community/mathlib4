@@ -133,6 +133,10 @@ theorem inductionOn₃ {p : Cardinal → Cardinal → Cardinal → Prop} (c₁ :
     (c₃ : Cardinal) (h : ∀ α β γ, p #α #β #γ) : p c₁ c₂ c₃ :=
   Quotient.inductionOn₃ c₁ c₂ c₃ h
 
+theorem induction_on_pi {ι : Type u} {p : (ι → Cardinal.{v}) → Prop}
+    (f : ι → Cardinal.{v}) (h : ∀ f : ι → Type v, p fun i ↦ #(f i)) : p f :=
+  Quotient.induction_on_pi f h
+
 protected theorem eq : #α = #β ↔ Nonempty (α ≃ β) :=
   Quotient.eq'
 
@@ -464,11 +468,6 @@ theorem mk_psum (α : Type u) (β : Type v) : #(α ⊕' β) = lift.{v} #α + lif
 theorem mk_fintype (α : Type u) [h : Fintype α] : #α = Fintype.card α :=
   mk_congr (Fintype.equivOfCardEq (by simp))
 
-protected theorem cast_succ (n : ℕ) : ((n + 1 : ℕ) : Cardinal.{u}) = n + 1 := by
-  change #(ULift.{u} (Fin (n+1))) = # (ULift.{u} (Fin n)) + 1
-  rw [← mk_option, mk_fintype, mk_fintype]
-  simp only [Fintype.card_ulift, Fintype.card_fin, Fintype.card_option]
-
 instance : Mul Cardinal.{u} :=
   ⟨map₂ Prod fun _ _ _ _ => Equiv.prodCongr⟩
 
@@ -478,9 +477,6 @@ theorem mul_def (α β : Type u) : #α * #β = #(α × β) :=
 @[simp]
 theorem mk_prod (α : Type u) (β : Type v) : #(α × β) = lift.{v, u} #α * lift.{u, v} #β :=
   mk_congr (Equiv.ulift.symm.prodCongr Equiv.ulift.symm)
-
-private theorem mul_comm' (a b : Cardinal.{u}) : a * b = b * a :=
-  inductionOn₂ a b fun α β => mk_congr <| Equiv.prodComm α β
 
 /-- The cardinal exponential. `#α ^ #β` is the cardinal of `β → α`. -/
 instance instPowCardinal : Pow Cardinal.{u} Cardinal.{u} :=
@@ -498,41 +494,45 @@ theorem lift_power (a b : Cardinal.{u}) : lift.{v} (a ^ b) = lift.{v} a ^ lift.{
     mk_congr <| Equiv.ulift.trans (Equiv.ulift.arrowCongr Equiv.ulift).symm
 
 @[simp]
-theorem power_zero {a : Cardinal} : a ^ (0 : Cardinal) = 1 :=
+theorem power_zero (a : Cardinal) : a ^ (0 : Cardinal) = 1 :=
   inductionOn a fun _ => mk_eq_one _
 
 @[simp]
-theorem power_one {a : Cardinal.{u}} : a ^ (1 : Cardinal) = a :=
+theorem power_one (a : Cardinal.{u}) : a ^ (1 : Cardinal) = a :=
   inductionOn a fun α => mk_congr (Equiv.funUnique (ULift.{u} (Fin 1)) α)
 
-theorem power_add {a b c : Cardinal} : a ^ (b + c) = a ^ b * a ^ c :=
+theorem power_add (a b c : Cardinal) : a ^ (b + c) = a ^ b * a ^ c :=
   inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumArrowEquivProdArrow β γ α
+
+private theorem cast_succ (n : ℕ) : ((n + 1 : ℕ) : Cardinal.{u}) = n + 1 := by
+  change #(ULift.{u} _) = #(ULift.{u} _) + 1
+  rw [← mk_option]
+  simp
 
 instance commSemiring : CommSemiring Cardinal.{u} where
   zero := 0
   one := 1
   add := (· + ·)
   mul := (· * ·)
-  zero_add a := inductionOn a fun α => mk_congr <| Equiv.emptySum (ULift (Fin 0)) α
-  add_zero a := inductionOn a fun α => mk_congr <| Equiv.sumEmpty α (ULift (Fin 0))
+  zero_add a := inductionOn a fun α => mk_congr <| Equiv.emptySum _ α
+  add_zero a := inductionOn a fun α => mk_congr <| Equiv.sumEmpty α _
   add_assoc a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumAssoc α β γ
   add_comm a b := inductionOn₂ a b fun α β => mk_congr <| Equiv.sumComm α β
   zero_mul a := inductionOn a fun α => mk_eq_zero _
   mul_zero a := inductionOn a fun α => mk_eq_zero _
-  one_mul a := inductionOn a fun α => mk_congr <| Equiv.uniqueProd α (ULift (Fin 1))
-  mul_one a := inductionOn a fun α => mk_congr <| Equiv.prodUnique α (ULift (Fin 1))
+  one_mul a := inductionOn a fun α => mk_congr <| Equiv.uniqueProd α _
+  mul_one a := inductionOn a fun α => mk_congr <| Equiv.prodUnique α _
   mul_assoc a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.prodAssoc α β γ
-  mul_comm := mul_comm'
+  mul_comm a b := inductionOn₂ a b fun α β => mk_congr <| Equiv.prodComm α β
   left_distrib a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.prodSumDistrib α β γ
   right_distrib a b c := inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.sumProdDistrib α β γ
   nsmul := nsmulRec
   npow n c := c ^ (n : Cardinal)
-  npow_zero := @power_zero
-  npow_succ n c := show c ^ (↑(n + 1) : Cardinal) = c ^ (↑n : Cardinal) * c
-    by rw [Cardinal.cast_succ, power_add, power_one, mul_comm']
-  natCast := (fun n => lift.{u} #(Fin n) : ℕ → Cardinal.{u})
+  npow_zero := power_zero
+  npow_succ n c := by dsimp; rw [cast_succ, power_add, power_one]
+  natCast n := lift #(Fin n)
   natCast_zero := rfl
-  natCast_succ := Cardinal.cast_succ
+  natCast_succ n := cast_succ n
 
 @[simp]
 theorem one_power {a : Cardinal} : (1 : Cardinal) ^ a = 1 :=
@@ -672,7 +672,7 @@ theorem self_le_power (a : Cardinal) {b : Cardinal} (hb : 1 ≤ b) : a ≤ a ^ b
   rcases eq_or_ne a 0 with (rfl | ha)
   · exact zero_le _
   · convert power_le_power_left ha hb
-    exact power_one.symm
+    exact (power_one a).symm
 
 /-- **Cantor's theorem** -/
 theorem cantor (a : Cardinal.{u}) : a < 2 ^ a := by
@@ -795,28 +795,43 @@ theorem lift_succ (a) : lift.{v, u} (succ a) = succ (lift.{v, u} a) :=
 
 /-- A cardinal is a limit if it is not zero or a successor cardinal. Note that `ℵ₀` is a limit
   cardinal by this definition, but `0` isn't.
-
-TODO: deprecate this in favor of `Order.IsSuccLimit`. -/
+Deprecated. Use `Order.IsSuccLimit` instead. -/
+@[deprecated IsSuccLimit (since := "2024-09-17")]
 def IsLimit (c : Cardinal) : Prop :=
   c ≠ 0 ∧ IsSuccPrelimit c
 
-protected theorem IsLimit.ne_zero {c} (h : IsLimit c) : c ≠ 0 :=
-  h.1
-
-protected theorem IsLimit.isSuccPrelimit {c} (h : IsLimit c) : IsSuccPrelimit c :=
-  h.2
-
-@[deprecated IsLimit.isSuccPrelimit (since := "2024-09-05")]
-alias IsLimit.isSuccLimit := IsLimit.isSuccPrelimit
-
-theorem IsLimit.succ_lt {x c} (h : IsLimit c) : x < c → succ x < c :=
-  h.isSuccPrelimit.succ_lt
+theorem ne_zero_of_isSuccLimit {c} (h : IsSuccLimit c) : c ≠ 0 :=
+  h.ne_bot
 
 theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Cardinal) :=
   isSuccPrelimit_bot
 
+protected theorem isSuccLimit_iff {c : Cardinal} : IsSuccLimit c ↔ c ≠ 0 ∧ IsSuccPrelimit c :=
+  isSuccLimit_iff
+
+section deprecated
+
+set_option linter.deprecated false
+
+@[deprecated IsSuccLimit.isSuccPrelimit (since := "2024-09-17")]
+protected theorem IsLimit.isSuccPrelimit {c} (h : IsLimit c) : IsSuccPrelimit c :=
+  h.2
+
+@[deprecated ne_zero_of_isSuccLimit (since := "2024-09-17")]
+protected theorem IsLimit.ne_zero {c} (h : IsLimit c) : c ≠ 0 :=
+  h.1
+
+@[deprecated IsLimit.isSuccPrelimit (since := "2024-09-05")]
+alias IsLimit.isSuccLimit := IsLimit.isSuccPrelimit
+
+@[deprecated IsSuccLimit.succ_lt (since := "2024-09-17")]
+theorem IsLimit.succ_lt {x c} (h : IsLimit c) : x < c → succ x < c :=
+  h.isSuccPrelimit.succ_lt
+
 @[deprecated isSuccPrelimit_zero (since := "2024-09-05")]
 alias isSuccLimit_zero := isSuccPrelimit_zero
+
+end deprecated
 
 /-! ### Indexed cardinal `sum` -/
 
@@ -835,6 +850,9 @@ theorem iSup_le_sum {ι} (f : ι → Cardinal) : iSup f ≤ sum f :=
 @[simp]
 theorem mk_sigma {ι} (f : ι → Type*) : #(Σ i, f i) = sum fun i => #(f i) :=
   mk_congr <| Equiv.sigmaCongrRight fun _ => outMkEquiv.symm
+
+theorem mk_sigma_arrow {ι} (α : Type*) (f : ι → Type*) :
+    #(Sigma f → α) = #(Π i, f i → α) := mk_congr <| Equiv.piCurry fun _ _ ↦ α
 
 @[simp]
 theorem sum_const (ι : Type u) (a : Cardinal.{v}) :
@@ -1042,9 +1060,19 @@ lemma exists_eq_of_iSup_eq_of_not_isSuccPrelimit
   rw [iSup, csSup_of_not_bddAbove hf, csSup_empty]
   exact isSuccPrelimit_bot
 
-@[deprecated exists_eq_of_iSup_eq_of_not_isSuccPrelimit (since := "2024-09-05")]
-alias exists_eq_of_iSup_eq_of_not_isSuccLimit := exists_eq_of_iSup_eq_of_not_isSuccPrelimit
+lemma exists_eq_of_iSup_eq_of_not_isSuccLimit
+    {ι : Type u} [hι : Nonempty ι] (f : ι → Cardinal.{v}) (hf : BddAbove (range f))
+    {c : Cardinal.{v}} (hc : ¬ IsSuccLimit c)
+    (h : ⨆ i, f i = c) : ∃ i, f i = c := by
+  rw [Cardinal.isSuccLimit_iff] at hc
+  refine (not_and_or.mp hc).elim (fun e ↦ ⟨hι.some, ?_⟩)
+    (Cardinal.exists_eq_of_iSup_eq_of_not_isSuccPrelimit.{u, v} f c · h)
+  cases not_not.mp e
+  rw [← le_zero_iff] at h ⊢
+  exact (le_ciSup hf _).trans h
 
+set_option linter.deprecated false in
+@[deprecated exists_eq_of_iSup_eq_of_not_isSuccLimit (since := "2024-09-17")]
 lemma exists_eq_of_iSup_eq_of_not_isLimit
     {ι : Type u} [hι : Nonempty ι] (f : ι → Cardinal.{v}) (hf : BddAbove (range f))
     (ω : Cardinal.{v}) (hω : ¬ ω.IsLimit)
@@ -1085,6 +1113,17 @@ theorem prod_eq_zero {ι} (f : ι → Cardinal.{u}) : prod f = 0 ↔ ∃ i, f i 
   simp only [mk_eq_zero_iff, ← mk_pi, isEmpty_pi]
 
 theorem prod_ne_zero {ι} (f : ι → Cardinal) : prod f ≠ 0 ↔ ∀ i, f i ≠ 0 := by simp [prod_eq_zero]
+
+theorem power_sum {ι} (a : Cardinal) (f : ι → Cardinal) :
+    a ^ sum f = prod fun i ↦ a ^ f i := by
+  induction a using Cardinal.inductionOn with | _ α =>
+  induction f using induction_on_pi with | _ f =>
+  simp_rw [prod, sum, power_def]
+  apply mk_congr
+  refine (Equiv.piCurry fun _ _ => α).trans ?_
+  refine Equiv.piCongrRight fun b => ?_
+  refine (Equiv.arrowCongr outMkEquiv (Equiv.refl α)).trans ?_
+  exact outMkEquiv.symm
 
 @[simp]
 theorem lift_prod {ι : Type u} (c : ι → Cardinal.{v}) :
@@ -1403,24 +1442,46 @@ theorem isSuccPrelimit_aleph0 : IsSuccPrelimit ℵ₀ :=
     rw [← nat_succ]
     apply nat_lt_aleph0
 
-@[deprecated isSuccPrelimit_aleph0 (since := "2024-09-05")]
-alias isSuccLimit_aleph0 := isSuccPrelimit_aleph0
+theorem isSuccLimit_aleph0 : IsSuccLimit ℵ₀ := by
+  rw [Cardinal.isSuccLimit_iff]
+  exact ⟨aleph0_ne_zero, isSuccPrelimit_aleph0⟩
 
+lemma not_isSuccLimit_natCast : (n : ℕ) → ¬ IsSuccLimit (n : Cardinal.{u})
+  | 0, e => e.1 isMin_bot
+  | Nat.succ n, e => Order.not_isSuccPrelimit_succ _ (nat_succ n ▸ e.2)
+
+theorem not_isSuccLimit_of_lt_aleph0 {c : Cardinal} (h : c < ℵ₀) : ¬ IsSuccLimit c := by
+  obtain ⟨n, rfl⟩ := lt_aleph0.1 h
+  exact not_isSuccLimit_natCast n
+
+theorem aleph0_le_of_isSuccLimit {c : Cardinal} (h : IsSuccLimit c) : ℵ₀ ≤ c := by
+  contrapose! h
+  exact not_isSuccLimit_of_lt_aleph0 h
+
+section deprecated
+
+set_option linter.deprecated false
+
+@[deprecated isSuccLimit_aleph0 (since := "2024-09-17")]
 theorem isLimit_aleph0 : IsLimit ℵ₀ :=
   ⟨aleph0_ne_zero, isSuccPrelimit_aleph0⟩
 
+@[deprecated not_isSuccLimit_natCast (since := "2024-09-17")]
 lemma not_isLimit_natCast : (n : ℕ) → ¬ IsLimit (n : Cardinal.{u})
   | 0, e => e.1 rfl
   | Nat.succ n, e => Order.not_isSuccPrelimit_succ _ (nat_succ n ▸ e.2)
 
+@[deprecated aleph0_le_of_isSuccLimit (since := "2024-09-17")]
 theorem IsLimit.aleph0_le {c : Cardinal} (h : IsLimit c) : ℵ₀ ≤ c := by
   by_contra! h'
   rcases lt_aleph0.1 h' with ⟨n, rfl⟩
   exact not_isLimit_natCast n h
 
+end deprecated
+
 lemma exists_eq_natCast_of_iSup_eq {ι : Type u} [Nonempty ι] (f : ι → Cardinal.{v})
     (hf : BddAbove (range f)) (n : ℕ) (h : ⨆ i, f i = n) : ∃ i, f i = n :=
-  exists_eq_of_iSup_eq_of_not_isLimit.{u, v} f hf _ (not_isLimit_natCast n) h
+  exists_eq_of_iSup_eq_of_not_isSuccLimit.{u, v} f hf (not_isSuccLimit_natCast n) h
 
 @[simp]
 theorem range_natCast : range ((↑) : ℕ → Cardinal) = Iio ℵ₀ :=
@@ -1488,7 +1549,7 @@ theorem nsmul_lt_aleph0_iff {n : ℕ} {a : Cardinal} : n • a < ℵ₀ ↔ n = 
   cases n with
   | zero => simpa using nat_lt_aleph0 0
   | succ n =>
-      simp only [Nat.succ_ne_zero, false_or_iff]
+      simp only [Nat.succ_ne_zero, false_or]
       induction' n with n ih
       · simp
       rw [succ_nsmul, add_lt_aleph0_iff, ih, and_self_iff]

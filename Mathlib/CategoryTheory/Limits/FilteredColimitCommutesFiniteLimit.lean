@@ -112,7 +112,7 @@ theorem colimitLimitToLimitColimit_injective :
       Finset.mem_union.mpr
         (Or.inl
           (by
-            simp only [true_and_iff, Finset.mem_univ, eq_self_iff_true, exists_prop_of_true,
+            simp only [true_and, Finset.mem_univ, eq_self_iff_true, exists_prop_of_true,
               Finset.mem_image, heq_iff_eq]
             refine ⟨j, ?_⟩
             simp only [heq_iff_eq] ))
@@ -122,7 +122,7 @@ theorem colimitLimitToLimitColimit_injective :
       Finset.mem_union.mpr
         (Or.inr
           (by
-            simp only [true_and_iff, Finset.mem_univ, eq_self_iff_true, exists_prop_of_true,
+            simp only [true_and, Finset.mem_univ, eq_self_iff_true, exists_prop_of_true,
               Finset.mem_image, heq_iff_eq]
             refine ⟨j, ?_⟩
             simp only [heq_iff_eq]))
