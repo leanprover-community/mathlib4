@@ -14,6 +14,9 @@ import Mathlib.Data.Set.Pointwise.Interval
 
 In this file we define (semi)normed rings and fields. We also prove some theorems about these
 definitions.
+
+Some useful results that relate the topology of the normed field to the discrete topology include:
+* `norm_eq_one_iff_ne_zero_of_discrete`
 -/
 
 -- Guard against import creep.
@@ -668,6 +671,46 @@ theorem dist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) :
 theorem nndist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) :
     nndist z⁻¹ w⁻¹ = nndist z w / (‖z‖₊ * ‖w‖₊) :=
   NNReal.eq <| dist_inv_inv₀ hz hw
+
+namespace NormedDivisionRing
+
+section Discrete
+
+variable {𝕜 : Type*} [NormedDivisionRing 𝕜] [DiscreteTopology 𝕜]
+
+lemma norm_eq_one_iff_ne_zero_of_discrete {x : 𝕜} : ‖x‖ = 1 ↔ x ≠ 0 := by
+  constructor <;> intro hx
+  · contrapose! hx
+    simp [hx]
+  · have : IsOpen {(0 : 𝕜)} := isOpen_discrete {0}
+    simp_rw [Metric.isOpen_singleton_iff, dist_eq_norm, sub_zero] at this
+    obtain ⟨ε, εpos, h'⟩ := this
+    wlog h : ‖x‖ < 1 generalizing 𝕜 with H
+    · push_neg at h
+      rcases h.eq_or_lt with h|h
+      · rw [h]
+      replace h := norm_inv x ▸ inv_lt_one h
+      rw [← inv_inj, inv_one, ← norm_inv]
+      exact H (by simpa) h' h
+    obtain ⟨k, hk⟩ : ∃ k : ℕ, ‖x‖ ^ k < ε := exists_pow_lt_of_lt_one εpos h
+    rw [← norm_pow] at hk
+    specialize h' _ hk
+    simp [hx] at h'
+
+@[simp]
+lemma norm_le_one_of_discrete
+    (x : 𝕜) : ‖x‖ ≤ 1 := by
+  rcases eq_or_ne x 0 with rfl|hx
+  · simp
+  · simp [norm_eq_one_iff_ne_zero_of_discrete.mpr hx]
+
+lemma discreteTopology_unit_closedBall_eq_univ : (Metric.closedBall 0 1 : Set 𝕜) = Set.univ := by
+  ext
+  simp
+
+end Discrete
+
+end NormedDivisionRing
 
 end NormedDivisionRing
 

@@ -145,13 +145,25 @@ jobs:
           lake exe cache get Mathlib.Init
           lake build --no-build Mathlib.Init && lake exe cache get || echo "No cache for 'Mathlib.Init' available"
 
+      - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
+        id: mk_all
+        run: |
+
+          if ! lake exe mk_all --check
+          then
+            echo "Not all lean files are in the import all files"
+            echo "mk_all=false" >> "${GITHUB_OUTPUT}"
+          else
+            echo "mk_all=true" >> "${GITHUB_OUTPUT}"
+          fi
+
       - name: build mathlib
         id: build
         uses: liskin/gh-problem-matcher-wrap@v3
         with:
           linters: gcc
           run: |
-            bash -o pipefail -c "lake exe mk_all || echo \"There are unaccounted for files, but I am not failing yet\!\"; env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
+            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
 
       - name: upload cache
         # We only upload the cache if the build started (whether succeeding, failing, or cancelled)
@@ -207,8 +219,13 @@ jobs:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
           MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
-      - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
-        run: lake exe mk_all --check
+      - name: Check {Mathlib, Tactic, Counterexamples, Archive}.lean
+        run: |
+          if [ ${{ steps.mk_all.outputs.mk_all }} == "false" ]
+          then
+            echo "Please run 'lake exe mk_all' to regenerate the import all files"
+            exit 1
+          fi
 
       - name: check for noisy stdout lines
         id: noisy
