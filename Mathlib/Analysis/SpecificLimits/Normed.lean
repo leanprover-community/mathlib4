@@ -415,7 +415,7 @@ lemma summable_descFactorial_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (
 open Polynomial in
 theorem summable_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
     Summable (fun n ↦ (n : 𝕜) ^ k * r ^ n : ℕ → 𝕜) := by
-  refine Nat.strong_induction_on k fun k hk => ?_
+  refine Nat.strongRecOn k fun k hk => ?_
   obtain ⟨a, ha⟩ : ∃ (a : ℕ → ℕ), ∀ n, (n + k).descFactorial k
       = n ^ k + ∑ i ∈ range k, a i * n ^ i := by
     let P : Polynomial ℕ := (ascPochhammer ℕ k).comp (Polynomial.X + C 1)

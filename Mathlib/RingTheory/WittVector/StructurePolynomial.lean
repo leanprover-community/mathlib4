@@ -264,7 +264,7 @@ variable (p)
 theorem map_wittStructureInt (Φ : MvPolynomial idx ℤ) (n : ℕ) :
     map (Int.castRingHom ℚ) (wittStructureInt p Φ n) =
       wittStructureRat p (map (Int.castRingHom ℚ) Φ) n := by
-  induction n using Nat.strong_induction_on with | h n IH => ?_
+  induction n using Nat.strongRecOn with | ind n IH => ?_
   rw [wittStructureInt, map_mapRange_eq_iff, Int.coe_castRingHom]
   intro c
   rw [wittStructureRat_rec, coeff_C_mul, mul_comm, mul_div_assoc', mul_one]

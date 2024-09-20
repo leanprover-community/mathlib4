@@ -217,7 +217,7 @@ completing the proof the harder direction of **Hall's Marriage Theorem**.
 theorem hall_hard_inductive (ht : ∀ s : Finset ι, s.card ≤ (s.biUnion t).card) :
     ∃ f : ι → α, Function.Injective f ∧ ∀ x, f x ∈ t x := by
   cases nonempty_fintype ι
-  induction' hn : Fintype.card ι using Nat.strong_induction_on with n ih generalizing ι
+  induction' hn : Fintype.card ι using Nat.strongRecOn with n ih generalizing ι
   rcases n with (_ | n)
   · rw [Fintype.card_eq_zero_iff] at hn
     exact ⟨isEmptyElim, isEmptyElim, isEmptyElim⟩

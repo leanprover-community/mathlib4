@@ -1344,7 +1344,7 @@ theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p :
 terms `p n (fun i ↦ y)` appearing in the sum are zero for any `n : ℕ`, `y : E`. -/
 theorem HasFPowerSeriesAt.apply_eq_zero {p : FormalMultilinearSeries 𝕜 E F} {x : E}
     (h : HasFPowerSeriesAt 0 p x) (n : ℕ) : ∀ y : E, (p n fun _ => y) = 0 := by
-  refine Nat.strong_induction_on n fun k hk => ?_
+  refine Nat.strongRecOn n fun k hk => ?_
   have psum_eq : p.partialSum (k + 1) = fun y => p k fun _ => y := by
     funext z
     refine Finset.sum_eq_single _ (fun b hb hnb => ?_) fun hn => ?_

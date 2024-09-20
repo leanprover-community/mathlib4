@@ -135,7 +135,7 @@ theorem map_frobeniusPoly (n : ℕ) :
     MvPolynomial.map (Int.castRingHom ℚ) (frobeniusPoly p n) = frobeniusPolyRat p n := by
   rw [frobeniusPoly, RingHom.map_add, RingHom.map_mul, RingHom.map_pow, map_C, map_X, eq_intCast,
     Int.cast_natCast, frobeniusPolyRat]
-  refine Nat.strong_induction_on n ?_; clear n
+  refine Nat.strongRecOn n ?_; clear n
   intro n IH
   rw [xInTermsOfW_eq]
   simp only [map_sum, map_sub, map_mul, map_pow (bind₁ _), bind₁_C_right]

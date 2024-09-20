@@ -107,7 +107,7 @@ nilpotent, then `P` is a unit.
 See also `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent`. -/
 theorem isUnit_of_coeff_isUnit_isNilpotent (hunit : IsUnit (P.coeff 0))
     (hnil : ∀ i, i ≠ 0 → IsNilpotent (P.coeff i)) : IsUnit P := by
-  induction' h : P.natDegree using Nat.strong_induction_on with k hind generalizing P
+  induction' h : P.natDegree using Nat.strongRecOn with k hind generalizing P
   by_cases hdeg : P.natDegree = 0
   { rw [eq_C_of_natDegree_eq_zero hdeg]
     exact hunit.map C }

@@ -110,7 +110,7 @@ theorem catalan_eq_centralBinom_div (n : ℕ) : catalan n = n.centralBinom / (n 
   suffices (catalan n : ℚ) = Nat.centralBinom n / (n + 1) by
     have h := Nat.succ_dvd_centralBinom n
     exact mod_cast this
-  induction' n using Nat.case_strong_induction_on with d hd
+  induction' n using Nat.caseStrongRecOn with d hd
   · simp
   · simp_rw [catalan_succ, Nat.cast_sum, Nat.cast_mul]
     trans (∑ i : Fin d.succ, Nat.centralBinom i / (i + 1) *
@@ -187,7 +187,7 @@ theorem coe_treesOfNumNodesEq (n : ℕ) :
   Set.ext (by simp)
 
 theorem treesOfNumNodesEq_card_eq_catalan (n : ℕ) : (treesOfNumNodesEq n).card = catalan n := by
-  induction' n using Nat.case_strong_induction_on with n ih
+  induction' n using Nat.caseStrongRecOn with n ih
   · simp
   rw [treesOfNumNodesEq_succ, card_biUnion, catalan_succ']
   · apply sum_congr rfl
