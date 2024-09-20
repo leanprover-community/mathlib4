@@ -18,6 +18,12 @@
   title  : Prime Number Theorem
 6:
   title  : Gödel’s Incompleteness Theorem
+  author : Shogo Saito
+  links  :
+    results :
+    - First: https://github.com/FormalizedFormalLogic/Incompleteness/blob/master/Incompleteness/Arith/First.lean
+    - Second: https://github.com/FormalizedFormalLogic/Incompleteness/blob/master/Incompleteness/Arith/Second.lean
+    website: https://formalizedformallogic.github.io/Book/
 7:
   title  : Law of Quadratic Reciprocity
   decls  :
