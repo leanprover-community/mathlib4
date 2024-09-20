@@ -89,7 +89,6 @@ variable {α β : Type u}
 
 /-! ### Definition of cardinals -/
 
-
 /-- The equivalence relation on types given by equivalence (bijective correspondence) of types.
   Quotienting by this equivalence relation gives the cardinal numbers.
 -/
@@ -220,7 +219,6 @@ theorem mk_set_le (s : Set α) : #s ≤ #α :=
   mk_subtype_le s
 
 /-! ### Lifting cardinals to a higher universe -/
-
 
 /-- The universe lift operation on cardinals. You can specify the universes explicitly with
   `lift.{u v} : Cardinal.{v} → Cardinal.{max v u}` -/
@@ -390,7 +388,6 @@ theorem lt_lift_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
     fun ⟨_, e, h⟩ => e ▸ lift_lt.2 h⟩
 
 /-! ### Basic cardinals -/
-
 
 instance : Zero Cardinal.{u} :=
   -- `PEmpty` might be more canonical, but this is convenient for defeq with natCast
@@ -602,7 +599,6 @@ theorem lift_two_power (a : Cardinal) : lift.{v} (2 ^ a) = 2 ^ lift.{v} a := by
   simp [← one_add_one_eq_two]
 
 /-! ### Order properties -/
-
 
 protected theorem zero_le : ∀ a : Cardinal, 0 ≤ a := by
   rintro ⟨α⟩
@@ -1168,7 +1164,6 @@ theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f 
 
 /-! ### The first infinite cardinal `aleph0` -/
 
-
 /-- `ℵ₀` is the smallest infinite cardinal. -/
 def aleph0 : Cardinal.{u} :=
   lift #ℕ
@@ -1401,7 +1396,6 @@ theorem lt_one_iff_zero {c : Cardinal} : c < 1 ↔ c = 0 := by
   simpa using lt_succ_bot_iff (a := c)
 
 /-! ### Properties about `aleph0` -/
-
 
 theorem nat_lt_aleph0 (n : ℕ) : (n : Cardinal.{u}) < ℵ₀ :=
   succ_le_iff.1
@@ -1689,7 +1683,6 @@ theorem mk_pNat : #ℕ+ = ℵ₀ :=
   mk_denumerable ℕ+
 
 /-! ### Cardinalities of basic sets and types -/
-
 
 -- porting note (#10618): simp can prove this
 -- @[simp]
@@ -2038,7 +2031,6 @@ theorem three_le {α : Type*} (h : 3 ≤ #α) (x : α) (y : α) : ∃ z : α, z 
   simpa [not_or] using this
 
 /-! ### `powerlt` operation -/
-
 
 /-- The function `a ^< b`, defined as the supremum of `a ^ c` for `c < b`. -/
 def powerlt (a b : Cardinal.{u}) : Cardinal.{u} :=
