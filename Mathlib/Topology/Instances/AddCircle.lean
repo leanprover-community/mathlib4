@@ -112,7 +112,6 @@ theorem continuousAt_toIocMod (hx : (x : 𝕜 ⧸ zmultiples p) ≠ a) : Continu
 end Continuity
 
 /-- The "additive circle": `𝕜 ⧸ (ℤ ∙ p)`. See also `Circle` and `Real.angle`. -/
-@[nolint unusedArguments]
 abbrev AddCircle [LinearOrderedAddCommGroup 𝕜] (p : 𝕜) :=
   𝕜 ⧸ zmultiples p
 

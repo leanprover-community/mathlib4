@@ -13,7 +13,7 @@ Construction of the Stone-Čech compactification using ultrafilters.
 For any topological space `α`, we build a compact Hausdorff space `StoneCech α` and a continuous
 map `stoneCechUnit : α → StoneCech α` which is minimal in the sense of the following universal
 property: for any compact Hausdorff space `β` and every map `f : α → β` such that
-`hf : Continuous f`, there is a unique map `stoneCechExtend hf : StoneCech α → β` such that
+`hf : Continuous f`, there is a unique map `stoneCechExtend hf : StoneCech α → β` such that
 `stoneCechExtend_extends : stoneCechExtend hf ∘ stoneCechUnit = f`.
 Continuity of this extension is asserted by `continuous_stoneCechExtend` and uniqueness by
 `stoneCech_hom_ext`.
@@ -100,7 +100,7 @@ instance Ultrafilter.t2Space : T2Space (Ultrafilter α) :=
 instance : TotallyDisconnectedSpace (Ultrafilter α) := by
   rw [totallyDisconnectedSpace_iff_connectedComponent_singleton]
   intro A
-  simp only [Set.eq_singleton_iff_unique_mem, mem_connectedComponent, true_and_iff]
+  simp only [Set.eq_singleton_iff_unique_mem, mem_connectedComponent, true_and]
   intro B hB
   rw [← Ultrafilter.coe_le_coe]
   intro s hs
@@ -221,7 +221,7 @@ section PreStoneCech
 
 variable (α : Type u) [TopologicalSpace α]
 
-/-- Auxilliary construction towards the Stone-Čech compactification of a topological space.
+/-- Auxiliary construction towards the Stone-Čech compactification of a topological space.
 It should not be used after the Stone-Čech compactification is constructed. -/
 def PreStoneCech : Type u :=
   Quot fun F G : Ultrafilter α ↦ ∃ x, (F : Filter α) ≤ 𝓝 x ∧ (G : Filter α) ≤ 𝓝 x

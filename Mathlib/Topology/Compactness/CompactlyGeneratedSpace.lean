@@ -54,7 +54,7 @@ The compactly generated topology on a topological space `X`. This is the finest 
 which makes all maps from compact Hausdorff spaces to `X`, which are continuous for the original
 topology, continuous.
 
-Note: this definition should be used with an explicit universe parameter `u` for the size of the
+Note: this definition should be used with an explicit universe parameter `u` for the size of the
 compact Hausdorff spaces mapping to `X`.
 -/
 def TopologicalSpace.compactlyGenerated (X : Type w) [TopologicalSpace X] : TopologicalSpace X :=

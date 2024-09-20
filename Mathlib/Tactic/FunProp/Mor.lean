@@ -29,12 +29,12 @@ namespace Meta.FunProp
 
 namespace Mor
 
-/-- Is `name` a coerction from some function space to functiosn? -/
+/-- Is `name` a coerction from some function space to functions? -/
 def isCoeFunName (name : Name) : CoreM Bool := do
   let .some info ← getCoeFnInfo? name | return false
   return info.type == .coeFun
 
-/-- Is `e` a coerction from some function space to functiosn? -/
+/-- Is `e` a coerction from some function space to functions? -/
 def isCoeFun (e : Expr) : MetaM Bool := do
   let .some (name,_) := e.getAppFn.const? | return false
   let .some info ← getCoeFnInfo? name | return false
@@ -89,7 +89,7 @@ Weak normal head form of an expression involving morphism applications.
 
 For example calling this on `coe (f a) b` will put `f` in weak normal head form instead of `coe`.
  -/
-def whnf (e : Expr)  (cfg : WhnfCoreConfig := {}) : MetaM Expr :=
+def whnf (e : Expr) (cfg : WhnfCoreConfig := {}) : MetaM Expr :=
   whnfPred e (fun _ => return false) cfg
 
 
@@ -120,6 +120,14 @@ where
         go f (as.push { coe := c, expr := x})
       else
         go (.app c f) (as.push { expr := x})
+    | .app (.proj n i f) x, as => do
+      -- convert proj back to function application
+      let env ← getEnv
+      let info := getStructureInfo? env n |>.get!
+      let projFn := getProjFnForField? env n (info.fieldNames[i]!) |>.get!
+      let .app c f ← mkAppM projFn #[f] | panic! "bug in Mor.withApp"
+
+      go (.app (.app c f) x) as
     | .app f a, as =>
       go f (as.push { expr := a })
     | f        , as => k f as.reverse

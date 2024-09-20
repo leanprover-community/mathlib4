@@ -39,7 +39,7 @@ infixr:25 " →ₐ " => AlgHom _
 notation:25 A " →ₐ[" R "] " B => AlgHom R A B
 
 /-- `AlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
-from `A` to `B`.  -/
+from `A` to `B`. -/
 class AlgHomClass (F : Type*) (R A B : outParam Type*)
   [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
   [FunLike F A B] extends RingHomClass F A B : Prop where
@@ -421,11 +421,25 @@ def toNatAlgHom [Semiring R] [Semiring S] (f : R →+* S) : R →ₐ[ℕ] S :=
     toFun := f
     commutes' := fun n => by simp }
 
+@[simp]
+lemma toNatAlgHom_coe [Semiring R] [Semiring S] (f : R →+* S) :
+    ⇑f.toNatAlgHom = ⇑f := rfl
+
+lemma toNatAlgHom_apply [Semiring R] [Semiring S] (f : R →+* S) (x : R) :
+    f.toNatAlgHom x = f x := rfl
+
 /-- Reinterpret a `RingHom` as a `ℤ`-algebra homomorphism. -/
-def toIntAlgHom [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] (f : R →+* S) : R →ₐ[ℤ] S :=
+def toIntAlgHom [Ring R] [Ring S] (f : R →+* S) : R →ₐ[ℤ] S :=
   { f with commutes' := fun n => by simp }
 
-lemma toIntAlgHom_injective [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] :
+@[simp]
+lemma toIntAlgHom_coe [Ring R] [Ring S] (f : R →+* S) :
+    ⇑f.toIntAlgHom = ⇑f := rfl
+
+lemma toIntAlgHom_apply [Ring R] [Ring S] (f : R →+* S) (x : R) :
+    f.toIntAlgHom x = f x := rfl
+
+lemma toIntAlgHom_injective [Ring R] [Ring S] :
     Function.Injective (RingHom.toIntAlgHom : (R →+* S) → _) :=
   fun _ _ e ↦ DFunLike.ext _ _ (fun x ↦ DFunLike.congr_fun e x)
 

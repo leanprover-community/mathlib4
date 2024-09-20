@@ -325,7 +325,7 @@ def prodPseudoEMetricAux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
             (if · = 0 then edist f.fst g.fst else edist f.snd g.snd)
             (if · = 0 then edist g.fst h.fst else edist g.snd h.snd) hp
           simp only [Finset.mem_singleton, not_false_eq_true, Finset.sum_insert,
-            Finset.sum_singleton] at this
+            Finset.sum_singleton, reduceCtorEq] at this
           exact this
 
 attribute [local instance] WithLp.prodPseudoEMetricAux
@@ -420,7 +420,7 @@ theorem prod_antilipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricS
         gcongr <;> simp [edist]
       _ = (2 ^ (1 / p.toReal) : ℝ≥0) * edist (WithLp.equiv p _ x) (WithLp.equiv p _ y) := by
         simp only [← two_mul, ENNReal.mul_rpow_of_nonneg _ _ nonneg, ← ENNReal.rpow_mul, cancel,
-          ENNReal.rpow_one, ← ENNReal.coe_rpow_of_nonneg _ nonneg, coe_ofNat]
+          ENNReal.rpow_one, ENNReal.coe_rpow_of_nonneg _ nonneg, coe_ofNat]
 
 theorem prod_aux_uniformity_eq [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     𝓤 (WithLp p (α × β)) = 𝓤[instUniformSpaceProd] := by

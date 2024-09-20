@@ -145,7 +145,7 @@ lemma hf_zero (P : WeakFEPair E) (r : ℝ) :
   specialize hC' hx
   simp_rw [Function.comp_apply, ← one_div, P.h_feq' _ hx] at hC'
   rw [← ((mul_inv_cancel₀ h_nv).symm ▸ one_smul ℂ P.g₀ :), mul_smul _ _ P.g₀, ← smul_sub, norm_smul,
-    ← le_div_iff' (lt_of_le_of_ne (norm_nonneg _) (norm_ne_zero_iff.mpr h_nv).symm)] at hC'
+    ← le_div_iff₀' (lt_of_le_of_ne (norm_nonneg _) (norm_ne_zero_iff.mpr h_nv).symm)] at hC'
   convert hC' using 1
   · congr 3
     rw [rpow_neg hx.le]

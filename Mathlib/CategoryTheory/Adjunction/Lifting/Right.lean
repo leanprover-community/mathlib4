@@ -22,13 +22,15 @@ does.
 
 The adjoint lifting theorem says that given a commutative square of functors (up to isomorphism):
 
+```
       Q
     A → B
   U ↓   ↓ V
     C → D
       L
+```
 
-where `V` is comonadic, `U` has a right adjoint and `A` has coreflexive equalizers, then if `L` has
+where `V` is comonadic, `U` has a right adjoint, and `A` has coreflexive equalizers, then if `L` has
 a right adjoint then `Q` has a right adjoint.
 
 ## Implementation
@@ -89,7 +91,7 @@ def unitEqualises [∀ X : B, RegularMono (adj₁.unit.app X)] (X : B) :
       apply hm.trans (RegularMono.lift' (adj₁.unit.app X) s.ι _).2.symm
 
 /-- (Implementation)
-To construct the left adjoint, we use the coequalizer of `U' F η_X` with the composite
+To construct the right adjoint, we use the equalizer of `U' F η_X` with the composite
 
 `U' F X ⟶ U' F L U' F X ⟶ U' F U F L U' F X ⟶ U' F U F X`
 
@@ -157,22 +159,22 @@ noncomputable def constructRightAdjoint [∀ X : B, RegularMono (adj₁.unit.app
 
 end LiftRightAdjoint
 
-/-- The adjoint triangle theorem: Suppose `U : B ⥤ C` has a left adjoint `F` such that each counit
-`ε_X : FUX ⟶ X` is a regular epimorphism. Then if a category `A` has coequalizers of reflexive
-pairs, then a functor `R : A ⥤ B` has a left adjoint if the composite `R ⋙ U` does.
+/-- The adjoint triangle theorem: Suppose `U : A ⥤ B` has a left adjoint `F` such that each unit
+`η_X : X ⟶ UFX` is a regular monomorphism. Then if a category `C` has equalizers of coreflexive
+pairs, then a functor `L : C ⥤ B` has a right adjoint if the composite `L ⋙ F` does.
 
 Note the converse is true (with weaker assumptions), by `Adjunction.comp`.
 See https://ncatlab.org/nlab/show/adjoint+triangle+theorem
 -/
-lemma isLeftAdjoint_triangle_lift  {U : A ⥤ B} {F : B ⥤ A} (L : C ⥤ B) (adj₁ : F ⊣ U)
+lemma isLeftAdjoint_triangle_lift {U : A ⥤ B} {F : B ⥤ A} (L : C ⥤ B) (adj₁ : F ⊣ U)
     [∀ X, RegularMono (adj₁.unit.app X)] [HasCoreflexiveEqualizers C]
     [(L ⋙ F).IsLeftAdjoint ] : L.IsLeftAdjoint where
   exists_rightAdjoint :=
     ⟨LiftRightAdjoint.constructRightAdjoint L _ adj₁ (Adjunction.ofIsLeftAdjoint _),
       ⟨Adjunction.adjunctionOfEquivRight _ _⟩⟩
 
-/-- If `R ⋙ U` has a left adjoint, the domain of `R` has reflexive coequalizers and `U` is a monadic
-functor, then `R` has a left adjoint.
+/-- If `L ⋙ F` has a right adjoint, the domain of `L` has coreflexive equalizers and `F` is a
+comonadic functor, then `L` has a right adjoint.
 This is a special case of `isLeftAdjoint_triangle_lift` which is often more useful in practice.
 -/
 lemma isLeftAdjoint_triangle_lift_comonadic (F : B ⥤ A) [ComonadicLeftAdjoint F] {L : C ⥤ B}
@@ -198,15 +200,17 @@ variable [Category.{v₄} D]
 
 /-- Suppose we have a commutative square of functors
 
+```
       Q
     A → B
   U ↓   ↓ V
     C → D
       R
+```
 
-where `U` has a left adjoint, `A` has reflexive coequalizers and `V` has a left adjoint such that
-each component of the counit is a regular epi.
-Then `Q` has a left adjoint if `R` has a left adjoint.
+where `U` has a right adjoint, `A` has coreflexive equalizers and `V` has a right adjoint such that
+each component of the counit is a regular mono.
+Then `Q` has a right adjoint if `L` has a right adjoint.
 
 See https://ncatlab.org/nlab/show/adjoint+lifting+theorem
 -/
@@ -219,14 +223,16 @@ lemma isLeftAdjoint_square_lift (Q : A ⥤ B) (V : B ⥤ D) (U : A ⥤ C) (L : C
 
 /-- Suppose we have a commutative square of functors
 
+```
       Q
     A → B
   U ↓   ↓ V
     C → D
       R
+```
 
-where `U` has a left adjoint, `A` has reflexive coequalizers and `V` is monadic.
-Then `Q` has a left adjoint if `R` has a left adjoint.
+where `U` has a right adjoint, `A` has reflexive equalizers and `V` is comonadic.
+Then `Q` has a right adjoint if `L` has a right adjoint.
 
 See https://ncatlab.org/nlab/show/adjoint+lifting+theorem
 -/

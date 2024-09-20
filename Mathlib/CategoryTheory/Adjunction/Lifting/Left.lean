@@ -11,6 +11,7 @@ import Mathlib.CategoryTheory.Monad.Coequalizer
 
 This file gives two constructions for building left adjoints: the adjoint triangle theorem and the
 adjoint lifting theorem.
+
 The adjoint triangle theorem concerns a functor `U : B ⥤ C` with a left adjoint `F` such
 that `ε_X : FUX ⟶ X` is a regular epi. Then for any category `A` with coequalizers of reflexive
 pairs, a functor `R : A ⥤ B` has a left adjoint if (and only if) the composite `R ⋙ U` does.
@@ -20,14 +21,16 @@ monadic, `A` has reflexive coequalizers then `R : A ⥤ B` has a left adjoint pr
 
 The adjoint lifting theorem says that given a commutative square of functors (up to isomorphism):
 
+```
       Q
     A → B
   U ↓   ↓ V
     C → D
       R
+```
 
-where `U` and `V` are monadic and `A` has reflexive coequalizers, then if `R` has a left adjoint
-then `Q` has a left adjoint.
+where `V` is monadic, `U` has a left adjoint, and `A` has reflexive coequalizers, then if `R` has a
+left adjoint then `Q` has a left adjoint.
 
 ## Implementation
 
@@ -204,11 +207,13 @@ variable [Category.{v₄} D]
 
 /-- Suppose we have a commutative square of functors
 
+```
       Q
     A → B
   U ↓   ↓ V
     C → D
       R
+```
 
 where `U` has a left adjoint, `A` has reflexive coequalizers and `V` has a left adjoint such that
 each component of the counit is a regular epi.
@@ -225,11 +230,13 @@ lemma isRightAdjoint_square_lift (Q : A ⥤ B) (V : B ⥤ D) (U : A ⥤ C) (R : 
 
 /-- Suppose we have a commutative square of functors
 
+```
       Q
     A → B
   U ↓   ↓ V
     C → D
       R
+```
 
 where `U` has a left adjoint, `A` has reflexive coequalizers and `V` is monadic.
 Then `Q` has a left adjoint if `R` has a left adjoint.

@@ -3,6 +3,8 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Init.Logic
+import Mathlib.Logic.OpClass
 import Mathlib.Order.Lattice
 
 /-!
@@ -188,14 +190,14 @@ theorem max_lt_max (h₁ : a < c) (h₂ : b < d) : max a b < max c d :=
 theorem min_lt_min (h₁ : a < c) (h₂ : b < d) : min a b < min c d :=
   @max_lt_max αᵒᵈ _ _ _ _ _ h₁ h₂
 
-theorem min_right_comm (a b c : α) : min (min a b) c = min (min a c) b :=
-  right_comm min min_comm min_assoc a b c
+theorem min_right_comm (a b c : α) : min (min a b) c = min (min a c) b := by
+  rw [min_assoc, min_comm b, min_assoc]
 
-theorem Max.left_comm (a b c : α) : max a (max b c) = max b (max a c) :=
-  _root_.left_comm max max_comm max_assoc a b c
+theorem Max.left_comm (a b c : α) : max a (max b c) = max b (max a c) := by
+  rw [← max_assoc, max_comm a, max_assoc]
 
-theorem Max.right_comm (a b c : α) : max (max a b) c = max (max a c) b :=
-  _root_.right_comm max max_comm max_assoc a b c
+theorem Max.right_comm (a b c : α) : max (max a b) c = max (max a c) b := by
+  rw [max_assoc, max_comm b, max_assoc]
 
 theorem MonotoneOn.map_max (hf : MonotoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (max a b) =
     max (f a) (f b) := by
@@ -234,34 +236,26 @@ theorem le_of_max_le_left {a b c : α} (h : max a b ≤ c) : a ≤ c :=
 theorem le_of_max_le_right {a b c : α} (h : max a b ≤ c) : b ≤ c :=
   le_trans (le_max_right _ _) h
 
-theorem max_commutative : Commutative (max : α → α → α) :=
-  max_comm
+instance instCommutativeMax : Std.Commutative (α := α) max where comm := max_comm
+instance instAssociativeMax : Std.Associative (α := α) max where assoc := max_assoc
+instance instCommutativeMin : Std.Commutative (α := α) min where comm := min_comm
+instance instAssociativeMin : Std.Associative (α := α) min where assoc := min_assoc
 
-theorem max_associative : Associative (max : α → α → α) :=
-  max_assoc
+theorem max_left_commutative : LeftCommutative (max : α → α → α) := ⟨max_left_comm⟩
+theorem min_left_commutative : LeftCommutative (min : α → α → α) := ⟨min_left_comm⟩
 
-instance : Std.Commutative (α := α) max where
-  comm := max_comm
+section deprecated
+set_option linter.deprecated false
 
-instance : Std.Associative (α := α) max where
-  assoc := max_assoc
+@[deprecated instCommutativeMax (since := "2024-09-12")]
+theorem max_commutative : Commutative (α := α) max := max_comm
+@[deprecated instAssociativeMax (since := "2024-09-12")]
+theorem max_associative : Associative (α := α) max := max_assoc
+@[deprecated instCommutativeMin (since := "2024-09-12")]
+theorem min_commutative : Commutative (α := α) min := min_comm
+@[deprecated instAssociativeMin (since := "2024-09-12")]
+theorem min_associative : Associative (α := α) min := min_assoc
 
-theorem max_left_commutative : LeftCommutative (max : α → α → α) :=
-  max_left_comm
-
-theorem min_commutative : Commutative (min : α → α → α) :=
-  min_comm
-
-theorem min_associative : Associative (α := α) min :=
-  min_assoc
-
-instance : Std.Commutative (α := α) min where
-  comm := min_comm
-
-instance : Std.Associative (α := α) min where
-  assoc := min_assoc
-
-theorem min_left_commutative : LeftCommutative (min : α → α → α) :=
-  min_left_comm
+end deprecated
 
 end

@@ -17,7 +17,7 @@ respectively, `⩿` and `⋖`, which then leads to a characterization of monoton
 functions whose domain is a locally finite order. In particular, this file proves:
 
 * `le_iff_transGen_wcovBy`: `≤` is the transitive closure of `⩿`
-* `lt_iff_transGen_covBy`: `≤` is the transitive closure of `⩿`
+* `lt_iff_transGen_covBy`: `<` is the transitive closure of `⋖`
 * `monotone_iff_forall_wcovBy`: Characterization of monotone functions
 * `strictMono_iff_forall_covBy`: Characterization of strictly monotone functions
 
@@ -113,19 +113,19 @@ theorem Ioo_eq_empty_of_le (h : b ≤ a) : Ioo a b = ∅ :=
 
 -- porting note (#10618): simp can prove this
 -- @[simp]
-theorem left_mem_Icc : a ∈ Icc a b ↔ a ≤ b := by simp only [mem_Icc, true_and_iff, le_rfl]
+theorem left_mem_Icc : a ∈ Icc a b ↔ a ≤ b := by simp only [mem_Icc, true_and, le_rfl]
 
 -- porting note (#10618): simp can prove this
 -- @[simp]
-theorem left_mem_Ico : a ∈ Ico a b ↔ a < b := by simp only [mem_Ico, true_and_iff, le_refl]
+theorem left_mem_Ico : a ∈ Ico a b ↔ a < b := by simp only [mem_Ico, true_and, le_refl]
 
 -- porting note (#10618): simp can prove this
 -- @[simp]
-theorem right_mem_Icc : b ∈ Icc a b ↔ a ≤ b := by simp only [mem_Icc, and_true_iff, le_rfl]
+theorem right_mem_Icc : b ∈ Icc a b ↔ a ≤ b := by simp only [mem_Icc, and_true, le_rfl]
 
 -- porting note (#10618): simp can prove this
 -- @[simp]
-theorem right_mem_Ioc : b ∈ Ioc a b ↔ a < b := by simp only [mem_Ioc, and_true_iff, le_rfl]
+theorem right_mem_Ioc : b ∈ Ioc a b ↔ a < b := by simp only [mem_Ioc, and_true, le_rfl]
 
 -- porting note (#10618): simp can prove this
 -- @[simp]
@@ -334,6 +334,12 @@ lemma nonempty_Ici : (Ici a).Nonempty := ⟨a, mem_Ici.2 le_rfl⟩
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 lemma nonempty_Ioi : (Ioi a).Nonempty ↔ ¬ IsMax a := by simp [Finset.Nonempty]
 
+theorem Ici_subset_Ici : Ici a ⊆ Ici b ↔ b ≤ a := by
+  simpa [← coe_subset] using Set.Ici_subset_Ici
+
+theorem Ioi_subset_Ioi (h : a ≤ b) : Ioi b ⊆ Ioi a := by
+  simpa [← coe_subset] using Set.Ioi_subset_Ioi h
+
 variable [LocallyFiniteOrder α]
 
 theorem Icc_subset_Ici_self : Icc a b ⊆ Ici a := by
@@ -362,6 +368,12 @@ variable [LocallyFiniteOrderBot α]
 
 @[simp] lemma nonempty_Iic : (Iic a).Nonempty := ⟨a, mem_Iic.2 le_rfl⟩
 @[simp] lemma nonempty_Iio : (Iio a).Nonempty ↔ ¬ IsMin a := by simp [Finset.Nonempty]
+
+theorem Iic_subset_Iic : Iic a ⊆ Iic b ↔ a ≤ b := by
+  simpa [← coe_subset] using Set.Iic_subset_Iic
+
+theorem Iio_subset_Iio (h : a ≤ b) : Iio a ⊆ Iio b := by
+  simpa [← coe_subset] using Set.Iio_subset_Iio h
 
 variable [LocallyFiniteOrder α]
 

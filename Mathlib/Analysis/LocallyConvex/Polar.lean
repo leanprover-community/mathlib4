@@ -5,7 +5,7 @@ Authors: Moritz Doll, Kalle Kytölä
 -/
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.LinearAlgebra.SesquilinearForm
-import Mathlib.Topology.Algebra.Module.WeakDual
+import Mathlib.Topology.Algebra.Module.WeakBilin
 
 /-!
 # Polar set
@@ -152,8 +152,8 @@ theorem polar_subMulAction {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m 
   · intro hy x hx
     obtain ⟨r, hr⟩ := NormedField.exists_lt_norm 𝕜 ‖B x y‖⁻¹
     contrapose! hr
-    rw [← one_div, le_div_iff (norm_pos_iff.2 hr)]
-    simpa using  hy _ (SMulMemClass.smul_mem r hx)
+    rw [← one_div, le_div_iff₀ (norm_pos_iff.2 hr)]
+    simpa using hy _ (SMulMemClass.smul_mem r hx)
   · intro h x hx
     simp [h x hx]
 

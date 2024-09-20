@@ -42,8 +42,12 @@ Fraïssé limit - the countable ultrahomogeneous structure with that age.
   essentially countable.
 - `FirstOrder.Language.exists_countable_is_age_of_iff` gives necessary and sufficient conditions
   for a class to be the age of a countable structure in a language with countably many functions.
-- `FirstOrder.Language.IsFraisseLimit.nonempty_equiv` shows that any class which is Fraïsse has
-  at most one Fraïsse limit up to equivalence.
+- `FirstOrder.Language.IsFraisseLimit.nonempty_equiv` shows that any class which is Fraïssé has
+  at most one Fraïssé limit up to equivalence.
+- `FirstOrder.Language.empty.isFraisseLimit_of_countable_infinite` shows that any countably infinite
+  structure in the empty language is a Fraïssé limit of the class of finite structures.
+- `FirstOrder.Language.empty.isFraisse_finite` shows that the class of finite structures in the
+  empty language is Fraïssé.
 
 ## Implementation Notes
 
@@ -58,7 +62,7 @@ Fraïssé limit - the countable ultrahomogeneous structure with that age.
 
 ## TODO
 
-- Show existence and uniqueness of Fraïssé limits
+- Show existence of Fraïssé limits
 
 -/
 
@@ -77,7 +81,7 @@ open Structure Substructure
 
 variable (L : Language.{u, v})
 
-/-! ### The Age of a Structure and Fraïssé Classes-/
+/-! ### The Age of a Structure and Fraïssé Classes -/
 
 
 /-- The age of a structure `M` is the class of finitely-generated structures that embed into it. -/
@@ -88,7 +92,7 @@ variable {L}
 variable (K : Set (Bundled.{w} L.Structure))
 
 /-- A class `K` has the hereditary property when all finitely-generated structures that embed into
-  structures in `K` are also in `K`.  -/
+  structures in `K` are also in `K`. -/
 def Hereditary : Prop :=
   ∀ M : Bundled.{w} L.Structure, M ∈ K → L.age M ⊆ K
 
@@ -300,8 +304,8 @@ theorem IsUltrahomogeneous.extend_embedding (M_homog : L.IsUltrahomogeneous M) {
     Equiv.coe_toHom, Embedding.coe_toHom, coeSubtype] at eq'
   simp only [Embedding.comp_apply, ← eq', Equiv.coe_toEmbedding, EmbeddingLike.apply_eq_iff_eq]
   apply (Embedding.equivRange (Embedding.comp r g)).injective
-  simp only [Equiv.apply_symm_apply]
-  rfl
+  ext
+  simp only [Equiv.apply_symm_apply, Embedding.equivRange_apply, s]
 
 /-- A countably generated structure is ultrahomogeneous if and only if any equivalence between
 finitely generated substructures can be extended to any element in the domain.-/
@@ -382,8 +386,8 @@ protected theorem isExtensionPair : L.IsExtensionPair M N := by
     ((subtype f.cod).comp f.toEquiv.toEmbedding) (inclusion (le_sup_left : _ ≤ S))
   refine ⟨⟨⟨S, g.toHom.range, g.equivRange⟩, S_FG⟩,
     subset_closure.trans (le_sup_right : _ ≤ S) (mem_singleton m), ⟨le_sup_left, ?_⟩⟩
-  simp only [Subtype.mk_le_mk, PartialEquiv.le_def, g_eq]
-  rfl
+  ext
+  simp [Subtype.mk_le_mk, PartialEquiv.le_def, g_eq]
 
 /-- The Fraïssé limit of a class is unique, in that any two Fraïssé limits are isomorphic. -/
 theorem nonempty_equiv : Nonempty (M ≃[L] N) := by
@@ -402,6 +406,35 @@ theorem nonempty_equiv : Nonempty (M ≃[L] N) := by
       (hN.isExtensionPair hM))⟩
 
 end IsFraisseLimit
+
+namespace empty
+
+/-- Any countable infinite structure in the empty language is a Fraïssé limit of the class of finite
+structures. -/
+theorem isFraisseLimit_of_countable_infinite
+    (M : Type*) [Countable M] [Infinite M] [Language.empty.Structure M] :
+    IsFraisseLimit { S : Bundled Language.empty.Structure | Finite S } M where
+  age := by
+    ext S
+    simp only [age, Structure.fg_iff_finite, mem_setOf_eq, and_iff_left_iff_imp]
+    intro hS
+    simp
+  ultrahomogeneous S hS f := by
+    classical
+    have : Finite S := hS.finite
+    have : Infinite { x // x ∉ S } := ((Set.toFinite _).infinite_compl).to_subtype
+    have : Finite f.toHom.range := (((Substructure.fg_iff_structure_fg S).1 hS).range _).finite
+    have : Infinite { x // x ∉ f.toHom.range } := ((Set.toFinite _).infinite_compl ).to_subtype
+    refine ⟨StrongHomClass.toEquiv (f.equivRange.subtypeCongr nonempty_equiv_of_countable.some), ?_⟩
+    ext x
+    simp [Equiv.subtypeCongr]
+
+/-- The class of finite structures in the empty language is Fraïssé. -/
+theorem isFraisse_finite : IsFraisse { S : Bundled.{w} Language.empty.Structure | Finite S } := by
+  have : Language.empty.Structure (ULift ℕ : Type w) := emptyStructure
+  exact (isFraisseLimit_of_countable_infinite (ULift ℕ)).isFraisse
+
+end empty
 
 end Language
 

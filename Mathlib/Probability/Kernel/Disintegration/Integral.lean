@@ -187,7 +187,7 @@ lemma setLIntegral_condKernel (hf : Measurable f) {s : Set β}
     ∫⁻ b in s, ∫⁻ ω in t, f (b, ω) ∂(ρ.condKernel b) ∂ρ.fst
       = ∫⁻ x in s ×ˢ t, f x ∂ρ := by
   conv_rhs => rw [← ρ.disintegrate ρ.condKernel]
-  rw [setLIntegral_compProd  hf hs ht]
+  rw [setLIntegral_compProd hf hs ht]
 
 @[deprecated (since := "2024-06-29")]
 alias set_lintegral_condKernel := setLIntegral_condKernel
