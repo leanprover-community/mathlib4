@@ -135,32 +135,22 @@ theorem continuous_C [Ring R] [TopologicalRing R] :
 
 theorem variables_tendsto_zero [Semiring R] :
     Filter.Tendsto (X · : σ → MvPowerSeries σ R) Filter.cofinite (nhds 0) := by
-  classical
   rw [tendsto_pi_nhds]
+  simp_rw [apply_eq_coeff]
   intro d s hs
-  rw [Filter.mem_map, Filter.mem_cofinite, ← Set.preimage_compl]
+  replace hs : 0 ∈ s := by simpa only [map_zero] using mem_of_mem_nhds hs
+  simp_rw [Filter.mem_map, Filter.mem_cofinite, ← Set.preimage_compl, coeff_X]
   by_cases h : ∃ i, d = Finsupp.single i 1
   · obtain ⟨i, rfl⟩ := h
-    apply Set.Finite.subset (Set.finite_singleton i)
+    apply (Set.finite_singleton i).subset
     intro x
-    simp only [OfNat.ofNat, Zero.zero] at hs
-    rw [Set.mem_preimage, Set.mem_compl_iff, Set.mem_singleton_iff, not_imp_comm]
-    intro hx
-    convert mem_of_mem_nhds hs
-    rw [apply_eq_coeff (X x) (Finsupp.single i 1), coeff_X, if_neg]
-    rfl
-    · simp only [Finsupp.single_eq_single_iff, Ne.symm hx, and_true, one_ne_zero, and_self,
-      or_self, not_false_eq_true]
+    by_cases hx : x = i <;>
+      simp [Finsupp.single_eq_single_iff, Ne.symm, hx, hs]
   · convert Set.finite_empty
     rw [Set.eq_empty_iff_forall_not_mem]
     intro x
-    rw [Set.mem_preimage, Set.not_mem_compl_iff]
-    convert mem_of_mem_nhds hs using 1
-    rw [apply_eq_coeff (X x) d, coeff_X, if_neg]
-    rfl
-    · intro h'
-      apply h
-      exact ⟨x, h'⟩
+    rwa [Set.mem_preimage, Set.not_mem_compl_iff, if_neg]
+    tauto
 
 theorem tendsto_pow_zero_of_constantCoeff_nilpotent [CommSemiring R]
     {f} (hf : IsNilpotent (constantCoeff σ R f)) :
