@@ -3,7 +3,7 @@ Copyright (c) 2024 Geoffrey Irving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
+import Mathlib.Analysis.Analytic.Constructions
 
 /-!
 # Properties of analyticity restricted to a set
@@ -14,12 +14,10 @@ From `Mathlib.Analysis.Analytic.Basic`, we have the definitions
 2. `AnalyticWithinOn 𝕜 f s t` means `∀ x ∈ t, AnalyticWithinAt 𝕜 f s x`.
 
 This means there exists an extension of `f` which is analytic and agrees with `f` on `s ∪ {x}`, but
-`f` is allowed to be arbitrary elsewhere.  Requiring `ContinuousWithinAt` is essential if `x ∉ s`:
-it is required for composition and smoothness to follow without extra hypotheses (we could
-alternately require convergence at `x` even if `x ∉ s`).
+`f` is allowed to be arbitrary elsewhere.
 
 Here we prove basic properties of these definitions. Where convenient we assume completeness of the
-ambient space, which allows us to related `AnalyticWithinAt` to analyticity of a local extension.
+ambient space, which allows us to relate `AnalyticWithinAt` to analyticity of a local extension.
 -/
 
 noncomputable section
@@ -57,10 +55,6 @@ lemma analyticWithinAt_of_singleton_mem {f : E → F} {s : Set E} {x : E} (h : {
       simp only [this]
       apply (hasFPowerSeriesOnBall_const (e := 0)).hasSum
       simp only [Metric.emetric_ball_top, mem_univ] }⟩
-
-lemma AnalyticWithinOn.continuousOn {f : E → F} {s : Set E} (h : AnalyticWithinOn 𝕜 f s) :
-    ContinuousOn f s :=
-  fun x m ↦ (h x m).continuousWithinAt
 
 /-- If `f` is `AnalyticWithinOn` near each point in a set, it is `AnalyticWithinOn` the set -/
 lemma analyticWithinOn_of_locally_analyticWithinOn {f : E → F} {s : Set E}
@@ -200,74 +194,3 @@ lemma analyticWithinAt_iff_exists_analyticAt' [CompleteSpace F] {f : E → F} {s
     exact ⟨g, by filter_upwards [self_mem_nhdsWithin] using hf, hg⟩
 
 alias ⟨AnalyticWithinAt.exists_analyticAt, _⟩ := analyticWithinAt_iff_exists_analyticAt'
-
-/-!
-### Congruence
-
--/
-
-
-lemma HasFPowerSeriesWithinOnBall.congr {f g : E → F} {p : FormalMultilinearSeries 𝕜 E F}
-    {s : Set E} {x : E} {r : ℝ≥0∞} (h : HasFPowerSeriesWithinOnBall f p s x r)
-    (h' : EqOn g f (s ∩ EMetric.ball x r)) (h'' : g x = f x) :
-    HasFPowerSeriesWithinOnBall g p s x r := by
-  refine ⟨h.r_le, h.r_pos, ?_⟩
-  · intro y hy h'y
-    convert h.hasSum hy h'y using 1
-    simp only [mem_insert_iff, add_right_eq_self] at hy
-    rcases hy with rfl | hy
-    · simpa using h''
-    · apply h'
-      refine ⟨hy, ?_⟩
-      simpa [edist_eq_coe_nnnorm_sub] using h'y
-
-lemma HasFPowerSeriesWithinAt.congr {f g : E → F} {p : FormalMultilinearSeries 𝕜 E F} {s : Set E}
-    {x : E} (h : HasFPowerSeriesWithinAt f p s x) (h' : g =ᶠ[𝓝[s] x] f) (h'' : g x = f x) :
-    HasFPowerSeriesWithinAt g p s x := by
-  rcases h with ⟨r, hr⟩
-  obtain ⟨ε, εpos, hε⟩ : ∃ ε > 0, EMetric.ball x ε ∩ s ⊆ {y | g y = f y} :=
-    EMetric.mem_nhdsWithin_iff.1 h'
-  let r' := min r ε
-  refine ⟨r', ?_⟩
-  have := hr.of_le (r' := r') (by simp [r', εpos, hr.r_pos]) (min_le_left _ _)
-  apply this.congr _ h''
-  intro z hz
-  exact hε ⟨EMetric.ball_subset_ball (min_le_right _ _) hz.2, hz.1⟩
-
-
-lemma AnalyticWithinAt.congr_of_eventuallyEq {f g : E → F} {s : Set E} {x : E}
-    (hf : AnalyticWithinAt 𝕜 f s x) (hs : g =ᶠ[𝓝[s] x] f) (hx : g x = f x) :
-    AnalyticWithinAt 𝕜 g s x := by
-  rcases hf with ⟨p, hp⟩
-  exact ⟨p, hp.congr hs hx⟩
-
-lemma AnalyticWithinAt.congr {f g : E → F} {s : Set E} {x : E}
-    (hf : AnalyticWithinAt 𝕜 f s x) (hs : EqOn g f s) (hx : g x = f x) :
-    AnalyticWithinAt 𝕜 g s x :=
-  hf.congr_of_eventuallyEq hs.eventuallyEq_nhdsWithin hx
-
-lemma AnalyticWithinOn.congr {f g : E → F} {s : Set E}
-    (hf : AnalyticWithinOn 𝕜 f s) (hs : EqOn g f s) :
-    AnalyticWithinOn 𝕜 g s :=
-  fun x m ↦ (hf x m).congr hs (hs m)
-
-/-!
-### Monotonicity w.r.t. the set we're analytic within
--/
-
-lemma AnalyticWithinOn.mono {f : E → F} {s t : Set E} (h : AnalyticWithinOn 𝕜 f t)
-    (hs : s ⊆ t) : AnalyticWithinOn 𝕜 f s :=
-  fun _ m ↦ (h _ (hs m)).mono hs
-
-/-!
-### Analyticity within implies smoothness
--/
-
-lemma AnalyticWithinAt.contDiffWithinAt [CompleteSpace F] {f : E → F} {s : Set E} {x : E}
-    (h : AnalyticWithinAt 𝕜 f s x) {n : ℕ∞} : ContDiffWithinAt 𝕜 n f s x := by
-  rcases h.exists_analyticAt with ⟨g, fx, fg, hg⟩
-  exact hg.contDiffAt.contDiffWithinAt.congr (fg.mono (subset_insert _ _)) fx
-
-lemma AnalyticWithinOn.contDiffOn [CompleteSpace F] {f : E → F} {s : Set E}
-    (h : AnalyticWithinOn 𝕜 f s) {n : ℕ∞} : ContDiffOn 𝕜 n f s :=
-  fun x m ↦ (h x m).contDiffWithinAt
