@@ -83,7 +83,7 @@ theorem enumOrd_surjective (hS : ¬ BddAbove S) {b : Ordinal} (hs : b ∈ S) :
     ∃ a, enumOrd S a = b := by
   rwa [← range_enumOrd hS] at hs
 
-theorem enumOrd_mono_ {S T : Set Ordinal} (hS : ¬ BddAbove S) (hST : S ⊆ T) :
+theorem enumOrd_le_of_subset {S T : Set Ordinal} (hS : ¬ BddAbove S) (hST : S ⊆ T) :
     enumOrd T ≤ enumOrd S := by
   intro a
   rw [enumOrd, enumOrd]
