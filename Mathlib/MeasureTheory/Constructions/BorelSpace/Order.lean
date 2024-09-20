@@ -99,19 +99,28 @@ variable [MeasurableSpace δ]
 
 section Preorder
 
-variable [Preorder α] [OrderClosedTopology α] {a b x : α}
+variable [Preorder α] [OrderClosedTopology α] {a b x : α} {μ : Measure α}
 
 @[simp, measurability]
 theorem measurableSet_Ici : MeasurableSet (Ici a) :=
   isClosed_Ici.measurableSet
 
+theorem nullMeasurableSet_Ici : NullMeasurableSet (Ici a) μ :=
+  measurableSet_Ici.nullMeasurableSet
+
 @[simp, measurability]
 theorem measurableSet_Iic : MeasurableSet (Iic a) :=
   isClosed_Iic.measurableSet
 
+theorem nullMeasurableSet_Iic : NullMeasurableSet (Iic a) μ :=
+  measurableSet_Iic.nullMeasurableSet
+
 @[simp, measurability]
 theorem measurableSet_Icc : MeasurableSet (Icc a b) :=
   isClosed_Icc.measurableSet
+
+theorem nullMeasurableSet_Icc : NullMeasurableSet (Icc a b) μ :=
+  measurableSet_Icc.nullMeasurableSet
 
 instance nhdsWithin_Ici_isMeasurablyGenerated : (𝓝[Ici b] a).IsMeasurablyGenerated :=
   measurableSet_Ici.nhdsWithin_isMeasurablyGenerated _
@@ -157,7 +166,7 @@ end PartialOrder
 
 section LinearOrder
 
-variable [LinearOrder α] [OrderClosedTopology α] {a b x : α}
+variable [LinearOrder α] [OrderClosedTopology α] {a b x : α} {μ : Measure α}
 
 -- we open this locale only here to avoid issues with list being treated as intervals above
 open Interval
@@ -166,21 +175,36 @@ open Interval
 theorem measurableSet_Iio : MeasurableSet (Iio a) :=
   isOpen_Iio.measurableSet
 
+theorem nullMeasurableSet_Iio : NullMeasurableSet (Iio a) μ :=
+  measurableSet_Iio.nullMeasurableSet
+
 @[simp, measurability]
 theorem measurableSet_Ioi : MeasurableSet (Ioi a) :=
   isOpen_Ioi.measurableSet
+
+theorem nullMeasurableSet_Ioi : NullMeasurableSet (Ioi a) μ :=
+  measurableSet_Ioi.nullMeasurableSet
 
 @[simp, measurability]
 theorem measurableSet_Ioo : MeasurableSet (Ioo a b) :=
   isOpen_Ioo.measurableSet
 
+theorem nullMeasurableSet_Ioo : NullMeasurableSet (Ioo a b) μ :=
+  measurableSet_Ioo.nullMeasurableSet
+
 @[simp, measurability]
 theorem measurableSet_Ioc : MeasurableSet (Ioc a b) :=
   measurableSet_Ioi.inter measurableSet_Iic
 
+theorem nullMeasurableSet_Ioc : NullMeasurableSet (Ioc a b) μ :=
+  measurableSet_Ioc.nullMeasurableSet
+
 @[simp, measurability]
 theorem measurableSet_Ico : MeasurableSet (Ico a b) :=
   measurableSet_Ici.inter measurableSet_Iio
+
+theorem nullMeasurableSet_Ico : NullMeasurableSet (Ico a b) μ :=
+  measurableSet_Ico.nullMeasurableSet
 
 instance nhdsWithin_Ioi_isMeasurablyGenerated : (𝓝[Ioi b] a).IsMeasurablyGenerated :=
   measurableSet_Ioi.nhdsWithin_isMeasurablyGenerated _
@@ -398,11 +422,11 @@ theorem ext_of_Iic {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
   · rcases exists_countable_dense_bot_top α with ⟨s, hsc, hsd, -, hst⟩
     have : DirectedOn (· ≤ ·) s := directedOn_iff_directed.2 (Subtype.mono_coe _).directed_le
     simp only [← biSup_measure_Iic hsc (hsd.exists_ge' hst) this, h]
-  rw [← Iic_diff_Iic, measure_diff (Iic_subset_Iic.2 hlt.le) measurableSet_Iic.nullMeasurableSet,
-    measure_diff (Iic_subset_Iic.2 hlt.le) measurableSet_Iic.nullMeasurableSet, h a, h b]
+  rw [← Iic_diff_Iic, measure_diff (Iic_subset_Iic.2 hlt.le) nullMeasurableSet_Iic,
+    measure_diff (Iic_subset_Iic.2 hlt.le) nullMeasurableSet_Iic, h a, h b]
   · rw [← h a]
-    exact (measure_lt_top μ _).ne
-  · exact (measure_lt_top μ _).ne
+    exact measure_ne_top μ _
+  · exact measure_ne_top μ _
 
 /-- Two finite measures on a Borel space are equal if they agree on all left-closed right-infinite
 intervals. -/
