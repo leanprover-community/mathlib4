@@ -3,6 +3,7 @@ Copyright (c) 2024 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
+import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Module
@@ -28,6 +29,9 @@ example (n : ℕ) : 0 + n • x = n • x := by module
 example : x + (y + (x + (z + (x + (u + (x + v)))))) = v + u + z + y + 4 • x := by module
 example : x + y = y + x := by module
 example : x + 2 • x = 2 • x + x := by module
+
+example : x + (y + x) = x + x + y := by module ℕ
+example : x + 2 • x = 2 • x + x := by module ℕ
 
 example : x + (y + x) = x + x + y ∨ False := by
   left
@@ -86,6 +90,8 @@ example : x - (0 - 0) = x := by module
 example : x + (y - x) = y  := by module
 example : -y + (z - x) = z - y - x := by module
 
+example : x + y + z + (z - x - x) = (-1) • x + y + 2 • z := by module ℤ
+
 example : x + y = y + x ∧ (↑((1:ℕ) + 1) : ℚ) = 2 := by
   constructor
   module -- do not focus this tactic: the double goal is the point of the test
@@ -131,6 +137,19 @@ inst✝ : AddCommGroup V
 example : -x + x = 0 := by
   match_scalars
 
+/-! ### `ℚ`-module -/
+
+section
+variable [Module ℚ≥0 V] [Module ℚ V] [IsScalarTower ℚ≥0 ℚ V]
+
+/-- error: match_scalars failed: ℤ is not an ℚ≥0-algebra and ℚ≥0 is not an ℤ-algebra -/
+#guard_msgs in
+example : (2:ℤ) • x = (2:ℚ≥0) • x := by module
+
+example : (2:ℤ) • x = (2:ℚ≥0) • x := by module ℚ
+
+end
+
 /-! ### Commutative ring -/
 
 section CommRing
@@ -150,6 +169,9 @@ example : (4 : ℕ) • v = (4 : K) • v := by module
 
 -- from https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/linear_combination.20for.20groups/near/437042918
 example : (1 + a ^ 2) • (v + w) - a • (a • v - w) = v + (1 + a + a ^ 2) • w := by module
+
+example : (μ - ν) • a • x = (a • μ • x + b • ν • y) - ν • (a • x + b • y) := by module K
+example : (4 : ℕ) • v = (4 : K) • v := by module K
 
 example (h : a = b) : a • x = b • x := by
   match_scalars
@@ -219,6 +241,10 @@ inst✝ : Module K V
 #guard_msgs in
 example : 2 • a • x = 2 • x := by module
 
+/-- error: match_scalars ℤ failed: K is not a subring of ℤ -/
+#guard_msgs in
+example : 2 • a • x = 2 • x := by module ℤ
+
 end CommRing
 
 /-! ### (Noncommutative) ring -/
@@ -228,6 +254,10 @@ variable [Ring K] [Module K V]
 
 example : a • x + b • x = (b + a) • x := by
   match_scalars
+  noncomm_ring
+
+example : a • x + b • x = (b + a) • x := by
+  match_scalars K
   noncomm_ring
 
 example : 2 • a • x = a • (2:ℤ) • x := by
