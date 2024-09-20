@@ -38,7 +38,7 @@ def Implies (T : L.Theory) (φ ψ : L.BoundedFormula α n) : Prop :=
   T ⊨ᵇ φ.imp ψ
 
 @[inherit_doc FirstOrder.Language.Theory.Implies]
-scoped[FirstOrder] notation:25 φ " ⟹[" T "] " ψ => Language.Theory.Implies T φ ψ
+scoped[FirstOrder] notation:51 φ:50 " ⟹[" T "] " ψ:51 => Language.Theory.Implies T φ ψ
 
 namespace Implies
 
@@ -120,10 +120,11 @@ def SemanticallyEquivalent (T : L.Theory) (φ ψ : L.BoundedFormula α n) : Prop
   T ⊨ᵇ φ.iff ψ
 
 @[inherit_doc FirstOrder.Language.Theory.SemanticallyEquivalent]
-scoped[FirstOrder] notation:25 φ " ⇔[" T "] " ψ => Language.Theory.SemanticallyEquivalent T φ ψ
+scoped[FirstOrder]
+notation:51 φ:50 " ⇔[" T "] " ψ:51 => Language.Theory.SemanticallyEquivalent T φ ψ
 
 theorem semanticallyEquivalent_iff_implies_and_implies {φ ψ : L.BoundedFormula α n} :
-    (φ ⇔[T] ψ) ↔ (φ ⟹[T] ψ) ∧ (ψ ⟹[T] φ) := by
+    φ ⇔[T] ψ ↔ φ ⟹[T] ψ ∧ ψ ⟹[T] φ := by
   simp only [Implies, ModelsBoundedFormula, BoundedFormula.realize_imp, ← forall_and,
     SemanticallyEquivalent, BoundedFormula.realize_iff, iff_iff_implies_and_implies]
 
