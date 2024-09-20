@@ -33,6 +33,10 @@ This file defines operations on two-sided ideals of a ring `R`.
 - `TwoSidedIdeal.map`: pushforward of a two-sided ideal; defined as the span of the image of a
   two-sided ideal.
 - `TwoSidedIdeal.ker`: the kernel of a ring homomorphism as a two-sided ideal.
+
+- `TwoSidedIdeal.gc`: `fromIdeal` and `asIdeal` form a Galois connection where
+  `fromIdeal : Ideal R → TwoSidedIdeal R` is defined as the smallest two-sided ideal containing an
+  ideal and `asIdeal : TwoSidedIdeal R → Ideal R` the inclusion map.
 -/
 
 namespace TwoSidedIdeal
@@ -224,8 +228,10 @@ def asIdeal : TwoSidedIdeal R →o Ideal R where
 lemma mem_asIdeal {I : TwoSidedIdeal R} {x : R} :
     x ∈ asIdeal I ↔ x ∈ I := by simp [asIdeal]
 
--- `fromIdeal` and `asIdeal` does **not** form a Galois connection in general.
--- Consider `R` = `Mat₂₂(ℤ)` and `I : Ideal R` = `span {[1 1] [0 1]}` and then `fromIdeal I` is `R`.
+lemma gc : GaloisConnection fromIdeal (asIdeal (R := R)) := fun I J =>
+⟨fun h x hx ↦ h <| mem_span_iff.2 fun _ H ↦ H hx, fun h x hx ↦ by
+  simp only [fromIdeal, OrderHom.coe_mk, mem_span_iff] at hx
+  exact hx _ h⟩
 
 @[simp]
 lemma coe_asIdeal {I : TwoSidedIdeal R} : (asIdeal I : Set R) = I := rfl
