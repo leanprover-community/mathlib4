@@ -11,15 +11,15 @@ import Mathlib.Data.Fintype.BigOperators
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.Order.GaloisConnection
 
-
 /-!
 # Operations on two-sided ideals
 
 This file defines operations on two-sided ideals of a ring `R`.
 
 ## Main definitions and results
+
 - `TwoSidedIdeal.span`: the span of `s ⊆ R` is the smallest two-sided ideal containing the set.
-- `TwoSidedIdeal.mem_span_iff_mem_addSubgroup_closure_nonunital`: in a associative but non-unital
+- `TwoSidedIdeal.mem_span_iff_mem_addSubgroup_closure_nonunital`: in an associative but non-unital
   ring, an element `x` is in the two-sided ideal spanned by `s` if and only if `x` is in the closure
   of `s ∪ {y * a | y ∈ s, a ∈ R} ∪ {a * y | y ∈ s, a ∈ R} ∪ {a * y * b | y ∈ s, a, b ∈ R}`.
 - `TwoSidedIdeal.mem_span_iff_mem_addSubgroup_closure`: in a unital and associative ring, an
@@ -70,7 +70,7 @@ lemma span_mono {s t : Set R} (h : s ⊆ t) : span s ≤ span t := by
   exact fun I hI => hx I <| h.trans hI
 
 /--
-pushout of a two-sided ideal defined as the span of the image of a two-sided ideal under some ring
+Pushout of a two-sided ideal. Defined as the span of the image of a two-sided ideal under a ring
 homomorphism.
 -/
 def map (I : TwoSidedIdeal R) : TwoSidedIdeal S :=
@@ -83,7 +83,7 @@ lemma map_mono {I J : TwoSidedIdeal R} (h : I ≤ J) :
 variable [NonUnitalRingHomClass F R S]
 
 /--
-preimage of a two-sided ideal is still two-sided -/
+Preimage of a two-sided ideal, as a two-sided ideal. -/
 def comap (I : TwoSidedIdeal S) : TwoSidedIdeal R :=
 { ringCon := I.ringCon.comap f }
 
@@ -92,7 +92,7 @@ lemma mem_comap {I : TwoSidedIdeal S} {x : R} :
   simp [comap, RingCon.comap, mem_iff]
 
 /--
-kernel of a ring homomorphism as a two-sided ideal.
+The kernel of a ring homomorphism, as a two-sided ideal.
 -/
 def ker : TwoSidedIdeal R :=
   .mk'

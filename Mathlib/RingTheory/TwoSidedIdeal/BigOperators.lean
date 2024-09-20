@@ -20,21 +20,18 @@ variable {R : Type*} [NonUnitalNonAssocRing R] (I : TwoSidedIdeal R)
 
 lemma listSum_mem {ι : Type*} (l : List ι) (f : ι → R) (hl : ∀ x ∈ l, f x ∈ I) :
     (l.map f).sum ∈ I := by
-  rw [mem_iff]
-  convert I.ringCon.listSum l (f := f) (g := 0) hl
-  exact List.sum_map_zero |>.symm
+  rw [mem_iff, ← List.sum_map_zero]
+  exact I.ringCon.listSum l hl
 
 lemma multisetSum_mem {ι : Type*} (s : Multiset ι) (f : ι → R) (hs : ∀ x ∈ s, f x ∈ I) :
     (s.map f).sum ∈ I := by
-  rw [mem_iff]
-  convert I.ringCon.multisetSum s (f := f) (g := 0) hs
-  exact Multiset.sum_map_zero |>.symm
+  rw [mem_iff, ← Multiset.sum_map_zero]
+  exact I.ringCon.multisetSum s hs
 
 lemma finsetSum_mem {ι : Type*} (s : Finset ι) (f : ι → R) (hs : ∀ x ∈ s, f x ∈ I) :
     s.sum f ∈ I := by
-  rw [mem_iff]
-  convert I.ringCon.finsetSum s (f := f) (g := 0) hs
-  simp
+  rw [mem_iff, ←Finset.sum_const_zero]
+  exact I.ringCon.finsetSum s hs
 
 end sum
 
@@ -50,9 +47,9 @@ lemma listProd_mem {ι : Type*} (l : List ι) (f : ι → R) (hl : ∃ x ∈ l, 
   | nil => simp only [List.not_mem_nil, false_and, exists_false] at hl
   | cons x l ih =>
     simp only [List.mem_cons, exists_eq_or_imp] at hl
-    rcases hl with h|⟨y, ⟨hy₁, hy₂⟩⟩
+    rcases hl with h | hal
     · simpa only [List.map_cons, List.prod_cons] using I.mul_mem_right _ _ h
-    · simpa only [List.map_cons, List.prod_cons] using I.mul_mem_left _ _ <| ih ⟨y, hy₁, hy₂⟩
+    · simpa only [List.map_cons, List.prod_cons] using I.mul_mem_left _ _ <| ih hal
 
 end ring
 
