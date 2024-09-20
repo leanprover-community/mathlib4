@@ -99,7 +99,7 @@ lemma CFC.exists_pos_algebraMap_le_iff {A : Type*} [TopologicalSpace A] [Ring A]
 
 section CStar_unital
 
-variable {A : Type*} [CStarAlgebra ℂ A]
+variable {A : Type*} [CStarAlgebra A]
 
 section StarOrderedRing
 
