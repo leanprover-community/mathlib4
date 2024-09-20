@@ -598,8 +598,8 @@ lemma HasFPowerSeriesAt.hasFPowerSeriesWithinAt (hf : HasFPowerSeriesAt f p x) :
   rw [← hasFPowerSeriesWithinAt_univ] at hf
   apply hf.mono (subset_univ _)
 
-theorem HasFPowerSeriesWithinAt.mono_of_mem {f : E → F} {p : FormalMultilinearSeries 𝕜 E F}
-    {s t : Set E} {x : E} (h : HasFPowerSeriesWithinAt f p s x) (hst : s ∈ 𝓝[t] x) :
+theorem HasFPowerSeriesWithinAt.mono_of_mem
+    (h : HasFPowerSeriesWithinAt f p s x) (hst : s ∈ 𝓝[t] x) :
     HasFPowerSeriesWithinAt f p t x := by
   rcases h with ⟨r, hr⟩
   rcases EMetric.mem_nhdsWithin_iff.1 hst with ⟨r', r'_pos, hr'⟩
@@ -615,14 +615,12 @@ theorem HasFPowerSeriesWithinAt.mono_of_mem {f : E → F} {p : FormalMultilinear
     add_sub_cancel_left, hy, and_true] at h'y ⊢
   exact h'y.2
 
-@[simp] lemma hasFPowerSeriesWithinOnBall_insert_self {f : E → F}
-    {p : FormalMultilinearSeries 𝕜 E F} {s : Set E} {x : E} {r : ℝ≥0∞} :
+@[simp] lemma hasFPowerSeriesWithinOnBall_insert_self :
     HasFPowerSeriesWithinOnBall f p (insert x s) x r ↔ HasFPowerSeriesWithinOnBall f p s x r := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩  <;>
   exact ⟨h.r_le, h.r_pos, fun {y} ↦ by simpa only [insert_idem] using h.hasSum (y := y)⟩
 
-@[simp] theorem hasFPowerSeriesAt_insert {f : E → F} {p : FormalMultilinearSeries 𝕜 E F}
-    {s : Set E} {x y : E} :
+@[simp] theorem hasFPowerSeriesWithinAt_insert {y : E} :
     HasFPowerSeriesWithinAt f p (insert y s) x ↔ HasFPowerSeriesWithinAt f p s x := by
   rcases eq_or_ne x y with rfl | hy
   · simp [HasFPowerSeriesWithinAt]
@@ -665,7 +663,7 @@ theorem HasFPowerSeriesAt.coeff_zero (hf : HasFPowerSeriesAt f pf x) (v : Fin 0 
     AnalyticWithinAt 𝕜 f univ x ↔ AnalyticAt 𝕜 f x := by
   simp [AnalyticWithinAt, AnalyticAt]
 
-@[simp] lemma analyticWithinOn_univ {f : E → F} :
+@[simp] lemma analyticWithinOn_univ :
     AnalyticWithinOn 𝕜 f univ ↔ AnalyticOn 𝕜 f univ := by
   simp only [AnalyticWithinOn, analyticWithinAt_univ, AnalyticOn]
 
@@ -681,19 +679,18 @@ lemma AnalyticAt.analyticWithinAt (hf : AnalyticAt 𝕜 f x) : AnalyticWithinAt 
 lemma AnalyticOn.analyticWithinOn (hf : AnalyticOn 𝕜 f s) : AnalyticWithinOn 𝕜 f s :=
   fun x hx ↦ (hf x hx).analyticWithinAt
 
-lemma AnalyticWithinAt.congr_of_eventuallyEq {f g : E → F} {s : Set E} {x : E}
+lemma AnalyticWithinAt.congr_of_eventuallyEq
     (hf : AnalyticWithinAt 𝕜 f s x) (hs : g =ᶠ[𝓝[s] x] f) (hx : g x = f x) :
     AnalyticWithinAt 𝕜 g s x := by
   rcases hf with ⟨p, hp⟩
   exact ⟨p, hp.congr hs hx⟩
 
-lemma AnalyticWithinAt.congr {f g : E → F} {s : Set E} {x : E}
+lemma AnalyticWithinAt.congr
     (hf : AnalyticWithinAt 𝕜 f s x) (hs : EqOn g f s) (hx : g x = f x) :
     AnalyticWithinAt 𝕜 g s x :=
   hf.congr_of_eventuallyEq hs.eventuallyEq_nhdsWithin hx
 
-lemma AnalyticWithinOn.congr {f g : E → F} {s : Set E}
-    (hf : AnalyticWithinOn 𝕜 f s) (hs : EqOn g f s) :
+lemma AnalyticWithinOn.congr (hf : AnalyticWithinOn 𝕜 f s) (hs : EqOn g f s) :
     AnalyticWithinOn 𝕜 g s :=
   fun x m ↦ (hf x m).congr hs (hs m)
 
@@ -704,7 +701,7 @@ theorem AnalyticAt.congr (hf : AnalyticAt 𝕜 f x) (hg : f =ᶠ[𝓝 x] g) : An
 theorem analyticAt_congr (h : f =ᶠ[𝓝 x] g) : AnalyticAt 𝕜 f x ↔ AnalyticAt 𝕜 g x :=
   ⟨fun hf ↦ hf.congr h, fun hg ↦ hg.congr h.symm⟩
 
-theorem AnalyticOn.mono {s t : Set E} (hf : AnalyticOn 𝕜 f t) (hst : s ⊆ t) : AnalyticOn 𝕜 f s :=
+theorem AnalyticOn.mono (hf : AnalyticOn 𝕜 f t) (hst : s ⊆ t) : AnalyticOn 𝕜 f s :=
   fun z hz => hf z (hst hz)
 
 theorem AnalyticOn.congr' (hf : AnalyticOn 𝕜 f s) (hg : f =ᶠ[𝓝ˢ s] g) :
@@ -722,13 +719,12 @@ theorem AnalyticOn.congr (hs : IsOpen s) (hf : AnalyticOn 𝕜 f s) (hg : s.EqOn
 theorem analyticOn_congr (hs : IsOpen s) (h : s.EqOn f g) : AnalyticOn 𝕜 f s ↔
     AnalyticOn 𝕜 g s := ⟨fun hf => hf.congr hs h, fun hg => hg.congr hs h.symm⟩
 
-theorem AnalyticWithinAt.mono_of_mem {f : E → F} {s t : Set E} {x : E}
+theorem AnalyticWithinAt.mono_of_mem
     (h : AnalyticWithinAt 𝕜 f s x) (hst : s ∈ 𝓝[t] x) : AnalyticWithinAt 𝕜 f t x := by
   rcases h with ⟨p, hp⟩
   exact ⟨p, hp.mono_of_mem hst⟩
 
-lemma AnalyticWithinOn.mono {f : E → F} {s t : Set E} (h : AnalyticWithinOn 𝕜 f t)
-    (hs : s ⊆ t) : AnalyticWithinOn 𝕜 f s :=
+lemma AnalyticWithinOn.mono (h : AnalyticWithinOn 𝕜 f t) (hs : s ⊆ t) : AnalyticWithinOn 𝕜 f s :=
   fun _ m ↦ (h _ (hs m)).mono hs
 
 @[simp] theorem analyticWithinAt_insert {f : E → F} {s : Set E} {x y : E} :
