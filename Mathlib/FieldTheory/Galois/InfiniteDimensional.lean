@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Yuyang Zhao, Jujian Zhang
 -/
 
+import Mathlib.Algebra.Category.Grp.FiniteGrp
+import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.FieldTheory.KrullTopology
 import Mathlib.FieldTheory.NormalClosure
 import Mathlib.FieldTheory.SeparableClosure
-import Mathlib.Topology.Algebra.Category.ProfiniteGrp
 
 /-!
 
