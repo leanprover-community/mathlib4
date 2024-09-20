@@ -207,6 +207,10 @@ section PartialOrder
 
 variable [PartialOrder β] {a a' : α} {b : β}
 
+theorem init_le [Preorder α] (f : (· < ·) ≼i (· < ·)) (h : b ≤ f a) : ∃ a', f a' = b := by
+  obtain rfl | hb := h.eq_or_lt
+  exacts [⟨a, rfl⟩, f.init hb]
+
 @[simp]
 theorem le_iff_le [PartialOrder α] (f : @InitialSeg α β (· < ·) (· < ·)) : f a ≤ f a' ↔ a ≤ a' :=
   f.toOrderEmbedding.le_iff_le
@@ -220,10 +224,6 @@ theorem monotone [PartialOrder α] (f : @InitialSeg α β (· < ·) (· < ·)) :
 
 theorem strictMono [PartialOrder α] (f : @InitialSeg α β (· < ·) (· < ·)) : StrictMono f :=
   f.toOrderEmbedding.strictMono
-
-theorem init_le [Preorder α] (f : (· < ·) ≼i (· < ·)) (h : b ≤ f a) : ∃ a', f a' = b := by
-  obtain rfl | hb := h.eq_or_lt
-  exacts [⟨a, rfl⟩, f.init hb]
 
 theorem le_apply_iff [LinearOrder α] (f : (· < ·) ≼i (· < ·)) : b ≤ f a ↔ ∃ c ≤ a, f c = b := by
   constructor
