@@ -5,7 +5,7 @@ Authors: Moritz Doll, Kalle Kytölä
 -/
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.LinearAlgebra.SesquilinearForm
-import Mathlib.Topology.Algebra.Module.WeakDual
+import Mathlib.Topology.Algebra.Module.WeakBilin
 
 /-!
 # Polar set

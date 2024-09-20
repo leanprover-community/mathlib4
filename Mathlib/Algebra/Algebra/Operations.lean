@@ -364,7 +364,7 @@ theorem mul_smul_mul_eq_smul_mul_smul (x y : R) : (x * y) • (M * N) = (x • M
     · rw [smul_add]
       exact Submodule.add_mem _ hn hm
   · rintro _ ⟨m, hm, rfl⟩ _ ⟨n, hn, rfl⟩
-    erw [smul_mul_smul_comm x m y n]
+    simp_rw [DistribMulAction.toLinearMap_apply, smul_mul_smul_comm]
     exact smul_mem_pointwise_smul _ _ _ (mul_mem_mul hm hn)
 
 /-- Sub-R-modules of an R-algebra form an idempotent semiring. -/
