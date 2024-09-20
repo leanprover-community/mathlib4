@@ -5,7 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.LinearAlgebra.Projection
-import Mathlib.Order.JordanHoelder
+import Mathlib.Order.JordanHolder
 import Mathlib.Order.CompactlyGenerated.Intervals
 import Mathlib.LinearAlgebra.FiniteDimensional
 
@@ -405,9 +405,9 @@ noncomputable instance _root_.Module.End.divisionRing
 end LinearMap
 
 -- Porting note: adding a namespace with all the new statements; existing result is not used in ML3
-namespace JordanHoelderModule
+namespace JordanHolderModule
 
--- Porting note: jordanHoelderModule was timing out so outlining the fields
+-- Porting note: jordanHolderModule was timing out so outlining the fields
 
 /-- An isomorphism `X₂ / X₁ ∩ X₂ ≅ Y₂ / Y₁ ∩ Y₂` of modules for pairs
 `(X₁,X₂) (Y₁,Y₂) : Submodule R M` -/
@@ -428,7 +428,7 @@ theorem second_iso {X Y : Submodule R M} (_ : X ⋖ X ⊔ Y) :
   dsimp
   exact (LinearMap.quotientInfEquivSupQuotient Y X).symm
 
-instance instJordanHoelderLattice : JordanHoelderLattice (Submodule R M) where
+instance instJordanHolderLattice : JordanHolderLattice (Submodule R M) where
   IsMaximal := (· ⋖ ·)
   lt_of_isMaximal := CovBy.lt
   sup_eq_of_isMaximal hxz hyz := WCovBy.sup_eq hxz.wcovBy hyz.wcovBy
@@ -438,4 +438,4 @@ instance instJordanHoelderLattice : JordanHoelderLattice (Submodule R M) where
   iso_trans := iso_trans
   second_iso := second_iso
 
-end JordanHoelderModule
+end JordanHolderModule
