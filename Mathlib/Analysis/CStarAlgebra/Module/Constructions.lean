@@ -60,11 +60,13 @@ open CStarModule CStarRing
 
 namespace WithCStarModule
 
-variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A]
 
 /-! ## A C⋆-algebra as a C⋆-module over itself -/
 
 section Self
+
+variable [StarOrderedRing A]
 
 /-- Reinterpret a C⋆-algebra `A` as a `CStarModule` over itself. -/
 instance : CStarModule A A where
@@ -109,6 +111,8 @@ lemma prod_norm_le_norm_add (x : C⋆ᵐᵒᵈ (E × F)) : ‖x‖ ≤ ‖x.1‖
     _ = ‖x.1‖ ^ 2 + 0 + ‖x.2‖ ^ 2 := by simp [norm_sq_eq]
     _ ≤ ‖x.1‖ ^ 2 + 2 * ‖x.1‖ * ‖x.2‖ + ‖x.2‖ ^ 2 := by gcongr; positivity
     _ = (‖x.1‖ + ‖x.2‖) ^ 2 := by ring
+
+variable [StarOrderedRing A]
 
 noncomputable instance : CStarModule A (C⋆ᵐᵒᵈ (E × F)) where
   inner x y := inner x.1 y.1 + inner x.2 y.2
@@ -207,6 +211,8 @@ lemma pi_norm_le_sum_norm (x : C⋆ᵐᵒᵈ (Π i, E i)) : ‖x‖ ≤ ∑ i, �
   calc ‖x‖ ^ 2 ≤ ∑ i, ‖⟪x i, x i⟫_A‖ := pi_norm_sq x ▸ norm_sum_le _ _
     _ = ∑ i, ‖x i‖ ^ 2 := by simp only [norm_sq_eq]
     _ ≤ (∑ i, ‖x i‖) ^ 2 := sum_sq_le_sq_sum_of_nonneg (fun _ _ ↦ norm_nonneg _)
+
+variable [StarOrderedRing A]
 
 open Finset in
 noncomputable instance : CStarModule A (C⋆ᵐᵒᵈ (Π i, E i)) where
