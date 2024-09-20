@@ -26,7 +26,7 @@ for which `WithHoelder C r f` is true.
 
 ## Tags
 
-Hölder norm, Hoeder norm
+Hölder norm, Holder norm, Hoelder norm
 
 -/
 
