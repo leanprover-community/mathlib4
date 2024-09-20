@@ -1549,6 +1549,7 @@ import Mathlib.CategoryTheory.GradedObject.Unitor
 import Mathlib.CategoryTheory.Grothendieck
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Groupoid.Basic
+import Mathlib.CategoryTheory.Groupoid.Discrete
 import Mathlib.CategoryTheory.Groupoid.FreeGroupoid
 import Mathlib.CategoryTheory.Groupoid.Subgroupoid
 import Mathlib.CategoryTheory.Groupoid.VertexGroup
