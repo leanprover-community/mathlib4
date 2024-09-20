@@ -974,7 +974,7 @@ theorem scale_zero_apply (f : R⟦X⟧) :
 /-- When p is linear, substitution of p and then a scalar homothety
   is substitution of the homothety then p -/
 lemma subst_linear_subst_scalar_comm (a : A)
-    {σ : Type*} [DecidableEq σ] (p : MvPowerSeries σ R)
+    {σ : Type*} (p : MvPowerSeries σ R)
     (hp_lin : ∀ (d : σ →₀ ℕ), (d.sum (fun _ n ↦ n) ≠ 1) → MvPowerSeries.coeff R d p = 0)
     (f : PowerSeries R) :
     subst p (scale a f)
@@ -996,8 +996,8 @@ lemma subst_linear_subst_scalar_comm (a : A)
   rfl
 
 theorem scale_map_eq_map_scale' [Algebra A S] (φ : R →+* S) (a : A) (f : R⟦X⟧) :
-    scale (φ (algebraMap A R a)) (PowerSeries.map φ f)
-    = PowerSeries.map (φ : R →+* S) (scale a f) := by
+    scale (φ (algebraMap A R a)) (PowerSeries.map φ f) = 
+      PowerSeries.map (φ : R →+* S) (scale a f) := by
   ext n
   simp only [coeff_scale, coeff_map,
     algebra_compatible_smul S (a ^ n), algebra_compatible_smul R (a ^ n),
