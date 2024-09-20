@@ -248,6 +248,17 @@ lemma dimension_comp_eq_dimension_add_dimension [Q.IsFinite] [P.IsFinite] :
 
 section
 
+/-!
+### Jacobian of composition
+
+Let `S` be an `R`-algebra and `T` be an `S`-algebra with presentations `P` and `Q` respectively.
+In this section we compute the jacobian of the composition of `Q` and `P` to be
+the product of the jacobians. For this we use a block decomposition of the jacobi matrix and show
+that the upper-right block vanishes, the upper-left block has determinant jacobian of `Q` and
+the lower-right block has determinant jacobian of `P`.
+
+-/
+
 variable [Fintype (Q.comp P).rels]
 
 private lemma jacobiMatrix_comp_inl_inr (i : Q.rels) (j : P.rels) :
