@@ -97,22 +97,25 @@ Oriented graphs are `Digraph`s that have no self-loops and no pair of vertices w
 directions.
 -/
 def IsOriented (G : Digraph V) : Prop :=
-  ∀ v w : V, ¬(G.Adj v w ∧ G.Adj w v)
+  Asymmetric G.Adj
 
-lemma isOriented_loopless {G : Digraph V} (h : G.IsOriented) {v : V} : ¬G.Adj v v :=
-  and_self (G.Adj v v) ▸ h v v
+lemma isOriented_def {G : Digraph V} (h : G.IsOriented) (v w : V) : ¬(G.Adj v w ∧ G.Adj w v) :=
+  fun ⟨a, b⟩ ↦ h a b
+
+lemma isOriented_loopless {G : Digraph V} (h : G.IsOriented) : Irreflexive G.Adj :=
+  fun _ a ↦ h a a
 
 lemma isOriented_toSimpleGraphAnd_eq_bot {G : Digraph V} (h : G.IsOriented) :
     G.toSimpleGraphAnd = ⊥ := by
-  ext; exact ⟨fun a ↦ h _ _ a.2, False.elim⟩
+  ext; exact ⟨fun ⟨_, a, b⟩ ↦ h a b, False.elim⟩
 
 lemma toSimpleGraphAnd_eq_bot_iff_isOriented_and_loopless {G : Digraph V} :
     G.IsOriented ↔ G.toSimpleGraphAnd = ⊥ ∧ ∀ v, ¬G.Adj v v:= by
-  refine ⟨fun h ↦ ⟨isOriented_toSimpleGraphAnd_eq_bot h, fun v ↦ isOriented_loopless h⟩,
+  refine ⟨fun h ↦ ⟨isOriented_toSimpleGraphAnd_eq_bot h, isOriented_loopless h⟩,
     fun ⟨h₁, h₂⟩ v w ↦ ?_⟩
   by_cases h : v = w
-  · exact h ▸ and_self _ ▸ h₂ v
-  · exact not_and.mpr fun a b ↦ (SimpleGraph.bot_adj v w).mp <| h₁ ▸ ⟨h, And.intro a b⟩
+  · exact h ▸ fun _ ↦ h₂ v
+  · exact fun a b ↦ (SimpleGraph.bot_adj v w).mp <| h₁ ▸ ⟨h, a, b⟩
 
 end IsOriented
 
