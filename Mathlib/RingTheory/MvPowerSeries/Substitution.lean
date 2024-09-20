@@ -209,7 +209,7 @@ variable {σ : Type*} -- [DecidableEq σ]
   {S : Type*} [CommRing S] [Algebra A S] [Algebra R S] [IsScalarTower A R S]
   -- [TopologicalSpace R] [TopologicalRing R][TopologicalAlgebra α R]
 
-open WithPiTopology 
+open WithPiTopology
 
 /-- Families of power series which can be substituted -/
 structure SubstDomain (a : σ → MvPowerSeries τ S) : Prop where
@@ -286,7 +286,7 @@ noncomputable def subst (a : σ → MvPowerSeries τ S) (f : MvPowerSeries σ R)
   letI : UniformSpace S := ⊥
   MvPowerSeries.eval₂ (algebraMap _ _) a f
 
-variable {a : σ → MvPowerSeries τ S} 
+variable {a : σ → MvPowerSeries τ S}
 
 theorem SubstDomain.evalDomain (ha : SubstDomain a) :
     @EvalDomain σ (MvPowerSeries τ S) _ (@instTopologicalSpace τ S ⊥) a :=
@@ -520,7 +520,7 @@ theorem substAlgHom_comp_substAlgHom (ha : SubstDomain a) (hb : SubstDomain b) :
   simp only [AlgHom.coe_restrictScalars', coe_substAlgHom]
   exact (continuous_subst (R := S) hb)
 
-theorem substAlgHom_comp_substAlgHom_apply (ha : SubstDomain a) (hb : SubstDomain b) 
+theorem substAlgHom_comp_substAlgHom_apply (ha : SubstDomain a) (hb : SubstDomain b)
     (f : MvPowerSeries σ R) :
     (substAlgHom hb) (substAlgHom ha f) = substAlgHom (ha.comp hb) f :=
   DFunLike.congr_fun (substAlgHom_comp_substAlgHom ha hb) f
@@ -543,7 +543,127 @@ theorem comp_substAlgHom
   sorry
 -/
 
-section scale
+section rescale
+
+/-- Scale multivariate power series -/
+noncomputable def rescale (a : σ → R) (f : MvPowerSeries σ R) :
+    MvPowerSeries σ R :=
+  subst (a • X) f
+
+theorem scale_eq_subst (a : σ → R) (f : MvPowerSeries σ R) :
+    rescale a f = subst (a • X) f := rfl
+
+variable (R) in
+theorem substDomain_rescale (a : σ → R) :
+    SubstDomain ((a • X) : σ → MvPowerSeries σ R) := by
+  convert substDomain_mul (fun s ↦ algebraMap R (MvPowerSeries σ R) (a s))
+    substDomain_X using 1
+  rw [Function.funext_iff]
+  intro s
+  simp only [Pi.smul_apply', Pi.mul_apply]
+  rw [algebra_compatible_smul (MvPowerSeries σ R), smul_eq_mul]
+
+variable (R) in
+/-- Scale multivariate power series, as an `AlgHom` -/
+noncomputable def rescale_algHom (a : σ → R) :
+    MvPowerSeries σ R →ₐ[R] MvPowerSeries σ  R :=
+  substAlgHom (substDomain_rescale R a)
+
+theorem coe_rescale_algHom (a : σ → R) :
+    ⇑(rescale_algHom R a) = rescale a :=
+  coe_substAlgHom (substDomain_rescale R a)
+
+theorem rescale_algHom_comp (a b : σ → R) :
+    (rescale_algHom R a).comp (rescale_algHom R b) = rescale_algHom R (a * b) := by
+  rw [AlgHom.ext_iff]
+  intro f
+  simp only [AlgHom.coe_comp, Function.comp_apply, rescale_algHom]
+  rw [substAlgHom_comp_substAlgHom_apply]
+  congr
+  rw [Function.funext_iff]
+  intro s
+  simp only [Pi.smul_apply', Pi.mul_apply]
+  rw [AlgHom.map_smul_of_tower]
+  rw [← MvPolynomial.coe_X, substAlgHom_coe, MvPolynomial.aeval_X, MvPolynomial.coe_X]
+  simp only [Pi.smul_apply', algebraMap_smul]
+  rw [← mul_smul, mul_comm]
+
+theorem rescale_rescale_apply (a b : σ → R) (f : MvPowerSeries σ R) :
+    (f.rescale b).rescale a = f.rescale (a * b) := by
+  simp only [← coe_rescale_algHom, ← AlgHom.comp_apply, rescale_algHom_comp]
+
+theorem coeff_rescale (r : σ → R) (f : MvPowerSeries σ R) (d : σ →₀ ℕ) :
+    coeff R d (rescale r f) = (d.prod fun s n ↦ r s ^ n) • coeff R d f := by
+  unfold rescale
+  rw [coeff_subst (substDomain_rescale R _)]
+  simp only [Pi.smul_apply', smul_eq_mul, prod_smul_X_eq_smul_monomial_one]
+  simp only [LinearMap.map_smul_of_tower, Algebra.mul_smul_comm]
+  rw [finsum_eq_single _ d]
+  · simp only [coeff_monomial_same, mul_one, smul_eq_mul]
+  · intro e he
+    simp only [coeff_monomial_ne he.symm, mul_zero, smul_zero]
+
+theorem rescale_one :
+    rescale 1 = @id (MvPowerSeries σ R) := by
+  ext f d
+  simp only [coeff_rescale, Finsupp.prod, Pi.one_apply, one_pow, Finset.prod_const_one, smul_eq_mul,
+    one_mul, id_eq]
+
+theorem rescale_algHom_one :
+    rescale_algHom R 1 = AlgHom.id R (MvPowerSeries σ R):= by
+  rw [DFunLike.ext_iff]
+  intro f
+  simp only [Function.const_one, coe_rescale_algHom, AlgHom.coe_id, id_eq, rescale_one]
+
+/-- Scale mv power series, as a `MonoidHom` in the scaling parameters -/
+noncomputable def rescale_MonoidHom : (σ → R) →* MvPowerSeries σ R →ₐ[R] MvPowerSeries σ R where
+  toFun := rescale_algHom R
+  map_one' := rescale_algHom_one
+  map_mul' a b := by
+    dsimp only
+    rw [← rescale_algHom_comp, AlgHom.End_toSemigroup_toMul_mul]
+
+theorem rescale_zero_apply (f : MvPowerSeries σ R) :
+    rescale 0 f = MvPowerSeries.C σ R (constantCoeff σ R f) := by
+  classical
+  ext d
+  simp only [coeff_rescale, coeff_C]
+  by_cases hd : d = 0
+  · simp only [hd, Pi.zero_apply, Finsupp.prod_zero_index, coeff_zero_eq_constantCoeff,
+      smul_eq_mul, one_mul, ↓reduceIte]
+  · simp only [Pi.zero_apply, smul_eq_mul, if_neg hd]
+    convert zero_smul R _
+    simp only [DFunLike.ext_iff, Finsupp.coe_zero, Pi.zero_apply, not_forall] at hd
+    obtain ⟨s, hs⟩ := hd
+    apply Finset.prod_eq_zero (Finsupp.mem_support_iff.mpr hs)
+    simp only [Function.const_apply, zero_pow hs]
+
+/-- Scaling a linear power series is smul -/
+lemma rescale_linear_eq_smul (r : R) (f : MvPowerSeries σ R)
+    (hf : ∀ (d : σ →₀ ℕ), (d.sum (fun _ n ↦ n) ≠ 1) → MvPowerSeries.coeff R d f = 0) :
+    MvPowerSeries.rescale (Function.const σ r) f = r • f := by
+  ext e
+  simp only [MvPowerSeries.coeff_rescale, map_smul]
+  simp only [Finsupp.prod, Function.const_apply, Finset.prod_pow_eq_pow_sum, smul_eq_mul]
+  by_cases he : Finsupp.sum e (fun _ n ↦ n) = 1
+  · simp only [Finsupp.sum] at he
+    simp only [he, pow_one]
+  · simp only [hf e he, mul_zero]
+
+open PowerSeries
+
+theorem rescaleUnit (a : R) (f : R⟦X⟧) :
+    MvPowerSeries.rescale (Function.const _ a) f = PowerSeries.rescale a f := by
+  ext d
+  change MvPowerSeries.coeff R _ _ = _
+  rw [PowerSeries.coeff_rescale, coeff_rescale, smul_eq_mul]
+  simp only [Function.const_apply, pow_zero, Finsupp.prod_single_index, PowerSeries.coeff]
+
+end rescale
+
+/- section scale
+
+-- More general version, deleted for the moment, because it often needs more explicit [Algebra...]
 
 /-- Scale multivariate power series -/
 noncomputable def scale (a : σ → A) (f : MvPowerSeries σ R) :
@@ -655,7 +775,7 @@ lemma scale_linear_eq_smul (r : A) (f : MvPowerSeries σ R)
 
 
 end scale
-
+-/
 end MvPowerSeries
 
 namespace PowerSeries
@@ -909,9 +1029,9 @@ theorem subst_comp_subst_apply [Algebra R S] [Algebra S T] [IsScalarTower R S T]
     subst b (subst a f) = subst (subst b a) f :=
   congr_fun (subst_comp_subst (R := R) ha hb) f
 
+/- -- Duplicates PowerSeries.rescale, the additional generality is probably useless
 section scale
 
--- oops, it exists as PowerSeries.rescale
 /-- Scale power series` -/
 noncomputable def scale (a : A) (f : R⟦X⟧) : R⟦X⟧ :=
     MvPowerSeries.scale (Function.const Unit a) f
@@ -995,13 +1115,13 @@ lemma subst_linear_subst_scalar_comm (a : A)
   rw [MvPowerSeries.scale_linear_eq_smul _ _ hp_lin]
   rfl
 
-theorem scale_map_eq_map_scale' [Algebra A S] (φ : R →+* S) (a : A) (f : R⟦X⟧) :
-    scale (φ (algebraMap A R a)) (PowerSeries.map φ f) = 
+theorem scale_map_eq_map_scale' (φ : R →+* S) (a : A) (f : R⟦X⟧) :
+    scale (φ (algebraMap A R a)) (PowerSeries.map φ f) =
       PowerSeries.map (φ : R →+* S) (scale a f) := by
   ext n
-  simp only [coeff_scale, coeff_map,
-    algebra_compatible_smul S (a ^ n), algebra_compatible_smul R (a ^ n),
-    smul_eq_mul, smul_eq_mul, map_mul, map_pow]
+  simp only [coeff_scale, coeff_map]
+ --   algebra_compatible_smul S (a ^ n), algebra_compatible_smul R (a ^ n),
+  rw [smul_eq_mul, smul_eq_mul, map_mul, map_pow]
 
 theorem scale_map_eq_map_scale [Algebra A S] (φ : R →ₐ[A] S) (a : A) (f : R⟦X⟧) :
     scale a (PowerSeries.map φ f)
@@ -1009,5 +1129,6 @@ theorem scale_map_eq_map_scale [Algebra A S] (φ : R →ₐ[A] S) (a : A) (f : R
   rw [← scale_map_eq_map_scale', ← scale_algebraMap, RingHom.coe_coe, AlgHom.commutes]
 
 end scale
+-/
 
 end PowerSeries
