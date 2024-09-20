@@ -43,6 +43,8 @@ This file defines ordered first-order languages and structures, as well as their
   theory of linear orders.
 - `FirstOrder.Language.isFraisse_finite_linear_order` shows that the class of finite models of the
   theory of linear orders is Fraïssé.
+- `FirstOrder.Language.aleph0_categorical_dlo` shows that the theory of dense linear orders is
+  `ℵ₀`-categorical, and thus complete.
 
 -/
 
@@ -79,6 +81,19 @@ instance instSubsingleton : Subsingleton (Language.order.Relations n) :=
   ⟨by rintro ⟨⟩ ⟨⟩; rfl⟩
 
 instance : IsEmpty (Language.order.Relations 0) := ⟨fun x => by cases x⟩
+
+instance : Unique (Σ n, Language.order.Relations n) :=
+  ⟨⟨⟨2, .le⟩⟩, fun ⟨n, R⟩ =>
+      match n, R with
+      | 2, .le => rfl⟩
+
+instance : Unique Language.order.Symbols := ⟨⟨Sum.inr default⟩, by
+  have : IsEmpty (Σ n, Language.order.Functions n) := isEmpty_sigma.2 inferInstance
+  simp only [Symbols, Sum.forall, reduceCtorEq, Sum.inr.injEq, IsEmpty.forall_iff, true_and]
+  exact Unique.eq_default⟩
+
+@[simp]
+lemma card_eq_one : Language.order.card = 1 := by simp [card]
 
 end order
 
@@ -486,7 +501,7 @@ lemma dlo_age [Language.order.Structure M] [Mdlo : M ⊨ Language.order.dlo] [No
 
 /-- Any countable nonempty model of the theory of dense linear orders is a Fraïssé limit of the
 class of finite models of the theory of linear orders. -/
-lemma isFraisseLimit_of_countable_nonempty_dlo (M : Type w)
+theorem isFraisseLimit_of_countable_nonempty_dlo (M : Type w)
     [Language.order.Structure M] [Countable M] [Nonempty M] [M ⊨ Language.order.dlo] :
     IsFraisseLimit {M : CategoryTheory.Bundled.{w} Language.order.Structure |
       Finite M ∧ M ⊨ Language.order.linearOrderTheory} M :=
@@ -498,6 +513,23 @@ theorem isFraisse_finite_linear_order :
       Finite M ∧ M ⊨ Language.order.linearOrderTheory} := by
   letI : Language.order.Structure ℚ := orderStructure _
   exact (isFraisseLimit_of_countable_nonempty_dlo ℚ).isFraisse
+
+open Cardinal
+
+/-- The theory of dense linear orders is `ℵ₀`-categorical. -/
+theorem aleph0_categorical_dlo : (ℵ₀).Categorical Language.order.dlo := fun M₁ M₂ h₁ h₂ => by
+  obtain ⟨_⟩ := denumerable_iff.2 h₁
+  obtain ⟨_⟩ := denumerable_iff.2 h₂
+  exact (isFraisseLimit_of_countable_nonempty_dlo M₁).nonempty_equiv
+    (isFraisseLimit_of_countable_nonempty_dlo M₂)
+
+/-- The theory of dense linear orders is `ℵ₀`-complete. -/
+theorem dlo_isComplete : Language.order.dlo.IsComplete :=
+  aleph0_categorical_dlo.{0}.isComplete ℵ₀ _ le_rfl (by simp [one_le_aleph0])
+    ⟨by
+      letI : Language.order.Structure ℚ := orderStructure ℚ
+      exact Theory.ModelType.of _ ℚ⟩
+    fun M => inferInstance
 
 end Fraisse
 
