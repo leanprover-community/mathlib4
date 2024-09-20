@@ -178,7 +178,7 @@ theorem tendsto_pow_of_constantCoeff_nilpotent_iff [CommRing R] [DiscreteTopolog
   suffices Filter.Tendsto (fun n : ℕ => constantCoeff σ R (f ^ n)) Filter.atTop (nhds 0) by
     simp only [Filter.tendsto_def] at this
     specialize this {0} _
-    suffices  ∀ x : R, {x} ∈ nhds x by exact this 0
+    suffices ∀ x : R, {x} ∈ nhds x by exact this 0
     rw [← discreteTopology_iff_singleton_mem_nhds]; infer_instance
     simp only [map_pow, Filter.mem_atTop_sets, ge_iff_le, Set.mem_preimage,
       Set.mem_singleton_iff] at this
