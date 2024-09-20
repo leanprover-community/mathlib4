@@ -5,10 +5,8 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Data.Set.Image
 import Mathlib.Topology.Bases
-import Mathlib.Topology.Exterior
-import Mathlib.Tactic.Peel
 import Mathlib.Topology.Inseparable
-import Mathlib.Topology.Compactness.Compact
+import Mathlib.Topology.Compactness.Exterior
 
 /-!
 # Alexandrov-discrete topological spaces
@@ -126,18 +124,6 @@ lemma Inducing.alexandrovDiscrete [AlexandrovDiscrete α] {f : β → α} (h : I
     refine ⟨_, isOpen_iInter₂ hU, ?_⟩
     simp_rw [preimage_iInter, htU, sInter_eq_biInter]
 
-theorem IsCompact.exterior_iff : IsCompact (exterior s) ↔ IsCompact s := by
-  simp only [isCompact_iff_finite_subcover]
-  peel with ι U hUo
-  simp only [(isOpen_iUnion hUo).exterior_subset,
-    (isOpen_iUnion fun i ↦ isOpen_iUnion fun _ ↦ hUo i).exterior_subset]
-
-protected alias ⟨IsCompact.of_exterior, IsCompact.exterior⟩ := IsCompact.exterior_iff
-
-@[deprecated IsCompact.exterior (since := "2024-09-18")]
-lemma Set.Finite.isCompact_exterior (hs : s.Finite) : IsCompact (exterior s) :=
-  hs.isCompact.exterior
-
 end
 
 lemma AlexandrovDiscrete.sup {t₁ t₂ : TopologicalSpace α} (_ : @AlexandrovDiscrete α t₁)
@@ -199,7 +185,7 @@ instance AlexandrovDiscrete.toFirstCountable : FirstCountableTopology α where
 instance AlexandrovDiscrete.toLocallyCompactSpace : LocallyCompactSpace α where
   local_compact_nhds a _U hU := ⟨exterior {a},
     isOpen_exterior.mem_nhds <| subset_exterior <| mem_singleton _,
-      exterior_singleton_subset_iff_mem_nhds.2 hU, (finite_singleton _).isCompact.exterior⟩
+      exterior_singleton_subset_iff_mem_nhds.2 hU, isCompact_singleton.exterior⟩
 
 instance Subtype.instAlexandrovDiscrete {p : α → Prop} : AlexandrovDiscrete {a // p a} :=
   inducing_subtype_val.alexandrovDiscrete

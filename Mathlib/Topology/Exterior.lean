@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
+Authors: Yaël Dillies, Yury Kudryashov
 -/
 import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.Inseparable
@@ -23,12 +23,9 @@ variable {X : Type*} [TopologicalSpace X] {s t : Set X} {x y : X}
 
 lemma exterior_singleton_eq_ker_nhds (x : X) : exterior {x} = (𝓝 x).ker := by simp [exterior]
 
-theorem mem_exterior_iff_specializes : x ∈ exterior s ↔ ∃ y ∈ s, x ⤳ y := by
-  constructor
-  · i
-
-lemma mem_exterior_singleton_iff_specializes : x ∈ exterior {y} ↔ x ⤳ y := by
-  rw [exterior_singleton_eq_ker_nhds, mem_ker, specializes_iff_pure, pure_le_iff]
+@[simp]
+theorem mem_exterior_singleton : x ∈ exterior {y} ↔ x ⤳ y := by
+  rw [exterior_singleton_eq_ker_nhds, ker_nhds_eq_specializes, mem_setOf]
 
 lemma exterior_def (s : Set X) : exterior s = ⋂₀ {t : Set X | IsOpen t ∧ s ⊆ t} :=
   (hasBasis_nhdsSet _).ker.trans sInter_eq_biInter.symm
@@ -46,11 +43,46 @@ lemma exterior_minimal (h₁ : s ⊆ t) (h₂ : IsOpen t) : exterior s ⊆ t := 
 lemma IsOpen.exterior_eq (h : IsOpen s) : exterior s = s :=
   (exterior_minimal Subset.rfl h).antisymm subset_exterior
 
-lemma IsOpen.exterior_subset_iff (ht : IsOpen t) : exterior s ⊆ t ↔ s ⊆ t :=
+lemma IsOpen.exterior_subset (ht : IsOpen t) : exterior s ⊆ t ↔ s ⊆ t :=
   ⟨subset_exterior.trans, fun h ↦ exterior_minimal h ht⟩
+
+@[deprecated (since := "2024-09-18")] alias IsOpen.exterior_subset_iff := IsOpen.exterior_subset
+
+@[simp]
+theorem exterior_iUnion {ι : Sort*} (s : ι → Set X) :
+    exterior (⋃ i, s i) = ⋃ i, exterior (s i) := by
+  simp only [exterior, nhdsSet_iUnion, ker_iSup]
+
+@[simp]
+theorem exterior_union (s t : Set X) : exterior (s ∪ t) = exterior s ∪ exterior t := by
+  simp only [exterior, nhdsSet_union, ker_sup]
+
+@[simp]
+theorem exterior_sUnion (S : Set (Set X)) : exterior (⋃₀ S) = ⋃ s ∈ S, exterior s := by
+  simp only [sUnion_eq_biUnion, exterior_iUnion]
+
+theorem mem_exterior_iff_specializes : x ∈ exterior s ↔ ∃ y ∈ s, x ⤳ y := calc
+  x ∈ exterior s ↔ x ∈ exterior (⋃ y ∈ s, {y}) := by simp
+  _ ↔ ∃ y ∈ s, x ⤳ y := by
+    simp only [exterior_iUnion, mem_exterior_singleton, mem_iUnion₂, exists_prop]
 
 @[mono] lemma exterior_mono : Monotone (exterior : Set X → Set X) :=
   fun _s _t h ↦ ker_mono <| nhdsSet_mono h
+
+/-- This name was used to be used for the `Iff` version,
+see `exterior_subset_exterior_iff_nhdsSet`.
+-/
+@[gcongr] lemma exterior_subset_exterior (h : s ⊆ t) : exterior s ⊆ exterior t := exterior_mono h
+
+@[simp] lemma exterior_subset_exterior_iff_nhdsSet : exterior s ⊆ exterior t ↔ 𝓝ˢ s ≤ 𝓝ˢ t := by
+  simp (config := {contextual := true}) only [subset_exterior_iff, (hasBasis_nhdsSet _).ge_iff,
+    and_imp, IsOpen.mem_nhdsSet, IsOpen.exterior_subset]
+
+theorem exterior_eq_exterior_iff_nhdsSet : exterior s = exterior t ↔ 𝓝ˢ s = 𝓝ˢ t := by
+  simp [le_antisymm_iff]
+
+lemma specializes_iff_exterior_subset : x ⤳ y ↔ exterior {x} ⊆ exterior {y} := by
+  simp [Specializes]
 
 @[simp] lemma exterior_empty : exterior (∅ : Set X) = ∅ := isOpen_empty.exterior_eq
 @[simp] lemma exterior_univ : exterior (univ : Set X) = univ := isOpen_univ.exterior_eq
@@ -58,10 +90,9 @@ lemma IsOpen.exterior_subset_iff (ht : IsOpen t) : exterior s ⊆ t ↔ s ⊆ t 
 @[simp] lemma exterior_eq_empty : exterior s = ∅ ↔ s = ∅ :=
   ⟨eq_bot_mono subset_exterior, by rintro rfl; exact exterior_empty⟩
 
--- TODO: duplicate of `IsOpen.exterior_subset_iff`
-lemma IsOpen.exterior_subset (ht : IsOpen t) : exterior s ⊆ t ↔ s ⊆ t :=
-  ⟨subset_exterior.trans, fun h ↦ exterior_minimal h ht⟩
+@[simp] lemma nhdsSet_exterior (s : Set X) : 𝓝ˢ (exterior s) = 𝓝ˢ s := by
+  refine le_antisymm ((hasBasis_nhdsSet _).ge_iff.2 ?_) (nhdsSet_mono subset_exterior)
+  exact fun U ⟨hUo, hsU⟩ ↦ hUo.mem_nhdsSet.2 <| hUo.exterior_subset.2 hsU
 
-lemma specializes_iff_exterior_subset : x ⤳ y ↔ exterior {x} ⊆ exterior {y} := by
-  simp only [subset_def, mem_exterior_singleton_iff_specializes]
-  exact ⟨fun h₁ z h₂ ↦ h₂.trans h₁, fun h ↦ h _ le_rfl⟩
+@[simp] lemma exterior_exterior (s : Set X) : exterior (exterior s) = exterior s := by
+  simp only [exterior_eq_exterior_iff_nhdsSet, nhdsSet_exterior]
