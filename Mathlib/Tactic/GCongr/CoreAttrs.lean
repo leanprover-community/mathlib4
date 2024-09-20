@@ -6,7 +6,10 @@ Authors: Yury Kudryashov
 import Mathlib.Tactic.GCongr.Core
 
 /-!
-# gcongr attributes for core lemmas
+# gcongr attributes for lemmas up in the import chain
+
+In this file we add `gcongr` attribute to lemmas in `Lean.Init`.
+We may add lemmas from other files imported by `Mathlib/Tactic/GCongr/Core` later.
 -/
 
 attribute [gcongr] List.Sublist.append List.Sublist.append_left List.Sublist.append_right
