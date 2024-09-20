@@ -3,8 +3,12 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+<<<<<<< HEAD
 import Mathlib.Analysis.Analytic.Within
+=======
+>>>>>>> origin/master
 import Mathlib.Analysis.Analytic.CPolynomial
+import Mathlib.Analysis.Analytic.Within
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.Calculus.ContDiff.Defs
 import Mathlib.Analysis.Calculus.FDeriv.Add
@@ -324,10 +328,6 @@ theorem AnalyticAt.contDiffAt [CompleteSpace F] (h : AnalyticAt 𝕜 f x) {n : �
     ContDiffAt 𝕜 n f x := by
   obtain ⟨s, hs, hf⟩ := h.exists_mem_nhds_analyticOn
   exact hf.contDiffOn.contDiffAt hs
-
-/-!
-### Analyticity within implies smoothness
--/
 
 lemma AnalyticWithinAt.contDiffWithinAt [CompleteSpace F] {f : E → F} {s : Set E} {x : E}
     (h : AnalyticWithinAt 𝕜 f s x) {n : ℕ∞} : ContDiffWithinAt 𝕜 n f s x := by
