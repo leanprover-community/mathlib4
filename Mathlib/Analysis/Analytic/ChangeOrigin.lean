@@ -284,7 +284,6 @@ theorem analyticAt_changeOrigin (p : FormalMultilinearSeries 𝕜 E F) (rp : p.r
 
 end FormalMultilinearSeries
 
-
 section
 
 variable [CompleteSpace F] {f : E → F} {p : FormalMultilinearSeries 𝕜 E F} {x y : E} {r : ℝ≥0∞}

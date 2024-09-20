@@ -57,7 +57,8 @@ theorem analyticWithinOn_const {v : F} {s : Set E} : AnalyticWithinOn 𝕜 (fun 
   analyticOn_const.analyticWithinOn
 
 /-!
-### Addition, negation, subtraction -/
+### Addition, negation, subtraction
+-/
 
 section
 
@@ -156,7 +157,6 @@ theorem AnalyticWithinAt.sub (hf : AnalyticWithinAt 𝕜 f s x) (hg : AnalyticWi
 theorem AnalyticAt.sub (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) :
     AnalyticAt 𝕜 (f - g) x := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
-
 
 theorem AnalyticWithinOn.add (hf : AnalyticWithinOn 𝕜 f s) (hg : AnalyticWithinOn 𝕜 g s) :
     AnalyticWithinOn 𝕜 (f + g) s :=
