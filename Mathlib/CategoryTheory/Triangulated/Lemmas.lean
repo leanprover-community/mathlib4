@@ -11,6 +11,10 @@ section Shift
 variable {C : Type u} {A : Type*} [CategoryTheory.Category.{v, u} C] [AddCommMonoid A]
   [CategoryTheory.HasShift C A]
 
+attribute [local instance] endofunctorMonoidalCategory
+
+open Category
+
 @[reassoc]
 lemma shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd'_hom_app (m₁ m₂ m₃ m : A)
     (hm : m₂ + m₃ = m) (X : C) :
@@ -37,6 +41,70 @@ lemma shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd'_hom_app (m₁ m₂ m�
   erw [Category.id_comp]
   rw [shiftFunctorAdd'_assoc_hom_app m₁ m₂ m₃ (m₁ + m₂) m (m₁ + m) rfl hm (by rw [add_assoc, hm])]
   simp only [Functor.comp_obj, Iso.inv_hom_id_app_assoc]
+
+lemma shiftFunctorAdd_symm_eqToIso (i j i' j' : A) (hi : i = i') (hj : j = j') :
+    (shiftFunctorAdd C i j).symm = eqToIso (by rw [hi, hj]) ≪≫
+    (shiftFunctorAdd C i' j').symm ≪≫ eqToIso (by rw [hi, hj]) := by
+  ext X
+  simp only [Functor.comp_obj, Iso.symm_hom, Iso.trans_hom, eqToIso.hom, NatTrans.comp_app,
+    eqToHom_app]
+  have := (shiftMonoidalFunctor C A).μ_natural_left (X := {as := i})
+    (Y := {as := i'}) (eqToHom (by rw [hi])) {as := j}
+  apply_fun (fun T ↦ T.app X) at this
+  simp only [endofunctorMonoidalCategory_tensorObj_obj, MonoidalCategory.eqToHom_whiskerRight,
+    NatTrans.comp_app] at this
+  change _ ≫ (shiftFunctorAdd C i' j).inv.app X = (shiftFunctorAdd C i j).inv.app X ≫ _ at this
+  simp only [Functor.comp_obj, endofunctorMonoidalCategory_whiskerRight_app] at this
+  set f : ((shiftMonoidalFunctor C A).obj (MonoidalCategory.tensorObj { as := i' }
+    { as := j })).obj X ⟶ ((shiftMonoidalFunctor C A).obj
+    (MonoidalCategory.tensorObj { as := i } { as := j })).obj X := eqToHom (by rw [hi])
+  rw [← cancel_mono f] at this
+  simp only [eqToHom_map, eqToHom_app, assoc, eqToHom_trans, eqToHom_refl, comp_id, f] at this
+  rw [← this]
+  have := (shiftMonoidalFunctor C A).μ_natural_right (X := {as := j})
+    (Y := {as := j'}) {as := i'} (eqToHom (by rw [hj]))
+  apply_fun (fun T ↦ T.app X) at this
+  simp only [endofunctorMonoidalCategory_tensorObj_obj, MonoidalCategory.eqToHom_whiskerRight,
+    NatTrans.comp_app] at this
+  change _ ≫ (shiftFunctorAdd C i' j').inv.app X = (shiftFunctorAdd C i' j).inv.app X ≫ _ at this
+  simp only [Functor.comp_obj, MonoidalCategory.whiskerLeft_eqToHom, eqToHom_app,
+    endofunctorMonoidalCategory_tensorObj_obj, eqToHom_map, eqToHom_app] at this
+  set f : ((shiftMonoidalFunctor C A).obj (MonoidalCategory.tensorObj { as := i' }
+    { as := j' })).obj X ⟶ ((shiftMonoidalFunctor C A).obj
+    (MonoidalCategory.tensorObj { as := i' } { as := j })).obj X := eqToHom (by rw [hj])
+  rw [← cancel_mono f] at this
+  simp only [assoc, eqToHom_trans, eqToHom_refl, comp_id, f] at this
+  rw [← this]
+  simp
+
+lemma shiftFunctorAdd_eqToIso (i j i' j' : A) (hi : i = i') (hj : j = j') :
+    shiftFunctorAdd C i j = eqToIso (by rw [hi, hj]) ≪≫
+    shiftFunctorAdd C i' j' ≪≫ eqToIso (by rw [hi, hj]) := by
+  conv_lhs => rw [← Iso.symm_symm_eq (shiftFunctorAdd C i j),
+                shiftFunctorAdd_symm_eqToIso i j i' j' hi hj]
+  ext X
+  simp
+
+lemma shiftFunctorAdd'_symm_eqToIso (i j k i' j' k' : A) (h : i + j = k) (h' : i' + j' = k')
+    (hi : i = i') (hj : j = j') :
+    (shiftFunctorAdd' C i j k h).symm = eqToIso (by rw [hi, hj]) ≪≫
+    (shiftFunctorAdd' C i' j' k' h').symm ≪≫ eqToIso (by rw [← h, ← h', hi, hj])
+    := by
+  dsimp [shiftFunctorAdd']
+  rw [shiftFunctorAdd_symm_eqToIso i j i' j' hi hj]
+  ext X
+  simp only [Functor.comp_obj, Iso.trans_assoc, Iso.trans_hom, eqToIso.hom, Iso.symm_hom,
+    eqToIso.inv, eqToHom_trans, NatTrans.comp_app, eqToHom_app]
+
+lemma shiftFunctorAdd'_eqToIso (i j k i' j' k' : A) (h : i + j = k) (h' : i' + j' = k')
+    (hi : i = i') (hj : j = j') :
+    shiftFunctorAdd' C i j k h = eqToIso (by rw [← h, ← h', hi, hj]) ≪≫
+    shiftFunctorAdd' C i' j' k' h' ≪≫ eqToIso (by rw [hi, hj]) := by
+  dsimp [shiftFunctorAdd']
+  rw [shiftFunctorAdd_eqToIso i j i' j' hi hj]
+  ext X
+  simp only [Functor.comp_obj, Iso.trans_hom, eqToIso.hom, eqToHom_trans_assoc, NatTrans.comp_app,
+    eqToHom_app, Iso.trans_assoc]
 
 end Shift
 

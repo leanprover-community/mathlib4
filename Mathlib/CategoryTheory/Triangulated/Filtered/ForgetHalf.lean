@@ -571,6 +571,15 @@ noncomputable def power_of_alpha (n : ℕ) : ∀ (X : C) (a b : ℤ) (_ : a + n 
       (by rw [← hn]; simp only [Nat.cast_add, Nat.cast_one]; linarith)).symm.app X).hom
     exact hP.α.app _
 
+/-
+noncomputable def power_of_alpha_alt (X : C) (a b : ℤ) :
+    (@shiftFunctor C _ _ _ Shift₂ a).obj X ⟶ (@shiftFunctor C _ _ _ Shift₂ b).obj X :=
+  Int.inductionOn' b a (𝟙 _)
+  (fun b _ f ↦ f ≫ α.app ((@shiftFunctor C _ _ _ Shift₂ b).obj X)  ≫
+  ((@shiftFunctorAdd C _ _ _ Shift₂ b 1).symm.app X).hom)
+  (fun _ _ _ ↦ 0)
+-/
+
 lemma power_of_alpha_zero (X : C) (a b : ℤ) (hab : a = b) :
     power_of_alpha 0 X a b (by rw [hab, Nat.cast_zero, add_zero]) = eqToHom (by rw [hab]) := by
   dsimp [power_of_alpha, shiftFunctorAdd']
@@ -585,80 +594,45 @@ lemma power_of_alpha_zero' (X : C) (a : ℤ) :
   simp only [Iso.trans_inv, isoWhiskerLeft_inv, Iso.symm_inv, NatTrans.comp_app, Functor.comp_obj,
     Functor.id_obj, whiskerLeft_app, Functor.rightUnitor_hom_app, comp_id, Iso.inv_hom_id_app]
 
-lemma shiftFunctorAdd_symm_eqToIso (i j i' j' : ℤ) (hi : i = i') (hj : j = j') :
-    (@shiftFunctorAdd C _ _ _ Shift₂ i j).symm = eqToIso (by rw [hi, hj]) ≪≫
-    (@shiftFunctorAdd C _ _ _ Shift₂ i' j').symm ≪≫ eqToIso (by rw [hi, hj]) := by
-  ext X
-  simp only [Functor.comp_obj, Iso.symm_hom, Iso.trans_hom, eqToIso.hom, NatTrans.comp_app,
-    eqToHom_app]
-  have := (@shiftMonoidalFunctor C _ _ _ Shift₂).μ_natural_left (X := {as := i})
-    (Y := {as := i'}) (eqToHom (by rw [hi])) {as := j}
-  apply_fun (fun T ↦ T.app X) at this
-  simp only [endofunctorMonoidalCategory_tensorObj_obj, MonoidalCategory.eqToHom_whiskerRight,
-    NatTrans.comp_app] at this
-  change _ ≫ (@shiftFunctorAdd C _ _ _ Shift₂ i' j).inv.app X =
-    (@shiftFunctorAdd C _ _ _ Shift₂ i j).inv.app X ≫ _ at this
-  simp only [Functor.comp_obj, endofunctorMonoidalCategory_whiskerRight_app] at this
-  set f : ((@shiftMonoidalFunctor C ℤ _ _ Shift₂).obj (MonoidalCategory.tensorObj { as := i' }
-    { as := j })).obj X ⟶ ((@shiftMonoidalFunctor C ℤ _ _ Shift₂).obj
-    (MonoidalCategory.tensorObj { as := i } { as := j })).obj X := eqToHom (by rw [hi])
-  rw [← cancel_mono f] at this
-  simp only [eqToHom_map, eqToHom_app, assoc, eqToHom_trans, eqToHom_refl, comp_id, f] at this
-  rw [← this]
-  have := (@shiftMonoidalFunctor C _ _ _ Shift₂).μ_natural_right (X := {as := j})
-    (Y := {as := j'}) {as := i'} (eqToHom (by rw [hj]))
-  apply_fun (fun T ↦ T.app X) at this
-  simp only [endofunctorMonoidalCategory_tensorObj_obj, MonoidalCategory.eqToHom_whiskerRight,
-    NatTrans.comp_app] at this
-  change _ ≫ (@shiftFunctorAdd C _ _ _ Shift₂ i' j').inv.app X =
-    (@shiftFunctorAdd C _ _ _ Shift₂ i' j).inv.app X ≫ _ at this
-  simp only [Functor.comp_obj, MonoidalCategory.whiskerLeft_eqToHom, eqToHom_app,
-    endofunctorMonoidalCategory_tensorObj_obj, eqToHom_map, eqToHom_app] at this
-  set f : ((@shiftMonoidalFunctor C ℤ _ _ Shift₂).obj (MonoidalCategory.tensorObj { as := i' }
-    { as := j' })).obj X ⟶ ((@shiftMonoidalFunctor C ℤ _ _ Shift₂).obj
-    (MonoidalCategory.tensorObj { as := i' } { as := j })).obj X := eqToHom (by rw [hj])
-  rw [← cancel_mono f] at this
-  simp only [assoc, eqToHom_trans, eqToHom_refl, comp_id, f] at this
-  rw [← this]
-  simp
+lemma power_of_alpha_eqToHom (n : ℕ) : ∀ (X : C) (a b a' b' : ℤ) (hn : a + n = b)
+    (hn' : a' + n = b') (ha : a = a') (hb : b = b'),
+    power_of_alpha n X a b hn = eqToHom (by rw [ha]) ≫ power_of_alpha n X a' b' hn' ≫
+    eqToHom (by rw [hb]) := by
+  induction' n with n hind
+  · intro X a b a' b' hn hn' ha hb
+    rw [power_of_alpha_zero X a b (by rw [← hn, Nat.cast_zero, add_zero]),
+      power_of_alpha_zero X a' b' (by rw [← hn', Nat.cast_zero, add_zero])]
+    simp only [eqToHom_trans]
+  · intro X a b a' b' hn hn' ha hb
+    change power_of_alpha n X a (a + n) rfl ≫ hP.α.app _ ≫
+      ((@shiftFunctorAdd' C _ _ _ Shift₂ (a + n) 1 b
+      (by rw [← hn]; simp only [Nat.cast_add, Nat.cast_one]; linarith)).symm.app X).hom
+      = _ ≫ (power_of_alpha n X a' (a' + n) rfl ≫ hP.α.app _ ≫
+      ((@shiftFunctorAdd' C _ _ _ Shift₂ (a' + n) 1 b'
+      (by rw [← hn']; simp only [Nat.cast_add, Nat.cast_one]; linarith)).symm.app X).hom) ≫ _
+    rw [hind X a (a + n) a' (a' + n) rfl rfl ha (by rw [ha])]
+    rw [@shiftFunctorAdd'_symm_eqToIso C _ _ _ Shift₂ (a + n) 1 b (a' + n) 1 b'
+      (by rw [← hn, add_assoc, Nat.cast_add, Nat.cast_one])
+      (by rw [← hn', add_assoc, Nat.cast_add, Nat.cast_one]) (by rw [ha]) rfl]
+    simp only [Functor.comp_obj, NatIso.trans_app, Iso.trans_hom, Iso.app_hom, eqToIso.hom,
+      eqToHom_app, Iso.symm_hom, assoc]
+    congr 2
+    have := α.naturality (eqToHom (by rw [ha]) : (@shiftFunctor C _ _ _ Shift₂ (a' + n)).obj X ⟶
+      (@shiftFunctor C _ _ _ Shift₂ (a + n)).obj X)
+    simp only [Functor.id_obj, Functor.id_map] at this
+    conv_lhs => rw [← assoc, this, eqToHom_map]
+    simp only [assoc, eqToHom_trans_assoc, eqToHom_refl, id_comp]
 
-lemma shiftFunctorAdd_eqToIso (i j i' j' : ℤ) (hi : i = i') (hj : j = j') :
-    (@shiftFunctorAdd C _ _ _ Shift₂ i j) = eqToIso (by rw [hi, hj]) ≪≫
-    (@shiftFunctorAdd C _ _ _ Shift₂ i' j') ≪≫ eqToIso (by rw [hi, hj]) := by
-  conv_lhs => rw [← Iso.symm_symm_eq (@shiftFunctorAdd C _ _ _ Shift₂ i j),
-                shiftFunctorAdd_symm_eqToIso i j i' j' hi hj]
-  ext X
-  simp
-
-lemma shiftFunctorAdd'_symm_eqToIso (i j k i' j' k' : ℤ) (h : i + j = k) (h' : i' + j' = k')
-    (hi : i = i') (hj : j = j') :
-    (@shiftFunctorAdd' C _ _ _ Shift₂ i j k h).symm = eqToIso (by rw [hi, hj]) ≪≫
-    (@shiftFunctorAdd' C _ _ _ Shift₂ i' j' k' h').symm ≪≫ eqToIso (by rw [← h, ← h', hi, hj])
-    := by
-  dsimp [shiftFunctorAdd']
-  rw [shiftFunctorAdd_symm_eqToIso i j i' j' hi hj]
-  ext X
-  simp only [Functor.comp_obj, Iso.trans_assoc, Iso.trans_hom, eqToIso.hom, Iso.symm_hom,
-    eqToIso.inv, eqToHom_trans, NatTrans.comp_app, eqToHom_app]
-
-lemma shiftFunctorAdd'_eqToIso (i j k i' j' k' : ℤ) (h : i + j = k) (h' : i' + j' = k')
-    (hi : i = i') (hj : j = j') :
-    (@shiftFunctorAdd' C _ _ _ Shift₂ i j k h) = eqToIso (by rw [← h, ← h', hi, hj]) ≪≫
-    (@shiftFunctorAdd' C _ _ _ Shift₂ i' j' k' h') ≪≫ eqToIso (by rw [hi, hj]) := by
-  dsimp [shiftFunctorAdd']
-  rw [shiftFunctorAdd_eqToIso i j i' j' hi hj]
-  ext X
-  simp only [Functor.comp_obj, Iso.trans_hom, eqToIso.hom, eqToHom_trans_assoc, NatTrans.comp_app,
-    eqToHom_app, Iso.trans_assoc]
-
-lemma power_of_alpha_plus_one (X : C) (n : ℕ) (a b c : ℤ) (hn : a + n = b) (h : a + (n + 1) = c) :
+lemma power_of_alpha_plus_one' (X : C) (n : ℕ) (a b c : ℤ) (hn : a + n = b) (h : a + (n + 1) = c) :
     power_of_alpha (n + 1) X a c h = power_of_alpha n X a b hn ≫ α.app _ ≫
     ((@shiftFunctorAdd' C _ _ _ Shift₂ b 1 c (by rw [← hn, ← h, add_assoc])).symm.app X).hom := by
   conv_lhs => rw [power_of_alpha]
   change power_of_alpha n X a (a + n) rfl ≫ hP.α.app ((@shiftFunctor C _ _ _ Shift₂ (a + n)).obj X)
-    ≫ ((@shiftFunctorAdd' C _ _ _ Shift₂ (a + n) 1 c (by sorry)).symm.app X).hom  = _
+    ≫ ((@shiftFunctorAdd' C _ _ _ Shift₂ (a + n) 1 c (by rw [← h, add_assoc])).symm.app X).hom  = _
   have heq : power_of_alpha n X a (a + n) rfl = power_of_alpha n X a b hn ≫ eqToHom
-    (by rw [hn]) := sorry
+      (by rw [hn]) := by
+    rw [power_of_alpha_eqToHom n X a (a + n) a b rfl hn rfl hn]
+    simp only [eqToHom_refl, id_comp]
   rw [heq]
   simp only [Functor.comp_obj, Iso.app_hom, Iso.symm_hom, assoc]
   congr 1
@@ -668,7 +642,8 @@ lemma power_of_alpha_plus_one (X : C) (n : ℕ) (a b c : ℤ) (hn : a + n = b) (
   rw [← assoc, this, assoc]
   congr 1
   rw [eqToHom_map]
-  have := shiftFunctorAdd'_symm_eqToIso (C := C) (a + n) 1 c b 1 c sorry sorry sorry sorry
+  have := @shiftFunctorAdd'_symm_eqToIso C _ _ _ Shift₂ (a + n) 1 c b 1 c (by rw [← h, add_assoc])
+    (by rw [← hn, ← h, add_assoc]) hn rfl
   apply_fun (fun T ↦ T.hom.app X) at this
   simp only [Functor.comp_obj, Iso.symm_hom, eqToIso_refl, Iso.trans_refl, Iso.trans_hom,
     eqToIso.hom, NatTrans.comp_app, eqToHom_app] at this
@@ -678,14 +653,17 @@ lemma power_of_alpha_plus_one (X : C) (n : ℕ) (a b c : ℤ) (hn : a + n = b) (
 lemma power_of_alpha_assoc (X : C) (a b c : ℤ) (n m : ℕ) (hn : a + n = b) (hm : b + m = c) :
     power_of_alpha n X a b hn ≫ power_of_alpha m X b c hm =
     power_of_alpha (n + m) X a c (by rw [← hm, ← hn, Nat.cast_add, add_assoc]) := by
+  revert n X a b c
   induction' m with m hind
-  · have heq : c = b := by rw [← hm, Nat.cast_zero, add_zero]
+  · intro X a b c n hn hm
+    have heq : c = b := by rw [← hm, Nat.cast_zero, add_zero]
     rw [power_of_alpha_zero _ _ _ heq.symm]
-    induction' n with n hind'
-    · dsimp [power_of_alpha, shiftFunctorAdd']
-      simp only [eqToHom_app, assoc, eqToHom_trans]
-    · sorry
-  · sorry
+    simp only [add_zero]
+    rw [power_of_alpha_eqToHom n X a c a b (by rw [heq, hn]) hn rfl heq]
+    simp only [eqToHom_refl, id_comp]
+  · intro X a b c n hn hm
+    rw [power_of_alpha_plus_one' X m b (b + m) c rfl hm, ← assoc, hind X a b (b + m) n hn rfl]
+
 
 /-- The morphism "`αⁿ`"" from `X` to `X⟪n⟫`, if `n` is a natural number.-/
 noncomputable def power_of_alpha' (X : C) (n : ℕ) :
