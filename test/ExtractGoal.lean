@@ -1,8 +1,8 @@
 import Mathlib.Tactic.ExtractGoal
-import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Order.Basic
 import Mathlib.Data.Nat.Defs
 
+set_option linter.style.setOption false
 set_option pp.unicode.fun true
 set_option autoImplicit true
 set_option linter.unusedVariables false

@@ -54,6 +54,10 @@ lemma shiftFunctor_comp_inverts (a : A) :
 end IsCompatibleWithShift
 
 variable {A} in
+lemma shift {X Y : C} {f : X ⟶ Y} (hf : W f) (a : A) : W (f⟦a⟧') := by
+  simpa only [IsCompatibleWithShift.iff W f a] using hf
+
+variable {A} in
 /-- The morphism of localizer from `W` to `W` given by the functor `shiftFunctor C a`
 when `a : A` and `W` is compatible with the shift by `A`. -/
 abbrev shiftLocalizerMorphism (a : A) : LocalizerMorphism W W where
@@ -62,6 +66,7 @@ abbrev shiftLocalizerMorphism (a : A) : LocalizerMorphism W W where
 
 end MorphismProperty
 
+section
 variable [W.IsCompatibleWithShift A]
 
 /-- When `L : C ⥤ D` is a localization functor with respect to a morphism property `W`
@@ -85,7 +90,7 @@ noncomputable def Functor.CommShift.localized :
 
 attribute [irreducible] HasShift.localized Functor.CommShift.localized
 
-/-- The localized category `W.Localization` is endowed with the induced shift.  -/
+/-- The localized category `W.Localization` is endowed with the induced shift. -/
 noncomputable instance HasShift.localization :
     HasShift W.Localization A :=
   HasShift.localized W.Q W A
@@ -99,7 +104,7 @@ attribute [irreducible] HasShift.localization MorphismProperty.commShift_Q
 
 variable [W.HasLocalization]
 
-/-- The localized category `W.Localization'` is endowed with the induced shift.  -/
+/-- The localized category `W.Localization'` is endowed with the induced shift. -/
 noncomputable instance HasShift.localization' :
     HasShift W.Localization' A :=
   HasShift.localized W.Q' W A
@@ -110,6 +115,8 @@ noncomputable instance MorphismProperty.commShift_Q' :
   Functor.CommShift.localized W.Q' W A
 
 attribute [irreducible] HasShift.localization' MorphismProperty.commShift_Q'
+
+end
 
 section
 
@@ -158,7 +165,7 @@ end commShiftOfLocalization
 
 /-- In the context of localization of categories, if a functor
 is induced by a functor which commutes with the shift, then
-this functor commutes with the shift.  -/
+this functor commutes with the shift. -/
 noncomputable def commShiftOfLocalization : F'.CommShift A where
   iso := commShiftOfLocalization.iso L W F F'
   zero := by

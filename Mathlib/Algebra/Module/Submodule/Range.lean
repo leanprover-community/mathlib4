@@ -310,11 +310,11 @@ theorem map_subtype_embedding_eq (p' : Submodule R p) :
   rfl
 
 /-- If `N ⊆ M` then submodules of `N` are the same as submodules of `M` contained in `N`. -/
-def mapIic [Semiring R] [AddCommMonoid M] [Module R M] (p : Submodule R M) :
+def mapIic (p : Submodule R M) :
     Submodule R p ≃o Set.Iic p :=
   Submodule.MapSubtype.relIso p
 
-@[simp] lemma coe_mapIic_apply [Semiring R] [AddCommMonoid M] [Module R M]
+@[simp] lemma coe_mapIic_apply
     (p : Submodule R M) (q : Submodule R p) :
     (p.mapIic q : Submodule R M) = q.map p.subtype :=
   rfl

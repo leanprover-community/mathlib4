@@ -20,11 +20,12 @@ of topological (semi)rings.
 ## Main Results
 
 - `Subring.topologicalClosure`/`Subsemiring.topologicalClosure`: the topological closure of a
-  `Subring`/`Subsemiring` is itself a `sub(semi)ring`.
+  `Subring`/`Subsemiring` is itself a `Sub(semi)ring`.
 - The product of two topological (semi)rings is a topological (semi)ring.
 - The indexed product of topological (semi)rings is a topological (semi)ring.
 -/
 
+assert_not_exists Cardinal
 
 open Set Filter TopologicalSpace Function Topology Filter
 
@@ -39,7 +40,7 @@ The `TopologicalSemiring` class should *only* be instantiated in the presence of
 `NonUnitalNonAssocSemiring` instance; if there is an instance of `NonUnitalNonAssocRing`,
 then `TopologicalRing` should be used. Note: in the presence of `NonAssocRing`, these classes are
 mathematically equivalent (see `TopologicalSemiring.continuousNeg_of_mul` or
-`TopologicalSemiring.toTopologicalRing`).  -/
+`TopologicalSemiring.toTopologicalRing`). -/
 class TopologicalSemiring [TopologicalSpace α] [NonUnitalNonAssocSemiring α] extends
   ContinuousAdd α, ContinuousMul α : Prop
 

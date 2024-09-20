@@ -147,6 +147,7 @@ def hasShiftMk (h : ShiftMkCore C A) : HasShift C A :=
 
 end
 
+section
 variable [HasShift C A]
 
 /-- The monoidal functor from `A` to `C ⥤ C` given a `HasShift` instance. -/
@@ -173,16 +174,16 @@ lemma shiftFunctorAdd'_eq_shiftFunctorAdd (i j : A) :
   ext1
   apply Category.id_comp
 
-variable (A)
-
+variable (A) in
 /-- Shifting by zero is the identity functor. -/
 def shiftFunctorZero : shiftFunctor C (0 : A) ≅ 𝟭 C :=
   (shiftMonoidalFunctor C A).εIso.symm
 
-variable {A} in
 /-- Shifting by `a` such that `a = 0` identifies to the identity functor. -/
 def shiftFunctorZero' (a : A) (ha : a = 0) : shiftFunctor C a ≅ 𝟭 C :=
   eqToIso (by rw [ha]) ≪≫ shiftFunctorZero C A
+
+end
 
 variable {C A}
 
@@ -220,6 +221,7 @@ set_option quotPrecheck false in
 notation f "⟦" n "⟧'" => (shiftFunctor _ n).map f
 
 variable (C)
+variable [HasShift C A]
 
 lemma shiftFunctorAdd'_zero_add (a : A) :
     shiftFunctorAdd' C 0 a a (zero_add a) = (Functor.leftUnitor _).symm ≪≫
@@ -407,7 +409,7 @@ def shiftEquiv' (i j : A) (h : i + j = 0) : C ≌ C where
       rfl
 
 /-- Shifting by `n` and shifting by `-n` forms an equivalence. -/
-abbrev shiftEquiv (n : A) : C ≌ C := shiftEquiv' C n (-n) (add_neg_self n)
+abbrev shiftEquiv (n : A) : C ≌ C := shiftEquiv' C n (-n) (add_neg_cancel n)
 
 variable (X Y : C) (f : X ⟶ Y)
 
@@ -429,14 +431,14 @@ abbrev shiftNegShift (i : A) : X⟦-i⟧⟦i⟧ ≅ X :=
 variable {X Y}
 
 theorem shift_shift_neg' (i : A) :
-    f⟦i⟧'⟦-i⟧' = (shiftFunctorCompIsoId C i (-i) (add_neg_self i)).hom.app X ≫
-      f ≫ (shiftFunctorCompIsoId C i (-i) (add_neg_self i)).inv.app Y :=
-  (NatIso.naturality_2 (shiftFunctorCompIsoId C i (-i) (add_neg_self i)) f).symm
+    f⟦i⟧'⟦-i⟧' = (shiftFunctorCompIsoId C i (-i) (add_neg_cancel i)).hom.app X ≫
+      f ≫ (shiftFunctorCompIsoId C i (-i) (add_neg_cancel i)).inv.app Y :=
+  (NatIso.naturality_2 (shiftFunctorCompIsoId C i (-i) (add_neg_cancel i)) f).symm
 
 theorem shift_neg_shift' (i : A) :
-    f⟦-i⟧'⟦i⟧' = (shiftFunctorCompIsoId C (-i) i (neg_add_self i)).hom.app X ≫ f ≫
-      (shiftFunctorCompIsoId C (-i) i (neg_add_self i)).inv.app Y :=
-  (NatIso.naturality_2 (shiftFunctorCompIsoId C (-i) i (neg_add_self i)) f).symm
+    f⟦-i⟧'⟦i⟧' = (shiftFunctorCompIsoId C (-i) i (neg_add_cancel i)).hom.app X ≫ f ≫
+      (shiftFunctorCompIsoId C (-i) i (neg_add_cancel i)).inv.app Y :=
+  (NatIso.naturality_2 (shiftFunctorCompIsoId C (-i) i (neg_add_cancel i)) f).symm
 
 theorem shift_equiv_triangle (n : A) (X : C) :
     (shiftShiftNeg X n).inv⟦n⟧' ≫ (shiftNegShift (X⟦n⟧) n).hom = 𝟙 (X⟦n⟧) :=
@@ -447,40 +449,40 @@ section
 theorem shift_shiftFunctorCompIsoId_hom_app (n m : A) (h : n + m = 0) (X : C) :
     ((shiftFunctorCompIsoId C n m h).hom.app X)⟦n⟧' =
     (shiftFunctorCompIsoId C m n
-      (by rw [← neg_eq_of_add_eq_zero_left h, add_right_neg])).hom.app (X⟦n⟧) := by
+      (by rw [← neg_eq_of_add_eq_zero_left h, add_neg_cancel])).hom.app (X⟦n⟧) := by
   dsimp [shiftFunctorCompIsoId]
   simpa only [Functor.map_comp, ← shiftFunctorAdd'_zero_add_inv_app n X,
     ← shiftFunctorAdd'_add_zero_inv_app n X]
     using shiftFunctorAdd'_assoc_inv_app n m n 0 0 n h
-      (by rw [← neg_eq_of_add_eq_zero_left h, add_right_neg]) (by rw [h, zero_add]) X
+      (by rw [← neg_eq_of_add_eq_zero_left h, add_neg_cancel]) (by rw [h, zero_add]) X
 
 theorem shift_shiftFunctorCompIsoId_inv_app (n m : A) (h : n + m = 0) (X : C) :
     ((shiftFunctorCompIsoId C n m h).inv.app X)⟦n⟧' =
     ((shiftFunctorCompIsoId C m n
-      (by rw [← neg_eq_of_add_eq_zero_left h, add_right_neg])).inv.app (X⟦n⟧)) := by
+      (by rw [← neg_eq_of_add_eq_zero_left h, add_neg_cancel])).inv.app (X⟦n⟧)) := by
   rw [← cancel_mono (((shiftFunctorCompIsoId C n m h).hom.app X)⟦n⟧'),
     ← Functor.map_comp, Iso.inv_hom_id_app, Functor.map_id,
     shift_shiftFunctorCompIsoId_hom_app, Iso.inv_hom_id_app]
   rfl
 
-theorem shift_shiftFunctorCompIsoId_add_neg_self_hom_app (n : A) (X : C) :
-    ((shiftFunctorCompIsoId C n (-n) (add_neg_self n)).hom.app X)⟦n⟧' =
-    (shiftFunctorCompIsoId C (-n) n (neg_add_self n)).hom.app (X⟦n⟧) := by
+theorem shift_shiftFunctorCompIsoId_add_neg_cancel_hom_app (n : A) (X : C) :
+    ((shiftFunctorCompIsoId C n (-n) (add_neg_cancel n)).hom.app X)⟦n⟧' =
+    (shiftFunctorCompIsoId C (-n) n (neg_add_cancel n)).hom.app (X⟦n⟧) := by
   apply shift_shiftFunctorCompIsoId_hom_app
 
-theorem shift_shiftFunctorCompIsoId_add_neg_self_inv_app (n : A) (X : C) :
-    ((shiftFunctorCompIsoId C n (-n) (add_neg_self n)).inv.app X)⟦n⟧' =
-    (shiftFunctorCompIsoId C (-n) n (neg_add_self n)).inv.app (X⟦n⟧) := by
+theorem shift_shiftFunctorCompIsoId_add_neg_cancel_inv_app (n : A) (X : C) :
+    ((shiftFunctorCompIsoId C n (-n) (add_neg_cancel n)).inv.app X)⟦n⟧' =
+    (shiftFunctorCompIsoId C (-n) n (neg_add_cancel n)).inv.app (X⟦n⟧) := by
   apply shift_shiftFunctorCompIsoId_inv_app
 
-theorem shift_shiftFunctorCompIsoId_neg_add_self_hom_app (n : A) (X : C) :
-    ((shiftFunctorCompIsoId C (-n) n (neg_add_self n)).hom.app X)⟦-n⟧' =
-    (shiftFunctorCompIsoId C n (-n) (add_neg_self n)).hom.app (X⟦-n⟧) := by
+theorem shift_shiftFunctorCompIsoId_neg_add_cancel_hom_app (n : A) (X : C) :
+    ((shiftFunctorCompIsoId C (-n) n (neg_add_cancel n)).hom.app X)⟦-n⟧' =
+    (shiftFunctorCompIsoId C n (-n) (add_neg_cancel n)).hom.app (X⟦-n⟧) := by
   apply shift_shiftFunctorCompIsoId_hom_app
 
-theorem shift_shiftFunctorCompIsoId_neg_add_self_inv_app (n : A) (X : C) :
-    ((shiftFunctorCompIsoId C (-n) n (neg_add_self n)).inv.app X)⟦-n⟧' =
-    (shiftFunctorCompIsoId C n (-n) (add_neg_self n)).inv.app (X⟦-n⟧) := by
+theorem shift_shiftFunctorCompIsoId_neg_add_cancel_inv_app (n : A) (X : C) :
+    ((shiftFunctorCompIsoId C (-n) n (neg_add_cancel n)).inv.app X)⟦-n⟧' =
+    (shiftFunctorCompIsoId C n (-n) (add_neg_cancel n)).inv.app (X⟦-n⟧) := by
   apply shift_shiftFunctorCompIsoId_inv_app
 
 end

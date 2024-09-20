@@ -69,9 +69,6 @@ theorem coe_injective : @Function.Injective (P →ᴬ[R] Q) (P → Q) (⇑) :=
 theorem ext {f g : P →ᴬ[R] Q} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
 
-theorem ext_iff {f g : P →ᴬ[R] Q} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
-
 theorem congr_fun {f g : P →ᴬ[R] Q} (h : f = g) (x : P) : f x = g x :=
   DFunLike.congr_fun h _
 

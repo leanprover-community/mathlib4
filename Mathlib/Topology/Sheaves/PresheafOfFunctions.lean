@@ -154,7 +154,7 @@ values in some topological commutative ring `T`.
 
 For example, we could construct the presheaf of continuous complex valued functions of `X` as
 ```
-presheafToTopCommRing X (TopCommRing.of ℂ)
+presheafToTopCommRing X (TopCommRingCat.of ℂ)
 ```
 (this requires `import Topology.Instances.Complex`).
 -/

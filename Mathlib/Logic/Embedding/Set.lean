@@ -90,7 +90,7 @@ variable {α : Type*}
 subtypes `{x // p x} ⊕ {x // q x}` such that `¬ p x` is sent to the right, when
 `Disjoint p q`.
 
-See also `Equiv.sumCompl`, for when `IsCompl p q`.  -/
+See also `Equiv.sumCompl`, for when `IsCompl p q`. -/
 @[simps apply]
 def subtypeOrEquiv (p q : α → Prop) [DecidablePred p] (h : Disjoint p q) :
     { x // p x ∨ q x } ≃ { x // p x } ⊕ { x // q x } where

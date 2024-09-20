@@ -69,6 +69,7 @@ alias lpMeas.ae_eq_zero_of_forall_set_integral_eq_zero :=
 
 variable (𝕜)
 
+include 𝕜 in
 theorem Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' (hm : m ≤ m0) (f : Lp E' p μ)
     (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     (hf_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn f s μ)
@@ -92,6 +93,7 @@ theorem Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' (hm : m ≤ m0) (f : Lp E' 
 alias Lp.ae_eq_zero_of_forall_set_integral_eq_zero' :=
   Lp.ae_eq_zero_of_forall_setIntegral_eq_zero'
 
+include 𝕜 in
 /-- **Uniqueness of the conditional expectation** -/
 theorem Lp.ae_eq_of_forall_setIntegral_eq' (hm : m ≤ m0) (f g : Lp E' p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) (hf_int_finite : ∀ s, MeasurableSet[m] s → μ s < ∞ → IntegrableOn f s μ)
