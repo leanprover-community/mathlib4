@@ -24,11 +24,6 @@ disconnected.
 * `ofFiniteGrp` : A `FiniteGrp` when given the discrete topology can be considered as a
   profinite group.
 
-* `ofContinuousMulEquivProfiniteGrp` : If a topological group has a two-sided continuous
-  isomorphism to a profinite group then it is profinite as well.
-
-* `ofClosedSubgroup` : A closed subgroup of a profinite group is profinite.
-
 -/
 
 universe u
