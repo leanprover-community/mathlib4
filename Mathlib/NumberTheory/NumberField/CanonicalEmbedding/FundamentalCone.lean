@@ -27,11 +27,11 @@ domain for the action of `(𝓞 K)ˣ` modulo torsion, see `exists_unit_smul_mem`
 fundamental cone that are images of algebraic integers of `K`.
 
 * `NumberField.mixedEmbedding.fundamentalCone.integralPointEquiv`: the equivalence between
-`fundamentalCone.integralPoint K` and the principal non-zero ideals of `𝓞 K` times the
+`fundamentalCone.integralPoint K` and the principal nonzero ideals of `𝓞 K` times the
 torsion of `K`.
 
 * `NumberField.mixedEmbedding.fundamentalCone.card_isPrincipal_norm_eq`: the number of principal
-non-zero ideals in `𝓞 K` of norm `n` multiplied by the order of the torsion of `K` is
+nonzero ideals in `𝓞 K` of norm `n` multiplied by the order of the torsion of `K` is
 equal to the number of `fundamentalCone.integralPoint K` of norm `n`.
 
 ## Tags
@@ -265,21 +265,21 @@ theorem exists_unique_preimage_of_integralPoint {a : mixedSpace K} (ha : a ∈ i
   refine Function.Injective.exists_unique_of_mem_range ?_ (Set.mem_range_self x)
   exact (mixedEmbedding_injective K).comp RingOfIntegers.coe_injective
 
-theorem integralPoint_ne_zero (a : integralPoint K) :
-    (a : mixedSpace K) ≠ 0 := by
+theorem integralPoint_ne_zero (a : integralPoint K) :  (a : mixedSpace K) ≠ 0 := by
   by_contra!
   exact a.prop.1.2 (this.symm ▸ mixedEmbedding.norm.map_zero')
 
 open scoped nonZeroDivisors
 
-/-- For `a : fundamentalCone K`, the unique non-zero algebraic integer `x` which image by
+/-- For `a : fundamentalCone K`, the unique nonzero algebraic integer `x` which image by
 `mixedEmbedding` is equal to `a`. Note that we state the fact that `x ≠ 0` by saying that `x` is
 a nonzero divisors since we will use later on the isomorphism
 `Ideal.associatesNonZeroDivisorsEquivIsPrincipal`, see `integralPointEquiv`. -/
-def preimageOfIntegralPoint (a : integralPoint K) : (𝓞 K)⁰ := by
-  refine ⟨(mem_integralPoint.mp a.prop).2.choose, mem_nonZeroDivisors_of_ne_zero ?_⟩
+def preimageOfIntegralPoint (a : integralPoint K) : (𝓞 K)⁰ :=
+  ⟨(mem_integralPoint.mp a.prop).2.choose, mem_nonZeroDivisors_of_ne_zero (by
   simp_rw [ne_eq, ← RingOfIntegers.coe_injective.eq_iff, ← (mixedEmbedding_injective K).eq_iff,
-    map_zero, (mem_integralPoint.mp a.prop).2.choose_spec, integralPoint_ne_zero, not_false_eq_true]
+    map_zero, (mem_integralPoint.mp a.prop).2.choose_spec, integralPoint_ne_zero,
+    not_false_eq_true])⟩
 
 @[simp]
 theorem mixedEmbedding_preimageOfIntegralPoint (a : integralPoint K) :
@@ -300,13 +300,12 @@ theorem exists_unitSMul_mem_integralPoint {x : mixedSpace K} (hx : x ≠ 0)
   replace hx : mixedEmbedding.norm x ≠ 0 :=
       (norm_eq_zero_iff' (Set.mem_range_of_mem_image (mixedEmbedding K) _ hx')).not.mpr hx
   obtain ⟨u, hu⟩ := exists_unit_smul_mem hx
-  obtain ⟨_, ⟨⟨x, rfl⟩, ⟨_, rfl⟩⟩⟩ := hx'
-  exact ⟨u, mem_integralPoint.mpr ⟨hu, ⟨u * x, by simp_rw [unitSMul_smul, ← map_mul]⟩⟩⟩
+  obtain ⟨_, ⟨x, rfl⟩, _, rfl⟩ := hx'
+  exact ⟨u, mem_integralPoint.mpr ⟨hu, u * x, by simp_rw [unitSMul_smul, ← map_mul]⟩⟩
 
 /-- The set `integralPoint K` is stable under the action of the torsion. -/
 theorem torsion_unitSMul_mem_integralPoint {x : mixedSpace K} {ζ : (𝓞 K)ˣ} (hζ : ζ ∈ torsion K)
-    (hx : x ∈ integralPoint K) :
-    ζ • x ∈ integralPoint K := by
+    (hx : x ∈ integralPoint K) : ζ • x ∈ integralPoint K := by
   obtain ⟨a, ⟨_, rfl⟩, rfl⟩ := (mem_integralPoint.mp hx).2
   refine mem_integralPoint.mpr ⟨torsion_smul_mem_of_mem hx.1 hζ, ⟨ζ * a, by simp⟩⟩
 
@@ -322,7 +321,8 @@ instance : MulAction (torsion K) (integralPoint K) where
     rw [Subtype.mk_eq_mk]
     simp_rw [integralPoint_torsionSMul_smul_coe, Subgroup.coe_mul, mul_smul]
 
-/-- The `mixedEmbedding.norm` of `a : integralPoint K` as a natural integer, see `intNorm_coe` . -/
+/-- The `mixedEmbedding.norm` of `a : integralPoint K` as a natural number, see also
+`intNorm_coe`. -/
 def intNorm (a : integralPoint K) : ℕ := (Algebra.norm ℤ (preimageOfIntegralPoint a : 𝓞 K)).natAbs
 
 @[simp]

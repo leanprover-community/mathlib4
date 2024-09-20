@@ -110,7 +110,7 @@ lemma prod_sum (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → �
     ∏ a ∈ s, ∑ b ∈ t a, f a b = ∑ p ∈ s.pi t, ∏ x ∈ s.attach, f x.1 (p x.1 x.2) := by
   classical
   induction s using Finset.induction with
-  | empty => rw [pi_empty, sum_singleton]; rfl
+  | empty => simp
   | insert ha ih =>
     rename_i a s
     have h₁ : ∀ x ∈ t a, ∀ y ∈ t a, x ≠ y →
