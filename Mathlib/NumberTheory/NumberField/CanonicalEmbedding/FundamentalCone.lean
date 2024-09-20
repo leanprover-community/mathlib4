@@ -30,8 +30,8 @@ fundamental cone that are images of algebraic integers of `K`.
 `fundamentalCone.integralPoint K` and the principal nonzero ideals of `𝓞 K` times the
 torsion of `K`.
 
-* `NumberField.mixedEmbedding.fundamentalCone.card_isPrincipal_norm_eq`: the number of principal
-nonzero ideals in `𝓞 K` of norm `n` multiplied by the order of the torsion of `K` is
+* `NumberField.mixedEmbedding.fundamentalCone.card_isPrincipal_norm_eq_mul_torsion`: the number of
+principal nonzero ideals in `𝓞 K` of norm `n` multiplied by the order of the torsion of `K` is
 equal to the number of `fundamentalCone.integralPoint K` of norm `n`.
 
 ## Tags
@@ -358,8 +358,7 @@ theorem integralPointToAssociates_surjective :
   rintro ⟨x⟩
   obtain ⟨u, hu⟩ : ∃ u : (𝓞 K)ˣ, u • mixedEmbedding K (x : 𝓞 K) ∈ integralPoint K := by
     refine exists_unitSMul_mem_integralPoint ?_ ⟨(x : 𝓞 K), Set.mem_range_self _, rfl⟩
-    rw [map_ne_zero, RingOfIntegers.coe_ne_zero_iff]
-    exact nonZeroDivisors.coe_ne_zero _
+    exact (map_ne_zero _).mpr <| RingOfIntegers.coe_ne_zero_iff.mpr (nonZeroDivisors.coe_ne_zero _)
   refine ⟨⟨u • mixedEmbedding K (x : 𝓞 K), hu⟩,
     Quotient.sound ⟨unitsNonZeroDivisorsEquiv.symm u⁻¹, ?_⟩⟩
   simp_rw [Subtype.ext_iff, RingOfIntegers.ext_iff, ← (mixedEmbedding_injective K).eq_iff,
@@ -379,7 +378,7 @@ theorem integralPointToAssociates_eq_iff (a b : integralPoint K) :
   exact (unit_smul_mem_iff_mem_torsion a.prop.1 _).mp (by simpa [h] using b.prop.1)
 
 variable (K) in
-/-- The equivalence between `integralPoint K / torsion K` and `Associates (𝓞 K)⁰`. -/
+/-- The equivalence between `integralPoint K` modulo `torsion K` and `Associates (𝓞 K)⁰`. -/
 def integralPointQuotEquivAssociates :
     Quotient (MulAction.orbitRel (torsion K) (integralPoint K)) ≃ Associates (𝓞 K)⁰ :=
   Equiv.ofBijective
@@ -389,8 +388,8 @@ def integralPointQuotEquivAssociates :
         all_goals
         · ext a b
           rw [Setoid.ker_def, eq_comm, integralPointToAssociates_eq_iff b a,
-    MulAction.orbitRel_apply, MulAction.mem_orbit_iff],
-      (Quot.surjective_lift _).mpr (integralPointToAssociates_surjective K)⟩
+            MulAction.orbitRel_apply, MulAction.mem_orbit_iff],
+        (Quot.surjective_lift _).mpr (integralPointToAssociates_surjective K)⟩
 
 @[simp]
 theorem integralPointQuotEquivAssociates_apply (a : integralPoint K) :
@@ -459,7 +458,7 @@ variable (K)
 
 /-- For `n` positive, the number of principal ideals in `𝓞 K` of norm `n` multiplied by the order
 of the torsion of `K` is equal to the number of `integralPoint K` of norm `n`. -/
-theorem card_isPrincipal_norm_eq (n : ℕ) :
+theorem card_isPrincipal_norm_eq_mul_torsion (n : ℕ) :
     Nat.card {I : (Ideal (𝓞 K))⁰ | IsPrincipal (I : Ideal (𝓞 K)) ∧
       absNorm (I : Ideal (𝓞 K)) = n} * torsionOrder K =
         Nat.card {a : integralPoint K | intNorm a = n} := by
@@ -468,7 +467,7 @@ theorem card_isPrincipal_norm_eq (n : ℕ) :
 
 /-- For `s : ℝ`, the number of principal nonzero ideals in `𝓞 K` of norm `≤ s` multiplied by the
 order of the torsion of `K` is equal to the number of `integralPoint K` of norm `≤ s`. -/
-theorem card_isPrincipal_norm_le (s : ℝ) :
+theorem card_isPrincipal_norm_le_mul_torsion (s : ℝ) :
     Nat.card {I : (Ideal (𝓞 K))⁰ | IsPrincipal (I : Ideal (𝓞 K)) ∧
       absNorm (I : Ideal (𝓞 K)) ≤ s} * torsionOrder K =
         Nat.card {a : integralPoint K | intNorm a ≤ s} := by
@@ -483,11 +482,13 @@ theorem card_isPrincipal_norm_le (s : ℝ) :
     _ ≃ {I : {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1 ∧ absNorm I.1 ≤ _} // absNorm I.1.1 = i}
           × torsion K := Equiv.prodSubtypeFstEquivSubtypeProd
     _ ≃ {I : (Ideal (𝓞 K))⁰ // (IsPrincipal I.1 ∧ absNorm I.1 ≤ _) ∧ absNorm I.1 = i}
-          × torsion K := Equiv.prodCongrLeft fun _ ↦ (Equiv.subtypeSubtypeEquivSubtypeInter
-      (p := fun I : (Ideal (𝓞 K))⁰ ↦ IsPrincipal I.1 ∧ absNorm I.1 ≤ _)
-      (q := fun I ↦ absNorm I.1 = i))
+          × torsion K :=
+      Equiv.prodCongrLeft fun _ ↦ (Equiv.subtypeSubtypeEquivSubtypeInter
+        (p := fun I : (Ideal (𝓞 K))⁰ ↦ IsPrincipal I.1 ∧ absNorm I.1 ≤ _)
+        (q := fun I ↦ absNorm I.1 = i))
     _ ≃ {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1 ∧ absNorm I.1 = i ∧ absNorm I.1 ≤ _}
-          × torsion K := Equiv.prodCongrLeft fun _ ↦ (Equiv.subtypeEquivRight fun _ ↦ by aesop)
+          × torsion K :=
+      Equiv.prodCongrLeft fun _ ↦ (Equiv.subtypeEquivRight fun _ ↦ by aesop)
     _ ≃ {I : (Ideal (𝓞 K))⁰ // IsPrincipal I.1 ∧ absNorm I.1 = i} × torsion K :=
       Equiv.prodCongrLeft fun _ ↦ (Equiv.subtypeEquivRight fun _ ↦ by
       rw [and_iff_left_of_imp (a := absNorm _ = _) fun h ↦ Finset.mem_Iic.mp (h ▸ hi)])
