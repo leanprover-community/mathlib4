@@ -87,6 +87,7 @@ values in `F`. This is the space in which the `n`-th derivative of a function fr
 
 In this file, we denote `(⊤ : ℕ∞) : WithTop ℕ∞` with `∞`, and `⊤ : WithTop ℕ∞` with `ω`. To
 avoid ambiguities with the two tops, the theorems name use either `infty` or `omega`.
+These notations are scoped in `ContDiff`.
 
 ## Tags
 
@@ -106,8 +107,22 @@ attribute [local instance 1001]
 
 open Set Fin Filter Function
 
-local notation "ω" => (⊤ : WithTop (ℕ∞))
-local notation "∞" => ((⊤ : ℕ∞) : WithTop (ℕ∞))
+scoped [ContDiff] notation3 "ω" => (⊤ : WithTop (ℕ∞))
+scoped [ContDiff] notation3 "∞" => ((⊤ : ℕ∞) : WithTop (ℕ∞))
+
+open ContDiff
+
+
+@[simp] lemma ENat.succ_eq_coe_top_iff (n : WithTop ℕ∞) :
+    n + 1 = ∞ ↔ n = ∞ := by
+  match n with
+  | ω => exact Iff.rfl
+  | ∞ => exact Iff.rfl
+  | (n : ℕ) => norm_cast; simp only [coe_ne_top, iff_false, ne_eq]
+
+@[simp] lemma ENat.coe_top_add_one : ∞ + 1 = ∞ := rfl
+
+@[simp] lemma ENat.nat_ne_coe_top (n : ℕ) : (n : WithTop ℕ∞) ≠ ∞ := ne_of_beq_false rfl
 
 universe u uE uF uG uX
 
@@ -316,12 +331,6 @@ theorem ContDiffWithinAt.differentiableWithinAt (h : ContDiffWithinAt 𝕜 n f s
     DifferentiableWithinAt 𝕜 f s x :=
   (h.differentiable_within_at' hn).mono (subset_insert x s)
 
-@[simp] lemma ENat.succ_eq_coe_top_iff (n : WithTop ℕ∞) :
-    n + 1 = ∞ ↔ n = ∞ := by
-  match n with
-  | ω => exact Iff.rfl
-  | ∞ => exact Iff.rfl
-  | (n : ℕ) => norm_cast; simp only [coe_ne_top, iff_false, ne_eq]
 
 /-- A function is `C^(n + 1)` on a domain iff locally, it has a derivative which is `C^n`
 (and moreover the function is analytic when `n = ω`). -/
@@ -719,10 +728,6 @@ theorem contDiffOn_iff_continuousOn_differentiableOn {n : ℕ∞} (hs : UniqueDi
       fun _m hm => h.differentiableOn_iteratedFDerivWithin (by exact_mod_cast hm) hs⟩,
     fun h => contDiffOn_of_continuousOn_differentiableOn h.1 h.2⟩
 
-@[simp] lemma ENat.coe_top_add_one : ∞ + 1 = ∞ := rfl
-
-@[simp] lemma ENat.nat_ne_coe_top (n : ℕ) : (n : WithTop ℕ∞) ≠ ∞ := ne_of_beq_false rfl
-
 theorem contDiffOn_succ_of_fderivWithin (hf : DifferentiableOn 𝕜 f s)
     (h' : n = ω → AnalyticWithinOn 𝕜 f s)
     (h : ContDiffOn 𝕜 n (fun y => fderivWithin 𝕜 f s y) s) : ContDiffOn 𝕜 (n + 1) f s := by
@@ -856,20 +861,21 @@ nonrec lemma ContDiffAt.contDiffOn (h : ContDiffAt 𝕜 n f x) (hm : m ≤ n) (h
   simpa [nhdsWithin_univ] using h.contDiffOn hm h'
 
 /-- A function is `C^(n + 1)` at a point iff locally, it has a derivative which is `C^n`. -/
-theorem contDiffAt_succ_iff_hasFDerivAt {n : ℕ} :
-    ContDiffAt 𝕜 (n + 1 : ℕ) f x ↔
+theorem contDiffAt_succ_iff_hasFDerivAt :
+    ContDiffAt 𝕜 (n + 1) f x ↔ (n = ω → AnalyticAt 𝕜 f x) ∧
       ∃ f' : E → E →L[𝕜] F, (∃ u ∈ 𝓝 x, ∀ x ∈ u, HasFDerivAt f (f' x) x) ∧ ContDiffAt 𝕜 n f' x := by
-  rw [← contDiffWithinAt_univ, contDiffWithinAt_succ_iff_hasFDerivWithinAt]
+  rw [← contDiffWithinAt_univ, contDiffWithinAt_succ_iff_hasFDerivWithinAt, ← analyticWithinAt_univ]
   simp only [nhdsWithin_univ, exists_prop, mem_univ, insert_eq_of_mem]
   constructor
-  · rintro ⟨u, H, f', h_fderiv, h_cont_diff⟩
+  · rintro ⟨u, H, f_an, f', h_fderiv, h_cont_diff⟩
     rcases mem_nhds_iff.mp H with ⟨t, htu, ht, hxt⟩
-    refine ⟨f', ⟨t, ?_⟩, h_cont_diff.contDiffAt H⟩
+    refine ⟨fun h ↦ (f_an h x (mem_of_mem_nhds H)).mono_of_mem (mem_nhdsWithin_of_mem_nhds H),
+      f', ⟨t, ?_⟩, h_cont_diff.contDiffAt H⟩
     refine ⟨mem_nhds_iff.mpr ⟨t, Subset.rfl, ht, hxt⟩, ?_⟩
     intro y hyt
     refine (h_fderiv y (htu hyt)).hasFDerivAt ?_
     exact mem_nhds_iff.mpr ⟨t, htu, ht, hyt⟩
-  · rintro ⟨f', ⟨u, H, h_fderiv⟩, h_cont_diff⟩
+  · rintro ⟨h, f', ⟨u, H, h_fderiv⟩, h_cont_diff⟩
     refine ⟨u, H, f', ?_, h_cont_diff.contDiffWithinAt⟩
     intro x hxu
     exact (h_fderiv x hxu).hasFDerivWithinAt
