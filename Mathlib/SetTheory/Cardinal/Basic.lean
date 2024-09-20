@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Set.Countable
 import Mathlib.Logic.Small.Set
+import Mathlib.Order.InitialSeg
 import Mathlib.Order.SuccPred.CompleteLinearOrder
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
 import Mathlib.Algebra.Order.Ring.Nat
@@ -79,7 +80,8 @@ Cantor's theorem, König's theorem, Konig's theorem
 assert_not_exists Field
 
 open Mathlib (Vector)
-open Function Set Order
+open Function Order Set
+open scoped InitialSeg
 
 noncomputable section
 
@@ -168,6 +170,59 @@ def map₂ (f : Type u → Type v → Type w) (hf : ∀ α β γ δ, α ≃ β �
     Cardinal.{u} → Cardinal.{v} → Cardinal.{w} :=
   Quotient.map₂ f fun α β ⟨e₁⟩ γ δ ⟨e₂⟩ => ⟨hf α β γ δ e₁ e₂⟩
 
+/-- We define the order on cardinal numbers by `#α ≤ #β` if and only if
+  there exists an embedding (injective function) from α to β. -/
+instance : LE Cardinal.{u} :=
+  ⟨fun q₁ q₂ =>
+    Quotient.liftOn₂ q₁ q₂ (fun α β => Nonempty <| α ↪ β) fun _ _ _ _ ⟨e₁⟩ ⟨e₂⟩ =>
+      propext ⟨fun ⟨e⟩ => ⟨e.congr e₁ e₂⟩, fun ⟨e⟩ => ⟨e.congr e₁.symm e₂.symm⟩⟩⟩
+
+instance partialOrder : PartialOrder Cardinal.{u} where
+  le := (· ≤ ·)
+  le_refl := by
+    rintro ⟨α⟩
+    exact ⟨Embedding.refl _⟩
+  le_trans := by
+    rintro ⟨α⟩ ⟨β⟩ ⟨γ⟩ ⟨e₁⟩ ⟨e₂⟩
+    exact ⟨e₁.trans e₂⟩
+  le_antisymm := by
+    rintro ⟨α⟩ ⟨β⟩ ⟨e₁⟩ ⟨e₂⟩
+    exact Quotient.sound (e₁.antisymm e₂)
+
+instance linearOrder : LinearOrder Cardinal.{u} :=
+  { Cardinal.partialOrder with
+    le_total := by
+      rintro ⟨α⟩ ⟨β⟩
+      apply Embedding.total
+    decidableLE := Classical.decRel _ }
+
+theorem le_def (α β : Type u) : #α ≤ #β ↔ Nonempty (α ↪ β) :=
+  Iff.rfl
+
+theorem mk_le_of_injective {α β : Type u} {f : α → β} (hf : Injective f) : #α ≤ #β :=
+  ⟨⟨f, hf⟩⟩
+
+theorem _root_.Function.Embedding.cardinal_le {α β : Type u} (f : α ↪ β) : #α ≤ #β :=
+  ⟨f⟩
+
+theorem out_embedding {c c' : Cardinal} : c ≤ c' ↔ Nonempty (c.out ↪ c'.out) := by
+  trans
+  · rw [← Quotient.out_eq c, ← Quotient.out_eq c']
+  · rw [mk'_def, mk'_def, le_def]
+
+theorem mk_le_of_surjective {α β : Type u} {f : α → β} (hf : Surjective f) : #β ≤ #α :=
+  ⟨Embedding.ofSurjective f hf⟩
+
+theorem le_mk_iff_exists_set {c : Cardinal} {α : Type u} : c ≤ #α ↔ ∃ p : Set α, #p = c :=
+  ⟨inductionOn c fun _ ⟨⟨f, hf⟩⟩ => ⟨Set.range f, (Equiv.ofInjective f hf).cardinal_eq.symm⟩,
+    fun ⟨_, e⟩ => e ▸ ⟨⟨Subtype.val, fun _ _ => Subtype.eq⟩⟩⟩
+
+theorem mk_subtype_le {α : Type u} (p : α → Prop) : #(Subtype p) ≤ #α :=
+  ⟨Embedding.subtype p⟩
+
+theorem mk_set_le (s : Set α) : #s ≤ #α :=
+  mk_subtype_le s
+
 /-- The universe lift operation on cardinals. You can specify the universes explicitly with
   `lift.{u v} : Cardinal.{v} → Cardinal.{max v u}` -/
 @[pp_with_univ]
@@ -214,68 +269,6 @@ theorem lift_uzero (a : Cardinal.{u}) : lift.{0} a = a :=
 theorem lift_lift.{u_1} (a : Cardinal.{u_1}) : lift.{w} (lift.{v} a) = lift.{max v w} a :=
   inductionOn a fun _ => (Equiv.ulift.trans <| Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
 
-/-- We define the order on cardinal numbers by `#α ≤ #β` if and only if
-  there exists an embedding (injective function) from α to β. -/
-instance : LE Cardinal.{u} :=
-  ⟨fun q₁ q₂ =>
-    Quotient.liftOn₂ q₁ q₂ (fun α β => Nonempty <| α ↪ β) fun _ _ _ _ ⟨e₁⟩ ⟨e₂⟩ =>
-      propext ⟨fun ⟨e⟩ => ⟨e.congr e₁ e₂⟩, fun ⟨e⟩ => ⟨e.congr e₁.symm e₂.symm⟩⟩⟩
-
-instance partialOrder : PartialOrder Cardinal.{u} where
-  le := (· ≤ ·)
-  le_refl := by
-    rintro ⟨α⟩
-    exact ⟨Embedding.refl _⟩
-  le_trans := by
-    rintro ⟨α⟩ ⟨β⟩ ⟨γ⟩ ⟨e₁⟩ ⟨e₂⟩
-    exact ⟨e₁.trans e₂⟩
-  le_antisymm := by
-    rintro ⟨α⟩ ⟨β⟩ ⟨e₁⟩ ⟨e₂⟩
-    exact Quotient.sound (e₁.antisymm e₂)
-
-instance linearOrder : LinearOrder Cardinal.{u} :=
-  { Cardinal.partialOrder with
-    le_total := by
-      rintro ⟨α⟩ ⟨β⟩
-      apply Embedding.total
-    decidableLE := Classical.decRel _ }
-
-theorem le_def (α β : Type u) : #α ≤ #β ↔ Nonempty (α ↪ β) :=
-  Iff.rfl
-
-theorem mk_le_of_injective {α β : Type u} {f : α → β} (hf : Injective f) : #α ≤ #β :=
-  ⟨⟨f, hf⟩⟩
-
-theorem _root_.Function.Embedding.cardinal_le {α β : Type u} (f : α ↪ β) : #α ≤ #β :=
-  ⟨f⟩
-
-theorem mk_le_of_surjective {α β : Type u} {f : α → β} (hf : Surjective f) : #β ≤ #α :=
-  ⟨Embedding.ofSurjective f hf⟩
-
-theorem le_mk_iff_exists_set {c : Cardinal} {α : Type u} : c ≤ #α ↔ ∃ p : Set α, #p = c :=
-  ⟨inductionOn c fun _ ⟨⟨f, hf⟩⟩ => ⟨Set.range f, (Equiv.ofInjective f hf).cardinal_eq.symm⟩,
-    fun ⟨_, e⟩ => e ▸ ⟨⟨Subtype.val, fun _ _ => Subtype.eq⟩⟩⟩
-
-theorem mk_subtype_le {α : Type u} (p : α → Prop) : #(Subtype p) ≤ #α :=
-  ⟨Embedding.subtype p⟩
-
-theorem mk_set_le (s : Set α) : #s ≤ #α :=
-  mk_subtype_le s
-
-@[simp]
-lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s) := by
-  rw [← mk_uLift, Cardinal.eq]
-  constructor
-  let f : ULift.down ⁻¹' s → ULift s := fun x ↦ ULift.up (restrictPreimage s ULift.down x)
-  have : Function.Bijective f :=
-    ULift.up_bijective.comp (restrictPreimage_bijective _ (ULift.down_bijective))
-  exact Equiv.ofBijective f this
-
-theorem out_embedding {c c' : Cardinal} : c ≤ c' ↔ Nonempty (c.out ↪ c'.out) := by
-  trans
-  · rw [← Quotient.out_eq c, ← Quotient.out_eq c']
-  · rw [mk'_def, mk'_def, le_def]
-
 theorem lift_mk_le {α : Type v} {β : Type w} :
     lift.{max u w} #α ≤ lift.{max u v} #β ↔ Nonempty (α ↪ β) :=
   ⟨fun ⟨f⟩ => ⟨Embedding.congr Equiv.ulift Equiv.ulift f⟩, fun ⟨f⟩ =>
@@ -301,33 +294,73 @@ we provide this statement separately so you don't have to solve the specializati
 theorem lift_mk_eq' {α : Type u} {β : Type v} : lift.{v} #α = lift.{u} #β ↔ Nonempty (α ≃ β) :=
   lift_mk_eq.{u, v, 0}
 
+/-- `Cardinal.lift` as an `InitialSeg`. -/
+@[simps!]
+def lift.initialSeg : @InitialSeg Cardinal.{u} Cardinal.{max u v} (· < ·) (· < ·) := by
+  refine ⟨(OrderEmbedding.ofMapLEIff lift ?_).ltEmbedding, ?_⟩ <;> intro a b
+  · refine inductionOn₂ a b fun _ _ ↦ ?_
+    rw [← lift_umax, lift_mk_le.{v, u, u}, le_def]
+  · refine inductionOn₂ a b fun α β h ↦ ?_
+    obtain ⟨e⟩ := h.le
+    replace e := e.congr (Equiv.refl β) Equiv.ulift
+    refine ⟨#(range e), mk_congr (Equiv.ulift.trans <| Equiv.symm ?_)⟩
+    apply (e.codRestrict _ mem_range_self).equivOfSurjective
+    rintro ⟨a, ⟨b, rfl⟩⟩
+    exact ⟨b, rfl⟩
+
+/-- `Cardinal.lift` as an `OrderEmbedding`. -/
+@[deprecated Cardinal.lift.initialSeg (since := "2024-09-19")]
+def liftOrderEmbedding : Cardinal.{v} ↪o Cardinal.{max v u} :=
+  lift.initialSeg.toOrderEmbedding
+
 @[simp]
 theorem lift_le {a b : Cardinal.{v}} : lift.{u, v} a ≤ lift.{u, v} b ↔ a ≤ b :=
-  inductionOn₂ a b fun α β => by
-    rw [← lift_umax]
-    exact lift_mk_le.{u}
+  lift.initialSeg.le_iff_le
 
--- Porting note: changed `simps` to `simps!` because the linter told to do so.
-/-- `Cardinal.lift` as an `OrderEmbedding`. -/
-@[simps! (config := .asFn)]
-def liftOrderEmbedding : Cardinal.{v} ↪o Cardinal.{max v u} :=
-  OrderEmbedding.ofMapLEIff lift.{u, v} fun _ _ => lift_le
+@[simp]
+theorem lift_lt {a b : Cardinal.{u}} : lift.{v, u} a < lift.{v, u} b ↔ a < b :=
+  lift.initialSeg.lt_iff_lt
 
 theorem lift_injective : Injective lift.{u, v} :=
-  liftOrderEmbedding.injective
+  lift.initialSeg.injective
 
 @[simp]
 theorem lift_inj {a b : Cardinal.{u}} : lift.{v, u} a = lift.{v, u} b ↔ a = b :=
   lift_injective.eq_iff
 
-@[simp]
-theorem lift_lt {a b : Cardinal.{u}} : lift.{v, u} a < lift.{v, u} b ↔ a < b :=
-  liftOrderEmbedding.lt_iff_lt
-
 theorem lift_strictMono : StrictMono lift := fun _ _ => lift_lt.2
 
 theorem lift_monotone : Monotone lift :=
   lift_strictMono.monotone
+
+@[simp]
+theorem lift_min {a b : Cardinal} : lift.{u, v} (min a b) = min (lift.{u, v} a) (lift.{u, v} b) :=
+  lift_monotone.map_min
+
+@[simp]
+theorem lift_max {a b : Cardinal} : lift.{u, v} (max a b) = max (lift.{u, v} a) (lift.{u, v} b) :=
+  lift_monotone.map_max
+
+theorem lift_down {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
+    b ≤ lift.{v, u} a → ∃ a', lift.{v, u} a' = b :=
+  lift.initialSeg.init_le
+
+theorem le_lift_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
+    b ≤ lift.{v, u} a ↔ ∃ a' ≤ a, lift.{v, u} a' = b :=
+  lift.initialSeg.le_apply_iff
+
+theorem lt_lift_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
+    b < lift.{v, u} a ↔ ∃ a' < a, lift.{v, u} a' = b :=
+  lift.initialSeg.lt_apply_iff
+
+@[simp]
+lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s) := by
+  rw [← mk_uLift, Cardinal.eq]
+  constructor
+  let f : ULift.down ⁻¹' s → ULift s := fun x ↦ ULift.up (restrictPreimage s ULift.down x)
+  have : Function.Bijective f :=
+    ULift.up_bijective.comp (restrictPreimage_bijective _ (ULift.down_bijective))
+  exact Equiv.ofBijective f this
 
 instance : Zero Cardinal.{u} :=
   -- `PEmpty` might be more canonical, but this is convenient for defeq with natCast
@@ -1010,35 +1043,11 @@ theorem lift_iInf {ι} (f : ι → Cardinal) : lift.{u, v} (iInf f) = ⨅ i, lif
   convert lift_sInf (range f)
   simp_rw [← comp_apply (f := lift), range_comp]
 
-theorem lift_down {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
-    b ≤ lift.{v,u} a → ∃ a', lift.{v,u} a' = b :=
-  inductionOn₂ a b fun α β => by
-    rw [← lift_id #β, ← lift_umax, ← lift_umax.{u, v}, lift_mk_le.{v}]
-    exact fun ⟨f⟩ =>
-      ⟨#(Set.range f),
-        Eq.symm <| lift_mk_eq.{_, _, v}.2
-          ⟨Function.Embedding.equivOfSurjective (Embedding.codRestrict _ f Set.mem_range_self)
-              fun ⟨a, ⟨b, e⟩⟩ => ⟨b, Subtype.eq e⟩⟩⟩
-
-theorem le_lift_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
-    b ≤ lift.{v, u} a ↔ ∃ a', lift.{v, u} a' = b ∧ a' ≤ a :=
-  ⟨fun h =>
-    let ⟨a', e⟩ := lift_down h
-    ⟨a', e, lift_le.1 <| e.symm ▸ h⟩,
-    fun ⟨_, e, h⟩ => e ▸ lift_le.2 h⟩
-
-theorem lt_lift_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
-    b < lift.{v, u} a ↔ ∃ a', lift.{v, u} a' = b ∧ a' < a :=
-  ⟨fun h =>
-    let ⟨a', e⟩ := lift_down h.le
-    ⟨a', e, lift_lt.1 <| e.symm ▸ h⟩,
-    fun ⟨_, e, h⟩ => e ▸ lift_lt.2 h⟩
-
 @[simp]
 theorem lift_succ (a) : lift.{v, u} (succ a) = succ (lift.{v, u} a) :=
   le_antisymm
     (le_of_not_gt fun h => by
-      rcases lt_lift_iff.1 h with ⟨b, e, h⟩
+      rcases lt_lift_iff.1 h with ⟨b, h, e⟩
       rw [lt_succ_iff, ← lift_le, e] at h
       exact h.not_lt (lt_succ _))
     (succ_le_of_lt <| lift_lt.2 <| lt_succ a)
@@ -1048,14 +1057,6 @@ theorem lift_succ (a) : lift.{v, u} (succ a) = succ (lift.{v, u} a) :=
 theorem lift_umax_eq {a : Cardinal.{u}} {b : Cardinal.{v}} :
     lift.{max v w} a = lift.{max u w} b ↔ lift.{v} a = lift.{u} b := by
   rw [← lift_lift.{v, w, u}, ← lift_lift.{u, w, v}, lift_inj]
-
-@[simp]
-theorem lift_min {a b : Cardinal} : lift.{u, v} (min a b) = min (lift.{u, v} a) (lift.{u, v} b) :=
-  lift_monotone.map_min
-
-@[simp]
-theorem lift_max {a b : Cardinal} : lift.{u, v} (max a b) = max (lift.{u, v} a) (lift.{u, v} b) :=
-  lift_monotone.map_max
 
 /-- The lift of a supremum is the supremum of the lifts. -/
 theorem lift_sSup {s : Set Cardinal} (hs : BddAbove s) :
@@ -1354,7 +1355,7 @@ theorem one_le_aleph0 : 1 ≤ ℵ₀ :=
 
 theorem lt_aleph0 {c : Cardinal} : c < ℵ₀ ↔ ∃ n : ℕ, c = n :=
   ⟨fun h => by
-    rcases lt_lift_iff.1 h with ⟨c, rfl, h'⟩
+    rcases lt_lift_iff.1 h with ⟨c, h', rfl⟩
     rcases le_mk_iff_exists_set.1 h'.1 with ⟨S, rfl⟩
     suffices S.Finite by
       lift S to Finset ℕ using this
