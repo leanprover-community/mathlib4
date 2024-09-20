@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Nailin Guan, Yuyang Zhao
 -/
 import Mathlib.Algebra.Category.Grp.FiniteGrp
+import Mathlib.Topology.Algebra.ClosedSubgroup
 import Mathlib.Topology.Algebra.ContinuousMonoidHom
 import Mathlib.Topology.Category.Profinite.Basic
 
@@ -23,6 +24,8 @@ disconnected.
 
 * `ofFiniteGrp` : A `FiniteGrp` when given the discrete topology can be considered as a
   profinite group.
+
+* `ofClosedSubgroup` : A closed subgroup of a profinite group is profinite.
 
 -/
 
@@ -160,5 +163,10 @@ instance : HasForget₂ ProfiniteGrp Grp where
     obj := fun P => ⟨P, P.group⟩
     map := fun f => f.toMonoidHom
   }
+
+/-- A closed subgroup of a profinite group is profinite. -/
+def ofClosedSubgroup {G : ProfiniteGrp} (H : ClosedSubgroup G)  : ProfiniteGrp :=
+  letI : CompactSpace H := isCompact_iff_compactSpace.mp (IsClosed.isCompact H.isClosed')
+  of H.1
 
 end ProfiniteGrp
