@@ -7,7 +7,6 @@ import Qq
 import Mathlib.Data.Nat.Notation
 import Mathlib.Util.AtomM
 import Mathlib.Data.List.TFAE
-import Mathlib.Tactic.Have
 
 /-!
 # The Following Are Equivalent (TFAE)
@@ -118,9 +117,6 @@ example : TFAE [P, Q] := by
 ```
 -/
 syntax (name := tfaeHave) "tfae_have " tfaeHaveDecl : tactic
-
-@[inherit_doc tfaeHave]
-syntax (name := tfaeHave') "tfae_have " tfaeHaveIdLhs : tactic
 
 /--
 `tfae_finish` is used to close goals of the form `TFAE [P₁, P₂, ...]` once a sufficient collection
@@ -262,8 +258,7 @@ def elabTFAEType (tfaeList : List Q(Prop)) : TSyntax ``tfaeType → TermElabM Ex
   | _ => throwUnsupportedSyntax
 
 /- Convert `tfae_have i <arr> j ...` to `tfae_have tfae_i_arr_j : i <arr> j ...`. See
-`expandHave`, which is responsible for inserting `this` in `have : A := ...`. Note that we
-require some extra help for `tfaeHave'` (Mathlib `have`). -/
+`expandHave`, which is responsible for inserting `this` in `have : A := ...`. -/
 macro_rules
 | `(tfaeHave|tfae_have $hy:hygieneInfo $t:tfaeType := $val) => do
   let id := HygieneInfo.mkIdent hy (← mkTFAEId t) (canonical := true)
@@ -271,11 +266,6 @@ macro_rules
 | `(tfaeHave|tfae_have $hy:hygieneInfo $t:tfaeType $alts:matchAlts) => do
   let id := HygieneInfo.mkIdent hy (← mkTFAEId t) (canonical := true)
   `(tfaeHave|tfae_have $id : $t $alts)
-
--- Mathlib `have`
-| `(tfaeHave'|tfae_have $hy:hygieneInfo $t:tfaeType) => do
-  let id := HygieneInfo.mkIdent hy (← mkTFAEId t) (canonical := true)
-  `(tfaeHave'|tfae_have $id : $t)
 
 open Term
 
@@ -295,17 +285,6 @@ elab_rules : tactic
       let type ← elabTFAEType tfaeList t
       evalTactic <|← `(tactic|have $pat:term : $(← exprToSyntax type) := $pf)
     | _ => throwUnsupportedSyntax
-
--- Mathlib `have`
-| `(tfaeHave'|tfae_have $d:tfaeHaveIdLhs) => withMainContext do
-  let goal ← getMainGoal
-  let (_, tfaeList) ← getTFAEList (← goal.getType)
-  match d with
-  | `(tfaeHaveIdLhs| $b:ident : $t:tfaeType) =>
-    let type ← elabTFAEType tfaeList t
-    evalTactic <|← `(tactic|have $b:ident : $(← exprToSyntax type))
-  | _ => throwUnsupportedSyntax
-
 
 elab_rules : tactic
 | `(tactic| tfae_finish) => do
@@ -327,6 +306,39 @@ elab_rules : tactic
           let q2 ← AtomM.addAtom ty.bindingBody!
           hyps := hyps.push (q1, q2, hyp)
       proveTFAE hyps (← get).atoms is tfaeListQ
+
+/-!
+
+# "Old-style" `tfae_have`
+
+We preserve the "old-style" `tfae_have` (which behaves like Mathlib `have`) for compatibility
+purposes.
+
+-/
+
+@[inherit_doc tfaeHave]
+syntax (name := tfaeHave') "tfae_have " tfaeHaveIdLhs : tactic
+
+macro_rules
+| `(tfaeHave'|tfae_have $hy:hygieneInfo $t:tfaeType) => do
+  let id := HygieneInfo.mkIdent hy (← mkTFAEId t) (canonical := true)
+  `(tfaeHave'|tfae_have $id : $t)
+
+elab_rules : tactic
+| `(tfaeHave'|tfae_have $d:tfaeHaveIdLhs) => withMainContext do
+  let goal ← getMainGoal
+  let (_, tfaeList) ← getTFAEList (← goal.getType)
+  -- Note that due to the macro above, the following match is exhaustive.
+  match d with
+  | `(tfaeHaveIdLhs| $b:ident : $t:tfaeType) =>
+    let n := b.getId
+    let type ← elabTFAEType tfaeList t
+    let p ← mkFreshExprMVar type MetavarKind.syntheticOpaque n
+    let (fv, mainGoal) ← (← MVarId.assert goal n type p).intro1P
+    mainGoal.withContext do
+      Term.addTermInfo' (isBinder := true) b (mkFVar fv)
+    replaceMainGoal [p.mvarId!, mainGoal]
+  | _ => throwUnsupportedSyntax
 
 end TFAE
 
