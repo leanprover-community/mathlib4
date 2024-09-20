@@ -273,8 +273,8 @@ theorem mem_measurableCylinders (t : Set (∀ i, α i)) :
   simp_rw [measurableCylinders, mem_iUnion, exists_prop, mem_singleton_iff]
 
 @[measurability]
-theorem measurableSet_measurableCylinders {s : Set (Π i, α i)} (hs : s ∈ measurableCylinders α) :
-    MeasurableSet s := by
+theorem _root_.MeasurableSet.of_mem_measurableCylinders {s : Set (Π i, α i)}
+    (hs : s ∈ measurableCylinders α) : MeasurableSet s := by
   obtain ⟨I, t, mt, rfl⟩ := (mem_measurableCylinders s).1 hs
   exact mt.cylinder
 
