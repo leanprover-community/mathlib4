@@ -301,18 +301,6 @@ theorem le_mul_pow_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F) (h : 0 <
   rw [inv_pow, ← div_eq_mul_inv]
   exact hCp n
 
-lemma radius_le_of_le {𝕜' E' F' : Type*}
-    [NontriviallyNormedField 𝕜'] [NormedAddCommGroup E'] [NormedSpace 𝕜' E']
-    [NormedAddCommGroup F'] [NormedSpace 𝕜' F']
-    {p : FormalMultilinearSeries 𝕜 E F} {q : FormalMultilinearSeries 𝕜' E' F'}
-    (h : ∀ n, ‖p n‖ ≤ ‖q n‖) : q.radius ≤ p.radius := by
-  apply le_of_forall_nnreal_lt (fun r hr ↦ ?_)
-  rcases norm_mul_pow_le_of_lt_radius _ hr with ⟨C, -, hC⟩
-  apply le_radius_of_bound _ C (fun n ↦ ?_)
-  apply le_trans _ (hC n)
-  gcongr
-  exact h n
-
 /-- The radius of the sum of two formal series is at least the minimum of their two radii. -/
 theorem min_radius_le_radius_add (p q : FormalMultilinearSeries 𝕜 E F) :
     min p.radius q.radius ≤ (p + q).radius := by
@@ -739,33 +727,17 @@ lemma AnalyticWithinOn.mono {f : E → F} {s t : Set E} (h : AnalyticWithinOn �
 ### Composition with linear maps
 -/
 
-/-- If a function `f` has a power series `p` on a ball within a set and `g` is linear,
-then `g ∘ f` has the power series `g ∘ p` on the same ball. -/
-theorem ContinuousLinearMap.comp_hasFPowerSeriesWithinOnBall (g : F →L[𝕜] G)
-    (h : HasFPowerSeriesWithinOnBall f p s x r) :
-    HasFPowerSeriesWithinOnBall (g ∘ f) (g.compFormalMultilinearSeries p) s x r where
-  r_le := h.r_le.trans (p.radius_le_radius_continuousLinearMap_comp _)
-  r_pos := h.r_pos
-  hasSum := fun hy h'y => by
-    simpa only [ContinuousLinearMap.compFormalMultilinearSeries_apply,
-      ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply] using
-      g.hasSum (h.hasSum hy h'y)
-
 /-- If a function `f` has a power series `p` on a ball and `g` is linear, then `g ∘ f` has the
 power series `g ∘ p` on the same ball. -/
 theorem ContinuousLinearMap.comp_hasFPowerSeriesOnBall (g : F →L[𝕜] G)
     (h : HasFPowerSeriesOnBall f p x r) :
-    HasFPowerSeriesOnBall (g ∘ f) (g.compFormalMultilinearSeries p) x r := by
-  rw [← hasFPowerSeriesWithinOnBall_univ] at h ⊢
-  exact g.comp_hasFPowerSeriesWithinOnBall h
-
-/-- If a function `f` is analytic on a set `s` and `g` is linear, then `g ∘ f` is analytic
-on `s`. -/
-theorem ContinuousLinearMap.comp_analyticWithinOn (g : F →L[𝕜] G) (h : AnalyticWithinOn 𝕜 f s) :
-    AnalyticWithinOn 𝕜 (g ∘ f) s := by
-  rintro x hx
-  rcases h x hx with ⟨p, r, hp⟩
-  exact ⟨g.compFormalMultilinearSeries p, r, g.comp_hasFPowerSeriesWithinOnBall hp⟩
+    HasFPowerSeriesOnBall (g ∘ f) (g.compFormalMultilinearSeries p) x r :=
+  { r_le := h.r_le.trans (p.radius_le_radius_continuousLinearMap_comp _)
+    r_pos := h.r_pos
+    hasSum := fun hy => by
+      simpa only [ContinuousLinearMap.compFormalMultilinearSeries_apply,
+        ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply] using
+        g.hasSum (h.hasSum hy) }
 
 /-- If a function `f` is analytic on a set `s` and `g` is linear, then `g ∘ f` is analytic
 on `s`. -/
