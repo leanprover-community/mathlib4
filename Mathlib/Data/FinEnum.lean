@@ -172,6 +172,8 @@ instance PSigma.finEnumPropProp {α : Prop} {β : α → Prop} [Decidable α] [�
   if h : ∃ a, β a then ofList [⟨h.fst, h.snd⟩] (by rintro ⟨⟩; simp)
   else ofList [] fun a => (h ⟨a.fst, a.snd⟩).elim
 
+instance [DecidableEq α] (xs : List α) : FinEnum { x : α // x ∈ xs } := ofList xs.attach (by simp)
+
 instance (priority := 100) [FinEnum α] : Fintype α where
   elems := univ.map (equiv).symm.toEmbedding
   complete := by intros; simp

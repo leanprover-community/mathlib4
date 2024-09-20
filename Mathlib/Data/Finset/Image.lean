@@ -344,16 +344,6 @@ theorem _root_.Function.Injective.mem_finset_image (hf : Injective f) :
   obtain ⟨y, hy, heq⟩ := mem_image.1 h
   exact hf heq ▸ hy
 
-theorem filter_mem_image_eq_image (f : α → β) (s : Finset α) (t : Finset β) (h : ∀ x ∈ s, f x ∈ t) :
-    (t.filter fun y => y ∈ s.image f) = s.image f := by
-  ext
-  simp only [mem_filter, mem_image, decide_eq_true_eq, and_iff_right_iff_imp, forall_exists_index,
-    and_imp]
-  rintro x xel rfl
-  exact h _ xel
-
-theorem fiber_nonempty_iff_mem_image (f : α → β) (s : Finset α) (y : β) :
-    (s.filter fun x => f x = y).Nonempty ↔ y ∈ s.image f := by simp [Finset.Nonempty]
 
 @[simp, norm_cast]
 theorem coe_image : ↑(s.image f) = f '' ↑s :=
@@ -438,6 +428,14 @@ theorem filter_image {p : β → Prop} [DecidablePred p] :
     exact
       ⟨by rintro ⟨⟨x, h1, rfl⟩, h2⟩; exact ⟨x, ⟨h1, h2⟩, rfl⟩,
        by rintro ⟨x, ⟨h1, h2⟩, rfl⟩; exact ⟨⟨x, h1, rfl⟩, h2⟩⟩
+
+@[deprecated filter_mem_eq_inter (since := "2024-09-15")]
+theorem filter_mem_image_eq_image (f : α → β) (s : Finset α) (t : Finset β) (h : ∀ x ∈ s, f x ∈ t) :
+    (t.filter fun y => y ∈ s.image f) = s.image f := by
+  rwa [filter_mem_eq_inter, inter_eq_right, image_subset_iff]
+
+theorem fiber_nonempty_iff_mem_image {y : β} : (s.filter (f · = y)).Nonempty ↔ y ∈ s.image f := by
+  simp [Finset.Nonempty]
 
 theorem image_union [DecidableEq α] {f : α → β} (s₁ s₂ : Finset α) :
     (s₁ ∪ s₂).image f = s₁.image f ∪ s₂.image f :=

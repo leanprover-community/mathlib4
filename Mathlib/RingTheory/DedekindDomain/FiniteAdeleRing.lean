@@ -265,7 +265,7 @@ theorem one : (1 : K_hat R K).IsFiniteAdele := by
   -- Porting note: was `exact`, but `OfNat` got in the way.
   convert finite_empty
 
-open scoped DiscreteValuation
+open scoped Multiplicative
 
 theorem algebraMap' (k : K) : (_root_.algebraMap K (K_hat R K) k).IsFiniteAdele := by
   rw [IsFiniteAdele, Filter.eventually_cofinite]
@@ -371,7 +371,7 @@ lemma exists_finiteIntegralAdele_iff (a : FiniteAdeleRing R K) : (∃ c : R_hat 
 section Topology
 
 open nonZeroDivisors
-open scoped DiscreteValuation
+open scoped Multiplicative
 
 variable {R K} in
 lemma mul_nonZeroDivisor_mem_finiteIntegralAdeles (a : FiniteAdeleRing R K) :
