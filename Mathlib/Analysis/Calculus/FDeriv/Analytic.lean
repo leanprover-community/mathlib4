@@ -127,6 +127,15 @@ theorem AnalyticAt.contDiffAt [CompleteSpace F] (h : AnalyticAt 𝕜 f x) {n : �
   obtain ⟨s, hs, hf⟩ := h.exists_mem_nhds_analyticOn
   exact hf.contDiffOn.contDiffAt hs
 
+lemma AnalyticWithinAt.contDiffWithinAt [CompleteSpace F] {f : E → F} {s : Set E} {x : E}
+    (h : AnalyticWithinAt 𝕜 f s x) {n : ℕ∞} : ContDiffWithinAt 𝕜 n f s x := by
+  rcases h.exists_analyticAt with ⟨g, fx, fg, hg⟩
+  exact hg.contDiffAt.contDiffWithinAt.congr (fg.mono (subset_insert _ _)) fx
+
+lemma AnalyticWithinOn.contDiffOn [CompleteSpace F] {f : E → F} {s : Set E}
+    (h : AnalyticWithinOn 𝕜 f s) {n : ℕ∞} : ContDiffOn 𝕜 n f s :=
+  fun x m ↦ (h x m).contDiffWithinAt
+
 end fderiv
 
 section deriv
