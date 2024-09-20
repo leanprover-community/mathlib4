@@ -54,20 +54,16 @@ open Filter
 
 open Topology
 
-variable {α 𝕜 E F : Type*}
-
-section WeakStarTopology
+variable {α 𝕜 𝕝 E F : Type*}
 
 /-- The canonical pairing of a vector space and its topological dual. -/
 def topDualPairing (𝕜 E) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [AddCommMonoid E]
     [Module 𝕜 E] [TopologicalSpace E] [ContinuousConstSMul 𝕜 𝕜] : (E →L[𝕜] 𝕜) →ₗ[𝕜] E →ₗ[𝕜] 𝕜 :=
   ContinuousLinearMap.coeLM 𝕜
 
-variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
-variable [ContinuousConstSMul 𝕜 𝕜]
-variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
-
-theorem topDualPairing_apply (v : E →L[𝕜] 𝕜) (x : E) : topDualPairing 𝕜 E v x = v x :=
+theorem topDualPairing_apply [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
+    [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] [ContinuousConstSMul 𝕜 𝕜] (v : E →L[𝕜] 𝕜)
+    (x : E) : topDualPairing 𝕜 E v x = v x :=
   rfl
 
 /-- The weak star topology is the topology coarsest topology on `E →L[𝕜] 𝕜` such that all
@@ -77,6 +73,12 @@ def WeakDual (𝕜 E : Type*) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [Conti
   WeakBilin (topDualPairing 𝕜 E)
 
 namespace WeakDual
+
+section Semiring
+
+variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
+variable [ContinuousConstSMul 𝕜 𝕜]
+variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 
 -- Porting note: the next four instances should be derived from the definition
 instance instAddCommMonoid : AddCommMonoid (WeakDual 𝕜 E) :=
@@ -150,6 +152,21 @@ instance instT2Space [T2Space 𝕜] : T2Space (WeakDual 𝕜 E) :=
     WeakBilin.embedding <|
       show Function.Injective (topDualPairing 𝕜 E) from ContinuousLinearMap.coe_injective
 
+end Semiring
+
+section Ring
+
+variable [CommRing 𝕜] [TopologicalSpace 𝕜] [TopologicalAddGroup 𝕜] [ContinuousConstSMul 𝕜 𝕜]
+variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E]
+
+instance instAddCommGroup : AddCommGroup (WeakDual 𝕜 E) :=
+  WeakBilin.instAddCommGroup (topDualPairing 𝕜 E)
+
+instance instTopologicalAddGroup : TopologicalAddGroup (WeakDual 𝕜 E) :=
+  WeakBilin.instTopologicalAddGroup (topDualPairing 𝕜 E)
+
+end Ring
+
 end WeakDual
 
 /-- The weak topology is the topology coarsest topology on `E` such that all functionals
@@ -157,6 +174,12 @@ end WeakDual
 def WeakSpace (𝕜 E) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
     [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
   WeakBilin (topDualPairing 𝕜 E).flip
+
+section Semiring
+
+variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
+variable [ContinuousConstSMul 𝕜 𝕜]
+variable [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 
 namespace WeakSpace
 
@@ -172,6 +195,13 @@ instance instTopologicalSpace : TopologicalSpace (WeakSpace 𝕜 E) :=
 
 instance instContinuousAdd : ContinuousAdd (WeakSpace 𝕜 E) :=
   WeakBilin.instContinuousAdd (topDualPairing 𝕜 E).flip
+
+instance instModule' [CommSemiring 𝕝] [Module 𝕝 E] : Module 𝕝 (WeakSpace 𝕜 E) :=
+  WeakBilin.instModule' (topDualPairing 𝕜 E).flip
+
+instance instIsScalarTower [CommSemiring 𝕝] [Module 𝕝 𝕜] [Module 𝕝 E] [IsScalarTower 𝕝 𝕜 E] :
+    IsScalarTower 𝕝 𝕜 (WeakSpace 𝕜 E) :=
+  WeakBilin.instIsScalarTower (topDualPairing 𝕜 E).flip
 
 variable [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F]
 
@@ -199,7 +229,7 @@ def toWeakSpace : E ≃ₗ[𝕜] WeakSpace 𝕜 E := LinearEquiv.refl 𝕜 E
 variable (𝕜 E) in
 /-- For a topological vector space `E`, "identity mapping" `E → WeakSpace 𝕜 E` is continuous.
 This definition implements it as a continuous linear map. -/
-def continuousLinearMapToWeakSpace : E →L[𝕜] WeakSpace 𝕜 E where
+def toWeakSpaceCLM : E →L[𝕜] WeakSpace 𝕜 E where
   __ := toWeakSpace 𝕜 E
   cont := by
     apply WeakBilin.continuous_of_continuous_eval
@@ -207,21 +237,21 @@ def continuousLinearMapToWeakSpace : E →L[𝕜] WeakSpace 𝕜 E where
 
 variable (𝕜 E) in
 @[simp]
-theorem continuousLinearMapToWeakSpace_eq_toWeakSpace (x : E) :
-    continuousLinearMapToWeakSpace 𝕜 E x = toWeakSpace 𝕜 E x := by rfl
+theorem toWeakSpaceCLM_eq_toWeakSpace (x : E) :
+    toWeakSpaceCLM 𝕜 E x = toWeakSpace 𝕜 E x := by rfl
 
-theorem continuousLinearMapToWeakSpace_bijective :
-    Function.Bijective (continuousLinearMapToWeakSpace 𝕜 E) :=
+theorem toWeakSpaceCLM_bijective :
+    Function.Bijective (toWeakSpaceCLM 𝕜 E) :=
   (toWeakSpace 𝕜 E).bijective
 
 /-- The canonical map from `WeakSpace 𝕜 E` to `E` is an open map. -/
 theorem isOpenMap_toWeakSpace_symm : IsOpenMap (toWeakSpace 𝕜 E).symm :=
-  IsOpenMap.of_inverse (continuousLinearMapToWeakSpace 𝕜 E).cont
+  IsOpenMap.of_inverse (toWeakSpaceCLM 𝕜 E).cont
     (toWeakSpace 𝕜 E).left_inv (toWeakSpace 𝕜 E).right_inv
 
 /-- A set in `E` which is open in the weak topology is open. -/
 theorem WeakSpace.isOpen_of_isOpen (V : Set E)
-    (hV : IsOpen ((continuousLinearMapToWeakSpace 𝕜 E) '' V : Set (WeakSpace 𝕜 E))) : IsOpen V := by
+    (hV : IsOpen ((toWeakSpaceCLM 𝕜 E) '' V : Set (WeakSpace 𝕜 E))) : IsOpen V := by
   simpa [Set.image_image] using isOpenMap_toWeakSpace_symm _ hV
 
 theorem tendsto_iff_forall_eval_tendsto_topDualPairing {l : Filter α} {f : α → WeakDual 𝕜 E}
@@ -230,4 +260,21 @@ theorem tendsto_iff_forall_eval_tendsto_topDualPairing {l : Filter α} {f : α �
       ∀ y, Tendsto (fun i => topDualPairing 𝕜 E (f i) y) l (𝓝 (topDualPairing 𝕜 E x y)) :=
   WeakBilin.tendsto_iff_forall_eval_tendsto _ ContinuousLinearMap.coe_injective
 
-end WeakStarTopology
+end Semiring
+
+section Ring
+
+namespace WeakSpace
+
+variable [CommRing 𝕜] [TopologicalSpace 𝕜] [TopologicalAddGroup 𝕜] [ContinuousConstSMul 𝕜 𝕜]
+variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E]
+
+instance instAddCommGroup : AddCommGroup (WeakSpace 𝕜 E) :=
+  WeakBilin.instAddCommGroup (topDualPairing 𝕜 E).flip
+
+instance instTopologicalAddGroup : TopologicalAddGroup (WeakSpace 𝕜 E) :=
+  WeakBilin.instTopologicalAddGroup (topDualPairing 𝕜 E).flip
+
+end WeakSpace
+
+end Ring
