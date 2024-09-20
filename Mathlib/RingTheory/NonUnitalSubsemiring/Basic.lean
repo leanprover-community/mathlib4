@@ -29,15 +29,8 @@ variable {R : Type u} {S : Type v} {T : Type w} [NonUnitalNonAssocSemiring R] (M
 
 /-- `NonUnitalSubsemiringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both an additive submonoid and also a multiplicative subsemigroup. -/
-class NonUnitalSubsemiringClass (S : Type*) (R : Type u) [NonUnitalNonAssocSemiring R]
-  [SetLike S R] extends AddSubmonoidClass S R : Prop where
-  mul_mem : ∀ {s : S} {a b : R}, a ∈ s → b ∈ s → a * b ∈ s
-
--- See note [lower instance priority]
-instance (priority := 100) NonUnitalSubsemiringClass.mulMemClass (S : Type*) (R : Type u)
-    [NonUnitalNonAssocSemiring R] [SetLike S R] [h : NonUnitalSubsemiringClass S R] :
-    MulMemClass S R :=
-  { h with }
+class abbrev NonUnitalSubsemiringClass (S : Type*) (R : Type u) [NonUnitalNonAssocSemiring R]
+  [SetLike S R] : Prop := AddSubmonoidClass S R, MulMemClass S R
 
 namespace NonUnitalSubsemiringClass
 
