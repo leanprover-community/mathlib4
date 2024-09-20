@@ -559,7 +559,6 @@ instance : CommRing Nimber where
   mul_comm := Nimber.mul_comm
   one_mul := Nimber.one_mul
   mul_one := Nimber.mul_one
-  neg_add_cancel := add_self
   __ : AddCommGroupWithOne Nimber := inferInstance
 
 instance : IsDomain Nimber where
