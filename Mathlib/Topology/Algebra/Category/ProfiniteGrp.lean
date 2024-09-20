@@ -162,12 +162,6 @@ instance : HasForget₂ ProfiniteGrp Grp where
     map := fun f => f.toMonoidHom
   }
 
-/-- A closed subgroup of a profinite group is profinite. -/
-def ofClosedSubgroup {G : ProfiniteGrp}
-    (H : Subgroup G) (hH : IsClosed (H : Set G)) : ProfiniteGrp :=
-  letI : CompactSpace H := isCompact_iff_compactSpace.mp (IsClosed.isCompact hH)
-  of H
-
 end ProfiniteGrp
 
 /-!
