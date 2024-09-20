@@ -183,7 +183,6 @@ theorem completedLFunction_one_sub {χ : DirichletCharacter ℂ N} (hχ : IsPrim
   · simp only [completedLFunction_modOne_eq, completedRiemannZeta_one_sub, Nat.cast_one, one_cpow,
       rootNumber_modOne, one_mul]
   -- facts about `χ` as function
-  have : Nontrivial (ZMod N) := nontrivial_iff.mpr hN -- instance argument to show `χ 0 = 0` later
   have h_sum : ∑ j, χ j = 0 := by
     refine χ.sum_eq_zero_of_ne_one (fun h ↦ hN.symm ?_)
     rwa [IsPrimitive, h, conductor_one (NeZero.ne _)] at hχ
@@ -196,7 +195,7 @@ theorem completedLFunction_one_sub {χ : DirichletCharacter ℂ N} (hχ : IsPrim
     simp only [ε]
     split_ifs with h
     · rw [pow_zero, div_one, h, mul_one, completedLFunction,
-        completedLFunction_one_sub_even h.to_fun _ (.inr h_sum) (.inr <| MulChar.map_zero _)]
+        completedLFunction_one_sub_even h.to_fun _ (.inr h_sum) (.inr <| χ.map_zero' hN)]
     · replace h : χ.Odd := χ.even_or_odd.resolve_left h
       rw [completedLFunction, completedLFunction_one_sub_odd h.to_fun,
         pow_one, h, div_I, mul_neg_one, ← neg_mul, neg_neg]
