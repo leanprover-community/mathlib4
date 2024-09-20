@@ -5,6 +5,7 @@ Authors: Yongle Hu
 -/
 import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 import Mathlib.RingTheory.LocalProperties.Basic
+import Mathlib.RingTheory.Localization.LocalizationLocalization
 
 /-!
 # `IsIntegrallyClosed` is a local property
