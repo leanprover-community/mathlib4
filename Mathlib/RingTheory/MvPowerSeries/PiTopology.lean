@@ -127,7 +127,7 @@ theorem continuous_C [Ring R] [TopologicalRing R] : Continuous (C σ R) := by
 /-- Scalar multiplication on `MvPowerSeries` is continous -/
 instance [Ring R] [TopologicalRing R] :
     ContinuousSMul R (MvPowerSeries σ R) := by
-  suffices (fun (u : R × MvPowerSeries σ R) ↦ (u.1 • u.2 : MvPowerSeries σ R)) = 
+  suffices (fun (u : R × MvPowerSeries σ R) ↦ (u.1 • u.2 : MvPowerSeries σ R)) =
     (fun u : MvPowerSeries σ R × MvPowerSeries σ R ↦ u.1 * u.2) ∘ (fun u ↦ ⟨C σ R u.1, u.2⟩) by
     apply ContinuousSMul.mk
     rw [this]
