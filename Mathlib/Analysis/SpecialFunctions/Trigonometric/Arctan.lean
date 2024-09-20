@@ -72,7 +72,7 @@ theorem continuousOn_tan_Ioo : ContinuousOn tan (Ioo (-(π / 2)) (π / 2)) := by
     rw [hxr_eq, ← one_mul (π / 2), mul_div_assoc, ge_iff_le, neg_mul_eq_neg_mul,
       mul_le_mul_right (half_pos pi_pos)]
     have hr_le : r ≤ -1 := by rwa [Int.lt_iff_add_one_le, ← le_neg_iff_add_nonpos_right] at h
-    rw [← le_sub_iff_add_le, mul_comm, ← le_div_iff]
+    rw [← le_sub_iff_add_le, mul_comm, ← le_div_iff₀]
     · norm_num
       rw [← Int.cast_one, ← Int.cast_neg]; norm_cast
     · exact zero_lt_two

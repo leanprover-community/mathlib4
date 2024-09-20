@@ -23,7 +23,7 @@ Functions with finite support are used (at least) in the following parts of the 
 
 * the linear combination of a family of vectors `v i` with coefficients `f i` (as used, e.g., to
   define linearly independent family `LinearIndependent`) is defined as a map
-  `Finsupp.total : (ι → M) → (ι →₀ R) →ₗ[R] M`.
+  `Finsupp.linearCombination : (ι → M) → (ι →₀ R) →ₗ[R] M`.
 
 Some other constructions are naturally equivalent to `α →₀ M` with some `α` and `M` but are defined
 in a different way in the library:
@@ -212,9 +212,6 @@ noncomputable def _root_.Equiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →�
 theorem unique_ext [Unique α] {f g : α →₀ M} (h : f default = g default) : f = g :=
   ext fun a => by rwa [Unique.eq_default a]
 
-theorem unique_ext_iff [Unique α] {f g : α →₀ M} : f = g ↔ f default = g default :=
-  ⟨fun h => h ▸ rfl, unique_ext⟩
-
 end Basic
 
 /-! ### Declarations about `single` -/
@@ -365,17 +362,21 @@ theorem unique_single [Unique α] (x : α →₀ M) : x = single default (x defa
 
 @[simp]
 theorem unique_single_eq_iff [Unique α] {b' : M} : single a b = single a' b' ↔ b = b' := by
-  rw [unique_ext_iff, Unique.eq_default a, Unique.eq_default a', single_eq_same, single_eq_same]
+  rw [Finsupp.unique_ext_iff, Unique.eq_default a, Unique.eq_default a', single_eq_same,
+    single_eq_same]
 
-lemma apply_single [AddCommMonoid N] [AddCommMonoid P]
-    {F : Type*} [FunLike F N P] [AddMonoidHomClass F N P] (e : F)
-    (a : α) (n : N) (b : α) :
+lemma apply_single' [Zero N] [Zero P] (e : N → P) (he : e 0 = 0) (a : α) (n : N) (b : α) :
     e ((single a n) b) = single a (e n) b := by
   classical
   simp only [single_apply]
   split_ifs
   · rfl
-  · exact map_zero e
+  · exact he
+
+lemma apply_single [Zero N] [Zero P] {F : Type*} [FunLike F N P] [ZeroHomClass F N P]
+    (e : F) (a : α) (n : N) (b : α) :
+    e ((single a n) b) = single a (e n) b :=
+  apply_single' e (map_zero e) a n b
 
 theorem support_eq_singleton {f : α →₀ M} {a : α} :
     f.support = {a} ↔ f a ≠ 0 ∧ f = single a (f a) :=
@@ -501,8 +502,9 @@ theorem support_update_ne_zero [DecidableEq α] (h : b ≠ 0) :
   simp only [update, h, ite_false, mem_support_iff, ne_eq]
   congr!
 
-theorem support_update_subset [DecidableEq α] [DecidableEq M] :
+theorem support_update_subset [DecidableEq α] :
     support (f.update a b) ⊆ insert a f.support := by
+  classical
   rw [support_update]
   split_ifs
   · exact (erase_subset _ _).trans (subset_insert _ _)
@@ -754,7 +756,7 @@ def embDomain (f : α ↪ β) (v : α →₀ M) : β →₀ M where
   mem_support_toFun a₂ := by
     dsimp
     split_ifs with h
-    · simp only [h, true_iff_iff, Ne]
+    · simp only [h, true_iff, Ne]
       rw [← not_mem_support_iff, not_not]
       classical apply Finset.choose_mem
     · simp only [h, Ne, ne_self_iff_false, not_true_eq_false]
@@ -907,6 +909,20 @@ theorem support_add_eq [DecidableEq α] {g₁ g₂ : α →₀ M} (h : Disjoint 
 @[simp]
 theorem single_add (a : α) (b₁ b₂ : M) : single a (b₁ + b₂) = single a b₁ + single a b₂ :=
   (zipWith_single_single _ _ _ _ _).symm
+
+theorem support_single_add {a : α} {b : M} {f : α →₀ M} (ha : a ∉ f.support) (hb : b ≠ 0) :
+    support (single a b + f) = cons a f.support ha := by
+  classical
+  have H := support_single_ne_zero a hb
+  rw [support_add_eq, H, cons_eq_insert, insert_eq]
+  rwa [H, disjoint_singleton_left]
+
+theorem support_add_single {a : α} {b : M} {f : α →₀ M} (ha : a ∉ f.support) (hb : b ≠ 0) :
+    support (f + single a b) = cons a f.support ha := by
+  classical
+  have H := support_single_ne_zero a hb
+  rw [support_add_eq, H, union_comm, cons_eq_insert, insert_eq]
+  rwa [H, disjoint_singleton_right]
 
 instance instAddZeroClass : AddZeroClass (α →₀ M) :=
   DFunLike.coe_injective.addZeroClass _ coe_zero coe_add

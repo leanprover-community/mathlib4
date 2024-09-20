@@ -34,10 +34,10 @@ related work.
 -/
 
 
-universe w w' v v' v'' u u' u''
-
 assert_not_exists CategoryTheory.CommSq
 assert_not_exists CategoryTheory.Adjunction
+
+universe w w' v v' v'' u u' u''
 
 namespace CategoryTheory
 
@@ -83,8 +83,6 @@ section
 attribute [local instance] ConcreteCategory.hasCoeToSort
 
 variable {C : Type u} [Category.{v} C] [ConcreteCategory.{w} C]
-
--- Porting note: forget_obj_eq_coe has become a syntactic tautology.
 
 /-- In any concrete category, `(forget C).map` is injective. -/
 abbrev ConcreteCategory.instFunLike {X Y : C} : FunLike (X ⟶ Y) X Y where

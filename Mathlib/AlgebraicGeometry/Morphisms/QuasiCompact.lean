@@ -65,7 +65,7 @@ instance quasiCompact_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiCo
 theorem isCompactOpen_iff_eq_finset_affine_union {X : Scheme} (U : Set X) :
     IsCompact U ∧ IsOpen U ↔ ∃ s : Set X.affineOpens, s.Finite ∧ U = ⋃ i ∈ s, i := by
   apply Opens.IsBasis.isCompact_open_iff_eq_finite_iUnion
-    (fun (U : X.affineOpens) => (U : Opens X))
+    (fun (U : X.affineOpens) => (U : X.Opens))
   · rw [Subtype.range_coe]; exact isBasis_affine_open X
   · exact fun i => i.2.isCompact
 
@@ -77,7 +77,7 @@ theorem isCompactOpen_iff_eq_basicOpen_union {X : Scheme} [IsAffine X] (U : Set 
 
 theorem quasiCompact_iff_forall_affine :
     QuasiCompact f ↔
-      ∀ U : Opens Y, IsAffineOpen U → IsCompact (f ⁻¹ᵁ U : Set X) := by
+      ∀ U : Y.Opens, IsAffineOpen U → IsCompact (f ⁻¹ᵁ U : Set X) := by
   rw [quasiCompact_iff]
   refine ⟨fun H U hU => H U U.isOpen hU.isCompact, ?_⟩
   intro H U hU hU'
@@ -85,7 +85,7 @@ theorem quasiCompact_iff_forall_affine :
   simp only [Set.preimage_iUnion]
   exact Set.Finite.isCompact_biUnion hS (fun i _ => H i i.prop)
 
-theorem isCompact_basicOpen (X : Scheme) {U : Opens X} (hU : IsCompact (U : Set X))
+theorem isCompact_basicOpen (X : Scheme) {U : X.Opens} (hU : IsCompact (U : Set X))
     (f : Γ(X, U)) : IsCompact (X.basicOpen f : Set X) := by
   classical
   refine ((isCompactOpen_iff_eq_finset_affine_union _).mpr ?_).1
@@ -109,7 +109,7 @@ theorem isCompact_basicOpen (X : Scheme) {U : Opens X} (hU : IsCompact (U : Set 
     -- Porting note: had to make explicit the first given parameter to `Set.subset_iUnion₂`
     exact Set.Subset.trans (Set.Subset.rfl : _ ≤ g ⟨i, hi⟩)
       (@Set.subset_iUnion₂ _ _ _
-        (fun (i : Scheme.affineOpens X) (_ : i ∈ Set.range g) => (i : Set X.toPresheafedSpace)) _
+        (fun (i : X.affineOpens) (_ : i ∈ Set.range g) => (i : Set X.toPresheafedSpace)) _
         (Set.mem_range_self ⟨i, hi⟩))
   · rintro ⟨i, hi⟩ ⟨⟨j, hj⟩, hj'⟩
     rw [← hj']
@@ -176,18 +176,18 @@ instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact f] : QuasiCompact (pullback.s
   quasiCompact_stableUnderBaseChange.snd f g inferInstance
 
 @[elab_as_elim]
-theorem compact_open_induction_on {P : Opens X → Prop} (S : Opens X)
+theorem compact_open_induction_on {P : X.Opens → Prop} (S : X.Opens)
     (hS : IsCompact S.1) (h₁ : P ⊥)
-    (h₂ : ∀ (S : Opens X) (_ : IsCompact S.1) (U : X.affineOpens), P S → P (S ⊔ U)) :
+    (h₂ : ∀ (S : X.Opens) (_ : IsCompact S.1) (U : X.affineOpens), P S → P (S ⊔ U)) :
     P S := by
   classical
   obtain ⟨s, hs, hs'⟩ := (isCompactOpen_iff_eq_finset_affine_union S.1).mp ⟨hS, S.2⟩
-  replace hs' : S = iSup fun i : s => (i : Opens X) := by ext1; simpa using hs'
+  replace hs' : S = iSup fun i : s => (i : X.Opens) := by ext1; simpa using hs'
   subst hs'
   apply @Set.Finite.induction_on _ _ _ hs
   · convert h₁; rw [iSup_eq_bot]; rintro ⟨_, h⟩; exact h.elim
   · intro x s _ hs h₄
-    have : IsCompact (⨆ i : s, (i : Opens X)).1 := by
+    have : IsCompact (⨆ i : s, (i : X.Opens)).1 := by
       refine ((isCompactOpen_iff_eq_finset_affine_union _).mpr ?_).1; exact ⟨s, hs, by simp⟩
     convert h₂ _ this x h₄
     rw [iSup_subtype, sup_comm]
@@ -195,7 +195,7 @@ theorem compact_open_induction_on {P : Opens X → Prop} (S : Opens X)
     exact iSup_insert
 
 theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen (X : Scheme)
-    {U : Opens X} (hU : IsAffineOpen U) (x f : Γ(X, U))
+    {U : X.Opens} (hU : IsAffineOpen U) (x f : Γ(X, U))
     (H : x |_ X.basicOpen f = 0) : ∃ n : ℕ, f ^ n * x = 0 := by
   rw [← map_zero (X.presheaf.map (homOfLE <| X.basicOpen_le f : X.basicOpen f ⟶ U).op)] at H
   obtain ⟨⟨_, n, rfl⟩, e⟩ := (hU.isLocalization_basicOpen f).exists_of_eq H
@@ -204,14 +204,14 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen (X : Sch
 /-- If `x : Γ(X, U)` is zero on `D(f)` for some `f : Γ(X, U)`, and `U` is quasi-compact, then
 `f ^ n * x = 0` for some `n`. -/
 theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme.{u})
-    {U : Opens X} (hU : IsCompact U.1) (x f : Γ(X, U))
+    {U : X.Opens} (hU : IsCompact U.1) (x f : Γ(X, U))
     (H : x |_ X.basicOpen f = 0) : ∃ n : ℕ, f ^ n * x = 0 := by
   obtain ⟨s, hs, e⟩ := (isCompactOpen_iff_eq_finset_affine_union U.1).mp ⟨hU, U.2⟩
-  replace e : U = iSup fun i : s => (i : Opens X) := by
+  replace e : U = iSup fun i : s => (i : X.Opens) := by
     ext1; simpa using e
   have h₁ : ∀ i : s, i.1.1 ≤ U := by
     intro i
-    change (i : Opens X) ≤ U
+    change (i : X.Opens) ≤ U
     rw [e]
     -- Porting note: `exact le_iSup _ _` no longer works
     exact le_iSup (fun (i : s) => (i : Opens (X.toPresheafedSpace))) _
@@ -233,7 +233,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
   use Finset.univ.sup n
   suffices ∀ i : s, X.presheaf.map (homOfLE (h₁ i)).op (f ^ Finset.univ.sup n * x) = 0 by
     subst e
-    apply TopCat.Sheaf.eq_of_locally_eq X.sheaf fun i : s => (i : Opens X)
+    apply TopCat.Sheaf.eq_of_locally_eq X.sheaf fun i : s => (i : X.Opens)
     intro i
     rw [map_zero]
     apply this
@@ -249,7 +249,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme
 /-- A section over a compact open of a scheme is nilpotent if and only if its associated
 basic open is empty. -/
 lemma Scheme.isNilpotent_iff_basicOpen_eq_bot_of_isCompact {X : Scheme.{u}}
-    {U : Opens X} (hU : IsCompact U.carrier) (f : Γ(X, U)) :
+    {U : X.Opens} (hU : IsCompact (U : Set X)) (f : Γ(X, U)) :
     IsNilpotent f ↔ X.basicOpen f = ⊥ := by
   refine ⟨X.basicOpen_eq_bot_of_isNilpotent U f, fun hf ↦ ?_⟩
   have h : (1 : Γ(X, U)) |_ X.basicOpen f = (0 : Γ(X, X.basicOpen f)) := by
@@ -266,9 +266,9 @@ lemma Scheme.isNilpotent_iff_basicOpen_eq_bot_of_isCompact {X : Scheme.{u}}
 
 /-- The zero locus of a set of sections over a compact open of a scheme is `X` if and only if
 `s` is contained in the nilradical of `Γ(X, U)`. -/
-lemma Scheme.zeroLocus_eq_top_iff_subset_nilradical_of_isCompact {X : Scheme.{u}} {U : Opens X}
-    (hU : IsCompact U.carrier) (s : Set Γ(X, U)) :
-    X.zeroLocus s = ⊤ ↔ s ⊆ (nilradical Γ(X, U)).carrier := by
+lemma Scheme.zeroLocus_eq_top_iff_subset_nilradical_of_isCompact {X : Scheme.{u}} {U : X.Opens}
+    (hU : IsCompact (U : Set X)) (s : Set Γ(X, U)) :
+    X.zeroLocus s = ⊤ ↔ s ⊆ nilradical Γ(X, U) := by
   simp [Scheme.zeroLocus_def, ← Scheme.isNilpotent_iff_basicOpen_eq_bot_of_isCompact hU,
     ← mem_nilradical, Set.subset_def]
 

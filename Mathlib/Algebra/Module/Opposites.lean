@@ -10,7 +10,7 @@ import Mathlib.Algebra.Module.Equiv.Defs
 # Module operations on `Mᵐᵒᵖ`
 
 This file contains definitions that build on top of the group action definitions in
-`Algebra.GroupWithZero.Action.Opposite`.
+`Mathlib.Algebra.GroupWithZero.Action.Opposite`.
 -/
 
 

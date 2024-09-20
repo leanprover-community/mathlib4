@@ -92,7 +92,7 @@ theorem finrank {n} (h : n ≠ 0) : FiniteDimensional.finrank (ZMod p) (GaloisFi
   set g_poly := (X ^ p ^ n - X : (ZMod p)[X])
   have hp : 1 < p := h_prime.out.one_lt
   have aux : g_poly ≠ 0 := FiniteField.X_pow_card_pow_sub_X_ne_zero _ h hp
-  -- Porting note: in the statment of `key`, replaced `g_poly` by its value otherwise the
+  -- Porting note: in the statement of `key`, replaced `g_poly` by its value otherwise the
   -- proof fails
   have key : Fintype.card (g_poly.rootSet (GaloisField p n)) = g_poly.natDegree :=
     card_rootSet_eq_natDegree (galois_poly_separable p _ (dvd_pow (dvd_refl p) h))
@@ -189,7 +189,7 @@ namespace FiniteField
 variable {K : Type*} [Field K] [Fintype K] {K' : Type*} [Field K'] [Fintype K']
 
 /-- Uniqueness of finite fields:
-  Any two finite fields of the same cardinality are (possibly non canonically) isomorphic-/
+  Any two finite fields of the same cardinality are (possibly non canonically) isomorphic -/
 def algEquivOfCardEq (p : ℕ) [h_prime : Fact p.Prime] [Algebra (ZMod p) K] [Algebra (ZMod p) K']
     (hKK' : Fintype.card K = Fintype.card K') : K ≃ₐ[ZMod p] K' := by
   have : CharP K p := by rw [← Algebra.charP_iff (ZMod p) K p]; exact ZMod.charP p
@@ -203,7 +203,7 @@ def algEquivOfCardEq (p : ℕ) [h_prime : Fact p.Prime] [Algebra (ZMod p) K] [Al
   exact AlgEquiv.trans hGalK hK'Gal
 
 /-- Uniqueness of finite fields:
-  Any two finite fields of the same cardinality are (possibly non canonically) isomorphic-/
+  Any two finite fields of the same cardinality are (possibly non canonically) isomorphic -/
 def ringEquivOfCardEq (hKK' : Fintype.card K = Fintype.card K') : K ≃+* K' := by
   choose p _char_p_K using CharP.exists K
   choose p' _char_p'_K' using CharP.exists K'

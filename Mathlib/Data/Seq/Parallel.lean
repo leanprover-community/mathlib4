@@ -3,7 +3,6 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init.Data.Prod
 import Mathlib.Data.Seq.WSeq
 
 /-!
@@ -129,7 +128,6 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
     · have C : corec parallel.aux1 (l, S) = pure a := by
         apply destruct_eq_pure
         rw [corec_eq, parallel.aux1]
-        dsimp only []
         rw [h]
         simp only [rmap]
       rw [C]
@@ -147,7 +145,6 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
     · have C : corec parallel.aux1 (l, S) = pure a := by
         apply destruct_eq_pure
         rw [corec_eq, parallel.aux1]
-        dsimp only []
         rw [h]
         simp only [rmap]
       rw [C]

@@ -38,8 +38,7 @@ Henstock-Kurzweil integral.
 Henstock-Kurzweil integral, integral, Stokes theorem, divergence theorem
 -/
 
-
-open scoped Classical NNReal ENNReal Topology BoxIntegral
+open scoped NNReal ENNReal Topology BoxIntegral
 
 open ContinuousLinearMap (lsmul)
 
@@ -78,7 +77,7 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
     `f y - a - f' (y - x)` over each of these faces is less than or equal to `ε * c * vol I`. We
     integrate a function of the norm `≤ ε * diam I.Icc` over a box of volume
     `∏ j ≠ i, (I.upper j - I.lower j)`. Since `diam I.Icc ≤ c * (I.upper i - I.lower i)`, we get the
-    required estimate.  -/
+    required estimate. -/
   have Hl : I.lower i ∈ Icc (I.lower i) (I.upper i) := Set.left_mem_Icc.2 (I.lower_le_upper i)
   have Hu : I.upper i ∈ Icc (I.lower i) (I.upper i) := Set.right_mem_Icc.2 (I.lower_le_upper i)
   have Hi : ∀ x ∈ Icc (I.lower i) (I.upper i),

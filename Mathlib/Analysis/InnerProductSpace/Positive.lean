@@ -99,6 +99,31 @@ theorem IsPositive.orthogonalProjection_comp {T : E →L[𝕜] E} (hT : T.IsPosi
   have := hT.conj_adjoint (orthogonalProjection U : E →L[𝕜] U)
   rwa [U.adjoint_orthogonalProjection] at this
 
+open scoped NNReal
+
+lemma antilipschitz_of_forall_le_inner_map {H : Type*} [NormedAddCommGroup H]
+    [InnerProductSpace 𝕜 H] (f : H →L[𝕜] H) {c : ℝ≥0} (hc : 0 < c)
+    (h : ∀ x, ‖x‖ ^ 2 * c ≤ ‖⟪f x, x⟫_𝕜‖) : AntilipschitzWith c⁻¹ f := by
+  refine f.antilipschitz_of_bound (K := c⁻¹) fun x ↦ ?_
+  rw [NNReal.coe_inv, inv_mul_eq_div, le_div_iff₀ (by exact_mod_cast hc)]
+  simp_rw [sq, mul_assoc] at h
+  by_cases hx0 : x = 0
+  · simp [hx0]
+  · apply (map_le_map_iff <| OrderIso.mulLeft₀ ‖x‖ (norm_pos_iff'.mpr hx0)).mp
+    exact (h x).trans <| (norm_inner_le_norm _ _).trans <| (mul_comm _ _).le
+
+lemma isUnit_of_forall_le_norm_inner_map (f : E →L[𝕜] E) {c : ℝ≥0} (hc : 0 < c)
+    (h : ∀ x, ‖x‖ ^ 2 * c ≤ ‖⟪f x, x⟫_𝕜‖) : IsUnit f := by
+  rw [isUnit_iff_bijective, bijective_iff_dense_range_and_antilipschitz]
+  have h_anti : AntilipschitzWith c⁻¹ f := antilipschitz_of_forall_le_inner_map f hc h
+  refine ⟨?_, ⟨_, h_anti⟩⟩
+  have _inst := h_anti.completeSpace_range_clm
+  rw [Submodule.topologicalClosure_eq_top_iff, Submodule.eq_bot_iff]
+  intro x hx
+  have : ‖x‖ ^ 2 * c = 0 := le_antisymm (by simpa only [hx (f x) ⟨x, rfl⟩, norm_zero] using h x)
+    (by positivity)
+  aesop
+
 section Complex
 
 variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace ℂ E'] [CompleteSpace E']

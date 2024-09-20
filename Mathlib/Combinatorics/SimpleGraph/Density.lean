@@ -165,7 +165,7 @@ theorem mul_edgeDensity_le_edgeDensity (hs : s₂ ⊆ s₁) (ht : t₂ ⊆ t₁)
     (ht₂ : t₂.Nonempty) :
     (s₂.card : ℚ) / s₁.card * (t₂.card / t₁.card) * edgeDensity r s₂ t₂ ≤ edgeDensity r s₁ t₁ := by
   have hst : (s₂.card : ℚ) * t₂.card ≠ 0 := by simp [hs₂.ne_empty, ht₂.ne_empty]
-  rw [edgeDensity, edgeDensity, div_mul_div_comm, mul_comm, div_mul_div_cancel _ hst]
+  rw [edgeDensity, edgeDensity, div_mul_div_comm, mul_comm, div_mul_div_cancel₀ hst]
   gcongr
   exact interedges_mono hs ht
 
@@ -214,9 +214,9 @@ theorem abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq (hs : s₂ ⊆ s₁) (
   have h₁ := hs₂'.mono hs
   have h₂ := ht₂'.mono ht
   gcongr
-  · refine (le_div_iff ?_).2 hs₂
+  · refine (le_div_iff₀ ?_).2 hs₂
     exact mod_cast h₁.card_pos
-  · refine (le_div_iff ?_).2 ht₂
+  · refine (le_div_iff₀ ?_).2 ht₂
     exact mod_cast h₂.card_pos
 
 /-- If `s₂ ⊆ s₁`, `t₂ ⊆ t₁` and they take up all but a `δ`-proportion, then the difference in edge
@@ -237,23 +237,26 @@ end Asymmetric
 
 section Symmetric
 
-variable (r : α → α → Prop) [DecidableRel r] {s s₁ s₂ t t₁ t₂ : Finset α} {a b : α}
-variable {r} (hr : Symmetric r)
+variable {r : α → α → Prop} [DecidableRel r] {s s₁ s₂ t t₁ t₂ : Finset α} {a b : α}
 
 @[simp]
-theorem swap_mem_interedges_iff {x : α × α} : x.swap ∈ interedges r s t ↔ x ∈ interedges r t s := by
+theorem swap_mem_interedges_iff (hr : Symmetric r) {x : α × α} :
+    x.swap ∈ interedges r s t ↔ x ∈ interedges r t s := by
   rw [mem_interedges_iff, mem_interedges_iff, hr.iff]
   exact and_left_comm
 
-theorem mk_mem_interedges_comm : (a, b) ∈ interedges r s t ↔ (b, a) ∈ interedges r t s :=
+theorem mk_mem_interedges_comm (hr : Symmetric r) :
+    (a, b) ∈ interedges r s t ↔ (b, a) ∈ interedges r t s :=
   @swap_mem_interedges_iff _ _ _ _ _ hr (b, a)
 
-theorem card_interedges_comm (s t : Finset α) : (interedges r s t).card = (interedges r t s).card :=
+theorem card_interedges_comm (hr : Symmetric r) (s t : Finset α) :
+    (interedges r s t).card = (interedges r t s).card :=
   Finset.card_bij (fun (x : α × α) _ ↦ x.swap) (fun _ ↦ (swap_mem_interedges_iff hr).2)
     (fun _ _ _ _ h ↦ Prod.swap_injective h) fun x h ↦
     ⟨x.swap, (swap_mem_interedges_iff hr).2 h, x.swap_swap⟩
 
-theorem edgeDensity_comm (s t : Finset α) : edgeDensity r s t = edgeDensity r t s := by
+theorem edgeDensity_comm (hr : Symmetric r) (s t : Finset α) :
+    edgeDensity r s t = edgeDensity r t s := by
   rw [edgeDensity, mul_comm, card_interedges_comm hr, edgeDensity]
 
 end Symmetric
