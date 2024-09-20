@@ -42,11 +42,8 @@ TODO: add the similar result for the series of homogeneous components.
 ## Instances
 
 - If `R` is a topological (semi)ring, then so is `MvPowerSeries σ R`.
-
 - If the topology of `R` is T0 or T2, then so is that of `MvPowerSeries σ R`.
-
 - If `R` is a `UniformAddGroup`, then so is `MvPowerSeries σ R`.
-
 - If `R` is complete, then so is `MvPowerSeries σ R`.
 
 -/
