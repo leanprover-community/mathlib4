@@ -1243,6 +1243,14 @@ theorem ord_ofNat (n : ℕ) [n.AtLeastTwo] : ord (no_index (OfNat.ofNat n)) = Of
   ord_nat n
 
 @[simp]
+theorem ord_aleph0 : ord.{u} ℵ₀ = ω :=
+  le_antisymm (ord_le.2 le_rfl) <|
+    le_of_forall_lt fun o h => by
+      rcases Ordinal.lt_lift_iff.1 h with ⟨o, rfl, h'⟩
+      rw [lt_ord, ← lift_card, lift_lt_aleph0, ← typein_enum (· < ·) h']
+      exact lt_aleph0_iff_fintype.2 ⟨Set.fintypeLTNat _⟩
+
+@[simp]
 theorem lift_ord (c) : Ordinal.lift.{u,v} (ord c) = ord (lift.{u,v} c) := by
   refine le_antisymm (le_of_forall_lt fun a ha => ?_) ?_
   · rcases Ordinal.lt_lift_iff.1 ha with ⟨a, rfl, _⟩
@@ -1448,6 +1456,32 @@ theorem type_fintype (r : α → α → Prop) [IsWellOrder α r] [Fintype α] :
     type r = Fintype.card α := by rw [← card_eq_nat, card_type, mk_fintype]
 
 theorem type_fin (n : ℕ) : @type (Fin n) (· < ·) _ = n := by simp
+
+/-- An ordinal is initial when it is the first ordinal with a given cardinality. -/
+def IsInitial (o : Ordinal) : Prop :=
+  o.card.ord = o
+
+theorem IsInitial.ord_card {o : Ordinal} (h : IsInitial o) : o.card.ord = o := h
+
+theorem IsInitial.le_of_card_le {a b : Ordinal} (ha : IsInitial a)
+    (hb : a.card ≤ b.card) : a ≤ b := by
+  rw [← ha.ord_card]
+  exact (ord_mono hb).trans (ord_card_le b)
+
+theorem isInitial_ord (c : Cardinal) : IsInitial c.ord := by
+  rw [IsInitial, card_ord]
+
+theorem isInitial_natCast (n : ℕ) : IsInitial n := by
+  rw [IsInitial, card_nat, ord_nat]
+
+theorem isInitial_zero : IsInitial 0 := by
+  exact_mod_cast isInitial_natCast 0
+
+theorem isInitial_one : IsInitial 1 := by
+  exact_mod_cast isInitial_natCast 1
+
+theorem isInitial_omega : IsInitial ω := by
+  rw [IsInitial, card_omega, ord_aleph0]
 
 end Ordinal
 
