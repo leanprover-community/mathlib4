@@ -542,7 +542,7 @@ theorem snoc_update : snoc (update p i y) x = update (snoc p x) (castSucc i) y :
         · simp [h, h']
         · exact heq_of_cast_eq C2 rfl
       rw [E1, E2]
-      exact eq_rec_compose (Eq.trans C2.symm C1) C2 y
+      rfl
     · have : ¬castLT j h = i := by
         intro E
         apply h'
@@ -778,7 +778,7 @@ theorem insertNth_apply_succAbove (i : Fin (n + 1)) (x : α i) (p : ∀ j, α (i
     generalize hk : castPred ((succAbove i) j) H₁ = k
     rw [castPred_succAbove _ _ hlt] at hk; cases hk
     intro; rfl
-  · generalize_proofs H₁ H₂; revert H₂
+  · generalize_proofs H₀ H₁ H₂; revert H₂
     generalize hk : pred (succAbove i j) H₁ = k
     erw [pred_succAbove _ _ (Fin.not_lt.1 hlt)] at hk; cases hk
     intro; rfl

@@ -477,7 +477,7 @@ theorem IsRotated.dropLast_tail {α}
   | [] => by simp
   | [_] => by simp
   | a :: b :: L => by
-    simp at hL' |-
+    simp only [head_cons, ne_eq, reduceCtorEq, not_false_eq_true, getLast_cons] at hL'
     simp [hL', IsRotated.cons_getLast_dropLast]
 
 /-- List of all cyclic permutations of `l`.

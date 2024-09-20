@@ -47,7 +47,7 @@ theorem natDegree_list_sum_le (l : List S[X]) : natDegree l.sum ≤ (l.map natDe
   List.sum_le_foldr_max natDegree (by simp) natDegree_add_le _
 
 theorem natDegree_multiset_sum_le (l : Multiset S[X]) :
-    natDegree l.sum ≤ (l.map natDegree).foldr max max_left_comm 0 :=
+    natDegree l.sum ≤ (l.map natDegree).foldr max 0 :=
   Quotient.inductionOn l (by simpa using natDegree_list_sum_le)
 
 theorem natDegree_sum_le (f : ι → S[X]) :
@@ -186,7 +186,7 @@ theorem natDegree_multiset_prod_of_monic (h : ∀ f ∈ t, Monic f) :
     rw [this]
     simp
   convert prod_replicate (Multiset.card t) (1 : R)
-  · simp only [eq_replicate, Multiset.card_map, eq_self_iff_true, true_and_iff]
+  · simp only [eq_replicate, Multiset.card_map, eq_self_iff_true, true_and]
     rintro i hi
     obtain ⟨i, hi, rfl⟩ := Multiset.mem_map.mp hi
     apply h

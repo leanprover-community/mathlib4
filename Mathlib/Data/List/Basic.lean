@@ -7,6 +7,7 @@ import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.List.Defs
 import Mathlib.Data.List.Monad
+import Mathlib.Logic.OpClass
 import Mathlib.Logic.Unique
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Common
@@ -34,7 +35,7 @@ variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : Lis
 @[deprecated (since := "2024-07-27")]
 theorem le_eq_not_gt [LT α] : ∀ l₁ l₂ : List α, (l₁ ≤ l₂) = ¬l₂ < l₁ := fun _ _ => rfl
 
-@[deprecated (since := "2024-06-07")] alias toArray_data := Array.data_toArray
+@[deprecated (since := "2024-06-07")] alias toArray_data := Array.toList_toArray
 
 -- Porting note: Delete this attribute
 -- attribute [inline] List.head!
@@ -57,9 +58,6 @@ instance : Std.Associative (α := List α) Append.append where
 @[simp] theorem cons_injective {a : α} : Injective (cons a) := fun _ _ => tail_eq_of_cons_eq
 
 theorem singleton_injective : Injective fun a : α => [a] := fun _ _ h => (cons_eq_cons.1 h).1
-
-theorem singleton_inj {a b : α} : [a] = [b] ↔ a = b :=
-  singleton_injective.eq_iff
 
 theorem set_of_mem_cons (l : List α) (a : α) : { x | x ∈ a :: l } = insert a { x | x ∈ l } :=
   Set.ext fun _ => mem_cons
@@ -488,6 +486,15 @@ theorem get_eq_get? (l : List α) (i : Fin l.length) :
     l.get i = (l.get? i).get (by simp [getElem?_eq_getElem]) := by
   simp
 
+theorem exists_mem_iff_getElem {l : List α} {p : α → Prop} :
+    (∃ x ∈ l, p x) ↔ ∃ (i : ℕ) (_ : i < l.length), p l[i] := by
+  simp only [mem_iff_getElem]
+  exact ⟨fun ⟨_x, ⟨i, hi, hix⟩, hxp⟩ ↦ ⟨i, hi, hix ▸ hxp⟩, fun ⟨i, hi, hp⟩ ↦ ⟨_, ⟨i, hi, rfl⟩, hp⟩⟩
+
+theorem forall_mem_iff_getElem {l : List α} {p : α → Prop} :
+    (∀ x ∈ l, p x) ↔ ∀ (i : ℕ) (_ : i < l.length), p l[i] := by
+  simp [mem_iff_getElem, @forall_swap α]
+
 theorem getElem_cons {l : List α} {a : α} {n : ℕ} (h : n < (a :: l).length) :
     (a :: l)[n] = if hn : n = 0 then a else l[n - 1]'(by rw [length_cons] at h; omega) := by
   cases n <;> simp
@@ -696,7 +703,7 @@ theorem indexOf_eq_length {a : α} {l : List α} : indexOf a l = length l ↔ a 
   rw [cond_eq_if]
   split_ifs with h <;> simp at h
   · exact iff_of_false (by rintro ⟨⟩) fun H => H <| Or.inl h.symm
-  · simp only [Ne.symm h, false_or_iff]
+  · simp only [Ne.symm h, false_or]
     rw [← ih]
     exact succ_inj'
 
@@ -712,7 +719,7 @@ theorem indexOf_le_length {a : α} {l : List α} : indexOf a l ≤ length l := b
   · rw [if_neg h]; exact succ_le_succ ih
 
 theorem indexOf_lt_length {a} {l : List α} : indexOf a l < length l ↔ a ∈ l :=
-  ⟨fun h => Decidable.by_contradiction fun al => Nat.ne_of_lt h <| indexOf_eq_length.2 al,
+  ⟨fun h => Decidable.byContradiction fun al => Nat.ne_of_lt h <| indexOf_eq_length.2 al,
    fun al => (lt_of_le_of_ne indexOf_le_length) fun h => indexOf_eq_length.1 h al⟩
 
 theorem indexOf_append_of_mem {a : α} (h : a ∈ l₁) : indexOf a (l₁ ++ l₂) = indexOf a l₁ := by
@@ -1232,7 +1239,7 @@ theorem getElem_succ_scanl {i : ℕ} (h : i + 1 < (scanl f b l).length) :
     · simp only [length] at h
       exact absurd h (by omega)
     · simp_rw [scanl_cons]
-      rw [getElem_append_right']
+      rw [getElem_append_right]
       · simp only [length, Nat.zero_add 1, succ_add_sub_one, hi]; rfl
       · simp only [length_singleton]; omega
 
@@ -1263,25 +1270,27 @@ section FoldlEqFoldr
 -- foldl and foldr coincide when f is commutative and associative
 variable {f : α → α → α}
 
-theorem foldl1_eq_foldr1 (hassoc : Associative f) :
+theorem foldl1_eq_foldr1 [hassoc : Std.Associative f] :
     ∀ a b l, foldl f a (l ++ [b]) = foldr f b (a :: l)
   | a, b, nil => rfl
   | a, b, c :: l => by
-    simp only [cons_append, foldl_cons, foldr_cons, foldl1_eq_foldr1 hassoc _ _ l]; rw [hassoc]
+    simp only [cons_append, foldl_cons, foldr_cons, foldl1_eq_foldr1 _ _ l]
+    rw [hassoc.assoc]
 
-theorem foldl_eq_of_comm_of_assoc (hcomm : Commutative f) (hassoc : Associative f) :
+theorem foldl_eq_of_comm_of_assoc [hcomm : Std.Commutative f] [hassoc : Std.Associative f] :
     ∀ a b l, foldl f a (b :: l) = f b (foldl f a l)
-  | a, b, nil => hcomm a b
+  | a, b, nil => hcomm.comm a b
   | a, b, c :: l => by
     simp only [foldl_cons]
-    rw [← foldl_eq_of_comm_of_assoc hcomm hassoc .., right_comm _ hcomm hassoc]; rfl
+    have : RightCommutative f := inferInstance
+    rw [← foldl_eq_of_comm_of_assoc .., this.right_comm]; rfl
 
-theorem foldl_eq_foldr (hcomm : Commutative f) (hassoc : Associative f) :
+theorem foldl_eq_foldr [Std.Commutative f] [Std.Associative f] :
     ∀ a l, foldl f a l = foldr f a l
   | a, nil => rfl
   | a, b :: l => by
-    simp only [foldr_cons, foldl_eq_of_comm_of_assoc hcomm hassoc]
-    rw [foldl_eq_foldr hcomm hassoc a l]
+    simp only [foldr_cons, foldl_eq_of_comm_of_assoc]
+    rw [foldl_eq_foldr a l]
 
 end FoldlEqFoldr
 
@@ -1512,18 +1521,19 @@ theorem modifyLast.go_append_one (f : α → α) (a : α) (tl : List α) (r : Ar
     rw [modifyLast.go, modifyLast.go]
     case x_3 | x_3 => exact append_ne_nil_of_right_ne_nil tl (cons_ne_nil a [])
     rw [modifyLast.go_append_one _ _ tl _, modifyLast.go_append_one _ _ tl (Array.push #[] hd)]
-    simp only [Array.toListAppend_eq, Array.push_data, Array.data_toArray, nil_append, append_assoc]
+    simp only [Array.toListAppend_eq, Array.push_toList, Array.toList_toArray, nil_append,
+      append_assoc]
 
 theorem modifyLast_append_one (f : α → α) (a : α) (l : List α) :
     modifyLast f (l ++ [a]) = l ++ [f a] := by
   cases l with
   | nil =>
-    simp only [nil_append, modifyLast, modifyLast.go, Array.toListAppend_eq, Array.data_toArray]
+    simp only [nil_append, modifyLast, modifyLast.go, Array.toListAppend_eq, Array.toList_toArray]
   | cons _ tl =>
     simp only [cons_append, modifyLast]
     rw [modifyLast.go]
     case x_3 => exact append_ne_nil_of_right_ne_nil tl (cons_ne_nil a [])
-    rw [modifyLast.go_append_one, Array.toListAppend_eq, Array.push_data, Array.data_toArray,
+    rw [modifyLast.go_append_one, Array.toListAppend_eq, Array.push_toList, Array.toList_toArray,
       nil_append, cons_append, nil_append, cons_inj_right]
     exact modifyLast_append_one _ _ tl
 
@@ -1574,11 +1584,13 @@ variable (f : α → Option α)
 theorem lookmap.go_append (l : List α) (acc : Array α) :
     lookmap.go f l acc = acc.toListAppend (lookmap f l) := by
   cases l with
-  | nil => rfl
+  | nil => simp [go, lookmap]
   | cons hd tl =>
     rw [lookmap, go, go]
     cases f hd with
-    | none => simp only [go_append tl _, Array.toListAppend_eq, append_assoc, Array.push_data]; rfl
+    | none =>
+      simp only [go_append tl _, Array.toListAppend_eq, append_assoc, Array.push_toList]
+      rfl
     | some a => rfl
 
 @[simp]
@@ -1588,13 +1600,13 @@ theorem lookmap_nil : [].lookmap f = [] :=
 @[simp]
 theorem lookmap_cons_none {a : α} (l : List α) (h : f a = none) :
     (a :: l).lookmap f = a :: l.lookmap f := by
-  simp only [lookmap, lookmap.go, Array.toListAppend_eq, Array.data_toArray, nil_append]
+  simp only [lookmap, lookmap.go, Array.toListAppend_eq, Array.toList_toArray, nil_append]
   rw [lookmap.go_append, h]; rfl
 
 @[simp]
 theorem lookmap_cons_some {a b : α} (l : List α) (h : f a = some b) :
     (a :: l).lookmap f = b :: l := by
-  simp only [lookmap, lookmap.go, Array.toListAppend_eq, Array.data_toArray, nil_append]
+  simp only [lookmap, lookmap.go, Array.toListAppend_eq, Array.toList_toArray, nil_append]
   rw [h]
 
 theorem lookmap_some : ∀ l : List α, l.lookmap some = l
@@ -1754,12 +1766,8 @@ lemma filter_attach (l : List α) (p : α → Bool) :
     simp_rw [map_map, comp_def, Subtype.map, id, ← Function.comp_apply (g := Subtype.val),
       ← filter_map, attach_map_subtype_val]
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 lemma filter_comm (q) (l : List α) : filter p (filter q l) = filter q (filter p l) := by
-  simp [_root_.and_comm]
+  simp [Bool.and_comm]
 
 @[simp]
 theorem filter_true (l : List α) :
@@ -1881,7 +1889,7 @@ theorem erase_getElem [DecidableEq ι] {l : List ι} {i : ℕ} (hi : i < l.lengt
     | succ i =>
       have hi' : i < l.length := by simpa using hi
       if ha : a = l[i] then
-        simpa [ha] using .trans (perm_cons_erase (l.getElem_mem i _)) (.cons _ (IH hi'))
+        simpa [ha] using .trans (perm_cons_erase (getElem_mem _)) (.cons _ (IH hi'))
       else
         simpa [ha] using IH hi'
 
@@ -2176,7 +2184,7 @@ variable {p q : α → Prop} {l : List α}
 
 @[simp]
 theorem forall_cons (p : α → Prop) (x : α) : ∀ l : List α, Forall p (x :: l) ↔ p x ∧ Forall p l
-  | [] => (and_true_iff _).symm
+  | [] => (and_iff_left_of_imp fun _ ↦ trivial).symm
   | _ :: _ => Iff.rfl
 
 theorem forall_iff_forall_mem : ∀ {l : List α}, Forall p l ↔ ∀ x ∈ l, p x
@@ -2202,7 +2210,7 @@ end Forall
 /-! ### Miscellaneous lemmas -/
 
 theorem get_attach (L : List α) (i) :
-    (L.attach.get i).1 = L.get ⟨i, length_attach L ▸ i.2⟩ := by simp
+    (L.attach.get i).1 = L.get ⟨i, length_attach (L := L) ▸ i.2⟩ := by simp
 
 #adaptation_note
 /--
@@ -2274,6 +2282,15 @@ theorem disjoint_map {f : α → β} {s t : List α} (hf : Function.Injective f)
   rw [← pmap_eq_map _ _ _ (fun _ _ ↦ trivial), ← pmap_eq_map _ _ _ (fun _ _ ↦ trivial)]
   exact disjoint_pmap _ _ (fun _ _ _ _ h' ↦ hf h') h
 
+alias Disjoint.map := disjoint_map
+
+theorem Disjoint.of_map {f : α → β} {s t : List α} (h : Disjoint (s.map f) (t.map f)) :
+    Disjoint s t := fun _a has hat ↦
+  h (mem_map_of_mem f has) (mem_map_of_mem f hat)
+
+theorem Disjoint.map_iff {f : α → β} {s t : List α} (hf : Function.Injective f) :
+    Disjoint (s.map f) (t.map f) ↔ Disjoint s t :=
+  ⟨fun h ↦ h.of_map, fun h ↦ h.map hf⟩
 
 theorem Perm.disjoint_left {l₁ l₂ l : List α} (p : List.Perm l₁ l₂) :
     Disjoint l₁ l ↔ Disjoint l₂ l := by

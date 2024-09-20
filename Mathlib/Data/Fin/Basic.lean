@@ -181,6 +181,8 @@ protected theorem heq_fun₂_iff {α : Sort*} {k l k' l' : ℕ} (h : k = l) (h' 
   subst h'
   simp [Function.funext_iff]
 
+/-- Two elements of `Fin k` and `Fin l` are heq iff their values in `ℕ` coincide. This requires
+`k = l`. For the left implication without this assumption, see `val_eq_val_of_heq`. -/
 protected theorem heq_ext_iff {k l : ℕ} (h : k = l) {i : Fin k} {j : Fin l} :
     HEq i j ↔ (i : ℕ) = (j : ℕ) := by
   subst h
@@ -270,6 +272,12 @@ theorem pos_iff_ne_zero' [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
 
 @[simp] lemma cast_eq_self (a : Fin n) : cast rfl a = a := rfl
 
+@[simp] theorem cast_eq_zero {k l : ℕ} [NeZero k] [NeZero l]
+    (h : k = l) (x : Fin k) : Fin.cast h x = 0 ↔ x = 0 := by simp [← val_eq_val]
+
+lemma cast_injective {k l : ℕ} (h : k = l) : Injective (Fin.cast h) :=
+  fun a b hab ↦ by simpa [← val_eq_val] using hab
+
 theorem rev_involutive : Involutive (rev : Fin n → Fin n) := rev_rev
 
 /-- `Fin.rev` as an `Equiv.Perm`, the antitone involution `Fin n → Fin n` given by
@@ -351,16 +359,6 @@ section Monoid
 protected theorem add_zero [NeZero n] (k : Fin n) : k + 0 = k := by
   simp only [add_def, val_zero', Nat.add_zero, mod_eq_of_lt (is_lt k)]
 
--- Porting note (#10618): removing `simp`, `simp` can prove it with AddCommMonoid instance
-protected theorem zero_add [NeZero n] (k : Fin n) : 0 + k = k := by
-  simp [Fin.ext_iff, add_def, mod_eq_of_lt (is_lt k)]
-
-instance {a : ℕ} [NeZero n] : OfNat (Fin n) a where
-  ofNat := Fin.ofNat' a n.pos_of_neZero
-
-instance inhabited (n : ℕ) [NeZero n] : Inhabited (Fin n) :=
-  ⟨0⟩
-
 instance inhabitedFinOneAdd (n : ℕ) : Inhabited (Fin (1 + n)) :=
   haveI : NeZero (1 + n) := by rw [Nat.add_comm]; infer_instance
   inferInstance
@@ -371,8 +369,8 @@ theorem default_eq_zero (n : ℕ) [NeZero n] : (default : Fin n) = 0 :=
 
 section from_ad_hoc
 
-@[simp] lemma ofNat'_zero {h : 0 < n} [NeZero n] : (Fin.ofNat' 0 h : Fin n) = 0 := rfl
-@[simp] lemma ofNat'_one {h : 0 < n} [NeZero n] : (Fin.ofNat' 1 h : Fin n) = 1 := rfl
+@[simp] lemma ofNat'_zero [NeZero n] : (Fin.ofNat' n 0) = 0 := rfl
+@[simp] lemma ofNat'_one [NeZero n] : (Fin.ofNat' n 1) = 1 := rfl
 
 end from_ad_hoc
 
@@ -452,13 +450,6 @@ lemma natCast_strictMono (hbn : b ≤ n) (hab : a < b) : (a : Fin (n + 1)) < b :
 
 end OfNatCoe
 
-@[simp]
-theorem one_eq_zero_iff [NeZero n] : (1 : Fin n) = 0 ↔ n = 1 := by
-  obtain _ | _ | n := n <;> simp [Fin.ext_iff]
-
-@[simp]
-theorem zero_eq_one_iff [NeZero n] : (0 : Fin n) = 1 ↔ n = 1 := by rw [eq_comm, one_eq_zero_iff]
-
 end Add
 
 section Succ
@@ -513,10 +504,6 @@ This one instead uses a `NeZero n` typeclass hypothesis.
 @[simp]
 theorem le_zero_iff' {n : ℕ} [NeZero n] {k : Fin n} : k ≤ 0 ↔ k = 0 :=
   ⟨fun h => Fin.ext <| by rw [Nat.eq_zero_of_le_zero h]; rfl, by rintro rfl; exact Nat.le_refl _⟩
-
--- Move to Batteries?
-@[simp] theorem cast_refl {n : Nat} (h : n = n) :
-    Fin.cast h = id := rfl
 
 -- TODO: Move to Batteries
 @[simp] lemma castLE_inj {hmn : m ≤ n} {a b : Fin m} : castLE hmn a = castLE hmn b ↔ a = b := by
@@ -1427,7 +1414,7 @@ theorem eq_zero (n : Fin 1) : n = 0 := Subsingleton.elim _ _
 instance uniqueFinOne : Unique (Fin 1) where
   uniq _ := Subsingleton.elim _ _
 
-@[simp]
+@[deprecated val_eq_zero (since := "2024-09-18")]
 theorem coe_fin_one (a : Fin 1) : (a : ℕ) = 0 := by simp [Subsingleton.elim a 0]
 
 lemma eq_one_of_neq_zero (i : Fin 2) (hi : i ≠ 0) : i = 1 :=
@@ -1479,6 +1466,13 @@ lemma pos_of_ne_zero {n : ℕ} {a : Fin (n + 1)} (h : a ≠ 0) :
     0 < a :=
   Nat.pos_of_ne_zero (val_ne_of_ne h)
 
+lemma sub_succ_le_sub_of_le {n : ℕ} {u v : Fin (n + 2)} (h : u < v) : v - (u + 1) < v - u := by
+  have h' : u + 1 ≤ v := add_one_le_of_lt h
+  apply lt_def.mpr
+  simp only [sub_val_of_le h', sub_val_of_le (Fin.le_of_lt h)]
+  refine Nat.sub_lt_sub_left h (lt_def.mp ?_)
+  exact lt_add_one_iff.mpr (Fin.lt_of_lt_of_le h v.le_last)
+
 end AddGroup
 
 @[simp]
@@ -1508,16 +1502,6 @@ protected theorem zero_mul' [NeZero n] (k : Fin n) : (0 : Fin n) * k = 0 := by
   simp [Fin.ext_iff, mul_def]
 
 end Mul
-
-open Qq in
-instance toExpr (n : ℕ) : Lean.ToExpr (Fin n) where
-  toTypeExpr := q(Fin $n)
-  toExpr := match n with
-    | 0 => finZeroElim
-    | k + 1 => fun i => show Q(Fin $n) from
-      have i : Q(Nat) := Lean.mkRawNatLit i -- raw literal to avoid ofNat-double-wrapping
-      have : Q(NeZero $n) := haveI : $n =Q $k + 1 := ⟨⟩; by exact q(NeZero.succ)
-      q(OfNat.ofNat $i)
 
 end Fin
 
