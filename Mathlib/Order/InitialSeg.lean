@@ -225,24 +225,21 @@ theorem init_le [Preorder α] (f : (· < ·) ≼i (· < ·)) (h : b ≤ f a) : �
   obtain rfl | hb := h.eq_or_lt
   exacts [⟨a, rfl⟩, f.init hb]
 
-theorem le_apply_iff [LinearOrder α] (f :(· < ·) ≼i (· < ·)) : b ≤ f a ↔ ∃ c ≤ a, f c = b := by
+theorem le_apply_iff [LinearOrder α] (f : (· < ·) ≼i (· < ·)) : b ≤ f a ↔ ∃ c ≤ a, f c = b := by
   constructor
   · intro h
     obtain ⟨c, hc⟩ := f.init_le h
     refine ⟨c, ?_, hc⟩
-    rw [← hc] at h
-    rwa [← f.le_iff_le]
+    rwa [← hc, f.le_iff_le] at h
   · rintro ⟨c, hc, rfl⟩
     exact f.monotone hc
 
-theorem lt_apply_iff [LinearOrder α] (f : @InitialSeg α β (· < ·) (· < ·)) :
-    b < f a ↔ ∃ a' < a, f a' = b := by
+theorem lt_apply_iff [LinearOrder α] (f : (· < ·) ≼i (· < ·)) : b < f a ↔ ∃ a' < a, f a' = b := by
   constructor
   · intro h
     obtain ⟨c, hc⟩ := f.init h
     refine ⟨c, ?_, hc⟩
-    rw [← hc] at h
-    rwa [← f.toOrderEmbedding.lt_iff_lt]
+    rwa [← hc, f.lt_iff_lt] at h
   · rintro ⟨c, hc, rfl⟩
     exact f.strictMono hc
 
