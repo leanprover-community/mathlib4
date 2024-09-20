@@ -20,6 +20,12 @@ impartial game is equivalent to some game of nim. If `x ≈ nim o₁` and `y ≈
 `x + y ≈ nim (o₁ + o₂)`, where the ordinals are summed together as nimbers. Unfortunately, the
 nim product admits no such characterization.
 
+## Notation
+
+Following [On Numbers And Games][conway2001] (p. 121), we define notation `∗o` for the cast from
+`Ordinal` to `Nimber`. Note that for general `n : ℕ`, `∗n` is **not** the same as `↑n`. For
+instance, `∗2 ≠ 0`, whereas `↑2 = ↑1 + ↑1 = 0`.
+
 ## Implementation notes
 
 The nimbers inherit the order from the ordinals - this makes working with minimum excluded values
@@ -29,10 +35,6 @@ interacting with the arithmetic in any nice way.
 To reduce API duplication, we opt not to implement operations on `Nimber` on `Ordinal`. The order
 isomorphisms `Ordinal.toNimber` and `Nimber.toOrdinal` allow us to cast between them whenever
 needed.
-
-We also define notation `∗o` for `Ordinal.toNimber o` in the `Nimber` namespace. Note that for
-general `n : ℕ`, `∗n` is **not** the same as `↑n`. For instance, `∗2 ≠ 0`, whereas
-`↑2 = ↑1 + ↑1 = 0`.
 
 ## Todo
 
