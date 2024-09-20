@@ -17,7 +17,7 @@ respectively, `⩿` and `⋖`, which then leads to a characterization of monoton
 functions whose domain is a locally finite order. In particular, this file proves:
 
 * `le_iff_transGen_wcovBy`: `≤` is the transitive closure of `⩿`
-* `lt_iff_transGen_covBy`: `≤` is the transitive closure of `⩿`
+* `lt_iff_transGen_covBy`: `<` is the transitive closure of `⋖`
 * `monotone_iff_forall_wcovBy`: Characterization of monotone functions
 * `strictMono_iff_forall_covBy`: Characterization of strictly monotone functions
 
