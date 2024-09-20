@@ -400,7 +400,9 @@ It is assumed that there is a "linear order" on all the semirings which appear i
 for any two semirings `R` and `S` which occur, we have either `Algebra R S` or `Algebra S R`).
 
 (TODO: implement a variant in which a semiring `R` is provided by the user, and the assumption is
-instead that for any semiring `S` which occurs, we have `Algebra S R`.) -/
+instead that for any semiring `S` which occurs, we have `Algebra S R`. The PR #16984 provides a
+proof-of-concept implementation of this variant, but it would need some polishing before joining
+Mathlib.) -/
 partial def parse (iM : Q(AddCommMonoid $M)) (x : Q($M)) :
     AtomM (Σ u : Level, Σ R : Q(Type u), Σ iR : Q(Semiring $R), Σ _ : Q(@Module $R $M $iR $iM),
       Σ l : qNF R M, Q($x = NF.eval $(l.toNF))) := do
