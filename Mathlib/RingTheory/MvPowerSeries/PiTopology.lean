@@ -158,7 +158,7 @@ theorem tendsto_pow_zero_of_constantCoeff_nilpotent [CommSemiring R]
   classical
   obtain ⟨m, hm⟩ := hf
   simp_rw [tendsto_iff_coeff_tendsto, coeff_zero]
-  exact fun d =>  tendsto_atTop_of_eventually_const fun n hn =>
+  exact fun d ↦ tendsto_atTop_of_eventually_const fun n hn ↦
     coeff_eq_zero_of_constantCoeff_nilpotent hm hn
 
 theorem tendsto_pow_zero_of_constantCoeff_zero [CommSemiring R]
