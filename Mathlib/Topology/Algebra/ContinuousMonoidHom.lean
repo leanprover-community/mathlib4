@@ -391,3 +391,61 @@ theorem locallyCompactSpace_of_hasBasis (V : ℕ → Set Y)
 end LocallyCompact
 
 end ContinuousMonoidHom
+
+section
+
+/-!
+
+# Continuous MulEquiv
+
+This section defines the space of continuous isomorphisms between two topological groups.
+
+## Main definitions
+
+-/
+
+universe u v
+
+variable (G : Type u) [TopologicalSpace G] (H : Type v) [TopologicalSpace H]
+
+/-- Define the structure of two-sided continuous isomorphism of additive groups. -/
+structure ContinuousAddEquiv [AddGroup G] [AddGroup H] extends AddEquiv G H , Homeomorph G H
+
+/-- Define the structure of two-sided continuous isomorphism of groups. -/
+@[to_additive "The type of two-sided continuous isomorphism of additive groups."]
+structure ContinuousMulEquiv [Group G] [Group H] extends MulEquiv G H , Homeomorph G H
+
+/-- The Homeomorphism induced from a two-sided continuous isomorphism of groups. -/
+add_decl_doc ContinuousMulEquiv.toHomeomorph
+
+/-- The Homeomorphism induced from a two-sided continuous isomorphism additive groups. -/
+add_decl_doc ContinuousAddEquiv.toHomeomorph
+
+namespace ContinuousMulEquiv
+
+variable {G} {H} [Group G] [Group H]
+
+/-- The inverse of a ContinuousMulEquiv. -/
+@[to_additive "The inverse of a ContinuousAddEquiv."]
+def symm (cme : ContinuousMulEquiv G H) : ContinuousMulEquiv H G := {
+  cme.toMulEquiv.symm with
+  continuous_toFun := cme.continuous_invFun
+  continuous_invFun := cme.continuous_toFun
+  }
+
+/-- The composition of two ContinuousMulEquiv. -/
+@[to_additive "The composition of two ContinuousAddEquiv."]
+def trans {K : Type*} [Group K] [TopologicalSpace K]
+    (cme1 : ContinuousMulEquiv G H) (cme2 : ContinuousMulEquiv H K) : ContinuousMulEquiv G K := {
+  cme1.toMulEquiv.trans cme2.toMulEquiv with
+  continuous_toFun :=
+    let this := Continuous.comp cme2.continuous_toFun cme1.continuous_toFun
+    this
+  continuous_invFun :=
+    let this := Continuous.comp cme1.continuous_invFun cme2.continuous_invFun
+    this
+  }
+
+end ContinuousMulEquiv
+
+end
