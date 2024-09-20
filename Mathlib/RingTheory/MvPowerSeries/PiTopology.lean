@@ -134,7 +134,7 @@ theorem continuous_C [Ring R] [TopologicalRing R] :
     rw [coeff_C, if_neg hd]
 
 theorem variables_tendsto_zero [Semiring R] :
-    Filter.Tendsto (fun s : σ => (X s : MvPowerSeries σ R)) Filter.cofinite (nhds 0) := by
+    Filter.Tendsto (X · : σ → MvPowerSeries σ R) Filter.cofinite (nhds 0) := by
   classical
   rw [tendsto_pi_nhds]
   intro d s hs
