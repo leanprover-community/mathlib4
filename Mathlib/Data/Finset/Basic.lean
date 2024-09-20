@@ -778,6 +778,8 @@ theorem cons_nonempty (h : a ∉ s) : (cons a s h).Nonempty :=
 
 @[deprecated (since := "2024-09-19")] alias nonempty_cons := cons_nonempty
 
+@[simp] theorem cons_ne_empty (h : a ∉ s) : cons a s h ≠ ∅ := (cons_nonempty _).ne_empty
+
 @[simp]
 theorem nonempty_mk {m : Multiset α} {hm} : (⟨m, hm⟩ : Finset α).Nonempty ↔ m ≠ 0 := by
   induction m using Multiset.induction_on <;> simp
