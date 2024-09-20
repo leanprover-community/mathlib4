@@ -49,6 +49,7 @@ variable {S : Type*} {R : Type*} {M : Type*}
 
 /-- Augment a `Module.NF R M` object `l`, i.e. a list of pairs in `R × M`, by prepending another
 pair `p : R × M`. -/
+@[match_pattern]
 def cons (p : R × M) (l : NF R M) : NF R M := p :: l
 
 @[inherit_doc cons] infixl:100 " ::ᵣ " => cons
@@ -239,7 +240,7 @@ number), build an `Expr` representing an object of type `NF R M` (i.e. `List (R 
 in the obvious way: by forgetting the natural numbers and gluing together the `Expr`s. -/
 def toNF (l : qNF R M) : Q(NF $R $M) :=
   let l' : List Q($R × $M) := (l.map Prod.fst).map (fun (a, x) ↦ q(($a, $x)))
-  let qt : List Q($R × $M) → Q(List ($R × $M)) := List.rec q([]) (fun e _ l ↦ q($e :: $l))
+  let qt : List Q($R × $M) → Q(List ($R × $M)) := List.rec q([]) (fun e _ l ↦ q($e ::ᵣ $l))
   qt l'
 
 /-- Given `l` of type `qNF R₁ M`, i.e. a list of `(Q($R₁) × Q($M)) × ℕ`s (two `Expr`s and a natural
@@ -264,13 +265,13 @@ appear in `l₁`, `l₂` respectively with the same `ℕ`-component `k`, then co
 def add (iR : Q(Semiring $R)) : qNF R M → qNF R M → qNF R M
   | [], l => l
   | l, [] => l
-  | ((a₁, x₁), k₁) :: t₁, ((a₂, x₂), k₂) :: t₂ =>
+  | ((a₁, x₁), k₁) ::ᵣ t₁, ((a₂, x₂), k₂) ::ᵣ t₂ =>
     if k₁ < k₂ then
-      ((a₁, x₁), k₁) :: add iR t₁ (((a₂, x₂), k₂) :: t₂)
+      ((a₁, x₁), k₁) ::ᵣ add iR t₁ (((a₂, x₂), k₂) ::ᵣ t₂)
     else if k₁ = k₂ then
-      ((q($a₁ + $a₂), x₁), k₁) :: add iR t₁ t₂
+      ((q($a₁ + $a₂), x₁), k₁) ::ᵣ add iR t₁ t₂
     else
-      ((a₂, x₂), k₂) :: add iR (((a₁, x₁), k₁) :: t₁) t₂
+      ((a₂, x₂), k₂) ::ᵣ add iR (((a₁, x₁), k₁) ::ᵣ t₁) t₂
 
 /-- Given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
 and a natural number), recursively construct a proof that in the `$R`-module `$M`, the sum of the
@@ -282,15 +283,15 @@ def mkAddProof {iR : Q(Semiring $R)} {iM : Q(AddCommMonoid $M)} (iRM : Q(Module 
   match l₁, l₂ with
   | [], l => (q(zero_add (NF.eval $(l.toNF))):)
   | l, [] => (q(add_zero (NF.eval $(l.toNF))):)
-  | ((a₁, x₁), k₁) :: t₁, ((a₂, x₂), k₂) :: t₂ =>
+  | ((a₁, x₁), k₁) ::ᵣ t₁, ((a₂, x₂), k₂) ::ᵣ t₂ =>
     if k₁ < k₂ then
-      let pf := mkAddProof iRM t₁ (((a₂, x₂), k₂) :: t₂)
+      let pf := mkAddProof iRM t₁ (((a₂, x₂), k₂) ::ᵣ t₂)
       (q(NF.add_eq_eval₁ ($a₁, $x₁) $pf):)
     else if k₁ = k₂ then
       let pf := mkAddProof iRM t₁ t₂
       (q(NF.add_eq_eval₂ $a₁ $a₂ $x₁ $pf):)
     else
-      let pf := mkAddProof iRM (((a₁, x₁), k₁) :: t₁) t₂
+      let pf := mkAddProof iRM (((a₁, x₁), k₁) ::ᵣ t₁) t₂
       (q(NF.add_eq_eval₃ ($a₂, $x₂) $pf):)
 
 /-- Given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
@@ -309,13 +310,13 @@ that if pairs `(a₁, x₁)` and `(a₂, x₂)` appear in `l₁`, `l₂` respect
 def sub (iR : Q(Ring $R)) : qNF R M → qNF R M → qNF R M
   | [], l => l.onScalar q(Neg.neg)
   | l, [] => l
-  | ((a₁, x₁), k₁) :: t₁, ((a₂, x₂), k₂) :: t₂ =>
+  | ((a₁, x₁), k₁) ::ᵣ t₁, ((a₂, x₂), k₂) ::ᵣ t₂ =>
     if k₁ < k₂ then
-      ((a₁, x₁), k₁) :: sub iR t₁ (((a₂, x₂), k₂) :: t₂)
+      ((a₁, x₁), k₁) ::ᵣ sub iR t₁ (((a₂, x₂), k₂) ::ᵣ t₂)
     else if k₁ = k₂ then
-      ((q($a₁ - $a₂), x₁), k₁) :: sub iR t₁ t₂
+      ((q($a₁ - $a₂), x₁), k₁) ::ᵣ sub iR t₁ t₂
     else
-      ((q(-$a₂), x₂), k₂) :: sub iR (((a₁, x₁), k₁) :: t₁) t₂
+      ((q(-$a₂), x₂), k₂) ::ᵣ sub iR (((a₁, x₁), k₁) ::ᵣ t₁) t₂
 
 /-- Given two terms `l₁`, `l₂` of type `qNF R M`, i.e. lists of `(Q($R) × Q($M)) × ℕ`s (two `Expr`s
 and a natural number), recursively construct a proof that in the `$R`-module `$M`, the difference
@@ -327,15 +328,15 @@ def mkSubProof (iR : Q(Ring $R)) (iM : Q(AddCommGroup $M)) (iRM : Q(Module $R $M
   match l₁, l₂ with
   | [], l => (q(NF.zero_sub_eq_eval $(l.toNF)):)
   | l, [] => (q(sub_zero (NF.eval $(l.toNF))):)
-  | ((a₁, x₁), k₁) :: t₁, ((a₂, x₂), k₂) :: t₂ =>
+  | ((a₁, x₁), k₁) ::ᵣ t₁, ((a₂, x₂), k₂) ::ᵣ t₂ =>
     if k₁ < k₂ then
-      let pf := mkSubProof iR iM iRM t₁ (((a₂, x₂), k₂) :: t₂)
+      let pf := mkSubProof iR iM iRM t₁ (((a₂, x₂), k₂) ::ᵣ t₂)
       (q(NF.sub_eq_eval₁ ($a₁, $x₁) $pf):)
     else if k₁ = k₂ then
       let pf := mkSubProof iR iM iRM t₁ t₂
       (q(NF.sub_eq_eval₂ $a₁ $a₂ $x₁ $pf):)
     else
-      let pf := mkSubProof iR iM iRM (((a₁, x₁), k₁) :: t₁) t₂
+      let pf := mkSubProof iR iM iRM (((a₁, x₁), k₁) ::ᵣ t₁) t₂
       (q(NF.sub_eq_eval₃ ($a₂, $x₂) $pf):)
 
 variable {iM : Q(AddCommMonoid $M)}
@@ -477,18 +478,18 @@ partial def reduceCoefficientwise {R : Q(Type u)} {_ : Q(AddCommMonoid $M)} {_ :
     pure ([], pf)
   /- if one of the lists is empty and the other one is not, recurse down the nonempty one,
     forming goals that each of the listed coefficents is equal to zero -/
-  | [], ((a, x), _) :: (L : qNF R M) =>
+  | [], ((a, x), _) ::ᵣ L =>
     let mvar : Q((0:$R) = $a) ← mkFreshExprMVar q((0:$R) = $a)
     let (mvars, pf) ← reduceCoefficientwise iRM [] L
     pure (mvar.mvarId! :: mvars, (q(NF.eq_const_cons $x $mvar $pf):))
-  | ((a, x), _) :: (L : qNF R M), [] =>
+  | ((a, x), _) ::ᵣ L, [] =>
     let mvar : Q($a = (0:$R)) ← mkFreshExprMVar q($a = (0:$R))
     let (mvars, pf) ← reduceCoefficientwise iRM L []
     pure (mvar.mvarId! :: mvars, (q(NF.eq_cons_const $x $mvar $pf):))
   /- if both lists are nonempty, then deal with the numerically-smallest term in either list,
     forming a goal that it is equal to zero (if it appears in only one list) or that its
     coefficients in the two lists are the same (if it appears in both lists); then recurse -/
-  | ((a₁, x₁), k₁) :: L₁, ((a₂, x₂), k₂) :: L₂ =>
+  | ((a₁, x₁), k₁) ::ᵣ L₁, ((a₂, x₂), k₂) ::ᵣ L₂ =>
     if k₁ < k₂ then
       let mvar : Q($a₁ = (0:$R)) ← mkFreshExprMVar q($a₁ = (0:$R))
       let (mvars, pf) ← reduceCoefficientwise iRM L₁ l₂
