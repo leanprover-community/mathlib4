@@ -5,6 +5,7 @@ Authors: Salvatore Mercuri
 -/
 import Mathlib.Algebra.Field.Subfield
 import Mathlib.Analysis.Normed.Module.Completion
+import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.Topology.UniformSpace.Basic
 import Mathlib.Topology.Instances.Real
@@ -13,6 +14,16 @@ import Mathlib.Topology.Instances.Real
 # The completion of a number field at an infinite place
 
 This file contains the completion of a number field at an infinite place.
+
+This is ultimately achieved by applying the `UniformSpace.Completion` functor, however each
+infinite place defines its own `UniformSpace` instance, so the inference system cannot
+automatically infer these. A common approach to handle the ambiguity that arises from having
+multiple sources of instances is through the use of type synonyms. In this case, we define a
+type synonym `WithAbs` for a semiring which depends on an absolute value. This provides a
+systematic way of assigning and inferring instances of the semiring that depend on an absolute
+value. In our application, relevant instances and the completion of a number field `K` are first
+defined at the level of `AbsoluteValue` by using the type synonym `WithAbs` of `K`, and then
+derived downstream for `InfinitePlace` (which is a subtype of `AbsoluteValue`).
 
 ## Main definitions
  - `WithAbs` : type synonym equipping a semiring with an absolute value.
@@ -56,28 +67,10 @@ def WithAbs {R S : Type*} [Semiring R] [OrderedSemiring S] :
 
 namespace WithAbs
 
-instance {R : Type*} [Ring R] (v : AbsoluteValue R ℝ) : NormedRing (WithAbs v) where
-  toRing := inferInstanceAs (Ring R)
-  norm := v
-  dist_eq _ _ := rfl
-  dist_self x := by simp only [sub_self, MulHom.toFun_eq_coe, AbsoluteValue.coe_toMulHom, map_zero]
-  dist_comm := v.map_sub
-  dist_triangle := v.sub_le
-  edist_dist x y := rfl
-  norm_mul x y := (v.map_mul x y).le
-  eq_of_dist_eq_zero := by simp only [MulHom.toFun_eq_coe, AbsoluteValue.coe_toMulHom,
-    AbsoluteValue.map_sub_eq_zero_iff, imp_self, implies_true]
-
-instance {R : Type*} [Ring R] [Nontrivial R] (v : AbsoluteValue R ℝ) :
-    NormOneClass (WithAbs v) where
-  norm_one := v.map_one
-
 variable {K : Type*} [Field K] (v : AbsoluteValue K ℝ)
 
-instance normedField : NormedField (WithAbs v) where
-  toField := inferInstanceAs (Field K)
-  dist_eq := (inferInstanceAs (NormedRing (WithAbs v))).dist_eq
-  norm_mul' := v.map_mul
+instance normedField : NormedField (WithAbs v) :=
+  v.normedField
 
 variable {L : Type*} [NormedField L] {f : WithAbs v →+* L} {v}
 
