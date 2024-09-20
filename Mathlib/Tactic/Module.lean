@@ -367,7 +367,7 @@ def matchRings (l₁ : qNF R₁ M) (l₂ : qNF R₂ M) (r : Q($R₂)) (x : Q($M)
     let _i₃ ← synthInstanceQ q(Algebra $R₁ $R₂)
     let _i₄ ← synthInstanceQ q(IsScalarTower $R₁ $R₂ $M)
     assumeInstancesCommute
-    let l₁' : qNF R₂ M := l₁.onScalar q(fun p ↦ algebraMap $R₁ $R₂ p)
+    let l₁' : qNF R₂ M := l₁.onScalar q(algebraMap $R₁ $R₂)
     pure ⟨u₂, R₂, iR₂, iRM₂, ⟨l₁', (q(NF.eval_algebraMap $R₂ $(l₁.toNF)):)⟩, ⟨l₂, q(rfl)⟩,
       r, q(rfl)⟩
   catch _ => try
@@ -376,7 +376,7 @@ def matchRings (l₁ : qNF R₁ M) (l₂ : qNF R₂ M) (r : Q($R₂)) (x : Q($M)
     let _i₃ ← synthInstanceQ q(Algebra $R₂ $R₁)
     let _i₄ ← synthInstanceQ q(IsScalarTower $R₂ $R₁ $M)
     assumeInstancesCommute
-    let l₂' : qNF R₁ M := l₂.onScalar q(fun p ↦ algebraMap $R₂ $R₁ p)
+    let l₂' : qNF R₁ M := l₂.onScalar q(algebraMap $R₂ $R₁)
     let r' : Q($R₁) := q(algebraMap $R₂ $R₁ $r)
     pure ⟨u₁, R₁, iR₁, iRM₁, ⟨l₁, q(rfl)⟩, ⟨l₂', (q(NF.eval_algebraMap $R₁ $(l₂.toNF)):)⟩,
       r', (q(IsScalarTower.algebraMap_smul $R₁ $r $x):)⟩
