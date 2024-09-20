@@ -116,8 +116,8 @@ theorem uniformSpace_eq [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)
 @[simp]
 theorem uniformity_toTopologicalSpace_eq [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
     (UniformConvergenceCLM.instUniformSpace σ F 𝔖).toTopologicalSpace =
-      UniformConvergenceCLM.instTopologicalSpace σ F 𝔖 := by
-  with_reducible_and_instances rfl
+      UniformConvergenceCLM.instTopologicalSpace σ F 𝔖 :=
+  rfl
 
 theorem uniformEmbedding_coeFn [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
     UniformEmbedding (α := UniformConvergenceCLM σ F 𝔖) (UniformOnFun.ofFun 𝔖 ∘ DFunLike.coe) :=
