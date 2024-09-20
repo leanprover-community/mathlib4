@@ -123,6 +123,16 @@ theorem whiskeringLeft_obj_comp {D' : Type u₄} [Category.{v₄} D'] (F : C ⥤
     (whiskeringLeft C D' E).obj (F ⋙ G) :=
   rfl
 
+@[simp]
+theorem whiskeringRight_obj_id : (whiskeringRight E C C).obj (.id _) = .id _ :=
+  rfl
+
+@[simp]
+theorem whiskeringRight_obj_comp {D' : Type u₄} [Category.{v₄} D'] (F : C ⥤ D) (G : D ⥤ D') :
+    (whiskeringRight E C D).obj F ⋙ (whiskeringRight E D D').obj G =
+    (whiskeringRight E C D').obj (F ⋙ G) :=
+  rfl
+
 instance full_whiskeringRight_obj {F : D ⥤ E} [F.Faithful] [F.Full] :
     ((whiskeringRight C D E).obj F).Full :=
   ((Functor.FullyFaithful.ofFullyFaithful F).whiskeringRight C).full
