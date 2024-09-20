@@ -24,11 +24,6 @@ namespace Ordinal
 
 variable {o a b : Ordinal.{u}}
 
-theorem not_bddAbove_range_strictMono {f : Ordinal.{u} → Ordinal.{u}} (hf : StrictMono f) :
-    ¬ BddAbove (range f) := by
-  rintro ⟨a, ha⟩
-  exact (((hf.id_le a).trans_lt (hf (lt_succ a))).trans_le <| ha (mem_range_self _)).false
-
 /-- Enumerator function for an unbounded set of ordinals. -/
 noncomputable def enumOrd (S : Set Ordinal.{u}) (o : Ordinal.{u}) : Ordinal.{u} :=
   sInf (S ∩ { b | ∀ c, c < o → enumOrd S c < b })
@@ -103,7 +98,7 @@ theorem eq_enumOrd (f : Ordinal → Ordinal) (hS : ¬ BddAbove S) :
     exact ⟨enumOrd_strictMono hS, range_enumOrd hS⟩
 
 theorem enumOrd_range {f : Ordinal → Ordinal} (hf : StrictMono f) : enumOrd (range f) = f :=
-  (eq_enumOrd _ (not_bddAbove_range_strictMono hf)).1 ⟨hf, rfl⟩
+  (eq_enumOrd _ hf.not_bddAbove_range).1 ⟨hf, rfl⟩
 
 @[simp]
 theorem enumOrd_univ : enumOrd Set.univ = id := by
