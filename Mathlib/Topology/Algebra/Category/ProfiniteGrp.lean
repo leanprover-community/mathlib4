@@ -163,7 +163,16 @@ instance : HasForget₂ ProfiniteGrp Grp where
 
 end ProfiniteGrp
 
-open CategoryTheory Topology TopologicalGroup
+/-!
+# The projective limit of finite groups is profinite
+
+* `ProfiniteGrp.limit` : the concretely constructed projective limit of finite groups
+  as a subgroup of the pi-type
+
+* `ofLimit`: projective limit of finite groups is a profinite group
+
+* Verify that the constructed limit satisfies the universal property.
+-/
 
 section Profiniteoflimit
 
@@ -186,19 +195,20 @@ def limit : Subgroup (Π j : J, F.obj j) where
 def profiniteGrpToProfinite : ProfiniteGrp ⥤ Profinite where
   obj G := G.toProfinite
   map f := ⟨f, by continuity⟩
-instance : CompactSpace (limit F) := inferInstanceAs
-  (CompactSpace (Profinite.limitCone (F ⋙ profiniteGrpToProfinite.{max v w'})).pt)
 
 instance instProfiniteGrpToProfiniteFaithful : profiniteGrpToProfinite.Faithful := {
   map_injective := fun {_ _} _ _ h =>
     ConcreteCategory.hom_ext_iff.mpr (congrFun (congrArg ContinuousMap.toFun h)) }
+
+instance : CompactSpace (limit F) := inferInstanceAs
+  (CompactSpace (Profinite.limitCone (F ⋙ profiniteGrpToProfinite.{max v w'})).pt)
 
 /-- Making the direct limit of `FiniteGrp` into a `ProfiniteGrp`. -/
 def ofLimit : ProfiniteGrp := .of (ProfiniteGrp.limit F)
 
 /-- Verify that the limit constructed above exist projections to the `FiniteGrps`
 that are compatible with the morphisms between them. -/
-def LimitCone : Limits.Cone F where
+def limitCone : Limits.Cone F where
   pt := ofLimit F
   π :=
   { app := fun j => {
@@ -217,16 +227,15 @@ def LimitCone : Limits.Cone F where
   }
 
 @[simp]
-lemma LimitCone_pt : (ProfiniteGrp.LimitCone F).pt =
+lemma limitCone_pt : (ProfiniteGrp.limitCone F).pt =
     ProfiniteGrp.ofLimit F := rfl
 
 @[simp, nolint simpNF]
-lemma LimitCone_π_app_apply  (j : J) (x : ↑(((CategoryTheory.Functor.const J).obj
-    (ProfiniteGrp.ofLimit F)).obj j).toProfinite.toTop) :
-    ((ProfiniteGrp.LimitCone F).π.app j) x = x.1 j := rfl
+lemma limitCone_π_app_apply  (j : J) (x : ofLimit F) :
+    ((ProfiniteGrp.limitCone F).π.app j) x = x.1 j := rfl
 
 /-- Verify that the limit constructed above satisfies the universal property. -/
-def LimitConeIsLimit : Limits.IsLimit (LimitCone F) where
+def limitConeIsLimit : Limits.IsLimit (limitCone F) where
   lift cone := {
     toFun := ((Profinite.limitConeIsLimit (F ⋙ profiniteGrpToProfinite)).lift
       (profiniteGrpToProfinite.mapCone cone)).toFun
@@ -247,14 +256,14 @@ def LimitConeIsLimit : Limits.IsLimit (LimitCone F) where
       (fun j ↦ congrArg profiniteGrpToProfinite.map (h j))
 
 @[simp, nolint simpNF]
-lemma LimitConeIsLimit_lift_toFun_coe (j : J) (cone : Limits.Cone F)
+lemma limitConeIsLimit_lift_toFun_coe (j : J) (cone : Limits.Cone F)
     (pt : ↑cone.pt.toProfinite.toTop) :
-    (((ProfiniteGrp.LimitConeIsLimit F).lift cone) pt).val j = (cone.π.app j) pt := rfl
+    (((ProfiniteGrp.limitConeIsLimit F).lift cone) pt).val j = (cone.π.app j) pt := rfl
 
 instance : Limits.HasLimit F where
   exists_limit := Nonempty.intro
-    { cone := LimitCone F
-      isLimit := LimitConeIsLimit F }
+    { cone := limitCone F
+      isLimit := limitConeIsLimit F }
 
 end ProfiniteGrp
 
