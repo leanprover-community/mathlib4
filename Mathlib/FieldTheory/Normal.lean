@@ -359,6 +359,16 @@ theorem AlgEquiv.restrictNormalHom_surjective [Normal F K₁] [Normal F E] :
     Function.Surjective (AlgEquiv.restrictNormalHom K₁ : (E ≃ₐ[F] E) → K₁ ≃ₐ[F] K₁) := fun χ =>
   ⟨χ.liftNormal E, χ.restrict_liftNormal E⟩
 
+@[simp]
+theorem AlgEquiv.restrictNormalHom_id (F K : Type*)
+    [Field F] [Field K] [Algebra F K] [Normal F K] :
+    AlgEquiv.restrictNormalHom (F := F) (K₁ := K) K = MonoidHom.id (K ≃ₐ[F] K) := by
+  ext f x
+  dsimp [restrictNormalHom]
+  apply (algebraMap K K).injective
+  rw [AlgEquiv.restrictNormal_commutes]
+  simp only [Algebra.id.map_eq_id, RingHom.id_apply]
+
 open IntermediateField in
 theorem Normal.minpoly_eq_iff_mem_orbit [h : Normal F E] {x y : E} :
     minpoly F x = minpoly F y ↔ x ∈ MulAction.orbit (E ≃ₐ[F] E) y := by
