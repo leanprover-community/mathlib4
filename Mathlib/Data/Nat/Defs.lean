@@ -117,6 +117,8 @@ alias ⟨of_le_succ, _⟩ := le_succ_iff
 
 lemma lt_iff_le_pred : ∀ {n}, 0 < n → (m < n ↔ m ≤ n - 1) | _ + 1, _ => Nat.lt_succ_iff
 
+lemma pred_lt_iff_le : ∀ {m}, 0 < m → (m - 1 < n ↔ m ≤ n) | _ + 1, _ => succ_le_iff.symm
+
 lemma le_of_pred_lt : ∀ {m}, pred m < n → m ≤ n
   | 0 => Nat.le_of_lt
   | _ + 1 => id
