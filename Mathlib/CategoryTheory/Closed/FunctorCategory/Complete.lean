@@ -5,11 +5,15 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Adjunction.Lifting.Right
 import Mathlib.CategoryTheory.Closed.FunctorCategory.Groupoid
+import Mathlib.CategoryTheory.Groupoid.Discrete
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 import Mathlib.CategoryTheory.Monad.Comonadicity
 /-!
+
 # Functors into a complete monoidal closed category form a monoidal closed category.
 
+TODO (in progress by Joël Riou): make a more explicit construction of the internal hom in functor
+categories.
 -/
 
 universe v₁ v₂ u₁ u₂
@@ -25,15 +29,10 @@ variable (I : Type u₂) [Category.{v₂} I]
 
 private abbrev incl : Discrete I ⥤ I := Discrete.functor id
 
-instance : Groupoid (Discrete I) := { inv := fun h ↦ ⟨⟨h.1.1.symm⟩⟩ }
-
 variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory C] [MonoidalClosed C]
 
--- Since `Discrete I` is a groupoid, functors to `C` form a monoidal closed category.
-example : MonoidalClosed (Discrete I ⥤ C) := inferInstance
-
 variable [∀ (F : Discrete I ⥤ C), (Discrete.functor id).HasRightKanExtension F]
--- ...is also implied by: `[HasLimitsOfSize.{u₂, max u₂ v₂} C]`
+-- is also implied by: `[HasLimitsOfSize.{u₂, max u₂ v₂} C]`
 
 instance : ReflectsIsomorphisms <| (whiskeringLeft _ _ C).obj (incl I) where
   reflects f h := by
@@ -42,9 +41,6 @@ instance : ReflectsIsomorphisms <| (whiskeringLeft _ _ C).obj (incl I) where
     exact h ⟨X⟩
 
 variable [HasLimitsOfShape WalkingParallelPair C]
-
--- Since `C` has equalizers, `I ⥤ C` has them, and thus it has coreflexive equalizers:
--- example : HasCoreflexiveEqualizers (I ⥤ C) := inferInstance
 
 instance : Comonad.PreservesLimitOfIsCoreflexivePair ((whiskeringLeft _ _ C).obj (incl I)) :=
   ⟨inferInstance⟩
@@ -56,14 +52,23 @@ instance : ComonadicLeftAdjoint ((whiskeringLeft _ _ C).obj (incl I)) :=
 instance (F : I ⥤ C) : IsLeftAdjoint (tensorLeft (incl I ⋙ F)) :=
   (ihom.adjunction (incl I ⋙ F)).isLeftAdjoint
 
-instance (F : I ⥤ C) : Closed F :=
+/-- Auxiliary definition for `functorCategoryMonoidalClosed` -/
+def functorCategoryClosed (F : I ⥤ C) : Closed F :=
   have := (ihom.adjunction (incl I ⋙ F)).isLeftAdjoint
   have := isLeftAdjoint_square_lift_comonadic (tensorLeft F) ((whiskeringLeft _ _ C).obj (incl I))
     ((whiskeringLeft _ _ C).obj (incl I)) (tensorLeft (incl I ⋙ F)) (Iso.refl _)
   { rightAdj := (tensorLeft F).rightAdjoint
     adj := Adjunction.ofIsLeftAdjoint (tensorLeft F) }
 
-instance : MonoidalClosed (I ⥤ C) where
+/--
+Assuming the existence of certain limits, functors into a monoidal closed category form a
+monoidal closed category.
+
+Note: this is defined completely abstractly, and does not have any good definitional properties.
+See the TODO in the module docstring.
+-/
+def functorCategoryMonoidalClosed : MonoidalClosed (I ⥤ C) where
+  closed F := functorCategoryClosed I C F
 
 end
 
