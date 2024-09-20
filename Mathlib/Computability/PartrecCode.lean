@@ -1015,18 +1015,14 @@ theorem fixed_point₂ {f : Code → ℕ →. ℕ} (hf : Partrec₂ f) : ∃ c :
 
 end
 
-/-- There are only countably many partial recursive functions ℕ → ℕ. -/
-instance : Countable {f : ℕ →. ℕ // Nat.Partrec f} := by
-  choose v hv using fun x : {f : ℕ →. ℕ // Nat.Partrec f} ↦ Nat.Partrec.Code.exists_code.1 x.2
-  suffices v.Injective from this.countable
-  intro f g h
-  ext
-  simp [h, ← hv]
+/-- There are only countably many partial recursive partial functions `ℕ →. ℕ`. -/
+instance : Countable {f : ℕ →. ℕ // _root_.Partrec f} := by
+  apply Function.Surjective.countable (f := fun c => ⟨eval c, eval_part.comp (.const c) .id⟩)
+  intro ⟨f, hf⟩; simpa using exists_code.1 hf
 
-/-- There are only countably many computable functions ℕ → ℕ. -/
+/-- There are only countably many computable functions `ℕ → ℕ`. -/
 instance : Countable {f : ℕ → ℕ // Computable f} :=
-  @Function.Injective.countable {f : ℕ → ℕ // Computable f} {f : ℕ →. ℕ // Nat.Partrec f} _
-    (fun f => ⟨f.val, Partrec.nat_iff.mp f.2⟩)
-    fun _ _ h => SetCoe.ext <| PFun.lift_injective <| (Subtype.mk.injEq _ _ _ _) ▸ h
-
+  @Function.Injective.countable {f : ℕ → ℕ // Computable f} {f : ℕ →. ℕ // _root_.Partrec f} _
+    (fun f => ⟨f.val, f.2⟩)
+    (fun _ _ h => Subtype.val_inj.1 (PFun.lift_injective (by simpa using h)))
 end Nat.Partrec.Code
