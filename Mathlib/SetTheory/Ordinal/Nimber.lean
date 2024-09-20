@@ -3,6 +3,7 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
+import Mathlib.Algebra.CharP.Two
 import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.Tactic.Abel
 
@@ -38,7 +39,7 @@ needed.
 
 universe u v
 
-open Function Order
+open CharTwo Function Order
 
 noncomputable section
 
@@ -337,6 +338,15 @@ instance : AddCommGroupWithOne Nimber where
   neg_add_cancel := add_self
   add_comm := Nimber.add_comm
 
+-- TODO: prove `0 ≠ 1` and `1 + 1 = 0` are sufficient to build a `CharP _ 2` instance.
+instance : CharP Nimber 2 where
+  cast_eq_zero_iff' x := by
+    obtain ⟨r, rfl⟩ | ⟨r, rfl⟩ := Nat.even_or_odd x
+    · rw [Nat.cast_add, ← two_mul]
+      simp
+    · rw [Nat.cast_add, two_mul, Nat.cast_add, ← two_mul]
+      simp
+
 @[simp]
 theorem add_cancel_right (a b : Nimber) : a + b + b = a := by
   rw [add_assoc, add_self, add_zero]
@@ -358,17 +368,12 @@ theorem add_trichotomy {a b c : Nimber} (h : a + b + c ≠ 0) :
   · rw [← hx'] at hx
     exact Or.inr <| Or.inr hx
 
-theorem two_nsmul (a : Nimber) : 2 • a = 0 := by
-  rw [_root_.two_nsmul, add_self]
+private theorem two_zsmul (x : Nimber) : (2 : ℤ) • x = 0 := by
+  rw [_root_.two_zsmul]
+  exact add_self x
 
-theorem two_zsmul (a : Nimber) : (2 : ℤ) • a = 0 :=
-  two_nsmul a
-
-theorem add_eq_iff_eq_add : a + b = c ↔ a = c + b :=
+private theorem add_eq_iff_eq_add : a + b = c ↔ a = c + b :=
   sub_eq_iff_eq_add
-
-theorem eq_add_iff_add_eq : a = b + c ↔ a + c = b :=
-  eq_sub_iff_add_eq
 
 /-! ### Nimber multiplication -/
 

@@ -20,14 +20,18 @@ variable {R ι : Type*}
 
 namespace CharTwo
 
+theorem two_eq_zero [AddMonoidWithOne R] [CharP R 2] : (2 : R) = 0 := by
+  rw [← Nat.cast_two, CharP.cast_eq_zero]
+
 section Semiring
 
 variable [Semiring R] [CharP R 2]
 
-theorem two_eq_zero : (2 : R) = 0 := by rw [← Nat.cast_two, CharP.cast_eq_zero]
-
 @[scoped simp]
 theorem add_self_eq_zero (x : R) : x + x = 0 := by rw [← two_smul R x, two_eq_zero, zero_smul]
+
+@[scoped simp]
+theorem two_nsmul' (x : R) : 2 • x = 0 := by rw [two_smul, add_self_eq_zero]
 
 end Semiring
 
@@ -37,7 +41,7 @@ variable [Ring R] [CharP R 2]
 
 @[scoped simp]
 theorem neg_eq (x : R) : -x = x := by
-  rw [neg_eq_iff_add_eq_zero, ← two_smul R x, two_eq_zero, zero_smul]
+  rw [neg_eq_iff_add_eq_zero, add_self_eq_zero]
 
 theorem neg_eq' : Neg.neg = (id : R → R) :=
   funext neg_eq
@@ -47,6 +51,16 @@ theorem sub_eq_add (x y : R) : x - y = x + y := by rw [sub_eq_add_neg, neg_eq]
 
 theorem sub_eq_add' : HSub.hSub = ((· + ·) : R → R → R) :=
   funext fun x => funext fun y => sub_eq_add x y
+
+theorem add_eq_iff_eq_add {a b c : R} : a + b = c ↔ a = c + b := by
+  rw [← sub_eq_iff_eq_add, sub_eq_add]
+
+theorem eq_add_iff_add_eq {a b c : R} : a = b + c ↔ a + c = b := by
+  rw [← eq_sub_iff_add_eq, sub_eq_add]
+
+@[scoped simp]
+theorem two_zsmul' (x : R) : (2 : ℤ) • x = 0 := by
+  rw [two_zsmul, add_self_eq_zero]
 
 end Ring
 
