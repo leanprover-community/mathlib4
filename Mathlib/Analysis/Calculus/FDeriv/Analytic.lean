@@ -8,7 +8,6 @@ import Mathlib.Analysis.Analytic.Within
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.Calculus.ContDiff.Defs
 import Mathlib.Analysis.Calculus.FDeriv.Add
-import Mathlib.Analysis.Calculus.FDeriv.Prod
 import Mathlib.Analysis.Normed.Module.Completion
 
 /-!
