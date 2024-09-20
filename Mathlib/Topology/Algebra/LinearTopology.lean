@@ -1,50 +1,46 @@
 /-
-Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos Fernandez. All rights reserved.
+Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir, María Inés de Frutos Fernandez
+Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.Topology.Algebra.Nonarchimedean.Bases
 
 /-! # Linear topologies on rings
 
-Following Bourbaki, *Algebra II*, chapter 4, §2, n° 3,
-a topology on a ring `R` is *linear* if it is invariant by translation
-and there admits a basis of neighborhoods of 0 consisting of two-sided ideals.
+Following Bourbaki, *Algebra II*, chapter 4, §2, n° 3, a topology on a ring `R` is *linear* if
+it is invariant by translation and there admits a basis of neighborhoods of 0 consisting of
+two-sided ideals.
 
-Reflecting the discrepancy between `Filter.IsBasis` and `RingFilterBasis`,
-there are two ways to get this basis of neighborhoods,
-either via a `Set (Ideal R)`, or via a function `ι → Ideal R`.
+Reflecting the discrepancy between `Filter.IsBasis` and `RingFilterBasis`, there are two ways to get
+this basis of neighborhoods, either via a `Set (Ideal R)`, or via a function `ι → Ideal R`.
 
-- `IdealBasis R` is a structure that records a `Set (Ideal R)` and asserts
-it defines a basis of neighborhoods of `0` for *some* topology
+- `IdealBasis R` is a structure that records a `Set (Ideal R)` and asserts that
+it defines a basis of neighborhoods of `0` for *some* topology.
 
 - `Ideal.IsBasis B`, for `B : ι → Ideal R`, is the structure that records
 that the range of `B` defines a basis of neighborhoods of `0` for *some* topology on `R`.
 
-- `Ideal.IsBasis.toRingFilterBasis` converts an `Ideal.IsBasis` to a `RingFilterBasis``
+- `Ideal.IsBasis.toRingFilterBasis` converts an `Ideal.IsBasis` to a `RingFilterBasis`.
 
-- `Ideal.IsBasis.topology` defines the associated topology
+- `Ideal.IsBasis.topology` defines the associated topology.
 
-- `Ideal.IsBasis.topologicalRing`: an `Ideal.IsBasis` defines a topological ring
+- `Ideal.IsBasis.topologicalRing`: an `Ideal.IsBasis` defines a topological ring.
 
-- `Ideal.IsBasis.toIdealBasis` and `IdealBasis.toIsBasis` convert one
-structure to another.
+- `Ideal.IsBasis.toIdealBasis` and `IdealBasis.toIsBasis` convert one structure to another.
 
-- `IdealBasis.toIsBasis.toIdealBasis_eq` proves that this identity;
+- `IdealBasis.toIsBasis.IdealBasis.toIsBasis.toIdealBasis_eq` proves the identity
+`B.toIsBasis.toIdealBasis = B`.
 
 - `Ideal.IsBasis.ofIdealBasis_topology_eq` proves that the topologies coincide.
 
-- For `Ring R` and `TopologicalSpace R`, the type class `LinearTopology R`
-asserts that the topology is linear.
+- For `Ring R` and `TopologicalSpace R`, the type class `LinearTopology R` asserts that the
+topology on `R` is linear.
 
-- `LinearTopology.topologicalRing`: instance showing that then the ring is
-a topological ring.
+- `LinearTopology.topologicalRing`: instance showing that then the ring is a topological ring.
 
-- `LinearTopology.tendsto_zero_mul`: for `f, g : ι → R`
-such that `f i` converges to `0`, then `f i * g i` converges to `0`
+- `LinearTopology.tendsto_zero_mul`: for `f, g : ι → R` such that `f i` converges to `0`,
+`f i * g i` converges to `0`.
 
 -/
 
@@ -54,39 +50,35 @@ variable (α : Type*) [Ring α]
 
 /-- `IdealBasis α` is a structure that furnishes a filter basis of left- and right-ideals -/
 structure IdealBasis where
-  /-- Sets of a filter basis. -/
+  /-- Ideals of a filter basis. -/
   sets : Set (Ideal α)
-  /-- The set of filter basis sets is nonempty. -/
+  /-- The set of filter basis ideals is nonempty. -/
   nonempty : sets.Nonempty
-  /-- The set of filter basis sets is directed downwards. -/
+  /-- The set of filter basis ideals is directed downwards. -/
   inter_sets {x y} : x ∈ sets → y ∈ sets → ∃ z ∈ sets, z ≤ x ⊓ y
-  /-- Ideals in sets are right ideals -/
-  mul_right {x} {a b : α}: x ∈ sets → a ∈ x → a * b ∈ x
+  /-- Ideals in sets are right ideals. -/
+  mul_right {x} {a b : α} : x ∈ sets → a ∈ x → a * b ∈ x
 
 instance IdealBasis.setLike : SetLike (IdealBasis α) (Ideal α) where
   coe := fun B ↦ B.sets
   coe_injective' := fun B B' h ↦ by cases B; cases B'; congr
 
 /-- Define an `IdealBasis` on a `CommRing`-/
-def IdealBasis.ofComm {α : Type*} [CommRing α] (B : Set (Ideal α))
-    (nonempty : Set.Nonempty B)
-    (inter : ∀ {i j}, i ∈ B → j ∈ B → ∃ k ∈ B, k ≤ i ⊓ j) :
-    IdealBasis α where
+def IdealBasis.ofComm {α : Type*} [CommRing α] (B : Set (Ideal α)) (nonempty : Set.Nonempty B)
+    (inter : ∀ {i j}, i ∈ B → j ∈ B → ∃ k ∈ B, k ≤ i ⊓ j) : IdealBasis α where
   sets := B
   inter_sets := inter
   nonempty := nonempty
-  mul_right {i} {a b} _ ha := by
-    rw [mul_comm]
-    exact Ideal.mul_mem_left i b ha
+  mul_right {i a b} _ ha := mul_comm a b ▸ Ideal.mul_mem_left i b ha
 
 variable {α}
 
 variable {ι : Sort*} (B : ι → Ideal α)
 
-/-- `Ideal.IsBasis B` means the image of `B` is a filter basis consisting
+/-- `Ideal.IsBasis B` means that the image of `B` is a filter basis consisting
 of left- and right-ideals. -/
 structure Ideal.IsBasis  : Prop where
-  /-- There is an `i : ι` -/
+  /-- There is an `i : ι`. -/
   nonempty : Nonempty ι
   /-- Every intersection of ideals in `B` contains an ideal in `B`. -/
   inter : ∀ (i j : ι), ∃ (k : ι), B k ≤ B i ⊓ B j
@@ -95,12 +87,10 @@ structure Ideal.IsBasis  : Prop where
 
 /-- Define an `Ideal.IsBasis` on a `CommRing`. -/
 lemma Ideal.IsBasis.ofComm {α : Type*} [CommRing α] {ι : Type*} [Nonempty ι] {B : ι → Ideal α}
-    (inter : ∀ (i j), ∃ k, B k ≤ B i ⊓ B j) :
-    Ideal.IsBasis B :=
+    (inter : ∀ (i j), ∃ k, B k ≤ B i ⊓ B j) : Ideal.IsBasis B :=
   { inter
     nonempty := inferInstance
-    mul_right := fun i a r h => by
-      rw [mul_comm]; exact Ideal.mul_mem_left (B i) r h }
+    mul_right := fun i a r h => mul_comm a r ▸ Ideal.mul_mem_left (B i) r h }
 
 variable {B} in
 /-- The `IdealBasis` associated with an `Ideal.IsBasis` -/
@@ -175,8 +165,7 @@ theorem ofIdealBasis_topology_eq (hB : Ideal.IsBasis B) :
     (hB.toIdealBasis.toIsBasis).topology = hB.topology := by
   rw [TopologicalSpace.ext_iff_nhds]
   intro a
-  simp [AddGroupFilterBasis.nhds_eq]
-  simp only [AddGroupFilterBasis.N]
+  simp only [AddGroupFilterBasis.nhds_eq, AddGroupFilterBasis.N]
   apply congr_arg₂ _ rfl
   -- Now we have to prove that both filter bases (sets vs families) coincide
   ext s
@@ -195,8 +184,7 @@ namespace IdealBasis
 
 variable {α : Type*} [Ring α]
 
-theorem mem_nhds_zero_iff (B : IdealBasis α)
-    (s : Set α) :
+theorem mem_nhds_zero_iff (B : IdealBasis α) (s : Set α) :
     (s ∈ @nhds _ B.toIsBasis.topology 0) ↔
     ∃ i ∈ B.sets, (i : Set α) ∈ @nhds _ B.toIsBasis.topology 0 ∧ i ≤ s := by
   rw [Ideal.IsBasis.mem_nhds_zero_iff]
@@ -215,42 +203,31 @@ section LinearTopology
 
 variable (α : Type u) [Ring α]
 
-/-- A topology on a ring is linear if its topology is defined by a family of ideals -/
+/-- A topology on a ring is linear if its topology is defined by a family of ideals. -/
 class LinearTopology [τ : TopologicalSpace α]
     extends IdealBasis α where
   isTopology :  τ = toIdealBasis.toIsBasis.topology
 
-/-- If the topology of a ring is linear, then it makes the ring a topological ring -/
+/-- If the topology of a ring is linear, then it makes the ring a topological ring. -/
 instance [TopologicalSpace α] [hLT : LinearTopology α] :
   TopologicalRing α  :=
   hLT.isTopology ▸ (Ideal.IsBasis.topologicalRing hLT.toIdealBasis.toIsBasis)
 
 namespace LinearTopology
 
-theorem mem_nhds_zero_iff [TopologicalSpace α] [hL : LinearTopology α]
-    (s : Set α) :
-    (s ∈ nhds 0) ↔
-    ∃ i ∈ hL.sets, (i : Set α) ∈ nhds 0 ∧ i ≤ s := by
-  rw [TopologicalSpace.ext_iff_nhds.mp hL.isTopology,
-    hL.toIdealBasis.mem_nhds_zero_iff]
+theorem mem_nhds_zero_iff [TopologicalSpace α] [hL : LinearTopology α] (s : Set α) :
+    (s ∈ nhds 0) ↔ ∃ i ∈ hL.sets, (i : Set α) ∈ nhds 0 ∧ i ≤ s := by
+  rw [TopologicalSpace.ext_iff_nhds.mp hL.isTopology, hL.toIdealBasis.mem_nhds_zero_iff]
 
-theorem tendsto_zero_mul [TopologicalSpace α] [LinearTopology α]
-    {ι : Type*} {f : Filter ι} (a b : ι → α)
-    (hb : Filter.Tendsto b f (nhds 0)) :
+theorem tendsto_zero_mul [TopologicalSpace α] [LinearTopology α] {ι : Type*} {f : Filter ι}
+    (a b : ι → α) (hb : Filter.Tendsto b f (nhds 0)) :
     Filter.Tendsto (a * b) f (nhds 0) := by
   intro v hv
-  rw [LinearTopology.mem_nhds_zero_iff] at hv
-  obtain ⟨I, _, I_mem, I_le⟩ := hv
-  simp only [Set.le_eq_subset] at I_le
+  obtain ⟨I, _, I_mem, I_le⟩ := (LinearTopology.mem_nhds_zero_iff _ _).mp hv
   apply Filter.sets_of_superset _ _ I_le
   simp only [Filter.mem_sets, Filter.mem_map]
   rw [Filter.tendsto_def] at hb
-  specialize hb _ I_mem
-  apply Filter.sets_of_superset _ hb
-  intro x
-  simp only [Set.mem_preimage, Pi.mul_apply, SetLike.mem_coe]
-  intro hx
-  apply Ideal.mul_mem_left _ _ hx
+  exact Filter.sets_of_superset _ (hb _ I_mem) (fun x hx ↦ Ideal.mul_mem_left _ _ hx)
 
 end LinearTopology
 
