@@ -31,6 +31,11 @@ termination_by o
 
 variable {S : Set Ordinal.{u}}
 
+@[deprecated (since := "2024-09-20")]
+theorem enumOrd_def (o : Ordinal.{u}) :
+    enumOrd S o = sInf (S ∩ { b | ∀ c, c < o → enumOrd S c < b }) := by
+  rw [enumOrd]
+
 theorem enumOrd_le_of_forall_lt (ha : a ∈ S) (H : ∀ b < o, enumOrd S b < a) : enumOrd S o ≤ a := by
   rw [enumOrd]
   exact csInf_le' ⟨ha, H⟩
@@ -78,13 +83,13 @@ theorem enumOrd_surjective (hS : ¬ BddAbove S) {b : Ordinal} (hs : b ∈ S) :
     ∃ a, enumOrd S a = b := by
   rwa [← range_enumOrd hS] at hs
 
-theorem enumOrd_le_enumOrd {S T : Set Ordinal} (hS : ¬ BddAbove S) (hST : S ⊆ T) :
+theorem enumOrd_mono_ {S T : Set Ordinal} (hS : ¬ BddAbove S) (hST : S ⊆ T) :
     enumOrd T ≤ enumOrd S := by
   intro a
   rw [enumOrd, enumOrd]
   apply csInf_le_csInf' (enumOrd_nonempty hS a) (inter_subset_inter hST _)
   intro b hb c hc
-  exact (enumOrd_le_enumOrd hS hST c).trans_lt <| hb c hc
+  exact (enumOrd_le_of_subset hS hST c).trans_lt <| hb c hc
 termination_by a => a
 
 /-- A characterization of `enumOrd`: it is the unique strict monotonic function with range `S`. -/
