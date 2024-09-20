@@ -201,20 +201,20 @@ end DiscreteUniformity
 
 namespace MvPowerSeries
 
-variable {σ : Type*} [DecidableEq σ]
+variable {σ : Type*} -- [DecidableEq σ]
   {A : Type*} [CommSemiring A]
   {R : Type*} [CommRing R] [Algebra A R]
   -- [TopologicalSpace α] [TopologicalRing α]
-  {τ : Type*} [DecidableEq τ]
+  {τ : Type*} -- [DecidableEq τ]
   {S : Type*} [CommRing S] [Algebra A S] [Algebra R S] [IsScalarTower A R S]
   -- [TopologicalSpace R] [TopologicalRing R][TopologicalAlgebra α R]
 
-open WithPiTopology WithPiUniformity
+open WithPiTopology 
 
 /-- Families of power series which can be substituted -/
 structure SubstDomain (a : σ → MvPowerSeries τ S) : Prop where
   const_coeff : ∀ s, IsNilpotent (constantCoeff τ S (a s))
-  tendsto_zero : Filter.Tendsto a Filter.cofinite (@nhds _ (@topologicalSpace τ S ⊥) 0)
+  tendsto_zero : Filter.Tendsto a Filter.cofinite (@nhds _ (@instTopologicalSpace τ S ⊥) 0)
 
 theorem substDomain_X :
     SubstDomain (fun (s : σ) ↦ (X s : MvPowerSeries σ S)) :=
@@ -286,98 +286,112 @@ noncomputable def subst (a : σ → MvPowerSeries τ S) (f : MvPowerSeries σ R)
   letI : UniformSpace S := ⊥
   MvPowerSeries.eval₂ (algebraMap _ _) a f
 
-variable {a : σ → MvPowerSeries τ S} (ha : SubstDomain a)
+variable {a : σ → MvPowerSeries τ S} 
 
-theorem SubstDomain.evalDomain :
-    @EvalDomain σ (MvPowerSeries τ S) _ (@topologicalSpace τ S ⊥) a :=
+theorem SubstDomain.evalDomain (ha : SubstDomain a) :
+    @EvalDomain σ (MvPowerSeries τ S) _ (@instTopologicalSpace τ S ⊥) a :=
   letI : UniformSpace S := ⊥
   { hpow := fun s ↦ (tendsto_pow_of_constantCoeff_nilpotent_iff (a s)).mpr (ha.const_coeff s)
     tendsto_zero := ha.tendsto_zero }
 
 /-- Substitution of power series into a power series -/
-noncomputable def substAlgHom : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ S :=
+noncomputable def substAlgHom (ha : SubstDomain a) :
+    MvPowerSeries σ R →ₐ[R] MvPowerSeries τ S := by
 -- NOTE : Could there be a tactic that introduces these local instances?
+  classical
   letI : UniformSpace R := ⊥
   letI : UniformSpace S := ⊥
-  MvPowerSeries.aeval ha.evalDomain
+  haveI : ContinuousSMul R S := DiscreteTopology.instContinuousSMul R S
+  haveI : ContinuousSMul R (MvPowerSeries τ S) := IsScalarTower.continuousSMul S
+  exact MvPowerSeries.aeval ha.evalDomain
 
 @[simp]
-theorem coe_substAlgHom :
+theorem coe_substAlgHom (ha : SubstDomain a) :
     ⇑(substAlgHom ha) = subst (R := R) a :=
   letI : UniformSpace R := ⊥
   letI : UniformSpace S := ⊥
+  haveI : ContinuousSMul R S := DiscreteTopology.instContinuousSMul R S
+  haveI : ContinuousSMul R (MvPowerSeries τ S) := IsScalarTower.continuousSMul S
   coe_aeval (SubstDomain.evalDomain ha)
 
-theorem subst_add (f g : MvPowerSeries σ R) :
+theorem subst_add (ha : SubstDomain a) (f g : MvPowerSeries σ R) :
     subst a (f + g) = subst a f + subst a g := by
   rw [← coe_substAlgHom ha, map_add]
 
-theorem subst_mul (f g : MvPowerSeries σ R) :
+theorem subst_mul (ha : SubstDomain a) (f g : MvPowerSeries σ R) :
     subst a (f * g) = subst a f * subst a g := by
   rw [← coe_substAlgHom ha, map_mul]
 
-theorem subst_pow (f : MvPowerSeries σ R) (n : ℕ) :
+theorem subst_pow (ha : SubstDomain a) (f : MvPowerSeries σ R) (n : ℕ) :
     subst a (f ^ n) = (subst a f ) ^ n := by
   rw [← coe_substAlgHom ha, map_pow]
 
-theorem subst_smul (r : A) (f : MvPowerSeries σ R) :
+theorem subst_smul (ha : SubstDomain a) (r : A) (f : MvPowerSeries σ R) :
     subst a (r • f) = r • (subst a f) := by
   rw [← coe_substAlgHom ha, AlgHom.map_smul_of_tower]
 
-theorem substAlgHom_coe (p : MvPolynomial σ R) :
+theorem substAlgHom_coe (ha : SubstDomain a) (p : MvPolynomial σ R) :
     substAlgHom (R := R) ha p = MvPolynomial.aeval a p :=
   letI : UniformSpace R := ⊥
   letI : UniformSpace S := ⊥
+  haveI : ContinuousSMul R S := DiscreteTopology.instContinuousSMul R S
+  haveI : ContinuousSMul R (MvPowerSeries τ S) := IsScalarTower.continuousSMul S
   aeval_coe ha.evalDomain p
 
-theorem substAlgHom_X (s : σ) :
+theorem substAlgHom_X (ha : SubstDomain a) (s : σ) :
     substAlgHom (R := R) ha (X s) = a s := by
   rw [← MvPolynomial.coe_X, substAlgHom_coe, MvPolynomial.aeval_X]
 
-theorem substAlgHom_monomial (e : σ →₀ ℕ) (r : R) :
+theorem substAlgHom_monomial (ha : SubstDomain a) (e : σ →₀ ℕ) (r : R) :
     substAlgHom ha (monomial R e r) =
       (algebraMap R (MvPowerSeries τ S) r) * (e.prod (fun s n ↦ (a s) ^ n)) := by
   rw [← MvPolynomial.coe_monomial, substAlgHom_coe, MvPolynomial.aeval_monomial]
 
-theorem subst_coe (p : MvPolynomial σ R) :
+theorem subst_coe (ha : SubstDomain a) (p : MvPolynomial σ R) :
     subst (R := R) a p = MvPolynomial.aeval a p := by
   rw [← coe_substAlgHom ha, substAlgHom_coe]
 
-theorem subst_X (s : σ) :
+theorem subst_X (ha : SubstDomain a) (s : σ) :
     subst (R := R) a (X s) = a s := by
   rw [← coe_substAlgHom ha, substAlgHom_X]
 
-theorem subst_monomial (e : σ →₀ ℕ) (r : R) :
+theorem subst_monomial (ha : SubstDomain a) (e : σ →₀ ℕ) (r : R) :
     subst a (monomial R e r) =
       (algebraMap R (MvPowerSeries τ S) r) * (e.prod (fun s n ↦ (a s) ^ n)) := by
   rw [← coe_substAlgHom ha, substAlgHom_monomial]
 
-theorem continuous_subst :
+theorem continuous_subst (ha : SubstDomain a) :
     letI : UniformSpace R := ⊥
     letI : UniformSpace S := ⊥
     Continuous (subst a : MvPowerSeries σ R → MvPowerSeries τ S) :=
   letI : UniformSpace R := ⊥
   letI : UniformSpace S := ⊥
+  haveI : ContinuousSMul R S := DiscreteTopology.instContinuousSMul R S
+  haveI : ContinuousSMul R (MvPowerSeries τ S) := IsScalarTower.continuousSMul S
   continuous_eval₂ (continuous_algebraMap _ _) ha.evalDomain
 
-theorem coeff_subst_finite (f : MvPowerSeries σ R) (e : τ →₀ ℕ) :
+theorem coeff_subst_finite (ha : SubstDomain a) (f : MvPowerSeries σ R) (e : τ →₀ ℕ) :
     Set.Finite (fun d ↦ (coeff R d f) • (coeff S e (d.prod fun s e => (a s) ^ e))).support :=
   letI : UniformSpace S := ⊥
   letI : UniformSpace R := ⊥
+  haveI : ContinuousSMul R S := DiscreteTopology.instContinuousSMul R S
+  haveI : ContinuousSMul R (MvPowerSeries τ S) := IsScalarTower.continuousSMul S
   Set.Finite.support_of_summable _
-    ((hasSum_aeval ha.evalDomain f).map (coeff S e) (continuous_coeff e)).summable
+    ((hasSum_aeval ha.evalDomain f).map (coeff S e) (continuous_coeff S e)).summable
 
-theorem coeff_subst (f : MvPowerSeries σ R) (e : τ →₀ ℕ) :
+theorem coeff_subst (ha : SubstDomain a) (f : MvPowerSeries σ R) (e : τ →₀ ℕ) :
     coeff S e (subst a f) =
       finsum (fun d ↦ (coeff R d f) • (coeff S e (d.prod fun s e => (a s) ^ e))) := by
   letI : UniformSpace S := ⊥
   letI : UniformSpace R := ⊥
-  have := ((hasSum_aeval ha.evalDomain f).map (coeff S e) (continuous_coeff e))
+  haveI : ContinuousSMul R S := DiscreteTopology.instContinuousSMul R S
+  haveI : ContinuousSMul R (MvPowerSeries τ S) := IsScalarTower.continuousSMul S
+  have := ((hasSum_aeval ha.evalDomain f).map (coeff S e) (continuous_coeff S e))
   erw [← coe_substAlgHom ha, ← this.tsum_eq, tsum_def]
   erw [dif_pos this.summable, if_pos (coeff_subst_finite ha f e)]
   rfl
 
-theorem constantCoeff_subst (f : MvPowerSeries σ R) :
+theorem constantCoeff_subst (ha : SubstDomain a) (f : MvPowerSeries σ R) :
     constantCoeff τ S (subst a f) =
       finsum (fun d ↦ (coeff R d f) • (constantCoeff τ S (d.prod fun s e => (a s) ^ e))) := by
   simp only [← coeff_zero_eq_constantCoeff_apply, coeff_subst ha f 0]
@@ -395,50 +409,53 @@ variable
     {T : Type*} [CommRing T]
     [UniformSpace T] [T2Space T] [CompleteSpace T]
     [UniformAddGroup T] [TopologicalRing T] [LinearTopology T]
-    [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+    [Algebra R T] -- [Algebra S T] [IsScalarTower R S T]
     {ε : MvPowerSeries τ S →ₐ[R] T}
 
-theorem comp_substAlgHom :
+theorem comp_substAlgHom (ha : SubstDomain a) :
     letI : UniformSpace S := ⊥
     letI : UniformSpace R := ⊥
+    haveI : ContinuousSMul R T := DiscreteTopology.instContinuousSMul R T
     (hε : Continuous ε) →
       ε.comp (substAlgHom ha) = aeval (EvalDomain.map hε ha.evalDomain) :=
   letI : UniformSpace R := ⊥
   letI : UniformSpace S := ⊥
+  haveI : ContinuousSMul R T := DiscreteTopology.instContinuousSMul R T
+  haveI : ContinuousSMul R S := DiscreteTopology.instContinuousSMul R S
+  haveI : ContinuousSMul R (MvPowerSeries τ S) := IsScalarTower.continuousSMul S
   fun hε ↦ comp_aeval ha.evalDomain hε
 
-theorem comp_subst :
+theorem comp_subst (ha : SubstDomain a) :
     letI : UniformSpace R := ⊥
     letI : UniformSpace S := ⊥
+    haveI : ContinuousSMul R T := DiscreteTopology.instContinuousSMul R T
     (hε : Continuous ε) →
       ⇑ε ∘ (subst a) = ⇑(aeval (R := R) (EvalDomain.map hε ha.evalDomain)) :=
-  letI : UniformSpace R := ⊥
-  letI : UniformSpace S := ⊥
   fun hε ↦ by rw [← comp_substAlgHom ha hε, AlgHom.coe_comp, coe_substAlgHom]
 
-theorem comp_subst_apply :
+theorem comp_subst_apply (ha : SubstDomain a) :
     letI : UniformSpace R := ⊥
     letI : UniformSpace S := ⊥
+    haveI : ContinuousSMul R T := DiscreteTopology.instContinuousSMul R T
     (hε : Continuous ε) → (f : MvPowerSeries σ R) →
       ε (subst a f) = aeval (R := R) (EvalDomain.map hε ha.evalDomain) f :=
-  letI : UniformSpace R := ⊥
-  letI : UniformSpace S := ⊥
   fun hε ↦ congr_fun (comp_subst ha hε)
 
-theorem eval₂_subst {b : τ → T} (hb : EvalDomain b) (f : MvPowerSeries σ R) :
+variable [Algebra S T] [IsScalarTower R S T]
+
+theorem eval₂_subst (ha : SubstDomain a) {b : τ → T} (hb : EvalDomain b) (f : MvPowerSeries σ R) :
     letI : UniformSpace R := ⊥
     letI : UniformSpace S := ⊥
     eval₂ (algebraMap S T) b (subst a f) =
       eval₂ (algebraMap R T) (fun s ↦ eval₂ (algebraMap S T) b (a s)) f := by
   letI : UniformSpace R := ⊥
   letI : UniformSpace S := ⊥
+  haveI : ContinuousSMul S T := DiscreteTopology.instContinuousSMul S T
   let ε : MvPowerSeries τ S →ₐ[R] T := (aeval hb).restrictScalars R
   have hε : Continuous ε := continuous_aeval hb
   simpa only [AlgHom.coe_restrictScalars', AlgHom.toRingHom_eq_coe,
     AlgHom.coe_restrictScalars, RingHom.coe_coe, ε, coe_aeval]
     using comp_subst_apply ha hε f
-
-
 
 /- a : σ → MvPowerSeries τ S
    b : τ → MvPowerSeries υ T
@@ -448,15 +465,16 @@ theorem eval₂_subst {b : τ → T} (hb : EvalDomain b) (f : MvPowerSeries σ R
    f(a) (b) = substAlgHom hb (a s)
    -/
 
-variable {υ : Type*} [DecidableEq υ]
+variable {υ : Type*} -- [DecidableEq υ]
   {T : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
   {b : τ → MvPowerSeries υ T}
-  (hb : @SubstDomain τ υ T _ b)
+  -- (hb : @SubstDomain τ υ T _ b)
 
 -- TODO? : the converse holds when the kernel of `algebraMap R S` is a nilideal
-theorem IsNilpotent_subst
+theorem IsNilpotent_subst (ha : SubstDomain a)
     {f : MvPowerSeries σ R} (hf : IsNilpotent (constantCoeff σ R f)) :
     IsNilpotent (constantCoeff τ S ((substAlgHom ha) f)) := by
+  classical
   rw [coe_substAlgHom, constantCoeff_subst ha]
   apply IsNilpotent.finsum
   intro d
@@ -478,7 +496,8 @@ theorem IsNilpotent_subst
       simp only [Finsupp.filter_apply, if_neg ht', ne_eq, not_true_eq_false] at htt'
     · exact fun _ ↦ by rw [pow_zero]
 
-theorem SubstDomain.comp : SubstDomain (fun s ↦ substAlgHom hb (a s)) where
+theorem SubstDomain.comp (ha : SubstDomain a) (hb : SubstDomain b) :
+    SubstDomain (fun s ↦ substAlgHom hb (a s)) where
   const_coeff s := IsNilpotent_subst hb (ha.const_coeff s)
   tendsto_zero := by
     letI : TopologicalSpace S := ⊥
@@ -487,27 +506,32 @@ theorem SubstDomain.comp : SubstDomain (fun s ↦ substAlgHom hb (a s)) where
     simp only [← map_zero (substAlgHom (R := S) hb), coe_substAlgHom]
     exact (continuous_subst hb).continuousAt
 
-theorem substAlgHom_comp_substAlgHom :
+theorem substAlgHom_comp_substAlgHom (ha : SubstDomain a) (hb : SubstDomain b) :
     ((substAlgHom hb).restrictScalars R).comp (substAlgHom ha) = substAlgHom (ha.comp hb) := by
   letI : UniformSpace R := ⊥
   letI : UniformSpace S := ⊥
   letI : UniformSpace T := ⊥
+  haveI : ContinuousSMul R S := DiscreteTopology.instContinuousSMul R S
+  haveI : ContinuousSMul R (MvPowerSeries τ S) := IsScalarTower.continuousSMul S
+  haveI : ContinuousSMul R T := DiscreteTopology.instContinuousSMul R T
+  haveI : ContinuousSMul R (MvPowerSeries υ T) := IsScalarTower.continuousSMul T
   apply comp_aeval (R := R) (ε := (substAlgHom hb).restrictScalars R)
     ha.evalDomain
   simp only [AlgHom.coe_restrictScalars', coe_substAlgHom]
   exact (continuous_subst (R := S) hb)
 
-theorem substAlgHom_comp_substAlgHom_apply (f : MvPowerSeries σ R) :
+theorem substAlgHom_comp_substAlgHom_apply (ha : SubstDomain a) (hb : SubstDomain b) 
+    (f : MvPowerSeries σ R) :
     (substAlgHom hb) (substAlgHom ha f) = substAlgHom (ha.comp hb) f :=
   DFunLike.congr_fun (substAlgHom_comp_substAlgHom ha hb) f
 
-theorem subst_comp_subst :
+theorem subst_comp_subst (ha : SubstDomain a) (hb : SubstDomain b) :
     (subst b) ∘ (subst a) = subst (R := R) (fun s ↦ subst b (a s)) := by
   simpa only [Function.funext_iff, coe_substAlgHom, DFunLike.ext_iff,
     AlgHom.coe_comp, AlgHom.coe_restrictScalars', Function.comp_apply]
     using substAlgHom_comp_substAlgHom (R := R) ha hb
 
-theorem subst_comp_subst_apply (f : MvPowerSeries σ R) :
+theorem subst_comp_subst_apply (ha : SubstDomain a) (hb : SubstDomain b) (f : MvPowerSeries σ R) :
     subst b (subst a f) = subst (fun s ↦ subst b (a s)) f :=
   congr_fun (subst_comp_subst (R := R) ha hb) f
 
@@ -601,6 +625,7 @@ noncomputable def scale_MonoidHom : (σ → A) →* MvPowerSeries σ R →ₐ[R]
 
 theorem scale_zero_apply (f : MvPowerSeries σ R) :
     (scale (Function.const σ (0 : A))) f = MvPowerSeries.C σ R (constantCoeff σ R f) := by
+  classical
   ext d
   simp only [coeff_scale, coeff_C]
   by_cases hd : d = 0
@@ -638,10 +663,10 @@ namespace PowerSeries
 variable
   {A : Type*} [CommRing A]
   {R : Type*} [CommRing R] [Algebra A R]
-  {τ : Type*} [DecidableEq τ]
-  {S : Type*} [CommRing S] [Algebra A S] [Algebra R S] [IsScalarTower A R S]
+  {τ : Type*} -- [DecidableEq τ]
+  {S : Type*} [CommRing S] -- [Algebra A S] [Algebra R S] [IsScalarTower A R S]
 
-open MvPowerSeries.WithPiUniformity MvPowerSeries.WithPiTopology
+open MvPowerSeries.WithPiTopology
 /-
 local instance us : UniformSpace R := ⊥
 local instance : TopologicalRing R := DiscreteTopology.topologicalRing
@@ -701,41 +726,44 @@ theorem substDomain_smul_X (a : A) : SubstDomain (a • X : R⟦X⟧) :=
     rw [← coeff_zero_eq_constantCoeff]
     simp only [LinearMap.map_smul_of_tower, coeff_zero_X, smul_zero])
 
-variable {υ : Type*} [DecidableEq υ]
-  {T : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable {υ : Type*} -- [DecidableEq υ]
+  {T : Type*} [CommRing T] [Algebra R T] [Algebra S T] -- [IsScalarTower R S T]
 
 /-- Substitution of power series into a power series -/
-noncomputable def subst (a : MvPowerSeries τ S) (f : PowerSeries R) :
+noncomputable def subst [Algebra R S] (a : MvPowerSeries τ S) (f : PowerSeries R) :
     MvPowerSeries τ S :=
   MvPowerSeries.subst (fun _ ↦ a) f
 
-variable {a : MvPowerSeries τ S} (ha : SubstDomain a)
+variable {a : MvPowerSeries τ S}
 
-theorem SubstDomain.const : MvPowerSeries.SubstDomain (fun (_ : Unit) ↦ a) where
+theorem SubstDomain.const (ha : SubstDomain a) :
+    MvPowerSeries.SubstDomain (fun (_ : Unit) ↦ a) where
   const_coeff  := fun _ ↦ ha.const_coeff
   tendsto_zero := by simp only [Filter.cofinite_eq_bot, Filter.tendsto_bot]
 
 /-- Substitution of power series into a power series -/
-noncomputable def substAlgHom  : PowerSeries R →ₐ[R] MvPowerSeries τ S :=
+noncomputable def substAlgHom [Algebra R S] (ha : SubstDomain a) :
+    PowerSeries R →ₐ[R] MvPowerSeries τ S :=
   MvPowerSeries.substAlgHom ha.const
 
-theorem coe_substAlgHom :
+theorem coe_substAlgHom [Algebra R S] (ha : SubstDomain a) :
     ⇑(substAlgHom ha) = subst (R := R) a :=
   MvPowerSeries.coe_substAlgHom ha.const
 
-theorem subst_add (f g : PowerSeries R) :
+theorem subst_add [Algebra R S] (ha : SubstDomain a) (f g : PowerSeries R) :
     subst a (f + g) = subst a f + subst a g := by
   rw [← coe_substAlgHom ha, map_add]
 
-theorem subst_pow (f : PowerSeries R) (n : ℕ) :
+theorem subst_pow [Algebra R S] (ha : SubstDomain a) (f : PowerSeries R) (n : ℕ) :
     subst a (f ^ n) = (subst a f ) ^ n := by
   rw [← coe_substAlgHom ha, map_pow]
 
-theorem subst_mul (f g : PowerSeries R) :
+theorem subst_mul [Algebra R S] (ha : SubstDomain a) (f g : PowerSeries R) :
     subst a (f * g) = subst a f * subst a g := by
   rw [← coe_substAlgHom ha, map_mul]
 
-theorem subst_smul (r : A) (f : PowerSeries R) :
+theorem subst_smul [Algebra A S] [Algebra R S] [IsScalarTower A R S]
+    (ha : SubstDomain a) (r : A) (f : PowerSeries R) :
     subst a (r • f) = r • (subst a f) := by
   rw [← coe_substAlgHom ha, AlgHom.map_smul_of_tower]
 
@@ -746,7 +774,7 @@ theorem subst_smul (r : A) (f : PowerSeries R) :
 - The support under finsuppUnitEquiv should be the image of the support.
 -/
 
-theorem coeff_subst_finite (f : PowerSeries R) (e : τ →₀ ℕ) :
+theorem coeff_subst_finite [Algebra R S] (ha : SubstDomain a) (f : PowerSeries R) (e : τ →₀ ℕ) :
     Set.Finite (fun (d : ℕ) ↦ (coeff R d f) • (MvPowerSeries.coeff S e (a ^ d))).support := by
   convert (MvPowerSeries.coeff_subst_finite ha.const f e).image
     ⇑(Finsupp.LinearEquiv.finsuppUnique ℕ ℕ Unit).toEquiv
@@ -759,7 +787,7 @@ theorem coeff_subst_finite (f : PowerSeries R) (e : τ →₀ ℕ) :
     Finsupp.LinearEquiv.finsuppUnique_symm_apply, Finsupp.single_eq_same]
   congr
 
-theorem coeff_subst (f : PowerSeries R) (e : τ →₀ ℕ) :
+theorem coeff_subst [Algebra R S] (ha : SubstDomain a) (f : PowerSeries R) (e : τ →₀ ℕ) :
     MvPowerSeries.coeff S e (subst a f) =
       finsum (fun (d : ℕ) ↦
         (coeff R d f) • (MvPowerSeries.coeff S e (a ^ d))) := by
@@ -771,12 +799,12 @@ theorem coeff_subst (f : PowerSeries R) (e : τ →₀ ℕ) :
   · ext; simp
   · simp
 
-theorem constantCoeff_subst (f : PowerSeries R) :
+theorem constantCoeff_subst [Algebra R S] (ha : SubstDomain a) (f : PowerSeries R) :
     MvPowerSeries.constantCoeff τ S (subst a f) =
       finsum (fun d ↦ (coeff R d f) • (MvPowerSeries.constantCoeff τ S (a ^ d))) := by
   simp only [← MvPowerSeries.coeff_zero_eq_constantCoeff_apply, coeff_subst ha f 0]
 
-theorem map_algebraMap_eq_subst_X (f : R⟦X⟧) :
+theorem map_algebraMap_eq_subst_X [Algebra R S] (f : R⟦X⟧) :
     map (algebraMap R S) f = subst X f :=
   MvPowerSeries.map_algebraMap_eq_subst_X f
 
@@ -811,7 +839,7 @@ theorem _root_.Polynomial.toPowerSeries_toMvPowerSeries (p : Polynomial R) :
   rw [MvPowerSeries.subst_coe, MvPolynomial.aeval_X]
 -/
 
-theorem substAlgHom_coe (p : Polynomial R) :
+theorem substAlgHom_coe [Algebra R S] (ha : SubstDomain a) (p : Polynomial R) :
     substAlgHom ha (p : PowerSeries R) = ↑(Polynomial.aeval a p) := by
   rw [p.toPowerSeries_toMvPowerSeries, substAlgHom]
   erw [MvPowerSeries.coe_substAlgHom]
@@ -820,14 +848,16 @@ theorem substAlgHom_coe (p : Polynomial R) :
   apply Polynomial.algHom_ext
   simp only [AlgHom.coe_comp, Function.comp_apply, Polynomial.aeval_X, MvPolynomial.aeval_X]
 
-theorem substAlgHom_X : substAlgHom ha (X : R⟦X⟧) = a := by
+theorem substAlgHom_X [Algebra R S] (ha : SubstDomain a) :
+    substAlgHom ha (X : R⟦X⟧) = a := by
   rw [← Polynomial.coe_X, substAlgHom_coe, Polynomial.aeval_X]
 
-theorem subst_coe (p : Polynomial R) :
+theorem subst_coe [Algebra R S] (ha : SubstDomain a) (p : Polynomial R) :
     subst (R := R) a (p : PowerSeries R) = ↑(Polynomial.aeval a p) := by
   rw [← coe_substAlgHom ha, substAlgHom_coe]
 
-theorem subst_X : subst a (X : R⟦X⟧) = a := by
+theorem subst_X [Algebra R S] (ha : SubstDomain a) :
+    subst a (X : R⟦X⟧) = a := by
   rw [← coe_substAlgHom ha, substAlgHom_X]
 
 -- TODO: remove
@@ -849,29 +879,33 @@ theorem SubstDomain.comp {a : PowerSeries S} (ha : SubstDomain a)
   const_coeff := MvPowerSeries.IsNilpotent_subst hb.const (ha.const_coeff)
 
 variable
-    {υ : Type*} [DecidableEq υ]
-    {T : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-    {a : PowerSeries S} (ha : SubstDomain a)
-    {b : MvPowerSeries υ T} (hb : SubstDomain b)
-    {a' : MvPowerSeries τ S} (ha' : SubstDomain a')
-    {b' : τ → MvPowerSeries υ T} (hb' : MvPowerSeries.SubstDomain b')
+    {υ : Type*} -- [DecidableEq υ]
+    {T : Type*} [CommRing T] [Algebra R T] -- [Algebra S T] [Algebra R S] [IsScalarTower R S T]
+    {a : PowerSeries S} -- (ha : SubstDomain a)
+    {b : MvPowerSeries υ T}  -- (hb : SubstDomain b)
+    {a' : MvPowerSeries τ S} -- (ha' : SubstDomain a')
+    {b' : τ → MvPowerSeries υ T} -- (hb' : MvPowerSeries.SubstDomain b')
 
-theorem substAlgHom_comp_substAlgHom :
+theorem substAlgHom_comp_substAlgHom [Algebra R S] [Algebra S T] [IsScalarTower R S T]
+    (ha : SubstDomain a) (hb : SubstDomain b) :
     ((substAlgHom hb).restrictScalars R).comp (substAlgHom ha)
       = substAlgHom (ha.comp hb) :=
   MvPowerSeries.substAlgHom_comp_substAlgHom _ _
 
-theorem substAlgHom_comp_substAlgHom_apply (f : PowerSeries R) :
+theorem substAlgHom_comp_substAlgHom_apply [Algebra R S] [Algebra S T] [IsScalarTower R S T]
+    (ha : SubstDomain a) (hb : SubstDomain b) (f : PowerSeries R) :
     (substAlgHom hb) (substAlgHom  ha f) = substAlgHom (ha.comp hb) f :=
   DFunLike.congr_fun (substAlgHom_comp_substAlgHom ha hb) f
 
-theorem subst_comp_subst :
+theorem subst_comp_subst [Algebra R S] [Algebra S T] [IsScalarTower R S T]
+    (ha : SubstDomain a) (hb : SubstDomain b) :
     (subst b) ∘ (subst a) = subst (R := R) (subst b a) := by
   simpa only [Function.funext_iff, DFunLike.ext_iff, AlgHom.coe_comp, AlgHom.coe_restrictScalars',
     Function.comp_apply, coe_substAlgHom]
     using substAlgHom_comp_substAlgHom (R := R) ha hb
 
-theorem subst_comp_subst_apply (f : PowerSeries R) :
+theorem subst_comp_subst_apply [Algebra R S] [Algebra S T] [IsScalarTower R S T]
+    (ha : SubstDomain a) (hb : SubstDomain b) (f : PowerSeries R) :
     subst b (subst a f) = subst (subst b a) f :=
   congr_fun (subst_comp_subst (R := R) ha hb) f
 
@@ -961,7 +995,7 @@ lemma subst_linear_subst_scalar_comm (a : A)
   rw [MvPowerSeries.scale_linear_eq_smul _ _ hp_lin]
   rfl
 
-theorem scale_map_eq_map_scale' (φ : R →+* S) (a : A) (f : R⟦X⟧) :
+theorem scale_map_eq_map_scale' [Algebra A S] (φ : R →+* S) (a : A) (f : R⟦X⟧) :
     scale (φ (algebraMap A R a)) (PowerSeries.map φ f)
     = PowerSeries.map (φ : R →+* S) (scale a f) := by
   ext n
@@ -969,7 +1003,7 @@ theorem scale_map_eq_map_scale' (φ : R →+* S) (a : A) (f : R⟦X⟧) :
     algebra_compatible_smul S (a ^ n), algebra_compatible_smul R (a ^ n),
     smul_eq_mul, smul_eq_mul, map_mul, map_pow]
 
-theorem scale_map_eq_map_scale (φ : R →ₐ[A] S) (a : A) (f : R⟦X⟧) :
+theorem scale_map_eq_map_scale [Algebra A S] (φ : R →ₐ[A] S) (a : A) (f : R⟦X⟧) :
     scale a (PowerSeries.map φ f)
     = PowerSeries.map (φ : R →+* S) (scale a f) := by
   rw [← scale_map_eq_map_scale', ← scale_algebraMap, RingHom.coe_coe, AlgHom.commutes]

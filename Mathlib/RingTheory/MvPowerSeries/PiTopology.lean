@@ -124,6 +124,19 @@ theorem continuous_C [Ring R] [TopologicalRing R] : Continuous (C σ R) := by
   · simp only [coeff_C, if_neg hd]
     exact continuousAt_const
 
+/-- Scalar multiplication on `MvPowerSeries` is continous -/
+instance [Ring R] [TopologicalRing R] :
+    ContinuousSMul R (MvPowerSeries σ R) := by
+  suffices (fun (u : R × MvPowerSeries σ R) ↦ (u.1 • u.2 : MvPowerSeries σ R)) = 
+    (fun u : MvPowerSeries σ R × MvPowerSeries σ R ↦ u.1 * u.2) ∘ (fun u ↦ ⟨C σ R u.1, u.2⟩) by
+    apply ContinuousSMul.mk
+    rw [this]
+    apply Continuous.comp
+    · exact Continuous.mul continuous_fst continuous_snd
+    · simp only [continuous_prod_mk]
+      exact ⟨Continuous.comp continuous_C continuous_fst, continuous_snd⟩
+  ext; simp
+
 theorem variables_tendsto_zero [Semiring R] :
     Filter.Tendsto (X · : σ → MvPowerSeries σ R) Filter.cofinite (nhds 0) := by
   classical

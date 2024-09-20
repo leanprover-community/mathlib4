@@ -140,10 +140,10 @@ section Evaluation
 
 open WithPiTopology
 
-variable {σ : Type*} 
+variable {σ : Type*}
 variable {R : Type*} [CommRing R] [UniformSpace R]
 variable {S : Type*} [CommRing S] [UniformSpace S]
-variable {φ : R →+* S} 
+variable {φ : R →+* S}
 
 -- We endow MvPowerSeries σ R with the product uniform structure
 private instance : UniformSpace (MvPolynomial σ R) :=
