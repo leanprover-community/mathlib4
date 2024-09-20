@@ -250,9 +250,10 @@ variable {n : ℕ} (hζ : (primitiveRoots n K).Nonempty) (hn : 0 < n)
 variable (a : K) (H : Irreducible (X ^ n - C a))
 
 set_option quotPrecheck false in
-scoped[KummerExtension] notation3 "K[" n "√" a "]" => AdjoinRoot (Polynomial.X ^ n - Polynomial.C a)
+scoped[KummerExtension] notation3 "hidy" K "[" n "√" a "]" =>
+  AdjoinRoot (R := K) (Polynomial.X ^ n - Polynomial.C a)
 
-attribute [nolint docBlame] KummerExtension.«termK[_√_]»
+-- attribute [nolint docBlame] KummerExtension.«termK[_√_]»
 
 open scoped KummerExtension
 
@@ -262,7 +263,7 @@ include hζ H in
 /-- Also see `Polynomial.separable_X_pow_sub_C_unit` -/
 theorem Polynomial.separable_X_pow_sub_C_of_irreducible : (X ^ n - C a).Separable := by
   letI := Fact.mk H
-  letI : Algebra K K[n√a] := inferInstance
+  letI : Algebra K (hidy K [n √ a]) := inferInstance
   have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
   by_cases hn' : n = 1
   · rw [hn', pow_one]; exact separable_X_sub_C
@@ -276,10 +277,12 @@ theorem Polynomial.separable_X_pow_sub_C_of_irreducible : (X ^ n - C a).Separabl
   /--
   After https://github.com/leanprover/lean4/pull/5376 we need to provide this helper instance.
   -/
-  have : MonoidHomClass (K →+* K[n√a]) K K[n√a] := inferInstance
-  exact (hζ.map_of_injective (algebraMap K K[n√a]).injective).injOn_pow_mul
+  -- set_option trace.Meta.synthInstance true in
+  -- have : RingHomClass (K →+* K[n√a]) K K[n√a] := inferInstance
+  set_option trace.Meta.synthInstance true in
+  exact (IsPrimitiveRoot.map_of_injective (M := K) (N := K[n√a]) (k := n) hζ (algebraMap K K[n√a]).injective).injOn_pow_mul
     (root_X_pow_sub_C_ne_zero (lt_of_le_of_ne (show 1 ≤ n from hn) (Ne.symm hn')) _)
-
+#exit
 /-- The natural embedding of the roots of unity of `K` into `Gal(K[ⁿ√a]/K)`, by sending
 `η ↦ (ⁿ√a ↦ η • ⁿ√a)`. Also see `autAdjoinRootXPowSubC` for the `AlgEquiv` version. -/
 noncomputable

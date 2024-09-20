@@ -329,8 +329,7 @@ class RingHomClass (F : Type*) (α β : outParam Type*)
 
 variable [FunLike F α β]
 
--- Porting note: marked `{}` rather than `[]` to prevent dangerous instances
-variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} [RingHomClass F α β]
+variable [NonAssocSemiring α] [NonAssocSemiring β] [RingHomClass F α β]
 
 /-- Turn an element of a type `F` satisfying `RingHomClass F α β` into an actual
 `RingHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
@@ -351,12 +350,7 @@ namespace RingHom
 
 section coe
 
-/-!
-Throughout this section, some `Semiring` arguments are specified with `{}` instead of `[]`.
-See note [implicit instance arguments].
--/
-
-variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β}
+variable [NonAssocSemiring α] [NonAssocSemiring β]
 
 instance instFunLike : FunLike (α →+* β) α β where
   coe f := f.toFun
