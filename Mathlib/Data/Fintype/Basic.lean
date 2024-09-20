@@ -446,7 +446,7 @@ def ofFinset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) : Fin
 /-- Given a fintype `α`, a subtype of `α` is also a fintype. -/
 def subtypeOfFintype [Fintype α] (P : α → Prop) [DecidablePred P] : Fintype {v // P v} :=
   Fintype.subtype (univ.filter P) (by simp)
-  
+
 /-- If `f : α → β` is a bijection and `α` is a fintype, then `β` is also a fintype. -/
 def ofBijective [Fintype α] (f : α → β) (H : Function.Bijective f) : Fintype β :=
   ⟨univ.map ⟨f, H.1⟩, fun b =>
