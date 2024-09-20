@@ -191,6 +191,10 @@ lemma mulAction_def {X : C} (σ : Aut F) (x : F.obj X) :
     σ • x = σ.hom.app X x :=
   rfl
 
+lemma mulAction_naturality {X Y : C} (σ : Aut F) (f : X ⟶ Y) (x : F.obj X) :
+    σ • F.map f x = F.map f (σ • x) :=
+  FunctorToFintypeCat.naturality F F σ.hom f x
+
 /-- An object that is neither initial or connected has a non-trivial subobject. -/
 lemma has_non_trivial_subobject_of_not_isConnected_of_not_initial (X : C) (hc : ¬ IsConnected X)
     (hi : IsInitial X → False) :
