@@ -3,7 +3,7 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Algebra.CharP.Two
+import Mathlib.Algebra.CharP.Defs
 import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.Tactic.Abel
 
@@ -39,7 +39,7 @@ needed.
 
 universe u v
 
-open CharTwo Function Order
+open Function Order
 
 noncomputable section
 
