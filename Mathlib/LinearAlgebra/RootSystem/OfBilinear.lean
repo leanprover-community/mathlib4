@@ -30,12 +30,12 @@ variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommG
 namespace LinearMap
 
 /-- A vector `x` is reflective with respect to a bilinear form if multiplication by its norm is
-injective, and for any other vector `y`, there is a scalar that takes the norm of `x` to twice the
-inner product of `x` and `y`. These conditions are what we need when describing reflection as a map
-taking `y` to `y - 2 • (B x y) / (B x x) • x`. -/
+injective, and for any vector `y`, the norm of `x` divides twice the inner product of `x` and `y`.
+These conditions are what we need when describing reflection as a map taking `y` to
+`y - 2 • (B x y) / (B x x) • x`. -/
 structure IsReflective (B : M →ₗ[R] M →ₗ[R] R) (x : M) : Prop :=
   regular : IsRegular (B x x)
-  dvd_two_mul : ∀y, B x x ∣ 2 * B x y
+  dvd_two_mul : ∀ y, B x x ∣ 2 * B x y
 
 variable (B : M →ₗ[R] M →ₗ[R] R) {x : M}
 
@@ -43,7 +43,7 @@ namespace IsReflective
 
 lemma of_dvd_two [IsDomain R] [NeZero (2 : R)] (hx : B x x ∣ 2) :
     IsReflective B x where
-  regular := isRegular_of_ne_zero <| fun contra => by simp [contra, two_ne_zero (α := R)] at hx
+  regular := isRegular_of_ne_zero <| fun contra ↦ by simp [contra, two_ne_zero (α := R)] at hx
   dvd_two_mul y := hx.mul_right (B x y)
 
 variable (hx : IsReflective B x)
@@ -63,8 +63,7 @@ def coroot : M →ₗ[R] R where
       two_mul, smul_eq_mul, two_mul, mul_add]
 
 @[simp]
-lemma apply_self_mul_coroot_apply {y : M} :
-    B x x * coroot B hx y = 2 * B x y :=
+lemma apply_self_mul_coroot_apply {y : M} : B x x * coroot B hx y = 2 * B x y :=
   (hx.dvd_two_mul y).choose_spec.symm
 
 @[simp]
@@ -87,18 +86,16 @@ lemma isOrthogonal_reflection (hSB : LinearMap.IsSymm B) :
     apply_self_mul_coroot_apply]
   ring
 
-lemma reflective_reflection (B : M →ₗ[R] M →ₗ[R] R) (hSB : LinearMap.IsSymm B) {x y : M}
+lemma reflective_reflection (hSB : LinearMap.IsSymm B) {y : M}
     (hx : IsReflective B x) (hy : IsReflective B y) :
     IsReflective B (Module.reflection (coroot_apply_self B hx) y) := by
   constructor
-  · rw [← LinearEquiv.coe_coe, (isOrthogonal_reflection B hx hSB) y y]
+  · rw [← LinearEquiv.coe_coe, isOrthogonal_reflection B hx hSB]
     exact hy.1
   · intro z
     have hz : Module.reflection (coroot_apply_self B hx)
         (Module.reflection (coroot_apply_self B hx) z) = z := by
-      exact
-        (LinearEquiv.eq_symm_apply (Module.reflection (coroot_apply_self B hx))).mp
-          rfl
+      exact (LinearEquiv.eq_symm_apply (Module.reflection (coroot_apply_self B hx))).mp rfl
     rw [← hz, ← LinearEquiv.coe_coe, isOrthogonal_reflection B hx hSB,
       isOrthogonal_reflection B hx hSB]
     exact hy.2 _
@@ -112,8 +109,8 @@ namespace RootPairing
 open LinearMap IsReflective
 
 /-- The root pairing given by all reflective vectors for a bilinear form. -/
-def of_Bilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : Nondegenerate B)
-    (hSB : IsSymm B) (h2 : IsRegular (2 : R)) :
+def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMap.Nondegenerate B)
+    (hSB : LinearMap.IsSymm B) (h2 : IsRegular (2 : R)) :
     RootPairing {x : M | IsReflective B x} R M (Dual R M) where
   toPerfectPairing := (IsReflexive.toPerfectPairingDual (R := R) (M := M)).flip
   root := Embedding.subtype fun x ↦ IsReflective B x
@@ -152,20 +149,18 @@ def of_Bilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : Nondege
       Embedding.coeFn_mk, PerfectPairing.flip_apply_apply]
     exact coroot_apply_self B x.2
   reflection_perm x :=
-    { toFun := fun y => ⟨(Module.reflection (IsReflective.coroot_apply_self B x.2) y),
-        IsReflective.reflective_reflection B hSB x.2 y.2⟩
-      invFun := fun y => ⟨(Module.reflection (IsReflective.coroot_apply_self B x.2) y),
-        IsReflective.reflective_reflection B hSB x.2 y.2⟩
+    { toFun := fun y => ⟨(Module.reflection (coroot_apply_self B x.2) y),
+        reflective_reflection B hSB x.2 y.2⟩
+      invFun := fun y => ⟨(Module.reflection (coroot_apply_self B x.2) y),
+        reflective_reflection B hSB x.2 y.2⟩
       left_inv := by
         intro y
-        simp [involutive_reflection (IsReflective.coroot_apply_self B x.2) y]
+        simp [involutive_reflection (coroot_apply_self B x.2) y]
       right_inv := by
         intro y
-        simp [involutive_reflection (IsReflective.coroot_apply_self B x.2) y] }
+        simp [involutive_reflection (coroot_apply_self B x.2) y] }
   reflection_perm_root x y := by
-    simp only [coe_setOf, Embedding.coe_subtype, mem_setOf_eq, Embedding.coeFn_mk, Equiv.coe_fn_mk]
-    rw [Module.reflection_apply, PerfectPairing.flip_apply_apply,
-      IsReflexive.toPerfectPairingDual_apply]
+    simp [Module.reflection_apply]
   reflection_perm_coroot x y := by
     simp only [coe_setOf, mem_setOf_eq, Embedding.coeFn_mk, Embedding.coe_subtype,
       PerfectPairing.flip_apply_apply, IsReflexive.toPerfectPairingDual_apply, Equiv.coe_fn_mk]
@@ -173,16 +168,14 @@ def of_Bilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : Nondege
     simp only [LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul]
     refine y.2.1.1 ?_
     simp only [mem_setOf_eq, PerfectPairing.flip_apply_apply, mul_sub,
-      IsReflective.apply_self_mul_coroot_apply B y.2, ← mul_assoc]
-    rw [← IsReflective.isOrthogonal_reflection B x.2 hSB y y,
-      IsReflective.apply_self_mul_coroot_apply, ← hSB z, ← hSB z, RingHom.id_apply,
-      RingHom.id_apply, LinearEquiv.coe_coe, Module.reflection_apply, map_sub, mul_sub,
-      sub_eq_sub_iff_comm, sub_left_inj]
+      apply_self_mul_coroot_apply B y.2, ← mul_assoc]
+    rw [← isOrthogonal_reflection B x.2 hSB y y, apply_self_mul_coroot_apply, ← hSB z, ← hSB z,
+      RingHom.id_apply, RingHom.id_apply, LinearEquiv.coe_coe, Module.reflection_apply, map_sub,
+      mul_sub, sub_eq_sub_iff_comm, sub_left_inj]
     refine x.2.1.1 ?_
     simp only [mem_setOf_eq, map_smul, smul_eq_mul]
     rw [← mul_assoc _ _ (B z x), ← mul_assoc _ _ (B z x), mul_left_comm,
-      IsReflective.apply_self_mul_coroot_apply B x.2, mul_left_comm (B x x),
-      IsReflective.apply_self_mul_coroot_apply B x.2,
+      apply_self_mul_coroot_apply B x.2, mul_left_comm (B x x), apply_self_mul_coroot_apply B x.2,
       ← hSB x y, RingHom.id_apply, ← hSB x z, RingHom.id_apply]
     ring
 
