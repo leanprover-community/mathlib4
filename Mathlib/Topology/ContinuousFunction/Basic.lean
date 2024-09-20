@@ -39,8 +39,8 @@ section
 /-- `ContinuousMapClass F α β` states that `F` is a type of continuous maps.
 
 You should extend this class when you extend `ContinuousMap`. -/
-class ContinuousMapClass (F α β : Type*) [TopologicalSpace α] [TopologicalSpace β]
-    [FunLike F α β] : Prop where
+class ContinuousMapClass (F : Type*) (α β : outParam Type*)
+    [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β] : Prop where
   /-- Continuity -/
   map_continuous (f : F) : Continuous f
 
