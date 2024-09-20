@@ -12,7 +12,7 @@ The ordinals have the peculiar property that every subset bounded above is a sma
 themselves not being small. As a consequence of this, every unbounded subset of `Ordinal` is order
 isomorphic to `Ordinal`.
 
-We define this correspondence as `enumOrd`, and use it to define an order isomorphism
+We define this correspondence as `enumOrd`, and use it to then define an order isomorphism
 `enumOrdOrderIso`.
 -/
 
@@ -63,17 +63,16 @@ theorem enumOrd_succ_le (hS : ¬ BddAbove S) (ha : a ∈ S) (hb : enumOrd S b < 
 
 theorem range_enumOrd (hS : ¬ BddAbove S) : range (enumOrd S) = S := by
   ext a
+  let T := { b | a ≤ enumOrd S b }
   constructor
   · rintro ⟨b, rfl⟩
     exact enumOrd_mem hS b
   · intro ha
-    use sInf { b | a ≤ enumOrd S b }
-    apply le_antisymm
-    · apply enumOrd_le_of_forall_lt ha
-      intro b hb
+    refine ⟨sInf T, (enumOrd_le_of_forall_lt ha ?_).antisymm ?_⟩
+    · intro b hb
       by_contra! hb'
       exact hb.not_le (csInf_le' hb')
-    · exact csInf_mem (s := { b | a ≤ enumOrd S b }) ⟨a, (enumOrd_strictMono hS).id_le a⟩
+    · exact csInf_mem (s := T) ⟨a, (enumOrd_strictMono hS).id_le a⟩
 
 theorem enumOrd_surjective (hS : ¬ BddAbove S) {b : Ordinal} (hs : b ∈ S) :
     ∃ a, enumOrd S a = b := by
@@ -90,15 +89,15 @@ termination_by a => a
 
 /-- A characterization of `enumOrd`: it is the unique strict monotonic function with range `S`. -/
 theorem eq_enumOrd (f : Ordinal → Ordinal) (hS : ¬ BddAbove S) :
-    StrictMono f ∧ range f = S ↔ enumOrd S = f := by
+    enumOrd S = f ↔ StrictMono f ∧ range f = S := by
   constructor
-  · rintro ⟨h₁, h₂⟩
-    rwa [← StrictMono.range_inj (enumOrd_strictMono hS) h₁, range_enumOrd hS, eq_comm]
   · rintro rfl
     exact ⟨enumOrd_strictMono hS, range_enumOrd hS⟩
+  · rintro ⟨h₁, h₂⟩
+    rwa [← StrictMono.range_inj (enumOrd_strictMono hS) h₁, range_enumOrd hS, eq_comm]
 
 theorem enumOrd_range {f : Ordinal → Ordinal} (hf : StrictMono f) : enumOrd (range f) = f :=
-  (eq_enumOrd _ hf.not_bddAbove_range).1 ⟨hf, rfl⟩
+  (eq_enumOrd _ hf.not_bddAbove_range').2 ⟨hf, rfl⟩
 
 @[simp]
 theorem enumOrd_univ : enumOrd Set.univ = id := by
