@@ -903,9 +903,19 @@ theorem injective_πs' {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) : Function.Inje
 
 namespace Products
 
+open List in
 theorem lt_ord_of_lt {l m : Products I} {o : Ordinal} (h₁ : m < l)
     (h₂ : ∀ i ∈ l.val, ord I i < o) : ∀ i ∈ m.val, ord I i < o :=
-  List.Sorted.lt_ord_of_lt (List.chain'_iff_pairwise.mp l.2) (List.chain'_iff_pairwise.mp m.2) h₁ h₂
+  match l with
+  | ⟨[], _⟩ => (Lex.not_nil_right _ _ h₁).elim
+  | ⟨a::l, _⟩ => by
+    intro i hi
+    have : Inhabited I := ⟨i⟩
+    have hm : Sorted (· > ·) m.1 := chain'_iff_pairwise.mp m.2
+    apply lt_of_le_of_lt _  (h₂ _ <| List.head!_mem_self (cons_ne_nil a l))
+    apply (Ordinal.typein_le_typein _).2
+    rw [not_lt]
+    exact ((hm.le_head! hi).trans <| List.head!_le_of_lt _ _ h₁ (ne_nil_of_mem hi))
 
 theorem eval_πs {l : Products I} {o : Ordinal} (hlt : ∀ i ∈ l.val, ord I i < o) :
     πs C o (l.eval (π C (ord I · < o))) = l.eval C := by
@@ -1475,7 +1485,6 @@ theorem span_sum : Set.range (eval C) = Set.range (Sum.elim
     (fun (l : MaxProducts C ho) ↦ Products.eval C l.1)) := by
   rw [← sum_equiv_comp_eval_eq_elim C hsC ho, Equiv.toFun_as_coe,
     EquivLike.range_comp (e := sum_equiv C hsC ho)]
-
 
 theorem square_commutes : SumEval C ho ∘ Sum.inl =
     ModuleCat.ofHom (πs C o) ∘ eval (π C (ord I · < o)) := by
