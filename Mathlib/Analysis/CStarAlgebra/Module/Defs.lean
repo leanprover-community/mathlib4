@@ -153,8 +153,8 @@ end general
 
 section norm
 
-variable {A E : Type*} [NonUnitalNormedRing A] [StarRing A] [PartialOrder A]
-  [AddCommGroup E] [NormedSpace ℂ A] [Module ℂ E] [SMul Aᵐᵒᵖ E] [Norm E] [CStarModule A E]
+variable {A E : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [AddCommGroup E]
+  [Module ℂ E] [SMul Aᵐᵒᵖ E] [Norm E] [CStarModule A E]
 
 local notation "⟪" x ", " y "⟫" => inner (𝕜 := A) x y
 
@@ -177,8 +177,6 @@ protected lemma norm_pos {x : E} (hx : x ≠ 0) : 0 < ‖x‖ := by
   rw [inner_self] at H
   exact hx H
 
-variable [StarModule ℂ A]
-
 protected lemma norm_zero : ‖(0 : E)‖ = 0 := by simp [norm_eq_sqrt_norm_inner_self]
 
 lemma norm_zero_iff (x : E) : ‖x‖ = 0 ↔ x = 0 :=
@@ -187,8 +185,7 @@ lemma norm_zero_iff (x : E) : ‖x‖ = 0 ↔ x = 0 :=
 
 end
 
-variable [CStarRing A] [StarOrderedRing A] [StarModule ℂ A]
-  [IsScalarTower ℂ A A] [SMulCommClass ℂ A A]
+variable [StarOrderedRing A]
 
 open scoped InnerProductSpace in
 /-- The C⋆-algebra-valued Cauchy-Schwarz inequality for Hilbert C⋆-modules. -/
