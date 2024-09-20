@@ -10,15 +10,17 @@ import Mathlib.ModelTheory.FinitelyGenerated
 
 /-!
 # Direct Limits of First-Order Structures
+
 This file constructs the direct limit of a directed system of first-order embeddings.
 
 ## Main Definitions
-* `FirstOrder.Language.DirectLimit G f` is the direct limit of the directed system `f` of
+
+- `FirstOrder.Language.DirectLimit G f` is the direct limit of the directed system `f` of
   first-order embeddings between the structures indexed by `G`.
-* `FirstOrder.Language.DirectLimit.lift` is the universal property of the direct limit: maps
+- `FirstOrder.Language.DirectLimit.lift` is the universal property of the direct limit: maps
   from the components to another module that respect the directed system structure give rise to
   a unique map out of the direct limit.
-* `FirstOrder.Language.DirectLimit.equiv_lift` is the equivalence between limits of
+- `FirstOrder.Language.DirectLimit.equiv_lift` is the equivalence between limits of
   isomorphic direct systems.
 -/
 
@@ -328,14 +330,14 @@ theorem exists_fg_substructure_in_Sigma (S : L.Substructure (DirectLimit G f)) (
   rw [← image_univ, image_image, image_univ, ← eq_y,
     Subtype.range_coe_subtype, Finset.setOf_mem, A_closure]
 
-variable {P : Type u₁} [L.Structure P] (g : ∀ i, G i ↪[L] P)
-variable (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
-variable (L ι G f)
+variable {P : Type u₁} [L.Structure P]
 
+variable (L ι G f) in
 /-- The universal property of the direct limit: maps from the components to another module
 that respect the directed system structure (i.e. make some diagram commute) give rise
 to a unique map out of the direct limit. -/
-def lift : DirectLimit G f ↪[L] P where
+def lift (g : ∀ i, G i ↪[L] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
+    DirectLimit G f ↪[L] P where
   toFun :=
     Quotient.lift (fun x : Σˣ f => (g x.1) x.2) fun x y xy => by
       simp only
@@ -361,7 +363,7 @@ def lift : DirectLimit G f ↪[L] P where
       Quotient.lift_comp_mk]
     rfl
 
-variable {L ι G f}
+variable (g : ∀ i, G i ↪[L] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
 @[simp]
 theorem lift_quotient_mk'_sigma_mk' {i} (x : G i) : lift L ι G f g Hg ⟦.mk f i x⟧ = (g i) x := by
@@ -386,11 +388,11 @@ variable (L ι G f)
 variable (G' : ι → Type w') [∀ i, L.Structure (G' i)]
 variable (f' : ∀ i j, i ≤ j → G' i ↪[L] G' j)
 variable (g : ∀ i, G i ≃[L] G' i)
-variable (H_commuting : ∀ i j hij x, g j (f i j hij x) = f' i j hij (g i x))
 variable [DirectedSystem G' fun i j h => f' i j h]
 
 /-- The isomorphism between limits of isomorphic systems. -/
-noncomputable def equiv_lift : DirectLimit G f ≃[L] DirectLimit G' f' := by
+noncomputable def equiv_lift (H_commuting : ∀ i j hij x, g j (f i j hij x) = f' i j hij (g i x)) :
+    DirectLimit G f ≃[L] DirectLimit G' f' := by
   let U i : G i ↪[L] DirectLimit G' f' := (of L _ G' f' i).comp (g i).toEmbedding
   let F : DirectLimit G f ↪[L] DirectLimit G' f' := lift L _ G f U <| by
     intro _ _ _ _
@@ -402,6 +404,8 @@ noncomputable def equiv_lift : DirectLimit G f ≃[L] DirectLimit G' f' := by
     simp only [F, U, lift_of, Embedding.comp_apply, Equiv.coe_toEmbedding, Equiv.apply_symm_apply]
     rfl
   exact ⟨Equiv.ofBijective F ⟨F.injective, surj_f⟩, F.map_fun', F.map_rel'⟩
+
+variable (H_commuting : ∀ i j hij x, g j (f i j hij x) = f' i j hij (g i x))
 
 theorem equiv_lift_of {i : ι} (x : G i) :
     equiv_lift L ι G f G' f' g H_commuting (of L ι G f i x) = of L ι G' f' i (g i x) := rfl
@@ -415,7 +419,7 @@ theorem cg {ι : Type*} [Countable ι] [Preorder ι] [IsDirected ι (· ≤ ·)]
     Structure.CG L (DirectLimit G f) := by
   refine ⟨⟨⋃ i, DirectLimit.of L ι G f i '' Classical.choose (h i).out, ?_, ?_⟩⟩
   · exact Set.countable_iUnion fun i => Set.Countable.image (Classical.choose_spec (h i).out).1 _
-  · rw [eq_top_iff, Substructure.closure_unionᵢ]
+  · rw [eq_top_iff, Substructure.closure_iUnion]
     simp_rw [← Embedding.coe_toHom, Substructure.closure_image]
     rw [le_iSup_iff]
     intro S hS x _

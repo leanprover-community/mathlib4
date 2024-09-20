@@ -173,6 +173,21 @@ lemma exact_of_comp_of_mem_range
     (h1 : g ∘ₗ f = 0) (h2 : ∀ x, g x = 0 → x ∈ range f) : Exact f g :=
   exact_of_comp_eq_zero_of_ker_le_range h1 h2
 
+variable {R M N P : Type*} [CommRing R]
+  [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [Module R M] [Module R N] [Module R P]
+
+lemma exact_subtype_mkQ (Q : Submodule R N) :
+    Exact (Submodule.subtype Q) (Submodule.mkQ Q) := by
+  rw [exact_iff, Submodule.ker_mkQ, Submodule.range_subtype Q]
+
+lemma exact_map_mkQ_range (f : M →ₗ[R] N) :
+    Exact f (Submodule.mkQ (range f)) :=
+  exact_iff.mpr <| Submodule.ker_mkQ _
+
+lemma exact_subtype_ker_map (g : N →ₗ[R] P) :
+    Exact (Submodule.subtype (ker g)) g :=
+  exact_iff.mpr <| (Submodule.range_subtype _).symm
+
 end LinearMap
 
 variable (f g) in
@@ -339,6 +354,22 @@ theorem Exact.split_tfae
   tfae_finish
 
 end split
+
+section Prod
+
+variable [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+
+lemma Exact.inr_fst : Function.Exact (LinearMap.inr R M N) (LinearMap.fst R M N) := by
+  rintro ⟨x, y⟩
+  simp only [LinearMap.fst_apply, @eq_comm _ x, LinearMap.coe_inr, Set.mem_range, Prod.mk.injEq,
+    exists_eq_right]
+
+lemma Exact.inl_snd : Function.Exact (LinearMap.inl R M N) (LinearMap.snd R M N) := by
+  rintro ⟨x, y⟩
+  simp only [LinearMap.snd_apply, @eq_comm _ y, LinearMap.coe_inl, Set.mem_range, Prod.mk.injEq,
+    exists_eq_left]
+
+end Prod
 
 section Ring
 

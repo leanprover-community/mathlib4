@@ -341,7 +341,7 @@ instance orderedAddCommGroup : OrderedAddCommGroup Surreal where
   zero_add := by rintro ⟨a⟩; exact Quotient.sound (zero_add_equiv a)
   add_zero := by rintro ⟨a⟩; exact Quotient.sound (add_zero_equiv a)
   neg := Neg.neg
-  add_left_neg := by rintro ⟨a⟩; exact Quotient.sound (add_left_neg_equiv a)
+  neg_add_cancel := by rintro ⟨a⟩; exact Quotient.sound (neg_add_cancel_equiv a)
   add_comm := by rintro ⟨_⟩ ⟨_⟩; exact Quotient.sound add_comm_equiv
   le := (· ≤ ·)
   lt := (· < ·)

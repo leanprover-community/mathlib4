@@ -3,8 +3,9 @@ Copyright (c) 2019 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.Analysis.Normed.MulAction
+import Mathlib.Topology.Algebra.Module.Basic
 
 /-! # Constructions of continuous linear maps between (semi-)normed spaces
 
@@ -182,7 +183,7 @@ theorem ContinuousLinearEquiv.homothety_inverse (a : ℝ) (ha : 0 < a) (f : E �
   intro hf y
   calc
     ‖f.symm y‖ = a⁻¹ * (a * ‖f.symm y‖) := by
-      rw [← mul_assoc, inv_mul_cancel (ne_of_lt ha).symm, one_mul]
+      rw [← mul_assoc, inv_mul_cancel₀ (ne_of_lt ha).symm, one_mul]
     _ = a⁻¹ * ‖f (f.symm y)‖ := by rw [hf]
     _ = a⁻¹ * ‖y‖ := by simp
 

@@ -92,7 +92,7 @@ theorem OpenCover.iSup_opensRange {X : Scheme.{u}} (𝒰 : X.OpenCover) :
   Opens.ext <| by rw [Opens.coe_iSup]; exact 𝒰.iUnion_range
 
 /-- Given an open cover `{ Uᵢ }` of `X`, and for each `Uᵢ` an open cover, we may combine these
-open covers to form an open cover of `X`.  -/
+open covers to form an open cover of `X`. -/
 @[simps! J obj map]
 def OpenCover.bind (f : ∀ x : 𝒰.J, OpenCover (𝒰.obj x)) : OpenCover X where
   J := Σ i : 𝒰.J, (f i).J
@@ -444,7 +444,7 @@ lemma isNilpotent_of_isNilpotent_cover {X : Scheme.{u}} {U : X.Opens} (s : Γ(X,
   let N : ℕ := Finset.sup Finset.univ fn
   have hfnleN (i : 𝒰.J) : fn i ≤ N := Finset.le_sup (Finset.mem_univ i)
   use N
-  apply zero_of_zero_cover
+  apply zero_of_zero_cover (𝒰 := 𝒰)
   on_goal 1 => intro i; simp only [map_pow]
   -- This closes both remaining goals at once.
   exact pow_eq_zero_of_le (hfnleN i) (hfn i)

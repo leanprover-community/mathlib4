@@ -118,4 +118,4 @@ theorem mellin_inversion (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (hf :
       rw [mul_comm σ, ← rpow_def_of_pos hx, Real.exp_log hx, ← Complex.ofReal_cpow hx.le]
       norm_cast
       rw [← smul_assoc, smul_eq_mul, Real.rpow_neg hx.le,
-        inv_mul_cancel (ne_of_gt (rpow_pos_of_pos hx σ)), one_smul]
+        inv_mul_cancel₀ (ne_of_gt (rpow_pos_of_pos hx σ)), one_smul]

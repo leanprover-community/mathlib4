@@ -181,8 +181,7 @@ theorem exists_inv {I : Ideal R} [hI : I.IsMaximal] :
   rw [← eq_sub_iff_add_eq'] at abc
   rwa [abc, ← neg_mem_iff (G := R) (H := I), neg_sub] at hc
 
-open scoped Classical
-
+open Classical in
 /-- The quotient by a maximal ideal is a group with zero. This is a `def` rather than `instance`,
 since users will have computable inverses in some applications.
 

@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Archimedean
+import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.NatInt
 import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Order.MonotoneConvergence
@@ -14,9 +14,7 @@ import Mathlib.Topology.Order.MonotoneConvergence
 This file provides lemmas about the interaction of infinite sums and products and order operations.
 -/
 
-
 open Finset Filter Function
-open scoped Classical
 
 variable {ι κ α : Type*}
 
@@ -91,8 +89,9 @@ theorem prod_le_hasProd (s : Finset ι) (hs : ∀ i, i ∉ s → 1 ≤ f i) (hf 
 
 @[to_additive]
 theorem isLUB_hasProd (h : ∀ i, 1 ≤ f i) (hf : HasProd f a) :
-    IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) a :=
-  isLUB_of_tendsto_atTop (Finset.prod_mono_set_of_one_le' h) hf
+    IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) a := by
+  classical
+  exact isLUB_of_tendsto_atTop (Finset.prod_mono_set_of_one_le' h) hf
 
 @[to_additive]
 theorem le_hasProd (hf : HasProd f a) (i : ι) (hb : ∀ j, j ≠ i → 1 ≤ f j) : f i ≤ a :=
@@ -169,6 +168,7 @@ variable [OrderedCommGroup α] [TopologicalSpace α] [TopologicalGroup α]
 @[to_additive]
 theorem hasProd_lt (h : f ≤ g) (hi : f i < g i) (hf : HasProd f a₁) (hg : HasProd g a₂) :
     a₁ < a₂ := by
+  classical
   have : update f i 1 ≤ update g i 1 := update_le_update_iff.mpr ⟨rfl.le, fun i _ ↦ h i⟩
   have : 1 / f i * a₁ ≤ 1 / g i * a₂ := hasProd_le this (hf.update i 1) (hg.update i 1)
   simpa only [one_div, mul_inv_cancel_left] using mul_lt_mul_of_lt_of_le hi this
@@ -223,8 +223,9 @@ theorem tprod_ne_one_iff (hf : Multipliable f) : ∏' i, f i ≠ 1 ↔ ∃ x, f 
   rw [Ne, tprod_eq_one_iff hf, not_forall]
 
 @[to_additive]
-theorem isLUB_hasProd' (hf : HasProd f a) : IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) a :=
-  isLUB_of_tendsto_atTop (Finset.prod_mono_set' f) hf
+theorem isLUB_hasProd' (hf : HasProd f a) : IsLUB (Set.range fun s ↦ ∏ i ∈ s, f i) a := by
+  classical
+  exact isLUB_of_tendsto_atTop (Finset.prod_mono_set' f) hf
 
 end CanonicallyOrderedCommMonoid
 
@@ -287,4 +288,4 @@ theorem Summable.tendsto_atTop_of_pos [LinearOrderedField α] [TopologicalSpace 
     {f : ℕ → α} (hf : Summable f⁻¹) (hf' : ∀ n, 0 < f n) : Tendsto f atTop atTop :=
   inv_inv f ▸ Filter.Tendsto.inv_tendsto_zero <|
     tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hf.tendsto_atTop_zero <|
-      eventually_of_forall fun _ ↦ inv_pos.2 (hf' _)
+      Eventually.of_forall fun _ ↦ inv_pos.2 (hf' _)

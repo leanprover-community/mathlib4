@@ -60,7 +60,7 @@ variable (R : Type u) [CommRing R]
 variable {M : Type u} [AddCommGroup M] [Module R M]
 variable {N : Type u} [AddCommGroup N] [Module R N]
 
-open Classical DirectSum LinearMap Function Submodule
+open DirectSum LinearMap Function Submodule Finsupp
 
 namespace TensorProduct
 
@@ -102,7 +102,7 @@ vanishes, then it vanishes trivially. -/
 theorem vanishesTrivially_of_sum_tmul_eq_zero (hm : Submodule.span R (Set.range m) = ⊤)
     (hmn : ∑ i, m i ⊗ₜ n i = (0 : M ⊗[R] N)) : VanishesTrivially R m n := by
   -- Define a map $G \colon R^\iota \to M$ whose matrix entries are the $m_i$. It is surjective.
-  set G : (ι →₀ R) →ₗ[R] M := Finsupp.total ι M R m with hG
+  set G : (ι →₀ R) →ₗ[R] M := Finsupp.linearCombination R m with hG
   have G_basis_eq (i : ι) : G (Finsupp.single i 1) = m i := by simp [hG, toModule_lof]
   have G_surjective : Surjective G := by
     apply LinearMap.range_eq_top.mp
@@ -140,6 +140,7 @@ theorem vanishesTrivially_of_sum_tmul_eq_zero (hm : Submodule.span R (Set.range 
   use fun ⟨⟨_, yj⟩, _⟩ ↦ yj
   constructor
   · intro i
+    classical
     apply_fun finsuppScalarLeft R N ι at hkn
     apply_fun (· i) at hkn
     symm at hkn
@@ -153,7 +154,7 @@ theorem vanishesTrivially_of_sum_tmul_eq_zero (hm : Submodule.span R (Set.range 
     · next h'x => rw [h'x, zero_smul]
     · rfl
   · rintro ⟨⟨⟨k, hk⟩, _⟩, _⟩
-    simpa only [hG, Finsupp.total_apply, zero_smul, implies_true, Finsupp.sum_fintype] using
+    simpa only [hG, linearCombination_apply, zero_smul, implies_true, Finsupp.sum_fintype] using
       mem_ker.mp hk
 
 /-- **Equational criterion for vanishing**
