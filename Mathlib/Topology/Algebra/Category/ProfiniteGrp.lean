@@ -24,9 +24,6 @@ disconnected.
 * `ofFiniteGrp` : A `FiniteGrp` when given the discrete topology can be considered as a
   profinite group.
 
-* `ofContinuousMulEquivProfiniteGrp` : If a topological group has a two-sided continuous
-  isomorphism to a profinite group then it is profinite as well.
-
 * `ofClosedSubgroup` : A closed subgroup of a profinite group is profinite.
 
 -/
@@ -165,14 +162,6 @@ instance : HasForget₂ ProfiniteGrp Grp where
     obj := fun P => ⟨P, P.group⟩
     map := fun f => f.toMonoidHom
   }
-
-/-- A topological group that has a ContinuousMulEquiv to a profinite group is profinite. -/
-def ofContinuousMulEquivProfiniteGrp {G : ProfiniteGrp.{u}} {H : Type v} [TopologicalSpace H]
-    [Group H] [TopologicalGroup H] (e : ContinuousMulEquiv G H) : ProfiniteGrp.{v} :=
-  letI : CompactSpace H := Homeomorph.compactSpace e.toHomeomorph
-  letI : TotallyDisconnectedSpace G := Profinite.instTotallyDisconnectedSpaceαTopologicalSpaceToTop
-  letI : TotallyDisconnectedSpace H := Homeomorph.totallyDisconnectedSpace e.toHomeomorph
-  .of H
 
 /-- A closed subgroup of a profinite group is profinite. -/
 def ofClosedSubgroup {G : ProfiniteGrp} (H : ClosedSubgroup G) : ProfiniteGrp :=
