@@ -113,6 +113,16 @@ def Functor.FullyFaithful.whiskeringRight {F : D ⥤ E} (hF : F.FullyFaithful)
         simp only [map_comp, map_preimage]
         apply f.naturality }
 
+@[simp]
+theorem whiskeringLeft_obj_id : (whiskeringLeft C C E).obj (.id _) = .id _ :=
+  rfl
+
+@[simp]
+theorem whiskeringLeft_obj_comp {D' : Type u₄} [Category.{v₄} D'] (F : C ⥤ D) (G : D ⥤ D') :
+    (whiskeringLeft D D' E).obj G ⋙ (whiskeringLeft C D E).obj F =
+    (whiskeringLeft C D' E).obj (F ⋙ G) :=
+  rfl
+
 instance full_whiskeringRight_obj {F : D ⥤ E} [F.Faithful] [F.Full] :
     ((whiskeringRight C D E).obj F).Full :=
   ((Functor.FullyFaithful.ofFullyFaithful F).whiskeringRight C).full
