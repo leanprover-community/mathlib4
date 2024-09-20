@@ -373,8 +373,10 @@ section Condensed
 
 open Condensed CompHausLike
 
+namespace CondensedSet.LocallyConstant
+
 /-- The functor from sets to condensed sets given by locally constant maps into the set. -/
-abbrev CondensedSet.LocallyConstant.functor : Type (u+1) ⥤ CondensedSet.{u} :=
+abbrev functor : Type (u+1) ⥤ CondensedSet.{u} :=
   CompHausLike.LocallyConstant.functor.{u, u+1} (P := fun _ ↦ True)
     (hs := fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
 
@@ -382,29 +384,27 @@ abbrev CondensedSet.LocallyConstant.functor : Type (u+1) ⥤ CondensedSet.{u} :=
 `CondensedSet.LocallyConstant.functor` is isomorphic to `Condensed.discrete`
 (by uniqueness of adjoints).
 -/
-noncomputable def CondensedSet.LocallyConstant.iso :
-    CondensedSet.LocallyConstant.functor ≅ discrete (Type (u+1)) :=
+noncomputable def iso : functor ≅ discrete (Type (u+1)) :=
   (LocallyConstant.adjunction _ _).leftAdjointUniq (discreteUnderlyingAdj _)
 
 /-- `CondensedSet.LocallyConstant.functor` is fully faithful. -/
-noncomputable def CondensedSet.LocallyConstant.functor_fullyFaithful :
-    CondensedSet.LocallyConstant.functor.FullyFaithful :=
+noncomputable def functorFullyFaithful : functor.FullyFaithful :=
   (LocallyConstant.adjunction.{u, u+1} _ _).fullyFaithfulLOfIsIsoUnit
 
-noncomputable instance : CondensedSet.LocallyConstant.functor.Faithful :=
-  fullyFaithfulCondensedSetLocallyConstantFunctor.faithful
+noncomputable instance : functor.Faithful := functorFullyFaithful.faithful
 
-noncomputable instance : CondensedSet.LocallyConstant.functor.Full :=
-  fullyFaithfulCondensedSetLocallyConstantFunctor.full
+noncomputable instance : functor.Full := functorFullyFaithful.full
 
-instance : (discrete (Type _)).Faithful := Functor.Faithful.of_iso
-  CondensedSet.LocallyConstant.iso
+instance : (discrete (Type _)).Faithful := Functor.Faithful.of_iso iso
 
-noncomputable instance : (discrete (Type _)).Full := Functor.Full.of_iso
-  CondensedSet.LocallyConstant.iso
+noncomputable instance : (discrete (Type _)).Full := Functor.Full.of_iso iso
+
+end CondensedSet.LocallyConstant
+
+namespace LightCondSet.LocallyConstant
 
 /-- The functor from sets to light condensed sets given by locally constant maps into the set. -/
-abbrev LightCondSet.LocallyConstant.functor : Type u ⥤ LightCondSet.{u} :=
+abbrev functor : Type u ⥤ LightCondSet.{u} :=
   CompHausLike.LocallyConstant.functor.{u, u}
     (P := fun X ↦ TotallyDisconnectedSpace X ∧ SecondCountableTopology X)
     (hs := fun _ _ _ ↦ (LightProfinite.effectiveEpi_iff_surjective _).mp)
@@ -418,25 +418,21 @@ instance (S : LightProfinite.{u}) (p : S → Prop) :
 `LightCondSet.LocallyConstant.functor` is isomorphic to `LightCondensed.discrete`
 (by uniqueness of adjoints).
 -/
-noncomputable def LightCondSet.LocallyConstant.iso :
-    LightCondSet.LocallyConstant.functor ≅ LightCondensed.discrete (Type u) :=
+noncomputable def iso : functor ≅ LightCondensed.discrete (Type u) :=
   (LocallyConstant.adjunction _ _).leftAdjointUniq (LightCondensed.discreteUnderlyingAdj _)
 
 /-- `LightCondSet.LocallyConstant.functor` is fully faithful. -/
-noncomputable def fullyFaithfulLightCondSetLocallyConstantFunctor :
-    LightCondSet.LocallyConstant.functor.{u}.FullyFaithful :=
+noncomputable def functorFullyFaithful : functor.{u}.FullyFaithful :=
   (LocallyConstant.adjunction _ _).fullyFaithfulLOfIsIsoUnit
 
-instance : LightCondSet.LocallyConstant.functor.{u}.Faithful :=
-  fullyFaithfulLightCondSetLocallyConstantFunctor.faithful
+instance : functor.{u}.Faithful := functorFullyFaithful.faithful
 
-instance : LightCondSet.LocallyConstant.functor.Full :=
-  fullyFaithfulLightCondSetLocallyConstantFunctor.full
+instance : LightCondSet.LocallyConstant.functor.Full := functorFullyFaithful.full
 
-instance : (LightCondensed.discrete (Type u)).Faithful := Functor.Faithful.of_iso
-  LightCondSet.LocallyConstant.iso.{u}
+instance : (LightCondensed.discrete (Type u)).Faithful := Functor.Faithful.of_iso iso.{u}
 
-instance : (LightCondensed.discrete (Type u)).Full := Functor.Full.of_iso
-  LightCondSet.LocallyConstant.iso.{u}
+instance : (LightCondensed.discrete (Type u)).Full := Functor.Full.of_iso iso.{u}
+
+end LightCondSet.LocallyConstant
 
 end Condensed
