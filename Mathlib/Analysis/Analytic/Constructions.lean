@@ -158,10 +158,6 @@ theorem AnalyticAt.sub (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) :
     AnalyticAt 𝕜 (f - g) x := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
 
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/master
 theorem AnalyticWithinOn.add (hf : AnalyticWithinOn 𝕜 f s) (hg : AnalyticWithinOn 𝕜 g s) :
     AnalyticWithinOn 𝕜 (f + g) s :=
   fun z hz => (hf z hz).add (hg z hz)
