@@ -3331,6 +3331,7 @@ import Mathlib.MeasureTheory.Measure.Portmanteau
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.MeasureTheory.Measure.Restrict
+import Mathlib.MeasureTheory.Measure.SeparableMeasure
 import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.MeasureTheory.Measure.Sub
 import Mathlib.MeasureTheory.Measure.Tilted
@@ -3656,7 +3657,7 @@ import Mathlib.Order.Interval.Set.WithBotTop
 import Mathlib.Order.Irreducible
 import Mathlib.Order.IsWellOrderLimitElement
 import Mathlib.Order.Iterate
-import Mathlib.Order.JordanHoelder
+import Mathlib.Order.JordanHolder
 import Mathlib.Order.KonigLemma
 import Mathlib.Order.KrullDimension
 import Mathlib.Order.Lattice
@@ -4038,6 +4039,8 @@ import Mathlib.RingTheory.RootsOfUnity.Complex
 import Mathlib.RingTheory.RootsOfUnity.Lemmas
 import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.RingTheory.SimpleModule
+import Mathlib.RingTheory.SimpleRing.Basic
+import Mathlib.RingTheory.SimpleRing.Defs
 import Mathlib.RingTheory.Smooth.Basic
 import Mathlib.RingTheory.Smooth.Kaehler
 import Mathlib.RingTheory.Smooth.StandardSmooth
@@ -4659,7 +4662,7 @@ import Mathlib.Topology.MetricSpace.GromovHausdorff
 import Mathlib.Topology.MetricSpace.GromovHausdorffRealized
 import Mathlib.Topology.MetricSpace.HausdorffDimension
 import Mathlib.Topology.MetricSpace.HausdorffDistance
-import Mathlib.Topology.MetricSpace.Hoelder
+import Mathlib.Topology.MetricSpace.Holder
 import Mathlib.Topology.MetricSpace.Infsep
 import Mathlib.Topology.MetricSpace.IsometricSMul
 import Mathlib.Topology.MetricSpace.Isometry
