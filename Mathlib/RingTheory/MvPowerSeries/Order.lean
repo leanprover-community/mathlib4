@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 
-import Mathlib.RingTheory.MvPowerSeries.Basic
+import Mathlib.Data.ENat.Basic
 import Mathlib.Data.Finsupp.Weight
+import Mathlib.RingTheory.MvPowerSeries.Basic
 
 /-! # Order of multivariate power series
 
@@ -129,7 +130,7 @@ theorem ne_zero_iff_exists_coeff_ne_zero_and_weight :
     f ≠ 0 ↔ (∃ n : ℕ, ∃ d : σ →₀ ℕ, coeff R d f ≠ 0 ∧ weight w d = n) := by
   refine not_iff_not.mp ?_
   simp only [ne_eq, not_not, not_exists, not_and, forall_apply_eq_imp_iff₂, imp_false]
-  exact ext_iff
+  exact MvPowerSeries.ext_iff
 
 /-- The weighted order of a mv_power_series -/
 def weightedOrder : ℕ∞ := by
@@ -194,7 +195,7 @@ theorem le_weightedOrder {f : MvPowerSeries σ R} {n : ℕ∞}
     (h : ∀ d : σ →₀ ℕ, ↑(weight w d) < n → coeff R d f = 0) : n ≤ f.weightedOrder w := by
   cases n
   · rw [top_le_iff, weightedOrder_eq_top_iff]
-    ext d; exact h d (coe_lt_top _)
+    ext d; exact h d (ENat.coe_lt_top _)
   · apply nat_le_weightedOrder;
     simpa only [ENat.some_eq_coe, Nat.cast_lt] using h
 
@@ -329,7 +330,7 @@ variable (f : MvPowerSeries σ R)
 
 theorem eq_zero_iff_forall_coeff_eq_zero_and :
     f = 0 ↔ (∀ d : σ →₀ ℕ, coeff R d f = 0) :=
-  ext_iff
+  MvPowerSeries.ext_iff
 
 theorem ne_zero_iff_exists_coeff_ne_zero_and_degree :
     f ≠ 0 ↔ (∃ n : ℕ, ∃ d : σ →₀ ℕ, coeff R d f ≠ 0 ∧ degree d = n) := by
