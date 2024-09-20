@@ -21,7 +21,8 @@ This file defines operations on two-sided ideals of a ring `R`.
 - `TwoSidedIdeal.span`: the span of `s ⊆ R` is the smallest two-sided ideal containing the set.
 - `TwoSidedIdeal.mem_span_iff_mem_addSubgroup_closure_nonunital`: in an associative but non-unital
   ring, an element `x` is in the two-sided ideal spanned by `s` if and only if `x` is in the closure
-  of `s ∪ {y * a | y ∈ s, a ∈ R} ∪ {a * y | y ∈ s, a ∈ R} ∪ {a * y * b | y ∈ s, a, b ∈ R}`.
+  of `s ∪ {y * a | y ∈ s, a ∈ R} ∪ {a * y | y ∈ s, a ∈ R} ∪ {a * y * b | y ∈ s, a, b ∈ R}` as an
+  additive subgroup.
 - `TwoSidedIdeal.mem_span_iff_mem_addSubgroup_closure`: in a unital and associative ring, an
   element  `x` is in the two-sided ideal spanned by `s` if and only if `x` is in the closure of
   `{a*y*b | a, b ∈ R, y ∈ s}` as an additive subgroup.
@@ -222,6 +223,9 @@ def asIdeal : TwoSidedIdeal R →o Ideal R where
 
 lemma mem_asIdeal {I : TwoSidedIdeal R} {x : R} :
     x ∈ asIdeal I ↔ x ∈ I := by simp [asIdeal]
+
+-- `fromIdeal` and `asIdeal` does **not** form a Galois connection in general.
+-- Consider `R` = `Mat₂₂(ℤ)` and `I : Ideal R` = `span {[1 1] [0 1]}` and then `fromIdeal I` is `R`.
 
 @[simp]
 lemma coe_asIdeal {I : TwoSidedIdeal R} : (asIdeal I : Set R) = I := rfl
