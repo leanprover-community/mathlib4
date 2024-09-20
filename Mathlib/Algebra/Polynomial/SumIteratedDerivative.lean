@@ -3,7 +3,6 @@ Copyright (c) 2022 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
-
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.BigOperators
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
@@ -26,7 +25,7 @@ section Semiring
 variable [Semiring R]
 
 theorem sum_iterate_derivative_apply_of_lt {p : R[X]} {n : ℕ} (hn : p.natDegree < n) :
-    ∑ i in range (p.natDegree + 1), derivative^[i] p = ∑ i in range n, derivative^[i] p := by
+    ∑ i ∈ range (p.natDegree + 1), derivative^[i] p = ∑ i ∈ range n, derivative^[i] p := by
   obtain ⟨m, rfl⟩ := Nat.exists_eq_add_of_lt hn
   rw [add_right_comm, sum_range_add _ _ m]
   convert (add_zero _).symm
@@ -36,12 +35,12 @@ theorem sum_iterate_derivative_apply_of_lt {p : R[X]} {n : ℕ} (hn : p.natDegre
     iterate_derivative_zero]
 
 theorem sum_iterate_derivative_apply_of_le {p : R[X]} {n : ℕ} (hn : p.natDegree ≤ n) :
-    ∑ i in range (p.natDegree + 1), derivative^[i] p = ∑ i in range (n + 1), derivative^[i] p :=
+    ∑ i ∈ range (p.natDegree + 1), derivative^[i] p = ∑ i ∈ range (n + 1), derivative^[i] p :=
   sum_iterate_derivative_apply_of_lt (Nat.lt_add_one_iff.mpr hn)
 
 /-- Sum of iterated derivatives of a polynomial, as a linear map -/
 noncomputable def sumIderiv : R[X] →ₗ[R] R[X] where
-  toFun p := ∑ i in range (p.natDegree + 1), derivative^[i] p
+  toFun p := ∑ i ∈ range (p.natDegree + 1), derivative^[i] p
   map_add' p q := by
     dsimp only
     let x := max ((p + q).natDegree + 1) (max (p.natDegree + 1) (q.natDegree + 1))
@@ -57,15 +56,15 @@ noncomputable def sumIderiv : R[X] →ₗ[R] R[X] where
       iterate_derivative_smul, smul_sum]
 
 theorem sumIderiv_apply (p : R[X]) :
-    sumIderiv p = ∑ i in range (p.natDegree + 1), derivative^[i] p :=
+    sumIderiv p = ∑ i ∈ range (p.natDegree + 1), derivative^[i] p :=
   rfl
 
 theorem sumIderiv_apply_of_lt {p : R[X]} {n : ℕ} (hn : p.natDegree < n) :
-    sumIderiv p = ∑ i in range n, derivative^[i] p :=
+    sumIderiv p = ∑ i ∈ range n, derivative^[i] p :=
   sum_iterate_derivative_apply_of_lt hn
 
 theorem sumIderiv_apply_of_le {p : R[X]} {n : ℕ} (hn : p.natDegree ≤ n) :
-    sumIderiv p = ∑ i in range (n + 1), derivative^[i] p :=
+    sumIderiv p = ∑ i ∈ range (n + 1), derivative^[i] p :=
   sum_iterate_derivative_apply_of_le hn
 
 theorem sumIderiv_C (a : R) : sumIderiv (C a) = C a := by
@@ -92,7 +91,7 @@ theorem sumIderiv_eq_self_add (p : R[X]) : sumIderiv p = p + sumIderiv (derivati
 
 theorem iterate_derivative_eq_factorial_mul (p : R[X]) (k : ℕ) :
     derivative^[k] p = k ! •
-      (∑ x : ℕ in (derivative^[k] p).support, (x + k).choose k • C (p.coeff (x + k)) * X ^ x) := by
+      (∑ x ∈ (derivative^[k] p).support, (x + k).choose k • C (p.coeff (x + k)) * X ^ x) := by
   conv_lhs => rw [(derivative^[k] p).as_sum_support_C_mul_X_pow]
   rw [smul_sum]; congr; funext i
   calc
@@ -106,7 +105,7 @@ theorem iterate_derivative_eq_factorial_mul (p : R[X]) (k : ℕ) :
 
 theorem exists_iterate_derivative_eq_factorial_mul (p : R[X]) (k : ℕ) :
     ∃ gp : R[X], gp.natDegree ≤ p.natDegree - k ∧ derivative^[k] p = k ! • gp := by
-  use ∑ x : ℕ in (derivative^[k] p).support, (x + k).choose k • C (p.coeff (x + k)) * X ^ x
+  use ∑ x ∈ (derivative^[k] p).support, (x + k).choose k • C (p.coeff (x + k)) * X ^ x
   constructor
   · refine (natDegree_sum_le _ _).trans ?_
     rw [fold_max_le]
@@ -124,7 +123,7 @@ section CommRing
 
 variable [CommRing R] {A : Type*} [CommRing A] [Algebra R A]
 
-theorem iterate_derivative_small (p : R[X]) (q : ℕ) (r : A) {p' : A[X]}
+theorem aeval_iterate_derivative_of_lt (p : R[X]) (q : ℕ) (r : A) {p' : A[X]}
     (hp : p.map (algebraMap R A) = (X - C r) ^ q * p') {k : ℕ} (hk : k < q) :
     aeval r (derivative^[k] p) = 0 := by
   have h (x) : (X - C r) ^ (q - (k - x)) = (X - C r) ^ 1 * (X - C r) ^ (q - (k - x) - 1) := by
@@ -136,7 +135,7 @@ theorem iterate_derivative_small (p : R[X]) (q : ℕ) (r : A) {p' : A[X]}
     h, ← mul_smul_comm, mul_assoc, ← mul_sum, eval_mul, pow_one, eval_sub, eval_X, eval_C, sub_self,
     zero_mul]
 
-theorem iterate_derivative_of_eq (p : R[X]) (q : ℕ) (r : A) {p' : A[X]}
+theorem aeval_iterate_derivative_self (p : R[X]) (q : ℕ) (r : A) {p' : A[X]}
     (hp : p.map (algebraMap R A) = (X - C r) ^ q * p') :
     aeval r (derivative^[q] p) = q ! • p'.eval r := by
   have h (x) (h : 1 ≤ x) (h' : x ≤ q) :
@@ -157,7 +156,7 @@ theorem iterate_derivative_of_eq (p : R[X]) (q : ℕ) (r : A) {p' : A[X]}
 
 variable (A)
 
-theorem iterate_derivative_large (p : R[X]) (q : ℕ) {k : ℕ} (hk : q ≤ k) :
+theorem aeval_iterate_derivative_of_ge (p : R[X]) (q : ℕ) {k : ℕ} (hk : q ≤ k) :
     ∃ gp : R[X], gp.natDegree ≤ p.natDegree - k ∧
       ∀ r : A, aeval r (derivative^[k] p) = q ! • aeval r gp := by
   obtain ⟨p', p'_le, hp'⟩ := exists_iterate_derivative_eq_factorial_mul p k
@@ -166,7 +165,7 @@ theorem iterate_derivative_large (p : R[X]) (q : ℕ) {k : ℕ} (hk : q ≤ k) :
   simp_rw [hp', nsmul_eq_mul, map_mul, map_natCast, ← mul_assoc, ← Nat.cast_mul,
     Nat.add_descFactorial_eq_ascFactorial, Nat.factorial_mul_ascFactorial]
 
-theorem sumIderiv_sl (p : R[X]) (q : ℕ) :
+theorem aeval_sumIderiv (p : R[X]) (q : ℕ) :
     ∃ (gp : R[X]) (gp_le : gp.natDegree ≤ p.natDegree - q),
       ∀ (r : A) {p' : A[X]}, p.map (algebraMap R A) = (X - C r) ^ q * p' →
         aeval r (sumIderiv p) = q ! • aeval r gp := by
@@ -180,16 +179,12 @@ theorem sumIderiv_sl (p : R[X]) (q : ℕ) :
       rw [natDegree_zero]
       use Nat.zero_le _
       intro r p' hp
-      rw [map_zero, smul_zero, iterate_derivative_small p q r hp hk]
+      rw [map_zero, smul_zero, aeval_iterate_derivative_of_lt p q r hp hk]
     | inr hk =>
-      obtain ⟨gp, gp_le, h⟩ := iterate_derivative_large A p q hk
+      obtain ⟨gp, gp_le, h⟩ := aeval_iterate_derivative_of_ge A p q hk
       exact ⟨gp, gp_le.trans (tsub_le_tsub_left hk _), fun r p' _ => h r⟩
-  let c k := (h k).choose
-  have c_le (k) : (c k).natDegree ≤ p.natDegree - q := (h k).choose_spec.choose
-  have hc (k) :
-      ∀ (r : A) {p' : A[X]}, p.map (algebraMap R A) = (X - C r) ^ q * p' →
-        aeval r (derivative^[k] p) = q ! • aeval r (c k) :=
-    (h k).choose_spec.choose_spec
+  choose c h using h
+  choose c_le hc using h
   refine ⟨(range (p.natDegree + 1)).sum c, ?_, ?_⟩
   · refine (natDegree_sum_le _ _).trans ?_
     rw [fold_max_le]
@@ -197,7 +192,7 @@ theorem sumIderiv_sl (p : R[X]) (q : ℕ) :
   intro r p' hp
   rw [sumIderiv_apply, map_sum]; simp_rw [hc _ r hp, map_sum, smul_sum]
 
-theorem sumIderiv_sl' [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q : ℕ} (hq : 0 < q) :
+theorem aeval_sumIderiv' [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q : ℕ} (hq : 0 < q) :
     ∃ (gp : R[X]) (gp_le : gp.natDegree ≤ p.natDegree - q),
       ∀ (inj_amap : Function.Injective (algebraMap R A)) (r : A) {p' : A[X]},
         p.map (algebraMap R A) = (X - C r) ^ (q - 1) * p' →
@@ -212,16 +207,16 @@ theorem sumIderiv_sl' [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q : ℕ} (hq
     replace hp := (mul_eq_zero.mp hp.symm).resolve_left ?_
     rw [hp, eval_zero, smul_zero]
     exact fun h => X_sub_C_ne_zero r (pow_eq_zero h)
-  let c k := if hk : q ≤ k then (iterate_derivative_large A p q hk).choose else 0
+  let c k := if hk : q ≤ k then (aeval_iterate_derivative_of_ge A p q hk).choose else 0
   have c_le (k) : (c k).natDegree ≤ p.natDegree - k := by
     dsimp only [c]
     split_ifs with h
-    · exact (iterate_derivative_large A p q h).choose_spec.1
+    · exact (aeval_iterate_derivative_of_ge A p q h).choose_spec.1
     · rw [natDegree_zero]; exact Nat.zero_le _
   have hc (k) (hk : q ≤ k) : ∀ (r : A), aeval r (derivative^[k] p) = q ! • aeval r (c k) := by
     simp_rw [c, dif_pos hk]
-    exact (iterate_derivative_large A p q hk).choose_spec.2
-  refine ⟨∑ x : ℕ in Ico q (p.natDegree + 1), c x, ?_, ?_⟩
+    exact (aeval_iterate_derivative_of_ge A p q hk).choose_spec.2
+  refine ⟨∑ x ∈ Ico q (p.natDegree + 1), c x, ?_, ?_⟩
   · refine (natDegree_sum_le _ _).trans ?_
     rw [fold_max_le]
     exact ⟨Nat.zero_le _, fun i hi => (c_le i).trans (tsub_le_tsub_left (mem_Ico.mp hi).1 _)⟩
@@ -240,11 +235,10 @@ theorem sumIderiv_sl' [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q : ℕ} (hq
   rw [sumIderiv_apply, map_sum, map_sum, this]
   have : range q = range (q - 1 + 1) := by rw [tsub_add_cancel_of_le (Nat.one_le_of_lt hq)]
   rw [sum_union, this, sum_range_succ]
-  congr 1
-  · congr 1
-    · apply sum_eq_zero
-      exact fun x hx => iterate_derivative_small p _ r hp (mem_range.mp hx)
-    · rw [← iterate_derivative_of_eq _ _ _ hp]
+  congr 2
+  · apply sum_eq_zero
+    exact fun x hx => aeval_iterate_derivative_of_lt p _ r hp (mem_range.mp hx)
+  · rw [← aeval_iterate_derivative_self _ _ _ hp]
   · rw [smul_sum, sum_congr rfl]
     intro k hk
     exact hc k (mem_Ico.mp hk).1 r
