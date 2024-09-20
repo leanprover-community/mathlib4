@@ -308,11 +308,6 @@ protected theorem t2Space [T2Space X] (h : X ≃ₜ Y) : T2Space Y :=
 protected theorem t3Space [T3Space X] (h : X ≃ₜ Y) : T3Space Y :=
   h.symm.embedding.t3Space
 
-protected lemma totallyDisconnectedSpace (h : X ≃ₜ Y) [tdc : TotallyDisconnectedSpace X] :
-    TotallyDisconnectedSpace Y :=
-  (totallyDisconnectedSpace_iff Y).mpr
-    (h.range_coe ▸ ((Embedding.isTotallyDisconnected_range h.embedding).mpr tdc))
-
 protected theorem denseEmbedding (h : X ≃ₜ Y) : DenseEmbedding h :=
   { h.embedding with dense := h.surjective.denseRange }
 
