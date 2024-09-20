@@ -8,7 +8,7 @@ import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Sets.Opens
 
 /-!
-# Open subgroups of a topological groups
+# Open subgroups of a topological group
 
 This files builds the lattice `OpenSubgroup G` of open subgroups in a topological group `G`,
 and its additive version `OpenAddSubgroup`.  This lattice has a top element, the subgroup of all
