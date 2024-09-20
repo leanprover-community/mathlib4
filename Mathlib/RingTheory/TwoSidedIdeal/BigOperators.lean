@@ -30,7 +30,7 @@ lemma multisetSum_mem {ι : Type*} (s : Multiset ι) (f : ι → R) (hs : ∀ x 
 
 lemma finsetSum_mem {ι : Type*} (s : Finset ι) (f : ι → R) (hs : ∀ x ∈ s, f x ∈ I) :
     s.sum f ∈ I := by
-  rw [mem_iff, ←Finset.sum_const_zero]
+  rw [mem_iff, ← Finset.sum_const_zero]
   exact I.ringCon.finsetSum s hs
 
 end sum
