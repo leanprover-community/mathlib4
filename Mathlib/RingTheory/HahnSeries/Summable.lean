@@ -588,22 +588,87 @@ def cons_pi_prod (s : Finset σ) (α : σ → Type*) {a : σ} (has : a ∉ s) :
     (Π i ∈ cons a s has, α i) → α a × Π i ∈ s, α i :=
   fun x => (x a (mem_cons_self a s), fun i hi => x i (mem_cons_of_mem hi))
 --#find_home! cons_pi_prod -- [Mathlib.Data.Finset.Basic]
-/-!
+
+@[simp]
+theorem cons_pi_prod_mem (s : Finset σ) (α : σ → Type*) {a : σ} (has : a ∉ s)
+    (f : (i : σ) → i ∈ cons a s has → α i) : (cons_pi_prod s α has f).1 = f a (mem_cons_self a s) :=
+  rfl
+
+@[simp]
+theorem cons_pi_prod_not_mem (s : Finset σ) (α : σ → Type*) {a : σ} (has : a ∉ s)
+    (f : (i : σ) → i ∈ cons a s has → α i) :
+    (cons_pi_prod s α has f).2 = fun i hi => f i (mem_cons_of_mem hi) :=
+  rfl
+
+open Classical in
+theorem mem_of_mem_cons_of_ne {s : Finset σ} {a : σ} (has : a ∉ s) {i : σ}
+    (hi : i ∈ cons a s has) (hia : i ≠ a) : i ∈ s :=
+  mem_of_mem_insert_of_ne (cons_eq_insert a s has ▸ hi) hia
+
+open Classical in
+def prod_pi_cons (s : Finset σ) (α : σ → Type*) {a : σ} (has : a ∉ s) :
+    (α a × Π i ∈ s, α i) → (Π i ∈ cons a s has, α i) :=
+  fun x => (fun i hi =>
+    if h : i = a then cast (congrArg α h.symm) x.1 else x.2 i (mem_of_mem_cons_of_ne has hi h))
+
+@[simp]
+theorem prod_pi_cons_mem (s : Finset σ) (α : σ → Type*) {a : σ} (has : a ∉ s)
+    (f : α a × ((i : σ) → i ∈ s → α i)) :
+    prod_pi_cons s α has f a (mem_cons_self a s) = f.1 := by
+  simp [prod_pi_cons]
+
 theorem cons_pi_prod_bijective  (s : Finset σ) (α : σ → Type*) {a : σ} (has : a ∉ s) :
     Bijective (cons_pi_prod s α has) := by
-  sorry
+  refine bijective_iff_has_inverse.mpr ?_
+  use prod_pi_cons s α has
+  constructor
+  · intro f
+    ext i hi
+    dsimp only [prod_pi_cons, cons_pi_prod]
+    by_cases h : i = a
+    · rw [dif_pos h]
+      subst h
+      simp_all only [cast_eq]
+    · rw [dif_neg h]
+  · intro f
+    ext i hi
+    · simp [cons_pi_prod_mem, prod_pi_cons]
+    · simp only [cons_pi_prod_not_mem, prod_pi_cons]
+      exact dif_neg (ne_of_mem_of_not_mem hi has)
 
 /-- The equivalence between pi types on cons and the product. -/
 def cons_pi_equiv (s : Finset σ) (α : σ → Type*) {a : σ} (has : a ∉ s) :
-    (Π i ∈ cons a s has, α i) ≃ α a × Π i ∈ s, α i :=
-  Equiv.ofBijective (cons_pi_prod s α has) (cons_pi_prod_bijective s α has)
+    (Π i ∈ cons a s has, α i) ≃ α a × Π i ∈ s, α i where
+  toFun := cons_pi_prod s α has
+  invFun := prod_pi_cons s α has
+  left_inv := by
+    intro f
+    ext i hi
+    dsimp only [prod_pi_cons, cons_pi_prod]
+    by_cases h : i = a
+    · rw [dif_pos h]
+      subst h
+      simp_all only [cast_eq]
+    · rw [dif_neg h]
+  right_inv := by
+    intro f
+    ext i hi
+    · simp [cons_pi_prod_mem, prod_pi_cons]
+    · simp only [cons_pi_prod_not_mem, prod_pi_cons]
+      exact dif_neg (ne_of_mem_of_not_mem hi has)
 
 theorem piFamily_cons (s : Finset σ) {R} [CommSemiring R] (α : σ → Type*)
     (t : Π i : σ, SummableFamily Γ R (α i)) {a : σ} (has : a ∉ s) :
     Equiv (cons_pi_equiv s α has) (PiFamily (cons a s has) α t) =
       FamilyMul (t a) (PiFamily s α t) := by
-  ext f g
-  sorry
+  ext1 f
+  simp only [cons_pi_equiv, Equiv_toFun, Equiv.coe_fn_symm_mk, PiFamily_toFun, mem_cons, prod_cons,
+    true_or, ↓reduceDIte, prod_pi_cons_mem, FamilyMul_toFun]
+  congr 1
+  refine prod_congr rfl ?_
+  intro i hi
+  rw [dif_pos hi, dif_pos (mem_cons_of_mem hi)]
+  simp [prod_pi_cons, dif_neg (ne_of_mem_of_not_mem hi has)]
 
 theorem hsum_pi_family (s : Finset σ) {R} [CommSemiring R] (α : σ → Type*)
     (t : Π i : σ, SummableFamily Γ R (α i)) :
@@ -614,16 +679,17 @@ theorem hsum_pi_family (s : Finset σ) {R} [CommSemiring R] (α : σ → Type*)
     simp only [hsum_coeff, PiFamily_toFun, not_mem_empty, ↓reduceDIte, prod_const_one, one_coeff,
       prod_empty]
     classical
-    refine finsum_eq_single (fun x ↦ if g = 0 then 1 else 0)
+    refine finsum_eq_single (fun _ ↦ if g = 0 then 1 else 0)
       (fun i hi => False.elim ((List.mem_nil_iff i).mp hi)) ?_
     · intro f hf
-      contrapose! hf
-      ext i hi
-      exact False.elim ((List.mem_nil_iff i).mp hi)
+      by_contra
+      have hhf : f = fun i hi => False.elim ((List.mem_nil_iff i).mp hi) := by
+        ext i hi
+        exact False.elim ((List.mem_nil_iff i).mp hi)
+      apply hf hhf
   | cons a s' has hp =>
+    rw [prod_cons, ← hp, ← hsum_family_mul, ← piFamily_cons, hsum_equiv]
 
-    sorry
--/
 end Semiring
 
 section OfFinsupp
