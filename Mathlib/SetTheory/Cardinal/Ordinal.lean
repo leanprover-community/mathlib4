@@ -827,16 +827,15 @@ protected theorem ciSup_mul_ciSup (g : ι' → Cardinal.{v}) :
     (⨆ i, f i) * (⨆ j, g j) = ⨆ (i) (j), f i * g j := by
   simp_rw [Cardinal.ciSup_mul f, Cardinal.mul_ciSup g]
 
-theorem sum_eq_iSup {ι} {f : ι → Cardinal} (hι : ℵ₀ ≤ #ι) (h : #ι ≤ iSup f) : sum f = iSup f :=
-  le_antisymm (max_eq_right h ▸ mul_eq_max hι (hι.trans h) ▸ sum_le_iSup f) (iSup_le_sum f)
-
-theorem sum_eq_iSup_lift {ι : Type u} {f : ι → Cardinal.{max u v}} (hι : ℵ₀ ≤ #ι)
+theorem sum_eq_iSup_lift {f : ι → Cardinal.{max u v}} (hι : ℵ₀ ≤ #ι)
     (h : lift.{v} #ι ≤ iSup f) : sum f = iSup f := by
   apply le_antisymm
-  · have := sum_le_iSup_lift f
-    rwa [mul_eq_max (aleph0_le_lift.mpr hι) ((aleph0_le_lift.mpr hι).trans h),
-      max_eq_right h] at this
+  · convert sum_le_iSup_lift f
+    rw [mul_eq_max (aleph0_le_lift.mpr hι) ((aleph0_le_lift.mpr hι).trans h), max_eq_right h]
   · exact iSup_le_sum f
+
+theorem sum_eq_iSup {f : ι → Cardinal} (hι : ℵ₀ ≤ #ι) (h : #ι ≤ iSup f) : sum f = iSup f :=
+  sum_eq_iSup_lift hι ((lift_id #ι).symm ▸ h)
 
 end ciSup
 
