@@ -25,7 +25,7 @@ def toFin? (x : Int) : Option (Fin 8) :=
 @[simp] theorem toFin?_eq_some_iff (x : Int) : toFin? x = some y ↔ x = y := by
   simp only [toFin?]
   split <;> rename_i h₁
-  · simp only [dite_some_none_eq_some]
+  · simp only [Option.dite_none_right_eq_some, Option.some.injEq]
     constructor
     · rintro ⟨h, rfl⟩
       simp [h₁]
@@ -33,51 +33,7 @@ def toFin? (x : Int) : Option (Fin 8) :=
       simp
   · simp only [reduceCtorEq, false_iff]
     omega
-
-namespace Option
-
-@[simp] theorem mem_ite_none_left {x : α} [Decidable p] {l : Option α} :
-    (x ∈ if p then none else l) ↔ ¬ p ∧ x ∈ l := by
-  split <;> simp_all
-
-@[simp] theorem mem_ite_none_right {x : α} [Decidable p] {l : Option α} :
-    (x ∈ if p then l else none) ↔ p ∧ x ∈ l := by
-  split <;> simp_all
-
-end Option
-
-namespace Array
-
-@[simp] theorem mem_ite_empty_left {x : α} [Decidable p] {l : Array α} :
-    (x ∈ if p then #[] else l) ↔ ¬ p ∧ x ∈ l := by
-  split <;> simp_all
-
-@[simp] theorem mem_ite_empty_right {x : α} [Decidable p] {l : Array α} :
-    (x ∈ if p then l else #[]) ↔ p ∧ x ∈ l := by
-  split <;> simp_all
-
-end Array
-
 namespace List
-
-@[simp] theorem mem_ite_nil_left {x : α} [Decidable p] {l : List α} :
-    (x ∈ if p then [] else l) ↔ ¬ p ∧ x ∈ l := by
-  split <;> simp_all
-
-@[simp] theorem mem_ite_nil_right {x : α} [Decidable p] {l : List α} :
-    (x ∈ if p then l else []) ↔ p ∧ x ∈ l := by
-  split <;> simp_all
-
--- Replace unprimed:
-@[simp] theorem filter_filter' (q) : ∀ l, filter p (filter q l) = filter (fun a => p a && q a) l
-  | [] => rfl
-  | a :: l => by by_cases hp : p a <;> by_cases hq : q a <;> simp [hp, hq, filter_filter _ l]
-
--- Replace unprimed:
-theorem countP_filter' (l : List α) :
-    countP p (filter q l) = countP (fun a => p a && q a) l := by
-  simp only [countP_eq_length_filter, filter_filter']
-
 
 @[simp] theorem map_set {α β : Type} (f : α → β) (l : List α) (i : Nat) (a : α) :
     (l.set i a).map f = (l.map f).set i (f a) := by
@@ -85,41 +41,10 @@ theorem countP_filter' (l : List α) :
   | nil => simp
   | cons x l => cases i <;> simp
 
-theorem boole_getElem_le_countP (p : α → Bool) (l : List α) (i : Nat) (h : i < l.length) :
-    (if p l[i] then 1 else 0) ≤ l.countP p := by
-  induction l generalizing i with
-  | nil => simp at h
-  | cons x l ih =>
-    cases i with
-    | zero => simp [countP_cons]
-    | succ i =>
-      simp at h
-      simp [countP_cons]
-      specialize ih _ h
-      omega
-
-theorem countP_set (p : α → Bool) (l : List α) (i : Nat) (a : α) (h : i < l.length) :
-    (l.set i a).countP p = l.countP p - (if p l[i] then 1 else 0) + (if p a then 1 else 0) := by
-  induction l generalizing i with
-  | nil => simp at h
-  | cons x l ih =>
-    cases i with
-    | zero => simp [countP_cons]
-    | succ i =>
-      simp at h
-      simp [countP_cons, ih _ h]
-      have : (if p l[i] = true then 1 else 0) ≤ l.countP p := boole_getElem_le_countP p l i h
-      omega
-
 end List
 
 @[simp] theorem boole_pos_iff [Decidable p] : (0 < if p then 1 else 0) ↔ p := by
   split <;> simp_all
-
-attribute [simp] List.countP_pos
-
-@[simp] theorem List.one_le_countP_iff (p : α → Bool) (l : List α) : 1 ≤ l.countP p ↔ ∃ x ∈ l, p x :=
-  countP_pos p
 
 theorem List.getElem_le_sum_nat (l : List Nat) (i : Nat) (h : i < l.length) : l[i] ≤ l.sum := by
   induction l generalizing i with
@@ -152,7 +77,7 @@ theorem List.apply_getElem_le_sum_map_nat (f : α → Nat) (l : List α) (i : Na
 
 namespace Array
 
-@[simp] theorem getElem_data (a : Array α) (i : Nat) (h : i < a.size) : a.data[i] = a[i] := rfl
+@[simp] theorem getElem_toList (a : Array α) (i : Nat) (h : i < a.size) : a.toList[i] = a[i] := rfl
 
 @[simp] theorem getElem_mk (data : List α) (i : Nat) (h : i < data.length) : (Array.mk data)[i] = data[i] := rfl
 
@@ -171,18 +96,18 @@ theorem countP_set (p : α → Bool) (l : Array α) (i : Fin l.size) (a : α) :
     (l.set i a).countP p = l.countP p - (if p l[i] then 1 else 0) + (if p a then 1 else 0) := by
   simp [countP, List.countP_set]
 
-theorem exists_mem_data {as : Array α} {p : α → Prop} :
-    (∃ x ∈ as.data, p x) ↔ ∃ (i : Nat) (h : i < as.size), p as[i] := by
+theorem exists_mem_toList {as : Array α} {p : α → Prop} :
+    (∃ x ∈ as.toList, p x) ↔ ∃ (i : Nat) (h : i < as.size), p as[i] := by
   constructor
   · rintro ⟨x, m, w⟩
     obtain ⟨i, h, rfl⟩ := List.getElem_of_mem m
     exact ⟨i, h, w⟩
   · rintro ⟨i, h, w⟩
-    exact ⟨as[i], getElem_mem_data as h, w⟩
+    exact ⟨as[i], getElem_mem_toList as h, w⟩
 
 @[simp] theorem countP_pos_iff (p : α → Bool) (l : Array α) :
     0 < l.countP p ↔ ∃ (i : Nat) (h : i < l.size), p l[i] := by
-  simp [countP, exists_mem_data]
+  simp [countP, exists_mem_toList]
 
 @[simp] theorem one_le_countP_iff (p : α → Bool) (l : Array α) : 1 ≤ l.countP p ↔ ∃ (i : Nat) (h : i < l.size), p l[i] :=
   countP_pos_iff p l
@@ -205,12 +130,12 @@ theorem apply_getElem_le_sum_map_nat (f : α → Nat) (l : Array α) (i : Nat) (
 end Array
 
 structure Vec (n : Nat) (α : Type _) where
-  data : Array α
-  size : data.size = n
+  toArray : Array α
+  size : toArray.size = n
 
 namespace Vec
 
-@[simp] theorem size_data (v : Vec n α) : v.data.size = n := by
+@[simp] theorem size_toArray (v : Vec n α) : v.toArray.size = n := by
   simp [set, v.size]
 
 instance [Repr α] : Repr (Vec n α) where
@@ -219,19 +144,19 @@ instance [Repr α] : Repr (Vec n α) where
 instance : GetElem (Vec n α) Nat α (fun _ i => i < n) where
   getElem v i h := v.1[i]'(Nat.lt_of_lt_of_eq h v.2.symm)
 
-@[simp] theorem getElem_data (v : Vec n α) (i : Nat) (h : i < v.data.size) : v.data[i] = v[i]'(by simpa using h) := rfl
+@[simp] theorem getElem_toArray (v : Vec n α) (i : Nat) (h : i < v.toArray.size) : v.toArray[i] = v[i]'(by simpa using h) := rfl
 
 @[simp] theorem getElem_mk (data : Array α) (size : data.size = n) (i : Nat) (h : i < n) : (Vec.mk data size)[i] = data[i] := rfl
 
-def mkVec (n : Nat) (v : α) : Vec n α := ⟨Array.mkArray n v, by simp⟩
+def replicate (n : Nat) (v : α) : Vec n α := ⟨Array.mkArray n v, by simp⟩
 
 instance : Inhabited (Vec 0 α) := ⟨⟨#[], rfl⟩⟩
-instance [Inhabited α] : Inhabited (Vec n α) := ⟨mkVec n default⟩
+instance [Inhabited α] : Inhabited (Vec n α) := ⟨replicate n default⟩
 
 def set (v : Vec n α) (i : Fin n) (a : α) : Vec n α :=
   ⟨v.1.set ⟨i, Nat.lt_of_lt_of_eq i.2 v.2.symm⟩ a, by simp [Array.set, v.2]⟩
 
-@[simp] theorem data_set (v : Vec n α) (i : Fin n) (a : α) : (v.set i a).data = v.data.set (Fin.cast v.2.symm i) a := rfl
+@[simp] theorem toArray_set (v : Vec n α) (i : Fin n) (a : α) : (v.set i a).toArray = v.toArray.set (Fin.cast v.2.symm i) a := rfl
 
 @[simp] theorem set_mk {data : Array α} {size : data.size = n} :
     (mk data size).set i a = mk (data.set (Fin.cast size.symm i) a) (by simp [size]) := rfl
@@ -243,7 +168,7 @@ def set (v : Vec n α) (i : Fin n) (a : α) : Vec n α :=
 def map (f : α → β) (v : Vec n α) : Vec n β :=
   ⟨v.1.map f, by simp [v.2]⟩
 
-@[simp] theorem data_map (f : α → β) (v : Vec n α) : (v.map f).data = v.data.map f := rfl
+@[simp] theorem toArray_map (f : α → β) (v : Vec n α) : (v.map f).toArray = v.toArray.map f := rfl
 
 @[simp] theorem getElem_map (f : α → β) (v : Vec n α) (i : Nat) (h : i < n) : (v.map f)[i] = f v[i] := by
   simp [map]
@@ -252,7 +177,7 @@ def map (f : α → β) (v : Vec n α) : Vec n β :=
   simp [map]
 
 def countP (p : α → Bool) (v : Vec n α) : Nat :=
-  v.data.countP p
+  v.toArray.countP p
 
 theorem countP_set (p : α → Bool) (l : Vec n α) (i : Fin n) (a : α) :
     (l.set i a).countP p = l.countP p - (if p l[i] then 1 else 0) + (if p a then 1 else 0) := by
@@ -266,7 +191,7 @@ theorem countP_set (p : α → Bool) (l : Vec n α) (i : Fin n) (a : α) :
   countP_pos_iff p l
 
 def sum [Zero α] [Add α] (v : Vec n α) : α :=
-  v.data.sum
+  v.toArray.sum
 
 @[simp] theorem sum_set (v : Vec n Nat) (i : Fin n) (a : Nat) :
     (v.set i a).sum = v.sum - v[i] + a := by
@@ -435,7 +360,7 @@ def validMove (p₁ p₂ : Position) : Prop :=
 
 def empty : Position :=
   { whiteToMove := true
-    board := .mkVec 8 (.mkVec 8 none) }
+    board := .replicate 8 (.replicate 8 none) }
 
 example : Position.empty.moves = [] := rfl
 
