@@ -213,6 +213,11 @@ def limit : Subgroup (Π j : J, F.obj j) where
 def profiniteGrpToProfinite : ProfiniteGrp ⥤ Profinite where
   obj G := G.toProfinite
   map f := ⟨f, by continuity⟩
+
+instance instProfiniteGrpToProfiniteFaithful : profiniteGrpToProfinite.Faithful := {
+  map_injective := fun {_ _} _ _ h =>
+    ConcreteCategory.hom_ext_iff.mpr (congrFun (congrArg ContinuousMap.toFun h)) }
+
 instance : CompactSpace (limit F) := inferInstanceAs
   (CompactSpace (Profinite.limitCone (F ⋙ profiniteGrpToProfinite.{max v w'})).pt)
 
@@ -250,40 +255,23 @@ lemma limitCone_π_app_apply  (j : J) (x : ofLimit F) :
 /-- Verify that the limit constructed above satisfies the universal property. -/
 def limitConeIsLimit : Limits.IsLimit (limitCone F) where
   lift cone := {
-    toFun := fun pt =>
-      { val := fun j => (cone.π.1 j) pt
-        property := fun i j πij => by
-          have := cone.π.2 πij
-          simp only [Functor.const_obj_obj, Functor.comp_obj, Functor.const_obj_map,
-            Category.id_comp, Functor.comp_map] at this
-          simp only [Functor.const_obj_obj, Functor.comp_obj, this]
-          rfl }
+    toFun := ((Profinite.limitConeIsLimit (F ⋙ profiniteGrpToProfinite)).lift
+      (profiniteGrpToProfinite.mapCone cone)).toFun
     map_one' := by
       apply SetCoe.ext
-      simp only [Functor.const_obj_obj, Functor.comp_obj, OneMemClass.coe_one, Pi.one_apply,
-        OneHom.toFun_eq_coe, OneHom.coe_mk, id_eq, Functor.const_obj_map, Functor.comp_map,
-        MonoidHom.toOneHom_coe, MonoidHom.coe_mk, eq_mpr_eq_cast, cast_eq, map_one]
-      rfl
-    map_mul' := fun x y => by
+      ext j
+      exact map_one (cone.π.app j)
+    map_mul' := fun _ _ ↦ by
       apply SetCoe.ext
-      simp only [Functor.const_obj_obj, Functor.comp_obj, OneMemClass.coe_one, Pi.one_apply,
-        OneHom.toFun_eq_coe, OneHom.coe_mk, id_eq, Functor.const_obj_map, Functor.comp_map,
-        MonoidHom.toOneHom_coe, MonoidHom.coe_mk, eq_mpr_eq_cast, cast_eq, map_mul]
-      rfl
-    continuous_toFun :=  continuous_induced_rng.mpr
-      (continuous_pi (fun j => (cone.π.1 j).continuous_toFun))
-  }
-  fac cone j := by
-    ext pt
-    simp only [comp_apply]
-    rfl
-  uniq := by
-    intro cone g hyp
-    ext pt
-    refine Subtype.ext <| funext fun j => ?_
-    show _ = cone.π.app _ _
-    rw [← hyp j]
-    rfl
+      ext j
+      exact map_mul (cone.π.app j) _ _
+    continuous_toFun := ((Profinite.limitConeIsLimit (F ⋙ profiniteGrpToProfinite)).lift
+      (profiniteGrpToProfinite.mapCone cone)).continuous }
+  uniq cone m h := by
+    apply instProfiniteGrpToProfiniteFaithful.map_injective
+    simpa using (Profinite.limitConeIsLimit (F ⋙ profiniteGrpToProfinite)).uniq
+      (profiniteGrpToProfinite.mapCone cone) (profiniteGrpToProfinite.map m)
+      (fun j ↦ congrArg profiniteGrpToProfinite.map (h j))
 
 @[simp, nolint simpNF]
 lemma limitConeIsLimit_lift_toFun_coe (j : J) (cone : Limits.Cone F)
