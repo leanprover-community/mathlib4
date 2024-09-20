@@ -196,6 +196,17 @@ def isEmptyAlgEquiv [he : IsEmpty σ] : MvPolynomial σ R ≃ₐ[R] R :=
       ext i m
       exact IsEmpty.elim' he i)
 
+variable {R S₁ σ} in
+@[simp]
+lemma aeval_injective_iff_of_isEmpty [IsEmpty σ] [CommSemiring S₁] [Algebra R S₁] {f : σ → S₁} :
+    Function.Injective (aeval f : MvPolynomial σ R →ₐ[R] S₁) ↔
+      Function.Injective (algebraMap R S₁) := by
+  have : aeval f = (Algebra.ofId R S₁).comp (@isEmptyAlgEquiv R σ _ _).toAlgHom := by
+    ext i
+    exact IsEmpty.elim' ‹IsEmpty σ› i
+  rw [this, ← Injective.of_comp_iff' _ (@isEmptyAlgEquiv R σ _ _).bijective]
+  rfl
+
 /-- The ring isomorphism between multivariable polynomials in no variables
 and the ground ring. -/
 @[simps!]

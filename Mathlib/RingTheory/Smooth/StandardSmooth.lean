@@ -62,8 +62,6 @@ Finally, for ring homomorphisms we define:
 
 ## TODO
 
-- Show that the base change of a submersive presentation is submersive of equal relative
-  dimension.
 - Show that the module of Kaehler differentials of a standard smooth `R`-algebra `S` of relative
   dimension `n` is `S`-free of rank `n`. In particular this shows that the relative dimension
   is independent of the choice of the standard smooth presentation.
@@ -164,6 +162,29 @@ lemma jacobiMatrix_apply (i j : P.rels) :
 end Matrix
 
 section Constructions
+
+/-- If `algebraMap R S` is bijective, the empty generators are a pre-submersive
+presentation with no relations. -/
+noncomputable def ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)) :
+    PreSubmersivePresentation.{t, w} R S where
+  toPresentation := Presentation.ofBijectiveAlgebraMap.{t, w} h
+  map := PEmpty.elim
+  map_inj (a b : PEmpty) h := by contradiction
+  relations_finite := inferInstanceAs (Finite PEmpty.{t + 1})
+
+instance (h : Function.Bijective (algebraMap R S)) : Fintype (ofBijectiveAlgebraMap h).vars :=
+  inferInstanceAs (Fintype PEmpty)
+
+instance (h : Function.Bijective (algebraMap R S)) : Fintype (ofBijectiveAlgebraMap h).rels :=
+  inferInstanceAs (Fintype PEmpty)
+
+lemma ofBijectiveAlgebraMap_jacobian (h : Function.Bijective (algebraMap R S)) :
+    (ofBijectiveAlgebraMap h).jacobian = 1 := by
+  have : (algebraMap (ofBijectiveAlgebraMap h).Ring S).mapMatrix
+      (ofBijectiveAlgebraMap h).jacobiMatrix = 1 := by
+    ext (i j : PEmpty)
+    contradiction
+  rw [jacobian_eq_jacobiMatrix_det, RingHom.map_det, this, Matrix.det_one]
 
 section Localization
 
@@ -308,6 +329,36 @@ lemma comp_jacobian_eq_jacobian_smul_jacobian : (Q.comp P).jacobian = P.jacobian
 
 end Composition
 
+section BaseChange
+
+variable (T) [CommRing T] [Algebra R T] (P : PreSubmersivePresentation R S)
+
+/-- If `P` is a pre-submersive presentation of `S` over `R` and `T` is an `R`-algebra, we
+obtain a natural pre-submersive presentation of `T ⊗[R] S` over `T`. -/
+noncomputable def baseChange : PreSubmersivePresentation T (T ⊗[R] S) where
+  __ := P.toPresentation.baseChange T
+  map := P.map
+  map_inj := P.map_inj
+  relations_finite := P.relations_finite
+
+lemma baseChange_jacobian : (P.baseChange T).jacobian = 1 ⊗ₜ P.jacobian := by
+  classical
+  cases nonempty_fintype P.rels
+  letI : Fintype (P.baseChange T).rels := inferInstanceAs <| Fintype P.rels
+  simp_rw [jacobian_eq_jacobiMatrix_det]
+  have h : (baseChange T P).jacobiMatrix =
+      (MvPolynomial.map (algebraMap R T)).mapMatrix P.jacobiMatrix := by
+    ext i j : 1
+    simp only [baseChange, jacobiMatrix_apply, Presentation.baseChange_relation,
+      RingHom.mapMatrix_apply, Matrix.map_apply]
+    erw [MvPolynomial.pderiv_map]
+    rfl
+  rw [h]
+  erw [← RingHom.map_det, aeval_map_algebraMap]
+  apply aeval_one_tmul
+
+end BaseChange
+
 end Constructions
 
 end PreSubmersivePresentation
@@ -328,6 +379,21 @@ namespace SubmersivePresentation
 open PreSubmersivePresentation
 
 section Constructions
+
+variable {R S} in
+/-- If `algebraMap R S` is bijective, the empty generators are a submersive
+presentation with no relations. -/
+noncomputable def ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)) :
+    SubmersivePresentation.{t, w} R S where
+  __ := PreSubmersivePresentation.ofBijectiveAlgebraMap.{t, w} h
+  jacobian_isUnit := by
+    rw [ofBijectiveAlgebraMap_jacobian]
+    exact isUnit_one
+  isFinite := Presentation.ofBijectiveAlgebraMap_isFinite h
+
+/-- The canonical submersive `R`-presentation of `R` with no generators and no relations. -/
+noncomputable def id : SubmersivePresentation.{t, w} R R :=
+  ofBijectiveAlgebraMap Function.bijective_id
 
 section Composition
 
@@ -359,6 +425,19 @@ noncomputable def localizationAway : SubmersivePresentation R S where
   isFinite := Presentation.localizationAway_isFinite r
 
 end Localization
+
+section BaseChange
+
+variable (T) [CommRing T] [Algebra R T] (P : SubmersivePresentation R S)
+
+/-- If `P` is a submersive presentation of `S` over `R` and `T` is an `R`-algebra, we
+obtain a natural submersive presentation of `T ⊗[R] S` over `T`. -/
+noncomputable def baseChange : SubmersivePresentation T (T ⊗[R] S) where
+  toPreSubmersivePresentation := P.toPreSubmersivePresentation.baseChange T
+  jacobian_isUnit := P.baseChange_jacobian T ▸ P.jacobian_isUnit.map TensorProduct.includeRight
+  isFinite := Presentation.baseChange_isFinite T P.toPresentation
+
+end BaseChange
 
 end Constructions
 
@@ -395,6 +474,16 @@ lemma IsStandardSmoothOfRelativeDimension.isStandardSmooth
     IsStandardSmooth.{t, w} R S :=
   ⟨‹IsStandardSmoothOfRelativeDimension n R S›.out.nonempty⟩
 
+lemma IsStandardSmoothOfRelativeDimension.of_algebraMap_bijective
+    (h : Function.Bijective (algebraMap R S)) :
+    IsStandardSmoothOfRelativeDimension.{t, w} 0 R S :=
+  ⟨SubmersivePresentation.ofBijectiveAlgebraMap h, Presentation.ofBijectiveAlgebraMap_dimension h⟩
+
+variable (R) in
+instance IsStandardSmoothOfRelativeDimension.id :
+    IsStandardSmoothOfRelativeDimension.{t, w} 0 R R :=
+  IsStandardSmoothOfRelativeDimension.of_algebraMap_bijective Function.bijective_id
+
 section Composition
 
 variable (R S T) [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
@@ -425,6 +514,25 @@ lemma IsStandardSmoothOfRelativeDimension.localization_away (r : R) [IsLocalizat
     IsStandardSmoothOfRelativeDimension.{0, 0} 0 R S where
   out := ⟨SubmersivePresentation.localizationAway S r,
     Presentation.localizationAway_dimension_zero r⟩
+
+section BaseChange
+
+variable (T) [CommRing T] [Algebra R T]
+
+instance IsStandardSmooth.baseChange [IsStandardSmooth.{t, w} R S] :
+    IsStandardSmooth.{t, w} T (T ⊗[R] S) where
+  out := by
+    obtain ⟨⟨P⟩⟩ := ‹IsStandardSmooth R S›
+    exact ⟨P.baseChange T⟩
+
+instance IsStandardSmoothOfRelativeDimension.baseChange
+    [IsStandardSmoothOfRelativeDimension.{t, w} n R S] :
+    IsStandardSmoothOfRelativeDimension.{t, w} n T (T ⊗[R] S) where
+  out := by
+    obtain ⟨P, hP⟩ := ‹IsStandardSmoothOfRelativeDimension n R S›
+    exact ⟨P.baseChange T, hP⟩
+
+end BaseChange
 
 end Algebra
 
