@@ -61,7 +61,8 @@ theorem foldr_le_nfpFamily (f : ι → Ordinal → Ordinal)
   Ordinal.le_iSup _ _
 
 theorem le_nfpFamily (f : ι → Ordinal → Ordinal) (a) : a ≤ nfpFamily f a :=
-  Ordinal.le_iSup _ []
+  Ordinal.le_iSup (fun _ ↦ List.foldr _ a _) []
+
 
 theorem lt_nfpFamily {a b} : a < nfpFamily.{u, v} f b ↔ ∃ l, a < List.foldr f b l :=
   Ordinal.lt_iSup
@@ -243,7 +244,7 @@ theorem foldr_le_nfpBFamily {o : Ordinal}
 
 theorem le_nfpBFamily {o : Ordinal} (f : ∀ b < o, Ordinal → Ordinal) (a) :
     a ≤ nfpBFamily.{u, v} o f a :=
-  Ordinal.le_iSup _ []
+  Ordinal.le_iSup (fun _ ↦ List.foldr _ a _) []
 
 theorem lt_nfpBFamily {a b} :
     a < nfpBFamily.{u, v} o f b ↔ ∃ l, a < List.foldr (familyOfBFamily o f) b l :=
@@ -399,7 +400,7 @@ theorem sup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) (a : Ordinal.{u}) :
 
 theorem iterate_le_nfp (f a n) : f^[n] a ≤ nfp f a := by
   rw [← iSup_iterate_eq_nfp]
-  exact Ordinal.le_iSup _ n
+  exact Ordinal.le_iSup (fun n ↦ f^[n] a) n
 
 theorem le_nfp (f a) : a ≤ nfp f a :=
   iterate_le_nfp f a 0

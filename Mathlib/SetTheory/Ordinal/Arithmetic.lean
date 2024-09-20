@@ -1150,8 +1150,8 @@ theorem bddAbove_iff_small {s : Set Ordinal.{u}} : BddAbove s ↔ Small.{u} s :=
     bddAbove_of_small _⟩
 
 /-- `le_ciSup` whenever the outputs live in a higher universe than the inputs. -/
-protected theorem le_iSup {ι : Type u} (f : ι → Ordinal.{max u v}) : ∀ i, f i ≤ iSup f :=
-  le_ciSup (bddAbove_range f)
+protected theorem le_iSup {ι} (f : ι → Ordinal.{u}) [Small.{u} ι] : ∀ i, f i ≤ iSup f :=
+  le_ciSup (bddAbove_of_small _)
 
 set_option linter.deprecated false in
 @[deprecated Ordinal.le_iSup (since := "2024-08-27")]
@@ -1161,7 +1161,7 @@ theorem le_sup {ι : Type u} (f : ι → Ordinal.{max u v}) : ∀ i, f i ≤ sup
 /-- `ciSup_le_iff'` whenever the outputs live in a higher universe than the inputs. -/
 protected theorem iSup_le_iff {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
     iSup f ≤ a ↔ ∀ i, f i ≤ a :=
-  ciSup_le_iff' (bddAbove_iff_small.mpr (small_range f))
+  ciSup_le_iff' (bddAbove_of_small _)
 
 set_option linter.deprecated false in
 @[deprecated Ordinal.iSup_le_iff (since := "2024-08-27")]
@@ -1289,8 +1289,8 @@ theorem iSup_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal.{max u v
     iSup f = max (⨆ a, f (Sum.inl a)) (⨆ b, f (Sum.inr b)) := by
   apply (Ordinal.iSup_le _).antisymm (max_le _ _)
   · rintro (i | i)
-    · exact le_max_of_le_left (Ordinal.le_iSup.{u, max u v w} _ i)
-    · exact le_max_of_le_right (Ordinal.le_iSup.{v, max u v w} _ i)
+    · exact le_max_of_le_left (Ordinal.le_iSup (fun x ↦ f (Sum.inl x)) i)
+    · exact le_max_of_le_right (Ordinal.le_iSup (fun x ↦ f (Sum.inr x)) i)
   all_goals
     apply csSup_le_csSup' (bddAbove_range _)
     rintro i ⟨a, rfl⟩
