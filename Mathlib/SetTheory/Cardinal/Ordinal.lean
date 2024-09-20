@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 import Mathlib.Order.Bounded
 import Mathlib.SetTheory.Cardinal.PartENat
 import Mathlib.SetTheory.Ordinal.Principal
+import Mathlib.SetTheory.Ordinal.Enum
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -322,7 +323,15 @@ theorem aleph0_lt_aleph_one : ℵ₀ < aleph 1 := by
 theorem countable_iff_lt_aleph_one {α : Type*} (s : Set α) : s.Countable ↔ #s < aleph 1 := by
   rw [← succ_aleph0, lt_succ_iff, le_aleph0_iff_set_countable]
 
-/-- Ordinals that are cardinals are unbounded. -/
+/-- Initial ordinals are unbounded. -/
+theorem not_bddAbove_range_ord_card : ¬ BddAbove (Set.range (ord ∘ card)) := by
+  rw [not_bddAbove_iff]
+  intro x
+  refine ⟨_, ⟨(succ x.card).ord, ?_⟩, lt_ord_succ_card x⟩
+  simp
+
+/-- Initial ordinals are unbounded. -/
+@[deprecated not_bddAbove_range_ord_card (since := "2024-09-20")]
 theorem ord_card_unbounded : Unbounded (· < ·) { b : Ordinal | b.card.ord = b } :=
   unbounded_lt_iff.2 fun a =>
     ⟨_,
@@ -330,17 +339,15 @@ theorem ord_card_unbounded : Unbounded (· < ·) { b : Ordinal | b.card.ord = b 
         dsimp
         rw [card_ord], (lt_ord_succ_card a).le⟩⟩
 
+@[deprecated (since := "2024-09-20")]
 theorem eq_aleph'_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) : ∃ a, (aleph' a).ord = o :=
   ⟨aleph'.symm o.card, by simpa using ho⟩
 
 /-- `ord ∘ aleph'` enumerates the ordinals that are cardinals. -/
-theorem ord_aleph'_eq_enum_card : ord ∘ aleph' = enumOrd { b : Ordinal | b.card.ord = b } := by
-  rw [← eq_enumOrd _ ord_card_unbounded, range_eq_iff]
-  exact
-    ⟨aleph'_isNormal.strictMono,
-      ⟨fun a => by
-        dsimp
-        rw [card_ord], fun b hb => eq_aleph'_of_eq_card_ord hb⟩⟩
+theorem ord_aleph'_eq_enum_card : ord ∘ aleph' = enumOrd (Set.range (ord ∘ card)) := by
+  rw [eq_comm, eq_enumOrd _ (not_bddAbove_range_ord_card)]
+  use aleph'_isNormal.strictMono
+  rw [range_comp, range_comp, OrderIso.range_eq, card_surjective.range_eq]
 
 /-- Infinite ordinals that are cardinals are unbounded. -/
 theorem ord_card_unbounded' : Unbounded (· < ·) { b : Ordinal | b.card.ord = b ∧ ω ≤ b } :=
@@ -365,7 +372,7 @@ theorem ord_aleph_eq_enum_card :
     exact aleph0_le_aleph _
 
 end aleph
-
+#exit
 /-! ### Beth cardinals -/
 section beth
 
