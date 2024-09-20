@@ -186,9 +186,10 @@ elab (name := liftable_prefixes) "liftable_prefixes" : tactic => do
     (max 256 (synthInstance.maxSize.get opts))) do
   evalTactic (← `(tactic|
     (simp (config := {failIfUnchanged := false}) only
-      [monoidalComp, Category.assoc, BicategoricalCoherence.hom,
+      [monoidalComp, bicategoricalComp, Category.assoc, BicategoricalCoherence.iso,
       MonoidalCoherence.iso, Iso.trans, Iso.symm, Iso.refl,
-      MonoidalCategory.whiskerRightIso, MonoidalCategory.whiskerLeftIso]) <;>
+      MonoidalCategory.whiskerRightIso, MonoidalCategory.whiskerLeftIso,
+      Bicategory.whiskerRightIso, Bicategory.whiskerLeftIso]) <;>
     (apply (cancel_epi (𝟙 _)).1 <;> try infer_instance) <;>
     (simp (config := {failIfUnchanged := false}) only
       [assoc_liftHom, Mathlib.Tactic.BicategoryCoherence.assoc_liftHom₂])))

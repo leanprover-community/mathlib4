@@ -604,7 +604,7 @@ if `E` is purely inseparable over it. -/
 theorem separableClosure_le (L : IntermediateField F E)
     [h : IsPurelyInseparable L E] : separableClosure F E ≤ L := fun x hx ↦ by
   obtain ⟨y, rfl⟩ := h.inseparable' _ <|
-    IsSeparable.of_isScalarTower L (mem_separableClosure_iff.1 hx)
+    IsSeparable.tower_top L (mem_separableClosure_iff.1 hx)
   exact y.2
 
 /-- If `E / F` is algebraic, then an intermediate field of `E / F` contains the
@@ -1071,7 +1071,7 @@ theorem minpoly.map_eq_of_isSeparable_of_isPurelyInseparable (x : K)
   have hi' : IsIntegral E x := IsIntegral.tower_top hi
   refine eq_of_monic_of_dvd_of_natDegree_le (monic hi') ((monic hi).map (algebraMap F E))
     (dvd_map_of_isScalarTower F E x) (le_of_eq ?_)
-  have hsep' := IsSeparable.of_isScalarTower E hsep
+  have hsep' := IsSeparable.tower_top E hsep
   haveI := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep
   haveI := (isSeparable_adjoin_simple_iff_isSeparable _ _).2 hsep'
   have := Algebra.IsSeparable.isAlgebraic F F⟮x⟯
