@@ -123,27 +123,28 @@ end WellFounded
 
 section LinearOrder
 
-variable [LinearOrder β] [PartialOrder γ]
+variable [LinearOrder β] [Preorder γ]
 
 theorem WellFounded.min_le (h : WellFounded ((· < ·) : β → β → Prop))
     {x : β} {s : Set β} (hx : x ∈ s) (hne : s.Nonempty := ⟨x, hx⟩) : h.min s hne ≤ x :=
   not_lt.1 <| h.not_lt_min _ _ hx
-
-private theorem range_injOn_strictMono_aux {f g : β → γ} (hf : StrictMono f) (hg : StrictMono g)
-    (hfg : Set.range f = Set.range g) {b : β} (H : ∀ a < b, f a = g a) : f b ≤ g b := by
-  obtain ⟨c, hc⟩ : g b ∈ Set.range f := hfg ▸ Set.mem_range_self b
-  rcases lt_or_le c b with hcb | hbc
-  · rw [H c hcb, hg.injective.eq_iff] at hc
-    exact (hc.not_lt hcb).elim
-  · rwa [← hc, hf.le_iff_le]
 
 theorem Set.range_injOn_strictMono [WellFoundedLT β] :
     Set.InjOn Set.range { f : β → γ | StrictMono f } := by
   intro f hf g hg hfg
   ext a
   apply WellFoundedLT.induction a
-  exact fun b IH => (range_injOn_strictMono_aux hf hg hfg IH).antisymm
-    (range_injOn_strictMono_aux hg hf hfg.symm fun a hab => (IH a hab).symm)
+  intro a IH
+  obtain ⟨b, hb⟩ := hfg ▸ mem_range_self a
+  obtain h | rfl | h := lt_trichotomy b a
+  · rw [← IH b h] at hb
+    cases (hf.injective hb).not_lt h
+  · rw [hb]
+  · obtain ⟨c, hc⟩ := hfg.symm ▸ mem_range_self a
+    have := hg h
+    rw [hb, ← hc, hf.lt_iff_lt] at this
+    rw [IH c this] at hc
+    cases (hg.injective hc).not_lt this
 
 theorem Set.range_injOn_strictAnti [WellFoundedGT β] :
     Set.InjOn Set.range { f : β → γ | StrictAnti f } :=
@@ -163,18 +164,24 @@ theorem WellFounded.eq_strictMono_iff_eq_range (h : WellFounded ((· < ·) : β 
     Set.range f = Set.range g ↔ f = g :=
   @StrictMono.range_inj β γ _ _ ⟨h⟩ f g hf hg
 
-/-- A strict monotonic function `f` on a well order satisfies `x ≤ f x` for all `x`. -/
+/-- A strictly monotone function `f` on a well-order satisfies `x ≤ f x` for all `x`. -/
 theorem StrictMono.id_le [WellFoundedLT β] {f : β → β} (hf : StrictMono f) : id ≤ f := by
   rw [Pi.le_def]
   by_contra! H
   obtain ⟨m, hm, hm'⟩ := wellFounded_lt.has_min _ H
   exact hm' _ (hf hm) hm
 
-/-- A strict monotonic function `f` on a dual well order satisfies `f x ≤ x` for all `x`. -/
+theorem StrictMono.le_apply [WellFoundedLT β] {f : β → β} (hf : StrictMono f) {x} : x ≤ f x :=
+  hf.id_le x
+
+/-- A strictly monotone function `f` on a cowell-order satisfies `f x ≤ x` for all `x`. -/
 theorem StrictMono.le_id [WellFoundedGT β] {f : β → β} (hf : StrictMono f) : f ≤ id :=
   StrictMono.id_le (β := βᵒᵈ) hf.dual
 
-@[deprecated StrictMono.id_le (since := "2024-09-11")]
+theorem StrictMono.apply_le [WellFoundedGT β] {f : β → β} (hf : StrictMono f) {x} : f x ≤ x :=
+  StrictMono.le_apply (β := βᵒᵈ) hf.dual
+
+@[deprecated StrictMono.le_apply (since := "2024-09-11")]
 theorem WellFounded.self_le_of_strictMono (h : WellFounded ((· < ·) : β → β → Prop))
     {f : β → β} (hf : StrictMono f) : ∀ n, n ≤ f n := by
   by_contra! h₁

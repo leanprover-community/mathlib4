@@ -106,7 +106,7 @@ theorem AnalyticOn.iteratedFDeriv [CompleteSpace F] (h : AnalyticOn 𝕜 f s) (n
     rw [iteratedFDeriv_succ_eq_comp_left]
     -- Porting note: for reasons that I do not understand at all, `?g` cannot be inlined.
     convert ContinuousLinearMap.comp_analyticOn ?g IH.fderiv
-    case g => exact ↑(continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (n + 1) ↦ E) F)
+    case g => exact ↑(continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (n + 1) ↦ E) F).symm
     simp
 
 /-- An analytic function is infinitely differentiable. -/
@@ -230,7 +230,7 @@ theorem CPolynomialOn.iteratedFDeriv (h : CPolynomialOn 𝕜 f s) (n : ℕ) :
   | succ n IH =>
     rw [iteratedFDeriv_succ_eq_comp_left]
     convert ContinuousLinearMap.comp_cPolynomialOn ?g IH.fderiv
-    case g => exact ↑(continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (n + 1) ↦ E) F)
+    case g => exact ↑(continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (n + 1) ↦ E) F).symm
     simp
 
 /-- A polynomial function is infinitely differentiable. -/
@@ -277,13 +277,6 @@ variable {ι : Type*} {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] [∀ 
   [Fintype ι] (f : ContinuousMultilinearMap 𝕜 E F)
 
 open FormalMultilinearSeries
-
-protected theorem hasFiniteFPowerSeriesOnBall :
-    HasFiniteFPowerSeriesOnBall f f.toFormalMultilinearSeries 0 (Fintype.card ι + 1) ⊤ :=
-  .mk' (fun m hm ↦ dif_neg (Nat.succ_le_iff.mp hm).ne) ENNReal.zero_lt_top fun y _ ↦ by
-    rw [Finset.sum_eq_single_of_mem _ (Finset.self_mem_range_succ _), zero_add]
-    · rw [toFormalMultilinearSeries, dif_pos rfl]; rfl
-    · intro m _ ne; rw [toFormalMultilinearSeries, dif_neg ne.symm]; rfl
 
 theorem changeOriginSeries_support {k l : ℕ} (h : k + l ≠ Fintype.card ι) :
     f.toFormalMultilinearSeries.changeOriginSeries k l = 0 :=
