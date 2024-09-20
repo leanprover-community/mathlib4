@@ -7,6 +7,7 @@ import Mathlib.Algebra.Category.Grp.FiniteGrp
 import Mathlib.Topology.Algebra.ContinuousMonoidHom
 import Mathlib.Topology.Category.Profinite.Basic
 
+
 /-!
 
 # Category of Profinite Groups
@@ -30,7 +31,7 @@ disconnected.
 
 -/
 
-universe u v
+universe u
 
 open CategoryTheory Topology
 
@@ -164,3 +165,5 @@ instance : HasForget₂ ProfiniteGrp Grp where
     obj := fun P => ⟨P, P.group⟩
     map := fun f => f.toMonoidHom
   }
+
+end ProfiniteGrp
