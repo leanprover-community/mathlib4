@@ -838,7 +838,7 @@ end deprecated
 /-- The indexed sum of cardinals is the cardinality of the
   indexed disjoint union, i.e. sigma type. -/
 def sum {ι} (f : ι → Cardinal) : Cardinal :=
-  mk (Σi, (f i).out)
+  mk (Σ i, (f i).out)
 
 theorem le_sum {ι} (f : ι → Cardinal) (i) : f i ≤ sum f := by
   rw [← Quotient.out_eq (f i)]
