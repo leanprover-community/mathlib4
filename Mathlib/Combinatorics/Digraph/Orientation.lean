@@ -62,6 +62,7 @@ lemma toSimpleGraphAnd_subgraph_toSimpleGraphOr (G : Digraph V) :
     G.toSimpleGraphAnd ≤ G.toSimpleGraphOr :=
   fun _ _ h ↦ ⟨h.1, Or.inl h.2.1⟩
 
+@[mono]
 lemma toSimpleGraphOr_mono : Monotone (toSimpleGraphOr : _ → SimpleGraph V) := by
   intro _ _ h₁ _ _ h₂
   apply And.intro h₂.1
@@ -69,6 +70,7 @@ lemma toSimpleGraphOr_mono : Monotone (toSimpleGraphOr : _ → SimpleGraph V) :=
   · exact Or.inl <| h₁ ‹_›
   · exact Or.inr <| h₁ ‹_›
 
+@[mono]
 lemma toSimpleGraphAnd_mono : Monotone (toSimpleGraphAnd : _ → SimpleGraph V) :=
   fun _ _ h₁ _ _ h₂ ↦ And.intro h₂.1 <| And.intro (h₁ h₂.2.1) (h₁ h₂.2.2)
 
@@ -95,11 +97,22 @@ Oriented graphs are `Digraph`s that have no self-loops and no pair of vertices w
 directions.
 -/
 def IsOriented (G : Digraph V) : Prop :=
-  ∀ v w : V, ¬G.Adj v v ∧ ¬(G.Adj v w ∧ G.Adj w v)
+  ∀ v w : V, ¬(G.Adj v w ∧ G.Adj w v)
+
+lemma isOriented_loopless {G : Digraph V} (h : G.IsOriented) {v : V} : ¬G.Adj v v :=
+  and_self (G.Adj v v) ▸ h v v
 
 lemma isOriented_toSimpleGraphAnd_eq_bot {G : Digraph V} (h : G.IsOriented) :
     G.toSimpleGraphAnd = ⊥ := by
-  ext; exact ⟨fun a ↦ (h _ _).2 a.2, fun h ↦ h.elim⟩
+  ext; exact ⟨fun a ↦ (h _ _) a.2, fun h ↦ h.elim⟩
+
+lemma toSimpleGraphAnd_eq_bot_iff_isOriented_and_loopless {G : Digraph V} :
+    G.IsOriented ↔ G.toSimpleGraphAnd = ⊥ ∧ ∀ v, ¬G.Adj v v:= by
+  refine ⟨fun h ↦ ⟨isOriented_toSimpleGraphAnd_eq_bot h, fun v ↦ isOriented_loopless h⟩,
+    fun ⟨h₁, h₂⟩ v w ↦ ?_⟩
+  by_cases h : v = w
+  · exact h ▸ and_self _ ▸ h₂ v
+  · exact not_and.mpr fun a b ↦ (SimpleGraph.bot_adj v w).mp <| h₁ ▸ ⟨h, And.intro a b⟩
 
 end IsOriented
 
@@ -120,7 +133,8 @@ def toDigraph (G : SimpleGraph V) : Digraph V where
 lemma toDigraph_mono : Monotone (toDigraph : _ → Digraph V) :=
   fun _ _ h₁ _ _ h₂ ↦ h₁ h₂
 
-instance : GaloisConnection toDigraph (Digraph.toSimpleGraphAnd : _ → SimpleGraph V) :=
+lemma gc_toDigraph_toSimpleGraphAnd :
+    GaloisConnection toDigraph (Digraph.toSimpleGraphAnd : _ → SimpleGraph V) :=
   fun _ _ ↦ ⟨fun h₁ _ _ h₂ ↦ ⟨h₂.ne, h₁ h₂, h₁ h₂.symm⟩, fun h₁ _ _ h₂ ↦ (h₁ h₂).2.1⟩
 
 end SimpleGraph
