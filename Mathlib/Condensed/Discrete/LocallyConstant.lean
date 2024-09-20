@@ -299,7 +299,7 @@ The unit of the adjunciton is given by mapping each element to the correspondin
 def unit : 𝟭 _ ⟶ functor P hs ⋙ (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u+1}⟩ where
   app X x := LocallyConstant.const _ x
 
-lemma locallyConstantAdjunction_left_triangle [HasExplicitFiniteCoproducts.{u} P]
+lemma adjunction_left_triangle [HasExplicitFiniteCoproducts.{u} P]
     (X : Type max u w) : functorToPresheaves.{u, w}.map ((unit P hs).app X) ≫
       ((counit P hs).app ((functor P hs).obj X)).val = 𝟙 (functorToPresheaves.obj X) := by
   ext ⟨S⟩ (f : LocallyConstant _ X)
@@ -339,7 +339,7 @@ noncomputable def adjunction [HasExplicitFiniteCoproducts.{u} P] :
       Functor.associator_hom_app, whiskerLeft_app, Category.id_comp, NatTrans.id_app']
     apply Sheaf.hom_ext
     rw [Sheaf.instCategorySheaf_comp_val, Sheaf.instCategorySheaf_id_val]
-    exact locallyConstantAdjunction_left_triangle P hs X
+    exact adjunction_left_triangle P hs X
   right_triangle_components := by
     intro X
     ext (x : X.val.obj _)
