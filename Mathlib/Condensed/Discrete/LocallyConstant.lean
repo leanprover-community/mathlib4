@@ -295,6 +295,12 @@ The unit of the adjunciton is given by mapping each element to the correspondin
 def unit : 𝟭 _ ⟶ functor P hs ⋙ (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u+1}⟩ where
   app X x := LocallyConstant.const _ x
 
+/-- The unit of the adjunction is an iso. -/
+noncomputable def unitIso : 𝟭 (Type max u w) ≅ functor.{u, w} P hs ⋙
+    (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u+1}⟩ where
+  hom := unit P hs
+  inv := { app := fun X f ↦ f.toFun PUnit.unit }
+
 lemma adjunction_left_triangle [HasExplicitFiniteCoproducts.{u} P]
     (X : Type max u w) : functorToPresheaves.{u, w}.map ((unit P hs).app X) ≫
       ((counit P hs).app ((functor P hs).obj X)).val = 𝟙 (functorToPresheaves.obj X) := by
@@ -313,12 +319,6 @@ lemma adjunction_left_triangle [HasExplicitFiniteCoproducts.{u} P]
   ext x
   erw [← map_eq_image _ a x]
   rfl
-
-/-- The unit of the adjunction is an iso. -/
-noncomputable def unitIso : 𝟭 (Type max u w) ≅ functor.{u, w} P hs ⋙
-    (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u+1}⟩ where
-  hom := unit P hs
-  inv := { app := fun X f ↦ f.toFun PUnit.unit }
 
 /--
 `CompHausLike.LocallyConstant.functor` is left adjoint to the forgetful functor.
@@ -351,7 +351,6 @@ noncomputable def adjunction [HasExplicitFiniteCoproducts.{u} P] :
     erw [incl_of_counitAppApp]
     simp only [sheafToPresheaf_obj, unit_app, coe_of, counitAppAppImage, coe_const]
     erw [← map_eq_image _ a ⟨PUnit.unit, by simp [mem_iff_eq_image, ← map_preimage_eq_image]⟩]
-    simp
     rfl
 
 instance [HasExplicitFiniteCoproducts.{u} P] : IsIso (adjunction P hs).unit :=
