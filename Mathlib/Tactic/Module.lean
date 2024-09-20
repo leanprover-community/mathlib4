@@ -36,9 +36,9 @@ to prove goals in modules.  The basic object which these lemmas concern is `NF R
 for a list of ordered pairs in `R × M`, where typically `M` is an `R`-module.
 -/
 
-/-- Basic theoretical object of the `match_scalars` and `module` tactics: a type synonym for a list
-of ordered pairs in `R × M`, where typically `M` is an `R`-module.  This is the form to which the
-tactics reduce module expressions.
+/-- Basic theoretical "normal form" object of the `match_scalars` and `module` tactics: a type
+synonym for a list of ordered pairs in `R × M`, where typically `M` is an `R`-module.  This is the
+form to which the tactics reduce module expressions.
 
 (It is not a full "normal form" because the scalars, i.e. `R` components, are not themselves
 ring-normalized.  But this partial normal form is more convenient for our purposes.)  -/
@@ -215,9 +215,9 @@ variable {u v : Level}
 
 /-! ### Lists of expressions representing scalars and vectors, and operations on such lists -/
 
-/-- Basic meta-code object of the `match_scalars` and `module` tactics: a type synonym for a list of
-ordered triples comprising expressions representing terms of two types `R` and `M` (where typically
-`M` is an `R`-module), together with a natural number "index".
+/-- Basic meta-code "normal form" object of the `match_scalars` and `module` tactics: a type synonym
+for a list of ordered triples comprising expressions representing terms of two types `R` and `M`
+(where typically `M` is an `R`-module), together with a natural number "index".
 
 The natural number represents the index of the `M` term in the `AtomM` monad: this is not enforced,
 but is sometimes assumed in operations.  Thus when items `((a₁, x₁), k)` and `((a₂, x₂), k)`
