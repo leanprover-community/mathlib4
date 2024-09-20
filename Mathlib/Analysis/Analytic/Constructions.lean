@@ -32,6 +32,157 @@ variable {𝕝 : Type*} [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝]
 variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
 
 /-!
+### Constants are analytic
+-/
+
+theorem hasFPowerSeriesOnBall_const {c : F} {e : E} :
+    HasFPowerSeriesOnBall (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e ⊤ := by
+  refine ⟨by simp, WithTop.zero_lt_top, fun _ => hasSum_single 0 fun n hn => ?_⟩
+  simp [constFormalMultilinearSeries_apply hn]
+
+theorem hasFPowerSeriesAt_const {c : F} {e : E} :
+    HasFPowerSeriesAt (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e :=
+  ⟨⊤, hasFPowerSeriesOnBall_const⟩
+
+theorem analyticAt_const {v : F} {x : E} : AnalyticAt 𝕜 (fun _ => v) x :=
+  ⟨constFormalMultilinearSeries 𝕜 E v, hasFPowerSeriesAt_const⟩
+
+theorem analyticOn_const {v : F} {s : Set E} : AnalyticOn 𝕜 (fun _ => v) s :=
+  fun _ _ => analyticAt_const
+
+theorem analyticWithinAt_const {v : F} {s : Set E} {x : E} : AnalyticWithinAt 𝕜 (fun _ => v) s x :=
+  analyticAt_const.analyticWithinAt
+
+theorem analyticWithinOn_const {v : F} {s : Set E} : AnalyticWithinOn 𝕜 (fun _ => v) s :=
+  analyticOn_const.analyticWithinOn
+
+/-!
+### Addition, negation, subtraction
+-/
+
+section
+
+variable {f g : E → F} {pf pg : FormalMultilinearSeries 𝕜 E F} {s : Set E} {x : E} {r : ℝ≥0∞}
+
+theorem HasFPowerSeriesWithinOnBall.add (hf : HasFPowerSeriesWithinOnBall f pf s x r)
+    (hg : HasFPowerSeriesWithinOnBall g pg s x r) :
+    HasFPowerSeriesWithinOnBall (f + g) (pf + pg) s x r :=
+  { r_le := le_trans (le_min_iff.2 ⟨hf.r_le, hg.r_le⟩) (pf.min_radius_le_radius_add pg)
+    r_pos := hf.r_pos
+    hasSum := fun hy h'y => (hf.hasSum hy h'y).add (hg.hasSum hy h'y) }
+
+theorem HasFPowerSeriesOnBall.add (hf : HasFPowerSeriesOnBall f pf x r)
+    (hg : HasFPowerSeriesOnBall g pg x r) : HasFPowerSeriesOnBall (f + g) (pf + pg) x r :=
+  { r_le := le_trans (le_min_iff.2 ⟨hf.r_le, hg.r_le⟩) (pf.min_radius_le_radius_add pg)
+    r_pos := hf.r_pos
+    hasSum := fun hy => (hf.hasSum hy).add (hg.hasSum hy) }
+
+theorem HasFPowerSeriesWithinAt.add
+    (hf : HasFPowerSeriesWithinAt f pf s x) (hg : HasFPowerSeriesWithinAt g pg s x) :
+    HasFPowerSeriesWithinAt (f + g) (pf + pg) s x := by
+  rcases (hf.eventually.and hg.eventually).exists with ⟨r, hr⟩
+  exact ⟨r, hr.1.add hr.2⟩
+
+theorem HasFPowerSeriesAt.add (hf : HasFPowerSeriesAt f pf x) (hg : HasFPowerSeriesAt g pg x) :
+    HasFPowerSeriesAt (f + g) (pf + pg) x := by
+  rcases (hf.eventually.and hg.eventually).exists with ⟨r, hr⟩
+  exact ⟨r, hr.1.add hr.2⟩
+
+theorem AnalyticWithinAt.add (hf : AnalyticWithinAt 𝕜 f s x) (hg : AnalyticWithinAt 𝕜 g s x) :
+    AnalyticWithinAt 𝕜 (f + g) s x :=
+  let ⟨_, hpf⟩ := hf
+  let ⟨_, hqf⟩ := hg
+  (hpf.add hqf).analyticWithinAt
+
+theorem AnalyticAt.add (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) : AnalyticAt 𝕜 (f + g) x :=
+  let ⟨_, hpf⟩ := hf
+  let ⟨_, hqf⟩ := hg
+  (hpf.add hqf).analyticAt
+
+theorem HasFPowerSeriesWithinOnBall.neg (hf : HasFPowerSeriesWithinOnBall f pf s x r) :
+    HasFPowerSeriesWithinOnBall (-f) (-pf) s x r :=
+  { r_le := by
+      rw [pf.radius_neg]
+      exact hf.r_le
+    r_pos := hf.r_pos
+    hasSum := fun hy h'y => (hf.hasSum hy h'y).neg }
+
+theorem HasFPowerSeriesOnBall.neg (hf : HasFPowerSeriesOnBall f pf x r) :
+    HasFPowerSeriesOnBall (-f) (-pf) x r :=
+  { r_le := by
+      rw [pf.radius_neg]
+      exact hf.r_le
+    r_pos := hf.r_pos
+    hasSum := fun hy => (hf.hasSum hy).neg }
+
+theorem HasFPowerSeriesWithinAt.neg (hf : HasFPowerSeriesWithinAt f pf s x) :
+    HasFPowerSeriesWithinAt (-f) (-pf) s x :=
+  let ⟨_, hrf⟩ := hf
+  hrf.neg.hasFPowerSeriesWithinAt
+
+theorem HasFPowerSeriesAt.neg (hf : HasFPowerSeriesAt f pf x) : HasFPowerSeriesAt (-f) (-pf) x :=
+  let ⟨_, hrf⟩ := hf
+  hrf.neg.hasFPowerSeriesAt
+
+theorem AnalyticWithinAt.neg (hf : AnalyticWithinAt 𝕜 f s x) : AnalyticWithinAt 𝕜 (-f) s x :=
+  let ⟨_, hpf⟩ := hf
+  hpf.neg.analyticWithinAt
+
+theorem AnalyticAt.neg (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (-f) x :=
+  let ⟨_, hpf⟩ := hf
+  hpf.neg.analyticAt
+
+theorem HasFPowerSeriesWithinOnBall.sub (hf : HasFPowerSeriesWithinOnBall f pf s x r)
+    (hg : HasFPowerSeriesWithinOnBall g pg s x r) :
+    HasFPowerSeriesWithinOnBall (f - g) (pf - pg) s x r := by
+  simpa only [sub_eq_add_neg] using hf.add hg.neg
+
+theorem HasFPowerSeriesOnBall.sub (hf : HasFPowerSeriesOnBall f pf x r)
+    (hg : HasFPowerSeriesOnBall g pg x r) : HasFPowerSeriesOnBall (f - g) (pf - pg) x r := by
+  simpa only [sub_eq_add_neg] using hf.add hg.neg
+
+theorem HasFPowerSeriesWithinAt.sub
+    (hf : HasFPowerSeriesWithinAt f pf s x) (hg : HasFPowerSeriesWithinAt g pg s x) :
+    HasFPowerSeriesWithinAt (f - g) (pf - pg) s x := by
+  simpa only [sub_eq_add_neg] using hf.add hg.neg
+
+theorem HasFPowerSeriesAt.sub (hf : HasFPowerSeriesAt f pf x) (hg : HasFPowerSeriesAt g pg x) :
+    HasFPowerSeriesAt (f - g) (pf - pg) x := by
+  simpa only [sub_eq_add_neg] using hf.add hg.neg
+
+theorem AnalyticWithinAt.sub (hf : AnalyticWithinAt 𝕜 f s x) (hg : AnalyticWithinAt 𝕜 g s x) :
+    AnalyticWithinAt 𝕜 (f - g) s x := by
+  simpa only [sub_eq_add_neg] using hf.add hg.neg
+
+theorem AnalyticAt.sub (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) :
+    AnalyticAt 𝕜 (f - g) x := by
+  simpa only [sub_eq_add_neg] using hf.add hg.neg
+
+theorem AnalyticWithinOn.add (hf : AnalyticWithinOn 𝕜 f s) (hg : AnalyticWithinOn 𝕜 g s) :
+    AnalyticWithinOn 𝕜 (f + g) s :=
+  fun z hz => (hf z hz).add (hg z hz)
+
+theorem AnalyticOn.add (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
+    AnalyticOn 𝕜 (f + g) s :=
+  fun z hz => (hf z hz).add (hg z hz)
+
+theorem AnalyticWithinOn.neg (hf : AnalyticWithinOn 𝕜 f s) : AnalyticWithinOn 𝕜 (-f) s :=
+  fun z hz ↦ (hf z hz).neg
+
+theorem AnalyticOn.neg (hf : AnalyticOn 𝕜 f s) : AnalyticOn 𝕜 (-f) s :=
+  fun z hz ↦ (hf z hz).neg
+
+theorem AnalyticWithinOn.sub (hf : AnalyticWithinOn 𝕜 f s) (hg : AnalyticWithinOn 𝕜 g s) :
+    AnalyticWithinOn 𝕜 (f - g) s :=
+  fun z hz => (hf z hz).sub (hg z hz)
+
+theorem AnalyticOn.sub (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
+    AnalyticOn 𝕜 (f - g) s :=
+  fun z hz => (hf z hz).sub (hg z hz)
+
+end
+
+/-!
 ### Cartesian products are analytic
 -/
 
