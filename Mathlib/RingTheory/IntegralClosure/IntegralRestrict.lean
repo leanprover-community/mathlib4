@@ -3,9 +3,10 @@ Copyright (c) 2023 Andrew Yang, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.LocalProperties.Properties
-import Mathlib.RingTheory.Localization.NormTrace
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
+import Mathlib.RingTheory.LocalProperties.Finite
+import Mathlib.RingTheory.Localization.NormTrace
+
 /-!
 # Restriction of various maps between fields to integrally closed subrings.
 

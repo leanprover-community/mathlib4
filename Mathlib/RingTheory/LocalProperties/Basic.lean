@@ -12,6 +12,14 @@ import Mathlib.RingTheory.RingHomProperties
 
 In this file, we define local properties in general.
 
+## Naming Conventions
+
+* `localization_P` : `P` holds for `S⁻¹R` if `P` holds for `R`.
+* `P_of_localization_maximal` : `P` holds for `R` if `P` holds for `Rₘ` for all maximal `m`.
+* `P_of_localization_prime` : `P` holds for `R` if `P` holds for `Rₘ` for all prime `m`.
+* `P_ofLocalizationSpan` : `P` holds for `R` if given a spanning set `{fᵢ}`, `P` holds for all
+  `R_{fᵢ}`.
+
 ## Main definitions
 
 * `LocalizationPreserves` : A property `P` of comm rings is said to be preserved by localization
@@ -35,8 +43,8 @@ open scoped Pointwise Classical
 
 universe u
 
-variable {R S : Type u} [CommRing R] [CommRing S] (M : Submonoid R)
-variable (N : Submonoid S) (R' S' : Type u) [CommRing R'] [CommRing S'] (f : R →+* S)
+variable {R S : Type u} [CommRing R] [CommRing S] (M : Submonoid R) (f : R →+* S)
+variable (N : Submonoid S) (R' S' : Type u) [CommRing R'] [CommRing S']
 variable [Algebra R R'] [Algebra S S']
 
 section Properties
