@@ -75,16 +75,16 @@ lemma toSimpleGraphAnd_mono : Monotone (toSimpleGraphAnd : _ → SimpleGraph V) 
   fun _ _ h₁ _ _ h₂ ↦ And.intro h₂.1 <| And.intro (h₁ h₂.2.1) (h₁ h₂.2.2)
 
 lemma toSimpleGraphOr_top : (⊤ : Digraph V).toSimpleGraphOr = ⊤ := by
-  ext; exact ⟨fun h ↦ h.1, fun h ↦ ⟨h.ne, Or.inl trivial⟩⟩
+  ext; exact ⟨And.left, fun h ↦ ⟨h.ne, Or.inl trivial⟩⟩
 
 lemma toSimpleGraphAnd_top : (⊤ : Digraph V).toSimpleGraphAnd = ⊤ := by
-  ext; exact ⟨fun h ↦ h.1, fun h ↦ ⟨h.ne, trivial, trivial⟩⟩
+  ext; exact ⟨And.left, fun h ↦ ⟨h.ne, trivial, trivial⟩⟩
 
 lemma toSimpleGraphOr_bot : (⊥ : Digraph V).toSimpleGraphOr = ⊥ := by
-  ext; exact ⟨fun ⟨_, h⟩ ↦ by tauto, fun h ↦ h.elim⟩
+  ext; exact ⟨fun ⟨_, h⟩ ↦ by tauto, False.elim⟩
 
 lemma toSimpleGraphAnd_bot : (⊥ : Digraph V).toSimpleGraphAnd = ⊥ := by
-  ext; exact ⟨fun ⟨_, h⟩ ↦ by tauto, fun h ↦ h.elim⟩
+  ext; exact ⟨fun ⟨_, h⟩ ↦ by tauto, False.elim⟩
 
 end toSimpleGraph
 
@@ -104,7 +104,7 @@ lemma isOriented_loopless {G : Digraph V} (h : G.IsOriented) {v : V} : ¬G.Adj v
 
 lemma isOriented_toSimpleGraphAnd_eq_bot {G : Digraph V} (h : G.IsOriented) :
     G.toSimpleGraphAnd = ⊥ := by
-  ext; exact ⟨fun a ↦ (h _ _) a.2, fun h ↦ h.elim⟩
+  ext; exact ⟨fun a ↦ h _ _ a.2, False.elim⟩
 
 lemma toSimpleGraphAnd_eq_bot_iff_isOriented_and_loopless {G : Digraph V} :
     G.IsOriented ↔ G.toSimpleGraphAnd = ⊥ ∧ ∀ v, ¬G.Adj v v:= by
