@@ -185,9 +185,13 @@ theorem coeff_comp_monomial (n : σ →₀ ℕ) : (coeff R n).comp (monomial R n
 theorem coeff_zero (n : σ →₀ ℕ) : coeff R n (0 : MvPowerSeries σ R) = 0 :=
   rfl
 
+theorem eq_zero_iff_forall_coeff_zero (f : MvPowerSeries σ R) :
+    f = 0 ↔ (∀ d : σ →₀ ℕ, coeff R d f = 0) :=
+  MvPowerSeries.ext_iff
+
 theorem ne_zero_iff_exists_coeff_ne_zero (f : MvPowerSeries σ R) :
     f ≠ 0 ↔ (∃ d : σ →₀ ℕ, coeff R d f ≠ 0) := by
-  simp only [ext_iff, ne_eq, coeff_zero, not_forall]
+  simp only [MvPowerSeries.ext_iff, ne_eq, coeff_zero, not_forall]
 
 variable (m n : σ →₀ ℕ) (φ ψ : MvPowerSeries σ R)
 
