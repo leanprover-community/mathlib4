@@ -143,6 +143,14 @@ theorem Δ : W.Δ = -16 * (4 * W.a₄ ^ 3 + 27 * W.a₆ ^ 2) := by
   simp_rw [WeierstrassCurve.Δ, self.b₂, self.b₄, self.b₆, self.b₈]
   ring1
 
+theorem c₄_of_char_three [CharP R 3] : W.c₄ = 0 := by
+  rw [self.c₄]
+  linear_combination (-16 * W.a₄) * CharP.cast_eq_zero R 3
+
+theorem c₆_of_char_three [CharP R 3] : W.c₆ = 0 := by
+  rw [self.c₆]
+  linear_combination (-288 * W.a₆) * CharP.cast_eq_zero R 3
+
 theorem Δ_of_char_three [CharP R 3] : W.Δ = -W.a₄ ^ 3 := by
   rw [self.Δ]
   linear_combination (-21 * W.a₄ ^ 3 - 144 * W.a₆ ^ 2) * CharP.cast_eq_zero R 3
@@ -162,9 +170,7 @@ theorem j : E.j = 6912 * E.a₄ ^ 3 / (4 * E.a₄ ^ 3 + 27 * E.a₆ ^ 2) := by
   ring1
 
 theorem j_of_char_three [CharP K 3] : E.j = 0 := by
-  rw [self.j]
-  have : (6912 : K) = 0 := by linear_combination 2304 * CharP.cast_eq_zero K 3
-  simp [this]
+  simp [EllipticCurve.j, self.c₄_of_char_three]
 
 end IsCharNeTwoThreeNF
 
@@ -172,7 +178,7 @@ section VariableChange
 
 variable [Invertible (2 : R)] [Invertible (3 : R)]
 
-/-- This is an explicit change of variables of a `WeierstrassCurve` to
+/-- This is a (not so explicit) change of variables of a `WeierstrassCurve` to
 a normal form of characteristic ≠ 2 or 3, provided that 2 and 3 are invertible in the ring. -/
 def vcToCharNeTwoThreeNF : VariableChange R :=
   ⟨1, ⅟3 * -(W.variableChange W.vcToCharNeTwoNF).a₂, 0, 0⟩ * W.vcToCharNeTwoNF
@@ -189,5 +195,69 @@ theorem exists_variableChange_isCharNeTwoThreeNF :
   ⟨_, W.vcToCharNeTwoThreeNF_spec⟩
 
 end VariableChange
+
+/-! ### Normal forms of characteristic three and j not equal to zero -/
+
+/-- A `WeierstrassCurve` is in normal form of characteristic = 3 and j ≠ 0, if its $a_1$, $a_3$
+and $a_4$ coefficients are zero. In other words it is $Y^2 = X^3 + a_2X^2 + a_6$. -/
+@[mk_iff]
+structure IsCharThreeJNeZeroNF : Prop where
+  a₁ : W.a₁ = 0
+  a₃ : W.a₃ = 0
+  a₄ : W.a₄ = 0
+
+namespace IsCharThreeJNeZeroNF
+
+variable {W} (self : W.IsCharThreeJNeZeroNF)
+include self
+
+theorem isCharNeTwoNF : W.IsCharNeTwoNF := ⟨self.a₁, self.a₃⟩
+
+theorem b₂ : W.b₂ = 4 * W.a₂ := self.isCharNeTwoNF.b₂
+
+theorem b₄ : W.b₄ = 0 := by
+  simpa [self.a₄] using self.isCharNeTwoNF.b₄
+
+theorem b₆ : W.b₆ = 4 * W.a₆ := self.isCharNeTwoNF.b₆
+
+theorem b₈ : W.b₈ = 4 * W.a₂ * W.a₆ := by
+  simpa [self.a₄] using self.isCharNeTwoNF.b₈
+
+theorem c₄ : W.c₄ = 16 * W.a₂ ^ 2 := by
+  simpa [self.a₄] using self.isCharNeTwoNF.c₄
+
+theorem c₆ : W.c₆ = -64 * W.a₂ ^ 3 - 864 * W.a₆ := by
+  simpa [self.a₄] using self.isCharNeTwoNF.c₆
+
+theorem Δ : W.Δ = -64 * W.a₂ ^ 3 * W.a₆ - 432 * W.a₆ ^ 2 := by
+  simpa [self.a₄] using self.isCharNeTwoNF.Δ
+
+theorem c₄_of_char_three [CharP R 3] : W.c₄ = W.a₂ ^ 2 := by
+  rw [self.c₄]
+  linear_combination (5 * W.a₂ ^ 2) * CharP.cast_eq_zero R 3
+
+theorem c₆_of_char_three [CharP R 3] : W.c₆ = -W.a₂ ^ 3 := by
+  rw [self.c₆]
+  linear_combination (-21 * W.a₂ ^ 3 - 288 * W.a₆) * CharP.cast_eq_zero R 3
+
+theorem Δ_of_char_three [CharP R 3] : W.Δ = -W.a₂ ^ 3 * W.a₆ := by
+  rw [self.Δ]
+  linear_combination (-21 * W.a₂ ^ 3 * W.a₆ - 144 * W.a₆ ^ 2) * CharP.cast_eq_zero R 3
+
+end IsCharThreeJNeZeroNF
+
+namespace IsCharThreeJNeZeroNF
+
+variable {E} (self : E.IsCharThreeJNeZeroNF)
+include self
+
+theorem j_of_char_three [CharP K 3] : E.j = -E.a₂ ^ 3 / E.a₆ := by
+  have h := E.Δ'.ne_zero
+  rw [E.coe_Δ', self.Δ_of_char_three] at h
+  rw [EllipticCurve.j, Units.val_inv_eq_inv_val, ← div_eq_inv_mul, E.coe_Δ',
+    self.c₄_of_char_three, self.Δ_of_char_three, div_eq_div_iff h (right_ne_zero_of_mul h)]
+  ring1
+
+end IsCharThreeJNeZeroNF
 
 end WeierstrassCurve
