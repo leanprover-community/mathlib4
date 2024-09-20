@@ -72,7 +72,7 @@ theorem mem_properDivisors {m : ℕ} : n ∈ properDivisors m ↔ n ∣ m ∧ n 
   simp only [and_comm, ← filter_dvd_eq_properDivisors hm, mem_filter, mem_range]
 
 theorem insert_self_properDivisors (h : n ≠ 0) : insert n (properDivisors n) = divisors n := by
-  rw [divisors, properDivisors, Ico_succ_right_eq_insert_Ico (one_le_iff_ne_zero.2 h),
+  rw [divisors, properDivisors, ← Ico_insert_succ_right (one_le_iff_ne_zero.2 h),
     Finset.filter_insert, if_pos (dvd_refl n)]
 
 theorem cons_self_properDivisors (h : n ≠ 0) :

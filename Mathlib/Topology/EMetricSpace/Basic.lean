@@ -34,7 +34,7 @@ theorem edist_le_Ico_sum_edist (f : ℕ → α) {m n} (h : m ≤ n) :
       edist (f m) (f (n + 1)) ≤ edist (f m) (f n) + edist (f n) (f (n + 1)) := edist_triangle _ _ _
       _ ≤ (∑ i ∈ Finset.Ico m n, _) + _ := add_le_add ihn le_rfl
       _ = ∑ i ∈ Finset.Ico m (n + 1), _ := by
-      { rw [Nat.Ico_succ_right_eq_insert_Ico hle, Finset.sum_insert, add_comm]; simp }
+      { rw [← Nat.Ico_insert_succ_right hle, Finset.sum_insert, add_comm]; simp }
 
 /-- The triangle (polygon) inequality for sequences of points; `Finset.range` version. -/
 theorem edist_le_range_sum_edist (f : ℕ → α) (n : ℕ) :

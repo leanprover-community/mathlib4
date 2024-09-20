@@ -108,7 +108,7 @@ theorem prod_Ico_add_right_sub_eq [OrderedCancelAddCommMonoid α] [ExistsAddOfLE
 @[to_additive]
 theorem prod_Ico_succ_top {a b : ℕ} (hab : a ≤ b) (f : ℕ → M) :
     (∏ k ∈ Ico a (b + 1), f k) = (∏ k ∈ Ico a b, f k) * f b := by
-  rw [Nat.Ico_succ_right_eq_insert_Ico hab, prod_insert right_not_mem_Ico, mul_comm]
+  rw [← Nat.Ico_insert_succ_right hab, prod_insert right_not_mem_Ico, mul_comm]
 
 @[to_additive]
 theorem prod_eq_prod_Ico_succ_bot {a b : ℕ} (hab : a < b) (f : ℕ → M) :
