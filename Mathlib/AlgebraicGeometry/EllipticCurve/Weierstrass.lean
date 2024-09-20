@@ -542,6 +542,26 @@ variable {R : Type u} [CommRing R] (E : EllipticCurve R)
 def j : R :=
   E.Δ'⁻¹ * E.c₄ ^ 3
 
+theorem j_eq_zero_iff' : E.j = 0 ↔ E.c₄ ^ 3 = 0 := by
+  simp only [EllipticCurve.j, Units.mul_right_eq_zero]
+
+alias ⟨_, j_eq_zero'⟩ := j_eq_zero_iff'
+
+theorem j_eq_zero_iff [IsReduced R] : E.j = 0 ↔ E.c₄ = 0 := by
+  rw [j_eq_zero_iff']
+  exact ⟨fun h ↦ IsNilpotent.eq_zero ⟨_, h⟩, fun h ↦ by simp [h]⟩
+
+theorem j_eq_zero : E.c₄ = 0 → E.j = 0 := fun h ↦ by
+  simp [j_eq_zero_iff', h]
+
+theorem j_ne_zero_iff' : E.j ≠ 0 ↔ E.c₄ ^ 3 ≠ 0 := not_congr E.j_eq_zero_iff'
+
+alias ⟨_, j_ne_zero'⟩ := j_ne_zero_iff'
+
+theorem j_ne_zero_iff [IsReduced R] : E.j ≠ 0 ↔ E.c₄ ≠ 0 := not_congr E.j_eq_zero_iff
+
+alias ⟨_, j_ne_zero⟩ := j_ne_zero_iff
+
 lemma twoTorsionPolynomial_disc_ne_zero [Nontrivial R] [Invertible (2 : R)] :
     E.twoTorsionPolynomial.disc ≠ 0 :=
   E.toWeierstrassCurve.twoTorsionPolynomial_disc_ne_zero <| E.coe_Δ' ▸ E.Δ'.isUnit
