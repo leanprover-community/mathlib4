@@ -35,9 +35,7 @@ This file defines abundant, pseudoperfect, deficient, and weird numbers and form
   numbers greater than zero.
 
 ## References
-* Prielipp, Robert W. “PERFECT NUMBERS, ABUNDANT NUMBERS, AND DEFICIENT NUMBERS.”
-  The Mathematics Teacher, vol. 63, no. 8, 1970, pp. 692–96. JSTOR,
-  http://www.jstor.org/stable/27958492. Accessed 21 Feb. 2024.
+* [R. W. Prielipp, *PERFECT NUMBERS, ABUNDANT NUMBERS, AND DEFICIENT NUMBERS*][Prielipp1970]
 
 ## Tags
 
