@@ -213,7 +213,6 @@ noncomputable def counitApp [HasExplicitFiniteCoproducts.{u} P]
     simp only [FunctorToTypes.map_comp_apply, incl_of_counitAppApp]
     simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp,
       terminal.comp_from]
-    dsimp
     apply congrArg
     exact image_eq_image_mk (g := g.unop) (a := a)
 
@@ -235,10 +234,8 @@ def functor :
   obj X := {
     val := functorToPresheaves.{u, w}.obj X
     cond := by
-      rw [Presheaf.isSheaf_of_iso_iff
-        (functorToPresheavesIsoTopCatToSheafCompHausLike P hs X)]
-      exact ((topCatToSheafCompHausLike P hs).obj (TopCat.discrete.obj X)).cond
-  }
+      rw [Presheaf.isSheaf_of_iso_iff (functorToPresheavesIsoTopCatToSheafCompHausLike P hs X)]
+      exact ((topCatToSheafCompHausLike P hs).obj (TopCat.discrete.obj X)).cond }
   map f := ⟨functorToPresheaves.{u, w}.map f⟩
 
 /--
@@ -271,9 +268,8 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
     simp only [op_unop, functorToPresheaves_map_app, incl_of_counitAppApp]
     apply presheaf_ext (f.comap (sigmaIncl _ _))
     intro b
-    simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp,
-      CompHausLike.coe_of, map_apply, IsTerminal.comp_from,
-      ← map_preimage_eq_image_map f (g.val.app (op (CompHausLike.of P PUnit.{u+1})))]
+    simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp, CompHausLike.coe_of,
+      map_apply, IsTerminal.comp_from, ← map_preimage_eq_image_map]
     change (_ ≫ Y.val.map _) _ = (_ ≫ Y.val.map _) _
     simp only [← g.val.naturality,
       show sigmaIncl (f.comap (sigmaIncl (f.map _) a)) b ≫ sigmaIncl (f.map _) a =
@@ -348,19 +344,15 @@ noncomputable def adjunction [HasExplicitFiniteCoproducts.{u} P] :
       functor_obj_val, functorToPresheaves_obj_obj, types_id_apply, whiskerRight_app,
       Functor.flip_obj_map, sheafToPresheaf_map, counit_app_val, counitApp_app, NatTrans.id_app']
     have := CompHausLike.preregular hs
-    let _ : PreservesFiniteProducts
-        ((sheafToPresheaf (coherentTopology (CompHausLike P)) (Type (max u w))).obj X) :=
+    letI : PreservesFiniteProducts ((sheafToPresheaf (coherentTopology _) _).obj X) :=
       inferInstanceAs (PreservesFiniteProducts (Sheaf.val _))
     apply presheaf_ext ((unit P hs).app _ x)
     intro a
     erw [incl_of_counitAppApp]
-    simp only [sheafToPresheaf_obj, unit_app, coe_of, counitAppAppImage,
-      LocallyConstant.coe_const]
-    have := map_eq_image _ a ⟨PUnit.unit, by
-      simp [mem_iff_eq_image (a := a), ← map_preimage_eq_image]⟩
-    erw [← this]
-    simp only [coe_of, unit_app, LocallyConstant.coe_const, Function.const_apply]
-    congr
+    simp only [sheafToPresheaf_obj, unit_app, coe_of, counitAppAppImage, coe_const]
+    erw [← map_eq_image _ a ⟨PUnit.unit, by simp [mem_iff_eq_image, ← map_preimage_eq_image]⟩]
+    simp
+    rfl
 
 instance [HasExplicitFiniteCoproducts.{u} P] : IsIso (adjunction P hs).unit :=
   inferInstanceAs (IsIso (unitIso P hs).hom)
