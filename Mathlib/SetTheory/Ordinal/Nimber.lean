@@ -32,8 +32,6 @@ needed.
 
 ## Todo
 
-- Add a `CharP 2` instance.
-- Define nim multiplication and prove nimbers are a commutative ring.
 - Define nim division and prove nimbers are a field.
 - Show the nimbers are algebraically closed.
 -/
@@ -415,14 +413,10 @@ theorem mul_le_of_forall_ne (h : ∀ a' < a, ∀ b' < b, a' * b + a * b' + a' * 
 instance : MulZeroClass Nimber where
   mul_zero a := by
     rw [← Nimber.le_zero]
-    apply mul_le_of_forall_ne
-    intro _ _ _ h
-    exact (Nimber.not_lt_zero _ h).elim
+    exact mul_le_of_forall_ne fun _ _ _ h ↦ (Nimber.not_lt_zero _ h).elim
   zero_mul a := by
     rw [← Nimber.le_zero]
-    apply mul_le_of_forall_ne
-    intro _ h
-    exact (Nimber.not_lt_zero _ h).elim
+    exact mul_le_of_forall_ne fun _ h ↦ (Nimber.not_lt_zero _ h).elim
 
 private theorem mul_ne_of_lt : ∀ a' < a, ∀ b' < b, a' * b + a * b' + a' * b' ≠ a * b := by
   have H := csInf_mem (mul_nonempty a b)
