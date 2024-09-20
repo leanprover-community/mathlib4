@@ -1169,7 +1169,7 @@ theorem sup_le_iff {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : sup.{_, v}
   Ordinal.iSup_le_iff
 
 /-- `ciSup_le'` whenever the outputs live in a higher universe than the inputs. -/
-protected theorem iSup_le {ι : Type u} {f : ι → Ordinal.{max u v}} {a} :
+protected theorem iSup_le {ι} {f : ι → Ordinal.{u}} {a} :
     (∀ i, f i ≤ a) → iSup f ≤ a :=
   ciSup_le'
 
