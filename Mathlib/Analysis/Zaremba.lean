@@ -5,6 +5,7 @@ Authors: Alex Kontorovich, Heather Macbeth
 -/
 import Mathlib
 
+open scoped ComplexConjugate
 open scoped NNReal ENNReal Matrix Real
 open MeasureTheory Complex
 
@@ -40,23 +41,38 @@ theorem MeasureTheory.Lp.norm_const'' {α : Type*} {E : Type*} {m0 : MeasurableS
     ‖(Lp.const p μ) c‖ = ‖c‖ * (measureUnivNNReal μ) ^ (1 / p.toReal) :=
   sorry
 
-example : abs S ≤ (measureUnivNNReal μ) * (measureUnivNNReal ν) / (K * Q) := by
-  let f : Lp ℂ 2 μ := indicatorConstLp (μ := μ) (s := Set.univ) 2 sorry sorry 1
-  let g : Lp ℂ 2 μ := Memℒp.toLp (fun x ↦ ∫ y : Fin 2 → ℤ, exp (2 * π * I * θ * (x ⬝ᵥ y)) ∂ν) sorry
-  have H := norm_inner_le_norm (𝕜 := ℂ) f g
-  have : NeZero μ := sorry
-  rw [L2.inner_indicatorConstLp_one] at H
-  simp [f, Lp.norm_const''] at H
+section CauchySchwarzIntegral
+
+variable {α : Type*} {𝕜 : Type*} [RCLike 𝕜] [MeasurableSpace α]
+  (μ : Measure α)
+  (f g : α → 𝕜)
+
+
+example {z : ℂ} : ‖z‖^2=conj z * z := by exact?
+
+theorem cauchy_schwarz (hf : Memℒp f 2 μ) (hg : Memℒp g 2 μ) :
+    ‖∫ a, f a * g a ∂μ‖ ^ 2 ≤ (∫ a, ‖f a‖ ^ 2 ∂μ) * (∫ a, ‖g a‖ ^ 2 ∂μ) :=
+  sorry
+
+@[simp] theorem measure_univ_toReal : (μ Set.univ).toReal = measureUnivNNReal μ := rfl
+
+end CauchySchwarzIntegral
+
+
+example : ‖S‖ ^ 2 ≤ (measureUnivNNReal μ) ^ 2 * (measureUnivNNReal ν) ^ 2 / (K * Q) ^ 2 := by
+  let f : (Fin 2 → ℤ) → ℂ := 1
+  have hf : Memℒp f 2 μ := sorry --indicatorConstLp (μ := μ) (s := Set.univ) 2 sorry sorry 1
+  let g : (Fin 2 → ℤ) → ℂ := fun x ↦ ∫ y : Fin 2 → ℤ, exp (2 * π * I * θ * (x ⬝ᵥ y)) ∂ν
   calc
-    _ = _ := by
-        congrm Complex.abs ?_
-        apply integral_congr_ae
-        symm
-        apply Memℒp.coeFn_toLp
-    _ ≤ _ := H
-  apply le_of_pow_le_pow_left (n := 2) (by norm_num) (by positivity)
-  calc _ = measureUnivNNReal μ * ‖g‖ ^ ((2:ℝ≥0):ℝ) := by norm_cast; sorry -- squ
-    _ ≤ (measureUnivNNReal μ) * (measureUnivNNReal μ * ((measureUnivNNReal ν) / (K * Q)) ^ 2) := ?_
+    _ = _ := by simp [f, g]
+    _ ≤ _ := cauchy_schwarz (𝕜 := ℂ) μ f g hf sorry
+    _ = (measureUnivNNReal μ) * (∫ a, ‖g a‖ ^ 2 ∂μ) := by simp [f]
+    _ ≤ (measureUnivNNReal μ) *
+          ((measureUnivNNReal μ) * (measureUnivNNReal ν) ^ 2 / (K * Q) ^ 2) := ?_
     _ = _ := by ring
   gcongr
+  calc _ = ‖∫ (a : Fin 2 → ℤ), conj (g a) * g a ∂μ‖ := sorry
+    _ ≤ _ := ?_
+  dsimp only [g]
+  simp_rw [← integral_conj]
   sorry
