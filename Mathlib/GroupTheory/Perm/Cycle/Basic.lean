@@ -1011,38 +1011,6 @@ def subtypePerm_of_support_le (c : Perm α) {s : Finset α}
     (hcs : c.support ⊆ s) : Equiv.Perm s :=
   subtypePerm c (isInvariant_of_support_le hcs)
 
-/- Four lemmas added but maybe for nothing worth -/
-lemma subtypePerm_of_support_le_mul {c d : Perm α} {s : Finset α}
-    (hcs : c.support ⊆ s) (hds : d.support ⊆ s) :
-    let hcds : (c * d).support ⊆ s :=
-      subset_trans (Equiv.Perm.support_mul_le c d) (union_subset hcs hds)
-    (subtypePerm_of_support_le (c * d) hcds) =
-      (subtypePerm_of_support_le c hcs) * (subtypePerm_of_support_le d hds) := by
-  intro _
-  rfl
-
-lemma subtypePerm_of_support_le_inv {c : Perm α} {s : Finset α} (hcs : c.support ⊆ s) :
-    let hc's : c⁻¹.support ⊆ s := by simp only [support_inv]; exact hcs
-    (subtypePerm_of_support_le c⁻¹ hc's) = (subtypePerm_of_support_le c hcs)⁻¹ := by
-  intro hc's
-  rfl
-
-lemma subtypePerm_of_support_le_pow {c : Perm α} {s : Finset α} (hcs : c.support ⊆ s) (k : ℕ) :
-    let hc's : (c ^ k).support ⊆ s := subset_trans (Equiv.Perm.support_pow_le c k) hcs
-    (subtypePerm_of_support_le (c ^ k) hc's) = (subtypePerm_of_support_le c hcs) ^ k := by
-  intro _
-  unfold subtypePerm_of_support_le
-  ext
-  simp only [subtypePerm_apply, subtypePerm_pow]
-
-lemma subtypePerm_of_support_le_zpow {c : Perm α} {s : Finset α} (hcs : c.support ⊆ s) (k : ℤ) :
-    let hc's : (c ^ k).support ⊆ s := subset_trans (Equiv.Perm.support_zpow_le c k) hcs
-    (subtypePerm_of_support_le (c ^ k) hc's) = (subtypePerm_of_support_le c hcs) ^ k := by
-  intro _
-  unfold subtypePerm_of_support_le
-  ext
-  simp only [subtypePerm_apply, subtypePerm_zpow]
-
 /-- Support of a cycle is nonempty -/
 theorem IsCycle.nonempty_support {g : Perm α} (hg : g.IsCycle) :
     g.support.Nonempty := by
@@ -1056,7 +1024,7 @@ theorem IsCycle.commute_iff' {g c : Perm α} (hc : c.IsCycle) :
         subtypePerm g hc' ∈ Subgroup.zpowers c.subtypePermOfSupport := by
   constructor
   · intro hgc
-    let hgc' := mem_support_iff_of_commute hgc
+    have hgc' := mem_support_iff_of_commute hgc
     use hgc'
     obtain ⟨a, ha⟩ := IsCycle.nonempty_support hc
     obtain ⟨i, hi⟩ := hc.sameCycle (mem_support.mp ha) (mem_support.mp ((hgc' a).mp ha))
@@ -1069,24 +1037,19 @@ theorem IsCycle.commute_iff' {g c : Perm α} (hc : c.IsCycle) :
     rw [← zpow_add, add_comm i j, zpow_add]
     simp only [mul_apply, EmbeddingLike.apply_eq_iff_eq]
     exact hi
-  · -- converse
-    rintro ⟨hc', h⟩
-    obtain ⟨i, hi⟩ := h
+  · rintro ⟨hc', ⟨i, hi⟩⟩
     ext x
     simp only [coe_mul, Function.comp_apply]
     by_cases hx : x ∈ c.support
-    · -- hx : x ∈ c.support
-      suffices hi' : ∀ x ∈ c.support, g x = (c ^ i) x by
+    · suffices hi' : ∀ x ∈ c.support, g x = (c ^ i) x by
         rw [hi' x hx, hi' (c x) (apply_mem_support.mpr hx)]
         simp only [← mul_apply, ← zpow_add_one, ← zpow_one_add, add_comm]
-      -- proof of hi'
       intro x hx
-      let hix := Perm.congr_fun hi ⟨x, hx⟩
+      have hix := Perm.congr_fun hi ⟨x, hx⟩
       simp only [← Subtype.coe_inj, subtypePermOfSupport, Subtype.coe_mk, subtypePerm_apply,
         subtypePerm_apply_zpow_of_mem] at hix
       exact hix.symm
-    · -- hx : x ∉ c.support
-      rw [not_mem_support.mp hx, eq_comm, ← not_mem_support]
+    · rw [not_mem_support.mp hx, eq_comm, ← not_mem_support]
       contrapose! hx
       exact (hc' x).mpr hx
 
@@ -1096,27 +1059,17 @@ theorem IsCycle.commute_iff {g c : Perm α} (hc : c.IsCycle) :
     Commute g c ↔
       ∃ hc' : ∀ x : α, x ∈ c.support ↔ g x ∈ c.support,
         ofSubtype (subtypePerm g hc') ∈ Subgroup.zpowers c := by
-  rw [IsCycle.commute_iff' hc]
-  apply exists_congr
-  intro hc'
-  simp only [Subgroup.mem_zpowers_iff]
-  apply exists_congr
-  intro k
-  unfold subtypePermOfSupport
-  rw [subtypePerm_zpow c k]
-  simp only [Equiv.ext_iff, subtypePerm_apply, Subtype.mk.injEq, Subtype.forall]
+  simp_rw [hc.commute_iff', Subgroup.mem_zpowers_iff]
+  refine exists_congr fun hc' => exists_congr fun k => ?_
+  rw [subtypePermOfSupport, subtypePerm_zpow c k]
+  simp only [Perm.ext_iff, subtypePerm_apply, Subtype.mk.injEq, Subtype.forall]
   apply forall_congr'
   intro a
   by_cases ha : a ∈ c.support
-  · rw [imp_iff_right ha]
-    apply Eq.congr rfl
-    apply symm
-    exact ofSubtype_apply_of_mem _ (by exact ha)
-  · rw [iff_true_left _]
-    · rw [ofSubtype_apply_of_not_mem, ← not_mem_support]
-      · exact Finset.not_mem_mono (support_zpow_le c k) ha
-      exact ha
-    exact fun b ↦ (ha b).elim
+  · rw [imp_iff_right ha, ofSubtype_subtypePerm_of_mem hc' ha]
+  · rw [iff_true_left (fun b ↦ (ha b).elim), ofSubtype_apply_of_not_mem, ← not_mem_support]
+    · exact Finset.not_mem_mono (support_zpow_le c k) ha
+    · exact ha
 
 theorem zpow_eq_ofSubtype_subtypePerm_iff
     {g c : Equiv.Perm α} {s : Finset α}
@@ -1124,8 +1077,9 @@ theorem zpow_eq_ofSubtype_subtypePerm_iff
     c ^ n = ofSubtype (g.subtypePerm hg) ↔
       c.subtypePerm (isInvariant_of_support_le hc) ^ n = g.subtypePerm hg := by
   constructor
-  · intro h; ext ⟨x, hx⟩; let h' := Perm.congr_fun h x
-    simp only [h', subtypePerm_apply_zpow_of_mem, Subtype.coe_mk, subtypePerm_apply]
+  · intro h
+    ext ⟨x, hx⟩
+    simp only [Perm.congr_fun h x, subtypePerm_apply_zpow_of_mem, Subtype.coe_mk, subtypePerm_apply]
     rw [ofSubtype_apply_of_mem]
     · simp only [Subtype.coe_mk, subtypePerm_apply]
     · exact hx

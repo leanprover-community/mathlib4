@@ -3,12 +3,11 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.GroupTheory.GroupAction.ConjAct
-import Mathlib.GroupTheory.Perm.Support
-import Mathlib.GroupTheory.Perm.Cycle.Basic
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.GroupTheory.GroupAction.ConjAct
+import Mathlib.GroupTheory.Perm.Cycle.Basic
 import Mathlib.GroupTheory.Perm.Cycle.Factors
-
+import Mathlib.GroupTheory.Perm.Support
 /-! # Some lemmas pertaining to the action of `ConjAct (Perm α)` on `Perm α`
 
 We prove some lemmas related to the action of `ConjAct (Perm α)` on `Perm α`:
@@ -31,18 +30,18 @@ variable {α : Type*} [DecidableEq α] [Fintype α]
 
 /-- `a : α` belongs to the support of `k • g` iff
   `k⁻¹ * a` belongs to the support of `g` -/
-theorem conj_support_eq (k : ConjAct (Perm α)) (g : Perm α) (a : α) :
+theorem mem_conj_support (k : ConjAct (Perm α)) (g : Perm α) (a : α) :
     a ∈ (k • g).support ↔ ConjAct.ofConjAct k⁻¹ a ∈ g.support := by
   simp only [mem_support, ConjAct.smul_def, not_iff_not, coe_mul,
     Function.comp_apply, ConjAct.ofConjAct_inv]
   apply Equiv.apply_eq_iff_eq_symm_apply
 
 theorem cycleFactorsFinset_conj (g k : Perm α) :
-    (ConjAct.toConjAct k • g).cycleFactorsFinset  =
+    (ConjAct.toConjAct k • g).cycleFactorsFinset =
       Finset.map (MulAut.conj k).toEquiv.toEmbedding g.cycleFactorsFinset := by
   ext c
-  rw [ConjAct.smul_def, ConjAct.ofConjAct_toConjAct]
-  rw [Finset.mem_map_equiv, ← mem_cycleFactorsFinset_conj g k]
+  rw [ConjAct.smul_def, ConjAct.ofConjAct_toConjAct, Finset.mem_map_equiv,
+    ← mem_cycleFactorsFinset_conj g k]
   simp only [MulEquiv.toEquiv_eq_coe, MulEquiv.coe_toEquiv_symm, MulAut.conj_symm_apply]
   group
 

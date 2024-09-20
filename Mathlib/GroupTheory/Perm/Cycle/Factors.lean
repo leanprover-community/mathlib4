@@ -292,9 +292,7 @@ theorem SameCycle.exists_pow_eq [DecidableEq α] [Fintype α] (f : Perm α) (h :
     rw [not_mem_support] at hx
     rw [pow_apply_eq_self_of_apply_eq_self hx, zpow_apply_eq_self_of_apply_eq_self hx]
 
-variable [DecidableEq α] [Fintype α]
-
-theorem zpow_eq_zpow_on_iff
+theorem zpow_eq_zpow_on_iff [DecidableEq α] [Fintype α]
     (g : Perm α) {m n : ℤ} {x : α} (hx : g x ≠ x) :
     (g ^ m) x = (g ^ n) x ↔
       m % (g.cycleOf x).support.card = n % (g.cycleOf x).support.card := by
@@ -611,8 +609,7 @@ theorem mem_cycleFactorsFinset_conj (g k c : Perm α) :
     k * c * k⁻¹ ∈ (k * g * k⁻¹).cycleFactorsFinset ↔ c ∈ g.cycleFactorsFinset := by
   suffices imp_lemma : ∀ {g k c : Perm α},
       c ∈ g.cycleFactorsFinset → k * c * k⁻¹ ∈ (k * g * k⁻¹).cycleFactorsFinset by
-    refine ⟨?_, imp_lemma⟩
-    intro h
+    refine ⟨fun h ↦ ?_, imp_lemma⟩
     have aux : ∀ h : Perm α, h = k⁻¹ * (k * h * k⁻¹) * k := fun _ ↦ by group
     rw [aux g, aux c]
     exact imp_lemma h
@@ -628,9 +625,10 @@ theorem mem_cycleFactorsFinset_conj (g k c : Perm α) :
   rw [ha]
   simp only [Perm.smul_def, apply_inv_self]
 
-/- NB. The converse of the next theorem is false. Commuting with every cycle of `g`
-  means that we belong to the kernel of the action of `Equiv.Perm α` on `g.cycleFactorsFinset` -/
-/-- If a permutation commutes with every cycle of `g`, then it commutes with `g` -/
+/-- If a permutation commutes with every cycle of `g`, then it commutes with `g`
+
+NB. The converse is false. Commuting with every cycle of `g` means that we belong
+to the kernel of the action of `Equiv.Perm α` on `g.cycleFactorsFinset` -/
 theorem commute_of_mem_cycleFactorsFinset_commute (k g : Perm α)
     (hk : ∀ c ∈ g.cycleFactorsFinset, Commute k c) :
     Commute k g := by
@@ -660,8 +658,8 @@ theorem mem_support_cycle_of_cycle {g d c : Perm α}
       mul_apply, EmbeddingLike.apply_eq_iff_eq]
 
 /-- If a permutation is a cycle of `g`, then its support is invariant under `g`-/
-theorem mem_cycleFactorsFinset_support {g c : Perm α}
-    (hc : c ∈ g.cycleFactorsFinset) (a : α) : a ∈ c.support ↔ g a ∈ c.support :=
+theorem mem_cycleFactorsFinset_support {g c : Perm α} (hc : c ∈ g.cycleFactorsFinset) (a : α) :
+    a ∈ c.support ↔ g a ∈ c.support :=
   mem_support_iff_of_commute (self_mem_cycle_factors_commute hc).symm a
 
 end CycleFactorsFinset
