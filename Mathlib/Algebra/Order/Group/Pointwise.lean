@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Pointwise.Set
 import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 import Mathlib.Order.Bounds.OrderIso
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Upper/lower bounds in ordered monoids and groups
@@ -16,10 +15,8 @@ In this file we prove a few facts like “`-s` is bounded above iff `s` is bound
 (`bddAbove_neg`).
 -/
 
-
 open Function Set
-
-open Pointwise
+open scoped Pointwise
 
 section InvNeg
 
@@ -123,45 +120,3 @@ lemma BddBelow.range_mul {α : Type*} {f g : α → M} (hf : BddBelow (range f))
   BddAbove.range_mul (M := Mᵒᵈ) hf hg
 
 end mul_add
-
-section ConditionallyCompleteLattice
-
-section Right
-
-variable {ι G : Type*} [Group G] [ConditionallyCompleteLattice G]
-  [CovariantClass G G (Function.swap (· * ·)) (· ≤ ·)] [Nonempty ι] {f : ι → G}
-
-@[to_additive]
-theorem ciSup_mul (hf : BddAbove (range f)) (a : G) : (⨆ i, f i) * a = ⨆ i, f i * a :=
-  (OrderIso.mulRight a).map_ciSup hf
-
-@[to_additive]
-theorem ciSup_div (hf : BddAbove (range f)) (a : G) : (⨆ i, f i) / a = ⨆ i, f i / a := by
-  simp only [div_eq_mul_inv, ciSup_mul hf]
-
-@[to_additive]
-theorem ciInf_mul (hf : BddBelow (range f)) (a : G) : (⨅ i, f i) * a = ⨅ i, f i * a :=
-  (OrderIso.mulRight a).map_ciInf hf
-
-@[to_additive]
-theorem ciInf_div (hf : BddBelow (range f)) (a : G) : (⨅ i, f i) / a = ⨅ i, f i / a := by
-  simp only [div_eq_mul_inv, ciInf_mul hf]
-
-end Right
-
-section Left
-
-variable {ι : Sort*} {G : Type*} [Group G] [ConditionallyCompleteLattice G]
-  [CovariantClass G G (· * ·) (· ≤ ·)] [Nonempty ι] {f : ι → G}
-
-@[to_additive]
-theorem mul_ciSup (hf : BddAbove (range f)) (a : G) : (a * ⨆ i, f i) = ⨆ i, a * f i :=
-  (OrderIso.mulLeft a).map_ciSup hf
-
-@[to_additive]
-theorem mul_ciInf (hf : BddBelow (range f)) (a : G) : (a * ⨅ i, f i) = ⨅ i, a * f i :=
-  (OrderIso.mulLeft a).map_ciInf hf
-
-end Left
-
-end ConditionallyCompleteLattice
