@@ -54,7 +54,7 @@ The present choice is to have it defined as a plain function.
 - `Finsupp.degree_eq_weight_one` says `f.degree = f.weight 1`.
 This is useful to access the additivity properties of `Finsupp.degree`
 
--- For `Finite σ`, `Finsupp.finite_of_degree_le` proves that
+- For `Finite σ`, `Finsupp.finite_of_degree_le` proves that
 there are finitely many `f : σ →₀ ℕ` of bounded degree.
 
 
