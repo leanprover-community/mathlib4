@@ -161,7 +161,8 @@ theorem iInf_N {ι : Sort*} (f : ι → I.Filtration M) : (iInf f).N = ⨅ i, (f
   congr_arg sInf (Set.range_comp _ _).symm
 
 instance : CompleteLattice (I.Filtration M) :=
-  Function.Injective.completeLattice Ideal.Filtration.N Ideal.Filtration.ext sup_N inf_N
+  Function.Injective.completeLattice Ideal.Filtration.N
+    (fun _ _ => Ideal.Filtration.ext) sup_N inf_N
     (fun _ => sSup_image) (fun _ => sInf_image) top_N bot_N
 
 instance : Inhabited (I.Filtration M) :=
@@ -186,9 +187,8 @@ theorem _root_.Ideal.stableFiltration_stable (I : Ideal R) (N : Submodule R M) :
   rw [add_comm, pow_add, mul_smul, pow_one]
 
 variable {F F'}
-variable (h : F.Stable)
 
-theorem Stable.exists_pow_smul_eq : ∃ n₀, ∀ k, F.N (n₀ + k) = I ^ k • F.N n₀ := by
+theorem Stable.exists_pow_smul_eq (h : F.Stable) : ∃ n₀, ∀ k, F.N (n₀ + k) = I ^ k • F.N n₀ := by
   obtain ⟨n₀, hn⟩ := h
   use n₀
   intro k
@@ -197,7 +197,8 @@ theorem Stable.exists_pow_smul_eq : ∃ n₀, ∀ k, F.N (n₀ + k) = I ^ k • 
   · rw [← add_assoc, ← hn, ih, add_comm, pow_add, mul_smul, pow_one]
     omega
 
-theorem Stable.exists_pow_smul_eq_of_ge : ∃ n₀, ∀ n ≥ n₀, F.N n = I ^ (n - n₀) • F.N n₀ := by
+theorem Stable.exists_pow_smul_eq_of_ge (h : F.Stable) :
+    ∃ n₀, ∀ n ≥ n₀, F.N n = I ^ (n - n₀) • F.N n₀ := by
   obtain ⟨n₀, hn₀⟩ := h.exists_pow_smul_eq
   use n₀
   intro n hn
@@ -293,11 +294,11 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
   · intro H n hn
     refine (F.smul_le n).antisymm ?_
     intro x hx
-    obtain ⟨l, hl⟩ := (Finsupp.mem_span_iff_total _ _ _).mp (H _ ⟨x, hx, rfl⟩)
+    obtain ⟨l, hl⟩ := (Finsupp.mem_span_iff_linearCombination _ _ _).mp (H _ ⟨x, hx, rfl⟩)
     replace hl := congr_arg (fun f : ℕ →₀ M => f (n + 1)) hl
     dsimp only at hl
     erw [Finsupp.single_eq_same] at hl
-    rw [← hl, Finsupp.total_apply, Finsupp.sum_apply]
+    rw [← hl, Finsupp.linearCombination_apply, Finsupp.sum_apply]
     apply Submodule.sum_mem _ _
     rintro ⟨_, _, ⟨n', rfl⟩, _, ⟨hn', rfl⟩, m, hm, rfl⟩ -
     dsimp only [Subtype.coe_mk]

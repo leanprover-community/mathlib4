@@ -45,6 +45,10 @@ section NonUnitalNonAssocRing
 
 variable {R : Type*} [NonUnitalNonAssocRing R] (I : TwoSidedIdeal R)
 
+instance [Nontrivial R] : Nontrivial (TwoSidedIdeal R) := by
+  obtain ⟨I, J, h⟩ : Nontrivial (RingCon R) := inferInstance
+  exact ⟨⟨I⟩, ⟨J⟩, by contrapose! h; aesop⟩
+
 instance setLike : SetLike (TwoSidedIdeal R) R where
   coe t := {r | t.ringCon r 0}
   coe_injective'  := by
@@ -83,7 +87,7 @@ def orderIsoRingCon : TwoSidedIdeal R ≃o RingCon R where
   invFun := .mk
   left_inv _ := rfl
   right_inv _ := rfl
-  map_rel_iff' {I J} := Iff.symm $ le_iff.trans ⟨fun h x y r => by rw [rel_iff] at r ⊢; exact h r,
+  map_rel_iff' {I J} := Iff.symm <| le_iff.trans ⟨fun h x y r => by rw [rel_iff] at r ⊢; exact h r,
     fun h x hx => by rw [SetLike.mem_coe, mem_iff] at hx ⊢; exact h hx⟩
 
 lemma ringCon_injective : Function.Injective (TwoSidedIdeal.ringCon (R := R)) := by

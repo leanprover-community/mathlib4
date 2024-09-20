@@ -11,7 +11,6 @@ import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Fintype.Perm
 import Mathlib.SetTheory.Cardinal.Finite
 
-
 /-!  Subgroup of `Equiv.Perm α` preserving a function
 
 Let `α` and `ι` by types and let `f : α → ι`

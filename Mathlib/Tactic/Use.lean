@@ -3,6 +3,7 @@ Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Gabriel Ebner, Kyle Miller
 -/
+import Mathlib.Init
 import Lean.Meta.Tactic.Util
 import Lean.Elab.Tactic.Basic
 
@@ -201,3 +202,5 @@ elab (name := useSyntax)
 @[inherit_doc useSyntax]
 elab "use!" discharger?:(Parser.Tactic.discharger)? ppSpace args:term,+ : tactic => do
   runUse true (← mkUseDischarger discharger?) args.getElems.toList
+
+end Mathlib.Tactic

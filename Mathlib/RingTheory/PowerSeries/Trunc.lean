@@ -7,7 +7,6 @@ import Mathlib.Algebra.Polynomial.Coeff
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.RingTheory.PowerSeries.Basic
 
-
 /-!
 
 # Formal power series in one variable - Truncation

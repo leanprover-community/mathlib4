@@ -28,7 +28,8 @@ open QuadraticMap
 namespace QuadraticMap
 
 variable [CommSemiring R]
-variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid N]
+variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+         [AddCommMonoid N]
 variable [Module R M] [Module R M₁] [Module R M₂] [Module R M₃] [Module R N]
 
 /-- An isometric equivalence between two quadratic spaces `M₁, Q₁` and `M₂, Q₂` over a ring `R`,

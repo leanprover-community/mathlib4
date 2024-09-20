@@ -187,7 +187,7 @@ theorem map_unique {f : α → β} {g : hatα → hatβ} (hg : UniformContinuous
   pkg.funext (pkg.continuous_map _ _) hg.continuous <| by
     intro a
     change pkg.extend (ι' ∘ f) _ = _
-    simp_rw [(· ∘ ·), h, ← comp_apply (f := g)]
+    simp_rw [Function.comp_def, h, ← comp_apply (f := g)]
     rw [pkg.extend_coe (hg.comp pkg.uniformContinuous_coe)]
 
 @[simp]

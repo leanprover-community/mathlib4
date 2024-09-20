@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Algebra.Order.Group.Int
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Order.Interval.Finset.Basic
 
 /-!
@@ -113,9 +112,7 @@ theorem card_Ioo : (Ioo a b).card = (b - a - 1).toNat := (card_map _).trans <| c
 @[simp]
 theorem card_uIcc : (uIcc a b).card = (b - a).natAbs + 1 :=
   (card_map _).trans <|
-    Int.ofNat.inj <| by
-      -- Porting note (#11215): TODO: Restore `int.coe_nat_inj` and remove the `change`
-      change ((↑) : ℕ → ℤ) _ = ((↑) : ℕ → ℤ) _
+    (Nat.cast_inj (R := ℤ)).mp <| by
       rw [card_range, sup_eq_max, inf_eq_min,
         Int.toNat_of_nonneg (sub_nonneg_of_le <| le_add_one min_le_max), Int.ofNat_add,
         Int.natCast_natAbs, add_comm, add_sub_assoc, max_sub_min_eq_abs, add_comm, Int.ofNat_one]
@@ -185,7 +182,7 @@ theorem image_Ico_emod (n a : ℤ) (h : 0 ≤ a) : (Ico n (n + a)).image (· % a
     · exact hn.symm.le.trans (add_le_add_right hi _)
     · rw [add_comm n a]
       refine add_lt_add_of_lt_of_le hia.right (le_trans ?_ hn.le)
-      simp only [zero_le, le_add_iff_nonneg_left]
+      simp only [Nat.zero_le, le_add_iff_nonneg_left]
       exact Int.emod_nonneg n (ne_of_gt ha)
     · rw [Int.add_mul_emod_self_left, Int.emod_eq_of_lt hia.left hia.right]
 

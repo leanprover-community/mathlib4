@@ -129,7 +129,7 @@ theorem map_toReal_nhds (a : ℝₗ) : map toReal (𝓝 a) = 𝓝[≥] toReal a 
   simpa only [toReal.image_eq_preimage] using nhdsWithin_Ici_basis_Ico (toReal a)
 
 theorem nhds_eq_map (a : ℝₗ) : 𝓝 a = map toReal.symm (𝓝[≥] (toReal a)) := by
-  simp_rw [← map_toReal_nhds, map_map, (· ∘ ·), toReal.symm_apply_apply, map_id']
+  simp_rw [← map_toReal_nhds, map_map, Function.comp_def, toReal.symm_apply_apply, map_id']
 
 theorem nhds_eq_comap (a : ℝₗ) : 𝓝 a = comap toReal (𝓝[≥] (toReal a)) := by
   rw [← map_toReal_nhds, comap_map toReal.injective]
@@ -278,7 +278,7 @@ theorem not_separatedNhds_rat_irrational_antidiag :
     `Ico x (x + k⁻¹) ×ˢ Ico (-x) (-x + k⁻¹) ⊆ V`. -/
   have : ∀ x : ℝₗ, Irrational (toReal x) →
       ∃ k : ℕ+, Ico x (x + (k : ℝₗ)⁻¹) ×ˢ Ico (-x) (-x + (k : ℝₗ)⁻¹) ⊆ V := fun x hx ↦ by
-    have hV : V ∈ 𝓝 (x, -x) := Vo.mem_nhds (@TV (x, -x) ⟨add_neg_self x, hx⟩)
+    have hV : V ∈ 𝓝 (x, -x) := Vo.mem_nhds (@TV (x, -x) ⟨add_neg_cancel x, hx⟩)
     exact (nhds_prod_antitone_basis_inv_pnat _ _).mem_iff.1 hV
   choose! k hkV using this
   /- Since the set of irrational numbers is a dense Gδ set in the usual topology of `ℝ`, there
@@ -294,7 +294,7 @@ theorem not_separatedNhds_rat_irrational_antidiag :
   /- Choose a rational number `r` in the interior of the closure of `C N`, then choose `n ≥ N > 0`
     such that `Ico r (r + n⁻¹) × Ico (-r) (-r + n⁻¹) ⊆ U`. -/
   rcases Rat.denseRange_cast.exists_mem_open isOpen_interior hN with ⟨r, hr⟩
-  have hrU : ((r, -r) : ℝₗ × ℝₗ) ∈ U := @SU (r, -r) ⟨add_neg_self _, r, rfl⟩
+  have hrU : ((r, -r) : ℝₗ × ℝₗ) ∈ U := @SU (r, -r) ⟨add_neg_cancel _, r, rfl⟩
   obtain ⟨n, hnN, hn⟩ :
       ∃ n, N ≤ n ∧ Ico (r : ℝₗ) (r + (n : ℝₗ)⁻¹) ×ˢ Ico (-r : ℝₗ) (-r + (n : ℝₗ)⁻¹) ⊆ U :=
     ((nhds_prod_antitone_basis_inv_pnat _ _).hasBasis_ge N).mem_iff.1 (Uo.mem_nhds hrU)

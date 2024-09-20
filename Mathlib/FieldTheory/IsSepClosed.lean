@@ -50,8 +50,6 @@ separable closure, separably closed
 
 universe u v w
 
-open scoped Classical Polynomial
-
 open Polynomial
 
 variable (k : Type u) [Field k] (K : Type v) [Field K]

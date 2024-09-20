@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Topology.Instances.Int
+import Mathlib.Data.Nat.Lattice
 
 /-!
 # Topology on the natural numbers

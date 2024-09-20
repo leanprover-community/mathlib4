@@ -97,19 +97,19 @@ def pushforwardDiagramToColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
   obj j := op (colimit.ι (F ⋙ PresheafedSpace.forget C) j _* (F.obj j).presheaf)
   map {j j'} f :=
     ((pushforward C (colimit.ι (F ⋙ PresheafedSpace.forget C) j')).map (F.map f).c ≫
-      (Pushforward.comp  ((F ⋙ PresheafedSpace.forget C).map f)
+      (Pushforward.comp ((F ⋙ PresheafedSpace.forget C).map f)
         (colimit.ι (F ⋙ PresheafedSpace.forget C) j') (F.obj j).presheaf).inv ≫
       (pushforwardEq (colimit.w (F ⋙ PresheafedSpace.forget C) f) (F.obj j).presheaf).hom).op
   map_id j := by
     apply (opEquiv _ _).injective
-    refine NatTrans.ext _ _ (funext fun U => ?_)
+    refine NatTrans.ext (funext fun U => ?_)
     induction U with
     | h U =>
       simp [opEquiv]
       rfl
   map_comp {j₁ j₂ j₃} f g := by
     apply (opEquiv _ _).injective
-    refine NatTrans.ext _ _ (funext fun U => ?_)
+    refine NatTrans.ext (funext fun U => ?_)
     dsimp [opEquiv]
     have :
       op ((Opens.map (F.map g).base).obj
@@ -253,7 +253,7 @@ def colimitCoconeIsColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
       simp
     ext : 1
     · exact t
-    · refine NatTrans.ext _ _ (funext fun U => limit_obj_ext fun j => ?_)
+    · refine NatTrans.ext (funext fun U => limit_obj_ext fun j => ?_)
       simp [desc, descCApp,
         PresheafedSpace.congr_app (w (unop j)).symm U,
         NatTrans.congr (limit.π (pushforwardDiagramToColimit F).leftOp j)

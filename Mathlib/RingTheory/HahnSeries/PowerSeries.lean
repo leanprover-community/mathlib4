@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.RingTheory.HahnSeries.Multiplication
 import Mathlib.RingTheory.PowerSeries.Basic
+import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 import Mathlib.Data.Finsupp.PWO
 
 /-!
@@ -32,10 +33,7 @@ we get the more familiar semiring of formal power series with coefficients in `R
 -/
 
 
-open Finset Function
-
-open scoped Classical
-open Pointwise Polynomial
+open Finset Function Pointwise Polynomial
 
 noncomputable section
 
@@ -95,7 +93,7 @@ theorem ofPowerSeries_injective : Function.Injective (ofPowerSeries Γ R) :=
   embDomain_injective.comp toPowerSeries.symm.injective
 
 /-@[simp] Porting note: removing simp. RHS is more complicated and it makes linter
-failures elsewhere-/
+failures elsewhere -/
 theorem ofPowerSeries_apply (x : PowerSeries R) :
     ofPowerSeries Γ R x =
       HahnSeries.embDomain
@@ -173,6 +171,12 @@ def toMvPowerSeries {σ : Type*} [Finite σ] : HahnSeries (σ →₀ ℕ) R ≃+
       rw [and_iff_right (left_ne_zero_of_mul h), and_iff_right (right_ne_zero_of_mul h)]
 
 variable {σ : Type*} [Finite σ]
+
+-- TODO : generalize to all (?) rings of Hahn Series
+/-- If R has no zero divisors and `σ` is finite,
+then `HahnSeries (σ →₀ ℕ) R` has no zero divisors -/
+instance [NoZeroDivisors R] : NoZeroDivisors (HahnSeries (σ →₀ ℕ) R) :=
+  toMvPowerSeries.toMulEquiv.noZeroDivisors (A := HahnSeries (σ →₀ ℕ) R) (MvPowerSeries σ R)
 
 theorem coeff_toMvPowerSeries {f : HahnSeries (σ →₀ ℕ) R} {n : σ →₀ ℕ} :
     MvPowerSeries.coeff R n (toMvPowerSeries f) = f.coeff n :=
