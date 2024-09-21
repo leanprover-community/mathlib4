@@ -30,7 +30,7 @@ We relate in this file `CoverEntropy` and `NetEntropy`. This file is downstream 
 
 ## Main definitions
 - `IsDynNetOf`: property that dynamical balls centered on a subset `s` of `F` are disjoint.
-- `netMaxcard`: maximal cardinal of a dynamical net. Takes values in `ℕ∞`.
+- `netMaxcard`: maximal cardinality of a dynamical net. Takes values in `ℕ∞`.
 - `netEntropyInfEnt`/`netEntropyEnt`: exponential growth of `netMaxcard`. The former is
 defined with a `liminf`, the latter with a `limsup`. Take values in `EReal`.
 
@@ -100,10 +100,10 @@ lemma IsDynNetOf.card_le_card_of_isDynCoverOf {T : X → X} {F : Set X} {U : Set
   exact fun x x_s y y_s Fx_Fy ↦
     PairwiseDisjoint.elim_set hs.2 x_s y_s (F x) (s_t x x_s).2 (Fx_Fy ▸ (s_t y y_s).2)
 
-/-! ### Maximal cardinal of dynamical nets -/
+/-! ### Maximal cardinality of dynamical nets -/
 
-/-- The largest cardinal of a `(U, n)`-dynamical net of `F`. Takes values in `ℕ∞`, and is infinite
-if and only if `F` admits nets of arbitrarily large size.-/
+/-- The largest cardinality of a `(U, n)`-dynamical net of `F`. Takes values in `ℕ∞`, and is
+infinite if and only if `F` admits nets of arbitrarily large size.-/
 noncomputable def netMaxcard (T : X → X) (F : Set X) (U : Set (X × X)) (n : ℕ) : ℕ∞ :=
   ⨆ (s : Finset X) (_ : IsDynNetOf T F U n s), (s.card : ℕ∞)
 
@@ -223,7 +223,7 @@ lemma netMaxcard_le_coverMincard (T : X → X) (F : Set X) {U : Set (X × X)} (h
     exact iSup₂_le (fun s s_net ↦ Nat.cast_le.2 (s_net.card_le_card_of_isDynCoverOf h t_cover))
 
 /-- Given an entourage `U` and a time `n`, a minimal dynamical cover by `U ○ U` has a smaller
-  cardinal than a maximal dynamical net by `U`. This lemma is the second of two key results to
+  cardinality than a maximal dynamical net by `U`. This lemma is the second of two key results to
   compare two versions topological entropy: with cover and with nets.-/
 lemma coverMincard_le_netMaxcard (T : X → X) (F : Set X) {U : Set (X × X)} (U_rfl : idRel ⊆ U)
     (U_symm : SymmetricRel U) (n : ℕ) :
@@ -284,7 +284,6 @@ lemma netEntropyInfEnt_antitone (T : X → X) (F : Set X) :
   fun _ _ U_V ↦ (liminf_le_liminf) (Eventually.of_forall
     fun n ↦ monotone_div_right_of_nonneg (Nat.cast_nonneg' n)
       (log_monotone (ENat.toENNReal_mono (netMaxcard_antitone T F n U_V))))
-
 
 lemma netEntropyEnt_antitone (T : X → X) (F : Set X) :
     Antitone (fun U : Set (X × X) ↦ netEntropyEnt T F U) :=
