@@ -577,6 +577,28 @@ theorem apply_eq_iff_eq (e : M ≃ₜ* N) {x y : M} : e x = e y ↔ x = y :=
 
 end bijective
 
+section refl
+
+variable (M)
+
+/-- The identity map is a continuous multiplicative isomorphism. -/
+@[to_additive (attr := refl) "The identity map is an additive isomorphism."]
+def refl : M ≃ₜ* M := {
+  MulEquiv.refl _ with
+  continuous_toFun := by continuity
+  continuous_invFun := by continuity }
+
+@[to_additive]
+instance : Inhabited (M ≃ₜ* M) := ⟨ContinuousMulEquiv.refl M⟩
+
+@[to_additive (attr := simp)]
+theorem coe_refl : ↑(refl M) = id := rfl
+
+@[to_additive (attr := simp)]
+theorem refl_apply (m : M) : refl M m = m := rfl
+
+end refl
+
 end ContinuousMulEquiv
 
 end
