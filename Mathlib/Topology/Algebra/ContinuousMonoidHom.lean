@@ -496,6 +496,8 @@ namespace ContinuousMulEquiv
 
 variable {M N : Type*} [TopologicalSpace M] [TopologicalSpace N] [Mul M] [Mul N]
 
+section coe
+
 @[to_additive]
 instance : EquivLike (M ≃ₜ* N) M N where
   coe f := f.toFun
@@ -517,6 +519,42 @@ instance : ContinuousMulEquivClass (M ≃ₜ* N) M N where
   map_mul f := f.map_mul'
   map_continuous f := f.continuous_toFun
   inv_map_continuous f := f.continuous_invFun
+
+/-- Two continuous multiplicative isomorphisms agree if they are defined by the
+same underlying function. -/
+@[to_additive (attr := ext)
+  "Two continuous additive isomorphisms agree if they are defined by the same underlying function."]
+theorem ext {f g : M ≃ₜ* N} (h : ∀ x, f x = g x) : f = g :=
+  DFunLike.ext f g h
+
+@[to_additive]
+protected theorem congr_arg {f : M ≃ₜ* N} {x x' : M} : x = x' → f x = f x' :=
+  DFunLike.congr_arg f
+
+@[to_additive]
+protected theorem congr_fun {f g : M ≃ₜ* N} (h : f = g) (x : M) : f x = g x :=
+  DFunLike.congr_fun h x
+
+@[to_additive (attr := simp)]
+theorem coe_mk (f : M ≃* N) (hf1 : Continuous f.toFun) (hf2 : Continuous f.invFun) :
+    (mk f hf1 hf2 : M → N) = f := rfl
+
+@[to_additive (attr := simp)]
+theorem toEquiv_eq_coe (f : M ≃ₜ* N) : f.toEquiv = f :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem toMulHom_eq_coe (f : M ≃ₜ* N) : f.toMulEquiv = f :=
+  rfl
+
+/-- Makes a continuous multiplicative isomorphism from
+a homeomorphism which preserves multiplication. -/
+@[to_additive "Makes an continuous additive isomorphism from
+a homeomorphism which preserves addition."]
+def mk' (f : M ≃ₜ N) (h : ∀ x y, f (x * y) = f x * f y) : M ≃ₜ* N :=
+  ⟨⟨f.toEquiv,h⟩, f.continuous_toFun, f.continuous_invFun⟩
+
+end coe
 
 end ContinuousMulEquiv
 
