@@ -100,12 +100,10 @@ theorem local_hom_TFAE (f : R →+* S) :
   | _, _, ⟨a, ha, rfl⟩ => map_nonunit f a ha
   tfae_have 2 → 4 := Set.image_subset_iff.1
   tfae_have 3 ↔ 4 := Ideal.map_le_iff_le_comap
-  tfae_have 4 → 1
-  | h => ⟨fun x => not_imp_not.1 (@h x)⟩
+  tfae_have 4 → 1 := fun h ↦ ⟨fun x => not_imp_not.1 (@h x)⟩
   tfae_have 1 → 5
   | _ => by ext; exact not_iff_not.2 (isUnit_map_iff f _)
-  tfae_have 5 → 4
-  | h => le_of_eq h.symm
+  tfae_have 5 → 4 := fun h ↦ le_of_eq h.symm
   tfae_finish
 
 end

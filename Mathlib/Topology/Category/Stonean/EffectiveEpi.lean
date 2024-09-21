@@ -36,8 +36,7 @@ theorem effectiveEpi_tfae
     , Epi π
     , Function.Surjective π
     ] := by
-  tfae_have 1 → 2
-  | _ => inferInstance
+  tfae_have 1 → 2 := fun _ ↦ inferInstance
   tfae_have 2 ↔ 3 := epi_iff_surjective π
   tfae_have 3 → 1 := fun hπ ↦ ⟨⟨effectiveEpiStruct π hπ⟩⟩
   tfae_finish

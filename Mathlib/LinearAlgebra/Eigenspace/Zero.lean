@@ -52,8 +52,7 @@ lemma charpoly_nilpotent_tfae [IsNoetherian R M] (φ : Module.End R M) :
       φ.charpoly = X ^ finrank R M,
       ∀ m : M, ∃ (n : ℕ), (φ ^ n) m = 0,
       natTrailingDegree φ.charpoly = finrank R M ] := by
-  tfae_have 1 → 2 := by
-    apply IsNilpotent.charpoly_eq_X_pow_finrank
+  tfae_have 1 → 2 := IsNilpotent.charpoly_eq_X_pow_finrank _
   tfae_have 2 → 3
   | h, m => by
     use finrank R M

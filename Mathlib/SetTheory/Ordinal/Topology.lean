@@ -96,10 +96,10 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
     · simp [he] at h
     · refine ⟨hne, (isLUB_of_mem_closure ?_ h).csSup_eq hne⟩
       exact fun x hx => hx.2
-  tfae_have 3 → 4 :=
-    fun h => ⟨_, inter_subset_left, h.1, bddAbove_Iic.mono inter_subset_right, h.2⟩
-  tfae_have 4 → 5
-  | ⟨t, hts, hne, hbdd, rfl⟩ => by
+  tfae_have 3 → 4
+  | h => ⟨_, inter_subset_left, h.1, bddAbove_Iic.mono inter_subset_right, h.2⟩
+  tfae_have 4 → 5 := by
+    rintro ⟨t, hts, hne, hbdd, rfl⟩
     have hlub : IsLUB t (sSup t) := isLUB_csSup hne hbdd
     let ⟨y, hyt⟩ := hne
     classical
@@ -109,12 +109,12 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
       · refine le_antisymm (bsup_le fun x _ => ?_) (csSup_le hne fun x hx => ?_)
         · split_ifs <;> exact hlub.1 ‹_›
         · refine (if_pos hx).symm.trans_le (le_bsup _ _ <| (hlub.1 hx).trans_lt (lt_succ _))
-  tfae_have 5 → 6
-  | ⟨o, h₀, f, hfs, rfl⟩ =>
-    ⟨_, toType_nonempty_iff_ne_zero.2 h₀, familyOfBFamily o f, fun _ => hfs _ _, rfl⟩
-  tfae_have 6 → 1
-  | ⟨ι, hne, f, hfs, rfl⟩ =>
-    closure_mono (range_subset_iff.2 hfs) <| csSup_mem_closure (range_nonempty f)
+  tfae_have 5 → 6 := by
+    rintro ⟨o, h₀, f, hfs, rfl⟩
+    exact ⟨_, toType_nonempty_iff_ne_zero.2 h₀, familyOfBFamily o f, fun _ => hfs _ _, rfl⟩
+  tfae_have 6 → 1 := by
+    rintro ⟨ι, hne, f, hfs, rfl⟩
+    exact closure_mono (range_subset_iff.2 hfs) <| csSup_mem_closure (range_nonempty f)
       (bddAbove_range.{u, u} f)
   tfae_finish
 

@@ -391,16 +391,12 @@ theorem tfae [FiniteDimensional F E] : List.TFAE [
     IntermediateField.fixedField (⊤ : Subgroup (E ≃ₐ[F] E)) = ⊥,
     Fintype.card (E ≃ₐ[F] E) = finrank F E,
     ∃ p : F[X], p.Separable ∧ p.IsSplittingField F E] := by
-  tfae_have 1 → 2 :=
-    fun h => OrderIso.map_bot (@intermediateFieldEquivSubgroup F _ E _ _ _ h).symm
-  tfae_have 1 → 3
-  | _ => card_aut_eq_finrank F E
-  tfae_have 1 → 4
-  | _ => is_separable_splitting_field F E
+  tfae_have 1 → 2 := fun h ↦ OrderIso.map_bot (@intermediateFieldEquivSubgroup F _ E _ _ _ h).symm
+  tfae_have 1 → 3 := fun _ ↦ card_aut_eq_finrank F E
+  tfae_have 1 → 4 := fun _ ↦ is_separable_splitting_field F E
   tfae_have 2 → 1 := of_fixedField_eq_bot F E
   tfae_have 3 → 1 := of_card_aut_eq_finrank F E
-  tfae_have 4 → 1
-  | ⟨h, hp1, _⟩ => of_separable_splitting_field hp1
+  tfae_have 4 → 1 := fun ⟨h, hp1, _⟩ ↦ of_separable_splitting_field hp1
   tfae_finish
 
 end IsGalois
