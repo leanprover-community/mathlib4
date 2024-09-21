@@ -28,7 +28,7 @@ reals `[-∞, +∞]`. The consequence is that we use `ℕ∞`, `ℝ≥0∞` and 
 
 ## Main definitions
 - `IsDynCoverOf`: property that dynamical balls centered on a subset `s` cover a subset `F`.
-- `coverMincard`: minimal cardinal of a dynamical cover. Takes values in `ℕ∞`.
+- `coverMincard`: minimal cardinality of a dynamical cover. Takes values in `ℕ∞`.
 - `coverEntropyInfEntourage`/`coverEntropyEntourage`: exponential growth of `coverMincard`.
 The former is defined with a `liminf`, the later with a `limsup`. Take values in `EReal`.
 - `coverEntropyInf`/`coverEntropy`: supremum of `coverEntropyInfEntourage`/`coverEntropyEntourage`
