@@ -36,11 +36,13 @@ open RCLike
 
 open ComplexConjugate
 
+section Seminormed
+
 variable {𝕜 E E' F G : Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-variable [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
-variable [NormedAddCommGroup E'] [InnerProductSpace ℝ E']
+variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [SeminormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+variable [SeminormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+variable [SeminormedAddCommGroup E'] [InnerProductSpace ℝ E']
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
@@ -83,6 +85,57 @@ theorem IsSymmetric.add {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.Is
   rw [LinearMap.add_apply, inner_add_left, hT x y, hS x y, ← inner_add_right]
   rfl
 
+/-- For a symmetric operator `T`, the function `fun x ↦ ⟪T x, x⟫` is real-valued. -/
+@[simp]
+theorem IsSymmetric.coe_reApplyInnerSelf_apply {T : E →L[𝕜] E} (hT : IsSymmetric (T : E →ₗ[𝕜] E))
+    (x : E) : (T.reApplyInnerSelf x : 𝕜) = ⟪T x, x⟫ := by
+  rsuffices ⟨r, hr⟩ : ∃ r : ℝ, ⟪T x, x⟫ = r
+  · simp [hr, T.reApplyInnerSelf_apply]
+  rw [← conj_eq_iff_real]
+  exact hT.conj_inner_sym x x
+
+/-- If a symmetric operator preserves a submodule, its restriction to that submodule is
+symmetric. -/
+theorem IsSymmetric.restrict_invariant {T : E →ₗ[𝕜] E} (hT : IsSymmetric T) {V : Submodule 𝕜 E}
+    (hV : ∀ v ∈ V, T v ∈ V) : IsSymmetric (T.restrict hV) := fun v w => hT v w
+
+/-- Polarization identity for symmetric linear maps.
+See `inner_map_polarization` for the complex version without the symmetric assumption. -/
+theorem IsSymmetric.inner_map_polarization {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (x y : E) :
+    ⟪T x, y⟫ =
+      (⟪T (x + y), x + y⟫ - ⟪T (x - y), x - y⟫ - I * ⟪T (x + (I : 𝕜) • y), x + (I : 𝕜) • y⟫ +
+          I * ⟪T (x - (I : 𝕜) • y), x - (I : 𝕜) • y⟫) /
+        4 := by
+  rcases@I_mul_I_ax 𝕜 _ with (h | h)
+  · simp_rw [h, zero_mul, sub_zero, add_zero, map_add, map_sub, inner_add_left,
+      inner_add_right, inner_sub_left, inner_sub_right, hT x, ← inner_conj_symm x (T y)]
+    suffices (re ⟪T y, x⟫ : 𝕜) = ⟪T y, x⟫ by
+      rw [conj_eq_iff_re.mpr this]
+      ring
+    rw [← re_add_im ⟪T y, x⟫]
+    simp_rw [h, mul_zero, add_zero]
+    norm_cast
+  · simp_rw [map_add, map_sub, inner_add_left, inner_add_right, inner_sub_left, inner_sub_right,
+      LinearMap.map_smul, inner_smul_left, inner_smul_right, RCLike.conj_I, mul_add, mul_sub,
+      sub_sub, ← mul_assoc, mul_neg, h, neg_neg, one_mul, neg_one_mul]
+    ring
+
+end LinearMap
+
+end Seminormed
+
+section Normed
+
+variable {𝕜 E E' F G : Type*} [RCLike 𝕜]
+variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+variable [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+variable [NormedAddCommGroup E'] [InnerProductSpace ℝ E']
+
+local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+
+namespace LinearMap
+
 /-- The **Hellinger--Toeplitz theorem**: if a symmetric operator is defined on a complete space,
   then it is automatically continuous. -/
 theorem IsSymmetric.continuous [CompleteSpace E] {T : E →ₗ[𝕜] E} (hT : IsSymmetric T) :
@@ -100,20 +153,6 @@ theorem IsSymmetric.continuous [CompleteSpace E] {T : E →ₗ[𝕜] E} (hT : Is
   rw [← sub_self x]
   exact hu.sub_const _
 
-/-- For a symmetric operator `T`, the function `fun x ↦ ⟪T x, x⟫` is real-valued. -/
-@[simp]
-theorem IsSymmetric.coe_reApplyInnerSelf_apply {T : E →L[𝕜] E} (hT : IsSymmetric (T : E →ₗ[𝕜] E))
-    (x : E) : (T.reApplyInnerSelf x : 𝕜) = ⟪T x, x⟫ := by
-  rsuffices ⟨r, hr⟩ : ∃ r : ℝ, ⟪T x, x⟫ = r
-  · simp [hr, T.reApplyInnerSelf_apply]
-  rw [← conj_eq_iff_real]
-  exact hT.conj_inner_sym x x
-
-/-- If a symmetric operator preserves a submodule, its restriction to that submodule is
-symmetric. -/
-theorem IsSymmetric.restrict_invariant {T : E →ₗ[𝕜] E} (hT : IsSymmetric T) {V : Submodule 𝕜 E}
-    (hV : ∀ v ∈ V, T v ∈ V) : IsSymmetric (T.restrict hV) := fun v w => hT v w
-
 theorem IsSymmetric.restrictScalars {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
     @LinearMap.IsSymmetric ℝ E _ _ (InnerProductSpace.rclikeToReal 𝕜 E)
       (@LinearMap.restrictScalars ℝ 𝕜 _ _ _ _ _ _ (InnerProductSpace.rclikeToReal 𝕜 E).toModule
@@ -122,7 +161,7 @@ theorem IsSymmetric.restrictScalars {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) 
 
 section Complex
 
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℂ V]
+variable {V : Type*} [SeminormedAddCommGroup V] [InnerProductSpace ℂ V]
 
 attribute [local simp] map_ofNat in -- use `ofNat` simp theorem with bad keys
 open scoped InnerProductSpace in
@@ -146,27 +185,6 @@ theorem isSymmetric_iff_inner_map_self_real (T : V →ₗ[ℂ] V) :
 
 end Complex
 
-/-- Polarization identity for symmetric linear maps.
-See `inner_map_polarization` for the complex version without the symmetric assumption. -/
-theorem IsSymmetric.inner_map_polarization {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (x y : E) :
-    ⟪T x, y⟫ =
-      (⟪T (x + y), x + y⟫ - ⟪T (x - y), x - y⟫ - I * ⟪T (x + (I : 𝕜) • y), x + (I : 𝕜) • y⟫ +
-          I * ⟪T (x - (I : 𝕜) • y), x - (I : 𝕜) • y⟫) /
-        4 := by
-  rcases@I_mul_I_ax 𝕜 _ with (h | h)
-  · simp_rw [h, zero_mul, sub_zero, add_zero, map_add, map_sub, inner_add_left,
-      inner_add_right, inner_sub_left, inner_sub_right, hT x, ← inner_conj_symm x (T y)]
-    suffices (re ⟪T y, x⟫ : 𝕜) = ⟪T y, x⟫ by
-      rw [conj_eq_iff_re.mpr this]
-      ring
-    rw [← re_add_im ⟪T y, x⟫]
-    simp_rw [h, mul_zero, add_zero]
-    norm_cast
-  · simp_rw [map_add, map_sub, inner_add_left, inner_add_right, inner_sub_left, inner_sub_right,
-      LinearMap.map_smul, inner_smul_left, inner_smul_right, RCLike.conj_I, mul_add, mul_sub,
-      sub_sub, ← mul_assoc, mul_neg, h, neg_neg, one_mul, neg_one_mul]
-    ring
-
 /-- A symmetric linear map `T` is zero if and only if `⟪T x, x⟫_ℝ = 0` for all `x`.
 See `inner_map_self_eq_zero` for the complex version without the symmetric assumption. -/
 theorem IsSymmetric.inner_map_self_eq_zero {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
@@ -178,3 +196,5 @@ theorem IsSymmetric.inner_map_self_eq_zero {T : E →ₗ[𝕜] E} (hT : T.IsSymm
   ring
 
 end LinearMap
+
+end Normed
