@@ -151,7 +151,7 @@ theorem left_le_opow (a : Ordinal) {b : Ordinal} (b1 : 0 < b) : a ≤ a ^ b := b
   rwa [opow_le_opow_iff_right a1, one_le_iff_pos]
 
 theorem right_le_opow {a : Ordinal} (b : Ordinal) (a1 : 1 < a) : b ≤ a ^ b :=
-  (opow_isNormal a1).self_le _
+  (opow_isNormal a1).id_le _
 
 theorem opow_lt_opow_left_of_succ {a b c : Ordinal} (ab : a < b) : a ^ succ c < b ^ succ c := by
   rw [opow_succ, opow_succ]
@@ -400,9 +400,17 @@ theorem natCast_opow (m : ℕ) : ∀ n : ℕ, ↑(m ^ n : ℕ) = (m : Ordinal) ^
   | n + 1 => by
     rw [pow_succ, natCast_mul, natCast_opow m n, Nat.cast_succ, add_one_eq_succ, opow_succ]
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_opow := natCast_opow
+theorem iSup_pow {o : Ordinal} (ho : 0 < o) : ⨆ n : ℕ, o ^ n = o ^ ω := by
+  simp_rw [← opow_natCast]
+  rcases (one_le_iff_pos.2 ho).lt_or_eq with ho₁ | rfl
+  · exact (opow_isNormal ho₁).apply_omega
+  · rw [one_opow]
+    refine le_antisymm (Ordinal.iSup_le fun n => by rw [one_opow]) ?_
+    convert Ordinal.le_iSup _ 0
+    rw [Nat.cast_zero, opow_zero]
 
+set_option linter.deprecated false in
+@[deprecated iSup_pow (since := "2024-08-27")]
 theorem sup_opow_nat {o : Ordinal} (ho : 0 < o) : (sup fun n : ℕ => o ^ n) = o ^ ω := by
   simp_rw [← opow_natCast]
   rcases (one_le_iff_pos.2 ho).lt_or_eq with ho₁ | rfl

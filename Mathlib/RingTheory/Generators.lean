@@ -45,7 +45,7 @@ variable (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S]
 2. `val : vars → S`: The assignment of each variable to a value in `S`.
 3. `σ`: A section of `R[X] → S`. -/
 structure Algebra.Generators where
-  /-- The type of variables.  -/
+  /-- The type of variables. -/
   vars : Type w
   /-- The assignment of each variable to a value in `S`. -/
   val : vars → S
@@ -105,6 +105,18 @@ def ofSurjective {vars} (val : vars → S) (h : Function.Surjective (aeval (R :=
   val := val
   σ' x := (h x).choose
   aeval_val_σ' x := (h x).choose_spec
+
+/-- If `algebraMap R S` is surjective, the empty type generates `S`. -/
+noncomputable def ofSurjectiveAlgebraMap (h : Function.Surjective (algebraMap R S)) :
+    Generators.{w} R S :=
+  ofSurjective PEmpty.elim <| fun s ↦ by
+    use C (h s).choose
+    simp [(h s).choose_spec]
+
+/-- The canonical generators for `R` as an `R`-algebra. -/
+noncomputable def id : Generators.{w} R R := ofSurjectiveAlgebraMap <| by
+  rw [id.map_eq_id]
+  exact RingHomSurjective.is_surjective
 
 /-- Construct `Generators` from an assignment `I → S` such that `R[X] → S` is surjective. -/
 noncomputable
@@ -166,7 +178,7 @@ def comp (Q : Generators S T) (P : Generators R S) : Generators R T where
   σ' x := (Q.σ x).sum (fun n r ↦ rename Sum.inr (P.σ r) * monomial (n.mapDomain Sum.inl) 1)
   aeval_val_σ' s := by
     have (x : P.Ring) : aeval (algebraMap S T ∘ P.val) x = algebraMap S T (aeval P.val x) := by
-      rw [map_aeval, aeval_def, coe_eval₂Hom, ← IsScalarTower.algebraMap_eq, Function.comp]
+      rw [map_aeval, aeval_def, coe_eval₂Hom, ← IsScalarTower.algebraMap_eq, Function.comp_def]
     conv_rhs => rw [← Q.aeval_val_σ s, ← (Q.σ s).sum_single]
     simp only [map_finsupp_sum, map_mul, aeval_rename, Sum.elim_comp_inr, this, aeval_val_σ,
       aeval_monomial, map_one, Finsupp.prod_mapDomain_index_inj Sum.inl_injective, Sum.elim_inl,
@@ -381,10 +393,10 @@ instance : AddCommGroup P.Cotangent := inferInstanceAs (AddCommGroup P.ker.Cotan
 
 variable {P}
 
-/-- The identity map `P.ker.Cotangent → P.Cotangent` into the type synonym.  -/
+/-- The identity map `P.ker.Cotangent → P.Cotangent` into the type synonym. -/
 def Cotangent.of (x : P.ker.Cotangent) : P.Cotangent := x
 
-/-- The identity map `P.Cotangent → P.ker.Cotangent` from the type synonym.  -/
+/-- The identity map `P.Cotangent → P.ker.Cotangent` from the type synonym. -/
 def Cotangent.val (x : P.Cotangent) : P.ker.Cotangent := x
 
 @[ext]

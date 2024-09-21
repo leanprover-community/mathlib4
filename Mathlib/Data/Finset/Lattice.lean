@@ -220,7 +220,7 @@ theorem sup_le_of_le_directed {α : Type*} [SemilatticeSup α] [OrderBot α] (s 
     (∀ x ∈ t, ∃ y ∈ s, x ≤ y) → ∃ x ∈ s, t.sup id ≤ x := by
   classical
     induction' t using Finset.induction_on with a r _ ih h
-    · simpa only [forall_prop_of_true, and_true_iff, forall_prop_of_false, bot_le, not_false_iff,
+    · simpa only [forall_prop_of_true, and_true, forall_prop_of_false, bot_le, not_false_iff,
         sup_empty, forall_true_iff, not_mem_empty]
     · intro h
       have incs : (r : Set α) ⊆ ↑(insert a r) := by
@@ -520,7 +520,7 @@ theorem inf_sup {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (
   -- Porting note: `simpa` doesn't support placeholders in proof terms
   have := h (fun j hj => if hji : j = i then cast (congr_arg κ hji.symm) a
       else g _ <| mem_of_mem_insert_of_ne hj hji) (fun j hj => ?_)
-  · simpa only [cast_eq, dif_pos, Function.comp, Subtype.coe_mk, dif_neg, aux] using this
+  · simpa only [cast_eq, dif_pos, Function.comp_def, Subtype.coe_mk, dif_neg, aux] using this
   rw [mem_insert] at hj
   obtain (rfl | hj) := hj
   · simpa
@@ -704,7 +704,7 @@ theorem coe_sup' : ((s.sup' H f : α) : WithBot α) = s.sup ((↑) ∘ f) := by
 
 @[simp]
 theorem sup'_cons {b : β} {hb : b ∉ s} :
-    (cons b s hb).sup' (nonempty_cons hb) f = f b ⊔ s.sup' H f := by
+    (cons b s hb).sup' (cons_nonempty hb) f = f b ⊔ s.sup' H f := by
   rw [← WithBot.coe_eq_coe]
   simp [WithBot.coe_sup]
 
@@ -873,7 +873,7 @@ theorem coe_inf' : ((s.inf' H f : α) : WithTop α) = s.inf ((↑) ∘ f) :=
 
 @[simp]
 theorem inf'_cons {b : β} {hb : b ∉ s} :
-    (cons b s hb).inf' (nonempty_cons hb) f = f b ⊓ s.inf' H f :=
+    (cons b s hb).inf' (cons_nonempty hb) f = f b ⊓ s.inf' H f :=
   @sup'_cons αᵒᵈ _ _ _ H f _ _
 
 @[simp]
@@ -1951,3 +1951,5 @@ theorem set_biInter_biUnion (s : Finset γ) (t : γ → Finset α) (f : α → S
   iInf_biUnion s t f
 
 end Finset
+
+set_option linter.style.longFile 2100

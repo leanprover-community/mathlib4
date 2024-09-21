@@ -175,11 +175,11 @@ theorem eq_curry_iff (f : A ⊗ Y ⟶ X) (g : Y ⟶ A ⟶[C] X) : g = curry f �
   Adjunction.eq_homEquiv_apply (ihom.adjunction A) f g
 
 -- I don't think these two should be simp.
-theorem uncurry_eq (g : Y ⟶ A ⟶[C] X) : uncurry g = (A ◁ g) ≫ (ihom.ev A).app X :=
-  Adjunction.homEquiv_counit _
+theorem uncurry_eq (g : Y ⟶ A ⟶[C] X) : uncurry g = (A ◁ g) ≫ (ihom.ev A).app X := by
+  rfl
 
 theorem curry_eq (g : A ⊗ Y ⟶ X) : curry g = (ihom.coev A).app Y ≫ (ihom A).map g :=
-  Adjunction.homEquiv_unit _
+  rfl
 
 theorem curry_injective : Function.Injective (curry : (A ⊗ Y ⟶ X) → (Y ⟶ A ⟶[C] X)) :=
   (Closed.adj.homEquiv _ _).injective
@@ -266,7 +266,14 @@ theorem ofEquiv_curry_def {X Y Z : C} (f : X ⊗ Y ⟶ Z) :
       adj.homEquiv Y ((ihom (F.obj X)).obj (F.obj Z))
         (MonoidalClosed.curry (adj.toEquivalence.symm.toAdjunction.homEquiv (F.obj X ⊗ F.obj Y) Z
         ((Iso.compInverseIso (H := adj.toEquivalence)
-          (MonoidalFunctor.commTensorLeft F X)).hom.app Y ≫ f))) :=
+          (MonoidalFunctor.commTensorLeft F X)).hom.app Y ≫ f))) := by
+  -- This whole proof used to be `rfl` before #16317.
+  change ((adj.comp ((ihom.adjunction (F.obj X)).comp
+      adj.toEquivalence.symm.toAdjunction)).ofNatIsoLeft _).homEquiv _ _ _ = _
+  dsimp only [Adjunction.ofNatIsoLeft]
+  rw [Adjunction.mkOfHomEquiv_homEquiv]
+  dsimp
+  rw [Adjunction.comp_homEquiv, Adjunction.comp_homEquiv]
   rfl
 
 /-- Suppose we have a monoidal equivalence `F : C ≌ D`, with `D` monoidal closed. We can pull the
@@ -280,8 +287,17 @@ theorem ofEquiv_uncurry_def {X Y Z : C} :
       ((Iso.compInverseIso (H := adj.toEquivalence)
           (MonoidalFunctor.commTensorLeft F X)).inv.app Y) ≫
             (adj.toEquivalence.symm.toAdjunction.homEquiv _ _).symm
-              (MonoidalClosed.uncurry ((adj.homEquiv _ _).symm f)) :=
-  fun _ => rfl
+              (MonoidalClosed.uncurry ((adj.homEquiv _ _).symm f)) := by
+  intro f
+  -- This whole proof used to be `rfl` before #16317.
+  change (((adj.comp ((ihom.adjunction (F.obj X)).comp
+      adj.toEquivalence.symm.toAdjunction)).ofNatIsoLeft _).homEquiv _ _).symm _ = _
+  dsimp only [Adjunction.ofNatIsoLeft]
+  rw [Adjunction.mkOfHomEquiv_homEquiv]
+  dsimp
+  rw [Adjunction.comp_homEquiv, Adjunction.comp_homEquiv]
+  rfl
+
 end OfEquiv
 
 end MonoidalClosed

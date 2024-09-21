@@ -6,6 +6,7 @@ Authors: Louis Carlin, Mario Carneiro
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Order.RelClasses
 
 /-!
 # Euclidean domains
@@ -67,7 +68,7 @@ universe u
   satisfying `b * (a / b) + a % b = a`.
   The definition of a Euclidean domain usually includes a valuation function `R → ℕ`.
   This definition is slightly generalised to include a well founded relation
-  `r` with the property that `r (a % b) b`, instead of a valuation.  -/
+  `r` with the property that `r (a % b) b`, instead of a valuation. -/
 class EuclideanDomain (R : Type u) extends CommRing R, Nontrivial R where
   /-- A division function (denoted `/`) on `R`.
     This satisfies the property `b * (a / b) + a % b = a`, where `%` denotes `remainder`. -/
@@ -99,6 +100,9 @@ variable {R : Type u} [EuclideanDomain R]
 local infixl:50 " ≺ " => EuclideanDomain.r
 
 local instance wellFoundedRelation : WellFoundedRelation R where
+  wf := r_wellFounded
+
+instance isWellFounded : IsWellFounded R (· ≺ ·) where
   wf := r_wellFounded
 
 -- see Note [lower instance priority]
