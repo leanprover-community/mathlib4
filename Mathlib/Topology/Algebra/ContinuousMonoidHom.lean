@@ -599,6 +599,46 @@ theorem refl_apply (m : M) : refl M m = m := rfl
 
 end refl
 
+section symm
+
+/-- The inverse of a ContinuousMulEquiv. -/
+@[to_additive "The inverse of a ContinuousAddEquiv."]
+def symm (cme : M ≃ₜ* N) : N ≃ₜ* M := {
+  cme.toMulEquiv.symm with
+  continuous_toFun := cme.continuous_invFun
+  continuous_invFun := cme.continuous_toFun
+  }
+
+@[to_additive]
+theorem invFun_eq_symm {f : M ≃ₜ* N} : f.invFun = f.symm := rfl
+
+@[to_additive]
+theorem coe_toMulEquiv_symm (f : M ≃ₜ* N) : (f : M ≃* N).symm = f.symm := rfl
+
+@[to_additive]
+theorem coe_toHomeomorph_symm (f : M ≃ₜ* N) : f.toHomeomorph.symm = f.symm.toHomeomorph := rfl
+
+@[to_additive]
+theorem equivLike_inv_eq_symm (f : M ≃ₜ* N) : EquivLike.inv f = f.symm := rfl
+
+@[to_additive]
+theorem toMulEquiv_symm (f : M ≃ₜ* N) : (f.symm : N ≃* M) = (f : M ≃* N).symm := rfl
+
+@[to_additive]
+theorem symm_symm (f : M ≃ₜ* N) : f.symm.symm = f := rfl
+
+/-- `e.symm` is a right inverse of `e`, written as `e (e.symm y) = y`. -/
+@[to_additive (attr := simp) "`e.symm` is a right inverse of `e`, written as `e (e.symm y) = y`."]
+theorem apply_symm_apply (e : M ≃ₜ* N) (y : N) : e (e.symm y) = y :=
+  e.toEquiv.apply_symm_apply y
+
+/-- `e.symm` is a left inverse of `e`, written as `e.symm (e y) = y`. -/
+@[to_additive (attr := simp) "`e.symm` is a left inverse of `e`, written as `e.symm (e y) = y`."]
+theorem symm_apply_apply (e : M ≃ₜ* N) (x : M) : e.symm (e x) = x :=
+  e.toEquiv.symm_apply_apply x
+
+end symm
+
 end ContinuousMulEquiv
 
 end
@@ -606,14 +646,6 @@ end
 namespace ContinuousMulEquiv
 
 variable {G} {H} [Mul G] [Mul H]
-
-/-- The inverse of a ContinuousMulEquiv. -/
-@[to_additive "The inverse of a ContinuousAddEquiv."]
-def symm (cme : G ≃ₜ* H) : H ≃ₜ* G := {
-  cme.toMulEquiv.symm with
-  continuous_toFun := cme.continuous_invFun
-  continuous_invFun := cme.continuous_toFun
-  }
 
 /-- The composition of two ContinuousMulEquiv. -/
 @[to_additive "The composition of two ContinuousAddEquiv."]
