@@ -1149,7 +1149,8 @@ theorem bddAbove_iff_small {s : Set Ordinal.{u}} : BddAbove s ↔ Small.{u} s :=
   ⟨fun ⟨a, h⟩ => small_subset <| show s ⊆ Iic a from fun _ hx => h hx, fun _ =>
     bddAbove_of_small _⟩
 
-/-- `le_ciSup` whenever the outputs live in a higher universe than the inputs. -/
+/-- `le_ciSup` whenever the input type is small in the output universe. This lemma sometimes
+fails to infer `f` in simple cases and needs it to be given explicitly. -/
 protected theorem le_iSup {ι} (f : ι → Ordinal.{u}) [Small.{u} ι] : ∀ i, f i ≤ iSup f :=
   le_ciSup (bddAbove_of_small _)
 
@@ -1158,7 +1159,7 @@ set_option linter.deprecated false in
 theorem le_sup {ι : Type u} (f : ι → Ordinal.{max u v}) : ∀ i, f i ≤ sup.{_, v} f := fun i =>
   Ordinal.le_iSup f i
 
-/-- `ciSup_le_iff'` whenever the outputs live in a higher universe than the inputs. -/
+/-- `ciSup_le_iff'` whenever the input type is small in the output universe. -/
 protected theorem iSup_le_iff {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{u}} [Small.{u} ι] :
     iSup f ≤ a ↔ ∀ i, f i ≤ a :=
   ciSup_le_iff' (bddAbove_of_small _)
@@ -1168,7 +1169,6 @@ set_option linter.deprecated false in
 theorem sup_le_iff {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : sup.{_, v} f ≤ a ↔ ∀ i, f i ≤ a :=
   Ordinal.iSup_le_iff
 
-/-- `ciSup_le'` whenever the outputs live in a higher universe than the inputs. -/
 protected theorem iSup_le {ι} {f : ι → Ordinal.{u}} {a} :
     (∀ i, f i ≤ a) → iSup f ≤ a :=
   ciSup_le'
@@ -1189,7 +1189,8 @@ set_option linter.deprecated false in
 theorem lt_sup {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : a < sup.{_, v} f ↔ ∃ i, a < f i := by
   simpa only [not_forall, not_le] using not_congr (@sup_le_iff.{_, v} _ f a)
 
-theorem ne_iSup_iff_lt_iSup {ι} {f : ι → Ordinal.{u}} [Small.{u} ι] :
+@[deprecated (since := "2024-09-21")]
+theorem ne_iSup_iff_lt_iSup {ι : Type u} {f : ι → Ordinal.{max u v}} :
     (∀ i, f i ≠ iSup f) ↔ ∀ i, f i < iSup f :=
   ⟨fun hf _ => lt_of_le_of_ne (Ordinal.le_iSup _ _) (hf _), fun hf _ => ne_of_lt (hf _)⟩
 
