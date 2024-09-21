@@ -40,8 +40,8 @@ namespace Ordinal
 /-- Inducts on the base `b` expansion of an ordinal. -/
 @[elab_as_elim]
 noncomputable def CNFRec (b : Ordinal) {C : Ordinal → Sort*} (H0 : C 0)
-  (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) (o : Ordinal) : C o :=
-    if h : o = 0 then h ▸ H0 else H o h (CNFRec _ H0 H (o % b ^ log b o))
+    (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) (o : Ordinal) : C o :=
+  if h : o = 0 then h ▸ H0 else H o h (CNFRec _ H0 H (o % b ^ log b o))
 termination_by o
 decreasing_by exact mod_opow_log_lt_self b h
 
