@@ -1198,9 +1198,9 @@ instance (priority := 100) InnerProductSpace.toUniformConvexSpace : UniformConve
     ring_nf
     exact sub_le_sub_left (pow_le_pow_left hε.le hxy _) 4⟩
 
-section Complex
+section Complex_Seminormed
 
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℂ V]
+variable {V : Type*} [SeminormedAddCommGroup V] [InnerProductSpace ℂ V]
 
 /-- A complex polarization identity, with a linear map
 -/
@@ -1225,6 +1225,12 @@ theorem inner_map_polarization' (T : V →ₗ[ℂ] V) (x y : V) :
     inner_smul_right, Complex.conj_I, ← pow_two, Complex.I_sq, inner_sub_left, inner_sub_right,
     mul_add, ← mul_assoc, mul_neg, neg_neg, sub_neg_eq_add, one_mul, neg_one_mul, mul_sub, sub_sub]
   ring
+
+end Complex_Seminormed
+
+section Complex
+
+variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℂ V]
 
 /-- A linear map `T` is zero, if and only if the identity `⟪T x, x⟫_ℂ = 0` holds for all `x`.
 -/
@@ -1551,7 +1557,7 @@ variable {𝕜}
 
 namespace ContinuousLinearMap
 
-variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
+variable {E' : Type*} [SeminormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
 
 -- Note: odd and expensive build behavior is explicitly turned off using `noncomputable`
 /-- Given `f : E →L[𝕜] E'`, construct the continuous sesquilinear form `fun x y ↦ ⟪x, A y⟫`, given
