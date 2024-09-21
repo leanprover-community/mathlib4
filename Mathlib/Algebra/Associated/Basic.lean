@@ -1130,6 +1130,10 @@ theorem pow_injective_of_not_unit [CancelCommMonoidWithZero α] {q : α} (hq : �
   · exact not_isUnit_of_not_isUnit_dvd hq (dvd_pow (dvd_refl _) (Nat.sub_pos_of_lt h).ne')
   · exact (pow_mul_pow_sub q h.le).symm
 
+theorem pow_inj_of_not_isUnit [CancelCommMonoidWithZero α] {q : α} (hq : ¬IsUnit q)
+    (hq' : q ≠ 0) {m n : ℕ} : q ^ m = q ^ n ↔ m = n :=
+  (pow_injective_of_not_unit hq hq').eq_iff
+
 theorem dvd_prime_pow [CancelCommMonoidWithZero α] {p q : α} (hp : Prime p) (n : ℕ) :
     q ∣ p ^ n ↔ ∃ i ≤ n, Associated q (p ^ i) := by
   induction n generalizing q with

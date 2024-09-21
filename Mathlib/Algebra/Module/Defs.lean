@@ -415,21 +415,7 @@ This section defines the `NoZeroSMulDivisors` class, and includes some tests
 for the vanishing of elements (especially in modules over division rings).
 -/
 
-
-/-- `NoZeroSMulDivisors R M` states that a scalar multiple is `0` only if either argument is `0`.
-This is a version of saying that `M` is torsion free, without assuming `R` is zero-divisor free.
-
-The main application of `NoZeroSMulDivisors R M`, when `M` is a module,
-is the result `smul_eq_zero`: a scalar multiple is `0` iff either argument is `0`.
-
-It is a generalization of the `NoZeroDivisors` class to heterogeneous multiplication.
--/
-@[mk_iff]
-class NoZeroSMulDivisors (R M : Type*) [Zero R] [Zero M] [SMul R M] : Prop where
-  /-- If scalar multiplication yields zero, either the scalar or the vector was zero. -/
-  eq_zero_or_eq_zero_of_smul_eq_zero : ∀ {c : R} {x : M}, c • x = 0 → c = 0 ∨ x = 0
-
-export NoZeroSMulDivisors (eq_zero_or_eq_zero_of_smul_eq_zero)
+attribute [mk_iff] NoZeroSMulDivisors
 
 /-- Pullback a `NoZeroSMulDivisors` instance along an injective function. -/
 theorem Function.Injective.noZeroSMulDivisors {R M N : Type*} [Zero R] [Zero M] [Zero N]
