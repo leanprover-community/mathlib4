@@ -209,6 +209,11 @@ variable (σ R) in
 scoped instance : UniformSpace (MvPowerSeries σ R) :=
   Pi.uniformSpace fun _ : σ →₀ ℕ => R
 
+/-- Completeness of the uniform structure on MvPowerSeries -/
+@[scoped instance]
+theorem instCompleteSpace [CompleteSpace R] :
+    CompleteSpace (MvPowerSeries σ R) := Pi.complete _
+
 variable (R)
 
 /-- Coefficients are uniformly continuous -/
@@ -224,11 +229,6 @@ variable (σ)
 @[scoped instance]
 theorem instUniformAddGroup [UniformAddGroup R] :
     UniformAddGroup (MvPowerSeries σ R) := Pi.instUniformAddGroup
-
-/-- Completeness of the uniform structure on MvPowerSeries -/
-@[scoped instance]
-theorem instCompleteSpace [CompleteSpace R] :
-    CompleteSpace (MvPowerSeries σ R) := Pi.complete _
 
 end Uniformity
 
