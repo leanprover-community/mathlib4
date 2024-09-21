@@ -67,24 +67,20 @@ theorem diagramNatTrans_id (X : C) (P : Cᵒᵖ ⥤ D) :
     J.diagramNatTrans (𝟙 P) X = 𝟙 (J.diagram P X) := by
   ext : 2
   refine Multiequalizer.hom_ext _ _ _ (fun i => ?_)
-  dsimp
-  simp only [limit.lift_π, Multifork.ofι_pt, Multifork.ofι_π_app, Category.id_comp]
-  erw [Category.comp_id]
+  simp
 
 @[simp]
 theorem diagramNatTrans_zero [Preadditive D] (X : C) (P Q : Cᵒᵖ ⥤ D) :
     J.diagramNatTrans (0 : P ⟶ Q) X = 0 := by
   ext : 2
   refine Multiequalizer.hom_ext _ _ _ (fun i => ?_)
-  dsimp
-  rw [zero_comp, Multiequalizer.lift_ι, comp_zero]
+  simp
 
 @[simp]
 theorem diagramNatTrans_comp {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q ⟶ R) (X : C) :
     J.diagramNatTrans (η ≫ γ) X = J.diagramNatTrans η X ≫ J.diagramNatTrans γ X := by
   ext : 2
   refine Multiequalizer.hom_ext _ _ _ (fun i => ?_)
-  dsimp
   simp
 
 variable (D)
@@ -110,7 +106,7 @@ def plusObj : Cᵒᵖ ⥤ D where
     simp only [diagramPullback_app, colimit.ι_pre, ι_colimMap_assoc, Category.comp_id]
     let e := S.unop.pullbackId
     dsimp only [Functor.op, pullback_obj]
-    erw [← colimit.w _ e.inv.op, ← Category.assoc]
+    rw [← colimit.w _ e.inv.op, ← Category.assoc]
     convert Category.id_comp (colimit.ι (diagram J P (unop X)) S)
     refine Multiequalizer.hom_ext _ _ _ (fun I => ?_)
     dsimp
@@ -127,7 +123,7 @@ def plusObj : Cᵒᵖ ⥤ D where
       Category.assoc]
     let e := S.unop.pullbackComp g.unop f.unop
     dsimp only [Functor.op, pullback_obj]
-    erw [← colimit.w _ e.inv.op, ← Category.assoc, ← Category.assoc]
+    rw [← colimit.w _ e.inv.op, ← Category.assoc, ← Category.assoc]
     congr 1
     refine Multiequalizer.hom_ext _ _ _ (fun I => ?_)
     dsimp

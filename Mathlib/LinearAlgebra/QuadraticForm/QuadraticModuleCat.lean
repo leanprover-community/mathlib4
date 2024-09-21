@@ -16,7 +16,7 @@ universe v u
 
 variable (R : Type u) [CommRing R]
 
-/-- The category of quadratic modules; modules with an associated quadratic form-/
+/-- The category of quadratic modules; modules with an associated quadratic form -/
 structure QuadraticModuleCat extends ModuleCat.{v} R where
   /-- The quadratic form associated with the module. -/
   form : QuadraticForm R carrier

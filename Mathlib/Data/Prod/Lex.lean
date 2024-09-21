@@ -41,7 +41,7 @@ instance decidableEq (α β : Type*) [DecidableEq α] [DecidableEq β] : Decidab
 instance inhabited (α β : Type*) [Inhabited α] [Inhabited β] : Inhabited (α ×ₗ β) :=
   instInhabitedProd
 
-/-- Dictionary / lexicographic ordering on pairs.  -/
+/-- Dictionary / lexicographic ordering on pairs. -/
 instance instLE (α β : Type*) [LT α] [LE β] : LE (α ×ₗ β) where le := Prod.Lex (· < ·) (· ≤ ·)
 
 instance instLT (α β : Type*) [LT α] [LT β] : LT (α ×ₗ β) where lt := Prod.Lex (· < ·) (· < ·)
@@ -118,12 +118,11 @@ theorem toLex_strictMono : StrictMono (toLex : α × β → α ×ₗ β) := by
 end Preorder
 
 /-- Dictionary / lexicographic partial order for pairs. -/
-instance partialOrder (α β : Type*) [PartialOrder α] [PartialOrder β] : PartialOrder (α ×ₗ β) :=
-  { Prod.Lex.preorder α β with
-    le_antisymm := by
-      haveI : IsStrictOrder α (· < ·) := { irrefl := lt_irrefl, trans := fun _ _ _ => lt_trans }
-      haveI : IsAntisymm β (· ≤ ·) := ⟨fun _ _ => le_antisymm⟩
-      exact @antisymm _ (Prod.Lex _ _) _ }
+instance partialOrder (α β : Type*) [PartialOrder α] [PartialOrder β] : PartialOrder (α ×ₗ β) where
+  le_antisymm _ _ := by
+    haveI : IsStrictOrder α (· < ·) := { irrefl := lt_irrefl, trans := fun _ _ _ => lt_trans }
+    haveI : IsAntisymm β (· ≤ ·) := ⟨fun _ _ => le_antisymm⟩
+    exact antisymm (r := Prod.Lex _ _)
 
 /-- Dictionary / lexicographic linear order for pairs. -/
 instance linearOrder (α β : Type*) [LinearOrder α] [LinearOrder β] : LinearOrder (α ×ₗ β) :=

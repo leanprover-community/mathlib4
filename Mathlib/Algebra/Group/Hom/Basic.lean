@@ -101,7 +101,7 @@ section Group
 variable [Group G] [CommGroup H]
 
 /-- A homomorphism from a group to a monoid is injective iff its kernel is trivial.
-For the iff statement on the triviality of the kernel, see `injective_iff_map_eq_one'`.  -/
+For the iff statement on the triviality of the kernel, see `injective_iff_map_eq_one'`. -/
 @[to_additive
   "A homomorphism from an additive group to an additive monoid is injective iff
   its kernel is trivial. For the iff statement on the triviality of the kernel,

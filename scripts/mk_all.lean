@@ -64,7 +64,8 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
       updates := updates + 1
     else if (← IO.FS.readFile fileName) != fileContent then
       if check then
-        IO.println s!"The file '{fileName}' is out of date: run `lake exe mk_all{if git then " --git" else ""}` to update it"
+        IO.println s!"The file '{fileName}' is out of date: \
+          run `lake exe mk_all{if git then " --git" else ""}` to update it"
       else
         IO.println s!"Updating '{fileName}'"
         IO.FS.writeFile fileName fileContent

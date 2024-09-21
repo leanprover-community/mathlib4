@@ -179,8 +179,9 @@ lemma smul_basis_mul_Y (p q : R[X]) : (p • (1 : W.CoordinateRing) + q • mk W
 
 /-- The ring homomorphism `R[W] →+* S[W.map f]` induced by a ring homomorphism `f : R →+* S`. -/
 noncomputable def map : W.CoordinateRing →+* (W.map f).toAffine.CoordinateRing :=
-  AdjoinRoot.lift ((AdjoinRoot.of _).comp <| mapRingHom f) _ <| by
-    rw [← eval₂_map, ← map_polynomial, AdjoinRoot.eval₂_root]
+  AdjoinRoot.lift ((AdjoinRoot.of _).comp <| mapRingHom f)
+    ((AdjoinRoot.root (WeierstrassCurve.map W f).toAffine.polynomial)) <| by
+      rw [← eval₂_map, ← map_polynomial, AdjoinRoot.eval₂_root]
 
 lemma map_mk (x : R[X][Y]) : map W f (mk W x) = mk (W.map f) (x.map <| mapRingHom f) := by
   rw [map, AdjoinRoot.lift_mk, ← eval₂_map]

@@ -14,9 +14,10 @@ import Mathlib.Algebra.Order.Group.Unbundled.Abs
 
 open Subgroup
 
-@[simp] theorem abs_mem_iff {S G} [AddGroup G] [LinearOrder G] {_ : SetLike S G}
-    [NegMemClass S G] {H : S} {x : G} : |x| ∈ H ↔ x ∈ H := by
-  cases abs_choice x <;> simp [*]
+@[to_additive (attr := simp)]
+theorem mabs_mem_iff {S G} [Group G] [LinearOrder G] {_ : SetLike S G}
+    [InvMemClass S G] {H : S} {x : G} : |x|ₘ ∈ H ↔ x ∈ H := by
+  cases mabs_choice x <;> simp [*]
 
 section ModularLattice
 
@@ -110,3 +111,17 @@ instance toLinearOrderedCommGroup [LinearOrderedCommGroup G] (H : Subgroup G) :
     (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 end Subgroup
+
+@[to_additive]
+lemma Subsemigroup.strictMono_topEquiv {G : Type*} [OrderedCommMonoid G] :
+    StrictMono (topEquiv (M := G)) := fun _ _ ↦ id
+
+@[to_additive]
+lemma MulEquiv.strictMono_subsemigroupCongr {G : Type*} [OrderedCommMonoid G] {S T : Subsemigroup G}
+    (h : S = T) : StrictMono (subsemigroupCongr h) := fun _ _ ↦ id
+
+@[to_additive]
+lemma MulEquiv.strictMono_symm {G G' : Type*} [LinearOrderedCommMonoid G]
+    [LinearOrderedCommMonoid G'] {e : G ≃* G'} (he : StrictMono e) : StrictMono e.symm := by
+  intro
+  simp [← he.lt_iff_lt]

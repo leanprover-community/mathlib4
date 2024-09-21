@@ -3,6 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.Square
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
@@ -11,7 +12,9 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
 In this file, we translate the `IsPushout` and `IsPullback`
 API for the objects of the category `Square C` of commutative
-squares in a category `C`.
+squares in a category `C`. We also obtain lemmas which states
+in this language that a pullback of a monomorphism is
+a monomorphism (and similarly for pushouts of epimorphisms).
 
 -/
 
@@ -104,6 +107,40 @@ lemma IsPullback.op {sq : Square C} (h : sq.IsPullback) : sq.op.IsPushout :=
 
 lemma IsPullback.unop {sq : Square Cᵒᵖ} (h : sq.IsPullback) : sq.unop.IsPushout :=
   CategoryTheory.IsPullback.unop h.flip
+
+namespace IsPullback
+
+variable (h : sq.IsPullback)
+
+include h
+
+lemma flip : sq.flip.IsPullback := CategoryTheory.IsPullback.flip h
+
+lemma mono_f₁₃ [Mono sq.f₂₄] : Mono sq.f₁₃ :=
+  (MorphismProperty.StableUnderBaseChange.monomorphisms C) h (by assumption)
+
+lemma mono_f₁₂ [Mono sq.f₃₄] : Mono sq.f₁₂ := by
+  have : Mono sq.flip.f₂₄ := by dsimp; infer_instance
+  exact h.flip.mono_f₁₃
+
+end IsPullback
+
+namespace IsPushout
+
+variable (h : sq.IsPushout)
+
+include h
+
+lemma flip : sq.flip.IsPushout := CategoryTheory.IsPushout.flip h
+
+lemma epi_f₂₄ [Epi sq.f₁₃] : Epi sq.f₂₄ :=
+  (MorphismProperty.StableUnderCobaseChange.epimorphisms C) h (by assumption)
+
+lemma epi_f₃₄ [Epi sq.f₁₂] : Epi sq.f₃₄ := by
+  have : Epi sq.flip.f₁₃ := by dsimp; infer_instance
+  exact h.flip.epi_f₂₄
+
+end IsPushout
 
 end Square
 

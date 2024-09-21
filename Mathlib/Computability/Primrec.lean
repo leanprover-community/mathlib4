@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.List.GetD
 import Mathlib.Logic.Equiv.List
 import Mathlib.Logic.Function.Iterate
 
@@ -652,7 +651,7 @@ theorem dom_fintype [Finite α] (f : α → σ) : Primrec f :=
   option_some_iff.1 <| by
     haveI := decidableEqOfEncodable α
     refine ((list_get?₁ (l.map f)).comp (list_indexOf₁ l)).of_eq fun a => ?_
-    rw [List.get?_eq_getElem?, List.getElem?_map, List.getElem?_indexOf  (m a), Option.map_some']
+    rw [List.get?_eq_getElem?, List.getElem?_map, List.getElem?_indexOf (m a), Option.map_some']
 
 -- Porting note: These are new lemmas
 -- I added it because it actually simplified the proofs
@@ -925,9 +924,14 @@ theorem list_get? : Primrec₂ (@List.get? α) :=
       induction' l with _ l IH <;> simp [*]
     · apply IH
 
+theorem list_getElem? : Primrec₂ (fun (l : List α) (n : ℕ) => l[n]?) := by
+  convert list_get?
+  ext
+  simp
+
 theorem list_getD (d : α) : Primrec₂ fun l n => List.getD l n d := by
-  simp only [List.getD_eq_getD_get?]
-  exact option_getD.comp₂ list_get? (const _)
+  simp only [List.getD_eq_getElem?_getD]
+  exact option_getD.comp₂ list_getElem? (const _)
 
 theorem list_getI [Inhabited α] : Primrec₂ (@List.getI α _) :=
   list_getD _

@@ -88,7 +88,7 @@ def rootSpaceWeightSpaceProductAux {χ₁ χ₂ χ₃ : H → R} (hχ : χ₁ + 
     { toFun := fun m =>
         ⟨⁅(x : L), (m : M)⁆,
           hχ ▸ lie_mem_genWeightSpace_of_mem_genWeightSpace x.property m.property⟩
-      map_add' := fun m n => by simp only [LieSubmodule.coe_add, lie_add]; rfl
+      map_add' := fun m n => by simp only [Submodule.coe_add, lie_add, AddMemClass.mk_add_mk]
       map_smul' := fun t m => by
         dsimp only
         conv_lhs =>
@@ -97,8 +97,8 @@ def rootSpaceWeightSpaceProductAux {χ₁ χ₂ χ₃ : H → R} (hχ : χ₁ + 
         rfl }
   map_add' x y := by
     ext m
-    simp only [AddSubmonoid.coe_add, Submodule.coe_toAddSubmonoid, add_lie, LinearMap.coe_mk,
-      AddHom.coe_mk, LinearMap.add_apply, AddSubmonoid.mk_add_mk]
+    simp only [Submodule.coe_add, add_lie, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.add_apply,
+      AddMemClass.mk_add_mk]
   map_smul' t x := by
     simp only [RingHom.id_apply]
     ext m
@@ -115,9 +115,10 @@ def rootSpaceWeightSpaceProduct (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ�
     { toLinearMap := rootSpaceWeightSpaceProductAux R L H M hχ
       map_lie' := fun {x y} => by
         ext m
-        simp only [rootSpaceWeightSpaceProductAux, LieSubmodule.coe_bracket,
-          LieSubalgebra.coe_bracket_of_module, lie_lie, LinearMap.coe_mk, AddHom.coe_mk,
-          Subtype.coe_mk, LieHom.lie_apply, LieSubmodule.coe_sub] }
+        simp only [rootSpaceWeightSpaceProductAux]
+        dsimp
+        repeat rw [LieSubmodule.coe_bracket]
+        simp only [LieSubalgebra.coe_bracket_of_module, lie_lie] }
 
 @[simp]
 theorem coe_rootSpaceWeightSpaceProduct_tmul (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ₂ = χ₃)
@@ -293,7 +294,8 @@ lemma mem_corootSpace' {x : H} :
     exists_and_right, exists_eq_right, mem_setOf_eq, s]
   refine ⟨fun ⟨_, y, hy, z, hz, hyz⟩ ↦ ⟨y, hy, z, hz, hyz⟩,
     fun ⟨y, hy, z, hz, hyz⟩ ↦ ⟨?_, y, hy, z, hz, hyz⟩⟩
-  convert (rootSpaceProduct R L H α (-α) 0 (add_neg_cancel α) (⟨y, hy⟩ ⊗ₜ[R] ⟨z, hz⟩)).property
+  convert
+    (rootSpaceProduct R L H α (-α) 0 (add_neg_cancel α) (⟨y, hy⟩ ⊗ₜ[R] ⟨z, hz⟩)).property using 0
   simp [hyz]
 
 end LieAlgebra

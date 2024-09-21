@@ -35,7 +35,7 @@ open Set Function
 open Pointwise
 
 /-- A (left) ideal in a semiring `R` is an additive submonoid `s` such that
-`a * b ∈ s` whenever `b ∈ s`. If `R` is a ring, then `s` is an additive subgroup.  -/
+`a * b ∈ s` whenever `b ∈ s`. If `R` is a ring, then `s` is an additive subgroup. -/
 abbrev Ideal (R : Type u) [Semiring R] :=
   Submodule R R
 
@@ -76,9 +76,9 @@ theorem sum_mem (I : Ideal α) {ι : Type*} {t : Finset ι} {f : ι → α} :
 theorem eq_top_of_unit_mem (x y : α) (hx : x ∈ I) (h : y * x = 1) : I = ⊤ :=
   eq_top_iff.2 fun z _ =>
     calc
-      z = z * (y * x) := by simp [h]
-      _ = z * y * x := Eq.symm <| mul_assoc z y x
-      _ ∈ I := I.mul_mem_left _ hx
+      z * y * x ∈ I := I.mul_mem_left _ hx
+      _ = z * (y * x) := mul_assoc z y x
+      _ = z := by rw [h, mul_one]
 
 theorem eq_top_of_isUnit_mem {x} (hx : x ∈ I) (h : IsUnit x) : I = ⊤ :=
   let ⟨y, hy⟩ := h.exists_left_inv
@@ -490,6 +490,9 @@ theorem mul_mem_right (h : a ∈ I) : a * b ∈ I :=
 
 variable {b}
 
+lemma mem_of_dvd (hab : a ∣ b) (ha : a ∈ I) : b ∈ I := by
+  obtain ⟨c, rfl⟩ := hab; exact I.mul_mem_right _ ha
+
 theorem pow_mem_of_mem (ha : a ∈ I) (n : ℕ) (hn : 0 < n) : a ^ n ∈ I :=
   Nat.casesOn n (Not.elim (by decide))
     (fun m _hm => (pow_succ a m).symm ▸ I.mul_mem_left (a ^ m) ha) hn
@@ -570,7 +573,7 @@ theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
     · rw [Set.image_empty, hs]
       trivial
     · exact subset_span ⟨_, hx, pow_zero _⟩
-  rw [eq_top_iff_one, span, Finsupp.mem_span_iff_total] at hs
+  rw [eq_top_iff_one, span, Finsupp.mem_span_iff_linearCombination] at hs
   rcases hs with ⟨f, hf⟩
   have hf : (f.support.sum fun a => f a * a) = 1 := hf -- Porting note: was `change ... at hf`
   have := sum_pow_mem_span_pow f.support (fun a => f a * a) n

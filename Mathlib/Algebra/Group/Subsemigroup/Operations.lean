@@ -489,9 +489,9 @@ theorem coe_equivMapOfInjective_apply (f : M →ₙ* N) (hf : Function.Injective
 theorem closure_closure_coe_preimage {s : Set M} :
     closure ((Subtype.val : closure s → M) ⁻¹' s) = ⊤ :=
   eq_top_iff.2 fun x =>
-    Subtype.recOn x fun _ hx _ =>
-      closure_induction' (p := fun y hy ↦ ⟨y, hy⟩ ∈ closure (((↑) : closure s → M) ⁻¹' s))
-        (fun _ hg => subset_closure hg) (fun _ _ _ _ => Subsemigroup.mul_mem _) hx
+    Subtype.recOn x fun _ hx' _ => closure_induction'
+      (p := fun y hy ↦ (⟨y, hy⟩ : closure s) ∈ closure (((↑) : closure s → M) ⁻¹' s))
+        (fun _ hg => subset_closure hg) (fun _ _ _ _ => Subsemigroup.mul_mem _) hx'
 
 /-- Given `Subsemigroup`s `s`, `t` of semigroups `M`, `N` respectively, `s × t` as a subsemigroup
 of `M × N`. -/
@@ -531,7 +531,7 @@ theorem top_prod_top : (⊤ : Subsemigroup M).prod (⊤ : Subsemigroup N) = ⊤ 
 
 @[to_additive bot_prod_bot]
 theorem bot_prod_bot : (⊥ : Subsemigroup M).prod (⊥ : Subsemigroup N) = ⊥ :=
-  SetLike.coe_injective <| by simp [coe_prod, Prod.one_eq_mk]
+  SetLike.coe_injective <| by simp [coe_prod]
 
 /-- The product of subsemigroups is isomorphic to their product as semigroups. -/
 @[to_additive prodEquiv
@@ -594,6 +594,15 @@ theorem coe_srange (f : M →ₙ* N) : (f.srange : Set N) = Set.range f :=
 @[to_additive (attr := simp)]
 theorem mem_srange {f : M →ₙ* N} {y : N} : y ∈ f.srange ↔ ∃ x, f x = y :=
   Iff.rfl
+
+@[to_additive]
+private theorem srange_mk_aux_mul {f : M → N} (hf : ∀ (x y : M), f (x * y) = f x * f y)
+    {x y : N} (hx : x ∈ Set.range f) (hy : y ∈ Set.range f) :
+    x * y ∈ Set.range f :=
+  (srange ⟨f, hf⟩).mul_mem hx hy
+
+@[to_additive (attr := simp)] theorem srange_mk (f : M → N) (hf) :
+    srange ⟨f, hf⟩ = ⟨Set.range f, srange_mk_aux_mul hf⟩ := rfl
 
 @[to_additive]
 theorem srange_eq_map (f : M →ₙ* N) : f.srange = (⊤ : Subsemigroup M).map f :=

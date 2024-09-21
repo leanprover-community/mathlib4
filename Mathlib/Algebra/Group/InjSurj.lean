@@ -26,7 +26,7 @@ And there are versions for (additive) (commutative) semigroups/monoids.
 
 ## Implementation note
 
-The `nsmul` and `zsmul` assumptions on any tranfer definition for an algebraic structure involving
+The `nsmul` and `zsmul` assumptions on any transfer definition for an algebraic structure involving
 both addition and multiplication (eg `AddMonoidWithOne`) is `∀ n x, f (n • x) = n • f x`, which is
 what we would expect.
 However, we cannot do the same for transfer definitions built using `to_additive` (eg `AddMonoid`)

@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Int.Defs
 import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.Cases
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.SplitIfs
 
@@ -91,7 +90,7 @@ section Semigroup
 variable [Semigroup α]
 
 @[to_additive]
-instance Semigroup.to_isAssociative : Std.Associative (α := α)  (· * ·) := ⟨mul_assoc⟩
+instance Semigroup.to_isAssociative : Std.Associative (α := α) (· * ·) := ⟨mul_assoc⟩
 
 /-- Composing two multiplications on the left by `y` then `x`
 is equal to a multiplication on the left by `x * y`.
@@ -149,12 +148,12 @@ section CommSemigroup
 variable [CommSemigroup G]
 
 @[to_additive]
-theorem mul_left_comm : ∀ a b c : G, a * (b * c) = b * (a * c) :=
-  left_comm Mul.mul mul_comm mul_assoc
+theorem mul_left_comm (a b c : G) : a * (b * c) = b * (a * c) := by
+  rw [← mul_assoc, mul_comm a, mul_assoc]
 
 @[to_additive]
-theorem mul_right_comm : ∀ a b c : G, a * b * c = a * c * b :=
-  right_comm Mul.mul mul_comm mul_assoc
+theorem mul_right_comm (a b c : G) : a * b * c = a * c * b := by
+  rw [mul_assoc, mul_comm b, mul_assoc]
 
 @[to_additive]
 theorem mul_mul_mul_comm (a b c d : G) : a * b * (c * d) = a * c * (b * d) := by
@@ -644,6 +643,16 @@ theorem mul_eq_one_iff_eq_inv : a * b = 1 ↔ a = b⁻¹ :=
 theorem mul_eq_one_iff_inv_eq : a * b = 1 ↔ a⁻¹ = b := by
   rw [mul_eq_one_iff_eq_inv, inv_eq_iff_eq_inv]
 
+/-- Variant of `mul_eq_one_iff_eq_inv` with swapped equality. -/
+@[to_additive]
+theorem mul_eq_one_iff_eq_inv' : a * b = 1 ↔ b = a⁻¹ := by
+  rw [mul_eq_one_iff_inv_eq, eq_comm]
+
+/-- Variant of `mul_eq_one_iff_inv_eq` with swapped equality. -/
+@[to_additive]
+theorem mul_eq_one_iff_inv_eq' : a * b = 1 ↔ b⁻¹ = a := by
+  rw [mul_eq_one_iff_eq_inv, eq_comm]
+
 @[to_additive]
 theorem eq_inv_iff_mul_eq_one : a = b⁻¹ ↔ a * b = 1 :=
   mul_eq_one_iff_eq_inv.symm
@@ -729,13 +738,15 @@ theorem div_left_inj : b / a = c / a ↔ b = c := by
   rw [div_eq_mul_inv, div_eq_mul_inv]
   exact mul_left_inj _
 
-@[to_additive (attr := simp) sub_add_sub_cancel]
-theorem div_mul_div_cancel' (a b c : G) : a / b * (b / c) = a / c := by
+@[to_additive (attr := simp)]
+theorem div_mul_div_cancel (a b c : G) : a / b * (b / c) = a / c := by
   rw [← mul_div_assoc, div_mul_cancel]
 
-@[to_additive (attr := simp) sub_sub_sub_cancel_right]
-theorem div_div_div_cancel_right' (a b c : G) : a / c / (b / c) = a / b := by
-  rw [← inv_div c b, div_inv_eq_mul, div_mul_div_cancel']
+@[to_additive (attr := simp)]
+theorem div_div_div_cancel_right (a b c : G) : a / c / (b / c) = a / b := by
+  rw [← inv_div c b, div_inv_eq_mul, div_mul_div_cancel]
+
+@[deprecated (since := "2024-08-24")] alias div_div_div_cancel_right' := div_div_div_cancel_right
 
 @[to_additive]
 theorem div_eq_one : a / b = 1 ↔ a = b :=
@@ -833,6 +844,18 @@ lemma mul_zpow_self (a : G) (n : ℤ) : a ^ n * a = a ^ (n + 1) := (zpow_add_one
 
 @[to_additive sub_zsmul] lemma zpow_sub (a : G) (m n : ℤ) : a ^ (m - n) = a ^ m * (a ^ n)⁻¹ := by
   rw [Int.sub_eq_add_neg, zpow_add, zpow_neg]
+
+@[to_additive natCast_sub_natCast_zsmul]
+lemma zpow_natCast_sub_natCast (a : G) (m n : ℕ) : a ^ (m - n : ℤ) = a ^ m / a ^ n := by
+  simpa [div_eq_mul_inv] using zpow_sub a m n
+
+@[to_additive natCast_sub_one_zsmul]
+lemma zpow_natCast_sub_one (a : G) (n : ℕ) : a ^ (n - 1 : ℤ) = a ^ n / a := by
+  simpa [div_eq_mul_inv] using zpow_sub a n 1
+
+@[to_additive one_sub_natCast_zsmul]
+lemma zpow_one_sub_natCast (a : G) (n : ℕ) : a ^ (1 - n : ℤ) = a / a ^ n := by
+  simpa [div_eq_mul_inv] using zpow_sub a 1 n
 
 @[to_additive] lemma zpow_mul_comm (a : G) (m n : ℤ) : a ^ m * a ^ n = a ^ n * a ^ m := by
   rw [← zpow_add, Int.add_comm, zpow_add]
@@ -951,9 +974,11 @@ theorem mul_mul_div_cancel (a b c : G) : a * c * (b / c) = a * b := by
 theorem div_mul_mul_cancel (a b c : G) : a / c * (b * c) = a * b := by
   rw [mul_left_comm, div_mul_cancel, mul_comm]
 
-@[to_additive (attr := simp) sub_add_sub_cancel']
-theorem div_mul_div_cancel'' (a b c : G) : a / b * (c / a) = c / b := by
-  rw [mul_comm]; apply div_mul_div_cancel'
+@[to_additive (attr := simp)]
+theorem div_mul_div_cancel' (a b c : G) : a / b * (c / a) = c / b := by
+  rw [mul_comm]; apply div_mul_div_cancel
+
+@[deprecated (since := "2024-08-24")] alias div_mul_div_cancel'' := div_mul_div_cancel'
 
 @[to_additive (attr := simp)]
 theorem mul_div_div_cancel (a b c : G) : a * b / (a / c) = b * c := by
@@ -961,7 +986,7 @@ theorem mul_div_div_cancel (a b c : G) : a * b / (a / c) = b * c := by
 
 @[to_additive (attr := simp)]
 theorem div_div_div_cancel_left (a b c : G) : c / a / (c / b) = b / a := by
-  rw [← inv_div b c, div_inv_eq_mul, mul_comm, div_mul_div_cancel']
+  rw [← inv_div b c, div_inv_eq_mul, mul_comm, div_mul_div_cancel]
 
 @[to_additive]
 theorem div_eq_div_iff_mul_eq_mul : a / b = c / d ↔ a * d = c * b := by

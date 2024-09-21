@@ -27,12 +27,25 @@ variable [OrderedCommGroup α] {m n : ℤ} {a b : α}
   rintro rfl
   simp at hn
 
-@[to_additive zsmul_strictMono_left]
+@[to_additive zsmul_left_strictMono]
 lemma zpow_right_strictMono (ha : 1 < a) : StrictMono fun n : ℤ ↦ a ^ n := fun m n h ↦
   calc
     a ^ m = a ^ m * 1 := (mul_one _).symm
     _ < a ^ m * a ^ (n - m) := mul_lt_mul_left' (one_lt_zpow' ha <| Int.sub_pos_of_lt h) _
     _ = a ^ n := by simp [← zpow_add, m.add_comm]
+
+@[deprecated (since := "2024-09-19")] alias zsmul_strictMono_left := zsmul_left_strictMono
+
+@[to_additive zsmul_left_strictAnti]
+lemma zpow_right_strictAnti (ha : a < 1) : StrictAnti fun n : ℤ ↦ a ^ n := fun m n h ↦ calc
+  a ^ n < a ^ n * a⁻¹ ^ (n - m) :=
+    lt_mul_of_one_lt_right' _ <| one_lt_zpow' (one_lt_inv'.2 ha) <| Int.sub_pos.2 h
+  _ = a ^ m := by
+    rw [inv_zpow', Int.neg_sub, ← zpow_add, Int.add_comm, Int.sub_add_cancel]
+
+@[to_additive zsmul_left_inj]
+lemma zpow_right_inj (ha : 1 < a) {m n : ℤ} : a ^ m = a ^ n ↔ m = n :=
+  (zpow_right_strictMono ha).injective.eq_iff
 
 @[to_additive zsmul_mono_left]
 lemma zpow_mono_right (ha : 1 ≤ a) : Monotone fun n : ℤ ↦ a ^ n := fun m n h ↦
@@ -101,5 +114,27 @@ lemma zpow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (zpow_left_injec
 @[to_additive "Alias of `zsmul_right_inj`, for ease of discovery alongside `zsmul_le_zsmul_iff'` and
 `zsmul_lt_zsmul_iff'`."]
 lemma zpow_eq_zpow_iff' (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := zpow_left_inj hn
+
+variable (α) in
+/-- A nontrivial densely linear ordered commutative group can't be a cyclic group. -/
+@[to_additive
+  "A nontrivial densely linear ordered additive commutative group can't be a cyclic group."]
+theorem not_isCyclic_of_denselyOrdered [DenselyOrdered α] [Nontrivial α] : ¬IsCyclic α := by
+  intro h
+  rcases exists_zpow_surjective α with ⟨a, ha⟩
+  rcases lt_trichotomy a 1 with hlt | rfl | hlt
+  · rcases exists_between hlt with ⟨b, hab, hb⟩
+    rcases ha b with ⟨k, rfl⟩
+    suffices 0 < k ∧ k < 1 by omega
+    rw [← one_lt_inv'] at hlt
+    simp_rw [← zpow_lt_zpow_iff hlt]
+    simp_all
+  · rcases exists_ne (1 : α) with ⟨b, hb⟩
+    simpa [hb.symm] using ha b
+  · rcases exists_between hlt with ⟨b, hb, hba⟩
+    rcases ha b with ⟨k, rfl⟩
+    suffices 0 < k ∧ k < 1 by omega
+    simp_rw [← zpow_lt_zpow_iff hlt]
+    simp_all
 
 end LinearOrderedCommGroup

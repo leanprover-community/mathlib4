@@ -5,6 +5,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.Lean.Name
 import Mathlib.Lean.Expr.Basic
+import Lean.Elab.Command
 
 /-!
 # Commands `#long_names` and `#long_instances`

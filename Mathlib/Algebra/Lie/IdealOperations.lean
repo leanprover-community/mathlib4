@@ -213,6 +213,12 @@ theorem map_bracket_eq [LieModule R L M] : map f ⁅I, N⁆ = ⁅I, map f N⁆ :
     exact ⟨x, ⟨f n, (mem_map (f n)).mpr ⟨n, hn, rfl⟩⟩, hm⟩
   · rintro ⟨x, ⟨m₂, hm₂ : m₂ ∈ map f N⟩, rfl⟩
     obtain ⟨n, hn, rfl⟩ := (mem_map m₂).mp hm₂
+    #adaptation_note
+    /--
+    After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
+    See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
+    -/
+    letI : Bracket I M := LieRingModule.toBracket
     exact ⟨⁅x, n⁆, ⟨x, ⟨n, hn⟩, rfl⟩, by simp⟩
 
 theorem comap_bracket_eq [LieModule R L M] (hf₁ : f.ker = ⊥) (hf₂ : N₂ ≤ f.range) :

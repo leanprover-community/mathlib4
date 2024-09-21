@@ -292,7 +292,7 @@ of a family of linear maps over the various rings `R.obj X`. -/
 def mk' : P ⟶ Q where
   hom :=
     { app := fun X => (app X).toAddMonoidHom
-      naturality := fun X Y f => by ext x; apply naturality }
+      naturality := fun _ _ f => AddCommGrp.ext (naturality f) }
   map_smul X := (app X).map_smul
 
 @[simp]

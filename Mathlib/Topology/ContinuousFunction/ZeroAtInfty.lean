@@ -16,7 +16,7 @@ compact space, this type has nice properties.
 
 ## TODO
 
-* Create more intances of algebraic structures (e.g., `NonUnitalSemiring`) once the necessary
+* Create more instances of algebraic structures (e.g., `NonUnitalSemiring`) once the necessary
   type classes (e.g., `TopologicalRing`) are sufficiently generalized.
 * Relate the unitization of `C₀(α, β)` to the Alexandroff compactification.
 -/
