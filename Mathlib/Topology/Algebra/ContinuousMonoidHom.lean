@@ -21,6 +21,8 @@ This file defines the space of continuous homomorphisms between two topological 
 -/
 
 
+section
+
 open Pointwise Function
 
 variable (F A B C D E : Type*) [Monoid A] [Monoid B] [Monoid C] [Monoid D] [CommGroup E]
@@ -392,6 +394,8 @@ end LocallyCompact
 
 end ContinuousMonoidHom
 
+end
+
 section
 
 /-!
@@ -409,11 +413,11 @@ universe u v
 variable (G : Type u) [TopologicalSpace G] (H : Type v) [TopologicalSpace H]
 
 /-- Define the structure of two-sided continuous isomorphism of additive groups. -/
-structure ContinuousAddEquiv [AddGroup G] [AddGroup H] extends AddEquiv G H , Homeomorph G H
+structure ContinuousAddEquiv [Add G] [Add H] extends AddEquiv G H , Homeomorph G H
 
 /-- Define the structure of two-sided continuous isomorphism of groups. -/
 @[to_additive "The type of two-sided continuous isomorphism of additive groups."]
-structure ContinuousMulEquiv [Group G] [Group H] extends MulEquiv G H , Homeomorph G H
+structure ContinuousMulEquiv [Mul G] [Mul H] extends MulEquiv G H , Homeomorph G H
 
 /-- The Homeomorphism induced from a two-sided continuous isomorphism of groups. -/
 add_decl_doc ContinuousMulEquiv.toHomeomorph
@@ -421,13 +425,110 @@ add_decl_doc ContinuousMulEquiv.toHomeomorph
 /-- The Homeomorphism induced from a two-sided continuous isomorphism additive groups. -/
 add_decl_doc ContinuousAddEquiv.toHomeomorph
 
+/-- Notation for a `ContinuousMulEquiv`. -/
+infixl:25 " ≃ₜ* " => ContinuousMulEquiv
+
+/-- Notation for an `ContinuousAddEquiv`. -/
+infixl:25 " ≃ₜ+ " => ContinuousAddEquiv
+
+section
+
+/-- `ContinuousAddEquivClass F A B` states that `F` is a type of two-sided continuous additive
+isomomorphisms.-/
+class ContinuousAddEquivClass (F : Type*) (A B : outParam Type*) [Add A] [Add B]
+    [h : EquivLike F A B] [TopologicalSpace A] [TopologicalSpace B] extends AddEquivClass F A B :
+    Prop where
+    map_continuous (f : F) : Continuous (h.coe f)
+    inv_map_continuous (f : F) : Continuous (h.inv f)
+
+/-- `ContinuousMulEquivClass F A B` states that `F` is a type of two-sided continuous multiplicative
+isomomorphisms.-/
+@[to_additive]
+class ContinuousMulEquivClass (F : Type*) (A B : outParam Type*) [Mul A] [Mul B]
+    [h : EquivLike F A B] [TopologicalSpace A] [TopologicalSpace B] extends MulEquivClass F A B :
+    Prop where
+    map_continuous (f : F) : Continuous (h.coe f)
+    inv_map_continuous (f : F) : Continuous (h.inv f)
+
+namespace ContinuousMulEquivClass
+
+variable {F M N : Type*} [TopologicalSpace M] [TopologicalSpace N]
+
+@[to_additive]
+theorem map_eq_one_iff [MulOneClass M] [MulOneClass N] [EquivLike F M N]
+    [ContinuousMulEquivClass F M N] (h : F) {x : M} :
+    h x = 1 ↔ x = 1 := _root_.map_eq_one_iff h (EquivLike.injective h)
+
+@[to_additive]
+theorem map_ne_one_iff [MulOneClass M] [MulOneClass N] [EquivLike F M N]
+    [ContinuousMulEquivClass F M N] (h : F) {x : M} :
+    h x ≠ 1 ↔ x ≠ 1 := _root_.map_ne_one_iff h (EquivLike.injective h)
+
+end ContinuousMulEquivClass
+
+variable {F α β : Type*}[EquivLike F α β] [TopologicalSpace α] [TopologicalSpace β]
+
+/-- Turn an element of a type `F` satisfying `ContinuousMulEquivClass F α β` into an actual
+`ContinuousMulEquiv`. This is declared as the default coercion from `F` to `α ≃* β`. -/
+@[to_additive (attr := coe)
+"Turn an element of a type `F` satisfying `ContinuousAddEquivClass F α β` into an actual
+`ContinuousAddEquiv`. This is declared as the default coercion from `F` to `α ≃+ β`."]
+def ContinuousMulEquivClass.toContinuousMulEquiv [Mul α] [Mul β] [h : ContinuousMulEquivClass F α β]
+  (f : F) : α ≃ₜ* β := {
+    (f : α ≃* β) with
+    continuous_toFun := h.map_continuous f
+    continuous_invFun := h.inv_map_continuous f }
+
+/-- Any type satisfying `MulEquivClass` can be cast into `MulEquiv` via
+`MulEquivClass.toMulEquiv`. -/
+@[to_additive "Any type satisfying `AddEquivClass` can be cast into `AddEquiv` via
+`AddEquivClass.toAddEquiv`. "]
+instance [Mul α] [Mul β] [ContinuousMulEquivClass F α β] : CoeTC F (α ≃ₜ* β) :=
+  ⟨ContinuousMulEquivClass.toContinuousMulEquiv⟩
+
+
+@[to_additive]
+theorem ContinuousMulEquivClass.toContinuousMulEquiv_injective [Mul α] [Mul β]
+    [ContinuousMulEquivClass F α β] : Function.Injective ((↑) : F → α ≃ₜ* β) :=
+  fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr_arg (fun e : α ≃ₜ* β ↦ e.toFun a) e
+
 namespace ContinuousMulEquiv
 
-variable {G} {H} [Group G] [Group H]
+variable {M N : Type*} [TopologicalSpace M] [TopologicalSpace N] [Mul M] [Mul N]
+
+@[to_additive]
+instance : EquivLike (M ≃ₜ* N) M N where
+  coe f := f.toFun
+  inv f := f.invFun
+  left_inv f := f.left_inv
+  right_inv f := f.right_inv
+  coe_injective' f g h₁ h₂ := by
+    cases f
+    cases g
+    congr
+    exact MulEquiv.ext_iff.mpr (congrFun h₁)
+
+@[to_additive] -- shortcut instance that doesn't generate any subgoals
+instance : CoeFun (M ≃ₜ* N) fun _ ↦ M → N where
+  coe f := f
+
+@[to_additive]
+instance : ContinuousMulEquivClass (M ≃ₜ* N) M N where
+  map_mul f := f.map_mul'
+  map_continuous f := f.continuous_toFun
+  inv_map_continuous f := f.continuous_invFun
+
+end ContinuousMulEquiv
+
+end
+
+namespace ContinuousMulEquiv
+
+variable {G} {H} [Mul G] [Mul H]
 
 /-- The inverse of a ContinuousMulEquiv. -/
 @[to_additive "The inverse of a ContinuousAddEquiv."]
-def symm (cme : ContinuousMulEquiv G H) : ContinuousMulEquiv H G := {
+def symm (cme : G ≃ₜ* H) : H ≃ₜ* G := {
   cme.toMulEquiv.symm with
   continuous_toFun := cme.continuous_invFun
   continuous_invFun := cme.continuous_toFun
@@ -435,15 +536,11 @@ def symm (cme : ContinuousMulEquiv G H) : ContinuousMulEquiv H G := {
 
 /-- The composition of two ContinuousMulEquiv. -/
 @[to_additive "The composition of two ContinuousAddEquiv."]
-def trans {K : Type*} [Group K] [TopologicalSpace K]
-    (cme1 : ContinuousMulEquiv G H) (cme2 : ContinuousMulEquiv H K) : ContinuousMulEquiv G K := {
+def trans {K : Type*} [Mul K] [TopologicalSpace K]
+    (cme1 : G ≃ₜ* H) (cme2 : H ≃ₜ* K) : G ≃ₜ* K := {
   cme1.toMulEquiv.trans cme2.toMulEquiv with
-  continuous_toFun :=
-    let this := Continuous.comp cme2.continuous_toFun cme1.continuous_toFun
-    this
-  continuous_invFun :=
-    let this := Continuous.comp cme1.continuous_invFun cme2.continuous_invFun
-    this
+  continuous_toFun := by convert Continuous.comp cme2.continuous_toFun cme1.continuous_toFun
+  continuous_invFun := by convert Continuous.comp cme1.continuous_invFun cme2.continuous_invFun
   }
 
 end ContinuousMulEquiv
