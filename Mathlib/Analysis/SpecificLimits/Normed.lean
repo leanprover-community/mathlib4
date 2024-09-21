@@ -276,7 +276,7 @@ instance {R : Type*} [NormedRing R] [CompleteSpace R] : HasSummableGeomSeries R 
 
 section HasSummableGeometricSeries
 
-variable {R : Type*} [NormedRing R] [HasSummableGeomSeries R]
+variable {R : Type*} [NormedRing R]
 
 open NormedSpace
 
@@ -284,14 +284,22 @@ open NormedSpace
 normed ring satisfies the axiom `‖1‖ = 1`. -/
 theorem tsum_geometric_le_of_norm_lt_one (x : R) (h : ‖x‖ < 1) :
     ‖∑' n : ℕ, x ^ n‖ ≤ ‖(1 : R)‖ - 1 + (1 - ‖x‖)⁻¹ := by
-  rw [tsum_eq_zero_add (summable_geometric_of_norm_lt_one h)]
-  simp only [_root_.pow_zero]
-  refine le_trans (norm_add_le _ _) ?_
-  have : ‖∑' b : ℕ, (fun n ↦ x ^ (n + 1)) b‖ ≤ (1 - ‖x‖)⁻¹ - 1 := by
-    refine tsum_of_norm_bounded ?_ fun b ↦ norm_pow_le' _ (Nat.succ_pos b)
-    convert (hasSum_nat_add_iff' 1).mpr (hasSum_geometric_of_lt_one (norm_nonneg x) h)
-    simp
-  linarith
+  by_cases hx : Summable (fun n ↦ x ^ n)
+  · rw [tsum_eq_zero_add hx]
+    simp only [_root_.pow_zero]
+    refine le_trans (norm_add_le _ _) ?_
+    have : ‖∑' b : ℕ, (fun n ↦ x ^ (n + 1)) b‖ ≤ (1 - ‖x‖)⁻¹ - 1 := by
+      refine tsum_of_norm_bounded ?_ fun b ↦ norm_pow_le' _ (Nat.succ_pos b)
+      convert (hasSum_nat_add_iff' 1).mpr (hasSum_geometric_of_lt_one (norm_nonneg x) h)
+      simp
+    linarith
+  · simp [tsum_eq_zero_of_not_summable hx]
+    nontriviality R
+    have : 1 ≤ ‖(1 : R)‖ := one_le_norm_one R
+    have : 0 ≤ (1 - ‖x‖) ⁻¹ := inv_nonneg.2 (by linarith)
+    linarith
+
+variable [HasSummableGeomSeries R]
 
 @[deprecated (since := "2024-01-31")]
 alias NormedRing.tsum_geometric_of_norm_lt_1 := tsum_geometric_le_of_norm_lt_one
@@ -328,7 +336,7 @@ theorem geom_series_mul_one_add (x : R) (h : ‖x‖ < 1) :
   rw [add_mul, one_mul, geom_series_mul_shift x h, geom_series_succ x h, two_mul, add_sub_assoc]
 
 /-- In a normed ring with summable geometric series, a perturbation of `1` by an element `t`
-of distance less than `1` from `1` is a unit.  Here we construct its `Units` structure.  -/
+of distance less than `1` from `1` is a unit.  Here we construct its `Units` structure. -/
 @[simps val]
 def Units.oneSub (t : R) (h : ‖t‖ < 1) : Rˣ where
   val := 1 - t
