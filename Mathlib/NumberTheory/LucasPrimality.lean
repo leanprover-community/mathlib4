@@ -46,5 +46,6 @@ theorem lucas_primality (p : ℕ) (a : ZMod p) (ha : a ^ (p - 1) = 1)
   rw [Nat.prime_iff_card_units]
   apply (Nat.card_units_zmod_lt_sub_one hp1).antisymm
   let a' : (ZMod p)ˣ := Units.mkOfMulEqOne a _ (by rwa [← pow_succ', tsub_add_eq_add_tsub hp1])
-  rw [← orderOf_eq_of_pow_and_pow_div_prime (tsub_pos_of_lt hp1) ha hd]
-  exact (orderOf_injective (Units.coeHom _) Units.ext a').trans_le orderOf_le_card_univ
+  calc p - 1 = orderOf a := order_of_a.symm
+    _ = orderOf a' := (orderOf_injective (Units.coeHom (ZMod p)) Units.ext a')
+    _ ≤ Fintype.card (ZMod p)ˣ := orderOf_le_card_univ
