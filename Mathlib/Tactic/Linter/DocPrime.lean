@@ -9,7 +9,7 @@ import Lean.Elab.Command
 #  The "docPrime" linter
 
 The "docPrime" linter emits a warning on declarations that have no doc-string and whose
-name contains a `'`.
+name ends with a `'`.
 -/
 
 open Lean Elab
