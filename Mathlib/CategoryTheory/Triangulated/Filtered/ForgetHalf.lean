@@ -559,8 +559,9 @@ lemma support_truncGE (X : C) (n : ℤ) :
 
 /-- The morphism "`αⁿ` from `X⟪a⟫` to `X⟪b⟫`, if `a,b` are integers and `n` is a natural number
 such that `a + n = b`.-/
-noncomputable def power_of_alpha (n : ℕ) : ∀ (X : C) (a b : ℤ) (_ : a + n = b),
+noncomputable def power_of_alpha (X : C) (a b : ℤ) (n : ℕ) (_ : a + n = b) :
     (@shiftFunctor C _ _ _ Shift₂ a).obj X ⟶ (@shiftFunctor C _ _ _ Shift₂ b).obj X := by
+  revert X a b
   induction' n with n fn
   · intro X a b hn
     exact ((@shiftFunctorZero C _ _ _ Shift₂).symm.app ((@shiftFunctor C _ _ _ Shift₂ a).obj X) ≪≫
@@ -581,22 +582,27 @@ noncomputable def power_of_alpha_alt (X : C) (a b : ℤ) :
 -/
 
 lemma power_of_alpha_zero (X : C) (a b : ℤ) (hab : a = b) :
-    power_of_alpha 0 X a b (by rw [hab, Nat.cast_zero, add_zero]) = eqToHom (by rw [hab]) := by
+    power_of_alpha X a b 0 (by rw [hab, Nat.cast_zero, add_zero]) = eqToHom (by rw [hab]) := by
   dsimp [power_of_alpha, shiftFunctorAdd']
   rw [@shiftFunctorAdd_add_zero_inv_app C _ _ _ Shift₂]
   simp only [Functor.id_obj, add_zero, eqToHom_naturality, eqToHom_app, assoc,
     eqToHom_naturality_assoc, Iso.inv_hom_id_app_assoc, eqToHom_trans]
 
 lemma power_of_alpha_zero' (X : C) (a : ℤ) :
-    power_of_alpha 0 X a a (by simp only [Nat.cast_zero, add_zero]) = (Iso.refl _).hom := by
+    power_of_alpha X a a 0 (by simp only [Nat.cast_zero, add_zero]) = (Iso.refl _).hom := by
   dsimp [power_of_alpha]
   rw [shiftFunctorAdd'_add_zero]
   simp only [Iso.trans_inv, isoWhiskerLeft_inv, Iso.symm_inv, NatTrans.comp_app, Functor.comp_obj,
     Functor.id_obj, whiskerLeft_app, Functor.rightUnitor_hom_app, comp_id, Iso.inv_hom_id_app]
 
+
+lemma power_of_alpha_change_exponent (X : C) (n m : ℕ) (hnm : n = m) (a b : ℤ) (hn : a + n = b) :
+    power_of_alpha X a b n hn = power_of_alpha X a b m (by rw [← hnm, hn]) := by
+  simp_rw [hnm]
+
 lemma power_of_alpha_eqToHom (n : ℕ) : ∀ (X : C) (a b a' b' : ℤ) (hn : a + n = b)
     (hn' : a' + n = b') (ha : a = a') (hb : b = b'),
-    power_of_alpha n X a b hn = eqToHom (by rw [ha]) ≫ power_of_alpha n X a' b' hn' ≫
+    power_of_alpha X a b n hn = eqToHom (by rw [ha]) ≫ power_of_alpha X a' b' n hn' ≫
     eqToHom (by rw [hb]) := by
   induction' n with n hind
   · intro X a b a' b' hn hn' ha hb
@@ -604,10 +610,10 @@ lemma power_of_alpha_eqToHom (n : ℕ) : ∀ (X : C) (a b a' b' : ℤ) (hn : a +
       power_of_alpha_zero X a' b' (by rw [← hn', Nat.cast_zero, add_zero])]
     simp only [eqToHom_trans]
   · intro X a b a' b' hn hn' ha hb
-    change power_of_alpha n X a (a + n) rfl ≫ hP.α.app _ ≫
+    change power_of_alpha X a (a + n) n rfl ≫ hP.α.app _ ≫
       ((@shiftFunctorAdd' C _ _ _ Shift₂ (a + n) 1 b
       (by rw [← hn]; simp only [Nat.cast_add, Nat.cast_one]; linarith)).symm.app X).hom
-      = _ ≫ (power_of_alpha n X a' (a' + n) rfl ≫ hP.α.app _ ≫
+      = _ ≫ (power_of_alpha X a' (a' + n) n rfl ≫ hP.α.app _ ≫
       ((@shiftFunctorAdd' C _ _ _ Shift₂ (a' + n) 1 b'
       (by rw [← hn']; simp only [Nat.cast_add, Nat.cast_one]; linarith)).symm.app X).hom) ≫ _
     rw [hind X a (a + n) a' (a' + n) rfl rfl ha (by rw [ha])]
@@ -623,13 +629,13 @@ lemma power_of_alpha_eqToHom (n : ℕ) : ∀ (X : C) (a b a' b' : ℤ) (hn : a +
     conv_lhs => rw [← assoc, this, eqToHom_map]
     simp only [assoc, eqToHom_trans_assoc, eqToHom_refl, id_comp]
 
-lemma power_of_alpha_plus_one' (X : C) (n : ℕ) (a b c : ℤ) (hn : a + n = b) (h : a + (n + 1) = c) :
-    power_of_alpha (n + 1) X a c h = power_of_alpha n X a b hn ≫ α.app _ ≫
+lemma power_of_alpha_plus_one (X : C) (n : ℕ) (a b c : ℤ) (hn : a + n = b) (h : a + (n + 1) = c) :
+    power_of_alpha X a c (n + 1) h = power_of_alpha X a b n hn ≫ α.app _ ≫
     ((@shiftFunctorAdd' C _ _ _ Shift₂ b 1 c (by rw [← hn, ← h, add_assoc])).symm.app X).hom := by
   conv_lhs => rw [power_of_alpha]
-  change power_of_alpha n X a (a + n) rfl ≫ hP.α.app ((@shiftFunctor C _ _ _ Shift₂ (a + n)).obj X)
+  change power_of_alpha X a (a + n) n rfl ≫ hP.α.app ((@shiftFunctor C _ _ _ Shift₂ (a + n)).obj X)
     ≫ ((@shiftFunctorAdd' C _ _ _ Shift₂ (a + n) 1 c (by rw [← h, add_assoc])).symm.app X).hom  = _
-  have heq : power_of_alpha n X a (a + n) rfl = power_of_alpha n X a b hn ≫ eqToHom
+  have heq : power_of_alpha X a (a + n) n rfl = power_of_alpha X a b n hn ≫ eqToHom
       (by rw [hn]) := by
     rw [power_of_alpha_eqToHom n X a (a + n) a b rfl hn rfl hn]
     simp only [eqToHom_refl, id_comp]
@@ -651,8 +657,8 @@ lemma power_of_alpha_plus_one' (X : C) (n : ℕ) (a b c : ℤ) (hn : a + n = b) 
   simp
 
 lemma power_of_alpha_assoc (X : C) (a b c : ℤ) (n m : ℕ) (hn : a + n = b) (hm : b + m = c) :
-    power_of_alpha n X a b hn ≫ power_of_alpha m X b c hm =
-    power_of_alpha (n + m) X a c (by rw [← hm, ← hn, Nat.cast_add, add_assoc]) := by
+    power_of_alpha X a b n hn ≫ power_of_alpha X b c m hm =
+    power_of_alpha X a c (n + m) (by rw [← hm, ← hn, Nat.cast_add, add_assoc]) := by
   revert n X a b c
   induction' m with m hind
   · intro X a b c n hn hm
@@ -662,8 +668,11 @@ lemma power_of_alpha_assoc (X : C) (a b c : ℤ) (n m : ℕ) (hn : a + n = b) (h
     rw [power_of_alpha_eqToHom n X a c a b (by rw [heq, hn]) hn rfl heq]
     simp only [eqToHom_refl, id_comp]
   · intro X a b c n hn hm
-    rw [power_of_alpha_plus_one' X m b (b + m) c rfl hm, ← assoc, hind X a b (b + m) n hn rfl]
-
+    rw [power_of_alpha_plus_one X m b (b + m) c rfl hm, ← assoc, hind X a b (b + m) n hn rfl]
+    have : n + (m + 1) = (n + m) + 1 := by rw [add_assoc]
+    simp_rw [this]
+    rw [power_of_alpha_plus_one X (n + m) a (b + m) c (by rw [← hn, Nat.cast_add, add_assoc])
+      (by rw [← hm, ← hn, Nat.cast_add, Nat.cast_add, Nat.cast_one, add_assoc, add_assoc])]
 
 /-- The morphism "`αⁿ`"" from `X` to `X⟪n⟫`, if `n` is a natural number.-/
 noncomputable def power_of_alpha' (X : C) (n : ℕ) :
