@@ -14,6 +14,10 @@ and preparatory for defining the corresponding operations on `Finset`.
 -/
 
 
+-- Assert that we define `Finset` without the material on the set lattice.
+-- Note that we cannot put this in `Data.Finset.Basic` because we proved relevant lemmas there.
+assert_not_exists Set.sInter
+
 namespace Multiset
 
 open List
@@ -248,7 +252,3 @@ theorem Subset.ndinter_eq_left {s t : Multiset α} (h : s ⊆ t) : s.ndinter t =
   rw [quot_mk_to_coe'', quot_mk_to_coe'', coe_ndinter, List.Subset.inter_eq_left h]
 
 end Multiset
-
--- Assert that we define `Finset` without the material on the set lattice.
--- Note that we cannot put this in `Data.Finset.Basic` because we proved relevant lemmas there.
-assert_not_exists Set.sInter

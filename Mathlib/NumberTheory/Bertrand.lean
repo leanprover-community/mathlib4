@@ -122,7 +122,7 @@ theorem bertrand_main_inequality {n : ℕ} (n_large : 512 ≤ n) :
   · exact cast_div_le.trans (by norm_cast)
 
 /-- A lemma that tells us that, in the case where Bertrand's postulate does not hold, the prime
-factorization of the central binomial coefficent only has factors at most `2 * n / 3 + 1`.
+factorization of the central binomial coefficient only has factors at most `2 * n / 3 + 1`.
 -/
 theorem centralBinom_factorization_small (n : ℕ) (n_large : 2 < n)
     (no_prime : ¬∃ p : ℕ, p.Prime ∧ n < p ∧ p ≤ 2 * n) :

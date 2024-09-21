@@ -3,14 +3,10 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Balanced
 import Mathlib.CategoryTheory.Limits.EssentiallySmall
 import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 import Mathlib.CategoryTheory.Subobject.Lattice
-import Mathlib.CategoryTheory.Subobject.WellPowered
 import Mathlib.Data.Set.Opposite
-import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Separating and detecting sets
@@ -310,7 +306,8 @@ theorem wellPowered_of_isDetecting [HasPullbacks C] {𝒢 : Set C} [Small.{v₁}
     (h𝒢 : IsDetecting 𝒢) : WellPowered C :=
   ⟨fun X =>
     @small_of_injective _ _ _ (fun P : Subobject X => { f : ΣG : 𝒢, G.1 ⟶ X | P.Factors f.2 })
-      fun P Q h => Subobject.eq_of_isDetecting h𝒢 _ _ (by simpa [Set.ext_iff] using h)⟩
+      fun P Q h => Subobject.eq_of_isDetecting h𝒢 _ _
+        (by simpa [Set.ext_iff, Sigma.forall] using h)⟩
 
 end WellPowered
 

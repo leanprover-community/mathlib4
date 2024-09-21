@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Data.NNRat.Lemmas
 import Mathlib.Data.Rat.Lemmas
 
 /-!
@@ -159,7 +160,7 @@ lemma cast_divInt_of_ne_zero (a : ℤ) {b : ℤ} (b0 : (b : α) ≠ 0) : (a /. b
     ((divInt_eq_iff b0' <| ne_of_gt <| Int.natCast_pos.2 h.bot_lt).1 e)
   rw [Int.cast_mul, Int.cast_mul, Int.cast_natCast] at this
   rw [eq_comm, cast_def, div_eq_mul_inv, eq_div_iff_mul_eq d0, mul_assoc, (d.commute_cast _).eq,
-    ← mul_assoc, this, mul_assoc, mul_inv_cancel b0, mul_one]
+    ← mul_assoc, this, mul_assoc, mul_inv_cancel₀ b0, mul_one]
 
 @[norm_cast]
 lemma cast_mkRat_of_ne_zero (a : ℤ) {b : ℕ} (hb : (b : α) ≠ 0) : (mkRat a b : α) = a / b := by
@@ -222,19 +223,47 @@ theorem map_ratCast [DivisionRing α] [DivisionRing β] [RingHomClass F α β] (
 @[simp] lemma eq_ratCast [DivisionRing α] [FunLike F ℚ α] [RingHomClass F ℚ α] (f : F) (q : ℚ) :
     f q = q := by rw [← map_ratCast f, Rat.cast_id]
 
-namespace MonoidWithZeroHom
+namespace MonoidWithZeroHomClass
 
-variable {M₀ : Type*} [MonoidWithZero M₀] [FunLike F ℚ M₀] [MonoidWithZeroHomClass F ℚ M₀]
-variable {f g : F}
+variable {M₀ : Type*} [MonoidWithZero M₀]
 
-/-- If `f` and `g` agree on the integers then they are equal `φ`. -/
+section NNRat
+variable [FunLike F ℚ≥0 M₀] [MonoidWithZeroHomClass F ℚ≥0 M₀] {f g : F}
+
+/-- If monoid with zero homs `f` and `g` from `ℚ≥0` agree on the naturals then they are equal. -/
+lemma ext_nnrat' (h : ∀ n : ℕ, f n = g n) : f = g :=
+  (DFunLike.ext f g) fun r => by
+    rw [← r.num_div_den, div_eq_mul_inv, map_mul, map_mul, h, eq_on_inv₀ f g]
+    apply h
+
+/-- If monoid with zero homs `f` and `g` from `ℚ≥0` agree on the naturals then they are equal.
+
+See note [partially-applied ext lemmas] for why `comp` is used here. -/
+@[ext]
+lemma ext_nnrat {f g : ℚ≥0 →*₀ M₀}
+    (h : f.comp (Nat.castRingHom ℚ≥0 : ℕ →*₀ ℚ≥0) = g.comp (Nat.castRingHom ℚ≥0)) : f = g :=
+  ext_nnrat' <| DFunLike.congr_fun h
+
+/-- If monoid with zero homs `f` and `g` from `ℚ≥0` agree on the positive naturals then they are
+equal. -/
+lemma ext_nnrat_on_pnat (same_on_pnat : ∀ n : ℕ, 0 < n → f n = g n) : f = g :=
+  ext_nnrat' <| DFunLike.congr_fun <| ext_nat''
+    ((f : ℚ≥0 →*₀ M₀).comp (Nat.castRingHom ℚ≥0 : ℕ →*₀ ℚ≥0))
+    ((g : ℚ≥0 →*₀ M₀).comp (Nat.castRingHom ℚ≥0 : ℕ →*₀ ℚ≥0)) (by simpa)
+
+end NNRat
+
+section Rat
+variable [FunLike F ℚ M₀] [MonoidWithZeroHomClass F ℚ M₀] {f g : F}
+
+/-- If monoid with zero homs `f` and `g` from `ℚ` agree on the integers then they are equal. -/
 theorem ext_rat' (h : ∀ m : ℤ, f m = g m) : f = g :=
   (DFunLike.ext f g) fun r => by
     rw [← r.num_div_den, div_eq_mul_inv, map_mul, map_mul, h, ← Int.cast_natCast,
       eq_on_inv₀ f g]
     apply h
 
-/-- If `f` and `g` agree on the integers then they are equal `φ`.
+/-- If monoid with zero homs `f` and `g` from `ℚ` agree on the integers then they are equal.
 
 See note [partially-applied ext lemmas] for why `comp` is used here. -/
 @[ext]
@@ -242,7 +271,8 @@ theorem ext_rat {f g : ℚ →*₀ M₀}
     (h : f.comp (Int.castRingHom ℚ : ℤ →*₀ ℚ) = g.comp (Int.castRingHom ℚ)) : f = g :=
   ext_rat' <| DFunLike.congr_fun h
 
-/-- Positive integer values of a morphism `φ` and its value on `-1` completely determine `φ`. -/
+/-- If monoid with zero homs `f` and `g` from `ℚ` agree on the positive naturals and `-1` then
+they are equal. -/
 theorem ext_rat_on_pnat (same_on_neg_one : f (-1) = g (-1))
     (same_on_pnat : ∀ n : ℕ, 0 < n → f n = g n) : f = g :=
   ext_rat' <|
@@ -252,15 +282,19 @@ theorem ext_rat_on_pnat (same_on_neg_one : f (-1) = g (-1))
           (g : ℚ →*₀ M₀).comp (Int.castRingHom ℚ : ℤ →*₀ ℚ)
         from ext_int' (by simpa) (by simpa)
 
-end MonoidWithZeroHom
+end Rat
+end MonoidWithZeroHomClass
 
 /-- Any two ring homomorphisms from `ℚ` to a semiring are equal. If the codomain is a division ring,
 then this lemma follows from `eq_ratCast`. -/
 theorem RingHom.ext_rat {R : Type*} [Semiring R] [FunLike F ℚ R] [RingHomClass F ℚ R] (f g : F) :
     f = g :=
-  MonoidWithZeroHom.ext_rat' <|
+  MonoidWithZeroHomClass.ext_rat' <|
     RingHom.congr_fun <|
       ((f : ℚ →+* R).comp (Int.castRingHom ℚ)).ext_int ((g : ℚ →+* R).comp (Int.castRingHom ℚ))
+
+instance NNRat.subsingleton_ringHom {R : Type*} [Semiring R] : Subsingleton (ℚ≥0 →+* R) where
+  allEq f g := MonoidWithZeroHomClass.ext_nnrat' <| by simp
 
 instance Rat.subsingleton_ringHom {R : Type*} [Semiring R] : Subsingleton (ℚ →+* R) :=
   ⟨RingHom.ext_rat⟩

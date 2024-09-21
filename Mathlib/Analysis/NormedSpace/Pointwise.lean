@@ -384,7 +384,7 @@ theorem NormedSpace.sphere_nonempty [Nontrivial E] {x : E} {r : ℝ} :
   simp only [mem_sphere_iff_norm, add_sub_cancel_right, norm_smul, Real.norm_eq_abs, norm_inv,
     norm_norm, ne_eq, norm_eq_zero]
   simp only [abs_norm, ne_eq, norm_eq_zero]
-  rw [inv_mul_cancel this, mul_one, abs_eq_self.mpr hr]
+  rw [inv_mul_cancel₀ this, mul_one, abs_eq_self.mpr hr]
 
 theorem smul_sphere [Nontrivial E] (c : 𝕜) (x : E) {r : ℝ} (hr : 0 ≤ r) :
     c • sphere x r = sphere (c • x) (‖c‖ * r) := by

@@ -5,6 +5,8 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Multiset
+import Mathlib.Data.Multiset.OrderedMonoid
+import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.Positivity.Core
 
@@ -100,6 +102,8 @@ equal to the corresponding factor `g i` of another finite product, then
 theorem prod_le_prod' (h : ∀ i ∈ s, f i ≤ g i) : ∏ i ∈ s, f i ≤ ∏ i ∈ s, g i :=
   Multiset.prod_map_le_prod_map f g h
 
+attribute [bound] sum_le_sum
+
 /-- In an ordered additive commutative monoid, if each summand `f i` of one finite sum is less than
 or equal to the corresponding summand `g i` of another finite sum, then
 `∑ i ∈ s, f i ≤ ∑ i ∈ s, g i`. -/
@@ -144,7 +148,7 @@ theorem prod_eq_one_iff_of_one_le' :
       (fun _ ↦ ⟨fun _ _ h ↦ False.elim (Finset.not_mem_empty _ h), fun _ ↦ rfl⟩) ?_
     intro a s ha ih H
     have : ∀ i ∈ s, 1 ≤ f i := fun _ ↦ H _ ∘ mem_insert_of_mem
-    rw [prod_insert ha, mul_eq_one_iff' (H _ <| mem_insert_self _ _) (one_le_prod' this),
+    rw [prod_insert ha, mul_eq_one_iff_of_one_le (H _ <| mem_insert_self _ _) (one_le_prod' this),
       forall_mem_insert, ih this]
 
 @[to_additive sum_eq_zero_iff_of_nonpos]
@@ -541,7 +545,7 @@ theorem finset_sum_eq_sup_iff_disjoint [DecidableEq α] {β : Type*} {i : Finset
   · simp only [Finset.not_mem_empty, IsEmpty.forall_iff, imp_true_iff, Finset.sum_empty,
       Finset.sup_empty, bot_eq_zero, eq_self_iff_true]
   · simp_rw [Finset.sum_cons hz, Finset.sup_cons, Finset.mem_cons, Multiset.sup_eq_union,
-      forall_eq_or_imp, Ne, not_true_eq_false, IsEmpty.forall_iff, true_and_iff,
+      forall_eq_or_imp, Ne, not_true_eq_false, IsEmpty.forall_iff, true_and,
       imp_and, forall_and, ← hr, @eq_comm _ z]
     have := fun x (H : x ∈ i) => ne_of_mem_of_not_mem H hz
     simp (config := { contextual := true }) only [this, not_false_iff, true_imp_iff]

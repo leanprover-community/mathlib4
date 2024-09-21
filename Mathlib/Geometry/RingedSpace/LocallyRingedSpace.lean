@@ -14,7 +14,7 @@ stalks are local rings), and morphisms between these (morphisms in `SheafedSpace
 `IsLocalRingHom` on the stalk maps).
 -/
 
--- Explicit universe annotations were used in this file to improve perfomance #12737
+-- Explicit universe annotations were used in this file to improve performance #12737
 
 universe u
 

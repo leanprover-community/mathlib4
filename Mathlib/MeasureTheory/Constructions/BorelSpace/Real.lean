@@ -441,6 +441,9 @@ theorem AEMeasurable.coe_ereal_ennreal {f : α → ℝ≥0∞} {μ : Measure α}
 
 namespace NNReal
 
+instance : MeasurableSMul₂ ℝ≥0 ℝ≥0∞ where
+  measurable_smul := show Measurable fun r : ℝ≥0 × ℝ≥0∞ ↦ (r.1 : ℝ≥0) * r.2 by fun_prop
+
 /-- A limit (over a general filter) of measurable `ℝ≥0` valued functions is measurable. -/
 theorem measurable_of_tendsto' {ι} {f : ι → α → ℝ≥0} {g : α → ℝ≥0} (u : Filter ι) [NeBot u]
     [IsCountablyGenerated u] (hf : ∀ i, Measurable (f i)) (lim : Tendsto f u (𝓝 g)) :
@@ -467,7 +470,8 @@ end NNReal
 spanning measurable sets with finite measure on which `f` is bounded.
 See also `StronglyMeasurable.exists_spanning_measurableSet_norm_le` for functions into normed
 groups. -/
-theorem exists_spanning_measurableSet_le {m : MeasurableSpace α} {f : α → ℝ≥0}
+-- We redeclare `α` to temporarily avoid the `[MeasurableSpace α]` instance.
+theorem exists_spanning_measurableSet_le {α : Type*} {m : MeasurableSpace α} {f : α → ℝ≥0}
     (hf : Measurable f) (μ : Measure α) [SigmaFinite μ] :
     ∃ s : ℕ → Set α,
       (∀ n, MeasurableSet (s n) ∧ μ (s n) < ∞ ∧ ∀ x ∈ s n, f x ≤ n) ∧
@@ -476,7 +480,7 @@ theorem exists_spanning_measurableSet_le {m : MeasurableSpace α} {f : α → �
   let norm_sets := fun n : ℕ => { x | f x ≤ n }
   have norm_sets_spanning : ⋃ n, norm_sets n = Set.univ := by
     ext1 x
-    simp only [Set.mem_iUnion, Set.mem_setOf_eq, Set.mem_univ, iff_true_iff]
+    simp only [Set.mem_iUnion, Set.mem_setOf_eq, Set.mem_univ, iff_true]
     exact exists_nat_ge (f x)
   let sets n := sigma_finite_sets n ∩ norm_sets n
   have h_meas : ∀ n, MeasurableSet (sets n) := by
@@ -501,7 +505,7 @@ variable (μ : Measure ℝ) [IsFiniteMeasureOnCompacts μ]
 lemma tendsto_measure_Icc_nhdsWithin_right' (b : ℝ) :
     Tendsto (fun δ ↦ μ (Icc (b - δ) (b + δ))) (𝓝[>] (0 : ℝ)) (𝓝 (μ {b})) := by
   rw [Real.singleton_eq_inter_Icc]
-  apply tendsto_measure_biInter_gt (fun r hr ↦ measurableSet_Icc)
+  apply tendsto_measure_biInter_gt (fun r hr ↦ nullMeasurableSet_Icc)
   · intro r s _rpos hrs
     exact Icc_subset_Icc (by linarith) (by linarith)
   · exact ⟨1, zero_lt_one, isCompact_Icc.measure_ne_top⟩

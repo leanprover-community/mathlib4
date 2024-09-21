@@ -5,7 +5,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Category.Grp.Basic
 import Mathlib.CategoryTheory.SingleObj
-import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Conj
@@ -51,8 +51,8 @@ def ρAut {G : Grp.{u}} (A : Action V (MonCat.of G)) : G ⟶ Grp.of (Aut A.V) wh
   toFun g :=
     { hom := A.ρ g
       inv := A.ρ (g⁻¹ : G)
-      hom_inv_id := (A.ρ.map_mul (g⁻¹ : G) g).symm.trans (by rw [inv_mul_self, ρ_one])
-      inv_hom_id := (A.ρ.map_mul g (g⁻¹ : G)).symm.trans (by rw [mul_inv_self, ρ_one]) }
+      hom_inv_id := (A.ρ.map_mul (g⁻¹ : G) g).symm.trans (by rw [inv_mul_cancel, ρ_one])
+      inv_hom_id := (A.ρ.map_mul g (g⁻¹ : G)).symm.trans (by rw [mul_inv_cancel, ρ_one]) }
   map_one' := Aut.ext A.ρ.map_one
   map_mul' x y := Aut.ext (A.ρ.map_mul x y)
 
@@ -125,6 +125,16 @@ theorem comp_hom {M N K : Action V G} (f : M ⟶ N) (g : N ⟶ K) :
     (f ≫ g : Hom M K).hom = f.hom ≫ g.hom :=
   rfl
 
+@[simp]
+theorem hom_inv_hom {M N : Action V G} (f : M ≅ N) :
+    f.hom.hom ≫ f.inv.hom = 𝟙 M.V := by
+  rw [← comp_hom, Iso.hom_inv_id, id_hom]
+
+@[simp]
+theorem inv_hom_hom {M N : Action V G} (f : M ≅ N) :
+    f.inv.hom ≫ f.hom.hom = 𝟙 N.V := by
+  rw [← comp_hom, Iso.inv_hom_id, id_hom]
+
 /-- Construct an isomorphism of `G` actions/representations
 from an isomorphism of the underlying objects,
 where the forward direction commutes with the group action. -/
@@ -144,6 +154,12 @@ instance (priority := 100) isIso_of_hom_isIso {M N : Action V G} (f : M ⟶ N) [
 instance isIso_hom_mk {M N : Action V G} (f : M.V ⟶ N.V) [IsIso f] (w) :
     @IsIso _ _ M N (Hom.mk f w) :=
   (mkIso (asIso f) w).isIso_hom
+
+instance {M N : Action V G} (f : M ≅ N) : IsIso f.hom.hom where
+  out := ⟨f.inv.hom, by simp⟩
+
+instance {M N : Action V G} (f : M ≅ N) : IsIso f.inv.hom where
+  out := ⟨f.hom.hom, by simp⟩
 
 namespace FunctorCategoryEquivalence
 

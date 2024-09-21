@@ -192,9 +192,8 @@ noncomputable section Seminormed
 
 section Ring
 variable [SeminormedCommRing S] [SeminormedRing R] [SeminormedAddCommGroup M]
-variable [Algebra S R] [Module S M] [Module R M] [Module Rᵐᵒᵖ M]
-variable [BoundedSMul S R] [BoundedSMul S M] [BoundedSMul R M] [BoundedSMul Rᵐᵒᵖ M]
-variable [SMulCommClass R Rᵐᵒᵖ M] [IsScalarTower S R M] [IsScalarTower S Rᵐᵒᵖ M]
+variable [Algebra S R] [Module S M]
+variable [BoundedSMul S R] [BoundedSMul S M]
 
 instance instL1SeminormedAddCommGroup : SeminormedAddCommGroup (tsze R M) :=
   inferInstanceAs <| SeminormedAddCommGroup (WithLp 1 <| R × M)
@@ -216,6 +215,9 @@ theorem nnnorm_def (x : tsze R M) : ‖x‖₊ = ‖fst x‖₊ + ‖snd x‖₊
 
 @[simp] theorem nnnorm_inl (r : R) : ‖(inl r : tsze R M)‖₊ = ‖r‖₊ := by simp [nnnorm_def]
 @[simp] theorem nnnorm_inr (m : M) : ‖(inr m : tsze R M)‖₊ = ‖m‖₊ := by simp [nnnorm_def]
+
+variable [Module R M] [BoundedSMul R M] [Module Rᵐᵒᵖ M] [BoundedSMul Rᵐᵒᵖ M]
+  [SMulCommClass R Rᵐᵒᵖ M]
 
 instance instL1SeminormedRing : SeminormedRing (tsze R M) where
   norm_mul

@@ -149,7 +149,7 @@ def universalHom : R[S⁻¹] →+* T :=
         Submonoid.smul_def]
       simp only [mul_inv_rev, MonoidHom.map_mul, RingHom.map_add, RingHom.map_mul, Units.val_mul]
       rw [mul_add, mul_assoc, ← mul_assoc _ (f s₃), hf, ← Units.val_mul]
-      simp only [one_mul, mul_left_inv, Units.val_one]
+      simp only [one_mul, inv_mul_cancel, Units.val_one]
       congr 1
       rw [← mul_assoc]
       congr 1
@@ -229,7 +229,7 @@ instance nontrivial : Nontrivial R[R⁰⁻¹] :=
 variable [NoZeroDivisors R]
 
 open Classical in
-/-- The inversion of Ore fractions for a ring without zero divisors, satisying `0⁻¹ = 0` and
+/-- The inversion of Ore fractions for a ring without zero divisors, satisfying `0⁻¹ = 0` and
 `(r /ₒ r')⁻¹ = r' /ₒ r` for `r ≠ 0`. -/
 @[irreducible]
 protected def inv : R[R⁰⁻¹] → R[R⁰⁻¹] :=

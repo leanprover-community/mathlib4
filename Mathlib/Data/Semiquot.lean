@@ -34,7 +34,7 @@ namespace Semiquot
 variable {α : Type*} {β : Type*}
 
 instance : Membership α (Semiquot α) :=
-  ⟨fun a q => a ∈ q.s⟩
+  ⟨fun q a => a ∈ q.s⟩
 
 /-- Construct a `Semiquot α` from `h : a ∈ s` where `s : Set α`. -/
 def mk {a : α} {s : Set α} (h : a ∈ s) : Semiquot α :=

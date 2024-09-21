@@ -70,7 +70,7 @@ instance : NoncompactSpace ℚ := Int.closedEmbedding_coe_rat.noncompactSpace
 
 theorem uniformContinuous_add : UniformContinuous fun p : ℚ × ℚ => p.1 + p.2 :=
   Rat.uniformEmbedding_coe_real.toUniformInducing.uniformContinuous_iff.2 <| by
-    simp only [(· ∘ ·), Rat.cast_add]
+    simp only [Function.comp_def, Rat.cast_add]
     exact Real.uniformContinuous_add.comp
       (Rat.uniformContinuous_coe_real.prod_map Rat.uniformContinuous_coe_real)
 

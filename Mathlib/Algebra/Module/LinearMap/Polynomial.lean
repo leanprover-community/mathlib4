@@ -467,6 +467,7 @@ noncomputable
 def nilRank (φ : L →ₗ[R] Module.End R M) : ℕ :=
   nilRankAux φ (Module.Free.chooseBasis R L)
 
+section
 variable [Nontrivial R]
 
 lemma nilRank_eq_polyCharpoly_natTrailingDegree (b : Basis ι R L) :
@@ -480,7 +481,7 @@ lemma polyCharpoly_coeff_nilRank_ne_zero :
 
 open FiniteDimensional Module.Free
 
-lemma nilRank_le_card (b : Basis ι R M) : nilRank φ ≤ Fintype.card ι := by
+lemma nilRank_le_card {ι : Type*} [Fintype ι] (b : Basis ι R M) : nilRank φ ≤ Fintype.card ι := by
   apply Polynomial.natTrailingDegree_le_of_ne_zero
   rw [← FiniteDimensional.finrank_eq_card_basis b, ← polyCharpoly_natDegree φ (chooseBasis R L),
     Polynomial.coeff_natDegree, (polyCharpoly_monic _ _).leadingCoeff]
@@ -497,6 +498,8 @@ lemma nilRank_le_natTrailingDegree_charpoly (x : L) :
   rw [polyCharpoly_coeff_eval, map_zero] at h
   apply Polynomial.trailingCoeff_nonzero_iff_nonzero.mpr _ h
   apply (LinearMap.charpoly_monic _).ne_zero
+
+end
 
 /-- Let `L` and `M` be finite free modules over `R`,
 and let `φ : L →ₗ[R] Module.End R M` be a linear family of endomorphisms,
@@ -518,7 +521,7 @@ lemma isNilRegular_iff_coeff_polyCharpoly_nilRank_ne_zero :
       ((polyCharpoly φ b).coeff (nilRank φ)) ≠ 0 := by
   rw [IsNilRegular, polyCharpoly_coeff_eval]
 
-lemma isNilRegular_iff_natTrailingDegree_charpoly_eq_nilRank :
+lemma isNilRegular_iff_natTrailingDegree_charpoly_eq_nilRank [Nontrivial R] :
     IsNilRegular φ x ↔ (φ x).charpoly.natTrailingDegree = nilRank φ := by
   rw [isNilRegular_def]
   constructor
@@ -535,7 +538,7 @@ section IsDomain
 
 variable [IsDomain R]
 
-open Cardinal FiniteDimensional MvPolynomial in
+open Cardinal FiniteDimensional MvPolynomial Module.Free in
 lemma exists_isNilRegular_of_finrank_le_card (h : finrank R M ≤ #R) :
     ∃ x : L, IsNilRegular φ x := by
   let b := chooseBasis R L

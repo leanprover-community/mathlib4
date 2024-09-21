@@ -336,10 +336,10 @@ theorem pow_coeff (m : ℕ) (x : 𝕎 R) (n : ℕ) :
   simp [(· ^ ·), Pow.pow, eval, Matrix.cons_fin_one, coeff_mk]
 
 theorem add_coeff_zero (x y : 𝕎 R) : (x + y).coeff 0 = x.coeff 0 + y.coeff 0 := by
-  simp [add_coeff, peval]
+  simp [add_coeff, peval, Function.uncurry]
 
 theorem mul_coeff_zero (x y : 𝕎 R) : (x * y).coeff 0 = x.coeff 0 * y.coeff 0 := by
-  simp [mul_coeff, peval]
+  simp [mul_coeff, peval, Function.uncurry]
 
 end Coeff
 

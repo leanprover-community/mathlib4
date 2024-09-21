@@ -5,10 +5,9 @@ Authors: Joseph Myers
 -/
 import Mathlib.Algebra.ModEq
 import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Order.Archimedean
+import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Periodic
 import Mathlib.Data.Int.SuccPred
-import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.Order.Circular
 import Mathlib.Data.List.TFAE
 import Mathlib.Data.Set.Lattice
@@ -37,6 +36,9 @@ section LinearOrderedAddCommGroup
 
 variable {α : Type*} [LinearOrderedAddCommGroup α] [hα : Archimedean α] {p : α} (hp : 0 < p)
   {a b c : α} {n : ℤ}
+
+section
+include hp
 
 /--
 The unique integer such that this multiple of `p`, subtracted from `b`, is in `Ico a (a + p)`. -/
@@ -528,7 +530,7 @@ theorem tfae_modEq :
   · intro h
     rw [h, eq_comm, toIocMod_eq_iff, Set.right_mem_Ioc]
     refine ⟨lt_add_of_pos_right a hp, toIcoDiv hp a b - 1, ?_⟩
-    rw [sub_one_zsmul, add_add_add_comm, add_right_neg, add_zero]
+    rw [sub_one_zsmul, add_add_add_comm, add_neg_cancel, add_zero]
     conv_lhs => rw [← toIcoMod_add_toIcoDiv_zsmul hp a b, h]
   tfae_have 2 → 1
   · rw [← not_exists, not_imp_comm]
@@ -555,12 +557,12 @@ theorem not_modEq_iff_toIcoMod_eq_toIocMod : ¬a ≡ b [PMOD p] ↔ toIcoMod hp 
 theorem not_modEq_iff_toIcoDiv_eq_toIocDiv :
     ¬a ≡ b [PMOD p] ↔ toIcoDiv hp a b = toIocDiv hp a b := by
   rw [not_modEq_iff_toIcoMod_eq_toIocMod hp, toIcoMod, toIocMod, sub_right_inj,
-    (zsmul_strictMono_left hp).injective.eq_iff]
+    zsmul_left_inj hp]
 
 theorem modEq_iff_toIcoDiv_eq_toIocDiv_add_one :
     a ≡ b [PMOD p] ↔ toIcoDiv hp a b = toIocDiv hp a b + 1 := by
   rw [modEq_iff_toIcoMod_add_period_eq_toIocMod hp, toIcoMod, toIocMod, ← eq_sub_iff_add_eq,
-    sub_sub, sub_right_inj, ← add_one_zsmul, (zsmul_strictMono_left hp).injective.eq_iff]
+    sub_sub, sub_right_inj, ← add_one_zsmul, zsmul_left_inj hp]
 
 end AddCommGroup
 
@@ -593,7 +595,7 @@ theorem toIcoMod_le_toIocMod (a b : α) : toIcoMod hp a b ≤ toIocMod hp a b :=
 
 theorem toIocMod_le_toIcoMod_add (a b : α) : toIocMod hp a b ≤ toIcoMod hp a b + p := by
   rw [toIcoMod, toIocMod, sub_add, sub_le_sub_iff_left, sub_le_iff_le_add, ← add_one_zsmul,
-    (zsmul_strictMono_left hp).le_iff_le]
+    (zsmul_left_strictMono hp).le_iff_le]
   apply (toIocDiv_wcovBy_toIcoDiv _ _ _).le_succ
 
 end IcoIoc
@@ -706,6 +708,7 @@ theorem QuotientAddGroup.equivIocMod_coe (a b : α) :
 theorem QuotientAddGroup.equivIocMod_zero (a : α) :
     QuotientAddGroup.equivIocMod hp a 0 = ⟨toIocMod hp a 0, toIocMod_mem_Ioc hp a _⟩ :=
   rfl
+end
 
 /-!
 ### The circular order structure on `α ⧸ AddSubgroup.zmultiples p`
@@ -713,6 +716,8 @@ theorem QuotientAddGroup.equivIocMod_zero (a : α) :
 
 
 section Circular
+
+open AddCommGroup
 
 private theorem toIxxMod_iff (x₁ x₂ x₃ : α) : toIcoMod hp x₁ x₂ ≤ toIocMod hp x₁ x₃ ↔
     toIcoMod hp 0 (x₂ - x₁) + toIcoMod hp 0 (x₁ - x₃) ≤ p := by
@@ -901,6 +906,7 @@ open Set Int
 section LinearOrderedAddCommGroup
 
 variable {α : Type*} [LinearOrderedAddCommGroup α] [Archimedean α] {p : α} (hp : 0 < p) (a : α)
+include hp
 
 theorem iUnion_Ioc_add_zsmul : ⋃ n : ℤ, Ioc (a + n • p) (a + (n + 1) • p) = univ := by
   refine eq_univ_iff_forall.mpr fun b => mem_iUnion.mpr ?_
