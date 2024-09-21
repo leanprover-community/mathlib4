@@ -48,11 +48,10 @@ theorem TFAE_mem_nhdsWithin_Ioi {a b : α} (hab : a < b) (s : Set α) :
   tfae_have 1 ↔ 3 := by
     rw [nhdsWithin_Ioo_eq_nhdsWithin_Ioi hab]
   tfae_have 4 → 5 := fun ⟨u, umem, hu⟩ => ⟨u, umem.1, hu⟩
-  tfae_have 5 → 1 := by
-    rintro ⟨u, hau, hu⟩
-    exact mem_of_superset (Ioo_mem_nhdsWithin_Ioi ⟨le_refl a, hau⟩) hu
-  tfae_have 1 → 4 := by
-    intro h
+  tfae_have 5 → 1
+  | ⟨u, hau, hu⟩ => mem_of_superset (Ioo_mem_nhdsWithin_Ioi ⟨le_refl a, hau⟩) hu
+  tfae_have 1 → 4
+  | h => by
     rcases mem_nhdsWithin_iff_exists_mem_nhds_inter.1 h with ⟨v, va, hv⟩
     rcases exists_Ico_subset_of_mem_nhds' va hab with ⟨u, au, hu⟩
     exact ⟨u, au, fun x hx => hv ⟨hu ⟨le_of_lt hx.1, hx.2⟩, hx.1⟩⟩
@@ -188,11 +187,9 @@ theorem TFAE_mem_nhdsWithin_Ici {a b : α} (hab : a < b) (s : Set α) :
     rw [nhdsWithin_Ico_eq_nhdsWithin_Ici hab]
   tfae_have 1 ↔ 5 := (nhdsWithin_Ici_basis' ⟨b, hab⟩).mem_iff
   tfae_have 4 → 5 := fun ⟨u, umem, hu⟩ => ⟨u, umem.1, hu⟩
-  tfae_have 5 → 4 := by
-    rintro ⟨u, hua, hus⟩
-    exact
-      ⟨min u b, ⟨lt_min hua hab, min_le_right _ _⟩,
-        (Ico_subset_Ico_right <| min_le_left _ _).trans hus⟩
+  tfae_have 5 → 4
+  | ⟨u, hua, hus⟩ => ⟨min u b, ⟨lt_min hua hab, min_le_right _ _⟩,
+      (Ico_subset_Ico_right <| min_le_left _ _).trans hus⟩
   tfae_finish
 
 theorem mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset {a u' : α} {s : Set α} (hu' : a < u') :

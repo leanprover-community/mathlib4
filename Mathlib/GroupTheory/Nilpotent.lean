@@ -818,8 +818,8 @@ theorem isNilpotent_of_finite_tfae :
   | h, p, _, P => Sylow.normal_of_all_max_subgroups_normal h _
   tfae_have 4 → 5
   | h => Nonempty.intro (Sylow.directProductOfNormal fun {p hp hP} => h p hp hP)
-  tfae_have 5 → 1 := by
-    rintro ⟨e⟩; exact isNilpotent_of_product_of_sylow_group e
+  tfae_have 5 → 1
+  | ⟨e⟩ => isNilpotent_of_product_of_sylow_group e
   tfae_finish
 
 @[deprecated (since := "2024-06-05")] alias isNilpotent_of_finite_tFAE := isNilpotent_of_finite_tfae

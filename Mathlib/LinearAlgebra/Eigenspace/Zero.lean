@@ -54,13 +54,13 @@ lemma charpoly_nilpotent_tfae [IsNoetherian R M] (φ : Module.End R M) :
       natTrailingDegree φ.charpoly = finrank R M ] := by
   tfae_have 1 → 2 := by
     apply IsNilpotent.charpoly_eq_X_pow_finrank
-  tfae_have 2 → 3 := by
-    intro h m
+  tfae_have 2 → 3
+  | h, m => by
     use finrank R M
     suffices φ ^ finrank R M = 0 by simp only [this, LinearMap.zero_apply]
     simpa only [h, map_pow, aeval_X] using φ.aeval_self_charpoly
-  tfae_have 3 → 1 := by
-    intro h
+  tfae_have 3 → 1
+  | h => by
     obtain ⟨n, hn⟩ := Filter.eventually_atTop.mp <| φ.eventually_iSup_ker_pow_eq
     use n
     ext x
@@ -102,8 +102,8 @@ lemma hasEigenvalue_zero_tfae (φ : Module.End K M) :
     simp only [mem_ker, Submodule.mem_bot]
     contrapose!
     apply h
-  tfae_have 6 → 1 := by
-    rintro ⟨x, h1, h2⟩
+  tfae_have 6 → 1
+  | ⟨x, h1, h2⟩ => by
     apply Module.End.hasEigenvalue_of_hasEigenvector ⟨_, h1⟩
     simpa only [Module.End.eigenspace_zero, mem_ker] using h2
   tfae_finish

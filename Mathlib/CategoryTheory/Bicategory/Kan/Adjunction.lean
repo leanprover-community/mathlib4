@@ -105,14 +105,14 @@ theorem isLeftAdjoint_TFAE (f : a ⟶ b) :
       IsLeftAdjoint f,
       HasAbsLeftKanExtension f (𝟙 a),
       ∃ _ : HasLeftKanExtension f (𝟙 a), Lan.CommuteWith f (𝟙 a) f] := by
-  tfae_have 1 → 2 := by
-    intro h
+  tfae_have 1 → 2
+  | h => by
     exact IsAbsKan.hasAbsLeftKanExtension (Adjunction.ofIsLeftAdjoint f).isAbsoluteLeftKan
-  tfae_have 2 → 3 := by
-    intro h
+  tfae_have 2 → 3
+  | h => by
     exact ⟨inferInstance, inferInstance⟩
-  tfae_have 3 → 1 := by
-    intro ⟨h, h'⟩
+  tfae_have 3 → 1
+  | ⟨h, h'⟩ => by
     exact .mk <| (lanIsKan f (𝟙 a)).adjunction <| Lan.CommuteWith.isKan f (𝟙 a) f
   tfae_finish
 
@@ -187,14 +187,14 @@ theorem isRightAdjoint_TFAE (u : b ⟶ a) :
       IsRightAdjoint u,
       HasAbsLeftKanLift u (𝟙 a),
       ∃ _ : HasLeftKanLift u (𝟙 a), LanLift.CommuteWith u (𝟙 a) u] := by
-  tfae_have 1 → 2 := by
-    intro h
+  tfae_have 1 → 2
+  | h => by
     exact IsAbsKan.hasAbsLeftKanLift (Adjunction.ofIsRightAdjoint u).isAbsoluteLeftKanLift
-  tfae_have 2 → 3 := by
-    intro h
+  tfae_have 2 → 3
+  | h => by
     exact ⟨inferInstance, inferInstance⟩
-  tfae_have 3 → 1 := by
-    intro ⟨h, h'⟩
+  tfae_have 3 → 1
+  | ⟨h, h'⟩ => by
     exact .mk <| (lanLiftIsKan u (𝟙 a)).adjunction <| LanLift.CommuteWith.isKan u (𝟙 a) u
   tfae_finish
 

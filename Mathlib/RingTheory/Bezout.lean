@@ -56,8 +56,8 @@ theorem TFAE [IsBezout R] [IsDomain R] :
     | _ => inferInstance
     tfae_have 3 → 4
     | _ => inferInstance
-    tfae_have 4 → 1 := by
-      rintro ⟨h⟩
+    tfae_have 4 → 1
+    | ⟨h⟩ => by
       rw [isNoetherianRing_iff, isNoetherian_iff_fg_wellFounded]
       refine ⟨RelEmbedding.wellFounded ?_ h⟩
       have : ∀ I : { J : Ideal R // J.FG }, ∃ x : R, (I : Ideal R) = Ideal.span {x} :=

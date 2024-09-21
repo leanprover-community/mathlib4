@@ -170,9 +170,8 @@ open List in
 theorem Abelian.tfae_mono {X Y : C} (f : X ⟶ Y) (Z : C) :
     TFAE [Mono f, kernel.ι f = 0, (ShortComplex.mk (0 : Z ⟶ X) f zero_comp).Exact] := by
   tfae_have 2 → 1 := mono_of_kernel_ι_eq_zero _
-  tfae_have 1 → 2 := by
-    intro
-    rw [← cancel_mono f, kernel.condition, zero_comp]
+  tfae_have 1 → 2
+  | _ => by rw [← cancel_mono f, kernel.condition, zero_comp]
   tfae_have 3 ↔ 1 := ShortComplex.exact_iff_mono _ (by simp)
   tfae_finish
 
@@ -180,9 +179,8 @@ open List in
 theorem Abelian.tfae_epi {X Y : C} (f : X ⟶ Y) (Z : C ) :
     TFAE [Epi f, cokernel.π f = 0, (ShortComplex.mk f (0 : Y ⟶ Z) comp_zero).Exact] := by
   tfae_have 2 → 1 := epi_of_cokernel_π_eq_zero _
-  tfae_have 1 → 2 := by
-    intro
-    rw [← cancel_epi f, cokernel.condition, comp_zero]
+  tfae_have 1 → 2
+  | _ => by rw [← cancel_epi f, cokernel.condition, comp_zero]
   tfae_have 3 ↔ 1 := ShortComplex.exact_iff_epi _ (by simp)
   tfae_finish
 

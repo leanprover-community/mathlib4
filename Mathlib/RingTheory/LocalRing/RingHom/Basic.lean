@@ -96,20 +96,16 @@ theorem local_hom_TFAE (f : R →+* S) :
       [IsLocalRingHom f, f '' (maximalIdeal R).1 ⊆ maximalIdeal S,
         (maximalIdeal R).map f ≤ maximalIdeal S, maximalIdeal R ≤ (maximalIdeal S).comap f,
         (maximalIdeal S).comap f = maximalIdeal R] := by
-  tfae_have 1 → 2 := by
-    rintro _ _ ⟨a, ha, rfl⟩
-    exact map_nonunit f a ha
+  tfae_have 1 → 2
+  | _, _, ⟨a, ha, rfl⟩ => map_nonunit f a ha
   tfae_have 2 → 4 := Set.image_subset_iff.1
   tfae_have 3 ↔ 4 := Ideal.map_le_iff_le_comap
-  tfae_have 4 → 1 := by
-    intro h
-    constructor
-    exact fun x => not_imp_not.1 (@h x)
-  tfae_have 1 → 5 := by
-    intro
-    ext
-    exact not_iff_not.2 (isUnit_map_iff f _)
-  tfae_have 5 → 4 := fun h => le_of_eq h.symm
+  tfae_have 4 → 1
+  | h => ⟨fun x => not_imp_not.1 (@h x)⟩
+  tfae_have 1 → 5
+  | _ => by ext; exact not_iff_not.2 (isUnit_map_iff f _)
+  tfae_have 5 → 4
+  | h => le_of_eq h.symm
   tfae_finish
 
 end

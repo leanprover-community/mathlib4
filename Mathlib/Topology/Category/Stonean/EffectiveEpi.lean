@@ -81,8 +81,7 @@ theorem effectiveEpiFamily_tfae
   tfae_have 2 → 1
   | _ => by
     simpa [← effectiveEpi_desc_iff_effectiveEpiFamily, (effectiveEpi_tfae (Sigma.desc π)).out 0 1]
-  tfae_have 1 → 2 := by
-    intro; infer_instance
+  tfae_have 1 → 2 := fun _ ↦ inferInstance
   tfae_have 3 ↔ 1 := by
     erw [((CompHaus.effectiveEpiFamily_tfae
       (fun a ↦ Stonean.toCompHaus.obj (X a)) (fun a ↦ Stonean.toCompHaus.map (π a))).out 2 0 : )]
