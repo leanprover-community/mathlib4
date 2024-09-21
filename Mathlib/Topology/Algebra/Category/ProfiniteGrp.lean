@@ -161,6 +161,14 @@ instance : HasForget₂ ProfiniteGrp Grp where
     map := fun f => f.toMonoidHom
   }
 
+/-- A topological group that has a ContinuousMulEquiv to a profinite group is profinite. -/
+def ofContinuousMulEquivProfiniteGrp {G : ProfiniteGrp.{u}} {H : Type v} [TopologicalSpace H]
+    [Group H] [TopologicalGroup H] (e : G ≃ₜ* H) : ProfiniteGrp.{v} :=
+  letI : CompactSpace H := Homeomorph.compactSpace e.toHomeomorph
+  letI : TotallyDisconnectedSpace G := Profinite.instTotallyDisconnectedSpaceαTopologicalSpaceToTop
+  letI : TotallyDisconnectedSpace H := Homeomorph.totallyDisconnectedSpace e.toHomeomorph
+  .of H
+
 end ProfiniteGrp
 
 /-!
