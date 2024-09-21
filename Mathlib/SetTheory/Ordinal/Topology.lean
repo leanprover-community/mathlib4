@@ -3,7 +3,7 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Ordinal.Arithmetic
+import Mathlib.SetTheory.Ordinal.Enum
 import Mathlib.Tactic.TFAE
 import Mathlib.Topology.Order.Monotone
 
@@ -219,27 +219,26 @@ theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u})
       ⟨_, toType_nonempty_iff_ne_zero.2 ho.1, typein (· < ·), fun i => h _ (typein_lt_self i),
         sup_typein_limit ho.2⟩
 
-theorem enumOrd_isNormal_iff_isClosed (hs : s.Unbounded (· < ·)) :
+theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
     IsNormal (enumOrd s) ↔ IsClosed s := by
   have Hs := enumOrd_strictMono hs
   refine
     ⟨fun h => isClosed_iff_iSup.2 fun {ι} hι f hf => ?_, fun h =>
       (isNormal_iff_strictMono_limit _).2 ⟨Hs, fun a ha o H => ?_⟩⟩
-  · let g : ι → Ordinal.{u} := fun i => (enumOrdOrderIso hs).symm ⟨_, hf i⟩
+  · let g : ι → Ordinal.{u} := fun i => (enumOrdOrderIso s hs).symm ⟨_, hf i⟩
     suffices enumOrd s (⨆ i, g i) = ⨆ i, f i by
       rw [← this]
       exact enumOrd_mem hs _
     rw [IsNormal.map_iSup h g]
     congr
     ext x
-    change ((enumOrdOrderIso hs) _).val = f x
+    change (enumOrdOrderIso s hs _).val = f x
     rw [OrderIso.apply_symm_apply]
   · rw [isClosed_iff_bsup] at h
     suffices enumOrd s a ≤ bsup.{u, u} a fun b (_ : b < a) => enumOrd s b from
       this.trans (bsup_le H)
-    cases' enumOrd_surjective hs _
-        (h ha.1 (fun b _ => enumOrd s b) fun b _ => enumOrd_mem hs b) with
-      b hb
+    obtain ⟨b, hb⟩ := enumOrd_surjective hs (h ha.1 (fun b _ => enumOrd s b)
+      fun b _ => enumOrd_mem hs b)
     rw [← hb]
     apply Hs.monotone
     by_contra! hba
