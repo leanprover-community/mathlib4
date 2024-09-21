@@ -164,7 +164,7 @@ theorem lt_of_mem_CNF_coeffs {b o : Ordinal.{u}} (hb : 1 < b) {x : Ordinal} :
   · intro o ho IH h
     rw [CNF.coeffs, CNF_ne_zero ho] at h
     obtain rfl | h := mem_cons.mp h
-    · simpa only using div_opow_log_lt o hb
+    · exact div_opow_log_lt o hb
     · exact IH h
 
 @[deprecated lt_of_mem_CNF_coeffs (since := "2024-09-21")]
