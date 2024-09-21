@@ -138,9 +138,6 @@ protected theorem not_lt_zero (a : Nimber) : ¬ a < 0 :=
 protected theorem pos_iff_ne_zero {a : Nimber} : 0 < a ↔ a ≠ 0 :=
   Ordinal.pos_iff_ne_zero
 
-instance (a : Nimber.{u}) : Small.{u} (Set.Iio a) :=
-  Ordinal.small_Iio a
-
 instance (a : Nimber.{u}) : Small.{u} (Set.Iic a) :=
   Ordinal.small_Iic a
 
