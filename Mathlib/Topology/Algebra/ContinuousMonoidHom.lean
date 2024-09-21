@@ -556,6 +556,27 @@ def mk' (f : M ≃ₜ N) (h : ∀ x y, f (x * y) = f x * f y) : M ≃ₜ* N :=
 
 end coe
 
+section bijective
+
+@[to_additive]
+protected theorem bijective (e : M ≃ₜ* N) : Function.Bijective e :=
+  EquivLike.bijective e
+
+@[to_additive]
+protected theorem injective (e : M ≃ₜ* N) : Function.Injective e :=
+  EquivLike.injective e
+
+@[to_additive]
+protected theorem surjective (e : M ≃ₜ* N) : Function.Surjective e :=
+  EquivLike.surjective e
+
+-- Porting note (#10618): `simp` can prove this
+@[to_additive]
+theorem apply_eq_iff_eq (e : M ≃ₜ* N) {x y : M} : e x = e y ↔ x = y :=
+  e.injective.eq_iff
+
+end bijective
+
 end ContinuousMulEquiv
 
 end
