@@ -626,4 +626,3 @@ def trans {K : Type*} [Mul K] [TopologicalSpace K]
 end ContinuousMulEquiv
 
 end
-#lint
