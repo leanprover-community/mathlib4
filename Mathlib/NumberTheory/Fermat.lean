@@ -69,11 +69,8 @@ theorem coprime_fermat_fermat  {k n : ℕ} (h : k ≠ n): Coprime (fermat n) (fe
     exact this h.symm (by omega)
   let m := (fermat n).gcd (fermat k)
   have h_n : m ∣ fermat n := (fermat n).gcd_dvd_left (fermat k)
-  have h_m : m ∣ 2 :=  by
-    have h_m_prod : m ∣ (∏ k in Finset.range n, fermat k) :=
-      dvd_trans ((fermat n).gcd_dvd_right (fermat k))
-      (Finset.dvd_prod_of_mem fermat (Finset.mem_range.mpr hkn))
-    exact (Nat.dvd_add_right h_m_prod).mp <| fermat_prod_add_two ▸ h_n
+  have h_m : m ∣ 2 := (Nat.dvd_add_right (dvd_trans ((fermat n).gcd_dvd_right (fermat k))
+      (Finset.dvd_prod_of_mem fermat (Finset.mem_range.mpr hkn)))).mp <| fermat_prod_add_two ▸ h_n
   rcases (dvd_prime prime_two).mp h_m with h_one | h_two
   · exact h_one
   · by_contra
