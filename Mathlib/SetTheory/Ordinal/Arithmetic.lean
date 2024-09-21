@@ -1899,36 +1899,53 @@ set_option linter.deprecated false
 
 
 /-- The minimum excluded ordinal in a family of ordinals. -/
+@[deprecated "use sInf sᶜ instead" (since := "2024-09-20")]
 def mex {ι : Type u} (f : ι → Ordinal.{max u v}) : Ordinal :=
   sInf (Set.range f)ᶜ
 
+@[deprecated (since := "2024-09-20")]
 theorem mex_not_mem_range {ι : Type u} (f : ι → Ordinal.{max u v}) : mex.{_, v} f ∉ Set.range f :=
   csInf_mem (nonempty_compl_range.{_, v} f)
 
+@[deprecated (since := "2024-09-20")]
 theorem le_mex_of_forall {ι : Type u} {f : ι → Ordinal.{max u v}} {a : Ordinal}
     (H : ∀ b < a, ∃ i, f i = b) : a ≤ mex.{_, v} f := by
   by_contra! h
   exact mex_not_mem_range f (H _ h)
 
+@[deprecated (since := "2024-09-20")]
 theorem ne_mex {ι : Type u} (f : ι → Ordinal.{max u v}) : ∀ i, f i ≠ mex.{_, v} f := by
   simpa using mex_not_mem_range.{_, v} f
 
+@[deprecated (since := "2024-09-20")]
 theorem mex_le_of_ne {ι} {f : ι → Ordinal} {a} (ha : ∀ i, f i ≠ a) : mex f ≤ a :=
   csInf_le' (by simp [ha])
 
+@[deprecated (since := "2024-09-20")]
 theorem exists_of_lt_mex {ι} {f : ι → Ordinal} {a} (ha : a < mex f) : ∃ i, f i = a := by
   by_contra! ha'
   exact ha.not_le (mex_le_of_ne ha')
 
+@[deprecated (since := "2024-09-20")]
 theorem mex_le_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) : mex.{_, v} f ≤ lsub.{_, v} f :=
   csInf_le' (lsub_not_mem_range f)
 
+@[deprecated (since := "2024-09-20")]
 theorem mex_monotone {α β : Type u} {f : α → Ordinal.{max u v}} {g : β → Ordinal.{max u v}}
     (h : Set.range f ⊆ Set.range g) : mex.{_, v} f ≤ mex.{_, v} g := by
   refine mex_le_of_ne fun i hi => ?_
   cases' h ⟨i, rfl⟩ with j hj
   rw [← hj] at hi
   exact ne_mex g j hi
+
+theorem sInf_compl_lt_ord_succ {ι : Type u} (f : ι → Ordinal.{max u v}) :
+    sInf (range f)ᶜ < lift.{v} (succ #ι).ord := by
+  by_contra! h
+  have : range f ⊆ Iio (lift.{v} (succ #ι).ord) := sorry
+  have := mk_le_mk_of_subset this
+  have := mk_range_le f
+
+#exit
 
 theorem mex_lt_ord_succ_mk {ι : Type u} (f : ι → Ordinal.{u}) :
     mex.{_, u} f < (succ #ι).ord := by
