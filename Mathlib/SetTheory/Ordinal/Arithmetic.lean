@@ -1189,7 +1189,7 @@ set_option linter.deprecated false in
 theorem lt_sup {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : a < sup.{_, v} f ↔ ∃ i, a < f i := by
   simpa only [not_forall, not_le] using not_congr (@sup_le_iff.{_, v} _ f a)
 
-theorem ne_iSup_iff_lt_iSup {ι : Type u} {f : ι → Ordinal.{max u v}} :
+theorem ne_iSup_iff_lt_iSup {ι} {f : ι → Ordinal.{u}} [Small.{u} ι] :
     (∀ i, f i ≠ iSup f) ↔ ∀ i, f i < iSup f :=
   ⟨fun hf _ => lt_of_le_of_ne (Ordinal.le_iSup _ _) (hf _), fun hf _ => ne_of_lt (hf _)⟩
 
@@ -1200,7 +1200,7 @@ theorem ne_sup_iff_lt_sup {ι : Type u} {f : ι → Ordinal.{max u v}} :
   ne_iSup_iff_lt_iSup
 
 -- TODO: state in terms of `IsSuccLimit`.
-theorem succ_lt_iSup_of_ne_iSup {ι : Type u} {f : ι → Ordinal.{max u v}}
+theorem succ_lt_iSup_of_ne_iSup {ι} {f : ι → Ordinal.{u}} [Small.{u} ι]
     (hf : ∀ i, f i ≠ iSup f) {a} (hao : a < iSup f) : succ a < iSup f := by
   by_contra! hoa
   exact hao.not_le (Ordinal.iSup_le fun i => le_of_lt_succ <|
@@ -1215,7 +1215,7 @@ theorem sup_not_succ_of_ne_sup {ι : Type u} {f : ι → Ordinal.{max u v}}
     hao.not_le (sup_le fun i => le_of_lt_succ <| (lt_of_le_of_ne (le_sup _ _) (hf i)).trans_le hoa)
 
 -- TODO: generalize to conditionally complete lattices.
-theorem iSup_eq_zero_iff {ι : Type u} {f : ι → Ordinal.{max u v}} :
+theorem iSup_eq_zero_iff {ι} {f : ι → Ordinal.{u}} [Small.{u} ι] :
     iSup f = 0 ↔ ∀ i, f i = 0 := by
   refine
     ⟨fun h i => ?_, fun h =>
@@ -1285,14 +1285,14 @@ theorem sup_eq_of_range_eq {ι : Type u} {ι' : Type v}
   Ordinal.iSup_eq_of_range_eq h
 
 -- TODO: generalize to conditionally complete lattices
-theorem iSup_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal.{max u v w}) :
+theorem iSup_sum {α β} (f : α ⊕ β → Ordinal.{u}) [Small.{u} α] [Small.{u} β]:
     iSup f = max (⨆ a, f (Sum.inl a)) (⨆ b, f (Sum.inr b)) := by
   apply (Ordinal.iSup_le _).antisymm (max_le _ _)
   · rintro (i | i)
     · exact le_max_of_le_left (Ordinal.le_iSup (fun x ↦ f (Sum.inl x)) i)
     · exact le_max_of_le_right (Ordinal.le_iSup (fun x ↦ f (Sum.inr x)) i)
   all_goals
-    apply csSup_le_csSup' (bddAbove_range _)
+    apply csSup_le_csSup' (bddAbove_of_small _)
     rintro i ⟨a, rfl⟩
     apply mem_range_self
 
