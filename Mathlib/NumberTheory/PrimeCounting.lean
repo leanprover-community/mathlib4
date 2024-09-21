@@ -3,8 +3,8 @@ Copyright (c) 2021 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Ralf Stephan
 -/
-import Mathlib.Data.Nat.Totient
 import Mathlib.Data.Nat.Nth
+import Mathlib.Data.Nat.Totient
 import Mathlib.NumberTheory.SmoothNumbers
 
 /-!
@@ -72,7 +72,7 @@ theorem prime_nth_prime (n : ℕ) : Prime (nth Prime n) :=
 
 /-- The cardinality of the finset `primesBelow n` equals the counting function
 `primeCounting'` at `n`. -/
-lemma primesBelow_card_eq_primeCounting' (n : ℕ) : n.primesBelow.card = primeCounting' n := by
+theorem primesBelow_card_eq_primeCounting' (n : ℕ) : n.primesBelow.card = primeCounting' n := by
   simp only [primesBelow, primeCounting']
   exact (count_eq_card_filter_range Prime n).symm
 
@@ -102,7 +102,31 @@ theorem primeCounting'_add_le {a k : ℕ} (h0 : 0 < a) (h1 : a < k) (n : ℕ) :
 theorem zeroth_prime_eq_two : nth Prime 0 = 2 := nth_count prime_two
 
 /-- The `n`th prime is greater or equal to `n + 2`. -/
-lemma add_two_le_nth_prime (n : ℕ) : n + 2 ≤ nth Prime n :=
+theorem add_two_le_nth_prime (n : ℕ) : n + 2 ≤ nth Prime n :=
   zeroth_prime_eq_two ▸ (nth_strictMono infinite_setOf_prime).add_le_nat n 0
+
+@[simp]
+theorem range_primeCounting' : Set.range π' = Set.univ := by
+  ext n
+  exact ⟨fun _ => trivial, fun _ => by
+    use nth (fun p ↦ Prime p) n
+    exact Nat.count_nth_of_infinite infinite_setOf_prime n⟩
+
+@[simp]
+theorem range_primeCoutning : Set.range π = Set.univ := by
+  have h0 : primeCounting' 0 ∈ Set.range (π' ∘ succ) := by
+    simp only [Set.mem_range, Function.comp_apply, succ_eq_add_one]
+    use 0
+    rfl
+  simpa [Set.singleton_union, Set.insert_eq_of_mem h0] using Nat.range_of_succ primeCounting'
+
+open Filter
+
+theorem tendsto_primeCounting' : Tendsto π' atTop atTop := by
+  apply Filter.tendsto_atTop_atTop_of_monotone' monotone_primeCounting'
+  simp
+
+theorem tensto_primeCounting : Tendsto π atTop atTop := by
+  exact (Filter.tendsto_add_atTop_iff_nat 1).mpr tendsto_primeCounting'
 
 end Nat
