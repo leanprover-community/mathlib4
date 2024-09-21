@@ -755,6 +755,14 @@ theorem mem_cons_self (a : α) (s : Finset α) {h} : a ∈ cons a s h :=
 theorem cons_val (h : a ∉ s) : (cons a s h).1 = a ::ₘ s.1 :=
   rfl
 
+theorem eq_of_not_mem_of_mem_cons {s : Finset α} {a : α} (has : a ∉ s) {i : α}
+    (hi : i ∈ cons a s has) (his : i ∉ s) : i = a :=
+  (mem_cons.1 hi).resolve_right his
+
+theorem mem_of_mem_cons_of_ne {s : Finset α} {a : α} (has : a ∉ s) {i : α}
+    (hi : i ∈ cons a s has) (hia : i ≠ a) : i ∈ s :=
+  (mem_cons.1 hi).resolve_left hia
+
 theorem forall_mem_cons (h : a ∉ s) (p : α → Prop) :
     (∀ x, x ∈ cons a s h → p x) ↔ p a ∧ ∀ x, x ∈ s → p x := by
   simp only [mem_cons, or_imp, forall_and, forall_eq]
@@ -806,6 +814,38 @@ theorem ssubset_iff_exists_cons_subset : s ⊂ t ↔ ∃ (a : _) (h : a ∉ s), 
   refine ⟨fun h => ?_, fun ⟨a, ha, h⟩ => ssubset_of_ssubset_of_subset (ssubset_cons _) h⟩
   obtain ⟨a, hs, ht⟩ := not_subset.1 h.2
   exact ⟨a, ht, cons_subset.2 ⟨hs, h.subset⟩⟩
+
+/-- Split the added element of cons off a Pi type. -/
+@[simps!]
+def cons_pi_prod {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s) :
+    (Π i ∈ cons a s has, f i) → f a × Π i ∈ s, f i :=
+  fun x => (x a (mem_cons_self a s), fun i hi => x i (mem_cons_of_mem hi))
+
+open Classical in
+/-- Combine a product with a pi type to pi of cons. -/
+noncomputable def prod_pi_cons {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s) :
+    (f a × Π i ∈ s, f i) → (Π i ∈ cons a s has, f i) :=
+  fun x => (fun i hi =>
+    if h : i = a then cast (congrArg f h.symm) x.1 else x.2 i (mem_of_mem_cons_of_ne has hi h))
+
+/-- The equivalence between pi types on cons and the product. -/
+noncomputable def cons_pi_equiv {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s) :
+    (Π i ∈ cons a s has, f i) ≃ f a × Π i ∈ s, f i where
+  toFun := cons_pi_prod f has
+  invFun := prod_pi_cons f has
+  left_inv _ := by
+    ext i _
+    dsimp only [prod_pi_cons, cons_pi_prod]
+    by_cases h : i = a
+    · rw [dif_pos h]
+      subst h
+      simp_all only [cast_eq]
+    · rw [dif_neg h]
+  right_inv _ := by
+    ext _ hi
+    · simp [prod_pi_cons]
+    · simp only [cons_pi_prod_snd, prod_pi_cons]
+      exact dif_neg (ne_of_mem_of_not_mem hi has)
 
 end Cons
 
@@ -3077,4 +3117,4 @@ def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
 
 end Mathlib.Meta
 
-set_option linter.style.longFile 3100
+set_option linter.style.longFile 3300
