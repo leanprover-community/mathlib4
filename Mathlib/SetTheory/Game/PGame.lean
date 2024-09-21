@@ -21,8 +21,10 @@ The surreal numbers will be built as a quotient of a subtype of pregames.
 A pregame (`SetTheory.PGame` below) is axiomatised via an inductive type, whose sole constructor
 takes two types (thought of as indexing the possible moves for the players Left and Right), and a
 pair of functions out of these types to `SetTheory.PGame` (thought of as describing the resulting
-game after making a move). We may denote a game as $\{L | R\}$, where $L$ and $R$ stand for the
-collections of left and right moves.
+game after making a move).
+
+We may denote a game as $\{L | R\}$, where $L$ and $R$ stand for the collections of left and right
+moves. This notation is not currently used in Mathlib.
 
 Combinatorial games themselves, as a quotient of pregames, are constructed in `Game.lean`.
 
