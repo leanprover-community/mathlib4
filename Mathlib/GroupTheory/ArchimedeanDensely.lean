@@ -34,25 +34,15 @@ This is the stronger version of `AddSubgroup.mem_closure_singleton`."]
 lemma Subgroup.mem_closure_singleton_iff_existsUnique_zpow {G : Type*}
     [LinearOrderedCommGroup G] {a b : G} (ha : a ≠ 1) :
     b ∈ closure {a} ↔ ∃! k : ℤ, a ^ k = b := by
-  constructor <;> intro h
-  · wlog ha : 1 < a generalizing a b
-    · simp only [not_lt] at ha
-      rcases ha.eq_or_lt with rfl|ha
-      · contradiction
-      specialize @this a⁻¹ b (by simpa) (by simpa) (by simpa)
-      simp only [inv_zpow'] at this
-      obtain ⟨k, rfl, hk'⟩ := this
-      refine ⟨-k, rfl, ?_⟩
-      intro y hy
-      rw [← neg_eq_iff_eq_neg]
-      exact hk' _ (by simpa using hy)
-    · rw [mem_closure_singleton] at h
-      obtain ⟨k, hk⟩ := h
-      refine ⟨k, hk, ?_⟩
-      rintro l rfl
-      rwa [← zpow_right_inj ha, eq_comm]
-  · rw [mem_closure_singleton]
-    exact h.exists
+  rw [mem_closure_singleton]
+  constructor
+  · suffices Function.Injective (a ^ · : ℤ → G) by
+      rintro ⟨m, rfl⟩
+      exact ⟨m, rfl, fun k hk ↦ this hk⟩
+    rcases ha.lt_or_lt with ha | ha
+    · exact (zpow_right_strictAnti ha).injective
+    · exact (zpow_right_strictMono ha).injective
+  · exact fun h ↦ h.exists
 
 open Subgroup in
 /-- In two linearly ordered groups, the closure of an element of one group
