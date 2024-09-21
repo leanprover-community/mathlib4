@@ -365,6 +365,23 @@ lemma existance [ProperSpace 𝕜₁] (hC₁ : IsClosed C)
       _ = ∅ := hu
     ⟩⟩
 
+-- The topology of uniform convergence on compact subsets of E₁, a topology on the dual of E₁
+-- (i.e. linear maps from E₁ to 𝕜₁)
+#check UniformConvergenceCLM (RingHom.id _) 𝕜₁ {(C : Set E₁) | IsCompact C}
+
+-- I think Bourbaki uses the term "precompact" for "TotallyBounded"?
+#check UniformConvergenceCLM (RingHom.id _) 𝕜₁ {(C : Set E₁) | TotallyBounded C}
+
+open RingHom in
+lemma uc1 :
+    (UniformConvergenceCLM.instTopologicalSpace (id _) 𝕜₁ {(C : Set E₁) | TotallyBounded C}) ≤
+  (UniformConvergenceCLM.instTopologicalSpace (id 𝕜₁) 𝕜₁ {(C : Set E₁) | IsCompact C}) := by
+  apply UniformConvergenceCLM.topologicalSpace_mono
+  simp
+  intro C hC
+  exact IsCompact.totallyBounded hC
+
+
 /-
 theorem exists_seq_finite_subsets (hC₁ : IsClosed C) (hC₂ : 0 ∉ C): ∃ F : ℕ → Set E₁, ∀ n : ℕ,
     (F n).Finite ∧ F n ⊆ (U n) ∧ polar 𝕜₁ (⋃₀ {F k | k < n }) ∩ polar 𝕜₁ (U n) ∩ C = ∅ := by
