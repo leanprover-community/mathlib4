@@ -159,10 +159,9 @@ theorem CNF_lt_snd {b o : Ordinal.{u}} {x : Ordinal × Ordinal} (h : x ∈ CNF b
 /-- Every coefficient in the Cantor normal form `CNF b o` is less than `b`. -/
 theorem lt_of_mem_CNF_coeffs {b o : Ordinal.{u}} (hb : 1 < b) {x : Ordinal} :
     x ∈ CNF.coeffs b o → x < b := by
-  refine CNFRec b ?_ ?_ o
+  refine CNFRec b ?_ (fun o ho IH h ↦ ?_) o
   · simp
-  · intro o ho IH h
-    rw [CNF.coeffs, CNF_ne_zero ho] at h
+  · rw [CNF.coeffs, CNF_ne_zero ho] at h
     obtain rfl | h := mem_cons.mp h
     · exact div_opow_log_lt o hb
     · exact IH h
