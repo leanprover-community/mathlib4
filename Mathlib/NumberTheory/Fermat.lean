@@ -57,7 +57,7 @@ theorem fermat_product {n : ℕ} : ∏ k in Finset.range n, fermat k = fermat n 
   ring_nf
   omega
 
-theorem  fermat_prod_add_two {n : ℕ} :  fermat n = (∏ k in Finset.range n, fermat k) + 2 := by
+theorem  fermat_eq_prod_add_two {n : ℕ} :  fermat n = (∏ k in Finset.range n, fermat k) + 2 := by
   rw [fermat_product, Nat.sub_add_cancel]
   exact le_of_lt two_lt_fermat
 
@@ -70,7 +70,8 @@ theorem coprime_fermat_fermat  {k n : ℕ} (h : k ≠ n): Coprime (fermat n) (fe
   let m := (fermat n).gcd (fermat k)
   have h_n : m ∣ fermat n := (fermat n).gcd_dvd_left (fermat k)
   have h_m : m ∣ 2 := (Nat.dvd_add_right (dvd_trans ((fermat n).gcd_dvd_right (fermat k))
-      (Finset.dvd_prod_of_mem fermat (Finset.mem_range.mpr hkn)))).mp <| fermat_prod_add_two ▸ h_n
+      (Finset.dvd_prod_of_mem fermat (Finset.mem_range.mpr hkn)))).mp <|
+      fermat_eq_prod_add_two ▸ h_n
   rcases (dvd_prime prime_two).mp h_m with h_one | h_two
   · exact h_one
   · by_contra
