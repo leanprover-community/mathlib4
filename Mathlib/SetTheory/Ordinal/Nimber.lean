@@ -145,16 +145,16 @@ instance small_Iic (a : Nimber.{u}) : Small.{u} (Set.Iic a) :=
   Ordinal.small_Iic a
 
 instance small_Ico (a b : Nimber.{u}) : Small.{u} (Set.Ico a b) :=
-  small_subset Set.Ico_subset_Iio_self
+  Ordinal.small_Ico a b
 
 instance small_Icc (a b : Nimber.{u}) : Small.{u} (Set.Icc a b) :=
-  small_subset Set.Icc_subset_Iic_self
+  Ordinal.small_Icc a b
 
 instance small_Ioo (a b : Nimber.{u}) : Small.{u} (Set.Ioo a b) :=
-  small_subset Set.Ioo_subset_Iio_self
+  Ordinal.small_Ioo a b
 
 instance small_Ioc (a b : Nimber.{u}) : Small.{u} (Set.Ioc a b) :=
-  small_subset Set.Ioc_subset_Iic_self
+  Ordinal.small_Ioc a b
 
 end Nimber
 
