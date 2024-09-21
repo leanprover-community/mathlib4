@@ -18,9 +18,50 @@ In this file we prove a few facts like “`-s` is bounded above iff `s` is bound
 open Function Set
 open scoped Pointwise
 
-section InvNeg
+variable {ι G M : Type*}
 
-variable {G : Type*} [Group G] [Preorder G] [CovariantClass G G (· * ·) (· ≤ ·)]
+section Mul
+variable [Mul M] [Preorder M] [CovariantClass M M (· * ·) (· ≤ ·)]
+  [CovariantClass M M (swap (· * ·)) (· ≤ ·)] {f g : ι → M} {s t : Set M} {a b : M}
+
+@[to_additive]
+lemma mul_mem_upperBounds_mul (ha : a ∈ upperBounds s) (hb : b ∈ upperBounds t) :
+    a * b ∈ upperBounds (s * t) := forall_image2_iff.2 fun _ hx _ hy => mul_le_mul' (ha hx) (hb hy)
+
+@[to_additive]
+lemma subset_upperBounds_mul (s t : Set M) : upperBounds s * upperBounds t ⊆ upperBounds (s * t) :=
+  image2_subset_iff.2 fun _ hx _ hy => mul_mem_upperBounds_mul hx hy
+
+@[to_additive]
+lemma mul_mem_lowerBounds_mul (ha : a ∈ lowerBounds s) (hb : b ∈ lowerBounds t) :
+    a * b ∈ lowerBounds (s * t) := mul_mem_upperBounds_mul (M := Mᵒᵈ) ha hb
+
+@[to_additive]
+lemma subset_lowerBounds_mul (s t : Set M) : lowerBounds s * lowerBounds t ⊆ lowerBounds (s * t) :=
+  subset_upperBounds_mul (M := Mᵒᵈ) _ _
+
+@[to_additive]
+lemma BddAbove.mul (hs : BddAbove s) (ht : BddAbove t) : BddAbove (s * t) :=
+  (Nonempty.mul hs ht).mono (subset_upperBounds_mul s t)
+
+@[to_additive]
+lemma BddBelow.mul (hs : BddBelow s) (ht : BddBelow t) : BddBelow (s * t) :=
+  (Nonempty.mul hs ht).mono (subset_lowerBounds_mul s t)
+
+@[to_additive]
+lemma BddAbove.range_mul (hf : BddAbove (range f)) (hg : BddAbove (range g)) :
+    BddAbove (range fun i ↦ f i * g i) :=
+  .range_comp (f := fun i ↦ (f i, g i)) (bddAbove_range_prod.2 ⟨hf, hg⟩)
+    (monotone_fst.mul' monotone_snd)
+
+@[to_additive]
+lemma BddBelow.range_mul (hf : BddBelow (range f)) (hg : BddBelow (range g)) :
+    BddBelow (range fun i ↦ f i * g i) := BddAbove.range_mul (M := Mᵒᵈ) hf hg
+
+end Mul
+
+section InvNeg
+variable [Group G] [Preorder G] [CovariantClass G G (· * ·) (· ≤ ·)]
   [CovariantClass G G (swap (· * ·)) (· ≤ ·)] {s : Set G} {a : G}
 
 @[to_additive (attr := simp)]
@@ -74,49 +115,3 @@ lemma BddAbove.range_inv {α : Type*} {f : α → G} (hf : BddAbove (range f)) :
   BddBelow.range_inv (G := Gᵒᵈ) hf
 
 end InvNeg
-
-section mul_add
-
-variable {M : Type*} [Mul M] [Preorder M] [CovariantClass M M (· * ·) (· ≤ ·)]
-  [CovariantClass M M (swap (· * ·)) (· ≤ ·)]
-
-@[to_additive]
-theorem mul_mem_upperBounds_mul {s t : Set M} {a b : M} (ha : a ∈ upperBounds s)
-    (hb : b ∈ upperBounds t) : a * b ∈ upperBounds (s * t) :=
-  forall_image2_iff.2 fun _ hx _ hy => mul_le_mul' (ha hx) (hb hy)
-
-@[to_additive]
-theorem subset_upperBounds_mul (s t : Set M) :
-    upperBounds s * upperBounds t ⊆ upperBounds (s * t) :=
-  image2_subset_iff.2 fun _ hx _ hy => mul_mem_upperBounds_mul hx hy
-
-@[to_additive]
-theorem mul_mem_lowerBounds_mul {s t : Set M} {a b : M} (ha : a ∈ lowerBounds s)
-    (hb : b ∈ lowerBounds t) : a * b ∈ lowerBounds (s * t) :=
-  mul_mem_upperBounds_mul (M := Mᵒᵈ) ha hb
-
-@[to_additive]
-theorem subset_lowerBounds_mul (s t : Set M) :
-    lowerBounds s * lowerBounds t ⊆ lowerBounds (s * t) :=
-  subset_upperBounds_mul (M := Mᵒᵈ) _ _
-
-@[to_additive]
-theorem BddAbove.mul {s t : Set M} (hs : BddAbove s) (ht : BddAbove t) : BddAbove (s * t) :=
-  (Nonempty.mul hs ht).mono (subset_upperBounds_mul s t)
-
-@[to_additive]
-theorem BddBelow.mul {s t : Set M} (hs : BddBelow s) (ht : BddBelow t) : BddBelow (s * t) :=
-  (Nonempty.mul hs ht).mono (subset_lowerBounds_mul s t)
-
-@[to_additive]
-lemma BddAbove.range_mul {α : Type*} {f g : α → M} (hf : BddAbove (range f))
-    (hg : BddAbove (range g)) : BddAbove (range (fun x => f x * g x)) :=
-  BddAbove.range_comp (f := fun x => (⟨f x, g x⟩ : M × M))
-    (bddAbove_range_prod.mpr ⟨hf, hg⟩) (Monotone.mul' monotone_fst monotone_snd)
-
-@[to_additive]
-lemma BddBelow.range_mul {α : Type*} {f g : α → M} (hf : BddBelow (range f))
-    (hg : BddBelow (range g)) : BddBelow (range (fun x => f x * g x)) :=
-  BddAbove.range_mul (M := Mᵒᵈ) hf hg
-
-end mul_add
