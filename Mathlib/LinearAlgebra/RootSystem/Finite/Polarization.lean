@@ -3,7 +3,7 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.RootSystem.RootPositive
+import Mathlib.LinearAlgebra.RootSystem.Defs
 import Mathlib.Algebra.Ring.SumsOfSquares
 
 /-!
@@ -34,12 +34,10 @@ Weyl group.
  * Bourbaki, Lie groups and Lie algebras
 
 ## Main results:
-
- * `polInner_rootPositive`: `PolInner` is strictly positive on roots.
- * `polInner_posDef` : `PolInner` is strictly positive on non-zero linear combinations of roots.
-  That is, it is positive-definite when restricted to the linear span of roots.  This gives
-  us a convenient way to eliminate certain Dynkin diagrams from the classification, since it
-  suffices to produce a nonzero linear combination of simple roots with non-positive norm.
+ * `polarization_self_sum_of_squares` : The inner product of any weight vector is a sum of squares.
+ * `polInner_reflection_reflection_apply` : `PolInner` is invariant with respect to reflections.
+ * `polInner_self_coroot`: Two times `PolInner` applied to a root is a multiple of the corresponding
+  coroot.
 
 ## Todo
 
@@ -67,6 +65,7 @@ theorem isSumSq_of_sum_of_squares [Mul R] [AddCommMonoid R] (s : Finset ι) (f :
   | cons i s his h =>
     simp only [Finset.sum_cons]
     exact IsSumSq.sq_add (f i) (∑ i ∈ s, f i * f i) h
+--#find_home! isSumSq_of_sum_of_squares --here
 
 theorem sum_of_squares_eq_zero_iff [LinearOrderedCommRing R] (s : Finset ι) (f : ι → R) :
     ∑ i ∈ s, f i * f i = 0 ↔ ∀ i ∈ s, f i = 0 := by
@@ -78,6 +77,7 @@ theorem sum_of_squares_eq_zero_iff [LinearOrderedCommRing R] (s : Finset ι) (f 
     have hhi : f i * f i = 0 := by
       linarith [mul_self_nonneg (f i), IsSumSq.nonneg <| isSumSq_of_sum_of_squares s f]
     exact ⟨zero_eq_mul_self.mp hhi.symm, h.mp (by linarith)⟩
+--#find_home! sum_of_squares_eq_zero_iff -- here
 
 namespace RootPairing
 
@@ -85,15 +85,6 @@ section CommRing
 
 variable [Fintype ι] [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 (P : RootPairing ι R M N)
-
-/-!
-theorem : if there is a nonzero vector with nonpositive norm in the span of roots, then the root
-pairing is infinite.
-Maybe better to say, given a finite root pairing, all nonzero combinations of simple roots have
-strictly positive norm.
-Then, we can say, a Dynkin diagram is not finite type if there is a nonzero combination of simple
-roots that has nonpositive norm.
--/
 
 /-- An invariant linear map from weight space to coweight space. -/
 @[simps]
@@ -121,7 +112,16 @@ theorem polarization_root_self (j : ι) :
       ∑ (i : ι), (P.pairing j i) * (P.pairing j i) := by
   simp
 
--- reflections taken to coreflections.
+/-!
+theorem polarization_reflection (i : ι) (x : M) :
+    P.Polarization (P.reflection i x) = P.coreflection i (P.Polarization x) := by
+  simp only [reflection_apply, Polarization_apply, map_sum, map_smul, coreflection_apply,
+    root_coroot_eq_pairing, map_sub, smul_sub, Finset.sum_sub_distrib]
+  congr 1
+  rw [Finset.smul_sum]
+
+  sorry
+-/
 
 /-- An invariant inner product on the weight space. -/
 @[simps]
@@ -189,74 +189,5 @@ lemma four_smul_flip_polarization_polarization (P : RootPairing ι R M N) (i : �
     flip_polInner_self_root, smul_comm]
 
 end CommRing
-
-section LinearOrderedCommRing
-
-variable [Fintype ι] [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N]
-[Module R N] (P : RootPairing ι R M N)
-
---use IsSumSq.nonneg ?
-theorem polInner_self_non_neg (x : M) : 0 ≤ P.PolInner x x := by
-  simp only [PolInner, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_comp, comp_apply,
-    polarization_self, toLin_toPerfectPairing]
-  exact Finset.sum_nonneg fun i _ =>
-    (sq (P.toPerfectPairing x (P.coroot i))) ▸ sq_nonneg (P.toPerfectPairing x (P.coroot i))
-
-theorem polInner_self_zero_iff (x : M) :
-    P.PolInner x x = 0 ↔ ∀ i, P.toPerfectPairing x (P.coroot i) = 0 := by
-  simp only [PolInner_apply, PerfectPairing.toLin_apply, LinearMap.coe_comp, comp_apply,
-    Polarization_apply, map_sum, map_smul, smul_eq_mul]
-  convert sum_of_squares_eq_zero_iff Finset.univ fun i => (P.toPerfectPairing x) (P.coroot i)
-  constructor
-  · intro x _
-    exact x
-  · rename_i i
-    intro x
-    refine x ?_
-    exact Finset.mem_univ i
-
--- Use four_smul_flip_polarization_polarization to get injectivity of Polarization.
-
---lemma coxeter_weight_leq_4 :
-
-lemma polInner_root_self_pos (j : ι) :
-    0 < P.PolInner (P.root j) (P.root j) := by
-  simp only [PolInner, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_comp, comp_apply,
-    polarization_root_self, toLin_toPerfectPairing]
-  refine Finset.sum_pos' (fun i _ => (sq (P.pairing j i)) ▸ sq_nonneg (P.pairing j i)) ?_
-  use j
-  refine ⟨Finset.mem_univ j, ?_⟩
-  simp only [pairing_same, Nat.ofNat_pos, mul_pos_iff_of_pos_left]
-
-lemma polInner_rootPositive : IsRootPositive P P.PolInner where
-  zero_lt_apply_root i := P.polInner_root_self_pos i
-  symm := P.polInner_symmetric
-  apply_reflection_eq := P.polInner_reflection_reflection_apply
-
-/-!
-lemma positive_definite_polInner {x : M} (hx : x ∈ span R (range P.root)) (h : P.PolInner x x = 0) :
-    x = 0 := by
-  rw [mem_span_range_iff_exists_fun] at hx
-  obtain ⟨c, hc⟩ := hx
-  rw [← hc] at h
-  simp at h
-
-  sorry
-
-For any bilinear form over a commutative ring,
-`|(x,y) • x - (x,x) • y|^2 = |x|^2(|x|^2 * |y|^2 - (x,y)^2)` (easy cancellation)
-LinearOrderedCommRing version of Cauchy-Schwarz: right side of above is non-neg, and only zero when
-`(x,y) • x - (x,x) • y = 0`, i.e., linearly dependent.
-
-This constrains coxeterWeight to at most 4, and proportionality when 4.
--/
-
--- faithful Weyl action on roots: for all x, w(x)-x lies in R-span of roots.
---If all roots are fixed by w, then (w(x)-x, r) = (x, w^-1r -r)=0. w(x) - w by nondeg on R-span.
--- finiteness of Weyl follows from finiteness of permutations of roots.
-
---positivity constraints for finite root pairings mean we restrict to weights between 0 and 4.
-
-end LinearOrderedCommRing
 
 end RootPairing

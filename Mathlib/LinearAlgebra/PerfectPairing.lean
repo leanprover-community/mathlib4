@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.LinearAlgebra.Dual
+import Mathlib.RingTheory.Flat.Basic
 
 /-!
 # Perfect pairings of modules
@@ -233,18 +234,41 @@ lemma dualAnnihilator_map_linearEquiv_flip_symm (p : Submodule R (Dual R N)) :
 end Submodule
 
 
-section baseChange
+section FlatBaseChange
 /-!
 We have a correspondence between reflexive modules and perfect pairings.  Unfortunately, reflexivity
-is not preserved under arbitrary base change, so we need to assume the base change of `M` is
-reflexive.
+is not preserved under arbitrary base change, so we need to assume the base change is flat.
 -/
 open TensorProduct
 
 variable {S : Type*} [CommRing S] [Algebra R S] (p : PerfectPairing R M N)
-(hSM : IsReflexive S (S ⊗[R] M))
 
+/-! Plan: base change of id : Dual R M → Dual R M "is" id : Dual S (S ⊗[R] M) → Dual S (S ⊗[R] M)
+base change of flip "is" flip
+conclude that Dual.eval S (S ⊗[R] M) "is" base change of Dual.eval R M
+base change takes surjections to surjections. (can't find)
+
+flat base change takes injections to injections (can't find)
+
+
+lemma BaseChange_isReflexive_of_flat [IsReflexive R M] (hRS : Module.Flat R S) :
+    IsReflexive S (S ⊗[R] M) where
+  bijective_dual_eval' := by
+    --have h : Dual.eval S (S ⊗[R] M) =
+      --TensorProduct.AlgebraTensorModule.map (LinearEquiv.refl S S) (Dual.eval R M) := by
+      --sorry
+
+    constructor
+    · simp only [Dual.eval]
+
+
+
+      sorry
+    · simp only [Dual.eval]
+      sorry
+-/
 namespace PerfectPairing
+
 
 /-- The first step in a base change. -/
 noncomputable def baseChange1 : S ⊗[R] M ≃ₗ[S] (S ⊗[R] (N →ₗ[R] R)) :=
@@ -343,4 +367,4 @@ protected def baseChange (B : BilinForm R M₂) : BilinForm A (A ⊗[R] M₂) :=
 -/
 end PerfectPairing
 
-end baseChange
+end FlatBaseChange
