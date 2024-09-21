@@ -143,8 +143,8 @@ lemma preservesFiniteLimits_tfae : List.TFAE
     exact ⟨preservesFiniteLimitsOfPreservesKernels F⟩
 
   tfae_have 4 → 1
-  | ⟨_⟩, S, hS => by
-    exact (S.map F).exact_and_mono_f_iff_f_is_kernel |>.2 ⟨KernelFork.mapIsLimit _ hS.fIsKernel F⟩
+  | ⟨_⟩, S, hS =>
+    (S.map F).exact_and_mono_f_iff_f_is_kernel |>.2 ⟨KernelFork.mapIsLimit _ hS.fIsKernel F⟩
 
   tfae_finish
 
