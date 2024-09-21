@@ -197,7 +197,7 @@ theorem StrictMono.not_bddAbove_range_of_wellFoundedLT {f : β → β} [WellFoun
 
 theorem StrictMono.not_bddBelow_range_of_wellFoundedGT {f : β → β} [WellFoundedGT β] [NoMinOrder β]
     (hf : StrictMono f) : ¬ BddBelow (Set.range f) :=
-  hf.dual.not_bddAbove_range'
+  hf.dual.not_bddAbove_range_of_wellFoundedLT
 
 end LinearOrder
 

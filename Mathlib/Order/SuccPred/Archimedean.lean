@@ -157,21 +157,21 @@ alias StrictMono.not_bddAbove_range := StrictMono.not_bddAbove_range_of_isSuccAr
 
 lemma StrictMono.not_bddBelow_range_of_isPredArchimedean [NoMinOrder α] [PredOrder β]
     [IsPredArchimedean β] (hf : StrictMono f) : ¬ BddBelow (Set.range f) :=
-  hf.dual.not_bddAbove_range
+  hf.dual.not_bddAbove_range_of_isSuccArchimedean
 
 @[deprecated StrictMono.not_bddBelow_range_of_isPredArchimedean (since := "2024-09-21")]
 alias StrictMono.not_bddBelow_range := StrictMono.not_bddBelow_range_of_isPredArchimedean
 
 lemma StrictAnti.not_bddBelow_range_of_isSuccArchimedean [NoMinOrder α] [SuccOrder β]
     [IsSuccArchimedean β] (hf : StrictAnti f) : ¬ BddAbove (Set.range f) :=
-  hf.dual_right.not_bddBelow_range
+  hf.dual_right.not_bddBelow_range_of_isPredArchimedean
 
 @[deprecated StrictAnti.not_bddBelow_range_of_isSuccArchimedean (since := "2024-09-21")]
 alias StrictAnti.not_bddAbove_range := StrictAnti.not_bddBelow_range_of_isSuccArchimedean
 
 lemma StrictAnti.not_bddBelow_range_of_isPredArchimedean [NoMaxOrder α] [PredOrder β]
     [IsPredArchimedean β] (hf : StrictAnti f) : ¬ BddBelow (Set.range f) :=
-  hf.dual_right.not_bddAbove_range
+  hf.dual_right.not_bddAbove_range_of_isSuccArchimedean
 
 @[deprecated StrictAnti.not_bddBelow_range_of_isPredArchimedean (since := "2024-09-21")]
 alias StrictAnti.not_bddBelow_range := StrictAnti.not_bddBelow_range_of_isPredArchimedean
