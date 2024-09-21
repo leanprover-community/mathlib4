@@ -21,7 +21,8 @@ The surreal numbers will be built as a quotient of a subtype of pregames.
 A pregame (`SetTheory.PGame` below) is axiomatised via an inductive type, whose sole constructor
 takes two types (thought of as indexing the possible moves for the players Left and Right), and a
 pair of functions out of these types to `SetTheory.PGame` (thought of as describing the resulting
-game after making a move).
+game after making a move). We may denote a game as $\{L | R\}$, where $L$ and $R$ stand for the
+collections of left and right moves.
 
 Combinatorial games themselves, as a quotient of pregames, are constructed in `Game.lean`.
 
@@ -358,8 +359,7 @@ instance le : LE PGame :=
 
 /-- The less or fuzzy relation on pre-games.
 
-If `0 ⧏ x`, then Left can win `x` as the first player. `x ⧏ y` means that `0 ⧏ y - x`.
-See `PGame.lf_iff_sub_zero_lf`.  -/
+If `0 ⧏ x`, then Left can win `x` as the first player. `x ⧏ y` means that `¬ y ≤ x`. -/
 def LF (x y : PGame) : Prop :=
   ¬y ≤ x
 
