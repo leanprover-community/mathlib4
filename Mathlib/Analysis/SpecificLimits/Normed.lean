@@ -551,7 +551,8 @@ alias summable_norm_pow_mul_geometric_of_norm_lt_1 := summable_norm_pow_mul_geom
 alias summable_pow_mul_geometric_of_norm_lt_1 := summable_pow_mul_geometric_of_norm_lt_one
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`, `HasSum` version in a general ring
-with summable geometric series. -/
+with summable geometric series. For a version in a field, using division instead of `Ring.inverse`,
+see `hasSum_coe_mul_geometric_of_norm_lt_one`. -/
 theorem hasSum_coe_mul_geometric_of_norm_lt_one'
     {x : R} (h : ‖x‖ < 1) :
     HasSum (fun n ↦ n * x ^ n : ℕ → R) (x * (Ring.inverse (1 - x)) ^ 2) := by
@@ -569,7 +570,8 @@ theorem hasSum_coe_mul_geometric_of_norm_lt_one'
     _ = x * Ring.inverse (1 - x) ^ 2 := by noncomm_ring
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`, version in a general ring with
-summable geometric series. -/
+summable geometric series. For a version in a field, using division instead of `Ring.inverse`,
+see `tsum_coe_mul_geometric_of_norm_lt_one`. -/
 theorem tsum_coe_mul_geometric_of_norm_lt_one'
     {r : 𝕜} (hr : ‖r‖ < 1) : (∑' n : ℕ, n * r ^ n : 𝕜) = r * Ring.inverse (1 - r) ^ 2 :=
   (hasSum_coe_mul_geometric_of_norm_lt_one' hr).tsum_eq
