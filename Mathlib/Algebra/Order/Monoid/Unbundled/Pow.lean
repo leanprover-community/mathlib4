@@ -43,9 +43,17 @@ theorem one_le_pow_of_one_le' {a : M} (H : 1 ≤ a) : ∀ n : ℕ, 1 ≤ a ^ n
     rw [pow_succ]
     exact one_le_mul (one_le_pow_of_one_le' H k) H
 
+@[to_additive Left.nsmul_nonneg]
+theorem Left.one_le_pow_of_le (hx : 1 ≤ x) {n : ℕ} : 1 ≤ x ^ n :=
+  one_le_pow_of_one_le' hx n
+
 @[to_additive nsmul_nonpos]
 theorem pow_le_one' {a : M} (H : a ≤ 1) (n : ℕ) : a ^ n ≤ 1 :=
   one_le_pow_of_one_le' (M := Mᵒᵈ) H n
+
+@[to_additive Left.nsmul_nonpos]
+theorem Left.pow_le_one_of_le (hx : x ≤ 1) {n : ℕ} : x ^ n ≤ 1 :=
+  pow_le_one' hx n
 
 @[to_additive (attr := gcongr) nsmul_le_nsmul_left]
 theorem pow_le_pow_right' {a : M} {n m : ℕ} (ha : 1 ≤ a) (h : n ≤ m) : a ^ n ≤ a ^ m :=
@@ -61,59 +69,56 @@ theorem pow_le_pow_right_of_le_one' {a : M} {n m : ℕ} (ha : a ≤ 1) (h : n �
 @[to_additive nsmul_pos]
 theorem one_lt_pow' {a : M} (ha : 1 < a) {k : ℕ} (hk : k ≠ 0) : 1 < a ^ k := by
   rcases Nat.exists_eq_succ_of_ne_zero hk with ⟨l, rfl⟩
-  clear hk
-  induction l with
-  | zero => rw [pow_succ]; simpa using ha
-  | succ l IH => rw [pow_succ]; exact one_lt_mul'' IH ha
+  rw [pow_succ']
+  exact one_lt_mul_of_lt_of_le' ha (one_le_pow_of_one_le' ha.le _)
 
 @[to_additive nsmul_neg]
 theorem pow_lt_one' {a : M} (ha : a < 1) {k : ℕ} (hk : k ≠ 0) : a ^ k < 1 :=
   one_lt_pow' (M := Mᵒᵈ) ha hk
 
-@[to_additive (attr := gcongr) nsmul_lt_nsmul_left]
-theorem pow_lt_pow_right' [CovariantClass M M (· * ·) (· < ·)] {a : M} {n m : ℕ} (ha : 1 < a)
-    (h : n < m) : a ^ n < a ^ m := by
-  rcases Nat.le.dest h with ⟨k, rfl⟩; clear h
-  rw [pow_add, pow_succ, mul_assoc, ← pow_succ']
-  exact lt_mul_of_one_lt_right' _ (one_lt_pow' ha k.succ_ne_zero)
-
-@[to_additive nsmul_left_strictMono]
-theorem pow_right_strictMono' [CovariantClass M M (· * ·) (· < ·)] {a : M} (ha : 1 < a) :
-    StrictMono ((a ^ ·) : ℕ → M) := fun _ _ => pow_lt_pow_right' ha
-
-@[to_additive Left.pow_nonneg]
-theorem Left.one_le_pow_of_le (hx : 1 ≤ x) : ∀ {n : ℕ}, 1 ≤ x ^ n
-  | 0 => (pow_zero x).ge
-  | n + 1 => by
-    rw [pow_succ]
-    exact Left.one_le_mul (Left.one_le_pow_of_le hx) hx
-
-@[to_additive Left.pow_nonpos]
-theorem Left.pow_le_one_of_le (hx : x ≤ 1) : ∀ {n : ℕ}, x ^ n ≤ 1
-  | 0 => (pow_zero _).le
-  | n + 1 => by
-    rw [pow_succ]
-    exact Left.mul_le_one (Left.pow_le_one_of_le hx) hx
+@[to_additive Left.nsmul_neg]
+theorem Left.pow_lt_one_of_lt {a : M} {n : ℕ} (hn : 0 < n) (h : a < 1) : a ^ n < 1 :=
+  pow_lt_one' h hn.ne'
 
 end Left
+
+section LeftLt
+
+variable [CovariantClass M M (· * ·) (· < ·)] {a : M} {n m : ℕ}
+
+@[to_additive nsmul_left_strictMono]
+theorem pow_right_strictMono' (ha : 1 < a) : StrictMono ((a ^ ·) : ℕ → M) :=
+  strictMono_nat_of_lt_succ fun n ↦ by rw [pow_succ]; exact lt_mul_of_one_lt_right' (a ^ n) ha
+
+@[to_additive (attr := gcongr) nsmul_lt_nsmul_left]
+theorem pow_lt_pow_right' (ha : 1 < a) (h : n < m) : a ^ n < a ^ m :=
+  pow_right_strictMono' ha h
+
+end LeftLt
 
 section Right
 
 variable [CovariantClass M M (swap (· * ·)) (· ≤ ·)] {x : M}
 
-@[to_additive Right.pow_nonneg]
+@[to_additive Right.nsmul_nonneg]
 theorem Right.one_le_pow_of_le (hx : 1 ≤ x) : ∀ {n : ℕ}, 1 ≤ x ^ n
   | 0 => (pow_zero _).ge
   | n + 1 => by
     rw [pow_succ]
     exact Right.one_le_mul (Right.one_le_pow_of_le hx) hx
 
-@[to_additive Right.pow_nonpos]
+@[to_additive Right.nsmul_nonpos]
 theorem Right.pow_le_one_of_le (hx : x ≤ 1) : ∀ {n : ℕ}, x ^ n ≤ 1
   | 0 => (pow_zero _).le
   | n + 1 => by
     rw [pow_succ]
     exact Right.mul_le_one (Right.pow_le_one_of_le hx) hx
+
+@[to_additive Right.nsmul_neg]
+theorem Right.pow_lt_one_of_lt {n : ℕ} {x : M} (hn : 0 < n) (h : x < 1) : x ^ n < 1 := by
+  rcases Nat.exists_eq_succ_of_ne_zero hn.ne' with ⟨k, rfl⟩
+  rw [pow_succ]
+  exact mul_lt_one_of_le_of_lt (pow_le_one_of_le h.le) h
 
 end Right
 
@@ -156,24 +161,6 @@ theorem pow_left_mono (n : ℕ) : Monotone fun a : M => a ^ n := monotone_id.pow
 
 end CovariantLESwap
 
-@[to_additive Left.pow_neg]
-theorem Left.pow_lt_one_of_lt [CovariantClass M M (· * ·) (· < ·)] {n : ℕ} {x : M} (hn : 0 < n)
-    (h : x < 1) : x ^ n < 1 :=
-  Nat.le_induction ((pow_one _).trans_lt h)
-    (fun n _ ih => by
-      rw [pow_succ]
-      exact mul_lt_one ih h)
-    _ (Nat.succ_le_iff.2 hn)
-
-@[to_additive Right.pow_neg]
-theorem Right.pow_lt_one_of_lt [CovariantClass M M (swap (· * ·)) (· < ·)] {n : ℕ} {x : M}
-    (hn : 0 < n) (h : x < 1) : x ^ n < 1 :=
-  Nat.le_induction ((pow_one _).trans_lt h)
-    (fun n _ ih => by
-      rw [pow_succ]
-      exact Right.mul_lt_one ih h)
-    _ (Nat.succ_le_iff.2 hn)
-
 end Preorder
 
 section LinearOrder
@@ -206,6 +193,10 @@ theorem pow_eq_one_iff {x : M} {n : ℕ} (hn : n ≠ 0) : x ^ n = 1 ↔ x = 1 :=
   simp only [le_antisymm_iff]
   rw [pow_le_one_iff hn, one_le_pow_iff hn]
 
+end CovariantLE
+
+section CovariantLT
+
 variable [CovariantClass M M (· * ·) (· < ·)] {a : M} {m n : ℕ}
 
 @[to_additive nsmul_le_nsmul_iff_left]
@@ -216,7 +207,7 @@ theorem pow_le_pow_iff_right' (ha : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n :=
 theorem pow_lt_pow_iff_right' (ha : 1 < a) : a ^ m < a ^ n ↔ m < n :=
   (pow_right_strictMono' ha).lt_iff_lt
 
-end CovariantLE
+end CovariantLT
 
 section CovariantLESwap
 
@@ -266,11 +257,8 @@ theorem Left.pow_lt_one_iff [CovariantClass M M (· * ·) (· < ·)] {n : ℕ} {
 @[to_additive]
 theorem Right.pow_lt_one_iff [CovariantClass M M (swap (· * ·)) (· < ·)] {n : ℕ} {x : M}
     (hn : 0 < n) : x ^ n < 1 ↔ x < 1 :=
-  ⟨fun H =>
-    not_le.mp fun k =>
-      haveI := covariantClass_le_of_lt M M (swap (· * ·))
-      H.not_le <| Right.one_le_pow_of_le k,
-    Right.pow_lt_one_of_lt hn⟩
+  haveI := covariantClass_le_of_lt M M (swap (· * ·))
+  ⟨fun H => not_le.mp fun k => H.not_le <| Right.one_le_pow_of_le k, Right.pow_lt_one_of_lt hn⟩
 
 end LinearOrder
 
