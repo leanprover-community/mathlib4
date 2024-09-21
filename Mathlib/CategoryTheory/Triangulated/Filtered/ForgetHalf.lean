@@ -676,20 +676,29 @@ lemma power_of_alpha_assoc (X : C) (a b c : ℤ) (n m : ℕ) (hn : a + n = b) (h
 
 /-- The morphism "`αⁿ`"" from `X` to `X⟪n⟫`, if `n` is a natural number.-/
 noncomputable def power_of_alpha' (X : C) (n : ℕ) :
-    X ⟶ (@shiftFunctor C _ _ _ Shift₂ (n : ℤ)).obj X := by
-  induction' n with n fn
+    X ⟶ (@shiftFunctor C _ _ _ Shift₂ (n : ℤ)).obj X :=
+  (@shiftFunctorZero C _ _ _ Shift₂).inv.app X ≫ power_of_alpha X 0 n n (by rw [zero_add])
+/-  induction' n with n fn
   · exact ((@shiftFunctorZero C ℤ _ _ Shift₂).symm.app X).hom
   · exact fn ≫ α.app _ ≫ ((@shiftFunctorAdd' C _ _ _ Shift₂ n 1 ↑(n + 1) rfl).symm.app X).hom
+-/
 
 @[simp]
 lemma power_of_alpha'_zero (X : C) : power_of_alpha' X 0 = (shiftFunctorZero C ℤ).inv.app X := by
-  dsimp [power_of_alpha']; rfl
+  dsimp [power_of_alpha']
+  rw [power_of_alpha_zero']
+  simp only [Iso.refl_hom, comp_id]
+  rfl
+/-  dsimp [power_of_alpha']; rfl-/
 
 @[simp]
 lemma power_of_alpha'_plus_one (X : C) (n : ℕ) :
     power_of_alpha' X (n + 1) = power_of_alpha' X n ≫ α.app _ ≫
     ((@shiftFunctorAdd' C _ _ _ Shift₂ n 1 ↑(n + 1) rfl).symm.app X).hom := by
   dsimp [power_of_alpha']
+  rw [power_of_alpha_plus_one X n 0 n ↑(n + 1) (by rw [zero_add])]
+  simp only [Functor.comp_obj, Iso.app_hom, Iso.symm_hom, assoc]
+/-  dsimp [power_of_alpha']-/
 
 lemma adj_left_shift (X Y : C) (p q : ℤ) (hpq : p + 1 ≤ q) [IsLE X p] [IsGE Y q] :
     Function.Bijective (fun (f : (@shiftFunctor C _ _ _ Shift₂ 1).obj X ⟶ Y) ↦ α.app X ≫ f) := by
@@ -725,10 +734,35 @@ lemma adj_left_shift (X Y : C) (p q : ℤ) (hpq : p + 1 ≤ q) [IsLE X p] [IsGE 
   · exact hP.GE_shift (p + 1) _ _ (by linarith) _ (GE_antitone hpq _ (mem_of_isGE Y q))
   · exact hP.LE_shift p _ _ (by linarith) _ (mem_of_isLE _ _)
 
-lemma adj_left_extended (n : ℕ) : ∀ (X Y : C) (m : ℤ) [IsLE X m] [IsGE Y (m + n)],
+lemma adj_left_extended (X Y : C) (a b m : ℤ) (n : ℕ) (hn : a + n = b) [IsLE X (m - a)]
+    [IsGE Y (m + n)] : Function.Bijective
+    (fun (f : (@shiftFunctor C _ _ _ Shift₂ b).obj X ⟶ Y) ↦ (power_of_alpha X a b n hn ≫ f)) := by
+  revert X Y a b m
+  induction' n with n hind
+  · intro X Y a b m hn _ _
+    rw [power_of_alpha_zero X a b (by rw [← hn, Nat.cast_zero, add_zero])]
+    exact IsIso.comp_left_bijective _
+  · intro X Y a b m hn _ _
+    rw [power_of_alpha_plus_one X n a (a + n) b rfl (by rw [← hn, Nat.cast_add, Nat.cast_one])]
+    simp only [Functor.comp_obj, Iso.app_hom, Iso.symm_hom, assoc]
+    refine Function.Bijective.comp ?_ (Function.Bijective.comp ?_ (IsIso.comp_left_bijective _))
+    · have : IsGE Y (m + n) := isGE_of_GE Y (m + n) (m + ↑(n + 1)) (by simp only [Nat.cast_add,
+      Nat.cast_one, add_le_add_iff_left, le_add_iff_nonneg_right, zero_le_one])
+      exact hind X Y a (a + n) m rfl
+    · have : IsLE ((@shiftFunctor C _ _ _ Shift₂ (a + n)).obj X) (m + ↑n) := by
+        exact isLE_shift X (m - a) (a + n) (m + n) (by linarith)
+      exact adj_left_shift _ _ (m + n) (m + ↑(n + 1))
+        (by simp only [Nat.cast_add, Nat.cast_one]; linarith)
+
+lemma adj_left_extended' (X Y : C) (m : ℤ) (n : ℕ) [IsLE X m] [IsGE Y (m + n)] :
     Function.Bijective
     (fun (f : (@shiftFunctor C _ _ _ Shift₂ n).obj X ⟶ Y) ↦ (power_of_alpha' X n ≫ f)) := by
-  induction' n with n fn
+  dsimp [power_of_alpha']; simp only [assoc]
+  have : IsLE X (m - 0) := isLE_of_LE X m (m - 0) (by simp only [sub_zero, le_refl])
+  exact Function.Bijective.comp (IsIso.comp_left_bijective _)
+    (adj_left_extended X Y 0 n m n (by rw [zero_add]))
+
+/-  induction' n with n fn
   · intro X Y m _ _
     simp only [Int.Nat.cast_ofNat_Int, power_of_alpha'_zero]
     exact IsIso.comp_left_bijective _
@@ -742,7 +776,7 @@ lemma adj_left_extended (n : ℕ) : ∀ (X Y : C) (m : ℤ) [IsLE X m] [IsGE Y (
         exact isLE_shift X m n (m + n) (by linarith)
       exact adj_left_shift _ _ (m + n) (m + ↑(n + 1))
         (by simp only [Nat.cast_add, Nat.cast_one]; linarith)
-    · exact IsIso.comp_left_bijective _
+    · exact IsIso.comp_left_bijective _-/
 
 /- Lemmas about omega and shifting.-/
 
@@ -815,7 +849,7 @@ lemma existence_omega_support_singleton (X : C) [IsLE X 0] (hsupp : Finset.card 
        map_zero' := by simp only [comp_zero]
        map_add' := fun _ _ ↦ by simp only [comp_add]
       }
-    set e := AddEquiv.ofBijective f (adj_left_extended n.natAbs X Z n)
+    set e := AddEquiv.ofBijective f (adj_left_extended' X Z n n.natAbs)
     simp only [preadditiveYoneda_obj, Int.reduceNeg, Int.rawCast, Int.cast_id, Nat.rawCast,
       Nat.cast_id, Int.Nat.cast_ofNat_Int, Int.reduceAdd, Int.ofNat_eq_coe, eq_mp_eq_cast, id_eq,
       eq_mpr_eq_cast, Functor.comp_obj, preadditiveYonedaObj_obj, ModuleCat.forget₂_obj,
