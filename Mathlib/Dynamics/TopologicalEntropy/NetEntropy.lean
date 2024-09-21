@@ -9,24 +9,22 @@ import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
 # Topological entropy via nets
 We implement Bowen-Dinaburg's definitions of the topological entropy, via nets.
 
-All is stated in the vocabulary of uniform spaces. For compact spaces, the uniform structure
-is canonical, so the topological entropy depends only on the topological structure. This will give
-a clean proof that the topological entropy is a topological invariant of the dynamics.
+The major design decisions are the same as in `Mathlib.Dynamics.TopologicalEntropy.CoverEntropy`,
+and are explained in detail there: use of uniform spaces, definition of the topological entropy of
+a subset, and values taken in `EReal`.
 
-A notable choice is that we define the topological entropy of a subset `F` of the whole space.
-Usually, one defines the entropy of an invariant subset `F` as the entropy of the restriction of the
-transformation to `F`. We avoid the latter definition as it would involve frequent manipulation of
-subtypes. Our version directly gives a meaning to the topological entropy of a subsystem, and a
-single lemma (`subset_restriction_entropy` in `.Semiconj`) will give the equivalence between
-both versions.
+Given a map `T : X → X` and a subset `F ⊆ X`, the topological entropy is loosely defined using
+nets as the exponential growth (in `n`) of the number of distinguishable orbits of length `n`
+starting from `F`. More precisely, given an entourage `U`, two orbits of length `n` can be
+distinguished if there exists some index `k < n` such that `T^[k] x` and `T^[k] y` are far enough
+(i.e. `(T^[k] x, T^[k] y)` is not in `U`). The maximal number of distinguishable orbits of
+length `n` is `netMaxcard T F U n`, and its exponential growth `netEntropyEntourage T F U`. This
+quantity increases when `U` decreases, and a definition of the topological entropy is
+`⨆ U ∈ 𝓤 X, netEntropyInfEntourage T F U`.
 
-Another choice is to give a meaning to the entropy of `∅` (it must be `-∞` to stay coherent) and to
-keep the possibility for the entropy to be infinite. Hence, the entropy takes values in the extended
-reals `[-∞, +∞]`. The consequence is that we use `ℕ∞`, `ℝ≥0∞` and `EReal` numbers.
-
-We relate in this file `CoverEntropy` and `NetEntropy`. This file is downstream of
-`Mathlib.Dynamics.TopologicalEntropy.CoverEntropy` since the submultiplicative argument there
-(specifically `IsDynCoverOf.iterate_le_pow`) is more natural for covers.
+The definition of topological entropy using nets coincides with the definition using covers.
+Instead of defining a new notion of topological entropy, we prove that
+`coverEntropy` coincides with `⨆ U ∈ 𝓤 X, netEntropyEntourage T F U`.
 
 ## Main definitions
 - `IsDynNetIn`: property that dynamical balls centered on a subset `s` of `F` are disjoint.
@@ -37,14 +35,11 @@ defined with a `liminf`, the latter with a `limsup`. Take values in `EReal`.
 ## Implementation notes
 As when using covers, there are two competing definitions `netEntropyInfEntourage` and
 `netEntropyEntourage` in this file: one uses a `liminf`, the other a `limsup`. When using covers,
-we chose the `limsup` definition as the default. Because of lemmas
-`coverEntropyInf_eq_iSup_netEntropyInfEntourage` and `coverEntropy_eq_iSup_netEntropyEntourage`,
-we make the same choice here. Theorems about the topological entropy of invariant subsets will be
-stated using only `coverEntropy`.
+we chose the `limsup` definition as the default.
 
 ## Main results
 - `coverEntropy_eq_iSup_netEntropyEntourage`: equality between the notions of topological entropy
-defined with covers and with nets. Has a variant for `coverEntropyÌnf`.
+defined with covers and with nets. Has a variant for `coverEntropyInf`.
 
 ## Tags
 net, entropy
@@ -214,14 +209,14 @@ lemma netMaxcard_infinite_iff (T : X → X) (F : Set X) (U : Set (X × X)) (n : 
     rw [ENat.some_eq_coe, Nat.cast_lt]
     exact (lt_add_one k).trans_le s_card
 
-lemma netMaxcard_le_coverMincard (T : X → X) (F : Set X) {U : Set (X × X)} (h : SymmetricRel U)
+lemma netMaxcard_le_coverMincard (T : X → X) (F : Set X) {U : Set (X × X)} (U_symm : SymmetricRel U)
     (n : ℕ) :
     netMaxcard T F U n ≤ coverMincard T F U n := by
-  rcases eq_top_or_lt_top (coverMincard T F U n) with h' | h'
-  · exact h' ▸ le_top
-  · rcases ((coverMincard_finite_iff T F U n).1 h') with ⟨t, t_cover, t_mincard⟩
+  rcases eq_top_or_lt_top (coverMincard T F U n) with h | h
+  · exact h ▸ le_top
+  · rcases ((coverMincard_finite_iff T F U n).1 h) with ⟨t, t_cover, t_mincard⟩
     rw [← t_mincard]
-    exact iSup₂_le (fun s s_net ↦ Nat.cast_le.2 (s_net.card_le_card_of_isDynCoverOf h t_cover))
+    exact iSup₂_le (fun s s_net ↦ Nat.cast_le.2 (s_net.card_le_card_of_isDynCoverOf U_symm t_cover))
 
 /-- Given an entourage `U` and a time `n`, a minimal dynamical cover by `U ○ U` has a smaller
   cardinality than a maximal dynamical net by `U`. This lemma is the second of two key results to
@@ -355,7 +350,11 @@ lemma coverEntropyEntourage_le_netEntropyEntourage (T : X → X) (F : Set X) {U 
 
 variable [UniformSpace X] (T : X → X) (F : Set X)
 
-lemma coverEntropyInf_eq_iSup_netEntropyInfEntourage :
+/-- Bowen-Dinaburg's definition of topological entropy using nets is
+  `⨆ U ∈ 𝓤 X, netEntropyEntourage T F U`. This quantity is the same as the topological entropy using
+  covers, so there is no need to define a new notion of topological entropy. This version of the
+  theorem relates the `liminf` versions of topological entropy.-/
+theorem coverEntropyInf_eq_iSup_netEntropyInfEntourage :
     coverEntropyInf T F = ⨆ U ∈ 𝓤 X, netEntropyInfEntourage T F U := by
   apply le_antisymm <;> refine iSup₂_le fun U U_uni ↦ ?_
   · rcases (comp_symm_mem_uniformity_sets U_uni) with ⟨V, V_uni, V_symm, V_comp_U⟩
@@ -365,8 +364,11 @@ lemma coverEntropyInf_eq_iSup_netEntropyInfEntourage :
     apply (le_iSup₂ (symmetrizeRel U) (symmetrize_mem_uniformity U_uni)).trans'
     exact netEntropyInfEntourage_le_coverEntropyInfEntourage T F (symmetric_symmetrizeRel U)
 
-/-- Bowen-Dinaburg's definitions of topological entropy by covers and nets coincide.-/
-lemma coverEntropy_eq_iSup_netEntropyEntourage :
+/-- Bowen-Dinaburg's definition of topological entropy using nets is
+  `⨆ U ∈ 𝓤 X, netEntropyEntourage T F U`. This quantity is the same as the topological entropy using
+  covers, so there is no need to define a new notion of topological entropy. This version of the
+  theorem relates the `limsup` versions of topological entropy.-/
+theorem coverEntropy_eq_iSup_netEntropyEntourage :
     coverEntropy T F = ⨆ U ∈ 𝓤 X, netEntropyEntourage T F U := by
   apply le_antisymm <;> refine iSup₂_le fun U U_uni ↦ ?_
   · rcases (comp_symm_mem_uniformity_sets U_uni) with ⟨V, V_uni, V_symm, V_comp_U⟩
