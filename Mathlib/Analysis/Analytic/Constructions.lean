@@ -6,6 +6,7 @@ Authors: David Loeffler, Geoffrey Irving
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Linear
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
+import Mathlib.Analysis.Normed.Ring.Units
 
 /-!
 # Various ways to combine analytic functions
@@ -660,7 +661,7 @@ lemma formalMultilinearSeries_geometric_radius (𝕜 : Type*) [NontriviallyNorme
 
 lemma hasFPowerSeriesOnBall_inverse_one_sub
     (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-    (A : Type*) [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A] :
+    (A : Type*) [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A] :
     HasFPowerSeriesOnBall (fun x : A ↦ Ring.inverse (1 - x))
       (formalMultilinearSeries_geometric 𝕜 A) 0 1 := by
   constructor
@@ -671,23 +672,20 @@ lemma hasFPowerSeriesOnBall_inverse_one_sub
     simp only [zero_add, NormedRing.inverse_one_sub _ hy, Units.oneSub, Units.inv_mk,
       formalMultilinearSeries_geometric, ContinuousMultilinearMap.mkPiAlgebraFin_apply,
       List.ofFn_const, List.prod_replicate]
-    exact (NormedRing.summable_geometric_of_norm_lt_one _ hy).hasSum
+    exact (summable_geometric_of_norm_lt_one hy).hasSum
 
 lemma analyticAt_inverse_one_sub (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-    (A : Type*) [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A] :
+    (A : Type*) [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A] :
     AnalyticAt 𝕜 (fun x : A ↦ Ring.inverse (1 - x)) 0 :=
   ⟨_, ⟨_, hasFPowerSeriesOnBall_inverse_one_sub 𝕜 A⟩⟩
 
---lemma foo (𝕜 : Type*) [NontriviallyNormedField 𝕜]
---    (A : Type*) [NormedAddCommGroup A] [NormedSpace 𝕜 A] [Subsingleton A]
-
-
-/-- If `A` is a complete normed algebra over `𝕜`, then inversion on `A` is analytic at any unit. -/
+/-- If `A` is a normed algebra over `𝕜` with summable geometric series, then inversion on `A` is
+analytic at any unit. -/
 lemma analyticAt_inverse (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-    (A : Type*) [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A] {z : Aˣ} :
+    {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A] {z : Aˣ} :
     AnalyticAt 𝕜 Ring.inverse (z : A) := by
   rcases subsingleton_or_nontrivial A with hA|hA
-  · sorry
+  · convert analyticAt_const (v := (0 : A))
   · let f1 : A → A := fun a ↦ a * z.inv
     let f2 : A → A := fun b ↦ Ring.inverse (1 - b)
     let f3 : A → A := fun c ↦ 1 - z.inv * c
@@ -705,28 +703,17 @@ lemma analyticAt_inverse (𝕜 : Type*) [NontriviallyNormedField 𝕜]
       congr
       simp
     apply AnalyticAt.congr _ feq
-    apply ((analyticAt_id 𝕜 _).mul analyticAt_const).comp
+    apply (analyticAt_id.mul analyticAt_const).comp
     apply AnalyticAt.comp
     · simp only [Units.inv_eq_val_inv, Units.inv_mul, sub_self, f2, f3]
       exact analyticAt_inverse_one_sub 𝕜 A
-    · exact analyticAt_const.sub (analyticAt_const.mul (analyticAt_id _ _))
-
-
+    · exact analyticAt_const.sub (analyticAt_const.mul analyticAt_id)
 
 lemma hasFPowerSeriesOnBall_inv_one_sub
     (𝕜 𝕝 : Type*) [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝] :
     HasFPowerSeriesOnBall (fun x : 𝕝 ↦ (1 - x)⁻¹) (formalMultilinearSeries_geometric 𝕜 𝕝) 0 1 := by
-  constructor
-  · exact le_of_eq (formalMultilinearSeries_geometric_radius 𝕜 𝕝).symm
-  · exact one_pos
-  · intro y hy
-    simp_rw [zero_add, formalMultilinearSeries_geometric,
-        ContinuousMultilinearMap.mkPiAlgebraFin_apply,
-        List.prod_ofFn, Finset.prod_const,
-        Finset.card_univ, Fintype.card_fin]
-    apply hasSum_geometric_of_norm_lt_one
-    simpa only [← ofReal_one, Metric.emetric_ball, Metric.ball,
-      dist_eq_norm, sub_zero] using hy
+  convert hasFPowerSeriesOnBall_inverse_one_sub 𝕜 𝕝
+  exact Ring.inverse_eq_inv'.symm
 
 lemma analyticAt_inv_one_sub (𝕝 : Type*) [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝] :
     AnalyticAt 𝕜 (fun x : 𝕝 ↦ (1 - x)⁻¹) 0 :=
@@ -735,19 +722,8 @@ lemma analyticAt_inv_one_sub (𝕝 : Type*) [NontriviallyNormedField 𝕝] [Norm
 /-- If `𝕝` is a normed field extension of `𝕜`, then the inverse map `𝕝 → 𝕝` is `𝕜`-analytic
 away from 0. -/
 lemma analyticAt_inv {z : 𝕝} (hz : z ≠ 0) : AnalyticAt 𝕜 Inv.inv z := by
-  let f1 : 𝕝 → 𝕝 := fun a ↦ 1 / z * a
-  let f2 : 𝕝 → 𝕝 := fun b ↦ (1 - b)⁻¹
-  let f3 : 𝕝 → 𝕝 := fun c ↦ 1 - c / z
-  have feq : f1 ∘ f2 ∘ f3 = Inv.inv := by
-    ext1 x
-    dsimp only [f1, f2, f3, Function.comp_apply]
-    field_simp
-  have f3val : f3 z = 0 := by simp only [f3, div_self hz, sub_self]
-  have f3an : AnalyticAt 𝕜 f3 z := by
-    apply analyticAt_const.sub
-    simpa only [div_eq_inv_mul] using analyticAt_const.mul analyticAt_id
-  exact feq ▸ (analyticAt_const.mul analyticAt_id).comp
-    ((f3val.symm ▸ analyticAt_inv_one_sub 𝕝).comp f3an)
+  convert analyticAt_inverse 𝕜 (z := Units.mk0 _ hz)
+  exact Ring.inverse_eq_inv'.symm
 
 /-- `x⁻¹` is analytic away from zero -/
 lemma analyticOn_inv : AnalyticOn 𝕜 (fun z ↦ z⁻¹) {z : 𝕝 | z ≠ 0} := by
