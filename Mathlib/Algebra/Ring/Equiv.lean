@@ -169,8 +169,6 @@ theorem mk_coe (e : R ≃+* S) (e' h₁ h₂ h₃ h₄) : (⟨⟨e, e', h₁, h�
 theorem toEquiv_eq_coe (f : R ≃+* S) : f.toEquiv = f :=
   rfl
 
--- Porting note: `toFun_eq_coe` no longer needed in Lean4
-
 @[simp]
 theorem coe_toEquiv (f : R ≃+* S) : ⇑(f : R ≃ S) = f :=
   rfl
