@@ -85,6 +85,10 @@ theorem hasFDerivAt_inv (x_ne_zero : x ≠ 0) :
     HasFDerivAt (fun x => x⁻¹) (smulRight (1 : 𝕜 →L[𝕜] 𝕜) (-(x ^ 2)⁻¹) : 𝕜 →L[𝕜] 𝕜) x :=
   hasDerivAt_inv x_ne_zero
 
+theorem hasStrictFDerivAt_inv (x_ne_zero : x ≠ 0) :
+    HasStrictFDerivAt (fun x => x⁻¹) (smulRight (1 : 𝕜 →L[𝕜] 𝕜) (-(x ^ 2)⁻¹) : 𝕜 →L[𝕜] 𝕜) x :=
+  hasStrictDerivAt_inv x_ne_zero
+
 theorem hasFDerivWithinAt_inv (x_ne_zero : x ≠ 0) :
     HasFDerivWithinAt (fun x => x⁻¹) (smulRight (1 : 𝕜 →L[𝕜] 𝕜) (-(x ^ 2)⁻¹) : 𝕜 →L[𝕜] 𝕜) s x :=
   (hasFDerivAt_inv x_ne_zero).hasFDerivWithinAt

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.Analytic.Constructions
+import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Calculus.FDeriv.Bilinear
 
 /-!
@@ -782,7 +783,6 @@ open NormedRing ContinuousLinearMap Ring
 /-- At an invertible element `x` of a normed algebra `R`, the Fréchet derivative of the inversion
 operation is the linear map `fun t ↦ - x⁻¹ * t * x⁻¹`.
 
-TODO: prove that `Ring.inverse` is analytic and use it to prove a `HasStrictFDerivAt` lemma.
 TODO (low prio): prove a version without assumption `[HasSummableGeomSeries R]` but within the set
 of units. -/
 @[fun_prop]
@@ -808,6 +808,11 @@ theorem differentiableOn_inverse : DifferentiableOn 𝕜 (@Ring.inverse R _) {x 
 
 theorem fderiv_inverse (x : Rˣ) : fderiv 𝕜 (@Ring.inverse R _) x = -mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹ :=
   (hasFDerivAt_ring_inverse x).fderiv
+
+theorem hasStrictFDerivAt_ring_inverse (x : Rˣ) :
+    HasStrictFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) x := by
+  convert (analyticAt_inverse (𝕜 := 𝕜) x).hasStrictFDerivAt
+  exact (fderiv_inverse x).symm
 
 variable {h : E → R} {z : E} {S : Set E}
 
@@ -843,6 +848,13 @@ section DivisionRingInverse
 variable {R : Type*} [NormedDivisionRing R] [NormedAlgebra 𝕜 R]
 
 open NormedRing ContinuousLinearMap Ring
+
+/-- At an invertible element `x` of a normed division algebra `R`, the inversion is strictly
+differentiable, with derivative the linear map `fun t ↦ - x⁻¹ * t * x⁻¹`. For a nicer formula in
+the commutative case, see `hasStrictFDerivAt_inv`. -/
+theorem hasStrictFDerivAt_inv' {x : R} (hx : x ≠ 0) :
+    HasStrictFDerivAt Inv.inv (-mulLeftRight 𝕜 R x⁻¹ x⁻¹) x := by
+  simpa using hasStrictFDerivAt_ring_inverse (Units.mk0 _ hx)
 
 /-- At an invertible element `x` of a normed division algebra `R`, the Fréchet derivative of the
 inversion operation is the linear map `fun t ↦ - x⁻¹ * t * x⁻¹`. For a nicer formula in the
