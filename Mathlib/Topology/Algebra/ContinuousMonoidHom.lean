@@ -539,7 +539,7 @@ protected theorem congr_fun {f g : M ≃ₜ* N} (h : f = g) (x : M) : f x = g x 
 theorem coe_mk (f : M ≃* N) (hf1 : Continuous f.toFun) (hf2 : Continuous f.invFun) :
     (mk f hf1 hf2 : M → N) = f := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem toEquiv_eq_coe (f : M ≃ₜ* N) : f.toEquiv = f :=
   rfl
 
@@ -591,10 +591,10 @@ def refl : M ≃ₜ* M := {
 @[to_additive]
 instance : Inhabited (M ≃ₜ* M) := ⟨ContinuousMulEquiv.refl M⟩
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem coe_refl : ↑(refl M) = id := rfl
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem refl_apply (m : M) : refl M m = m := rfl
 
 end refl
@@ -626,3 +626,4 @@ def trans {K : Type*} [Mul K] [TopologicalSpace K]
 end ContinuousMulEquiv
 
 end
+#lint
