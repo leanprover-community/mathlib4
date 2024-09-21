@@ -123,7 +123,7 @@ theorem CNF_snd_lt {b o : Ordinal.{u}} (hb : 1 < b) {x : Ordinal × Ordinal} :
   · rw [CNF_ne_zero ho]
     intro h
     obtain rfl | h := mem_cons.mp h
-    · simpa only using div_opow_log_lt o hb
+    · exact div_opow_log_lt o hb
     · exact IH h
 
 /-- The exponents of the Cantor normal form are decreasing. -/
