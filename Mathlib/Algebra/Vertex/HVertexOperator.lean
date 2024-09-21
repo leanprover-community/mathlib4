@@ -15,7 +15,6 @@ here allows us to consider composites and scalar-multiply by multivariable Laure
 * `HVertexOperator` : An `R`-linear map from an `R`-module `V` to `HahnModule Γ W`.
 * The coefficient function as an `R`-linear map.
 * Composition of heterogeneous vertex operators - values are Hahn series on lex order product.
-* Composition of heterogeneous vertex operators - values are Hahn series on lex order product.
 ## Main results
 * `HahnSeries Γ R`-module structure on `HVertexOperator Γ R V W`.  This means we can consider
   products of the form `(X-Y)^n A(X)B(Y)` for all integers `n`, where `(X-Y)^n` is expanded as
@@ -32,8 +31,6 @@ here allows us to consider composites and scalar-multiply by multivariable Laure
   arXiv:hep-th/9706118
 * H. Li's paper on local systems?
 -/
-
-assert_not_exists Cardinal
 
 noncomputable section
 

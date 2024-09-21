@@ -7,7 +7,6 @@ import Mathlib.Data.Finsupp.PWO
 import Mathlib.RingTheory.HahnSeries.Multiplication
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
-import Mathlib.Data.Finsupp.PWO
 
 /-!
 # Comparison between Hahn series and power series
