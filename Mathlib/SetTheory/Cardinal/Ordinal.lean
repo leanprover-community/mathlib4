@@ -339,7 +339,6 @@ theorem ord_card_unbounded : Unbounded (· < ·) { b : Ordinal | b.card.ord = b 
         dsimp
         rw [card_ord], (lt_ord_succ_card a).le⟩⟩
 
-@[deprecated (since := "2024-09-20")]
 theorem eq_aleph'_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) : ∃ a, (aleph' a).ord = o :=
   ⟨aleph'.symm o.card, by simpa using ho⟩
 
@@ -350,6 +349,18 @@ theorem ord_aleph'_eq_enum_card : ord ∘ aleph' = enumOrd (Set.range (ord ∘ c
   rw [range_comp, range_comp, OrderIso.range_eq, card_surjective.range_eq]
 
 /-- Infinite ordinals that are cardinals are unbounded. -/
+theorem not_bddAbove_range_ord_card' : ¬ BddAbove (Set.range (ord ∘ card) ∩ Set.Ici ω) := by
+  have := not_bddAbove_range_ord_card
+  rw [not_bddAbove_iff] at *
+  intro x
+  obtain ⟨_, ⟨⟨y, rfl⟩, hy⟩⟩ := this (max x ω)
+  refine ⟨(ord ∘ card) y, ⟨mem_range_self _, ?_⟩, ?_⟩
+  · apply (le_max_right _ _).trans hy.le
+  · apply (le_max_left _ _).trans_lt hy
+
+set_option linter.deprecated false in
+/-- Infinite ordinals that are cardinals are unbounded. -/
+@[deprecated not_bddAbove_range_ord_card' (since := "2024-09-20")]
 theorem ord_card_unbounded' : Unbounded (· < ·) { b : Ordinal | b.card.ord = b ∧ ω ≤ b } :=
   (unbounded_lt_inter_le ω).2 ord_card_unbounded
 
@@ -362,17 +373,23 @@ theorem eq_aleph_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) (ho' : ω �
 
 /-- `ord ∘ aleph` enumerates the infinite ordinals that are cardinals. -/
 theorem ord_aleph_eq_enum_card :
-    ord ∘ aleph = enumOrd { b : Ordinal | b.card.ord = b ∧ ω ≤ b } := by
-  rw [← eq_enumOrd _ ord_card_unbounded']
+    ord ∘ aleph = enumOrd (Set.range (ord ∘ card) ∩ Set.Ici ω) := by
+  rw [eq_comm, eq_enumOrd _ not_bddAbove_range_ord_card']
   use aleph_isNormal.strictMono
-  rw [range_eq_iff]
-  refine ⟨fun a => ⟨?_, ?_⟩, fun b hb => eq_aleph_of_eq_card_ord hb.1 hb.2⟩
-  · rw [Function.comp_apply, card_ord]
-  · rw [← ord_aleph0, Function.comp_apply, ord_le_ord]
-    exact aleph0_le_aleph _
+  apply subset_antisymm
+  · rintro _ ⟨a, rfl⟩
+    refine ⟨⟨(aleph a).ord, ?_⟩, ?_⟩
+    · simp
+    · rw [comp_apply, mem_Ici, ← ord_aleph0, ord_le_ord]
+      exact aleph0_le_aleph _
+  · rintro _ ⟨⟨a, rfl⟩, ha⟩
+    use aleph'.symm a.card - ω
+    rw [comp_apply, comp_apply, ord_inj, aleph_eq_aleph', Ordinal.add_sub_cancel_of_le,
+      aleph'.apply_symm_apply]
+    rwa [← aleph'.le_iff_le, aleph'.apply_symm_apply, aleph'_omega, ← ord_le_ord, ord_aleph0]
 
 end aleph
-#exit
+
 /-! ### Beth cardinals -/
 section beth
 
