@@ -399,7 +399,7 @@ every point of `s`. -/
 def AnalyticOn (f : E → F) (s : Set E) :=
   ∀ x, x ∈ s → AnalyticAt 𝕜 f x
 
-/-- `f` is analytic within `s` if it is analytic within `s` at each point of `t`.  Note that
+/-- `f` is analytic within `s` if it is analytic within `s` at each point of `s`.  Note that
 this is weaker than `AnalyticOn 𝕜 f s`, as `f` is allowed to be arbitrary outside `s`. -/
 def AnalyticWithinOn (f : E → F) (s : Set E) : Prop :=
   ∀ x ∈ s, AnalyticWithinAt 𝕜 f s x
