@@ -591,10 +591,10 @@ def refl : M ≃ₜ* M := {
 @[to_additive]
 instance : Inhabited (M ≃ₜ* M) := ⟨ContinuousMulEquiv.refl M⟩
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem coe_refl : ↑(refl M) = id := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem refl_apply (m : M) : refl M m = m := rfl
 
 end refl
