@@ -14,23 +14,10 @@ variable {C : Type _} [Category C] [HasZeroObject C]  [Preadditive C] [HasShift 
 
 variable [∀ (X : C) (n : ℤ), Decidable (IsZero ((Gr'' n).obj X))]
 
-@[simp]
 noncomputable def HalfForgetObj (X : C) : hP.Core' := by
   by_cases IsLE X 0
   · exact (existence_omega X).choose
   · exact 0
-
-/-
-@[simp]
-lemma HalfForgetObj_of_isLE (X : C) (h : IsLE X 0) :
-    HalfForgetObj X = (existence_omega X).choose := by
-  dsimp [HalfForgetObj]; simp only [h, ↓reduceDIte]
-
-@[simp]
-lemma HalfForgetObj_of_not_isLE (X : C) (h : ¬ (IsLE X 0)) :
-    HalfForgetObj X = 0 := by
-  dsimp [HalfForgetObj]; simp only [h, ↓reduceDIte]
--/
 
 noncomputable def IdToHalfForgetApp (X : C) : X ⟶ (HalfForgetObj X).1 := by
   dsimp [HalfForgetObj]
@@ -48,7 +35,6 @@ lemma HalfForgetObj_prop (X : C) [IsLE X 0] (Y : C) [IsGE Y 0] :
   refine Function.Bijective.comp ?_ (IsIso.comp_left_bijective _)
   exact (existence_omega X).choose_spec.choose_spec Y inferInstance
 
-@[simp]
 noncomputable def HalfForgetMap {X Y : C} (f : X ⟶ Y) : HalfForgetObj X ⟶ HalfForgetObj Y := by
   by_cases IsLE X 0
   · by_cases IsLE Y 0
@@ -88,10 +74,14 @@ lemma HalfForgetMapComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsLE Y 0] :
     · simp only [HalfForgetObj, hX, hZ, HalfForgetMap, ↓reduceDIte, hY, comp_zero]
   · simp only [HalfForgetObj, hX, HalfForgetMap, ↓reduceDIte, hY, dite_eq_ite, zero_comp]
 
+lemma HalfForgetMapComp' {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hZ : ¬ (IsLE Z 0)) :
+    HalfForgetMap (f ≫ g) = HalfForgetMap f ≫ HalfForgetMap g := by sorry
+
 /- We construct `Forget X` as the colimit of `HalfForget X⟪n⟫` as `n` varies over `ℤ` (seen
 as a poset category), with the transition maps given by `power_of_alpha`.-/
 
-noncomputable def ForgetInductiveSystem (X : C) : ℤ ⥤ C where
+@[simp]
+noncomputable def ForgetInductiveSystem_aux (X : C) : ℤ ⥤ C where
   obj a := (@shiftFunctor C _ _ _ Shift₂ a).obj X
   map := by
     intro a b f
@@ -117,6 +107,32 @@ noncomputable def ForgetInductiveSystem (X : C) : ℤ ⥤ C where
       a c (by rw [hac, add_sub_cancel])]
     exact (power_of_alpha_assoc X a b c (b - a).natAbs (c - b).natAbs
       (by rw [hab, add_sub_cancel]) (by rw [hbc, add_sub_cancel])).symm
+
+noncomputable def ForgetInductiveSystem (X : C) : ℤ ⥤ hP.Core' where
+  obj a := HalfForgetObj ((ForgetInductiveSystem_aux X).obj a)
+  map f := HalfForgetMap ((ForgetInductiveSystem_aux X).map f)
+  map_id a := by
+    simp only
+    rw [Functor.map_id, HalfForgetMapId]
+  map_comp := by
+    intro a b c f g
+    simp only
+    rw [Functor.map_comp]
+    by_cases h : IsLE X (-b)
+    · have : IsLE ((ForgetInductiveSystem_aux X).obj b) 0 := by
+        dsimp [ForgetInductiveSystem_aux]
+        exact isLE_shift X (-b) b 0 (by linarith)
+      exact HalfForgetMapComp ((ForgetInductiveSystem_aux X).map f)
+        ((ForgetInductiveSystem_aux X).map g)
+    · have : ¬ IsLE ((ForgetInductiveSystem_aux X).obj c) 0 := by
+        dsimp [ForgetInductiveSystem_aux]
+        intro habs
+        have := isLE_shift ((@shiftFunctor C _ _ _ Shift₂ c).obj X) 0 (-c) (-c) (by rw [add_zero])
+        have : IsLE X (- c) := isLE_of_iso (@shiftShiftNeg C _ _ _ Shift₂ X c) (-c)
+        have : IsLE X (-b ) := isLE_of_LE X (- c) (- b) (by have := leOfHom g; linarith)
+        exact h this
+      exact HalfForgetMapComp' ((ForgetInductiveSystem_aux X).map f)
+        ((ForgetInductiveSystem_aux X).map g) this
 
 end FilteredTriangulated
 
