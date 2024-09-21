@@ -357,9 +357,10 @@ instance le : LE PGame :=
       (∀ i, ¬le y (x.moveLeft i) (Sym2.GameAdd.snd_fst <| IsOption.moveLeft i)) ∧
         ∀ j, ¬le (y.moveRight j) x (Sym2.GameAdd.fst_snd <| IsOption.moveRight j)⟩
 
-/-- The less or fuzzy relation on pre-games.
+/-- The less or fuzzy relation on pre-games. `x ⧏ y` is defined as `¬ y ≤ x`.
 
-If `0 ⧏ x`, then Left can win `x` as the first player. `x ⧏ y` means that `¬ y ≤ x`. -/
+If `0 ⧏ x`, then Left can win `x` as the first player. `x ⧏ y` means that `0 ⧏ y - x`.
+See `PGame.lf_iff_sub_zero_lf`. -/
 def LF (x y : PGame) : Prop :=
   ¬y ≤ x
 
