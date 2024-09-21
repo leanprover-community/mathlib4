@@ -134,6 +134,16 @@ noncomputable def ForgetInductiveSystem (X : C) : ℤ ⥤ hP.Core' where
       exact HalfForgetMapComp' ((ForgetInductiveSystem_aux X).map f)
         ((ForgetInductiveSystem_aux X).map g) this
 
+noncomputable def ForgetInductiveSystemMap {X Y : C} (f : X ⟶ Y) :
+    ForgetInductiveSystem X ⟶ ForgetInductiveSystem Y where
+  app a := by
+    dsimp [ForgetInductiveSystem]
+    exact HalfForgetMap ((@shiftFunctor C _ _ _ Shift₂ a).map f)
+  naturality := by
+    intro a b f
+    dsimp [ForgetInductiveSystem]
+    -- only commutes for b small enough!
+
 end FilteredTriangulated
 
 end Triangulated
