@@ -4,7 +4,7 @@ import Mathlib.Data.Real.Sign
 
 open Real NNReal Set Filter Topology FiniteDimensional MeasureTheory Module Submodule
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*}
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 theorem dense_of_ae {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
@@ -36,6 +36,8 @@ theorem basisOfSpan_subset [AddCommGroup E] [Module ℝ E] [FiniteDimensional �
     {s : Set E} (hs : span ℝ s = ⊤) :
     range (BasisOfSpan hs) ⊆ s := (basis_of_span hs).choose_spec
 
+variable [NormedAddCommGroup E] [NormedSpace ℝ E]
+
 theorem span_eq_top_of_ne_zero [IsReflexive ℝ E] {s : Set (E →ₗ[ℝ] ℝ)}
     (h : ∀ z : E, z ≠ 0 → ∃ f ∈ s, f z ≠ 0) :
     span ℝ s = ⊤ := by
@@ -59,7 +61,7 @@ theorem hasFDerivAt_norm_smul {x : E} {t : ℝ} (ht : t ≠ 0)
   rw [Asymptotics.isLittleO_iff] at *
   intro c hc
   have := hx hc
-  rw [eventually_iff, ← set_smul_mem_nhds_smul_iff ht] at this
+  rw [eventually_iff, ← smul_mem_nhds_smul_iff₀ ht] at this
   filter_upwards [this]
   rintro - ⟨ε, hε, rfl⟩
   simp only
@@ -75,7 +77,7 @@ theorem differentiableAt_norm_smul {x : E} {t : ℝ} (ht : t ≠ 0) :
   mp hd := (hasFDerivAt_norm_smul ht hd.hasFDerivAt).differentiableAt
   mpr hd := by
     convert (hasFDerivAt_norm_smul (inv_ne_zero ht) hd.hasFDerivAt).differentiableAt
-    rw [smul_smul, inv_mul_cancel ht, one_smul]
+    rw [smul_smul, inv_mul_cancel₀ ht, one_smul]
 
 theorem not_differentiableAt_norm_zero (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
     [Nontrivial E] :

@@ -303,7 +303,7 @@ theorem exists_inverse'' [CompleteSpace E] [Nontrivial E]
           simpa
         use n, f, fun i ↦ ⟨⟨g i, subset_span (g i).2⟩, this i⟩
         rw [← Subtype.val_inj, ← hx]
-        simp
+        simp [Submodule.coe_sum]
       rcases exists_inverse' (ψ p) (hψ p) (ψz p) this with ⟨T, nT, hT⟩
       exact ⟨T, fun y ↦ nT ▸ T.le_opNorm y, fun y ↦ congrFun hT y⟩
     · refine ⟨0, by simp, ?_⟩
@@ -327,7 +327,7 @@ theorem exists_inverse'' [CompleteSpace E] [Nontrivial E]
           simpa
         use n, f, fun i ↦ ⟨⟨g i, subset_span (g i).2⟩, this i⟩
         rw [← Subtype.val_inj, ← hx]
-        simp
+        simp [Submodule.coe_sum]
       apply LinearMap.ext_on_range this
       intro x
       simp only [LinearMap.coe_comp, coeSubtype, ContinuousLinearMap.coe_coe, Function.comp_apply]
