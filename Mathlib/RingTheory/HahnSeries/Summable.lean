@@ -604,8 +604,10 @@ open Classical in
 theorem mem_of_mem_cons_of_ne {s : Finset σ} {a : σ} (has : a ∉ s) {i : σ}
     (hi : i ∈ cons a s has) (hia : i ≠ a) : i ∈ s :=
   mem_of_mem_insert_of_ne (cons_eq_insert a s has ▸ hi) hia
+--#find_home! mem_of_mem_cons_of_ne --[Mathlib.Data.Finset.Basic]
 
 open Classical in
+/-- A function from a product with a pi type to pi of cons. -/
 def prod_pi_cons (s : Finset σ) (α : σ → Type*) {a : σ} (has : a ∉ s) :
     (α a × Π i ∈ s, α i) → (Π i ∈ cons a s has, α i) :=
   fun x => (fun i hi =>
@@ -641,8 +643,7 @@ def cons_pi_equiv (s : Finset σ) (α : σ → Type*) {a : σ} (has : a ∉ s) :
     (Π i ∈ cons a s has, α i) ≃ α a × Π i ∈ s, α i where
   toFun := cons_pi_prod s α has
   invFun := prod_pi_cons s α has
-  left_inv := by
-    intro f
+  left_inv _ := by
     ext i hi
     dsimp only [prod_pi_cons, cons_pi_prod]
     by_cases h : i = a
@@ -650,8 +651,7 @@ def cons_pi_equiv (s : Finset σ) (α : σ → Type*) {a : σ} (has : a ∉ s) :
       subst h
       simp_all only [cast_eq]
     · rw [dif_neg h]
-  right_inv := by
-    intro f
+  right_inv _ := by
     ext i hi
     · simp [cons_pi_prod_mem, prod_pi_cons]
     · simp only [cons_pi_prod_not_mem, prod_pi_cons]
@@ -661,7 +661,7 @@ theorem piFamily_cons (s : Finset σ) {R} [CommSemiring R] (α : σ → Type*)
     (t : Π i : σ, SummableFamily Γ R (α i)) {a : σ} (has : a ∉ s) :
     Equiv (cons_pi_equiv s α has) (PiFamily (cons a s has) α t) =
       FamilyMul (t a) (PiFamily s α t) := by
-  ext1 f
+  ext1 _
   simp only [cons_pi_equiv, Equiv_toFun, Equiv.coe_fn_symm_mk, PiFamily_toFun, mem_cons, prod_cons,
     true_or, ↓reduceDIte, prod_pi_cons_mem, FamilyMul_toFun]
   congr 1
