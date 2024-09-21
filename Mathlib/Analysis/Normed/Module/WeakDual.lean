@@ -379,6 +379,14 @@ lemma uc1 :
   UniformConvergenceCLM.topologicalSpace_mono _ _ (fun _ hC => IsCompact.totallyBounded hC)
 
 /-
+From TVS IV.3 Example - when E is complete the T of compact convergence coincides with compact
+convex convergence (III p8). The topology of compact convex convergence is compatible with the
+duality. This is used in corollary 2 of the BD theorem
+
+-/
+
+
+/-
 theorem exists_seq_finite_subsets (hC₁ : IsClosed C) (hC₂ : 0 ∉ C): ∃ F : ℕ → Set E₁, ∀ n : ℕ,
     (F n).Finite ∧ F n ⊆ (U n) ∧ polar 𝕜₁ (⋃₀ {F k | k < n }) ∩ polar 𝕜₁ (U n) ∩ C = ∅ := by
   use (fun n => Nat.recOn n {(0 : E₁)} (fun n v => {(0 : E₁)}))
