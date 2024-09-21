@@ -742,7 +742,7 @@ theorem ContinuousLinearMap.comp_hasFPowerSeriesWithinOnBall (g : F →L[𝕜] G
     HasFPowerSeriesWithinOnBall (g ∘ f) (g.compFormalMultilinearSeries p) s x r where
   r_le := h.r_le.trans (p.radius_le_radius_continuousLinearMap_comp _)
   r_pos := h.r_pos
-  hasSum := fun hy h'y => by
+  hasSum hy h'y := by
     simpa only [ContinuousLinearMap.compFormalMultilinearSeries_apply,
       ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply] using
       g.hasSum (h.hasSum hy h'y)
