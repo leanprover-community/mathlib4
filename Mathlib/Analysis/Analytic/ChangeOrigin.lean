@@ -306,7 +306,7 @@ theorem HasFPowerSeriesWithinOnBall.changeOrigin (hf : HasFPowerSeriesWithinOnBa
     apply le_trans _ p.changeOrigin_radius
     exact tsub_le_tsub hf.r_le le_rfl
   r_pos := by simp [h]
-  hasSum := fun {z} h'z hz => by
+  hasSum {z} h'z hz := by
     have : f (x + y + z) =
         FormalMultilinearSeries.sum (FormalMultilinearSeries.changeOrigin p y) z := by
       rw [mem_emetric_ball_zero_iff, lt_tsub_iff_right, add_comm] at hz
