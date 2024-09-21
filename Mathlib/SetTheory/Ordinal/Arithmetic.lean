@@ -332,16 +332,26 @@ theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : (typ
   rw [@enum_lt_enum _ r, Subtype.mk_lt_mk]
   apply lt_succ
 
--- Porting note: `· < ·` requires a type ascription for an `IsWellOrder` instance.
-theorem type_subrel_lt (o : Ordinal.{u}) :
-    type (@Subrel Ordinal (· < ·) { o' : Ordinal | o' < o }) = Ordinal.lift.{u + 1} o := by
+theorem type_Iio_ordinal (o : Ordinal.{u}) :
+    type (@Subrel Ordinal (· < ·) (Iio o)) = Ordinal.lift.{u + 1} o := by
   refine Quotient.inductionOn o ?_
   rintro ⟨α, r, wo⟩; apply Quotient.sound
   constructor; refine ((RelIso.preimage Equiv.ulift r).trans (enum r).symm).symm
 
+-- Porting note: `· < ·` requires a type ascription for an `IsWellOrder` instance.
+@[deprecated type_Iio_ordinal (since := "2024-09-19")]
+theorem type_subrel_lt (o : Ordinal.{u}) :
+    type (@Subrel Ordinal (· < ·) { o' : Ordinal | o' < o }) = Ordinal.lift.{u + 1} o :=
+  type_Iio_ordinal o
+
+theorem mk_Iio_ordinal (o : Ordinal.{u}) :
+    #(Iio o) = Cardinal.lift.{u + 1} o.card := by
+  rw [lift_card, ← type_Iio_ordinal, card_type]
+
+@[deprecated mk_Iio_ordinal (since := "2024-09-19")]
 theorem mk_initialSeg (o : Ordinal.{u}) :
-    #{ o' : Ordinal | o' < o } = Cardinal.lift.{u + 1} o.card := by
-  rw [lift_card, ← type_subrel_lt, card_type]
+    #{ o' : Ordinal | o' < o } = Cardinal.lift.{u + 1} o.card := mk_Iio_ordinal o
+
 
 /-! ### Normal ordinal functions -/
 
