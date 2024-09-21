@@ -68,7 +68,7 @@ instance (p : 𝒳 ⥤ 𝒮) [p.IsFibered] {R S T : 𝒮} (f : R ⟶ S) (g : S �
     (ψ : b ⟶ c) [IsCartesian p f φ] [IsCartesian p g ψ] : IsCartesian p (f ≫ g) (φ ≫ ψ) :=
   IsFibered.comp f g φ ψ
 
-namespace IsPreFibered
+namespace Functor.IsPreFibered
 
 open IsCartesian
 
@@ -91,17 +91,16 @@ instance pullbackMap.IsCartesian : IsCartesian p f (pullbackMap ha f) :=
 lemma pullbackObj_proj : p.obj (pullbackObj ha f) = R :=
   domain_eq p f (pullbackMap ha f)
 
-end IsPreFibered
+end Functor.IsPreFibered
 
-namespace IsFibered
+namespace Functor.IsFibered
 
 open IsCartesian IsPreFibered
 
 /-- In a fibered category, any cartesian morphism is strongly cartesian. -/
 instance isStronglyCartesian_of_isCartesian (p : 𝒳 ⥤ 𝒮) [p.IsFibered] {R S : 𝒮} (f : R ⟶ S)
     {a b : 𝒳} (φ : a ⟶ b) [p.IsCartesian f φ] : p.IsStronglyCartesian f φ where
-  universal_property' := by
-    intro a' g φ' hφ'
+  universal_property' g φ' hφ' := by
     -- Let `ψ` be a cartesian arrow lying over `g`
     let ψ := pullbackMap (domain_eq p f φ) g
     -- Let `τ` be the map induced by the universal property of `ψ ≫ φ`.
@@ -122,7 +121,7 @@ instance isStronglyCartesian_of_isCartesian (p : 𝒳 ⥤ 𝒮) [p.IsFibered] {R
 /-- In a category which admits strongly cartesian pullbacks, any cartesian morphism is
 strongly cartesian. This is a helper-lemma for the fact that admitting strongly cartesian pullbacks
 implies being fibered. -/
-lemma isStronglyCartesian_of_exists_isCartesian' (p : 𝒳 ⥤ 𝒮) (h : ∀ (a : 𝒳) (R : 𝒮)
+lemma isStronglyCartesian_of_exists_isCartesian (p : 𝒳 ⥤ 𝒮) (h : ∀ (a : 𝒳) (R : 𝒮)
     (f : R ⟶ p.obj a), ∃ (b : 𝒳) (φ : b ⟶ a), IsStronglyCartesian p f φ) {R S : 𝒮} (f : R ⟶ S)
       {a b : 𝒳} (φ : a ⟶ b) [p.IsCartesian f φ] : p.IsStronglyCartesian f φ := by
   constructor
@@ -155,15 +154,15 @@ form
 R --f--> p(a)
 ```
 admits a strongly cartesian lift `b ⟶ a` of `f`. -/
-lemma of_exists_isStronglyCartesian' {p : 𝒳 ⥤ 𝒮} (h : ∀ (a : 𝒳) (R : 𝒮) (f : R ⟶ p.obj a),
+lemma of_exists_isStronglyCartesian {p : 𝒳 ⥤ 𝒮} (h : ∀ (a : 𝒳) (R : 𝒮) (f : R ⟶ p.obj a),
     ∃ (b : 𝒳) (φ : b ⟶ a), IsStronglyCartesian p f φ) : IsFibered p where
   exists_isCartesian' := by
     intro a R f
     obtain ⟨b, φ, hφ⟩ := h a R f
     refine ⟨b, φ, inferInstance⟩
   comp := fun R S T f g {a b c} φ ψ _ _ =>
-    have : p.IsStronglyCartesian f φ := isStronglyCartesian_of_exists_isCartesian' p h _ _
-    have : p.IsStronglyCartesian g ψ := isStronglyCartesian_of_exists_isCartesian' p h _ _
+    have : p.IsStronglyCartesian f φ := isStronglyCartesian_of_exists_isCartesian p h _ _
+    have : p.IsStronglyCartesian g ψ := isStronglyCartesian_of_exists_isCartesian p h _ _
     inferInstance
 
 /-- Given a diagram
@@ -181,6 +180,6 @@ noncomputable def pullbackPullbackIso {p : 𝒳 ⥤ 𝒮} [IsFibered p]
   domainUniqueUpToIso p (g ≫ f) (pullbackMap (pullbackObj_proj ha f) g ≫ pullbackMap ha f)
     (pullbackMap ha (g ≫ f))
 
-end IsFibered
+end Functor.IsFibered
 
 end CategoryTheory
