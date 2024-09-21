@@ -150,8 +150,8 @@ lemma isLocallyClosed_tfae (s : Set X) :
       ∀ x ∈ s, ∃ U ∈ 𝓝 x, IsClosed (U ↓∩ s),
       ∀ x ∈ s, ∃ U, x ∈ U ∧ IsOpen U ∧ U ∩ closure s ⊆ s,
       IsOpen (closure s ↓∩ s)] := by
-  tfae_have 1 → 2
-  | ⟨U, Z, hU, hZ, rfl⟩ => by
+  tfae_have 1 → 2 := by
+    rintro ⟨U, Z, hU, hZ, rfl⟩
     have : Z ∪ (frontier (U ∩ Z))ᶜ = univ := by
       nth_rw 1 [← hZ.closure_eq]
       rw [← compl_subset_iff_union, compl_subset_compl]
