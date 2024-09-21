@@ -912,6 +912,7 @@ theorem exists_reduced_factors' (a b : R) (hb : b ≠ 0) :
   let ⟨b', a', c', no_factor, hb, ha⟩ := exists_reduced_factors b hb a
   ⟨a', b', c', fun _ hpb hpa => no_factor hpa hpb, ha, hb⟩
 
+-- TODO: reuse `pow_injective_of_not_unit`
 theorem pow_right_injective {a : R} (ha0 : a ≠ 0) (ha1 : ¬IsUnit a) :
     Function.Injective (a ^ · : ℕ → R) := by
   letI := Classical.decEq R

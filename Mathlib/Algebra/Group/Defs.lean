@@ -11,7 +11,6 @@ import Mathlib.Tactic.TypeStar
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.ToAdditive
 import Mathlib.Util.AssertExists
-import Batteries.Logic
 
 /-!
 # Typeclasses for (semi)groups and monoids
@@ -1141,6 +1140,33 @@ lemma mul_inv_cancel_comm (a b : G) : a * b * a⁻¹ = b := by rw [mul_comm, inv
   rw [mul_comm, inv_mul_cancel_right]
 
 end CommGroup
+
+/-- `NoZeroSMulDivisors R M` states that a scalar multiple is `0` only if either argument is `0`.
+This is a version of saying that `M` is torsion free, without assuming `R` is zero-divisor free.
+
+The main application of `NoZeroSMulDivisors R M`, when `M` is a module,
+is the result `smul_eq_zero`: a scalar multiple is `0` iff either argument is `0`.
+
+It is a generalization of the `NoZeroDivisors` class to heterogeneous multiplication.
+-/
+class NoZeroSMulDivisors (R M : Type*) [Zero R] [Zero M] [SMul R M] : Prop where
+  /-- If scalar multiplication yields zero, either the scalar or the vector was zero. -/
+  eq_zero_or_eq_zero_of_smul_eq_zero : ∀ {c : R} {x : M}, c • x = 0 → c = 0 ∨ x = 0
+
+export NoZeroSMulDivisors (eq_zero_or_eq_zero_of_smul_eq_zero)
+
+/-- `NoRootsOfUnity M R` states that `x ^ c = 1`, where `x : M` and `c : R`,
+implies `c = 0` or `x = 1`.
+
+At the moment, we only use this typeclass for `R = ℕ`,
+but define it for all `R` so that `to_additive` works. -/
+@[to_additive (reorder := 1 2, 3 4) existing NoZeroSMulDivisors]
+class NoRootsOfUnity (M R : Type*) [One M] [Zero R] [Pow M R] : Prop where
+  /-- If `x ^ c = 1`, then either `c = 0` or `x = 1`. -/
+  eq_zero_or_eq_one_of_pow_eq_one {c : R} {x : M} : x ^ c = 1 → c = 0 ∨ x = 1
+
+attribute [to_additive existing (reorder := 1 2, 3 4) eq_zero_or_eq_zero_of_smul_eq_zero]
+  NoRootsOfUnity.eq_zero_or_eq_one_of_pow_eq_one
 
 /-! We initialize all projections for `@[simps]` here, so that we don't have to do it in later
 files.
