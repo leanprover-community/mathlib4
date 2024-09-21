@@ -572,15 +572,6 @@ noncomputable def power_of_alpha (X : C) (a b : ℤ) (n : ℕ) (_ : a + n = b) :
       (by rw [← hn]; simp only [Nat.cast_add, Nat.cast_one]; linarith)).symm.app X).hom
     exact hP.α.app _
 
-/-
-noncomputable def power_of_alpha_alt (X : C) (a b : ℤ) :
-    (@shiftFunctor C _ _ _ Shift₂ a).obj X ⟶ (@shiftFunctor C _ _ _ Shift₂ b).obj X :=
-  Int.inductionOn' b a (𝟙 _)
-  (fun b _ f ↦ f ≫ α.app ((@shiftFunctor C _ _ _ Shift₂ b).obj X)  ≫
-  ((@shiftFunctorAdd C _ _ _ Shift₂ b 1).symm.app X).hom)
-  (fun _ _ _ ↦ 0)
--/
-
 lemma power_of_alpha_zero (X : C) (a b : ℤ) (hab : a = b) :
     power_of_alpha X a b 0 (by rw [hab, Nat.cast_zero, add_zero]) = eqToHom (by rw [hab]) := by
   dsimp [power_of_alpha, shiftFunctorAdd']
@@ -594,7 +585,6 @@ lemma power_of_alpha_zero' (X : C) (a : ℤ) :
   rw [shiftFunctorAdd'_add_zero]
   simp only [Iso.trans_inv, isoWhiskerLeft_inv, Iso.symm_inv, NatTrans.comp_app, Functor.comp_obj,
     Functor.id_obj, whiskerLeft_app, Functor.rightUnitor_hom_app, comp_id, Iso.inv_hom_id_app]
-
 
 lemma power_of_alpha_change_exponent (X : C) (n m : ℕ) (hnm : n = m) (a b : ℤ) (hn : a + n = b) :
     power_of_alpha X a b n hn = power_of_alpha X a b m (by rw [← hnm, hn]) := by
@@ -656,6 +646,28 @@ lemma power_of_alpha_plus_one (X : C) (n : ℕ) (a b c : ℤ) (hn : a + n = b) (
   rw [this]
   simp
 
+lemma power_of_alpha_naturality {X Y : C} (f : X ⟶ Y) (a b : ℤ) (n : ℕ) (hn : a + n = b) :
+    (@shiftFunctor C _ _ _ Shift₂ a).map f ≫ power_of_alpha Y a b n hn =
+    power_of_alpha X a b n hn ≫ (@shiftFunctor C _ _ _ Shift₂ b).map f := by
+  revert X Y f a b
+  induction' n with n hind
+  · intro X Y f a b hn
+    have hab : a = b := by rw [← hn, Nat.cast_zero, add_zero]
+    rw [power_of_alpha_zero X a b hab, power_of_alpha_zero Y a b hab,
+      eqToHom_naturality (fun (a : ℤ) ↦ (@shiftFunctor C _ _ _ Shift₂ a).map f) hab]
+  · intro X Y f a b hn
+    rw [power_of_alpha_plus_one X n a (a + n) b rfl (by rw [← hn, Nat.cast_add, Nat.cast_one])]
+    rw [power_of_alpha_plus_one Y n a (a + n) b rfl (by rw [← hn, Nat.cast_add, Nat.cast_one])]
+    conv_lhs => rw [← assoc, hind f a (a + n) rfl]
+    have := α.naturality ((@shiftFunctor C _ _ _ Shift₂ (a + n)).map f)
+    simp only [Functor.id_obj, Functor.id_map] at this
+    slice_lhs 2 3 => rw [this]
+    have := (@shiftFunctorAdd' C _ _ _ Shift₂ (a + n) 1 b
+      (by rw [← hn, Nat.cast_add, Nat.cast_one, add_assoc])).inv.naturality f
+    simp only [Functor.comp_obj, Functor.comp_map] at this
+    simp only [Functor.comp_obj, Iso.app_hom, Iso.symm_hom, assoc]
+    rw [this]
+
 lemma power_of_alpha_assoc (X : C) (a b c : ℤ) (n m : ℕ) (hn : a + n = b) (hm : b + m = c) :
     power_of_alpha X a b n hn ≫ power_of_alpha X b c m hm =
     power_of_alpha X a c (n + m) (by rw [← hm, ← hn, Nat.cast_add, add_assoc]) := by
@@ -678,10 +690,6 @@ lemma power_of_alpha_assoc (X : C) (a b c : ℤ) (n m : ℕ) (hn : a + n = b) (h
 noncomputable def power_of_alpha' (X : C) (n : ℕ) :
     X ⟶ (@shiftFunctor C _ _ _ Shift₂ (n : ℤ)).obj X :=
   (@shiftFunctorZero C _ _ _ Shift₂).inv.app X ≫ power_of_alpha X 0 n n (by rw [zero_add])
-/-  induction' n with n fn
-  · exact ((@shiftFunctorZero C ℤ _ _ Shift₂).symm.app X).hom
-  · exact fn ≫ α.app _ ≫ ((@shiftFunctorAdd' C _ _ _ Shift₂ n 1 ↑(n + 1) rfl).symm.app X).hom
--/
 
 @[simp]
 lemma power_of_alpha'_zero (X : C) : power_of_alpha' X 0 = (shiftFunctorZero C ℤ).inv.app X := by
@@ -689,7 +697,6 @@ lemma power_of_alpha'_zero (X : C) : power_of_alpha' X 0 = (shiftFunctorZero C �
   rw [power_of_alpha_zero']
   simp only [Iso.refl_hom, comp_id]
   rfl
-/-  dsimp [power_of_alpha']; rfl-/
 
 @[simp]
 lemma power_of_alpha'_plus_one (X : C) (n : ℕ) :
@@ -761,22 +768,6 @@ lemma adj_left_extended' (X Y : C) (m : ℤ) (n : ℕ) [IsLE X m] [IsGE Y (m + n
   have : IsLE X (m - 0) := isLE_of_LE X m (m - 0) (by simp only [sub_zero, le_refl])
   exact Function.Bijective.comp (IsIso.comp_left_bijective _)
     (adj_left_extended X Y 0 n m n (by rw [zero_add]))
-
-/-  induction' n with n fn
-  · intro X Y m _ _
-    simp only [Int.Nat.cast_ofNat_Int, power_of_alpha'_zero]
-    exact IsIso.comp_left_bijective _
-  · intro X Y m _ _
-    simp only [power_of_alpha'_plus_one, Functor.comp_obj, Iso.app_hom, Iso.symm_hom, assoc]
-    refine Function.Bijective.comp ?_ (Function.Bijective.comp ?_ ?_)
-    · have : IsGE Y (m + n) := isGE_of_GE Y (m + n) (m + ↑(n + 1)) (by simp only [Nat.cast_add,
-      Nat.cast_one, add_le_add_iff_left, le_add_iff_nonneg_right, zero_le_one])
-      exact fn X Y m
-    · have : IsLE ((@shiftFunctor C _ _ _ Shift₂ n).obj X) (m + ↑n) := by
-        exact isLE_shift X m n (m + n) (by linarith)
-      exact adj_left_shift _ _ (m + n) (m + ↑(n + 1))
-        (by simp only [Nat.cast_add, Nat.cast_one]; linarith)
-    · exact IsIso.comp_left_bijective _-/
 
 /- Lemmas about omega and shifting.-/
 

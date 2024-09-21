@@ -134,15 +134,30 @@ noncomputable def ForgetInductiveSystem (X : C) : ℤ ⥤ hP.Core' where
       exact HalfForgetMapComp' ((ForgetInductiveSystem_aux X).map f)
         ((ForgetInductiveSystem_aux X).map g) this
 
-noncomputable def ForgetInductiveSystemMap {X Y : C} (f : X ⟶ Y) :
-    ForgetInductiveSystem X ⟶ ForgetInductiveSystem Y where
-  app a := by
-    dsimp [ForgetInductiveSystem]
-    exact HalfForgetMap ((@shiftFunctor C _ _ _ Shift₂ a).map f)
-  naturality := by
-    intro a b f
-    dsimp [ForgetInductiveSystem]
-    -- only commutes for b small enough!
+noncomputable abbrev ForgetInductiveSystemMap {X Y : C} (f : X ⟶ Y) (a : ℤ) :
+    (ForgetInductiveSystem X).obj a ⟶ (ForgetInductiveSystem Y).obj a :=
+  HalfForgetMap ((@shiftFunctor C _ _ _ Shift₂ a).map f)
+
+lemma ForgetInductiveSystemMap_naturality {X Y : C} (f : X ⟶ Y) {a b : ℤ} (u : a ⟶ b)
+    [IsLE X (-b)] [IsLE Y (-b)] :
+    (ForgetInductiveSystem X).map u ≫ ForgetInductiveSystemMap f b =
+    ForgetInductiveSystemMap f a ≫ (ForgetInductiveSystem Y).map u := by
+  dsimp [ForgetInductiveSystem, ForgetInductiveSystemMap]
+  have : IsLE ((@shiftFunctor C _ _ _ Shift₂ b).obj X) 0 := isLE_shift X (-b) b 0 (by linarith)
+  have : IsLE ((@shiftFunctor C _ _ _ Shift₂ a).obj Y) 0 := by
+    have := isLE_shift Y (-b) a (a - b) (by linarith)
+    exact isLE_of_LE _ (a - b) 0 (by have := leOfHom u; linarith)
+  conv_lhs => rw [← HalfForgetMapComp]
+  conv_rhs => rw [← HalfForgetMapComp]
+  rw [power_of_alpha_naturality f]
+
+/- The definition of the functor `Forget`.-/
+
+noncomputable def ForgetObj (X : C) : hP.Core' := sorry
+    --Limits.limit (ForgetInductiveSystem X)
+    --need to prove that this has a limit, use CategoryTheory.Functor.Initial.limitIso',
+    -- CategoryTheory.Functor.Initial.hasLimit_of_comp and the fact that all transition
+    -- maps are isos for `a` small enough.
 
 end FilteredTriangulated
 
