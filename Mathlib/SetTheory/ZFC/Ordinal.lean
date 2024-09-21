@@ -13,20 +13,16 @@ import Mathlib.SetTheory.ZFC.Basic
 This file works towards the development of von Neumann ordinals, i.e. transitive sets, well-ordered
 under `∈`.
 
-We currently only have an initial development of transitive sets and ordinals. Further development
-can be found on the Mathlib 3 branch `von_neumann_v2`.
-
 ## Definitions
 
 - `ZFSet.IsTransitive` means that every element of a set is a subset.
 - `ZFSet.IsOrdinal` means that the set is transitive and well-ordered under `∈`.
 
-## TODO
+## Todo
 
-- Define von Neumann ordinals and the von Neumann hierarchy.
-- Build correspondences between these notions and those of the standard `Ordinal` type.
+- Define the von Neumann hierarchy.
+- Build correspondences between these set notions and those of the standard `Ordinal` type.
 -/
-
 
 universe u
 
@@ -95,7 +91,7 @@ theorem isTransitive_iff_subset_powerset : x.IsTransitive ↔ x ⊆ powerset x :
 alias ⟨IsTransitive.subset_powerset, _⟩ := isTransitive_iff_subset_powerset
 
 /-- A set `x` is a von Neumann ordinal when it's a transitive set, that's transitive under `∈`. We
-will prove that this further implies that `x` is well-ordered under `∈`.
+prove that this further implies that `x` is well-ordered under `∈` in `isOrdinal_iff_isWellOrder`.
 
 The transitivity condition `a ∈ b → b ∈ c → a ∈ c` can be written without assuming `a ∈ x` and
 `b ∈ x`. The lemma `isOrdinal_iff_isTrans` shows this condition is equivalent to the usual one. -/
