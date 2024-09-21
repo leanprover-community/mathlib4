@@ -110,10 +110,9 @@ theorem instTopologicalRing (R : Type*) [TopologicalSpace R] [Ring R] [Topologic
 
 variable {σ R}
 
-variable [DecidableEq σ] [TopologicalSpace R]
-
 theorem continuous_C [Ring R] [TopologicalRing R] :
     Continuous (C σ R) := by
+  classical
   apply continuous_of_continuousAt_zero
   rw [continuousAt_pi]
   intro d
@@ -126,6 +125,7 @@ theorem continuous_C [Ring R] [TopologicalRing R] :
 
 theorem variables_tendsto_zero [Semiring R] :
     Filter.Tendsto (X · : σ → MvPowerSeries σ R) Filter.cofinite (nhds 0) := by
+  classical
   rw [tendsto_pi_nhds]
   simp_rw [apply_eq_coeff]
   intro d s hs
