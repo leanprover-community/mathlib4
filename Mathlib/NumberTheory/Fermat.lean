@@ -34,14 +34,15 @@ theorem fermat_one : fermat 1 = 5 := by rfl
 @[simp]
 theorem fermat_two : fermat 2 = 17 := by rfl
 
-theorem fermat_stric_mono {n : ℕ} : fermat n < fermat (n + 1) := by
+theorem strictMono_fermat : StrictMono fermat := by
+  apply strictMono_nat_of_lt_succ
   simp only [fermat, add_lt_add_iff_right, Nat.pow_succ]
-  exact (pow_lt_pow_iff_right one_lt_two).mpr (by aesop)
+  exact fun n => (pow_lt_pow_iff_right one_lt_two).mpr (by aesop)
 
 theorem two_lt_fermat {n : ℕ} : 2 < fermat n := by
-  induction' n with n h
-  · decide
-  · exact lt_trans h fermat_stric_mono
+  cases n
+  · simp
+  · exact lt_of_succ_lt <| strictMono_fermat <| zero_lt_succ _
 
 theorem odd_fermat {n : ℕ} : Odd (fermat n) := by
   rw [fermat, ← Nat.not_even_iff_odd, Nat.even_add_one, not_not, Nat.even_pow]
@@ -56,8 +57,7 @@ theorem fermat_product {n : ℕ} : ∏ k in Finset.range n, fermat k = fermat n 
   ring_nf
   omega
 
-@[simp]
-theorem  fermat_prod_add_two {n : ℕ} : (∏ k in Finset.range n, fermat k) + 2 = fermat n := by
+theorem  fermat_prod_add_two {n : ℕ} :  fermat n = (∏ k in Finset.range n, fermat k) + 2 := by
   rw [fermat_product, Nat.sub_add_cancel]
   exact le_of_lt two_lt_fermat
 
