@@ -29,7 +29,7 @@ We relate in this file `CoverEntropy` and `NetEntropy`. This file is downstream 
 (specifically `IsDynCoverOf.iterate_le_pow`) is more natural for covers.
 
 ## Main definitions
-- `IsDynNetOf`: property that dynamical balls centered on a subset `s` of `F` are disjoint.
+- `IsDynNetIn`: property that dynamical balls centered on a subset `s` of `F` are disjoint.
 - `netMaxcard`: maximal cardinality of a dynamical net. Takes values in `ℕ∞`.
 - `netEntropyInfEntourage`/`netEntropyEntourage`: exponential growth of `netMaxcard`. The former is
 defined with a `liminf`, the latter with a `limsup`. Take values in `EReal`.
@@ -63,32 +63,32 @@ variable {X : Type*}
 
 /-- Given a subset `F`, an entourage `U` and an integer `n`, a subset `s` of `F` is a
 `(U, n)`-dynamical net of `F` if no two orbits of length `n` of points in `s` shadow each other.-/
-def IsDynNetOf (T : X → X) (F : Set X) (U : Set (X × X)) (n : ℕ) (s : Set X) : Prop :=
+def IsDynNetIn (T : X → X) (F : Set X) (U : Set (X × X)) (n : ℕ) (s : Set X) : Prop :=
     s ⊆ F ∧ s.PairwiseDisjoint (fun x : X ↦ ball x (dynEntourage T U n))
 
-lemma IsDynNetOf.of_le {T : X → X} {F : Set X} {U : Set (X × X)} {m n : ℕ} (m_n : m ≤ n) {s : Set X}
-    (h : IsDynNetOf T F U m s) :
-    IsDynNetOf T F U n s :=
+lemma IsDynNetIn.of_le {T : X → X} {F : Set X} {U : Set (X × X)} {m n : ℕ} (m_n : m ≤ n) {s : Set X}
+    (h : IsDynNetIn T F U m s) :
+    IsDynNetIn T F U n s :=
   ⟨h.1, PairwiseDisjoint.mono h.2 (fun x ↦ ball_mono (dynEntourage_antitone T U m_n) x)⟩
 
-lemma IsDynNetOf.of_entourage_subset {T : X → X} {F : Set X} {U V : Set (X × X)} (U_V : U ⊆ V)
-    {n : ℕ} {s : Set X} (h : IsDynNetOf T F V n s) :
-    IsDynNetOf T F U n s :=
+lemma IsDynNetIn.of_entourage_subset {T : X → X} {F : Set X} {U V : Set (X × X)} (U_V : U ⊆ V)
+    {n : ℕ} {s : Set X} (h : IsDynNetIn T F V n s) :
+    IsDynNetIn T F U n s :=
   ⟨h.1, PairwiseDisjoint.mono h.2 (fun x ↦ ball_mono (dynEntourage_monotone T n U_V) x)⟩
 
-lemma isDynNetOf_empty {T : X → X} {F : Set X} {U : Set (X × X)} {n : ℕ} :
-    IsDynNetOf T F U n ∅ :=
+lemma isDynNetIn_empty {T : X → X} {F : Set X} {U : Set (X × X)} {n : ℕ} :
+    IsDynNetIn T F U n ∅ :=
   ⟨empty_subset F, pairwise_empty _⟩
 
-lemma isDynNetOf_singleton (T : X → X) {F : Set X} (U : Set (X × X)) (n : ℕ) {x : X} (h : x ∈ F) :
-    IsDynNetOf T F U n {x} :=
+lemma isDynNetIn_singleton (T : X → X) {F : Set X} (U : Set (X × X)) (n : ℕ) {x : X} (h : x ∈ F) :
+    IsDynNetIn T F U n {x} :=
   ⟨singleton_subset_iff.2 h, pairwise_singleton x _⟩
 
 /-- Given an entourage `U` and a time `n`, a dynamical net has a smaller cardinality than
   a dynamical cover. This lemma is the first of two key results to compare two versions of
   topological entropy: with cover and with nets, the second being `coverMincard_le_netMaxcard`.-/
-lemma IsDynNetOf.card_le_card_of_isDynCoverOf {T : X → X} {F : Set X} {U : Set (X × X)}
-    (U_symm : SymmetricRel U) {n : ℕ} {s t : Finset X} (hs : IsDynNetOf T F U n s)
+lemma IsDynNetIn.card_le_card_of_isDynCoverOf {T : X → X} {F : Set X} {U : Set (X × X)}
+    (U_symm : SymmetricRel U) {n : ℕ} {s t : Finset X} (hs : IsDynNetIn T F U n s)
     (ht : IsDynCoverOf T F U n t) :
     s.card ≤ t.card := by
   have (x : X) (x_s : x ∈ s) : ∃ z ∈ t, x ∈ ball z (dynEntourage T U n) := by
@@ -106,10 +106,10 @@ lemma IsDynNetOf.card_le_card_of_isDynCoverOf {T : X → X} {F : Set X} {U : Set
 /-- The largest cardinality of a `(U, n)`-dynamical net of `F`. Takes values in `ℕ∞`, and is
 infinite if and only if `F` admits nets of arbitrarily large size.-/
 noncomputable def netMaxcard (T : X → X) (F : Set X) (U : Set (X × X)) (n : ℕ) : ℕ∞ :=
-  ⨆ (s : Finset X) (_ : IsDynNetOf T F U n s), (s.card : ℕ∞)
+  ⨆ (s : Finset X) (_ : IsDynNetIn T F U n s), (s.card : ℕ∞)
 
-lemma IsDynNetOf.card_le_netMaxcard {T : X → X} {F : Set X} {U : Set (X × X)} {n : ℕ} {s : Finset X}
-    (h : IsDynNetOf T F U n s) :
+lemma IsDynNetIn.card_le_netMaxcard {T : X → X} {F : Set X} {U : Set (X × X)} {n : ℕ} {s : Finset X}
+    (h : IsDynNetIn T F U n s) :
     s.card ≤ netMaxcard T F U n :=
   le_iSup₂ (α := ℕ∞) s h
 
@@ -123,7 +123,7 @@ lemma netMaxcard_antitone (T : X → X) (F : Set X) (n : ℕ) :
 
 lemma netMaxcard_finite_iff (T : X → X) (F : Set X) (U : Set (X × X)) (n : ℕ) :
     netMaxcard T F U n < ⊤ ↔
-    ∃ s : Finset X, IsDynNetOf T F U n s ∧ (s.card : ℕ∞) = netMaxcard T F U n := by
+    ∃ s : Finset X, IsDynNetIn T F U n s ∧ (s.card : ℕ∞) = netMaxcard T F U n := by
   apply Iff.intro <;> intro h
   · rcases WithTop.ne_top_iff_exists.1 h.ne with ⟨k, k_max⟩
     rw [← k_max]
@@ -131,11 +131,11 @@ lemma netMaxcard_finite_iff (T : X → X) (F : Set X) (U : Set (X × X)) (n : �
     -- The criterion we want to use is `Nat.sSup_mem`. We rewrite `netMaxcard` with an `sSup`,
     -- then check its `BddAbove` and `Nonempty` hypotheses.
     have : netMaxcard T F U n
-      = sSup (WithTop.some '' (Finset.card '' {s : Finset X | IsDynNetOf T F U n s})) := by
+      = sSup (WithTop.some '' (Finset.card '' {s : Finset X | IsDynNetIn T F U n s})) := by
       rw [netMaxcard, ← image_comp, sSup_image]
       simp only [mem_setOf_eq, ENat.some_eq_coe, Function.comp_apply]
     rw [this] at k_max
-    have h_bdda : BddAbove (Finset.card '' {s : Finset X | IsDynNetOf T F U n s}) := by
+    have h_bdda : BddAbove (Finset.card '' {s : Finset X | IsDynNetIn T F U n s}) := by
       refine ⟨k, mem_upperBounds.2 ?_⟩
       simp only [mem_image, mem_setOf_eq, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
       intro s h
@@ -143,10 +143,10 @@ lemma netMaxcard_finite_iff (T : X → X) (F : Set X) (U : Set (X × X)) (n : �
       apply le_sSup
       simp only [ENat.some_eq_coe, mem_image, mem_setOf_eq, Nat.cast_inj, exists_eq_right]
       exact Filter.frequently_principal.mp fun a ↦ a h rfl
-    have h_nemp : (Finset.card '' {s : Finset X | IsDynNetOf T F U n s}).Nonempty := by
+    have h_nemp : (Finset.card '' {s : Finset X | IsDynNetIn T F U n s}).Nonempty := by
       refine ⟨0, ?_⟩
       simp only [mem_image, mem_setOf_eq, Finset.card_eq_zero, exists_eq_right, Finset.coe_empty]
-      exact isDynNetOf_empty
+      exact isDynNetIn_empty
     rw [← WithTop.coe_sSup' h_bdda, ENat.some_eq_coe, Nat.cast_inj] at k_max
     have key := Nat.sSup_mem h_nemp h_bdda
     rw [← k_max, mem_image] at key
@@ -169,7 +169,7 @@ lemma netMaxcard_eq_zero_iff (T : X → X) (F : Set X) (U : Set (X × X)) (n : �
   refine Iff.intro (fun h ↦ ?_) (fun h ↦ by rw [h, netMaxcard_empty])
   rw [eq_empty_iff_forall_not_mem]
   intro x x_F
-  have key := isDynNetOf_singleton T U n x_F
+  have key := isDynNetIn_singleton T U n x_F
   rw [← Finset.coe_singleton] at key
   replace key := key.card_le_netMaxcard
   rw [Finset.card_singleton, Nat.cast_one, h] at key
@@ -199,7 +199,7 @@ lemma netMaxcard_univ (T : X → X) {F : Set X} (h : F.Nonempty) (n : ℕ) :
   exact PairwiseDisjoint.elim_set s_net x_s y_s x (mem_univ x) (mem_univ x)
 
 lemma netMaxcard_infinite_iff (T : X → X) (F : Set X) (U : Set (X × X)) (n : ℕ) :
-    netMaxcard T F U n = ⊤ ↔ ∀ k : ℕ, ∃ s : Finset X, IsDynNetOf T F U n s ∧ k ≤ s.card := by
+    netMaxcard T F U n = ⊤ ↔ ∀ k : ℕ, ∃ s : Finset X, IsDynNetIn T F U n s ∧ k ≤ s.card := by
   apply Iff.intro <;> intro h
   · intro k
     rw [netMaxcard, iSup_subtype', iSup_eq_top] at h
@@ -242,7 +242,7 @@ lemma coverMincard_le_netMaxcard (T : X → X) (F : Set X) {U : Set (X × X)} (U
   by_contra h
   rcases not_subset.1 h with ⟨x, x_F, x_uncov⟩
   simp only [Finset.mem_coe, mem_iUnion, exists_prop, not_exists, not_and] at x_uncov
-  have larger_net : IsDynNetOf T F U n (insert x s) := by
+  have larger_net : IsDynNetIn T F U n (insert x s) := by
     apply And.intro (insert_subset x_F s_net.1)
     refine pairwiseDisjoint_insert.2 (And.intro s_net.2 (fun y y_s _ ↦ ?_))
     refine disjoint_left.2 (fun z z_x z_y ↦ x_uncov y y_s ?_)
