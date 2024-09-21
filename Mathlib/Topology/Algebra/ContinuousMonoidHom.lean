@@ -474,7 +474,7 @@ variable {F α β : Type*}[EquivLike F α β] [TopologicalSpace α] [Topological
 "Turn an element of a type `F` satisfying `ContinuousAddEquivClass F α β` into an actual
 `ContinuousAddEquiv`. This is declared as the default coercion from `F` to `α ≃+ β`."]
 def ContinuousMulEquivClass.toContinuousMulEquiv [Mul α] [Mul β] [h : ContinuousMulEquivClass F α β]
-  (f : F) : α ≃ₜ* β := {
+    (f : F) : α ≃ₜ* β := {
     (f : α ≃* β) with
     continuous_toFun := h.map_continuous f
     continuous_invFun := h.inv_map_continuous f }
@@ -540,8 +540,7 @@ def trans {K : Type*} [Mul K] [TopologicalSpace K]
     (cme1 : G ≃ₜ* H) (cme2 : H ≃ₜ* K) : G ≃ₜ* K := {
   cme1.toMulEquiv.trans cme2.toMulEquiv with
   continuous_toFun := by convert Continuous.comp cme2.continuous_toFun cme1.continuous_toFun
-  continuous_invFun := by convert Continuous.comp cme1.continuous_invFun cme2.continuous_invFun
-  }
+  continuous_invFun := by convert Continuous.comp cme1.continuous_invFun cme2.continuous_invFun }
 
 end ContinuousMulEquiv
 
