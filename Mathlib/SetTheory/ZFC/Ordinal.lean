@@ -98,23 +98,20 @@ alias ⟨IsTransitive.subset_powerset, _⟩ := isTransitive_iff_subset_powerset
 will prove that this further implies that `x` is well-ordered under `∈`.
 
 The transitivity condition `a ∈ b → b ∈ c → a ∈ c` can be written without assuming `a ∈ x` and
-`b ∈ x`, and `isOrdinal_iff_isTrans` shows it is equivalent to the usual one. -/
-def IsOrdinal (x : ZFSet) : Prop :=
-  x.IsTransitive ∧ ∀ a b c : ZFSet, a ∈ b → b ∈ c → c ∈ x → a ∈ c
+`b ∈ x`. The lemma `isOrdinal_iff_isTrans` shows this condition is equivalent to the usual one. -/
+structure IsOrdinal (x : ZFSet) : Prop where
+  /-- An ordinal is a transitive set. -/
+  isTransitive : x.IsTransitive
+  /-- The membership operation within an ordinal is transitive. -/
+  mem_trans' {y z w : ZFSet} : y ∈ z → z ∈ w → w ∈ x → y ∈ w
 
 namespace IsOrdinal
-
-protected theorem isTransitive (h : x.IsOrdinal) : x.IsTransitive :=
-  h.1
 
 theorem subset_of_mem (h : x.IsOrdinal) : y ∈ x → y ⊆ x :=
   h.isTransitive.subset_of_mem
 
 theorem mem_trans (h : z.IsOrdinal) : x ∈ y → y ∈ z → x ∈ z :=
   h.isTransitive.mem_trans
-
-theorem mem_trans' (hx : x.IsOrdinal) : y ∈ z → z ∈ w → w ∈ x → y ∈ w :=
-  hx.2 y z w
 
 protected theorem isTrans (h : x.IsOrdinal) : IsTrans x.toSet (Subrel (· ∈ ·) _) :=
   ⟨fun _ _ c hab hbc => h.mem_trans' hab hbc c.2⟩
