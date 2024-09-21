@@ -39,11 +39,9 @@ def IsTransitive (x : ZFSet) : Prop :=
   ∀ y ∈ x, y ⊆ x
 
 @[simp]
-theorem empty_isTransitive : IsTransitive ∅ :=
-  fun y hy => (not_mem_empty y hy).elim
+theorem empty_isTransitive : IsTransitive ∅ := fun y hy => (not_mem_empty y hy).elim
 
-theorem IsTransitive.subset_of_mem (h : x.IsTransitive) : y ∈ x → y ⊆ x :=
-  h y
+theorem IsTransitive.subset_of_mem (h : x.IsTransitive) : y ∈ x → y ⊆ x := h y
 
 theorem isTransitive_iff_mem_trans : z.IsTransitive ↔ ∀ {x y : ZFSet}, x ∈ y → y ∈ z → x ∈ z :=
   ⟨fun h _ _ hx hy => h.subset_of_mem hy hx, fun H _ hx _ hy => H hy hx⟩
@@ -74,18 +72,17 @@ protected theorem IsTransitive.union (hx : x.IsTransitive) (hy : y.IsTransitive)
   rintro (rfl | rfl)
   assumption'
 
-protected theorem IsTransitive.powerset (h : x.IsTransitive) : (powerset x).IsTransitive := by
-  intro y hy z hz
+protected theorem IsTransitive.powerset (h : x.IsTransitive) : (powerset x).IsTransitive :=
+  fun y hy z hz => by
   rw [mem_powerset] at hy ⊢
   exact h.subset_of_mem (hy hz)
 
 theorem isTransitive_iff_sUnion_subset : x.IsTransitive ↔ (⋃₀ x : ZFSet) ⊆ x := by
   constructor <;>
   intro h y hy
-  · rcases mem_sUnion.1 hy with ⟨z, hz, hz'⟩
+  · obtain ⟨z, hz, hz'⟩ := mem_sUnion.1 hy
     exact h.mem_trans hz' hz
-  · intro z hz
-    exact h <| mem_sUnion_of_mem hz hy
+  · exact fun z hz ↦ h <| mem_sUnion_of_mem hz hy
 
 alias ⟨IsTransitive.sUnion_subset, _⟩ := isTransitive_iff_sUnion_subset
 
