@@ -1102,9 +1102,9 @@ lemma existence_omega_aux (n : ℕ) : ∀ (X : C) [IsLE X 0], Finset.card (suppo
     · exact shift_omega_mono s₃ 0 (-1) (fun Z hZ ↦ @IsIso.mono_of_iso _ _ _ _ _ (hY₃ Z hZ)) Z hZ
 
 lemma existence_omega (X : C) [IsLE X 0] : ∃ (Y : hP.Core') (s : X ⟶ Y.1),
-    ∀ (Z : C), IsGE Z 0 → IsIso ((preadditiveYoneda.obj Z).map (Quiver.Hom.op s)) :=
-    /- Or? : Function.Bijective (fun (f : Y.1 ⟶ Z) ↦ s ≫ f) :=-/
-  existence_omega_aux (Finset.card (support X)) X rfl
+    ∀ (Z : C), IsGE Z 0 → --IsIso ((preadditiveYoneda.obj Z).map (Quiver.Hom.op s)) :=
+    Function.Bijective (fun (f : Y.1 ⟶ Z) ↦ s ≫ f) := sorry
+--  existence_omega_aux (Finset.card (support X)) X rfl
 
 end FilteredTriangulated
 
