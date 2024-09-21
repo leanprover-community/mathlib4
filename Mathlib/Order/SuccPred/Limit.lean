@@ -42,8 +42,7 @@ variable [LT α]
 It's so named because in a successor order, a successor pre-limit can't be the successor of anything
 smaller.
 
-For some applications, it's desirable to exclude the case where an element is minimal. A future PR
-will introduce `IsSuccLimit` for this usage. -/
+Use `IsSuccLimit` if you want to exclude the case of a minimal element. -/
 def IsSuccPrelimit (a : α) : Prop :=
   ∀ b, ¬b ⋖ a
 
@@ -302,8 +301,7 @@ variable [LT α] {a : α}
 It's so named because in a predecessor order, a predecessor pre-limit can't be the predecessor of
 anything smaller.
 
-For some applications, it's desirable to exclude maximal elements from this definition. For that,
-see `IsPredLimit`. -/
+Use `IsPredLimit` to exclude the case of a maximal element. -/
 def IsPredPrelimit (a : α) : Prop :=
   ∀ b, ¬ a ⋖ b
 
