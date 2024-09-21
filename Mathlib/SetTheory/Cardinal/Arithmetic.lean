@@ -350,7 +350,7 @@ protected theorem eq_of_add_eq_add_right {a b c : Cardinal} (h : a + b = c + b) 
   rw [add_comm a b, add_comm c b] at h
   exact Cardinal.eq_of_add_eq_add_left h hb
 
-/-! ### Properties of `add` -/
+/-! ### Properties of `ciSup` -/
 
 variable {ι : Type u} {ι' : Type w} (f : ι → Cardinal.{v})
 
@@ -454,7 +454,7 @@ theorem add_one_le_add_one_iff {α β : Cardinal} : α + 1 ≤ β + 1 ↔ α ≤
 @[deprecated (since := "2024-02-12")]
 alias add_one_le_add_one_iff_of_lt_aleph_0 := add_one_le_add_one_iff
 
-/-! ### Properties about power -/
+/-! ### Properties about `power` -/
 
 theorem pow_le {κ μ : Cardinal.{u}} (H1 : ℵ₀ ≤ κ) (H2 : μ < ℵ₀) : κ ^ μ ≤ κ :=
   let ⟨n, H3⟩ := lt_aleph0.1 H2
