@@ -639,22 +639,39 @@ theorem symm_apply_apply (e : M ≃ₜ* N) (x : M) : e.symm (e x) = x :=
 
 end symm
 
-end ContinuousMulEquiv
+section trans
 
-end
-
-namespace ContinuousMulEquiv
-
-variable {G} {H} [Mul G] [Mul H]
+variable {L : Type*} [Mul L] [TopologicalSpace L]
 
 /-- The composition of two ContinuousMulEquiv. -/
 @[to_additive "The composition of two ContinuousAddEquiv."]
-def trans {K : Type*} [Mul K] [TopologicalSpace K]
-    (cme1 : G ≃ₜ* H) (cme2 : H ≃ₜ* K) : G ≃ₜ* K := {
+def trans (cme1 : M ≃ₜ* N) (cme2 : N ≃ₜ* L) : M ≃ₜ* L := {
   cme1.toMulEquiv.trans cme2.toMulEquiv with
   continuous_toFun := by convert Continuous.comp cme2.continuous_toFun cme1.continuous_toFun
   continuous_invFun := by convert Continuous.comp cme1.continuous_invFun cme2.continuous_invFun }
 
+@[to_additive (attr := simp)]
+theorem coe_trans (e₁ : M ≃ₜ* N) (e₂ : N ≃ₜ* L) : ↑(e₁.trans e₂) = e₂ ∘ e₁ := rfl
+
+@[to_additive (attr := simp)]
+theorem trans_apply (e₁ : M ≃ₜ* N) (e₂ : N ≃ₜ* L) (m : M) : e₁.trans e₂ m = e₂ (e₁ m) := rfl
+
+@[to_additive (attr := simp)]
+theorem symm_trans_apply (e₁ : M ≃ₜ* N) (e₂ : N ≃ₜ* L) (l : L) :
+    (e₁.trans e₂).symm l = e₁.symm (e₂.symm l) := rfl
+
+@[to_additive (attr := simp)]
+theorem symm_trans_self (e : M ≃ₜ* N) : e.symm.trans e = refl N :=
+  DFunLike.ext _ _ e.apply_symm_apply
+
+@[to_additive (attr := simp)]
+theorem self_trans_symm (e : M ≃ₜ* N) : e.trans e.symm = refl M :=
+  DFunLike.ext _ _ e.symm_apply_apply
+
+end trans
+
 end ContinuousMulEquiv
+
+end
 
 end
