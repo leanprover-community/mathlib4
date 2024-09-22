@@ -4,11 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving
 -/
 import Mathlib.Analysis.Analytic.Constructions
-<<<<<<< HEAD
 import Mathlib.Analysis.Analytic.ChangeOrigin
--- import Mathlib.Analysis.Calculus.FDeriv.Analytic
-=======
->>>>>>> SG_essai
 
 /-!
 # Properties of analyticity restricted to a set
@@ -41,41 +37,6 @@ variable {E F G H : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAd
 ### Basic properties
 -/
 
-lemma HasFPowerSeriesWithinOnBall.congr {f g : E → F} {p : FormalMultilinearSeries 𝕜 E F}
-    {s : Set E} {x : E} {r : ℝ≥0∞} (h : HasFPowerSeriesWithinOnBall f p s x r)
-    (h' : EqOn g f (s ∩ EMetric.ball x r)) (h'' : g x = f x) :
-    HasFPowerSeriesWithinOnBall g p s x r := by
-  refine ⟨h.r_le, h.r_pos, ?_⟩
-  intro y hy h'y
-  convert h.hasSum hy h'y using 1
-  simp only [mem_insert_iff, add_right_eq_self] at hy
-  rcases hy with rfl | hy
-  · simpa using h''
-  · apply h'
-    refine ⟨hy, ?_⟩
-    simpa [edist_eq_coe_nnnorm_sub] using h'y
-
-lemma HasFPowerSeriesWithinOnBall.congr' {f g : E → F} {p : FormalMultilinearSeries 𝕜 E F}
-    {s : Set E} {x : E} {r : ℝ≥0∞} (h : HasFPowerSeriesWithinOnBall f p s x r)
-    (h' : EqOn g f (insert x s ∩ EMetric.ball x r)) :
-    HasFPowerSeriesWithinOnBall g p s x r := by
-  refine ⟨h.r_le, h.r_pos, fun {y} hy h'y ↦ ?_⟩
-  convert h.hasSum hy h'y using 1
-  exact h' ⟨hy, by simpa [edist_eq_coe_nnnorm_sub] using h'y⟩
-
-lemma HasFPowerSeriesWithinAt.congr {f g : E → F} {p : FormalMultilinearSeries 𝕜 E F} {s : Set E}
-    {x : E} (h : HasFPowerSeriesWithinAt f p s x) (h' : g =ᶠ[𝓝[s] x] f) (h'' : g x = f x) :
-    HasFPowerSeriesWithinAt g p s x := by
-  rcases h with ⟨r, hr⟩
-  obtain ⟨ε, εpos, hε⟩ : ∃ ε > 0, EMetric.ball x ε ∩ s ⊆ {y | g y = f y} :=
-    EMetric.mem_nhdsWithin_iff.1 h'
-  let r' := min r ε
-  refine ⟨r', ?_⟩
-  have := hr.of_le (r' := r') (by simp [r', εpos, hr.r_pos]) (min_le_left _ _)
-  apply this.congr _ h''
-  intro z hz
-  exact hε ⟨EMetric.ball_subset_ball (min_le_right _ _) hz.2, hz.1⟩
-
 /-- `AnalyticWithinAt` is trivial if `{x} ∈ 𝓝[s] x` -/
 lemma analyticWithinAt_of_singleton_mem {f : E → F} {s : Set E} {x : E} (h : {x} ∈ 𝓝[s] x) :
     AnalyticWithinAt 𝕜 f s x := by
@@ -96,9 +57,6 @@ lemma analyticWithinAt_of_singleton_mem {f : E → F} {s : Set E} {x : E} (h : {
       apply (hasFPowerSeriesOnBall_const (e := 0)).hasSum
       simp only [Metric.emetric_ball_top, mem_univ] }⟩
 
-lemma AnalyticWithinOn.continuousOn {f : E → F} {s : Set E} (h : AnalyticWithinOn 𝕜 f s) :
-    ContinuousOn f s :=
-  fun x m ↦ (h x m).continuousWithinAt.mono (by simp)
 
 /-- If `f` is `AnalyticWithinOn` near each point in a set, it is `AnalyticWithinOn` the set -/
 lemma analyticWithinOn_of_locally_analyticWithinOn {f : E → F} {s : Set E}
@@ -140,27 +98,6 @@ lemma IsOpen.analyticWithinOn_iff_analyticOn {f : E → F} {s : Set E} (hs : IsO
       apply mem_insert_of_mem
       apply rs
       simp only [Metric.mem_ball, dist_self_add_left, ym.1] }⟩
-
-
-/-!
-### Congruence
--/
-
-lemma AnalyticWithinAt.congr_of_eventuallyEq {f g : E → F} {s : Set E} {x : E}
-    (hf : AnalyticWithinAt 𝕜 f s x) (hs : g =ᶠ[𝓝[s] x] f) (hx : g x = f x) :
-    AnalyticWithinAt 𝕜 g s x := by
-  rcases hf with ⟨p, hp⟩
-  exact ⟨p, hp.congr hs hx⟩
-
-lemma AnalyticWithinAt.congr {f g : E → F} {s : Set E} {x : E}
-    (hf : AnalyticWithinAt 𝕜 f s x) (hs : EqOn g f s) (hx : g x = f x) :
-    AnalyticWithinAt 𝕜 g s x :=
-  hf.congr_of_eventuallyEq hs.eventuallyEq_nhdsWithin hx
-
-lemma AnalyticWithinOn.congr {f g : E → F} {s : Set E}
-    (hf : AnalyticWithinOn 𝕜 f s) (hs : EqOn g f s) :
-    AnalyticWithinOn 𝕜 g s :=
-  fun x m ↦ (hf x m).congr hs (hs m)
 
 /-!
 ### Equivalence to analyticity of a local extension
