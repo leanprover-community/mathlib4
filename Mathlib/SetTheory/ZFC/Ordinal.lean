@@ -17,6 +17,7 @@ Further development can be found on the branch `von_neumann_v2`.
 ## Definitions
 
 - `ZFSet.IsTransitive` means that every element of a set is a subset.
+- `ZFSet.vonNeumann` is the von Neumann hierarchy of sets.
 
 ## TODO
 
@@ -151,10 +152,7 @@ theorem mem_vonNeumann {o : Ordinal} {x : ZFSet} : x ∈ vonNeumann o ↔ rank x
 theorem rank_vonNeumann (o : Ordinal) : rank (vonNeumann o) = o := by
   apply le_antisymm
   · rw [← subset_vonNeumann]
-  · apply le_of_forall_lt
-    intro a ha
-    have := rank_lt_of_mem (vonNeumann_mem_of_lt ha)
-    rwa [rank_vonNeumann] at this
+  · exact le_of_forall_lt fun a ha ↦ rank_vonNeumann a ▸ rank_lt_of_mem (vonNeumann_mem_of_lt ha)
 termination_by o
 
 @[simp]
