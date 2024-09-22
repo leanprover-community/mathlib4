@@ -211,7 +211,7 @@ theorem toPGame_nadd (a b : Ordinal) : (a ♯ b).toPGame ≈ a.toPGame + b.toPGa
     · exact nadd_lt_nadd_left wf _
 termination_by (a, b)
 
-theorem toGame_nadd (a b : Ordinal) : toGame (a ♯ b) = toGame a + toGame b :=
+theorem toGame_nadd (a b : Ordinal) : (a ♯ b).toGame = a.toGame + b.toGame :=
   game_eq (toPGame_nadd a b)
 
 /-- The natural multiplication of ordinals corresponds to their product as pre-games. -/
@@ -237,7 +237,7 @@ theorem toPGame_nmul (a b : Ordinal) : (a ⨳ b).toPGame ≈ a.toPGame * b.toPGa
     exact toLeftMovesToPGame_symm_lt _
 termination_by (a, b)
 
-theorem toGame_nmul (a b : Ordinal) : toGame (a ⨳ b) = ⟦a.toPGame * b.toPGame⟧ :=
+theorem toGame_nmul (a b : Ordinal) : (a ⨳ b).toGame = ⟦a.toPGame * b.toPGame⟧ :=
   game_eq (toPGame_nmul a b)
 
 @[simp, norm_cast]
