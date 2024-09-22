@@ -42,51 +42,33 @@ lemma sub_eq_lieDeriv_lieBracket (V W : E → E) (f : E → F) (x : E)
     ContinuousLinearMap.flip_apply, map_sub, hf]
   abel
 
-open Classical in
-def pullback (f : E → F) (V : F → F) (x : E) : E :=
-  if h : ∃ M : E ≃L[𝕜] F, fderiv 𝕜 f x = M then (choose h).symm (V (f x)) else 0
+def pullback (f : E → F) (V : F → F) (x : E) : E := (fderiv 𝕜 f x).inverse (V (f x))
 
 variable {𝕜}
 
 lemma pullback_eq_of_fderiv_eq
-    {f : E → F} {M : E ≃L[𝕜] F} {x : E} (hf : fderiv 𝕜 f x = M) (V : F → F) :
-    pullback 𝕜 f V x = M.symm (V (f x)) := by
-  have h : ∃ M : E ≃L[𝕜] F, fderiv 𝕜 f x = M := ⟨M, hf⟩
-  rw [pullback, dif_pos h]
-  congr
-  ext y
-  change ((Classical.choose h :) : E →L[𝕜] F) y = M y
-  rw [← Classical.choose_spec h, hf]
-  rfl
-
+    {f : E → F} {M : E ≃L[𝕜] F} {x : E} (hf : M = fderiv 𝕜 f x) (V : F → F) :
+    pullback 𝕜 f V x = M.symm (V (f x)) := by simp [pullback, ← hf]
 
 lemma pullback_eq_of_not_exists {f : E → F} {x : E}
-    (h : ¬(∃ M : E ≃L[𝕜] F, fderiv 𝕜 f x = M)) (V : F → F) :
-    pullback 𝕜 f V x = 0 := by
-  rw [pullback, dif_neg h]
+    (h : ¬(∃ M : E ≃L[𝕜] F, M = fderiv 𝕜 f x)) (V : F → F) :
+    pullback 𝕜 f V x = 0 := by simp [pullback, h]
 
 open scoped Topology Filter
 
 theorem fderiv.comp'
-    {f : E → F} {g : F → G} (x : E) (hg : DifferentiableAt 𝕜 g (f x)) (hf : DifferentiableAt 𝕜 f x) :
+    {f : E → F} {g : F → G} (x : E) (hg : DifferentiableAt 𝕜 g (f x))
+    (hf : DifferentiableAt 𝕜 f x) :
     fderiv 𝕜 (fun y ↦ g (f y)) x = (fderiv 𝕜 g (f x)).comp (fderiv 𝕜 f x) :=
   fderiv.comp x hg hf
 
 open Set
 
-open Classical in
-protected def ContinuousLinearMap.inv (f : E →L[𝕜] F) : F →L[𝕜] E :=
-  if h : ∃ M : E ≃L[𝕜] F, f = M then h.choose.symm else 0
-
 variable [CompleteSpace E]
 
-#check contDiffAt_ring_inverse
-
 theorem contDiffAt_continuousLinearMap_inv (n : ℕ∞) (M : E ≃L[𝕜] F) :
-    ContDiffAt 𝕜 n (ContinuousLinearMap.inv : (E →L[𝕜] F) → (F →L[𝕜] E)) (M : E →L[𝕜] F) := by
-  have : ∀ (f : E →L[𝕜] F), f.inv = (Ring.inverse (M.symm ∘L f)) ∘L M.symm := by
-    sorry
-
+    ContDiffAt 𝕜 n (ContinuousLinearMap.inverse : (E →L[𝕜] F) → (F →L[𝕜] E)) (M : E →L[𝕜] F) := by
+  sorry
 
 
 #exit
