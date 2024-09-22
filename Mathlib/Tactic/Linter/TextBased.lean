@@ -415,7 +415,7 @@ def lintModules (moduleNames : Array String) (style : ErrorFormat) (fix : Bool) 
     let (errors, changed) := ← lintFile path styleExceptions
     if let some c := changed then
       if fix then
-        let _ := ← IO.FS.writeFile path ("\n".intercalate c.toList)
+        let _ := ← IO.FS.writeFile path <| ("\n".intercalate c.toList).push '\n'
     if errors.size > 0 then
       allUnexpectedErrors := allUnexpectedErrors.append errors
       numberErrorFiles := numberErrorFiles + 1
