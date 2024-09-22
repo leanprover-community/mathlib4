@@ -117,7 +117,7 @@ and multiplicative endomorphisms of `Multiplicative A`. -/
 @[simps]
 def MulEquiv.piMultiplicative (K : ι → Type*) [∀ i, AddZeroClass (K i)] :
     Multiplicative (∀ i : ι, K i) ≃* (∀ i : ι, Multiplicative (K i)) where
-  toFun := fun x i ↦ Multiplicative.ofAdd <| Multiplicative.ofAdd x i
+  toFun := fun x i ↦ Multiplicative.ofAdd <| Multiplicative.toAdd x i
   invFun := fun x ↦ Multiplicative.ofAdd fun i ↦ Multiplicative.toAdd (x i)
   left_inv := fun _ ↦ rfl
   right_inv := fun _ ↦ rfl
