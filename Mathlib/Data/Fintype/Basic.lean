@@ -626,7 +626,7 @@ theorem toFinset_nonempty {s : Set α} [Fintype s] : s.toFinset.Nonempty ↔ s.N
   rw [← Finset.coe_nonempty, coe_toFinset]
 
 @[aesop safe apply (rule_sets := [finsetNonempty])]
-alias ⟨_, toFinset_nonempty_of_nonempty⟩ := toFinset_nonempty
+alias ⟨_, Aesop.toFinset_nonempty_of_nonempty⟩ := toFinset_nonempty
 
 @[simp]
 theorem toFinset_inj {s t : Set α} [Fintype s] [Fintype t] : s.toFinset = t.toFinset ↔ s = t :=

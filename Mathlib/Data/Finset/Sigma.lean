@@ -55,7 +55,7 @@ theorem coe_sigma (s : Finset ι) (t : ∀ i, Finset (α i)) :
 theorem sigma_nonempty : (s.sigma t).Nonempty ↔ ∃ i ∈ s, (t i).Nonempty := by simp [Finset.Nonempty]
 
 @[aesop safe apply (rule_sets := [finsetNonempty])]
-alias ⟨_, sigma_nonempty_of_exists_nonempty⟩ := sigma_nonempty
+alias ⟨_, Aesop.sigma_nonempty_of_exists_nonempty⟩ := sigma_nonempty
 
 @[simp]
 theorem sigma_eq_empty : s.sigma t = ∅ ↔ ∀ i ∈ s, t i = ∅ := by
