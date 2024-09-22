@@ -16,11 +16,15 @@ topological vector space has a basis consisting of absolutely convex sets.
 
 ## Main definitions
 
+* `absConvexHull`: the absolutely convex hull of a set `s` is the smallest absolutely convex set
+  containing `s`.
 * `gaugeSeminormFamily`: the seminorm family induced by all open absolutely convex neighborhoods
 of zero.
 
 ## Main statements
 
+* `absConvexHull_eq_convexHull_balancedHull`: when the locally convex space is a module, the
+  absolutely convex hull of a set `s` equals the convex hull of the balanced hull of `s`
 * `with_gaugeSeminormFamily`: the topology of a locally convex space is induced by the family
 `gaugeSeminormFamily`.
 
