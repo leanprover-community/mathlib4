@@ -103,12 +103,18 @@ lemma disjSum_inj {α β : Type*} {s₁ s₂ : Finset α} {t₁ t₂ : Finset β
 lemma Injective2_disjSum {α β : Type*} : Function.Injective2 (@disjSum α β) :=
   fun _ _ _ _ => by simp [Finset.ext_iff]
 
-/-- Given a finset of elements `α ⊕ β`, extract all the elements of the form `α`. -/
+/-- 
+Given a finset of elements `α ⊕ β`, extract all the elements of the form `α`. This
+forms a quasi-inverse to `disjSum`, in that it recovers its left input.
+-/
 def toLeft (s : Finset (α ⊕ β)) : Finset α :=
   s.disjiUnion (Sum.elim singleton (fun _ => ∅)) <| by
     simp [Set.PairwiseDisjoint, Set.Pairwise, Function.onFun, eq_comm]
 
-/-- Given a finset of elements `α ⊕ β`, extract all the elements of the form `β`. -/
+/-- 
+Given a finset of elements `α ⊕ β`, extract all the elements of the form `β`. This
+forms a quasi-inverse to `disjSum`, in that it recovers its right input.
+-/
 def toRight (s : Finset (α ⊕ β)) : Finset β :=
   s.disjiUnion (Sum.elim (fun _ => ∅) singleton) <| by
     simp [Set.PairwiseDisjoint, Set.Pairwise, Function.onFun, eq_comm]
