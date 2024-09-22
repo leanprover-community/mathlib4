@@ -3,6 +3,7 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
+import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.SetTheory.ZFC.Basic
 
 /-!
@@ -90,3 +91,8 @@ theorem isTransitive_iff_subset_powerset : x.IsTransitive ↔ x ⊆ powerset x :
 alias ⟨IsTransitive.subset_powerset, _⟩ := isTransitive_iff_subset_powerset
 
 end ZFSet
+
+/-- The von Neumann hierarchy is defined so that `vonNeumman o` is the powerset of the union of all
+`vonNeumann a` for `a < o`. -/
+def vonNeumann (o : Ordinal) : ZFSet :=
+  ZFSet.powerset (⋃ a < o, vonNeumann a)
