@@ -55,12 +55,13 @@ theorem pow_le_one' {a : M} (H : a ≤ 1) (n : ℕ) : a ^ n ≤ 1 :=
 theorem Left.pow_le_one_of_le (hx : x ≤ 1) {n : ℕ} : x ^ n ≤ 1 :=
   pow_le_one' hx n
 
+@[to_additive nsmul_left_monotone]
+theorem pow_right_monotone {a : M} (ha : 1 ≤ a) : Monotone fun n : ℕ ↦ a ^ n :=
+  monotone_nat_of_le_succ fun n ↦ by rw [pow_succ]; exact le_mul_of_one_le_right' ha
+
 @[to_additive (attr := gcongr) nsmul_le_nsmul_left]
 theorem pow_le_pow_right' {a : M} {n m : ℕ} (ha : 1 ≤ a) (h : n ≤ m) : a ^ n ≤ a ^ m :=
-  let ⟨k, hk⟩ := Nat.le.dest h
-  calc
-    a ^ n ≤ a ^ n * a ^ k := le_mul_of_one_le_right' (one_le_pow_of_one_le' ha _)
-    _ = a ^ m := by rw [← hk, pow_add]
+  pow_right_monotone ha h
 
 @[to_additive nsmul_le_nsmul_left_of_nonpos]
 theorem pow_le_pow_right_of_le_one' {a : M} {n m : ℕ} (ha : a ≤ 1) (h : n ≤ m) : a ^ m ≤ a ^ n :=
@@ -108,11 +109,8 @@ theorem Right.one_le_pow_of_le (hx : 1 ≤ x) : ∀ {n : ℕ}, 1 ≤ x ^ n
     exact Right.one_le_mul (Right.one_le_pow_of_le hx) hx
 
 @[to_additive Right.nsmul_nonpos]
-theorem Right.pow_le_one_of_le (hx : x ≤ 1) : ∀ {n : ℕ}, x ^ n ≤ 1
-  | 0 => (pow_zero _).le
-  | n + 1 => by
-    rw [pow_succ]
-    exact Right.mul_le_one (Right.pow_le_one_of_le hx) hx
+theorem Right.pow_le_one_of_le (hx : x ≤ 1) {n : ℕ} : x ^ n ≤ 1 :=
+  Right.one_le_pow_of_le (M := Mᵒᵈ) hx
 
 @[to_additive Right.nsmul_neg]
 theorem Right.pow_lt_one_of_lt {n : ℕ} {x : M} (hn : 0 < n) (h : x < 1) : x ^ n < 1 := by
