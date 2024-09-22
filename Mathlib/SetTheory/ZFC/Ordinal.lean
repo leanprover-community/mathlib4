@@ -28,6 +28,8 @@ universe u
 
 variable {x y z w : ZFSet.{u}}
 
+/-! ### Transitive sets -/
+
 namespace ZFSet
 
 /-- A transitive set is one where every element is a subset. -/
@@ -89,6 +91,8 @@ theorem isTransitive_iff_subset_powerset : x.IsTransitive ↔ x ⊆ powerset x :
   ⟨fun h _ hy => mem_powerset.2 <| h.subset_of_mem hy, fun H _ hy _ hz => mem_powerset.1 (H hy) hz⟩
 
 alias ⟨IsTransitive.subset_powerset, _⟩ := isTransitive_iff_subset_powerset
+
+/-! ### Ordinals -/
 
 /-- A set `x` is a von Neumann ordinal when it's a transitive set, that's transitive under `∈`. We
 prove that this further implies that `x` is well-ordered under `∈` in `isOrdinal_iff_isWellOrder`.
@@ -217,7 +221,7 @@ theorem IsTransitive.isOrdinal (h : x.IsTransitive) (H : ∀ y ∈ x, IsOrdinal 
 theorem isOrdinal_not_mem_univ : IsOrdinal ∉ Class.univ.{u} := by
   rintro ⟨x, hx, -⟩
   suffices IsOrdinal x by
-    apply Class.mem_irrefl.{u} x
+    apply Class.mem_irrefl x
     rwa [Class.coe_mem, hx]
   refine ⟨fun y hy z hz ↦ ?_, fun hyz hzw hwx ↦ ?_⟩ <;> rw [← Class.coe_apply, hx] at *
   exacts [hy.mem hz, hwx.mem_trans hyz hzw]
