@@ -78,16 +78,18 @@ theorem basisOfSpan_subset [AddCommGroup E] [Module ℝ E] [FiniteDimensional �
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 
-theorem span_eq_top_of_ne_zero [IsReflexive ℝ E] {s : Set (E →ₗ[ℝ] ℝ)}
-    (h : ∀ z : E, z ≠ 0 → ∃ f ∈ s, f z ≠ 0) :
-    span ℝ s = ⊤ := by
+theorem span_eq_top_of_ne_zero {R M : Type*} [CommRing R] [AddCommGroup M]
+    [Module R M] [IsReflexive R M]
+    {s : Set (M →ₗ[R] R)} [Free R ((M →ₗ[R] R) ⧸ (span R s))]
+    (h : ∀ z : M, z ≠ 0 → ∃ f ∈ s, f z ≠ 0) :
+    span R s = ⊤ := by
   by_contra! hn
   rcases exists_dual_map_eq_bot_of_lt_top hn.lt_top inferInstance with ⟨φ, φne, hφ⟩
-  let φs := (Module.evalEquiv ℝ E).symm φ
+  let φs := (Module.evalEquiv R M).symm φ
   have : ∀ f ∈ s, f φs = 0 := by
     intro f hf
-    rw [← mem_bot ℝ, ← hφ, Submodule.mem_map]
-    exact ⟨f, Submodule.subset_span hf, (apply_evalEquiv_symm_apply ℝ E f φ).symm⟩
+    rw [← mem_bot R, ← hφ, Submodule.mem_map]
+    exact ⟨f, Submodule.subset_span hf, (apply_evalEquiv_symm_apply R M f φ).symm⟩
   have φsn : φs ≠ 0 := by simp [φne, φs]
   rcases h φs φsn with ⟨x, xs, hx⟩
   exact hx <| this x xs
