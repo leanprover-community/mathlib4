@@ -59,12 +59,12 @@ instance instOrderedAddCommGroup : OrderedAddCommGroup (Lp E p μ) :=
 theorem _root_.MeasureTheory.Memℒp.sup {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g p μ) :
     Memℒp (f ⊔ g) p μ :=
   Memℒp.mono' (hf.norm.add hg.norm) (hf.1.sup hg.1)
-    (Filter.eventually_of_forall fun x => norm_sup_le_add (f x) (g x))
+    (Filter.Eventually.of_forall fun x => norm_sup_le_add (f x) (g x))
 
 theorem _root_.MeasureTheory.Memℒp.inf {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g p μ) :
     Memℒp (f ⊓ g) p μ :=
   Memℒp.mono' (hf.norm.add hg.norm) (hf.1.inf hg.1)
-    (Filter.eventually_of_forall fun x => norm_inf_le_add (f x) (g x))
+    (Filter.Eventually.of_forall fun x => norm_inf_le_add (f x) (g x))
 
 theorem _root_.MeasureTheory.Memℒp.abs {f : α → E} (hf : Memℒp f p μ) : Memℒp |f| p μ :=
   hf.sup hf.neg
@@ -93,8 +93,8 @@ noncomputable instance instNormedLatticeAddCommGroup [Fact (1 ≤ p)] :
     add_le_add_left := fun f g => add_le_add_left
     solid := fun f g hfg => by
       rw [← coeFn_le] at hfg
-      simp_rw [Lp.norm_def, ENNReal.toReal_le_toReal (Lp.snorm_ne_top f) (Lp.snorm_ne_top g)]
-      refine snorm_mono_ae ?_
+      simp_rw [Lp.norm_def, ENNReal.toReal_le_toReal (Lp.eLpNorm_ne_top f) (Lp.eLpNorm_ne_top g)]
+      refine eLpNorm_mono_ae ?_
       filter_upwards [hfg, Lp.coeFn_abs f, Lp.coeFn_abs g] with x hx hxf hxg
       rw [hxf, hxg] at hx
       exact HasSolidNorm.solid hx }

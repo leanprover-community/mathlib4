@@ -3,10 +3,9 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.DedekindDomain.Basic
-import Mathlib.RingTheory.Valuation.ValuationRing
-import Mathlib.RingTheory.Nakayama
+import Mathlib.RingTheory.DiscreteValuationRing.Basic
+import Mathlib.RingTheory.Ideal.Cotangent
 
 /-!
 
@@ -28,7 +27,7 @@ Also see `tfae_of_isNoetherianRing_of_localRing_of_isDomain` for a version witho
 
 variable (R : Type*) [CommRing R] (K : Type*) [Field K] [Algebra R K] [IsFractionRing R K]
 
-open scoped DiscreteValuation
+open scoped Multiplicative
 
 open LocalRing FiniteDimensional
 

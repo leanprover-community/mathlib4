@@ -93,7 +93,7 @@ theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι →
   simp only [HasSum, ← integral_finset_sum _ fun n _ => hF_integrable n]
   refine tendsto_integral_filter_of_dominated_convergence
       (fun a => ∑' n, bound n a) ?_ ?_ bound_integrable h_lim
-  · exact eventually_of_forall fun s => s.aestronglyMeasurable_sum fun n _ => hF_meas n
+  · exact Eventually.of_forall fun s => s.aestronglyMeasurable_sum fun n _ => hF_meas n
   · filter_upwards with s
     filter_upwards [eventually_countable_forall.2 h_bound, hb_nonneg, bound_summable]
       with a hFa ha0 has
@@ -177,7 +177,7 @@ theorem _root_.Antitone.tendsto_setIntegral (hsm : ∀ i, MeasurableSet (s i)) (
   · rw [integrable_indicator_iff (hsm 0)]
     exact hfi.norm
   · simp_rw [norm_indicator_eq_indicator_norm]
-    refine fun n => eventually_of_forall fun x => ?_
+    refine fun n => Eventually.of_forall fun x => ?_
     exact indicator_le_indicator_of_subset (h_anti (zero_le n)) (fun a => norm_nonneg _) _
   · filter_upwards [] with a using le_trans (h_anti.tendsto_indicator _ _ _) (pure_le_nhds _)
 
@@ -255,8 +255,8 @@ variable {X : Type*} [TopologicalSpace X] [FirstCountableTopology X]
 
 /-- Continuity of interval integral with respect to a parameter, at a point within a set.
   Given `F : X → ℝ → E`, assume `F x` is ae-measurable on `[a, b]` for `x` in a
-  neighborhood of `x₀` within `s` and at `x₀`, and assume it is bounded by a function integrable
-  on `[a, b]` independent of `x` in a neighborhood of `x₀` within `s`. If `(fun x ↦ F x t)`
+  neighborhood of `x₀` within `s` and at `x₀`, and assume it is bounded by a function integrable
+  on `[a, b]` independent of `x` in a neighborhood of `x₀` within `s`. If `(fun x ↦ F x t)`
   is continuous at `x₀` within `s` for almost every `t` in `[a, b]`
   then the same holds for `(fun x ↦ ∫ t in a..b, F x t ∂μ) s x₀`. -/
 theorem continuousWithinAt_of_dominated_interval {F : X → ℝ → E} {x₀ : X} {bound : ℝ → ℝ} {a b : ℝ}
@@ -293,7 +293,7 @@ theorem continuous_of_dominated_interval {F : X → ℝ → E} {bound : ℝ → 
     (h_cont : ∀ᵐ t ∂μ, t ∈ Ι a b → Continuous fun x => F x t) :
     Continuous fun x => ∫ t in a..b, F x t ∂μ :=
   continuous_iff_continuousAt.mpr fun _ =>
-    continuousAt_of_dominated_interval (eventually_of_forall hF_meas) (eventually_of_forall h_bound)
+    continuousAt_of_dominated_interval (Eventually.of_forall hF_meas) (Eventually.of_forall h_bound)
         bound_integrable <|
       h_cont.mono fun _ himp hx => (himp hx).continuousAt
 
@@ -395,7 +395,7 @@ theorem continuousAt_parametric_primitive_of_dominated [FirstCountableTopology X
     have hiF : ∀ {x a₀ b₀},
         (∀ᵐ t : ℝ ∂μ.restrict (Ι a b), ‖F x t‖ ≤ bound t) → a₀ ∈ Ioo a b → b₀ ∈ Ioo a b →
           IntervalIntegrable (F x) μ a₀ b₀ := fun {x a₀ b₀} hx ha₀ hb₀ ↦
-      (bound_integrable.mono_set_ae <| eventually_of_forall <| hsub ha₀ hb₀).mono_fun'
+      (bound_integrable.mono_set_ae <| Eventually.of_forall <| hsub ha₀ hb₀).mono_fun'
         ((hF_meas x).mono_set <| hsub ha₀ hb₀)
         (ae_restrict_of_ae_restrict_of_subset (hsub ha₀ hb₀) hx)
     rw [intervalIntegral.integral_sub, add_assoc, add_sub_cancel,
@@ -407,10 +407,10 @@ theorem continuousAt_parametric_primitive_of_dominated [FirstCountableTopology X
   rw [continuousAt_congr this]; clear this
   refine (ContinuousAt.add ?_ ?_).add ?_
   · exact (intervalIntegral.continuousAt_of_dominated_interval
-        (eventually_of_forall fun x ↦ (hF_meas x).mono_set <| hsub ha₀ hb₀)
+        (Eventually.of_forall fun x ↦ (hF_meas x).mono_set <| hsub ha₀ hb₀)
           (h_bound.mono fun x hx ↦
             ae_imp_of_ae_restrict <| ae_restrict_of_ae_restrict_of_subset (hsub ha₀ hb₀) hx)
-          (bound_integrable.mono_set_ae <| eventually_of_forall <| hsub ha₀ hb₀) <|
+          (bound_integrable.mono_set_ae <| Eventually.of_forall <| hsub ha₀ hb₀) <|
           ae_imp_of_ae_restrict <| ae_restrict_of_ae_restrict_of_subset (hsub ha₀ hb₀) h_cont).fst'
   · refine (?_ : ContinuousAt (fun t ↦ ∫ s in b₀..t, F x₀ s ∂μ) b₀).snd'
     apply ContinuousWithinAt.continuousAt _ (Icc_mem_nhds hb₀.1 hb₀.2)
@@ -577,17 +577,17 @@ theorem continuous_parametric_primitive_of_continuous
       gcongr
       · apply setIntegral_mono_set
         · exact (hf.uncurry_left _).norm.integrableOn_Icc
-        · exact eventually_of_forall (fun x ↦ norm_nonneg _)
+        · exact Eventually.of_forall (fun x ↦ norm_nonneg _)
         · have : Ι b₀ s ⊆ Icc (b₀ - δ) (b₀ + δ) := by
             apply uIoc_subset_uIcc.trans (uIcc_subset_Icc ?_ ⟨hs.1.le, hs.2.le⟩ )
             simp [δpos.le]
-          exact eventually_of_forall this
+          exact Eventually.of_forall this
       · apply setIntegral_mono_set
         · exact ((hf.uncurry_left _).sub (hf.uncurry_left _)).norm.integrableOn_Icc
-        · exact eventually_of_forall (fun x ↦ norm_nonneg _)
+        · exact Eventually.of_forall (fun x ↦ norm_nonneg _)
         · have : Ι a₀ b₀ ⊆ Icc a b := uIoc_subset_uIcc.trans
             (uIcc_subset_Icc ⟨a_lt.1.le, lt_b.1.le⟩ ⟨a_lt.2.le, lt_b.2.le⟩)
-          exact eventually_of_forall this
+          exact Eventually.of_forall this
   _ ≤ ∫ t in Icc (b₀ - δ) (b₀ + δ), M + 1 ∂μ + ∫ _t in Icc a b, δ ∂μ := by
       gcongr
       · apply setIntegral_mono_on

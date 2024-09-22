@@ -5,7 +5,7 @@ Authors: Joël Riou, Scott Morrison, Adam Topaz
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Limits.ConcreteCategory
+import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels

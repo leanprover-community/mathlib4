@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
 -/
 
--- Explicit universe annotations were used in this file to improve perfomance #12737
+-- Explicit universe annotations were used in this file to improve performance #12737
 
 
 noncomputable section
@@ -190,7 +190,7 @@ instance {R} [CommRing R] (f : R) :
     IsOpenImmersion (Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away f)))) :=
   basic_open_isOpenImmersion (R := .of R) f
 
-lemma IsOpenImmersion.of_isLocalization {R S} [CommRing R] [CommRing S]
+lemma _root_.AlgebraicGeometry.IsOpenImmersion.of_isLocalization {R S} [CommRing R] [CommRing S]
     [Algebra R S] (f : R) [IsLocalization.Away f S] :
     IsOpenImmersion (Spec.map (CommRingCat.ofHom (algebraMap R S))) := by
   have e := (IsLocalization.algEquiv (.powers f) S
@@ -209,7 +209,7 @@ theorem exists_affine_mem_range_and_range_subset
     ∃ (R : CommRingCat) (f : Spec R ⟶ X),
       IsOpenImmersion f ∧ x ∈ Set.range f.1.base ∧ Set.range f.1.base ⊆ U := by
   obtain ⟨⟨V, hxV⟩, R, ⟨e⟩⟩ := X.2 x
-  have : e.hom.1.base ⟨x, hxV⟩ ∈ (Opens.map (e.inv.1.base ≫ V.inclusion)).obj U :=
+  have : e.hom.1.base ⟨x, hxV⟩ ∈ (Opens.map (e.inv.1.base ≫ V.inclusion')).obj U :=
     show ((e.hom ≫ e.inv).1.base ⟨x, hxV⟩).1 ∈ U from e.hom_inv_id ▸ hxU
   obtain ⟨_, ⟨_, ⟨r : R, rfl⟩, rfl⟩, hr, hr'⟩ :=
     PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open this (Opens.is_open' _)
@@ -334,19 +334,25 @@ theorem to_iso {X Y : Scheme.{u}} (f : X ⟶ Y) [h : IsOpenImmersion f] [Epi f.1
     (@PresheafedSpace.IsOpenImmersion.to_iso _ _ _ _ f.1 h _) _
 
 theorem of_stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) (hf : OpenEmbedding f.1.base)
-    [∀ x, IsIso (PresheafedSpace.stalkMap f.1 x)] : IsOpenImmersion f :=
+    [∀ x, IsIso (f.stalkMap x)] : IsOpenImmersion f :=
+  haveI (x : X) : IsIso (f.val.stalkMap x) := inferInstanceAs <| IsIso (f.stalkMap x)
   SheafedSpace.IsOpenImmersion.of_stalk_iso f.1 hf
 
+instance stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (x : X) :
+    IsIso (f.stalkMap x) :=
+  inferInstanceAs <| IsIso (f.val.stalkMap x)
+
 theorem iff_stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) :
-    IsOpenImmersion f ↔ OpenEmbedding f.1.base ∧ ∀ x, IsIso (PresheafedSpace.stalkMap f.1 x) :=
-  ⟨fun H => ⟨H.1, inferInstance⟩, fun ⟨h₁, h₂⟩ => @IsOpenImmersion.of_stalk_iso _ _ f h₁ h₂⟩
+    IsOpenImmersion f ↔ OpenEmbedding f.1.base ∧ ∀ x, IsIso (f.stalkMap x) :=
+  ⟨fun H => ⟨H.1, fun x ↦ inferInstanceAs <| IsIso (f.val.stalkMap x)⟩,
+    fun ⟨h₁, h₂⟩ => @IsOpenImmersion.of_stalk_iso _ _ f h₁ h₂⟩
 
 theorem _root_.AlgebraicGeometry.isIso_iff_isOpenImmersion {X Y : Scheme.{u}} (f : X ⟶ Y) :
     IsIso f ↔ IsOpenImmersion f ∧ Epi f.1.base :=
   ⟨fun _ => ⟨inferInstance, inferInstance⟩, fun ⟨h₁, h₂⟩ => @IsOpenImmersion.to_iso _ _ f h₁ h₂⟩
 
 theorem _root_.AlgebraicGeometry.isIso_iff_stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) :
-    IsIso f ↔ IsIso f.1.base ∧ ∀ x, IsIso (PresheafedSpace.stalkMap f.1 x) := by
+    IsIso f ↔ IsIso f.1.base ∧ ∀ x, IsIso (f.stalkMap x) := by
   rw [isIso_iff_isOpenImmersion, IsOpenImmersion.iff_stalk_iso, and_comm, ← and_assoc]
   refine and_congr ⟨?_, ?_⟩ Iff.rfl
   · rintro ⟨h₁, h₂⟩

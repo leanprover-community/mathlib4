@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad, Robert Y. Lewis, Yury G. Kudryashov
+Authors: Jeremy Avigad, Robert Y. Lewis, Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
@@ -45,7 +45,7 @@ theorem one_le_pow_of_one_le' {a : M} (H : 1 ≤ a) : ∀ n : ℕ, 1 ≤ a ^ n
 
 @[to_additive nsmul_nonpos]
 theorem pow_le_one' {a : M} (H : a ≤ 1) (n : ℕ) : a ^ n ≤ 1 :=
-  @one_le_pow_of_one_le' Mᵒᵈ _ _ _ _ H n
+  one_le_pow_of_one_le' (M := Mᵒᵈ) H n
 
 @[to_additive (attr := gcongr) nsmul_le_nsmul_left]
 theorem pow_le_pow_right' {a : M} {n m : ℕ} (ha : 1 ≤ a) (h : n ≤ m) : a ^ n ≤ a ^ m :=
@@ -62,14 +62,13 @@ theorem pow_le_pow_right_of_le_one' {a : M} {n m : ℕ} (ha : a ≤ 1) (h : n �
 theorem one_lt_pow' {a : M} (ha : 1 < a) {k : ℕ} (hk : k ≠ 0) : 1 < a ^ k := by
   rcases Nat.exists_eq_succ_of_ne_zero hk with ⟨l, rfl⟩
   clear hk
-  induction' l with l IH
-  · rw [pow_succ]; simpa using ha
-  · rw [pow_succ]
-    exact one_lt_mul'' IH ha
+  induction l with
+  | zero => rw [pow_succ]; simpa using ha
+  | succ l IH => rw [pow_succ]; exact one_lt_mul'' IH ha
 
 @[to_additive nsmul_neg]
 theorem pow_lt_one' {a : M} (ha : a < 1) {k : ℕ} (hk : k ≠ 0) : a ^ k < 1 :=
-  @one_lt_pow' Mᵒᵈ _ _ _ _ ha k hk
+  one_lt_pow' (M := Mᵒᵈ) ha hk
 
 @[to_additive (attr := gcongr) nsmul_lt_nsmul_left]
 theorem pow_lt_pow_right' [CovariantClass M M (· * ·) (· < ·)] {a : M} {n m : ℕ} (ha : 1 < a)
@@ -192,7 +191,7 @@ theorem one_le_pow_iff {x : M} {n : ℕ} (hn : n ≠ 0) : 1 ≤ x ^ n ↔ 1 ≤ 
 
 @[to_additive]
 theorem pow_le_one_iff {x : M} {n : ℕ} (hn : n ≠ 0) : x ^ n ≤ 1 ↔ x ≤ 1 :=
-  @one_le_pow_iff Mᵒᵈ _ _ _ _ _ hn
+  one_le_pow_iff (M := Mᵒᵈ) hn
 
 @[to_additive nsmul_pos_iff]
 theorem one_lt_pow_iff {x : M} {n : ℕ} (hn : n ≠ 0) : 1 < x ^ n ↔ 1 < x :=

@@ -198,7 +198,10 @@ abbrev projectiveResolution (Z : C) [HasZeroObject C]
   (HasProjectiveResolution.out (Z := Z)).some
 
 variable (C)
-variable [Abelian C] [HasProjectiveResolutions C]
+variable [Abelian C]
+
+section
+variable [HasProjectiveResolutions C]
 
 /-- Taking projective resolutions is functorial,
 if considered with target the homotopy category
@@ -215,6 +218,7 @@ def projectiveResolutions : C ⥤ HomotopyCategory C (ComplexShape.down ℕ) whe
     rw [← (HomotopyCategory.quotient _ _).map_comp]
     apply HomotopyCategory.eq_of_homotopy
     apply ProjectiveResolution.liftCompHomotopy
+
 variable {C}
 
 /-- If `P : ProjectiveResolution X`, then the chosen `(projectiveResolutions C).obj X`
@@ -244,8 +248,11 @@ lemma ProjectiveResolution.iso_hom_naturality {X Y : C} (f : X ⟶ Y)
   rw [← cancel_epi (P.iso).inv, iso_inv_naturality_assoc f P Q φ comm,
     Iso.inv_hom_id_assoc, Iso.inv_hom_id, comp_id]
 
+end
+
 variable [EnoughProjectives C]
 
+variable {C} in
 theorem exact_d_f {X Y : C} (f : X ⟶ Y) :
     (ShortComplex.mk (d f) f (by simp)).Exact := by
   let α : ShortComplex.mk (d f) f (by simp) ⟶ ShortComplex.mk (kernel.ι f) f (by simp) :=
@@ -270,6 +277,7 @@ applied to the previously constructed morphism,
 and the map from the `n`-th object as `Projective.d`.
 -/
 
+variable {C}
 variable (Z : C)
 
 -- The construction of the projective resolution `of` would be very, very slow
@@ -292,12 +300,8 @@ lemma ofComplex_exactAt_succ (n : ℕ) :
   simp only [ChainComplex.of_d]
   -- TODO: this should just be apply exact_d_f so something is missing
   match n with
-  | 0 =>
-    apply exact_d_f ((ChainComplex.mkAux _ _ _ (d (Projective.π Z)) (d (d (Projective.π Z))) _ _
-      0).g)
-  | n+1 =>
-    apply exact_d_f ((ChainComplex.mkAux _ _ _ (d (Projective.π Z)) (d (d (Projective.π Z))) _ _
-      (n+1)).g)
+  | 0 => apply exact_d_f
+  | n + 1 => apply exact_d_f
 
 instance (n : ℕ) : Projective ((ofComplex Z).X n) := by
   obtain (_ | _ | _ | n) := n <;> apply Projective.projective_over

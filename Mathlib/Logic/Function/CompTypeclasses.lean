@@ -64,3 +64,5 @@ lemma comp_apply {M N P : Type*}
   rw [← h.comp_eq, Function.comp_apply]
 
 end CompTriple
+
+end CompTriple

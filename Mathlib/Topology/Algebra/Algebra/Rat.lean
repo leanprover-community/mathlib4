@@ -17,7 +17,7 @@ This is just a minimal stub for now!
 
 section DivisionRing
 
-/-- The action induced by `algebraRat` is continuous. -/
+/-- The action induced by `DivisionRing.toRatAlgebra` is continuous. -/
 instance DivisionRing.continuousConstSMul_rat {A} [DivisionRing A] [TopologicalSpace A]
     [ContinuousMul A] [CharZero A] : ContinuousConstSMul ℚ A :=
   ⟨fun r => by simpa only [Algebra.smul_def] using continuous_const.mul continuous_id⟩

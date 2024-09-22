@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Data.List.Lattice
-import Mathlib.Data.List.Range
 import Mathlib.Data.Bool.Basic
-import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Order.Lattice
+
 /-!
 # Intervals in ℕ
 
@@ -42,15 +42,15 @@ theorem zero_bot (n : ℕ) : Ico 0 n = range n := by rw [Ico, Nat.sub_zero, rang
 @[simp]
 theorem length (n m : ℕ) : length (Ico n m) = m - n := by
   dsimp [Ico]
-  simp [length_range', autoParam]
+  simp [length_range']
 
 theorem pairwise_lt (n m : ℕ) : Pairwise (· < ·) (Ico n m) := by
   dsimp [Ico]
-  simp [pairwise_lt_range', autoParam]
+  simp [pairwise_lt_range']
 
 theorem nodup (n m : ℕ) : Nodup (Ico n m) := by
   dsimp [Ico]
-  simp [nodup_range', autoParam]
+  simp [nodup_range']
 
 @[simp]
 theorem mem {n m l : ℕ} : l ∈ Ico n m ↔ n ≤ l ∧ l < m := by
@@ -116,9 +116,7 @@ theorem eq_cons {n m : ℕ} (h : n < m) : Ico n m = n :: Ico (n + 1) m := by
 
 @[simp]
 theorem pred_singleton {m : ℕ} (h : 0 < m) : Ico (m - 1) m = [m - 1] := by
-  dsimp [Ico]
-  rw [Nat.sub_sub_self (succ_le_of_lt h)]
-  simp [← Nat.one_eq_succ_zero]
+  simp [Ico, Nat.sub_sub_self (succ_le_of_lt h)]
 
 theorem chain'_succ (n m : ℕ) : Chain' (fun a b => b = succ a) (Ico n m) := by
   by_cases h : n < m

@@ -40,7 +40,7 @@ and Chris Hughes (on an earlier repository).
 -/
 
 -- A dividing line between this file and `AlgebraicGeometry.PrimeSpectrum.Basic` is
--- that we should not depened on the Zariski topology here
+-- that we should not depend on the Zariski topology here
 assert_not_exists TopologicalSpace
 
 noncomputable section
@@ -186,7 +186,7 @@ theorem gc_set :
     @GaloisConnection (Set R) (Set (PrimeSpectrum R))ᵒᵈ _ _ (fun s => zeroLocus s) fun t =>
       vanishingIdeal t := by
   have ideal_gc : GaloisConnection Ideal.span _ := (Submodule.gi R R).gc
-  simpa [zeroLocus_span, Function.comp] using ideal_gc.compose (gc R)
+  simpa [zeroLocus_span, Function.comp_def] using ideal_gc.compose (gc R)
 
 theorem subset_zeroLocus_iff_subset_vanishingIdeal (t : Set (PrimeSpectrum R)) (s : Set R) :
     t ⊆ zeroLocus s ↔ s ⊆ vanishingIdeal t :=
@@ -363,6 +363,37 @@ theorem sup_vanishingIdeal_le (t t' : Set (PrimeSpectrum R)) :
 theorem mem_compl_zeroLocus_iff_not_mem {f : R} {I : PrimeSpectrum R} :
     I ∈ (zeroLocus {f} : Set (PrimeSpectrum R))ᶜ ↔ f ∉ I.asIdeal := by
   rw [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff]; rfl
+
+section Order
+
+/-!
+## The specialization order
+
+We endow `PrimeSpectrum R` with a partial order induced from the ideal lattice.
+This is exactly the specialization order.
+See the corresponding section at `Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic`.
+-/
+
+instance : PartialOrder (PrimeSpectrum R) :=
+  PartialOrder.lift asIdeal (@PrimeSpectrum.ext _ _)
+
+@[simp]
+theorem asIdeal_le_asIdeal (x y : PrimeSpectrum R) : x.asIdeal ≤ y.asIdeal ↔ x ≤ y :=
+  Iff.rfl
+
+@[simp]
+theorem asIdeal_lt_asIdeal (x y : PrimeSpectrum R) : x.asIdeal < y.asIdeal ↔ x < y :=
+  Iff.rfl
+
+instance [IsDomain R] : OrderBot (PrimeSpectrum R) where
+  bot := ⟨⊥, Ideal.bot_prime⟩
+  bot_le I := @bot_le _ _ _ I.asIdeal
+
+instance {R : Type*} [Field R] : Unique (PrimeSpectrum R) where
+  default := ⊥
+  uniq x := PrimeSpectrum.ext ((IsSimpleOrder.eq_bot_or_eq_top _).resolve_right x.2.ne_top)
+
+end Order
 
 section Noetherian
 
