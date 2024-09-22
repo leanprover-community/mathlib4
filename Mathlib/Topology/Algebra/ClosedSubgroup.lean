@@ -9,7 +9,7 @@ import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.GroupTheory.Index
 
 /-!
-# Closed subgroups of a topological groups
+# Closed subgroups of a topological group
 
 This files builds the SemilatticeInf `ClosedSubgroup G` of closed subgroups in a
 topological group `G`, and its additive version `ClosedAddSubgroup`.
