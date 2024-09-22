@@ -80,7 +80,7 @@ end ClosedSubgroup
 
 open scoped Pointwise
 
-namespace TopologicalGroup
+namespace Subgroup
 
 variable {G : Type u} [Group G] [TopologicalSpace G] [ContinuousMul G]
 
@@ -89,11 +89,9 @@ lemma normalCore_isClosed (H : Subgroup G) (h : IsClosed (H : Set G)) :
   have : H.normalCore = ⨅ (g : ConjAct G), g • H := by
     ext g
     simp only [Subgroup.normalCore, Subgroup.mem_iInf, Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
-    constructor
-    <;> intro h x
-    <;> specialize h (x⁻¹)
-    · exact h
-    · simpa only [ConjAct.toConjAct_inv, inv_inv] using h
+    refine ⟨fun h x ↦ ?_, fun h x ↦ ?_⟩
+    · exact h x⁻¹
+    · simpa only [ConjAct.toConjAct_inv, inv_inv] using h x⁻¹
   rw [this]
   push_cast
   apply isClosed_iInter
@@ -102,7 +100,7 @@ lemma normalCore_isClosed (H : Subgroup G) (h : IsClosed (H : Set G)) :
   exact Set.ext (fun t ↦ Set.mem_smul_set_iff_inv_smul_mem)
 
 @[to_additive]
-lemma finiteindex_closedSubgroup_isOpen (H : Subgroup G) [H.FiniteIndex]
+lemma isOpen_of_isClosed_of_finiteIndex (H : Subgroup G) [H.FiniteIndex]
     (h : IsClosed (H : Set G)) : IsOpen (H : Set G) := by
   apply isClosed_compl_iff.mp
   convert isClosed_iUnion_of_finite <| fun (x : {x : (G ⧸ H) // x ≠ QuotientGroup.mk 1})
@@ -127,6 +125,6 @@ lemma finiteindex_closedSubgroup_isOpen (H : Subgroup G) [H.FiniteIndex]
     rw [← QuotientGroup.out_eq' y.1, QuotientGroup.eq]
     simp only [inv_one, ne_eq, one_mul, (Subgroup.mul_mem_cancel_right H hh).mp mH]
 
-end TopologicalGroup
+end Subgroup
 
 end
