@@ -2724,7 +2724,7 @@ theorem toFinset_nonempty : s.toFinset.Nonempty ↔ s ≠ 0 := by
   simp only [toFinset_eq_empty, Ne, Finset.nonempty_iff_ne_empty]
 
 @[aesop safe apply (rule_sets := [finsetNonempty])]
-alias ⟨_, toFinset_nonempty_of_ne⟩ := toFinset_nonempty
+protected alias ⟨_, Aesop.toFinset_nonempty_of_ne⟩ := toFinset_nonempty
 
 @[simp]
 theorem toFinset_subset : s.toFinset ⊆ t.toFinset ↔ s ⊆ t := by
@@ -2860,7 +2860,7 @@ theorem toFinset_nonempty_iff (l : List α) : l.toFinset.Nonempty ↔ l ≠ [] :
   simp [Finset.nonempty_iff_ne_empty]
 
 @[aesop safe apply (rule_sets := [finsetNonempty])]
-alias ⟨_, toFinset_nonempty_of_ne⟩ := toFinset_nonempty_iff
+alias ⟨_, Aesop.toFinset_nonempty_of_ne⟩ := toFinset_nonempty_iff
 
 @[simp]
 theorem toFinset_filter (s : List α) (p : α → Bool) :
