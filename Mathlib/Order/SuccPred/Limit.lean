@@ -301,7 +301,7 @@ theorem IsSuccPrelimit.le_iff_forall_le (h : IsSuccPrelimit a) : a ≤ b ↔ ∀
     by_contra! ha
     exact (lt_succ_of_not_isMax ha.not_isMax).not_le <| H _ (h.succ_lt ha)
 
-theorem IsSuccPrelimit.lt_iff_forall_lt (h : IsSuccPrelimit b) : a < b ↔ ∃ c < b, a < c := by
+theorem IsSuccPrelimit.lt_iff_exists_lt (h : IsSuccPrelimit b) : a < b ↔ ∃ c < b, a < c := by
   rw [← not_iff_not]
   simp [h.le_iff_forall_le]
 
@@ -580,7 +580,7 @@ variable [LinearOrder α] [PredOrder α]
 theorem IsPredPrelimit.le_iff_forall_le (h : IsPredPrelimit a) : b ≤ a ↔ ∀ ⦃c⦄, a < c → b ≤ c :=
   h.dual.le_iff_forall_le
 
-theorem IsPredPrelimit.lt_iff_forall_lt (h : IsPredPrelimit b) : b < a ↔ ∃ c, b < c ∧ c < a :=
+theorem IsPredPrelimit.lt_iff_exists_lt (h : IsPredPrelimit b) : b < a ↔ ∃ c, b < c ∧ c < a :=
   h.dual.lt_iff_forall_lt
 
 end LinearOrder
