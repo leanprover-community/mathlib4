@@ -345,6 +345,7 @@ variable [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S']
 variable [IsScalarTower R R' S'] [IsScalarTower R S S']
 
 open IsScalarTower (toAlgHom)
+open IsScalarTower (algebraMap_apply)
 
 variable (R S R' S')
 
@@ -493,6 +494,17 @@ theorem Algebra.IsPushout.algHom_ext [H : Algebra.IsPushout R S R' S'] {A : Type
   · intro s₁ s₂ e₁ e₂
     rw [map_add, map_add, e₁, e₂]
 
+/--
+Given a commutative diagram of rings
+```
+  R  →  S  →  T
+  ↓     ↓     ↓
+  R' →  S' →  T'
+```
+where the left-hand square is a pushout and the big rectangle is a pushout, then also the
+right-hand square is a pushout. Note that this is essentially the isomorphism
+`T ⊗[S] (S ⊗[R] R') ≃ₐ[T] T ⊗[R] R'.
+-/
 lemma Algebra.IsPushout.of_comp {T' : Type*} [CommRing T'] [Algebra R T']
     [Algebra S' T'] [Algebra S T'] [Algebra T T'] [Algebra R' T']
     [IsScalarTower R T T'] [IsScalarTower S T T'] [IsScalarTower S S' T']
@@ -501,22 +513,14 @@ lemma Algebra.IsPushout.of_comp {T' : Type*} [CommRing T'] [Algebra R T']
     Algebra.IsPushout S T S' T' := by
   constructor
   let f : R' →ₗ[R] S' := (IsScalarTower.toAlgHom R R' S').toLinearMap
-  let g : R' →ₗ[R] T' := (IsScalarTower.toAlgHom R R' T').toLinearMap
-  haveI : IsScalarTower R S T' := IsScalarTower.of_algebraMap_eq <| by
-    intro x
-    rw [IsScalarTower.algebraMap_apply S T T']
-    rw [IsScalarTower.algebraMap_apply R S' T']
-    rw [IsScalarTower.algebraMap_apply R S S']
-    rw [← IsScalarTower.algebraMap_apply S T T']
-    rw [← IsScalarTower.algebraMap_apply S S' T']
-  have heq : (IsScalarTower.toAlgHom S S' T').toLinearMap.restrictScalars R ∘ₗ f =
-      (IsScalarTower.toAlgHom R R' T').toLinearMap := by
+  haveI : IsScalarTower R S T' := IsScalarTower.of_algebraMap_eq <| fun x ↦ by
+    rw [algebraMap_apply R S' T', algebraMap_apply R S S', ← algebraMap_apply S S' T']
+  apply IsBaseChange.of_comp (f := f) Algebra.IsPushout.out
+  have heq : (toAlgHom S S' T').toLinearMap.restrictScalars R ∘ₗ f =
+      (toAlgHom R R' T').toLinearMap := by
     ext x
-    simp [f, g]
-    rw [← IsScalarTower.algebraMap_apply]
-  apply IsBaseChange.of_comp (f := f)
-  · exact Algebra.IsPushout.out
-  · rw [heq]
-    exact Algebra.IsPushout.out
+    simp [f, ← IsScalarTower.algebraMap_apply]
+  rw [heq]
+  exact Algebra.IsPushout.out
 
 end IsBaseChange
