@@ -113,7 +113,7 @@ theorem range_primeCounting' : Set.range π' = Set.univ := by
     exact Nat.count_nth_of_infinite infinite_setOf_prime n⟩
 
 @[simp]
-theorem range_primeCoutning : Set.range π = Set.univ := by
+theorem range_primeCounting : Set.range π = Set.univ := by
   have h0 : primeCounting' 0 ∈ Set.range (π' ∘ succ) := by
     simp only [Set.mem_range, Function.comp_apply, succ_eq_add_one]
     use 0
