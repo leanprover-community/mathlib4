@@ -120,7 +120,7 @@ def MulEquiv.piMultiplicative (K : ι → Type*) [∀ i, Add (K i)] :
   toFun x := fun i ↦ Multiplicative.ofAdd <| Multiplicative.toAdd x i
   invFun x := Multiplicative.ofAdd fun i ↦ Multiplicative.toAdd (x i)
   left_inv _ := rfl
-  right_inv rfl := rfl
+  right_inv _ := rfl
   map_mul' _ _ := rfl
 
 variable (ι) (G) in
@@ -133,14 +133,15 @@ abbrev MulEquiv.funMultiplicative [Add G] :
 @[simps]
 def AddEquiv.piAdditive (K : ι → Type*) [∀ i, Mul (K i)] :
     Additive (∀ i : ι, K i) ≃+ (∀ i : ι, Additive (K i)) where
-  toFun := fun x i ↦ Additive.ofMul <| Additive.toMul x i
-  invFun := fun x ↦ Additive.ofMul fun i ↦ Additive.toMul (x i)
-  left_inv := fun _ ↦ rfl
-  right_inv := fun _ ↦ rfl
-  map_add' := fun _ _ ↦ rfl
+  toFun x := fun i ↦ Additive.ofMul <| Additive.toMul x i
+  invFun x := Additive.ofMul fun i ↦ Additive.toMul (x i)
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_add' _ _ := rfl
 
+variable (ι) (G) in
 /-- `Additive (ι → G)` is equivalent to `ι → Additive G`. -/
-abbrev AddEquiv.funAdditive (ι) (G) [Mul G] :
+abbrev AddEquiv.funAdditive [Mul G] :
     Additive (ι → G) ≃+ (ι → Additive G) :=
   AddEquiv.piAdditive fun _ ↦ G
 
