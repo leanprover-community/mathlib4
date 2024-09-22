@@ -594,6 +594,8 @@ lemma div_pow (a b : α) (n : ℕ) : (a / b) ^ n = a ^ n / b ^ n := by
 lemma div_zpow (a b : α) (n : ℤ) : (a / b) ^ n = a ^ n / b ^ n := by
   simp only [div_eq_mul_inv, mul_zpow, inv_zpow]
 
+attribute [field_simps] div_pow div_zpow
+
 end DivisionCommMonoid
 
 section Group
