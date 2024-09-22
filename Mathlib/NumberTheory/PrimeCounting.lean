@@ -107,7 +107,7 @@ theorem add_two_le_nth_prime (n : ℕ) : n + 2 ≤ nth Prime n :=
 
 theorem surjective_primeCounting' : Function.Surjective π' := by
    intro n
-   use nth (fun p ↦ Prime p) n
+   use nth Prime n
    exact Nat.count_nth_of_infinite infinite_setOf_prime n
 
 theorem surjective_primeCounting : Function.Surjective π := by
