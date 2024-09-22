@@ -597,11 +597,15 @@ section Woodbury
 
 variable [Fintype m] [DecidableEq m]
 variable (A : Matrix n n α) (U : Matrix n m α) (C : Matrix m m α) (V : Matrix m n α)
-variable [Invertible A] [Invertible C] [Invertible (⅟C + V * ⅟A* U)]
 
 /-- The **Woodbury Identity** (`⁻¹` version). -/
-theorem add_mul_mul_inv_eq_sub [Invertible (A + U*C*V)]:
+theorem add_mul_mul_inv_eq_sub (hA : IsUnit A) (hC : IsUnit C) (hAC : IsUnit (C⁻¹ + V*A⁻¹*U)) :
     (A + U*C*V)⁻¹ = A⁻¹ - A⁻¹*U*(C⁻¹ + V*A⁻¹*U)⁻¹*V*A⁻¹ := by
+  obtain ⟨_⟩ := hA.nonempty_invertible
+  obtain ⟨_⟩ := hC.nonempty_invertible
+  obtain ⟨iAC⟩ := hAC.nonempty_invertible
+  simp only [← invOf_eq_nonsing_inv] at iAC
+  letI := invertibleAddMulMul A U C V
   simp only [← invOf_eq_nonsing_inv]
   apply invOf_add_mul_mul
 
