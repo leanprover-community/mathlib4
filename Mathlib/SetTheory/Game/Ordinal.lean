@@ -155,7 +155,7 @@ noncomputable def toPGameEmbedding : Ordinal.{u} ↪o PGame.{u} where
   map_rel_iff' := @toPGame_le_iff
 
 /-- Converts an ordinal into the corresponding game. -/
-noncomputable abbrev toGame (o : Ordinal.{u}) : Game.{u} := ⟦o.toPGame⟧
+noncomputable abbrev toGame (o : Ordinal) : Game := ⟦o.toPGame⟧
 
 /-- The order embedding version of `toGame`. -/
 @[simps]
