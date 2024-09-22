@@ -86,13 +86,7 @@ variable {G : Type u} [Group G] [TopologicalSpace G] [ContinuousMul G]
 
 lemma normalCore_isClosed (H : Subgroup G) (h : IsClosed (H : Set G)) :
     IsClosed (H.normalCore : Set G) := by
-  have : H.normalCore = ⨅ (g : ConjAct G), g • H := by
-    ext g
-    simp only [Subgroup.normalCore, Subgroup.mem_iInf, Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
-    refine ⟨fun h x ↦ ?_, fun h x ↦ ?_⟩
-    · exact h x⁻¹
-    · simpa only [ConjAct.toConjAct_inv, inv_inv] using h x⁻¹
-  rw [this]
+  rw [normalCore_eq_iInf_conjAct]
   push_cast
   apply isClosed_iInter
   intro g
