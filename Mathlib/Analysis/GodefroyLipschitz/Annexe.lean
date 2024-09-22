@@ -2,7 +2,7 @@ import Mathlib.Analysis.Calculus.Rademacher
 import Mathlib.LinearAlgebra.Dimension.Finrank
 import Mathlib.Data.Real.Sign
 
-open Real NNReal Set Filter Topology FiniteDimensional MeasureTheory Module Submodule
+open Real NNReal Set Filter Topology FiniteDimensional MeasureTheory Module Submodule LinearMap
 
 variable {E : Type*}
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
@@ -12,6 +12,46 @@ theorem dense_of_ae {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
     {p : X → Prop} (hp : ∀ᵐ x ∂μ, p x) : Dense {x | p x} := by
   rw [dense_iff_closure_eq, closure_eq_compl_interior_compl, compl_univ_iff]
   exact μ.interior_eq_empty_of_null hp
+
+section tkt
+
+theorem mem_span_dual {𝕜 E : Type*} [Field 𝕜] [AddCommGroup E] [Module 𝕜 E] [FiniteDimensional 𝕜 E]
+    {n : ℕ} {L : Fin n → E →ₗ[𝕜] 𝕜} {K : E →ₗ[𝕜] 𝕜}
+    (h : ⨅ i, ker (L i) ≤ ker K) : K ∈ span 𝕜 (range L) := by
+  by_contra hK
+  rcases exists_dual_map_eq_bot_of_nmem hK inferInstance with ⟨φ, φne, hφ⟩
+  let φs := (Module.evalEquiv 𝕜 E).symm φ
+  have : K φs = 0 := by
+    refine h <| (Submodule.mem_iInf _).2 fun i ↦ (mem_bot 𝕜).1 ?_
+    rw [← hφ, Submodule.mem_map]
+    exact ⟨L i, Submodule.subset_span ⟨i, rfl⟩, (apply_evalEquiv_symm_apply 𝕜 E _ φ).symm⟩
+  simp only [apply_evalEquiv_symm_apply, φs, φne] at this
+
+theorem mem_span_dual' {𝕜 E : Type*} [Field 𝕜] [AddCommGroup E] [Module 𝕜 E]
+    {n : ℕ} {L : Fin n → E →ₗ[𝕜] 𝕜} {K : E →ₗ[𝕜] 𝕜}
+    (h : ⨅ i, ker (L i) ≤ ker K) : K ∈ span 𝕜 (range L) := by
+  let φ : E →ₗ[𝕜] Fin n → 𝕜 := LinearMap.pi L
+  let p := ⨅ i, ker (L i)
+  have p_eq : p = ker φ := (ker_pi L).symm
+  let ψ : (E ⧸ p) →ₗ[𝕜] Fin n → 𝕜 := p.liftQ φ p_eq.le
+  have _ : FiniteDimensional 𝕜 (E ⧸ p) := of_injective ψ (ker_eq_bot.1 (ker_liftQ_eq_bot' p φ p_eq))
+  let L' i : (E ⧸ p) →ₗ[𝕜] 𝕜 := p.liftQ (L i) (iInf_le _ i)
+  let K' : (E ⧸ p) →ₗ[𝕜] 𝕜 := p.liftQ K h
+  have : ⨅ i, ker (L' i) ≤ ker K' := by
+    have : LinearMap.pi L' = ψ := by
+      ext x i
+      simp [L', ψ, φ]
+    simp_rw [← ker_pi, this, ψ, ker_liftQ_eq_bot' p φ p_eq]
+    exact bot_le
+  obtain ⟨c, hK'⟩ := (mem_span_range_iff_exists_fun 𝕜).1 (mem_span_dual this)
+  refine (mem_span_range_iff_exists_fun 𝕜).2 ⟨c, ?_⟩
+  conv_lhs => enter [2]; intro i; rw [← p.liftQ_mkQ (L i) (iInf_le _ i)]
+  rw [← p.liftQ_mkQ K h]
+  ext x
+  convert LinearMap.congr_fun hK' (p.mkQ x)
+  simp only [coeFn_sum, Finset.sum_apply, smul_apply, coe_comp, Function.comp_apply, smul_eq_mul]
+
+end tkt
 
 theorem basis_of_span [AddCommGroup E] [Module ℝ E] [FiniteDimensional ℝ E]
     {s : Set E} (hs : span ℝ s = ⊤) :
