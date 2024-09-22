@@ -123,8 +123,9 @@ def MulEquiv.piMultiplicative (K : ι → Type*) [∀ i, Add (K i)] :
   right_inv := fun _ ↦ rfl
   map_mul' := fun _ _ ↦ rfl
 
+variable (ι) (G) in
 /-- `Multiplicative (ι → G)` is equivalent to `ι → Multiplicative G`. -/
-abbrev MulEquiv.funMultiplicative (ι) (G) [Add G] :
+abbrev MulEquiv.funMultiplicative [Add G] :
     Multiplicative (ι → G) ≃* (ι → Multiplicative G) :=
   MulEquiv.piMultiplicative fun _ ↦ G
 
