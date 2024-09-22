@@ -36,6 +36,7 @@ noncomputable def toPGame (o : Ordinal.{u}) : PGame.{u} :=
 termination_by o
 decreasing_by exact ((enumIsoToType o).symm x).prop
 
+@[deprecated (since := "2024-09-22")]
 theorem toPGame_def (o : Ordinal) : o.toPGame =
     ⟨o.toType, PEmpty, fun x => ((enumIsoToType o).symm x).val.toPGame, PEmpty.elim⟩ := by
   rw [toPGame]
@@ -64,7 +65,6 @@ theorem toLeftMovesToPGame_symm_lt {o : Ordinal} (i : o.toPGame.LeftMoves) :
     ↑(toLeftMovesToPGame.symm i) < o :=
   (toLeftMovesToPGame.symm i).prop
 
-@[nolint unusedHavesSuffices]
 theorem toPGame_moveLeft_hEq {o : Ordinal} :
     HEq o.toPGame.moveLeft fun x : o.toType => ((enumIsoToType o).symm x).val.toPGame := by
   rw [toPGame]
@@ -235,7 +235,7 @@ termination_by (a, b)
 theorem toGame_nmul (a b : Ordinal) : toGame (a ⨳ b) = ⟦a.toPGame * b.toPGame⟧ :=
   Quot.sound (toPGame_nmul a b)
 
-@[simp, norm_cast]
+@[simp]
 theorem toGame_natCast : ∀ n : ℕ, toGame n = n
   | 0 => Quot.sound (zeroToPGameRelabelling).equiv
   | n + 1 => by
@@ -244,7 +244,7 @@ theorem toGame_natCast : ∀ n : ℕ, toGame n = n
     rfl
 
 theorem toPGame_natCast (n : ℕ) : toPGame n ≈ n := by
-  rw [PGame.equiv_iff_game_eq, ← toGame, toGame_natCast, quot_natCast]
+  rw [PGame.equiv_iff_game_eq, ← toGame_def, toGame_natCast, quot_natCast]
 
 end Ordinal
 
