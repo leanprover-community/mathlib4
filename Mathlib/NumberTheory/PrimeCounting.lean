@@ -6,6 +6,7 @@ Authors: Bolton Bailey, Ralf Stephan
 import Mathlib.Data.Nat.Nth
 import Mathlib.Data.Nat.Totient
 import Mathlib.NumberTheory.SmoothNumbers
+import Mathlib
 
 /-!
 # The Prime Counting Function
@@ -105,26 +106,25 @@ theorem zeroth_prime_eq_two : nth Prime 0 = 2 := nth_count prime_two
 theorem add_two_le_nth_prime (n : ℕ) : n + 2 ≤ nth Prime n :=
   zeroth_prime_eq_two ▸ (nth_strictMono infinite_setOf_prime).add_le_nat n 0
 
-@[simp]
-theorem range_primeCounting' : Set.range π' = Set.univ := by
-  ext n
-  exact ⟨fun _ => trivial, fun _ => by
-    use nth (fun p ↦ Prime p) n
-    exact Nat.count_nth_of_infinite infinite_setOf_prime n⟩
+theorem surjective_primeCounting' : Function.Surjective π' := by
+   intro n
+   use nth (fun p ↦ Prime p) n
+   exact Nat.count_nth_of_infinite infinite_setOf_prime n
 
-@[simp]
-theorem range_primeCounting : Set.range π = Set.univ := by
+theorem surjective_primeCounting : Function.Surjective π := by
+  apply Set.range_iff_surjective.mp _
   have h0 : primeCounting' 0 ∈ Set.range (π' ∘ succ) := by
     simp only [Set.mem_range, Function.comp_apply, succ_eq_add_one]
     use 0
     rfl
-  simpa [Set.singleton_union, Set.insert_eq_of_mem h0] using Nat.range_of_succ primeCounting'
+  simpa [Set.singleton_union, Set.insert_eq_of_mem h0,
+    Set.range_iff_surjective.mpr surjective_primeCounting'] using Nat.range_of_succ primeCounting'
 
 open Filter
 
 theorem tendsto_primeCounting' : Tendsto π' atTop atTop := by
   apply Filter.tendsto_atTop_atTop_of_monotone' monotone_primeCounting'
-  simp
+  simp [Set.range_iff_surjective.mpr surjective_primeCounting']
 
 theorem tensto_primeCounting : Tendsto π atTop atTop := by
   exact (Filter.tendsto_add_atTop_iff_nat 1).mpr tendsto_primeCounting'
