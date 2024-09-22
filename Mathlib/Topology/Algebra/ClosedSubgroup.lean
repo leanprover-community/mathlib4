@@ -9,7 +9,7 @@ import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.GroupTheory.Index
 
 /-!
-# Open subgroups of a topological groups
+# Closed subgroups of a topological groups
 
 This files builds the SemilatticeInf `ClosedSubgroup G` of closed subgroups in a
 topological group `G`, and its additive version `ClosedAddSubgroup`.
@@ -26,12 +26,12 @@ section
 
 universe u v
 
-/-- The type of open subgroups of a topological group. -/
+/-- The type of closed subgroups of a topological group. -/
 @[ext]
 structure ClosedSubgroup (G : Type u) [Group G] [TopologicalSpace G] extends Subgroup G where
   isClosed' : IsClosed carrier
 
-/-- The type of open subgroups of a topological group. -/
+/-- The type of closed subgroups of an additive topological group. -/
 @[ext]
 structure ClosedAddSubgroup (G : Type u) [AddGroup G] [TopologicalSpace G] extends
     AddSubgroup G where
@@ -49,7 +49,7 @@ variable {G} in
 @[to_additive]
 theorem toSubgroup_injective : Function.Injective
     (ClosedSubgroup.toSubgroup : ClosedSubgroup G → Subgroup G) :=
-  fun A B h => by
+  fun A B h ↦ by
   ext
   rw [h]
 
@@ -70,11 +70,11 @@ instance : Coe (ClosedSubgroup G) (Subgroup G) where
 
 @[to_additive]
 instance instInfClosedSubgroup : Inf (ClosedSubgroup G) :=
-  ⟨fun U V => ⟨U ⊓ V, U.isClosed'.inter V.isClosed'⟩⟩
+  ⟨fun U V ↦ ⟨U ⊓ V, U.isClosed'.inter V.isClosed'⟩⟩
 
 @[to_additive]
 instance instSemilatticeInfClosedSubgroup : SemilatticeInf (ClosedSubgroup G) :=
-  SetLike.coe_injective.semilatticeInf ((↑) : ClosedSubgroup G → Set G) fun _ _ => rfl
+  SetLike.coe_injective.semilatticeInf ((↑) : ClosedSubgroup G → Set G) fun _ _ ↦ rfl
 
 end ClosedSubgroup
 
@@ -88,7 +88,7 @@ lemma normalCore_isClosed (H : Subgroup G) (h : IsClosed (H : Set G)) :
     IsClosed (H.normalCore : Set G) := by
   have : H.normalCore = ⨅ (g : ConjAct G), g • H := by
     ext g
-    simp [Subgroup.normalCore, Subgroup.mem_iInf, Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
+    simp only [Subgroup.normalCore, Subgroup.mem_iInf, Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
     constructor
     <;> intro h x
     <;> specialize h (x⁻¹)
@@ -99,17 +99,16 @@ lemma normalCore_isClosed (H : Subgroup G) (h : IsClosed (H : Set G)) :
   apply isClosed_iInter
   intro g
   convert IsClosed.preimage (TopologicalGroup.continuous_conj (ConjAct.ofConjAct g⁻¹)) h
-  exact Set.ext (fun t => Set.mem_smul_set_iff_inv_smul_mem)
+  exact Set.ext (fun t ↦ Set.mem_smul_set_iff_inv_smul_mem)
 
 @[to_additive]
 lemma finiteindex_closedSubgroup_isOpen (H : Subgroup G) [H.FiniteIndex]
     (h : IsClosed (H : Set G)) : IsOpen (H : Set G) := by
   apply isClosed_compl_iff.mp
   convert isClosed_iUnion_of_finite <| fun (x : {x : (G ⧸ H) // x ≠ QuotientGroup.mk 1})
-    => IsClosed.smul h (Quotient.out' x.1)
+    ↦ IsClosed.smul h (Quotient.out' x.1)
   ext x
-  constructor
-  all_goals intro h
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · have : QuotientGroup.mk 1 ≠ QuotientGroup.mk (s := H) x := by
       apply QuotientGroup.eq.not.mpr
       simpa only [inv_one, one_mul, ne_eq]
