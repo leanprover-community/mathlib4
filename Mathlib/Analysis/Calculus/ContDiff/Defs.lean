@@ -733,6 +733,13 @@ theorem contDiffOn_iff_continuousOn_differentiableOn {n : ℕ∞} (hs : UniqueDi
       fun _m hm => h.differentiableOn_iteratedFDerivWithin (by exact_mod_cast hm) hs⟩,
     fun h => contDiffOn_of_continuousOn_differentiableOn h.1 h.2⟩
 
+theorem contDiffOn_nat_iff_continuousOn_differentiableOn {n : ℕ} (hs : UniqueDiffOn 𝕜 s) :
+    ContDiffOn 𝕜 n f s ↔
+      (∀ m : ℕ, m ≤ n → ContinuousOn (fun x => iteratedFDerivWithin 𝕜 m f s x) s) ∧
+        ∀ m : ℕ, m < n → DifferentiableOn 𝕜 (fun x => iteratedFDerivWithin 𝕜 m f s x) s := by
+  rw [show n = ((n : ℕ∞) : WithTop ℕ∞) from rfl, contDiffOn_iff_continuousOn_differentiableOn hs]
+  simp
+
 theorem contDiffOn_succ_of_fderivWithin (hf : DifferentiableOn 𝕜 f s)
     (h' : n = ω → AnalyticWithinOn 𝕜 f s)
     (h : ContDiffOn 𝕜 n (fun y => fderivWithin 𝕜 f s y) s) : ContDiffOn 𝕜 (n + 1) f s := by
@@ -1025,6 +1032,13 @@ theorem contDiff_iff_continuous_differentiable {n : ℕ∞} :
         ∀ m : ℕ, (m : ℕ∞) < n → Differentiable 𝕜 fun x => iteratedFDeriv 𝕜 m f x := by
   simp [contDiffOn_univ.symm, continuous_iff_continuousOn_univ, differentiableOn_univ.symm,
     iteratedFDerivWithin_univ, contDiffOn_iff_continuousOn_differentiableOn uniqueDiffOn_univ]
+
+theorem contDiff_nat_iff_continuous_differentiable {n : ℕ} :
+    ContDiff 𝕜 n f ↔
+      (∀ m : ℕ, m ≤ n → Continuous fun x => iteratedFDeriv 𝕜 m f x) ∧
+        ∀ m : ℕ, m < n → Differentiable 𝕜 fun x => iteratedFDeriv 𝕜 m f x := by
+  rw [show n = ((n : ℕ∞) : WithTop ℕ∞) from rfl, contDiff_iff_continuous_differentiable]
+  simp
 
 /-- If `f` is `C^n` then its `m`-times iterated derivative is continuous for `m ≤ n`. -/
 theorem ContDiff.continuous_iteratedFDeriv {m : ℕ} (hm : (m : ℕ∞) ≤ n) (hf : ContDiff 𝕜 n f) :

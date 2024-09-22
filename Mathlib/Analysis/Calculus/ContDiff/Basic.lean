@@ -1555,27 +1555,13 @@ open NormedRing ContinuousLinearMap Ring
 /-- In a complete normed algebra, the operation of inversion is `C^n`, for all `n`, at each
 invertible element.  The proof is by induction, bootstrapping using an identity expressing the
 derivative of inversion as a bilinear map of inversion itself. -/
-theorem contDiffAt_ring_inverse [CompleteSpace R] (x : Rˣ) :
+theorem contDiffAt_ring_inverse [HasSummableGeomSeries R] (x : Rˣ) :
     ContDiffAt 𝕜 n Ring.inverse (x : R) := by
-  induction' n using ENat.nat_induction with n IH Itop
-  · intro m hm
-    refine ⟨{ y : R | IsUnit y }, ?_, ?_⟩
-    · simpa [nhdsWithin_univ] using x.nhds
-    · use ftaylorSeriesWithin 𝕜 inverse univ
-      rw [le_antisymm hm bot_le, hasFTaylorSeriesUpToOn_zero_iff]
-      constructor
-      · rintro _ ⟨x', rfl⟩
-        exact (inverse_continuousAt x').continuousWithinAt
-      · simp [ftaylorSeriesWithin]
-  · rw [contDiffAt_succ_iff_hasFDerivAt]
-    refine ⟨fun x : R => -mulLeftRight 𝕜 R (inverse x) (inverse x), ?_, ?_⟩
-    · refine ⟨{ y : R | IsUnit y }, x.nhds, ?_⟩
-      rintro _ ⟨y, rfl⟩
-      simp_rw [inverse_unit]
-      exact hasFDerivAt_ring_inverse y
-    · convert (mulLeftRight_isBoundedBilinear 𝕜 R).contDiff.neg.comp_contDiffAt (x : R)
-        (IH.prod IH)
-  · exact contDiffAt_top.mpr Itop
+  have Z := analyticOn_inverse
+
+
+#exit
+
 
 variable {𝕜' : Type*} [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [CompleteSpace 𝕜']
 

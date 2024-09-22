@@ -709,6 +709,11 @@ lemma analyticAt_inverse {𝕜 : Type*} [NontriviallyNormedField 𝕜]
       exact analyticAt_inverse_one_sub 𝕜 A
     · exact analyticAt_const.sub (analyticAt_const.mul analyticAt_id)
 
+lemma analyticOn_inverse {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A] :
+    AnalyticOn 𝕜 Ring.inverse {x : A | IsUnit x} :=
+  fun _ hx ↦ analyticAt_inverse (IsUnit.unit hx)
+
 lemma hasFPowerSeriesOnBall_inv_one_sub
     (𝕜 𝕝 : Type*) [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝] :
     HasFPowerSeriesOnBall (fun x : 𝕝 ↦ (1 - x)⁻¹) (formalMultilinearSeries_geometric 𝕜 𝕝) 0 1 := by

@@ -29,7 +29,7 @@ variable {n : WithTop ℕ∞} {𝕂 : Type*} [RCLike 𝕂] {E' : Type*} [NormedA
 
 /-- If a function has a Taylor series at order at least 1, then at points in the interior of the
     domain of definition, the term of order 1 of this series is a strict derivative of `f`. -/
-theorem HasFTaylorSeriesUpToOn.hasStrictFDerivAt {n : ℕ∞} {s : Set E'} {f : E' → F'} {x : E'}
+theorem HasFTaylorSeriesUpToOn.hasStrictFDerivAt {s : Set E'} {f : E' → F'} {x : E'}
     {p : E' → FormalMultilinearSeries 𝕂 E' F'} (hf : HasFTaylorSeriesUpToOn n f p s) (hn : 1 ≤ n)
     (hs : s ∈ 𝓝 x) : HasStrictFDerivAt f ((continuousMultilinearCurryFin1 𝕂 E' F') (p x 1)) x :=
   hasStrictFDerivAt_of_hasFDerivAt_of_continuousAt (hf.eventually_hasFDerivAt hn hs) <|

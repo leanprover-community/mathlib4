@@ -160,6 +160,15 @@ theorem contDiffOn_iff_continuousOn_differentiableOn_deriv {n : ℕ∞} (hs : Un
   simp only [contDiffOn_iff_continuousOn_differentiableOn hs, iteratedFDerivWithin_eq_equiv_comp,
     LinearIsometryEquiv.comp_continuousOn_iff, LinearIsometryEquiv.comp_differentiableOn_iff]
 
+/-- The property of being `C^n`, initially defined in terms of the Fréchet derivative, can be
+reformulated in terms of the one-dimensional derivative on sets with unique derivatives. -/
+theorem contDiffOn_nat_iff_continuousOn_differentiableOn_deriv {n : ℕ} (hs : UniqueDiffOn 𝕜 s) :
+    ContDiffOn 𝕜 n f s ↔ (∀ m : ℕ, m ≤ n → ContinuousOn (iteratedDerivWithin m f s) s) ∧
+      ∀ m : ℕ, m < n → DifferentiableOn 𝕜 (iteratedDerivWithin m f s) s := by
+  rw [show n = ((n : ℕ∞) : WithTop ℕ∞) from rfl,
+    contDiffOn_iff_continuousOn_differentiableOn_deriv hs]
+  simp
+
 /-- The `n+1`-th iterated derivative within a set with unique derivatives can be obtained by
 differentiating the `n`-th iterated derivative. -/
 theorem iteratedDerivWithin_succ {x : 𝕜} (hxs : UniqueDiffWithinAt 𝕜 s x) :
@@ -230,6 +239,14 @@ theorem contDiff_iff_iteratedDeriv {n : ℕ∞} : ContDiff 𝕜 n f ↔
       ∀ m : ℕ, (m : ℕ∞) < n → Differentiable 𝕜 (iteratedDeriv m f) := by
   simp only [contDiff_iff_continuous_differentiable, iteratedFDeriv_eq_equiv_comp,
     LinearIsometryEquiv.comp_continuous_iff, LinearIsometryEquiv.comp_differentiable_iff]
+
+/-- The property of being `C^n`, initially defined in terms of the Fréchet derivative, can be
+reformulated in terms of the one-dimensional derivative. -/
+theorem contDiff_nat_iff_iteratedDeriv {n : ℕ} : ContDiff 𝕜 n f ↔
+    (∀ m : ℕ, m ≤ n → Continuous (iteratedDeriv m f)) ∧
+      ∀ m : ℕ, m < n → Differentiable 𝕜 (iteratedDeriv m f) := by
+  rw [show n = ((n : ℕ∞) : WithTop ℕ∞) from rfl, contDiff_iff_iteratedDeriv]
+  simp
 
 /-- To check that a function is `n` times continuously differentiable, it suffices to check that its
 first `n` derivatives are differentiable. This is slightly too strong as the condition we
