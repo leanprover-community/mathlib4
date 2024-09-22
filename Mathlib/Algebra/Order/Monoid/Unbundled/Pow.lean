@@ -47,6 +47,8 @@ theorem one_le_pow_of_one_le' {a : M} (H : 1 ≤ a) : ∀ n : ℕ, 1 ≤ a ^ n
 theorem Left.one_le_pow_of_le (hx : 1 ≤ x) {n : ℕ} : 1 ≤ x ^ n :=
   one_le_pow_of_one_le' hx n
 
+@[deprecated (since := "2024-09-21")] alias Left.pow_nonneg := Left.nsmul_nonneg
+
 @[to_additive nsmul_nonpos]
 theorem pow_le_one' {a : M} (H : a ≤ 1) (n : ℕ) : a ^ n ≤ 1 :=
   one_le_pow_of_one_le' (M := Mᵒᵈ) H n
@@ -54,6 +56,8 @@ theorem pow_le_one' {a : M} (H : a ≤ 1) (n : ℕ) : a ^ n ≤ 1 :=
 @[to_additive Left.nsmul_nonpos]
 theorem Left.pow_le_one_of_le (hx : x ≤ 1) {n : ℕ} : x ^ n ≤ 1 :=
   pow_le_one' hx n
+
+@[deprecated (since := "2024-09-21")] alias Left.pow_nonpos := Left.nsmul_nonpos
 
 @[to_additive nsmul_left_monotone]
 theorem pow_right_monotone {a : M} (ha : 1 ≤ a) : Monotone fun n : ℕ ↦ a ^ n :=
@@ -80,6 +84,8 @@ theorem pow_lt_one' {a : M} (ha : a < 1) {k : ℕ} (hk : k ≠ 0) : a ^ k < 1 :=
 @[to_additive Left.nsmul_neg]
 theorem Left.pow_lt_one_of_lt {a : M} {n : ℕ} (hn : 0 < n) (h : a < 1) : a ^ n < 1 :=
   pow_lt_one' h hn.ne'
+
+@[deprecated (since := "2024-09-21")] alias Left.pow_neg := Left.nsmul_neg
 
 end Left
 
@@ -108,15 +114,21 @@ theorem Right.one_le_pow_of_le (hx : 1 ≤ x) : ∀ {n : ℕ}, 1 ≤ x ^ n
     rw [pow_succ]
     exact Right.one_le_mul (Right.one_le_pow_of_le hx) hx
 
+@[deprecated (since := "2024-09-21")] alias Right.pow_nonneg := Right.nsmul_nonneg
+
 @[to_additive Right.nsmul_nonpos]
 theorem Right.pow_le_one_of_le (hx : x ≤ 1) {n : ℕ} : x ^ n ≤ 1 :=
   Right.one_le_pow_of_le (M := Mᵒᵈ) hx
+
+@[deprecated (since := "2024-09-21")] alias Right.pow_nonpos := Right.nsmul_nonpos
 
 @[to_additive Right.nsmul_neg]
 theorem Right.pow_lt_one_of_lt {n : ℕ} {x : M} (hn : 0 < n) (h : x < 1) : x ^ n < 1 := by
   rcases Nat.exists_eq_succ_of_ne_zero hn.ne' with ⟨k, rfl⟩
   rw [pow_succ]
   exact mul_lt_one_of_le_of_lt (pow_le_one_of_le h.le) h
+
+@[deprecated (since := "2024-09-21")] alias Right.pow_neg := Right.nsmul_neg
 
 end Right
 
