@@ -1,10 +1,71 @@
 import Mathlib.CategoryTheory.Triangulated.Triangulated
 import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Triangulated.Basic
+import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Filtered.Final
 
 universe u v
 
 namespace CategoryTheory
+
+section LimitOnZ
+
+open Limits
+
+variable {C : Type u} [CategoryTheory.Category.{v, u} C] (F F' : ℤ ⥤ C)
+
+lemma HasLimit_of_transition_iso {a : ℤ} (G : Set.Iic a ⥤ C) (hG : ∀ (b c : Set.Iic a)
+    (u : b ⟶ c), IsIso (G.map u)) : HasLimit G := by
+  refine HasLimit.mk {cone := ?_, isLimit := ?_}
+  · refine {pt := G.obj ⟨a, by simp only [Set.mem_Iic, le_refl]⟩, π := ?_}
+    refine {app := ?_, naturality := ?_}
+    · intro b
+      simp only [Functor.const_obj_obj]
+      have := hG b ⟨a, by simp only [Set.mem_Iic, le_refl]⟩ (homOfLE (Set.mem_Iic.mp b.2))
+      exact inv (G.map (homOfLE (Set.mem_Iic.mp b.2)))
+    · intro b c u
+      simp only [Functor.const_obj_obj, Functor.const_obj_map, id_eq, Category.id_comp,
+        IsIso.eq_inv_comp, IsIso.comp_inv_eq]
+      rw [← Functor.map_comp]
+      congr 1
+  · exact {lift := fun s ↦ s.π.app ⟨a, by simp only [Set.mem_Iic, le_refl]⟩,
+           fac := by simp, uniq := by simp}
+
+abbrev Inclusion_Iic (a : ℤ) : Set.Iic a ⥤ ℤ :=
+  Monotone.functor (f := fun b ↦ b.1) (fun _ _ h ↦ h)
+
+lemma Initial_inclusion_Iic (a : ℤ) : Functor.Initial (Inclusion_Iic a) := by
+  have : (Inclusion_Iic a).Full :=
+      {map_surjective := fun u ↦ by existsi homOfLE (Subtype.mk_le_mk.mpr (leOfHom u)); rfl}
+  apply Functor.initial_of_exists_of_isCofiltered_of_fullyFaithful
+  intro d
+  existsi ⟨min a d, by simp only [Set.mem_Iic, min_le_iff, le_refl, true_or]⟩
+  exact Nonempty.intro (homOfLE (min_le_right a d))
+
+lemma HasLimit_inclusion_of_transition_eventually_iso {a : ℤ}
+    (hF : ∀ (b c : Set.Iic a) (u : b.1 ⟶ c.1), IsIso (F.map u)) :
+    HasLimit (Inclusion_Iic a ⋙ F) := by
+  apply HasLimit_of_transition_iso
+  intro b c u
+  simp only [Functor.comp_obj, Functor.comp_map]
+  exact hF b c u
+
+lemma HasLimit_of_transition_eventually_iso {a : ℤ} (hF : ∀ (b c : Set.Iic a) (u : b.1 ⟶ c.1),
+    IsIso (F.map u)) : HasLimit F := by
+  have : (Inclusion_Iic a).Initial := Initial_inclusion_Iic a
+  have : HasLimit (Inclusion_Iic a ⋙ F) := HasLimit_inclusion_of_transition_eventually_iso F hF
+  exact Functor.Initial.hasLimit_of_comp (Inclusion_Iic a)
+
+noncomputable def Hom_of_almost_NatTrans [HasLimit F] [HasLimit F']
+    (α : (n : ℤ) → (F.obj n ⟶ F'.obj n)) {a : ℤ}
+    (nat : ∀ (b c : Set.Iic a) (u : b.1 ⟶ c.1), F.map u ≫ α c.1 = α b.1 ≫ F'.map u) :
+    Limits.limit F ⟶ Limits.limit F' := by
+  have := Initial_inclusion_Iic a
+  refine (Functor.Initial.limitIso (Inclusion_Iic a) F).inv ≫ ?_ ≫
+    (Functor.Initial.limitIso (Inclusion_Iic a) F').hom
+  exact limMap {app := fun b ↦ α b.1, naturality := nat}
+
+end LimitOnZ
 
 section Shift
 

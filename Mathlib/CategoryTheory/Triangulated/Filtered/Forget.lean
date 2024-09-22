@@ -75,7 +75,8 @@ lemma HalfForgetMapComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsLE Y 0] :
   · simp only [HalfForgetObj, hX, HalfForgetMap, ↓reduceDIte, hY, dite_eq_ite, zero_comp]
 
 lemma HalfForgetMapComp' {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (hZ : ¬ (IsLE Z 0)) :
-    HalfForgetMap (f ≫ g) = HalfForgetMap f ≫ HalfForgetMap g := by sorry
+    HalfForgetMap (f ≫ g) = HalfForgetMap f ≫ HalfForgetMap g := by
+  simp only [HalfForgetMap, hZ, ↓reduceDIte, dite_eq_ite, ite_self, comp_zero]
 
 /- We construct `Forget X` as the colimit of `HalfForget X⟪n⟫` as `n` varies over `ℤ` (seen
 as a poset category), with the transition maps given by `power_of_alpha`.-/
@@ -127,8 +128,7 @@ noncomputable def ForgetInductiveSystem (X : C) : ℤ ⥤ hP.Core' where
     · have : ¬ IsLE ((ForgetInductiveSystem_aux X).obj c) 0 := by
         dsimp [ForgetInductiveSystem_aux]
         intro habs
-        have := isLE_shift ((@shiftFunctor C _ _ _ Shift₂ c).obj X) 0 (-c) (-c) (by rw [add_zero])
-        have : IsLE X (- c) := isLE_of_iso (@shiftShiftNeg C _ _ _ Shift₂ X c) (-c)
+        have : IsLE X (-c) := isLE_of_shift X (-c) c 0 (by linarith)
         have : IsLE X (-b ) := isLE_of_LE X (- c) (- b) (by have := leOfHom g; linarith)
         exact h this
       exact HalfForgetMapComp' ((ForgetInductiveSystem_aux X).map f)
