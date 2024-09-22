@@ -96,7 +96,7 @@ theorem disj_sum_strictMono_right (s : Finset α) :
     StrictMono (s.disjSum : Finset β → Finset (α ⊕ β)) := fun _ _ =>
   disjSum_ssubset_disjSum_of_subset_of_ssubset Subset.rfl
 
-lemma disjSum_inj {α β : Type*} {s₁ s₂ : Finset α} {t₁ t₂ : Finset β} :
+@[simp] lemma disjSum_inj {α β : Type*} {s₁ s₂ : Finset α} {t₁ t₂ : Finset β} :
     s₁.disjSum t₁ = s₂.disjSum t₂ ↔ s₁ = s₂ ∧ t₁ = t₂ := by
   simp [Finset.ext_iff]
 
@@ -149,9 +149,9 @@ lemma card_toLeft_le {s : Finset (α ⊕ β)} : s.toLeft.card ≤ s.card :=
 lemma card_toRight_le {s : Finset (α ⊕ β)} : s.toRight.card ≤ s.card :=
   (Nat.le_add_left _ _).trans_eq card_toLeft_add_card_toRight
 
-@[simp] lemma disjSum_toLeft : (s.disjSum t).toLeft = s := by ext x; simp
+@[simp] lemma toLeft_disjSum : (s.disjSum t).toLeft = s := by ext x; simp
 
-@[simp] lemma disjSum_toRight : (s.disjSum t).toRight = t := by ext x; simp
+@[simp] lemma toRight_disjSum : (s.disjSum t).toRight = t := by ext x; simp
 
 lemma disjSum_eq_iff {u : Finset (α ⊕ β)} : s.disjSum t = u ↔ s = u.toLeft ∧ t = u.toRight :=
   ⟨fun h => by simp [← h], fun h => by simp [h, toLeft_disjSum_toRight]⟩
@@ -161,18 +161,18 @@ lemma eq_disjSum_iff {u : Finset (α ⊕ β)} : u = s.disjSum t ↔ u.toLeft = s
 
 variable [DecidableEq α] [DecidableEq β] {s t : Finset (α ⊕ β)}
 
-@[simp] lemma insert_inl_toLeft : (insert (inl a) s).toLeft = insert a s.toLeft := by ext y; simp
-@[simp] lemma insert_inr_toLeft : (insert (inr b) s).toLeft = s.toLeft := by ext y; simp
-@[simp] lemma insert_inl_toRight : (insert (inl a) s).toRight = s.toRight := by ext y; simp
-@[simp] lemma insert_inr_toRight : (insert (inr b) s).toRight = insert b s.toRight := by ext y; simp
+@[simp] lemma toLeft_insert_inl : (insert (inl a) s).toLeft = insert a s.toLeft := by ext y; simp
+@[simp] lemma toLeft_insert_inr : (insert (inr b) s).toLeft = s.toLeft := by ext y; simp
+@[simp] lemma toRight_insert_inl : (insert (inl a) s).toRight = s.toRight := by ext y; simp
+@[simp] lemma toRight_insert_inr : (insert (inr b) s).toRight = insert b s.toRight := by ext y; simp
 
-lemma inter_toLeft : (s ∩ t).toLeft = s.toLeft ∩ t.toLeft := by ext x; simp
-lemma inter_toRight : (s ∩ t).toRight = s.toRight ∩ t.toRight := by ext x; simp
+lemma toLeft_inter : (s ∩ t).toLeft = s.toLeft ∩ t.toLeft := by ext x; simp
+lemma toRight_inter : (s ∩ t).toRight = s.toRight ∩ t.toRight := by ext x; simp
 
-lemma union_toLeft : (s ∪ t).toLeft = s.toLeft ∪ t.toLeft := by ext x; simp
-lemma union_toRight : (s ∪ t).toRight = s.toRight ∪ t.toRight := by ext x; simp
+lemma toLeft_union : (s ∪ t).toLeft = s.toLeft ∪ t.toLeft := by ext x; simp
+lemma toRight_union : (s ∪ t).toRight = s.toRight ∪ t.toRight := by ext x; simp
 
-lemma sdiff_toLeft : (s \ t).toLeft = s.toLeft \ t.toLeft := by ext x; simp
-lemma sdiff_toRight : (s \ t).toRight = s.toRight \ t.toRight := by ext x; simp
+lemma toLeft_sdiff : (s \ t).toLeft = s.toLeft \ t.toLeft := by ext x; simp
+lemma toRight_sdiff : (s \ t).toRight = s.toRight \ t.toRight := by ext x; simp
 
 end Finset
