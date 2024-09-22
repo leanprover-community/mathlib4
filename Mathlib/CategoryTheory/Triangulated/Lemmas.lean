@@ -56,14 +56,51 @@ lemma HasLimit_of_transition_eventually_iso {a : ℤ} (hF : ∀ (b c : Set.Iic a
   have : HasLimit (Inclusion_Iic a ⋙ F) := HasLimit_inclusion_of_transition_eventually_iso F hF
   exact Functor.Initial.hasLimit_of_comp (Inclusion_Iic a)
 
-noncomputable def Hom_of_almost_NatTrans [HasLimit F] [HasLimit F']
-    (α : (n : ℤ) → (F.obj n ⟶ F'.obj n)) {a : ℤ}
+noncomputable def Hom_of_almost_NatTrans_aux [HasLimit F] [HasLimit F']
+    (α : (n : ℤ) → (F.obj n ⟶ F'.obj n)) (a : ℤ)
     (nat : ∀ (b c : Set.Iic a) (u : b.1 ⟶ c.1), F.map u ≫ α c.1 = α b.1 ≫ F'.map u) :
     Limits.limit F ⟶ Limits.limit F' := by
   have := Initial_inclusion_Iic a
   refine (Functor.Initial.limitIso (Inclusion_Iic a) F).inv ≫ ?_ ≫
     (Functor.Initial.limitIso (Inclusion_Iic a) F').hom
   exact limMap {app := fun b ↦ α b.1, naturality := nat}
+
+lemma Hom_of_almost_NatTrans_indep [HasLimit F] [HasLimit F']
+    (α : (n : ℤ) → (F.obj n ⟶ F'.obj n)) {a₁ a₂ : ℤ} (h : a₁ ≤ a₂)
+    (nat : ∀ (b c : Set.Iic a₂) (u : b.1 ⟶ c.1), F.map u ≫ α c.1 = α b.1 ≫ F'.map u) :
+    Hom_of_almost_NatTrans_aux F F' α a₁
+    (fun b c u ↦ nat ⟨b.1, le_trans (Set.mem_Iic.mp b.2) h⟩
+                 ⟨c.1, le_trans (Set.mem_Iic.mp c.2) h⟩ u) =
+    Hom_of_almost_NatTrans_aux F F' α a₂ nat := by
+  have := Initial_inclusion_Iic a₁
+  have := Initial_inclusion_Iic a₂
+  set e₂ := Functor.Initial.limitIso (Inclusion_Iic a₂) F
+  set e'₂ := Functor.Initial.limitIso (Inclusion_Iic a₂) F'
+  set e₁ := Functor.Initial.limitIso (Inclusion_Iic a₁) F
+  set e'₁ := Functor.Initial.limitIso (Inclusion_Iic a₁) F'
+  set f₂ : limit (Inclusion_Iic a₂ ⋙ F) ⟶ limit (Inclusion_Iic a₂ ⋙ F') :=
+    limMap {app := fun b ↦ α b.1, naturality := nat}
+  set f₁ : limit (Inclusion_Iic a₁ ⋙ F) ⟶ limit (Inclusion_Iic a₁ ⋙ F') :=
+    limMap {app := fun b ↦ α b.1, naturality := fun b c u ↦ nat ⟨b.1, le_trans (Set.mem_Iic.mp b.2) h⟩
+                 ⟨c.1, le_trans (Set.mem_Iic.mp c.2) h⟩ u}
+  change e₁.inv ≫ f₁ ≫ e'₁.hom = e₂.inv ≫ f₂ ≫ e'₂.hom
+  set I : Set.Iic a₁ ⥤ Set.Iic a₂ := Monotone.functor
+    (f := fun b ↦ ⟨b.1, le_trans (Set.mem_Iic.mp b.2) h⟩) (fun _ _ h ↦ h)
+  sorry
+
+
+
+/-
+lemma Hom_of_almost_NatTrans_indep [HasLimit F] [HasLimit F']
+    (α : (n : ℤ) → (F.obj n ⟶ F'.obj n)) {a₁ a₂ : ℤ}
+    (nat : ∀ (b c : Set.Iic (max a₁ a₂)) (u : b.1 ⟶ c.1), F.map u ≫ α c.1 = α b.1 ≫ F'.map u) :
+    Hom_of_almost_NatTrans_aux F F' α a₁
+    (fun b c u ↦ by refine nat ⟨b.1, le_trans (Set.mem_Iic.mp b.2) (le_max_left a₁ a₂)⟩
+                      ⟨c.1, le_trans (Set.mem_Iic.mp c.2) (le_max_left a₁ a₂)⟩ u) =
+    Hom_of_almost_NatTrans_aux F F' α a₂
+    (fun b c u ↦ by refine nat ⟨b.1, le_trans (Set.mem_Iic.mp b.2) (le_max_right a₁ a₂)⟩
+                      ⟨c.1, le_trans (Set.mem_Iic.mp c.2) (le_max_right a₁ a₂)⟩ u) := by sorry
+-/
 
 end LimitOnZ
 
