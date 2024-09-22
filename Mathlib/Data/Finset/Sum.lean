@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
+Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Data.Multiset.Sum
 import Mathlib.Data.Finset.Card
@@ -15,6 +15,8 @@ the `Finset.sum` operation which computes the additive sum.
 ## Main declarations
 
 * `Finset.disjSum`: `s.disjSum t` is the disjoint sum of `s` and `t`.
+* `Finset.toLeft`: Given a finset of elements `α ⊕ β`, extracts all the elements of the form `α`.
+* `Finset.toRight`: Given a finset of elements `α ⊕ β`, extracts all the elements of the form `β`.
 -/
 
 
@@ -93,5 +95,78 @@ theorem disjSum_strictMono_left (t : Finset β) : StrictMono fun s : Finset α =
 theorem disj_sum_strictMono_right (s : Finset α) :
     StrictMono (s.disjSum : Finset β → Finset (α ⊕ β)) := fun _ _ =>
   disjSum_ssubset_disjSum_of_subset_of_ssubset Subset.rfl
+
+lemma disjSum_inj {α β : Type*} {s₁ s₂ : Finset α} {t₁ t₂ : Finset β} :
+    s₁.disjSum t₁ = s₂.disjSum t₂ ↔ s₁ = s₂ ∧ t₁ = t₂ := by
+  simp [Finset.ext_iff]
+
+lemma Injective2_disjSum {α β : Type*} : Function.Injective2 (@disjSum α β) :=
+  fun _ _ _ _ => by simp [Finset.ext_iff]
+
+/-- Given a finset of elements `α ⊕ β`, extract all the elements of the form `α`. -/
+def toLeft (s : Finset (α ⊕ β)) : Finset α :=
+  s.disjiUnion (Sum.elim singleton (fun _ => ∅)) <| by
+    simp [Set.PairwiseDisjoint, Set.Pairwise, Function.onFun, eq_comm]
+
+/-- Given a finset of elements `α ⊕ β`, extract all the elements of the form `β`. -/
+def toRight (s : Finset (α ⊕ β)) : Finset β :=
+  s.disjiUnion (Sum.elim (fun _ => ∅) singleton) <| by
+    simp [Set.PairwiseDisjoint, Set.Pairwise, Function.onFun, eq_comm]
+
+@[simp] lemma mem_toLeft {s : Finset (α ⊕ β)} {x : α} : x ∈ s.toLeft ↔ inl x ∈ s := by
+  simp [toLeft]
+
+@[simp] lemma mem_toRight {s : Finset (α ⊕ β)} {x : β} : x ∈ s.toRight ↔ inr x ∈ s := by
+  simp [toRight]
+
+@[gcongr]
+lemma toLeft_subset_toLeft {s t : Finset (α ⊕ β)} : s ⊆ t → s.toLeft ⊆ t.toLeft :=
+  fun h _ => by simpa only [mem_toLeft] using @h _
+
+@[gcongr]
+lemma toRight_subset_toRight {s t : Finset (α ⊕ β)} : s ⊆ t → s.toRight ⊆ t.toRight :=
+  fun h _ => by simpa only [mem_toRight] using @h _
+
+lemma toLeft_monotone : Monotone (@toLeft α β) := fun _ _ => toLeft_subset_toLeft
+lemma toRight_monotone : Monotone (@toRight α β) := fun _ _ => toRight_subset_toRight
+
+lemma toLeft_disjSum_toRight {s : Finset (α ⊕ β)} : s.toLeft.disjSum s.toRight = s := by
+  ext (x | x) <;> simp
+
+lemma card_toLeft_add_card_toRight {s : Finset (α ⊕ β)} :
+    s.toLeft.card + s.toRight.card = s.card := by
+  rw [← card_disjSum, toLeft_disjSum_toRight]
+
+lemma card_toLeft_le {s : Finset (α ⊕ β)} : s.toLeft.card ≤ s.card :=
+  (Nat.le_add_right _ _).trans_eq card_toLeft_add_card_toRight
+
+lemma card_toRight_le {s : Finset (α ⊕ β)} : s.toRight.card ≤ s.card :=
+  (Nat.le_add_left _ _).trans_eq card_toLeft_add_card_toRight
+
+@[simp] lemma disjSum_toLeft : (s.disjSum t).toLeft = s := by ext x; simp
+
+@[simp] lemma disjSum_toRight : (s.disjSum t).toRight = t := by ext x; simp
+
+lemma disjSum_eq_iff {u : Finset (α ⊕ β)} : s.disjSum t = u ↔ s = u.toLeft ∧ t = u.toRight :=
+  ⟨fun h => by simp [← h], fun h => by simp [h, toLeft_disjSum_toRight]⟩
+
+lemma eq_disjSum_iff {u : Finset (α ⊕ β)} : u = s.disjSum t ↔ u.toLeft = s ∧ u.toRight = t :=
+  ⟨fun h => by simp [h], fun h => by simp [← h, toLeft_disjSum_toRight]⟩
+
+variable [DecidableEq α] [DecidableEq β] {s t : Finset (α ⊕ β)}
+
+@[simp] lemma insert_inl_toLeft : (insert (inl a) s).toLeft = insert a s.toLeft := by ext y; simp
+@[simp] lemma insert_inr_toLeft : (insert (inr b) s).toLeft = s.toLeft := by ext y; simp
+@[simp] lemma insert_inl_toRight : (insert (inl a) s).toRight = s.toRight := by ext y; simp
+@[simp] lemma insert_inr_toRight : (insert (inr b) s).toRight = insert b s.toRight := by ext y; simp
+
+lemma inter_toLeft : (s ∩ t).toLeft = s.toLeft ∩ t.toLeft := by ext x; simp
+lemma inter_toRight : (s ∩ t).toRight = s.toRight ∩ t.toRight := by ext x; simp
+
+lemma union_toLeft : (s ∪ t).toLeft = s.toLeft ∪ t.toLeft := by ext x; simp
+lemma union_toRight : (s ∪ t).toRight = s.toRight ∪ t.toRight := by ext x; simp
+
+lemma sdiff_toLeft : (s \ t).toLeft = s.toLeft \ t.toLeft := by ext x; simp
+lemma sdiff_toRight : (s \ t).toRight = s.toRight \ t.toRight := by ext x; simp
 
 end Finset
