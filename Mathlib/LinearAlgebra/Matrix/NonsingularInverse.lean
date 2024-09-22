@@ -483,30 +483,6 @@ theorem inv_eq_left_inv (h : B * A = 1) : A⁻¹ = B :=
 theorem inv_eq_right_inv (h : A * B = 1) : A⁻¹ = B :=
   inv_eq_left_inv (mul_eq_one_comm.2 h)
 
-section Woodbury
-
-variable [Fintype m] [DecidableEq m]
-variable (A: Matrix n n α) (U : Matrix n m α) (C : Matrix m m α) (V : Matrix m n α)
-variable [Invertible A] [Invertible C] [Invertible (⅟C + V * ⅟A* U)]
-
-/-- If matrices `A`, `C`, and `C⁻¹ + V*A⁻¹*U` are invertible, then so is `A + U * C * V`-/
-def add_mul_mul_inv: Invertible (A + U*C*V) := by
-  apply Matrix.invertibleOfRightInverse _ _ (Matrix.add_mul_mul_invOf_mul_eq_one A U C V)
-
-/-- **Woodbury Identity** -/
-theorem add_mul_mul_invOf_eq_sub [Invertible (A + U*C*V)]:
-    ⅟(A + U*C*V) = ⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A := by
-      rw [@invOf_eq_nonsing_inv]
-      apply inv_eq_right_inv
-      apply Matrix.add_mul_mul_invOf_mul_eq_one
-
-theorem add_mul_mul_inv_eq_sub [Invertible (A + U*C*V)]:
-    (A + U*C*V)⁻¹ = A⁻¹ - A⁻¹*U*(C⁻¹ + V*A⁻¹*U)⁻¹*V*A⁻¹ := by
-      simp only [← invOf_eq_nonsing_inv]
-      apply add_mul_mul_invOf_eq_sub
-
-end Woodbury
-
 section InvEqInv
 
 variable {C : Matrix n n α}
@@ -616,6 +592,20 @@ theorem inv_diagonal (v : n → α) : (diagonal v)⁻¹ = diagonal (Ring.inverse
     rw [Ring.inverse_non_unit _ h, Pi.zero_def, diagonal_zero, Ring.inverse_non_unit _ this]
 
 end Diagonal
+
+section Woodbury
+
+variable [Fintype m] [DecidableEq m]
+variable (A : Matrix n n α) (U : Matrix n m α) (C : Matrix m m α) (V : Matrix m n α)
+variable [Invertible A] [Invertible C] [Invertible (⅟C + V * ⅟A* U)]
+
+/-- The **Woodbury Identity** (`⁻¹` version). -/
+theorem add_mul_mul_inv_eq_sub [Invertible (A + U*C*V)]:
+    (A + U*C*V)⁻¹ = A⁻¹ - A⁻¹*U*(C⁻¹ + V*A⁻¹*U)⁻¹*V*A⁻¹ := by
+  simp only [← invOf_eq_nonsing_inv]
+  apply invOf_add_mul_mul
+
+end Woodbury
 
 @[simp]
 theorem inv_inv_inv (A : Matrix n n α) : A⁻¹⁻¹⁻¹ = A⁻¹ := by

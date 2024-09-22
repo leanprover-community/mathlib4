@@ -104,27 +104,64 @@ end CommSemiring
 
 section Ring
 
-variable [Ring α] (A : Matrix n n α)
+section Woodbury
 
-lemma add_mul_mul_invOf_mul_eq_one [Fintype m] [DecidableEq m]
-    (U : Matrix n m α) (C : Matrix m m α) (V : Matrix m n α)
-    [Invertible A] [Invertible C] [Invertible (⅟C + V * ⅟A* U)]:
+variable [Fintype m] [DecidableEq m] [Ring α]
+    (A : Matrix n n α) (U : Matrix n m α) (C : Matrix m m α) (V : Matrix m n α)
+    [Invertible A] [Invertible C] [Invertible (⅟C + V * ⅟A* U)]
+
+lemma add_mul_mul_invOf_mul_eq_one :
     (A + U*C*V)*(⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A) = 1 := by
   calc
-      (A + U*C*V)*(⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A)
-      _ = A*⅟A - A*⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A + U*C*V*⅟A - U*C*V*⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A := by
-        simp_rw [add_sub_assoc, Matrix.add_mul, Matrix.mul_sub, Matrix.mul_assoc]
-      _ = (1 + U*C*V*⅟A) - (U*⅟(⅟C + V*⅟A*U)*V*⅟A + U*C*V*⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A) := by
-        rw [mul_invOf_self, Matrix.one_mul]
-        abel
-      _ = 1 + U*C*V*⅟A - (U + U*C*V*⅟A*U)*⅟(⅟C + V*⅟A*U)*V*⅟A := by
-        rw [sub_right_inj, Matrix.add_mul, Matrix.add_mul, Matrix.add_mul]
-      _ = 1 + U*C*V*⅟A - U*C*(⅟C + V*⅟A*U)*⅟(⅟C + V*⅟A*U)*V*⅟A := by
-        congr
-        simp only [Matrix.mul_add, Matrix.mul_mul_invOf_self_cancel, ← Matrix.mul_assoc]
-      _ = 1 := by
-        rw [Matrix.mul_mul_invOf_self_cancel]
-        abel
+    (A + U*C*V)*(⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A)
+    _ = A*⅟A - A*⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A + U*C*V*⅟A - U*C*V*⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A := by
+      simp_rw [add_sub_assoc, add_mul, mul_sub, Matrix.mul_assoc]
+    _ = (1 + U*C*V*⅟A) - (U*⅟(⅟C + V*⅟A*U)*V*⅟A + U*C*V*⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A) := by
+      rw [mul_invOf_self, Matrix.one_mul]
+      abel
+    _ = 1 + U*C*V*⅟A - (U + U*C*V*⅟A*U)*⅟(⅟C + V*⅟A*U)*V*⅟A := by
+      rw [sub_right_inj, Matrix.add_mul, Matrix.add_mul, Matrix.add_mul]
+    _ = 1 + U*C*V*⅟A - U*C*(⅟C + V*⅟A*U)*⅟(⅟C + V*⅟A*U)*V*⅟A := by
+      congr
+      simp only [Matrix.mul_add, Matrix.mul_mul_invOf_self_cancel, ← Matrix.mul_assoc]
+    _ = 1 := by
+      rw [Matrix.mul_mul_invOf_self_cancel]
+      abel
+
+-- as above, but with multiplication reversed
+lemma add_mul_mul_invOf_mul_eq_one' :
+    (⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A)*(A + U*C*V) = 1 := by
+  calc
+    (⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A)*(A + U*C*V)
+    _ = ⅟A*A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A*A + ⅟A*U*C*V - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A*U*C*V := by
+      simp_rw [add_sub_assoc, _root_.mul_add, _root_.sub_mul, Matrix.mul_assoc]
+    _ = (1 + ⅟A*U*C*V) - (⅟A*U*⅟(⅟C + V*⅟A*U)*V + ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A*U*C*V) := by
+      rw [invOf_mul_self, Matrix.mul_invOf_mul_self_cancel]
+      abel
+    _ = 1 + ⅟A*U*C*V - ⅟A*U*⅟(⅟C + V*⅟A*U)*(V + V*⅟A*U*C*V) := by
+      rw [sub_right_inj, Matrix.mul_add]
+      simp_rw [Matrix.mul_assoc]
+    _ = 1 + ⅟A*U*C*V - ⅟A*U*⅟(⅟C + V*⅟A*U)*(⅟C + V*⅟A*U)*C*V := by
+      congr 1
+      simp only [Matrix.mul_add, Matrix.add_mul, ← Matrix.mul_assoc,
+        Matrix.mul_invOf_mul_self_cancel]
+    _ = 1 := by
+      rw [Matrix.mul_invOf_mul_self_cancel]
+      abel
+
+/-- If matrices `A`, `C`, and `C⁻¹ + V*A⁻¹*U` are invertible, then so is `A + U * C * V`-/
+def invertibleAddMulMul : Invertible (A + U*C*V) where
+  invOf := ⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A
+  invOf_mul_self := add_mul_mul_invOf_mul_eq_one' _ _ _ _
+  mul_invOf_self := add_mul_mul_invOf_mul_eq_one _ _ _ _
+
+/-- The **Woodbury Identity** (`⅟` version). -/
+theorem invOf_add_mul_mul [Invertible (A + U*C*V)] :
+    ⅟(A + U*C*V) = ⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A := by
+  letI := invertibleAddMulMul A U C V
+  convert (rfl : ⅟(A + U*C*V) = _)
+
+end Woodbury
 
 end Ring
 
