@@ -78,6 +78,8 @@ variable (𝕜) [SeminormedRing 𝕜] [SMul 𝕜 E] [SMul ℝ E] [AddCommMonoid 
 /-- The type of absolutely convex sets. -/
 def AbsConvex (s : Set E) : Prop := Balanced 𝕜 s ∧ Convex ℝ s
 
+variable {𝕜}
+
 theorem absConvex_empty : AbsConvex 𝕜 (∅ : Set E) := ⟨balanced_empty, convex_empty⟩
 
 theorem absConvex_univ : AbsConvex 𝕜 (Set.univ : Set E) := ⟨balanced_univ, convex_univ⟩
@@ -88,13 +90,92 @@ theorem AbsConvex.inter {s : Set E} {t : Set E} (hs : AbsConvex 𝕜 s) (ht : Ab
 theorem absConvex_sInter {S : Set (Set E)} (h : ∀ s ∈ S, AbsConvex 𝕜 s) : AbsConvex 𝕜 (⋂₀ S) :=
   ⟨balanced_sInter (fun s hs => (h s hs).1), convex_sInter (fun s hs => (h s hs).2)⟩
 
+variable (𝕜)
+
 /-- The absolute convex hull of a set `s` is the minimal absolute convex set that includes `s`. -/
 @[simps! isClosed]
 def absConvexHull : ClosureOperator (Set E) :=
-    .ofCompletePred (AbsConvex 𝕜) fun _ ↦ absConvex_sInter 𝕜
+    .ofCompletePred (AbsConvex 𝕜) fun _ ↦ absConvex_sInter
+
+variable (s : Set E)
+
+theorem subset_absConvexHull : s ⊆ absConvexHull 𝕜 s :=
+  (absConvexHull 𝕜).le_closure s
+
+theorem absConvex_absConvexHull : AbsConvex 𝕜 (absConvexHull 𝕜 s) :=
+    (absConvexHull 𝕜).isClosed_closure s
+
+theorem balanced_absConvexHull : Balanced 𝕜 ((absConvexHull 𝕜) s) := (absConvex_absConvexHull 𝕜 s).1
+
+theorem convex_absConvexHull : Convex ℝ ((absConvexHull 𝕜) s) := (absConvex_absConvexHull 𝕜 s).2
+
+theorem absConvexHull_eq_iInter :
+    absConvexHull 𝕜 s = ⋂ (t : Set E) (_ : s ⊆ t) (_ : AbsConvex 𝕜 t), t := by
+  simp [absConvexHull, iInter_subtype, iInter_and]
+
+variable {𝕜 s} {t : Set E} {x y : E}
+
+theorem mem_absConvexHull_iff : x ∈ absConvexHull 𝕜 s ↔ ∀ t, s ⊆ t → AbsConvex 𝕜 t → x ∈ t := by
+  simp_rw [absConvexHull_eq_iInter, mem_iInter]
+
+theorem absConvexHull_min : s ⊆ t → AbsConvex 𝕜 t → absConvexHull 𝕜 s ⊆ t :=
+  (absConvexHull 𝕜).closure_min
+
+theorem AbsConvex.absConvexHull_subset_iff (ht : AbsConvex 𝕜 t) : absConvexHull 𝕜 s ⊆ t ↔ s ⊆ t :=
+  (show (absConvexHull 𝕜).IsClosed t from ht).closure_le_iff
+
+@[mono, gcongr]
+theorem absConvexHull_mono (hst : s ⊆ t) : absConvexHull 𝕜 s ⊆ absConvexHull 𝕜 t :=
+  (absConvexHull 𝕜).monotone hst
+
+lemma absConvexHull_eq_self : absConvexHull 𝕜 s = s ↔ AbsConvex 𝕜 s :=
+  (absConvexHull 𝕜).isClosed_iff.symm
+
+alias ⟨_, AbsConvex.absConvexHull_eq⟩ := absConvexHull_eq_self
+
+@[simp]
+theorem absConvexHull_univ : absConvexHull 𝕜 (univ : Set E) = univ :=
+  ClosureOperator.closure_top (absConvexHull 𝕜)
+
+@[simp]
+theorem absConvexHull_empty : absConvexHull 𝕜 (∅ : Set E) = ∅ :=
+  absConvex_empty.absConvexHull_eq
+
+@[simp]
+theorem absConvexHull_empty_iff : absConvexHull 𝕜 s = ∅ ↔ s = ∅ := by
+  constructor
+  · intro h
+    rw [← Set.subset_empty_iff, ← h]
+    exact subset_absConvexHull 𝕜 _
+  · rintro rfl
+    exact absConvexHull_empty
+
+@[simp]
+theorem absConvexHull_nonempty_iff : (absConvexHull 𝕜 s).Nonempty ↔ s.Nonempty := by
+  rw [nonempty_iff_ne_empty, nonempty_iff_ne_empty, Ne, Ne]
+  exact not_congr absConvexHull_empty_iff
+
+protected alias ⟨_, Set.Nonempty.absConvexHull⟩ := absConvexHull_nonempty_iff
 
 end AbsolutelyConvex
 
+section
+
+variable (𝕜) [NontriviallyNormedField 𝕜] --[NormOneClass 𝕜]
+variable [AddCommGroup E] [Module ℝ E] [Module 𝕜 E] [SMulCommClass ℝ 𝕜 E]
+
+theorem absConvexHull_eq_convexHull_balancedHull {s : Set E} :
+    absConvexHull 𝕜 s = convexHull ℝ (balancedHull 𝕜 s) := by
+  apply le_antisymm
+  · exact absConvexHull_min
+      (subset_trans (subset_convexHull ℝ s) (convexHull_mono (subset_balancedHull 𝕜)))
+      ⟨Balanced.convexHull (balancedHull.balanced s), convex_convexHull _ _⟩
+  · rw [← Convex.convexHull_eq (convex_absConvexHull 𝕜 s)]
+    exact convexHull_mono
+      (Balanced.balancedHull_subset_of_subset (balanced_absConvexHull 𝕜 s)
+        (subset_absConvexHull 𝕜 s))
+
+end
 
 section AbsolutelyConvexSets
 
