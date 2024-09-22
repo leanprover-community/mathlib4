@@ -6,6 +6,7 @@ Authors: Amelia Livingston
 import Mathlib.Algebra.Homology.Opposite
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.RepresentationTheory.GroupCohomology.Resolution
+import Mathlib.Tactic.CategoryTheory.Slice
 
 /-!
 # The group cohomology of a `k`-linear `G`-representation
@@ -78,15 +79,33 @@ open CategoryTheory
 
 namespace groupCohomology
 
-variable [Monoid G]
+variable [Group G]
+
+@[simps!] def ChainComplex.linearYoneda (R : Type*) [Ring R] {C : Type*} [Category C] [Abelian C]
+  [Linear R C] [EnoughProjectives C]
+  {α : Type*} [AddRightCancelSemigroup α] [One α] (Z : C) :
+  ChainComplex C α ⥤ (CochainComplex (ModuleCat R) α)ᵒᵖ :=
+  ((CategoryTheory.linearYoneda R C).obj Z).rightOp.mapHomologicalComplex _ ⋙
+    HomologicalComplex.opInverse (ModuleCat R) (ComplexShape.up α)
+
+def ChainComplex.linearYoneda' (R : Type*) [Ring R] {C : Type*} [Category C] [Abelian C]
+  [Linear R C] [EnoughProjectives C]
+  {α : Type*} [AddRightCancelSemigroup α] [One α] (Z : C) :
+  (ChainComplex C α)ᵒᵖ ⥤ CochainComplex (ModuleCat R) α :=
+  HomologicalComplex.opFunctor C (ComplexShape.down α) ⋙
+    ((CategoryTheory.linearYoneda R C).obj Z).mapHomologicalComplex _
 
 /-- The complex `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `k`-linear
 `G`-representation. -/
 abbrev linearYonedaObjResolution (A : Rep k G) : CochainComplex (ModuleCat.{u} k) ℕ :=
   (groupCohomology.resolution k G).linearYonedaObj k A
 
-theorem linearYonedaObjResolution_d_apply {A : Rep k G} (i j : ℕ) (x : (resolution k G).X i ⟶ A) :
-    (linearYonedaObjResolution A).d i j x = (resolution k G).d j i ≫ x :=
+abbrev linearYonedaObjBarResolution (A : Rep k G) : CochainComplex (ModuleCat.{u} k) ℕ :=
+  (groupHomology.barResolution k G).linearYonedaObj k A
+
+theorem linearYonedaObjBarResolution_d_apply {A : Rep k G} (i j : ℕ)
+    (x : (groupHomology.barResolution k G).X i ⟶ A) :
+    (linearYonedaObjBarResolution A).d i j x = (groupHomology.barResolution k G).d j i ≫ x :=
   rfl
 
 end groupCohomology
@@ -105,63 +124,24 @@ def d [Monoid G] (n : ℕ) (A : Rep k G) : ((Fin n → G) → A) →ₗ[k] (Fin 
         (-1 : k) ^ ((j : ℕ) + 1) • f (Fin.contractNth j (· * ·) g)
   map_add' f g := by
     ext x
-/- Porting note: changed from `simp only` which needed extra heartbeats -/
-    simp_rw [Pi.add_apply, map_add, smul_add, Finset.sum_add_distrib, add_add_add_comm]
+    simp [Finset.sum_add_distrib, add_add_add_comm]
   map_smul' r f := by
     ext x
-/- Porting note: changed from `simp only` which needed extra heartbeats -/
-    simp_rw [Pi.smul_apply, RingHom.id_apply, map_smul, smul_add, Finset.smul_sum, ← smul_assoc,
-      smul_eq_mul, mul_comm r]
+    simp [Finset.smul_sum, ← smul_assoc, mul_comm r]
 
 variable [Group G] (n) (A : Rep k G)
 
-/- Porting note: linter says the statement doesn't typecheck, so we add `@[nolint checkType]` -/
-/-- The theorem that our isomorphism `Fun(Gⁿ, A) ≅ Hom(k[Gⁿ⁺¹], A)` (where the righthand side is
-morphisms in `Rep k G`) commutes with the differentials in the complex of inhomogeneous cochains
-and the homogeneous `linearYonedaObjResolution`. -/
 @[nolint checkType] theorem d_eq :
     d n A =
-      (diagonalHomEquiv n A).toModuleIso.inv ≫
-        (linearYonedaObjResolution A).d n (n + 1) ≫
-          (diagonalHomEquiv (n + 1) A).toModuleIso.hom := by
+      (freeLiftEquiv (Fin n → G) A).toModuleIso.inv ≫
+        (linearYonedaObjBarResolution A).d n (n + 1) ≫
+          (freeLiftEquiv (Fin (n + 1) → G) A).toModuleIso.hom := by
   ext f g
-/- Porting note (#11039): broken proof was
-  simp only [ModuleCat.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-    LinearEquiv.toModuleIso_inv, linearYonedaObjResolution_d_apply, LinearEquiv.toModuleIso_hom,
-    diagonalHomEquiv_apply, Action.comp_hom, Resolution.d_eq k G n,
-    Resolution.d_of (Fin.partialProd g), LinearMap.map_sum,
-    ← Finsupp.smul_single_one _ ((-1 : k) ^ _), map_smul, d_apply]
-  simp only [@Fin.sum_univ_succ _ _ (n + 1), Fin.val_zero, pow_zero, one_smul, Fin.succAbove_zero,
-    diagonalHomEquiv_symm_apply f (Fin.partialProd g ∘ @Fin.succ (n + 1)), Function.comp_apply,
-    Fin.partialProd_succ, Fin.castSucc_zero, Fin.partialProd_zero, one_mul]
-  congr 1
-  · congr
-    ext
-    have := Fin.partialProd_right_inv g (Fin.castSucc x)
-    simp only [mul_inv_rev, Fin.castSucc_fin_succ] at *
-    rw [mul_assoc, ← mul_assoc _ _ (g x.succ), this, inv_mul_cancel_left]
-  · exact Finset.sum_congr rfl fun j hj => by
-      rw [diagonalHomEquiv_symm_partialProd_succ, Fin.val_succ] -/
-  -- https://github.com/leanprover-community/mathlib4/issues/5026
-  -- https://github.com/leanprover-community/mathlib4/issues/5164
-  change d n A f g = diagonalHomEquiv (n + 1) A
-    ((resolution k G).d (n + 1) n ≫ (diagonalHomEquiv n A).symm f) g
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [diagonalHomEquiv_apply, Action.comp_hom, ModuleCat.comp_def, LinearMap.comp_apply,
-    resolution.d_eq]
-  erw [resolution.d_of (Fin.partialProd g)]
-  simp only [map_sum, ← Finsupp.smul_single_one _ ((-1 : k) ^ _)]
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [d_apply, @Fin.sum_univ_succ _ _ (n + 1), Fin.val_zero, pow_zero, one_smul,
-    Fin.succAbove_zero, diagonalHomEquiv_symm_apply f (Fin.partialProd g ∘ @Fin.succ (n + 1))]
-  simp_rw [Function.comp_apply, Fin.partialProd_succ, Fin.castSucc_zero,
-    Fin.partialProd_zero, one_mul]
-  rcongr x
-  · have := Fin.partialProd_right_inv g (Fin.castSucc x)
-    simp only [mul_inv_rev, Fin.castSucc_fin_succ] at this ⊢
-    rw [mul_assoc, ← mul_assoc _ _ (g x.succ), this, inv_mul_cancel_left]
-  · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [map_smul, diagonalHomEquiv_symm_partialProd_succ, Fin.val_succ]
+  simp only [ChainComplex.of_x, ChainComplex.linearYonedaObj_d, groupHomology.barResolution.d_def,
+    Function.comp_apply, freeLiftEquiv_apply]
+  show _ = Finsupp.linearCombination _ _ _
+  have h := groupHomology.d_single (k := k) g
+  simp_all [groupHomology.d_single (k := k) g, hom_def]
 
 end inhomogeneousCochains
 
@@ -177,39 +157,30 @@ which calculates the group cohomology of `A`. -/
 noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
   CochainComplex.of (fun n => ModuleCat.of k ((Fin n → G) → A))
     (fun n => inhomogeneousCochains.d n A) fun n => by
-/- Porting note (#11039): broken proof was
-    ext x y
-    have := LinearMap.ext_iff.1 ((linearYonedaObjResolution A).d_comp_d n (n + 1) (n + 2))
-    simp only [ModuleCat.coe_comp, Function.comp_apply] at this
-    simp only [ModuleCat.coe_comp, Function.comp_apply, d_eq, LinearEquiv.toModuleIso_hom,
-      LinearEquiv.toModuleIso_inv, LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply, this,
-      LinearMap.zero_apply, map_zero, Pi.zero_apply] -/
-    ext x
-    have := LinearMap.ext_iff.1 ((linearYonedaObjResolution A).d_comp_d n (n + 1) (n + 2))
-    simp only [ModuleCat.comp_def, LinearMap.comp_apply] at this
-    dsimp only
-    simp only [d_eq, LinearEquiv.toModuleIso_inv, LinearEquiv.toModuleIso_hom, ModuleCat.coe_comp,
-      Function.comp_apply]
-    /- Porting note: I can see I need to rewrite `LinearEquiv.coe_coe` twice to at
-      least reduce the need for `symm_apply_apply` to be an `erw`. However, even `erw` refuses to
-      rewrite the second `coe_coe`... -/
-    erw [LinearEquiv.symm_apply_apply, this]
-    exact map_zero _
+    simp only [d_eq]
+    slice_lhs 3 4 => { rw [Iso.hom_inv_id] }
+    slice_lhs 2 4 => { rw [Category.id_comp, (linearYonedaObjBarResolution A).d_comp_d] }
+    simp
 
 @[simp]
 theorem inhomogeneousCochains.d_def (n : ℕ) :
     (inhomogeneousCochains A).d n (n + 1) = inhomogeneousCochains.d n A :=
   CochainComplex.of_d _ _ _ _
 
-/-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
-to `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `G`-representation. -/
-def inhomogeneousCochainsIso : inhomogeneousCochains A ≅ linearYonedaObjResolution A := by
-  refine HomologicalComplex.Hom.isoOfComponents (fun i =>
-    (Rep.diagonalHomEquiv i A).toModuleIso.symm) ?_
+def inhomogeneousCochainsBarIso : inhomogeneousCochains A ≅ linearYonedaObjBarResolution A := by
+  refine HomologicalComplex.Hom.isoOfComponents ?_ ?_
+  · intro i
+    apply (Rep.freeLiftEquiv (Fin i → G) A).toModuleIso.symm
   rintro i j (h : i + 1 = j)
   subst h
-  simp only [CochainComplex.of_d, d_eq, Category.assoc, Iso.symm_hom, Iso.hom_inv_id,
-    Category.comp_id]
+  simp only [Iso.symm_hom, inhomogeneousCochains.d_def, d_eq, Category.assoc]
+  slice_rhs 2 4 => { rw [Iso.hom_inv_id, Category.comp_id] }
+
+/-- Given a `k`-linear `G`-representation `A`, the complex of inhomogeneous cochains is isomorphic
+to `Hom(P, A)`, where `P` is the standard resolution of `k` as a trivial `G`-representation. -/
+def inhomogeneousCochainsIso : inhomogeneousCochains A ≅ linearYonedaObjResolution A :=
+  inhomogeneousCochainsBarIso A ≪≫ ((ChainComplex.linearYoneda (R := k) A).mapIso
+    (groupHomology.barResolutionIso k G).symm).unop
 
 /-- The `n`-cocycles `Zⁿ(G, A)` of a `k`-linear `G`-representation `A`, i.e. the kernel of the
 `n`th differential in the complex of inhomogeneous cochains. -/

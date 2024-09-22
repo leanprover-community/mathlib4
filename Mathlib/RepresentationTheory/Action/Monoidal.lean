@@ -3,15 +3,13 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.RepresentationTheory.Action.Limits
-import Mathlib.RepresentationTheory.Action.Concrete
-import Mathlib.CategoryTheory.Monoidal.FunctorCategory
-import Mathlib.CategoryTheory.Monoidal.Transport
-import Mathlib.CategoryTheory.Monoidal.Rigid.OfEquivalence
-import Mathlib.CategoryTheory.Monoidal.Rigid.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Linear
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+import Mathlib.CategoryTheory.Monoidal.Rigid.FunctorCategory
+import Mathlib.CategoryTheory.Monoidal.Rigid.OfEquivalence
+import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
+import Mathlib.RepresentationTheory.Action.Concrete
+import Mathlib.RepresentationTheory.Action.Limits
 
 /-!
 # Induced monoidal structure on `Action V G`
@@ -61,6 +59,11 @@ theorem tensor_ρ' {X Y : Action V G} {g : G} :
 theorem tensor_ρ {X Y : Action V G} {g : G} : (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
   rfl
 
+@[simp]
+theorem tensor_typeρ {G : Type u} [Monoid G] (X Y : Action (Type u) G) (g : G) :
+    (X ⊗ Y).typeρ g = Prod.map (X.typeρ g) (Y.typeρ g) :=
+  rfl
+
 /-- Given an object `X` isomorphic to the tensor unit of `V`, `X` equipped with the trivial action
 is isomorphic to the tensor unit of `Action V G`. -/
 def tensorUnitIso {X : V} (f : 𝟙_ V ≅ X) : 𝟙_ (Action V G) ≅ Action.mk X 1 :=
@@ -70,10 +73,10 @@ variable (V G)
 
 /-- When `V` is monoidal the forgetful functor `Action V G` to `V` is monoidal. -/
 @[simps]
-def forgetMonoidal : MonoidalFunctor (Action V G) V where
-  toFunctor := forget _ _
-  ε := 𝟙 _
-  μ X Y := 𝟙 _
+def forgetMonoidal : MonoidalFunctor (Action V G) V :=
+  { toFunctor := Action.forget _ _
+    ε := 𝟙 _
+    μ := fun X Y => 𝟙 _ }
 
 instance forgetMonoidal_faithful : (forgetMonoidal V G).Faithful := by
   change (forget V G).Faithful; infer_instance
@@ -84,7 +87,7 @@ variable [BraidedCategory V]
 
 instance : BraidedCategory (Action V G) :=
   braidedCategoryOfFaithful (forgetMonoidal V G) (fun X Y => mkIso (β_ _ _)
-    (fun g => by simp)) (by aesop_cat)
+    (fun g => by simp [FunctorCategoryEquivalence.inverse])) (by aesop_cat)
 
 /-- When `V` is braided the forgetful functor `Action V G` to `V` is braided. -/
 @[simps!]
@@ -94,6 +97,13 @@ def forgetBraided : BraidedFunctor (Action V G) V :=
 instance forgetBraided_faithful : (forgetBraided V G).Faithful := by
   change (forget V G).Faithful; infer_instance
 
+@[simp]
+theorem β_types_hom (X Y : Action (Type u) G) :
+    hom (β_ X Y).hom = Equiv.prodComm X.V Y.V := rfl
+
+@[simp]
+theorem β_types_inv (X Y : Action (Type u) G) :
+    hom (β_ X Y).inv = Equiv.prodComm Y.V X.V := rfl
 end
 
 instance [SymmetricCategory V] : SymmetricCategory (Action V G) :=
@@ -228,39 +238,16 @@ open MonoidalCategory
 multiplication on the first factor and by `X.ρ` on the second) is isomorphic as a `G`-set to
 `G × X` (with `G` acting as left multiplication on the first factor and trivially on the second).
 The isomorphism is given by `(g, x) ↦ (g, g⁻¹ • x)`. -/
-@[simps]
-noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type u) G) :
-    leftRegular G ⊗ X ≅ leftRegular G ⊗ Action.mk X.V 1 where
-  hom :=
-    { hom := fun g => ⟨g.1, (X.ρ (g.1⁻¹ : G) g.2 : X.V)⟩
-      comm := fun (g : G) => by
-        funext ⟨(x₁ : G), (x₂ : X.V)⟩
-        refine Prod.ext rfl ?_
-        change (X.ρ ((g * x₁)⁻¹ : G) * X.ρ g) x₂ = X.ρ _ _
-        rw [mul_inv_rev, ← X.ρ.map_mul, inv_mul_cancel_right] }
-  inv :=
-    { hom := fun g => ⟨g.1, X.ρ g.1 g.2⟩
-      comm := fun (g : G) => by
-        funext ⟨(x₁ : G), (x₂ : X.V)⟩
-        refine Prod.ext rfl ?_
-        rw [tensor_ρ, tensor_ρ]
-        dsimp
-        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-        erw [leftRegular_ρ_apply]
-        erw [map_mul]
-        rfl }
-  hom_inv_id := by
-    apply Hom.ext
-    funext x
-    refine Prod.ext rfl ?_
-    change (X.ρ x.1 * X.ρ (x.1⁻¹ : G)) x.2 = x.2
-    rw [← X.ρ.map_mul, mul_inv_cancel, X.ρ.map_one, End.one_def, types_id_apply]
-  inv_hom_id := by
-    apply Hom.ext
-    funext x
-    refine Prod.ext rfl ?_
-    change (X.ρ (x.1⁻¹ : G) * X.ρ x.1) x.2 = x.2
-    rw [← X.ρ.map_mul, inv_mul_cancel, X.ρ.map_one, End.one_def, types_id_apply]
+noncomputable abbrev leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type u) G) :
+    leftRegular G ⊗ X ≅ leftRegular G ⊗ Action.trivial G X.V :=
+  Action.mkIso' {
+    toFun := fun g => ⟨g.1, (X.typeρ (g.1⁻¹ : G) g.2 : X.V)⟩
+    invFun := fun g => ⟨g.1, X.typeρ g.1 g.2⟩
+    left_inv := fun ⟨(x : G), (y : X.V)⟩ => Prod.ext rfl <| by simp
+    right_inv := fun ⟨(x : G), (y : X.V)⟩ => Prod.ext rfl <| by simp }
+  fun g => by
+    ext ⟨(x : G), (y : X.V)⟩
+    simp [-Action.instMonoidalCategory_tensorObj_V]
 
 /-- The natural isomorphism of `G`-sets `Gⁿ⁺¹ ≅ G × Gⁿ`, where `G` acts by left multiplication on
 each factor. -/
@@ -291,6 +278,10 @@ def mapActionLax (F : LaxMonoidalFunctor V W) (G : Type u) [Monoid G] :
   (μ := fun X Y =>
     { hom := F.μ X.V Y.V
       comm := fun g => F.μ_natural (X.ρ g) (Y.ρ g) })
+  (μ_natural := by intros; ext; simp)
+  (associativity := by intros; ext; simp)
+  (left_unitality := by intros; ext; simp)
+  (right_unitality := by intros; ext; simp)
 
 variable (F : MonoidalFunctor V W) (G : Type u) [Monoid G]
 
