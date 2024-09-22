@@ -6,7 +6,6 @@ Authors: Bolton Bailey, Ralf Stephan
 import Mathlib.Data.Nat.Nth
 import Mathlib.Data.Nat.Totient
 import Mathlib.NumberTheory.SmoothNumbers
-import Mathlib
 
 /-!
 # The Prime Counting Function
