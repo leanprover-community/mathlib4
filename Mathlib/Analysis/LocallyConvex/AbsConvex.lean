@@ -85,7 +85,7 @@ theorem absConvex_empty : AbsConvex 𝕜 (∅ : Set E) := ⟨balanced_empty, con
 theorem absConvex_univ : AbsConvex 𝕜 (Set.univ : Set E) := ⟨balanced_univ, convex_univ⟩
 
 theorem AbsConvex.inter {s : Set E} {t : Set E} (hs : AbsConvex 𝕜 s) (ht : AbsConvex 𝕜 t) :
-  AbsConvex 𝕜 (s ∩ t) := ⟨Balanced.inter hs.1 ht.1, Convex.inter hs.2 ht.2⟩
+    AbsConvex 𝕜 (s ∩ t) := ⟨Balanced.inter hs.1 ht.1, Convex.inter hs.2 ht.2⟩
 
 theorem absConvex_sInter {S : Set (Set E)} (h : ∀ s ∈ S, AbsConvex 𝕜 s) : AbsConvex 𝕜 (⋂₀ S) :=
   ⟨balanced_sInter (fun s hs => (h s hs).1), convex_sInter (fun s hs => (h s hs).2)⟩
