@@ -416,7 +416,7 @@ theorem union_mul_inter_subset_union : (s₁ ∪ s₂) * (t₁ ∩ t₂) ⊆ s�
       `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' + t'`."]
 theorem subset_mul {s t : Set α} :
     ↑u ⊆ s * t → ∃ s' t' : Finset α, ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' * t' :=
-  subset_image₂
+  subset_set_image₂
 
 @[to_additive]
 theorem image_mul [DecidableEq β] : (s * t).image (f : α → β) = s.image f * t.image f :=

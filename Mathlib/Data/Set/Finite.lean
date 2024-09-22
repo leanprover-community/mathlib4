@@ -897,7 +897,7 @@ theorem exists_subset_image_finite_and {f : α → β} {s : Set α} {p : Set β 
     (∃ t ⊆ f '' s, t.Finite ∧ p t) ↔ ∃ t ⊆ s, t.Finite ∧ p (f '' t) := by
   classical
   simp_rw [@and_comm (_ ⊆ _), and_assoc, exists_finite_iff_finset, @and_comm (p _),
-    Finset.subset_image_iff]
+    Finset.subset_set_image_iff]
   aesop
 
 section Pi
