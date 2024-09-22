@@ -119,83 +119,81 @@ def toRight (s : Finset (α ⊕ β)) : Finset β :=
   s.disjiUnion (Sum.elim (fun _ => ∅) singleton) <| by
     simp [Set.PairwiseDisjoint, Set.Pairwise, Function.onFun, eq_comm]
 
-@[simp] lemma mem_toLeft {s : Finset (α ⊕ β)} {x : α} : x ∈ s.toLeft ↔ inl x ∈ s := by
+variable {u v : Finset (α ⊕ β)}
+
+@[simp] lemma mem_toLeft {x : α} : x ∈ u.toLeft ↔ inl x ∈ u := by
   simp [toLeft]
 
-@[simp] lemma mem_toRight {s : Finset (α ⊕ β)} {x : β} : x ∈ s.toRight ↔ inr x ∈ s := by
+@[simp] lemma mem_toRight {x : β} : x ∈ u.toRight ↔ inr x ∈ u := by
   simp [toRight]
 
 @[gcongr]
-lemma toLeft_subset_toLeft {s t : Finset (α ⊕ β)} : s ⊆ t → s.toLeft ⊆ t.toLeft :=
+lemma toLeft_subset_toLeft : u ⊆ v → u.toLeft ⊆ v.toLeft :=
   fun h _ => by simpa only [mem_toLeft] using @h _
 
 @[gcongr]
-lemma toRight_subset_toRight {s t : Finset (α ⊕ β)} : s ⊆ t → s.toRight ⊆ t.toRight :=
+lemma toRight_subset_toRight : u ⊆ v → u.toRight ⊆ v.toRight :=
   fun h _ => by simpa only [mem_toRight] using @h _
 
 lemma toLeft_monotone : Monotone (@toLeft α β) := fun _ _ => toLeft_subset_toLeft
 lemma toRight_monotone : Monotone (@toRight α β) := fun _ _ => toRight_subset_toRight
 
-lemma toLeft_disjSum_toRight {s : Finset (α ⊕ β)} : s.toLeft.disjSum s.toRight = s := by
+lemma toLeft_disjSum_toRight : u.toLeft.disjSum u.toRight = u := by
   ext (x | x) <;> simp
 
-lemma card_toLeft_add_card_toRight {s : Finset (α ⊕ β)} :
-    s.toLeft.card + s.toRight.card = s.card := by
+lemma card_toLeft_add_card_toRight : u.toLeft.card + u.toRight.card = u.card := by
   rw [← card_disjSum, toLeft_disjSum_toRight]
 
-lemma card_toLeft_le {s : Finset (α ⊕ β)} : s.toLeft.card ≤ s.card :=
+lemma card_toLeft_le : u.toLeft.card ≤ u.card :=
   (Nat.le_add_right _ _).trans_eq card_toLeft_add_card_toRight
 
-lemma card_toRight_le {s : Finset (α ⊕ β)} : s.toRight.card ≤ s.card :=
+lemma card_toRight_le : u.toRight.card ≤ u.card :=
   (Nat.le_add_left _ _).trans_eq card_toLeft_add_card_toRight
 
 @[simp] lemma toLeft_disjSum : (s.disjSum t).toLeft = s := by ext x; simp
 
 @[simp] lemma toRight_disjSum : (s.disjSum t).toRight = t := by ext x; simp
 
-lemma disjSum_eq_iff {u : Finset (α ⊕ β)} : s.disjSum t = u ↔ s = u.toLeft ∧ t = u.toRight :=
+lemma disjSum_eq_iff : s.disjSum t = u ↔ s = u.toLeft ∧ t = u.toRight :=
   ⟨fun h => by simp [← h], fun h => by simp [h, toLeft_disjSum_toRight]⟩
 
-lemma eq_disjSum_iff {u : Finset (α ⊕ β)} : u = s.disjSum t ↔ u.toLeft = s ∧ u.toRight = t :=
+lemma eq_disjSum_iff : u = s.disjSum t ↔ u.toLeft = s ∧ u.toRight = t :=
   ⟨fun h => by simp [h], fun h => by simp [← h, toLeft_disjSum_toRight]⟩
 
-@[simp] lemma toLeft_map_sumComm {s : Finset (α ⊕ β)} :
-    (s.map (Equiv.sumComm _ _).toEmbedding).toLeft = s.toRight := by
+@[simp] lemma toLeft_map_sumComm : (u.map (Equiv.sumComm _ _).toEmbedding).toLeft = u.toRight := by
   ext x; simp
 
-@[simp] lemma toRight_map_sumComm {s : Finset (α ⊕ β)} :
-    (s.map (Equiv.sumComm _ _).toEmbedding).toLeft = s.toRight := by
+@[simp] lemma toRight_map_sumComm : (u.map (Equiv.sumComm _ _).toEmbedding).toLeft = u.toRight := by
   ext x; simp
-
-variable [DecidableEq α] [DecidableEq β] {s t : Finset (α ⊕ β)}
-
-lemma toLeft_image_swap {s : Finset (α ⊕ β)} : (s.image Sum.swap).toLeft = s.toRight := by
-  ext x; simp
-
-lemma toRight_image_swap {s : Finset (α ⊕ β)} : (s.image Sum.swap).toRight = s.toLeft := by
-  ext x; simp
-
-@[simp] lemma toLeft_insert_inl : (insert (inl a) s).toLeft = insert a s.toLeft := by ext y; simp
-@[simp] lemma toLeft_insert_inr : (insert (inr b) s).toLeft = s.toLeft := by ext y; simp
-@[simp] lemma toRight_insert_inl : (insert (inl a) s).toRight = s.toRight := by ext y; simp
-@[simp] lemma toRight_insert_inr : (insert (inr b) s).toRight = insert b s.toRight := by ext y; simp
 
 @[simp] lemma toLeft_cons_inl (ha) :
-    (cons (inl a) s ha).toLeft = cons a s.toLeft (by simpa) := by ext y; simp
+    (cons (inl a) u ha).toLeft = cons a u.toLeft (by simpa) := by ext y; simp
 @[simp] lemma toLeft_cons_inr (hb) :
-    (cons (inr b) s hb).toLeft = s.toLeft := by ext y; simp
+    (cons (inr b) u hb).toLeft = u.toLeft := by ext y; simp
 @[simp] lemma toRight_cons_inl (ha) :
-    (cons (inl a) s ha).toRight = s.toRight := by ext y; simp
+    (cons (inl a) u ha).toRight = u.toRight := by ext y; simp
 @[simp] lemma toRight_cons_inr (hb) :
-    (cons (inr b) s hb).toRight = cons b s.toRight (by simpa) := by ext y; simp
+    (cons (inr b) u hb).toRight = cons b u.toRight (by simpa) := by ext y; simp
+variable [DecidableEq α] [DecidableEq β]
 
-lemma toLeft_inter : (s ∩ t).toLeft = s.toLeft ∩ t.toLeft := by ext x; simp
-lemma toRight_inter : (s ∩ t).toRight = s.toRight ∩ t.toRight := by ext x; simp
+lemma toLeft_image_swap : (u.image Sum.swap).toLeft = u.toRight := by
+  ext x; simp
 
-lemma toLeft_union : (s ∪ t).toLeft = s.toLeft ∪ t.toLeft := by ext x; simp
-lemma toRight_union : (s ∪ t).toRight = s.toRight ∪ t.toRight := by ext x; simp
+lemma toRight_image_swap : (u.image Sum.swap).toRight = u.toLeft := by
+  ext x; simp
 
-lemma toLeft_sdiff : (s \ t).toLeft = s.toLeft \ t.toLeft := by ext x; simp
-lemma toRight_sdiff : (s \ t).toRight = s.toRight \ t.toRight := by ext x; simp
+@[simp] lemma toLeft_insert_inl : (insert (inl a) u).toLeft = insert a u.toLeft := by ext y; simp
+@[simp] lemma toLeft_insert_inr : (insert (inr b) u).toLeft = u.toLeft := by ext y; simp
+@[simp] lemma toRight_insert_inl : (insert (inl a) u).toRight = u.toRight := by ext y; simp
+@[simp] lemma toRight_insert_inr : (insert (inr b) u).toRight = insert b u.toRight := by ext y; simp
+
+lemma toLeft_inter : (u ∩ v).toLeft = u.toLeft ∩ v.toLeft := by ext x; simp
+lemma toRight_inter : (u ∩ v).toRight = u.toRight ∩ v.toRight := by ext x; simp
+
+lemma toLeft_union : (u ∪ v).toLeft = u.toLeft ∪ v.toLeft := by ext x; simp
+lemma toRight_union : (u ∪ v).toRight = u.toRight ∪ v.toRight := by ext x; simp
+
+lemma toLeft_sdiff : (u \ v).toLeft = u.toLeft \ v.toLeft := by ext x; simp
+lemma toRight_sdiff : (u \ v).toRight = u.toRight \ v.toRight := by ext x; simp
 
 end Finset
