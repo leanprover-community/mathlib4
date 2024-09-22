@@ -117,10 +117,41 @@ theorem vonNeumann_subset_of_le {a b : Ordinal} (h : a ≤ b) : vonNeumann a ⊆
   · rfl
   · exact (isTransitive_vonNeumann _).subset_of_mem (vonNeumann_mem_of_lt h)
 
-theorem mem_vonNeumann {o : Ordinal} {x : ZFSet} : x ∈ vonNeumann o ↔ rank x < o := by
-  
+theorem subset_vonNeumann {o : Ordinal} {x : ZFSet} : x ⊆ vonNeumann o ↔ rank x ≤ o := by
+  rw [vonNeumann, rank_le_iff]
+  constructor <;> intro hx y hy
+  · apply (rank_lt_of_mem (hx hy)).trans_le
+    simp_rw [rank_le_iff, mem_sUnion, mem_range]
+    rintro z ⟨_, ⟨⟨a, rfl⟩, hz⟩⟩
+    have := a.2
+    rw [mem_powerset, subset_vonNeumann] at hz
+    exact hz.trans_lt a.2
+  · simp_rw [mem_sUnion, mem_range]
+    have := hx hy
+    refine ⟨_, Set.mem_range_self ⟨y.rank, this⟩, ?_⟩
+    rw [mem_powerset, subset_vonNeumann]
+termination_by o
 
-#exit
+theorem mem_vonNeumann {o : Ordinal} {x : ZFSet} : x ∈ vonNeumann o ↔ rank x < o := by
+  rw [vonNeumann]
+  simp_rw [mem_sUnion, mem_range]
+  constructor
+  · rintro ⟨_, ⟨⟨a, rfl⟩, h⟩⟩
+    rw [mem_powerset] at h
+    exact ((rank_mono h).trans (subset_vonNeumann.1 (subset_rfl))).trans_lt a.2
+  · intro hx
+    refine ⟨_, Set.mem_range_self ⟨x.rank, hx⟩, ?_⟩
+    rw [mem_powerset, subset_vonNeumann]
+
+@[simp]
+theorem rank_vonNeumann (o : Ordinal) : rank (vonNeumann o) = o := by
+  apply le_antisymm
+  · rw [← subset_vonNeumann]
+  · apply le_of_forall_lt
+    intro a ha
+    have := rank_lt_of_mem (vonNeumann_mem_of_lt ha)
+    rwa [rank_vonNeumann] at this
+termination_by o
 
 @[simp]
 theorem vonNeumann_zero : vonNeumann 0 = ∅ := by
@@ -128,21 +159,15 @@ theorem vonNeumann_zero : vonNeumann 0 = ∅ := by
   rw [vonNeumann]
   simp
 
-/-@[simp]
+@[simp]
 theorem vonNeumann_succ (o : Ordinal) : vonNeumann (succ o) = powerset (vonNeumann o) := by
   ext x
-  rw [mem_powerset, mem_vonNeumann]
-  constructor
-  · intro hx y hy
-    obtain ⟨a, ho, ha⟩ := hx y hy
-    rw [lt_succ_iff] at ho
-    exact vonNeumann_subset_of_le ho ha
-  · exact fun hx y hy ↦ ⟨o, lt_succ o, hx hy⟩
+  rw [mem_vonNeumann, mem_powerset, subset_vonNeumann, lt_succ_iff]
 
 @[simp]
-theorem vonNeumann_of_isSuccLimit {o : Ordinal} (h : IsSuccLimit o) :
+theorem vonNeumann_of_isSuccPrelimit {o : Ordinal} (h : IsSuccPrelimit o) :
     vonNeumann o = (⋃₀ range fun a : Set.Iio o ↦ vonNeumann a : ZFSet) := by
-  rw [vonNeumann]
-  rw [powerset_eq]-/
+  ext x
+  simp [mem_vonNeumann]
 
 end ZFSet
