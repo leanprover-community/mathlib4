@@ -40,8 +40,8 @@ open scoped NaturalOps PGame
 namespace PGame
 
 /-- The birthday of a pre-game is inductively defined as the least strict upper bound of the
-  birthdays of its left and right games. It may be thought as the "step" in which a certain game is
-  constructed. -/
+birthdays of its left and right games. It may be thought as the "step" in which a certain game is
+constructed. -/
 noncomputable def birthday : PGame.{u} → Ordinal.{u}
   | ⟨_, _, xL, xR⟩ =>
     max (lsub.{u, u} fun i => birthday (xL i)) (lsub.{u, u} fun i => birthday (xR i))
