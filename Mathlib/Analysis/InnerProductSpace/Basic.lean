@@ -1003,27 +1003,12 @@ theorem coe_basisOfOrthonormalOfCardEqFinrank [Fintype ι] [Nonempty ι] {v : ι
     (basisOfOrthonormalOfCardEqFinrank hv card_eq : ι → E) = v :=
   coe_basisOfLinearIndependentOfCardEqFinrank _ _
 
-end OrthonormalSets_Seminormed
-
-section OrthonormalSets
-
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [NormedAddCommGroup F] [InnerProductSpace ℝ F]
-variable {ι : Type*}
-
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
-
-local notation "IK" => @RCLike.I 𝕜 _
-
-local postfix:90 "†" => starRingEnd _
-
 theorem Orthonormal.ne_zero {v : ι → E} (hv : Orthonormal 𝕜 v) (i : ι) : v i ≠ 0 := by
-  have : ‖v i‖ ≠ 0 := by
-    rw [hv.1 i]
-    norm_num
-  simpa using this
+  refine ne_of_apply_ne norm ?_
+  rw [hv.1 i, norm_zero]
+  norm_num
 
-end OrthonormalSets
+end OrthonormalSets_Seminormed
 
 section Norm_Seminormed
 
@@ -1582,6 +1567,46 @@ theorem toSesqForm_apply_norm_le {f : E →L[𝕜] E'} {v : E'} : ‖toSesqForm 
 
 end ContinuousLinearMap
 
+section
+
+variable {ι : Type*} {ι' : Type*} {ι'' : Type*}
+variable {E' : Type*} [SeminormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
+variable {E'' : Type*} [SeminormedAddCommGroup E''] [InnerProductSpace 𝕜 E'']
+
+@[simp]
+theorem Orthonormal.equiv_refl {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v) :
+    hv.equiv hv (Equiv.refl ι) = LinearIsometryEquiv.refl 𝕜 E :=
+  v.ext_linearIsometryEquiv fun i => by
+    simp only [Orthonormal.equiv_apply, Equiv.coe_refl, id, LinearIsometryEquiv.coe_refl]
+
+@[simp]
+theorem Orthonormal.equiv_symm {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v) {v' : Basis ι' 𝕜 E'}
+    (hv' : Orthonormal 𝕜 v') (e : ι ≃ ι') : (hv.equiv hv' e).symm = hv'.equiv hv e.symm :=
+  v'.ext_linearIsometryEquiv fun i =>
+    (hv.equiv hv' e).injective <| by
+      simp only [LinearIsometryEquiv.apply_symm_apply, Orthonormal.equiv_apply, e.apply_symm_apply]
+
+end
+
+variable (𝕜)
+
+/-- `innerSL` is an isometry. Note that the associated `LinearIsometry` is defined in
+`InnerProductSpace.Dual` as `toDualMap`. -/
+@[simp]
+theorem innerSL_apply_norm (x : E) : ‖innerSL 𝕜 x‖ = ‖x‖ := by
+  refine
+    le_antisymm ((innerSL 𝕜 x).opNorm_le_bound (norm_nonneg _) fun y => norm_inner_le_norm _ _) ?_
+  rcases (norm_nonneg x).eq_or_gt with (h | h)
+  · simp [h]
+  · refine (mul_le_mul_right h).mp ?_
+    calc
+      ‖x‖ * ‖x‖ = ‖(⟪x, x⟫ : 𝕜)‖ := by
+        rw [← sq, inner_self_eq_norm_sq_to_K, norm_pow, norm_ofReal, abs_norm]
+      _ ≤ ‖innerSL 𝕜 x‖ * ‖x‖ := (innerSL 𝕜 x).le_opNorm _
+
+lemma norm_innerSL_le : ‖innerSL 𝕜 (E := E)‖ ≤ 1 :=
+  ContinuousLinearMap.opNorm_le_bound _ zero_le_one (by simp)
+
 end Norm_Seminormed
 
 section Norm
@@ -1616,27 +1641,6 @@ theorem dist_div_norm_sq_smul {x y : F} (hx : x ≠ 0) (hy : y ≠ 0) (R : ℝ) 
         ring
     _ = R ^ 2 / (‖x‖ * ‖y‖) * dist x y := by
       rw [sqrt_mul, sqrt_sq, sqrt_sq, dist_eq_norm] <;> positivity
-
-section
-
-variable {ι : Type*} {ι' : Type*} {ι'' : Type*}
-variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
-variable {E'' : Type*} [NormedAddCommGroup E''] [InnerProductSpace 𝕜 E'']
-
-@[simp]
-theorem Orthonormal.equiv_refl {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v) :
-    hv.equiv hv (Equiv.refl ι) = LinearIsometryEquiv.refl 𝕜 E :=
-  v.ext_linearIsometryEquiv fun i => by
-    simp only [Orthonormal.equiv_apply, Equiv.coe_refl, id, LinearIsometryEquiv.coe_refl]
-
-@[simp]
-theorem Orthonormal.equiv_symm {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v) {v' : Basis ι' 𝕜 E'}
-    (hv' : Orthonormal 𝕜 v') (e : ι ≃ ι') : (hv.equiv hv' e).symm = hv'.equiv hv e.symm :=
-  v'.ext_linearIsometryEquiv fun i =>
-    (hv.equiv hv' e).injective <| by
-      simp only [LinearIsometryEquiv.apply_symm_apply, Orthonormal.equiv_apply, e.apply_symm_apply]
-
-end
 
 /-- The inner product of a nonzero vector with a nonzero multiple of
 itself, divided by the product of their norms, has absolute value
@@ -1824,27 +1828,6 @@ theorem inner_sum_smul_sum_smul_of_sum_eq_zero {ι₁ : Type*} {s₁ : Finset ι
     Finset.sum_add_distrib, ← Finset.mul_sum, ← Finset.sum_mul, h₁, h₂, zero_mul,
     mul_zero, Finset.sum_const_zero, zero_add, zero_sub, Finset.mul_sum, neg_div,
     Finset.sum_div, mul_div_assoc, mul_assoc]
-
-variable (𝕜)
-
-/-- `innerSL` is an isometry. Note that the associated `LinearIsometry` is defined in
-`InnerProductSpace.Dual` as `toDualMap`. -/
-@[simp]
-theorem innerSL_apply_norm (x : E) : ‖innerSL 𝕜 x‖ = ‖x‖ := by
-  refine
-    le_antisymm ((innerSL 𝕜 x).opNorm_le_bound (norm_nonneg _) fun y => norm_inner_le_norm _ _) ?_
-  rcases eq_or_ne x 0 with (rfl | h)
-  · simp
-  · refine (mul_le_mul_right (norm_pos_iff.2 h)).mp ?_
-    calc
-      ‖x‖ * ‖x‖ = ‖(⟪x, x⟫ : 𝕜)‖ := by
-        rw [← sq, inner_self_eq_norm_sq_to_K, norm_pow, norm_ofReal, abs_norm]
-      _ ≤ ‖innerSL 𝕜 x‖ * ‖x‖ := (innerSL 𝕜 x).le_opNorm _
-
-lemma norm_innerSL_le : ‖innerSL 𝕜 (E := E)‖ ≤ 1 :=
-  ContinuousLinearMap.opNorm_le_bound _ zero_le_one (by simp)
-
-variable {𝕜}
 
 /-- When an inner product space `E` over `𝕜` is considered as a real normed space, its inner
 product satisfies `IsBoundedBilinearMap`.
