@@ -159,6 +159,14 @@ lemma disjSum_eq_iff {u : Finset (α ⊕ β)} : s.disjSum t = u ↔ s = u.toLeft
 lemma eq_disjSum_iff {u : Finset (α ⊕ β)} : u = s.disjSum t ↔ u.toLeft = s ∧ u.toRight = t :=
   ⟨fun h => by simp [h], fun h => by simp [← h, toLeft_disjSum_toRight]⟩
 
+@[simp] lemma toLeft_map_sumComm {s : Finset (α ⊕ β)} :
+    (s.map (Equiv.sumComm _ _).toEmbedding).toLeft = s.toRight := by
+  ext x; simp
+
+@[simp] lemma toRight_map_sumComm {s : Finset (α ⊕ β)} :
+    (s.map (Equiv.sumComm _ _).toEmbedding).toLeft = s.toRight := by
+  ext x; simp
+
 variable [DecidableEq α] [DecidableEq β] {s t : Finset (α ⊕ β)}
 
 lemma toLeft_image_swap {s : Finset (α ⊕ β)} : (s.image Sum.swap).toLeft = s.toRight := by
@@ -171,6 +179,15 @@ lemma toRight_image_swap {s : Finset (α ⊕ β)} : (s.image Sum.swap).toRight =
 @[simp] lemma toLeft_insert_inr : (insert (inr b) s).toLeft = s.toLeft := by ext y; simp
 @[simp] lemma toRight_insert_inl : (insert (inl a) s).toRight = s.toRight := by ext y; simp
 @[simp] lemma toRight_insert_inr : (insert (inr b) s).toRight = insert b s.toRight := by ext y; simp
+
+@[simp] lemma toLeft_cons_inl (ha) :
+    (cons (inl a) s ha).toLeft = cons a s.toLeft (by simpa) := by ext y; simp
+@[simp] lemma toLeft_cons_inr (hb) :
+    (cons (inr b) s hb).toLeft = s.toLeft := by ext y; simp
+@[simp] lemma toRight_cons_inl (ha) :
+    (cons (inl a) s ha).toRight = s.toRight := by ext y; simp
+@[simp] lemma toRight_cons_inr (hb) :
+    (cons (inr b) s hb).toRight = cons b s.toRight (by simpa) := by ext y; simp
 
 lemma toLeft_inter : (s ∩ t).toLeft = s.toLeft ∩ t.toLeft := by ext x; simp
 lemma toRight_inter : (s ∩ t).toRight = s.toRight ∩ t.toRight := by ext x; simp
