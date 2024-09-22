@@ -106,6 +106,8 @@ lemma Injective2_disjSum {α β : Type*} : Function.Injective2 (@disjSum α β) 
 /--
 Given a finset of elements `α ⊕ β`, extract all the elements of the form `α`. This
 forms a quasi-inverse to `disjSum`, in that it recovers its left input.
+
+See also `List.partitionMap`.
 -/
 def toLeft (s : Finset (α ⊕ β)) : Finset α :=
   s.disjiUnion (Sum.elim singleton (fun _ => ∅)) <| by
@@ -114,6 +116,8 @@ def toLeft (s : Finset (α ⊕ β)) : Finset α :=
 /--
 Given a finset of elements `α ⊕ β`, extract all the elements of the form `β`. This
 forms a quasi-inverse to `disjSum`, in that it recovers its right input.
+
+See also `List.partitionMap`.
 -/
 def toRight (s : Finset (α ⊕ β)) : Finset β :=
   s.disjiUnion (Sum.elim (fun _ => ∅) singleton) <| by
@@ -174,6 +178,7 @@ lemma eq_disjSum_iff : u = s.disjSum t ↔ u.toLeft = s ∧ u.toRight = t :=
     (cons (inl a) u ha).toRight = u.toRight := by ext y; simp
 @[simp] lemma toRight_cons_inr (hb) :
     (cons (inr b) u hb).toRight = cons b u.toRight (by simpa) := by ext y; simp
+
 variable [DecidableEq α] [DecidableEq β]
 
 lemma toLeft_image_swap : (u.image Sum.swap).toLeft = u.toRight := by
