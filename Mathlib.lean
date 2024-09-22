@@ -3914,11 +3914,8 @@ import Mathlib.RingTheory.Kaehler.Polynomial
 import Mathlib.RingTheory.LaurentSeries
 import Mathlib.RingTheory.LittleWedderburn
 import Mathlib.RingTheory.LocalProperties.Basic
-import Mathlib.RingTheory.LocalProperties.Finite
-import Mathlib.RingTheory.LocalProperties.FiniteType
 import Mathlib.RingTheory.LocalProperties.IntegrallyClosed
 import Mathlib.RingTheory.LocalProperties.Reduced
-import Mathlib.RingTheory.LocalProperties.Surjective
 import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.RingTheory.LocalRing.Defs
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic

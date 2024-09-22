@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.Algebra.Module.LocalizedModuleIntegers
-import Mathlib.RingTheory.LocalProperties.Finite
 import Mathlib.RingTheory.Localization.Algebra
+import Mathlib.RingTheory.RingHom.Finite
 
 /-!
 
