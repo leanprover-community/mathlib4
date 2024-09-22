@@ -38,7 +38,15 @@ theorem sum_iterate_derivative_apply_of_le {p : R[X]} {n : ℕ} (hn : p.natDegre
     ∑ i ∈ range (p.natDegree + 1), derivative^[i] p = ∑ i ∈ range (n + 1), derivative^[i] p :=
   sum_iterate_derivative_apply_of_lt (Nat.lt_add_one_iff.mpr hn)
 
-/-- Sum of iterated derivatives of a polynomial, as a linear map -/
+/--
+Sum of iterated derivatives of a polynomial, as a linear map
+
+This definition does not allow different weights for the derivatives. It is likely that it could be
+extended to allow them, but this was not needed for the initial use case (the integration by part
+of the integral $I_i$ in the
+[Lindemann-Weierstrass](https://en.wikipedia.org/wiki/Lindemann%E2%80%93Weierstrass_theorem)
+theorem).
+-/
 noncomputable def sumIderiv : R[X] →ₗ[R] R[X] where
   toFun p := ∑ i ∈ range (p.natDegree + 1), derivative^[i] p
   map_add' p q := by
