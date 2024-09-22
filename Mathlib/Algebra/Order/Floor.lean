@@ -11,6 +11,7 @@ import Mathlib.Data.Nat.Cast.Order.Field
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Order.GaloisConnection
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Positivity
 
@@ -1085,6 +1086,9 @@ theorem ceil_le_floor_add_one (a : α) : ⌈a⌉ ≤ ⌊a⌋ + 1 := by
 theorem le_ceil (a : α) : a ≤ ⌈a⌉ :=
   gc_ceil_coe.le_u_l a
 
+lemma le_ceil_iff : z ≤ ⌈a⌉ ↔ z - 1 < a := by rw [← sub_one_lt_iff, lt_ceil]; norm_cast
+lemma ceil_lt_iff : ⌈a⌉ < z ↔ a ≤ z - 1 := by rw [← le_sub_one_iff, ceil_le]; norm_cast
+
 @[simp]
 theorem ceil_intCast (z : ℤ) : ⌈(z : α)⌉ = z :=
   eq_of_forall_ge_iff fun a => by rw [ceil_le, Int.cast_le]
@@ -1218,7 +1222,18 @@ theorem ceil_sub_self_eq (ha : fract a ≠ 0) : (⌈a⌉ : α) - a = 1 - fract a
 section LinearOrderedField
 variable {k : Type*} [LinearOrderedField k] [FloorRing k] {a b : k}
 
-lemma ceil_lt_mul (hb : 1 < b) (ha : (b - 1)⁻¹ ≤ a) : ⌈a⌉ < b * a := by
+lemma ceil_div_ceil_inv_sub_one (ha : 1 ≤ a) : ⌈⌈(a - 1)⁻¹⌉ / a⌉ = ⌈(a - 1)⁻¹⌉ := by
+  obtain rfl | ha := ha.eq_or_lt
+  · simp
+  have : 0 < a - 1 := by linarith
+  have : 0 < ⌈(a - 1)⁻¹⌉ := ceil_pos.2 <| by positivity
+  refine le_antisymm (ceil_le.2 <| div_le_self (by positivity) ha.le) <| ?_
+  rw [le_ceil_iff, sub_lt_comm, div_eq_mul_inv, ← mul_one_sub, ← lt_div_iff]
+  convert ceil_lt_add_one _ using 1
+  field_simp
+  exact sub_pos.2 <| inv_lt_one ha
+
+lemma ceil_lt_mul (hb : 1 < b) (ha : ⌈(b - 1)⁻¹⌉ / b < a) : ⌈a⌉ < b * a := by
   rw [← sub_pos] at hb
   calc
     ⌈a⌉ < a + 1 := ceil_lt_add_one _
@@ -1226,7 +1241,17 @@ lemma ceil_lt_mul (hb : 1 < b) (ha : (b - 1)⁻¹ ≤ a) : ⌈a⌉ < b * a := by
     _ ≤ a + (b - 1) * a := by gcongr; positivity
     _ = b * a := by rw [sub_one_mul, add_sub_cancel]
 
-lemma ceil_lt_two_mul (ha : 1 ≤ a) : ⌈a⌉ < 2 * a := ceil_lt_mul one_lt_two (by norm_num; exact ha)
+lemma ceil_le_mul (hb : 1 < b) (ha : ⌈(b - 1)⁻¹⌉ / b ≤ a) : ⌈a⌉ ≤ b * a := by
+  obtain rfl | ha := ha.eq_or_lt
+  · rw [ceil_div_ceil_inv_sub_one hb.le, mul_div_cancel₀]
+    positivity
+  · exact (ceil_lt_mul hb ha).le
+
+lemma ceil_lt_two_mul (ha : 2⁻¹ < a) : ⌈a⌉ < 2 * a :=
+  ceil_lt_mul one_lt_two (by norm_num at ha ⊢; exact ha)
+
+lemma ceil_le_two_mul (ha : 2⁻¹ ≤ a) : ⌈a⌉ ≤ 2 * a :=
+  ceil_le_mul one_lt_two (by norm_num at ha ⊢; exact ha)
 
 end LinearOrderedField
 
