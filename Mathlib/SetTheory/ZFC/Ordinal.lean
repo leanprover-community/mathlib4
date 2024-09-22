@@ -91,8 +91,12 @@ theorem isTransitive_iff_subset_powerset : x.IsTransitive ↔ x ⊆ powerset x :
 
 alias ⟨IsTransitive.subset_powerset, _⟩ := isTransitive_iff_subset_powerset
 
-/-- The von Neumann hierarchy is defined so that `vonNeumman o` is the union of the powerset of all
-`vonNeumann a` for `a < o`. -/
+/-- The von Neumann hierarchy is defined so that `vonNeumann o` is the union of the powerset of all
+`vonNeumann a` for `a < o`. It satisfies the following properties:
+
+- `vonNeumann_zero`: `vonNeumann 0 = ∅`
+- `vonNeumann_succ`: `vonNeumann (succ a) = powerset (vonNeumann a)`
+- `vonNeumann_of_isSuccPrelimit`: `IsSuccPrelimit a → vonNeumann a = ⋃ b < a, vonNeumann b` -/
 noncomputable def vonNeumann (o : Ordinal) : ZFSet :=
   ⋃₀ range fun a : Set.Iio o ↦ powerset (vonNeumann a)
 termination_by o
@@ -155,19 +159,19 @@ termination_by o
 
 @[simp]
 theorem vonNeumann_zero : vonNeumann 0 = ∅ := by
-  ext x
+  ext
   rw [vonNeumann]
   simp
 
 @[simp]
 theorem vonNeumann_succ (o : Ordinal) : vonNeumann (succ o) = powerset (vonNeumann o) := by
-  ext x
+  ext
   rw [mem_vonNeumann, mem_powerset, subset_vonNeumann, lt_succ_iff]
 
 @[simp]
 theorem vonNeumann_of_isSuccPrelimit {o : Ordinal} (h : IsSuccPrelimit o) :
     vonNeumann o = (⋃₀ range fun a : Set.Iio o ↦ vonNeumann a : ZFSet) := by
-  ext x
-  simp [mem_vonNeumann]
+  ext
+  simpa [mem_vonNeumann] using h.lt_iff_forall_lt
 
 end ZFSet
