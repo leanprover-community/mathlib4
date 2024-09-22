@@ -16,23 +16,20 @@ The Fermat numbers are a sequence of natural numbers defined as $2^{2^n} + 1$, f
 numbers $n$.
 
 ## Main theorems
-  `coprime_fermat_fermat`: two distinct fermat numbers are coprime.
+
+- `coprime_fermat_fermat`: two distinct fermat numbers are coprime.
 -/
+
 open Nat
 open scoped BigOperators
 
 /-- The Fermat numbers:
 the $n$-th Fermat number $F_n$ is defined as $2^{2^n} + 1$. -/
-def fermat : ℕ → ℕ := fun n ↦ 2 ^ (2 ^ n) + 1
+def fermat (n : ℕ) : ℕ := 2 ^ (2 ^ n) + 1
 
-@[simp]
-theorem fermat_zero : fermat 0 = 3 := by rfl
-
-@[simp]
-theorem fermat_one : fermat 1 = 5 := by rfl
-
-@[simp]
-theorem fermat_two : fermat 2 = 17 := by rfl
+@[simp] theorem fermat_zero : fermat 0 = 3 := rfl
+@[simp] theorem fermat_one : fermat 1 = 5 := rfl
+@[simp] theorem fermat_two : fermat 2 = 17 := rfl
 
 theorem strictMono_fermat : StrictMono fermat := by
   apply strictMono_nat_of_lt_succ
@@ -51,13 +48,13 @@ theorem odd_fermat {n : ℕ} : Odd (fermat n) := by
 @[simp]
 theorem fermat_product {n : ℕ} : ∏ k in Finset.range n, fermat k = fermat n - 2 := by
   induction' n with n hn
-  · trivial
+  · rfl
   rw [Finset.prod_range_succ, hn, fermat, fermat, mul_comm,
     (show 2 ^ 2 ^ n + 1 - 2 = 2 ^ 2 ^ n - 1 by omega),  ← Nat.sq_sub_sq]
   ring_nf
   omega
 
-theorem  fermat_eq_prod_add_two {n : ℕ} :  fermat n = (∏ k in Finset.range n, fermat k) + 2 := by
+theorem fermat_eq_prod_add_two {n : ℕ} : fermat n = (∏ k in Finset.range n, fermat k) + 2 := by
   rw [fermat_product, Nat.sub_add_cancel]
   exact le_of_lt two_lt_fermat
 
