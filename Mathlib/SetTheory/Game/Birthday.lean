@@ -112,9 +112,8 @@ theorem birthday_neg : ∀ x : PGame, (-x).birthday = x.birthday
 @[simp]
 theorem birthday_ordinalToPGame (o : Ordinal) : o.toPGame.birthday = o := by
   induction' o using Ordinal.induction with o IH
-  rw [toPGame_def, PGame.birthday]
+  rw [toPGame, PGame.birthday]
   simp only [lsub_empty, max_zero_right]
-  -- Porting note: was `nth_rw 1 [← lsub_typein o]`
   conv_rhs => rw [← lsub_typein o]
   congr with x
   exact IH _ (typein_lt_self x)
@@ -202,13 +201,13 @@ theorem birthday_eq_zero {x : Game} : birthday x = 0 ↔ x = 0 := by
     exact birthday_zero
 
 @[simp]
-theorem birthday_ordinalToGame (o : Ordinal) : birthday o.toGame = o := by
+theorem birthday_ordinalToGame (o : Ordinal) : birthday (toGame o) = o := by
   apply le_antisymm
   · conv_rhs => rw [← PGame.birthday_ordinalToPGame o]
     apply birthday_quot_le_pGameBirthday
-  · let ⟨x, hx₁, hx₂⟩ := birthday_eq_pGameBirthday o.toGame
+  · let ⟨x, hx₁, hx₂⟩ := birthday_eq_pGameBirthday (toGame o)
     rw [← hx₂, ← toPGame_le_iff]
-    rw [← PGame.equiv_iff_game_eq] at hx₁
+    rw [toGame_def, ← PGame.equiv_iff_game_eq] at hx₁
     exact hx₁.2.trans (PGame.le_birthday x)
 
 @[simp, norm_cast]
@@ -247,13 +246,13 @@ theorem birthday_neg (x : Game) : (-x).birthday = x.birthday := by
   conv_lhs => rw [← neg_neg x]
   exact birthday_neg' _
 
-theorem le_birthday (x : Game) : x ≤ x.birthday.toGame := by
+theorem le_birthday (x : Game) : x ≤ toGame x.birthday := by
   let ⟨y, hy₁, hy₂⟩ := birthday_eq_pGameBirthday x
   rw [← hy₁]
   apply (y.le_birthday).trans
   rw [toPGame_le_iff, hy₁, hy₂]
 
-theorem neg_birthday_le (x : Game) : -x.birthday.toGame ≤ x := by
+theorem neg_birthday_le (x : Game) : -toGame x.birthday ≤ x := by
   rw [neg_le, ← birthday_neg]
   exact le_birthday _
 
