@@ -115,7 +115,7 @@ and multiplicative endomorphisms of `Multiplicative A`. -/
 
 /-- `Multiplicative (∀ i : ι, K i)` is equivalent to `∀ i : ι, Multiplicative (K i)`. -/
 @[simps]
-def MulEquiv.piMultiplicative (K : ι → Type*) [∀ i, AddZeroClass (K i)] :
+def MulEquiv.piMultiplicative (K : ι → Type*) [∀ i, Add (K i)] :
     Multiplicative (∀ i : ι, K i) ≃* (∀ i : ι, Multiplicative (K i)) where
   toFun := fun x i ↦ Multiplicative.ofAdd <| Multiplicative.toAdd x i
   invFun := fun x ↦ Multiplicative.ofAdd fun i ↦ Multiplicative.toAdd (x i)
@@ -124,13 +124,13 @@ def MulEquiv.piMultiplicative (K : ι → Type*) [∀ i, AddZeroClass (K i)] :
   map_mul' := fun _ _ ↦ rfl
 
 /-- `Multiplicative (ι → G)` is equivalent to `ι → Multiplicative G`. -/
-abbrev MulEquiv.funMultiplicative (ι) (G) [AddZeroClass G] :
+abbrev MulEquiv.funMultiplicative (ι) (G) [Add G] :
     Multiplicative (ι → G) ≃* (ι → Multiplicative G) :=
   MulEquiv.piMultiplicative fun _ ↦ G
 
 /-- `Additive (∀ i : ι, K i)` is equivalent to `∀ i : ι, Additive (K i)`. -/
 @[simps]
-def AddEquiv.piAdditive (K : ι → Type*) [∀ i, MulOneClass (K i)] :
+def AddEquiv.piAdditive (K : ι → Type*) [∀ i, Mul (K i)] :
     Additive (∀ i : ι, K i) ≃+ (∀ i : ι, Additive (K i)) where
   toFun := fun x i ↦ Additive.ofMul <| Additive.toMul x i
   invFun := fun x ↦ Additive.ofMul fun i ↦ Additive.toMul (x i)
@@ -139,7 +139,7 @@ def AddEquiv.piAdditive (K : ι → Type*) [∀ i, MulOneClass (K i)] :
   map_add' := fun _ _ ↦ rfl
 
 /-- `Additive (ι → G)` is equivalent to `ι → Additive G`. -/
-def AddEquiv.funAdditive (ι) (G) [MulOneClass G] :
+abbrev AddEquiv.funAdditive (ι) (G) [Mul G] :
     Additive (ι → G) ≃+ (ι → Additive G) :=
   AddEquiv.piAdditive fun _ ↦ G
 
