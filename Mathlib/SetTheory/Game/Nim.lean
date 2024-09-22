@@ -261,10 +261,10 @@ theorem equiv_nim_grundyValue {G : PGame} (h : G.Impartial) : G ≈ nim (grundyV
   · rw [add_moveLeft_inl,
       ← fuzzy_congr_left (add_congr_left (Equiv.symm (equiv_nim_grundyValue (h.moveLeft i)))),
       nim_add_fuzzy_zero_iff]
-    exact grundyValue_ne_left i
+    exact grundyValue_ne_moveLeft i
   · rw [add_moveLeft_inr,
       ← (h.add ((impartial_nim _).moveLeft i)).exists_left_move_equiv_iff_fuzzy_zero]
-    obtain ⟨j, hj⟩ := exists_grundyValue_left_of_lt <| toLeftMovesNim_symm_lt i
+    obtain ⟨j, hj⟩ := exists_grundyValue_moveLeft_of_lt <| toLeftMovesNim_symm_lt i
     use toLeftMovesAdd (Sum.inl j)
     rw [add_moveLeft_inl, moveLeft_nim']
     exact Equiv.trans
