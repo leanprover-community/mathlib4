@@ -503,7 +503,7 @@ Given a commutative diagram of rings
 ```
 where the left-hand square is a pushout and the big rectangle is a pushout, then also the
 right-hand square is a pushout. Note that this is essentially the isomorphism
-`T ⊗[S] (S ⊗[R] R') ≃ₐ[T] T ⊗[R] R'.
+`T ⊗[S] (S ⊗[R] R') ≃ₐ[T] T ⊗[R] R'`.
 -/
 lemma Algebra.IsPushout.of_comp {T' : Type*} [CommRing T'] [Algebra R T']
     [Algebra S' T'] [Algebra S T'] [Algebra T T'] [Algebra R' T']
