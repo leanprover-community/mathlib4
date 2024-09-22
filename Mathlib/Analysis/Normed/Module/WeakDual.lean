@@ -378,9 +378,6 @@ lemma uc1 :
     (UniformConvergenceCLM.instTopologicalSpace (id 𝕜₁) 𝕜₁ {(C : Set E₁) | IsCompact C}) :=
   UniformConvergenceCLM.topologicalSpace_mono _ _ (fun _ hC => IsCompact.totallyBounded hC)
 
-#check convexHull
-#check balancedHull
-
 /-
 From TVS IV.3 Example - when E is complete the T of compact convergence coincides with compact
 convex convergence (III p8). The topology of compact convex convergence is compatible with the
