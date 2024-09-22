@@ -13,13 +13,10 @@ In this file, we define the ordinal ranks of `PSet` and `ZFSet`. These ranks are
 `WellFounded.rank` over `∈`, but are defined in a way that the universe levels of ranks are the
 same as the indexing types.
 
-We then define the von Neumann hierarchy, and prove that `x ∈ vonNeumann o ↔ rank x < o`.
-
 ## Definitions
 
 * `PSet.rank`: Ordinal rank of a pre-set.
 * `ZFSet.rank`: Ordinal rank of a ZFC set.
-* `vonNeumann`: The von Neumann hierarchy of sets.
 -/
 
 universe u v
