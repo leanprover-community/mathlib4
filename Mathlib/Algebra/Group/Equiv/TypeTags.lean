@@ -132,7 +132,7 @@ def MulEquiv.funMultiplicative (ι) (G) [AddZeroClass G] :
 @[simps]
 def AddEquiv.piAdditive (K : ι → Type*) [∀ i, MulOneClass (K i)] :
     Additive (∀ i : ι, K i) ≃+ (∀ i : ι, Additive (K i)) where
-  toFun := fun x i ↦ Additive.ofMul <| Additive.ofMul x i
+  toFun := fun x i ↦ Additive.ofMul <| Additive.toMul x i
   invFun := fun x ↦ Additive.ofMul fun i ↦ Additive.toMul (x i)
   left_inv := fun _ ↦ rfl
   right_inv := fun _ ↦ rfl
