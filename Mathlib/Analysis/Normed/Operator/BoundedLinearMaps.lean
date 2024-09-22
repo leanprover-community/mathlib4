@@ -437,7 +437,7 @@ variable (𝕜)
 
 /-- The function `ContinuousLinearMap.mulLeftRight : 𝕜' × 𝕜' → (𝕜' →L[𝕜] 𝕜')` is a bounded
 bilinear map. -/
-theorem ContinuousLinearMap.mulLeftRight_isBoundedBilinear (𝕜' : Type*) [NormedRing 𝕜']
+theorem ContinuousLinearMap.mulLeftRight_isBoundedBilinear (𝕜' : Type*) [SeminormedRing 𝕜']
     [NormedAlgebra 𝕜 𝕜'] :
     IsBoundedBilinearMap 𝕜 fun p : 𝕜' × 𝕜' => ContinuousLinearMap.mulLeftRight 𝕜 𝕜' p.1 p.2 :=
   (ContinuousLinearMap.mulLeftRight 𝕜 𝕜').isBoundedBilinearMap
@@ -472,9 +472,17 @@ theorem ContinuousOn.clm_apply {X} [TopologicalSpace X] {f : X → (E →L[𝕜]
     ContinuousOn (fun x ↦ f x (g x)) s :=
   isBoundedBilinearMap_apply.continuous.comp_continuousOn (hf.prod hg)
 
+
+end
+
 namespace ContinuousLinearEquiv
 
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+
 open Set
+open scoped Topology
 
 /-!
 ### The set of continuous linear equivalences between two Banach spaces is open
