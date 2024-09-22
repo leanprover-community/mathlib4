@@ -161,6 +161,12 @@ lemma eq_disjSum_iff {u : Finset (α ⊕ β)} : u = s.disjSum t ↔ u.toLeft = s
 
 variable [DecidableEq α] [DecidableEq β] {s t : Finset (α ⊕ β)}
 
+lemma toLeft_image_swap {s : Finset (α ⊕ β)} : (s.image Sum.swap).toLeft = s.toRight := by
+  ext x; simp
+
+lemma toRight_image_swap {s : Finset (α ⊕ β)} : (s.image Sum.swap).toRight = s.toLeft := by
+  ext x; simp
+
 @[simp] lemma toLeft_insert_inl : (insert (inl a) s).toLeft = insert a s.toLeft := by ext y; simp
 @[simp] lemma toLeft_insert_inr : (insert (inr b) s).toLeft = s.toLeft := by ext y; simp
 @[simp] lemma toRight_insert_inl : (insert (inl a) s).toRight = s.toRight := by ext y; simp
