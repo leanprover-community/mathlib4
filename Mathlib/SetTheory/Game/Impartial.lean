@@ -74,7 +74,7 @@ termination_by G
 theorem add {G H : PGame} (hG : G.Impartial) (hH : H.Impartial) : (G + H).Impartial := by
   rw [impartial_def]
   refine ⟨Equiv.trans (add_congr hG.neg_equiv_self hH.neg_equiv_self)
-      (Equiv.symm (negAddRelabelling _ _).equiv), ?_, ?_⟩ <;>
+    (Equiv.symm (negAddRelabelling _ _).equiv), ?_, ?_⟩ <;>
   intro k
   apply leftMoves_add_cases k
   on_goal 3 => apply rightMoves_add_cases k
