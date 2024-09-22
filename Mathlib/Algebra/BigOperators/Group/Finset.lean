@@ -539,15 +539,18 @@ theorem prod_biUnion [DecidableEq α] {s : Finset γ} {t : γ → Finset α}
     (hs : Set.PairwiseDisjoint (↑s) t) : ∏ x ∈ s.biUnion t, f x = ∏ x ∈ s, ∏ i ∈ t x, f i := by
   rw [← disjiUnion_eq_biUnion _ _ hs, prod_disjiUnion]
 
-/-- Product over a sigma type equals the product of fiberwise products. For rewriting
+/-- The product over a sigma type equals the product of the fiberwise products. For rewriting
 in the reverse direction, use `Finset.prod_sigma'`. -/
-@[to_additive "Sum over a sigma type equals the sum of fiberwise sums. For rewriting
+@[to_additive "The sum over a sigma type equals the sum of the fiberwise sums. For rewriting
 in the reverse direction, use `Finset.sum_sigma'`"]
 theorem prod_sigma {σ : α → Type*} (s : Finset α) (t : ∀ a, Finset (σ a)) (f : Sigma σ → β) :
     ∏ x ∈ s.sigma t, f x = ∏ a ∈ s, ∏ s ∈ t a, f ⟨a, s⟩ := by
   simp_rw [← disjiUnion_map_sigma_mk, prod_disjiUnion, prod_map, Function.Embedding.sigmaMk_apply]
 
-@[to_additive]
+/-- The product over a sigma type equals the product of the fiberwise products. For rewriting
+in the reverse direction, use `Finset.prod_sigma`. -/
+@[to_additive "The sum over a sigma type equals the sum of the fiberwise sums. For rewriting
+in the reverse direction, use `Finset.sum_sigma`"]
 theorem prod_sigma' {σ : α → Type*} (s : Finset α) (t : ∀ a, Finset (σ a)) (f : ∀ a, σ a → β) :
     (∏ a ∈ s, ∏ s ∈ t a, f a s) = ∏ x ∈ s.sigma t, f x.1 x.2 :=
   Eq.symm <| prod_sigma s t fun x => f x.1 x.2
@@ -775,13 +778,18 @@ lemma prod_mul_prod_comm (f g h i : α → β) :
     (∏ a ∈ s, f a * g a) * ∏ a ∈ s, h a * i a = (∏ a ∈ s, f a * h a) * ∏ a ∈ s, g a * i a := by
   simp_rw [prod_mul_distrib, mul_mul_mul_comm]
 
-@[to_additive]
+/-- The product over a product set equals the product of the fiberwise products. For rewriting
+in the reverse direction, use `Finset.prod_product'`. -/
+@[to_additive "The sum over a product set equals the sum of the fiberwise sums. For rewriting
+in the reverse direction, use `Finset.sum_product'`"]
 theorem prod_product (s : Finset γ) (t : Finset α) (f : γ × α → β) :
     ∏ x ∈ s ×ˢ t, f x = ∏ x ∈ s, ∏ y ∈ t, f (x, y) :=
   prod_finset_product (s ×ˢ t) s (fun _a => t) fun _p => mem_product
 
-/-- An uncurried version of `Finset.prod_product`. -/
-@[to_additive "An uncurried version of `Finset.sum_product`"]
+/-- The product over a product set equals the product of the fiberwise products. For rewriting
+in the reverse direction, use `Finset.prod_product`. -/
+@[to_additive "The sum over a product set equals the sum of the fiberwise sums. For rewriting
+in the reverse direction, use `Finset.sum_product`"]
 theorem prod_product' (s : Finset γ) (t : Finset α) (f : γ → α → β) :
     ∏ x ∈ s ×ˢ t, f x.1 x.2 = ∏ x ∈ s, ∏ y ∈ t, f x y :=
   prod_product ..

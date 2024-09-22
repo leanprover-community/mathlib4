@@ -45,19 +45,14 @@ instance : WellFoundedLT ℕ∞ := inferInstanceAs (WellFoundedLT (WithTop ℕ))
 instance : CharZero ℕ∞ := inferInstanceAs (CharZero (WithTop ℕ))
 instance : IsWellOrder ℕ∞ (· < ·) where
 
-instance : SuccAddOrder ℕ∞ := by
-  constructor
-  rintro (_ | _)
-  · rfl
-  · change ite .. = _
-    simp
-    rfl
-
 variable {m n : ℕ∞}
 
 /-- Lemmas about `WithTop` expect (and can output) `WithTop.some` but the normal form for coercion
 `ℕ → ℕ∞` is `Nat.cast`. -/
 @[simp] theorem some_eq_coe : (WithTop.some : ℕ → ℕ∞) = Nat.cast := rfl
+
+instance : SuccAddOrder ℕ∞ where
+  succ_eq_add_one x := by cases x <;> simp [SuccOrder.succ]
 
 -- Porting note: `simp` and `norm_cast` can prove it
 --@[simp, norm_cast]

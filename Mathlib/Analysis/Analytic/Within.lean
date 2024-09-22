@@ -4,8 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving
 -/
 import Mathlib.Analysis.Analytic.Constructions
+<<<<<<< HEAD
 import Mathlib.Analysis.Analytic.ChangeOrigin
 -- import Mathlib.Analysis.Calculus.FDeriv.Analytic
+=======
+>>>>>>> SG_essai
 
 /-!
 # Properties of analyticity restricted to a set

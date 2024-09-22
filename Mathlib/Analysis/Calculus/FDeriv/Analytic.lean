@@ -3,7 +3,6 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.Analytic.CPolynomial
 import Mathlib.Analysis.Analytic.Within
 import Mathlib.Analysis.Calculus.Deriv.Basic
@@ -92,6 +91,12 @@ theorem HasFPowerSeriesWithinAt.fderivWithin_eq
 theorem HasFPowerSeriesAt.fderiv_eq (h : HasFPowerSeriesAt f p x) :
     fderiv 𝕜 f x = continuousMultilinearCurryFin1 𝕜 E F (p 1) :=
   h.hasFDerivAt.fderiv
+
+theorem AnalyticAt.hasStrictFDerivAt (h : AnalyticAt 𝕜 f x) :
+    HasStrictFDerivAt f (fderiv 𝕜 f x) x := by
+  rcases h with ⟨p, hp⟩
+  rw [hp.fderiv_eq]
+  exact hp.hasStrictFDerivAt
 
 theorem HasFPowerSeriesWithinOnBall.differentiableOn [CompleteSpace F]
     (h : HasFPowerSeriesWithinOnBall f p s x r) :
@@ -307,6 +312,15 @@ theorem AnalyticOn.iteratedFDeriv_of_isOpen (h : AnalyticOn 𝕜 f s) (hs : IsOp
   rw [← hs.analyticWithinOn_iff_analyticOn] at h ⊢
   exact (h.iteratedFDerivWithin hs.uniqueDiffOn n).congr
     (fun x hx ↦ (iteratedFDerivWithin_of_isOpen n hs hx).symm)
+
+lemma AnalyticWithinAt.contDiffWithinAt [CompleteSpace F] {f : E → F} {s : Set E} {x : E}
+    (h : AnalyticWithinAt 𝕜 f s x) {n : ℕ∞} : ContDiffWithinAt 𝕜 n f s x := by
+  rcases h.exists_analyticAt with ⟨g, fx, fg, hg⟩
+  exact hg.contDiffAt.contDiffWithinAt.congr (fg.mono (subset_insert _ _)) fx
+
+lemma AnalyticWithinOn.contDiffOn [CompleteSpace F] {f : E → F} {s : Set E}
+    (h : AnalyticWithinOn 𝕜 f s) {n : ℕ∞} : ContDiffOn 𝕜 n f s :=
+  fun x m ↦ (h x m).contDiffWithinAt
 
 end fderiv
 
