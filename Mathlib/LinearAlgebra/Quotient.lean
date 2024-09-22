@@ -311,8 +311,8 @@ theorem liftQ_apply (f : M →ₛₗ[τ₁₂] M₂) {h} (x : M) : p.liftQ f h (
 @[simp]
 theorem liftQ_mkQ (f : M →ₛₗ[τ₁₂] M₂) (h) : (p.liftQ f h).comp p.mkQ = f := by ext; rfl
 
-theorem pi_liftQ_eq_liftQ_pi {ι R M : Type*} {N : ι → Type*} [Ring R] [AddCommGroup M]
-    [Module R M] [∀ i, AddCommGroup (N i)] [∀ i, Module R (N i)]
+theorem pi_liftQ_eq_liftQ_pi {ι : Type*} {N : ι → Type*}
+    [∀ i, AddCommGroup (N i)] [∀ i, Module R (N i)]
     (f : (i : ι) → M →ₗ[R] (N i)) {p : Submodule R M} (h : ∀ i, p ≤ ker (f i)) :
     LinearMap.pi (fun i ↦ p.liftQ (f i) (h i)) =
       p.liftQ (LinearMap.pi f) (LinearMap.ker_pi f ▸ le_iInf h) := by
