@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Set.Countable
 import Mathlib.Logic.Small.Set
+import Mathlib.Logic.UnivLE
 import Mathlib.Order.SuccPred.CompleteLinearOrder
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
 import Mathlib.Algebra.Order.Ring.Nat
@@ -822,13 +823,6 @@ theorem lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le {α : Type u} {β : Type v
                 Equiv.ulift.symm)).trans_le
         (hf b)
 
-/-- The range of an indexed cardinal function, whose outputs live in a higher universe than the
-    inputs, is always bounded above. -/
-theorem bddAbove_range {ι : Type u} (f : ι → Cardinal.{max u v}) : BddAbove (Set.range f) :=
-  ⟨sum f, by
-    rintro a ⟨i, rfl⟩
-    exact le_sum f i⟩
-
 instance (a : Cardinal.{u}) : Small.{u} (Set.Iic a) := by
   rw [← mk_out a]
   apply @small_of_surjective (Set a.out) (Iic #a.out) _ fun x => ⟨#x, mk_set_le x⟩
@@ -842,17 +836,18 @@ instance (a : Cardinal.{u}) : Small.{u} (Set.Iio a) :=
 theorem bddAbove_iff_small {s : Set Cardinal.{u}} : BddAbove s ↔ Small.{u} s :=
   ⟨fun ⟨a, ha⟩ => @small_subset _ (Iic a) s (fun x h => ha h) _, by
     rintro ⟨ι, ⟨e⟩⟩
-    suffices (range fun x : ι => (e.symm x).1) = s by
-      rw [← this]
-      apply bddAbove_range.{u, u}
-    ext x
-    refine ⟨?_, fun hx => ⟨e ⟨x, hx⟩, ?_⟩⟩
-    · rintro ⟨a, rfl⟩
-      exact (e.symm a).2
-    · simp_rw [Equiv.symm_apply_apply]⟩
+    use sum.{u, u} fun x ↦ e.symm x
+    intro a ha
+    simpa using le_sum (fun x ↦ e.symm x) (e ⟨a, ha⟩)⟩
 
 theorem bddAbove_of_small (s : Set Cardinal.{u}) [h : Small.{u} s] : BddAbove s :=
   bddAbove_iff_small.2 h
+
+@[deprecated bddAbove_of_small (since := "2024-09-22")]
+theorem bddAbove_range {ι : Type u} (f : ι → Cardinal.{max u v}) : BddAbove (Set.range f) :=
+  ⟨sum f, by
+    rintro a ⟨i, rfl⟩
+    exact le_sum f i⟩
 
 theorem bddAbove_image (f : Cardinal.{u} → Cardinal.{max u v}) {s : Set Cardinal.{u}}
     (hs : BddAbove s) : BddAbove (f '' s) := by
@@ -870,7 +865,7 @@ theorem iSup_le_sum {ι} (f : ι → Cardinal) : iSup f ≤ sum f :=
 theorem sum_le_iSup_lift {ι : Type u}
     (f : ι → Cardinal.{max u v}) : sum f ≤ Cardinal.lift #ι * iSup f := by
   rw [← (iSup f).lift_id, ← lift_umax, lift_umax.{max u v, u}, ← sum_const]
-  exact sum_le_sum _ _ (le_ciSup <| bddAbove_range f)
+  exact sum_le_sum _ _ (le_ciSup <| bddAbove_of_small _)
 
 theorem sum_le_iSup {ι : Type u} (f : ι → Cardinal.{u}) : sum f ≤ #ι * iSup f := by
   rw [← lift_id #ι]
