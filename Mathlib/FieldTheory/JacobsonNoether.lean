@@ -191,6 +191,72 @@ theorem Jacobson_Noether (H : k ≠ (⊤ : Subring D)) :
 
 end JacobsonNoether
 
+namespace canary
+
+open Algebra Subring Polynomial
+
+example {L D : Type*} [Field L] [DivisionRing D] [Algebra L D] [alg : Algebra.IsAlgebraic L D]
+    (hcenter : Subalgebra.center L D = ⊥) (hneq : (⊥ : Subalgebra L D) ≠ ⊤) :
+    ∃ x : D, x ∉ (⊥ : Subalgebra L D) ∧ IsSeparable L x := by
+  set k' := (⊥ : Subalgebra L D).toSubring with hk'
+  have hcenter' : k' = center D := by apply (hcenter.symm) ▸ hk'
+  have aux1 : (⊤ : Subring D) = (⊤ : Subalgebra L D).toSubring := rfl
+  have ntrivial : k' ≠ ⊤ := Ne.intro
+    fun heq ↦ hneq <| toSubring_eq_top.mp <| aux1 ▸ hk' ▸ heq
+  set ψ : L ≃+* (⊥ : Subalgebra L D) := by
+    · use ((Algebra.botEquiv L D).toRingEquiv).symm
+      · intro x y
+        simp only [Equiv.toFun_as_coe, EquivLike.coe_coe, map_mul]
+      · intro x y
+        simp only [Equiv.toFun_as_coe, EquivLike.coe_coe, map_add]
+  set φ : (⊥ : Subalgebra L D) ≃+* (center D) := by
+    rw [← hcenter]
+    exact RingEquiv.refl (Subalgebra.center L D)
+  set equiv : L ≃+* (center D) := ψ.trans φ
+  let keymap : L →+* (center D) := {
+    toFun := fun l ↦ ⟨(algebraMap L D) l,
+        mem_center_iff.mpr (fun g ↦ Eq.symm (commutes' l g))⟩
+    map_one' := by simp only [map_one]; rfl
+    map_mul' := by
+      simp only [map_mul, MulMemClass.mk_mul_mk, implies_true]
+    map_zero' := by simp only [map_zero]; rfl
+    map_add' := by
+      simp only [map_add, AddMemClass.mk_add_mk, implies_true]
+  }
+  letI : Algebra L (center D) := keymap.toAlgebra
+  have integral (x : D) : IsIntegral L x := IsAlgebraic.isIntegral (alg.1 x)
+  letI : Algebra.IsAlgebraic (center D) D := by
+    refine @Algebra.IsIntegral.isAlgebraic (center D) D _ _ _ ?_ ?_
+    · exact instNontrivialSubtypeMem (center D)
+    · refine isIntegral_def.mpr ?refine_2.a
+      intro x
+      obtain ⟨p, ⟨pmonic, evalp⟩⟩ := integral x
+      set p' := mapRingHom (algebraMap L (center D)) p with hp'
+      use p'
+      constructor
+      · refine @Monic.map L (center D) _ p _ (algebraMap L (center D)) pmonic
+      · rw [hp', ← eval_map, coe_mapRingHom]
+        rw [← eval_map] at evalp
+        have : map (algebraMap (center D) D) (map (algebraMap L (center D)) p) =
+          map (algebraMap L D) p := by
+          simp_all only [ne_eq, top_toSubring, coe_mapRingHom, k', p', this, keymap]
+          ext n : 1
+          simp_all only [coeff_map]; rfl
+        rw [this]
+        exact evalp
+  obtain ⟨x, hx⟩ := @JacobsonNoether.Jacobson_Noether D _ _ (hcenter' ▸ ntrivial)
+  use x
+  constructor
+  · simp_rw [← hcenter', hk'] at hx
+    exact hx.1
+  · have base := hx.2
+    /-Now the remaining task is to
+    ***prove `IsSeparable L x` from `IsSeparable (center D) x`***
+    ***We've proved that `L ≃+* (center D)`*** -/
+    sorry
+
+end canary
+
 #exit
 namespace test
 
