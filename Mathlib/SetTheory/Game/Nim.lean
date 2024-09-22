@@ -317,25 +317,27 @@ theorem grundyValue_eq_mex_right {G : PGame} (h : G.Impartial) :
 
 theorem grundyValue_ne_moveRight {G : PGame} (h : G.Impartial) (i : G.RightMoves) :
     grundyValue (G.moveRight i) ≠ grundyValue G := by
-  convert grundyValue_ne_moveLeft (toLeftMovesNeg i) using 1 <;> simp
+  convert ← grundyValue_ne_moveLeft (toLeftMovesNeg i) using 1
+  · simpa using grundyValue_neg (h.moveRight i)
+  · exact grundyValue_neg h
 
-theorem le_grundyValue_of_Iio_subset_moveRight {G : PGame} [G.Impartial] {o : Ordinal}
+theorem le_grundyValue_of_Iio_subset_moveRight {G : PGame} (hG : G.Impartial) {o : Ordinal}
     (h : Set.Iio o ⊆ Set.range (grundyValue ∘ G.moveRight)) : o ≤ grundyValue G := by
   by_contra! ho
   obtain ⟨i, hi⟩ := h ho
-  exact grundyValue_ne_moveRight i hi
+  exact grundyValue_ne_moveRight hG i hi
 
-theorem exists_grundyValue_moveRight_of_lt {G : PGame} [G.Impartial] {o : Ordinal}
+theorem exists_grundyValue_moveRight_of_lt {G : PGame} (hG : G.Impartial) {o : Ordinal}
     (h : o < grundyValue G) : ∃ i, grundyValue (G.moveRight i) = o := by
-  rw [← grundyValue_neg] at h
+  rw [← grundyValue_neg hG] at h
   obtain ⟨i, hi⟩ := exists_grundyValue_moveLeft_of_lt h
   use toLeftMovesNeg.symm i
-  rwa [← grundyValue_neg, ← moveLeft_neg']
+  rwa [← grundyValue_neg (hG.moveRight _), ← moveLeft_neg']
 
-theorem grundyValue_le_of_forall_moveRight {G : PGame} [G.Impartial] {o : Ordinal}
+theorem grundyValue_le_of_forall_moveRight {G : PGame} (hG : G.Impartial) {o : Ordinal}
     (h : ∀ i, grundyValue (G.moveRight i) ≠ o) : G.grundyValue ≤ o := by
   contrapose! h
-  exact exists_grundyValue_moveRight_of_lt h
+  exact exists_grundyValue_moveRight_of_lt hG h
 
 -- Todo: redefine `grundyValue` as a nimber, and prove `grundyValue (nim a + nim b) = a + b` for all
 -- nimbers.
