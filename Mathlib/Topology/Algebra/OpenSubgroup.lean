@@ -731,8 +731,8 @@ noncomputable def OpenNormalSubgroupSubClopenNhdsOfOne {G : Type*} [Group G] [To
   let H := OpenSubgroupSubClopenNhdsOfOne UClopen einU
   letI : Subgroup.FiniteIndex H.1 := Subgroup.finiteIndex_of_finite_quotient H.1
   { toSubgroup := Subgroup.normalCore H
-    isOpen' := TopologicalGroup.finiteindex_closedSubgroup_isOpen _ <|
-      TopologicalGroup.normalCore_isClosed H.1 <| OpenSubgroup.isClosed H }
+    isOpen' := Subgroup.isOpen_of_isClosed_of_finiteIndex _ <|
+      Subgroup.normalCore_isClosed H.1 <| OpenSubgroup.isClosed H }
 
 theorem openNormalSubgroupSubClopenNhdsOfOne_spec {G : Type*} [Group G] [TopologicalSpace G]
     [TopologicalGroup G] [CompactSpace G] {U : Set G}
