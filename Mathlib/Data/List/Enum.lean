@@ -44,22 +44,7 @@ theorem get_enum (l : List α) (i : Fin l.enum.length) :
     l.enum.get i = (i.1, l.get (i.cast enum_length)) := by
   simp
 
-theorem forall_mem_enumFrom {l : List α} {n : ℕ} {p : ℕ × α → Prop} :
-    (∀ x ∈ l.enumFrom n, p x) ↔ ∀ i : Fin (length l), p (n + i, l.get i) := by
-  simp only [forall_mem_iff_get, get_enumFrom, Fin.forall_iff, enumFrom_length, Fin.cast]
-
-theorem forall_mem_enum {l : List α} {p : ℕ × α → Prop} :
-    (∀ x ∈ l.enum, p x) ↔ ∀ i : Fin (length l), p (i, l.get i) :=
-  forall_mem_enumFrom.trans <| by simp
-
-theorem exists_mem_enumFrom {l : List α} {n : ℕ} {p : ℕ × α → Prop} :
-    (∃ x ∈ l.enumFrom n, p x) ↔ ∃ i : Fin (length l), p (n + i, l.get i) := by
-  simp only [exists_mem_iff_get, get_enumFrom, Fin.exists_iff, enumFrom_length, Fin.cast]
-
-theorem exists_mem_enum {l : List α} {p : ℕ × α → Prop} :
-    (∃ x ∈ l.enum, p x) ↔ ∃ i : Fin (length l), p (i, l.get i) :=
-  exists_mem_enumFrom.trans <| by simp
-
+@[deprecated mk_add_mem_enumFrom_iff_getElem? (since := "2024-08-12")]
 theorem mk_add_mem_enumFrom_iff_get? {n i : ℕ} {x : α} {l : List α} :
     (n + i, x) ∈ enumFrom n l ↔ l.get? i = x := by
   simp [mem_iff_get?]

@@ -668,8 +668,6 @@ theorem sublist_of_cons_sublist_cons {a} (h : a :: l₁ <+ a :: l₂) : l₁ <+ 
 
 @[deprecated (since := "2024-04-07")] alias cons_sublist_cons_iff := cons_sublist_cons
 
-attribute [gcongr] Sublist.append Sublist.append_left Sublist.append_right Sublist.reverse
-
 -- Porting note: this lemma seems to have been renamed on the occasion of its move to Batteries
 alias sublist_nil_iff_eq_nil := sublist_nil
 
@@ -2301,8 +2299,8 @@ theorem disjoint_pmap {p : α → Prop} {f : ∀ a : α, p a → β} {s t : List
     (hf : ∀ (a a' : α) (ha : p a) (ha' : p a'), f a ha = f a' ha' → a = a')
     (h : Disjoint s t) :
     Disjoint (s.pmap f hs) (t.pmap f ht) := by
-  simp only [Disjoint, mem_pmap, exists_imp]
-  rintro b a ha rfl a' ha' ha''
+  simp only [Disjoint, mem_pmap]
+  rintro b ⟨a, ha, rfl⟩ ⟨a', ha', ha''⟩
   apply h ha
   rwa [hf a a' (hs a ha) (ht a' ha') ha''.symm]
 
