@@ -86,7 +86,7 @@ variable {G : Type u} [Group G] [TopologicalSpace G] [ContinuousMul G]
 
 lemma normalCore_isClosed (H : Subgroup G) (h : IsClosed (H : Set G)) :
     IsClosed (H.normalCore : Set G) := by
-  rw [Subgroup.normalCore_eq_iInf_conjAct]
+  rw [normalCore_eq_iInf_conjAct]
   push_cast
   apply isClosed_iInter
   intro g
