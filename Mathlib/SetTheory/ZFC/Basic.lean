@@ -1087,6 +1087,10 @@ theorem toSet_range {α} [Small.{u} α] (f : α → ZFSet.{u}) :
   ext
   simp
 
+theorem mem_range_self {α} [Small.{u} α] {f : α → ZFSet.{u}} (a : α) : f a ∈ range f := by
+  rw [← mem_toSet, toSet_range]
+  exact Set.mem_range_self a
+
 /-- Kuratowski ordered pair -/
 def pair (x y : ZFSet.{u}) : ZFSet.{u} :=
   {{x}, {x, y}}

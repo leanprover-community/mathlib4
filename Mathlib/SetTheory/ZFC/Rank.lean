@@ -189,11 +189,16 @@ theorem le_succ_rank_sUnion : rank x ≤ succ (rank (⋃₀ x)) := by
   exists z
 
 @[simp]
-theorem rank_range {α : Type u} {f : α → ZFSet.{max u v}} :
-    rank (range f) = lsub fun i => rank (f i) := by
-  apply (lsub_le _).antisymm'
-  · simpa [rank_le_iff] using lt_lsub _
-  · simp [rank_lt_of_mem]
+theorem rank_range {α} [Small.{u} α] {f : α → ZFSet.{u}} :
+    rank (range f) = ⨆ i, succ (rank (f i)) := by
+  apply le_antisymm
+  · rw [rank_le_iff]
+    simp_rw [mem_range]
+    rintro _ ⟨a, rfl⟩
+    rw [← succ_le_iff]
+    apply Ordinal.le_iSup
+  ·
+    simp [rank_lt_of_mem]
 
 /-- `ZFSet.rank` is equal to the `WellFounded.rank` over `∈`. -/
 theorem rank_eq_wfRank : lift.{u + 1, u} (rank x) = mem_wf.rank x := by

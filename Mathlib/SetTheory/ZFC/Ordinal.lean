@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
 import Mathlib.SetTheory.Ordinal.Arithmetic
-import Mathlib.SetTheory.ZFC.Basic
+import Mathlib.SetTheory.ZFC.Rank
 
 /-!
 # Von Neumann ordinals
@@ -31,8 +31,9 @@ universe u
 
 variable {x y z : ZFSet.{u}}
 
-namespace ZFSet
+open Order
 
+namespace ZFSet
 
 /-- A transitive set is one where every element is a subset. -/
 def IsTransitive (x : ZFSet) : Prop :=
@@ -90,9 +91,58 @@ theorem isTransitive_iff_subset_powerset : x.IsTransitive ↔ x ⊆ powerset x :
 
 alias ⟨IsTransitive.subset_powerset, _⟩ := isTransitive_iff_subset_powerset
 
-end ZFSet
-
-/-- The von Neumann hierarchy is defined so that `vonNeumman o` is the powerset of the union of all
+/-- The von Neumann hierarchy is defined so that `vonNeumman o` is the union of the powerset of all
 `vonNeumann a` for `a < o`. -/
-def vonNeumann (o : Ordinal) : ZFSet :=
-  ZFSet.powerset (⋃ a < o, vonNeumann a)
+noncomputable def vonNeumann (o : Ordinal) : ZFSet :=
+  ⋃₀ range fun a : Set.Iio o ↦ powerset (vonNeumann a)
+termination_by o
+decreasing_by exact a.2
+
+theorem isTransitive_vonNeumann (o : Ordinal) : IsTransitive (vonNeumann o) := by
+  rw [vonNeumann]
+  apply IsTransitive.sUnion'
+  simp_rw [mem_range]
+  rintro _ ⟨a, rfl⟩
+  exact (isTransitive_vonNeumann a).powerset
+termination_by o
+decreasing_by exact a.2
+
+theorem vonNeumann_mem_of_lt {a b : Ordinal} (h : a < b) : vonNeumann a ∈ vonNeumann b := by
+  rw [vonNeumann, mem_sUnion]
+  refine ⟨_, mem_range_self ⟨a, h⟩, ?_⟩
+  rw [mem_powerset]
+
+theorem vonNeumann_subset_of_le {a b : Ordinal} (h : a ≤ b) : vonNeumann a ⊆ vonNeumann b := by
+  obtain rfl | h := h.eq_or_lt
+  · rfl
+  · exact (isTransitive_vonNeumann _).subset_of_mem (vonNeumann_mem_of_lt h)
+
+theorem mem_vonNeumann {o : Ordinal} {x : ZFSet} : x ∈ vonNeumann o ↔ rank x < o := by
+  
+
+#exit
+
+@[simp]
+theorem vonNeumann_zero : vonNeumann 0 = ∅ := by
+  ext x
+  rw [vonNeumann]
+  simp
+
+/-@[simp]
+theorem vonNeumann_succ (o : Ordinal) : vonNeumann (succ o) = powerset (vonNeumann o) := by
+  ext x
+  rw [mem_powerset, mem_vonNeumann]
+  constructor
+  · intro hx y hy
+    obtain ⟨a, ho, ha⟩ := hx y hy
+    rw [lt_succ_iff] at ho
+    exact vonNeumann_subset_of_le ho ha
+  · exact fun hx y hy ↦ ⟨o, lt_succ o, hx hy⟩
+
+@[simp]
+theorem vonNeumann_of_isSuccLimit {o : Ordinal} (h : IsSuccLimit o) :
+    vonNeumann o = (⋃₀ range fun a : Set.Iio o ↦ vonNeumann a : ZFSet) := by
+  rw [vonNeumann]
+  rw [powerset_eq]-/
+
+end ZFSet
