@@ -581,7 +581,7 @@ theorem IsPredPrelimit.le_iff_forall_le (h : IsPredPrelimit a) : b ≤ a ↔ ∀
   h.dual.le_iff_forall_le
 
 theorem IsPredPrelimit.lt_iff_exists_lt (h : IsPredPrelimit b) : b < a ↔ ∃ c, b < c ∧ c < a :=
-  h.dual.lt_iff_forall_lt
+  h.dual.lt_iff_exists_lt
 
 end LinearOrder
 
