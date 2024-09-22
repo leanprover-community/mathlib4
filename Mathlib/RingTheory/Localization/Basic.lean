@@ -828,6 +828,48 @@ theorem map_nonZeroDivisors_le [IsLocalization M S] :
     (nonZeroDivisors R).map (algebraMap R S) ≤ nonZeroDivisors S :=
   Submonoid.map_le_iff_le_comap.mpr (nonZeroDivisors_le_comap M S)
 
+/-- If `S₁` is the localization of `R` at `M₁` and `S₂` is the localization of
+`R` at `M₂`, then every localization `T` of `S₂` at `M₁` is also a localization of
+`S₁` at `M₂`, in other words `M₁⁻¹M₂⁻¹R` can be identified with `M₂⁻¹M₁⁻¹R`. -/
+lemma commutes (S₁ S₂ T : Type*) [CommSemiring S₁]
+    [CommSemiring S₂] [CommSemiring T] [Algebra R S₁] [Algebra R S₂] [Algebra R T] [Algebra S₁ T]
+    [Algebra S₂ T] [IsScalarTower R S₁ T] [IsScalarTower R S₂ T] (M₁ M₂ : Submonoid R)
+    [IsLocalization M₁ S₁] [IsLocalization M₂ S₂]
+    [IsLocalization (Algebra.algebraMapSubmonoid S₂ M₁) T] :
+    IsLocalization (Algebra.algebraMapSubmonoid S₁ M₂) T where
+  map_units' := by
+    rintro ⟨m, ⟨a, ha, rfl⟩⟩
+    rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply R S₂ T]
+    exact IsUnit.map _ (IsLocalization.map_units' ⟨a, ha⟩)
+  surj' a := by
+    obtain ⟨⟨y, -, m, hm, rfl⟩, hy⟩ := surj (M := Algebra.algebraMapSubmonoid S₂ M₁) a
+    rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply R S₁ T] at hy
+    obtain ⟨⟨z, n, hn⟩, hz⟩ := IsLocalization.surj (M := M₂) y
+    have hunit : IsUnit (algebraMap R S₁ m) := map_units' ⟨m, hm⟩
+    use ⟨algebraMap R S₁ z * hunit.unit⁻¹, ⟨algebraMap R S₁ n, n, hn, rfl⟩⟩
+    rw [map_mul, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply R S₂ T]
+    conv_rhs => rw [← IsScalarTower.algebraMap_apply]
+    rw [IsScalarTower.algebraMap_apply R S₂ T, ← hz, map_mul, ← hy]
+    convert_to _ = a * (algebraMap S₂ T) ((algebraMap R S₂) n) *
+        (algebraMap S₁ T) (((algebraMap R S₁) m) * hunit.unit⁻¹.val)
+    · rw [map_mul]
+      ring
+    simp
+  exists_of_eq {x y} hxy := by
+    obtain ⟨r, s, d, hr, hs⟩ := IsLocalization.surj₂ M₁ S₁ x y
+    apply_fun (· * algebraMap S₁ T (algebraMap R S₁ d)) at hxy
+    simp_rw [← map_mul, hr, hs, ← IsScalarTower.algebraMap_apply,
+      IsScalarTower.algebraMap_apply R S₂ T] at hxy
+    obtain ⟨⟨-, c, hmc, rfl⟩, hc⟩ := exists_of_eq (M := Algebra.algebraMapSubmonoid S₂ M₁) hxy
+    simp_rw [← map_mul] at hc
+    obtain ⟨a, ha⟩ := IsLocalization.exists_of_eq (M := M₂) hc
+    use ⟨algebraMap R S₁ a, a, a.property, rfl⟩
+    apply (map_units S₁ d).mul_right_cancel
+    rw [mul_assoc, hr, mul_assoc, hs]
+    apply (map_units S₁ ⟨c, hmc⟩).mul_right_cancel
+    rw [← map_mul, ← map_mul, mul_assoc, mul_comm _ c, ha, map_mul, map_mul]
+    ring
+
 end IsLocalization
 
 namespace Localization
