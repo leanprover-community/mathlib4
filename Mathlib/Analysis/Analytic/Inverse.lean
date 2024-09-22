@@ -30,10 +30,10 @@ open scoped Topology
 
 open Finset Filter
 
-namespace FormalMultilinearSeries
-
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+
+namespace FormalMultilinearSeries
 
 /-! ### The left inverse of a formal multilinear series -/
 
@@ -554,3 +554,11 @@ theorem radius_rightInv_pos_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F)
       _ ≤ (I + 1) * a := IRec (n + 1) (by norm_num)
 
 end FormalMultilinearSeries
+
+#where
+
+theorem HasFPowerSeriesAt.inverse (f : PartialHomeomorph E F)
+    {i : E ≃L[𝕜] F} {a : F} (ha : a ∈ f.target) {p : FormalMultilinearSeries 𝕜 E F}
+    (h : HasFPowerSeriesAt f p (f.symm a)) :
+    HasFPowerSeriesAt f.symm (p.rightInv i) a := by
+  rcases h with ⟨r, hr⟩

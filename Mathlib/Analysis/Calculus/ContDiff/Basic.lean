@@ -1645,16 +1645,16 @@ then `f.symm` is `n` times continuously differentiable at the point `a`.
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have
 an inverse function. -/
-theorem PartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : PartialHomeomorph E F)
+theorem PartialHomeomorph.contDiffAt_symm {n : ℕ∞} [CompleteSpace E] (f : PartialHomeomorph E F)
     {f₀' : E ≃L[𝕜] F} {a : F} (ha : a ∈ f.target)
     (hf₀' : HasFDerivAt f (f₀' : E →L[𝕜] F) (f.symm a)) (hf : ContDiffAt 𝕜 n f (f.symm a)) :
     ContDiffAt 𝕜 n f.symm a := by
   -- We prove this by induction on `n`
   induction' n using ENat.nat_induction with n IH Itop
-  · rw [contDiffAt_zero]
+  · apply contDiffAt_zero.2
     exact ⟨f.target, IsOpen.mem_nhds f.open_target ha, f.continuousOn_invFun⟩
   · obtain ⟨f', ⟨u, hu, hff'⟩, hf'⟩ := contDiffAt_succ_iff_hasFDerivAt.mp hf
-    rw [contDiffAt_succ_iff_hasFDerivAt]
+    apply contDiffAt_succ_iff_hasFDerivAt.2
     -- For showing `n.succ` times continuous differentiability (the main inductive step), it
     -- suffices to produce the derivative and show that it is `n` times continuously differentiable
     have eq_f₀' : f' (f.symm a) = f₀' := (hff' (f.symm a) (mem_of_mem_nhds hu)).unique hf₀'
@@ -1891,7 +1891,6 @@ theorem ContDiffWithinAt.restrict_scalars (h : ContDiffWithinAt 𝕜' n f s x) :
   | ω =>
     obtain ⟨u, u_mem, p', hp', Hp'⟩ := h
     refine ⟨u, u_mem, _, hp'.restrictScalars _, fun i ↦ ?_⟩
-    simp
     change AnalyticWithinOn 𝕜 (fun x ↦ ContinuousMultilinearMap.restrictScalarsLinear 𝕜 (p' x i)) u
     apply AnalyticOn.comp_analyticWithinOn _ (Hp' i).restrictScalars (Set.mapsTo_univ _ _)
     exact ContinuousLinearMap.analyticOn _ _

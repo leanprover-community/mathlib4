@@ -679,6 +679,32 @@ end FormalMultilinearSeries
 
 open FormalMultilinearSeries
 
+lemma bar {f : E → G} {q : FormalMultilinearSeries 𝕜 F G}
+    {p : FormalMultilinearSeries 𝕜 E F} {x : E} {t : Set F}
+    (hg : HasFPowerSeriesAt f (q.comp p) x) :
+    ∀ᶠ y in 𝓝 0,
+    Tendsto (fun (a : ℕ × ℕ) ↦ q.partialSum a.1 (p.partialSum a.2 y)) atTop (𝓝 (f (x + y))) := by
+  rcases hg with ⟨r0, h0⟩
+  let r : ℝ≥0∞ := r0
+  have : EMetric.ball (0 : E) r ∈ 𝓝 0 := sorry
+  filter_upwards [this] with y hy
+
+
+
+#exit
+
+lemma foo {g : F → G} {f : E → F} {q : FormalMultilinearSeries 𝕜 F G}
+    {p : FormalMultilinearSeries 𝕜 E F} {x : E} {t : Set F} {s : Set E}
+    (hg : HasFPowerSeriesWithinAt (g ∘ f) (q.comp p) s x) (hf : HasFPowerSeriesWithinAt f p s x)
+    (hs : Set.MapsTo f s t) : HasFPowerSeriesWithinAt g q t (f x) := by
+  refine ⟨1, ?_⟩
+  refine ⟨sorry, sorry, fun {y} hy h'y ↦ ?_⟩
+
+
+
+
+#exit
+
 /-- If two functions `g` and `f` have power series `q` and `p` respectively at `f x` and `x`, within
 two sets `s` and `t` such that `f` maps `s` to `t`, then `g ∘ f` admits the power
 series `q.comp p` at `x` within `s`. -/
