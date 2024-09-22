@@ -72,6 +72,22 @@ theorem nhds_basis_abs_convex_open :
 
 end NontriviallyNormedField
 
+section AbsolutelyConvex
+
+variable (𝕜) [SeminormedRing 𝕜] [SMul 𝕜 E] [SMul ℝ E] [AddCommMonoid E]
+/-- The type of absolutely convex sets. -/
+def AbsConvex (s : Set E) : Prop := Balanced 𝕜 s ∧ Convex ℝ s
+
+theorem absConvex_empty : AbsConvex 𝕜 (∅ : Set E) := ⟨balanced_empty, convex_empty⟩
+
+theorem absConvex_univ : AbsConvex 𝕜 (Set.univ : Set E) := ⟨balanced_univ, convex_univ⟩
+
+theorem AbsConvex.inter {s : Set E} {t : Set E} (hs : AbsConvex 𝕜 s) (ht : AbsConvex 𝕜 t) :
+  AbsConvex 𝕜 (s ∩ t) := ⟨Balanced.inter hs.1 ht.1, Convex.inter hs.2 ht.2⟩
+
+end AbsolutelyConvex
+
+
 section AbsolutelyConvexSets
 
 variable [TopologicalSpace E] [AddCommMonoid E] [Zero E] [SeminormedRing 𝕜]
@@ -80,7 +96,7 @@ variable (𝕜 E)
 
 /-- The type of absolutely convex open sets. -/
 def AbsConvexOpenSets :=
-  { s : Set E // (0 : E) ∈ s ∧ IsOpen s ∧ Balanced 𝕜 s ∧ Convex ℝ s }
+  { s : Set E // (0 : E) ∈ s ∧ IsOpen s ∧ AbsConvex 𝕜 s }
 
 noncomputable instance AbsConvexOpenSets.instCoeTC : CoeTC (AbsConvexOpenSets 𝕜 E) (Set E) :=
   ⟨Subtype.val⟩
