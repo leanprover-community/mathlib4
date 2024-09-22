@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.TypeTags
 
 /-!
@@ -158,5 +159,27 @@ def AddEquiv.additiveMultiplicative [AddZeroClass G] : Additive (Multiplicative 
 @[simps!]
 def MulEquiv.multiplicativeAdditive [MulOneClass H] : Multiplicative (Additive H) ≃* H :=
   AddEquiv.toMultiplicative'' (AddEquiv.refl (Additive H))
+
+/-- `Multiplicative (G × H)` is equivalent to `Multiplicative G × Multiplicative H`. -/
+@[simps]
+def MulEquiv.prodMultiplicative [Add G] [Add H] :
+    Multiplicative (G × H) ≃* Multiplicative G × Multiplicative H where
+  toFun x := (Multiplicative.ofAdd (Multiplicative.toAdd x).1,
+    Multiplicative.ofAdd (Multiplicative.toAdd x).2)
+  invFun := fun (x, y) ↦ Multiplicative.ofAdd (Multiplicative.toAdd x, Multiplicative.toAdd y)
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_mul' _ _ := rfl
+
+/-- `Additive (G × H)` is equivalent to `Additive G × Additive H`. -/
+@[simps]
+def AddEquiv.prodAdditive [Mul G] [Mul H] :
+    Additive (G × H) ≃+ Additive G × Additive H where
+  toFun x := (Additive.ofMul (Additive.toMul x).1,
+    Additive.ofMul (Additive.toMul x).2)
+  invFun := fun (x, y) ↦ Additive.ofMul (Additive.toMul x, Additive.toMul y)
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_add' _ _ := rfl
 
 end
