@@ -499,6 +499,21 @@ theorem floor_div_eq_div (m n : ℕ) : ⌊(m : α) / n⌋₊ = m / n := by
 
 end LinearOrderedSemifield
 
+section LinearOrderedField
+variable [LinearOrderedField α] [FloorSemiring α] {a b : α}
+
+lemma ceil_lt_mul (ha : 0 ≤ a) (hb : 1 < b) (h : (b - 1)⁻¹ ≤ a) : ⌈a⌉₊ < b * a := by
+  rw [← sub_pos] at hb
+  calc
+    ⌈a⌉₊ < a + 1 := ceil_lt_add_one ha
+    _ = a + (b - 1) * (b - 1)⁻¹ := by rw [mul_inv_cancel₀]; positivity
+    _ ≤ a + (b - 1) * a := by gcongr; positivity
+    _ = b * a := by rw [sub_one_mul, add_sub_cancel]
+
+lemma ceil_lt_two_mul (ha : 1 ≤ a) : ⌈a⌉₊ < 2 * a :=
+  ceil_lt_mul (by positivity) one_lt_two (by norm_num; exact ha)
+
+end LinearOrderedField
 end Nat
 
 /-- There exists at most one `FloorSemiring` structure on a linear ordered semiring. -/
@@ -1199,6 +1214,21 @@ theorem ceil_eq_add_one_sub_fract (ha : fract a ≠ 0) : (⌈a⌉ : α) = a + 1 
 theorem ceil_sub_self_eq (ha : fract a ≠ 0) : (⌈a⌉ : α) - a = 1 - fract a := by
   rw [(or_iff_right ha).mp (fract_eq_zero_or_add_one_sub_ceil a)]
   abel
+
+section LinearOrderedField
+variable {k : Type*} [LinearOrderedField k] [FloorRing k] {a b : k}
+
+lemma ceil_lt_mul (hb : 1 < b) (ha : (b - 1)⁻¹ ≤ a) : ⌈a⌉ < b * a := by
+  rw [← sub_pos] at hb
+  calc
+    ⌈a⌉ < a + 1 := ceil_lt_add_one _
+    _ = a + (b - 1) * (b - 1)⁻¹ := by rw [mul_inv_cancel₀]; positivity
+    _ ≤ a + (b - 1) * a := by gcongr; positivity
+    _ = b * a := by rw [sub_one_mul, add_sub_cancel]
+
+lemma ceil_lt_two_mul (ha : 1 ≤ a) : ⌈a⌉ < 2 * a := ceil_lt_mul one_lt_two (by norm_num; exact ha)
+
+end LinearOrderedField
 
 /-! #### Intervals -/
 
