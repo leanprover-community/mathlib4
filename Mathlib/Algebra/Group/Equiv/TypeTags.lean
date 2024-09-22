@@ -117,11 +117,11 @@ and multiplicative endomorphisms of `Multiplicative A`. -/
 @[simps]
 def MulEquiv.piMultiplicative (K : ι → Type*) [∀ i, Add (K i)] :
     Multiplicative (∀ i : ι, K i) ≃* (∀ i : ι, Multiplicative (K i)) where
-  toFun := fun x i ↦ Multiplicative.ofAdd <| Multiplicative.toAdd x i
-  invFun := fun x ↦ Multiplicative.ofAdd fun i ↦ Multiplicative.toAdd (x i)
-  left_inv := fun _ ↦ rfl
-  right_inv := fun _ ↦ rfl
-  map_mul' := fun _ _ ↦ rfl
+  toFun x := fun i ↦ Multiplicative.ofAdd <| Multiplicative.toAdd x i
+  invFun x := Multiplicative.ofAdd fun i ↦ Multiplicative.toAdd (x i)
+  left_inv _ := rfl
+  right_inv rfl := rfl
+  map_mul' _ _ := rfl
 
 variable (ι) (G) in
 /-- `Multiplicative (ι → G)` is equivalent to `ι → Multiplicative G`. -/
