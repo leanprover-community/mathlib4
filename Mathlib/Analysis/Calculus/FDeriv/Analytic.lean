@@ -313,15 +313,6 @@ theorem AnalyticOn.iteratedFDeriv_of_isOpen (h : AnalyticOn 𝕜 f s) (hs : IsOp
   exact (h.iteratedFDerivWithin hs.uniqueDiffOn n).congr
     (fun x hx ↦ (iteratedFDerivWithin_of_isOpen n hs hx).symm)
 
-lemma AnalyticWithinAt.contDiffWithinAt [CompleteSpace F] {f : E → F} {s : Set E} {x : E}
-    (h : AnalyticWithinAt 𝕜 f s x) {n : ℕ∞} : ContDiffWithinAt 𝕜 n f s x := by
-  rcases h.exists_analyticAt with ⟨g, fx, fg, hg⟩
-  exact hg.contDiffAt.contDiffWithinAt.congr (fg.mono (subset_insert _ _)) fx
-
-lemma AnalyticWithinOn.contDiffOn [CompleteSpace F] {f : E → F} {s : Set E}
-    (h : AnalyticWithinOn 𝕜 f s) {n : ℕ∞} : ContDiffOn 𝕜 n f s :=
-  fun x m ↦ (h x m).contDiffWithinAt
-
 end fderiv
 
 section deriv

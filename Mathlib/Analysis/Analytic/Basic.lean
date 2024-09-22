@@ -487,6 +487,14 @@ lemma HasFPowerSeriesWithinOnBall.congr {f g : E → F} {p : FormalMultilinearSe
     refine ⟨hy, ?_⟩
     simpa [edist_eq_coe_nnnorm_sub] using h'y
 
+lemma HasFPowerSeriesWithinOnBall.congr' {f g : E → F} {p : FormalMultilinearSeries 𝕜 E F}
+    {s : Set E} {x : E} {r : ℝ≥0∞} (h : HasFPowerSeriesWithinOnBall f p s x r)
+    (h' : EqOn g f (insert x s ∩ EMetric.ball x r)) :
+    HasFPowerSeriesWithinOnBall g p s x r := by
+  refine ⟨h.r_le, h.r_pos, fun {y} hy h'y ↦ ?_⟩
+  convert h.hasSum hy h'y using 1
+  exact h' ⟨hy, by simpa [edist_eq_coe_nnnorm_sub] using h'y⟩
+
 lemma HasFPowerSeriesWithinAt.congr {f g : E → F} {p : FormalMultilinearSeries 𝕜 E F} {s : Set E}
     {x : E} (h : HasFPowerSeriesWithinAt f p s x) (h' : g =ᶠ[𝓝[s] x] f) (h'' : g x = f x) :
     HasFPowerSeriesWithinAt g p s x := by
@@ -590,6 +598,39 @@ lemma HasFPowerSeriesAt.hasFPowerSeriesWithinAt (hf : HasFPowerSeriesAt f p x) :
   rw [← hasFPowerSeriesWithinAt_univ] at hf
   apply hf.mono (subset_univ _)
 
+theorem HasFPowerSeriesWithinAt.mono_of_mem {f : E → F} {p : FormalMultilinearSeries 𝕜 E F}
+    {s t : Set E} {x : E} (h : HasFPowerSeriesWithinAt f p s x) (hst : s ∈ 𝓝[t] x) :
+    HasFPowerSeriesWithinAt f p t x := by
+  rcases h with ⟨r, hr⟩
+  rcases EMetric.mem_nhdsWithin_iff.1 hst with ⟨r', r'_pos, hr'⟩
+  refine ⟨min r r', ?_⟩
+  have Z := hr.of_le (by simp [r'_pos, hr.r_pos]) (min_le_left r r')
+  refine ⟨Z.r_le, Z.r_pos, fun {y} hy h'y ↦ ?_⟩
+  apply Z.hasSum ?_ h'y
+  simp only [mem_insert_iff, add_right_eq_self] at hy
+  rcases hy with rfl | hy
+  · simp
+  apply mem_insert_of_mem _ (hr' ?_)
+  simp only [EMetric.mem_ball, edist_eq_coe_nnnorm_sub, sub_zero, lt_min_iff, mem_inter_iff,
+    add_sub_cancel_left, hy, and_true] at h'y ⊢
+  exact h'y.2
+
+@[simp] lemma hasFPowerSeriesWithinOnBall_insert_self {f : E → F}
+    {p : FormalMultilinearSeries 𝕜 E F} {s : Set E} {x : E} {r : ℝ≥0∞} :
+    HasFPowerSeriesWithinOnBall f p (insert x s) x r ↔ HasFPowerSeriesWithinOnBall f p s x r := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩  <;>
+  exact ⟨h.r_le, h.r_pos, fun {y} ↦ by simpa only [insert_idem] using h.hasSum (y := y)⟩
+
+@[simp] theorem hasFPowerSeriesAt_insert {f : E → F} {p : FormalMultilinearSeries 𝕜 E F}
+    {s : Set E} {x y : E} :
+    HasFPowerSeriesWithinAt f p (insert y s) x ↔ HasFPowerSeriesWithinAt f p s x := by
+  rcases eq_or_ne x y with rfl | hy
+  · simp [HasFPowerSeriesWithinAt]
+  · refine ⟨fun h ↦ h.mono (subset_insert _ _), fun h ↦ ?_⟩
+    apply HasFPowerSeriesWithinAt.mono_of_mem h
+    rw [nhdsWithin_insert_of_ne hy]
+    exact self_mem_nhdsWithin
+
 theorem HasFPowerSeriesWithinOnBall.coeff_zero (hf : HasFPowerSeriesWithinOnBall f pf s x r)
     (v : Fin 0 → E) : pf 0 v = f x := by
   have v_eq : v = fun i => 0 := Subsingleton.elim _ _
@@ -681,9 +722,18 @@ theorem AnalyticOn.congr (hs : IsOpen s) (hf : AnalyticOn 𝕜 f s) (hg : s.EqOn
 theorem analyticOn_congr (hs : IsOpen s) (h : s.EqOn f g) : AnalyticOn 𝕜 f s ↔
     AnalyticOn 𝕜 g s := ⟨fun hf => hf.congr hs h, fun hg => hg.congr hs h.symm⟩
 
+theorem AnalyticWithinAt.mono_of_mem {f : E → F} {s t : Set E} {x : E}
+    (h : AnalyticWithinAt 𝕜 f s x) (hst : s ∈ 𝓝[t] x) : AnalyticWithinAt 𝕜 f t x := by
+  rcases h with ⟨p, hp⟩
+  exact ⟨p, hp.mono_of_mem hst⟩
+
 lemma AnalyticWithinOn.mono {f : E → F} {s t : Set E} (h : AnalyticWithinOn 𝕜 f t)
     (hs : s ⊆ t) : AnalyticWithinOn 𝕜 f s :=
   fun _ m ↦ (h _ (hs m)).mono hs
+
+@[simp] theorem analyticWithinAt_insert {f : E → F} {s : Set E} {x y : E} :
+    AnalyticWithinAt 𝕜 f (insert y s) x ↔ AnalyticWithinAt 𝕜 f s x := by
+  simp [AnalyticWithinAt]
 
 /-!
 ### Composition with linear maps
