@@ -64,7 +64,7 @@ theorem polar_mem (s : Set E) (y : F) (hy : y ∈ B.polar s) : ∀ x ∈ s, ‖B
 theorem zero_mem_polar (s : Set E) : (0 : F) ∈ B.polar s := fun _ _ => by
   simp only [map_zero, norm_zero, zero_le_one]
 
-theorem polar_nonempty (s : Set E) : Nonempty (B.polar s) := by
+theorem polar_nonempty (s : Set E) : Set.Nonempty (B.polar s) := by
   use 0
   exact zero_mem_polar B s
 

@@ -163,7 +163,7 @@ theorem mem_polar_iff {x' : Dual 𝕜 E} (s : Set E) : x' ∈ polar 𝕜 s ↔ �
 theorem zero_mem_polar (s : Set E) : (0 : Dual 𝕜 E) ∈ polar 𝕜 s :=
   LinearMap.zero_mem_polar _ s
 
-theorem polar_nonempty (s : Set E) : Nonempty (polar 𝕜 s) :=
+theorem polar_nonempty (s : Set E) : Set.Nonempty (polar 𝕜 s) :=
   LinearMap.polar_nonempty _ _
 
 @[simp]
