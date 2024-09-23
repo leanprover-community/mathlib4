@@ -1,3 +1,14 @@
+/- import Mathlib.Data.Nat.Factors
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+import Mathlib.LinearAlgebra.Span
+import Mathlib.GroupTheory.GroupAction.Quotient
+import Init.Data.Int.Basic
+import Mathlib.Data.Nat.Cast.Defs
+import Mathlib.Algebra.RingQuot
+import Mathlib.Data.Nat.PrimeFin
+import Mathlib.NumberTheory.Divisors
+import Mathlib.Data.Nat.Factorization.Basic
+import Mathlib.Data.Real.Irrational-/
 import Mathlib
 
 /- Calculs.-/
