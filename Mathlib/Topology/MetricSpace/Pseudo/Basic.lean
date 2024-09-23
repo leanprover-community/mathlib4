@@ -180,9 +180,8 @@ theorem Metric.inseparable_iff {x y : α} : Inseparable x y ↔ dist x y = 0 := 
 alias ⟨Inseparable.dist_eq_zero, _⟩ := Metric.inseparable_iff
 
 /-- A weaker version of `tendsto_nhds_unique` for `PseudoMetricSpace`. -/
-theorem tendsto_nhds_unique_dist {X Y : Type*} [PseudoMetricSpace X]
-    {f : Y → X} {l : Filter Y} {a b : X} [NeBot l]
-    (ha : Tendsto f l (𝓝 a)) (hb : Tendsto f l (𝓝 b)) : dist a b = 0 :=
+theorem tendsto_nhds_unique_dist {f : β → α} {l : Filter β} {x y : α} [NeBot l]
+    (ha : Tendsto f l (𝓝 x)) (hb : Tendsto f l (𝓝 y)) : dist x y = 0 :=
   (tendsto_nhds_unique_inseparable ha hb).dist_eq_zero
 
 section Real

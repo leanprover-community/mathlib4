@@ -1050,8 +1050,7 @@ theorem inseparable_of_nhds_neBot {x y : X} (h : NeBot (𝓝 x ⊓ 𝓝 y)) :
   (r1Space_iff_inseparable_or_disjoint_nhds.mp ‹_› _ _).resolve_right fun h' => h.ne h'.eq_bot
 
 /-- A weaker version of `tendsto_nhds_unique` for `R1Space`. -/
-theorem tendsto_nhds_unique_inseparable {X Y : Type*} [TopologicalSpace X] [R1Space X]
-    {f : Y → X} {l : Filter Y} {a b : X} [NeBot l]
+theorem tendsto_nhds_unique_inseparable {f : Y → X} {l : Filter Y} {a b : X} [NeBot l]
     (ha : Tendsto f l (𝓝 a)) (hb : Tendsto f l (𝓝 b)) : Inseparable a b :=
   inseparable_of_nhds_neBot <| neBot_of_le <| le_inf ha hb
 
