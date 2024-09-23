@@ -775,7 +775,7 @@ lemma zpow_le_of_le_log {n : ℤ} (hy : 0 < y) (h : log x ≤ n * log y) : x ≤
 lemma rpow_lt_iff_lt_log (hx : 0 < x) (hy : 0 < y) : x ^ z < y ↔ z * log x < log y := by
   rw [← log_lt_log_iff (rpow_pos_of_pos hx _) hy, log_rpow hx]
 
-lemma pow_lt_iff_lt_log  (hx : 0 < x) (hy : 0 < y) : x ^ n < y ↔ n * log x < log y := by
+lemma pow_lt_iff_lt_log (hx : 0 < x) (hy : 0 < y) : x ^ n < y ↔ n * log x < log y := by
   rw [← rpow_lt_iff_lt_log hx hy, rpow_natCast]
 
 lemma zpow_lt_iff_lt_log {n : ℤ} (hx : 0 < x) (hy : 0 < y) : x ^ n < y ↔ n * log x < log y := by

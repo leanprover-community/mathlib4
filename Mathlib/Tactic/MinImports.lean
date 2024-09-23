@@ -160,7 +160,7 @@ def getAllImports (cmd id : Syntax) (dbg? : Bool := false) :
               |>.append (getSyntaxNodeKinds cmd)
               |>.append (getAttrs env cmd)
   if dbg? then dbg_trace "{ts.toArray.qsort Name.lt}"
-  let mut hm : HashMap Nat Name := {}
+  let mut hm : Std.HashMap Nat Name := {}
   for imp in env.header.moduleNames do
     hm := hm.insert ((env.getModuleIdx? imp).getD default) imp
   let mut fins : NameSet := {}
@@ -168,7 +168,7 @@ def getAllImports (cmd id : Syntax) (dbg? : Bool := false) :
     let tns := t1::(← resolveGlobalName t1).map Prod.fst
     for t in tns do
       let new := match env.getModuleIdxFor? t with
-        | some t => (hm.find? t).get!
+        | some t => (hm.get? t).get!
         | none   => .anonymous -- instead of `getMainModule`, we omit the current module
       if !fins.contains new then fins := fins.insert new
   return fins.erase .anonymous

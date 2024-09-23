@@ -7,6 +7,7 @@ import Mathlib.FieldTheory.IntermediateField.Basic
 import Mathlib.RingTheory.Algebraic
 import Mathlib.FieldTheory.Tower
 import Mathlib.FieldTheory.Minpoly.Basic
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 # Results on finite dimensionality and algebraicity of intermediate fields.
@@ -96,7 +97,7 @@ theorem minpoly_eq (x : S) : minpoly K x = minpoly K (x : L) :=
 
 end IntermediateField
 
-/-- If `L/K` is algebraic, the `K`-subalgebras of `L` are all fields.  -/
+/-- If `L/K` is algebraic, the `K`-subalgebras of `L` are all fields. -/
 def subalgebraEquivIntermediateField [Algebra.IsAlgebraic K L] :
     Subalgebra K L ≃o IntermediateField K L where
   toFun S := S.toIntermediateField fun x hx => S.inv_mem_of_algebraic

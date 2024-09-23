@@ -3,8 +3,6 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yaël Dillies
 -/
-import Mathlib.Data.Nat.Defs
-import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Tactic.Monotonicity.Attr
@@ -111,6 +109,15 @@ theorem log_lt_of_lt_pow {b x y : ℕ} (hy : y ≠ 0) : y < b ^ x → log b y < 
 theorem lt_pow_of_log_lt {b x y : ℕ} (hb : 1 < b) : log b y < x → y < b ^ x :=
   lt_imp_lt_of_le_imp_le (le_log_of_pow_le hb)
 
+lemma log_lt_self (b : ℕ) {x : ℕ} (hx : x ≠ 0) : log b x < x :=
+  match le_or_lt b 1 with
+  | .inl h => log_of_left_le_one h x ▸ Nat.pos_iff_ne_zero.2 hx
+  | .inr h => log_lt_of_lt_pow hx <| lt_pow_self h _
+
+lemma log_le_self (b x : ℕ) : log b x ≤ x :=
+  if hx : x = 0 then by simp [hx]
+  else (log_lt_self b hx).le
+
 theorem lt_pow_succ_log_self {b : ℕ} (hb : 1 < b) (x : ℕ) : x < b ^ (log b x).succ :=
   lt_pow_of_log_lt hb (lt_succ_self _)
 
@@ -198,6 +205,13 @@ theorem add_pred_div_lt {b n : ℕ} (hb : 1 < b) (hn : 2 ≤ n) : (n + b - 1) / 
   rw [div_lt_iff_lt_mul (by omega), ← succ_le_iff, ← pred_eq_sub_one,
     succ_pred_eq_of_pos (by omega)]
   exact Nat.add_le_mul hn hb
+
+lemma log2_eq_log_two {n : ℕ} : Nat.log2 n = Nat.log 2 n := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · rw [log2_zero, log_zero_right]
+  apply eq_of_forall_le_iff
+  intro m
+  rw [Nat.le_log2 hn, ← Nat.pow_le_iff_le_log Nat.one_lt_two hn]
 
 /-! ### Ceil logarithm -/
 

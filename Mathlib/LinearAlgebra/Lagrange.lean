@@ -145,7 +145,7 @@ theorem basisDivisor_self : basisDivisor x x = 0 := by
   simp only [basisDivisor, sub_self, inv_zero, map_zero, zero_mul]
 
 theorem basisDivisor_inj (hxy : basisDivisor x y = 0) : x = y := by
-  simp_rw [basisDivisor, mul_eq_zero, X_sub_C_ne_zero, or_false_iff, C_eq_zero, inv_eq_zero,
+  simp_rw [basisDivisor, mul_eq_zero, X_sub_C_ne_zero, or_false, C_eq_zero, inv_eq_zero,
     sub_eq_zero] at hxy
   exact hxy
 

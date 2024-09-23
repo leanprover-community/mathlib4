@@ -8,6 +8,7 @@ import Mathlib.FieldTheory.IntermediateField.Algebraic
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
 import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 
 /-!
 # Adjoining Elements to Fields
@@ -356,12 +357,12 @@ theorem adjoin_adjoin_left (T : Set E) :
   apply Set.eq_of_subset_of_subset <;> rw [adjoin_subset_adjoin_iff] <;> constructor
   · rintro _ ⟨⟨x, hx⟩, rfl⟩; exact adjoin.mono _ _ _ Set.subset_union_left hx
   · exact subset_adjoin_of_subset_right _ _ Set.subset_union_right
--- Porting note: orginal proof times out
+-- Porting note: original proof times out
   · rintro x ⟨f, rfl⟩
     refine Subfield.subset_closure ?_
     left
     exact ⟨f, rfl⟩
--- Porting note: orginal proof times out
+-- Porting note: original proof times out
   · refine Set.union_subset (fun x hx => Subfield.subset_closure ?_)
       (fun x hx => Subfield.subset_closure ?_)
     · left
@@ -997,6 +998,11 @@ theorem adjoinRootEquivAdjoin_apply_root (h : IsIntegral F α) :
     adjoinRootEquivAdjoin F h (AdjoinRoot.root (minpoly F α)) = AdjoinSimple.gen F α :=
   AdjoinRoot.lift_root (aeval_gen_minpoly F α)
 
+@[simp]
+theorem adjoinRootEquivAdjoin_symm_apply_gen (h : IsIntegral F α) :
+    (adjoinRootEquivAdjoin F h).symm (AdjoinSimple.gen F α) = AdjoinRoot.root (minpoly F α) := by
+  rw [AlgEquiv.symm_apply_eq, adjoinRootEquivAdjoin_apply_root]
+
 theorem adjoin_root_eq_top (p : K[X]) [Fact (Irreducible p)] : K⟮AdjoinRoot.root p⟯ = ⊤ :=
   (eq_adjoin_of_eq_algebra_adjoin K _ ⊤ (AdjoinRoot.adjoinRoot_eq_top (f := p)).symm).symm
 
@@ -1068,6 +1074,8 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
   convert natDegree_le_of_dvd dvd_g
     ((g.monic_toSubring _ _).mpr <| (minpoly.monic <| .of_finite K α).map _).ne_zero using 1
   rw [natDegree_toSubring, natDegree_map]
+
+instance : Module.Finite F (⊥ : IntermediateField F E) := Subalgebra.finite_bot
 
 variable {F} in
 /-- If `E / F` is an infinite algebraic extension, then there exists an intermediate field

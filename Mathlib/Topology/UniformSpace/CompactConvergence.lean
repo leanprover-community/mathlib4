@@ -163,7 +163,7 @@ which defines topology of uniform convergence on compact sets.
 We use `ContinuousMap.tendsto_iff_forall_compact_tendstoUniformlyOn`
 to show that the induced topology agrees with the compact-open topology
 and replace the topology with `compactOpen` to avoid non-defeq diamonds,
-see Note [forgetful inheritance].  -/
+see Note [forgetful inheritance]. -/
 instance compactConvergenceUniformSpace : UniformSpace C(α, β) :=
   .replaceTopology (.comap toUniformOnFunIsCompact inferInstance) <| by
     refine TopologicalSpace.ext_nhds fun f ↦ eq_of_forall_le_iff fun l ↦ ?_
@@ -334,7 +334,7 @@ theorem uniformSpace_eq_inf_precomp_of_cover {δ₁ δ₂ : Type*} [TopologicalS
   have h_preimage₂ : MapsTo (φ₂ ⁻¹' ·) 𝔖 𝔗₂ := fun K ↦ h_proper₂.isCompact_preimage
   have h_cover' : ∀ S ∈ 𝔖, S ⊆ range φ₁ ∪ range φ₂ := fun S _ ↦ h_cover ▸ subset_univ _
   -- ... and we just pull it back.
-  simp_rw [compactConvergenceUniformSpace, replaceTopology_eq, inferInstanceAs, inferInstance,
+  simp_rw [compactConvergenceUniformSpace, replaceTopology_eq,
     UniformOnFun.uniformSpace_eq_inf_precomp_of_cover _ _ _ _ _
       h_image₁ h_image₂ h_preimage₁ h_preimage₂ h_cover',
     UniformSpace.comap_inf, ← UniformSpace.comap_comap]
@@ -355,7 +355,7 @@ theorem uniformSpace_eq_iInf_precomp_of_cover {δ : ι → Type*} [∀ i, Topolo
       inter_eq_right.mp ?_⟩
     simp_rw [iUnion₂_inter, mem_setOf, iUnion_nonempty_self, ← iUnion_inter, h_cover, univ_inter]
   -- ... and we just pull it back.
-  simp_rw [compactConvergenceUniformSpace, replaceTopology_eq, inferInstanceAs, inferInstance,
+  simp_rw [compactConvergenceUniformSpace, replaceTopology_eq,
     UniformOnFun.uniformSpace_eq_iInf_precomp_of_cover _ _ _ h_image h_preimage h_cover',
     UniformSpace.comap_iInf, ← UniformSpace.comap_comap]
   rfl

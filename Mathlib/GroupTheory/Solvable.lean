@@ -180,7 +180,7 @@ theorem not_solvable_of_mem_derivedSeries {g : G} (h1 : g ≠ 1)
     (h2 : ∀ n : ℕ, g ∈ derivedSeries G n) : ¬IsSolvable G :=
   mt (isSolvable_def _).mp
     (not_exists_of_forall_not fun n h =>
-      h1 (Subgroup.mem_bot.mp ((congr_arg (Membership.mem g) h).mp (h2 n))))
+      h1 (Subgroup.mem_bot.mp ((congr_arg (g ∈ ·) h).mp (h2 n))))
 
 theorem Equiv.Perm.fin_5_not_solvable : ¬IsSolvable (Equiv.Perm (Fin 5)) := by
   let x : Equiv.Perm (Fin 5) := ⟨![1, 2, 0, 3, 4], ![2, 0, 1, 3, 4], by decide, by decide⟩

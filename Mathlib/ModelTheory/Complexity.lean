@@ -3,7 +3,7 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.Satisfiability
+import Mathlib.ModelTheory.Equivalence
 
 /-!
 # Quantifier Complexity
@@ -169,11 +169,10 @@ theorem IsQF.toPrenexImpRight {φ : L.BoundedFormula α n} :
 
 theorem isPrenex_toPrenexImpRight {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ) (hψ : IsPrenex ψ) :
     IsPrenex (φ.toPrenexImpRight ψ) := by
-  induction' hψ with _ _ hψ _ _ _ ih1 _ _ _ ih2
-  · rw [hψ.toPrenexImpRight]
-    exact (hφ.imp hψ).isPrenex
-  · exact (ih1 hφ.liftAt).all
-  · exact (ih2 hφ.liftAt).ex
+  induction hψ with
+  | of_isQF hψ => rw [hψ.toPrenexImpRight]; exact (hφ.imp hψ).isPrenex
+  | all _ ih1 => exact (ih1 hφ.liftAt).all
+  | ex _ ih2 => exact (ih2 hφ.liftAt).ex
 
 -- Porting note: universes in different order
 /-- An auxiliary operation to `FirstOrder.Language.BoundedFormula.toPrenex`.
@@ -196,11 +195,10 @@ theorem IsQF.toPrenexImp :
 
 theorem isPrenex_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ) (hψ : IsPrenex ψ) :
     IsPrenex (φ.toPrenexImp ψ) := by
-  induction' hφ with _ _ hφ _ _ _ ih1 _ _ _ ih2
-  · rw [hφ.toPrenexImp]
-    exact isPrenex_toPrenexImpRight hφ hψ
-  · exact (ih1 hψ.liftAt).ex
-  · exact (ih2 hψ.liftAt).all
+  induction hφ with
+  | of_isQF hφ => rw [hφ.toPrenexImp]; exact isPrenex_toPrenexImpRight hφ hψ
+  | all _ ih1 => exact (ih1 hψ.liftAt).ex
+  | ex _ ih2 => exact (ih2 hψ.liftAt).all
 
 -- Porting note: universes in different order
 /-- For any bounded formula `φ`, `φ.toPrenex` is a semantically-equivalent formula in prenex normal
@@ -222,12 +220,14 @@ variable [Nonempty M]
 theorem realize_toPrenexImpRight {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ) (hψ : IsPrenex ψ)
     {v : α → M} {xs : Fin n → M} :
     (φ.toPrenexImpRight ψ).Realize v xs ↔ (φ.imp ψ).Realize v xs := by
-  induction' hψ with _ _ hψ _ _ _hψ ih _ _ _hψ ih
-  · rw [hψ.toPrenexImpRight]
-  · refine _root_.trans (forall_congr' fun _ => ih hφ.liftAt) ?_
+  induction hψ with
+  | of_isQF hψ => rw [hψ.toPrenexImpRight]
+  | all _ ih =>
+    refine _root_.trans (forall_congr' fun _ => ih hφ.liftAt) ?_
     simp only [realize_imp, realize_liftAt_one_self, snoc_comp_castSucc, realize_all]
     exact ⟨fun h1 a h2 => h1 h2 a, fun h1 h2 a => h1 a h2⟩
-  · unfold toPrenexImpRight
+  | ex _ ih =>
+    unfold toPrenexImpRight
     rw [realize_ex]
     refine _root_.trans (exists_congr fun _ => ih hφ.liftAt) ?_
     simp only [realize_imp, realize_liftAt_one_self, snoc_comp_castSucc, realize_ex]
@@ -243,10 +243,14 @@ theorem realize_toPrenexImpRight {φ ψ : L.BoundedFormula α n} (hφ : IsQF φ)
 theorem realize_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ) (hψ : IsPrenex ψ)
     {v : α → M} {xs : Fin n → M} : (φ.toPrenexImp ψ).Realize v xs ↔ (φ.imp ψ).Realize v xs := by
   revert ψ
-  induction' hφ with _ _ hφ _ _ _hφ ih _ _ _hφ ih <;> intro ψ hψ
-  · rw [hφ.toPrenexImp]
+  induction hφ with
+  | of_isQF hφ =>
+    intro ψ hψ
+    rw [hφ.toPrenexImp]
     exact realize_toPrenexImpRight hφ hψ
-  · unfold toPrenexImp
+  | all _ ih =>
+    intro ψ hψ
+    unfold toPrenexImp
     rw [realize_ex]
     refine _root_.trans (exists_congr fun _ => ih hψ.liftAt) ?_
     simp only [realize_imp, realize_liftAt_one_self, snoc_comp_castSucc, realize_all]
@@ -258,20 +262,24 @@ theorem realize_toPrenexImp {φ ψ : L.BoundedFormula α n} (hφ : IsPrenex φ) 
         exact ⟨default, fun _h'' => h⟩
       · obtain ⟨a, ha⟩ := not_forall.1 (h ∘ h')
         exact ⟨a, fun h => (ha h).elim⟩
-  · refine _root_.trans (forall_congr' fun _ => ih hψ.liftAt) ?_
+  | ex _ ih =>
+    intro ψ hψ
+    refine _root_.trans (forall_congr' fun _ => ih hψ.liftAt) ?_
     simp
 
 @[simp]
 theorem realize_toPrenex (φ : L.BoundedFormula α n) {v : α → M} :
     ∀ {xs : Fin n → M}, φ.toPrenex.Realize v xs ↔ φ.Realize v xs := by
-  induction' φ with _ _ _ _ _ _ _ _ _ f1 f2 h1 h2 _ _ h
-  · exact Iff.rfl
-  · exact Iff.rfl
-  · exact Iff.rfl
-  · intros
+  induction φ with
+  | falsum => exact Iff.rfl
+  | equal => exact Iff.rfl
+  | rel => exact Iff.rfl
+  | imp f1 f2 h1 h2 =>
+    intros
     rw [toPrenex, realize_toPrenexImp f1.toPrenex_isPrenex f2.toPrenex_isPrenex, realize_imp,
       realize_imp, h1, h2]
-  · intros
+  | all _ h =>
+    intros
     rw [realize_all, toPrenex, realize_all]
     exact forall_congr' fun a => h
 
@@ -280,7 +288,7 @@ theorem IsQF.induction_on_sup_not {P : L.BoundedFormula α n → Prop} {φ : L.B
     (ha : ∀ ψ : L.BoundedFormula α n, IsAtomic ψ → P ψ)
     (hsup : ∀ {φ₁ φ₂}, P φ₁ → P φ₂ → P (φ₁ ⊔ φ₂)) (hnot : ∀ {φ}, P φ → P φ.not)
     (hse :
-      ∀ {φ₁ φ₂ : L.BoundedFormula α n}, Theory.SemanticallyEquivalent ∅ φ₁ φ₂ → (P φ₁ ↔ P φ₂)) :
+      ∀ {φ₁ φ₂ : L.BoundedFormula α n}, (φ₁ ⇔[∅] φ₂) → (P φ₁ ↔ P φ₂)) :
     P φ :=
   IsQF.recOn h hf @(ha) fun {φ₁ φ₂} _ _ h1 h2 =>
     (hse (φ₁.imp_semanticallyEquivalent_not_sup φ₂)).2 (hsup (hnot h1) h2)
@@ -290,7 +298,7 @@ theorem IsQF.induction_on_inf_not {P : L.BoundedFormula α n → Prop} {φ : L.B
     (ha : ∀ ψ : L.BoundedFormula α n, IsAtomic ψ → P ψ)
     (hinf : ∀ {φ₁ φ₂}, P φ₁ → P φ₂ → P (φ₁ ⊓ φ₂)) (hnot : ∀ {φ}, P φ → P φ.not)
     (hse :
-      ∀ {φ₁ φ₂ : L.BoundedFormula α n}, Theory.SemanticallyEquivalent ∅ φ₁ φ₂ → (P φ₁ ↔ P φ₂)) :
+      ∀ {φ₁ φ₂ : L.BoundedFormula α n}, (φ₁ ⇔[∅] φ₂) → (P φ₁ ↔ P φ₂)) :
     P φ :=
   h.induction_on_sup_not hf ha
     (fun {φ₁ φ₂} h1 h2 =>
@@ -298,7 +306,7 @@ theorem IsQF.induction_on_inf_not {P : L.BoundedFormula α n → Prop} {φ : L.B
     (fun {_} => hnot) fun {_ _} => hse
 
 theorem semanticallyEquivalent_toPrenex (φ : L.BoundedFormula α n) :
-    (∅ : L.Theory).SemanticallyEquivalent φ φ.toPrenex := fun M v xs => by
+    φ ⇔[∅] φ.toPrenex := fun M v xs => by
   rw [realize_iff, realize_toPrenex]
 
 theorem induction_on_all_ex {P : ∀ {m}, L.BoundedFormula α m → Prop} (φ : L.BoundedFormula α n)
@@ -306,22 +314,22 @@ theorem induction_on_all_ex {P : ∀ {m}, L.BoundedFormula α m → Prop} (φ : 
     (hall : ∀ {m} {ψ : L.BoundedFormula α (m + 1)}, P ψ → P ψ.all)
     (hex : ∀ {m} {φ : L.BoundedFormula α (m + 1)}, P φ → P φ.ex)
     (hse : ∀ {m} {φ₁ φ₂ : L.BoundedFormula α m},
-      Theory.SemanticallyEquivalent ∅ φ₁ φ₂ → (P φ₁ ↔ P φ₂)) :
+      (φ₁ ⇔[∅] φ₂) → (P φ₁ ↔ P φ₂)) :
     P φ := by
   suffices h' : ∀ {m} {φ : L.BoundedFormula α m}, φ.IsPrenex → P φ from
     (hse φ.semanticallyEquivalent_toPrenex).2 (h' φ.toPrenex_isPrenex)
   intro m φ hφ
-  induction' hφ with _ _ hφ _ _ _ hφ _ _ _ hφ
-  · exact hqf hφ
-  · exact hall hφ
-  · exact hex hφ
+  induction hφ with
+  | of_isQF hφ => exact hqf hφ
+  | all _ hφ => exact hall hφ
+  | ex _ hφ => exact hex hφ
 
 theorem induction_on_exists_not {P : ∀ {m}, L.BoundedFormula α m → Prop} (φ : L.BoundedFormula α n)
     (hqf : ∀ {m} {ψ : L.BoundedFormula α m}, IsQF ψ → P ψ)
     (hnot : ∀ {m} {φ : L.BoundedFormula α m}, P φ → P φ.not)
     (hex : ∀ {m} {φ : L.BoundedFormula α (m + 1)}, P φ → P φ.ex)
     (hse : ∀ {m} {φ₁ φ₂ : L.BoundedFormula α m},
-      Theory.SemanticallyEquivalent ∅ φ₁ φ₂ → (P φ₁ ↔ P φ₂)) :
+      (φ₁ ⇔[∅] φ₂) → (P φ₁ ↔ P φ₂)) :
     P φ :=
   φ.induction_on_all_ex (fun {_ _} => hqf)
     (fun {_ φ} hφ => (hse φ.all_semanticallyEquivalent_not_ex_not).2 (hnot (hex (hnot hφ))))
@@ -415,7 +423,7 @@ end BoundedFormula
 /-- A theory is universal when it is comprised only of universal sentences - these theories apply
 also to substructures. -/
 class Theory.IsUniversal (T : L.Theory) : Prop where
-  isUniversal_of_mem : ∀ {φ}, φ ∈ T → φ.IsUniversal
+  isUniversal_of_mem : ∀ ⦃φ⦄, φ ∈ T → φ.IsUniversal
 
 lemma Theory.IsUniversal.models_of_embedding {T : L.Theory} [hT : T.IsUniversal]
     {N : Type*} [L.Structure N] [N ⊨ T] (f : M ↪[L] N) : M ⊨ T := by
@@ -427,6 +435,12 @@ lemma Theory.IsUniversal.models_of_embedding {T : L.Theory} [hT : T.IsUniversal]
 instance Substructure.models_of_isUniversal
     (S : L.Substructure M) (T : L.Theory) [T.IsUniversal] [M ⊨ T] : S ⊨ T :=
   Theory.IsUniversal.models_of_embedding (Substructure.subtype S)
+
+lemma Theory.IsUniversal.insert
+    {T : L.Theory} [hT : T.IsUniversal] {φ : L.Sentence} (hφ : φ.IsUniversal) :
+    (insert φ T).IsUniversal := ⟨by
+  simp only [Set.mem_insert_iff, forall_eq_or_imp, hφ, true_and]
+  exact hT.isUniversal_of_mem⟩
 
 namespace Relations
 
