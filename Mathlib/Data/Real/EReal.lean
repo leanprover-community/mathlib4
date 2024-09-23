@@ -1460,6 +1460,14 @@ lemma coe_add_mul_of_nonneg (x : EReal) {y z : ℝ} (hy : 0 ≤ y) (hz : 0 ≤ z
   simp_rw [EReal.mul_comm _ x]
   exact EReal.mul_add_coe_of_nonneg x hy hz
 
+@[simp]
+lemma nsmul_eq_mul (n : ℕ) (x : EReal) : n • x = n * x := by
+  induction n with
+  | zero => rw [zero_smul, Nat.cast_zero, zero_mul]
+  | succ n ih =>
+    rw [succ_nsmul, ih, Nat.cast_succ]
+    convert (EReal.coe_add_mul_of_nonneg x _ _).symm <;> simp
+
 /-! ### Absolute value -/
 
 -- Porting note (#11215): TODO: use `Real.nnabs` for the case `(x : ℝ)`
