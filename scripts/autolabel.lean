@@ -279,10 +279,9 @@ unsafe def main (args : List String): IO Unit := do
     println s!"Exactly one label found."
     match prNumber? with
     | some n =>
-      println s!"test: {#["issue", "edit", n, "--add-labels", label]}"
       let res ← IO.Process.run {
         cmd := "gh",
-        args := #["issue", "edit", n, "--add-labels", label] }
+        args := #["issue", "edit", n, "--add-label", label] }
       println s!"res: {res}"
     | none =>
       println s!"No PR-number provided, skipping adding labels.
