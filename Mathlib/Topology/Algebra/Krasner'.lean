@@ -214,13 +214,40 @@ theorem minpoly.add_algebraMap' {B : Type*} [CommRing B] [Algebra A B] {x : B}
     refine fun h ↦ hx ?_
     simpa only [add_sub_cancel_right] using IsIntegral.sub h (isIntegral_algebraMap (x := a))
 
+noncomputable
+def Polynomial.compAlgHom {R : Type*} [CommSemiring R] :
+Polynomial R → Polynomial R →ₐ[R] Polynomial R :=
+  fun p => {
+    Polynomial.compRingHom p with
+    commutes' := fun r => by simp}
+
+
+theorem Polynomial.dvd_comp_algEquiv_iff {B : Type*} [CommRing B] {p q : B[X]}
+    {f : B[X] ≃ₐ[B] B[X]} : p ∣ f q ↔ f.symm p ∣ q := by
+  convert map_dvd_iff f using 2
+  simp only [AlgEquiv.apply_symm_apply]
+
 theorem Polynomial.dvd_comp_X_sub_C_iff {B : Type*} [CommRing B] {p q : Polynomial B} {a : B} :
     p ∣ q.comp (X - C a) ↔ p.comp (X + C a) ∣ q := by
   convert (map_dvd_iff <| algEquivAevalXAddC a).symm using 2
   rw [C_eq_algebraMap, algEquivAevalXAddC_apply, ← comp_eq_aeval]
   simp [comp_assoc]
 
-theorem Polynomial.irreducible_comp
+theorem map_isUnit {α : Type*} {β : Type*} [Monoid α] [Monoid β] {F : Type*}
+    [FunLike F α β] [MulHomClass F α β]
+    (f : F) {a} : IsUnit a → IsUnit (f a) := by
+  sorry
+
+theorem map_irreducible_iff {α : Type*} {β : Type*} [Monoid α] [Monoid β] {F : Type*}
+    [EquivLike F α β] [MulEquivClass F α β] (f : F) {a : α} :
+    Irreducible (f a) ↔ Irreducible a := by
+    let f := MulEquivClass.toMulEquiv f
+    refine ⟨fun ⟨h1, h2⟩ => ⟨?_, fun x y h => ?_⟩, fun ⟨h1, h2⟩ => ⟨fun h => ?_, ?_⟩⟩
+    exact fun h => h1 (map_isUnit f h)
+    rw [← f.left_inv x , ← f.left_inv y]
+    sorry
+    sorry
+    sorry
 
 theorem Polynomial.splits_of_comp_X_sub_C {B : Type*} [Field B] [Algebra A B] (a : A) {p : Polynomial A}
     (h : p.Splits (algebraMap A B)) : (p.comp (X - C a)).Splits (algebraMap A B) := by
@@ -257,7 +284,16 @@ theorem minpoly_split_sub_algebraMap {x : K} (r : R)
 
 theorem minpoly_split_algebraClosure {x : K} (h : IsIntegral k x)
     (g : (minpoly k x).Splits (algebraMap k K)) :
-    (minpoly k x).Splits (algebraMap k (IntermediateField.algebraicClosure k K)) := sorry
+    (minpoly k x).Splits (algebraMap k (algebraicClosure k K)) := by
+    apply Polynomial.splits_of_comp (algebraMap k (algebraicClosure k K))
+      (algebraMap (algebraicClosure k K) K) g
+    simp only [mem_roots']
+    intro r ⟨_, hrm⟩
+    simp only [IsRoot.def, Polynomial.eval_map] at hrm
+    simp only [RingHom.mem_range, IntermediateField.algebraMap_apply, Subtype.exists, exists_prop',
+      nonempty_prop, exists_eq_right]
+    exact ⟨minpoly k x, ⟨monic h, hrm⟩⟩
+
 
 end split
 
@@ -353,7 +389,8 @@ theorem of_completeSpace_aux [Algebra.IsAlgebraic K L] [CompleteSpace K] : IsKra
   rw [this.not] at hnin
   -- need + algebra map split and split tower.
   obtain ⟨z', hne, h1⟩ := (IsConjRoot.not_mem_iff_exist_ne zsep
-      (IsIntegral.minpoly_splits_tower_top (R := K) sorry sorry)).mp hnin -- wrong
+      (minpoly_split_sub_algebraMap ⟨y, hy⟩ (IsIntegral.minpoly_splits_tower_top
+        xsep.isIntegral sp))).mp hnin
   -- this is where the separablity is used.
   simp only [ne_eq, Subtype.mk.injEq] at hne
   have eq_spnM : (norm : M → ℝ) = spectralNorm K M :=
@@ -408,15 +445,16 @@ variable (K L) (M : IntermediateField K L)
 theorem of_completeSpace [CompleteSpace K] : IsKrasnerNorm K L := by
   constructor
   intro x y xsep sp hyK hxy
-  let L' := IntermediateField.algebraicClosure K L
+  let L' := algebraicClosure K L
   let xL : L' := ⟨x, IsSeparable.isIntegral xsep⟩
   let yL : L' := ⟨y, hyK⟩
   suffices xL ∈ K⟮yL⟯ by
     rwa [← IntermediateField.lift_adjoin_simple K L' yL, IntermediateField.mem_lift xL]
   have hL' : IsKrasnerNorm K L' := IsKrasnerNorm.of_completeSpace_aux is_na extd
   apply hL'.krasner_norm
-  · exact IsSeparable.of_algHom (L'.val) xsep
-  · exact Polynomial.splits_of_algHom (minpoly.algHom_eq (A := K) (B := L') (B' := L) (L'.val) sorry xL ▸ sp) _  -- If split, then split in the algebraic closure.
+  · exact IsSeparable.of_algHom L'.val xsep
+  · rw [← (minpoly.algHom_eq L'.val Subtype.val_injective xL)]
+    apply minpoly_split_algebraClosure (x := x) xsep.isIntegral sp
   · exact (isIntegral_algHom_iff _ L'.val.toRingHom.injective).mp hyK
   · exact fun x' hx' hne => hxy x' ((IsConjRoot.algHom_iff _ L'.val.toRingHom.injective).mpr hx')
       (Subtype.coe_ne_coe.mpr hne)
@@ -520,32 +558,32 @@ end IsKrasner
 -/
 
 
-def valuedIsAlgebraic (k K : Type*) {Γk : Type*} [Field k] [LinearOrderedCommGroupWithZero Γk]
-    [vk : Valued k Γk] [CompleteSpace k] [rk1k : vk.v.RankOne] [Field K] [Algebra k K]
-    [Algebra.IsAlgebraic k K] :
-    Valued K NNReal := sorry
+-- def valuedIsAlgebraic (k K : Type*) {Γk : Type*} [Field k] [LinearOrderedCommGroupWithZero Γk]
+--     [vk : Valued k Γk] [CompleteSpace k] [rk1k : vk.v.RankOne] [Field K] [Algebra k K]
+--     [Algebra.IsAlgebraic k K] :
+--     Valued K NNReal := sorry
 
-variable (k K : Type*) {Γk : Type*} [Field k] [LinearOrderedCommGroupWithZero Γk] [vk : Valued k Γk]
-    [CompleteSpace k] [rk1k : vk.v.RankOne] [Field K] [Algebra k K] [IsAlgClosure k K]
+-- variable (k K : Type*) {Γk : Type*} [Field k] [LinearOrderedCommGroupWithZero Γk] [vk : Valued k Γk]
+--     [CompleteSpace k] [rk1k : vk.v.RankOne] [Field K] [Algebra k K] [IsAlgClosure k K]
 
-instance :
-    letI := valuedIsAlgebraic k K
-    TopologicalDivisionRing K := sorry
+-- instance :
+--     letI := valuedIsAlgebraic k K
+--     TopologicalDivisionRing K := sorry
 
-instance :
-    @TopologicalDivisionRing K _ (valuedIsAlgebraic k K).toTopologicalSpace:= sorry
+-- instance :
+--     @TopologicalDivisionRing K _ (valuedIsAlgebraic k K).toTopologicalSpace:= sorry
 
-instance :
-    letI := valuedIsAlgebraic k K
-    CompletableTopField K := sorry
+-- instance :
+--     letI := valuedIsAlgebraic k K
+--     CompletableTopField K := sorry
 
-instance :
-    letI := valuedIsAlgebraic k K
-    UniformAddGroup K := sorry
+-- instance :
+--     letI := valuedIsAlgebraic k K
+--     UniformAddGroup K := sorry
 
-instance :
-    letI := valuedIsAlgebraic k K
-    IsAlgClosed (UniformSpace.Completion K) := sorry
+-- instance :
+--     letI := valuedIsAlgebraic k K
+--     IsAlgClosed (UniformSpace.Completion K) := sorry
 
 
 
