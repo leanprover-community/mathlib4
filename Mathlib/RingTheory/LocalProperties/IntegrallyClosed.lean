@@ -12,7 +12,6 @@ import Mathlib.RingTheory.Localization.LocalizationLocalization
 
 In this file, we prove that `IsIntegrallyClosed` is a local property.
 
-
 ## Main results
 
 * `IsIntegrallyClosed.of_localization_maximal` : An integral domain `R` is integral closed
