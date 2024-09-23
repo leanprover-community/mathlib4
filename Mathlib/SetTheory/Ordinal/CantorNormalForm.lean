@@ -88,7 +88,7 @@ theorem CNF_of_lt {b o : Ordinal} (ho : o ≠ 0) (hb : o < b) : CNF b o = [(0, o
 /-- Evaluating the Cantor normal form of an ordinal returns the ordinal. -/
 theorem CNF_foldr (b o : Ordinal) : (CNF b o).foldr (fun p r ↦ b ^ p.1 * p.2 + r) 0 = o := by
   refine CNFRec b ?_ ?_ o
-  · simp
+  · rw [CNF_zero, foldr_nil]
   · intro o ho IH
     rw [CNF_ne_zero ho, foldr_cons, IH, div_add_mod]
 
