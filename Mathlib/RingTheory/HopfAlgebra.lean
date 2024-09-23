@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ali Ramsey
 -/
 import Mathlib.RingTheory.Bialgebra.Basic
-import Mathlib.Algebra.Polynomial.Laurent
 
 /-!
 # Hopf algebras
@@ -152,7 +151,6 @@ lemma antipode_single (g : G) (a : A) :
   rfl
 
 instance instHopfAlgebra : HopfAlgebra R (MonoidAlgebra A G) where
-  toHopfAlgebraStruct := instHopfAlgebraStruct R A G
   mul_antipode_rTensor_comul := lhom_ext fun a b => by
     simp only [LinearMap.coe_comp, Function.comp_apply, comul_single,
       ← (Coalgebra.Repr.arbitrary R b).eq, map_sum,
@@ -189,7 +187,6 @@ lemma antipode_single (g : G) (a : A) :
   rfl
 
 instance instHopfAlgebra : HopfAlgebra R A[G] where
-  toHopfAlgebraStruct := instHopfAlgebraStruct R A G
   mul_antipode_rTensor_comul := lhom_ext fun a b => by
     simp only [LinearMap.coe_comp, Function.comp_apply, comul_single,
       ← (Coalgebra.Repr.arbitrary R b).eq, map_sum, TensorProduct.map_tmul, lsingle_apply,
@@ -217,45 +214,6 @@ instance instHopfAlgebra : HopfAlgebra R A[T;T⁻¹] :=
   inferInstanceAs (HopfAlgebra R <| AddMonoidAlgebra A ℤ)
 
 variable {R A}
-
-@[simp]
-theorem comul_C (a : A) :
-    Coalgebra.comul (R := R) (C a)
-      = TensorProduct.map (lsingle 0) (lsingle 0) (Coalgebra.comul (R := R) a) :=
-  comul_single _ _ _ _ _
-
-@[simp]
-theorem comul_T (n : ℤ) :
-    Coalgebra.comul (R := R) (T (R := A) n) = T n ⊗ₜ[R] T n := by
-  erw [comul_single]
-  simp [Algebra.TensorProduct.one_def]
-
-@[simp]
-theorem comul_C_mul_T (a : A) (n : ℤ) :
-    Coalgebra.comul (R := R) (C a * T n)
-      = TensorProduct.map (lsingle n) (lsingle n) (Coalgebra.comul (R := R) a) := by
-  rw [← single_eq_C_mul_T, comul_single]
-
-@[simp high]
-theorem comul_C_mul_T_self (a : R) (n : ℤ) :
-    Coalgebra.comul (R := R) (C a * T n) = T n ⊗ₜ[R] (C a * T n) := by
-  erw [comul_C_mul_T]
-  simp
-
-@[simp]
-theorem counit_C (a : A) :
-    Coalgebra.counit (R := R) (C a) = Coalgebra.counit (R := R) a :=
-  counit_single _ _ _ _ _
-
-@[simp]
-theorem counit_T (n : ℤ) :
-    Coalgebra.counit (R := R) (T (R := A) n) = 1 := by
-  erw [counit_single]
-  rw [Bialgebra.counit_one]
-
-theorem counit_C_mul_T (a : A) (n : ℤ) :
-    Coalgebra.counit (R := R) (C a * T n) = Coalgebra.counit (R := R) a := by
-  simp
 
 @[simp]
 theorem antipode_C (a : A) :

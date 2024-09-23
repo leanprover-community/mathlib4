@@ -163,31 +163,11 @@ namespace MonoidAlgebra
 
 open Bialgebra
 
-variable {R : Type u} [CommSemiring R] {A : Type v} [Semiring A] {X : Type w}
-
-section
-variable [Module R A] [Coalgebra R A]
-
-variable (R A X) in
-instance instCoalgebra : Coalgebra R (MonoidAlgebra A X) := Finsupp.instCoalgebra R X A
-
-@[simp]
-lemma counit_single (x : X) (a : A) :
-    Coalgebra.counit (single x a) = Coalgebra.counit (R := R) a :=
-  Finsupp.counit_single _ _ _ _ _
-
-@[simp]
-lemma comul_single (x : X) (a : A) :
-    Coalgebra.comul (single x a)
-      = TensorProduct.map (lsingle R A x) (lsingle R A x) (Coalgebra.comul a) :=
-  Finsupp.comul_single _ _ _ _ _
-
-end
-variable [Bialgebra R A] [Monoid X]
+variable {R : Type u} [CommSemiring R] {A : Type v} [Semiring A]
+  {X : Type w} [Bialgebra R A] [Monoid X]
 
 variable (R A X) in
 instance instBialgebra : Bialgebra R (MonoidAlgebra A X) where
-  toCoalgebra := instCoalgebra R A X
   counit_one := by simp only [one_def, counit_single, Bialgebra.counit_one]
   mul_compr₂_counit := lhom_ext fun a b => lhom_ext fun c d => by
     simp only [LinearMap.compr₂_apply, LinearMap.mul_apply', single_mul_single, counit_single,
@@ -209,32 +189,11 @@ namespace AddMonoidAlgebra
 
 open Bialgebra
 
-variable {R : Type u} [CommSemiring R] {A : Type v} [Semiring A] {X : Type w}
-
-section
-variable [Module R A] [Coalgebra R A]
-
-variable (R A X) in
-instance instCoalgebra : Coalgebra R (A[X]) := Finsupp.instCoalgebra R X A
-
-@[simp]
-lemma counit_single (x : X) (a : A) :
-    Coalgebra.counit (single x a) = Coalgebra.counit (R := R) a :=
-  Finsupp.counit_single _ _ _ _ _
-
-@[simp]
-lemma comul_single (x : X) (a : A) :
-    Coalgebra.comul (single x a)
-      = TensorProduct.map (lsingle R A x) (lsingle R A x) (Coalgebra.comul a) :=
-  Finsupp.comul_single _ _ _ _ _
-
-end
-
-variable [Bialgebra R A] [AddMonoid X]
+variable {R : Type u} [CommSemiring R] {A : Type v} [Semiring A]
+  {X : Type w} [Bialgebra R A] [AddMonoid X]
 
 variable (R A X) in
 instance instBialgebra : Bialgebra R A[X] where
-  toCoalgebra := instCoalgebra R A X
   counit_one := by simp only [one_def, counit_single, Bialgebra.counit_one]
   mul_compr₂_counit := lhom_ext fun a b => lhom_ext fun c d => by
     simp only [LinearMap.compr₂_apply, LinearMap.mul_apply', single_mul_single, counit_single,
@@ -251,3 +210,23 @@ instance instBialgebra : Bialgebra R A[X] where
       Finset.sum_comm (s := (Coalgebra.Repr.arbitrary R b).index)]
 
 end AddMonoidAlgebra
+
+namespace LaurentPolynomial
+open AddMonoidAlgebra
+
+variable {R : Type u} [CommSemiring R] {A : Type v} [Semiring A] [Bialgebra R A]
+
+instance instBialgebra : Bialgebra R A[T;T⁻¹] :=
+  (inferInstance : Bialgebra R A[ℤ])
+
+@[simp]
+theorem comul_T (n : ℤ) :
+    Coalgebra.comul (R := R) (T (R := A) n) = T n ⊗ₜ[R] T n := by
+  simp [T, -single_eq_C_mul_T, Algebra.TensorProduct.one_def]
+
+@[simp]
+theorem counit_T (n : ℤ) :
+    Coalgebra.counit (R := R) (T (R := A) n) = 1 := by
+  simp [T, -single_eq_C_mul_T]
+
+end LaurentPolynomial
