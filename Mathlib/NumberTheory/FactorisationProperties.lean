@@ -123,7 +123,7 @@ theorem prime_not_weird (h : Prime n) : ¬ Weird n := by
   left
   exact prime_not_abundant h
 
-theorem prime_not_pseudoperfect (h : Prime p) : ¬ Pseudoperfect p := by
+theorem Prime.not_pseudoperfect (h : Prime p) : ¬ Pseudoperfect p := by
   simp_rw [not_pseudoperfect_iff_forall, ← mem_powerset,
     show powerset (properDivisors p) = {∅, {1}} by rw [Prime.properDivisors h]; rfl]
   refine Or.inr (fun s hs ↦ ?_)
