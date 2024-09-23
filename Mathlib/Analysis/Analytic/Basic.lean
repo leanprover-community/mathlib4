@@ -874,7 +874,7 @@ theorem HasFPowerSeriesWithinAt.isBigO_sub_partialSum_pow
   refine isBigO_iff.2 ⟨C * (a / r') ^ n, ?_⟩
   replace r'0 : 0 < (r' : ℝ) := mod_cast r'0
   filter_upwards [inter_mem_nhdsWithin _ (Metric.ball_mem_nhds (0 : E) r'0)] with y hy
-  simpa [mul_pow, mul_div_assoc, mul_assoc, div_mul_eq_mul_div]
+  simpa [mul_pow, mul_div_assoc, mul_assoc, div_mul_eq_mul_div, div_pow]
     using hp y hy.2 n (by simpa using hy.1)
 
 /-- Taylor formula for an analytic function, `IsBigO` version. -/
