@@ -119,7 +119,7 @@ theorem Prime.not_abundant (h : Prime n) : ¬ Abundant n :=
 theorem Prime.not_weird (h : Prime n) : ¬ Weird n := by
   simp only [Nat.Weird, not_and_or]
   left
-  exact prime_not_abundant h
+  exact Prime.not_abundant h
 
 theorem Prime.not_pseudoperfect (h : Prime p) : ¬ Pseudoperfect p := by
   simp_rw [not_pseudoperfect_iff_forall, ← mem_powerset,
@@ -132,7 +132,7 @@ theorem Prime.not_pseudoperfect (h : Prime p) : ¬ Pseudoperfect p := by
 theorem Prime.not_perfect (h : Prime p) : ¬ Perfect p := by
   have h1 := Prime.not_pseudoperfect h
   revert h1
-  exact not_imp_not.mpr (perfect_pseudoperfect)
+  exact not_imp_not.mpr (Perfect.pseudoperfect)
 
 /-- Any natural number power of a prime is deficient -/
 theorem Prime.deficient_pow  (h : Prime n) : Deficient (n ^ m) := by
@@ -170,21 +170,24 @@ theorem infinite_deficient : {n : ℕ | n.Deficient}.Infinite := by
   rw [Set.infinite_iff_exists_gt]
   intro a
   obtain ⟨b, h1, h2⟩ := exists_infinite_primes a.succ
-  exact ⟨b, Set.mem_setOf.mpr (prime_deficient h2), h1⟩
+  exact ⟨b, Set.mem_setOf.mpr (Prime.deficient h2), h1⟩
 
 theorem infinite_even_deficient : {n : ℕ | Even n ∧ n.Deficient}.Infinite := by
+  rw [Set.infinite_iff_exists_gt]
+  intro n
   use 2 ^ (n + 1)
   constructor
+  · exact Set.mem_sep (Set.mem_def.mpr ⟨2 ^ n, by ring⟩) (Prime.deficient_pow prime_two)
   · calc
       n ≤ 2 ^ n := Nat.le_of_lt (lt_two_pow n)
-      _ ≤ 2 ^ (n + 1) := le_of_succ_le ((Nat.pow_lt_pow_iff_right (Nat.one_lt_two)).mpr
-        (lt_add_one n))
-  · exact ⟨Prime.deficient_pow prime_two, even_pow.mpr ⟨even_two, Ne.symm
-      (NeZero.ne' (n + 1))⟩⟩
+      _ < 2 ^ (n + 1) := (Nat.pow_lt_pow_iff_right (Nat.one_lt_two)).mpr (lt_add_one n)
 
-theorem exists_infinite_odd_deficients : ∃ d, n ≤ d ∧ Deficient d ∧ Odd d := by
-  obtain ⟨p, ⟨h1, h2⟩⟩ := exists_infinite_primes (max n 3)
-  exact ⟨p, le_of_max_le_left h1, ⟨prime_deficient h2, Prime.odd_of_ne_two h2 (Ne.symm (ne_of_lt
-    (le_of_max_le_right h1)))⟩⟩
+
+theorem infinite_odd_deficient : {n : ℕ | Odd n ∧ n.Deficient}.Infinite := by
+  rw [Set.infinite_iff_exists_gt]
+  intro n
+  obtain ⟨p, ⟨_, h2⟩⟩ := exists_infinite_primes (max (n + 1) 3)
+  exact ⟨p, Set.mem_setOf.mpr ⟨Prime.odd_of_ne_two h2 (Ne.symm (ne_of_lt (by omega))),
+    Prime.deficient h2⟩, by omega⟩
 
 end Nat
