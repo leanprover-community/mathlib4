@@ -1450,6 +1450,7 @@ import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
 import Mathlib.CategoryTheory.Closed.Cartesian
 import Mathlib.CategoryTheory.Closed.Functor
 import Mathlib.CategoryTheory.Closed.FunctorCategory
+import Mathlib.CategoryTheory.Closed.FunctorToTypes
 import Mathlib.CategoryTheory.Closed.Ideal
 import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.CategoryTheory.Closed.Types
@@ -3331,6 +3332,7 @@ import Mathlib.MeasureTheory.Measure.Portmanteau
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.MeasureTheory.Measure.Restrict
+import Mathlib.MeasureTheory.Measure.SeparableMeasure
 import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.MeasureTheory.Measure.Sub
 import Mathlib.MeasureTheory.Measure.Tilted
@@ -3656,7 +3658,7 @@ import Mathlib.Order.Interval.Set.WithBotTop
 import Mathlib.Order.Irreducible
 import Mathlib.Order.IsWellOrderLimitElement
 import Mathlib.Order.Iterate
-import Mathlib.Order.JordanHoelder
+import Mathlib.Order.JordanHolder
 import Mathlib.Order.KonigLemma
 import Mathlib.Order.KrullDimension
 import Mathlib.Order.Lattice
@@ -3733,6 +3735,7 @@ import Mathlib.Probability.Distributions.Uniform
 import Mathlib.Probability.IdentDistrib
 import Mathlib.Probability.Independence.Basic
 import Mathlib.Probability.Independence.Conditional
+import Mathlib.Probability.Independence.Integrable
 import Mathlib.Probability.Independence.Kernel
 import Mathlib.Probability.Independence.ZeroOne
 import Mathlib.Probability.Integration
@@ -3740,6 +3743,7 @@ import Mathlib.Probability.Kernel.Basic
 import Mathlib.Probability.Kernel.Composition
 import Mathlib.Probability.Kernel.CondDistrib
 import Mathlib.Probability.Kernel.Condexp
+import Mathlib.Probability.Kernel.Defs
 import Mathlib.Probability.Kernel.Disintegration.Basic
 import Mathlib.Probability.Kernel.Disintegration.CDFToKernel
 import Mathlib.Probability.Kernel.Disintegration.CondCDF
@@ -3748,6 +3752,7 @@ import Mathlib.Probability.Kernel.Disintegration.Integral
 import Mathlib.Probability.Kernel.Disintegration.MeasurableStieltjes
 import Mathlib.Probability.Kernel.Disintegration.StandardBorel
 import Mathlib.Probability.Kernel.Disintegration.Unique
+import Mathlib.Probability.Kernel.Integral
 import Mathlib.Probability.Kernel.IntegralCompProd
 import Mathlib.Probability.Kernel.Invariance
 import Mathlib.Probability.Kernel.MeasurableIntegral
@@ -4035,6 +4040,8 @@ import Mathlib.RingTheory.RootsOfUnity.Complex
 import Mathlib.RingTheory.RootsOfUnity.Lemmas
 import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.RingTheory.SimpleModule
+import Mathlib.RingTheory.SimpleRing.Basic
+import Mathlib.RingTheory.SimpleRing.Defs
 import Mathlib.RingTheory.Smooth.Basic
 import Mathlib.RingTheory.Smooth.Kaehler
 import Mathlib.RingTheory.Smooth.StandardSmooth
@@ -4124,6 +4131,7 @@ import Mathlib.SetTheory.Surreal.Multiplication
 import Mathlib.SetTheory.ZFC.Basic
 import Mathlib.SetTheory.ZFC.Ordinal
 import Mathlib.SetTheory.ZFC.Rank
+import Mathlib.Std.Data.HashMap
 import Mathlib.Tactic
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.AdaptationNote
@@ -4223,6 +4231,7 @@ import Mathlib.Tactic.FunProp.ToBatteries
 import Mathlib.Tactic.FunProp.Types
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.GCongr.CoreAttrs
 import Mathlib.Tactic.GCongr.ForwardAttr
 import Mathlib.Tactic.Generalize
 import Mathlib.Tactic.GeneralizeProofs
@@ -4655,7 +4664,7 @@ import Mathlib.Topology.MetricSpace.GromovHausdorff
 import Mathlib.Topology.MetricSpace.GromovHausdorffRealized
 import Mathlib.Topology.MetricSpace.HausdorffDimension
 import Mathlib.Topology.MetricSpace.HausdorffDistance
-import Mathlib.Topology.MetricSpace.Hoelder
+import Mathlib.Topology.MetricSpace.Holder
 import Mathlib.Topology.MetricSpace.Infsep
 import Mathlib.Topology.MetricSpace.IsometricSMul
 import Mathlib.Topology.MetricSpace.Isometry
