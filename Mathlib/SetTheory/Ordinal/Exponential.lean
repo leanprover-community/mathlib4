@@ -304,6 +304,7 @@ theorem opow_le_iff_le_log {b x c : Ordinal} (hb : 1 < b) (hx : x ≠ 0) :
       ((opow_le_opow_iff_right hb).2 <| succ_le_of_lt hn).trans h
   · exact ((opow_le_opow_iff_right hb).2 h).trans <| opow_log_le_self b hx
 
+/-- This lemma assumes `c ≠ 0` rather than `x ≠ 0`. -/
 theorem opow_le_iff_le_log' {b x c : Ordinal} (hb : 1 < b) (hc : c ≠ 0) :
     b ^ c ≤ x ↔ c ≤ log b x := by
   obtain rfl | hx := eq_or_ne x 0
@@ -326,6 +327,7 @@ theorem opow_le_of_le_log {b x c : Ordinal} (hc : c ≠ 0) (h : c ≤ log b x) :
 theorem lt_opow_iff_log_lt {b x c : Ordinal} (hb : 1 < b) (hx : x ≠ 0) : x < b ^ c ↔ log b x < c :=
   lt_iff_lt_of_le_iff_le (opow_le_iff_le_log hb hx)
 
+/-- This lemma assumes `c ≠ 0` rather than `x ≠ 0`. -/
 theorem lt_opow_iff_log_lt' {b x c : Ordinal} (hb : 1 < b) (hc : c ≠ 0) : x < b ^ c ↔ log b x < c :=
   lt_iff_lt_of_le_iff_le (opow_le_iff_le_log' hb hc)
 
