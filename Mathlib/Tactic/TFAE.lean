@@ -78,7 +78,7 @@ open Parser
 context, where `<arrow>` can be `→`, `←`, or `↔`. Note that `i` and `j` are natural number indices
 (beginning at 1) used to specify the propositions `P₁, P₂, ...` that appear in the goal.
 
-```lean
+```lean4
 example (h : P → R) : TFAE [P, Q, R] := by
   tfae_have 1 → 3 := h
   ...
@@ -88,7 +88,7 @@ The resulting context now includes `tfae_1_to_3 : P → R`.
 Once sufficient hypotheses have been introduced by `tfae_have`, `tfae_finish` can be used to close
 the goal. For example,
 
-```lean
+```lean4
 example : TFAE [P, Q, R] := by
   tfae_have 1 → 2 := sorry /- proof of P → Q -/
   tfae_have 2 → 1 := sorry /- proof of Q → P -/
@@ -96,27 +96,26 @@ example : TFAE [P, Q, R] := by
   tfae_finish
 ```
 
-All relevant features of `have` are supported by `tfae_have`, including naming, destructuring, goal
-creation, and matching. These are demonstrated below.
+All features of `have` are supported by `tfae_have`, including naming, matching,
+destructuring, and goal creation. These are demonstrated below.
 
-```lean
+```lean4
 example : TFAE [P, Q] := by
-  -- `tfae_1_to_2 : P → Q`:
+  -- assert `tfae_1_to_2 : P → Q`:
   tfae_have 1 → 2 := sorry
-  -- `hpq : P → Q`:
+
+  -- assert `hpq : P → Q`:
   tfae_have hpq : 1 → 2 := sorry
-  -- inaccessible `h✝ : P → Q`:
-  tfae_have _ : 1 → 2 := sorry
-  -- `tfae_1_to_2 : P → Q`, and `?a` is a new goal:
-  tfae_have 1 → 2 := f ?a
-  -- create a goal of type `P → Q`:
-  tfae_have 1 → 2
-  · exact (sorry : P → Q)
-  -- match on `p : P` and prove `Q`:
+
+  -- match on `p : P` and prove `Q` via `f p`:
   tfae_have 1 → 2
   | p => f p
-  -- introduces `pq : P → Q`, `qp : Q → P`:
+
+  -- assert `pq : P → Q`, `qp : Q → P`:
   tfae_have ⟨pq, qp⟩ : 1 ↔ 2 := sorry
+
+  -- assert `h : P → Q`; `?a` is a new goal:
+  tfae_have h : 1 → 2 := f ?a
   ...
 ```
 -/
@@ -129,7 +128,7 @@ of hypotheses of the form `Pᵢ → Pⱼ` or `Pᵢ ↔ Pⱼ` have been introduce
 `tfae_have` can be used to conveniently introduce these hypotheses; see `tfae_have`.
 
 Example:
-```lean
+```lean4
 example : TFAE [P, Q, R] := by
   tfae_have 1 → 2 := sorry /- proof of P → Q -/
   tfae_have 2 → 1 := sorry /- proof of Q → P -/
