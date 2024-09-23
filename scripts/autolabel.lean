@@ -151,7 +151,7 @@ unsafe def main (args : List String): IO Unit := do
     | some n =>
       let _ ← IO.Process.run {
         cmd := "gh",
-        args := #["issue", "edit", n, "--add-label", label] }
+        args := #["pr", "edit", n, "--add-label", label] }
       println s!"Added label: {label}"
     | none =>
       println s!"No PR-number provided, skipping adding labels.
