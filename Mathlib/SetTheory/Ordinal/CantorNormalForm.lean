@@ -67,9 +67,12 @@ def CNF (b o : Ordinal) : List (Ordinal × Ordinal) :=
 
 namespace CNF
 
-/-- The exponents of the Cantor normal form are stored in the first entries. -/
+/-- The exponents of the Cantor normal form are stored
+in the first entries of elements in `CNF`. -/
 def exponents (b o : Ordinal) := (CNF b o).map Prod.fst
-/-- The coefficients of the Cantor normal form are stored in the second entries. -/
+
+/-- The coefficients of the Cantor normal form are stored
+in the second entries of elements in `CNF`. -/
 def coeffs (b o : Ordinal) := (CNF b o).map Prod.snd
 
 @[simp]
