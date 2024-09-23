@@ -26,11 +26,39 @@ At least one of `before` and `after` must appear, but either one of them is opti
 
 namespace Mathlib.Tactic.ExtendDocs
 
+open Lean Elab Command
+
+set_option autoImplicit true in
+open private docStringExt in addDocString in
+/-- Replace a declaration's docstring. If `declName` does not have a docstring yet, add it.
+
+Note that the docstring extension maintains both a `List (Name × String)` (for serialization) and a
+`NameMap String` (for state). Each `Name` in this `List` should be unique.
+`addDocString declName docString` assumes that `declName` does not have a docstring yet, and simply
+prepends `(declName, docString)` to the list. As such, it is unsuitable for modifying extant
+docstrings. -/
+private def replaceDocString [Monad m] [MonadError m] [MonadEnv m]
+    (declName : Name) (docString : String) : m Unit := do
+  unless (← getEnv).getModuleIdxFor? declName |>.isNone do
+    throwError s!"invalid doc string, declaration '{declName}' is in an imported module"
+  modifyEnv fun env => PersistentEnvExtension.modifyState docStringExt env fun (entries, map) =>
+    let entries := if map.contains declName then
+      modifyEntry entries else (declName, docString) :: entries
+    -- Note that `NameMap.insert` overwrites any existing key-value pairs.
+    (entries, map.insert declName docString)
+where
+  /-- Replace the `String` in the first pair that contains `declName`. (`declName` is assumed to
+  appear somewhere in the list.) -/
+  modifyEntry : List (Name × String) → List (Name × String)
+  | e@(n, _) :: entries =>
+    if n == declName then (n, docString) :: entries else e :: modifyEntry entries
+  | [] => []
+
+
 /-- `extend_docs <declName> before <prefix_string> after <suffix_string>` extends the
 docs of `<declName>` by adding `<prefix_string>` before and `<suffix_string>` after. -/
 syntax "extend_docs" ident (colGt &"before" str)? (colGt &"after" str)? : command
 
-open Lean Elab Command in
 elab_rules : command
   | `(command| extend_docs $na:ident $[before $bef:str]? $[after $aft:str]?) => do
     if bef.isNone && aft.isNone then throwError "expected at least one of 'before' or 'after'"
@@ -38,6 +66,6 @@ elab_rules : command
     let bef := if bef.isNone then "" else (bef.get!).getString ++ "\n\n"
     let aft := if aft.isNone then "" else "\n\n" ++ (aft.get!).getString
     let oldDoc := (← findDocString? (← getEnv) declName).getD ""
-    addDocString declName <| bef ++ oldDoc ++ aft
+    replaceDocString declName <| bef ++ oldDoc ++ aft
 
 end Mathlib.Tactic.ExtendDocs
