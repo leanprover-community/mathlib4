@@ -544,7 +544,7 @@ theorem toEquiv_eq_coe (f : M ≃ₜ* N) : f.toEquiv = f :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem toMulHom_eq_coe (f : M ≃ₜ* N) : f.toMulEquiv = f :=
+theorem toMulEquiv_eq_coe (f : M ≃ₜ* N) : f.toMulEquiv = f :=
   rfl
 
 /-- Makes a continuous multiplicative isomorphism from
@@ -636,6 +636,46 @@ theorem apply_symm_apply (e : M ≃ₜ* N) (y : N) : e (e.symm y) = y :=
 @[to_additive (attr := simp) "`e.symm` is a left inverse of `e`, written as `e.symm (e y) = y`."]
 theorem symm_apply_apply (e : M ≃ₜ* N) (x : M) : e.symm (e x) = x :=
   e.toEquiv.symm_apply_apply x
+
+@[to_additive (attr := simp)]
+theorem symm_comp_self (e : M ≃ₜ* N) : e.symm ∘ e = id :=
+  funext e.symm_apply_apply
+
+@[to_additive (attr := simp)]
+theorem self_comp_symm (e : M ≃ₜ* N) : e ∘ e.symm = id :=
+  funext e.apply_symm_apply
+
+@[to_additive]
+theorem apply_eq_iff_symm_apply (e : M ≃ₜ* N) {x : M} {y : N} : e x = y ↔ x = e.symm y :=
+  e.toEquiv.apply_eq_iff_eq_symm_apply
+
+@[to_additive]
+theorem symm_apply_eq (e : M ≃ₜ* N) {x y} : e.symm x = y ↔ x = e y :=
+  e.toEquiv.symm_apply_eq
+
+@[to_additive]
+theorem eq_symm_apply (e : M ≃ₜ* N) {x y} : y = e.symm x ↔ e y = x :=
+  e.toEquiv.eq_symm_apply
+
+@[to_additive]
+theorem eq_comp_symm {α : Type*} (e : M ≃ₜ* N) (f : N → α) (g : M → α) :
+    f = g ∘ e.symm ↔ f ∘ e = g :=
+  e.toEquiv.eq_comp_symm f g
+
+@[to_additive]
+theorem comp_symm_eq {α : Type*} (e : M ≃ₜ* N) (f : N → α) (g : M → α) :
+    g ∘ e.symm = f ↔ g = f ∘ e :=
+  e.toEquiv.comp_symm_eq f g
+
+@[to_additive]
+theorem eq_symm_comp {α : Type*} (e : M ≃ₜ* N) (f : α → M) (g : α → N) :
+    f = e.symm ∘ g ↔ e ∘ f = g :=
+  e.toEquiv.eq_symm_comp f g
+
+@[to_additive]
+theorem symm_comp_eq {α : Type*} (e : M ≃ₜ* N) (f : α → M) (g : α → N) :
+    e.symm ∘ g = f ↔ g = e ∘ f :=
+  e.toEquiv.symm_comp_eq f g
 
 end symm
 
