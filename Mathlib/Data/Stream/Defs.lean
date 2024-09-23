@@ -94,7 +94,7 @@ infixl:65 " ⋈ " => interleave
 
 /-- Elements of a stream with even indices. -/
 def even (s : Stream' α) : Stream' α :=
-  corec (fun s => head s) (fun s => tail (tail s)) s
+  corec head (fun s => tail (tail s)) s
 
 /-- Elements of a stream with odd indices. -/
 def odd (s : Stream' α) : Stream' α :=

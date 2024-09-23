@@ -69,7 +69,7 @@ lemma autEmbedding_range :
   ext a
   simp only [Set.mem_range, id_obj, Set.mem_iInter, Set.mem_setOf_eq]
   refine ⟨fun ⟨σ, h⟩ i ↦ h.symm ▸ σ.hom.naturality i.hom, fun h ↦ ?_⟩
-  · use NatIso.ofComponents (fun X => a X) (fun {X Y} f ↦ h ⟨X, Y, f⟩)
+  · use NatIso.ofComponents a (fun {X Y} f ↦ h ⟨X, Y, f⟩)
     rfl
 
 /-- The image of `Aut F` in `∀ X, Aut (F.obj X)` is closed. -/

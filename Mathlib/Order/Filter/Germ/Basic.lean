@@ -118,7 +118,7 @@ def IsConstant {l : Filter α} (P : Germ l β) : Prop :=
     exact fun f g b hfg hf ↦ (hfg.symm).trans hf
 
 theorem isConstant_coe {l : Filter α} {b} (h : ∀ x', f x' = b) : (↑f : Germ l β).IsConstant :=
-  ⟨b, Eventually.of_forall (fun x ↦ h x)⟩
+  ⟨b, Eventually.of_forall h⟩
 
 @[simp]
 theorem isConstant_coe_const {l : Filter α} {b : β} : (fun _ : α ↦ b : Germ l β).IsConstant := by

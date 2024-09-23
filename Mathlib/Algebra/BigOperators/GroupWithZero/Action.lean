@@ -104,7 +104,7 @@ theorem smul_prod
     (s : Finset β) (b : α) (f : β → β) :
     b ^ s.card • ∏ x in s, f x = ∏ x in s, b • f x := by
   have : Multiset.map (fun (x : β) ↦ b • f x) s.val =
-      Multiset.map (fun x ↦ b • x) (Multiset.map (fun x ↦ f x) s.val) := by
+      Multiset.map (fun x ↦ b • x) (Multiset.map f s.val) := by
     simp only [Multiset.map_map, Function.comp_apply]
   simp_rw [prod_eq_multiset_prod, card_def, this, ← Multiset.smul_prod _ b, Multiset.card_map]
 
