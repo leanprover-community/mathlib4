@@ -210,7 +210,7 @@ end CommGroup
 end Lattice
 
 section LinearOrder
-variable [LinearOrder α] [Group α] {a : α}
+variable [LinearOrder α] [Group α] {a b : α}
 
 @[to_additive] lemma oneLePart_eq_ite : a⁺ᵐ = if 1 ≤ a then a else 1 := by
   rw [oneLePart, ← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]
@@ -222,6 +222,8 @@ variable [LinearOrder α] [Group α] {a : α}
 lemma oneLePart_of_one_lt_oneLePart (ha : 1 < a⁺ᵐ) : a⁺ᵐ = a := by
   rw [oneLePart, right_lt_sup, not_le] at ha; exact oneLePart_eq_self.2 ha.le
 
+@[to_additive (attr := simp)] lemma oneLePart_lt : a⁺ᵐ < b ↔ a < b ∧ 1 < b := sup_lt_iff
+
 section covariantmul
 variable [CovariantClass α α (· * ·) (· ≤ ·)]
 
@@ -230,6 +232,11 @@ variable [CovariantClass α α (· * ·) (· ≤ ·)]
 
 @[to_additive (attr := simp) negPart_pos_iff] lemma one_lt_ltOnePart_iff : 1 < a⁻ᵐ ↔ a < 1 :=
   lt_iff_lt_of_le_iff_le <| (one_le_leOnePart _).le_iff_eq.trans leOnePart_eq_one
+
+variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+
+@[to_additive (attr := simp)] lemma leOnePart_lt : a⁻ᵐ < b ↔ b⁻¹ < a ∧ 1 < b :=
+  sup_lt_iff.trans <| by rw [inv_lt']
 
 end covariantmul
 end LinearOrder
