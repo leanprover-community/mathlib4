@@ -7,6 +7,7 @@ import Qq
 import Mathlib.Data.Nat.Notation
 import Mathlib.Util.AtomM
 import Mathlib.Data.List.TFAE
+import Mathlib.Tactic.ExtendDoc
 
 /-!
 # The Following Are Equivalent (TFAE)
@@ -45,12 +46,15 @@ sense in this context; we also include `" : "` after the binder to avoid breakin
 syntax (which, unlike `have`, omits `" : "`).
 -/
 
+/- We need this to ensure `<|>` in `tfaeHaveIdLhs` takes in the same number of syntax trees on
+each side. -/
+private def binder := leading_parser ppSpace >> binderIdent >> " : "
 /- See `haveIdLhs`.
 
 We omit `many (ppSpace >> letIdBinder)`, as it makes no sense to add extra arguments to a
 `tfae_have` decl.  -/
 private def tfaeHaveIdLhs := leading_parser
-  ((ppSpace >> binderIdent >> " : ") <|> hygieneInfo)  >> tfaeType
+  (binder <|> hygieneInfo)  >> tfaeType
 /- See `haveIdDecl`. E.g. `h : 1 → 3 := term`. -/
 private def tfaeHaveIdDecl   := leading_parser (withAnonymousAntiquot := false)
   atomic (tfaeHaveIdLhs >> " := ") >> termParser
@@ -307,38 +311,59 @@ elab_rules : tactic
           hyps := hyps.push (q1, q2, hyp)
       proveTFAE hyps (← get).atoms is tfaeListQ
 
+end Mathlib.Tactic.TFAE
+
 /-!
 
-# "Old-style" `tfae_have`
+# Deprecated "Goal-style" `tfae_have`
 
-We preserve the "old-style" `tfae_have` (which behaves like Mathlib `have`) for compatibility
-purposes.
+This syntax and its implementation, which behaves like "Mathlib `have`" is deprecated; we preserve
+it here to provide graceful deprecation behavior.
 
 -/
+
+/-- Re-enables "goal-style" syntax for `tfae_have` when `true`. -/
+register_option Mathlib.Tactic.TFAE.useDeprecated : Bool := {
+  descr := "Re-enable \"goal-style\" 'tfae_have' syntax"
+  defValue := false
+}
+
+namespace Mathlib.Tactic.TFAE
+
+open Lean Parser Meta Elab Tactic
 
 @[inherit_doc tfaeHave]
 syntax (name := tfaeHave') "tfae_have " tfaeHaveIdLhs : tactic
 
-macro_rules
-| `(tfaeHave'|tfae_have $hy:hygieneInfo $t:tfaeType) => do
-  let id := HygieneInfo.mkIdent hy (← mkTFAEId t) (canonical := true)
-  `(tfaeHave'|tfae_have $id : $t)
+extend_docs tfaeHave'
+  before "\"Goal-style\" `tfae_have` syntax is deprecated. Now, `tfae_have ...` should be followed\
+    by  `:= ...`; see below for the new behavior. This warning can be turned off with \
+    `set_option Mathlib.Tactic.TFAE.useDeprecated true`.\n\n***"
 
 elab_rules : tactic
 | `(tfaeHave'|tfae_have $d:tfaeHaveIdLhs) => withMainContext do
+  -- Deprecate syntax:
+  let ref ← getRef
+  unless useDeprecated.get (← getOptions) do
+    logWarning <| .tagged ``Linter.deprecatedAttr m!"\
+      \"Goal-style\" syntax '{ref}' is deprecated in favor of '{ref} := ...'.\n\n\
+      To turn this warning off, use set_option Mathlib.Tactic.TFAE.useDeprecated true"
+
   let goal ← getMainGoal
   let (_, tfaeList) ← getTFAEList (← goal.getType)
-  -- Note that due to the macro above, the following match is exhaustive.
-  match d with
-  | `(tfaeHaveIdLhs| $b:ident : $t:tfaeType) =>
-    let n := b.getId
-    let type ← elabTFAEType tfaeList t
-    let p ← mkFreshExprMVar type MetavarKind.syntheticOpaque n
-    let (fv, mainGoal) ← (← MVarId.assert goal n type p).intro1P
-    mainGoal.withContext do
-      Term.addTermInfo' (isBinder := true) b (mkFVar fv)
-    replaceMainGoal [p.mvarId!, mainGoal]
-  | _ => throwUnsupportedSyntax
+  let (b, t) ← liftMacroM <| match d with
+    | `(tfaeHaveIdLhs| $hy:hygieneInfo $t:tfaeType) => do
+      pure (HygieneInfo.mkIdent hy (← mkTFAEId t) (canonical := true), t)
+    | `(tfaeHaveIdLhs| $b:ident : $t:tfaeType) =>
+      pure (b, t)
+    | _ => Macro.throwUnsupported
+  let n := b.getId
+  let type ← elabTFAEType tfaeList t
+  let p ← mkFreshExprMVar type MetavarKind.syntheticOpaque n
+  let (fv, mainGoal) ← (← MVarId.assert goal n type p).intro1P
+  mainGoal.withContext do
+    Term.addTermInfo' (isBinder := true) b (mkFVar fv)
+  replaceMainGoal [p.mvarId!, mainGoal]
 
 end TFAE
 
