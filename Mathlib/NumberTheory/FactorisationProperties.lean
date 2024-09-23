@@ -119,7 +119,7 @@ theorem Prime.not_abundant (h : Prime n) : ¬ Abundant n :=
 theorem Prime.not_weird (h : Prime n) : ¬ Weird n := by
   simp only [Nat.Weird, not_and_or]
   left
-  exact Prime.not_abundant h
+  exact h.not_abundant
 
 theorem Prime.not_pseudoperfect (h : Prime p) : ¬ Pseudoperfect p := by
   simp_rw [not_pseudoperfect_iff_forall, ← mem_powerset,
