@@ -545,12 +545,11 @@ def j : R :=
 lemma j_eq_zero_iff' : E.j = 0 ↔ E.c₄ ^ 3 = 0 := by
   rw [j, Units.mul_right_eq_zero]
 
-lemma j_eq_zero_iff [IsReduced R] : E.j = 0 ↔ E.c₄ = 0 := by
-  rw [j_eq_zero_iff']
-  exact ⟨fun h ↦ IsNilpotent.eq_zero ⟨_, h⟩, fun h ↦ by simp [h]⟩
-
-lemma j_eq_zero : E.c₄ = 0 → E.j = 0 := fun h ↦ by
+lemma j_eq_zero (h : E.c₄ = 0) : E.j = 0 := by
   simp [j_eq_zero_iff', h]
+
+lemma j_eq_zero_iff [IsReduced R] : E.j = 0 ↔ E.c₄ = 0 :=
+  ⟨fun h ↦ IsNilpotent.eq_zero ⟨_, E.j_eq_zero_iff'.1 h⟩, E.j_eq_zero⟩
 
 lemma j_ne_zero_iff' : E.j ≠ 0 ↔ E.c₄ ^ 3 ≠ 0 := not_congr E.j_eq_zero_iff'
 
