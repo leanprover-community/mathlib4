@@ -252,9 +252,7 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
       _ = ε / 2 * ∑ k ∈ S, bernstein n k x := by rw [Finset.mul_sum]
       -- In this step we increase the sum over `S` back to a sum over all of `Fin (n+1)`,
       -- so that we can use `bernstein.probability`.
-      _ ≤ ε / 2 * ∑ k : Fin (n + 1), bernstein n k x := by
-        gcongr
-        exact Finset.sum_le_univ_sum_of_nonneg fun k => bernstein_nonneg
+      _ ≤ ε / 2 * ∑ k : Fin (n + 1), bernstein n k x := by gcongr; exact S.subset_univ
       _ = ε / 2 := by rw [bernstein.probability, mul_one]
   · -- We now turn to working on `Sᶜ`: we control the difference term just using `‖f‖`,
     -- and then insert a `δ^(-2) * (x - k/n)^2` factor
@@ -271,9 +269,7 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
         exact le_of_mem_S_compl m
       -- Again enlarging the sum from `Sᶜ` to all of `Fin (n+1)`
       _ ≤ 2 * ‖f‖ * ∑ k : Fin (n + 1), δ ^ (-2 : ℤ) * ((x : ℝ) - k/ₙ) ^ 2 * bernstein n k x := by
-        gcongr
-        refine Finset.sum_le_univ_sum_of_nonneg fun k => ?_
-        positivity
+        gcongr; exact Sᶜ.subset_univ
       _ = 2 * ‖f‖ * δ ^ (-2 : ℤ) * ∑ k : Fin (n + 1), ((x : ℝ) - k/ₙ) ^ 2 * bernstein n k x := by
         conv_rhs =>
           rw [mul_assoc, Finset.mul_sum]
