@@ -170,7 +170,7 @@ theorem infinite_deficient : {n : ℕ | n.Deficient}.Infinite := by
   rw [Set.infinite_iff_exists_gt]
   intro a
   obtain ⟨b, h1, h2⟩ := exists_infinite_primes a.succ
-  exact ⟨b, Set.mem_setOf.mpr (Prime.deficient h2), h1⟩
+  exact ⟨b, h2.deficient, h1⟩
 
 theorem infinite_even_deficient : {n : ℕ | Even n ∧ n.Deficient}.Infinite := by
   rw [Set.infinite_iff_exists_gt]
