@@ -36,7 +36,7 @@ This is an isomorphism if `f` has a right inverse (`quotientKerEquivOfRightInver
 is surjective (`quotientKerEquivOfSurjective`).
 -/
 def kerLift : R ⧸ ker f →+* S :=
-  Ideal.Quotient.lift _ f fun _ => f.mem_ker.mp
+  Ideal.Quotient.lift _ f fun _ => mem_ker.mp
 
 @[simp]
 theorem kerLift_mk (r : R) : kerLift f (Ideal.Quotient.mk (ker f) r) = f r :=
