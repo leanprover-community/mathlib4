@@ -10,8 +10,9 @@ import Mathlib.Tactic.FinCases
 
 /-!
 # Factorisation properties of natural numbers
+
 This file defines abundant, pseudoperfect, deficient, and weird numbers and formalizes their
-  relations with prime and perfect numbers.
+relations with prime and perfect numbers.
 
 ## Main Definitions
 * `Nat.Abundant`: a natural number `n` is _abundant_ if the sum of its proper divisors is greater
