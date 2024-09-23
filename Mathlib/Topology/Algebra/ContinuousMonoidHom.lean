@@ -544,7 +544,7 @@ theorem toEquiv_eq_coe (f : M ≃ₜ* N) : f.toEquiv = f :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem toMulHom_eq_coe (f : M ≃ₜ* N) : f.toMulEquiv = f :=
+theorem toMulEquiv_eq_coe (f : M ≃ₜ* N) : f.toMulEquiv = f :=
   rfl
 
 /-- Makes a continuous multiplicative isomorphism from
@@ -554,7 +554,30 @@ a homeomorphism which preserves addition."]
 def mk' (f : M ≃ₜ N) (h : ∀ x y, f (x * y) = f x * f y) : M ≃ₜ* N :=
   ⟨⟨f.toEquiv,h⟩, f.continuous_toFun, f.continuous_invFun⟩
 
+instance : Coe (M ≃ₜ* N) (M ≃ₜ N) where
+  coe := toHomeomorph
+
+theorem isHomeomorph (f : M ≃ₜ* N) : IsHomeomorph f :=
+  Homeomorph.isHomeomorph f
+
 end coe
+
+section map
+
+/-- A continuous multiplicative isomorphism preserves multiplication. -/
+@[to_additive "A continuous additive isomorphism preserves addition."]
+protected theorem map_mul (f : M ≃ₜ* N) : ∀ x y, f (x * y) = f x * f y :=
+  map_mul f
+
+protected lemma isClosedMap (f : M ≃ₜ* N) : IsClosedMap f := f.toHomeomorph.isClosedMap
+protected lemma inducing (f : M ≃ₜ* N) : Inducing f := f.toHomeomorph.inducing
+protected lemma quotientMap (f : M ≃ₜ* N) : QuotientMap f := f.toHomeomorph.quotientMap
+protected lemma embedding (f : M ≃ₜ* N) : Embedding f := f.toHomeomorph.embedding
+protected lemma openEmbedding (f : M ≃ₜ* N) : OpenEmbedding f := f.toHomeomorph.openEmbedding
+protected lemma closedEmbedding (f : M ≃ₜ* N) : ClosedEmbedding f := f.toHomeomorph.closedEmbedding
+protected lemma denseEmbedding (f : M ≃ₜ* N) : DenseEmbedding f := f.toHomeomorph.denseEmbedding
+
+end map
 
 section bijective
 
@@ -637,6 +660,46 @@ theorem apply_symm_apply (e : M ≃ₜ* N) (y : N) : e (e.symm y) = y :=
 theorem symm_apply_apply (e : M ≃ₜ* N) (x : M) : e.symm (e x) = x :=
   e.toEquiv.symm_apply_apply x
 
+@[to_additive (attr := simp)]
+theorem symm_comp_self (e : M ≃ₜ* N) : e.symm ∘ e = id :=
+  funext e.symm_apply_apply
+
+@[to_additive (attr := simp)]
+theorem self_comp_symm (e : M ≃ₜ* N) : e ∘ e.symm = id :=
+  funext e.apply_symm_apply
+
+@[to_additive]
+theorem apply_eq_iff_symm_apply (e : M ≃ₜ* N) {x : M} {y : N} : e x = y ↔ x = e.symm y :=
+  e.toEquiv.apply_eq_iff_eq_symm_apply
+
+@[to_additive]
+theorem symm_apply_eq (e : M ≃ₜ* N) {x y} : e.symm x = y ↔ x = e y :=
+  e.toEquiv.symm_apply_eq
+
+@[to_additive]
+theorem eq_symm_apply (e : M ≃ₜ* N) {x y} : y = e.symm x ↔ e y = x :=
+  e.toEquiv.eq_symm_apply
+
+@[to_additive]
+theorem eq_comp_symm {α : Type*} (e : M ≃ₜ* N) (f : N → α) (g : M → α) :
+    f = g ∘ e.symm ↔ f ∘ e = g :=
+  e.toEquiv.eq_comp_symm f g
+
+@[to_additive]
+theorem comp_symm_eq {α : Type*} (e : M ≃ₜ* N) (f : N → α) (g : M → α) :
+    g ∘ e.symm = f ↔ g = f ∘ e :=
+  e.toEquiv.comp_symm_eq f g
+
+@[to_additive]
+theorem eq_symm_comp {α : Type*} (e : M ≃ₜ* N) (f : α → M) (g : α → N) :
+    f = e.symm ∘ g ↔ e ∘ f = g :=
+  e.toEquiv.eq_symm_comp f g
+
+@[to_additive]
+theorem symm_comp_eq {α : Type*} (e : M ≃ₜ* N) (f : α → M) (g : α → N) :
+    e.symm ∘ g = f ↔ g = e ∘ f :=
+  e.toEquiv.symm_comp_eq f g
+
 end symm
 
 section trans
@@ -669,6 +732,26 @@ theorem self_trans_symm (e : M ≃ₜ* N) : e.trans e.symm = refl M :=
   DFunLike.ext _ _ e.symm_apply_apply
 
 end trans
+
+section unique
+
+/-- The `MulEquiv` between two monoids with a unique element. -/
+@[to_additive "The `AddEquiv` between two `AddMonoid`s with a unique element."]
+def continuousMulEquivOfUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N]
+    [TopologicalSpace M] [TopologicalSpace N] : M ≃ₜ* N := {
+  MulEquiv.mulEquivOfUnique with
+  continuous_toFun := by continuity
+  continuous_invFun := by continuity }
+
+/-- There is a unique monoid homomorphism between two monoids with a unique element. -/
+@[to_additive "There is a unique additive monoid homomorphism between two additive monoids with
+  a unique element."]
+instance {M N} [Unique M] [Unique N] [Mul M] [Mul N]
+    [TopologicalSpace M] [TopologicalSpace N] : Unique (M ≃ₜ* N) where
+  default := continuousMulEquivOfUnique
+  uniq _ := ext fun _ ↦ Subsingleton.elim _ _
+
+end unique
 
 end ContinuousMulEquiv
 
