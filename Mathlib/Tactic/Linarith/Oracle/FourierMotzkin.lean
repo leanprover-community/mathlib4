@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
 import Mathlib.Std.Data.HashMap
+import Batteries.Lean.HashMap
 import Mathlib.Tactic.Linarith.Datatypes
-import Batteries.Data.HashMap.WF
 
 /-!
 # The Fourier-Motzkin elimination procedure
