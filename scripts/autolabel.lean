@@ -260,29 +260,33 @@ end AutoLabel
 
 open IO AutoLabel.Label in
 
-unsafe def main : IO Unit := do
+unsafe def main (args : List String): IO Unit := do
+  let prNumber? := args[0]?
+
   IO.println "[autolabel]: starting…"
   let gitDiff ← IO.Process.run {
     cmd := "git",
     args := #["diff", "--name-only", "origin/master...HEAD"] }
-  -- IO.println s!"[autolabel]: {gitDiff}"
 
   let dirs := (gitDiff.splitOn "\n").toArray
   let labels' := getMatchingLabels dirs |>.toArray.qsort (·.1 < ·.1)
   let labels := ((labels'.map Prod.fst).filter (· != "unlabeled")).toList
 
-  if labels.isEmpty then
-    println s!"No applicable label."
-  else
-    println s!"Applicable labels: {String.intercalate "," labels}"
-
+  match labels with
+  | [] =>
+    println s!"No applicable label found!"
+  | [label] =>
+    println s!"Exactly one label found."
+    match prNumber? with
+    | some n =>
+      let res ← IO.Process.run {
+        cmd := "git",
+        args := #["gh", "issue", "edit", n, "--add-labels", label] }
+    | none =>
+      println s!"No PR-number provided, skipping adding labels.
+      (call `lake exe autolabel 150602` to add the labels to PR `150602`)"
+  | _ =>
+    println s!"More than one label found: not adding a label."
   IO.println "[autolabel]: done"
 
-  --CoreM.withImportModules #[`Mathlib, `Archive]
-  --    (searchPath := compile_time_search_path%) (trustLevel := 1024) do
-    -- let decls := (←getEnv).constants
-    -- let results ← databases.mapM (fun p => processDb decls p)
-    -- if results.any id then
   IO.Process.exit 0
-
---produce_labels! "git"
