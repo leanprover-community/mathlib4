@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Lean.Elab.Command
-import Lean.Linter.Util
 
 /-!
 #  The "multiGoal" linter
@@ -90,7 +89,8 @@ abbrev exclusions : Std.HashSet SyntaxNodeKind := .ofList [
     ``Lean.Parser.Tactic.substVars,
     `Batteries.Tactic.«tacticPick_goal-_»,
     ``Lean.Parser.Tactic.case',
-    `«tactic#adaptation_note_»
+    `«tactic#adaptation_note_»,
+    `tacticSleep_heartbeats_
   ]
 
 /-- these are `SyntaxNodeKind`s that block the linter. -/

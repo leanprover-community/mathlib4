@@ -35,7 +35,6 @@ elab "sleep_heartbeats " n:num : tactic => do
   | some m => sleepAtLeastHeartbeats (m * 1000)
 
 -- TODO: this is a false positive, it should not warn on an unused tactic.
-set_option linter.style.multiGoal false in
 set_option linter.unusedTactic false in
 example : 1 = 1 := by
   sleep_heartbeats 1000
