@@ -68,11 +68,9 @@ theorem not_pseudoperfect_iff_forall :
   rw [Pseudoperfect, not_and_or]
   simp only [not_lt, nonpos_iff_eq_zero, mem_powerset, not_exists, not_and, ne_eq]
 
-theorem Deficient_one : Deficient 1 := zero_lt_one
-
-theorem Deficient_two : Deficient 2 := one_lt_two
-
-theorem Deficient_three : Deficient 3 := by norm_num [Deficient]
+theorem deficient_one : Deficient 1 := zero_lt_one
+theorem deficient_two : Deficient 2 := one_lt_two
+theorem deficient_three : Deficient 3 := by norm_num [Deficient]
 
 theorem Abundant_twelve : Abundant 12 := by
   rw [Abundant, show properDivisors 12 = {1,2,3,4,6} by rfl]
