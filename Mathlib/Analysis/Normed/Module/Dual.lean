@@ -274,9 +274,6 @@ theorem polar_singleton {a : E} : polar 𝕜 {a} = { x | ‖x a‖ ≤ 1 } := by
 theorem mem_polar_singleton {a : E} (y : Dual 𝕜 E) : y ∈ polar 𝕜 {a} ↔ ‖y a‖ ≤ 1 := by
   simp only [polar_singleton, mem_setOf_eq]
 
-theorem polar_nonempty (s : Set E) : Nonempty (polar 𝕜 s) := by
-  exact LinearMap.polar_nonempty (dualPairing 𝕜 E).flip s
-
 theorem polar_union {s t : Set E} : polar 𝕜 (s ∪ t) = polar 𝕜 s ∩ polar 𝕜 t :=
   (dualPairing 𝕜 E).flip.polar_union
 

@@ -347,10 +347,10 @@ lemma existance [ProperSpace 𝕜₁] (hC₁ : IsClosed C)
       have e2 : u = ∅ := by
         aesop
       rw [e2, iInter_of_empty_univ, inter_univ] at hu
-      haveI : Nonempty (polar 𝕜₁ (E:=E₁) (U (n + 2))) :=
+      haveI : Set.Nonempty (polar 𝕜₁ (E:=E₁) (U (n + 2))) :=
         LinearMap.polar_nonempty (dualPairing 𝕜₁ E₁).flip (U (n + 2))
       subst e2
-      simp_all only [nonempty_subtype, mem_empty_iff_false, exists_const]
+      simp_all only [Set.not_nonempty_empty]
     letI : Nonempty u := eu
     rw [← more_confusion _ _ _ _ eu, confusion _ _ _ _ eu] at hu
     calc
