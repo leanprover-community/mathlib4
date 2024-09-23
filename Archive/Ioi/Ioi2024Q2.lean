@@ -387,14 +387,6 @@ def scc {α : Type*} [Fintype α] [DecidableEq α] (f : α → α) :
     Finpartition (Finset.univ : Finset α) :=
   Finpartition.ofSetoid (AntisymmRel.setoid _ (RepApp f))
 
-theorem Equiv.Perm.IsCycleOn.exists_pow_eq_iff {α : Type*} {a b : α} {f : Equiv.Perm α}
-    {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s) :
-    b ∈ s ↔ ∃ n : ℕ, (f ^ n) a = b := by
-  constructor
-  · apply hf.exists_pow_eq' (Finset.finite_toSet s) ha
-  · rintro ⟨n, -, rfl⟩
-    exact (hf.1.perm_pow n).1 ha
-
 lemma mem_scc_perm_iff {α : Type*} [Fintype α] [DecidableEq α] (f : Equiv.Perm α) (s : Finset α) :
     s ∈ (scc f).parts ↔ (s.Nonempty ∧ f.IsCycleOn s) where
   mp h := by
