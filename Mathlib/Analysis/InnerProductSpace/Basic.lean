@@ -2276,7 +2276,7 @@ local postfix:90 "†" => starRingEnd _
 theorem continuous_inner : Continuous fun p : E × E => ⟪p.1, p.2⟫ :=
   letI : InnerProductSpace ℝ E := InnerProductSpace.rclikeToReal 𝕜 E
   letI : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower _ _ _
-  (isBoundedBilinearMap_inner 𝕜).continuous
+  isBoundedBilinearMap_inner.continuous
 
 variable {α : Type*}
 
