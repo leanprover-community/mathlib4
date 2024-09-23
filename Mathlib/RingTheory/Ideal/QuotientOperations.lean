@@ -49,7 +49,7 @@ theorem lift_injective_of_ker_le_ideal (I : Ideal R) {f : R →+* S} (H : ∀ a 
   obtain ⟨v, rfl⟩ := Ideal.Quotient.mk_surjective u
   rw [Ideal.Quotient.lift_mk] at hu
   rw [Ideal.Quotient.eq_zero_iff_mem]
-  exact hI ((RingHom.mem_ker f).mpr hu)
+  exact hI (RingHom.mem_ker.mpr hu)
 
 /-- The induced map from the quotient by the kernel is injective. -/
 theorem kerLift_injective : Function.Injective (kerLift f) :=
