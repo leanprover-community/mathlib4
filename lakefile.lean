@@ -89,6 +89,11 @@ lean_exe «check-yaml» where
   srcDir := "scripts"
   supportInterpreter := true
 
+/-- `lake exe autolabel` does nothing yet. -/
+lean_exe autolabel where
+  srcDir := "scripts"
+  supportInterpreter := true
+
 /-- `lake exe mk_all` constructs the files containing all imports for a project. -/
 lean_exe mk_all where
   srcDir := "scripts"
