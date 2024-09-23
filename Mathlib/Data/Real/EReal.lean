@@ -1219,6 +1219,51 @@ protected lemma neg_mul (x y : EReal) : -x * y = -(x * y) := by
   | pos_bot _ h => rw [coe_mul_bot_of_pos h, neg_bot, ← coe_neg,
     coe_mul_bot_of_neg (neg_neg_of_pos h)]
 
+lemma mul_eq_top (a b : EReal) :
+    a * b = ⊤ ↔ (a = ⊥ ∧ b < 0) ∨ (a < 0 ∧ b = ⊥) ∨ (a = ⊤ ∧ 0 < b) ∨ (0 < a ∧ b = ⊤) := by
+  induction a, b using EReal.induction₂_symm with
+  | symm h =>
+    rw [EReal.mul_comm, h]
+    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+      <;> cases h with
+      | inl h => exact Or.inr (Or.inl ⟨h.2, h.1⟩)
+      | inr h => cases h with
+        | inl h => exact Or.inl ⟨h.2, h.1⟩
+        | inr h => cases h with
+          | inl h => exact Or.inr (Or.inr (Or.inr ⟨h.2, h.1⟩))
+          | inr h => exact Or.inr (Or.inr (Or.inl ⟨h.2, h.1⟩))
+  | top_top => simp
+  | top_pos _ hx => simp [EReal.top_mul_coe_of_pos hx, hx]
+  | top_zero => simp
+  | top_neg _ hx => simp [hx.le, EReal.top_mul_coe_of_neg hx]
+  | top_bot => simp
+  | pos_bot _ hx => simp [hx.le, EReal.coe_mul_bot_of_pos hx]
+  | coe_coe x y =>
+    simp only [EReal.coe_ne_bot, EReal.coe_neg', false_and, and_false, EReal.coe_ne_top,
+      EReal.coe_pos, or_self, iff_false, EReal.coe_mul]
+    exact EReal.coe_ne_top _
+  | zero_bot => simp
+  | neg_bot _ hx => simp [hx, EReal.coe_mul_bot_of_neg hx]
+  | bot_bot => simp
+
+lemma mul_ne_top (a b : EReal) :
+    a * b ≠ ⊤ ↔ (a ≠ ⊥ ∨ 0 ≤ b) ∧ (0 ≤ a ∨ b ≠ ⊥) ∧ (a ≠ ⊤ ∨ b ≤ 0) ∧ (a ≤ 0 ∨ b ≠ ⊤) := by
+  rw [ne_eq, mul_eq_top]
+  set_option push_neg.use_distrib true in push_neg
+  rfl
+
+lemma mul_eq_bot (a b : EReal) :
+    a * b = ⊥ ↔ (a = ⊥ ∧ 0 < b) ∨ (0 < a ∧ b = ⊥) ∨ (a = ⊤ ∧ b < 0) ∨ (a < 0 ∧ b = ⊤) := by
+  rw [← neg_eq_top_iff, ← EReal.neg_mul, mul_eq_top, neg_eq_bot_iff, neg_eq_top_iff,
+    EReal.neg_lt, EReal.lt_neg, neg_zero]
+  tauto
+
+lemma mul_ne_bot (a b : EReal) :
+    a * b ≠ ⊥ ↔ (a ≠ ⊥ ∨ b ≤ 0) ∧ (a ≤ 0 ∨ b ≠ ⊥) ∧ (a ≠ ⊤ ∨ 0 ≤ b) ∧ (0 ≤ a ∨ b ≠ ⊤) := by
+  rw [ne_eq, mul_eq_bot]
+  set_option push_neg.use_distrib true in push_neg
+  rfl
+
 instance : HasDistribNeg EReal where
   neg_mul := EReal.neg_mul
   mul_neg := fun x y => by
