@@ -1607,6 +1607,41 @@ theorem innerSL_apply_norm (x : E) : ‖innerSL 𝕜 x‖ = ‖x‖ := by
 lemma norm_innerSL_le : ‖innerSL 𝕜 (E := E)‖ ≤ 1 :=
   ContinuousLinearMap.opNorm_le_bound _ zero_le_one (by simp)
 
+/-- When an inner product space `E` over `𝕜` is considered as a real normed space, its inner
+product satisfies `IsBoundedBilinearMap`.
+
+In order to state these results, we need a `NormedSpace ℝ E` instance. We will later establish
+such an instance by restriction-of-scalars, `InnerProductSpace.rclikeToReal 𝕜 E`, but this
+instance may be not definitionally equal to some other “natural” instance. So, we assume
+`[NormedSpace ℝ E]`.
+-/
+theorem _root_.isBoundedBilinearMap_inner [NormedSpace ℝ E] [IsScalarTower ℝ 𝕜 E] :
+    IsBoundedBilinearMap ℝ fun p : E × E => ⟪p.1, p.2⟫ :=
+  { add_left := inner_add_left
+    smul_left := fun r x y => by
+      simp only [← algebraMap_smul 𝕜 r x, algebraMap_eq_ofReal, inner_smul_real_left]
+    add_right := inner_add_right
+    smul_right := fun r x y => by
+      simp only [← algebraMap_smul 𝕜 r y, algebraMap_eq_ofReal, inner_smul_real_right]
+    bound :=
+      ⟨1, zero_lt_one, fun x y => by
+        rw [one_mul]
+        exact norm_inner_le_norm x y⟩ }
+
+/-- The inner product of two weighted sums, where the weights in each
+sum add to 0, in terms of the norms of pairwise differences. -/
+theorem inner_sum_smul_sum_smul_of_sum_eq_zero {ι₁ : Type*} {s₁ : Finset ι₁} {w₁ : ι₁ → ℝ}
+    (v₁ : ι₁ → F) (h₁ : ∑ i ∈ s₁, w₁ i = 0) {ι₂ : Type*} {s₂ : Finset ι₂} {w₂ : ι₂ → ℝ}
+    (v₂ : ι₂ → F) (h₂ : ∑ i ∈ s₂, w₂ i = 0) :
+    ⟪∑ i₁ ∈ s₁, w₁ i₁ • v₁ i₁, ∑ i₂ ∈ s₂, w₂ i₂ • v₂ i₂⟫_ℝ =
+      (-∑ i₁ ∈ s₁, ∑ i₂ ∈ s₂, w₁ i₁ * w₂ i₂ * (‖v₁ i₁ - v₂ i₂‖ * ‖v₁ i₁ - v₂ i₂‖)) / 2 := by
+  simp_rw [sum_inner, inner_sum, real_inner_smul_left, real_inner_smul_right,
+    real_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two, ← div_sub_div_same,
+    ← div_add_div_same, mul_sub_left_distrib, left_distrib, Finset.sum_sub_distrib,
+    Finset.sum_add_distrib, ← Finset.mul_sum, ← Finset.sum_mul, h₁, h₂, zero_mul,
+    mul_zero, Finset.sum_const_zero, zero_add, zero_sub, Finset.mul_sum, neg_div,
+    Finset.sum_div, mul_div_assoc, mul_assoc]
+
 end Norm_Seminormed
 
 section Norm
@@ -1814,41 +1849,6 @@ theorem eq_of_norm_le_re_inner_eq_norm_sq {x y : E} (hle : ‖x‖ ≤ ‖y‖) 
   have H₁ : ‖x‖ ^ 2 ≤ ‖y‖ ^ 2 := by gcongr
   have H₂ : re ⟪y, x⟫ = ‖y‖ ^ 2 := by rwa [← inner_conj_symm, conj_re]
   simpa [inner_sub_left, inner_sub_right, ← norm_sq_eq_inner, h, H₂] using H₁
-
-/-- The inner product of two weighted sums, where the weights in each
-sum add to 0, in terms of the norms of pairwise differences. -/
-theorem inner_sum_smul_sum_smul_of_sum_eq_zero {ι₁ : Type*} {s₁ : Finset ι₁} {w₁ : ι₁ → ℝ}
-    (v₁ : ι₁ → F) (h₁ : ∑ i ∈ s₁, w₁ i = 0) {ι₂ : Type*} {s₂ : Finset ι₂} {w₂ : ι₂ → ℝ}
-    (v₂ : ι₂ → F) (h₂ : ∑ i ∈ s₂, w₂ i = 0) :
-    ⟪∑ i₁ ∈ s₁, w₁ i₁ • v₁ i₁, ∑ i₂ ∈ s₂, w₂ i₂ • v₂ i₂⟫_ℝ =
-      (-∑ i₁ ∈ s₁, ∑ i₂ ∈ s₂, w₁ i₁ * w₂ i₂ * (‖v₁ i₁ - v₂ i₂‖ * ‖v₁ i₁ - v₂ i₂‖)) / 2 := by
-  simp_rw [sum_inner, inner_sum, real_inner_smul_left, real_inner_smul_right,
-    real_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two, ← div_sub_div_same,
-    ← div_add_div_same, mul_sub_left_distrib, left_distrib, Finset.sum_sub_distrib,
-    Finset.sum_add_distrib, ← Finset.mul_sum, ← Finset.sum_mul, h₁, h₂, zero_mul,
-    mul_zero, Finset.sum_const_zero, zero_add, zero_sub, Finset.mul_sum, neg_div,
-    Finset.sum_div, mul_div_assoc, mul_assoc]
-
-/-- When an inner product space `E` over `𝕜` is considered as a real normed space, its inner
-product satisfies `IsBoundedBilinearMap`.
-
-In order to state these results, we need a `NormedSpace ℝ E` instance. We will later establish
-such an instance by restriction-of-scalars, `InnerProductSpace.rclikeToReal 𝕜 E`, but this
-instance may be not definitionally equal to some other “natural” instance. So, we assume
-`[NormedSpace ℝ E]`.
--/
-theorem _root_.isBoundedBilinearMap_inner [NormedSpace ℝ E] :
-    IsBoundedBilinearMap ℝ fun p : E × E => ⟪p.1, p.2⟫ :=
-  { add_left := inner_add_left
-    smul_left := fun r x y => by
-      simp only [← algebraMap_smul 𝕜 r x, algebraMap_eq_ofReal, inner_smul_real_left]
-    add_right := inner_add_right
-    smul_right := fun r x y => by
-      simp only [← algebraMap_smul 𝕜 r y, algebraMap_eq_ofReal, inner_smul_real_right]
-    bound :=
-      ⟨1, zero_lt_one, fun x y => by
-        rw [one_mul]
-        exact norm_inner_le_norm x y⟩ }
 
 end Norm
 
@@ -2258,7 +2258,7 @@ end RCLikeToReal
 
 section Continuous
 
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
@@ -2273,7 +2273,8 @@ local postfix:90 "†" => starRingEnd _
 
 theorem continuous_inner : Continuous fun p : E × E => ⟪p.1, p.2⟫ :=
   letI : InnerProductSpace ℝ E := InnerProductSpace.rclikeToReal 𝕜 E
-  isBoundedBilinearMap_inner.continuous
+  letI : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower _ _ _
+  (isBoundedBilinearMap_inner 𝕜).continuous
 
 variable {α : Type*}
 
@@ -2323,7 +2324,7 @@ end ReApplyInnerSelf
 
 section ReApplyInnerSelf_Seminormed
 
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
@@ -2345,7 +2346,7 @@ end ReApplyInnerSelf_Seminormed
 
 section UniformSpace.Completion
 
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
