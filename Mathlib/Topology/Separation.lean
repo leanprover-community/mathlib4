@@ -1045,7 +1045,7 @@ theorem r1Space_iff_inseparable_or_disjoint_nhds {X : Type*} [TopologicalSpace X
   ⟨fun _h x y ↦ (specializes_or_disjoint_nhds x y).imp_left Specializes.inseparable, fun h ↦
     ⟨fun x y ↦ (h x y).imp_left Inseparable.specializes⟩⟩
 
-theorem inseparable_of_nhds_neBot {x y : X} (h : NeBot (𝓝 x ⊓ 𝓝 y)) :
+theorem Inseparable.of_nhds_neBot {x y : X} (h : NeBot (𝓝 x ⊓ 𝓝 y)) :
     Inseparable x y :=
   (r1Space_iff_inseparable_or_disjoint_nhds.mp ‹_› _ _).resolve_right fun h' => h.ne h'.eq_bot
 
@@ -1054,7 +1054,7 @@ theorem inseparable_of_nhds_neBot {x y : X} (h : NeBot (𝓝 x ⊓ 𝓝 y)) :
 A weaker version of `tendsto_nhds_unique` for `R1Space`. -/
 theorem tendsto_nhds_unique_inseparable {f : Y → X} {l : Filter Y} {a b : X} [NeBot l]
     (ha : Tendsto f l (𝓝 a)) (hb : Tendsto f l (𝓝 b)) : Inseparable a b :=
-  inseparable_of_nhds_neBot <| neBot_of_le <| le_inf ha hb
+  .of_nhds_neBot <| neBot_of_le <| le_inf ha hb
 
 theorem isClosed_setOf_specializes : IsClosed { p : X × X | p.1 ⤳ p.2 } := by
   simp only [← isOpen_compl_iff, compl_setOf, ← disjoint_nhds_nhds_iff_not_specializes,
