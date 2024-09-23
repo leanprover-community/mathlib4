@@ -251,6 +251,8 @@ instance : Limits.HasLimit F where
     { cone := limitCone F
       isLimit := limitConeIsLimit F }
 
+abbrev limit : ProfiniteGrp := (ProfiniteGrp.limitCone F).pt
+
 end
 
 instance : Limits.PreservesLimits profiniteGrpToProfinite.{u} := {
