@@ -169,8 +169,13 @@ end Metric
 
 open Metric
 
+theorem Metric.inseparable_iff_nndist {x y : α} : Inseparable x y ↔ nndist x y = 0 := by
+  rw [EMetric.inseparable_iff, edist_nndist, ENNReal.coe_eq_zero]
+
+alias ⟨Inseparable.nndist_eq_zero, _⟩ := Metric.inseparable_iff_nndist
+
 theorem Metric.inseparable_iff {x y : α} : Inseparable x y ↔ dist x y = 0 := by
-  rw [EMetric.inseparable_iff, edist_nndist, dist_nndist, ENNReal.coe_eq_zero, NNReal.coe_eq_zero]
+  rw [Metric.inseparable_iff_nndist, dist_nndist, NNReal.coe_eq_zero]
 
 alias ⟨Inseparable.dist_eq_zero, _⟩ := Metric.inseparable_iff
 
