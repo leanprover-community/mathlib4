@@ -141,9 +141,31 @@ section unicodeLinter
 open Mathlib.Linter.TextBased
 open Mathlib.Linter.TextBased.unicodeLinter
 
+-- test parsing back error message in `parse?_errorContext` for unicode errors
 #guard let errContext : ErrorContext := {
-    error := .unwantedUnicode 'Z', lineNumber := 4, path:="./MYFILE.lean"}
+    error := .unwantedUnicode '\u1234', lineNumber := 4, path:="./MYFILE.lean"}
   (parse?_errorContext <| outputMessage errContext .exceptionsFile) == some errContext
+
+-- test parsing back error message in `parse?_errorContext` for variant selector errors
+
+-- "missing" selector
+#guard let errContext : ErrorContext := {
+    error := .unicodeVariant "\u1234A" UnicodeVariant.emoji ⟨6⟩,
+    lineNumber := 4, path:="./MYFILE.lean"}
+  (parse?_errorContext <| outputMessage errContext .exceptionsFile) == some errContext
+
+-- "wrong" selector
+#guard let errContext : ErrorContext := {
+    error := .unicodeVariant "\u1234\uFE0E" UnicodeVariant.emoji ⟨6⟩,
+    lineNumber := 4, path:="./MYFILE.lean"}
+  (parse?_errorContext <| outputMessage errContext .exceptionsFile) == some errContext
+
+-- "unexpected" selector
+#guard let errContext : ErrorContext := {
+    error := .unicodeVariant "\uFE0EA" none ⟨6⟩, lineNumber := 4, path:="./MYFILE.lean"}
+  (parse?_errorContext <| outputMessage errContext .exceptionsFile) == some errContext
+
+-- make sure hard-coded lists of unicode characters are disjoint (for clarity and maintainability)
 
 -- lists of special characters should not have allowed ASCII.
 #guard List.all [
@@ -163,7 +185,5 @@ open Mathlib.Linter.TextBased.unicodeLinter
 #guard withVSCodeAbbrev.toList ∩ nonEmojis.toList = ∅
 
 #guard emojis.toList ∩ nonEmojis.toList = ∅
-
-
 
 end unicodeLinter

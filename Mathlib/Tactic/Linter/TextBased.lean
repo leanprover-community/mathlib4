@@ -143,7 +143,8 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
         Please use the {variant}-variant: \"{newC}\" ({newHex})!"
       else
         -- `c₁` is irrelevant here as it is an arbitrary character.
-        s!"missing unicode variant-selector at char {pos}: \"{c₀}\" ({oldHex}). \
+        -- Printing it for consistency in parsing error messages back.
+        s!"missing unicode variant-selector at char {pos}: \"{s}\" ({oldHex}). \
         Please use the {variant}-variant: \"{newC}\" ({newHex})!"
     | _, _ =>
       s!"unexpected unicode variant-selector at char {pos}: \"{s}\" ({oldHex}). \
@@ -230,8 +231,12 @@ def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
     -- Print for humans: clickable file name and omit the error code
     s!"error: {errctx.path}:{errctx.lineNumber}: {errorMessage}"
 
--- TODO check if this doc change is correct as per intentions of original authors!!!
 
+/-- Removes quotation marks '"' at front and back of string. -/
+def removeQuotations (s : String) : String := (s.stripPrefix "\"").stripSuffix "\""
+
+
+-- TODO check if this doc change is correct as per intentions of original authors!!!
 /-- Try parsing an `ErrorContext` from a string: return `some` if successful, `none` otherwise.
 This should be the inverse of `fun ctx ↦ outputMessage ctx .exceptionsFile` -/
 def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
@@ -258,15 +263,25 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
             some (StyleError.broadImport BroadImports.TacticFolder)
           else
             some (StyleError.broadImport BroadImports.Lake)
-        | "ERR_UNICODE" =>
-            if let some str := errorMessage.get? 2 then
-              if let some c := str.get? ⟨1⟩ then
-                some (StyleError.unwantedUnicode c)
-              else none
-            else none
-        | "ERR_UNICODE_VARIANT" =>
-          -- some (StyleError.unicodeVariant _ _ _)
-          none --TODO
+        | "ERR_UNICODE" => do
+            let str ← errorMessage.get? 2
+            let c ← str.get? ⟨1⟩
+            StyleError.unwantedUnicode c
+        | "ERR_UNICODE_VARIANT" => do  -- note: it's possible to cheat this parsing code.
+          match (← errorMessage.get? 0) with
+          | "wrong" | "missing" =>
+            let offending := removeQuotations (← errorMessage.get? 6)
+            let charPos ← (← errorMessage.get? 5).stripSuffix ":" |>.toNat?
+            let selector := match ← errorMessage.get? 12 with
+            | "emoji-variant:" => UnicodeVariant.emoji
+            | "text-variant:" => UnicodeVariant.text
+            | _ => none
+            StyleError.unicodeVariant offending selector ⟨charPos⟩
+          | "unexpected" =>
+            let offending := removeQuotations (← errorMessage.get? 6)
+            let charPos ← (← errorMessage.get? 5).stripSuffix ":" |>.toNat?
+            StyleError.unicodeVariant offending none ⟨charPos⟩
+          | _ => none
         | _ => none
       match String.toNat? lineNumber with
       | some n => err.map fun e ↦ (ErrorContext.mk e n path)
