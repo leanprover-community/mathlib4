@@ -181,26 +181,23 @@ instance : profiniteGrpToProfinite.Faithful := {
 end ProfiniteGrp
 
 /-!
-# The projective limit of finite groups is profinite
+# Limits in the category of profinite groups
 
-* `ProfiniteGrp.limitConePtAux` : the auxiliary construction (in the pi-type) to obtain
-  the group structure on the limit of profinite groups.
+* `ProfiniteGrp.limitCone` : The explicit limit cone in `ProfiniteGrp`。
 
-* `ProfiniteGrp.limit`: the abbreviation for the limit of `ProfiniteGrp`s.
+* `ProfiniteGrp.limitConeIsLimit`: `ProfiniteGrp.limitCone` is a limit cone.
 
 -/
 
-section Profiniteoflimit
+section Limits
 
-/- In this section, we prove that the projective limit of finite groups is profinite-/
-
-universe w w'
+/- In this section, we construct limits in the category of profinite groups. -/
 
 namespace ProfiniteGrp
 
 section
 
-variable {J : Type v} [SmallCategory J] (F : J ⥤ ProfiniteGrp.{max v w'})
+variable {J : Type v} [SmallCategory J] (F : J ⥤ ProfiniteGrp.{max v u})
 
 /-- Auxiliary construction to obtain the group structure on the limit of profinite groups. -/
 def limitConePtAux : Subgroup (Π j : J, F.obj j) where
@@ -209,15 +206,15 @@ def limitConePtAux : Subgroup (Π j : J, F.obj j) where
   one_mem' := by simp only [Set.mem_setOf_eq, Pi.one_apply, map_one, implies_true]
   inv_mem' h _ _ π := by simp only [Pi.inv_apply, map_inv, h π]
 
-instance : Group (Profinite.limitCone (F ⋙ profiniteGrpToProfinite.{max v w'})).pt :=
+instance : Group (Profinite.limitCone (F ⋙ profiniteGrpToProfinite.{max v u})).pt :=
   inferInstanceAs (Group (limitConePtAux F))
 
-instance : TopologicalGroup (Profinite.limitCone (F ⋙ profiniteGrpToProfinite.{max v w'})).pt :=
+instance : TopologicalGroup (Profinite.limitCone (F ⋙ profiniteGrpToProfinite.{max v u})).pt :=
   inferInstanceAs (TopologicalGroup (limitConePtAux F))
 
 /-- The explicit limit cone in `ProfiniteGrp`. -/
 def limitCone : Limits.Cone F where
-  pt := ofProfinite (Profinite.limitCone (F ⋙ profiniteGrpToProfinite.{max v w'})).pt
+  pt := ofProfinite (Profinite.limitCone (F ⋙ profiniteGrpToProfinite.{max v u})).pt
   π :=
   { app := fun j => {
       toFun := fun x => x.1 j
@@ -269,4 +266,4 @@ instance : Limits.PreservesLimits profiniteGrpToProfinite.{u} := {
 
 end ProfiniteGrp
 
-end Profiniteoflimit
+end Limits
