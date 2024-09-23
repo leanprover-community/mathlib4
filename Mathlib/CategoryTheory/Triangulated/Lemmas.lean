@@ -89,7 +89,6 @@ lemma Hom_of_almost_NatTrans_indep [HasLimit F] [HasLimit F']
   sorry
 
 
-
 /-
 lemma Hom_of_almost_NatTrans_indep [HasLimit F] [HasLimit F']
     (α : (n : ℤ) → (F.obj n ⟶ F'.obj n)) {a₁ a₂ : ℤ}
