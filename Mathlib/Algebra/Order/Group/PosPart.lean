@@ -49,7 +49,7 @@ section Lattice
 variable [Lattice α]
 
 section Group
-variable [Group α] {a : α}
+variable [Group α] {a b : α}
 
 /-- The *positive part* of an element `a` in a lattice ordered group is `a ⊔ 1`, denoted `a⁺ᵐ`. -/
 @[to_additive
@@ -129,6 +129,16 @@ lemma leOnePart_eq_one : a⁻ᵐ = 1 ↔ 1 ≤ a := by simp [leOnePart_eq_one']
 
 @[to_additive (attr := simp)] lemma leOnePart_div_oneLePart (a : α) : a⁻ᵐ / a⁺ᵐ = a⁻¹ := by
   rw [← inv_div, oneLePart_div_leOnePart]
+
+@[to_additive]
+lemma oneLePart_leOnePart_injective : Injective fun a : α ↦ (a⁺ᵐ, a⁻ᵐ) := by
+  simp only [Injective, Prod.mk.injEq, and_imp]
+  rintro a b hpos hneg
+  rw [← oneLePart_div_leOnePart a, ← oneLePart_div_leOnePart b, hpos, hneg]
+
+@[to_additive]
+lemma oneLePart_leOnePart_inj : a⁺ᵐ = b⁺ᵐ ∧ a⁻ᵐ = b⁻ᵐ ↔ a = b :=
+  Prod.mk.inj_iff.symm.trans oneLePart_leOnePart_injective.eq_iff
 
 section covariantmulop
 variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
