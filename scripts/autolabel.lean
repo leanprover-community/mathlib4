@@ -280,10 +280,9 @@ unsafe def main (args : List String): IO Unit := do
     match prNumber? with
     | some n =>
       let res ← IO.Process.run {
-        cmd := "git",
-        args := #["gh", "issue", "edit", n, "--add-labels", label] }
-
-      println res
+        cmd := "gh",
+        args := #["issue", "edit", n, "--add-labels", label] }
+      println s!"res: {res}"
     | none =>
       println s!"No PR-number provided, skipping adding labels.
       (call `lake exe autolabel 150602` to add the labels to PR `150602`)"
