@@ -13,6 +13,8 @@ of any syntax that would be valid in an `obtain` block. This tactic just calls `
 on the expression, and then `rotate_left`.
 -/
 
+namespace Mathlib.Tactic
+
 /--
 The `rsuffices` tactic is an alternative version of `suffices`, that allows the usage
 of any syntax that would be valid in an `obtain` block. This tactic just calls `obtain`
@@ -24,3 +26,5 @@ syntax (name := rsuffices) "rsuffices"
 macro_rules
 | `(tactic| rsuffices $[$pred]? $[: $foo]? $[:= $bar]?) =>
 `(tactic | (obtain $[$pred]? $[: $foo]? $[:= $bar]?; rotate_left))
+
+end Mathlib.Tactic

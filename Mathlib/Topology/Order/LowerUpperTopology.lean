@@ -509,3 +509,17 @@ lemma isLower_orderDual [Preorder α] [TopologicalSpace α] : IsLower αᵒᵈ �
   isUpper_orderDual.symm
 
 end Topology
+
+/-- The Sierpiński topology on `Prop` is the upper topology -/
+instance : IsUpper Prop where
+  topology_eq_upperTopology := by
+    rw [Topology.upper, sierpinskiSpace, ← generateFrom_insert_empty]
+    congr
+    exact le_antisymm
+      (fun h hs => by
+        simp only [compl_Iic, mem_setOf_eq]
+        rw [← Ioi_True, ← Ioi_False] at hs
+        rcases hs with (rfl | rfl)
+        · use True
+        · use False)
+      (by rintro _ ⟨a, rfl⟩; by_cases a <;> aesop (add simp [Ioi, lt_iff_le_not_le]))

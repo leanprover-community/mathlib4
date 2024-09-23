@@ -5,7 +5,7 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Data.Countable.Basic
 import Mathlib.Logic.Encodable.Basic
-import Mathlib.Order.SuccPred.Basic
+import Mathlib.Order.SuccPred.Archimedean
 import Mathlib.Order.Interval.Finset.Defs
 import Mathlib.Algebra.Order.Ring.Nat
 
@@ -55,6 +55,41 @@ About `toZ`:
 open Order
 
 variable {ι : Type*} [LinearOrder ι]
+
+namespace LinearOrder
+
+variable [SuccOrder ι] [PredOrder ι]
+
+instance (priority := 100) isPredArchimedean_of_isSuccArchimedean [IsSuccArchimedean ι] :
+    IsPredArchimedean ι where
+  exists_pred_iterate_of_le {i j} hij := by
+    have h_exists := exists_succ_iterate_of_le hij
+    obtain ⟨n, hn_eq, hn_lt_ne⟩ : ∃ n, succ^[n] i = j ∧ ∀ m < n, succ^[m] i ≠ j :=
+      ⟨Nat.find h_exists, Nat.find_spec h_exists, fun m hmn ↦ Nat.find_min h_exists hmn⟩
+    refine ⟨n, ?_⟩
+    rw [← hn_eq]
+    cases n with
+    | zero => simp only [Function.iterate_zero, id]
+    | succ n =>
+      rw [pred_succ_iterate_of_not_isMax]
+      rw [Nat.succ_sub_succ_eq_sub, tsub_zero]
+      suffices succ^[n] i < succ^[n.succ] i from not_isMax_of_lt this
+      refine lt_of_le_of_ne ?_ ?_
+      · rw [Function.iterate_succ_apply']
+        exact le_succ _
+      · rw [hn_eq]
+        exact hn_lt_ne _ (Nat.lt_succ_self n)
+
+instance isSuccArchimedean_of_isPredArchimedean [IsPredArchimedean ι] : IsSuccArchimedean ι :=
+  inferInstanceAs (IsSuccArchimedean ιᵒᵈᵒᵈ)
+
+/-- In a linear `SuccOrder` that's also a `PredOrder`, `IsSuccArchimedean` and `IsPredArchimedean`
+are equivalent. -/
+theorem isSuccArchimedean_iff_isPredArchimedean : IsSuccArchimedean ι ↔ IsPredArchimedean ι where
+  mp _ := isPredArchimedean_of_isSuccArchimedean
+  mpr _ := isSuccArchimedean_of_isPredArchimedean
+
+end LinearOrder
 
 namespace LinearLocallyFiniteOrder
 
@@ -111,12 +146,9 @@ noncomputable instance (priority := 100) [LocallyFiniteOrder ι] : SuccOrder ι 
   succ_le_of_lt h := succFn_le_of_lt _ _ h
 
 noncomputable instance (priority := 100) [LocallyFiniteOrder ι] : PredOrder ι :=
-  (inferInstance : PredOrder (OrderDual ιᵒᵈ))
+  inferInstanceAs (PredOrder ιᵒᵈᵒᵈ)
 
-end LinearLocallyFiniteOrder
-
-instance (priority := 100) LinearLocallyFiniteOrder.isSuccArchimedean [LocallyFiniteOrder ι] :
-    IsSuccArchimedean ι where
+instance (priority := 100) [LocallyFiniteOrder ι] : IsSuccArchimedean ι where
   exists_succ_iterate_of_le := by
     intro i j hij
     rw [le_iff_lt_or_eq] at hij
@@ -145,28 +177,14 @@ instance (priority := 100) LinearLocallyFiniteOrder.isSuccArchimedean [LocallyFi
     have h_max : IsMax (succ^[n] i) := isMax_iterate_succ_of_eq_of_ne h_eq hnm.ne
     exact not_le.mpr (h_lt n) (h_max (h_lt n).le)
 
-instance (priority := 100) LinearOrder.isPredArchimedean_of_isSuccArchimedean [SuccOrder ι]
-    [PredOrder ι] [IsSuccArchimedean ι] : IsPredArchimedean ι where
-  exists_pred_iterate_of_le := by
-    intro i j hij
-    have h_exists := exists_succ_iterate_of_le hij
-    obtain ⟨n, hn_eq, hn_lt_ne⟩ : ∃ n, succ^[n] i = j ∧ ∀ m < n, succ^[m] i ≠ j :=
-      ⟨Nat.find h_exists, Nat.find_spec h_exists, fun m hmn ↦ Nat.find_min h_exists hmn⟩
-    refine ⟨n, ?_⟩
-    rw [← hn_eq]
-    induction' n with n
-    · simp only [Function.iterate_zero, id]
-    · rw [pred_succ_iterate_of_not_isMax]
-      rw [Nat.succ_sub_succ_eq_sub, tsub_zero]
-      suffices succ^[n] i < succ^[n.succ] i from not_isMax_of_lt this
-      refine lt_of_le_of_ne ?_ ?_
-      · rw [Function.iterate_succ']
-        exact le_succ _
-      · rw [hn_eq]
-        exact hn_lt_ne _ (Nat.lt_succ_self n)
+instance (priority := 100) [LocallyFiniteOrder ι] : IsPredArchimedean ι :=
+  inferInstance
+
+end LinearLocallyFiniteOrder
 
 section toZ
 
+-- Requiring either of `IsSuccArchimedean` or `IsPredArchimedean` is equivalent.
 variable [SuccOrder ι] [IsSuccArchimedean ι] [PredOrder ι] {i0 i : ι}
 
 -- For "to_Z"

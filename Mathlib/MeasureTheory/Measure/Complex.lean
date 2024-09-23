@@ -4,16 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
 import Mathlib.MeasureTheory.Measure.VectorMeasure
+import Mathlib.Analysis.Complex.Basic
 
 /-!
 # Complex measure
 
-This file proves some elementary results about complex measures. In particular, we prove that
+This file defines a complex measure to be a vector measure with codomain `ℂ`.
+Then we prove some elementary results about complex measures. In particular, we prove that
 a complex measure is always in the form `s + it` where `s` and `t` are signed measures.
-
-The complex measure is defined to be vector measure over `ℂ`, this definition can be found
-in `Mathlib/MeasureTheory/Measure/VectorMeasure.lean` and is known as
-`MeasureTheory.ComplexMeasure`.
 
 ## Main definitions
 
@@ -41,6 +39,10 @@ variable {α β : Type*} {m : MeasurableSpace α}
 namespace MeasureTheory
 
 open VectorMeasure
+
+/-- A `ComplexMeasure` is a `ℂ`-vector measure. -/
+abbrev ComplexMeasure (α : Type*) [MeasurableSpace α] :=
+  VectorMeasure α ℂ
 
 namespace ComplexMeasure
 

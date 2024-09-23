@@ -268,21 +268,21 @@ theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equ
   intro i
   replace h₁ := congr_fun (congr_fun h₁ Fin2.fz) i
   simp only [TypeVec.comp, appendFun, splitFun] at h₁
-  replace h₁ := Quot.eqvGen_exact _ h₁
+  replace h₁ := Quot.eqvGen_exact h₁
   rw [h₀.eqvGen_iff] at h₁
   exact h₁
 
 theorem M.bisim' {α : TypeVec n} (R : P.M α → P.M α → Prop)
     (h : ∀ x y, R x y → (id ::: Quot.mk R) <$$> M.dest _ x = (id ::: Quot.mk R) <$$> M.dest _ y)
     (x y) (r : R x y) : x = y := by
-  have := M.bisim₀ P (EqvGen R) ?_ ?_
-  · solve_by_elim [EqvGen.rel]
-  · apply EqvGen.is_equivalence
+  have := M.bisim₀ P (Relation.EqvGen R) ?_ ?_
+  · solve_by_elim [Relation.EqvGen.rel]
+  · apply Relation.EqvGen.is_equivalence
   · clear r x y
     introv Hr
-    have : ∀ x y, R x y → EqvGen R x y := @EqvGen.rel _ R
+    have : ∀ x y, R x y → Relation.EqvGen R x y := @Relation.EqvGen.rel _ R
     induction Hr
-    · rw [← Quot.factor_mk_eq R (EqvGen R) this]
+    · rw [← Quot.factor_mk_eq R (Relation.EqvGen R) this]
       rwa [appendFun_comp_id, ← MvFunctor.map_map, ← MvFunctor.map_map, h]
     all_goals aesop
 

@@ -50,7 +50,7 @@ lemma zagierSet_lower_bound {x y z : ℕ} (h : (x, y, z) ∈ zagierSet k) : 0 < 
     cases' (Nat.dvd_prime hk.out).1 (dvd_of_mul_left_eq _ h) with e e
     all_goals
       simp only [e, self_eq_add_left, ne_eq, add_eq_zero, and_false, not_false_eq_true,
-        mul_eq_left₀] at h
+        mul_eq_left₀, reduceCtorEq] at h
       simp only [h, zero_add] at hk
       exact Nat.not_prime_one hk.out
 
@@ -148,7 +148,7 @@ theorem eq_of_mem_fixedPoints {t : zagierSet k} (mem : t ∈ fixedPoints (comple
   split_ifs at mem with less more <;>
     -- less (completely handled by the pre-applied `simp_all only`)
     simp_all only [not_lt, Prod.mk.injEq, add_right_eq_self, mul_eq_zero, false_or,
-      lt_self_iff_false]
+      lt_self_iff_false, reduceCtorEq]
   · -- more
     obtain ⟨_, _, _⟩ := mem; simp_all
   · -- middle (the one fixed point falls under this case)
@@ -161,7 +161,7 @@ theorem eq_of_mem_fixedPoints {t : zagierSet k} (mem : t ∈ fixedPoints (comple
     cases' (Nat.dvd_prime hk.out).1 (dvd_of_mul_left_eq _ h) with e e
     · rw [e, mul_one] at h
       simp_all [h, show z = 0 by linarith [e]]
-    · simp only [e, mul_left_eq_self₀, add_eq_zero, and_false, or_false] at h
+    · simp only [e, mul_left_eq_self₀, add_eq_zero, and_false, or_false, reduceCtorEq] at h
       simp only [h, true_and]
       linarith [e]
 

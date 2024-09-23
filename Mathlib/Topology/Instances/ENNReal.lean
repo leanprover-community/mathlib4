@@ -267,8 +267,8 @@ instance : ContinuousAdd ℝ≥0∞ := by
   · exact tendsto_nhds_top_mono' continuousAt_fst fun p => le_add_right le_rfl
   rcases b with (_ | b)
   · exact tendsto_nhds_top_mono' continuousAt_snd fun p => le_add_left le_rfl
-  simp only [ContinuousAt, some_eq_coe, nhds_coe_coe, ← coe_add, tendsto_map'_iff, (· ∘ ·),
-    tendsto_coe, tendsto_add]
+  simp only [ContinuousAt, some_eq_coe, nhds_coe_coe, ← coe_add, tendsto_map'_iff,
+    Function.comp_def, tendsto_coe, tendsto_add]
 
 protected theorem tendsto_atTop_zero [Nonempty β] [SemilatticeSup β] {f : β → ℝ≥0∞} :
     Tendsto f atTop (𝓝 0) ↔ ∀ ε > 0, ∃ N, ∀ n ≥ N, f n ≤ ε :=
@@ -291,7 +291,7 @@ theorem tendsto_sub : ∀ {a b : ℝ≥0∞}, (a ≠ ∞ ∨ b ≠ ∞) →
       (lt_mem_nhds <| @coe_lt_top (a + 1))).mono fun x hx =>
         tsub_eq_zero_iff_le.2 (hx.1.trans hx.2).le
   | (a : ℝ≥0), (b : ℝ≥0), _ => by
-    simp only [nhds_coe_coe, tendsto_map'_iff, ← ENNReal.coe_sub, (· ∘ ·), tendsto_coe]
+    simp only [nhds_coe_coe, tendsto_map'_iff, ← ENNReal.coe_sub, Function.comp_def, tendsto_coe]
     exact continuous_sub.tendsto (a, b)
 
 protected theorem Tendsto.sub {f : Filter α} {ma : α → ℝ≥0∞} {mb : α → ℝ≥0∞} {a b : ℝ≥0∞}
@@ -316,10 +316,11 @@ protected theorem tendsto_mul (ha : a ≠ 0 ∨ b ≠ ∞) (hb : b ≠ 0 ∨ a �
     induction b with
     | top =>
       simp only [ne_eq, or_false, not_true_eq_false] at ha
-      simpa [(· ∘ ·), mul_comm, mul_top ha]
+      simpa [Function.comp_def, mul_comm, mul_top ha]
         using (ht a ha).comp (continuous_swap.tendsto (ofNNReal a, ∞))
     | coe b =>
-      simp only [nhds_coe_coe, ← coe_mul, tendsto_coe, tendsto_map'_iff, (· ∘ ·), tendsto_mul]
+      simp only [nhds_coe_coe, ← coe_mul, tendsto_coe, tendsto_map'_iff, Function.comp_def,
+        tendsto_mul]
 
 protected theorem Tendsto.mul {f : Filter α} {ma : α → ℝ≥0∞} {mb : α → ℝ≥0∞} {a b : ℝ≥0∞}
     (hma : Tendsto ma f (𝓝 a)) (ha : a ≠ 0 ∨ b ≠ ∞) (hmb : Tendsto mb f (𝓝 b))
@@ -389,11 +390,11 @@ protected theorem continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a 
   simp_rw [pow_add, pow_one, continuous_iff_continuousAt]
   intro x
   refine ENNReal.Tendsto.mul (IH.tendsto _) ?_ tendsto_id ?_ <;> by_cases H : x = 0
-  · simp only [H, zero_ne_top, Ne, or_true_iff, not_false_iff]
+  · simp only [H, zero_ne_top, Ne, or_true, not_false_iff]
   · exact Or.inl fun h => H (pow_eq_zero h)
-  · simp only [H, pow_eq_top_iff, zero_ne_top, false_or_iff, eq_self_iff_true, not_true, Ne,
-      not_false_iff, false_and_iff]
-  · simp only [H, true_or_iff, Ne, not_false_iff]
+  · simp only [H, pow_eq_top_iff, zero_ne_top, false_or, eq_self_iff_true, not_true, Ne,
+      not_false_iff, false_and]
+  · simp only [H, true_or, Ne, not_false_iff]
 
 theorem continuousOn_sub :
     ContinuousOn (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) { p : ℝ≥0∞ × ℝ≥0∞ | p ≠ ⟨∞, ∞⟩ } := by
@@ -405,7 +406,7 @@ theorem continuousOn_sub :
 theorem continuous_sub_left {a : ℝ≥0∞} (a_ne_top : a ≠ ∞) : Continuous (a - ·) := by
   change Continuous (Function.uncurry Sub.sub ∘ (a, ·))
   refine continuousOn_sub.comp_continuous (Continuous.Prod.mk a) fun x => ?_
-  simp only [a_ne_top, Ne, mem_setOf_eq, Prod.mk.inj_iff, false_and_iff, not_false_iff]
+  simp only [a_ne_top, Ne, mem_setOf_eq, Prod.mk.inj_iff, false_and, not_false_iff]
 
 theorem continuous_nnreal_sub {a : ℝ≥0} : Continuous fun x : ℝ≥0∞ => (a : ℝ≥0∞) - x :=
   continuous_sub_left coe_ne_top
@@ -422,7 +423,7 @@ theorem continuous_sub_right (a : ℝ≥0∞) : Continuous fun x : ℝ≥0∞ =>
   · rw [show (fun x => x - a) = (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) ∘ fun x => ⟨x, a⟩ by rfl]
     apply ContinuousOn.comp_continuous continuousOn_sub (continuous_id'.prod_mk continuous_const)
     intro x
-    simp only [a_infty, Ne, mem_setOf_eq, Prod.mk.inj_iff, and_false_iff, not_false_iff]
+    simp only [a_infty, Ne, mem_setOf_eq, Prod.mk.inj_iff, and_false, not_false_iff]
 
 protected theorem Tendsto.pow {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} {n : ℕ}
     (hm : Tendsto m f (𝓝 a)) : Tendsto (fun x => m x ^ n) f (𝓝 (a ^ n)) :=
@@ -804,7 +805,7 @@ theorem tsum_const_eq_top_of_ne_zero {α : Type*} [Infinite α] {c : ℝ≥0∞}
     ∑' _ : α, c = ∞ := by
   have A : Tendsto (fun n : ℕ => (n : ℝ≥0∞) * c) atTop (𝓝 (∞ * c)) := by
     apply ENNReal.Tendsto.mul_const tendsto_nat_nhds_top
-    simp only [true_or_iff, top_ne_zero, Ne, not_false_iff]
+    simp only [true_or, top_ne_zero, Ne, not_false_iff]
   have B : ∀ n : ℕ, (n : ℝ≥0∞) * c ≤ ∑' _ : α, c := fun n => by
     rcases Infinite.exists_subset_card_eq α n with ⟨s, hs⟩
     simpa [hs] using @ENNReal.sum_le_tsum α (fun _ => c) s
@@ -1168,7 +1169,7 @@ theorem tsum_comp_le_tsum_of_inj {β : Type*} {f : α → ℝ} (hf : Summable f)
     {i : β → α} (hi : Function.Injective i) : tsum (f ∘ i) ≤ tsum f := by
   lift f to α → ℝ≥0 using hn
   rw [NNReal.summable_coe] at hf
-  simpa only [(· ∘ ·), ← NNReal.coe_tsum] using NNReal.tsum_comp_le_tsum_of_inj hf hi
+  simpa only [Function.comp_def, ← NNReal.coe_tsum] using NNReal.tsum_comp_le_tsum_of_inj hf hi
 
 /-- Comparison test of convergence of series of non-negative real numbers. -/
 theorem Summable.of_nonneg_of_le {f g : β → ℝ} (hg : ∀ b, 0 ≤ g b) (hgf : ∀ b, g b ≤ f b)
@@ -1235,7 +1236,7 @@ open EMetric
 theorem tendsto_iff_edist_tendsto_0 {l : Filter β} {f : β → α} {y : α} :
     Tendsto f l (𝓝 y) ↔ Tendsto (fun x => edist (f x) y) l (𝓝 0) := by
   simp only [EMetric.nhds_basis_eball.tendsto_right_iff, EMetric.mem_ball,
-    @tendsto_order ℝ≥0∞ β _ _, forall_prop_of_false ENNReal.not_lt_zero, forall_const, true_and_iff]
+    @tendsto_order ℝ≥0∞ β _ _, forall_prop_of_false ENNReal.not_lt_zero, forall_const, true_and]
 
 /-- Yet another metric characterization of Cauchy sequences on integers. This one is often the
 most efficient. -/
@@ -1459,9 +1460,11 @@ section LimsupLiminf
 
 variable {ι : Type*}
 
-lemma limsup_sub_const (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞) (c : ℝ≥0∞) :
-    Filter.limsup (fun i ↦ f i - c) F = Filter.limsup f F - c :=
-  (Monotone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ x - c)
+lemma limsup_sub_const (F : Filter ι) (f : ι → ℝ≥0∞) (c : ℝ≥0∞) :
+    Filter.limsup (fun i ↦ f i - c) F = Filter.limsup f F - c := by
+  rcases F.eq_or_neBot with rfl | _
+  · simp only [limsup_bot, bot_eq_zero', zero_le, tsub_eq_zero_of_le]
+  · exact (Monotone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ x - c)
     (fun _ _ h ↦ tsub_le_tsub_right h c) (continuous_sub_right c).continuousAt).symm
 
 lemma liminf_sub_const (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞) (c : ℝ≥0∞) :
@@ -1469,14 +1472,14 @@ lemma liminf_sub_const (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞) (c : �
   (Monotone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ x - c)
     (fun _ _ h ↦ tsub_le_tsub_right h c) (continuous_sub_right c).continuousAt).symm
 
-lemma limsup_const_sub (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞)
-    {c : ℝ≥0∞} (c_ne_top : c ≠ ∞) :
-    Filter.limsup (fun i ↦ c - f i) F = c - Filter.liminf f F :=
-  (Antitone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ c - x)
+lemma limsup_const_sub (F : Filter ι) (f : ι → ℝ≥0∞) {c : ℝ≥0∞} (c_ne_top : c ≠ ∞) :
+    Filter.limsup (fun i ↦ c - f i) F = c - Filter.liminf f F := by
+  rcases F.eq_or_neBot with rfl | _
+  · simp only [limsup_bot, bot_eq_zero', liminf_bot, le_top, tsub_eq_zero_of_le]
+  · exact (Antitone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ c - x)
     (fun _ _ h ↦ tsub_le_tsub_left h c) (continuous_sub_left c_ne_top).continuousAt).symm
 
-lemma liminf_const_sub (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞)
-    {c : ℝ≥0∞} (c_ne_top : c ≠ ∞) :
+lemma liminf_const_sub (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞) {c : ℝ≥0∞} (c_ne_top : c ≠ ∞) :
     Filter.liminf (fun i ↦ c - f i) F = c - Filter.limsup f F :=
   (Antitone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ c - x)
     (fun _ _ h ↦ tsub_le_tsub_left h c) (continuous_sub_left c_ne_top).continuousAt).symm

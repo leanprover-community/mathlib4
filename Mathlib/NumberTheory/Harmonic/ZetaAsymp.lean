@@ -128,7 +128,7 @@ lemma term_tsum_one : HasSum (fun n ↦ term (n + 1) 1) (1 - γ) := by
   refine Tendsto.add ?_ tendsto_const_nhds
   have := (tendsto_eulerMascheroniSeq'.comp (tendsto_add_atTop_nat 1)).neg
   refine this.congr' (Eventually.of_forall (fun n ↦ ?_))
-  simp_rw [Function.comp_apply, eulerMascheroniSeq', if_false]
+  simp_rw [Function.comp_apply, eulerMascheroniSeq', reduceCtorEq, if_false]
   push_cast
   abel
 

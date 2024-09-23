@@ -27,7 +27,7 @@ theorem Filter.IsBoundedUnder.isLittleO_sub_self_inv {𝕜 E : Type*} [NormedFie
     {f : 𝕜 → E} (h : IsBoundedUnder (· ≤ ·) (𝓝[≠] a) (norm ∘ f)) :
     f =o[𝓝[≠] a] fun x => (x - a)⁻¹ := by
   refine (h.isBigO_const (one_ne_zero' ℝ)).trans_isLittleO (isLittleO_const_left.2 <| Or.inr ?_)
-  simp only [(· ∘ ·), norm_inv]
+  simp only [Function.comp_def, norm_inv]
   exact (tendsto_norm_sub_self_punctured_nhds a).inv_tendsto_zero
 
 end NormedField

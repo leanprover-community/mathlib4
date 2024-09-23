@@ -17,8 +17,6 @@ directed iff each pair of elements has a shared upper bound.
 * `DirectedOn r s`: Predicate stating that the set `s` is `r`-directed.
 * `IsDirected α r`: Prop-valued mixin stating that `α` is `r`-directed. Follows the style of the
   unbundled relation classes such as `IsTotal`.
-* `ScottContinuous`: Predicate stating that a function between preorders preserves `IsLUB` on
-  directed sets.
 
 ## TODO
 
@@ -110,7 +108,7 @@ theorem Directed.extend_bot [Preorder α] [OrderBot α] {e : ι → β} {f : ι 
     simp [Function.extend_apply' _ _ _ hb]
   rcases hf i j with ⟨k, hi, hj⟩
   use e k
-  simp only [he.extend_apply, *, true_and_iff]
+  simp only [he.extend_apply, *, true_and]
 
 /-- A set stable by infimum is `≥`-directed. -/
 theorem directedOn_of_inf_mem [SemilatticeInf α] {S : Set α}
@@ -250,18 +248,48 @@ theorem isBot_iff_isMin [IsDirected α (· ≥ ·)] : IsBot a ↔ IsMin a :=
 theorem isTop_iff_isMax [IsDirected α (· ≤ ·)] : IsTop a ↔ IsMax a :=
   ⟨IsTop.isMax, IsMax.isTop⟩
 
-variable (β) [PartialOrder β]
+end Preorder
 
-theorem exists_lt_of_directed_ge [IsDirected β (· ≥ ·)] [Nontrivial β] : ∃ a b : β, a < b := by
+section PartialOrder
+
+variable [PartialOrder β]
+
+section Nontrivial
+
+variable [Nontrivial β]
+
+variable (β) in
+theorem exists_lt_of_directed_ge [IsDirected β (· ≥ ·)] :
+    ∃ a b : β, a < b := by
   rcases exists_pair_ne β with ⟨a, b, hne⟩
   rcases isBot_or_exists_lt a with (ha | ⟨c, hc⟩)
   exacts [⟨a, b, (ha b).lt_of_ne hne⟩, ⟨_, _, hc⟩]
 
-theorem exists_lt_of_directed_le [IsDirected β (· ≤ ·)] [Nontrivial β] : ∃ a b : β, a < b :=
+variable (β) in
+theorem exists_lt_of_directed_le [IsDirected β (· ≤ ·)] :
+    ∃ a b : β, a < b :=
   let ⟨a, b, h⟩ := exists_lt_of_directed_ge βᵒᵈ
   ⟨b, a, h⟩
 
-variable {f : α → β} {s : Set α}
+protected theorem IsMin.not_isMax [IsDirected β (· ≥ ·)] {b : β} (hb : IsMin b) : ¬ IsMax b := by
+  intro hb'
+  obtain ⟨a, c, hac⟩ := exists_lt_of_directed_ge β
+  have := hb.isBot a
+  obtain rfl := (hb' <| this).antisymm this
+  exact hb'.not_lt hac
+
+protected theorem IsMin.not_isMax' [IsDirected β (· ≤ ·)] {b : β} (hb : IsMin b) : ¬ IsMax b :=
+  fun hb' ↦ hb'.toDual.not_isMax hb.toDual
+
+protected theorem IsMax.not_isMin [IsDirected β (· ≤ ·)] {b : β} (hb : IsMax b) : ¬ IsMin b :=
+  fun hb' ↦ hb.toDual.not_isMax hb'.toDual
+
+protected theorem IsMax.not_isMin' [IsDirected β (· ≥ ·)] {b : β} (hb : IsMax b) : ¬ IsMin b :=
+  fun hb' ↦ hb'.toDual.not_isMin hb.toDual
+
+end Nontrivial
+
+variable [Preorder α] {f : α → β} {s : Set α}
 
 -- TODO: Generalise the following two lemmas to connected orders
 
@@ -278,7 +306,7 @@ lemma constant_of_monotoneOn_antitoneOn (hf : MonotoneOn f s) (hf' : AntitoneOn 
   obtain ⟨c, hc, hac, hbc⟩ := hs _ ha _ hb
   exact le_antisymm ((hf ha hc hac).trans <| hf' hb hc hbc) ((hf hb hc hbc).trans <| hf' ha hc hac)
 
-end Preorder
+end PartialOrder
 
 -- see Note [lower instance priority]
 instance (priority := 100) SemilatticeSup.to_isDirected_le [SemilatticeSup α] :
