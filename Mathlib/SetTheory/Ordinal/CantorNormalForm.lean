@@ -41,7 +41,7 @@ namespace Ordinal
 @[elab_as_elim]
 noncomputable def CNFRec (b : Ordinal) {C : Ordinal → Sort*} (H0 : C 0)
     (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) (o : Ordinal) : C o :=
-  if h : o = 0 then h ▸ H0 else H o h (CNFRec _ H0 H (o % b ^ log b o))
+  if h : o = 0 then h ▸ H0 else H o h (CNFRec b H0 H (o % b ^ log b o))
 termination_by o
 decreasing_by exact mod_opow_log_lt_self b h
 
@@ -53,7 +53,7 @@ theorem CNFRec_zero {C : Ordinal → Sort*} (b : Ordinal) (H0 : C 0)
 theorem CNFRec_pos (b : Ordinal) {o : Ordinal} {C : Ordinal → Sort*} (ho : o ≠ 0) (H0 : C 0)
     (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) :
     CNFRec b H0 H o = H o ho (@CNFRec b C H0 H _) := by
-  rw [CNFRec, dif_neg ho]
+  rw [CNFRec, dif_neg]
 
 /-- The Cantor normal form of an ordinal `o` is the list of coefficients and exponents in the
 base-`b` expansion of `o`.
@@ -117,7 +117,7 @@ theorem CNF_of_lt {b o : Ordinal} (ho : o ≠ 0) (hb : o < b) : CNF b o = [(0, o
 /-- Evaluating the Cantor normal form of an ordinal returns the ordinal. -/
 theorem CNF_foldr (b o : Ordinal) : (CNF b o).foldr (fun p r ↦ b ^ p.1 * p.2 + r) 0 = o := by
   refine CNFRec b ?_ ?_ o
-  · simp
+  · rw [CNF_zero, foldr_nil]
   · intro o ho IH
     rw [CNF_ne_zero ho, foldr_cons, IH, div_add_mod]
 
@@ -147,9 +147,10 @@ theorem pos_of_mem_CNF_coeffs {b o : Ordinal.{u}} {x : Ordinal} :
     x ∈ CNF.coeffs b o → 0 < x := by
   refine CNFRec b ?_ (fun o ho IH ↦ ?_) o
   · simp
-  · rw [CNF.coeffs, CNF_ne_zero ho]
-    rintro (h | ⟨_, h⟩)
-    · exact div_opow_log_pos b ho
+  · rw [CNF_ne_zero ho]
+    intro h
+    obtain rfl | h := mem_cons.mp h
+    · exact div_opow_log_lt o hb
     · exact IH h
 
 @[deprecated pos_of_mem_CNF_coeffs (since := "2024-09-21")]
@@ -175,7 +176,8 @@ theorem CNF_snd_lt {b o : Ordinal.{u}} (hb : 1 < b) {x : Ordinal × Ordinal} (h 
 theorem CNF_exponents_sorted (b o : Ordinal) : (CNF.exponents b o).Sorted (· > ·) := by
   rw [CNF.exponents]
   refine CNFRec b ?_ (fun o ho IH ↦ ?_) o
-  · simp
+  · rw [CNF_zero]
+    exact sorted_nil
   · rcases le_or_lt b 1 with hb | hb
     · rw [CNF_of_le_one hb ho]
       exact sorted_singleton _
