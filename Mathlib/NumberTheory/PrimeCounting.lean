@@ -78,7 +78,7 @@ theorem add_two_le_nth_prime (n : ℕ) : n + 2 ≤ nth Prime n :=
   zeroth_prime_eq_two ▸ (nth_strictMono infinite_setOf_prime).add_le_nat n 0
 
 theorem surjective_primeCounting' : Function.Surjective π' :=
-  Nat.surjective_of_infinite_setOf infinite_setOf_prime
+  Nat.surjective_count_of_infinite_setOf infinite_setOf_prime
 
 theorem surjective_primeCounting : Function.Surjective π := by
   apply Function.Surjective.of_comp (g := fun n => n - 1)
