@@ -43,7 +43,7 @@ relations with prime and perfect numbers.
 abundant, deficient, weird, pseudoperfect
 -/
 
-open BigOperators Finset
+open Finset
 
 namespace Nat
 
