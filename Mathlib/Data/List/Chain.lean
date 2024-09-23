@@ -450,7 +450,7 @@ theorem chain'_attachWith {l : List α} {p : α → Prop} (h : ∀ x ∈ l, p x)
       have hb' := h b (mem_cons_of_mem a (mem_of_mem_head? hb))
       exact ⟨h a (mem_cons_self a l), hb', hc ⟨b, hb'⟩ rfl⟩
     · cases l with
-      | nil => simp at hb
+      | nil => cases hb
       | cons b l =>
         obtain ⟨_, _, rfl⟩ := hb
         obtain ⟨_, _, hr⟩ := hc b rfl
