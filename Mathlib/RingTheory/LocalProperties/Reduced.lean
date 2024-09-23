@@ -10,7 +10,6 @@ import Mathlib.RingTheory.LocalProperties.Basic
 
 In this file, we prove that `IsReduced` is a local property.
 
-
 ## Main results
 
 Let `R` be a commutative ring, `M` be a submonoid of `R`.
