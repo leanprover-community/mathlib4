@@ -118,7 +118,7 @@ theorem perfect_pseudoperfect (h : Perfect n) : Pseudoperfect n :=
 theorem prime_not_abundant (h : Prime n) : ¬ Abundant n :=
   fun h1 ↦ (h.one_lt.trans h1).ne' (sum_properDivisors_eq_one_iff_prime.mpr h)
 
-theorem prime_not_weird (h : Prime n) : ¬ Weird n := by
+theorem Prime.not_weird (h : Prime n) : ¬ Weird n := by
   simp only [Nat.Weird, not_and_or]
   left
   exact prime_not_abundant h
