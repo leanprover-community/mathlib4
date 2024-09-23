@@ -143,9 +143,8 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
         s!"wrong unicode variant-selector at char {pos}: \"{s}\" ({oldHex}). \
         Please use the {variant}-variant: \"{newC}\" ({newHex})!"
       else
-        -- `c₁` is irrelevant here as it is an arbitrary character.
-        -- Printing it for consistency in parsing error messages back.
-        s!"missing unicode variant-selector at char {pos}: \"{s}\" ({oldHex}). \
+        -- only use `c₀` here as `c₁` is irrelevant (and an arbitrary character).
+        s!"missing unicode variant-selector at char {pos}: \"{c₀}\" ({oldHex}). \
         Please use the {variant}-variant: \"{newC}\" ({newHex})!"
     | _, _ =>
       s!"unexpected unicode variant-selector at char {pos}: \"{s}\" ({oldHex}). \
