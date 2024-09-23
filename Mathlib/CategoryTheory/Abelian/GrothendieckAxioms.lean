@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Isaac Hernando, Coleton Kotch, Adam Topaz
 -/
 
-import Mathlib.CategoryTheory.Limits.Filtered
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
+import Mathlib.CategoryTheory.Limits.Constructions.Filtered
+import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 
 /-!
 
@@ -42,7 +42,7 @@ namespace CategoryTheory
 
 open Limits
 
-universe v v' u u'
+universe v v' u u' w
 
 variable (C : Type u) [Category.{v} C]
 
@@ -89,5 +89,14 @@ class AB5Star [HasCofilteredLimits C] where
     PreservesFiniteColimits (lim (J := J) (C := C))
 
 attribute [instance] AB5Star.preservesFiniteColimits
+
+#check Additive
+
+open CoproductsFromFiniteFiltered
+
+example [HasZeroMorphisms C] [HasFiniteBiproducts C] (α : Type w) :
+    PreservesFiniteLimits (liftToFinset C α) :=
+  ⟨fun J cJ fJ => ⟨fun {K} => ⟨fun {c} lc =>
+    _⟩⟩⟩
 
 end CategoryTheory
