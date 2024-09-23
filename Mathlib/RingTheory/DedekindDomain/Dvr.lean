@@ -150,8 +150,8 @@ theorem IsDedekindDomainDvr.ring_dimensionLEOne (h : IsDedekindDomainDvr A) :
     intro p hp hpp
     rcases p.exists_le_maximal (Ideal.IsPrime.ne_top hpp) with ⟨q, hq, hpq⟩
     let f := (IsLocalization.orderIsoOfPrime q.primeCompl (Localization.AtPrime q)).symm
-    let P := f ⟨p, hpp, HasSubset.Subset.disjoint_compl_left hpq⟩
-    let Q := f ⟨q, hq.isPrime, HasSubset.Subset.disjoint_compl_left (fun _ a => a)⟩
+    let P := f ⟨p, hpp, hpq.disjoint_compl_left⟩
+    let Q := f ⟨q, hq.isPrime, Set.disjoint_left.mpr fun _ a => a⟩
     have hinj : Function.Injective (algebraMap A (Localization.AtPrime q)) :=
       IsLocalization.injective (Localization.AtPrime q) q.primeCompl_le_nonZeroDivisors
     have hp1 : P.1 ≠ ⊥ := fun x => hp ((p.map_eq_bot_iff_of_injective hinj).mp x)
