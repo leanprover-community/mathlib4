@@ -713,29 +713,20 @@ def neTopBotEquivReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ ℝ where
 
 /-! ### Addition -/
 
-@[simp]
-theorem add_bot (x : EReal) : x + ⊥ = ⊥ :=
-  WithBot.add_bot _
+@[simp] theorem add_bot (x : EReal) : x + ⊥ = ⊥ := WithBot.add_bot _
+
+@[simp] theorem bot_add (x : EReal) : ⊥ + x = ⊥ := WithBot.bot_add _
+
+@[simp] theorem add_eq_bot_iff {x y : EReal} : x + y = ⊥ ↔ x = ⊥ ∨ y = ⊥ := WithBot.add_eq_bot
+
+@[simp] lemma add_ne_bot_iff {x y : EReal} : x + y ≠ ⊥ ↔ x ≠ ⊥ ∧ y ≠ ⊥ := WithBot.add_ne_bot
 
 @[simp]
-theorem bot_add (x : EReal) : ⊥ + x = ⊥ :=
-  WithBot.bot_add _
+theorem bot_lt_add_iff {x y : EReal} : ⊥ < x + y ↔ ⊥ < x ∧ ⊥ < y := by simp [bot_lt_iff_ne_bot]
 
-@[simp]
-theorem add_eq_bot_iff {x y : EReal} : x + y = ⊥ ↔ x = ⊥ ∨ y = ⊥ :=
-  WithBot.add_eq_bot
+@[simp] theorem top_add_top : (⊤ : EReal) + ⊤ = ⊤ := rfl
 
-@[simp]
-theorem bot_lt_add_iff {x y : EReal} : ⊥ < x + y ↔ ⊥ < x ∧ ⊥ < y := by
-  simp [bot_lt_iff_ne_bot, not_or]
-
-@[simp]
-theorem top_add_top : (⊤ : EReal) + ⊤ = ⊤ :=
-  rfl
-
-@[simp]
-theorem top_add_coe (x : ℝ) : (⊤ : EReal) + x = ⊤ :=
-  rfl
+@[simp] theorem top_add_coe (x : ℝ) : (⊤ : EReal) + x = ⊤ := rfl
 
 /-- For any extended real number `x` which is not `⊥`, the sum of `⊤` and `x` is equal to `⊤`. -/
 @[simp]
