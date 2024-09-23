@@ -438,7 +438,7 @@ theorem repr_add : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ + o₂) = rep
     have := h₁.fst; haveI := nf.fst; have ee := cmp_compares e e'
     cases he : cmp e e' <;> simp only [he, Ordering.compares_gt, Ordering.compares_lt,
         Ordering.compares_eq, repr, gt_iff_lt, PNat.add_coe, Nat.cast_add] at ee ⊢
-    · rw [← add_assoc, @add_absorp_of_le _ (repr e') (ω ^ repr e' * (n' : ℕ))]
+    · rw [← add_assoc, @add_of_omega_opow_le _ (repr e') (ω ^ repr e' * (n' : ℕ))]
       · have := (h₁.below_of_lt ee).repr_lt
         unfold repr at this
         cases he' : e' <;> simp only [he', zero_def, opow_zero, repr, gt_iff_lt] at this ⊢ <;>

@@ -193,6 +193,9 @@ theorem principal_add_omega : Principal (· + ·) ω := fun a b ha hb =>
 theorem add_omega {a : Ordinal} : a < ω → a + ω = ω :=
   principal_add_omega.add_absorp
 
+theorem add_of_le_omega {a b : Ordinal} : a < ω → ω ≤ b → a + b = b :=
+  principal_add_omega.add_absorp_of_le
+
 theorem principal_add_omega_opow (x : Ordinal) : Principal (· + ·) (ω ^ x) := by
   obtain rfl | ha' := eq_or_ne x 0
   · rw [opow_zero, principal_one_iff, add_zero]
@@ -207,11 +210,11 @@ theorem principal_add_omega_opow (x : Ordinal) : Principal (· + ·) (ω ^ x) :=
 theorem add_omega_opow {a b : Ordinal} : a < ω ^ b → a + ω ^ b = ω ^ b :=
   (principal_add_omega_opow b).add_absorp
 
-theorem add_absorp {a b : Ordinal} : a < ω ^ b → a + ω ^ b = ω ^ b :=
-  (principal_add_omega_opow b).add_absorp
-
-theorem add_absorp_of_le {a b c : Ordinal} : a < ω ^ b → ω ^ b ≤ c → a + c = c :=
+theorem add_of_omega_opow_le {a b c : Ordinal} : a < ω ^ b → ω ^ b ≤ c → a + c = c :=
   (principal_add_omega_opow b).add_absorp_of_le
+
+@[deprecated add_of_omega_opow_le (since := "2024-09-23")]
+alias add_absorp := add_of_omega_opow_le
 
 /-- The main characterization theorem for additive principal ordinals. -/
 theorem principal_add_iff_zero_or_omega_opow {o : Ordinal} :
