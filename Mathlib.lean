@@ -2162,6 +2162,7 @@ import Mathlib.Data.Finset.Grade
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.Finset.Interval
 import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Finset.Max
 import Mathlib.Data.Finset.MulAntidiagonal
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Finset.NatAntidiagonal
@@ -2178,6 +2179,7 @@ import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Finset.SMulAntidiagonal
+import Mathlib.Data.Finset.SetLattice
 import Mathlib.Data.Finset.Sigma
 import Mathlib.Data.Finset.Slice
 import Mathlib.Data.Finset.Sort

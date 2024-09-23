@@ -8,6 +8,10 @@ import Mathlib.Order.Minimal
 
 /-!
 # Lattice operations on finsets
+
+This file is concerned with how big lattice or set operations behave when indexed by a finset.
+
+See also Lattice.lean, which is concerned with folding binary lattice operations over a finset.
 -/
 
 assert_not_exists OrderedCommMonoid
