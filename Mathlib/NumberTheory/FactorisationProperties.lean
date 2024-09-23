@@ -129,7 +129,7 @@ theorem Prime.not_pseudoperfect (h : Prime p) : ¬ Pseudoperfect p := by
   simp only [sum_empty, sum_singleton] <;>
   linarith [Prime.one_lt h]
 
-theorem prime_not_perfect (h : Prime p) : ¬ Perfect p := by
+theorem Prime.not_perfect (h : Prime p) : ¬ Perfect p := by
   have h1 := Prime.not_pseudoperfect h
   revert h1
   exact not_imp_not.mpr (perfect_pseudoperfect)
