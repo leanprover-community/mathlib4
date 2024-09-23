@@ -128,8 +128,7 @@ theorem whiskeringRight_obj_id : (whiskeringRight E C C).obj (𝟭 _) = 𝟭 _ :
 
 theorem whiskeringRight_obj_comp {D' : Type u₄} [Category.{v₄} D'] (F : C ⥤ D) (G : D ⥤ D') :
     (whiskeringRight E C D).obj F ⋙ (whiskeringRight E D D').obj G =
-    (whiskeringRight E C D').obj (F ⋙ G)
-     :=
+    (whiskeringRight E C D').obj (F ⋙ G) :=
   rfl
 
 instance full_whiskeringRight_obj {F : D ⥤ E} [F.Faithful] [F.Full] :
