@@ -399,9 +399,8 @@ lemma primrec_even_equiv : PrimrecPred fun k ↦ k / 2 * 2 = k := by
         Primrec₂.right)
     · exact Primrec.id
 
-lemma even_div_two:
-∀ (a : ℕ), a / 2 * 2 = a ↔ Even a := fun a => Iff.intro
-      (fun h => ⟨a / 2, Eq.trans h.symm (mul_two (a/2))⟩) <| Nat.div_two_mul_two_of_even
+lemma even_div_two (a : ℕ) : a / 2 * 2 = a ↔ Even a :=
+  Iff.intro (fun h => ⟨a / 2, Eq.trans h.symm (mul_two (a/2))⟩) <| Nat.div_two_mul_two_of_even
 
 lemma even_primrec : @PrimrecPred ℕ _ Even _ :=
   PrimrecPred.of_eq primrec_even_equiv even_div_two
@@ -412,10 +411,9 @@ theorem computable_join {f₁ f₂ : ℕ → ℕ} (hf₁ : Computable f₁) (hf�
     (Computable.cond (Primrec.to_comp even_primrec) (comphalf_primrec hf₁) (comphalf_primrec hf₂))
     (by intro n; simp)
 
-theorem getHasIte {C : C₁}
-  (hasIte₂ : ∀ {f₁ f₂}, C.func f₁ → C.func f₂ → C.func
+theorem getHasIte {C : C₁} (hasIte₂ : ∀ {f₁ f₂}, C.func f₁ → C.func f₂ → C.func
     fun k ↦ if Even k then f₁ (k / 2) else f₂ (k / 2)) :
-   ∀ f, C.func f → C.func (fun k : ℕ => if Even k then f (k / 2) * 2 else k) := by
+    ∀ f, C.func f → C.func (fun k : ℕ => if Even k then f (k / 2) * 2 else k) := by
   intro f hf
   have : (fun k ↦ if Even k then ((fun a => a * 2) ∘ f) (k / 2) else
           (fun a => 2 * a + 1)  (k / 2))
