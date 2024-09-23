@@ -226,21 +226,22 @@ end CartesianClosed
 
 open CartesianClosed
 
-/-- Show that the exponential of the terminal object is isomorphic to itself, i.e. `X^1 ≅ X`.
+/-- The exponential with the terminal object is naturally isomorphic to the identity.-/
+def expTerminalNatIso : 𝟭 C ≅ @exp _ _ (⊤_ C) _ terminalExponentiable :=
+  MonoidalClosed.unitNatIso (C := C)
 
+def expTerminalNatIso' [Exponentiable (⊤_ C)] : 𝟭 C ≅ exp (⊤_ C) := by
+  refine conjugateIsoEquiv
+    (Adjunction.id (C := C)) (exp.adjunction (⊤_ C))
+    (NatIso.ofComponents ?_ ?_)
+  · exact (fun X => (Limits.prod.leftUnitor (C := C) X))
+  · exact (fun f => Limits.prod.leftUnitor_hom_naturality f)
+
+/-- Show that the exponential of the terminal object is isomorphic to itself, i.e. `X^1 ≅ X`.
 The typeclass argument is explicit: any instance can be used.
 -/
 def expTerminalIsoSelf [Exponentiable (⊤_ C)] : (⊤_ C) ⟹ X ≅ X :=
-  Yoneda.ext ((⊤_ C) ⟹ X) X
-    (fun {Y} f => (Limits.prod.leftUnitor Y).inv ≫ CartesianClosed.uncurry f)
-    (fun {Y} f => CartesianClosed.curry ((Limits.prod.leftUnitor Y).hom ≫ f))
-    (fun g => by
-      rw [curry_eq_iff, Iso.hom_inv_id_assoc])
-    (fun g => by simp)
-    (fun f g => by
-      -- Porting note: `rw` is a bit brittle here, requiring the `dsimp` rule cancellation.
-      dsimp [-prod.leftUnitor_inv]
-      rw [uncurry_natural_left, prod.leftUnitor_inv_naturality_assoc f])
+  (expTerminalNatIso'.app X).symm
 
 /-- The internal element which points at the given morphism. -/
 def internalizeHom (f : A ⟶ Y) : ⊤_ C ⟶ A ⟹ Y :=
