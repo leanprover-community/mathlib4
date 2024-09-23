@@ -84,7 +84,7 @@ theorem surjective_primeCounting : Function.Surjective π := by
   suffices Function.Surjective (π ∘ fun n => n - 1) from this.of_comp
   convert surjective_primeCounting'
   ext
-  simp
+  exact primeCounting_sub_one _
 
 open Filter
 
@@ -92,7 +92,7 @@ theorem tendsto_primeCounting' : Tendsto π' atTop atTop := by
   apply tendsto_atTop_atTop_of_monotone' monotone_primeCounting'
   simp [Set.range_iff_surjective.mpr surjective_primeCounting']
 
-theorem tensto_primeCounting : Tendsto π atTop atTop := 
+theorem tensto_primeCounting : Tendsto π atTop atTop :=
   (tendsto_add_atTop_iff_nat 1).mpr tendsto_primeCounting'
 
 @[simp]
