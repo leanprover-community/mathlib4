@@ -25,6 +25,10 @@ jobs:
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
       - run: |
+          # the checkout dance, to avoid a detached head
+          git checkout master
+          git checkout -
+
           lake exe autolabel "$NUMBER"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
