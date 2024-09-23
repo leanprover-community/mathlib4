@@ -54,7 +54,12 @@ def primeCounting (n : ℕ) : ℕ :=
 
 @[inherit_doc] scoped[Nat.Prime] notation "π'" => Nat.primeCounting'
 
+
 open scoped Nat.Prime
+
+@[simp]
+theorem primeCounting_sub_one {n : ℕ} : π (n - 1) = π' n  := by
+  cases n <;> rfl
 
 theorem monotone_primeCounting' : Monotone primeCounting' :=
   count_monotone Prime
@@ -105,19 +110,16 @@ theorem zeroth_prime_eq_two : nth Prime 0 = 2 := nth_count prime_two
 theorem add_two_le_nth_prime (n : ℕ) : n + 2 ≤ nth Prime n :=
   zeroth_prime_eq_two ▸ (nth_strictMono infinite_setOf_prime).add_le_nat n 0
 
-theorem surjective_primeCounting' : Function.Surjective π' := by
-   intro n
-   use nth Prime n
-   exact Nat.count_nth_of_infinite infinite_setOf_prime n
+theorem surjective_primeCounting' : Function.Surjective π' :=
+  Nat.surjective_of_infinite_setOf infinite_setOf_prime
 
 theorem surjective_primeCounting : Function.Surjective π := by
-  apply Set.range_iff_surjective.mp _
-  have h0 : primeCounting' 0 ∈ Set.range (π' ∘ succ) := by
-    simp only [Set.mem_range, Function.comp_apply, succ_eq_add_one]
-    use 0
-    rfl
-  simpa [Set.singleton_union, Set.insert_eq_of_mem h0,
-    Set.range_iff_surjective.mpr surjective_primeCounting'] using Nat.range_of_succ primeCounting'
+  apply @Function.Surjective.of_comp ℕ ℕ  ℕ π (fun n => n - 1)
+  have : π ∘ (fun n => n - 1) = π' := by
+    ext n
+    rw [Function.comp_apply, primeCounting_sub_one]
+  rw [this]
+  exact surjective_primeCounting'
 
 open Filter
 
