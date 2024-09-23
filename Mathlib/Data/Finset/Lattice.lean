@@ -17,6 +17,8 @@ import Mathlib.Order.Nat
 
 This file is concerned with folding binary lattice operations over finsets.
 
+For the special case of maximum and minimum of a finset, see Max.lean.
+
 See also SetLattice.lean, which is instead concerned with how big lattice or set operations behave
 when indexed by a finset.
 -/

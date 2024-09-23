@@ -14,12 +14,7 @@ import Mathlib.Order.Hom.Lattice
 import Mathlib.Order.Nat
 
 /-!
-# Lattice operations on finsets
-
-This file is concerned with folding binary lattice operations over finsets.
-
-See also SetLattice.lean, which is instead concerned with how big lattice or set operations behave
-when indexed by a finset.
+# Maximum and minimum of finite sets
 -/
 
 assert_not_exists OrderedCommMonoid
