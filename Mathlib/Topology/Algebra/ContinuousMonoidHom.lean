@@ -562,6 +562,23 @@ theorem isHomeomorph (f : M ≃ₜ* N) : IsHomeomorph f :=
 
 end coe
 
+section map
+
+/-- A continuous multiplicative isomorphism preserves multiplication. -/
+@[to_additive "A continuous additive isomorphism preserves addition."]
+protected theorem map_mul (f : M ≃ₜ* N) : ∀ x y, f (x * y) = f x * f y :=
+  map_mul f
+
+protected lemma isClosedMap (f : M ≃ₜ* N) : IsClosedMap f := f.toHomeomorph.isClosedMap
+protected lemma inducing (f : M ≃ₜ* N) : Inducing f := f.toHomeomorph.inducing
+protected lemma quotientMap (f : M ≃ₜ* N) : QuotientMap f := f.toHomeomorph.quotientMap
+protected lemma embedding (f : M ≃ₜ* N) : Embedding f := f.toHomeomorph.embedding
+protected lemma openEmbedding (f : M ≃ₜ* N) : OpenEmbedding f := f.toHomeomorph.openEmbedding
+protected lemma closedEmbedding (f : M ≃ₜ* N) : ClosedEmbedding f := f.toHomeomorph.closedEmbedding
+protected lemma denseEmbedding (f : M ≃ₜ* N) : DenseEmbedding f := f.toHomeomorph.denseEmbedding
+
+end map
+
 section bijective
 
 @[to_additive]
