@@ -404,8 +404,7 @@ lemma map_zsmul_eq_zpow (ψ : AddChar A M) (n : ℤ) (a : A) : ψ (n • a) = (�
 
 end fromAddGrouptoDivisionMonoid
 
-section fromAddGrouptoDivisionCommMonoid
-
+section fromAddCommGrouptoDivisionCommMonoid
 variable {A M : Type*} [AddCommGroup A] [DivisionCommMonoid M]
 
 lemma inv_apply' (ψ : AddChar A M) (a : A) : ψ⁻¹ a = (ψ a)⁻¹ := by rw [inv_apply, map_neg_eq_inv]
@@ -417,21 +416,18 @@ lemma div_apply' (ψ χ : AddChar A M) (a : A) : (ψ / χ) a = ψ a / χ a := by
 lemma sub_apply' (ψ χ : AddChar A M) (a : A) : (ψ - χ) a = ψ a / χ a := by
   rw [sub_apply, map_neg_eq_inv, div_eq_mul_inv]
 
+@[simp] lemma zsmul_apply (n : ℤ) (ψ : AddChar A M) (a : A) : (n • ψ) a = ψ a ^ n := by
+  cases n
+  · simp
+  · simp [-neg_apply, neg_apply']
+
+@[simp] lemma zpow_apply (ψ : AddChar A M) (n : ℤ) (a : A) : (ψ ^ n) a = ψ a ^ n := zsmul_apply ..
+
 lemma map_sub_eq_div (ψ : AddChar A M) (a b : A) : ψ (a - b) = ψ a / ψ b :=
   ψ.toMonoidHom.map_div _ _
 
 lemma injective_iff {ψ : AddChar A M} : Injective ψ ↔ ∀ ⦃x⦄, ψ x = 1 → x = 0 :=
   ψ.toMonoidHom.ker_eq_bot_iff.symm.trans eq_bot_iff
-
-end fromAddGrouptoDivisionCommMonoid
-
-section fromAddCommGrouptoDivisionCommMonoid
-variable {G M : Type*} [AddCommGroup G] [DivisionCommMonoid M]
-
-@[simp] lemma zsmul_apply (n : ℤ) (ψ : AddChar G M) (a : G) : (n • ψ) a = ψ a ^ n := by
-  cases n
-  · simp
-  · simp [-neg_apply, neg_apply']
 
 end fromAddCommGrouptoDivisionCommMonoid
 
