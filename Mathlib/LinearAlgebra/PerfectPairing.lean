@@ -148,6 +148,8 @@ theorem reflexive_right : IsReflexive R N :=
 
 end PerfectPairing
 
+section Reflexive
+
 variable [IsReflexive R M]
 
 /-- A reflexive module has a perfect pairing with its dual. -/
@@ -233,6 +235,7 @@ lemma dualAnnihilator_map_linearEquiv_flip_symm (p : Submodule R (Dual R N)) :
 
 end Submodule
 
+end Reflexive
 
 section FlatBaseChange
 /-!
@@ -241,15 +244,46 @@ is not preserved under arbitrary base change, so we need to assume the base chan
 -/
 open TensorProduct
 
-variable {S : Type*} [CommRing S] [Algebra R S] (p : PerfectPairing R M N)
+-- Just a copy to remove import complaints.  Orig. starts with Module.Flat.
+theorem lTensor_preserves_injective_linearMap {N' : Type*} [AddCommGroup N'] [Module R N']
+    [Flat R M] (L : N →ₗ[R] N') (hL : Function.Injective L) :
+    Function.Injective (L.lTensor M) :=
+  (L.lTensor_inj_iff_rTensor_inj M).2 (Module.Flat.rTensor_preserves_injective_linearMap L hL)
 
-/-! Plan: base change of id : Dual R M → Dual R M "is" id : Dual S (S ⊗[R] M) → Dual S (S ⊗[R] M)
+--theorem LinearMap.lTensor_surjective (hg : Function.Surjective g) :
+--    Function.Surjective (lTensor Q g) := by
+
+variable {S : Type*} [CommRing S] [Algebra R S]
+/-!
+
+/-- Linear map `Dual R M →ₗ[R] Dual S (S ⊗[R] M)` - I am having a problem getting `S`-linearity -/
+def dual_lTensor : Dual R M →ₗ[R] Dual S (S ⊗[R] M) :=
+  LinearMap.llcomp R (Dual R M) _ (Dual S (S ⊗[R] M))
+    (LinearMap.lcomp R (Dual S (S ⊗[R] M)) _ (TensorProduct.rid R S))
+    (LinearMap.lTensorHom S (N := M) (P := R))
+
+/-- `S`-module isom between `Dual S (S ⊗[R] M))` and `S ⊗[R] Dual R M` - needs flat?-/
+def dual_base_change : S ⊗[R] Dual R M ≃ₗ[S] Dual S (S ⊗[R] M) where
+  toFun x := sorry
+  map_add' := sorry
+  map_smul' := sorry
+  invFun := sorry
+  left_inv := sorry
+  right_inv := sorry
+
+theorem base_change_of_id_dual :
+    LinearMap.id (R := S) (M := Dual S (S ⊗[R] M)) =
+      dual_base_change ∘ₗ LinearMap.lTensor (LinearMap.id) (Dual R M) ∘ₗ
+      (dual_base_change (R := R) (S := S) (M := M)).symm := by
+  sorry
+
+ Plan: base change of `id : Dual R M → Dual R M` "is" `id : Dual S (S ⊗[R] M) → Dual S (S ⊗[R] M)`
+Need isom from `S ⊗[R] Dual R M` to `Dual S (S ⊗[R] M)`
+That is, `S ⊗[R] (M →ₗ[R] R) ≃ₗ[S] (S ⊗[R] M) →ₗ[S] S`.
+`s ⊗ₜ f → ()
 base change of flip "is" flip
 conclude that Dual.eval S (S ⊗[R] M) "is" base change of Dual.eval R M
-base change takes surjections to surjections. (can't find)
-
-flat base change takes injections to injections (can't find)
-
+base change takes surjections to surjections : LinearMap.lTensor_surjective
 
 lemma BaseChange_isReflexive_of_flat [IsReflexive R M] (hRS : Module.Flat R S) :
     IsReflexive S (S ⊗[R] M) where
@@ -269,6 +303,7 @@ lemma BaseChange_isReflexive_of_flat [IsReflexive R M] (hRS : Module.Flat R S) :
 -/
 namespace PerfectPairing
 
+variable (p : PerfectPairing R M N)
 
 /-- The first step in a base change. -/
 noncomputable def baseChange1 : S ⊗[R] M ≃ₗ[S] (S ⊗[R] (N →ₗ[R] R)) :=
