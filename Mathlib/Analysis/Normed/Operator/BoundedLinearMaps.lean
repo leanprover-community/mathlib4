@@ -471,7 +471,6 @@ theorem ContinuousOn.clm_apply {X} [TopologicalSpace X] {f : X → (E →L[𝕜]
     ContinuousOn (fun x ↦ f x (g x)) s :=
   isBoundedBilinearMap_apply.continuous.comp_continuousOn (hf.prod hg)
 
-
 end
 
 namespace ContinuousLinearEquiv
