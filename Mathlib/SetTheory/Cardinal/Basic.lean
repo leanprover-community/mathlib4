@@ -710,28 +710,43 @@ theorem add_one_le_succ (c : Cardinal.{u}) : c + 1 ≤ succ c := by
 
 /-- A cardinal is a limit if it is not zero or a successor cardinal. Note that `ℵ₀` is a limit
   cardinal by this definition, but `0` isn't.
-
-TODO: deprecate this in favor of `Order.IsSuccLimit`. -/
+Deprecated. Use `Order.IsSuccLimit` instead. -/
+@[deprecated IsSuccLimit (since := "2024-09-17")]
 def IsLimit (c : Cardinal) : Prop :=
   c ≠ 0 ∧ IsSuccPrelimit c
 
-protected theorem IsLimit.ne_zero {c} (h : IsLimit c) : c ≠ 0 :=
-  h.1
-
-protected theorem IsLimit.isSuccPrelimit {c} (h : IsLimit c) : IsSuccPrelimit c :=
-  h.2
-
-@[deprecated IsLimit.isSuccPrelimit (since := "2024-09-05")]
-alias IsLimit.isSuccLimit := IsLimit.isSuccPrelimit
-
-theorem IsLimit.succ_lt {x c} (h : IsLimit c) : x < c → succ x < c :=
-  h.isSuccPrelimit.succ_lt
+theorem ne_zero_of_isSuccLimit {c} (h : IsSuccLimit c) : c ≠ 0 :=
+  h.ne_bot
 
 theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Cardinal) :=
   isSuccPrelimit_bot
 
+protected theorem isSuccLimit_iff {c : Cardinal} : IsSuccLimit c ↔ c ≠ 0 ∧ IsSuccPrelimit c :=
+  isSuccLimit_iff
+
+section deprecated
+
+set_option linter.deprecated false
+
+@[deprecated IsSuccLimit.isSuccPrelimit (since := "2024-09-17")]
+protected theorem IsLimit.isSuccPrelimit {c} (h : IsLimit c) : IsSuccPrelimit c :=
+  h.2
+
+@[deprecated ne_zero_of_isSuccLimit (since := "2024-09-17")]
+protected theorem IsLimit.ne_zero {c} (h : IsLimit c) : c ≠ 0 :=
+  h.1
+
+@[deprecated IsLimit.isSuccPrelimit (since := "2024-09-05")]
+alias IsLimit.isSuccLimit := IsLimit.isSuccPrelimit
+
+@[deprecated IsSuccLimit.succ_lt (since := "2024-09-17")]
+theorem IsLimit.succ_lt {x c} (h : IsLimit c) : x < c → succ x < c :=
+  h.isSuccPrelimit.succ_lt
+
 @[deprecated isSuccPrelimit_zero (since := "2024-09-05")]
 alias isSuccLimit_zero := isSuccPrelimit_zero
+
+end deprecated
 
 /-- The indexed sum of cardinals is the cardinality of the
   indexed disjoint union, i.e. sigma type. -/
@@ -882,9 +897,19 @@ lemma exists_eq_of_iSup_eq_of_not_isSuccPrelimit
   rw [iSup, csSup_of_not_bddAbove hf, csSup_empty]
   exact isSuccPrelimit_bot
 
-@[deprecated exists_eq_of_iSup_eq_of_not_isSuccPrelimit (since := "2024-09-05")]
-alias exists_eq_of_iSup_eq_of_not_isSuccLimit := exists_eq_of_iSup_eq_of_not_isSuccPrelimit
+lemma exists_eq_of_iSup_eq_of_not_isSuccLimit
+    {ι : Type u} [hι : Nonempty ι] (f : ι → Cardinal.{v}) (hf : BddAbove (range f))
+    {c : Cardinal.{v}} (hc : ¬ IsSuccLimit c)
+    (h : ⨆ i, f i = c) : ∃ i, f i = c := by
+  rw [Cardinal.isSuccLimit_iff] at hc
+  refine (not_and_or.mp hc).elim (fun e ↦ ⟨hι.some, ?_⟩)
+    (Cardinal.exists_eq_of_iSup_eq_of_not_isSuccPrelimit.{u, v} f c · h)
+  cases not_not.mp e
+  rw [← le_zero_iff] at h ⊢
+  exact (le_ciSup hf _).trans h
 
+set_option linter.deprecated false in
+@[deprecated exists_eq_of_iSup_eq_of_not_isSuccLimit (since := "2024-09-17")]
 lemma exists_eq_of_iSup_eq_of_not_isLimit
     {ι : Type u} [hι : Nonempty ι] (f : ι → Cardinal.{v}) (hf : BddAbove (range f))
     (ω : Cardinal.{v}) (hω : ¬ ω.IsLimit)
@@ -1354,24 +1379,46 @@ theorem isSuccPrelimit_aleph0 : IsSuccPrelimit ℵ₀ :=
     rw [← nat_succ]
     apply nat_lt_aleph0
 
-@[deprecated isSuccPrelimit_aleph0 (since := "2024-09-05")]
-alias isSuccLimit_aleph0 := isSuccPrelimit_aleph0
+theorem isSuccLimit_aleph0 : IsSuccLimit ℵ₀ := by
+  rw [Cardinal.isSuccLimit_iff]
+  exact ⟨aleph0_ne_zero, isSuccPrelimit_aleph0⟩
 
+lemma not_isSuccLimit_natCast : (n : ℕ) → ¬ IsSuccLimit (n : Cardinal.{u})
+  | 0, e => e.1 isMin_bot
+  | Nat.succ n, e => Order.not_isSuccPrelimit_succ _ (nat_succ n ▸ e.2)
+
+theorem not_isSuccLimit_of_lt_aleph0 {c : Cardinal} (h : c < ℵ₀) : ¬ IsSuccLimit c := by
+  obtain ⟨n, rfl⟩ := lt_aleph0.1 h
+  exact not_isSuccLimit_natCast n
+
+theorem aleph0_le_of_isSuccLimit {c : Cardinal} (h : IsSuccLimit c) : ℵ₀ ≤ c := by
+  contrapose! h
+  exact not_isSuccLimit_of_lt_aleph0 h
+
+section deprecated
+
+set_option linter.deprecated false
+
+@[deprecated isSuccLimit_aleph0 (since := "2024-09-17")]
 theorem isLimit_aleph0 : IsLimit ℵ₀ :=
   ⟨aleph0_ne_zero, isSuccPrelimit_aleph0⟩
 
+@[deprecated not_isSuccLimit_natCast (since := "2024-09-17")]
 lemma not_isLimit_natCast : (n : ℕ) → ¬ IsLimit (n : Cardinal.{u})
   | 0, e => e.1 rfl
   | Nat.succ n, e => Order.not_isSuccPrelimit_succ _ (nat_succ n ▸ e.2)
 
+@[deprecated aleph0_le_of_isSuccLimit (since := "2024-09-17")]
 theorem IsLimit.aleph0_le {c : Cardinal} (h : IsLimit c) : ℵ₀ ≤ c := by
   by_contra! h'
   rcases lt_aleph0.1 h' with ⟨n, rfl⟩
   exact not_isLimit_natCast n h
 
+end deprecated
+
 lemma exists_eq_natCast_of_iSup_eq {ι : Type u} [Nonempty ι] (f : ι → Cardinal.{v})
     (hf : BddAbove (range f)) (n : ℕ) (h : ⨆ i, f i = n) : ∃ i, f i = n :=
-  exists_eq_of_iSup_eq_of_not_isLimit.{u, v} f hf _ (not_isLimit_natCast n) h
+  exists_eq_of_iSup_eq_of_not_isSuccLimit.{u, v} f hf (not_isSuccLimit_natCast n) h
 
 @[simp]
 theorem range_natCast : range ((↑) : ℕ → Cardinal) = Iio ℵ₀ :=
