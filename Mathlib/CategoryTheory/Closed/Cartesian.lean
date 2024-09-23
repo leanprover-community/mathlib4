@@ -230,6 +230,8 @@ open CartesianClosed
 def expTerminalNatIso : 𝟭 C ≅ @exp _ _ (⊤_ C) _ terminalExponentiable :=
   MonoidalClosed.unitNatIso (C := C)
 
+/-- A direct proof of the same result using an explicit instance of exponentiability for use below.
+-/
 def expTerminalNatIso' [Exponentiable (⊤_ C)] : 𝟭 C ≅ exp (⊤_ C) := by
   refine conjugateIsoEquiv
     (Adjunction.id (C := C)) (exp.adjunction (⊤_ C))
