@@ -354,11 +354,10 @@ def QuotientOpenNormalSubgroup (P : ProfiniteGrp) :
 /-- Defining the canonical projection from a profinite group to the limit of the quotient groups
 as a subgroup of the product space -/
 def CanonicalQuotientMap (P : ProfiniteGrp.{u}) : P ⟶
-    ofLimit ((QuotientOpenNormalSubgroup P) ⋙ (forget₂ FiniteGrp ProfiniteGrp)) where
+    limit ((QuotientOpenNormalSubgroup P) ⋙ (forget₂ FiniteGrp ProfiniteGrp)) where
   toFun := fun p => {
     val := fun H => QuotientGroup.mk p
-    property := fun A B _ => rfl
-  }
+    property := fun A => rfl }
   map_one' := Subtype.val_inj.mp (by ext H; rfl)
   map_mul' := fun x y => Subtype.val_inj.mp (by ext H; rfl)
   continuous_toFun := by
@@ -429,14 +428,13 @@ theorem canonicalQuotientMap_injective (P : ProfiniteGrp.{u}) :
     (openNormalSubgroupSubOpenNhdsOfOne_spec (isOpen_compl_singleton) this) a rfl
   have xinKer : (CanonicalQuotientMap P).toMonoidHom x = 1 := h
   simp only [CanonicalQuotientMap, MonoidHom.coe_mk, OneHom.coe_mk] at xinKer
-  apply Subtype.val_inj.mpr at xinKer
-  have xinH := congrFun xinKer H
-  rw [OneMemClass.coe_one, Pi.one_apply, QuotientGroup.eq_one_iff] at xinH
-  exact xninH xinH
+  have xinH := congrFun (Subtype.val_inj.mpr xinKer) H
+  dsimp at xinH
+  exact xninH ((QuotientGroup.eq_one_iff x).mp xinH)
 
 /-- Make the equivilence into a ContinuousMulEquiv -/
 noncomputable def ContinuousMulEquivLimitQuotientOpenNormalSubgroup (P : ProfiniteGrp.{u}) :
-    P ≃ₜ* (ofLimit ((QuotientOpenNormalSubgroup P) ⋙ (forget₂ FiniteGrp ProfiniteGrp))) := {
+    P ≃ₜ* (limit ((QuotientOpenNormalSubgroup P) ⋙ (forget₂ FiniteGrp ProfiniteGrp))) := {
   (Continuous.homeoOfEquivCompactToT2
     (f := Equiv.ofBijective _ ⟨canonicalQuotientMap_injective P, canonicalQuotientMap_surjective P⟩)
     P.CanonicalQuotientMap.continuous_toFun)
