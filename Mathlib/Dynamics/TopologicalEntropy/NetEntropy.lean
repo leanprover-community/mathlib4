@@ -237,18 +237,16 @@ lemma coverMincard_le_netMaxcard (T : X → X) (F : Set X) {U : Set (X × X)} (U
   by_contra h
   rcases not_subset.1 h with ⟨x, x_F, x_uncov⟩
   simp only [Finset.mem_coe, mem_iUnion, exists_prop, not_exists, not_and] at x_uncov
-  have larger_net : IsDynNetIn T F U n (insert x s) := by
-    apply And.intro (insert_subset x_F s_net.1)
-    refine pairwiseDisjoint_insert.2 (And.intro s_net.2 (fun y y_s _ ↦ ?_))
-    refine disjoint_left.2 (fun z z_x z_y ↦ x_uncov y y_s ?_)
-    exact mem_ball_dynEntourage_comp T n U_symm x y (nonempty_of_mem ⟨z_x, z_y⟩)
+  have larger_net : IsDynNetIn T F U n (insert x s) :=
+    And.intro (insert_subset x_F s_net.1) (pairwiseDisjoint_insert.2 (And.intro s_net.2
+      (fun y y_s _ ↦ (disjoint_left.2 (fun z z_x z_y ↦ x_uncov y y_s
+        (mem_ball_dynEntourage_comp T n U_symm x y (nonempty_of_mem ⟨z_x, z_y⟩)))))))
   rw [← Finset.coe_insert x s] at larger_net
   apply larger_net.card_le_netMaxcard.not_lt
   rw [← s_netMaxcard, Nat.cast_lt]
   refine (lt_add_one s.card).trans_eq (Finset.card_insert_of_not_mem fun x_s ↦ ?_).symm
-  apply x_uncov x x_s
-  apply ball_mono (dynEntourage_monotone T n (subset_comp_self U_rfl)) x
-  apply ball_mono (idRel_subset_dynEntourage T U_rfl n) x
+  apply x_uncov x x_s (ball_mono (dynEntourage_monotone T n (subset_comp_self U_rfl)) x
+    (ball_mono (idRel_subset_dynEntourage T U_rfl n) x _))
   simp only [ball, mem_preimage, mem_idRel]
 
 open ENNReal EReal
@@ -320,10 +318,9 @@ lemma netEntropyEntourage_univ (T : X → X) {F : Set X} (h : F.Nonempty) :
 
 lemma netEntropyInfEntourage_le_coverEntropyInfEntourage (T : X → X) (F : Set X) {U : Set (X × X)}
     (U_symm : SymmetricRel U) :
-    netEntropyInfEntourage T F U ≤ coverEntropyInfEntourage T F U := by
-  refine (liminf_le_liminf) (Eventually.of_forall fun n ↦ ?_)
-  apply div_le_div_right_of_nonneg (Nat.cast_nonneg' n) (log_monotone _)
-  exact ENat.toENNReal_le.2 (netMaxcard_le_coverMincard T F U_symm n)
+    netEntropyInfEntourage T F U ≤ coverEntropyInfEntourage T F U :=
+  (liminf_le_liminf) (Eventually.of_forall fun n ↦ (div_le_div_right_of_nonneg (Nat.cast_nonneg' n)
+    (log_monotone (ENat.toENNReal_le.2 (netMaxcard_le_coverMincard T F U_symm n)))))
 
 lemma coverEntropyInfEntourage_le_netEntropyInfEntourage (T : X → X) (F : Set X) {U : Set (X × X)}
     (U_rfl : idRel ⊆ U) (U_symm : SymmetricRel U) :
