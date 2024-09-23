@@ -172,7 +172,7 @@ theorem infinite_deficient : {n : ℕ | n.Deficient}.Infinite := by
   obtain ⟨b, h1, h2⟩ := exists_infinite_primes a.succ
   exact ⟨b, Set.mem_setOf.mpr (prime_deficient h2), h1⟩
 
-theorem exists_infinite_even_deficients : ∃ d, n ≤ d ∧ Deficient d ∧ Even d := by
+theorem infinite_even_deficient : {n : ℕ | Even n ∧ n.Deficient}.Infinite := by
   use 2 ^ (n + 1)
   constructor
   · calc
