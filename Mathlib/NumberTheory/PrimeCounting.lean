@@ -89,7 +89,7 @@ theorem surjective_primeCounting : Function.Surjective π := by
 open Filter
 
 theorem tendsto_primeCounting' : Tendsto π' atTop atTop := by
-  apply Filter.tendsto_atTop_atTop_of_monotone' monotone_primeCounting'
+  apply tendsto_atTop_atTop_of_monotone' monotone_primeCounting'
   simp [Set.range_iff_surjective.mpr surjective_primeCounting']
 
 theorem tensto_primeCounting : Tendsto π atTop atTop := by
