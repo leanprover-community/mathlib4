@@ -99,6 +99,12 @@ symmetric. -/
 theorem IsSymmetric.restrict_invariant {T : E →ₗ[𝕜] E} (hT : IsSymmetric T) {V : Submodule 𝕜 E}
     (hV : ∀ v ∈ V, T v ∈ V) : IsSymmetric (T.restrict hV) := fun v w => hT v w
 
+theorem IsSymmetric.restrictScalars {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
+    letI := InnerProductSpace.rclikeToReal 𝕜 E
+    letI : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower _ _ _
+    (T.restrictScalars ℝ).IsSymmetric :=
+  fun x y => by simp [hT x y, real_inner_eq_re_inner, LinearMap.coe_restrictScalars ℝ]
+
 /-- Polarization identity for symmetric linear maps.
 See `inner_map_polarization` for the complex version without the symmetric assumption. -/
 theorem IsSymmetric.inner_map_polarization {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (x y : E) :
@@ -119,6 +125,32 @@ theorem IsSymmetric.inner_map_polarization {T : E →ₗ[𝕜] E} (hT : T.IsSymm
       LinearMap.map_smul, inner_smul_left, inner_smul_right, RCLike.conj_I, mul_add, mul_sub,
       sub_sub, ← mul_assoc, mul_neg, h, neg_neg, one_mul, neg_one_mul]
     ring
+
+section Complex
+
+variable {V : Type*} [SeminormedAddCommGroup V] [InnerProductSpace ℂ V]
+
+attribute [local simp] map_ofNat in -- use `ofNat` simp theorem with bad keys
+open scoped InnerProductSpace in
+/-- A linear operator on a complex inner product space is symmetric precisely when
+`⟪T v, v⟫_ℂ` is real for all v. -/
+theorem isSymmetric_iff_inner_map_self_real (T : V →ₗ[ℂ] V) :
+    IsSymmetric T ↔ ∀ v : V, conj ⟪T v, v⟫_ℂ = ⟪T v, v⟫_ℂ := by
+  constructor
+  · intro hT v
+    apply IsSymmetric.conj_inner_sym hT
+  · intro h x y
+    rw [← inner_conj_symm x (T y)]
+    rw [inner_map_polarization T x y]
+    simp only [starRingEnd_apply, star_div', star_sub, star_add, star_mul]
+    simp only [← starRingEnd_apply]
+    rw [h (x + y), h (x - y), h (x + Complex.I • y), h (x - Complex.I • y)]
+    simp only [Complex.conj_I]
+    rw [inner_map_polarization']
+    norm_num
+    ring
+
+end Complex
 
 end LinearMap
 
@@ -152,38 +184,6 @@ theorem IsSymmetric.continuous [CompleteSpace E] {T : E →ₗ[𝕜] E} (hT : Is
   refine Filter.Tendsto.inner ?_ tendsto_const_nhds
   rw [← sub_self x]
   exact hu.sub_const _
-
-theorem IsSymmetric.restrictScalars {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
-    @LinearMap.IsSymmetric ℝ E _ _ (InnerProductSpace.rclikeToReal 𝕜 E)
-      (@LinearMap.restrictScalars ℝ 𝕜 _ _ _ _ _ _ (InnerProductSpace.rclikeToReal 𝕜 E).toModule
-        (InnerProductSpace.rclikeToReal 𝕜 E).toModule _ _ _ T) :=
-  fun x y => by simp [hT x y, real_inner_eq_re_inner, LinearMap.coe_restrictScalars ℝ]
-
-section Complex
-
-variable {V : Type*} [SeminormedAddCommGroup V] [InnerProductSpace ℂ V]
-
-attribute [local simp] map_ofNat in -- use `ofNat` simp theorem with bad keys
-open scoped InnerProductSpace in
-/-- A linear operator on a complex inner product space is symmetric precisely when
-`⟪T v, v⟫_ℂ` is real for all v. -/
-theorem isSymmetric_iff_inner_map_self_real (T : V →ₗ[ℂ] V) :
-    IsSymmetric T ↔ ∀ v : V, conj ⟪T v, v⟫_ℂ = ⟪T v, v⟫_ℂ := by
-  constructor
-  · intro hT v
-    apply IsSymmetric.conj_inner_sym hT
-  · intro h x y
-    rw [← inner_conj_symm x (T y)]
-    rw [inner_map_polarization T x y]
-    simp only [starRingEnd_apply, star_div', star_sub, star_add, star_mul]
-    simp only [← starRingEnd_apply]
-    rw [h (x + y), h (x - y), h (x + Complex.I • y), h (x - Complex.I • y)]
-    simp only [Complex.conj_I]
-    rw [inner_map_polarization']
-    norm_num
-    ring
-
-end Complex
 
 /-- A symmetric linear map `T` is zero if and only if `⟪T x, x⟫_ℝ = 0` for all `x`.
 See `inner_map_self_eq_zero` for the complex version without the symmetric assumption. -/
