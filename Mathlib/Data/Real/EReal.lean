@@ -1056,6 +1056,20 @@ lemma sub_self {x : EReal} (h_top : x ≠ ⊤) (h_bot : x ≠ ⊥) : x - x = 0 :
 lemma sub_self_le_zero {x : EReal} : x - x ≤ 0 := by
   induction x <;> simp
 
+lemma sub_nonneg {x y : EReal} (h_top : x ≠ ⊤ ∨ y ≠ ⊤) (h_bot : x ≠ ⊥ ∨ y ≠ ⊥) :
+    0 ≤ x - y ↔ y ≤ x := by
+  induction x <;> induction y <;> simp_all [← EReal.coe_sub]
+
+lemma sub_nonpos {x y : EReal} : x - y ≤ 0 ↔ x ≤ y := by
+  induction x <;> induction y <;> simp [← EReal.coe_sub]
+
+lemma sub_pos {x y : EReal} : 0 < x - y ↔ y < x := by
+  induction x <;> induction y <;> simp [← EReal.coe_sub]
+
+lemma sub_neg {x y : EReal} (h_top : x ≠ ⊤ ∨ y ≠ ⊤) (h_bot : x ≠ ⊥ ∨ y ≠ ⊥) :
+    x - y < 0 ↔ x < y := by
+  induction x <;> induction y <;> simp_all [← EReal.coe_sub]
+
 theorem sub_le_sub {x y z t : EReal} (h : x ≤ y) (h' : t ≤ z) : x - z ≤ y - t :=
   add_le_add h (neg_le_neg_iff.2 h')
 
