@@ -557,10 +557,6 @@ def mk' (f : M ≃ₜ N) (h : ∀ x y, f (x * y) = f x * f y) : M ≃ₜ* N :=
 instance : Coe (M ≃ₜ* N) (M ≃ₜ N) where
   coe := toHomeomorph
 
-@[to_additive (attr := simp)]
-theorem toHomeomorph_eq_coe (f : M ≃ₜ* N) : f.toHomeomorph = f :=
-  rfl
-
 theorem isHomeomorph (f : M ≃ₜ* N) : IsHomeomorph f :=
   Homeomorph.isHomeomorph f
 
@@ -719,6 +715,26 @@ theorem self_trans_symm (e : M ≃ₜ* N) : e.trans e.symm = refl M :=
   DFunLike.ext _ _ e.symm_apply_apply
 
 end trans
+
+section unique
+
+/-- The `MulEquiv` between two monoids with a unique element. -/
+@[to_additive "The `AddEquiv` between two `AddMonoid`s with a unique element."]
+def continuousMulEquivOfUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N]
+    [TopologicalSpace M] [TopologicalSpace N] : M ≃ₜ* N := {
+  MulEquiv.mulEquivOfUnique with
+  continuous_toFun := by continuity
+  continuous_invFun := by continuity }
+
+/-- There is a unique monoid homomorphism between two monoids with a unique element. -/
+@[to_additive "There is a unique additive monoid homomorphism between two additive monoids with
+  a unique element."]
+instance {M N} [Unique M] [Unique N] [Mul M] [Mul N]
+    [TopologicalSpace M] [TopologicalSpace N] : Unique (M ≃ₜ* N) where
+  default := continuousMulEquivOfUnique
+  uniq _ := ext fun _ ↦ Subsingleton.elim _ _
+
+end unique
 
 end ContinuousMulEquiv
 
