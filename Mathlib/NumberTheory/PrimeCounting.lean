@@ -84,7 +84,7 @@ theorem surjective_primeCounting : Function.Surjective π := by
   suffices Function.Surjective (π ∘ fun n => n - 1) from this.of_comp
   convert surjective_primeCounting'
   ext
-  exact primeCounting_sub_one
+  simp
 
 open Filter
 
