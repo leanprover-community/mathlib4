@@ -77,7 +77,7 @@ theorem abundant_twelve : Abundant 12 := by
   norm_num
 
 set_option maxRecDepth 1730 in
-theorem Weird_seventy : Weird 70 := by
+theorem weird_seventy : Weird 70 := by
   rw [Weird, Abundant, not_pseudoperfect_iff_forall]
   have h : properDivisors 70 = {1, 2, 5, 7, 10, 14, 35} := by rfl
   constructor
@@ -94,18 +94,18 @@ lemma deficient_iff_not_abundant_and_not_perfect (hn : n ≠ 0) :
   dsimp only [Perfect, Abundant, Deficient]
   omega
 
-lemma perfect_not_abundant_or_deficient (hn : 0 < n) :
+lemma perfect_iff_not_abundant_or_deficient (hn : 0 ≠ n) :
     Perfect n ↔ ¬ Abundant n ∧ ¬ Deficient n := by
   dsimp only [Perfect, Abundant, Deficient]
   omega
 
-lemma abundant_not_perfect_or_deficient (hn : 0 < n) :
+lemma abundant_iff_not_perfect_or_deficient (hn : 0 ≠ n) :
     Abundant n ↔ ¬ Perfect n ∧ ¬ Deficient n := by
   dsimp only [Perfect, Abundant, Deficient]
   omega
 
 /-- A positive natural number is either deficient, perfect, or abundant -/
-theorem deficient_or_perfect_or_abundant (hn : 0 < n) :
+theorem deficient_or_perfect_or_abundant (hn : 0 ≠ n) :
     Deficient n ∨ Abundant n ∨ Perfect n := by
   dsimp only [Perfect, Abundant, Deficient]
   omega
@@ -123,22 +123,22 @@ theorem Prime.not_weird (h : Prime n) : ¬ Weird n := by
 
 theorem Prime.not_pseudoperfect (h : Prime p) : ¬ Pseudoperfect p := by
   simp_rw [not_pseudoperfect_iff_forall, ← mem_powerset,
-    show powerset (properDivisors p) = {∅, {1}} by rw [Prime.properDivisors h]; rfl]
+    show p.properDivisors.powerset = {∅, {1}} by rw [Prime.properDivisors h]; rfl]
   refine Or.inr (fun s hs ↦ ?_)
   fin_cases hs <;>
   simp only [sum_empty, sum_singleton] <;>
   linarith [Prime.one_lt h]
 
 theorem prime_not_perfect (h : Prime p) : ¬ Perfect p := by
-  have h1 := prime_not_pseudoperfect h
+  have h1 := Prime.not_pseudoperfect h
   revert h1
   exact not_imp_not.mpr (perfect_pseudoperfect)
 
 /-- Any natural number power of a prime is deficient -/
 theorem Prime.deficient_pow  (h : Prime n) : Deficient (n ^ m) := by
   rcases Nat.eq_zero_or_pos m with (rfl | _)
-  · simpa using Deficient_one
-  · have h1 : properDivisors (n ^ m) = image (n ^ ·) (range m) := by
+  · simpa using deficient_one
+  · have h1 : (n ^ m).properDivisors = image (n ^ ·) (range m) := by
       apply subset_antisymm <;> intro a
       · simp only [mem_properDivisors, mem_image, mem_range, dvd_prime_pow h]
         rintro ⟨⟨t, ht, rfl⟩, ha'⟩
@@ -163,12 +163,14 @@ theorem Prime.deficient_pow  (h : Prime n) : Deficient (n ^ m) := by
 
 theorem prime_deficient (h : Prime n) : Deficient n := by
   rw [← pow_one n]
-  exact prime_pow_deficient h
+  exact Prime.deficient_pow h
 
 /-- There exists infinitely many deficient numbers -/
-theorem infinite_deficient : {n : ℕ | n.deficient}.Infinite := by
-  obtain ⟨p, ⟨h1, h2⟩⟩ := exists_infinite_primes n
-  exact ⟨p, h1, prime_deficient h2⟩
+theorem infinite_deficient : {n : ℕ | n.Deficient}.Infinite := by
+  rw [Set.infinite_iff_exists_gt]
+  intro a
+  obtain ⟨b, h1, h2⟩ := exists_infinite_primes a.succ
+  exact ⟨b, Set.mem_setOf.mpr (prime_deficient h2), h1⟩
 
 theorem exists_infinite_even_deficients : ∃ d, n ≤ d ∧ Deficient d ∧ Even d := by
   use 2 ^ (n + 1)
@@ -177,7 +179,7 @@ theorem exists_infinite_even_deficients : ∃ d, n ≤ d ∧ Deficient d ∧ Eve
       n ≤ 2 ^ n := Nat.le_of_lt (lt_two_pow n)
       _ ≤ 2 ^ (n + 1) := le_of_succ_le ((Nat.pow_lt_pow_iff_right (Nat.one_lt_two)).mpr
         (lt_add_one n))
-  · exact ⟨prime_pow_deficient prime_two, even_pow.mpr ⟨even_two, Ne.symm
+  · exact ⟨Prime.deficient_pow prime_two, even_pow.mpr ⟨even_two, Ne.symm
       (NeZero.ne' (n + 1))⟩⟩
 
 theorem exists_infinite_odd_deficients : ∃ d, n ≤ d ∧ Deficient d ∧ Odd d := by
