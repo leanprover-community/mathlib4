@@ -89,7 +89,7 @@ theorem Weird_seventy : Weird 70 := by
     have hs' := mem_powerset.mpr hs
     fin_cases hs' <;> decide
 
-lemma deficient_not_abundant_or_perfect (hn : 0 < n) :
+lemma deficient_iff_not_abundant_and_not_perfect (hn : n ≠ 0) :
     Deficient n ↔ ¬ Abundant n ∧ ¬ Perfect n := by
   dsimp only [Perfect, Abundant, Deficient]
   omega
