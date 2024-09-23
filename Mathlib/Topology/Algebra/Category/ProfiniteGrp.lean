@@ -253,6 +253,11 @@ instance : Limits.HasLimit F where
 
 end
 
+instance : Limits.PreservesLimits profiniteGrpToProfinite.{u} := {
+  preservesLimitsOfShape := {
+    preservesLimit := fun {F} ↦ CategoryTheory.Limits.preservesLimitOfPreservesLimitCone
+      (limitConeIsLimit F) (Profinite.limitConeIsLimit (F ⋙ profiniteGrpToProfinite)) }}
+
 end ProfiniteGrp
 
 end Profiniteoflimit
