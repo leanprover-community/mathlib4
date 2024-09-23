@@ -175,7 +175,7 @@ protected theorem not {p : α → Prop} (hp : ComputablePred p) : ComputablePred
 
 /-- The computable functions are closed under if-then-else definitions. -/
 theorem ite {f₁ f₂ : ℕ → ℕ} (hf₁ : Computable f₁) (hf₂ : Computable f₂)
-    {c : ℕ → Prop} [∀ k, Decidable (c k)] (hc : ComputablePred c) :
+    {c : ℕ → Prop} [DecidablePred c] (hc : ComputablePred c) :
     Computable fun k ↦ if c k then f₁ k else f₂ k := by
   simp_rw [← Bool.cond_decide]
   obtain ⟨inst, hc⟩ := hc
