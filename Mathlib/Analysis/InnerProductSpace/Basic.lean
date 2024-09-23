@@ -1607,6 +1607,8 @@ theorem innerSL_apply_norm (x : E) : ‖innerSL 𝕜 x‖ = ‖x‖ := by
 lemma norm_innerSL_le : ‖innerSL 𝕜 (E := E)‖ ≤ 1 :=
   ContinuousLinearMap.opNorm_le_bound _ zero_le_one (by simp)
 
+variable {𝕜}
+
 /-- When an inner product space `E` over `𝕜` is considered as a real normed space, its inner
 product satisfies `IsBoundedBilinearMap`.
 
