@@ -264,7 +264,7 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
             let str ← errorMessage.get? 2
             let c ← str.get? ⟨1⟩
             StyleError.unwantedUnicode c
-        | "ERR_UNICODE_VARIANT" => do  -- note: it's possible to cheat this parsing code.
+        | "ERR_UNICODE_VARIANT" => do
           match (← errorMessage.get? 0) with
           | "wrong" | "missing" =>
             let offending := removeQuotations (← errorMessage.get? 6)
@@ -670,22 +670,35 @@ end unicodeLinter
 
 open unicodeLinter in
 
-
 /-- Lint a collection of input strings if one of them contains unwanted unicode. -/
 def unicodeLinter : TextbasedLinter := fun lines ↦ Id.run do
+  let mut changed : Array String := #[]
   let mut errors : Array (StyleError × ℕ) := Array.mkEmpty 0
   let mut lineNumber := 1
   for line in lines do
-    errors := errors.append ((findBadUnicode line).map (fun e => (e, lineNumber)))
+    let err := findBadUnicode line
+    let mut newLine := line
+    for e in err do
+      match e with
+      | .unicodeVariant s sel pos =>
+        let x := newLine.extract 0 pos
+        let y := newLine.extract (x ++ s).endPos line.endPos
+        newLine := match sel with
+        | some v => x ++ (⟨[s.get 0, v]⟩ : String) ++ y
+        | none => x ++ (⟨[s.get 0]⟩ : String) ++ y
+      | _ =>
+        -- no fixes
+        pure ()
+    changed := changed.push newLine
+    errors := errors.append (err.map (fun e => (e, lineNumber)))
     lineNumber := lineNumber + 1
-  return (errors, none) -- TODO implement automatic fixes for some errors!
+  return (errors, changed) -- TODO implement automatic fixes for some errors!
 
 /-- All text-based linters registered in this file. -/
 def allLinters : Array TextbasedLinter := #[
     copyrightHeaderLinter, adaptationNoteLinter, broadImportsLinter, duplicateImportsLinter,
     unicodeLinter
   ]
-
 
 /-- Read a file and apply all text-based linters.
 Return a list of all unexpected errors, and, if some errors could be fixed automatically,
