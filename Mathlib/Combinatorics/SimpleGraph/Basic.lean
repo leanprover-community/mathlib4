@@ -122,6 +122,10 @@ instance {V : Type u} [Fintype V] [DecidableEq V] : Fintype (SimpleGraph V) wher
     · ext
       simp
 
+/-- There are finitely many simple graphs on a given finite type. -/
+instance SimpleGraph.instFinite {V : Type u} [Finite V] : Finite (SimpleGraph V) :=
+  .of_injective SimpleGraph.Adj fun _ _ ↦ SimpleGraph.ext
+
 /-- Construct the simple graph induced by the given relation. It
 symmetrizes the relation and makes it irreflexive. -/
 def SimpleGraph.fromRel {V : Type u} (r : V → V → Prop) : SimpleGraph V where

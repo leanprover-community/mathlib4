@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.Ring.Pointwise.Set
+import Mathlib.Data.Finset.Density
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Set.Pointwise.Finite
 import Mathlib.Data.Set.Pointwise.ListOfFn
@@ -1621,6 +1622,9 @@ variable [Group α] [DecidableEq α] {s t : Finset α}
 @[to_additive] lemma card_le_card_div_right (ht : t.Nonempty) : s.card ≤ (s / t).card :=
   card_le_card_image₂_right _ ht fun _ ↦ div_left_injective
 
+@[to_additive] lemma card_le_card_div_self : s.card ≤ (s / s).card := by
+  cases s.eq_empty_or_nonempty <;> simp [card_le_card_div_left, *]
+
 end Group
 
 open Pointwise
@@ -1693,6 +1697,9 @@ theorem smul_univ [Fintype β] {s : Finset α} (hs : s.Nonempty) : s • (univ :
 @[to_additive (attr := simp)]
 theorem card_smul_finset (a : α) (s : Finset β) : (a • s).card = s.card :=
   card_image_of_injective _ <| MulAction.injective _
+
+@[to_additive (attr := simp)]
+lemma dens_smul_finset [Fintype β] (a : α) (s : Finset β) : (a • s).dens = s.dens := by simp [dens]
 
 /-- If the left cosets of `t` by elements of `s` are disjoint (but not necessarily distinct!), then
 the size of `t` divides the size of `s • t`. -/

@@ -839,13 +839,3 @@ end Supp
 
 -- end of section
 end AddValuation
-
-section ValuationNotation
-
-/-- Notation for `WithZero (Multiplicative ℕ)` -/
-scoped[DiscreteValuation] notation "ℕₘ₀" => WithZero (Multiplicative ℕ)
-
-/-- Notation for `WithZero (Multiplicative ℤ)` -/
-scoped[DiscreteValuation] notation "ℤₘ₀" => WithZero (Multiplicative ℤ)
-
-end ValuationNotation
