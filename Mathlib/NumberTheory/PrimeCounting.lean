@@ -114,7 +114,7 @@ theorem surjective_primeCounting' : Function.Surjective π' :=
   Nat.surjective_of_infinite_setOf infinite_setOf_prime
 
 theorem surjective_primeCounting : Function.Surjective π := by
-  apply @Function.Surjective.of_comp ℕ ℕ  ℕ π (fun n => n - 1)
+  apply Function.Surjective.of_comp (g := fun n => n - 1)
   have : π ∘ (fun n => n - 1) = π' := by
     ext n
     rw [Function.comp_apply, primeCounting_sub_one]
