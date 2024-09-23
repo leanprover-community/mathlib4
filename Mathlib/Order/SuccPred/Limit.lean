@@ -294,12 +294,10 @@ section LinearOrder
 variable [LinearOrder α]
 
 theorem IsSuccPrelimit.le_iff_forall_le (h : IsSuccPrelimit a) : a ≤ b ↔ ∀ c < a, c ≤ b := by
-  constructor
-  · intro ha c hc
-    exact hc.le.trans ha
-  · intro H
-    by_contra! ha
-    exact h b ⟨ha, fun c hb hc ↦ (H c hc).not_lt hb⟩
+  use fun ha c hc ↦ hc.le.trans ha
+  intro H
+  by_contra! ha
+  exact h b ⟨ha, fun c hb hc ↦ (H c hc).not_lt hb⟩
 
 theorem IsSuccPrelimit.lt_iff_exists_lt (h : IsSuccPrelimit b) : a < b ↔ ∃ c < b, a < c := by
   rw [← not_iff_not]
