@@ -80,17 +80,19 @@ lean_lib docs where
 ## Executables provided by Mathlib
 -/
 
+/-- `lake exe autolabel 150100` adds a topic label to PR `150100` if there is a unique choice.
+
+Calling `lake exe autolabel` without a PR number will print the result without applying
+any labels online. -/
+lean_exe autolabel where
+  srcDir := "scripts"
+
 /-- `lake exe cache get` retrieves precompiled `.olean` files from a central server. -/
 lean_exe cache where
   root := `Cache.Main
 
 /-- `lake exe check-yaml` verifies that all declarations referred to in `docs/*.yaml` files exist. -/
 lean_exe «check-yaml» where
-  srcDir := "scripts"
-  supportInterpreter := true
-
-/-- `lake exe autolabel` does nothing yet. -/
-lean_exe autolabel where
   srcDir := "scripts"
   supportInterpreter := true
 
