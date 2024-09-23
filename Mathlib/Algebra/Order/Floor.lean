@@ -503,6 +503,14 @@ end LinearOrderedSemifield
 section LinearOrderedField
 variable [LinearOrderedField α] [FloorSemiring α] {a b : α}
 
+lemma mul_lt_floor (hb₀ : 0 < b) (hb : b < 1) (hba : ⌈b / (1 - b)⌉₊ ≤ a) : b * a < ⌊a⌋₊ := by
+  calc
+    b * a < b * (⌊a⌋₊ + 1) := by gcongr; exacts [hb₀, lt_floor_add_one _]
+    _ ≤ ⌊a⌋₊ := by
+      rw [_root_.mul_add_one, ← le_sub_iff_add_le', ← one_sub_mul, ← div_le_iff₀' (by linarith),
+        ← ceil_le]
+      exact le_floor hba
+
 lemma ceil_lt_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉₊ / b < a) : ⌈a⌉₊ < b * a := by
   obtain hab | hba := le_total a (b - 1)⁻¹
   · calc
@@ -515,12 +523,15 @@ lemma ceil_lt_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉₊ / b < a) : ⌈a⌉�
       _ ≤ a + (b - 1) * a := by gcongr; positivity
       _ = b * a := by rw [sub_one_mul, add_sub_cancel]
 
-lemma ceil_le_mul (hb : 1 < b) (ha : ⌈(b - 1)⁻¹⌉₊ / b ≤ a) : ⌈a⌉₊ ≤ b * a := by
-  obtain rfl | ha := ha.eq_or_lt
+lemma ceil_le_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉₊ / b ≤ a) : ⌈a⌉₊ ≤ b * a := by
+  obtain rfl | hba := hba.eq_or_lt
   · rw [mul_div_cancel₀, cast_le, ceil_le]
     exact _root_.div_le_self (by positivity) hb.le
     · positivity
-  · exact (ceil_lt_mul hb ha).le
+  · exact (ceil_lt_mul hb hba).le
+
+lemma div_two_lt_floor (ha : 1 ≤ a) : a / 2 < ⌊a⌋₊ := by
+  rw [div_eq_inv_mul]; refine mul_lt_floor ?_ ?_ ?_ <;> norm_num; assumption
 
 lemma ceil_lt_two_mul (ha : 2⁻¹ < a) : ⌈a⌉₊ < 2 * a :=
   ceil_lt_mul one_lt_two (by norm_num at ha ⊢; exact ha)
@@ -1236,6 +1247,13 @@ theorem ceil_sub_self_eq (ha : fract a ≠ 0) : (⌈a⌉ : α) - a = 1 - fract a
 section LinearOrderedField
 variable {k : Type*} [LinearOrderedField k] [FloorRing k] {a b : k}
 
+lemma mul_lt_floor (hb₀ : 0 < b) (hb : b < 1) (hba : ⌈b / (1 - b)⌉ ≤ a) : b * a < ⌊a⌋ := by
+  calc
+    b * a < b * (⌊a⌋ + 1) := by gcongr; exacts [hb₀, lt_floor_add_one _]
+    _ ≤ ⌊a⌋ := by
+      rwa [_root_.mul_add_one, ← le_sub_iff_add_le', ← one_sub_mul, ← div_le_iff₀' (by linarith),
+        ← ceil_le, le_floor]
+
 lemma ceil_div_ceil_inv_sub_one (ha : 1 ≤ a) : ⌈⌈(a - 1)⁻¹⌉ / a⌉ = ⌈(a - 1)⁻¹⌉ := by
   obtain rfl | ha := ha.eq_or_lt
   · simp
@@ -1259,11 +1277,14 @@ lemma ceil_lt_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉ / b < a) : ⌈a⌉ < b 
       _ ≤ a + (b - 1) * a := by gcongr; positivity
       _ = b * a := by rw [sub_one_mul, add_sub_cancel]
 
-lemma ceil_le_mul (hb : 1 < b) (ha : ⌈(b - 1)⁻¹⌉ / b ≤ a) : ⌈a⌉ ≤ b * a := by
-  obtain rfl | ha := ha.eq_or_lt
+lemma ceil_le_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉ / b ≤ a) : ⌈a⌉ ≤ b * a := by
+  obtain rfl | hba := hba.eq_or_lt
   · rw [ceil_div_ceil_inv_sub_one hb.le, mul_div_cancel₀]
     positivity
-  · exact (ceil_lt_mul hb ha).le
+  · exact (ceil_lt_mul hb hba).le
+
+lemma div_two_lt_floor (ha : 1 ≤ a) : a / 2 < ⌊a⌋ := by
+  rw [div_eq_inv_mul]; refine mul_lt_floor ?_ ?_ ?_ <;> norm_num; assumption
 
 lemma ceil_lt_two_mul (ha : 2⁻¹ < a) : ⌈a⌉ < 2 * a :=
   ceil_lt_mul one_lt_two (by norm_num at ha ⊢; exact ha)
