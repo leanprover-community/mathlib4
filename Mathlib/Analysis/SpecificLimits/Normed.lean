@@ -212,7 +212,7 @@ theorem isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt {R : Type*} [Norm
   have A : (fun n ↦ (n : R) ^ k : ℕ → R) =o[atTop] fun n ↦ (r₂ / ‖r₁‖) ^ n :=
     isLittleO_pow_const_const_pow_of_one_lt k ((one_lt_div h0).2 h)
   suffices (fun n ↦ r₁ ^ n) =O[atTop] fun n ↦ ‖r₁‖ ^ n by
-    simpa [div_mul_cancel₀ _ (pow_pos h0 _).ne'] using A.mul_isBigO this
+    simpa [div_mul_cancel₀ _ (pow_pos h0 _).ne', div_pow] using A.mul_isBigO this
   exact IsBigO.of_bound 1 (by simpa using eventually_norm_pow_le r₁)
 
 theorem tendsto_pow_const_div_const_pow_of_one_lt (k : ℕ) {r : ℝ} (hr : 1 < r) :
