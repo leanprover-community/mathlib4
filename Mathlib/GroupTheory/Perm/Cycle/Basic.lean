@@ -193,6 +193,11 @@ theorem SameCycle.exists_pow_eq'' [Finite α] (h : SameCycle f x y) :
       rw [pow_orderOf_eq_one, pow_zero]
     · exact ⟨i.succ, i.zero_lt_succ, hi.le, by rfl⟩
 
+theorem SameCycle.iff_exists_pow_eq [Finite α] :
+    f.SameCycle x y ↔ ∃ i < orderOf f, (f ^ i) x = y where
+  mp := Equiv.Perm.SameCycle.exists_pow_eq'
+  mpr := fun ⟨i, _, hi⟩ ↦ ⟨i, hi⟩
+
 instance (f : Perm α) [DecidableRel (SameCycle f⁻¹)] :
     DecidableRel (SameCycle f) := fun x y =>
   decidable_of_iff (f⁻¹.SameCycle x y) (sameCycle_inv)

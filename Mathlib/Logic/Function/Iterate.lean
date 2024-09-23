@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Logic.Function.Conjugate
+import Mathlib.Data.Nat.Defs
 
 /-!
 # Iterations of a function
@@ -208,6 +209,19 @@ lemma iterate_cancel (hf : Injective f) (ha : f^[m] a = f^[n] a) : f^[m - n] a =
   obtain h | h := Nat.le_total m n
   { simp [Nat.sub_eq_zero_of_le h] }
   { exact iterate_cancel_of_add hf (by rwa [Nat.sub_add_cancel h]) }
+
+lemma iterate_cancel_of_le (ha : f^[m] a = f^[n] a)
+    (hnm : n ≤ m) (i : ℕ) (hi : m ≤ i) : f^[i] a = f^[i - (m - n)] a := by
+  obtain ⟨i, rfl⟩ := Nat.exists_eq_add_of_le hi
+  simp only [hnm, Nat.add_sub_sub_cancel]
+  rw [Nat.add_comm, Function.iterate_add_apply, Function.iterate_add_apply, ha]
+
+lemma iterate_exists_loop (ha : f^[m] a = f^[n] a)
+    (hnm : n < m) (i : ℕ) : ∃ j < m, f^[i] a = f^[j] a := by
+  rcases lt_or_le i m with _ | hi
+  · exists i
+  rw [iterate_cancel_of_le ha (le_of_lt hnm) i hi]
+  apply iterate_exists_loop ha hnm
 
 theorem involutive_iff_iter_2_eq_id {α} {f : α → α} : Involutive f ↔ f^[2] = id :=
   funext_iff.symm

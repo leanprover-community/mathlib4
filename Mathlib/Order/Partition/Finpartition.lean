@@ -74,6 +74,8 @@ structure Finpartition [Lattice α] [OrderBot α] (a : α) where
 -- Porting note: attribute [protected] doesn't work
 -- attribute [protected] Finpartition.supIndep
 
+attribute [simp] Finpartition.not_bot_mem
+
 namespace Finpartition
 
 section Lattice
@@ -472,6 +474,7 @@ theorem existsUnique_mem (ha : a ∈ s) : ∃! t, t ∈ P.parts ∧ a ∈ t := b
 /-- The part of the finpartition that `a` lies in. -/
 def part (a : α) : Finset α := if ha : a ∈ s then choose (hp := P.existsUnique_mem ha) else ∅
 
+@[simp]
 lemma part_mem (ha : a ∈ s) : P.part a ∈ P.parts := by simp [part, ha, choose_mem]
 
 lemma mem_part (ha : a ∈ s) : a ∈ P.part a := by
@@ -588,6 +591,7 @@ def ofSetoid (s : Setoid α) [DecidableRel s.r] : Finpartition (univ : Finset α
     simp only [filter_eq_empty_iff, not_forall, mem_univ, forall_true_left, true_and, not_not]
     use a; exact s.refl a
 
+@[simp]
 theorem mem_part_ofSetoid_iff_rel {s : Setoid α} [DecidableRel s.r] {b : α} :
     b ∈ (ofSetoid s).part a ↔ s.r a b := by
   simp_rw [part, ofSetoid, mem_univ, reduceDIte]
@@ -597,6 +601,11 @@ theorem mem_part_ofSetoid_iff_rel {s : Setoid α} [DecidableRel s.r] {b : α} :
   obtain ⟨⟨_, hc⟩, this⟩ := this
   simp only [← hc, mem_univ, mem_filter, true_and] at this ⊢
   exact ⟨s.trans (s.symm this), s.trans this⟩
+
+theorem mem_iff_rel_of_mem_parts {s : Setoid α} [DecidableRel s.r] {x y : α}
+    {f : Finset α} (hf : f ∈ (ofSetoid s).parts) (hx : x ∈ f) : y ∈ f ↔ s.r x y := by
+  obtain rfl := Finpartition.part_eq_of_mem _ hf hx
+  apply mem_part_ofSetoid_iff_rel
 
 end Setoid
 

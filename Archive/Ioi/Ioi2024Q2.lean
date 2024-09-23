@@ -4,15 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
 import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Data.Finset.Sort
-import Mathlib.GroupTheory.Perm.List
-import Mathlib.Order.Partition.Finpartition
-import Mathlib.Tactic.Zify
 import Mathlib.Combinatorics.Colex
-import Mathlib.Data.Prod.Lex
 import Mathlib.GroupTheory.Perm.Cycle.Basic
+import Mathlib.Order.Partition.Finpartition
 
 open Mathlib
 
@@ -191,12 +185,6 @@ theorem List.mtranspose_pmap_getElem {α : Type*} (l : List (List α)) (i : ℕ)
   · simp
     sorry
 
-theorem Mathlib.Vector.getElem_def {n : ℕ} {α : Type*} (v : Vector α n)
-    (i : ℕ) {hi : i < n} : v[i] = v.toList[i]'(by simpa) := rfl
-
-theorem Mathlib.Vector.toList_getElem {n : ℕ} {α : Type*} (v : Vector α n)
-    (i : ℕ) {hi : i < v.toList.length} : v.toList[i] = v[i]'(by simp_all) := rfl
-
 def List.transpose' {α : Type*} {n : ℕ} (l : List (Vector α n)) : Vector (List α) n :=
   if hl : l.length = 0 then ⟨List.replicate n [], by simp⟩ else
   ⟨(l.map Vector.toList).mtranspose, by
@@ -288,16 +276,6 @@ theorem Finset.next_lt_iff {n : ℕ} (s : Finset (Fin n)) (hs : s.Nontrivial) (v
       simp at hs
     · simp
 
-lemma Fin.intCast_val_sub {n : ℕ} (a b : Fin n) :
-    ((a - b).val : ℤ) = a.val - b.val + if b ≤ a then 0 else n := by
-  split
-  · rw [Fin.sub_val_of_le]
-    omega
-    assumption
-  · simp at ‹¬b ≤ a›
-    rw [Fin.coe_sub_iff_lt.2 ‹_›]
-    omega
-
 theorem cyc_sum {n : ℕ} (s : Finset (Fin n)) (hs : s.Nontrivial) :
     ∑ v ∈ s, (s.next v - v).val = n := by
   zify
@@ -343,6 +321,9 @@ lemma RepApp_rfl {α : Type*} (f : α → α) (a : α) : RepApp f a a := ⟨0, r
 @[simp]
 lemma RepApp_iterate {α : Type*} (f : α → α) (a : α) (i : ℕ) : RepApp f a (f^[i] a) := ⟨i, rfl⟩
 
+@[simp]
+lemma RepApp_apply {α : Type*} (f : α → α) (a : α) : RepApp f a (f a) := ⟨1, rfl⟩
+
 lemma RepApp_isMin_of_nontrivial {α : Type*} {f : α → α} {a b c : α} (hab : a ≠ b)
     (ha : RepApp f a b) (hb : RepApp f b a) (hc : RepApp f a c) : RepApp f c a := by
   obtain ⟨i, rfl⟩ := ha
@@ -369,19 +350,6 @@ instance {α : Type*} (f : α → α) : IsPreorder α (RepApp f) where
     obtain ⟨j, rfl⟩ := hb
     simp [← Function.iterate_add_apply]
 
-lemma Function.iterate_cancel' {α : Type*} {f : α → α} {m n : ℕ} {a : α} (ha : f^[m] a = f^[n] a)
-    (hnm : n ≤ m) (i : ℕ) (hi : m ≤ i) : f^[i] a = f^[i - (m - n)] a := by
-  obtain ⟨i, rfl⟩ := exists_add_of_le hi
-  simp only [hnm, add_tsub_tsub_cancel]
-  rw [add_comm, Function.iterate_add_apply, Function.iterate_add_apply, ha]
-
-lemma Function.iterate_cancel'' {α : Type*} {f : α → α} {m n : ℕ} {a : α} (ha : f^[m] a = f^[n] a)
-    (hnm : n < m) (i : ℕ) : ∃ j < m, f^[i] a = f^[j] a := by
-  rcases lt_or_le i m with _ | hi
-  · use i
-  rw [Function.iterate_cancel' ha hnm.le i hi]
-  apply iterate_cancel'' ha hnm
-
 lemma RepApp_iff_repApp_small {α : Type*} [Fintype α] (f : α → α) (a b : α) :
     RepApp f a b ↔ ∃ i < Fintype.card α, f^[i] a = b where
   mp hr := by
@@ -405,23 +373,76 @@ instance {α : Type*} (f : α → α → Prop) [DecidableRel f] [IsPreorder α f
 lemma SameCycle_iff_antisymm_repApp {α : Type*} [Finite α] (f : Equiv.Perm α) (a b : α) :
     f.SameCycle a b ↔ AntisymmRel (RepApp f) a b := by
   constructor
-  · rintro ⟨i, rfl⟩
-    simp [AntisymmRel]
-    sorry
+  · rw [Equiv.Perm.SameCycle.iff_exists_pow_eq]
+    rintro ⟨i, hi, rfl⟩
+    simp only [AntisymmRel, ← Equiv.Perm.iterate_eq_pow, RepApp_iterate, true_and]
+    use orderOf f - i
+    rw [← Function.iterate_add_apply]
+    simp [show orderOf f - i + i = orderOf f by omega, pow_orderOf_eq_one]
   · rintro ⟨⟨i, rfl⟩, -⟩
     simp only [Equiv.Perm.iterate_eq_pow, Equiv.Perm.sameCycle_pow_right]
     rfl
 
-theorem Finpartition.ofSetoid_mem_part_iff  {α : Type*} [DecidableEq α] [Fintype α]
-    (s : Setoid α) [DecidableRel s.r] (x : α) (y : α) : y ∈ (ofSetoid s).part x ↔ s.r x y := by
-  rw [Finpartition.part_eq_of_mem (t := Finset.univ.filter (s.r x))]
-  · simp
-  · simp [ofSetoid]
-  · simpa using s.refl' x
+-- theorem Finpartition.rel_of_mem_parts_ofSetoid' {α : Type*} [DecidableEq α] [Fintype α]
+--     (s : Setoid α) [DecidableRel s.r] (x y : α) (f : Finset α) (hf : f ∈ (ofSetoid s).parts)
+--     (hxy : s.r x y) :
+--     x ∈ f ↔ y ∈ f := by
+--   constructor
+--   · intro hx
+--     rwa [rel_of_mem_parts_ofSetoid hf hx]
+--   · intro hy
+--     rw [rel_of_mem_parts_ofSetoid hf hy]
+--     exact Setoid.symm' _ hxy
 
 def scc {α : Type*} [Fintype α] [DecidableEq α] (f : α → α) :
     Finpartition (Finset.univ : Finset α) :=
   Finpartition.ofSetoid (AntisymmRel.setoid _ (RepApp f))
+
+theorem Equiv.Perm.IsCycleOn.exists_pow_eq_iff {α : Type*} {a b : α} {f : Equiv.Perm α}
+    {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s) :
+    b ∈ s ↔ ∃ n : ℕ, (f ^ n) a = b := by
+  constructor
+  · apply hf.exists_pow_eq' (Finset.finite_toSet s) ha
+  · rintro ⟨n, -, rfl⟩
+    exact (hf.1.perm_pow n).1 ha
+
+lemma mem_scc_perm_iff {α : Type*} [Fintype α] [DecidableEq α] (f : Equiv.Perm α) (s : Finset α) :
+    s ∈ (scc f).parts ↔ (s.Nonempty ∧ f.IsCycleOn s) where
+  mp h := by
+    constructor
+    · rw [Finset.nonempty_iff_ne_empty]
+      rintro rfl
+      simp only [← Finset.bot_eq_empty, Finpartition.not_bot_mem] at h
+    · constructor
+      · convert f.symm.bijOn_symm_image
+        ext y
+        simp only [Finset.mem_coe, Set.mem_image_equiv, Equiv.symm_symm]
+        constructor <;> {
+          intro hy
+          rw [Finpartition.rel_of_mem_parts_ofSetoid h hy]
+          simp only [AntisymmRel.setoid_r, AntisymmRel, RepApp_apply, true_and, and_true]
+          use orderOf f - 1
+          rw [← Function.iterate_succ_apply]
+          have := orderOf_pos f
+          rw [show (orderOf f - 1).succ = orderOf f by omega]
+          simp [pow_orderOf_eq_one]
+        }
+      · intro a ha b hb
+        rw [Finset.mem_coe] at ha hb
+        rw [SameCycle_iff_antisymm_repApp]
+        exact (Finpartition.rel_of_mem_parts_ofSetoid h ha).1 hb
+  mpr h := by
+    obtain ⟨⟨x, hx⟩, h⟩ := h
+    suffices s = (scc f).part x by simp [this]
+    ext y
+    simp only [scc, Finpartition.ofSetoid_mem_part_iff, AntisymmRel.setoid_r]
+    rw [← SameCycle_iff_antisymm_repApp]
+    constructor
+    · apply h.2 hx
+    · intro hy
+      obtain ⟨i, -, rfl⟩ := hy.exists_pow_eq'
+      rw [h.exists_pow_eq_iff hx]
+      use i
 
 lemma scc_part_eq_orbit_of_nontrivial {α : Type*} [Fintype α] [DecidableEq α] (f : α → α)
     (x : α) (hx : ((scc f).part x).Nontrivial) : (scc f).part x = {f^[i] x | i} := by
@@ -436,13 +457,13 @@ lemma scc_congr' {α : Type*} [Fintype α] [DecidableEq α] (f g : α → α) (s
     (hs : s.card ≠ 1) (hfg : ∀ x ∈ s, f x = g x) (hf : s ∈ (scc f).parts) :
     s ∈ (scc g).parts := by
   rcases hs.lt_or_lt with hs | hs
-  · simp_all [← Finset.bot_eq_empty, Finpartition.not_bot_mem]
+  · simp_all [← Finset.bot_eq_empty]
   rw [Finset.one_lt_card_iff_nontrivial] at hs
   obtain ⟨x, hx⟩ := hs.nonempty
   rw [Finset.mem_coe] at hx
   obtain rfl := Finpartition.part_eq_of_mem _ hf hx
   clear hf hx
-  suffices (scc f).part x = (scc g).part x by simp [this, Finpartition.part_mem]
+  suffices (scc f).part x = (scc g).part x by simp [this]
   ext z
   have := scc_part_eq_orbit_of_nontrivial f x hs
   rw [← Finset.mem_coe, this]
@@ -455,10 +476,6 @@ lemma scc_congr' {α : Type*} [Fintype α] [DecidableEq α] (f g : α → α) (s
 lemma scc_congr {α : Type*} [Fintype α] [DecidableEq α] (f g : α → α) (s : Finset α)
     (hs : s.card ≠ 1) (hfg : ∀ x ∈ s, f x = g x) : s ∈ (scc f).parts ↔ s ∈ (scc g).parts := by
   constructor <;> apply scc_congr' <;> simp_all
-
-theorem Fin.natCast_sub {m n : ℕ} (hmn : m ≤ n) {k : ℕ} [NeZero k] :
-    ((n - m : ℕ) : Fin k) = n - m := by
-  sorry
 
 end Setup
 
@@ -632,7 +649,7 @@ def Basma.winningStrat : Basma := SimpleBasma.winningStrat.toBasma
 theorem IOI2024Q2 : Aisha.winningStrat.Small ∧ Aisha.winningStrat.Correct Basma.winningStrat := by
   constructor
   · apply SimpleAisha.toAisha_small_of_out
-    intro msg comp msgb msgu cc
+    intro msg comp _ _ cc
     simp [SimpleAisha.winningStrat, Vector.transpose, List.length_mtranspose]
     conv_lhs =>
       lhs
@@ -665,8 +682,12 @@ theorem IOI2024Q2 : Aisha.winningStrat.Small ∧ Aisha.winningStrat.Correct Basm
       have hmem : compᶜ ∈ (scc (SimpleBasma.winningStrat_comp.f run')).parts := by
         rw [scc_congr (g := (SimpleBasma.winningStrat_comp.f msg'))]
         rw [scc_congr (g := fun v ↦ compᶜ.next v)]
-        ·
-          sorry
+        · simp only [mem_scc_perm_iff, ← Finset.card_pos, ccc, Nat.ofNat_pos, Finset.coe_compl,
+            true_and, Finset.next]
+          convert List.Nodup.isCycleOn_formPerm _ using 1
+          · ext
+            simp
+          · simp
         · simp [ccc]
         · intro x hx
           simp only [SimpleBasma.winningStrat_comp.f, Fin.isValue, Fin.getElem_fin,
@@ -676,9 +697,9 @@ theorem IOI2024Q2 : Aisha.winningStrat.Small ∧ Aisha.winningStrat.Correct Basm
           rw [List.splitSizes_length_getElem]
           · simp only [Fin.isValue, List.getElem_map, List.getElem_finRange, Fin.eta, hx,
             ↓reduceIte]
-            rw [Fin.natCast_sub]
+            rw [Nat.cast_sub]
             · simp
-              sorry
+              ring_nf
             · trans 31 <;> simp
           · rw [main_theorem comp cc, List.length_pad]
             omega
