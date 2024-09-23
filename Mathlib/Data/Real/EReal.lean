@@ -1063,10 +1063,21 @@ theorem toReal_sub {x y : EReal} (hx : x ≠ ⊤) (h'x : x ≠ ⊥) (hy : y ≠ 
   rfl
 
 lemma add_sub_cancel_right {a : EReal} {b : Real} : a + b - b = a := by
-  induction a
-  · rw [bot_add b, bot_sub b]
-  · norm_cast; linarith
-  · rw [top_add_of_ne_bot (coe_ne_bot b), top_sub_coe]
+  induction a <;> norm_cast
+  exact _root_.add_sub_cancel_right _ _
+
+lemma add_sub_cancel_left {a : EReal} {b : Real} : b + a - b = a := by
+  rw [add_comm, EReal.add_sub_cancel_right]
+
+lemma sub_add_cancel {a : EReal} {b : Real} : a - b + b = a := by
+  rw [add_comm, ← add_sub_assoc, add_sub_cancel_left]
+
+lemma sub_add_cancel_right {a : EReal} {b : Real} : b - (a + b) = -a := by
+  induction a <;> norm_cast
+  exact _root_.sub_add_cancel_right _ _
+
+lemma sub_add_cancel_left {a : EReal} {b : Real} : b - (b + a) = -a := by
+  rw [add_comm, sub_add_cancel_right]
 
 /-! ### Multiplication -/
 
