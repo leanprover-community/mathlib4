@@ -72,7 +72,8 @@ theorem exist_algEquiv [Normal K L] {x x': L} (h : IsConjRoot K x x') :
   exact ⟨AlgEquiv.ofBijective σ (σ.normal_bijective _ _ _), hσ.symm⟩
 
 variable {K} in
-theorem not_mem_iff_exist_ne {x : L} (sep : (minpoly K x).Separable) :
+theorem not_mem_iff_exist_ne {x : L} (h : IsSeparable K x)
+    (sp : (minpoly K x).Splits (algebraMap K L)) :
     x ∉ (⊥ : Subalgebra K L) ↔ ∃ x' : L, x ≠ x' ∧ IsConjRoot K x x' := sorry
 -- `should decide what is the definition when both x, x' are trancendental over R`
 
@@ -121,31 +122,6 @@ theorem ne_zero {x x' : A} (hx : x ≠ 0) (h : IsConjRoot R x x') : x' ≠ 0 := 
 end IsConjRoot
 
 end conj
-
-section Separable
--- do we need elementwise IsSeparable (just like IsIntegral) and
--- rename old one into Field.IsSeparable
---`separable_mul`
---`Field.separable_add`
---`Field.separable_inv`
-
--- theorem Polymonial.Separable.minpoly_mul
-
--- smul
-
--- pow
-
-variable {R : Type*} [CommRing R]
-
-variable (A : Type*) {B : Type*} [Field A] [CommRing B] [Algebra R A]
-    [Algebra R B] [Algebra A B] [IsScalarTower R A B]
-
-theorem Polynomial.minpoly_separable_of_isScalarTower {x : B} (h : (minpoly R x).Separable) :
-    (minpoly A x).Separable := by
-  apply Polynomial.Separable.of_dvd (Polynomial.Separable.map h)
-  exact minpoly.dvd_map_of_isScalarTower R A x
-
-end Separable
 
 section ContinuousSMul
 
@@ -218,19 +194,72 @@ instance instIntermediateFieldAlgebraicClosureIsAlgebraic (K L : Type*) [Field K
 
 end IntegralClosure
 
-section IsSeparable
+section split
 
-variable {F E} (E') [Field F] [Field E] [Field E'] [Algebra F E] [Algebra F E']
-    (f : E →ₐ[F] E')
+variable {A} [Field A]
+theorem minpoly.add_algebraMap' {B : Type*} [CommRing B] [Algebra A B] {x : B}
+    (a : A) : minpoly A (x + algebraMap A B a) = (minpoly A x).comp (X - C a) := by
+  by_cases hx : IsIntegral A x
+  · refine (minpoly.unique _ _ ((minpoly.monic hx).comp_X_sub_C _) ?_ fun q qmo hq => ?_).symm
+    · simp [aeval_comp]
+    · have : (Polynomial.aeval x) (q.comp (X + C a)) = 0 := by simpa [aeval_comp] using hq
+      have H := minpoly.min A x (qmo.comp_X_add_C _) this
+      rw [degree_eq_natDegree qmo.ne_zero,
+        degree_eq_natDegree ((minpoly.monic hx).comp_X_sub_C _).ne_zero, natDegree_comp,
+        natDegree_X_sub_C, mul_one]
+      rwa [degree_eq_natDegree (minpoly.ne_zero hx),
+        degree_eq_natDegree (qmo.comp_X_add_C _).ne_zero, natDegree_comp,
+        natDegree_X_add_C, mul_one] at H
+  · rw [minpoly.eq_zero hx, minpoly.eq_zero, zero_comp]
+    refine fun h ↦ hx ?_
+    simpa only [add_sub_cancel_right] using IsIntegral.sub h (isIntegral_algebraMap (x := a))
 
-include f
+theorem Polynomial.dvd_comp_X_sub_C_iff {B : Type*} [CommRing B] {p q : Polynomial B} {a : B} :
+    p ∣ q.comp (X - C a) ↔ p.comp (X + C a) ∣ q := by
+  convert (map_dvd_iff <| algEquivAevalXAddC a).symm using 2
+  rw [C_eq_algebraMap, algEquivAevalXAddC_apply, ← comp_eq_aeval]
+  simp [comp_assoc]
 
-theorem IsSeparable.of_algHom' {x : E} (h : IsSeparable F (f x)) : IsSeparable F x := by
-  letI : Algebra E E' := RingHom.toAlgebra f.toRingHom
-  haveI : IsScalarTower F E E' := IsScalarTower.of_algebraMap_eq fun x => (f.commutes x).symm
-  exact h.tower_bot
+theorem Polynomial.irreducible_comp
 
-end IsSeparable
+theorem Polynomial.splits_of_comp_X_sub_C {B : Type*} [Field B] [Algebra A B] (a : A) {p : Polynomial A}
+    (h : p.Splits (algebraMap A B)) : (p.comp (X - C a)).Splits (algebraMap A B) := by
+  cases h with
+  | inl h0 =>
+    left
+    simp only [map_eq_zero] at h0 ⊢
+    exact h0.symm ▸ zero_comp
+  | inr h =>
+    right
+    intro g irr dvd
+    rw [Polynomial.map_comp] at dvd
+    simp at dvd
+    rw [Polynomial.dvd_comp_X_sub_C_iff] at dvd
+
+
+variable {R k : Type*} {K : Type*} [Field R] [Field k] [Field K] [Algebra R K] [Algebra k K]
+
+theorem minpoly_split_add_algebraMap {x : K} (r : R)
+    (g : (minpoly R x).Splits (algebraMap R K)) :
+    (minpoly R (x + algebraMap R K r)).Splits (algebraMap R K) := by
+  cases g with
+  | inl g0 =>
+    left
+    simp only [Polynomial.map_eq_zero (algebraMap R K)] at g0 ⊢
+
+  | inr => sorry
+
+
+theorem minpoly_split_sub_algebraMap {x : K} (r : R)
+    (g : (minpoly R x).Splits (algebraMap R K)) :
+    (minpoly R (x - algebraMap R K r)).Splits (algebraMap R K) := by
+  simpa only [sub_eq_add_neg, map_neg] using minpoly_split_add_algebraMap (-r) g
+
+theorem minpoly_split_algebraClosure {x : K} (h : IsIntegral k x)
+    (g : (minpoly k x).Splits (algebraMap k K)) :
+    (minpoly k x).Splits (algebraMap k (IntermediateField.algebraicClosure k K)) := sorry
+
+end split
 
 open Algebra
 open IntermediateField
@@ -238,33 +267,34 @@ open IntermediateField
 variable (K : Type*) {L : Type*} {ΓK ΓL : outParam Type*}
     [LinearOrderedCommGroupWithZero ΓK] [LinearOrderedCommGroupWithZero ΓL]
     [Field K] [Field L] [Algebra K L] [vK : Valued K ΓK] [vL : Valued L ΓL]
-
+-- should add x split in L
 variable (L) in
 class IsKrasner : Prop where
-  krasner' : ∀ {x y : L}, IsSeparable K x → IsIntegral K y →
-    (∀ x' : L, IsConjRoot K x x' →  x ≠ x' → vL.v (x - y) < vL.v (x - x')) →
+  krasner' : ∀ {x y : L}, IsSeparable K x → (minpoly K x).Splits (algebraMap K L) →
+    IsIntegral K y → (∀ x' : L, IsConjRoot K x x' → x ≠ x' → vL.v (x - y) < vL.v (x - x')) →
       x ∈ K⟮y⟯
 -- `As an application of IsKrasner, prove that C_p is algebraically closed,`
 -- ` accelerating integrating into mathlib`
 class IsKrasnerNorm (K L : Type*) [Field K] [NormedField L] [Algebra K L] : Prop where
-  krasner_norm' : ∀ {x y : L}, (minpoly K x).Separable → IsIntegral K y →
-    (∀ x' : L, IsConjRoot K x x' →  x ≠ x' → ‖x - y‖ < ‖x - x'‖) →
+  krasner_norm' : ∀ {x y : L}, IsSeparable K x → (minpoly K x).Splits (algebraMap K L) →
+    IsIntegral K y → (∀ x' : L, IsConjRoot K x x' →  x ≠ x' → ‖x - y‖ < ‖x - x'‖) →
       x ∈ K⟮y⟯
 
 section
 variable [IsKrasner K L]
 
-theorem IsKrasner.krasner {x y : L} (hx : (minpoly K x).Separable) (hy : IsIntegral K y)
+theorem IsKrasner.krasner {x y : L} (hx : IsSeparable K x)
+    (sp : (minpoly K x).Splits (algebraMap K L)) (hy : IsIntegral K y)
     (h : (∀ x' : L, IsConjRoot K x x' → x ≠ x' → vL.v (x - y) < vL.v (x - x'))) : x ∈ K⟮y⟯ :=
-  IsKrasner.krasner' hx hy h
--- Algebra.adjoin R {x} ≤ Algebra.adjoin R {y}
+  IsKrasner.krasner' hx sp hy h
 
 end
 
 theorem IsKrasnerNorm.krasner_norm {K L : Type*} [Field K] [NormedField L] [Algebra K L]
-    [IsKrasnerNorm K L] {x y : L} (hx : (minpoly K x).Separable) (hy : IsIntegral K y)
+    [IsKrasnerNorm K L] {x y : L} (hx : (minpoly K x).Separable)
+    (sp : (minpoly K x).Splits (algebraMap K L)) (hy : IsIntegral K y)
     (h : (∀ x' : L, IsConjRoot K x x' → x ≠ x' → ‖x - y‖ < ‖x - x'‖)) : x ∈ K⟮y⟯ :=
-  IsKrasnerNorm.krasner_norm' hx hy h
+  IsKrasnerNorm.krasner_norm' hx sp hy h
 
 namespace IsKrasnerNorm
 
@@ -286,7 +316,7 @@ variable (M : IntermediateField K L)
 include extd is_na
 theorem of_completeSpace_aux [Algebra.IsAlgebraic K L] [CompleteSpace K] : IsKrasnerNorm K L := by
   constructor
-  intro x y xsep hyK hxy
+  intro x y xsep sp hyK hxy
   let z := x - y
   let M := K⟮y⟯
   let FDM := IntermediateField.adjoin.finiteDimensional hyK
@@ -310,8 +340,8 @@ theorem of_completeSpace_aux [Algebra.IsAlgebraic K L] [CompleteSpace K] : IsKra
       rfl
   letI : CompleteSpace M := FiniteDimensional.complete K M
   have hy : y ∈ K⟮y⟯ := IntermediateField.subset_adjoin K {y} rfl
-  have zsep : (minpoly M z).Separable := by
-    apply Field.isSeparable_sub (Polynomial.minpoly_separable_of_isScalarTower M xsep)
+  have zsep : IsSeparable M z := by
+    apply Field.isSeparable_sub (IsSeparable.tower_top M xsep)
     simp only [IsSeparable]
     exact
       minpoly.eq_X_sub_C_of_algebraMap_inj (⟨y, hy⟩ : M)
@@ -321,7 +351,9 @@ theorem of_completeSpace_aux [Algebra.IsAlgebraic K L] [CompleteSpace K] : IsKra
   by_contra hnin
   have : z ∈ K⟮y⟯ ↔ z ∈ (⊥ : Subalgebra M L) := by simp [Algebra.mem_bot]
   rw [this.not] at hnin
-  obtain ⟨z', hne, h1⟩ := (IsConjRoot.not_mem_iff_exist_ne zsep).mp hnin
+  -- need + algebra map split and split tower.
+  obtain ⟨z', hne, h1⟩ := (IsConjRoot.not_mem_iff_exist_ne zsep
+      (IsIntegral.minpoly_splits_tower_top (R := K) sorry sorry)).mp hnin -- wrong
   -- this is where the separablity is used.
   simp only [ne_eq, Subtype.mk.injEq] at hne
   have eq_spnM : (norm : M → ℝ) = spectralNorm K M :=
@@ -375,7 +407,7 @@ variable (K L) (M : IntermediateField K L)
 -- TODO: we know this is true and after it is in mathlib we can remove this condition.
 theorem of_completeSpace [CompleteSpace K] : IsKrasnerNorm K L := by
   constructor
-  intro x y xsep hyK hxy
+  intro x y xsep sp hyK hxy
   let L' := IntermediateField.algebraicClosure K L
   let xL : L' := ⟨x, IsSeparable.isIntegral xsep⟩
   let yL : L' := ⟨y, hyK⟩
@@ -383,7 +415,8 @@ theorem of_completeSpace [CompleteSpace K] : IsKrasnerNorm K L := by
     rwa [← IntermediateField.lift_adjoin_simple K L' yL, IntermediateField.mem_lift xL]
   have hL' : IsKrasnerNorm K L' := IsKrasnerNorm.of_completeSpace_aux is_na extd
   apply hL'.krasner_norm
-  · exact IsSeparable.of_algHom' L (L'.val) xsep
+  · exact IsSeparable.of_algHom (L'.val) xsep
+  · exact Polynomial.splits_of_algHom (minpoly.algHom_eq (A := K) (B := L') (B' := L) (L'.val) sorry xL ▸ sp) _  -- If split, then split in the algebraic closure.
   · exact (isIntegral_algHom_iff _ L'.val.toRingHom.injective).mp hyK
   · exact fun x' hx' hne => hxy x' ((IsConjRoot.algHom_iff _ L'.val.toRingHom.injective).mpr hx')
       (Subtype.coe_ne_coe.mpr hne)
@@ -411,12 +444,12 @@ theorem Valued.toUniformSpace_eq_of_isEquiv (h : vK.v.IsEquiv vK'.v) :
     use Units.mk0 (vK'.v x) (h.ne_zero.mp <| hx ▸ γ.ne_zero)
     convert hγ
     simp only [Units.val_mk0, ← hx]
-    exact ((Valuation.isEquiv_iff_val_lt_val vK.v vK'.v).mp h).symm
+    exact (Valuation.isEquiv_iff_val_lt_val.mp h).symm
   · obtain ⟨x, hx⟩ := Valued.surj vK' γ.1
     use Units.mk0 (vK.v x) (h.symm.ne_zero.mp <| hx ▸ γ.ne_zero)
     convert hγ
     simp only [Units.val_mk0, ← hx]
-    exact ((Valuation.isEquiv_iff_val_lt_val vK.v vK'.v).mp h)
+    exact (Valuation.isEquiv_iff_val_lt_val.mp h)
 -- `prove a copy of this using that the valuation is surjective`
 
 variable {A B : Type*} [CommRing A] [Ring B] {Γ : Type*}
@@ -453,7 +486,7 @@ theorem of_completeSpace [rk1L : vL.v.RankOne] {ΓK : outParam Type*}
     [LinearOrderedCommGroupWithZero ΓK] [vK : Valued K ΓK] [rk1K : vK.v.RankOne] [CompleteSpace K]
     (h : vK.v.IsEquiv <| vL.v.comap (algebraMap K L)): IsKrasner K L := by
   constructor
-  intro x y xsep hyK hxy
+  intro x y xsep sp hyK hxy
   letI := vL.toNormedField
   letI vK' : Valued K ΓL := {
     vK.toUniformSpace with
@@ -474,7 +507,7 @@ theorem of_completeSpace [rk1L : vL.v.RankOne] {ΓK : outParam Type*}
   }
   letI := vK'.toNontriviallyNormedField
   refine (IsKrasnerNorm.of_completeSpace (K := K) (L := L) ?_ (fun _ ↦ rfl)).krasner_norm
-    xsep hyK ?_
+    xsep sp hyK ?_
   · exact Valued.toNormedField.isNonarchimedean
   · intros x' hx' hne
     exact Valued.toNormedField.norm_lt_iff.mpr (hxy x' hx' hne)
