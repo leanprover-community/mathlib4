@@ -29,9 +29,6 @@ A `Label` consists of the
   in one of these paths should be labeled by `label`.
 * The `exclusions` field is the array of all "root paths" that are excluded, among the
   ones that start with the ones in `dirs`.
-
-It is not really intended to be used directly.
-The command `add_label` manages `Label`s: it creates them and adds them to the `Environment`.
 -/
 structure Label where
   /-- The label name as it appears on github -/
@@ -43,9 +40,9 @@ structure Label where
   deriving BEq, Hashable
 
 /--
-Mathlib Labels. Add new labels/folders here.
+Mathlib Labels and their corresponding folders. Add new labels and folders here!
 -/
-def mathlibLabels : Std.HashSet Label := Std.HashSet.ofList [
+private def mathlibLabels : Std.HashSet Label := Std.HashSet.ofList [
   { label := "t-algebra",
     dirs := #[
       "Mathlib" / "FieldTheory",
@@ -59,24 +56,25 @@ def mathlibLabels : Std.HashSet Label := Std.HashSet.ofList [
       "Mathlib" / "Geometry.RingedSpace" ]},
   { label := "t-analysis",
     dirs := #[
-      "Mathlib" / "Analysis"]},
+      "Mathlib" / "Analysis" ]},
   { label := "t-category-theory",
     dirs := #[
-      "Mathlib" / "CategoryTheory"]},
+      "Mathlib" / "CategoryTheory" ]},
   { label := "t-combinatorics",
     dirs := #[
-      "Mathlib" / "Combinatorics"]},
+      "Mathlib" / "Combinatorics" ]},
   { label := "t-computability",
     dirs := #[
-      "Mathlib" / "Computability"]},
+      "Mathlib" / "Computability" ]},
   { label := "t-condensed",
     dirs := #[
-      "Mathlib" / "Data"]},
+      "Mathlib" / "Condensed" ]},
   { label := "t-data",
     dirs := #[
-      "Mathlib" / "DifferentialGeometry"]},
+      "Mathlib" / "Data" ]},
   { label := "t-differential-geometry",
     dirs := #[
+      "Mathlib" / "DifferentialGeometry",
       "Mathlib" / "Geometry" / "Manifold" ]},
   { label := "t-dynamics",
     dirs := #[
@@ -106,7 +104,7 @@ def mathlibLabels : Std.HashSet Label := Std.HashSet.ofList [
       "Mathlib" / "NumberTheory"]},
   { label := "t-order",
     dirs := #[
-      "Mathlib" / "Order"]},
+      "Mathlib" / "Order" ]},
   { label := "t-set-theory",
     dirs := #[
       "Mathlib" / "SetTheory"]},
@@ -116,7 +114,7 @@ def mathlibLabels : Std.HashSet Label := Std.HashSet.ofList [
       "Mathlib" / "AlgebraicTopology" ]},
   { label := "CI",
     dirs := #[
-      ".github" ]}]
+      ".github" / "workflows" ]}]
 
 def getMatchingLabels (files : Array String) : Array Label :=
   mathlibLabels.toArray.filter fun label =>
