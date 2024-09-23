@@ -72,7 +72,7 @@ theorem deficient_one : Deficient 1 := zero_lt_one
 theorem deficient_two : Deficient 2 := one_lt_two
 theorem deficient_three : Deficient 3 := by norm_num [Deficient]
 
-theorem Abundant_twelve : Abundant 12 := by
+theorem abundant_twelve : Abundant 12 := by
   rw [Abundant, show properDivisors 12 = {1,2,3,4,6} by rfl]
   norm_num
 
