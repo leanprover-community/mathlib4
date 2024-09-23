@@ -53,7 +53,7 @@ theorem CNFRec_zero {C : Ordinal → Sort*} (b : Ordinal) (H0 : C 0)
 theorem CNFRec_pos (b : Ordinal) {o : Ordinal} {C : Ordinal → Sort*} (ho : o ≠ 0) (H0 : C 0)
     (H : ∀ o, o ≠ 0 → C (o % b ^ log b o) → C o) :
     CNFRec b H0 H o = H o ho (@CNFRec b C H0 H _) := by
-  rw [CNFRec, dif_neg ho]
+  rw [CNFRec, dif_neg]
 
 /-- The Cantor normal form of an ordinal `o` is the list of coefficients and exponents in the
 base-`b` expansion of `o`.
