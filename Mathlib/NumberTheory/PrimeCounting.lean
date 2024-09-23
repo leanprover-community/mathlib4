@@ -58,7 +58,7 @@ def primeCounting (n : ℕ) : ℕ :=
 open scoped Nat.Prime
 
 @[simp]
-theorem primeCounting_sub_one {n : ℕ} : π (n - 1) = π' n  := by
+theorem primeCounting_sub_one (n : ℕ) : π (n - 1) = π' n := by
   cases n <;> rfl
 
 theorem monotone_primeCounting' : Monotone primeCounting' :=
