@@ -545,7 +545,7 @@ def ker : Ideal R :=
 
 variable {f} in
 /-- An element is in the kernel if and only if it maps to zero. -/
-theorem mem_ker {r} : r ∈ ker f ↔ f r = 0 := by rw [ker, Ideal.mem_comap, Submodule.mem_bot]
+@[simp] theorem mem_ker {r} : r ∈ ker f ↔ f r = 0 := by rw [ker, Ideal.mem_comap, Submodule.mem_bot]
 
 theorem ker_eq : (ker f : Set R) = Set.preimage f {0} :=
   rfl
