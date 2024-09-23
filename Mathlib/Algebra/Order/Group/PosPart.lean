@@ -239,4 +239,3 @@ variable {ι : Type*} {α : ι → Type*} [∀ i, Lattice (α i)] [∀ i, AddCom
 @[to_additive] lemma leOnePart_def (f : ∀ i, α i) : f⁻ = fun i ↦ (f i)⁻ := rfl
 
 end Pi
-#lint
