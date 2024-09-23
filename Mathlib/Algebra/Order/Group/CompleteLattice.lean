@@ -7,10 +7,7 @@ import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
-# Upper/lower bounds in ordered monoids and groups
-
-In this file we prove a few facts like “`-s` is bounded above iff `s` is bounded below”
-(`bddAbove_neg`).
+# Distributivity of group operations over supremum/infimum
 -/
 
 open Function Set
