@@ -175,6 +175,84 @@ theorem absConvexHull_eq_convexHull_balancedHull {s : Set E} :
       (Balanced.balancedHull_subset_of_subset (balanced_absConvexHull 𝕜 s)
         (subset_absConvexHull 𝕜 s))
 
+lemma balancedHull_subseteq_convexHull {s : Set E} : balancedHull ℝ s ⊆ convexHull ℝ (s ∪ -s) := by
+  intro a ha
+  obtain ⟨r, hr, y, hy, rfl⟩ := mem_balancedHull_iff.1 ha
+  simp at ha
+  simp
+  have e1 : segment ℝ y (-y) ⊆ (convexHull ℝ) (s ∪ -s) :=
+    segment_subset_convexHull (mem_union_left (-s) hy) (mem_union_right _ (neg_mem_neg.mpr hy))
+  apply e1
+  rw [segment, mem_setOf_eq]
+  use (1+r)/2
+  use (1-r)/2
+  simp at hr
+  constructor
+  · rw [← zero_div 2]
+    exact (div_le_div_right zero_lt_two).mpr (neg_le_iff_add_nonneg'.mp (neg_le_of_abs_le hr))
+  · constructor
+    · rw [← zero_div 2]
+      exact (div_le_div_right zero_lt_two).mpr (sub_nonneg_of_le (le_of_max_le_left hr))
+    · constructor
+      · ring_nf
+      · ring_nf
+        rw [add_smul]
+        rw [add_smul]
+        rw [smul_neg]
+        rw [smul_neg]
+        abel_nf
+        rw [← smul_assoc]
+        rw [← add_smul]
+        apply congrFun (congrArg HSMul.hSMul _) y
+        ring_nf
+        abel_nf
+        simp
+        rw [← mul_add]
+        rw [← two_mul]
+        rw [CommGroupWithZero.mul_inv_cancel _ (NeZero.ne 2)  , mul_one]
+
+
+/-
+theorem test {s : Set E} : absConvexHull 𝕜 s = convexHull ℝ (s ∪ -s) := by
+  apply le_antisymm
+  · sorry
+  · sorry
+-/
+
+end
+
+section
+
+variable (𝕜 E) {s : Set E}
+variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
+variable [TopologicalSpace E] [TopologicalAddGroup E]  [LocallyConvexSpace ℝ E] [ContinuousSMul 𝕜 E]
+
+--#check TotallyBounded
+--#check Set.Finite.isCompact_convexHull --(II.14 cor 1)
+--#check IsCompact.totallyBounded
+
+/-
+theorem test (d : Set (E × E)) (hd : d ∈ (TopologicalAddGroup.toUniformSpace E).uniformity)
+    (y : E) : AbsConvex 𝕜 {x | (x, y) ∈ d} := by
+  constructor
+  · sorry
+  · intro a ha b hb t₁ t₂ ht₁ ht₂ ht
+    simp_all
+-/
+
+
+--theorem test (hs : Finite s) : TotallyBounded (convexHull ℝ s) := sorry
+
+/-
+theorem TotallyBounded.convexHull
+    (hs : TotallyBounded (uniformSpace := TopologicalAddGroup.toUniformSpace E) s) :
+    TotallyBounded (uniformSpace := TopologicalAddGroup.toUniformSpace E) (absConvexHull 𝕜 s) := by
+  intro d hd
+  obtain ⟨t,⟨htf,hts⟩⟩ := hs d hd
+  sorry
+-/
+
 end
 
 section AbsolutelyConvexSets
