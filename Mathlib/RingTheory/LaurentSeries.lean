@@ -27,21 +27,21 @@ import Mathlib.Topology.UniformSpace.Cauchy
 * Embedding of rational functions into Laurent series, provided as a coercion, utilizing
 the underlying `RatFunc.coeAlgHom`.
 * Study of the `X`-Adic valuation on the ring of Laurent series over a field
-* In `uniformContinuous_coeff` we show that sending a Laurent series to its `d`th coefficient in
-uniformly continuous, ensuring that it sends a Cauchy filter `ℱ` in `LaurentSeries K` to a Cauchy
-filter in `K`: since this latter is given the discrete topology, this provides an element
-`Cauchy.coeff ℱ d` in `K` that serves as `d`th coefficient of the Laurent series to which the
-`ℱ` converges.
+* In `LaurentSeries.uniformContinuous_coeff` we show that sending a Laurent series to its `d`th
+coefficient in uniformly continuous, ensuring that it sends a Cauchy filter `ℱ` in `LaurentSeries K`
+to a Cauchy filter in `K`: since this latter is given the discrete topology, this provides an
+element `LaurentSeries.Cauchy.coeff ℱ d` in `K` that serves as `d`th coefficient of the Laurent
+series to which the filter `ℱ` converges.
 
 ## Main Results
 * Basic properties of Hasse derivatives
 ### About the `X`-Adic valuation:
 * The (integral) valuation of a power series is the order of the first non-zero coefficient, see
-`intValuation_le_iff_coeff_lt_eq_zero`.
+`LaurentSeries.intValuation_le_iff_coeff_lt_eq_zero`.
 * The valuation of a Laurent series is the order of the first non-zero coefficient, see
-`valuation_le_iff_coeff_lt_eq_zero`.
+`LaurentSeries.valuation_le_iff_coeff_lt_eq_zero`.
 * Every Laurent series of valuation less than `(1 : ℤₘ₀)` comes from a power series, see
-`val_le_one_iff_eq_coe`.
+`LaurentSeries.val_le_one_iff_eq_coe`.
 * The uniform space of `LaurentSeries` over a field is complete.
 
 ## Implementation details
@@ -626,29 +626,29 @@ open scoped DiscreteValuation
 
 variable {K : Type*} [Field K]
 
-/- Sending a Laurent series to its `d`-th coefficient is uniformly continuous when the coefficient
-field has the discrete uniformity. -/
-theorem uniformContinuous_coeff {uK : UniformSpace K} (h : uK = ⊥) (d : ℤ) :
+/- Sending a Laurent series to its `d`-th coefficient is uniformly continuous (independently of the
+ uniformity with which `K` is endowed). -/
+theorem uniformContinuous_coeff {uK : UniformSpace K} (d : ℤ) :
     UniformContinuous fun f : LaurentSeries K ↦ f.coeff d := by
   refine uniformContinuous_iff_eventually.mpr fun S hS ↦ eventually_iff_exists_mem.mpr ?_
   let γ : ℤₘ₀ˣ := Units.mk0 (↑(Multiplicative.ofAdd (-(d + 1)))) WithZero.coe_ne_zero
   use {P | Valued.v (P.snd - P.fst) < ↑γ}
   refine ⟨(Valued.hasBasis_uniformity (LaurentSeries K) ℤₘ₀).mem_of_mem (by tauto), fun P hP ↦ ?_⟩
   rw [eq_coeff_of_valuation_sub_lt K (le_of_lt hP) (lt_add_one _)]
-  apply bot_uniformity ▸ h ▸ hS; rfl
+  exact mem_uniformity_of_eq hS rfl
 
 /-- Since extracting coefficients is uniformly continuous, every Cauchy filter in
-`laurent_series K` gives rise to a Cauchy filter in `K` for every `d : ℤ`, and such Cauchy filter
+`laurentSeries K` gives rise to a Cauchy filter in `K` for every `d : ℤ`, and such Cauchy filter
 in `K` converges to a principal filter -/
 def Cauchy.coeff {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) : ℤ → K :=
   let _ : UniformSpace K := ⊥
-  fun d ↦ UniformSpace.DiscreteUnif.cauchyConst rfl <| hℱ.map (uniformContinuous_coeff rfl d)
+  fun d ↦ UniformSpace.DiscreteUnif.cauchyConst rfl <| hℱ.map (uniformContinuous_coeff d)
 
 theorem Cauchy.coeff_tendsto {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) (D : ℤ) :
     Tendsto (fun f : LaurentSeries K ↦ f.coeff D) ℱ (𝓟 {coeff hℱ D}) :=
   let _ : UniformSpace K := ⊥
   le_of_eq <| UniformSpace.DiscreteUnif.eq_const_of_cauchy (by rfl)
-    (hℱ.map (uniformContinuous_coeff rfl D)) ▸ (principal_singleton _).symm
+    (hℱ.map (uniformContinuous_coeff D)) ▸ (principal_singleton _).symm
 
 /- For every Cauchy filter of Laurent series, there is a `N` such that the `n`-th coefficient
 vanishes for all `n ≤ N` and almost all series in the filter. This is an auxiliary lemma used
@@ -682,12 +682,12 @@ lemma Cauchy.exists_lb_eventual_support {ℱ : Filter (LaurentSeries K)} (hℱ :
     (Set.inter_subset_right (s := S)) |>.trans H <| Set.mem_prod.mpr ⟨hf, hg⟩
   exact hN g (le_of_lt h_prod)
 
-/- The support of `Cauchy.coeff` is bounded below -/
+/- The support of `Cauchy.coeff` has a lower bound. -/
 theorem Cauchy.exists_lb_support {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) :
     ∃ N, ∀ n, n < N → coeff hℱ n = 0 := by
   let _ : UniformSpace K := ⊥
   obtain ⟨N, hN⟩ := exists_lb_eventual_support hℱ
-  refine ⟨N, fun n hn ↦ Ultrafilter.eq_of_le_pure (hℱ.map (uniformContinuous_coeff rfl n)).1
+  refine ⟨N, fun n hn ↦ Ultrafilter.eq_of_le_pure (hℱ.map (uniformContinuous_coeff n)).1
       ((principal_singleton _).symm ▸ coeff_tendsto _ _) ?_⟩
   simp only [pure_zero, nonpos_iff]
   apply Filter.mem_of_superset hN (fun _ ha ↦ ha _ hn)
@@ -699,63 +699,58 @@ theorem Cauchy.coeff_support_bddBelow {ℱ : Filter (LaurentSeries K)} (hℱ : C
   by_contra hNd
   exact hd ((exists_lb_support hℱ).choose_spec d (not_le.mp hNd))
 
-/-- To any Cauchy filter ℱ of `laurent_series K`, we can attach a laurent series that is the limit
-of the filter. Its `d`-th coefficient is defined as the limit of `ℱ.coeff d`, which is again Cauchy
-but valued in the discrete space `K`. That sufficiently negative coefficients vanish follows from
-`Cauchy.coeff_support_bddBelow` -/
+/-- To any Cauchy filter ℱ of `LaurentSeries K`, we can attach a laurent series that is the limit
+of the filter. Its `d`-th coefficient is defined as the limit of `Cauchy.coeff hℱ d`, which is
+again Cauchy but valued in the discrete space `K`. That sufficiently negative coefficients vanish
+follows from `Cauchy.coeff_support_bddBelow` -/
 def Cauchy.mk_LaurentSeries {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) : LaurentSeries K :=
   HahnSeries.mk (coeff hℱ) <| Set.IsWF.isPWO (coeff_support_bddBelow _).wellFoundedOn_lt
 
 /- The following lemma shows that for every `d` smaller than the minimum between the integers
-produced in `cauchy.exists_lb_eventual_support` and `cauchy.exists_lb_support`, for almost all
-series in `ℱ` the `d`th coefficient coincides with the `d`th coefficient of `coeff hℱ`. -/
+produced in `Cauchy.exists_lb_eventual_support` and `Cauchy.exists_lb_support`, for almost all
+series in `ℱ` the `d`th coefficient coincides with the `d`th coefficient of `Cauchy.coeff hℱ`. -/
 theorem Cauchy.exists_lb_coeff_ne {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) :
     ∃ N, ∀ᶠ f : LaurentSeries K in ℱ, ∀ d < N, coeff hℱ d = f.coeff d := by
   obtain ⟨⟨N₁, hN₁⟩, ⟨N₂, hN₂⟩⟩ := exists_lb_eventual_support hℱ, exists_lb_support hℱ
   refine ⟨min N₁ N₂, ℱ.3 hN₁ fun _ hf d hd ↦ ?_⟩
   rw [hf d (lt_of_lt_of_le hd (min_le_left _ _)), hN₂ d (lt_of_lt_of_le hd (min_le_right _ _))]
 
-
-/- Given a Cauchy filter in the Laurent Series and a bound `D`, for almost all series in the filter
-the coefficients below `D` coincide with `Caucy.coeff`-/
+/- Given a Cauchy filter `ℱ` in the Laurent Series and a bound `D`, for almost all series in the
+filter the coefficients below `D` coincide with `Caucy.coeff hℱ`-/
 theorem Cauchy.coeff_eventually_equal {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) {D : ℤ} :
     ∀ᶠ f : LaurentSeries K in ℱ, ∀ d, d < D → coeff hℱ d = f.coeff d := by
   -- `φ` sends `d` to the set of Laurent Series having `d`th coefficient equal to `ℱ.coeff`.
   let φ : ℤ → Set (LaurentSeries K) := fun d ↦ {f | coeff hℱ d = f.coeff d}
-  have intersec :
+  have intersec₁ :
     (⋂ n ∈ Set.Iio D, φ n) ⊆ {x : LaurentSeries K | ∀ d : ℤ, d < D → coeff hℱ d = x.coeff d} := by
     intro _ hf
-    simp only [Set.mem_iInter] at hf
-    exact hf
-  let N := min (exists_lb_coeff_ne hℱ).choose D
-  -- The goal becomes to show that the intersection of all `φ n` (for `n ≤ D`) is in `ℱ`.
-  suffices (⋂ n ∈ Set.Iio D, φ n) ∈ ℱ by
-    exact ℱ.3 this intersec
-  -- We first treat the case where `D` is already so small that all series in `ℱ` have trivial
-  -- coefficient below `D`
-  by_cases H : D < (exists_lb_coeff_ne hℱ).choose
-  · apply ℱ.3 (exists_lb_coeff_ne hℱ).choose_spec
-    simp only [Set.mem_Iio, Set.subset_iInter_iff]
-    intro _ hm _ hd
-    exact hd _ (lt_trans hm H)
-  -- We are left with the case when some coefficients below `D` are still non-zero.
-  · rw [← Set.Iio_union_Ico_eq_Iio (le_of_not_gt H), Set.biInter_union]
-    simp only [Set.mem_Iio, Set.mem_Ico, inter_mem_iff]
+    simpa only [Set.mem_iInter] using hf
+  -- The goal is now to show that the intersection of all `φ d` (for `d < D`) is in `ℱ`.
+  let ℓ := (exists_lb_coeff_ne hℱ).choose
+  let N := max ℓ D
+  have intersec₂ : ⋂ n ∈ Set.Iio D, φ n ⊇ (⋂ n ∈ Set.Iio ℓ, φ n) ∩ (⋂ n ∈ Set.Icc ℓ N, φ n) := by
+    simp only [Set.mem_Iio, Set.mem_Icc, Set.subset_iInter_iff]
+    intro i hi x hx
+    simp only [Set.mem_inter_iff, Set.mem_iInter, and_imp] at hx
+    by_cases H : i < ℓ
+    exacts [hx.1 _ H, hx.2 _ (le_of_not_lt H) <| le_of_lt <| lt_max_of_lt_right hi]
+  suffices (⋂ n ∈ Set.Iio ℓ, φ n) ∩ (⋂ n ∈ Set.Icc ℓ N, φ n) ∈ ℱ by
+    exact ℱ.sets_of_superset this <| intersec₂.trans intersec₁
+  /- To show that the intersection we have in sight is in `ℱ`, we use that it contains a double
+  intersection (an infinite and a finite one): by general properties of filters, we are reduced
+  to show that both terms are in `ℱ`, which is easy in light of their definition. -/
+  · simp only [Set.mem_Iio, Set.mem_Ico, inter_mem_iff]
     constructor
     · have := (exists_lb_coeff_ne hℱ).choose_spec
       rw [Filter.eventually_iff] at this
       convert this
       ext
       simp only [Set.mem_iInter, Set.mem_setOf_eq]; rfl
-    · have : ⋂ x, ⋂ (_ : (exists_lb_coeff_ne hℱ).choose ≤ x ∧ x < D), φ x =
-        (⋂ (n : ℤ) (_ : n ∈ Set.Ico N D), φ n) := by
-        rw [Set.iInter_congr]
-        intro
-        simp_all only [Set.mem_Ico, Set.mem_Iio, not_lt, min_eq_left, φ, N]
-      rw [this, biInter_mem (Set.finite_Ico N D)]
+    · rw [biInter_mem (Set.finite_Icc ℓ N)]
       intro _ _
       apply coeff_tendsto hℱ
       simp only [principal_singleton, mem_pure]; rfl
+
 
 open scoped Topology
 
