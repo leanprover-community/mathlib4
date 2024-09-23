@@ -184,7 +184,7 @@ lemma Set.Finite.exists_minimal_le {s : Set α} (hs : s.Finite) (h : a ∈ s) :
 
 lemma Set.Finite.exists_le_maximal {s : Set α} (hs : s.Finite) (h : a ∈ s) :
     ∃ b, a ≤ b ∧ Maximal (· ∈ s) b :=
-  Set.Finite.exists_minimal_le (α := αᵒᵈ) hs h
+  hs.exists_minimal_le (α := αᵒᵈ) h
 
 end PartialOrder
 
