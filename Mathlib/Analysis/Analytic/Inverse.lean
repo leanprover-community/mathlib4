@@ -555,13 +555,18 @@ theorem radius_rightInv_pos_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F)
 
 end FormalMultilinearSeries
 
+variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+
+open scoped ENNReal
+
+open FormalMultilinearSeries List
+
 lemma bar {f : E → G} {q : FormalMultilinearSeries 𝕜 F G}
-    {p : FormalMultilinearSeries 𝕜 E F} {x : E} {t : Set F} (hq : 0 < q.radius) (hp : 0 < p.radius)
-    (hg : HasFPowerSeriesAt f (q.comp p) x) :
+    {p : FormalMultilinearSeries 𝕜 E F} {x : E} (hq : 0 < q.radius) (hp : 0 < p.radius)
+    (hf : HasFPowerSeriesAt f (q.comp p) x) :
     ∀ᶠ y in 𝓝 0, Tendsto (fun (a : ℕ × ℕ) ↦ q.partialSum a.1 (p.partialSum a.2 y
       - p 0 (fun _ ↦ 0))) atTop (𝓝 (f (x + y))) := by
-  rcases hg with ⟨r0, h0⟩
-  -- The terms defining `q.comp p` are geometrically summable in a disk of some radius `r1`.
+  rcases hf with ⟨r0, h0⟩
   rcases q.comp_summable_nnreal p hq hp with ⟨r1, r1_pos : 0 < r1, hr1⟩
   let r : ℝ≥0∞ := min r0 r1
   have : EMetric.ball (0 : E) r ∈ 𝓝 0 :=
@@ -601,6 +606,58 @@ lemma bar {f : E → G} {q : FormalMultilinearSeries 𝕜 F G}
         Finset.sum_eq_sum_Ico_succ_bot hn]
   congr
   exact ofFn_inj.mp rfl
+
+
+lemma barb {f : E → F} {g : F → G} {q : FormalMultilinearSeries 𝕜 F G}
+    {p : FormalMultilinearSeries 𝕜 E F} {x : E} {t : Set F} (hq : 0 < q.radius)
+    (hgf : HasFPowerSeriesAt (g ∘ f) (q.comp p) x) (hf : HasFPowerSeriesAt f p x) :
+    ∀ᶠ y in 𝓝 0, Tendsto (fun n ↦ q.partialSum n (f (x + y) - f x)) atTop (𝓝 (g (f (x + y)))) := by
+  filter_upwards [bar hq (hf.radius_pos) hgf, hf.tendsto_partialSum] with y hy h'y
+  intro u hu
+  simp only [Filter.mem_map, mem_atTop_sets, ge_iff_le, Set.mem_preimage]
+  -- exists_mem_nhds_isClosed_subset
+  rcases mem_nhds_iff.1 hu with ⟨v, vu, v_open, hv⟩
+  obtain ⟨a₀, b₀, hab⟩ : ∃ a₀ b₀, ∀ (a b : ℕ), a₀ ≤ a → b₀ ≤ b →
+      q.partialSum a (p.partialSum b y - (p 0) fun x ↦ 0) ∈ v := by
+    simpa using hy (v_open.mem_nhds hv)
+  refine ⟨a₀, fun a ha ↦ ?_⟩
+  have : Tendsto (fun b ↦ q.partialSum a (p.partialSum b y - (p 0) fun x ↦ 0)) atTop
+      (𝓝 (q.partialSum a (f (x + y) - f x))) := by
+    have : ContinuousAt (q.partialSum a) (f (x + y) - f x) :=
+      (partialSum_continuous q a).continuousAt
+    apply this.tendsto.comp
+    apply Tendsto.sub h'y
+    convert tendsto_const_nhds
+    exact (HasFPowerSeriesAt.coeff_zero hf fun x ↦ 0).symm
+
+
+
+
+
+
+lemma barb {f : E → F} {g : F → G} {q : FormalMultilinearSeries 𝕜 F G}
+    {p : FormalMultilinearSeries 𝕜 E F} {x : E} {t : Set F} (hq : 0 < q.radius)
+    (hgf : HasFPowerSeriesAt (g ∘ f) (q.comp p) x) (hf : HasFPowerSeriesAt f p x) :
+    ∀ᶠ y in 𝓝 0, HasSum (fun n ↦ q n (fun _ ↦ f (x + y) - f x)) (g (f (x + y))) := by
+  filter_upwards [bar hq (hf.radius_pos) hgf] with y hy
+  intro u hu
+  simp
+  rcases mem_nhds_iff.1 hu with ⟨v, vu, v_open, hv⟩
+  obtain ⟨a₀, b₀, hab⟩ : ∃ a₀ b₀, ∀ (a b : ℕ), a₀ ≤ a → b₀ ≤ b →
+      q.partialSum a (p.partialSum b y - (p 0) fun x ↦ 0) ∈ v := by
+    simpa using hy (v_open.mem_nhds hv)
+  filter_upwards [Ici_mem_atTop b₀]
+
+
+
+
+
+
+#exit
+
+
+    Tendsto (fun (a : ℕ × ℕ) ↦ q.partialSum a.1 (p.partialSum a.2 y
+      - p 0 (fun _ ↦ 0))) atTop (𝓝 (f (x + y))) := by
 
 theorem HasFPowerSeriesAt.inverse (f : PartialHomeomorph E F)
     {i : E ≃L[𝕜] F} {a : F} (ha : a ∈ f.target) {p : FormalMultilinearSeries 𝕜 E F}

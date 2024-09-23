@@ -811,8 +811,6 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
   rw [Function.comp_apply]
   exact E
 
-#exit
-
 /-- If two functions `g` and `f` have power series `q` and `p` respectively at `f x` and `x`,
 then `g ∘ f` admits the power  series `q.comp p` at `x` within `s`. -/
 theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinearSeries 𝕜 F G}
