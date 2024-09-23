@@ -778,6 +778,8 @@ theorem cons_nonempty (h : a ∉ s) : (cons a s h).Nonempty :=
 
 @[deprecated (since := "2024-09-19")] alias nonempty_cons := cons_nonempty
 
+@[simp] theorem cons_ne_empty (h : a ∉ s) : cons a s h ≠ ∅ := (cons_nonempty _).ne_empty
+
 @[simp]
 theorem nonempty_mk {m : Multiset α} {hm} : (⟨m, hm⟩ : Finset α).Nonempty ↔ m ≠ 0 := by
   induction m using Multiset.induction_on <;> simp
@@ -2594,6 +2596,10 @@ theorem range_filter_eq {n m : ℕ} : (range n).filter (· = m) = if m < n then 
 lemma range_nontrivial {n : ℕ} (hn : 1 < n) : (Finset.range n).Nontrivial := by
   rw [Finset.Nontrivial, Finset.coe_range]
   exact ⟨0, Nat.zero_lt_one.trans hn, 1, hn, Nat.zero_ne_one⟩
+
+theorem exists_nat_subset_range (s : Finset ℕ) : ∃ n : ℕ, s ⊆ range n :=
+  s.induction_on (by simp)
+    fun a s _ ⟨n, hn⟩ => ⟨max (a + 1) n, insert_subset (by simp) (hn.trans (by simp))⟩
 
 end Range
 
