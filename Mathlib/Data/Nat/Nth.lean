@@ -303,7 +303,7 @@ theorem count_nth_of_lt_card_finite {n : ℕ} (hp : (setOf p).Finite) (hlt : n <
 theorem count_nth_of_infinite (hp : (setOf p).Infinite) (n : ℕ) : count p (nth p n) = n :=
   count_nth fun hf => absurd hf hp
 
-theorem surjective_of_infinite_setOf (h : {n | p n}.Infinite) :
+theorem surjective_count_of_infinite_setOf (h : {n | p n}.Infinite) :
     Function.Surjective (Nat.count p) :=
   fun n => ⟨nth p n, count_nth_of_infinite h n⟩
 

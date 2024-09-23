@@ -54,7 +54,6 @@ def primeCounting (n : ℕ) : ℕ :=
 
 @[inherit_doc] scoped[Nat.Prime] notation "π'" => Nat.primeCounting'
 
-
 open scoped Nat.Prime
 
 @[simp]
@@ -70,6 +69,33 @@ theorem monotone_primeCounting : Monotone primeCounting :=
 @[simp]
 theorem primeCounting'_nth_eq (n : ℕ) : π' (nth Prime n) = n :=
   count_nth_of_infinite infinite_setOf_prime _
+
+@[simp]
+theorem zeroth_prime_eq_two : nth Prime 0 = 2 := nth_count prime_two
+
+/-- The `n`th prime is greater or equal to `n + 2`. -/
+theorem add_two_le_nth_prime (n : ℕ) : n + 2 ≤ nth Prime n :=
+  zeroth_prime_eq_two ▸ (nth_strictMono infinite_setOf_prime).add_le_nat n 0
+
+theorem surjective_primeCounting' : Function.Surjective π' :=
+  Nat.surjective_of_infinite_setOf infinite_setOf_prime
+
+theorem surjective_primeCounting : Function.Surjective π := by
+  apply Function.Surjective.of_comp (g := fun n => n - 1)
+  have : π ∘ (fun n => n - 1) = π' := by
+    ext n
+    rw [Function.comp_apply, primeCounting_sub_one]
+  rw [this]
+  exact surjective_primeCounting'
+
+open Filter
+
+theorem tendsto_primeCounting' : Tendsto π' atTop atTop := by
+  apply Filter.tendsto_atTop_atTop_of_monotone' monotone_primeCounting'
+  simp [Set.range_iff_surjective.mpr surjective_primeCounting']
+
+theorem tensto_primeCounting : Tendsto π atTop atTop := by
+  exact (Filter.tendsto_add_atTop_iff_nat 1).mpr tendsto_primeCounting'
 
 @[simp]
 theorem prime_nth_prime (n : ℕ) : Prime (nth Prime n) :=
@@ -102,32 +128,5 @@ theorem primeCounting'_add_le {a k : ℕ} (h0 : 0 < a) (h1 : a < k) (n : ℕ) :
     _ ≤ π' k + totient a * (n / a + 1) := by
       rw [add_le_add_iff_left]
       exact Ico_filter_coprime_le k n h0
-
-@[simp]
-theorem zeroth_prime_eq_two : nth Prime 0 = 2 := nth_count prime_two
-
-/-- The `n`th prime is greater or equal to `n + 2`. -/
-theorem add_two_le_nth_prime (n : ℕ) : n + 2 ≤ nth Prime n :=
-  zeroth_prime_eq_two ▸ (nth_strictMono infinite_setOf_prime).add_le_nat n 0
-
-theorem surjective_primeCounting' : Function.Surjective π' :=
-  Nat.surjective_of_infinite_setOf infinite_setOf_prime
-
-theorem surjective_primeCounting : Function.Surjective π := by
-  apply Function.Surjective.of_comp (g := fun n => n - 1)
-  have : π ∘ (fun n => n - 1) = π' := by
-    ext n
-    rw [Function.comp_apply, primeCounting_sub_one]
-  rw [this]
-  exact surjective_primeCounting'
-
-open Filter
-
-theorem tendsto_primeCounting' : Tendsto π' atTop atTop := by
-  apply Filter.tendsto_atTop_atTop_of_monotone' monotone_primeCounting'
-  simp [Set.range_iff_surjective.mpr surjective_primeCounting']
-
-theorem tensto_primeCounting : Tendsto π atTop atTop := by
-  exact (Filter.tendsto_add_atTop_iff_nat 1).mpr tendsto_primeCounting'
 
 end Nat
