@@ -53,8 +53,6 @@ where
   | e@(n, _) :: entries =>
     if n == declName then (n, docString) :: entries else e :: modifyEntry entries
   | [] => []
-
-
 /-- `extend_docs <declName> before <prefix_string> after <suffix_string>` extends the
 docs of `<declName>` by adding `<prefix_string>` before and `<suffix_string>` after. -/
 syntax "extend_docs" ident (colGt &"before" str)? (colGt &"after" str)? : command
