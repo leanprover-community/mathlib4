@@ -105,27 +105,6 @@ theorem IsSymmetric.restrictScalars {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) 
     (T.restrictScalars ℝ).IsSymmetric :=
   fun x y => by simp [hT x y, real_inner_eq_re_inner, LinearMap.coe_restrictScalars ℝ]
 
-/-- Polarization identity for symmetric linear maps.
-See `inner_map_polarization` for the complex version without the symmetric assumption. -/
-theorem IsSymmetric.inner_map_polarization {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (x y : E) :
-    ⟪T x, y⟫ =
-      (⟪T (x + y), x + y⟫ - ⟪T (x - y), x - y⟫ - I * ⟪T (x + (I : 𝕜) • y), x + (I : 𝕜) • y⟫ +
-          I * ⟪T (x - (I : 𝕜) • y), x - (I : 𝕜) • y⟫) /
-        4 := by
-  rcases@I_mul_I_ax 𝕜 _ with (h | h)
-  · simp_rw [h, zero_mul, sub_zero, add_zero, map_add, map_sub, inner_add_left,
-      inner_add_right, inner_sub_left, inner_sub_right, hT x, ← inner_conj_symm x (T y)]
-    suffices (re ⟪T y, x⟫ : 𝕜) = ⟪T y, x⟫ by
-      rw [conj_eq_iff_re.mpr this]
-      ring
-    rw [← re_add_im ⟪T y, x⟫]
-    simp_rw [h, mul_zero, add_zero]
-    norm_cast
-  · simp_rw [map_add, map_sub, inner_add_left, inner_add_right, inner_sub_left, inner_sub_right,
-      LinearMap.map_smul, inner_smul_left, inner_smul_right, RCLike.conj_I, mul_add, mul_sub,
-      sub_sub, ← mul_assoc, mul_neg, h, neg_neg, one_mul, neg_one_mul]
-    ring
-
 section Complex
 
 variable {V : Type*} [SeminormedAddCommGroup V] [InnerProductSpace ℂ V]
@@ -151,6 +130,27 @@ theorem isSymmetric_iff_inner_map_self_real (T : V →ₗ[ℂ] V) :
     ring
 
 end Complex
+
+/-- Polarization identity for symmetric linear maps.
+See `inner_map_polarization` for the complex version without the symmetric assumption. -/
+theorem IsSymmetric.inner_map_polarization {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (x y : E) :
+    ⟪T x, y⟫ =
+      (⟪T (x + y), x + y⟫ - ⟪T (x - y), x - y⟫ - I * ⟪T (x + (I : 𝕜) • y), x + (I : 𝕜) • y⟫ +
+          I * ⟪T (x - (I : 𝕜) • y), x - (I : 𝕜) • y⟫) /
+        4 := by
+  rcases@I_mul_I_ax 𝕜 _ with (h | h)
+  · simp_rw [h, zero_mul, sub_zero, add_zero, map_add, map_sub, inner_add_left,
+      inner_add_right, inner_sub_left, inner_sub_right, hT x, ← inner_conj_symm x (T y)]
+    suffices (re ⟪T y, x⟫ : 𝕜) = ⟪T y, x⟫ by
+      rw [conj_eq_iff_re.mpr this]
+      ring
+    rw [← re_add_im ⟪T y, x⟫]
+    simp_rw [h, mul_zero, add_zero]
+    norm_cast
+  · simp_rw [map_add, map_sub, inner_add_left, inner_add_right, inner_sub_left, inner_sub_right,
+      LinearMap.map_smul, inner_smul_left, inner_smul_right, RCLike.conj_I, mul_add, mul_sub,
+      sub_sub, ← mul_assoc, mul_neg, h, neg_neg, one_mul, neg_one_mul]
+    ring
 
 end LinearMap
 
