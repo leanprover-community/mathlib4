@@ -845,9 +845,7 @@ theorem bddAbove_of_small (s : Set Cardinal.{u}) [h : Small.{u} s] : BddAbove s 
 
 @[deprecated bddAbove_of_small (since := "2024-09-22")]
 theorem bddAbove_range {ι : Type u} (f : ι → Cardinal.{max u v}) : BddAbove (Set.range f) :=
-  ⟨sum f, by
-    rintro a ⟨i, rfl⟩
-    exact le_sum f i⟩
+  bddAbove_of_small _
 
 theorem bddAbove_image (f : Cardinal.{u} → Cardinal.{max u v}) {s : Set Cardinal.{u}}
     (hs : BddAbove s) : BddAbove (f '' s) := by
