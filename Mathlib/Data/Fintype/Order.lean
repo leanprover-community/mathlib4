@@ -172,7 +172,7 @@ lemma Finite.exists_le_maximal [Finite α] (h : p a) : ∃ b, a ≤ b ∧ Maxima
 
 lemma Finset.exists_minimal_le {s : Finset α} (h : a ∈ s) : ∃ b, b ≤ a ∧ Minimal (· ∈ s) b := by
   obtain ⟨⟨b, _⟩, lb, minb⟩ := @Finite.exists_minimal_le s _ ⟨a, h⟩ (·.1 ∈ s) _ h
-  use b, lb; rwa [minimal_subtype, inf_of_le_right fun _ ↦ id] at minb
+  use b, lb; rwa [minimal_subtype, inf_idem] at minb
 
 lemma Finset.exists_le_maximal {s : Finset α} (h : a ∈ s) : ∃ b, a ≤ b ∧ Maximal (· ∈ s) b :=
   Finset.exists_minimal_le (α := αᵒᵈ) h
