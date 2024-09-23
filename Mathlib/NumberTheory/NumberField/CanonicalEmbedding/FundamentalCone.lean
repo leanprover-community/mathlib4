@@ -271,7 +271,7 @@ theorem integralPoint_ne_zero (a : integralPoint K) :  (a : mixedSpace K) ≠ 0 
 
 open scoped nonZeroDivisors
 
-/-- For `a : fundamentalCone K`, the unique nonzero algebraic integer `x` which image by
+/-- For `a : fundamentalCone K`, the unique nonzero algebraic integer `x` such that its image by
 `mixedEmbedding` is equal to `a`. Note that we state the fact that `x ≠ 0` by saying that `x` is
 a nonzero divisors since we will use later on the isomorphism
 `Ideal.associatesNonZeroDivisorsEquivIsPrincipal`, see `integralPointEquiv`. -/
