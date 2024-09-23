@@ -151,7 +151,8 @@ lemma antipode_single (g : G) (a : A) :
   rfl
 
 instance instHopfAlgebra : HopfAlgebra R (MonoidAlgebra A G) where
-  mul_antipode_rTensor_comul := lhom_ext fun a b => by
+  mul_antipode_rTensor_comul := by
+    ext a b
     simp only [LinearMap.coe_comp, Function.comp_apply, comul_single,
       ← (Coalgebra.Repr.arbitrary R b).eq, map_sum,
       TensorProduct.map_tmul, lsingle_apply, LinearMap.rTensor_tmul, antipode_single,
@@ -159,7 +160,8 @@ instance instHopfAlgebra : HopfAlgebra R (MonoidAlgebra A G) where
       Algebra.linearMap_apply, coe_algebraMap]
     simp only [← lsingle_apply (k := R), ← map_sum (lsingle R A (1 : G)),
       sum_antipode_mul_eq_smul, Algebra.algebraMap_eq_smul_one]
-  mul_antipode_lTensor_comul := lhom_ext fun a b => by
+  mul_antipode_lTensor_comul := by
+    ext a b
     simp only [LinearMap.coe_comp, Function.comp_apply, comul_single,
       ← (Coalgebra.Repr.arbitrary R b).eq, map_sum, TensorProduct.map_tmul,
       lsingle_apply, LinearMap.lTensor_tmul, antipode_single, LinearMap.mul'_apply,
@@ -187,14 +189,16 @@ lemma antipode_single (g : G) (a : A) :
   rfl
 
 instance instHopfAlgebra : HopfAlgebra R A[G] where
-  mul_antipode_rTensor_comul := lhom_ext fun a b => by
+  mul_antipode_rTensor_comul := by
+    ext a b
     simp only [LinearMap.coe_comp, Function.comp_apply, comul_single,
       ← (Coalgebra.Repr.arbitrary R b).eq, map_sum, TensorProduct.map_tmul, lsingle_apply,
       LinearMap.rTensor_tmul, antipode_single, LinearMap.mul'_apply, single_mul_single,
       neg_add_cancel, counit_single, Algebra.linearMap_apply, coe_algebraMap]
     simp only [← lsingle_apply (k := R), ← map_sum (lsingle R A (0 : G)),
       HopfAlgebra.sum_antipode_mul_eq_smul, Algebra.algebraMap_eq_smul_one]
-  mul_antipode_lTensor_comul := lhom_ext fun a b => by
+  mul_antipode_lTensor_comul := by
+    ext a b
     simp only [LinearMap.coe_comp, Function.comp_apply, comul_single,
       ← (Coalgebra.Repr.arbitrary R b).eq, map_sum, TensorProduct.map_tmul,
       lsingle_apply, LinearMap.lTensor_tmul, antipode_single, LinearMap.mul'_apply,

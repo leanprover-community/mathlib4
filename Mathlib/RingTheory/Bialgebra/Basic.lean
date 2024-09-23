@@ -169,16 +169,15 @@ variable {R : Type u} [CommSemiring R] {A : Type v} [Semiring A]
 variable (R A X) in
 instance instBialgebra : Bialgebra R (MonoidAlgebra A X) where
   counit_one := by simp only [one_def, counit_single, Bialgebra.counit_one]
-  mul_compr₂_counit := lhom_ext fun a b => lhom_ext fun c d => by
-    simp only [LinearMap.compr₂_apply, LinearMap.mul_apply', single_mul_single, counit_single,
-      Bialgebra.counit_mul, LinearMap.compl₁₂_apply, lsingle_apply]
+  mul_compr₂_counit := by ext; simp
   comul_one := by
     simp only [one_def, comul_single, Bialgebra.comul_one, Algebra.TensorProduct.one_def,
       TensorProduct.map_tmul, lsingle_apply]
-  mul_compr₂_comul := lhom_ext fun a b => lhom_ext fun c d => by
-    simp only [LinearMap.compr₂_apply, LinearMap.mul_apply', single_mul_single, comul_single,
-      Bialgebra.comul_mul, ← (Coalgebra.Repr.arbitrary R b).eq,
-      ← (Coalgebra.Repr.arbitrary R d).eq, Finset.sum_mul_sum,
+  mul_compr₂_comul := by
+    ext a b c d
+    simp only [Function.comp_apply, LinearMap.coe_comp, LinearMap.compr₂_apply,
+      LinearMap.mul_apply', single_mul_single, comul_single, Bialgebra.comul_mul,
+      ← (Coalgebra.Repr.arbitrary R b).eq, ← (Coalgebra.Repr.arbitrary R d).eq, Finset.sum_mul_sum,
       Algebra.TensorProduct.tmul_mul_tmul, map_sum, TensorProduct.map_tmul, lsingle_apply,
       LinearMap.compl₁₂_apply, LinearMap.coeFn_sum, Finset.sum_apply,
       Finset.sum_comm (s := (Coalgebra.Repr.arbitrary R b).index)]
@@ -195,16 +194,15 @@ variable {R : Type u} [CommSemiring R] {A : Type v} [Semiring A]
 variable (R A X) in
 instance instBialgebra : Bialgebra R A[X] where
   counit_one := by simp only [one_def, counit_single, Bialgebra.counit_one]
-  mul_compr₂_counit := lhom_ext fun a b => lhom_ext fun c d => by
-    simp only [LinearMap.compr₂_apply, LinearMap.mul_apply', single_mul_single, counit_single,
-      Bialgebra.counit_mul, LinearMap.compl₁₂_apply, lsingle_apply]
+  mul_compr₂_counit := by ext; simp [single_mul_single]
   comul_one := by
     simp only [one_def, comul_single, Bialgebra.comul_one, Algebra.TensorProduct.one_def,
       TensorProduct.map_tmul, lsingle_apply]
-  mul_compr₂_comul := lhom_ext fun a b => lhom_ext fun c d => by
-    simp only [LinearMap.compr₂_apply, LinearMap.mul_apply', single_mul_single, comul_single,
-      Bialgebra.comul_mul, ← (Coalgebra.Repr.arbitrary R b).eq,
-      ← (Coalgebra.Repr.arbitrary R d).eq, Finset.sum_mul_sum,
+  mul_compr₂_comul := by
+    ext a b c d
+    simp only [Function.comp_apply, LinearMap.coe_comp, LinearMap.compr₂_apply,
+      LinearMap.mul_apply', single_mul_single, comul_single, Bialgebra.comul_mul,
+      ← (Coalgebra.Repr.arbitrary R b).eq, ← (Coalgebra.Repr.arbitrary R d).eq, Finset.sum_mul_sum,
       Algebra.TensorProduct.tmul_mul_tmul, map_sum, TensorProduct.map_tmul, lsingle_apply,
       LinearMap.compl₁₂_apply, LinearMap.coeFn_sum, Finset.sum_apply,
       Finset.sum_comm (s := (Coalgebra.Repr.arbitrary R b).index)]

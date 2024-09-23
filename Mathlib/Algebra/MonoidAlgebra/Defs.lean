@@ -584,9 +584,6 @@ variable (k A) in
 def lsingle (i : G) : A →ₗ[k] MonoidAlgebra A G :=
   Finsupp.lsingle i
 
-lemma lsingle_def (i : G) :
-    lsingle k A i = Finsupp.lsingle i := rfl
-
 @[simp]
 lemma lsingle_apply (i : G) (a : A) :
     lsingle k A i a = single i a := rfl
@@ -594,8 +591,8 @@ lemma lsingle_apply (i : G) (a : A) :
 @[ext]
 theorem lhom_ext {B : Type*} [AddCommMonoid B] [Module k B]
     {f g : MonoidAlgebra A G →ₗ[k] B}
-    (h : ∀ a b, f (lsingle k A a b) = g (lsingle k A a b)) : f = g :=
-  Finsupp.lhom_ext h
+    (h : ∀ a, f ∘ₗ lsingle k A a = g ∘ₗ lsingle k A a) : f = g :=
+  Finsupp.lhom_ext' h
 
 end Linear
 
@@ -1316,9 +1313,6 @@ variable (k A) in
 def lsingle (i : G) : A →ₗ[k] A[G] :=
   Finsupp.lsingle i
 
-lemma lsingle_def (i : G) :
-    lsingle k A i = Finsupp.lsingle i := rfl
-
 @[simp]
 lemma lsingle_apply (i : G) (a : A) :
     lsingle k A i a = single i a := rfl
@@ -1326,8 +1320,8 @@ lemma lsingle_apply (i : G) (a : A) :
 @[ext]
 theorem lhom_ext {B : Type*} [AddCommMonoid B] [Module k B]
     {f g : A[G] →ₗ[k] B}
-    (h : ∀ a b, f (lsingle k A a b) = g (lsingle k A a b)) : f = g :=
-  Finsupp.lhom_ext h
+    (h : ∀ a , f ∘ₗ lsingle k A a = g ∘ₗ lsingle k A a) : f = g :=
+  Finsupp.lhom_ext' h
 
 end Linear
 
