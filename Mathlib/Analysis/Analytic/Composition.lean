@@ -634,11 +634,12 @@ theorem compChangeOfVariables_sum {α : Type*} [AddCommMonoid α] (m M N : ℕ)
 
 /-- The auxiliary set corresponding to the composition of partial sums asymptotically contains
 all possible compositions. -/
-theorem compPartialSumTarget_tendsto_atTop :
-    Tendsto (fun N => compPartialSumTarget 0 N N) atTop atTop := by
+theorem compPartialSumTarget_tendsto_prod_atTop :
+    Tendsto (fun (p : ℕ × ℕ) => compPartialSumTarget 0 p.1 p.2) atTop atTop := by
   apply Monotone.tendsto_atTop_finset
   · intro m n hmn a ha
-    have : ∀ i, i < m → i < n := fun i hi => lt_of_lt_of_le hi hmn
+    have : ∀ i, i < m.1 → i < n.1 := fun i hi => lt_of_lt_of_le hi hmn.1
+    have : ∀ i, i < m.2 → i < n.2 := fun i hi => lt_of_lt_of_le hi hmn.2
     aesop
   · rintro ⟨n, c⟩
     simp only [mem_compPartialSumTarget_iff]
@@ -650,90 +651,40 @@ theorem compPartialSumTarget_tendsto_atTop :
     apply hn
     simp only [Finset.mem_image_of_mem, Finset.mem_coe, Finset.mem_univ]
 
+/-- The auxiliary set corresponding to the composition of partial sums asymptotically contains
+all possible compositions. -/
+theorem compPartialSumTarget_tendsto_atTop :
+    Tendsto (fun N => compPartialSumTarget 0 N N) atTop atTop := by
+  apply Tendsto.comp compPartialSumTarget_tendsto_prod_atTop tendsto_atTop_diagonal
+
 /-- Composing the partial sums of two multilinear series coincides with the sum over all
 compositions in `compPartialSumTarget 0 N N`. This is precisely the motivation for the
 definition of `compPartialSumTarget`. -/
 theorem comp_partialSum (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultilinearSeries 𝕜 E F)
-    (N : ℕ) (z : E) :
-    q.partialSum N (∑ i ∈ Finset.Ico 1 N, p i fun _j => z) =
-      ∑ i ∈ compPartialSumTarget 0 N N, q.compAlongComposition p i.2 fun _j => z := by
+    (M N : ℕ) (z : E) :
+    q.partialSum M (∑ i ∈ Finset.Ico 1 N, p i fun _j => z) =
+      ∑ i ∈ compPartialSumTarget 0 M N, q.compAlongComposition p i.2 fun _j => z := by
   -- we expand the composition, using the multilinearity of `q` to expand along each coordinate.
   suffices H :
-    (∑ n ∈ Finset.range N,
+    (∑ n ∈ Finset.range M,
         ∑ r ∈ Fintype.piFinset fun i : Fin n => Finset.Ico 1 N,
           q n fun i : Fin n => p (r i) fun _j => z) =
-      ∑ i ∈ compPartialSumTarget 0 N N, q.compAlongComposition p i.2 fun _j => z by
+      ∑ i ∈ compPartialSumTarget 0 M N, q.compAlongComposition p i.2 fun _j => z by
     simpa only [FormalMultilinearSeries.partialSum, ContinuousMultilinearMap.map_sum_finset] using H
   -- rewrite the first sum as a big sum over a sigma type, in the finset
   -- `compPartialSumTarget 0 N N`
   rw [Finset.range_eq_Ico, Finset.sum_sigma']
   -- use `compChangeOfVariables_sum`, saying that this change of variables respects sums
-  apply compChangeOfVariables_sum 0 N N
+  apply compChangeOfVariables_sum 0 M N
   rintro ⟨k, blocks_fun⟩ H
-  apply congr _ (compChangeOfVariables_length 0 N N H).symm
+  apply congr _ (compChangeOfVariables_length 0 M N H).symm
   intros
-  rw [← compChangeOfVariables_blocksFun 0 N N H]
+  rw [← compChangeOfVariables_blocksFun 0 M N H]
   rfl
 
 end FormalMultilinearSeries
 
 open FormalMultilinearSeries
-
-lemma bar {f : E → G} {q : FormalMultilinearSeries 𝕜 F G}
-    {p : FormalMultilinearSeries 𝕜 E F} {x : E} {t : Set F} (hq : 0 < q.radius) (hp : 0 < p.radius)
-    (hg : HasFPowerSeriesAt f (q.comp p) x) :
-    ∀ᶠ y in 𝓝 0,
-    Tendsto (fun (a : ℕ × ℕ) ↦ q.partialSum a.1 (p.partialSum a.2 y)) atTop (𝓝 (f (x + y))) := by
-  rcases hg with ⟨r0, h0⟩
-  -- The terms defining `q.comp p` are geometrically summable in a disk of some radius `r1`.
-  rcases q.comp_summable_nnreal p hq hp with ⟨r1, r1_pos : 0 < r1, hr1⟩
-  let r : ℝ≥0∞ := min r0 r1
-  have : EMetric.ball (0 : E) r ∈ 𝓝 0 := sorry
-  filter_upwards [this] with y hy
-  have hy0 : y ∈ EMetric.ball 0 r0 := sorry
-  have Z := h0.hasSum hy0
-  have cau : CauchySeq fun s : Finset (Σ n, Composition n) =>
-      ∑ i ∈ s, q.compAlongComposition p i.2 fun _j => y := by
-    apply cauchySeq_finset_of_norm_bounded _ (NNReal.summable_coe.2 hr1) _
-    simp only [coe_nnnorm, NNReal.coe_mul, NNReal.coe_pow]
-    rintro ⟨n, c⟩
-    calc
-      ‖(compAlongComposition q p c) fun _j : Fin n => y‖ ≤
-          ‖compAlongComposition q p c‖ * ∏ _j : Fin n, ‖y‖ := by
-        apply ContinuousMultilinearMap.le_opNorm
-      _ ≤ ‖compAlongComposition q p c‖ * (r1 : ℝ) ^ n := by
-        apply mul_le_mul_of_nonneg_left _ (norm_nonneg _)
-        rw [Finset.prod_const, Finset.card_fin]
-        apply pow_le_pow_left (norm_nonneg _)
-        rw [EMetric.mem_ball, edist_eq_coe_nnnorm] at hy
-        have := le_trans (le_of_lt hy) (min_le_right _ _)
-        rwa [ENNReal.coe_le_coe, ← NNReal.coe_le_coe, coe_nnnorm] at this
-  sorry
-
-/-
-
-  have D :
-    HasSum (fun i : Σ n, Composition n => q.compAlongComposition p i.2 fun _j => y)
-      (g (f (x + y))) :=
-    tendsto_nhds_of_cauchySeq_of_subseq cau compPartialSumTarget_tendsto_atTop C
-
-
-
-#exit
-
-lemma foo {g : F → G} {f : E → F} {q : FormalMultilinearSeries 𝕜 F G}
-    {p : FormalMultilinearSeries 𝕜 E F} {x : E} {t : Set F} {s : Set E}
-    (hg : HasFPowerSeriesWithinAt (g ∘ f) (q.comp p) s x) (hf : HasFPowerSeriesWithinAt f p s x)
-    (hs : Set.MapsTo f s t) : HasFPowerSeriesWithinAt g q t (f x) := by
-  refine ⟨1, ?_⟩
-  refine ⟨sorry, sorry, fun {y} hy h'y ↦ ?_⟩
-
-
-
-
-#exit
-
--/
 
 /-- If two functions `g` and `f` have power series `q` and `p` respectively at `f x` and `x`, within
 two sets `s` and `t` such that `f` maps `s` to `t`, then `g ∘ f` admits the power

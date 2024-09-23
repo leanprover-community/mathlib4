@@ -555,7 +555,52 @@ theorem radius_rightInv_pos_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F)
 
 end FormalMultilinearSeries
 
-#where
+lemma bar {f : E → G} {q : FormalMultilinearSeries 𝕜 F G}
+    {p : FormalMultilinearSeries 𝕜 E F} {x : E} {t : Set F} (hq : 0 < q.radius) (hp : 0 < p.radius)
+    (hg : HasFPowerSeriesAt f (q.comp p) x) :
+    ∀ᶠ y in 𝓝 0, Tendsto (fun (a : ℕ × ℕ) ↦ q.partialSum a.1 (p.partialSum a.2 y
+      - p 0 (fun _ ↦ 0))) atTop (𝓝 (f (x + y))) := by
+  rcases hg with ⟨r0, h0⟩
+  -- The terms defining `q.comp p` are geometrically summable in a disk of some radius `r1`.
+  rcases q.comp_summable_nnreal p hq hp with ⟨r1, r1_pos : 0 < r1, hr1⟩
+  let r : ℝ≥0∞ := min r0 r1
+  have : EMetric.ball (0 : E) r ∈ 𝓝 0 :=
+    EMetric.ball_mem_nhds 0 (lt_min h0.r_pos (by exact_mod_cast r1_pos))
+  filter_upwards [this] with y hy
+  have hy0 : y ∈ EMetric.ball 0 r0 := EMetric.ball_subset_ball (min_le_left _ _) hy
+  have A : HasSum (fun i : Σ n, Composition n => q.compAlongComposition p i.2 fun _j => y)
+      (f (x + y)) := by
+    have cau : CauchySeq fun s : Finset (Σ n, Composition n) =>
+        ∑ i ∈ s, q.compAlongComposition p i.2 fun _j => y := by
+      apply cauchySeq_finset_of_norm_bounded _ (NNReal.summable_coe.2 hr1) _
+      simp only [coe_nnnorm, NNReal.coe_mul, NNReal.coe_pow]
+      rintro ⟨n, c⟩
+      calc
+        ‖(compAlongComposition q p c) fun _j : Fin n => y‖ ≤
+            ‖compAlongComposition q p c‖ * ∏ _j : Fin n, ‖y‖ := by
+          apply ContinuousMultilinearMap.le_opNorm
+        _ ≤ ‖compAlongComposition q p c‖ * (r1 : ℝ) ^ n := by
+          apply mul_le_mul_of_nonneg_left _ (norm_nonneg _)
+          rw [Finset.prod_const, Finset.card_fin]
+          apply pow_le_pow_left (norm_nonneg _)
+          rw [EMetric.mem_ball, edist_eq_coe_nnnorm] at hy
+          have := le_trans (le_of_lt hy) (min_le_right _ _)
+          rwa [ENNReal.coe_le_coe, ← NNReal.coe_le_coe, coe_nnnorm] at this
+    apply HasSum.of_sigma (fun b ↦ hasSum_fintype _) ?_ cau
+    simpa [FormalMultilinearSeries.comp] using h0.hasSum hy0
+  have B : Tendsto (fun (n : ℕ × ℕ) => ∑ i ∈ compPartialSumTarget 0 n.1 n.2,
+      q.compAlongComposition p i.2 fun _j => y) atTop (𝓝 (f (x + y))) := by
+    apply Tendsto.comp A compPartialSumTarget_tendsto_prod_atTop
+  have C : Tendsto (fun (n : ℕ × ℕ) => q.partialSum n.1 (∑ a ∈ Finset.Ico 1 n.2, p a fun _b ↦ y))
+      atTop (𝓝 (f (x + y))) := by simpa [comp_partialSum] using B
+  apply C.congr'
+  filter_upwards [Ici_mem_atTop (0, 1)]
+  rintro ⟨-, n⟩ ⟨-, (hn : 1 ≤ n)⟩
+  congr
+  rw [partialSum, eq_sub_iff_add_eq', Finset.range_eq_Ico,
+        Finset.sum_eq_sum_Ico_succ_bot hn]
+  congr
+  exact ofFn_inj.mp rfl
 
 theorem HasFPowerSeriesAt.inverse (f : PartialHomeomorph E F)
     {i : E ≃L[𝕜] F} {a : F} (ha : a ∈ f.target) {p : FormalMultilinearSeries 𝕜 E F}
