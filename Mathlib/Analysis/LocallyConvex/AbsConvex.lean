@@ -24,7 +24,9 @@ of zero.
 ## Main statements
 
 * `absConvexHull_eq_convexHull_balancedHull`: when the locally convex space is a module, the
-  absolutely convex hull of a set `s` equals the convex hull of the balanced hull of `s`
+  absolutely convex hull of a set `s` equals the convex hull of the balanced hull of `s`.
+* `absConvexHull_eq_convexHull_union_neg`: the convex hull of `s ∪ -s` is the absolute convex hull
+  of `s`.
 * `with_gaugeSeminormFamily`: the topology of a locally convex space is induced by the family
 `gaugeSeminormFamily`.
 
@@ -176,6 +178,39 @@ theorem absConvexHull_eq_convexHull_balancedHull {s : Set E} :
     exact convexHull_mono
       (Balanced.balancedHull_subset_of_subset (balanced_absConvexHull 𝕜 s)
         (subset_absConvexHull 𝕜 s)))
+
+end
+
+section
+
+variable [AddCommGroup E] [Module ℝ E]
+
+lemma balancedHull_subseteq_convexHull {s : Set E} : balancedHull ℝ s ⊆ convexHull ℝ (s ∪ -s) := by
+  intro a ha
+  obtain ⟨r, hr, y, hy, rfl⟩ := mem_balancedHull_iff.1 ha
+  apply segment_subset_convexHull (mem_union_left (-s) hy) (mem_union_right _ (neg_mem_neg.mpr hy))
+  use (1+r)/2
+  use (1-r)/2
+  constructor
+  · rw [← zero_div 2]
+    exact (div_le_div_right zero_lt_two).mpr (neg_le_iff_add_nonneg'.mp (neg_le_of_abs_le hr))
+  · constructor
+    · rw [← zero_div 2]
+      exact (div_le_div_right zero_lt_two).mpr (sub_nonneg_of_le (le_of_max_le_left hr))
+    · constructor
+      · ring_nf
+      · rw [smul_neg, ← sub_eq_add_neg, ← sub_smul]
+        apply congrFun (congrArg HSMul.hSMul _) y
+        ring_nf
+
+theorem absConvexHull_eq_convexHull_union_neg {s : Set E} :
+    absConvexHull ℝ s = convexHull ℝ (s ∪ -s) := by
+  rw [absConvexHull_eq_convexHull_balancedHull]
+  exact le_antisymm (by
+    rw [← Convex.convexHull_eq (convex_convexHull ℝ (s ∪ -s)) ]
+    exact convexHull_mono balancedHull_subseteq_convexHull)
+    (convexHull_mono (union_subset (subset_balancedHull ℝ)
+      (fun _ _ => by rw [mem_balancedHull_iff]; use -1; aesop)))
 
 end
 
