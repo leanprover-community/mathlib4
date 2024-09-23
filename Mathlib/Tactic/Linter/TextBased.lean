@@ -41,8 +41,6 @@ open System
 
 namespace Mathlib.Linter.TextBased
 
--- TODO remove Repr instances (used for debugging) if it's bad to have them!
-
 /-- Different kinds of "broad imports" that are linted against. -/
 inductive BroadImports
   /-- Importing the entire "Mathlib.Tactic" folder -/
@@ -130,9 +128,12 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
       s!"unicode character '{c}' ({printCodepointHex c}) is not recommended. \
         Consider adding it to the whitelist."
   | StyleError.unicodeVariant s selector pos =>
-    let variant := if selector == UnicodeVariant.emoji then "emoji"
-      else if selector == UnicodeVariant.text then "text"
-      else "default"
+    let variant := if selector == UnicodeVariant.emoji then
+      "emoji"
+    else if selector == UnicodeVariant.text then
+      "text"
+    else
+      "default"
     let oldHex := " ".intercalate <| s.data.map printCodepointHex
     match s, selector with
     | ⟨c₀ :: [c₁]⟩, some sel =>
@@ -231,12 +232,9 @@ def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
     -- Print for humans: clickable file name and omit the error code
     s!"error: {errctx.path}:{errctx.lineNumber}: {errorMessage}"
 
-
 /-- Removes quotation marks '"' at front and back of string. -/
 def removeQuotations (s : String) : String := (s.stripPrefix "\"").stripSuffix "\""
 
-
--- TODO check if this doc change is correct as per intentions of original authors!!!
 /-- Try parsing an `ErrorContext` from a string: return `some` if successful, `none` otherwise.
 This should be the inverse of `fun ctx ↦ outputMessage ctx .exceptionsFile` -/
 def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
