@@ -1198,7 +1198,6 @@ def subtypeProdEquivProd {α β} {p : α → Prop} {q : β → Prop} :
 
 /-- A subtype of a `Prod` that depends only on the first component is equivalent to the
 corresponding subtype of the first type times the second type. -/
-@[simps]
 def prodSubtypeFstEquivSubtypeProd {α β} {p : α → Prop} :
     {s : α × β // p s.1} ≃ {a // p a} × β where
   toFun x := ⟨⟨x.1.1, x.2⟩, x.1.2⟩

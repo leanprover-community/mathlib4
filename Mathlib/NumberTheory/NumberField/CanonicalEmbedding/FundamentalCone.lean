@@ -421,12 +421,7 @@ def integralPointEquiv :
 
 @[simp]
 theorem integralPointEquiv_apply_fst (a : integralPoint K) :
-    ((integralPointEquiv K a).1 : Ideal (𝓞 K)) = span {(preimageOfIntegralPoint a : 𝓞 K)} := by
-  simp_rw [integralPointEquiv, Equiv.trans_apply, Equiv.sigmaEquivProdOfEquiv_apply,
-    Equiv.prodCongrLeft_apply, Equiv.trans_apply,
-    MulAction.selfEquivSigmaOrbitsQuotientStabilizer_apply_fst,
-    integralPointQuotEquivAssociates_apply,
-    associatesNonZeroDivisorsEquivIsPrincipal_apply]
+    ((integralPointEquiv K a).1 : Ideal (𝓞 K)) = span {(preimageOfIntegralPoint a : 𝓞 K)} := rfl
 
 variable (K) in
 /-- For an integer `n`, The equivalence between the `integralPoint K` of norm `n` and the product
@@ -452,10 +447,9 @@ def integralPointEquivNorm (n : ℕ) :
 theorem integralPointEquivNorm_apply_fst {n : ℕ} {a : integralPoint K} (ha : intNorm a = n) :
     ((integralPointEquivNorm K n ⟨a, ha⟩).1 : Ideal (𝓞 K)) =
       span {(preimageOfIntegralPoint a : 𝓞 K)} := by
-  simp_rw [integralPointEquivNorm, Equiv.instTrans_trans, Equiv.trans_apply,
-    Equiv.prodSubtypeFstEquivSubtypeProd_apply, Equiv.subtypeEquiv_apply,
-    Equiv.prodCongrLeft_apply, Equiv.subtypeSubtypeEquivSubtypeInter_apply_coe,
-    integralPointEquiv_apply_fst]
+  simp_rw [integralPointEquivNorm, Equiv.prodSubtypeFstEquivSubtypeProd, Equiv.instTrans_trans,
+    Equiv.prodCongrLeft, Equiv.trans_apply, Equiv.subtypeEquiv_apply, Equiv.coe_fn_mk,
+    Equiv.subtypeSubtypeEquivSubtypeInter_apply_coe, integralPointEquiv_apply_fst]
 
 variable (K)
 

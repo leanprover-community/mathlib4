@@ -208,11 +208,6 @@ noncomputable def selfEquivSigmaOrbitsQuotientStabilizer' {φ : Ω → β}
         (Equiv.Set.ofEq <| orbitRel.Quotient.orbit_eq_orbit_out _ hφ).trans <|
           orbitEquivQuotientStabilizer α (φ ω)
 
-@[to_additive (attr := simp)]
-theorem selfEquivSigmaOrbitsQuotientStabilizer'_apply_fst {φ : Ω → β}
-    (hφ : LeftInverse Quotient.mk'' φ) (b : β) :
-    (selfEquivSigmaOrbitsQuotientStabilizer' α β hφ b).fst = ⟦b⟧ := rfl
-
 /-- **Class formula** for a finite group acting on a finite type. See
 `MulAction.card_eq_sum_card_group_div_card_stabilizer` for a specialized version using
 `Quotient.out'`. -/
@@ -240,12 +235,6 @@ theorem card_eq_sum_card_group_div_card_stabilizer' [Fintype α] [Fintype β] [F
       `AddAction.self_equiv_sigma_orbits_quotient_stabilizer'` with `φ = Quotient.out'`. "]
 noncomputable def selfEquivSigmaOrbitsQuotientStabilizer : β ≃ Σω : Ω, α ⧸ stabilizer α ω.out' :=
   selfEquivSigmaOrbitsQuotientStabilizer' α β Quotient.out_eq'
-
-@[to_additive (attr := simp)]
-theorem selfEquivSigmaOrbitsQuotientStabilizer_apply_fst (b : β) :
-    (selfEquivSigmaOrbitsQuotientStabilizer α β b).fst = ⟦b⟧ := by
-  rw [selfEquivSigmaOrbitsQuotientStabilizer,
-    selfEquivSigmaOrbitsQuotientStabilizer'_apply_fst]
 
 /-- **Class formula** for a finite group acting on a finite type. -/
 @[to_additive "**Class formula** for a finite group acting on a finite type."]
