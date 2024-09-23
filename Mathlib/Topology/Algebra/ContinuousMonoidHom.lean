@@ -554,6 +554,16 @@ a homeomorphism which preserves addition."]
 def mk' (f : M ≃ₜ N) (h : ∀ x y, f (x * y) = f x * f y) : M ≃ₜ* N :=
   ⟨⟨f.toEquiv,h⟩, f.continuous_toFun, f.continuous_invFun⟩
 
+instance : Coe (M ≃ₜ* N) (M ≃ₜ N) where
+  coe := toHomeomorph
+
+@[to_additive (attr := simp)]
+theorem toHomeomorph_eq_coe (f : M ≃ₜ* N) : f.toHomeomorph = f :=
+  rfl
+
+theorem isHomeomorph (f : M ≃ₜ* N) : IsHomeomorph f :=
+  Homeomorph.isHomeomorph f
+
 end coe
 
 section bijective
