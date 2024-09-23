@@ -55,9 +55,9 @@ theorem mapIdxGo_append : ∀ (f : ℕ → α → β) (l₁ l₂ : List α) (arr
       cases l₂
       · rfl
       · rw [List.length_append] at h; contradiction
-    rw [l₁_nil, l₂_nil]; simp only [mapIdx.go, Array.toArray_toList]
+    rw [l₁_nil, l₂_nil]; simp only [mapIdx.go, List.toArray_toList]
   · cases' l₁ with head tail <;> simp only [mapIdx.go]
-    · simp only [nil_append, Array.toArray_toList]
+    · simp only [nil_append, List.toArray_toList]
     · simp only [List.append_eq]
       rw [ih]
       · simp only [cons_append, length_cons, length_append, Nat.succ.injEq] at h
