@@ -503,16 +503,30 @@ end LinearOrderedSemifield
 section LinearOrderedField
 variable [LinearOrderedField α] [FloorSemiring α] {a b : α}
 
-lemma ceil_lt_mul (ha : 0 ≤ a) (hb : 1 < b) (h : (b - 1)⁻¹ ≤ a) : ⌈a⌉₊ < b * a := by
-  rw [← sub_pos] at hb
-  calc
-    ⌈a⌉₊ < a + 1 := ceil_lt_add_one ha
-    _ = a + (b - 1) * (b - 1)⁻¹ := by rw [mul_inv_cancel₀]; positivity
-    _ ≤ a + (b - 1) * a := by gcongr; positivity
-    _ = b * a := by rw [sub_one_mul, add_sub_cancel]
+lemma ceil_lt_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉₊ / b < a) : ⌈a⌉₊ < b * a := by
+  obtain hab | hba := le_total a (b - 1)⁻¹
+  · calc
+      ⌈a⌉₊ ≤ (⌈(b - 1)⁻¹⌉₊ : α) := by gcongr
+      _ < b * a := by rwa [← div_lt_iff']; positivity
+  · rw [← sub_pos] at hb
+    calc
+      ⌈a⌉₊ < a + 1 := ceil_lt_add_one <| hba.trans' <| by positivity
+      _ = a + (b - 1) * (b - 1)⁻¹ := by rw [mul_inv_cancel₀]; positivity
+      _ ≤ a + (b - 1) * a := by gcongr; positivity
+      _ = b * a := by rw [sub_one_mul, add_sub_cancel]
 
-lemma ceil_lt_two_mul (ha : 1 ≤ a) : ⌈a⌉₊ < 2 * a :=
-  ceil_lt_mul (by positivity) one_lt_two (by norm_num; exact ha)
+lemma ceil_le_mul (hb : 1 < b) (ha : ⌈(b - 1)⁻¹⌉₊ / b ≤ a) : ⌈a⌉₊ ≤ b * a := by
+  obtain rfl | ha := ha.eq_or_lt
+  · rw [mul_div_cancel₀, cast_le, ceil_le]
+    exact _root_.div_le_self (by positivity) hb.le
+    · positivity
+  · exact (ceil_lt_mul hb ha).le
+
+lemma ceil_lt_two_mul (ha : 2⁻¹ < a) : ⌈a⌉₊ < 2 * a :=
+  ceil_lt_mul one_lt_two (by norm_num at ha ⊢; exact ha)
+
+lemma ceil_le_two_mul (ha : 2⁻¹ ≤ a) : ⌈a⌉₊ ≤ 2 * a :=
+  ceil_le_mul one_lt_two (by norm_num at ha ⊢; exact ha)
 
 end LinearOrderedField
 end Nat
@@ -1233,13 +1247,17 @@ lemma ceil_div_ceil_inv_sub_one (ha : 1 ≤ a) : ⌈⌈(a - 1)⁻¹⌉ / a⌉ = 
   field_simp
   exact sub_pos.2 <| inv_lt_one ha
 
-lemma ceil_lt_mul (hb : 1 < b) (ha : ⌈(b - 1)⁻¹⌉ / b < a) : ⌈a⌉ < b * a := by
-  rw [← sub_pos] at hb
-  calc
-    ⌈a⌉ < a + 1 := ceil_lt_add_one _
-    _ = a + (b - 1) * (b - 1)⁻¹ := by rw [mul_inv_cancel₀]; positivity
-    _ ≤ a + (b - 1) * a := by gcongr; positivity
-    _ = b * a := by rw [sub_one_mul, add_sub_cancel]
+lemma ceil_lt_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉ / b < a) : ⌈a⌉ < b * a := by
+  obtain hab | hba := le_total a (b - 1)⁻¹
+  · calc
+      ⌈a⌉ ≤ (⌈(b - 1)⁻¹⌉ : k) := by gcongr
+      _ < b * a := by rwa [← div_lt_iff']; positivity
+  · rw [← sub_pos] at hb
+    calc
+      ⌈a⌉ < a + 1 := ceil_lt_add_one _
+      _ = a + (b - 1) * (b - 1)⁻¹ := by rw [mul_inv_cancel₀]; positivity
+      _ ≤ a + (b - 1) * a := by gcongr; positivity
+      _ = b * a := by rw [sub_one_mul, add_sub_cancel]
 
 lemma ceil_le_mul (hb : 1 < b) (ha : ⌈(b - 1)⁻¹⌉ / b ≤ a) : ⌈a⌉ ≤ b * a := by
   obtain rfl | ha := ha.eq_or_lt
