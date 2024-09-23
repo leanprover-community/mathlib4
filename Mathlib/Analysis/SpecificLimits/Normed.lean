@@ -130,29 +130,24 @@ theorem TFAE_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
     fun x hx ↦ ⟨(neg_lt_zero.2 (hx.1.trans_lt hx.2)).trans_le hx.1, hx.2⟩
   have B : Ioo 0 R ⊆ Ioo (-R) R := Subset.trans Ioo_subset_Ico_self A
   -- First we prove that 1-4 are equivalent using 2 → 3 → 4, 1 → 3, and 2 → 1
-  tfae_have 1 → 3
-  · exact fun ⟨a, ha, H⟩ ↦ ⟨a, ha, H.isBigO⟩
-  tfae_have 2 → 1
-  · exact fun ⟨a, ha, H⟩ ↦ ⟨a, B ha, H⟩
+  tfae_have 1 → 3 := fun ⟨a, ha, H⟩ ↦ ⟨a, ha, H.isBigO⟩
+  tfae_have 2 → 1 := fun ⟨a, ha, H⟩ ↦ ⟨a, B ha, H⟩
   tfae_have 3 → 2
-  · rintro ⟨a, ha, H⟩
+  | ⟨a, ha, H⟩ => by
     rcases exists_between (abs_lt.2 ha) with ⟨b, hab, hbR⟩
     exact ⟨b, ⟨(abs_nonneg a).trans_lt hab, hbR⟩,
       H.trans_isLittleO (isLittleO_pow_pow_of_abs_lt_left (hab.trans_le (le_abs_self b)))⟩
-  tfae_have 2 → 4
-  · exact fun ⟨a, ha, H⟩ ↦ ⟨a, ha, H.isBigO⟩
-  tfae_have 4 → 3
-  · exact fun ⟨a, ha, H⟩ ↦ ⟨a, B ha, H⟩
+  tfae_have 2 → 4 := fun ⟨a, ha, H⟩ ↦ ⟨a, ha, H.isBigO⟩
+  tfae_have 4 → 3 := fun ⟨a, ha, H⟩ ↦ ⟨a, B ha, H⟩
   -- Add 5 and 6 using 4 → 6 → 5 → 3
   tfae_have 4 → 6
-  · rintro ⟨a, ha, H⟩
+  | ⟨a, ha, H⟩ => by
     rcases bound_of_isBigO_nat_atTop H with ⟨C, hC₀, hC⟩
     refine ⟨a, ha, C, hC₀, fun n ↦ ?_⟩
     simpa only [Real.norm_eq_abs, abs_pow, abs_of_nonneg ha.1.le] using hC (pow_ne_zero n ha.1.ne')
-  tfae_have 6 → 5
-  · exact fun ⟨a, ha, C, H₀, H⟩ ↦ ⟨a, ha.2, C, Or.inl H₀, H⟩
+  tfae_have 6 → 5 := fun ⟨a, ha, C, H₀, H⟩ ↦ ⟨a, ha.2, C, Or.inl H₀, H⟩
   tfae_have 5 → 3
-  · rintro ⟨a, ha, C, h₀, H⟩
+  | ⟨a, ha, C, h₀, H⟩ => by
     rcases sign_cases_of_C_mul_pow_nonneg fun n ↦ (abs_nonneg _).trans (H n) with (rfl | ⟨hC₀, ha₀⟩)
     · obtain rfl : f = 0 := by
         ext n
@@ -163,19 +158,15 @@ theorem TFAE_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
       isBigO_of_le' _ fun n ↦ (H n).trans <| mul_le_mul_of_nonneg_left (le_abs_self _) hC₀.le⟩
   -- Add 7 and 8 using 2 → 8 → 7 → 3
   tfae_have 2 → 8
-  · rintro ⟨a, ha, H⟩
+  | ⟨a, ha, H⟩ => by
     refine ⟨a, ha, (H.def zero_lt_one).mono fun n hn ↦ ?_⟩
     rwa [Real.norm_eq_abs, Real.norm_eq_abs, one_mul, abs_pow, abs_of_pos ha.1] at hn
-  tfae_have 8 → 7
-  · exact fun ⟨a, ha, H⟩ ↦ ⟨a, ha.2, H⟩
+  tfae_have 8 → 7 := fun ⟨a, ha, H⟩ ↦ ⟨a, ha.2, H⟩
   tfae_have 7 → 3
-  · rintro ⟨a, ha, H⟩
+  | ⟨a, ha, H⟩ => by
     have : 0 ≤ a := nonneg_of_eventually_pow_nonneg (H.mono fun n ↦ (abs_nonneg _).trans)
     refine ⟨a, A ⟨this, ha⟩, IsBigO.of_bound 1 ?_⟩
     simpa only [Real.norm_eq_abs, one_mul, abs_pow, abs_of_nonneg this]
-  -- Porting note: used to work without explicitly having 6 → 7
-  tfae_have 6 → 7
-  · exact fun h ↦ tfae_8_to_7 <| tfae_2_to_8 <| tfae_3_to_2 <| tfae_5_to_3 <| tfae_6_to_5 h
   tfae_finish
 
 /-- For any natural `k` and a real `r > 1` we have `n ^ k = o(r ^ n)` as `n → ∞`. -/
