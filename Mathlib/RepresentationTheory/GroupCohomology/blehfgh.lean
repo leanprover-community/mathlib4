@@ -428,12 +428,24 @@ abbrev iCycles (n : ℕ) : cycles A n ⟶ ModuleCat.of k ((Fin n → G) →₀ A
 abbrev toCycles (i j : ℕ) : ModuleCat.of k ((Fin i → G) →₀ A) ⟶ cycles A j :=
   (inhomogeneousChains A).toCycles i j
 
+abbrev opcycles (n : ℕ) : ModuleCat k := (inhomogeneousChains A).opcycles n
+
+noncomputable def pOpcycles (n : ℕ) :
+    ModuleCat.of k ((Fin n → G) →₀ A) ⟶ opcycles A n := (inhomogeneousChains A).pOpcycles n
+
+noncomputable def fromOpcycles (i j : ℕ) :
+    opcycles A i ⟶ ModuleCat.of k ((Fin j → G) →₀ A) := (inhomogeneousChains A).fromOpcycles i j
+
 def groupHomology (n : ℕ) : ModuleCat k :=
   (inhomogeneousChains A).homology n
 
 abbrev groupHomologyπ (n : ℕ) :
     cycles A n ⟶ groupHomology A n :=
   (inhomogeneousChains A).homologyπ n
+
+abbrev groupHomologyι (n : ℕ) :
+    groupHomology A n ⟶ opcycles A n :=
+  (inhomogeneousChains A).homologyι n
 
 def groupHomologyIsoTor [Group G] (A : Rep k G) (n : ℕ) :
     groupHomology A n ≅ ((Tor k G n).obj A).obj (Rep.trivial k G k) :=
