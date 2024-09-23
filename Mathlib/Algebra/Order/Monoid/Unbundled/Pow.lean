@@ -24,40 +24,41 @@ section Preorder
 
 variable [Preorder M]
 
-section Left
+namespace Left
 
-variable [CovariantClass M M (· * ·) (· ≤ ·)] {x : M}
+variable [CovariantClass M M (· * ·) (· ≤ ·)] {a b : M}
 
-@[to_additive (attr := mono, gcongr) nsmul_le_nsmul_right]
-theorem pow_le_pow_left' [CovariantClass M M (swap (· * ·)) (· ≤ ·)] {a b : M} (hab : a ≤ b) :
-    ∀ i : ℕ, a ^ i ≤ b ^ i
-  | 0 => by simp
-  | k + 1 => by
-    rw [pow_succ, pow_succ]
-    exact mul_le_mul' (pow_le_pow_left' hab k) hab
-
-@[to_additive nsmul_nonneg]
-theorem one_le_pow_of_one_le' {a : M} (H : 1 ≤ a) : ∀ n : ℕ, 1 ≤ a ^ n
+@[to_additive Left.nsmul_nonneg]
+theorem one_le_pow_of_le (ha : 1 ≤ a) : ∀ n : ℕ, 1 ≤ a ^ n
   | 0 => by simp
   | k + 1 => by
     rw [pow_succ]
-    exact one_le_mul (one_le_pow_of_one_le' H k) H
+    exact one_le_mul (one_le_pow_of_le ha k) ha
 
-@[to_additive Left.nsmul_nonneg]
-theorem Left.one_le_pow_of_le (hx : 1 ≤ x) {n : ℕ} : 1 ≤ x ^ n :=
-  one_le_pow_of_one_le' hx n
-
-@[deprecated (since := "2024-09-21")] alias Left.pow_nonneg := Left.nsmul_nonneg
+@[deprecated (since := "2024-09-21")] alias pow_nonneg := nsmul_nonneg
 
 @[to_additive nsmul_nonpos]
-theorem pow_le_one' {a : M} (H : a ≤ 1) (n : ℕ) : a ^ n ≤ 1 :=
-  one_le_pow_of_one_le' (M := Mᵒᵈ) H n
+theorem pow_le_one_of_le (ha : a ≤ 1) (n : ℕ) : a ^ n ≤ 1 := one_le_pow_of_le (M := Mᵒᵈ) ha n
 
-@[to_additive Left.nsmul_nonpos]
-theorem Left.pow_le_one_of_le (hx : x ≤ 1) {n : ℕ} : x ^ n ≤ 1 :=
-  pow_le_one' hx n
+@[deprecated (since := "2024-09-21")] alias pow_nonpos := nsmul_nonpos
 
-@[deprecated (since := "2024-09-21")] alias Left.pow_nonpos := Left.nsmul_nonpos
+@[to_additive nsmul_neg]
+theorem pow_lt_one_of_lt {a : M} {n : ℕ} (h : a < 1) (hn : n ≠ 0) : a ^ n < 1 := by
+  rcases Nat.exists_eq_succ_of_ne_zero hn with ⟨k, rfl⟩
+  rw [pow_succ']
+  exact mul_lt_one_of_lt_of_le h (pow_le_one_of_le h.le _)
+
+@[deprecated (since := "2024-09-21")] alias pow_neg := nsmul_neg
+
+end Left
+
+@[to_additive nsmul_nonneg] alias one_le_pow_of_one_le' := Left.one_le_pow_of_le
+@[to_additive nsmul_nonpos] alias pow_le_one' := Left.pow_le_one_of_le
+@[to_additive nsmul_neg] alias pow_lt_one' := Left.pow_lt_one_of_lt
+
+section Left
+
+variable [CovariantClass M M (· * ·) (· ≤ ·)] {x : M}
 
 @[to_additive nsmul_left_monotone]
 theorem pow_right_monotone {a : M} (ha : 1 ≤ a) : Monotone fun n : ℕ ↦ a ^ n :=
@@ -72,20 +73,8 @@ theorem pow_le_pow_right_of_le_one' {a : M} {n m : ℕ} (ha : a ≤ 1) (h : n �
   pow_le_pow_right' (M := Mᵒᵈ) ha h
 
 @[to_additive nsmul_pos]
-theorem one_lt_pow' {a : M} (ha : 1 < a) {k : ℕ} (hk : k ≠ 0) : 1 < a ^ k := by
-  rcases Nat.exists_eq_succ_of_ne_zero hk with ⟨l, rfl⟩
-  rw [pow_succ']
-  exact one_lt_mul_of_lt_of_le' ha (one_le_pow_of_one_le' ha.le _)
-
-@[to_additive nsmul_neg]
-theorem pow_lt_one' {a : M} (ha : a < 1) {k : ℕ} (hk : k ≠ 0) : a ^ k < 1 :=
-  one_lt_pow' (M := Mᵒᵈ) ha hk
-
-@[to_additive Left.nsmul_neg]
-theorem Left.pow_lt_one_of_lt {a : M} {n : ℕ} (hn : 0 < n) (h : a < 1) : a ^ n < 1 :=
-  pow_lt_one' h hn.ne'
-
-@[deprecated (since := "2024-09-21")] alias Left.pow_neg := Left.nsmul_neg
+theorem one_lt_pow' {a : M} (ha : 1 < a) {k : ℕ} (hk : k ≠ 0) : 1 < a ^ k :=
+  pow_lt_one' (M := Mᵒᵈ) ha hk
 
 end Left
 
@@ -158,6 +147,13 @@ section CovariantLESwap
 
 variable [Preorder β] [CovariantClass M M (· * ·) (· ≤ ·)]
   [CovariantClass M M (swap (· * ·)) (· ≤ ·)]
+
+@[to_additive (attr := mono, gcongr) nsmul_le_nsmul_right]
+theorem pow_le_pow_left' {a b : M} (hab : a ≤ b) : ∀ i : ℕ, a ^ i ≤ b ^ i
+  | 0 => by simp
+  | k + 1 => by
+    rw [pow_succ, pow_succ]
+    exact mul_le_mul' (pow_le_pow_left' hab k) hab
 
 @[to_additive Monotone.const_nsmul]
 theorem Monotone.pow_const {f : β → M} (hf : Monotone f) : ∀ n : ℕ, Monotone fun a => f a ^ n
