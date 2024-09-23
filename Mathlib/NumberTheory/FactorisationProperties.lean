@@ -113,7 +113,7 @@ theorem deficient_or_perfect_or_abundant (hn : 0 ≠ n) :
 theorem Perfect.pseudoperfect (h : Perfect n) : Pseudoperfect n :=
   ⟨h.2, ⟨properDivisors n, ⟨fun ⦃_⦄ a ↦ a, h.1⟩⟩⟩
 
-theorem prime_not_abundant (h : Prime n) : ¬ Abundant n :=
+theorem Prime.not_abundant (h : Prime n) : ¬ Abundant n :=
   fun h1 ↦ (h.one_lt.trans h1).ne' (sum_properDivisors_eq_one_iff_prime.mpr h)
 
 theorem Prime.not_weird (h : Prime n) : ¬ Weird n := by
