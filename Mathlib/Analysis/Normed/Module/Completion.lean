@@ -29,27 +29,6 @@ namespace Completion
 
 variable (𝕜 E : Type*)
 
-instance [Zero 𝕜] [Zero E] [SMul 𝕜 E] [PseudoMetricSpace 𝕜] [PseudoMetricSpace E]
-    [BoundedSMul 𝕜 E] : BoundedSMul 𝕜 (Completion E) where
-  dist_smul_pair' c x₁ x₂ := by
-    induction x₁, x₂ using induction_on₂ with
-    | hp =>
-      exact isClosed_le
-        ((continuous_fst.const_smul _).dist (continuous_snd.const_smul _))
-        (continuous_const.mul (continuous_fst.dist continuous_snd))
-    | ih x₁ x₂ =>
-      rw [← coe_smul, ← coe_smul, Completion.dist_eq,  Completion.dist_eq]
-      exact dist_smul_pair c x₁ x₂
-  dist_pair_smul' c₁ c₂ x := by
-    induction x using induction_on with
-    | hp =>
-      exact isClosed_le
-        ((continuous_const_smul _).dist (continuous_const_smul _))
-        (continuous_const.mul (continuous_id.dist continuous_const))
-    | ih x =>
-      rw [← coe_smul, ← coe_smul, Completion.dist_eq, ← coe_zero, Completion.dist_eq]
-      exact dist_pair_smul c₁ c₂ x
-
 instance [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] :
     NormedSpace 𝕜 (Completion E) where
   norm_smul_le := norm_smul_le
