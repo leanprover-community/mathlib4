@@ -29,7 +29,7 @@ disconnected.
 
 -/
 
-universe u
+universe u v
 
 open CategoryTheory Topology
 
@@ -168,5 +168,13 @@ instance : HasForget₂ ProfiniteGrp Grp where
 def ofClosedSubgroup {G : ProfiniteGrp} (H : ClosedSubgroup G)  : ProfiniteGrp :=
   letI : CompactSpace H := isCompact_iff_compactSpace.mp (IsClosed.isCompact H.isClosed')
   of H.1
+
+/-- A topological group that has a ContinuousMulEquiv to a profinite group is profinite. -/
+def ofContinuousMulEquivProfiniteGrp {G : ProfiniteGrp.{u}} {H : Type v} [TopologicalSpace H]
+    [Group H] [TopologicalGroup H] (e : G ≃ₜ* H) : ProfiniteGrp.{v} :=
+  letI : CompactSpace H := Homeomorph.compactSpace e.toHomeomorph
+  letI : TotallyDisconnectedSpace G := Profinite.instTotallyDisconnectedSpaceαTopologicalSpaceToTop
+  letI : TotallyDisconnectedSpace H := Homeomorph.totallyDisconnectedSpace e.toHomeomorph
+  .of H
 
 end ProfiniteGrp
