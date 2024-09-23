@@ -17,50 +17,18 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: install elan
         run: |
           set -o pipefail
           curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
-      - run: |
-          # the checkout dance, to avoid a detached head
-          git checkout master
-          git checkout -
-
-          lake exe autolabel "$NUMBER"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_REPO: ${{ github.repository }}
-          NUMBER: ${{ github.event.number }}
-      - name: Auto-label script
-        if: false
+      - name: lake exe autolabel
         run: |
           # the checkout dance, to avoid a detached head
           git checkout master
           git checkout -
-
-          # append the "noisy" commands, so we can read off their values and not fail CI
-          printf '\nproduce_labels! "git"\n\nproduce_labels "git"\n' >> Mathlib/Tactic/Autolabels/Labels.lean
-
-          # build the file, showing its output -- useful for debugging
-          # and save the cleaned up output in the `labels` variable
-          # source: https://serverfault.com/a/989827
-          { labels="$(lake build Mathlib.Tactic.Autolabels.Labels | tee /dev/fd/3 | sed -n 's=.*Applicable labels: *\(.*\)=\1=p')"; } 3>&1
-
-          if [ -z "${labels}" ]
-          then
-            printf 'No label found\n'
-          elif
-            [[ ${labels} =~ , ]]
-          then
-            printf 'More than one label found: not adding a label\n'
-          else
-            printf 'Exactly one label found: running\n'
-            printf $'\'gh issue edit %s --add-label %s\'\n' "$NUMBER" "${labels}"
-            gh issue edit "$NUMBER" --add-label "${labels}"
-          fi
+          lake exe autolabel "$NUMBER"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
