@@ -163,7 +163,7 @@ theorem Prime.deficient_pow  (h : Prime n) : Deficient (n ^ m) := by
 
 theorem Prime.deficient (h : Prime n) : Deficient n := by
   rw [← pow_one n]
-  exact Prime.deficient_pow h
+  exact h.deficient_pow
 
 /-- There exists infinitely many deficient numbers -/
 theorem infinite_deficient : {n : ℕ | n.Deficient}.Infinite := by
