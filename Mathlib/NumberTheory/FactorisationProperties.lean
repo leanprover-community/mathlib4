@@ -168,7 +168,7 @@ theorem prime_deficient (h : Prime n) : Deficient n := by
   exact prime_pow_deficient h
 
 /-- There exists infinitely many deficient numbers -/
-theorem exists_infinite_deficients : ∃ d, n ≤ d ∧ Deficient d := by
+theorem infinite_deficient : {n : ℕ | n.deficient}.Infinite := by
   obtain ⟨p, ⟨h1, h2⟩⟩ := exists_infinite_primes n
   exact ⟨p, h1, prime_deficient h2⟩
 
