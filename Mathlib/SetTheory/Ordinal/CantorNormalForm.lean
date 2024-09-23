@@ -99,7 +99,7 @@ theorem CNF_fst_le_log {b o : Ordinal.{u}} {x : Ordinal × Ordinal} :
   · simp
   · rw [CNF_ne_zero ho, mem_cons]
     rintro (rfl | h)
-    · exact le_rfl
+    · rfl
     · exact (H h).trans (log_mono_right _ (mod_opow_log_lt_self b ho).le)
 
 /-- Every exponent in the Cantor normal form `CNF b o` is less or equal to `o`. -/
