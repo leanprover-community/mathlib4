@@ -175,6 +175,12 @@ theorem absConvexHull_eq_convexHull_balancedHull {s : Set E} :
       (Balanced.balancedHull_subset_of_subset (balanced_absConvexHull 𝕜 s)
         (subset_absConvexHull 𝕜 s))
 
+end
+
+section
+
+variable [AddCommGroup E] [Module ℝ E]
+
 lemma balancedHull_subseteq_convexHull {s : Set E} : balancedHull ℝ s ⊆ convexHull ℝ (s ∪ -s) := by
   intro a ha
   obtain ⟨r, hr, y, hy, rfl⟩ := mem_balancedHull_iff.1 ha
