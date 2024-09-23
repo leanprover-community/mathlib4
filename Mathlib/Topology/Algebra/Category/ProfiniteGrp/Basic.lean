@@ -173,7 +173,7 @@ instance : profiniteGrpToProfinite.Faithful := {
 end ProfiniteGrp
 
 /-!
-# The projective limit of finite groups is profinite
+# Limits in the category of profinite groups
 
 * `ProfiniteGrp.limitCone` : The explicit limit cone in `ProfiniteGrp`。
 
