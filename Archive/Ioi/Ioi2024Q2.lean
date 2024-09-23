@@ -383,17 +383,6 @@ lemma SameCycle_iff_antisymm_repApp {α : Type*} [Finite α] (f : Equiv.Perm α)
     simp only [Equiv.Perm.iterate_eq_pow, Equiv.Perm.sameCycle_pow_right]
     rfl
 
--- theorem Finpartition.rel_of_mem_parts_ofSetoid' {α : Type*} [DecidableEq α] [Fintype α]
---     (s : Setoid α) [DecidableRel s.r] (x y : α) (f : Finset α) (hf : f ∈ (ofSetoid s).parts)
---     (hxy : s.r x y) :
---     x ∈ f ↔ y ∈ f := by
---   constructor
---   · intro hx
---     rwa [rel_of_mem_parts_ofSetoid hf hx]
---   · intro hy
---     rw [rel_of_mem_parts_ofSetoid hf hy]
---     exact Setoid.symm' _ hxy
-
 def scc {α : Type*} [Fintype α] [DecidableEq α] (f : α → α) :
     Finpartition (Finset.univ : Finset α) :=
   Finpartition.ofSetoid (AntisymmRel.setoid _ (RepApp f))
