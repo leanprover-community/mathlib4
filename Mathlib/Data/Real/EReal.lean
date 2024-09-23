@@ -1109,16 +1109,6 @@ lemma top_mul_coe_ennreal {x : ℝ≥0∞} (hx : x ≠ 0) : ⊤ * (x : EReal) = 
 lemma coe_ennreal_mul_top {x : ℝ≥0∞} (hx : x ≠ 0) : (x : EReal) * ⊤ = ⊤ := by
   rw [EReal.mul_comm, top_mul_coe_ennreal hx]
 
-/-- The product of two positive extended real numbers is positive. -/
-lemma mul_pos {a b : EReal} (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by
-  induction a
-  · exfalso; exact not_lt_bot ha
-  · induction b
-    · exfalso; exact not_lt_bot hb
-    · norm_cast at *; exact Left.mul_pos ha hb
-    · rw [EReal.mul_comm, top_mul_of_pos ha]; exact hb
-  · rw [top_mul_of_pos hb]; exact ha
-
 lemma coe_mul_bot_of_pos {x : ℝ} (h : 0 < x) : (x : EReal) * ⊥ = ⊥ :=
   if_pos h
 
@@ -1172,6 +1162,29 @@ instance : NoZeroDivisors EReal where
         <;> simp [EReal.mul_top_of_neg, EReal.mul_top_of_pos, h]
     · rcases lt_or_gt_of_ne h.2 with (h | h)
         <;> simp [EReal.top_mul_of_pos, EReal.top_mul_of_neg, h]
+
+lemma mul_pos_iff {a b : EReal} : 0 < a * b ↔ 0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 := by
+  induction a, b using EReal.induction₂_symm with
+  | symm h => simp [EReal.mul_comm, h, and_comm]
+  | top_top => simp
+  | top_pos _ hx => simp [EReal.top_mul_coe_of_pos hx, hx]
+  | top_zero => simp
+  | top_neg _ hx => simp [hx, EReal.top_mul_coe_of_neg hx, le_of_lt]
+  | top_bot => simp
+  | pos_bot _ hx => simp [hx, EReal.coe_mul_bot_of_pos hx, le_of_lt]
+  | coe_coe x y => simp [← coe_mul, _root_.mul_pos_iff]
+  | zero_bot => simp
+  | neg_bot _ hx => simp [hx, EReal.coe_mul_bot_of_neg hx]
+  | bot_bot => simp
+
+lemma mul_nonneg_iff {a b : EReal} : 0 ≤ a * b ↔ 0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
+  simp_rw [le_iff_lt_or_eq, mul_pos_iff, zero_eq_mul (a := a)]
+  rcases lt_trichotomy a 0 with (h | h | h) <;> rcases lt_trichotomy b 0 with (h' | h' | h')
+    <;> simp only [h, h', true_or, true_and, or_true, and_true] <;> tauto
+
+/-- The product of two positive extended real numbers is positive. -/
+lemma mul_pos {a b : EReal} (ha : 0 < a) (hb : 0 < b) : 0 < a * b :=
+  mul_pos_iff.mpr (Or.inl ⟨ha, hb⟩)
 
 /-- Induct on two ereals by performing case splits on the sign of one whenever the other is
 infinite. This version eliminates some cases by assuming that `P x y` implies `P (-x) y` for all
