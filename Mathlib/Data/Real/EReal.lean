@@ -351,6 +351,18 @@ protected theorem coe_pos {x : ℝ} : (0 : EReal) < x ↔ 0 < x :=
 protected theorem coe_neg' {x : ℝ} : (x : EReal) < 0 ↔ x < 0 :=
   EReal.coe_lt_coe_iff
 
+lemma toReal_nonneg {x : EReal} (hx : 0 ≤ x) : 0 ≤ x.toReal := by
+  induction x
+  · norm_num
+  · exact toReal_coe _ ▸ EReal.coe_nonneg.mp hx
+  · norm_num
+
+lemma toReal_nonpos {x : EReal} (hx : x ≤ 0) : x.toReal ≤ 0 := by
+  induction x
+  · norm_num
+  · exact toReal_coe _ ▸ EReal.coe_nonpos.mp hx
+  · norm_num
+
 theorem toReal_le_toReal {x y : EReal} (h : x ≤ y) (hx : x ≠ ⊥) (hy : y ≠ ⊤) :
     x.toReal ≤ y.toReal := by
   lift x to ℝ using ⟨ne_top_of_le_ne_top hy h, hx⟩
