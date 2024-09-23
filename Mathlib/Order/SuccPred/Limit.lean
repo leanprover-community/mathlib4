@@ -24,7 +24,7 @@ predicate `Order.IsSuccLimit`.
 -/
 
 
-variable {α : Type*}
+variable {α : Type*} {a b : α}
 
 namespace Order
 
@@ -62,7 +62,7 @@ end LT
 
 section Preorder
 
-variable [Preorder α] {a : α}
+variable [Preorder α]
 
 /-- A successor limit is a value that isn't minimal and doesn't cover any other.
 
@@ -182,7 +182,7 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α] {a b : α}
+variable [PartialOrder α]
 
 theorem isSuccLimit_iff [OrderBot α] : IsSuccLimit a ↔ a ≠ ⊥ ∧ IsSuccPrelimit a := by
   rw [IsSuccLimit, isMin_iff_eq_bot]
@@ -289,12 +289,30 @@ end IsSuccArchimedean
 
 end PartialOrder
 
+section LinearOrder
+
+variable [LinearOrder α] [SuccOrder α]
+
+theorem IsSuccPrelimit.le_iff_forall_le (h : IsSuccPrelimit a) : a ≤ b ↔ ∀ c < a, c ≤ b := by
+  constructor
+  · intro ha c hc
+    exact hc.le.trans ha
+  · intro H
+    by_contra! ha
+    exact (lt_succ_of_not_isMax ha.not_isMax).not_le <| H _ (h.succ_lt ha)
+
+theorem IsSuccPrelimit.lt_iff_forall_lt (h : IsSuccPrelimit b) : a < b ↔ ∃ c < b, a < c := by
+  rw [← not_iff_not]
+  simp [h.le_iff_forall_le]
+
+end LinearOrder
+
 /-! ### Predecessor limits -/
 
 
 section LT
 
-variable [LT α] {a : α}
+variable [LT α]
 
 /-- A predecessor pre-limit is a value that isn't covered by any other.
 
@@ -335,7 +353,7 @@ end LT
 
 section Preorder
 
-variable [Preorder α] {a : α}
+variable [Preorder α]
 
 /-- A predecessor limit is a value that isn't maximal and doesn't cover any other.
 
@@ -462,7 +480,7 @@ end Preorder
 
 section PartialOrder
 
-variable [PartialOrder α] {a b : α}
+variable [PartialOrder α]
 
 theorem isPredLimit_iff [OrderTop α] : IsPredLimit a ↔ a ≠ ⊤ ∧ IsPredPrelimit a := by
   rw [IsPredLimit, isMax_iff_eq_top]
@@ -555,12 +573,24 @@ end IsPredArchimedean
 
 end PartialOrder
 
+section LinearOrder
+
+variable [LinearOrder α] [PredOrder α]
+
+theorem IsPredPrelimit.le_iff_forall_le (h : IsPredPrelimit a) : b ≤ a ↔ ∀ ⦃c⦄, a < c → b ≤ c :=
+  h.dual.le_iff_forall_le
+
+theorem IsPredPrelimit.lt_iff_forall_lt (h : IsPredPrelimit b) : b < a ↔ ∃ c, b < c ∧ c < a :=
+  h.dual.lt_iff_forall_lt
+
+end LinearOrder
+
 end Order
 
 /-! ### Induction principles -/
 
 
-variable {C : α → Sort*} {b : α}
+variable {C : α → Sort*}
 
 namespace Order
 
