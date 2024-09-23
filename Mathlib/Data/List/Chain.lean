@@ -435,6 +435,31 @@ lemma Chain'.iterate_eq_of_apply_eq {α : Type*} {f : α → α} {l : List α}
     apply hl
     omega
 
+theorem chain'_attachWith {l : List α} {p : α → Prop} (h : ∀ x ∈ l, p x)
+    {r : {a // p a} → {a // p a} → Prop} :
+    (l.attachWith p h).Chain' r ↔ l.Chain' fun a b ↦ ∃ ha hb, r ⟨a, ha⟩ ⟨b, hb⟩ := by
+  induction l with
+  | nil => rfl
+  | cons a l IH =>
+    rw [attachWith_cons, chain'_cons', chain'_cons', IH, and_congr_left]
+    simp_rw [head?_attachWith]
+    intros
+    constructor <;>
+    intro hc b (hb : _ = _)
+    · simp_rw [hb, Option.pbind_some] at hc
+      have hb' := h b (mem_cons_of_mem a (mem_of_mem_head? hb))
+      exact ⟨h a (mem_cons_self a l), hb', hc ⟨b, hb'⟩ rfl⟩
+    · cases l with
+      | nil => simp at hb
+      | cons b l =>
+        obtain ⟨_, _, rfl⟩ := hb
+        obtain ⟨_, _, hr⟩ := hc b rfl
+        exact hr
+
+theorem chain'_attach {l : List α} {r : {a // a ∈ l} → {a // a ∈ l} → Prop} :
+    l.attach.Chain' r ↔ l.Chain' fun a b ↦ ∃ ha hb, r ⟨a, ha⟩ ⟨b, hb⟩ :=
+  chain'_attachWith fun _ ↦ id
+
 end List
 
 
