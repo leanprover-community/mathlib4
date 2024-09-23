@@ -1099,6 +1099,16 @@ lemma top_mul_of_pos {x : EReal} (h : 0 < x) : ⊤ * x = ⊤ := by
   rw [EReal.mul_comm]
   exact mul_top_of_pos h
 
+lemma top_mul_of_neg {x : EReal} (h : x < 0) : ⊤ * x = ⊥ := by
+  rw [EReal.mul_comm]
+  exact mul_top_of_neg h
+
+lemma top_mul_coe_ennreal {x : ℝ≥0∞} (hx : x ≠ 0) : ⊤ * (x : EReal) = ⊤ :=
+  top_mul_of_pos <| coe_ennreal_pos.mpr <| pos_iff_ne_zero.mpr hx
+
+lemma coe_ennreal_mul_top {x : ℝ≥0∞} (hx : x ≠ 0) : (x : EReal) * ⊤ = ⊤ := by
+  rw [EReal.mul_comm, top_mul_coe_ennreal hx]
+
 /-- The product of two positive extended real numbers is positive. -/
 lemma mul_pos {a b : EReal} (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by
   induction a
@@ -1108,10 +1118,6 @@ lemma mul_pos {a b : EReal} (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by
     · norm_cast at *; exact Left.mul_pos ha hb
     · rw [EReal.mul_comm, top_mul_of_pos ha]; exact hb
   · rw [top_mul_of_pos hb]; exact ha
-
-lemma top_mul_of_neg {x : EReal} (h : x < 0) : ⊤ * x = ⊥ := by
-  rw [EReal.mul_comm]
-  exact mul_top_of_neg h
 
 lemma coe_mul_bot_of_pos {x : ℝ} (h : 0 < x) : (x : EReal) * ⊥ = ⊥ :=
   if_pos h
