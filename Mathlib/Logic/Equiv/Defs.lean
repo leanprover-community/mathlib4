@@ -700,6 +700,7 @@ def sigmaEquivProd (α β : Type*) : (Σ _ : α, β) ≃ α × β :=
 
 /-- If each fiber of a `Sigma` type is equivalent to a fixed type, then the sigma type
 is equivalent to the product. -/
+@[simps!]
 def sigmaEquivProdOfEquiv {α β} {β₁ : α → Sort _} (F : ∀ a, β₁ a ≃ β) : Sigma β₁ ≃ α × β :=
   (sigmaCongrRight F).trans (sigmaEquivProd α β)
 
