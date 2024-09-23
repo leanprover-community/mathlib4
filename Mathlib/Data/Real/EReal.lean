@@ -71,6 +71,8 @@ instance : AddCommMonoidWithOne EReal :=
 instance : DenselyOrdered EReal :=
   inferInstanceAs (DenselyOrdered (WithBot (WithTop ℝ)))
 
+instance : CharZero EReal := inferInstanceAs (CharZero (WithBot (WithTop ℝ)))
+
 /-- The canonical inclusion from reals to ereals. Registered as a coercion. -/
 @[coe] def Real.toEReal : ℝ → EReal := some ∘ some
 
@@ -1134,6 +1136,20 @@ lemma toReal_mul {x y : EReal} : toReal (x * y) = toReal x * toReal y := by
   | top_neg _ h => simp [top_mul_coe_of_neg h]
   | pos_bot _ h => simp [coe_mul_bot_of_pos h]
   | neg_bot _ h => simp [coe_mul_bot_of_neg h]
+
+instance : NoZeroDivisors EReal where
+  eq_zero_or_eq_zero_of_mul_eq_zero := by
+    intro a b h
+    contrapose! h
+    induction a <;> induction b <;> try {· simp_all [← EReal.coe_mul]}
+    · rcases lt_or_gt_of_ne h.2 with (h | h)
+        <;> simp [EReal.bot_mul_of_neg, EReal.bot_mul_of_pos, h]
+    · rcases lt_or_gt_of_ne h.1 with (h | h)
+        <;> simp [EReal.mul_bot_of_pos, EReal.mul_bot_of_neg, h]
+    · rcases lt_or_gt_of_ne h.1 with (h | h)
+        <;> simp [EReal.mul_top_of_neg, EReal.mul_top_of_pos, h]
+    · rcases lt_or_gt_of_ne h.2 with (h | h)
+        <;> simp [EReal.top_mul_of_pos, EReal.top_mul_of_neg, h]
 
 /-- Induct on two ereals by performing case splits on the sign of one whenever the other is
 infinite. This version eliminates some cases by assuming that `P x y` implies `P (-x) y` for all
