@@ -907,12 +907,29 @@ theorem neg_strictAnti : StrictAnti (- · : EReal → EReal) :=
 protected theorem neg_le {a b : EReal} : -a ≤ b ↔ -b ≤ a := by
  rw [← neg_le_neg_iff, neg_neg]
 
-/-- if `-a ≤ b` then `-b ≤ a` on `EReal`. -/
+/-- `-a ≤ b → -b ≤ a` on `EReal`. -/
 protected theorem neg_le_of_neg_le {a b : EReal} (h : -a ≤ b) : -b ≤ a := EReal.neg_le.mp h
 
-/-- `a ≤ -b → b ≤ -a` on ereal -/
-theorem le_neg_of_le_neg {a b : EReal} (h : a ≤ -b) : b ≤ -a := by
-  rwa [← neg_neg b, EReal.neg_le, neg_neg]
+/-- `a ≤ -b ↔ b ≤ -a` on `EReal`. -/
+protected theorem le_neg {a b : EReal} : a ≤ -b ↔ b ≤ -a := by
+  rw [← neg_le_neg_iff, neg_neg]
+
+/-- `a ≤ -b → b ≤ -a` on `EReal`. -/
+protected theorem le_neg_of_le_neg {a b : EReal} (h : a ≤ -b) : b ≤ -a := EReal.le_neg.mp h
+
+/-- `-a < b ↔ -b < a` on `EReal`. -/
+protected theorem neg_lt {a b : EReal} : -a < b ↔ -b < a := by
+  rw [← neg_lt_neg_iff, neg_neg]
+
+/-- `-a < b → -b < a` on `EReal`. -/
+protected theorem neg_lt_of_neg_lt {a b : EReal} (h : -a < b) : -b < a := EReal.neg_lt.mp h
+
+/-- `a < -b ↔ b < -a` on `EReal`. -/
+protected theorem lt_neg {a b : EReal} : a < -b ↔ b < -a := by
+  rw [← neg_lt_neg_iff, neg_neg]
+
+/-- `a < -b → b < -a` on `EReal`. -/
+protected theorem lt_neg_of_lt_neg {a b : EReal} (h : a < -b) : b < -a := EReal.lt_neg.mp h
 
 /-- Negation as an order reversing isomorphism on `EReal`. -/
 def negOrderIso : EReal ≃o ERealᵒᵈ :=
@@ -920,11 +937,6 @@ def negOrderIso : EReal ≃o ERealᵒᵈ :=
     toFun := fun x => OrderDual.toDual (-x)
     invFun := fun x => -OrderDual.ofDual x
     map_rel_iff' := neg_le_neg_iff }
-
-theorem neg_lt_iff_neg_lt {a b : EReal} : -a < b ↔ -b < a := by
-  rw [← neg_lt_neg_iff, neg_neg]
-
-theorem neg_lt_of_neg_lt {a b : EReal} (h : -a < b) : -b < a := neg_lt_iff_neg_lt.1 h
 
 lemma neg_add {x y : EReal} (h1 : x ≠ ⊥ ∨ y ≠ ⊤) (h2 : x ≠ ⊤ ∨ y ≠ ⊥) :
     - (x + y) = - x - y := by
@@ -989,9 +1001,9 @@ lemma le_add_of_forall_le_add {a b c : EReal} (h₁ : a ≠ ⊥ ∨ b ≠ ⊤) (
   refine add_le_of_forall_add_le fun d d_a e e_b ↦ ?_
   have h₃ : d ≠ ⊥ ∨ e ≠ ⊤ := Or.inr (ne_top_of_lt e_b)
   have h₄ : d ≠ ⊤ ∨ e ≠ ⊥ := Or.inl (ne_top_of_lt d_a)
-  rw [← neg_neg d, neg_lt_iff_neg_lt, neg_neg a] at d_a
-  rw [← neg_neg e, neg_lt_iff_neg_lt, neg_neg b] at e_b
-  exact le_neg_of_le_neg <| neg_add h₃ h₄ ▸ h (- d) d_a (- e) e_b
+  rw [← neg_neg d, EReal.neg_lt, neg_neg a] at d_a
+  rw [← neg_neg e, EReal.neg_lt, neg_neg b] at e_b
+  exact EReal.le_neg_of_le_neg <| neg_add h₃ h₄ ▸ h (- d) d_a (- e) e_b
 
 /-!
 ### Subtraction
@@ -1607,7 +1619,7 @@ lemma antitone_div_right_of_nonpos {b : EReal} (h : b ≤ 0) : Antitone fun a �
   change a' * b⁻¹ ≤ a * b⁻¹
   rw [← neg_neg (a * b⁻¹), ← neg_neg (a' * b⁻¹), neg_le_neg_iff, mul_comm a b⁻¹, mul_comm a' b⁻¹,
     ← neg_mul b⁻¹ a, ← neg_mul b⁻¹ a', mul_comm (-b⁻¹) a, mul_comm (-b⁻¹) a', ← inv_neg b]
-  have : 0 ≤ -b := by apply le_neg_of_le_neg; simp [h]
+  have : 0 ≤ -b := by apply EReal.le_neg_of_le_neg; simp [h]
   exact div_le_div_right_of_nonneg this h'
 
 lemma div_le_div_right_of_nonpos {a a' b : EReal} (h : b ≤ 0) (h' : a ≤ a') :
