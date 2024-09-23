@@ -4130,6 +4130,7 @@ import Mathlib.SetTheory.Surreal.Multiplication
 import Mathlib.SetTheory.ZFC.Basic
 import Mathlib.SetTheory.ZFC.Ordinal
 import Mathlib.SetTheory.ZFC.Rank
+import Mathlib.Std.Data.HashMap
 import Mathlib.Tactic
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.AdaptationNote
