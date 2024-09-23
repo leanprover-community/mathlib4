@@ -129,7 +129,8 @@ theorem CNF_snd_lt {b o : Ordinal.{u}} (hb : 1 < b) {x : Ordinal × Ordinal} :
 /-- The exponents of the Cantor normal form are decreasing. -/
 theorem CNF_sorted (b o : Ordinal) : ((CNF b o).map Prod.fst).Sorted (· > ·) := by
   refine CNFRec b ?_ (fun o ho IH ↦ ?_) o
-  · simp
+  · rw [CNF_zero]
+    exact sorted_nil
   · rcases le_or_lt b 1 with hb | hb
     · rw [CNF_of_le_one hb ho]
       exact sorted_singleton _
