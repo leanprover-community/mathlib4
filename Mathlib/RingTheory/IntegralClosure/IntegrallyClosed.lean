@@ -277,7 +277,7 @@ end integralClosure
 
 /-- Any field is integral closed. -/
 /- Although `infer_instance` can find this if you import Mathlib, in this file they have not been
-  proven yet. However, it is used to prove fundamental property of `IsIntegrallyClosed`,
+  proven yet. However, it is used to prove a fundamental property of `IsIntegrallyClosed`,
   and it is not desirable to involve more content from other files. -/
 instance Field.instIsIntegrallyClosed (K : Type*) [Field K] : IsIntegrallyClosed K :=
   (isIntegrallyClosed_iff K).mpr fun {x} _ ↦ ⟨x, rfl⟩
