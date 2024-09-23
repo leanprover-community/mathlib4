@@ -1,0 +1,21 @@
+name: 'Close stale issues and PRs'
+on:
+  schedule:
+    - cron: '30 1 * * *' # every day at 01:30 UTC
+  workflow_dispatch:
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      # until https://github.com/actions/stale/pull/1145 is merged
+      - uses: asterisk/github-actions-stale@main-only-matching-filter
+        with:
+          debug-only: 'true' # TODO: remove in follow-up PR after testing is done!
+          stale-pr-label: 'stale'
+          stale-pr-message: 'Message to comment on stale PRs.'
+          close-pr-label: 'closed-due-to-inactivity'
+          close-pr-message: 'Comment on the staled PRs while closed'
+          days-before-stale: 60
+          days-before-close: 120
+          only-matching-filter: '[ "is:open is:pr -is:draft sort:updated-asc -label:blocked-by-other-PR -label:merge-conflict status:success -label:awaiting-CI -label:WIP -label:awaiting-author base:master -label:delegated -label:auto-merge-after-CI -label:ready-to-merge" ]'
