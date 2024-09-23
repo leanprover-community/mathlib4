@@ -1,12 +1,11 @@
 /-
 Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jujian Zhang, Nailin Guan, Youle Fang, Yuyang Zhao
+Authors: Jujian Zhang, Nailin Guan, Yuyang Zhao
 -/
 import Mathlib.Algebra.Category.Grp.FiniteGrp
 import Mathlib.Topology.Algebra.ClosedSubgroup
 import Mathlib.Topology.Algebra.ContinuousMonoidHom
-import Mathlib.Topology.Algebra.OpenSubgroup
 import Mathlib.Topology.Category.Profinite.Basic
 
 
