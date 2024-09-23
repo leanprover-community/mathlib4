@@ -204,9 +204,6 @@ theorem _root_.List.foldr_sup_eq_sup_toFinset [DecidableEq α] (l : List α) :
 theorem subset_range_sup_succ (s : Finset ℕ) : s ⊆ range (s.sup id).succ := fun _ hn =>
   mem_range.2 <| Nat.lt_succ_of_le <| @le_sup _ _ _ _ _ id _ hn
 
-theorem exists_nat_subset_range (s : Finset ℕ) : ∃ n : ℕ, s ⊆ range n :=
-  ⟨_, s.subset_range_sup_succ⟩
-
 theorem sup_induction {p : α → Prop} (hb : p ⊥) (hp : ∀ a₁, p a₁ → ∀ a₂, p a₂ → p (a₁ ⊔ a₂))
     (hs : ∀ b ∈ s, p (f b)) : p (s.sup f) := by
   induction s using Finset.cons_induction with
