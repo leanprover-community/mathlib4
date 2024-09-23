@@ -1018,25 +1018,25 @@ points, so is subtraction. There is no standard algebraic typeclass involving su
 registered on `EReal`, beyond `SubNegZeroMonoid`, because of this bad behavior.
 -/
 
-@[simp]
-theorem bot_sub (x : EReal) : ⊥ - x = ⊥ :=
-  bot_add x
+@[simp] theorem bot_sub (x : EReal) : ⊥ - x = ⊥ := bot_add x
+
+@[simp] theorem sub_top (x : EReal) : x - ⊤ = ⊥ := add_bot x
+
+@[simp] theorem top_sub_bot : (⊤ : EReal) - ⊥ = ⊤ := rfl
+
+@[simp] theorem top_sub_coe (x : ℝ) : (⊤ : EReal) - x = ⊤ := rfl
+
+@[simp] theorem coe_sub_bot (x : ℝ) : (x : EReal) - ⊥ = ⊤ := rfl
+
+lemma top_sub_of_ne_top {x : EReal} (hx : x ≠ ⊤) : ⊤ - x = ⊤ := by
+  induction x <;> tauto
 
 @[simp]
-theorem sub_top (x : EReal) : x - ⊤ = ⊥ :=
-  add_bot x
+lemma sub_self {x : EReal} (h_top : x ≠ ⊤) (h_bot : x ≠ ⊥) : x - x = 0 := by
+  induction x <;> simp_all [← coe_sub]
 
-@[simp]
-theorem top_sub_bot : (⊤ : EReal) - ⊥ = ⊤ :=
-  rfl
-
-@[simp]
-theorem top_sub_coe (x : ℝ) : (⊤ : EReal) - x = ⊤ :=
-  rfl
-
-@[simp]
-theorem coe_sub_bot (x : ℝ) : (x : EReal) - ⊥ = ⊤ :=
-  rfl
+lemma sub_self_le_zero {x : EReal} : x - x ≤ 0 := by
+  induction x <;> simp
 
 theorem sub_le_sub {x y z t : EReal} (h : x ≤ y) (h' : t ≤ z) : x - z ≤ y - t :=
   add_le_add h (neg_le_neg_iff.2 h')
