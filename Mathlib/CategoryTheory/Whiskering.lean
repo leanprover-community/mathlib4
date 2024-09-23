@@ -114,23 +114,22 @@ def Functor.FullyFaithful.whiskeringRight {F : D ⥤ E} (hF : F.FullyFaithful)
         apply f.naturality }
 
 @[simp]
-theorem whiskeringLeft_obj_id : (whiskeringLeft C C E).obj (.id _) = .id _ :=
+theorem whiskeringLeft_obj_id : (whiskeringLeft C C E).obj (𝟭 _) = 𝟭 _ :=
   rfl
 
-@[simp]
 theorem whiskeringLeft_obj_comp {D' : Type u₄} [Category.{v₄} D'] (F : C ⥤ D) (G : D ⥤ D') :
-    (whiskeringLeft D D' E).obj G ⋙ (whiskeringLeft C D E).obj F =
-    (whiskeringLeft C D' E).obj (F ⋙ G) :=
+    (whiskeringLeft C D' E).obj (F ⋙ G) =
+    (whiskeringLeft D D' E).obj G ⋙ (whiskeringLeft C D E).obj F :=
   rfl
 
 @[simp]
-theorem whiskeringRight_obj_id : (whiskeringRight E C C).obj (.id _) = .id _ :=
+theorem whiskeringRight_obj_id : (whiskeringRight E C C).obj (𝟭 _) = 𝟭 _ :=
   rfl
 
-@[simp]
 theorem whiskeringRight_obj_comp {D' : Type u₄} [Category.{v₄} D'] (F : C ⥤ D) (G : D ⥤ D') :
     (whiskeringRight E C D).obj F ⋙ (whiskeringRight E D D').obj G =
-    (whiskeringRight E C D').obj (F ⋙ G) :=
+    (whiskeringRight E C D').obj (F ⋙ G)
+     :=
   rfl
 
 instance full_whiskeringRight_obj {F : D ⥤ E} [F.Faithful] [F.Full] :
