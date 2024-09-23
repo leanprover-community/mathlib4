@@ -160,7 +160,7 @@ theorem Principal.add_absorp {a o : Ordinal} (ho : Principal (· + ·) o) (ha : 
     a + o = o :=
   principal_add_iff_add_left_eq_self.1 ho a ha
 
-theorem Principal.add_absorp_of_ge {a b c : Ordinal} (hb : Principal (· + ·) b)
+theorem Principal.add_absorp_of_le {a b c : Ordinal} (hb : Principal (· + ·) b)
     (hab : a < b) (hbc : b ≤ c) : a + c = c := by
   rw [← Ordinal.add_sub_cancel_of_le hbc, ← add_assoc, hb.add_absorp hab,
     Ordinal.add_sub_cancel_of_le hbc]
@@ -210,8 +210,8 @@ theorem add_omega_opow {a b : Ordinal} : a < ω ^ b → a + ω ^ b = ω ^ b :=
 theorem add_absorp {a b : Ordinal} : a < ω ^ b → a + ω ^ b = ω ^ b :=
   (principal_add_omega_opow b).add_absorp
 
-theorem add_absorp_of_ge {a b c : Ordinal} : a < ω ^ b → ω ^ b ≤ c → a + c = c :=
-  (principal_add_omega_opow b).add_absorp_of_ge
+theorem add_absorp_of_le {a b c : Ordinal} : a < ω ^ b → ω ^ b ≤ c → a + c = c :=
+  (principal_add_omega_opow b).add_absorp_of_le
 
 /-- The main characterization theorem for additive principal ordinals. -/
 theorem principal_add_iff_zero_or_omega_opow {o : Ordinal} :
