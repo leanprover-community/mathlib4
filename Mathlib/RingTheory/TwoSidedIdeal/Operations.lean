@@ -228,10 +228,10 @@ def asIdeal : TwoSidedIdeal R →o Ideal R where
 lemma mem_asIdeal {I : TwoSidedIdeal R} {x : R} :
     x ∈ asIdeal I ↔ x ∈ I := by simp [asIdeal]
 
-lemma gc : GaloisConnection fromIdeal (asIdeal (R := R)) := fun I J =>
-⟨fun h x hx ↦ h <| mem_span_iff.2 fun _ H ↦ H hx, fun h x hx ↦ by
-  simp only [fromIdeal, OrderHom.coe_mk, mem_span_iff] at hx
-  exact hx _ h⟩
+lemma gc : GaloisConnection fromIdeal (asIdeal (R := R)) :=
+  fun I J => ⟨fun h x hx ↦ h <| mem_span_iff.2 fun _ H ↦ H hx, fun h x hx ↦ by
+    simp only [fromIdeal, OrderHom.coe_mk, mem_span_iff] at hx
+    exact hx _ h⟩
 
 @[simp]
 lemma coe_asIdeal {I : TwoSidedIdeal R} : (asIdeal I : Set R) = I := rfl
