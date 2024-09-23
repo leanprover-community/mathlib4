@@ -119,7 +119,8 @@ theorem getElem?_mapIdx_go (f : ℕ → α → β) : ∀ (l : List α) (arr : Ar
     (mapIdx.go f l arr)[i]? =
       if h : i < arr.size then some arr[i] else Option.map (f i) l[i - arr.size]?
   | [], arr, i => by
-    simp [mapIdx.go, getElem?_eq, Array.getElem_eq_toList_getElem]
+    simp only [mapIdx.go, Array.toListImpl_eq, getElem?_eq, Array.toList_length,
+      Array.getElem_eq_toList_getElem, length_nil, Nat.not_lt_zero, ↓reduceDIte, Option.map_none']
   | a :: l, arr, i => by
     rw [mapIdx.go, getElem?_mapIdx_go]
     simp only [Array.size_push]
