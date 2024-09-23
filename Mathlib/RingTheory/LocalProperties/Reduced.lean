@@ -15,13 +15,13 @@ In this file, we prove that `IsReduced` is a local property.
 
 Let `R` be a commutative ring, `M` be a submonoid of `R`.
 
-* `localization_isReduced` :  `M⁻¹R` is reduced if `R` is reduced.
+* `isReduced_localizationPreserves` :  `M⁻¹R` is reduced if `R` is reduced.
 * `isReduced_ofLocalizationMaximal` : `R` is reduced if `Rₘ` is reduced for all maximal ideal `m`.
 
 -/
 
 /-- `M⁻¹R` is reduced if `R` is reduced. -/
-theorem localization_isReduced : LocalizationPreserves fun R hR => IsReduced R := by
+theorem isReduced_localizationPreserves : LocalizationPreserves fun R hR => IsReduced R := by
   introv R _ _
   constructor
   rintro x ⟨_ | n, e⟩
@@ -41,7 +41,7 @@ theorem localization_isReduced : LocalizationPreserves fun R hR => IsReduced R :
   exact ⟨m', by rw [← hm', mul_comm]⟩
 
 instance {R : Type*} [CommRing R] (M : Submonoid R) [IsReduced R] : IsReduced (Localization M) :=
-  localization_isReduced M _ inferInstance
+  isReduced_localizationPreserves M _ inferInstance
 
 /-- `R` is reduced if `Rₘ` is reduced for all maximal ideal `m`. -/
 theorem isReduced_ofLocalizationMaximal : OfLocalizationMaximal fun R hR => IsReduced R := by

@@ -14,7 +14,7 @@ import Mathlib.RingTheory.Localization.Integer
 
 Let `R` be a commutative ring, `S` is an `R`-algebra, `M` be a submonoid of `R`.
 
-* `localization_finite` : If `S` is a finite `R`-algebra, then `S' = M⁻¹S` is a
+* `finite_localizationPreserves` : If `S` is a finite `R`-algebra, then `S' = M⁻¹S` is a
   finite `R' = M⁻¹R`-algebra.
 * `finite_ofLocalizationSpan` : `S` is a finite `R`-algebra if there exists
   a set `{ r }` that spans `R` such that `Sᵣ` is a finite `Rᵣ`-algebra.
@@ -93,7 +93,7 @@ lemma Module.Finite_of_isLocalization (R S Rₚ Sₚ) [CommSemiring R] [CommRing
   rw [Algebra.smul_def, this, IsLocalization.map_mk', map_one]
 
 /-- If `S` is a finite `R`-algebra, then `S' = M⁻¹S` is a finite `R' = M⁻¹R`-algebra. -/
-theorem RingHom.localization_finite : RingHom.LocalizationPreserves @RingHom.Finite := by
+theorem RingHom.finite_localizationPreserves : RingHom.LocalizationPreserves @RingHom.Finite := by
   introv R hf
   letI := f.toAlgebra
   letI := ((algebraMap S S').comp f).toAlgebra
@@ -109,7 +109,7 @@ theorem RingHom.localization_finite : RingHom.LocalizationPreserves @RingHom.Fin
 
 theorem RingHom.localization_away_map_finite (r : R) [IsLocalization.Away r R']
     [IsLocalization.Away (f r) S'] (hf : f.Finite) : (IsLocalization.Away.map R' S' f r).Finite :=
-  localization_finite.away r hf
+  finite_localizationPreserves.away r hf
 
 /-- Let `S` be an `R`-algebra, `M` a submonoid of `R`, and `S' = M⁻¹S`.
 If the image of some `x : S` falls in the span of some finite `s ⊆ S'` over `R`,

@@ -13,7 +13,7 @@ import Mathlib.RingTheory.LocalProperties.Basic
 
 Let `R` be a commutative ring, `M` be a submonoid of `R`.
 
-* `localizationPreserves_surjective` :  `M⁻¹R →+* M⁻¹S` is surjective if `R →+* S` is surjective.
+* `surjective_localizationPreserves` :  `M⁻¹R →+* M⁻¹S` is surjective if `R →+* S` is surjective.
 * `surjective_ofLocalizationSpan` : `R →+* S` is surjective if there exists a set `{ r }` that
   spans `R` such that `Rᵣ →+* Sᵣ` is surjective.
 * `surjective_localRingHom_of_surjective` : A surjective ring homomorphism `R →+* S` induces a
@@ -53,7 +53,7 @@ theorem surjective_stableUnderBaseChange : StableUnderBaseChange surjective := b
   | add x y ex ey => obtain ⟨⟨x, rfl⟩, ⟨y, rfl⟩⟩ := ex, ey; exact ⟨x + y, map_add _ x y⟩
 
 /-- `M⁻¹R →+* M⁻¹S` is surjective if `R →+* S` is surjective. -/
-theorem localizationPreserves_surjective :
+theorem surjective_localizationPreserves :
     LocalizationPreserves surjective := by
   introv R H x
   obtain ⟨x, ⟨_, s, hs, rfl⟩, rfl⟩ := IsLocalization.mk'_surjective (M.map f) x
@@ -87,6 +87,6 @@ theorem surjective_localRingHom_of_surjective {R S : Type u} [CommRing R] [CommR
     Function.Surjective (Localization.localRingHom (P.comap f) P f rfl) :=
   have : IsLocalization (Submonoid.map f (Ideal.comap f P).primeCompl) (Localization.AtPrime P) :=
     (Submonoid.map_comap_eq_of_surjective h P.primeCompl).symm ▸ Localization.isLocalization
-  localizationPreserves_surjective _ _ _ _ h
+  surjective_localizationPreserves _ _ _ _ h
 
 end RingHom

@@ -15,7 +15,7 @@ import Mathlib.RingTheory.RingHom.Finite
 
 Let `R` be a commutative ring, `S` is an `R`-algebra, `M` be a submonoid of `R`.
 
-* `localization_finiteType` : If `S` is a finite type `R`-algebra, then `S' = M⁻¹S` is a
+* `finiteType_localizationPreserves` : If `S` is a finite type `R`-algebra, then `S' = M⁻¹S` is a
   finite type `R' = M⁻¹R`-algebra.
 * `finiteType_ofLocalizationSpan` : `S` is a finite type `R`-algebra if there exists
   a set `{ r }` that spans `R` such that `Sᵣ` is a finite type `Rᵣ`-algebra.
@@ -39,7 +39,7 @@ theorem finiteType_stableUnderComposition : StableUnderComposition @FiniteType :
   exact hg.comp hf
 
 /-- If `S` is a finite type `R`-algebra, then `S' = M⁻¹S` is a finite type `R' = M⁻¹R`-algebra. -/
-theorem localization_finiteType : RingHom.LocalizationPreserves @RingHom.FiniteType := by
+theorem finiteType_localizationPreserves : RingHom.LocalizationPreserves @RingHom.FiniteType := by
   introv R hf
   -- mirrors the proof of `localization_map_finite`
   letI := f.toAlgebra
@@ -71,7 +71,7 @@ theorem localization_finiteType : RingHom.LocalizationPreserves @RingHom.FiniteT
 theorem localization_away_map_finiteType (r : R) [IsLocalization.Away r R']
     [IsLocalization.Away (f r) S'] (hf : f.FiniteType) :
     (IsLocalization.Away.map R' S' f r).FiniteType :=
-  localization_finiteType.away r hf
+  finiteType_localizationPreserves.away r hf
 
 variable {S'}
 
@@ -216,7 +216,7 @@ theorem finiteType_ofLocalizationSpanTarget : OfLocalizationSpanTarget @FiniteTy
     · rw [ht]; trivial
 
 theorem finiteType_is_local : PropertyIsLocal @FiniteType :=
-  ⟨localization_finiteType, finiteType_ofLocalizationSpanTarget,
+  ⟨finiteType_localizationPreserves, finiteType_ofLocalizationSpanTarget,
     finiteType_stableUnderComposition.stableUnderCompositionWithLocalizationAway
       finiteType_holdsForLocalizationAway⟩
 
