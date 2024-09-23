@@ -110,7 +110,7 @@ theorem deficient_or_perfect_or_abundant (hn : 0 ≠ n) :
   dsimp only [Perfect, Abundant, Deficient]
   omega
 
-theorem perfect_pseudoperfect (h : Perfect n) : Pseudoperfect n :=
+theorem Perfect.pseudoperfect (h : Perfect n) : Pseudoperfect n :=
   ⟨h.2, ⟨properDivisors n, ⟨fun ⦃_⦄ a ↦ a, h.1⟩⟩⟩
 
 theorem prime_not_abundant (h : Prime n) : ¬ Abundant n :=
