@@ -973,3 +973,19 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow {α : Type*} [Meas
   rw [A, B, C, add_assoc]
 
 end ENNReal
+
+namespace EReal
+
+lemma lowerSemicontinuous_add : LowerSemicontinuous fun (p : EReal × EReal) ↦ p.1 + p.2 := by
+  intro x
+  by_cases hx1_bot : x.1 = ⊥
+  · intro y
+    simp [hx1_bot]
+  by_cases hx2_bot : x.2 = ⊥
+  · intro y
+    simp [hx2_bot]
+  exact EReal.continuousAt_add (Or.inr hx2_bot) (Or.inl hx1_bot) |>.lowerSemicontinuousAt
+
+instance : MeasurableAdd₂ EReal := ⟨EReal.lowerSemicontinuous_add.measurable⟩
+
+end EReal
