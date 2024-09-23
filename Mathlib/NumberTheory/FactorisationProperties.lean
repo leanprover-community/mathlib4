@@ -53,7 +53,7 @@ variable {n m p : ℕ}
 def Abundant (n : ℕ) : Prop := n < ∑ i ∈ properDivisors n, i
 
 /-- `n : ℕ` is _deficient_ if the sum of the proper divisors of `n` is less than `n`. -/
-def Deficient (n : ℕ) : Prop := ∑ i in properDivisors n, i < n
+def Deficient (n : ℕ) : Prop := ∑ i ∈ properDivisors n, i < n
 
 /-- A positive natural number `n` is _pseudoperfect_ if there exists a subset of the proper
   divisors of `n` such that the sum of that subset is equal to `n`. -/
