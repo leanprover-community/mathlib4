@@ -939,7 +939,7 @@ theorem isPathConnected_pathComponentIn (h : x ∈ F) : IsPathConnected (pathCom
     exact γ.extend_extends' ⟨min (max t'.1 0) t.1,by simp [t.2.1,t.2.2]⟩ ▸ hγ _⟩
 
 theorem isPathConnected_pathComponent : IsPathConnected (pathComponent x) := by
-  rw [←pathComponentIn_univ]
+  rw [← pathComponentIn_univ]
   exact isPathConnected_pathComponentIn (mem_univ x)
 
 theorem IsPathConnected.union {U V : Set X} (hU : IsPathConnected U) (hV : IsPathConnected V)
