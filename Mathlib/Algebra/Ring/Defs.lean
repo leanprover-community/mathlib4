@@ -112,35 +112,59 @@ that `Semiring -> NonAssocSemiring` is tried before `NonAssocRing -> NonAssocSem
 TODO: clean this once lean4#2115 is fixed
 -/
 
+no_instances
 /-- A not-necessarily-unital, not-necessarily-associative semiring. See `CommutatorRing` and the
   documentation thereof in case you need a `NonUnitalNonAssocSemiring` instance on a Lie ring
   or a Lie algebra. -/
 class NonUnitalNonAssocSemiring (α : Type u) extends AddCommMonoid α, Distrib α, MulZeroClass α
 
+attribute [instance] NonUnitalNonAssocSemiring.toAddCommMonoid
+attribute [instance] NonUnitalNonAssocSemiring.toDistrib
+attribute [instance] NonUnitalNonAssocSemiring.toMulZeroClass
+
 /-- An associative but not-necessarily unital semiring. -/
 class NonUnitalSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, SemigroupWithZero α
 
+no_instances
 /-- A unital but not-necessarily-associative semiring. -/
 class NonAssocSemiring (α : Type u) extends NonUnitalNonAssocSemiring α, MulZeroOneClass α,
     AddCommMonoidWithOne α
 
+attribute [instance] NonAssocSemiring.toNonUnitalNonAssocSemiring
+attribute [instance] NonAssocSemiring.toMulZeroOneClass
+attribute [instance] NonAssocSemiring.toAddCommMonoidWithOne
+
+no_instances
 /-- A not-necessarily-unital, not-necessarily-associative ring. -/
 class NonUnitalNonAssocRing (α : Type u) extends AddCommGroup α, NonUnitalNonAssocSemiring α
+
+attribute [instance] NonUnitalNonAssocRing.toAddCommGroup
+attribute [instance] NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring
 
 /-- An associative but not-necessarily unital ring. -/
 class NonUnitalRing (α : Type*) extends NonUnitalNonAssocRing α, NonUnitalSemiring α
 
+no_instances
 /-- A unital but not-necessarily-associative ring. -/
 class NonAssocRing (α : Type*) extends NonUnitalNonAssocRing α, NonAssocSemiring α,
     AddCommGroupWithOne α
 
+attribute [instance] NonAssocRing.toNonUnitalNonAssocRing
+attribute [instance] NonAssocRing.toNonAssocSemiring
+attribute [instance] NonAssocRing.toAddCommGroupWithOne
+
 /-- A `Semiring` is a type with addition, multiplication, a `0` and a `1` where addition is
 commutative and associative, multiplication is associative and left and right distributive over
 addition, and `0` and `1` are additive and multiplicative identities. -/
-class Semiring (α : Type u) extends NonUnitalSemiring α, NonAssocSemiring α, MonoidWithZero α
+class Semiring (α : Type u) extends NonAssocSemiring α, NonUnitalSemiring α, MonoidWithZero α
 
+no_instances
 /-- A `Ring` is a `Semiring` with negation making it an additive group. -/
 class Ring (R : Type u) extends Semiring R, AddCommGroup R, AddGroupWithOne R
+
+attribute [instance] Ring.toSemiring
+attribute [instance] Ring.toAddCommGroup
+attribute [instance] Ring.toAddGroupWithOne
 
 /-!
 ### Semirings

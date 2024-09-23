@@ -74,15 +74,15 @@ instance instAddCommGroup [AddCommGroup α] : AddCommGroup αᵐᵒᵖ :=
     (fun _ _ => rfl) fun _ _ => rfl
 
 instance instAddGroupWithOne [AddGroupWithOne α] : AddGroupWithOne αᵐᵒᵖ where
-  toAddMonoidWithOne := instAddMonoidWithOne
+  toAddGroup := instAddGroup
+  __ := instAddMonoidWithOne
   toIntCast := instIntCast
-  __ := instAddGroup
   intCast_ofNat n := show op ((n : ℤ) : α) = op (n : α) by rw [Int.cast_natCast]
   intCast_negSucc n := show op _ = op (-unop (op ((n + 1 : ℕ) : α))) by simp
 
 instance instAddCommGroupWithOne [AddCommGroupWithOne α] : AddCommGroupWithOne αᵐᵒᵖ where
-  toAddCommGroup := instAddCommGroup
-  __ := instAddGroupWithOne
+  toAddGroupWithOne := instAddGroupWithOne
+  __ := instAddCommGroup
 
 /-!
 ### Multiplicative structures on `αᵐᵒᵖ`
@@ -123,8 +123,8 @@ instance instMulOneClass [MulOneClass α] : MulOneClass αᵐᵒᵖ where
 
 @[to_additive]
 instance instMonoid [Monoid α] : Monoid αᵐᵒᵖ where
-  toSemigroup := instSemigroup
-  __ := instMulOneClass
+  toMulOneClass := instMulOneClass
+  __ := instSemigroup
   npow n a := op <| a.unop ^ n
   npow_zero _ := unop_injective <| pow_zero _
   npow_succ _ _ := unop_injective <| pow_succ' _ _
@@ -348,9 +348,9 @@ instance instAddCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithO
   natCast_succ := show ∀ n, op ((n + 1 : ℕ) : α) = op ↑(n : ℕ) + 1 by simp [add_comm]
 
 instance instAddCommGroupWithOne [AddCommGroupWithOne α] : AddCommGroupWithOne αᵃᵒᵖ where
-  toIntCast := instIntCast
-  toAddCommGroup := instAddCommGroup
+  toAddGroup := instAddGroup
   __ := instAddCommMonoidWithOne
+  toIntCast := instIntCast
   intCast_ofNat _ := congr_arg op <| Int.cast_natCast _
   intCast_negSucc _ := congr_arg op <| Int.cast_negSucc _
 

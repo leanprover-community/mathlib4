@@ -40,14 +40,14 @@ instance commRing : CommRing ℚ where
       ← divInt_one_one, Int.natCast_add, Int.natCast_one, mul_one]
 
 instance commGroupWithZero : CommGroupWithZero ℚ :=
-  { exists_pair_ne := ⟨0, 1, Rat.zero_ne_one⟩
-    inv_zero := by
+  { inv_zero := by
       change Rat.inv 0 = 0
       rw [Rat.inv_def]
       rfl
     mul_inv_cancel := Rat.mul_inv_cancel
     mul_zero := mul_zero
-    zero_mul := zero_mul }
+    zero_mul := zero_mul
+    mul_comm := mul_comm }
 
 instance isDomain : IsDomain ℚ := NoZeroDivisors.to_isDomain _
 instance instCharZero : CharZero ℚ where cast_injective a b hab := by simpa using congr_arg num hab

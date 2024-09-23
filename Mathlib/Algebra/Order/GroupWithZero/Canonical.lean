@@ -30,15 +30,23 @@ The solutions is to use a typeclass, and that is exactly what we do in this file
 
 variable {α : Type*}
 
+no_instances
 /-- A linearly ordered commutative monoid with a zero element. -/
 class LinearOrderedCommMonoidWithZero (α : Type*) extends LinearOrderedCommMonoid α,
   CommMonoidWithZero α where
   /-- `0 ≤ 1` in any linearly ordered commutative monoid. -/
   zero_le_one : (0 : α) ≤ 1
 
+attribute [instance] LinearOrderedCommMonoidWithZero.toLinearOrderedCommMonoid
+attribute [instance] LinearOrderedCommMonoidWithZero.toCommMonoidWithZero
+
+no_instances
 /-- A linearly ordered commutative group with a zero element. -/
 class LinearOrderedCommGroupWithZero (α : Type*) extends LinearOrderedCommMonoidWithZero α,
   CommGroupWithZero α
+
+attribute [instance] LinearOrderedCommGroupWithZero.toLinearOrderedCommMonoidWithZero
+attribute [instance] LinearOrderedCommGroupWithZero.toCommGroupWithZero
 
 instance (priority := 100) LinearOrderedCommMonoidWithZero.toZeroLeOneClass
     [LinearOrderedCommMonoidWithZero α] : ZeroLEOneClass α :=

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
 -/
 import Mathlib.Data.Nat.Cast.Defs
+import Mathlib.Util.NoInstances
 
 /-!
 # Cast of integers
@@ -31,9 +32,10 @@ protected def Int.castDef {R : Type u} [NatCast R] [Neg R] : ℤ → R
 
 /-! ### Additive groups with one -/
 
+no_instances
 /-- An `AddGroupWithOne` is an `AddGroup` with a 1. It also contains data for the unique
 homomorphisms `ℕ → R` and `ℤ → R`. -/
-class AddGroupWithOne (R : Type u) extends IntCast R, AddMonoidWithOne R, AddGroup R where
+class AddGroupWithOne (R : Type u) extends AddGroup R, AddMonoidWithOne R, IntCast R where
   /-- The canonical homomorphism `ℤ → R`. -/
   intCast := Int.castDef
   /-- The canonical homomorphism `ℤ → R` agrees with the one from `ℕ → R` on `ℕ`. -/
@@ -42,6 +44,15 @@ class AddGroupWithOne (R : Type u) extends IntCast R, AddMonoidWithOne R, AddGro
   of the canonical homomorphism `ℕ → R`. -/
   intCast_negSucc : ∀ n : ℕ, intCast (Int.negSucc n) = - Nat.cast (n + 1) := by intros; rfl
 
+attribute [instance] AddGroupWithOne.toIntCast
+attribute [instance] AddGroupWithOne.toAddMonoidWithOne
+attribute [instance] AddGroupWithOne.toAddGroup
+
+no_instances
 /-- An `AddCommGroupWithOne` is an `AddGroupWithOne` satisfying `a + b = b + a`. -/
 class AddCommGroupWithOne (R : Type u)
-  extends AddCommGroup R, AddGroupWithOne R, AddCommMonoidWithOne R
+  extends AddGroupWithOne R, AddCommGroup R, AddCommMonoidWithOne R
+
+attribute [instance] AddCommGroupWithOne.toAddCommGroup
+attribute [instance] AddCommGroupWithOne.toAddGroupWithOne
+attribute [instance] AddCommGroupWithOne.toAddCommMonoidWithOne

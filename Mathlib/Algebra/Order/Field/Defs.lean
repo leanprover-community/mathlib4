@@ -25,13 +25,22 @@ assert_not_exists MonoidHom
 
 variable {α : Type*}
 
+no_instances
 /-- A linear ordered semifield is a field with a linear order respecting the operations. -/
 class LinearOrderedSemifield (α : Type*) extends LinearOrderedCommSemiring α, Semifield α
 
+attribute [instance] LinearOrderedSemifield.toLinearOrderedCommSemiring
+attribute [instance] LinearOrderedSemifield.toSemifield
+
+no_instances
 /-- A linear ordered field is a field with a linear order respecting the operations. -/
 class LinearOrderedField (α : Type*) extends LinearOrderedCommRing α, Field α
 
+attribute [instance] LinearOrderedField.toLinearOrderedCommRing
+attribute [instance] LinearOrderedField.toField
+
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedField.toLinearOrderedSemifield [LinearOrderedField α] :
-    LinearOrderedSemifield α :=
-  { LinearOrderedRing.toLinearOrderedSemiring, ‹LinearOrderedField α› with }
+    LinearOrderedSemifield α where
+  __ := ‹LinearOrderedField α›
+  __ := LinearOrderedRing.toLinearOrderedSemiring

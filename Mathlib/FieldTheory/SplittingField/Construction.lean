@@ -246,6 +246,8 @@ instance instGroupWithZero : GroupWithZero (SplittingField f) :=
   { inv := fun a ↦ e.symm (e a)⁻¹
     inv_zero := by simp
     mul_inv_cancel := fun a ha ↦ e.injective <| by simp [(AddEquivClass.map_ne_zero_iff _).2 ha]
+    zero_mul := zero_mul
+    mul_zero := mul_zero
     __ := e.surjective.nontrivial }
 
 instance instField : Field (SplittingField f) where

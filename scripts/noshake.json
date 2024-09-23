@@ -189,6 +189,7 @@
   "Mathlib.Util.Syntax",
   "Mathlib.Util.Tactic",
   "Mathlib.Util.WhatsNew",
+  "Mathlib.Util.NoInstances",
   "Mathlib.Util.WithWeakNamespace",
   "Qq"],
  "ignoreAll":

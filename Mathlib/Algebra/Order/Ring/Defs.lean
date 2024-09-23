@@ -145,6 +145,7 @@ class OrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α where
 and multiplication by a nonnegative number is monotone. -/
 class OrderedCommRing (α : Type u) extends OrderedRing α, CommRing α
 
+no_instances
 /-- A `StrictOrderedSemiring` is a nontrivial semiring with a partial order such that addition is
 strictly monotone and multiplication by a positive number is strictly monotone. -/
 class StrictOrderedSemiring (α : Type u) extends Semiring α, OrderedCancelAddCommMonoid α,
@@ -156,10 +157,18 @@ class StrictOrderedSemiring (α : Type u) extends Semiring α, OrderedCancelAddC
   /-- Right multiplication by a positive element is strictly monotone. -/
   protected mul_lt_mul_of_pos_right : ∀ a b c : α, a < b → 0 < c → a * c < b * c
 
+attribute [instance] StrictOrderedSemiring.toOrderedCancelAddCommMonoid
+attribute [instance] StrictOrderedSemiring.toNontrivial
+
+no_instances
 /-- A `StrictOrderedCommSemiring` is a commutative semiring with a partial order such that
 addition is strictly monotone and multiplication by a positive number is strictly monotone. -/
 class StrictOrderedCommSemiring (α : Type u) extends StrictOrderedSemiring α, CommSemiring α
 
+attribute [instance] StrictOrderedCommSemiring.toStrictOrderedSemiring
+attribute [nolint docBlame] StrictOrderedCommSemiring.toCommSemiring
+
+no_instances
 /-- A `StrictOrderedRing` is a ring with a partial order such that addition is strictly monotone
 and multiplication by a positive number is strictly monotone. -/
 class StrictOrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α, Nontrivial α where
@@ -168,9 +177,15 @@ class StrictOrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α, N
   /-- The product of two positive elements is positive. -/
   protected mul_pos : ∀ a b : α, 0 < a → 0 < b → 0 < a * b
 
+attribute [nolint docBlame] StrictOrderedRing.toOrderedAddCommGroup
+
+no_instances
 /-- A `StrictOrderedCommRing` is a commutative ring with a partial order such that addition is
 strictly monotone and multiplication by a positive number is strictly monotone. -/
 class StrictOrderedCommRing (α : Type*) extends StrictOrderedRing α, CommRing α
+
+attribute [instance] StrictOrderedCommRing.toStrictOrderedRing
+attribute [nolint docBlame] StrictOrderedCommRing.toCommRing
 
 /- It's not entirely clear we should assume `Nontrivial` at this point; it would be reasonable to
 explore changing this, but be warned that the instances involving `Domain` may cause typeclass
@@ -237,6 +252,9 @@ end OrderedCommRing
 section StrictOrderedSemiring
 
 variable [StrictOrderedSemiring α] {a b c d : α}
+
+attribute [local instance] StrictOrderedSemiring.toSemiring
+attribute [local instance] StrictOrderedSemiring.toNontrivial
 
 -- see Note [lower instance priority]
 instance (priority := 200) StrictOrderedSemiring.toPosMulStrictMono : PosMulStrictMono α :=
@@ -306,6 +324,9 @@ end StrictOrderedCommSemiring
 section StrictOrderedRing
 variable [StrictOrderedRing α] {a b c : α}
 
+attribute [local instance] StrictOrderedRing.toRing
+attribute [local instance] StrictOrderedRing.toOrderedAddCommGroup
+
 -- see Note [lower instance priority]
 instance (priority := 100) StrictOrderedRing.toStrictOrderedSemiring : StrictOrderedSemiring α :=
   { ‹StrictOrderedRing α›, (Ring.toSemiring : Semiring α) with
@@ -337,6 +358,9 @@ end StrictOrderedRing
 section StrictOrderedCommRing
 
 variable [StrictOrderedCommRing α]
+
+attribute [local instance] StrictOrderedCommRing.toStrictOrderedRing
+attribute [local instance] StrictOrderedCommRing.toCommRing
 
 -- See note [reducible non-instances]
 /-- A choice-free version of `StrictOrderedCommRing.toOrderedCommRing` to avoid using
