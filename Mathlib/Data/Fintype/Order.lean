@@ -170,16 +170,16 @@ lemma Finite.exists_minimal_le [Finite α] (h : p a) : ∃ b, b ≤ a ∧ Minima
 lemma Finite.exists_le_maximal [Finite α] (h : p a) : ∃ b, a ≤ b ∧ Maximal p b :=
   Finite.exists_minimal_le (α := αᵒᵈ) h
 
-lemma Finset.exists_minimal_le {s : Finset α} (h : a ∈ s) : ∃ b, b ≤ a ∧ Minimal (· ∈ s) b := by
+lemma Finset.exists_minimal_le (s : Finset α) (h : a ∈ s) : ∃ b, b ≤ a ∧ Minimal (· ∈ s) b := by
   obtain ⟨⟨b, _⟩, lb, minb⟩ := @Finite.exists_minimal_le s _ ⟨a, h⟩ (·.1 ∈ s) _ h
   use b, lb; rwa [minimal_subtype, inf_idem] at minb
 
-lemma Finset.exists_le_maximal {s : Finset α} (h : a ∈ s) : ∃ b, a ≤ b ∧ Maximal (· ∈ s) b :=
-  Finset.exists_minimal_le (α := αᵒᵈ) h
+lemma Finset.exists_le_maximal (s : Finset α) (h : a ∈ s) : ∃ b, a ≤ b ∧ Maximal (· ∈ s) b :=
+  s.exists_minimal_le (α := αᵒᵈ) h
 
 lemma Set.Finite.exists_minimal_le {s : Set α} (hs : s.Finite) (h : a ∈ s) :
     ∃ b, b ≤ a ∧ Minimal (· ∈ s) b := by
-  obtain ⟨b, lb, minb⟩ := Finset.exists_minimal_le (hs.mem_toFinset.mpr h)
+  obtain ⟨b, lb, minb⟩ := hs.toFinset.exists_minimal_le (hs.mem_toFinset.mpr h)
   use b, lb; simpa using minb
 
 lemma Set.Finite.exists_le_maximal {s : Set α} (hs : s.Finite) (h : a ∈ s) :
