@@ -1232,6 +1232,20 @@ protected lemma neg_mul (x y : EReal) : -x * y = -(x * y) := by
   | pos_bot _ h => rw [coe_mul_bot_of_pos h, neg_bot, ← coe_neg,
     coe_mul_bot_of_neg (neg_neg_of_pos h)]
 
+instance : HasDistribNeg EReal where
+  neg_mul := EReal.neg_mul
+  mul_neg := fun x y => by
+    rw [x.mul_comm, x.mul_comm]
+    exact y.neg_mul x
+
+lemma mul_neg_iff {a b : EReal} : a * b < 0 ↔ 0 < a ∧ b < 0 ∨ a < 0 ∧ 0 < b := by
+  nth_rw 1 [← neg_zero]
+  rw [EReal.lt_neg, ← mul_neg a, mul_pos_iff, EReal.neg_lt, EReal.lt_neg, neg_zero]
+
+lemma mul_nonpos_iff {a b : EReal} : a * b ≤ 0 ↔ 0 ≤ a ∧ b ≤ 0 ∨ a ≤ 0 ∧ 0 ≤ b := by
+  nth_rw 1 [← neg_zero]
+  rw [EReal.le_neg, ← mul_neg, mul_nonneg_iff, EReal.neg_le, EReal.le_neg, neg_zero]
+
 lemma mul_eq_top (a b : EReal) :
     a * b = ⊤ ↔ (a = ⊥ ∧ b < 0) ∨ (a < 0 ∧ b = ⊥) ∨ (a = ⊤ ∧ 0 < b) ∨ (0 < a ∧ b = ⊤) := by
   induction a, b using EReal.induction₂_symm with
@@ -1276,12 +1290,6 @@ lemma mul_ne_bot (a b : EReal) :
   rw [ne_eq, mul_eq_bot]
   set_option push_neg.use_distrib true in push_neg
   rfl
-
-instance : HasDistribNeg EReal where
-  neg_mul := EReal.neg_mul
-  mul_neg := fun x y => by
-    rw [x.mul_comm, x.mul_comm]
-    exact y.neg_mul x
 
 lemma right_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
     (a + b) * c = a * c + b * c := by
