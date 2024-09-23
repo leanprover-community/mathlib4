@@ -12,6 +12,7 @@ import Mathlib.Order.Partition.Finpartition
 import Mathlib.Tactic.Zify
 import Mathlib.Combinatorics.Colex
 import Mathlib.Data.Prod.Lex
+import Mathlib.GroupTheory.Perm.Cycle.Basic
 
 open Mathlib
 
@@ -400,6 +401,16 @@ instance {α : Type*} [Fintype α] [DecidableEq α] (f : α → α) : DecidableR
 
 instance {α : Type*} (f : α → α → Prop) [DecidableRel f] [IsPreorder α f] :
   DecidableRel (AntisymmRel.setoid _ f).r := inferInstanceAs (DecidableRel (AntisymmRel f))
+
+lemma SameCycle_iff_antisymm_repApp {α : Type*} [Finite α] (f : Equiv.Perm α) (a b : α) :
+    f.SameCycle a b ↔ AntisymmRel (RepApp f) a b := by
+  constructor
+  · rintro ⟨i, rfl⟩
+    simp [AntisymmRel]
+    sorry
+  · rintro ⟨⟨i, rfl⟩, -⟩
+    simp only [Equiv.Perm.iterate_eq_pow, Equiv.Perm.sameCycle_pow_right]
+    rfl
 
 theorem Finpartition.ofSetoid_mem_part_iff  {α : Type*} [DecidableEq α] [Fintype α]
     (s : Setoid α) [DecidableRel s.r] (x : α) (y : α) : y ∈ (ofSetoid s).part x ↔ s.r x y := by
