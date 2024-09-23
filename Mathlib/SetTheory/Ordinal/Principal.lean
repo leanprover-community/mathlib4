@@ -232,8 +232,7 @@ theorem principal_add_iff_zero_or_omega_opow {o : Ordinal} :
     · rw [Nat.cast_succ, mul_add, mul_one]
       exact H IH h
   · rintro (rfl | ⟨a, rfl⟩)
-    · exact principal_zero
-    · exact principal_add_omega_opow a
+    exacts [principal_zero, principal_add_omega_opow a]
 
 theorem opow_principal_add_of_principal_add {a} (ha : Principal (· + ·) a) (b : Ordinal) :
     Principal (· + ·) (a ^ b) := by
