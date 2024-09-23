@@ -61,7 +61,6 @@ def injClone : C₁ := {
   inr := by
     apply Function.Injective.comp
     exact Nat.succ_injective
-    simp
     refine mul_right_injective₀ ?ha
 }
 
@@ -169,7 +168,7 @@ def le_m {E : C₀} (a b : @𝓓ₘ E) : Prop := by
   · intro C D
     intro (hCD : C ≡ₘ D)
     show le_m' C b = le_m' D b
-    simp
+    simp only [eq_iff_iff]
     unfold le_m'
     apply Eq.to_iff
     congr
@@ -250,7 +249,7 @@ noncomputable def botSwap {E : C₀} : @𝓓ₘ E → @𝓓ₘ E := fun a =>
 theorem botSwap_inj {E : C₀} : Function.Injective fun a ↦
     if a = @emp_m E then ℕₘ else if a = ℕₘ then  ∅ₘ else a := by
   intro a b h
-  simp_all
+  simp_all only
   split_ifs at h with g₀ g₁ g₂ g₃ g₄ g₅
   · apply Eq.trans;exact g₀
     exact g₁.symm
@@ -269,14 +268,11 @@ theorem botSwap_inj {E : C₀} : Function.Injective fun a ↦
 theorem botSwap_surj {E : C₀} : Function.Surjective
     fun a ↦ if a = @emp_m E then  ℕₘ else if a = ℕₘ then  ∅ₘ else a := by
   · intro b
-    simp
     by_cases H : b = ∅ₘ
-    subst H
-    use ℕₘ
-    simp
-    by_cases H : b = ℕₘ
-    aesop
-    aesop
+    · subst H
+      use ℕₘ
+      simp
+    · by_cases H : b = ℕₘ <;> aesop
 
 lemma emp_not_below {E : C₀} : ¬ (@emp_m E) ≤ (ℕₘ) := by
   intro hc
@@ -299,7 +295,7 @@ theorem emp_min {E : C₀} : ∀ (a : @𝓓ₘ E), (h : a ≤ (∅ₘ)) →  a =
 
   unfold emp_m at *
   unfold 𝓓ₘ 𝓓ₘsetoid m_equivalent m_reducible at *
-  simp_all
+  simp_all only [Quotient.eq]
   constructor
   use f
   use f
@@ -312,7 +308,7 @@ theorem univ_min {E : C₀} : ∀ (a : @𝓓ₘ E), (h : a ≤ (ℕₘ)) →  a 
 
   unfold univ_m at *
   unfold 𝓓ₘ 𝓓ₘsetoid m_equivalent m_reducible at *
-  simp_all
+  simp_all only [Quotient.eq]
   constructor
   use f
   use f
@@ -352,7 +348,7 @@ lemma emp_univ_m_degree {E : C₀} : (@emp_m E) ≠ (ℕₘ) := by
   unfold emp_m univ_m at hc
   have : 𝓓ₘsetoid.r (fun _ => false) (fun _ => true) := Quotient.eq''.mp hc
   unfold 𝓓ₘsetoid m_equivalent at this
-  simp at this
+  simp only at this
   obtain ⟨f,hf⟩ := this.1
   simp at hf
 
@@ -362,7 +358,7 @@ theorem botSwapNontrivial {E : C₀} : @botSwap E ≠ id := by
   specialize this (∅ₘ)
 
   unfold botSwap at this
-  simp_all
+  simp_all only [ite_true, id_eq]
   apply emp_univ_m_degree.symm
   exact this
 
@@ -376,7 +372,11 @@ def rigid (α : Type) [PartialOrder α] : Prop :=
 
 lemma half_primrec : Primrec (fun k => k/2) :=
   Primrec.of_graph
-    ⟨id, ⟨Primrec.id, by intro x;simp;omega⟩⟩
+    ⟨id, ⟨Primrec.id, by
+      intro x
+      simp only [Encodable.encode_nat, id_eq]
+      omega
+    ⟩⟩
     (PrimrecRel.comp₂
       Primrec.eq
       (Primrec₂.comp₂ Primrec.nat_div Primrec₂.left <| Primrec₂.const 2)
@@ -546,11 +546,11 @@ theorem emp_univ {E : C₂} (B : ℕ → Bool) (h_2 : ¬⟦B⟧ = @emp_m E.toC�
     rfl
   · have : ∃ k, B k ≠ false := by
       contrapose H
-      simp_all
+      simp_all only [ne_eq, Bool.not_eq_false, not_exists, Bool.not_eq_true, Decidable.not_not]
       ext x;tauto
     obtain ⟨k,hk⟩ := this
     use fun _ => k
-    simp_all
+    simp_all only [ne_eq, Bool.not_eq_false, implies_true, and_true]
     exact E.const k
 
 theorem univ_emp {E : C₂} (B : ℕ → Bool) (h_2 : ¬⟦B⟧ = @univ_m E.toC₀ ) : @emp_m E.toC₀ ≤ ⟦B⟧ := by
@@ -563,20 +563,19 @@ theorem univ_emp {E : C₂} (B : ℕ → Bool) (h_2 : ¬⟦B⟧ = @univ_m E.toC�
   rfl
   have : ∃ k, B k ≠ true := by
     contrapose H
-    simp_all
+    simp_all only [ne_eq, Bool.not_eq_true, not_exists, Bool.not_eq_false, Decidable.not_not]
     ext x;tauto
   obtain ⟨k,hk⟩ := this
   use fun _ => k
-  simp_all
+  simp_all only [ne_eq, Bool.not_eq_true, implies_true, and_true]
   exact E.const k
 
 
 theorem complementMapIsNontrivial {E : C₀} : @complementMap E ≠ id := by
   intro hc
-  have : @complementMap E (∅ₘ) = ∅ₘ := by
-    rw [hc];simp
+  have : @complementMap E (∅ₘ) = ∅ₘ := by rw [hc]; simp
   unfold complementMap cpl emp_m at this
-  simp at this
+  simp only [Quotient.lift_mk, Bool.not_false, Quotient.eq] at this
   obtain ⟨f,hf⟩ := this.1
   simp at hf
 
@@ -593,7 +592,7 @@ theorem complementMapIsAuto {E : C₀} : (@automorphism (@𝓓ₘ E)) complement
   apply Quotient.ind
   intro B
   intro h
-  simp at h
+  simp only [Quotient.lift_mk, Quotient.eq] at h
   apply Quotient.sound
   unfold cpl at *
   obtain ⟨f₁,hf₁⟩ := h.1
@@ -605,7 +604,7 @@ theorem complementMapIsAuto {E : C₀} : (@automorphism (@𝓓ₘ E)) complement
   · tauto
   · intro x
     have Q := hf₁.2 x
-    simp at Q
+    simp only at Q
     have : A x = ! ! A x := by simp
     rw [this]
     have : B (f₁ x) = ! ! B (f₁ x) := by simp
@@ -616,7 +615,7 @@ theorem complementMapIsAuto {E : C₀} : (@automorphism (@𝓓ₘ E)) complement
   · tauto
   · intro x
     have Q := hf₂.2 x
-    simp at Q
+    simp only at Q
     have : B x = ! ! B x := by simp
     rw [this]
     have : A (f₂ x) = ! ! A (f₂ x) := by simp
@@ -626,9 +625,9 @@ theorem complementMapIsAuto {E : C₀} : (@automorphism (@𝓓ₘ E)) complement
   apply Quotient.ind
   intro A
   use ⟦ cpl A ⟧
-  simp
+  simp only [Quotient.lift_mk, Quotient.eq]
   unfold cpl
-  simp
+  simp only [Bool.not_not]
   constructor
   use id
   constructor
@@ -645,29 +644,21 @@ theorem complementMapIsAuto {E : C₀} : (@automorphism (@𝓓ₘ E)) complement
   intro B
   constructor
   intro h
-  simp at h
   unfold cpl
   obtain ⟨f,hf⟩ := h
   use f
-  constructor
-  tauto
-  simp
-  intro x
-  congr
   tauto
 
   intro h
-  simp at h
   unfold cpl at h
   obtain ⟨f,hf⟩ := h
   use f
   constructor
   tauto
-  simp at hf
   intro x
   let Q := hf.2 x
   apply congrArg (fun b => !b) at Q
-  simp at Q
+  simp only [Bool.not_not] at Q
   tauto
 
 theorem notrigid {E : C₀} : ¬ rigid (@𝓓ₘ E) := by
@@ -705,7 +696,7 @@ theorem botSwapIsAuto {E : C₂} : (@automorphism (@𝓓ₘ E.toC₀)) botSwap :
     constructor
     exact fun h => False.elim <| univ_not_below h
     exact fun h => False.elim <| emp_not_below h
-  · simp;rw [g₃, g₅];
+  · simp only [le_refl, iff_true];rw [g₃, g₅];
   · rw [g₃]
     constructor
     exact fun _ => univ_emp B g₅
@@ -728,7 +719,7 @@ notation:50 " ⊥ₘ " => zero_m
 example {E : C₂} : (@emp_m E.toC₀) < ( ⊥ₘ ) := by
   refine lt_of_le_not_le ?_ ?_
   · use fun _ => 1
-    simp
+    simp only [one_ne_zero, ↓reduceIte, implies_true, and_true]
     exact E.const 1
   · intro hc
     obtain ⟨f,hf⟩ := hc
@@ -740,9 +731,8 @@ lemma zero_one_m {E : C₂} {b : Bool} (A : ℕ → Bool) :
   constructor
   · intro hA
     unfold m_reducible
-    simp
     contrapose hA
-    simp_all
+    simp_all only [not_exists, not_and, not_forall, Bool.not_not_eq, ne_eq, Decidable.not_not]
     ext n
     have ⟨_,ha⟩ := hA (fun _ ↦ n) (E.const _)
     exact ha.symm
@@ -765,7 +755,7 @@ noncomputable def K : ℕ → Bool := fun e =>
 theorem K_re : RePred fun k ↦ (K k) = true := by
   unfold K
   have Q := ComputablePred.halting_problem_re 0
-  simp_all
+  simp_all only [decide_eq_true_eq]
   show RePred fun l => (fun c : Nat.Partrec.Code ↦ (c.eval 0).Dom)
     ((fun k ↦ Denumerable.ofNat Nat.Partrec.Code k) l)
   unfold RePred at *
@@ -784,7 +774,7 @@ theorem K_re : RePred fun k ↦ (K k) = true := by
 
 theorem Kbar_not_re : ¬RePred fun k ↦ (!K k) = true := by
   unfold K
-  simp
+  simp only [Bool.not_eq_true', decide_eq_false_iff_not]
   intro hc
   have h₀ : (fun c : Nat.Partrec.Code ↦ ¬(c.eval 0).Dom)
            = fun c ↦ ¬((Denumerable.ofNat Nat.Partrec.Code (Encodable.encode c)).eval 0).Dom := by
@@ -819,7 +809,7 @@ theorem re_closed_m_downward (A B : ℕ → Bool) (h : RePred (fun (k : ℕ) => 
   rw [this]
 
   unfold RePred at *
-  simp_all
+  simp_all only [Function.comp_apply, implies_true, and_true]
   show Partrec fun a ↦ Part.assert (B (f a) = true) fun _ ↦ Part.some ()
   let g := (fun a ↦ Part.assert (B (a) = true) fun _ ↦ Part.some ())
   show Partrec <| fun b => g (f b)
