@@ -74,7 +74,7 @@ namespace HomotopyCategory
 /-- The collection of all single functors `C ⥤ HomotopyCategory C (ComplexShape.up ℤ))`
 for `n : ℤ` along with their compatibilites with shifts. -/
 noncomputable def singleFunctors : SingleFunctors C (HomotopyCategory C (ComplexShape.up ℤ)) ℤ :=
-  (CochainComplex.singleFunctors C).postcomp (HomotopyCategory.quotient _ _)
+  (CochainComplex.singleFunctors C).postComp (HomotopyCategory.quotient _ _)
 
 /-- The single functor `C ⥤ HomotopyCategory C (ComplexShape.up ℤ)`
 which sends `X` to the complex consisting of `X` in degree `n : ℤ` and zero otherwise. -/
@@ -83,13 +83,13 @@ noncomputable abbrev singleFunctor (n : ℤ) :
   (singleFunctors C).functor n
 
 instance (n : ℤ) : (singleFunctor C n).Additive := by
-  dsimp only [singleFunctor, singleFunctors, SingleFunctors.postcomp]
+  dsimp only [singleFunctor, singleFunctors, SingleFunctors.postComp]
   infer_instance
 
 /-- The isomorphism given by the very definition of `singleFunctors C`. -/
 noncomputable def singleFunctorsPostcompQuotientIso :
     singleFunctors C ≅
-      (CochainComplex.singleFunctors C).postcomp (HomotopyCategory.quotient _ _) :=
+      (CochainComplex.singleFunctors C).postComp (HomotopyCategory.quotient _ _) :=
   Iso.refl _
 
 /-- `HomotopyCategory.singleFunctor C n` is induced by `CochainComplex.singleFunctor C n`. -/

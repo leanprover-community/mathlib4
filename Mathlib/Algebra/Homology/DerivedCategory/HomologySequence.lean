@@ -40,6 +40,8 @@ noncomputable def homologyFunctorFactorsh (n : ℤ) : Qh ⋙ homologyFunctor C n
     HomotopyCategory.homologyFunctor _ _ n :=
   HomologicalComplexUpToQuasiIso.homologyFunctorFactorsh C (ComplexShape.up ℤ) n
 
+instance (n : ℤ) : (homologyFunctor C n).PreservesZeroMorphisms := sorry
+
 instance (n : ℤ) : (homologyFunctor C n).IsHomological :=
   Functor.isHomological_of_localization Qh
     (homologyFunctor C n) _ (homologyFunctorFactorsh C n)
