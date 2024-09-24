@@ -1850,4 +1850,4 @@ unsafe def positivity_coe_ennreal_ereal : expr → tactic strictness
 end Tactic
 -/
 
-set_option linter.style.longFile 1800
+set_option linter.style.longFile 2000
