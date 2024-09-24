@@ -16,6 +16,15 @@ a PR modifies and then finds all labels that should be added based on these chan
 
 For the time being, the script only adds a label if it finds a single unique label
 that would apply. If multiple labels are found, nothing happens.
+
+## Tests
+
+Additionally, the script does a few consistency checks:
+
+- it ensures all paths in specified in `AutoLabel.mathlibLabels` exist
+- It makes sure all subfolders of `Mathlib/` belong to at least one label.
+  there is `AutoLabel.mathlibUnlabelled` to add exceptions for this test.
+
 -/
 
 open Lean System
@@ -103,13 +112,13 @@ def mathlibLabels : Array Label := #[
   { label := "IMO",
     dirs := #["Archive" / "Imo"] } ]
 
-/-- `FilePath`s inside `Mathlib/` which by choice do not have a label -/
+/-- Exceptions inside `Mathlib/` which are not covered by any label. -/
 def mathlibUnlabelled : Array FilePath := #[
     "Mathlib" / "Deprecated",
     "Mathlib" / "Init",
     "Mathlib" / "Testing" ]
 
-/-- Checks if the folder `path` lies inside the folder `dir` -/
+/-- Checks if the folder `path` lies inside the folder `dir`. -/
 def _root_.System.FilePath.isPrefixOf (dir path : FilePath) : Bool :=
   -- use `dir / ""` to prevent partial matching of folder names
   (dir / "").normalize.toString.isPrefixOf (path / "").normalize.toString
@@ -118,7 +127,7 @@ def _root_.System.FilePath.isPrefixOf (dir path : FilePath) : Bool :=
 Return all names of labels in `mathlibLabels` which match
 at least one of the `files`.
 
-* `files`: array of relative paths starting from the mathlib project directory.
+* `files`: array of relative paths starting from the mathlib root directory.
 -/
 def getMatchingLabels (files : Array FilePath) : Array String :=
   let applicable := mathlibLabels.filter fun label ↦
@@ -153,19 +162,19 @@ section Tests
 
 /-- Testing function to ensure the labels defined in `mathlibLabels` cover all
 subfolders of `Mathlib/`. -/
-partial
-def findUncoveredPaths (path : FilePath) (exceptions : Array FilePath := #[]) :
+partial def findUncoveredPaths (path : FilePath) (exceptions : Array FilePath := #[]) :
     IO <| Array FilePath := do
   let mut notMatched : Array FilePath := #[]
   -- all directories inside `path`
   let subDirs ← (← path.readDir).map (·.path) |>.filterM (do FilePath.isDir ·)
-  -- accumulate any directories
   for dir in subDirs do
     -- if the sub directory is not matched by a label,
     -- we go recursively into it
     if (getMatchingLabels #[dir]).size == 0 then
       notMatched := notMatched ++ (← findUncoveredPaths dir exceptions)
-  -- a directory should be flagged if none of its sub-direcories is matched by a label
+  -- a directory should be flagged if none of its sub-directories is matched by a label
+  -- note: we assume here the base directory, i.e. "Mathlib" is never matched by a label,
+  -- therefore we skip this test.
   if notMatched.size == subDirs.size then
     if exceptions.contains path then
       return #[]
@@ -185,8 +194,8 @@ open IO AutoLabel in
 ## Exit codes:
 
 - `0`: success
-- `1`: invalid arguments
-- `2`: invalid labels
+- `1`: invalid arguments provided
+- `2`: invalid labels defined
 - `3`: labels do not cover all of `Mathlib/`
 -/
 unsafe def main (args : List String): IO Unit := do
