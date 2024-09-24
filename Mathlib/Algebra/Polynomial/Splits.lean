@@ -140,8 +140,8 @@ theorem splits_id_iff_splits {f : K[X]} : (f.map i).Splits (RingHom.id L) ↔ f.
   rw [splits_map_iff, RingHom.id_comp]
 
 variable {i} in
-theorem Splits.comp_X_sub_C
-    (h : p.Splits i) : (p.comp (X - C a)).Splits i := by
+theorem Splits.comp_X_sub_C {f : K[X]}
+    (h : f.Splits i) : (f.comp (X - C a)).Splits i := by
   cases h with
   | inl h0 =>
     left
@@ -158,8 +158,8 @@ theorem Splits.comp_X_sub_C
       natDegree_comp, natDegree_X_add_C, mul_one] at this
 
 variable {i} in
-theorem Splits.comp_X_add_C (a : K) {p : K[X]}
-    (h : p.Splits i) : (p.comp (X + C a)).Splits i := by
+theorem Splits.comp_X_add_C (a : K) {f : K[X]}
+    (h : f.Splits i) : (p.comp (X + C a)).Splits i := by
   simpa only [map_neg, sub_neg_eq_add] using Polynomial.Splits.comp_X_sub_C (-a) h
 
 theorem exists_root_of_splits' {f : K[X]} (hs : Splits i f) (hf0 : degree (f.map i) ≠ 0) :
