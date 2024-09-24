@@ -420,7 +420,6 @@ end CharZero
 
 namespace Fin
 
-instance charP (n : ℕ) [NeZero n] : CharP (Fin n) n where
-  cast_eq_zero_iff' := by simp [Fin.ext_iff, Nat.dvd_iff_mod_eq_zero]
+instance charP (n : ℕ) [NeZero n] : CharP (Fin n) n where cast_eq_zero_iff' _ := natCast_eq_zero
 
 end Fin
