@@ -128,14 +128,14 @@ variable [Preorder R] [AddCommMonoid R] (N : Network V R) (s t : V)
 non-negative excess, that is, the outgoing flow is at most as much as the incoming flow. -/
 @[ext]
 structure PreFlow extends N.PseudoFlow where
-  excess_nonneg : ∀ v, v ≠ s ∧ v ≠ t → toPseudoFlow.outgoing v ≤ toPseudoFlow.incoming v
+  excess_nonneg : ∀ v, v ≠ s → v ≠ t → toPseudoFlow.outgoing v ≤ toPseudoFlow.incoming v
 
 namespace PreFlow
 
 variable {N s t}
 
 instance : Zero (N.PreFlow s t) where
-  zero := { (0 : N.PseudoFlow) with excess_nonneg := fun _ _ ↦ le_rfl }
+  zero := { (0 : N.PseudoFlow) with excess_nonneg := fun _ _ _ ↦ le_rfl }
 
 /-- The value of a flow is the amount of flow units that leave the source vertex and arrive at the
 sink vertex. In particular, this is equal to the excess of `t`. -/
@@ -152,13 +152,13 @@ variable [Preorder R] [AddCommMonoid R] (N : Network V R) (s t : V)
 requires that the excess is 0 (also called _flow conservation_). -/
 @[ext]
 structure Flow extends N.PreFlow s t where
-  conservation : ∀ v, v ≠ s ∧ v ≠ t → toPseudoFlow.outgoing v = toPseudoFlow.incoming v
-  excess_nonneg v hv := le_of_eq <| conservation v hv
+  conservation : ∀ v, v ≠ s → v ≠ t → toPseudoFlow.outgoing v = toPseudoFlow.incoming v
+  excess_nonneg v hs ht := (conservation v hs ht).le
 
 namespace Flow
 
 instance : Zero (N.Flow s t) where
-  zero := { (0 : N.PreFlow s t) with conservation := fun _ _ ↦ rfl }
+  zero := { (0 : N.PreFlow s t) with conservation := fun _ _ _ ↦ rfl }
 
 end Flow
 end FlowDefinition
@@ -172,10 +172,10 @@ variable (f : N.PseudoFlow)
 
 lemma sum_outgoing_eq_sum_incoming : ∑ v, f.outgoing v = ∑ v, f.incoming v := by
   unfold outgoing incoming
-  rw[Finset.sum_comm]
+  rw [Finset.sum_comm]
 
 @[simp]
-lemma sum_excess_zero : ∑ v, f.excess v = 0 := by simp[excess, sum_outgoing_eq_sum_incoming]
+lemma sum_excess_zero : ∑ v, f.excess v = 0 := by simp [excess, sum_outgoing_eq_sum_incoming]
 
 end PseudoFlow
 
@@ -183,34 +183,34 @@ namespace Flow
 
 variable {s t : V} (f : N.Flow s t)
 
-lemma excess_s_zero_of_eq (hst : s = t) : f.excess s = 0 := by
-  rw[← f.sum_excess_zero]
+lemma excess_source_zero_of_eq (hst : s = t) : f.excess s = 0 := by
+  rw [← f.sum_excess_zero]
   apply Eq.symm
   apply Finset.sum_eq_single_of_mem s (Finset.mem_univ _)
-  intro v _ hv
-  simp[PseudoFlow.excess, f.conservation v ⟨hv, hst ▸ hv⟩]
+  intro v _ hs
+  simp [PseudoFlow.excess, f.conservation v hs (hst ▸ hs)]
 
 lemma value_zero_of_eq (hst : s = t) : f.value = 0 := by
   subst t
-  rw[PreFlow.value, f.excess_s_zero_of_eq rfl]
+  rw [PreFlow.value, f.excess_source_zero_of_eq rfl]
 
-lemma excess_s_eq_neg_excess_t : f.excess s = -f.excess t := by
+lemma excess_source_eq_neg_excess_sink : f.excess s = -f.excess t := by
   wlog hst : s ≠ t
-  · rw[not_not] at hst
+  · rw [not_not] at hst
     subst t
-    simp[f.excess_s_zero_of_eq]
+    simp [f.excess_source_zero_of_eq]
   apply eq_neg_of_add_eq_zero_left
-  rw[← f.sum_excess_zero]
+  rw [← f.sum_excess_zero]
   apply Eq.symm
   apply Finset.sum_eq_add_of_mem s t (Finset.mem_univ _) (Finset.mem_univ _) hst
   intro v _ hv
-  simp[PseudoFlow.excess, f.conservation v hv]
+  simp [PseudoFlow.excess, f.conservation v hv.left hv.right]
 
-lemma excess_t_eq_neg_excess_s : f.excess t = -f.excess s := by
-  rw[excess_s_eq_neg_excess_t, neg_neg]
+lemma excess_sink_eq_neg_excess_source : f.excess t = -f.excess s := by
+  rw [excess_source_eq_neg_excess_sink, neg_neg]
 
-lemma value_eq_outgoing_minus_incoming_s : f.value = f.outgoing s - f.incoming s := by
-  rw[PreFlow.value, excess_t_eq_neg_excess_s, PseudoFlow.excess, neg_sub]
+lemma value_eq_outgoing_minus_incoming_source : f.value = f.outgoing s - f.incoming s := by
+  rw [PreFlow.value, excess_sink_eq_neg_excess_source, PseudoFlow.excess, neg_sub]
 
 end Flow
 end SummingLemmas
