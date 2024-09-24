@@ -107,13 +107,13 @@ Return all labels from `mathlibLabels` which are matching at least one of the `f
 * `files`: array of relative paths starting from the mathlib project directory.
 -/
 def getMatchingLabels (files : Array FilePath) : Array Label :=
-  mathlibLabels.filter fun label =>
+  mathlibLabels.filter fun label ↦
     -- modified files which are not excluded by the label
-    let notExcludedFiles := files.filter fun file =>
+    let notExcludedFiles := files.filter fun file ↦
       label.exclusions.map (!·.toString.isPrefixOf file.toString) |>.all (·)
 
     -- return `true` if any of the label's dirs prefixes any of the modified files.
-    label.dirs.map (fun dir =>
+    label.dirs.map (fun dir ↦
       notExcludedFiles.map (dir.toString.isPrefixOf ·.toString) |>.any (·)) |>.any (·)
 
 end AutoLabel
