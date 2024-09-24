@@ -152,7 +152,7 @@ end MonoidHom
 
 namespace IsUnit
 
-variable {F G α M N : Type*} [FunLike F M N] [FunLike G N M]
+variable {E F G α M N : Type*} [FunLike F M N] [FunLike G N M] [EquivLike E M N]
 
 section Monoid
 
@@ -166,18 +166,16 @@ theorem map [MonoidHomClass F M N] (f : F) {x : M} (h : IsUnit x) : IsUnit (f x)
 theorem of_leftInverse [MonoidHomClass G N M] {f : F} {x : M} (g : G)
     (hfg : Function.LeftInverse g f) (h : IsUnit (f x)) : IsUnit x := by
   simpa only [hfg x] using h.map g
-#check MulEquivClass.instMonoidHomClass
-theorem map_isUnit_iff {α : Type*} {β : Type*} [Monoid α] [Monoid β] {E : Type*}
-    [EquivLike E α β] [MulEquivClass E α β]
-    (f : E) {a} : IsUnit a ↔ IsUnit (f a) := by
-  exact
-  ⟨IsUnit.map f, by simpa [MulEquivClass.coe_symm_apply_apply] using
-    (IsUnit.map (f : α ≃* β).symm (x := f a))⟩
 
 @[to_additive]
 theorem _root_.isUnit_map_of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M]
     {f : F} {x : M} (g : G) (hfg : Function.LeftInverse g f) :
     IsUnit (f x) ↔ IsUnit x := ⟨of_leftInverse g hfg, map _⟩
+
+@[to_additive]
+theorem _root_.map_isUnit_iff [MulEquivClass E M N]
+    (f : E) {a} : IsUnit (f a) ↔ IsUnit a :=
+  _root_.isUnit_map_of_leftInverse (f : M ≃* N).symm (f : M ≃* N).left_inv
 
 /-- If a homomorphism `f : M →* N` sends each element to an `IsUnit`, then it can be lifted
 to `f : M →* Nˣ`. See also `Units.liftRight` for a computable version. -/
