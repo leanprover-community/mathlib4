@@ -29,17 +29,18 @@ register_option linter.style.setOption : Bool := {
 namespace Style.setOption
 
 /-- Whether a syntax element is a `set_option` command, tactic or term:
-Return the name of the option being set, if any. -/
-def parse_set_option : Syntax → Option Name
-  -- This handles all four possibilities of `_val`: a string, number, `true` and `false`.
-  | `(command|set_option $name:ident $_val) => some name.getId
-  | `(set_option $name:ident $_val in $_x) => some name.getId
-  | `(tactic|set_option $name:ident $_val in $_x) => some name.getId
+Return the name and value of the option being set, if any.
+-/
+def parse_set_option : Syntax → Option (Name × TSyntax [`str, `num])
+  -- This handles all four possibilities of `val`: a string, number, `true` and `false`.
+  | `(command|set_option $name:ident $val) => some (name.getId, val)
+  | `(set_option $name:ident $val in $_x) => some (name.getId, val)
+  | `(tactic|set_option $name:ident $val in $_x) => some (name.getId, val)
   | _ => none
 
 /-- Whether a given piece of syntax is a `set_option` command, tactic or term. -/
 def is_set_option : Syntax → Bool :=
-  fun stx ↦ parse_set_option stx matches some _name
+  fun stx ↦ parse_set_option stx matches some _nameval
 
 /-- The `setOption` linter: this lints any `set_option` command, term or tactic
 which sets a `pp`, `profiler` or `trace` option.
@@ -55,7 +56,16 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
     if (← MonadState.get).messages.hasErrors then
       return
     if let some head := stx.find? is_set_option then
-      if let some name := parse_set_option head then
+      if let some (name, val) := parse_set_option head then
+        -- xxx: how to make this check typed? I'd like to check for a `str variant with content
+        -- "true"...
+        if name == `autoImplicit && s!"{val}" == "\"true\"" then
+          -- XXX: don't lint the tests directory!
+          Linter.logLint linter.style.setOption head
+            m!"Using `autoImplicit true` is deprecated in mathlib: \
+            please try to rewrite your code to avoid it. \n\
+            (If using this option makes the code much better and you conciously prefer to \
+            use autoImplicit,\nplease add a comment why you are disabling this linter.)"
         let forbidden := [`debug, `pp, `profiler, `trace]
         if forbidden.contains name.getRoot then
           Linter.logLint linter.style.setOption head
