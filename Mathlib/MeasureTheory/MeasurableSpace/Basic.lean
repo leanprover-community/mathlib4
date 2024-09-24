@@ -748,6 +748,12 @@ theorem measurable_from_prod_countable [Countable β] [MeasurableSingletonClass 
     Measurable f :=
   measurable_from_prod_countable' hf (by simp (config := {contextual := true}))
 
+lemma measurable_from_prod_countable'' [Countable β] [MeasurableSingletonClass β]
+    {f : β × α → γ} (hf : ∀ x, Measurable fun y => f (x, y)) :
+    Measurable f := by
+  change Measurable ((fun (p : α × β) ↦ f (p.2, p.1)) ∘ Prod.swap)
+  exact (measurable_from_prod_countable hf).comp measurable_swap
+
 /-- A piecewise function on countably many pieces is measurable if all the data is measurable. -/
 @[measurability]
 theorem Measurable.find {_ : MeasurableSpace α} {f : ℕ → α → β} {p : ℕ → α → Prop}
