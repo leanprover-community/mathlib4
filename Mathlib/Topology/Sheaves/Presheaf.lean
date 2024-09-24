@@ -155,7 +155,7 @@ def pushforward {X Y : TopCat.{w}} (f : X ⟶ Y) : X.Presheaf C ⥤ Y.Presheaf C
 
 set_option quotPrecheck false in
 /-- push forward of a presheaf -/
-notation f:80 " _* " P:81 => (pushforward _ f).obj P
+scoped[CategoryTheory] notation f:80 " _* " P:81 => (pushforward _ f).obj P
 
 @[simp]
 theorem pushforward_map_app' {X Y : TopCat.{w}} (f : X ⟶ Y) {ℱ 𝒢 : X.Presheaf C} (α : ℱ ⟶ 𝒢)
