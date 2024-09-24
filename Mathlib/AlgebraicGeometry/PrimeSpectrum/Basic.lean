@@ -209,8 +209,8 @@ section Comap
 
 variable {S' : Type*} [CommSemiring S']
 
-/-- The continuous function between prime spectra of commutative (semi)rings
-induced by a ring homomorphism. -/
+/-- The continuous function between prime spectra of commutative (semi)rings induced by a ring
+homomorphism. -/
 def comap (f : R →+* S) : C(PrimeSpectrum S, PrimeSpectrum R) where
   toFun := f.specComap
   continuous_toFun := by

@@ -509,8 +509,7 @@ theorem specComap_asIdeal (y : PrimeSpectrum S) :
   rfl
 
 @[simp]
-theorem specComap_id : (RingHom.id R).specComap = fun x => x := by
-  ext
+theorem specComap_id : (RingHom.id R).specComap = fun x => x :=
   rfl
 
 @[simp]
