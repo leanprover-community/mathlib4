@@ -83,11 +83,11 @@ theorem iSup_eigenspace_inf_eigenspace (hB : B.IsSymmetric) (hAB : Commute A B) 
     (⨆ γ, eigenspace A α ⊓ eigenspace B γ) = eigenspace A α := by
   conv_rhs => rw [← (eigenspace A α).map_subtype_top]
   simp only [← Module.End.genEigenspace_one B, ← Submodule.map_iSup,
-    (eigenspace A α).inf_genEigenspace _ (eigenspace_invariant_of_commute hAB _)]
+    (eigenspace A α).inf_genEigenspace _ (mapsTo_genEigenspace_of_comm hAB α 1)]
   congr 1
   simpa only [Module.End.genEigenspace_one, Submodule.orthogonal_eq_bot_iff]
     using orthogonalComplement_iSup_eigenspaces_eq_bot <|
-      hB.restrict_invariant <| eigenspace_invariant_of_commute hAB α
+      hB.restrict_invariant <| mapsTo_genEigenspace_of_comm hAB α 1
 
 /-- If A and B are commuting symmetric operators acting on a finite dimensional inner product space,
 then the simultaneous eigenspaces of A and B exhaust the space. -/
