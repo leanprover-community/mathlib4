@@ -229,6 +229,9 @@ theorem enumOrd_isNormal_iff_isClosed (hs : s.Unbounded (· < ·)) :
 
 open Set Filter
 
+/- TODO: prove these 2 definitions are equivalent to being an accumulation point and a closed set
+in the appropriate topologies. -/
+
 /-- An ordinal is an accumulation point of a set of ordinals if it is positive and there
 are elements in the set arbitrarily close to the ordinal from below. -/
 def IsAcc (o : Ordinal) (S : Set Ordinal) : Prop :=
