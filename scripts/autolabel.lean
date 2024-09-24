@@ -18,7 +18,7 @@ For the time being, the script only adds a label if it finds a single unique lab
 that would apply. If multiple labels are found, nothing happens.
 -/
 
-open Lean
+open Lean System
 
 namespace AutoLabel
 
@@ -34,97 +34,105 @@ structure Label where
   /-- The label name as it appears on github -/
   label : String
   /-- Array of paths which fall under this label. e.g. `"Mathlib" / "Algebra"` -/
-  dirs : Array System.FilePath
+  dirs : Array FilePath
   /-- Array of (sub)-paths which should be excluded -/
-  exclusions : Array System.FilePath := #[]
+  exclusions : Array FilePath := #[]
   deriving BEq, Hashable
 
 /--
 Mathlib Labels and their corresponding folders. Add new labels and folders here!
 -/
-private def mathlibLabels : Std.HashSet Label := Std.HashSet.ofList [
+def mathlibLabels : Array Label := #[
   { label := "t-algebra",
-    dirs := #[
-      "Mathlib" / "FieldTheory",
-      "Mathlib" /" RingTheory",
-      "Mathlib" / "GroupTheory",
-      "Mathlib" / "RepresentationTheory",
-      "Mathlib" / "LinearAlgebra" ]},
+    dirs :=
+      #[{ toString := "Mathlib" } / { toString := "FieldTheory" },
+        { toString := "Mathlib" } / { toString := " RingTheory" },
+        { toString := "Mathlib" } / { toString := "GroupTheory" },
+        { toString := "Mathlib" } / { toString := "RepresentationTheory" },
+        { toString := "Mathlib" } / { toString := "LinearAlgebra" }] },
   { label := "t-algebraic-geometry",
-    dirs := #[
-      "Mathlib" / "AlgebraicGeometry",
-      "Mathlib" / "Geometry.RingedSpace" ]},
+    dirs :=
+      #[{ toString := "Mathlib" } / { toString := "AlgebraicGeometry" },
+        { toString := "Mathlib" } / { toString := "Geometry.RingedSpace" }] },
   { label := "t-analysis",
-    dirs := #[
-      "Mathlib" / "Analysis" ]},
+    dirs :=
+      #[{ toString := "Mathlib" } / { toString := "Analysis" }] },
   { label := "t-category-theory",
-    dirs := #[
-      "Mathlib" / "CategoryTheory" ]},
+    dirs :=
+      #[{ toString := "Mathlib" } / { toString := "CategoryTheory" }] },
   { label := "t-combinatorics",
-    dirs := #[
-      "Mathlib" / "Combinatorics" ]},
+    dirs :=
+      #[{ toString := "Mathlib" } / { toString := "Combinatorics" }] },
   { label := "t-computability",
-    dirs := #[
-      "Mathlib" / "Computability" ]},
+    dirs :=
+      #[{ toString := "Mathlib" } / { toString := "Computability" }] },
   { label := "t-condensed",
-    dirs := #[
-      "Mathlib" / "Condensed" ]},
+    dirs :=
+      #[{ toString := "Mathlib" } / { toString := "Condensed" }] },
   { label := "t-data",
-    dirs := #[
-      "Mathlib" / "Data" ]},
+    dirs :=
+      #[{ toString := "Mathlib" } / { toString := "Data" }] },
   { label := "t-differential-geometry",
-    dirs := #[
-      "Mathlib" / "DifferentialGeometry",
-      "Mathlib" / "Geometry" / "Manifold" ]},
+    dirs :=
+      #[{ toString := "Mathlib" } / { toString := "DifferentialGeometry" },
+        { toString := "Mathlib" } / { toString := "Geometry" } / { toString := "Manifold" }] },
   { label := "t-dynamics",
-    dirs := #[
-      "Mathlib" / "Dynamics"]},
+    dirs :=
+      #[{ toString := "Mathlib" } / { toString := "Dynamics" }] },
   { label := "t-euclidean-geometry",
-    dirs := #[
-      "Mathlib" / "Geometry" / "Euclidean" ] },
+    dirs :=
+      #[{ toString := "Mathlib" } / { toString := "Geometry" } / { toString := "Euclidean" }] },
   { label := "t-linter",
-    dirs := #[
-      "Mathlib" / "Tactic" / "Linter" ]},
+    dirs :=
+      #[{ toString := "Mathlib" } / { toString := "Tactic" } / { toString := "Linter" }] },
   { label := "t-logic",
-    dirs := #[
-      "Mathlib" / "Logic",
-      "Mathlib" / "ModelTheory" ]},
+    dirs :=
+      #[{ toString := "Mathlib" } / { toString := "Logic" },
+        { toString := "Mathlib" } / { toString := "ModelTheory" }] },
   { label := "t-measure-probability",
-    dirs := #[
-      "Mathlib" / "MeasureTheory",
-      "Mathlib" / "Probability",
-      "Mathlib" / "InformationTheory" ]},
+    dirs :=
+      #[{ toString := "Mathlib" } / { toString := "MeasureTheory" },
+        { toString := "Mathlib" } / { toString := "Probability" },
+        { toString := "Mathlib" } / { toString := "InformationTheory" }] },
   { label := "t-meta",
-    dirs := #[
-      "Mathlib" / "Tactic" ],
-    exclusions := #[
-      "Mathlib" / "Tactic" / "Linter" ]},
+    dirs :=
+      #[{ toString := "Mathlib" } / { toString := "Tactic" }],
+    exclusions :=
+      #[{ toString := "Mathlib" } / { toString := "Tactic" } / { toString := "Linter" }] },
   { label := "t-number-theory",
-    dirs := #[
-      "Mathlib" / "NumberTheory"]},
+    dirs :=
+      #[{ toString := "Mathlib" } / { toString := "NumberTheory" }] },
   { label := "t-order",
-    dirs := #[
-      "Mathlib" / "Order" ]},
+    dirs :=
+      #[{ toString := "Mathlib" } / { toString := "Order" }] },
   { label := "t-set-theory",
-    dirs := #[
-      "Mathlib" / "SetTheory"]},
+    dirs :=
+      #[{ toString := "Mathlib" } / { toString := "SetTheory" }] },
   { label := "t-topology",
-    dirs := #[
-      "Mathlib" / "Topology",
-      "Mathlib" / "AlgebraicTopology" ]},
+    dirs :=
+      #[{ toString := "Mathlib" } / { toString := "Topology" },
+        { toString := "Mathlib" } / { toString := "AlgebraicTopology" }] },
   { label := "CI",
-    dirs := #[
-      ".github" / "workflows" ]}]
+    dirs :=
+      #[{ toString := ".github" } / { toString := "workflows" }] }]
 
-def getMatchingLabels (files : Array String) : Array Label :=
-  mathlibLabels.toArray.filter fun label =>
+
+#print mathlibLabels
+
+/--
+Return all labels from `mathlibLabels` which are matching at least one of the `files`.
+
+* `files`: array of relative paths starting from the mathlib project directory.
+-/
+def getMatchingLabels (files : Array FilePath) : Array Label :=
+  mathlibLabels.filter fun label =>
     -- modified files which are not excluded by the label
     let notExcludedFiles := files.filter fun file =>
-      label.exclusions.map (!·.toString.isPrefixOf file) |>.all (·)
+      label.exclusions.map (!·.toString.isPrefixOf file.toString) |>.all (·)
 
     -- return `true` if any of the label's dirs prefixes any of the modified files.
     label.dirs.map (fun dir =>
-      notExcludedFiles.map (dir.toString.isPrefixOf ·) |>.any (·)) |>.any (·)
+      notExcludedFiles.map (dir.toString.isPrefixOf ·.toString) |>.any (·)) |>.any (·)
 
 end AutoLabel
 
@@ -137,7 +145,7 @@ unsafe def main (args : List String): IO Unit := do
     cmd := "git",
     args := #["diff", "--name-only", "origin/master...HEAD"] }
 
-  let modifiedFiles := (gitDiff.splitOn "\n").toArray
+  let modifiedFiles : Array FilePath := (gitDiff.splitOn "\n").toArray.map (⟨·⟩)
   let labels := getMatchingLabels modifiedFiles |>.map (·.label) |>.qsort (· < ·)
 
   match labels with
@@ -152,7 +160,7 @@ unsafe def main (args : List String): IO Unit := do
         args := #["pr", "edit", n, "--add-label", label] }
       println s!"Added label: {label}"
     | none =>
-      println s!"No PR-number provided, skipping adding labels.
+      println s!"No PR-number provided, skipping adding labels. \
       (call `lake exe autolabel 150602` to add the labels to PR `150602`)"
   | labels =>
     println s!"Multiple labels found: {labels}"
