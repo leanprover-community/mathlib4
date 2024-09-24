@@ -84,7 +84,12 @@ def mathlibLabels : Array Label := #[
       "Mathlib" / "Probability",
       "Mathlib" / "InformationTheory"] },
   { label := "t-meta",
-    dirs := #["Mathlib" / "Tactic"],
+    dirs := #[
+      "Mathlib" / "Control",
+      "Mathlib" / "Lean",
+      "Mathlib" / "Mathport",
+      "Mathlib" / "Tactic",
+      "Mathlib" / "Util"],
     exclusions := #["Mathlib" / "Tactic" / "Linter"] },
   { label := "t-number-theory" },
   { label := "t-order" },
@@ -94,12 +99,20 @@ def mathlibLabels : Array Label := #[
       "Mathlib" / "Topology",
       "Mathlib" / "AlgebraicTopology"] },
   { label := "CI",
-    dirs := #[".github" / "workflows"] }]
+    dirs := #[".github" / "workflows"] },
+  { label := "IMO",
+    dirs := #["Archive" / "Imo"] } ]
+
+/-- `FilePath`s inside `Mathlib/` which by choice do not have a label -/
+def mathlibUnlabelled : Array FilePath := #[
+    "Mathlib" / "Deprecated",
+    "Mathlib" / "Init",
+    "Mathlib" / "Testing" ]
 
 /-- Checks if the folder `path` lies inside the folder `dir` -/
 def _root_.System.FilePath.isPrefixOf (dir path : FilePath) : Bool :=
   -- use `dir / ""` to prevent partial matching of folder names
-  (dir / "").normalize.toString.isPrefixOf path.normalize.toString
+  (dir / "").normalize.toString.isPrefixOf (path / "").normalize.toString
 
 /--
 Return all names of labels in `mathlibLabels` which match
@@ -138,6 +151,37 @@ section Tests
   "Mathlib" / "Tactic"/ "Linter" / "Lint.lean",
   "Mathlib" / "Tactic" / "Abel.lean" ] == #["t-linter", "t-meta"]
 
+/-- Testing function to ensure the labels defined in `mathlibLabels` cover all
+subfolders of `Mathlib/`. -/
+partial
+def findUncoveredPaths (path : FilePath) (exceptions : Array FilePath := #[]) :
+    IO <| Array FilePath := do
+  let mut notMatched : Array FilePath := #[]
+  -- all directories inside `path`
+  let subDirs ← (← path.readDir).map (·.path) |>.filterM (do FilePath.isDir ·)
+  -- accumulate any directories
+  for dir in subDirs do
+    -- if the sub directory is not matched by a label,
+    -- we go recursively into it
+    if (getMatchingLabels #[dir]).size == 0 then
+      notMatched := notMatched ++ (← findUncoveredPaths dir exceptions)
+  -- a directory should be flagged if none of its sub-direcories is matched by a label
+  if notMatched.size == subDirs.size then
+    if exceptions.contains path then
+      return #[]
+    else
+      return #[path]
+  else
+    return notMatched
+
+-- Run the test ensuring the labels cover all subfolders of `Mathlib/`
+run_cmd
+  let notMatchedPaths ← findUncoveredPaths "Mathlib" (exceptions := mathlibUnlabelled)
+  if notMatchedPaths.size > 0 then
+    logError m!"error: the following paths inside `Mathlib/` are not covered \
+    by any label:\n\n{notMatchedPaths}\n\nPlease modify `mathlibLabels` in \
+    `scripts/autolabel.lean` accordingly!"
+
 end Tests
 
 end AutoLabel
@@ -145,7 +189,6 @@ end AutoLabel
 open IO AutoLabel in
 
 /-- `args` is expected to have length 1, and the first argument is the PR number.
-
 
 ## Exit codes:
 
