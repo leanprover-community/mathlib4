@@ -197,8 +197,8 @@ theorem curry_id_eq_coev : curry (𝟙 _) = (ihom.coev A).app X := by
   apply comp_id
 
 /-- The internal hom out of the unit is naturally isomorphic to the identity functor.-/
-noncomputable def unitNatIso : 𝟭 C ≅ @ihom _ _ _ (𝟙_ C) unitClosed :=
-  conjugateIsoEquiv (Adjunction.id (C := C)) (@ihom.adjunction _ _ _ _ unitClosed)
+noncomputable def unitNatIso [Closed (𝟙_ C)] : 𝟭 C ≅ ihom (𝟙_ C) :=
+  conjugateIsoEquiv (Adjunction.id (C := C)) (ihom.adjunction (𝟙_ C))
     (leftUnitorNatIso C)
 section Pre
 

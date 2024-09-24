@@ -226,24 +226,16 @@ end CartesianClosed
 
 open CartesianClosed
 
-/-- The exponential with the terminal object is naturally isomorphic to the identity.-/
-def expTerminalNatIso : 𝟭 C ≅ @exp _ _ (⊤_ C) _ terminalExponentiable :=
+/-- The exponential with the terminal object is naturally isomorphic to the identity. The typeclass
+argument is explicit: any instance can be used.-/
+def expTerminalNatIso [Exponentiable (⊤_ C)] : 𝟭 C ≅ exp (⊤_ C) :=
   MonoidalClosed.unitNatIso (C := C)
 
-/-- A direct proof of the same result using an explicit instance of exponentiability for use below.
--/
-def expTerminalNatIso' [Exponentiable (⊤_ C)] : 𝟭 C ≅ exp (⊤_ C) := by
-  refine conjugateIsoEquiv
-    (Adjunction.id (C := C)) (exp.adjunction (⊤_ C))
-    (NatIso.ofComponents ?_ ?_)
-  · exact (fun X => (Limits.prod.leftUnitor (C := C) X))
-  · exact (fun f => Limits.prod.leftUnitor_hom_naturality f)
-
-/-- Show that the exponential of the terminal object is isomorphic to itself, i.e. `X^1 ≅ X`.
-The typeclass argument is explicit: any instance can be used.
+/-- A component of the above in the reversed direction, showing that the exponential with the
+terminal object is isomorphic to itself, i.e. `X^1 ≅ X`.
 -/
 def expTerminalIsoSelf [Exponentiable (⊤_ C)] : (⊤_ C) ⟹ X ≅ X :=
-  (expTerminalNatIso'.app X).symm
+  (expTerminalNatIso.app X).symm
 
 /-- The internal element which points at the given morphism. -/
 def internalizeHom (f : A ⟶ Y) : ⊤_ C ⟶ A ⟹ Y :=
