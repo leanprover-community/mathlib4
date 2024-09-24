@@ -204,9 +204,6 @@ theorem _root_.List.foldr_sup_eq_sup_toFinset [DecidableEq α] (l : List α) :
 theorem subset_range_sup_succ (s : Finset ℕ) : s ⊆ range (s.sup id).succ := fun _ hn =>
   mem_range.2 <| Nat.lt_succ_of_le <| @le_sup _ _ _ _ _ id _ hn
 
-theorem exists_nat_subset_range (s : Finset ℕ) : ∃ n : ℕ, s ⊆ range n :=
-  ⟨_, s.subset_range_sup_succ⟩
-
 theorem sup_induction {p : α → Prop} (hb : p ⊥) (hp : ∀ a₁, p a₁ → ∀ a₂, p a₂ → p (a₁ ⊔ a₂))
     (hs : ∀ b ∈ s, p (f b)) : p (s.sup f) := by
   induction s using Finset.cons_induction with
@@ -704,7 +701,7 @@ theorem coe_sup' : ((s.sup' H f : α) : WithBot α) = s.sup ((↑) ∘ f) := by
 
 @[simp]
 theorem sup'_cons {b : β} {hb : b ∉ s} :
-    (cons b s hb).sup' (nonempty_cons hb) f = f b ⊔ s.sup' H f := by
+    (cons b s hb).sup' (cons_nonempty hb) f = f b ⊔ s.sup' H f := by
   rw [← WithBot.coe_eq_coe]
   simp [WithBot.coe_sup]
 
@@ -873,7 +870,7 @@ theorem coe_inf' : ((s.inf' H f : α) : WithTop α) = s.inf ((↑) ∘ f) :=
 
 @[simp]
 theorem inf'_cons {b : β} {hb : b ∉ s} :
-    (cons b s hb).inf' (nonempty_cons hb) f = f b ⊓ s.inf' H f :=
+    (cons b s hb).inf' (cons_nonempty hb) f = f b ⊓ s.inf' H f :=
   @sup'_cons αᵒᵈ _ _ _ H f _ _
 
 @[simp]
