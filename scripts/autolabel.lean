@@ -34,8 +34,12 @@ A `Label` consists of the
 structure Label where
   /-- The label name as it appears on github -/
   label : String
-  /-- Array of paths which fall under this label. e.g. `"Mathlib" / "Algebra"` -/
-  dirs : Array FilePath
+  /-- Array of paths which fall under this label. e.g. `"Mathlib" / "Algebra"`.
+
+  For a label of the form `t-set-theory` this defaults to `#["Mathlib" / "SetTheory"]`. -/
+  dirs : Array FilePath := if label.startsWith "t-" then
+      #["Mathlib" / ("".intercalate (label.splitOn "-" |>.drop 1 |>.map .capitalize))]
+    else #[]
   /-- Array of paths which should be excluded.
   Any modifications to a file in an excluded path is ignored for the purposes of labelling. -/
   exclusions : Array FilePath := #[]
@@ -47,6 +51,7 @@ Mathlib Labels and their corresponding folders. Add new labels and folders here!
 def mathlibLabels : Array Label := #[
   { label := "t-algebra",
     dirs := #[
+      "Mathlib" / "Algebra",
       "Mathlib" / "FieldTheory",
       "Mathlib" / "RingTheory",
       "Mathlib" / "GroupTheory",
@@ -56,22 +61,15 @@ def mathlibLabels : Array Label := #[
     dirs := #[
       "Mathlib" / "AlgebraicGeometry",
       "Mathlib" / "Geometry" / "RingedSpace"] },
-  { label := "t-analysis",
-    dirs := #["Mathlib" / "Analysis"] },
-  { label := "t-category-theory",
-    dirs := #["Mathlib" / "CategoryTheory"] },
-  { label := "t-combinatorics",
-    dirs := #["Mathlib" / "Combinatorics"] },
-  { label := "t-computability",
-    dirs := #["Mathlib" / "Computability"] },
-  { label := "t-condensed",
-    dirs := #["Mathlib" / "Condensed"] },
-  { label := "t-data",
-    dirs := #["Mathlib" / "Data"] },
+  { label := "t-analysis" },
+  { label := "t-category-theory" },
+  { label := "t-combinatorics" },
+  { label := "t-computability" },
+  { label := "t-condensed" },
+  { label := "t-data" },
   { label := "t-differential-geometry",
     dirs := #["Mathlib" / "Geometry" / "Manifold"] },
-  { label := "t-dynamics",
-    dirs := #["Mathlib" / "Dynamics"] },
+  { label := "t-dynamics" },
   { label := "t-euclidean-geometry",
     dirs := #["Mathlib" / "Geometry" / "Euclidean"] },
   { label := "t-linter",
@@ -88,12 +86,9 @@ def mathlibLabels : Array Label := #[
   { label := "t-meta",
     dirs := #["Mathlib" / "Tactic"],
     exclusions := #["Mathlib" / "Tactic" / "Linter"] },
-  { label := "t-number-theory",
-    dirs := #["Mathlib" / "NumberTheory"] },
-  { label := "t-order",
-    dirs := #["Mathlib" / "Order"] },
-  { label := "t-set-theory",
-    dirs := #["Mathlib" / "SetTheory"] },
+  { label := "t-number-theory" },
+  { label := "t-order" },
+  { label := "t-set-theory" },
   { label := "t-topology",
     dirs := #[
       "Mathlib" / "Topology",
@@ -103,7 +98,7 @@ def mathlibLabels : Array Label := #[
 
 /-- Checks if the folder `path` lies inside the folder `dir` -/
 def _root_.System.FilePath.isPrefixOf (dir path : FilePath) : Bool :=
-  -- use `/ ""` to en
+  -- use `dir / ""` to prevent partial matching of folder names
   (dir / "").normalize.toString.isPrefixOf path.normalize.toString
 
 /--
@@ -133,9 +128,9 @@ section Tests
 -- Test `FilePath.isPrefixOf` does not trigger on partial prefixes
 #guard ! ("Mathlib" / "Algebra" : FilePath).isPrefixOf ("Mathlib" / "AlgebraicGeometry")
 
--- Test `getMatchingLabels`
 #guard getMatchingLabels #[] == #[]
-
+-- Test default value for `label.dirs` works
+#guard getMatchingLabels #["Mathlib" / "SetTheory" / "ZFC"] == #["t-set-theory"]
 -- Test exclusion
 #guard getMatchingLabels #["Mathlib" / "Tactic"/ "Abel.lean"] == #["t-meta"]
 #guard getMatchingLabels #["Mathlib" / "Tactic"/ "Linter" / "Lint.lean"] == #["t-linter"]
@@ -149,7 +144,7 @@ end AutoLabel
 
 open IO AutoLabel in
 
-/-- args` is expected to have length 1, and the first argument is the PR number. -/
+/-- `args` is expected to have length 1, and the first argument is the PR number. -/
 unsafe def main (args : List String): IO Unit := do
   if args.length > 1 then
     println s!"autolabel: invalid number of arguments ({args.length}). Please run without \
