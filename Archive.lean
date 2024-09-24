@@ -5,7 +5,6 @@ import Archive.Examples.IfNormalization.WithoutAesop
 import Archive.Examples.MersennePrimes
 import Archive.Examples.PropEncodable
 import Archive.Hairer
-import Archive.Ioi.Ioi2024Q2
 import Archive.Imo.Imo1959Q1
 import Archive.Imo.Imo1959Q2
 import Archive.Imo.Imo1960Q1
@@ -45,6 +44,7 @@ import Archive.Imo.Imo2021Q1
 import Archive.Imo.Imo2024Q1
 import Archive.Imo.Imo2024Q2
 import Archive.Imo.Imo2024Q6
+import Archive.Ioi.Ioi2024Q2
 import Archive.MiuLanguage.Basic
 import Archive.MiuLanguage.DecisionNec
 import Archive.MiuLanguage.DecisionSuf
