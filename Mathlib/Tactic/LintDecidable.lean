@@ -18,8 +18,8 @@ assumption in the type. `typesToAvoid` the list of such types.
 This is the main logic underlying the linters below. -/
 def checkUnusedAssumptionInType (declInfo : ConstantInfo) (typesToAvoid : Array Name) :
     MetaM (Option MessageData) := do
-  -- We omit inductive types for now, as this has many false positives.
-  if declInfo.isInductive then return none
+  -- We omit inductive types and their constructors for now, as this has many false positives.
+  if declInfo.isInductive || declInfo.isCtor then return none
   let type := declInfo.type
   -- Compute an array of pairs (argument index, error message) for each superfluous argument:
   -- the first component is the index of the superfluous argument, the second component
