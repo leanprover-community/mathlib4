@@ -36,6 +36,7 @@ open Real BigOperators Finset RealInnerProductSpace Matrix
 
 namespace Imo1982Q3
 
+variable {ι : Type*} [Fintype ι]
 
 lemma sum_Fin_eq_sum_Ico {x : ℕ → ℝ} {N : ℕ} : ∑ n : Fin N, x n = ∑ n ∈ Ico 0 N, x n := by
   rw [Fin.sum_univ_eq_sum_range, Nat.Ico_zero_eq_range]
@@ -43,49 +44,49 @@ lemma sum_Fin_eq_sum_Ico {x : ℕ → ℝ} {N : ℕ} : ∑ n : Fin N, x n = ∑ 
 /-
 Specialization of Cauchy-Schwarz inequality with the sequences x n / √(y n) and √(y n)
 -/
-lemma Sedrakyan's_lemma {n : ℕ} {x y: EuclideanSpace ℝ (Fin n)}
-    (hN : 0 < n) (xi_pos : ∀ i, 0 < x i) (yi_pos : ∀ i, 0 < y i) :
-  (∑ n : Fin n, x n)^2 / (∑ n : Fin n, y n) ≤ (∑ n : Fin n, ((x n)^2 / (y n))) := by
-  let nonneg : ∀ f : Fin n → ℝ, (∀ i, 0 < f i) → ∀ i, 0 ≤ f i :=
+lemma Sedrakyan's_lemma {x y: EuclideanSpace ℝ ι}
+    (hN : 0 < Fintype.card ι) (xi_pos : ∀ i, 0 < x i) (yi_pos : ∀ i, 0 < y i) :
+  (∑ n :ι, x n)^2 / (∑ n :ι, y n) ≤ (∑ n :ι, ((x n)^2 / (y n))) := by
+  let nonneg : ∀ f :ι → ℝ, (∀ i, 0 < f i) → ∀ i, 0 ≤ f i :=
     fun f h i => (lt_iff_le_and_ne.mp (h i)).left
   have xi_nonneg : ∀ i, 0 ≤ x i := nonneg x xi_pos
   have yi_nonneg : ∀ i, 0 ≤ y i := fun i => le_of_lt (yi_pos _)
   have sqrt_yi_pos : ∀ i, 0 < √(y i) := fun i => (Real.sqrt_pos_of_pos (yi_pos i))
-  have sum_yi_pos : 0 < (∑ n : Fin n, y n) := by
+  have sum_yi_pos : 0 < (∑ n :ι, y n) := by
     apply Finset.sum_pos (fun i _hi => yi_pos i)
-    rw [← Finset.card_pos, card_fin]
+    rw [← Finset.card_pos]
     apply hN
   rw [div_le_iff₀' sum_yi_pos]
   convert_to
-    (∑ n : Fin n, √(y n) * (x n / √(y n))) ^ 2
+    (∑ n :ι, √(y n) * (x n / √(y n))) ^ 2
     ≤
-    (∑ n : Fin n, y n) * ∑ n : Fin n, x n ^ 2 / y n using 3
+    (∑ n :ι, y n) * ∑ n :ι, x n ^ 2 / y n using 3
   rw [mul_div_cancel₀ (hb := sqrt_ne_zero'.mpr (yi_pos _))]
-  have RHS_nonneg : 0 ≤ (∑ n : Fin n, y n) * (∑ n : Fin n, x n ^ 2 / y n):= by
+  have RHS_nonneg : 0 ≤ (∑ n :ι, y n) * (∑ n :ι, x n ^ 2 / y n):= by
     rw [mul_nonneg_iff_of_pos_left]
     apply Finset.sum_nonneg (fun i _ => div_nonneg (sq_nonneg _) (yi_nonneg i))
     apply sum_yi_pos
-  have LHS_nonneg : 0 ≤ ∑ n : Fin n, √(y n) * (x n / √(y n)) := by
+  have LHS_nonneg : 0 ≤ ∑ n :ι, √(y n) * (x n / √(y n)) := by
     apply Finset.sum_nonneg
     intro i _hi
     apply mul_nonneg (le_of_lt (sqrt_yi_pos i))
     apply div_nonneg (xi_nonneg _) (le_of_lt (sqrt_yi_pos _))
   rw [← Real.le_sqrt LHS_nonneg RHS_nonneg, sqrt_mul (le_of_lt sum_yi_pos)]
   convert_to
-    (∑ n : Fin n, √(y n) * (x n / √(y n)))
+    (∑ n :ι, √(y n) * (x n / √(y n)))
     ≤
-    √(∑ n : Fin n, √(y n) ^ 2) * √(∑ n : Fin n, (x n / √(y n)) ^ 2) using 4
+    √(∑ n :ι, √(y n) ^ 2) * √(∑ n :ι, (x n / √(y n)) ^ 2) using 4
   · rw [sq_sqrt (yi_nonneg _)]
   · rw [div_pow, sq_sqrt (yi_nonneg _)]
   convert_to
-    (∑ n : Fin n, √(y n) * (x n / √(y n)))
+    (∑ n :ι, √(y n) * (x n / √(y n)))
     ≤
-    √(∑ n : Fin n, ‖√(y n)‖ ^ 2) * √(∑ n : Fin n, ‖x n / √(y n)‖  ^ 2) using 4
+    √(∑ n :ι, ‖√(y n)‖ ^ 2) * √(∑ n :ι, ‖x n / √(y n)‖  ^ 2) using 4
   · rw [norm_eq_abs, abs_of_pos (sqrt_yi_pos _) ]
   · rw [norm_eq_abs, abs_of_pos]; apply div_pos (xi_pos _) (sqrt_yi_pos _)
-  let sqrt_y : EuclideanSpace ℝ (Fin n) := fun n => √(y n)
-  let x_div_sqrt_y : EuclideanSpace ℝ (Fin n) := fun n => x n / √(y n)
-  convert_to (∑ n : Fin n, √(y n) * (x n / √(y n))) ≤ ‖sqrt_y‖ * ‖x_div_sqrt_y‖ using 3
+  let sqrt_y : EuclideanSpace ℝ ι := fun n => √(y n)
+  let x_div_sqrt_y : EuclideanSpace ℝ ι := fun n => x n / √(y n)
+  convert_to (∑ n : ι, √(y n) * (x n / √(y n))) ≤ ‖sqrt_y‖ * ‖x_div_sqrt_y‖ using 3
   · rw [EuclideanSpace.norm_eq (x := sqrt_y)]
   · rw [EuclideanSpace.norm_eq (x := x_div_sqrt_y)]
   convert_to (dotProduct sqrt_y x_div_sqrt_y) ≤ ‖sqrt_y‖ * ‖x_div_sqrt_y‖ using 1
@@ -262,7 +263,7 @@ theorem Imo1982Q3_part_a {x : ℕ → ℝ} (x_pos : ∀ i, x i > (0 : ℝ)) (hx�
   have sedrakayan's_lemma :
     ∀ N > 0,
     ((∑ n : Fin N, (x n))^2 / (∑ n : Fin N, x (n + 1))) ≤ (∑ n : Fin N, (x n)^2 / x (n + 1)) :=
-    fun N hN => Sedrakyan's_lemma hN (fun i => x_pos i) (fun i => x_pos (i + 1))
+    fun N hN => Sedrakyan's_lemma (by simpa) (fun i => x_pos i) (fun i => x_pos (i + 1))
   have :
     ∃ (N : ℕ), 0 < N ∧ 1 < N ∧ 2 < N ∧  (3.999 : ℝ) ≤ 4 * ((N - 1) / N) :=  by use 4000; norm_num
   obtain ⟨N, zero_lt_N, one_lt_N, two_lt_N, ineq₀⟩ := this
