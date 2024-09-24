@@ -113,7 +113,6 @@ def Functor.FullyFaithful.whiskeringRight {F : D ⥤ E} (hF : F.FullyFaithful)
         simp only [map_comp, map_preimage]
         apply f.naturality }
 
-@[simp]
 theorem whiskeringLeft_obj_id : (whiskeringLeft C C E).obj (𝟭 _) = 𝟭 _ :=
   rfl
 
@@ -134,7 +133,6 @@ def whiskeringLeftObjCompIso {D' : Type u₄} [Category.{v₄} D'] (F : C ⥤ D)
     (whiskeringLeft D D' E).obj G ⋙ (whiskeringLeft C D E).obj F :=
   Iso.refl _
 
-@[simp]
 theorem whiskeringRight_obj_id : (whiskeringRight E C C).obj (𝟭 _) = 𝟭 _ :=
   rfl
 
