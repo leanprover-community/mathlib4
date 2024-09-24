@@ -221,12 +221,6 @@ Polynomial R → Polynomial R →ₐ[R] Polynomial R :=
     Polynomial.compRingHom p with
     commutes' := fun r => by simp}
 
-
-theorem Polynomial.dvd_comp_algEquiv_iff {B : Type*} [CommRing B] {p q : B[X]}
-    {f : B[X] ≃ₐ[B] B[X]} : p ∣ f q ↔ f.symm p ∣ q := by
-  convert map_dvd_iff f using 2
-  simp only [AlgEquiv.apply_symm_apply]
-
 theorem Polynomial.dvd_comp_X_sub_C_iff {B : Type*} [CommRing B] {p q : Polynomial B} {a : B} :
     p ∣ q.comp (X - C a) ↔ p.comp (X + C a) ∣ q := by
   convert (map_dvd_iff <| algEquivAevalXAddC a).symm using 2
@@ -268,20 +262,22 @@ theorem map_irreducible_iff {α : Type*} {β : Type*} [Monoid α] [Monoid β] {F
   ⟨by simpa only [symm_apply_apply] using Irreducible.map f.symm (x := f a) , Irreducible.map f⟩
 
 
-#check Polynomial.degree_eq_natDegree
-#check Polynomial.natDegree_comp
--- when p is 0, q is scalar, the equation fails, p = 0, q = 0 holds
--- when p is not zero, q is nonzero scalar is ok, q = 0 fails
-theorem Polynomial.degree_comp {R : Type*} [CommRing R] [IsDomain R] {p q : Polynomial R} (hp : p ≠ 0) (hq : q ≠ 0) :
-    degree (p.comp q) = degree p * degree q := by
-  by_cases hp : p = 0
-  · simp [hp, WithBot.bot_mul (by tauto)]
-  · have : p.comp q ≠ 0 := by
-      apply Polynomial.comp_eq_zero_iff.not.mpr
-      push_neg
+-- #check Polynomial.degree_eq_natDegree
+-- #check Polynomial.natDegree_comp
+-- -- when p is 0, q is scalar, the equation fails, p = 0, q = 0 holds
+-- -- when p is not zero, q is nonzero scalar is ok, q = 0 fails
+-- theorem Polynomial.degree_comp {R : Type*} [CommRing R] [IsDomain R]
+-- {p q : Polynomial R} (hp : p ≠ 0) (hq : q ≠ 0) :
+--     degree (p.comp q) = degree p * degree q := by
+--   by_cases hp : p = 0
+--   · simp [hp, WithBot.bot_mul (by tauto)]
+--   · have : p.comp q ≠ 0 := by
+--       apply Polynomial.comp_eq_zero_iff.not.mpr
+--       push_neg
 
 
-theorem Polynomial.splits_of_comp_X_sub_C {B : Type*} [Field B] [Algebra A B] (a : A) {p : Polynomial A}
+theorem Polynomial.Splits.comp_X_sub_C {B : Type*} [Field B]
+    [Algebra A B] (a : A) {p : Polynomial A}
     (h : p.Splits (algebraMap A B)) : (p.comp (X - C a)).Splits (algebraMap A B) := by
   cases h with
   | inl h0 =>
@@ -291,15 +287,13 @@ theorem Polynomial.splits_of_comp_X_sub_C {B : Type*} [Field B] [Algebra A B] (a
   | inr h =>
     right
     intro g irr dvd
-    rw [Polynomial.map_comp] at dvd
-    simp at dvd
-    rw [Polynomial.dvd_comp_X_sub_C_iff] at dvd
+    rw [map_comp, Polynomial.map_sub, map_X, map_C, dvd_comp_X_sub_C_iff] at dvd
     have := h (irr.map (algEquivAevalXAddC _)) dvd
     change degree (g.comp (X + C (algebraMap A B a))) = 1 at this
-    -- Polynomial.natDegree_comp
-    #check Polynomial.comp_X_add_C_ne_zero_iff
-    rw [Polynomial.degree_eq_natDegree] at *
-
+    rw [Polynomial.degree_eq_natDegree] at this ⊢
+    rwa [natDegree_comp, natDegree_X_add_C, mul_one] at this
+    exact irr.ne_zero
+    exact fun h => WithBot.bot_ne_one (h ▸ this)
 
 
 variable {R k : Type*} {K : Type*} [Field R] [Field k] [Field K] [Algebra R K] [Algebra k K]
@@ -307,12 +301,7 @@ variable {R k : Type*} {K : Type*} [Field R] [Field k] [Field K] [Algebra R K] [
 theorem minpoly_split_add_algebraMap {x : K} (r : R)
     (g : (minpoly R x).Splits (algebraMap R K)) :
     (minpoly R (x + algebraMap R K r)).Splits (algebraMap R K) := by
-  cases g with
-  | inl g0 =>
-    left
-    simp only [Polynomial.map_eq_zero (algebraMap R K)] at g0 ⊢
-
-  | inr => sorry
+  simpa [minpoly.add_algebraMap'] using g.comp_X_sub_C r
 
 
 theorem minpoly_split_sub_algebraMap {x : K} (r : R)
