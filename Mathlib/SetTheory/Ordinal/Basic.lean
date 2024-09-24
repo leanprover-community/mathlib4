@@ -67,42 +67,6 @@ universe u v w
 variable {α : Type u} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
   {t : γ → γ → Prop}
 
-/-! ### Well order on an arbitrary type -/
-
-
-section WellOrderingThm
-
--- Porting note: `parameter` does not work
--- parameter {σ : Type u}
-variable {σ : Type u}
-
-
-open Function
-
-theorem nonempty_embedding_to_cardinal : Nonempty (σ ↪ Cardinal.{u}) :=
-  (Embedding.total _ _).resolve_left fun ⟨⟨f, hf⟩⟩ =>
-    let g : σ → Cardinal.{u} := invFun f
-    let ⟨x, (hx : g x = 2 ^ sum g)⟩ := invFun_surjective hf (2 ^ sum g)
-    have : g x ≤ sum g := le_sum.{u, u} g x
-    not_le_of_gt (by rw [hx]; exact cantor _) this
-
-/-- An embedding of any type to the set of cardinals. -/
-def embeddingToCardinal : σ ↪ Cardinal.{u} :=
-  Classical.choice nonempty_embedding_to_cardinal
-
-/-- Any type can be endowed with a well order, obtained by pulling back the well order over
-cardinals by some embedding. -/
-def WellOrderingRel : σ → σ → Prop :=
-  embeddingToCardinal ⁻¹'o (· < ·)
-
-instance WellOrderingRel.isWellOrder : IsWellOrder σ WellOrderingRel :=
-  (RelEmbedding.preimage _ _).isWellOrder
-
-instance IsWellOrder.subtype_nonempty : Nonempty { r // IsWellOrder σ r } :=
-  ⟨⟨WellOrderingRel, inferInstance⟩⟩
-
-end WellOrderingThm
-
 /-! ### Definition of ordinals -/
 
 
