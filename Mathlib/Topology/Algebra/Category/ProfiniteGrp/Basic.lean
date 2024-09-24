@@ -183,7 +183,7 @@ end ProfiniteGrp
 /-!
 # Limits in the category of profinite groups
 
-* `ProfiniteGrp.limitCone` : The explicit limit cone in `ProfiniteGrp`。
+* `ProfiniteGrp.limitCone` : The explicit limit cone in `ProfiniteGrp`.
 
 * `ProfiniteGrp.limitConeIsLimit`: `ProfiniteGrp.limitCone` is a limit cone.
 
@@ -259,10 +259,10 @@ abbrev limit : ProfiniteGrp := (ProfiniteGrp.limitCone F).pt
 
 end
 
-instance : Limits.PreservesLimits profiniteGrpToProfinite.{u} := {
+instance : Limits.PreservesLimits profiniteGrpToProfinite.{u} where
   preservesLimitsOfShape := {
     preservesLimit := fun {F} ↦ CategoryTheory.Limits.preservesLimitOfPreservesLimitCone
-      (limitConeIsLimit F) (Profinite.limitConeIsLimit (F ⋙ profiniteGrpToProfinite)) }}
+      (limitConeIsLimit F) (Profinite.limitConeIsLimit (F ⋙ profiniteGrpToProfinite)) }
 
 end ProfiniteGrp
 
