@@ -219,17 +219,17 @@ theorem add_div_le_sum_sq_div_card (hst : s ⊆ t) (f : ι → 𝕜) (d : 𝕜) 
     apply h₁.trans
     rw [sum_sub_distrib, sum_const, nsmul_eq_mul, sub_div, mul_div_cancel_left₀ _ hscard.ne']
   apply (add_le_add_right ht _).trans
-  rw [← mul_div_right_comm, le_div_iff htcard, add_mul, div_mul_cancel₀ _ htcard.ne']
+  rw [← mul_div_right_comm, le_div_iff₀ htcard, add_mul, div_mul_cancel₀ _ htcard.ne']
   have h₃ := mul_sq_le_sum_sq hst (fun i => (f i - (∑ j ∈ t, f j) / t.card)) h₂ hscard.ne'
   apply (add_le_add_left h₃ _).trans
   -- Porting note: was
   -- `simp [← mul_div_right_comm _ (t.card : 𝕜), sub_div' _ _ _ htcard.ne', ← sum_div, ← add_div,`
-  -- `  mul_pow, div_le_iff (sq_pos_of_ne_zero htcard.ne'), sub_sq, sum_add_distrib, ← sum_mul,`
+  -- `  mul_pow, div_le_iff₀ (sq_pos_of_ne_zero htcard.ne'), sub_sq, sum_add_distrib, ← sum_mul,`
   -- `  ← mul_sum]`
   simp_rw [sub_div' _ _ _ htcard.ne']
   conv_lhs => enter [2, 2, x]; rw [div_pow]
   rw [div_pow, ← sum_div, ← mul_div_right_comm _ (t.card : 𝕜), ← add_div,
-    div_le_iff (sq_pos_of_ne_zero htcard.ne')]
+    div_le_iff₀ (sq_pos_of_ne_zero htcard.ne')]
   simp_rw [sub_sq, sum_add_distrib, sum_const, nsmul_eq_mul, sum_sub_distrib, mul_pow, ← sum_mul,
     ← mul_sum, ← sum_mul]
   ring_nf; rfl

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Scott Morrison
+Authors: Mario Carneiro, Kim Morrison
 -/
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.TryThis
@@ -340,7 +340,7 @@ partial def eval (e : Expr) : M (NormalExpr × Expr) := do
     let (e₁, p₁) ← eval e
     let (e₂, p₂) ← evalNeg e₁
     return (e₂, ← iapp `Mathlib.Tactic.Abel.subst_into_neg #[e, e₁, e₂, p₁, p₂])
-  | (`AddMonoid.nsmul, #[_, _, e₁, e₂]) => do
+  | (``AddMonoid.nsmul, #[_, _, e₁, e₂]) => do
     let n ← if (← read).isGroup then mkAppM ``Int.ofNat #[e₁] else pure e₁
     let (e', p) ← eval <| ← iapp ``smul #[n, e₂]
     return (e', ← iapp ``unfold_smul #[e₁, e₂, e', p])
@@ -563,8 +563,4 @@ macro (name := abelConv) "abel" : conv =>
 @[inherit_doc abelConv] macro "abel!" : conv =>
   `(conv| first | discharge => abel1! | try_this abel_nf!)
 
-end Abel
-
-end Tactic
-
-end Mathlib
+end Mathlib.Tactic.Abel

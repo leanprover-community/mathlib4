@@ -28,7 +28,7 @@ theorem tan_arctan {z : ℂ} (h₁ : z ≠ I) (h₂ : z ≠ -I) : tan (arctan z)
   rw [div_div_eq_mul_div, div_mul_cancel₀ _ two_ne_zero, ← div_mul_eq_mul_div,
     -- multiply top and bottom by `exp (arctan z * I)`
     ← mul_div_mul_right _ _ (exp_ne_zero (arctan z * I)), sub_mul, add_mul,
-    ← exp_add, neg_mul, add_left_neg, exp_zero, ← exp_add, ← two_mul]
+    ← exp_add, neg_mul, neg_add_cancel, exp_zero, ← exp_add, ← two_mul]
   have z₁ : 1 + z * I ≠ 0 := by
     contrapose! h₁
     rw [add_eq_zero_iff_neg_eq, ← div_eq_iff I_ne_zero, div_I, neg_one_mul, neg_neg] at h₁
@@ -74,7 +74,7 @@ theorem arctan_tan {z : ℂ} (h₀ : z ≠ π / 2) (h₁ : -(π / 2) < z.re) (h�
     show -I / 2 * (2 * (I * z)) = -(I * I) * z by ring, I_mul_I, neg_neg, one_mul]
   all_goals norm_num
   · rwa [← div_lt_iff' two_pos, neg_div]
-  · rwa [← le_div_iff' two_pos]
+  · rwa [← le_div_iff₀' two_pos]
 
 @[simp, norm_cast]
 theorem ofReal_arctan (x : ℝ) : (Real.arctan x : ℂ) = arctan x := by
@@ -124,9 +124,9 @@ theorem hasSum_arctan {z : ℂ} (hz : ‖z‖ < 1) :
   dsimp only
   convert hasSum_fintype (_ : Fin 2 → ℂ) using 1
   rw [Fin.sum_univ_two, Fin.val_zero, Fin.val_one, Odd.neg_one_pow (n := 2 * k + 0 + 1) (by simp),
-    add_left_neg, zero_mul, zero_div, mul_zero, zero_add, show 2 * k + 1 + 1 = 2 * (k + 1) by ring,
-    Even.neg_one_pow (n := 2 * (k + 1)) (by simp), ← mul_div_assoc (_ / _), ← mul_assoc,
-    show -I / 2 * (1 + 1) = -I by ring]
+    neg_add_cancel, zero_mul, zero_div, mul_zero, zero_add,
+    show 2 * k + 1 + 1 = 2 * (k + 1) by ring, Even.neg_one_pow (n := 2 * (k + 1)) (by simp),
+    ← mul_div_assoc (_ / _), ← mul_assoc, show -I / 2 * (1 + 1) = -I by ring]
   congr 1
   rw [mul_pow, pow_succ' I, pow_mul, I_sq,
     show -I * _ = -(I * I) * (-1) ^ k * z ^ (2 * k + 1) by ring, I_mul_I, neg_neg, one_mul]

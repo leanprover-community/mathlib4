@@ -177,7 +177,7 @@ theorem of_exponent_ge {p q : ℝ≥0∞} {f : ∀ i, E i} (hfq : Memℓp f q) (
     use A ^ q.toReal⁻¹
     rintro x ⟨i, rfl⟩
     have : 0 ≤ ‖f i‖ ^ q.toReal := by positivity
-    simpa [← Real.rpow_mul, mul_inv_cancel hq.ne'] using
+    simpa [← Real.rpow_mul, mul_inv_cancel₀ hq.ne'] using
       Real.rpow_le_rpow this (hA ⟨i, rfl⟩) (inv_nonneg.mpr hq.le)
   · apply memℓp_gen
     have hf' := hfq.summable hq
@@ -595,7 +595,7 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
     · simp [lp.eq_zero' f]
     have hcf := lp.isLUB_norm (c • f)
     have hfc := (lp.isLUB_norm f).mul_left (norm_nonneg c)
-    simp_rw [← Set.range_comp, Function.comp] at hfc
+    simp_rw [← Set.range_comp, Function.comp_def] at hfc
     -- TODO: some `IsLUB` API should make it a one-liner from here.
     refine hcf.right ?_
     have := hfc.left
@@ -1066,9 +1066,9 @@ theorem memℓp_of_tendsto {F : ι → lp E p} (hF : Bornology.IsBounded (Set.ra
   · apply memℓp_infty
     use C
     rintro _ ⟨a, rfl⟩
-    exact norm_apply_le_of_tendsto (eventually_of_forall hCF) hf a
+    exact norm_apply_le_of_tendsto (Eventually.of_forall hCF) hf a
   · apply memℓp_gen'
-    exact sum_rpow_le_of_tendsto hp.ne (eventually_of_forall hCF) hf
+    exact sum_rpow_le_of_tendsto hp.ne (Eventually.of_forall hCF) hf
 
 /-- If a sequence is Cauchy in the `lp E p` topology and pointwise convergent to an element `f` of
 `lp E p`, then it converges to `f` in the `lp E p` topology. -/

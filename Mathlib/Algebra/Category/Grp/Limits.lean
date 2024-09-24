@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.MonCat.Limits
 import Mathlib.Algebra.Category.Grp.ForgetCorepresentable
@@ -126,7 +126,7 @@ instance hasLimit : HasLimit F :=
 end
 
 /-- A functor `F : J ⥤ Grp.{u}` has a limit iff `(F ⋙ forget Grp).sections` is
-`u`-small.  -/
+`u`-small. -/
 @[to_additive "A functor `F : J ⥤ AddGrp.{u}` has a limit iff
 `(F ⋙ forget AddGrp).sections` is `u`-small."]
 lemma hasLimit_iff_small_sections :
@@ -281,7 +281,7 @@ instance hasLimit : HasLimit F :=
 end
 
 /-- A functor `F : J ⥤ CommGrp.{u}` has a limit iff `(F ⋙ forget CommGrp).sections` is
-`u`-small.  -/
+`u`-small. -/
 @[to_additive "A functor `F : J ⥤ AddCommGrp.{u}` has a limit iff
 `(F ⋙ forget AddCommGrp).sections` is `u`-small."]
 lemma hasLimit_iff_small_sections :

@@ -139,8 +139,10 @@ its span. -/
 theorem rank_submodule_eq_one_iff (s : Submodule K V) [Module.Free K s] :
     Module.rank K s = 1 ↔ ∃ v₀ ∈ s, v₀ ≠ 0 ∧ s ≤ K ∙ v₀ := by
   simp_rw [rank_eq_one_iff, le_span_singleton_iff]
-  refine ⟨fun ⟨⟨v₀, hv₀⟩, H, h⟩ ↦ ⟨v₀, hv₀, fun h' ↦ by simp [h'] at H, fun v hv ↦ ?_⟩,
-    fun ⟨v₀, hv₀, H, h⟩ ↦ ⟨⟨v₀, hv₀⟩, fun h' ↦ H (by simpa using h'), fun ⟨v, hv⟩ ↦ ?_⟩⟩
+  refine ⟨fun ⟨⟨v₀, hv₀⟩, H, h⟩ ↦ ⟨v₀, hv₀, fun h' ↦ by
+    simp only [h', ne_eq] at H; exact H rfl, fun v hv ↦ ?_⟩,
+    fun ⟨v₀, hv₀, H, h⟩ ↦ ⟨⟨v₀, hv₀⟩,
+      fun h' ↦ H (by rwa [AddSubmonoid.mk_eq_zero] at h'), fun ⟨v, hv⟩ ↦ ?_⟩⟩
   · obtain ⟨r, hr⟩ := h ⟨v, hv⟩
     exact ⟨r, by rwa [Subtype.ext_iff, coe_smul] at hr⟩
   · obtain ⟨r, hr⟩ := h v hv

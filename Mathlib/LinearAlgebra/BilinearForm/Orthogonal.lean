@@ -217,7 +217,7 @@ theorem iIsOrtho.not_isOrtho_basis_self_of_nondegenerate {n : Type w} [Nontrivia
   intro ho
   refine v.ne_zero i (hB (v i) fun m => ?_)
   obtain ⟨vi, rfl⟩ := v.repr.symm.surjective m
-  rw [Basis.repr_symm_apply, Finsupp.total_apply, Finsupp.sum, sum_right]
+  rw [Basis.repr_symm_apply, Finsupp.linearCombination_apply, Finsupp.sum, sum_right]
   apply Finset.sum_eq_zero
   rintro j -
   rw [smul_right]
@@ -237,7 +237,8 @@ theorem iIsOrtho.nondegenerate_iff_not_isOrtho_basis_self {n : Type w} [Nontrivi
   ext i
   rw [Finsupp.zero_apply]
   specialize hB (v i)
-  simp_rw [Basis.repr_symm_apply, Finsupp.total_apply, Finsupp.sum, sum_left, smul_left] at hB
+  simp_rw [Basis.repr_symm_apply, Finsupp.linearCombination_apply, Finsupp.sum, sum_left,
+           smul_left] at hB
   rw [Finset.sum_eq_single i] at hB
   · exact eq_zero_of_ne_zero_of_mul_right_eq_zero (ho i) hB
   · intro j _ hij
@@ -289,6 +290,15 @@ lemma ker_restrict_eq_of_codisjoint {p q : Submodule R M} (hpq : Codisjoint p q)
     simpa [hB z hz y hy] using LinearMap.congr_fun h ⟨x, hx⟩
   · ext ⟨x, hx⟩
     simpa using LinearMap.congr_fun h x
+
+lemma inf_orthogonal_self_le_ker_restrict {W : Submodule R M} (b₁ : B.IsRefl) :
+    W ⊓ B.orthogonal W ≤ (LinearMap.ker <| B.restrict W).map W.subtype := by
+  rintro v ⟨hv : v ∈ W, hv' : v ∈ B.orthogonal W⟩
+  simp only [Submodule.mem_map, mem_ker, restrict_apply, Submodule.coeSubtype, Subtype.exists,
+    exists_and_left, exists_prop, exists_eq_right_right]
+  refine ⟨?_, hv⟩
+  ext ⟨w, hw⟩
+  exact b₁ w v <| hv' w hw
 
 variable [FiniteDimensional K V]
 
@@ -380,15 +390,6 @@ lemma orthogonal_eq_bot_iff
   refine ⟨eq_top_of_restrict_nondegenerate_of_orthogonal_eq_bot b₁ b₂, fun h ↦ ?_⟩
   rw [h, eq_bot_iff]
   exact fun x hx ↦ b₃ x fun y ↦ b₁ y x <| by simpa using hx y
-
-lemma inf_orthogonal_self_le_ker_restrict (b₁ : B.IsRefl) :
-    W ⊓ B.orthogonal W ≤ (LinearMap.ker <| B.restrict W).map W.subtype := by
-  rintro v ⟨hv : v ∈ W, hv' : v ∈ B.orthogonal W⟩
-  simp only [Submodule.mem_map, mem_ker, restrict_apply, Submodule.coeSubtype, Subtype.exists,
-    exists_and_left, exists_prop, exists_eq_right_right]
-  refine ⟨?_, hv⟩
-  ext ⟨w, hw⟩
-  exact b₁ w v <| hv' w hw
 
 end
 

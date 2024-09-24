@@ -29,10 +29,14 @@ section UniqueMDiff
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type*}
-  [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M] {E' : Type*}
+  [TopologicalSpace M] [ChartedSpace H M] {E' : Type*}
   [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  [SmoothManifoldWithCorners I' M'] {s : Set M} {x : M}
+  [SmoothManifoldWithCorners I' M'] {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H' M'']
+  {s : Set M} {x : M}
+
+section
+variable [SmoothManifoldWithCorners I M]
 
 /-- If `s` has the unique differential property at `x`, `f` is differentiable within `s` at x` and
 its derivative has dense range, then `f '' s` has the unique differential property at `f x`. -/
@@ -93,8 +97,8 @@ theorem UniqueMDiffOn.uniqueDiffOn_target_inter (hs : UniqueMDiffOn I s) (x : M)
 /-- When considering functions between manifolds, this statement shows up often. It entails
 the unique differential of the pullback in extended charts of the set where the function can
 be read in the charts. -/
-theorem UniqueMDiffOn.uniqueDiffOn_inter_preimage (hs : UniqueMDiffOn I s) (x : M) (y : M')
-    {f : M → M'} (hf : ContinuousOn f s) :
+theorem UniqueMDiffOn.uniqueDiffOn_inter_preimage (hs : UniqueMDiffOn I s) (x : M) (y : M'')
+    {f : M → M''} (hf : ContinuousOn f s) :
     UniqueDiffOn 𝕜
       ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' y).source)) :=
   haveI : UniqueMDiffOn I (s ∩ f ⁻¹' (extChartAt I' y).source) := by
@@ -103,6 +107,8 @@ theorem UniqueMDiffOn.uniqueDiffOn_inter_preimage (hs : UniqueMDiffOn I s) (x : 
     apply (hf z hz.1).preimage_mem_nhdsWithin
     exact (isOpen_extChartAt_source I' y).mem_nhds hz.2
   this.uniqueDiffOn_target_inter _
+
+end
 
 open Bundle
 
@@ -113,6 +119,8 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {Z : M → Type
 theorem Trivialization.mdifferentiable (e : Trivialization F (π F Z)) [MemTrivializationAtlas e] :
     e.toPartialHomeomorph.MDifferentiable (I.prod 𝓘(𝕜, F)) (I.prod 𝓘(𝕜, F)) :=
   ⟨(e.smoothOn I).mdifferentiableOn, (e.smoothOn_symm I).mdifferentiableOn⟩
+
+variable [SmoothManifoldWithCorners I M]
 
 theorem UniqueMDiffWithinAt.smooth_bundle_preimage {p : TotalSpace F Z}
     (hs : UniqueMDiffWithinAt I s p.proj) :

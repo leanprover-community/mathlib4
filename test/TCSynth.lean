@@ -54,7 +54,7 @@ section
 
 open Real in
 set_option synthInstance.maxHeartbeats 10000 in
-example : expMapCircle (2 * π) = 1 := by simp
+example : Circle.exp (2 * π) = 1 := by simp
 
 end
 
@@ -63,7 +63,7 @@ section
 -- Initial issue: https://github.com/leanprover-community/mathlib4/issues/12230
 
 open Complex in
-set_option synthInstance.maxHeartbeats 3000 in
+set_option synthInstance.maxHeartbeats 3200 in
 example (x : ℝ) : abs (cos x + sin x * I) = 1 := by simp
 
 end
@@ -84,9 +84,10 @@ end
 section
 
 -- Initial issue: https://github.com/leanprover-community/mathlib4/issues/12232
+-- reduced from 9000 to 1000 after `@[simp low] map_zero` in #16679 (only 10 needed)
 
 open Equiv in
-set_option synthInstance.maxHeartbeats 9000 in
+set_option synthInstance.maxHeartbeats 1000 in
 example {n : ℕ} (p : Fin (n + 1)) (e : Perm (Fin n)) :
     Equiv.Perm.decomposeFin.symm (p, e) 0 = p := by simp
 

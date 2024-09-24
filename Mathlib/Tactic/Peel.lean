@@ -10,7 +10,7 @@ import Mathlib.Tactic.Basic
 # The `peel` tactic
 
 `peel h with h' idents*` tries to apply `forall_imp` (or `Exists.imp`, or `Filter.Eventually.mp`,
-`Filter.Frequently.mp` and `Filter.eventually_of_forall`) with the argument `h` and uses `idents*`
+`Filter.Frequently.mp` and `Filter.Eventually.of_forall`) with the argument `h` and uses `idents*`
 to introduce variables with the supplied names, giving the "peeled" argument the name `h'`.
 
 One can provide a numeric argument as in `peel 4 h` which will peel 4 quantifiers off
@@ -78,7 +78,7 @@ immediately. In particular, `peel h using e` is equivalent to `peel h; exact e`.
 may be paired with any of the other features of `peel`.
 
 This tactic works by repeatedly applying lemmas such as `forall_imp`, `Exists.imp`,
-`Filter.Eventually.mp`, `Filter.Frequently.mp`, and `Filter.eventually_of_forall`.
+`Filter.Eventually.mp`, `Filter.Frequently.mp`, and `Filter.Eventually.of_forall`.
 -/
 syntax (name := peel)
   "peel" (num)? (ppSpace colGt term)?
@@ -88,11 +88,11 @@ private lemma and_imp_left_of_imp_imp {p q r : Prop} (h : r → p → q) : r ∧
 
 private theorem eventually_imp {α : Type*} {p q : α → Prop} {f : Filter α}
     (hq : ∀ (x : α), p x → q x) (hp : ∀ᶠ (x : α) in f, p x) : ∀ᶠ (x : α) in f, q x :=
-  Filter.Eventually.mp hp (Filter.eventually_of_forall hq)
+  Filter.Eventually.mp hp (Filter.Eventually.of_forall hq)
 
 private theorem frequently_imp {α : Type*} {p q : α → Prop} {f : Filter α}
     (hq : ∀ (x : α), p x → q x) (hp : ∃ᶠ (x : α) in f, p x) : ∃ᶠ (x : α) in f, q x :=
-  Filter.Frequently.mp hp (Filter.eventually_of_forall hq)
+  Filter.Frequently.mp hp (Filter.Eventually.of_forall hq)
 
 private theorem eventually_congr {α : Type*} {p q : α → Prop} {f : Filter α}
     (hq : ∀ (x : α), p x ↔ q x) : (∀ᶠ (x : α) in f, p x) ↔ ∀ᶠ (x : α) in f, q x := by
@@ -225,7 +225,7 @@ def peelArgsIff (l : List Name) : TacticM Unit := withMainContext do
 elab_rules : tactic
   | `(tactic| peel $[$num?:num]? $e:term $[with $l?* $n?]?) => withMainContext do
     /- we use `elabTermForApply` instead of `elabTerm` so that terms passed to `peel` can contain
-    quantifiers with implicit bound variables without causing errors or requiring `@`.  -/
+    quantifiers with implicit bound variables without causing errors or requiring `@`. -/
     let e ← elabTermForApply e false
     let n? := n?.bind fun n => if n.raw.isIdent then pure n.raw.getId else none
     let l := (l?.getD #[]).map getNameOfIdent' |>.toList
@@ -244,8 +244,4 @@ macro_rules
   | `(tactic| peel $[$n:num]? $[$e:term]? $[with $h*]? using $u:term) =>
     `(tactic| peel $[$n:num]? $[$e:term]? $[with $h*]?; exact $u)
 
-end Peel
-
-end Tactic
-
-end Mathlib
+end Mathlib.Tactic.Peel

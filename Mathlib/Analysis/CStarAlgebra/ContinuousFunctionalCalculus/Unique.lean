@@ -92,9 +92,13 @@ lemma toNNReal_neg_one : (-1 : C(X, ℝ)).toNNReal = 0 := toNNReal_neg_algebraMa
 
 end ContinuousMap
 
-variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [Algebra ℝ A] [TopologicalRing A]
+variable {A : Type*} [Ring A] [StarRing A] [Algebra ℝ A]
 
 namespace StarAlgHom
+
+section TopologicalRing
+
+variable [TopologicalSpace A] [TopologicalRing A]
 
 /-- Given a star `ℝ≥0`-algebra homomorphism `φ` from `C(X, ℝ≥0)` into an `ℝ`-algebra `A`, this is
 the unique extension of `φ` from `C(X, ℝ)` to `A` as a star `ℝ`-algebra homomorphism. -/
@@ -135,6 +139,8 @@ lemma continuous_realContinuousMapOfNNReal (φ : C(X, ℝ≥0) →⋆ₐ[ℝ≥0
   simp [realContinuousMapOfNNReal]
   fun_prop
 
+end TopologicalRing
+
 @[simp high]
 lemma realContinuousMapOfNNReal_apply_comp_toReal (φ : C(X, ℝ≥0) →⋆ₐ[ℝ≥0] A)
     (f : C(X, ℝ≥0)) :
@@ -154,6 +160,8 @@ lemma realContinuousMapOfNNReal_injective :
   simpa using congr($(h) ((ContinuousMap.mk toReal continuous_coe).comp f))
 
 end StarAlgHom
+
+variable [TopologicalSpace A] [TopologicalRing A]
 
 instance NNReal.instUniqueContinuousFunctionalCalculus [UniqueContinuousFunctionalCalculus ℝ A] :
     UniqueContinuousFunctionalCalculus ℝ≥0 A where
@@ -283,12 +291,15 @@ lemma toNNReal_add_add_neg_add_neg_eq (f g : C(X, ℝ)₀) :
 
 end ContinuousMapZero
 
-variable {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [Module ℝ A]
-variable [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [TopologicalRing A]
+variable {A : Type*} [NonUnitalRing A] [StarRing A] [Module ℝ A]
 
 namespace NonUnitalStarAlgHom
 
 open ContinuousMapZero
+
+section TopologicalRing
+
+variable [TopologicalSpace A] [TopologicalRing A]
 
 /-- Given a non-unital star `ℝ≥0`-algebra homomorphism `φ` from `C(X, ℝ≥0)₀` into a non-unital
 `ℝ`-algebra `A`, this is the unique extension of `φ` from `C(X, ℝ)₀` to `A` as a non-unital
@@ -331,6 +342,8 @@ lemma continuous_realContinuousMapZeroOfNNReal (φ : C(X, ℝ≥0)₀ →⋆ₙ�
   simp [realContinuousMapZeroOfNNReal]
   fun_prop
 
+end TopologicalRing
+
 @[simp high]
 lemma realContinuousMapZeroOfNNReal_apply_comp_toReal (φ : C(X, ℝ≥0)₀ →⋆ₙₐ[ℝ≥0] A)
     (f : C(X, ℝ≥0)₀) :
@@ -355,6 +368,7 @@ end NonUnitalStarAlgHom
 open ContinuousMapZero
 
 instance NNReal.instUniqueNonUnitalContinuousFunctionalCalculus
+    [TopologicalSpace A] [TopologicalRing A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
     [UniqueNonUnitalContinuousFunctionalCalculus ℝ A] :
     UniqueNonUnitalContinuousFunctionalCalculus ℝ≥0 A where
   compactSpace_quasispectrum a := by
@@ -406,3 +420,103 @@ instance NNReal.instUniqueNonUnitalContinuousFunctionalCalculus
 end NNReal
 
 end UniqueNonUnital
+
+section NonUnitalStarAlgHom
+
+open scoped ContinuousMapZero
+
+variable {F R S A B : Type*} {p : A → Prop} {q : B → Prop}
+  [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R] [TopologicalSemiring R]
+  [ContinuousStar R] [CommRing S] [Algebra R S]
+  [Ring A] [StarRing A] [TopologicalSpace A] [Module R A]
+  [IsScalarTower R A A] [SMulCommClass R A A]
+  [Ring B] [StarRing B] [TopologicalSpace B] [Module R B]
+  [IsScalarTower R B B] [SMulCommClass R B B]
+  [Module S A] [Module S B] [IsScalarTower R S A] [IsScalarTower R S B]
+  [NonUnitalContinuousFunctionalCalculus R p] [NonUnitalContinuousFunctionalCalculus R q]
+  [UniqueNonUnitalContinuousFunctionalCalculus R B] [FunLike F A B] [NonUnitalAlgHomClass F S A B]
+  [StarHomClass F A B]
+
+include S in
+/-- Non-unital star algebra homomorphisms commute with the non-unital continuous functional
+calculus. -/
+lemma NonUnitalStarAlgHomClass.map_cfcₙ (φ : F) (f : R → R) (a : A)
+    [CompactSpace (quasispectrum R a)] (hf : ContinuousOn f (quasispectrum R a) := by cfc_cont_tac)
+    (hf₀ : f 0 = 0 := by cfc_zero_tac) (hφ : Continuous φ := by fun_prop) (ha : p a := by cfc_tac)
+    (hφa : q (φ a) := by cfc_tac) : φ (cfcₙ f a) = cfcₙ f (φ a) := by
+  let ψ : A →⋆ₙₐ[R] B := (φ : A →⋆ₙₐ[S] B).restrictScalars R
+  have : Continuous ψ := hφ
+  have h_spec := NonUnitalAlgHom.quasispectrum_apply_subset' (R := R) S φ a
+  have hψa : q (ψ a) := hφa
+  let ι : C(quasispectrum R (ψ a), quasispectrum R a)₀ :=
+    ⟨⟨Set.inclusion h_spec, continuous_id.subtype_map h_spec⟩, rfl⟩
+  suffices ψ.comp (cfcₙHom ha) =
+      (cfcₙHom hψa).comp (ContinuousMapZero.nonUnitalStarAlgHom_precomp R ι) by
+    have hf' : ContinuousOn f (quasispectrum R (ψ a)) := hf.mono h_spec
+    rw [cfcₙ_apply .., cfcₙ_apply ..]
+    exact DFunLike.congr_fun this _
+  refine UniqueNonUnitalContinuousFunctionalCalculus.eq_of_continuous_of_map_id _ rfl _ _
+    ?_ ?_ ?apply_id
+  case apply_id =>
+    trans cfcₙHom hψa ⟨.restrict (quasispectrum R (ψ a)) (.id R), rfl⟩
+    · simp [cfcₙHom_id]
+    · congr
+  all_goals
+    simp [ContinuousMapZero.nonUnitalStarAlgHom_precomp]
+    fun_prop
+
+/-- Non-unital star algebra homomorphisms commute with the non-unital continuous functional
+calculus.  This version is specialized to `A →⋆ₙₐ[S] B` to allow for dot notation. -/
+lemma NonUnitalStarAlgHom.map_cfcₙ (φ : A →⋆ₙₐ[S] B) (f : R → R) (a : A)
+    [CompactSpace (quasispectrum R a)] (hf : ContinuousOn f (quasispectrum R a) := by cfc_cont_tac)
+    (hf₀ : f 0 = 0 := by cfc_zero_tac) (hφ : Continuous φ := by fun_prop) (ha : p a := by cfc_tac)
+    (hφa : q (φ a) := by cfc_tac) : φ (cfcₙ f a) = cfcₙ f (φ a) :=
+  NonUnitalStarAlgHomClass.map_cfcₙ φ f a
+
+end NonUnitalStarAlgHom
+
+section StarAlgHom
+
+variable {F R S A B : Type*} {p : A → Prop} {q : B → Prop}
+  [CommSemiring R] [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
+  [Ring A] [StarRing A] [TopologicalSpace A] [Algebra R A]
+  [Ring B] [StarRing B] [TopologicalSpace B] [Algebra R B]
+  [CommSemiring S] [Algebra R S] [Algebra S A] [Algebra S B] [IsScalarTower R S A]
+  [IsScalarTower R S B] [ContinuousFunctionalCalculus R p] [ContinuousFunctionalCalculus R q]
+  [UniqueContinuousFunctionalCalculus R B] [FunLike F A B] [AlgHomClass F S A B]
+  [StarHomClass F A B]
+
+include S in
+/-- Star algebra homomorphisms commute with the continuous functional calculus. -/
+lemma StarAlgHomClass.map_cfc (φ : F) (f : R → R) (a : A)
+    [CompactSpace (spectrum R a)] (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
+    (hφ : Continuous φ := by fun_prop) (ha : p a := by cfc_tac) (hφa : q (φ a) := by cfc_tac) :
+    φ (cfc f a) = cfc f (φ a) := by
+  let ψ : A →⋆ₐ[R] B := (φ : A →⋆ₐ[S] B).restrictScalars R
+  have : Continuous ψ := hφ
+  have h_spec := AlgHom.spectrum_apply_subset ψ a
+  have hψa : q (ψ a) := hφa
+  let ι : C(spectrum R (ψ a), spectrum R a) :=
+    ⟨Set.inclusion h_spec, continuous_id.subtype_map h_spec⟩
+  suffices ψ.comp (cfcHom ha) = (cfcHom hψa).comp (ContinuousMap.compStarAlgHom' R R ι) by
+    have hf' : ContinuousOn f (spectrum R (ψ a)) := hf.mono h_spec
+    rw [cfc_apply .., cfc_apply ..]
+    congrm($(this) ⟨_, hf.restrict⟩)
+  refine UniqueContinuousFunctionalCalculus.eq_of_continuous_of_map_id _ _ _ ?_ ?_ ?apply_id
+  case apply_id =>
+    trans cfcHom hψa (.restrict (spectrum R (ψ a)) (.id R))
+    · simp [cfcHom_id]
+    · congr
+  all_goals
+    simp [ContinuousMap.compStarAlgHom']
+    fun_prop
+
+/-- Star algebra homomorphisms commute with the continuous functional calculus.
+This version is specialized to `A →⋆ₐ[S] B` to allow for dot notation. -/
+lemma StarAlgHom.map_cfc (φ : A →⋆ₐ[S] B) (f : R → R) (a : A) [CompactSpace (spectrum R a)]
+    (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac) (hφ : Continuous φ := by fun_prop)
+    (ha : p a := by cfc_tac) (hφa : q (φ a) := by cfc_tac) :
+    φ (cfc f a) = cfc f (φ a) :=
+  StarAlgHomClass.map_cfc φ f a
+
+end StarAlgHom
