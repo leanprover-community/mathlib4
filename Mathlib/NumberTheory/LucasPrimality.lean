@@ -63,7 +63,7 @@ and `a^((p-1)/q) ≠ 1 mod p` for all prime factors `q` of `p-1`.
 The multiplicative group mod `p` is cyclic, so `a` can be any generator of the group
 (which must have order `p-1`).
 -/
-theorem reverse_lucas_primality (p : ℕ) (hP : p.Prime):
+theorem reverse_lucas_primality (p : ℕ) (hP : p.Prime) :
     ∃ a : ZMod p, a ^ (p - 1) = 1 ∧ ∀ q : ℕ, q.Prime → q ∣ p - 1 → a ^ ((p - 1) / q) ≠ 1 := by
   have : Fact p.Prime := ⟨hP⟩
   obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := (ZMod p)ˣ)
@@ -78,6 +78,6 @@ theorem reverse_lucas_primality (p : ℕ) (hP : p.Prime):
 /-- A number `p` is prime if and only if there exists an `a` such that
 `a^(p-1) = 1 mod p` and `a^((p-1)/q) ≠ 1 mod p` for all prime factors `q` of `p-1`.
 -/
-theorem lucas_primality_iff (p : ℕ): p.Prime ↔
+theorem lucas_primality_iff (p : ℕ) : p.Prime ↔
     ∃ a : ZMod p, a ^ (p - 1) = 1 ∧ ∀ q : ℕ, q.Prime → q ∣ p - 1 → a ^ ((p - 1) / q) ≠ 1 :=
   ⟨reverse_lucas_primality p, fun ⟨a, ⟨ha, hb⟩⟩ ↦ lucas_primality p a ha hb⟩
