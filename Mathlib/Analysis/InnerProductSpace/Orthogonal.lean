@@ -112,8 +112,7 @@ theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, LinearMap.ker (innerSL 𝕜 (v :
 /-- The orthogonal complement of any submodule `K` is closed. -/
 theorem isClosed_orthogonal : IsClosed (Kᗮ : Set E) := by
   rw [orthogonal_eq_inter K]
-  have := fun v : K => ContinuousLinearMap.isClosed_ker (innerSL 𝕜 (v : E))
-  convert isClosed_iInter this
+  convert isClosed_iInter <| fun v : K => ContinuousLinearMap.isClosed_ker (innerSL 𝕜 (v : E))
   simp only [iInf_coe]
 
 /-- In a complete space, the orthogonal complement of any submodule `K` is complete. -/

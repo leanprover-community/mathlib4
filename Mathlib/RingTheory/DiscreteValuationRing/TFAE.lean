@@ -3,10 +3,9 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.DedekindDomain.Basic
-import Mathlib.RingTheory.Valuation.ValuationRing
-import Mathlib.RingTheory.Nakayama
+import Mathlib.RingTheory.DiscreteValuationRing.Basic
+import Mathlib.RingTheory.Ideal.Cotangent
 
 /-!
 
@@ -28,7 +27,7 @@ Also see `tfae_of_isNoetherianRing_of_localRing_of_isDomain` for a version witho
 
 variable (R : Type*) [CommRing R] (K : Type*) [Field K] [Algebra R K] [IsFractionRing R K]
 
-open scoped DiscreteValuation
+open scoped Multiplicative
 
 open LocalRing FiniteDimensional
 
@@ -167,23 +166,17 @@ theorem tfae_of_isNoetherianRing_of_localRing_of_isDomain
         (maximalIdeal R).IsPrincipal,
         finrank (ResidueField R) (CotangentSpace R) ≤ 1,
         ∀ (I) (_ : I ≠ ⊥), ∃ n : ℕ, I = maximalIdeal R ^ n] := by
-  tfae_have 1 → 2
-  · exact fun _ ↦ inferInstance
-  tfae_have 2 → 1
-  · exact fun _ ↦ ((IsBezout.TFAE (R := R)).out 0 1).mp ‹_›
+  tfae_have 1 → 2 := fun _ ↦ inferInstance
+  tfae_have 2 → 1 := fun _ ↦ ((IsBezout.TFAE (R := R)).out 0 1).mp ‹_›
   tfae_have 1 → 4
-  · intro H
-    exact ⟨inferInstance, fun P hP hP' ↦ eq_maximalIdeal (hP'.isMaximal hP)⟩
-  tfae_have 4 → 3
-  · exact fun ⟨h₁, h₂⟩ ↦ { h₁ with maximalOfPrime := (h₂ _ · · ▸ maximalIdeal.isMaximal R) }
-  tfae_have 3 → 5
-  · exact fun h ↦ maximalIdeal_isPrincipal_of_isDedekindDomain R
-  tfae_have 6 ↔ 5
-  · exact finrank_cotangentSpace_le_one_iff
-  tfae_have 5 → 7
-  · exact exists_maximalIdeal_pow_eq_of_principal R
-  tfae_have 7 → 2
-  · rw [ValuationRing.iff_ideal_total]
+  | H => ⟨inferInstance, fun P hP hP' ↦ eq_maximalIdeal (hP'.isMaximal hP)⟩
+  tfae_have 4 → 3 :=
+    fun ⟨h₁, h₂⟩ ↦ { h₁ with maximalOfPrime := (h₂ _ · · ▸ maximalIdeal.isMaximal R) }
+  tfae_have 3 → 5 := fun h ↦ maximalIdeal_isPrincipal_of_isDedekindDomain R
+  tfae_have 6 ↔ 5 := finrank_cotangentSpace_le_one_iff
+  tfae_have 5 → 7 := exists_maximalIdeal_pow_eq_of_principal R
+  tfae_have 7 → 2 := by
+    rw [ValuationRing.iff_ideal_total]
     intro H
     constructor
     intro I J

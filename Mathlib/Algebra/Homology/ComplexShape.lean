@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Scott Morrison
+Authors: Johan Commelin, Kim Morrison
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Logic.Relation
@@ -40,8 +40,6 @@ so `d : X i ⟶ X j` is nonzero only when `i = j + 1`.
 -/
 
 noncomputable section
-
-open scoped Classical
 
 /-- A `c : ComplexShape ι` describes the shape of a chain complex,
 with chain groups indexed by `ι`.
@@ -88,9 +86,7 @@ def symm (c : ComplexShape ι) : ComplexShape ι where
   prev_eq w w' := c.next_eq w w'
 
 @[simp]
-theorem symm_symm (c : ComplexShape ι) : c.symm.symm = c := by
-  ext
-  simp
+theorem symm_symm (c : ComplexShape ι) : c.symm.symm = c := rfl
 
 theorem symm_bijective :
     Function.Bijective (ComplexShape.symm : ComplexShape ι → ComplexShape ι) :=
@@ -126,12 +122,14 @@ instance subsingleton_prev (c : ComplexShape ι) (j : ι) : Subsingleton { i // 
   congr
   exact c.prev_eq rik rjk
 
+open Classical in
 /-- An arbitrary choice of index `j` such that `Rel i j`, if such exists.
 Returns `i` otherwise.
 -/
 def next (c : ComplexShape ι) (i : ι) : ι :=
   if h : ∃ j, c.Rel i j then h.choose else i
 
+open Classical in
 /-- An arbitrary choice of index `i` such that `Rel i j`, if such exists.
 Returns `j` otherwise.
 -/

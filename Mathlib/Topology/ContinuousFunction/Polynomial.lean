@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Topology.Algebra.Polynomial
 import Mathlib.Topology.ContinuousFunction.Algebra
@@ -220,7 +220,7 @@ theorem polynomialFunctions.eq_adjoin_X (s : Set R) :
 theorem polynomialFunctions.le_equalizer {A : Type*} [Semiring A] [Algebra R A] (s : Set R)
     (φ ψ : C(s, R) →ₐ[R] A)
     (h : φ (toContinuousMapOnAlgHom s X) = ψ (toContinuousMapOnAlgHom s X)) :
-    polynomialFunctions s ≤ φ.equalizer ψ := by
+    polynomialFunctions s ≤ AlgHom.equalizer φ ψ := by
   rw [polynomialFunctions.eq_adjoin_X s]
   exact φ.adjoin_le_equalizer ψ fun x hx => (Set.mem_singleton_iff.1 hx).symm ▸ h
 

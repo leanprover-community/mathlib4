@@ -194,7 +194,7 @@ Lean 4 so the previous instance needed modification. Was following my nose here.
 instance {X : C} : Ring (End X) :=
   { (inferInstance : Semiring (End X)),
     (inferInstance : AddCommGroup (End X)) with
-    add_left_neg := add_left_neg }
+    neg_add_cancel := neg_add_cancel }
 
 instance moduleEndRight {X Y : C} : Module (End Y) (X ⟶ Y) where
   smul_add _ _ _ := add_comp _ _ _ _ _ _

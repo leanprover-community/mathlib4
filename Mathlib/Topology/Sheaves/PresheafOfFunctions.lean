@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Topology.Sheaves.Presheaf
@@ -154,7 +154,7 @@ values in some topological commutative ring `T`.
 
 For example, we could construct the presheaf of continuous complex valued functions of `X` as
 ```
-presheafToTopCommRing X (TopCommRing.of ℂ)
+presheafToTopCommRing X (TopCommRingCat.of ℂ)
 ```
 (this requires `import Topology.Instances.Complex`).
 -/

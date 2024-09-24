@@ -44,9 +44,10 @@ theorem cast_toNat_of_lt_aleph0 {c : Cardinal} (h : c < ℵ₀) : ↑(toNat c) =
   lift c to ℕ using h
   rw [toNat_natCast]
 
-theorem toNat_apply_of_lt_aleph0 {c : Cardinal} (h : c < ℵ₀) :
+theorem toNat_apply_of_lt_aleph0 {c : Cardinal.{u}} (h : c < ℵ₀) :
     toNat c = Classical.choose (lt_aleph0.1 h) :=
-  Nat.cast_injective <| by rw [cast_toNat_of_lt_aleph0 h, ← Classical.choose_spec (lt_aleph0.1 h)]
+  Nat.cast_injective (R := Cardinal.{u}) <| by
+    rw [cast_toNat_of_lt_aleph0 h, ← Classical.choose_spec (lt_aleph0.1 h)]
 
 theorem toNat_apply_of_aleph0_le {c : Cardinal} (h : ℵ₀ ≤ c) : toNat c = 0 := by simp [h]
 

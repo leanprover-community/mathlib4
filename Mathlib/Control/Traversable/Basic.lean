@@ -79,8 +79,8 @@ end ApplicativeTransformation
 
 namespace ApplicativeTransformation
 
-variable (F : Type u → Type v) [Applicative F] [LawfulApplicative F]
-variable (G : Type u → Type w) [Applicative G] [LawfulApplicative G]
+variable (F : Type u → Type v) [Applicative F]
+variable (G : Type u → Type w) [Applicative G]
 
 instance : CoeFun (ApplicativeTransformation F G) fun _ => ∀ {α}, F α → G α :=
   ⟨fun η ↦ η.app _⟩
@@ -117,10 +117,6 @@ theorem ext ⦃η η' : ApplicativeTransformation F G⦄ (h : ∀ (α : Type u) 
   ext1 α
   exact funext (h α)
 
-theorem ext_iff {η η' : ApplicativeTransformation F G} :
-    η = η' ↔ ∀ (α : Type u) (x : F α), η x = η' x :=
-  ⟨fun h _ _ => h ▸ rfl, fun h => ext h⟩
-
 section Preserves
 
 variable (η : ApplicativeTransformation F G)
@@ -132,6 +128,8 @@ theorem preserves_pure {α} : ∀ x : α, η (pure x) = pure x :=
 @[functor_norm]
 theorem preserves_seq {α β : Type u} : ∀ (x : F (α → β)) (y : F α), η (x <*> y) = η x <*> η y :=
   η.preserves_seq'
+
+variable [LawfulApplicative F] [LawfulApplicative G]
 
 @[functor_norm]
 theorem preserves_map {α β} (x : α → β) (y : F α) : η (x <$> y) = x <$> η y := by
@@ -154,7 +152,7 @@ instance : Inhabited (ApplicativeTransformation F F) :=
 
 universe s t
 
-variable {H : Type u → Type s} [Applicative H] [LawfulApplicative H]
+variable {H : Type u → Type s} [Applicative H]
 
 /-- The composition of applicative transformations. -/
 def comp (η' : ApplicativeTransformation G H) (η : ApplicativeTransformation F G) :
@@ -223,7 +221,7 @@ satisfy a naturality condition with respect to applicative
 transformations. -/
 class LawfulTraversable (t : Type u → Type u) [Traversable t] extends LawfulFunctor t :
     Prop where
-  /-- `traverse` plays well with `pure` of the identity monad-/
+  /-- `traverse` plays well with `pure` of the identity monad -/
   id_traverse : ∀ {α} (x : t α), traverse (pure : α → Id α) x = x
   /-- `traverse` plays well with composition of applicative functors. -/
   comp_traverse :

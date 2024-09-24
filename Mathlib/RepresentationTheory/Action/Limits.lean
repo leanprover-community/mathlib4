@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.Abelian.Transfer
@@ -244,7 +244,7 @@ instance : Preadditive (Action V G) where
       zero_add := by intros; ext; exact zero_add _
       add_zero := by intros; ext; exact add_zero _
       add_assoc := by intros; ext; exact add_assoc _ _ _
-      add_left_neg := by intros; ext; exact add_left_neg _
+      neg_add_cancel := by intros; ext; exact neg_add_cancel _
       add_comm := by intros; ext; exact add_comm _ _ }
   add_comp := by intros; ext; exact Preadditive.add_comp _ _ _ _ _ _
   comp_add := by intros; ext; exact Preadditive.comp_add _ _ _ _ _ _
