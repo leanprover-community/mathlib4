@@ -1450,6 +1450,7 @@ import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory
 import Mathlib.CategoryTheory.Closed.Cartesian
 import Mathlib.CategoryTheory.Closed.Functor
 import Mathlib.CategoryTheory.Closed.FunctorCategory
+import Mathlib.CategoryTheory.Closed.FunctorToTypes
 import Mathlib.CategoryTheory.Closed.Ideal
 import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.CategoryTheory.Closed.Types
@@ -2041,6 +2042,7 @@ import Mathlib.Computability.TuringMachine
 import Mathlib.Condensed.Basic
 import Mathlib.Condensed.CartesianClosed
 import Mathlib.Condensed.Discrete.Basic
+import Mathlib.Condensed.Discrete.LocallyConstant
 import Mathlib.Condensed.Epi
 import Mathlib.Condensed.Equivalence
 import Mathlib.Condensed.Explicit
@@ -4540,6 +4542,7 @@ import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.Compactification.OnePoint
 import Mathlib.Topology.Compactness.Compact
 import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
+import Mathlib.Topology.Compactness.Exterior
 import Mathlib.Topology.Compactness.Lindelof
 import Mathlib.Topology.Compactness.LocallyCompact
 import Mathlib.Topology.Compactness.Paracompact
@@ -4590,6 +4593,7 @@ import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.Topology.EMetricSpace.Pi
 import Mathlib.Topology.ExtendFrom
+import Mathlib.Topology.Exterior
 import Mathlib.Topology.ExtremallyDisconnected
 import Mathlib.Topology.FiberBundle.Basic
 import Mathlib.Topology.FiberBundle.Constructions

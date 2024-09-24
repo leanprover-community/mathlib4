@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Kyle Miller
+Authors: Kim Morrison, Kyle Miller
 -/
 
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
@@ -29,7 +29,7 @@ For more details, see the documentation attached to the `syntax` declaration.
 ## Implementation
 
 This closely follows the implementation of the `@[reassoc]` attribute, due to Simon Hudon and
-reimplemented by Scott Morrison in Lean 4.
+reimplemented by Kim Morrison in Lean 4.
 -/
 
 open Lean Meta Elab Tactic
