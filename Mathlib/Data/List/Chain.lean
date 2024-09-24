@@ -419,6 +419,30 @@ lemma Chain'.iterate_eq_of_apply_eq {α : Type*} {f : α → α} {l : List α}
     apply hl
     omega
 
+theorem chain'_replicate (n : ℕ) (a : α) : Chain' (· = ·) (replicate n a) :=
+  match n with
+  | 0 => chain'_nil
+  | 1 => chain'_singleton _
+  | n + 2 => by
+    rw [replicate_succ, replicate_succ, chain'_cons]
+    exact ⟨rfl, chain'_replicate (n + 1) a⟩
+
+theorem chain'_eq_iff_eq_replicate {l : List α} :
+    Chain' (· = ·) l ↔ ∀ a ∈ l.head?, l = replicate l.length a :=
+  match l with
+  | [] => by simp
+  | [a] => by simp
+  | a::b::l => by
+    constructor <;> intro H
+    · intro c hc
+      rw [head?_cons, Option.mem_def, Option.some.injEq] at hc
+      subst hc
+      rw [chain'_cons] at H
+      rw [H.1, length_cons, replicate_succ, cons_inj_right]
+      exact chain'_eq_iff_eq_replicate.1 H.2 _ head?_cons
+    · rw [H a head?_cons]
+      exact chain'_replicate _ _
+
 end List
 
 
