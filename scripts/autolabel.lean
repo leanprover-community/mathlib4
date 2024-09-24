@@ -174,14 +174,6 @@ def findUncoveredPaths (path : FilePath) (exceptions : Array FilePath := #[]) :
   else
     return notMatched
 
--- Run the test ensuring the labels cover all subfolders of `Mathlib/`
-run_cmd
-  let notMatchedPaths ← findUncoveredPaths "Mathlib" (exceptions := mathlibUnlabelled)
-  if notMatchedPaths.size > 0 then
-    logError m!"error: the following paths inside `Mathlib/` are not covered \
-    by any label:\n\n{notMatchedPaths}\n\nPlease modify `mathlibLabels` in \
-    `scripts/autolabel.lean` accordingly!"
-
 end Tests
 
 end AutoLabel
@@ -195,6 +187,7 @@ open IO AutoLabel in
 - `0`: success
 - `1`: invalid arguments
 - `2`: invalid labels
+- `3`: labels do not cover all of `Mathlib/`
 -/
 unsafe def main (args : List String): IO Unit := do
   if args.length > 1 then
@@ -203,7 +196,7 @@ unsafe def main (args : List String): IO Unit := do
     IO.Process.exit 1
   let prNumber? := args[0]?
 
-  -- validate that all paths in `mathlibLabels` actually exist
+  -- test: validate that all paths in `mathlibLabels` actually exist
   let mut valid := true
   for label in mathlibLabels do
     for dir in label.dirs do
@@ -216,6 +209,14 @@ unsafe def main (args : List String): IO Unit := do
         valid := false
   unless valid do
     IO.Process.exit 2
+
+  -- test: validate that the labels cover all of the `Mathlib/` folder
+  let notMatchedPaths ← findUncoveredPaths "Mathlib" (exceptions := mathlibUnlabelled)
+  if notMatchedPaths.size > 0 then
+    println s!"error: the following paths inside `Mathlib/` are not covered \
+    by any label:\n\n{notMatchedPaths}\n\nPlease modify `mathlibLabels` in \
+    `scripts/autolabel.lean` accordingly!"
+   IO.Process.exit 3
 
   -- get the modified files
   let gitDiff ← IO.Process.run {
