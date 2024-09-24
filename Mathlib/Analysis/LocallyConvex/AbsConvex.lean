@@ -215,7 +215,8 @@ section
 variable (𝕜 E) {s : Set E}
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
-variable [TopologicalSpace E] [TopologicalAddGroup E]  [LocallyConvexSpace ℝ E] [ContinuousSMul 𝕜 E]
+variable [TopologicalSpace E] [TopologicalAddGroup E]  [lcs : LocallyConvexSpace ℝ E]
+  [ContinuousSMul 𝕜 E]
 
 --#check TotallyBounded
 --#check Set.Finite.isCompact_convexHull --(II.14 cor 1)
@@ -233,13 +234,35 @@ theorem test (d : Set (E × E)) (hd : d ∈ (TopologicalAddGroup.toUniformSpace 
 
 --theorem test (hs : Finite s) : TotallyBounded (convexHull ℝ s) := sorry
 
+--#check convexHull_vadd
+
 /-
 theorem TotallyBounded.convexHull
     (hs : TotallyBounded (uniformSpace := TopologicalAddGroup.toUniformSpace E) s) :
-    TotallyBounded (uniformSpace := TopologicalAddGroup.toUniformSpace E) (absConvexHull 𝕜 s) := by
+    TotallyBounded (uniformSpace := TopologicalAddGroup.toUniformSpace E) (absConvexHull ℝ s) := by
   intro d hd
-  obtain ⟨t,⟨htf,hts⟩⟩ := hs d hd
-  sorry
+  obtain ⟨N,⟨hN₁,hN₂⟩⟩ := hd
+  --obtain ⟨U,hU⟩ := hN₁
+  obtain ⟨S,⟨hS₁,hS₂,hS₃⟩⟩ := (locallyConvexSpace_iff_exists_convex_subset_zero ℝ E).mp lcs N hN₁
+  let V := S ∩ -S
+  let d₂ := {(x,y) | y-x ∈ S} ∩ {(x,y) | y-x ∈ -S}
+  --have e1 : d₂ ∈ uniformity E := sorry
+  obtain ⟨t,⟨htf,hts⟩⟩ := hs d₂ (by
+    rw [uniformity_eq_comap_nhds_zero' E]
+    simp_all only [Filter.inter_mem_iff, Filter.mem_comap, d₂]
+    apply And.intro
+    · aesop
+    · use -S
+      constructor
+      · exact neg_mem_nhds_zero E hS₁
+      · exact fun ⦃a⦄ a ↦ a
+    )
+  use t
+  constructor
+  · exact htf
+  · -- I think the proof now follows along the lines of TVS II.25 Prop3
+    -- Next steps, prove absConvexHull_vadd
+    sorry
 -/
 
 end
