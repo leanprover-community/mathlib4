@@ -150,7 +150,7 @@ lemma add_mul_mul_invOf_mul_eq_one' :
       rw [Matrix.mul_invOf_mul_self_cancel]
       abel
 
-/-- If matrices `A`, `C`, and `C⁻¹ + V*A⁻¹*U` are invertible, then so is `A + U * C * V`-/
+/-- If matrices `A`, `C`, and `C⁻¹ + V * A⁻¹ * U` are invertible, then so is `A + U * C * V`-/
 def invertibleAddMulMul : Invertible (A + U*C*V) where
   invOf := ⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A
   invOf_mul_self := add_mul_mul_invOf_mul_eq_one' _ _ _ _
