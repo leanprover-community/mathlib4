@@ -79,7 +79,7 @@ variable [FiniteDimensional 𝕜 E]
 
 /-- If A and B are commuting symmetric operators on a finite dimensional inner product space
 then the eigenspaces of the restriction of B to any eigenspace of A exhaust that eigenspace. -/
-theorem iSup_eigenspace_inf_eigenspace (hB : B.IsSymmetric) (hAB : A ∘ₗ B = B ∘ₗ A) :
+theorem iSup_eigenspace_inf_eigenspace (hB : B.IsSymmetric) (hAB : Commute A B) :
     (⨆ γ, eigenspace A α ⊓ eigenspace B γ) = eigenspace A α := by
   conv_rhs => rw [← (eigenspace A α).map_subtype_top]
   simp only [← Module.End.genEigenspace_one B, ← Submodule.map_iSup,
@@ -110,7 +110,7 @@ theorem directSum_isInternal_of_commute (hA : A.IsSymmetric) (hB : B.IsSymmetric
 /-- If `F` is an invariant subspace of a symmetric operator `S`, then `F` is the supremum of the
 eigenspaces of the restriction of `S` to `F`. -/
 theorem iSup_eigenspace_restrict {F : Submodule 𝕜 E}
-    (S : E →ₗ[𝕜] E) (hS : IsSymmetric S) (hInv : ∀ v ∈ F, S v ∈ F) :
+    (S : E →ₗ[𝕜] E) (hS : IsSymmetric S) (hInv : Set.MapsTo S F F) :
     ⨆ μ, map F.subtype (eigenspace (S.restrict hInv) μ) = F := by
   conv_lhs => rw [← Submodule.map_iSup]
   conv_rhs => rw [← map_subtype_top F]
@@ -140,12 +140,7 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Finite n]
     simp only [Submodule.orthogonal_eq_bot_iff] at *
     rw [← (Equiv.funSplitAt i 𝕜).symm.iSup_comp, iSup_prod, iSup_comm]
     convert H with γ
-    have H1 : ∀ v ∈ ⨅ j, eigenspace (Subtype.restrict (· ≠ i) T j) (γ j),
-        T i v ∈ ⨅ j, eigenspace (Subtype.restrict (· ≠ i) T j) (γ j) := by
-      intro v hv
-      simp only [Submodule.mem_iInf] at hv ⊢
-      exact fun j ↦ mapsTo_genEigenspace_of_comm (hC j i) (γ j) 1 (hv j)
-    rw [← iSup_eigenspace_restrict (T i) (hT i) H1]
+    rw [← iSup_eigenspace_restrict (T i) (hT i) (mapsTo_iInf_genEigenspace_of_forall_comm (hC i) γ 1)]
     congr! with μ
     rw [← Module.End.genEigenspace_one, ← Submodule.inf_genEigenspace _ _ _ (k := 1), inf_comm,
       iInf_split_single _ i, iInf_subtype]
