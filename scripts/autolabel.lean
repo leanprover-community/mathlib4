@@ -77,7 +77,7 @@ def mathlibLabels : Array Label := #[
   { label := "t-condensed" },
   -- { label := "t-data" },
   { label := "t-differential-geometry",
-    dirs := #["Mathlib" / "Geometry" / "Manifold"] },
+    dirs := #["Mathlib" / "Geometry" / "Maniifold"] },
   { label := "t-dynamics" },
   { label := "t-euclidean-geometry",
     dirs := #["Mathlib" / "Geometry" / "Euclidean"] },
@@ -210,11 +210,13 @@ unsafe def main (args : List String): IO Unit := do
   for label in mathlibLabels do
     for dir in label.dirs do
       unless ← FilePath.pathExists dir do
-        println s!"error: directory {dir} does not exist! (from label {label.label})"
+        println s!"::error file=scripts/autolabel.lean,line=60::directory {dir} does not exist! \
+        (from label {label.label})"
         valid := false
     for dir in label.exclusions do
       unless ← FilePath.pathExists dir do
-        println s!"error: excluded directory {dir} does not exist! (from label {label.label})"
+        println s!"::error file=scripts/autolabel.lean,line=60::excluded directory {dir} \
+        does not exist! (from label {label.label})"
         valid := false
   unless valid do
     IO.Process.exit 2
@@ -222,9 +224,8 @@ unsafe def main (args : List String): IO Unit := do
   -- test: validate that the labels cover all of the `Mathlib/` folder
   let notMatchedPaths ← findUncoveredPaths "Mathlib" (exceptions := mathlibUnlabelled)
   if notMatchedPaths.size > 0 then
-    println s!"::warning file=scripts/autolabel.lean,line=1::the following paths inside `Mathlib/` are not covered \
-    by any label:\n{notMatchedPaths}\nPlease modify `mathlibLabels` in \
-    `scripts/autolabel.lean` accordingly!"
+    println s!"::warning file=scripts/autolabel.lean,line=60::the following paths inside `Mathlib/` are not covered \
+    by any label: {notMatchedPaths} Please modify `AutoLabel.mathlibLabels` accordingly!"
     -- IO.Process.exit 3
 
   -- get the modified files
