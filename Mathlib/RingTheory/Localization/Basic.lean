@@ -1050,6 +1050,14 @@ end IsLocalization
 
 open IsLocalization
 
+theorem Field.isLocalization_self {K : Type*} [Field K] {M : Submonoid K} (hM : 0 ∉ M) :
+    IsLocalization M K where
+  map_units' y := by
+    simp_rw [Algebra.id.map_eq_id, RingHom.id_apply, isUnit_iff_ne_zero]
+    exact fun hy ↦ hM (hy ▸ Subtype.coe_prop y)
+  surj' z := ⟨⟨z, 1⟩, by simp⟩
+  exists_of_eq _ := ⟨1, by simpa⟩
+
 /-- If `R` is a field, then localizing at a submonoid not containing `0` adds no new elements. -/
 theorem IsField.localization_map_bijective {R Rₘ : Type*} [CommRing R] [CommRing Rₘ]
     {M : Submonoid R} (hM : (0 : R) ∉ M) (hR : IsField R) [Algebra R Rₘ] [IsLocalization M Rₘ] :

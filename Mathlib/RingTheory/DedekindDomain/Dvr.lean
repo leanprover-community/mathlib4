@@ -6,6 +6,8 @@ Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 import Mathlib.RingTheory.Localization.LocalizationLocalization
 import Mathlib.RingTheory.Localization.Submodule
 import Mathlib.RingTheory.DiscreteValuationRing.TFAE
+import Mathlib.RingTheory.DedekindDomain.Ideal
+import Mathlib.RingTheory.FractionalIdeal.LocalizedAtPrime
 
 /-!
 # Dedekind domains
@@ -22,7 +24,7 @@ namely a Noetherian integral domain where the localization at all nonzero prime 
 ## Main results
  - `IsLocalization.AtPrime.discreteValuationRing_of_dedekind_domain` shows that
    `IsDedekindDomain` implies the localization at each nonzero prime ideal is a DVR.
- - `IsDedekindDomain.isDedekindDomainDvr` is one direction of the equivalence of definitions
+ - `isDedekindDomain_iff_isDedekindDomainDvr` proves the equivalence of definitions
    of a Dedekind domain
 
 ## Implementation notes
@@ -143,3 +145,50 @@ theorem IsDedekindDomain.isDedekindDomainDvr [IsDedekindDomain A] : IsDedekindDo
   { isNoetherianRing := IsDedekindRing.toIsNoetherian
     is_dvr_at_nonzero_prime := fun _ hP _ =>
       IsLocalization.AtPrime.discreteValuationRing_of_dedekind_domain A hP _ }
+
+open FractionalIdeal
+
+variable {A}
+
+/-- Dedekind domains, in the sense of Noetherian domains where the localization at every nonzero
+prime ideal is a DVR, are also Dedekind domains in the sense of an integral domain such that every
+fractional ideal has an inverse. -/
+theorem IsDedekindDomainDvr.isDedekindDomainInv (hA : IsDedekindDomainDvr A) :
+    IsDedekindDomainInv A := by
+  refine (isDedekindDomainInv_iff (K := FractionRing A)).2 fun I hI ↦ ?_
+  have ⟨J, hJ⟩ := le_one_iff_exists_coeIdeal.1 I.mul_one_div_le_one
+  suffices J = ⊤ by rw [inv_eq, ← hJ, this, coeIdeal_top]
+  -- We know I * I⁻¹ = J for some integral ideal J, which we want to prove is ⊤. If J ≠ ⊤, then J
+  -- would be contained within a maximal ideal P, and localizing at P yields a contradiction.
+  by_contra J_ne_top
+  have ⟨P, hP, JP⟩ := J.exists_le_maximal J_ne_top
+  by_cases Pbot : P = ⊥
+  · have Jbot : J = ⊥ := by rw [Pbot] at JP; exact J.eq_bot_iff.2 JP
+    exact ne_of_lt (bot_lt_mul_inv hI) (by convert (Jbot ▸ hJ))
+  refine not_le_of_localizedAtPrime_eq_one P (coeIdeal J) ?_ (IsLocalization.coeSubmodule_mono _ JP)
+  rw [hJ, localizedAtPrime_mul, ← inv_eq]
+  rw [localizedAtPrime_inv P <| fg_of_isNoetherianRing (hR := hA.isNoetherianRing) (by rfl) I]
+  have := hA.is_dvr_at_nonzero_prime P Pbot hP.isPrime
+  exact invertible_of_principal (FractionRing A) _ (localizedAtPrime_ne_zero P hI)
+
+variable (A)
+
+/-- `IsDedekindDomainInv` and `IsDedekindDomainDvr` are equivalent ways to express that an integral
+domain is a Dedekind domain.-/
+theorem isDedekindDomainInv_iff_isDedekindDomainDvr :
+    IsDedekindDomainInv A ↔ IsDedekindDomainDvr A :=
+  ⟨fun h ↦ h.isDedekindDomain.isDedekindDomainDvr, fun h ↦ h.isDedekindDomainInv⟩
+
+/-- `IsDedekindDomain` and `IsDedekindDomainDvr` are equivalent ways to express that an integral
+domain is a Dedekind domain.-/
+theorem isDedekindDomain_iff_isDedekindDomainDvr :
+    IsDedekindDomain A ↔ IsDedekindDomainDvr A := by
+  rw [← isDedekindDomainInv_iff_isDedekindDomainDvr, isDedekindDomain_iff_isDedekindDomainInv]
+
+variable {A}
+
+/-- Dedekind domains, in the sense of Noetherian domains where the localization at every nonzero
+prime ideal is a DVR, are also Dedekind domains in the sense of Noetherian integrally closed
+domains of Krull dimension ≤ 1. -/
+theorem IsDedekindDomainDvr.isDedekindDomain (hA : IsDedekindDomainDvr A) : IsDedekindDomain A :=
+  (isDedekindDomain_iff_isDedekindDomainDvr A).2 hA
