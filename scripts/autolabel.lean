@@ -23,7 +23,7 @@ Additionally, the script does a few consistency checks:
 
 - it ensures all paths in specified in `AutoLabel.mathlibLabels` exist
 - It makes sure all subfolders of `Mathlib/` belong to at least one label.
-  there is `AutoLabel.mathlibUnlabelled` to add exceptions for this test.
+  There is `AutoLabel.mathlibUnlabelled` to add exceptions for this test.
 
 -/
 
