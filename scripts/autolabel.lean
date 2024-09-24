@@ -56,7 +56,7 @@ def mathlibLabels : Array Label := #[
       "Mathlib" / "RingTheory",
       "Mathlib" / "GroupTheory",
       "Mathlib" / "RepresentationTheory",
-      "Mathlib" / "LinearAlgebra"] },
+      "Mathlib" / "LinearsAlgebra"] },
   { label := "t-algebraic-geometry",
     dirs := #[
       "Mathlib" / "AlgebraicGeometry",
