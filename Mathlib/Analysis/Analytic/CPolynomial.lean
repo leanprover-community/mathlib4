@@ -5,6 +5,7 @@ Authors: Sophie Morel
 -/
 import Mathlib.Analysis.Analytic.ChangeOrigin
 import Mathlib.Analysis.Analytic.Constructions
+import Mathlib.Tactic.LintDecidable
 
 /-! We specialize the theory fo analytic functions to the case of functions that admit a
 development given by a *finite* formal multilinear series. We call them "continuously polynomial",
@@ -638,18 +639,22 @@ lemma analyticWithinAt_uncurry_of_multilinear :
     AnalyticWithinAt 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s x :=
   f.analyticAt_uncurry_of_multilinear.analyticWithinAt
 
+@[nolint finiteFintype]
 lemma continuousOn_uncurry_of_multilinear :
     ContinuousOn (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s :=
   f.analyticOn_uncurry_of_multilinear.continuousOn
 
+@[nolint finiteFintype]
 lemma continuous_uncurry_of_multilinear :
     Continuous (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) :=
   f.analyticOn_uncurry_of_multilinear.continuous
 
+@[nolint finiteFintype]
 lemma continuousAt_uncurry_of_multilinear :
     ContinuousAt (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) x :=
   f.analyticAt_uncurry_of_multilinear.continuousAt
 
+@[nolint finiteFintype]
 lemma continuousWithinAt_uncurry_of_multilinear :
     ContinuousWithinAt (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s x :=
   f.analyticWithinAt_uncurry_of_multilinear.continuousWithinAt
