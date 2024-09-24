@@ -1,7 +1,6 @@
 name: Autolabel PRs
 
 on:
-  push: # TODO: remove me after testing
   pull_request:
     types: [opened]
   workflow_dispatch:
