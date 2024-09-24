@@ -242,6 +242,15 @@ instance (priority := 1) preservesSplitEqualizers (f g : X ⟶ Y) [HasSplitEqual
     (isLimitMapConeForkEquiv G _).symm
       ((HasSplitEqualizer.isSplitEqualizer f g).map G).isEqualizer
 
+instance (priority := 1) preservesSplitEqualizers (f g : X ⟶ Y) [HasSplitEqualizer f g] :
+    PreservesLimit (parallelPair f g) G := by
+  apply
+    preservesLimitOfPreservesLimitCone
+      (HasSplitEqualizer.isSplitEqualizer f g).isEqualizer
+  apply
+    (isLimitMapConeForkEquiv G _).symm
+      ((HasSplitEqualizer.isSplitEqualizer f g).map G).isEqualizer
+
 end Coequalizers
 
 end CategoryTheory.Limits
