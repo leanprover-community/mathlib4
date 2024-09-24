@@ -43,22 +43,6 @@ namespace IsSymmetric
 
 variable {𝕜 E n m : Type*}
 
-section CommRing
-
-variable [CommRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
-variable {α : 𝕜} {A B : E →ₗ[𝕜] E}
-
-/-- The indexed infimum of eigenspaces of a commuting family of linear operators is
-invariant under each operator. -/
-theorem iInf_eigenspace_invariant_of_commute {T : n → E →ₗ[𝕜] E}
-    (hC : ∀ i j, T i ∘ₗ T j = T j ∘ₗ T i) (i : n) (γ : {x // x ≠ i} → 𝕜) ⦃v : E⦄
-    (hv : v ∈ ⨅ j, eigenspace (Subtype.restrict (· ≠ i) T j) (γ j)) :
-    T i v ∈ ⨅ j, eigenspace (Subtype.restrict (· ≠ i) T j) (γ j) := by
-  simp only [Submodule.mem_iInf] at hv ⊢
-  exact fun j ↦ mapsTo_genEigenspace_of_comm (hC j i) (γ j) 1 (hv j)
-
-end CommRing
-
 open Submodule
 
 section RCLike
@@ -156,8 +140,12 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Finite n]
     simp only [Submodule.orthogonal_eq_bot_iff] at *
     rw [← (Equiv.funSplitAt i 𝕜).symm.iSup_comp, iSup_prod, iSup_comm]
     convert H with γ
-    -- mapsTo_iInf_genEigenspace_of_forall_comm (hC : ∀ j, Commute (f j) g) (μ : ι → R) (k : ℕ)
-    rw [← iSup_eigenspace_restrict (T i) (hT i) (mapsTo_iInf_genEigenspace_of_forall_comm hC i γ)]
+    have H1 : ∀ v ∈ ⨅ j, eigenspace (Subtype.restrict (· ≠ i) T j) (γ j),
+        T i v ∈ ⨅ j, eigenspace (Subtype.restrict (· ≠ i) T j) (γ j) := by
+      intro v hv
+      simp only [Submodule.mem_iInf] at hv ⊢
+      exact fun j ↦ mapsTo_genEigenspace_of_comm (hC j i) (γ j) 1 (hv j)
+    rw [← iSup_eigenspace_restrict (T i) (hT i) H1]
     congr! with μ
     rw [← Module.End.genEigenspace_one, ← Submodule.inf_genEigenspace _ _ _ (k := 1), inf_comm,
       iInf_split_single _ i, iInf_subtype]
