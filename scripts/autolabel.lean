@@ -196,7 +196,7 @@ open IO AutoLabel in
 - `0`: success
 - `1`: invalid arguments provided
 - `2`: invalid labels defined
-- `3`: labels do not cover all of `Mathlib/`
+- `3`: ~labels do not cover all of `Mathlib/`~ (unused; only emitting warning)
 -/
 unsafe def main (args : List String): IO Unit := do
   if args.length > 1 then
@@ -210,11 +210,13 @@ unsafe def main (args : List String): IO Unit := do
   for label in mathlibLabels do
     for dir in label.dirs do
       unless ← FilePath.pathExists dir do
-        println s!"error: directory {dir} does not exist! (from label {label.label})"
+        println s!"::error file=scripts/autolabel.lean,line=60::directory {dir} does not exist! \
+        (from label {label.label})"
         valid := false
     for dir in label.exclusions do
       unless ← FilePath.pathExists dir do
-        println s!"error: excluded directory {dir} does not exist! (from label {label.label})"
+        println s!"::error file=scripts/autolabel.lean,line=60::excluded directory {dir} \
+        does not exist! (from label {label.label})"
         valid := false
   unless valid do
     IO.Process.exit 2
@@ -222,10 +224,11 @@ unsafe def main (args : List String): IO Unit := do
   -- test: validate that the labels cover all of the `Mathlib/` folder
   let notMatchedPaths ← findUncoveredPaths "Mathlib" (exceptions := mathlibUnlabelled)
   if notMatchedPaths.size > 0 then
-    println s!"error: the following paths inside `Mathlib/` are not covered \
-    by any label:\n\n{notMatchedPaths}\n\nPlease modify `mathlibLabels` in \
-    `scripts/autolabel.lean` accordingly!"
-    IO.Process.exit 3
+    -- note: only emmitting a warning because the workflow is only triggered on the first commit
+    -- of a PR and could therefore lead to unexpected behaviour if a folder was created later.
+    println s!"::warning file=scripts/autolabel.lean,line=60::the following paths inside `Mathlib/` are not covered \
+    by any label: {notMatchedPaths} Please modify `AutoLabel.mathlibLabels` accordingly!"
+    -- IO.Process.exit 3
 
   -- get the modified files
   let gitDiff ← IO.Process.run {
