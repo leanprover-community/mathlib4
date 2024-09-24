@@ -275,6 +275,16 @@ theorem map_iSup {ι : Sort*} (f : F) (s : ι → Submonoid M) : (iSup s).map f 
   (gc_map_comap f : GaloisConnection (map f) (comap f)).l_iSup
 
 @[to_additive]
+theorem map_inf (S T : Submonoid M) (f : F) (hf : Function.Injective f) :
+    (S ⊓ T).map f = S.map f ⊓ T.map f := SetLike.coe_injective (Set.image_inter hf)
+
+@[to_additive]
+theorem map_iInf {ι : Sort*} [Nonempty ι] (f : F) (hf : Function.Injective f)
+    (s : ι → Submonoid M) : (iInf s).map f = ⨅ i, (s i).map f := by
+  apply SetLike.coe_injective
+  simpa using (Set.injOn_of_injective hf).image_iInter_eq (s := SetLike.coe ∘ s)
+
+@[to_additive]
 theorem comap_inf (S T : Submonoid N) (f : F) : (S ⊓ T).comap f = S.comap f ⊓ T.comap f :=
   (gc_map_comap f : GaloisConnection (map f) (comap f)).u_inf
 
