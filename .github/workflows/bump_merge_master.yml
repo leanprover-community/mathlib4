@@ -1,0 +1,76 @@
+name: Bump Merge Master
+
+on:
+  schedule:
+    - cron: '0 */2 * * *'  # Runs every 2 hours
+
+jobs:
+  bump-merge:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Fetch all branches
+      run: git fetch --all
+
+    - name: Find the newest bump branch
+      id: find-bump-branch
+      run: |
+        BUMP_BRANCH=$(git branch -r | grep 'bump/v4' | sed 's|origin/||' | sort -V | tail -n 1)
+        echo "::set-output name=bump_branch::$BUMP_BRANCH"
+
+    - name: Checkout the bump branch
+      run: git checkout ${{ steps.find-bump-branch.outputs.bump_branch }}
+
+    - name: Merge master into bump branch
+      id: merge-master
+      run: |
+        git merge origin/master || echo "Merge conflicts detected" > merge_conflicts.txt
+
+    - name: Check for merge conflicts
+      id: check-conflicts
+      run: |
+        if [ -f merge_conflicts.txt ]; then
+          git diff --name-only --diff-filter=U > conflict_files.txt
+          if [ $(wc -l < conflict_files.txt) -eq 1 ] && grep -q 'lean-toolchain' conflict_files.txt; then
+            git checkout --ours lean-toolchain
+            git add lean-toolchain
+            git commit -m "Resolved conflict in lean-toolchain"
+          else
+            echo "Multiple conflicts detected" > multiple_conflicts.txt
+          fi
+        fi
+
+    - name: Push changes if merge was successful
+      if: success() && steps.check-conflicts.outputs.multiple_conflicts == ''
+      run: |
+        git push origin ${{ steps.find-bump-branch.outputs.bump_branch }}
+
+  notify-failure:
+    runs-on: ubuntu-latest
+    needs: bump-merge
+    if: failure() || steps.check-conflicts.outputs.multiple_conflicts
+    steps:
+    - name: Send message on Zulip about merge conflicts
+      uses: zulip/github-actions-zulip/send-message@v1
+      with:
+        api-key: ${{ secrets.ZULIP_API_KEY }}
+        email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+        organization-url: 'https://leanprover.zulipchat.com'
+        to: 'nightly-testing'
+        type: 'stream'
+        topic: "merge master into 'bump/${{ steps.find-bump-branch.outputs.bump_branch }}'"
+        content: |
+          ❌ A bot failed to merge 'master' into 'bump/${{ steps.find-bump-branch.outputs.bump_branch }}' because of merge conflicts. Please resolve the merge conflicts by running the following command:
+
+          ```bash
+          ./scripts/bump-merge-master.sh --bumpversion=${{ steps.find-bump-branch.outputs.bump_branch }} --auto=yes
+          ```
+
+          If 'gh' or 'zulip-send' are not installed, please use the following command instead:
+
+          ```bash
+          ./scripts/bump-merge-master.sh --bumpversion=${{ steps.find-bump-branch.outputs.bump_branch }} --auto=no
+          ```
