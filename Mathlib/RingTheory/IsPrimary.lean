@@ -5,7 +5,6 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # Primary submodules
