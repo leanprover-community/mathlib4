@@ -339,7 +339,7 @@ theorem binaryRec_eq' {motive : ℕ → Sort*} {z : motive 0} {f : ∀ b n, moti
   by_cases h' : bit b n = 0
   case pos =>
     obtain ⟨rfl, rfl⟩ := bit_eq_zero_iff.mp h'
-    simp only [Bool.false_eq_true, imp_false, not_true_eq_false, or_false] at h
+    simp only [imp_false, or_false, eq_self_iff_true, not_true, reduceCtorEq] at h
     unfold binaryRec
     exact h.symm
   case neg =>

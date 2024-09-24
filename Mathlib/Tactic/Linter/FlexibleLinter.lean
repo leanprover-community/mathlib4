@@ -364,7 +364,7 @@ def reallyPersist
       | some mvDecl0 => -- the `mvar` *is* managed by `ctx0`: push the pair `(fvar, mvar)` through
         for mv1 in mvs1 do  -- for each new `MVarId` in `mvs1`
           match ctx1.decls.find? mv1 with  -- check if `mv1` is managed by `ctx1` (it should be)
-            | none => dbg_trace "'really_persist' coud this happen?" default -- ??? maybe `.push`?
+            | none => dbg_trace "'really_persist' could this happen?" default -- ??? maybe `.push`?
             | some mvDecl1 =>  -- we found a "new" declaration
               let persisted_fv := persistFVars fvar mvDecl0.lctx mvDecl1.lctx  -- persist `fv`
               new := new.push (persisted_fv, mv1)

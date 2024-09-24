@@ -44,18 +44,17 @@ variable (D : Type*) [Category D]
 /-- The constant presheaf functor is left adjoint to evaluation at a terminal object. -/
 @[simps! unit_app counit_app_app]
 noncomputable def constantPresheafAdj {T : C} (hT : IsTerminal T) :
-    Functor.const Cᵒᵖ ⊣ (evaluation Cᵒᵖ D).obj (op T) :=
-  Adjunction.mkOfUnitCounit {
-    unit := (Functor.constCompEvaluationObj D (op T)).hom
-    counit := {
-      app := fun F => {
-        app := fun ⟨X⟩ => F.map (IsTerminal.from hT X).op
-        naturality := fun _ _ _ => by
-          simp only [Functor.comp_obj, Functor.const_obj_obj, Functor.id_obj, Functor.const_obj_map,
-            Category.id_comp, ← Functor.map_comp]
-          congr
-          simp }
-      naturality := by intros; ext; simp /- Note: `aesop` works but is kind of slow -/ } }
+    Functor.const Cᵒᵖ ⊣ (evaluation Cᵒᵖ D).obj (op T) where
+  unit := (Functor.constCompEvaluationObj D (op T)).hom
+  counit := {
+    app := fun F => {
+      app := fun ⟨X⟩ => F.map (IsTerminal.from hT X).op
+      naturality := fun _ _ _ => by
+        simp only [Functor.comp_obj, Functor.const_obj_obj, Functor.id_obj, Functor.const_obj_map,
+          Category.id_comp, ← Functor.map_comp]
+        congr
+        simp }
+    naturality := by intros; ext; simp /- Note: `aesop` works but is kind of slow -/ }
 
 variable [HasWeakSheafify J D]
 

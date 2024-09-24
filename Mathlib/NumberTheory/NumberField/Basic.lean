@@ -164,7 +164,7 @@ lemma coe_injective : Function.Injective (algebraMap (𝓞 K) K) :=
 This is a convenient abbreviation for `map_eq_zero_iff` applied to
 `NoZeroSMulDivisors.algebraMap_injective`.
 -/
-@[simp] lemma coe_eq_zero_iff {x : 𝓞 K} : algebraMap _ K x = 0 ↔ x = 0 :=
+lemma coe_eq_zero_iff {x : 𝓞 K} : algebraMap _ K x = 0 ↔ x = 0 :=
   map_eq_zero_iff _ coe_injective
 
 /-- The canonical map from `𝓞 K` to `K` is injective.
