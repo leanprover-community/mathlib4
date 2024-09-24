@@ -309,8 +309,8 @@ def vcToCharThreeNF : VariableChange K :=
 
 lemma vcToCharThreeJZeroNF_a₂ :
     (W.variableChange W.vcToCharThreeJZeroNF).a₂ = W.b₂ := by
-  have h : (2 : R) * 2 = 1 := by linear_combination 1 * CharP.cast_eq_zero R 3
-  letI : Invertible (2 : R) := ⟨2, h, h⟩
+  -- have h : (2 : R) * 2 = 1 := by linear_combination 1 * CharP.cast_eq_zero R 3
+  -- letI : Invertible (2 : R) := ⟨2, h, h⟩
   simp_rw [vcToCharThreeJZeroNF, vcToCharNeTwoNF, variableChange_a₂, inv_one,
     Units.val_one, b₂]
   linear_combination (-W.a₂ - W.a₁ ^ 2) * CharP.cast_eq_zero R 3
@@ -339,8 +339,8 @@ theorem vcToCharThreeNF_spec_of_b₂_ne_zero (hb₂ : W₁.b₂ ≠ 0) :
 
 theorem vcToCharThreeNF_spec_of_b₂_zero (hb₂ : W₁.b₂ = 0) :
     (W₁.variableChange W₁.vcToCharThreeNF).IsCharNeTwoThreeNF := by
-  have h : (2 : K) * 2 = 1 := by linear_combination 1 * CharP.cast_eq_zero K 3
-  letI : Invertible (2 : K) := ⟨2, h, h⟩
+  -- have h : (2 : K) * 2 = 1 := by linear_combination 1 * CharP.cast_eq_zero K 3
+  -- letI : Invertible (2 : K) := ⟨2, h, h⟩
   rw [vcToCharThreeNF, vcToCharThreeJZeroNF_a₂, hb₂, div_zero]
   erw [one_mul]
   exact W₁.vcToCharThreeJZeroNF_spec hb₂
