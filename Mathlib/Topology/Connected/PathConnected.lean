@@ -836,18 +836,18 @@ theorem mem_pathComponentIn_self (h : x ∈ F) : x ∈ pathComponentIn x F :=
   JoinedIn.refl h
 
 theorem pathComponentIn_subset : pathComponentIn x F ⊆ F :=
-  fun _ hy => hy.target_mem
+  fun _ hy ↦ hy.target_mem
 
 theorem pathComponentIn_nonEmpty_iff : (pathComponentIn x F).Nonempty ↔ x ∈ F :=
-  ⟨fun ⟨_,⟨γ,hγ⟩⟩ => γ.source ▸ hγ 0,fun hx => ⟨x,mem_pathComponentIn_self hx⟩⟩
+  ⟨fun ⟨_, ⟨γ, hγ⟩⟩ ↦ γ.source ▸ hγ 0, fun hx ↦ ⟨x, mem_pathComponentIn_self hx⟩⟩
 
 theorem pathComponentIn_congr (h : x ∈ pathComponentIn y F) :
-    pathComponentIn x F = pathComponentIn y F :=
-  Set.ext fun _ => ⟨h.trans,h.symm.trans⟩
+    pathComponentIn x F = pathComponentIn y F := by
+  ext; exact ⟨h.trans, h.symm.trans⟩
 
 theorem pathComponentIn_mono {G : Set X} (h : F ⊆ G) :
     pathComponentIn x F ⊆ pathComponentIn x G :=
-  fun _ ⟨γ,hγ⟩ => ⟨γ,fun t => h (hγ t)⟩
+  fun _ ⟨γ, hγ⟩ ↦ ⟨γ, fun t ↦ h (hγ t)⟩
 
 /-! ### Path connected sets -/
 
@@ -924,7 +924,7 @@ theorem IsPathConnected.subset_pathComponent (h : IsPathConnected F) (x_in : x �
 
 theorem IsPathConnected.subset_pathComponentIn {s : Set X} (hs : IsPathConnected s)
     (hxs : x ∈ s) (hsF : s ⊆ F) : s ⊆ pathComponentIn x F :=
-  fun y hys => (hs.joinedIn x hxs y hys).mono hsF
+  fun y hys ↦ (hs.joinedIn x hxs y hys).mono hsF
 
 theorem isPathConnected_singleton (x : X) : IsPathConnected ({x} : Set X) := by
   refine ⟨x, rfl, ?_⟩
@@ -932,11 +932,11 @@ theorem isPathConnected_singleton (x : X) : IsPathConnected ({x} : Set X) := by
   exact JoinedIn.refl rfl
 
 theorem isPathConnected_pathComponentIn (h : x ∈ F) : IsPathConnected (pathComponentIn x F) :=
-  ⟨x,mem_pathComponentIn_self h,fun ⟨γ,hγ⟩ => by
-    refine ⟨γ,fun t =>
-      ⟨(γ.truncateOfLE t.2.1).cast (γ.extend_zero.symm) (γ.extend_extends' t).symm,fun t' => ?_⟩⟩
-    dsimp [Path.truncateOfLE,Path.truncate]
-    exact γ.extend_extends' ⟨min (max t'.1 0) t.1,by simp [t.2.1,t.2.2]⟩ ▸ hγ _⟩
+  ⟨x, mem_pathComponentIn_self h, fun ⟨γ, hγ⟩ ↦ by
+    refine ⟨γ, fun t ↦
+      ⟨(γ.truncateOfLE t.2.1).cast (γ.extend_zero.symm) (γ.extend_extends' t).symm, fun t' ↦ ?_⟩⟩
+    dsimp [Path.truncateOfLE, Path.truncate]
+    exact γ.extend_extends' ⟨min (max t'.1 0) t.1, by simp [t.2.1, t.2.2]⟩ ▸ hγ _⟩
 
 theorem isPathConnected_pathComponent : IsPathConnected (pathComponent x) := by
   rw [← pathComponentIn_univ]
@@ -1154,22 +1154,22 @@ export LocPathConnectedSpace (path_connected_basis)
 
 lemma isOpen_pathComponentIn [LocPathConnectedSpace X] (hF : IsOpen F) :
     IsOpen (pathComponentIn x F) := by
-  refine isOpen_iff_mem_nhds.mpr fun y hy => ?_
-  let ⟨s,hs⟩ := (path_connected_basis y).mem_iff.mp (hF.mem_nhds (pathComponentIn_subset hy))
-  exact Filter.mem_of_superset hs.1.1 <| pathComponentIn_congr hy ▸
+  refine isOpen_iff_mem_nhds.mpr fun y hy ↦ ?_
+  let ⟨s, hs⟩ := (path_connected_basis y).mem_iff.mp (hF.mem_nhds (pathComponentIn_subset hy))
+  exact mem_of_superset hs.1.1 <| pathComponentIn_congr hy ▸
     hs.1.2.subset_pathComponentIn (mem_of_mem_nhds hs.1.1) hs.2
 
 lemma isOpen_pathComponent [LocPathConnectedSpace X] : IsOpen (pathComponent x) :=
   pathComponentIn_univ x ▸ isOpen_pathComponentIn isOpen_univ
 
 lemma isClosed_pathComponent [LocPathConnectedSpace X] : IsClosed (pathComponent x) := by
-  refine isClosed_iff_nhds.mpr fun y h => ?_
-  let ⟨z,hz⟩ := h _ (isOpen_pathComponent.mem_nhds <| mem_pathComponent_self y)
+  refine isClosed_iff_nhds.mpr fun y h ↦ ?_
+  let ⟨z, hz⟩ := h _ (isOpen_pathComponent.mem_nhds <| mem_pathComponent_self y)
   exact hz.2.trans hz.1.symm
 
 /-- In locally path-connected spaces, path components are both closed and open. -/
 lemma isClopen_pathComponent [LocPathConnectedSpace X] : IsClopen (pathComponent x) :=
-  ⟨isClosed_pathComponent,isOpen_pathComponent⟩
+  ⟨isClosed_pathComponent, isOpen_pathComponent⟩
 
 /-- In locally path-connected spaces, path components and connected components are the same. -/
 lemma pathComponent_eq_connectedComponent [LocPathConnectedSpace X] :
@@ -1179,11 +1179,11 @@ lemma pathComponent_eq_connectedComponent [LocPathConnectedSpace X] :
 
 /-- The path-connected neighbourhoods of `path_connected_basis` can be chosen to be open. -/
 theorem LocPathConnectedSpace.open_pathConnected_basis [LocPathConnectedSpace X] :
-    ∀ x : X, (𝓝 x).HasBasis (fun s : Set X => IsOpen s ∧ x ∈ s ∧ IsPathConnected s) id := by
-  refine fun x => ⟨fun s => ⟨fun hs => ?_,fun ⟨u,hu⟩ => mem_nhds_iff.mpr ⟨u,hu.2,hu.1.1,hu.1.2.1⟩⟩⟩
-  have ⟨u,hus,hu,hxu⟩ := mem_nhds_iff.mp hs
-  exact ⟨pathComponentIn x u,⟨isOpen_pathComponentIn hu,⟨mem_pathComponentIn_self hxu,
-    isPathConnected_pathComponentIn hxu⟩⟩,pathComponentIn_subset.trans hus⟩
+    ∀ x : X, (𝓝 x).HasBasis (fun s : Set X ↦ IsOpen s ∧ x ∈ s ∧ IsPathConnected s) id := by
+  refine fun x ↦ ⟨fun s ↦ ⟨fun hs ↦ ?_, fun ⟨u, hu⟩ ↦ mem_nhds_iff.mpr ⟨u, hu.2, hu.1.1, hu.1.2.1⟩⟩⟩
+  have ⟨u, hus, hu, hxu⟩ := mem_nhds_iff.mp hs
+  exact ⟨pathComponentIn x u, ⟨isOpen_pathComponentIn hu, ⟨mem_pathComponentIn_self hxu,
+    isPathConnected_pathComponentIn hxu⟩⟩, pathComponentIn_subset.trans hus⟩
 
 theorem locPathConnected_of_bases {p : ι → Prop} {s : X → ι → Set X}
     (h : ∀ x, (𝓝 x).HasBasis p (s x)) (h' : ∀ x i, p i → IsPathConnected (s x i)) :
@@ -1251,41 +1251,41 @@ theorem IsOpen.isConnected_iff_isPathConnected [LocPathConnectedSpace X] {U : Se
 
 /-- Locally path-connected spaces are locally connected. -/
 instance [LocPathConnectedSpace X] : LocallyConnectedSpace X := by
-  refine ⟨forall_imp (fun x h => ⟨fun s => ?_⟩) LocPathConnectedSpace.open_pathConnected_basis⟩
-  refine ⟨fun hs => ?_,fun ⟨u,⟨hu,hxu,_⟩,hus⟩ => mem_nhds_iff.mpr ⟨u,hus,hu,hxu⟩⟩
-  let ⟨u,⟨hu,hxu,hu'⟩,hus⟩ := (h.mem_iff' s).mp hs
-  exact ⟨u,⟨hu,hxu,hu'.isConnected⟩,hus⟩
+  refine ⟨forall_imp (fun x h ↦ ⟨fun s ↦ ?_⟩) LocPathConnectedSpace.open_pathConnected_basis⟩
+  refine ⟨fun hs ↦ ?_, fun ⟨u, ⟨hu, hxu, _⟩, hus⟩ ↦ mem_nhds_iff.mpr ⟨u, hus, hu, hxu⟩⟩
+  let ⟨u, ⟨hu, hxu, hu'⟩, hus⟩ := (h.mem_iff' s).mp hs
+  exact ⟨u, ⟨hu, hxu, hu'.isConnected⟩, hus⟩
 
 /-- A space is locally path-connected iff all path components of open subsets are open. -/
 lemma isLocPathConnected_iff : LocPathConnectedSpace X ↔
     ∀ (x : X) (u : Set X), IsOpen u → IsOpen (pathComponentIn x u) :=
-  ⟨fun _ _ _ hu => isOpen_pathComponentIn hu,fun h => ⟨fun x => ⟨fun s => by
-    refine ⟨fun hs => ?_,fun ⟨_,ht⟩ => Filter.mem_of_superset ht.1.1 ht.2⟩
-    let ⟨u,hu⟩ := mem_nhds_iff.mp hs
-    exact ⟨pathComponentIn x u,⟨(h x u hu.2.1).mem_nhds (mem_pathComponentIn_self hu.2.2),
-      isPathConnected_pathComponentIn hu.2.2⟩,pathComponentIn_subset.trans hu.1⟩⟩⟩⟩
+  ⟨fun _ _ _ hu ↦ isOpen_pathComponentIn hu, fun h ↦ ⟨fun x ↦ ⟨fun s ↦ by
+    refine ⟨fun hs ↦ ?_, fun ⟨_, ht⟩ ↦ Filter.mem_of_superset ht.1.1 ht.2⟩
+    let ⟨u, hu⟩ := mem_nhds_iff.mp hs
+    exact ⟨pathComponentIn x u, ⟨(h x u hu.2.1).mem_nhds (mem_pathComponentIn_self hu.2.2),
+      isPathConnected_pathComponentIn hu.2.2⟩, pathComponentIn_subset.trans hu.1⟩⟩⟩⟩
 
 /-- A space is locally path-connected iff all path components of open subsets are neighbourhoods. -/
 lemma isLocPathConnected_iff' : LocPathConnectedSpace X ↔
     ∀ x : X, ∀ u : Set X, IsOpen u → x ∈ u → pathComponentIn x u ∈ nhds x := by
-  simp_rw [isLocPathConnected_iff,forall_comm (β := Set X),← imp_forall_iff]
-  refine forall_congr' fun u => imp_congr_right fun _ => ?_
-  exact ⟨fun h x hxu => (h x).mem_nhds (mem_pathComponentIn_self hxu),
-    fun h x => isOpen_iff_mem_nhds.mpr fun y hy =>
+  simp_rw [isLocPathConnected_iff, forall_comm (β := Set X), ← imp_forall_iff]
+  refine forall_congr' fun u ↦ imp_congr_right fun _ ↦ ?_
+  exact ⟨fun h x hxu ↦ (h x).mem_nhds (mem_pathComponentIn_self hxu),
+    fun h x ↦ isOpen_iff_mem_nhds.mpr fun y hy ↦
       pathComponentIn_congr hy ▸ h y <| pathComponentIn_subset hy⟩
 
 /-- Any topology coinduced by a locally path-connected topology is locally path-connected. -/
 lemma LocPathConnectedSpace.coinduced {Y : Type*} [LocPathConnectedSpace X] (f : X → Y) :
     @LocPathConnectedSpace Y (.coinduced f ‹_›) := by
   let _ := TopologicalSpace.coinduced f ‹_›; have hf : Continuous f := continuous_coinduced_rng
-  refine isLocPathConnected_iff.mpr fun y u hu =>
-    isOpen_coinduced.mpr <| isOpen_iff_mem_nhds.mpr fun x hx => ?_
+  refine isLocPathConnected_iff.mpr fun y u hu ↦
+    isOpen_coinduced.mpr <| isOpen_iff_mem_nhds.mpr fun x hx ↦ ?_
   have hx' := preimage_mono pathComponentIn_subset hx
-  refine mem_nhds_iff.mpr ⟨pathComponentIn x (f ⁻¹' u),?_,
-    isOpen_pathComponentIn <| hu.preimage hf,mem_pathComponentIn_self hx'⟩
-  rw [← image_subset_iff,← pathComponentIn_congr hx]
+  refine mem_nhds_iff.mpr ⟨pathComponentIn x (f ⁻¹' u), ?_,
+    isOpen_pathComponentIn <| hu.preimage hf, mem_pathComponentIn_self hx'⟩
+  rw [← image_subset_iff, ← pathComponentIn_congr hx]
   exact ((isPathConnected_pathComponentIn hx').image hf).subset_pathComponentIn
-    ⟨x,mem_pathComponentIn_self hx',rfl⟩ <|
+    ⟨x, mem_pathComponentIn_self hx', rfl⟩ <|
     (image_mono pathComponentIn_subset).trans <| u.image_preimage_subset f
 
 /-- Quotients of locally path-connected spaces are locally path-connected. -/
@@ -1308,10 +1308,10 @@ instance Sigma.locPathConnectedSpace {X : ι → Type*}
     [(i : ι) → TopologicalSpace (X i)] [(i : ι) → LocPathConnectedSpace (X i)] :
     LocPathConnectedSpace ((i : ι) × X i) := by
   rw [isLocPathConnected_iff']; intro x u hu hxu; rw [mem_nhds_iff]
-  refine ⟨(Sigma.mk x.1) '' (pathComponentIn x.2 ((Sigma.mk x.1) ⁻¹' u)),?_,?_,?_⟩
+  refine ⟨(Sigma.mk x.1) '' (pathComponentIn x.2 ((Sigma.mk x.1) ⁻¹' u)), ?_, ?_, ?_⟩
   · apply IsPathConnected.subset_pathComponentIn
     · exact (isPathConnected_pathComponentIn (by exact hxu)).image continuous_sigmaMk
-    · exact ⟨x.2,mem_pathComponentIn_self hxu,rfl⟩
+    · exact ⟨x.2, mem_pathComponentIn_self hxu, rfl⟩
     · exact (image_mono pathComponentIn_subset).trans (u.image_preimage_subset _)
   · exact isOpenMap_sigmaMk _ <| isOpen_pathComponentIn <| hu.preimage continuous_sigmaMk
-  · exact ⟨x.2,mem_pathComponentIn_self hxu,rfl⟩
+  · exact ⟨x.2, mem_pathComponentIn_self hxu, rfl⟩
