@@ -25,7 +25,7 @@ it is an isomorphism.
 * `Sheaf.isConstant_iff_of_equivalence` : The property of a sheaf of being constant is invariant
 under equivalence of sheaf categories.
 
-* `Sheaf.isConstant_iff_forget` : Given a "forgetful" functor `U : D ⥤ B` a sheaf `F : Sheaf J D` is
+* `Sheaf.isConstant_iff_forget` : Given a "forgetful" functor `U : D ⥤ B` a sheaf `F : Sheaf J D` is
 constant if and only if the sheaf given by postcomposition with `U` is constant.
 
 ## Future work
@@ -177,7 +177,7 @@ variable {B : Type*} [Category B] (U : D ⥤ B) [HasWeakSheafify J B]
   [J.PreservesSheafification U] [J.HasSheafCompose U] (F : Sheaf J D)
 
 /--
-The constant sheaf functor commutes with `sheafCompose J U` up to isomorphism, provided that `U` 
+The constant sheaf functor commutes with `sheafCompose J U` up to isomorphism, provided that `U`
 preserves sheafification.
 -/
 noncomputable def constantCommuteCompose :
@@ -189,7 +189,7 @@ noncomputable def constantCommuteCompose :
 lemma constantCommuteCompose_hom_app_val (X : D) : ((constantCommuteCompose J U).hom.app X).val =
     (sheafifyComposeIso J U ((const Cᵒᵖ).obj X)).inv ≫ sheafifyMap J (constComp Cᵒᵖ X U).hom := rfl
 
-/-- The counit of `constantSheafAdj` factors through the isomorphism `constantCommuteCompose`. -/
+/-- The counit of `constantSheafAdj` factors through the isomorphism `constantCommuteCompose`. -/
 lemma constantSheafAdj_counit_w {T : C} (hT : IsTerminal T) :
     ((constantCommuteCompose J U).hom.app (F.val.obj ⟨T⟩)) ≫
       ((constantSheafAdj J B hT).counit.app ((sheafCompose J U).obj F)) =
