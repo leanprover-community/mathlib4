@@ -3,6 +3,7 @@ name: Autolabel PRs
 on:
   pull_request:
     types: [opened]
+  push:
   workflow_dispatch:
 
 jobs:
