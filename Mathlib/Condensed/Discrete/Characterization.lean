@@ -19,6 +19,17 @@ open CategoryTheory Limits Functor FintypeCat
 
 attribute [local instance] ConcreteCategory.instFunLike
 
+namespace Condensed
+
+variable {C : Type*} [Category C] [HasWeakSheafify (coherentTopology CompHaus.{u}) C]
+
+/--
+A condensed object is *discrete* if it is constant as a sheaf, i.e. isomorphic to a constant sheaf.
+-/
+abbrev IsDiscrete (X : Condensed.{u} C) := X.IsConstant (coherentTopology CompHaus)
+
+end Condensed
+
 namespace CondensedSet
 
 /--
@@ -59,48 +70,35 @@ noncomputable abbrev LocallyConstant.adjunction :
     CondensedSet.LocallyConstant.functor ⊣ Condensed.underlying (Type (u+1)) :=
   CompHausLike.LocallyConstant.adjunction _ _
 
-/--
-A condensed set is discrete if it is discrete as a sheaf with respect to the terminal object
-`PUnit` in `CompHaus`.
--/
-abbrev IsDiscrete (M : CondensedSet.{u}) := Sheaf.IsConstant (coherentTopology CompHaus) M
-
-open List in
+open CondensedSet.LocallyConstant List in
 theorem isDiscrete_tfae  (X : CondensedSet.{u}) :
     TFAE
     [ X.IsDiscrete
     , IsIso ((Condensed.discreteUnderlyingAdj _).counit.app X)
     , X ∈ (Condensed.discrete _).essImage
-    , X ∈ CondensedSet.LocallyConstant.functor.essImage
-    , IsIso (CondensedSet.LocallyConstant.adjunction.counit.app X)
+    , X ∈ functor.essImage
+    , IsIso (adjunction.counit.app X)
     , Sheaf.IsConstant (coherentTopology Profinite)
         ((Condensed.ProfiniteCompHaus.equivalence _).inverse.obj X)
     , ∀ S : Profinite.{u}, Nonempty
         (IsColimit <| (profiniteToCompHaus.op ⋙ X.val).mapCocone S.asLimitCone.op)
     ] := by
-  tfae_have 1 ↔ 2
-  · exact Sheaf.isConstant_iff_isIso_counit_app _ _ _
-  tfae_have 1 ↔ 3
-  · exact ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
-  tfae_have 1 ↔ 4
-  · exact Sheaf.isConstant_iff_mem_essImage _ CompHaus.isTerminalPUnit
-      CondensedSet.LocallyConstant.adjunction _
-  tfae_have 1 ↔ 5
-  · have : LocallyConstant.functor.Faithful := inferInstance
-    have : LocallyConstant.functor.Full := inferInstance
+  tfae_have 1 ↔ 2 := Sheaf.isConstant_iff_isIso_counit_app _ _ _
+  tfae_have 1 ↔ 3 := ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
+  tfae_have 1 ↔ 4 := Sheaf.isConstant_iff_mem_essImage _ CompHaus.isTerminalPUnit adjunction _
+  tfae_have 1 ↔ 5 :=
+    have : functor.Faithful := inferInstance
+    have : functor.Full := inferInstance
     -- These `have` statements above shouldn't be needed, but they are.
-    exact Sheaf.isConstant_iff_isIso_counit_app' _ CompHaus.isTerminalPUnit
-      CondensedSet.LocallyConstant.adjunction _
-  tfae_have 1 ↔ 6
-  · exact (Sheaf.isConstant_iff_of_equivalence (coherentTopology Profinite)
+    Sheaf.isConstant_iff_isIso_counit_app' _ CompHaus.isTerminalPUnit adjunction _
+  tfae_have 1 ↔ 6 :=
+    (Sheaf.isConstant_iff_of_equivalence (coherentTopology Profinite)
       (coherentTopology CompHaus) profiniteToCompHaus Profinite.isTerminalPUnit
       CompHaus.isTerminalPUnit _).symm
-  tfae_have 7 → 4
-  · intro h
-    exact mem_locallyContant_essImage_of_isColimit_mapCocone X (fun S ↦ (h S).some)
-  tfae_have 4 → 7
-  · intro ⟨Y, ⟨i⟩⟩ S
-    exact ⟨IsColimit.mapCoconeEquiv (isoWhiskerLeft profiniteToCompHaus.op
+  tfae_have 7 → 4 := fun h ↦
+    mem_locallyContant_essImage_of_isColimit_mapCocone X (fun S ↦ (h S).some)
+  tfae_have 4 → 7 := fun ⟨Y, ⟨i⟩⟩ S ↦
+    ⟨IsColimit.mapCoconeEquiv (isoWhiskerLeft profiniteToCompHaus.op
       ((sheafToPresheaf _ _).mapIso i))
       (Condensed.isColimitLocallyConstantPresheafDiagram Y S)⟩
   tfae_finish
@@ -111,19 +109,24 @@ namespace CondensedMod
 
 variable (R : Type (u+1)) [Ring R]
 
-/--
-A condensed module is discrete if it is discrete as a sheaf with respect to the terminal object
-`PUnit` in `CompHaus`.
--/
-abbrev IsDiscrete (M : CondensedMod R) :=
-  Sheaf.IsConstant (coherentTopology CompHaus) M
-
 lemma isDiscrete_iff_isDiscrete_forget (M : CondensedMod R) :
-    IsDiscrete R M ↔ CondensedSet.IsDiscrete ((Condensed.forget R).obj M) :=
+    M.IsDiscrete ↔ ((Condensed.forget R).obj M).IsDiscrete  :=
   Sheaf.isConstant_iff_forget (coherentTopology CompHaus)
     (CategoryTheory.forget (ModuleCat R)) M CompHaus.isTerminalPUnit
 
 end CondensedMod
+
+namespace LightCondensed
+
+variable {C : Type*} [Category C] [HasWeakSheafify (coherentTopology LightProfinite.{u}) C]
+
+/--
+A light condensed object is *discrete* if it is constant as a sheaf, i.e. isomorphic to a constant
+sheaf.
+-/
+abbrev IsDiscrete (X : LightCondensed.{u} C) := X.IsConstant (coherentTopology LightProfinite)
+
+end LightCondensed
 
 namespace LightCondSet
 
@@ -132,8 +135,6 @@ instance : (constantSheaf (coherentTopology LightProfinite) (Type u)).Faithful :
 
 instance : (constantSheaf (coherentTopology LightProfinite) (Type u)).Full :=
   inferInstanceAs (LightCondensed.discrete _).Full
-
-open CompHausLike.LocallyConstant
 
 lemma mem_locallyContant_essImage_of_isColimit_mapCocone (X : LightCondSet.{u})
     (h : ∀ S : LightProfinite.{u}, IsColimit <|
@@ -151,43 +152,29 @@ noncomputable abbrev LocallyConstant.adjunction :
     LightCondSet.LocallyConstant.functor ⊣ LightCondensed.underlying (Type u) :=
   CompHausLike.LocallyConstant.adjunction _ _
 
-/--
-A light condensed set is discrete if it is discrete as a sheaf with respect to the terminal object
-`PUnit` in `LightProfinite`.
--/
-abbrev IsDiscrete (M : LightCondSet.{u}) :=
-  Sheaf.IsConstant (coherentTopology LightProfinite) M
-
-open List in
+open LightCondSet.LocallyConstant List in
 theorem isDiscrete_tfae  (X : LightCondSet.{u}) :
     TFAE
     [ X.IsDiscrete
     , IsIso ((LightCondensed.discreteUnderlyingAdj _).counit.app X)
     , X ∈ (LightCondensed.discrete _).essImage
-    , X ∈ LightCondSet.LocallyConstant.functor.essImage
-    , IsIso (LightCondSet.LocallyConstant.adjunction.counit.app X)
+    , X ∈ functor.essImage
+    , IsIso (adjunction.counit.app X)
     , ∀ S : LightProfinite.{u}, Nonempty
         (IsColimit <| X.val.mapCocone (coconeRightOpOfCone S.asLimitCone))
     ] := by
-  tfae_have 1 ↔ 2
-  · exact Sheaf.isConstant_iff_isIso_counit_app _ _ _
-  tfae_have 1 ↔ 3
-  · exact ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
-  tfae_have 1 ↔ 4
-  · exact Sheaf.isConstant_iff_mem_essImage _ LightProfinite.isTerminalPUnit
-      LightCondSet.LocallyConstant.adjunction X
-  tfae_have 1 ↔ 5
-  · have : LocallyConstant.functor.Faithful := inferInstance
-    have : LocallyConstant.functor.Full := inferInstance
+  tfae_have 1 ↔ 2 := Sheaf.isConstant_iff_isIso_counit_app _ _ _
+  tfae_have 1 ↔ 3 := ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
+  tfae_have 1 ↔ 4 := Sheaf.isConstant_iff_mem_essImage _ LightProfinite.isTerminalPUnit adjunction X
+  tfae_have 1 ↔ 5 :=
+    have : functor.Faithful := inferInstance
+    have : functor.Full := inferInstance
     -- These `have` statements above shouldn't be needed, but they are.
-    exact Sheaf.isConstant_iff_isIso_counit_app' _ LightProfinite.isTerminalPUnit
-      LightCondSet.LocallyConstant.adjunction X
-  tfae_have 6 → 4
-  · intro h
-    exact mem_locallyContant_essImage_of_isColimit_mapCocone X (fun S ↦ (h S).some)
-  tfae_have 4 → 6
-  · intro ⟨Y, ⟨i⟩⟩ S
-    exact ⟨IsColimit.mapCoconeEquiv ((sheafToPresheaf _ _).mapIso i)
+    Sheaf.isConstant_iff_isIso_counit_app' _ LightProfinite.isTerminalPUnit adjunction X
+  tfae_have 6 → 4 := fun h ↦
+    mem_locallyContant_essImage_of_isColimit_mapCocone X (fun S ↦ (h S).some)
+  tfae_have 4 → 6 := fun ⟨Y, ⟨i⟩⟩ S ↦
+    ⟨IsColimit.mapCoconeEquiv ((sheafToPresheaf _ _).mapIso i)
       (LightCondensed.isColimitLocallyConstantPresheafDiagram Y S)⟩
   tfae_finish
 
@@ -197,15 +184,8 @@ namespace LightCondMod
 
 variable (R : Type u) [Ring R]
 
-/--
-A light condensed module is discrete if it is discrete as a sheaf with respect to the terminal
-object `PUnit` in `LightProfinite`.
--/
-abbrev IsDiscrete (M : LightCondMod R) :=
-  Sheaf.IsConstant (coherentTopology LightProfinite) M
-
 lemma isDiscrete_iff_isDiscrete_forget (M : LightCondMod R) :
-    IsDiscrete R M ↔ LightCondSet.IsDiscrete ((LightCondensed.forget R).obj M) :=
+    M.IsDiscrete ↔ ((LightCondensed.forget R).obj M).IsDiscrete  :=
   Sheaf.isConstant_iff_forget (coherentTopology LightProfinite)
     (CategoryTheory.forget (ModuleCat R)) M LightProfinite.isTerminalPUnit
 
