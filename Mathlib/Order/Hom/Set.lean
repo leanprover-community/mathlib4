@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Order.Hom.Basic
 import Mathlib.Logic.Equiv.Set
+import Mathlib.Data.Set.Monotone
 import Mathlib.Data.Set.Image
 import Mathlib.Order.WellFounded
 
