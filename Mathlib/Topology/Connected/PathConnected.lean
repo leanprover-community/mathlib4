@@ -836,18 +836,18 @@ theorem mem_pathComponentIn_self (h : x ∈ F) : x ∈ pathComponentIn x F :=
   JoinedIn.refl h
 
 theorem pathComponentIn_subset : pathComponentIn x F ⊆ F :=
-  fun _ hy => hy.target_mem
+  fun _ hy ↦ hy.target_mem
 
 theorem pathComponentIn_nonEmpty_iff : (pathComponentIn x F).Nonempty ↔ x ∈ F :=
-  ⟨fun ⟨_,⟨γ,hγ⟩⟩ => γ.source ▸ hγ 0,fun hx => ⟨x,mem_pathComponentIn_self hx⟩⟩
+  ⟨fun ⟨_, ⟨γ, hγ⟩⟩ ↦ γ.source ▸ hγ 0, fun hx ↦ ⟨x, mem_pathComponentIn_self hx⟩⟩
 
 theorem pathComponentIn_congr (h : x ∈ pathComponentIn y F) :
-    pathComponentIn x F = pathComponentIn y F :=
-  Set.ext fun _ => ⟨h.trans,h.symm.trans⟩
+    pathComponentIn x F = pathComponentIn y F := by
+  ext; exact ⟨h.trans, h.symm.trans⟩
 
 theorem pathComponentIn_mono {G : Set X} (h : F ⊆ G) :
     pathComponentIn x F ⊆ pathComponentIn x G :=
-  fun _ ⟨γ,hγ⟩ => ⟨γ,fun t => h (hγ t)⟩
+  fun _ ⟨γ, hγ⟩ ↦ ⟨γ, fun t ↦ h (hγ t)⟩
 
 /-! ### Path connected sets -/
 
@@ -924,7 +924,7 @@ theorem IsPathConnected.subset_pathComponent (h : IsPathConnected F) (x_in : x �
 
 theorem IsPathConnected.subset_pathComponentIn {s : Set X} (hs : IsPathConnected s)
     (hxs : x ∈ s) (hsF : s ⊆ F) : s ⊆ pathComponentIn x F :=
-  fun y hys => (hs.joinedIn x hxs y hys).mono hsF
+  fun y hys ↦ (hs.joinedIn x hxs y hys).mono hsF
 
 theorem isPathConnected_singleton (x : X) : IsPathConnected ({x} : Set X) := by
   refine ⟨x, rfl, ?_⟩
@@ -932,11 +932,11 @@ theorem isPathConnected_singleton (x : X) : IsPathConnected ({x} : Set X) := by
   exact JoinedIn.refl rfl
 
 theorem isPathConnected_pathComponentIn (h : x ∈ F) : IsPathConnected (pathComponentIn x F) :=
-  ⟨x,mem_pathComponentIn_self h,fun ⟨γ,hγ⟩ => by
-    refine ⟨γ,fun t =>
-      ⟨(γ.truncateOfLE t.2.1).cast (γ.extend_zero.symm) (γ.extend_extends' t).symm,fun t' => ?_⟩⟩
-    dsimp [Path.truncateOfLE,Path.truncate]
-    exact γ.extend_extends' ⟨min (max t'.1 0) t.1,by simp [t.2.1,t.2.2]⟩ ▸ hγ _⟩
+  ⟨x, mem_pathComponentIn_self h, fun ⟨γ, hγ⟩ ↦ by
+    refine ⟨γ, fun t ↦
+      ⟨(γ.truncateOfLE t.2.1).cast (γ.extend_zero.symm) (γ.extend_extends' t).symm, fun t' ↦ ?_⟩⟩
+    dsimp [Path.truncateOfLE, Path.truncate]
+    exact γ.extend_extends' ⟨min (max t'.1 0) t.1, by simp [t.2.1, t.2.2]⟩ ▸ hγ _⟩
 
 theorem isPathConnected_pathComponent : IsPathConnected (pathComponent x) := by
   rw [← pathComponentIn_univ]
