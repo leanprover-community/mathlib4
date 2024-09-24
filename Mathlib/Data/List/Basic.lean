@@ -67,7 +67,7 @@ theorem set_of_mem_cons (l : List α) (a : α) : { x | x ∈ a :: l } = insert a
 
 /-! ### mem -/
 
-theorem _root_.Decidable.List.eq_or_ne_mem_of_mem [DecidableEq α]
+theorem _root_.Decidable.List.eq_or_ne_mem_of_mem
     {a b : α} {l : List α} (h : a ∈ b :: l) : a = b ∨ a ≠ b ∧ a ∈ l := by
   by_cases hab : a = b
   · exact Or.inl hab
