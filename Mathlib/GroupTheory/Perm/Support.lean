@@ -296,6 +296,12 @@ theorem support_congr (h : f.support ⊆ g.support) (h' : ∀ x ∈ g.support, f
   · rw [not_mem_support.mp hx, ← not_mem_support]
     exact fun H => hx (h H)
 
+/-- If g and c commute, then g stabilizes the support of c -/
+theorem mem_support_iff_of_commute {g c : Perm α} (hgc : Commute g c) (x : α) :
+    x ∈ c.support ↔ g x ∈ c.support := by
+  simp only [mem_support, not_iff_not, ← mul_apply]
+  rw [← hgc, mul_apply, Equiv.apply_eq_iff_eq]
+
 theorem support_mul_le (f g : Perm α) : (f * g).support ≤ f.support ⊔ g.support := fun x => by
   simp only [sup_eq_union]
   rw [mem_union, mem_support, mem_support, mem_support, mul_apply, ← not_and_or, not_imp_not]
@@ -325,6 +331,37 @@ theorem support_inv (σ : Perm α) : support σ⁻¹ = σ.support := by
 -- @[simp] -- Porting note (#10618): simp can prove this
 theorem apply_mem_support {x : α} : f x ∈ f.support ↔ x ∈ f.support := by
   rw [mem_support, mem_support, Ne, Ne, apply_eq_iff_eq]
+
+/-- The support of a permutation is invariant -/
+theorem isInvariant_of_support_le {c : Perm α} {s : Finset α} (hcs : c.support ≤ s) (x : α) :
+    x ∈ s ↔ c x ∈ s := by
+  by_cases hx' : x ∈ c.support
+  · simp only [hcs hx', true_iff, hcs (apply_mem_support.mpr hx')]
+  · rw [not_mem_support.mp hx']
+
+/-- A permutation c is the extension of a restriction of g to s
+  iff its support is contained in s and its restriction is that of g -/
+lemma ofSubtype_eq_iff {g c : Equiv.Perm α} {s : Finset α}
+    (hg : ∀ x, x ∈ s ↔ g x ∈ s) :
+    ofSubtype (g.subtypePerm hg) = c ↔
+      c.support ≤ s ∧
+      ∀ (hc' : ∀ x, x ∈ s ↔ c x ∈ s), c.subtypePerm hc' = g.subtypePerm hg := by
+  simp only [Equiv.ext_iff, subtypePerm_apply, Subtype.mk.injEq, Subtype.forall]
+  constructor
+  · intro h
+    constructor
+    · intro a ha
+      by_contra ha'
+      rw [mem_support, ← h a, ofSubtype_apply_of_not_mem (p := (· ∈ s)) _ ha'] at ha
+      exact ha rfl
+    · intro _ a ha
+      rw [← h a, ofSubtype_apply_of_mem (p := (· ∈ s)) _ ha, subtypePerm_apply]
+  · rintro ⟨hc, h⟩ a
+    specialize h (isInvariant_of_support_le hc)
+    by_cases ha : a ∈ s
+    · rw [h a ha, ofSubtype_apply_of_mem (p := (· ∈ s)) _ ha, subtypePerm_apply]
+    · rw [ofSubtype_apply_of_not_mem (p := (· ∈ s)) _ ha, eq_comm, ← not_mem_support]
+      exact Finset.not_mem_mono hc ha
 
 -- @[simp] -- Porting note (#10618): simp can prove this
 theorem pow_apply_mem_support {n : ℕ} {x : α} : (f ^ n) x ∈ f.support ↔ x ∈ f.support := by

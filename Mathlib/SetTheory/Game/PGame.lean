@@ -1275,7 +1275,8 @@ instance : Add PGame.{u} :=
 
 Note that this is **not** the usual recursive definition `n = {0, 1, … | }`. For instance,
 `2 = 0 + 1 + 1 = {0 + 0 + 1, 0 + 1 + 0 | }` does not contain any left option equivalent to `0`. For
-an implementation of said definition, see `Ordinal.toPGame`. -/
+an implementation of said definition, see `Ordinal.toPGame`. For the proof that these games are
+equivalent, see `Ordinal.toPGame_natCast`. -/
 instance : NatCast PGame :=
   ⟨Nat.unaryCast⟩
 
