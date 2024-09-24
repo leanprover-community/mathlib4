@@ -951,14 +951,17 @@ theorem bddAbove_range {ι : Type u} (f : ι → Cardinal.{max u v}) : BddAbove 
     rintro a ⟨i, rfl⟩
     exact le_sum f i⟩
 
-instance (a : Cardinal.{u}) : Small.{u} (Set.Iic a) := by
+instance small_Iic (a : Cardinal.{u}) : Small.{u} (Iic a) := by
   rw [← mk_out a]
   apply @small_of_surjective (Set a.out) (Iic #a.out) _ fun x => ⟨#x, mk_set_le x⟩
   rintro ⟨x, hx⟩
   simpa using le_mk_iff_exists_set.1 hx
 
-instance (a : Cardinal.{u}) : Small.{u} (Set.Iio a) :=
-  small_subset Iio_subset_Iic_self
+instance small_Iio (a : Cardinal.{u}) : Small.{u} (Iio a) := small_subset Iio_subset_Iic_self
+instance small_Icc (a b : Cardinal.{u}) : Small.{u} (Icc a b) := small_subset Icc_subset_Iic_self
+instance small_Ico (a b : Cardinal.{u}) : Small.{u} (Ico a b) := small_subset Ico_subset_Iio_self
+instance small_Ioc (a b : Cardinal.{u}) : Small.{u} (Ioc a b) := small_subset Ioc_subset_Iic_self
+instance small_Ioo (a b : Cardinal.{u}) : Small.{u} (Ioo a b) := small_subset Ioo_subset_Iio_self
 
 /-- A set of cardinals is bounded above iff it's small, i.e. it corresponds to a usual ZFC set. -/
 theorem bddAbove_iff_small {s : Set Cardinal.{u}} : BddAbove s ↔ Small.{u} s :=

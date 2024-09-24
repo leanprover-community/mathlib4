@@ -1306,21 +1306,6 @@ theorem le_sup_shrink_equiv {s : Set Ordinal.{u}} (hs : Small.{u} s) (a) (ha : a
 
 -- TODO: move this together with `bddAbove_range`.
 
-instance small_Iio (o : Ordinal.{u}) : Small.{u} (Set.Iio o) :=
-  let f : o.toType → Set.Iio o :=
-    fun x => ⟨typein (α := o.toType) (· < ·) x, typein_lt_self x⟩
-  let hf : Surjective f := fun b =>
-    ⟨enum (α := o.toType) (· < ·) ⟨b.val,
-        by
-          rw [type_lt]
-          exact b.prop⟩,
-      Subtype.ext (typein_enum _ _)⟩
-  small_of_surjective hf
-
-instance small_Iic (o : Ordinal.{u}) : Small.{u} (Set.Iic o) := by
-  rw [← Iio_succ]
-  infer_instance
-
 theorem bddAbove_of_small (s : Set Ordinal.{u}) [h : Small.{u} s] : BddAbove s := by
   obtain ⟨a, ha⟩ := bddAbove_range (fun x => ((@equivShrink s h).symm x).val)
   use a
