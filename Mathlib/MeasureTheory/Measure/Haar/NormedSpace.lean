@@ -30,23 +30,19 @@ example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E] [F
     [MeasurableSpace E] [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] : NoAtoms μ := by
   infer_instance
 
-section ContinuousLinearEquiv
+section LinearEquiv
 
 variable {𝕜 G H : Type*} [MeasurableSpace G] [MeasurableSpace H] [NontriviallyNormedField 𝕜]
   [TopologicalSpace G] [TopologicalSpace H] [AddCommGroup G] [AddCommGroup H]
   [TopologicalAddGroup G] [TopologicalAddGroup H] [Module 𝕜 G] [Module 𝕜 H] (μ : Measure G)
-  [IsAddHaarMeasure μ] [BorelSpace G] [BorelSpace H] [T2Space H]
-
-instance MapContinuousLinearEquiv.isAddHaarMeasure (e : G ≃L[𝕜] H) : IsAddHaarMeasure (μ.map e) :=
-  e.toAddEquiv.isAddHaarMeasure_map _ e.continuous e.symm.continuous
-
-variable [CompleteSpace 𝕜] [T2Space G] [FiniteDimensional 𝕜 G] [ContinuousSMul 𝕜 G]
-  [ContinuousSMul 𝕜 H]
+  [IsAddHaarMeasure μ] [BorelSpace G] [BorelSpace H]
+  [CompleteSpace 𝕜] [T2Space G] [FiniteDimensional 𝕜 G] [ContinuousSMul 𝕜 G]
+  [ContinuousSMul 𝕜 H] [T2Space H]
 
 instance MapLinearEquiv.isAddHaarMeasure (e : G ≃ₗ[𝕜] H) : IsAddHaarMeasure (μ.map e) :=
-  MapContinuousLinearEquiv.isAddHaarMeasure _ e.toContinuousLinearEquiv
+  e.toContinuousLinearEquiv.isAddHaarMeasure_map _
 
-end ContinuousLinearEquiv
+end LinearEquiv
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
   [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ] {F : Type*} [NormedAddCommGroup F]

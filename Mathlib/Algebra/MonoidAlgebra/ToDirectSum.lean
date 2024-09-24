@@ -191,7 +191,7 @@ def addMonoidAlgebraEquivDirectSum [DecidableEq ι] [Semiring M] [∀ m : M, Dec
     toFun := AddMonoidAlgebra.toDirectSum
     invFun := DirectSum.toAddMonoidAlgebra }
 
-/-- The additive version of `AddMonoidAlgebra.addMonoidAlgebraEquivDirectSum`.  -/
+/-- The additive version of `AddMonoidAlgebra.addMonoidAlgebraEquivDirectSum`. -/
 @[simps (config := .asFn)]
 def addMonoidAlgebraAddEquivDirectSum [DecidableEq ι] [Semiring M] [∀ m : M, Decidable (m ≠ 0)] :
     AddMonoidAlgebra M ι ≃+ ⨁ _ : ι, M :=
@@ -200,7 +200,7 @@ def addMonoidAlgebraAddEquivDirectSum [DecidableEq ι] [Semiring M] [∀ m : M, 
     invFun := DirectSum.toAddMonoidAlgebra
     map_add' := AddMonoidAlgebra.toDirectSum_add }
 
-/-- The ring version of `AddMonoidAlgebra.addMonoidAlgebraEquivDirectSum`.  -/
+/-- The ring version of `AddMonoidAlgebra.addMonoidAlgebraEquivDirectSum`. -/
 @[simps (config := .asFn)]
 def addMonoidAlgebraRingEquivDirectSum [DecidableEq ι] [AddMonoid ι] [Semiring M]
     [∀ m : M, Decidable (m ≠ 0)] : AddMonoidAlgebra M ι ≃+* ⨁ _ : ι, M :=

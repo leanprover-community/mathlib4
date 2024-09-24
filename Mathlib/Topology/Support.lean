@@ -299,7 +299,22 @@ variable {f f' : α → β} {x : α}
 theorem HasCompactMulSupport.mul (hf : HasCompactMulSupport f) (hf' : HasCompactMulSupport f') :
     HasCompactMulSupport (f * f') := hf.comp₂_left hf' (mul_one 1)
 
+@[to_additive, simp]
+protected lemma HasCompactMulSupport.one {α β : Type*} [TopologicalSpace α] [One β] :
+    HasCompactMulSupport (1 : α → β) := by
+  simp [HasCompactMulSupport, mulTSupport]
+
 end Monoid
+
+section DivisionMonoid
+
+@[to_additive]
+protected lemma HasCompactMulSupport.inv' {α β : Type*} [TopologicalSpace α] [DivisionMonoid β]
+    {f : α → β} (hf : HasCompactMulSupport f) :
+    HasCompactMulSupport (f⁻¹) := by
+  simpa only [HasCompactMulSupport, mulTSupport, mulSupport_inv'] using hf
+
+end DivisionMonoid
 
 section SMulZeroClass
 

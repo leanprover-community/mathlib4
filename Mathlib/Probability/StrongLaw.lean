@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Probability.IdentDistrib
+import Mathlib.Probability.Independence.Integrable
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.Analysis.SpecificLimits.FloorPow
 import Mathlib.Analysis.PSeries
@@ -107,11 +108,11 @@ theorem truncation_eq_of_nonneg {f : α → ℝ} {A : ℝ} (h : ∀ x, 0 ≤ f x
     truncation f A = indicator (Set.Ioc 0 A) id ∘ f := by
   ext x
   rcases (h x).lt_or_eq with (hx | hx)
-  · simp only [truncation, indicator, hx, Set.mem_Ioc, id, Function.comp_apply, true_and_iff]
+  · simp only [truncation, indicator, hx, Set.mem_Ioc, id, Function.comp_apply]
     by_cases h'x : f x ≤ A
     · have : -A < f x := by linarith [h x]
-      simp only [this, true_and_iff]
-    · simp only [h'x, and_false_iff]
+      simp only [this, true_and]
+    · simp only [h'x, and_false]
   · simp only [truncation, indicator, hx, id, Function.comp_apply, ite_self]
 
 theorem truncation_nonneg {f : α → ℝ} (A : ℝ) {x : α} (h : 0 ≤ f x) : 0 ≤ truncation f A x :=
@@ -298,7 +299,7 @@ theorem tsum_prob_mem_Ioi_lt_top {X : Ω → ℝ} (hint : Integrable X) (hnonneg
       · simp (config := {contextual := true}) only [Set.mem_Ioc, Set.mem_Ioi,
           Set.iUnion_subset_iff, Set.setOf_subset_setOf, imp_true_iff]
     rw [this]
-    apply tendsto_measure_iUnion
+    apply tendsto_measure_iUnion_atTop
     intro m n hmn x hx
     exact ⟨hx.1, hx.2.trans (Nat.cast_le.2 hmn)⟩
   apply le_of_tendsto_of_tendsto A tendsto_const_nhds
@@ -380,11 +381,11 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
     ε * ⌊c ^ n⌋₊ := by
   /- Let `S n = ∑ i ∈ range n, Y i` where `Y i = truncation (X i) i`. We should show that
     `|S k - 𝔼[S k]| / k ≤ ε` along the sequence of powers of `c`. For this, we apply Borel-Cantelli:
-    it suffices to show that the converse probabilites are summable. From Chebyshev inequality, this
-    will follow from a variance control `∑' Var[S (c^i)] / (c^i)^2 < ∞`. This is checked in `I2`
-    using pairwise independence to expand the variance of the sum as the sum of the variances,
+    it suffices to show that the converse probabilities are summable. From Chebyshev inequality,
+    this will follow from a variance control `∑' Var[S (c^i)] / (c^i)^2 < ∞`. This is checked in
+    `I2` using pairwise independence to expand the variance of the sum as the sum of the variances,
     and then a straightforward but tedious computation (essentially boiling down to the fact that
-    the sum of `1/(c ^ i)^2` beyong a threshold `j` is comparable to `1/j^2`).
+    the sum of `1/(c ^ i)^2` beyond a threshold `j` is comparable to `1/j^2`).
     Note that we have written `c^i` in the above proof sketch, but rigorously one should put integer
     parts everywhere, making things more painful. We write `u i = ⌊c^i⌋₊` for brevity. -/
   have c_pos : 0 < c := zero_lt_one.trans c_one
@@ -546,7 +547,7 @@ theorem strong_law_aux5 :
     · have : -(n : ℝ) < X n ω := by
         apply lt_of_lt_of_le _ (hnonneg n ω)
         simpa only [Right.neg_neg_iff, Nat.cast_pos] using npos
-      simp only [this, true_and_iff, not_le] at h
+      simp only [this, true_and, not_le] at h
       exact (hn h).elim
   filter_upwards [B] with ω hω
   convert isLittleO_sum_range_of_tendsto_zero hω using 1

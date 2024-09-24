@@ -45,7 +45,7 @@ abbrev ofList (rs : List R) := span { r | r ∈ rs }
   have : { r | r ∈ rs₁ ++ rs₂ } = _ := Set.ext (fun _ => List.mem_append)
   Eq.trans (congrArg span this) (span_union _ _)
 
-@[simp] lemma ofList_singleton (r : R) : ofList [r] = span {r} :=
+lemma ofList_singleton (r : R) : ofList [r] = span {r} :=
   congrArg span (Set.ext fun _ => List.mem_singleton)
 
 @[simp] lemma ofList_cons (r : R) (rs : List R) :
@@ -555,12 +555,14 @@ lemma map_first_exact_on_four_term_right_exact_of_isSMulRegular_last
     (h₄ : IsWeaklyRegular M₄ rs) :
     Exact (mapQ _ _ _ (smul_top_le_comap_smul_top (Ideal.ofList rs) f₁))
           (mapQ _ _ _ (smul_top_le_comap_smul_top (Ideal.ofList rs) f₂)) := by
-  induction' h₄ with _ _ _ N _ _ r rs h₄ _ ih generalizing M M₂ M₃
-  · apply (Exact.iff_of_ladder_linearEquiv ?_ ?_).mp h₁₂
+  induction h₄ generalizing M M₂ M₃ with
+  | nil =>
+    apply (Exact.iff_of_ladder_linearEquiv ?_ ?_).mp h₁₂
     any_goals exact quotEquivOfEqBot _ <|
       Eq.trans (congrArg (· • ⊤) Ideal.ofList_nil) (bot_smul ⊤)
     all_goals exact quot_hom_ext _ _ _ fun _ => rfl
-  · specialize ih
+  | cons r rs h₄ _ ih =>
+    specialize ih
       (map_first_exact_on_four_term_exact_of_isSMulRegular_last h₁₂ h₂₃ h₄)
       (map_exact r h₂₃ h₃) (map_surjective r h₃)
     have H₁ := quotOfListConsSMulTopEquivQuotSMulTopInner_naturality r rs f₁
