@@ -6,21 +6,16 @@ Authors: Bhavik Mehta
 import Mathlib.Analysis.SpecialFunctions.Integrals
 import Mathlib.Data.Real.Irrational
 
+/-!
+# `Real.pi` is irrational
+
+The main result of this file is `irrational_pi`.
+-/
+
 noncomputable section
 
 open intervalIntegral MeasureTheory.MeasureSpace Set Polynomial Real
 open scoped Nat
-
-lemma intervalIntegral.integral_pos {f : ℝ → ℝ} {a b : ℝ} (hab : a < b)
-    (hfc : ContinuousOn f (Icc a b)) (hle : ∀ x ∈ Ioc a b, 0 ≤ f x) (hlt : ∃ c ∈ Icc a b, 0 < f c) :
-    0 < ∫ x in a..b, f x :=
-  (integral_lt_integral_of_continuousOn_of_le_of_exists_lt hab
-    continuousOn_const hfc hle hlt).trans_eq' (by simp)
-
-@[simp]
-theorem natDegree_ofNat {R : Type*} [Semiring R] (n : ℕ) [Nat.AtLeastTwo n] :
-    natDegree (no_index (OfNat.ofNat n : R[X])) = 0 := by
-  rw [←map_ofNat C, natDegree_C]
 
 private def I (n : ℕ) (θ : ℝ) : ℝ := ∫ x in (-1)..1, (1 - x ^ 2) ^ n * cos (x * θ)
 
@@ -175,7 +170,7 @@ private lemma is_integer {p : Polynomial ℤ} (a b : ℤ) {k : ℕ} (hp : p.natD
   conv => lhs; rw [←sum_monomial_eq p]
   rw [eval₂_sum, Polynomial.sum, Finset.sum_mul, Int.cast_sum]
   simp only [eval₂_monomial, eq_intCast, div_pow, Int.cast_mul, Int.cast_pow]
-  refine Finset.sum_congr rfl (λ i hi => ?_)
+  refine Finset.sum_congr rfl (fun i hi => ?_)
   have ik := (le_natDegree_of_mem_supp i hi).trans hp
   rw [mul_assoc, div_mul_comm, ←Int.cast_pow, ←Int.cast_pow, ←Int.cast_pow, ←pow_sub_mul_pow b ik,
     ←Int.cast_div_charZero, Int.mul_ediv_cancel _ (pow_ne_zero _ hb), ←mul_assoc, mul_right_comm,
@@ -186,7 +181,7 @@ open Filter
 
 private lemma I_pos : 0 < I n (π / 2) := by
   refine integral_pos (by norm_num) (Continuous.continuousOn (by continuity)) ?_ ⟨0, by simp⟩
-  refine λ x hx => mul_nonneg (pow_nonneg ?_ _) ?_
+  refine fun x hx => mul_nonneg (pow_nonneg ?_ _) ?_
   · rw [sub_nonneg, sq_le_one_iff_abs_le_one, abs_le]
     exact ⟨hx.1.le, hx.2⟩
   refine cos_nonneg_of_neg_pi_div_two_le_of_le ?_ ?_ <;>
@@ -204,7 +199,7 @@ private lemma I_le (n : ℕ) : I n (π / 2) ≤ 2 := by
   nlinarith
 
 private lemma my_tendsto_pow_div_factorial_at_top (a : ℝ) :
-  Tendsto (λ n => (a : ℝ) ^ (2 * n + 1) / n !) atTop (nhds 0) := by
+  Tendsto (fun n => (a : ℝ) ^ (2 * n + 1) / n !) atTop (nhds 0) := by
   rw [←mul_zero a]
   refine ((tendsto_pow_div_factorial_atTop (a ^ 2)).const_mul a).congr (fun x => ?_)
   rw [←pow_mul, mul_div_assoc', _root_.pow_succ']
@@ -224,7 +219,7 @@ private lemma not_irrational.exists_rep {x : ℝ} :
     have : 0 < (a : ℝ) / b := h ▸ pi_div_two_pos
     rwa [lt_div_iff ((@Nat.cast_pos ℝ _ _ _).2 hb), zero_mul] at this
   have k : ∀ n, 0 < (a : ℝ) ^ (2 * n + 1) / n ! :=
-    λ n => div_pos (pow_pos ha _) (Nat.cast_pos.2 n.factorial_pos)
+    fun n => div_pos (pow_pos ha _) (Nat.cast_pos.2 n.factorial_pos)
   have j : ∀ᶠ n : ℕ in atTop, (a : ℝ) ^ (2 * n + 1) / n ! * I n (π / 2) < 1 := by
     have := eventually_lt_of_tendsto_lt (show (0 : ℝ) < 1 / 2 by norm_num)
               (my_tendsto_pow_div_factorial_at_top a)
