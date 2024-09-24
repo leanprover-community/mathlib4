@@ -92,7 +92,7 @@ lemma sin_le_mul (hx : -(π / 2) ≤ x) (hx₀ : x ≤ 0) : sin x ≤ 2 / π * x
 /-- Half of **Jordan's inequality** for absolute values. -/
 lemma mul_abs_le_abs_sin (hx : |x| ≤ π / 2) : 2 / π * |x| ≤ |sin x| := by
   wlog hx₀ : 0 ≤ x
-  case inr => simpa using this (by rwa [abs_neg]) <| neg_nonneg.2 <| le_of_not_ge hx₀
+  · simpa using this (by rwa [abs_neg]) <| neg_nonneg.2 <| le_of_not_ge hx₀
   rw [abs_of_nonneg hx₀] at hx ⊢
   exact (mul_le_sin hx₀ hx).trans (le_abs_self _)
 
@@ -100,17 +100,17 @@ lemma sin_sq_lt_sq (hx : x ≠ 0) : sin x ^ 2 < x ^ 2 := by
   wlog hx₀ : 0 < x
   case inr =>
     simpa using this (neg_ne_zero.2 hx) <| neg_pos_of_neg <| hx.lt_of_le <| le_of_not_gt hx₀
-  rcases le_or_gt x 1 with hxπ | hxπ
-  case inl =>
+  cases le_or_gt x 1 with
+  | inl hxπ =>
     exact pow_lt_pow_left₀ (sin_lt hx₀)
       (sin_nonneg_of_nonneg_of_le_pi hx₀.le (by linarith [two_le_pi])) (by simp)
-  case inr =>
+  | inr hxπ =>
     exact (sin_sq_le_one _).trans_lt (by rwa [one_lt_sq_iff₀ hx₀.le])
 
 lemma sin_sq_le_sq : sin x ^ 2 ≤ x ^ 2 := by
-  rcases eq_or_ne x 0 with rfl | hx
-  case inl => simp
-  case inr => exact (sin_sq_lt_sq hx).le
+  cases eq_or_ne x 0 with
+  | inl hx => simp [hx]
+  | inr hx => exact (sin_sq_lt_sq hx).le
 
 lemma abs_sin_lt_abs (hx : x ≠ 0) : |sin x| < |x| := sq_lt_sq.1 (sin_sq_lt_sq hx)
 lemma abs_sin_le_abs : |sin x| ≤ |x| := sq_le_sq.1 sin_sq_le_sq
@@ -121,9 +121,9 @@ lemma one_sub_sq_div_two_lt_cos (hx : x ≠ 0) : 1 - x ^ 2 / 2 < cos x := by
   linarith
 
 lemma one_sub_sq_div_two_le_cos : 1 - x ^ 2 / 2 ≤ cos x := by
-  rcases eq_or_ne x 0 with rfl | hx
-  case inl => simp
-  case inr => exact (one_sub_sq_div_two_lt_cos hx).le
+  cases eq_or_ne x 0 with
+  | inl hx => simp [hx]
+  | inr hx => exact (one_sub_sq_div_two_lt_cos hx).le
 
 /-- Half of **Jordan's inequality** for `cos`. -/
 lemma one_sub_mul_le_cos (hx₀ : 0 ≤ x) (hx : x ≤ π / 2) : 1 - 2 / π * x ≤ cos x := by
@@ -136,7 +136,7 @@ lemma one_add_mul_le_cos (hx₀ : -(π / 2) ≤ x) (hx : x ≤ 0) : 1 + 2 / π *
 
 lemma cos_le_one_sub_mul_cos_sq (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x ^ 2 := by
   wlog hx₀ : 0 ≤ x
-  case inr => simpa using this (by rwa [abs_neg]) <| neg_nonneg.2 <| le_of_not_ge hx₀
+  · simpa using this (by rwa [abs_neg]) <| neg_nonneg.2 <| le_of_not_ge hx₀
   rw [abs_of_nonneg hx₀] at hx
   have : x / π ≤ sin (x / 2) := by simpa using mul_le_sin (x := x / 2) (by positivity) (by linarith)
   have := (pow_le_pow_left₀ (by positivity) this 2).trans_eq (sin_sq_eq_half_sub _)
