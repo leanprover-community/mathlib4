@@ -1,8 +1,9 @@
 /-
 Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau
+Authors: Kenny Lau, Yakov Pechersky
 -/
+import Mathlib.RingTheory.IsPrimary
 import Mathlib.RingTheory.Ideal.Operations
 
 /-!
@@ -14,6 +15,10 @@ A proper ideal `I` is primary iff `xy ∈ I` implies `x ∈ I` or `y ∈ radical
 
 - `Ideal.IsPrimary`
 
+## Implementation details
+
+Uses a specialized phrasing of `Submodule.IsPrimary` to have better API-piercing usage.
+
 -/
 
 namespace Ideal
@@ -23,6 +28,23 @@ variable {R : Type*} [CommSemiring R]
 /-- A proper ideal `I` is primary iff `xy ∈ I` implies `x ∈ I` or `y ∈ radical I`. -/
 def IsPrimary (I : Ideal R) : Prop :=
   I ≠ ⊤ ∧ ∀ {x y : R}, x * y ∈ I → x ∈ I ∨ y ∈ radical I
+
+lemma isPrimary_iff {I : Ideal R} :
+    I.IsPrimary ↔ I ≠ ⊤ ∧ ∀ {x y : R}, x * y ∈ I → x ∈ I ∨ y ∈ radical I :=
+  Iff.rfl
+
+/-- An ideal `I : Ideal R` is primary iff it is primary as a submodule. This links
+`Ideal.IsPrimary` with `Submodule.IsPrimary`. -/
+lemma isPrimary_iff' {I : Ideal R} :
+    I.IsPrimary ↔ Submodule.IsPrimary I := by
+  rw [isPrimary_iff, Submodule.isPrimary_iff]
+  simp only [ne_eq, mem_radical_iff, smul_eq_mul, and_congr_right_iff,
+             ← Submodule.ideal_span_singleton_smul, smul_eq_mul, mul_top, span_singleton_le_iff_mem]
+  intro
+  constructor <;>
+  · intro h r x hrx
+    rw [mul_comm] at hrx
+    exact h hrx
 
 theorem IsPrime.isPrimary {I : Ideal R} (hi : IsPrime I) : IsPrimary I :=
   ⟨hi.1, fun {_ _} hxy => (hi.mem_or_mem hxy).imp id fun hyi => le_radical hyi⟩
