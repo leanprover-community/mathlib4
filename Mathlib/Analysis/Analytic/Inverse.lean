@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Analytic.Composition
+import Mathlib.Analysis.Analytic.Linear
 
 /-!
 
@@ -89,7 +90,7 @@ theorem leftInv_removeZero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
 term is invertible. -/
 theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
     (h : p 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm i) : (leftInv p i).comp p = id 𝕜 E := by
-  ext (n v)
+  ext n v
   classical
   match n with
   | 0 =>
@@ -481,7 +482,7 @@ theorem radius_rightInv_pos_of_radius_pos_aux2 {n : ℕ} (hn : 2 ≤ n + 1)
 
 /-- If a a formal multilinear series has a positive radius of convergence, then its right inverse
 also has a positive radius of convergence. -/
-theorem radius_rightInv_pos_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
+theorem radius_rightInv_pos_of_radius_pos {p : FormalMultilinearSeries 𝕜 E F} {i : E ≃L[𝕜] F}
     (hp : 0 < p.radius) : 0 < (p.rightInv i).radius := by
   obtain ⟨C, r, Cpos, rpos, ple⟩ :
     ∃ (C r : _) (_ : 0 < C) (_ : 0 < r), ∀ n : ℕ, ‖p n‖ ≤ C * r ^ n :=
@@ -553,6 +554,14 @@ theorem radius_rightInv_pos_of_radius_pos (p : FormalMultilinearSeries 𝕜 E F)
         single_le_sum this (by simp [one_le_n]))
       _ ≤ (I + 1) * a := IRec (n + 1) (by norm_num)
 
+/-- If a a formal multilinear series has a positive radius of convergence, then its left inverse
+also has a positive radius of convergence. -/
+theorem radius_leftInv_pos_of_radius_pos {p : FormalMultilinearSeries 𝕜 E F} {i : E ≃L[𝕜] F}
+    (hp : 0 < p.radius) (h : p 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm i) :
+    0 < (p.leftInv i).radius := by
+  rw [leftInv_eq_rightInv _ _ h]
+  exact radius_rightInv_pos_of_radius_pos hp
+
 end FormalMultilinearSeries
 
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
@@ -607,60 +616,60 @@ lemma bar {f : E → G} {q : FormalMultilinearSeries 𝕜 F G}
   congr
   exact ofFn_inj.mp rfl
 
-
 lemma barb {f : E → F} {g : F → G} {q : FormalMultilinearSeries 𝕜 F G}
-    {p : FormalMultilinearSeries 𝕜 E F} {x : E} {t : Set F} (hq : 0 < q.radius)
+    {p : FormalMultilinearSeries 𝕜 E F} {x : E} (hq : 0 < q.radius)
     (hgf : HasFPowerSeriesAt (g ∘ f) (q.comp p) x) (hf : HasFPowerSeriesAt f p x) :
-    ∀ᶠ y in 𝓝 0, Tendsto (fun n ↦ q.partialSum n (f (x + y) - f x)) atTop (𝓝 (g (f (x + y)))) := by
-  filter_upwards [bar hq (hf.radius_pos) hgf, hf.tendsto_partialSum] with y hy h'y
-  intro u hu
-  simp only [Filter.mem_map, mem_atTop_sets, ge_iff_le, Set.mem_preimage]
-  -- exists_mem_nhds_isClosed_subset
-  rcases mem_nhds_iff.1 hu with ⟨v, vu, v_open, hv⟩
-  obtain ⟨a₀, b₀, hab⟩ : ∃ a₀ b₀, ∀ (a b : ℕ), a₀ ≤ a → b₀ ≤ b →
-      q.partialSum a (p.partialSum b y - (p 0) fun x ↦ 0) ∈ v := by
-    simpa using hy (v_open.mem_nhds hv)
-  refine ⟨a₀, fun a ha ↦ ?_⟩
-  have : Tendsto (fun b ↦ q.partialSum a (p.partialSum b y - (p 0) fun x ↦ 0)) atTop
-      (𝓝 (q.partialSum a (f (x + y) - f x))) := by
-    have : ContinuousAt (q.partialSum a) (f (x + y) - f x) :=
-      (partialSum_continuous q a).continuousAt
-    apply this.tendsto.comp
-    apply Tendsto.sub h'y
-    convert tendsto_const_nhds
-    exact (HasFPowerSeriesAt.coeff_zero hf fun x ↦ 0).symm
+    ∀ᶠ y in 𝓝 0, HasSum (fun n : ℕ => q n fun _ : Fin n => (f (x + y) - f x)) (g (f (x + y))) := by
+  have : ∀ᶠ y in 𝓝 (0 : E), f (x + y) - f x ∈ EMetric.ball 0 q.radius := by
+    have A : ContinuousAt (fun y ↦ f (x + y) - f x) 0 := by
+      apply ContinuousAt.sub _ continuousAt_const
+      exact hf.continuousAt.comp_of_eq (continuous_add_left x).continuousAt (by simp)
+    have B : EMetric.ball 0 q.radius ∈ 𝓝 (f (x + 0) - f x) := by
+      simpa using EMetric.ball_mem_nhds _ hq
+    exact A.preimage_mem_nhds B
+  filter_upwards [bar hq (hf.radius_pos) hgf, hf.tendsto_partialSum, this] with y hy h'y h''y
+  have L : Tendsto (fun n ↦ q.partialSum n (f (x + y) - f x)) atTop (𝓝 (g (f (x + y)))) := by
+    apply (closed_nhds_basis (g (f (x + y)))).tendsto_right_iff.2
+    rintro u ⟨hu, u_closed⟩
+    simp only [id_eq, eventually_atTop, ge_iff_le]
+    rcases mem_nhds_iff.1 hu with ⟨v, vu, v_open, hv⟩
+    obtain ⟨a₀, b₀, hab⟩ : ∃ a₀ b₀, ∀ (a b : ℕ), a₀ ≤ a → b₀ ≤ b →
+        q.partialSum a (p.partialSum b y - (p 0) fun x ↦ 0) ∈ v := by
+      simpa using hy (v_open.mem_nhds hv)
+    refine ⟨a₀, fun a ha ↦ ?_⟩
+    have : Tendsto (fun b ↦ q.partialSum a (p.partialSum b y - (p 0) fun x ↦ 0)) atTop
+        (𝓝 (q.partialSum a (f (x + y) - f x))) := by
+      have : ContinuousAt (q.partialSum a) (f (x + y) - f x) :=
+        (partialSum_continuous q a).continuousAt
+      apply this.tendsto.comp
+      apply Tendsto.sub h'y
+      convert tendsto_const_nhds
+      exact (HasFPowerSeriesAt.coeff_zero hf fun _ ↦ 0).symm
+    apply u_closed.mem_of_tendsto this
+    filter_upwards [Ici_mem_atTop b₀] with b hb using vu (hab _ _ ha hb)
+  have C : CauchySeq (fun (s : Finset ℕ) ↦ ∑ n ∈ s, q n fun _ : Fin n => (f (x + y) - f x)) := by
+    have Z := q.summable_norm_apply (x := f (x + y) - f x) h''y
+    exact cauchySeq_finset_of_norm_bounded _ Z (fun i ↦ le_rfl)
+  exact tendsto_nhds_of_cauchySeq_of_subseq C tendsto_finset_range L
 
 
 
 
-
-
-lemma barb {f : E → F} {g : F → G} {q : FormalMultilinearSeries 𝕜 F G}
-    {p : FormalMultilinearSeries 𝕜 E F} {x : E} {t : Set F} (hq : 0 < q.radius)
-    (hgf : HasFPowerSeriesAt (g ∘ f) (q.comp p) x) (hf : HasFPowerSeriesAt f p x) :
-    ∀ᶠ y in 𝓝 0, HasSum (fun n ↦ q n (fun _ ↦ f (x + y) - f x)) (g (f (x + y))) := by
-  filter_upwards [bar hq (hf.radius_pos) hgf] with y hy
-  intro u hu
-  simp
-  rcases mem_nhds_iff.1 hu with ⟨v, vu, v_open, hv⟩
-  obtain ⟨a₀, b₀, hab⟩ : ∃ a₀ b₀, ∀ (a b : ℕ), a₀ ≤ a → b₀ ≤ b →
-      q.partialSum a (p.partialSum b y - (p 0) fun x ↦ 0) ∈ v := by
-    simpa using hy (v_open.mem_nhds hv)
-  filter_upwards [Ici_mem_atTop b₀]
-
-
-
-
-
-
-#exit
-
-
-    Tendsto (fun (a : ℕ × ℕ) ↦ q.partialSum a.1 (p.partialSum a.2 y
-      - p 0 (fun _ ↦ 0))) atTop (𝓝 (f (x + y))) := by
 
 theorem HasFPowerSeriesAt.inverse (f : PartialHomeomorph E F)
-    {i : E ≃L[𝕜] F} {a : F} (ha : a ∈ f.target) {p : FormalMultilinearSeries 𝕜 E F}
-    (h : HasFPowerSeriesAt f p (f.symm a)) :
-    HasFPowerSeriesAt f.symm (p.rightInv i) a := by
-  rcases h with ⟨r, hr⟩
+    {i : E ≃L[𝕜] F} (h0 : 0 ∈ f.source) {p : FormalMultilinearSeries 𝕜 E F}
+    (h : HasFPowerSeriesAt f p 0)
+    (hp : p 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm i) :
+    HasFPowerSeriesAt f.symm (p.leftInv i) (f 0) := by
+  have A : HasFPowerSeriesAt (f.symm ∘ f) ((p.leftInv i).comp p) 0 := by
+    have : HasFPowerSeriesAt (ContinuousLinearMap.id 𝕜 E) ((p.leftInv i).comp p) 0 := by
+      rw [leftInv_comp _ _ hp]
+      exact (ContinuousLinearMap.id 𝕜 E).hasFPowerSeriesAt 0
+    apply this.congr
+    filter_upwards [f.open_source.mem_nhds h0] with x hx using by simp [hx]
+  have B : ∀ᶠ (y : E) in 𝓝 0, HasSum (fun n ↦ (p.leftInv i n) fun x ↦ f y - f 0)
+      (f.symm (f y)) :=
+    by simpa using barb (radius_leftInv_pos_of_radius_pos h.radius_pos hp) A h
+  have C : ∀ᶠ (y : E) in 𝓝 0, HasSum (fun n ↦ (p.leftInv i n) fun x ↦ f y - f 0) y := by
+    filter_upwards [B, f.open_source.mem_nhds h0] with x hx h'x
+    simpa [h'x] using hx
