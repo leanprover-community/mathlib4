@@ -417,21 +417,19 @@ theorem conjugateEquiv_comp (α : L₂ ⟶ L₁) (β : L₃ ⟶ L₂) :
   rw [vcompd]
 
 @[simp]
-theorem conjugateEquiv_comp_symm (α : R₁ ⟶ R₂) (β : R₂ ⟶ R₃) :
+theorem conjugateEquiv_symm_comp (α : R₁ ⟶ R₂) (β : R₂ ⟶ R₃) :
     (conjugateEquiv adj₂ adj₃).symm β ≫ (conjugateEquiv adj₁ adj₂).symm α =
       (conjugateEquiv adj₁ adj₃).symm (α ≫ β) := by
   rw [Equiv.eq_symm_apply, ← conjugateEquiv_comp _ adj₂]
   simp only [Equiv.apply_symm_apply]
 
-@[simp]
 theorem conjugateEquiv_comm {α : L₂ ⟶ L₁} {β : L₁ ⟶ L₂} (βα : β ≫ α = 𝟙 _) :
     conjugateEquiv adj₁ adj₂ α ≫ conjugateEquiv adj₂ adj₁ β = 𝟙 _ := by
   rw [conjugateEquiv_comp, βα, conjugateEquiv_id]
 
-@[simp]
 theorem conjugateEquiv_symm_comm {α : R₁ ⟶ R₂} {β : R₂ ⟶ R₁} (αβ : α ≫ β = 𝟙 _) :
     (conjugateEquiv adj₂ adj₁).symm β ≫ (conjugateEquiv adj₁ adj₂).symm α = 𝟙 _ := by
-  rw [conjugateEquiv_comp_symm, αβ, conjugateEquiv_symm_id]
+  rw [conjugateEquiv_symm_comp, αβ, conjugateEquiv_symm_id]
 
 end ConjugateComposition
 
