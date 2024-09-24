@@ -21,7 +21,7 @@ and C₂ (which includes 𝓓ₘ but not 𝓓₁).
 - We show over C₁ that the degrees are not rigid, using complementation.
 
 - Over C₂ we show that the degrees form an upper semilattice and has
-a peculiar automorphism that simply swaps ∅ₘ and ℕₘ.
+a peculiar automorphism that simply swaps ⊥ := ⟦∅⟧ₘ and ⊤ := ⟦ℕ⟧ₘ.
 
 - The halting problem `K` is defined in this context and
 its basic degree-theoretic properties established.
@@ -44,15 +44,19 @@ structure C₀ where
   id : func id
   comp : ∀ {f g}, func f → func g → func (f ∘ g)
 
+/-- Embedding on the left over ℕ. -/
+def inlFun : ℕ → ℕ := fun k => 2 * k
+
+/-- Embedding on the right over ℕ. -/
+def inrFun : ℕ → ℕ := fun k => 2 * k + 1
 
 /-- A monoid in which we can prove ⊕ is an upper bound, even if not the least one.
-Perhaps dangerous to call the fields `inl` and `inr`.
-Note that (join f₁ f₂) ∘ inl = f₁ in some sense.
 -/
 structure C₁ extends C₀ where
-  inl : func (fun k => 2 * k)
-  inr : func (fun k => 2 * k + 1)
+  inl : func inlFun
+  inr : func inrFun
 
+/-- The injective functions ca be used in defining 1-degrees, 𝓓₁. -/
 def injClone : C₁ := {
   func := Function.Injective
   id := fun ⦃a₁ a₂⦄ a ↦ a
@@ -65,7 +69,10 @@ def injClone : C₁ := {
 }
 
 
+/-- Mapping (many-one) reducibility. -/
 def m_reducible {C : C₀}  (A B : ℕ → Bool) := ∃ f : ℕ → ℕ, C.func f ∧ ∀ x, A x = B (f x)
+
+/-- A ≡ₘ B ↔ A ≤ₘ B and B ≤ₘ A. -/
 def m_equivalent {C : C₀} (A B : ℕ → Bool) := @m_reducible C A B ∧ @m_reducible C B A
 
 
@@ -80,9 +87,11 @@ infix:50 " ≡ₘ " => m_equivalent
 
 -/
 
+/-- m-reducibility is reflexive. -/
 lemma m_refl {C : C₀} : Reflexive (@m_reducible C ):=
   fun _ => ⟨ id, ⟨C.id, fun _ => rfl⟩⟩
 
+/-- m-reducibility is transitive. -/
 lemma m_trans {D : C₀} : Transitive (@m_reducible D) := by
   intro A B C ⟨g₁,hg₁⟩ ⟨g₂,hg₂⟩
   use g₂ ∘ g₁
@@ -93,6 +102,7 @@ lemma m_trans {D : C₀} : Transitive (@m_reducible D) := by
   intro x
   rw [hg₁.2 x, hg₂.2 (g₁ x)];rfl
 
+/-- To do calc proofs with m-reducibility we create a Trans instance. -/
 instance {C : C₀} : Trans (@m_reducible C) (@m_reducible C) (@m_reducible C) := {
   trans := @m_trans C
 }
@@ -104,8 +114,10 @@ instance {C : C₀} : Trans (@m_reducible C) (@m_reducible C) (@m_reducible C) :
 
 -/
 
+/-- Many-one equivalence is reflexive. -/
 lemma m_equiv_refl {C : C₀} : Reflexive (@m_equivalent C) := fun _ => ⟨m_refl _, m_refl _⟩
 
+/-- Many-one equivalence is transitive. -/
 lemma m_equiv_trans {C : C₀} : Transitive (@m_equivalent C) := by
   intro A B C h₁ h₂
   unfold m_equivalent at *
@@ -113,12 +125,14 @@ lemma m_equiv_trans {C : C₀} : Transitive (@m_equivalent C) := by
   exact m_trans h₁.1 h₂.1
   exact m_trans h₂.2 h₁.2
 
+/-- Many-one equivalence is symmetric. -/
 lemma m_equiv_symm {C : C₀} : Symmetric (@m_equivalent C) := by
   intro A B h
   unfold m_equivalent at *
   constructor
   tauto;tauto
 
+/-- Many-one equivalence. -/
 lemma m_equiv_equiv {C : C₀} : Equivalence (@m_equivalent C) :=
 {
   refl := m_equiv_refl,
@@ -189,6 +203,7 @@ lemma le_m_refl {C : C₀} : Reflexive <|@le_m C :=
 lemma le_m_trans {C : C₀} : Transitive <|@le_m C :=
   Quot.ind fun _ => Quot.ind fun _ => Quot.ind fun _ h => m_trans h
 
+/-- m-reducibility is a preorder. -/
 def m_degrees_preorder {C : C₀} : Preorder (ℕ → Bool) :=
   @Preorder.mk (ℕ → Bool) {le := @m_reducible C}
   {lt := fun A B => m_reducible A B ∧ ¬ m_reducible B A}
@@ -205,14 +220,20 @@ instance {E : C₀}: PartialOrder <|@𝓓ₘ E := {
   le_antisymm := Quotient.ind <| fun A => Quotient.ind <| fun B h₁ h₂ => Quotient.sound ⟨h₁,h₂⟩
 }
 
-/-- AKA Quotient.mk 𝓓ₘsetoid (fun _ => false) -- or Quot.mk m_equivalent ... -/
-def emp_m {E : C₀}: @𝓓ₘ E := ⟦ (fun _ => false) ⟧
-def univ_m {E : C₀} : @𝓓ₘ E := ⟦ (fun _ => true) ⟧
-def zero_m {E : C₀} : @𝓓ₘ E := ⟦ (fun k => ite (k=0) true false) ⟧
+/-- The nontrivial computable sets form the m-degree `0`. -/
+instance {E : C₀} : Zero (@𝓓ₘ E) := {
+  zero := ⟦ (fun k => ite (k=0) true false) ⟧
+}
 
-notation:60 " ∅ₘ " => emp_m
+/-- The degree ⟦∅⟧ₘ = ⊤. -/
+instance {E : C₀} : Bot (@𝓓ₘ E) := {
+  bot := ⟦ (fun _ => false) ⟧
+}
 
-notation:60 " ℕₘ " => univ_m
+/-- The degree ⟦ℕ⟧ₘ = ⊤. -/
+instance {E : C₀} : Top (@𝓓ₘ E) := {
+  top := ⟦ (fun _ => true) ⟧
+}
 
 /--
 
@@ -226,30 +247,42 @@ def join (A B : ℕ → Bool) := fun k => ite (Even k) (A (k/2)) <| B (k/2)
 /-- Make sure ♯ binds stronger than ≤ₘ. -/
 infix:70 " ⊕ " => join
 
-lemma join_left {C : C₁}  (A B : ℕ → Bool) : @m_reducible C.toC₀ A (A ⊕ B) :=
-  ⟨fun k => 2 * k, C.inl, fun k => by unfold join; simp⟩
 
+/-- Join works as desired on the left. -/
+lemma join_inl (A B : ℕ → Bool) (k : ℕ): (join A B) (inlFun k) = A k := by
+  unfold join inlFun
+  simp
+
+/-- Join works as desired on the right. -/
+lemma join_inr (A B : ℕ → Bool) (k : ℕ): (join A B) (inrFun k) = B k := by
+  unfold join inrFun
+  simp
+  congr
+  omega
+
+
+/-- A ≤ₘ A ⊕ B. -/
+lemma join_left {C : C₁}  (A B : ℕ → Bool) : @m_reducible C.toC₀ A (A ⊕ B) :=
+  ⟨fun k => 2 * k, C.inl, fun k => .symm <| join_inl A B k⟩
+
+/-- B ≤ₘ A ⊕ B. -/
 lemma join_right {C : C₁} (A B : ℕ → Bool) : @m_reducible C.toC₀ B (A ⊕ B) :=
-  ⟨fun k => 2 * k + 1, C.inr, fun k => by
-    unfold join
-    have : (2*k+1)/2 = (2*k)/2 := Nat.succ_div_of_not_dvd <| by simp
-    rw [this]
-    simp⟩
+  ⟨fun k => 2 * k + 1, C.inr, fun k => .symm <|join_inr A B k⟩
 
 
 
 
 open Classical
 
+/-- A map on 𝓓ₘ that swaps ∅ and ℕ. -/
 noncomputable def botSwap {E : C₀} : @𝓓ₘ E → @𝓓ₘ E := fun a =>
-  ite (a = ∅ₘ) (ℕₘ) (ite (a = ℕₘ) (∅ₘ) a)
+  ite (a = ⊥) ⊤ (ite (a = ⊤) ⊥ a)
 
 
-
-theorem botSwap_inj {E : C₀} : Function.Injective fun a ↦
-    if a = @emp_m E then ℕₘ else if a = ℕₘ then  ∅ₘ else a := by
+/-- Swapping ∅ and ℕ is injective on 𝓓ₘ. -/
+theorem botSwap_inj {E : C₀} : Function.Injective <| @botSwap E := by
   intro a b h
-  simp_all only
+  unfold botSwap at h
   split_ifs at h with g₀ g₁ g₂ g₃ g₄ g₅
   · apply Eq.trans;exact g₀
     exact g₁.symm
@@ -265,61 +298,68 @@ theorem botSwap_inj {E : C₀} : Function.Injective fun a ↦
   · exfalso;exact g₀ h
   · exact h
 
-theorem botSwap_surj {E : C₀} : Function.Surjective
-    fun a ↦ if a = @emp_m E then  ℕₘ else if a = ℕₘ then  ∅ₘ else a := by
-  · intro b
-    by_cases H : b = ∅ₘ
+/-- Swapping ∅ and ℕ is surjective on 𝓓ₘ. -/
+theorem botSwap_surj {E : C₀} : Function.Surjective <| @botSwap E := by
+  · unfold botSwap
+    intro b
+    by_cases H : b = ⊥
     · subst H
-      use ℕₘ
+      use ⊤
       simp
-    · by_cases H : b = ℕₘ <;> aesop
+    · by_cases H : b = ⊤ <;> aesop
 
-lemma emp_not_below {E : C₀} : ¬ (@emp_m E) ≤ (ℕₘ) := by
+/-- In 𝓓ₘ, ⊥ is not below ⊤. -/
+lemma emp_not_below {E : C₀} : ¬ (⊥ : @𝓓ₘ E) ≤ ⊤ := by
   intro hc
-  unfold emp_m univ_m at hc
   unfold 𝓓ₘ 𝓓ₘsetoid m_equivalent at hc
   obtain ⟨f,hf⟩ := hc
   simp at hf
 
-lemma univ_not_below {E : C₀} : ¬ (@univ_m E) ≤ (∅ₘ) := by
+/-- In 𝓓ₘ, ⊤ is not below ⊥. -/
+lemma univ_not_below {E : C₀} : ¬ (⊤ : @𝓓ₘ E) ≤ ⊥ := by
   intro hc
-  unfold emp_m univ_m at hc
   unfold 𝓓ₘ 𝓓ₘsetoid m_equivalent at hc
   obtain ⟨f,hf⟩ := hc
   simp at hf
 
-theorem emp_min {E : C₀} : ∀ (a : @𝓓ₘ E), (h : a ≤ (∅ₘ)) →  a = ∅ₘ := by
+/-- In 𝓓ₘ, ⊥ is a minimal element. -/
+theorem emp_min {E : C₀} : ∀ (a : @𝓓ₘ E), (h : a ≤ ⊥) →  a = ⊥ := by
   apply Quotient.ind
   intro A h
   obtain ⟨f,hf⟩ := h
 
-  unfold emp_m at *
   unfold 𝓓ₘ 𝓓ₘsetoid m_equivalent m_reducible at *
   simp_all only [Quotient.eq]
+  apply Quot.sound
+  have : A = fun _ => false := by ext x; exact hf.2 x
   constructor
   use f
   use f
   simp_all
 
-theorem univ_min {E : C₀} : ∀ (a : @𝓓ₘ E), (h : a ≤ (ℕₘ)) →  a = ℕₘ := by
+/-- In 𝓓ₘ, ⊤ is a minimal element. -/
+theorem univ_min {E : C₀} : ∀ (a : @𝓓ₘ E), (h : a ≤ ⊤) →  a = ⊤ := by
   apply Quotient.ind
   intro A h
   obtain ⟨f,hf⟩ := h
 
-  unfold univ_m at *
   unfold 𝓓ₘ 𝓓ₘsetoid m_equivalent m_reducible at *
   simp_all only [Quotient.eq]
+  apply Quot.sound
   constructor
   use f
   use f
   simp_all
 
-
+/-- An automorphism of a partial order is a bijection that preserves and reflects
+the order. -/
 def automorphism {α : Type} [PartialOrder α] (π : α → α): Prop :=
   Function.Bijective π ∧ ∀ a b, a ≤ b ↔ π a ≤ π b
 
+/-- The complement map on `ℕ → Bool`. -/
 def cpl : (ℕ → Bool) → (ℕ → Bool) := fun A => (fun k => ! (A k))
 
+/-- The complement map on 𝓓ₘ. -/
 def complementMap {E : C₀} : @𝓓ₘ E → @𝓓ₘ E := by
   apply Quotient.lift
   intro A B h
@@ -343,25 +383,27 @@ def complementMap {E : C₀} : @𝓓ₘ E → @𝓓ₘ E := by
     congr
     tauto
 
-lemma emp_univ_m_degree {E : C₀} : (@emp_m E) ≠ (ℕₘ) := by
+/-- In 𝓓ₘ, ⊥ ≠ ⊤. -/
+lemma emp_univ_m_degree {E : C₀} : (⊥ : @𝓓ₘ E) ≠ ⊤ := by
   intro hc
-  unfold emp_m univ_m at hc
   have : 𝓓ₘsetoid.r (fun _ => false) (fun _ => true) := Quotient.eq''.mp hc
   unfold 𝓓ₘsetoid m_equivalent at this
   simp only at this
   obtain ⟨f,hf⟩ := this.1
   simp at hf
 
+/-- The (⊥,⊤) swap map is not the identity. -/
 theorem botSwapNontrivial {E : C₀} : @botSwap E ≠ id := by
   intro hc
   have : ∀ a, @botSwap E a = id a := by exact fun a ↦ congrFun hc a
-  specialize this (∅ₘ)
+  specialize this ⊥
 
   unfold botSwap at this
   simp_all only [ite_true, id_eq]
   apply emp_univ_m_degree.symm
   exact this
 
+/-- A partial order is rigid if there are no nontrivial automorphisms. -/
 def rigid (α : Type) [PartialOrder α] : Prop :=
   ∀ π, @automorphism α _ π → π  = id
 
@@ -370,6 +412,7 @@ def rigid (α : Type) [PartialOrder α] : Prop :=
 ## Computability results needed for C₂
 -/
 
+/-- Dividing-by-two is primitive recursive. -/
 lemma half_primrec : Primrec (fun k => k/2) :=
   Primrec.of_graph
     ⟨id, ⟨Primrec.id, by
@@ -382,10 +425,7 @@ lemma half_primrec : Primrec (fun k => k/2) :=
       (Primrec₂.comp₂ Primrec.nat_div Primrec₂.left <| Primrec₂.const 2)
       Primrec₂.right)
 
-lemma comphalf_primrec {f : ℕ → ℕ} (hc : Computable f) :
-    Computable (fun k => f (k / 2)) :=
-  Computable.comp hc <|Primrec.to_comp half_primrec
-
+/-- An arithmetical characterization of "Even" is primitive recursive. -/
 lemma primrec_even_equiv : PrimrecPred fun k ↦ k / 2 * 2 = k := by
     apply PrimrecRel.comp
     exact Primrec.eq
@@ -399,19 +439,27 @@ lemma primrec_even_equiv : PrimrecPred fun k ↦ k / 2 * 2 = k := by
         Primrec₂.right)
     · exact Primrec.id
 
+/-- Characterizing "Even" arithmetically. -/
 lemma even_div_two (a : ℕ) : a / 2 * 2 = a ↔ Even a :=
   Iff.intro (fun h => ⟨a / 2, Eq.trans h.symm (mul_two (a/2))⟩) <| Nat.div_two_mul_two_of_even
 
+/-- "Even" is a primitive recursive predicate. -/
 lemma even_primrec : @PrimrecPred ℕ _ Even _ :=
   PrimrecPred.of_eq primrec_even_equiv even_div_two
 
+
+/-- The usual join of functions on ℕ is computable. -/
 theorem computable_join {f₁ f₂ : ℕ → ℕ} (hf₁ : Computable f₁) (hf₂ : Computable f₂) :
     Computable fun k ↦ if Even k then f₁ (k / 2) else f₂ (k / 2) :=
   Computable.of_eq
-    (Computable.cond (Primrec.to_comp even_primrec) (comphalf_primrec hf₁) (comphalf_primrec hf₂))
+    (Computable.cond (Primrec.to_comp even_primrec)
+      (Computable.comp hf₁ <|Primrec.to_comp half_primrec)
+      (Computable.comp hf₂ <|Primrec.to_comp half_primrec))
     (by intro n; simp)
 
-theorem getHasIte {C : C₁} (hasIte₂ : ∀ {f₁ f₂}, C.func f₁ → C.func f₂ → C.func
+/-- An auxiliary lemma for proving that the join A₀ ⊕ A₁ is monotone in A₀ within the context
+ of the monoid class `C₁`.-/
+lemma getHasIte {C : C₁} (hasIte₂ : ∀ {f₁ f₂}, C.func f₁ → C.func f₂ → C.func
     fun k ↦ if Even k then f₁ (k / 2) else f₂ (k / 2)) :
     ∀ f, C.func f → C.func (fun k : ℕ => if Even k then f (k / 2) * 2 else k) := by
   intro f hf
@@ -429,18 +477,21 @@ theorem getHasIte {C : C₁} (hasIte₂ : ∀ {f₁ f₂}, C.func f₁ → C.fun
   exact @hasIte₂ ((fun a => a * 2) ∘ f) (fun a => 2 * a + 1)
     (C.comp (by simp_rw [mul_comm _ 2]; exact C.inl) hf) C.inr
 
-/--
+/-
 
 ## C₂ : a monoid that is a "clone" and closer to closure under primitive recursion.
 
 -/
 
+/-- Coding two functions into one. -/
 def joinFun (f₁ f₂ : ℕ → ℕ) := fun k ↦ if Even k then f₁ (k / 2) else f₂ (k / 2)
 
+/-- Requirement for a semilattice like 𝓓ₘ. -/
 structure C₂ extends C₁ where
   join : ∀ {f₁ f₂}, func f₁ → func f₂ → func (joinFun f₁ f₂)
   const : ∀ c, func (fun _ => c)
 
+/-- The computable functions satisfy the requirement for a semilattice like 𝓓ₘ. -/
 def comput : C₂ := {
   func  := Computable
   id    := Computable.id
@@ -533,10 +584,9 @@ instance {E : C₂}: SemilatticeSup <|@𝓓ₘ E.toC₀ := {
 /-- This is false for 1-degrees.
 However, the complementing automorphism works there.
 -/
-theorem emp_univ {E : C₂} (B : ℕ → Bool) (h_2 : ¬⟦B⟧ = @emp_m E.toC₀ ) :
-    (@univ_m E.toC₀) ≤ ⟦B⟧ := by
-  unfold univ_m at *
-  unfold 𝓓ₘ 𝓓ₘsetoid m_equivalent m_reducible at *
+theorem emp_univ {E : C₂} (B : ℕ → Bool) (h_2 : ¬(⟦B⟧ : @𝓓ₘ E.toC₀) = ⟦ (fun _ => false) ⟧ ) :
+    (⟦ (fun _ => true) ⟧ : @𝓓ₘ E.toC₀) ≤ ⟦B⟧ := by
+  unfold 𝓓ₘsetoid m_equivalent m_reducible at *
   by_cases H : B = (fun _ => false)
   · subst H
     exfalso
@@ -551,8 +601,9 @@ theorem emp_univ {E : C₂} (B : ℕ → Bool) (h_2 : ¬⟦B⟧ = @emp_m E.toC�
     simp_all only [ne_eq, Bool.not_eq_false, implies_true, and_true]
     exact E.const k
 
-theorem univ_emp {E : C₂} (B : ℕ → Bool) (h_2 : ¬⟦B⟧ = @univ_m E.toC₀ ) : @emp_m E.toC₀ ≤ ⟦B⟧ := by
-  unfold emp_m at *
+/-- In the m-degrees, if ⟦B⟧ ≠ ⊤ then ⊥ ≤ ⟦B⟧. -/
+theorem univ_emp {E : C₂} (B : ℕ → Bool) (h_2 : ⟦B⟧ ≠ (⊤ : @𝓓ₘ E.toC₀) ) :
+    (⊥ : @𝓓ₘ E.toC₀) ≤ ⟦B⟧ := by
   unfold 𝓓ₘ 𝓓ₘsetoid m_equivalent m_reducible at *
   by_cases H : B = (fun _ => true)
   subst H
@@ -568,153 +619,92 @@ theorem univ_emp {E : C₂} (B : ℕ → Bool) (h_2 : ¬⟦B⟧ = @univ_m E.toC�
   simp_all only [ne_eq, Bool.not_eq_true, implies_true, and_true]
   exact E.const k
 
-
+/-- The complement map is not the identity map of 𝓓ₘ. -/
 theorem complementMapIsNontrivial {E : C₀} : @complementMap E ≠ id := by
   intro hc
-  have : @complementMap E (∅ₘ) = ∅ₘ := by rw [hc]; simp
-  unfold complementMap cpl emp_m at this
+  have : @complementMap E ⟦fun _ => false⟧ = ⟦fun _ => false⟧ := by rw [hc]; simp
+  unfold complementMap cpl at this
   simp only [Quotient.lift_mk, Bool.not_false, Quotient.eq] at this
   obtain ⟨f,hf⟩ := this.1
   simp at hf
 
-
-theorem complementMapIsAuto {E : C₀} : (@automorphism (@𝓓ₘ E)) complementMap := by
+/-- The complement map is a surjective map of 𝓓ₘ. -/
+theorem complementMap_surjective {E : C₀} : Function.Surjective <|@complementMap E := by
   unfold complementMap
-  constructor
-  constructor
-
-
-  -- injective:
-  apply Quotient.ind
-  intro A
-  apply Quotient.ind
-  intro B
-  intro h
-  simp only [Quotient.lift_mk, Quotient.eq] at h
-  apply Quotient.sound
-  unfold cpl at *
-  obtain ⟨f₁,hf₁⟩ := h.1
-  obtain ⟨f₂,hf₂⟩ := h.2
-  constructor
-
-  use f₁
-  constructor
-  · tauto
-  · intro x
-    have Q := hf₁.2 x
-    simp only at Q
-    have : A x = ! ! A x := by simp
-    rw [this]
-    have : B (f₁ x) = ! ! B (f₁ x) := by simp
-    rw [this]
-    rw [Q]
-  use f₂
-  constructor
-  · tauto
-  · intro x
-    have Q := hf₂.2 x
-    simp only at Q
-    have : B x = ! ! B x := by simp
-    rw [this]
-    have : A (f₂ x) = ! ! A (f₂ x) := by simp
-    rw [this]
-    rw [Q]
-  -- surjective:
   apply Quotient.ind
   intro A
   use ⟦ cpl A ⟧
   simp only [Quotient.lift_mk, Quotient.eq]
   unfold cpl
   simp only [Bool.not_not]
-  constructor
-  use id
-  constructor
-  exact E.id
-  tauto
-  use id
-  constructor
-  exact E.id
-  tauto
-  -- preserves ≤ₘ
-  apply Quotient.ind
-  intro A
-  apply Quotient.ind
-  intro B
-  constructor
-  intro h
-  unfold cpl
-  obtain ⟨f,hf⟩ := h
-  use f
-  tauto
+  exact ⟨⟨id, E.id, by tauto⟩, ⟨id, E.id, by tauto⟩⟩
 
-  intro h
-  unfold cpl at h
-  obtain ⟨f,hf⟩ := h
-  use f
-  constructor
-  tauto
-  intro x
-  let Q := hf.2 x
-  apply congrArg (fun b => !b) at Q
-  simp only [Bool.not_not] at Q
-  tauto
+/-- The complement map is an injective map of 𝓓ₘ. -/
+theorem complementMap_injective {E : C₀} : Function.Injective <|@complementMap E :=
+  Quotient.ind fun A => Quotient.ind fun B h => Quotient.sound <| by
+  unfold complementMap cpl at h
+  simp only [Quotient.lift_mk, Quotient.eq] at h
+  obtain ⟨f₁,hf₁⟩ := h.1
+  obtain ⟨f₂,hf₂⟩ := h.2
+  simp only at hf₁ hf₂
+  exact ⟨⟨f₁, hf₁.1, fun x => by rw [← Bool.not_not <| A x, ← Bool.not_not <| B <| f₁ x, hf₁.2 x]⟩,
+         ⟨f₂, hf₂.1, fun x => by rw [← Bool.not_not <| B x, ← Bool.not_not <| A <| f₂ x, hf₂.2 x]⟩⟩
 
+/-- The complement map is an automorphism of 𝓓ₘ. -/
+theorem complementMapIsAuto {E : C₀} : (@automorphism (@𝓓ₘ E)) complementMap :=
+    ⟨⟨complementMap_injective, complementMap_surjective⟩,
+    Quotient.ind fun A => Quotient.ind fun B => by
+      constructor
+      · intro h
+        obtain ⟨f,hf⟩ := h
+        use f
+        unfold cpl
+        tauto
+
+      · intro h
+        obtain ⟨f,hf⟩ := h
+        use f
+        constructor
+        tauto
+        intro x
+        let Q := hf.2 x
+        apply congrArg (fun b => !b) at Q
+        unfold cpl at Q
+        simp only [Bool.not_not] at Q
+        tauto⟩
+
+/-- 𝓓ₘ is not rigid. -/
 theorem notrigid {E : C₀} : ¬ rigid (@𝓓ₘ E) := by
   unfold rigid
   push_neg
-  use complementMap
-  constructor
-  exact complementMapIsAuto
-  exact complementMapIsNontrivial
+  exact ⟨complementMap, complementMapIsAuto, complementMapIsNontrivial⟩
 
 
-/-- This result does not hold over C₁. -/
-theorem botSwapIsAuto {E : C₂} : (@automorphism (@𝓓ₘ E.toC₀)) botSwap := by
-  unfold automorphism botSwap
-  constructor
-  constructor
-  exact botSwap_inj
-
-  exact botSwap_surj
-  apply Quotient.ind
-  intro A
-  apply Quotient.ind
-  intro B
-  split_ifs with g₀ g₁ g₂ g₃ g₄ g₅ g₆ g₇
-  · rw [g₀,g₁];simp
-  · rw [g₀,g₂]
-    constructor
-    exact fun h => False.elim <| emp_not_below h
-    exact fun h => False.elim <| univ_not_below h
-  · rw [g₀]
-    constructor
-    exact fun _ => emp_univ B g₁
-    exact fun _ => univ_emp B g₂
-  · rw [g₃,g₄]
-    constructor
-    exact fun h => False.elim <| univ_not_below h
-    exact fun h => False.elim <| emp_not_below h
-  · simp only [le_refl, iff_true];rw [g₃, g₅];
-  · rw [g₃]
-    constructor
-    exact fun _ => univ_emp B g₅
-    exact fun _ => emp_univ B g₄
-  · rw [g₆]
-    constructor
-    exact fun h => False.elim <|  g₀ <| emp_min ⟦A⟧ h
-    exact fun h => False.elim <|  g₃ <| univ_min ⟦A⟧ h
-  · rw [g₇]
-    constructor
-    exact fun h => False.elim <| g₃ <| univ_min ⟦A⟧ h
-    exact fun h => False.elim <| g₀ <| emp_min ⟦A⟧ h
-  · tauto
+/-- Over a rich enough monoid, `botSwap` is an automorphism. -/
+theorem botSwapIsAuto {E : C₂} : (@automorphism (@𝓓ₘ E.toC₀)) botSwap :=
+  ⟨⟨botSwap_inj, botSwap_surj⟩,
+    Quotient.ind fun A => Quotient.ind fun B => by
+      unfold botSwap
+      split_ifs with g₀ g₁ g₂ g₃ g₄ g₅ g₆ g₇
+      · rw [g₀,g₁];simp
+      · rw [g₀,g₂]
+        exact ⟨fun h => False.elim <| emp_not_below h, fun h => False.elim <| univ_not_below h⟩
+      · exact g₀ ▸ ⟨fun _ => emp_univ B g₁, fun _ => univ_emp B g₂⟩
+      · rw [g₃,g₄]
+        exact ⟨fun h => False.elim <| univ_not_below h, fun h => False.elim <| emp_not_below h⟩
+      · simp only [le_refl, iff_true];rw [g₃, g₅];
+      · rw [g₃]
+        exact ⟨fun _ => univ_emp B g₅, fun _ => emp_univ B g₄⟩
+      · rw [g₆]
+        exact ⟨fun h => False.elim <|  g₀ <| emp_min ⟦A⟧ h,
+              fun h => False.elim <|  g₃ <| univ_min ⟦A⟧ h⟩
+      · exact g₇ ▸ ⟨fun h => False.elim <| g₃ <| univ_min ⟦A⟧ h,
+                    fun h => False.elim <| g₀ <| emp_min ⟦A⟧ h⟩
+      · tauto⟩
 
 
-
-
-notation:50 " ⊥ₘ " => zero_m
-
-example {E : C₂} : (@emp_m E.toC₀) < ( ⊥ₘ ) := by
+/-- In 𝓓ₘ, the degree of ∅ is less than 0. -/
+lemma emp_lt_zero {E : C₂} : ⊥ < (0 : @𝓓ₘ E.toC₀) := by
   refine lt_of_le_not_le ?_ ?_
   · use fun _ => 1
     simp only [one_ne_zero, ↓reduceIte, implies_true, and_true]
@@ -723,7 +713,7 @@ example {E : C₂} : (@emp_m E.toC₀) < ( ⊥ₘ ) := by
     obtain ⟨f,hf⟩ := hc
     simp at hf
 
-/-- The famous observation that ∅ and ℕ are the minimal elements of 𝓓ₘ. -/
+/-- ∅ and ℕ are the minimal elements of 𝓓ₘ. -/
 lemma zero_one_m {E : C₂} {b : Bool} (A : ℕ → Bool) :
     A ≠ (fun _ => b) ↔ @m_reducible E.toC₀ (fun _ => !b) A := by
   constructor
@@ -746,10 +736,12 @@ open Classical
 noncomputable def φ {e : Nat.Partrec.Code} : ℕ → Bool := fun n => (Nat.Partrec.Code.eval e n).Dom
 
 
-/-- Defining K as {e | φₑ(0)↓} -/
+/-- Defining the halting set K as {e | φₑ(0)↓}.
+(There are other possible, essentially equivalent, definitions.) -/
 noncomputable def K : ℕ → Bool := fun e =>
   (Nat.Partrec.Code.eval (Denumerable.ofNat Nat.Partrec.Code e) 0).Dom
 
+/-- The halting set K is r.e. -/
 theorem K_re : RePred fun k ↦ (K k) = true := by
   unfold K
   have Q := ComputablePred.halting_problem_re 0
@@ -770,6 +762,7 @@ theorem K_re : RePred fun k ↦ (K k) = true := by
   exact Q
   exact Computable.ofNat Nat.Partrec.Code
 
+/-- The complement of the halting set K is not r.e. -/
 theorem Kbar_not_re : ¬RePred fun k ↦ (!K k) = true := by
   unfold K
   simp only [Bool.not_eq_true', decide_eq_false_iff_not]
@@ -779,6 +772,7 @@ theorem Kbar_not_re : ¬RePred fun k ↦ (!K k) = true := by
     simp only [Denumerable.ofNat_encode]
   exact ComputablePred.halting_problem_not_re 0 <| h₀ ▸ Partrec.comp hc Computable.encode
 
+/-- The complement of the halting set K is not computable. -/
 theorem Kbar_not_computable : ¬ Computable fun k => ! K k := by
   intro hc
   have : ComputablePred fun k ↦ K k = false := by
@@ -788,10 +782,12 @@ theorem Kbar_not_computable : ¬ Computable fun k => ! K k := by
     exact hc
   exact Kbar_not_re <| ComputablePred.to_re (by simp_all)
 
+/-- The halting set K is not computable. -/
 theorem K_not_computable : ¬ Computable K :=
   fun hc => Kbar_not_computable
     <| Computable.cond hc (Computable.const false) (Computable.const true)
 
+/-- If B is computable and A ≤ₘ B then A is computable. -/
 theorem compute_closed_m_downward (A B : ℕ → Bool) (h : Computable B)
     (h₀ : @m_reducible comput.toC₀ A B) : Computable A := by
   obtain ⟨f,hf⟩ := h₀
@@ -800,26 +796,19 @@ theorem compute_closed_m_downward (A B : ℕ → Bool) (h : Computable B)
   apply Computable.comp h
   exact hf.1
 
-theorem re_closed_m_downward (A B : ℕ → Bool) (h : RePred (fun (k : ℕ) => (B k = true)))
+/-- If B is r.e. and A ≤ₘ B then A is r.e. -/
+theorem re_closed_m_downward {A B : ℕ → Bool} (h : RePred (fun (k : ℕ) => (B k = true)))
     (h₀ : @m_reducible comput.toC₀ A B) : RePred (fun (k : ℕ) => (A k = true)) := by
   obtain ⟨f,hf⟩ := h₀
   have : A = B ∘ f := by ext k; simp_all
   rw [this]
-
   unfold RePred at *
   simp_all only [Function.comp_apply, implies_true, and_true]
-  show Partrec fun a ↦ Part.assert (B (f a) = true) fun _ ↦ Part.some ()
-  let g := (fun a ↦ Part.assert (B (a) = true) fun _ ↦ Part.some ())
-  show Partrec <| fun b => g (f b)
-  have hf' : Computable f := hf
-  have : Partrec g := h
-  exact Partrec.comp this hf'
+  exact Partrec.comp h hf
 
+/-- The complement of K is not m-reducible to K. -/
 theorem Kbar_not_below_K : ¬ @m_reducible comput.toC₀ (fun k ↦ (!K k) = true) K := by
   intro hc
-  have : RePred (fun (k : ℕ) => (! K k = true)) := by
-    apply re_closed_m_downward
-    exact K_re
-    simp_all
+  have : RePred (fun (k : ℕ) => (! K k = true)) := re_closed_m_downward K_re (by simp_all)
   have := Kbar_not_re
   simp_all
