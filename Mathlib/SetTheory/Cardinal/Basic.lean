@@ -946,6 +946,10 @@ theorem mk_pi_congr {ι ι' : Type u} {f : ι → Type v} {g : ι' → Type v} (
     (h : ∀ i, #(f i) = #(g (e i))) : #(Π i, f i) = #(Π i, g i) :=
   mk_congr <| Equiv.piCongr e fun i ↦ Classical.choice <| Cardinal.eq.mp (h i)
 
+theorem mk_pi_congr_prop {ι ι' : Prop} {f : ι → Type v} {g : ι' → Type v} (e : ι ↔ ι')
+    (h : ∀ i, #(f i) = #(g (e.mp i))) : #(Π i, f i) = #(Π i, g i) :=
+  mk_congr <| Equiv.piCongr (.ofIff e) fun i ↦ Classical.choice <| Cardinal.eq.mp (h i)
+
 theorem mk_pi_congr' {ι : Type u} {ι' : Type v} {f : ι → Type max w (max u v)}
     {g : ι' → Type max w (max u v)} (e : ι ≃ ι')
     (h : ∀ i, #(f i) = #(g (e i))) : #(Π i, f i) = #(Π i, g i) :=
@@ -955,10 +959,13 @@ theorem mk_pi_congrRight {ι : Type u} {f g : ι → Type v} (h : ∀ i, #(f i) 
     #(Π i, f i) = #(Π i, g i) :=
   mk_pi_congr (Equiv.refl ι) h
 
-theorem mk_pi_congrRight_prop {ι : Type u} {f g : ι → Type v} {p : ι → Prop}
-    (h : ∀ i, p i → #(f i) = #(g i)) : #(Π i, p i → f i) = #(Π i, p i → g i) := mk_congr <|
-  Equiv.piCongr (Equiv.refl ι)
-    fun i ↦ Equiv.piCongr (.refl _) (fun hi ↦ Classical.choice <| Cardinal.eq.mp (h i hi))
+theorem mk_pi_congrRight_prop {ι : Prop} {f g : ι → Type v} (h : ∀ i, #(f i) = #(g i)) :
+    #(Π i, f i) = #(Π i, g i) :=
+  mk_pi_congr_prop Iff.rfl h
+
+theorem mk_pi_congrRight_subtype {ι : Type u} {f g : ι → Type v} {p : ι → Prop}
+    (h : ∀ i, p i → #(f i) = #(g i)) : #(Π i, p i → f i) = #(Π i, p i → g i) :=
+  mk_pi_congrRight fun i => mk_pi_congrRight_prop fun hi => h i hi
 
 @[simp]
 theorem prod_const (ι : Type u) (a : Cardinal.{v}) :
