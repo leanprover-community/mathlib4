@@ -22,14 +22,12 @@ cautious here.
 
 example : (0 : UInt8) = ⟨0⟩ := rfl
 
-
 set_option hygiene false in
 run_cmd
   for typeName' in [`UInt8, `UInt16, `UInt32, `UInt64, `USize] do
   let typeName := Lean.mkIdent typeName'
   Lean.Elab.Command.elabCommand (← `(
     namespace $typeName
-      instance neZero : NeZero size := ⟨by decide⟩
 
       instance : Neg $typeName where
         neg a := mk ⟨-a.val⟩
