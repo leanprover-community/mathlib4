@@ -28,9 +28,9 @@ initial segment (or, equivalently, in any way). This total order is well founded
 * `Ordinal.card o`: the cardinality of an ordinal `o`.
 * `Ordinal.lift` lifts an ordinal in universe `u` to an ordinal in universe `max u v`.
   For a version registering additionally that this is an initial segment embedding, see
-  `Ordinal.lift.initialSeg`.
+  `Ordinal.liftInitialSeg`.
   For a version registering that it is a principal segment embedding if `u < v`, see
-  `Ordinal.lift.principalSeg`.
+  `Ordinal.liftPrincipalSeg`.
 * `Ordinal.omega` or `ω` is the order type of `ℕ`. This definition is universe polymorphic:
   `Ordinal.omega.{u} : Ordinal.{u}` (contrast with `ℕ : Type`, which lives in a specific
   universe). In some cases the universe level has to be given explicitly.
@@ -526,7 +526,7 @@ theorem card_one : card 1 = 1 := mk_eq_one _
 -- Porting note: Needed to add universe hint .{u} below
 /-- The universe lift operation for ordinals, which embeds `Ordinal.{u}` as
   a proper initial segment of `Ordinal.{v}` for `v > u`. For the initial segment version,
-  see `lift.initialSeg`. -/
+  see `liftInitialSeg`. -/
 @[pp_with_univ]
 def lift (o : Ordinal.{v}) : Ordinal.{max v u} :=
   Quotient.liftOn o (fun w => type <| ULift.down.{u} ⁻¹'o w.r) fun ⟨_, r, _⟩ ⟨_, s, _⟩ ⟨f⟩ =>
@@ -686,11 +686,19 @@ theorem lt_lift_iff {a : Ordinal.{u}} {b : Ordinal.{max u v}} :
 
 /-- Initial segment version of the lift operation on ordinals, embedding `ordinal.{u}` in
   `ordinal.{v}` as an initial segment when `u ≤ v`. -/
-def lift.initialSeg : @InitialSeg Ordinal.{u} Ordinal.{max u v} (· < ·) (· < ·) :=
+def liftInitialSeg : @InitialSeg Ordinal.{u} Ordinal.{max u v} (· < ·) (· < ·) :=
   ⟨⟨⟨lift.{v}, fun _ _ => lift_inj.1⟩, lift_lt⟩, fun _ _ h => lift_down (le_of_lt h)⟩
 
+@[deprecated liftInitialSeg (since := "2024-09-21")]
+alias lift.initialSeg := liftInitialSeg
+
 @[simp]
-theorem lift.initialSeg_coe : (lift.initialSeg.{u,v} : Ordinal → Ordinal) = lift.{v,u} :=
+theorem liftInitialSeg_coe : (liftInitialSeg.{u, v} : Ordinal → Ordinal) = lift.{v, u} :=
+  rfl
+
+set_option linter.deprecated false in
+@[deprecated liftInitialSeg_coe (since := "2024-09-21")]
+theorem lift.initialSeg_coe : (lift.initialSeg.{u, v} : Ordinal → Ordinal) = lift.{v, u} :=
   rfl
 
 /-! ### The first infinite ordinal `omega` -/
@@ -1035,8 +1043,8 @@ theorem univ_umax : univ.{u, max (u + 1) v} = univ.{u, v} :=
 
 /-- Principal segment version of the lift operation on ordinals, embedding `ordinal.{u}` in
   `ordinal.{v}` as a principal segment when `u < v`. -/
-def lift.principalSeg : @PrincipalSeg Ordinal.{u} Ordinal.{max (u + 1) v} (· < ·) (· < ·) :=
-  ⟨↑lift.initialSeg.{u, max (u + 1) v}, univ.{u, v}, by
+def liftPrincipalSeg : @PrincipalSeg Ordinal.{u} Ordinal.{max (u + 1) v} (· < ·) (· < ·) :=
+  ⟨↑liftInitialSeg.{u, max (u + 1) v}, univ.{u, v}, by
     refine fun b => inductionOn b ?_; intro β s _
     rw [univ, ← lift_umax]; constructor <;> intro h
     · rw [← lift_id (type s)] at h ⊢
@@ -1065,16 +1073,34 @@ def lift.principalSeg : @PrincipalSeg Ordinal.{u} Ordinal.{max (u + 1) v} (· < 
       intro α r _
       exact lift_type_lt.{u, u + 1, max (u + 1) v}.2 ⟨typein.principalSeg r⟩⟩
 
+@[deprecated liftPrincipalSeg (since := "2024-09-21")]
+alias lift.principalSeg := liftPrincipalSeg
+
 @[simp]
+theorem liftPrincipalSeg_coe :
+    (liftPrincipalSeg.{u, v} : Ordinal → Ordinal) = lift.{max (u + 1) v} :=
+  rfl
+
+set_option linter.deprecated false in
+@[deprecated liftPrincipalSeg_coe (since := "2024-09-21")]
 theorem lift.principalSeg_coe :
     (lift.principalSeg.{u, v} : Ordinal → Ordinal) = lift.{max (u + 1) v} :=
   rfl
 
--- Porting note: Added universe hints below
 @[simp]
-theorem lift.principalSeg_top : (lift.principalSeg.{u,v}).top = univ.{u,v} :=
+theorem liftPrincipalSeg_top : (liftPrincipalSeg.{u, v}).top = univ.{u, v} :=
   rfl
 
+set_option linter.deprecated false in
+@[deprecated liftPrincipalSeg_top (since := "2024-09-21")]
+theorem lift.principalSeg_top : (lift.principalSeg.{u, v}).top = univ.{u, v} :=
+  rfl
+
+theorem liftPrincipalSeg_top' : liftPrincipalSeg.{u, u + 1}.top = @type Ordinal (· < ·) _ := by
+  simp only [liftPrincipalSeg_top, univ_id]
+
+set_option linter.deprecated false in
+@[deprecated liftPrincipalSeg_top (since := "2024-09-21")]
 theorem lift.principalSeg_top' : lift.principalSeg.{u, u + 1}.top = @type Ordinal (· < ·) _ := by
   simp only [lift.principalSeg_top, univ_id]
 
@@ -1283,8 +1309,8 @@ theorem univ_umax : univ.{u, max (u + 1) v} = univ.{u, v} :=
   congr_fun lift_umax _
 
 theorem lift_lt_univ (c : Cardinal) : lift.{u + 1, u} c < univ.{u, u + 1} := by
-  simpa only [lift.principalSeg_coe, lift_ord, lift_succ, ord_le, succ_le_iff] using
-    le_of_lt (lift.principalSeg.{u, u + 1}.lt_top (succ c).ord)
+  simpa only [liftPrincipalSeg_coe, lift_ord, lift_succ, ord_le, succ_le_iff] using
+    le_of_lt (liftPrincipalSeg.{u, u + 1}.lt_top (succ c).ord)
 
 theorem lift_lt_univ' (c : Cardinal) : lift.{max (u + 1) v, u} c < univ.{u, v} := by
   have := lift_lt.{_, max (u+1) v}.2 (lift_lt_univ c)
@@ -1294,18 +1320,18 @@ theorem lift_lt_univ' (c : Cardinal) : lift.{max (u + 1) v, u} c < univ.{u, v} :
 @[simp]
 theorem ord_univ : ord univ.{u, v} = Ordinal.univ.{u, v} := by
   refine le_antisymm (ord_card_le _) <| le_of_forall_lt fun o h => lt_ord.2 ?_
-  have := lift.principalSeg.{u, v}.down.1 (by simpa only [lift.principalSeg_coe] using h)
+  have := liftPrincipalSeg.{u, v}.down.1 (by simpa only [liftPrincipalSeg_coe] using h)
   rcases this with ⟨o, h'⟩
-  rw [← h', lift.principalSeg_coe, ← lift_card]
+  rw [← h', liftPrincipalSeg_coe, ← lift_card]
   apply lift_lt_univ'
 
 theorem lt_univ {c} : c < univ.{u, u + 1} ↔ ∃ c', c = lift.{u + 1, u} c' :=
   ⟨fun h => by
     have := ord_lt_ord.2 h
     rw [ord_univ] at this
-    cases' lift.principalSeg.{u, u + 1}.down.1 (by simpa only [lift.principalSeg_top] ) with o e
+    cases' liftPrincipalSeg.{u, u + 1}.down.1 (by simpa only [liftPrincipalSeg_top] ) with o e
     have := card_ord c
-    rw [← e, lift.principalSeg_coe, ← lift_card] at this
+    rw [← e, liftPrincipalSeg_coe, ← lift_card] at this
     exact ⟨_, this.symm⟩, fun ⟨c', e⟩ => e.symm ▸ lift_lt_univ _⟩
 
 theorem lt_univ' {c} : c < univ.{u, v} ↔ ∃ c', c = lift.{max (u + 1) v, u} c' :=
