@@ -49,7 +49,7 @@ private lemma recursion' (n : ℕ) :
   have hu₁_eval_neg_one : u₁ (-1) = 0 := by simp only [u₁, f]; simp
   have t : u₂ 1 * v₂ 1 - u₂ (-1) * v₂ (-1) = 2 * (0 ^ n * cos θ) := by
     simp only [u₂, v₂, f, one_pow, sub_self, one_mul, neg_one_sq, neg_mul, cos_neg, sub_neg_eq_add]
-    simp only [←two_mul]
+    simp only [← two_mul]
   have hf : ∀ x, HasDerivAt f (- 2 * x) x := by
     intro x
     convert (hasDerivAt_pow 2 x).const_sub 1 using 1
@@ -67,12 +67,12 @@ private lemma recursion' (n : ℕ) :
     ring
   have hv₂ : ∀ x, HasDerivAt v₂ (v₂' x) x := fun x => (hasDerivAt_mul_const θ).cos
   convert_to (∫ (x : ℝ) in (-1)..1, u₁ x * v₁' x) * θ = _ using 1
-  · simp_rw [u₁, v₁', ←intervalIntegral.integral_mul_const, sq θ, mul_assoc]
+  · simp_rw [u₁, v₁', ← intervalIntegral.integral_mul_const, sq θ, mul_assoc]
   rw [integral_mul_deriv_eq_deriv_mul (fun x _ => hu₁ x) (fun x _ => hv₁ x)
     (hu₁d.intervalIntegrable _ _) (hv₁d.intervalIntegrable _ _), hu₁_eval_one, hu₁_eval_neg_one,
-    zero_mul, zero_mul, sub_zero, zero_sub, ←integral_neg, ←integral_mul_const]
+    zero_mul, zero_mul, sub_zero, zero_sub, ← integral_neg, ← integral_mul_const]
   convert_to ((-2 : ℝ) * (n + 1)) * ∫ (x : ℝ) in (-1)..1, (u₂ x * v₂' x) = _ using 1
-  · rw [←integral_const_mul]
+  · rw [← integral_const_mul]
     congr 1 with x
     dsimp [u₁', v₁, u₂, v₂']
     ring
@@ -102,7 +102,7 @@ private lemma recursion (n : ℕ) :
   ring_nf
 
 private lemma I_one : I 1 θ * θ ^ 3 = 4 * sin θ - 4 * θ * cos θ := by
-  rw [_root_.pow_succ, ←mul_assoc, recursion' 0, Nat.cast_zero, mul_zero, mul_zero, zero_mul,
+  rw [_root_.pow_succ, ← mul_assoc, recursion' 0, Nat.cast_zero, mul_zero, mul_zero, zero_mul,
     sub_zero, zero_add, mul_one, mul_one, add_mul, mul_assoc, mul_assoc, I_zero]
   ring
 
@@ -149,9 +149,9 @@ private lemma sinPoly_add_cosPoly_eval (θ : ℝ) :
         eval₂_monomial, Nat.reduceAdd]
       simp [sub_eq_add_neg]
   | (n+2) => by
-      rw [Nat.mul_succ, add_right_comm, add_comm (_ + _), pow_add, ←mul_assoc, recursion, sub_mul,
+      rw [Nat.mul_succ, add_right_comm, add_comm (_ + _), pow_add, ← mul_assoc, recursion, sub_mul,
         mul_assoc, mul_assoc _ (I n θ), sinPoly_add_cosPoly_eval, mul_add_one 2, add_right_comm,
-        pow_add, ←mul_assoc (I n θ), sinPoly_add_cosPoly_eval, sinPoly, cosPoly, eval₂_add,
+        pow_add, ← mul_assoc (I n θ), sinPoly_add_cosPoly_eval, sinPoly, cosPoly, eval₂_add,
         eval₂_add, eval₂_smul, eval₂_smul, eval₂_mul, eval₂_mul, eval₂_monomial]
       simp only [map_mul, map_ofNat, map_add, map_natCast, Int.reduceNeg, map_neg, neg_mul,
         Nat.factorial_succ]
@@ -167,14 +167,14 @@ private lemma is_integer {p : Polynomial ℤ} (a b : ℤ) {k : ℕ} (hp : p.natD
     · exact ⟨p.coeff 0, by simp⟩
     exact ⟨0, by simp [hk.ne']⟩
   refine ⟨∑ i in p.support, p.coeff i * a ^ i * b ^ (k - i), ?_⟩
-  conv => lhs; rw [←sum_monomial_eq p]
+  conv => lhs; rw [← sum_monomial_eq p]
   rw [eval₂_sum, Polynomial.sum, Finset.sum_mul, Int.cast_sum]
   simp only [eval₂_monomial, eq_intCast, div_pow, Int.cast_mul, Int.cast_pow]
   refine Finset.sum_congr rfl (fun i hi => ?_)
   have ik := (le_natDegree_of_mem_supp i hi).trans hp
-  rw [mul_assoc, div_mul_comm, ←Int.cast_pow, ←Int.cast_pow, ←Int.cast_pow, ←pow_sub_mul_pow b ik,
-    ←Int.cast_div_charZero, Int.mul_ediv_cancel _ (pow_ne_zero _ hb), ←mul_assoc, mul_right_comm,
-    ←Int.cast_pow]
+  rw [mul_assoc, div_mul_comm, ← Int.cast_pow, ← Int.cast_pow, ← Int.cast_pow, ← pow_sub_mul_pow b ik,
+    ← Int.cast_div_charZero, Int.mul_ediv_cancel _ (pow_ne_zero _ hb), ← mul_assoc, mul_right_comm,
+    ← Int.cast_pow]
   exact dvd_mul_left _ _
 
 open Filter
@@ -188,7 +188,7 @@ private lemma I_pos : 0 < I n (π / 2) := by
   nlinarith [hx.1, hx.2, pi_pos]
 
 private lemma I_le (n : ℕ) : I n (π / 2) ≤ 2 := by
-  rw [←norm_of_nonneg I_pos.le]
+  rw [← norm_of_nonneg I_pos.le]
   refine (norm_integral_le_of_norm_le_const ?_).trans (show (1 : ℝ) * _ ≤ _ by norm_num)
   intros x hx
   simp only [uIoc_of_le, neg_le_self_iff, zero_le_one, mem_Ioc] at hx
@@ -200,9 +200,9 @@ private lemma I_le (n : ℕ) : I n (π / 2) ≤ 2 := by
 
 private lemma my_tendsto_pow_div_factorial_at_top (a : ℝ) :
   Tendsto (fun n => (a : ℝ) ^ (2 * n + 1) / n !) atTop (nhds 0) := by
-  rw [←mul_zero a]
+  rw [← mul_zero a]
   refine ((tendsto_pow_div_factorial_atTop (a ^ 2)).const_mul a).congr (fun x => ?_)
-  rw [←pow_mul, mul_div_assoc', _root_.pow_succ']
+  rw [← pow_mul, mul_div_assoc', _root_.pow_succ']
 
 private lemma not_irrational.exists_rep {x : ℝ} :
     ¬Irrational x → ∃ (a : ℤ) (b : ℕ), 0 < b ∧ x = a / b := by
@@ -235,12 +235,12 @@ private lemma not_irrational.exists_rep {x : ℝ} :
   rw [cos_pi_div_two, sin_pi_div_two, mul_zero, mul_one, add_zero] at e
   have : (a : ℝ) ^ (2 * n + 1) / ↑n ! * I n (π / 2) =
     eval₂ (Int.castRingHom ℝ) (π / 2) (sinPoly n) * b ^ (2 * n + 1) := by
-    rw [←mul_div_right_comm]
+    rw [← mul_div_right_comm]
     refine div_eq_of_eq_mul (Nat.cast_ne_zero.2 n.factorial_pos.ne') ?_
-    rw [mul_rotate, mul_assoc, ←e, h, mul_comm (I _ _), ←mul_assoc, div_pow, mul_div_cancel₀]
+    rw [mul_rotate, mul_assoc, ← e, h, mul_comm (I _ _), ← mul_assoc, div_pow, mul_div_cancel₀]
     exact pow_ne_zero _ (Nat.cast_ne_zero.2 hb.ne')
   have : (0 : ℝ) < z ∧ (z : ℝ) < 1 := by
-    rw [←hz, ←h, ←this]
+    rw [← hz, ← h, ← this]
     exact ⟨hn', hn⟩
   norm_cast at this
   omega
