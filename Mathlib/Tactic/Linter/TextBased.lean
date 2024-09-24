@@ -681,14 +681,11 @@ def unicodeLinter : TextbasedLinter := fun lines ↦ Id.run do
 
     -- try to auto-fix the style error
     let mut newLine := line
-    for e in err do
+    for e in err.reverse do -- reversing is a cheap fix to prevent shifting indices
       match e with
       | .unicodeVariant s sel pos =>
         let head := newLine.extract 0 pos
-        let tail :=
-          let a := (head ++ s).endPos
-          let b := line.endPos
-          if a < b then newLine.extract a b else ""
+        let tail := newLine.extract (head ++ s).endPos line.endPos
         newLine := match sel with
         | some v =>
           -- injecting desired variant-selector
