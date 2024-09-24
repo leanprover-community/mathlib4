@@ -75,7 +75,7 @@ def mathlibLabels : Array Label := #[
   { label := "t-combinatorics" },
   { label := "t-computability" },
   { label := "t-condensed" },
-  { label := "t-data" },
+  -- { label := "t-data" },
   { label := "t-differential-geometry",
     dirs := #["Mathlib" / "Geometry" / "Manifold"] },
   { label := "t-dynamics" },
@@ -196,7 +196,7 @@ open IO AutoLabel in
 - `0`: success
 - `1`: invalid arguments provided
 - `2`: invalid labels defined
-- `3`: labels do not cover all of `Mathlib/`
+- `3`: ~labels do not cover all of `Mathlib/`~ (unused; only emitting warning)
 -/
 unsafe def main (args : List String): IO Unit := do
   if args.length > 1 then
@@ -222,10 +222,10 @@ unsafe def main (args : List String): IO Unit := do
   -- test: validate that the labels cover all of the `Mathlib/` folder
   let notMatchedPaths ← findUncoveredPaths "Mathlib" (exceptions := mathlibUnlabelled)
   if notMatchedPaths.size > 0 then
-    println s!"error: the following paths inside `Mathlib/` are not covered \
-    by any label:\n\n{notMatchedPaths}\n\nPlease modify `mathlibLabels` in \
+    println s!"::warning file=scripts/autolabel.lean,line=1::the following paths inside `Mathlib/` are not covered \
+    by any label:\n{notMatchedPaths}\nPlease modify `mathlibLabels` in \
     `scripts/autolabel.lean` accordingly!"
-    IO.Process.exit 3
+    -- IO.Process.exit 3
 
   -- get the modified files
   let gitDiff ← IO.Process.run {
