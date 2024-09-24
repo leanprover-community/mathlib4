@@ -146,7 +146,7 @@ theorem exists_lfpApprox_eq_lfpApprox : ∃ a < ord <| succ #α, ∃ b < ord <| 
   · exact h_fab
 
 /-- If there are distinct indices yielding equal values then
-  every value at indices succeeding the smaller index is a fixed point -/
+every value at indices succeeding the smaller index is a fixed point -/
 lemma lfpApprox_mem_fixedPoints_of_eq {a b c : Ordinal}
     (h_init : x ≤ f x) (h_ab : a < b) (h_ac : a ≤ c) (h_fab : lfpApprox f x a = lfpApprox f x b) :
     lfpApprox f x c ∈ fixedPoints f := by
