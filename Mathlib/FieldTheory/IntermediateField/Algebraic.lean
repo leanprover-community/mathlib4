@@ -18,6 +18,27 @@ open FiniteDimensional
 variable {K : Type*} {L : Type*} [Field K] [Field L] [Algebra K L]
   {S : IntermediateField K L}
 
+theorem IntermediateField.coe_isIntegral_iff {R : Type*} [CommRing R] [Algebra R K] [Algebra R L]
+    [IsScalarTower R K L] {x : S} : IsIntegral R (x : L) ↔ IsIntegral R x :=
+  isIntegral_algHom_iff (S.val.restrictScalars R) Subtype.val_injective
+
+/-- Turn an algebraic subalgebra into an intermediate field, `Subalgebra.IsAlgebraic` version. -/
+def Subalgebra.IsAlgebraic.toIntermediateField {S : Subalgebra K L} (hS : S.IsAlgebraic) :
+    IntermediateField K L where
+  toSubalgebra := S
+  inv_mem' x hx := Algebra.adjoin_le_iff.mpr
+    (Set.singleton_subset_iff.mpr hx) (hS x hx).isIntegral.inv_mem_adjoin
+
+/-- Turn an algebraic subalgebra into an intermediate field, `Algebra.IsAlgebraic` version. -/
+abbrev Algebra.IsAlgebraic.toIntermediateField (S : Subalgebra K L) [Algebra.IsAlgebraic K S] :
+    IntermediateField K L := (S.isAlgebraic_iff.mpr ‹_›).toIntermediateField
+
+/-- The algebraic closure of a field `K` in an extension `L`. Definitionally, this is exactly
+  `integralClosure K L` as an intermediate field. We choose the name `algClosure` to
+  distinguish the intermediate field from the subalgebra, and from `AlgebraicClosure`. -/
+def algebraicClosure : IntermediateField K L :=
+  Algebra.IsAlgebraic.toIntermediateField (integralClosure K L)
+
 namespace IntermediateField
 
 section FiniteDimensional

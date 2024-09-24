@@ -254,23 +254,6 @@ theorem toIntermediateField_toSubalgebra (S : IntermediateField K L) :
   ext
   rfl
 
-/-- Turn an algebraic subalgebra into an intermediate field, `Subalgebra.IsAlgebraic` version. -/
-def Subalgebra.IsAlgebraic.toIntermediateField {S : Subalgebra K L} (hS : S.IsAlgebraic) :
-    IntermediateField K L where
-  toSubalgebra := S
-  inv_mem' x hx := Algebra.adjoin_le_iff.mpr
-    (Set.singleton_subset_iff.mpr hx) (hS x hx).isIntegral.inv_mem_adjoin
-
-/-- Turn an algebraic subalgebra into an intermediate field, `Algebra.IsAlgebraic` version. -/
-abbrev Algebra.IsAlgebraic.toIntermediateField (S : Subalgebra K L) [Algebra.IsAlgebraic K S] :
-    IntermediateField K L := (S.isAlgebraic_iff.mpr ‹_›).toIntermediateField
-
-/-- The algebraic closure of a field `K` in an extension `L`. Definitionally, this is exactly
-  `integralClosure K L` as an intermediate field. We choose the name `algClosure` to
-  distinguish the intermediate field from the subalgebra, and from `AlgebraicClosure`. -/
-def IntermediateField.algClosure : IntermediateField K L :=
-  Algebra.IsAlgebraic.toIntermediateField (integralClosure K L)
-
 /-- Turn a subalgebra satisfying `IsField` into an intermediate_field -/
 def Subalgebra.toIntermediateField' (S : Subalgebra K L) (hS : IsField S) : IntermediateField K L :=
   S.toIntermediateField fun x hx => by
@@ -348,11 +331,11 @@ theorem coe_smul {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] 
 instance {R : Type*} [Semiring R] [Algebra L R] : SMul S R := S.instSMulSubtypeMem
 
 instance isScalarTower_bot {R : Type*} [Semiring R] [Algebra L R] : IsScalarTower S L R :=
-  inferInstance
+  IsScalarTower.subalgebra _ _ _ S.toSubalgebra
 
 instance isScalarTower_mid {R : Type*} [Semiring R] [Algebra L R] [Algebra K R]
     [IsScalarTower K L R] : IsScalarTower K S R :=
-  inferInstance
+  IsScalarTower.subalgebra' _ _ _ S.toSubalgebra
 
 /-- Specialize `is_scalar_tower_mid` to the common case where the top field is `L` -/
 instance isScalarTower_mid' : IsScalarTower K S L :=
@@ -485,10 +468,6 @@ instance AlgHom.inhabited : Inhabited (S →ₐ[K] L) :=
 theorem aeval_coe {R : Type*} [CommRing R] [Algebra R K] [Algebra R L] [IsScalarTower R K L]
     (x : S) (P : R[X]) : aeval (x : L) P = aeval x P :=
   aeval_algHom_apply (S.val.restrictScalars R) x P
-
-theorem coe_isIntegral_iff {R : Type*} [CommRing R] [Algebra R K] [Algebra R L]
-    [IsScalarTower R K L] {x : S} : IsIntegral R (x : L) ↔ IsIntegral R x :=
-  isIntegral_algHom_iff (S.val.restrictScalars R) Subtype.val_injective
 
 /-- The map `E → F` when `E` is an intermediate field contained in the intermediate field `F`.
 
