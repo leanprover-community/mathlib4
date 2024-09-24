@@ -152,7 +152,6 @@ open IO AutoLabel in
 - `0`: success
 - `1`: invalid arguments
 - `2`: invalid labels
-- `3`: no applicable label found
 -/
 unsafe def main (args : List String): IO Unit := do
   if args.length > 1 then
@@ -187,7 +186,6 @@ unsafe def main (args : List String): IO Unit := do
   match labels with
   | #[] =>
     println s!"No applicable labels found!"
-    IO.Process.exit 3
   | #[label] =>
     println s!"Exactly one label found: {label}"
     match prNumber? with
