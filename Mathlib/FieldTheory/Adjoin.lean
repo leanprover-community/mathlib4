@@ -369,7 +369,7 @@ theorem adjoin_adjoin_left (T : Set E) :
   · exact Set.union_subset
       (fun x hx ↦ Subfield.subset_closure <| .inl ⟨⟨x, Subfield.subset_closure (.inr hx)⟩, rfl⟩)
       (fun x hx ↦ Subfield.subset_closure <| .inr hx)
- 
+
 @[simp]
 theorem adjoin_insert_adjoin (x : E) :
     adjoin F (insert x (adjoin F S : Set E)) = adjoin F (insert x S) :=
