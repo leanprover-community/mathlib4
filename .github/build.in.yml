@@ -1,4 +1,8 @@
-# This is the master file for autogenerating `.github/workflows/{bors, build_fork, build }.yml`.
+### NB: This is the master file for autogenerating
+### NB: `.github/workflows/{bors, build_fork, build}.yml`.
+### NB: If you need to edit any of those files, you should edit this file instead,
+### NB: and regenerate those files by manually running
+### NB: .github/workflows/mk_build_yml.sh
 
 jobs:
   # Cancels previous runs of jobs in this file
