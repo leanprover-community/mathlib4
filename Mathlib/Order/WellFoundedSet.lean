@@ -134,16 +134,15 @@ theorem acc_iff_wellFoundedOn {α} {r : α → α → Prop} {a : α} :
     TFAE [Acc r a,
       WellFoundedOn { b | ReflTransGen r b a } r,
       WellFoundedOn { b | TransGen r b a } r] := by
-  tfae_have 1 → 2
-  · refine fun h => ⟨fun b => InvImage.accessible _ ?_⟩
+  tfae_have 1 → 2 := by
+    refine fun h => ⟨fun b => InvImage.accessible _ ?_⟩
     rw [← acc_transGen_iff] at h ⊢
     obtain h' | h' := reflTransGen_iff_eq_or_transGen.1 b.2
     · rwa [h'] at h
     · exact h.inv h'
-  tfae_have 2 → 3
-  · exact fun h => h.subset fun _ => TransGen.to_reflTransGen
-  tfae_have 3 → 1
-  · refine fun h => Acc.intro _ (fun b hb => (h.apply ⟨b, .single hb⟩).of_fibration Subtype.val ?_)
+  tfae_have 2 → 3 := fun h => h.subset fun _ => TransGen.to_reflTransGen
+  tfae_have 3 → 1 := by
+    refine fun h => Acc.intro _ (fun b hb => (h.apply ⟨b, .single hb⟩).of_fibration Subtype.val ?_)
     exact fun ⟨c, hc⟩ d h => ⟨⟨d, .head h hc⟩, h, rfl⟩
   tfae_finish
 

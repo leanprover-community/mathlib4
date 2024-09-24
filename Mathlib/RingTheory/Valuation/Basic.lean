@@ -515,8 +515,9 @@ theorem isEquiv_tfae [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGr
     [ v.IsEquiv v',
       ∀ {x y}, v x < v y ↔ v' x < v' y,
       ∀ {x}, v x ≤ 1 ↔ v' x ≤ 1,
-      ∀ {x}, v x = 1 ↔ v' x = 1, ∀ {x}, v x < 1 ↔ v' x < 1,
-      ∀ {x}, v (x - 1) < 1 ↔ v' (x - 1) < 1].TFAE := by
+      ∀ {x}, v x = 1 ↔ v' x = 1,
+      ∀ {x}, v x < 1 ↔ v' x < 1,
+      ∀ {x}, v (x - 1) < 1 ↔ v' (x - 1) < 1 ].TFAE := by
   tfae_have 1 ↔ 2; · apply isEquiv_iff_val_lt_val
   tfae_have 1 ↔ 3; · apply isEquiv_iff_val_le_one
   tfae_have 1 ↔ 4; · apply isEquiv_iff_val_eq_one
