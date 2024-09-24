@@ -570,9 +570,10 @@ open scoped ENNReal
 
 open FormalMultilinearSeries List
 
-lemma bar {f : E → G} {q : FormalMultilinearSeries 𝕜 F G}
-    {p : FormalMultilinearSeries 𝕜 E F} {x : E} (hq : 0 < q.radius) (hp : 0 < p.radius)
-    (hf : HasFPowerSeriesAt f (q.comp p) x) :
+lemma HasFPowerSeriesAt.tendsto_partialSum_prod_of_comp
+    {f : E → G} {q : FormalMultilinearSeries 𝕜 F G}
+    {p : FormalMultilinearSeries 𝕜 E F} {x : E}
+    (hf : HasFPowerSeriesAt f (q.comp p) x) (hq : 0 < q.radius) (hp : 0 < p.radius) :
     ∀ᶠ y in 𝓝 0, Tendsto (fun (a : ℕ × ℕ) ↦ q.partialSum a.1 (p.partialSum a.2 y
       - p 0 (fun _ ↦ 0))) atTop (𝓝 (f (x + y))) := by
   rcases hf with ⟨r0, h0⟩
@@ -616,9 +617,10 @@ lemma bar {f : E → G} {q : FormalMultilinearSeries 𝕜 F G}
   congr
   exact ofFn_inj.mp rfl
 
-lemma barb {f : E → F} {g : F → G} {q : FormalMultilinearSeries 𝕜 F G}
-    {p : FormalMultilinearSeries 𝕜 E F} {x : E} (hq : 0 < q.radius)
-    (hgf : HasFPowerSeriesAt (g ∘ f) (q.comp p) x) (hf : HasFPowerSeriesAt f p x) :
+lemma HasFPowerSeriesAt.eventually_hasSum_of_comp  {f : E → F} {g : F → G}
+    {q : FormalMultilinearSeries 𝕜 F G} {p : FormalMultilinearSeries 𝕜 E F} {x : E}
+    (hgf : HasFPowerSeriesAt (g ∘ f) (q.comp p) x) (hf : HasFPowerSeriesAt f p x)
+    (hq : 0 < q.radius) :
     ∀ᶠ y in 𝓝 0, HasSum (fun n : ℕ => q n fun _ : Fin n => (f (x + y) - f x)) (g (f (x + y))) := by
   have : ∀ᶠ y in 𝓝 (0 : E), f (x + y) - f x ∈ EMetric.ball 0 q.radius := by
     have A : ContinuousAt (fun y ↦ f (x + y) - f x) 0 := by
@@ -627,7 +629,8 @@ lemma barb {f : E → F} {g : F → G} {q : FormalMultilinearSeries 𝕜 F G}
     have B : EMetric.ball 0 q.radius ∈ 𝓝 (f (x + 0) - f x) := by
       simpa using EMetric.ball_mem_nhds _ hq
     exact A.preimage_mem_nhds B
-  filter_upwards [bar hq (hf.radius_pos) hgf, hf.tendsto_partialSum, this] with y hy h'y h''y
+  filter_upwards [hgf.tendsto_partialSum_prod_of_comp hq (hf.radius_pos),
+    hf.tendsto_partialSum, this] with y hy h'y h''y
   have L : Tendsto (fun n ↦ q.partialSum n (f (x + y) - f x)) atTop (𝓝 (g (f (x + y)))) := by
     apply (closed_nhds_basis (g (f (x + y)))).tendsto_right_iff.2
     rintro u ⟨hu, u_closed⟩
@@ -652,11 +655,10 @@ lemma barb {f : E → F} {g : F → G} {q : FormalMultilinearSeries 𝕜 F G}
     exact cauchySeq_finset_of_norm_bounded _ Z (fun i ↦ le_rfl)
   exact tendsto_nhds_of_cauchySeq_of_subseq C tendsto_finset_range L
 
-
-
-
-
-theorem HasFPowerSeriesAt.inverse (f : PartialHomeomorph E F)
+/-- If a partial homeomorphism `f` is defined at `0` and has a power series expansion there with
+invertible linear term, then `f.symm` has a power series expansion at `f 0`, given by the inverse
+of the initial power series. -/
+theorem PartialHomeomorph.hasFPowerSeriesAt_inverse_zero (f : PartialHomeomorph E F)
     {i : E ≃L[𝕜] F} (h0 : 0 ∈ f.source) {p : FormalMultilinearSeries 𝕜 E F}
     (h : HasFPowerSeriesAt f p 0)
     (hp : p 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm i) :
@@ -667,9 +669,87 @@ theorem HasFPowerSeriesAt.inverse (f : PartialHomeomorph E F)
       exact (ContinuousLinearMap.id 𝕜 E).hasFPowerSeriesAt 0
     apply this.congr
     filter_upwards [f.open_source.mem_nhds h0] with x hx using by simp [hx]
-  have B : ∀ᶠ (y : E) in 𝓝 0, HasSum (fun n ↦ (p.leftInv i n) fun x ↦ f y - f 0)
-      (f.symm (f y)) :=
-    by simpa using barb (radius_leftInv_pos_of_radius_pos h.radius_pos hp) A h
-  have C : ∀ᶠ (y : E) in 𝓝 0, HasSum (fun n ↦ (p.leftInv i n) fun x ↦ f y - f 0) y := by
+  have B : ∀ᶠ (y : E) in 𝓝 0, HasSum (fun n ↦ (p.leftInv i n) fun x ↦ f y - f 0) (f.symm (f y)) :=
+    by simpa using A.eventually_hasSum_of_comp h (radius_leftInv_pos_of_radius_pos h.radius_pos hp)
+  have C : ∀ᶠ (y : E) in 𝓝 (f.symm (f 0)),
+      HasSum (fun n ↦ (p.leftInv i n) fun _ ↦ f y - f 0) y := by
+    simp only [h0, PartialHomeomorph.left_inv]
     filter_upwards [B, f.open_source.mem_nhds h0] with x hx h'x
     simpa [h'x] using hx
+  have D : ∀ᶠ z in 𝓝 (f 0), HasSum (fun n ↦ (p.leftInv i n) fun _ ↦ f (f.symm z) - f 0)
+      (f.symm z) := by
+    have : ContinuousAt f.symm (f 0) := f.continuousAt_symm (f.map_source h0)
+    exact this C
+  have E : ∀ᶠ z in 𝓝 (f 0), HasSum (fun n ↦ (p.leftInv i n) fun _ ↦ z - f 0) (f.symm z) := by
+    have : f.target ∈ 𝓝 (f 0) := f.open_target.mem_nhds (f.map_source h0)
+    filter_upwards [this, D] with z hz h'z
+    simpa [hz] using h'z
+  rcases EMetric.mem_nhds_iff.1 E with ⟨r, r_pos, hr⟩
+  refine ⟨min r (p.leftInv i).radius, min_le_right _ _,
+    lt_min r_pos (radius_leftInv_pos_of_radius_pos h.radius_pos hp), fun {y} hy ↦ ?_⟩
+  have : y + f 0 ∈ EMetric.ball (f 0) r := by
+    simp only [EMetric.mem_ball, edist_eq_coe_nnnorm_sub, sub_zero, lt_min_iff,
+      add_sub_cancel_right] at hy ⊢
+    exact hy.1
+  simpa [add_comm] using hr this
+
+instance : AddCommGroup (FormalMultilinearSeries 𝕜 F E) := by infer_instance
+
+
+/-- If a partial homeomorphism `f` is defined at `0` and has a power series expansion there with
+invertible linear term, then `f.symm` has a power series expansion at `f 0`, given by the inverse
+of the initial power series. -/
+theorem PartialHomeomorph.hasFPowerSeriesAt_inverse (f : PartialHomeomorph E F) {a : E}
+    {i : E ≃L[𝕜] F} (h0 : a ∈ f.source) {p : FormalMultilinearSeries 𝕜 E F}
+    (h : HasFPowerSeriesAt f p a)
+    (hp : p 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm i) :
+    HasFPowerSeriesAt f.symm (p.leftInv i + constFormalMultilinearSeries 𝕜 F a) (f a) := by
+  have A : HasFPowerSeriesAt (f.symm ∘ f) ((p.leftInv i).comp p) a := by
+    have : HasFPowerSeriesAt (ContinuousLinearMap.id 𝕜 E)
+        ((p.leftInv i).comp p + constFormalMultilinearSeries 𝕜 E a) a := by
+      rw [leftInv_comp _ _ hp]
+      convert (ContinuousLinearMap.id 𝕜 E).hasFPowerSeriesAt a
+      ext n
+      cases n
+      simp [ContinuousLinearMap.fpowerSeries, FormalMultilinearSeries.id]
+
+#exit
+
+    apply this.congr
+    filter_upwards [f.open_source.mem_nhds h0] with x hx using by simp [hx]
+  have B : ∀ᶠ (y : E) in 𝓝 0, HasSum (fun n ↦ (p.leftInv i n) fun x ↦ f y - f 0) (f.symm (f y)) :=
+    by simpa using A.eventually_hasSum_of_comp h (radius_leftInv_pos_of_radius_pos h.radius_pos hp)
+  have C : ∀ᶠ (y : E) in 𝓝 (f.symm (f 0)),
+      HasSum (fun n ↦ (p.leftInv i n) fun _ ↦ f y - f 0) y := by
+    simp only [h0, PartialHomeomorph.left_inv]
+    filter_upwards [B, f.open_source.mem_nhds h0] with x hx h'x
+    simpa [h'x] using hx
+  have D : ∀ᶠ z in 𝓝 (f 0), HasSum (fun n ↦ (p.leftInv i n) fun _ ↦ f (f.symm z) - f 0)
+      (f.symm z) := by
+    have : ContinuousAt f.symm (f 0) := f.continuousAt_symm (f.map_source h0)
+    exact this C
+  have E : ∀ᶠ z in 𝓝 (f 0), HasSum (fun n ↦ (p.leftInv i n) fun _ ↦ z - f 0) (f.symm z) := by
+    have : f.target ∈ 𝓝 (f 0) := f.open_target.mem_nhds (f.map_source h0)
+    filter_upwards [this, D] with z hz h'z
+    simpa [hz] using h'z
+  rcases EMetric.mem_nhds_iff.1 E with ⟨r, r_pos, hr⟩
+  refine ⟨min r (p.leftInv i).radius, min_le_right _ _,
+    lt_min r_pos (radius_leftInv_pos_of_radius_pos h.radius_pos hp), fun {y} hy ↦ ?_⟩
+  have : y + f 0 ∈ EMetric.ball (f 0) r := by
+    simp only [EMetric.mem_ball, edist_eq_coe_nnnorm_sub, sub_zero, lt_min_iff,
+      add_sub_cancel_right] at hy ⊢
+    exact hy.1
+  simpa [add_comm] using hr this
+
+/-- If a partial homeomorphism `f` is defined at `0` and has a power series expansion there with
+invertible linear term, then `f.symm` has a power series expansion at `f 0`, given by the inverse
+of the initial power series. -/
+theorem PartialHomeomorph.hasFPowerSeriesAt_inverse (f : PartialHomeomorph E F) {a : E}
+    {i : E ≃L[𝕜] F} (ha : a ∈ f.source) {p : FormalMultilinearSeries 𝕜 E F}
+    (h : HasFPowerSeriesAt f p a)
+    (hp : p 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm i) :
+    HasFPowerSeriesAt f.symm (p.leftInv i + constFormalMultilinearSeries 𝕜 F a) (f a) := by
+  let g := (Homeomorph.addLeft a).toPartialHomeomorph.trans f
+  have : g 0 = f a := by simp [g]
+  have : 0 ∈ g.source := by simp [g, ha]
+  have : HasFPowerSeriesAt
