@@ -51,17 +51,26 @@ section LocallyFiniteOrder
 
 variable [LocallyFiniteOrder α]
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem nonempty_Icc : (Icc a b).Nonempty ↔ a ≤ b := by
   rw [← coe_nonempty, coe_Icc, Set.nonempty_Icc]
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[aesop safe apply (rule_sets := [finsetNonempty])]
+alias ⟨_, Aesop.nonempty_Icc_of_le⟩ := nonempty_Icc
+
+@[simp]
 theorem nonempty_Ico : (Ico a b).Nonempty ↔ a < b := by
   rw [← coe_nonempty, coe_Ico, Set.nonempty_Ico]
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[aesop safe apply (rule_sets := [finsetNonempty])]
+alias ⟨_, Aesop.nonempty_Ico_of_lt⟩ := nonempty_Ico
+
+@[simp]
 theorem nonempty_Ioc : (Ioc a b).Nonempty ↔ a < b := by
   rw [← coe_nonempty, coe_Ioc, Set.nonempty_Ioc]
+
+@[aesop safe apply (rule_sets := [finsetNonempty])]
+alias ⟨_, Aesop.nonempty_Ioc_of_lt⟩ := nonempty_Ioc
 
 -- TODO: This is nonsense. A locally finite order is never densely ordered
 @[simp]
@@ -331,8 +340,11 @@ variable [LocallyFiniteOrderTop α]
 
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 lemma nonempty_Ici : (Ici a).Nonempty := ⟨a, mem_Ici.2 le_rfl⟩
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 lemma nonempty_Ioi : (Ioi a).Nonempty ↔ ¬ IsMax a := by simp [Finset.Nonempty]
+
+@[aesop safe apply (rule_sets := [finsetNonempty])]
+alias ⟨_, Aesop.nonempty_Ioi_of_not_isMax⟩ := nonempty_Ioi
 
 theorem Ici_subset_Ici : Ici a ⊆ Ici b ↔ b ≤ a := by
   simpa [← coe_subset] using Set.Ici_subset_Ici
@@ -366,8 +378,13 @@ section LocallyFiniteOrderBot
 
 variable [LocallyFiniteOrderBot α]
 
-@[simp] lemma nonempty_Iic : (Iic a).Nonempty := ⟨a, mem_Iic.2 le_rfl⟩
-@[simp] lemma nonempty_Iio : (Iio a).Nonempty ↔ ¬ IsMin a := by simp [Finset.Nonempty]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+lemma nonempty_Iic : (Iic a).Nonempty := ⟨a, mem_Iic.2 le_rfl⟩
+@[simp]
+lemma nonempty_Iio : (Iio a).Nonempty ↔ ¬ IsMin a := by simp [Finset.Nonempty]
+
+@[aesop safe apply (rule_sets := [finsetNonempty])]
+alias ⟨_, Aesop.nonempty_Iio_of_not_isMin⟩ := nonempty_Iio
 
 theorem Iic_subset_Iic : Iic a ⊆ Iic b ↔ a ≤ b := by
   simpa [← coe_subset] using Set.Iic_subset_Iic
