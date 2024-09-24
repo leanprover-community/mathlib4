@@ -140,7 +140,7 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Finite n]
     simp only [Submodule.orthogonal_eq_bot_iff] at *
     rw [← (Equiv.funSplitAt i 𝕜).symm.iSup_comp, iSup_prod, iSup_comm]
     convert H with γ
-    rw [← iSup_eigenspace_restrict (T i) (hT i) (mapsTo_iInf_genEigenspace_of_forall_comm (hC i) γ 1)]
+    rw [← iSup_eigenspace_restrict (T i) (hT i) (mapsTo_iInf_genEigenspace_of_forall_comm (M := E) (fun j ↦ hC (↑j) i) γ 1)]
     congr! with μ
     rw [← Module.End.genEigenspace_one, ← Submodule.inf_genEigenspace _ _ _ (k := 1), inf_comm,
       iInf_split_single _ i, iInf_subtype]
