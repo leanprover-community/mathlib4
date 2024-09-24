@@ -225,7 +225,7 @@ def mkOfSucc {n} (i : Fin n) : ([1] : SimplexCategory) ⟶ [n] :=
     toFun := fun | 0 => i.castSucc | 1 => i.succ
     monotone' := fun
       | 0, 0, _ | 1, 1, _ => le_rfl
-      | 0, 1, _ => Fin.le_succ i
+      | 0, 1, _ => Fin.castSucc_le_succ i
   }
 
 /-- The morphism `[2] ⟶ [n]` that picks out a specified composite of morphisms in `Fin (n+1)`.-/

@@ -236,7 +236,5 @@ def nonemptyFinLinOrdDualCompForgetToFinPartOrd :
   hom := { app := fun X => OrderHom.id }
   inv := { app := fun X => OrderHom.id }
 
-theorem Fin.le_succ {n} (i : Fin n) : i.castSucc ≤ i.succ := Nat.le_succ i
-
 /-- The generating arrow `i ⟶ i+1` in the category `Fin n`.-/
-def Fin.hom_succ {n} (i : Fin n) : i.castSucc ⟶ i.succ := homOfLE (Fin.le_succ i)
+def Fin.hom_succ {n} (i : Fin n) : i.castSucc ⟶ i.succ := homOfLE (Fin.castSucc_le_succ i)
