@@ -763,10 +763,10 @@ theorem mk_sigma_congrRight {ι : Type u} {f g : ι → Type v} (h : ∀ i, #(f 
     #(Σ i, f i) = #(Σ i, g i) :=
   mk_sigma_congr (Equiv.refl ι) h
 
-theorem mk_sigma_congrRight_prop {ι : Type u} {f g : ι → Type v} {p : ι → Prop}
-    (h : ∀ i, p i → #(f i) = #(g i)) : #(Σ i, p i → f i) = #(Σ i, p i → g i) := mk_congr <|
-  .sigmaCongr (.refl _) <| fun i ↦ .piCongr (.refl _)
-    (fun hp ↦ Classical.choice <| Cardinal.eq.mp (h i hp))
+theorem mk_sigma_congrRight_subtype {ι : Type u} {f g : ι → Type v} {p : ι → Prop}
+    (h : ∀ i, p i → #(f i) = #(g i)) : #(Σ i, Σ' _ : p i, f i) = #(Σ i, Σ' _ : p i, g i) :=
+  mk_congr <| Equiv.sigmaCongr (Equiv.refl ι)
+    fun i ↦ .psigmaCongrRight fun h' ↦ Classical.choice <| Cardinal.eq.mp (h i h')
 
 theorem mk_sigma_arrow {ι} (α : Type*) (f : ι → Type*) :
     #(Sigma f → α) = #(Π i, f i → α) := mk_congr <| Equiv.piCurry fun _ _ ↦ α
@@ -962,10 +962,6 @@ theorem mk_pi_congrRight {ι : Type u} {f g : ι → Type v} (h : ∀ i, #(f i) 
 theorem mk_pi_congrRight_prop {ι : Prop} {f g : ι → Type v} (h : ∀ i, #(f i) = #(g i)) :
     #(Π i, f i) = #(Π i, g i) :=
   mk_pi_congr_prop Iff.rfl h
-
-theorem mk_pi_congrRight_subtype {ι : Type u} {f g : ι → Type v} {p : ι → Prop}
-    (h : ∀ i, p i → #(f i) = #(g i)) : #(Π i, p i → f i) = #(Π i, p i → g i) :=
-  mk_pi_congrRight fun i => mk_pi_congrRight_prop fun hi => h i hi
 
 @[simp]
 theorem prod_const (ι : Type u) (a : Cardinal.{v}) :
