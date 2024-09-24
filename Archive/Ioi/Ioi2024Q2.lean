@@ -7,6 +7,9 @@ import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Combinatorics.Colex
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 import Mathlib.Order.Partition.Finpartition
+import Mathlib.Data.List.Transpose
+import Mathlib.Data.List.SplitLengths
+import ImportGraph.Imports
 
 open Mathlib
 
@@ -18,178 +21,24 @@ lemma List.IsPrefix.iff_getElem {α : Type*} {l₁ l₂ : List α} :
   mpr h := by
     obtain ⟨hl, h⟩ := h
     induction l₂ generalizing l₁
-    · simpa using hl
-    case cons head tail tail_ih =>
-    cases l₁
-    · simp
-    case cons head2 tail2 =>
-    simp [Fin.forall_fin_succ] at hl h
-    simp only [h.1, cons_prefix_cons, true_and]
-    apply tail_ih hl h.2
+    case nil =>
+      simpa using hl
+    case cons _ _ tail_ih =>
+      cases l₁
+      · exact nil_prefix
+      · simp [Fin.forall_fin_succ] at hl h
+        simp only [h.1, cons_prefix_cons, true_and]
+        apply tail_ih hl h.2
 
 lemma List.IsPrefix.eq_of_length_le {α : Type*} {l₁ l₂ : List α} (h : l₁ <+: l₂)
     (h₂ : l₂.length ≤ l₁.length) : l₁ = l₂ :=
-  h.eq_of_length (h₂.antisymm' h.length_le)
-
-def List.splitSizes {α : Type*} : List α → List ℕ → List (List α)
-| _, [] => []
-| x, n::ns =>
-  let (x0, x1) := x.splitAt n
-  x0 :: x1.splitSizes ns
-
-@[simp]
-theorem List.length_splitSizes {α : Type*} (l : List α) (sz : List ℕ) :
-    (l.splitSizes sz).length = sz.length := by
-  induction sz generalizing l
-  · simp [splitSizes]
-  · simp [splitSizes, ‹∀ (l : List α), _›]
-
-theorem List.length_splitSizes_getElem {α : Type*} (l : List α) (sz : List ℕ) { i : ℕ }
-    { hi : i < (l.splitSizes sz).length } :
-    (l.splitSizes sz)[i].length ≤ sz[i]'(by simpa using hi) := by
-  induction sz generalizing l i
-  · simp at hi
-  case cons head tail tail_ih =>
-    simp only [splitSizes, splitAt_eq]
-    cases i
-    · simp
-    · simp only [getElem_cons_succ]
-      apply tail_ih
-
-theorem List.join_splitSizes {α : Type*} (l : List α) (sz : List ℕ) (h : l.length ≤ sz.sum) :
-    (l.splitSizes sz).join = l := by
-  induction sz generalizing l
-  · simp_all [splitSizes]
-  case cons head tail ih =>
-    simp only [splitSizes, splitAt_eq, join_cons]
-    rw [ih, take_append_drop]
-    simpa [add_comm] using h
-
-theorem List.splitSizes_map_length {α : Type*} (l : List α) (sz : List ℕ) (h : l.length = sz.sum) :
-    (l.splitSizes sz).map length = sz := by
-  induction sz generalizing l
-  · simp_all [splitSizes]
-  case cons head tail ih =>
-    simp only [sum_cons] at h
-    simp only [splitSizes, splitAt_eq, map_cons, length_take, h, le_add_iff_nonneg_right, zero_le,
-      min_eq_left, cons.injEq, true_and]
-    rw [ih]
-    simp [h]
-
-theorem List.splitSizes_length_getElem {α : Type*} (l : List α) (sz : List ℕ)
-    (h : l.length = sz.sum) (i : ℕ) (hi : i < (l.splitSizes sz).length) :
-    (l.splitSizes sz)[i].length = sz[i]'(by simpa using hi) := by
-  have := splitSizes_map_length l sz h
-  rw [← List.getElem_map List.length]
-  · simp [this]
-  · simpa using hi
-
-theorem List.length_mem_splitSizes {α : Type*} (l : List α) (sz : List ℕ) (b : ℕ)
-    (h : ∀ n ∈ sz, n ≤ b) : ∀ l₂ ∈ l.splitSizes sz, l₂.length ≤ b := by
-  induction sz generalizing l
-  · simp [splitSizes]
-  case cons _ _ ih =>
-    simp at h
-    simp [splitSizes, h]
-    apply ih _ h.2
-
-theorem List.exists_mem_mem_of_mem_zipWith {α β γ : Type*} (f : α → β → γ) (xs : List α)
-    (ys : List β) (v : γ) (h : v ∈ zipWith f xs ys) : ∃ x ∈ xs, ∃ y ∈ ys, f x y = v := by
-  induction xs generalizing ys
-  · simp at h
-  case cons headX tailX ihX =>
-  cases ys
-  · simp at h
-  case cons headY tailY =>
-  simp only [zipWith_cons_cons, mem_cons] at h
-  obtain h | h := h
-  · simp [h]
-  · obtain ⟨x, hx, y, hy, h⟩ := ihX _ h
-    use x, (by simp [hx]), y, (by simp [hy]), h
-
-def List.mtranspose {α : Type*} : List (List α) → List (List α)
-| [] => []
-| [a] => a.map ([·])
-| a :: b => zipWith cons a (mtranspose b)
-
-@[simp]
-lemma List.mtranspose_nil {α : Type*} : ([] : List (List α)).mtranspose = [] := rfl
-
-@[simp]
-lemma List.mtranspose_single {α : Type*} (l : List α) : [l].mtranspose = l.map ([·]) := rfl
-
-theorem List.length_of_mem_mtranspose {α : Type*} (l : List (List α)) :
-    ∀ v ∈ l.mtranspose, v.length = l.length := by
-  induction l
-  · simp
-  case cons head tail tail_ih =>
-  cases tail
-  · simp
-  simp only [length_cons, mtranspose] at tail_ih ⊢
-  intro v hv
-  obtain ⟨_, _, v', hv', rfl⟩ := exists_mem_mem_of_mem_zipWith _ _ _ _ hv
-  simp only [length_cons, add_left_inj]
-  exact tail_ih _ hv'
-
-theorem List.length_mtranspose {α : Type*} (l : List (List α)) :
-    l.mtranspose.length = (l.map List.length).minimum?.getD 0 := by
-  induction l
-  · simp
-  case cons head tail tail_ih =>
-  cases tail
-  · simp [List.minimum?_cons]
-  simp only [mtranspose, length_zipWith, tail_ih, map_cons, minimum?_cons, Option.getD_some,
-    foldl_cons, foldl_assoc]
-
-theorem List.forall_mtranspose_length_le {α : Type*} (l : List (List α)) :
-    ∀ v ∈ l, l.mtranspose.length ≤ v.length := by
-  rw [List.length_mtranspose]
-  intro v hv
-  cases hl : (l.map length).minimum?
-  · simp
-  simp only [Option.getD_some]
-  by_contra! nh
-  apply Nat.add_one_le_of_lt at nh
-  rw [List.le_minimum?_iff (by simp) hl] at nh
-  specialize nh v.length (by simp only [mem_map]; use v, hv)
-  omega
-
-theorem List.mtranspose_getElem {α : Type*} (l : List (List α)) (i : ℕ)
-    (hi : i < l.mtranspose.length) :
-    l.mtranspose[i] = l.pmap (fun x hx ↦ x[i]'hx)
-      (fun a ha ↦ hi.trans_le (forall_mtranspose_length_le l a ha)) := by
-  induction l
-  · simp at hi
-  case cons head tail tail_ih =>
-  cases tail
-  · simp
-  case cons head tail =>
-  simp only [mtranspose, getElem_zipWith]
-  rw [tail_ih]
-  simp
-
-theorem List.mtranspose_pmap_getElem {α : Type*} (l : List (List α)) (i : ℕ)
-    (hi : i < l.length) :
-    l.mtranspose.pmap (·[i]'·) (fun a ha ↦ List.length_of_mem_mtranspose l a ha ▸ hi) = l[i] := by
-  induction l generalizing i
-  · simp at hi
-  case cons head tail tail_ih =>
-  cases tail
-  · simp [pmap_map]
-  case cons head2 tail =>
-  simp [mtranspose]
-  generalize_proofs hp
-  cases i
-  · simp
-    sorry
-  · simp
-    sorry
+  h.eq_of_length (Nat.le_antisymm h.length_le h₂)
 
 def List.transpose' {α : Type*} {n : ℕ} (l : List (Vector α n)) : Vector (List α) n :=
   if hl : l.length = 0 then ⟨List.replicate n [], by simp⟩ else
-  ⟨(l.map Vector.toList).mtranspose, by
+  ⟨(l.map Vector.toList).ttranspose, by
     conv_lhs =>
-      rw [length_mtranspose]
+      rw [length_ttranspose]
       lhs
       tactic =>
         convert List.minimum?_replicate_of_pos (by simp : min n n = n) (Nat.pos_of_ne_zero hl)
@@ -201,19 +50,19 @@ lemma List.transpose'_getElem {α : Type*} {n i : ℕ} (l : List (Vector α n)) 
   simp [transpose']
   split
   · simpa [Vector.getElem_def, ← List.length_eq_zero]
-  simp [Vector.getElem_def, List.mtranspose_getElem, List.pmap_map]
+  simp [Vector.getElem_def, List.ttranspose_getElem, List.pmap_map]
   change l.pmap (fun a h ↦ a.toList[i]'(by simpa)) _ = _
   simp
 
 def Mathlib.Vector.transpose {α : Type*} {n : ℕ} (l : Vector (List α) n) : List (Vector α n) :=
-  l.toList.mtranspose.pmap Subtype.mk (fun _ b ↦ by simp [List.length_of_mem_mtranspose _ _ b])
+  l.toList.ttranspose.pmap Subtype.mk (fun _ b ↦ by simp [List.length_of_mem_ttranspose _ _ b])
 
 lemma Mathlib.Vector.map_getElem_transpose {α : Type*} {n i : ℕ}
-    (l : Vector (List α) n) (h : i < n) :
+    (l : Vector (List α) n) (h : i < n) (hl : ∀ x ∈ l.toList, l[i].length ≤ x.length) :
     l.transpose.map (·[i]) = l[i] := by
   simp [transpose, List.map_pmap]
   conv_lhs => simp [Vector.getElem_def]
-  conv_rhs => apply (List.mtranspose_pmap_getElem l.toList ..).symm
+  conv_rhs => apply (List.ttranspose_pmap_getElem l.toList _ _ hl).symm
   apply List.pmap_congr
   simp
 
@@ -279,7 +128,7 @@ theorem Finset.next_lt_iff {n : ℕ} (s : Finset (Fin n)) (hs : s.Nontrivial) (v
 theorem cyc_sum {n : ℕ} (s : Finset (Fin n)) (hs : s.Nontrivial) :
     ∑ v ∈ s, (s.next v - v).val = n := by
   zify
-  simp only [Fin.intCast_val_sub, Nat.cast_ite, Nat.cast_zero, Finset.sum_add_distrib,
+  simp only [Fin.intCast_val_sub_eq_ite, Nat.cast_ite, Nat.cast_zero, Finset.sum_add_distrib,
     Finset.sum_sub_distrib]
   conv =>
     enter [1, 1, 1]
@@ -358,7 +207,7 @@ lemma RepApp_iff_repApp_small {α : Type*} [Fintype α] (f : α → α) (a b : �
     wlog hmn : n < m
     · exact this f a b hr n m (by omega) h.symm (by omega)
     obtain ⟨i, hi⟩ := hr
-    obtain ⟨j, hj, h⟩ := Function.iterate_cancel'' h hmn i
+    obtain ⟨j, hj, h⟩ := Function.iterate_exists_loop h hmn i
     use j
     simp only [← h, hi, and_true]
     omega
@@ -400,7 +249,7 @@ lemma mem_scc_perm_iff {α : Type*} [Fintype α] [DecidableEq α] (f : Equiv.Per
         simp only [Finset.mem_coe, Set.mem_image_equiv, Equiv.symm_symm]
         constructor <;> {
           intro hy
-          rw [Finpartition.rel_of_mem_parts_ofSetoid h hy]
+          rw [Finpartition.mem_iff_rel_of_mem_parts h hy]
           simp only [AntisymmRel.setoid_r, AntisymmRel, RepApp_apply, true_and, and_true]
           use orderOf f - 1
           rw [← Function.iterate_succ_apply]
@@ -411,12 +260,12 @@ lemma mem_scc_perm_iff {α : Type*} [Fintype α] [DecidableEq α] (f : Equiv.Per
       · intro a ha b hb
         rw [Finset.mem_coe] at ha hb
         rw [SameCycle_iff_antisymm_repApp]
-        exact (Finpartition.rel_of_mem_parts_ofSetoid h ha).1 hb
+        exact (Finpartition.mem_iff_rel_of_mem_parts h ha).1 hb
   mpr h := by
     obtain ⟨⟨x, hx⟩, h⟩ := h
     suffices s = (scc f).part x by simp [this]
     ext y
-    simp only [scc, Finpartition.ofSetoid_mem_part_iff, AntisymmRel.setoid_r]
+    simp only [scc, Finpartition.mem_part_ofSetoid_iff_rel, AntisymmRel.setoid_r]
     rw [← SameCycle_iff_antisymm_repApp]
     constructor
     · apply h.2 hx
@@ -428,9 +277,9 @@ lemma mem_scc_perm_iff {α : Type*} [Fintype α] [DecidableEq α] (f : Equiv.Per
 lemma scc_part_eq_orbit_of_nontrivial {α : Type*} [Fintype α] [DecidableEq α] (f : α → α)
     (x : α) (hx : ((scc f).part x).Nontrivial) : (scc f).part x = {f^[i] x | i} := by
   obtain ⟨z, hz, hxz⟩ := hx.exists_ne x
-  simp only [scc, Finpartition.ofSetoid_mem_part_iff, AntisymmRel.setoid_r, AntisymmRel] at hz
+  simp only [scc, Finpartition.mem_part_ofSetoid_iff_rel, AntisymmRel.setoid_r, AntisymmRel] at hz
   ext y
-  simp only [scc, Finset.mem_coe, Finpartition.ofSetoid_mem_part_iff, AntisymmRel.setoid_r,
+  simp only [scc, Finset.mem_coe, Finpartition.mem_part_ofSetoid_iff_rel, AntisymmRel.setoid_r,
     AntisymmRel, Set.mem_setOf_eq, ← RepApp_def]
   exact ⟨And.left, fun h ↦ ⟨h, RepApp_isMin_of_nontrivial hxz.symm hz.1 hz.2 h⟩⟩
 
@@ -563,7 +412,7 @@ theorem main_theorem (comp : Finset (Fin 31)) (cc : comp.card = 15) :
 
 def SimpleAisha.winningStrat' (msg : List Bool) (comp : Finset (Fin 31)) :
     Vector (List Bool) 31 :=
-  ⟨(msg.splitSizes ((List.finRange 31).map (fun v ↦ if v ∈ compᶜ then
+  ⟨(msg.splitLengths ((List.finRange 31).map (fun v ↦ if v ∈ compᶜ then
     66 - (compᶜ.next v - v).val else 0))).map
     (fun l ↦ l.pad 66), by simp⟩
 
@@ -577,7 +426,7 @@ lemma SimpleAisha.winningStrat'_length_of_mem (msg : List Bool)
   apply List.length_pad
   apply Nat.lt_succ_of_le
   revert a
-  apply List.length_mem_splitSizes
+  apply List.length_mem_splitLengths
   simp only [List.mem_map, List.mem_finRange, true_and, forall_exists_index,
     forall_apply_eq_imp_iff]
   intro a
@@ -631,7 +480,7 @@ theorem IOI2024Q2 : Aisha.winningStrat.Small ∧ Aisha.winningStrat.Correct Basm
   constructor
   · apply SimpleAisha.toAisha_small_of_out
     intro msg comp _ _ cc
-    simp [SimpleAisha.winningStrat, Vector.transpose, List.length_mtranspose]
+    simp [SimpleAisha.winningStrat, Vector.transpose, List.length_ttranspose]
     conv_lhs =>
       lhs
       tactic =>
@@ -650,8 +499,14 @@ theorem IOI2024Q2 : Aisha.winningStrat.Small ∧ Aisha.winningStrat.Correct Basm
       intro v hv
       specialize hr v hv
       simp only [Fin.getElem_fin, SimpleAisha.winningStrat] at hr
-      simp only [Fin.getElem_fin, List.transpose'_getElem, hr, Vector.map_getElem_transpose, run',
+      simp only [Fin.getElem_fin, List.transpose'_getElem, hr, run',
         msg']
+      apply Vector.map_getElem_transpose
+      intro x hx
+      rw [SimpleAisha.winningStrat'_length_of_mem (msg.pad 1025) comp ?cnt _ hx,
+        SimpleAisha.winningStrat'_length_of_mem (msg.pad 1025) comp ?cnt]
+      · simp [Vector.getElem_def, List.getElem_mem]
+      · simp [← Finset.one_lt_card_iff_nontrivial, Finset.card_compl, cc]
     change (SimpleBasma.winningStrat_msg run' (SimpleBasma.winningStrat_comp run')).unpad = _
     convert List.unpad_pad _ 1025
     have ccc : compᶜ.card = 16 := by simp [cc, Finset.card_compl]
@@ -675,7 +530,7 @@ theorem IOI2024Q2 : Aisha.winningStrat.Small ∧ Aisha.winningStrat.Correct Basm
             Fin.cast_val_eq_self, msg']
           simp only [Fin.isValue, SimpleAisha.winningStrat',
             Vector.getElem_def, Vector.toList_mk, List.getElem_map, List.unpad_pad]
-          rw [List.splitSizes_length_getElem]
+          rw [List.splitLengths_length_getElem]
           · simp only [Fin.isValue, List.getElem_map, List.getElem_finRange, Fin.eta, hx,
             ↓reduceIte]
             rw [Nat.cast_sub]
@@ -721,7 +576,7 @@ theorem IOI2024Q2 : Aisha.winningStrat.Small ∧ Aisha.winningStrat.Correct Basm
         List.nil_eq, msg']
         apply List.eq_nil_of_length_eq_zero
         apply Nat.eq_zero_of_le_zero
-        convert List.length_splitSizes_getElem _ _
+        convert List.length_splitLengths_getElem _ _
         simp [h]
       · congr 1
         exact hr _ h
@@ -731,8 +586,6 @@ theorem IOI2024Q2 : Aisha.winningStrat.Small ∧ Aisha.winningStrat.Correct Basm
       enter [1, 1, 1, x]
       simp only [Finset.mem_compl, Function.comp_apply, Vector.toList_mk, List.unpad_pad]
     simp only [List.map_id_fun', id_eq]
-    apply List.join_splitSizes
+    apply List.join_splitLengths
     simp only [List.pad, List.leftpad_length, List.length_cons, Nat.reduceLeDiff, msgu, max_eq_left,
       main_theorem comp cc]
-
-#min_imports

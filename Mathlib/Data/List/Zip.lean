@@ -29,6 +29,19 @@ namespace List
 
 variable {α : Type u} {β γ δ ε : Type*}
 
+theorem exists_mem_mem_of_mem_zipWith (f : α → β → γ) (xs : List α) (ys : List β) (v : γ)
+    (h : v ∈ zipWith f xs ys) : ∃ x ∈ xs, ∃ y ∈ ys, f x y = v := by
+  induction xs generalizing ys
+  · simp at h
+  case cons _ _ ih =>
+  · cases ys
+    · simp at h
+    · simp only [zipWith_cons_cons, mem_cons] at h
+      rcases h with h | h
+      · simp [h]
+      · obtain ⟨x, hx, y, hy, h⟩ := ih _ h
+        use x, (by simp [hx]), y, (by simp [hy]), h
+
 @[simp]
 theorem zip_swap : ∀ (l₁ : List α) (l₂ : List β), (zip l₁ l₂).map Prod.swap = zip l₂ l₁
   | [], l₂ => zip_nil_right.symm

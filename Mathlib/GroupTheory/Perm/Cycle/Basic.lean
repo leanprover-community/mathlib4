@@ -832,6 +832,14 @@ theorem IsCycleOn.exists_pow_eq' (hs : s.Finite) (hf : f.IsCycleOn s) (ha : a �
   obtain ⟨n, -, hn⟩ := hf.exists_pow_eq ha hb
   exact ⟨n, hn⟩
 
+theorem IsCycleOn.exists_pow_eq_iff {α : Type*} {a b : α} {f : Equiv.Perm α}
+    {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈ s) :
+    b ∈ s ↔ ∃ n : ℕ, (f ^ n) a = b := by
+  constructor
+  · apply hf.exists_pow_eq' (Finset.finite_toSet s) ha
+  · rintro ⟨n, -, rfl⟩
+    exact (hf.1.perm_pow n).1 ha
+
 theorem IsCycleOn.range_pow (hs : s.Finite) (h : f.IsCycleOn s) (ha : a ∈ s) :
     Set.range (fun n => (f ^ n) a : ℕ → α) = s :=
   Set.Subset.antisymm (Set.range_subset_iff.2 fun _ => h.1.mapsTo.perm_pow _ ha) fun _ =>

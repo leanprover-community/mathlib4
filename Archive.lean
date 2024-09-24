@@ -5,6 +5,7 @@ import Archive.Examples.IfNormalization.WithoutAesop
 import Archive.Examples.MersennePrimes
 import Archive.Examples.PropEncodable
 import Archive.Hairer
+import Archive.Ioi.Ioi2024Q2
 import Archive.Imo.Imo1959Q1
 import Archive.Imo.Imo1959Q2
 import Archive.Imo.Imo1960Q1
