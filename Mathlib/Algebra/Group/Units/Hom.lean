@@ -173,7 +173,7 @@ theorem _root_.isUnit_map_of_leftInverse [MonoidHomClass F M N] [MonoidHomClass 
     IsUnit (f x) ↔ IsUnit x := ⟨of_leftInverse g hfg, map _⟩
 
 @[to_additive]
-theorem _root_.isUnit_map_iff [MulEquivClass E M N]
+theorem _root_.isUnit_map_iff' [MulEquivClass E M N]
     (f : E) {a} : IsUnit (f a) ↔ IsUnit a :=
   _root_.isUnit_map_of_leftInverse (f : M ≃* N).symm (f : M ≃* N).left_inv
 
