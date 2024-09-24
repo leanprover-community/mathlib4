@@ -245,7 +245,7 @@ lemma jacobiSum_mem_algebraAdjoin_of_pow_eq_one {n : ℕ} (hn : n ≠ 0) {χ φ 
 
 open Algebra in
 private
-lemma MulChar.apply_sub_one {n : ℕ} (hn : n ≠ 0) {χ : MulChar F R} {μ : R} (hχ : χ ^ n = 1)
+lemma MulChar.exists_apply_sub_one_eq_mul_sub_one {n : ℕ} (hn : n ≠ 0) {χ : MulChar F R} {μ : R} (hχ : χ ^ n = 1)
     (hμ : IsPrimitiveRoot μ n) {x : F} (hx : x ≠ 0) :
     ∃ z ∈ Algebra.adjoin ℤ {μ}, χ x - 1 = z * (μ - 1) := by
   obtain ⟨k, _, hk⟩ := exists_apply_eq_pow hn hχ hμ hx
@@ -253,7 +253,7 @@ lemma MulChar.apply_sub_one {n : ℕ} (hn : n ≠ 0) {χ : MulChar F R} {μ : R}
   exact Subalgebra.sum_mem _ fun m _ ↦ Subalgebra.pow_mem _ (self_mem_adjoin_singleton _ μ) _
 
 private
-lemma MulChar.apply_sub_one_mul_apply_sub_one {n : ℕ} (hn : n ≠ 0) {χ ψ : MulChar F R} {μ : R}
+lemma MulChar.exists_apply_sub_one_mul_apply_sub_one {n : ℕ} (hn : n ≠ 0) {χ ψ : MulChar F R} {μ : R}
     (hχ : χ ^ n = 1) (hψ : ψ ^ n = 1) (hμ : IsPrimitiveRoot μ n) (x : F) :
     ∃ z ∈ Algebra.adjoin ℤ {μ}, (χ x - 1) * (ψ (1 - x) - 1) = z * (μ - 1) ^ 2 := by
   rcases eq_or_ne x 0 with rfl | hx₀
@@ -269,7 +269,7 @@ lemma MulChar.apply_sub_one_mul_apply_sub_one {n : ℕ} (hn : n ≠ 0) {χ ψ : 
 with values in an integral domain `R` and `μ` is a primitive `n`th root of unity in `R`,
 then `J(χ,ψ) = -1 + z*(μ - 1)^2` for some `z ∈ ℤ[μ] ⊆ R`. (We assume that `#F ≡ 1 mod n`.)
 Note that we do not state this as a divisbility in `R`, as this would give a weaker statement. -/
-lemma jacobiSum_eq_neg_one_add [DecidableEq F] {n : ℕ} (hn : 2 < n) {χ ψ : MulChar F R} {μ : R}
+lemma exists_jacobiSum_eq_neg_one_add [DecidableEq F] {n : ℕ} (hn : 2 < n) {χ ψ : MulChar F R} {μ : R}
     (hχ : χ ^ n = 1) (hψ : ψ ^ n = 1) (hn' : n ∣ Fintype.card F - 1) (hμ : IsPrimitiveRoot μ n) :
     ∃ z ∈ Algebra.adjoin ℤ {μ}, jacobiSum χ ψ = -1 + z * (μ - 1) ^ 2 := by
   obtain ⟨q, hq⟩ := hn'
