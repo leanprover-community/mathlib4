@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, David Kurniadi Angdinata
 -/
 import Mathlib.Algebra.CubicDiscriminant
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.LinearCombination
 
 /-!
 # Weierstrass equations of elliptic curves

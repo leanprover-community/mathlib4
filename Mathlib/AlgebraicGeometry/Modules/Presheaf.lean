@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Category.ModuleCat.Presheaf
 import Mathlib.AlgebraicGeometry.Scheme
-import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-!
 # The category of presheaves of modules over a scheme

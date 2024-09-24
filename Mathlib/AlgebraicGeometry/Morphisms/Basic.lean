@@ -3,10 +3,8 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.AlgebraicGeometry.Pullbacks
 import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.Data.List.TFAE
 
 /-!
 # Properties of morphisms between Schemes
