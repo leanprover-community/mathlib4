@@ -6,7 +6,6 @@ Authors: Anne Baanen
 import Mathlib.Algebra.Field.Subfield
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.RingTheory.LocalRing.Basic
-import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 
 /-!
 # Intermediate fields
