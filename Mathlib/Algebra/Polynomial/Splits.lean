@@ -140,7 +140,7 @@ theorem splits_id_iff_splits {f : K[X]} : (f.map i).Splits (RingHom.id L) ↔ f.
   rw [splits_map_iff, RingHom.id_comp]
 
 variable {i} in
-theorem Splits.comp_X_sub_C {f : K[X]}
+theorem Splits.comp_X_sub_C (a : K) {f : K[X]}
     (h : f.Splits i) : (f.comp (X - C a)).Splits i := by
   cases h with
   | inl h0 =>
