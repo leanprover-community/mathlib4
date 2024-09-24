@@ -49,14 +49,14 @@ structure Label where
 Mathlib labels and their corresponding folders. Add new labels and folders here!
 -/
 def mathlibLabels : Array Label := #[
-  -- { label := "t-algebra",
-  --   dirs := #[
-  --     "Mathlib" / "Algebra",
-  --     "Mathlib" / "FieldTheory",
-  --     "Mathlib" / "RingTheory",
-  --     "Mathlib" / "GroupTheory",
-  --     "Mathlib" / "RepresentationTheory",
-  --     "Mathlib" / "LinearAlgebra"] },
+  { label := "t-algebra",
+    dirs := #[
+      "Mathlib" / "Algebra",
+      "Mathlib" / "FieldTheory",
+      "Mathlib" / "RingTheory",
+      "Mathlib" / "GroupTheory",
+      "Mathlib" / "RepresentationTheory",
+      "Mathlib" / "LinearAlgebra"] },
   { label := "t-algebraic-geometry",
     dirs := #[
       "Mathlib" / "AlgebraicGeometry",
@@ -216,7 +216,7 @@ unsafe def main (args : List String): IO Unit := do
     println s!"error: the following paths inside `Mathlib/` are not covered \
     by any label:\n\n{notMatchedPaths}\n\nPlease modify `mathlibLabels` in \
     `scripts/autolabel.lean` accordingly!"
-   IO.Process.exit 3
+    IO.Process.exit 3
 
   -- get the modified files
   let gitDiff ← IO.Process.run {
