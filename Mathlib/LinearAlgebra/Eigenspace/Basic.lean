@@ -315,9 +315,10 @@ lemma mapsTo_iInf_genEigenspace_of_forall_comm {ι R M : Type*} [CommRing R] [Ad
     [Module R M] {f : ι → Module.End R M} {g : Module.End R M} (hC : ∀ j, Commute (f j) g)
     (μ : ι → R) (k : ℕ) :
     MapsTo g
-      (⨅ j, genEigenspace (f j) (μ j) k)
-      (⨅ j, genEigenspace (f j) (μ j) k) :=
-  mapsTo_iInter_iInter fun j ↦ mapsTo_genEigenspace_of_comm (hC j) (μ j) k
+      (⨅ j, genEigenspace (f j) (μ j) k : Submodule R M)
+      (⨅ j, genEigenspace (f j) (μ j) k : Submodule R M) := by
+  rw [Submodule.iInf_coe]
+  exact mapsTo_iInter_iInter fun j ↦ mapsTo_genEigenspace_of_comm (hC j) (μ j) k
 
 /-- The restriction of `f - μ • 1` to the `k`-fold generalized `μ`-eigenspace is nilpotent. -/
 lemma isNilpotent_restrict_sub_algebraMap (f : End R M) (μ : R) (k : ℕ)
