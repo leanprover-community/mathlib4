@@ -120,6 +120,27 @@ theorem extendLe_subset (hs : LinearIndependent K ((↑) : s → V))
     range (Basis.extendLe hs hst ht) ⊆ t :=
   (range_extendLe hs hst ht).symm ▸ hs.extend_subset hst
 
+/-- If a set `s` spans the space, this is a basis contained in `s`. -/
+noncomputable def ofSpan (hs : ⊤ ≤ span K s) :
+    Basis ((linearIndependent_empty K V).extend (empty_subset s)) K V :=
+  extendLe (linearIndependent_empty K V) (empty_subset s) hs
+
+theorem ofSpan_apply_self (hs : ⊤ ≤ span K s)
+    (x : (linearIndependent_empty K V).extend (empty_subset s)) :
+    Basis.ofSpan hs x = x :=
+  extendLe_apply_self (linearIndependent_empty K V) (empty_subset s) hs x
+
+@[simp]
+theorem coe_ofSpan (hs : ⊤ ≤ span K s) : ⇑(ofSpan hs) = ((↑) : _ → _) :=
+  funext (ofSpan_apply_self hs)
+
+theorem range_ofSpan (hs : ⊤ ≤ span K s) :
+    range (ofSpan hs) = (linearIndependent_empty K V).extend (empty_subset s) := by
+  rw [coe_ofSpan, Subtype.range_coe_subtype, setOf_mem_eq]
+
+theorem ofSpan_subset (hs : ⊤ ≤ span K s) : range (ofSpan hs) ⊆ s :=
+  extendLe_subset (linearIndependent_empty K V) (empty_subset s) hs
+
 section
 
 variable (K V)
