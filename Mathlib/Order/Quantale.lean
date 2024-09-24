@@ -81,14 +81,14 @@ class Quantale (α : Type*) [Semigroup α] extends CompleteLattice α where
 
 /-- An integral (or strictly two-sided) additive quantale is a quantale over an additive monoid
     where top and unit coincide. -/
-class IsAddIntegral (α : Type*) [AddMonoid α] [AddQuantale α] : Prop where
+class AddQuantale.IsAddIntegral (α : Type*) [AddMonoid α] [AddQuantale α] : Prop where
   /-- Top and unit coincide in an integral (or strictly two-sided) quantale -/
   protected top_eq_zero : (⊤ : α) = 0
 
 /-- An integral (or strictly two-sided) quantale is a quantale over a monoid where
     top and unit coincide. -/
 @[to_additive]
-class IsIntegral (α : Type*) [Monoid α] [Quantale α] : Prop where
+class Quantale.IsIntegral (α : Type*) [Monoid α] [Quantale α] : Prop where
   /-- Top and unit coincide in an integral (or strictly two-sided) quantale -/
   protected top_eq_one : (⊤ : α) = 1
 
@@ -108,6 +108,7 @@ theorem sSup_mul_eq_iSup_mul : ∀ s : Set α, ∀ y : α, sSup s * y = ⨆ x �
 end Quantale
 
 section IsIntegral
+open Quantale
 
 variable (α : Type _)
 variable [Monoid α] [Quantale α] [IsIntegral α]
