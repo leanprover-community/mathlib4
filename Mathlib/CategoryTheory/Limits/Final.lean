@@ -813,4 +813,28 @@ theorem IsCofiltered.of_initial (F : C ⥤ D) [Initial F] [IsCofiltered C] : IsC
 
 end Filtered
 
+section
+
+variable {C : Type u₁} [Category.{v₁} C]
+variable {D : Type u₂} [Category.{v₂} D]
+variable {E : Type u₃} [Category.{v₃} E]
+
+open Functor
+
+/-- The functor `StructuredArrow.pre X T S` is final if `T` is final. -/
+instance StructuredArrow.final_pre (T : C ⥤ D) [Final T] (S : D ⥤ E) (X : E) :
+    Final (pre X T S) := by
+  refine ⟨fun f => ?_⟩
+  rw [isConnected_iff_of_equivalence (StructuredArrow.preEquivalence T f)]
+  exact Final.out f.right
+
+/-- The functor `CostructuredArrow.pre X T S` is initial if `T` is initial. -/
+instance CostructuredArrow.initial_pre (T : C ⥤ D) [Initial T] (S : D ⥤ E) (X : E) :
+    Initial (CostructuredArrow.pre T S X) := by
+  refine ⟨fun f => ?_⟩
+  rw [isConnected_iff_of_equivalence (CostructuredArrow.preEquivalence T f)]
+  exact Initial.out f.left
+
+end
+
 end CategoryTheory
