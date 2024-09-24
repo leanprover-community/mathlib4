@@ -108,13 +108,15 @@ theorem generateMeasurable_eq_rec (s : Set (Set α)) :
         ⋃ (i : (aleph 1).ord.toType), generateMeasurableRec s i := by
   ext t; refine ⟨fun ht => ?_, fun ht => ?_⟩
   · inhabit ω₁
-    induction' ht with u hu u _ IH f _ IH
-    · exact mem_iUnion.2 ⟨default, self_subset_generateMeasurableRec s _ hu⟩
-    · exact mem_iUnion.2 ⟨default, empty_mem_generateMeasurableRec s _⟩
-    · rcases mem_iUnion.1 IH with ⟨i, hi⟩
+    induction ht with
+    | basic u hu => exact mem_iUnion.2 ⟨default, self_subset_generateMeasurableRec s _ hu⟩
+    | empty => exact mem_iUnion.2 ⟨default, empty_mem_generateMeasurableRec s _⟩
+    | compl _ _ IH =>
+      rcases mem_iUnion.1 IH with ⟨i, hi⟩
       obtain ⟨j, hj⟩ := exists_gt i
       exact mem_iUnion.2 ⟨j, compl_mem_generateMeasurableRec hj hi⟩
-    · have : ∀ n, ∃ i, f n ∈ generateMeasurableRec s i := fun n => by simpa using IH n
+    | iUnion f _ IH =>
+      have : ∀ n, ∃ i, f n ∈ generateMeasurableRec s i := fun n => by simpa using IH n
       choose I hI using this
       refine mem_iUnion.2 ⟨Ordinal.enum (α := ω₁) (· < ·)
         ⟨Ordinal.lsub fun n => Ordinal.typein.{u} (α := ω₁) (· < ·) (I n), ?_⟩,

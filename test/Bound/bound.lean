@@ -18,15 +18,9 @@ open scoped NNReal
 section bound_only
 variable {a b c x y : ℝ} {z : ℂ} {n : ℕ}
 
-#adaptation_note
-/--
-Due to changes in https://github.com/leanprover/lean4/pull/5225 and
-https://github.com/leanprover/lean4/pull/5226, these next three are no longer working.
--/
--- example (h : x < y) : y - x > 0 := by bound
--- example (h : x < y) : Real.exp (y - x) > 1 := by bound
--- example (h : x < y) (y0 : 0 < y) : x / y < 1 := by bound
-
+example (h : x < y) : y - x > 0 := by bound
+example (h : x < y) : Real.exp (y - x) > 1 := by bound
+example (h : x < y) (y0 : 0 < y) : x / y < 1 := by bound
 example (f : ℕ → ℝ) (h : ∀ n, f n ≥ 0) : f n ≥ 0 := by bound [h n]
 example (x y : ℝ≥0) (h : x < y) : (x : ℝ) < y := by bound
 example : dist a c ≤ dist a b + dist b c := by bound
@@ -51,27 +45,14 @@ example (h : a ≤ b) : a ≤ max b c := by bound
 example (h : a ≤ c) : a ≤ max b c := by bound
 example (h : a ≤ c) : min a b ≤ c := by bound
 example (h : b ≤ c) : min a b ≤ c := by bound
-
-#adaptation_note
-/--
-Due to changes in https://github.com/leanprover/lean4/pull/5225 and
-https://github.com/leanprover/lean4/pull/5226, these next four are no longer working.
--/
--- example (h : a < b) : a < max b c := by bound
--- example (h : a < c) : a < max b c := by bound
--- example (h : a < c) : min a b < c := by bound
--- example (h : b < c) : min a b < c := by bound
-
+example (h : a < b) : a < max b c := by bound
+example (h : a < c) : a < max b c := by bound
+example (h : a < c) : min a b < c := by bound
+example (h : b < c) : min a b < c := by bound
 example (a1 : 1 ≤ a) (h : m ≤ n) : a^m ≤ a^n := by bound
 example (a0 : 0 ≤ a) (a1 : a ≤ 1) (h : n ≤ m) : a^m ≤ a^n := by bound
 example (a1 : 1 ≤ a) (h : b ≤ c) : a^b ≤ a^c := by bound
-
-#adaptation_note
-/--
-Due to changes in https://github.com/leanprover/lean4/pull/5225 and
-https://github.com/leanprover/lean4/pull/5226, this is not working.
--/
--- example (a0 : 0 < a) (a1 : a ≤ 1) (h : c ≤ b) : a^b ≤ a^c := by bound
+example (a0 : 0 < a) (a1 : a ≤ 1) (h : c ≤ b) : a^b ≤ a^c := by bound
 
 end guess_tests
 
@@ -79,15 +60,8 @@ section positive_tests
 variable {n : ℕ} {x y : ℝ} {u : ℝ≥0} {z : ℂ}
 example (h : 0 < x) : x^2 > 0 := by bound
 example (h : x > 0) : x^2 > 0 := by bound
-
-#adaptation_note
-/--
-Due to changes in https://github.com/leanprover/lean4/pull/5225 and
-https://github.com/leanprover/lean4/pull/5226, this is not working.
--/
--- example (p : x > 0) (q : y > 0) : x * y > 0 := by bound
--- example (p : x > 0) (q : y > 0) : x / y > 0 := by bound
-
+example (p : x > 0) (q : y > 0) : x * y > 0 := by bound
+example (p : x > 0) (q : y > 0) : x / y > 0 := by bound
 example : 0 < 4 := by bound
 example : 0 < 7 := by bound
 example : 0 < (4 : ℝ) := by bound
@@ -134,44 +108,28 @@ example (h : x ≤ y) : x - a ≤ y - a := by bound
 example (ab : a ≤ b) (xy : x ≥ y) : a - x ≤ b - y := by bound
 example (h : x > 0) : x ≥ 0 := by bound
 example (hc : c ≥ 0) (h : a ≤ b) : a / c ≤ b / c := by bound
-
-#adaptation_note
-/--
-Due to changes in https://github.com/leanprover/lean4/pull/5225 and
-https://github.com/leanprover/lean4/pull/5226, this is not working.
--/
--- example (ha : a ≥ 0) (hc : c > 0) (h : b ≥ c) : a / b ≤ a / c := by bound
--- example (x y : ℝ) (x0 : 0 < x) (h : x ≤ y) : x.log ≤ y.log := by bound
+example (ha : a ≥ 0) (hc : c > 0) (h : b ≥ c) : a / b ≤ a / c := by bound
+example (x y : ℝ) (x0 : 0 < x) (h : x ≤ y) : x.log ≤ y.log := by bound
 
 end bound_tests
 
-#adaptation_note
-/--
-Due to changes in https://github.com/leanprover/lean4/pull/5225 and
-https://github.com/leanprover/lean4/pull/5226, this is not working.
--/
--- /-- This broke without appropriate `g.withContext` use in an older implementation of `bound`.
--- Leaving the test here just in case. -/
--- example {s : Set ℂ} (o : IsOpen s) (z) (h : z ∈ s) : ∃ r : ℝ, r > 0 := by
---   rw [Metric.isOpen_iff] at o
---   rcases o z h with ⟨t, tp, bs⟩
---   exists t/2
---   clear o h bs z s
---   bound
+/-- This broke without appropriate `g.withContext` use in an older implementation of `bound`.
+Leaving the test here just in case. -/
+example {s : Set ℂ} (o : IsOpen s) (z) (h : z ∈ s) : ∃ r : ℝ, r > 0 := by
+  rw [Metric.isOpen_iff] at o
+  rcases o z h with ⟨t, tp, bs⟩
+  exists t/2
+  clear o h bs z s
+  bound
 
-#adaptation_note
-/--
-Due to changes in https://github.com/leanprover/lean4/pull/5225 and
-https://github.com/leanprover/lean4/pull/5226, this is not working.
--/
--- -- Test various elaboration issues
--- example {f : ℂ → ℂ} {z w : ℂ} {s r c e : ℝ}
---       (sc : ∀ {w}, abs (w - z) < s → abs (f w - f z) < e) (wz : abs (w - z) < s) (wr : abs w < r)
---       (h : ∀ z : ℂ, abs z < r → abs (f z) ≤ c * abs z) :
---       abs (f z) ≤ c * abs w + e := by
---   calc abs (f z) = abs (f w - (f w - f z)) := by ring_nf
---     _ ≤ abs (f w) + abs (f w - f z) := by bound
---     _ ≤ c * abs w + e := by bound [h w wr, sc wz]
+-- Test various elaboration issues
+example {f : ℂ → ℂ} {z w : ℂ} {s r c e : ℝ}
+      (sc : ∀ {w}, abs (w - z) < s → abs (f w - f z) < e) (wz : abs (w - z) < s) (wr : abs w < r)
+      (h : ∀ z : ℂ, abs z < r → abs (f z) ≤ c * abs z) :
+      abs (f z) ≤ c * abs w + e := by
+  calc abs (f z) = abs (f w - (f w - f z)) := by ring_nf
+    _ ≤ abs (f w) + abs (f w - f z) := by bound
+    _ ≤ c * abs w + e := by bound [h w wr, sc wz]
 
 -- A test that requires reduction to weak head normal form to work (surfaced by `Hartogs.lean`)
 example (x y : ℝ) (h : x < y ∧ True) : x ≤ y := by
