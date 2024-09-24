@@ -170,8 +170,8 @@ theorem separableClosure.separableClosure_eq_bot :
 theorem separableClosure.normalClosure_eq_self :
     normalClosure F (separableClosure F E) E = separableClosure F E :=
   le_antisymm (normalClosure_le_iff.2 fun i ↦
-    haveI : Algebra.IsSeparable F i.fieldRange :=
-      (AlgEquiv.Algrebra.isSeparable (AlgEquiv.ofInjectiveField i))
+    have : Algebra.IsSeparable F i.fieldRange :=
+      (AlgEquiv.Algebra.isSeparable (AlgEquiv.ofInjectiveField i))
     le_separableClosure F E _) (le_normalClosure _)
 
 /-- If `E` is normal over `F`, then the separable closure of `F` in `E` is Galois (i.e.
@@ -220,7 +220,7 @@ theorem separableClosure.eq_top_iff : separableClosure F E = ⊤ ↔ Algebra.IsS
 `separableClosure E K`. -/
 theorem separableClosure.le_restrictScalars [Algebra E K] [IsScalarTower F E K] :
     separableClosure F K ≤ (separableClosure E K).restrictScalars F :=
-  fun _ h ↦ IsSeparable.tower_top E h
+  fun _ ↦ IsSeparable.tower_top E
 
 /-- If `K / E / F` is a field extension tower, such that `E / F` is separable, then
 `separableClosure F K` is equal to `separableClosure E K`. -/

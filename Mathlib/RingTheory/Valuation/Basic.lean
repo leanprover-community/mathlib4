@@ -506,10 +506,10 @@ theorem isEquiv_tfae [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGr
     (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
     [v.IsEquiv v', ∀ {x}, v x ≤ 1 ↔ v' x ≤ 1, ∀ {x}, v x = 1 ↔ v' x = 1, ∀ {x}, v x < 1 ↔ v' x < 1,
         ∀ {x}, v (x - 1) < 1 ↔ v' (x - 1) < 1].TFAE := by
-  tfae_have 1 ↔ 2; · apply isEquiv_iff_val_le_one
-  tfae_have 1 ↔ 3; · apply isEquiv_iff_val_eq_one
-  tfae_have 1 ↔ 4; · apply isEquiv_iff_val_lt_one
-  tfae_have 1 ↔ 5; · apply isEquiv_iff_val_sub_one_lt_one
+  tfae_have 1 ↔ 2 := isEquiv_iff_val_le_one ..
+  tfae_have 1 ↔ 3 := isEquiv_iff_val_eq_one ..
+  tfae_have 1 ↔ 4 := isEquiv_iff_val_lt_one ..
+  tfae_have 1 ↔ 5 := isEquiv_iff_val_sub_one_lt_one ..
   tfae_finish
 
 end
@@ -839,13 +839,3 @@ end Supp
 
 -- end of section
 end AddValuation
-
-section ValuationNotation
-
-/-- Notation for `WithZero (Multiplicative ℕ)` -/
-scoped[DiscreteValuation] notation "ℕₘ₀" => WithZero (Multiplicative ℕ)
-
-/-- Notation for `WithZero (Multiplicative ℤ)` -/
-scoped[DiscreteValuation] notation "ℤₘ₀" => WithZero (Multiplicative ℤ)
-
-end ValuationNotation

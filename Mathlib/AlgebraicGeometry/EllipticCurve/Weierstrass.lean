@@ -526,7 +526,6 @@ end WeierstrassCurve
 
 /-- An elliptic curve over a commutative ring. Note that this definition is only mathematically
 accurate for certain rings whose Picard group has trivial 12-torsion, such as a field or a PID. -/
-@[ext]
 structure EllipticCurve (R : Type u) [CommRing R] extends WeierstrassCurve R where
   /-- The discriminant `Δ'` of an elliptic curve over `R`, which is given as a unit in `R`. -/
   Δ' : Rˣ
@@ -535,7 +534,20 @@ structure EllipticCurve (R : Type u) [CommRing R] extends WeierstrassCurve R whe
 
 namespace EllipticCurve
 
-variable {R : Type u} [CommRing R] (E : EllipticCurve R)
+variable {R : Type u} [CommRing R]
+
+theorem toWeierstrassCurve_injective : Function.Injective (toWeierstrassCurve (R := R))
+  | ⟨x1, _, x3⟩, ⟨y1, _, y3⟩, h => by
+    change x1 = y1 at h
+    congr
+    exact Units.ext (by rw [x3, y3, h])
+
+@[ext]
+theorem ext {x y : EllipticCurve R} (h₁ : x.a₁ = y.a₁) (h₂ : x.a₂ = y.a₂) (h₃ : x.a₃ = y.a₃)
+    (h₄ : x.a₄ = y.a₄) (h₆ : x.a₆ = y.a₆) : x = y :=
+  toWeierstrassCurve_injective (WeierstrassCurve.ext h₁ h₂ h₃ h₄ h₆)
+
+variable (E : EllipticCurve R)
 
 -- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 /-- The j-invariant `j` of an elliptic curve, which is invariant under isomorphisms over `R`. -/
@@ -623,8 +635,7 @@ lemma map_j : (E.map φ).j = φ E.j := by
 
 lemma map_injective {φ : R →+* A} (hφ : Function.Injective φ) :
     Function.Injective <| map (φ := φ) := fun _ _ h => by
-  rcases mk.inj h with ⟨h1, h2⟩
-  replace h2 := (Units.mk.inj h2).left
+  rcases mk.inj h with ⟨h1, _⟩
   rcases WeierstrassCurve.mk.inj h1 with ⟨_, _, _, _, _⟩
   ext <;> apply_fun _ using hφ <;> assumption
 

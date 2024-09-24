@@ -62,7 +62,7 @@ Fraïssé limit - the countable ultrahomogeneous structure with that age.
 
 ## TODO
 
-- Show existence and uniqueness of Fraïssé limits
+- Show existence of Fraïssé limits
 
 -/
 
