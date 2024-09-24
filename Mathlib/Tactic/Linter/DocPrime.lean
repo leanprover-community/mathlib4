@@ -38,11 +38,13 @@ def docPrimeLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   unless [``Lean.Parser.Command.declaration, `lemma].contains stx.getKind  do return
   let docstring := stx[0][0]
+  -- The current declaration's id, possibly followed by a list of universe names.
   let declId :=
     if stx[1].isOfKind ``Lean.Parser.Command.instance then
       stx[1][3][0]
     else
       stx[1][1]
+  -- The name of the current declaration, with namespaces resolved.
   let declName :=
     if let `_root_ :: rest := declId[0].getId.components then
       rest.foldl (· ++ ·) default
