@@ -86,6 +86,40 @@ theorem subset_extend {s : Set V} (hs : LinearIndependent K ((↑) : s → V)) :
     s ⊆ hs.extend (Set.subset_univ _) :=
   hs.subset_extend _
 
+/-- If `s` is a family of linearly independent vectors contained in a set `t` spanning `V`,
+then one can get a basis of `V` containing `s` and contained in `t`. -/
+noncomputable def extendLe (hs : LinearIndependent K ((↑) : s → V))
+    (hst : s ⊆ t) (ht : ⊤ ≤ span K t) :
+    Basis (hs.extend hst) K V :=
+  Basis.mk
+    (@LinearIndependent.restrict_of_comp_subtype _ _ _ id _ _ _ _ (hs.linearIndependent_extend _))
+    (le_trans ht <| Submodule.span_le.2 <| by simpa using hs.subset_span_extend hst)
+
+theorem extendLe_apply_self (hs : LinearIndependent K ((↑) : s → V))
+    (hst : s ⊆ t) (ht : ⊤ ≤ span K t) (x : hs.extend hst) :
+    Basis.extendLe hs hst ht x = x :=
+  Basis.mk_apply _ _ _
+
+@[simp]
+theorem coe_extendLe (hs : LinearIndependent K ((↑) : s → V))
+    (hst : s ⊆ t) (ht : ⊤ ≤ span K t) : ⇑(Basis.extendLe hs hst ht) = ((↑) : _ → _) :=
+  funext (extendLe_apply_self hs hst ht)
+
+theorem range_extendLe (hs : LinearIndependent K ((↑) : s → V))
+    (hst : s ⊆ t) (ht : ⊤ ≤ span K t) :
+    range (Basis.extendLe hs hst ht) = hs.extend hst := by
+  rw [coe_extendLe, Subtype.range_coe_subtype, setOf_mem_eq]
+
+theorem subset_extendLe (hs : LinearIndependent K ((↑) : s → V))
+    (hst : s ⊆ t) (ht : ⊤ ≤ span K t) :
+    s ⊆ range (Basis.extendLe hs hst ht) :=
+  (range_extendLe hs hst ht).symm ▸ hs.subset_extend hst
+
+theorem extendLe_subset (hs : LinearIndependent K ((↑) : s → V))
+    (hst : s ⊆ t) (ht : ⊤ ≤ span K t) :
+    range (Basis.extendLe hs hst ht) ⊆ t :=
+  (range_extendLe hs hst ht).symm ▸ hs.extend_subset hst
+
 section
 
 variable (K V)
