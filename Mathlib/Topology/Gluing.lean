@@ -342,8 +342,8 @@ instance (h : MkCore.{u}) (i j : h.J) : IsIso (h.t i j) := by
 
 /-- (Implementation) the restricted transition map to be fed into `TopCat.GlueData`. -/
 def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
-    pullback (h.V i j).inclusion (h.V i k).inclusion ⟶
-      pullback (h.V j k).inclusion (h.V j i).inclusion := by
+    pullback (h.V i j).inclusion' (h.V i k).inclusion' ⟶
+      pullback (h.V j k).inclusion' (h.V j i).inclusion' := by
   refine (pullbackIsoProdSubtype _ _).hom ≫ ⟨?_, ?_⟩ ≫ (pullbackIsoProdSubtype _ _).inv
   · intro x
     refine ⟨⟨⟨(h.t i j x.1.1).1, ?_⟩, h.t i j x.1.1⟩, rfl⟩
@@ -361,7 +361,7 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
   J := h.J
   U := h.U
   V i := (Opens.toTopCat _).obj (h.V i.1 i.2)
-  f i j := (h.V i j).inclusion
+  f i j := (h.V i j).inclusion'
   f_id i := by
     -- Porting note (#12129): additional beta reduction needed
     beta_reduce
@@ -410,7 +410,7 @@ def ofOpenSubsets : TopCat.GlueData.{u} :=
   mk'.{u}
     { J
       U := fun i => (Opens.toTopCat <| TopCat.of α).obj (U i)
-      V := fun i j => (Opens.map <| Opens.inclusion _).obj (U j)
+      V := fun i j => (Opens.map <| Opens.inclusion' _).obj (U j)
       t := fun i j => ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by
         -- Porting note: was `continuity`, see https://github.com/leanprover-community/mathlib4/issues/5030
         refine Continuous.subtype_mk ?_ ?_
@@ -429,13 +429,13 @@ This map is an open embedding (`fromOpenSubsetsGlue_openEmbedding`),
 and its range is `⋃ i, (U i : Set α)` (`range_fromOpenSubsetsGlue`).
 -/
 def fromOpenSubsetsGlue : (ofOpenSubsets U).toGlueData.glued ⟶ TopCat.of α :=
-  Multicoequalizer.desc _ _ (fun x => Opens.inclusion _) (by rintro ⟨i, j⟩; ext x; rfl)
+  Multicoequalizer.desc _ _ (fun x => Opens.inclusion' _) (by rintro ⟨i, j⟩; ext x; rfl)
 
 -- Porting note: `elementwise` here produces a bad lemma,
 -- where too much has been simplified, despite the `nosimp`.
 @[simp, elementwise nosimp]
 theorem ι_fromOpenSubsetsGlue (i : J) :
-    (ofOpenSubsets U).toGlueData.ι i ≫ fromOpenSubsetsGlue U = Opens.inclusion _ :=
+    (ofOpenSubsets U).toGlueData.ι i ≫ fromOpenSubsetsGlue U = Opens.inclusion' _ :=
   Multicoequalizer.π_desc _ _ _ _ _
 
 theorem fromOpenSubsetsGlue_injective : Function.Injective (fromOpenSubsetsGlue U) := by
@@ -457,7 +457,7 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
   rw [isOpen_iff_forall_mem_open]
   rintro _ ⟨x, hx, rfl⟩
   obtain ⟨i, ⟨x, hx'⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective x
-  use fromOpenSubsetsGlue U '' s ∩ Set.range (@Opens.inclusion (TopCat.of α) (U i))
+  use fromOpenSubsetsGlue U '' s ∩ Set.range (@Opens.inclusion' (TopCat.of α) (U i))
   use Set.inter_subset_left
   constructor
   · erw [← Set.image_preimage_eq_inter_range]

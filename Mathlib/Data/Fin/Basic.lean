@@ -181,6 +181,8 @@ protected theorem heq_fun₂_iff {α : Sort*} {k l k' l' : ℕ} (h : k = l) (h' 
   subst h'
   simp [Function.funext_iff]
 
+/-- Two elements of `Fin k` and `Fin l` are heq iff their values in `ℕ` coincide. This requires
+`k = l`. For the left implication without this assumption, see `val_eq_val_of_heq`. -/
 protected theorem heq_ext_iff {k l : ℕ} (h : k = l) {i : Fin k} {j : Fin l} :
     HEq i j ↔ (i : ℕ) = (j : ℕ) := by
   subst h
@@ -269,6 +271,12 @@ theorem pos_iff_ne_zero' [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
   rw [← val_fin_lt, val_zero', Nat.pos_iff_ne_zero, Ne, Ne, Fin.ext_iff, val_zero']
 
 @[simp] lemma cast_eq_self (a : Fin n) : cast rfl a = a := rfl
+
+@[simp] theorem cast_eq_zero {k l : ℕ} [NeZero k] [NeZero l]
+    (h : k = l) (x : Fin k) : Fin.cast h x = 0 ↔ x = 0 := by simp [← val_eq_val]
+
+lemma cast_injective {k l : ℕ} (h : k = l) : Injective (Fin.cast h) :=
+  fun a b hab ↦ by simpa [← val_eq_val] using hab
 
 theorem rev_involutive : Involutive (rev : Fin n → Fin n) := rev_rev
 
@@ -415,7 +423,8 @@ in the same value. -/
 
 -- Porting note: this is syntactically the same as `cast_val_of_lt`
 
-@[simp] lemma natCast_self (n : ℕ) [NeZero n] : (n : Fin n) = 0 := by ext; simp
+-- This is a special case of `CharP.cast_eq_zero` that doesn't require typeclass search
+@[simp high] lemma natCast_self (n : ℕ) [NeZero n] : (n : Fin n) = 0 := by ext; simp
 
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_self := natCast_self
@@ -1479,6 +1488,13 @@ lemma pos_of_ne_zero {n : ℕ} {a : Fin (n + 1)} (h : a ≠ 0) :
     0 < a :=
   Nat.pos_of_ne_zero (val_ne_of_ne h)
 
+lemma sub_succ_le_sub_of_le {n : ℕ} {u v : Fin (n + 2)} (h : u < v) : v - (u + 1) < v - u := by
+  have h' : u + 1 ≤ v := add_one_le_of_lt h
+  apply lt_def.mpr
+  simp only [sub_val_of_le h', sub_val_of_le (Fin.le_of_lt h)]
+  refine Nat.sub_lt_sub_left h (lt_def.mp ?_)
+  exact lt_add_one_iff.mpr (Fin.lt_of_lt_of_le h v.le_last)
+
 end AddGroup
 
 @[simp]
@@ -1508,16 +1524,6 @@ protected theorem zero_mul' [NeZero n] (k : Fin n) : (0 : Fin n) * k = 0 := by
   simp [Fin.ext_iff, mul_def]
 
 end Mul
-
-open Qq in
-instance toExpr (n : ℕ) : Lean.ToExpr (Fin n) where
-  toTypeExpr := q(Fin $n)
-  toExpr := match n with
-    | 0 => finZeroElim
-    | k + 1 => fun i => show Q(Fin $n) from
-      have i : Q(Nat) := Lean.mkRawNatLit i -- raw literal to avoid ofNat-double-wrapping
-      have : Q(NeZero $n) := haveI : $n =Q $k + 1 := ⟨⟩; by exact q(NeZero.succ)
-      q(OfNat.ofNat $i)
 
 end Fin
 

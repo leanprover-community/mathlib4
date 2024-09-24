@@ -6,6 +6,7 @@ Authors: Geoffrey Irving
 import Mathlib.Algebra.Group.ZeroOne
 import Mathlib.Tactic.Bound.Init
 import Qq
+import Aesop
 
 /-!
 # The `bound` attribute
