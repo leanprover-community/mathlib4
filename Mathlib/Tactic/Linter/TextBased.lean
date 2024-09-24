@@ -582,7 +582,6 @@ def emojis := #[
 
 /-- Unicode symbols in mathilb that should always be followed by the text-variant selector. -/
 def nonEmojis : Array Char := #[]
--- TODO: should there be any? maybe #['↗', '↘', '✝', '▼', '▶']?
 
 /--
 Other unicode characters present in Mathlib (as of Aug. 28, 2024)
@@ -597,7 +596,9 @@ def othersInMathlib := #[
 'ᴄ', 'ꜰ', 'ß', 'ᴢ', 'ᴏ', 'ᴀ', 'ꜱ', 'ɴ', 'ꞯ', 'ʟ',
 'ʜ', 'ᵟ', 'ʙ', 'ᵪ', 'ᵩ', 'ᵦ', 'ᴊ', 'ᴛ', 'ᴡ', 'ᴠ',
 'ɪ', '̀', 'ᴇ', 'ᴍ', 'ʀ', 'ᴅ', 'ɢ', 'ʏ', 'ᴘ', 'ĝ', 'ᵨ',
-'ᴋ', 'ś', '꙳', '𝓡', '𝕝', '𝖣', '⨳' ]
+'ᴋ', 'ś', '꙳', '𝓡', '𝕝', '𝖣', '⨳',
+-- superscript small/capital "Q" are used by `Mathlib.Util.Superscript`:
+'𐞥', 'ꟴ' ]
 
 /-
 TODO there are more symbols we could use that aren't in this list yet. E.g, see
@@ -677,22 +678,34 @@ def unicodeLinter : TextbasedLinter := fun lines ↦ Id.run do
   let mut lineNumber := 1
   for line in lines do
     let err := findBadUnicode line
+
+    -- try to auto-fix the style error
     let mut newLine := line
     for e in err do
       match e with
       | .unicodeVariant s sel pos =>
-        let x := newLine.extract 0 pos
-        let y := newLine.extract (x ++ s).endPos line.endPos
+        let head := newLine.extract 0 pos
+        let tail :=
+          let a := (head ++ s).endPos
+          let b := line.endPos
+          if a < b then newLine.extract a b else ""
         newLine := match sel with
-        | some v => x ++ (⟨[s.get 0, v]⟩ : String) ++ y
-        | none => x ++ (⟨[s.get 0]⟩ : String) ++ y
-      | _ =>
-        -- no fixes
+        | some v =>
+          -- injecting desired variant-selector
+          head ++ ⟨[s.get 0, v]⟩ ++ tail
+        | none =>
+          -- removing used variant-selector
+          head ++ ⟨[s.get 0]⟩ ++ tail
+      | .unwantedUnicode _ =>
+        -- no automatic fixes available
         pure ()
+      | _ =>
+        unreachable!
+
     changed := changed.push newLine
     errors := errors.append (err.map (fun e => (e, lineNumber)))
     lineNumber := lineNumber + 1
-  return (errors, changed) -- TODO implement automatic fixes for some errors!
+  return (errors, changed)
 
 /-- All text-based linters registered in this file. -/
 def allLinters : Array TextbasedLinter := #[
