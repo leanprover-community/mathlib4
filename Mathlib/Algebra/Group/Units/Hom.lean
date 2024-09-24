@@ -3,7 +3,7 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes, Kevin Buzzard
 -/
-import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Units
 
 /-!
@@ -166,6 +166,13 @@ theorem map [MonoidHomClass F M N] (f : F) {x : M} (h : IsUnit x) : IsUnit (f x)
 theorem of_leftInverse [MonoidHomClass G N M] {f : F} {x : M} (g : G)
     (hfg : Function.LeftInverse g f) (h : IsUnit (f x)) : IsUnit x := by
   simpa only [hfg x] using h.map g
+#check MulEquivClass.instMonoidHomClass
+theorem map_isUnit_iff {α : Type*} {β : Type*} [Monoid α] [Monoid β] {E : Type*}
+    [EquivLike E α β] [MulEquivClass E α β]
+    (f : E) {a} : IsUnit a ↔ IsUnit (f a) := by
+  exact
+  ⟨IsUnit.map f, by simpa [MulEquivClass.coe_symm_apply_apply] using
+    (IsUnit.map (f : α ≃* β).symm (x := f a))⟩
 
 @[to_additive]
 theorem _root_.isUnit_map_of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M]
