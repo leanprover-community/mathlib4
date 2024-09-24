@@ -108,7 +108,7 @@ section Woodbury
 
 variable [Fintype m] [DecidableEq m] [Ring α]
     (A : Matrix n n α) (U : Matrix n m α) (C : Matrix m m α) (V : Matrix m n α)
-    [Invertible A] [Invertible C] [Invertible (⅟C + V * ⅟A* U)]
+    [Invertible A] [Invertible C] [Invertible (⅟C + V * ⅟A * U)]
 
 -- Removed spaces around multiplication signs for better clarity
 lemma add_mul_mul_invOf_mul_eq_one :
