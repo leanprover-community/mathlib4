@@ -52,8 +52,19 @@ but don't use this assumption in the type.
   test declName := do
     if (← isAutoDecl declName) then return none
     else if Name.isPrefixOf declName `Decidable then return none
-    let names := #[`Decidable, `DecidableEq, `DecidablePred, `Inhabited]
+    let names := #[`Decidable, `DecidableEq, `DecidablePred]
     return ← checkUnusedAssumptionInType (← getConstInfo declName) names
+
+/--
+Linter that checks for theorems that assume `[Inhabited p]`
+but don't use this assumption in the type.
+-/
+@[env_linter] def inhabitedNonempty : Linter where
+  noErrorsFound := "No uses of `Inhabited` arguments should be replaced`"
+  errorsFound := "USES OF `Inhabited` SHOULD BE REPLACED WITH `Nonempty` (OR REMOVED)."
+  test declName := do
+    if (← isAutoDecl declName) then return none
+    return ← checkUnusedAssumptionInType (← getConstInfo declName) #[`Inhabited]
 
 /--
 Linter that checks for theorems that assume `[Fintype p]`,
