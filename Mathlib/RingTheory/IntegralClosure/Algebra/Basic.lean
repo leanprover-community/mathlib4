@@ -32,12 +32,13 @@ theorem Subalgebra.isIntegral_iff (S : Subalgebra R A) :
     Algebra.IsIntegral R S ↔ ∀ x ∈ S, IsIntegral R x :=
   Algebra.isIntegral_def.trans <| .trans
     (forall_congr' fun _ ↦ (isIntegral_algHom_iff S.val Subtype.val_injective).symm) Subtype.forall
+
 section
 
 variable {A B : Type*} [Ring A] [Ring B] [Algebra R A] [Algebra R B]
-variable (f : A →ₐ[R] B) (hf : Function.Injective f)
 
-theorem Algebra.IsIntegral.of_injective [Algebra.IsIntegral R B] : Algebra.IsIntegral R A :=
+theorem Algebra.IsIntegral.of_injective (f : A →ₐ[R] B) (hf : Function.Injective f)
+    [Algebra.IsIntegral R B] : Algebra.IsIntegral R A :=
   ⟨fun _ ↦ (isIntegral_algHom_iff f hf).mp (isIntegral _)⟩
 
 theorem AlgEquiv.isIntegral_iff (e : A ≃ₐ[R] B) : Algebra.IsIntegral R A ↔ Algebra.IsIntegral R B :=
