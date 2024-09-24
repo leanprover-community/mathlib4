@@ -1166,7 +1166,7 @@ theorem lt_sup {ι : Type u} {f : ι → Ordinal.{max u v}} {a} : a < sup.{_, v}
 @[deprecated (since := "2024-08-27")]
 theorem ne_iSup_iff_lt_iSup {ι : Type u} {f : ι → Ordinal.{max u v}} :
     (∀ i, f i ≠ iSup f) ↔ ∀ i, f i < iSup f :=
-  ⟨fun hf _ => lt_of_le_of_ne (Ordinal.le_iSup _ _) (hf _), fun hf _ => ne_of_lt (hf _)⟩
+  forall_congr' fun i => (Ordinal.le_iSup' ..).lt_iff_ne.symm
 
 set_option linter.deprecated false in
 @[deprecated ne_iSup_iff_lt_iSup (since := "2024-08-27")]
