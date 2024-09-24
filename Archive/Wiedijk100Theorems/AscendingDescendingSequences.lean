@@ -25,6 +25,35 @@ variable {α : Type*} [LinearOrder α] {β : Type*}
 
 open Function Finset
 
+lemma strictMonoOn_insert_iff {α β : Type*} [Preorder α] [Preorder β] (f : α → β) (s : Set α)
+    (a : α) :
+    StrictMonoOn f (insert a s) ↔
+       (∀ b ∈ s, b < a → f b < f a) ∧ (∀ b ∈ s, a < b → f a < f b) ∧ StrictMonoOn f s := by
+  simp only [StrictMonoOn, Set.mem_insert_iff, forall_eq_or_imp, forall_and, lt_self_iff_false,
+    imp_self, true_and]
+
+lemma strictMonoOn_insert_iff_of_maximal {α β : Type*} [Preorder α] [Preorder β] (f : α → β)
+    (s : Set α) (a : α) (ha : Maximal (· ∈ s) a) :
+    StrictMonoOn f (insert a s) ↔ (∀ b ∈ s, b < a → f b < f a) ∧ StrictMonoOn f s := by
+  rw [strictMonoOn_insert_iff]
+  have : ∀ b ∈ s, a < b → f a < f b := by
+    intro b hb hab
+    cases (ha.2 hb hab.le).not_lt hab
+  aesop
+
+lemma strictMonoOn_insert_iff_of_minimal {α β : Type*} [Preorder α] [Preorder β] (f : α → β)
+    (s : Set α) (a : α) (ha : Minimal (· ∈ s) a) :
+    StrictMonoOn f (insert a s) ↔ (∀ b ∈ s, a < b → f a < f b) ∧ StrictMonoOn f s := by
+  rw [strictMonoOn_insert_iff]
+  have : ∀ b ∈ s, b < a → f b < f a := by
+    intro b hb hab
+    cases (ha.2 hb hab.le).not_lt hab
+  aesop
+
+#find_home strictMonoOn_insert_iff
+
+#exit
+
 namespace Theorems100
 
 /-- **Erdős–Szekeres Theorem**: Given a sequence of more than `r * s` distinct values, there is an
@@ -40,130 +69,165 @@ which is a contradiction if there are more than `r * s` elements.
 theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : Injective f) :
     (∃ t : Finset (Fin n), r < t.card ∧ StrictMonoOn f ↑t) ∨
       ∃ t : Finset (Fin n), s < t.card ∧ StrictAntiOn f ↑t := by
+  classical
   -- Given an index `i`, produce the set of increasing (resp., decreasing) subsequences which ends
   -- at `i`.
-  let inc_sequences_ending_in : Fin n → Finset (Finset (Fin n)) := fun i =>
-    univ.powerset.filter fun t => Finset.max t = i ∧ StrictMonoOn f ↑t
-  let dec_sequences_ending_in : Fin n → Finset (Finset (Fin n)) := fun i =>
-    univ.powerset.filter fun t => Finset.max t = i ∧ StrictAntiOn f ↑t
+  let inc_sequences_ending_in' (i : Fin n) : Finset ℕ := image card <|
+    univ.filter fun t : Finset (Fin n) => IsGreatest t i ∧ StrictMonoOn f t
+  let dec_sequences_ending_in' (i : Fin n) : Finset ℕ := image card <|
+    univ.filter fun t : Finset (Fin n) => IsGreatest t i ∧ StrictAntiOn f t
   -- The singleton sequence is in both of the above collections.
   -- (This is useful to show that the maximum length subsequence is at least 1, and that the set
   -- of subsequences is nonempty.)
-  have inc_i : ∀ i, {i} ∈ inc_sequences_ending_in i := fun i => by
-    simp [inc_sequences_ending_in, StrictMonoOn]
-  have dec_i : ∀ i, {i} ∈ dec_sequences_ending_in i := fun i => by
-    simp [dec_sequences_ending_in, StrictAntiOn]
+  have inc_i' (i : Fin n) : 1 ∈ inc_sequences_ending_in' i := by
+    simp only [inc_sequences_ending_in', mem_image]
+    use {i}
+    simp
+  have dec_i' (i : Fin n) : 1 ∈ dec_sequences_ending_in' i := by
+    simp only [dec_sequences_ending_in', mem_image]
+    use {i}
+    simp
   -- Define the pair of labels: at index `i`, the pair is the maximum length of an increasing
   -- subsequence ending at `i`, paired with the maximum length of a decreasing subsequence ending
   -- at `i`.
   -- We call these labels `(a_i, b_i)`.
-  let ab' : Fin n → ℕ × ℕ := by
-    intro i
-    apply
-      (max' ((inc_sequences_ending_in i).image card) (Nonempty.image ⟨{i}, inc_i i⟩ _),
-        max' ((dec_sequences_ending_in i).image card) (Nonempty.image ⟨{i}, dec_i i⟩ _))
-  -- Porting note: it costs many resources to unfold `ab'` so we obscure the definition:
-  generalize hab : ab' = ab
-  -- It now suffices to show that one of the labels is 'big' somewhere. In particular, if the
-  -- first in the pair is more than `r` somewhere, then we have an increasing subsequence in our
-  -- set, and if the second is more than `s` somewhere, then we have a decreasing subsequence.
-  rsuffices ⟨i, hi⟩ : ∃ i, r < (ab i).1 ∨ s < (ab i).2
-  · refine Or.imp ?_ ?_ hi
-    on_goal 1 =>
-      have : (ab i).1 ∈ image card (inc_sequences_ending_in i) := by
-        simp only [← hab]; exact max'_mem _ _
-    on_goal 2 =>
-      have : (ab i).2 ∈ image card (dec_sequences_ending_in i) := by
-        simp only [← hab]; exact max'_mem _ _
-    all_goals
-      intro hi
-      rw [mem_image] at this
-      obtain ⟨t, ht₁, ht₂⟩ := this
-      refine ⟨t, by rwa [ht₂], ?_⟩
-      rw [mem_filter] at ht₁
-      apply ht₁.2.2
-  -- Show first that the pair of labels is unique.
-  have : Injective ab := by
-    simp only [← hab]
-    apply injective_of_lt_imp_ne
-    intro i j k q
-    injection q with q₁ q₂
-    -- We have two cases: `f i < f j` or `f j < f i`.
-    -- In the former we'll show `a_i < a_j`, and in the latter we'll show `b_i < b_j`.
-    cases lt_or_gt_of_ne fun _ => ne_of_lt ‹i < j› (hf ‹f i = f j›)
-    on_goal 1 =>
-      apply ne_of_lt _ q₁
-      have : (ab' i).1 ∈ image card (inc_sequences_ending_in i) := by dsimp only; exact max'_mem _ _
-    on_goal 2 =>
-      apply ne_of_lt _ q₂
-      have : (ab' i).2 ∈ image card (dec_sequences_ending_in i) := by dsimp only; exact max'_mem _ _
-    all_goals
-      -- Reduce to showing there is a subsequence of length `a_i + 1` which ends at `j`.
-      rw [Nat.lt_iff_add_one_le]
-      apply le_max'
-      rw [mem_image] at this ⊢
-      -- In particular we take the subsequence `t` of length `a_i` which ends at `i`, by definition
-      -- of `a_i`
-      rcases this with ⟨t, ht₁, ht₂⟩
-      rw [mem_filter] at ht₁
-      -- Ensure `t` ends at `i`.
-      have : t.max = i := by simp only [ht₁.2.1]
-      -- Now our new subsequence is given by adding `j` at the end of `t`.
-      refine ⟨insert j t, ?_, ?_⟩
-      -- First make sure it's valid, i.e., that this subsequence ends at `j` and is increasing
-      · rw [mem_filter]
-        refine ⟨?_, ?_, ?_⟩
-        · rw [mem_powerset]; apply subset_univ
-        -- It ends at `j` since `i < j`.
-        · convert max_insert (a := j) (s := t)
-          rw [ht₁.2.1, max_eq_left]
-          apply WithBot.coe_le_coe.mpr (le_of_lt ‹i < j›)
-        -- To show it's increasing (i.e., `f` is monotone increasing on `t.insert j`), we do cases
-        -- on what the possibilities could be - either in `t` or equals `j`.
-        simp only [StrictMonoOn, StrictAntiOn, coe_insert, Set.mem_insert_iff, mem_coe]
-        -- Most of the cases are just bashes.
-        rintro x ⟨rfl | _⟩ y ⟨rfl | _⟩ _
-        · apply (irrefl _ ‹j < j›).elim
-        · exfalso
-          apply not_le_of_lt (_root_.trans ‹i < j› ‹j < y›) (le_max_of_eq ‹y ∈ t› ‹t.max = i›)
-        · first
-          | apply lt_of_le_of_lt _ ‹f i < f j›
-          | apply lt_of_lt_of_le ‹f j < f i› _
-          rcases lt_or_eq_of_le (le_max_of_eq ‹x ∈ t› ‹t.max = i›) with (_ | rfl)
-          · apply le_of_lt (ht₁.2.2 ‹x ∈ t› (mem_of_max ‹t.max = i›) ‹x < i›)
-          · rfl
-        · apply ht₁.2.2 ‹x ∈ t› ‹y ∈ t› ‹x < y›
-      -- Finally show that this new subsequence is one longer than the old one.
-      · rw [card_insert_of_not_mem, ht₂]
-        intro
-        apply not_le_of_lt ‹i < j› (le_max_of_eq ‹j ∈ t› ‹t.max = i›)
-  -- Finished both goals!
-  -- Now that we have uniqueness of each label, it remains to do some counting to finish off.
-  -- Suppose all the labels are small.
-  by_contra! q
-  -- Then the labels `(a_i, b_i)` all fit in the following set: `{ (x,y) | 1 ≤ x ≤ r, 1 ≤ y ≤ s }`
-  let ran : Finset (ℕ × ℕ) := (range r).image Nat.succ ×ˢ (range s).image Nat.succ
-  -- which we prove here.
-  have : image ab univ ⊆ ran := by
-    -- First some logical shuffling
-    rintro ⟨x₁, x₂⟩
-    simp only [ran, mem_image, exists_prop, mem_range, mem_univ, mem_product, true_and,
-      Prod.ext_iff]
-    rintro ⟨i, rfl, rfl⟩
-    specialize q i
-    -- Show `1 ≤ a_i` and `1 ≤ b_i`, which is easy from the fact that `{i}` is an increasing and
-    -- decreasing subsequence which we did right near the top.
-    have z : 1 ≤ (ab i).1 ∧ 1 ≤ (ab i).2 := by
-      simp only [← hab]
-      constructor <;>
-        · apply le_max'
-          rw [mem_image]
-          exact ⟨{i}, by solve_by_elim, card_singleton i⟩
-    -- Need to get `a_i ≤ r`, here phrased as: there is some `a < r` with `a+1 = a_i`.
-    exact ⟨⟨(ab i).1 - 1, by omega⟩, (ab i).2 - 1, by omega⟩
-  -- To get our contradiction, it suffices to prove `n ≤ r * s`
-  apply not_le_of_lt hn
-  -- Which follows from considering the cardinalities of the subset above, since `ab` is injective.
-  simpa [ran, Nat.succ_injective, card_image_of_injective, ‹Injective ab›] using card_le_card this
+  set ab'' : Fin n → ℕ × ℕ := fun i =>
+    (max' (inc_sequences_ending_in' i) ⟨_, inc_i' _⟩,
+     max' (dec_sequences_ending_in' i) ⟨_, dec_i' _⟩)
+  -- -- Porting note: it costs many resources to unfold `ab'` so we obscure the definition:
+  -- generalize hab : ab' = ab
+  generalize hab'' : ab'' = ab
+  have uniq_a : ∀ i j : Fin n, i < j → f i < f j → (ab i).1 < (ab j).1 := by
+    intro i j hij hfij
+    rw [Nat.lt_iff_add_one_le]
+    nth_rw 2 [←hab'']
+    refine le_max' _ _ ?_
+    have : (ab i).1 ∈ inc_sequences_ending_in' i := by rw [← hab'']; exact max'_mem _ ⟨_, inc_i' i⟩
+    simp only [inc_sequences_ending_in', mem_image, mem_filter, exists_prop, mem_univ,
+      exists_and_right, true_and, and_assoc] at this
+    obtain ⟨t, hti, ht₁, ht₂⟩ := this
+    simp only [inc_sequences_ending_in', mem_image, mem_filter, mem_univ, true_and,
+      exists_and_right, and_assoc]
+    have : ∀ x ∈ t, x < j := by
+      intro x hx
+      exact (hti.2 hx).trans_lt hij
+    refine ⟨insert j t, ?_, ?_, ?_⟩
+    next =>
+      convert hti.insert j using 1
+      next => simp
+      next => rw [max_eq_left hij.le]
+    next =>
+      simp
+      apply StrictMonoOn.insert
+
+
+    -- simp only [exists_and_right, powerset_univ, mem_image, mem_filter, mem_univ, true_and,
+    --   inc_sequences_ending_in'] at this
+
+
+  -- have : Injective ab'' := by
+    -- sorry
+
+  -- -- It now suffices to show that one of the labels is 'big' somewhere. In particular, if the
+  -- -- first in the pair is more than `r` somewhere, then we have an increasing subsequence in our
+  -- -- set, and if the second is more than `s` somewhere, then we have a decreasing subsequence.
+  -- rsuffices ⟨i, hi⟩ : ∃ i, r < (ab i).1 ∨ s < (ab i).2
+  -- · refine Or.imp ?_ ?_ hi
+  --   on_goal 1 =>
+  --     have : (ab i).1 ∈ image card (inc_sequences_ending_in i) := by
+  --       simp only [← hab]; exact max'_mem _ _
+  --   on_goal 2 =>
+  --     have : (ab i).2 ∈ image card (dec_sequences_ending_in i) := by
+  --       simp only [← hab]; exact max'_mem _ _
+  --   all_goals
+  --     intro hi
+  --     rw [mem_image] at this
+  --     obtain ⟨t, ht₁, ht₂⟩ := this
+  --     refine ⟨t, by rwa [ht₂], ?_⟩
+  --     rw [mem_filter] at ht₁
+  --     apply ht₁.2.2
+  -- -- Show first that the pair of labels is unique.
+  -- have : Injective ab := by
+  --   simp only [← hab]
+  --   apply injective_of_lt_imp_ne
+  --   intro i j k q
+  --   injection q with q₁ q₂
+  --   -- We have two cases: `f i < f j` or `f j < f i`.
+  --   -- In the former we'll show `a_i < a_j`, and in the latter we'll show `b_i < b_j`.
+  --   cases lt_or_gt_of_ne fun _ => ne_of_lt ‹i < j› (hf ‹f i = f j›)
+  --   on_goal 1 =>
+  --     apply ne_of_lt _ q₁
+  --     have : (ab' i).1 ∈ image card (inc_sequences_ending_in i) := by dsimp only; exact max'_mem _ _
+  --   on_goal 2 =>
+  --     apply ne_of_lt _ q₂
+  --     have : (ab' i).2 ∈ image card (dec_sequences_ending_in i) := by dsimp only; exact max'_mem _ _
+  --   all_goals
+  --     -- Reduce to showing there is a subsequence of length `a_i + 1` which ends at `j`.
+  --     rw [Nat.lt_iff_add_one_le]
+  --     apply le_max'
+  --     rw [mem_image] at this ⊢
+  --     -- In particular we take the subsequence `t` of length `a_i` which ends at `i`, by definition
+  --     -- of `a_i`
+  --     rcases this with ⟨t, ht₁, ht₂⟩
+  --     rw [mem_filter] at ht₁
+  --     -- Ensure `t` ends at `i`.
+  --     have : t.max = i := by simp only [ht₁.2.1]
+  --     -- Now our new subsequence is given by adding `j` at the end of `t`.
+  --     refine ⟨insert j t, ?_, ?_⟩
+  --     -- First make sure it's valid, i.e., that this subsequence ends at `j` and is increasing
+  --     · rw [mem_filter]
+  --       refine ⟨?_, ?_, ?_⟩
+  --       · rw [mem_powerset]; apply subset_univ
+  --       -- It ends at `j` since `i < j`.
+  --       · convert max_insert (a := j) (s := t)
+  --         rw [ht₁.2.1, max_eq_left]
+  --         apply WithBot.coe_le_coe.mpr (le_of_lt ‹i < j›)
+  --       -- To show it's increasing (i.e., `f` is monotone increasing on `t.insert j`), we do cases
+  --       -- on what the possibilities could be - either in `t` or equals `j`.
+  --       simp only [StrictMonoOn, StrictAntiOn, coe_insert, Set.mem_insert_iff, mem_coe]
+  --       -- Most of the cases are just bashes.
+  --       rintro x ⟨rfl | _⟩ y ⟨rfl | _⟩ _
+  --       · apply (irrefl _ ‹j < j›).elim
+  --       · exfalso
+  --         apply not_le_of_lt (_root_.trans ‹i < j› ‹j < y›) (le_max_of_eq ‹y ∈ t› ‹t.max = i›)
+  --       · first
+  --         | apply lt_of_le_of_lt _ ‹f i < f j›
+  --         | apply lt_of_lt_of_le ‹f j < f i› _
+  --         rcases lt_or_eq_of_le (le_max_of_eq ‹x ∈ t› ‹t.max = i›) with (_ | rfl)
+  --         · apply le_of_lt (ht₁.2.2 ‹x ∈ t› (mem_of_max ‹t.max = i›) ‹x < i›)
+  --         · rfl
+  --       · apply ht₁.2.2 ‹x ∈ t› ‹y ∈ t› ‹x < y›
+  --     -- Finally show that this new subsequence is one longer than the old one.
+  --     · rw [card_insert_of_not_mem, ht₂]
+  --       intro
+  --       apply not_le_of_lt ‹i < j› (le_max_of_eq ‹j ∈ t› ‹t.max = i›)
+  -- -- Finished both goals!
+  -- -- Now that we have uniqueness of each label, it remains to do some counting to finish off.
+  -- -- Suppose all the labels are small.
+  -- by_contra! q
+  -- -- Then the labels `(a_i, b_i)` all fit in the following set: `{ (x,y) | 1 ≤ x ≤ r, 1 ≤ y ≤ s }`
+  -- let ran : Finset (ℕ × ℕ) := (range r).image Nat.succ ×ˢ (range s).image Nat.succ
+  -- -- which we prove here.
+  -- have : image ab univ ⊆ ran := by
+  --   -- First some logical shuffling
+  --   rintro ⟨x₁, x₂⟩
+  --   simp only [ran, mem_image, exists_prop, mem_range, mem_univ, mem_product, true_and,
+  --     Prod.ext_iff]
+  --   rintro ⟨i, rfl, rfl⟩
+  --   specialize q i
+  --   -- Show `1 ≤ a_i` and `1 ≤ b_i`, which is easy from the fact that `{i}` is an increasing and
+  --   -- decreasing subsequence which we did right near the top.
+  --   have z : 1 ≤ (ab i).1 ∧ 1 ≤ (ab i).2 := by
+  --     simp only [← hab]
+  --     constructor <;>
+  --       · apply le_max'
+  --         rw [mem_image]
+  --         exact ⟨{i}, by solve_by_elim, card_singleton i⟩
+  --   -- Need to get `a_i ≤ r`, here phrased as: there is some `a < r` with `a+1 = a_i`.
+  --   exact ⟨⟨(ab i).1 - 1, by omega⟩, (ab i).2 - 1, by omega⟩
+  -- -- To get our contradiction, it suffices to prove `n ≤ r * s`
+  -- apply not_le_of_lt hn
+  -- -- Which follows from considering the cardinalities of the subset above, since `ab` is injective.
+  -- simpa [ran, Nat.succ_injective, card_image_of_injective, ‹Injective ab›] using card_le_card this
 
 end Theorems100
