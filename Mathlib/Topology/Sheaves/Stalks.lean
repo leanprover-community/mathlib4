@@ -60,6 +60,8 @@ open TopologicalSpace
 
 open Opposite
 
+open scoped AlgebraicGeometry
+
 variable {C : Type u} [Category.{v} C]
 variable [HasColimits.{v} C]
 variable {X Y Z : TopCat.{v}}
