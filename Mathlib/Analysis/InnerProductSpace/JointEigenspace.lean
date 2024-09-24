@@ -48,13 +48,6 @@ section CommRing
 variable [CommRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable {α : 𝕜} {A B : E →ₗ[𝕜] E}
 
-/-- If a pair of operators commute, then the eigenspaces of one are invariant under the other. -/
-theorem eigenspace_invariant_of_commute
-    (hAB : A ∘ₗ B = B ∘ₗ A) (α : 𝕜) : ∀ v ∈ eigenspace A α, B v ∈ eigenspace A α := by
-  intro v hv
-  rw [eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply, ← comp_apply A B v, hAB,
-    comp_apply B A v, ← map_smul, ← map_sub, hv, map_zero] at *
-
 /-- The indexed infimum of eigenspaces of a commuting family of linear operators is
 invariant under each operator. -/
 theorem iInf_eigenspace_invariant_of_commute {T : n → E →ₗ[𝕜] E}
@@ -62,7 +55,7 @@ theorem iInf_eigenspace_invariant_of_commute {T : n → E →ₗ[𝕜] E}
     (hv : v ∈ ⨅ j, eigenspace (Subtype.restrict (· ≠ i) T j) (γ j)) :
     T i v ∈ ⨅ j, eigenspace (Subtype.restrict (· ≠ i) T j) (γ j) := by
   simp only [Submodule.mem_iInf] at hv ⊢
-  exact fun j ↦ eigenspace_invariant_of_commute (hC j i) (γ j) v (hv j)
+  exact fun j ↦ mapsTo_genEigenspace_of_comm (hC j i) (γ j) 1 (hv j)
 
 end CommRing
 
@@ -115,7 +108,7 @@ theorem iSup_eigenspace_inf_eigenspace (hB : B.IsSymmetric) (hAB : A ∘ₗ B = 
 /-- If A and B are commuting symmetric operators acting on a finite dimensional inner product space,
 then the simultaneous eigenspaces of A and B exhaust the space. -/
 theorem iSup_iSup_eigenspace_inf_eigenspace_eq_top (hA : A.IsSymmetric) (hB : B.IsSymmetric)
-    (hAB : A ∘ₗ B = B ∘ₗ A) :
+    (hAB : Commute A B) :
     (⨆ α, ⨆ γ, eigenspace A α ⊓ eigenspace B γ) = ⊤ := by
   simpa [iSup_eigenspace_inf_eigenspace hB hAB] using
     Submodule.orthogonal_eq_bot_iff.mp <| hA.orthogonalComplement_iSup_eigenspaces_eq_bot
@@ -124,7 +117,7 @@ theorem iSup_iSup_eigenspace_inf_eigenspace_eq_top (hA : A.IsSymmetric) (hB : B.
 space, the space decomposes as an internal direct sum of simultaneous eigenspaces of these
 operators. -/
 theorem directSum_isInternal_of_commute (hA : A.IsSymmetric) (hB : B.IsSymmetric)
-    (hAB : A ∘ₗ B = B ∘ₗ A) :
+    (hAB : Commute A B) :
     DirectSum.IsInternal (fun (i : 𝕜 × 𝕜) ↦ (eigenspace A i.2 ⊓ eigenspace B i.1)):= by
   apply (orthogonalFamily_eigenspace_inf_eigenspace hA hB).isInternal_iff.mpr
   rw [Submodule.orthogonal_eq_bot_iff, iSup_prod, iSup_comm]
@@ -144,7 +137,7 @@ theorem iSup_eigenspace_restrict {F : Submodule 𝕜 E}
 /-- The orthocomplement of the indexed supremum of joint eigenspaces of a finite commuting tuple of
 symmetric operators is trivial. -/
 theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Finite n]
-    (hT : ∀ i, (T i).IsSymmetric) (hC : ∀ i j, T i ∘ₗ T j = T j ∘ₗ T i) :
+    (hT : ∀ i, (T i).IsSymmetric) (hC : ∀ i j, Commute (T i) (T j)) :
     (⨆ γ : n → 𝕜, ⨅ j, eigenspace (T j) (γ j))ᗮ = ⊥ := by
   have _ := Fintype.ofFinite n
   revert T
@@ -163,7 +156,8 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Finite n]
     simp only [Submodule.orthogonal_eq_bot_iff] at *
     rw [← (Equiv.funSplitAt i 𝕜).symm.iSup_comp, iSup_prod, iSup_comm]
     convert H with γ
-    rw [← iSup_eigenspace_restrict (T i) (hT i) (iInf_eigenspace_invariant_of_commute hC i γ)]
+    -- mapsTo_iInf_genEigenspace_of_forall_comm (hC : ∀ j, Commute (f j) g) (μ : ι → R) (k : ℕ)
+    rw [← iSup_eigenspace_restrict (T i) (hT i) (mapsTo_iInf_genEigenspace_of_forall_comm hC i γ)]
     congr! with μ
     rw [← Module.End.genEigenspace_one, ← Submodule.inf_genEigenspace _ _ _ (k := 1), inf_comm,
       iInf_split_single _ i, iInf_subtype]
@@ -175,7 +169,7 @@ theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Finite n]
 act decomposes as an internal direct sum of simultaneous eigenspaces. -/
 theorem LinearMap.IsSymmetric.directSum_isInternal_of_commute_of_fintype [Finite n]
     [DecidableEq (n → 𝕜)] (hT :∀ i, (T i).IsSymmetric)
-    (hC : ∀ i j, T i ∘ₗ T j = T j ∘ₗ T i) :
+    (hC : ∀ i j, Commute (T i) (T j)) :
     DirectSum.IsInternal (fun α : n → 𝕜 ↦ ⨅ j, eigenspace (T j) (α j)) := by
   rw [OrthogonalFamily.isInternal_iff]
   · exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot hT hC
