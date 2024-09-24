@@ -213,7 +213,7 @@ lemma exists_forall_mem_corootSpace_smul_add_eq_zero
     simp_rw [genWeightSpaceChain_def', LieSubmodule.iSup_coe_toSubmodule]
   rw [← trace_toEnd_genWeightSpaceChain_eq_zero M α χ p q hp hq hx,
     ← LieSubmodule.toEnd_restrict_eq_toEnd]
-  -- This lays bare the horror of trying to treat `LieSubmodule` as both a
+  -- The lines below illustrate the cost of treating `LieSubmodule` as both a
   -- `Submodule` and a `LieSubmodule` simultaneously.
   erw [LinearMap.trace_eq_sum_trace_restrict_of_eq_biSup _ h₁ h₂ (genWeightSpaceChain M α χ p q) h₃]
   simp_rw [LieSubmodule.toEnd_restrict_eq_toEnd]
