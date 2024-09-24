@@ -328,6 +328,7 @@ Furthermore, this bijection preserves (and reflects) isomorphisms, i.e. a transf
 iff its image under the bijection is an iso, see eg `CategoryTheory.conjugateIsoEquiv`.
 This is in contrast to the general case `mateEquiv` which does not in general have this property.
 -/
+@[simps!]
 def conjugateEquiv : (L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂) :=
   calc
     (L₂ ⟶ L₁) ≃ _ := (Iso.homCongr L₂.leftUnitor L₁.rightUnitor).symm
@@ -401,6 +402,7 @@ variable [Category.{v₁} C] [Category.{v₂} D]
 variable {L₁ L₂ L₃ : C ⥤ D} {R₁ R₂ R₃ : D ⥤ C}
 variable (adj₁ : L₁ ⊣ R₁) (adj₂ : L₂ ⊣ R₂) (adj₃ : L₃ ⊣ R₃)
 
+@[simp]
 theorem conjugateEquiv_comp (α : L₂ ⟶ L₁) (β : L₃ ⟶ L₂) :
     conjugateEquiv adj₁ adj₂ α ≫ conjugateEquiv adj₂ adj₃ β =
       conjugateEquiv adj₁ adj₃ (β ≫ α) := by
@@ -414,19 +416,22 @@ theorem conjugateEquiv_comp (α : L₂ ⟶ L₁) (β : L₃ ⟶ L₂) :
   simp only [comp_id, id_comp, assoc, map_comp] at vcompd ⊢
   rw [vcompd]
 
-theorem conjugateEquiv_symm_comp (α : R₁ ⟶ R₂) (β : R₂ ⟶ R₃) :
+@[simp]
+theorem conjugateEquiv_comp_symm (α : R₁ ⟶ R₂) (β : R₂ ⟶ R₃) :
     (conjugateEquiv adj₂ adj₃).symm β ≫ (conjugateEquiv adj₁ adj₂).symm α =
       (conjugateEquiv adj₁ adj₃).symm (α ≫ β) := by
   rw [Equiv.eq_symm_apply, ← conjugateEquiv_comp _ adj₂]
   simp only [Equiv.apply_symm_apply]
 
+@[simp]
 theorem conjugateEquiv_comm {α : L₂ ⟶ L₁} {β : L₁ ⟶ L₂} (βα : β ≫ α = 𝟙 _) :
     conjugateEquiv adj₁ adj₂ α ≫ conjugateEquiv adj₂ adj₁ β = 𝟙 _ := by
   rw [conjugateEquiv_comp, βα, conjugateEquiv_id]
 
+@[simp]
 theorem conjugateEquiv_symm_comm {α : R₁ ⟶ R₂} {β : R₂ ⟶ R₁} (αβ : α ≫ β = 𝟙 _) :
     (conjugateEquiv adj₂ adj₁).symm β ≫ (conjugateEquiv adj₁ adj₂).symm α = 𝟙 _ := by
-  rw [conjugateEquiv_symm_comp, αβ, conjugateEquiv_symm_id]
+  rw [conjugateEquiv_comp_symm, αβ, conjugateEquiv_symm_id]
 
 end ConjugateComposition
 
@@ -473,9 +478,16 @@ theorem conjugateEquiv_symm_of_iso (α : R₁ ⟶ R₂)
   infer_instance
 
 /-- Thus conjugation defines an equivalence between natural isomorphisms. -/
-noncomputable def conjugateIsoEquiv : (L₂ ≅ L₁) ≃ (R₁ ≅ R₂) where
-  toFun α := asIso (conjugateEquiv adj₁ adj₂ α.hom)
-  invFun β := asIso ((conjugateEquiv adj₁ adj₂).symm β.hom)
+@[simps]
+def conjugateIsoEquiv : (L₂ ≅ L₁) ≃ (R₁ ≅ R₂) where
+  toFun α := {
+    hom := conjugateEquiv adj₁ adj₂ α.hom
+    inv := conjugateEquiv adj₂ adj₁ α.inv
+  }
+  invFun β := {
+    hom := (conjugateEquiv adj₁ adj₂).symm β.hom
+    inv := (conjugateEquiv adj₂ adj₁).symm β.inv
+  }
   left_inv := by aesop_cat
   right_inv := by aesop_cat
 
