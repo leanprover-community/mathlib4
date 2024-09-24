@@ -1671,8 +1671,8 @@ theorem norm_inner_eq_norm_tfae (x y : E) :
       x = 0 ∨ y = (⟪x, y⟫ / ⟪x, x⟫) • x,
       x = 0 ∨ ∃ r : 𝕜, y = r • x,
       x = 0 ∨ y ∈ 𝕜 ∙ x] := by
-  tfae_have 1 → 2
-  · refine fun h => or_iff_not_imp_left.2 fun hx₀ => ?_
+  tfae_have 1 → 2 := by
+    refine fun h => or_iff_not_imp_left.2 fun hx₀ => ?_
     have : ‖x‖ ^ 2 ≠ 0 := pow_ne_zero _ (norm_ne_zero_iff.2 hx₀)
     rw [← sq_eq_sq, mul_pow, ← mul_right_inj' this, eq_comm, ← sub_eq_zero, ← mul_sub] at h <;>
       try positivity
@@ -1682,13 +1682,12 @@ theorem norm_inner_eq_norm_tfae (x y : E) :
       sub_eq_zero] at h
     rw [div_eq_inv_mul, mul_smul, h, inv_smul_smul₀]
     rwa [inner_self_ne_zero]
-  tfae_have 2 → 3
-  · exact fun h => h.imp_right fun h' => ⟨_, h'⟩
-  tfae_have 3 → 1
-  · rintro (rfl | ⟨r, rfl⟩) <;>
+  tfae_have 2 → 3 := fun h => h.imp_right fun h' => ⟨_, h'⟩
+  tfae_have 3 → 1 := by
+    rintro (rfl | ⟨r, rfl⟩) <;>
     simp [inner_smul_right, norm_smul, inner_self_eq_norm_sq_to_K, inner_self_eq_norm_mul_norm,
       sq, mul_left_comm]
-  tfae_have 3 ↔ 4; · simp only [Submodule.mem_span_singleton, eq_comm]
+  tfae_have 3 ↔ 4 := by simp only [Submodule.mem_span_singleton, eq_comm]
   tfae_finish
 
 /-- If the inner product of two vectors is equal to the product of their norms, then the two vectors
