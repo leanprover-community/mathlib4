@@ -118,7 +118,7 @@ def getMatchingLabels (files : Array FilePath) : Array String :=
   applicable.map (·.label) |>.qsort (· < ·)
 
 /-!
-Testing the functionaliry of the declarations defined in this script
+Testing the functionality of the declarations defined in this script
 -/
 section Tests
 
