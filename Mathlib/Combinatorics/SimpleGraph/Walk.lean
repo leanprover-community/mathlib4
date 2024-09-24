@@ -420,8 +420,8 @@ theorem concatRec_concat {u v w : V} (p : G.Walk u v) (h : G.Adj v w) :
   trans concatRecAux @Hnil @Hconcat (cons h.symm p.reverse)
   · congr
     simp
-  · rw [concatRecAux, rec_heq_iff_heq]
-    congr <;> simp [heq_rec_iff_heq]
+  · rw [concatRecAux, eqRec_heq_iff_heq]
+    congr <;> simp [heq_eqRec_iff_heq]
 
 end ConcatRec
 

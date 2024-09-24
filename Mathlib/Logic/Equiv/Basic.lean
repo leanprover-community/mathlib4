@@ -1611,7 +1611,7 @@ around it in the case where `a` is of the form `e.symm b`, so we can use `g b` i
 @[simp]
 lemma piCongrLeft'_symm_apply_apply (P : α → Sort*) (e : α ≃ β) (g : ∀ b, P (e.symm b)) (b : β) :
     (piCongrLeft' P e).symm g (e.symm b) = g b := by
-  rw [piCongrLeft'_symm_apply, ← heq_iff_eq, rec_heq_iff_heq]
+  rw [piCongrLeft'_symm_apply, ← heq_iff_eq, eqRec_heq_iff_heq]
   exact congr_arg_heq _ (e.apply_symm_apply _)
 
 end

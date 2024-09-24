@@ -412,22 +412,26 @@ theorem congr_fun_rfl {α β : Sort*} (f : α → β) (a : α) : congr_fun (Eq.r
 theorem congr_fun_congr_arg {α β γ : Sort*} (f : α → β → γ) {a a' : α} (p : a = a') (b : β) :
     congr_fun (congr_arg f p) b = congr_arg (fun a ↦ f a b) p := rfl
 
+@[deprecated (since := "2024-09-25")]
 theorem Eq.rec_eq_cast {α : Sort _} {P : α → Sort _} {x y : α} (h : x = y) (z : P x) :
-    h ▸ z = cast (congr_arg P h) z := by induction h; rfl
+    h ▸ z = cast (congr_arg P h) z := eqRec_eq_cast _ _
 
+@[deprecated (since := "2024-09-25")]
 theorem eqRec_heq' {α : Sort*} {a' : α} {motive : (a : α) → a' = a → Sort*}
     (p : motive a' (rfl : a' = a')) {a : α} (t : a' = a) :
-    HEq (@Eq.rec α a' motive p a t) p := by
-  subst t; rfl
+    HEq (@Eq.rec α a' motive p a t) p :=
+  eqRec_heq_self p t
 
 theorem rec_heq_of_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : C a} {y : β}
-    (e : a = b) (h : HEq x y) : HEq (e ▸ x) y := by subst e; exact h
+    (e : a = b) (h : HEq x y) : HEq (e ▸ x) y := eqRec_heq_iff_heq.mpr h
 
+@[deprecated (since := "2024-09-25")]
 theorem rec_heq_iff_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : C a} {y : β} {e : a = b} :
-    HEq (e ▸ x) y ↔ HEq x y := by subst e; rfl
+    HEq (e ▸ x) y ↔ HEq x y := eqRec_heq_iff_heq
 
+@[deprecated (since := "2024-09-25")]
 theorem heq_rec_iff_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : β} {y : C a} {e : a = b} :
-    HEq x (e ▸ y) ↔ HEq x y := by subst e; rfl
+    HEq x (e ▸ y) ↔ HEq x y := heq_eqRec_iff_heq
 
 end Equality
 
