@@ -210,12 +210,13 @@ theorem card_inv_le : s⁻¹.card ≤ s.card :=
 theorem inv_empty : (∅ : Finset α)⁻¹ = ∅ :=
   image_empty _
 
-@[to_additive (attr := simp, aesop safe apply (rule_sets := [finsetNonempty]))]
+@[to_additive (attr := simp)]
 theorem inv_nonempty_iff : s⁻¹.Nonempty ↔ s.Nonempty := image_nonempty
 
 alias ⟨Nonempty.of_inv, Nonempty.inv⟩ := inv_nonempty_iff
 
 attribute [to_additive] Nonempty.inv Nonempty.of_inv
+attribute [aesop safe apply (rule_sets := [finsetNonempty])] Nonempty.inv Nonempty.neg
 
 @[to_additive (attr := simp)]
 theorem inv_eq_empty : s⁻¹ = ∅ ↔ s = ∅ := image_eq_empty
@@ -341,11 +342,11 @@ theorem mul_empty (s : Finset α) : s * ∅ = ∅ :=
 theorem mul_eq_empty : s * t = ∅ ↔ s = ∅ ∨ t = ∅ :=
   image₂_eq_empty_iff
 
-@[to_additive (attr := simp, aesop safe apply (rule_sets := [finsetNonempty]))]
+@[to_additive (attr := simp)]
 theorem mul_nonempty : (s * t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image₂_nonempty_iff
 
-@[to_additive]
+@[to_additive (attr := aesop safe apply (rule_sets := [finsetNonempty]))]
 theorem Nonempty.mul : s.Nonempty → t.Nonempty → (s * t).Nonempty :=
   Nonempty.image₂
 
@@ -525,11 +526,11 @@ theorem div_empty (s : Finset α) : s / ∅ = ∅ :=
 theorem div_eq_empty : s / t = ∅ ↔ s = ∅ ∨ t = ∅ :=
   image₂_eq_empty_iff
 
-@[to_additive (attr := simp, aesop safe apply (rule_sets := [finsetNonempty]))]
+@[to_additive (attr := simp)]
 theorem div_nonempty : (s / t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image₂_nonempty_iff
 
-@[to_additive]
+@[to_additive (attr := aesop safe apply (rule_sets := [finsetNonempty]))]
 theorem Nonempty.div : s.Nonempty → t.Nonempty → (s / t).Nonempty :=
   Nonempty.image₂
 
@@ -1119,11 +1120,11 @@ theorem smul_empty (s : Finset α) : s • (∅ : Finset β) = ∅ :=
 theorem smul_eq_empty : s • t = ∅ ↔ s = ∅ ∨ t = ∅ :=
   image₂_eq_empty_iff
 
-@[to_additive (attr := simp, aesop safe apply (rule_sets := [finsetNonempty]))]
+@[to_additive (attr := simp)]
 theorem smul_nonempty_iff : (s • t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image₂_nonempty_iff
 
-@[to_additive]
+@[to_additive (attr := aesop safe apply (rule_sets := [finsetNonempty]))]
 theorem Nonempty.smul : s.Nonempty → t.Nonempty → (s • t).Nonempty :=
   Nonempty.image₂
 
@@ -1240,10 +1241,11 @@ theorem vsub_empty (s : Finset β) : s -ᵥ (∅ : Finset β) = ∅ :=
 theorem vsub_eq_empty : s -ᵥ t = ∅ ↔ s = ∅ ∨ t = ∅ :=
   image₂_eq_empty_iff
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem vsub_nonempty : (s -ᵥ t : Finset α).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image₂_nonempty_iff
 
+@[aesop safe apply (rule_sets := [finsetNonempty])]
 theorem Nonempty.vsub : s.Nonempty → t.Nonempty → (s -ᵥ t : Finset α).Nonempty :=
   Nonempty.image₂
 
@@ -1351,11 +1353,11 @@ theorem smul_finset_empty (a : α) : a • (∅ : Finset β) = ∅ :=
 theorem smul_finset_eq_empty : a • s = ∅ ↔ s = ∅ :=
   image_eq_empty
 
-@[to_additive (attr := simp, aesop safe apply (rule_sets := [finsetNonempty]))]
+@[to_additive (attr := simp)]
 theorem smul_finset_nonempty : (a • s).Nonempty ↔ s.Nonempty :=
   image_nonempty
 
-@[to_additive]
+@[to_additive (attr := aesop safe apply (rule_sets := [finsetNonempty]))]
 theorem Nonempty.smul_finset (hs : s.Nonempty) : (a • s).Nonempty :=
   hs.image _
 
