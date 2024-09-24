@@ -110,6 +110,7 @@ variable [Fintype m] [DecidableEq m] [Ring α]
     (A : Matrix n n α) (U : Matrix n m α) (C : Matrix m m α) (V : Matrix m n α)
     [Invertible A] [Invertible C] [Invertible (⅟C + V * ⅟A* U)]
 
+-- Removed spaces around multiplication signs for better clarity
 lemma add_mul_mul_invOf_mul_eq_one :
     (A + U*C*V)*(⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A) = 1 := by
   calc
