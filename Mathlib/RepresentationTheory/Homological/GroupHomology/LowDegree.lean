@@ -5,7 +5,7 @@ Authors: Amelia Livingston, Joël Riou
 
 -/
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.RepresentationTheory.GroupCohomology.blehfgh
+import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
 import Mathlib.RepresentationTheory.Invariants
 
 

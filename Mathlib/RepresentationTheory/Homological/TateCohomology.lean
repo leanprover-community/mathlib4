@@ -1,7 +1,7 @@
-import Mathlib.RepresentationTheory.GroupCohomology.Basic
-import Mathlib.RepresentationTheory.GroupCohomology.blehfgh
-import Mathlib.RepresentationTheory.GroupCohomology.LowDegree
-import Mathlib.RepresentationTheory.GroupCohomology.LowDegreeHomology
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
+import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+import Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
 
 universe v u
 
@@ -29,5 +29,18 @@ noncomputable def TateCohomology [DecidableEq G] (i : ℤ) : ModuleCat k :=
   | (n + 1 : ℕ) => groupCohomology A (n + 1)
   | -1 => ModuleCat.of k (LinearMap.ker (norm2 A))
   | -(n + 2 : ℕ) => groupHomology A (n + 1)
+
+-- lol
+noncomputable def TateCohomology2 [DecidableEq G] (i : ℤ) : ModuleCat k :=
+  match i with
+  | 0 => ModuleCat.of k (A.ρ.invariants ⧸ (LinearMap.range (norm2 A)))
+  | 1 => ModuleCat.of k (groupCohomology.H1 A)
+  | 2 => ModuleCat.of k (groupCohomology.H2 A)
+  | (n + 3 : ℕ) => groupCohomology A (n + 3)
+  | -1 => ModuleCat.of k (LinearMap.ker (norm2 A))
+  | -2 => ModuleCat.of k (groupHomology.H1 A)
+  | -3 => ModuleCat.of k (groupHomology.H2 A)
+  | -(n + 4 : ℕ) => groupHomology A (n + 3)
+
 
 end Rep
