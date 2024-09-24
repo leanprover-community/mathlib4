@@ -10,7 +10,7 @@ import Mathlib.Algebra.Order.Group.TypeTags
 import Mathlib.Algebra.Order.Hom.Monoid
 
 /-!
-# Archimedean groups are either discrete or densely ordere
+# Archimedean groups are either discrete or densely ordered
 
 This file proves a few additional facts about linearly ordered additive groups which satisfy the
   `Archimedean` property --
