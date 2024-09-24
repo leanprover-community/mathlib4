@@ -11,7 +11,7 @@ import Lean.Elab.Command
 This file contains the script to automatically assign a GitHub label to a PR.
 
 `AutoLabel.mathlibLabels` contains an assignment of github labels to folders inside
-the mathlib repository. The sctript uses `git diff` to determine which files
+the mathlib repository. The script uses `git diff` to determine which files
 a PR modifies and then finds all labels that should be added based on these changes.
 
 For the time being, the script only adds a label if it finds a single unique label
@@ -41,12 +41,12 @@ structure Label where
       #["Mathlib" / ("".intercalate (label.splitOn "-" |>.drop 1 |>.map .capitalize))]
     else #[]
   /-- Array of paths which should be excluded.
-  Any modifications to a file in an excluded path is ignored for the purposes of labelling. -/
+  Any modifications to a file in an excluded path are ignored for the purposes of labelling. -/
   exclusions : Array FilePath := #[]
   deriving BEq, Hashable
 
 /--
-Mathlib Labels and their corresponding folders. Add new labels and folders here!
+Mathlib labels and their corresponding folders. Add new labels and folders here!
 -/
 def mathlibLabels : Array Label := #[
   { label := "t-algebra",
@@ -102,7 +102,7 @@ def _root_.System.FilePath.isPrefixOf (dir path : FilePath) : Bool :=
   (dir / "").normalize.toString.isPrefixOf path.normalize.toString
 
 /--
-Return all labels names for labels in `mathlibLabels` which are matching
+Return all names of labels in `mathlibLabels` which match
 at least one of the `files`.
 
 * `files`: array of relative paths starting from the mathlib project directory.
@@ -152,7 +152,7 @@ unsafe def main (args : List String): IO Unit := do
     IO.Process.exit 1
   let prNumber? := args[0]?
 
-  -- validate that all paths in `mathilbLabels` actually exist
+  -- validate that all paths in `mathlibLabels` actually exist
   let mut valid := true
   for label in mathlibLabels do
     for dir in label.dirs do
