@@ -151,10 +151,10 @@ theorem runLengthRecOn_append {p : List α → Sort*} (n : ℕ+) (a : α) {l : L
     (hn : p []) (hi : ∀ (n : ℕ+) {a l}, a ∉ l.head? → p l → p (replicate n a ++ l)) :
     runLengthRecOn (replicate n a ++ l) hn hi = hi n hl (runLengthRecOn l hn hi) := by
   rw [runLengthRecOn, runLengthRecOn, cast_eq_iff_heq]
-  have H₁ := runLength_append n.2 hl
-  have H₂ : Chain' (fun x y ↦ x.2 ≠ y.2) ((n, a) :: l.RunLength) := H₁ ▸ chain'_runLength _
+  have := runLength_append n.2 hl
   have H : HEq (List.runLengthRecOnAux (replicate n a ++ l).RunLength
-      (chain'_runLength _) hn hi) (List.runLengthRecOnAux ((n, a)::l.RunLength) H₂ hn hi) := by
+      (chain'_runLength _) hn hi) (List.runLengthRecOnAux ((n, a)::l.RunLength)
+      (this ▸ chain'_runLength _) hn hi) := by
     congr
     exact proof_irrel_heq _ _
   apply H.trans
