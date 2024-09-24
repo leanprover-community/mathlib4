@@ -1,11 +1,11 @@
 {"version": "1.1.0",
  "packagesDir": ".lake/packages",
  "packages":
- [{"url": "https://github.com/leanprover-community/batteries",
+ [{"url": "https://github.com/FR-vdash-bot/std4",
    "type": "git",
    "subDir": null,
    "scope": "leanprover-community",
-   "rev": "35d1cd731ad832c9f1d860c4d8ec1c7c3ab96823",
+   "rev": "8c79f5be06cbde71a707dc1d67a88671f3423e42",
    "name": "batteries",
    "manifestFile": "lake-manifest.json",
    "inputRev": "main",
