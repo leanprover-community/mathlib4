@@ -167,22 +167,6 @@ theorem MulEquivClass.toMulEquiv_injective [Mul α] [Mul β] [MulEquivClass F α
     Function.Injective ((↑) : F → α ≃* β) :=
   fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr_arg (fun e : α ≃* β ↦ e.toFun a) e
 
-namespace MulEquivClass
-
-@[to_additive (attr := simp)]
-theorem apply_coe_symm_apply {α β} [Mul α] [Mul β] {F} [EquivLike F α β]
-    [MulEquivClass F α β] (e : F) (x : β) :
-    e ((e : α ≃* β).symm x) = x :=
-  (e : α ≃* β).right_inv x
-
-@[to_additive (attr := simp)]
-theorem coe_symm_apply_apply {α β} [Mul α] [Mul β] {F} [EquivLike F α β]
-    [MulEquivClass F α β] (e : F) (x : α) :
-    (e : α ≃* β).symm (e x) = x :=
-  (e : α ≃* β).left_inv x
-
-end MulEquivClass
-
 namespace MulEquiv
 section Mul
 variable [Mul M] [Mul N] [Mul P] [Mul Q]
@@ -404,6 +388,18 @@ theorem eq_symm_comp {α : Type*} (e : M ≃* N) (f : α → M) (g : α → N) :
 theorem symm_comp_eq {α : Type*} (e : M ≃* N) (f : α → M) (g : α → N) :
     e.symm ∘ g = f ↔ g = e ∘ f :=
   e.toEquiv.symm_comp_eq f g
+
+@[to_additive (attr := simp)]
+theorem _root_.MulEquivClass.apply_coe_symm_apply {α β} [Mul α] [Mul β] {F} [EquivLike F α β]
+    [MulEquivClass F α β] (e : F) (x : β) :
+    e ((e : α ≃* β).symm x) = x :=
+  (e : α ≃* β).right_inv x
+
+@[to_additive (attr := simp)]
+theorem _root_.MulEquivClass.coe_symm_apply_apply {α β} [Mul α] [Mul β] {F} [EquivLike F α β]
+    [MulEquivClass F α β] (e : F) (x : α) :
+    (e : α ≃* β).symm (e x) = x :=
+  (e : α ≃* β).left_inv x
 
 end symm
 
