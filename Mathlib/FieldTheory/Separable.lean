@@ -603,7 +603,7 @@ alias IsSeparable.of_isScalarTower := Algebra.isSeparable_tower_top_of_isSeparab
 
 end IsScalarTower
 
-end
+end CommRing
 
 section Field
 

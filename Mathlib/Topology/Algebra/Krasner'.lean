@@ -195,31 +195,7 @@ instance instIntermediateFieldAlgebraicClosureIsAlgebraic (K L : Type*) [Field K
 end IntegralClosure
 
 section split
-#check minpoly.add_algebraMap
 variable {A} [Field A]
-theorem minpoly.add_algebraMap' {B : Type*} [CommRing B] [Algebra A B] {x : B}
-    (a : A) : minpoly A (x + algebraMap A B a) = (minpoly A x).comp (X - C a) := by
-  by_cases hx : IsIntegral A x
-  · refine (minpoly.unique _ _ ((minpoly.monic hx).comp_X_sub_C _) ?_ fun q qmo hq => ?_).symm
-    · simp [aeval_comp]
-    · have : (Polynomial.aeval x) (q.comp (X + C a)) = 0 := by simpa [aeval_comp] using hq
-      have H := minpoly.min A x (qmo.comp_X_add_C _) this
-      rw [degree_eq_natDegree qmo.ne_zero,
-        degree_eq_natDegree ((minpoly.monic hx).comp_X_sub_C _).ne_zero, natDegree_comp,
-        natDegree_X_sub_C, mul_one]
-      rwa [degree_eq_natDegree (minpoly.ne_zero hx),
-        degree_eq_natDegree (qmo.comp_X_add_C _).ne_zero, natDegree_comp,
-        natDegree_X_add_C, mul_one] at H
-  · rw [minpoly.eq_zero hx, minpoly.eq_zero, zero_comp]
-    refine fun h ↦ hx ?_
-    simpa only [add_sub_cancel_right] using IsIntegral.sub h (isIntegral_algebraMap (x := a))
-
-noncomputable
-def Polynomial.compAlgHom {R : Type*} [CommSemiring R] :
-Polynomial R → Polynomial R →ₐ[R] Polynomial R :=
-  fun p => {
-    Polynomial.compRingHom p with
-    commutes' := fun r => by simp}
 
 theorem Polynomial.dvd_comp_X_sub_C_iff {B : Type*} [CommRing B] {p q : Polynomial B} {a : B} :
     p ∣ q.comp (X - C a) ↔ p.comp (X + C a) ∣ q := by
@@ -229,13 +205,13 @@ theorem Polynomial.dvd_comp_X_sub_C_iff {B : Type*} [CommRing B] {p q : Polynomi
 
 @[simp] lemma MulEquivClass.apply_coe_symm_apply {α β} [Mul α] [Mul β] {F} [EquivLike F α β]
     [MulEquivClass F α β] (e : F) (x : β) :
-    e ((e : α ≃* β).symm x) = x := by
-  exact (e : α ≃* β).right_inv x
+    e ((e : α ≃* β).symm x) = x :=
+  (e : α ≃* β).right_inv x
 
 @[simp] lemma MulEquivClass.coe_symm_apply_apply {α β} [Mul α] [Mul β] {F} [EquivLike F α β]
     [MulEquivClass F α β] (e : F) (x : α) :
-    (e : α ≃* β).symm (e x) = x := by
-  exact (e : α ≃* β).left_inv x
+    (e : α ≃* β).symm (e x) = x :=
+  (e : α ≃* β).left_inv x
 
 theorem map_isUnit_iff {α : Type*} {β : Type*} [Monoid α] [Monoid β] {F : Type*}
     [EquivLike F α β] [MulEquivClass F α β]
@@ -249,7 +225,7 @@ variable (f : F)
 
 open MulEquiv
 
-lemma Irreducible.map {x : M} (h : Irreducible x) : Irreducible (f x) :=
+theorem Irreducible.map {x : M} (h : Irreducible x) : Irreducible (f x) :=
   let f := MulEquivClass.toMulEquiv f
   ⟨fun g ↦ h.1 (symm_apply_apply f x ▸ g.map f.symm), fun a b g ↦
     .elim (h.2 _ _ (symm_apply_apply f x ▸ map_mul f.symm a b ▸ congrArg f.symm g))
@@ -290,19 +266,21 @@ theorem Polynomial.Splits.comp_X_sub_C {B : Type*} [Field B]
     rw [map_comp, Polynomial.map_sub, map_X, map_C, dvd_comp_X_sub_C_iff] at dvd
     have := h (irr.map (algEquivAevalXAddC _)) dvd
     change degree (g.comp (X + C (algebraMap A B a))) = 1 at this
-    rw [Polynomial.degree_eq_natDegree] at this ⊢
-    rwa [natDegree_comp, natDegree_X_add_C, mul_one] at this
-    exact irr.ne_zero
-    exact fun h => WithBot.bot_ne_one (h ▸ this)
+    rw [degree_eq_natDegree irr.ne_zero]
+    rwa [degree_eq_natDegree (fun h => WithBot.bot_ne_one (h ▸ this)),
+      natDegree_comp, natDegree_X_add_C, mul_one] at this
 
+theorem Polynomial.Splits.comp_X_add_C {B : Type*} [Field B]
+    [Algebra A B] (a : A) {p : Polynomial A}
+    (h : p.Splits (algebraMap A B)) : (p.comp (X + C a)).Splits (algebraMap A B) := by
+  simpa only [map_neg, sub_neg_eq_add] using Polynomial.Splits.comp_X_sub_C (-a) h
 
 variable {R k : Type*} {K : Type*} [Field R] [Field k] [Field K] [Algebra R K] [Algebra k K]
 
 theorem minpoly_split_add_algebraMap {x : K} (r : R)
     (g : (minpoly R x).Splits (algebraMap R K)) :
     (minpoly R (x + algebraMap R K r)).Splits (algebraMap R K) := by
-  simpa [minpoly.add_algebraMap'] using g.comp_X_sub_C r
-
+  simpa [minpoly.add_algebraMap] using g.comp_X_sub_C r
 
 theorem minpoly_split_sub_algebraMap {x : K} (r : R)
     (g : (minpoly R x).Splits (algebraMap R K)) :
