@@ -233,21 +233,53 @@ theorem Polynomial.dvd_comp_X_sub_C_iff {B : Type*} [CommRing B] {p q : Polynomi
   rw [C_eq_algebraMap, algEquivAevalXAddC_apply, ← comp_eq_aeval]
   simp [comp_assoc]
 
-theorem map_isUnit {α : Type*} {β : Type*} [Monoid α] [Monoid β] {F : Type*}
-    [FunLike F α β] [MulHomClass F α β]
-    (f : F) {a} : IsUnit a → IsUnit (f a) := by
-  sorry
+@[simp] lemma MulEquivClass.apply_coe_symm_apply {α β} [Mul α] [Mul β] {F} [EquivLike F α β]
+    [MulEquivClass F α β] (e : F) (x : β) :
+    e ((e : α ≃* β).symm x) = x := by
+  exact (e : α ≃* β).right_inv x
+
+@[simp] lemma MulEquivClass.coe_symm_apply_apply {α β} [Mul α] [Mul β] {F} [EquivLike F α β]
+    [MulEquivClass F α β] (e : F) (x : α) :
+    (e : α ≃* β).symm (e x) = x := by
+  exact (e : α ≃* β).left_inv x
+
+theorem map_isUnit_iff {α : Type*} {β : Type*} [Monoid α] [Monoid β] {F : Type*}
+    [EquivLike F α β] [MulEquivClass F α β]
+    (f : F) {a} : IsUnit a ↔ IsUnit (f a) :=
+  ⟨IsUnit.map f, by simpa only [MulEquivClass.coe_symm_apply_apply] using
+    (IsUnit.map (f : α ≃* β).symm (x := f a))⟩
+
+variable {M N F : Type*} [Monoid M] [Monoid N] [EquivLike F M N] [MulEquivClass F M N]
+
+variable (f : F)
+
+open MulEquiv
+
+lemma Irreducible.map {x : M} (h : Irreducible x) : Irreducible (f x) :=
+  let f := MulEquivClass.toMulEquiv f
+  ⟨fun g ↦ h.1 (symm_apply_apply f x ▸ g.map f.symm), fun a b g ↦
+    .elim (h.2 _ _ (symm_apply_apply f x ▸ map_mul f.symm a b ▸ congrArg f.symm g))
+    (fun h ↦ .inl (apply_symm_apply f a ▸ h.map f)) (fun h ↦ .inr (apply_symm_apply f b ▸ h.map f))⟩
 
 theorem map_irreducible_iff {α : Type*} {β : Type*} [Monoid α] [Monoid β] {F : Type*}
     [EquivLike F α β] [MulEquivClass F α β] (f : F) {a : α} :
-    Irreducible (f a) ↔ Irreducible a := by
-    let f := MulEquivClass.toMulEquiv f
-    refine ⟨fun ⟨h1, h2⟩ => ⟨?_, fun x y h => ?_⟩, fun ⟨h1, h2⟩ => ⟨fun h => ?_, ?_⟩⟩
-    exact fun h => h1 (map_isUnit f h)
-    rw [← f.left_inv x , ← f.left_inv y]
-    sorry
-    sorry
-    sorry
+    Irreducible (f a) ↔ Irreducible a :=
+  let f := MulEquivClass.toMulEquiv f
+  ⟨by simpa only [symm_apply_apply] using Irreducible.map f.symm (x := f a) , Irreducible.map f⟩
+
+
+#check Polynomial.degree_eq_natDegree
+#check Polynomial.natDegree_comp
+-- when p is 0, q is scalar, the equation fails, p = 0, q = 0 holds
+-- when p is not zero, q is nonzero scalar is ok, q = 0 fails
+theorem Polynomial.degree_comp {R : Type*} [CommRing R] [IsDomain R] {p q : Polynomial R} (hp : p ≠ 0) (hq : q ≠ 0) :
+    degree (p.comp q) = degree p * degree q := by
+  by_cases hp : p = 0
+  · simp [hp, WithBot.bot_mul (by tauto)]
+  · have : p.comp q ≠ 0 := by
+      apply Polynomial.comp_eq_zero_iff.not.mpr
+      push_neg
+
 
 theorem Polynomial.splits_of_comp_X_sub_C {B : Type*} [Field B] [Algebra A B] (a : A) {p : Polynomial A}
     (h : p.Splits (algebraMap A B)) : (p.comp (X - C a)).Splits (algebraMap A B) := by
@@ -262,6 +294,12 @@ theorem Polynomial.splits_of_comp_X_sub_C {B : Type*} [Field B] [Algebra A B] (a
     rw [Polynomial.map_comp] at dvd
     simp at dvd
     rw [Polynomial.dvd_comp_X_sub_C_iff] at dvd
+    have := h (irr.map (algEquivAevalXAddC _)) dvd
+    change degree (g.comp (X + C (algebraMap A B a))) = 1 at this
+    -- Polynomial.natDegree_comp
+    #check Polynomial.comp_X_add_C_ne_zero_iff
+    rw [Polynomial.degree_eq_natDegree] at *
+
 
 
 variable {R k : Type*} {K : Type*} [Field R] [Field k] [Field K] [Algebra R K] [Algebra k K]
