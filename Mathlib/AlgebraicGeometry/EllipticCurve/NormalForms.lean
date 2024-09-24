@@ -28,7 +28,7 @@ elliptic curve, weierstrass equation, normal form
 -/
 
 variable {R : Type*} [CommRing R] (W : WeierstrassCurve R)
-variable {K : Type*} [Field K] (E : EllipticCurve K)
+variable {K : Type*} [Field K] (W₁ : WeierstrassCurve K) (E : EllipticCurve K)
 
 namespace WeierstrassCurve
 
@@ -178,8 +178,9 @@ section VariableChange
 
 variable [Invertible (2 : R)] [Invertible (3 : R)]
 
-/-- This is a (not so explicit) change of variables of a `WeierstrassCurve` to
-a normal form of characteristic ≠ 2 or 3, provided that 2 and 3 are invertible in the ring. -/
+/-- This is a change of variables of a `WeierstrassCurve` to
+a normal form of characteristic ≠ 2 or 3, provided that 2 and 3 are invertible in the ring.
+It is the composition of an explicit change of variables with `vcToCharNeTwoNF`. -/
 def vcToCharNeTwoThreeNF : VariableChange R :=
   ⟨1, ⅟3 * -(W.variableChange W.vcToCharNeTwoNF).a₂, 0, 0⟩ * W.vcToCharNeTwoNF
 
@@ -258,6 +259,102 @@ theorem j_of_char_three [CharP K 3] : E.j = -E.a₂ ^ 3 / E.a₆ := by
     self.c₄_of_char_three, self.Δ_of_char_three, div_eq_div_iff h (right_ne_zero_of_mul h)]
   ring1
 
+theorem j_ne_zero_of_char_three [CharP K 3] : E.j ≠ 0 := by
+  rw [self.j_of_char_three, div_ne_zero_iff]
+  have h := E.Δ'.ne_zero
+  rw [E.coe_Δ', self.Δ_of_char_three] at h
+  exact ⟨left_ne_zero_of_mul h, right_ne_zero_of_mul h⟩
+
 end IsCharThreeJNeZeroNF
+
+/-! ### Normal forms of characteristic three -/
+
+/-- A `WeierstrassCurve` is in normal form of characteristic 3, if it is
+$Y^2 = X^3 + a_2X^2 + a_6$ (`IsCharThreeJNeZeroNF`) or
+$Y^2 = X^3 + a_4X + a_6$ (`IsCharNeTwoThreeNF`). -/
+def IsCharThreeNF : Prop := W.IsCharThreeJNeZeroNF ∨ W.IsCharNeTwoThreeNF
+
+namespace IsCharThreeNF
+
+variable {W} (self : W.IsCharThreeNF)
+include self
+
+theorem isCharNeTwoNF : W.IsCharNeTwoNF :=
+  match self with
+  | Or.inl h | Or.inr h => h.isCharNeTwoNF
+
+end IsCharThreeNF
+
+section VariableChange
+
+variable [CharP R 3] [CharP K 3]
+
+/-- For a `WeierstrassCurve` defined over a ring of characteristic 3,
+there is an explicit change of variables, which changes it to $Y^2 = X^3 + a_4X + a_6$
+(`IsCharNeTwoThreeNF`) if its j is zero.
+This is in fact given by `vcToCharNeTwoNF`. -/
+def vcToCharThreeJZeroNF : VariableChange R :=
+  have h : (2 : R) * 2 = 1 := by linear_combination 1 * CharP.cast_eq_zero R 3
+  letI : Invertible (2 : R) := ⟨2, h, h⟩
+  W.vcToCharNeTwoNF
+
+/-- For a `WeierstrassCurve` defined over a field of characteristic 3,
+there is an explicit change of variables of it to `IsCharThreeNF`, that is,
+$Y^2 = X^3 + a_2X^2 + a_6$ (`IsCharThreeJNeZeroNF`) or
+$Y^2 = X^3 + a_4X + a_6$ (`IsCharNeTwoThreeNF`).
+It is the composition of an explicit change of variables with `vcToCharThreeJZeroNF`. -/
+def vcToCharThreeNF : VariableChange K :=
+  ⟨1, (W₁.variableChange W₁.vcToCharThreeJZeroNF).a₄ /
+    (W₁.variableChange W₁.vcToCharThreeJZeroNF).a₂, 0, 0⟩ * W₁.vcToCharThreeJZeroNF
+
+lemma vcToCharThreeJZeroNF_a₂ :
+    (W.variableChange W.vcToCharThreeJZeroNF).a₂ = W.b₂ := by
+  have h : (2 : R) * 2 = 1 := by linear_combination 1 * CharP.cast_eq_zero R 3
+  letI : Invertible (2 : R) := ⟨2, h, h⟩
+  simp_rw [vcToCharThreeJZeroNF, vcToCharNeTwoNF, variableChange_a₂, inv_one,
+    Units.val_one, b₂]
+  linear_combination (-W.a₂ - W.a₁ ^ 2) * CharP.cast_eq_zero R 3
+
+theorem vcToCharThreeJZeroNF_spec (hb₂ : W.b₂ = 0) :
+    (W.variableChange W.vcToCharThreeJZeroNF).IsCharNeTwoThreeNF := by
+  have h : (2 : R) * 2 = 1 := by linear_combination 1 * CharP.cast_eq_zero R 3
+  letI : Invertible (2 : R) := ⟨2, h, h⟩
+  have H : (W.variableChange W.vcToCharThreeJZeroNF).IsCharNeTwoNF :=
+    W.vcToCharNeTwoNF_spec
+  exact ⟨H.a₁, hb₂ ▸ W.vcToCharThreeJZeroNF_a₂, H.a₃⟩
+
+theorem vcToCharThreeNF_spec_of_b₂_ne_zero (hb₂ : W₁.b₂ ≠ 0) :
+    (W₁.variableChange W₁.vcToCharThreeNF).IsCharThreeJNeZeroNF := by
+  have h : (2 : K) * 2 = 1 := by linear_combination 1 * CharP.cast_eq_zero K 3
+  letI : Invertible (2 : K) := ⟨2, h, h⟩
+  rw [vcToCharThreeNF]; erw [variableChange_comp]
+  rw [← vcToCharThreeJZeroNF_a₂] at hb₂
+  set W' := W₁.variableChange W₁.vcToCharThreeJZeroNF
+  have H : W'.IsCharNeTwoNF := W₁.vcToCharNeTwoNF_spec
+  constructor
+  · simp [H.a₁]
+  · simp [H.a₁, H.a₃]
+  · field_simp [hb₂]
+    linear_combination (W'.a₄ * W'.a₂ ^ 2 + W'.a₄ ^ 2) * CharP.cast_eq_zero K 3
+
+theorem vcToCharThreeNF_spec_of_b₂_zero (hb₂ : W₁.b₂ = 0) :
+    (W₁.variableChange W₁.vcToCharThreeNF).IsCharNeTwoThreeNF := by
+  have h : (2 : K) * 2 = 1 := by linear_combination 1 * CharP.cast_eq_zero K 3
+  letI : Invertible (2 : K) := ⟨2, h, h⟩
+  rw [vcToCharThreeNF, vcToCharThreeJZeroNF_a₂, hb₂, div_zero]
+  erw [one_mul]
+  exact W₁.vcToCharThreeJZeroNF_spec hb₂
+
+theorem vcToCharThreeNF_spec :
+    (W₁.variableChange W₁.vcToCharThreeNF).IsCharThreeNF := by
+  by_cases hb₂ : W₁.b₂ = 0
+  · exact Or.inr (W₁.vcToCharThreeNF_spec_of_b₂_zero hb₂)
+  · exact Or.inl (W₁.vcToCharThreeNF_spec_of_b₂_ne_zero hb₂)
+
+theorem exists_variableChange_isCharThreeNF :
+    ∃ C : VariableChange K, (W₁.variableChange C).IsCharThreeNF :=
+  ⟨_, W₁.vcToCharThreeNF_spec⟩
+
+end VariableChange
 
 end WeierstrassCurve
