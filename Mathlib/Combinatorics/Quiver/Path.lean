@@ -5,6 +5,7 @@ Authors: David Wärn, Scott Morrison
 -/
 import Mathlib.Combinatorics.Quiver.Basic
 import Mathlib.Logic.Lemmas
+import Batteries.Data.List.Basic
 
 /-!
 # Paths in quivers
