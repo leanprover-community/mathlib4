@@ -39,18 +39,15 @@ protected theorem tfae (f : X → Y) :
       ∀ x, IsOpen { x' | f x' = f x },
       ∀ y, IsOpen (f ⁻¹' {y}),
       ∀ x, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ ∀ x' ∈ U, f x' = f x] := by
-  tfae_have 1 → 4
-  · exact fun h y => h {y}
-  tfae_have 4 → 3
-  · exact fun h x => h (f x)
-  tfae_have 3 → 2
-  · exact fun h x => IsOpen.mem_nhds (h x) rfl
+  tfae_have 1 → 4 := fun h y => h {y}
+  tfae_have 4 → 3 := fun h x => h (f x)
+  tfae_have 3 → 2 := fun h x => IsOpen.mem_nhds (h x) rfl
   tfae_have 2 → 5
-  · intro h x
+  | h, x => by
     rcases mem_nhds_iff.1 (h x) with ⟨U, eq, hU, hx⟩
     exact ⟨U, hU, hx, eq⟩
   tfae_have 5 → 1
-  · intro h s
+  | h, s => by
     refine isOpen_iff_forall_mem_open.2 fun x hx ↦ ?_
     rcases h x with ⟨U, hU, hxU, eq⟩
     exact ⟨U, fun x' hx' => mem_preimage.2 <| (eq x' hx').symm ▸ hx, hU, hxU⟩

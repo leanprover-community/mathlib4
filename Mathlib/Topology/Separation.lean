@@ -576,30 +576,28 @@ theorem t1Space_TFAE (X : Type u) [TopologicalSpace X] :
       ∀ ⦃x y : X⦄, x ≠ y → Disjoint (𝓝 x) (pure y),
       ∀ ⦃x y : X⦄, x ≠ y → Disjoint (pure x) (𝓝 y),
       ∀ ⦃x y : X⦄, x ⤳ y → x = y] := by
-  tfae_have 1 ↔ 2
-  · exact ⟨fun h => h.1, fun h => ⟨h⟩⟩
-  tfae_have 2 ↔ 3
-  · simp only [isOpen_compl_iff]
-  tfae_have 5 ↔ 3
-  · refine forall_swap.trans ?_
+  tfae_have 1 ↔ 2 := ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  tfae_have 2 ↔ 3 := by
+    simp only [isOpen_compl_iff]
+  tfae_have 5 ↔ 3 := by
+    refine forall_swap.trans ?_
     simp only [isOpen_iff_mem_nhds, mem_compl_iff, mem_singleton_iff]
-  tfae_have 5 ↔ 6
-  · simp only [← subset_compl_singleton_iff, exists_mem_subset_iff]
-  tfae_have 5 ↔ 7
-  · simp only [(nhds_basis_opens _).mem_iff, subset_compl_singleton_iff, exists_prop, and_assoc,
+  tfae_have 5 ↔ 6 := by
+    simp only [← subset_compl_singleton_iff, exists_mem_subset_iff]
+  tfae_have 5 ↔ 7 := by
+    simp only [(nhds_basis_opens _).mem_iff, subset_compl_singleton_iff, exists_prop, and_assoc,
       and_left_comm]
-  tfae_have 5 ↔ 8
-  · simp only [← principal_singleton, disjoint_principal_right]
-  tfae_have 8 ↔ 9
-  · exact forall_swap.trans (by simp only [disjoint_comm, ne_comm])
-  tfae_have 1 → 4
-  · simp only [continuous_def, CofiniteTopology.isOpen_iff']
+  tfae_have 5 ↔ 8 := by
+    simp only [← principal_singleton, disjoint_principal_right]
+  tfae_have 8 ↔ 9 := forall_swap.trans (by simp only [disjoint_comm, ne_comm])
+  tfae_have 1 → 4 := by
+    simp only [continuous_def, CofiniteTopology.isOpen_iff']
     rintro H s (rfl | hs)
     exacts [isOpen_empty, compl_compl s ▸ (@Set.Finite.isClosed _ _ H _ hs).isOpen_compl]
-  tfae_have 4 → 2
-  · exact fun h x => (CofiniteTopology.isClosed_iff.2 <| Or.inr (finite_singleton _)).preimage h
-  tfae_have 2 ↔ 10
-  · simp only [← closure_subset_iff_isClosed, specializes_iff_mem_closure, subset_def,
+  tfae_have 4 → 2 :=
+    fun h x => (CofiniteTopology.isClosed_iff.2 <| Or.inr (finite_singleton _)).preimage h
+  tfae_have 2 ↔ 10 := by
+    simp only [← closure_subset_iff_isClosed, specializes_iff_mem_closure, subset_def,
       mem_singleton_iff, eq_comm]
   tfae_finish
 
@@ -1890,30 +1888,28 @@ theorem regularSpace_TFAE (X : Type u) [TopologicalSpace X] :
       ∀ (x : X) (s : Set X), s ∈ 𝓝 x → ∃ t ∈ 𝓝 x, IsClosed t ∧ t ⊆ s,
       ∀ x : X, (𝓝 x).lift' closure ≤ 𝓝 x,
       ∀ x : X , (𝓝 x).lift' closure = 𝓝 x] := by
-  tfae_have 1 ↔ 5
-  · rw [regularSpace_iff, (@compl_surjective (Set X) _).forall, forall_swap]
+  tfae_have 1 ↔ 5 := by
+    rw [regularSpace_iff, (@compl_surjective (Set X) _).forall, forall_swap]
     simp only [isClosed_compl_iff, mem_compl_iff, Classical.not_not, @and_comm (_ ∈ _),
       (nhds_basis_opens _).lift'_closure.le_basis_iff (nhds_basis_opens _), and_imp,
       (nhds_basis_opens _).disjoint_iff_right, exists_prop, ← subset_interior_iff_mem_nhdsSet,
       interior_compl, compl_subset_compl]
-  tfae_have 5 → 6
-  · exact fun h a => (h a).antisymm (𝓝 _).le_lift'_closure
+  tfae_have 5 → 6 := fun h a => (h a).antisymm (𝓝 _).le_lift'_closure
   tfae_have 6 → 4
-  · intro H a s hs
+  | H, a, s, hs => by
     rw [← H] at hs
     rcases (𝓝 a).basis_sets.lift'_closure.mem_iff.mp hs with ⟨U, hU, hUs⟩
     exact ⟨closure U, mem_of_superset hU subset_closure, isClosed_closure, hUs⟩
   tfae_have 4 → 2
-  · intro H s a ha
+  | H, s, a, ha => by
     have ha' : sᶜ ∈ 𝓝 a := by rwa [← mem_interior_iff_mem_nhds, interior_compl]
     rcases H _ _ ha' with ⟨U, hU, hUc, hUs⟩
     refine disjoint_of_disjoint_of_mem disjoint_compl_left ?_ hU
     rwa [← subset_interior_iff_mem_nhdsSet, hUc.isOpen_compl.interior_eq, subset_compl_comm]
-  tfae_have 2 → 3
-  · refine fun H a s => ⟨fun hd has => mem_closure_iff_nhds_ne_bot.mp has ?_, H s a⟩
+  tfae_have 2 → 3 := by
+    refine fun H a s => ⟨fun hd has => mem_closure_iff_nhds_ne_bot.mp has ?_, H s a⟩
     exact (hd.symm.mono_right <| @principal_le_nhdsSet _ _ s).eq_bot
-  tfae_have 3 → 1
-  · exact fun H => ⟨fun hs ha => (H _ _).mpr <| hs.closure_eq.symm ▸ ha⟩
+  tfae_have 3 → 1 := fun H => ⟨fun hs ha => (H _ _).mpr <| hs.closure_eq.symm ▸ ha⟩
   tfae_finish
 
 theorem RegularSpace.of_lift'_closure_le (h : ∀ x : X, (𝓝 x).lift' closure ≤ 𝓝 x) :
