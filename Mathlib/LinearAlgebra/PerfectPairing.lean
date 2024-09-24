@@ -140,6 +140,11 @@ def IsReflexive.toPerfectPairingDual : PerfectPairing R (Dual R M) M where
   bijectiveLeft := bijective_id
   bijectiveRight := bijective_dual_eval R M
 
+@[simp]
+lemma IsReflexive.toPerfectPairingDual_apply {f : Dual R M} {x : M} :
+    IsReflexive.toPerfectPairingDual (R := R) f x = f x :=
+  rfl
+
 variable (e : N ≃ₗ[R] Dual R M)
 
 namespace LinearEquiv

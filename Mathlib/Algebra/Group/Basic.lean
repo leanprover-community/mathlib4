@@ -586,13 +586,15 @@ theorem mul_div_mul_comm : a * b / (c * d) = a / c * (b / d) := by simp
   | (n : ℕ) => by simp_rw [zpow_natCast, mul_pow]
   | .negSucc n => by simp_rw [zpow_negSucc, ← inv_pow, mul_inv, mul_pow]
 
-@[to_additive (attr := simp) nsmul_sub]
+@[to_additive nsmul_sub]
 lemma div_pow (a b : α) (n : ℕ) : (a / b) ^ n = a ^ n / b ^ n := by
   simp only [div_eq_mul_inv, mul_pow, inv_pow]
 
-@[to_additive (attr := simp) zsmul_sub]
+@[to_additive zsmul_sub]
 lemma div_zpow (a b : α) (n : ℤ) : (a / b) ^ n = a ^ n / b ^ n := by
   simp only [div_eq_mul_inv, mul_zpow, inv_zpow]
+
+attribute [field_simps] div_pow div_zpow
 
 end DivisionCommMonoid
 

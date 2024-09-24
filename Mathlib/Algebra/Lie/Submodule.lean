@@ -1048,6 +1048,7 @@ theorem ker_le_comap : f.ker ≤ J.comap f :=
 theorem ker_coeSubmodule : LieSubmodule.toSubmodule (ker f) = LinearMap.ker (f : L →ₗ[R] L') :=
   rfl
 
+variable {f} in
 @[simp]
 theorem mem_ker {x : L} : x ∈ ker f ↔ f x = 0 :=
   show x ∈ LieSubmodule.toSubmodule (f.ker) ↔ _ by
@@ -1155,9 +1156,12 @@ theorem map_sup_ker_eq_map : LieIdeal.map f (I ⊔ f.ker) = LieIdeal.map f I := 
   suffices LieIdeal.map f (I ⊔ f.ker) ≤ LieIdeal.map f I by
     exact le_antisymm this (LieIdeal.map_mono le_sup_left)
   apply LieSubmodule.lieSpan_mono
-  rintro x ⟨y, hy₁, hy₂⟩; rw [← hy₂]
-  erw [LieSubmodule.mem_sup] at hy₁;obtain ⟨z₁, hz₁, z₂, hz₂, hy⟩ := hy₁; rw [← hy]
-  rw [f.coe_toLinearMap, f.map_add, f.mem_ker.mp hz₂, add_zero]; exact ⟨z₁, hz₁, rfl⟩
+  rintro x ⟨y, hy₁, hy₂⟩
+  rw [← hy₂]
+  erw [LieSubmodule.mem_sup] at hy₁
+  obtain ⟨z₁, hz₁, z₂, hz₂, hy⟩ := hy₁
+  rw [← hy]
+  rw [f.coe_toLinearMap, f.map_add, LieHom.mem_ker.mp hz₂, add_zero]; exact ⟨z₁, hz₁, rfl⟩
 
 @[simp]
 theorem map_sup_ker_eq_map' :
@@ -1249,7 +1253,7 @@ theorem ker_eq_bot : f.ker = ⊥ ↔ Function.Injective f := by
 variable {f}
 
 @[simp]
-theorem mem_ker (m : M) : m ∈ f.ker ↔ f m = 0 :=
+theorem mem_ker {m : M} : m ∈ f.ker ↔ f m = 0 :=
   Iff.rfl
 
 @[simp]
@@ -1257,7 +1261,7 @@ theorem ker_id : (LieModuleHom.id : M →ₗ⁅R,L⁆ M).ker = ⊥ :=
   rfl
 
 @[simp]
-theorem comp_ker_incl : f.comp f.ker.incl = 0 := by ext ⟨m, hm⟩; exact (mem_ker m).mp hm
+theorem comp_ker_incl : f.comp f.ker.incl = 0 := by ext ⟨m, hm⟩; exact mem_ker.mp hm
 
 theorem le_ker_iff_map (M' : LieSubmodule R L M) : M' ≤ f.ker ↔ LieSubmodule.map f M' = ⊥ := by
   rw [ker, eq_bot_iff, LieSubmodule.map_le_iff_le_comap]
