@@ -8,7 +8,7 @@ import Mathlib.Data.DFinsupp.Basic
 import Mathlib.Data.Finsupp.Basic
 
 /-!
-# Conversion between `Finsupp` and homogenous `DFinsupp`
+# Conversion between `Finsupp` and homogeneous `DFinsupp`
 
 This module provides conversions between `Finsupp` and `DFinsupp`.
 It is in its own file since neither `Finsupp` or `DFinsupp` depend on each other.
@@ -65,7 +65,7 @@ variable {ι : Type*} {R : Type*} {M : Type*}
 
 section Defs
 
-/-- Interpret a `Finsupp` as a homogenous `DFinsupp`. -/
+/-- Interpret a `Finsupp` as a homogeneous `DFinsupp`. -/
 def Finsupp.toDFinsupp [Zero M] (f : ι →₀ M) : Π₀ _ : ι, M where
   toFun := f
   support' :=
@@ -93,7 +93,7 @@ theorem toDFinsupp_support (f : ι →₀ M) : f.toDFinsupp.support = f.support 
   ext
   simp
 
-/-- Interpret a homogenous `DFinsupp` as a `Finsupp`.
+/-- Interpret a homogeneous `DFinsupp` as a `Finsupp`.
 
 Note that the elaborator has a lot of trouble with this definition - it is often necessary to
 write `(DFinsupp.toFinsupp f : ι →₀ M)` instead of `f.toFinsupp`, as for some unknown reason

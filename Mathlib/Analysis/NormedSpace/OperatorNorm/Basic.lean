@@ -30,7 +30,7 @@ suppress_compilation
 
 open Bornology
 open Filter hiding map_smul
-open scoped Classical NNReal Topology Uniformity
+open scoped NNReal Topology Uniformity
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
 variable {𝕜 𝕜₂ 𝕜₃ E Eₗ F Fₗ G Gₗ 𝓕 : Type*}
@@ -275,9 +275,9 @@ one controls the norm of `f`. -/
 theorem opNorm_le_of_unit_norm [NormedSpace ℝ E] [NormedSpace ℝ F] {f : E →L[ℝ] F} {C : ℝ}
     (hC : 0 ≤ C) (hf : ∀ x, ‖x‖ = 1 → ‖f x‖ ≤ C) : ‖f‖ ≤ C := by
   refine opNorm_le_bound' f hC fun x hx => ?_
-  have H₁ : ‖‖x‖⁻¹ • x‖ = 1 := by rw [norm_smul, norm_inv, norm_norm, inv_mul_cancel hx]
+  have H₁ : ‖‖x‖⁻¹ • x‖ = 1 := by rw [norm_smul, norm_inv, norm_norm, inv_mul_cancel₀ hx]
   have H₂ := hf _ H₁
-  rwa [map_smul, norm_smul, norm_inv, norm_norm, ← div_eq_inv_mul, _root_.div_le_iff] at H₂
+  rwa [map_smul, norm_smul, norm_inv, norm_norm, ← div_eq_inv_mul, div_le_iff₀] at H₂
   exact (norm_nonneg x).lt_of_ne' hx
 
 @[deprecated (since := "2024-02-02")] alias op_norm_le_of_unit_norm := opNorm_le_of_unit_norm
@@ -325,7 +325,7 @@ private lemma uniformity_eq_seminorm :
       simpa [NormedSpace.isVonNBounded_closedBall, closedBall_mem_nhds, subset_def] using this
     intro f hf
     refine opNorm_le_of_shell (f := f) one_pos (norm_nonneg c) hc fun x hcx hx ↦ ?_
-    exact (hf x hx.le).trans ((div_le_iff' <| one_pos.trans hc).1 hcx)
+    exact (hf x hx.le).trans ((div_le_iff₀' <| one_pos.trans hc).1 hcx)
   · rcases (NormedSpace.isVonNBounded_iff' _).1 hs with ⟨ε, hε⟩
     rcases exists_pos_mul_lt hr ε with ⟨δ, hδ₀, hδ⟩
     refine ⟨δ, hδ₀, fun f hf x hx ↦ ?_⟩
@@ -411,24 +411,6 @@ theorem coe_restrictScalarsIsometry :
 @[simp]
 theorem restrictScalarsIsometry_toLinearMap :
     (restrictScalarsIsometry 𝕜 E Fₗ 𝕜' 𝕜'').toLinearMap = restrictScalarsₗ 𝕜 E Fₗ 𝕜' 𝕜'' :=
-  rfl
-
-variable (𝕜'')
-
-
-/-- `ContinuousLinearMap.restrictScalars` as a `ContinuousLinearMap`. -/
-def restrictScalarsL : (E →L[𝕜] Fₗ) →L[𝕜''] E →L[𝕜'] Fₗ :=
-  (restrictScalarsIsometry 𝕜 E Fₗ 𝕜' 𝕜'').toContinuousLinearMap
-
-variable {𝕜 E Fₗ 𝕜' 𝕜''}
-
-@[simp]
-theorem coe_restrictScalarsL : (restrictScalarsL 𝕜 E Fₗ 𝕜' 𝕜'' : (E →L[𝕜] Fₗ) →ₗ[𝕜''] E →L[𝕜'] Fₗ) =
-    restrictScalarsₗ 𝕜 E Fₗ 𝕜' 𝕜'' :=
-  rfl
-
-@[simp]
-theorem coe_restrict_scalarsL' : ⇑(restrictScalarsL 𝕜 E Fₗ 𝕜' 𝕜'') = restrictScalars 𝕜' :=
   rfl
 
 end RestrictScalars

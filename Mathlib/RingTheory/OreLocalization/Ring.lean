@@ -102,7 +102,7 @@ lemma nsmul_eq_nsmul (n : ℕ) (x : X[S⁻¹]) :
     letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℕ) (R := R) (X := X) (S := S)
     HSMul.hSMul (self := @instHSMul _ _ inst.toSMul) n x = n • x := by
   letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℕ) (R := R) (X := X) (S := S)
-  exact congr($(AddCommMonoid.natModule.unique.2 inst).smul n x)
+  exact congr($(AddCommMonoid.uniqueNatModule.2 inst).smul n x)
 
 /-- The ring homomorphism from `R` to `R[S⁻¹]`, mapping `r : R` to the fraction `r /ₒ 1`. -/
 @[simps!]
@@ -149,7 +149,7 @@ def universalHom : R[S⁻¹] →+* T :=
         Submonoid.smul_def]
       simp only [mul_inv_rev, MonoidHom.map_mul, RingHom.map_add, RingHom.map_mul, Units.val_mul]
       rw [mul_add, mul_assoc, ← mul_assoc _ (f s₃), hf, ← Units.val_mul]
-      simp only [one_mul, mul_left_inv, Units.val_one]
+      simp only [one_mul, inv_mul_cancel, Units.val_one]
       congr 1
       rw [← mul_assoc]
       congr 1
@@ -188,7 +188,7 @@ lemma zsmul_eq_zsmul (n : ℤ) (x : X[S⁻¹]) :
     letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℤ) (R := R) (X := X) (S := S)
     HSMul.hSMul (self := @instHSMul _ _ inst.toSMul) n x = n • x := by
   letI inst := OreLocalization.instModuleOfIsScalarTower (R₀ := ℤ) (R := R) (X := X) (S := S)
-  exact congr($(AddCommGroup.intModule.unique.2 inst).smul n x)
+  exact congr($(AddCommGroup.uniqueIntModule.2 inst).smul n x)
 
 open nonZeroDivisors
 
@@ -229,7 +229,7 @@ instance nontrivial : Nontrivial R[R⁰⁻¹] :=
 variable [NoZeroDivisors R]
 
 open Classical in
-/-- The inversion of Ore fractions for a ring without zero divisors, satisying `0⁻¹ = 0` and
+/-- The inversion of Ore fractions for a ring without zero divisors, satisfying `0⁻¹ = 0` and
 `(r /ₒ r')⁻¹ = r' /ₒ r` for `r ≠ 0`. -/
 @[irreducible]
 protected def inv : R[R⁰⁻¹] → R[R⁰⁻¹] :=

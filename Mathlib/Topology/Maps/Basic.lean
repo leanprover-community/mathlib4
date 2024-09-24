@@ -233,7 +233,7 @@ section QuotientMap
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 theorem quotientMap_iff : QuotientMap f ↔ Surjective f ∧ ∀ s : Set Y, IsOpen s ↔ IsOpen (f ⁻¹' s) :=
-  and_congr Iff.rfl TopologicalSpace.ext_iff
+  (quotientMap_iff' _).trans <| and_congr Iff.rfl TopologicalSpace.ext_iff
 
 theorem quotientMap_iff_closed :
     QuotientMap f ↔ Surjective f ∧ ∀ s : Set Y, IsClosed s ↔ IsClosed (f ⁻¹' s) :=
@@ -246,13 +246,13 @@ protected theorem id : QuotientMap (@id X) :=
   ⟨fun x => ⟨x, rfl⟩, coinduced_id.symm⟩
 
 protected theorem comp (hg : QuotientMap g) (hf : QuotientMap f) : QuotientMap (g ∘ f) :=
-  ⟨hg.left.comp hf.left, by rw [hg.right, hf.right, coinduced_compose]⟩
+  ⟨hg.surjective.comp hf.surjective, by rw [hg.eq_coinduced, hf.eq_coinduced, coinduced_compose]⟩
 
 protected theorem of_quotientMap_compose (hf : Continuous f) (hg : Continuous g)
     (hgf : QuotientMap (g ∘ f)) : QuotientMap g :=
   ⟨hgf.1.of_comp,
     le_antisymm
-      (by rw [hgf.right, ← coinduced_compose]; exact coinduced_mono hf.coinduced_le)
+      (by rw [hgf.eq_coinduced, ← coinduced_compose]; exact coinduced_mono hf.coinduced_le)
       hg.coinduced_le⟩
 
 theorem of_inverse {g : Y → X} (hf : Continuous f) (hg : Continuous g) (h : LeftInverse g f) :
@@ -260,13 +260,10 @@ theorem of_inverse {g : Y → X} (hf : Continuous f) (hg : Continuous g) (h : Le
   QuotientMap.of_quotientMap_compose hf hg <| h.comp_eq_id.symm ▸ QuotientMap.id
 
 protected theorem continuous_iff (hf : QuotientMap f) : Continuous g ↔ Continuous (g ∘ f) := by
-  rw [continuous_iff_coinduced_le, continuous_iff_coinduced_le, hf.right, coinduced_compose]
+  rw [continuous_iff_coinduced_le, continuous_iff_coinduced_le, hf.eq_coinduced, coinduced_compose]
 
 protected theorem continuous (hf : QuotientMap f) : Continuous f :=
   hf.continuous_iff.mp continuous_id
-
-protected theorem surjective (hf : QuotientMap f) : Surjective f :=
-  hf.1
 
 protected theorem isOpen_preimage (hf : QuotientMap f) {s : Set Y} : IsOpen (f ⁻¹' s) ↔ IsOpen s :=
   ((quotientMap_iff.1 hf).2 s).symm
@@ -380,6 +377,11 @@ theorem isOpenMap_iff_interior : IsOpenMap f ↔ ∀ s, f '' interior s ⊆ inte
 /-- An inducing map with an open range is an open map. -/
 protected theorem Inducing.isOpenMap (hi : Inducing f) (ho : IsOpen (range f)) : IsOpenMap f :=
   IsOpenMap.of_nhds_le fun _ => (hi.map_nhds_of_mem _ <| IsOpen.mem_nhds ho <| mem_range_self _).ge
+
+/-- Preimage of a dense set under an open map is dense. -/
+protected theorem Dense.preimage {s : Set Y} (hs : Dense s) (hf : IsOpenMap f) :
+    Dense (f ⁻¹' s) := fun x ↦
+  hf.preimage_closure_subset_closure_preimage <| hs (f x)
 
 end OpenMap
 
@@ -519,7 +521,7 @@ theorem openEmbedding_iff_embedding_open :
 
 theorem openEmbedding_of_continuous_injective_open
     (h₁ : Continuous f) (h₂ : Injective f) (h₃ : IsOpenMap f) : OpenEmbedding f := by
-  simp only [openEmbedding_iff_embedding_open, embedding_iff, inducing_iff_nhds, *, and_true_iff]
+  simp only [openEmbedding_iff_embedding_open, embedding_iff, inducing_iff_nhds, *, and_true]
   exact fun x =>
     le_antisymm (h₁.tendsto _).le_comap (@comap_map _ _ (𝓝 x) _ h₂ ▸ comap_mono (h₃.nhds_le _))
 
@@ -553,6 +555,10 @@ theorem of_comp (f : X → Y) (hg : OpenEmbedding g)
 
 theorem of_isEmpty [IsEmpty X] (f : X → Y) : OpenEmbedding f :=
   openEmbedding_of_embedding_open (.of_subsingleton f) (IsOpenMap.of_isEmpty f)
+
+theorem image_mem_nhds {f : X → Y} (hf : OpenEmbedding f) {s : Set X} {x : X} :
+    f '' s ∈ 𝓝 (f x) ↔ s ∈ 𝓝 x := by
+  rw [← hf.map_nhds_eq, mem_map, preimage_image_eq _ hf.inj]
 
 end OpenEmbedding
 

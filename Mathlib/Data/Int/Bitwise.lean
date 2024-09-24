@@ -24,7 +24,7 @@ def div2 : ℤ → ℤ
   | (n : ℕ) => n.div2
   | -[n +1] => negSucc n.div2
 
-/-- `bodd n` returns `true` if `n` is odd-/
+/-- `bodd n` returns `true` if `n` is odd -/
 def bodd : ℤ → Bool
   | (n : ℕ) => n.bodd
   | -[n +1] => not (n.bodd)
@@ -81,7 +81,7 @@ def ldiff : ℤ → ℤ → ℤ
   | -[m +1], -[n +1] => Nat.ldiff n m
 
 -- Porting note: I don't know why `Nat.xor'` got the prime, but I'm matching this change here
-/-- `xor` computes the bitwise `xor` of two natural numbers-/
+/-- `xor` computes the bitwise `xor` of two natural numbers -/
 protected def xor : ℤ → ℤ → ℤ
   | (m : ℕ), (n : ℕ) => (m ^^^ n)
   | (m : ℕ), -[n +1] => -[(m ^^^ n) +1]

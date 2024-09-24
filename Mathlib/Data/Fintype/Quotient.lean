@@ -110,8 +110,7 @@ theorem finChoice_eq (a : ∀ i, α i) :
   simp_rw [← hl, Equiv.subtypeQuotientEquivQuotientSubtype, listChoice_mk]
   rfl
 
-lemma eval_finChoice [S : ∀ i, Setoid (α i)]
-    (f : ∀ i, Quotient (S i)) :
+lemma eval_finChoice (f : ∀ i, Quotient (S i)) :
     eval (finChoice f) = f :=
   fin_induction_on f (fun a ↦ by rw [finChoice_eq]; rfl)
 
@@ -167,14 +166,14 @@ def finRecOn {C : (∀ i, Quotient (S i)) → Sort*}
     (h : ∀ (a b : ∀ i, α i) (h : ∀ i, a i ≈ b i),
       Eq.ndrec (f a) (funext fun i ↦ Quotient.sound (h i)) = f b) :
     C q :=
-  finHRecOn q f (heq_of_eq_rec_left _ <| h · · ·)
+  finHRecOn q f (rec_heq_iff_heq.mp <| heq_of_eq <| h · · ·)
 
 @[simp]
 lemma finHRecOn_mk {C : (∀ i, Quotient (S i)) → Sort*}
     (a : ∀ i, α i) :
     finHRecOn (C := C) (⟦a ·⟧) = fun f _ ↦ f a := by
   ext f h
-  refine eq_of_heq ((eq_rec_heq _ _).trans ?_)
+  refine eq_of_heq ((eqRec_heq _ _).trans ?_)
   rw [finChoice_eq]
   rfl
 

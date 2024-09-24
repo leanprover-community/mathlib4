@@ -94,11 +94,12 @@ theorem image₂_subset_iff_left : image₂ f s t ⊆ u ↔ ∀ a ∈ s, (t.imag
 theorem image₂_subset_iff_right : image₂ f s t ⊆ u ↔ ∀ b ∈ t, (s.image fun a => f a b) ⊆ u := by
   simp_rw [image₂_subset_iff, image_subset_iff, @forall₂_swap α]
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem image₂_nonempty_iff : (image₂ f s t).Nonempty ↔ s.Nonempty ∧ t.Nonempty := by
   rw [← coe_nonempty, coe_image₂]
   exact image2_nonempty_iff
 
+@[aesop safe apply (rule_sets := [finsetNonempty])]
 theorem Nonempty.image₂ (hs : s.Nonempty) (ht : t.Nonempty) : (image₂ f s t).Nonempty :=
   image₂_nonempty_iff.2 ⟨hs, ht⟩
 
@@ -425,7 +426,7 @@ theorem image₂_right_identity {f : γ → β → γ} {b : β} (h : ∀ a, f a 
 
 /-- If each partial application of `f` is injective, and images of `s` under those partial
 applications are disjoint (but not necessarily distinct!), then the size of `t` divides the size of
-`finset.image₂ f s t`. -/
+`Finset.image₂ f s t`. -/
 theorem card_dvd_card_image₂_right (hf : ∀ a ∈ s, Injective (f a))
     (hs : ((fun a => t.image <| f a) '' s).PairwiseDisjoint id) : t.card ∣ (image₂ f s t).card := by
   classical
@@ -446,7 +447,7 @@ theorem card_dvd_card_image₂_right (hf : ∀ a ∈ s, Injective (f a))
 
 /-- If each partial application of `f` is injective, and images of `t` under those partial
 applications are disjoint (but not necessarily distinct!), then the size of `s` divides the size of
-`finset.image₂ f s t`. -/
+`Finset.image₂ f s t`. -/
 theorem card_dvd_card_image₂_left (hf : ∀ b ∈ t, Injective fun a => f a b)
     (ht : ((fun b => s.image fun a => f a b) '' t).PairwiseDisjoint id) :
     s.card ∣ (image₂ f s t).card := by rw [← image₂_swap]; exact card_dvd_card_image₂_right hf ht

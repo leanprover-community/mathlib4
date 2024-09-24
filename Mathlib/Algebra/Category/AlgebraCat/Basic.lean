@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.FreeAlgebra
@@ -17,9 +17,7 @@ associating to a type the free `R`-algebra on that type is left adjoint to the f
 -/
 
 
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 universe v u
 

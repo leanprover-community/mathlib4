@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.AlgebraicGeometry.Spec
 import Mathlib.Algebra.Category.Ring.Constructions
@@ -18,7 +18,7 @@ A morphism of schemes is just a morphism of the underlying locally ringed spaces
 
 -/
 
--- Explicit universe annotations were used in this file to improve perfomance #12737
+-- Explicit universe annotations were used in this file to improve performance #12737
 
 
 universe u
@@ -152,11 +152,11 @@ to `X.presheaf.stalk x` for any `x : X`. -/
 def stalkMap (x : X) : Y.presheaf.stalk (f.val.base x) ⟶ X.presheaf.stalk x :=
   f.val.stalkMap x
 
-@[ext]
+@[ext (iff := false)]
 protected lemma ext {f g : X ⟶ Y} (h_base : f.1.base = g.1.base)
     (h_app : ∀ U, f.app U ≫ X.presheaf.map
       (eqToHom congr((Opens.map $h_base.symm).obj U)).op = g.app U) : f = g :=
-  LocallyRingedSpace.Hom.ext _ _ <| SheafedSpace.ext h_base
+  LocallyRingedSpace.Hom.ext <| SheafedSpace.ext _ _ h_base
     (TopCat.Presheaf.ext fun U ↦ by simpa using h_app U)
 
 lemma preimage_iSup {ι} (U : ι → Opens Y) : f ⁻¹ᵁ iSup U = ⨆ i, f ⁻¹ᵁ U i :=

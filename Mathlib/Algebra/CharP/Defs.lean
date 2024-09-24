@@ -18,6 +18,8 @@ import Mathlib.Data.ULift
 
 assert_not_exists Finset
 
+open Set
+
 variable (R : Type*)
 
 namespace CharP
@@ -90,6 +92,13 @@ end AddMonoidWithOne
 
 section AddGroupWithOne
 variable [AddGroupWithOne R] (p : ℕ) [CharP R p] {a b : ℤ}
+
+lemma intCast_injOn_Ico [IsRightCancelAdd R] : InjOn (Int.cast : ℤ → R) (Ico 0 p) := by
+  rintro a ⟨ha₀, ha⟩ b ⟨hb₀, hb⟩ hab
+  lift a to ℕ using ha₀
+  lift b to ℕ using hb₀
+  norm_cast at *
+  exact natCast_injOn_Iio _ _ ha hb hab
 
 lemma intCast_eq_zero_iff (a : ℤ) : (a : R) = 0 ↔ (p : ℤ) ∣ a := by
   rcases lt_trichotomy a 0 with (h | rfl | h)
@@ -366,7 +375,7 @@ instance Prod.charZero_of_right [CharZero S] : CharZero (R × S) where
 end Prod
 
 instance ULift.charP [AddMonoidWithOne R] (p : ℕ) [CharP R p] : CharP (ULift R) p where
-  cast_eq_zero_iff' n := Iff.trans (ULift.ext_iff _ _) <| CharP.cast_eq_zero_iff R p n
+  cast_eq_zero_iff' n := Iff.trans ULift.ext_iff <| CharP.cast_eq_zero_iff R p n
 
 instance MulOpposite.charP [AddMonoidWithOne R] (p : ℕ) [CharP R p] : CharP Rᵐᵒᵖ p where
   cast_eq_zero_iff' n := MulOpposite.unop_inj.symm.trans <| CharP.cast_eq_zero_iff R p n
@@ -411,7 +420,6 @@ end CharZero
 
 namespace Fin
 
-instance charP (n : ℕ) : CharP (Fin (n + 1)) (n + 1) where
-    cast_eq_zero_iff' := by simp [Fin.ext_iff, Nat.dvd_iff_mod_eq_zero]
+instance charP (n : ℕ) [NeZero n] : CharP (Fin n) n where cast_eq_zero_iff' _ := natCast_eq_zero
 
 end Fin

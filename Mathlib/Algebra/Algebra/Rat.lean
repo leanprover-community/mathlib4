@@ -3,8 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Data.Rat.Cast.CharZero
 import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.GroupWithZero.Action.Basic
+import Mathlib.Data.Rat.Cast.CharZero
 
 /-!
 # Further basic results about `Algebra`'s over `ℚ`.
@@ -12,9 +13,9 @@ import Mathlib.Algebra.Algebra.Defs
 This file could usefully be split further.
 -/
 
-namespace RingHom
+variable {F R S : Type*}
 
-variable {R S : Type*}
+namespace RingHom
 
 -- Porting note: changed `[Ring R] [Ring S]` to `[Semiring R] [Semiring S]`
 -- otherwise, Lean failed to find a `Subsingleton (ℚ →+* S)` instance
@@ -25,25 +26,89 @@ theorem map_rat_algebraMap [Semiring R] [Semiring S] [Algebra ℚ R] [Algebra �
 
 end RingHom
 
-section Rat
+namespace NNRat
+variable [DivisionSemiring R] [CharZero R]
 
-instance algebraRat {α} [DivisionRing α] [CharZero α] : Algebra ℚ α where
-  smul := (· • ·)
-  smul_def' := Rat.smul_def
-  toRingHom := Rat.castHom α
-  commutes' := Rat.cast_commute
+section Semiring
+variable [Semiring S] [Module ℚ≥0 S]
 
-/-- The rational numbers are an algebra over the non-negative rationals. -/
-instance : Algebra NNRat ℚ :=
-  NNRat.coeHom.toAlgebra
+variable (R) in
+/-- `nnqsmul` is equal to any other module structure via a cast. -/
+lemma cast_smul_eq_nnqsmul [Module R S] (q : ℚ≥0) (a : S) : (q : R) • a = q • a := by
+  refine MulAction.injective₀ (G₀ := ℚ≥0) (Nat.cast_ne_zero.2 q.den_pos.ne') ?_
+  dsimp
+  rw [← mul_smul, den_mul_eq_num, Nat.cast_smul_eq_nsmul, Nat.cast_smul_eq_nsmul, ← smul_assoc,
+    nsmul_eq_mul q.den, ← cast_natCast, ← cast_mul, den_mul_eq_num, cast_natCast,
+    Nat.cast_smul_eq_nsmul]
 
-/-- The two `Algebra ℚ ℚ` instances should coincide. -/
-example : algebraRat = Algebra.id ℚ :=
-  rfl
+end Semiring
 
-@[simp] theorem algebraMap_rat_rat : algebraMap ℚ ℚ = RingHom.id ℚ := rfl
+section DivisionSemiring
+variable [DivisionSemiring S] [CharZero S]
 
-instance algebra_rat_subsingleton {α} [Semiring α] : Subsingleton (Algebra ℚ α) :=
+instance _root_.DivisionSemiring.toNNRatAlgebra : Algebra ℚ≥0 R where
+  smul_def' := smul_def
+  toRingHom := castHom _
+  commutes' := cast_commute
+
+instance _root_.RingHomClass.toLinearMapClassNNRat [FunLike F R S] [RingHomClass F R S] :
+    LinearMapClass F ℚ≥0 R S where
+  map_smulₛₗ f q a := by simp [smul_def, cast_id]
+
+variable [SMul R S]
+
+instance instSMulCommClass [SMulCommClass R S S] : SMulCommClass ℚ≥0 R S where
+  smul_comm q a b := by simp [smul_def, mul_smul_comm]
+
+instance instSMulCommClass' [SMulCommClass S R S] : SMulCommClass R ℚ≥0 S :=
+  have := SMulCommClass.symm S R S; SMulCommClass.symm _ _ _
+
+end DivisionSemiring
+end NNRat
+
+namespace Rat
+variable [DivisionRing R] [CharZero R]
+
+section Ring
+variable [Ring S] [Module ℚ S]
+
+variable (R) in
+/-- `nnqsmul` is equal to any other module structure via a cast. -/
+lemma cast_smul_eq_qsmul [Module R S] (q : ℚ) (a : S) : (q : R) • a = q • a := by
+  refine MulAction.injective₀ (G₀ := ℚ) (Nat.cast_ne_zero.2 q.den_pos.ne') ?_
+  dsimp
+  rw [← mul_smul, den_mul_eq_num, Nat.cast_smul_eq_nsmul, Int.cast_smul_eq_zsmul, ← smul_assoc,
+    nsmul_eq_mul q.den, ← cast_natCast, ← cast_mul, den_mul_eq_num, cast_intCast,
+    Int.cast_smul_eq_zsmul]
+
+end Ring
+
+section DivisionRing
+variable [DivisionRing S] [CharZero S]
+
+instance _root_.DivisionRing.toRatAlgebra : Algebra ℚ R where
+  smul_def' := smul_def
+  toRingHom := castHom _
+  commutes' := cast_commute
+
+instance _root_.RingHomClass.toLinearMapClassRat [FunLike F R S] [RingHomClass F R S] :
+    LinearMapClass F ℚ R S where
+  map_smulₛₗ f q a := by simp [smul_def, cast_id]
+
+variable [SMul R S]
+
+instance instSMulCommClass [SMulCommClass R S S] : SMulCommClass ℚ R S where
+  smul_comm q a b := by simp [smul_def, mul_smul_comm]
+
+instance instSMulCommClass' [SMulCommClass S R S] : SMulCommClass R ℚ S :=
+  have := SMulCommClass.symm S R S; SMulCommClass.symm _ _ _
+
+end DivisionRing
+
+@[deprecated Algebra.id.map_eq_id (since := "2024-07-30")]
+lemma _root_.algebraMap_rat_rat : algebraMap ℚ ℚ = RingHom.id ℚ := rfl
+
+instance algebra_rat_subsingleton {R} [Semiring R] : Subsingleton (Algebra ℚ R) :=
   ⟨fun x y => Algebra.algebra_ext x y <| RingHom.congr_fun <| Subsingleton.elim _ _⟩
 
 end Rat

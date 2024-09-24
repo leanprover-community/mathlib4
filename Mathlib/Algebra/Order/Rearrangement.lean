@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Group.Instances
+import Mathlib.Algebra.Order.Module.OrderedSMul
+import Mathlib.Algebra.Order.Module.Synonym
 import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Set.Image
 import Mathlib.GroupTheory.Perm.Support
@@ -163,10 +164,10 @@ theorem MonovaryOn.sum_comp_perm_smul_eq_sum_smul_iff (hfg : MonovaryOn f g s)
     rw [σ.sum_comp' s (fun i j ↦ f i • g j) hσ]
     congr
   · convert h.comp_right σ
-    · rw [comp.assoc, inv_def, symm_comp_self, comp_id]
+    · rw [comp_assoc, inv_def, symm_comp_self, comp_id]
     · rw [σ.eq_preimage_iff_image_eq, Set.image_perm hσ]
   · convert h.comp_right σ.symm
-    · rw [comp.assoc, self_comp_symm, comp_id]
+    · rw [comp_assoc, self_comp_symm, comp_id]
     · rw [σ.symm.eq_preimage_iff_image_eq]
       exact Set.image_perm hσinv
 

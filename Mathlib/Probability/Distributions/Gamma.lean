@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
 import Mathlib.Probability.Notation
-import Mathlib.Probability.Cdf
+import Mathlib.Probability.CDF
 import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 
 /-! # Gamma distributions over ℝ

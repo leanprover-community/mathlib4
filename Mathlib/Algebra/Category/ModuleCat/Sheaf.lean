@@ -55,7 +55,7 @@ instance : Category (SheafOfModules.{v} R) where
 
 @[ext]
 lemma hom_ext {X Y : SheafOfModules.{v} R} {f g : X ⟶ Y} (h : f.val = g.val) : f = g :=
-  Hom.ext _ _ h
+  Hom.ext h
 
 @[simp]
 lemma id_val (X : SheafOfModules.{v} R) : Hom.val (𝟙 X) = 𝟙 X.val := rfl

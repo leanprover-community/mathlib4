@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Analysis.SpecialFunctions.Bernstein
 import Mathlib.Topology.Algebra.Algebra
@@ -32,7 +32,7 @@ theorem polynomialFunctions_closure_eq_top' : (polynomialFunctions I).topologica
   rintro f -
   refine Filter.Frequently.mem_closure ?_
   refine Filter.Tendsto.frequently (bernsteinApproximation_uniform f) ?_
-  apply frequently_of_forall
+  apply Frequently.of_forall
   intro n
   simp only [SetLike.mem_coe]
   apply Subalgebra.sum_mem
