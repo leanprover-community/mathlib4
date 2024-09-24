@@ -48,7 +48,7 @@ def mathlibLabels : Array Label := #[
   { label := "t-algebra",
     dirs := #[
       "Mathlib" / "FieldTheory",
-      "Mathlib" / " RingTheory",
+      "Mathlib" / "RingTheory",
       "Mathlib" / "GroupTheory",
       "Mathlib" / "RepresentationTheory",
       "Mathlib" / "LinearAlgebra"] },
@@ -101,38 +101,84 @@ def mathlibLabels : Array Label := #[
   { label := "CI",
     dirs := #[".github" / "workflows"] }]
 
+/-- Checks if the folder `path` lies inside the folder `dir` -/
+def _root_.System.FilePath.isPrefixOf (dir path : FilePath) : Bool :=
+  -- use `/ ""` to en
+  (dir / "").normalize.toString.isPrefixOf path.normalize.toString
+
 /--
-Return all labels from `mathlibLabels` which are matching at least one of the `files`.
+Return all labels names for labels in `mathlibLabels` which are matching
+at least one of the `files`.
 
 * `files`: array of relative paths starting from the mathlib project directory.
 -/
-def getMatchingLabels (files : Array FilePath) : Array Label :=
-  mathlibLabels.filter fun label ↦
-    -- modified files which are not excluded by the label
+def getMatchingLabels (files : Array FilePath) : Array String :=
+  let applicable := mathlibLabels.filter fun label ↦
+    -- first exclude all files the label excludes,
+    -- then see if any file remains included by the label
     let notExcludedFiles := files.filter fun file ↦
-      label.exclusions.map (!·.toString.isPrefixOf file.toString) |>.all (·)
+      label.exclusions.all (!·.isPrefixOf file)
+    label.dirs.any (fun dir ↦ notExcludedFiles.any (dir.isPrefixOf ·))
+  -- return sorted list of label names
+  applicable.map (·.label) |>.qsort (· < ·)
 
-    -- return `true` if any of the label's dirs prefixes any of the modified files.
-    label.dirs.map (fun dir ↦
-      notExcludedFiles.map (dir.toString.isPrefixOf ·.toString) |>.any (·)) |>.any (·)
+/-!
+Testing the functionaliry of the declarations defined in this script
+-/
+section Tests
+
+-- Test `FilePath.isPrefixOf`
+#guard ("Mathlib" / "Algebra" : FilePath).isPrefixOf ("Mathlib" / "Algebra" / "Basic.lean")
+
+-- Test `FilePath.isPrefixOf` does not trigger on partial prefixes
+#guard ! ("Mathlib" / "Algebra" : FilePath).isPrefixOf ("Mathlib" / "AlgebraicGeometry")
+
+-- Test `getMatchingLabels`
+#guard getMatchingLabels #[] == #[]
+
+-- Test exclusion
+#guard getMatchingLabels #["Mathlib" / "Tactic"/ "Abel.lean"] == #["t-meta"]
+#guard getMatchingLabels #["Mathlib" / "Tactic"/ "Linter" / "Lint.lean"] == #["t-linter"]
+#guard getMatchingLabels #[
+  "Mathlib" / "Tactic"/ "Linter" / "Lint.lean",
+  "Mathlib" / "Tactic" / "Abel.lean" ] == #["t-linter", "t-meta"]
+
+end Tests
 
 end AutoLabel
 
 open IO AutoLabel in
 
-/-- `args` is expected to have length 1, and the first argument is the PR number. -/
+/-- args` is expected to have length 1, and the first argument is the PR number. -/
 unsafe def main (args : List String): IO Unit := do
   if args.length > 1 then
     println s!"autolabel: invalid number of arguments ({args.length}). Please run without \
     arguments or provide the target PR's number as single argument!"
     IO.Process.exit 1
   let prNumber? := args[0]?
+
+  -- validate that all paths in `mathilbLabels` actually exist
+  let mut valid := true
+  for label in mathlibLabels do
+    for dir in label.dirs do
+      unless ← FilePath.pathExists dir do
+        println s!"error: directory {dir} does not exist! (from label {label.label})"
+        valid := false
+    for dir in label.exclusions do
+      unless ← FilePath.pathExists dir do
+        println s!"error: excluded directory {dir} does not exist! (from label {label.label})"
+        valid := false
+  unless valid do
+    IO.Process.exit 2
+
+  -- get the modified files
   let gitDiff ← IO.Process.run {
     cmd := "git",
     args := #["diff", "--name-only", "origin/master...HEAD"] }
-
   let modifiedFiles : Array FilePath := (gitDiff.splitOn "\n").toArray.map (⟨·⟩)
-  let labels := getMatchingLabels modifiedFiles |>.map (·.label) |>.qsort (· < ·)
+
+  -- find labels covering the modified files
+  let labels := getMatchingLabels modifiedFiles
 
   match labels with
   | #[] =>
