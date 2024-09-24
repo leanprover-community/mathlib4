@@ -11,6 +11,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 import Mathlib.CategoryTheory.SingleObj
 import Mathlib.Data.Finite.Card
 import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.Tactic.LintDecidable
 
 /-!
 # Definition and basic properties of Galois categories
@@ -334,6 +335,7 @@ lemma surjective_of_nonempty_fiber_of_isConnected {X A : C} [Nonempty (F.obj X)]
 
 /-- If `X : ι → C` is a finite family of objects with non-empty fiber, then
 also `∏ᶜ X` has non-empty fiber. -/
+@[nolint finiteFintype]
 instance nonempty_fiber_pi_of_nonempty_of_finite {ι : Type*} [Fintype ι] (X : ι → C)
     [∀ i, Nonempty (F.obj (X i))] : Nonempty (F.obj (∏ᶜ X)) :=
   let f (i : ι) : FintypeCat.{w} := F.obj (X i)
