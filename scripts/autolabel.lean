@@ -56,7 +56,7 @@ def mathlibLabels : Array Label := #[
       "Mathlib" / "RingTheory",
       "Mathlib" / "GroupTheory",
       "Mathlib" / "RepresentationTheory",
-      "Mathlib" / "LinearAlgebra"] },
+      "Mathlib" / "LinearAlgebras"] },
   { label := "t-algebraic-geometry",
     dirs := #[
       "Mathlib" / "AlgebraicGeometry",
@@ -144,7 +144,16 @@ end AutoLabel
 
 open IO AutoLabel in
 
-/-- `args` is expected to have length 1, and the first argument is the PR number. -/
+/-- `args` is expected to have length 1, and the first argument is the PR number.
+
+
+## Exit codes:
+
+- `0`: success
+- `1`: invalid arguments
+- `2`: invalid labels
+- `3`: no applicable label found
+-/
 unsafe def main (args : List String): IO Unit := do
   if args.length > 1 then
     println s!"autolabel: invalid number of arguments ({args.length}). Please run without \
@@ -178,6 +187,7 @@ unsafe def main (args : List String): IO Unit := do
   match labels with
   | #[] =>
     println s!"No applicable labels found!"
+    IO.Process.exit 3
   | #[label] =>
     println s!"Exactly one label found: {label}"
     match prNumber? with

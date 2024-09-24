@@ -1,6 +1,7 @@
 name: Autolabel PRs
 
 on:
+  push: # TODO: remove me after testing
   pull_request:
     types: [opened]
   workflow_dispatch:
@@ -11,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     # Don't run on forks, where we wouldn't have permissions to add the label anyway.
     if: github.repository == 'leanprover-community/mathlib4'
+    continue-on-error: true # failing this job should not fail the CI check overall
     permissions:
       issues: write
       checks: write
