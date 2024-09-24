@@ -89,33 +89,14 @@ theorem sumIDeriv_eq_self_add (p : R[X]) : sumIDeriv p = p + sumIDeriv (derivati
   simp_rw [← Function.iterate_succ_apply' derivative, Nat.succ_eq_add_one,
     Function.iterate_zero_apply, iterate_derivative_eq_zero (Nat.lt_succ_self _)]
 
-theorem iterate_derivative_eq_factorial_mul (p : R[X]) (k : ℕ) :
-    derivative^[k] p = k ! •
-      (∑ x ∈ (derivative^[k] p).support, (x + k).choose k • C (p.coeff (x + k)) * X ^ x) := by
-  conv_lhs => rw [(derivative^[k] p).as_sum_support_C_mul_X_pow]
-  rw [smul_sum]; congr; funext i
-  calc
-    C ((derivative^[k] p).coeff i) * X ^ i =
-        C ((i + k).descFactorial k • p.coeff (i + k)) * X ^ i := by rw [coeff_iterate_derivative]
-    _ = C ((k ! * (i + k).choose k) • p.coeff (i + k)) * X ^ i := by
-      rw [Nat.descFactorial_eq_factorial_mul_choose]
-    _ = (k ! * (i + k).choose k) • C (p.coeff (i + k)) * X ^ i := by rw [smul_C]
-    _ = k ! • (i + k).choose k • C (p.coeff (i + k)) * X ^ i := by rw [mul_smul]
-    _ = k ! • ((i + k).choose k • C (p.coeff (i + k)) * X ^ i) := by rw [smul_mul_assoc]
-
-theorem exists_iterate_derivative_eq_factorial_mul (p : R[X]) (k : ℕ) :
+theorem exists_iterate_derivative_eq_factorial_smul (p : R[X]) (k : ℕ) :
     ∃ gp : R[X], gp.natDegree ≤ p.natDegree - k ∧ derivative^[k] p = k ! • gp := by
-  use ∑ x ∈ (derivative^[k] p).support, (x + k).choose k • C (p.coeff (x + k)) * X ^ x
-  constructor
-  · refine (natDegree_sum_le _ _).trans ?_
-    rw [fold_max_le]
-    refine ⟨Nat.zero_le _, fun i hi => ?_⟩; dsimp only [Function.comp]
-    replace hi := le_natDegree_of_mem_supp _ hi
-    rw [smul_C]; refine (natDegree_C_mul_le _ _).trans ?_
-    refine (natDegree_X_pow_le _).trans ?_
-    refine hi.trans ?_
-    exact natDegree_iterate_derivative _ _
-  · exact iterate_derivative_eq_factorial_mul p k
+  refine ⟨_, (natDegree_sum_le _ _).trans ?_, iterate_derivative_eq_factorial_smul_sum p k⟩
+  rw [fold_max_le]
+  refine ⟨Nat.zero_le _, fun i hi => ?_⟩
+  dsimp only [Function.comp]
+  exact (natDegree_C_mul_le _ _).trans <| (natDegree_X_pow_le _).trans <|
+    (le_natDegree_of_mem_supp _ hi).trans <| natDegree_iterate_derivative _ _
 
 end Semiring
 
@@ -159,7 +140,7 @@ variable (A)
 theorem aeval_iterate_derivative_of_ge (p : R[X]) (q : ℕ) {k : ℕ} (hk : q ≤ k) :
     ∃ gp : R[X], gp.natDegree ≤ p.natDegree - k ∧
       ∀ r : A, aeval r (derivative^[k] p) = q ! • aeval r gp := by
-  obtain ⟨p', p'_le, hp'⟩ := exists_iterate_derivative_eq_factorial_mul p k
+  obtain ⟨p', p'_le, hp'⟩ := exists_iterate_derivative_eq_factorial_smul p k
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hk
   refine ⟨((q + k).descFactorial k : R[X]) * p', (natDegree_C_mul_le _ _).trans p'_le, fun r => ?_⟩
   simp_rw [hp', nsmul_eq_mul, map_mul, map_natCast, ← mul_assoc, ← Nat.cast_mul,
