@@ -139,8 +139,9 @@ theorem splits_X_pow (n : ℕ) : (X ^ n).Splits i :=
 theorem splits_id_iff_splits {f : K[X]} : (f.map i).Splits (RingHom.id L) ↔ f.Splits i := by
   rw [splits_map_iff, RingHom.id_comp]
 
-theorem Polynomial.Splits.comp_X_sub_C
-    (h : p.Splits f) : (p.comp (X - C a)).Splits f := by
+variable {i} in
+theorem Splits.comp_X_sub_C
+    (h : p.Splits i) : (p.comp (X - C a)).Splits i := by
   cases h with
   | inl h0 =>
     left
@@ -151,13 +152,14 @@ theorem Polynomial.Splits.comp_X_sub_C
     intro g irr dvd
     rw [map_comp, Polynomial.map_sub, map_X, map_C, dvd_comp_X_sub_C_iff] at dvd
     have := h (irr.map (algEquivAevalXAddC _)) dvd
-    change degree (g.comp (X + C (f a))) = 1 at this
+    change degree (g.comp (X + C (i a))) = 1 at this
     rw [degree_eq_natDegree irr.ne_zero]
     rwa [degree_eq_natDegree (fun h => WithBot.bot_ne_one (h ▸ this)),
       natDegree_comp, natDegree_X_add_C, mul_one] at this
 
-theorem Polynomial.Splits.comp_X_add_C (a : K) {p : K[X]}
-    (h : p.Splits f) : (p.comp (X + C a)).Splits f := by
+variable {i} in
+theorem Splits.comp_X_add_C (a : K) {p : K[X]}
+    (h : p.Splits i) : (p.comp (X + C a)).Splits i := by
   simpa only [map_neg, sub_neg_eq_add] using Polynomial.Splits.comp_X_sub_C (-a) h
 
 theorem exists_root_of_splits' {f : K[X]} (hs : Splits i f) (hf0 : degree (f.map i) ≠ 0) :
