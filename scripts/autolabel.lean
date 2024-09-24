@@ -49,14 +49,14 @@ structure Label where
 Mathlib labels and their corresponding folders. Add new labels and folders here!
 -/
 def mathlibLabels : Array Label := #[
-  { label := "t-algebra",
-    dirs := #[
-      "Mathlib" / "Algebra",
-      "Mathlib" / "FieldTheory",
-      "Mathlib" / "RingTheory",
-      "Mathlib" / "GroupTheory",
-      "Mathlib" / "RepresentationTheory",
-      "Mathlib" / "LinearAlgebras"] },
+  -- { label := "t-algebra",
+  --   dirs := #[
+  --     "Mathlib" / "Algebra",
+  --     "Mathlib" / "FieldTheory",
+  --     "Mathlib" / "RingTheory",
+  --     "Mathlib" / "GroupTheory",
+  --     "Mathlib" / "RepresentationTheory",
+  --     "Mathlib" / "LinearAlgebra"] },
   { label := "t-algebraic-geometry",
     dirs := #[
       "Mathlib" / "AlgebraicGeometry",
