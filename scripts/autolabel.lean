@@ -122,6 +122,10 @@ open IO AutoLabel in
 
 /-- `args` is expected to have length 1, and the first argument is the PR number. -/
 unsafe def main (args : List String): IO Unit := do
+  if args.length > 1 then
+    println s!"autolabel: invalid number of arguments ({args.length}). Please run without \
+    arguments or provide the target PR's number as single argument!"
+    IO.Process.exit 1
   let prNumber? := args[0]?
   let gitDiff ← IO.Process.run {
     cmd := "git",
