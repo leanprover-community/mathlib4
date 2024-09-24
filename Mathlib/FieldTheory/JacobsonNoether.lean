@@ -196,7 +196,7 @@ namespace canary
 #check IsSeparable.of_equiv_equiv
 
 lemma IsSeparable.of_equiv_equiv' {A₁ A₂ B : Type*} [Field A₁] [Field A₂] [Ring B]
-  [Algebra A₁ B] [Algebra A₂ B] (e₁ : A₁ ≃+* A₂) {x : B} (h : IsSeparable A₁ x)
+    [Algebra A₁ B] [Algebra A₂ B] (e₁ : A₁ ≃+* A₂) {x : B} (h : IsSeparable A₁ x)
   (he : (algebraMap A₂ B).comp e₁ = algebraMap A₁ B) : IsSeparable A₂ x := by
   letI := e₁.toRingHom.toAlgebra
   letI : IsScalarTower A₁ A₂ B := by
