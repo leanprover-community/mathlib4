@@ -584,7 +584,7 @@ end AlgEquiv
 
 section IsScalarTower
 
-variable [Field L] [CommRing E] [Algebra F L]
+variable [Field L] [Ring E] [Algebra F L]
     [Algebra F E] [Algebra L E] [IsScalarTower F L E]
 
 /-- If `E / L / F` is a scalar tower and `x : E` is separable over `F`, then it's also separable

@@ -193,6 +193,21 @@ end JacobsonNoether
 
 namespace canary
 
+#check IsSeparable.of_equiv_equiv
+
+lemma IsSeparable.of_equiv_equiv' {A₁ A₂ B : Type*} [Field A₁] [Field A₂] [Ring B]
+  [Algebra A₁ B] [Algebra A₂ B] (e₁ : A₁ ≃+* A₂) {x : B} (h : IsSeparable A₁ x)
+  (he : (algebraMap A₂ B).comp e₁ = algebraMap A₁ B) : IsSeparable A₂ x := by
+  letI := e₁.toRingHom.toAlgebra
+  letI : IsScalarTower A₁ A₂ B := by
+    refine @IsScalarTower.of_algebraMap_eq A₁ A₂ B _ _ _ _ _ _ ?_
+    intro x
+    show (algebraMap A₁ B) x = (algebraMap A₂ B).comp (algebraMap A₁ A₂) x
+    exact congrFun (congrArg DFunLike.coe (id (Eq.symm he))) x
+  exact IsSeparable.tower_top A₂ h
+
+#check minpoly.dvd_map_of_isScalarTower
+
 open Algebra Subring Polynomial
 
 example {L D : Type*} [Field L] [DivisionRing D] [Algebra L D] [alg : Algebra.IsAlgebraic L D]
@@ -214,14 +229,11 @@ example {L D : Type*} [Field L] [DivisionRing D] [Algebra L D] [alg : Algebra.Is
     exact RingEquiv.refl (Subalgebra.center L D)
   set equiv : L ≃+* (center D) := ψ.trans φ
   let keymap : L →+* (center D) := {
-    toFun := fun l ↦ ⟨(algebraMap L D) l,
-        mem_center_iff.mpr (fun g ↦ Eq.symm (commutes' l g))⟩
+    toFun := fun l ↦ ⟨(algebraMap L D) l, mem_center_iff.mpr (fun g ↦ Eq.symm (commutes' l g))⟩
     map_one' := by simp only [map_one]; rfl
-    map_mul' := by
-      simp only [map_mul, MulMemClass.mk_mul_mk, implies_true]
+    map_mul' := by simp only [map_mul, MulMemClass.mk_mul_mk, implies_true]
     map_zero' := by simp only [map_zero]; rfl
-    map_add' := by
-      simp only [map_add, AddMemClass.mk_add_mk, implies_true]
+    map_add' := by simp only [map_add, AddMemClass.mk_add_mk, implies_true]
   }
   letI : Algebra L (center D) := keymap.toAlgebra
   have integral (x : D) : IsIntegral L x := IsAlgebraic.isIntegral (alg.1 x)
@@ -249,10 +261,7 @@ example {L D : Type*} [Field L] [DivisionRing D] [Algebra L D] [alg : Algebra.Is
   constructor
   · simp_rw [← hcenter', hk'] at hx
     exact hx.1
-  · have base := hx.2
-    /-Now the remaining task is to
-    ***prove `IsSeparable L x` from `IsSeparable (center D) x`***
-    ***We've proved that `L ≃+* (center D)`*** -/
+  · apply IsSeparable.of_equiv_equiv' equiv.symm hx.2
     sorry
 
 end canary
