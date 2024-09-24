@@ -195,7 +195,7 @@ instance instIntermediateFieldAlgebraicClosureIsAlgebraic (K L : Type*) [Field K
 end IntegralClosure
 
 section split
-
+#check minpoly.add_algebraMap
 variable {A} [Field A]
 theorem minpoly.add_algebraMap' {B : Type*} [CommRing B] [Algebra A B] {x : B}
     (a : A) : minpoly A (x + algebraMap A B a) = (minpoly A x).comp (X - C a) := by
