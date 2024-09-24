@@ -1,6 +1,7 @@
 name: Autolabel PRs
 
 on:
+  push:
   pull_request:
     types: [opened]
   workflow_dispatch:
