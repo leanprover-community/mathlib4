@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Init
 import Batteries.Tactic.Lint
+import Mathlib.Tactic.LintDecidable
 
 /-!
 # A parser for superscripts and subscripts
@@ -95,7 +96,8 @@ partial def satisfyTokensFn (p : Char → Bool) (errorMsg : String) (many := tru
 variable {α : Type u} [Inhabited α] (as : Array α) (leftOfPartition : α → Bool) in
 /-- Given a predicate `leftOfPartition` which is true for indexes `< i` and false for `≥ i`,
 returns `i`, by binary search. -/
-@[specialize] partial def partitionPoint (lo := 0) (hi := as.size) : Nat :=
+@[specialize, nolint inhabitedNonempty]
+partial def partitionPoint (lo := 0) (hi := as.size) : Nat :=
   if lo < hi then
     let m := (lo + hi)/2
     let a := as.get! m
