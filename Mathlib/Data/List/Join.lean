@@ -111,9 +111,9 @@ theorem join_drop_length_sub_one {L : List (List α)} (h : L ≠ []) :
 `(x ++ l₁) ++ (x ++ l₂) ++ ... ++ (x ++ lₙ) ++ x` where `L = [l₁, l₂, ..., lₙ]`. -/
 theorem append_join_map_append (L : List (List α)) (x : List α) :
     x ++ (L.map (· ++ x)).join = (L.map (x ++ ·)).join ++ x := by
-  induction' L with _ _ ih
-  · rw [map_nil, join, append_nil, map_nil, join, nil_append]
-  · rw [map_cons, join, map_cons, join, append_assoc, ih, append_assoc, append_assoc]
+  induction L with
+  | nil => rw [map_nil, join, append_nil, map_nil, join, nil_append]
+  | cons _ _ ih => rw [map_cons, join, map_cons, join, append_assoc, ih, append_assoc, append_assoc]
 
 @[deprecated (since := "2024-08-15")] alias sublist_join := sublist_join_of_mem
 
