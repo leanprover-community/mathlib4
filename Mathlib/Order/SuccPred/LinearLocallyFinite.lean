@@ -194,7 +194,7 @@ variable [SuccOrder ι] [IsSuccArchimedean ι] [P : PredOrder ι] {i0 i : ι}
 the range of `toZ`. -/
 def toZ (i0 i : ι) : ℤ :=
   dite (i0 ≤ i) (fun hi ↦ Nat.find (exists_succ_iterate_of_le hi)) fun hi ↦
-    -Nat.find (@exists_pred_iterate_of_le _ _ P _ _ _ (not_le.mp hi).le)
+    -Nat.find (exists_pred_iterate_of_le (α := ι) (not_le.mp hi).le)
 
 theorem toZ_of_ge (hi : i0 ≤ i) : toZ i0 i = Nat.find (exists_succ_iterate_of_le hi) :=
   dif_pos hi
