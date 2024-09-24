@@ -971,15 +971,18 @@ theorem iterate_comp_eval :
 lemma isRoot_comp {R} [CommSemiring R] {p q : R[X]} {r : R} :
     (p.comp q).IsRoot r ↔ p.IsRoot (q.eval r) := by simp_rw [IsRoot, eval_comp]
 
-/-- `comp p`, regarded as a ring homomorphism from `R[X]` to itself. -/
-def compRingHom : R[X] → R[X] →+* R[X] :=
-  eval₂RingHom C
+/-- `comp p`, regarded as a `R`-algebra homomorphism from `R[X]` to itself. -/
+def compAlgHom : R[X] → R[X] →ₐ[R] R[X] :=
+  fun p =>
+  { eval₂RingHom C p with
+    commutes' := fun r => by simp
+  }
 
 @[simp]
-theorem coe_compRingHom (q : R[X]) : (compRingHom q : R[X] → R[X]) = fun p => comp p q :=
+theorem coe_compAlgHom (q : R[X]) : (compAlgHom q : R[X] → R[X]) = fun p => comp p q :=
   rfl
 
-theorem coe_compRingHom_apply (p q : R[X]) : (compRingHom q : R[X] → R[X]) p = comp p q :=
+theorem coe_compAlgHom_apply (p q : R[X]) : (compAlgHom q : R[X] → R[X]) p = comp p q :=
   rfl
 
 theorem root_mul_left_of_isRoot (p : R[X]) {q : R[X]} : IsRoot q a → IsRoot (p * q) a := fun H => by
@@ -1014,15 +1017,15 @@ theorem eval_prod {ι : Type*} (s : Finset ι) (p : ι → R[X]) (x : R) :
 
 theorem list_prod_comp (l : List R[X]) (q : R[X]) :
     l.prod.comp q = (l.map fun p : R[X] => p.comp q).prod :=
-  map_list_prod (compRingHom q) _
+  map_list_prod (compAlgHom q) _
 
 theorem multiset_prod_comp (s : Multiset R[X]) (q : R[X]) :
     s.prod.comp q = (s.map fun p : R[X] => p.comp q).prod :=
-  map_multiset_prod (compRingHom q) _
+  map_multiset_prod (compAlgHom q) _
 
 theorem prod_comp {ι : Type*} (s : Finset ι) (p : ι → R[X]) (q : R[X]) :
     (∏ j ∈ s, p j).comp q = ∏ j ∈ s, (p j).comp q :=
-  map_prod (compRingHom q) _ _
+  map_prod (compAlgHom q) _ _
 
 theorem isRoot_prod {R} [CommRing R] [IsDomain R] {ι : Type*} (s : Finset ι) (p : ι → R[X])
     (x : R) : IsRoot (∏ j ∈ s, p j) x ↔ ∃ i ∈ s, IsRoot (p i) x := by
