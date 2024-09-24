@@ -104,7 +104,8 @@ instance add_contravariantClass_le : ContravariantClass Ordinal.{u} Ordinal.{u} 
                   simpa only [Sum.lex_inr_inr, fr, InitialSeg.coe_coe_fn, Embedding.coeFn_mk] using
                     @RelEmbedding.map_rel_iff _ _ _ _ f.toRelEmbedding (Sum.inr a) (Sum.inr b)⟩,
               fun a b H => by
-                rcases f.init (by rw [fr] <;> exact Sum.lex_inr_inr.2 H) with ⟨a' | a', h⟩
+                rcases f.mem_range_of_rel (by rw [fr] <;> exact Sum.lex_inr_inr.2 H) with
+                  ⟨a' | a', h⟩
                 · rw [fl] at h
                   cases h
                 · rw [fr] at h
@@ -1305,21 +1306,6 @@ theorem le_sup_shrink_equiv {s : Set Ordinal.{u}} (hs : Small.{u} s) (a) (ha : a
   rw [symm_apply_apply]
 
 -- TODO: move this together with `bddAbove_range`.
-
-instance small_Iio (o : Ordinal.{u}) : Small.{u} (Set.Iio o) :=
-  let f : o.toType → Set.Iio o :=
-    fun x => ⟨typein (α := o.toType) (· < ·) x, typein_lt_self x⟩
-  let hf : Surjective f := fun b =>
-    ⟨enum (α := o.toType) (· < ·) ⟨b.val,
-        by
-          rw [type_lt]
-          exact b.prop⟩,
-      Subtype.ext (typein_enum _ _)⟩
-  small_of_surjective hf
-
-instance small_Iic (o : Ordinal.{u}) : Small.{u} (Set.Iic o) := by
-  rw [← Iio_succ]
-  infer_instance
 
 theorem bddAbove_of_small (s : Set Ordinal.{u}) [h : Small.{u} s] : BddAbove s := by
   obtain ⟨a, ha⟩ := bddAbove_range (fun x => ((@equivShrink s h).symm x).val)
