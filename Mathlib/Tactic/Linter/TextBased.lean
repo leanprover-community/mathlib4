@@ -694,9 +694,14 @@ def unicodeLinter : TextbasedLinter := fun lines ↦ Id.run do
         | none =>
           -- removing used variant-selector
           head ++ ⟨[s.get 0]⟩ ++ tail
-      | .unwantedUnicode _ =>
-        -- no automatic fixes available
-        pure ()
+      | .unwantedUnicode c =>
+        match c with
+        | '\u00a0' =>
+          -- replace non-breaking space with normal whitespace
+          newLine := newLine.replace "\u00a0" " "
+        | _ =>
+          -- no automatic fixes available
+          pure ()
       | _ =>
         unreachable!
 
