@@ -40,8 +40,12 @@ monoid (C₀) vs. clone (C₂)
 
 /-- An arbitrary monoid. -/
 structure C₀ where
+
+  /-- The functions under consideration (computable, primitive recursive, hyperarithmetic, etc.) -/
   func : (ℕ → ℕ) → Prop
+
   id : func id
+
   comp : ∀ {f g}, func f → func g → func (f ∘ g)
 
 /-- Embedding on the left over ℕ. -/
@@ -76,8 +80,10 @@ def m_reducible {C : C₀}  (A B : ℕ → Bool) := ∃ f : ℕ → ℕ, C.func 
 def m_equivalent {C : C₀} (A B : ℕ → Bool) := @m_reducible C A B ∧ @m_reducible C B A
 
 
-
+/-- A ≤ₘ B iff A is many-one reducible to B. -/
 infix:50 " ≤ₘ " => m_reducible
+
+/-- A ≡ₘ B iff A is many-one equivalent to B. -/
 infix:50 " ≡ₘ " => m_equivalent
 
 
@@ -141,7 +147,7 @@ lemma m_equiv_equiv {C : C₀} : Equivalence (@m_equivalent C) :=
 }
 
 
-/-
+/--
 
 ## The degree structure 𝓓ₘ, using quotients
 
@@ -256,7 +262,7 @@ lemma join_inl (A B : ℕ → Bool) (k : ℕ): (join A B) (inlFun k) = A k := by
 /-- Join works as desired on the right. -/
 lemma join_inr (A B : ℕ → Bool) (k : ℕ): (join A B) (inrFun k) = B k := by
   unfold join inrFun
-  simp
+  simp only [Nat.not_even_bit1, ↓reduceIte]
   congr
   omega
 
@@ -284,18 +290,14 @@ theorem botSwap_inj {E : C₀} : Function.Injective <| @botSwap E := by
   intro a b h
   unfold botSwap at h
   split_ifs at h with g₀ g₁ g₂ g₃ g₄ g₅
-  · apply Eq.trans;exact g₀
-    exact g₁.symm
-  · exfalso;
-    rw [g₂] at g₁
-    exact g₁ h
-  · exfalso;exact g₂ h.symm
-  · rw [g₃,h] at g₀
-    exfalso;apply g₀;rfl
-  · subst g₃;exact g₅.symm
-  · exfalso;exact g₄ h.symm
-  · exfalso;exact g₃ h
-  · exfalso;exact g₀ h
+  · exact Eq.trans g₀ g₁.symm
+  · exact False.elim <|(g₂ ▸ g₁) h
+  · exact False.elim <| g₂ h.symm
+  · exfalso;apply g₃ ▸ h ▸ g₀;rfl
+  · exact g₃ ▸ g₅.symm
+  · exact False.elim <| g₄ h.symm
+  · exact False.elim <| g₃ h
+  · exact False.elim <| g₀ h
   · exact h
 
 /-- Swapping ∅ and ℕ is surjective on 𝓓ₘ. -/
@@ -309,24 +311,15 @@ theorem botSwap_surj {E : C₀} : Function.Surjective <| @botSwap E := by
     · by_cases H : b = ⊤ <;> aesop
 
 /-- In 𝓓ₘ, ⊥ is not below ⊤. -/
-lemma emp_not_below {E : C₀} : ¬ (⊥ : @𝓓ₘ E) ≤ ⊤ := by
-  intro hc
-  unfold 𝓓ₘ 𝓓ₘsetoid m_equivalent at hc
-  obtain ⟨f,hf⟩ := hc
-  simp at hf
+lemma emp_not_below {E : C₀} : ¬ (⊥ : @𝓓ₘ E) ≤ ⊤ := fun ⟨f,hf⟩ => by simp at hf
 
 /-- In 𝓓ₘ, ⊤ is not below ⊥. -/
-lemma univ_not_below {E : C₀} : ¬ (⊤ : @𝓓ₘ E) ≤ ⊥ := by
-  intro hc
-  unfold 𝓓ₘ 𝓓ₘsetoid m_equivalent at hc
-  obtain ⟨f,hf⟩ := hc
-  simp at hf
+lemma univ_not_below {E : C₀} : ¬ (⊤ : @𝓓ₘ E) ≤ ⊥ := fun ⟨f,hf⟩ => by simp at hf
 
 /-- In 𝓓ₘ, ⊥ is a minimal element. -/
 theorem emp_min {E : C₀} : ∀ (a : @𝓓ₘ E), (h : a ≤ ⊥) →  a = ⊥ := by
   apply Quotient.ind
-  intro A h
-  obtain ⟨f,hf⟩ := h
+  intro A ⟨f,hf⟩
 
   unfold 𝓓ₘ 𝓓ₘsetoid m_equivalent m_reducible at *
   simp_all only [Quotient.eq]
@@ -340,9 +333,7 @@ theorem emp_min {E : C₀} : ∀ (a : @𝓓ₘ E), (h : a ≤ ⊥) →  a = ⊥ 
 /-- In 𝓓ₘ, ⊤ is a minimal element. -/
 theorem univ_min {E : C₀} : ∀ (a : @𝓓ₘ E), (h : a ≤ ⊤) →  a = ⊤ := by
   apply Quotient.ind
-  intro A h
-  obtain ⟨f,hf⟩ := h
-
+  intro A ⟨f,hf⟩
   unfold 𝓓ₘ 𝓓ₘsetoid m_equivalent m_reducible at *
   simp_all only [Quotient.eq]
   apply Quot.sound
@@ -362,26 +353,10 @@ def cpl : (ℕ → Bool) → (ℕ → Bool) := fun A => (fun k => ! (A k))
 /-- The complement map on 𝓓ₘ. -/
 def complementMap {E : C₀} : @𝓓ₘ E → @𝓓ₘ E := by
   apply Quotient.lift
-  intro A B h
+  intro A B ⟨⟨f₁,hf₁⟩,⟨f₂,hf₂⟩⟩
   show ⟦cpl A⟧ = ⟦cpl B⟧
-  apply Quotient.sound
-  obtain ⟨f₁,hf₁⟩ := h.1
-  obtain ⟨f₂,hf₂⟩ := h.2
-  constructor
-  · use f₁
-    unfold cpl
-    constructor
-    tauto
-    intro x
-    congr
-    tauto
-  · use f₂
-    unfold cpl
-    constructor
-    tauto
-    intro x
-    congr
-    tauto
+  exact Quotient.sound <| ⟨⟨f₁,hf₁.1, fun x => by unfold cpl; congr; exact hf₁.2 x⟩,
+                           ⟨f₂,hf₂.1, fun x => by unfold cpl; congr; exact hf₂.2 x⟩⟩
 
 /-- In 𝓓ₘ, ⊥ ≠ ⊤. -/
 lemma emp_univ_m_degree {E : C₀} : (⊥ : @𝓓ₘ E) ≠ ⊤ := by
@@ -470,7 +445,7 @@ lemma getHasIte {C : C₁} (hasIte₂ : ∀ {f₁ f₂}, C.func f₁ → C.func 
     split_ifs with g₀
     · rfl
     · show 2 * (k/2) + 1 = k
-      obtain ⟨a,ha⟩ := odd_iff_exists_bit1.mp <| Nat.not_even_iff_odd.mp g₀
+      have ⟨a,ha⟩ := odd_iff_exists_bit1.mp <| Nat.not_even_iff_odd.mp g₀
       subst ha
       omega
   rw [← this]
@@ -519,15 +494,12 @@ theorem join_le_join {C : C₂} {A₀ A₁ : ℕ → Bool} (h : @m_reducible C.t
 
 /-- The join is bounded by each upper bound. -/
 lemma join_le {E : C₂} {A B C : ℕ → Bool} (h₁ : @m_reducible E.toC₀ A C)
-    (h₂ : @m_reducible E.toC₀ B C) :
-    @m_reducible E.toC₀ (join A B) C := by
+    (h₂ : @m_reducible E.toC₀ B C) : @m_reducible E.toC₀ (join A B) C := by
   obtain ⟨f₁,hf₁⟩ := h₁
   obtain ⟨f₂,hf₂⟩ := h₂
   use fun k => ite (Even k) (f₁ (k/2)) (f₂ (k/2))
   constructor
-  · apply E.join
-    exact hf₁.1
-    exact hf₂.1
+  · exact E.join hf₁.1 hf₂.1
   · intro k
     unfold join
     split_ifs with h
@@ -592,11 +564,10 @@ theorem emp_univ {E : C₂} (B : ℕ → Bool) (h_2 : ¬(⟦B⟧ : @𝓓ₘ E.to
     exfalso
     apply h_2
     rfl
-  · have : ∃ k, B k ≠ false := by
+  · have ⟨k,hk⟩ : ∃ k, B k ≠ false := by
       contrapose H
       simp_all only [ne_eq, Bool.not_eq_false, not_exists, Bool.not_eq_true, Decidable.not_not]
       ext x;tauto
-    obtain ⟨k,hk⟩ := this
     use fun _ => k
     simp_all only [ne_eq, Bool.not_eq_false, implies_true, and_true]
     exact E.const k
@@ -610,11 +581,10 @@ theorem univ_emp {E : C₂} (B : ℕ → Bool) (h_2 : ⟦B⟧ ≠ (⊤ : @𝓓�
   exfalso
   apply h_2
   rfl
-  have : ∃ k, B k ≠ true := by
+  have ⟨k,hk⟩ : ∃ k, B k ≠ true := by
     contrapose H
     simp_all only [ne_eq, Bool.not_eq_true, not_exists, Bool.not_eq_false, Decidable.not_not]
     ext x;tauto
-  obtain ⟨k,hk⟩ := this
   use fun _ => k
   simp_all only [ne_eq, Bool.not_eq_true, implies_true, and_true]
   exact E.const k
@@ -644,8 +614,7 @@ theorem complementMap_injective {E : C₀} : Function.Injective <|@complementMap
   Quotient.ind fun A => Quotient.ind fun B h => Quotient.sound <| by
   unfold complementMap cpl at h
   simp only [Quotient.lift_mk, Quotient.eq] at h
-  obtain ⟨f₁,hf₁⟩ := h.1
-  obtain ⟨f₂,hf₂⟩ := h.2
+  obtain ⟨⟨f₁,hf₁⟩, ⟨f₂,hf₂⟩⟩ := h
   simp only at hf₁ hf₂
   exact ⟨⟨f₁, hf₁.1, fun x => by rw [← Bool.not_not <| A x, ← Bool.not_not <| B <| f₁ x, hf₁.2 x]⟩,
          ⟨f₂, hf₂.1, fun x => by rw [← Bool.not_not <| B x, ← Bool.not_not <| A <| f₂ x, hf₂.2 x]⟩⟩
@@ -655,23 +624,12 @@ theorem complementMapIsAuto {E : C₀} : (@automorphism (@𝓓ₘ E)) complement
     ⟨⟨complementMap_injective, complementMap_surjective⟩,
     Quotient.ind fun A => Quotient.ind fun B => by
       constructor
-      · intro h
-        obtain ⟨f,hf⟩ := h
+      · intro ⟨f,hf⟩
         use f
         unfold cpl
         tauto
-
-      · intro h
-        obtain ⟨f,hf⟩ := h
-        use f
-        constructor
-        tauto
-        intro x
-        let Q := hf.2 x
-        apply congrArg (fun b => !b) at Q
-        unfold cpl at Q
-        simp only [Bool.not_not] at Q
-        tauto⟩
+      · exact fun ⟨f,hf⟩ => ⟨f, hf.1, fun x => (Bool.not_not <| B <| f x) ▸
+          (Bool.not_not <| A <| x) ▸ congrArg (fun b => !b) (hf.2 x)⟩⟩
 
 /-- 𝓓ₘ is not rigid. -/
 theorem notrigid {E : C₀} : ¬ rigid (@𝓓ₘ E) := by
@@ -709,8 +667,7 @@ lemma emp_lt_zero {E : C₂} : ⊥ < (0 : @𝓓ₘ E.toC₀) := by
   · use fun _ => 1
     simp only [one_ne_zero, ↓reduceIte, implies_true, and_true]
     exact E.const 1
-  · intro hc
-    obtain ⟨f,hf⟩ := hc
+  · intro ⟨f,hf⟩
     simp at hf
 
 /-- ∅ and ℕ are the minimal elements of 𝓓ₘ. -/
@@ -724,8 +681,7 @@ lemma zero_one_m {E : C₂} {b : Bool} (A : ℕ → Bool) :
     ext n
     have ⟨_,ha⟩ := hA (fun _ ↦ n) (E.const _)
     exact ha.symm
-  · intro hr hc
-    obtain ⟨g,hg⟩ := hr
+  · intro ⟨g,hg⟩ hc
     subst hc
     simp_all
 
