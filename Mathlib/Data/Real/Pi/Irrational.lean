@@ -50,22 +50,19 @@ private lemma recursion' (n : ℕ) :
   have t : u₂ 1 * v₂ 1 - u₂ (-1) * v₂ (-1) = 2 * (0 ^ n * cos θ) := by
     simp only [u₂, v₂, f, one_pow, sub_self, one_mul, neg_one_sq, neg_mul, cos_neg, sub_neg_eq_add]
     simp only [← two_mul]
-  have hf : ∀ x, HasDerivAt f (- 2 * x) x := by
-    intro x
+  have hf (x) : HasDerivAt f (- 2 * x) x := by
     convert (hasDerivAt_pow 2 x).const_sub 1 using 1
     simp
-  have hu₁ : ∀ x, HasDerivAt u₁ (u₁' x) x := by
-    intros x
+  have hu₁ (x) : HasDerivAt u₁ (u₁' x) x := by
     convert (hf x).pow _ using 1
     simp only [Nat.add_succ_sub_one, u₁', Nat.cast_add_one]
     ring
-  have hv₁ : ∀ x, HasDerivAt v₁ (v₁' x) x := fun x => (hasDerivAt_mul_const θ).sin
-  have hu₂ : ∀ x, HasDerivAt u₂ (u₂' x) x := by
-    intros x
+  have hv₁ (x) : HasDerivAt v₁ (v₁' x) x := (hasDerivAt_mul_const θ).sin
+  have hu₂ (x) : HasDerivAt u₂ (u₂' x) x := by
     convert HasDerivAt.mul (hasDerivAt_id' x) ((hf x).pow _) using 1
     simp only [u₂']
     ring
-  have hv₂ : ∀ x, HasDerivAt v₂ (v₂' x) x := fun x => (hasDerivAt_mul_const θ).cos
+  have hv₂ (x) : HasDerivAt v₂ (v₂' x) x := (hasDerivAt_mul_const θ).cos
   convert_to (∫ (x : ℝ) in (-1)..1, u₁ x * v₁' x) * θ = _ using 1
   · simp_rw [u₁, v₁', ← intervalIntegral.integral_mul_const, sq θ, mul_assoc]
   rw [integral_mul_deriv_eq_deriv_mul (fun x _ => hu₁ x) (fun x _ => hv₁ x)
@@ -79,8 +76,7 @@ private lemma recursion' (n : ℕ) :
   rw [integral_mul_deriv_eq_deriv_mul (fun x _ => hu₂ x) (fun x _ => hv₂ x)
     (hu₂d.intervalIntegrable _ _)
     (hv₂d.intervalIntegrable _ _), mul_sub, t, neg_mul, neg_mul, neg_mul, sub_neg_eq_add]
-  have : ∀ x, u₂' x = (2 * n + 1) * f x ^ n - 2 * n * f x ^ (n - 1) := by
-    intro x
+  have (x) : u₂' x = (2 * n + 1) * f x ^ n - 2 * n * f x ^ (n - 1) := by
     cases' n with n
     · simp [u₂']
     simp only [u₂', pow_succ _ n, f, Nat.succ_sub_one, Nat.cast_succ]
@@ -115,7 +111,6 @@ private def cosPoly : ℕ → Polynomial ℤ
   | 0 => 0
   | 1 => monomial 1 (-4)
   | (n+2) => ((2 : ℤ) * (2 * n + 3)) • cosPoly (n + 1) + monomial 2 (-4) * cosPoly n
-
 
 private lemma sinPoly_natDegree_le : ∀ n : ℕ, (sinPoly n).natDegree ≤ n
   | 0 => by simp [sinPoly]
@@ -172,9 +167,9 @@ private lemma is_integer {p : Polynomial ℤ} (a b : ℤ) {k : ℕ} (hp : p.natD
   simp only [eval₂_monomial, eq_intCast, div_pow, Int.cast_mul, Int.cast_pow]
   refine Finset.sum_congr rfl (fun i hi => ?_)
   have ik := (le_natDegree_of_mem_supp i hi).trans hp
-  rw [mul_assoc, div_mul_comm, ← Int.cast_pow, ← Int.cast_pow, ← Int.cast_pow, ← pow_sub_mul_pow b ik,
-    ← Int.cast_div_charZero, Int.mul_ediv_cancel _ (pow_ne_zero _ hb), ← mul_assoc, mul_right_comm,
-    ← Int.cast_pow]
+  rw [mul_assoc, div_mul_comm, ← Int.cast_pow, ← Int.cast_pow, ← Int.cast_pow,
+    ← pow_sub_mul_pow b ik, ← Int.cast_div_charZero, Int.mul_ediv_cancel _ (pow_ne_zero _ hb),
+    ← mul_assoc, mul_right_comm, ← Int.cast_pow]
   exact dvd_mul_left _ _
 
 open Filter
