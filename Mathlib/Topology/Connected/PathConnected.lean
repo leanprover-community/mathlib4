@@ -838,13 +838,14 @@ theorem mem_pathComponentIn_self (h : x ∈ F) : x ∈ pathComponentIn x F :=
 theorem pathComponentIn_subset : pathComponentIn x F ⊆ F :=
   fun _ hy ↦ hy.target_mem
 
-theorem pathComponentIn_nonEmpty_iff : (pathComponentIn x F).Nonempty ↔ x ∈ F :=
+theorem pathComponentIn_nonempty_iff : (pathComponentIn x F).Nonempty ↔ x ∈ F :=
   ⟨fun ⟨_, ⟨γ, hγ⟩⟩ ↦ γ.source ▸ hγ 0, fun hx ↦ ⟨x, mem_pathComponentIn_self hx⟩⟩
 
 theorem pathComponentIn_congr (h : x ∈ pathComponentIn y F) :
     pathComponentIn x F = pathComponentIn y F := by
   ext; exact ⟨h.trans, h.symm.trans⟩
 
+@[gcongr]
 theorem pathComponentIn_mono {G : Set X} (h : F ⊆ G) :
     pathComponentIn x F ⊆ pathComponentIn x G :=
   fun _ ⟨γ, hγ⟩ ↦ ⟨γ, fun t ↦ h (hγ t)⟩
