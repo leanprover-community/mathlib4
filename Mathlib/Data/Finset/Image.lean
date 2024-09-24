@@ -242,10 +242,11 @@ theorem map_cons (f : α ↪ β) (a : α) (s : Finset α) (ha : a ∉ s) :
 @[simp]
 theorem map_eq_empty : s.map f = ∅ ↔ s = ∅ := (map_injective f).eq_iff' (map_empty f)
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem map_nonempty : (s.map f).Nonempty ↔ s.Nonempty :=
   mod_cast Set.image_nonempty (f := f) (s := s)
 
+@[aesop safe apply (rule_sets := [finsetNonempty])]
 protected alias ⟨_, Nonempty.map⟩ := map_nonempty
 
 @[simp]
@@ -349,10 +350,11 @@ theorem _root_.Function.Injective.mem_finset_image (hf : Injective f) :
 theorem coe_image : ↑(s.image f) = f '' ↑s :=
   Set.ext <| by simp only [mem_coe, mem_image, Set.mem_image, implies_true]
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 lemma image_nonempty : (s.image f).Nonempty ↔ s.Nonempty :=
   mod_cast Set.image_nonempty (f := f) (s := (s : Set α))
 
+@[aesop safe apply (rule_sets := [finsetNonempty])]
 protected theorem Nonempty.image (h : s.Nonempty) (f : α → β) : (s.image f).Nonempty :=
   image_nonempty.2 h
 

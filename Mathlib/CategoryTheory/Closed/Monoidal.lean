@@ -267,7 +267,7 @@ theorem ofEquiv_curry_def {X Y Z : C} (f : X ⊗ Y ⟶ Z) :
         (MonoidalClosed.curry (adj.toEquivalence.symm.toAdjunction.homEquiv (F.obj X ⊗ F.obj Y) Z
         ((Iso.compInverseIso (H := adj.toEquivalence)
           (MonoidalFunctor.commTensorLeft F X)).hom.app Y ≫ f))) := by
-  -- This whole proof used to be `rfl` before #16317.
+  -- This whole proof used to be `rfl` before #16317.
   change ((adj.comp ((ihom.adjunction (F.obj X)).comp
       adj.toEquivalence.symm.toAdjunction)).ofNatIsoLeft _).homEquiv _ _ _ = _
   dsimp only [Adjunction.ofNatIsoLeft]
@@ -289,7 +289,7 @@ theorem ofEquiv_uncurry_def {X Y Z : C} :
             (adj.toEquivalence.symm.toAdjunction.homEquiv _ _).symm
               (MonoidalClosed.uncurry ((adj.homEquiv _ _).symm f)) := by
   intro f
-  -- This whole proof used to be `rfl` before #16317.
+  -- This whole proof used to be `rfl` before #16317.
   change (((adj.comp ((ihom.adjunction (F.obj X)).comp
       adj.toEquivalence.symm.toAdjunction)).ofNatIsoLeft _).homEquiv _ _).symm _ = _
   dsimp only [Adjunction.ofNatIsoLeft]
