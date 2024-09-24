@@ -4,42 +4,179 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
 import Mathlib.Data.List.GroupBy
+import Mathlib.Data.PNat.Defs
 import Mathlib.Order.TypeTags
 
 /-!
 # Run-length encoding
 -/
 
-variable {α : Type*} [DecidableEq α]
+variable {α : Type*}
 
 namespace List
+
+theorem pmap_eq_self {l : List α} {p : α → Prop} (hp : ∀ (a : α), a ∈ l → p a)
+    (f : (a : α) → p a → α) (h : ∀ a (h : a ∈ l), f a (hp a h) = a) : l.pmap f hp = l := by
+  rw [pmap_eq_map_attach]
+  conv_rhs => rw [← attach_map_subtype_val l]
+  congr! with ⟨x, hx⟩
+  exact h x hx
+
+variable [DecidableEq α]
 
 /-- Run-length encoding of a list. Returns a list of pairs `(n, a)` representing consecutive groups
 of `a` of length `n`. -/
 def RunLength (l : List α) : List (ℕ+ × α) :=
-  ((l.groupBy (· == ·)).attachWith _ (fun _ ↦ ne_nil_of_mem_groupBy _)).map
-    fun m ↦ (⟨m.1.length, length_pos_of_ne_nil m.2⟩, m.1.head m.2)
+  (l.groupBy (· == ·)).pmap
+    (fun m hm ↦ (⟨m.length, length_pos_of_ne_nil hm⟩, m.head hm))
+    (fun _ ↦ ne_nil_of_mem_groupBy _)
 
 @[simp]
 theorem runLength_nil : RunLength ([] : List α) = [] :=
   rfl
 
 @[simp]
+theorem runLength_eq_nil {l : List α} : RunLength l = [] ↔ l = [] := by
+  rw [RunLength, pmap_eq_nil, groupBy_eq_nil]
+
+theorem runLength_append {n : ℕ} (hn : 0 < n) {a : α} {l : List α} (ha : a ∉ l.head?) :
+    (replicate n a ++ l).RunLength = (⟨n, hn⟩, a) :: l.RunLength := by
+  suffices groupBy (· == ·) (replicate n a ++ l) = replicate n a :: l.groupBy (· == ·) by
+    simp [this, RunLength, attachWith]
+  apply groupBy_append
+  case hn => simpa using hn.ne'
+  · simp_rw [beq_iff_eq]
+    exact chain'_replicate n a
+  · cases l with
+    | nil => simp
+    | cons b l =>
+      rw [Option.mem_def, eq_comm] at ha
+      simpa using ha
+
+@[simp]
 theorem runLength_replicate {n : ℕ} (hn : 0 < n) (a : α) :
     RunLength (replicate n a) = [(⟨n, hn⟩, a)] := by
-  
+  convert runLength_append hn (a := a) (l := []) _ <;> simp
 
-def runLengthRecOn (l : List α) {p : List α → Sort*} (pn : p [])
-    (pr : ∀ (n : ℕ+) a, p (replicate n a))
+theorem runLength_append_cons {n : ℕ} (hn : 0 < n) {a b : α} {l : List α} (h : a ≠ b) :
+    RunLength (replicate n a ++ b::l) = (⟨n, hn⟩, a) :: (b::l).RunLength := by
+  apply runLength_append hn
+  rwa [head?_cons, Option.mem_some_iff, eq_comm]
 
-#exit
-theorem join_map_runLength (l : List α) :
-    (l.RunLength.map (fun x ↦ replicate x.1 x.2)).join = l := by
-  convert join_groupBy (· == ·) l
+theorem join_map_runLength (l : List α) : (l.RunLength.map fun x ↦ replicate x.1 x.2).join = l := by
+  rw [RunLength, map_pmap, pmap_eq_self, join_groupBy]
+  intro m hm
+  have := chain'_of_mem_groupBy hm
+  simp_rw [beq_iff_eq, chain'_eq_iff_eq_replicate] at this
+  exact (this _ (head_mem_head? _)).symm
+
+theorem runLength_injective : Function.Injective (List.RunLength (α := α)) := by
+  intro l m h
+  have := join_map_runLength m
+  rwa [← h, join_map_runLength] at this
+
+@[simp]
+theorem runLength_inj {l m : List α} : l.RunLength = m.RunLength ↔ l = m :=
+  runLength_injective.eq_iff
+
+theorem runLength_join_map {l : List (ℕ+ × α)} (hl : l.Chain' fun x y ↦ x.2 ≠ y.2) :
+    (l.map fun x ↦ replicate x.1 x.2).join.RunLength = l := by
   induction l with
   | nil => rfl
-  | cons a l IH =>
-    rw [map_cons]
+  | cons x l IH =>
+    rw [chain'_cons'] at hl
+    rw [map_cons, join_cons, runLength_append, IH hl.2]
+    · rfl
+    · cases l with
+      | nil => simp
+      | cons y l => simpa [head?_replicate] using (hl.1 y head?_cons).symm
 
+private theorem chain'_runLengthAux {α : Type*} {l : List (List α)} (hn : ∀ m ∈ l, m ≠ [])
+    (h : ∀ m (hm : m ∈ l), m.head (hn m hm) = m.getLast (hn m hm))
+    (hl : l.Chain' fun a b ↦ ∃ ha hb, a.getLast ha ≠ b.head hb) :
+    (l.pmap List.head hn).Chain' Ne := by
+  induction l with
+  | nil => exact chain'_nil
+  | cons a l IH =>
+    cases l with
+    | nil => simp
+    | cons b l =>
+      rw [chain'_cons] at hl
+      rw [pmap, pmap, chain'_cons]
+      refine ⟨?_, IH (fun m hm ↦ hn _ (mem_cons_of_mem _ hm))
+        (fun m hm ↦ h _ (mem_cons_of_mem _ hm)) hl.2⟩
+      rw [h _ (mem_cons_self _ _)]
+      obtain ⟨_, _, H⟩ := hl.1
+      exact H
+
+theorem chain'_runLength (l : List α) : l.RunLength.Chain' fun x y ↦ x.2 ≠ y.2 := by
+  rw [RunLength]
+  apply (List.chain'_map (β := ℕ+ × α) Prod.snd).1
+  rw [map_pmap]
+  apply chain'_runLengthAux
+  · intro m hm
+    have := chain'_of_mem_groupBy hm
+    simp_rw [beq_iff_eq, chain'_eq_iff_eq_replicate] at this
+    generalize_proofs hm
+    obtain ⟨n, a, hm'⟩ : ∃ n a, m = replicate n a := ⟨_, _, this _ (head_mem_head? hm)⟩
+    simp [hm']
+  · simpa using chain'_last_head_groupBy (· == ·) l
+
+private def runLengthRecOnAux (l : List (ℕ+ × α)) {p : List α → Sort*}
+    (hc : l.Chain' fun x y ↦ x.2 ≠ y.2) (hn : p [])
+    (hi : ∀ (n : ℕ+) {a l}, a ∉ l.head? → p l → p (replicate n a ++ l)) :
+    p (l.map fun x ↦ replicate x.1 x.2).join :=
+  match l with
+  | [] => hn
+  | (n, a)::l => by
+    rw [chain'_cons'] at hc
+    apply hi _ _ (runLengthRecOnAux l hc.2 hn hi)
+    cases l with
+    | nil => simp
+    | cons x l => simpa [head?_replicate] using (hc.1 x head?_cons).symm
+
+/-- Recursion on the run-length encoding of a list. -/
+def runLengthRecOn (l : List α) {p : List α → Sort*} (hn : p [])
+    (hi : ∀ (n : ℕ+) {a l}, a ∉ l.head? → p l → p (replicate n a ++ l)) : p l :=
+  cast (congr_arg p (join_map_runLength l))
+    (runLengthRecOnAux l.RunLength (chain'_runLength _) hn hi)
+
+@[simp]
+theorem runLengthRecOn_nil {p : List α → Sort*} (hn : p [])
+    (hi : ∀ (n : ℕ+) {a l}, a ∉ l.head? → p l → p (replicate n a ++ l)) :
+    runLengthRecOn [] hn hi = hn :=
+  rfl
+
+theorem runLengthRecOn_append {p : List α → Sort*} (n : ℕ+) (a : α) {l : List α} (hl : a ∉ l.head?)
+    (hn : p []) (hi : ∀ (n : ℕ+) {a l}, a ∉ l.head? → p l → p (replicate n a ++ l)) :
+    runLengthRecOn (replicate n a ++ l) hn hi = hi n hl (runLengthRecOn l hn hi) := by
+  rw [runLengthRecOn, runLengthRecOn, cast_eq_iff_heq]
+  have H₁ := runLength_append n.2 hl
+  have H₂ : Chain' (fun x y ↦ x.2 ≠ y.2) ((n, a) :: l.RunLength) := H₁ ▸ chain'_runLength _
+  have H : HEq (List.runLengthRecOnAux (replicate n a ++ l).RunLength
+      (chain'_runLength _) hn hi) (List.runLengthRecOnAux ((n, a)::l.RunLength) H₂ hn hi) := by
+    congr
+    exact proof_irrel_heq _ _
+  apply H.trans
+  rw [runLengthRecOnAux]
+  congr
+  · exact join_map_runLength _
+  · exact proof_irrel_heq _ _
+  · exact (cast_heq _ _).symm
+
+theorem groupBy_beq (l : List α) :
+    l.groupBy (· == ·) = l.RunLength.map fun x ↦ replicate x.1 x.2 := by
+  apply runLengthRecOn l
+  · rfl
+  · intro n a l ha IH
+    rw [groupBy_append, runLength_append _ ha, map_cons, IH]
+    · rfl
+    · simp
+    · simp_rw [beq_iff_eq]
+      exact chain'_replicate _ _
+    · intro h
+      rw [getLast_replicate, beq_eq_false_iff_ne]
+      rintro rfl
+      exact ha (head_mem_head? _)
 
 end List

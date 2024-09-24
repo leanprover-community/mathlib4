@@ -50,6 +50,15 @@ theorem join_groupBy (r : α → α → Bool) (l : List α) : (l.groupBy r).join
   | nil => rfl
   | cons _ _ => join_groupBy_loop
 
+@[simp]
+theorem groupBy_eq_nil {r : α → α → Bool} {l : List α} : l.groupBy r = [] ↔ l = [] := by
+  constructor
+  · intro h
+    have := join_groupBy r l
+    rwa [h, join_nil, eq_comm] at this
+  · rintro rfl
+    rfl
+
 private theorem nil_not_mem_groupBy_loop {r : α → α → Bool} {l : List α} {a : α} {g : List α} :
     [] ∉ groupBy.loop r l a g [] := by
   induction l generalizing a g with
