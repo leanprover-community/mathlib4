@@ -68,8 +68,8 @@ open Function fixedPoints Cardinal Order OrderHom
 
 set_option linter.unusedVariables false in
 /-- The ordinal-indexed sequence approximating the least fixed point greater than
-  an initial value `x`. It is defined in such a way that we have `lfpApprox 0 x = x` and
-  `lfpApprox a x = ⨆ b < a, f (lfpApprox b x)`. -/
+an initial value `x`. It is defined in such a way that we have `lfpApprox 0 x = x` and
+`lfpApprox a x = ⨆ b < a, f (lfpApprox b x)`. -/
 def lfpApprox (a : Ordinal.{u}) : α :=
   sSup ({ f (lfpApprox b) | (b : Ordinal) (h : b < a) } ∪ {x})
 termination_by a
