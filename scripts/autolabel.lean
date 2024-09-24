@@ -24,18 +24,20 @@ namespace AutoLabel
 
 /--
 A `Label` consists of the
-* The `label` field is the actual GitHub label.
+* The `label` field is the actual GitHub label name.
 * The `dirs` field is the array of all "root paths" such that a modification in a file contained
-  in one of these paths should be labeled by `label`.
+  in one of these paths should be labelled with `label`.
 * The `exclusions` field is the array of all "root paths" that are excluded, among the
   ones that start with the ones in `dirs`.
+  Any modifications to a file in an excluded path is ignored for the purposes of labelling.
 -/
 structure Label where
   /-- The label name as it appears on github -/
   label : String
   /-- Array of paths which fall under this label. e.g. `"Mathlib" / "Algebra"` -/
   dirs : Array FilePath
-  /-- Array of (sub)-paths which should be excluded -/
+  /-- Array of paths which should be excluded.
+  Any modifications to a file in an excluded path is ignored for the purposes of labelling. -/
   exclusions : Array FilePath := #[]
   deriving BEq, Hashable
 
@@ -44,80 +46,60 @@ Mathlib Labels and their corresponding folders. Add new labels and folders here!
 -/
 def mathlibLabels : Array Label := #[
   { label := "t-algebra",
-    dirs :=
-      #[{ toString := "Mathlib" } / { toString := "FieldTheory" },
-        { toString := "Mathlib" } / { toString := " RingTheory" },
-        { toString := "Mathlib" } / { toString := "GroupTheory" },
-        { toString := "Mathlib" } / { toString := "RepresentationTheory" },
-        { toString := "Mathlib" } / { toString := "LinearAlgebra" }] },
+    dirs := #[
+      "Mathlib" / "FieldTheory",
+      "Mathlib" / " RingTheory",
+      "Mathlib" / "GroupTheory",
+      "Mathlib" / "RepresentationTheory",
+      "Mathlib" / "LinearAlgebra"] },
   { label := "t-algebraic-geometry",
-    dirs :=
-      #[{ toString := "Mathlib" } / { toString := "AlgebraicGeometry" },
-        { toString := "Mathlib" } / { toString := "Geometry.RingedSpace" }] },
+    dirs := #[
+      "Mathlib" / "AlgebraicGeometry",
+      "Mathlib" / "Geometry" / "RingedSpace"] },
   { label := "t-analysis",
-    dirs :=
-      #[{ toString := "Mathlib" } / { toString := "Analysis" }] },
+    dirs := #["Mathlib" / "Analysis"] },
   { label := "t-category-theory",
-    dirs :=
-      #[{ toString := "Mathlib" } / { toString := "CategoryTheory" }] },
+    dirs := #["Mathlib" / "CategoryTheory"] },
   { label := "t-combinatorics",
-    dirs :=
-      #[{ toString := "Mathlib" } / { toString := "Combinatorics" }] },
+    dirs := #["Mathlib" / "Combinatorics"] },
   { label := "t-computability",
-    dirs :=
-      #[{ toString := "Mathlib" } / { toString := "Computability" }] },
+    dirs := #["Mathlib" / "Computability"] },
   { label := "t-condensed",
-    dirs :=
-      #[{ toString := "Mathlib" } / { toString := "Condensed" }] },
+    dirs := #["Mathlib" / "Condensed"] },
   { label := "t-data",
-    dirs :=
-      #[{ toString := "Mathlib" } / { toString := "Data" }] },
+    dirs := #["Mathlib" / "Data"] },
   { label := "t-differential-geometry",
-    dirs :=
-      #[{ toString := "Mathlib" } / { toString := "DifferentialGeometry" },
-        { toString := "Mathlib" } / { toString := "Geometry" } / { toString := "Manifold" }] },
+    dirs := #["Mathlib" / "Geometry" / "Manifold"] },
   { label := "t-dynamics",
-    dirs :=
-      #[{ toString := "Mathlib" } / { toString := "Dynamics" }] },
+    dirs := #["Mathlib" / "Dynamics"] },
   { label := "t-euclidean-geometry",
-    dirs :=
-      #[{ toString := "Mathlib" } / { toString := "Geometry" } / { toString := "Euclidean" }] },
+    dirs := #["Mathlib" / "Geometry" / "Euclidean"] },
   { label := "t-linter",
-    dirs :=
-      #[{ toString := "Mathlib" } / { toString := "Tactic" } / { toString := "Linter" }] },
+    dirs := #["Mathlib" / "Tactic" / "Linter"] },
   { label := "t-logic",
-    dirs :=
-      #[{ toString := "Mathlib" } / { toString := "Logic" },
-        { toString := "Mathlib" } / { toString := "ModelTheory" }] },
+    dirs := #[
+      "Mathlib" / "Logic",
+      "Mathlib" / "ModelTheory"] },
   { label := "t-measure-probability",
-    dirs :=
-      #[{ toString := "Mathlib" } / { toString := "MeasureTheory" },
-        { toString := "Mathlib" } / { toString := "Probability" },
-        { toString := "Mathlib" } / { toString := "InformationTheory" }] },
+    dirs := #[
+      "Mathlib" / "MeasureTheory",
+      "Mathlib" / "Probability",
+      "Mathlib" / "InformationTheory"] },
   { label := "t-meta",
-    dirs :=
-      #[{ toString := "Mathlib" } / { toString := "Tactic" }],
-    exclusions :=
-      #[{ toString := "Mathlib" } / { toString := "Tactic" } / { toString := "Linter" }] },
+    dirs := #["Mathlib" / "Tactic"],
+    exclusions := #["Mathlib" / "Tactic" / "Linter"] },
   { label := "t-number-theory",
-    dirs :=
-      #[{ toString := "Mathlib" } / { toString := "NumberTheory" }] },
+    dirs := #["Mathlib" / "NumberTheory"] },
   { label := "t-order",
-    dirs :=
-      #[{ toString := "Mathlib" } / { toString := "Order" }] },
+    dirs := #["Mathlib" / "Order"] },
   { label := "t-set-theory",
-    dirs :=
-      #[{ toString := "Mathlib" } / { toString := "SetTheory" }] },
+    dirs := #["Mathlib" / "SetTheory"] },
   { label := "t-topology",
-    dirs :=
-      #[{ toString := "Mathlib" } / { toString := "Topology" },
-        { toString := "Mathlib" } / { toString := "AlgebraicTopology" }] },
+    dirs := #[
+      "Mathlib" / "Topology",
+      "Mathlib" / "AlgebraicTopology"] },
   { label := "CI",
-    dirs :=
-      #[{ toString := ".github" } / { toString := "workflows" }] }]
-
-
-#print mathlibLabels
+    dirs := #[".github" / "workflows"] }]
 
 /--
 Return all labels from `mathlibLabels` which are matching at least one of the `files`.
