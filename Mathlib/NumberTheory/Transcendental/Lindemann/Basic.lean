@@ -3,7 +3,6 @@ Copyright (c) 2022 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
-import Mathlib.Algebra.Order.Floor.Prime
 import Mathlib.Analysis.Complex.IsIntegral
 import Mathlib.NumberTheory.Transcendental.Lindemann.Init.AlgebraicPart
 import Mathlib.NumberTheory.Transcendental.Lindemann.Init.AnalyticalPart
@@ -66,9 +65,20 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
   let W := sup' univ univ_nonempty fun j => ‖w' j‖
   have W0 : 0 ≤ W := I.elim fun j => (norm_nonneg (w' j)).trans (le_sup' (‖w' ·‖) (mem_univ j))
 
-  obtain ⟨q, hqN, prime_q, hq⟩ :=
-    FloorRing.exists_prime_mul_pow_div_factorial_lt_one N
-      (W * ↑(∑ i : Fin m, Multiset.card ((p i).aroots ℂ))) (‖k‖ ^ P.natDegree * c)
+  have (x : ℝ) : Filter.Tendsto (fun n ↦ x ^ n / (n - 1)!) .atTop (nhds 0) := by
+    suffices Filter.Tendsto ((fun n ↦ x ^ (n + 1) / n !) ∘ (· - 1)) .atTop (nhds 0) from
+      this.congr' <| Filter.eventually_atTop.mpr ⟨1, fun _ h ↦ by simp [h]⟩
+    have := x.tendsto_pow_div_factorial_atTop.const_mul x
+    simp_rw [← mul_div_assoc, ← pow_succ', mul_zero] at this
+    exact this.comp (Filter.tendsto_atTop_atTop.mpr fun b ↦ ⟨b + 1, fun _ ↦ by omega⟩)
+
+  obtain ⟨q, hqN, prime_q, hq⟩ := Filter.Frequently.forall_exists_of_atTop
+    ((Nat.frequently_atTop_iff_infinite.mpr Nat.infinite_setOf_prime).and_eventually <|
+      eventually_lt_of_tendsto_lt (u := 1) (by simp)
+        ((this (‖k‖ ^ P.natDegree * c)).const_mul (W * ∑ i, Multiset.card ((p i).aroots ℂ))))
+    (N + 1)
+  rw [ge_iff_le, Nat.succ_le] at hqN
+  simp_rw [← mul_div_assoc] at hq
 
   obtain ⟨n, hn, gp, hgp, hc⟩ := hc' q ((le_max_left _ _).trans_lt hqN) prime_q
   replace hgp : gp.natDegree ≤ P.natDegree * q := by rw [mul_comm]; exact hgp.trans tsub_le_self

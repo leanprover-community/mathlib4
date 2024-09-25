@@ -187,7 +187,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
   use c
   intro q q_gt prime_q
   have q0 : 0 < q := Nat.Prime.pos prime_q
-  obtain ⟨gp', -, h'⟩ := sumIderiv_sl' ℤ (X ^ (q - 1) * p ^ q) q0
+  obtain ⟨gp', -, h'⟩ := aeval_sumIderiv' ℤ (X ^ (q - 1) * p ^ q) q0
   simp_rw [RingHom.algebraMap_toAlgebra] at h'
   simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, Polynomial.map_mul,
     Polynomial.map_pow, map_X, eq_intCast] at h'
@@ -203,7 +203,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
     replace h := Int.Prime.dvd_pow' prime_q h; rw [Int.natCast_dvd] at h
     replace h := Nat.le_of_dvd (Int.natAbs_pos.mpr p0) h
     revert h; rwa [imp_false, not_le]
-  obtain ⟨gp, gp'_le, h⟩ := sumIderiv_sl ℂ (X ^ (q - 1) * p ^ q) q
+  obtain ⟨gp, gp'_le, h⟩ := aeval_sumIderiv ℂ (X ^ (q - 1) * p ^ q) q
   refine ⟨gp, ?_, ?_⟩
   · refine gp'_le.trans ((tsub_le_tsub_right natDegree_mul_le q).trans ?_)
     rw [natDegree_X_pow, natDegree_pow, tsub_add_eq_add_tsub (Nat.one_le_of_lt q0),
