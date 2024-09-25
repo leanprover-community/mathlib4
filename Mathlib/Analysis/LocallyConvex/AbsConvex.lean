@@ -214,6 +214,11 @@ theorem absConvexHull_eq_convexHull_union_neg {s : Set E} :
     (convexHull_mono (union_subset (subset_balancedHull ℝ)
       (fun _ _ => by rw [mem_balancedHull_iff]; use -1; aesop)))
 
+theorem absConvexHull_inter_neg_eq {s : Set E} :
+    absConvexHull ℝ (s ∩ -s) = convexHull ℝ (s ∩ -s) := by
+  rw [absConvexHull_eq_convexHull_union_neg, inter_neg, neg_neg, inter_comm, union_self]
+
+
 end
 
 section
@@ -222,7 +227,7 @@ variable (𝕜 E) {s : Set E}
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
 variable [TopologicalSpace E] [TopologicalAddGroup E]  [lcs : LocallyConvexSpace ℝ E]
-  [ContinuousSMul 𝕜 E]
+  [ContinuousSMul ℝ E]
 
 --#check TotallyBounded
 --#check Set.Finite.isCompact_convexHull --(II.14 cor 1)
@@ -245,7 +250,7 @@ theorem test (d : Set (E × E)) (hd : d ∈ (TopologicalAddGroup.toUniformSpace 
 --#check Set.vaddSet
 
 /-
-theorem TotallyBounded.convexHull
+theorem totallyBounded_absConvexHull
     (hs : TotallyBounded (uniformSpace := TopologicalAddGroup.toUniformSpace E) s) :
     TotallyBounded (uniformSpace := TopologicalAddGroup.toUniformSpace E) (absConvexHull ℝ s) := by
   intro d hd
@@ -274,17 +279,34 @@ theorem TotallyBounded.convexHull
     have e1 (y : E) : {x | (x, y) ∈ d₂} = y +ᵥ V := by
       apply le_antisymm
       · intro x hx
-        --simp at hx
-        /-_have e11 : y - x ∈ S := by
-          simp_all only [mem_neg, neg_sub, mem_inter_iff, mem_setOf_eq, d₂]
-        have e12 : y - x ∈ -S := by
-          simp_all only [mem_neg, neg_sub, mem_inter_iff, mem_setOf_eq, true_and, d₂]
-        have e13 : y - x ∈ V := by
-          simp_all only [mem_neg, neg_sub, mem_inter_iff, mem_setOf_eq, true_and, and_self, d₂, V]
-        have e14 : x - y ∈ V := by
-          simp_all only [mem_neg, neg_sub, mem_inter_iff, mem_setOf_eq, and_self, d₂, V]-/
         rw [Set.mem_vadd']
         aesop
+      · intro x hx
+        rw [Set.mem_vadd'] at hx
+        aesop
+    have e2 : ⋃ y ∈ t, {x | (x, y) ∈ d₂} = t + V := by
+      aesop
+    rw [e2] at hts
+    have e3 : (absConvexHull ℝ) s ⊆ (absConvexHull ℝ) (t + V) := by
+      exact absConvexHull_mono hts
+    have e4 : (absConvexHull ℝ) s ⊆ ((absConvexHull ℝ) t) + (absConvexHull ℝ) V :=
+      le_trans e3 (AbsConvex.hullAdd _)
+    have e5 : (absConvexHull ℝ) V = V := by
+      rw [AbsConvex.absConvexHull_eq]
+      rw [← absConvexHull_eq_self]
+      rw [absConvexHull_inter_neg_eq]
+      rw [Convex.convexHull_eq]
+      exact Convex.inter hS₂ (Convex.neg hS₂)
+    rw [e5] at e4
+    rw [absConvexHull_eq_convexHull_union_neg (s := t)] at e4
+    have e6 : TotallyBounded (uniformSpace := TopologicalAddGroup.toUniformSpace E)
+        ((convexHull ℝ) (t ∪ -t)) := by
+      letI := TopologicalAddGroup.toUniformSpace E
+      apply IsCompact.totallyBounded
+      apply Set.Finite.isCompact_convexHull
+      apply finite_union
+
+    --apply le_trans (b := t + V)
 
     sorry
 -/
