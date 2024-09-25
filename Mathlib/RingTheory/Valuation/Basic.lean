@@ -260,7 +260,6 @@ variable [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation R Γ₀) {x y z :
 theorem map_neg (x : R) : v (-x) = v x :=
   v.toMonoidWithZeroHom.toMonoidHom.map_neg x
 
-#check map_sub_swap
 theorem map_sub_swap (x y : R) : v (x - y) = v (y - x) :=
   v.toMonoidWithZeroHom.toMonoidHom.map_sub_swap x y
 
