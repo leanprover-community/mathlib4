@@ -222,7 +222,7 @@ theorem lfpApprox_le_of_mem_fixedPoints {a : α}
     | inl h_y =>
       let ⟨j, h_j_lt, h_j⟩ := h_y
       rw [← h_j, ← h_a]
-      apply f.monotone' (IH j h_j_lt)
+      exact f.monotone' (IH j h_j_lt)
     | inr h_y =>
       rw [h_y]
       exact h_le_init
@@ -265,7 +265,7 @@ theorem gfpApprox_add_one (h : f x ≤ x) (a : Ordinal) :
     gfpApprox f x (a+1) = f (gfpApprox f x a) :=
   lfpApprox_add_one (OrderHom.dual f) x h a
 
-theorem gfpApprox_mono_left : Monotone (gfpApprox : (α →o α) → _ ) := by
+theorem gfpApprox_mono_left : Monotone (gfpApprox : (α →o α) → _) := by
   intro f g h
   have : (OrderHom.dual g) ≤ (OrderHom.dual f) := h
   exact lfpApprox_mono_left this
