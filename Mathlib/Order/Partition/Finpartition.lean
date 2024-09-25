@@ -607,6 +607,10 @@ theorem mem_iff_rel_of_mem_parts {s : Setoid α} [DecidableRel s.r] {x y : α}
   obtain rfl := Finpartition.part_eq_of_mem _ hf hx
   apply mem_part_ofSetoid_iff_rel
 
+theorem mem_parts_ofSetoid_iff {s : Setoid α} [DecidableRel s.r] {f : Finset α} [Nonempty α] :
+    f ∈ (ofSetoid s).parts ↔ (∀ x ∈ f, ∀ y ∈ f, s.r x y) ∧ ∀ x ∉ f, ∃ y ∈ f, ¬s.r x y := by
+  sorry
+
 end Setoid
 
 section Atomise

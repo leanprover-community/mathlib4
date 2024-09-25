@@ -110,8 +110,6 @@ def List.unpad (l : List Bool) : List Bool :=
 lemma List.unpad_pad (l : List Bool) (n : ℕ) : (l.pad n).unpad = l := by
   simp [pad, leftpad, unpad]
 
-def RepApp {α : Type*} (f : α → α) (a b : α) : Prop := ∃ i : ℕ, f^[i] a = b
-
 lemma RepApp_def {α : Type*} (f : α → α) (a b : α) : RepApp f a b ↔ ∃ i : ℕ, f^[i] a = b := Iff.rfl
 
 @[simp, refl]
