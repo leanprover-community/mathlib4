@@ -514,12 +514,12 @@ def Sigma.isoColimit :
   IsColimit.coconePointUniqueUpToIso (coproductIsCoproduct' X) (colimit.isColimit X)
 
 @[reassoc (attr := simp)]
-lemma Sigma.isoColimit_ι_hom (j : α) :
+lemma Sigma.ι_isoColimit_hom (j : α) :
     Sigma.ι _ j ≫ (Sigma.isoColimit X).hom = colimit.ι _ (Discrete.mk j) :=
   IsColimit.comp_coconePointUniqueUpToIso_hom (coproductIsCoproduct' X) _ _
 
 @[reassoc (attr := simp)]
-lemma Sigma.isoColimit_ι_inv (j : α) :
+lemma Sigma.ι_isoColimit_inv (j : α) :
     colimit.ι _ ⟨j⟩ ≫ (Sigma.isoColimit X).inv = Sigma.ι (fun j ↦ X.obj ⟨j⟩) _ :=
   IsColimit.comp_coconePointUniqueUpToIso_inv _ _ _
 
