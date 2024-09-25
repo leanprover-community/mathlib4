@@ -3,10 +3,10 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Gabin Kolly
 -/
-import Mathlib.Data.Fintype.Order
 import Mathlib.Algebra.DirectLimit
-import Mathlib.ModelTheory.Quotients
+import Mathlib.Data.Fintype.Order
 import Mathlib.ModelTheory.FinitelyGenerated
+import Mathlib.ModelTheory.Quotients
 
 /-!
 # Direct Limits of First-Order Structures

@@ -3,13 +3,13 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.LineDeriv.Measurable
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.Analysis.BoundedVariation
-import Mathlib.MeasureTheory.Group.Integral
+import Mathlib.Analysis.Calculus.LineDeriv.Measurable
 import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
+import Mathlib.Analysis.Normed.Module.FiniteDimension
+import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Measure.Haar.Disintegration
+import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 /-!
 # Rademacher's theorem: a Lipschitz function is differentiable almost everywhere

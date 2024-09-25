@@ -3,11 +3,11 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.Algebra.Ring.Regular
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Star.Basic
+import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Matrix.Basic
 import Mathlib.LinearAlgebra.StdBasis
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!
 # Dot product of two vectors

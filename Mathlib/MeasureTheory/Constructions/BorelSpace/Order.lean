@@ -3,11 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Kexing Ying
 -/
-import Mathlib.Topology.Semicontinuous
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.MeasureTheory.Function.AEMeasurableSequence
 import Mathlib.MeasureTheory.Order.Lattice
 import Mathlib.Topology.Order.Lattice
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+import Mathlib.Topology.Semicontinuous
 
 /-!
 # Borel sigma algebras on spaces with orders

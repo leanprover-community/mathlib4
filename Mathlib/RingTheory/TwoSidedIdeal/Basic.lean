@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 
-import Mathlib.Tactic.Abel
+import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.RingTheory.Congruence.Basic
-import Mathlib.Algebra.Module.LinearMap.Defs
+import Mathlib.Tactic.Abel
 
 /-!
 # Two Sided Ideals

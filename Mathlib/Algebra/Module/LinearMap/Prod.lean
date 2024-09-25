@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
 
+import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Tactic.Abel
-import Mathlib.Algebra.Module.LinearMap.Defs
 
 /-!
 # Addition and subtraction are linear maps from the product space

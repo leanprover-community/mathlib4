@@ -3,10 +3,10 @@ Copyright (c) 2020 Patrick Stevens. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Stevens, Bolton Bailey
 -/
-import Mathlib.Data.Nat.Choose.Factorization
-import Mathlib.NumberTheory.Primorial
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
+import Mathlib.Data.Nat.Choose.Factorization
+import Mathlib.NumberTheory.Primorial
 import Mathlib.Tactic.NormNum.Prime
 
 /-!

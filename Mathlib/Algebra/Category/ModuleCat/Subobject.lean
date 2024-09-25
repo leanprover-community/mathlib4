@@ -5,8 +5,8 @@ Authors: Markus Himmel
 -/
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Category.ModuleCat.Kernels
-import Mathlib.CategoryTheory.Subobject.WellPowered
 import Mathlib.CategoryTheory.Subobject.Limits
+import Mathlib.CategoryTheory.Subobject.WellPowered
 
 /-!
 # Subobjects in the category of `R`-modules

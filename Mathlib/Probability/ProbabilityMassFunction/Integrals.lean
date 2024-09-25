@@ -3,9 +3,9 @@ Copyright (c) 2023 Joachim Breitner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joachim Breitner
 -/
+import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.Probability.ProbabilityMassFunction.Basic
 import Mathlib.Probability.ProbabilityMassFunction.Constructions
-import Mathlib.MeasureTheory.Integral.Bochner
 
 /-!
 # Integrals with a measure derived from probability mass functions.

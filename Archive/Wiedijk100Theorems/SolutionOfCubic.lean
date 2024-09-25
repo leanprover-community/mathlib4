@@ -3,8 +3,8 @@ Copyright (c) 2022 Jeoff Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeoff Lee
 -/
-import Mathlib.Tactic.LinearCombination
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # The Solution of a Cubic

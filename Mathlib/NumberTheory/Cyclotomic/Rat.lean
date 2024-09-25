@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
 import Mathlib.NumberTheory.Cyclotomic.Discriminant
-import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
 import Mathlib.RingTheory.Ideal.Norm
+import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
 
 /-!
 # Ring of integers of `p ^ n`-th cyclotomic fields

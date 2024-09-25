@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Joachim Breitner
 -/
 import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 import Mathlib.SetTheory.Cardinal.Basic
-import Mathlib.Data.Set.Pointwise.SMul
 
 /-!
 # The coproduct (a.k.a. the free product) of groups or monoids

@@ -3,12 +3,12 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Group.Defs
-import Mathlib.Algebra.Order.Monoid.WithTop
-import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.CharZero.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
+import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
+import Mathlib.Algebra.Order.Monoid.WithTop
 
 /-!
 # Linearly ordered commutative additive groups and monoids with a top element adjoined

@@ -3,8 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
-import Mathlib.Order.Filter.Germ.OrderedMonoid
 import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Order.Filter.Germ.OrderedMonoid
 
 /-!
 # Lemmas about filters and ordered rings.

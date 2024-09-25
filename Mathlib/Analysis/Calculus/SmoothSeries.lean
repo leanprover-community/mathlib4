@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.Calculus.UniformLimitsDeriv
-import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Analysis.NormedSpace.FunctionSeries
+import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
 # Smoothness of series

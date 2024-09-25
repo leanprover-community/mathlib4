@@ -3,10 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.NumberTheory.Liouville.Residual
-import Mathlib.NumberTheory.Liouville.LiouvilleWith
 import Mathlib.Analysis.PSeries
+import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+import Mathlib.NumberTheory.Liouville.LiouvilleWith
+import Mathlib.NumberTheory.Liouville.Residual
 
 /-!
 # Volume of the set of Liouville numbers

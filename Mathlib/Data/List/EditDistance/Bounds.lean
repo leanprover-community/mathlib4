@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+import Mathlib.Data.List.EditDistance.Defs
 import Mathlib.Data.List.Infix
 import Mathlib.Data.List.MinMax
-import Mathlib.Data.List.EditDistance.Defs
 
 /-!
 # Lower bounds for Levenshtein distances

@@ -5,9 +5,9 @@ Authors: Johan Commelin
 -/
 import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Data.ZMod.Algebra
+import Mathlib.FieldTheory.Perfect
 import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.RingTheory.WittVector.IsPoly
-import Mathlib.FieldTheory.Perfect
 
 /-!
 ## The Frobenius operator

@@ -3,11 +3,11 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Order.Lattice
+import Mathlib.Data.Fintype.Card
 import Mathlib.Data.List.Sort
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Logic.Equiv.Functor
-import Mathlib.Data.Fintype.Card
+import Mathlib.Order.Lattice
 import Mathlib.Order.RelSeries
 
 /-!

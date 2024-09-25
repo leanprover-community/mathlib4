@@ -7,9 +7,9 @@ import Mathlib.Analysis.LocallyConvex.Bounded
 import Mathlib.Analysis.Seminorm
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Topology.Algebra.Equicontinuity
-import Mathlib.Topology.MetricSpace.Equicontinuity
 import Mathlib.Topology.Algebra.FilterBasis
 import Mathlib.Topology.Algebra.Module.LocallyConvex
+import Mathlib.Topology.MetricSpace.Equicontinuity
 
 /-!
 # Topology induced by a family of seminorms

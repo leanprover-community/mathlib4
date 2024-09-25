@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Set.Function
-import Mathlib.Logic.Function.Iterate
 import Mathlib.GroupTheory.Perm.Basic
+import Mathlib.Logic.Function.Iterate
 
 /-!
 # Fixed points of a self-map

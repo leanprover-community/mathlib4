@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Sina Hazratpour
 -/
 import Mathlib.CategoryTheory.Category.Cat
-import Mathlib.CategoryTheory.Elements
 import Mathlib.CategoryTheory.Comma.Over
+import Mathlib.CategoryTheory.Elements
 
 /-!
 # The Grothendieck construction

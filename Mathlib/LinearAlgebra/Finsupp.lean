@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Finsupp.Encodable
+import Mathlib.Data.Set.Countable
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Span
-import Mathlib.Data.Set.Countable
 
 /-!
 # Properties of the module `α →₀ M`

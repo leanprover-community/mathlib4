@@ -3,15 +3,15 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Data.Finite.Set
+import Mathlib.Data.Finset.Order
 import Mathlib.Order.Atoms
+import Mathlib.Order.Interval.Set.OrderIso
 import Mathlib.Order.OrderIsoNat
 import Mathlib.Order.RelIso.Set
 import Mathlib.Order.SupClosed
 import Mathlib.Order.SupIndep
 import Mathlib.Order.Zorn
-import Mathlib.Data.Finset.Order
-import Mathlib.Order.Interval.Set.OrderIso
-import Mathlib.Data.Finite.Set
 import Mathlib.Tactic.TFAE
 
 /-!

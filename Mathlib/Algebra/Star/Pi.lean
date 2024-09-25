@@ -3,8 +3,8 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Star.Basic
 import Mathlib.Algebra.Ring.Pi
+import Mathlib.Algebra.Star.Basic
 
 /-!
 # `star` on pi types

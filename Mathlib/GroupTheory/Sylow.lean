@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
 -/
 import Mathlib.Data.SetLike.Fintype
-import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.NoncommPiCoprod
+import Mathlib.GroupTheory.PGroup
 
 /-!
 # Sylow theorems

@@ -3,9 +3,9 @@ Copyright (c) 2024 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang, Bichang Lei
 -/
-import Mathlib.RingTheory.Valuation.Integers
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
 import Mathlib.RingTheory.LocalRing.RingHom.Defs
+import Mathlib.RingTheory.Valuation.Integers
 
 /-!
 # Extension of Valuation

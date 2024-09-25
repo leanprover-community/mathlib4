@@ -3,14 +3,14 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.RingTheory.Ideal.MinimalPrime
+import Mathlib.RingTheory.Ideal.Over
+import Mathlib.RingTheory.LocalRing.ResidueField.Defs
+import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.PrimeSpectrum
 import Mathlib.Topology.Irreducible
 import Mathlib.Topology.Sets.Closeds
 import Mathlib.Topology.Sober
-import Mathlib.RingTheory.Ideal.MinimalPrime
-import Mathlib.RingTheory.Ideal.Over
-import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 
 /-!
 # The Zariski topology on the prime spectrum of a commutative (semi)ring

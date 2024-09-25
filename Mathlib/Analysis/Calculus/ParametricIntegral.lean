@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
 import Mathlib.Analysis.Calculus.MeanValue
+import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.MeasureTheory.Integral.SetIntegral
-import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 
 /-!
 # Derivatives of integrals depending on parameters

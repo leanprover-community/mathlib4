@@ -3,9 +3,9 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 -/
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.GroupWithZero.InjSurj
+import Mathlib.Algebra.Opposites
+import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Pulling back rings along injective maps, and pushing them forward along surjective maps

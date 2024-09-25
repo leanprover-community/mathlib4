@@ -5,8 +5,8 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.List.Sublists
 import Mathlib.Data.List.InsertNth
+import Mathlib.Data.List.Sublists
 
 /-!
 # Free groups

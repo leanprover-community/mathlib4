@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Mario Carneiro, Yury Kudryashov, Heather Macbeth
 -/
 import Mathlib.Algebra.Module.MinimalAxioms
-import Mathlib.Topology.ContinuousFunction.Algebra
+import Mathlib.Analysis.CStarAlgebra.Basic
 import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
-import Mathlib.Analysis.CStarAlgebra.Basic
 import Mathlib.Topology.Bornology.BoundedOperation
+import Mathlib.Topology.ContinuousFunction.Algebra
 
 /-!
 # Bounded continuous functions

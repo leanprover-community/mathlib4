@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li, Joachim Breitner
 -/
 
-import Mathlib.Order.RelSeries
 import Mathlib.Data.ENat.Lattice
+import Mathlib.Order.RelSeries
 
 /-!
 # Krull dimension of a preordered set and height of an element

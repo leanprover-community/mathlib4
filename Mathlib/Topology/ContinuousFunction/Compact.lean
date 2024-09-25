@@ -3,11 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Topology.ContinuousFunction.Bounded
-import Mathlib.Topology.UniformSpace.Compact
-import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.Sets.Compacts
 import Mathlib.Analysis.Normed.Group.InfiniteSum
+import Mathlib.Topology.CompactOpen
+import Mathlib.Topology.ContinuousFunction.Bounded
+import Mathlib.Topology.Sets.Compacts
+import Mathlib.Topology.UniformSpace.Compact
 
 /-!
 # Continuous functions on a compact space

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Michael Stoll
 -/
 import Mathlib.Data.Nat.Squarefree
-import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
 import Mathlib.NumberTheory.Padics.PadicVal.Basic
+import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
 
 /-!
 # Sums of two squares

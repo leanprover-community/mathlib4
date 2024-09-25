@@ -3,9 +3,9 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Batteries.Tactic.Lint.Misc
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.Basic
-import Batteries.Tactic.Lint.Misc
 
 /-!
 # The `extract_lets at` tactic

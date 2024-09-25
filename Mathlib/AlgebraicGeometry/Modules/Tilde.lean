@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weihong Xu
 -/
 
-import Mathlib.Algebra.Module.LocalizedModule
-import Mathlib.AlgebraicGeometry.StructureSheaf
-import Mathlib.AlgebraicGeometry.Modules.Sheaf
 import Mathlib.Algebra.Category.ModuleCat.Sheaf
+import Mathlib.Algebra.Module.LocalizedModule
+import Mathlib.AlgebraicGeometry.Modules.Sheaf
+import Mathlib.AlgebraicGeometry.StructureSheaf
 
 /-!
 

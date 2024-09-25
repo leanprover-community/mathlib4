@@ -3,9 +3,9 @@ Copyright (c) 2023 Apurva Nakade. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
-import Mathlib.Analysis.Convex.Cone.InnerDual
-import Mathlib.Algebra.Order.Nonneg.Module
 import Mathlib.Algebra.Module.Submodule.Basic
+import Mathlib.Algebra.Order.Nonneg.Module
+import Mathlib.Analysis.Convex.Cone.InnerDual
 
 /-!
 # Pointed cones

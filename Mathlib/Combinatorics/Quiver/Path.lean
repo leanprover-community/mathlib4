@@ -3,9 +3,9 @@ Copyright (c) 2021 David Wärn,. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Kim Morrison
 -/
+import Batteries.Data.List.Basic
 import Mathlib.Combinatorics.Quiver.Basic
 import Mathlib.Logic.Lemmas
-import Batteries.Data.List.Basic
 
 /-!
 # Paths in quivers

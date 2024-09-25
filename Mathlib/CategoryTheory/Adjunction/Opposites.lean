@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Thomas Read, Andrew Yang
 -/
 import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.Yoneda
 import Mathlib.CategoryTheory.Opposites
+import Mathlib.CategoryTheory.Yoneda
 
 /-!
 # Opposite adjunctions

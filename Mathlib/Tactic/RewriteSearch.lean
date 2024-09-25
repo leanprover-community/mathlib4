@@ -3,12 +3,12 @@ Copyright (c) 2023 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Batteries.Data.MLList.Heartbeats
 import Lean.Meta.Tactic.Rewrites
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.List.EditDistance.Estimator
 import Mathlib.Data.MLList.BestFirst
 import Mathlib.Order.Interval.Finset.Nat
-import Batteries.Data.MLList.Heartbeats
 
 /-!
 # The `rw_search` tactic

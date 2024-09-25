@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Renshaw
 -/
 
-import Mathlib.Init
-import Lean.Util.CollectAxioms
 import Lean.Elab.Command
+import Lean.Util.CollectAxioms
+import Mathlib.Init
 
 /-!
 # Defines the `assert_no_sorry` command.

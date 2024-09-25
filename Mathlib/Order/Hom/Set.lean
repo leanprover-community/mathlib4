@@ -3,9 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Order.Hom.Basic
-import Mathlib.Logic.Equiv.Set
 import Mathlib.Data.Set.Image
+import Mathlib.Logic.Equiv.Set
+import Mathlib.Order.Hom.Basic
 import Mathlib.Order.WellFounded
 
 /-!

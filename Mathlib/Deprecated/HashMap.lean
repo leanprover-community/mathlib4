@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 
-import Mathlib.Init
-import Mathlib.Tactic.TypeStar
 import Batteries.Data.HashMap.Basic
 import Batteries.Data.RBMap.Basic
+import Mathlib.Init
+import Mathlib.Tactic.TypeStar
 
 /-!
 # Additional API for `HashMap` and `RBSet`.

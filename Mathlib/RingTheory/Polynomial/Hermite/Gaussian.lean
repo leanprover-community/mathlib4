@@ -3,11 +3,11 @@ Copyright (c) 2023 Luke Mantle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Mantle, Jake Levinson
 -/
-import Mathlib.RingTheory.Polynomial.Hermite.Basic
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+import Mathlib.RingTheory.Polynomial.Hermite.Basic
 
 /-!
 # Hermite polynomials and Gaussians

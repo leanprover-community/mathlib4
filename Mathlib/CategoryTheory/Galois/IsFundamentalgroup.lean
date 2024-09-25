@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.CategoryTheory.Galois.Basic
-import Mathlib.CategoryTheory.Galois.Topology
 import Mathlib.CategoryTheory.Galois.Prorepresentability
+import Mathlib.CategoryTheory.Galois.Topology
 import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-!

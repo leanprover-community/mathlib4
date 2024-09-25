@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.RingTheory.Polynomial.Bernstein
-import Mathlib.Topology.ContinuousFunction.Polynomial
 import Mathlib.Topology.ContinuousFunction.Compact
+import Mathlib.Topology.ContinuousFunction.Polynomial
 
 /-!
 # Bernstein approximations and Weierstrass' theorem

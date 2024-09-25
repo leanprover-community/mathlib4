@@ -3,8 +3,8 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro
 -/
-import Mathlib.Algebra.Module.Submodule.Bilinear
 import Mathlib.Algebra.Module.Equiv.Basic
+import Mathlib.Algebra.Module.Submodule.Bilinear
 import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.SuppressCompilation

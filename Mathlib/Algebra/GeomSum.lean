@@ -10,8 +10,8 @@ import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Algebra.Ring.Opposite
-import Mathlib.Tactic.Abel
 import Mathlib.Algebra.Ring.Regular
+import Mathlib.Tactic.Abel
 
 /-!
 # Partial sums of geometric series

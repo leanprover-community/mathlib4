@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Jujian Zhang
 -/
 import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.RingTheory.Localization.Basic
 import Mathlib.Algebra.Exact
+import Mathlib.RingTheory.Localization.Basic
 
 /-!
 # Localized Module

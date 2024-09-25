@@ -5,8 +5,8 @@ Authors: Patrick Stevens, Thomas Browning
 -/
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Nat.GCD.Basic
-import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.Ring
 
 /-!
 # Central binomial coefficients

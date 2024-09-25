@@ -3,10 +3,10 @@ Copyright (c) 2024 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Group.Subsemigroup.Basic
-import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Star.Center
+import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 
 /-!
 # Non-unital Star Subsemirings

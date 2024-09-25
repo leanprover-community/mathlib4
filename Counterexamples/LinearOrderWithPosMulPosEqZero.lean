@@ -3,8 +3,8 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Damiano Testa, Kevin Buzzard
 -/
-import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
+import Mathlib.Algebra.Order.Monoid.Defs
 
 /-!
 An example of a `LinearOrderedCommMonoidWithZero` in which the product of two positive

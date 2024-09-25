@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.Topology.Category.Profinite.Basic
-import Mathlib.Topology.LocallyConstant.Basic
-import Mathlib.Topology.DiscreteQuotient
 import Mathlib.Topology.Category.TopCat.Limits.Cofiltered
 import Mathlib.Topology.Category.TopCat.Limits.Konig
+import Mathlib.Topology.DiscreteQuotient
+import Mathlib.Topology.LocallyConstant.Basic
 
 /-!
 # Cofiltered limits of profinite sets.

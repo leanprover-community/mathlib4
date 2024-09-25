@@ -8,9 +8,9 @@ import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Periodic
 import Mathlib.Data.Int.SuccPred
-import Mathlib.Order.Circular
 import Mathlib.Data.List.TFAE
 import Mathlib.Data.Set.Lattice
+import Mathlib.Order.Circular
 
 /-!
 # Reducing to an interval modulo its length

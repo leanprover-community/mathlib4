@@ -3,10 +3,10 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Lean.Elab.Tactic.Induction
-import Batteries.Tactic.OpenPrivate
-import Mathlib.Lean.Expr.Basic
 import Batteries.Data.List.Basic
+import Batteries.Tactic.OpenPrivate
+import Lean.Elab.Tactic.Induction
+import Mathlib.Lean.Expr.Basic
 
 /-!
 # Backward compatible implementation of lean 3 `cases` tactic

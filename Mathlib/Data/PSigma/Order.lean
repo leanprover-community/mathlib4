@@ -3,11 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Minchao Wu
 -/
+import Init.NotationExtra
+import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Order.BoundedOrder
 import Mathlib.Util.Notation3
-import Init.NotationExtra
-import Mathlib.Data.Sigma.Basic
 
 /-!
 # Lexicographic order on a sigma type

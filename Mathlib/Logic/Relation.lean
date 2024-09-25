@@ -5,9 +5,9 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Relator
-import Mathlib.Tactic.Use
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Use
 
 /-!
 # Relation closures

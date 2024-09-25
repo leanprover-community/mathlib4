@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
 import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
-import Mathlib.RingTheory.Norm.Defs
 import Mathlib.RingTheory.AdjoinRoot
+import Mathlib.RingTheory.Norm.Defs
 
 /-!
 # Norms on free modules over principal ideal domains

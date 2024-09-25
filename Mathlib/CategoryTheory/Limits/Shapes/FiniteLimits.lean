@@ -6,8 +6,8 @@ Authors: Kim Morrison
 import Mathlib.CategoryTheory.FinCategory.AsType
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 import Mathlib.Data.Fintype.Option
 
 /-!

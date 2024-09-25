@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 
-import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 import Mathlib.Order.Atoms
+import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 
 /-! # Simple rings
 

@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Ring.Int
+import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.ZMod.Basic
 import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.Data.Fintype.BigOperators
 
 /-!
 # Lagrange's four square theorem

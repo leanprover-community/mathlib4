@@ -3,10 +3,10 @@ Copyright (c) 2024 Brendan Murphy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Brendan Murphy
 -/
-import Mathlib.RingTheory.Regular.IsSMulRegular
-import Mathlib.RingTheory.Artinian
 import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.RingTheory.Artinian
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+import Mathlib.RingTheory.Regular.IsSMulRegular
 
 /-!
 # Regular sequences and weakly regular sequences

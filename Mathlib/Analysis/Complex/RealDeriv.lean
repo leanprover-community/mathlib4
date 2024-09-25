@@ -3,10 +3,10 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yourong Zang
 -/
+import Mathlib.Analysis.Calculus.Conformal.NormedSpace
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.Calculus.Deriv.Linear
 import Mathlib.Analysis.Complex.Conformal
-import Mathlib.Analysis.Calculus.Conformal.NormedSpace
 
 /-! # Real differentiability of complex-differentiable functions
 

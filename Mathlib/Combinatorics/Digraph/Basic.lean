@@ -3,8 +3,8 @@ Copyright (c) 2024 Kyle Miller, Jack Cheverton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Jack Cheverton, Jeremy Tan
 -/
-import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Data.Fintype.Pi
+import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
 # Digraphs

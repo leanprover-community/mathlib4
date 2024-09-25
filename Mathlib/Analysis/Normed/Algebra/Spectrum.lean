@@ -4,14 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Algebra.Quasispectrum
-import Mathlib.FieldTheory.IsAlgClosed.Spectrum
+import Mathlib.Analysis.Analytic.RadiusLiminf
 import Mathlib.Analysis.Complex.Liouville
 import Mathlib.Analysis.Complex.Polynomial.Basic
-import Mathlib.Analysis.Analytic.RadiusLiminf
-import Mathlib.Topology.Algebra.Module.CharacterSpace
 import Mathlib.Analysis.Normed.Algebra.Exponential
 import Mathlib.Analysis.Normed.Algebra.UnitizationL1
+import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Topology.Algebra.Module.CharacterSpace
 
 /-!
 # The spectrum of elements in a complete normed algebra

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Mario Carneiro, Alex J. Best
 -/
 
-import Mathlib.Init
 import Lean
+import Mathlib.Init
 
 /-!
 # The `simp_rw` tactic

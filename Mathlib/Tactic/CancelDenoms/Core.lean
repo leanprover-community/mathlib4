@@ -8,8 +8,8 @@ import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Data.Tree.Basic
 import Mathlib.Logic.Basic
 import Mathlib.Tactic.NormNum.Core
-import Mathlib.Util.SynthesizeUsing
 import Mathlib.Util.Qq
+import Mathlib.Util.SynthesizeUsing
 
 /-!
 # A tactic for canceling numeric denominators

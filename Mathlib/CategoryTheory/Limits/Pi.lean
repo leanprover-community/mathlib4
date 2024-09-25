@@ -3,8 +3,8 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.Pi.Basic
 
 /-!
 # Limits in the category of indexed families of objects.

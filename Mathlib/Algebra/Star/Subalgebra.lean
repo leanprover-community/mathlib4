@@ -3,11 +3,11 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Jireh Loreaux
 -/
-import Mathlib.Algebra.Star.Center
-import Mathlib.Algebra.Star.StarAlgHom
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.Star.Pointwise
+import Mathlib.Algebra.Star.Center
 import Mathlib.Algebra.Star.Module
+import Mathlib.Algebra.Star.Pointwise
+import Mathlib.Algebra.Star.StarAlgHom
 import Mathlib.RingTheory.Adjoin.Basic
 
 /-!

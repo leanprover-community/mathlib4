@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Topology
-import Mathlib.Topology.Sheaves.LocalPredicate
-import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
 import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
+import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
+import Mathlib.Topology.Sheaves.LocalPredicate
 
 /-!
 # The structure sheaf on `ProjectiveSpectrum 𝒜`.

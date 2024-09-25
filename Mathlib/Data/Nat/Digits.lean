@@ -6,10 +6,10 @@ Authors: Kim Morrison, Shing Tak Lam, Mario Carneiro
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Data.Int.ModEq
-import Mathlib.Data.Nat.Bits
-import Mathlib.Data.Nat.Log
 import Mathlib.Data.List.Indexes
 import Mathlib.Data.List.Palindrome
+import Mathlib.Data.Nat.Bits
+import Mathlib.Data.Nat.Log
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring

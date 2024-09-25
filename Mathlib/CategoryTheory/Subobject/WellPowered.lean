@@ -3,8 +3,8 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Subobject.Basic
 import Mathlib.CategoryTheory.EssentiallySmall
+import Mathlib.CategoryTheory.Subobject.Basic
 
 /-!
 # Well-powered categories

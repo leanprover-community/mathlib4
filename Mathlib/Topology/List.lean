@@ -3,10 +3,10 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Topology.Constructions
-import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Order.Filter.ListTraverse
 import Mathlib.Tactic.AdaptationNote
+import Mathlib.Topology.Algebra.Monoid
+import Mathlib.Topology.Constructions
 
 /-!
 # Topology on lists and vectors

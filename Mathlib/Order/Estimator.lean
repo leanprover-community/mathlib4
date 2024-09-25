@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Data.Set.Operations
-import Mathlib.Order.Heyting.Basic
-import Mathlib.Order.RelClasses
-import Mathlib.Order.Hom.Basic
 import Mathlib.Lean.Thunk
+import Mathlib.Order.Heyting.Basic
+import Mathlib.Order.Hom.Basic
+import Mathlib.Order.RelClasses
 
 /-!
 # Improvable lower bounds.

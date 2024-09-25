@@ -6,8 +6,8 @@ Authors: Chris Hughes
 
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 import Mathlib.ModelTheory.Algebra.Field.Basic
+import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 
 /-!
 # First order theory of fields

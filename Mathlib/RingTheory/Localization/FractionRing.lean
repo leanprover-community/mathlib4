@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
 import Mathlib.Algebra.Algebra.Tower
-import Mathlib.RingTheory.Localization.Basic
 import Mathlib.Algebra.Field.Equiv
+import Mathlib.RingTheory.Localization.Basic
 
 /-!
 # Fraction ring / fraction field Frac(R) as localization

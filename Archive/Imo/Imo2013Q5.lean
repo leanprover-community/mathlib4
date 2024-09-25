@@ -5,8 +5,8 @@ Authors: David Renshaw
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Data.Real.Archimedean
-import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Positivity
 
 /-!
 # IMO 2013 Q5

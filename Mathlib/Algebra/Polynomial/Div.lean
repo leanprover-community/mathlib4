@@ -5,8 +5,8 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Polynomial.Inductions
 import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.RingTheory.Multiplicity
 import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.RingTheory.Multiplicity
 
 /-!
 # Division of univariate polynomials

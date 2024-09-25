@@ -3,10 +3,10 @@ Copyright (c) 2022 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang
 -/
+import Mathlib.Data.FunLike.Basic
 import Mathlib.Topology.MetricSpace.Antilipschitz
 import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.MetricSpace.Lipschitz
-import Mathlib.Data.FunLike.Basic
 
 /-!
 # Dilations

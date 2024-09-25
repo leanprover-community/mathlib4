@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
-import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.IndicatorConstPointwise
+import Mathlib.Topology.Metrizable.Basic
 
 /-!
 # Measurable functions in (pseudo-)metrizable Borel spaces

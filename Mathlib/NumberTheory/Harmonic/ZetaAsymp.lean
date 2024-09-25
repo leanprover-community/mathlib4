@@ -3,8 +3,8 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.NumberTheory.LSeries.RiemannZeta
 import Mathlib.NumberTheory.Harmonic.GammaDeriv
+import Mathlib.NumberTheory.LSeries.RiemannZeta
 
 /-!
 # Asymptotics of `ζ s` as `s → 1`

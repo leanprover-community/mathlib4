@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Comma.StructuredArrow
-import Mathlib.CategoryTheory.PUnit
-import Mathlib.CategoryTheory.Functor.ReflectsIso
 import Mathlib.CategoryTheory.Functor.EpiMono
+import Mathlib.CategoryTheory.Functor.ReflectsIso
+import Mathlib.CategoryTheory.PUnit
 
 /-!
 # Over and under categories

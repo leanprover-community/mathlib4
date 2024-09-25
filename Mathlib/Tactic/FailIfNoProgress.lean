@@ -3,9 +3,9 @@ Copyright (c) 2023 Thomas Murrills. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Murrills
 -/
-import Mathlib.Init
 import Lean.Elab.Tactic.Basic
 import Lean.Meta.Tactic.Util
+import Mathlib.Init
 
 /-!
 # Fail if no progress

@@ -3,10 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.Topology.Algebra.Polynomial
 import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.Topology.UnitInterval
-import Mathlib.Algebra.Star.Subalgebra
 
 /-!
 # Constructions relating polynomial functions and continuous functions.

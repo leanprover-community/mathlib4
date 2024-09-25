@@ -3,10 +3,10 @@ Copyright (c) 2024 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Init
 import Lean.Elab.Binders
 import Lean.Elab.Tactic.ElabTerm
 import Lean.Meta.Tactic.Generalize
+import Mathlib.Init
 
 /-!
 # Backwards compatibility shim for `generalize`.

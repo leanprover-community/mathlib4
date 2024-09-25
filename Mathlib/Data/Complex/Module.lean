@@ -6,9 +6,9 @@ Authors: Alexander Bentkamp, Sébastien Gouëzel, Eric Wieser
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Data.Complex.Basic
-import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.Data.Real.Star
 import Mathlib.Data.ZMod.Defs
+import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 # Complex number as a vector space over `ℝ`

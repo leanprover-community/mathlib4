@@ -3,8 +3,8 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Span
 import Mathlib.LinearAlgebra.BilinearMap
+import Mathlib.LinearAlgebra.Span
 
 /-!
 # Images of pairs of submodules under bilinear maps

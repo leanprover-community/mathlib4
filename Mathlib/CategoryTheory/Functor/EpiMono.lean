@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.EpiMono
-import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 import Mathlib.CategoryTheory.LiftingProperties.Adjunction
+import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 
 /-!
 # Preservation and reflection of monomorphisms and epimorphisms

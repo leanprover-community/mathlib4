@@ -3,21 +3,21 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
 -/
-import Mathlib.Data.Nat.Notation
-import Mathlib.Data.String.Defs
-import Mathlib.Data.Array.Defs
-import Mathlib.Lean.Expr.ReplaceRec
-import Mathlib.Lean.EnvExtension
-import Mathlib.Lean.Meta.Simp
-import Mathlib.Lean.Name
-import Lean.Elab.Tactic.Ext
-import Lean.Meta.Tactic.Symm
-import Lean.Meta.Tactic.Rfl
-import Lean.Meta.Match.MatcherInfo
 import Batteries.Lean.NameMapAttribute
 import Batteries.Tactic.Lint -- useful to lint this file and for DiscrTree.elements
-import Mathlib.Tactic.Relation.Trans -- just to copy the attribute
+import Lean.Elab.Tactic.Ext
+import Lean.Meta.Match.MatcherInfo
+import Lean.Meta.Tactic.Rfl
+import Lean.Meta.Tactic.Symm
+import Mathlib.Data.Array.Defs
+import Mathlib.Data.Nat.Notation
+import Mathlib.Data.String.Defs
+import Mathlib.Lean.EnvExtension
+import Mathlib.Lean.Expr.ReplaceRec
+import Mathlib.Lean.Meta.Simp
+import Mathlib.Lean.Name
 import Mathlib.Tactic.Eqns -- just to copy the attribute
+import Mathlib.Tactic.Relation.Trans -- just to copy the attribute
 import Mathlib.Tactic.Simps.Basic
 
 /-!

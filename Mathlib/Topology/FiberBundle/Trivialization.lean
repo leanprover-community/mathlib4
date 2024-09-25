@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Data.Bundle
 import Mathlib.Data.Set.Image
-import Mathlib.Topology.PartialHomeomorph
 import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.PartialHomeomorph
 
 /-!
 # Trivializations

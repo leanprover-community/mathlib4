@@ -3,8 +3,8 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.CommSq
+import Mathlib.CategoryTheory.Comma.Arrow
 
 /-!
 # The category of commutative squares

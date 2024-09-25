@@ -3,8 +3,8 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.CharP.Two
 import Mathlib.Algebra.CharP.Reduced
+import Mathlib.Algebra.CharP.Two
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.GroupTheory.SpecificGroups.Cyclic

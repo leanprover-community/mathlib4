@@ -6,9 +6,9 @@ Authors: Yaël Dillies, Christopher Hoskin
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Module.Hom
+import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
-import Mathlib.Algebra.Ring.Subsemiring.Basic
 
 /-!
 # Centroid homomorphisms

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Adam Topaz
 -/
 import Mathlib.Data.Setoid.Partition
-import Mathlib.Topology.Separation
 import Mathlib.Topology.LocallyConstant.Basic
+import Mathlib.Topology.Separation
 
 /-!
 

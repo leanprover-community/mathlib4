@@ -5,9 +5,9 @@ Authors: Johan Commelin, Riccardo Brasca
 -/
 import Mathlib.Analysis.Normed.Group.Constructions
 import Mathlib.Analysis.Normed.Group.Hom
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.CategoryTheory.Elementwise
+import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
 /-!
 # The category of seminormed groups

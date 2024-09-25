@@ -3,11 +3,11 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
+import Batteries.Data.RBMap.Alter
 import Mathlib.Tactic.FunProp.Decl
-import Mathlib.Tactic.FunProp.Types
 import Mathlib.Tactic.FunProp.FunctionData
 import Mathlib.Tactic.FunProp.RefinedDiscrTree
-import Batteries.Data.RBMap.Alter
+import Mathlib.Tactic.FunProp.Types
 
 /-!
 ## `fun_prop` environment extensions storing theorems for `fun_prop`

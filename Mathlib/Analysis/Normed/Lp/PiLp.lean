@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Jireh Loreaux
 -/
 import Mathlib.Analysis.MeanInequalities
+import Mathlib.Analysis.Normed.Lp.WithLp
 import Mathlib.Data.Fintype.Order
 import Mathlib.LinearAlgebra.Matrix.Basis
-import Mathlib.Analysis.Normed.Lp.WithLp
 
 /-!
 # `L^p` distance on finite products of metric spaces

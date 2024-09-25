@@ -3,8 +3,8 @@ Copyright (c) 2021 Manuel Candales. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Manuel Candales
 -/
-import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Data.Nat.Squarefree
+import Mathlib.Topology.Algebra.InfiniteSum.Real
 
 /-!
 # Divergence of the Prime Reciprocal Series

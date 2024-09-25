@@ -3,10 +3,10 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Topology.UniformSpace.UniformConvergence
-import Mathlib.Topology.UniformSpace.Equicontinuity
 import Mathlib.Topology.Separation
 import Mathlib.Topology.Support
+import Mathlib.Topology.UniformSpace.Equicontinuity
+import Mathlib.Topology.UniformSpace.UniformConvergence
 
 /-!
 # Compact separated uniform spaces

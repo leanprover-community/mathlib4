@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Kim Morrison
 -/
 import Mathlib.Algebra.Group.Ext
-import Mathlib.CategoryTheory.Simple
-import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.CategoryTheory.Endomorphism
+import Mathlib.CategoryTheory.Linear.Basic
+import Mathlib.CategoryTheory.Simple
 import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 
 /-!

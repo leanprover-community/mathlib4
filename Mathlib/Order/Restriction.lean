@@ -3,8 +3,8 @@ Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Order.Interval.Finset.Basic
+import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Restriction of a function indexed by a preorder

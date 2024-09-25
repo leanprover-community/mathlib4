@@ -3,8 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.Defs.Induced
 import Mathlib.Topology.Basic
+import Mathlib.Topology.Defs.Induced
 
 /-!
 # Ordering on topologies and (co)induced topologies

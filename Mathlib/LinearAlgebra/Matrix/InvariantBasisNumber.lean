@@ -3,8 +3,8 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.LinearAlgebra.InvariantBasisNumber
+import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 # Invertible matrices over a ring with invariant basis number are square.

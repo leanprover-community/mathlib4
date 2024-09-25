@@ -3,8 +3,8 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 import Mathlib.Data.ZMod.Basic
+import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!

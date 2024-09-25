@@ -6,9 +6,9 @@ Authors: Yury Kudryashov
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.Dynamics.Minimal
 import Mathlib.GroupTheory.GroupAction.Hom
+import Mathlib.MeasureTheory.Group.Defs
 import Mathlib.MeasureTheory.Group.MeasurableEquiv
 import Mathlib.MeasureTheory.Measure.Regular
-import Mathlib.MeasureTheory.Group.Defs
 import Mathlib.Order.Filter.EventuallyConst
 
 /-!

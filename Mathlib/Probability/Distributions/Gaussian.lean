@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lorenzo Luccioli, Rémy Degenne, Alexander Bentkamp
 -/
 import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
-import Mathlib.Probability.Notation
 import Mathlib.MeasureTheory.Decomposition.Lebesgue
+import Mathlib.Probability.Notation
 
 /-!
 # Gaussian distributions over ℝ

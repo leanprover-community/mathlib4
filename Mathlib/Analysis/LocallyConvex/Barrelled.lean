@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Topology.Semicontinuous
 import Mathlib.Topology.Baire.Lemmas
+import Mathlib.Topology.Semicontinuous
 
 /-!
 # Barrelled spaces and the Banach-Steinhaus theorem / Uniform Boundedness Principle

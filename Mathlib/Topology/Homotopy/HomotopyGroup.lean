@@ -3,10 +3,10 @@ Copyright (c) 2021 Roberto Alvarez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Roberto Alvarez
 -/
+import Mathlib.Algebra.Group.Ext
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 import Mathlib.GroupTheory.EckmannHilton
 import Mathlib.Logic.Equiv.TransferInstance
-import Mathlib.Algebra.Group.Ext
 
 /-!
 # `n`th homotopy group

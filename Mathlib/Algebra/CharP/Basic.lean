@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
 import Mathlib.Algebra.CharP.Defs
-import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Data.Nat.Multiplicity
 
 /-!
 # Characteristic of semirings

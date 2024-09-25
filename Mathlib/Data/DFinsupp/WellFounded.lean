@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
 import Mathlib.Data.DFinsupp.Lex
-import Mathlib.Order.GameAdd
 import Mathlib.Order.Antisymmetrization
-import Mathlib.Tactic.AdaptationNote
+import Mathlib.Order.GameAdd
 import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Well-foundedness of the lexicographic and product orders on `DFinsupp` and `Pi`

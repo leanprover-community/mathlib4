@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Finset.Pairwise
+import Mathlib.Data.Finsupp.Defs
 
 /-!
 

@@ -6,8 +6,8 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
-import Mathlib.RingTheory.OreLocalization.Ring
 import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.OreLocalization.Ring
 
 /-!
 # Localizations of commutative rings

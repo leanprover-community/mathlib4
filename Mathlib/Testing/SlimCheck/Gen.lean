@@ -3,8 +3,8 @@ Copyright (c) 2021 Henrik Böving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Simon Hudon
 -/
-import Mathlib.Control.Random
 import Batteries.Data.List.Perm
+import Mathlib.Control.Random
 
 /-!
 # `Gen` Monad

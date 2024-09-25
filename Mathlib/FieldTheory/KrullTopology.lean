@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Monnet
 -/
 import Mathlib.FieldTheory.Galois
+import Mathlib.Tactic.ByContra
 import Mathlib.Topology.Algebra.FilterBasis
 import Mathlib.Topology.Algebra.OpenSubgroup
-import Mathlib.Tactic.ByContra
 
 /-!
 # Krull topology

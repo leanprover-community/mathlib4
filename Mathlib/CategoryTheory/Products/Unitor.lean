@@ -3,8 +3,8 @@ Copyright (c) 2024 Shanghe Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shanghe Chen
 -/
-import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Products.Basic
 
 /-!
 # The left/right unitor equivalences `1 × C ≌ C` and `C × 1 ≌ C`.

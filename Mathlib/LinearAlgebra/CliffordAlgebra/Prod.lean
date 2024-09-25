@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
-import Mathlib.LinearAlgebra.TensorProduct.Graded.Internal
 import Mathlib.LinearAlgebra.QuadraticForm.Prod
+import Mathlib.LinearAlgebra.TensorProduct.Graded.Internal
 
 /-!
 # Clifford algebras of a direct sum of two vector spaces

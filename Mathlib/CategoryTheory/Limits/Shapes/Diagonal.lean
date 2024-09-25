@@ -5,8 +5,8 @@ Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Adjunction.Over
 import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Assoc
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
 /-!
 # The diagonal object of a morphism.

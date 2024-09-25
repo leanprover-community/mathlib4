@@ -3,9 +3,9 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Data.DList.Defs
 import Mathlib.Control.Traversable.Equiv
 import Mathlib.Control.Traversable.Instances
+import Mathlib.Data.DList.Defs
 
 /-!
 # Traversable instance for DLists

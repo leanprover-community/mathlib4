@@ -3,10 +3,10 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl, Reid Barton
 -/
-import Mathlib.CategoryTheory.Equivalence
 import Mathlib.CategoryTheory.EqToHom
-import Mathlib.Order.Hom.Basic
+import Mathlib.CategoryTheory.Equivalence
 import Mathlib.Data.ULift
+import Mathlib.Order.Hom.Basic
 
 /-!
 

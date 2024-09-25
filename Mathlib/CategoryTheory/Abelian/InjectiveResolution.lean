@@ -3,8 +3,8 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Preadditive.InjectiveResolution
 import Mathlib.Algebra.Homology.HomotopyCategory
+import Mathlib.CategoryTheory.Preadditive.InjectiveResolution
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Tactic.AdaptationNote
 

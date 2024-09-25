@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Abelian.Basic
-import Mathlib.CategoryTheory.Preadditive.Opposite
 import Mathlib.CategoryTheory.Limits.Opposites
+import Mathlib.CategoryTheory.Preadditive.Opposite
 
 /-!
 # The opposite of an abelian category is abelian.

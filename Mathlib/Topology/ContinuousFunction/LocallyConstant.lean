@@ -3,9 +3,9 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Topology.LocallyConstant.Algebra
-import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.ContinuousFunction.Algebra
+import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.LocallyConstant.Algebra
 
 /-!
 # The algebra morphism from locally constant functions to continuous functions.

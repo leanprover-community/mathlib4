@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang
 -/
 import Mathlib.Analysis.Complex.Isometry
-import Mathlib.Analysis.NormedSpace.ConformalLinearMap
 import Mathlib.Analysis.Normed.Module.FiniteDimension
+import Mathlib.Analysis.NormedSpace.ConformalLinearMap
 import Mathlib.Data.Complex.FiniteDimensional
 
 /-!

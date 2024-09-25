@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.GroupWithZero.ULift
-import Mathlib.Algebra.Ring.ULift
 import Mathlib.Algebra.Module.Equiv.Defs
+import Mathlib.Algebra.Ring.ULift
 import Mathlib.Data.ULift
 
 /-!

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
 import Mathlib.Data.Fin.Tuple.Sort
-import Mathlib.Order.WellFounded
 import Mathlib.Order.PiLex
+import Mathlib.Order.WellFounded
 
 /-!
 # "Bubble sort" induction

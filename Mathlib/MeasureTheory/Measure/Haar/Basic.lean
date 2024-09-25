@@ -3,8 +3,8 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Measure.Content
 import Mathlib.MeasureTheory.Group.Prod
+import Mathlib.MeasureTheory.Measure.Content
 import Mathlib.Topology.Algebra.Group.Compact
 
 /-!

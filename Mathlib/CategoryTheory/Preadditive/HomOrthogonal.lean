@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.CategoryTheory.Preadditive.Biproducts
-import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
 
 /-!
 # Hom orthogonal families.

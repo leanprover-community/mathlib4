@@ -3,8 +3,8 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.NumberTheory.LSeries.ZMod
 import Mathlib.NumberTheory.DirichletCharacter.Basic
+import Mathlib.NumberTheory.LSeries.ZMod
 
 /-!
 # Analytic continuation of Dirichlet L-functions

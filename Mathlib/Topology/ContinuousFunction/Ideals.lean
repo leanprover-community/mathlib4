@@ -3,12 +3,12 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+import Mathlib.Analysis.Normed.Ring.Units
+import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Topology.Algebra.Algebra
+import Mathlib.Topology.Algebra.Module.CharacterSpace
 import Mathlib.Topology.ContinuousFunction.Compact
 import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Analysis.Normed.Ring.Units
-import Mathlib.Topology.Algebra.Module.CharacterSpace
 
 /-!
 # Ideals of continuous functions

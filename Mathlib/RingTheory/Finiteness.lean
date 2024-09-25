@@ -5,12 +5,12 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.GroupTheory.Finiteness
+import Mathlib.LinearAlgebra.Basis.Cardinality
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.LinearAlgebra.StdBasis
-import Mathlib.GroupTheory.Finiteness
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Nilpotent.Defs
-import Mathlib.LinearAlgebra.Basis.Cardinality
 
 /-!
 # Finiteness conditions in commutative algebra

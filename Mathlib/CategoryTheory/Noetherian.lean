@@ -3,9 +3,9 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Subobject.Lattice
 import Mathlib.CategoryTheory.EssentiallySmall
 import Mathlib.CategoryTheory.Simple
+import Mathlib.CategoryTheory.Subobject.Lattice
 
 /-!
 # Artinian and noetherian categories

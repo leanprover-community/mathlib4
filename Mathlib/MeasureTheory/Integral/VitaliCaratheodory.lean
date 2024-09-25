@@ -3,10 +3,10 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Measure.Regular
-import Mathlib.Topology.Semicontinuous
 import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.Topology.Instances.EReal
+import Mathlib.Topology.Semicontinuous
 
 /-!
 # Vitali-Carathéodory theorem

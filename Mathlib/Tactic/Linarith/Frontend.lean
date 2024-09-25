@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
 import Mathlib.Control.Basic
-import Mathlib.Tactic.Linarith.Verification
-import Mathlib.Tactic.Linarith.Preprocessing
 import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
+import Mathlib.Tactic.Linarith.Preprocessing
+import Mathlib.Tactic.Linarith.Verification
 
 /-!
 # `linarith`: solving linear arithmetic goals

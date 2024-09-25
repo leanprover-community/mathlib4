@@ -3,10 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Oliver Nash
 -/
-import Mathlib.Topology.PartialHomeomorph
 import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Data.Real.Sqrt
+import Mathlib.Topology.PartialHomeomorph
 
 /-!
 # (Local) homeomorphism between a normed space and a ball

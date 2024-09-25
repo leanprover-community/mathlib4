@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
-import Mathlib.CategoryTheory.Sites.EpiMono
 import Mathlib.CategoryTheory.Sites.Coherent.LocallySurjective
+import Mathlib.CategoryTheory.Sites.EpiMono
 import Mathlib.Condensed.Light.Module
 /-!
 

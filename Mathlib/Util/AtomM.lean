@@ -3,8 +3,8 @@ Copyright (c) 2023 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init
 import Lean.Meta.Tactic.Simp.Types
+import Mathlib.Init
 
 /-!
 # A monad for tracking and deduplicating atoms

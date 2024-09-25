@@ -3,8 +3,8 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison, Mario Carneiro, Andrew Yang
 -/
-import Mathlib.Topology.Category.TopCat.Limits.Basic
 import Mathlib.CategoryTheory.Filtered.Basic
+import Mathlib.Topology.Category.TopCat.Limits.Basic
 
 /-!
 # Cofiltered limits in the category of topological spaces

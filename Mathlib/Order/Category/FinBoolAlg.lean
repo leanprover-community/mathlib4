@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Fintype.Powerset
+import Mathlib.Data.Set.Subsingleton
 import Mathlib.Order.Category.BoolAlg
 import Mathlib.Order.Category.FinBddDistLat
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Data.Set.Subsingleton
 
 /-!
 # The category of finite boolean algebras

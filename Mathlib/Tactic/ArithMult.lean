@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
 
-import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ArithMult.Init
+import Mathlib.Tactic.Basic
 
 /-!
 # Multiplicativity

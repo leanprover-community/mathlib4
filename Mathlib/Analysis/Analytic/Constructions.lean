@@ -5,8 +5,8 @@ Authors: David Loeffler, Geoffrey Irving
 -/
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Linear
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
 import Mathlib.Analysis.Normed.Ring.Units
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
 
 /-!
 # Various ways to combine analytic functions

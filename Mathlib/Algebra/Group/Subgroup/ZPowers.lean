@@ -5,9 +5,9 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Data.Countable.Basic
+import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.Subsingleton
-import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.GroupTheory.Subgroup.Centralizer
 
 /-!

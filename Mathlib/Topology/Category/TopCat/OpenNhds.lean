@@ -3,8 +3,8 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Topology.Category.TopCat.Opens
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Topology.Category.TopCat.Opens
 
 /-!
 # The category of open neighborhoods of a point

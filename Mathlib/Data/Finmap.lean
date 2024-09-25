@@ -3,8 +3,8 @@ Copyright (c) 2018 Sean Leather. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sean Leather, Mario Carneiro
 -/
-import Mathlib.Data.List.AList
 import Mathlib.Data.Finset.Sigma
+import Mathlib.Data.List.AList
 import Mathlib.Data.Part
 
 /-!

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Algebra.Group.Commute.Units
-import Mathlib.Algebra.Group.Invertible.Defs
 import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.Group.Invertible.Defs
 import Mathlib.Logic.Equiv.Defs
 /-!
 # Theorems about invertible elements

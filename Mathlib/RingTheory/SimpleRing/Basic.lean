@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 
-import Mathlib.RingTheory.SimpleRing.Defs
 import Mathlib.Algebra.Field.Equiv
 import Mathlib.Algebra.Ring.Subring.Basic
+import Mathlib.RingTheory.SimpleRing.Defs
 
 /-! # Basic Properties of Simple rings
 

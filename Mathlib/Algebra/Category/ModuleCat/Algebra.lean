@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
-import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.Algebra.Category.ModuleCat.Basic
+import Mathlib.CategoryTheory.Linear.Basic
 
 /-!
 # Additional typeclass for modules over an algebra

@@ -3,10 +3,10 @@ Copyright (c) 2024 Paul Reichert. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Reichert
 -/
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.HomCongr
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.HomCongr
+import Mathlib.CategoryTheory.Limits.Types
 
 /-!
 # Colimits of connected index categories

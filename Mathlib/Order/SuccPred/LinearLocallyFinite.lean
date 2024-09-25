@@ -3,11 +3,11 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Countable.Basic
 import Mathlib.Logic.Encodable.Basic
-import Mathlib.Order.SuccPred.Archimedean
 import Mathlib.Order.Interval.Finset.Defs
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Order.SuccPred.Archimedean
 
 /-!
 # Linear locally finite orders

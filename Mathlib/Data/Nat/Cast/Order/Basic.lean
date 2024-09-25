@@ -3,10 +3,10 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Data.Nat.Cast.NeZero
 import Mathlib.Algebra.Order.ZeroLEOne
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Nat.Cast.NeZero
 import Mathlib.Order.Hom.Basic
 
 /-!

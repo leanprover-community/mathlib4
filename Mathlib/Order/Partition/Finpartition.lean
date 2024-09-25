@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Order.SupIndep
 import Mathlib.Order.Atoms
+import Mathlib.Order.SupIndep
 
 /-!
 # Finite partitions

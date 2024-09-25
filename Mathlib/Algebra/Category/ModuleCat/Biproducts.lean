@@ -3,10 +3,10 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.Algebra.Category.ModuleCat.Abelian
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 
 /-!
 # The category of `R`-modules has finite biproducts

@@ -5,8 +5,8 @@ Authors: Aaron Anderson
 -/
 import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.RingTheory.Int.Basic
-import Mathlib.RingTheory.Localization.Integral
 import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+import Mathlib.RingTheory.Localization.Integral
 
 /-!
 # Gauss's Lemma

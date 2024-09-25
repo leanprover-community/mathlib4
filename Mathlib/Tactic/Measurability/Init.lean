@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Miyahara Kō
 -/
 
-import Mathlib.Init
 import Aesop
+import Mathlib.Init
 
 /-!
 # Measurability Rule Set

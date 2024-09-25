@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Daniel Selsam, Gabriel Ebner
 -/
 
-import Mathlib.Init
 import Lean
+import Mathlib.Init
 
 /-!
 # Defines `with_weak_namespace` command.

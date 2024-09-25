@@ -3,9 +3,9 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Deepro Choudhury
 -/
+import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.LinearAlgebra.Span
-import Mathlib.Algebra.Module.Equiv.Basic
 
 /-!
 

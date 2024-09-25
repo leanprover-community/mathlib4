@@ -3,9 +3,9 @@ Copyright (c) 2023 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Floris van Doorn
 -/
-import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.List.FinRange
+import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # `norm_num` plugin for big operators

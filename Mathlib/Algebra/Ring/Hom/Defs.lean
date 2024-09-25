@@ -5,8 +5,8 @@ Authors: Amelia Livingston, Jireh Loreaux
 -/
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Ring.Basic
+import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Homomorphisms of semirings and rings

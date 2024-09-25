@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 
-import Mathlib.Init
 import Aesop
+import Mathlib.Init
 
 /-!
 # Rule sets related to topological (pre)sheaves

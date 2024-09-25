@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 
-import Mathlib.RingTheory.Congruence.Basic
 import Mathlib.GroupTheory.Congruence.Opposite
+import Mathlib.RingTheory.Congruence.Basic
 
 /-!
 # Congruences on the opposite ring

@@ -6,11 +6,11 @@ Authors: Paul van Wamelen
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.RingTheory.Int.Basic
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.FieldSimp
 import Mathlib.Data.Int.NatPrime
 import Mathlib.Data.ZMod.Basic
+import Mathlib.RingTheory.Int.Basic
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Ring
 
 /-!
 # Pythagorean Triples

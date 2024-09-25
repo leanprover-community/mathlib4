@@ -6,9 +6,9 @@ Authors: David Renshaw
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.PNat.Basic
-import Mathlib.Tactic.Ring
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Ring
 
 /-!
 # IMO 2013 Q1

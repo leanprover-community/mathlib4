@@ -3,8 +3,8 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
 -/
-import Mathlib.Probability.Process.Adapted
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+import Mathlib.Probability.Process.Adapted
 
 /-!
 # Stopping times, stopped processes and stopped values

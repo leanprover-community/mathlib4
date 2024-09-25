@@ -5,8 +5,8 @@ Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl, Reid Barton
 -/
 import Mathlib.CategoryTheory.Category.Init
 import Mathlib.Combinatorics.Quiver.Basic
-import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.Common
+import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.StacksAttribute
 
 /-!

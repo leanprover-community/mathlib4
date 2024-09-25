@@ -3,12 +3,12 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import ProofWidgets.Component.PenroseDiagram
-import ProofWidgets.Component.Panel.Basic
-import ProofWidgets.Presentation.Expr
-import ProofWidgets.Component.HtmlDisplay
 import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
 import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
+import ProofWidgets.Component.HtmlDisplay
+import ProofWidgets.Component.Panel.Basic
+import ProofWidgets.Component.PenroseDiagram
+import ProofWidgets.Presentation.Expr
 
 /-!
 # String Diagram Widget

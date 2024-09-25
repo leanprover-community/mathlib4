@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Algebra.Ring.Basic
+import Mathlib.Topology.Category.TopCat.Basic
 
 /-!
 # Category of topological commutative rings

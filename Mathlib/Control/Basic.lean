@@ -5,8 +5,8 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Control.Combinators
 import Mathlib.Logic.Function.Defs
-import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Attr.Core
+import Mathlib.Tactic.CasesM
 
 /-!
 Extends the theory on functors, applicatives and monads.

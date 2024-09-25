@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Bhavik Mehta, Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Monad.Limits
-import Mathlib.Topology.StoneCech
-import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Topology.Category.CompHausLike.Basic
 import Mathlib.Topology.Category.TopCat.Limits.Basic
+import Mathlib.Topology.StoneCech
+import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # The category of Compact Hausdorff Spaces

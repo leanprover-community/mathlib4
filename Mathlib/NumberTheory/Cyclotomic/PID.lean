@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
 
-import Mathlib.NumberTheory.NumberField.ClassNumber
-import Mathlib.NumberTheory.Cyclotomic.Rat
 import Mathlib.NumberTheory.Cyclotomic.Embeddings
+import Mathlib.NumberTheory.Cyclotomic.Rat
+import Mathlib.NumberTheory.NumberField.ClassNumber
 
 /-!
 # Cyclotomic fields whose ring of integers is a PID.

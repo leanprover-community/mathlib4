@@ -3,9 +3,9 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Data.Countable.Small
 import Mathlib.CategoryTheory.EssentiallySmall
 import Mathlib.CategoryTheory.FinCategory.Basic
+import Mathlib.Data.Countable.Small
 import Mathlib.Data.Fintype.Card
 /-!
 # Countable categories

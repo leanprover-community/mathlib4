@@ -6,8 +6,8 @@ Authors: Kenny Lau, Mario Carneiro, Johannes Hölzl, Chris Hughes, Jens Wagemake
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Logic.Unique
-import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Lift
+import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Subsingleton
 
 /-!

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
-import Mathlib.Algebra.Order.Field.InjSurj
 import Mathlib.Algebra.Field.Subfield
+import Mathlib.Algebra.Order.Field.InjSurj
 
 /-!
 # Ordered instances on subfields

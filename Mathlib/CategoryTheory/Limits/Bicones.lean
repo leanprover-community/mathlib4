@@ -3,8 +3,8 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Limits.Cones
 import Mathlib.CategoryTheory.FinCategory.Basic
+import Mathlib.CategoryTheory.Limits.Cones
 
 /-!
 # Bicones

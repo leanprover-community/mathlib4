@@ -3,9 +3,9 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Newell Jensen
 -/
-import Mathlib.Init
 import Lean.Elab.SyntheticMVars
 import Lean.Meta.Tactic.Constructor
+import Mathlib.Init
 
 /-!
 # The `fconstructor` and `econstructor` tactics

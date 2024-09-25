@@ -3,8 +3,8 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Yury Kudryashov
 -/
-import Mathlib.Topology.NhdsSet
 import Mathlib.Topology.Inseparable
+import Mathlib.Topology.NhdsSet
 
 /-!
 # Exterior of a set

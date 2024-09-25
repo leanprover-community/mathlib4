@@ -6,8 +6,8 @@ Authors: Yury Kudryashov
 import Mathlib.Analysis.BoxIntegral.Partition.Filter
 import Mathlib.Analysis.BoxIntegral.Partition.Measure
 import Mathlib.Analysis.Oscillation
-import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Data.Bool.Basic
+import Mathlib.Topology.UniformSpace.Compact
 
 /-!
 # Integrals of Riemann, Henstock-Kurzweil, and McShane

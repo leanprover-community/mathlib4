@@ -3,8 +3,8 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!

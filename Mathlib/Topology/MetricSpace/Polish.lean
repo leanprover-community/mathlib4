@@ -5,9 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Topology.Instances.Nat
-import Mathlib.Topology.MetricSpace.PiNat
-import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.MetricSpace.Gluing
+import Mathlib.Topology.MetricSpace.Isometry
+import Mathlib.Topology.MetricSpace.PiNat
 import Mathlib.Topology.Sets.Opens
 
 /-!

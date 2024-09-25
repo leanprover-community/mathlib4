@@ -3,9 +3,9 @@ Copyright (c) 2021 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Devon Tuma
 -/
-import Mathlib.RingTheory.Jacobson
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.FieldTheory.MvPolynomial
+import Mathlib.RingTheory.Jacobson
 import Mathlib.RingTheory.PrimeSpectrum
 
 /-!

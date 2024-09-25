@@ -3,9 +3,9 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou
 -/
+import Mathlib.Algebra.Category.Grp.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
-import Mathlib.Algebra.Category.Grp.Colimits
 
 /-!
 # The category of R-modules has all colimits.

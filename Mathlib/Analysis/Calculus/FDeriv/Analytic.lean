@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Analytic.CPolynomial
 import Mathlib.Analysis.Analytic.Within
-import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.Calculus.ContDiff.Defs
+import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.Calculus.FDeriv.Add
 
 /-!

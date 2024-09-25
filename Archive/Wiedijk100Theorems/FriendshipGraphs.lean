@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
-import Mathlib.LinearAlgebra.Matrix.Charpoly.FiniteField
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.ZMod.Basic
+import Mathlib.LinearAlgebra.Matrix.Charpoly.FiniteField
 import Mathlib.Tactic.IntervalCases
 
 /-!

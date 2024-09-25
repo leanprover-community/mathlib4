@@ -3,9 +3,9 @@ Copyright (c) 2019 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
-import Mathlib.Analysis.Normed.Operator.LinearIsometry
 import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
+import Mathlib.Analysis.Normed.Operator.LinearIsometry
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
 
 /-!
 # Operator norm: bilinear maps

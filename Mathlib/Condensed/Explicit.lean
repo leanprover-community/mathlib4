@@ -3,8 +3,8 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Riccardo Brasca, Filippo A. E. Nuccio
 -/
-import Mathlib.Condensed.Module
 import Mathlib.Condensed.Equivalence
+import Mathlib.Condensed.Module
 /-!
 
 # The explicit sheaf condition for condensed sets

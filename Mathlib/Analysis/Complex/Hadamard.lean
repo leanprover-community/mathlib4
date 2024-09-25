@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Généreux
 -/
 
-import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 import Mathlib.Analysis.Complex.PhragmenLindelof
+import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
 # Hadamard three-lines Theorem

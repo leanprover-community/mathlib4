@@ -5,8 +5,8 @@ Authors: Josha Dekker
 -/
 
 import Mathlib.Analysis.SpecialFunctions.Exponential
-import Mathlib.Probability.ProbabilityMassFunction.Basic
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+import Mathlib.Probability.ProbabilityMassFunction.Basic
 
 /-! # Poisson distributions over ℕ
 

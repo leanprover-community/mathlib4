@@ -3,11 +3,11 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
-import Mathlib.Algebra.PUnitInstances.Algebra
 import Mathlib.Algebra.Group.ULift
-import Mathlib.CategoryTheory.Functor.ReflectsIso
+import Mathlib.Algebra.PUnitInstances.Algebra
 import Mathlib.Algebra.Ring.Action.Group
+import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
+import Mathlib.CategoryTheory.Functor.ReflectsIso
 
 /-!
 # Category instances for `Monoid`, `AddMonoid`, `CommMonoid`, and `AddCommMmonoid`.

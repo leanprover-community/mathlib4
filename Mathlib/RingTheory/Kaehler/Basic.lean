@@ -3,12 +3,12 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Andrew Yang
 -/
-import Mathlib.RingTheory.Derivation.ToSquareZero
-import Mathlib.RingTheory.Ideal.Cotangent
-import Mathlib.RingTheory.IsTensorProduct
-import Mathlib.RingTheory.EssentialFiniteness
 import Mathlib.Algebra.Exact
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+import Mathlib.RingTheory.Derivation.ToSquareZero
+import Mathlib.RingTheory.EssentialFiniteness
+import Mathlib.RingTheory.Ideal.Cotangent
+import Mathlib.RingTheory.IsTensorProduct
 
 /-!
 # The module of kaehler differentials

@@ -7,9 +7,9 @@ Francesco Veneziano
 -/
 
 import Mathlib.Analysis.Normed.Field.Lemmas
+import Mathlib.Analysis.Normed.Ring.Seminorm
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Analysis.Normed.Ring.Seminorm
 import Mathlib.NumberTheory.Padics.PadicNorm
 
 /-!

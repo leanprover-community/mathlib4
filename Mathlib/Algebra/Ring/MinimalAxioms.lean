@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 
-import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.MinimalAxioms
+import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Minimal Axioms for a Ring

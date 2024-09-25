@@ -3,11 +3,11 @@ Copyright (c) 2020 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
+import Mathlib.Data.Set.Subsingleton
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Order.Atoms
 import Mathlib.Order.Chain
 import Mathlib.Order.UpperLower.Basic
-import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Order ideals, cofinal sets, and the Rasiowa–Sikorski lemma

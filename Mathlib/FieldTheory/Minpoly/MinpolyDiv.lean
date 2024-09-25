@@ -3,9 +3,9 @@ Copyright (c) 2023 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 import Mathlib.FieldTheory.PrimitiveElement
-import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 /-!
 # Results about `minpoly R x / (X - C x)`

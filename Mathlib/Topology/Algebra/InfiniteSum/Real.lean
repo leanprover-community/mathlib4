@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Topology.Algebra.InfiniteSum.Order
-import Mathlib.Topology.Instances.Real
 import Mathlib.Topology.Instances.ENNReal
+import Mathlib.Topology.Instances.Real
 
 /-!
 # Infinite sum in the reals

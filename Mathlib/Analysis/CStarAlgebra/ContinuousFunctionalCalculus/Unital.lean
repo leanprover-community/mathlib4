@@ -6,9 +6,9 @@ Authors: Jireh Loreaux
 import Mathlib.Algebra.Algebra.Quasispectrum
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Algebra.Order.Star.Basic
+import Mathlib.Tactic.ContinuousFunctionalCalculus
 import Mathlib.Topology.Algebra.Polynomial
 import Mathlib.Topology.ContinuousFunction.Algebra
-import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # The continuous functional calculus

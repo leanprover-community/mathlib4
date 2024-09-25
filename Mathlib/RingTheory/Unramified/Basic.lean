@@ -5,8 +5,8 @@ Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.FinitePresentation
 import Mathlib.RingTheory.FiniteStability
-import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.QuotientNilpotent
 import Mathlib.RingTheory.TensorProduct.Basic
 

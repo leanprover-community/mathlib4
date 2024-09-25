@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
 import Batteries.Lean.Position
-import Mathlib.Tactic.Widget.SelectPanelUtils
+import Lean.Util.FoldConsts
 import Mathlib.Lean.GoalsLocation
 import Mathlib.Lean.Meta.KAbstractPositions
-import Lean.Util.FoldConsts
+import Mathlib.Tactic.Widget.SelectPanelUtils
 
 /-!
 

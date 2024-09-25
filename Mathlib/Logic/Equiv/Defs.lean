@@ -3,12 +3,12 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
+import Mathlib.Data.Bool.Basic
 import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.Quot
-import Mathlib.Data.Bool.Basic
 import Mathlib.Logic.Unique
-import Mathlib.Tactic.Substs
 import Mathlib.Tactic.Conv
+import Mathlib.Tactic.Substs
 
 /-!
 # Equivalence between types

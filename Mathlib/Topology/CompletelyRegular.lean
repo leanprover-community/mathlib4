@@ -3,9 +3,9 @@ Copyright (c) 2023 Matias Heikkilä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matias Heikkilä
 -/
-import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Topology.UnitInterval
 import Mathlib.Topology.StoneCech
+import Mathlib.Topology.UnitInterval
+import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Completely regular topological spaces.

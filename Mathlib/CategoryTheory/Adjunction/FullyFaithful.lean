@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.MorphismProperty.Basic
 import Mathlib.CategoryTheory.EpiMono
+import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # Adjoints of fully faithful functors

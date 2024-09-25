@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Field.Basic
-import Mathlib.GroupTheory.QuotientGroup.Basic
 import Mathlib.Algebra.Order.Group.Unbundled.Int
+import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 # Lemmas about quotients in characteristic zero

@@ -9,9 +9,9 @@ import Mathlib.Analysis.InnerProductSpace.EuclideanDist
 import Mathlib.MeasureTheory.Function.ContinuousMapDense
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Integral.SetIntegral
-import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.MeasureTheory.Measure.Haar.Unique
 import Mathlib.Topology.Algebra.Module.WeakDual
+import Mathlib.Topology.EMetricSpace.Paracompact
 
 /-!
 # The Riemann-Lebesgue Lemma

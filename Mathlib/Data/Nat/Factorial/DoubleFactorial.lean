@@ -5,8 +5,8 @@ Authors: Jake Levinson
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Positivity.Core
+import Mathlib.Tactic.Ring
 
 /-!
 # Double factorials

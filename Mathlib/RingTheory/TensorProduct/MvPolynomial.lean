@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
-import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.Algebra.MvPolynomial.Basic
-import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.Algebra.MvPolynomial.Equiv
+import Mathlib.LinearAlgebra.DirectSum.Finsupp
+import Mathlib.RingTheory.TensorProduct.Basic
 /-!
 
 # Tensor Product of (multivariate) polynomial rings

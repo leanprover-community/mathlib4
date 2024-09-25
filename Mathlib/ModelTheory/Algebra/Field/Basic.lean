@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 
-import Mathlib.ModelTheory.Syntax
-import Mathlib.ModelTheory.Semantics
-import Mathlib.ModelTheory.Algebra.Ring.Basic
 import Mathlib.Algebra.Field.MinimalAxioms
 import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.ModelTheory.Algebra.Ring.Basic
+import Mathlib.ModelTheory.Semantics
+import Mathlib.ModelTheory.Syntax
 
 /-!
 # The First Order Theory of Fields

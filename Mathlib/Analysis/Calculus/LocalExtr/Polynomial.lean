@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson, Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Analysis.Calculus.LocalExtr.Rolle
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
+import Mathlib.Analysis.Calculus.LocalExtr.Rolle
 import Mathlib.Topology.Algebra.Polynomial
 
 /-!

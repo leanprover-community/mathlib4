@@ -3,9 +3,9 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Johan Commelin
 -/
+import Mathlib.Analysis.Normed.Group.HomCompletion
 import Mathlib.Analysis.Normed.Group.SemiNormedGrp
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.Analysis.Normed.Group.HomCompletion
 
 /-!
 # Completions of normed groups
