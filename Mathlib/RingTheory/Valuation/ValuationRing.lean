@@ -18,7 +18,7 @@ A valuation ring is a domain such that for every pair of elements `a b`, either 
 
 Any valuation ring induces a natural valuation on its fraction field, as we show in this file.
 Namely, given the following instances:
-`[CommRing A] [IsDomain A] [ValuationRing A] [Field K] [Algebra A K] [IsFractionRing A K]`,
+`[CommRing A] [ValuationRing A] [Field K] [Algebra A K] [IsFractionRing A K]`,
 there is a natural valuation `Valuation A K` on `K` with values in `value_group A K` where
 the image of `A` under `algebraMap A K` agrees with `(Valuation A K).integer`.
 
@@ -377,8 +377,8 @@ protected theorem TFAE (R : Type u) [CommRing R] [IsDomain R] :
 
 end
 
-theorem _root_.Function.Surjective.valuationRing {R S : Type*} [CommRing R] [IsDomain R]
-    [ValuationRing R] [CommRing S] [IsDomain S] (f : R →+* S) (hf : Function.Surjective f) :
+theorem _root_.Function.Surjective.valuationRing {R S : Type*} [CommRing R] [ValuationRing R]
+    [CommRing S] (f : R →+* S) (hf : Function.Surjective f) :
     ValuationRing S :=
   ⟨fun a b => by
     obtain ⟨⟨a, rfl⟩, ⟨b, rfl⟩⟩ := hf a, hf b
