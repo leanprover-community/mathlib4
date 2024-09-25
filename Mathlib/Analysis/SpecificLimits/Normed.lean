@@ -124,29 +124,24 @@ theorem TFAE_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
     fun x hx ↦ ⟨(neg_lt_zero.2 (hx.1.trans_lt hx.2)).trans_le hx.1, hx.2⟩
   have B : Ioo 0 R ⊆ Ioo (-R) R := Subset.trans Ioo_subset_Ico_self A
   -- First we prove that 1-4 are equivalent using 2 → 3 → 4, 1 → 3, and 2 → 1
-  tfae_have 1 → 3
-  · exact fun ⟨a, ha, H⟩ ↦ ⟨a, ha, H.isBigO⟩
-  tfae_have 2 → 1
-  · exact fun ⟨a, ha, H⟩ ↦ ⟨a, B ha, H⟩
+  tfae_have 1 → 3 := fun ⟨a, ha, H⟩ ↦ ⟨a, ha, H.isBigO⟩
+  tfae_have 2 → 1 := fun ⟨a, ha, H⟩ ↦ ⟨a, B ha, H⟩
   tfae_have 3 → 2
-  · rintro ⟨a, ha, H⟩
+  | ⟨a, ha, H⟩ => by
     rcases exists_between (abs_lt.2 ha) with ⟨b, hab, hbR⟩
     exact ⟨b, ⟨(abs_nonneg a).trans_lt hab, hbR⟩,
       H.trans_isLittleO (isLittleO_pow_pow_of_abs_lt_left (hab.trans_le (le_abs_self b)))⟩
-  tfae_have 2 → 4
-  · exact fun ⟨a, ha, H⟩ ↦ ⟨a, ha, H.isBigO⟩
-  tfae_have 4 → 3
-  · exact fun ⟨a, ha, H⟩ ↦ ⟨a, B ha, H⟩
+  tfae_have 2 → 4 := fun ⟨a, ha, H⟩ ↦ ⟨a, ha, H.isBigO⟩
+  tfae_have 4 → 3 := fun ⟨a, ha, H⟩ ↦ ⟨a, B ha, H⟩
   -- Add 5 and 6 using 4 → 6 → 5 → 3
   tfae_have 4 → 6
-  · rintro ⟨a, ha, H⟩
+  | ⟨a, ha, H⟩ => by
     rcases bound_of_isBigO_nat_atTop H with ⟨C, hC₀, hC⟩
     refine ⟨a, ha, C, hC₀, fun n ↦ ?_⟩
     simpa only [Real.norm_eq_abs, abs_pow, abs_of_nonneg ha.1.le] using hC (pow_ne_zero n ha.1.ne')
-  tfae_have 6 → 5
-  · exact fun ⟨a, ha, C, H₀, H⟩ ↦ ⟨a, ha.2, C, Or.inl H₀, H⟩
+  tfae_have 6 → 5 := fun ⟨a, ha, C, H₀, H⟩ ↦ ⟨a, ha.2, C, Or.inl H₀, H⟩
   tfae_have 5 → 3
-  · rintro ⟨a, ha, C, h₀, H⟩
+  | ⟨a, ha, C, h₀, H⟩ => by
     rcases sign_cases_of_C_mul_pow_nonneg fun n ↦ (abs_nonneg _).trans (H n) with (rfl | ⟨hC₀, ha₀⟩)
     · obtain rfl : f = 0 := by
         ext n
@@ -157,19 +152,15 @@ theorem TFAE_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
       isBigO_of_le' _ fun n ↦ (H n).trans <| mul_le_mul_of_nonneg_left (le_abs_self _) hC₀.le⟩
   -- Add 7 and 8 using 2 → 8 → 7 → 3
   tfae_have 2 → 8
-  · rintro ⟨a, ha, H⟩
+  | ⟨a, ha, H⟩ => by
     refine ⟨a, ha, (H.def zero_lt_one).mono fun n hn ↦ ?_⟩
     rwa [Real.norm_eq_abs, Real.norm_eq_abs, one_mul, abs_pow, abs_of_pos ha.1] at hn
-  tfae_have 8 → 7
-  · exact fun ⟨a, ha, H⟩ ↦ ⟨a, ha.2, H⟩
+  tfae_have 8 → 7 := fun ⟨a, ha, H⟩ ↦ ⟨a, ha.2, H⟩
   tfae_have 7 → 3
-  · rintro ⟨a, ha, H⟩
+  | ⟨a, ha, H⟩ => by
     have : 0 ≤ a := nonneg_of_eventually_pow_nonneg (H.mono fun n ↦ (abs_nonneg _).trans)
     refine ⟨a, A ⟨this, ha⟩, IsBigO.of_bound 1 ?_⟩
     simpa only [Real.norm_eq_abs, one_mul, abs_pow, abs_of_nonneg this]
-  -- Porting note: used to work without explicitly having 6 → 7
-  tfae_have 6 → 7
-  · exact fun h ↦ tfae_8_to_7 <| tfae_2_to_8 <| tfae_3_to_2 <| tfae_5_to_3 <| tfae_6_to_5 h
   tfae_finish
 
 /-- For any natural `k` and a real `r > 1` we have `n ^ k = o(r ^ n)` as `n → ∞`. -/
@@ -206,7 +197,7 @@ theorem isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt {R : Type*} [Norm
   have A : (fun n ↦ (n : R) ^ k : ℕ → R) =o[atTop] fun n ↦ (r₂ / ‖r₁‖) ^ n :=
     isLittleO_pow_const_const_pow_of_one_lt k ((one_lt_div h0).2 h)
   suffices (fun n ↦ r₁ ^ n) =O[atTop] fun n ↦ ‖r₁‖ ^ n by
-    simpa [div_mul_cancel₀ _ (pow_pos h0 _).ne'] using A.mul_isBigO this
+    simpa [div_mul_cancel₀ _ (pow_pos h0 _).ne', div_pow] using A.mul_isBigO this
   exact IsBigO.of_bound 1 (by simpa using eventually_norm_pow_le r₁)
 
 theorem tendsto_pow_const_div_const_pow_of_one_lt (k : ℕ) {r : ℝ} (hr : 1 < r) :
@@ -276,7 +267,7 @@ instance {R : Type*} [NormedRing R] [CompleteSpace R] : HasSummableGeomSeries R 
 
 section HasSummableGeometricSeries
 
-variable {R : Type*} [NormedRing R] [HasSummableGeomSeries R]
+variable {R : Type*} [NormedRing R]
 
 open NormedSpace
 
@@ -284,14 +275,22 @@ open NormedSpace
 normed ring satisfies the axiom `‖1‖ = 1`. -/
 theorem tsum_geometric_le_of_norm_lt_one (x : R) (h : ‖x‖ < 1) :
     ‖∑' n : ℕ, x ^ n‖ ≤ ‖(1 : R)‖ - 1 + (1 - ‖x‖)⁻¹ := by
-  rw [tsum_eq_zero_add (summable_geometric_of_norm_lt_one h)]
-  simp only [_root_.pow_zero]
-  refine le_trans (norm_add_le _ _) ?_
-  have : ‖∑' b : ℕ, (fun n ↦ x ^ (n + 1)) b‖ ≤ (1 - ‖x‖)⁻¹ - 1 := by
-    refine tsum_of_norm_bounded ?_ fun b ↦ norm_pow_le' _ (Nat.succ_pos b)
-    convert (hasSum_nat_add_iff' 1).mpr (hasSum_geometric_of_lt_one (norm_nonneg x) h)
-    simp
-  linarith
+  by_cases hx : Summable (fun n ↦ x ^ n)
+  · rw [tsum_eq_zero_add hx]
+    simp only [_root_.pow_zero]
+    refine le_trans (norm_add_le _ _) ?_
+    have : ‖∑' b : ℕ, (fun n ↦ x ^ (n + 1)) b‖ ≤ (1 - ‖x‖)⁻¹ - 1 := by
+      refine tsum_of_norm_bounded ?_ fun b ↦ norm_pow_le' _ (Nat.succ_pos b)
+      convert (hasSum_nat_add_iff' 1).mpr (hasSum_geometric_of_lt_one (norm_nonneg x) h)
+      simp
+    linarith
+  · simp [tsum_eq_zero_of_not_summable hx]
+    nontriviality R
+    have : 1 ≤ ‖(1 : R)‖ := one_le_norm_one R
+    have : 0 ≤ (1 - ‖x‖) ⁻¹ := inv_nonneg.2 (by linarith)
+    linarith
+
+variable [HasSummableGeomSeries R]
 
 @[deprecated (since := "2024-01-31")]
 alias NormedRing.tsum_geometric_of_norm_lt_1 := tsum_geometric_le_of_norm_lt_one
@@ -328,7 +327,7 @@ theorem geom_series_mul_one_add (x : R) (h : ‖x‖ < 1) :
   rw [add_mul, one_mul, geom_series_mul_shift x h, geom_series_succ x h, two_mul, add_sub_assoc]
 
 /-- In a normed ring with summable geometric series, a perturbation of `1` by an element `t`
-of distance less than `1` from `1` is a unit.  Here we construct its `Units` structure.  -/
+of distance less than `1` from `1` is a unit.  Here we construct its `Units` structure. -/
 @[simps val]
 def Units.oneSub (t : R) (h : ‖t‖ < 1) : Rˣ where
   val := 1 - t
@@ -543,7 +542,8 @@ alias summable_norm_pow_mul_geometric_of_norm_lt_1 := summable_norm_pow_mul_geom
 alias summable_pow_mul_geometric_of_norm_lt_1 := summable_pow_mul_geometric_of_norm_lt_one
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`, `HasSum` version in a general ring
-with summable geometric series. -/
+with summable geometric series. For a version in a field, using division instead of `Ring.inverse`,
+see `hasSum_coe_mul_geometric_of_norm_lt_one`. -/
 theorem hasSum_coe_mul_geometric_of_norm_lt_one'
     {x : R} (h : ‖x‖ < 1) :
     HasSum (fun n ↦ n * x ^ n : ℕ → R) (x * (Ring.inverse (1 - x)) ^ 2) := by
@@ -561,7 +561,8 @@ theorem hasSum_coe_mul_geometric_of_norm_lt_one'
     _ = x * Ring.inverse (1 - x) ^ 2 := by noncomm_ring
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`, version in a general ring with
-summable geometric series. -/
+summable geometric series. For a version in a field, using division instead of `Ring.inverse`,
+see `tsum_coe_mul_geometric_of_norm_lt_one`. -/
 theorem tsum_coe_mul_geometric_of_norm_lt_one'
     {r : 𝕜} (hr : ‖r‖ < 1) : (∑' n : ℕ, n * r ^ n : 𝕜) = r * Ring.inverse (1 - r) ^ 2 :=
   (hasSum_coe_mul_geometric_of_norm_lt_one' hr).tsum_eq

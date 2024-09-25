@@ -96,6 +96,7 @@ import Mathlib.Tactic.FunProp.ToBatteries
 import Mathlib.Tactic.FunProp.Types
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.GCongr.CoreAttrs
 import Mathlib.Tactic.GCongr.ForwardAttr
 import Mathlib.Tactic.Generalize
 import Mathlib.Tactic.GeneralizeProofs
@@ -149,6 +150,7 @@ import Mathlib.Tactic.Measurability.Init
 import Mathlib.Tactic.MinImports
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.ModCases
+import Mathlib.Tactic.Module
 import Mathlib.Tactic.Monotonicity
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Tactic.Monotonicity.Basic

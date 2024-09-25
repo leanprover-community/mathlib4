@@ -202,7 +202,7 @@ def proveFalseByLinarith (transparency : TransparencyMode) (oracle : Certificate
       trace[linarith.detail] "... finished `linearFormsAndMaxVar`."
       trace[linarith.detail] "{comps}"
       -- perform the elimination and fail if no contradiction is found.
-      let certificate : Batteries.HashMap Nat Nat ← try
+      let certificate : Std.HashMap Nat Nat ← try
         oracle.produceCertificate comps max_var
       catch e =>
         trace[linarith] e.toMessageData
@@ -210,7 +210,7 @@ def proveFalseByLinarith (transparency : TransparencyMode) (oracle : Certificate
       trace[linarith] "linarith has found a contradiction: {certificate.toList}"
       let enum_inputs := inputs.enum
       -- construct a list pairing nonzero coeffs with the proof of their corresponding comparison
-      let zip := enum_inputs.filterMap fun ⟨n, e⟩ => (certificate.find? n).map (e, ·)
+      let zip := enum_inputs.filterMap fun ⟨n, e⟩ => (certificate[n]?).map (e, ·)
       let mls ← zip.mapM fun ⟨e, n⟩ => do mulExpr n (← leftOfIneqProof e)
       -- `sm` is the sum of input terms, scaled to cancel out all variables.
       let sm ← addExprs mls

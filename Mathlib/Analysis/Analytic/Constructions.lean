@@ -681,8 +681,8 @@ lemma analyticAt_inverse_one_sub (𝕜 : Type*) [NontriviallyNormedField 𝕜]
 
 /-- If `A` is a normed algebra over `𝕜` with summable geometric series, then inversion on `A` is
 analytic at any unit. -/
-lemma analyticAt_inverse (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-    {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A] {z : Aˣ} :
+lemma analyticAt_inverse {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A] (z : Aˣ) :
     AnalyticAt 𝕜 Ring.inverse (z : A) := by
   rcases subsingleton_or_nontrivial A with hA|hA
   · convert analyticAt_const (v := (0 : A))
@@ -722,7 +722,7 @@ lemma analyticAt_inv_one_sub (𝕝 : Type*) [NontriviallyNormedField 𝕝] [Norm
 /-- If `𝕝` is a normed field extension of `𝕜`, then the inverse map `𝕝 → 𝕝` is `𝕜`-analytic
 away from 0. -/
 lemma analyticAt_inv {z : 𝕝} (hz : z ≠ 0) : AnalyticAt 𝕜 Inv.inv z := by
-  convert analyticAt_inverse 𝕜 (z := Units.mk0 _ hz)
+  convert analyticAt_inverse (𝕜 := 𝕜) (Units.mk0 _ hz)
   exact Ring.inverse_eq_inv'.symm
 
 /-- `x⁻¹` is analytic away from zero -/
