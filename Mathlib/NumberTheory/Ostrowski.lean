@@ -121,6 +121,7 @@ section Non_archimedean
 Every bounded absolute value is equivalent to a `p`-adic absolute value
 -/
 
+/-- The mulRingNorm corresponding to the p-adic norm on `ℚ`. -/
 def mulRingNorm_padic (p : ℕ) [Fact p.Prime] : MulRingNorm ℚ :=
 { toFun     := fun x : ℚ ↦ (padicNorm p x : ℝ),
   map_zero' := by simp only [padicNorm.zero, Rat.cast_zero]
