@@ -6,10 +6,13 @@ Authors: Damiano Testa
 import Lean.Elab.Command
 
 /-!
-#  The "docPrime" linter
+# The "docPrime" linter
 
 The "docPrime" linter emits a warning on declarations that have no doc-string and whose
-name ends with a `'`.
+name ends with a `'`. Such declarations are expected to have a documented explanation
+for the presence of a `'` in their name. This may consist of discussion of the difference relative
+to an unprimed version of that declaration, or an explanation as to why no better naming scheme
+is possible.
 -/
 
 open Lean Elab
@@ -20,8 +23,8 @@ namespace Mathlib.Linter
 The "docPrime" linter emits a warning on declarations that have no doc-string and whose
 name ends with a `'`.
 
-The file `scripts/no_lints_prime_decls.txt` records the list of exceptions at the moment in
-which the linter was written.
+The file `scripts/no_lints_prime_decls.txt` contains a list of temporary exceptions to this linter.
+This list should not be appended to, and become emptied over time.
 -/
 register_option linter.docPrime : Bool := {
   defValue := false
@@ -36,7 +39,7 @@ def docPrimeLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
-  unless [``Lean.Parser.Command.declaration, `lemma].contains stx.getKind  do return
+  unless [``Lean.Parser.Command.declaration, `lemma].contains stx.getKind do return
   let docstring := stx[0][0]
   -- The current declaration's id, possibly followed by a list of universe names.
   let declId :=
@@ -50,10 +53,10 @@ def docPrimeLinter : Linter where run := withSetOptionIn fun stx ↦ do
       rest.foldl (· ++ ·) default
     else (← getCurrNamespace) ++ declId[0].getId
   let msg := m!"`{declName}` is missing a doc-string, please add one.\n\
-          Declarations whose name ends with a `'` are expected to contain an explanation for the \
-          presence of a `'` in their doc-string. This may consist of discussion of the difference \
-          relative to the unprimed version, or an explanation as to why no better naming scheme \
-          is possible."
+      Declarations whose name ends with a `'` are expected to contain an explanation for the \
+      presence of a `'` in their doc-string. This may consist of discussion of the difference \
+      relative to the unprimed version, or an explanation as to why no better naming scheme \
+      is possible."
   if docstring[0][1].getAtomVal.isEmpty && declName.toString.back == '\'' then
     if ← System.FilePath.pathExists "scripts/no_lints_prime_decls.txt" then
       if (← IO.FS.lines "scripts/no_lints_prime_decls.txt").contains declName.toString then
