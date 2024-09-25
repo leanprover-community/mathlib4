@@ -33,7 +33,7 @@ end Condensed
 namespace CondensedSet
 
 /--
-This is an auxiliary definition to prove that the constant sheaf functor from `Type (u+1)` 
+This is an auxiliary definition to prove that the constant sheaf functor from `Type (u+1)`
 to sheaves for the coherent topology on `Profinite.{u}` is fully faithful.
 -/
 noncomputable
@@ -89,7 +89,7 @@ theorem isDiscrete_tfae  (X : CondensedSet.{u}) :
   tfae_have 1 ↔ 5 :=
     have : functor.Faithful := inferInstance
     have : functor.Full := inferInstance
-    -- These `have` statements above shouldn't be needed, but they are.
+    -- These `have` statements above shouldn't be needed, but they are.
     Sheaf.isConstant_iff_isIso_counit_app' _ CompHaus.isTerminalPUnit adjunction _
   tfae_have 1 ↔ 6 :=
     (Sheaf.isConstant_iff_of_equivalence (coherentTopology Profinite)
@@ -169,7 +169,7 @@ theorem isDiscrete_tfae  (X : LightCondSet.{u}) :
   tfae_have 1 ↔ 5 :=
     have : functor.Faithful := inferInstance
     have : functor.Full := inferInstance
-    -- These `have` statements above shouldn't be needed, but they are.
+    -- These `have` statements above shouldn't be needed, but they are.
     Sheaf.isConstant_iff_isIso_counit_app' _ LightProfinite.isTerminalPUnit adjunction X
   tfae_have 6 → 4 := fun h ↦
     mem_locallyContant_essImage_of_isColimit_mapCocone X (fun S ↦ (h S).some)
