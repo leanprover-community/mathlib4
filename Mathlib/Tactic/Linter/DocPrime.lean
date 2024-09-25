@@ -66,7 +66,6 @@ def docPrimeLinter : Linter where run := withSetOptionIn fun stx ↦ do
     else
       Linter.logLint linter.docPrime declId msg
 
-
 initialize addLinter docPrimeLinter
 
 end DocPrime
