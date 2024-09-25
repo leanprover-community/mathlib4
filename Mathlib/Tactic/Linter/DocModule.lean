@@ -233,6 +233,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   for (imp, msg) in broadImportsCheck importIds do
     Linter.logLint linter.style.header imp msg
   let afterImports := firstNonImport? upToStx
+  if afterImports.isNone then return
   let copyright := match upToStx.getHeadInfo with
     | .original lead .. => lead.toString
     | _ => ""
