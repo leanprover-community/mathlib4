@@ -3,7 +3,8 @@ Copyright (c) 2023 Michael Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Lee, Geoffrey Irving
 -/
-import Mathlib.Analysis.Analytic.Within
+import Mathlib.Analysis.Analytic.Constructions
+import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 
 /-!
@@ -27,7 +28,7 @@ open scoped Manifold Filter Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {H : Type*}
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*}
   [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M]
 
 /-!
@@ -53,7 +54,7 @@ def analyticPregroupoid : Pregroupoid H where
     · rintro x ⟨hx1, _⟩
       simpa only [mfld_simps] using hx1.2
   id_mem := by
-    apply (analyticOn_id 𝕜).analyticWithinOn.congr
+    apply analyticWithinOn_id.congr
     rintro x ⟨_, hx2⟩
     obtain ⟨y, hy⟩ := mem_range.1 hx2
     simp only [mfld_simps, ← hy]
@@ -85,8 +86,8 @@ theorem ofSet_mem_analyticGroupoid {s : Set H} (hs : IsOpen s) :
   rw [analyticGroupoid, mem_groupoid_of_pregroupoid]
   suffices h : AnalyticWithinOn 𝕜 (I ∘ I.symm) (I.symm ⁻¹' s ∩ range I) by
     simp [h, analyticPregroupoid]
-  have hi : AnalyticWithinOn 𝕜 id (univ : Set E) := (analyticOn_id _).analyticWithinOn
-  exact (hi.mono (subset_univ _)).congr (fun x hx ↦ (I.right_inv hx.2).symm)
+  have hi : AnalyticWithinOn 𝕜 id (univ : Set E) := analyticWithinOn_id
+  exact (hi.mono (subset_univ _)).congr (fun x hx ↦ I.right_inv hx.2)
 
 /-- The composition of a partial homeomorphism from `H` to `M` and its inverse belongs to
 the analytic groupoid. -/
@@ -123,19 +124,19 @@ theorem mem_analyticGroupoid_of_boundaryless [I.Boundaryless] (e : PartialHomeom
 
 /-- `analyticGroupoid` is closed under products -/
 theorem analyticGroupoid_prod {E A : Type} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [CompleteSpace E] [TopologicalSpace A] {F B : Type} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-    [CompleteSpace F] [TopologicalSpace B] {I : ModelWithCorners 𝕜 E A} {J : ModelWithCorners 𝕜 F B}
+    [TopologicalSpace A] {F B : Type} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+    [TopologicalSpace B] {I : ModelWithCorners 𝕜 E A} {J : ModelWithCorners 𝕜 F B}
     {f : PartialHomeomorph A A} {g : PartialHomeomorph B B}
     (fa : f ∈ analyticGroupoid I) (ga : g ∈ analyticGroupoid J) :
     f.prod g ∈ analyticGroupoid (I.prod J) := by
   have pe : range (I.prod J) = (range I).prod (range J) := I.range_prod
   simp only [mem_analyticGroupoid, Function.comp, image_subset_iff] at fa ga ⊢
   exact ⟨AnalyticWithinOn.prod
-      (fa.1.comp (analyticOn_fst _).analyticWithinOn fun _ m ↦ ⟨m.1.1, (pe ▸ m.2).1⟩)
-      (ga.1.comp (analyticOn_snd _).analyticWithinOn fun _ m ↦ ⟨m.1.2, (pe ▸ m.2).2⟩),
+      (fa.1.comp analyticWithinOn_fst fun _ m ↦ ⟨m.1.1, (pe ▸ m.2).1⟩)
+      (ga.1.comp analyticWithinOn_snd fun _ m ↦ ⟨m.1.2, (pe ▸ m.2).2⟩),
     AnalyticWithinOn.prod
-      (fa.2.comp (analyticOn_fst _).analyticWithinOn fun _ m ↦ ⟨m.1.1, (pe ▸ m.2).1⟩)
-      (ga.2.comp (analyticOn_snd _).analyticWithinOn fun _ m ↦ ⟨m.1.2, (pe ▸ m.2).2⟩)⟩
+      (fa.2.comp analyticWithinOn_fst fun _ m ↦ ⟨m.1.1, (pe ▸ m.2).1⟩)
+      (ga.2.comp analyticWithinOn_snd fun _ m ↦ ⟨m.1.2, (pe ▸ m.2).2⟩)⟩
 
 end analyticGroupoid
 
@@ -151,8 +152,8 @@ instance AnalyticManifold.self : AnalyticManifold 𝓘(𝕜, E) E where
 
 /-- `M × N` is an analytic manifold if `M` and `N` are -/
 instance AnalyticManifold.prod {E A : Type} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [CompleteSpace E] [TopologicalSpace A] {F B : Type} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-    [CompleteSpace F] [TopologicalSpace B] {I : ModelWithCorners 𝕜 E A} {J : ModelWithCorners 𝕜 F B}
+    [TopologicalSpace A] {F B : Type} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+    [TopologicalSpace B] {I : ModelWithCorners 𝕜 E A} {J : ModelWithCorners 𝕜 F B}
     {M : Type} [TopologicalSpace M] [ChartedSpace A M] [m : AnalyticManifold I M]
     {N : Type} [TopologicalSpace N] [ChartedSpace B N] [n : AnalyticManifold J N] :
     AnalyticManifold (I.prod J) (M × N) where
@@ -163,7 +164,8 @@ instance AnalyticManifold.prod {E A : Type} [NormedAddCommGroup E] [NormedSpace 
       (n.toHasGroupoid.compatible hf2 hg2)
 
 /-- Analytic manifolds are smooth manifolds. -/
-instance AnalyticManifold.smoothManifoldWithCorners [ChartedSpace H M] [cm : AnalyticManifold I M] :
+instance AnalyticManifold.smoothManifoldWithCorners [ChartedSpace H M]
+    [cm : AnalyticManifold I M] [CompleteSpace E] :
     SmoothManifoldWithCorners I M where
   compatible := by
     intro f g hf hg

@@ -442,7 +442,7 @@ then there is a `b`-th primitive root of unity in `R`. -/
 theorem pow {n : ℕ} {a b : ℕ} (hn : 0 < n) (h : IsPrimitiveRoot ζ n) (hprod : n = a * b) :
     IsPrimitiveRoot (ζ ^ a) b := by
   subst n
-  simp only [iff_def, ← pow_mul, h.pow_eq_one, eq_self_iff_true, true_and_iff]
+  simp only [iff_def, ← pow_mul, h.pow_eq_one, eq_self_iff_true, true_and]
   intro l hl
   -- Porting note: was `by rintro rfl; simpa only [Nat.not_lt_zero, zero_mul] using hn`
   have ha0 : a ≠ 0 := left_ne_zero_of_mul hn.ne'
@@ -868,14 +868,14 @@ theorem card_primitiveRoots {ζ : R} {k : ℕ} (h : IsPrimitiveRoot ζ k) :
   · simp [h0]
   symm
   refine Finset.card_bij (fun i _ ↦ ζ ^ i) ?_ ?_ ?_
-  · simp only [true_and_iff, and_imp, mem_filter, mem_range, mem_univ]
+  · simp only [and_imp, mem_filter, mem_range, mem_univ]
     rintro i - hi
     rw [mem_primitiveRoots (Nat.pos_of_ne_zero h0)]
     exact h.pow_of_coprime i hi.symm
-  · simp only [true_and_iff, and_imp, mem_filter, mem_range, mem_univ]
+  · simp only [and_imp, mem_filter, mem_range, mem_univ]
     rintro i hi - j hj - H
     exact h.pow_inj hi hj H
-  · simp only [exists_prop, true_and_iff, mem_filter, mem_range, mem_univ]
+  · simp only [exists_prop, mem_filter, mem_range, mem_univ]
     intro ξ hξ
     rw [mem_primitiveRoots (Nat.pos_of_ne_zero h0),
       h.isPrimitiveRoot_iff (Nat.pos_of_ne_zero h0)] at hξ
@@ -898,7 +898,7 @@ theorem nthRoots_one_eq_biUnion_primitiveRoots' {ζ : R} {n : ℕ+} (h : IsPrimi
   · intro x
     simp only [nthRootsFinset, ← Multiset.toFinset_eq (nthRoots_one_nodup h), exists_prop,
       Finset.mem_biUnion, Finset.mem_filter, Finset.mem_range, mem_nthRoots, Finset.mem_mk,
-      Nat.mem_divisors, and_true_iff, Ne, PNat.ne_zero, PNat.pos, not_false_iff]
+      Nat.mem_divisors, and_true, Ne, PNat.ne_zero, PNat.pos, not_false_iff]
     rintro ⟨a, ⟨d, hd⟩, ha⟩
     have hazero : 0 < a := by
       contrapose! hd with ha0
