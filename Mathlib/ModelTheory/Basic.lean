@@ -474,7 +474,7 @@ def comp (hnp : N ↪[L] P) (hmn : M ↪[L] N) : M ↪[L] P where
   -- Porting note: should be done by autoparam?
   map_fun' := by intros; simp only [Function.comp_apply, map_fun]; trivial
   -- Porting note: should be done by autoparam?
-  map_rel' := by intros; rw [Function.comp.assoc, map_rel, map_rel]
+  map_rel' := by intros; rw [Function.comp_assoc, map_rel, map_rel]
 
 @[simp]
 theorem comp_apply (g : N ↪[L] P) (f : M ↪[L] N) (x : M) : g.comp f x = g (f x) :=
@@ -551,11 +551,11 @@ def symm (f : M ≃[L] N) : N ≃[L] M :=
       simp only [Equiv.toFun_as_coe]
       rw [Equiv.symm_apply_eq]
       refine Eq.trans ?_ (f.map_fun' f' (f.toEquiv.symm ∘ x)).symm
-      rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp]
+      rw [← Function.comp_assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp]
     map_rel' := fun n r {x} => by
       simp only [Equiv.toFun_as_coe]
       refine (f.map_rel' r (f.toEquiv.symm ∘ x)).symm.trans ?_
-      rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp] }
+      rw [← Function.comp_assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp] }
 
 instance hasCoeToFun : CoeFun (M ≃[L] N) fun _ => M → N :=
   DFunLike.hasCoeToFun
@@ -648,7 +648,7 @@ def comp (hnp : N ≃[L] P) (hmn : M ≃[L] N) : M ≃[L] P :=
     -- Porting note: should be done by autoparam?
     map_fun' := by intros; simp only [Function.comp_apply, map_fun]; trivial
     -- Porting note: should be done by autoparam?
-    map_rel' := by intros; rw [Function.comp.assoc, map_rel, map_rel] }
+    map_rel' := by intros; rw [Function.comp_assoc, map_rel, map_rel] }
 
 @[simp]
 theorem comp_apply (g : N ≃[L] P) (f : M ≃[L] N) (x : M) : g.comp f x = g (f x) :=
@@ -830,8 +830,8 @@ def inducedStructureEquiv (e : M ≃ N) : @Language.Equiv L M N _ (inducedStruct
   letI : L.Structure N := inducedStructure e
   exact
   { e with
-    map_fun' := @fun n f x => by simp [← Function.comp.assoc e.symm e x]
-    map_rel' := @fun n r x => by simp [← Function.comp.assoc e.symm e x] }
+    map_fun' := @fun n f x => by simp [← Function.comp_assoc e.symm e x]
+    map_rel' := @fun n r x => by simp [← Function.comp_assoc e.symm e x] }
 
 @[simp]
 theorem toEquiv_inducedStructureEquiv (e : M ≃ N) :
