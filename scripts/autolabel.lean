@@ -227,8 +227,8 @@ to add the label to the PR.
 -/
 unsafe def main (args : List String): IO Unit := do
   if args.length > 1 then
-    println s!"autolabel: invalid number of arguments ({args.length}). Please run without \
-    arguments or provide the target PR's number as single argument!"
+    println s!"autolabel: invalid number of arguments ({args.length}), expected at most 1. \
+    Please run without arguments or provide the target PR's number as single argument!"
     IO.Process.exit 1
   let prNumber? := args[0]?
 
