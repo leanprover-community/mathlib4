@@ -28,7 +28,9 @@ defining objects that can be created randomly.
 
 -/
 
-set_option autoImplicit true -- Note: this file uses `autoImplicit` pervasively
+-- Note: this file uses `autoImplicit` consistently and intentionally.
+set_option linter.setOption false in
+set_option autoImplicit true
 
 /-- A monad transformer to generate random objects using the generic generator type `g` -/
 abbrev RandGT (g : Type) := StateT (ULift g)
