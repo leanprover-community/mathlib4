@@ -47,7 +47,7 @@ instance hasQuotient : HasQuotient M (Submodule R M) :=
 namespace Quotient
 
 instance : QuotLike (M ⧸ p) M p.quotientRel where
-instance : QuotLike.HasQuotHint _ p (M ⧸ p) M p.quotientRel where
+instance : QuotLike.HasQuotHint p (M ⧸ p) M p.quotientRel where
 
 /-- Map associating to an element of `M` the corresponding element of `M/p`,
 when `p` is a submodule of `M`. -/

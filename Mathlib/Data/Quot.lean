@@ -44,7 +44,7 @@ namespace Quot
 
 variable {ra : α → α → Prop} {rb : β → β → Prop} {φ : Quot ra → Quot rb → Sort*}
 
-scoped instance (s : Setoid α) : QuotLike.Hint (Setoid α) s (Quot s) α s where
+scoped instance (s : Setoid α) : QuotLike.Hint s (Quot s) α s where
 
 @[inherit_doc Quot.mk]
 local notation3:arg (priority := high) "⟦" a "⟧" => Quot.mk _ a

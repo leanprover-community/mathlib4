@@ -350,7 +350,7 @@ variable [Group α] {s : Subgroup α}
 instance : QuotLike (α ⧸ s) α (leftRel s) where
 
 @[to_additive]
-instance : QuotLike.HasQuotHint _ s (α ⧸ s) α (leftRel s) where
+instance : QuotLike.HasQuotHint s (α ⧸ s) α (leftRel s) where
 
 @[to_additive]
 instance fintype [Fintype α] (s : Subgroup α) [DecidableRel (leftRel s).r] : Fintype (α ⧸ s) :=

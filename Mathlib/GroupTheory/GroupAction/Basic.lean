@@ -461,11 +461,11 @@ abbrev orbitRel.Quotient : Type _ :=
 instance : QuotLike (orbitRel.Quotient G α) α (orbitRel G α) where
 
 @[to_additive]
-scoped instance : QuotLike.HasQuotHint _ G (orbitRel.Quotient G α) α (orbitRel G α) where
+scoped instance : QuotLike.HasQuotHint G (orbitRel.Quotient G α) α (orbitRel G α) where
 
 @[to_additive]
 scoped instance (H : Subgroup G) :
-    QuotLike.HasQuotHint _ H (orbitRel.Quotient H α) α (orbitRel H α) where
+    QuotLike.HasQuotHint H (orbitRel.Quotient H α) α (orbitRel H α) where
 
 /-- An action is pretransitive if and only if the quotient by `MulAction.orbitRel` is a
 subsingleton. -/
