@@ -27,7 +27,7 @@ theorem sum_tsub_distrib [AddCommMonoid α] [PartialOrder α] [ExistsAddOfLE α]
     [OrderedSub α] (s : Finset ι) {f g : ι → α} (hfg : ∀ x ∈ s, g x ≤ f x) :
     ∑ x in s, (f x - g x) = ∑ x in s, f x - ∑ x in s, g x :=
   eq_tsub_of_add_eq <| by
-    rw [← Finset.sum_add_distrib];
+    rw [← Finset.sum_add_distrib]
     exact Finset.sum_congr rfl fun x hx => tsub_add_cancel_of_le <| hfg _ hx
 
 section AddCommMonoidWithOne
