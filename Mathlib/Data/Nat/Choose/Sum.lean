@@ -90,17 +90,6 @@ theorem sub_pow [CommRing R] (x : R) (y : R) (n : ℕ) :
   nth_rewrite 2 [show (1 : R) = (-1) ^ (2 * m) by simp]
   rw [← pow_add, ← pow_add, show n - m + 2 * m = m + n by omega]
 
-/-- A special case of the sub_pow -/
-theorem sub_square_pow [CommRing R] (x : R) (n : ℕ) :
-    (x - x ^ 2) ^ n = ∑ m ∈ range (n + 1), (- 1) ^ m * n.choose m • x ^ (n + m) := by
-  rw [sub_eq_add_neg, add_comm, add_pow]
-  apply Finset.sum_congr rfl
-  intro m hm
-  simp only [mem_range] at hm
-  rw [neg_pow, pow_two, mul_pow,← mul_assoc, mul_comm, mul_assoc, pow_mul_pow_sub _ (by linarith),
-     mul_assoc, ← pow_add, ← mul_assoc, nsmul_eq_mul, add_comm]
-  ring_nf
-
 namespace Nat
 
 /-- The sum of entries in a row of Pascal's triangle -/
