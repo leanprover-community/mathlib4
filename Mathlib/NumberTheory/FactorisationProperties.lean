@@ -95,12 +95,12 @@ lemma deficient_iff_not_abundant_and_not_perfect (hn : n ≠ 0) :
   dsimp only [Perfect, Abundant, Deficient]
   omega
 
-lemma perfect_iff_not_abundant_or_deficient (hn : 0 ≠ n) :
+lemma perfect_iff_not_abundant_and_not_deficient (hn : 0 ≠ n) :
     Perfect n ↔ ¬ Abundant n ∧ ¬ Deficient n := by
   dsimp only [Perfect, Abundant, Deficient]
   omega
 
-lemma abundant_iff_not_perfect_or_deficient (hn : 0 ≠ n) :
+lemma abundant_iff_not_perfect_and_not_deficient (hn : 0 ≠ n) :
     Abundant n ↔ ¬ Perfect n ∧ ¬ Deficient n := by
   dsimp only [Perfect, Abundant, Deficient]
   omega
