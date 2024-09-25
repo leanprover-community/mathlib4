@@ -32,7 +32,7 @@ theorem map_neg (x : R) : f (-x) = f x := by rw [← neg_one_mul, map_mul, map_n
 
 end MonoidHom
 
-theorem map_sub_swap [Ring R] [Monoid M] [NoRootsOfUnity M ℕ] (f : R →* M) (x y : R) :
+theorem MonoidHom.map_sub_swap [Ring R] [Monoid M] [NoRootsOfUnity M ℕ] (f : R →* M) (x y : R) :
     f (x - y) = f (y - x) := by
   rw [← f.map_neg, neg_sub]
 
