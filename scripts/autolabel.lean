@@ -132,7 +132,7 @@ def mathlibLabels : Array Label := #[
       "Mathlib" / "Topology",
       "Mathlib" / "AlgebraicTopology"] },
   { label := "CI",
-    dirs := #[".github" / "workflows"] },
+    dirs := #[".github"] },
   { label := "IMO",
     dirs := #["Archive" / "Imo"] } ]
 
