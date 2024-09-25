@@ -1119,9 +1119,9 @@ def prod {ι : Type u} (f : ι → Cardinal) : Cardinal :=
 theorem mk_pi {ι : Type u} (α : ι → Type v) : #(Π i, α i) = prod fun i => #(α i) :=
   mk_congr <| Equiv.piCongrRight fun _ => outMkEquiv.symm
 
-theorem mk_pi_congr_lift {ι : Type u} {ι' : Type v} {f : ι → Type w} {g : ι' → Type x}
-    (e : ι ≃ ι') (h : ∀ i, lift.{x} #(f i) = lift.{w} #(g (e i))) :
-    lift.{max v x} #(Π i, f i) = lift.{max u w} #(Π i, g i) :=
+theorem mk_pi_congr_lift {ι : Type v} {ι' : Type v'} {f : ι → Type w} {g : ι' → Type w'}
+    (e : ι ≃ ι') (h : ∀ i, lift.{w'} #(f i) = lift.{w} #(g (e i))) :
+    lift.{max v' w'} #(Π i, f i) = lift.{max v w} #(Π i, g i) :=
   Cardinal.lift_mk_eq'.2 ⟨.piCongr e fun i ↦ Classical.choice <| Cardinal.lift_mk_eq'.1 (h i)⟩
 
 theorem mk_pi_congr {ι ι' : Type u} {f : ι → Type v} {g : ι' → Type v} (e : ι ≃ ι')
