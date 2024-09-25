@@ -25,6 +25,7 @@ relations with prime and perfect numbers.
 * `Nat.Weird`: a natural number is _weird_ if it is abundant but not pseudoperfect
 
 ## Main Results
+
 * `Nat.deficient_or_perfect_or_abundant`: A positive natural number is either deficient,
   perfect, or abundant.
 * `Nat.prime_deficient`: All prime natural numbers are deficient.
