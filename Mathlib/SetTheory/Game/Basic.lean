@@ -475,6 +475,7 @@ def negMulRelabelling (x y : PGame.{u}) : -x * y ≡r -(x * y) :=
   termination_by (x, y)
 
 /-- `x * -y` and `-(x * y)` have the same moves. -/
+@[simp]
 lemma mul_neg (x y : PGame) : x * -y = -(x * y) :=
   match x, y with
   | mk xl xr xL xR, mk yl yr yL yR => by
