@@ -168,9 +168,8 @@ theorem embedding_restrictScalars :
 
 @[continuity, fun_prop]
 theorem continuous_restrictScalars :
-    Continuous
-      (restrictScalars 𝕜' : E [⋀^ι]→L[𝕜] F → E [⋀^ι]→L[𝕜'] F) :=
-   embedding_restrictScalars.continuous
+    Continuous (restrictScalars 𝕜' : E [⋀^ι]→L[𝕜] F → E [⋀^ι]→L[𝕜'] F) :=
+  embedding_restrictScalars.continuous
 
 variable (𝕜') in
 /-- `ContinuousMultilinearMap.restrictScalars` as a `ContinuousLinearMap`. -/

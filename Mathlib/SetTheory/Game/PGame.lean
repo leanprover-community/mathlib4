@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison
+Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison
 -/
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Data.List.InsertNth
@@ -1275,7 +1275,8 @@ instance : Add PGame.{u} :=
 
 Note that this is **not** the usual recursive definition `n = {0, 1, … | }`. For instance,
 `2 = 0 + 1 + 1 = {0 + 0 + 1, 0 + 1 + 0 | }` does not contain any left option equivalent to `0`. For
-an implementation of said definition, see `Ordinal.toPGame`. -/
+an implementation of said definition, see `Ordinal.toPGame`. For the proof that these games are
+equivalent, see `Ordinal.toPGame_natCast`. -/
 instance : NatCast PGame :=
   ⟨Nat.unaryCast⟩
 
@@ -1732,15 +1733,18 @@ instance uniqueStarLeftMoves : Unique star.LeftMoves :=
 instance uniqueStarRightMoves : Unique star.RightMoves :=
   PUnit.unique
 
+theorem zero_lf_star : 0 ⧏ star := by
+  rw [zero_lf]
+  use default
+  rintro ⟨⟩
+
+theorem star_lf_zero : star ⧏ 0 := by
+  rw [lf_zero]
+  use default
+  rintro ⟨⟩
+
 theorem star_fuzzy_zero : star ‖ 0 :=
-  ⟨by
-    rw [lf_zero]
-    use default
-    rintro ⟨⟩,
-   by
-    rw [zero_lf]
-    use default
-    rintro ⟨⟩⟩
+  ⟨star_lf_zero, zero_lf_star⟩
 
 @[simp]
 theorem neg_star : -star = star := by simp [star]
