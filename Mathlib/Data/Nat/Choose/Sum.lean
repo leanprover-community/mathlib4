@@ -75,17 +75,26 @@ theorem add_pow [CommSemiring R] (x y : R) (n : ℕ) :
     (x + y) ^ n = ∑ m ∈ range (n + 1), x ^ m * y ^ (n - m) * n.choose m :=
   (Commute.all x y).add_pow n
 
-/-- An special case of the **binomial theorem** -/
+/-- A special case of the **binomial theorem** -/
 theorem sub_pow [CommRing R] (x : R) (y : R) (n : ℕ) :
     (x - y) ^ n = ∑ m ∈ range (n + 1), n.choose m • x ^ m * (- 1) ^ (n - m) * y ^ (n - m) := by
   rw [sub_eq_add_neg, add_pow]
   apply Finset.sum_congr rfl
   intro m _
   field_simp
-  have eq1 : (-y) ^ (n - m) = (-1) ^ (n - m) * y ^ (n - m) := by
-    rw[neg_pow]
-  rw[eq1]
+  rw [neg_pow]
   ring_nf
+
+/-- A special case of the sub_pow -/
+theorem sub_square_pow [CommRing R] (x : R) (n : ℕ) :
+    (x - x ^ 2) ^ n = ∑ m ∈ range (n + 1), n.choose m • (- 1) ^ m * x ^ (n + m) := by
+  rw [sub_eq_add_neg, add_comm, add_pow]
+  apply Finset.sum_congr rfl
+  intro m hm
+  rw [neg_pow, pow_two, mul_pow,← mul_assoc, mul_comm, mul_assoc, pow_mul_pow_sub, mul_assoc,
+    ← pow_add, ← mul_assoc, nsmul_eq_mul, add_comm]
+  rw [Finset.mem_range] at hm
+  linarith
 
 namespace Nat
 
