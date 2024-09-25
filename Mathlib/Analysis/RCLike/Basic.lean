@@ -317,16 +317,14 @@ open List in
 /-- There are several equivalent ways to say that a number `z` is in fact a real number. -/
 theorem is_real_TFAE (z : K) : TFAE [conj z = z, ∃ r : ℝ, (r : K) = z, ↑(re z) = z, im z = 0] := by
   tfae_have 1 → 4
-  · intro h
+  | h => by
     rw [← @ofReal_inj K, im_eq_conj_sub, h, sub_self, mul_zero, zero_div,
       ofReal_zero]
   tfae_have 4 → 3
-  · intro h
+  | h => by
     conv_rhs => rw [← re_add_im z, h, ofReal_zero, zero_mul, add_zero]
-  tfae_have 3 → 2
-  · exact fun h => ⟨_, h⟩
-  tfae_have 2 → 1
-  · exact fun ⟨r, hr⟩ => hr ▸ conj_ofReal _
+  tfae_have 3 → 2 := fun h => ⟨_, h⟩
+  tfae_have 2 → 1 := fun ⟨r, hr⟩ => hr ▸ conj_ofReal _
   tfae_finish
 
 theorem conj_eq_iff_real {z : K} : conj z = z ↔ ∃ r : ℝ, z = (r : K) :=

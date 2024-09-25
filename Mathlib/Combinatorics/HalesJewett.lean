@@ -150,7 +150,7 @@ def reindex (l : Subspace η α ι) (eη : η ≃ η') (eα : α ≃ α') (eι :
 
 protected lemma IsMono.reindex {eη : η ≃ η'} {eα : α ≃ α'} {eι : ι ≃ ι'} {C : (ι → α) → κ}
     (hl : l.IsMono C) : (l.reindex eη eα eι).IsMono fun x ↦ C <| eα.symm ∘ x ∘ eι := by
-  simp [reindex_isMono, Function.comp.assoc]; simpa [← Function.comp.assoc]
+  simp [reindex_isMono, Function.comp_assoc]; simpa [← Function.comp_assoc]
 
 end Subspace
 
