@@ -6,7 +6,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 import Mathlib.Analysis.Complex.RealDeriv
 import Mathlib.Analysis.Calculus.ContDiff.RCLike
 import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
-import Mathlib.Analysis.Complex.CauchyIntegral
+-- import Mathlib.Analysis.Complex.CauchyIntegral
 
 
 /-!
@@ -45,11 +45,6 @@ theorem differentiable_exp : Differentiable 𝕜 exp := fun x =>
 theorem differentiableAt_exp {x : ℂ} : DifferentiableAt 𝕜 exp x :=
   differentiable_exp x
 
-/-- `exp` is entire -/
-theorem analyticOn_cexp : AnalyticOn ℂ exp univ := by
-  rw [analyticOn_univ_iff_differentiable]; exact differentiable_exp
-
-
 @[simp]
 theorem deriv_exp : deriv exp = exp :=
   funext fun x => (hasDerivAt_exp x).deriv
@@ -59,10 +54,9 @@ theorem iter_deriv_exp : ∀ n : ℕ, deriv^[n] exp = exp
   | 0 => rfl
   | n + 1 => by rw [iterate_succ_apply, deriv_exp, iter_deriv_exp n]
 
+/-
 theorem contDiff_exp {n : WithTop ℕ∞} : ContDiff 𝕜 n exp := by
   apply AnalyticOn.contDiff
-  exact?
-
   -- Porting note: added `@` due to `∀ {n}` weirdness above
   refine @(contDiff_all_iff_nat.2 fun n => ?_)
   have : ContDiff ℂ (↑n) exp := by
@@ -80,6 +74,9 @@ theorem hasStrictDerivAt_exp (x : ℂ) : HasStrictDerivAt exp (exp x) x :=
 theorem hasStrictFDerivAt_exp_real (x : ℂ) : HasStrictFDerivAt exp (exp x • (1 : ℂ →L[ℝ] ℂ)) x :=
   (hasStrictDerivAt_exp x).complexToReal_fderiv
 
+-/
+
+
 end Complex
 
 section
@@ -87,9 +84,11 @@ section
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 ℂ] {f : 𝕜 → ℂ} {f' : ℂ} {x : 𝕜}
   {s : Set 𝕜}
 
+/-
 theorem HasStrictDerivAt.cexp (hf : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (fun x => Complex.exp (f x)) (Complex.exp (f x) * f') x :=
   (Complex.hasStrictDerivAt_exp (f x)).comp x hf
+-/
 
 theorem HasDerivAt.cexp (hf : HasDerivAt f f' x) :
     HasDerivAt (fun x => Complex.exp (f x)) (Complex.exp (f x) * f') x :=
@@ -115,9 +114,11 @@ section
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 ℂ] {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {f : E → ℂ} {f' : E →L[𝕜] ℂ} {x : E} {s : Set E}
 
+/-
 theorem HasStrictFDerivAt.cexp (hf : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (fun x => Complex.exp (f x)) (Complex.exp (f x) • f') x :=
   (Complex.hasStrictDerivAt_exp (f x)).comp_hasStrictFDerivAt x hf
+-/
 
 theorem HasFDerivWithinAt.cexp (hf : HasFDerivWithinAt f f' s x) :
     HasFDerivWithinAt (fun x => Complex.exp (f x)) (Complex.exp (f x) • f') s x :=
@@ -143,6 +144,7 @@ theorem DifferentiableOn.cexp (hc : DifferentiableOn 𝕜 f s) :
 theorem Differentiable.cexp (hc : Differentiable 𝕜 f) :
     Differentiable 𝕜 fun x => Complex.exp (f x) := fun x => (hc x).cexp
 
+/-
 theorem ContDiff.cexp {n} (h : ContDiff 𝕜 n f) : ContDiff 𝕜 n fun x => Complex.exp (f x) :=
   Complex.contDiff_exp.comp h
 
@@ -157,15 +159,17 @@ theorem ContDiffOn.cexp {n} (hf : ContDiffOn 𝕜 n f s) :
 theorem ContDiffWithinAt.cexp {n} (hf : ContDiffWithinAt 𝕜 n f s x) :
     ContDiffWithinAt 𝕜 n (fun x => Complex.exp (f x)) s x :=
   Complex.contDiff_exp.contDiffAt.comp_contDiffWithinAt x hf
+-/
 
 end
 
+/-
 open Complex in
 @[simp]
 theorem iteratedDeriv_cexp_const_mul (n : ℕ) (c : ℂ) :
     (iteratedDeriv n fun s : ℂ => exp (c * s)) = fun s => c ^ n * exp (c * s) := by
   rw [iteratedDeriv_const_mul contDiff_exp, iteratedDeriv_eq_iterate, iter_deriv_exp]
-
+-/
 
 /-! ## `Real.exp` -/
 
@@ -173,14 +177,18 @@ namespace Real
 
 variable {x y z : ℝ}
 
+/-
 theorem hasStrictDerivAt_exp (x : ℝ) : HasStrictDerivAt exp (exp x) x :=
   (Complex.hasStrictDerivAt_exp x).real_of_complex
+-/
 
 theorem hasDerivAt_exp (x : ℝ) : HasDerivAt exp (exp x) x :=
   (Complex.hasDerivAt_exp x).real_of_complex
 
+/-
 theorem contDiff_exp {n} : ContDiff ℝ n exp :=
   Complex.contDiff_exp.real_of_complex
+-/
 
 theorem differentiable_exp : Differentiable ℝ exp := fun x => (hasDerivAt_exp x).differentiableAt
 
@@ -206,9 +214,11 @@ function, for standalone use and use with `simp`. -/
 
 variable {f : ℝ → ℝ} {f' x : ℝ} {s : Set ℝ}
 
+/-
 theorem HasStrictDerivAt.exp (hf : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (fun x => Real.exp (f x)) (Real.exp (f x) * f') x :=
   (Real.hasStrictDerivAt_exp (f x)).comp x hf
+-/
 
 theorem HasDerivAt.exp (hf : HasDerivAt f f' x) :
     HasDerivAt (fun x => Real.exp (f x)) (Real.exp (f x) * f') x :=
@@ -238,6 +248,7 @@ function, for standalone use and use with `simp`. -/
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {f' : E →L[ℝ] ℝ} {x : E}
   {s : Set E}
 
+/-
 theorem ContDiff.exp {n} (hf : ContDiff ℝ n f) : ContDiff ℝ n fun x => Real.exp (f x) :=
   Real.contDiff_exp.comp hf
 
@@ -250,6 +261,7 @@ theorem ContDiffOn.exp {n} (hf : ContDiffOn ℝ n f s) : ContDiffOn ℝ n (fun x
 theorem ContDiffWithinAt.exp {n} (hf : ContDiffWithinAt ℝ n f s x) :
     ContDiffWithinAt ℝ n (fun x => Real.exp (f x)) s x :=
   Real.contDiff_exp.contDiffAt.comp_contDiffWithinAt x hf
+-/
 
 theorem HasFDerivWithinAt.exp (hf : HasFDerivWithinAt f f' s x) :
     HasFDerivWithinAt (fun x => Real.exp (f x)) (Real.exp (f x) • f') s x :=
@@ -259,9 +271,11 @@ theorem HasFDerivAt.exp (hf : HasFDerivAt f f' x) :
     HasFDerivAt (fun x => Real.exp (f x)) (Real.exp (f x) • f') x :=
   (Real.hasDerivAt_exp (f x)).comp_hasFDerivAt x hf
 
+/-
 theorem HasStrictFDerivAt.exp (hf : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (fun x => Real.exp (f x)) (Real.exp (f x) • f') x :=
   (Real.hasStrictDerivAt_exp (f x)).comp_hasStrictFDerivAt x hf
+-/
 
 theorem DifferentiableWithinAt.exp (hf : DifferentiableWithinAt ℝ f s x) :
     DifferentiableWithinAt ℝ (fun x => Real.exp (f x)) s x :=
@@ -290,8 +304,10 @@ theorem fderiv_exp (hc : DifferentiableAt ℝ f x) :
 
 end
 
+/-
 open Real in
 @[simp]
 theorem iteratedDeriv_exp_const_mul (n : ℕ) (c : ℝ) :
     (iteratedDeriv n fun s => exp (c * s)) = fun s => c ^ n * exp (c * s) := by
   rw [iteratedDeriv_const_mul contDiff_exp, iteratedDeriv_eq_iterate, iter_deriv_exp]
+-/
