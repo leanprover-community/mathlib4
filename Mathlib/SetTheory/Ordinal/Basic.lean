@@ -392,7 +392,7 @@ theorem typein_apply {α β} {r : α → α → Prop} {s : β → β → Prop} [
         (RelEmbedding.codRestrict _ ((Subrel.relEmbedding _ _).trans f) fun ⟨x, h⟩ => by
           rw [RelEmbedding.trans_apply]; exact f.toRelEmbedding.map_rel_iff.2 h)
           fun ⟨y, h⟩ => by
-            rcases f.init h with ⟨a, rfl⟩
+            rcases f.mem_range_of_rel h with ⟨a, rfl⟩
             exact ⟨⟨a, f.toRelEmbedding.map_rel_iff.1 h⟩,
               Subtype.eq <| RelEmbedding.trans_apply _ _ _⟩⟩
 
@@ -862,7 +862,7 @@ private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b :=
           · exact False.elim ∘ Sum.lex_inr_inr.1
         · rcases a with (a | _)
           · intro h
-            have := @PrincipalSeg.init _ _ _ _ _ ⟨f, t, hf⟩ _ _ h
+            have := @PrincipalSeg.mem_range_of_rel _ _ _ _ _ ⟨f, t, hf⟩ _ _ h
             cases' this with w h
             exact ⟨Sum.inl w, h⟩
           · intro h
