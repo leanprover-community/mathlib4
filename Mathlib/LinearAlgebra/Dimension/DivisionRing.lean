@@ -2,7 +2,7 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen,
-Scott Morrison, Chris Hughes, Anne Baanen, Junyan Xu
+Kim Morrison, Chris Hughes, Anne Baanen, Junyan Xu
 -/
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.Dimension.Finite
@@ -180,9 +180,7 @@ theorem linearIndependent_iff_card_eq_finrank_span {ι : Type*} [Fintype ι] {b 
         simp [f, Set.mem_image, Set.mem_range]
       rw [hf] at h
       have hx : (x : V) ∈ span K (Set.range b) := x.property
-      conv at hx =>
-        arg 2
-        rw [h]
+      simp_rw [h] at hx
       simpa [f, mem_map] using hx
     have hi : LinearMap.ker f = ⊥ := ker_subtype _
     convert (linearIndependent_of_top_le_span_of_card_eq_finrank hs hc).map' _ hi
@@ -249,8 +247,8 @@ theorem max_aleph0_card_le_rank_fun_nat : max ℵ₀ #K ≤ Module.rank K (ℕ �
     contrapose! card_K
     exact (power_lt_aleph0 card_K <| nat_lt_aleph0 _).le
   obtain ⟨e⟩ := lift_mk_le'.mp (card_ιL.trans_eq (lift_uzero #ιL).symm)
-  have rep_e := bK.total_repr (bL ∘ e)
-  rw [Finsupp.total_apply, Finsupp.sum] at rep_e
+  have rep_e := bK.linearCombination_repr (bL ∘ e)
+  rw [Finsupp.linearCombination_apply, Finsupp.sum] at rep_e
   set c := bK.repr (bL ∘ e)
   set s := c.support
   let f i (j : s) : L := ⟨bK j i, Subfield.subset_closure ⟨(j, i), rfl⟩⟩

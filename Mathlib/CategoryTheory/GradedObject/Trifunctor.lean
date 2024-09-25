@@ -215,13 +215,17 @@ noncomputable def mapTrifunctorMapFunctorObj (X₁ : GradedObject I₁ C₁)
       NatTrans.id_app, categoryOfGradedObjects_comp, Functor.map_comp, NatTrans.comp_app,
       id_comp, assoc, ι_mapTrifunctorMapMap_assoc]
 
+#adaptation_note
+/--
+At nightly-2024-08-08 we needed to significantly increase the maxHeartbeats here.
+-/
+set_option maxHeartbeats 800000 in
 /-- Given a trifunctor `F : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄` and a map `p : I₁ × I₂ × I₃ → J`,
 this is the functor
 `GradedObject I₁ C₁ ⥤ GradedObject I₂ C₂ ⥤ GradedObject I₃ C₃ ⥤ GradedObject J C₄`
 sending `X₁ : GradedObject I₁ C₁`, `X₂ : GradedObject I₂ C₂` and `X₃ : GradedObject I₃ C₃`
 to the `J`-graded object sending `j` to the coproduct of
 `((F.obj (X₁ i₁)).obj (X₂ i₂)).obj (X₃ i₃)` for `p ⟨i₁, i₂, i₃⟩ = j`. -/
-@[simps]
 noncomputable def mapTrifunctorMap
     [∀ X₁ X₂ X₃, HasMap ((((mapTrifunctor F I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) p] :
     GradedObject I₁ C₁ ⥤ GradedObject I₂ C₂ ⥤ GradedObject I₃ C₃ ⥤ GradedObject J C₄ where
@@ -242,6 +246,8 @@ noncomputable def mapTrifunctorMap
         simp only [ι_mapTrifunctorMapMap_assoc, categoryOfGradedObjects_id, Functor.map_id,
           NatTrans.id_app, ι_mapTrifunctorMapMap, id_comp,
           NatTrans.naturality_app_assoc] }
+
+attribute [simps] mapTrifunctorMap
 
 end
 
@@ -361,7 +367,7 @@ section
 variable [HasMap ((((mapTrifunctor (bifunctorComp₁₂ F₁₂ G) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) r]
 
 /-- The action on graded objects of a trifunctor obtained by composition of two
-bifunctors can be computed as a composition of the actions of these two bifunctors.  -/
+bifunctors can be computed as a composition of the actions of these two bifunctors. -/
 noncomputable def mapBifunctorComp₁₂MapObjIso :
     mapTrifunctorMapObj (bifunctorComp₁₂ F₁₂ G) r X₁ X₂ X₃ ≅
     mapBifunctorMapObj G ρ₁₂.q (mapBifunctorMapObj F₁₂ ρ₁₂.p X₁ X₂) X₃ :=
@@ -539,7 +545,7 @@ section
 variable [HasMap ((((mapTrifunctor (bifunctorComp₂₃ F G₂₃) I₁ I₂ I₃).obj X₁).obj X₂).obj X₃) r]
 
 /-- The action on graded objects of a trifunctor obtained by composition of two
-bifunctors can be computed as a composition of the actions of these two bifunctors.  -/
+bifunctors can be computed as a composition of the actions of these two bifunctors. -/
 noncomputable def mapBifunctorComp₂₃MapObjIso :
     mapTrifunctorMapObj (bifunctorComp₂₃ F G₂₃) r X₁ X₂ X₃ ≅
     mapBifunctorMapObj F ρ₂₃.q X₁ (mapBifunctorMapObj G₂₃ ρ₂₃.p X₂ X₃) :=

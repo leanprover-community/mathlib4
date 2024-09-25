@@ -555,7 +555,7 @@ theorem le_jacobson_bot [IsAdicComplete I R] : I ≤ (⊥ : Ideal R).jacobson :=
     ring
   cases n
   · simp only [Ideal.one_eq_top, pow_zero, mem_top]
-  · rw [← neg_sub _ (1 : R), neg_mul, mul_geom_sum, neg_sub, sub_sub, add_comm, ← sub_sub,
+  · rw [← neg_sub _ (1 : R), neg_mul, mul_geom_sum, neg_sub, sub_sub, add_comm (_ ^ _), ← sub_sub,
       sub_self, zero_sub, @neg_mem_iff, mul_pow]
     exact Ideal.mul_mem_right _ (I ^ _) (Ideal.pow_mem_pow hx _)
 

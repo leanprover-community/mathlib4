@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison, Yuyang Zhao
+Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Yuyang Zhao
 -/
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Data.List.InsertNth
@@ -228,9 +228,9 @@ theorem wf_isOption : WellFounded IsOption :=
   ⟨fun x =>
     moveRecOn x fun x IHl IHr =>
       Acc.intro x fun y h => by
-        induction' h with _ i _ j
-        · exact IHl i
-        · exact IHr j⟩
+        induction h with
+        | moveLeft i => exact IHl i
+        | moveRight j => exact IHr j⟩
 
 /-- `Subsequent x y` says that `x` can be obtained by playing some nonempty sequence of moves from
 `y`. It is the transitive closure of `IsOption`. -/
@@ -616,7 +616,7 @@ private theorem le_trans_aux {x y z : PGame}
 instance : Preorder PGame :=
   { PGame.le with
     le_refl := fun x => by
-      induction' x with _ _ _ _ IHl IHr
+      induction x with | mk _ _ _ _ IHl IHr => _
       exact
         le_of_forall_lf (fun i => lf_of_le_moveLeft (IHl i)) fun i => lf_of_moveRight_le (IHr i)
     le_trans := by
@@ -841,7 +841,7 @@ instance : IsEquiv _ PGame.Equiv where
   trans := fun _ _ _ ⟨xy, yx⟩ ⟨yz, zy⟩ => ⟨xy.trans yz, zy.trans yx⟩
   symm _ _ := And.symm
 
--- Porting note: moved the setoid instance from Basic.lean to here
+-- Porting note: moved the setoid instance from Basic.lean to here
 
 instance setoid : Setoid PGame :=
   ⟨Equiv, refl, symm, Trans.trans⟩
@@ -1495,8 +1495,8 @@ theorem zero_fuzzy_neg_iff {x : PGame} : 0 ‖ -x ↔ 0 ‖ x := by rw [← neg_
 /-- The sum of `x = {xL | xR}` and `y = {yL | yR}` is `{xL + y, x + yL | xR + y, x + yR}`. -/
 instance : Add PGame.{u} :=
   ⟨fun x y => by
-    induction' x with xl xr _ _ IHxl IHxr generalizing y
-    induction' y with yl yr yL yR IHyl IHyr
+    induction x generalizing y with | mk xl xr _ _ IHxl IHxr => _
+    induction y with | mk yl yr yL yR IHyl IHyr => _
     have y := mk yl yr yL yR
     refine ⟨xl ⊕ yl, xr ⊕ yr, Sum.rec ?_ ?_, Sum.rec ?_ ?_⟩
     · exact fun i => IHxl i y
@@ -1520,7 +1520,8 @@ theorem mk_add_moveRight {xl xr yl yr} {xL xR yL yR} {i} :
 
 Note that this is **not** the usual recursive definition `n = {0, 1, … | }`. For instance,
 `2 = 0 + 1 + 1 = {0 + 0 + 1, 0 + 1 + 0 | }` does not contain any left option equivalent to `0`. For
-an implementation of said definition, see `Ordinal.toPGame`. -/
+an implementation of said definition, see `Ordinal.toPGame`. For the proof that these games are
+equivalent, see `Ordinal.toPGame_natCast`. -/
 instance : NatCast PGame :=
   ⟨Nat.unaryCast⟩
 
@@ -2091,15 +2092,18 @@ instance uniqueStarLeftMoves : Unique star.LeftMoves :=
 instance uniqueStarRightMoves : Unique star.RightMoves :=
   PUnit.unique
 
+theorem zero_lf_star : 0 ⧏ star := by
+  rw [zero_lf]
+  use default
+  rintro ⟨⟩
+
+theorem star_lf_zero : star ⧏ 0 := by
+  rw [lf_zero]
+  use default
+  rintro ⟨⟩
+
 theorem star_fuzzy_zero : star ‖ 0 :=
-  ⟨by
-    rw [lf_zero]
-    use default
-    rintro ⟨⟩,
-   by
-    rw [zero_lf]
-    use default
-    rintro ⟨⟩⟩
+  ⟨star_lf_zero, zero_lf_star⟩
 
 @[simp]
 theorem neg_star : -star = star := by simp [star]
@@ -2118,3 +2122,5 @@ theorem zero_lf_one : (0 : PGame) ⧏ 1 :=
 end PGame
 
 end SetTheory
+
+set_option linter.style.longFile 2300

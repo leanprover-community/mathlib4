@@ -3,7 +3,6 @@ Copyright (c) 2021 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Algebra.Group.Subgroup.Actions
 import Mathlib.Algebra.Order.Module.Algebra
 import Mathlib.LinearAlgebra.LinearIndependent
 import Mathlib.Algebra.Ring.Subring.Units
@@ -467,7 +466,7 @@ theorem sameRay_smul_right_iff {v : M} {r : R} : SameRay R v (r • v) ↔ 0 ≤
 is positive. -/
 theorem sameRay_smul_right_iff_of_ne {v : M} (hv : v ≠ 0) {r : R} (hr : r ≠ 0) :
     SameRay R v (r • v) ↔ 0 < r := by
-  simp only [sameRay_smul_right_iff, hv, or_false_iff, hr.symm.le_iff_lt]
+  simp only [sameRay_smul_right_iff, hv, or_false, hr.symm.le_iff_lt]
 
 @[simp]
 theorem sameRay_smul_left_iff {v : M} {r : R} : SameRay R (r • v) v ↔ 0 ≤ r ∨ v = 0 :=
@@ -485,7 +484,7 @@ theorem sameRay_neg_smul_right_iff {v : M} {r : R} : SameRay R (-v) (r • v) �
 
 theorem sameRay_neg_smul_right_iff_of_ne {v : M} {r : R} (hv : v ≠ 0) (hr : r ≠ 0) :
     SameRay R (-v) (r • v) ↔ r < 0 := by
-  simp only [sameRay_neg_smul_right_iff, hv, or_false_iff, hr.le_iff_lt]
+  simp only [sameRay_neg_smul_right_iff, hv, or_false, hr.le_iff_lt]
 
 @[simp]
 theorem sameRay_neg_smul_left_iff {v : M} {r : R} : SameRay R (r • v) (-v) ↔ r ≤ 0 ∨ v = 0 :=

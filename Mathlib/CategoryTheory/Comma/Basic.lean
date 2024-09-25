@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2018 Scott Morrison. All rights reserved.
+Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Johan Commelin, Bhavik Mehta
+Authors: Kim Morrison, Johan Commelin, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.Functor.Category
@@ -60,7 +60,7 @@ variable {B' : Type u₅} [Category.{v₅} B']
 variable {T' : Type u₆} [Category.{v₆} T']
 
 /-- The objects of the comma category are triples of an object `left : A`, an object
-   `right : B` and a morphism `hom : L.obj left ⟶ R.obj right`.  -/
+   `right : B` and a morphism `hom : L.obj left ⟶ R.obj right`. -/
 structure Comma (L : A ⥤ T) (R : B ⥤ T) : Type max u₁ u₂ v₃ where
   left : A
   right : B

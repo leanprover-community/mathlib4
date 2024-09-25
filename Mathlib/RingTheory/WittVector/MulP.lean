@@ -70,7 +70,7 @@ theorem bind₁_wittMulN_wittPolynomial (n k : ℕ) :
   · rw [wittMulN, ← bind₁_bind₁, wittAdd, wittStructureInt_prop]
     simp only [map_add, Nat.cast_succ, bind₁_X_right]
     rw [add_mul, one_mul, bind₁_rename, bind₁_rename]
-    simp only [ih, Function.uncurry, Function.comp, bind₁_X_left, AlgHom.id_apply,
+    simp only [ih, Function.uncurry, Function.comp_def, bind₁_X_left, AlgHom.id_apply,
       Matrix.cons_val_zero, Matrix.head_cons, Matrix.cons_val_one]
 
 end

@@ -111,7 +111,7 @@ instance : Infinite (DihedralGroup 0) :=
   DihedralGroup.fintypeHelper.infinite_iff.mp inferInstance
 
 instance : Nontrivial (DihedralGroup n) :=
-  ⟨⟨r 0, sr 0, by simp_rw [ne_eq, not_false_eq_true]⟩⟩
+  ⟨⟨r 0, sr 0, by simp_rw [ne_eq, reduceCtorEq, not_false_eq_true]⟩⟩
 
 /-- If `0 < n`, then `DihedralGroup n` has `2n` elements.
 -/
@@ -150,7 +150,7 @@ theorem orderOf_sr (i : ZMod n) : orderOf (sr i) = 2 := by
   · rw [sq, sr_mul_self]
   · -- Porting note: Previous proof was `decide`
     revert n
-    simp_rw [one_def, ne_eq, forall_const, not_false_eq_true]
+    simp_rw [one_def, ne_eq, reduceCtorEq, forall_const, not_false_eq_true]
 
 /-- If `0 < n`, then `r 1` has order `n`.
 -/

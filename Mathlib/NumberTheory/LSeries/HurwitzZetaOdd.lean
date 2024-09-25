@@ -547,11 +547,9 @@ lemma hasSum_nat_sinZeta (a : ℝ) {s : ℂ} (hs : 1 < re s) :
 
 /-- Reformulation of `hasSum_nat_sinZeta` using `LSeriesHasSum`. -/
 lemma LSeriesHasSum_sin (a : ℝ) {s : ℂ} (hs : 1 < re s) :
-    LSeriesHasSum (Real.sin <| 2 * π * a * ·) s (sinZeta a s) := by
-  refine (hasSum_nat_sinZeta a hs).congr_fun (fun n ↦ ?_)
-  rcases eq_or_ne n 0 with rfl | hn
-  · rw [LSeries.term_zero, Nat.cast_zero, mul_zero, Real.sin_zero, ofReal_zero, zero_div]
-  · apply LSeries.term_of_ne_zero hn
+    LSeriesHasSum (Real.sin <| 2 * π * a * ·) s (sinZeta a s) :=
+  (hasSum_nat_sinZeta a hs).congr_fun
+    (LSeries.term_of_ne_zero' (ne_zero_of_one_lt_re hs) _)
 
 /-- The trivial zeroes of the odd Hurwitz zeta function. -/
 theorem hurwitzZetaOdd_neg_two_mul_nat_sub_one (a : UnitAddCircle) (n : ℕ) :
