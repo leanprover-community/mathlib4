@@ -26,9 +26,10 @@ open scoped Topology
 
 /-! ## `Complex.exp` -/
 
-namespace Complex
+section
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 ℂ]
+open Complex
+
 variable {E : Type} [NormedAddCommGroup E] [NormedSpace ℂ E]
 variable {f g : E → ℂ} {z : ℂ} {x : E} {s : Set E}
 
@@ -48,6 +49,12 @@ theorem AnalyticAt.cexp (fa : AnalyticAt ℂ f x) : AnalyticAt ℂ (fun z ↦ ex
 /-- `exp ∘ f` is analytic -/
 theorem AnalyticOn.cexp (fs : AnalyticOn ℂ f s) : AnalyticOn ℂ (fun z ↦ exp (f z)) s :=
   fun z n ↦ analyticAt_cexp.comp (fs z n)
+
+end
+
+namespace Complex
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 ℂ]
 
 /-- The complex exponential is everywhere differentiable, with the derivative `exp x`. -/
 theorem hasDerivAt_exp (x : ℂ) : HasDerivAt exp (exp x) x := by
