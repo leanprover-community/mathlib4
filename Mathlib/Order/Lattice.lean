@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Data.Bool.Basic
 import Mathlib.Order.Monotone.Basic
 import Mathlib.Order.ULift
-import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.GCongr.CoreAttrs
 
 /-!
 # (Semi-)lattices
@@ -901,9 +901,27 @@ theorem map_inf_le [SemilatticeInf α] [SemilatticeInf β] {f : α → β} (h : 
     f (x ⊓ y) ≤ f x ⊓ f y :=
   le_inf (h inf_le_left) (h inf_le_right)
 
+theorem of_map_inf_le_left [SemilatticeInf α] [Preorder β] {f : α → β}
+    (h : ∀ x y, f (x ⊓ y) ≤ f x) : Monotone f := by
+  intro x y hxy
+  rw [← inf_eq_right.2 hxy]
+  apply h
+
+theorem of_map_inf_le [SemilatticeInf α] [SemilatticeInf β] {f : α → β}
+    (h : ∀ x y, f (x ⊓ y) ≤ f x ⊓ f y) : Monotone f :=
+  of_map_inf_le_left fun x y ↦ (h x y).trans inf_le_left
+
 theorem of_map_inf [SemilatticeInf α] [SemilatticeInf β] {f : α → β}
     (h : ∀ x y, f (x ⊓ y) = f x ⊓ f y) : Monotone f :=
-  fun x y hxy => inf_eq_left.1 <| by rw [← h, inf_eq_left.2 hxy]
+  of_map_inf_le fun x y ↦ (h x y).le
+
+theorem of_left_le_map_sup [SemilatticeSup α] [Preorder β] {f : α → β}
+    (h : ∀ x y, f x ≤ f (x ⊔ y)) : Monotone f :=
+  monotone_dual_iff.1 <| of_map_inf_le_left h
+
+theorem of_le_map_sup [SemilatticeSup α] [SemilatticeSup β] {f : α → β}
+    (h : ∀ x y, f x ⊔ f y ≤ f (x ⊔ y)) : Monotone f :=
+  monotone_dual_iff.mp <| of_map_inf_le h
 
 theorem of_map_sup [SemilatticeSup α] [SemilatticeSup β] {f : α → β}
     (h : ∀ x y, f (x ⊔ y) = f x ⊔ f y) : Monotone f :=

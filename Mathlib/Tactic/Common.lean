@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2023 Scott Morrison. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 
 -- First import Aesop and Qq
@@ -14,6 +14,9 @@ import ImportGraph.Imports
 -- Import common Batteries tactics and commands
 import Batteries.Tactic.Where
 import Batteries.Tactic.Basic
+
+-- Import syntax for leansearch
+import LeanSearchClient
 
 -- Import Mathlib-specific linters.
 import Mathlib.Tactic.Linter.Lint

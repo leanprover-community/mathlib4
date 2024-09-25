@@ -189,7 +189,6 @@ theorem norm_image_sub_le_of_bound' [DecidableEq ι] {C : ℝ} (hC : 0 ≤ C)
       rw [B, A, ← f.map_sub]
       apply le_trans (H _)
       gcongr with j
-      · exact fun j _ => norm_nonneg _
       by_cases h : j = i
       · rw [h]
         simp
@@ -657,17 +656,6 @@ def restrictScalarsₗᵢ : ContinuousMultilinearMap 𝕜 E G →ₗᵢ[𝕜'] C
   map_smul' _ _ := rfl
   norm_map' _ := rfl
 
-/-- `ContinuousMultilinearMap.restrictScalars` as a `ContinuousLinearMap`. -/
-def restrictScalarsLinear : ContinuousMultilinearMap 𝕜 E G →L[𝕜'] ContinuousMultilinearMap 𝕜' E G :=
-  (restrictScalarsₗᵢ 𝕜').toContinuousLinearMap
-
-variable {𝕜'}
-
-theorem continuous_restrictScalars :
-    Continuous
-      (restrictScalars 𝕜' : ContinuousMultilinearMap 𝕜 E G → ContinuousMultilinearMap 𝕜' E G) :=
-  (restrictScalarsLinear 𝕜').continuous
-
 end RestrictScalars
 
 /-- The difference `f m₁ - f m₂` is controlled in terms of `‖f‖` and `‖m₁ - m₂‖`, precise version.
@@ -774,6 +762,12 @@ theorem norm_mkPiAlgebraFin_zero : ‖ContinuousMultilinearMap.mkPiAlgebraFin �
     simp
   · convert ratio_le_opNorm (ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 0 A) fun _ => (1 : A)
     simp
+
+theorem norm_mkPiAlgebraFin_le :
+    ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n A‖ ≤ max 1 ‖(1 : A)‖ := by
+  cases n
+  · exact norm_mkPiAlgebraFin_zero.le.trans (le_max_right _ _)
+  · exact (norm_mkPiAlgebraFin_le_of_pos (Nat.zero_lt_succ _)).trans (le_max_left _ _)
 
 @[simp]
 theorem norm_mkPiAlgebraFin [NormOneClass A] :
@@ -1252,7 +1246,6 @@ lemma norm_iteratedFDerivComponent_le {α : Type*} [Fintype α]
   _ ≤ ‖f‖ * ∏ _i : {a : ι // a ∉ s}, ‖x‖ := by
       gcongr
       · exact MultilinearMap.mkContinuousMultilinear_norm_le _ (norm_nonneg _) _
-      · exact fun _ _ ↦ norm_nonneg _
       · exact norm_le_pi_norm _ _
   _ = ‖f‖ * ‖x‖ ^ (Fintype.card {a : ι // a ∉ s}) := by rw [prod_const, card_univ]
   _ = ‖f‖ * ‖x‖ ^ (Fintype.card ι - Fintype.card α) := by simp [Fintype.card_congr e]

@@ -55,7 +55,7 @@ def traverse : Multiset α' → F (Multiset β') := by
       congr
       funext a b l
       simpa [flip] using Perm.swap a b l
-    simp [(· ∘ ·), this, functor_norm, Coe.coe]
+    simp [Function.comp_def, this, functor_norm, Coe.coe]
   | trans => simp [*]
 
 instance : Monad Multiset :=
@@ -97,9 +97,9 @@ theorem comp_traverse {G H : Type _ → Type _} [Applicative G] [Applicative H] 
     Comp.mk (Functor.map (traverse h) (traverse g x)) := by
   refine QuotLike.inductionOn x ?_
   intro
-  simp only [traverse, Coe.coe, traverse_comp, mkQ_to_coe, lift_coe, Function.comp_apply,
-    Comp.map_mk, Functor.map_map]
-  simp only [Function.comp, lift_coe]
+  simp only [traverse, mkQ_to_coe, lift_coe, Coe.coe, Function.comp_apply, Functor.map_map,
+    functor_norm]
+  simp only [Function.comp_def, lift_coe]
 
 theorem map_traverse {G : Type* → Type _} [Applicative G] [CommApplicative G] {α β γ : Type _}
     (g : α → G β) (h : β → γ) (x : Multiset α) :

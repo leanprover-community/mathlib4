@@ -97,7 +97,7 @@ structure Filter (α : Type*) where
 
 /-- If `F` is a filter on `α`, and `U` a subset of `α` then we can write `U ∈ F` as on paper. -/
 instance {α : Type*} : Membership (Set α) (Filter α) :=
-  ⟨fun U F => U ∈ F.sets⟩
+  ⟨fun F U => U ∈ F.sets⟩
 
 namespace Filter
 
@@ -138,6 +138,9 @@ theorem mem_of_superset {x y : Set α} (hx : x ∈ f) (hxy : x ⊆ y) : y ∈ f 
 
 instance : Trans (· ⊇ ·) ((· ∈ ·) : Set α → Filter α → Prop) (· ∈ ·) where
   trans h₁ h₂ := mem_of_superset h₂ h₁
+
+instance : Trans Membership.mem (· ⊆ ·) (Membership.mem : Filter α → Set α → Prop) where
+  trans h₁ h₂ := mem_of_superset h₁ h₂
 
 theorem inter_mem {s t : Set α} (hs : s ∈ f) (ht : t ∈ f) : s ∩ t ∈ f :=
   f.inter_sets hs ht
@@ -520,7 +523,7 @@ theorem mem_sSup {x : Set α} {s : Set (Filter α)} : x ∈ sSup s ↔ ∀ f ∈
 
 @[simp]
 theorem mem_iSup {x : Set α} {f : ι → Filter α} : x ∈ iSup f ↔ ∀ i, x ∈ f i := by
-  simp only [← Filter.mem_sets, iSup_sets_eq, iff_self_iff, mem_iInter]
+  simp only [← Filter.mem_sets, iSup_sets_eq, mem_iInter]
 
 @[simp]
 theorem iSup_neBot {f : ι → Filter α} : (⨆ i, f i).NeBot ↔ ∃ i, (f i).NeBot := by
@@ -533,20 +536,21 @@ theorem mem_iInf_of_mem {f : ι → Filter α} (i : ι) {s} (hs : s ∈ f i) : s
   iInf_le f i hs
 
 theorem mem_iInf_of_iInter {ι} {s : ι → Filter α} {U : Set α} {I : Set ι} (I_fin : I.Finite)
-    {V : I → Set α} (hV : ∀ i, V i ∈ s i) (hU : ⋂ i, V i ⊆ U) : U ∈ ⨅ i, s i := by
+    {V : I → Set α} (hV : ∀ (i : I), V i ∈ s i) (hU : ⋂ i, V i ⊆ U) : U ∈ ⨅ i, s i := by
   haveI := I_fin.fintype
   refine mem_of_superset (iInter_mem.2 fun i => ?_) hU
   exact mem_iInf_of_mem (i : ι) (hV _)
 
 theorem mem_iInf {ι} {s : ι → Filter α} {U : Set α} :
-    (U ∈ ⨅ i, s i) ↔ ∃ I : Set ι, I.Finite ∧ ∃ V : I → Set α, (∀ i, V i ∈ s i) ∧ U = ⋂ i, V i := by
+    (U ∈ ⨅ i, s i) ↔
+      ∃ I : Set ι, I.Finite ∧ ∃ V : I → Set α, (∀ (i : I), V i ∈ s i) ∧ U = ⋂ i, V i := by
   constructor
   · rw [iInf_eq_generate, mem_generate_iff]
     rintro ⟨t, tsub, tfin, tinter⟩
     rcases eq_finite_iUnion_of_finite_subset_iUnion tfin tsub with ⟨I, Ifin, σ, σfin, σsub, rfl⟩
     rw [sInter_iUnion] at tinter
     set V := fun i => U ∪ ⋂₀ σ i with hV
-    have V_in : ∀ i, V i ∈ s i := by
+    have V_in : ∀ (i : I), V i ∈ s i := by
       rintro i
       have : ⋂₀ σ i ∈ s i := by
         rw [sInter_mem (σfin _)]
@@ -568,10 +572,10 @@ theorem mem_iInf' {ι} {s : ι → Filter α} {U : Set α} :
   refine ⟨I, If, fun i => if hi : i ∈ I then V ⟨i, hi⟩ else univ, fun i => ?_, fun i hi => ?_, ?_⟩
   · dsimp only
     split_ifs
-    exacts [hV _, univ_mem]
+    exacts [hV ⟨i,_⟩, univ_mem]
   · exact dif_neg hi
   · simp only [iInter_dite, biInter_eq_iInter, dif_pos (Subtype.coe_prop _), Subtype.coe_eta,
-      iInter_univ, inter_univ, eq_self_iff_true, true_and_iff]
+      iInter_univ, inter_univ, eq_self_iff_true, true_and]
 
 theorem exists_iInter_of_mem_iInf {ι : Type*} {α : Type*} {f : ι → Filter α} {s}
     (hs : s ∈ ⨅ i, f i) : ∃ t : ι → Set α, (∀ i, t i ∈ f i) ∧ s = ⋂ i, t i :=
@@ -591,7 +595,7 @@ theorem Iic_principal (s : Set α) : Iic (𝓟 s) = { l | s ∈ l } :=
   Set.ext fun _ => le_principal_iff
 
 theorem principal_mono {s t : Set α} : 𝓟 s ≤ 𝓟 t ↔ s ⊆ t := by
-  simp only [le_principal_iff, iff_self_iff, mem_principal]
+  simp only [le_principal_iff, mem_principal]
 
 @[gcongr] alias ⟨_, _root_.GCongr.filter_principal_mono⟩ := principal_mono
 
@@ -707,7 +711,7 @@ theorem eq_sInf_of_mem_iff_exists_mem {S : Set (Filter α)} {l : Filter α}
 
 theorem eq_iInf_of_mem_iff_exists_mem {f : ι → Filter α} {l : Filter α}
     (h : ∀ {s}, s ∈ l ↔ ∃ i, s ∈ f i) : l = iInf f :=
-  eq_sInf_of_mem_iff_exists_mem <| h.trans exists_range_iff.symm
+  eq_sInf_of_mem_iff_exists_mem <| h.trans (exists_range_iff (p := (_ ∈ ·))).symm
 
 theorem eq_biInf_of_mem_iff_exists_mem {f : ι → Filter α} {p : ι → Prop} {l : Filter α}
     (h : ∀ {s}, s ∈ l ↔ ∃ i, p i ∧ s ∈ f i) : l = ⨅ (i) (_ : p i), f i := by
@@ -781,7 +785,8 @@ instance : DistribLattice (Filter α) :=
           x.sets_of_superset hs inter_subset_right, ht₂, rfl⟩ }
 
 /-- The dual version does not hold! `Filter α` is not a `CompleteDistribLattice`. -/
-def coframeMinimalAxioms : Coframe.MinimalAxioms (Filter α) :=
+-- See note [reducible non-instances]
+abbrev coframeMinimalAxioms : Coframe.MinimalAxioms (Filter α) :=
   { Filter.instCompleteLatticeFilter with
     iInf_sup_le_sup_sInf := fun f s t ⟨h₁, h₂⟩ => by
       classical
@@ -1266,12 +1271,15 @@ theorem Eventually.choice {r : α → β → Prop} {l : Filter α} [l.NeBot] (h 
 def EventuallyEq (l : Filter α) (f g : α → β) : Prop :=
   ∀ᶠ x in l, f x = g x
 
+section EventuallyEq
+variable {l : Filter α} {f g : α → β}
+
 @[inherit_doc]
 notation:50 f " =ᶠ[" l:50 "] " g:50 => EventuallyEq l f g
 
-theorem EventuallyEq.eventually {l : Filter α} {f g : α → β} (h : f =ᶠ[l] g) :
-    ∀ᶠ x in l, f x = g x :=
-  h
+theorem EventuallyEq.eventually (h : f =ᶠ[l] g) : ∀ᶠ x in l, f x = g x := h
+
+@[simp] lemma eventuallyEq_top : f =ᶠ[⊤] g ↔ f = g := by simp [EventuallyEq, funext_iff]
 
 theorem EventuallyEq.rw {l : Filter α} {f g : α → β} (h : f =ᶠ[l] g) (p : α → β → Prop)
     (hf : ∀ᶠ x in l, p x (f x)) : ∀ᶠ x in l, p x (g x) :=
@@ -1308,6 +1316,9 @@ theorem EventuallyEq.refl (l : Filter α) (f : α → β) : f =ᶠ[l] f :=
 
 protected theorem EventuallyEq.rfl {l : Filter α} {f : α → β} : f =ᶠ[l] f :=
   EventuallyEq.refl l f
+
+theorem EventuallyEq.of_eq {l : Filter α} {f g : α → β} (h : f = g) : f =ᶠ[l] g := h ▸ .rfl
+alias _root_.Eq.eventuallyEq := EventuallyEq.of_eq
 
 @[symm]
 theorem EventuallyEq.symm {f g : α → β} {l : Filter α} (H : f =ᶠ[l] g) : g =ᶠ[l] f :=
@@ -1612,7 +1623,7 @@ theorem set_eventuallyLE_iff_mem_inf_principal {s t : Set α} {l : Filter α} :
 theorem set_eventuallyLE_iff_inf_principal_le {s t : Set α} {l : Filter α} :
     s ≤ᶠ[l] t ↔ l ⊓ 𝓟 s ≤ l ⊓ 𝓟 t :=
   set_eventuallyLE_iff_mem_inf_principal.trans <| by
-    simp only [le_inf_iff, inf_le_left, true_and_iff, le_principal_iff]
+    simp only [le_inf_iff, inf_le_left, true_and, le_principal_iff]
 
 theorem set_eventuallyEq_iff_inf_principal {s t : Set α} {l : Filter α} :
     s =ᶠ[l] t ↔ l ⊓ 𝓟 s = l ⊓ 𝓟 t := by
@@ -1636,6 +1647,8 @@ theorem EventuallyLE.le_sup_of_le_right [SemilatticeSup β] {l : Filter α} {f g
 
 theorem join_le {f : Filter (Filter α)} {l : Filter α} (h : ∀ᶠ m in f, m ≤ l) : join f ≤ l :=
   fun _ hs => h.mono fun _ hm => hm hs
+
+end EventuallyEq
 
 /-! ### Push-forwards, pull-backs, and the monad structure -/
 
@@ -2443,7 +2456,7 @@ theorem mem_seq_def {f : Filter (α → β)} {g : Filter α} {s : Set β} :
 
 theorem mem_seq_iff {f : Filter (α → β)} {g : Filter α} {s : Set β} :
     s ∈ f.seq g ↔ ∃ u ∈ f, ∃ t ∈ g, Set.seq u t ⊆ s := by
-  simp only [mem_seq_def, seq_subset, exists_prop, iff_self_iff]
+  simp only [mem_seq_def, seq_subset, exists_prop]
 
 theorem mem_map_seq_iff {f : Filter α} {g : Filter β} {m : α → β → γ} {s : Set γ} :
     s ∈ (f.map m).seq g ↔ ∃ t u, t ∈ g ∧ u ∈ f ∧ ∀ x ∈ u, ∀ y ∈ t, m x y ∈ s :=
@@ -2733,7 +2746,7 @@ theorem map_eq_of_inverse {f : Filter α} {g : Filter β} {φ : α → β} (ψ :
 
 theorem tendsto_inf {f : α → β} {x : Filter α} {y₁ y₂ : Filter β} :
     Tendsto f x (y₁ ⊓ y₂) ↔ Tendsto f x y₁ ∧ Tendsto f x y₂ := by
-  simp only [Tendsto, le_inf_iff, iff_self_iff]
+  simp only [Tendsto, le_inf_iff]
 
 theorem tendsto_inf_left {f : α → β} {x₁ x₂ : Filter α} {y : Filter β} (h : Tendsto f x₁ y) :
     Tendsto f (x₁ ⊓ x₂) y :=
@@ -2750,7 +2763,7 @@ theorem Tendsto.inf {f : α → β} {x₁ x₂ : Filter α} {y₁ y₂ : Filter 
 @[simp]
 theorem tendsto_iInf {f : α → β} {x : Filter α} {y : ι → Filter β} :
     Tendsto f x (⨅ i, y i) ↔ ∀ i, Tendsto f x (y i) := by
-  simp only [Tendsto, iff_self_iff, le_iInf_iff]
+  simp only [Tendsto, le_iInf_iff]
 
 theorem tendsto_iInf' {f : α → β} {x : ι → Filter α} {y : Filter β} (i : ι)
     (hi : Tendsto f (x i) y) : Tendsto f (⨅ i, x i) y :=

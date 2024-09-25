@@ -151,7 +151,7 @@ theorem ext_iff' {s t : Finmap β} : s.entries = t.entries ↔ s = t :=
 
 /-- The predicate `a ∈ s` means that `s` has a value associated to the key `a`. -/
 instance : Membership α (Finmap β) :=
-  ⟨fun a s => a ∈ s.entries.keys⟩
+  ⟨fun s a => a ∈ s.entries.keys⟩
 
 theorem mem_def {a : α} {s : Finmap β} : a ∈ s ↔ a ∈ s.entries.keys :=
   Iff.rfl
@@ -213,7 +213,7 @@ theorem keys_singleton (a : α) (b : β a) : (singleton a b).keys = {a} :=
 
 @[simp]
 theorem mem_singleton (x y : α) (b : β y) : x ∈ singleton y b ↔ x = y := by
-  simp only [singleton]; erw [mem_cons, mem_nil_iff, or_false_iff]
+  simp only [singleton]; erw [mem_cons, mem_nil_iff, or_false]
 
 section
 
@@ -341,7 +341,8 @@ end
 /-- Fold a commutative function over the key-value pairs in the map -/
 def foldl {δ : Type w} (f : δ → ∀ a, β a → δ)
     (H : ∀ d a₁ b₁ a₂ b₂, f (f d a₁ b₁) a₂ b₂ = f (f d a₂ b₂) a₁ b₁) (d : δ) (m : Finmap β) : δ :=
-  m.entries.foldl (fun d s => f d s.1 s.2) (fun _ _ _ => H _ _ _ _ _) d
+  letI : RightCommutative fun d (s : Sigma β) ↦ f d s.1 s.2 := ⟨fun _ _ _ ↦ H _ _ _ _ _⟩
+  m.entries.foldl (fun d s => f d s.1 s.2) d
 
 /-- `any f s` returns `true` iff there exists a value `v` in `s` such that `f v = true`. -/
 def any (f : ∀ x, β x → Bool) (s : Finmap β) : Bool :=

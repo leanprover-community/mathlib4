@@ -100,7 +100,7 @@ theorem Transitive.comap (h : Transitive r) (f : α → β) : Transitive (r on f
   fun _ _ _ hab hbc ↦ h hab hbc
 
 theorem Equivalence.comap (h : Equivalence r) (f : α → β) : Equivalence (r on f) :=
-  ⟨h.reflexive.comap f, @(h.symmetric.comap f), @(h.transitive.comap f)⟩
+  ⟨fun a ↦ h.refl (f a), h.symm, h.trans⟩
 
 end Comap
 
@@ -343,9 +343,7 @@ theorem trans_left (hab : TransGen r a b) (hbc : ReflTransGen r b c) : TransGen 
 instance : Trans (TransGen r) (ReflTransGen r) (TransGen r) :=
   ⟨trans_left⟩
 
-@[trans]
-theorem trans (hab : TransGen r a b) (hbc : TransGen r b c) : TransGen r a c :=
-  trans_left hab hbc.to_reflTransGen
+attribute [trans] trans
 
 instance : Trans (TransGen r) (TransGen r) (TransGen r) :=
   ⟨trans⟩

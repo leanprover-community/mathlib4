@@ -119,14 +119,13 @@ def topCatAdjunctionUnit (X : CondensedSet.{u}) : X ⟶ X.toTopCat.toCondensedSe
       rfl }
 
 /-- The adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` -/
-noncomputable def topCatAdjunction : condensedSetToTopCat.{u} ⊣ topCatToCondensedSet :=
-  Adjunction.mkOfUnitCounit {
-    unit := { app := topCatAdjunctionUnit }
-    counit := { app := topCatAdjunctionCounit }
-    left_triangle := by
-      ext Y
-      change Y.val.map (𝟙 _) _ = _
-      simp }
+noncomputable def topCatAdjunction : condensedSetToTopCat.{u} ⊣ topCatToCondensedSet where
+  unit := { app := topCatAdjunctionUnit }
+  counit := { app := topCatAdjunctionCounit }
+  left_triangle_components Y := by
+    ext
+    change Y.val.map (𝟙 _) _ = _
+    simp
 
 instance (X : TopCat) : Epi (topCatAdjunction.counit.app X) := by
   rw [TopCat.epi_iff_surjective]

@@ -332,7 +332,8 @@ theorem Sylow.conj_eq_normalizer_conj_of_mem_centralizer [Fact p.Prime] [Finite 
 theorem Sylow.conj_eq_normalizer_conj_of_mem [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     [_hP : (P : Subgroup G).IsCommutative] (x g : G) (hx : x ∈ P) (hy : g⁻¹ * x * g ∈ P) :
     ∃ n ∈ (P : Subgroup G).normalizer, g⁻¹ * x * g = n⁻¹ * x * n :=
-  P.conj_eq_normalizer_conj_of_mem_centralizer x g (le_centralizer P hx) (le_centralizer P hy)
+  P.conj_eq_normalizer_conj_of_mem_centralizer x g
+    (le_centralizer (P : Subgroup G) hx) (le_centralizer (P : Subgroup G) hy)
 
 /-- Sylow `p`-subgroups are in bijection with cosets of the normalizer of a Sylow `p`-subgroup -/
 noncomputable def Sylow.equivQuotientNormalizer [Fact p.Prime] [Finite (Sylow p G)]

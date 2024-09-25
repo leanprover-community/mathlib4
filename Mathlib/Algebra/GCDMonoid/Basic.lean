@@ -400,7 +400,7 @@ theorem gcd_mul_left [NormalizedGCDMonoid α] (a b c : α) :
     gcd (a * b) (a * c) = normalize a * gcd b c :=
   (by_cases (by rintro rfl; simp only [zero_mul, gcd_zero_left, normalize_zero]))
     fun ha : a ≠ 0 =>
-    suffices gcd (a * b) (a * c) = normalize (a * gcd b c) by simpa
+    suffices gcd (a * b) (a * c) = normalize (a * gcd b c) by simpa [- normalize_apply]
     let ⟨d, eq⟩ := dvd_gcd (dvd_mul_right a b) (dvd_mul_right a c)
     gcd_eq_normalize
       (eq.symm ▸ mul_dvd_mul_left a
@@ -666,7 +666,7 @@ theorem lcm_dvd_iff [GCDMonoid α] {a b c : α} : lcm a b ∣ c ↔ a ∣ c ∧ 
   by_cases h : a = 0 ∨ b = 0
   · rcases h with (rfl | rfl) <;>
       simp (config := { contextual := true }) only [iff_def, lcm_zero_left, lcm_zero_right,
-        zero_dvd_iff, dvd_zero, eq_self_iff_true, and_true_iff, imp_true_iff]
+        zero_dvd_iff, dvd_zero, eq_self_iff_true, and_true, imp_true_iff]
   · obtain ⟨h1, h2⟩ := not_or.1 h
     have h : gcd a b ≠ 0 := fun H => h1 ((gcd_eq_zero_iff _ _).1 H).1
     rw [← mul_dvd_mul_iff_left h, (gcd_mul_lcm a b).dvd_iff_dvd_left, ←
@@ -767,7 +767,7 @@ theorem lcm_mul_left [NormalizedGCDMonoid α] (a b c : α) :
     lcm (a * b) (a * c) = normalize a * lcm b c :=
   (by_cases (by rintro rfl; simp only [zero_mul, lcm_zero_left, normalize_zero]))
     fun ha : a ≠ 0 =>
-    suffices lcm (a * b) (a * c) = normalize (a * lcm b c) by simpa
+    suffices lcm (a * b) (a * c) = normalize (a * lcm b c) by simpa [- normalize_apply]
     have : a ∣ lcm (a * b) (a * c) := (dvd_mul_right _ _).trans (dvd_lcm_left _ _)
     let ⟨d, eq⟩ := this
     lcm_eq_normalize
@@ -1306,7 +1306,7 @@ instance (priority := 100) : NormalizedGCDMonoid G₀ where
         exact Associated.refl _
       -- Porting note(#12129): additional beta reduction needed
       · beta_reduce
-        rw [if_neg (not_and_of_not_left _ ha), one_mul, if_neg (not_or_of_not ha hb)]
+        rw [if_neg (not_and_of_not_left _ ha), one_mul, if_neg (not_or_intro ha hb)]
         exact (associated_one_iff_isUnit.mpr ((IsUnit.mk0 _ ha).mul (IsUnit.mk0 _ hb))).symm
   lcm_zero_left b := if_pos (Or.inl rfl)
   lcm_zero_right a := if_pos (Or.inr rfl)
