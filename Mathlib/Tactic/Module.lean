@@ -610,6 +610,14 @@ example [AddCommGroup M] [Ring R] [Module R M] (a : R) (x : M) :
     -(2:R) • a • x = a • (-2:ℤ) • x  := by
   match_scalars
 ```
+The scalar type for the goals produced by the `match_scalars` tactic is the largest scalar type
+encountered; for example, if `ℕ`, `ℚ` and a characteristic-zero field `K` all occur as scalars, then
+the goals produced are equalities in `K`.  A variant of `push_cast` is used internally in
+`match_scalars` to interpret scalars from the other types in this largest type.
+
+If the set of scalar types encountered is not totally ordered (in the sense that for all rings `R`,
+`S` encountered, it holds that either `Algebra R S` or `Algebra S R`), then the `match_scalars`
+tactic fails.
 -/
 elab "match_scalars" : tactic => Tactic.liftMetaTactic matchScalars
 
