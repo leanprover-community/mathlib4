@@ -294,7 +294,7 @@ private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
       simp only [Finset.ext_iff, mem_insert, mem_range, mem_filter]
       exact fun m =>
         ⟨fun h => by
-          simp only [h.2, and_true_iff]
+          simp only [h.2, and_true]
           exact Or.symm (lt_or_eq_of_le ((@lt_succ_iff_le _ _ _ ⟨m, h.2⟩ _).1 h.1)),
          fun h =>
           h.elim (fun h => h.symm ▸ ⟨lt_succ_self _, (ofNat s n).prop⟩) fun h =>

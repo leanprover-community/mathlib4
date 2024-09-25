@@ -3,9 +3,10 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
+import Batteries.Tactic.Alias
+import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.TypeStar
 
-
-import Mathlib.Init
 /-!
 # Helper definitions and instances for `Ordering`
 -/
@@ -16,18 +17,26 @@ deriving instance Repr for Ordering
 
 namespace Ordering
 
-/-- Combine two `Ordering`s lexicographically. -/
-@[inline]
-def orElse : Ordering → Ordering → Ordering
-  | lt, _ => lt
-  | eq, o => o
-  | gt, _ => gt
+variable {α : Type*}
 
-/-- The relation corresponding to each `Ordering` constructor (e.g. `.lt.toProp a b` is `a < b`). -/
-def toRel {α : Type u} [LT α] : Ordering → α → α → Prop
-  | .lt => (· < ·)
-  | .eq => Eq
-  | .gt => (· > ·)
+@[deprecated (since := "2024-09-13")] alias orElse := «then»
+
+/-- `Compares o a b` means that `a` and `b` have the ordering relation `o` between them, assuming
+that the relation `a < b` is defined. -/
+-- Porting note: we have removed `@[simp]` here in favour of separate simp lemmas,
+-- otherwise this definition will unfold to a match.
+def Compares [LT α] : Ordering → α → α → Prop
+  | lt, a, b => a < b
+  | eq, a, b => a = b
+  | gt, a, b => a > b
+
+@[deprecated (since := "2024-09-13")] alias toRel := Compares
+
+@[simp] lemma compares_lt [LT α] (a b : α) : Compares lt a b = (a < b) := rfl
+
+@[simp] lemma compares_eq [LT α] (a b : α) : Compares eq a b = (a = b) := rfl
+
+@[simp] lemma compares_gt [LT α] (a b : α) : Compares gt a b = (a > b) := rfl
 
 end Ordering
 

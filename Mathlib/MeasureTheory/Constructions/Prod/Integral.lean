@@ -61,7 +61,7 @@ along one of the variables (using either the Lebesgue or Bochner integral) is me
 
 theorem measurableSet_integrable [SFinite ν] ⦃f : α → β → E⦄
     (hf : StronglyMeasurable (uncurry f)) : MeasurableSet {x | Integrable (f x) ν} := by
-  simp_rw [Integrable, hf.of_uncurry_left.aestronglyMeasurable, true_and_iff]
+  simp_rw [Integrable, hf.of_uncurry_left.aestronglyMeasurable, true_and]
   exact measurableSet_lt (Measurable.lintegral_prod_right hf.ennnorm) measurable_const
 
 section
@@ -422,7 +422,7 @@ theorem integral_prod (f : α × β → E) (hf : Integrable f (μ.prod ν)) :
   revert f
   apply Integrable.induction
   · intro c s hs h2s
-    simp_rw [integral_indicator hs, ← indicator_comp_right, Function.comp,
+    simp_rw [integral_indicator hs, ← indicator_comp_right, Function.comp_def,
       integral_indicator (measurable_prod_mk_left hs), setIntegral_const, integral_smul_const,
       integral_toReal (measurable_measure_prod_mk_left hs).aemeasurable
         (ae_measure_lt_top hs h2s.ne)]

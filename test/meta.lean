@@ -11,6 +11,7 @@ namespace Tests
 open Lean Meta
 
 private axiom test_sorry : ∀ {α}, α
+set_option linter.style.setOption false in
 set_option pp.unicode.fun true
 
 def eTrue := Expr.const ``True []
@@ -58,6 +59,8 @@ elab "test_forallNot_of_notExists" t:term : tactic => do
   let (ety', e') ← Expr.forallNot_of_notExists ety' e
   unless ← isDefEq ety' (← inferType e') do throwError "bad proof"
   logInfo m!"{ety'}"
+
+set_option linter.unusedTactic false
 
 /-- info: ∀ (x : Nat), ¬0 < x -/
 #guard_msgs in
