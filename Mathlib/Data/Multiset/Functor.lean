@@ -99,7 +99,6 @@ theorem comp_traverse {G H : Type _ → Type _} [Applicative G] [Applicative H] 
   intro
   simp only [traverse, quot_mk_to_coe, lift_coe, Coe.coe, Function.comp_apply, Functor.map_map,
     functor_norm]
-  simp only [Function.comp_def, lift_coe]
 
 theorem map_traverse {G : Type* → Type _} [Applicative G] [CommApplicative G] {α β γ : Type _}
     (g : α → G β) (h : β → γ) (x : Multiset α) :
@@ -107,7 +106,8 @@ theorem map_traverse {G : Type* → Type _} [Applicative G] [CommApplicative G] 
   refine Quotient.inductionOn x ?_
   intro
   simp only [traverse, quot_mk_to_coe, lift_coe, Function.comp_apply, Functor.map_map, map_comp_coe]
-  rw [LawfulFunctor.comp_map, Traversable.map_traverse']
+  rw [Traversable.map_traverse']
+  simp only [fmap_def, Function.comp_apply, Functor.map_map, List.map_eq_map]
   rfl
 
 theorem traverse_map {G : Type* → Type _} [Applicative G] [CommApplicative G] {α β γ : Type _}
