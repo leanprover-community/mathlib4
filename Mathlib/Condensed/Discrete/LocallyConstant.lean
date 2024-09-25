@@ -226,7 +226,7 @@ noncomputable def functorToPresheavesIso (X : Type (max u w)) :
 
 /-- `CompHausLike.LocallyConstant.functorToPresheaves` lands in sheaves. -/
 @[simps]
-def functor : 
+def functor :
     haveI := CompHausLike.preregular hs
     Type (max u w) ⥤ Sheaf (coherentTopology (CompHausLike.{u} P)) (Type (max u w)) where
   obj X := {
