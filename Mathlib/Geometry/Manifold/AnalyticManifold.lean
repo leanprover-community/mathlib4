@@ -167,9 +167,8 @@ instance AnalyticManifold.prod {E A : Type} [NormedAddCommGroup E] [NormedSpace 
 instance AnalyticManifold.smoothManifoldWithCorners [ChartedSpace H M]
     [cm : AnalyticManifold I M] [CompleteSpace E] :
     SmoothManifoldWithCorners I M where
-  compatible := by
-    intro f g hf hg
-    have m := cm.compatible hf hg
-    exact ⟨m.1.contDiffOn, m.2.contDiffOn⟩
+  compatible hf hg := ⟨(cm.compatible hf hg).1.contDiffOn I.unique_diff_preimage_source,
+    (cm.compatible hg hf).1.contDiffOn I.unique_diff_preimage_source⟩
+
 
 end AnalyticManifold

@@ -9,6 +9,7 @@ import Mathlib.Analysis.Fourier.FourierTransform
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
+import Mathlib.Analysis.Calculus.FDeriv.AnalyticIt
 
 /-!
 # Derivatives of the Fourier transform
@@ -310,7 +311,8 @@ lemma _root_.Continuous.fourierPowSMulRight {f : V → E} (hf : Continuous f) (n
   apply (smulRightL ℝ (fun (_ : Fin n) ↦ W) E).continuous₂.comp₂ _ hf
   exact Continuous.comp (map_continuous _) (continuous_pi (fun _ ↦ L.continuous))
 
-lemma _root_.ContDiff.fourierPowSMulRight {f : V → E} {k : ℕ∞} (hf : ContDiff ℝ k f) (n : ℕ) :
+lemma _root_.ContDiff.fourierPowSMulRight
+    {f : V → E} {k : WithTop ℕ∞} (hf : ContDiff ℝ k f) (n : ℕ) :
     ContDiff ℝ k (fun v ↦ fourierPowSMulRight L f v n) := by
   simp_rw [fourierPowSMulRight_eq_comp]
   apply ContDiff.const_smul
@@ -335,7 +337,7 @@ set_option maxSynthPendingDepth 2 in
 /-- The iterated derivative of a function multiplied by `(L v ⬝) ^ n` can be controlled in terms
 of the iterated derivatives of the initial function. -/
 lemma norm_iteratedFDeriv_fourierPowSMulRight
-    {f : V → E} {K : ℕ∞} {C : ℝ} (hf : ContDiff ℝ K f) {n : ℕ} {k : ℕ} (hk : k ≤ K)
+    {f : V → E} {K : WithTop ℕ∞} {C : ℝ} (hf : ContDiff ℝ K f) {n : ℕ} {k : ℕ} (hk : k ≤ K)
     {v : V} (hv : ∀ i ≤ k, ∀ j ≤ n, ‖v‖ ^ j * ‖iteratedFDeriv ℝ i f v‖ ≤ C) :
     ‖iteratedFDeriv ℝ k (fun v ↦ fourierPowSMulRight L f v n) v‖ ≤
       (2 * π) ^ n * (2 * n + 2) ^ k * ‖L‖ ^ n * C := by
@@ -440,7 +442,7 @@ lemma integrable_fourierPowSMulRight {n : ℕ} (hf : Integrable (fun v ↦ ‖v�
   filter_upwards with v
   exact (norm_fourierPowSMulRight_le L f v n).trans (le_of_eq (by ring))
 
-lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
+lemma hasFTaylorSeriesUpTo_fourierIntegral {N : WithTop ℕ∞}
     (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun v ↦ ‖v‖^n * ‖f v‖) μ)
     (h'f : AEStronglyMeasurable f μ) :
     HasFTaylorSeriesUpTo N (fourierIntegral 𝐞 μ L.toLinearMap₂ f)
@@ -455,7 +457,7 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
     have I₁ : Integrable (fun v ↦ fourierPowSMulRight L f v n) μ :=
       integrable_fourierPowSMulRight L (hf n hn.le) h'f
     have I₂ : Integrable (fun v ↦ ‖v‖ * ‖fourierPowSMulRight L f v n‖) μ := by
-      apply ((hf (n+1) (Order.add_one_le_of_lt hn)).const_mul ((2 * π * ‖L‖) ^ n)).mono'
+      apply ((hf (n+1) (ENat.add_one_nat_le_withTop_of_lt hn)).const_mul ((2 * π * ‖L‖) ^ n)).mono'
         (continuous_norm.aestronglyMeasurable.mul (h'f.fourierPowSMulRight L n).norm)
       filter_upwards with v
       simp only [Pi.mul_apply, norm_mul, norm_norm]
@@ -465,7 +467,7 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
           gcongr; apply norm_fourierPowSMulRight_le
       _ = (2 * π * ‖L‖) ^ n * (‖v‖ ^ (n + 1) * ‖f v‖) := by rw [pow_succ]; ring
     have I₃ : Integrable (fun v ↦ fourierPowSMulRight L f v (n + 1)) μ :=
-      integrable_fourierPowSMulRight L (hf (n + 1) (Order.add_one_le_of_lt hn)) h'f
+      integrable_fourierPowSMulRight L (hf (n + 1) (ENat.add_one_nat_le_withTop_of_lt hn)) h'f
     have I₄ : Integrable
         (fun v ↦ fourierSMulRight L (fun v ↦ fourierPowSMulRight L f v n) v) μ := by
       apply (I₂.const_mul ((2 * π * ‖L‖))).mono' (h'f.fourierPowSMulRight L n).fourierSMulRight
@@ -488,12 +490,19 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
     apply fourierIntegral_continuous Real.continuous_fourierChar (by apply L.continuous₂)
     exact integrable_fourierPowSMulRight L (hf n hn) h'f
 
+lemma hasFTaylorSeriesUpTo_fourierIntegral' {N : ℕ∞}
+    (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun v ↦ ‖v‖^n * ‖f v‖) μ)
+    (h'f : AEStronglyMeasurable f μ) :
+    HasFTaylorSeriesUpTo N (fourierIntegral 𝐞 μ L.toLinearMap₂ f)
+      (fun w n ↦ fourierIntegral 𝐞 μ L.toLinearMap₂ (fun v ↦ fourierPowSMulRight L f v n) w) :=
+  hasFTaylorSeriesUpTo_fourierIntegral _ (fun n hn ↦ hf n (by exact_mod_cast hn)) h'f
+
 /-- If `‖v‖^n * ‖f v‖` is integrable for all `n ≤ N`, then the Fourier transform of `f` is `C^N`. -/
 theorem contDiff_fourierIntegral {N : ℕ∞}
     (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun v ↦ ‖v‖^n * ‖f v‖) μ) :
     ContDiff ℝ N (fourierIntegral 𝐞 μ L.toLinearMap₂ f) := by
   by_cases h'f : Integrable f μ
-  · exact (hasFTaylorSeriesUpTo_fourierIntegral L hf h'f.1).contDiff
+  · exact (hasFTaylorSeriesUpTo_fourierIntegral' L hf h'f.1).contDiff
   · have : fourierIntegral 𝐞 μ L.toLinearMap₂ f = 0 := by
       ext w; simp [fourierIntegral, integral, h'f]
     simpa [this] using contDiff_const
@@ -507,7 +516,8 @@ lemma iteratedFDeriv_fourierIntegral {N : ℕ∞}
     iteratedFDeriv ℝ n (fourierIntegral 𝐞 μ L.toLinearMap₂ f) =
       fourierIntegral 𝐞 μ L.toLinearMap₂ (fun v ↦ fourierPowSMulRight L f v n) := by
   ext w : 1
-  exact ((hasFTaylorSeriesUpTo_fourierIntegral L hf h'f).eq_iteratedFDeriv hn w).symm
+  exact ((hasFTaylorSeriesUpTo_fourierIntegral' L hf h'f).eq_iteratedFDeriv
+    (by exact_mod_cast hn) w).symm
 
 end SecondCountableTopology
 
