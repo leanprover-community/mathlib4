@@ -22,14 +22,14 @@ such as splittings and equivalences.
 
 ```text
 For multiplicative groups:
-      ↗ E  ↘
+      ↗︎ E  ↘
 1 → N   ↓    G → 1
-      ↘ E' ↗
+      ↘︎ E' ↗︎️
 
 For additive groups:
-      ↗ E  ↘
+      ↗︎ E  ↘
 0 → N   ↓    G → 0
-      ↘ E' ↗
+      ↘︎ E' ↗︎️
 ```
 
 - `(Add?)GroupExtension.Splitting S`: structure for splittings of a group extension `S` of `G` by

@@ -38,7 +38,7 @@ def makeCongrMString (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr)
 @[server_rpc_method]
 def CongrMSelectionPanel.rpc := mkSelectionPanelRPC makeCongrMString
   "Use shift-click to select sub-expressions in the goal that should become holes in congrm."
-  "CongrM 🔍️"
+  "CongrM 🔍"
 
 /-- The congrm widget. -/
 @[widget_module]
