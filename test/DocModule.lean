@@ -164,7 +164,7 @@ Authors: Name LastName.
 
 /--
 info: Text: `  `
-Range: (150, 152)
+Range: (149, 151)
 Message: 'Double spaces are not allowed.'
 -/
 #guard_msgs in
@@ -174,6 +174,17 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Name LastName,
    Name LastName
+-/
+"
+
+-- the `Copyright` line can overflow
+#check_copyright
+"/-
+Copyright (c) 2019 Reid Barton, Johan Commelin, Jesse Michael Han, Chris Hughes, Robert Y. Lewis,
+Patrick Massot. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Reid Barton, Johan Commelin, Jesse Michael Han, Chris Hughes, Robert Y. Lewis,
+  Patrick Massot
 -/
 "
 

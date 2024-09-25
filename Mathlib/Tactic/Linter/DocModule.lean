@@ -110,7 +110,7 @@ def authorsLineChecks (line : String) (offset : String.Pos) : Array (Syntax × S
     stxs := stxs.push
       (toSyntax line (line.take "Authors: ".length) offset,
        s!"The authors line should begin with 'Authors: '")
-  if ((line.replace "\n  " " ").splitOn "  ").length != 1 then
+  if (line.splitOn "  ").length != 1 then
     stxs := stxs.push (toSyntax line "  " offset, s!"Double spaces are not allowed.")
   if (line.splitOn " and ").length != 1 then
     stxs := stxs.push (toSyntax line " and " offset, s!"Please, do not use 'and', use ',' instead.")
@@ -134,8 +134,11 @@ The linter checks that
   contains no ` and ` nor a double space, except possibly after a line break.
 -/
 def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.run do
+  -- first, we merge lines ending in `,`: two spaces after the line-break are ok,
+  -- but so is only one or none.  We take care of *not* adding more consecutive spaces, though.
+  let preprocessCopyright := (copyright.replace ",\n  " ", ").replace ",\n" ","
   -- filter out everything after the first isolated `-/`
-  let pieces := copyright.splitOn "\n-/"
+  let pieces := preprocessCopyright.splitOn "\n-/"
   let copyright := (pieces.getD 0 "") ++ "\n-/"
   let stdTxt (s : String) :=
     s!"Malformed or missing copyright header: `{s}` should be alone on its own line."
