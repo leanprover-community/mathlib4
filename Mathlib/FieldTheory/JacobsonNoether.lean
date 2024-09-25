@@ -191,22 +191,97 @@ theorem Jacobson_Noether (H : k ≠ (⊤ : Subring D)) :
 
 end JacobsonNoether
 
-namespace canary
 
-#check IsSeparable.of_equiv_equiv
+namespace separable_canary
 
-lemma IsSeparable.of_equiv_equiv' {A₁ A₂ B : Type*} [Field A₁] [Field A₂] [Ring B]
-    [Algebra A₁ B] [Algebra A₂ B] (e₁ : A₁ ≃+* A₂) {x : B} (h : IsSeparable A₁ x)
-  (he : (algebraMap A₂ B).comp e₁ = algebraMap A₁ B) : IsSeparable A₂ x := by
+variable {A₁ B₁ A₂ B₂ : Type*} [Field A₁] [Ring B₁] [Field A₂] [Ring B₂]
+  [alg1 : Algebra A₁ B₁] [alg2 : Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
+
+def alg3 : Algebra A₂ B₁ := {
+  smul := fun a b ↦ ((algebraMap A₁ B₁).comp e₁.symm.toRingHom a) * b
+  toFun := fun a ↦ ((algebraMap A₁ B₁).comp e₁.symm.toRingHom a)
+  map_add' := fun x y ↦ RingHom.map_add ((algebraMap A₁ B₁).comp e₁.symm.toRingHom) x y
+  map_mul' := fun x y ↦ RingHom.map_mul ((algebraMap A₁ B₁).comp e₁.symm.toRingHom) x y
+  map_one' := RingHom.map_one ((algebraMap A₁ B₁).comp e₁.symm.toRingHom)
+  map_zero' := RingHom.map_zero ((algebraMap A₁ B₁).comp e₁.symm.toRingHom)
+  commutes' := fun r x ↦ (alg1.commutes) (e₁.symm r) x
+  smul_def' := fun _ _ ↦ rfl
+}
+
+example : @algebraMap A₂ B₁ _ _ (alg3 e₁) = (algebraMap A₁ B₁).comp e₁.symm := by
+  exact rfl
+
+lemma IsSeparable.of_equiv_equiv₀ [Algebra A₂ B₁]
+    [hl : RingHomCompTriple e₁ (algebraMap A₂ B₁) (algebraMap A₁ B₁)]
+    [hr : RingHomCompTriple (algebraMap A₂ B₁) e₂ (algebraMap A₂ B₂)]
+    {x : B₁} (h : IsSeparable A₁ x) : IsSeparable A₂ (e₂ x) :=
   letI := e₁.toRingHom.toAlgebra
-  letI : IsScalarTower A₁ A₂ B := by
-    refine @IsScalarTower.of_algebraMap_eq A₁ A₂ B _ _ _ _ _ _ ?_
-    intro x
-    show (algebraMap A₁ B) x = (algebraMap A₂ B).comp (algebraMap A₁ A₂) x
-    exact congrFun (congrArg DFunLike.coe (id (Eq.symm he))) x
-  exact IsSeparable.tower_top A₂ h
+  letI : RingHomCompTriple (algebraMap A₁ A₂) (algebraMap A₂ B₁) (algebraMap A₁ B₁) := hl
+  haveI : IsScalarTower A₁ A₂ B₁ :=
+    IsScalarTower.of_algebraMap_eq <| fun _ ↦ RingHomCompTriple.comp_apply.symm
+  let e : B₁ ≃ₐ[A₂] B₂ :=
+    { e₂ with
+      commutes' := fun _ ↦ RingHomCompTriple.comp_apply
+        (σ₁₂ := (algebraMap A₂ B₁)) (σ₂₃ := e₂) (σ₁₃ := (algebraMap A₂ B₂))}
+  (AlgEquiv.isSeparable_iff e).mpr <| IsSeparable.tower_top A₂ h
 
-#check minpoly.dvd_map_of_isScalarTower
+lemma IsSeparable.of_equiv [Algebra A₂ B₁] {x : B₁} (h : IsSeparable A₁ x)
+    (he : (algebraMap A₂ B₁).comp e₁ = algebraMap A₁ B₁) : IsSeparable A₂ x :=
+  haveI : RingHomCompTriple (algebraMap A₂ B₁) (RingEquiv.refl B₁) (algebraMap A₂ B₁) :=
+    { comp_eq := by rfl }
+  haveI : RingHomCompTriple e₁ (algebraMap A₂ B₁) (algebraMap A₁ B₁) := { comp_eq := he }
+  IsSeparable.of_equiv_equiv₀ e₁ (RingEquiv.refl B₁) h
+
+open RingHom RingEquiv in
+lemma IsSeparable.of_equiv_equiv'
+    {A₁ B₁ A₂ B₂ : Type*} [Field A₁] [Field B₁] [Field A₂] [Field B₂]
+    [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
+    (he : (algebraMap A₂ B₂).comp e₁ = e₂.toRingHom.comp (algebraMap A₁ B₁))
+    {x : B₁} (h : IsSeparable A₁ x) : IsSeparable A₂ (e₂ x) :=
+  letI : Algebra A₂ B₁ := (e₂.symm.toRingHom.comp (algebraMap A₂ B₂)).toAlgebra
+  have he' : (algebraMap A₁ B₁).comp e₁.symm = e₂.symm.toRingHom.comp (algebraMap A₂ B₂) := by
+    apply_fun fun x ↦ e₂.symm.toRingHom.comp (x.comp e₁.symm.toRingHom) at he
+    rw [← toRingHom_eq_coe, comp_assoc, comp_assoc, toRingHom_comp_symm_toRingHom,
+      ← comp_assoc, ← comp_assoc, symm_toRingHom_comp_toRingHom] at he
+    exact id he.symm
+  have decomp : algebraMap A₂ B₁ = (algebraMap A₁ B₁).comp e₁.symm := id he'.symm
+  haveI : RingHomCompTriple e₁ (algebraMap A₂ B₁) (algebraMap A₁ B₁) := by
+    refine { comp_eq := ?_ }
+    rw [decomp, comp_assoc, ← toRingHom_eq_coe, ← toRingHom_eq_coe,
+      symm_toRingHom_comp_toRingHom e₁]; rfl
+  haveI : RingHomCompTriple (algebraMap A₂ B₁) e₂ (algebraMap A₂ B₂) := by
+    rw [decomp]
+    apply_fun fun x ↦ e₂.toRingHom.comp x at he'
+    rw [← comp_assoc, ← comp_assoc, toRingHom_comp_symm_toRingHom] at he'
+    exact { comp_eq := he' }
+  IsSeparable.of_equiv_equiv₀ e₁ e₂ h
+
+open RingHom RingEquiv in
+lemma IsSeparable.of_equiv_equiv''
+    {A₁ B₁ A₂ B₂ : Type*} [Field A₁] [Ring B₁] [Field A₂] [Ring B₂]
+    [Algebra A₁ B₁] [Algebra A₂ B₂] [Algebra A₂ B₁] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
+    (hc : algebraMap A₂ B₁ = (algebraMap A₁ B₁).comp e₁.symm)
+    (he : (algebraMap A₂ B₂).comp e₁ = e₂.toRingHom.comp (algebraMap A₁ B₁))
+    {x : B₁} (h : IsSeparable A₁ x) : IsSeparable A₂ (e₂ x) :=
+  have he' : (algebraMap A₁ B₁).comp e₁.symm = e₂.symm.toRingHom.comp (algebraMap A₂ B₂) := by
+    apply_fun fun x ↦ e₂.symm.toRingHom.comp (x.comp e₁.symm.toRingHom) at he
+    rw [← toRingHom_eq_coe, comp_assoc, comp_assoc, toRingHom_comp_symm_toRingHom,
+      ← comp_assoc, ← comp_assoc, symm_toRingHom_comp_toRingHom] at he
+    exact id he.symm
+  haveI : RingHomCompTriple e₁ (algebraMap A₂ B₁) (algebraMap A₁ B₁) := by
+    refine { comp_eq := ?_ }
+    rw [hc, comp_assoc, ← toRingHom_eq_coe, ← toRingHom_eq_coe,
+      symm_toRingHom_comp_toRingHom e₁]; rfl
+  haveI : RingHomCompTriple (algebraMap A₂ B₁) e₂ (algebraMap A₂ B₂) := by
+    rw [hc]
+    apply_fun fun x ↦ e₂.toRingHom.comp x at he'
+    rw [← comp_assoc, ← comp_assoc, toRingHom_comp_symm_toRingHom] at he'
+    exact { comp_eq := he' }
+  IsSeparable.of_equiv_equiv₀ e₁ e₂ h
+
+end separable_canary
+
+namespace canary
 
 open Algebra Subring Polynomial
 
@@ -261,7 +336,7 @@ example {L D : Type*} [Field L] [DivisionRing D] [Algebra L D] [alg : Algebra.Is
   constructor
   · simp_rw [← hcenter', hk'] at hx
     exact hx.1
-  · apply IsSeparable.of_equiv_equiv' equiv.symm hx.2
+  · refine separable_canary.IsSeparable.of_equiv equiv.symm hx.2 ?_
     sorry
 
 end canary
