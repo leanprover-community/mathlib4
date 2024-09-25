@@ -57,9 +57,7 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
       return
     if let some head := stx.find? is_set_option then
       if let some (name, val) := parse_set_option head then
-        -- xxx: how to make this check typed? I'd like to check for a `str variant with content
-        -- "true"...
-        if name == `autoImplicit && s!"{val}" == "\"true\"" then
+        if name == `autoImplicit && val.raw matches .atom _ "true" then
           -- XXX: don't lint the tests directory!
           Linter.logLint linter.style.setOption head
             m!"Using `autoImplicit true` is deprecated in mathlib: \
