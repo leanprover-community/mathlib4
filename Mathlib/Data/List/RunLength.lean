@@ -147,7 +147,7 @@ theorem runLengthRecOn_nil {p : List α → Sort*} (hn : p [])
     runLengthRecOn [] hn hi = hn :=
   rfl
 
-theorem runLengthRecOn_append {p : List α → Sort*} {n : ℕ} (h : 0 < n) (a : α) {l : List α}
+theorem runLengthRecOn_append {p : List α → Sort*} {n : ℕ} (h : 0 < n) {a : α} {l : List α}
     (hl : a ∉ l.head?) (hn : p [])
     (hi : ∀ (n : ℕ+) {a l}, a ∉ l.head? → p l → p (replicate n a ++ l)) :
     runLengthRecOn (replicate n a ++ l) hn hi = hi ⟨n, h⟩ hl (runLengthRecOn l hn hi) := by
