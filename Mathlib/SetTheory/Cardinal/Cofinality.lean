@@ -806,12 +806,19 @@ theorem isStrongLimit_aleph0 : IsStrongLimit ℵ₀ :=
     rcases lt_aleph0.1 hx with ⟨n, rfl⟩
     exact mod_cast nat_lt_aleph0 (2 ^ n)⟩
 
+protected theorem IsStrongLimit.isSuccLimit {c} (H : IsStrongLimit c) : IsSuccLimit c := by
+  rw [Cardinal.isSuccLimit_iff]
+  exact ⟨H.ne_zero, isSuccPrelimit_of_succ_lt fun x h =>
+    (succ_le_of_lt <| cantor x).trans_lt (H.two_power_lt h)⟩
+
 protected theorem IsStrongLimit.isSuccPrelimit {c} (H : IsStrongLimit c) : IsSuccPrelimit c :=
-  isSuccPrelimit_of_succ_lt fun x h => (succ_le_of_lt <| cantor x).trans_lt (H.two_power_lt h)
+  H.isSuccLimit.isSuccPrelimit
 
-@[deprecated IsStrongLimit.isSuccPrelimit (since := "2024-09-05")]
-alias IsStrongLimit.isSuccLimit := IsStrongLimit.isSuccPrelimit
+theorem IsStrongLimit.aleph0_le {c} (H : IsStrongLimit c) : ℵ₀ ≤ c :=
+  aleph0_le_of_isSuccLimit H.isSuccLimit
 
+set_option linter.deprecated false in
+@[deprecated IsStrongLimit.isSuccLimit (since := "2024-09-17")]
 theorem IsStrongLimit.isLimit {c} (H : IsStrongLimit c) : IsLimit c :=
   ⟨H.ne_zero, H.isSuccPrelimit⟩
 
@@ -836,7 +843,7 @@ theorem mk_bounded_subset {α : Type*} (h : ∀ x < #α, (2^x) < #α) {r : α �
     rintro ⟨s, hs⟩
     exact (not_unbounded_iff s).2 hs (unbounded_of_isEmpty s)
   have h' : IsStrongLimit #α := ⟨ha, h⟩
-  have ha := h'.isLimit.aleph0_le
+  have ha := h'.aleph0_le
   apply le_antisymm
   · have : { s : Set α | Bounded r s } = ⋃ i, 𝒫{ j | r j i } := setOf_exists _
     rw [← coe_setOf, this]
@@ -871,7 +878,7 @@ theorem mk_subset_mk_lt_cof {α : Type*} (h : ∀ x < #α, (2^x) < #α) :
     exact lt_cof_type hs
   · refine @mk_le_of_injective α _ (fun x => Subtype.mk {x} ?_) ?_
     · rw [mk_singleton]
-      exact one_lt_aleph0.trans_le (aleph0_le_cof.2 (ord_isLimit h'.isLimit.aleph0_le))
+      exact one_lt_aleph0.trans_le (aleph0_le_cof.2 (ord_isLimit h'.aleph0_le))
     · intro a b hab
       simpa [singleton_eq_singleton_iff] using hab
 

@@ -423,7 +423,8 @@ in the same value. -/
 
 -- Porting note: this is syntactically the same as `cast_val_of_lt`
 
-@[simp] lemma natCast_self (n : ℕ) [NeZero n] : (n : Fin n) = 0 := by ext; simp
+-- This is a special case of `CharP.cast_eq_zero` that doesn't require typeclass search
+@[simp high] lemma natCast_self (n : ℕ) [NeZero n] : (n : Fin n) = 0 := by ext; simp
 
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_self := natCast_self

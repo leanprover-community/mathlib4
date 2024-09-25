@@ -451,14 +451,14 @@ theorem comp_continuousWithinAt_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) (
 theorem comp_isOpenMap_iff (h : X ≃ₜ Y) {f : Z → X} : IsOpenMap (h ∘ f) ↔ IsOpenMap f := by
   refine ⟨?_, fun hf => h.isOpenMap.comp hf⟩
   intro hf
-  rw [← Function.id_comp f, ← h.symm_comp_self, Function.comp.assoc]
+  rw [← Function.id_comp f, ← h.symm_comp_self, Function.comp_assoc]
   exact h.symm.isOpenMap.comp hf
 
 @[simp]
 theorem comp_isOpenMap_iff' (h : X ≃ₜ Y) {f : Y → Z} : IsOpenMap (f ∘ h) ↔ IsOpenMap f := by
   refine ⟨?_, fun hf => hf.comp h.isOpenMap⟩
   intro hf
-  rw [← Function.comp_id f, ← h.self_comp_symm, ← Function.comp.assoc]
+  rw [← Function.comp_id f, ← h.self_comp_symm, ← Function.comp_assoc]
   exact hf.comp h.symm.isOpenMap
 
 /-- A homeomorphism `h : X ≃ₜ Y` lifts to a homeomorphism between subtypes corresponding to
