@@ -425,5 +425,3 @@ instance : (LightCondensed.discrete (Type u)).Full := Functor.Full.of_iso iso.{u
 end LightCondSet.LocallyConstant
 
 end Condensed
-
-end Condensed
