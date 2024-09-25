@@ -242,6 +242,8 @@ theorem test (d : Set (E × E)) (hd : d ∈ (TopologicalAddGroup.toUniformSpace 
 
 --#check convexHull_vadd
 
+--#check Set.vaddSet
+
 /-
 theorem TotallyBounded.convexHull
     (hs : TotallyBounded (uniformSpace := TopologicalAddGroup.toUniformSpace E) s) :
@@ -268,6 +270,22 @@ theorem TotallyBounded.convexHull
   · exact htf
   · -- I think the proof now follows along the lines of TVS II.25 Prop3
     -- Next steps, prove absConvexHull_vadd
+    --have e0 :
+    have e1 (y : E) : {x | (x, y) ∈ d₂} = y +ᵥ V := by
+      apply le_antisymm
+      · intro x hx
+        --simp at hx
+        /-_have e11 : y - x ∈ S := by
+          simp_all only [mem_neg, neg_sub, mem_inter_iff, mem_setOf_eq, d₂]
+        have e12 : y - x ∈ -S := by
+          simp_all only [mem_neg, neg_sub, mem_inter_iff, mem_setOf_eq, true_and, d₂]
+        have e13 : y - x ∈ V := by
+          simp_all only [mem_neg, neg_sub, mem_inter_iff, mem_setOf_eq, true_and, and_self, d₂, V]
+        have e14 : x - y ∈ V := by
+          simp_all only [mem_neg, neg_sub, mem_inter_iff, mem_setOf_eq, and_self, d₂, V]-/
+        rw [Set.mem_vadd']
+        aesop
+
     sorry
 -/
 
