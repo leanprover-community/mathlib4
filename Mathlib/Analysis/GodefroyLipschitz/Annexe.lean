@@ -53,28 +53,71 @@ theorem mem_span_dual' {𝕜 E : Type*} [Field 𝕜] [AddCommGroup E] [Module �
 
 end tkt
 
-theorem basis_of_span [AddCommGroup E] [Module ℝ E] [FiniteDimensional ℝ E]
-    {s : Set E} (hs : span ℝ s = ⊤) :
-    ∃ b : Basis (Fin (finrank ℝ E)) ℝ E, range b ⊆ s := by
-  let u := (linearIndependent_empty ℝ E).extend (empty_subset s)
-  let v : u → E := Subtype.val
-  have liv : LinearIndependent ℝ v :=
-    (linearIndependent_empty ℝ E).linearIndependent_extend (empty_subset s)
-  have sv : ⊤ ≤ span ℝ (range v) := by
-    rw [Subtype.range_val_subtype, ← hs, span_le]
-    exact (linearIndependent_empty ℝ E).subset_span_extend (empty_subset s)
-  let w := Basis.mk liv sv
-  use w.reindex (w.indexEquiv (finBasis ℝ E))
-  rw [w.range_reindex, show range w = range v by simp [v, w], Subtype.range_val_subtype]
-  exact (linearIndependent_empty ℝ E).extend_subset (empty_subset s)
+section OfTopLeSpan
 
-noncomputable def BasisOfSpan [AddCommGroup E] [Module ℝ E] [FiniteDimensional ℝ E]
-    {s : Set E} (hs : span ℝ s = ⊤) :
-    Basis (Fin (finrank ℝ E)) ℝ E := (basis_of_span hs).choose
+variable {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V]
+variable {s t : Set V}
 
-theorem basisOfSpan_subset [AddCommGroup E] [Module ℝ E] [FiniteDimensional ℝ E]
-    {s : Set E} (hs : span ℝ s = ⊤) :
-    range (BasisOfSpan hs) ⊆ s := (basis_of_span hs).choose_spec
+namespace Basis
+
+/-- If `s` is a family of linearly independent vectors contained in a set `t` spanning `V`,
+then one can get a basis of `V` containing `s` and contained in `t`. -/
+noncomputable def extendLe (hs : LinearIndependent K ((↑) : s → V))
+    (hst : s ⊆ t) (ht : ⊤ ≤ span K t) :
+    Basis (hs.extend hst) K V :=
+  Basis.mk
+    (@LinearIndependent.restrict_of_comp_subtype _ _ _ id _ _ _ _ (hs.linearIndependent_extend _))
+    (le_trans ht <| Submodule.span_le.2 <| by simpa using hs.subset_span_extend hst)
+
+theorem extendLe_apply_self (hs : LinearIndependent K ((↑) : s → V))
+    (hst : s ⊆ t) (ht : ⊤ ≤ span K t) (x : hs.extend hst) :
+    extendLe hs hst ht x = x :=
+  Basis.mk_apply _ _ _
+
+@[simp]
+theorem coe_extendLe (hs : LinearIndependent K ((↑) : s → V))
+    (hst : s ⊆ t) (ht : ⊤ ≤ span K t) : ⇑(extendLe hs hst ht) = ((↑) : _ → _) :=
+  funext (extendLe_apply_self hs hst ht)
+
+theorem range_extendLe (hs : LinearIndependent K ((↑) : s → V))
+    (hst : s ⊆ t) (ht : ⊤ ≤ span K t) :
+    range (extendLe hs hst ht) = hs.extend hst := by
+  rw [coe_extendLe, Subtype.range_coe_subtype, setOf_mem_eq]
+
+theorem subset_extendLe (hs : LinearIndependent K ((↑) : s → V))
+    (hst : s ⊆ t) (ht : ⊤ ≤ span K t) :
+    s ⊆ range (extendLe hs hst ht) :=
+  (range_extendLe hs hst ht).symm ▸ hs.subset_extend hst
+
+theorem extendLe_subset (hs : LinearIndependent K ((↑) : s → V))
+    (hst : s ⊆ t) (ht : ⊤ ≤ span K t) :
+    range (extendLe hs hst ht) ⊆ t :=
+  (range_extendLe hs hst ht).symm ▸ hs.extend_subset hst
+
+/-- If a set `s` spans the space, this is a basis contained in `s`. -/
+noncomputable def ofSpan (hs : ⊤ ≤ span K s) :
+    Basis ((linearIndependent_empty K V).extend (empty_subset s)) K V :=
+  extendLe (linearIndependent_empty K V) (empty_subset s) hs
+
+theorem ofSpan_apply_self (hs : ⊤ ≤ span K s)
+    (x : (linearIndependent_empty K V).extend (empty_subset s)) :
+    Basis.ofSpan hs x = x :=
+  extendLe_apply_self (linearIndependent_empty K V) (empty_subset s) hs x
+
+@[simp]
+theorem coe_ofSpan (hs : ⊤ ≤ span K s) : ⇑(ofSpan hs) = ((↑) : _ → _) :=
+  funext (ofSpan_apply_self hs)
+
+theorem range_ofSpan (hs : ⊤ ≤ span K s) :
+    range (ofSpan hs) = (linearIndependent_empty K V).extend (empty_subset s) := by
+  rw [coe_ofSpan, Subtype.range_coe_subtype, setOf_mem_eq]
+
+theorem ofSpan_subset (hs : ⊤ ≤ span K s) : range (ofSpan hs) ⊆ s :=
+  extendLe_subset (linearIndependent_empty K V) (empty_subset s) hs
+
+end Basis
+
+end OfTopLeSpan
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E]
 
@@ -97,8 +140,7 @@ theorem span_eq_top_of_ne_zero {R M : Type*} [CommRing R] [AddCommGroup M]
 theorem hasFDerivAt_norm_smul {x : E} {t : ℝ} (ht : t ≠ 0)
     {f : E →L[ℝ] ℝ} (hx : HasFDerivAt (‖·‖) f x) :
     HasFDerivAt (‖·‖) ((SignType.sign t : ℝ) • f) (t • x) := by
-  unfold HasFDerivAt at *
-  have hx := hx.isLittleO
+  replace hx := (hx.hasFDerivAtFilter le_rfl).isLittleO
   constructor
   rw [Asymptotics.isLittleO_iff] at *
   intro c hc
@@ -124,17 +166,14 @@ theorem differentiableAt_norm_smul {x : E} {t : ℝ} (ht : t ≠ 0) :
 theorem not_differentiableAt_norm_zero (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
     [Nontrivial E] :
     ¬DifferentiableAt ℝ (‖·‖) (0 : E) := by
-  rcases NormedSpace.exists_lt_norm ℝ E 0 with ⟨x, hx⟩
+  obtain ⟨x, hx⟩ := NormedSpace.exists_lt_norm ℝ E 0
   intro h
-  have : DifferentiableAt ℝ (fun t : ℝ ↦ ‖t • x‖) 0 := by
-    apply DifferentiableAt.comp
-    · simpa
-    · simp
+  have : DifferentiableAt ℝ (fun t : ℝ ↦ ‖t • x‖) 0 := DifferentiableAt.comp _ (by simpa) (by simp)
   have : DifferentiableAt ℝ (|·|) (0 : ℝ) := by
     simp_rw [norm_smul, norm_eq_abs] at this
     have aux : abs = fun t ↦ (1 / ‖x‖) * (|t| * ‖x‖) := by
       ext t
-      rw [mul_comm, mul_assoc, mul_one_div_cancel hx.ne.symm, mul_one]
+      field_simp
     rw [aux]
     exact this.const_mul _
   exact not_differentiableAt_abs_zero this
@@ -165,7 +204,7 @@ theorem deriv_abs (x : ℝ) : deriv (|·|) x = SignType.sign x := by
 theorem hasDerivAt_abs {x : ℝ} (hx : x ≠ 0) : HasDerivAt abs (SignType.sign x : ℝ) x := by
   convert (differentiableAt_of_deriv_ne_zero ?_).hasDerivAt
   · rw [deriv_abs]
-  · rcases hx.lt_or_lt with hx | hx
+  · obtain hx | hx := hx.lt_or_lt
     all_goals rw [deriv_abs]; simp [hx]
 
 theorem differentiableAt_abs {x : ℝ} (hx : x ≠ 0) : DifferentiableAt ℝ abs x :=
