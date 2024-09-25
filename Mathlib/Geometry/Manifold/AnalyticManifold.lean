@@ -15,9 +15,6 @@ half-space (to get manifolds with boundaries) for which changes of coordinates a
 interior and smooth everywhere (including at the boundary).  The definition mirrors
 `SmoothManifoldWithCorners`, but using an `analyticGroupoid` in place of `contDiffGroupoid`.  All
 analytic manifolds are smooth manifolds.
-
-Completeness is required throughout, but this is nonessential: it is due to many of the lemmas about
-AnalyticWithinOn` requiring completeness for ease of proof.
 -/
 
 noncomputable section
@@ -165,7 +162,7 @@ instance AnalyticManifold.prod {E A : Type} [NormedAddCommGroup E] [NormedSpace 
 
 /-- Analytic manifolds are smooth manifolds. -/
 instance AnalyticManifold.smoothManifoldWithCorners [ChartedSpace H M]
-    [cm : AnalyticManifold I M] [CompleteSpace E] :
+    [cm : AnalyticManifold I M] :
     SmoothManifoldWithCorners I M where
   compatible hf hg := ⟨(cm.compatible hf hg).1.contDiffOn I.unique_diff_preimage_source,
     (cm.compatible hg hf).1.contDiffOn I.unique_diff_preimage_source⟩

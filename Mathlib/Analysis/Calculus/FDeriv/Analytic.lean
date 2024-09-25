@@ -646,7 +646,6 @@ theorem hasFDerivAt_uncurry_of_multilinear [DecidableEq ι]
   have J : ∀ (i : ι), f.continuousMultilinearMapOption.toContinuousLinearMap (fun _ ↦ v) (some i)
       = ((f v.1).toContinuousLinearMap v.2 i) ∘L (.proj _) ∘L (.snd _ _ _) := by
     intro i
-    have : Nonempty ι := ⟨i⟩
     apply ContinuousLinearMap.ext (fun w ↦ ?_)
     simp only [ContinuousMultilinearMap.toContinuousLinearMap, continuousMultilinearMapOption,
       coe_mk', MultilinearMap.toLinearMap_apply, ContinuousMultilinearMap.coe_coe,

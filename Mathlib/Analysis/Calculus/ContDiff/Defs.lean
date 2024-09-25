@@ -107,7 +107,9 @@ attribute [local instance 1001]
 
 open Set Fin Filter Function
 
+/-- Smoothness exponent for analytic functions. -/
 scoped [ContDiff] notation3 "ω" => (⊤ : WithTop (ℕ∞))
+/-- Smoothness exponent for infinitely differentiable functions. -/
 scoped [ContDiff] notation3 "∞" => ((⊤ : ℕ∞) : WithTop (ℕ∞))
 
 open ContDiff
