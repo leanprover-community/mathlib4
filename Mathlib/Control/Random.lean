@@ -29,7 +29,7 @@ defining objects that can be created randomly.
 -/
 
 -- Note: this file uses `autoImplicit` consistently and intentionally.
-set_option linter.setOption false in
+set_option linter.style.setOption false
 set_option autoImplicit true
 
 /-- A monad transformer to generate random objects using the generic generator type `g` -/
