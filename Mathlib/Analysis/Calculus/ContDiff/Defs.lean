@@ -331,7 +331,6 @@ theorem ContDiffWithinAt.differentiableWithinAt (h : ContDiffWithinAt 𝕜 n f s
     DifferentiableWithinAt 𝕜 f s x :=
   (h.differentiable_within_at' hn).mono (subset_insert x s)
 
-
 /-- A function is `C^(n + 1)` on a domain iff locally, it has a derivative which is `C^n`
 (and moreover the function is analytic when `n = ω`). -/
 theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt (hn : n ≠ ∞) :
@@ -862,6 +861,20 @@ theorem ContDiffAt.of_le (h : ContDiffAt 𝕜 n f x) (hmn : m ≤ n) : ContDiffA
 
 theorem ContDiffAt.continuousAt (h : ContDiffAt 𝕜 n f x) : ContinuousAt f x := by
   simpa [continuousWithinAt_univ] using h.continuousWithinAt
+
+theorem ContDiffAt.analyticAt (h : ContDiffAt 𝕜 ω f x) : AnalyticAt 𝕜 f x := by
+  rw [← contDiffWithinAt_univ] at h
+  rw [← analyticWithinAt_univ]
+  exact h.analyticWithinAt
+
+/-- In a complete space, a function which is analytic at a point is also `C^ω` there.
+Note that the same statement for `AnalyticOn` does not require completeness, see
+`AnalyticOn.contDiffOn`. -/
+theorem AnalyticAt.contDiffAt [CompleteSpace F] (h : AnalyticAt 𝕜 f x) :
+    ContDiffAt 𝕜 n f x := by
+  rw [← contDiffWithinAt_univ]
+  rw [← analyticWithinAt_univ] at h
+  exact h.contDiffWithinAt
 
 /-- If a function is `C^n` with `n ≥ 1` at a point, then it is differentiable there. -/
 theorem ContDiffAt.differentiableAt (h : ContDiffAt 𝕜 n f x) (hn : 1 ≤ n) :

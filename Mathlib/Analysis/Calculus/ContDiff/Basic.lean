@@ -1588,20 +1588,20 @@ theorem ContDiff.inv {f : E → 𝕜'} {n} (hf : ContDiff 𝕜 n f) (h : ∀ x, 
   rw [contDiff_iff_contDiffAt]; exact fun x => hf.contDiffAt.inv (h x)
 
 -- TODO: generalize to `f g : E → 𝕜'`
-theorem ContDiffWithinAt.div [CompleteSpace 𝕜] {f g : E → 𝕜} {n} (hf : ContDiffWithinAt 𝕜 n f s x)
+theorem ContDiffWithinAt.div {f g : E → 𝕜} {n} (hf : ContDiffWithinAt 𝕜 n f s x)
     (hg : ContDiffWithinAt 𝕜 n g s x) (hx : g x ≠ 0) :
     ContDiffWithinAt 𝕜 n (fun x => f x / g x) s x := by
   simpa only [div_eq_mul_inv] using hf.mul (hg.inv hx)
 
-theorem ContDiffOn.div [CompleteSpace 𝕜] {f g : E → 𝕜} {n} (hf : ContDiffOn 𝕜 n f s)
+theorem ContDiffOn.div {f g : E → 𝕜} {n} (hf : ContDiffOn 𝕜 n f s)
     (hg : ContDiffOn 𝕜 n g s) (h₀ : ∀ x ∈ s, g x ≠ 0) : ContDiffOn 𝕜 n (f / g) s := fun x hx =>
   (hf x hx).div (hg x hx) (h₀ x hx)
 
-nonrec theorem ContDiffAt.div [CompleteSpace 𝕜] {f g : E → 𝕜} {n} (hf : ContDiffAt 𝕜 n f x)
+nonrec theorem ContDiffAt.div {f g : E → 𝕜} {n} (hf : ContDiffAt 𝕜 n f x)
     (hg : ContDiffAt 𝕜 n g x) (hx : g x ≠ 0) : ContDiffAt 𝕜 n (fun x => f x / g x) x :=
   hf.div hg hx
 
-theorem ContDiff.div [CompleteSpace 𝕜] {f g : E → 𝕜} {n} (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g)
+theorem ContDiff.div {f g : E → 𝕜} {n} (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g)
     (h0 : ∀ x, g x ≠ 0) : ContDiff 𝕜 n fun x => f x / g x := by
   simp only [contDiff_iff_contDiffAt] at *
   exact fun x => (hf x).div (hg x) (h0 x)
@@ -1652,11 +1652,8 @@ theorem PartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : PartialHomeomor
     ContDiffAt 𝕜 n f.symm a := by
   match n with
   | ω =>
-    have : AnalyticAt 𝕜 f.symm a := by
-      have Z := PartialHomeomorph.analyticAt_symm
-
-#exit
-
+    apply AnalyticAt.contDiffAt
+    exact f.analyticAt_symm ha hf.analyticAt hf₀'.fderiv
   | (n : ℕ∞) =>
     -- We prove this by induction on `n`
     induction' n using ENat.nat_induction with n IH Itop
