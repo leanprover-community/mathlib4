@@ -10,6 +10,7 @@ import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # Sums of binomial coefficients
@@ -73,6 +74,18 @@ end Commute
 theorem add_pow [CommSemiring R] (x y : R) (n : ℕ) :
     (x + y) ^ n = ∑ m ∈ range (n + 1), x ^ m * y ^ (n - m) * n.choose m :=
   (Commute.all x y).add_pow n
+
+/-- An special case of the **binomial theorem** -/
+theorem sub_pow [CommRing R] (x : R) (y : R) (n : ℕ) :
+    (x - y) ^ n = ∑ m ∈ range (n + 1), (n.choose m) • x ^ m * (- 1) ^ (n - m) * y ^ (n - m) := by
+  rw [← Mathlib.Tactic.RingNF.add_neg, add_pow]
+  apply Finset.sum_congr rfl
+  intro m _
+  field_simp
+  have eq1 : (-y) ^ (n - m) = (-1) ^ (n - m) * y ^ (n - m) := by
+    rw[neg_pow]
+  rw[eq1]
+  ring_nf
 
 namespace Nat
 
