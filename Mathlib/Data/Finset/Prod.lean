@@ -168,6 +168,7 @@ theorem empty_product (t : Finset β) : (∅ : Finset α) ×ˢ t = ∅ :=
 theorem product_empty (s : Finset α) : s ×ˢ (∅ : Finset β) = ∅ :=
   eq_empty_of_forall_not_mem fun _ h => not_mem_empty _ (Finset.mem_product.1 h).2
 
+@[aesop safe apply (rule_sets := [finsetNonempty])]
 theorem Nonempty.product (hs : s.Nonempty) (ht : t.Nonempty) : (s ×ˢ t).Nonempty :=
   let ⟨x, hx⟩ := hs
   let ⟨y, hy⟩ := ht
@@ -181,7 +182,7 @@ theorem Nonempty.snd (h : (s ×ˢ t).Nonempty) : t.Nonempty :=
   let ⟨xy, hxy⟩ := h
   ⟨xy.2, (mem_product.1 hxy).2⟩
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem nonempty_product : (s ×ˢ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.product h.2⟩
 
