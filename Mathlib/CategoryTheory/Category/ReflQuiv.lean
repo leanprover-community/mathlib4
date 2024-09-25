@@ -186,8 +186,8 @@ def adj.counit.app (C : Cat) : Cat.freeRefl.obj (forget.obj C) ⥤ C := by
   · intro x y f g rel
     cases rel
     unfold Quiv.adj
-    simp only [Adjunction.mkOfHomEquiv_counit_app, Quiv.lift_map, Prefunctor.mapPath_toPath,
-      composePath_toPath]
+    simp only [Adjunction.mkOfHomEquiv_counit_app, Equiv.coe_fn_symm_mk,
+      Quiv.lift_map, Prefunctor.mapPath_toPath, composePath_toPath]
     rfl
 
 /-- This is used in the proof of both triangle equalities. -/
