@@ -66,65 +66,27 @@ theorem deriv_log (x : ℝ) : deriv log x = x⁻¹ :=
 theorem deriv_log' : deriv log = Inv.inv :=
   funext deriv_log
 
-
-/-- `Real.exp` as a `PartialHomeomorph` with `source = univ` and `target = {z | 0 < z}`. -/
-@[simps] noncomputable def expPartialHomeomorph : PartialHomeomorph ℝ ℝ where
-  toFun := Real.exp
-  invFun := Real.log
-  source := univ
-  target := Ioi (0 : ℝ)
-  map_source' x _ := exp_pos x
-  map_target' _ _ := mem_univ _
-  left_inv' _ _ := by simp
-  right_inv' _ hx := exp_log hx
-  open_source := isOpen_univ
-  open_target := isOpen_Ioi
-  continuousOn_toFun := continuousOn_exp
-  continuousOn_invFun x hx := (continuousAt_log (ne_of_gt hx)).continuousWithinAt
-
-theorem glou {n : WithTop ℕ∞} (x : ℝ) (hx : 0 < x) :
-    ContDiffAt ℝ n log x := by
-  apply expPartialHomeomorph.contDiffAt_symm_deriv (f₀' := x) hx.ne' (by simpa)
-  · convert hasDerivAt_exp (log x)
-    rw [exp_log hx]
-  · simp [expPartialHomeomorph]
-
-
-
-
-
+theorem contDiffAt_log {n : WithTop ℕ∞} {x : ℝ} : ContDiffAt ℝ n log x ↔ x ≠ 0 := by
+  refine ⟨fun h ↦ continuousAt_log_iff.1 h.continuousAt, fun hx ↦ ?_⟩
+  have A y (hy : 0 < y) : ContDiffAt ℝ n log y := by
+    apply expPartialHomeomorph.contDiffAt_symm_deriv (f₀' := y) hy.ne' (by simpa)
+    · convert hasDerivAt_exp (log y)
+      rw [exp_log hy]
+    · exact analyticAt_rexp.contDiffAt
+  rcases hx.lt_or_lt with hx | hx
+  · have : ContDiffAt ℝ n (log ∘ (fun y ↦ -y)) x := by
+      apply ContDiffAt.comp
+      apply A _ (Left.neg_pos_iff.mpr hx)
+      apply contDiffAt_id.neg
+    convert this
+    ext x
+    simp
+  · exact A x hx
 
 theorem contDiffOn_log {n : WithTop ℕ∞} : ContDiffOn ℝ n log {0}ᶜ := by
-  apply AnalyticOn.contDiffOn _ isOpen_compl_singleton.uniqueDiffOn
-  sorry
-
-
-
-#exit
-
-theorem deriv_sqrt_aux {x : ℝ} (hx : x ≠ 0) :
-    HasStrictDerivAt (√·) (1 / (2 * √x)) x ∧ ∀ n, ContDiffAt ℝ n (√·) x := by
-  cases' hx.lt_or_lt with hx hx
-  · rw [sqrt_eq_zero_of_nonpos hx.le, mul_zero, div_zero]
-    have : (√·) =ᶠ[𝓝 x] fun _ => 0 := (gt_mem_nhds hx).mono fun x hx => sqrt_eq_zero_of_nonpos hx.le
-    exact
-      ⟨(hasStrictDerivAt_const x (0 : ℝ)).congr_of_eventuallyEq this.symm, fun n =>
-        contDiffAt_const.congr_of_eventuallyEq this⟩
-  · have : ↑2 * √x ^ (2 - 1) ≠ 0 := by simp [(sqrt_pos.2 hx).ne', @two_ne_zero ℝ]
-    constructor
-    · simpa using sqPartialHomeomorph.hasStrictDerivAt_symm hx this (hasStrictDerivAt_pow 2 _)
-    · exact fun n => sqPartialHomeomorph.contDiffAt_symm_deriv this hx (hasDerivAt_pow 2 (√x))
-        (contDiffAt_id.pow 2)
-
-
-
-
-  refine (contDiffOn_top_iff_deriv_of_isOpen isOpen_compl_singleton).2 ?_
-  simp [differentiableOn_log, contDiffOn_inv]
-
-theorem contDiffAt_log {n : ℕ∞} : ContDiffAt ℝ n log x ↔ x ≠ 0 :=
-  ⟨fun h => continuousAt_log_iff.1 h.continuousAt, fun hx =>
-    (contDiffOn_log x hx).contDiffAt <| IsOpen.mem_nhds isOpen_compl_singleton hx⟩
+  intro x hx
+  simp only [mem_compl_iff, mem_singleton_iff] at hx
+  exact (contDiffAt_log.2 hx).contDiffWithinAt
 
 end Real
 
