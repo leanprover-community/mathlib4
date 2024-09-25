@@ -37,10 +37,6 @@ lemma zpow_right_strictAnti (ha : a < 1) : StrictAnti fun n : ℤ ↦ a ^ n := b
   rw [zpow_add_one]
   exact mul_lt_of_lt_one_right' (a ^ n) ha
 
-@[to_additive zsmul_left_inj]
-lemma zpow_right_inj (ha : 1 < a) {m n : ℤ} : a ^ m = a ^ n ↔ m = n :=
-  (zpow_right_strictMono ha).injective.eq_iff
-
 @[to_additive zsmul_mono_left]
 lemma zpow_mono_right (ha : 1 ≤ a) : Monotone fun n : ℤ ↦ a ^ n := by
   refine monotone_int_of_le_succ fun n ↦ ?_
@@ -88,25 +84,6 @@ variable [LinearOrderedCommGroup α] {n : ℤ} {a b : α}
 
 @[to_additive] lemma zpow_lt_zpow_iff' (hn : 0 < n) : a ^ n < b ^ n ↔ a < b :=
   (zpow_strictMono_left α hn).lt_iff_lt
-
-@[to_additive zsmul_right_injective
-"See also `smul_right_injective`. TODO: provide a `NoZeroSMulDivisors` instance. We can't do
-that here because importing that definition would create import cycles."]
-lemma zpow_left_injective (hn : n ≠ 0) : Injective ((· ^ n) : α → α) := by
-  obtain hn | hn := hn.lt_or_lt
-  · refine fun a b (hab : a ^ n = b ^ n) ↦
-      (zpow_strictMono_left _ <| Int.neg_pos_of_neg hn).injective ?_
-    rw [zpow_neg, zpow_neg, hab]
-  · exact (zpow_strictMono_left _ hn).injective
-
-@[to_additive zsmul_right_inj]
-lemma zpow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (zpow_left_injective hn).eq_iff
-
-/-- Alias of `zpow_left_inj`, for ease of discovery alongside `zsmul_le_zsmul_iff'` and
-`zsmul_lt_zsmul_iff'`. -/
-@[to_additive "Alias of `zsmul_right_inj`, for ease of discovery alongside `zsmul_le_zsmul_iff'` and
-`zsmul_lt_zsmul_iff'`."]
-lemma zpow_eq_zpow_iff' (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := zpow_left_inj hn
 
 variable (α) in
 /-- A nontrivial densely linear ordered commutative group can't be a cyclic group. -/

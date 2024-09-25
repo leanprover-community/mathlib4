@@ -195,9 +195,12 @@ theorem pow_lt_one_iff {x : M} {n : ℕ} (hn : n ≠ 0) : x ^ n < 1 ↔ x < 1 :=
   lt_iff_lt_of_le_iff_le (one_le_pow_iff hn)
 
 @[to_additive]
-theorem pow_eq_one_iff {x : M} {n : ℕ} (hn : n ≠ 0) : x ^ n = 1 ↔ x = 1 := by
-  simp only [le_antisymm_iff]
-  rw [pow_le_one_iff hn, one_le_pow_iff hn]
+instance (priority := 100) NoRootsOfUnity.of_linearOrderedMonoid : NoRootsOfUnity M ℕ where
+  eq_zero_or_eq_one_of_pow_eq_one := by
+    intro n x h
+    rw [or_iff_not_imp_left]
+    intro hn
+    simpa only [le_antisymm_iff, one_le_pow_iff hn, pow_le_one_iff hn] using h
 
 end CovariantLE
 

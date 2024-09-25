@@ -309,11 +309,6 @@ instance (priority := 100) CharZero.noZeroSMulDivisors_nat [Semiring R] [NoZeroD
     [CharZero R] : NoZeroSMulDivisors ℕ R :=
   NoZeroSMulDivisors.of_algebraMap_injective <| (algebraMap ℕ R).injective_nat
 
--- see note [lower instance priority]
-instance (priority := 100) CharZero.noZeroSMulDivisors_int [Ring R] [NoZeroDivisors R]
-    [CharZero R] : NoZeroSMulDivisors ℤ R :=
-  NoZeroSMulDivisors.of_algebraMap_injective <| (algebraMap ℤ R).injective_int
-
 end NoZeroSMulDivisors
 
 section IsScalarTower

@@ -1168,6 +1168,8 @@ class NoRootsOfUnity (M R : Type*) [One M] [Zero R] [Pow M R] : Prop where
 attribute [to_additive existing (reorder := 1 2, 3 4) eq_zero_or_eq_zero_of_smul_eq_zero]
   NoRootsOfUnity.eq_zero_or_eq_one_of_pow_eq_one
 
+attribute [to_additive existing (reorder := 1 2, 3 4)] NoRootsOfUnity.mk
+
 /-! We initialize all projections for `@[simps]` here, so that we don't have to do it in later
 files.
 
