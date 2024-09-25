@@ -58,8 +58,9 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
     if let some head := stx.find? is_set_option then
       if let some (name, val) := parse_set_option head then
         if name == `autoImplicit && val.raw matches .atom _ "true" then
-          -- We do not lint mathlib's test directory.
-          if (← getMainModule).getRoot == `test then
+          -- We do not lint mathlib's test directory (but do lint this linter's test).
+          let mod := ← getMainModule
+          if mod.getRoot == `test && mod != `test.LintStyle then
             return
           Linter.logLint linter.style.setOption head
             m!"Using `autoImplicit true` is deprecated in mathlib: \
