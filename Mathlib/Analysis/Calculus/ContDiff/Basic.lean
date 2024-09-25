@@ -1542,7 +1542,9 @@ theorem contDiff_prod_mk_right (e₀ : E) : ContDiff 𝕜 n fun f : F => (e₀, 
 
 end prodMap
 
-/-! ### Inversion in a complete normed algebra -/
+/-!
+### Inversion in a complete normed algebra (or more generally with summable geometric series)
+-/
 
 section AlgebraInverse
 
@@ -1553,8 +1555,7 @@ variable [NormedAlgebra 𝕜 R]
 open NormedRing ContinuousLinearMap Ring
 
 /-- In a complete normed algebra, the operation of inversion is `C^n`, for all `n`, at each
-invertible element.  The proof is by induction, bootstrapping using an identity expressing the
-derivative of inversion as a bilinear map of inversion itself. -/
+invertible element, as it is analytic. -/
 theorem contDiffAt_ring_inverse [HasSummableGeomSeries R] (x : Rˣ) :
     ContDiffAt 𝕜 n Ring.inverse (x : R) := by
   have := AnalyticOn.contDiffOn (analyticOn_inverse (𝕜 := 𝕜) (A := R)) (n := n)
@@ -1645,51 +1646,61 @@ then `f.symm` is `n` times continuously differentiable at the point `a`.
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have
 an inverse function. -/
-theorem PartialHomeomorph.contDiffAt_symm {n : ℕ∞} [CompleteSpace E] (f : PartialHomeomorph E F)
+theorem PartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : PartialHomeomorph E F)
     {f₀' : E ≃L[𝕜] F} {a : F} (ha : a ∈ f.target)
     (hf₀' : HasFDerivAt f (f₀' : E →L[𝕜] F) (f.symm a)) (hf : ContDiffAt 𝕜 n f (f.symm a)) :
     ContDiffAt 𝕜 n f.symm a := by
-  -- We prove this by induction on `n`
-  induction' n using ENat.nat_induction with n IH Itop
-  · apply contDiffAt_zero.2
-    exact ⟨f.target, IsOpen.mem_nhds f.open_target ha, f.continuousOn_invFun⟩
-  · obtain ⟨f', ⟨u, hu, hff'⟩, hf'⟩ := contDiffAt_succ_iff_hasFDerivAt.mp hf
-    apply contDiffAt_succ_iff_hasFDerivAt.2
-    -- For showing `n.succ` times continuous differentiability (the main inductive step), it
-    -- suffices to produce the derivative and show that it is `n` times continuously differentiable
-    have eq_f₀' : f' (f.symm a) = f₀' := (hff' (f.symm a) (mem_of_mem_nhds hu)).unique hf₀'
-    -- This follows by a bootstrapping formula expressing the derivative as a function of `f` itself
-    refine ⟨inverse ∘ f' ∘ f.symm, ?_, ?_⟩
-    · -- We first check that the derivative of `f` is that formula
-      have h_nhds : { y : E | ∃ e : E ≃L[𝕜] F, ↑e = f' y } ∈ 𝓝 (f.symm a) := by
-        have hf₀' := f₀'.nhds
-        rw [← eq_f₀'] at hf₀'
-        exact hf'.continuousAt.preimage_mem_nhds hf₀'
-      obtain ⟨t, htu, ht, htf⟩ := mem_nhds_iff.mp (Filter.inter_mem hu h_nhds)
-      use f.target ∩ f.symm ⁻¹' t
-      refine ⟨IsOpen.mem_nhds ?_ ?_, ?_⟩
-      · exact f.isOpen_inter_preimage_symm ht
-      · exact mem_inter ha (mem_preimage.mpr htf)
-      intro x hx
-      obtain ⟨hxu, e, he⟩ := htu hx.2
-      have h_deriv : HasFDerivAt f (e : E →L[𝕜] F) (f.symm x) := by
-        rw [he]
-        exact hff' (f.symm x) hxu
-      convert f.hasFDerivAt_symm hx.1 h_deriv
-      simp [← he]
-    · -- Then we check that the formula, being a composition of `ContDiff` pieces, is
-      -- itself `ContDiff`
-      have h_deriv₁ : ContDiffAt 𝕜 n inverse (f' (f.symm a)) := by
-        rw [eq_f₀']
-        exact contDiffAt_map_inverse _
-      have h_deriv₂ : ContDiffAt 𝕜 n f.symm a := by
-        refine IH (hf.of_le ?_)
-        norm_cast
-        exact Nat.le_succ n
-      exact (h_deriv₁.comp _ hf').comp _ h_deriv₂
-  · refine contDiffAt_top.mpr ?_
-    intro n
-    exact Itop n (contDiffAt_top.mp hf n)
+  match n with
+  | ω =>
+    have : AnalyticAt 𝕜 f.symm a := by
+      have Z := PartialHomeomorph.analyticAt_symm
+
+#exit
+
+  | (n : ℕ∞) =>
+    -- We prove this by induction on `n`
+    induction' n using ENat.nat_induction with n IH Itop
+    · apply contDiffAt_zero.2
+      exact ⟨f.target, IsOpen.mem_nhds f.open_target ha, f.continuousOn_invFun⟩
+    · obtain ⟨f', ⟨u, hu, hff'⟩, hf'⟩ := contDiffAt_succ_iff_hasFDerivAt.mp hf
+      apply contDiffAt_succ_iff_hasFDerivAt.2
+      -- For showing `n.succ` times continuous differentiability (the main inductive step), it
+      -- suffices to produce the derivative and show that it is `n` times continuously
+      -- differentiable
+      have eq_f₀' : f' (f.symm a) = f₀' := (hff' (f.symm a) (mem_of_mem_nhds hu)).unique hf₀'
+      -- This follows by a bootstrapping formula expressing the derivative as a
+      -- function of `f` itself
+      refine ⟨inverse ∘ f' ∘ f.symm, ?_, ?_⟩
+      · -- We first check that the derivative of `f` is that formula
+        have h_nhds : { y : E | ∃ e : E ≃L[𝕜] F, ↑e = f' y } ∈ 𝓝 (f.symm a) := by
+          have hf₀' := f₀'.nhds
+          rw [← eq_f₀'] at hf₀'
+          exact hf'.continuousAt.preimage_mem_nhds hf₀'
+        obtain ⟨t, htu, ht, htf⟩ := mem_nhds_iff.mp (Filter.inter_mem hu h_nhds)
+        use f.target ∩ f.symm ⁻¹' t
+        refine ⟨IsOpen.mem_nhds ?_ ?_, ?_⟩
+        · exact f.isOpen_inter_preimage_symm ht
+        · exact mem_inter ha (mem_preimage.mpr htf)
+        intro x hx
+        obtain ⟨hxu, e, he⟩ := htu hx.2
+        have h_deriv : HasFDerivAt f (e : E →L[𝕜] F) (f.symm x) := by
+          rw [he]
+          exact hff' (f.symm x) hxu
+        convert f.hasFDerivAt_symm hx.1 h_deriv
+        simp [← he]
+      · -- Then we check that the formula, being a composition of `ContDiff` pieces, is
+        -- itself `ContDiff`
+        have h_deriv₁ : ContDiffAt 𝕜 n inverse (f' (f.symm a)) := by
+          rw [eq_f₀']
+          exact contDiffAt_map_inverse _
+        have h_deriv₂ : ContDiffAt 𝕜 n f.symm a := by
+          refine IH (hf.of_le ?_)
+          norm_cast
+          exact Nat.le_succ n
+        exact (h_deriv₁.comp _ hf').comp _ h_deriv₂
+    · refine contDiffAt_infty.mpr ?_
+      intro n
+      exact Itop n (contDiffAt_infty.mp hf n)
 
 /-- If `f` is an `n` times continuously differentiable homeomorphism,
 and if the derivative of `f` at each point is a continuous linear equivalence,
