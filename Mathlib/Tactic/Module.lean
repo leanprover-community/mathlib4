@@ -614,7 +614,11 @@ RHS of the goal as linear combinations of `M`-atoms over some commutative semiri
 the goal by checking that the LHS- and RHS-coefficients of each atom are the same up to
 ring-normalization in `R`.
 
-Examples:
+(If the proofs of coefficient-wise equality will require more reasoning than just
+ring-normalization, use the tactic `match_scalars` instead, and then prove coefficient-wise equality
+by hand.)
+
+Example uses of the `module` tactic:
 ```
 example [AddCommMonoid M] [CommSemiring R] [Module R M] (a b : R) (x : M) :
     a • x + b • x = (b + a) • x := by
@@ -632,9 +636,6 @@ example [AddCommGroup M] [CommRing R] [Module R M] (a b μ ν : R) (x y : M) :
     (μ - ν) • a • x = (a • μ • x + b • ν • y) - ν • (a • x + b • y) := by
   module
 ```
-
-If the proofs of coefficient-wise equality will require more reasoning than just ring-normalization,
-use the tactic `match_scalars` instead, and then prove coefficient-wise equality by hand.
 -/
 elab "module" : tactic => Tactic.liftMetaFinishingTactic fun g ↦ do
   let l ← matchScalars g
