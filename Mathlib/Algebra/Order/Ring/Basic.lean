@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis
 import Mathlib.Algebra.Group.NoRootsOfUnity
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Parity
+import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Tactic.Bound.Attribute
 
 /-!
