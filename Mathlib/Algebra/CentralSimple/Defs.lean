@@ -11,7 +11,7 @@ import Mathlib.Algebra.Algebra.Subalgebra.Basic
 # Characteristic predicate for central simple algebras
 
 In this file we define the predicate `IsCentralSimple K D` where `K` is a field
-and `D` is a (noncommutative) `K`-algebra.
+and `D` is a (not necessarily commutative) `K`-algebra.
 
 Note that the predicate makes sense just for `K` a `CommRing` but it doesn't give the
 right definition; for a commutative ring base, one should use the theory of Azumaya algebras.
