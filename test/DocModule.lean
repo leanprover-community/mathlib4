@@ -9,8 +9,6 @@ import Lake
 import /- -/ Mathlib.Tactic -- the `TextBased` linter does not flag this `broadImport`
 
 /--
-warning: using 'exit' to interrupt Lean
----
 warning: In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter (see e.g. mathlib4#13779). Please consider carefully if this import is useful and make sure to benchmark it. If this is fine, feel free to allow this linter.
 note: this linter can be disabled with `set_option linter.style.header false`
 ---
@@ -18,7 +16,9 @@ warning: Files in mathlib cannot import the whole tactic folder.
 note: this linter can be disabled with `set_option linter.style.header false`
 ---
 warning: The module doc-string for a file should be the first command after the imports.
-Please, add a module doc-string before `#exit`.
+Please, add a module doc-string before `/-!# Tests for the `docModule` linter
+-/
+`.
 note: this linter can be disabled with `set_option linter.style.header false`
 -/
 #guard_msgs in
