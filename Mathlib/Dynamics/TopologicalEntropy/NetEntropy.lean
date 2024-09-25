@@ -59,7 +59,7 @@ variable {X : Type*}
 /-- Given a subset `F`, an entourage `U` and an integer `n`, a subset `s` of `F` is a
 `(U, n)`-dynamical net of `F` if no two orbits of length `n` of points in `s` shadow each other.-/
 def IsDynNetIn (T : X → X) (F : Set X) (U : Set (X × X)) (n : ℕ) (s : Set X) : Prop :=
-    s ⊆ F ∧ s.PairwiseDisjoint (fun x : X ↦ ball x (dynEntourage T U n))
+  s ⊆ F ∧ s.PairwiseDisjoint (fun x : X ↦ ball x (dynEntourage T U n))
 
 lemma IsDynNetIn.of_le {T : X → X} {F : Set X} {U : Set (X × X)} {m n : ℕ} (m_n : m ≤ n) {s : Set X}
     (h : IsDynNetIn T F U m s) :
