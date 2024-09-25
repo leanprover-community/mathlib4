@@ -238,7 +238,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     | .original lead .. => lead.toString
     | _ => ""
   -- copyright report
-  if (← getMainModule) != `Mathlib.Init then
+  if !#[`Mathlib, `Mathlib.Init].contains (← getMainModule) then
     for (stx, m) in copyrightHeaderChecks copyright do
       Linter.logLint linter.style.header stx m!"* '{stx.getAtomVal}':\n{m}\n"
   -- doc-module report
