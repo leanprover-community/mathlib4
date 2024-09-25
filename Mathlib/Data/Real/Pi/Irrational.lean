@@ -45,9 +45,7 @@ private lemma recursion' (n : ℕ) :
   have hv₂d : Continuous v₂' := by fun_prop
   have hu₁_eval_one : u₁ 1 = 0 := by simp only [u₁, f]; simp
   have hu₁_eval_neg_one : u₁ (-1) = 0 := by simp only [u₁, f]; simp
-  have t : u₂ 1 * v₂ 1 - u₂ (-1) * v₂ (-1) = 2 * (0 ^ n * cos θ) := by
-    simp only [u₂, v₂, f, one_pow, sub_self, one_mul, neg_one_sq, neg_mul, cos_neg, sub_neg_eq_add]
-    simp only [← two_mul]
+  have t : u₂ 1 * v₂ 1 - u₂ (-1) * v₂ (-1) = 2 * (0 ^ n * cos θ) := by simp [u₂, v₂, f, ← two_mul]
   have hf (x) : HasDerivAt f (- 2 * x) x := by
     convert (hasDerivAt_pow 2 x).const_sub 1 using 1
     simp
@@ -57,7 +55,7 @@ private lemma recursion' (n : ℕ) :
     ring
   have hv₁ (x) : HasDerivAt v₁ (v₁' x) x := (hasDerivAt_mul_const θ).sin
   have hu₂ (x) : HasDerivAt u₂ (u₂' x) x := by
-    convert HasDerivAt.mul (hasDerivAt_id' x) ((hf x).pow _) using 1
+    convert (hasDerivAt_id' x).mul ((hf x).pow _) using 1
     simp only [u₂']
     ring
   have hv₂ (x) : HasDerivAt v₂ (v₂' x) x := (hasDerivAt_mul_const θ).cos
@@ -72,32 +70,29 @@ private lemma recursion' (n : ℕ) :
     dsimp [u₁', v₁, u₂, v₂']
     ring
   rw [integral_mul_deriv_eq_deriv_mul (fun x _ => hu₂ x) (fun x _ => hv₂ x)
-    (hu₂d.intervalIntegrable _ _)
-    (hv₂d.intervalIntegrable _ _), mul_sub, t, neg_mul, neg_mul, neg_mul, sub_neg_eq_add]
+    (hu₂d.intervalIntegrable _ _) (hv₂d.intervalIntegrable _ _),
+    mul_sub, t, neg_mul, neg_mul, neg_mul, sub_neg_eq_add]
   have (x) : u₂' x = (2 * n + 1) * f x ^ n - 2 * n * f x ^ (n - 1) := by
-    cases' n with n
-    · simp [u₂']
-    simp only [u₂', pow_succ _ n, f, Nat.succ_sub_one, Nat.cast_succ]
-    ring
+    cases n with
+    | zero => simp [u₂']
+    | succ n => ring!
   simp_rw [this, sub_mul, mul_assoc _ _ (v₂ _)]
   have : Continuous v₂ := by fun_prop
   rw [mul_mul_mul_comm, integral_sub, mul_sub, add_sub_assoc]
   · congr 1
     simp_rw [integral_const_mul]
-    simp only [I, f, v₂]
-    ring
+    ring!
   all_goals exact Continuous.intervalIntegrable (by fun_prop) _ _
 
 private lemma recursion (n : ℕ) :
     I (n + 2) θ * θ ^ 2 =
       2 * (n + 2) * (2 * n + 3) * I (n + 1) θ - 4 * (n + 2) * (n + 1) * I n θ := by
-  rw [recursion' (n + 1), Nat.cast_add_one, zero_pow (Nat.succ_ne_zero _)]
+  rw [recursion' (n + 1)]
   simp
-  ring_nf
+  ring!
 
 private lemma I_one : I 1 θ * θ ^ 3 = 4 * sin θ - 4 * θ * cos θ := by
-  rw [_root_.pow_succ, ← mul_assoc, recursion' 0, Nat.cast_zero, mul_zero, mul_zero, zero_mul,
-    sub_zero, zero_add, mul_one, mul_one, add_mul, mul_assoc, mul_assoc, I_zero]
+  rw [_root_.pow_succ, ← mul_assoc, recursion' 0, sub_mul, add_mul, mul_assoc _ (I 0 θ), I_zero]
   ring
 
 private def sinPoly : ℕ → ℤ[X]
@@ -113,7 +108,7 @@ private def cosPoly : ℕ → ℤ[X]
 private lemma sinPoly_natDegree_le : ∀ n : ℕ, (sinPoly n).natDegree ≤ n
   | 0 => by simp [sinPoly]
   | 1 => by simp only [natDegree_C, mul_one, zero_le', sinPoly]
-  | (n+2) => by
+  | n + 2 => by
       rw [sinPoly]
       refine natDegree_add_le_of_degree_le ((natDegree_smul_le _ _).trans ?_) ?_
       · exact (sinPoly_natDegree_le (n + 1)).trans (by simp)
@@ -123,33 +118,23 @@ private lemma sinPoly_natDegree_le : ∀ n : ℕ, (sinPoly n).natDegree ≤ n
 private lemma cosPoly_natDegree_le : ∀ n : ℕ, (cosPoly n).natDegree ≤ n
   | 0 => by simp [cosPoly]
   | 1 => (natDegree_monomial_le _).trans (by simp)
-  | (n+2) => by
+  | n + 2 => by
       rw [cosPoly]
       refine natDegree_add_le_of_degree_le ((natDegree_smul_le _ _).trans ?_) ?_
       · exact (cosPoly_natDegree_le (n + 1)).trans (by simp)
-      refine natDegree_mul_le.trans ?_
-      simp only [Int.reduceNeg, map_neg, natDegree_neg, natDegree_monomial, OfNat.ofNat_ne_zero,
-        ↓reduceIte]
-      linarith [cosPoly_natDegree_le n]
+      exact natDegree_mul_le.trans (by simp [add_comm 2, cosPoly_natDegree_le n])
 
 private lemma sinPoly_add_cosPoly_eval (θ : ℝ) :
     ∀ n : ℕ,
       I n θ * θ ^ (2 * n + 1) = n ! * ((sinPoly n).eval₂ (Int.castRingHom _) θ * sin θ +
         (cosPoly n).eval₂ (Int.castRingHom _) θ * cos θ)
-  | 0 => by simp [sinPoly, cosPoly, I_zero, eval₂_C]
-  | 1 => by
-      simp only [I_one, cosPoly, sinPoly, Nat.factorial_one, Nat.cast_one, mul_one, eval₂_C,
-        eval₂_monomial, Nat.reduceAdd]
-      simp [sub_eq_add_neg]
-  | (n+2) => by
-      rw [Nat.mul_succ, add_right_comm, add_comm (_ + _), pow_add, ← mul_assoc, recursion, sub_mul,
-        mul_assoc, mul_assoc _ (I n θ), sinPoly_add_cosPoly_eval, mul_add_one 2, add_right_comm,
-        pow_add, ← mul_assoc (I n θ), sinPoly_add_cosPoly_eval, sinPoly, cosPoly, eval₂_add,
-        eval₂_add, eval₂_smul, eval₂_smul, eval₂_mul, eval₂_mul, eval₂_monomial]
-      simp only [map_mul, map_ofNat, map_add, map_natCast, Int.reduceNeg, map_neg, neg_mul,
-        Nat.factorial_succ]
-      push_cast
-      ring
+  | 0 => by simp [sinPoly, cosPoly, I_zero]
+  | 1 => by simp [I_one, sinPoly, cosPoly, sub_eq_add_neg]
+  | n + 2 => by
+      calc I (n + 2) θ * θ ^ (2 * (n + 2) + 1) = I (n + 2) θ * θ ^ 2 * θ ^ (2 * n + 3) := by ring
+        _ = 2 * (n + 2) * (2 * n + 3) * (I (n + 1) θ * θ ^ (2 * (n + 1) + 1)) -
+            4 * (n + 2) * (n + 1) * θ ^ 2 * (I n θ * θ ^ (2 * n + 1)) := by rw [recursion]; ring
+        _ = _ := by simp [sinPoly_add_cosPoly_eval, sinPoly, cosPoly, Nat.factorial_succ]; ring
 
 open BigOperators
 
