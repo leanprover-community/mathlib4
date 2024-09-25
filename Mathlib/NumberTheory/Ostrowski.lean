@@ -9,9 +9,9 @@ Francesco Veneziano
 import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Analysis.Normed.Ring.Seminorm
 import Mathlib.NumberTheory.Padics.PadicNorm
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 /-!
 # Ostrowski’s Theorem
@@ -39,11 +39,10 @@ open Topology
 
 -- If `a : ℝ` is bounded by `g(k)` for every `0 < k` then it is bounded by `lim_{k → ∞} g(k)`
 private lemma le_of_limit_le {a : ℝ} {g : ℕ → ℝ} {l : ℝ} (ha : ∀ (k : ℕ) (_ : 0 < k), a ≤ g k)
-  (hg : Tendsto g Filter.atTop (𝓝 l)) : a ≤ l := by
+    (hg : Tendsto g Filter.atTop (𝓝 l)) : a ≤ l := by
   apply le_of_tendsto_of_tendsto tendsto_const_nhds hg
   rw [EventuallyLE, eventually_atTop]
   exact ⟨1, ha⟩
-
 
 -- For any `C > 0`, the limit of `C ^ (1/k)` is 1 as `k → ∞`
 private lemma tendsto_root_atTop_nhds_one {C : ℝ} (hC : 0 < C) :
@@ -62,28 +61,27 @@ private lemma tendsto_nat_rpow_div :
   simp_rw [← one_div]
   exact tendsto_rpow_div
 
-
 namespace Rat.MulRingNorm
 open Int
 
 variable {f g : MulRingNorm ℚ}
 
 /-- Values of a multiplicative norm of the rationals coincide on ℕ if and only if they coincide
-on `ℤ`. --/
+on `ℤ`. -/
 lemma eq_on_nat_iff_eq_on_Int : (∀ n : ℕ , f n = g n) ↔ (∀ n : ℤ , f n = g n) := by
   refine ⟨fun h z ↦ ?_, fun a n ↦ a n⟩
   obtain ⟨n , rfl | rfl⟩ := eq_nat_or_neg z <;>
   simp only [Int.cast_neg, Int.cast_natCast, map_neg_eq_map, h n]
 
 /-- Values of a multiplicative norm of the rationals are determined by the values on the natural
-numbers. --/
+numbers. -/
 lemma eq_on_nat_iff_eq : (∀ n : ℕ , f n = g n) ↔ f = g := by
   refine ⟨fun h ↦ ?_, fun h n ↦ congrFun (congrArg DFunLike.coe h) ↑n⟩
   ext z
   rw [← Rat.num_div_den z, map_div₀, map_div₀, h, eq_on_nat_iff_eq_on_Int.mp h]
 
 /-- The equivalence class of a multiplicative norm on the rationals is determined by its values on
-the natural numbers. --/
+the natural numbers. -/
 lemma equiv_on_nat_iff_equiv : (∃ c : ℝ, 0 < c ∧ (∀ n : ℕ , (f n) ^ c = g n)) ↔
     f.equiv g := by
     refine ⟨fun ⟨c, hc, h⟩ ↦ ⟨c, ⟨hc, ?_⟩⟩, fun ⟨c, hc, h⟩ ↦ ⟨c, ⟨hc, fun n ↦ by rw [← h]⟩⟩⟩
@@ -99,9 +97,8 @@ section Non_archimedean
 /-! ## Non-archimedean case
 
 Every bounded absolute value is equivalent to a `p`-adic absolute value
- -/
+-/
 
-/-- The mulRingNorm corresponding to the p-adic norm on `ℚ`. --/
 def mulRingNorm_padic (p : ℕ) [Fact p.Prime] : MulRingNorm ℚ :=
 { toFun     := fun x : ℚ ↦ (padicNorm p x : ℝ),
   map_zero' := by simp only [padicNorm.zero, Rat.cast_zero]
@@ -118,7 +115,7 @@ def mulRingNorm_padic (p : ℕ) [Fact p.Prime] : MulRingNorm ℚ :=
 @[simp] lemma mulRingNorm_eq_padic_norm (p : ℕ) [Fact p.Prime] (r : ℚ) :
   mulRingNorm_padic p r = padicNorm p r := rfl
 
-/-! ## Step 1: define `p = minimal n s. t. 0 < f n < 1` -/
+-- ## Step 1: define `p = minimal n s. t. 0 < f n < 1`
 
 variable (hf_nontriv : f ≠ 1) (bdd : ∀ n : ℕ, f n ≤ 1)
 
@@ -139,7 +136,7 @@ lemma exists_minimal_nat_zero_lt_mulRingNorm_lt_one : ∃ p : ℕ, (0 < f p ∧ 
     ⟨n, map_pos_of_ne_zero f (Nat.cast_ne_zero.mpr hn1), lt_of_le_of_ne (bdd n) hn2⟩
   exact ⟨sInf P, Nat.sInf_mem hP, fun m hm ↦ Nat.sInf_le hm⟩
 
-/-! ## Step 2: p is prime -/
+-- ## Step 2: p is prime
 
 variable {p : ℕ} (hp0 : 0 < f p) (hp1 : f p < 1) (hmin : ∀ m : ℕ, 0 < f m ∧ f m < 1 → p ≤ m)
 
@@ -167,12 +164,12 @@ lemma is_prime_of_minimal_nat_zero_lt_mulRingNorm_lt_one : p.Prime := by
     rw [Nat.cast_mul, map_mul] at hp1
     exact ((one_le_mul_of_one_le_of_one_le ha hb).trans_lt hp1).false
 
-/-! ## Step 3: if p does not divide m, then f m = 1 -/
+-- ## Step 3: if p does not divide m, then f m = 1
 
 open Real
 
 include hp0 hp1 hmin bdd in
-/-- A natural number not divible by `p` has absolute value 1. --/
+/-- A natural number not divible by `p` has absolute value 1. -/
 lemma mulRingNorm_eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
   apply le_antisymm (bdd m)
   by_contra! hm
@@ -212,10 +209,10 @@ lemma mulRingNorm_eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
       map_pos_of_ne_zero _ <| Nat.cast_ne_zero.2 fun H ↦ hpm <| H ▸ dvd_zero p
     linarith only [le_half hp0 hp1 le_sup_left, le_half hm₀ hm le_sup_right]
 
-/-! ## Step 4: f p = p ^ (- t) for some positive real t -/
+-- ## Step 4: f p = p ^ (- t) for some positive real t
 
 include hp0 hp1 hmin in
-/-- The absolute value of `p` is `p ^ (-t)` for some positive real number `t`. --/
+/-- The absolute value of `p` is `p ^ (-t)` for some positive real number `t`. -/
 lemma exists_pos_mulRingNorm_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) := by
   have pprime := is_prime_of_minimal_nat_zero_lt_mulRingNorm_lt_one hp0 hp1 hmin
   refine ⟨- logb p (f p), Left.neg_pos_iff.2 <| logb_neg (mod_cast pprime.one_lt) hp0 hp1, ?_⟩
@@ -226,7 +223,7 @@ lemma exists_pos_mulRingNorm_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) 
 /-! ## Non-archimedean case: end goal -/
 
 include hf_nontriv bdd in
-/-- If `f` is bounded and not trivial, then it is equivalent to a p-adic absolute value. --/
+/-- If `f` is bounded and not trivial, then it is equivalent to a p-adic absolute value. -/
 theorem mulRingNorm_equiv_padic_of_bounded :
     ∃! p, ∃ (hp : Fact (p.Prime)), MulRingNorm.equiv f (mulRingNorm_padic p) := by
   obtain ⟨p, hfp, hmin⟩ := exists_minimal_nat_zero_lt_mulRingNorm_lt_one hf_nontriv bdd
@@ -274,7 +271,7 @@ section Archimedean
 
 /-- Given an two integers `n, m` with `m > 1` the mulRingNorm of `n` is bounded by
     `m + m * f m + m * (f m) ^ 2 + ... + m * (f m) ^ d` where `d` is the number of digits of the
-    expansion of `n` in base `m`. --/
+    expansion of `n` in base `m`. -/
 lemma MulRingNorm_le_sum_digits (n : ℕ) {m : ℕ} (hm : 1 < m):
     f n ≤ ((Nat.digits m n).mapIdx fun i _ ↦ m * (f m) ^ i).sum := by
   set L := Nat.digits m n
@@ -306,7 +303,7 @@ open Filter
 
 /-! ## Step 1: if f is a MulRingNorm and f n > 1 for some natural n, then f n > 1 for all n ≥ 2 -/
 
-/-- If `f n > 1` for some `n` then `f n > 1` for all `n ≥ 2` --/
+/-- If `f n > 1` for some `n` then `f n > 1` for all `n ≥ 2` -/
 lemma one_lt_of_not_bounded (notbdd : ¬ ∀ (n : ℕ), f n ≤ 1) {n₀ : ℕ} (hn₀ : 1 < n₀) : 1 < f n₀ := by
   contrapose! notbdd with h
   intro n
@@ -359,11 +356,9 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ (n : ℕ), f n ≤ 1) {n₀ : ℕ} 
       (fun k : ℕ ↦ (n₀ * (Real.logb n₀ n + 1)) ^ (k : ℝ)⁻¹ * (k ^ (k : ℝ)⁻¹))
       Filter.atTop (𝓝 1) := by
     nth_rw 2 [← mul_one 1]
+    have : 0 < logb ↑n₀ ↑n := Real.logb_pos (mod_cast hn₀) (by norm_cast; omega)
     have hnlim : Tendsto (fun k : ℕ ↦ (n₀ * (Real.logb n₀ n + 1)) ^ (k : ℝ)⁻¹) atTop (𝓝 1) :=
-      tendsto_root_atTop_nhds_one
-        (mul_pos
-          (mod_cast (lt_trans zero_lt_one hn₀))
-          (add_pos (Real.logb_pos (mod_cast hn₀) (by norm_cast; omega)) Real.zero_lt_one))
+      tendsto_root_atTop_nhds_one (by positivity)
     exact hnlim.mul tendsto_nat_rpow_div
   exact le_of_limit_le h_ineq2 prod_limit
 
