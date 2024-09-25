@@ -74,11 +74,11 @@ def Hom.comp {ι₁ M₁ N₁ ι₂ M₂ N₂ : Type*} [AddCommGroup M₁] [Modu
   root_weightMap := by
     ext i
     simp only [LinearMap.coe_comp, Equiv.coe_trans]
-    rw [comp.assoc, f.root_weightMap, ← comp.assoc, g.root_weightMap, comp.assoc]
+    rw [comp_assoc, f.root_weightMap, ← comp_assoc, g.root_weightMap, comp_assoc]
   coroot_coweightMap := by
     ext i
     simp only [LinearMap.coe_comp, Equiv.symm_trans_apply]
-    rw [comp.assoc, g.coroot_coweightMap, ← comp.assoc, f.coroot_coweightMap, comp.assoc]
+    rw [comp_assoc, g.coroot_coweightMap, ← comp_assoc, f.coroot_coweightMap, comp_assoc]
     simp
 
 @[simp]

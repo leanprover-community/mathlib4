@@ -58,6 +58,12 @@ theorem HasFPowerSeriesAt.fderiv_eq (h : HasFPowerSeriesAt f p x) :
     fderiv 𝕜 f x = continuousMultilinearCurryFin1 𝕜 E F (p 1) :=
   h.hasFDerivAt.fderiv
 
+theorem AnalyticAt.hasStrictFDerivAt (h : AnalyticAt 𝕜 f x) :
+    HasStrictFDerivAt f (fderiv 𝕜 f x) x := by
+  rcases h with ⟨p, hp⟩
+  rw [hp.fderiv_eq]
+  exact hp.hasStrictFDerivAt
+
 theorem HasFPowerSeriesOnBall.differentiableOn [CompleteSpace F]
     (h : HasFPowerSeriesOnBall f p x r) : DifferentiableOn 𝕜 f (EMetric.ball x r) := fun _ hy =>
   (h.analyticAt_of_mem hy).differentiableWithinAt
