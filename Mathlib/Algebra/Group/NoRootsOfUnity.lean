@@ -6,6 +6,13 @@ Authors: Yury Kudryashov
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Order.Monotone.Basic
 
+/-!
+# Monoids and groups without roots of unity
+
+In this file we prove that in a group without roots of unity,
+`x^n` is injective in `x` (unless `n = 0`) and in `n` (unless `x = 1`).
+-/
+
 section Monoid
 
 variable {M : Type*} [Monoid M] [NoRootsOfUnity M ℕ] {x : M} {n : ℕ}
