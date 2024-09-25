@@ -21,22 +21,43 @@ module doc-string*
 rest
 ```
 It emits a warning if the first non-`import` command is not a module doc-string.
+
+The linter allows `import`-only files and does not require a copyright statement in `Mathlib.Init`.
+
+The strategy used by the linter is as follows.
+Upon reaching the end of file, the linter locates the end position of the first doc-module string
+and, if there are no doc-module strings, the end of file.
+Next, it tries to parse the file up to the position determined above.
+
+If the parsing is successful, the linter checks the resulting `Syntax` and everything is fine.
+
+If the parsing is not successful, this already means that there is some "problematic" command
+after the imports.
+In particular, there is a command that is not a doc-module string immediately following the last.
+import: the file should be flagged by the linter.
+Hence, the linter then falls back to parsing the header of the file adding a spurious `section`
+after.
+This makes it possible for the linter to check all the header of the file, emit warnings that
+could arise from this part and also flag that the file should contain a doc-module string after
+the `import` statements.
 -/
 
 open Lean Elab Command
 
 namespace Mathlib.Linter
 
-/-- `onlyImportsModDocs stx` checks whether `stx` is the syntax for a module that
-only consists of any number of `import` statements (possibly none) followed by
-either a module doc-string (and then anything else) or nothing else.
+/--
+`firstNonImport? stx` assumes that the input `Syntax` is of kind `Lean.Parser.Module.module`.
+It returns
+* `none`, if `stx` consists only of `import` statements,
+* the first non-`import` command in `stx`, otherwise.
+
+The intended use-case is to use the output of `testParseModule` as the input of
+`firstNonImport?`.
 -/
-def onlyImportsModDocs : Syntax → Option Bool
-  | .node _ ``Lean.Parser.Module.module #[_header, .node _ `null args] =>
-    let args := args
-    let first := args.get? 0
-    first.map (·.isOfKind ``Lean.Parser.Command.moduleDoc)
-  | _=> some false
+def firstNonImport? : Syntax → Option Syntax
+  | .node _ ``Lean.Parser.Module.module #[_header, .node _ `null args] => args[0]?
+  | _=> some .missing  -- this is unreachable, if the input comes from `testParseModule`
 
 /-- Returns the array of all `import` identifiers in `s`. -/
 partial
@@ -48,8 +69,8 @@ def getImportIds (s : Syntax) : Array Syntax :=
     rest
 
 /--
-`parseUpToHere stx post` takes as input a `Syntax` `stx` and a `String` `post`.
-It parses the file containing `stx` up to and excluding `stx`, appending `post` at the end.
+`parseUpToHere pos post` takes as input `pos : String.Pos` and the optional `post : String`.
+It parses the current file from the beginning until `pos`, appending `post` at the end.
 
 The option of appending a final string to the text gives more control to avoid syntax errors,
 for instance in the presence of `#guard_msgs in` or `set_option ... in`.
@@ -63,11 +84,8 @@ parsing the file linearly, it will only need to parse
 In conclusion, either the parsing is successful, and the linter can continue with its analysis,
 or the parsing is not successful and the linter will flag a missing module doc-string!
 -/
-def parseUpToHere (stx : Syntax) (post : String := "") (included : Bool := true) :
-    CommandElabM Syntax := do
-  let fm ← getFileMap
-  let startPos := if included then stx.getTailPos?.getD default else stx.getPos?.getD default
-  let upToHere : Substring:= { str := fm.source, startPos := ⟨0⟩, stopPos := startPos}
+def parseUpToHere (pos : String.Pos) (post : String := "") : CommandElabM Syntax := do
+  let upToHere : Substring:= { str := (← getFileMap).source, startPos := ⟨0⟩, stopPos := pos }
   -- append a further string after the `upToHere` content
   Parser.testParseModule (← getEnv) "linter.style.header" (upToHere.toString ++ post)
 
@@ -96,7 +114,7 @@ def authorsLineChecks (line : String) (offset : String.Pos) : Array (Syntax × S
     stxs := stxs.push (toSyntax line "  " offset, s!"Double spaces are not allowed.")
   if (line.splitOn " and ").length != 1 then
     stxs := stxs.push (toSyntax line " and " offset, s!"Please, do not use 'and', use ',' instead.")
-  if line.endsWith "." then
+  if line.back == '.' then
     stxs := stxs.push
       (toSyntax line "." offset,
        s!"Please, do not end the authors' line with a period.")
@@ -187,10 +205,6 @@ register_option linter.style.header : Bool := {
   descr := "enable the header style linter"
 }
 
-/-- An `IO.Ref` used to keep track of the initial segment of the file, from the end of the last
-`import` command, until the first non-`import` command. -/
-initialize fileToFirstCommand : IO.Ref Substring ← IO.mkRef default
-
 namespace Style.header
 
 @[inherit_doc Mathlib.Linter.linter.style.header]
@@ -199,48 +213,41 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
-  -- instead of silencing this linter on Sensitivity, we should probably silence the text-based one
-  if #[`Archive.Sensitivity, `Mathlib.Init].contains (← getMainModule) then
+  unless Parser.isTerminalCommand stx do
     return
-  let mut fileStart ← fileToFirstCommand.get
-  let mut upToStx : Syntax := .missing
-  let mut importIds : Array Syntax := #[]
-  let offset : String.Pos := ⟨3⟩
   let fm ← getFileMap
-  if Parser.isTerminalCommand stx then
-    let currStart : Substring :=
-      {str := fm.source, startPos := fileStart.startPos, stopPos := fileStart.stopPos}
-    if fileStart != currStart then
-      logWarningAt (.ofRange ⟨fileStart.startPos + ⟨1⟩, fileStart.stopPos⟩)
-        m!"Header information is outdated, please restart the file to get up to date information."
-  let stxRg := stx.getRange?.getD default
-  if fileStart.isEmpty ||
-    stx.getPos?.getD 0 ≤ fileStart.stopPos - (stxRg.stop - stxRg.start) + offset then
-    upToStx ← parseUpToHere stx <|> pure Syntax.missing
-    importIds := getImportIds upToStx
-    fileStart := { str      := fm.source
-                   startPos := importIds.back.getTailPos?.getD 0
-                   stopPos  := stx.getTailPos?.getD 0 }
-    fileToFirstCommand.set fileStart
-  if upToStx != .missing then
-    if (onlyImportsModDocs upToStx).isNone then return
-    unless stx.getPos?.getD 0 ≤ fileStart.stopPos - (stxRg.stop - stxRg.start) + offset do
-      return
-    let copyright := match upToStx.getHeadInfo with
-      | .original lead .. => lead.toString
-      | _ => ""
-    -- copyright report
+  let md := (getMainModuleDoc (← getEnv)).toArray
+  -- the end of the first module doc, or the end of the file if there are no module docs.
+  let firstDocModPos := match md[0]? with
+                          | none     => fm.positions.back
+                          | some doc => fm.ofPosition doc.declarationRange.endPos
+  -- we try to parse the file up to `firstDocModPos`.
+  let upToStx ← parseUpToHere firstDocModPos <|> (do
+    -- if parsing failed, then there are some non-module docs, so we parse until the end of the
+    -- imports, adding an extra `section` after, so that we trigger a "no module doc" warning.
+    let fil ← getFileName
+    let (stx, _) ← Parser.parseHeader { input := fm.source, fileName := fil, fileMap := fm }
+    parseUpToHere (stx.getTailPos?.getD default) "\nsection")
+  let importIds := getImportIds upToStx
+  -- imports report
+  for (imp, msg) in broadImportsCheck importIds do
+    Linter.logLint linter.style.header imp msg
+  let afterImports := firstNonImport? upToStx
+  let copyright := match upToStx.getHeadInfo with
+    | .original lead .. => lead.toString
+    | _ => ""
+  -- copyright report
+  if (← getMainModule) != `Mathlib.Init then
     for (stx, m) in copyrightHeaderChecks copyright do
       Linter.logLint linter.style.header stx m!"* '{stx.getAtomVal}':\n{m}\n"
-    -- imports report
-    for (imp, msg) in broadImportsCheck importIds do
-      Linter.logLint linter.style.header imp msg
-    -- doc-module report
-    if let some false := onlyImportsModDocs upToStx then
-      Linter.logLint linter.style.header stx
-        m!"The module doc-string for a file should be the first command after the imports.\n\
-         Please, add a module doc-string before `{stx}`."
-    else return
+  -- doc-module report
+  match afterImports with
+    | none => return
+    | some (.node _ ``Lean.Parser.Command.moduleDoc _) => return
+    | some rest =>
+    Linter.logLint linter.style.header rest
+      m!"The module doc-string for a file should be the first command after the imports.\n\
+       Please, add a module doc-string before `{stx}`."
 
 initialize addLinter headerLinter
 
