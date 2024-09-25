@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
 import Mathlib.Algebra.Algebra.Tower
-import Mathlib.GroupTheory.GroupAction.BigOperators
+import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Tactic.Ring
 import Mathlib.Util.AtomM
 
