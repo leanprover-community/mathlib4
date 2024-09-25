@@ -46,7 +46,7 @@ def functorToPresheaves : ModuleCat.{max u w} R ⥤ ((CompHausLike.{u} P)ᵒᵖ 
 variable [HasExplicitFiniteCoproducts.{0} P] [HasExplicitPullbacks.{u} P]
   (hs : ∀ ⦃X Y : CompHausLike P⦄ (f : X ⟶ Y), EffectiveEpi f → Function.Surjective f)
 
-/-- `CompHausLike.LocallyConstantModule.functorToPresheaves` lands in sheaves. -/
+/-- `CompHausLike.LocallyConstantModule.functorToPresheaves` lands in sheaves. -/
 @[simps]
 def functor : haveI := CompHausLike.preregular hs
     ModuleCat R ⥤ Sheaf (coherentTopology (CompHausLike.{u} P)) (ModuleCat R) where
@@ -67,11 +67,11 @@ open Condensed
 
 variable (R : Type (u+1)) [Ring R]
 
-/-- `functorToPresheaves` in the case of `CompHaus`. -/
+/-- `functorToPresheaves` in the case of `CompHaus`. -/
 abbrev functorToPresheaves : ModuleCat.{u+1} R ⥤ (CompHaus.{u}ᵒᵖ ⥤ ModuleCat R) :=
   CompHausLike.LocallyConstantModule.functorToPresheaves.{u+1, u} R
 
-/-- `functorToPresheaves` as a functor to condensed modules. -/
+/-- `functorToPresheaves` as a functor to condensed modules. -/
 abbrev functor : ModuleCat R ⥤ CondensedMod.{u} R :=
   CompHausLike.LocallyConstantModule.functor.{u+1, u} R
     (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
@@ -174,11 +174,11 @@ open LightCondensed
 
 variable (R : Type u) [Ring R]
 
-/-- `functorToPresheaves` in the case of `LightProfinite`. -/
+/-- `functorToPresheaves` in the case of `LightProfinite`. -/
 abbrev functorToPresheaves : ModuleCat.{u} R ⥤ (LightProfinite.{u}ᵒᵖ ⥤ ModuleCat R) :=
   CompHausLike.LocallyConstantModule.functorToPresheaves.{u, u} R
 
-/-- `functorToPresheaves` as a functor to light condensed modules. -/
+/-- `functorToPresheaves` as a functor to light condensed modules. -/
 abbrev functor : ModuleCat R ⥤ LightCondMod.{u} R :=
   CompHausLike.LocallyConstantModule.functor.{u, u} R
     (fun _ _ _ ↦ (LightProfinite.effectiveEpi_iff_surjective _).mp)
