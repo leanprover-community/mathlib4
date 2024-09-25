@@ -55,7 +55,7 @@ theorem deriv_tan (x : ℝ) : deriv tan x = 1 / cos x ^ 2 :=
   else (hasDerivAt_tan h).deriv
 
 @[simp]
-theorem contDiffAt_tan {n x} : ContDiffAt ℝ n tan x ↔ cos x ≠ 0 :=
+theorem contDiffAt_tan {n : WithTop ℕ∞} {x : ℝ} : ContDiffAt ℝ n tan x ↔ cos x ≠ 0 :=
   ⟨fun h => continuousAt_tan.1 h.continuousAt, fun h =>
     (Complex.contDiffAt_tan.2 <| mod_cast h).real_of_complex⟩
 
