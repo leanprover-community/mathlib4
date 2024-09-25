@@ -10,7 +10,7 @@ import Mathlib.Topology.Category.LightProfinite.Extend
 
 # The condensed set given by left Kan extension from `FintypeCat` to `Profinite`.
 
-This file provides the necessary API to prove that a condensed set `X` is discrete if and only if
+This file provides the necessary API to prove that a condensed set `X` is discrete if and only if
 for every profinite set `S = limᵢSᵢ`, `X(S) ≅ colimᵢX(Sᵢ)`, and the analogous result for light
 condensed sets.
 -/
@@ -50,8 +50,8 @@ noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi 
     refine ⟨⟨k⟩, ki.op, kj.op, ?_⟩
     dsimp only [comp_obj, op_obj, functorToPresheaves_obj_obj, CompHausLike.coe_of,
       Functor.comp_map, op_map, Quiver.Hom.unop_op, functorToPresheaves_obj_map]
-    -- Note: we might want to remove the `simps` attribute from `FintypeCat.toProfinite`; keeping
-    -- `toProfinite_obj` in the `dsimp` block above causes the following `ext` to fail.
+    -- Note: we might want to remove the `simps` attribute from `FintypeCat.toProfinite`; keeping
+    -- `toProfinite_obj` in the `dsimp` block above causes the following `ext` to fail.
     ext x
     obtain ⟨x, hx⟩ := ((Profinite.epi_iff_surjective (c.π.app k)).mp inferInstance) x
     rw [← hx]
