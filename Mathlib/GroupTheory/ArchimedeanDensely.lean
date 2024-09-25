@@ -34,11 +34,7 @@ This is the stronger version of `AddSubgroup.mem_closure_singleton`."]
 lemma Subgroup.mem_closure_singleton_iff_existsUnique_zpow {G : Type*}
     [Group G] [NoRootsOfUnity G ℕ] {a b : G} (ha : a ≠ 1) :
     b ∈ closure {a} ↔ ∃! k : ℤ, a ^ k = b := by
-  rw [mem_closure_singleton]
-  constructor
-  · rintro ⟨m, rfl⟩
-    simp [ha]
-  · exact fun h ↦ h.exists
+  rw [mem_closure_singleton, ← mem_range, (zpow_right_injective ha).mem_range_iff_existsUnique]
 
 open Subgroup in
 /-- In two linearly ordered groups, the closure of an element of one group
