@@ -17,9 +17,8 @@ In this file, we prove some basic results about central simple algebras over a f
 - `Algebra.IsCentralSimple.center_eq_bot`: the center of a central simple algebra over a field `K`
   is equal to `K`.
 - `Algebra.IsCentralSimple.self`: a field is a central simple algebra over itself.
-- `Algebra.IsCentralSimple.tower`: being central simple is stable under field extensions, i.e. if
-  `K/k` is a field extension and `D` is a central simple algebra over `k`, then `D` is a central
-  simple algebra over `K`.
+- `Algebra.IsCentralSimple.baseField_essentially_unique`: Let `D/K/k` is a tower of scalars where
+  `K` and `k` are fields. If `D` is central simple over `k`, `K` is isomorphic to `k`.
 -/
 
 universe u v
@@ -39,15 +38,23 @@ lemma mem_center_iff {x : D} : x ∈ Subalgebra.center K D ↔ ∃ (a : K), x = 
 instance self : IsCentralSimple K K where
   is_central x := by simp [Algebra.mem_bot]
 
-lemma tower {k K D : Type*} [Field k] [Field K] [Ring D]
-    [Algebra k K] [Algebra K D] [Algebra k D] [IsScalarTower k K D] [IsCentralSimple k D] :
-    IsCentralSimple K D where
-  is_central x := by
-    change x ∈ Subalgebra.center k D → _
-    rw [center_eq_bot k D, Algebra.mem_bot, Algebra.mem_bot]
-    simp only [Set.mem_range, forall_exists_index]
-    rintro x rfl
-    refine ⟨algebraMap k K x, by simp only [algebraMap_eq_smul_one, smul_assoc, one_smul]⟩
-  is_simple := IsCentralSimple.is_simple k
+lemma baseField_essentially_unique
+    {k K D : Type*} [Field k] [Field K] [Ring D]
+    [Algebra k K] [Algebra K D] [Algebra k D] [IsScalarTower k K D]
+    [IsCentralSimple k D] :
+    Function.Bijective (algebraMap k K) := by
+  haveI : IsSimpleRing D := IsCentralSimple.is_simple k
+  haveI : IsCentralSimple K D :=
+  { is_central := fun x ↦ show x ∈ Subalgebra.center k D → _ by
+      simp only [center_eq_bot, mem_bot, Set.mem_range, forall_exists_index]
+      rintro x rfl
+      exact  ⟨algebraMap k K x, by simp [algebraMap_eq_smul_one, smul_assoc]⟩
+    is_simple := IsCentralSimple.is_simple k }
+  refine ⟨NoZeroSMulDivisors.algebraMap_injective k K, fun x => ?_⟩
+  have H : algebraMap K D x ∈ (Subalgebra.center K D : Set D) := Subalgebra.algebraMap_mem _ _
+  rw [show (Subalgebra.center K D : Set D) = Subalgebra.center k D by rfl] at H
+  simp only [center_eq_bot, coe_bot, Set.mem_range] at H
+  obtain ⟨x', H⟩ := H
+  exact ⟨x', (algebraMap K D).injective <| by simp [← H, algebraMap_eq_smul_one]⟩
 
 end Algebra.IsCentralSimple
