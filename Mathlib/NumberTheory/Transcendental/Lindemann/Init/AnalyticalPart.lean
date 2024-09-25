@@ -27,11 +27,11 @@ theorem Differentiable.real_of_complex {e : ℂ → ℂ} (h : Differentiable ℂ
   (h.restrictScalars ℝ).comp ofRealCLM.differentiable
 
 theorem deriv_eq_f (p : ℂ[X]) (s : ℂ) :
-    (deriv fun x ↦ -(cexp (-(x • s)) * p.sumIderiv.eval (x • s))) =
+    (deriv fun x ↦ -(cexp (-(x • s)) * p.sumIDeriv.eval (x • s))) =
       fun x : ℝ ↦ s * (cexp (-(x • s)) * p.eval (x • s)) := by
   have h :
-    (fun y : ℝ => p.sumIderiv.eval (y • s)) =
-      (fun x => p.sumIderiv.eval x) ∘ fun y => y • s :=
+    (fun y : ℝ => p.sumIDeriv.eval (y • s)) =
+      (fun x => p.sumIDeriv.eval x) ∘ fun y => y • s :=
     rfl
   funext x
   rw [deriv.neg, deriv_mul, deriv_cexp, deriv.neg]
@@ -39,12 +39,12 @@ theorem deriv_eq_f (p : ℂ[X]) (s : ℂ) :
   rw [deriv_smul_const, deriv_id'', deriv.comp, Polynomial.deriv, deriv_smul_const, deriv_id'']
   simp_rw [one_smul, mul_assoc, ← mul_add]
   have h :
-    s * p.sumIderiv.eval (x • s) -
-        (derivative (R := ℂ) (sumIderiv p)).eval (x • s) * s =
+    s * p.sumIDeriv.eval (x • s) -
+        (derivative (R := ℂ) (sumIDeriv p)).eval (x • s) * s =
       s * p.eval (x • s) := by
     conv_lhs =>
       congr
-      rw [sumIderiv_eq_self_add, sumIderiv_derivative]
+      rw [sumIDeriv_eq_self_add, sumIDeriv_derivative]
     rw [mul_comm _ s, eval_add, mul_add, add_sub_cancel_right]
   rw [← mul_neg, neg_add', neg_mul, neg_neg, h, mul_left_comm]
   any_goals apply Differentiable.differentiableAt
@@ -62,12 +62,12 @@ theorem deriv_eq_f (p : ℂ[X]) (s : ℂ) :
 
 theorem integral_f_eq (p : ℂ[X]) (s : ℂ) :
     s * ∫ x in (0)..1, exp (-(x • s)) * p.eval (x • s) =
-      -(exp (-s) * p.sumIderiv.eval s) -
-        -p.sumIderiv.eval 0 := by
+      -(exp (-s) * p.sumIDeriv.eval s) -
+        -p.sumIDeriv.eval 0 := by
   rw [← intervalIntegral.integral_const_mul]
   convert
     intervalIntegral.integral_deriv_eq_sub'
-      (fun x : ℝ => -(exp (-(x • s)) * p.sumIderiv.eval (x • s)))
+      (fun x : ℝ => -(exp (-(x • s)) * p.sumIDeriv.eval (x • s)))
       (deriv_eq_f p s) _ _
   · rw [one_smul]
   · rw [one_smul]
@@ -75,7 +75,7 @@ theorem integral_f_eq (p : ℂ[X]) (s : ℂ) :
   · intro x _; apply (Differentiable.mul _ _).neg.differentiableAt
     apply @Differentiable.real_of_complex fun c : ℂ => exp (-(c * s))
     refine (differentiable_id.mul_const _).neg.cexp
-    change Differentiable ℝ ((fun y : ℂ => p.sumIderiv.eval y) ∘ fun x : ℝ => x • s)
+    change Differentiable ℝ ((fun y : ℂ => p.sumIDeriv.eval y) ∘ fun x : ℝ => x • s)
     apply Differentiable.comp
     apply @Differentiable.restrictScalars ℝ _ ℂ; exact Polynomial.differentiable _
     exact differentiable_id'.smul_const _
@@ -85,7 +85,7 @@ theorem integral_f_eq (p : ℂ[X]) (s : ℂ) :
     exact p.continuous_aeval.comp (continuous_id'.smul continuous_const)
 
 def P (p : ℂ[X]) (s : ℂ) :=
-  exp s * p.sumIderiv.eval 0 - p.sumIderiv.eval s
+  exp s * p.sumIDeriv.eval 0 - p.sumIDeriv.eval s
 
 theorem P_le' (p : ℕ → ℂ[X]) (s : ℂ)
     (h :
@@ -187,12 +187,11 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
   use c
   intro q q_gt prime_q
   have q0 : 0 < q := Nat.Prime.pos prime_q
-  obtain ⟨gp', -, h'⟩ := aeval_sumIderiv' ℤ (X ^ (q - 1) * p ^ q) q0
-  simp_rw [RingHom.algebraMap_toAlgebra] at h'
-  simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, Polynomial.map_mul,
-    Polynomial.map_pow, map_X, eq_intCast] at h'
+  obtain ⟨gp', -, h'⟩ := aeval_sumIDeriv' ℤ (X ^ (q - 1) * p ^ q) q0
+  simp? [- nsmul_eq_mul] at h' says
+    simp only [Algebra.id.map_eq_id, Polynomial.map_mul, Polynomial.map_pow, map_X,
+      map_id, eq_intCast, coe_aeval_eq_eval] at h'
   specialize h' Function.injective_id 0 (by rw [Int.cast_zero, sub_zero])
-  erw [map_id] at h' -- TODO remove `erw`
   rw [eval_pow] at h'
   use p.eval 0 ^ q + q • aeval (0 : ℤ) gp'
   rw [exists_prop]
@@ -203,7 +202,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
     replace h := Int.Prime.dvd_pow' prime_q h; rw [Int.natCast_dvd] at h
     replace h := Nat.le_of_dvd (Int.natAbs_pos.mpr p0) h
     revert h; rwa [imp_false, not_le]
-  obtain ⟨gp, gp'_le, h⟩ := aeval_sumIderiv ℂ (X ^ (q - 1) * p ^ q) q
+  obtain ⟨gp, gp'_le, h⟩ := aeval_sumIDeriv ℂ (X ^ (q - 1) * p ^ q) q
   refine ⟨gp, ?_, ?_⟩
   · refine gp'_le.trans ((tsub_le_tsub_right natDegree_mul_le q).trans ?_)
     rw [natDegree_X_pow, natDegree_pow, tsub_add_eq_add_tsub (Nat.one_le_of_lt q0),
@@ -228,7 +227,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
     mul_comm, mul_sub, ← nsmul_eq_mul, ← nsmul_eq_mul, smul_smul, mul_comm,
     Nat.mul_factorial_pred q0, ← h]
   rw [nsmul_eq_mul, ← Int.cast_natCast, ← zsmul_eq_mul, smul_smul, mul_add, ← nsmul_eq_mul, ←
-    nsmul_eq_mul, smul_smul, mul_comm, Nat.mul_factorial_pred q0, ← h', zsmul_eq_mul, aeval_def,
-    eval₂_at_zero, ← eq_intCast (algebraMap ℤ ℂ), ← IsScalarTower.algebraMap_apply, ←
-    eval₂_at_zero, aeval_def, eval₂_eq_eval_map, eval₂_eq_eval_map, mul_comm, ← sumIderiv_map, ← P]
+    nsmul_eq_mul, smul_smul, mul_comm, Nat.mul_factorial_pred q0, coe_aeval_eq_eval, ← h',
+    zsmul_eq_mul, mul_comm, ← eq_intCast (algebraMap ℤ ℂ), eval, hom_eval₂, RingHom.comp_id,
+    map_zero, aeval_def, eval₂_eq_eval_map, eval₂_eq_eval_map, ← sumIDeriv_map, ← P]
   exact (Pp'_le r q (Nat.one_le_of_lt q0)).trans (pow_le_pow_left (c'0 r) (hc r hr) _)
