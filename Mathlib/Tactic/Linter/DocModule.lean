@@ -25,11 +25,11 @@ It emits a warning if the first non-`import` command is not a module doc-string.
 The linter allows `import`-only files and does not require a copyright statement in `Mathlib.Init`.
 
 The strategy used by the linter is as follows.
-Upon reaching the end of file, the linter locates the end position of the first doc-module string
-and, if there are no doc-module strings, the end of file.
-Next, it tries to parse the file up to the position determined above.
+The linter computes the end position of the first module doc-string of the file,
+resorting to the end of the file, if there is no module doc-string.
+Next, the linter tries to parse the file up to the position determined above.
 
-If the parsing is successful, the linter checks the resulting `Syntax` and everything is fine.
+If the parsing is successful, the linter checks the resulting `Syntax` and behaves accordingly.
 
 If the parsing is not successful, this already means that there is some "problematic" command
 after the imports.
@@ -216,8 +216,6 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
-  unless Parser.isTerminalCommand stx do
-    return
   let mainModule ← getMainModule
   if mainModule == `Mathlib then return
   let fm ← getFileMap
@@ -226,6 +224,8 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let firstDocModPos := match md[0]? with
                           | none     => fm.positions.back
                           | some doc => fm.ofPosition doc.declarationRange.endPos
+  unless stx.getTailPos? == some firstDocModPos do
+    return
   -- we try to parse the file up to `firstDocModPos`.
   let upToStx ← parseUpToHere firstDocModPos <|> (do
     -- if parsing failed, then there are some non-module docs, so we parse until the end of the
