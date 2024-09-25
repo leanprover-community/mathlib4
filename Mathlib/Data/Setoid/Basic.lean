@@ -36,6 +36,8 @@ attribute [refl] Setoid.refl
 attribute [symm] Setoid.symm
 attribute [trans] Setoid.trans
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 variable {α : Type*} {β : Type*}
 
 /-- A version of `Setoid.r` that takes the equivalence relation as an explicit argument. -/

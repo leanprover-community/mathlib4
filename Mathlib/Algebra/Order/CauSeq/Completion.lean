@@ -34,6 +34,8 @@ variable {abv}
 def mk : CauSeq _ abv → Cauchy abv :=
   Quotient.mk''
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 @[simp]
 theorem mk_eq_mk (f : CauSeq _ abv) : @Eq (Cauchy abv) ⟦f⟧ (mk f) :=
   rfl

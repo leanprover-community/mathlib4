@@ -1003,6 +1003,8 @@ class PathConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where
   /-- Any two points in a path-connected space must be joined by a continuous path. -/
   joined : ∀ x y : X, Joined x y
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 theorem pathConnectedSpace_iff_zerothHomotopy :
     PathConnectedSpace X ↔ Nonempty (ZerothHomotopy X) ∧ Subsingleton (ZerothHomotopy X) := by
   letI := pathSetoid X

@@ -42,6 +42,8 @@ open scoped FundamentalGroupoid
 
 open scoped unitInterval
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 namespace unitInterval
 
 /-- The path 0 ⟶ 1 in `I` -/

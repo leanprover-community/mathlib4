@@ -66,6 +66,8 @@ universe u
 
 open SetTheory Game PGame WellFounded
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 namespace Surreal.Multiplication
 
 /-- The nontrivial part of P1 in [SchleicherStoll] says that the left options of `x * y` are less

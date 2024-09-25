@@ -173,6 +173,8 @@ end PGame
 
 namespace Game
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 /-- The birthday of a game is defined as the least birthday among all pre-games that define it. -/
 noncomputable def birthday (x : Game.{u}) : Ordinal.{u} :=
   sInf (PGame.birthday '' (Quotient.mk' ⁻¹' {x}))

@@ -269,6 +269,8 @@ def Surreal :=
 
 namespace Surreal
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 /-- Construct a surreal number from a numeric pre-game. -/
 def mk (x : PGame) (h : x.Numeric) : Surreal :=
   ⟦⟨x, h⟩⟧

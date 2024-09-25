@@ -273,6 +273,8 @@ theorem map_mk {f : α → β} (h : UniformContinuous f) (a : α) : map f (mk a)
 theorem uniformContinuous_map (f : α → β) : UniformContinuous (map f) :=
   uniformContinuous_lift' _
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 theorem map_unique {f : α → β} (hf : UniformContinuous f)
     {g : SeparationQuotient α → SeparationQuotient β} (comm : mk ∘ f = g ∘ mk) : map f = g := by
   ext ⟨a⟩

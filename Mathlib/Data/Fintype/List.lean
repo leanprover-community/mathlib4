@@ -31,6 +31,8 @@ open List
 
 namespace Multiset
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 /-- The `Finset` of `l : List α` that, given `m : Multiset α`, have the property `⟦l⟧ = m`.
 -/
 def lists : Multiset α → Finset (List α) := fun s =>

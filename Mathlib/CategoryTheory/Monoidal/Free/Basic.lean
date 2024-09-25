@@ -136,6 +136,8 @@ section
 
 open FreeMonoidalCategory.HomEquiv
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 instance categoryFreeMonoidalCategory : Category.{u} (F C) where
   Hom X Y := Quotient (FreeMonoidalCategory.setoidHom X Y)
   id X := ⟦Hom.id X⟧

@@ -325,6 +325,8 @@ def inverseAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (Y ⟶ᵐ X)
 
 end
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 instance : Groupoid.{u} (F C) :=
   { (inferInstance : Category (F C)) with
     inv := Quotient.lift (fun f => ⟦inverseAux f⟧) (by aesop_cat) }

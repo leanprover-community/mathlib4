@@ -73,6 +73,8 @@ end SimplyConnectedSpace
 
 attribute [local instance] Path.Homotopic.setoid
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 /-- A space is simply connected iff it is path connected, and there is at most one path
   up to homotopy between any two points. -/
 theorem simply_connected_iff_paths_homotopic {Y : Type*} [TopologicalSpace Y] :

@@ -263,6 +263,8 @@ private irreducible_def lt : ℝ → ℝ → Prop
 instance : LT ℝ :=
   ⟨lt⟩
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 theorem lt_cauchy {f g} : (⟨⟦f⟧⟩ : ℝ) < ⟨⟦g⟧⟩ ↔ f < g :=
   show lt _ _ ↔ _ by rw [lt_def]; rfl
 

@@ -134,6 +134,8 @@ section Monoid
 
 variable [Monoid α] [Monoid β]
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 /-- The canonical quotient map from a monoid `α` into the `ConjClasses` of `α` -/
 protected def mk {α : Type*} [Monoid α] (a : α) : ConjClasses α := ⟦a⟧
 

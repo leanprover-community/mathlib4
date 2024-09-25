@@ -48,6 +48,8 @@ theorem proj_map (i : I) (x₀ x₁ : πₓ (TopCat.of (∀ i, X i))) (p : x₀ 
     (proj X i).map p = @Path.Homotopic.proj _ _ _ _ _ i p :=
   rfl
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 /-- The map taking the pi product of a family of fundamental groupoids to the fundamental
 groupoid of the pi product. This is actually an isomorphism (see `piIso`)
 -/

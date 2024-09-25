@@ -221,6 +221,8 @@ end PGame
 
 namespace Game
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 /-- Construct a combinatorial `Game` from a state. -/
 def ofState {S : Type u} [PGame.State S] (s : S) : Game :=
   ⟦PGame.ofState s⟧

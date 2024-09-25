@@ -595,6 +595,8 @@ instance PreEnvelGroup.setoid (R : Type*) [Rack R] : Setoid (PreEnvelGroup R) wh
 def EnvelGroup (R : Type*) [Rack R] :=
   Quotient (PreEnvelGroup.setoid R)
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 -- Define the `Group` instances in two steps so `inv` can be inferred correctly.
 -- TODO: is there a non-invasive way of defining the instance directly?
 instance (R : Type*) [Rack R] : DivInvMonoid (EnvelGroup R) where

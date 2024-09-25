@@ -168,6 +168,8 @@ theorem age.fg_substructure {S : L.Substructure M} (fg : S.FG) : Bundled.mk S �
 
 variable (M)
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 /-- Any class in the age of a structure has a representative which is a finitely generated
 substructure. -/
 theorem age.has_representative_as_substructure :

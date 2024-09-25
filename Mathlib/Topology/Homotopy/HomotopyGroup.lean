@@ -453,6 +453,8 @@ instance group (N) [DecidableEq N] [Nonempty N] : Group (HomotopyGroup N X x) :=
 abbrev auxGroup (i : N) : Group (HomotopyGroup N X x) :=
   (homotopyGroupEquivFundamentalGroup i).group
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 theorem isUnital_auxGroup (i : N) :
     EckmannHilton.IsUnital (auxGroup i).mul (⟦const⟧ : HomotopyGroup N X x) where
   left_id := (auxGroup i).one_mul

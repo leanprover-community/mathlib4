@@ -82,6 +82,8 @@ open CategoryTheory.Preadditive
 
 universe v u
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 namespace CategoryTheory.Abelian
 
 variable {C : Type u} [Category.{v} C]

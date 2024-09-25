@@ -35,6 +35,8 @@ universe u v
 
 open Function Set
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 namespace Set
 
 variable {α β γ : Type*} {ι ι' : Sort*}

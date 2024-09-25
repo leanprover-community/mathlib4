@@ -102,6 +102,8 @@ attribute [local instance] Pseudoelement.setoid
 
 open scoped Pseudoelement
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 /-- `biprod.fst ⟦x⟧ = biprod.fst ⟦y⟧`. -/
 theorem fst_mk'_x_eq_fst_mk'_y :
     (biprod.fst : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _) ⟦x⟧ = (biprod.fst : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _) ⟦y⟧ :=

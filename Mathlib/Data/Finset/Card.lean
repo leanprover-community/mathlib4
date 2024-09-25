@@ -209,6 +209,8 @@ theorem Multiset.toFinset_card_eq_card_iff_nodup {m : Multiset α} :
 theorem List.card_toFinset : l.toFinset.card = l.dedup.length :=
   rfl
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 theorem List.toFinset_card_le : l.toFinset.card ≤ l.length :=
   Multiset.toFinset_card_le ⟦l⟧
 

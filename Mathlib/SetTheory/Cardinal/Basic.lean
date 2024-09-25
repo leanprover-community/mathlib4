@@ -139,6 +139,8 @@ theorem induction_on_pi {ι : Type u} {p : (ι → Cardinal.{v}) → Prop}
 protected theorem eq : #α = #β ↔ Nonempty (α ≃ β) :=
   Quotient.eq'
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 @[simp]
 theorem mk'_def (α : Type u) : @Eq Cardinal ⟦α⟧ #α :=
   rfl

@@ -48,6 +48,8 @@ instance quotientStructure : L.Structure (Quotient s) where
 
 variable (s)
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 theorem funMap_quotient_mk' {n : ℕ} (f : L.Functions n) (x : Fin n → M) :
     (funMap f fun i => (⟦x i⟧ : Quotient s)) = ⟦@funMap _ _ ps.toStructure _ f x⟧ := by
   change

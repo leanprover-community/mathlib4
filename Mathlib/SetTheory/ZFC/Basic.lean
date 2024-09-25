@@ -512,6 +512,8 @@ end PSet
 def ZFSet : Type (u + 1) :=
   Quotient PSet.setoid.{u}
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 namespace PSet
 
 namespace Resp

@@ -18,6 +18,8 @@ to a quotient of finite families.
 -/
 
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 /-- An auxiliary function for `Quotient.finChoice`.  Given a
 collection of setoids indexed by a type `ι`, a (finite) list `l` of
 indices, and a function that for each `i ∈ l` gives a term of the

@@ -104,6 +104,8 @@ end Prod
 
 end ContinuousMap
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 namespace Path.Homotopic
 
 attribute [local instance] Path.Homotopic.setoid

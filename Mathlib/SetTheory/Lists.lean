@@ -392,6 +392,8 @@ def Finsets (α : Type*) :=
 
 namespace Finsets
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 instance : EmptyCollection (Finsets α) :=
   ⟨⟦Lists.of' Lists'.nil⟧⟩
 

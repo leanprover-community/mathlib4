@@ -69,6 +69,8 @@ its category structure.
 -/
 def Skeleton : Type u₁ := InducedCategory C Quotient.out
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 instance [Inhabited C] : Inhabited (Skeleton C) :=
   ⟨⟦default⟧⟩
 

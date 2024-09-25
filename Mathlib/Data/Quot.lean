@@ -198,7 +198,7 @@ variable {φ : Quotient sa → Quotient sb → Sort*}
 -- reliably found but it can't always be inferred from the expected type either.
 -- See also: https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/confusion.20between.20equivalence.20and.20instance.20setoid/near/360822354
 @[inherit_doc Quotient.mk]
-notation3:arg "⟦" a "⟧" => Quotient.mk _ a
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
 
 instance instInhabitedQuotient (s : Setoid α) [Inhabited α] : Inhabited (Quotient s) :=
   ⟨⟦default⟧⟩
@@ -263,6 +263,8 @@ instance (q₁ : Quotient sa) (q₂ : Quotient sb) (f : α → β → Prop)
   Quotient.lift₂.decidablePred _ _ _ _
 
 end Quotient
+
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
 
 theorem Quot.eq {α : Type*} {r : α → α → Prop} {x y : α} :
     Quot.mk r x = Quot.mk r y ↔ Relation.EqvGen r x y :=

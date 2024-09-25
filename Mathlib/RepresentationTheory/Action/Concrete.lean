@@ -94,6 +94,8 @@ notation:10 G:10 " ⧸ₐ " H:10 => Action.FintypeCat.ofMulAction G (FintypeCat.
 
 variable {G : Type*} [Group G] (H N : Subgroup G) [Fintype (G ⧸ N)]
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 /-- If `N` is a normal subgroup of `G`, then this is the group homomorphism
 sending an element `g` of `G` to the `G`-endomorphism of `G ⧸ₐ N` given by
 multiplication with `g⁻¹` on the right. -/
