@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.PartialHomeomorph
+import Mathlib.Topology.Connected.PathConnected
 
 /-!
 # Charted spaces
@@ -689,6 +690,24 @@ theorem ChartedSpace.locallyConnectedSpace [LocallyConnectedSpace H] : LocallyCo
         ((e x).open_target.mem_nhds (mem_chart_target H x))).map (e x).symm
   · rintro x s ⟨⟨-, -, hsconn⟩, hssubset⟩
     exact hsconn.isPreconnected.image _ ((e x).continuousOn_symm.mono hssubset)
+
+/-- If a topological space admits an atlas with locally path-connected charts, then the space itself
+  is locally connected. -/
+theorem ChartedSpace.locPathConnectedSpace [LocPathConnectedSpace H] : LocPathConnectedSpace M := by
+  refine ⟨fun x ↦ ⟨fun s ↦ ⟨fun hs ↦ ?_, fun ⟨u, hu⟩ ↦ Filter.mem_of_superset hu.1.1 hu.2⟩⟩⟩
+  let e := chartAt H x
+  let t := s ∩ e.source
+  have ht : t ∈ nhds x := Filter.inter_mem hs (chart_source_mem_nhds _ _)
+  have hts : t ⊆ s := inter_subset_left
+  use e.symm '' pathComponentIn (e x) (e '' t); refine ⟨⟨?_, ?_⟩, subset_trans ?_ hts⟩
+  · nth_rewrite 1 [← e.left_inv (mem_chart_source _ _)]
+    apply e.symm.image_mem_nhds (by simp [e])
+    exact pathComponentIn_mem_nhds <| e.image_mem_nhds (mem_chart_source _ _) ht
+  · refine (isPathConnected_pathComponentIn <| mem_image_of_mem e (mem_of_mem_nhds ht)).image' ?_
+    refine e.continuousOn_symm.mono <| subset_trans ?_ e.map_source''
+    exact (pathComponentIn_mono <| image_mono inter_subset_right).trans pathComponentIn_subset
+  · exact (image_mono pathComponentIn_subset).trans
+      (PartialEquiv.symm_image_image_of_subset_source _ inter_subset_right).subset
 
 /-- If `M` is modelled on `H'` and `H'` is itself modelled on `H`, then we can consider `M` as being
 modelled on `H`. -/

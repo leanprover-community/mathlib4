@@ -1171,6 +1171,12 @@ lemma isClosed_pathComponent [LocPathConnectedSpace X] : IsClosed (pathComponent
 lemma isClopen_pathComponent [LocPathConnectedSpace X] : IsClopen (pathComponent x) :=
   ⟨isClosed_pathComponent, isOpen_pathComponent⟩
 
+lemma pathComponentIn_mem_nhds [LocPathConnectedSpace X] (hF : F ∈ nhds x) :
+    pathComponentIn x F ∈ nhds x := by
+  let ⟨u, huF, hu, hxu⟩ := mem_nhds_iff.mp hF
+  exact mem_nhds_iff.mpr ⟨pathComponentIn x u, pathComponentIn_mono huF,
+    isOpen_pathComponentIn hu, mem_pathComponentIn_self hxu⟩
+
 /-- In locally path-connected spaces, path components and connected components are the same. -/
 lemma pathComponent_eq_connectedComponent [LocPathConnectedSpace X] :
     pathComponent x = connectedComponent x :=
