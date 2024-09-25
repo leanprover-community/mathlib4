@@ -181,9 +181,13 @@ open Mathlib.Linter.TextBased.unicodeLinter
 #guard othersInMathlib.toList ∩ emojis.toList = ∅
 #guard othersInMathlib.toList ∩ nonEmojis.toList = ∅
 
+-- note: it would be a problem if there was a shortcut for any of these
+-- unicode characters without their corresponding variant-selector.
+-- therefore, we add these tests to notice if that's happening.
 #guard withVSCodeAbbrev.toList ∩ emojis.toList = ∅
 #guard withVSCodeAbbrev.toList ∩ nonEmojis.toList = ∅
 
+-- only one variant-selector can be used
 #guard emojis.toList ∩ nonEmojis.toList = ∅
 
 end unicodeLinter
