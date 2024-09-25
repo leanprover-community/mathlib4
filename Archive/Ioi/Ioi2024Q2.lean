@@ -8,63 +8,13 @@ import Mathlib.Combinatorics.Colex
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 import Mathlib.Order.Partition.Finpartition
 import Mathlib.Data.List.Transpose
+import Mathlib.Data.Vector.Transpose
 import Mathlib.Data.List.SplitLengths
 import ImportGraph.Imports
 
 open Mathlib
 
 section Setup
-
-lemma List.IsPrefix.iff_getElem {α : Type*} {l₁ l₂ : List α} :
-    l₁ <+: l₂ ↔ ∃ (h : l₁.length ≤ l₂.length), ∀ x : Fin l₁.length, l₁[x] = l₂[x] where
-  mp h := ⟨h.length_le, fun _ ↦ h.getElem _⟩
-  mpr h := by
-    obtain ⟨hl, h⟩ := h
-    induction l₂ generalizing l₁
-    case nil =>
-      simpa using hl
-    case cons _ _ tail_ih =>
-      cases l₁
-      · exact nil_prefix
-      · simp [Fin.forall_fin_succ] at hl h
-        simp only [h.1, cons_prefix_cons, true_and]
-        apply tail_ih hl h.2
-
-lemma List.IsPrefix.eq_of_length_le {α : Type*} {l₁ l₂ : List α} (h : l₁ <+: l₂)
-    (h₂ : l₂.length ≤ l₁.length) : l₁ = l₂ :=
-  h.eq_of_length (Nat.le_antisymm h.length_le h₂)
-
-def List.transpose' {α : Type*} {n : ℕ} (l : List (Vector α n)) : Vector (List α) n :=
-  if hl : l.length = 0 then ⟨List.replicate n [], by simp⟩ else
-  ⟨(l.map Vector.toList).ttranspose, by
-    conv_lhs =>
-      rw [length_ttranspose]
-      lhs
-      tactic =>
-        convert List.minimum?_replicate_of_pos (by simp : min n n = n) (Nat.pos_of_ne_zero hl)
-        simp [List.eq_replicate]
-    simp⟩
-
-lemma List.transpose'_getElem {α : Type*} {n i : ℕ} (l : List (Vector α n)) (hi : i < n) :
-    l.transpose'[i] = l.map (·[i]) := by
-  simp [transpose']
-  split
-  · simpa [Vector.getElem_def, ← List.length_eq_zero]
-  simp [Vector.getElem_def, List.ttranspose_getElem, List.pmap_map]
-  change l.pmap (fun a h ↦ a.toList[i]'(by simpa)) _ = _
-  simp
-
-def Mathlib.Vector.transpose {α : Type*} {n : ℕ} (l : Vector (List α) n) : List (Vector α n) :=
-  l.toList.ttranspose.pmap Subtype.mk (fun _ b ↦ by simp [List.length_of_mem_ttranspose _ _ b])
-
-lemma Mathlib.Vector.map_getElem_transpose {α : Type*} {n i : ℕ}
-    (l : Vector (List α) n) (h : i < n) (hl : ∀ x ∈ l.toList, l[i].length ≤ x.length) :
-    l.transpose.map (·[i]) = l[i] := by
-  simp [transpose, List.map_pmap]
-  conv_lhs => simp [Vector.getElem_def]
-  conv_rhs => apply (List.ttranspose_pmap_getElem l.toList _ _ hl).symm
-  apply List.pmap_congr
-  simp
 
 lemma Finset.sum_tsub_distrib {ι α : Type*} [OrderedAddCommMonoid α] [Sub α] [ExistsAddOfLE α]
     [OrderedSub α] [ContravariantClass α α (· + ·) (· ≤ ·)] (s : Finset ι) (f : ι → α) (g : ι → α)
@@ -436,7 +386,7 @@ lemma SimpleAisha.winningStrat'_length_of_mem (msg : List Bool)
   · simp
 
 def SimpleAisha.winningStrat : SimpleAisha := fun msg comp ↦
-  (winningStrat' msg comp).transpose
+  (winningStrat' msg comp).listTranspose
 
 def Aisha.winningStrat : Aisha := SimpleAisha.winningStrat.toAisha
 
@@ -471,8 +421,8 @@ def SimpleBasma.winningStrat_comp (msg : Vector (List Bool) 31) :
     (by simp [Finpartition.parts_nonempty_iff, Finset.univ_eq_empty_iff])) |>.2.ofColexᶜ
 
 def SimpleBasma.winningStrat : SimpleBasma := fun run ↦
-  let run' : Vector (List Bool) 31 := run.transpose'
-  SimpleBasma.winningStrat_msg run' (SimpleBasma.winningStrat_comp run')
+  SimpleBasma.winningStrat_msg run.vectorTranspose
+    (SimpleBasma.winningStrat_comp run.vectorTranspose)
 
 def Basma.winningStrat : Basma := SimpleBasma.winningStrat.toBasma
 
@@ -480,7 +430,7 @@ theorem IOI2024Q2 : Aisha.winningStrat.Small ∧ Aisha.winningStrat.Correct Basm
   constructor
   · apply SimpleAisha.toAisha_small_of_out
     intro msg comp _ _ cc
-    simp [SimpleAisha.winningStrat, Vector.transpose, List.length_ttranspose]
+    simp [SimpleAisha.winningStrat, Vector.listTranspose, List.length_ttranspose]
     conv_lhs =>
       lhs
       tactic =>
@@ -493,15 +443,15 @@ theorem IOI2024Q2 : Aisha.winningStrat.Small ∧ Aisha.winningStrat.Correct Basm
   · intro msg comp run msgb msgu cc hr
     apply SimpleAisha.toAisha_eq_of_validRun at hr
     simp only [Basma.winningStrat, SimpleBasma.toBasma, SimpleBasma.winningStrat]
-    let run' : Vector (List Bool) 31 := run.transpose'
+    let run' : Vector (List Bool) 31 := run.vectorTranspose
     let msg' : Vector (List Bool) 31 := SimpleAisha.winningStrat' (msg.pad 1025) comp
     replace hr : ∀ v ∉ comp, run'[v] = msg'[v] := by
       intro v hv
       specialize hr v hv
       simp only [Fin.getElem_fin, SimpleAisha.winningStrat] at hr
-      simp only [Fin.getElem_fin, List.transpose'_getElem, hr, run',
+      simp only [Fin.getElem_fin, List.vectorTranspose_getElem, hr, run',
         msg']
-      apply Vector.map_getElem_transpose
+      apply Vector.map_getElem_listTranspose
       intro x hx
       rw [SimpleAisha.winningStrat'_length_of_mem (msg.pad 1025) comp ?cnt _ hx,
         SimpleAisha.winningStrat'_length_of_mem (msg.pad 1025) comp ?cnt]
