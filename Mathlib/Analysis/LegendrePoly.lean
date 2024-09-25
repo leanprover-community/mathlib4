@@ -30,7 +30,7 @@ variable {R : Type*}
 namespace Polynomial
 
 noncomputable abbrev Legendre (n : ℕ) : ℝ[X] :=
-  C (1 / n ! : ℝ) * derivative^[n] (X ^ n * (1 - X) ^ n)
+  C (n ! : ℝ)⁻¹ * derivative^[n] (X ^ n * (1 - X) ^ n)
 
 lemma sub_pow_special [CommRing R] (x : R) (n : ℕ) :
     (x - x ^ 2) ^ n = (Finset.range (n + 1)).sum fun (m : ℕ) =>
@@ -113,8 +113,8 @@ lemma deriv_one_sub_X {n i : ℕ} : (⇑derivative)^[i] ((1 - X) ^ n : ℝ[X]) =
   rw [Algebra.smul_def, algebraMap_eq, map_natCast]
   simp
 
-lemma legendre_eval_symm {n : ℕ} {x : ℝ} : eval x (Legendre n) =
-    (-1) ^ n * eval (1 - x) (Legendre n) := by
+lemma legendre_eval_symm (n : ℕ) (x : ℝ) :
+    eval x (Legendre n) = (-1) ^ n * eval (1 - x) (Legendre n) := by
   rw [mul_comm]
   simp only [eval_mul, one_div, eval_C]
   rw [mul_assoc]
