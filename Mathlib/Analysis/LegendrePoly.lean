@@ -6,7 +6,9 @@ Authors: Junqi Liu
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Analysis.Calculus.Deriv.Polynomial
+import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.Derivative
+import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Real.Basic
 import Mathlib.Tactic.Linarith
