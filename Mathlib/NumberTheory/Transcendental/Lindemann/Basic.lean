@@ -73,7 +73,7 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
     exact this.comp (Filter.tendsto_atTop_atTop.mpr fun b ↦ ⟨b + 1, fun _ ↦ by omega⟩)
 
   obtain ⟨q, hqN, prime_q, hq⟩ := Filter.Frequently.forall_exists_of_atTop
-    ((Nat.frequently_atTop_iff_infinite.mpr Nat.infinite_setOf_prime).and_eventually <|
+    ((Filter.frequently_atTop.mpr Nat.exists_infinite_primes).and_eventually <|
       eventually_lt_of_tendsto_lt (u := 1) (by simp)
         ((this (‖k‖ ^ P.natDegree * c)).const_mul (W * ∑ i, Multiset.card ((p i).aroots ℂ))))
     (N + 1)
