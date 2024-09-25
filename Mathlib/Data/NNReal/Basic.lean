@@ -11,7 +11,7 @@ import Mathlib.Algebra.Order.Nonneg.Floor
 import Mathlib.Data.Real.Pointwise
 import Mathlib.Order.ConditionallyCompleteLattice.Group
 import Mathlib.Tactic.Bound.Attribute
-import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.GCongr.CoreAttrs
 import Mathlib.Algebra.Ring.Regular
 
 /-!

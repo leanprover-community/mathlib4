@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison, Apurva Nakade
+Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Apurva Nakade
 -/
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Ring.Int
@@ -77,6 +77,9 @@ instance instAddCommGroupWithOneGame : AddCommGroupWithOne Game where
 
 instance : Inhabited Game :=
   ⟨0⟩
+
+theorem zero_def : (0 : Game) = ⟦0⟧ :=
+  rfl
 
 instance instPartialOrderGame : PartialOrder Game where
   le := Quotient.lift₂ (· ≤ ·) fun x₁ y₁ x₂ y₂ hx hy => propext (le_congr hx hy)
@@ -224,6 +227,13 @@ namespace PGame
 @[simp] theorem quot_neg (a : PGame) : (⟦-a⟧ : Game) = -⟦a⟧ := rfl
 @[simp] theorem quot_add (a b : PGame) : ⟦a + b⟧ = (⟦a⟧ : Game) + ⟦b⟧ := rfl
 @[simp] theorem quot_sub (a b : PGame) : ⟦a - b⟧ = (⟦a⟧ : Game) - ⟦b⟧ := rfl
+
+@[simp]
+theorem quot_natCast : ∀ n : ℕ, ⟦(n : PGame)⟧ = (n : Game)
+  | 0 => rfl
+  | n + 1 => by
+    rw [PGame.nat_succ, quot_add, Nat.cast_add, Nat.cast_one, quot_natCast]
+    rfl
 
 theorem quot_eq_of_mk'_quot_eq {x y : PGame} (L : x.LeftMoves ≃ y.LeftMoves)
     (R : x.RightMoves ≃ y.RightMoves) (hl : ∀ i, (⟦x.moveLeft i⟧ : Game) = ⟦y.moveLeft (L i)⟧)

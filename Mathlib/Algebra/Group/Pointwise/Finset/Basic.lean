@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.Ring.Pointwise.Set
+import Mathlib.Data.Finset.Density
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Set.Pointwise.Finite
 import Mathlib.Data.Set.Pointwise.ListOfFn
@@ -209,12 +210,13 @@ theorem card_inv_le : s⁻¹.card ≤ s.card :=
 theorem inv_empty : (∅ : Finset α)⁻¹ = ∅ :=
   image_empty _
 
-@[to_additive (attr := simp, aesop safe apply (rule_sets := [finsetNonempty]))]
+@[to_additive (attr := simp)]
 theorem inv_nonempty_iff : s⁻¹.Nonempty ↔ s.Nonempty := image_nonempty
 
 alias ⟨Nonempty.of_inv, Nonempty.inv⟩ := inv_nonempty_iff
 
 attribute [to_additive] Nonempty.inv Nonempty.of_inv
+attribute [aesop safe apply (rule_sets := [finsetNonempty])] Nonempty.inv Nonempty.neg
 
 @[to_additive (attr := simp)]
 theorem inv_eq_empty : s⁻¹ = ∅ ↔ s = ∅ := image_eq_empty
@@ -340,11 +342,11 @@ theorem mul_empty (s : Finset α) : s * ∅ = ∅ :=
 theorem mul_eq_empty : s * t = ∅ ↔ s = ∅ ∨ t = ∅ :=
   image₂_eq_empty_iff
 
-@[to_additive (attr := simp, aesop safe apply (rule_sets := [finsetNonempty]))]
+@[to_additive (attr := simp)]
 theorem mul_nonempty : (s * t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image₂_nonempty_iff
 
-@[to_additive]
+@[to_additive (attr := aesop safe apply (rule_sets := [finsetNonempty]))]
 theorem Nonempty.mul : s.Nonempty → t.Nonempty → (s * t).Nonempty :=
   Nonempty.image₂
 
@@ -524,11 +526,11 @@ theorem div_empty (s : Finset α) : s / ∅ = ∅ :=
 theorem div_eq_empty : s / t = ∅ ↔ s = ∅ ∨ t = ∅ :=
   image₂_eq_empty_iff
 
-@[to_additive (attr := simp, aesop safe apply (rule_sets := [finsetNonempty]))]
+@[to_additive (attr := simp)]
 theorem div_nonempty : (s / t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image₂_nonempty_iff
 
-@[to_additive]
+@[to_additive (attr := aesop safe apply (rule_sets := [finsetNonempty]))]
 theorem Nonempty.div : s.Nonempty → t.Nonempty → (s / t).Nonempty :=
   Nonempty.image₂
 
@@ -988,12 +990,12 @@ to
   ∃ a, s = {a} ∧ IsUnit a -/
 -- @[simp]
 theorem isUnit_iff_singleton : IsUnit s ↔ ∃ a, s = {a} := by
-  simp only [isUnit_iff, Group.isUnit, and_true_iff]
+  simp only [isUnit_iff, Group.isUnit, and_true]
 
 @[simp]
 theorem isUnit_iff_singleton_aux {α} [Group α] {s : Finset α} :
     (∃ a, s = {a} ∧ IsUnit a) ↔ ∃ a, s = {a} := by
-  simp only [Group.isUnit, and_true_iff]
+  simp only [Group.isUnit, and_true]
 
 @[to_additive (attr := simp)]
 theorem image_mul_left :
@@ -1118,11 +1120,11 @@ theorem smul_empty (s : Finset α) : s • (∅ : Finset β) = ∅ :=
 theorem smul_eq_empty : s • t = ∅ ↔ s = ∅ ∨ t = ∅ :=
   image₂_eq_empty_iff
 
-@[to_additive (attr := simp, aesop safe apply (rule_sets := [finsetNonempty]))]
+@[to_additive (attr := simp)]
 theorem smul_nonempty_iff : (s • t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image₂_nonempty_iff
 
-@[to_additive]
+@[to_additive (attr := aesop safe apply (rule_sets := [finsetNonempty]))]
 theorem Nonempty.smul : s.Nonempty → t.Nonempty → (s • t).Nonempty :=
   Nonempty.image₂
 
@@ -1239,10 +1241,11 @@ theorem vsub_empty (s : Finset β) : s -ᵥ (∅ : Finset β) = ∅ :=
 theorem vsub_eq_empty : s -ᵥ t = ∅ ↔ s = ∅ ∨ t = ∅ :=
   image₂_eq_empty_iff
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem vsub_nonempty : (s -ᵥ t : Finset α).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image₂_nonempty_iff
 
+@[aesop safe apply (rule_sets := [finsetNonempty])]
 theorem Nonempty.vsub : s.Nonempty → t.Nonempty → (s -ᵥ t : Finset α).Nonempty :=
   Nonempty.image₂
 
@@ -1350,11 +1353,11 @@ theorem smul_finset_empty (a : α) : a • (∅ : Finset β) = ∅ :=
 theorem smul_finset_eq_empty : a • s = ∅ ↔ s = ∅ :=
   image_eq_empty
 
-@[to_additive (attr := simp, aesop safe apply (rule_sets := [finsetNonempty]))]
+@[to_additive (attr := simp)]
 theorem smul_finset_nonempty : (a • s).Nonempty ↔ s.Nonempty :=
   image_nonempty
 
-@[to_additive]
+@[to_additive (attr := aesop safe apply (rule_sets := [finsetNonempty]))]
 theorem Nonempty.smul_finset (hs : s.Nonempty) : (a • s).Nonempty :=
   hs.image _
 
@@ -1570,6 +1573,17 @@ theorem singleton_mul_inter : {a} * (s ∩ t) = {a} * s ∩ ({a} * t) :=
 theorem card_le_card_mul_left {s : Finset α} (hs : s.Nonempty) : t.card ≤ (s * t).card :=
   card_le_card_image₂_left _ hs mul_right_injective
 
+/--
+The size of `s * s` is at least the size of `s`, version with left-cancellative multiplication.
+See `card_le_card_mul_self'` for the version with right-cancellative multiplication.
+-/
+@[to_additive
+"The size of `s + s` is at least the size of `s`, version with left-cancellative addition.
+See `card_le_card_add_self'` for the version with right-cancellative addition."
+]
+theorem card_le_card_mul_self {s : Finset α} : s.card ≤ (s * s).card := by
+  cases s.eq_empty_or_nonempty <;> simp [card_le_card_mul_left, *]
+
 end IsLeftCancelMul
 
 section
@@ -1588,6 +1602,17 @@ theorem inter_mul_singleton : s ∩ t * {a} = s * {a} ∩ (t * {a}) :=
 theorem card_le_card_mul_right {t : Finset α} (ht : t.Nonempty) : s.card ≤ (s * t).card :=
   card_le_card_image₂_right _ ht mul_left_injective
 
+/--
+The size of `s * s` is at least the size of `s`, version with right-cancellative multiplication.
+See `card_le_card_mul_self` for the version with left-cancellative multiplication.
+-/
+@[to_additive
+"The size of `s + s` is at least the size of `s`, version with right-cancellative addition.
+See `card_le_card_add_self` for the version with left-cancellative addition."
+]
+theorem card_le_card_mul_self' {s : Finset α} : s.card ≤ (s * s).card := by
+  cases s.eq_empty_or_nonempty <;> simp [card_le_card_mul_right, *]
+
 end
 
 section Group
@@ -1598,6 +1623,9 @@ variable [Group α] [DecidableEq α] {s t : Finset α}
 
 @[to_additive] lemma card_le_card_div_right (ht : t.Nonempty) : s.card ≤ (s / t).card :=
   card_le_card_image₂_right _ ht fun _ ↦ div_left_injective
+
+@[to_additive] lemma card_le_card_div_self : s.card ≤ (s / s).card := by
+  cases s.eq_empty_or_nonempty <;> simp [card_le_card_div_left, *]
 
 end Group
 
@@ -1671,6 +1699,9 @@ theorem smul_univ [Fintype β] {s : Finset α} (hs : s.Nonempty) : s • (univ :
 @[to_additive (attr := simp)]
 theorem card_smul_finset (a : α) (s : Finset β) : (a • s).card = s.card :=
   card_image_of_injective _ <| MulAction.injective _
+
+@[to_additive (attr := simp)]
+lemma dens_smul_finset [Fintype β] (a : α) (s : Finset β) : (a • s).dens = s.dens := by simp [dens]
 
 /-- If the left cosets of `t` by elements of `s` are disjoint (but not necessarily distinct!), then
 the size of `t` divides the size of `s • t`. -/

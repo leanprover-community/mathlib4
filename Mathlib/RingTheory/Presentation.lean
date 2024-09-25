@@ -27,11 +27,10 @@ A presentation of an `R`-algebra `S` is a distinguished family of generators and
 - `Algebra.Presentation.dimension`: The dimension of a presentation is the number of generators
   minus the number of relations.
 
-We also give constructors for localization and base change.
+We also give constructors for localization, base change and composition.
 
 ## TODO
 
-- Define composition of presentations.
 - Define `Hom`s of presentations.
 
 ## Notes
@@ -123,6 +122,39 @@ lemma finitePresentation_of_isFinite [P.IsFinite] :
 
 section Construction
 
+/-- If `algebraMap R S` is bijective, the empty generators are a presentation with no relations. -/
+noncomputable def ofBijectiveAlgebraMap (h : Function.Bijective (algebraMap R S)) :
+    Presentation.{t, w} R S where
+  __ := Generators.ofSurjectiveAlgebraMap h.surjective
+  rels := PEmpty
+  relation := PEmpty.elim
+  span_range_relation_eq_ker := by
+    simp only [Set.range_eq_empty, Ideal.span_empty]
+    symm
+    rw [← RingHom.injective_iff_ker_eq_bot]
+    show Function.Injective (aeval PEmpty.elim)
+    rw [aeval_injective_iff_of_isEmpty]
+    exact h.injective
+
+instance ofBijectiveAlgebraMap_isFinite (h : Function.Bijective (algebraMap R S)) :
+    (ofBijectiveAlgebraMap.{t, w} h).IsFinite where
+  finite_vars := inferInstanceAs (Finite PEmpty.{w + 1})
+  finite_rels := inferInstanceAs (Finite PEmpty.{t + 1})
+
+lemma ofBijectiveAlgebraMap_dimension (h : Function.Bijective (algebraMap R S)) :
+    (ofBijectiveAlgebraMap h).dimension = 0 := by
+  show Nat.card PEmpty - Nat.card PEmpty = 0
+  simp only [Nat.card_eq_fintype_card, Fintype.card_ofIsEmpty, le_refl, tsub_eq_zero_of_le]
+
+variable (R) in
+/-- The canonical `R`-presentation of `R` with no generators and no relations. -/
+noncomputable def id : Presentation.{t, w} R R := ofBijectiveAlgebraMap Function.bijective_id
+
+instance : (id R).IsFinite := ofBijectiveAlgebraMap_isFinite (R := R) Function.bijective_id
+
+lemma id_dimension : (Presentation.id R).dimension = 0 :=
+  ofBijectiveAlgebraMap_dimension (R := R) Function.bijective_id
+
 section Localization
 
 variable (r : R) [IsLocalization.Away r S]
@@ -168,7 +200,9 @@ lemma localizationAway_dimension_zero : (localizationAway r (S := S)).dimension 
 
 end Localization
 
-variable {T} [CommRing T] [Algebra R T] (P : Presentation R S)
+section BaseChange
+
+variable (T) [CommRing T] [Algebra R T] (P : Presentation R S)
 
 private lemma span_range_relation_eq_ker_baseChange :
     Ideal.span (Set.range fun i ↦ (MvPolynomial.map (algebraMap R T)) (P.relation i)) =
@@ -227,7 +261,164 @@ def baseChange : Presentation T (T ⊗[R] S) where
   __ := Generators.baseChange P.toGenerators
   rels := P.rels
   relation i := MvPolynomial.map (algebraMap R T) (P.relation i)
-  span_range_relation_eq_ker := P.span_range_relation_eq_ker_baseChange
+  span_range_relation_eq_ker := P.span_range_relation_eq_ker_baseChange T
+
+instance baseChange_isFinite [P.IsFinite] : (P.baseChange T).IsFinite where
+  finite_vars := inferInstanceAs <| Finite (P.vars)
+  finite_rels := inferInstanceAs <| Finite (P.rels)
+
+end BaseChange
+
+section Composition
+
+/-!
+### Composition of presentations
+
+Let `S` be an `R`-algebra with presentation `P` and `T` be an `S`-algebra with
+presentation `Q`. In this section we construct a presentation of `T` as an `R`-algebra.
+
+For the underlying generators see `Algebra.Generators.comp`. The family of relations is
+indexed by `Q.rels ⊕ P.rels`.
+
+We have two canonical maps:
+`MvPolynomial P.vars R →ₐ[R] MvPolynomial (Q.vars ⊕ P.vars) R` induced by `Sum.inr`
+and `aux : MvPolynomial (Q.vars ⊕ P.vars) R →ₐ[R] MvPolynomial Q.vars S` induced by
+the evaluation `MvPolynomial P.vars R →ₐ[R] S` (see below).
+
+Now `i : P.rels` is mapped to the image of `P.relation i` under the first map and
+`j : Q.rels` is mapped to a pre-image under `aux` of `Q.relation j` (see `comp_relation_aux`
+for the construction of the pre-image and `comp_relation_aux_map` for a proof that it is indeed
+a pre-image).
+
+The evaluation map factors as:
+`MvPolynomial (Q.vars ⊕ P.vars) R →ₐ[R] MvPolynomial Q.vars S →ₐ[R] T`, where
+the first map is `aux`. The goal is to compute that the kernel of this composition
+is spanned by the relations indexed by `Q.rels ⊕ P.rels` (`span_range_relation_eq_ker_comp`).
+One easily sees that this kernel is the pre-image under `aux` of the kernel of the evaluation
+of `Q`, where the latter is by assumption spanned by the relations `Q.relation j`.
+
+Since `aux` is surjective (`aux_surjective`), the pre-image is the sum of the ideal spanned
+by the constructed pre-images of the `Q.relation j` and the kernel of `aux`. It hence
+remains to show that the kernel of `aux` is spanned by the image of the `P.relation i`
+under the canonical map `MvPolynomial P.vars R →ₐ[R] MvPolynomial (Q.vars ⊕ P.vars) R`. By
+assumption this span is the kernel of the evaluation map of `P`. For this, we use the isomorphism
+`MvPolynomial (Q.vars ⊕ P.vars) R ≃ₐ[R] MvPolynomial Q.vars (MvPolynomial P.vars R)` and
+`MvPolynomial.ker_map`.
+
+-/
+
+variable {T} [CommRing T] [Algebra S T]
+variable (Q : Presentation S T) (P : Presentation R S)
+
+/-- The evaluation map `MvPolynomial (Q.vars ⊕ P.vars) →ₐ[R] T` factors via this map. For more
+details, see the module docstring at the beginning of the section. -/
+private noncomputable def aux : MvPolynomial (Q.vars ⊕ P.vars) R →ₐ[R] MvPolynomial Q.vars S :=
+  aeval (Sum.elim X (MvPolynomial.C ∘ P.val))
+
+/-- A choice of pre-image of `Q.relation r` under `aux`. -/
+private noncomputable def comp_relation_aux (r : Q.rels) : MvPolynomial (Q.vars ⊕ P.vars) R :=
+  Finsupp.sum (Q.relation r)
+    (fun x j ↦ (MvPolynomial.rename Sum.inr <| P.σ j) * monomial (x.mapDomain Sum.inl) 1)
+
+@[simp]
+private lemma aux_X (i : Q.vars ⊕ P.vars) : (Q.aux P) (X i) = Sum.elim X (C ∘ P.val) i :=
+  aeval_X (Sum.elim X (C ∘ P.val)) i
+
+/-- The pre-images constructed in `comp_relation_aux` are indeed pre-images under `aux`. -/
+private lemma comp_relation_aux_map (r : Q.rels) :
+    (Q.aux P) (Q.comp_relation_aux P r) = Q.relation r := by
+  simp only [aux, comp_relation_aux, Generators.comp_vars, Sum.elim_inl, map_finsupp_sum]
+  simp only [_root_.map_mul, aeval_rename, aeval_monomial, Sum.elim_comp_inr]
+  conv_rhs => rw [← Finsupp.sum_single (Q.relation r)]
+  congr
+  ext u s m
+  simp only [MvPolynomial.single_eq_monomial, aeval, AlgHom.coe_mk, coe_eval₂Hom]
+  rw [monomial_eq, IsScalarTower.algebraMap_eq R S, algebraMap_eq, ← eval₂_comp_left, ← aeval_def]
+  simp [Finsupp.prod_mapDomain_index_inj (Sum.inl_injective)]
+
+private lemma aux_surjective : Function.Surjective (Q.aux P) := fun p ↦ by
+  induction' p using MvPolynomial.induction_on with a p q hp hq p i h
+  · use rename Sum.inr <| P.σ a
+    simp only [aux, aeval_rename, Sum.elim_comp_inr]
+    have (p : MvPolynomial P.vars R) :
+        aeval (C ∘ P.val) p = (C (aeval P.val p) : MvPolynomial Q.vars S) := by
+      induction' p using MvPolynomial.induction_on with a p q hp hq p i h
+      · simp
+      · simp [hp, hq]
+      · simp [h]
+    simp [this]
+  · obtain ⟨a, rfl⟩ := hp
+    obtain ⟨b, rfl⟩ := hq
+    exact ⟨a + b, map_add _ _ _⟩
+  · obtain ⟨a, rfl⟩ := h
+    exact ⟨(a * X (Sum.inl i)), by simp⟩
+
+private lemma aux_image_relation :
+    Q.aux P '' (Set.range (Algebra.Presentation.comp_relation_aux Q P)) = Set.range Q.relation := by
+  ext x
+  constructor
+  · rintro ⟨y, ⟨a, rfl⟩, rfl⟩
+    exact ⟨a, (Q.comp_relation_aux_map P a).symm⟩
+  · rintro ⟨y, rfl⟩
+    use Q.comp_relation_aux P y
+    simp only [Set.mem_range, exists_apply_eq_apply, true_and, comp_relation_aux_map]
+
+private lemma aux_eq_comp : Q.aux P =
+    (MvPolynomial.mapAlgHom (aeval P.val)).comp (sumAlgEquiv R Q.vars P.vars).toAlgHom := by
+  ext i : 1
+  cases i <;> simp
+
+private lemma aux_ker :
+    RingHom.ker (Q.aux P) = Ideal.map (rename Sum.inr) (RingHom.ker (aeval P.val)) := by
+  rw [aux_eq_comp, ← AlgHom.comap_ker, MvPolynomial.ker_mapAlgHom]
+  show Ideal.comap _ (Ideal.map (IsScalarTower.toAlgHom R (MvPolynomial P.vars R) _) _) = _
+  rw [← sumAlgEquiv_comp_rename_inr, ← Ideal.map_mapₐ, Ideal.comap_map_of_bijective]
+  simpa using AlgEquiv.bijective (sumAlgEquiv R Q.vars P.vars)
+
+variable [Algebra R T] [IsScalarTower R S T]
+
+private lemma aeval_comp_val_eq :
+    (aeval (Q.comp P.toGenerators).val) =
+      (aevalTower (IsScalarTower.toAlgHom R S T) Q.val).comp (Q.aux P) := by
+  ext i
+  simp only [AlgHom.coe_comp, Function.comp_apply]
+  erw [Q.aux_X P i]
+  cases i <;> simp
+
+private lemma span_range_relation_eq_ker_comp : Ideal.span
+    (Set.range (Sum.elim (Algebra.Presentation.comp_relation_aux Q P)
+      fun rp ↦ (rename Sum.inr) (P.relation rp))) = (Q.comp P.toGenerators).ker := by
+  rw [Generators.ker_eq_ker_aeval_val, Q.aeval_comp_val_eq, ← AlgHom.comap_ker]
+  show _ = Ideal.comap _ (Q.ker)
+  rw [← Q.span_range_relation_eq_ker, ← Q.aux_image_relation P, ← Ideal.map_span,
+    Ideal.comap_map_of_surjective' _ (Q.aux_surjective P)]
+  rw [Set.Sum.elim_range, Ideal.span_union, Q.aux_ker, ← P.ker_eq_ker_aeval_val,
+    ← P.span_range_relation_eq_ker, Ideal.map_span]
+  congr
+  ext
+  simp
+
+/-- Given presentations of `T` over `S` and of `S` over `R`,
+we may construct a presentation of `T` over `R`. -/
+@[simps rels, simps (config := .lemmasOnly) relation]
+noncomputable def comp : Presentation R T where
+  toGenerators := Q.toGenerators.comp P.toGenerators
+  rels := Q.rels ⊕ P.rels
+  relation := Sum.elim (Q.comp_relation_aux P)
+    (fun rp ↦ MvPolynomial.rename Sum.inr <| P.relation rp)
+  span_range_relation_eq_ker := Q.span_range_relation_eq_ker_comp P
+
+lemma comp_relation_map (r : Q.rels) :
+    aeval (Sum.elim X (MvPolynomial.C ∘ P.val)) ((Q.comp P).relation (Sum.inl r)) =
+      Q.relation r := by
+  show (Q.aux P) _ = _
+  simp [comp_relation, comp_relation_aux_map]
+
+instance comp_isFinite [P.IsFinite] [Q.IsFinite] : (Q.comp P).IsFinite where
+  finite_vars := inferInstanceAs <| Finite (Q.vars ⊕ P.vars)
+  finite_rels := inferInstanceAs <| Finite (Q.rels ⊕ P.rels)
+
+end Composition
 
 end Construction
 
