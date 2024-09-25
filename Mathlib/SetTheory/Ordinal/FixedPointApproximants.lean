@@ -263,7 +263,7 @@ theorem gfpApprox_add_one (h : f x ≤ x) (a : Ordinal) :
 
 theorem gfpApprox_mono_left : Monotone (gfpApprox : (α →o α) → _) := by
   intro f g h
-  have : (OrderHom.dual g) ≤ (OrderHom.dual f) := h
+  have : g.dual ≤ f.dual := h
   exact lfpApprox_mono_left this
 
 theorem gfpApprox_mono_mid : Monotone (gfpApprox f) :=
