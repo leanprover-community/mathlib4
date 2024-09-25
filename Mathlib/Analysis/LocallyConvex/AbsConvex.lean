@@ -166,9 +166,15 @@ end AbsolutelyConvex
 section
 
 variable (𝕜) [NontriviallyNormedField 𝕜]
-variable [AddCommGroup E] [Module ℝ E] [Module 𝕜 E] [SMulCommClass ℝ 𝕜 E]
+variable [AddCommGroup E] [Module ℝ E] [Module 𝕜 E]
 
-theorem absConvexHull_eq_convexHull_balancedHull {s : Set E} :
+theorem AbsConvex.hullAdd {s t : Set E} :
+    absConvexHull 𝕜 (s + t) ⊆ absConvexHull 𝕜 s + absConvexHull 𝕜 t :=
+  absConvexHull_min (add_subset_add (subset_absConvexHull 𝕜 s) (subset_absConvexHull 𝕜 t))
+    ⟨Balanced.add (balanced_absConvexHull 𝕜 s) (balanced_absConvexHull 𝕜 t),
+      Convex.add (convex_absConvexHull 𝕜 s) (convex_absConvexHull 𝕜 t)⟩
+
+theorem absConvexHull_eq_convexHull_balancedHull [SMulCommClass ℝ 𝕜 E] {s : Set E} :
     absConvexHull 𝕜 s = convexHull ℝ (balancedHull 𝕜 s) := le_antisymm
   (absConvexHull_min
       (subset_trans (subset_convexHull ℝ s) (convexHull_mono (subset_balancedHull 𝕜)))
