@@ -369,7 +369,7 @@ lemma MulRingNorm.apply_natAbs_eq {R : Type*} [Ring R] (x : ℤ) (f : MulRingNor
   obtain ⟨n, rfl | rfl⟩ := eq_nat_or_neg x <;>
   simp only [natAbs_neg, natAbs_ofNat, cast_neg, cast_natCast, map_neg_eq_map]
 
-/-- Triangle inequality for mulRingNorm applied to a List. -/
+/-- Triangle inequality for `MulRingNorm` applied to a list. -/
 lemma mulRingNorm_sum_le_sum_mulRingNorm {R : Type*} [NonAssocRing R] (l : List R)
     (f : MulRingNorm R) : f l.sum ≤ (l.map f).sum := by
   induction l with
