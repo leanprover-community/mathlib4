@@ -69,8 +69,6 @@ inductive StyleError where
   /-- A line ends with windows line endings (\r\n) instead of unix ones (\n). -/
   | windowsLineEnding
   | duplicateImport (importStatement: String) (alreadyImportedLine: ℕ)
-  /-- A unicode character was used that isn't recommended -/
-  | unwantedUnicode (c : Char)
   /-- Unicode variant selectors are used in a bad way.
 
   * `s` is the string containing the unicode character and any unicode-variant-selector following it
@@ -110,9 +108,6 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
     endings (\n) instead"
   | StyleError.duplicateImport (importStatement) (alreadyImportedLine) =>
     s!"Duplicate imports: {importStatement} (already imported on line {alreadyImportedLine})"
-  | StyleError.unwantedUnicode c =>
-      s!"unicode character '{c}' ({printCodepointHex c}) is not recommended. \
-        Consider adding it to the whitelist."
   | StyleError.unicodeVariant s selector pos =>
     let variant := if selector == UnicodeVariant.emoji then
       "emoji"
@@ -147,7 +142,6 @@ def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.broadImport _ => "ERR_IMP"
   | StyleError.windowsLineEnding => "ERR_WIN"
   | StyleError.duplicateImport _ _ => "ERR_DIMP"
-  | StyleError.unwantedUnicode _ => "ERR_UNICODE"
   | StyleError.unicodeVariant _ _ _ => "ERR_UNICODE_VARIANT"
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
@@ -247,10 +241,6 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
             some (StyleError.broadImport BroadImports.TacticFolder)
           else
             some (StyleError.broadImport BroadImports.Lake)
-        | "ERR_UNICODE" => do
-            let str ← errorMessage.get? 2
-            let c ← str.get? ⟨1⟩
-            StyleError.unwantedUnicode c
         | "ERR_UNICODE_VARIANT" => do
           match (← errorMessage.get? 0) with
           | "wrong" | "missing" =>
@@ -415,7 +405,7 @@ end
 
 namespace UnicodeLinter
 
-/-- Creates `StyleError`s for non-whitelisted unicode characters as well as
+/-- Creates `StyleError`s for
 bad usage of (emoji/text)-variant-selectors.
 Note: if `pos` is not a valid position, the result is unspecified. -/
 def findBadUnicodeAux (s : String) (pos : String.Pos) (c : Char)
@@ -440,10 +430,6 @@ def findBadUnicodeAux (s : String) (pos : String.Pos) (c : Char)
     else if cₙ != UnicodeVariant.text && nonEmojis.contains c then
       -- bad: missing text-variant selector
       let errₙ := err.push (.unicodeVariant ⟨[c]⟩ UnicodeVariant.text pos)
-      findBadUnicodeAux s posₙ cₙ errₙ
-    else if ! isAllowedCharacter c then
-      -- bad: character not allowed
-      let errₙ := err.push (.unwantedUnicode c)
       findBadUnicodeAux s posₙ cₙ errₙ
     else
       -- okay
@@ -488,14 +474,6 @@ def unicodeLinter : TextbasedLinter := fun lines ↦ Id.run do
         | none =>
           -- removing used variant-selector
           head ++ ⟨[s.get 0]⟩ ++ tail
-      | .unwantedUnicode c =>
-        match c with
-        | '\u00a0' =>
-          -- replace non-breaking space with normal whitespace
-          newLine := newLine.replace "\u00a0" " "
-        | _ =>
-          -- no automatic fixes available
-          pure ()
       | _ =>
         unreachable!
 
