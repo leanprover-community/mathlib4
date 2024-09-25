@@ -237,12 +237,12 @@ unsafe def main (args : List String): IO Unit := do
   for label in mathlibLabels do
     for dir in label.dirs do
       unless ← FilePath.pathExists dir do
-        println s!"::error file=scripts/autolabel.lean,line=60::directory {dir} does not exist! \
+        println s!"::error file=scripts/autolabel.lean,line=84::directory {dir} does not exist! \
         (from label {label.label})"
         valid := false
     for dir in label.exclusions do
       unless ← FilePath.pathExists dir do
-        println s!"::error file=scripts/autolabel.lean,line=60::excluded directory {dir} \
+        println s!"::error file=scripts/autolabel.lean,line=84::excluded directory {dir} \
         does not exist! (from label {label.label})"
         valid := false
   unless valid do
@@ -253,7 +253,7 @@ unsafe def main (args : List String): IO Unit := do
   if notMatchedPaths.size > 0 then
     -- note: only emitting a warning because the workflow is only triggered on the first commit
     -- of a PR and could therefore lead to unexpected behaviour if a folder was created later.
-    println s!"::warning file=scripts/autolabel.lean,line=60::the following paths inside `Mathlib/` are not covered \
+    println s!"::warning file=scripts/autolabel.lean,line=84::the following paths inside `Mathlib/` are not covered \
     by any label: {notMatchedPaths} Please modify `AutoLabel.mathlibLabels` accordingly!"
     -- IO.Process.exit 3
 
