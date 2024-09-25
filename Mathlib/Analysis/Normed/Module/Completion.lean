@@ -27,7 +27,7 @@ namespace UniformSpace
 
 namespace Completion
 
-variable (𝕜 E : Type*) [NormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable (𝕜 E : Type*) [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 instance (priority := 100) NormedSpace.to_uniformContinuousConstSMul :
     UniformContinuousConstSMul 𝕜 E :=
