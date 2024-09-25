@@ -77,7 +77,7 @@ theorem add_pow [CommSemiring R] (x y : R) (n : ℕ) :
 
 /-- A special case of the **binomial theorem** -/
 theorem sub_pow [CommRing R] (x : R) (y : R) (n : ℕ) :
-    (x - y) ^ n = ∑ m ∈ range (n + 1), n.choose m • x ^ m * (- 1) ^ (n - m) * y ^ (n - m) := by
+    (x - y) ^ n = ∑ m ∈ range (n + 1), (-1) ^ (m + n) * n.choose m • x ^ m * y ^ (n - m) := by
   rw [sub_eq_add_neg, add_pow]
   apply Finset.sum_congr rfl
   intro m _
