@@ -15,9 +15,9 @@ and `D` is a (not necessarily commutative) `K`-algebra.
 
 Note that the predicate makes sense just for `K` a `CommRing` but it doesn't give the
 right definition; for a commutative ring base, one should use the theory of Azumaya algebras.
-This adds an extra layer of complication which we don't need. In fact ideals of `K`
-immediately give rise to nontrivial quotients of `D` so there are no central simple
-algebras in this case according to our definition.
+In fact ideals of `K` immediately give rise to nontrivial quotients of `D` so there are no central simple
+algebras in this case according to our definition, if K is not a field. The theory of central simple algebras
+really is a theory over fields.
 
 ## Main definitions
 
