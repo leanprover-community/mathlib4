@@ -35,8 +35,6 @@ variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : Lis
 @[deprecated (since := "2024-07-27")]
 theorem le_eq_not_gt [LT α] : ∀ l₁ l₂ : List α, (l₁ ≤ l₂) = ¬l₂ < l₁ := fun _ _ => rfl
 
-@[deprecated (since := "2024-06-07")] alias toArray_data := Array.toList_toArray
-
 -- Porting note: Delete this attribute
 -- attribute [inline] List.head!
 
