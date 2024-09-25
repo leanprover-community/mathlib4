@@ -175,6 +175,20 @@ theorem det_ne_zero_of_right_inverse [Nontrivial α] (h : A * B = 1) : A.det ≠
 
 end Invertible
 
+
+section
+
+variable [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [CommRing α]
+
+/-- A version of `mul_eq_one_comm` that works for square matrices with rectangular types. -/
+theorem mul_eq_one_comm_of_equiv {A : Matrix m n α} {B : Matrix n m α} (e : m ≃ n) :
+    A * B = 1 ↔ B * A = 1 := by
+  refine (reindex e e).injective.eq_iff.symm.trans ?_
+  rw [reindex_apply, reindex_apply, submatrix_one_equiv, ← submatrix_mul_equiv _ _ _ (.refl _),
+    mul_eq_one_comm, submatrix_mul_equiv, coe_refl, submatrix_id_id]
+
+end
+
 section Inv
 
 variable [Fintype n] [DecidableEq n] [CommRing α]
