@@ -39,12 +39,12 @@ universe u v w
 
 /-- An integral domain is called a `ValuationRing` provided that for any pair
 of elements `a b : A`, either `a` divides `b` or vice versa. -/
-class ValuationRing (A : Type u) [CommRing A] [IsDomain A] : Prop where
+class ValuationRing (A : Type u) [CommRing A] : Prop where
   cond' : ∀ a b : A, ∃ c : A, a * c = b ∨ b * c = a
 
 -- Porting note: this lemma is needed since infer kinds are unsupported in Lean 4
-lemma ValuationRing.cond {A : Type u} [CommRing A] [IsDomain A] [ValuationRing A] (a b : A) :
-    ∃ c : A, a * c = b ∨ b * c = a := @ValuationRing.cond' A _ _ _ _ _
+lemma ValuationRing.cond {A : Type u} [CommRing A] [ValuationRing A] (a b : A) :
+    ∃ c : A, a * c = b ∨ b * c = a := @ValuationRing.cond' A _ _ _ _
 
 namespace ValuationRing
 
@@ -268,10 +268,11 @@ end
 
 section
 
-variable {R : Type*} [CommRing R] [IsDomain R] {K : Type*}
-variable [Field K] [Algebra R K] [IsFractionRing R K]
+section dvd
 
-theorem iff_dvd_total : ValuationRing R ↔ IsTotal R (· ∣ ·) := by
+variable {R : Type*} [CommRing R]
+
+theorem iff_dvd_total {R : Type*} [CommRing R] : ValuationRing R ↔ IsTotal R (· ∣ ·) := by
   classical
   refine ⟨fun H => ⟨fun a b => ?_⟩, fun H => ⟨fun a b => ?_⟩⟩
   · obtain ⟨c, rfl | rfl⟩ := ValuationRing.cond a b <;> simp
@@ -288,6 +289,11 @@ variable (K)
 
 theorem dvd_total [h : ValuationRing R] (x y : R) : x ∣ y ∨ y ∣ x :=
   @IsTotal.total _ _ (iff_dvd_total.mp h) x y
+
+end dvd
+
+variable {R : Type*} [CommRing R] [IsDomain R] (K : Type*)
+variable [Field K] [Algebra R K] [IsFractionRing R K]
 
 theorem unique_irreducible [ValuationRing R] ⦃p q : R⦄ (hp : Irreducible p) (hq : Irreducible q) :
     Associated p q := by
@@ -381,7 +387,9 @@ theorem _root_.Function.Surjective.valuationRing {R S : Type*} [CommRing R] [IsD
 
 section
 
-variable {𝒪 : Type u} {K : Type v} {Γ : Type w} [CommRing 𝒪] [IsDomain 𝒪] [Field K] [Algebra 𝒪 K]
+section of_integers
+
+variable {𝒪 : Type u} {K : Type v} {Γ : Type w} [CommRing 𝒪] [Field K] [Algebra 𝒪 K]
   [LinearOrderedCommGroupWithZero Γ]
 
 /-- If `𝒪` satisfies `v.integers 𝒪` where `v` is a valuation on a field, then `𝒪`
@@ -397,6 +405,11 @@ theorem of_integers (v : Valuation K Γ) (hh : v.Integers 𝒪) : ValuationRing 
 
 instance instValuationRingInteger (v : Valuation K Γ) : ValuationRing v.integer :=
   of_integers (v := v) (Valuation.integer.integers v)
+
+end of_integers
+
+variable {𝒪 : Type u} {K : Type v} {Γ : Type w} [CommRing 𝒪] [IsDomain 𝒪] [Field K] [Algebra 𝒪 K]
+  [LinearOrderedCommGroupWithZero Γ]
 
 theorem isFractionRing_iff [ValuationRing 𝒪] :
     IsFractionRing 𝒪 K ↔
