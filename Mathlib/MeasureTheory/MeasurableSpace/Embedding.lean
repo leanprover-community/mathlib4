@@ -488,17 +488,17 @@ def finTwoArrow : (Fin 2 → α) ≃ᵐ α × α :=
   piFinTwo fun _ => α
 
 /-- Measurable equivalence between `Π j : Fin (n + 1), α j` and
-`α i × Π j : Fin n, α (Fin.succAbove i j)`. -/
+`α i × Π j : Fin n, α (Fin.succAbove i j)`.
+
+Measurable version of `Fin.insertNthEquiv`. -/
 @[simps! (config := .asFn)]
 def piFinSuccAbove {n : ℕ} (α : Fin (n + 1) → Type*) [∀ i, MeasurableSpace (α i)]
     (i : Fin (n + 1)) : (∀ j, α j) ≃ᵐ α i × ∀ j, α (i.succAbove j) where
-  toEquiv := .piFinSuccAbove α i
+  toEquiv := (Fin.insertNthEquiv α i).symm
   measurable_toFun := (measurable_pi_apply i).prod_mk <| measurable_pi_iff.2 fun j =>
     measurable_pi_apply _
   measurable_invFun := measurable_pi_iff.2 <| i.forall_iff_succAbove.2
-    ⟨by simp only [piFinSuccAbove_symm_apply, Fin.insertNth_apply_same, measurable_fst],
-      fun j => by simpa only [piFinSuccAbove_symm_apply, Fin.insertNth_apply_succAbove]
-        using (measurable_pi_apply _).comp measurable_snd⟩
+    ⟨by simp [measurable_fst], fun j => by simpa using (measurable_pi_apply _).comp measurable_snd⟩
 
 variable (π)
 

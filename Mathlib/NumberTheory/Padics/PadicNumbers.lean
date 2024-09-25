@@ -5,7 +5,7 @@ Authors: Robert Y. Lewis
 -/
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.NumberTheory.Padics.PadicNorm
-import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Tactic.Peel
 import Mathlib.Topology.MetricSpace.Ultra.Basic
 

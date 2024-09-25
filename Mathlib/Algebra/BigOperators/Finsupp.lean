@@ -268,9 +268,10 @@ theorem support_sum [DecidableEq β] [Zero M] [AddCommMonoid N] {f : α →₀ M
 theorem support_finset_sum [DecidableEq β] [AddCommMonoid M] {s : Finset α} {f : α → β →₀ M} :
     (Finset.sum s f).support ⊆ s.biUnion fun x => (f x).support := by
   rw [← Finset.sup_eq_biUnion]
-  induction' s using Finset.cons_induction_on with a s ha ih
-  · rfl
-  · rw [Finset.sum_cons, Finset.sup_cons]
+  induction s using Finset.cons_induction_on with
+  | h₁ => rfl
+  | h₂ _ ih =>
+    rw [Finset.sum_cons, Finset.sup_cons]
     exact support_add.trans (Finset.union_subset_union (Finset.Subset.refl _) ih)
 
 @[simp]
@@ -345,9 +346,8 @@ def liftAddHom [AddZeroClass M] [AddCommMonoid N] : (α → M →+ N) ≃+ ((α 
     ext
     simp [singleAddHom]
   right_inv F := by
-  -- Porting note: This was `ext` and used the wrong lemma
-    apply Finsupp.addHom_ext'
-    simp [singleAddHom, AddMonoidHom.comp, Function.comp]
+    ext
+    simp [singleAddHom, AddMonoidHom.comp, Function.comp_def]
   map_add' F G := by
     ext x
     exact sum_add

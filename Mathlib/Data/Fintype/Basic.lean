@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.List.FinRange
-import Mathlib.Init.Data.Nat.Lemmas
 
 /-!
 # Finite types
@@ -271,7 +270,7 @@ theorem compl_erase : (s.erase a)ᶜ = insert a sᶜ := by
 @[simp]
 theorem compl_insert : (insert a s)ᶜ = sᶜ.erase a := by
   ext
-  simp only [not_or, mem_insert, iff_self_iff, mem_compl, mem_erase]
+  simp only [not_or, mem_insert, mem_compl, mem_erase]
 
 theorem insert_compl_insert (ha : a ∉ s) : insert a (insert a s)ᶜ = sᶜ := by
   simp_rw [compl_insert, insert_erase (mem_compl.2 ha)]
@@ -569,7 +568,7 @@ def ofEquiv (α : Type*) [Fintype α] (f : α ≃ β) : Fintype β :=
 def ofSubsingleton (a : α) [Subsingleton α] : Fintype α :=
   ⟨{a}, fun _ => Finset.mem_singleton.2 (Subsingleton.elim _ _)⟩
 
--- In principle, this could be a `simp` theorem but it applies to any occurence of `univ` and
+-- In principle, this could be a `simp` theorem but it applies to any occurrence of `univ` and
 -- required unification of the (possibly very complex) `Fintype` instances.
 theorem univ_ofSubsingleton (a : α) [Subsingleton α] : @univ _ (ofSubsingleton a) = {a} :=
   rfl
@@ -593,7 +592,7 @@ namespace Set
 
 variable {s t : Set α}
 
-/-- Construct a finset enumerating a set `s`, given a `Fintype` instance.  -/
+/-- Construct a finset enumerating a set `s`, given a `Fintype` instance. -/
 def toFinset (s : Set α) [Fintype s] : Finset α :=
   (@Finset.univ s _).map <| Function.Embedding.subtype _
 
@@ -622,9 +621,12 @@ def decidableMemOfFintype [DecidableEq α] (s : Set α) [Fintype s] (a) : Decida
 theorem coe_toFinset (s : Set α) [Fintype s] : (↑s.toFinset : Set α) = s :=
   Set.ext fun _ => mem_toFinset
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem toFinset_nonempty {s : Set α} [Fintype s] : s.toFinset.Nonempty ↔ s.Nonempty := by
   rw [← Finset.coe_nonempty, coe_toFinset]
+
+@[aesop safe apply (rule_sets := [finsetNonempty])]
+alias ⟨_, Aesop.toFinset_nonempty_of_nonempty⟩ := toFinset_nonempty
 
 @[simp]
 theorem toFinset_inj {s t : Set α} [Fintype s] [Fintype t] : s.toFinset = t.toFinset ↔ s = t :=

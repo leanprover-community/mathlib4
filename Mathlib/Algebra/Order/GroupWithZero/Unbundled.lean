@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.GCongr.CoreAttrs
 import Mathlib.Tactic.Nontriviality
 
 /-!
@@ -620,6 +620,17 @@ variable [Preorder α]
 /-! Lemmas of the form `a ≤ a * b ↔ 1 ≤ b` and `a * b ≤ a ↔ b ≤ 1`,
 which assume left covariance. -/
 
+lemma one_lt_of_lt_mul_left₀ [PosMulReflectLT α] (ha : 0 ≤ a) (h : a < a * b) : 1 < b :=
+  lt_of_mul_lt_mul_left (by simpa) ha
+
+lemma one_lt_of_lt_mul_right₀ [MulPosReflectLT α] (hb : 0 ≤ b) (h : b < a * b) : 1 < a :=
+  lt_of_mul_lt_mul_right (by simpa) hb
+
+lemma one_le_of_le_mul_left₀ [PosMulReflectLE α] (ha : 0 < a) (h : a ≤ a * b) : 1 ≤ b :=
+  le_of_mul_le_mul_left (by simpa) ha
+
+lemma one_le_of_le_mul_right₀ [MulPosReflectLE α] (hb : 0 < b) (h : b ≤ a * b) : 1 ≤ a :=
+  le_of_mul_le_mul_right (by simpa) hb
 
 @[simp]
 lemma le_mul_iff_one_le_right [PosMulMono α] [PosMulReflectLE α] (a0 : 0 < a) : a ≤ a * b ↔ 1 ≤ b :=
@@ -1198,19 +1209,19 @@ end GroupWithZero.LinearOrder
 
 section CommSemigroupHasZero
 
-variable [Mul α] [IsSymmOp α α (· * ·)] [Zero α] [Preorder α]
+variable [Mul α] [@Std.Commutative α (· * ·)] [Zero α] [Preorder α]
 
 theorem posMulStrictMono_iff_mulPosStrictMono : PosMulStrictMono α ↔ MulPosStrictMono α := by
-  simp only [PosMulStrictMono, MulPosStrictMono, IsSymmOp.symm_op]
+  simp only [PosMulStrictMono, MulPosStrictMono, Std.Commutative.comm]
 
 theorem posMulReflectLT_iff_mulPosReflectLT : PosMulReflectLT α ↔ MulPosReflectLT α := by
-  simp only [PosMulReflectLT, MulPosReflectLT, IsSymmOp.symm_op]
+  simp only [PosMulReflectLT, MulPosReflectLT, Std.Commutative.comm]
 
 theorem posMulMono_iff_mulPosMono : PosMulMono α ↔ MulPosMono α := by
-  simp only [PosMulMono, MulPosMono, IsSymmOp.symm_op]
+  simp only [PosMulMono, MulPosMono, Std.Commutative.comm]
 
 theorem posMulReflectLE_iff_mulPosReflectLE : PosMulReflectLE α ↔ MulPosReflectLE α := by
-  simp only [PosMulReflectLE, MulPosReflectLE, IsSymmOp.symm_op]
+  simp only [PosMulReflectLE, MulPosReflectLE, Std.Commutative.comm]
 
 end CommSemigroupHasZero
 

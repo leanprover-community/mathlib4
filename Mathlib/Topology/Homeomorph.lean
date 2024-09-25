@@ -31,7 +31,7 @@ open Set Filter Function
 
 open Topology
 
-variable {X : Type*} {Y : Type*} {Z : Type*}
+variable {X Y W Z : Type*}
 
 -- not all spaces are homeomorphic to each other
 /-- Homeomorphism between `X` and `Y`, also called topological isomorphism -/
@@ -47,7 +47,7 @@ infixl:25 " ≃ₜ " => Homeomorph
 
 namespace Homeomorph
 
-variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace W] [TopologicalSpace Z]
   {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
 
 theorem toEquiv_injective : Function.Injective (toEquiv : X ≃ₜ Y → X ≃ Y)
@@ -451,14 +451,14 @@ theorem comp_continuousWithinAt_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) (
 theorem comp_isOpenMap_iff (h : X ≃ₜ Y) {f : Z → X} : IsOpenMap (h ∘ f) ↔ IsOpenMap f := by
   refine ⟨?_, fun hf => h.isOpenMap.comp hf⟩
   intro hf
-  rw [← Function.id_comp f, ← h.symm_comp_self, Function.comp.assoc]
+  rw [← Function.id_comp f, ← h.symm_comp_self, Function.comp_assoc]
   exact h.symm.isOpenMap.comp hf
 
 @[simp]
 theorem comp_isOpenMap_iff' (h : X ≃ₜ Y) {f : Y → Z} : IsOpenMap (f ∘ h) ↔ IsOpenMap f := by
   refine ⟨?_, fun hf => hf.comp h.isOpenMap⟩
   intro hf
-  rw [← Function.comp_id f, ← h.self_comp_symm, ← Function.comp.assoc]
+  rw [← Function.comp_id f, ← h.self_comp_symm, ← Function.comp_assoc]
   exact hf.comp h.symm.isOpenMap
 
 /-- A homeomorphism `h : X ≃ₜ Y` lifts to a homeomorphism between subtypes corresponding to
@@ -508,9 +508,81 @@ theorem prodCongr_symm (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') :
 theorem coe_prodCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : ⇑(h₁.prodCongr h₂) = Prod.map h₁ h₂ :=
   rfl
 
-section
+-- Commutativity and associativity of the disjoint union of topological spaces,
+-- and the sum with an empty space.
+section sum
 
-variable (X Y Z)
+variable (X Y W Z)
+
+/-- `X ⊕ Y` is homeomorphic to `Y ⊕ X`. -/
+def sumComm : X ⊕ Y ≃ₜ Y ⊕ X where
+  toEquiv := Equiv.sumComm X Y
+  continuous_toFun := continuous_sum_swap
+  continuous_invFun := continuous_sum_swap
+
+@[simp]
+theorem sumComm_symm : (sumComm X Y).symm = sumComm Y X :=
+  rfl
+
+@[simp]
+theorem coe_sumComm : ⇑(sumComm X Y) = Sum.swap :=
+  rfl
+
+@[continuity, fun_prop]
+lemma continuous_sumAssoc : Continuous (Equiv.sumAssoc X Y Z) :=
+  Continuous.sum_elim (by fun_prop) (by fun_prop)
+
+@[continuity, fun_prop]
+lemma continuous_sumAssoc_symm : Continuous (Equiv.sumAssoc X Y Z).symm :=
+  Continuous.sum_elim (by fun_prop) (by fun_prop)
+
+/-- `(X ⊕ Y) ⊕ Z` is homeomorphic to `X ⊕ (Y ⊕ Z)`. -/
+def sumAssoc : (X ⊕ Y) ⊕ Z ≃ₜ X ⊕ Y ⊕ Z where
+  toEquiv := Equiv.sumAssoc X Y Z
+  continuous_toFun := continuous_sumAssoc X Y Z
+  continuous_invFun := continuous_sumAssoc_symm X Y Z
+
+@[simp]
+lemma sumAssoc_toEquiv : (sumAssoc X Y Z).toEquiv = Equiv.sumAssoc X Y Z := rfl
+
+/-- Four-way commutativity of the disjoint union. The name matches `add_add_add_comm`. -/
+def sumSumSumComm : (X ⊕ Y) ⊕ W ⊕ Z ≃ₜ (X ⊕ W) ⊕ Y ⊕ Z where
+  toEquiv := Equiv.sumSumSumComm X Y W Z
+  continuous_toFun := by
+    unfold Equiv.sumSumSumComm
+    dsimp only
+    have : Continuous (Sum.map (Sum.map (@id X) ⇑(Equiv.sumComm Y W)) (@id Z)) := by continuity
+    fun_prop
+  continuous_invFun := by
+    unfold Equiv.sumSumSumComm
+    dsimp only
+    have : Continuous (Sum.map (Sum.map (@id X) (Equiv.sumComm Y W).symm) (@id Z)) := by continuity
+    fun_prop
+
+@[simp]
+lemma sumSumSumComm_toEquiv : (sumSumSumComm X Y W Z).toEquiv = (Equiv.sumSumSumComm X Y W Z) := rfl
+
+@[simp]
+lemma sumSumSumComm_symm : (sumSumSumComm X Y W Z).symm = (sumSumSumComm X W Y Z) := rfl
+
+/-- The sum of `X` with any empty topological space is homeomorphic to `X`. -/
+@[simps! (config := .asFn) apply]
+def sumEmpty [IsEmpty Y] : X ⊕ Y ≃ₜ X where
+  toEquiv := Equiv.sumEmpty X Y
+  continuous_toFun := Continuous.sum_elim continuous_id (by fun_prop)
+  continuous_invFun := continuous_inl
+
+/-- The sum of `X` with any empty topological space is homeomorphic to `X`. -/
+def emptySum [IsEmpty Y] : Y ⊕ X ≃ₜ X := (sumComm Y X).trans (sumEmpty X Y)
+
+@[simp] theorem coe_emptySum [IsEmpty Y] : (emptySum X Y).toEquiv = Equiv.emptySum Y X := rfl
+
+end sum
+
+-- Commutativity and associativity of the product of top. spaces, and the product with `PUnit`.
+section prod
+
+variable (X Y W Z)
 
 /-- `X × Y` is homeomorphic to `Y × X`. -/
 def prodComm : X × Y ≃ₜ Y × X where
@@ -532,6 +604,25 @@ def prodAssoc : (X × Y) × Z ≃ₜ X × Y × Z where
   continuous_invFun := (continuous_fst.prod_mk continuous_snd.fst).prod_mk continuous_snd.snd
   toEquiv := Equiv.prodAssoc X Y Z
 
+@[simp]
+lemma prodAssoc_toEquiv : (prodAssoc X Y Z).toEquiv = Equiv.prodAssoc X Y Z := rfl
+
+/-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
+def prodProdProdComm : (X × Y) × W × Z ≃ₜ (X × W) × Y × Z where
+  toEquiv := Equiv.prodProdProdComm X Y W Z
+  continuous_toFun := by
+    unfold Equiv.prodProdProdComm
+    dsimp only
+    fun_prop
+  continuous_invFun := by
+    unfold Equiv.prodProdProdComm
+    dsimp only
+    fun_prop
+
+@[simp]
+theorem prodProdProdComm_symm : (prodProdProdComm X Y W Z).symm = prodProdProdComm X W Y Z :=
+  rfl
+
 /-- `X × {*}` is homeomorphic to `X`. -/
 @[simps! (config := .asFn) apply]
 def prodPUnit : X × PUnit ≃ₜ X where
@@ -552,7 +643,7 @@ def homeomorphOfUnique [Unique X] [Unique Y] : X ≃ₜ Y :=
     continuous_toFun := continuous_const
     continuous_invFun := continuous_const }
 
-end
+end prod
 
 /-- `Equiv.piCongrLeft` as a homeomorphism: this is the natural homeomorphism
 `Π i, Y (e i) ≃ₜ Π j, Y j` obtained from a bijection `ι ≃ ι'`. -/
@@ -822,9 +913,9 @@ lemma isHomeomorph_iff_exists_homeomorph : IsHomeomorph f ↔ ∃ h : X ≃ₜ Y
 lemma isHomeomorph_iff_exists_inverse : IsHomeomorph f ↔ Continuous f ∧ ∃ g : Y → X,
     LeftInverse g f ∧ RightInverse g f ∧ Continuous g := by
   refine ⟨fun hf ↦ ⟨hf.continuous, ?_⟩, fun ⟨hf, g, hg⟩ ↦ ?_⟩
-  let h := hf.homeomorph f
-  exact ⟨h.symm, h.left_inv, h.right_inv, h.continuous_invFun⟩
-  exact (Homeomorph.mk ⟨f, g, hg.1, hg.2.1⟩ hf hg.2.2).isHomeomorph
+  · let h := hf.homeomorph f
+    exact ⟨h.symm, h.left_inv, h.right_inv, h.continuous_invFun⟩
+  · exact (Homeomorph.mk ⟨f, g, hg.1, hg.2.1⟩ hf hg.2.2).isHomeomorph
 
 /-- A map is a homeomorphism iff it is a surjective embedding. -/
 lemma isHomeomorph_iff_embedding_surjective : IsHomeomorph f ↔ Embedding f ∧ Surjective f where
