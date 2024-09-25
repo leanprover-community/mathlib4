@@ -22,6 +22,8 @@ open Finset
 
 open Polynomial
 
+open scoped Nat
+
 namespace Polynomial
 
 universe u v w y z
@@ -329,6 +331,21 @@ theorem coeff_iterate_derivative {k} (p : R[X]) (m : ℕ) :
           rw [← Nat.succ_add, Nat.descFactorial_succ, add_tsub_cancel_right]
         _ = Nat.descFactorial (m + k.succ) k.succ • p.coeff (m + k.succ) := by
           rw [Nat.succ_add_eq_add_succ]
+
+theorem iterate_derivative_eq_sum (p : R[X]) (k : ℕ) :
+    derivative^[k] p =
+      ∑ x ∈ (derivative^[k] p).support, C ((x + k).descFactorial k • p.coeff (x + k)) * X ^ x := by
+  conv_lhs => rw [(derivative^[k] p).as_sum_support_C_mul_X_pow]
+  refine sum_congr rfl fun i _ ↦ ?_
+  rw [coeff_iterate_derivative, Nat.descFactorial_eq_factorial_mul_choose]
+
+theorem iterate_derivative_eq_factorial_smul_sum (p : R[X]) (k : ℕ) :
+    derivative^[k] p = k ! •
+      ∑ x ∈ (derivative^[k] p).support, C ((x + k).choose k • p.coeff (x + k)) * X ^ x := by
+  conv_lhs => rw [iterate_derivative_eq_sum]
+  rw [smul_sum]
+  refine sum_congr rfl fun i _ ↦ ?_
+  rw [← smul_mul_assoc, smul_C, smul_smul, Nat.descFactorial_eq_factorial_mul_choose]
 
 theorem iterate_derivative_mul {n} (p q : R[X]) :
     derivative^[n] (p * q) =
