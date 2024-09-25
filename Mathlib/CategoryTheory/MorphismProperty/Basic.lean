@@ -143,9 +143,11 @@ section
 
 variable {C}
 
+/-- `P` respects isomorphisms, if it respects the morphism property `isomorphisms C`, i.e.
+it is stable under pre- and postcomposition with isomorphisms. -/
 abbrev RespectsIso (P : MorphismProperty C) : Prop := P.Respects (isomorphisms C)
 
-def RespectsIso.mk (P : MorphismProperty C)
+lemma RespectsIso.mk (P : MorphismProperty C)
     (hprecomp : ∀ {X Y Z : C} (e : X ≅ Y) (f : Y ⟶ Z) (_ : P f), P (e.hom ≫ f))
     (hpostcomp : ∀ {X Y Z : C} (e : Y ≅ Z) (f : X ⟶ Y) (_ : P f), P (f ≫ e.hom)) :
     P.RespectsIso where
