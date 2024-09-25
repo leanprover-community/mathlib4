@@ -1,13 +1,13 @@
 import Mathlib.Tactic.Linter.DocPrime
 import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.Linter.GlobalAttributeIn
+import Mathlib.Tactic.Linter.Header
 -- This file imports Batteries.Tactic.Lint, where the `env_linter` attribute is defined.
 import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.Linter.OldObtain
 import Mathlib.Tactic.Linter.RefineLinter
 import Mathlib.Tactic.Linter.UnusedTactic
 import Mathlib.Tactic.Linter.Style
-import Mathlib.Tactic.Linter.DocModule
 
 /-!
 This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.
