@@ -23,10 +23,10 @@ the functor of sheaves of locally constant maps described above.
 
 The hard part of this adjunction is to define the counit. Its components are defined as follows:
 
-Let `S : CompHausLike P` and let `Y` be a finite-product preserving presheaf on `CompHausLike P` 
+Let `S : CompHausLike P` and let `Y` be a finite-product preserving presheaf on `CompHausLike P`
 (e.g. a sheaf for the coherent topology). We need to define a map `LocallyConstant S Y(*) ⟶ Y(S)`.
 Given a locally constant map `f : S → Y(*)`, let `S = S₁ ⊔ ⋯ ⊔ Sₙ` be the corresponding
-decomposition of `S` into the fibers. Let `yᵢ ∈ Y(*)` denote the value of `f` on `Sᵢ` and denote
+decomposition of `S` into the fibers. Let `yᵢ ∈ Y(*)` denote the value of `f` on `Sᵢ` and denote
 by `gᵢ` the canonical map `Y(*) → Y(Sᵢ)`. Our map then takes `f` to the image of
 `(g₁(y₁), ⋯, gₙ(yₙ))` under the isomorphism `Y(S₁) × ⋯ × Y(Sₙ) ≅ Y(S₁ ⊔ ⋯ ⊔ Sₙ) = Y(S)`.
 
@@ -34,14 +34,14 @@ Now we need to prove that the counit is natural in `S : CompHausLike P` and
 `Y : Sheaf  (coherentTopology (CompHausLike P)) (Type _)`. There are two key lemmas in all
 naturality proofs in this file (both lemmas are in the `CompHausLike.LocallyConstant` namespace):
 
-* `presheaf_ext`: given `S`, `Y` and `f : LocallyConstant S Y(*)` like above, another presheaf
+* `presheaf_ext`: given `S`, `Y` and `f : LocallyConstant S Y(*)` like above, another presheaf
   `X`, and two elements `x y : X(S)`, to prove that `x = y` it suffices to prove that for every
   inclusion map `ιᵢ : Sᵢ ⟶ S`,  `X(ιᵢ)(x) = X(ιᵢ)(y)`.
-  Here it is important that we set everything up in such a way that the `Sᵢ` are literally subtypes
-  of `S`. 
+  Here it is important that we set everything up in such a way that the `Sᵢ` are literally subtypes
+  of `S`.
 
-* `incl_of_counitAppApp`: given  `S`, `Y` and `f : LocallyConstant S Y(*)` like above, we have
-  `Y(ιᵢ)(ε_{S, Y}(f)) = gᵢ(yᵢ)` where `ε` denotes the counit and the other notation is like above.
+* `incl_of_counitAppApp`: given  `S`, `Y` and `f : LocallyConstant S Y(*)` like above, we have
+  `Y(ιᵢ)(ε_{S, Y}(f)) = gᵢ(yᵢ)` where `ε` denotes the counit and the other notation is like above.
 
 ## Main definitions
 
@@ -139,8 +139,8 @@ noncomputable def counitAppAppImage : (a : Fiber f) → Y.obj ⟨fiber f a⟩ :=
 
 /--
 The counit is defined as follows: given a locally constant map `f : S → Y(*)`, let
-`S = S₁ ⊔ ⋯ ⊔ Sₙ` be the corresponding decomposition of `S` into the fibers. We need to provide an
-element of `Y(S)`. It suffices to provide an element of `Y(Sᵢ)` for all `i`. Let `yᵢ ∈ Y(*)` denote
+`S = S₁ ⊔ ⋯ ⊔ Sₙ` be the corresponding decomposition of `S` into the fibers. We need to provide an
+element of `Y(S)`. It suffices to provide an element of `Y(Sᵢ)` for all `i`. Let `yᵢ ∈ Y(*)` denote
 the value of `f` on `Sᵢ`. Our desired element is the image of `yᵢ` under the canonical map
 `Y(*) → Y(Sᵢ)`.
 -/
@@ -178,7 +178,7 @@ variable {T : CompHausLike.{u} P} (g : T ⟶ S)
 
 /--
 This is an auxiliary definition, the details do not matter. What's important is that this map exists
-so that the lemma `incl_comap` works.
+so that the lemma `incl_comap` works.
 -/
 def componentHom (a : Fiber (f.comap g)) :
     fiber _ a ⟶ fiber _ (Fiber.mk f (g a.preimage)) where
@@ -220,13 +220,13 @@ variable (P) (X : TopCat.{max u w})
     [HasExplicitFiniteCoproducts.{0} P] [HasExplicitPullbacks P]
     (hs : ∀ ⦃X Y : CompHausLike P⦄ (f : X ⟶ Y), EffectiveEpi f → Function.Surjective f)
 
-/-- `locallyConstantIsoContinuousMap` is a natural isomorphism. -/
+/-- `locallyConstantIsoContinuousMap` is a natural isomorphism. -/
 noncomputable def functorToPresheavesIsoTopCatToSheafCompHausLike (X : Type (max u w)) :
     functorToPresheaves.{u, w}.obj X ≅
       ((topCatToSheafCompHausLike P hs).obj (TopCat.discrete.obj X)).val :=
   NatIso.ofComponents (fun S ↦ locallyConstantIsoContinuousMap _ _)
 
-/-- `CompHausLike.LocallyConstant.functorToPresheaves` lands in sheaves. -/
+/-- `CompHausLike.LocallyConstant.functorToPresheaves` lands in sheaves. -/
 @[simps]
 def functor :
     have := CompHausLike.preregular hs
@@ -239,7 +239,7 @@ def functor :
   map f := ⟨functorToPresheaves.{u, w}.map f⟩
 
 /--
-`CompHausLike.LocallyConstant.functor` is naturally isomorphic to the restriction of
+`CompHausLike.LocallyConstant.functor` is naturally isomorphic to the restriction of
 `topCatToSheafCompHausLike` to discrete topological spaces.
 -/
 noncomputable def functorIsoTopCatToSheafCompHausLike :
@@ -289,7 +289,7 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
     exact (mem_iff_eq_image (g.val.app _ ∘ f) _ _).symm
 
 /--
-The unit of the adjunciton is given by mapping each element to the corresponding constant map.
+The unit of the adjunciton is given by mapping each element to the corresponding constant map.
 -/
 @[simps]
 def unit : 𝟭 _ ⟶ functor P hs ⋙ (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u+1}⟩ where
@@ -321,7 +321,7 @@ lemma adjunction_left_triangle [HasExplicitFiniteCoproducts.{u} P]
   rfl
 
 /--
-`CompHausLike.LocallyConstant.functor` is left adjoint to the forgetful functor.
+`CompHausLike.LocallyConstant.functor` is left adjoint to the forgetful functor.
 -/
 @[simps]
 noncomputable def adjunction [HasExplicitFiniteCoproducts.{u} P] :
@@ -372,7 +372,7 @@ abbrev functor : Type (u+1) ⥤ CondensedSet.{u} :=
     (hs := fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
 
 /--
-`CondensedSet.LocallyConstant.functor` is isomorphic to `Condensed.discrete`
+`CondensedSet.LocallyConstant.functor` is isomorphic to `Condensed.discrete`
 (by uniqueness of adjoints).
 -/
 noncomputable def iso : functor ≅ discrete (Type (u+1)) :=
@@ -406,7 +406,7 @@ instance (S : LightProfinite.{u}) (p : S → Prop) :
     (inferInstance : SecondCountableTopology {s | p s})⟩⟩
 
 /--
-`LightCondSet.LocallyConstant.functor` is isomorphic to `LightCondensed.discrete`
+`LightCondSet.LocallyConstant.functor` is isomorphic to `LightCondensed.discrete`
 (by uniqueness of adjoints).
 -/
 noncomputable def iso : functor ≅ LightCondensed.discrete (Type u) :=
