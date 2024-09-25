@@ -135,6 +135,7 @@ section disjoint_subsets
 
 variable [PreconnectedSpace α]
   {s : ι → Set α} (h_nonempty : ∀ i, (s i).Nonempty) (h_disj : Pairwise (Disjoint on s))
+include h_nonempty h_disj
 
 /-- In a preconnected space, any disjoint family of non-empty clopen subsets has at most one
 element. -/
@@ -254,7 +255,7 @@ theorem isPreconnected_iff_subset_of_disjoint {s : Set α} :
   · intro u v hu hv hs huv
     specialize h u v hu hv hs
     contrapose! huv
-    simp [not_subset] at huv
+    simp only [not_subset] at huv
     rcases huv with ⟨⟨x, hxs, hxu⟩, ⟨y, hys, hyv⟩⟩
     have hxv : x ∈ v := or_iff_not_imp_left.mp (hs hxs) hxu
     have hyu : y ∈ u := or_iff_not_imp_right.mp (hs hys) hyv
@@ -311,7 +312,7 @@ theorem isPreconnected_iff_subset_of_disjoint_closed :
     rw [isPreconnected_closed_iff] at h
     specialize h u v hu hv hs
     contrapose! huv
-    simp [not_subset] at huv
+    simp only [not_subset] at huv
     rcases huv with ⟨⟨x, hxs, hxu⟩, ⟨y, hys, hyv⟩⟩
     have hxv : x ∈ v := or_iff_not_imp_left.mp (hs hxs) hxu
     have hyu : y ∈ u := or_iff_not_imp_right.mp (hs hys) hyv

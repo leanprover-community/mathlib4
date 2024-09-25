@@ -102,9 +102,9 @@ instance (priority := 75) toSemiring {R} [Semiring R] [SetLike S R] [Subsemiring
 @[simp, norm_cast]
 theorem coe_pow {R} [Semiring R] [SetLike S R] [SubsemiringClass S R] (x : s) (n : ℕ) :
     ((x ^ n : s) : R) = (x : R) ^ n := by
-  induction' n with n ih
-  · simp
-  · simp [pow_succ, ih]
+  induction n with
+  | zero => simp
+  | succ n ih => simp [pow_succ, ih]
 
 /-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
 instance toCommSemiring {R} [CommSemiring R] [SetLike S R] [SubsemiringClass S R] :
@@ -314,9 +314,9 @@ instance toSemiring {R} [Semiring R] (s : Subsemiring R) : Semiring s :=
 @[simp, norm_cast]
 theorem coe_pow {R} [Semiring R] (s : Subsemiring R) (x : s) (n : ℕ) :
     ((x ^ n : s) : R) = (x : R) ^ n := by
-  induction' n with n ih
-  · simp
-  · simp [pow_succ, ih]
+  induction n with
+  | zero => simp
+  | succ n ih => simp [pow_succ, ih]
 
 /-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
 instance toCommSemiring {R} [CommSemiring R] (s : Subsemiring R) : CommSemiring s :=
@@ -499,6 +499,13 @@ theorem coe_sInf (S : Set (Subsemiring R)) : ((sInf S : Subsemiring R) : Set R) 
 
 theorem mem_sInf {S : Set (Subsemiring R)} {x : R} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
   Set.mem_iInter₂
+
+@[simp, norm_cast]
+theorem coe_iInf {ι : Sort*} {S : ι → Subsemiring R} : (↑(⨅ i, S i) : Set R) = ⋂ i, S i := by
+  simp only [iInf, coe_sInf, Set.biInter_range]
+
+theorem mem_iInf {ι : Sort*} {S : ι → Subsemiring R} {x : R} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+  simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[simp]
 theorem sInf_toSubmonoid (s : Set (Subsemiring R)) :
@@ -834,6 +841,14 @@ theorem map_sup (s t : Subsemiring R) (f : R →+* S) : (s ⊔ t).map f = s.map 
 theorem map_iSup {ι : Sort*} (f : R →+* S) (s : ι → Subsemiring R) :
     (iSup s).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
+
+theorem map_inf (s t : Subsemiring R) (f : R →+* S) (hf : Function.Injective f) :
+    (s ⊓ t).map f = s.map f ⊓ t.map f := SetLike.coe_injective (Set.image_inter hf)
+
+theorem map_iInf {ι : Sort*} [Nonempty ι] (f : R →+* S) (hf : Function.Injective f)
+    (s : ι → Subsemiring R) : (iInf s).map f = ⨅ i, (s i).map f := by
+  apply SetLike.coe_injective
+  simpa using (Set.injOn_of_injective hf).image_iInter_eq (s := SetLike.coe ∘ s)
 
 theorem comap_inf (s t : Subsemiring S) (f : R →+* S) : (s ⊓ t).comap f = s.comap f ⊓ t.comap f :=
   (gc_map_comap f).u_inf

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Joël Riou
+Authors: Kim Morrison, Joël Riou
 -/
 import Mathlib.Algebra.Group.Int
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
@@ -485,6 +485,7 @@ def isColimitCofanMapObjComp :
       dsimp
       rw [assoc])
 
+include hpqr in
 lemma hasMap_comp [(X.mapObj p).HasMap q] : X.HasMap r :=
   fun k => ⟨_, isColimitCofanMapObjComp X p q r hpqr k _
     (fun j _ => X.isColimitCofanMapObj p j) _ ((X.mapObj p).isColimitCofanMapObj q k)⟩

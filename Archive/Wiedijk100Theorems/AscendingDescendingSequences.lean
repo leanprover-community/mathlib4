@@ -21,12 +21,9 @@ https://en.wikipedia.org/wiki/Erdos-Szekeres_theorem#Pigeonhole_principle.
 sequences, increasing, decreasing, Ramsey, Erdos-Szekeres, Erdős–Szekeres, Erdős-Szekeres
 -/
 
-
 variable {α : Type*} [LinearOrder α] {β : Type*}
 
 open Function Finset
-
-open scoped Classical
 
 namespace Theorems100
 
@@ -150,7 +147,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
   have : image ab univ ⊆ ran := by
     -- First some logical shuffling
     rintro ⟨x₁, x₂⟩
-    simp only [ran, mem_image, exists_prop, mem_range, mem_univ, mem_product, true_and_iff,
+    simp only [ran, mem_image, exists_prop, mem_range, mem_univ, mem_product, true_and,
       Prod.ext_iff]
     rintro ⟨i, rfl, rfl⟩
     specialize q i

@@ -15,9 +15,7 @@ This file provides `fun₀ | 3 => a | 7 => b` notation for `Finsupp`, which desu
 
 namespace Finsupp
 
-open Lean
-open Lean.Parser
-open Lean.Parser.Term
+open Lean Parser Term
 
 -- A variant of `Lean.Parser.Term.matchAlts` with less line wrapping.
 @[nolint docBlame] -- we do not want any doc hover on this notation.

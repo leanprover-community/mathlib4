@@ -90,7 +90,7 @@ variable [Fintype ι] [DecidableEq ι]
 
 @[simp]
 def invFun : (∀ i, Ms i ⧸ p i) → (∀ i, Ms i) ⧸ pi Set.univ p :=
-  piQuotientLift p (pi Set.univ p) single fun _ => le_comap_single_pi p
+  piQuotientLift p (pi Set.univ p) _ fun _ => le_comap_single_pi p
 
 theorem left_inv : Function.LeftInverse (invFun p) (toFun p) := fun x =>
   Quotient.inductionOn' x fun x' => by

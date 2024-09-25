@@ -43,7 +43,7 @@ infixr:25 " →ₗc " => CoalgHom _
 notation:25 A " →ₗc[" R "] " B => CoalgHom R A B
 
 /-- `CoalgHomClass F R A B` asserts `F` is a type of bundled coalgebra homomorphisms
-from `A` to `B`.  -/
+from `A` to `B`. -/
 class CoalgHomClass (F : Type*) (R A B : outParam Type*)
     [CommSemiring R] [AddCommMonoid A] [Module R A] [AddCommMonoid B] [Module R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] [FunLike F A B]
@@ -260,9 +260,10 @@ end CoalgHom
 
 namespace Coalgebra
 
-variable (R : Type u) (A : Type v)
+variable (R : Type u) (A : Type v) (B : Type w)
 
-variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
+variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
+variable [Coalgebra R A] [Coalgebra R B]
 
 /-- The counit of a coalgebra as a `CoalgHom`. -/
 def counitCoalgHom : A →ₗc[R] R :=
@@ -292,5 +293,19 @@ instance subsingleton_to_ring : Subsingleton (A →ₗc[R] R) :=
 
 @[ext high]
 theorem ext_to_ring (f g : A →ₗc[R] R) : f = g := Subsingleton.elim _ _
+
+variable {A B}
+/--
+If `φ : A → B` is a coalgebra map and `a = ∑ xᵢ ⊗ yᵢ`, then `φ a = ∑ φ xᵢ ⊗ φ yᵢ`
+-/
+@[simps]
+def Repr.induced {a : A} (repr : Repr R a)
+    {F : Type*} [FunLike F A B] [CoalgHomClass F R A B]
+    (φ : F) : Repr R (φ a) where
+  index := repr.index
+  left := φ ∘ repr.left
+  right := φ ∘ repr.right
+  eq := (congr($((CoalgHomClass.map_comp_comul φ).symm) a).trans <|
+      by rw [LinearMap.comp_apply, ← repr.eq, map_sum]; rfl).symm
 
 end Coalgebra

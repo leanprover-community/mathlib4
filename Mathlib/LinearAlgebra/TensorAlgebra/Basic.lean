@@ -73,7 +73,7 @@ instance instAlgebra {R A M} [CommSemiring R] [AddCommMonoid M] [CommSemiring A]
 
 -- verify there is no diamond
 -- but doesn't work at `reducible_and_instances` #10906
-example : (algebraNat : Algebra ℕ (TensorAlgebra R M)) = instAlgebra := rfl
+example : (Semiring.toNatAlgebra : Algebra ℕ (TensorAlgebra R M)) = instAlgebra := rfl
 
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemiring A]
     [Algebra R A] [Algebra S A] [Module R M] [Module S M] [Module A M]
@@ -95,7 +95,7 @@ instance {S : Type*} [CommRing S] [Module S M] : Ring (TensorAlgebra S M) :=
 -- verify there is no diamond
 -- but doesn't work at `reducible_and_instances` #10906
 variable (S M : Type) [CommRing S] [AddCommGroup M] [Module S M] in
-example : (algebraInt _ : Algebra ℤ (TensorAlgebra S M)) = instAlgebra := rfl
+example : (Ring.toIntAlgebra _ : Algebra ℤ (TensorAlgebra S M)) = instAlgebra := rfl
 
 variable {M}
 
@@ -177,7 +177,7 @@ theorem hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : TensorAlgebra R M 
 
 -- This proof closely follows `FreeAlgebra.induction`
 /-- If `C` holds for the `algebraMap` of `r : R` into `TensorAlgebra R M`, the `ι` of `x : M`,
-and is preserved under addition and muliplication, then it holds for all of `TensorAlgebra R M`.
+and is preserved under addition and multiplication, then it holds for all of `TensorAlgebra R M`.
 -/
 @[elab_as_elim]
 theorem induction {C : TensorAlgebra R M → Prop}

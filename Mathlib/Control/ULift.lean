@@ -1,9 +1,10 @@
 /-
-Copyright (c) 2018 Scott Morrison. All rights reserved.
+Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Jannis Limperg
+Authors: Kim Morrison, Jannis Limperg
 -/
 
+import Mathlib.Init
 /-!
 # Monadic instances for `ULift` and `PLift`
 

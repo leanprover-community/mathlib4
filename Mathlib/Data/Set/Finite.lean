@@ -280,6 +280,9 @@ section FintypeInstances
 instance fintypeUniv [Fintype α] : Fintype (@univ α) :=
   Fintype.ofEquiv α (Equiv.Set.univ α).symm
 
+-- Redeclared with appropriate keys
+instance fintypeTop [Fintype α] : Fintype (⊤ : Set α) := inferInstanceAs (Fintype (univ : Set α))
+
 /-- If `(Set.univ : Set α)` is finite then `α` is a finite type. -/
 noncomputable def fintypeOfFiniteUniv (H : (univ (α := α)).Finite) : Fintype α :=
   @Fintype.ofEquiv _ (univ : Set α) H.fintype (Equiv.Set.univ _)
@@ -768,7 +771,7 @@ theorem Finite.of_preimage (h : (f ⁻¹' s).Finite) (hf : Surjective f) : s.Fin
 theorem Finite.preimage (I : Set.InjOn f (f ⁻¹' s)) (h : s.Finite) : (f ⁻¹' s).Finite :=
   (h.subset (image_preimage_subset f s)).of_finite_image I
 
-theorem Finite.preimage'  (h : s.Finite) (hf : ∀ b ∈ s, (f ⁻¹' {b}).Finite) :
+theorem Finite.preimage' (h : s.Finite) (hf : ∀ b ∈ s, (f ⁻¹' {b}).Finite) :
     (f ⁻¹' s).Finite := by
   rw [← Set.biUnion_preimage_singleton]
   exact Set.Finite.biUnion h hf
@@ -1348,9 +1351,10 @@ theorem exists_upper_bound_image [Nonempty α] [LinearOrder β] (s : Set α) (f 
 theorem Finite.iSup_biInf_of_monotone {ι ι' α : Type*} [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (· ≤ ·)] [Order.Frame α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
     (hf : ∀ i ∈ s, Monotone (f i)) : ⨆ j, ⨅ i ∈ s, f i j = ⨅ i ∈ s, ⨆ j, f i j := by
-  induction' s, hs using Set.Finite.dinduction_on with a s _ _ ihs hf
-  · simp [iSup_const]
-  · rw [forall_mem_insert] at hf
+  induction s, hs using Set.Finite.dinduction_on with
+  | H0 => simp [iSup_const]
+  | H1 _ _ ihs =>
+    rw [forall_mem_insert] at hf
     simp only [iInf_insert, ← ihs hf.2]
     exact iSup_inf_of_monotone hf.1 fun j₁ j₂ hj => iInf₂_mono fun i hi => hf.2 i hi hj
 
@@ -1563,3 +1567,5 @@ theorem DirectedOn.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} {f
   rw [Set.biUnion_eq_iUnion] at hs
   haveI := hn.coe_sort
   simpa using (directed_comp.2 hc.directed_val).exists_mem_subset_of_finset_subset_biUnion hs
+
+set_option linter.style.longFile 1700
