@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Rothgang
+Authors: Michael Rothgang, Jon Eugster
 -/
 
 import Batteries.Data.String.Matcher
@@ -21,7 +21,7 @@ For now, this only contains linters checking
 - for certain disallowed imports
 - if the string "adaptation note" is used instead of the command #adaptation_note
 - files are at most 1500 lines long (unless specifically allowed).
-- unicode characters that aren't used in math or in Mathlib
+- bad unicode characters
 
 For historic reasons, some of these checks are still written in a Python script `lint-style.py`:
 these are gradually being rewritten in Lean.
@@ -39,6 +39,7 @@ An executable running all these linters is defined in `scripts/lint-style.lean`.
 -/
 
 open System
+
 namespace Mathlib.Linter.TextBased
 
 open UnicodeLinter
@@ -50,7 +51,7 @@ inductive BroadImports
   /-- Importing any module in `Lake`, unless carefully measured
   This has caused unexpected regressions in the past. -/
   | Lake
-deriving BEq, Repr
+deriving BEq
 
 /-- Possible errors that text-based linters can report. -/
 -- We collect these in one inductive type to centralise error reporting.
@@ -70,13 +71,12 @@ inductive StyleError where
   | windowsLineEnding
   | duplicateImport (importStatement: String) (alreadyImportedLine: ℕ)
   /-- Unicode variant selectors are used in a bad way.
-
   * `s` is the string containing the unicode character and any unicode-variant-selector following it
   * `selector` is the desired selector or `none`
   * `pos`: the character position in the line.
   -/
   | unicodeVariant (s : String) (selector: Option Char) (pos : String.Pos)
-deriving BEq, Repr
+deriving BEq
 
 /-- How to format style errors -/
 inductive ErrorFormat
@@ -153,7 +153,6 @@ structure ErrorContext where
   lineNumber : ℕ
   /-- The path to the file which was linted -/
   path : FilePath
-deriving BEq, Repr
 
 /-- Possible results of comparing an `ErrorContext` to an `existing` entry:
 most often, they are different --- if the existing entry covers the new exception,
