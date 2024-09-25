@@ -609,6 +609,76 @@ theorem coe_ennreal_mul : ∀ x y : ℝ≥0∞, ((x * y : ℝ≥0∞) : EReal) =
 theorem coe_ennreal_nsmul (n : ℕ) (x : ℝ≥0∞) : (↑(n • x) : EReal) = n • (x : EReal) :=
   map_nsmul (⟨⟨(↑), coe_ennreal_zero⟩, coe_ennreal_add⟩ : ℝ≥0∞ →+ EReal) _ _
 
+/-! ### toENNReal -/
+
+/-- `x.toENNReal` returns `x` if it is nonnegative, `0` otherwise. -/
+noncomputable def toENNReal (x : EReal) : ENNReal :=
+  if x = ⊤ then ⊤
+  else ENNReal.ofReal x.toReal
+
+@[simp] lemma toENNReal_top : (⊤ : EReal).toENNReal = ⊤ := rfl
+
+@[simp]
+lemma toENNReal_of_ne_top {x : EReal} (hx : x ≠ ⊤) : x.toENNReal = ENNReal.ofReal x.toReal :=
+  if_neg hx
+
+@[simp]
+lemma toENNReal_eq_top_iff {x : EReal} : x.toENNReal = ⊤ ↔ x = ⊤ := by
+  by_cases h : x = ⊤
+  · simp [h]
+  · simp [h, toENNReal]
+
+lemma toENNReal_ne_top_iff {x : EReal} : x.toENNReal ≠ ⊤ ↔ x ≠ ⊤ := toENNReal_eq_top_iff.not
+
+@[simp]
+lemma toENNReal_of_nonpos {x : EReal} (hx : x ≤ 0) : x.toENNReal = 0 := by
+  rw [toENNReal, if_neg (fun h ↦ ?_)]
+  · exact ENNReal.ofReal_of_nonpos (toReal_nonpos hx)
+  · exact zero_ne_top <| top_le_iff.mp <| h ▸ hx
+
+@[simp] lemma toENNReal_bot : (⊥ : EReal).toENNReal = 0 := toENNReal_of_nonpos bot_le
+@[simp] lemma toENNReal_zero : (0 : EReal).toENNReal = 0 := toENNReal_of_nonpos le_rfl
+
+lemma toENNReal_eq_zero_iff {x : EReal} : x.toENNReal = 0 ↔ x ≤ 0 := by
+  induction x <;> simp [toENNReal]
+
+lemma toENNReal_ne_zero_iff {x : EReal} : x.toENNReal ≠ 0 ↔ 0 < x := by
+  simp [toENNReal_eq_zero_iff.not]
+
+@[simp]
+lemma coe_toENNReal {x : EReal} (hx : 0 ≤ x) : (x.toENNReal : EReal) = x := by
+  rw [toENNReal]
+  by_cases h_top : x = ⊤
+  · rw [if_pos h_top, h_top]
+    rfl
+  rw [if_neg h_top]
+  simp only [coe_ennreal_ofReal, ge_iff_le, hx, toReal_nonneg, max_eq_left]
+  exact coe_toReal h_top fun _ ↦ by simp_all only [le_bot_iff, zero_ne_bot]
+
+@[simp]
+lemma toENNReal_coe {x : ENNReal} : (x : EReal).toENNReal = x := by
+  by_cases h_top : x = ⊤
+  · rw [h_top, coe_ennreal_top, toENNReal_top]
+  rwa [toENNReal, if_neg _, toReal_coe_ennreal, ENNReal.ofReal_toReal_eq_iff]
+  simp [h_top]
+
+lemma toENNReal_le_toENNReal {x y : EReal} (h : x ≤ y) : x.toENNReal ≤ y.toENNReal := by
+  induction x
+  · simp
+  · by_cases hy_top : y = ⊤
+    · simp [hy_top]
+    simp only [toENNReal, coe_ne_top, ↓reduceIte, toReal_coe, hy_top]
+    exact ENNReal.ofReal_le_ofReal <| EReal.toReal_le_toReal h (coe_ne_bot _) hy_top
+  · simp_all
+
+@[simp] lemma real_coe_toENNReal (x : ℝ) : (x : EReal).toENNReal = ENNReal.ofReal x := rfl
+
+@[simp]
+lemma toReal_toENNReal {x : EReal} (hx : 0 ≤ x) : x.toENNReal.toReal = x.toReal := by
+  by_cases h : x = ⊤
+  · simp [h]
+  · simp [h, toReal_nonneg hx]
+
 /-! ### nat coercion -/
 
 theorem coe_coe_eq_natCast (n : ℕ) : (n : ℝ) = (n : EReal) := rfl
@@ -738,6 +808,17 @@ theorem toReal_add {x y : EReal} (hx : x ≠ ⊤) (h'x : x ≠ ⊥) (hy : y ≠ 
   lift x to ℝ using ⟨hx, h'x⟩
   lift y to ℝ using ⟨hy, h'y⟩
   rfl
+
+lemma toENNReal_add {x y : EReal} (hx : 0 ≤ x) (hy : 0 ≤ y) :
+    (x + y).toENNReal = x.toENNReal + y.toENNReal := by
+  induction x <;> induction y <;> try {· simp_all}
+  norm_cast
+  simp_rw [real_coe_toENNReal]
+  simp_all [ENNReal.ofReal_add]
+
+lemma toENNReal_add_le {x y : EReal} : (x + y).toENNReal ≤ x.toENNReal + y.toENNReal := by
+  induction x <;> induction y <;> try {· simp}
+  exact ENNReal.ofReal_add_le
 
 theorem addLECancellable_coe (x : ℝ) : AddLECancellable (x : EReal)
   | _, ⊤, _ => le_top
@@ -1032,6 +1113,20 @@ theorem toReal_sub {x y : EReal} (hx : x ≠ ⊤) (h'x : x ≠ ⊥) (hy : y ≠ 
   lift y to ℝ using ⟨hy, h'y⟩
   rfl
 
+lemma toENNReal_sub {x y : EReal} (hy : 0 ≤ y) :
+    (x - y).toENNReal = x.toENNReal - y.toENNReal := by
+  induction x <;> induction y <;> try {· simp_all}
+  · rename_i x y
+    simp only [ne_eq, coe_ne_top, not_false_eq_true, toENNReal_of_ne_top, toReal_coe]
+    by_cases hxy : x ≤ y
+    · rw [toENNReal_of_nonpos]
+      swap; · exact sub_nonpos.mpr <| EReal.coe_le_coe_iff.mpr hxy
+      simp_all
+    · rw [toENNReal_of_ne_top, ← EReal.coe_sub, toReal_coe,
+        ENNReal.ofReal_sub x (EReal.coe_nonneg.mp hy)]
+      exact (ne_of_beq_false rfl).symm
+  · rw [ENNReal.sub_eq_top_iff.mpr (by simp), top_sub_of_ne_top (coe_ne_top _), toENNReal_top]
+
 lemma add_sub_cancel_right {a : EReal} {b : Real} : a + b - b = a := by
   induction a <;> norm_cast
   exact _root_.add_sub_cancel_right _ _
@@ -1272,6 +1367,23 @@ lemma mul_ne_bot (a b : EReal) :
   rw [ne_eq, mul_eq_bot]
   set_option push_neg.use_distrib true in push_neg
   rfl
+
+lemma toENNReal_mul {x y : EReal} (hx : 0 ≤ x) :
+    (x * y).toENNReal = x.toENNReal * y.toENNReal := by
+  induction x <;> induction y
+    <;> try {· simp_all [mul_nonpos_iff, ENNReal.ofReal_mul, ← EReal.coe_mul]}
+  · rcases eq_or_lt_of_le hx with (hx | hx)
+    · simp [← hx]
+    · simp_all [EReal.mul_top_of_pos hx]
+  · rename_i a
+    rcases lt_trichotomy a 0 with (ha | ha | ha)
+    · simp_all [le_of_lt, top_mul_of_neg (EReal.coe_neg'.mpr ha)]
+    · simp [ha]
+    · simp_all [top_mul_of_pos (EReal.coe_pos.mpr ha)]
+
+lemma toENNReal_mul' {x y : EReal} (hy : 0 ≤ y) :
+    (x * y).toENNReal = x.toENNReal * y.toENNReal := by
+  rw [EReal.mul_comm, toENNReal_mul hy, mul_comm]
 
 lemma right_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
     (a + b) * c = a * c + b * c := by
