@@ -215,6 +215,8 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   unless Parser.isTerminalCommand stx do
     return
+  let mainModule ← getMainModule
+  if mainModule == `Mathlib then return
   let fm ← getFileMap
   let md := (getMainModuleDoc (← getEnv)).toArray
   -- the end of the first module doc, or the end of the file if there are no module docs.
@@ -238,7 +240,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     | .original lead .. => lead.toString
     | _ => ""
   -- copyright report
-  if !#[`Mathlib, `Mathlib.Init].contains (← getMainModule) then
+  if mainModule != `Mathlib.Init then
     for (stx, m) in copyrightHeaderChecks copyright do
       Linter.logLint linter.style.header stx m!"* '{stx.getAtomVal}':\n{m}\n"
   -- doc-module report
