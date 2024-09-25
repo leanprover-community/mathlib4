@@ -18,11 +18,11 @@ open scoped Nat
 
 namespace Polynomial
 
-variable {R : Type*}
+variable {R S : Type*}
 
 section Semiring
 
-variable [Semiring R]
+variable [Semiring R] [Semiring S]
 
 /--
 Iterated derivatives as a finite support function.
@@ -39,6 +39,36 @@ theorem support_derivativeFinsupp_subset_range {p : R[X]} {n : ℕ} (h : p.natDe
     (derivativeFinsupp p).support ⊆ range n := by
   dsimp [derivativeFinsupp]
   exact Finsupp.support_onFinset_subset.trans (Finset.range_subset.mpr h)
+
+@[simp]
+theorem derivativeFinsupp_C (r : R) : derivativeFinsupp (C r : R[X]) = .single 0 (C r) := by
+  ext i : 1
+  match i with
+  | 0 => simp
+  | i + 1 => simp
+
+@[simp]
+theorem derivativeFinsupp_one : derivativeFinsupp (1 : R[X]) = .single 0 1 := by
+  simpa using derivativeFinsupp_C (1 : R)
+
+@[simp]
+theorem derivativeFinsupp_X : derivativeFinsupp (X : R[X]) = .single 0 X + .single 1 1 := by
+  ext i : 1
+  match i with
+  | 0 => simp
+  | 1 => simp
+  | (n + 2) => simp
+
+theorem derivativeFinsupp_map (p : R[X]) (f : R →+* S) :
+    derivativeFinsupp (p.map f) = (derivativeFinsupp p).mapRange (·.map f) (by simp) := by
+  ext i : 1
+  simp
+
+theorem derivativeFinsupp_derivative (p : R[X]) :
+    derivativeFinsupp (derivative p) =
+      (derivativeFinsupp p).comapDomain Nat.succ Nat.succ_injective.injOn := by
+  ext i : 1
+  simp
 
 /--
 Sum of iterated derivatives of a polynomial, as a linear map
