@@ -83,7 +83,7 @@ open Function Set Order
 
 noncomputable section
 
-universe u v w
+universe u v w x
 
 variable {α β : Type u}
 
@@ -750,6 +750,11 @@ theorem le_sum {ι} (f : ι → Cardinal) (i) : f i ≤ sum f := by
 theorem mk_sigma {ι} (f : ι → Type*) : #(Σ i, f i) = sum fun i => #(f i) :=
   mk_congr <| Equiv.sigmaCongrRight fun _ => outMkEquiv.symm
 
+theorem mk_sigma_congr_lift {ι : Type u} {ι' : Type v} {f : ι → Type w} {g : ι' → Type x}
+    (e : ι ≃ ι') (h : ∀ i, lift.{x} #(f i) = lift.{w} #(g (e i))) :
+    lift.{max v x} #(Σ i, f i) = lift.{max u w} #(Σ i, g i) :=
+  Cardinal.lift_mk_eq'.2 ⟨.sigmaCongr e fun i ↦ Classical.choice <| Cardinal.lift_mk_eq'.1 (h i)⟩
+
 theorem mk_sigma_congr {ι ι' : Type u} {f : ι → Type v} {g : ι' → Type v} (e : ι ≃ ι')
     (h : ∀ i, #(f i) = #(g (e i))) : #(Σ i, f i) = #(Σ i, g i) :=
   mk_congr <| Equiv.sigmaCongr e fun i ↦ Classical.choice <| Cardinal.eq.mp (h i)
@@ -944,6 +949,11 @@ def prod {ι : Type u} (f : ι → Cardinal) : Cardinal :=
 @[simp]
 theorem mk_pi {ι : Type u} (α : ι → Type v) : #(∀ i, α i) = prod fun i => #(α i) :=
   mk_congr <| Equiv.piCongrRight fun _ => outMkEquiv.symm
+
+theorem mk_pi_congr_lift {ι : Type u} {ι' : Type v} {f : ι → Type w} {g : ι' → Type x}
+    (e : ι ≃ ι') (h : ∀ i, lift.{x} #(f i) = lift.{w} #(g (e i))) :
+    lift.{max v x} #(Π i, f i) = lift.{max u w} #(Π i, g i) :=
+  Cardinal.lift_mk_eq'.2 ⟨.piCongr e fun i ↦ Classical.choice <| Cardinal.lift_mk_eq'.1 (h i)⟩
 
 theorem mk_pi_congr {ι ι' : Type u} {f : ι → Type v} {g : ι' → Type v} (e : ι ≃ ι')
     (h : ∀ i, #(f i) = #(g (e i))) : #(Π i, f i) = #(Π i, g i) :=
