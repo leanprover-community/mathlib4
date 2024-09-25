@@ -945,13 +945,6 @@ instance IsWellOrder.subtype_nonempty : Nonempty { r // IsWellOrder α r } :=
 
 namespace Cardinal
 
-/-- The range of an indexed cardinal function, whose outputs live in a higher universe than the
-    inputs, is always bounded above. -/
-theorem bddAbove_range {ι : Type u} (f : ι → Cardinal.{max u v}) : BddAbove (Set.range f) :=
-  ⟨sum f, by
-    rintro a ⟨i, rfl⟩
-    exact le_sum f i⟩
-
 instance small_Iic (a : Cardinal.{u}) : Small.{u} (Iic a) := by
   rw [← mk_out a]
   apply @small_of_surjective (Set a.out) (Iic #a.out) _ fun x => ⟨#x, mk_set_le x⟩
