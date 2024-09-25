@@ -28,6 +28,7 @@ section LeftCancelMonoid
 
 variable {M : Type*} [LeftCancelMonoid M] [NoRootsOfUnity M ℕ] {x : M} {m n : ℕ}
 
+/-- Earlier, this name was used for what's now called `pow_right_injective₀`. -/
 @[to_additive nsmul_left_injective]
 theorem pow_right_injective (h : x ≠ 1) : Function.Injective fun n : ℕ ↦ x ^ n := by
   refine injective_of_lt_imp_ne fun k l hlt heq ↦ ?_

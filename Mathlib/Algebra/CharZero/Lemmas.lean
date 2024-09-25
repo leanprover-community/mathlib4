@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.Group.NoRootsOfUnity
 import Mathlib.Algebra.Group.Support
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
@@ -36,8 +37,8 @@ def castEmbedding : ℕ ↪ R :=
 @[simp]
 theorem cast_pow_eq_one {R : Type*} [Semiring R] [CharZero R] (q : ℕ) (n : ℕ) (hn : n ≠ 0) :
     (q : R) ^ n = 1 ↔ q = 1 := by
-  rw [← cast_pow, cast_eq_one]
-  exact pow_eq_one_iff hn
+  norm_cast
+  simp [hn]
 
 @[simp, norm_cast]
 theorem cast_div_charZero {k : Type*} [DivisionSemiring k] [CharZero k] {m n : ℕ} (n_dvd : n ∣ m) :
