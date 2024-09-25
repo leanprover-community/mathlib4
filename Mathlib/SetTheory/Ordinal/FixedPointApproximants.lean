@@ -71,13 +71,9 @@ def lfpApprox (a : Ordinal.{u}) : α :=
 termination_by a
 decreasing_by exact h
 
-theorem lfpApprox_def (a : Ordinal) :
-    lfpApprox f x a = sSup ({ f (lfpApprox f x b) | (b : Ordinal) (_ : b < a)} ∪ {x}) := by
-  rw [lfpApprox]
-
 theorem lfpApprox_monotone : Monotone (lfpApprox f x) := by
   intros a b h
-  rw [lfpApprox_def, lfpApprox_def]
+  rw [lfpApprox, lfpApprox]
   refine sSup_le_sSup ?h
   apply sup_le_sup_right
   simp only [exists_prop, Set.le_eq_subset, Set.setOf_subset_setOf, forall_exists_index, and_imp,
@@ -87,14 +83,14 @@ theorem lfpApprox_monotone : Monotone (lfpApprox f x) := by
   exact ⟨lt_of_lt_of_le h' h, rfl⟩
 
 theorem le_lfpApprox {a : Ordinal} : x ≤ lfpApprox f x a := by
-  rw [lfpApprox_def]
+  rw [lfpApprox]
   apply le_sSup
   simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq, true_or]
 
 theorem lfpApprox_add_one (h : x ≤ f x) (a : Ordinal) :
     lfpApprox f x (a+1) = f (lfpApprox f x a) := by
   apply le_antisymm
-  · conv => left; rw [lfpApprox_def]
+  · conv => left; rw [lfpApprox]
     apply sSup_le
     simp only [Ordinal.add_one_eq_succ, lt_succ_iff, exists_prop, Set.union_singleton,
       Set.mem_insert_iff, Set.mem_setOf_eq, forall_eq_or_imp, forall_exists_index, and_imp,
@@ -105,7 +101,7 @@ theorem lfpApprox_add_one (h : x ≤ f x) (a : Ordinal) :
       exact le_lfpApprox f x
     · intros a' h
       apply f.2; apply lfpApprox_monotone; exact h
-  · conv => right; rw [lfpApprox_def]
+  · conv => right; rw [lfpApprox]
     apply le_sSup
     simp only [Ordinal.add_one_eq_succ, lt_succ_iff, exists_prop]
     rw [Set.mem_union]
@@ -117,7 +113,7 @@ theorem lfpApprox_mono_left : Monotone (lfpApprox : (α →o α) → _) := by
   intro f g h x a
   induction a using Ordinal.induction with
   | h i ih =>
-    rw [lfpApprox_def, lfpApprox_def]
+    rw [lfpApprox, lfpApprox]
     apply sSup_le
     simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq, sSup_insert,
       forall_eq_or_imp, le_sup_left, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
@@ -134,7 +130,7 @@ theorem lfpApprox_mono_mid : Monotone (lfpApprox f) := by
   intro x₁ x₂ h a
   induction a using Ordinal.induction with
   | h i ih =>
-    rw [lfpApprox_def, lfpApprox_def]
+    rw [lfpApprox, lfpApprox]
     apply sSup_le
     simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq, sSup_insert,
       forall_eq_or_imp, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
@@ -153,7 +149,7 @@ theorem lfpApprox_eq_of_mem_fixedPoints {a b : Ordinal} (h_init : x ≤ f x) (h_
   rw [mem_fixedPoints_iff] at h
   induction b using Ordinal.induction with | h b IH =>
   apply le_antisymm
-  · conv => left; rw [lfpApprox_def]
+  · conv => left; rw [lfpApprox]
     apply sSup_le
     simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq,
       forall_eq_or_imp, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
@@ -213,7 +209,7 @@ theorem lfpApprox_le_of_mem_fixedPoints {a : α}
     (h_a : a ∈ fixedPoints f) (h_le_init : x ≤ a) (i : Ordinal) : lfpApprox f x i ≤ a := by
   induction i using Ordinal.induction with
   | h i IH =>
-    rw [lfpApprox_def]
+    rw [lfpApprox]
     apply sSup_le
     simp only [exists_prop]
     intro y h_y
