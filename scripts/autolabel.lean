@@ -10,12 +10,36 @@ import Lean.Elab.Command
 
 This file contains the script to automatically assign a GitHub label to a PR.
 
-`AutoLabel.mathlibLabels` contains an assignment of github labels to folders inside
-the mathlib repository. The script uses `git diff` to determine which files
-a PR modifies and then finds all labels that should be added based on these changes.
+## Label definition
 
-For the time being, the script only adds a label if it finds a single unique label
-that would apply. If multiple labels are found, nothing happens.
+The mapping from GitHub labels to Mathlib folders is done in this file and
+needs to be updated here if necessary:
+
+* `AutoLabel.mathlibLabels` contains an assignment of GitHub labels to folders inside
+  the mathlib repository. If no folder is specified, a label like `t-set-theory` will be
+  interpreted as matching the folder `"Mathlib" / "SetTheory"`.
+* `AutoLabel.mathlibUnlabelled` contains subfolders of `Mathlib/` which are deliberately
+  left without topic label.
+
+## lake exe autolabel
+
+`lake exe autolabel` uses `git diff --name-only origin/master...HEAD` to determine which
+files have been modifed and then finds all labels which should be added based on these changes.
+These are printed for testing purposes.
+
+`lake exe autolabel [NUMBER]` will further try to add the applicable labels
+to the PR specified. This requires the **GitHub CLI** `gh` to be installed!
+Example: `lake exe autolabel 10402` for PR #10402.
+
+For the time being, the script only adds a label if it finds a **single unique label**
+which would apply. If multiple labels are found, nothing happens.
+
+## Workflow
+
+There is a mathlib workflow `.github/workflows/add_label_from_diff.yaml` which executes
+this script automatically.
+
+Currently it is set to run only one time when a PR is created.
 
 ## Tests
 
@@ -41,7 +65,7 @@ A `Label` consists of the
   Any modifications to a file in an excluded path is ignored for the purposes of labelling.
 -/
 structure Label where
-  /-- The label name as it appears on github -/
+  /-- The label name as it appears on GitHub -/
   label : String
   /-- Array of paths which fall under this label. e.g. `"Mathlib" / "Algebra"`.
 
@@ -189,7 +213,10 @@ end AutoLabel
 
 open IO AutoLabel in
 
-/-- `args` is expected to have length 1, and the first argument is the PR number.
+/-- `args` is expected to have length 0 or 1, where the first argument is the PR number.
+
+If a PR number is provided, the script requires GitHub CLI `gh` to be installed in order
+to add the label to the PR.
 
 ## Exit codes:
 
