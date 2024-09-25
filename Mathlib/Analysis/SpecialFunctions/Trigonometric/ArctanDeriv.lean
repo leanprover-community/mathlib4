@@ -88,7 +88,7 @@ theorem differentiable_arctan : Differentiable ℝ arctan :=
 theorem deriv_arctan : deriv arctan = fun (x : ℝ) => 1 / (1 + x ^ 2) :=
   funext fun x => (hasDerivAt_arctan x).deriv
 
-theorem contDiff_arctan {n : ℕ∞} : ContDiff ℝ n arctan :=
+theorem contDiff_arctan {n : WithTop ℕ∞} : ContDiff ℝ n arctan :=
   contDiff_iff_contDiffAt.2 fun x =>
     have : cos (arctan x) ≠ 0 := (cos_arctan_pos x).ne'
     tanPartialHomeomorph.contDiffAt_symm_deriv (by simpa) trivial (hasDerivAt_tan this)

@@ -172,7 +172,24 @@ theorem iteratedDeriv_cexp_const_mul (n : ℕ) (c : ℂ) :
 
 namespace Real
 
-variable {x y z : ℝ}
+variable {x y z : ℝ} {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ}
+
+/-- `exp` is entire -/
+theorem analyticOn_rexp : AnalyticOn ℝ exp univ := by
+  rw [Real.exp_eq_exp_ℝ]
+  exact fun x _ ↦ NormedSpace.exp_analytic x
+
+/-- `exp` is analytic at any point -/
+theorem analyticAt_rexp : AnalyticAt ℝ exp x :=
+  analyticOn_rexp x (mem_univ _)
+
+/-- `exp ∘ f` is analytic -/
+theorem AnalyticAt.rexp {x : E} (fa : AnalyticAt ℝ f x) : AnalyticAt ℝ (fun z ↦ exp (f z)) x :=
+  analyticAt_rexp.comp fa
+
+/-- `exp ∘ f` is analytic -/
+theorem AnalyticOn.cexp {s : Set E} (fs : AnalyticOn ℝ f s) : AnalyticOn ℝ (fun z ↦ exp (f z)) s :=
+  fun z n ↦ analyticAt_rexp.comp (fs z n)
 
 theorem hasStrictDerivAt_exp (x : ℝ) : HasStrictDerivAt exp (exp x) x :=
   (Complex.hasStrictDerivAt_exp x).real_of_complex
