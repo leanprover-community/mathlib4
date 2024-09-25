@@ -662,8 +662,8 @@ theorem PartialHomeomorph.hasFPowerSeriesAt_symm (f : PartialHomeomorph E F) {a 
     apply this.congr
     filter_upwards [f.open_source.mem_nhds h0] with x hx using by simp [hx]
   have B : ∀ᶠ (y : E) in 𝓝 0, HasSum (fun n ↦ (p.leftInv i a n) fun _ ↦ f (a + y) - f a)
-      (f.symm (f (a + y))) :=
-    by simpa using A.eventually_hasSum_of_comp h (radius_leftInv_pos_of_radius_pos h.radius_pos hp)
+      (f.symm (f (a + y))) := by
+    simpa using A.eventually_hasSum_of_comp h (radius_leftInv_pos_of_radius_pos h.radius_pos hp)
   have C : ∀ᶠ (y : E) in 𝓝 a, HasSum (fun n ↦ (p.leftInv i a n) fun _ ↦ f y - f a)
       (f.symm (f y)) := by
     rw [← sub_eq_zero_of_eq (a := a) rfl] at B
