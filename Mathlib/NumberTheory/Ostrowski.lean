@@ -7,10 +7,10 @@ Francesco Veneziano
 -/
 
 import Mathlib.Analysis.Normed.Field.Lemmas
+import Mathlib.Analysis.Normed.Ring.Seminorm
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.Analysis.Normed.Ring.Seminorm
 import Mathlib.NumberTheory.Padics.PadicNorm
 
 /-!
@@ -34,8 +34,7 @@ ring_norm, ostrowski
 
 /- ## Preliminary lemmas on limits -/
 
-open Filter
-open Topology
+open Filter Topology
 
 -- If `a : ℝ` is bounded by `g(k)` for every `0 < k` then it is bounded by `lim_{k → ∞} g(k)`
 private lemma le_of_limit_le {a : ℝ} {g : ℕ → ℝ} {l : ℝ} (ha : ∀ (k : ℕ) (_ : 0 < k), a ≤ g k)
