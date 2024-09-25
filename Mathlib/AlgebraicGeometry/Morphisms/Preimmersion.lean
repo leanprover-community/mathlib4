@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
-import Mathlib.RingTheory.LocalProperties
+import Mathlib.RingTheory.RingHom.Surjective
 
 /-!
 
@@ -52,7 +52,7 @@ lemma isPreimmersion_eq_inf :
 /-- Being surjective on stalks is local at the target. -/
 instance isSurjectiveOnStalks_isLocalAtTarget : IsLocalAtTarget
     (stalkwise (Function.Surjective ·)) :=
-  stalkwiseIsLocalAtTarget_of_respectsIso surjective_respectsIso
+  stalkwiseIsLocalAtTarget_of_respectsIso RingHom.surjective_respectsIso
 
 namespace IsPreimmersion
 
