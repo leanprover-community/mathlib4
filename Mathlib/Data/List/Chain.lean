@@ -435,7 +435,7 @@ theorem chain_eq_iff_eq_replicate {a : α} {l : List α} :
 theorem chain'_replicate [IsRefl α r] {n : ℕ} {a : α} : Chain' r (replicate n a) :=
   match n with
   | 0 => chain'_nil
-  | _ + 1 => chain_reflexive
+  | _ + 1 => chain_replicate
 
 theorem chain'_eq_iff_eq_replicate {l : List α} :
     Chain' (· = ·) l ↔ ∀ a ∈ l.head?, l = replicate l.length a :=
