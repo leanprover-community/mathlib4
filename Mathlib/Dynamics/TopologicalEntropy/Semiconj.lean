@@ -204,5 +204,3 @@ theorem coverEntropy_restrict [UniformSpace X] {T : X → X} {F : Set X} (h : Ma
     Subtype.range_coe_subtype, setOf_mem_eq]
 
 end Dynamics
-
-#lint
