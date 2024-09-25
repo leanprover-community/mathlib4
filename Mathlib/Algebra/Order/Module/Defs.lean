@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
+import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity.Core
 
 /-!
@@ -769,7 +770,7 @@ instance instPosSMulReflectLE [PosSMulReflectLE α β] : PosSMulReflectLE α β�
 end Left
 
 section Right
-variable [Preorder α] [Ring α] [OrderedAddCommGroup β] [Module α β]
+variable [Preorder α] [Monoid α] [OrderedAddCommGroup β] [DistribMulAction α β]
 
 instance instSMulPosMono [SMulPosMono α β] : SMulPosMono α βᵒᵈ where
   elim _b hb a₁ a₂ ha := by
@@ -793,6 +794,45 @@ instance instSMulPosReflectLE [SMulPosReflectLE α β] : SMulPosReflectLE α β�
 
 end Right
 end OrderDual
+
+section OrderedAddCommMonoid
+variable [StrictOrderedSemiring α] [ExistsAddOfLE α] [OrderedCancelAddCommMonoid β]
+  [Module α β]
+
+section PosSMulMono
+variable [PosSMulMono α β] {a₁ a₂ : α} {b₁ b₂ : β}
+
+/-- Binary **rearrangement inequality**. -/
+lemma smul_add_smul_le_smul_add_smul (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) :
+    a₁ • b₂ + a₂ • b₁ ≤ a₁ • b₁ + a₂ • b₂ := by
+  obtain ⟨a, ha₀, rfl⟩ := exists_nonneg_add_of_le ha
+  rw [add_smul, add_smul, add_left_comm]
+  gcongr
+
+/-- Binary **rearrangement inequality**. -/
+lemma smul_add_smul_le_smul_add_smul' (ha : a₂ ≤ a₁) (hb : b₂ ≤ b₁) :
+    a₁ • b₂ + a₂ • b₁ ≤ a₁ • b₁ + a₂ • b₂ := by
+  simp_rw [add_comm (a₁ • _)]; exact smul_add_smul_le_smul_add_smul ha hb
+
+end PosSMulMono
+
+section PosSMulStrictMono
+variable [PosSMulStrictMono α β] {a₁ a₂ : α} {b₁ b₂ : β}
+
+/-- Binary strict **rearrangement inequality**. -/
+lemma smul_add_smul_lt_smul_add_smul (ha : a₁ < a₂) (hb : b₁ < b₂) :
+    a₁ • b₂ + a₂ • b₁ < a₁ • b₁ + a₂ • b₂ := by
+  obtain ⟨a, ha₀, rfl⟩ := lt_iff_exists_pos_add.1 ha
+  rw [add_smul, add_smul, add_left_comm]
+  gcongr
+
+/-- Binary strict **rearrangement inequality**. -/
+lemma smul_add_smul_lt_smul_add_smul' (ha : a₂ < a₁) (hb : b₂ < b₁) :
+    a₁ • b₂ + a₂ • b₁ < a₁ • b₁ + a₂ • b₂ := by
+  simp_rw [add_comm (a₁ • _)]; exact smul_add_smul_lt_smul_add_smul ha hb
+
+end PosSMulStrictMono
+end OrderedAddCommMonoid
 
 section OrderedRing
 variable [OrderedRing α]
@@ -864,39 +904,6 @@ lemma smul_neg_iff_of_neg_left (ha : a < 0) : a • b < 0 ↔ 0 < b := by
   simpa only [smul_zero] using smul_lt_smul_iff_of_neg_left ha (b₂ := (0 : β))
 
 end PosSMulStrictMono
-
-/-- Binary **rearrangement inequality**. -/
-lemma smul_add_smul_le_smul_add_smul [PosSMulMono α β]
-    {b₁ b₂ : α} {a d : β} (hab : b₁ ≤ b₂) (hcd : a ≤ d) : b₁ • d + b₂ • a ≤ b₁ • a + b₂ • d := by
-  obtain ⟨b₂, rfl⟩ := exists_add_of_le hab
-  obtain ⟨d, rfl⟩ := exists_add_of_le hcd
-  rw [smul_add, add_right_comm, smul_add, ← add_assoc, add_smul _ _ d]
-  rw [le_add_iff_nonneg_right] at hab hcd
-  exact add_le_add_left (le_add_of_nonneg_right <| smul_nonneg hab hcd) _
-
-/-- Binary **rearrangement inequality**. -/
-lemma smul_add_smul_le_smul_add_smul' [PosSMulMono α β]
-    {b₁ b₂ : α} {a d : β} (hba : b₂ ≤ b₁) (hdc : d ≤ a) : b₁ • d + b₂ • a ≤ b₁ • a + b₂ • d := by
-  rw [add_comm (b₁ • d), add_comm (b₁ • a)]
-  exact smul_add_smul_le_smul_add_smul hba hdc
-
-/-- Binary strict **rearrangement inequality**. -/
-lemma smul_add_smul_lt_smul_add_smul [PosSMulStrictMono α β]
-    {b₁ b₂ : α} {a d : β} (hab : b₁ < b₂) (hcd : a < d) :
-    b₁ • d + b₂ • a < b₁ • a + b₂ • d := by
-  obtain ⟨b₂, rfl⟩ := exists_add_of_le hab.le
-  obtain ⟨d, rfl⟩ := exists_add_of_le hcd.le
-  rw [smul_add, add_right_comm, smul_add, ← add_assoc, add_smul _ _ d]
-  rw [lt_add_iff_pos_right] at hab hcd
-  exact add_lt_add_left (lt_add_of_pos_right _ <| smul_pos hab hcd) _
-
-/-- Binary strict **rearrangement inequality**. -/
-lemma smul_add_smul_lt_smul_add_smul' [PosSMulStrictMono α β]
-    {b₁ b₂ : α} {a d : β} (hba : b₂ < b₁) (hdc : d < a) :
-    b₁ • d + b₂ • a < b₁ • a + b₂ • d := by
-  rw [add_comm (b₁ • d), add_comm (b₁ • a)]
-  exact smul_add_smul_lt_smul_add_smul hba hdc
-
 end OrderedAddCommGroup
 
 section LinearOrderedAddCommGroup

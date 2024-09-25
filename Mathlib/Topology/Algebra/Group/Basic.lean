@@ -305,6 +305,10 @@ lemma Homeomorph.coe_inv {G : Type*} [TopologicalSpace G] [InvolutiveInv G] [Con
     ⇑(Homeomorph.inv G) = Inv.inv := rfl
 
 @[to_additive]
+theorem nhds_inv (a : G) : 𝓝 a⁻¹ = (𝓝 a)⁻¹ :=
+  ((Homeomorph.inv G).map_nhds_eq a).symm
+
+@[to_additive]
 theorem isOpenMap_inv : IsOpenMap (Inv.inv : G → G) :=
   (Homeomorph.inv _).isOpenMap
 
@@ -849,6 +853,10 @@ variable [TopologicalSpace G] [Group G]
 @[to_additive]
 instance instTopologicalSpace (N : Subgroup G) : TopologicalSpace (G ⧸ N) :=
   instTopologicalSpaceQuotient
+
+@[to_additive]
+instance [CompactSpace G] (N : Subgroup G) : CompactSpace (G ⧸ N) :=
+  Quotient.compactSpace
 
 @[to_additive]
 theorem quotientMap_mk (N : Subgroup G) : QuotientMap (mk : G → G ⧸ N) :=

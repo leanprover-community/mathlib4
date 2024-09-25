@@ -93,7 +93,7 @@ theorem rank_powerset : rank (powerset x) = succ (rank x) := by
 
 /-- For the rank of `⋃₀ x`, we only have `rank (⋃₀ x) ≤ rank x ≤ rank (⋃₀ x) + 1`.
 
-This inequality is splitted into `rank_sUnion_le` and `le_succ_rank_sUnion`. -/
+This inequality is split into `rank_sUnion_le` and `le_succ_rank_sUnion`. -/
 theorem rank_sUnion_le : rank (⋃₀ x) ≤ rank x := by
   simp_rw [rank_le_iff, mem_sUnion]
   intro _ ⟨_, _, _⟩
@@ -114,10 +114,10 @@ theorem rank_eq_wfRank : lift.{u + 1, u} (rank x) = mem_wf.rank x := by
   induction' x using mem_wf.induction with x ih
   rw [mem_wf.rank_eq]
   simp_rw [← fun y : { y // y ∈ x } => ih y y.2]
-  apply (le_of_forall_lt _).antisymm (Ordinal.sup_le _) <;> intro h
+  apply (le_of_forall_lt _).antisymm (Ordinal.iSup_le.{u + 1, u} _) <;> intro h
   · rw [lt_lift_iff]
     rintro ⟨o, rfl, h⟩
-    simpa [Ordinal.lt_sup] using lt_rank_iff.1 h
+    simpa [Ordinal.lt_iSup.{u + 1, u}] using lt_rank_iff.1 h
   · simpa using rank_lt_of_mem h.2
 
 end PSet
@@ -173,7 +173,7 @@ theorem rank_powerset : rank (powerset x) = succ (rank x) :=
 
 /-- For the rank of `⋃₀ x`, we only have `rank (⋃₀ x) ≤ rank x ≤ rank (⋃₀ x) + 1`.
 
-This inequality is splitted into `rank_sUnion_le` and `le_succ_rank_sUnion`. -/
+This inequality is split into `rank_sUnion_le` and `le_succ_rank_sUnion`. -/
 theorem rank_sUnion_le : rank (⋃₀ x) ≤ rank x := by
   simp_rw [rank_le_iff, mem_sUnion]
   intro _ ⟨_, _, _⟩
@@ -200,10 +200,10 @@ theorem rank_eq_wfRank : lift.{u + 1, u} (rank x) = mem_wf.rank x := by
   induction' x using inductionOn with x ih
   rw [mem_wf.rank_eq]
   simp_rw [← fun y : { y // y ∈ x } => ih y y.2]
-  apply (le_of_forall_lt _).antisymm (Ordinal.sup_le _) <;> intro h
+  apply (le_of_forall_lt _).antisymm (Ordinal.iSup_le.{u + 1, u} _) <;> intro h
   · rw [lt_lift_iff]
     rintro ⟨o, rfl, h⟩
-    simpa [Ordinal.lt_sup] using lt_rank_iff.1 h
+    simpa [Ordinal.lt_iSup.{u + 1, u}] using lt_rank_iff.1 h
   · simpa using rank_lt_of_mem h.2
 
 end ZFSet

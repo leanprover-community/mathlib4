@@ -1,13 +1,14 @@
 /-
 Copyright (c) 2021 Vladimir Goryachev. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Scott Morrison, Eric Rodriguez
+Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Kim Morrison, Eric Rodriguez
 -/
 import Mathlib.Data.List.GetD
 import Mathlib.Data.Nat.Count
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Order.OrderIsoNat
+import Mathlib.Order.WellFounded
 
 /-!
 # The `n`th Number Satisfying a Predicate
@@ -237,7 +238,7 @@ theorem nth_eq_zero {n} :
     exacts [nth_zero_of_zero h₀, nth_of_card_le hf hle]
 
 theorem nth_eq_zero_mono (h₀ : ¬p 0) {a b : ℕ} (hab : a ≤ b) (ha : nth p a = 0) : nth p b = 0 := by
-  simp only [nth_eq_zero, h₀, false_and_iff, false_or_iff] at ha ⊢
+  simp only [nth_eq_zero, h₀, false_and, false_or] at ha ⊢
   exact ha.imp fun hf hle => hle.trans hab
 
 theorem le_nth_of_lt_nth_succ {k a : ℕ} (h : a < nth p (k + 1)) (ha : p a) : a ≤ nth p k := by
@@ -301,6 +302,10 @@ theorem count_nth_of_lt_card_finite {n : ℕ} (hp : (setOf p).Finite) (hlt : n <
 
 theorem count_nth_of_infinite (hp : (setOf p).Infinite) (n : ℕ) : count p (nth p n) = n :=
   count_nth fun hf => absurd hf hp
+
+theorem surjective_count_of_infinite_setOf (h : {n | p n}.Infinite) :
+    Function.Surjective (Nat.count p) :=
+  fun n => ⟨nth p n, count_nth_of_infinite h n⟩
 
 theorem count_nth_succ {n : ℕ} (hn : ∀ hf : (setOf p).Finite, n < hf.toFinset.card) :
     count p (nth p n + 1) = n + 1 := by rw [count_succ, count_nth hn, if_pos (nth_mem _ hn)]
