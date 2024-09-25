@@ -3,9 +3,8 @@ Copyright (c) 2022 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
-import Mathlib.Data.Nat.PrimeFin
+import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Order.Filter.AtTopBot.Floor
-import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Existence of a sufficiently large prime for which `a * c ^ p / (p - 1)! < 1`
