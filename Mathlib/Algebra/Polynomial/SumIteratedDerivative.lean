@@ -101,7 +101,7 @@ theorem sumIDeriv_C (a : R) : sumIDeriv (C a) = C a := by
   rw [sumIDeriv_apply, natDegree_C, zero_add, sum_range_one, Function.iterate_zero_apply]
 
 @[simp]
-theorem sumIDeriv_map {S : Type*} [CommSemiring S] (p : R[X]) (f : R →+* S) :
+theorem sumIDeriv_map (p : R[X]) (f : R →+* S) :
     sumIDeriv (p.map f) = (sumIDeriv p).map f := by
   let n := max (p.map f).natDegree p.natDegree
   rw [sumIDeriv_apply_of_le (le_max_left _ _ : _ ≤ n)]
