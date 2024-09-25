@@ -86,8 +86,7 @@ instance [SeminormedCommRing A] : NormedCommRing (Completion A) where
   __ : CommRing (Completion A) := inferInstance
   __ : NormedRing (Completion A) := inferInstance
 
-instance
-    [NormedField 𝕜] [SeminormedCommRing A] [NormedAlgebra 𝕜 A] [UniformContinuousConstSMul 𝕜 A] :
+instance [NormedField 𝕜] [SeminormedCommRing A] [NormedAlgebra 𝕜 A] :
     NormedAlgebra 𝕜 (Completion A) where
   norm_smul_le := norm_smul_le
 
