@@ -44,7 +44,7 @@ diffeomorphism, manifold
 -/
 
 
-open scoped Manifold Topology
+open scoped Manifold Topology ContDiff
 
 open Function Set
 
@@ -484,7 +484,7 @@ instance smoothManifoldWithCorners_transDiffeomorph [SmoothManifoldWithCorners I
     SmoothManifoldWithCorners (I.transDiffeomorph e) M := by
   refine smoothManifoldWithCorners_of_contDiffOn (I.transDiffeomorph e) M fun e₁ e₂ h₁ h₂ => ?_
   refine e.contDiff.comp_contDiffOn
-      (((contDiffGroupoid ⊤ I).compatible h₁ h₂).1.comp e.symm.contDiff.contDiffOn ?_)
+      (((contDiffGroupoid ∞ I).compatible h₁ h₂).1.comp e.symm.contDiff.contDiffOn ?_)
   mfld_set_tac
 
 variable (I M)

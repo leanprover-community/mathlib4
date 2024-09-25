@@ -82,7 +82,7 @@ noncomputable section
 
 open Real Complex MeasureTheory Filter TopologicalSpace
 
-open scoped FourierTransform Topology
+open scoped FourierTransform Topology ContDiff
 
 -- without this local instance, Lean tries first the instance
 -- `secondCountableTopologyEither_of_right` (whose priority is 100) and takes a very long time to
@@ -550,7 +550,8 @@ theorem fourierIntegral_iteratedFDeriv [FiniteDimensional ℝ V]
           ← fourierIntegral_continuousLinearMap_apply' J]
       exact H
     have h'n : n < N := (Nat.cast_lt.mpr n.lt_succ_self).trans_le hn
-    rw [fourierIntegral_fderiv _ (h'f n h'n.le) (hf.differentiable_iteratedFDeriv h'n) J]
+    rw [fourierIntegral_fderiv _ (h'f n h'n.le)
+      (hf.differentiable_iteratedFDeriv (by exact_mod_cast h'n)) J]
     simp only [ih h'n.le, fourierSMulRight_apply, ContinuousLinearMap.neg_apply,
       ContinuousLinearMap.flip_apply, neg_smul, smul_neg, neg_neg, smul_apply,
       fourierPowSMulRight_apply, ← coe_smul (E := E), smul_smul]
@@ -581,9 +582,10 @@ theorem fourierPowSMulRight_iteratedFDeriv_fourierIntegral [FiniteDimensional �
       simp only [Finset.mem_product, Finset.mem_range_succ_iff] at hp
       exact h'f _ _ ((Nat.cast_le.2 hp.1).trans hk) ((Nat.cast_le.2 hp.2).trans hm)
     apply (I.const_mul ((2 * π) ^ k * (2 * k + 2) ^ m * ‖L‖ ^ k)).mono'
-      ((hf.fourierPowSMulRight L k).continuous_iteratedFDeriv hm).aestronglyMeasurable
+      ((hf.fourierPowSMulRight L k).continuous_iteratedFDeriv
+        (by exact_mod_cast hm)).aestronglyMeasurable
     filter_upwards with v
-    refine norm_iteratedFDeriv_fourierPowSMulRight _ hf hm (fun i hi j hj ↦ ?_)
+    refine norm_iteratedFDeriv_fourierPowSMulRight _ hf (by exact_mod_cast hm) (fun i hi j hj ↦ ?_)
     apply Finset.single_le_sum (f := fun p ↦ ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖) (a := (j, i))
     · intro i _hi
       positivity
@@ -614,7 +616,7 @@ theorem norm_fourierPowSMulRight_iteratedFDeriv_fourierIntegral_le [FiniteDimens
   · filter_upwards with v using norm_nonneg _
   · exact (integrable_finset_sum _ I).const_mul _
   · filter_upwards with v
-    apply norm_iteratedFDeriv_fourierPowSMulRight _ hf hn _
+    apply norm_iteratedFDeriv_fourierPowSMulRight _ hf (by exact_mod_cast hn) _
     intro i hi j hj
     apply Finset.single_le_sum (f := fun p ↦ ‖v‖ ^ p.1 * ‖iteratedFDeriv ℝ p.2 f v‖) (a := (j, i))
     · intro i _hi

@@ -59,6 +59,9 @@ universe uι uE uH uM uF
 
 open Function Filter FiniteDimensional Set
 open scoped Topology Manifold
+/- Next line is necessary while the manifold smoothness class is not extended to `ω`.
+Later, replace with `open scoped ContDiff`. -/
+local notation "∞" => (⊤ : ℕ∞)
 
 noncomputable section
 

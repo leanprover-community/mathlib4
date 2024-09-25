@@ -86,17 +86,15 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
     refine ((continuousAt_id.prod hg.continuousAt).tendsto.eventually h3f).mono fun x hx => ?_
     exact hx.comp (g x) (contMDiffAt_const.prod_mk contMDiffAt_id)
   have h2g := hg.continuousAt.preimage_mem_nhds (extChartAt_source_mem_nhds I (g x₀))
-  have :
-    ContDiffWithinAt 𝕜 m
-      (fun x =>
-        fderivWithin 𝕜
+  have : ContDiffWithinAt 𝕜 m (fun x ↦ fderivWithin 𝕜
           (extChartAt I' (f x₀ (g x₀)) ∘ f ((extChartAt J x₀).symm x) ∘ (extChartAt I (g x₀)).symm)
           (range I) (extChartAt I (g x₀) (g ((extChartAt J x₀).symm x))))
-      (range J) (extChartAt J x₀ x₀) := by
+          (range J) (extChartAt J x₀ x₀) := by
     rw [contMDiffAt_iff] at hf hg
     simp_rw [Function.comp_def, uncurry, extChartAt_prod, PartialEquiv.prod_coe_symm,
       ModelWithCorners.range_prod] at hf ⊢
-    refine ContDiffWithinAt.fderivWithin ?_ hg.2 I.unique_diff hmn (mem_range_self _) ?_
+    have : m + 1 ≤ (n : WithTop ℕ∞) := by exact_mod_cast hmn
+    refine ContDiffWithinAt.fderivWithin ?_ hg.2 I.unique_diff this (mem_range_self _) ?_
     · simp_rw [extChartAt_to_inv]; exact hf.2
     · rw [← image_subset_iff]
       rintro _ ⟨x, -, rfl⟩
@@ -159,11 +157,11 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
     rw [(h2x₂.mdifferentiableAt le_rfl).mfderiv]
     have hI := (contDiffWithinAt_ext_coord_change I (g x₂) (g x₀) <|
       PartialEquiv.mem_symm_trans_source _ hx₂ <|
-        mem_extChartAt_source I (g x₂)).differentiableWithinAt le_top
+        mem_extChartAt_source I (g x₂)).differentiableWithinAt (by exact_mod_cast le_top)
     have hI' :=
       (contDiffWithinAt_ext_coord_change I' (f x₀ (g x₀)) (f x₂ (g x₂)) <|
             PartialEquiv.mem_symm_trans_source _ (mem_extChartAt_source I' (f x₂ (g x₂)))
-              h3x₂).differentiableWithinAt le_top
+              h3x₂).differentiableWithinAt (by exact_mod_cast le_top)
     have h3f := (h2x₂.mdifferentiableAt le_rfl).differentiableWithinAt_writtenInExtChartAt
     refine fderivWithin.comp₃ _ hI' h3f hI ?_ ?_ ?_ ?_ (I.unique_diff _ <| mem_range_self _)
     · exact fun x _ => mem_range_self _
@@ -269,7 +267,7 @@ theorem ContMDiffOn.continuousOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
   let y : H' := I'.symm (0 : E')
   have A := hf.2 x y
   simp only [I.image_eq, inter_comm, mfld_simps] at A ⊢
-  apply A.continuousOn_fderivWithin _ hn
+  apply A.continuousOn_fderivWithin _ (by exact_mod_cast hn)
   convert hs.uniqueDiffOn_target_inter x using 1
   simp only [inter_comm, mfld_simps]
 
@@ -309,7 +307,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
   -- check that all bits in this formula are `C^n`
   have hf' := contMDiffOn_iff.1 hf
   have A : ContDiffOn 𝕜 m (I' ∘ f ∘ I.symm) (range I ∩ I.symm ⁻¹' s) := by
-    simpa only [mfld_simps] using (hf'.2 (I.symm 0) (I'.symm 0)).of_le m_le_n
+    simpa only [mfld_simps] using (hf'.2 (I.symm 0) (I'.symm 0)).of_le (by exact_mod_cast m_le_n)
   have B : ContDiffOn 𝕜 m
       ((I' ∘ f ∘ I.symm) ∘ Prod.fst) ((range I ∩ I.symm ⁻¹' s) ×ˢ (univ : Set E)) :=
     A.comp contDiff_fst.contDiffOn (prod_subset_preimage_fst _ _)
@@ -327,7 +325,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin_aux {f : H → H'} {s : Set H}
       (range I ∩ I.symm ⁻¹' s) := by
     have : ContDiffOn 𝕜 n (I' ∘ f ∘ I.symm) (range I ∩ I.symm ⁻¹' s) := by
       simpa only [mfld_simps] using hf'.2 (I.symm 0) (I'.symm 0)
-    simpa only [inter_comm] using this.fderivWithin U' hmn
+    simpa only [inter_comm] using this.fderivWithin U' (by exact_mod_cast hmn)
   refine ContDiffOn.clm_apply ?_ contDiffOn_snd
   exact D.comp contDiff_fst.contDiffOn (prod_subset_preimage_fst _ _)
 
@@ -599,6 +597,9 @@ namespace ContMDiffMap
 -- (However as a consequence we import `Mathlib/Geometry/Manifold/ContMDiffMap.lean` here now.)
 -- They could be moved to another file (perhaps a new file) if desired.
 open scoped Manifold
+/- Next line is necessary while the manifold smoothness class is not extended to `ω`.
+Later, replace with `open scoped ContDiff`. -/
+local notation "∞" => (⊤ : ℕ∞)
 
 protected theorem mdifferentiable' (f : C^n⟮I, M; I', M'⟯) (hn : 1 ≤ n) : MDifferentiable I I' f :=
   f.contMDiff.mdifferentiable hn

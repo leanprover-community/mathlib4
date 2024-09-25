@@ -32,7 +32,7 @@ This defines a smooth vector bundle `TangentBundle` with fibers `TangentSpace`.
 
 open Bundle Set SmoothManifoldWithCorners PartialHomeomorph ContinuousLinearMap
 
-open scoped Manifold Topology Bundle
+open scoped Manifold Topology Bundle ContDiff
 
 noncomputable section
 
@@ -55,7 +55,8 @@ theorem contDiffOn_fderiv_coord_change (i j : atlas H M) :
   have h : ((i.1.extend I).symm ≫ j.1.extend I).source ⊆ range I := by
     rw [i.1.extend_coord_change_source]; apply image_subset_range
   intro x hx
-  refine (ContDiffWithinAt.fderivWithin_right ?_ I.unique_diff le_top <| h hx).mono h
+  refine (ContDiffWithinAt.fderivWithin_right ?_ I.unique_diff (n := ∞) (by exact_mod_cast le_top)
+    <| h hx).mono h
   refine (PartialHomeomorph.contDiffOn_extend_coord_change I (subset_maximalAtlas I j.2)
     (subset_maximalAtlas I i.2) x hx).mono_of_mem ?_
   exact i.1.extend_coord_change_source_mem_nhdsWithin j.1 I hx
@@ -101,9 +102,9 @@ def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
       simp_rw [Function.comp_apply, (j.1.extend I).left_inv hy]
     · simp_rw [Function.comp_apply, i.1.extend_left_inv I hxi, j.1.extend_left_inv I hxj]
     · exact (contDiffWithinAt_extend_coord_change' I (subset_maximalAtlas I k.2)
-        (subset_maximalAtlas I j.2) hxk hxj).differentiableWithinAt le_top
+        (subset_maximalAtlas I j.2) hxk hxj).differentiableWithinAt (by exact_mod_cast le_top)
     · exact (contDiffWithinAt_extend_coord_change' I (subset_maximalAtlas I j.2)
-        (subset_maximalAtlas I i.2) hxj hxi).differentiableWithinAt le_top
+        (subset_maximalAtlas I i.2) hxj hxi).differentiableWithinAt (by exact_mod_cast le_top)
     · intro x _; exact mem_range_self _
     · exact I.unique_diff_at_image
     · rw [Function.comp_apply, i.1.extend_left_inv I hxi]
