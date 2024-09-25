@@ -11,6 +11,8 @@ import Mathlib.Order.Filter.Cofinite
 # Existence of a sufficiently large prime for which `a * c ^ p / (p - 1)! < 1`
 
 This is a technical result used in the proof of the Lindemann-Weierstrass theorem.
+
+TODO: delete this file.
 -/
 
 open scoped Nat
