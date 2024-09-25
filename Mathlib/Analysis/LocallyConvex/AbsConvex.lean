@@ -284,7 +284,7 @@ theorem totallyBounded_absConvexHull
       · intro x hx
         rw [Set.mem_vadd'] at hx
         aesop
-    have e2 : ⋃ y ∈ t, {x | (x, y) ∈ d₂} = t + V := by
+    have e2 {t₁ : Set E} : ⋃ y ∈ t₁, {x | (x, y) ∈ d₂} = t₁ + V := by
       aesop
     rw [e2] at hts
     have e3 : (absConvexHull ℝ) s ⊆ (absConvexHull ℝ) (t + V) := by
@@ -299,15 +299,27 @@ theorem totallyBounded_absConvexHull
       exact Convex.inter hS₂ (Convex.neg hS₂)
     rw [e5] at e4
     rw [absConvexHull_eq_convexHull_union_neg (s := t)] at e4
+    letI := TopologicalAddGroup.toUniformSpace E
     have e6 : TotallyBounded (uniformSpace := TopologicalAddGroup.toUniformSpace E)
         ((convexHull ℝ) (t ∪ -t)) := by
-      letI := TopologicalAddGroup.toUniformSpace E
       apply IsCompact.totallyBounded
       apply Set.Finite.isCompact_convexHull
-      apply finite_union
-
-    --apply le_trans (b := t + V)
-
+      apply finite_union.mpr ⟨htf,Finite.neg htf⟩
+    have e0 : d₂ = symmetrizeRel {(x,y) | y-x ∈ S} := by
+      simp_all only [mem_neg, neg_sub, d₂]
+      rfl
+    obtain ⟨t',⟨htf',hts'⟩⟩ := e6 d₂ (by
+      rw [e0]
+      apply symmetrize_mem_uniformity
+      rw [uniformity_eq_comap_nhds_zero']
+      aesop
+    )
+    rw [e2] at hts'
+    have e7: (absConvexHull ℝ) s ⊆ t' + V + V := by
+      apply le_trans
+      apply e4
+      apply Set.add_subset_add_right
+      apply hts'
     sorry
 -/
 
