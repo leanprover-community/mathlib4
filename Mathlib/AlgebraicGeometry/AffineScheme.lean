@@ -265,7 +265,7 @@ instance isOpenImmersion_fromSpec :
 theorem range_fromSpec :
     Set.range hU.fromSpec.1.base = (U : Set X) := by
   delta IsAffineOpen.fromSpec; dsimp
-  rw [Function.comp.assoc, Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
+  rw [Function.comp_assoc, Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
   · exact Subtype.range_coe
   erw [← coe_comp, ← TopCat.epi_iff_surjective] -- now `erw` after #13170
   infer_instance
