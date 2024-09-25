@@ -98,6 +98,9 @@ theorem hom_def {A B : Rep k G} (f : A ⟶ B) : f.hom = hom f := rfl
 theorem hom_ext {A B : Rep k G} {f g : A ⟶ B} (h : hom f = hom g) : f = g :=
   Action.hom_ext _ _ h
 
+@[simp]
+theorem hom_id (A : Rep k G) : hom (𝟙 A) = LinearMap.id := rfl
+
 @[simps]
 def mkHom' {A B : Rep k G} (f : A →ₗ[k] B) (h : ∀ g, f ∘ₗ A.ρ g = B.ρ g ∘ₗ f) :
     A ⟶ B where
@@ -211,6 +214,33 @@ have removed `@[simp]`. -/
 theorem MonoidalCategory.braiding_inv_apply {A B : Rep k G} (x : A) (y : B) :
     Action.Hom.hom (β_ A B).inv (TensorProduct.tmul k y x) = TensorProduct.tmul k x y :=
   rfl
+
+section Res
+
+variable {H : Type u} [Monoid H] (f : G →* H)
+
+lemma coe_res_obj (A : Rep k H) :
+    ((Action.res _ f).obj A : Type u) = A := rfl
+
+@[simp]
+lemma res_obj_ρ (A : Rep k H) :
+    ((Action.res _ f).obj A).ρ = A.ρ.comp f := rfl
+
+@[simp]
+lemma res_map_hom {A B : Rep k H} (φ : A ⟶ B) :
+    hom ((Action.res _ f).map φ) = hom φ := rfl
+
+variable (k) in
+def resFunctor : Grpᵒᵖ ⥤ Cat where
+  obj := fun G ↦ Cat.of (Rep k G.unop)
+  map := fun f ↦ Action.res (ModuleCat k) f.unop
+
+variable (k) in
+def opResFunctor (k : Type u) [CommRing k] : Grpᵒᵖ ⥤ Cat where
+  obj := fun G ↦ Cat.of (Rep k G.unop)ᵒᵖ
+  map := fun f ↦ (Action.res (ModuleCat k) f.unop).op
+
+end Res
 
 section Linearization
 

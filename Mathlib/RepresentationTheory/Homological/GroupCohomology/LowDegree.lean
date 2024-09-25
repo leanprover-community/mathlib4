@@ -633,7 +633,7 @@ abbrev H0 := A.ρ.invariants
 abbrev H1 := oneCocycles A ⧸ oneCoboundaries A
 
 /-- The quotient map `Z¹(G, A) → H¹(G, A).` -/
-def H1_π : oneCocycles A →ₗ[k] H1 A := (oneCoboundaries A).mkQ
+def H1π : oneCocycles A →ₗ[k] H1 A := (oneCoboundaries A).mkQ
 
 /-- We define the 2nd group cohomology of a `k`-linear `G`-representation `A`, `H²(G, A)`, to be
 2-cocycles (i.e. `Z²(G, A) := Ker(d² : Fun(G², A) → Fun(G³, A)`) modulo 2-coboundaries
@@ -641,7 +641,7 @@ def H1_π : oneCocycles A →ₗ[k] H1 A := (oneCoboundaries A).mkQ
 abbrev H2 := twoCocycles A ⧸ twoCoboundaries A
 
 /-- The quotient map `Z²(G, A) → H²(G, A).` -/
-def H2_π : twoCocycles A →ₗ[k] H2 A := (twoCoboundaries A).mkQ
+def H2π : twoCocycles A →ₗ[k] H2 A := (twoCoboundaries A).mkQ
 
 end Cohomology
 
@@ -671,16 +671,16 @@ def H1LequivOfIsTrivial [A.IsTrivial] :
   (Submodule.quotEquivOfEqBot _ (oneCoboundaries_eq_bot_of_isTrivial A)).trans
     (oneCocyclesLequivOfIsTrivial A)
 
-theorem H1LequivOfIsTrivial_comp_H1_π [A.IsTrivial] :
-    (H1LequivOfIsTrivial A).comp (H1_π A) = oneCocyclesLequivOfIsTrivial A := by
+theorem H1LequivOfIsTrivial_comp_H1π [A.IsTrivial] :
+    (H1LequivOfIsTrivial A).comp (H1π A) = oneCocyclesLequivOfIsTrivial A := by
   ext; rfl
 
-@[simp] theorem H1LequivOfIsTrivial_H1_π_apply_apply
+@[simp] theorem H1LequivOfIsTrivial_H1π_apply_apply
     [A.IsTrivial] (f : oneCocycles A) (x : Additive G) :
-    H1LequivOfIsTrivial A (H1_π A f) x = f.1 (Additive.toMul x) := rfl
+    H1LequivOfIsTrivial A (H1π A f) x = f.1 (Additive.toMul x) := rfl
 
 @[simp] theorem H1LequivOfIsTrivial_symm_apply [A.IsTrivial] (f : Additive G →+ A) :
-    (H1LequivOfIsTrivial A).symm f = H1_π A ((oneCocyclesLequivOfIsTrivial A).symm f) :=
+    (H1LequivOfIsTrivial A).symm f = H1π A ((oneCocyclesLequivOfIsTrivial A).symm f) :=
   rfl
 
 end H1
@@ -730,7 +730,7 @@ def isoZeroCocycles : cocycles A 0 ≅ ModuleCat.of k A.ρ.invariants :=
 
 @[reassoc (attr := simp)]
 lemma isoZeroCocycles_hom_comp_subtype :
-    (isoZeroCocycles A).hom ≫ A.ρ.invariants.subtype =
+    (isoZeroCocycles A).hom ≫ ModuleCat.ofHom A.ρ.invariants.subtype =
       iCocycles A 0 ≫ (zeroCochainsLequiv A).toModuleIso.hom := by
   dsimp [isoZeroCocycles]
   apply KernelFork.mapOfIsLimit_ι
@@ -768,7 +768,7 @@ def isoOneCocycles : cocycles A 1 ≅ ModuleCat.of k (oneCocycles A) :=
 
 @[reassoc (attr := simp)]
 lemma isoOneCocycles_hom_comp_subtype :
-    (isoOneCocycles A).hom ≫ (oneCocycles A).subtype =
+    (isoOneCocycles A).hom ≫ ModuleCat.ofHom (oneCocycles A).subtype =
       iCocycles A 1 ≫ (oneCochainsLequiv A).toModuleIso.hom := by
   dsimp [isoOneCocycles]
   rw [Category.assoc, Category.assoc]
@@ -778,7 +778,7 @@ lemma isoOneCocycles_hom_comp_subtype :
 @[reassoc (attr := simp)]
 lemma isoOneCocycles_inv_comp_iCocycles :
     (isoOneCocycles A).inv ≫ iCocycles A 1 =
-      (oneCocycles A).subtype ≫ (oneCochainsLequiv A).toModuleIso.inv := by
+      ModuleCat.ofHom (oneCocycles A).subtype ≫ (oneCochainsLequiv A).toModuleIso.inv := by
   rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, isoOneCocycles_hom_comp_subtype]
 
 @[reassoc (attr := simp)]

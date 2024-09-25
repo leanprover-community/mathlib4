@@ -313,6 +313,16 @@ variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k 
 variable (ρ : Representation k G V)
 
 @[simp]
+theorem ρ_inv_self_apply (g : G) (x : V) :
+    ρ g⁻¹ (ρ g x) = x := by
+  simp [← LinearMap.mul_apply, ← map_mul]
+
+@[simp]
+theorem ρ_self_inv_apply (g : G) (x : V) :
+    ρ g (ρ g⁻¹ x) = x := by
+  simp [← LinearMap.mul_apply, ← map_mul]
+
+@[simp]
 theorem ofMulAction_apply {H : Type*} [MulAction G H] (g : G) (f : H →₀ k) (h : H) :
     ofMulAction k G H g f h = f (g⁻¹ • h) := by
   conv_lhs => rw [← smul_inv_smul g h]

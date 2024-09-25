@@ -6,6 +6,7 @@ Authors: Amelia Livingston
 import Mathlib.Algebra.Homology.Opposite
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.RepresentationTheory.Homological.Resolution
+import Mathlib.RepresentationTheory.Invariants
 import Mathlib.Tactic.CategoryTheory.Slice
 import Mathlib.CategoryTheory.Abelian.LeftDerived
 
@@ -25,7 +26,7 @@ open CategoryTheory CategoryTheory.Limits MonoidalCategory
 
 namespace Rep
 
-variable {k G : Type u} [CommRing k] [Group G] (A B C : Rep k G) {n : ℕ} (α : Type u)
+variable {k G : Type u} [CommRing k] [Group G] (A B C D : Rep k G) {n : ℕ} (α : Type u)
 
 def finsuppTensorLeft [DecidableEq α] :
     A.finsupp α ⊗ B ≅ (A ⊗ B).finsupp α :=
@@ -70,77 +71,8 @@ theorem finsuppTensorRight_inv_apply_single [DecidableEq α] (a : α) (x : A) (y
     hom (finsuppTensorRight A B α).inv (Finsupp.single a (x ⊗ₜ y)) = x ⊗ₜ Finsupp.single a y :=
   TensorProduct.finsuppRight_symm_apply_single _ _ _
 
-end Rep
-namespace Representation
-
-variable {k G V W : Type*} [CommRing k] [Group G]
-    [AddCommGroup V] [Module k V] (ρ : Representation k G V)
-    [AddCommGroup W] [Module k W] (τ : Representation k G W)
-
-def inv : Representation k Gᵐᵒᵖ V :=
-  ρ.comp (MulEquiv.inv' G).symm.toMonoidHom
-
-@[simp] lemma inv_apply (g : Gᵐᵒᵖ) (x : V) :
-  ρ.inv g x = ρ g.unop⁻¹ x := rfl
-
-abbrev coinvariantsKer := Submodule.span k (Set.range <| fun (x : G × V) => ρ x.1 x.2 - x.2)
-
-lemma mem_coinvariantsKer (g : G) (x a : V) (h : ρ g x - x = a) : a ∈ coinvariantsKer ρ :=
-Submodule.subset_span ⟨(g, x), h⟩
-
-abbrev coinvariants := V ⧸ coinvariantsKer ρ
-
-def coinvariantsLift (f : V →ₗ[k] W) (h : ∀ (x : G), f ∘ₗ ρ x = f) :
-    ρ.coinvariants →ₗ[k] W :=
-  Submodule.liftQ _ f <| Submodule.span_le.2 fun x ⟨⟨g, y⟩, hy⟩ => by
-    simpa only [← hy, SetLike.mem_coe, LinearMap.mem_ker, map_sub, sub_eq_zero, LinearMap.coe_comp,
-      Function.comp_apply] using LinearMap.ext_iff.1 (h g) y
-
-@[simp] theorem coinvariantsLift_mkQ (f : V →ₗ[k] W) {h : ∀ (x : G), f ∘ₗ ρ x = f} :
-  coinvariantsLift ρ f h ∘ₗ (coinvariantsKer ρ).mkQ = f := rfl
-
-@[simp]
-theorem coinvariantsLift_apply (f : V →ₗ[k] W) {h : ∀ (x : G), f ∘ₗ ρ x = f} (x : V) :
-  coinvariantsLift ρ f h (Submodule.Quotient.mk x) = f x := rfl
-end Representation
-
-namespace Rep
-
-variable {k G : Type u} [CommRing k] [Group G] {A B C D : Rep k G} {n : ℕ} (α : Type u)
-  {V : Type u} [AddCommGroup V] [Module k V]
+variable (A)
 open Representation
-def coinvariantsLift (f : A ⟶ (Rep.trivial k G V)) :
-    coinvariants A.ρ →ₗ[k] V :=
-  Representation.coinvariantsLift _ (hom f) f.comm
-
-def coinvariantsMap (f : A ⟶ B) :
-    coinvariants A.ρ →ₗ[k] coinvariants B.ρ :=
-  Representation.coinvariantsLift _ (Submodule.mkQ _ ∘ₗ hom f) fun g => LinearMap.ext fun x => by
-    simpa [hom_comm_apply'', Submodule.Quotient.eq]
-    using mem_coinvariantsKer B.ρ g (hom f x) _ rfl
-
-@[simp] theorem coinvariantsMap_mkQ (f : A ⟶ B) :
-  coinvariantsMap f ∘ₗ (coinvariantsKer A.ρ).mkQ = (coinvariantsKer B.ρ).mkQ ∘ₗ hom f := rfl
-
-@[simp]
-theorem coinvariantsMap_apply (f : A ⟶ B) (x : A) :
-  coinvariantsMap f (Submodule.Quotient.mk x) = Submodule.Quotient.mk (hom f x) := rfl
-
-variable (α : Type u)
-variable (A B)
-
-@[simps]
-def coinvariantsHomEquiv :
-    (coinvariants A.ρ →ₗ[k] B) ≃ (A ⟶ trivial k G B) where
-  toFun := fun f => {
-    hom := f ∘ₗ (coinvariantsKer A.ρ).mkQ
-    comm := fun g => by
-      ext x
-      exact congr(f $((Submodule.Quotient.eq <| coinvariantsKer A.ρ).2
-        (mem_coinvariantsKer _ g x _ rfl))) }
-  invFun := fun f => coinvariantsLift f
-  left_inv := fun x => Submodule.linearMap_qext _ rfl
-  right_inv := fun x => Action.Hom.ext rfl
 
 @[simp] def coinvariantsToFinsupp :
     coinvariants (A.finsupp α).ρ →ₗ[k] α →₀ coinvariants A.ρ :=
@@ -171,7 +103,7 @@ def coinvariantsFinsuppLEquiv :
       (x : coinvariants A.ρ) fun y => ?_) x
     simp [coinvariantsMap, Submodule.Quotient.mk''_eq_mk]
 
-variable {A B}
+variable {A C D}
 
 lemma coinvariants_whisker_comm (f : A ⟶ B) (g : C ⟶ D) :
     coinvariantsMap (B ◁ g) ∘ₗ coinvariantsMap (f ▷ C)
