@@ -88,7 +88,7 @@ def rootSpaceWeightSpaceProductAux {χ₁ χ₂ χ₃ : H → R} (hχ : χ₁ + 
     { toFun := fun m =>
         ⟨⁅(x : L), (m : M)⁆,
           hχ ▸ lie_mem_genWeightSpace_of_mem_genWeightSpace x.property m.property⟩
-      map_add' := fun m n => by simp only [Submodule.coe_add, lie_add, AddMemClass.mk_add_mk]
+      map_add' := fun m n => by simp only [LieSubmodule.coe_add, lie_add, AddMemClass.mk_add_mk]
       map_smul' := fun t m => by
         dsimp only
         conv_lhs =>
@@ -97,7 +97,7 @@ def rootSpaceWeightSpaceProductAux {χ₁ χ₂ χ₃ : H → R} (hχ : χ₁ + 
         rfl }
   map_add' x y := by
     ext m
-    simp only [Submodule.coe_add, add_lie, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.add_apply,
+    simp only [LieSubmodule.coe_add, add_lie, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.add_apply,
       AddMemClass.mk_add_mk]
   map_smul' t x := by
     simp only [RingHom.id_apply]
@@ -117,7 +117,6 @@ def rootSpaceWeightSpaceProduct (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ�
         ext m
         simp only [rootSpaceWeightSpaceProductAux]
         dsimp
-        repeat rw [LieSubmodule.coe_bracket]
         simp only [LieSubalgebra.coe_bracket_of_module, lie_lie] }
 
 @[simp]
@@ -271,7 +270,9 @@ lemma mem_corootSpace {x : H} :
   have : x ∈ corootSpace α ↔
       (x : L) ∈ LieSubmodule.map H.toLieSubmodule.incl (corootSpace α) := by
     rw [corootSpace]
-    simpa using exists_congr fun _ ↦ H.toLieSubmodule.injective_incl.eq_iff.symm
+    simp only [rootSpaceProduct_def, LieModuleHom.mem_range, LieSubmodule.mem_map,
+      LieSubmodule.incl_apply, SetLike.coe_eq_coe, exists_eq_right]
+    rfl
   simp_rw [this, corootSpace, ← LieModuleHom.map_top, ← LieSubmodule.mem_coeSubmodule,
     LieSubmodule.coeSubmodule_map, LieSubmodule.top_coeSubmodule, ← TensorProduct.span_tmul_eq_top,
     LinearMap.map_span, Set.image, Set.mem_setOf_eq, exists_exists_exists_and_eq]
