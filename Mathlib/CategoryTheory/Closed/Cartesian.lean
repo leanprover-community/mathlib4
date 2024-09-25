@@ -231,9 +231,8 @@ argument is explicit: any instance can be used.-/
 def expTerminalNatIso [Exponentiable (⊤_ C)] : 𝟭 C ≅ exp (⊤_ C) :=
   MonoidalClosed.unitNatIso (C := C)
 
-/-- A component of the above in the reversed direction, showing that the exponential with the
-terminal object is isomorphic to itself, i.e. `X^1 ≅ X`.
--/
+/-- The exponential of any object with the terminal object is isomorphic to itself, i.e. `X^1 ≅ X`.
+The typeclass argument is explicit: any instance can be used.-/
 def expTerminalIsoSelf [Exponentiable (⊤_ C)] : (⊤_ C) ⟹ X ≅ X :=
   (expTerminalNatIso.app X).symm
 
