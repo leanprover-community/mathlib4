@@ -26,10 +26,13 @@ section FiniteDimensional
 
 open Function FiniteDimensional
 
+open scoped ContDiff
+
 variable [CompleteSpace 𝕜]
 
 /-- A family of continuous linear maps is `C^n` on `s` if all its applications are. -/
-theorem contDiffOn_clm_apply {n : ℕ∞} {f : E → F →L[𝕜] G} {s : Set E} [FiniteDimensional 𝕜 F] :
+theorem contDiffOn_clm_apply {n : WithTop ℕ∞}
+    {f : E → F →L[𝕜] G} {s : Set E} [FiniteDimensional 𝕜 F] :
     ContDiffOn 𝕜 n f s ↔ ∀ y, ContDiffOn 𝕜 n (fun x => f x y) s := by
   refine ⟨fun h y => h.clm_apply contDiffOn_const, fun h => ?_⟩
   let d := finrank 𝕜 F
@@ -39,7 +42,7 @@ theorem contDiffOn_clm_apply {n : ℕ∞} {f : E → F →L[𝕜] G} {s : Set E}
   rw [← id_comp f, ← e₂.symm_comp_self]
   exact e₂.symm.contDiff.comp_contDiffOn (contDiffOn_pi.mpr fun i => h _)
 
-theorem contDiff_clm_apply_iff {n : ℕ∞} {f : E → F →L[𝕜] G} [FiniteDimensional 𝕜 F] :
+theorem contDiff_clm_apply_iff {n : WithTop ℕ∞} {f : E → F →L[𝕜] G} [FiniteDimensional 𝕜 F] :
     ContDiff 𝕜 n f ↔ ∀ y, ContDiff 𝕜 n fun x => f x y := by
   simp_rw [← contDiffOn_univ, contDiffOn_clm_apply]
 
@@ -52,19 +55,23 @@ often requires an inconvenient need to generalize `F`, which results in universe
 (see the discussion in the section of `ContDiff.comp`).
 
 This lemma avoids these universe issues, but only applies for finite dimensional `E`. -/
-theorem contDiff_succ_iff_fderiv_apply [FiniteDimensional 𝕜 E] {n : ℕ} {f : E → F} :
-    ContDiff 𝕜 (n + 1 : ℕ) f ↔ Differentiable 𝕜 f ∧ ∀ y, ContDiff 𝕜 n fun x => fderiv 𝕜 f x y := by
+theorem contDiff_succ_iff_fderiv_apply [FiniteDimensional 𝕜 E] {n : WithTop ℕ∞} {f : E → F} :
+    ContDiff 𝕜 (n + 1) f ↔ Differentiable 𝕜 f ∧
+      (n = ω → AnalyticOn 𝕜 f Set.univ) ∧ ∀ y, ContDiff 𝕜 n fun x => fderiv 𝕜 f x y := by
   rw [contDiff_succ_iff_fderiv, contDiff_clm_apply_iff]
 
-theorem contDiffOn_succ_of_fderiv_apply [FiniteDimensional 𝕜 E] {n : ℕ} {f : E → F} {s : Set E}
-    (hf : DifferentiableOn 𝕜 f s) (h : ∀ y, ContDiffOn 𝕜 n (fun x => fderivWithin 𝕜 f s x y) s) :
-    ContDiffOn 𝕜 (n + 1 : ℕ) f s :=
-  contDiffOn_succ_of_fderivWithin hf <| contDiffOn_clm_apply.mpr h
+theorem contDiffOn_succ_of_fderiv_apply [FiniteDimensional 𝕜 E] {n : WithTop ℕ∞}
+    {f : E → F} {s : Set E}
+    (hf : DifferentiableOn 𝕜 f s) (h'f : n = ω → AnalyticWithinOn 𝕜 f s)
+    (h : ∀ y, ContDiffOn 𝕜 n (fun x => fderivWithin 𝕜 f s x y) s) :
+    ContDiffOn 𝕜 (n + 1) f s :=
+  contDiffOn_succ_of_fderivWithin hf h'f <| contDiffOn_clm_apply.mpr h
 
-theorem contDiffOn_succ_iff_fderiv_apply [FiniteDimensional 𝕜 E] {n : ℕ} {f : E → F} {s : Set E}
-    (hs : UniqueDiffOn 𝕜 s) :
-    ContDiffOn 𝕜 (n + 1 : ℕ) f s ↔
-      DifferentiableOn 𝕜 f s ∧ ∀ y, ContDiffOn 𝕜 n (fun x => fderivWithin 𝕜 f s x y) s := by
+theorem contDiffOn_succ_iff_fderiv_apply [FiniteDimensional 𝕜 E]
+    {n : WithTop ℕ∞} {f : E → F} {s : Set E} (hs : UniqueDiffOn 𝕜 s) :
+    ContDiffOn 𝕜 (n + 1) f s ↔
+      DifferentiableOn 𝕜 f s ∧ (n = ω → AnalyticWithinOn 𝕜 f s) ∧
+      ∀ y, ContDiffOn 𝕜 n (fun x => fderivWithin 𝕜 f s x y) s := by
   rw [contDiffOn_succ_iff_fderivWithin hs, contDiffOn_clm_apply]
 
 end FiniteDimensional

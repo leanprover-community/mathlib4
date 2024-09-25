@@ -6,6 +6,8 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 import Mathlib.Analysis.Complex.RealDeriv
 import Mathlib.Analysis.Calculus.ContDiff.RCLike
 import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
+import Mathlib.Analysis.Complex.CauchyIntegral
+
 
 /-!
 # Complex and real exponential
@@ -43,6 +45,11 @@ theorem differentiable_exp : Differentiable 𝕜 exp := fun x =>
 theorem differentiableAt_exp {x : ℂ} : DifferentiableAt 𝕜 exp x :=
   differentiable_exp x
 
+/-- `exp` is entire -/
+theorem analyticOn_cexp : AnalyticOn ℂ exp univ := by
+  rw [analyticOn_univ_iff_differentiable]; exact differentiable_exp
+
+
 @[simp]
 theorem deriv_exp : deriv exp = exp :=
   funext fun x => (hasDerivAt_exp x).deriv
@@ -52,7 +59,10 @@ theorem iter_deriv_exp : ∀ n : ℕ, deriv^[n] exp = exp
   | 0 => rfl
   | n + 1 => by rw [iterate_succ_apply, deriv_exp, iter_deriv_exp n]
 
-theorem contDiff_exp : ∀ {n}, ContDiff 𝕜 n exp := by
+theorem contDiff_exp {n : WithTop ℕ∞} : ContDiff 𝕜 n exp := by
+  apply AnalyticOn.contDiff
+  exact?
+
   -- Porting note: added `@` due to `∀ {n}` weirdness above
   refine @(contDiff_all_iff_nat.2 fun n => ?_)
   have : ContDiff ℂ (↑n) exp := by
