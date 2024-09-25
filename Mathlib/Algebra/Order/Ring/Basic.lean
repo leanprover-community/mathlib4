@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 -/
 import Mathlib.Algebra.Group.NoRootsOfUnity
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Parity
 import Mathlib.Tactic.Bound.Attribute

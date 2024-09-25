@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
 import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.SetTheory.Game.Birthday
