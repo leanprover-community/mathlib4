@@ -392,6 +392,9 @@ this is weaker than `AnalyticOnNhd 𝕜 f s`, as `f` is allowed to be arbitrary 
 def AnalyticOn (f : E → F) (s : Set E) : Prop :=
   ∀ x ∈ s, AnalyticWithinAt 𝕜 f s x
 
+@[deprecated (since := "2024-09-26")]
+alias AnalyticWithinOn := AnalyticOn
+
 /-!
 ### `HasFPowerSeriesOnBall` and `HasFPowerSeriesWithinOnBall`
 -/
