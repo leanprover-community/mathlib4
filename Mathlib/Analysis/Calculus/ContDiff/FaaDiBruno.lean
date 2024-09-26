@@ -3,9 +3,7 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Analytic.Within
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
+import Mathlib.Data.Finite.Card
 
 /-!
 # Faa di Bruno formula
@@ -73,15 +71,7 @@ The application to the proof of the Faa di Bruno formula will be PRed in a secon
 
 noncomputable section
 
-open Set Fin Filter Function
-
-universe u uE uF uG uX
-
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type uE} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type uF} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type uG}
-  [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-  {s : Set E} {t : Set F}
-  {q : F → FormalMultilinearSeries 𝕜 F G} {p : E → FormalMultilinearSeries 𝕜 E F}
+open Set Fin Function
 
 /-- A partition of `Fin n` into finitely many nonempty subsets, given by the increasing
 parameterization of these subsets. We order the subsets by increasing greatest element. -/
