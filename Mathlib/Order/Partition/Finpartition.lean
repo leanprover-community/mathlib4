@@ -480,6 +480,7 @@ def part (a : α) : Finset α := if ha : a ∈ s then choose (hp := P.existsUniq
 @[simp]
 lemma part_mem (ha : a ∈ s) : P.part a ∈ P.parts := by simp [part, ha, choose_mem]
 
+@[simp]
 lemma mem_part (ha : a ∈ s) : a ∈ P.part a := by
   simp [part, ha, choose_property (p := fun s => a ∈ s) P.parts (P.existsUnique_mem ha)]
 
