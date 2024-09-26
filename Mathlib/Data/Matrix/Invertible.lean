@@ -48,10 +48,12 @@ protected theorem invOf_mul_cancel_right (A : Matrix m n α) (B : Matrix n n α)
 protected theorem mul_invOf_cancel_right (A : Matrix m n α) (B : Matrix n n α) [Invertible B] :
     A * B * ⅟ B = A := by rw [Matrix.mul_assoc, mul_invOf_self, Matrix.mul_one]
 
-@[deprecated (since := "2024-09-07")] alias invOf_mul_self_assoc := invOf_mul_cancel_left
-@[deprecated (since := "2024-09-07")] alias mul_invOf_self_assoc := mul_invOf_cancel_left
-@[deprecated (since := "2024-09-07")] alias mul_invOf_mul_self_cancel := invOf_mul_cancel_right
-@[deprecated (since := "2024-09-07")] alias mul_mul_invOf_self_cancel := mul_invOf_cancel_right
+@[deprecated (since := "2024-09-07")] alias invOf_mul_self_assoc := Matrix.invOf_mul_cancel_left
+@[deprecated (since := "2024-09-07")] alias mul_invOf_self_assoc := Matrix.mul_invOf_cancel_left
+@[deprecated (since := "2024-09-07")]
+alias mul_invOf_mul_self_cancel := Matrix.invOf_mul_cancel_right
+@[deprecated (since := "2024-09-07")]
+alias mul_mul_invOf_self_cancel := Matrix.mul_invOf_cancel_right
 
 section ConjTranspose
 variable [StarRing α] (A : Matrix n n α)
@@ -115,7 +117,7 @@ variable [Fintype m] [DecidableEq m] [Ring α]
     (A : Matrix n n α) (U : Matrix n m α) (C : Matrix m m α) (V : Matrix m n α)
     [Invertible A] [Invertible C] [Invertible (⅟C + V * ⅟A * U)]
 
--- Removed spaces around multiplication signs for better clarity
+-- No spaces around multiplication signs for better clarity
 lemma add_mul_mul_invOf_mul_eq_one :
     (A + U*C*V)*(⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A) = 1 := by
   calc
@@ -129,12 +131,12 @@ lemma add_mul_mul_invOf_mul_eq_one :
       rw [sub_right_inj, Matrix.add_mul, Matrix.add_mul, Matrix.add_mul]
     _ = 1 + U*C*V*⅟A - U*C*(⅟C + V*⅟A*U)*⅟(⅟C + V*⅟A*U)*V*⅟A := by
       congr
-      simp only [Matrix.mul_add, Matrix.mul_mul_invOf_self_cancel, ← Matrix.mul_assoc]
+      simp only [Matrix.mul_add, Matrix.mul_invOf_cancel_right, ← Matrix.mul_assoc]
     _ = 1 := by
-      rw [Matrix.mul_mul_invOf_self_cancel]
+      rw [Matrix.mul_invOf_cancel_right]
       abel
 
--- as above, but with multiplication reversed
+/-- Like `add_mul_mul_invOf_mul_eq_one`, but with multiplication reversed. -/
 lemma add_mul_mul_invOf_mul_eq_one' :
     (⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A)*(A + U*C*V) = 1 := by
   calc
@@ -142,7 +144,7 @@ lemma add_mul_mul_invOf_mul_eq_one' :
     _ = ⅟A*A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A*A + ⅟A*U*C*V - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A*U*C*V := by
       simp_rw [add_sub_assoc, _root_.mul_add, _root_.sub_mul, Matrix.mul_assoc]
     _ = (1 + ⅟A*U*C*V) - (⅟A*U*⅟(⅟C + V*⅟A*U)*V + ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A*U*C*V) := by
-      rw [invOf_mul_self, Matrix.mul_invOf_mul_self_cancel]
+      rw [invOf_mul_self, Matrix.invOf_mul_cancel_right]
       abel
     _ = 1 + ⅟A*U*C*V - ⅟A*U*⅟(⅟C + V*⅟A*U)*(V + V*⅟A*U*C*V) := by
       rw [sub_right_inj, Matrix.mul_add]
@@ -150,9 +152,9 @@ lemma add_mul_mul_invOf_mul_eq_one' :
     _ = 1 + ⅟A*U*C*V - ⅟A*U*⅟(⅟C + V*⅟A*U)*(⅟C + V*⅟A*U)*C*V := by
       congr 1
       simp only [Matrix.mul_add, Matrix.add_mul, ← Matrix.mul_assoc,
-        Matrix.mul_invOf_mul_self_cancel]
+        Matrix.invOf_mul_cancel_right]
     _ = 1 := by
-      rw [Matrix.mul_invOf_mul_self_cancel]
+      rw [Matrix.invOf_mul_cancel_right]
       abel
 
 /-- If matrices `A`, `C`, and `C⁻¹ + V * A⁻¹ * U` are invertible, then so is `A + U * C * V`-/
