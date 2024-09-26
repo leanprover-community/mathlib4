@@ -209,6 +209,19 @@ partial def findUncoveredPaths (path : FilePath) (exceptions : Array FilePath :=
 
 end Tests
 
+/--
+Create a message which github CI parses as annotation and displays at the specified file.
+
+Note: duplicate `file` so that they are also visible in the plain text output.
+
+* `type`: "error" or "warning"
+* `file`: file where the annotation should be displayed
+* `title`: title of the annotation
+* `message`: annotation message
+-/
+def githubAnnotation (type file title message : String) : String :=
+  s!"::{type} file={file},title={title}::{file}: {message}"
+
 end AutoLabel
 
 open IO AutoLabel in
@@ -227,8 +240,9 @@ to add the label to the PR.
 -/
 unsafe def main (args : List String): IO Unit := do
   if args.length > 1 then
-    println s!"autolabel: invalid number of arguments ({args.length}), expected at most 1. \
-    Please run without arguments or provide the target PR's number as a single argument!"
+    println s!"::error:: autolabel: invalid number of arguments ({args.length}), \
+    expected at most 1. Please run without arguments or provide the target PR's \
+    number as a single argument!"
     IO.Process.exit 1
   let prNumber? := args[0]?
 
@@ -237,13 +251,17 @@ unsafe def main (args : List String): IO Unit := do
   for label in mathlibLabels do
     for dir in label.dirs do
       unless ← FilePath.pathExists dir do
-        println s!"::error file=scripts/autolabel.lean,line=84::directory {dir} does not exist! \
-        (from label {label.label})"
+        -- print github annotation error
+        println <| AutoLabel.githubAnnotation "error" "scripts/autolabel.lean"
+          s!"Misformatted `{ ``AutoLabel.mathlibLabels }`"
+          s!"directory {dir} does not exist! (from label {label.label})"
         valid := false
     for dir in label.exclusions do
       unless ← FilePath.pathExists dir do
-        println s!"::error file=scripts/autolabel.lean,line=84::excluded directory {dir} \
-        does not exist! (from label {label.label})"
+        -- print github annotation error
+        println <| AutoLabel.githubAnnotation "error" "scripts/autolabel.lean"
+          s!"Misformatted `{ ``AutoLabel.mathlibLabels }`"
+          s!"excluded directory {dir} does not exist! (from label {label.label})"
         valid := false
   unless valid do
     IO.Process.exit 2
@@ -251,10 +269,13 @@ unsafe def main (args : List String): IO Unit := do
   -- test: validate that the labels cover all of the `Mathlib/` folder
   let notMatchedPaths ← findUncoveredPaths "Mathlib" (exceptions := mathlibUnlabelled)
   if notMatchedPaths.size > 0 then
+    -- print github annotation warning
     -- note: only emitting a warning because the workflow is only triggered on the first commit
     -- of a PR and could therefore lead to unexpected behaviour if a folder was created later.
-    println s!"::warning file=scripts/autolabel.lean,line=84::the following paths inside `Mathlib/` are not covered \
-    by any label: {notMatchedPaths} Please modify `AutoLabel.mathlibLabels` accordingly!"
+    println <| AutoLabel.githubAnnotation "error" "scripts/autolabel.lean"
+      s!"Incomplete `{ ``AutoLabel.mathlibLabels }`"
+      s!"the following paths inside `Mathlib/` are not covered \
+      by any label: {notMatchedPaths} Please modify `AutoLabel.mathlibLabels` accordingly!"
     -- IO.Process.exit 3
 
   -- get the modified files
