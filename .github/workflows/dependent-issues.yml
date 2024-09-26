@@ -3,6 +3,7 @@ name: Dependent Issues
 on:
   schedule:
     - cron: '*/15 * * * *' # run every 15 minutes
+  workflow_dispatch:
 
 jobs:
   cancel:

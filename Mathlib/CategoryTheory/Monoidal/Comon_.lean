@@ -59,9 +59,9 @@ def trivial : Comon_ C where
   X := 𝟙_ C
   counit := 𝟙 _
   comul := (λ_ _).inv
-  comul_assoc := by coherence
-  counit_comul := by coherence
-  comul_counit := by coherence
+  comul_assoc := by monoidal_coherence
+  counit_comul := by monoidal_coherence
+  comul_counit := by monoidal_coherence
 
 instance : Inhabited (Comon_ C) :=
   ⟨trivial C⟩

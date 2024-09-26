@@ -428,9 +428,9 @@ open scoped ContinuousMapZero
 variable {F R S A B : Type*} {p : A → Prop} {q : B → Prop}
   [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R] [TopologicalSemiring R]
   [ContinuousStar R] [CommRing S] [Algebra R S]
-  [Ring A] [StarRing A] [TopologicalSpace A] [Module R A]
+  [NonUnitalRing A] [StarRing A] [TopologicalSpace A] [Module R A]
   [IsScalarTower R A A] [SMulCommClass R A A]
-  [Ring B] [StarRing B] [TopologicalSpace B] [Module R B]
+  [NonUnitalRing B] [StarRing B] [TopologicalSpace B] [Module R B]
   [IsScalarTower R B B] [SMulCommClass R B B]
   [Module S A] [Module S B] [IsScalarTower R S A] [IsScalarTower R S B]
   [NonUnitalContinuousFunctionalCalculus R p] [NonUnitalContinuousFunctionalCalculus R q]
