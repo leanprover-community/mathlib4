@@ -31,7 +31,7 @@ def UnicodeVariant.emoji := '\uFE0F'
 def UnicodeVariant.text := '\uFE0E'
 
 /-- Prints a unicode character's codepoint in hexadecimal with prefix 'U+'.
-E.g., 'a' is "U+0061".-/
+E.g., 'a' is "U+0061". -/
 def printCodepointHex (c : Char) : String :=
   let digits := Nat.toDigits 16 c.val.toNat
   match digits.length with  -- print at least 4 (could be more) hex characters using leading zeros
