@@ -43,8 +43,8 @@ The following normal forms are in [silverman2009], Appendix A, Proposition 1.1.
   it into such normal form (see `WeierstrassCurve.vcToCharThreeJZeroNF`
   and `WeierstrassCurve.vcToCharThreeJZeroNF_spec`).
 
-- `WeierstrassCurve.IsCharThreeJNeZeroNF` is a predicate asserts that a `WeierstrassCurve` is of form
-  $Y^2 = X^3 + a_2X^2 + a_6$. It is the normal form of characteristic = 3 and j ≠ 0.
+- `WeierstrassCurve.IsCharThreeJNeZeroNF` is a predicate asserts that a `WeierstrassCurve` is of
+  form $Y^2 = X^3 + a_2X^2 + a_6$. It is the normal form of characteristic = 3 and j ≠ 0.
 
   If the field is of characteristic 3 and the $b_2$ of the curve is not zero (for an elliptic curve,
   it is equivalent to that j ≠ 0), then there exists a change of variables which will change
