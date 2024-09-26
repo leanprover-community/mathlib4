@@ -14,6 +14,7 @@ can be degenerate) by quotienting the null space.
 
 ## Main results
 
+It is shown that ` ⟪x, y⟫_𝕜 = 0` for all `y : E` using the Cauchy-Schwarz inequality.
 -/
 
 noncomputable section
@@ -26,8 +27,7 @@ section Nullspace
 
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-/-- The null space with respect to the canonical inner product. It is defined by `‖x‖ = 0` and
-it is proven using the Cauchy-Schwarz inequality that ` ⟪x, y⟫_𝕜 = 0` for all `y : E`. -/
+/-- The null space with respect to the norm. -/
 def nullSpace : Submodule 𝕜 E where
   carrier := {x : E | ‖x‖ = 0}
   add_mem' := by
@@ -71,12 +71,14 @@ lemma inn_nullSpace_right_eq_zero (x y : E) (h : y ∈ nullSpace 𝕜 E) : ‖x 
     inner_eq_zero_of_left_mem_nullSpace 𝕜 E y x h, inner_eq_zero_of_left_mem_nullSpace 𝕜 E y y h]
   simp only [sub_zero, add_zero]
 
+/-- For each `x : E`, the kernel of `⟪x, ⬝⟫` includes the null space. -/
 lemma nullSpace_le_ker_toDualMap (x : E) : nullSpace 𝕜 E ≤ ker (toDualMap 𝕜 E x) := by
   intro y hy
   refine LinearMap.mem_ker.mpr ?_
   simp only [toDualMap_apply]
   exact inner_nullSpace_right_eq_zero 𝕜 E x y hy
 
+/-- The kernel of the map `x ↦ ⟪x, ⬝⟫` includes the null space. -/
 lemma nullSpace_le_ker_toDualMap' : nullSpace 𝕜 E ≤ ker (toDualMap 𝕜 E) := by
   intro x hx
   refine LinearMap.mem_ker.mpr ?_
