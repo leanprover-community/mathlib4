@@ -8,7 +8,8 @@ import Mathlib.Data.List.Chain
 /-!
 # Group a list by a relation
 
-This file provides the basic API for `List.groupBy`. The main results are the following:
+This file provides the basic API for `List.groupBy` which is defined in Core.
+The main results are the following:
 
 - `List.join_groupBy`: the lists in `List.groupBy` join to the original list.
 - `List.nil_not_mem_groupBy`: the empty list is not contained in `List.groupBy`.
