@@ -60,7 +60,17 @@ theorem AnalyticOnNhd.clog (fs : AnalyticOnNhd ℂ f s) (m : ∀ z ∈ s, f z �
 
 theorem AnalyticOn.clog (fs : AnalyticOn ℂ f s) (m : ∀ z ∈ s, f z ∈ slitPlane) :
     AnalyticOn ℂ (fun z ↦ log (f z)) s :=
-  fun z n ↦ (analyticAt_clog (m z n)).comp (fs z n)
+  fun z n ↦ (analyticAt_clog (m z n)).analyticWithinAt.comp (fs z n) m
+
+/-- `f z ^ g z` is analytic if `f z` is not a nonpositive real -/
+theorem AnalyticWithinAt.cpow (fa : AnalyticWithinAt ℂ f s x) (ga : AnalyticWithinAt ℂ g s x)
+    (m : f x ∈ slitPlane) : AnalyticWithinAt ℂ (fun z ↦ f z ^ g z) s x := by
+  have e : (fun z ↦ f z ^ g z) =ᶠ[𝓝[insert x s] x] fun z ↦ exp (log (f z) * g z) := by
+    filter_upwards [(fa.continuousWithinAt_insert.eventually_ne (slitPlane_ne_zero m))]
+    intro z fz
+    simp only [fz, cpow_def, if_false]
+  apply AnalyticWithinAt.congr_of_eventuallyEq_insert _ e
+  exact ((fa.clog m).mul ga).cexp
 
 /-- `f z ^ g z` is analytic if `f z` is not a nonpositive real -/
 theorem AnalyticAt.cpow (fa : AnalyticAt ℂ f x) (ga : AnalyticAt ℂ g x)

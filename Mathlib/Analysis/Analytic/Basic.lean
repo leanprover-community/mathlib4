@@ -640,6 +640,12 @@ lemma AnalyticWithinAt.congr_of_eventuallyEq {f g : E → F} {s : Set E} {x : E}
   rcases hf with ⟨p, hp⟩
   exact ⟨p, hp.congr hs hx⟩
 
+lemma AnalyticWithinAt.congr_of_eventuallyEq_insert {f g : E → F} {s : Set E} {x : E}
+    (hf : AnalyticWithinAt 𝕜 f s x) (hs : g =ᶠ[𝓝[insert x s] x] f) :
+    AnalyticWithinAt 𝕜 g s x := by
+  apply hf.congr_of_eventuallyEq (nhdsWithin_mono x (subset_insert x s) hs)
+  apply mem_of_mem_nhdsWithin (mem_insert x s) hs
+
 lemma AnalyticWithinAt.congr {f g : E → F} {s : Set E} {x : E}
     (hf : AnalyticWithinAt 𝕜 f s x) (hs : EqOn g f s) (hx : g x = f x) :
     AnalyticWithinAt 𝕜 g s x :=
