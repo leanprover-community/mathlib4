@@ -11,21 +11,35 @@ inductive isFlatZero : {basis : Basis} → PreMS basis → Prop
 | const {c : ℝ} (h : c = 0) : isFlatZero (basis := []) c
 | nil {basis_hd : _} {basis_tl : _} : isFlatZero (basis := basis_hd :: basis_tl) CoList.nil
 
-theorem isFlatZero_cons {basis_hd : _} {basis_tl : _} {deg : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)} :
+#check isFlatZero.casesOn
+
+theorem isFlatZero_cons {basis_hd : _} {basis_tl : _} {deg : ℝ} {coef : PreMS basis_tl}
+    {tl : PreMS (basis_hd :: basis_tl)} :
     ¬(isFlatZero (basis := (basis_hd :: basis_tl)) (CoList.cons (deg, coef) tl)) := by
-  sorry
+  intro h
+  let motive : {basis : Basis} → (a : PreMS basis) → a.isFlatZero → Prop := fun {basis} a _ =>
+    match basis with
+    | [] => True
+    | hd :: tl => a = .nil
+  have := h.casesOn (motive := motive) (by simp [motive]) (by simp [motive])
+  simp [motive] at this
+
 
 inductive isTrimmed : {basis : Basis} → PreMS basis → Prop
 | const {c : ℝ} : isTrimmed (basis := []) c
 | nil {basis_hd : _} {basis_tl : _} : isTrimmed (basis := basis_hd :: basis_tl) CoList.nil
-| cons {basis_hd : _} {basis_tl : _} {deg : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
-  (h_trimmed : coef.isTrimmed) (h_ne_flat_zero : ¬ coef.isFlatZero) : isTrimmed (basis := basis_hd :: basis_tl) (CoList.cons (deg, coef) tl)
+| cons {basis_hd : _} {basis_tl : _} {deg : ℝ} {coef : PreMS basis_tl}
+  {tl : PreMS (basis_hd :: basis_tl)} (h_trimmed : coef.isTrimmed)
+  (h_ne_flat_zero : ¬ coef.isFlatZero) :
+  isTrimmed (basis := basis_hd :: basis_tl) (CoList.cons (deg, coef) tl)
 
-theorem isTrimmed_cons {basis_hd : _} {basis_tl : _} {deg : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
+theorem isTrimmed_cons {basis_hd : _} {basis_tl : _} {deg : ℝ} {coef : PreMS basis_tl}
+    {tl : PreMS (basis_hd :: basis_tl)}
     (h : isTrimmed (basis := basis_hd :: basis_tl) (CoList.cons (deg, coef) tl)) :
     coef.isTrimmed ∧ ¬ coef.isFlatZero := by
   apply h.casesOn (motive := fun {basis : Basis} (a : PreMS basis) (h_trimmed : a.isTrimmed) =>
-    (h_basis : basis = basis_hd :: basis_tl) → (a = h_basis ▸ (CoList.cons (deg, coef) tl)) → coef.isTrimmed ∧ ¬ coef.isFlatZero)
+    (h_basis : basis = basis_hd :: basis_tl) → (a = h_basis ▸ (CoList.cons (deg, coef) tl)) →
+      coef.isTrimmed ∧ ¬ coef.isFlatZero)
   · intro _ h_basis
     simp at h_basis
   · intro _ _ h_basis h
@@ -33,30 +47,47 @@ theorem isTrimmed_cons {basis_hd : _} {basis_tl : _} {deg : ℝ} {coef : PreMS b
     obtain ⟨h_basis_hd, h_basis_tl⟩ := h_basis
     subst h_basis_hd h_basis_tl
     simp at h
-    apply (CoList.noConfusion _ _ h.symm).elim
   · intro _ _ deg coef tl h_trimmed h_ne_flat_zero h_basis h
     simp at h_basis
     obtain ⟨h_basis_hd, h_basis_tl⟩ := h_basis
     subst h_basis_hd h_basis_tl
     simp at h
-    obtain ⟨h_hd, _⟩ := CoList.cons_eq_cons h
-    simp at h_hd
-    rw [← h_hd.2]
+    rw [← h.1.2]
     exact ⟨h_trimmed, h_ne_flat_zero⟩
   · rfl
   · rfl
 
 inductive hasNegativeLeading : {basis : Basis} → (ms : PreMS basis) → Prop
-| cons {basis_hd : ℝ → ℝ} {basis_tl : List (ℝ → ℝ)} {deg : ℝ} {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
-    (h : deg < 0) : hasNegativeLeading (basis := basis_hd :: basis_tl) (.cons (deg, coef) tl)
+| nil {basis_hd : ℝ → ℝ} {basis_tl : List (ℝ → ℝ)} :
+  hasNegativeLeading (basis := basis_hd :: basis_tl) .nil
+| cons {basis_hd : ℝ → ℝ} {basis_tl : List (ℝ → ℝ)} {deg : ℝ} {coef : PreMS basis_tl}
+    {tl : PreMS (basis_hd :: basis_tl)} (h : deg < 0) :
+  hasNegativeLeading (basis := basis_hd :: basis_tl) (.cons (deg, coef) tl)
 
 def isPartiallyTrimmed {basis : Basis} (ms : PreMS basis) : Prop :=
   ms.hasNegativeLeading ∨ ms.isTrimmed
 
+-- may be put in another file?
+theorem hasNegativeLeading_tendsto_zero {basis : Basis} {ms : PreMS basis} {F : ℝ → ℝ}
+    (h_neg : ms.hasNegativeLeading) (h_approx : ms.isApproximation F basis) :
+    Filter.Tendsto F Filter.atTop (nhds 0) := by
+  cases h_neg with
+  | nil =>
+    replace h_approx := isApproximation_nil h_approx
+    apply Filter.Tendsto.congr' h_approx.symm
+    apply tendsto_const_nhds
+  | cons h_deg =>
+    rename_i deg coef tl
+    replace h_approx := isApproximation_cons h_approx
+    obtain ⟨_, _, h_comp, _⟩ := h_approx
+    specialize h_comp 0 (by linarith)
+    simpa using h_comp
+
 namespace Trimming
 
 theorem PreMS.isApproximation_sub_zero {basis : Basis} {ms : PreMS basis} {F C : ℝ → ℝ}
-    (h_approx : ms.isApproximation (F - C) basis) (h_C : C =ᶠ[Filter.atTop] 0) : ms.isApproximation F basis := by
+    (h_approx : ms.isApproximation (F - C) basis) (h_C : C =ᶠ[Filter.atTop] 0) :
+    ms.isApproximation F basis := by
   apply PreMS.isApproximation_of_EventuallyEq h_approx
   have := Filter.EventuallyEq.sub (Filter.EventuallyEq.refl _ F) h_C
   simpa using this
@@ -69,7 +100,8 @@ structure PreMS.TrimmingResult {basis : Basis} (ms : PreMS basis) where
 
 def maxUnfoldingSteps : ℕ := 20
 
-def PreMS.trim {basis : Basis} (ms : PreMS basis) (stepsLeft := maxUnfoldingSteps) : TendstoM <| PreMS.TrimmingResult ms :=
+def PreMS.trim {basis : Basis} (ms : PreMS basis) (stepsLeft := maxUnfoldingSteps) :
+    TendstoM <| PreMS.TrimmingResult ms :=
   match stepsLeft with
   | 0 => do throw TendstoException.trimmingException
   | stepsLeftNext + 1 => do
@@ -100,7 +132,7 @@ def PreMS.trim {basis : Basis} (ms : PreMS basis) (stepsLeft := maxUnfoldingStep
                 h_wo := by
                   intro h_wo
                   replace h_wo := wellOrdered_cons h_wo
-                  exact tl_trimmed.h_wo h_wo.right
+                  exact tl_trimmed.h_wo h_wo.right.left
                 h_approx := by
                   intro F h_approx
                   replace h_approx := isApproximation_cons h_approx
@@ -109,7 +141,8 @@ def PreMS.trim {basis : Basis} (ms : PreMS basis) (stepsLeft := maxUnfoldingStep
                   subst h_c_zero
                   apply tl_trimmed.h_approx
                   apply isApproximation_sub_zero h_tl
-                  have := Filter.EventuallyEq.mul (Filter.EventuallyEq.refl _ (fun x ↦ basis_hd x ^ deg)) h_coef
+                  have := Filter.EventuallyEq.mul
+                    (Filter.EventuallyEq.refl _ (fun x ↦ basis_hd x ^ deg)) h_coef
                   simpa using this
                 h_trimmed := tl_trimmed.h_trimmed
               }
@@ -118,13 +151,11 @@ def PreMS.trim {basis : Basis} (ms : PreMS basis) (stepsLeft := maxUnfoldingStep
                 h_wo := by
                   intro h_wo
                   replace h_wo := wellOrdered_cons h_wo
-                  sorry
-                  -- exact tl_trimmed.h_wo h_wo.right
-                  -- simp [PreMS.wellOrdered] at h_wo
-                  -- unfold PreMS.wellOrdered
-                  -- constructor
-                  -- · exact coef_trimmed.h_wo h_wo.left
-                  -- · exact h_wo.right
+                  apply wellOrdered.cons
+                  · apply coef_trimmed.h_wo
+                    exact h_wo.left
+                  · exact h_wo.right.left
+                  · exact h_wo.right.right
                 h_approx := by
                   intro F h_approx
                   replace h_approx := isApproximation_cons h_approx
@@ -134,7 +165,6 @@ def PreMS.trim {basis : Basis} (ms : PreMS basis) (stepsLeft := maxUnfoldingStep
                   · exact h_comp
                   · exact h_tl
                 h_trimmed := by
-                  -- simp [PreMS.isTrimmed]
                   constructor
                   · exact coef_trimmed.h_trimmed
                   · intro h
@@ -156,13 +186,11 @@ def PreMS.trim {basis : Basis} (ms : PreMS basis) (stepsLeft := maxUnfoldingStep
                 h_wo := by
                   intro h_wo
                   replace h_wo := wellOrdered_cons h_wo
-                  sorry
-                  -- exact tl_trimmed.h_wo h_wo.right
-                  -- simp [PreMS.wellOrdered] at h_wo
-                  -- unfold PreMS.wellOrdered
-                  -- constructor
-                  -- · exact coef_trimmed.h_wo h_wo.left
-                  -- · exact h_wo.right
+                  apply wellOrdered.cons
+                  · apply coef_trimmed.h_wo
+                    exact h_wo.left
+                  · exact h_wo.right.left
+                  · exact h_wo.right.right
                 h_approx := by
                   intro F h_approx
                   replace h_approx := isApproximation_cons h_approx
@@ -198,7 +226,7 @@ def PreMS.trim {basis : Basis} (ms : PreMS basis) (stepsLeft := maxUnfoldingStep
                   h_wo := by
                     intro h_wo
                     replace h_wo := wellOrdered_cons h_wo
-                    exact tl_trimmed.h_wo h_wo.right
+                    exact tl_trimmed.h_wo h_wo.right.left
                   h_approx := by
                     intro F h_approx
                     replace h_approx := isApproximation_cons h_approx
@@ -210,7 +238,8 @@ def PreMS.trim {basis : Basis} (ms : PreMS basis) (stepsLeft := maxUnfoldingStep
                     have hC : C =ᶠ[Filter.atTop] 0 := by
                       have := h_coef_trimmed ▸ coef_trimmed.h_approx C h_coef
                       exact isApproximation_nil this
-                    have := Filter.EventuallyEq.mul (Filter.EventuallyEq.refl _ (fun x ↦ basis_hd x ^ deg)) hC
+                    have := Filter.EventuallyEq.mul
+                      (Filter.EventuallyEq.refl _ (fun x ↦ basis_hd x ^ deg)) hC
                     simpa using this
                   h_trimmed := tl_trimmed.h_trimmed
                 }
@@ -221,13 +250,11 @@ def PreMS.trim {basis : Basis} (ms : PreMS basis) (stepsLeft := maxUnfoldingStep
                   h_wo := by
                     intro h_wo
                     replace h_wo := wellOrdered_cons h_wo
-                    sorry
-                    -- exact tl_trimmed.h_wo h_wo.right
-                    -- simp [PreMS.wellOrdered] at h_wo
-                    -- unfold PreMS.wellOrdered
-                    -- constructor
-                    -- · exact coef_trimmed.h_wo h_wo.left
-                    -- · exact h_wo.right
+                    apply wellOrdered.cons
+                    · apply coef_trimmed.h_wo
+                      exact h_wo.left
+                    · exact h_wo.right.left
+                    · exact h_wo.right.right
                   h_approx := by
                     intro F h_approx
                     replace h_approx := isApproximation_cons h_approx

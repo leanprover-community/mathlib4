@@ -9,7 +9,7 @@ open Asymptotics Filter
 
 namespace TendstoTactic
 
-def MS.wellOrderedBasis (basis : List (ℝ → ℝ)) : Prop :=
+def MS.wellOrderedBasis (basis : Basis) : Prop :=
   match basis with
   | [] => True
   | hd :: tl => Tendsto hd atTop atTop ∧ MS.wellOrderedBasis tl ∧ match tl with
@@ -22,19 +22,20 @@ example : MS.wellOrderedBasis [Real.exp, id] := by
   · exact Real.tendsto_exp_atTop
   · constructor
     · exact fun ⦃U⦄ a ↦ a
-    · simp [Function.comp]
+    · unfold Function.comp
+      simp
       exact Real.isLittleO_log_id_atTop
 
 -- to upstream? here wasn't used
 universe u in
-theorem List.foldl_map'' {α β γ γ' : Type u} (g : α → β) (h : γ → γ') (f : α → γ → α) (f' : β → γ' → β) (a : α) (l : List γ)
-    (h_congr : ∀ x y, f' (g x) (h y) = g (f x y)) :
+theorem List.foldl_map'' {α β γ γ' : Type u} (g : α → β) (h : γ → γ') (f : α → γ → α)
+    (f' : β → γ' → β) (a : α) (l : List γ) (h_congr : ∀ x y, f' (g x) (h y) = g (f x y)) :
     (l.map h).foldl f' (g a) = g (l.foldl f a) := by
   induction l generalizing a
   · simp
   · simp [*, h_congr]
 
-theorem MS.basis_tendsto_top {basis : List (ℝ → ℝ)} (h : MS.wellOrderedBasis basis) :
+theorem MS.basis_tendsto_top {basis : Basis} (h : MS.wellOrderedBasis basis) :
     ∀ f ∈ basis, Tendsto f atTop atTop := by
   induction basis with
   | nil => simp
@@ -45,7 +46,7 @@ theorem MS.basis_tendsto_top {basis : List (ℝ → ℝ)} (h : MS.wellOrderedBas
     · exact h.left
     · exact ih h.right.left
 
-theorem MS.basis_eventually_pos {basis : List (ℝ → ℝ)} (h : MS.wellOrderedBasis basis) :
+theorem MS.basis_eventually_pos {basis : Basis} (h : MS.wellOrderedBasis basis) :
     ∀ᶠ x in atTop, ∀ f ∈ basis, 0 < f x := by
   induction basis with
   | nil => simp
@@ -57,14 +58,15 @@ theorem MS.basis_eventually_pos {basis : List (ℝ → ℝ)} (h : MS.wellOrdered
     · apply ih
       exact h.right.left
 
-theorem MS.basis_head_eventually_pos {basis_hd : ℝ → ℝ} {basis_tl : List (ℝ → ℝ)}
+theorem MS.basis_head_eventually_pos {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (h : MS.wellOrderedBasis (basis_hd :: basis_tl)) : ∀ᶠ x in atTop, 0 < basis_hd x := by
-  apply Eventually.mono <| (forall_eventually_of_eventually_forall (MS.basis_eventually_pos h)) basis_hd
+  apply Eventually.mono <| (forall_eventually_of_eventually_forall (MS.basis_eventually_pos h))
+    basis_hd
   intro x h
   apply h
   simp
 
-theorem MS.basis_IsLittleO_of_head {hd : ℝ → ℝ} {tl : List (ℝ → ℝ)} (h : MS.wellOrderedBasis (hd :: tl)) :
+theorem MS.basis_IsLittleO_of_head {hd : ℝ → ℝ} {tl : Basis} (h : MS.wellOrderedBasis (hd :: tl)) :
     ∀ f ∈ tl, (Real.log ∘ f) =o[atTop] (Real.log ∘ hd) := by
   induction tl generalizing hd with
   | nil => simp
@@ -80,11 +82,11 @@ theorem MS.basis_IsLittleO_of_head {hd : ℝ → ℝ} {tl : List (ℝ → ℝ)} 
       intro f hf
       exact IsLittleO.trans (this f hf) h.right.right
 
-theorem MS.basis_compare {f g : ℝ → ℝ} (a b : ℝ) (hf : ∀ᶠ x in atTop, 0 < f x) (hg : Tendsto g atTop atTop)
-    (h : (Real.log ∘ f) =o[atTop] (Real.log ∘ g)) (hb : 0 < b) :
+theorem MS.basis_compare {f g : ℝ → ℝ} (a b : ℝ) (hf : ∀ᶠ x in atTop, 0 < f x)
+    (hg : Tendsto g atTop atTop) (h : (Real.log ∘ f) =o[atTop] (Real.log ∘ g)) (hb : 0 < b) :
     (fun x ↦ (f x)^a) =o[atTop] fun x ↦ (g x)^b := by
-  obtain ⟨φ, h1, h2⟩ := IsLittleO.exists_eq_mul <| IsLittleO.const_mul_right' (c := b) (isUnit_iff_ne_zero.mpr hb.ne.symm)
-    (IsLittleO.const_mul_left h a)
+  obtain ⟨φ, h1, h2⟩ := IsLittleO.exists_eq_mul <| IsLittleO.const_mul_right' (c := b)
+    (isUnit_iff_ne_zero.mpr hb.ne.symm) (IsLittleO.const_mul_left h a)
   have hf_exp_log : (fun x ↦ (f x)^a) =ᶠ[atTop] fun x ↦ Real.exp (a * (Real.log (f x))) := by
     simp only [EventuallyEq]
     apply Eventually.mono hf
@@ -102,7 +104,7 @@ theorem MS.basis_compare {f g : ℝ → ℝ} (a b : ℝ) (hf : ∀ᶠ x in atTop
   eta_expand at h2; simp at h2
   apply EventuallyEq.trans_isLittleO h2
   apply isLittleO_of_tendsto'
-  · apply eventually_of_forall
+  · apply Eventually.of_forall
     intro x h
     absurd h
     apply (Real.exp_pos _).ne.symm
@@ -110,7 +112,8 @@ theorem MS.basis_compare {f g : ℝ → ℝ} (a b : ℝ) (hf : ∀ᶠ x in atTop
     conv =>
       arg 1
       ext x
-      rw [show φ x * (b * Real.log (g x)) - b * Real.log (g x) = b * ((φ x - 1) * Real.log (g x)) by ring_nf]
+      rw [show φ x * (b * Real.log (g x)) - b * Real.log (g x) =
+        b * ((φ x - 1) * Real.log (g x)) by ring]
     apply Tendsto.const_mul_atBot hb
     apply Tendsto.neg_mul_atTop (C := -1) (by simp)
     · simp_rw [show (-1 : ℝ) = 0 - 1 by simp]
@@ -138,8 +141,9 @@ lemma MS.compare_self {f : ℝ → ℝ} {e1 e2 : ℝ} (h1 : Tendsto f atTop atTo
     absurd h2
     exact (Real.rpow_pos_of_pos h1 _).ne.symm
 
--- theorem PreMS.isApproximation_coef_isLittleO_head {c : PreMS} {C basis_hd : ℝ → ℝ} {basis_tl : Basis}
---     {deg : ℝ} (h_deg : 0 < deg) (h_approx : c.isApproximation C basis_tl) (h_basis : MS.wellOrderedBasis (basis_hd :: basis_tl)) :
+-- theorem PreMS.isApproximation_coef_isLittleO_head {c : PreMS} {C basis_hd : ℝ → ℝ}
+--     {basis_tl : Basis} {deg : ℝ} (h_deg : 0 < deg) (h_approx : c.isApproximation C basis_tl)
+--     (h_basis : MS.wellOrderedBasis (basis_hd :: basis_tl)) :
 --     C =o[atTop] fun x ↦ (basis_hd x)^deg := by
 --   cases h_approx with
 --   | const c _ hC =>
@@ -154,7 +158,8 @@ lemma MS.compare_self {f : ℝ → ℝ} {e1 e2 : ℝ} (h1 : Tendsto f atTop atTo
 --     apply isLittleO_const_left.mpr
 --     left
 --     rfl
---   | cons coef_deg coef_coef coef_tl _ CC basis_tl_hd basis_tl_tl h_coef_coef h_coef_tl h_coef_comp =>
+--   | cons coef_deg coef_coef coef_tl _ CC basis_tl_hd basis_tl_tl h_coef_coef
+--       h_coef_tl h_coef_comp =>
 --     apply Asymptotics.IsLittleO.trans <| h_coef_comp (coef_deg + 1) (by linarith)
 --     apply MS.basis_compare
 --     · apply MS.basis_head_eventually_pos

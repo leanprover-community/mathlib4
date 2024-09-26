@@ -133,8 +133,10 @@ instance (α : Type u) : LawfulFunctor (OutType α) where
     unfold Functor.map instOutTypeFunctor
     simp
 
-def out {α : Type u} : CoList α → (OutType α <| CoList α) :=
-  sorry
+def out {α : Type u} : CoList α → (OutType α <| CoList α) := fun li =>
+  li.casesOn'
+    (nil := .nil)
+    (cons := fun hd tl => .cons hd tl)
 
 def corec {α : Type u} {β : Type v} (g : β → OutType α β) (b : β) : CoList α :=
   let next : OutType α β → OutType α β := fun x =>
@@ -172,23 +174,6 @@ def corec {α : Type u} {β : Type v} (g : β → OutType α β) (b : β) : CoLi
   --     rw [this]
   --     rfl
   -- ⟩
-
-theorem corec_correct {α : Type u} {β : Type u} (g : β → OutType α β) (b : β) :
-    out (corec g b) = (corec (α := α) g) <$> (g b) := by
-  sorry
-
-@[simp]
-theorem corec_nil {α : Type u} {β : Type u} (g : β → OutType α β) (b : β)
-    (h : g b = .nil) : corec g b = nil := by
-  sorry
-
-@[simp]
-theorem corec_cons {α : Type u} {β : Type u} (g : β → OutType α β) (b : β) {hd : α} {tl : β}
-    (h : g b = .cons hd tl) : corec g b = cons hd (corec g tl) := by
-  sorry
-
-
-
 
 def append {α : Type u} (a b : CoList α) : CoList α :=
   b.casesOn'
@@ -301,14 +286,21 @@ theorem cons_tail {α : Type u} (hd : α) (tl : CoList α) : (cons hd tl).tail =
 theorem nil_head {α : Type u} : (nil (α := α)).head = .none :=
   rfl
 
-theorem head_nil {α : Type u} {li : CoList α} (h : li.head = none) : li = nil := by
+theorem head_eq_none {α : Type u} {li : CoList α} (h : li.head = none) : li = nil := by
   revert h
   apply li.casesOn
   · intro; rfl
   · intro hd tl h
     simp at h
 
-theorem head_cons {α : Type u} {li : CoList α} {hd : α} (h : li.head = some hd) : li = cons hd li.tail := by
+@[simp]
+theorem head_eq_none_iff {α : Type u} {li : CoList α} : li.head = none ↔ li = nil := by
+  constructor
+  · apply head_eq_none
+  · intro h
+    simp [h]
+
+theorem head_eq_some {α : Type u} {li : CoList α} {hd : α} (h : li.head = some hd) : li = cons hd li.tail := by
   sorry
 
 @[simp]
@@ -316,18 +308,82 @@ theorem nil_tail {α : Type u} : (nil (α := α)).tail = nil :=
   rfl
 
 @[simp]
-theorem noConfusion {α : Type u} (hd : α) (tl : CoList α) : (cons hd tl) ≠ .nil := by
+theorem nil_tail' {α : Type u} {n : ℕ} : tail^[n] (nil (α := α)) = nil := by
+  induction n with
+  | zero =>
+    simp
+  | succ =>
+    simpa
+
+@[simp]
+theorem noConfusion {α : Type u} {hd : α} {tl : CoList α} : (cons hd tl) ≠ .nil := by
   intro h
   apply_fun head at h
   simp at h
 
--- @[simp]
-theorem cons_eq_cons {α : Type u} {hd hd' : α} {tl tl' : CoList α} (h : cons hd tl = cons hd' tl') : hd = hd' ∧ tl = tl' := by
+@[simp]
+theorem noConfusion' {α : Type u} {hd : α} {tl : CoList α} : .nil ≠ (cons hd tl) := by
+  symm
+  simp
+
+theorem head_eq_out {α : Type u} {li : CoList α} : li.head = match li.out with
+    | .nil => .none
+    | .cons hd tl => .some hd := by
+  apply li.casesOn <;> simp [out]
+
+theorem tail_eq_out {α : Type u} {li : CoList α} : li.tail = match li.out with
+    | .nil => .nil
+    | .cons hd tl => tl := by
+  apply li.casesOn <;> simp [out]
+
+@[simp]
+theorem nil_out {α : Type u} : (nil (α := α)).out = .nil := by
+  simp [out]
+
+@[simp]
+theorem cons_out {α : Type u} {hd : α} {tl : CoList α} : (cons hd tl).out = .cons hd tl := by
+  simp [out]
+
+theorem out_eq_nil {α : Type u} {li : CoList α} (h : li.out = .nil) : li = .nil := by
+  apply head_eq_none
+  have := h ▸ head_eq_out (li := li)
+  simpa using this
+
+theorem out_eq_cons {α : Type u} {li : CoList α} {hd : α} {tl : CoList α} (h : li.out = .cons hd tl) : li = .cons hd tl := by
+  revert h
+  apply li.casesOn
+  · intro h
+    simp at h
+  · intro hd' tl' h
+    simp [out] at h
+    congr
+    exacts [h.left, h.right]
+
+theorem corec_out {α : Type u} {β : Type u} (g : β → OutType α β) (b : β) :
+    out (corec g b) = (corec (α := α) g) <$> (g b) := by
+  sorry
+
+@[simp]
+theorem corec_nil {α : Type u} {β : Type u} (g : β → OutType α β) (b : β)
+    (h : g b = .nil) : corec g b = nil := by
+  sorry
+
+@[simp]
+theorem corec_cons {α : Type u} {β : Type u} {g : β → OutType α β} {b : β} {hd : α} {tl : β}
+    (h : g b = .cons hd tl) : corec g b = cons hd (corec g tl) := by
+  sorry
+
+@[simp]
+theorem cons_eq_cons {α : Type u} {hd hd' : α} {tl tl' : CoList α} : (cons hd tl = cons hd' tl') ↔ (hd = hd' ∧ tl = tl') := by
   constructor
-  · apply_fun head at h
-    simpa using h
-  · apply_fun tail at h
-    simpa using h
+  · intro h
+    constructor
+    · apply_fun head at h
+      simpa using h
+    · apply_fun tail at h
+      simpa using h
+  · rintro ⟨h_hd, h_tl⟩
+    congr
 
 @[simp]
 theorem get_eq_head {α : Type u} (li : CoList α) (n : ℕ) : li.get n = head (tail^[n] li) := by
@@ -336,6 +392,26 @@ theorem get_eq_head {α : Type u} (li : CoList α) (n : ℕ) : li.get n = head (
   | succ m ih =>
     simp [get]
     apply ih
+
+-- @[simp]
+-- theorem get_nil {α : Type u} {n : ℕ} : (nil (α := α)).get n = .none := by
+--   simp
+
+@[simp]
+theorem take_nil {α : Type u} {n : ℕ} : (nil (α := α)).take n = List.nil := by
+  cases n <;> rfl
+
+@[simp]
+theorem take_succ {α : Type u} {n : ℕ} {hd : α} {tl : CoList α} :
+    (cons hd tl).take (n + 1) = hd :: tl.take n := by
+  rfl
+
+@[simp]
+theorem take_zero {α : Type u} {li : CoList α} : li.take 0 = [] := by
+  apply li.casesOn
+  · rfl
+  · intro hd tl
+    rfl
 
 @[simp]
 theorem map_nil {α : Type v} {β : Type v} (f : α → β) : nil.map f = nil := by
@@ -437,6 +513,46 @@ theorem fold_idk {α : Type u} {β : Type u} {init init' : β} {f : β → α �
     -- simp only [get_eq_head, Function.iterate_succ, Function.comp_apply] at ih ⊢
 
 
+-- very bad proof. May be possible to do everything in a single induction?
+theorem atLeastAsLong.coind {α : Type u} {β : Type v} (motive : CoList α → CoList β → Prop)
+    (h_survive : ∀ a b, motive a b →
+      (∀ b_hd b_tl, (b = cons b_hd b_tl) → ∃ a_hd a_tl, a = cons a_hd a_tl ∧ motive a_tl b_tl))
+    {a : CoList α} {b : CoList β} (h : motive a b) : a.atLeastAsLongAs b := by
+  simp only [atLeastAsLongAs]
+  intro n
+  have : tail^[n] b ≠ .nil → motive (tail^[n] a) (tail^[n] b) := by
+    intro hb
+    induction n with
+    | zero =>
+      simpa
+    | succ m ih =>
+      simp only [Function.iterate_succ', Function.comp_apply] at hb ⊢
+      generalize tail^[m] a = ta at *
+      generalize tail^[m] b = tb at *
+      revert hb ih
+      apply tb.casesOn
+      · intro hb ih
+        simp at hb
+      · intro tb_hd tb_tl hb ih
+        simp at ih
+        specialize h_survive ta (cons tb_hd tb_tl) ih _ _ (by rfl)
+        obtain ⟨a_hd, a_tl, ha, h_tail⟩ := h_survive
+        subst ha
+        simpa
+  simp [get_eq_head]
+  intro hb
+  specialize this hb
+  specialize h_survive _ _ this
+  generalize tail^[n] b = tb at *
+  revert hb h_survive
+  apply tb.casesOn
+  · simp
+  · intro tb_hd tb_tl _ h_survive
+    specialize h_survive _ _ (by rfl)
+    obtain ⟨a_hd, a_tl, ha, _⟩ := h_survive
+    rw [ha]
+    simp
+
 theorem atLeastAsLongAs_cons {α : Type u} {β : Type v} {a : CoList α} {hd : β} {tl : CoList β}
     (h : a.atLeastAsLongAs (cons hd tl)) : ∃ hd' tl', a = cons hd' tl' := by
   revert h
@@ -482,7 +598,7 @@ theorem all_cons {α : Type u} {p : α → Prop} {hd : α} {tl : CoList α} :
   sorry
 
 /-- Coinduction principle for proving `a = b`. -/
-def Eq.principle {α : Type u} {a b : CoList α}
+def Eq.coind {α : Type u} {a b : CoList α}
     (motive : CoList α → CoList α → Prop)
     (h_survive : ∀ a b, motive a b →
       (∃ a_hd a_tl b_hd b_tl, a = cons a_hd a_tl ∧ b = cons b_hd b_tl ∧ a_hd = b_hd ∧ motive a_tl b_tl) ∨
@@ -497,26 +613,29 @@ def Eq.principle {α : Type u} {a b : CoList α}
     | succ m ih =>
       simp only [Function.iterate_succ', Function.comp_apply]
       specialize h_survive (tail^[m] a) (tail^[m] b) ih
-      cases' h_survive with h h
-      · obtain ⟨a_hd, a_tl, b_hd, b_tl, h_a_eq, h_b_eq, _, h_tail⟩ := h
+      cases h_survive with
+      | inl h =>
+        obtain ⟨a_hd, a_tl, b_hd, b_tl, h_a_eq, h_b_eq, _, h_tail⟩ := h
         rw [h_a_eq, h_b_eq]
         simpa
-      · rw [h.1, h.2] at ih ⊢
+      | inr h =>
+        rw [h.1, h.2] at ih ⊢
         simpa
   simp
   specialize h_survive _ _ this
-  cases' h_survive with h h
-  · obtain ⟨a_hd, a_tl, b_hd, b_tl, h_a_eq, h_b_eq, h_head, _⟩ := h
+  cases h_survive with
+  | inl h =>
+    obtain ⟨a_hd, a_tl, b_hd, b_tl, h_a_eq, h_b_eq, h_head, _⟩ := h
     rw [h_a_eq, h_b_eq]
     simpa
-  · rw [h.1, h.2]
+  | inr h => rw [h.1, h.2]
 
 @[simp]
 theorem map_append {α : Type v} {β : Type v} (a b : CoList α) (f : α → β) :
     (a.append b).map f = (a.map f).append (b.map f) := by
   sorry
 
-def all.principle {α : Type u} {li : CoList α} {p : α → Prop}
+def all.coind' {α : Type u} {li : CoList α} {p : α → Prop}
     (motive : CoList α → (α → Prop) → Prop)
     (h_cons : ∀ hd tl p, motive (cons hd tl) p → p hd ∧ motive tl p)
     (h : motive li p) : li.all p := by
@@ -533,7 +652,7 @@ def all.principle {α : Type u} {li : CoList α} {p : α → Prop}
         · simpa
       | some hd =>
         simp
-        have := head_cons h1
+        have := head_eq_some h1
         specialize h_cons hd li.tail p (this ▸ h)
         constructor
         · exact h_cons.left
@@ -555,14 +674,16 @@ def all.principle {α : Type u} {li : CoList α} {p : α → Prop}
         · cases h_head : tl.head with
           | none => simp
           | some tl_hd =>
-            have h_tl_cons := head_cons h_head
+            have h_tl_cons := head_eq_some h_head
             specialize h_cons tl_hd tl.tail p (h_tl_cons ▸ this)
             simp
             exact h_cons.left
         · assumption
   exact this.left
 
-def all.principle' {α : Type u} {li : CoList α} {p : α → Prop}
+
+-- can I prove using `all.coind` ?
+def all.coind {α : Type u} {li : CoList α} {p : α → Prop}
     (motive : CoList α → Prop)
     (h_cons : ∀ hd tl, motive (cons hd tl) → p hd ∧ motive tl)
     (h : motive li) : li.all p := by
@@ -579,7 +700,7 @@ def all.principle' {α : Type u} {li : CoList α} {p : α → Prop}
         · simpa
       | some hd =>
         simp
-        have := head_cons h1
+        have := head_eq_some h1
         specialize h_cons hd li.tail (this ▸ h)
         constructor
         · exact h_cons.left
@@ -601,7 +722,7 @@ def all.principle' {α : Type u} {li : CoList α} {p : α → Prop}
         · cases h_head : tl.head with
           | none => simp
           | some tl_hd =>
-            have h_tl_cons := head_cons h_head
+            have h_tl_cons := head_eq_some h_head
             specialize h_cons tl_hd tl.tail (h_tl_cons ▸ this)
             simp
             exact h_cons.left
@@ -612,7 +733,7 @@ def all.principle' {α : Type u} {li : CoList α} {p : α → Prop}
 theorem all_mp {α : Type u} {p q : α → Prop} (h : ∀ a, p a → q a) {li : CoList α} (hp : li.all p) :
     li.all q := by
   let motive : CoList α → Prop := fun x => x.all p
-  apply all.principle' motive
+  apply all.coind motive
   · intro hd tl ih
     simp [motive] at ih
     constructor
@@ -621,20 +742,45 @@ theorem all_mp {α : Type u} {p q : α → Prop} (h : ∀ a, p a → q a) {li : 
       exact ih.right
   · exact hp
 
-theorem map_all {α : Type u} {β : Type u} {f : α → β} {p : β → Prop} {li : CoList α} :
-    (li.map f).all p → li.all (p ∘ f) := by
-  intro h
-  let motive : CoList α → Prop := fun x => (map f x).all p
-  apply all.principle' motive _ h
-  · intro hd tl ih
-    simp [motive] at ih
-    exact ih
+theorem map_all_iff {α : Type u} {β : Type u} {f : α → β} {p : β → Prop} {li : CoList α} :
+    (li.map f).all p ↔ li.all (p ∘ f) := by
+  constructor
+  · intro h
+    let motive : CoList α → Prop := fun x => (map f x).all p
+    apply all.coind motive _ h
+    · intro hd tl ih
+      simp [motive] at ih
+      exact ih
+  · intro h
+    let motive : CoList β → Prop := fun x => ∃ (y : CoList α), x = y.map f ∧ y.all (p ∘ f)
+    apply all.coind motive
+    · intro hd tl ih
+      simp [motive] at ih
+      obtain ⟨y, hx_eq, hy⟩ := ih
+      revert hx_eq hy
+      apply y.casesOn
+      · intro hx_eq
+        simp at hx_eq
+      · intro y_hd y_tl hx_eq hy
+        simp at hx_eq hy
+        constructor
+        · convert hy.left
+          exact hx_eq.left
+        · simp [motive]
+          use y_tl
+          constructor
+          · exact hx_eq.right
+          · exact hy.right
+    · simp [motive]
+      use li
+
+
 
 theorem map_comp {α β γ : Type u} {f : α → β} {g : β → γ} {li : CoList α} :
     (li.map f).map g = li.map (g ∘ f) := by
   let motive : CoList γ → CoList γ → Prop := fun x y =>
     ∃ a : CoList α, x = (a.map f).map g ∧ y = a.map (g ∘ f)
-  apply Eq.principle motive
+  apply Eq.coind motive
   · intro x y ih
     simp [motive] at ih
     obtain ⟨a, h_x_eq, h_y_eq⟩ := ih
@@ -704,14 +850,14 @@ def ones : CoList ℕ :=
   let g : Unit → OutType ℕ Unit := fun _ ↦ .cons 1 ()
   corec g ()
 
-#eval ones.take 5
+#eval! ones.take 5
 
-#eval ones.fold 0 (fun x y => x + y) |>.take 5
+#eval! ones.fold 0 (fun x y => x + y) |>.take 5
 
 def onee := cons 1 nil
 
-#eval onee.take 5
-#eval onee.fold 0 (fun x y => x + y) |>.take 5
+#eval! onee.take 5
+#eval! onee.fold 0 (fun x y => x + y) |>.take 5
 
 
 example : Infinite ones := by
