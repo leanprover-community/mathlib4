@@ -30,9 +30,9 @@ structure AssertExists where
 
 /-- Defines the `assertExistsExt` extension for adding a `HashSet` of `AssertExists`s
 to the environment. -/
-initialize assertExistsExt : SimplePersistentEnvExtension AssertExists (HashSet AssertExists) ←
+initialize assertExistsExt : SimplePersistentEnvExtension AssertExists (Std.HashSet AssertExists) ←
   registerSimplePersistentEnvExtension {
-    addImportedFn := fun as => as.foldl HashSet.insertMany {}
+    addImportedFn := fun as => as.foldl Std.HashSet.insertMany {}
     addEntryFn := .insert
   }
 

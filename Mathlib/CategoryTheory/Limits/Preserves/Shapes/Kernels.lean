@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2022 Scott Morrison. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
@@ -176,7 +176,7 @@ def isColimitMapCoconeEquiv :
 
 /-- A colimit cokernel cofork is mapped to a colimit cokernel cofork by a functor `G`
 when this functor preserves the corresponding colimit. -/
-def mapIsColimit  (hc : IsColimit c) (G : C ⥤ D)
+def mapIsColimit (hc : IsColimit c) (G : C ⥤ D)
     [Functor.PreservesZeroMorphisms G] [PreservesColimit (parallelPair f 0) G] :
     IsColimit (c.map G) :=
   c.isColimitMapCoconeEquiv G (isColimitOfPreserves G hc)

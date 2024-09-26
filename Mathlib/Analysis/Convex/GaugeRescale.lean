@@ -115,7 +115,7 @@ theorem continuous_gaugeRescale {s t : Set E} (hs : Convex ℝ s) (hs₀ : s ∈
   rcases eq_or_ne x 0 with rfl | hx
   · rw [ContinuousAt, gaugeRescale_zero]
     nth_rewrite 2 [← comap_gauge_nhds_zero htb ht₀]
-    simp only [tendsto_comap_iff, (· ∘ ·), gauge_gaugeRescale _ hta htb]
+    simp only [tendsto_comap_iff, Function.comp_def, gauge_gaugeRescale _ hta htb]
     exact tendsto_gauge_nhds_zero hs₀
   · exact ((continuousAt_gauge hs hs₀).div (continuousAt_gauge ht ht₀)
       ((gauge_pos hta htb).2 hx).ne').smul continuousAt_id

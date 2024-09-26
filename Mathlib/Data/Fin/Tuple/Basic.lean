@@ -5,7 +5,6 @@ Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 -/
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Nat.Find
-import Batteries.Data.Fin.Lemmas
 
 /-!
 # Operation on tuples
@@ -543,7 +542,7 @@ theorem snoc_update : snoc (update p i y) x = update (snoc p x) (castSucc i) y :
         · simp [h, h']
         · exact heq_of_cast_eq C2 rfl
       rw [E1, E2]
-      exact eq_rec_compose (Eq.trans C2.symm C1) C2 y
+      rfl
     · have : ¬castLT j h = i := by
         intro E
         apply h'

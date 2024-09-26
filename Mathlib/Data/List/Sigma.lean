@@ -217,7 +217,7 @@ theorem dlookup_map (l : List (Sigma β))
 theorem dlookup_map₁ {β : Type v} (l : List (Σ _ : α, β))
     {f : α → α'} (hf : Function.Injective f) (a : α) :
     (l.map fun x => ⟨f x.1, x.2⟩ : List (Σ _ : α', β)).dlookup (f a) = l.dlookup a := by
-  rw [dlookup_map (β' := fun _ => β) l hf (fun _ x => x) a, Option.map_id'']
+  rw [dlookup_map (β' := fun _ => β) l hf (fun _ x => x) a, Option.map_id']
 
 theorem dlookup_map₂ {γ δ : α → Type*} {l : List (Σ a, γ a)} {f : ∀ a, γ a → δ a} (a : α) :
     (l.map fun x => ⟨x.1, f _ x.2⟩ : List (Σ a, δ a)).dlookup a = (l.dlookup a).map (f a) :=
@@ -250,7 +250,7 @@ theorem lookupAll_eq_nil {a : α} :
     by_cases h : a = a'
     · subst a'
       simp only [lookupAll_cons_eq, mem_cons, Sigma.mk.inj_iff, heq_eq_eq, true_and, not_or,
-        false_iff, not_forall, not_and, not_not]
+        false_iff, not_forall, not_and, not_not, reduceCtorEq]
       use b
       simp
     · simp [h, lookupAll_eq_nil]
@@ -379,7 +379,9 @@ theorem kerase_cons_ne {a} {s : Sigma β} {l : List (Sigma β)} (h : a ≠ s.1) 
 
 @[simp]
 theorem kerase_of_not_mem_keys {a} {l : List (Sigma β)} (h : a ∉ l.keys) : kerase a l = l := by
-  induction' l with _ _ ih <;> [rfl; (simp [not_or] at h; simp [h.1, ih h.2])]
+  induction l with
+  | nil => rfl
+  | cons _ _ ih => simp [not_or] at h; simp [h.1, ih h.2]
 
 theorem kerase_sublist (a : α) (l : List (Sigma β)) : kerase a l <+ l :=
   eraseP_sublist _
@@ -417,7 +419,7 @@ theorem mem_keys_kerase_of_ne {a₁ a₂} {l : List (Sigma β)} (h : a₁ ≠ a�
     else by simp [q, p]
 
 theorem keys_kerase {a} {l : List (Sigma β)} : (kerase a l).keys = l.keys.erase a := by
-  rw [keys, kerase, erase_eq_eraseP, eraseP_map, Function.comp]
+  rw [keys, kerase, erase_eq_eraseP, eraseP_map, Function.comp_def]
   simp only [beq_eq_decide]
   congr
   funext

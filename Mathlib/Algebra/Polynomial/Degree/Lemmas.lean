@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
+Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Polynomial.Eval
 
@@ -57,6 +57,13 @@ theorem natDegree_comp_le : natDegree (p.comp q) ≤ natDegree p * natDegree q :
                 WithBot.coe_le_coe.2 <|
                   mul_le_mul_of_nonneg_right (le_natDegree_of_ne_zero (mem_support_iff.1 hn))
                     (Nat.zero_le _)
+
+theorem natDegree_comp_eq_of_mul_ne_zero (h : p.leadingCoeff * q.leadingCoeff ^ p.natDegree ≠ 0) :
+    natDegree (p.comp q) = natDegree p * natDegree q := by
+  by_cases hq : natDegree q = 0
+  · exact le_antisymm natDegree_comp_le (by simp [hq])
+  apply natDegree_eq_of_le_of_coeff_ne_zero natDegree_comp_le
+  rwa [coeff_comp_degree_mul_degree hq]
 
 theorem degree_pos_of_root {p : R[X]} (hp : p ≠ 0) (h : IsRoot p a) : 0 < degree p :=
   lt_of_not_ge fun hlt => by
@@ -345,9 +352,8 @@ theorem natDegree_comp : natDegree (p.comp q) = natDegree p * natDegree q := by
       natDegree_C, mul_zero]
   · by_cases p0 : p = 0
     · simp only [p0, zero_comp, natDegree_zero, zero_mul]
-    refine le_antisymm natDegree_comp_le (le_natDegree_of_ne_zero ?_)
-    simp only [coeff_comp_degree_mul_degree q0, p0, mul_eq_zero, leadingCoeff_eq_zero, or_self_iff,
-      ne_zero_of_natDegree_gt (Nat.pos_of_ne_zero q0), pow_ne_zero, Ne, not_false_iff]
+    · simp only [Ne, mul_eq_zero, leadingCoeff_eq_zero, p0, natDegree_comp_eq_of_mul_ne_zero,
+        ne_zero_of_natDegree_gt (Nat.pos_of_ne_zero q0), not_false_eq_true, pow_ne_zero, or_self]
 
 @[simp]
 theorem natDegree_iterate_comp (k : ℕ) :

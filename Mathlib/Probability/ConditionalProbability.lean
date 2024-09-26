@@ -144,6 +144,9 @@ theorem cond_apply (hms : MeasurableSet s) (t : Set Ω) : μ[t|s] = (μ s)⁻¹ 
 theorem cond_apply' {t : Set Ω} (hA : MeasurableSet t) : μ[t|s] = (μ s)⁻¹ * μ (s ∩ t) := by
   rw [cond, Measure.smul_apply, Measure.restrict_apply hA, Set.inter_comm, smul_eq_mul]
 
+@[simp] lemma cond_apply_self (hs₀ : μ s ≠ 0) (hs : μ s ≠ ∞) : μ[s|s] = 1 := by
+  simpa [cond] using ENNReal.inv_mul_cancel hs₀ hs
+
 theorem cond_inter_self (hms : MeasurableSet s) (t : Set Ω) : μ[s ∩ t|s] = μ[t|s] := by
   rw [cond_apply _ hms, ← Set.inter_assoc, Set.inter_self, ← cond_apply _ hms]
 

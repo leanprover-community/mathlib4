@@ -5,7 +5,7 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Nontrivial.Defs
-import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.GCongr.CoreAttrs
 import Mathlib.Tactic.PushNeg
 import Mathlib.Util.AssertExists
 
@@ -824,6 +824,22 @@ lemma le_induction {m : ℕ} {P : ∀ n, m ≤ n → Prop} (base : P m m.le_refl
     (succ : ∀ n hmn, P n hmn → P (n + 1) (le_succ_of_le hmn)) : ∀ n hmn, P n hmn :=
   @Nat.leRec (motive := P) base succ
 
+/-- Induction principle deriving the next case from the two previous ones. -/
+def twoStepInduction {P : ℕ → Sort*} (zero : P 0) (one : P 1)
+    (more : ∀ n, P n → P (n + 1) → P (n + 2)) : ∀ a, P a
+  | 0 => zero
+  | 1 => one
+  | _ + 2 => more _ (twoStepInduction zero one more _) (twoStepInduction zero one more _)
+
+@[elab_as_elim]
+protected theorem strong_induction_on {p : ℕ → Prop} (n : ℕ)
+    (h : ∀ n, (∀ m, m < n → p m) → p n) : p n :=
+  Nat.strongRecOn n h
+
+protected theorem case_strong_induction_on {p : ℕ → Prop} (a : ℕ) (hz : p 0)
+    (hi : ∀ n, (∀ m, m ≤ n → p m) → p (n + 1)) : p a :=
+  Nat.caseStrongRecOn a hz hi
+
 /-- Decreasing induction: if `P (k+1)` implies `P k` for all `k < n`, then `P n` implies `P m` for
 all `m ≤ n`.
 Also works for functions to `Sort*`.
@@ -1062,8 +1078,11 @@ lemma sub_mod_eq_zero_of_mod_eq (h : m % k = n % k) : (m - n) % k = 0 := by
 @[simp] lemma one_mod (n : ℕ) : 1 % (n + 2) = 1 :=
   Nat.mod_eq_of_lt (Nat.add_lt_add_right n.succ_pos 1)
 
-lemma one_mod_of_ne_one : ∀ {n : ℕ}, n ≠ 1 → 1 % n = 1
-  | 0, _ | (n + 2), _ => by simp
+lemma one_mod_eq_one : ∀ {n : ℕ}, 1 % n = 1 ↔ n ≠ 1
+  | 0 | 1 | n + 2 => by simp
+
+@[deprecated (since := "2024-08-28")]
+lemma one_mod_of_ne_one  : ∀ {n : ℕ}, n ≠ 1 → 1 % n = 1 := one_mod_eq_one.mpr
 
 lemma dvd_sub_mod (k : ℕ) : n ∣ k - k % n :=
   ⟨k / n, Nat.sub_eq_of_eq_add (Nat.div_add_mod k n).symm⟩

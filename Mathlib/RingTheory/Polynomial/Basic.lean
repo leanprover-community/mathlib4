@@ -173,6 +173,34 @@ theorem degreeLT_succ_eq_degreeLE {n : ℕ} : degreeLT R (n + 1) = degreeLE R n 
   · rw [mem_degreeLT, mem_degreeLE, ← natDegree_lt_iff_degree_lt (by rwa [ne_eq]),
       ← natDegree_le_iff_degree_le, Nat.lt_succ]
 
+/-- The equivalence between monic polynomials of degree `n` and polynomials of degree less than
+`n`, formed by adding a term `X ^ n`. -/
+def monicEquivDegreeLT [Nontrivial R] (n : ℕ) :
+    { p : R[X] // p.Monic ∧ p.natDegree = n } ≃ degreeLT R n where
+  toFun p := ⟨p.1.eraseLead, by
+    rcases p with ⟨p, hp, rfl⟩
+    simp only [mem_degreeLT]
+    refine lt_of_lt_of_le ?_ degree_le_natDegree
+    exact degree_eraseLead_lt (ne_zero_of_ne_zero_of_monic one_ne_zero hp)⟩
+  invFun := fun p =>
+    ⟨X^n + p.1, monic_X_pow_add (mem_degreeLT.1 p.2), by
+        rw [natDegree_add_eq_left_of_degree_lt]
+        · simp
+        · simp [mem_degreeLT.1 p.2]⟩
+  left_inv := by
+    rintro ⟨p, hp, rfl⟩
+    ext1
+    simp only
+    conv_rhs => rw [← eraseLead_add_C_mul_X_pow p]
+    simp [Monic.def.1 hp, add_comm]
+  right_inv := by
+    rintro ⟨p, hp⟩
+    ext1
+    simp only
+    rw [eraseLead_add_of_degree_lt_left]
+    · simp
+    · simp [mem_degreeLT.1 hp]
+
 /-- For every polynomial `p` in the span of a set `s : Set R[X]`, there exists a polynomial of
   `p' ∈ s` with higher degree. See also `Polynomial.exists_degree_le_of_mem_span_of_finite`. -/
 theorem exists_degree_le_of_mem_span {s : Set R[X]} {p : R[X]}
@@ -219,7 +247,7 @@ theorem span_of_finite_le_degreeLT {s : Set R[X]} (s_fin : s.Finite) :
   exact ⟨n + 1, by rwa [degreeLT_succ_eq_degreeLE]⟩
 
 /-- If `R` is a nontrivial ring, the polynomials `R[X]` are not finite as an `R`-module. When `R` is
-a field, this is equivalent to `R[X]` being an infinite-dimensional vector space over `R`.  -/
+a field, this is equivalent to `R[X]` being an infinite-dimensional vector space over `R`. -/
 theorem not_finite [Nontrivial R] : ¬ Module.Finite R R[X] := by
   rw [Module.finite_def, Submodule.fg_def]
   push_neg
@@ -238,6 +266,7 @@ def coeffs (p : R[X]) : Finset R :=
 
 @[deprecated (since := "2024-05-17")] noncomputable alias frange := coeffs
 
+@[simp]
 theorem coeffs_zero : coeffs (0 : R[X]) = ∅ :=
   rfl
 
@@ -261,6 +290,10 @@ theorem coeff_mem_coeffs (p : R[X]) (n : ℕ) (h : p.coeff n ≠ 0) : p.coeff n 
   exact ⟨n, h, rfl⟩
 
 @[deprecated (since := "2024-05-17")] alias coeff_mem_frange := coeff_mem_coeffs
+
+theorem coeffs_monomial (n : ℕ) {c : R} (hc : c ≠ 0) : (monomial n c).coeffs = {c} := by
+  rw [coeffs, support_monomial n hc]
+  simp
 
 theorem geom_sum_X_comp_X_add_one_eq_sum (n : ℕ) :
     (∑ i ∈ range n, (X : R[X]) ^ i).comp (X + 1) =
@@ -572,8 +605,7 @@ theorem _root_.Polynomial.ker_mapRingHom (f : R →+* S) :
   ext
   simp only [LinearMap.mem_ker, RingHom.toSemilinearMap_apply, coe_mapRingHom]
   rw [mem_map_C_iff, Polynomial.ext_iff]
-  simp_rw [RingHom.mem_ker f]
-  simp
+  simp [RingHom.mem_ker]
 
 variable (I : Ideal R[X])
 
@@ -724,8 +756,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
           · rw [← not_le]
             intro hnj
             exact (add_lt_add_of_lt_of_le hmi hnj).ne hij.2.symm
-          · simp only [eq_self_iff_true, not_true, false_or_iff, add_right_inj,
-              not_and_self_iff] at hij
+          · simp only [eq_self_iff_true, not_true, false_or, add_right_inj, not_and_self_iff] at hij
         · rw [mul_comm]
           apply P.mul_mem_left
           exact Classical.not_not.1 (Nat.find_min hf hi)
@@ -840,14 +871,14 @@ namespace Polynomial
 
 instance (priority := 100) wfDvdMonoid {R : Type*} [CommRing R] [IsDomain R] [WfDvdMonoid R] :
     WfDvdMonoid R[X] where
-  wellFounded_dvdNotUnit := by
+  wf := by
     classical
       refine
         RelHomClass.wellFounded
           (⟨fun p : R[X] =>
               ((if p = 0 then ⊤ else ↑p.degree : WithTop (WithBot ℕ)), p.leadingCoeff), ?_⟩ :
             DvdNotUnit →r Prod.Lex (· < ·) DvdNotUnit)
-          (wellFounded_lt.prod_lex ‹WfDvdMonoid R›.wellFounded_dvdNotUnit)
+          (wellFounded_lt.prod_lex ‹WfDvdMonoid R›.wf)
       rintro a b ⟨ane0, ⟨c, ⟨not_unit_c, rfl⟩⟩⟩
       dsimp
       rw [Polynomial.degree_mul, if_neg ane0]
@@ -968,8 +999,8 @@ theorem exists_irreducible_of_natDegree_ne_zero {R : Type u} [CommRing R] [IsDom
 theorem linearIndependent_powers_iff_aeval (f : M →ₗ[R] M) (v : M) :
     (LinearIndependent R fun n : ℕ => (f ^ n) v) ↔ ∀ p : R[X], aeval f p v = 0 → p = 0 := by
   rw [linearIndependent_iff]
-  simp only [Finsupp.total_apply, aeval_endomorphism, forall_iff_forall_finsupp, Sum, support,
-    coeff, ofFinsupp_eq_zero]
+  simp only [Finsupp.linearCombination_apply, aeval_endomorphism, forall_iff_forall_finsupp, Sum,
+    support, coeff, ofFinsupp_eq_zero]
   exact Iff.rfl
 
 attribute [-instance] Ring.toNonAssocRing
@@ -1182,6 +1213,11 @@ theorem ker_map (f : R →+* S) :
   ext
   rw [MvPolynomial.mem_map_C_iff, RingHom.mem_ker, MvPolynomial.ext_iff]
   simp_rw [coeff_map, coeff_zero, RingHom.mem_ker]
+
+lemma ker_mapAlgHom {S₁ S₂ σ : Type*} [CommRing S₁] [CommRing S₂] [Algebra R S₁]
+    [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
+    RingHom.ker (MvPolynomial.mapAlgHom (σ := σ) f) = Ideal.map MvPolynomial.C (RingHom.ker f) :=
+  MvPolynomial.ker_map (f.toRingHom : S₁ →+* S₂)
 
 end MvPolynomial
 

@@ -3,9 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov, Yaël Dillies
 -/
+import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Data.Fintype.BigOperators
-import Mathlib.GroupTheory.GroupAction.BigOperators
 
 /-!
 # Finite sums over modules over a ring
@@ -54,6 +54,6 @@ lemma sum_piFinset_apply (f : κ → α) (s : Finset κ) (i : ι) :
   classical
   rw [Finset.sum_comp]
   simp only [eval_image_piFinset_const, card_filter_piFinset_const s, ite_smul, zero_smul, smul_sum,
-    sum_ite_mem, inter_self]
+    Finset.sum_ite_mem, inter_self]
 
 end Fintype
