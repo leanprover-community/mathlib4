@@ -22,14 +22,6 @@ variable {ι ι' α β γ : Type*} {κ : ι → Type*} {s s₁ s₂ : Finset ι}
 
 namespace Finset
 
-theorem sum_tsub_distrib [AddCommMonoid α] [PartialOrder α] [ExistsAddOfLE α]
-    [CovariantClass α α (· + ·) (· ≤ ·)] [ContravariantClass α α (· + ·) (· ≤ ·)] [Sub α]
-    [OrderedSub α] (s : Finset ι) {f g : ι → α} (hfg : ∀ x ∈ s, g x ≤ f x) :
-    ∑ x in s, (f x - g x) = ∑ x in s, f x - ∑ x in s, g x :=
-  eq_tsub_of_add_eq <| by
-    rw [← sum_add_distrib]
-    exact sum_congr rfl fun x hx => tsub_add_cancel_of_le <| hfg _ hx
-
 section AddCommMonoidWithOne
 variable [AddCommMonoidWithOne α]
 
