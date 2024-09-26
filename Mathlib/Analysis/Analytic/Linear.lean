@@ -44,7 +44,7 @@ protected theorem hasFPowerSeriesAt (f : E →L[𝕜] F) (x : E) :
 protected theorem analyticAt (f : E →L[𝕜] F) (x : E) : AnalyticAt 𝕜 f x :=
   (f.hasFPowerSeriesAt x).analyticAt
 
-protected theorem analyticOn (f : E →L[𝕜] F) (s : Set E) : AnalyticOn 𝕜 f s :=
+protected theorem analyticOnNhd (f : E →L[𝕜] F) (s : Set E) : AnalyticOnNhd 𝕜 f s :=
   fun x _ ↦ f.analyticAt x
 
 protected theorem analyticWithinAt (f : E →L[𝕜] F) (s : Set E) (x : E) : AnalyticWithinAt 𝕜 f s x :=
@@ -121,8 +121,8 @@ protected theorem analyticAt_bilinear (f : E →L[𝕜] F →L[𝕜] G) (x : E �
     AnalyticAt 𝕜 (fun x : E × F => f x.1 x.2) x :=
   (f.hasFPowerSeriesAt_bilinear x).analyticAt
 
-protected theorem analyticOn_bilinear (f : E →L[𝕜] F →L[𝕜] G) (s : Set (E × F)) :
-    AnalyticOn 𝕜 (fun x : E × F => f x.1 x.2) s :=
+protected theorem analyticOnNhd_bilinear (f : E →L[𝕜] F →L[𝕜] G) (s : Set (E × F)) :
+    AnalyticOnNhd 𝕜 (fun x : E × F => f x.1 x.2) s :=
   fun x _ ↦ f.analyticAt_bilinear x
 
 end ContinuousLinearMap
@@ -136,7 +136,7 @@ lemma analyticWithinAt_id : AnalyticWithinAt 𝕜 (id : E → E) s z :=
   analyticAt_id.analyticWithinAt
 
 /-- `id` is entire -/
-theorem analyticOn_id : AnalyticOn 𝕜 (fun x : E ↦ x) s :=
+theorem analyticOnNhd_id : AnalyticOnNhd 𝕜 (fun x : E ↦ x) s :=
   fun _ _ ↦ analyticAt_id
 
 theorem analyticWithinOn_id : AnalyticWithinOn 𝕜 (fun x : E ↦ x) s :=
@@ -157,14 +157,14 @@ theorem analyticWithinAt_snd : AnalyticWithinAt 𝕜 (fun p : E × F ↦ p.snd) 
   analyticAt_snd.analyticWithinAt
 
 /-- `fst` is entire -/
-theorem analyticOn_fst : AnalyticOn 𝕜 (fun p : E × F ↦ p.fst) t :=
+theorem analyticOnNhd_fst : AnalyticOnNhd 𝕜 (fun p : E × F ↦ p.fst) t :=
   fun _ _ ↦ analyticAt_fst
 
 theorem analyticWithinOn_fst : AnalyticWithinOn 𝕜 (fun p : E × F ↦ p.fst) t :=
   fun _ _ ↦ analyticWithinAt_fst
 
 /-- `snd` is entire -/
-theorem analyticOn_snd : AnalyticOn 𝕜 (fun p : E × F ↦ p.snd) t :=
+theorem analyticOnNhd_snd : AnalyticOnNhd 𝕜 (fun p : E × F ↦ p.snd) t :=
   fun _ _ ↦ analyticAt_snd
 
 theorem analyticWithinOn_snd : AnalyticWithinOn 𝕜 (fun p : E × F ↦ p.snd) t :=
@@ -177,7 +177,7 @@ variable (f : E ≃L[𝕜] F) (s : Set E) (x : E)
 protected theorem analyticAt : AnalyticAt 𝕜 f x :=
   ((f : E →L[𝕜] F).hasFPowerSeriesAt x).analyticAt
 
-protected theorem analyticOn : AnalyticOn 𝕜 f s :=
+protected theorem analyticOnNhd : AnalyticOnNhd 𝕜 f s :=
   fun x _ ↦ f.analyticAt x
 
 protected theorem analyticWithinAt (f : E →L[𝕜] F) (s : Set E) (x : E) : AnalyticWithinAt 𝕜 f s x :=
@@ -195,7 +195,7 @@ variable (f : E ≃ₗᵢ[𝕜] F) (s : Set E) (x : E)
 protected theorem analyticAt : AnalyticAt 𝕜 f x :=
   ((f : E →L[𝕜] F).hasFPowerSeriesAt x).analyticAt
 
-protected theorem analyticOn : AnalyticOn 𝕜 f s :=
+protected theorem analyticOnNhd : AnalyticOnNhd 𝕜 f s :=
   fun x _ ↦ f.analyticAt x
 
 protected theorem analyticWithinAt (f : E →L[𝕜] F) (s : Set E) (x : E) : AnalyticWithinAt 𝕜 f s x :=

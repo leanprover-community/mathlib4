@@ -31,11 +31,11 @@ theorem AnalyticAt.aeval_polynomial (hf : AnalyticAt 𝕜 f z) (p : A[X]) :
   · convert hp.mul hf
     simp_rw [pow_succ, aeval_mul, ← mul_assoc, aeval_X]
 
-theorem AnalyticOn.aeval_polynomial (hf : AnalyticOn 𝕜 f s) (p : A[X]) :
-    AnalyticOn 𝕜 (fun x ↦ aeval (f x) p) s := fun x hx ↦ (hf x hx).aeval_polynomial p
+theorem AnalyticOnNhd.aeval_polynomial (hf : AnalyticOnNhd 𝕜 f s) (p : A[X]) :
+    AnalyticOnNhd 𝕜 (fun x ↦ aeval (f x) p) s := fun x hx ↦ (hf x hx).aeval_polynomial p
 
-theorem AnalyticOn.eval_polynomial {A} [NormedCommRing A] [NormedAlgebra 𝕜 A] (p : A[X]) :
-    AnalyticOn 𝕜 (eval · p) Set.univ := analyticOn_id.aeval_polynomial p
+theorem AnalyticOnNhd.eval_polynomial {A} [NormedCommRing A] [NormedAlgebra 𝕜 A] (p : A[X]) :
+    AnalyticOnNhd 𝕜 (eval · p) Set.univ := analyticOnNhd_id.aeval_polynomial p
 
 end Polynomial
 
@@ -51,27 +51,27 @@ theorem AnalyticAt.aeval_mvPolynomial (hf : ∀ i, AnalyticAt 𝕜 (f · i) z) (
   · simp_rw [map_add]; exact hp.add hq
   · simp_rw [map_mul, aeval_X]; exact hp.mul (hf i)
 
-theorem AnalyticOn.aeval_mvPolynomial (hf : ∀ i, AnalyticOn 𝕜 (f · i) s) (p : MvPolynomial σ A) :
-    AnalyticOn 𝕜 (fun x ↦ aeval (f x) p) s := fun x hx ↦ .aeval_mvPolynomial (hf · x hx) p
+theorem AnalyticOnNhd.aeval_mvPolynomial (hf : ∀ i, AnalyticOnNhd 𝕜 (f · i) s) (p : MvPolynomial σ A) :
+    AnalyticOnNhd 𝕜 (fun x ↦ aeval (f x) p) s := fun x hx ↦ .aeval_mvPolynomial (hf · x hx) p
 
-theorem AnalyticOn.eval_continuousLinearMap (f : E →L[𝕜] σ → B) (p : MvPolynomial σ B) :
-    AnalyticOn 𝕜 (fun x ↦ eval (f x) p) Set.univ :=
+theorem AnalyticOnNhd.eval_continuousLinearMap (f : E →L[𝕜] σ → B) (p : MvPolynomial σ B) :
+    AnalyticOnNhd 𝕜 (fun x ↦ eval (f x) p) Set.univ :=
   fun x _ ↦ .aeval_mvPolynomial (fun i ↦ ((ContinuousLinearMap.proj i).comp f).analyticAt x) p
 
-theorem AnalyticOn.eval_continuousLinearMap' (f : σ → E →L[𝕜] B) (p : MvPolynomial σ B) :
-    AnalyticOn 𝕜 (fun x ↦ eval (f · x) p) Set.univ :=
+theorem AnalyticOnNhd.eval_continuousLinearMap' (f : σ → E →L[𝕜] B) (p : MvPolynomial σ B) :
+    AnalyticOnNhd 𝕜 (fun x ↦ eval (f · x) p) Set.univ :=
   fun x _ ↦ .aeval_mvPolynomial (fun i ↦ (f i).analyticAt x) p
 
 variable [CompleteSpace 𝕜] [T2Space E] [FiniteDimensional 𝕜 E]
 
-theorem AnalyticOn.eval_linearMap (f : E →ₗ[𝕜] σ → B) (p : MvPolynomial σ B) :
-    AnalyticOn 𝕜 (fun x ↦ eval (f x) p) Set.univ :=
-  AnalyticOn.eval_continuousLinearMap { f with cont := f.continuous_of_finiteDimensional } p
+theorem AnalyticOnNhd.eval_linearMap (f : E →ₗ[𝕜] σ → B) (p : MvPolynomial σ B) :
+    AnalyticOnNhd 𝕜 (fun x ↦ eval (f x) p) Set.univ :=
+  AnalyticOnNhd.eval_continuousLinearMap { f with cont := f.continuous_of_finiteDimensional } p
 
-theorem AnalyticOn.eval_linearMap' (f : σ → E →ₗ[𝕜] B) (p : MvPolynomial σ B) :
-    AnalyticOn 𝕜 (fun x ↦ eval (f · x) p) Set.univ := AnalyticOn.eval_linearMap (.pi f) p
+theorem AnalyticOnNhd.eval_linearMap' (f : σ → E →ₗ[𝕜] B) (p : MvPolynomial σ B) :
+    AnalyticOnNhd 𝕜 (fun x ↦ eval (f · x) p) Set.univ := AnalyticOnNhd.eval_linearMap (.pi f) p
 
-theorem AnalyticOn.eval_mvPolynomial [Fintype σ] (p : MvPolynomial σ 𝕜) :
-    AnalyticOn 𝕜 (eval · p) Set.univ := AnalyticOn.eval_linearMap (.id (R := 𝕜) (M := σ → 𝕜)) p
+theorem AnalyticOnNhd.eval_mvPolynomial [Fintype σ] (p : MvPolynomial σ 𝕜) :
+    AnalyticOnNhd 𝕜 (eval · p) Set.univ := AnalyticOnNhd.eval_linearMap (.id (R := 𝕜) (M := σ → 𝕜)) p
 
 end MvPolynomial

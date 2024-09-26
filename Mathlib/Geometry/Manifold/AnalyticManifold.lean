@@ -43,7 +43,7 @@ section analyticGroupoid
 
 /-- Given a model with corners `(E, H)`, we define the pregroupoid of analytic transformations of
 `H` as the maps that are `AnalyticWithinOn` when read in `E` through `I`.  Using `AnalyticWithinOn`
-rather than `AnalyticOn` gives us meaningful definitions at boundary points. -/
+rather than `AnalyticOnNhd` gives us meaningful definitions at boundary points. -/
 def analyticPregroupoid : Pregroupoid H where
   property f s := AnalyticWithinOn 𝕜 (I ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I)
   comp {f g u v} hf hg _ _ _ := by
@@ -76,7 +76,7 @@ def analyticPregroupoid : Pregroupoid H where
 
 /-- Given a model with corners `(E, H)`, we define the groupoid of analytic transformations of
 `H` as the maps that are `AnalyticWithinOn` when read in `E` through `I`.  Using `AnalyticWithinOn`
-rather than `AnalyticOn` gives us meaningful definitions at boundary points. -/
+rather than `AnalyticOnNhd` gives us meaningful definitions at boundary points. -/
 def analyticGroupoid : StructureGroupoid H :=
   (analyticPregroupoid I).groupoid
 
@@ -115,10 +115,10 @@ lemma mem_analyticGroupoid {I : ModelWithCorners 𝕜 E H} {f : PartialHomeomorp
 /-- The analytic groupoid on a boundaryless charted space modeled on a complete vector space
 consists of the partial homeomorphisms which are analytic and have analytic inverse. -/
 theorem mem_analyticGroupoid_of_boundaryless [I.Boundaryless] (e : PartialHomeomorph H H) :
-    e ∈ analyticGroupoid I ↔ AnalyticOn 𝕜 (I ∘ e ∘ I.symm) (I '' e.source) ∧
-      AnalyticOn 𝕜 (I ∘ e.symm ∘ I.symm) (I '' e.target) := by
+    e ∈ analyticGroupoid I ↔ AnalyticOnNhd 𝕜 (I ∘ e ∘ I.symm) (I '' e.source) ∧
+      AnalyticOnNhd 𝕜 (I ∘ e.symm ∘ I.symm) (I '' e.target) := by
   simp only [mem_analyticGroupoid, I.range_eq_univ, inter_univ, I.image_eq]
-  rw [IsOpen.analyticWithinOn_iff_analyticOn, IsOpen.analyticWithinOn_iff_analyticOn]
+  rw [IsOpen.analyticWithinOn_iff_analyticOnNhd, IsOpen.analyticWithinOn_iff_analyticOnNhd]
   · exact I.continuous_symm.isOpen_preimage _ e.open_target
   · exact I.continuous_symm.isOpen_preimage _ e.open_source
 

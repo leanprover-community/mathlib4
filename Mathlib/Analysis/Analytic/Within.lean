@@ -79,10 +79,10 @@ lemma analyticWithinOn_of_locally_analyticWithinOn {f : E → F} {s : Set E}
             simp only [Metric.mem_ball, dist_self_add_left, yr]
         · simp only [EMetric.mem_ball, yr] }⟩
 
-/-- On open sets, `AnalyticOn` and `AnalyticWithinOn` coincide -/
-lemma IsOpen.analyticWithinOn_iff_analyticOn {f : E → F} {s : Set E} (hs : IsOpen s) :
-    AnalyticWithinOn 𝕜 f s ↔ AnalyticOn 𝕜 f s := by
-  refine ⟨?_, AnalyticOn.analyticWithinOn⟩
+/-- On open sets, `AnalyticOnNhd` and `AnalyticWithinOn` coincide -/
+lemma IsOpen.analyticWithinOn_iff_analyticOnNhd {f : E → F} {s : Set E} (hs : IsOpen s) :
+    AnalyticWithinOn 𝕜 f s ↔ AnalyticOnNhd 𝕜 f s := by
+  refine ⟨?_, AnalyticOnNhd.analyticWithinOn⟩
   intro hf x m
   rcases Metric.mem_nhds_iff.mp (hs.mem_nhds m) with ⟨r, r0, rs⟩
   rcases hf x m with ⟨p, t, fp⟩

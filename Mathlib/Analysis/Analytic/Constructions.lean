@@ -48,14 +48,14 @@ theorem hasFPowerSeriesAt_const {c : F} {e : E} :
 theorem analyticAt_const {v : F} {x : E} : AnalyticAt 𝕜 (fun _ => v) x :=
   ⟨constFormalMultilinearSeries 𝕜 E v, hasFPowerSeriesAt_const⟩
 
-theorem analyticOn_const {v : F} {s : Set E} : AnalyticOn 𝕜 (fun _ => v) s :=
+theorem analyticOnNhd_const {v : F} {s : Set E} : AnalyticOnNhd 𝕜 (fun _ => v) s :=
   fun _ _ => analyticAt_const
 
 theorem analyticWithinAt_const {v : F} {s : Set E} {x : E} : AnalyticWithinAt 𝕜 (fun _ => v) s x :=
   analyticAt_const.analyticWithinAt
 
 theorem analyticWithinOn_const {v : F} {s : Set E} : AnalyticWithinOn 𝕜 (fun _ => v) s :=
-  analyticOn_const.analyticWithinOn
+  analyticOnNhd_const.analyticWithinOn
 
 /-!
 ### Addition, negation, subtraction
@@ -163,22 +163,22 @@ theorem AnalyticWithinOn.add (hf : AnalyticWithinOn 𝕜 f s) (hg : AnalyticWith
     AnalyticWithinOn 𝕜 (f + g) s :=
   fun z hz => (hf z hz).add (hg z hz)
 
-theorem AnalyticOn.add (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
-    AnalyticOn 𝕜 (f + g) s :=
+theorem AnalyticOnNhd.add (hf : AnalyticOnNhd 𝕜 f s) (hg : AnalyticOnNhd 𝕜 g s) :
+    AnalyticOnNhd 𝕜 (f + g) s :=
   fun z hz => (hf z hz).add (hg z hz)
 
 theorem AnalyticWithinOn.neg (hf : AnalyticWithinOn 𝕜 f s) : AnalyticWithinOn 𝕜 (-f) s :=
   fun z hz ↦ (hf z hz).neg
 
-theorem AnalyticOn.neg (hf : AnalyticOn 𝕜 f s) : AnalyticOn 𝕜 (-f) s :=
+theorem AnalyticOnNhd.neg (hf : AnalyticOnNhd 𝕜 f s) : AnalyticOnNhd 𝕜 (-f) s :=
   fun z hz ↦ (hf z hz).neg
 
 theorem AnalyticWithinOn.sub (hf : AnalyticWithinOn 𝕜 f s) (hg : AnalyticWithinOn 𝕜 g s) :
     AnalyticWithinOn 𝕜 (f - g) s :=
   fun z hz => (hf z hz).sub (hg z hz)
 
-theorem AnalyticOn.sub (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
-    AnalyticOn 𝕜 (f - g) s :=
+theorem AnalyticOnNhd.sub (hf : AnalyticOnNhd 𝕜 f s) (hg : AnalyticOnNhd 𝕜 g s) :
+    AnalyticOnNhd 𝕜 (f - g) s :=
   fun z hz => (hf z hz).sub (hg z hz)
 
 end
@@ -276,9 +276,9 @@ lemma AnalyticWithinOn.prod {f : E → F} {g : E → G} {s : Set E}
   fun x hx ↦ (hf x hx).prod (hg x hx)
 
 /-- The Cartesian product of analytic functions is analytic. -/
-lemma AnalyticOn.prod {f : E → F} {g : E → G} {s : Set E}
-    (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
-    AnalyticOn 𝕜 (fun x ↦ (f x, g x)) s :=
+lemma AnalyticOnNhd.prod {f : E → F} {g : E → G} {s : Set E}
+    (hf : AnalyticOnNhd 𝕜 f s) (hg : AnalyticOnNhd 𝕜 g s) :
+    AnalyticOnNhd 𝕜 (fun x ↦ (f x, g x)) s :=
   fun x hx ↦ (hf x hx).prod (hg x hx)
 
 /-- `AnalyticAt.comp` for functions on product spaces -/
@@ -304,10 +304,10 @@ theorem AnalyticAt.comp₂_analyticWithinAt
     AnalyticWithinAt 𝕜 (fun x ↦ h (f x, g x)) s x :=
   AnalyticAt.comp_analyticWithinAt ha (fa.prod ga)
 
-/-- `AnalyticOn.comp` for functions on product spaces -/
-theorem AnalyticOn.comp₂ {h : F × G → H} {f : E → F} {g : E → G} {s : Set (F × G)} {t : Set E}
-    (ha : AnalyticOn 𝕜 h s) (fa : AnalyticOn 𝕜 f t) (ga : AnalyticOn 𝕜 g t)
-    (m : ∀ x, x ∈ t → (f x, g x) ∈ s) : AnalyticOn 𝕜 (fun x ↦ h (f x, g x)) t :=
+/-- `AnalyticOnNhd.comp` for functions on product spaces -/
+theorem AnalyticOnNhd.comp₂ {h : F × G → H} {f : E → F} {g : E → G} {s : Set (F × G)} {t : Set E}
+    (ha : AnalyticOnNhd 𝕜 h s) (fa : AnalyticOnNhd 𝕜 f t) (ga : AnalyticOnNhd 𝕜 g t)
+    (m : ∀ x, x ∈ t → (f x, g x) ∈ s) : AnalyticOnNhd 𝕜 (fun x ↦ h (f x, g x)) t :=
   fun _ xt ↦ (ha _ (m _ xt)).comp₂ (fa _ xt) (ga _ xt)
 
 /-- `AnalyticWithinOn.comp` for functions on product spaces -/
@@ -341,10 +341,10 @@ theorem AnalyticWithinAt.curry_right
   AnalyticWithinAt.comp₂ fa  analyticWithinAt_const analyticWithinAt_id (fun _ hx ↦ hx)
 
 /-- Analytic functions on products are analytic in the first coordinate -/
-theorem AnalyticOn.curry_left {f : E × F → G} {s : Set (E × F)} {y : F} (fa : AnalyticOn 𝕜 f s) :
-    AnalyticOn 𝕜 (fun x ↦ f (x, y)) {x | (x, y) ∈ s} :=
+theorem AnalyticOnNhd.curry_left {f : E × F → G} {s : Set (E × F)} {y : F} (fa : AnalyticOnNhd 𝕜 f s) :
+    AnalyticOnNhd 𝕜 (fun x ↦ f (x, y)) {x | (x, y) ∈ s} :=
   fun x m ↦ (fa (x, y) m).curry_left
-alias AnalyticOn.along_fst := AnalyticOn.curry_left
+alias AnalyticOnNhd.along_fst := AnalyticOnNhd.curry_left
 
 theorem AnalyticWithinOn.curry_left
     {f : E × F → G} {s : Set (E × F)} {y : F} (fa : AnalyticWithinOn 𝕜 f s) :
@@ -352,10 +352,10 @@ theorem AnalyticWithinOn.curry_left
   fun x m ↦ (fa (x, y) m).curry_left
 
 /-- Analytic functions on products are analytic in the second coordinate -/
-theorem AnalyticOn.curry_right {f : E × F → G} {x : E} {s : Set (E × F)} (fa : AnalyticOn 𝕜 f s) :
-    AnalyticOn 𝕜 (fun y ↦ f (x, y)) {y | (x, y) ∈ s} :=
+theorem AnalyticOnNhd.curry_right {f : E × F → G} {x : E} {s : Set (E × F)} (fa : AnalyticOnNhd 𝕜 f s) :
+    AnalyticOnNhd 𝕜 (fun y ↦ f (x, y)) {y | (x, y) ∈ s} :=
   fun y m ↦ (fa (x, y) m).curry_right
-alias AnalyticOn.along_snd := AnalyticOn.curry_right
+alias AnalyticOnNhd.along_snd := AnalyticOnNhd.curry_right
 
 theorem AnalyticWithinOn.curry_right
     {f : E × F → G} {x : E} {s : Set (E × F)} (fa : AnalyticWithinOn 𝕜 f s) :
@@ -499,12 +499,12 @@ lemma analyticWithinOn_pi_iff :
     AnalyticWithinOn 𝕜 (fun x ↦ (f · x)) s ↔ ∀ i, AnalyticWithinOn 𝕜 (f i) s :=
   ⟨fun h i x hx ↦ analyticWithinAt_pi_iff.1 (h x hx) i, fun h ↦ .pi h⟩
 
-lemma AnalyticOn.pi (hf : ∀ i, AnalyticOn 𝕜 (f i) s) :
-    AnalyticOn 𝕜 (fun x ↦ (f · x)) s :=
+lemma AnalyticOnNhd.pi (hf : ∀ i, AnalyticOnNhd 𝕜 (f i) s) :
+    AnalyticOnNhd 𝕜 (fun x ↦ (f · x)) s :=
   fun x hx ↦ AnalyticAt.pi (fun i ↦ hf i x hx)
 
-lemma analyticOn_pi_iff :
-    AnalyticOn 𝕜 (fun x ↦ (f · x)) s ↔ ∀ i, AnalyticOn 𝕜 (f i) s :=
+lemma analyticOnNhd_pi_iff :
+    AnalyticOnNhd 𝕜 (fun x ↦ (f · x)) s ↔ ∀ i, AnalyticOnNhd 𝕜 (f i) s :=
   ⟨fun h i x hx ↦ analyticAt_pi_iff.1 (h x hx) i, fun h ↦ .pi h⟩
 
 end
@@ -547,9 +547,9 @@ lemma AnalyticWithinOn.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F]
   fun _ m ↦ (hf _ m).smul (hg _ m)
 
 /-- Scalar multiplication of one analytic function by another. -/
-lemma AnalyticOn.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝} {g : E → F} {s : Set E}
-    (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
-    AnalyticOn 𝕜 (fun x ↦ f x • g x) s :=
+lemma AnalyticOnNhd.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝} {g : E → F} {s : Set E}
+    (hf : AnalyticOnNhd 𝕜 f s) (hg : AnalyticOnNhd 𝕜 g s) :
+    AnalyticOnNhd 𝕜 (fun x ↦ f x • g x) s :=
   fun _ m ↦ (hf _ m).smul (hg _ m)
 
 /-- Multiplication of analytic functions (valued in a normed `𝕜`-algebra) is analytic. -/
@@ -570,8 +570,8 @@ lemma AnalyticWithinOn.mul {f g : E → A} {s : Set E}
   fun _ m ↦ (hf _ m).mul (hg _ m)
 
 /-- Multiplication of analytic functions (valued in a normed `𝕜`-algebra) is analytic. -/
-lemma AnalyticOn.mul {f g : E → A} {s : Set E} (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
-    AnalyticOn 𝕜 (fun x ↦ f x * g x) s :=
+lemma AnalyticOnNhd.mul {f g : E → A} {s : Set E} (hf : AnalyticOnNhd 𝕜 f s) (hg : AnalyticOnNhd 𝕜 g s) :
+    AnalyticOnNhd 𝕜 (fun x ↦ f x * g x) s :=
   fun _ m ↦ (hf _ m).mul (hg _ m)
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
@@ -597,8 +597,8 @@ lemma AnalyticWithinOn.pow {f : E → A} {s : Set E} (hf : AnalyticWithinOn 𝕜
   fun _ m ↦ (hf _ m).pow n
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
-lemma AnalyticOn.pow {f : E → A} {s : Set E} (hf : AnalyticOn 𝕜 f s) (n : ℕ) :
-    AnalyticOn 𝕜 (fun x ↦ f x ^ n) s :=
+lemma AnalyticOnNhd.pow {f : E → A} {s : Set E} (hf : AnalyticOnNhd 𝕜 f s) (n : ℕ) :
+    AnalyticOnNhd 𝕜 (fun x ↦ f x ^ n) s :=
   fun _ m ↦ (hf _ m).pow n
 
 section Geometric
@@ -726,7 +726,7 @@ lemma analyticAt_inv {z : 𝕝} (hz : z ≠ 0) : AnalyticAt 𝕜 Inv.inv z := by
   exact Ring.inverse_eq_inv'.symm
 
 /-- `x⁻¹` is analytic away from zero -/
-lemma analyticOn_inv : AnalyticOn 𝕜 (fun z ↦ z⁻¹) {z : 𝕝 | z ≠ 0} := by
+lemma analyticOnNhd_inv : AnalyticOnNhd 𝕜 (fun z ↦ z⁻¹) {z : 𝕝 | z ≠ 0} := by
   intro z m; exact analyticAt_inv m
 
 /-- `(f x)⁻¹` is analytic away from `f x = 0` -/
@@ -747,8 +747,8 @@ theorem AnalyticWithinOn.inv {f : E → 𝕝} {s : Set E}
   fun x m ↦ (fa x m).inv (f0 x m)
 
 /-- `(f x)⁻¹` is analytic away from `f x = 0` -/
-theorem AnalyticOn.inv {f : E → 𝕝} {s : Set E} (fa : AnalyticOn 𝕜 f s) (f0 : ∀ x ∈ s, f x ≠ 0) :
-    AnalyticOn 𝕜 (fun x ↦ (f x)⁻¹) s :=
+theorem AnalyticOnNhd.inv {f : E → 𝕝} {s : Set E} (fa : AnalyticOnNhd 𝕜 f s) (f0 : ∀ x ∈ s, f x ≠ 0) :
+    AnalyticOnNhd 𝕜 (fun x ↦ (f x)⁻¹) s :=
   fun x m ↦ (fa x m).inv (f0 x m)
 
 /-- `f x / g x` is analytic away from `g x = 0` -/
@@ -770,9 +770,9 @@ theorem AnalyticWithinOn.div {f g : E → 𝕝} {s : Set E}
   (fa x m).div (ga x m) (g0 x m)
 
 /-- `f x / g x` is analytic away from `g x = 0` -/
-theorem AnalyticOn.div {f g : E → 𝕝} {s : Set E}
-    (fa : AnalyticOn 𝕜 f s) (ga : AnalyticOn 𝕜 g s) (g0 : ∀ x ∈ s, g x ≠ 0) :
-    AnalyticOn 𝕜 (fun x ↦ f x / g x) s := fun x m ↦
+theorem AnalyticOnNhd.div {f g : E → 𝕝} {s : Set E}
+    (fa : AnalyticOnNhd 𝕜 f s) (ga : AnalyticOnNhd 𝕜 g s) (g0 : ∀ x ∈ s, g x ≠ 0) :
+    AnalyticOnNhd 𝕜 (fun x ↦ f x / g x) s := fun x m ↦
   (fa x m).div (ga x m) (g0 x m)
 
 /-!
@@ -804,9 +804,9 @@ theorem Finset.analyticWithinOn_sum {f : α → E → F} {s : Set E}
   fun z zs ↦ N.analyticWithinAt_sum (fun n m ↦ h n m z zs)
 
 /-- Finite sums of analytic functions are analytic -/
-theorem Finset.analyticOn_sum {f : α → E → F} {s : Set E}
-    (N : Finset α) (h : ∀ n ∈ N, AnalyticOn 𝕜 (f n) s) :
-    AnalyticOn 𝕜 (fun z ↦ ∑ n ∈ N, f n z) s :=
+theorem Finset.analyticOnNhd_sum {f : α → E → F} {s : Set E}
+    (N : Finset α) (h : ∀ n ∈ N, AnalyticOnNhd 𝕜 (f n) s) :
+    AnalyticOnNhd 𝕜 (fun z ↦ ∑ n ∈ N, f n z) s :=
   fun z zs ↦ N.analyticAt_sum (fun n m ↦ h n m z zs)
 
 /-- Finite products of analytic functions are analytic -/
@@ -834,7 +834,7 @@ theorem Finset.analyticWithinOn_prod {A : Type*} [NormedCommRing A] [NormedAlgeb
   fun z zs ↦ N.analyticWithinAt_prod (fun n m ↦ h n m z zs)
 
 /-- Finite products of analytic functions are analytic -/
-theorem Finset.analyticOn_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
-    {f : α → E → A} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticOn 𝕜 (f n) s) :
-    AnalyticOn 𝕜 (fun z ↦ ∏ n ∈ N, f n z) s :=
+theorem Finset.analyticOnNhd_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
+    {f : α → E → A} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticOnNhd 𝕜 (f n) s) :
+    AnalyticOnNhd 𝕜 (fun z ↦ ∏ n ∈ N, f n z) s :=
   fun z zs ↦ N.analyticAt_prod (fun n m ↦ h n m z zs)
