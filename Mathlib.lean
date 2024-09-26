@@ -3475,6 +3475,7 @@ import Mathlib.NumberTheory.Zsqrtd.Basic
 import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
 import Mathlib.NumberTheory.Zsqrtd.ToReal
+import Mathlib.Numerology.Everything
 import Mathlib.Order.Antichain
 import Mathlib.Order.Antisymmetrization
 import Mathlib.Order.Atoms
