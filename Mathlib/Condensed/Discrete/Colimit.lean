@@ -34,11 +34,13 @@ variable {I : Type u} [Category.{u} I] [IsCofiltered I] {F : I ⥤ FintypeCat.{u
 abbrev locallyConstantPresheaf : Profinite.{u}ᵒᵖ ⥤ Type (u+1) :=
   CompHausLike.LocallyConstant.functorToPresheaves.{u, u+1}.obj X
 
+namespace LocallyConstant
+
 /--
 The functor `locallyConstantPresheaf` takes cofiltered limits of finite sets with surjective
 projection maps to colimits.
 -/
-noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi (c.π.app i)] :
+noncomputable def isColimitAux (hc : IsLimit c) [∀ i, Epi (c.π.app i)] :
     IsColimit <| (locallyConstantPresheaf X).mapCocone c.op := by
   refine Types.FilteredColimit.isColimitOf _ _ ?_ ?_
   · intro (f : LocallyConstant c.pt X)
@@ -60,12 +62,19 @@ noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi 
     have h := LocallyConstant.congr_fun h x
     rwa [c.w, c.w]
 
-/-- `isColimitLocallyConstantPresheaf` in the case of `S.asLimit`. -/
-noncomputable def isColimitLocallyConstantPresheafDiagram (S : Profinite) :
+/--
+The functor `locallyConstantPresheaf` takes a profinite set written as the cofiltered limit of its
+discrete quotients (`S.asLimit`) to the corresponding colimit.
+-/
+noncomputable def isColimit (S : Profinite) :
     IsColimit <| (locallyConstantPresheaf X).mapCocone S.asLimitCone.op :=
-  isColimitLocallyConstantPresheaf _ _ S.asLimit
+  isColimitAux _ _ S.asLimit
+
+end LocallyConstant
 
 end LocallyConstantAsColimit
+
+open Condensed.LocallyConstant Profinite
 
 /--
 Given a presheaf `F` on `Profinite`, `lanPresheaf F` is the left Kan extension of its
@@ -115,10 +124,8 @@ def lanPresheafNatIso (hF : ∀ S : Profinite, IsColimit <| F.mapCocone S.asLimi
 def lanSheafProfinite (X : Type (u+1)) : Sheaf (coherentTopology Profinite.{u}) (Type (u+1)) where
   val := lanPresheaf (locallyConstantPresheaf X)
   cond := by
-    rw [Presheaf.isSheaf_of_iso_iff (lanPresheafNatIso
-      fun _ ↦ isColimitLocallyConstantPresheafDiagram _ _)]
-    exact ((CompHausLike.LocallyConstant.functor.{u, u+1}
-      (hs := fun _ _ _ ↦ ((Profinite.effectiveEpi_tfae _).out 0 2).mp)).obj X).cond
+    rw [Presheaf.isSheaf_of_iso_iff (lanPresheafNatIso fun _ ↦ isColimit _ _)]
+    exact ((functor.{u, u+1} (hs := fun _ _ _ ↦ ((effectiveEpi_tfae _).out 0 2).mp)).obj X).cond
 
 /-- `lanPresheaf (locallyConstantPresheaf X)` as a condensed set. -/
 def lanCondensedSet (X : Type (u+1)) : CondensedSet.{u} :=
@@ -192,7 +199,7 @@ def isoLocallyConstantOfIsColimit
     F ≅ (locallyConstantPresheaf (F.obj (toProfinite.op.obj ⟨of PUnit.{u+1}⟩))) :=
   (lanPresheafNatIso hF).symm ≪≫ lanPresheafExt
     (isoFinYoneda F ≪≫ (locallyConstantIsoFinYoneda F).symm) ≪≫
-      lanPresheafNatIso fun _ ↦ isColimitLocallyConstantPresheafDiagram _ _
+      lanPresheafNatIso fun _ ↦ isColimit _ _
 
 end Condensed
 
@@ -206,11 +213,13 @@ variable {F : ℕᵒᵖ ⥤ FintypeCat.{u}} (c : Cone <| F ⋙ toLightProfinite)
 abbrev locallyConstantPresheaf : LightProfiniteᵒᵖ ⥤ Type u :=
   CompHausLike.LocallyConstant.functorToPresheaves.{u, u}.obj X
 
+namespace LocallyConstant
+
 /--
 The functor `locallyConstantPresheaf` takes sequential limits of finite sets with surjective
 projection maps to colimits.
 -/
-noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi (c.π.app i)] :
+noncomputable def isColimitAux (hc : IsLimit c) [∀ i, Epi (c.π.app i)] :
     IsColimit <| (locallyConstantPresheaf X).mapCocone c.op := by
   refine Types.FilteredColimit.isColimitOf _ _ ?_ ?_
   · intro (f : LocallyConstant c.pt X)
@@ -231,13 +240,20 @@ noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi 
     have h := LocallyConstant.congr_fun h x
     rwa [c.w, c.w]
 
-/-- `isColimitLocallyConstantPresheaf` in the case of `S.asLimit`. -/
-noncomputable def isColimitLocallyConstantPresheafDiagram (S : LightProfinite) :
+/--
+The functor `locallyConstantPresheaf` takes a light profinite set written as a sequential limit of
+its discrete quotients (`S.asLimit`) to the corresponding colimit.
+-/
+noncomputable def isColimit (S : LightProfinite) :
     IsColimit <| (locallyConstantPresheaf X).mapCocone (coconeRightOpOfCone S.asLimitCone) :=
   (Functor.Final.isColimitWhiskerEquiv (opOpEquivalence ℕ).inverse _).symm
-    (isColimitLocallyConstantPresheaf _ _ S.asLimit)
+    (isColimitAux _ _ S.asLimit)
+
+end LocallyConstant
 
 end LocallyConstantAsColimit
+
+open LightCondensed.LocallyConstant LightProfinite
 
 instance (S : LightProfinite.{u}ᵒᵖ) :
     HasColimitsOfShape (CostructuredArrow toLightProfinite.op S) (Type u) :=
@@ -295,10 +311,8 @@ def lanPresheafNatIso
 def lanLightCondSet (X : Type u) : LightCondSet.{u} where
   val := lanPresheaf (locallyConstantPresheaf X)
   cond := by
-    rw [Presheaf.isSheaf_of_iso_iff (lanPresheafNatIso
-      fun _ ↦ isColimitLocallyConstantPresheafDiagram _ _)]
-    exact (CompHausLike.LocallyConstant.functor.{u, u}
-      (hs := fun _ _ _ ↦ ((LightProfinite.effectiveEpi_iff_surjective _).mp)).obj X).cond
+    rw [Presheaf.isSheaf_of_iso_iff (lanPresheafNatIso fun _ ↦ isColimit _ _)]
+    exact (functor.{u, u} (hs := fun _ _ _ ↦ ((effectiveEpi_iff_surjective _).mp)).obj X).cond
 
 variable (F : LightProfinite.{u}ᵒᵖ ⥤ Type u)
 
@@ -373,6 +387,6 @@ def isoLocallyConstantOfIsColimit (hF : ∀ S : LightProfinite, IsColimit <|
         (F.obj (toLightProfinite.op.obj ⟨of PUnit.{u+1}⟩))) :=
   (lanPresheafNatIso hF).symm ≪≫
     lanPresheafExt (isoFinYoneda F ≪≫ (locallyConstantIsoFinYoneda F).symm) ≪≫
-      lanPresheafNatIso fun _ ↦ isColimitLocallyConstantPresheafDiagram _ _
+      lanPresheafNatIso fun _ ↦ isColimit _ _
 
 end LightCondensed
