@@ -11,11 +11,80 @@ import Mathlib.Algebra.CharP.Defs
 # Some normal forms of elliptic curves
 
 This file defines some normal forms of Weierstrass equations of elliptic curves.
-See [silverman2009], section III.1 and Appendix A.
 
-## Main definitions
+## Main definitions and results
 
-- ...
+The following normal form is in [silverman2009], section III.1, page 42.
+
+- `WeierstrassCurve.IsCharNeTwoNF` is a predicate asserts that a `WeierstrassCurve` is of form
+  $Y^2 = X^3 + a_2X^2 + a_4X + a_6$. It is the normal form of characteristic ≠ 2.
+
+  If 2 is invertible in the ring (for example, if it is a field of characteristic not equal to 2),
+  then for any `WeierstrassCurve` there exists a change of variables which will change
+  it into such normal form (`WeierstrassCurve.exists_variableChange_isCharNeTwoNF`).
+  See also `WeierstrassCurve.vcToCharNeTwoNF` and
+  `WeierstrassCurve.vcToCharNeTwoNF_spec`.
+
+The following normal forms are in [silverman2009], Appendix A, Proposition 1.1.
+
+- `WeierstrassCurve.IsCharNeTwoThreeNF` is a predicate asserts that a `WeierstrassCurve` is of form
+  $Y^2 = X^3 + a_4X + a_6$. It is the normal form of characteristic ≠ 2.
+  It is also the normal form of characteristic = 3 and j = 0.
+
+  If 2 and 3 are invertible in the ring (for example, if it is a field of characteristic
+  not equal to 2 or 3),
+  then for any `WeierstrassCurve` there exists a change of variables which will change
+  it into such normal form (`WeierstrassCurve.exists_variableChange_isCharNeTwoThreeNF`).
+  See also `WeierstrassCurve.vcToCharNeTwoThreeNF` and
+  `WeierstrassCurve.vcToCharNeTwoThreeNF_spec`.
+
+  If the ring is of characteristic 3 and the $b_2$ of the curve is zero (for an elliptic curve,
+  it is equivalent to that j = 0), then there exists a change of variables which will change
+  it into such normal form (see `WeierstrassCurve.vcToCharThreeJZeroNF`
+  and `WeierstrassCurve.vcToCharThreeJZeroNF_spec`).
+
+- `WeierstrassCurve.IsCharThreeJNeZeroNF` is a predicate asserts that a `WeierstrassCurve` is of form
+  $Y^2 = X^3 + a_2X^2 + a_6$. It is the normal form of characteristic = 3 and j ≠ 0.
+
+  If the field is of characteristic 3 and the $b_2$ of the curve is not zero (for an elliptic curve,
+  it is equivalent to that j ≠ 0), then there exists a change of variables which will change
+  it into such normal form (see `WeierstrassCurve.vcToCharThreeNF`
+  and `WeierstrassCurve.vcToCharThreeNF_spec_of_b₂_ne_zero`).
+
+- `WeierstrassCurve.IsCharThreeNF` is the combination of the above two, that is, asserts that
+  a `WeierstrassCurve` is of form $Y^2 = X^3 + a_2X^2 + a_6$ or $Y^2 = X^3 + a_4X + a_6$.
+  It is the normal form of characteristic = 3.
+
+  If the field is of characteristic 3, then there exists a change of variables which will change
+  it into such normal form (`WeierstrassCurve.exists_variableChange_isCharThreeNF`).
+  See also `WeierstrassCurve.vcToCharThreeNF` and
+  `WeierstrassCurve.vcToCharThreeNF_spec`.
+
+- `WeierstrassCurve.IsCharTwoJZeroNF` is a predicate asserts that a `WeierstrassCurve` is of form
+  $Y^2 + a_3Y = X^3 + a_4X + a_6$. It is the normal form of characteristic = 2 and j = 0.
+
+  If the ring is of characteristic 2 and the $a_1$ of the curve is zero (for an elliptic curve,
+  it is equivalent to that j = 0), then there exists a change of variables which will change
+  it into such normal form (see `WeierstrassCurve.vcToCharTwoJZeroNF`
+  and `WeierstrassCurve.vcToCharTwoJZeroNF_spec`).
+
+- `WeierstrassCurve.IsCharTwoJNeZeroNF` is a predicate asserts that a `WeierstrassCurve` is of form
+  $Y^2 + XY = X^3 + a_2X^2 + a_6$. It is the normal form of characteristic = 2 and j ≠ 0.
+
+  If the field is of characteristic 2 and the $a_1$ of the curve is not zero (for an elliptic curve,
+  it is equivalent to that j ≠ 0), then there exists a change of variables which will change
+  it into such normal form (see `WeierstrassCurve.vcToCharTwoJNeZeroNF`
+  and `WeierstrassCurve.vcToCharTwoJNeZeroNF_spec`).
+
+- `WeierstrassCurve.IsCharTwoNF` is the combination of the above two, that is, asserts that
+  a `WeierstrassCurve` is of form $Y^2 + XY = X^3 + a_2X^2 + a_6$ or
+  $Y^2 + a_3Y = X^3 + a_4X + a_6$.
+  It is the normal form of characteristic = 2.
+
+  If the field is of characteristic 2, then there exists a change of variables which will change
+  it into such normal form (`WeierstrassCurve.exists_variableChange_isCharTwoNF`).
+  See also `WeierstrassCurve.vcToCharTwoNF` and
+  `WeierstrassCurve.vcToCharTwoNF_spec`.
 
 ## References
 
@@ -309,8 +378,6 @@ def vcToCharThreeNF : VariableChange K :=
 
 lemma vcToCharThreeJZeroNF_a₂ :
     (W.variableChange W.vcToCharThreeJZeroNF).a₂ = W.b₂ := by
-  -- have h : (2 : R) * 2 = 1 := by linear_combination 1 * CharP.cast_eq_zero R 3
-  -- letI : Invertible (2 : R) := ⟨2, h, h⟩
   simp_rw [vcToCharThreeJZeroNF, vcToCharNeTwoNF, variableChange_a₂, inv_one,
     Units.val_one, b₂]
   linear_combination (-W.a₂ - W.a₁ ^ 2) * CharP.cast_eq_zero R 3
@@ -319,8 +386,7 @@ theorem vcToCharThreeJZeroNF_spec (hb₂ : W.b₂ = 0) :
     (W.variableChange W.vcToCharThreeJZeroNF).IsCharNeTwoThreeNF := by
   have h : (2 : R) * 2 = 1 := by linear_combination 1 * CharP.cast_eq_zero R 3
   letI : Invertible (2 : R) := ⟨2, h, h⟩
-  have H : (W.variableChange W.vcToCharThreeJZeroNF).IsCharNeTwoNF :=
-    W.vcToCharNeTwoNF_spec
+  have H := W.vcToCharNeTwoNF_spec
   exact ⟨H.a₁, hb₂ ▸ W.vcToCharThreeJZeroNF_a₂, H.a₃⟩
 
 theorem vcToCharThreeNF_spec_of_b₂_ne_zero (hb₂ : W₁.b₂ ≠ 0) :
@@ -334,13 +400,11 @@ theorem vcToCharThreeNF_spec_of_b₂_ne_zero (hb₂ : W₁.b₂ ≠ 0) :
   constructor
   · simp [H.a₁]
   · simp [H.a₁, H.a₃]
-  · field_simp [hb₂]
+  · field_simp
     linear_combination (W'.a₄ * W'.a₂ ^ 2 + W'.a₄ ^ 2) * CharP.cast_eq_zero K 3
 
 theorem vcToCharThreeNF_spec_of_b₂_zero (hb₂ : W₁.b₂ = 0) :
     (W₁.variableChange W₁.vcToCharThreeNF).IsCharNeTwoThreeNF := by
-  -- have h : (2 : K) * 2 = 1 := by linear_combination 1 * CharP.cast_eq_zero K 3
-  -- letI : Invertible (2 : K) := ⟨2, h, h⟩
   rw [vcToCharThreeNF, vcToCharThreeJZeroNF_a₂, hb₂, div_zero]
   erw [one_mul]
   exact W₁.vcToCharThreeJZeroNF_spec hb₂
@@ -354,6 +418,244 @@ theorem vcToCharThreeNF_spec :
 theorem exists_variableChange_isCharThreeNF :
     ∃ C : VariableChange K, (W₁.variableChange C).IsCharThreeNF :=
   ⟨_, W₁.vcToCharThreeNF_spec⟩
+
+end VariableChange
+
+/-! ### Normal forms of characteristic two and j not equal to zero -/
+
+/-- A `WeierstrassCurve` is in normal form of characteristic = 2 and j ≠ 0, if its $a_1$ is one,
+$a_3$ and $a_4$ coefficients are zero. In other words it is $Y^2 + XY = X^3 + a_2X^2 + a_6$. -/
+@[mk_iff]
+structure IsCharTwoJNeZeroNF : Prop where
+  a₁ : W.a₁ = 1
+  a₃ : W.a₃ = 0
+  a₄ : W.a₄ = 0
+
+-- TODO: move to suitable location ???
+theorem b₂_of_char_two [CharP R 2] : W.b₂ = W.a₁ ^ 2 := by
+  rw [b₂]
+  linear_combination (2 * W.a₂) * CharP.cast_eq_zero R 2
+
+-- TODO: move to suitable location ???
+theorem b₄_of_char_two [CharP R 2] : W.b₄ = W.a₁ * W.a₃ := by
+  rw [b₄]
+  linear_combination W.a₄ * CharP.cast_eq_zero R 2
+
+-- TODO: move to suitable location ???
+theorem b₆_of_char_two [CharP R 2] : W.b₆ = W.a₃ ^ 2 := by
+  rw [b₆]
+  linear_combination (2 * W.a₆) * CharP.cast_eq_zero R 2
+
+-- TODO: move to suitable location ???
+theorem c₄_of_char_two [CharP R 2] : W.c₄ = W.a₁ ^ 4 := by
+  rw [c₄, b₂_of_char_two]
+  linear_combination (-12 * W.b₄) * CharP.cast_eq_zero R 2
+
+-- TODO: move to suitable location ???
+theorem c₆_of_char_two [CharP R 2] : W.c₆ = -W.a₁ ^ 6 := by
+  rw [c₆, b₂_of_char_two]
+  linear_combination (18 * W.a₁ ^ 2 * W.b₄ - 108 * W.b₆) * CharP.cast_eq_zero R 2
+
+namespace IsCharTwoJNeZeroNF
+
+variable {W} (self : W.IsCharTwoJNeZeroNF)
+include self
+
+theorem b₂ : W.b₂ = 1 + 4 * W.a₂ := by
+  simp_rw [WeierstrassCurve.b₂, self.a₁]
+  ring1
+
+theorem b₄ : W.b₄ = 0 := by
+  simp_rw [WeierstrassCurve.b₄, self.a₃, self.a₄]
+  ring1
+
+theorem b₆ : W.b₆ = 4 * W.a₆ := by
+  simp_rw [WeierstrassCurve.b₆, self.a₃]
+  ring1
+
+theorem b₈ : W.b₈ = W.a₆ + 4 * W.a₂ * W.a₆ := by
+  simp_rw [WeierstrassCurve.b₈, self.a₁, self.a₃, self.a₄]
+  ring1
+
+theorem c₄ : W.c₄ = W.b₂ ^ 2 := by
+  simp_rw [WeierstrassCurve.c₄, self.b₄]
+  ring1
+
+theorem c₆ : W.c₆ = -W.b₂ ^ 3 - 864 * W.a₆ := by
+  simp_rw [WeierstrassCurve.c₆, self.b₄, self.b₆]
+  ring1
+
+variable [CharP R 2]
+
+theorem b₂_of_char_two : W.b₂ = 1 := by
+  rw [self.b₂]
+  linear_combination (2 * W.a₂) * CharP.cast_eq_zero R 2
+
+theorem b₆_of_char_two : W.b₆ = 0 := by
+  rw [self.b₆]
+  linear_combination (2 * W.a₆) * CharP.cast_eq_zero R 2
+
+theorem b₈_of_char_two : W.b₈ = W.a₆ := by
+  rw [self.b₈]
+  linear_combination (2 * W.a₂ * W.a₆) * CharP.cast_eq_zero R 2
+
+theorem c₄_of_char_two : W.c₄ = 1 := by
+  rw [self.c₄, self.b₂_of_char_two]
+  ring1
+
+theorem c₆_of_char_two : W.c₆ = 1 := by
+  rw [self.c₆, self.b₂_of_char_two]
+  linear_combination (-1 - 432 * W.a₆) * CharP.cast_eq_zero R 2
+
+theorem Δ_of_char_two : W.Δ = W.a₆ := by
+  simp_rw [WeierstrassCurve.Δ, self.b₂_of_char_two, self.b₄,
+    self.b₆_of_char_two, self.b₈_of_char_two]
+  linear_combination -W.a₆ * CharP.cast_eq_zero R 2
+
+end IsCharTwoJNeZeroNF
+
+namespace IsCharTwoJNeZeroNF
+
+variable {E} (self : E.IsCharTwoJNeZeroNF)
+include self
+
+theorem j_of_char_two [CharP K 2] : E.j = 1 / E.a₆ := by
+  rw [EllipticCurve.j, Units.val_inv_eq_inv_val, ← div_eq_inv_mul, E.coe_Δ',
+    self.c₄_of_char_two, self.Δ_of_char_two, one_pow]
+
+theorem j_ne_zero_of_char_two [CharP K 2] : E.j ≠ 0 := by
+  rw [self.j_of_char_two, div_ne_zero_iff]
+  have h := E.Δ'.ne_zero
+  rw [E.coe_Δ', self.Δ_of_char_two] at h
+  exact ⟨one_ne_zero, h⟩
+
+end IsCharTwoJNeZeroNF
+
+/-! ### Normal forms of characteristic two and j equal to zero -/
+
+/-- A `WeierstrassCurve` is in normal form of characteristic = 2 and j = 0, if its
+$a_1$ and $a_2$ coefficients are zero. In other words it is $Y^2 + a_3Y = X^3 + a_4X + a_6$. -/
+@[mk_iff]
+structure IsCharTwoJZeroNF : Prop where
+  a₁ : W.a₁ = 0
+  a₂ : W.a₂ = 0
+
+namespace IsCharTwoJZeroNF
+
+variable {W} (self : W.IsCharTwoJZeroNF)
+include self
+
+theorem b₂ : W.b₂ = 0 := by
+  simp_rw [WeierstrassCurve.b₂, self.a₁, self.a₂]
+  ring1
+
+theorem b₄ : W.b₄ = 2 * W.a₄ := by
+  simp_rw [WeierstrassCurve.b₄, self.a₁]
+  ring1
+
+theorem b₈ : W.b₈ = -W.a₄ ^ 2 := by
+  simp_rw [WeierstrassCurve.b₈, self.a₁, self.a₂]
+  ring1
+
+theorem c₄ : W.c₄ = -48 * W.a₄ := by
+  simp_rw [WeierstrassCurve.c₄, self.b₂, self.b₄]
+  ring1
+
+theorem c₆ : W.c₆ = -216 * W.b₆ := by
+  simp_rw [WeierstrassCurve.c₆, self.b₂, self.b₄]
+  ring1
+
+theorem Δ : W.Δ = -64 * W.a₄ ^ 3 - 27 * W.b₆ ^ 2 := by
+  simp_rw [WeierstrassCurve.Δ, self.b₂, self.b₄]
+  ring1
+
+variable [CharP R 2]
+
+theorem b₄_of_char_two : W.b₄ = 0 := by
+  rw [self.b₄]
+  linear_combination W.a₄ * CharP.cast_eq_zero R 2
+
+theorem c₄_of_char_two : W.c₄ = 0 := by
+  rw [self.c₄]
+  linear_combination (-24 * W.a₄) * CharP.cast_eq_zero R 2
+
+theorem c₆_of_char_two : W.c₆ = 0 := by
+  rw [self.c₆]
+  linear_combination (-108 * W.b₆) * CharP.cast_eq_zero R 2
+
+theorem Δ_of_char_two : W.Δ = W.a₃ ^ 4 := by
+  rw [self.Δ, W.b₆_of_char_two]
+  linear_combination (-32 * W.a₄ ^ 3 - 14 * W.a₃ ^ 4) * CharP.cast_eq_zero R 2
+
+end IsCharTwoJZeroNF
+
+namespace IsCharTwoJZeroNF
+
+variable {E} (self : E.IsCharTwoJZeroNF)
+include self
+
+theorem j_of_char_two [CharP K 2] : E.j = 0 := by
+  simp [EllipticCurve.j, self.c₄_of_char_two]
+
+end IsCharTwoJZeroNF
+
+/-! ### Normal forms of characteristic two -/
+
+/-- A `WeierstrassCurve` is in normal form of characteristic 2, if it is
+$Y^2 + XY = X^3 + a_2X^2 + a_6$ (`IsCharTwoJNeZeroNF`) or
+$Y^2 + a_3Y = X^3 + a_4X + a_6$ (`IsCharTwoJZeroNF`). -/
+def IsCharTwoNF : Prop := W.IsCharTwoJNeZeroNF ∨ W.IsCharTwoJZeroNF
+
+section VariableChange
+
+variable [CharP R 2] [CharP K 2]
+
+/-- For a `WeierstrassCurve` defined over a ring of characteristic 2,
+there is an explicit change of variables, which changes it to $Y^2 + a_3Y = X^3 + a_4X + a_6$
+(`IsCharTwoJZeroNF`) if its j is zero. -/
+def vcToCharTwoJZeroNF : VariableChange R := ⟨1, W.a₂, 0, 0⟩
+
+/-- For a `WeierstrassCurve` defined over a field of characteristic 2,
+there is an explicit change of variables, which changes it to $Y^2 + XY = X^3 + a_2X^2 + a_6$
+(`IsCharTwoJNeZeroNF`) if its j is not zero. -/
+def vcToCharTwoJNeZeroNF (ha₁ : W₁.a₁ ≠ 0) : VariableChange K :=
+  ⟨Units.mk0 _ ha₁, W₁.a₃ / W₁.a₁, 0, (W₁.a₁ ^ 2 * W₁.a₄ + W₁.a₃ ^ 2) / W₁.a₁ ^ 3⟩
+
+theorem vcToCharTwoJZeroNF_spec (ha₁ : W.a₁ = 0) :
+    (W.variableChange W.vcToCharTwoJZeroNF).IsCharTwoJZeroNF := by
+  constructor
+  · simp [vcToCharTwoJZeroNF, ha₁]
+  · simp [vcToCharTwoJZeroNF, show W.a₂ + 3 * W.a₂ = 0 by
+      linear_combination (2 * W.a₂) * CharP.cast_eq_zero R 2]
+
+theorem vcToCharTwoJNeZeroNF_spec (ha₁ : W₁.a₁ ≠ 0) :
+    (W₁.variableChange (W₁.vcToCharTwoJNeZeroNF ha₁)).IsCharTwoJNeZeroNF := by
+  constructor
+  · simp [vcToCharTwoJNeZeroNF, ha₁]
+  · field_simp [vcToCharTwoJNeZeroNF]
+    linear_combination (W₁.a₃ * W₁.a₁ ^ 3 + W₁.a₁ ^ 2 * W₁.a₄ + W₁.a₃ ^ 2) * CharP.cast_eq_zero K 2
+  · field_simp [vcToCharTwoJNeZeroNF]
+    linear_combination (W₁.a₁ ^ 4 * W₁.a₃ ^ 2 + W₁.a₁ ^ 5 * W₁.a₃ * W₁.a₂) * CharP.cast_eq_zero K 2
+
+/-- For a `WeierstrassCurve` defined over a field of characteristic 2,
+there is an explicit change of variables of it to `IsCharTwoNF`, that is,
+$Y^2 + XY = X^3 + a_2X^2 + a_6$ (`IsCharTwoJNeZeroNF`) or
+$Y^2 + a_3Y = X^3 + a_4X + a_6$ (`IsCharTwoJZeroNF`). -/
+def vcToCharTwoNF [DecidableEq K] : VariableChange K :=
+  if ha₁ : W₁.a₁ = 0 then W₁.vcToCharTwoJZeroNF else W₁.vcToCharTwoJNeZeroNF ha₁
+
+theorem vcToCharTwoNF_spec [DecidableEq K] :
+    (W₁.variableChange W₁.vcToCharTwoNF).IsCharTwoNF := by
+  by_cases ha₁ : W₁.a₁ = 0
+  · rw [vcToCharTwoNF, dif_pos ha₁]
+    exact Or.inr (W₁.vcToCharTwoJZeroNF_spec ha₁)
+  · rw [vcToCharTwoNF, dif_neg ha₁]
+    exact Or.inl (W₁.vcToCharTwoJNeZeroNF_spec ha₁)
+
+open scoped Classical in
+theorem exists_variableChange_isCharTwoNF :
+    ∃ C : VariableChange K, (W₁.variableChange C).IsCharTwoNF :=
+  ⟨_, W₁.vcToCharTwoNF_spec⟩
 
 end VariableChange
 
