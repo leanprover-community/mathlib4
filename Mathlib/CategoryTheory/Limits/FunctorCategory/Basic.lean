@@ -5,7 +5,6 @@ Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.CategoryTheory.Limits.Preserves.Limits
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
 /-!
 # (Co)limits in functor categories.
@@ -312,12 +311,6 @@ def preservesLimitsOfEvaluation (F : D ⥤ K ⥤ C)
     PreservesLimitsOfSize.{w', w} F :=
   ⟨fun {L} _ =>
     preservesLimitsOfShapeOfEvaluation F L fun _ => PreservesLimitsOfSize.preservesLimitsOfShape⟩
-
-/-- `F : D ⥤ K ⥤ C` preserves finite limits if it does for each `k : K`. -/
-def preservesFiniteLimitsOfEvaluation (F : D ⥤ K ⥤ C)
-    (h : ∀ k : K, PreservesFiniteLimits (F ⋙ (evaluation K C).obj k)) :
-    PreservesFiniteLimits F :=
-  ⟨fun J _ _ => preservesLimitsOfShapeOfEvaluation F J fun k => (h k).preservesFiniteLimits _⟩
 
 /-- The constant functor `C ⥤ (D ⥤ C)` preserves limits. -/
 instance preservesLimitsConst : PreservesLimitsOfSize.{w', w} (const D : C ⥤ _) :=
