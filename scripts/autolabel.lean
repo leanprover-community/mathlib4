@@ -89,7 +89,8 @@ def mathlibLabels : Array Label := #[
       "Mathlib" / "RingTheory",
       "Mathlib" / "GroupTheory",
       "Mathlib" / "RepresentationTheory",
-      "Mathlib" / "LinearAlgebra"] },
+      "Mathlib" / "LinearAlgebra"],
+    exclusions := #["Mathlib" / "Algebra" / "NonExistent"] },
   { label := "t-algebraic-geometry",
     dirs := #[
       "Mathlib" / "AlgebraicGeometry",
@@ -123,7 +124,7 @@ def mathlibLabels : Array Label := #[
       "Mathlib" / "Mathport",
       "Mathlib" / "Tactic",
       "Mathlib" / "Util"],
-    exclusions := #["Mathlib" / "Tactic" / "Linters"] },
+    exclusions := #["Mathlib" / "Tactic" / "Linter"] },
   { label := "t-number-theory" },
   { label := "t-order" },
   { label := "t-set-theory" },
