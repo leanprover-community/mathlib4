@@ -345,7 +345,7 @@ theorem totallyBounded_absConvexHull
       simp?
       rw [add_comm]
       rw [two_smul]
-      simp
+      simp?
       rw [← hz₂]
       simp?
       exact id (Eq.symm hz'₂)
