@@ -26,7 +26,7 @@ closed irreducible sets.
 noncomputable def topologicalKrullDim (T : Type*) [TopologicalSpace T] : WithBot ℕ∞ :=
   Order.krullDim (IrreducibleCloseds T)
 
-/-
+/--
 Map induced on irreducible closed susets by a closed continuous map f.
 This is just a wrapper around the image of f together with proofs that it
 preserves irreducibility (by continuity) and closedness (since f is closed).
@@ -66,9 +66,9 @@ theorem topologicalKrullDim_le_of_closed_injection {X Y : Type*} [TopologicalSpa
 /-
 The topological Krull dimension is invariant under homeomorphisms
 -/
-theorem topologicalKrullDim_eq_of_homeo (X Y : Type*)
- [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y)
- (h : IsHomeomorph f) : topologicalKrullDim X = topologicalKrullDim Y :=
+theorem topologicalKrullDim_eq_of_homeo (X Y : Type*) [TopologicalSpace X]
+    [TopologicalSpace Y] (f : X → Y) (h : IsHomeomorph f) :
+    topologicalKrullDim X = topologicalKrullDim Y :=
 
   let fwd : topologicalKrullDim X ≤ topologicalKrullDim Y :=
    topologicalKrullDim_le_of_closed_injection f h.continuous
