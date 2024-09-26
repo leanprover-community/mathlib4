@@ -142,9 +142,9 @@ variable (M : Cᵒᵖ ⥤ Ab.{v}) [∀ X, Module (R.obj X) (M.obj X)]
     M.map f (r • m) = R.map f r • M.map f m)
 
 /-- The object in `PresheafOfModules R` that is obtained from `M : Cᵒᵖ ⥤ Ab.{v}` such
-that for all `X : Cᵒᵖ`, `M.obj X` if a `R.obj X` module, in such a way that the
+that for all `X : Cᵒᵖ`, `M.obj X` is a `R.obj X` module, in such a way that the
 restriction maps are semilinear. (This constructor should be used only in cases
-when the preferred constructor is `PresheafOfModules.mk` is not as convenient as this one.) -/
+when the preferred constructor `PresheafOfModules.mk` is not as convenient as this one.) -/
 @[simps]
 def ofPresheaf : PresheafOfModules.{v} R where
   obj X := ModuleCat.of _ (M.obj X)
