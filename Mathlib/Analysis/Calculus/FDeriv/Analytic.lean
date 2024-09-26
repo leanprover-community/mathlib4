@@ -138,8 +138,8 @@ lemma AnalyticWithinAt.contDiffWithinAt [CompleteSpace F] {f : E → F} {s : Set
   rcases h.exists_analyticAt with ⟨g, fx, fg, hg⟩
   exact hg.contDiffAt.contDiffWithinAt.congr (fg.mono (subset_insert _ _)) fx
 
-lemma AnalyticWithinOn.contDiffOn [CompleteSpace F] {f : E → F} {s : Set E}
-    (h : AnalyticWithinOn 𝕜 f s) {n : ℕ∞} : ContDiffOn 𝕜 n f s :=
+lemma AnalyticOn.contDiffOn [CompleteSpace F] {f : E → F} {s : Set E}
+    (h : AnalyticOn 𝕜 f s) {n : ℕ∞} : ContDiffOn 𝕜 n f s :=
   fun x m ↦ (h x m).contDiffWithinAt
 
 end fderiv

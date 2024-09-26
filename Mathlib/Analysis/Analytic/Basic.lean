@@ -55,7 +55,7 @@ We also define versions of `HasFPowerSeriesOnBall`, `AnalyticAt`, and `AnalyticO
 set, similar to `ContinuousWithinAt`. See `Mathlib.Analysis.Analytic.Within` for basic properties.
 
 * `AnalyticWithinAt 𝕜 f s x` means a power series at `x` converges to `f` on `𝓝[s ∪ {x}] x`.
-* `AnalyticWithinOn 𝕜 f s t` means `∀ x ∈ t, AnalyticWithinAt 𝕜 f s x`.
+* `AnalyticOn 𝕜 f s t` means `∀ x ∈ t, AnalyticWithinAt 𝕜 f s x`.
 
 We develop the basic properties of these notions, notably:
 * If a function admits a power series, it is continuous (see
@@ -389,7 +389,7 @@ def AnalyticOnNhd (f : E → F) (s : Set E) :=
 
 /-- `f` is analytic within `s` if it is analytic within `s` at each point of `t`.  Note that
 this is weaker than `AnalyticOnNhd 𝕜 f s`, as `f` is allowed to be arbitrary outside `s`. -/
-def AnalyticWithinOn (f : E → F) (s : Set E) : Prop :=
+def AnalyticOn (f : E → F) (s : Set E) : Prop :=
   ∀ x ∈ s, AnalyticWithinAt 𝕜 f s x
 
 /-!
@@ -612,9 +612,9 @@ theorem HasFPowerSeriesAt.coeff_zero (hf : HasFPowerSeriesAt f pf x) (v : Fin 0 
     AnalyticWithinAt 𝕜 f univ x ↔ AnalyticAt 𝕜 f x := by
   simp [AnalyticWithinAt, AnalyticAt]
 
-@[simp] lemma analyticWithinOn_univ {f : E → F} :
-    AnalyticWithinOn 𝕜 f univ ↔ AnalyticOnNhd 𝕜 f univ := by
-  simp only [AnalyticWithinOn, analyticWithinAt_univ, AnalyticOnNhd]
+@[simp] lemma analyticOn_univ {f : E → F} :
+    AnalyticOn 𝕜 f univ ↔ AnalyticOnNhd 𝕜 f univ := by
+  simp only [AnalyticOn, analyticWithinAt_univ, AnalyticOnNhd]
 
 lemma AnalyticWithinAt.mono (hf : AnalyticWithinAt 𝕜 f s x) (h : t ⊆ s) :
     AnalyticWithinAt 𝕜 f t x := by
@@ -625,7 +625,7 @@ lemma AnalyticAt.analyticWithinAt (hf : AnalyticAt 𝕜 f x) : AnalyticWithinAt 
   rw [← analyticWithinAt_univ] at hf
   apply hf.mono (subset_univ _)
 
-lemma AnalyticOnNhd.analyticWithinOn (hf : AnalyticOnNhd 𝕜 f s) : AnalyticWithinOn 𝕜 f s :=
+lemma AnalyticOnNhd.analyticOn (hf : AnalyticOnNhd 𝕜 f s) : AnalyticOn 𝕜 f s :=
   fun x hx ↦ (hf x hx).analyticWithinAt
 
 lemma AnalyticWithinAt.congr_of_eventuallyEq {f g : E → F} {s : Set E} {x : E}
@@ -639,9 +639,9 @@ lemma AnalyticWithinAt.congr {f g : E → F} {s : Set E} {x : E}
     AnalyticWithinAt 𝕜 g s x :=
   hf.congr_of_eventuallyEq hs.eventuallyEq_nhdsWithin hx
 
-lemma AnalyticWithinOn.congr {f g : E → F} {s : Set E}
-    (hf : AnalyticWithinOn 𝕜 f s) (hs : EqOn g f s) :
-    AnalyticWithinOn 𝕜 g s :=
+lemma AnalyticOn.congr {f g : E → F} {s : Set E}
+    (hf : AnalyticOn 𝕜 f s) (hs : EqOn g f s) :
+    AnalyticOn 𝕜 g s :=
   fun x m ↦ (hf x m).congr hs (hs m)
 
 theorem AnalyticAt.congr (hf : AnalyticAt 𝕜 f x) (hg : f =ᶠ[𝓝 x] g) : AnalyticAt 𝕜 g x :=
@@ -669,8 +669,8 @@ theorem AnalyticOnNhd.congr (hs : IsOpen s) (hf : AnalyticOnNhd 𝕜 f s) (hg : 
 theorem analyticOnNhd_congr (hs : IsOpen s) (h : s.EqOn f g) : AnalyticOnNhd 𝕜 f s ↔
     AnalyticOnNhd 𝕜 g s := ⟨fun hf => hf.congr hs h, fun hg => hg.congr hs h.symm⟩
 
-lemma AnalyticWithinOn.mono {f : E → F} {s t : Set E} (h : AnalyticWithinOn 𝕜 f t)
-    (hs : s ⊆ t) : AnalyticWithinOn 𝕜 f s :=
+lemma AnalyticOn.mono {f : E → F} {s t : Set E} (h : AnalyticOn 𝕜 f t)
+    (hs : s ⊆ t) : AnalyticOn 𝕜 f s :=
   fun _ m ↦ (h _ (hs m)).mono hs
 
 /-!
@@ -1167,7 +1167,7 @@ protected theorem AnalyticAt.continuousAt (hf : AnalyticAt 𝕜 f x) : Continuou
 protected theorem AnalyticOnNhd.continuousOn {s : Set E} (hf : AnalyticOnNhd 𝕜 f s) : ContinuousOn f s :=
   fun x hx => (hf x hx).continuousAt.continuousWithinAt
 
-protected lemma AnalyticWithinOn.continuousOn {f : E → F} {s : Set E} (h : AnalyticWithinOn 𝕜 f s) :
+protected lemma AnalyticOn.continuousOn {f : E → F} {s : Set E} (h : AnalyticOn 𝕜 f s) :
     ContinuousOn f s :=
   fun x m ↦ (h x m).continuousWithinAt
 

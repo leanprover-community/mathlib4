@@ -50,7 +50,7 @@ protected theorem analyticOnNhd (f : E →L[𝕜] F) (s : Set E) : AnalyticOnNhd
 protected theorem analyticWithinAt (f : E →L[𝕜] F) (s : Set E) (x : E) : AnalyticWithinAt 𝕜 f s x :=
   (f.analyticAt x).analyticWithinAt
 
-protected theorem analyticWithinOn (f : E →L[𝕜] F) (s : Set E) : AnalyticWithinOn 𝕜 f s :=
+protected theorem analyticOn (f : E →L[𝕜] F) (s : Set E) : AnalyticOn 𝕜 f s :=
   fun x _ ↦ f.analyticWithinAt _ x
 
 /-- Reinterpret a bilinear map `f : E →L[𝕜] F →L[𝕜] G` as a multilinear map
@@ -139,7 +139,7 @@ lemma analyticWithinAt_id : AnalyticWithinAt 𝕜 (id : E → E) s z :=
 theorem analyticOnNhd_id : AnalyticOnNhd 𝕜 (fun x : E ↦ x) s :=
   fun _ _ ↦ analyticAt_id
 
-theorem analyticWithinOn_id : AnalyticWithinOn 𝕜 (fun x : E ↦ x) s :=
+theorem analyticOn_id : AnalyticOn 𝕜 (fun x : E ↦ x) s :=
   fun _ _ ↦ analyticWithinAt_id
 
 /-- `fst` is analytic -/
@@ -160,14 +160,14 @@ theorem analyticWithinAt_snd : AnalyticWithinAt 𝕜 (fun p : E × F ↦ p.snd) 
 theorem analyticOnNhd_fst : AnalyticOnNhd 𝕜 (fun p : E × F ↦ p.fst) t :=
   fun _ _ ↦ analyticAt_fst
 
-theorem analyticWithinOn_fst : AnalyticWithinOn 𝕜 (fun p : E × F ↦ p.fst) t :=
+theorem analyticOn_fst : AnalyticOn 𝕜 (fun p : E × F ↦ p.fst) t :=
   fun _ _ ↦ analyticWithinAt_fst
 
 /-- `snd` is entire -/
 theorem analyticOnNhd_snd : AnalyticOnNhd 𝕜 (fun p : E × F ↦ p.snd) t :=
   fun _ _ ↦ analyticAt_snd
 
-theorem analyticWithinOn_snd : AnalyticWithinOn 𝕜 (fun p : E × F ↦ p.snd) t :=
+theorem analyticOn_snd : AnalyticOn 𝕜 (fun p : E × F ↦ p.snd) t :=
   fun _ _ ↦ analyticWithinAt_snd
 
 namespace ContinuousLinearEquiv
@@ -183,7 +183,7 @@ protected theorem analyticOnNhd : AnalyticOnNhd 𝕜 f s :=
 protected theorem analyticWithinAt (f : E →L[𝕜] F) (s : Set E) (x : E) : AnalyticWithinAt 𝕜 f s x :=
   (f.analyticAt x).analyticWithinAt
 
-protected theorem analyticWithinOn (f : E →L[𝕜] F) (s : Set E) : AnalyticWithinOn 𝕜 f s :=
+protected theorem analyticOn (f : E →L[𝕜] F) (s : Set E) : AnalyticOn 𝕜 f s :=
   fun x _ ↦ f.analyticWithinAt _ x
 
 end ContinuousLinearEquiv
@@ -201,7 +201,7 @@ protected theorem analyticOnNhd : AnalyticOnNhd 𝕜 f s :=
 protected theorem analyticWithinAt (f : E →L[𝕜] F) (s : Set E) (x : E) : AnalyticWithinAt 𝕜 f s x :=
   (f.analyticAt x).analyticWithinAt
 
-protected theorem analyticWithinOn (f : E →L[𝕜] F) (s : Set E) : AnalyticWithinOn 𝕜 f s :=
+protected theorem analyticOn (f : E →L[𝕜] F) (s : Set E) : AnalyticOn 𝕜 f s :=
   fun x _ ↦ f.analyticWithinAt _ x
 
 end LinearIsometryEquiv

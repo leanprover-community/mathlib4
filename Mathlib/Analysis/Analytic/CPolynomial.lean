@@ -573,8 +573,8 @@ lemma cpolyomialOn : CPolynomialOn 𝕜 f s := fun _ _ ↦ f.cpolynomialAt
 
 lemma analyticOnNhd : AnalyticOnNhd 𝕜 f s := f.cpolyomialOn.analyticOnNhd
 
-lemma analyticWithinOn : AnalyticWithinOn 𝕜 f s :=
-  f.analyticOnNhd.analyticWithinOn
+lemma analyticOn : AnalyticOn 𝕜 f s :=
+  f.analyticOnNhd.analyticOn
 
 lemma analyticAt : AnalyticAt 𝕜 f x := f.cpolynomialAt.analyticAt
 
@@ -627,9 +627,9 @@ lemma cpolyomialOn_uncurry_of_multilinear :
 lemma analyticOnNhd_uncurry_of_multilinear : AnalyticOnNhd 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s :=
   f.cpolyomialOn_uncurry_of_multilinear.analyticOnNhd
 
-lemma analyticWithinOn_uncurry_of_multilinear :
-    AnalyticWithinOn 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s :=
-  f.analyticOnNhd_uncurry_of_multilinear.analyticWithinOn
+lemma analyticOn_uncurry_of_multilinear :
+    AnalyticOn 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s :=
+  f.analyticOnNhd_uncurry_of_multilinear.analyticOn
 
 lemma analyticAt_uncurry_of_multilinear : AnalyticAt 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) x :=
   f.cpolynomialAt_uncurry_of_multilinear.analyticAt
