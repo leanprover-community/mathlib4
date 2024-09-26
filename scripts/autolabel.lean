@@ -123,7 +123,7 @@ def mathlibLabels : Array Label := #[
       "Mathlib" / "Mathport",
       "Mathlib" / "Tactic",
       "Mathlib" / "Util"],
-    exclusions := #["Mathlib" / "Tactic" / "Linter"] },
+    exclusions := #["Mathlib" / "Tactic" / "Linters"] },
   { label := "t-number-theory" },
   { label := "t-order" },
   { label := "t-set-theory" },
