@@ -21,17 +21,20 @@ variable {α M R : Type*}
 
 namespace MonoidHom
 
-variable [Ring R] [Monoid M] [LinearOrder M] [CovariantClass M M (· * ·) (· ≤ ·)] (f : R →* M)
+variable [Monoid R] [HasDistribNeg R] [Monoid M] [Monoid.IsTorsionFree M]
 
-theorem map_neg_one : f (-1) = 1 :=
-  (pow_eq_one_iff (Nat.succ_ne_zero 1)).1 <| by rw [← map_pow, neg_one_sq, map_one]
+theorem map_neg_one (f : R →* M) : f (-1) = 1 :=
+  (pow_eq_one_iff_left (Nat.succ_ne_zero 1)).1 <| by rw [← map_pow, neg_one_sq, map_one]
 
 @[simp]
-theorem map_neg (x : R) : f (-x) = f x := by rw [← neg_one_mul, map_mul, map_neg_one, one_mul]
-
-theorem map_sub_swap (x y : R) : f (x - y) = f (y - x) := by rw [← map_neg, neg_sub]
+theorem map_neg (f : R →* M) (x : R) : f (-x) = f x := by
+  rw [← neg_one_mul, map_mul, map_neg_one, one_mul]
 
 end MonoidHom
+
+theorem MonoidHom.map_sub_swap [Ring R] [Monoid M] [Monoid.IsTorsionFree M] (f : R →* M) (x y : R) :
+    f (x - y) = f (y - x) := by
+  rw [← map_neg, neg_sub]
 
 section OrderedSemiring
 

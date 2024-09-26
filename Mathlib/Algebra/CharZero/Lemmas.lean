@@ -37,7 +37,7 @@ def castEmbedding : ℕ ↪ R :=
 theorem cast_pow_eq_one {R : Type*} [Semiring R] [CharZero R] (q : ℕ) (n : ℕ) (hn : n ≠ 0) :
     (q : R) ^ n = 1 ↔ q = 1 := by
   rw [← cast_pow, cast_eq_one]
-  exact pow_eq_one_iff hn
+  exact pow_eq_one_iff_left hn
 
 @[simp, norm_cast]
 theorem cast_div_charZero {k : Type*} [DivisionSemiring k] [CharZero k] {m n : ℕ} (n_dvd : n ∣ m) :

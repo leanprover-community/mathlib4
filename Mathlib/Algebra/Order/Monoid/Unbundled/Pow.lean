@@ -3,6 +3,7 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.IsTorsionFree.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 import Mathlib.Tactic.Lift
@@ -195,9 +196,9 @@ theorem pow_lt_one_iff {x : M} {n : ℕ} (hn : n ≠ 0) : x ^ n < 1 ↔ x < 1 :=
   lt_iff_lt_of_le_iff_le (one_le_pow_iff hn)
 
 @[to_additive]
-theorem pow_eq_one_iff {x : M} {n : ℕ} (hn : n ≠ 0) : x ^ n = 1 ↔ x = 1 := by
-  simp only [le_antisymm_iff]
-  rw [pow_le_one_iff hn, one_le_pow_iff hn]
+instance Monoid.IsTorsionFree.of_linearOrderedMonoid : IsTorsionFree M where
+  pow_ne_one _x _n hx hn := hx.lt_or_lt.elim (fun hlt ↦ (pow_lt_one' hlt hn.ne').ne) fun hlt ↦
+    (one_lt_pow' hlt hn.ne').ne'
 
 end CovariantLE
 
