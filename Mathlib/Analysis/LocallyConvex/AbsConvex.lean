@@ -225,23 +225,11 @@ section
 variable [AddCommGroup E] [Module ℝ E]
 
 lemma half_add_half_of_convex {V : Set E} (h : Convex ℝ V) : (1/2 : ℝ) • V + (1/2 : ℝ) • V = V := by
-  apply le_antisymm
-  · apply convex_iff_pointwise_add_subset.mp h (le_of_lt (half_pos Real.zero_lt_one))
-      (le_of_lt (half_pos Real.zero_lt_one))
-      (add_halves 1)
-  · intro x hx
-    have e1 : x = (1/2 : ℝ) • x + (1/2 : ℝ) • x := by
-      rw [← two_smul ℝ]
-      simp only [one_div, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, smul_inv_smul₀]
-    rw [e1]
-    apply add_mem_add
-    exact smul_mem_smul_set hx
-    exact smul_mem_smul_set hx
+  rw [← Convex.add_smul h (le_of_lt (half_pos Real.zero_lt_one))
+    (le_of_lt (half_pos Real.zero_lt_one)), add_halves 1, MulAction.one_smul]
 
 lemma add_self_eq_smul_two {V : Set E} (h : Convex ℝ V) : V + V = (2 : ℝ) • V := by
-  have v1 : Convex ℝ ((2 : ℝ) • V) := Convex.smul h 2
-  rw [← half_add_half_of_convex v1]
-  simp only [one_div, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, inv_smul_smul₀]
+  rw [← one_add_one_eq_two, Convex.add_smul h (zero_le_one' ℝ) (zero_le_one' ℝ), MulAction.one_smul]
 
 lemma help' (a b :E) (h : a = b) : (1/2 : ℝ) • a = (1/2 : ℝ) •b := by
   exact congrArg (HSMul.hSMul (1 / 2)) h
@@ -265,21 +253,14 @@ theorem totallyBounded_absConvexHull
     TotallyBounded (uniformSpace := TopologicalAddGroup.toUniformSpace E) (absConvexHull ℝ s) := by
   intro d' hd'
   letI := TopologicalAddGroup.toUniformSpace E
-  obtain ⟨d,⟨hd₁, hd₂⟩⟩ := comp_mem_uniformity_sets hd'
-  obtain ⟨N,⟨hN₁,hN₂⟩⟩ := hd₁
+  obtain ⟨d,⟨⟨N,⟨hN₁,hN₂⟩⟩, hd₂⟩⟩ := comp_mem_uniformity_sets hd'
   obtain ⟨S,⟨hS₁,hS₂,hS₃⟩⟩ := (locallyConvexSpace_iff_exists_convex_subset_zero ℝ E).mp lcs N hN₁
   let V := S ∩ -S
   let d₂ := {(x,y) | y-x ∈ S} ∩ {(x,y) | y-x ∈ -S}
   obtain ⟨t,⟨htf,hts⟩⟩ := hs d₂ (by
     rw [uniformity_eq_comap_nhds_zero' E]
     simp_all only [Filter.inter_mem_iff, Filter.mem_comap, d₂]
-    apply And.intro
-    · aesop
-    · use -S
-      constructor
-      · exact neg_mem_nhds_zero E hS₁
-      · exact fun ⦃a⦄ a ↦ a
-    )
+    exact And.intro (by aesop) (by use -S; exact ⟨neg_mem_nhds_zero E hS₁, fun ⦃a⦄ a ↦ a⟩))
   have e1 (y : E) : {x | (x, y) ∈ d₂} = y +ᵥ V := by
     apply le_antisymm
     · intro x hx
