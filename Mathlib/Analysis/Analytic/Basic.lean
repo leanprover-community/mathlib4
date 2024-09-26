@@ -785,23 +785,20 @@ theorem ContinuousLinearMap.comp_hasFPowerSeriesOnBall (g : F →L[𝕜] G)
 
 /-- If a function `f` is analytic on a set `s` and `g` is linear, then `g ∘ f` is analytic
 on `s`. -/
-theorem ContinuousLinearMap.comp_analyticOnNhd
-    {s : Set E} (g : F →L[𝕜] G) (h : AnalyticOnNhd 𝕜 f s) :
-    AnalyticOnNhd 𝕜 (g ∘ f) s := by
+theorem ContinuousLinearMap.comp_analyticOn {s : Set E} (g : F →L[𝕜] G) (h : AnalyticOn 𝕜 f s) :
+    AnalyticOn 𝕜 (g ∘ f) s := by
   rintro x hx
   rcases h x hx with ⟨p, r, hp⟩
   exact ⟨g.compFormalMultilinearSeries p, r, g.comp_hasFPowerSeriesWithinOnBall hp⟩
 
 /-- If a function `f` is analytic on a set `s` and `g` is linear, then `g ∘ f` is analytic
 on `s`. -/
-theorem ContinuousLinearMap.comp_analyticOnNhd {s : Set E} (g : F →L[𝕜] G) (h : AnalyticOnNhd 𝕜 f s) :
+theorem ContinuousLinearMap.comp_analyticOnNhd
+    {s : Set E} (g : F →L[𝕜] G) (h : AnalyticOnNhd 𝕜 f s) :
     AnalyticOnNhd 𝕜 (g ∘ f) s := by
   rintro x hx
   rcases h x hx with ⟨p, r, hp⟩
   exact ⟨g.compFormalMultilinearSeries p, r, g.comp_hasFPowerSeriesOnBall hp⟩
-
-@[deprecated (since := "2024-09-26")]
-alias ContinuousLinearMap.comp_analyticOn := ContinuousLinearMap.comp_analyticOnNhd
 
 /-!
 ### Relation between analytic function and the partial sums of its power series
