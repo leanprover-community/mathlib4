@@ -722,7 +722,7 @@ lemma IsSeparable.of_equiv_equiv
 
 include e₁
 lemma IsSeparable.of_equiv' {x : B₁} (h : IsSeparable A₁ x) :
-  haveI : Algebra A₂ B₁ := algebraComp B₁ e₁.symm.toRingHom; IsSeparable A₂ x := by
+    haveI : Algebra A₂ B₁ := algebraComp B₁ e₁.symm.toRingHom; IsSeparable A₂ x := by
   haveI : Algebra A₂ B₁ := algebraComp B₁ e₁.symm.toRingHom
   have : (algebraMap A₂ B₁).comp e₁.toRingHom =
     (RingEquiv.refl B₁).toRingHom.comp (algebraMap A₁ B₁) := by
