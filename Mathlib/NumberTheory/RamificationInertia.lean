@@ -807,21 +807,19 @@ theorem ramificationIdx_tower [IsDedekindDomain S] [DecidableEq (Ideal S)]
     IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count hg0 hqm hq0,
     IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count hfg hqm hq0, ← map_map]
   rcases eq_prime_pow_mul_coprime hp0 hf0 with ⟨I, hcp, heq⟩
-  have hcp : map g P ⊔ map g I = ⊤ := by rw [← map_sup, hcp, map_top g]
+  have hcp : ⊤ = map g P ⊔ map g I := by rw [← map_sup, hcp, map_top g]
   have hp : map g P ≤ Q := map_le_iff_le_comap.mpr (le_of_eq hg)
   have hntq : ¬ ⊤ ≤ Q := fun ht ↦ IsPrime.ne_top hqm (Iff.mpr (eq_top_iff_one Q) (ht trivial))
   nth_rw 1 [heq, map_mul, Ideal.map_pow, normalizedFactors_mul (pow_ne_zero _ hg0) <| by
     by_contra h
-    simp only [h, Submodule.zero_eq_bot, ge_iff_le, bot_le, sup_of_le_left] at hcp
-    rw [hcp] at hp
-    exact hntq hp, Multiset.count_add, normalizedFactors_pow, Multiset.count_nsmul]
-  exact add_right_eq_self.mpr <| Decidable.byContradiction fun h ↦ hntq <|
-    le_of_eq_of_le hcp.symm <| sup_le hp <| le_of_dvd <| dvd_of_mem_normalizedFactors <|
-      Multiset.count_ne_zero.mp h
+    simp only [h, Submodule.zero_eq_bot, bot_le, sup_of_le_left] at hcp
+    exact hntq (hcp.trans_le hp), Multiset.count_add, normalizedFactors_pow, Multiset.count_nsmul]
+  exact add_right_eq_self.mpr <| Decidable.byContradiction fun h ↦ hntq <| hcp.trans_le <|
+    sup_le hp <| le_of_dvd <| dvd_of_mem_normalizedFactors <| Multiset.count_ne_zero.mp h
 
 attribute [local instance] Quotient.field in
 theorem inertiaDeg_tower {f : R →+* S} {g : S →+* T} {p : Ideal R} {P : Ideal S} {I : Ideal T}
-    [p.IsMaximal] [P.IsMaximal] [Nontrivial (T ⧸ I)] (hp : p = comap f P) (hP : P = comap g I) :
+    [p.IsMaximal] [P.IsMaximal] (hp : p = comap f P) (hP : P = comap g I) :
     inertiaDeg (g.comp f) p I = inertiaDeg f p P * inertiaDeg g P I := by
   have h : comap (g.comp f) I = p := by rw [hp, hP, comap_comap]
   simp only [inertiaDeg, dif_pos hp.symm, dif_pos hP.symm, dif_pos h]
@@ -848,8 +846,8 @@ theorem ramificationIdx_algebra_tower [IsDedekindDomain S] [DecidableEq (Ideal S
   and `p` and `P` are maximal. If `p = P ∩ S` and `P = Q ∩ S`,
   then `f (Q | p) = f (P | p) * f (Q | P)`. -/
 theorem inertiaDeg_algebra_tower {p : Ideal R} {P : Ideal S} {I : Ideal T} [p.IsMaximal]
-    [P.IsMaximal] [Nontrivial (T ⧸ I)] (hp : p = comap (algebraMap R S) P)
-    (hP : P = comap (algebraMap S T) I) : inertiaDeg (algebraMap R T) p I =
+    [P.IsMaximal] (hp : p = comap (algebraMap R S) P) (hP : P = comap (algebraMap S T) I) :
+    inertiaDeg (algebraMap R T) p I =
     inertiaDeg (algebraMap R S) p P * inertiaDeg (algebraMap S T) P I := by
   rw [IsScalarTower.algebraMap_eq R S T]
   exact inertiaDeg_tower hp hP
