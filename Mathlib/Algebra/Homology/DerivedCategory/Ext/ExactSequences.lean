@@ -180,6 +180,7 @@ lemma preadditiveYoneda_homologySequenceδ_singleTriangle_apply
   rfl
 
 include hS in
+/-- Alternative formulation of `contravariant_sequence_exact₂` -/
 lemma contravariant_sequence_exact₂' (n : ℕ) :
     (ShortComplex.mk (AddCommGrp.ofHom ((mk₀ S.g).precomp Y (zero_add n)))
       (AddCommGrp.ofHom ((mk₀ S.f).precomp Y (zero_add n))) (by
@@ -199,6 +200,7 @@ section
 
 variable (n₀ n₁ : ℕ) (h : 1 + n₀ = n₁)
 
+/-- Alternative formulation of `contravariant_sequence_exact₁` -/
 lemma contravariant_sequence_exact₁' :
     (ShortComplex.mk (AddCommGrp.ofHom (((mk₀ S.f).precomp Y (zero_add n₀))))
       (AddCommGrp.ofHom (hS.extClass.precomp Y h)) (by
@@ -215,6 +217,7 @@ lemma contravariant_sequence_exact₁' :
   · ext; apply singleFunctor_map_comp_hom (C := C)
   · ext; dsimp; apply preadditiveYoneda_homologySequenceδ_singleTriangle_apply
 
+/-- Alternative formulation of `contravariant_sequence_exact₃` -/
 lemma contravariant_sequence_exact₃' :
     (ShortComplex.mk (AddCommGrp.ofHom (hS.extClass.precomp Y h))
       (AddCommGrp.ofHom (((mk₀ S.g).precomp Y (zero_add n₁)))) (by
