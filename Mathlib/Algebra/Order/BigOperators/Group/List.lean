@@ -143,7 +143,8 @@ lemma one_lt_prod_of_one_lt [OrderedCommMonoid M] :
     · exact hl₁.2.1
     · exact hl₁.2.2 _ ‹_›
 
-@[to_additive]
+/-- See also `List.le_prod_of_mem`. -/
+@[to_additive "See also `List.le_sum_of_mem`."]
 lemma single_le_prod [OrderedCommMonoid M] {l : List M} (hl₁ : ∀ x ∈ l, (1 : M) ≤ x) :
     ∀ x ∈ l, x ≤ l.prod := by
   induction l
@@ -173,6 +174,19 @@ variable [CanonicallyOrderedCommMonoid M] {l : List M}
   · rw [prod_take_succ _ _ h]
     exact le_self_mul
   · simp [take_of_length_le h, take_of_length_le (le_trans h (Nat.le_succ _))]
+
+/-- See also `List.single_le_prod`. -/
+@[to_additive "See also `List.single_le_sum`."]
+theorem le_prod_of_mem {xs : List M} {x : M} (h₁ : x ∈ xs) : x ≤ xs.prod := by
+  induction xs with
+  | nil => simp at h₁
+  | cons y ys ih =>
+    simp only [mem_cons] at h₁
+    rcases h₁ with (rfl | h₁)
+    · simp
+    · specialize ih h₁
+      simp only [List.prod_cons]
+      exact le_mul_left ih
 
 end CanonicallyOrderedCommMonoid
 end List

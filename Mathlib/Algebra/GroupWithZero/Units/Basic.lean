@@ -322,11 +322,11 @@ lemma mul_div_mul_right (a b : G₀) (hc : c ≠ 0) : a * c / (b * c) = a / b :=
 -- TODO: Duplicate of `mul_inv_cancel_right₀`
 lemma mul_mul_div (a : G₀) (hb : b ≠ 0) : a = a * b * (1 / b) := (hb.isUnit.mul_mul_div _).symm
 
-lemma div_div_div_cancel_right (a : G₀) (hc : c ≠ 0) : a / c / (b / c) = a / b := by
+lemma div_div_div_cancel_right₀ (hc : c ≠ 0) (a b : G₀) : a / c / (b / c) = a / b := by
   rw [div_div_eq_mul_div, div_mul_cancel₀ _ hc]
 
-lemma div_mul_div_cancel (a : G₀) (hc : c ≠ 0) : a / c * (c / b) = a / b := by
-  rw [← mul_div_assoc, div_mul_cancel₀ _ hc]
+lemma div_mul_div_cancel₀ (hb : b ≠ 0) : a / b * (b / c) = a / c := by
+  rw [← mul_div_assoc, div_mul_cancel₀ _ hb]
 
 lemma div_mul_cancel_of_imp (h : b = 0 → a = 0) : a / b * b = a := by
   obtain rfl | hb := eq_or_ne b 0 <;>  simp [*]
@@ -458,6 +458,9 @@ lemma div_helper (b : G₀) (h : a ≠ 0) : 1 / (a * b) * a = 1 / b := by
 
 lemma div_div_div_cancel_left' (a b : G₀) (hc : c ≠ 0) : c / a / (c / b) = b / a := by
   rw [div_div_div_eq, mul_comm, mul_div_mul_right _ _ hc]
+
+@[simp] lemma div_mul_div_cancel₀' (ha : a ≠ 0) (b c : G₀) : a / b * (c / a) = c / b := by
+  rw [mul_comm, div_mul_div_cancel₀ ha]
 
 end CommGroupWithZero
 

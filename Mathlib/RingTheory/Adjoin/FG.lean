@@ -58,17 +58,17 @@ theorem fg_trans (h1 : (adjoin R s).toSubmodule.FG) (h2 : (adjoin (adjoin R s) t
     change r ∈ adjoin R (s ∪ t) at hr
     rw [adjoin_union_eq_adjoin_adjoin] at hr
     change r ∈ Subalgebra.toSubmodule (adjoin (adjoin R s) t) at hr
-    rw [← hq', ← Set.image_id q, Finsupp.mem_span_image_iff_total (adjoin R s)] at hr
+    rw [← hq', ← Set.image_id q, Finsupp.mem_span_image_iff_linearCombination (adjoin R s)] at hr
     rcases hr with ⟨l, hlq, rfl⟩
-    have := @Finsupp.total_apply A A (adjoin R s)
+    have := @Finsupp.linearCombination_apply A A (adjoin R s)
     rw [this, Finsupp.sum]
     refine sum_mem ?_
     intro z hz
     change (l z).1 * _ ∈ _
     have : (l z).1 ∈ Subalgebra.toSubmodule (adjoin R s) := (l z).2
-    rw [← hp', ← Set.image_id p, Finsupp.mem_span_image_iff_total R] at this
+    rw [← hp', ← Set.image_id p, Finsupp.mem_span_image_iff_linearCombination R] at this
     rcases this with ⟨l2, hlp, hl⟩
-    have := @Finsupp.total_apply A A R
+    have := @Finsupp.linearCombination_apply A A R
     rw [this] at hl
     rw [← hl, Finsupp.sum_mul]
     refine sum_mem ?_

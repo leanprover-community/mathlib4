@@ -53,10 +53,10 @@ inductive Rewrites (r : ContextFreeRule T N) : List (Symbol T N) → List (Symbo
       r.Rewrites (x :: s₁) (x :: s₂)
 
 lemma Rewrites.exists_parts {r : ContextFreeRule T N} {u v : List (Symbol T N)}
-    (hyp : r.Rewrites u v) :
+    (hr : r.Rewrites u v) :
     ∃ p q : List (Symbol T N),
       u = p ++ [Symbol.nonterminal r.input] ++ q ∧ v = p ++ r.output ++ q := by
-  induction hyp with
+  induction hr with
   | head s =>
     use [], s
     simp
@@ -181,7 +181,7 @@ lemma Derives.append_left {v w : List (Symbol T g.NT)}
   | refl => rfl
   | tail _ last ih => exact ih.trans_produces <| last.append_left p
 
-/-- Add extra prefix to context-free deriving. -/
+/-- Add extra postfix to context-free deriving. -/
 lemma Derives.append_right {v w : List (Symbol T g.NT)}
     (hvw : g.Derives v w) (p : List (Symbol T g.NT)) :
     g.Derives (v ++ p) (w ++ p) := by
@@ -193,7 +193,10 @@ end ContextFreeGrammar
 
 /-- Context-free languages are defined by context-free grammars. -/
 def Language.IsContextFree (L : Language T) : Prop :=
-  ∃ g : ContextFreeGrammar.{uT} T, g.language = L
+  ∃ g : ContextFreeGrammar.{0} T, g.language = L
+
+proof_wanted Language.isContextFree_iff {L : Language T} :
+    L.IsContextFree ↔ ∃ g : ContextFreeGrammar.{uN} T, g.language = L
 
 section closure_reversal
 

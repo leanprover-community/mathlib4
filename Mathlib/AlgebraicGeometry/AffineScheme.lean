@@ -31,7 +31,7 @@ We also define predicates about affine schemes and affine open sets.
 
 -/
 
--- Explicit universe annotations were used in this file to improve perfomance #12737
+-- Explicit universe annotations were used in this file to improve performance #12737
 
 noncomputable section
 
@@ -265,7 +265,7 @@ instance isOpenImmersion_fromSpec :
 theorem range_fromSpec :
     Set.range hU.fromSpec.1.base = (U : Set X) := by
   delta IsAffineOpen.fromSpec; dsimp
-  rw [Function.comp.assoc, Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
+  rw [Function.comp_assoc, Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
   · exact Subtype.range_coe
   erw [← coe_comp, ← TopCat.epi_iff_surjective] -- now `erw` after #13170
   infer_instance
@@ -312,7 +312,7 @@ theorem _root_.AlgebraicGeometry.Scheme.Hom.isAffineOpen_iff_of_isOpenImmersion
     (IsOpenImmersion.isoOfRangeEq (X.ofRestrict U.openEmbedding ≫ f) (Y.ofRestrict _) ?_).hom ?_ hU,
     fun hU => hU.image_of_isOpenImmersion f⟩
   · erw [Scheme.comp_val_base, coe_comp, Set.range_comp] -- now `erw` after #13170
-    dsimp [Opens.coe_inclusion, Scheme.restrict]
+    dsimp [Opens.coe_inclusion', Scheme.restrict]
     erw [Subtype.range_coe, Subtype.range_coe] -- now `erw` after #13170
     rfl
   · infer_instance
@@ -417,8 +417,8 @@ theorem exists_basicOpen_le {V : X.Opens} (x : V) (h : ↑x ∈ U) :
     ∃ f : Γ(X, U), X.basicOpen f ≤ V ∧ ↑x ∈ X.basicOpen f := by
   have : IsAffine _ := hU
   obtain ⟨_, ⟨_, ⟨r, rfl⟩, rfl⟩, h₁, h₂⟩ :=
-    (isBasis_basicOpen U).exists_subset_of_mem_open (x.2 : ⟨x, h⟩ ∈ _)
-      ((Opens.map U.inclusion).obj V).isOpen
+    (isBasis_basicOpen U).exists_subset_of_mem_open (x.2 : (⟨x, h⟩ : U) ∈ _)
+      ((Opens.map U.inclusion').obj V).isOpen
   have :
     U.ι ''ᵁ (U.toScheme.basicOpen r) =
       X.basicOpen (X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op r) := by
@@ -578,7 +578,7 @@ def _root_.AlgebraicGeometry.Scheme.affineBasicOpen
 include hU in
 /--
 In an affine open set `U`, a family of basic open covers `U` iff the sections span `Γ(X, U)`.
-See `iSup_basicOpen_of_span_eq_top` for the inverse direction without the affine-ness assuption.
+See `iSup_basicOpen_of_span_eq_top` for the inverse direction without the affine-ness assumption.
 -/
 theorem basicOpen_union_eq_self_iff (s : Set Γ(X, U)) :
     ⨆ f : s, X.basicOpen (f : Γ(X, U)) = U ↔ Ideal.span s = ⊤ := by

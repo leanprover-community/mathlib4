@@ -43,7 +43,7 @@ variable (f₁ : Q₁ →qᵢ Qₙ) (f₂ : Q₂ →qᵢ Qₙ) (hf : ∀ x y, Q�
 variable (m₁ : CliffordAlgebra Q₁) (m₂ : CliffordAlgebra Q₂)
 include hf
 
-/-- If `m₁` and `m₂` are both homogenous,
+/-- If `m₁` and `m₂` are both homogeneous,
 and the quadratic spaces `Q₁` and `Q₂` map into
 orthogonal subspaces of `Qₙ` (for instance, when `Qₙ = Q₁.prod Q₂`),
 then the product of the embedding in `CliffordAlgebra Q` commutes up to a sign factor. -/

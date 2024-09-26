@@ -158,6 +158,7 @@ variable {A E : Type*} [NonUnitalNormedRing A] [StarRing A] [PartialOrder A]
 
 local notation "⟪" x ", " y "⟫" => inner (𝕜 := A) x y
 
+open scoped InnerProductSpace in
 /-- The norm associated with a Hilbert C⋆-module. It is not registered as a norm, since a type
 might already have a norm defined on it. -/
 noncomputable def norm (A : Type*) {E : Type*} [Norm A] [Inner A E] : Norm E where
@@ -168,7 +169,7 @@ lemma norm_sq_eq {x : E} : ‖x‖ ^ 2 = ‖⟪x, x⟫‖ := by simp [norm_eq_sq
 section
 include A
 
-protected lemma norm_nonneg {x : E} : 0 ≤ ‖x‖ := by simp [norm_eq_sqrt_norm_inner_self]; positivity
+protected lemma norm_nonneg {x : E} : 0 ≤ ‖x‖ := by simp [norm_eq_sqrt_norm_inner_self]
 
 protected lemma norm_pos {x : E} (hx : x ≠ 0) : 0 < ‖x‖ := by
   simp only [norm_eq_sqrt_norm_inner_self, Real.sqrt_pos, norm_pos_iff]
@@ -189,6 +190,7 @@ end
 variable [CStarRing A] [StarOrderedRing A] [StarModule ℂ A]
   [IsScalarTower ℂ A A] [SMulCommClass ℂ A A]
 
+open scoped InnerProductSpace in
 /-- The C⋆-algebra-valued Cauchy-Schwarz inequality for Hilbert C⋆-modules. -/
 lemma inner_mul_inner_swap_le [CompleteSpace A] {x y : E} : ⟪y, x⟫ * ⟪x, y⟫ ≤ ‖x‖ ^ 2 • ⟪y, y⟫ := by
   rcases eq_or_ne x 0 with h|h
@@ -207,7 +209,7 @@ lemma inner_mul_inner_swap_le [CompleteSpace A] {x y : E} : ⟪y, x⟫ * ⟪x, y
             _ ≤ ‖x‖ ^ 2 • (star a * a) - ‖x‖ ^ 2 • (⟪y, x⟫ * a)
                   - ‖x‖ ^ 2 • (star a * ⟪x, y⟫) + ‖x‖ ^ 2 • (‖x‖ ^ 2 • ⟪y, y⟫) := by
                       gcongr
-                      calc _ ≤ ‖⟪x, x⟫_A‖ • (star a * a) := CStarRing.conjugate_le_norm_smul
+                      calc _ ≤ ‖⟪x, x⟫_A‖ • (star a * a) := CStarAlgebra.conjugate_le_norm_smul
                         _ = (Real.sqrt ‖⟪x, x⟫_A‖) ^ 2 • (star a * a) := by
                                   congr
                                   have : 0 ≤ ‖⟪x, x⟫_A‖ := by positivity
@@ -217,13 +219,14 @@ lemma inner_mul_inner_swap_le [CompleteSpace A] {x y : E} : ⟪y, x⟫ * ⟪x, y
     simp only [star_inner, sub_self, zero_sub, le_neg_add_iff_add_le, add_zero] at h₁
     rwa [smul_le_smul_iff_of_pos_left (pow_pos (CStarModule.norm_pos h) _)] at h₁
 
+open scoped InnerProductSpace in
 variable (E) in
 /-- The Cauchy-Schwarz inequality for Hilbert C⋆-modules. -/
 lemma norm_inner_le [CompleteSpace A] {x y : E} : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ := by
   have := calc ‖⟪x, y⟫‖ ^ 2 = ‖⟪y, x⟫ * ⟪x, y⟫‖ := by
                 rw [← star_inner x, CStarRing.norm_star_mul_self, pow_two]
     _ ≤ ‖‖x‖^ 2 • ⟪y, y⟫‖ := by
-                refine CStarRing.norm_le_norm_of_nonneg_of_le ?_ inner_mul_inner_swap_le
+                refine CStarAlgebra.norm_le_norm_of_nonneg_of_le ?_ inner_mul_inner_swap_le
                 rw [← star_inner x]
                 exact star_mul_self_nonneg ⟪x, y⟫_A
     _ = ‖x‖ ^ 2 * ‖⟪y, y⟫‖ := by simp [norm_smul]
@@ -260,6 +263,7 @@ and bornology instead of inheriting them from the norm. -/
 abbrev normedAddCommGroup [CompleteSpace A] : NormedAddCommGroup E :=
   NormedAddCommGroup.ofCore CStarModule.normedSpaceCore
 
+open scoped InnerProductSpace in
 lemma norm_eq_csSup [CompleteSpace A] (v : E) :
     ‖v‖ = sSup { ‖⟪w, v⟫_A‖ | (w : E) (_ : ‖w‖ ≤ 1) } := by
   let instNACG : NormedAddCommGroup E := NormedAddCommGroup.ofCore normedSpaceCore
@@ -275,6 +279,8 @@ lemma norm_eq_csSup [CompleteSpace A] (v : E) :
 end norm
 
 section NormedAddCommGroup
+
+open scoped InnerProductSpace
 
 /- Note: one generally creates a `CStarModule` instance for a type `E` first before getting the
 `NormedAddCommGroup` and `NormedSpace` instances via `CStarModule.normedSpaceCore`, especially by

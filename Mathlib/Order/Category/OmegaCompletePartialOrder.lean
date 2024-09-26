@@ -120,7 +120,8 @@ def isEqualizer {X Y : ωCPO.{v}} (f g : X ⟶ Y) : IsLimit (equalizer f g) :=
     -- Porting note: Changed `s.ι x` to `s.ι.toFun x`
     ⟨{  toFun := fun x => ⟨s.ι.toFun x, by apply ContinuousHom.congr_fun s.condition⟩
         monotone' := fun x y h => s.ι.monotone h
-        cont := fun x => Subtype.ext (s.ι.continuous x) }, by ext; rfl, fun hm => by
+        map_ωSup' := fun x => Subtype.ext (s.ι.continuous x)
+      }, by ext; rfl, fun hm => by
       apply ContinuousHom.ext _ _ fun x => Subtype.ext ?_ -- Porting note: Originally `ext`
       apply ContinuousHom.congr_fun hm⟩
 

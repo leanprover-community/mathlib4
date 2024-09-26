@@ -116,7 +116,7 @@ theorem poly_eq_of_wittPolynomial_bind_eq' [Fact p.Prime] (f g : ℕ → MvPolyn
   rw [← Function.funext_iff] at h
   replace h :=
     congr_arg (fun fam => bind₁ (MvPolynomial.map (Int.castRingHom ℚ) ∘ fam) (xInTermsOfW p ℚ n)) h
-  simpa only [Function.comp, map_bind₁, map_wittPolynomial, ← bind₁_bind₁,
+  simpa only [Function.comp_def, map_bind₁, map_wittPolynomial, ← bind₁_bind₁,
     bind₁_wittPolynomial_xInTermsOfW, bind₁_X_right] using h
 
 theorem poly_eq_of_wittPolynomial_bind_eq [Fact p.Prime] (f g : ℕ → MvPolynomial ℕ ℤ)
@@ -126,7 +126,7 @@ theorem poly_eq_of_wittPolynomial_bind_eq [Fact p.Prime] (f g : ℕ → MvPolyno
   rw [← Function.funext_iff] at h
   replace h :=
     congr_arg (fun fam => bind₁ (MvPolynomial.map (Int.castRingHom ℚ) ∘ fam) (xInTermsOfW p ℚ n)) h
-  simpa only [Function.comp, map_bind₁, map_wittPolynomial, ← bind₁_bind₁,
+  simpa only [Function.comp_def, map_bind₁, map_wittPolynomial, ← bind₁_bind₁,
     bind₁_wittPolynomial_xInTermsOfW, bind₁_X_right] using h
 
 -- Ideally, we would generalise this to n-ary functions
@@ -233,7 +233,7 @@ instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsP
     uncurry]
   apply eval₂Hom_congr rfl _ rfl
   ext ⟨i, n⟩
-  fin_cases i <;> simp [aeval_eq_eval₂Hom, eval₂Hom_rename, Function.comp]
+  fin_cases i <;> simp [aeval_eq_eval₂Hom, eval₂Hom_rename, Function.comp_def]
 
 /-- The composition of a polynomial function with a binary polynomial function is polynomial. -/
 -- Porting note (#10754): made this an instance
@@ -301,10 +301,8 @@ theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
 instance oneIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 1 :=
   ⟨⟨onePoly, by
       intros; funext n; cases n
-      · -- Porting note: was `simp only [...]` but with slightly different `[...]`.
-        simp only [lt_self_iff_false, one_coeff_zero, onePoly, ite_true, map_one]
-      · -- Porting note: was `simp only [...]` but with slightly different `[...]`.
-        simp only [Nat.succ_pos', one_coeff_eq_of_pos, onePoly, Nat.succ_ne_zero, ite_false,
+      · simp only [lt_self_iff_false, one_coeff_zero, onePoly, ite_true, map_one]
+      · simp only [Nat.succ_pos', one_coeff_eq_of_pos, onePoly, Nat.succ_ne_zero, ite_false,
           map_zero]
   ⟩⟩
 
