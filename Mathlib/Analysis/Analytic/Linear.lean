@@ -54,7 +54,7 @@ protected theorem analyticOn (f : E →L[𝕜] F) (s : Set E) : AnalyticOn 𝕜 
   fun x _ ↦ f.analyticWithinAt _ x
 
 @[deprecated (since := "2024-09-26")]
-alias analyticWithinOn := analyticOn
+alias analyticWithinOn := ContinuousLinearMap.analyticOn
 
 /-- Reinterpret a bilinear map `f : E →L[𝕜] F →L[𝕜] G` as a multilinear map
 `(E × F) [×2]→L[𝕜] G`. This multilinear map is the second term in the formal
@@ -199,7 +199,7 @@ protected theorem analyticOn (f : E →L[𝕜] F) (s : Set E) : AnalyticOn 𝕜 
   fun x _ ↦ f.analyticWithinAt _ x
 
 @[deprecated (since := "2024-09-26")]
-alias analyticWithinOn := analyticOn
+alias analyticWithinOn := ContinuousLinearEquiv.analyticOn
 
 end ContinuousLinearEquiv
 
@@ -220,6 +220,6 @@ protected theorem analyticOn (f : E →L[𝕜] F) (s : Set E) : AnalyticOn 𝕜 
   fun x _ ↦ f.analyticWithinAt _ x
 
 @[deprecated (since := "2024-09-26")]
-alias analyticWithinOn := analyticOn
+alias analyticWithinOn := LinearIsometryEquiv.analyticOn
 
 end LinearIsometryEquiv
