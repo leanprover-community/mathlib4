@@ -140,7 +140,8 @@ def mathlibLabels : Array Label := #[
 def mathlibUnlabelled : Array FilePath := #[
     "Mathlib" / "Deprecated",
     "Mathlib" / "Init",
-    "Mathlib" / "Testing" ]
+    "Mathlib" / "Testing",
+    "Mathlib" / "Std" ]
 
 /-- Checks if the folder `path` lies inside the folder `dir`. -/
 def _root_.System.FilePath.isPrefixOf (dir path : FilePath) : Bool :=
@@ -272,7 +273,7 @@ unsafe def main (args : List String): IO Unit := do
     -- print github annotation warning
     -- note: only emitting a warning because the workflow is only triggered on the first commit
     -- of a PR and could therefore lead to unexpected behaviour if a folder was created later.
-    println <| AutoLabel.githubAnnotation "error" "scripts/autolabel.lean"
+    println <| AutoLabel.githubAnnotation "warning" "scripts/autolabel.lean"
       s!"Incomplete `{ ``AutoLabel.mathlibLabels }`"
       s!"the following paths inside `Mathlib/` are not covered \
       by any label: {notMatchedPaths} Please modify `AutoLabel.mathlibLabels` accordingly!"
