@@ -255,14 +255,16 @@ unsafe def main (args : List String): IO Unit := do
         -- print github annotation error
         println <| AutoLabel.githubAnnotation "error" "scripts/autolabel.lean"
           s!"Misformatted `{ ``AutoLabel.mathlibLabels }`"
-          s!"directory {dir} does not exist! (from label {label.label})"
+          s!"directory '{dir}' does not exist but is included by label '{label.label}'. \
+          Please update `{ ``AutoLabel.mathlibLabels }`!"
         valid := false
     for dir in label.exclusions do
       unless ← FilePath.pathExists dir do
         -- print github annotation error
         println <| AutoLabel.githubAnnotation "error" "scripts/autolabel.lean"
           s!"Misformatted `{ ``AutoLabel.mathlibLabels }`"
-          s!"excluded directory {dir} does not exist! (from label {label.label})"
+          s!"directory '{dir}' does not exist but is excluded by label '{label.label}'. \
+          Please update `{ ``AutoLabel.mathlibLabels }`!"
         valid := false
   unless valid do
     IO.Process.exit 2
