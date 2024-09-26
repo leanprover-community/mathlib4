@@ -79,7 +79,7 @@ noncomputable def sheafificationHomEquiv
       (P ⟶ (restrictScalars α).obj ((SheafOfModules.forget _).obj F)) := by
   apply sheafifyHomEquiv
 
-lemma toPresheaf_map_sheafificationHomEquiv'
+lemma toPresheaf_map_sheafificationHomEquiv_def
     {P : PresheafOfModules.{v} R₀} {F : SheafOfModules.{v} R}
     (f : (sheafification α).obj P ⟶ F) :
     (toPresheaf R₀).map (sheafificationHomEquiv α f) =
@@ -91,7 +91,7 @@ lemma toPresheaf_map_sheafificationHomEquiv
     (toPresheaf R₀).map (sheafificationHomEquiv α f) =
       (sheafificationAdjunction J AddCommGrp).homEquiv P.presheaf
         ((SheafOfModules.toSheaf _).obj F) ((SheafOfModules.toSheaf _).map f) := by
-  rw [toPresheaf_map_sheafificationHomEquiv', Adjunction.homEquiv_unit]
+  rw [toPresheaf_map_sheafificationHomEquiv_def, Adjunction.homEquiv_unit]
   dsimp
 
 lemma toSheaf_map_sheafificationHomEquiv_symm
