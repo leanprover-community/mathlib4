@@ -160,7 +160,8 @@ namespace AnalyticOnNhd
 a connected set. Superseded by `eqOn_zero_of_preconnected_of_locally_zero` which does not assume
 completeness of the target space. -/
 theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f : E → F} {U : Set E}
-    (hf : AnalyticOnNhd 𝕜 f U) (hU : IsPreconnected U) {z₀ : E} (h₀ : z₀ ∈ U) (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
+    (hf : AnalyticOnNhd 𝕜 f U) (hU : IsPreconnected U)
+    {z₀ : E} (h₀ : z₀ ∈ U) (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
     EqOn f 0 U := by
   /- Let `u` be the set of points around which `f` vanishes. It is clearly open. We have to show
     that its limit points in `U` still belong to it, from which the inclusion `U ⊆ u` will follow
@@ -204,7 +205,8 @@ neighborhood of a point `z₀`, then it is uniformly zero along a connected set.
 version assuming only that the function vanishes at some points arbitrarily close to `z₀`, see
 `eqOn_zero_of_preconnected_of_frequently_eq_zero`. -/
 theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : E → F} {U : Set E}
-    (hf : AnalyticOnNhd 𝕜 f U) (hU : IsPreconnected U) {z₀ : E} (h₀ : z₀ ∈ U) (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
+    (hf : AnalyticOnNhd 𝕜 f U) (hU : IsPreconnected U)
+    {z₀ : E} (h₀ : z₀ ∈ U) (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
     EqOn f 0 U := by
   let F' := UniformSpace.Completion F
   set e : F →L[𝕜] F' := UniformSpace.Completion.toComplL

@@ -478,11 +478,13 @@ theorem completedLFunction_one_sub_even (hΦ : Φ.Even) (s : ℂ)
     · simp only [rank_real_complex, Nat.one_lt_ofNat]
   -- Analyticity on U:
   have hF : AnalyticOnNhd ℂ F U := by
-    refine DifferentiableOn.analyticOnNhd (fun t ht ↦ DifferentiableAt.differentiableWithinAt ?_) hUo
+    refine DifferentiableOn.analyticOnNhd
+      (fun t ht ↦ DifferentiableAt.differentiableWithinAt ?_) hUo
     refine (differentiableAt_completedLFunction Φ _ ?_ ?_).comp t (differentiableAt_id.const_sub 1)
     exacts [ht.2.imp_left (sub_ne_zero.mpr ∘ Ne.symm), ht.1.imp_left sub_eq_self.not.mpr]
   have hG : AnalyticOnNhd ℂ G U := by
-    refine DifferentiableOn.analyticOnNhd (fun t ht ↦ DifferentiableAt.differentiableWithinAt ?_) hUo
+    refine DifferentiableOn.analyticOnNhd
+      (fun t ht ↦ DifferentiableAt.differentiableWithinAt ?_) hUo
     apply ((differentiableAt_id.sub_const 1).const_cpow (.inl (NeZero.ne _))).mul
     apply differentiableAt_completedLFunction _ _ (ht.1.imp_right fun h ↦ dft_apply_zero Φ ▸ h)
     exact ht.2.imp_right (fun h ↦ by simp only [← dft_apply_zero, dft_dft, neg_zero, h, smul_zero])

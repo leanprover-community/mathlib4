@@ -571,6 +571,10 @@ protected theorem _root_.DifferentiableOn.analyticAt {s : Set ℂ} {f : ℂ → 
 theorem _root_.DifferentiableOn.analyticOnNhd {s : Set ℂ} {f : ℂ → E} (hd : DifferentiableOn ℂ f s)
     (hs : IsOpen s) : AnalyticOnNhd ℂ f s := fun _z hz => hd.analyticAt (hs.mem_nhds hz)
 
+theorem _root_.DifferentiableOn.analyticOn {s : Set ℂ} {f : ℂ → E} (hd : DifferentiableOn ℂ f s)
+    (hs : IsOpen s) : AnalyticOn ℂ f s :=
+  (hd.analyticOnNhd hs).analyticOn
+
 /-- If `f : ℂ → E` is complex differentiable on some open set `s`, then it is continuously
 differentiable on `s`. -/
 protected theorem _root_.DifferentiableOn.contDiffOn {s : Set ℂ} {f : ℂ → E} {n : ℕ}
@@ -599,11 +603,22 @@ theorem analyticOnNhd_iff_differentiableOn {f : ℂ → E} {s : Set ℂ} (o : Is
     AnalyticOnNhd ℂ f s ↔ DifferentiableOn ℂ f s :=
   ⟨AnalyticOnNhd.differentiableOn, fun d _ zs ↦ d.analyticAt (o.mem_nhds zs)⟩
 
+/-- On an open set, `f : ℂ → E` is analytic iff it is differentiable -/
+theorem analyticOn_iff_differentiableOn {f : ℂ → E} {s : Set ℂ} (o : IsOpen s) :
+    AnalyticOn ℂ f s ↔ DifferentiableOn ℂ f s := by
+  rw [o.analyticOn_iff_analyticOnNhd]
+  exact analyticOnNhd_iff_differentiableOn o
+
 /-- `f : ℂ → E` is entire iff it's differentiable -/
 theorem analyticOnNhd_univ_iff_differentiable {f : ℂ → E} :
     AnalyticOnNhd ℂ f univ ↔ Differentiable ℂ f := by
   simp only [← differentiableOn_univ]
   exact analyticOnNhd_iff_differentiableOn isOpen_univ
+
+theorem analyticOn_univ_iff_differentiable {f : ℂ → E} :
+    AnalyticOn ℂ f univ ↔ Differentiable ℂ f := by
+  rw [analyticOn_univ]
+  exact analyticOnNhd_univ_iff_differentiable
 
 /-- `f : ℂ → E` is analytic at `z` iff it's differentiable near `z` -/
 theorem analyticAt_iff_eventually_differentiableAt {f : ℂ → E} {c : ℂ} :

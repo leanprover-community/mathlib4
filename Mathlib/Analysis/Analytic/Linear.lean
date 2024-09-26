@@ -53,6 +53,9 @@ protected theorem analyticWithinAt (f : E →L[𝕜] F) (s : Set E) (x : E) : An
 protected theorem analyticOn (f : E →L[𝕜] F) (s : Set E) : AnalyticOn 𝕜 f s :=
   fun x _ ↦ f.analyticWithinAt _ x
 
+@[deprecated (since := "2024-09-26")]
+alias analyticWithinOn := ContinuousLinearMap.analyticOn
+
 /-- Reinterpret a bilinear map `f : E →L[𝕜] F →L[𝕜] G` as a multilinear map
 `(E × F) [×2]→L[𝕜] G`. This multilinear map is the second term in the formal
 multilinear series expansion of `uncurry f`. It is given by
@@ -121,9 +124,17 @@ protected theorem analyticAt_bilinear (f : E →L[𝕜] F →L[𝕜] G) (x : E �
     AnalyticAt 𝕜 (fun x : E × F => f x.1 x.2) x :=
   (f.hasFPowerSeriesAt_bilinear x).analyticAt
 
+protected theorem analyticWithinAt_bilinear (f : E →L[𝕜] F →L[𝕜] G) (s : Set (E × F)) (x : E × F) :
+    AnalyticWithinAt 𝕜 (fun x : E × F => f x.1 x.2) s x :=
+  (f.analyticAt_bilinear x).analyticWithinAt
+
 protected theorem analyticOnNhd_bilinear (f : E →L[𝕜] F →L[𝕜] G) (s : Set (E × F)) :
     AnalyticOnNhd 𝕜 (fun x : E × F => f x.1 x.2) s :=
   fun x _ ↦ f.analyticAt_bilinear x
+
+protected theorem analyticOn_bilinear (f : E →L[𝕜] F →L[𝕜] G) (s : Set (E × F)) :
+    AnalyticOn 𝕜 (fun x : E × F => f x.1 x.2) s :=
+  (f.analyticOnNhd_bilinear s).analyticOn
 
 end ContinuousLinearMap
 
@@ -141,6 +152,9 @@ theorem analyticOnNhd_id : AnalyticOnNhd 𝕜 (fun x : E ↦ x) s :=
 
 theorem analyticOn_id : AnalyticOn 𝕜 (fun x : E ↦ x) s :=
   fun _ _ ↦ analyticWithinAt_id
+
+@[deprecated (since := "2024-09-26")]
+alias analyticWithinOn_id := analyticOn_id
 
 /-- `fst` is analytic -/
 theorem analyticAt_fst  : AnalyticAt 𝕜 (fun p : E × F ↦ p.fst) p :=
@@ -163,12 +177,18 @@ theorem analyticOnNhd_fst : AnalyticOnNhd 𝕜 (fun p : E × F ↦ p.fst) t :=
 theorem analyticOn_fst : AnalyticOn 𝕜 (fun p : E × F ↦ p.fst) t :=
   fun _ _ ↦ analyticWithinAt_fst
 
+@[deprecated (since := "2024-09-26")]
+alias analyticWithinOn_fst := analyticOn_fst
+
 /-- `snd` is entire -/
 theorem analyticOnNhd_snd : AnalyticOnNhd 𝕜 (fun p : E × F ↦ p.snd) t :=
   fun _ _ ↦ analyticAt_snd
 
 theorem analyticOn_snd : AnalyticOn 𝕜 (fun p : E × F ↦ p.snd) t :=
   fun _ _ ↦ analyticWithinAt_snd
+
+@[deprecated (since := "2024-09-26")]
+alias analyticWithinOn_snd := analyticOn_snd
 
 namespace ContinuousLinearEquiv
 
@@ -185,6 +205,9 @@ protected theorem analyticWithinAt (f : E →L[𝕜] F) (s : Set E) (x : E) : An
 
 protected theorem analyticOn (f : E →L[𝕜] F) (s : Set E) : AnalyticOn 𝕜 f s :=
   fun x _ ↦ f.analyticWithinAt _ x
+
+@[deprecated (since := "2024-09-26")]
+alias analyticWithinOn := ContinuousLinearEquiv.analyticOn
 
 end ContinuousLinearEquiv
 
@@ -203,5 +226,8 @@ protected theorem analyticWithinAt (f : E →L[𝕜] F) (s : Set E) (x : E) : An
 
 protected theorem analyticOn (f : E →L[𝕜] F) (s : Set E) : AnalyticOn 𝕜 f s :=
   fun x _ ↦ f.analyticWithinAt _ x
+
+@[deprecated (since := "2024-09-26")]
+alias analyticWithinOn := LinearIsometryEquiv.analyticOn
 
 end LinearIsometryEquiv

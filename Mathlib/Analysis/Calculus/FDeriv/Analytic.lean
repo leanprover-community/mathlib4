@@ -193,6 +193,9 @@ protected theorem AnalyticOnNhd.fderiv [CompleteSpace F] (h : AnalyticOnNhd 𝕜
     AnalyticOnNhd 𝕜 (fderiv 𝕜 f) s :=
   fun y hy ↦ AnalyticAt.fderiv (h y hy)
 
+@[deprecated (since := "2024-09-26")]
+alias AnalyticOn.fderiv := AnalyticOnNhd.fderiv
+
 /-- If a function is analytic on a set `s`, so are its successive Fréchet derivative. -/
 protected theorem AnalyticOnNhd.iteratedFDeriv [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) (n : ℕ) :
     AnalyticOnNhd 𝕜 (iteratedFDeriv 𝕜 n f) s := by
@@ -333,6 +336,9 @@ theorem PartialHomeomorph.analyticAt_symm (f : PartialHomeomorph E F) {a : F}
   rw [this]
   exact f.analyticAt_symm' (by simp [h0]) h h'
 
+@[deprecated (since := "2024-09-26")]
+alias AnalyticWithinOn.contDiffOn := AnalyticOn.contDiffOn
+
 end fderiv
 
 section deriv
@@ -353,8 +359,12 @@ protected theorem HasFPowerSeriesAt.deriv (h : HasFPowerSeriesAt f p x) :
   h.hasDerivAt.deriv
 
 /-- If a function is analytic on a set `s`, so is its derivative. -/
-theorem AnalyticOnNhd.deriv [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) : AnalyticOnNhd 𝕜 (deriv f) s :=
+theorem AnalyticOnNhd.deriv [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) :
+    AnalyticOnNhd 𝕜 (deriv f) s :=
   (ContinuousLinearMap.apply 𝕜 F (1 : 𝕜)).comp_analyticOnNhd h.fderiv
+
+@[deprecated (since := "2024-09-26")]
+alias AnalyticOn.deriv := AnalyticOnNhd.deriv
 
 /-- If a function is analytic on a set `s`, so are its successive derivatives. -/
 theorem AnalyticOnNhd.iterated_deriv [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) (n : ℕ) :
@@ -362,6 +372,9 @@ theorem AnalyticOnNhd.iterated_deriv [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f
   induction n with
   | zero => exact h
   | succ n IH => simpa only [Function.iterate_succ', Function.comp_apply] using IH.deriv
+
+@[deprecated (since := "2024-09-26")]
+alias AnalyticOn.iterated_deriv := AnalyticOnNhd.iterated_deriv
 
 end deriv
 section fderiv
