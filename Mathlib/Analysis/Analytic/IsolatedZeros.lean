@@ -268,6 +268,6 @@ theorem eq_of_frequently_eq [ConnectedSpace 𝕜] (hf : AnalyticOnNhd 𝕜 f uni
     eqOn_of_preconnected_of_frequently_eq hf hg isPreconnected_univ (mem_univ z₀) hfg (mem_univ x)
 
 @[deprecated (since := "2024-09-26")]
-alias eq_of_frequently_eq := eq_of_frequently_eq
+alias _root_.AnalyticOn.eq_of_frequently_eq := eq_of_frequently_eq
 
 end AnalyticOnNhd
