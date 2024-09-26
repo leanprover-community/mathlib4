@@ -38,7 +38,7 @@ def Imp (T : L.Theory) (φ ψ : L.BoundedFormula α n) : Prop :=
   T ⊨ᵇ φ.imp ψ
 
 @[inherit_doc FirstOrder.Language.Theory.Imp]
-scoped[FirstOrder] notation:25 φ " ⟹[" T "] " ψ => Language.Theory.Imp T φ ψ
+scoped[FirstOrder] notation:51 φ:50 " ⟹[" T "] " ψ:51 => Language.Theory.Imp T φ ψ
 
 namespace Imp
 
@@ -120,24 +120,25 @@ def Iff (T : L.Theory) (φ ψ : L.BoundedFormula α n) : Prop :=
   T ⊨ᵇ φ.iff ψ
 
 @[inherit_doc FirstOrder.Language.Theory.Iff]
-scoped[FirstOrder] notation:25 φ " ⇔[" T "] " ψ => Language.Theory.Iff T φ ψ
+scoped[FirstOrder]
+notation:51 φ:50 " ⇔[" T "] " ψ:51 => Language.Theory.Iff T φ ψ
 
-theorem Iff_iff_imp_and_imp {φ ψ : L.BoundedFormula α n} :
+theorem iff_iff_imp_and_imp {φ ψ : L.BoundedFormula α n} :
     (φ ⇔[T] ψ) ↔ (φ ⟹[T] ψ) ∧ (ψ ⟹[T] φ) := by
   simp only [Imp, ModelsBoundedFormula, BoundedFormula.realize_imp, ← forall_and,
     Iff, BoundedFormula.realize_iff, iff_iff_implies_and_implies]
 
 theorem imp_antisymm {φ ψ : L.BoundedFormula α n} (h₁ : φ ⟹[T] ψ) (h₂ : ψ ⟹[T] φ) :
     φ ⇔[T] ψ :=
-  Iff_iff_imp_and_imp.2 ⟨h₁, h₂⟩
+  iff_iff_imp_and_imp.2 ⟨h₁, h₂⟩
 
 namespace Iff
 
 protected theorem mp {φ ψ : L.BoundedFormula α n} (h : φ ⇔[T] ψ) :
-    φ ⟹[T] ψ := (Iff_iff_imp_and_imp.1 h).1
+    φ ⟹[T] ψ := (iff_iff_imp_and_imp.1 h).1
 
 protected theorem mpr {φ ψ : L.BoundedFormula α n} (h : φ ⇔[T] ψ) :
-    ψ ⟹[T] φ := (Iff_iff_imp_and_imp.1 h).2
+    ψ ⟹[T] φ := (iff_iff_imp_and_imp.1 h).2
 
 @[refl]
 protected theorem refl (φ : L.BoundedFormula α n) : φ ⇔[T] φ :=
