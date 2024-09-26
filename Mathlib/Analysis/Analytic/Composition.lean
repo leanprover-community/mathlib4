@@ -830,10 +830,13 @@ theorem AnalyticWithinAt.comp_of_eq {g : F → G} {f : E → F} {y : F} {x : E} 
   rw [← hy] at hg
   exact hg.comp hf h
 
-lemma AnalyticWithinOn.comp {f : F → G} {g : E → F} {s : Set F}
-    {t : Set E} (hf : AnalyticWithinOn 𝕜 f s) (hg : AnalyticWithinOn 𝕜 g t) (h : Set.MapsTo g t s) :
-    AnalyticWithinOn 𝕜 (f ∘ g) t :=
+lemma AnalyticOn.comp {f : F → G} {g : E → F} {s : Set F}
+    {t : Set E} (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g t) (h : Set.MapsTo g t s) :
+    AnalyticOn 𝕜 (f ∘ g) t :=
   fun x m ↦ (hf _ (h m)).comp (hg x m) h
+
+@[deprecated (since := "2024-09-26")]
+alias AnalyticWithinOn.comp := AnalyticOn.comp
 
 /-- If two functions `g` and `f` are analytic respectively at `f x` and `x`, then `g ∘ f` is
 analytic at `x`. -/
@@ -862,18 +865,25 @@ theorem AnalyticAt.comp_analyticWithinAt_of_eq {g : F → G} {f : E → F} {x : 
 
 /-- If two functions `g` and `f` are analytic respectively on `s.image f` and `s`, then `g ∘ f` is
 analytic on `s`. -/
-theorem AnalyticOn.comp' {s : Set E} {g : F → G} {f : E → F} (hg : AnalyticOn 𝕜 g (s.image f))
-    (hf : AnalyticOn 𝕜 f s) : AnalyticOn 𝕜 (g ∘ f) s :=
+theorem AnalyticOnNhd.comp' {s : Set E} {g : F → G} {f : E → F} (hg : AnalyticOnNhd 𝕜 g (s.image f))
+    (hf : AnalyticOnNhd 𝕜 f s) : AnalyticOnNhd 𝕜 (g ∘ f) s :=
   fun z hz => (hg (f z) (Set.mem_image_of_mem f hz)).comp (hf z hz)
 
-theorem AnalyticOn.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F} (hg : AnalyticOn 𝕜 g t)
-    (hf : AnalyticOn 𝕜 f s) (st : Set.MapsTo f s t) : AnalyticOn 𝕜 (g ∘ f) s :=
+@[deprecated (since := "2024-09-26")]
+alias AnalyticOn.comp' := AnalyticOnNhd.comp'
+
+theorem AnalyticOnNhd.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F}
+    (hg : AnalyticOnNhd 𝕜 g t) (hf : AnalyticOnNhd 𝕜 f s) (st : Set.MapsTo f s t) :
+    AnalyticOnNhd 𝕜 (g ∘ f) s :=
   comp' (mono hg (Set.mapsTo'.mp st)) hf
 
-lemma AnalyticOn.comp_analyticWithinOn {f : F → G} {g : E → F} {s : Set F}
-    {t : Set E} (hf : AnalyticOn 𝕜 f s) (hg : AnalyticWithinOn 𝕜 g t) (h : Set.MapsTo g t s) :
-    AnalyticWithinOn 𝕜 (f ∘ g) t :=
+lemma AnalyticOnNhd.comp_analyticOn {f : F → G} {g : E → F} {s : Set F}
+    {t : Set E} (hf : AnalyticOnNhd 𝕜 f s) (hg : AnalyticOn 𝕜 g t) (h : Set.MapsTo g t s) :
+    AnalyticOn 𝕜 (f ∘ g) t :=
   fun x m ↦ (hf _ (h m)).comp_analyticWithinAt (hg x m)
+
+@[deprecated (since := "2024-09-26")]
+alias AnalyticOn.comp_analyticWithinOn := AnalyticOnNhd.comp_analyticOn
 
 /-!
 ### Associativity of the composition of formal multilinear series

@@ -318,9 +318,12 @@ theorem HasFPowerSeriesOnBall.analyticAt_of_mem (hf : HasFPowerSeriesOnBall f p 
   rw [add_sub_cancel] at this
   exact this.analyticAt
 
-theorem HasFPowerSeriesOnBall.analyticOn (hf : HasFPowerSeriesOnBall f p x r) :
-    AnalyticOn 𝕜 f (EMetric.ball x r) :=
+theorem HasFPowerSeriesOnBall.analyticOnNhd (hf : HasFPowerSeriesOnBall f p x r) :
+    AnalyticOnNhd 𝕜 f (EMetric.ball x r) :=
   fun _y hy => hf.analyticAt_of_mem hy
+
+@[deprecated (since := "2024-09-26")]
+alias HasFPowerSeriesOnBall.analyticOn := HasFPowerSeriesOnBall.analyticOnNhd
 
 variable (𝕜 f) in
 /-- For any function `f` from a normed vector space to a Banach space, the set of points `x` such
@@ -334,13 +337,19 @@ theorem AnalyticAt.eventually_analyticAt (h : AnalyticAt 𝕜 f x) :
     ∀ᶠ y in 𝓝 x, AnalyticAt 𝕜 f y :=
   (isOpen_analyticAt 𝕜 f).mem_nhds h
 
-theorem AnalyticAt.exists_mem_nhds_analyticOn (h : AnalyticAt 𝕜 f x) :
-    ∃ s ∈ 𝓝 x, AnalyticOn 𝕜 f s :=
+theorem AnalyticAt.exists_mem_nhds_analyticOnNhd (h : AnalyticAt 𝕜 f x) :
+    ∃ s ∈ 𝓝 x, AnalyticOnNhd 𝕜 f s :=
   h.eventually_analyticAt.exists_mem
 
+@[deprecated (since := "2024-09-26")]
+alias AnalyticAt.exists_mem_nhds_analyticOn := AnalyticAt.exists_mem_nhds_analyticOnNhd
+
 /-- If we're analytic at a point, we're analytic in a nonempty ball -/
-theorem AnalyticAt.exists_ball_analyticOn (h : AnalyticAt 𝕜 f x) :
-    ∃ r : ℝ, 0 < r ∧ AnalyticOn 𝕜 f (Metric.ball x r) :=
+theorem AnalyticAt.exists_ball_analyticOnNhd (h : AnalyticAt 𝕜 f x) :
+    ∃ r : ℝ, 0 < r ∧ AnalyticOnNhd 𝕜 f (Metric.ball x r) :=
   Metric.isOpen_iff.mp (isOpen_analyticAt _ _) _ h
+
+@[deprecated (since := "2024-09-26")]
+alias AnalyticAt.exists_ball_analyticOn := AnalyticAt.exists_ball_analyticOnNhd
 
 end
