@@ -28,7 +28,7 @@ relations with prime and perfect numbers.
 
 * `Nat.deficient_or_perfect_or_abundant`: A positive natural number is either deficient,
   perfect, or abundant.
-* `Prime.deficient`: All prime natural numbers are deficient.
+* `Nat.Prime.deficient`: All prime natural numbers are deficient.
 * `Nat.infinite_deficient`: There are infinitely many deficient numbers.
 * `Prime.deficient_pow`: Any natural number power of a prime is deficient.
 
