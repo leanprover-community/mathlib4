@@ -27,6 +27,7 @@ open scoped ENNReal NNReal
 open MeasureTheory Real Set Filter Topology
 
 namespace ProbabilityTheory
+variable {t r x : ℝ}
 
 section ParetoPDF
 
@@ -41,15 +42,15 @@ noncomputable def paretoPDF (t r x : ℝ) : ℝ≥0∞ :=
 lemma paretoPDF_eq (t r x : ℝ) :
     paretoPDF t r x = ENNReal.ofReal (if t ≤ x then r * t ^ r * x ^ (-(r + 1)) else 0) := rfl
 
-lemma paretoPDF_of_lt {t r x : ℝ} (hx : x < t) : paretoPDF t r x = 0 := by
+lemma paretoPDF_of_lt (hx : x < t) : paretoPDF t r x = 0 := by
   simp only [paretoPDF_eq, if_neg (not_le.mpr hx), ENNReal.ofReal_zero]
 
-lemma paretoPDF_of_le {t r x : ℝ} (hx : t ≤ x) :
+lemma paretoPDF_of_le (hx : t ≤ x) :
     paretoPDF t r x = ENNReal.ofReal (r * t ^ r * x ^ (-(r + 1))) := by
   simp only [paretoPDF_eq, if_pos hx]
 
 /-- The Lebesgue integral of the Pareto pdf over reals `≤ t` equals `0`. -/
-lemma lintegral_paretoPDF_of_le {t r x : ℝ} (hx : x ≤ t) :
+lemma lintegral_paretoPDF_of_le (hx : x ≤ t) :
     ∫⁻ y in Iio x, paretoPDF t r y = 0 := by
   rw [setLIntegral_congr_fun (g := fun _ ↦ 0) measurableSet_Iio]
   · rw [lintegral_zero, ← ENNReal.ofReal_zero]
@@ -69,14 +70,14 @@ lemma stronglyMeasurable_paretoPDFReal (t r : ℝ) :
   (measurable_paretoPDFReal t r).stronglyMeasurable
 
 /-- The Pareto pdf is positive for all reals `>= t`. -/
-lemma paretoPDFReal_pos {t r x : ℝ} (ht : 0 < t) (hr : 0 < r) (hx : t ≤ x) :
+lemma paretoPDFReal_pos (ht : 0 < t) (hr : 0 < r) (hx : t ≤ x) :
     0 < paretoPDFReal t r x := by
   rw [paretoPDFReal, if_pos hx]
   have _ : 0 < x := by linarith
   positivity
 
 /-- The Pareto pdf is nonnegative. -/
-lemma paretoPDFReal_nonneg {t r : ℝ} (ht : 0 ≤ t) (hr : 0 ≤ r) (x : ℝ) :
+lemma paretoPDFReal_nonneg (ht : 0 ≤ t) (hr : 0 ≤ r) (x : ℝ) :
     0 ≤ paretoPDFReal t r x := by
   unfold paretoPDFReal
   split_ifs with h
@@ -93,7 +94,7 @@ open Measure
 
 /-- The pdf of the Pareto distribution integrates to `1`. -/
 @[simp]
-lemma lintegral_paretoPDF_eq_one {t r : ℝ} (ht : 0 < t) (hr : 0 < r) :
+lemma lintegral_paretoPDF_eq_one (ht : 0 < t) (hr : 0 < r) :
     ∫⁻ x, paretoPDF t r x = 1 := by
   have leftSide : ∫⁻ x in Iio t, paretoPDF t r x = 0 := lintegral_paretoPDF_of_le (le_refl t)
   have rightSide : ∫⁻ x in Ici t, paretoPDF t r x =
@@ -122,28 +123,25 @@ open MeasureTheory
 noncomputable def paretoMeasure (t r : ℝ) : Measure ℝ :=
   volume.withDensity (paretoPDF t r)
 
-lemma isProbabilityMeasure_paretoMeasure {t r : ℝ} (ht : 0 < t) (hr : 0 < r) :
+lemma isProbabilityMeasure_paretoMeasure (ht : 0 < t) (hr : 0 < r) :
     IsProbabilityMeasure (paretoMeasure t r) where
   measure_univ := by simp [paretoMeasure, lintegral_paretoPDF_eq_one ht hr]
 
 section ParetoCDF
 
-/-- CDF of the Pareto distribution. -/
-noncomputable def paretoCDFReal (t r : ℝ) : StieltjesFunction :=
-  cdf (paretoMeasure t r)
-
-lemma paretoCDFReal_eq_integral {t r : ℝ} (ht : 0 < t) (hr : 0 < r) (x : ℝ) :
-    paretoCDFReal t r x = ∫ x in Iic x, paretoPDFReal t r x := by
+/-- CDF of the Pareto distribution equals the integral of the PDF. -/
+lemma paretoCDFReal_eq_integral (ht : 0 < t) (hr : 0 < r) (x : ℝ) :
+    cdf (paretoMeasure t r) x = ∫ x in Iic x, paretoPDFReal t r x := by
   have : IsProbabilityMeasure (paretoMeasure t r) := isProbabilityMeasure_paretoMeasure ht hr
-  rw [paretoCDFReal, cdf_eq_toReal, paretoMeasure, withDensity_apply _ measurableSet_Iic]
+  rw [cdf_eq_toReal, paretoMeasure, withDensity_apply _ measurableSet_Iic]
   refine (integral_eq_lintegral_of_nonneg_ae ?_ ?_).symm
   · exact ae_of_all _ fun _ ↦ by simp only [Pi.zero_apply, paretoPDFReal_nonneg ht.le hr.le]
   · exact (measurable_paretoPDFReal t r).aestronglyMeasurable.restrict
 
-lemma paretoCDFReal_eq_lintegral {t r : ℝ} (ht : 0 < t) (hr : 0 < r) (x : ℝ) :
-    paretoCDFReal t r x = ENNReal.toReal (∫⁻ x in Iic x, paretoPDF t r x) := by
+lemma paretoCDFReal_eq_lintegral (ht : 0 < t) (hr : 0 < r) (x : ℝ) :
+    cdf (paretoMeasure t r) x = ENNReal.toReal (∫⁻ x in Iic x, paretoPDF t r x) := by
   have : IsProbabilityMeasure (paretoMeasure t r) := isProbabilityMeasure_paretoMeasure ht hr
-  rw [paretoCDFReal, cdf_eq_toReal, paretoMeasure, withDensity_apply _ measurableSet_Iic]
+  rw [cdf_eq_toReal, paretoMeasure, withDensity_apply _ measurableSet_Iic]
 
 end ParetoCDF
 end ProbabilityTheory
