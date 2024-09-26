@@ -1158,7 +1158,7 @@ def sigmaEquivSigmaPi (n : ℕ) :
       · intro i
         dsimp [Composition.sigmaCompositionAux]
         rw [getElem_of_eq (splitWrtComposition_join _ _ _)]
-        · simp only [getElem_ofFn]
+        · simp only [List.getElem_ofFn]
         · simp only [map_ofFn]
           rfl
       · congr
