@@ -104,16 +104,16 @@ def liftToFinsetEvaluationIso [HasFiniteCoproducts C] (I : Finset (Discrete α))
   NatIso.ofComponents (fun _ => HasColimit.isoOfNatIso (Discrete.natIso fun _ => Iso.refl _))
     (fun _ => by dsimp; ext; simp)
 
-variable [HasZeroMorphisms C] [HasFiniteBiproducts C]
+variable [HasZeroMorphisms C] [HasFiniteBiproducts C] [HasFiniteLimits C]
 
 instance : PreservesFiniteLimits (liftToFinset C α) :=
   preservesFiniteLimitsOfEvaluation _ fun I =>
     let colimIso : colim (J := Discrete I) (C := C) ≅ lim := sorry
     letI : PreservesFiniteLimits (colim (J := Discrete I) (C := C)) :=
       preservesFiniteLimitsOfNatIso colimIso.symm
-    letI : PreservesFiniteLimits ((whiskeringLeft (Discrete { x // x ∈ I }) (Discrete α) C).obj
-        (Discrete.functor fun x ↦ ↑x)) := by
-      sorry
+    letI : PreservesFiniteLimits ((whiskeringLeft (Discrete I) (Discrete α) C).obj
+        (Discrete.functor fun x ↦ ↑x)) :=
+      ⟨fun J _ _ => whiskeringLeftPreservesLimitsOfShape J _⟩
     letI : PreservesFiniteLimits ((whiskeringLeft (Discrete I) (Discrete α) C).obj
         (Discrete.functor (·.val)) ⋙ colim) :=
       compPreservesFiniteLimits _ _
