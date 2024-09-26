@@ -353,7 +353,7 @@ theorem realize_relabel {m n : ℕ} {φ : L.BoundedFormula α n} {g : α → β 
     {xs : Fin (m + n) → M} :
     (φ.relabel g).Realize v xs ↔
       φ.Realize (Sum.elim v (xs ∘ Fin.castAdd n) ∘ g) (xs ∘ Fin.natAdd m) := by
-  rw [relabel, realize_mapTermRel_add_castLe] <;> intros <;> simp
+  apply realize_mapTermRel_add_castLe <;> simp
 
 theorem realize_liftAt {n n' m : ℕ} {φ : L.BoundedFormula α n} {v : α → M} {xs : Fin (n + n') → M}
     (hmn : m + n' ≤ n + 1) :

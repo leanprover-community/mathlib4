@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Set.Defs
-import Mathlib.Init.Logic
 import Mathlib.Logic.Basic
 import Mathlib.Logic.ExistsUnique
 import Mathlib.Logic.Nonempty
@@ -330,7 +329,7 @@ theorem LeftInverse.eq_rightInverse {f : α → β} {g₁ g₂ : β → α} (h�
     (h₂ : RightInverse g₂ f) : g₁ = g₂ :=
   calc
     g₁ = g₁ ∘ f ∘ g₂ := by rw [h₂.comp_eq_id, comp_id]
-     _ = g₂ := by rw [← comp.assoc, h₁.comp_eq_id, id_comp]
+     _ = g₂ := by rw [← comp_assoc, h₁.comp_eq_id, id_comp]
 
 attribute [local instance] Classical.propDecidable
 
@@ -655,6 +654,10 @@ lemma FactorsThrough.extend_comp {g : α → γ} (e' : β → γ) (hf : FactorsT
   funext fun a => hf.extend_apply e' a
 
 @[simp]
+lemma extend_const (f : α → β) (c : γ) : extend f (fun _ ↦ c) (fun _ ↦ c) = fun _ ↦ c :=
+  funext fun _ ↦ ite_id _
+
+@[simp]
 theorem extend_comp (hf : Injective f) (g : α → γ) (e' : β → γ) : extend f g e' ∘ f = g :=
   funext fun a ↦ hf.extend_apply g e' a
 
@@ -669,7 +672,7 @@ theorem Injective.surjective_comp_right [Nonempty γ] (hf : Injective f) :
 theorem Bijective.comp_right (hf : Bijective f) : Bijective fun g : β → γ ↦ g ∘ f :=
   ⟨hf.surjective.injective_comp_right, fun g ↦
     ⟨g ∘ surjInv hf.surjective,
-     by simp only [comp.assoc g _ f, (leftInverse_surjInv hf).comp_eq_id, comp_id]⟩⟩
+     by simp only [comp_assoc g _ f, (leftInverse_surjInv hf).comp_eq_id, comp_id]⟩⟩
 
 end Extend
 

@@ -13,6 +13,7 @@ require "leanprover-community" / "aesop" @ git "master"
 require "leanprover-community" / "proofwidgets" @ git "v0.0.42"
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
+  from git "https://github.com/leanprover-community/LeanSearchClient" @ "main"
 
 /-!
 ## Options for building mathlib
@@ -24,6 +25,7 @@ require "leanprover-community" / "LeanSearchClient" @ git "main"
   (as well as `Archive`, `Counterexamples` and `test`).
 -/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
+  ⟨`linter.docPrime, true⟩,
   ⟨`linter.hashCommand, true⟩,
   ⟨`linter.oldObtain, true,⟩,
   ⟨`linter.refine, true⟩,
