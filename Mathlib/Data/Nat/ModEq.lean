@@ -438,7 +438,6 @@ theorem odd_mul_odd {n m : ℕ} : n % 2 = 1 → m % 2 = 1 → n * m % 2 = 1 := b
 
 theorem odd_mul_odd_div_two {m n : ℕ} (hm1 : m % 2 = 1) (hn1 : n % 2 = 1) :
     m * n / 2 = m * (n / 2) + m / 2 :=
-  have hm0 : 0 < m := Nat.pos_of_ne_zero fun h => by simp_all
   have hn0 : 0 < n := Nat.pos_of_ne_zero fun h => by simp_all
   mul_right_injective₀ two_ne_zero <| by
     dsimp
