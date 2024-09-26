@@ -237,7 +237,7 @@ end MeromorphicAt
 /-- Meromorphy of a function on a set. -/
 def MeromorphicOn (f : 𝕜 → E) (U : Set 𝕜) : Prop := ∀ x ∈ U, MeromorphicAt f x
 
-lemma AnalyticOn.meromorphicOn {f : 𝕜 → E} {U : Set 𝕜} (hf : AnalyticOn 𝕜 f U) :
+lemma AnalyticOnNhd.meromorphicOn {f : 𝕜 → E} {U : Set 𝕜} (hf : AnalyticOnNhd 𝕜 f U) :
     MeromorphicOn f U :=
   fun x hx ↦ (hf x hx).meromorphicAt
 

@@ -72,12 +72,12 @@ theorem iteratedFDeriv_zero_fun {n : ℕ} : (iteratedFDeriv 𝕜 n fun _ : E ↦
     iteratedFDerivWithin_zero_fun uniqueDiffOn_univ (mem_univ x)
 
 theorem contDiff_zero_fun : ContDiff 𝕜 n fun _ : E => (0 : F) :=
-  analyticOn_const.contDiff
+  analyticOnNhd_const.contDiff
 
 /-- Constants are `C^∞`.
 -/
 theorem contDiff_const {c : F} : ContDiff 𝕜 n fun _ : E => c :=
-  analyticOn_const.contDiff
+  analyticOnNhd_const.contDiff
 
 theorem contDiffOn_const {c : F} {s : Set E} : ContDiffOn 𝕜 n (fun _ : E => c) s :=
   contDiff_const.contDiffOn
@@ -134,7 +134,7 @@ theorem iteratedFDeriv_const_of_ne {n : ℕ} (hn : n ≠ 0) (c : F) :
 /-- Unbundled bounded linear functions are `C^n`.
 -/
 theorem IsBoundedLinearMap.contDiff (hf : IsBoundedLinearMap 𝕜 f) : ContDiff 𝕜 n f :=
-  (ContinuousLinearMap.analyticOn hf.toContinuousLinearMap univ).contDiff
+  (ContinuousLinearMap.analyticOnNhd hf.toContinuousLinearMap univ).contDiff
 
 theorem ContinuousLinearMap.contDiff (f : E →L[𝕜] F) : ContDiff 𝕜 n f :=
   f.isBoundedLinearMap.contDiff
@@ -165,7 +165,7 @@ theorem contDiffOn_id {s} : ContDiffOn 𝕜 n (id : E → E) s :=
 /-- Bilinear functions are `C^n`.
 -/
 theorem IsBoundedBilinearMap.contDiff (hb : IsBoundedBilinearMap 𝕜 b) : ContDiff 𝕜 n b :=
-  (hb.toContinuousLinearMap.analyticOn_bilinear _).contDiff
+  (hb.toContinuousLinearMap.analyticOnNhd_bilinear _).contDiff
 
 /-- If `f` admits a Taylor series `p` in a set `s`, and `g` is linear, then `g ∘ f` admits a Taylor
 series whose `k`-th term is given by `g ∘ (p k)`. -/
@@ -186,11 +186,11 @@ theorem ContDiffWithinAt.continuousLinearMap_comp (g : F →L[𝕜] G)
   | ω =>
     obtain ⟨u, hu, p, hp, h'p⟩ := hf
     refine ⟨u, hu, _, hp.continuousLinearMap_comp g, fun i ↦ ?_⟩
-    change AnalyticWithinOn 𝕜
+    change AnalyticOn 𝕜
       (fun x ↦ (ContinuousLinearMap.compContinuousMultilinearMapL 𝕜
       (fun _ : Fin i ↦ E) F G g) (p x i)) u
-    apply AnalyticOn.comp_analyticWithinOn _ (h'p i) (Set.mapsTo_univ _ _)
-    exact ContinuousLinearMap.analyticOn _ _
+    apply AnalyticOnNhd.comp_analyticOn _ (h'p i) (Set.mapsTo_univ _ _)
+    exact ContinuousLinearMap.analyticOnNhd _ _
   | (n : ℕ∞) =>
     intro m hm
     rcases hf m hm with ⟨u, hu, p, hp⟩
@@ -353,11 +353,11 @@ theorem ContDiffWithinAt.comp_continuousLinearMap {x : G} (g : G →L[𝕜] E)
     · refine g.continuous.continuousWithinAt.tendsto_nhdsWithin ?_ hu
       exact (mapsTo_singleton.2 <| mem_singleton _).union_union (mapsTo_preimage _ _)
     · intro i
-      change AnalyticWithinOn 𝕜 (fun x ↦
+      change AnalyticOn 𝕜 (fun x ↦
         ContinuousMultilinearMap.compContinuousLinearMapL (fun _ ↦ g) (p (g x) i)) (⇑g ⁻¹' u)
-      apply AnalyticWithinOn.comp _ _ (Set.mapsTo_univ _ _)
-      · exact ContinuousLinearEquiv.analyticWithinOn _ _
-      · exact (h'p i).comp (g.analyticWithinOn _) (mapsTo_preimage _ _)
+      apply AnalyticOn.comp _ _ (Set.mapsTo_univ _ _)
+      · exact ContinuousLinearEquiv.analyticOn _ _
+      · exact (h'p i).comp (g.analyticOn _) (mapsTo_preimage _ _)
   | (n : ℕ∞) =>
     intro m hm
     rcases hf m hm with ⟨u, hu, p, hp⟩
@@ -490,9 +490,9 @@ theorem ContDiffWithinAt.prod {s : Set E} {f : E → F} {g : E → G} (hf : Cont
     obtain ⟨v, hv, q, hq, h'q⟩ := hg
     refine ⟨u ∩ v, Filter.inter_mem hu hv, _,
       (hp.mono inter_subset_left).prod (hq.mono inter_subset_right), fun i ↦ ?_⟩
-    change AnalyticWithinOn 𝕜 (fun x ↦ ContinuousMultilinearMap.prodL _ _ _ _ (p x i, q x i))
+    change AnalyticOn 𝕜 (fun x ↦ ContinuousMultilinearMap.prodL _ _ _ _ (p x i, q x i))
       (u ∩ v)
-    apply AnalyticOn.comp_analyticWithinOn (LinearIsometryEquiv.analyticOn _ _) _
+    apply AnalyticOnNhd.comp_analyticOn (LinearIsometryEquiv.analyticOnNhd _ _) _
       (Set.mapsTo_univ _ _)
     exact ((h'p i).mono inter_subset_left).prod ((h'q i).mono inter_subset_right)
   | (n : ℕ∞) =>
@@ -568,15 +568,15 @@ theorem ContDiffWithinAt.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F
       simp only [image_insert_eq]
       apply insert_subset_insert
       exact image_subset_iff.mpr st
-    · have : AnalyticWithinOn 𝕜 f w := by
-        have : AnalyticWithinOn 𝕜 (fun y ↦ (continuousMultilinearCurryFin0 𝕜 E F).symm (f y)) w :=
+    · have : AnalyticOn 𝕜 f w := by
+        have : AnalyticOn 𝕜 (fun y ↦ (continuousMultilinearCurryFin0 𝕜 E F).symm (f y)) w :=
           ((h'p 0).mono wu).congr  fun y hy ↦ (hp.zero_eq' (wu hy)).symm
-        have : AnalyticWithinOn 𝕜 (fun y ↦ (continuousMultilinearCurryFin0 𝕜 E F)
+        have : AnalyticOn 𝕜 (fun y ↦ (continuousMultilinearCurryFin0 𝕜 E F)
             ((continuousMultilinearCurryFin0 𝕜 E F).symm (f y))) w :=
-          AnalyticOn.comp_analyticWithinOn (LinearIsometryEquiv.analyticOn _ _ ) this
+          AnalyticOnNhd.comp_analyticOn (LinearIsometryEquiv.analyticOnNhd _ _ ) this
           (mapsTo_univ _ _)
         simpa using this
-      exact analyticWithinOn_taylorComp h'q (fun n ↦ (h'p n).mono wu) this wv
+      exact analyticOn_taylorComp h'q (fun n ↦ (h'p n).mono wu) this wv
   | (n : ℕ∞) =>
     intro m hm
     rcases hf m hm with ⟨u, hu, p, hp⟩
@@ -1076,9 +1076,9 @@ theorem contDiffWithinAt_pi :
       hasFTaylorSeriesUpToOn_pi.2 fun i => (hp i).mono <| iInter_subset _ _, fun m ↦ ?_⟩
     set L : (∀ i, E[×m]→L[𝕜] F' i) ≃ₗᵢ[𝕜] E[×m]→L[𝕜] ∀ i, F' i :=
       ContinuousMultilinearMap.piₗᵢ _ _
-    change AnalyticWithinOn 𝕜 (fun x ↦ L (fun i ↦ p i x m)) (⋂ i, u i)
-    apply (L.analyticOn univ).comp_analyticWithinOn ?_ (mapsTo_univ _ _)
-    exact AnalyticWithinOn.pi (fun i ↦ (h'p i m).mono (iInter_subset _ _))
+    change AnalyticOn 𝕜 (fun x ↦ L (fun i ↦ p i x m)) (⋂ i, u i)
+    apply (L.analyticOnNhd univ).comp_analyticOn ?_ (mapsTo_univ _ _)
+    exact AnalyticOn.pi (fun i ↦ (h'p i m).mono (iInter_subset _ _))
   | (n : ℕ∞) =>
     intro m hm
     choose u hux p hp using fun i => h i m hm
@@ -1558,7 +1558,7 @@ open NormedRing ContinuousLinearMap Ring
 invertible element, as it is analytic. -/
 theorem contDiffAt_ring_inverse [HasSummableGeomSeries R] (x : Rˣ) :
     ContDiffAt 𝕜 n Ring.inverse (x : R) := by
-  have := AnalyticOn.contDiffOn (analyticOn_inverse (𝕜 := 𝕜) (A := R)) (n := n)
+  have := AnalyticOnNhd.contDiffOn (analyticOnNhd_inverse (𝕜 := 𝕜) (A := R)) (n := n)
     Units.isOpen.uniqueDiffOn x x.isUnit
   exact this.contDiffAt (Units.isOpen.mem_nhds x.isUnit)
 
@@ -1783,7 +1783,7 @@ open ContinuousLinearMap (smulRight)
 differentiable there, and its derivative (formulated with `derivWithin`) is `C^n`. -/
 theorem contDiffOn_succ_iff_derivWithin (hs : UniqueDiffOn 𝕜 s₂) :
     ContDiffOn 𝕜 (n + 1) f₂ s₂ ↔
-      DifferentiableOn 𝕜 f₂ s₂ ∧ (n = ω → AnalyticWithinOn 𝕜 f₂ s₂) ∧
+      DifferentiableOn 𝕜 f₂ s₂ ∧ (n = ω → AnalyticOn 𝕜 f₂ s₂) ∧
         ContDiffOn 𝕜 n (derivWithin f₂ s₂) s₂ := by
   rw [contDiffOn_succ_iff_fderivWithin hs, and_congr_right_iff]
   intro _
@@ -1808,7 +1808,7 @@ theorem contDiffOn_succ_iff_derivWithin (hs : UniqueDiffOn 𝕜 s₂) :
 differentiable there, and its derivative (formulated with `deriv`) is `C^n`. -/
 theorem contDiffOn_succ_iff_deriv_of_isOpen (hs : IsOpen s₂) :
     ContDiffOn 𝕜 (n + 1) f₂ s₂ ↔
-      DifferentiableOn 𝕜 f₂ s₂ ∧ (n = ω → AnalyticWithinOn 𝕜 f₂ s₂) ∧
+      DifferentiableOn 𝕜 f₂ s₂ ∧ (n = ω → AnalyticOn 𝕜 f₂ s₂) ∧
         ContDiffOn 𝕜 n (deriv f₂) s₂ := by
   rw [contDiffOn_succ_iff_derivWithin hs.uniqueDiffOn]
   exact Iff.rfl.and (Iff.rfl.and (contDiffOn_congr fun _ => derivWithin_of_isOpen hs))
@@ -1834,7 +1834,7 @@ theorem ContDiffOn.continuousOn_deriv_of_isOpen (h : ContDiffOn 𝕜 n f₂ s₂
 /-- A function is `C^(n + 1)` if and only if it is differentiable,
   and its derivative (formulated in terms of `deriv`) is `C^n`. -/
 theorem contDiff_succ_iff_deriv :
-    ContDiff 𝕜 (n + 1) f₂ ↔ Differentiable 𝕜 f₂ ∧ (n = ω → AnalyticWithinOn 𝕜 f₂ univ) ∧
+    ContDiff 𝕜 (n + 1) f₂ ↔ Differentiable 𝕜 f₂ ∧ (n = ω → AnalyticOn 𝕜 f₂ univ) ∧
       ContDiff 𝕜 n (deriv f₂) := by
   simp only [← contDiffOn_univ, contDiffOn_succ_iff_deriv_of_isOpen, isOpen_univ,
     differentiableOn_univ]
@@ -1899,9 +1899,9 @@ theorem ContDiffWithinAt.restrict_scalars (h : ContDiffWithinAt 𝕜' n f s x) :
   | ω =>
     obtain ⟨u, u_mem, p', hp', Hp'⟩ := h
     refine ⟨u, u_mem, _, hp'.restrictScalars _, fun i ↦ ?_⟩
-    change AnalyticWithinOn 𝕜 (fun x ↦ ContinuousMultilinearMap.restrictScalarsLinear 𝕜 (p' x i)) u
-    apply AnalyticOn.comp_analyticWithinOn _ (Hp' i).restrictScalars (Set.mapsTo_univ _ _)
-    exact ContinuousLinearMap.analyticOn _ _
+    change AnalyticOn 𝕜 (fun x ↦ ContinuousMultilinearMap.restrictScalarsLinear 𝕜 (p' x i)) u
+    apply AnalyticOnNhd.comp_analyticOn _ (Hp' i).restrictScalars (Set.mapsTo_univ _ _)
+    exact ContinuousLinearMap.analyticOnNhd _ _
   | (n : ℕ∞) =>
     intro m hm
     rcases h m hm with ⟨u, u_mem, p', hp'⟩

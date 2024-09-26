@@ -34,20 +34,20 @@ variable {E : Type} [NormedAddCommGroup E] [NormedSpace ℂ E]
 variable {f g : E → ℂ} {z : ℂ} {x : E} {s : Set E}
 
 /-- `exp` is entire -/
-theorem analyticOn_cexp : AnalyticOn ℂ exp univ := by
+theorem analyticOnNhd_cexp : AnalyticOnNhd ℂ exp univ := by
   rw [Complex.exp_eq_exp_ℂ]
   exact fun x _ ↦ NormedSpace.exp_analytic x
 
 /-- `exp` is analytic at any point -/
 theorem analyticAt_cexp : AnalyticAt ℂ exp z :=
-  analyticOn_cexp z (mem_univ _)
+  analyticOnNhd_cexp z (mem_univ _)
 
 /-- `exp ∘ f` is analytic -/
 theorem AnalyticAt.cexp (fa : AnalyticAt ℂ f x) : AnalyticAt ℂ (fun z ↦ exp (f z)) x :=
   analyticAt_cexp.comp fa
 
 /-- `exp ∘ f` is analytic -/
-theorem AnalyticOn.cexp (fs : AnalyticOn ℂ f s) : AnalyticOn ℂ (fun z ↦ exp (f z)) s :=
+theorem AnalyticOnNhd.cexp (fs : AnalyticOnNhd ℂ f s) : AnalyticOnNhd ℂ (fun z ↦ exp (f z)) s :=
   fun z n ↦ analyticAt_cexp.comp (fs z n)
 
 end
@@ -81,7 +81,7 @@ theorem iter_deriv_exp : ∀ n : ℕ, deriv^[n] exp = exp
   | n + 1 => by rw [iterate_succ_apply, deriv_exp, iter_deriv_exp n]
 
 theorem contDiff_exp {n : WithTop ℕ∞} : ContDiff 𝕜 n exp :=
-  analyticOn_cexp.restrictScalars.contDiff
+  analyticOnNhd_cexp.restrictScalars.contDiff
 
 theorem hasStrictDerivAt_exp (x : ℂ) : HasStrictDerivAt exp (exp x) x :=
   contDiff_exp.contDiffAt.hasStrictDerivAt' (hasDerivAt_exp x) le_rfl
@@ -182,20 +182,20 @@ namespace Real
 variable {x y z : ℝ} {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ}
 
 /-- `exp` is entire -/
-theorem analyticOn_rexp : AnalyticOn ℝ exp univ := by
+theorem analyticOnNhd_rexp : AnalyticOnNhd ℝ exp univ := by
   rw [Real.exp_eq_exp_ℝ]
   exact fun x _ ↦ NormedSpace.exp_analytic x
 
 /-- `exp` is analytic at any point -/
 theorem analyticAt_rexp : AnalyticAt ℝ exp x :=
-  analyticOn_rexp x (mem_univ _)
+  analyticOnNhd_rexp x (mem_univ _)
 
 /-- `exp ∘ f` is analytic -/
 theorem AnalyticAt.rexp {x : E} (fa : AnalyticAt ℝ f x) : AnalyticAt ℝ (fun z ↦ exp (f z)) x :=
   analyticAt_rexp.comp fa
 
 /-- `exp ∘ f` is analytic -/
-theorem AnalyticOn.cexp {s : Set E} (fs : AnalyticOn ℝ f s) : AnalyticOn ℝ (fun z ↦ exp (f z)) s :=
+theorem AnalyticOnNhd.cexp {s : Set E} (fs : AnalyticOnNhd ℝ f s) : AnalyticOnNhd ℝ (fun z ↦ exp (f z)) s :=
   fun z n ↦ analyticAt_rexp.comp (fs z n)
 
 theorem hasStrictDerivAt_exp (x : ℝ) : HasStrictDerivAt exp (exp x) x :=

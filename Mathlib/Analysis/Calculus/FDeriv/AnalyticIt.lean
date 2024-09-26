@@ -45,11 +45,11 @@ theorem CPolynomialOn.contDiffOn (h : CPolynomialOn 𝕜 f s) {n : WithTop ℕ�
     ContDiffOn 𝕜 n f s := by
   let t := { x | CPolynomialAt 𝕜 f x }
   suffices ContDiffOn 𝕜 n f t from this.mono h
-  suffices AnalyticOn 𝕜 f t by
+  suffices AnalyticOnNhd 𝕜 f t by
     have t_open : IsOpen t := isOpen_cPolynomialAt 𝕜 f
-    exact AnalyticOn.contDiffOn this t_open.uniqueDiffOn
+    exact AnalyticOnNhd.contDiffOn this t_open.uniqueDiffOn
   have H : CPolynomialOn 𝕜 f t := fun _x hx ↦ hx
-  exact H.analyticOn
+  exact H.analyticOnNhd
 
 theorem CPolynomialAt.contDiffAt (h : CPolynomialAt 𝕜 f x) {n : WithTop ℕ∞} :
     ContDiffAt 𝕜 n f x :=

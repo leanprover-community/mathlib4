@@ -844,19 +844,19 @@ protected noncomputable def taylorComp
 
 end FormalMultilinearSeries
 
-theorem analyticWithinOn_taylorComp
-    (hq : ∀ (n : ℕ), AnalyticWithinOn 𝕜 (fun x ↦ q x n) t)
-    (hp : ∀ n, AnalyticWithinOn 𝕜 (fun x ↦ p x n) s) {f : E → F}
-    (hf : AnalyticWithinOn 𝕜 f s) (h : MapsTo f s t) (n : ℕ) :
-    AnalyticWithinOn 𝕜 (fun x ↦ (q (f x)).taylorComp (p x) n) s := by
-  apply Finset.analyticWithinOn_sum _ (fun c _ ↦ ?_)
+theorem analyticOn_taylorComp
+    (hq : ∀ (n : ℕ), AnalyticOn 𝕜 (fun x ↦ q x n) t)
+    (hp : ∀ n, AnalyticOn 𝕜 (fun x ↦ p x n) s) {f : E → F}
+    (hf : AnalyticOn 𝕜 f s) (h : MapsTo f s t) (n : ℕ) :
+    AnalyticOn 𝕜 (fun x ↦ (q (f x)).taylorComp (p x) n) s := by
+  apply Finset.analyticOn_sum _ (fun c _ ↦ ?_)
   let B := c.compAlongOrderedFinpartitionL 𝕜 E F G
-  change AnalyticWithinOn 𝕜
+  change AnalyticOn 𝕜
     ((fun p ↦ B p.1 p.2) ∘ (fun x ↦ (q (f x) c.length, fun m ↦ p x (c.partSize m)))) s
-  apply B.analyticOn_uncurry_of_multilinear.comp_analyticWithinOn ?_ (mapsTo_univ _ _)
-  apply AnalyticWithinOn.prod
+  apply B.analyticOnNhd_uncurry_of_multilinear.comp_analyticOn ?_ (mapsTo_univ _ _)
+  apply AnalyticOn.prod
   · exact (hq c.length).comp hf h
-  · exact AnalyticWithinOn.pi (fun i ↦ hp _)
+  · exact AnalyticOn.pi (fun i ↦ hp _)
 
 open OrderedFinpartition
 
