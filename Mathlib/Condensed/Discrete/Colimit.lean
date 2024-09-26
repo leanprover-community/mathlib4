@@ -155,19 +155,11 @@ def fintypeCatAsCofan (X : FintypeCat) : Cofan (fun (_ : X) ↦ toProfinite.obj 
   Cofan.mk (toProfinite.obj X) (fun x ↦ toProfinite.map (fun _ ↦ x))
 
 /-- A finite set is the coproduct of its points in `Profinite`. -/
-def fintypeCatAsCofanIsColimit (X : FintypeCat.{u}) :
-    IsColimit (fintypeCatAsCofan X) :=
+def fintypeCatAsCofanIsColimit (X : FintypeCat.{u}) : IsColimit (fintypeCatAsCofan X) :=
   mkCofanColimit _ (fun t ↦ ⟨fun x ↦ t.inj x PUnit.unit, continuous_bot⟩) (by aesop)
     (fun _ _ h ↦ by ext x; exact ContinuousMap.congr_fun (h x) _)
 
 variable [PreservesFiniteProducts F]
-
-noncomputable instance (X : FintypeCat.{u}) :
-    PreservesLimitsOfShape (Discrete X) F :=
-  let X' := (Countable.toSmall.{0} X).equiv_small.choose
-  let e : X ≃ X' := (Countable.toSmall X).equiv_small.choose_spec.some
-  have : Fintype X' := Fintype.ofEquiv X e
-  preservesLimitsOfShapeOfEquiv (Discrete.equivalence e.symm) F
 
 /-- Auxiliary definition for `isoFinYoneda`. -/
 @[simps!]
@@ -338,22 +330,11 @@ def fintypeCatAsCofan (X : FintypeCat) :
   Cofan.mk (toLightProfinite.obj X) (fun x ↦ toProfinite.map (fun _ ↦ x))
 
 /-- A finite set is the coproduct of its points in `LightProfinite`. -/
-def fintypeCatAsCofanIsColimit (X : FintypeCat.{u}) :
-    IsColimit (fintypeCatAsCofan X) := by
-  refine mkCofanColimit _ (fun t ↦ ⟨fun x ↦ t.inj x PUnit.unit, continuous_bot⟩) (by aesop) ?_
-  intro t m h
-  ext x
-  change m x = t.inj x _
-  rw [← h x]
-  rfl
+def fintypeCatAsCofanIsColimit (X : FintypeCat.{u}) : IsColimit (fintypeCatAsCofan X) :=
+  mkCofanColimit _ (fun t ↦ ⟨fun x ↦ t.inj x PUnit.unit, continuous_bot⟩) (by aesop)
+    (fun _ _ h ↦ by ext x; exact ContinuousMap.congr_fun (h x) _)
 
 variable [PreservesFiniteProducts F]
-
-noncomputable instance (X : FintypeCat.{u}) : PreservesLimitsOfShape (Discrete X) F :=
-  let X' := (Countable.toSmall.{0} X).equiv_small.choose
-  let e : X ≃ X' := (Countable.toSmall X).equiv_small.choose_spec.some
-  have : Fintype X' := Fintype.ofEquiv X e
-  preservesLimitsOfShapeOfEquiv (Discrete.equivalence e.symm) F
 
 /-- Auxiliary definition for `isoFinYoneda`. -/
 @[simps!]
