@@ -365,9 +365,6 @@ theorem AnalyticOnNhd.curry_left {f : E × F → G} {s : Set (E × F)} {y : F}
   fun x m ↦ (fa (x, y) m).curry_left
 alias AnalyticOnNhd.along_fst := AnalyticOnNhd.curry_left
 
-@[deprecated (since := "2024-09-26")]
-alias AnalyticOnNhd.curry_left := AnalyticOnNhd.curry_left
-
 theorem AnalyticOn.curry_left
     {f : E × F → G} {s : Set (E × F)} {y : F} (fa : AnalyticOn 𝕜 f s) :
     AnalyticOn 𝕜 (fun x ↦ f (x, y)) {x | (x, y) ∈ s} :=
@@ -379,9 +376,6 @@ theorem AnalyticOnNhd.curry_right {f : E × F → G} {x : E} {s : Set (E × F)}
     AnalyticOnNhd 𝕜 (fun y ↦ f (x, y)) {y | (x, y) ∈ s} :=
   fun y m ↦ (fa (x, y) m).curry_right
 alias AnalyticOnNhd.along_snd := AnalyticOnNhd.curry_right
-
-@[deprecated (since := "2024-09-26")]
-alias AnalyticOnNhd.curry_right := AnalyticOnNhd.curry_right
 
 theorem AnalyticOn.curry_right
     {f : E × F → G} {x : E} {s : Set (E × F)} (fa : AnalyticOn 𝕜 f s) :
@@ -613,9 +607,6 @@ lemma AnalyticOnNhd.mul {f g : E → A} {s : Set E}
     AnalyticOnNhd 𝕜 (fun x ↦ f x * g x) s :=
   fun _ m ↦ (hf _ m).mul (hg _ m)
 
-@[deprecated (since := "2024-09-26")]
-alias AnalyticOnNhd.mul := AnalyticOnNhd.mul
-
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
 lemma AnalyticWithinAt.pow {f : E → A} {z : E} {s : Set E} (hf : AnalyticWithinAt 𝕜 f s z) (n : ℕ) :
     AnalyticWithinAt 𝕜 (fun x ↦ f x ^ n) s z := by
@@ -799,9 +790,6 @@ theorem AnalyticOnNhd.inv {f : E → 𝕝} {s : Set E}
     (fa : AnalyticOnNhd 𝕜 f s) (f0 : ∀ x ∈ s, f x ≠ 0) :
     AnalyticOnNhd 𝕜 (fun x ↦ (f x)⁻¹) s :=
   fun x m ↦ (fa x m).inv (f0 x m)
-
-@[deprecated (since := "2024-09-26")]
-alias AnalyticOnNhd.inv := AnalyticOnNhd.inv
 
 /-- `f x / g x` is analytic away from `g x = 0` -/
 theorem AnalyticWithinAt.div {f g : E → 𝕝} {s : Set E} {x : E}

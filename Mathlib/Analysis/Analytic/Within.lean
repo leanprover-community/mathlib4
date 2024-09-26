@@ -101,7 +101,7 @@ lemma IsOpen.analyticOn_iff_analyticOnNhd {f : E → F} {s : Set E} (hs : IsOpen
       simp only [Metric.mem_ball, dist_self_add_left, ym.1] }⟩
 
 @[deprecated (since := "2024-09-26")]
-alias IsOpen.analyticWithinOn_iff_analyticOnNhd := IsOpen.analyticOn_iff_analyticOnNhd
+alias IsOpen.analyticWithinOn_iff_analyticOn := IsOpen.analyticOn_iff_analyticOnNhd
 
 
 /-!

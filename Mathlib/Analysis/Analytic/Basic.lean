@@ -632,7 +632,7 @@ lemma AnalyticOnNhd.analyticOn (hf : AnalyticOnNhd 𝕜 f s) : AnalyticOn 𝕜 f
   fun x hx ↦ (hf x hx).analyticWithinAt
 
 @[deprecated (since := "2024-09-26")]
-alias AnalyticOnNhd.analyticWithinOn := AnalyticOnNhd.analyticOn
+alias AnalyticOn.analyticWithinOn := AnalyticOnNhd.analyticOn
 
 lemma AnalyticWithinAt.congr_of_eventuallyEq {f g : E → F} {s : Set E} {x : E}
     (hf : AnalyticWithinAt 𝕜 f s x) (hs : g =ᶠ[𝓝[s] x] f) (hx : g x = f x) :
@@ -663,9 +663,6 @@ theorem analyticAt_congr (h : f =ᶠ[𝓝 x] g) : AnalyticAt 𝕜 f x ↔ Analyt
 theorem AnalyticOnNhd.mono {s t : Set E} (hf : AnalyticOnNhd 𝕜 f t) (hst : s ⊆ t) :
     AnalyticOnNhd 𝕜 f s :=
   fun z hz => hf z (hst hz)
-
-@[deprecated (since := "2024-09-26")]
-alias AnalyticOnNhd.mono := AnalyticOnNhd.mono
 
 theorem AnalyticOnNhd.congr' (hf : AnalyticOnNhd 𝕜 f s) (hg : f =ᶠ[𝓝ˢ s] g) :
     AnalyticOnNhd 𝕜 g s :=
@@ -1184,9 +1181,6 @@ protected theorem AnalyticAt.continuousAt (hf : AnalyticAt 𝕜 f x) : Continuou
 protected theorem AnalyticOnNhd.continuousOn {s : Set E} (hf : AnalyticOnNhd 𝕜 f s) :
     ContinuousOn f s :=
   fun x hx => (hf x hx).continuousAt.continuousWithinAt
-
-@[deprecated (since := "2024-09-26")]
-alias AnalyticOnNhd.continuousOn := AnalyticOnNhd.continuousOn
 
 protected lemma AnalyticOn.continuousOn {f : E → F} {s : Set E} (h : AnalyticOn 𝕜 f s) :
     ContinuousOn f s :=
