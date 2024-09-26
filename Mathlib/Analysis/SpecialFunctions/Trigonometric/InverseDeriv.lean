@@ -106,12 +106,6 @@ theorem differentiableOn_arcsin : DifferentiableOn ℝ arcsin {-1, 1}ᶜ := fun 
 theorem contDiffOn_arcsin {n : WithTop ℕ∞} : ContDiffOn ℝ n arcsin {-1, 1}ᶜ := fun _x hx =>
   (contDiffAt_arcsin (mt Or.inl hx) (mt Or.inr hx)).contDiffWithinAt
 
-/-TODO: move to ENat file -/
-lemma _root_.ENat.one_le_iff_ne_zero_withTop (n : WithTop ℕ∞) :
-    1 ≤ n ↔ n ≠ 0 := by
-  refine ⟨fun h ↦ (zero_lt_one.trans_le h).ne',
-    fun h ↦ ENat.add_one_nat_le_withTop_of_lt (pos_iff_ne_zero.mpr h)⟩
-
 theorem contDiffAt_arcsin_iff {x : ℝ} {n : WithTop ℕ∞} :
     ContDiffAt ℝ n arcsin x ↔ n = 0 ∨ x ≠ -1 ∧ x ≠ 1 :=
   ⟨fun h => or_iff_not_imp_left.2 fun hn => differentiableAt_arcsin.1 <| h.differentiableAt <|

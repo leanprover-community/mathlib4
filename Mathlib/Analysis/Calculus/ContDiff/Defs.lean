@@ -114,18 +114,6 @@ scoped [ContDiff] notation3 "∞" => ((⊤ : ℕ∞) : WithTop (ℕ∞))
 
 open ContDiff
 
-
-@[simp] lemma ENat.succ_eq_coe_top_iff (n : WithTop ℕ∞) :
-    n + 1 = ∞ ↔ n = ∞ := by
-  match n with
-  | ω => exact Iff.rfl
-  | ∞ => exact Iff.rfl
-  | (n : ℕ) => norm_cast; simp only [coe_ne_top, iff_false, ne_eq]
-
-@[simp] lemma ENat.coe_top_add_one : ∞ + 1 = ∞ := rfl
-
-@[simp] lemma ENat.nat_ne_coe_top (n : ℕ) : (n : WithTop ℕ∞) ≠ ∞ := ne_of_beq_false rfl
-
 universe u uE uF uG uX
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type uE} [NormedAddCommGroup E]

@@ -487,6 +487,8 @@ lemma HasFPowerSeriesWithinOnBall.congr {f g : E → F} {p : FormalMultilinearSe
     refine ⟨hy, ?_⟩
     simpa [edist_eq_coe_nnnorm_sub] using h'y
 
+/-- Variant of `HasFPowerSeriesWithinOnBall.congr` where one does not separate the congruence
+property between `s` and `x`, requesting it instead of `insert x s`. -/
 lemma HasFPowerSeriesWithinOnBall.congr' {f g : E → F} {p : FormalMultilinearSeries 𝕜 E F}
     {s : Set E} {x : E} {r : ℝ≥0∞} (h : HasFPowerSeriesWithinOnBall f p s x r)
     (h' : EqOn g f (insert x s ∩ EMetric.ball x r)) :
