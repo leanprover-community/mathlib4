@@ -102,7 +102,7 @@
   "Mathlib.Tactic.FinCases",
   "Mathlib.Tactic.Find",
   "Mathlib.Tactic.GCongr",
-  "Mathlib.Tactic.GCongr.Core",
+  "Mathlib.Tactic.GCongr.CoreAttrs",
   "Mathlib.Tactic.Generalize",
   "Mathlib.Tactic.GeneralizeProofs",
   "Mathlib.Tactic.Group",
@@ -211,7 +211,7 @@
   "Mathlib.Tactic.Use": ["Batteries.Logic"],
   "Mathlib.Tactic.TermCongr": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.Tauto": ["Mathlib.Logic.Basic"],
-  "Mathlib.Tactic.TFAE": ["Mathlib.Data.List.TFAE"],
+  "Mathlib.Tactic.TFAE": ["Mathlib.Data.List.TFAE", "Mathlib.Tactic.Have"],
   "Mathlib.Tactic.Subsingleton": ["Mathlib.Logic.Basic", "Std.Logic"],
   "Mathlib.Tactic.ReduceModChar":
   ["Mathlib.Data.ZMod.Basic", "Mathlib.RingTheory.Polynomial.Basic"],
@@ -236,6 +236,8 @@
   "Mathlib.Tactic.Measurability":
   ["Mathlib.Algebra.Group.Defs", "Mathlib.Tactic.Measurability.Init"],
   "Mathlib.Tactic.Linter.UnusedTactic": ["Batteries.Tactic.Unreachable"],
+  "Mathlib.Tactic.LinearCombination":
+  ["Mathlib.Tactic.LinearCombination.Lemmas"],
   "Mathlib.Tactic.Lemma": ["Lean.Parser.Command"],
   "Mathlib.Tactic.IrreducibleDef": ["Mathlib.Data.Subtype"],
   "Mathlib.Tactic.ITauto":
@@ -372,10 +374,16 @@
   ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.CategoryTheory.Sites.IsSheafFor":
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono"],
+  "Mathlib.CategoryTheory.Monoidal.Rigid.Basic":
+  ["Mathlib.Tactic.CategoryTheory.Monoidal.Basic"],
+  "Mathlib.CategoryTheory.Monoidal.Braided.Basic":
+  ["Mathlib.Tactic.CategoryTheory.Monoidal.Basic"],
   "Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits":
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback",
    "Mathlib.CategoryTheory.Limits.Shapes.Pullbacks"],
   "Mathlib.CategoryTheory.Limits.IsLimit": ["Batteries.Tactic.Congr"],
+  "Mathlib.CategoryTheory.Bicategory.Adjunction":
+  ["Mathlib.Tactic.CategoryTheory.Bicategory.Basic"],
   "Mathlib.CategoryTheory.Bicategory.Functor.Oplax":
   ["Mathlib.Tactic.CategoryTheory.ToApp"],
   "Mathlib.CategoryTheory.Bicategory.Functor.Lax":

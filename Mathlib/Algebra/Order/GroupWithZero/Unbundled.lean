@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.GCongr.CoreAttrs
 import Mathlib.Tactic.Nontriviality
 
 /-!
