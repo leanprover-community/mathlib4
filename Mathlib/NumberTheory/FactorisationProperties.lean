@@ -30,7 +30,7 @@ relations with prime and perfect numbers.
   perfect, or abundant.
 * `Nat.Prime.deficient`: All prime natural numbers are deficient.
 * `Nat.infinite_deficient`: There are infinitely many deficient numbers.
-* `Prime.deficient_pow`: Any natural number power of a prime is deficient.
+* `Nat.Prime.deficient_pow`: Any natural number power of a prime is deficient.
 
 ## Implementation Notes
 * Zero is not included in any of the definitions and these definitions only apply to natural
