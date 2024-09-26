@@ -342,19 +342,21 @@ theorem totallyBounded_absConvexHull
       rw [smul_add]
       rw [smul_sub]
       rw [← smul_assoc]
-      simp?
+      simp only [one_div, smul_eq_mul, isUnit_iff_ne_zero, ne_eq, OfNat.ofNat_ne_zero,
+        not_false_eq_true, IsUnit.mul_inv_cancel, one_smul, smul_inv_smul₀, smul_neg]
       rw [add_comm]
       rw [two_smul]
-      simp?
+      simp only [sub_add_cancel_right]
       rw [← hz₂]
-      simp?
+      simp only [neg_add_rev, add_neg_cancel_comm_assoc, neg_inj]
       exact id (Eq.symm hz'₂)
     have e12 : y - (1 / 2 : ℝ) • (x + y) = -z' := by
       apply help
       rw [smul_sub]
-      simp?
+      simp only [one_div, smul_add, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, smul_inv_smul₀,
+        smul_neg]
       rw [two_smul]
-      simp?
+      simp only [add_sub_add_right_eq_sub]
       rw [← hz₂]
       simp
       exact id (Eq.symm hz'₂)
