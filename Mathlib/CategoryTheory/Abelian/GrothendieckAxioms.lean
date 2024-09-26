@@ -90,13 +90,25 @@ class AB5Star [HasCofilteredLimits C] where
 
 attribute [instance] AB5Star.preservesFiniteColimits
 
-#check Additive
-
 open CoproductsFromFiniteFiltered
 
-example [HasZeroMorphisms C] [HasFiniteBiproducts C] (α : Type w) :
-    PreservesFiniteLimits (liftToFinset C α) :=
-  ⟨fun J cJ fJ => ⟨fun {K} => ⟨fun {c} lc =>
-    _⟩⟩⟩
+#check Discrete.functor
+#check Functor.flip
+#check colim
+
+/-- `liftToFinset`, when composed with the evaluation functor, results in the whiskering composed
+with `colim`. -/
+noncomputable def liftToFinsetEvaluationIso
+    (α : Type w) [HasFiniteCoproducts C] (I : Finset (Discrete α)) :
+    liftToFinset C α ⋙ (evaluation _ _).obj I ≅
+    (whiskeringLeft _ _ _).obj (Discrete.functor (·.val)) ⋙ colim (J := Discrete I) :=
+  NatIso.ofComponents (fun _ => HasColimit.isoOfNatIso (Discrete.natIso fun _ => Iso.refl _)) (by
+     intros
+     dsimp only [Functor.comp_obj, evaluation_obj_obj, liftToFinset_obj_obj, whiskeringLeft_obj_obj,
+       colim_obj, Functor.comp_map, evaluation_obj_map, liftToFinset_map_app,
+       Discrete.functor_obj_eq_as, whiskeringLeft_obj_map, colim_map]
+     ext
+     simp)
+
 
 end CategoryTheory
