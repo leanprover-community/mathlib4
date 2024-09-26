@@ -10,7 +10,7 @@ import Mathlib.Lean.Expr.Basic
 # Linter for `Decidable`/`Encodable`/`Inhabited`
 -/
 
-namespace Std.Tactic.Lint
+namespace Batteries.Tactic.Lint
 open Lean Meta
 
 /-- Check if a given declaration assumes some hypothesis `[Type p]`, but doesn't use this
@@ -90,4 +90,4 @@ but don't use this assumption in the type.
     if (← isAutoDecl declName) then return none
     return ← checkUnusedAssumptionInType (← getConstInfo declName) #[`Encodable]
 
-end Std.Tactic.Lint
+end Batteries.Tactic.Lint
