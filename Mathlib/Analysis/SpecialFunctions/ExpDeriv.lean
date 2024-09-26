@@ -38,6 +38,8 @@ theorem analyticOnNhd_cexp : AnalyticOnNhd ℂ exp univ := by
   rw [Complex.exp_eq_exp_ℂ]
   exact fun x _ ↦ NormedSpace.exp_analytic x
 
+theorem analyticOn_cexp : AnalyticOn ℂ exp univ := analyticOnNhd_cexp.analyticOn
+
 /-- `exp` is analytic at any point -/
 theorem analyticAt_cexp : AnalyticAt ℂ exp z :=
   analyticOnNhd_cexp z (mem_univ _)
@@ -46,9 +48,16 @@ theorem analyticAt_cexp : AnalyticAt ℂ exp z :=
 theorem AnalyticAt.cexp (fa : AnalyticAt ℂ f x) : AnalyticAt ℂ (fun z ↦ exp (f z)) x :=
   analyticAt_cexp.comp fa
 
+theorem AnalyticWithinAt.cexp (fa : AnalyticWithinAt ℂ f s x) :
+    AnalyticWithinAt ℂ (fun z ↦ exp (f z)) s x :=
+  analyticAt_cexp.comp_analyticWithinAt fa
+
 /-- `exp ∘ f` is analytic -/
 theorem AnalyticOnNhd.cexp (fs : AnalyticOnNhd ℂ f s) : AnalyticOnNhd ℂ (fun z ↦ exp (f z)) s :=
   fun z n ↦ analyticAt_cexp.comp (fs z n)
+
+theorem AnalyticOn.cexp (fs : AnalyticOn ℂ f s) : AnalyticOn ℂ (fun z ↦ exp (f z)) s :=
+  analyticOnNhd_cexp.comp_analyticOn fs (mapsTo_univ _ _)
 
 end
 
@@ -177,7 +186,9 @@ theorem iteratedDeriv_cexp_const_mul (n : ℕ) (c : ℂ) :
 
 /-! ## `Real.exp` -/
 
-namespace Real
+section
+
+open Real
 
 variable {x y z : ℝ} {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ}
 
@@ -195,8 +206,13 @@ theorem AnalyticAt.rexp {x : E} (fa : AnalyticAt ℝ f x) : AnalyticAt ℝ (fun 
   analyticAt_rexp.comp fa
 
 /-- `exp ∘ f` is analytic -/
-theorem AnalyticOnNhd.cexp {s : Set E} (fs : AnalyticOnNhd ℝ f s) : AnalyticOnNhd ℝ (fun z ↦ exp (f z)) s :=
+theorem AnalyticOnNhd.rexp {s : Set E} (fs : AnalyticOnNhd ℝ f s) :
+    AnalyticOnNhd ℝ (fun z ↦ exp (f z)) s :=
   fun z n ↦ analyticAt_rexp.comp (fs z n)
+
+end
+
+namespace Real
 
 theorem hasStrictDerivAt_exp (x : ℝ) : HasStrictDerivAt exp (exp x) x :=
   (Complex.hasStrictDerivAt_exp x).real_of_complex
@@ -209,7 +225,7 @@ theorem contDiff_exp {n : WithTop ℕ∞} : ContDiff ℝ n exp :=
 
 theorem differentiable_exp : Differentiable ℝ exp := fun x => (hasDerivAt_exp x).differentiableAt
 
-theorem differentiableAt_exp : DifferentiableAt ℝ exp x :=
+theorem differentiableAt_exp {x : ℝ} : DifferentiableAt ℝ exp x :=
   differentiable_exp x
 
 @[simp]
