@@ -5,6 +5,7 @@ Authors: Jiazhen Xia, Elliot Dean Young
 -/
 
 import Mathlib.Topology.Category.TopCat.Limits.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Functor.OfSequence
 
 /-!
@@ -45,17 +46,15 @@ variable {S D : TopCat.{u}} (f : S ⟶ D)
 /-- Given the inclusion map `f : S ⟶ D` for one generalized cell, we construct the inclusion map
 from the disjoint union of `S` (boundary of generalized cells) to the disjoint union of `D`
 (generalized cells), where both of the disjoint unions are indexed by `cells`. -/
-def generalizedSigmaSphereInclusion (cells : Type) :
-    TopCat.of (Σ (_ : cells), S) ⟶ TopCat.of (Σ (_ : cells), D) where
-  toFun := Sigma.map id fun _ x ↦ f.toFun x
-  continuous_toFun := Continuous.sigma_map fun _ ↦ f.continuous_toFun
+noncomputable def generalizedSigmaSphereInclusion (cells : Type) :
+    ∐ Function.const cells S ⟶ ∐ Function.const cells D :=
+  Limits.Sigma.map fun _ ↦ f
 
 /-- Given an attaching map for each `S` (boundary of a generalized cell), we construct
 the attaching map for the disjoint union of all the `S`. -/
-def generalizedSigmaAttachMap (S X : TopCat.{u}) {cells : Type} (attach_maps : cells → C(S, X)) :
-    TopCat.of (Σ (_ : cells), S) ⟶ X where
-  toFun := fun ⟨i, x⟩ ↦ attach_maps i x
-  continuous_toFun := continuous_sigma fun i ↦ (attach_maps i).continuous_toFun
+noncomputable def generalizedSigmaAttachMap (S X : TopCat.{u}) {cells : Type}
+    (attachMaps : cells → C(S, X)) : ∐ Function.const cells S ⟶ X :=
+  Limits.Sigma.desc attachMaps
 
 /-- A type witnessing that `X'` is obtained from `X` by attaching generalized cells `f : S ⟶ D`. -/
 structure AttachGeneralizedCells (X X' : TopCat.{u}) where
@@ -74,7 +73,7 @@ noncomputable def sigmaSphereInclusion (n : ℤ) :=
 
 /-- Given an attaching map for each `n`-sphere, we construct the attaching map for the disjoint
 union of the `n`-spheres. -/
-def sigmaAttachMap (n : ℤ) := generalizedSigmaAttachMap (sphere n)
+noncomputable def sigmaAttachMap (n : ℤ) := generalizedSigmaAttachMap (sphere n)
 
 /-- A type witnessing that `X'` is obtained from `X` by attaching `(n+1)`-disks -/
 def AttachCells (n : ℤ) := AttachGeneralizedCells (sphereInclusion n)
