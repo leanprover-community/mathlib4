@@ -116,10 +116,10 @@ theorem HasFPowerSeriesOnBall.differentiableOn [CompleteSpace F]
   (h.analyticAt_of_mem hy).differentiableWithinAt
 
 theorem AnalyticOn.differentiableOn (h : AnalyticOn 𝕜 f s) : DifferentiableOn 𝕜 f s :=
-  fun y hy => (h y hy).differentiableWithinAt.mono (by simp)
+  fun y hy ↦  (h y hy).differentiableWithinAt.mono (by simp)
 
-theorem AnalyticOnNhd.differentiableOn (h : AnalyticOnNhd 𝕜 f s) : DifferentiableOn 𝕜 f s := fun y hy =>
-  (h y hy).differentiableWithinAt
+theorem AnalyticOnNhd.differentiableOn (h : AnalyticOnNhd 𝕜 f s) : DifferentiableOn 𝕜 f s :=
+  fun y hy ↦ (h y hy).differentiableWithinAt
 
 theorem HasFPowerSeriesWithinOnBall.hasFDerivWithinAt [CompleteSpace F]
     (h : HasFPowerSeriesWithinOnBall f p s x r)
@@ -210,7 +210,8 @@ protected theorem AnalyticOnNhd.iteratedFDeriv [CompleteSpace F] (h : AnalyticOn
     case g => exact ↑(continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (n + 1) ↦ E) F).symm
     simp
 
-lemma AnalyticOnNhd.hasFTaylorSeriesUpToOn [CompleteSpace F] (n : WithTop ℕ∞) (h : AnalyticOnNhd 𝕜 f s) :
+lemma AnalyticOnNhd.hasFTaylorSeriesUpToOn [CompleteSpace F]
+    (n : WithTop ℕ∞) (h : AnalyticOnNhd 𝕜 f s) :
     HasFTaylorSeriesUpToOn n f (ftaylorSeries 𝕜 f) s := by
   refine ⟨fun x _hx ↦ rfl, fun m _hm x hx ↦ ?_, fun m _hm x hx ↦ ?_⟩
   · apply HasFDerivAt.hasFDerivWithinAt
@@ -335,9 +336,6 @@ theorem PartialHomeomorph.analyticAt_symm (f : PartialHomeomorph E F) {a : F}
   have : a = f (f.symm a) := by simp [h0]
   rw [this]
   exact f.analyticAt_symm' (by simp [h0]) h h'
-
-@[deprecated (since := "2024-09-26")]
-alias AnalyticWithinOn.contDiffOn := AnalyticOn.contDiffOn
 
 end fderiv
 
