@@ -103,6 +103,12 @@ instance compPreservesFiniteProducts (F : C ⥤ D) (G : D ⥤ E)
     PreservesFiniteProducts (F ⋙ G) where
   preserves _ _ := inferInstance
 
+/-- `F : C ⥤ D ⥤ E` preserves finite limits if it does for each `d : D`. -/
+def preservesFiniteLimitsOfEvaluation (F : C ⥤ D ⥤ E)
+    (h : ∀ d : D, PreservesFiniteLimits (F ⋙ (evaluation D E).obj d)) :
+    PreservesFiniteLimits F :=
+  ⟨fun J _ _ => preservesLimitsOfShapeOfEvaluation F J fun k => (h k).preservesFiniteLimits _⟩
+
 noncomputable instance (F : C ⥤ D) [PreservesFiniteLimits F] : PreservesFiniteProducts F where
   preserves _ _ := inferInstance
 
@@ -150,12 +156,6 @@ finite limits.
 def preservesFiniteLimitsOfReflectsOfPreserves (F : C ⥤ D) (G : D ⥤ E)
     [PreservesFiniteLimits (F ⋙ G)] [ReflectsFiniteLimits G] : PreservesFiniteLimits F where
   preservesFiniteLimits _ _ _ := preservesLimitsOfShapeOfReflectsOfPreserves F G
-
-/-- `F : C ⥤ D ⥤ E` preserves finite limits if it does for each `d : D`. -/
-def preservesFiniteLimitsOfEvaluation (F : C ⥤ D ⥤ E)
-    (h : ∀ d : D, PreservesFiniteLimits (F ⋙ (evaluation D E).obj d)) :
-    PreservesFiniteLimits F :=
-  ⟨fun J _ _ => preservesLimitsOfShapeOfEvaluation F J fun k => (h k).preservesFiniteLimits _⟩
 
 /--
 If `F ⋙ G` preserves finite products and `G` reflects finite products, then `F` preserves
@@ -260,6 +260,12 @@ noncomputable instance compPreservesFiniteCoproducts (F : C ⥤ D) (G : D ⥤ E)
     [PreservesFiniteCoproducts F] [PreservesFiniteCoproducts G] :
     PreservesFiniteCoproducts (F ⋙ G) where
   preserves _ _ := inferInstance
+
+/-- `F : C ⥤ D ⥤ E` preserves finite limits if it does for each `d : D`. -/
+def preservesFiniteColimitsOfEvaluation (F : C ⥤ D ⥤ E)
+    (h : ∀ d : D, PreservesFiniteColimits (F ⋙ (evaluation D E).obj d)) :
+    PreservesFiniteColimits F :=
+  ⟨fun J _ _ => preservesColimitsOfShapeOfEvaluation F J fun k => (h k).preservesFiniteColimits _⟩
 
 noncomputable instance (F : C ⥤ D) [PreservesFiniteColimits F] : PreservesFiniteCoproducts F where
   preserves _ _ := inferInstance
