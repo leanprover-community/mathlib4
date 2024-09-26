@@ -3,7 +3,7 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Pointwise
+import Mathlib.Algebra.Order.Field.Pointwise
 import Mathlib.Analysis.NormedSpace.SphereNormEquiv
 import Mathlib.Analysis.SpecialFunctions.Integrals
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
