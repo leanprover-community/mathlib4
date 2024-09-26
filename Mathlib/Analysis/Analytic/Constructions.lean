@@ -342,7 +342,7 @@ theorem AnalyticWithinAt.curry_right
 
 /-- Analytic functions on products are analytic in the first coordinate -/
 theorem AnalyticOnNhd.curry_left {f : E × F → G} {s : Set (E × F)} {y : F}
-   (fa : AnalyticOnNhd 𝕜 f s) :
+    (fa : AnalyticOnNhd 𝕜 f s) :
     AnalyticOnNhd 𝕜 (fun x ↦ f (x, y)) {x | (x, y) ∈ s} :=
   fun x m ↦ (fa (x, y) m).curry_left
 alias AnalyticOnNhd.along_fst := AnalyticOnNhd.curry_left
