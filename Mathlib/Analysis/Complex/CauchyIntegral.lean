@@ -611,7 +611,7 @@ theorem analyticOnNhd_univ_iff_differentiable {f : ℂ → E} :
 
 theorem analyticOn_univ_iff_differentiable {f : ℂ → E} :
     AnalyticOn ℂ f univ ↔ Differentiable ℂ f := by
-  rw [← analyticOnNhds_univ]
+  rw [analyticOn_univ]
   exact analyticOnNhd_univ_iff_differentiable
 
 /-- `f : ℂ → E` is analytic at `z` iff it's differentiable near `z` -/
