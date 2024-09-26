@@ -310,6 +310,7 @@ jobs:
         run: |
           scripts/lean-pr-testing-comments.sh lean
           scripts/lean-pr-testing-comments.sh batteries
+
   final:
     name: Post-CI job
     if: github.repository == 'leanprover-community/mathlib4'
