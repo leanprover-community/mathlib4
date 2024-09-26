@@ -554,18 +554,18 @@ variable (E : EllipticCurve R)
 def j : R :=
   E.Δ'⁻¹ * E.c₄ ^ 3
 
+/-- The `j` of an elliptic curve is zero if and only if its `c₄ ^ 3` is zero. -/
 lemma j_eq_zero_iff' : E.j = 0 ↔ E.c₄ ^ 3 = 0 := by
   rw [j, Units.mul_right_eq_zero]
 
+/-- If the `c₄` of an elliptic curve is zero, then its `j` is zero. -/
 lemma j_eq_zero (h : E.c₄ = 0) : E.j = 0 := by
   simp [j_eq_zero_iff', h]
 
-lemma j_eq_zero_iff [IsReduced R] : E.j = 0 ↔ E.c₄ = 0 :=
-  ⟨fun h ↦ IsNilpotent.eq_zero ⟨_, E.j_eq_zero_iff'.1 h⟩, E.j_eq_zero⟩
-
-lemma j_ne_zero_iff' : E.j ≠ 0 ↔ E.c₄ ^ 3 ≠ 0 := not_congr E.j_eq_zero_iff'
-
-lemma j_ne_zero_iff [IsReduced R] : E.j ≠ 0 ↔ E.c₄ ≠ 0 := not_congr E.j_eq_zero_iff
+/-- If the ring is reduced, then the `j` of an elliptic curve is zero if and only if
+its `c₄` is zero. -/
+lemma j_eq_zero_iff [IsReduced R] : E.j = 0 ↔ E.c₄ = 0 := by
+  simp [j_eq_zero_iff']
 
 lemma twoTorsionPolynomial_disc_ne_zero [Nontrivial R] [Invertible (2 : R)] :
     E.twoTorsionPolynomial.disc ≠ 0 :=
