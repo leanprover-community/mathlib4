@@ -56,7 +56,7 @@ private def rangeOfWType : Subfield (closure s) where
 
 private lemma rangeOfWType_eq_top : rangeOfWType s = ⊤ := top_le_iff.mp fun a _ ↦ by
   rw [← SetLike.mem_coe, ← Subtype.val_injective.mem_set_image]
-  change ↑a ∈ map (closure s).subtype _
+  change ↑a ∈ map (closure s).subtype (Subfield.rangeOfWType s)
   refine closure_le.mpr (fun a ha ↦ ?_) a.prop
   exact ⟨⟨a, subset_closure ha⟩, ⟨WType.mk (.inr ⟨a, ha⟩) Empty.rec, rfl⟩, rfl⟩
 

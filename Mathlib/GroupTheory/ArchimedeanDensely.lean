@@ -153,12 +153,17 @@ noncomputable def LinearOrderedAddCommGroup.int_orderAddMonoidIso_of_isLeast_pos
   let e : G ≃+o (⊤ : AddSubgroup G) := ⟨AddSubsemigroup.topEquiv.symm,
     (AddEquiv.strictMono_symm AddSubsemigroup.strictMono_topEquiv).le_iff_le⟩
   let e' : (⊤ : AddSubgroup G) ≃+o AddSubgroup.closure {x} :=
-    ⟨AddEquiv.subsemigroupCongr (by simp [this]),
-     (AddEquiv.strictMono_subsemigroupCongr _).le_iff_le⟩
+    ⟨AddEquiv.subsemigroupCongr
+      (S := (⊤ : AddSubgroup G).toAddSubmonoid.toAddSubsemigroup)
+      (T := (AddSubgroup.closure {x}).toAddSubmonoid.toAddSubsemigroup) (by simp [this]),
+      (AddEquiv.strictMono_subsemigroupCongr _).le_iff_le⟩
   let g : (⊤ : AddSubgroup ℤ) ≃+o ℤ := ⟨AddSubsemigroup.topEquiv,
     (AddSubsemigroup.strictMono_topEquiv).le_iff_le⟩
   let g' : AddSubgroup.closure ({1} : Set ℤ) ≃+o (⊤ : AddSubgroup ℤ) :=
-    ⟨(.subsemigroupCongr (by simp [AddSubgroup.closure_singleton_int_one_eq_top])),
+    ⟨.subsemigroupCongr
+      (S := (AddSubgroup.closure {1}).toAddSubmonoid.toAddSubsemigroup)
+      (T := (⊤ : AddSubgroup ℤ).toAddSubmonoid.toAddSubsemigroup)
+      (by simp [AddSubgroup.closure_singleton_int_one_eq_top]),
      (AddEquiv.strictMono_subsemigroupCongr _).le_iff_le⟩
   let f := closure_equiv_closure x (1 : ℤ) (by simp [h.left.ne'])
   exact ((((e.trans e').trans f).trans g').trans g : G ≃+o ℤ)

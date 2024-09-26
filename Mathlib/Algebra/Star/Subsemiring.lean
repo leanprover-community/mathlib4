@@ -32,7 +32,7 @@ variable {R : Type v} [NonAssocSemiring R] [StarRing R]
 
 instance setLike : SetLike (StarSubsemiring R) R where
   coe {s} := s.carrier
-  coe_injective' p q h := by obtain ⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩ := p; cases q; congr
+  coe_injective' p q h := by obtain ⟨⟨⟨⟩⟩⟩ := p; congr
 
 instance starMemClass : StarMemClass (StarSubsemiring R) R where
   star_mem {s} := s.star_mem'

@@ -155,7 +155,7 @@ instance : SubsemiringClass (Subsemiring R) R where
 theorem mem_toSubmonoid {s : Subsemiring R} {x : R} : x ∈ s.toSubmonoid ↔ x ∈ s :=
   Iff.rfl
 
--- `@[simp]` -- Porting note (#10618): simp can prove thisrove this
+@[simp]
 theorem mem_carrier {s : Subsemiring R} {x : R} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 

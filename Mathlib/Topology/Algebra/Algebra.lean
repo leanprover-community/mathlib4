@@ -217,7 +217,7 @@ variable [TopologicalSemiring A]
 
 /-- The topological closure of a subalgebra -/
 def _root_.Subalgebra.topologicalClosure (s : Subalgebra R A) : Subalgebra R A where
-  toSubsemiring := s.toSubsemiring.topologicalClosure
+  __ := s.toSubsemiring.topologicalClosure
   algebraMap_mem' r := by
     simp only [Subsemiring.coe_carrier_toSubmonoid, Subsemiring.topologicalClosure_coe,
       Subalgebra.coe_toSubsemiring]
@@ -478,11 +478,11 @@ def _root_.Subalgebra.valA (p : Subalgebra R A) : p →A[R] A where
 
 @[simp, norm_cast]
 theorem _root_.Subalgebra.coe_valA (p : Subalgebra R A) :
-    (p.valA : p →ₐ[R] A) = p.subtype :=
+    (p.valA : p →ₐ[R] A) = p.toSubsemiring.subtype :=
   rfl
 
 @[simp]
-theorem _root_.Subalgebra.coe_valA' (p : Subalgebra R A) : ⇑p.valA = p.subtype :=
+theorem _root_.Subalgebra.coe_valA' (p : Subalgebra R A) : ⇑p.valA = p.toSubsemiring.subtype :=
   rfl
 
 @[simp]
