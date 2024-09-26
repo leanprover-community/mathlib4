@@ -79,16 +79,12 @@ theorem add_pow [CommSemiring R] (x y : R) (n : ℕ) :
 theorem sub_pow [CommRing R] (x : R) (y : R) (n : ℕ) :
     (x - y) ^ n = ∑ m ∈ range (n + 1), (-1) ^ (m + n) * n.choose m • x ^ m * y ^ (n - m) := by
   rw [sub_eq_add_neg, add_pow]
-  apply Finset.sum_congr rfl
-  intro m hm
-  simp only [mem_range] at hm
-  rw [neg_pow]
-  ring_nf
-  nth_rewrite 3 [mul_assoc]
-  congr
-  rw [← mul_one (a := (-1) ^ (n - m))]
-  nth_rewrite 2 [show (1 : R) = (-1) ^ (2 * m) by simp]
-  rw [← pow_add, ← pow_add, show n - m + 2 * m = m + n by omega]
+  congr! 1 with m hm
+  have : (-1 : R) ^ (n - m) = (-1) ^ (n + m) := by
+    rw [mem_range] at hm
+    simp [show n + m = n - m + 2 * m by omega, pow_add]
+  rw [neg_pow, this]
+  ring
 
 namespace Nat
 
