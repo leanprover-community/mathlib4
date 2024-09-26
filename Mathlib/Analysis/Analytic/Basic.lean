@@ -762,6 +762,10 @@ lemma AnalyticOn.mono {f : E → F} {s t : Set E} (h : AnalyticOn 𝕜 f t)
 @[deprecated (since := "2024-09-26")]
 alias AnalyticWithinOn.mono := AnalyticOn.mono
 
+@[simp] theorem analyticWithinAt_insert {f : E → F} {s : Set E} {x y : E} :
+    AnalyticWithinAt 𝕜 f (insert y s) x ↔ AnalyticWithinAt 𝕜 f s x := by
+  simp [AnalyticWithinAt]
+
 /-!
 ### Composition with linear maps
 -/

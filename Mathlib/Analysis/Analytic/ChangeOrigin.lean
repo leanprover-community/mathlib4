@@ -349,8 +349,8 @@ theorem HasFPowerSeriesOnBall.analyticAt_of_mem (hf : HasFPowerSeriesOnBall f p 
   rw [← analyticWithinAt_univ]
   exact hf.analyticWithinAt_of_mem (by simpa using h)
 
-theorem HasFPowerSeriesWithinOnBall.analyticWithinOn (hf : HasFPowerSeriesWithinOnBall f p s x r) :
-    AnalyticWithinOn 𝕜 f (insert x s ∩ EMetric.ball x r) :=
+theorem HasFPowerSeriesWithinOnBall.analyticOn (hf : HasFPowerSeriesWithinOnBall f p s x r) :
+    AnalyticOn 𝕜 f (insert x s ∩ EMetric.ball x r) :=
   fun _ hy ↦ ((analyticWithinAt_insert (y := x)).2 (hf.analyticWithinAt_of_mem hy)).mono
     inter_subset_left
 
