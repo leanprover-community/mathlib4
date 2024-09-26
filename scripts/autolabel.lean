@@ -228,7 +228,7 @@ to add the label to the PR.
 unsafe def main (args : List String): IO Unit := do
   if args.length > 1 then
     println s!"autolabel: invalid number of arguments ({args.length}), expected at most 1. \
-    Please run without arguments or provide the target PR's number as single argument!"
+    Please run without arguments or provide the target PR's number as a single argument!"
     IO.Process.exit 1
   let prNumber? := args[0]?
 
@@ -251,7 +251,7 @@ unsafe def main (args : List String): IO Unit := do
   -- test: validate that the labels cover all of the `Mathlib/` folder
   let notMatchedPaths ← findUncoveredPaths "Mathlib" (exceptions := mathlibUnlabelled)
   if notMatchedPaths.size > 0 then
-    -- note: only emmitting a warning because the workflow is only triggered on the first commit
+    -- note: only emitting a warning because the workflow is only triggered on the first commit
     -- of a PR and could therefore lead to unexpected behaviour if a folder was created later.
     println s!"::warning file=scripts/autolabel.lean,line=60::the following paths inside `Mathlib/` are not covered \
     by any label: {notMatchedPaths} Please modify `AutoLabel.mathlibLabels` accordingly!"
