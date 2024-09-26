@@ -90,27 +90,27 @@ class AB5Star [HasCofilteredLimits C] where
 
 attribute [instance] AB5Star.preservesFiniteColimits
 
+noncomputable section
+
 open CoproductsFromFiniteFiltered
 
-#check Discrete.functor
-#check Functor.flip
-#check colim
-
-variable [HasFiniteCoproducts C] [HasZeroMorphisms C] [HasFiniteBiproducts C]
 variable {α : Type w}
 
 /-- `liftToFinset`, when composed with the evaluation functor, results in the whiskering composed
 with `colim`. -/
-noncomputable def liftToFinsetEvaluationIso (I : Finset (Discrete α)) :
+def liftToFinsetEvaluationIso [HasFiniteCoproducts C] (I : Finset (Discrete α)) :
     liftToFinset C α ⋙ (evaluation _ _).obj I ≅
     (whiskeringLeft _ _ _).obj (Discrete.functor (·.val)) ⋙ colim (J := Discrete I) :=
   NatIso.ofComponents (fun _ => HasColimit.isoOfNatIso (Discrete.natIso fun _ => Iso.refl _))
     (fun _ => by dsimp; ext; simp)
 
-noncomputable example : PreservesFiniteLimits (liftToFinset C α) :=
+variable [HasZeroMorphisms C] [HasFiniteBiproducts C]
+
+instance : PreservesFiniteLimits (liftToFinset C α) :=
   preservesFiniteLimitsOfEvaluation _ fun I =>
+    let colimIso : colim (J := Discrete I) (C := C) ≅ lim := sorry
     letI : PreservesFiniteLimits (colim (J := Discrete I) (C := C)) :=
-      sorry --preservesFiniteLimitsOfNatIso sorry
+      preservesFiniteLimitsOfNatIso colimIso.symm
     letI : PreservesFiniteLimits ((whiskeringLeft (Discrete { x // x ∈ I }) (Discrete α) C).obj
         (Discrete.functor fun x ↦ ↑x)) := by
       sorry
@@ -119,10 +119,12 @@ noncomputable example : PreservesFiniteLimits (liftToFinset C α) :=
       compPreservesFiniteLimits _ _
     preservesFiniteLimitsOfNatIso (liftToFinsetEvaluationIso C I).symm
 
-#check preservesLimitsOfNatIso
-#check preservesLimitsOfEvaluation
-#check preservesLimitsOfShapeOfEvaluation
-#check HasBiproducts.colimIsoLim
+def AB4.ofAB5 [HasFilteredColimits C] [HasCoproducts C] [AB5 C] : AB4 C where
+  preservesFiniteLimits J :=
+    letI : PreservesFiniteLimits (liftToFinset C J ⋙ colim) :=
+      compPreservesFiniteLimits _ _
+    preservesFiniteLimitsOfNatIso (liftToFinsetColimIso)
 
+end
 
 end CategoryTheory
