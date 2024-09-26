@@ -234,6 +234,14 @@ theorem d_apply (n : ℕ) (x : (Fin (n + 1) → G) →₀ A) :
   ext
   simp [d]
 
+@[simp]
+theorem d_single (n : ℕ) (g : Fin (n + 1) → G) (a : A) :
+    A.d n (Finsupp.single g a) = Finsupp.single (fun i => g i.succ) (A.ρ (g 0)⁻¹ a)
+      + Finset.univ.sum fun j : Fin (n + 1) =>
+        (-1 : k) ^ ((j : ℕ) + 1) • Finsupp.single (Fin.contractNth j (· * ·) g) a := by
+  rw [d_apply, Finsupp.sum_single_index]
+  simp
+
 variable (k G)
 
 @[simps] def coinvariants : Rep k G ⥤ ModuleCat k where
@@ -303,11 +311,18 @@ def torIso (B : Rep k G) (P : ProjectiveResolution B) (n : ℕ) :
     ((Tor k G n).obj A).obj B ≅ ((tensorChainComplex A ℕ).obj P.complex).homology n :=
   ProjectiveResolution.isoLeftDerivedObj P ((tensor k G).obj A) n
 
+end Rep
+
+namespace groupHomology
+open Rep
+variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G) {n : ℕ}
+
 def tensorBarResolution := (tensorChainComplex A ℕ).obj (groupHomology.barResolution k G)
 
 def tensorStdResolution := (tensorChainComplex A ℕ).obj (groupCohomology.resolution k G)
 
-open groupHomology
+open groupHomology Finsupp
+
 theorem d_eq [DecidableEq G] :
     A.d n = (coinvariantsTensorFreeIso A (Fin (n + 1) → G)).inv ≫
       (tensorBarResolution A).d (n + 1) n ≫ (coinvariantsTensorFreeIso A (Fin n → G)).hom := by
@@ -319,7 +334,7 @@ theorem d_eq [DecidableEq G] :
     Functor.mapHomologicalComplex_obj_d, barResolution.d_def]
   show _ = A.coinvariantsTensorFreeToFinsupp (Fin n → G)
     (Submodule.Quotient.mk (a ⊗ₜ[k] hom (groupHomology.d k G n) (single _ _)))
-  have := d_single (k := k) g
+  have := groupHomology.d_single (k := k) g
   simp_all [TensorProduct.tmul_add, TensorProduct.tmul_sum, Submodule.Quotient.mk_sum, d,
     coinvariantsTensorFreeToFinsupp_apply (α := Fin n → G) a]
 
@@ -367,6 +382,10 @@ noncomputable def pOpcycles (n : ℕ) :
 
 noncomputable def fromOpcycles (i j : ℕ) :
     opcycles A i ⟶ ModuleCat.of k ((Fin j → G) →₀ A) := (inhomogeneousChains A).fromOpcycles i j
+
+end groupHomology
+open groupHomology Rep
+variable {k G : Type u} [CommRing k] [Group G] [DecidableEq G] (A : Rep k G)
 
 def groupHomology (n : ℕ) : ModuleCat k :=
   (inhomogeneousChains A).homology n

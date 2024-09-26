@@ -621,7 +621,7 @@ abbrev H0 := A.ρ.coinvariants
 abbrev H1 := oneCycles A ⧸ oneBoundaries A
 
 /-- The quotient map `Z₁(G, A) → H₁(G, A).` -/
-def H1_π : oneCycles A →ₗ[k] H1 A := (oneBoundaries A).mkQ
+def H1π : oneCycles A →ₗ[k] H1 A := (oneBoundaries A).mkQ
 
 /-- We define the 2nd group homology of a `k`-linear `G`-representation `A`, `H₂(G, A)`, to be
 2-cycles (i.e. `Z₂(G, A) := Ker(d₁ : (G² →₀ A) → (G →₀ A)`) modulo 2-boundaries
@@ -629,7 +629,7 @@ def H1_π : oneCycles A →ₗ[k] H1 A := (oneBoundaries A).mkQ
 abbrev H2 := twoCycles A ⧸ twoBoundaries A
 
 /-- The quotient map `Z₂(G, A) → H₂(G, A).` -/
-def H2_π : twoCycles A →ₗ[k] H2 A := (twoBoundaries A).mkQ
+def H2π : twoCycles A →ₗ[k] H2 A := (twoBoundaries A).mkQ
 
 end Homology
 
@@ -660,16 +660,16 @@ def H1LEquivOfIsTrivial [A.IsTrivial] :
   (Submodule.quotEquivOfEqBot _ (oneBoundaries_eq_bot_of_isTrivial A)).trans
     (oneCyclesLEquivOfIsTrivial A)
 
-theorem H1LEquivOfIsTrivial_comp_H1_π [A.IsTrivial] :
-    (H1LEquivOfIsTrivial A).comp (H1_π A) = oneCyclesLEquivOfIsTrivial A := by
+theorem H1LEquivOfIsTrivial_comp_H1π [A.IsTrivial] :
+    (H1LEquivOfIsTrivial A).comp (H1π A) = oneCyclesLEquivOfIsTrivial A := by
   ext; rfl
 
-@[simp] theorem H1LEquivOfIsTrivial_H1_π_apply_apply
+@[simp] theorem H1LEquivOfIsTrivial_H1π_apply_apply
     [A.IsTrivial] (f : oneCycles A) (x : Additive G) :
-    H1LEquivOfIsTrivial A (H1_π A f) x = f.1 (Additive.toMul x) := rfl
+    H1LEquivOfIsTrivial A (H1π A f) x = f.1 (Additive.toMul x) := rfl
 
 @[simp] theorem H1LEquivOfIsTrivial_symm_apply [A.IsTrivial] (f : Additive G →+ A) :
-    (H1LEquivOfIsTrivial A).symm f = H1_π A ((oneCyclesLEquivOfIsTrivial A).symm f) :=
+    (H1LEquivOfIsTrivial A).symm f = H1π A ((oneCyclesLEquivOfIsTrivial A).symm f) :=
   rfl
 -/
 end H1
@@ -716,6 +716,7 @@ def isoZeroOpcycles : opcycles A 0 ≅ ModuleCat.of k A.ρ.coinvariants :=
     ((inhomogeneousChains A).opcyclesIsCokernel 1 0 (by simp)) (shortComplexH0_exact A).gIsCokernel
       (dZeroArrowIso A)
 
+@[reassoc (attr := simp)]
 lemma isoZeroOpcycles_hom_comp_subtype :
     pOpcycles A 0 ≫ (isoZeroOpcycles A).hom =
       (zeroChainsLEquiv A).toModuleIso.hom ≫ A.ρ.coinvariantsKer.mkQ := by
@@ -727,6 +728,7 @@ chains, is isomorphic to the coinvariants of the representation on `A`. -/
 def isoH0 : groupHomology A 0 ≅ ModuleCat.of k (H0 A) :=
   (ChainComplex.isoHomologyι₀ _) ≪≫ (isoZeroOpcycles A)
 
+@[reassoc (attr := simp)]
 lemma groupHomologyι_comp_isoZeroOpcycles_hom  :
     groupHomologyι A 0 ≫ (isoZeroOpcycles A).hom = (isoH0 A).hom := by
   simp [isoH0]
@@ -754,6 +756,7 @@ def isoOneCycles : cycles A 1 ≅ ModuleCat.of k (oneCycles A) :=
   (inhomogeneousChains A).cyclesIsoSc' _ _ _ (by aesop) (by aesop) ≪≫
     cyclesMapIso (shortComplexH1Iso A) ≪≫ (shortComplexH1 A).moduleCatCyclesIso
 
+@[reassoc (attr := simp)]
 lemma isoOneCycles_hom_comp_subtype :
     (isoOneCycles A).hom ≫ ModuleCat.ofHom (oneCycles A).subtype =
       iCycles A 1 ≫ (oneChainsLEquiv A).toModuleIso.hom := by
@@ -762,6 +765,7 @@ lemma isoOneCycles_hom_comp_subtype :
   erw [(shortComplexH1 A).moduleCatCyclesIso_hom_subtype]
   rw [cyclesMap_i, HomologicalComplex.cyclesIsoSc'_hom_iCycles_assoc]
 
+@[reassoc (attr := simp)]
 lemma toCycles_comp_isoOneCycles_hom :
     toCycles A 2 1 ≫ (isoOneCycles A).hom =
       (twoChainsLEquiv A).toModuleIso.hom ≫
@@ -775,6 +779,7 @@ def isoH1 : groupHomology A 1 ≅ ModuleCat.of k (H1 A) :=
   (inhomogeneousChains A).homologyIsoSc' _ _ _ (by aesop) (by aesop) ≪≫
     homologyMapIso (shortComplexH1Iso A) ≪≫ (shortComplexH1 A).moduleCatHomologyIso
 
+@[reassoc (attr := simp)]
 lemma groupHomologyπ_comp_isoH1_hom  :
     groupHomologyπ A 1 ≫ (isoH1 A).hom =
       (isoOneCycles A).hom ≫ (shortComplexH1 A).moduleCatHomologyπ := by
@@ -804,6 +809,7 @@ def isoTwoCycles : cycles A 2 ≅ ModuleCat.of k (twoCycles A) :=
   (inhomogeneousChains A).cyclesIsoSc' _ _ _ (by aesop) (by aesop) ≪≫
     cyclesMapIso (shortComplexH2Iso A) ≪≫ (shortComplexH2 A).moduleCatCyclesIso
 
+@[reassoc (attr := simp)]
 lemma isoTwoCycles_hom_comp_subtype :
     (isoTwoCycles A).hom ≫ ModuleCat.ofHom (twoCycles A).subtype =
       iCycles A 2 ≫ (twoChainsLEquiv A).toModuleIso.hom := by
@@ -812,6 +818,7 @@ lemma isoTwoCycles_hom_comp_subtype :
   erw [(shortComplexH2 A).moduleCatCyclesIso_hom_subtype]
   rw [cyclesMap_i, HomologicalComplex.cyclesIsoSc'_hom_iCycles_assoc]
 
+@[reassoc (attr := simp)]
 lemma toCycles_comp_isoTwoCycles_hom :
     toCycles A 3 2 ≫ (isoTwoCycles A).hom =
       (threeChainsLEquiv A).toModuleIso.hom ≫
@@ -825,6 +832,7 @@ def isoH2 : groupHomology A 2 ≅ ModuleCat.of k (H2 A) :=
   (inhomogeneousChains A).homologyIsoSc' _ _ _ (by aesop) (by aesop) ≪≫
     homologyMapIso (shortComplexH2Iso A) ≪≫ (shortComplexH2 A).moduleCatHomologyIso
 
+@[reassoc (attr := simp)]
 lemma groupHomologyπ_comp_isoH2_hom  :
     groupHomologyπ A 2 ≫ (isoH2 A).hom =
       (isoTwoCycles A).hom ≫ (shortComplexH2 A).moduleCatHomologyπ := by
