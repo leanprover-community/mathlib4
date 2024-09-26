@@ -96,19 +96,33 @@ open CoproductsFromFiniteFiltered
 #check Functor.flip
 #check colim
 
+variable [HasFiniteCoproducts C] [HasZeroMorphisms C] [HasFiniteBiproducts C]
+variable {α : Type w}
+
 /-- `liftToFinset`, when composed with the evaluation functor, results in the whiskering composed
 with `colim`. -/
-noncomputable def liftToFinsetEvaluationIso
-    (α : Type w) [HasFiniteCoproducts C] (I : Finset (Discrete α)) :
+noncomputable def liftToFinsetEvaluationIso (I : Finset (Discrete α)) :
     liftToFinset C α ⋙ (evaluation _ _).obj I ≅
     (whiskeringLeft _ _ _).obj (Discrete.functor (·.val)) ⋙ colim (J := Discrete I) :=
-  NatIso.ofComponents (fun _ => HasColimit.isoOfNatIso (Discrete.natIso fun _ => Iso.refl _)) (by
-     intros
-     dsimp only [Functor.comp_obj, evaluation_obj_obj, liftToFinset_obj_obj, whiskeringLeft_obj_obj,
-       colim_obj, Functor.comp_map, evaluation_obj_map, liftToFinset_map_app,
-       Discrete.functor_obj_eq_as, whiskeringLeft_obj_map, colim_map]
-     ext
-     simp)
+  NatIso.ofComponents (fun _ => HasColimit.isoOfNatIso (Discrete.natIso fun _ => Iso.refl _))
+    (fun _ => by dsimp; ext; simp)
+
+noncomputable example : PreservesFiniteLimits (liftToFinset C α) :=
+  preservesFiniteLimitsOfEvaluation _ fun I =>
+    letI : PreservesFiniteLimits (colim (J := Discrete I) (C := C)) :=
+      sorry --preservesFiniteLimitsOfNatIso sorry
+    letI : PreservesFiniteLimits ((whiskeringLeft (Discrete { x // x ∈ I }) (Discrete α) C).obj
+        (Discrete.functor fun x ↦ ↑x)) := by
+      sorry
+    letI : PreservesFiniteLimits ((whiskeringLeft (Discrete I) (Discrete α) C).obj
+        (Discrete.functor (·.val)) ⋙ colim) :=
+      compPreservesFiniteLimits _ _
+    preservesFiniteLimitsOfNatIso (liftToFinsetEvaluationIso C I).symm
+
+#check preservesLimitsOfNatIso
+#check preservesLimitsOfEvaluation
+#check preservesLimitsOfShapeOfEvaluation
+#check HasBiproducts.colimIsoLim
 
 
 end CategoryTheory
