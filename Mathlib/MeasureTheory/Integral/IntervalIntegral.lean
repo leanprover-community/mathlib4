@@ -592,16 +592,12 @@ nonrec theorem integral_ofReal {a b : ℝ} {μ : Measure ℝ} {f : ℝ → ℝ} 
     (∫ x in a..b, (f x : ℂ) ∂μ) = ↑(∫ x in a..b, f x ∂μ) :=
   RCLike.intervalIntegral_ofReal
 
-theorem integral_re (μ: Measure ℝ) {a b : ℝ} {f:ℝ → ℂ} (hab: a ≤ b)
+theorem intervalIntegral_re {μ : Measure ℝ} {a b : ℝ} {f : ℝ → ℂ} (hab: a ≤ b)
     (hf: IntervalIntegrable f μ a b) :
-    ∫ x in (a)..b, (f x).re = (∫ x in (a)..b, f x).re := by
+    (∫ x in (a)..b, (f x).re ∂μ) = (∫ x in (a)..b, f x ∂μ).re := by
     repeat rw [intervalIntegral.integral_of_le hab]
     apply setIntegral_re
     rw [← intervalIntegrable_iff_integrableOn_Ioc_of_le hab]
-    have : IntervalIntegrable f μ a b = IntervalIntegrable f volume a b := by
-      dsimp
-      sorry
-    rw [← this]
     exact hf
 
 section ContinuousLinearMap

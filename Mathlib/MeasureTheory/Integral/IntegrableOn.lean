@@ -129,7 +129,8 @@ theorem integrableOn_congr_fun (hst : EqOn f g s) (hs : MeasurableSet s) :
   ⟨fun h => h.congr_fun hst hs, fun h => h.congr_fun hst.symm hs⟩
 
 theorem integrableOn_iff_ofReal {X : Type*} [MeasurableSpace X] {μ : Measure X} {s : Set X}
-    {f : X → ℝ} : IntegrableOn f s μ ↔ IntegrableOn (fun x ↦ (f x : ℂ)) s μ := integrable_iff_ofReal
+    {f : X → ℝ} : IntegrableOn f s μ ↔ IntegrableOn (fun x ↦ (f x : ℂ)) s μ :=
+    MeasureTheory.Integrable.iff_ofReal
 
 theorem Integrable.integrableOn (h : Integrable f μ) : IntegrableOn f s μ :=
   h.mono_measure <| Measure.restrict_le_self

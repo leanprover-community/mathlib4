@@ -1131,10 +1131,6 @@ theorem Integrable.ofReal {f : α → ℝ} (hf : Integrable f μ) :
   rw [← memℒp_one_iff_integrable] at hf ⊢
   exact hf.ofReal
 
-theorem Integrable.iff_ofReal {X : Type*} [MeasurableSpace X] {μ : Measure X}
-    {f : X → ℝ} : Integrable f μ ↔ Integrable (fun x ↦ (f x : ℂ)) μ :=
-    ⟨fun hf ↦ hf.ofReal, fun hf ↦ hf.re⟩
-
 theorem Integrable.re_im_iff :
     Integrable (fun x => RCLike.re (f x)) μ ∧ Integrable (fun x => RCLike.im (f x)) μ ↔
       Integrable f μ := by
@@ -1456,5 +1452,9 @@ lemma Integrable.snd {f : α → E × F} (hf : Integrable f μ) : Integrable (fu
 lemma integrable_prod {f : α → E × F} :
     Integrable f μ ↔ Integrable (fun x ↦ (f x).1) μ ∧ Integrable (fun x ↦ (f x).2) μ :=
   ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.1.prod_mk h.2⟩
+
+lemma Integrable.iff_ofReal {X : Type*} [MeasurableSpace X] {μ : Measure X}
+    {f : X → ℝ} : Integrable f μ ↔ Integrable (fun x ↦ (f x : ℂ)) μ :=
+    ⟨fun hf ↦ hf.ofReal, fun hf ↦ hf.re⟩
 
 end MeasureTheory
