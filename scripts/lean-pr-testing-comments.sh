@@ -3,23 +3,23 @@
 ## See https://leanprover-community.github.io/contribute/tags_and_branches.html
 set -e
 
-# Ensure REPO is set to either 'lean' or 'batteries'.
-if [ -z "$REPO" ]; then
-  echo "REPO environment variable must be set to either 'lean' or 'batteries'"
+# Ensure first argument is either 'lean' or 'batteries'.
+if [ -z "$1" ]; then
+  echo "The first argument must be either 'lean' or 'batteries'"
   exit 1
 fi
 
 # Adjust the branch pattern and URLs based on the repository.
-if [ "$REPO" == "lean" ]; then
+if [ "$1" == "lean" ]; then
   branch_prefix="lean-pr-testing"
   repo_url="https://api.github.com/repos/leanprover/lean4"
   base_branch="nightly-testing" # This really should be the relevant `nightly-testing-YYYY-MM-DD` tag.
-elif [ "$REPO" == "batteries" ]; then
+elif [ "$1" == "batteries" ]; then
   branch_prefix="batteries-pr-testing"
   repo_url="https://api.github.com/repos/leanprover-community/batteries"
   base_branch="master"
 else
-  echo "Unknown REPO value: $REPO. Must be either 'lean' or 'batteries'."
+  echo "Unknown repository: $1. Must be either 'lean' or 'batteries'."
   exit 1
 fi
 
