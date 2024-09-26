@@ -8,7 +8,7 @@ import Batteries.Data.String.Matcher
 import Mathlib.Data.Nat.Notation
 
 /-!
-## Text-based linters
+## Text-based linterss
 
 This file defines various mathlib linters which are based on reading the source code only.
 In practice, all such linters check for code style issues.
