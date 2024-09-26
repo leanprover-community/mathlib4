@@ -237,13 +237,13 @@ theorem eqOn_zero_of_preconnected_of_frequently_eq_zero (hf : AnalyticOn 𝕜 f 
 
 theorem eqOn_zero_or_eventually_ne_zero_of_preconnected (hf : AnalyticOn 𝕜 f U)
     (hU : IsPreconnected U) : EqOn f 0 U ∨ ∀ᶠ x in codiscreteWithin U, f x ≠ 0 := by
-  simp only [or_iff_not_imp_right, ne_eq, eventually_iff, mem_codiscreteWithin, 
+  simp only [or_iff_not_imp_right, ne_eq, eventually_iff, mem_codiscreteWithin,
     disjoint_principal_right, not_forall]
   rintro ⟨x, hx, hx2⟩
   refine hf.eqOn_zero_of_preconnected_of_frequently_eq_zero hU hx fun nh ↦ hx2 ?_
   filter_upwards [nh] with a ha
   simp_all
-  
+
 theorem eqOn_zero_of_preconnected_of_mem_closure (hf : AnalyticOn 𝕜 f U) (hU : IsPreconnected U)
     (h₀ : z₀ ∈ U) (hfz₀ : z₀ ∈ closure ({z | f z = 0} \ {z₀})) : EqOn f 0 U :=
   hf.eqOn_zero_of_preconnected_of_frequently_eq_zero hU h₀
