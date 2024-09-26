@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Probability.IdentDistrib
+import Mathlib.Probability.Independence.Integrable
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.Analysis.SpecificLimits.FloorPow
 import Mathlib.Analysis.PSeries
@@ -298,7 +299,7 @@ theorem tsum_prob_mem_Ioi_lt_top {X : Ω → ℝ} (hint : Integrable X) (hnonneg
       · simp (config := {contextual := true}) only [Set.mem_Ioc, Set.mem_Ioi,
           Set.iUnion_subset_iff, Set.setOf_subset_setOf, imp_true_iff]
     rw [this]
-    apply tendsto_measure_iUnion
+    apply tendsto_measure_iUnion_atTop
     intro m n hmn x hx
     exact ⟨hx.1, hx.2.trans (Nat.cast_le.2 hmn)⟩
   apply le_of_tendsto_of_tendsto A tendsto_const_nhds
