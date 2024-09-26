@@ -211,9 +211,9 @@ partial def findUncoveredPaths (path : FilePath) (exceptions : Array FilePath :=
 end Tests
 
 /--
-Create a message which github CI parses as annotation and displays at the specified file.
+Create a message which GitHub CI parses as annotation and displays at the specified file.
 
-Note: duplicate `file` so that they are also visible in the plain text output.
+Note: `file` is duplicated below so that it is also visible in the plain text output.
 
 * `type`: "error" or "warning"
 * `file`: file where the annotation should be displayed
