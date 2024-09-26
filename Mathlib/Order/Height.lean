@@ -100,9 +100,9 @@ theorem exists_chain_of_le_chainHeight {n : ℕ} (hn : ↑n ≤ s.chainHeight) :
 
 theorem le_chainHeight_TFAE (n : ℕ) :
     TFAE [↑n ≤ s.chainHeight, ∃ l ∈ s.subchain, length l = n, ∃ l ∈ s.subchain, n ≤ length l] := by
-  tfae_have 1 → 2; · exact s.exists_chain_of_le_chainHeight
-  tfae_have 2 → 3; · rintro ⟨l, hls, he⟩; exact ⟨l, hls, he.ge⟩
-  tfae_have 3 → 1; · rintro ⟨l, hs, hn⟩; exact le_iSup₂_of_le l hs (WithTop.coe_le_coe.2 hn)
+  tfae_have 1 → 2 := s.exists_chain_of_le_chainHeight
+  tfae_have 2 → 3 := fun ⟨l, hls, he⟩ ↦ ⟨l, hls, he.ge⟩
+  tfae_have 3 → 1 := fun ⟨l, hs, hn⟩ ↦ le_iSup₂_of_le l hs (WithTop.coe_le_coe.2 hn)
   tfae_finish
 
 variable {s t}
@@ -169,10 +169,10 @@ theorem chainHeight_add_le_chainHeight_add (s : Set α) (t : Set β) (n m : ℕ)
 theorem chainHeight_le_chainHeight_TFAE (s : Set α) (t : Set β) :
     TFAE [s.chainHeight ≤ t.chainHeight, ∀ l ∈ s.subchain, ∃ l' ∈ t.subchain, length l = length l',
       ∀ l ∈ s.subchain, ∃ l' ∈ t.subchain, length l ≤ length l'] := by
-  tfae_have 1 ↔ 3
-  · convert ← chainHeight_add_le_chainHeight_add s t 0 0 <;> apply add_zero
-  tfae_have 2 ↔ 3
-  · refine forall₂_congr fun l hl ↦ ?_
+  tfae_have 1 ↔ 3 := by
+    convert ← chainHeight_add_le_chainHeight_add s t 0 0 <;> apply add_zero
+  tfae_have 2 ↔ 3 := by
+    refine forall₂_congr fun l _ ↦ ?_
     simp_rw [← (le_chainHeight_TFAE t l.length).out 1 2, eq_comm]
   tfae_finish
 
