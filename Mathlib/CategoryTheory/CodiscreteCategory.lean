@@ -34,6 +34,7 @@ def Codiscrete (A : Type u) : Type u := A
 
 namespace Codiscrete
 
+
 instance (A : Type*) : Category (Codiscrete A) where
   Hom _ _ := Unit -- The hom types in the Codiscrete A are the unit type.
   id _ := ⟨⟩ -- This is the unique element of the unit type.
@@ -96,6 +97,7 @@ protected def opposite (A : Type*) : (Codiscrete A)ᵒᵖ ≌ Codiscrete A :=
   counitIso := natIso fun c => Iso.refl c
  }
 
+/-- Codiscrete.Functor turns a type into a codiscrete category-/
 def functor : Type u ⥤ Cat.{0,u} where
   obj A := Cat.of (Codiscrete A)
   map := funToFunc
