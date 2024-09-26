@@ -554,7 +554,7 @@ variable (E : EllipticCurve R)
 def j : R :=
   E.Δ'⁻¹ * E.c₄ ^ 3
 
-/-- A variant of `WeierstrassCurve.j_eq_zero_iff` without assuming the ring being reduced. -/
+/-- A variant of `EllipticCurve.j_eq_zero_iff` without assuming the ring being reduced. -/
 lemma j_eq_zero_iff' : E.j = 0 ↔ E.c₄ ^ 3 = 0 := by
   rw [j, Units.mul_right_eq_zero]
 
