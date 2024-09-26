@@ -79,23 +79,23 @@ if [[ "$branch_name" =~ ^lean-pr-testing-([0-9]+)$ ]]; then
   branch="[lean-pr-testing-$pr_number](https://github.com/leanprover-community/mathlib4/compare/nightly-testing...lean-pr-testing-$pr_number)"
   # Depending on the success/failure, set the appropriate message
   if [ "$LINT_OUTCOME" == "cancelled" ] || [ "$TEST_OUTCOME" == "cancelled" ] || [ "$COUNTEREXAMPLES_OUTCOME" == "cancelled" ] || [ "$ARCHIVE_OUTCOME" == "cancelled" ] || [ "$NOISY_OUTCOME" == "cancelled" ] || [ "$BUILD_OUTCOME" == "cancelled" ]; then
-    message="- 🟡 Mathlib branch $branch build against this PR was cancelled. ($current_time) [View Log]($WORKFLOW_URL)"
+    message="- 🟡️ Mathlib branch $branch build against this PR was cancelled. ($current_time) [View Log]($WORKFLOW_URL)"
   elif [ "$TEST_OUTCOME" == "success" ]; then
-    message="- ✅ Mathlib branch $branch has successfully built against this PR. ($current_time) [View Log]($WORKFLOW_URL)"
+    message="- ✅️ Mathlib branch $branch has successfully built against this PR. ($current_time) [View Log]($WORKFLOW_URL)"
   elif [ "$BUILD_OUTCOME" == "failure" ] ; then
-    message="- 💥 Mathlib branch $branch build failed against this PR. ($current_time) [View Log]($WORKFLOW_URL)"
+    message="- 💥️ Mathlib branch $branch build failed against this PR. ($current_time) [View Log]($WORKFLOW_URL)"
   elif [ "$LINT_OUTCOME" == "failure" ]; then
-    message="- ❌ Mathlib branch $branch built against this PR, but linting failed. ($current_time) [View Log]($WORKFLOW_URL)"
+    message="- ❌️ Mathlib branch $branch built against this PR, but linting failed. ($current_time) [View Log]($WORKFLOW_URL)"
   elif [ "$COUNTEREXAMPLES_OUTCOME" == "failure" ]; then
-    message="- ❌ Mathlib branch $branch built against this PR, but the counterexamples library failed. ($current_time) [View Log]($WORKFLOW_URL)"
+    message="- ❌️ Mathlib branch $branch built against this PR, but the counterexamples library failed. ($current_time) [View Log]($WORKFLOW_URL)"
   elif [ "$ARCHIVE_OUTCOME" == "failure" ]; then
-    message="- ❌ Mathlib branch $branch built against this PR, but the archive failed. ($current_time) [View Log]($WORKFLOW_URL)"
+    message="- ❌️ Mathlib branch $branch built against this PR, but the archive failed. ($current_time) [View Log]($WORKFLOW_URL)"
   elif [ "$NOISY_OUTCOME" == "failure" ]; then
-    message="- ❌ Mathlib branch $branch built against this PR, but was unexpectedly noisy. ($current_time) [View Log]($WORKFLOW_URL)"
+    message="- ❌️ Mathlib branch $branch built against this PR, but was unexpectedly noisy. ($current_time) [View Log]($WORKFLOW_URL)"
   elif [ "$TEST_OUTCOME" == "failure" ]; then
-    message="- ❌ Mathlib branch $branch built against this PR, but testing failed. ($current_time) [View Log]($WORKFLOW_URL)"
+    message="- ❌️ Mathlib branch $branch built against this PR, but testing failed. ($current_time) [View Log]($WORKFLOW_URL)"
   else
-    message="- 🟡 Mathlib branch $branch build this PR didn't complete normally. ($current_time) [View Log]($WORKFLOW_URL)"
+    message="- 🟡️ Mathlib branch $branch build this PR didn't complete normally. ($current_time) [View Log]($WORKFLOW_URL)"
   fi
 
   echo "$message"

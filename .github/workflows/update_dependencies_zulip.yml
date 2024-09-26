@@ -22,7 +22,7 @@ jobs:
           result-encoding: string
           script: |
             const owner = context.repo.owner, repo = context.repo.repo;
-            let output = "❌ `lake update` [failed](" + context.payload.workflow_run.html_url + "). "
+            let output = "❌️ `lake update` [failed](" + context.payload.workflow_run.html_url + "). "
             let prs = context.payload.workflow_run.pull_requests
             if (prs.length) {
               for (let pr of prs) {
