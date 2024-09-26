@@ -72,9 +72,8 @@ theorem AnalyticOnNhd.differentiableOn (h : AnalyticOnNhd 𝕜 f s) :
     DifferentiableOn 𝕜 f s := fun y hy =>
   (h y hy).differentiableWithinAt
 
-theorem AnalyticOn.differentiableOn (h : AnalyticOn 𝕜 f s) :
-    DifferentiableOn 𝕜 f s := fun y hy =>
-  (h y hy).differentiableWithinAt
+@[deprecated (since := "2024-09-26")]
+alias AnalyticOn.differentiableOn := AnalyticOnNhd.differentiableOn
 
 theorem HasFPowerSeriesOnBall.hasFDerivAt [CompleteSpace F] (h : HasFPowerSeriesOnBall f p x r)
     {y : E} (hy : (‖y‖₊ : ℝ≥0∞) < r) :
