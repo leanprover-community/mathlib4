@@ -679,6 +679,28 @@ section ToMatrix
 variable [DecidableEq ι]
 
 section
+open scoped Matrix
+
+/-- A version of `OrthonormalBasis.toMatrix_orthonormalBasis_mem_unitary` that works for bases with
+different index types. -/
+@[simp]
+theorem OrthonormalBasis.toMatrix_orthonormalBasis_conjTranspose_mul_self [Fintype ι']
+    (a : OrthonormalBasis ι' 𝕜 E) (b : OrthonormalBasis ι 𝕜 E) :
+    (a.toBasis.toMatrix b)ᴴ * a.toBasis.toMatrix b = 1 := by
+  ext i j
+  convert a.repr.inner_map_map (b i) (b j)
+  rw [orthonormal_iff_ite.mp b.orthonormal i j]
+  rfl
+
+/-- A version of `OrthonormalBasis.toMatrix_orthonormalBasis_mem_unitary` that works for bases with
+different index types. -/
+@[simp]
+theorem OrthonormalBasis.toMatrix_orthonormalBasis_self_mul_conjTranspose [Fintype ι']
+    (a : OrthonormalBasis ι 𝕜 E) (b : OrthonormalBasis ι' 𝕜 E) :
+    a.toBasis.toMatrix b * (a.toBasis.toMatrix b)ᴴ = 1 := by
+  classical
+  rw [Matrix.mul_eq_one_comm_of_equiv (a.toBasis.indexEquiv b.toBasis),
+    a.toMatrix_orthonormalBasis_conjTranspose_mul_self b]
 
 variable (a b : OrthonormalBasis ι 𝕜 E)
 
@@ -686,10 +708,7 @@ variable (a b : OrthonormalBasis ι 𝕜 E)
 theorem OrthonormalBasis.toMatrix_orthonormalBasis_mem_unitary :
     a.toBasis.toMatrix b ∈ Matrix.unitaryGroup ι 𝕜 := by
   rw [Matrix.mem_unitaryGroup_iff']
-  ext i j
-  convert a.repr.inner_map_map (b i) (b j)
-  rw [orthonormal_iff_ite.mp b.orthonormal i j]
-  rfl
+  exact a.toMatrix_orthonormalBasis_conjTranspose_mul_self b
 
 /-- The determinant of the change-of-basis matrix between two orthonormal bases `a`, `b` has
 unit length. -/
