@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
 -/
 import Mathlib.Algebra.Bounds
-import Mathlib.Algebra.Order.Field.Basic -- Porting note: `LinearOrderedField`, etc
-import Mathlib.Algebra.SMulWithZero
+import Mathlib.Algebra.Order.Field.Basic
 
 /-!
 # Pointwise operations on ordered algebraic objects

@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Ring.Invertible
 import Mathlib.Algebra.Ring.Opposite
-import Mathlib.Algebra.SMulWithZero
 import Mathlib.Data.Int.Cast.Lemmas
 
 /-!

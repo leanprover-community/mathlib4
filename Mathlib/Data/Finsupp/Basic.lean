@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Kim Morrison
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Regular.SMul
 import Mathlib.Data.Rat.BigOperators
 
