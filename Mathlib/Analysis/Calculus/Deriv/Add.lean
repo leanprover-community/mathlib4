@@ -247,44 +247,6 @@ theorem differentiable_neg : Differentiable 𝕜 (Neg.neg : 𝕜 → 𝕜) :=
 theorem differentiableOn_neg : DifferentiableOn 𝕜 (Neg.neg : 𝕜 → 𝕜) s :=
   DifferentiableOn.neg differentiableOn_id
 
-section abs
-
-open Filter
-
-theorem not_differentiableAt_abs_zero : ¬ DifferentiableAt ℝ (abs : ℝ → ℝ) 0 := by
-  intro h
-  have h₁ : deriv abs (0 : ℝ) = 1 :=
-    (uniqueDiffOn_Ici _ _ Set.left_mem_Ici).eq_deriv _ h.hasDerivAt.hasDerivWithinAt <|
-      (hasDerivWithinAt_id _ _).congr_of_mem (fun _ h ↦ abs_of_nonneg h) Set.left_mem_Ici
-  have h₂ : deriv abs (0 : ℝ) = -1 :=
-    (uniqueDiffOn_Iic _ _ Set.right_mem_Iic).eq_deriv _ h.hasDerivAt.hasDerivWithinAt <|
-      (hasDerivWithinAt_neg _ _).congr_of_mem (fun _ h ↦ abs_of_nonpos h) Set.right_mem_Iic
-  linarith
-
-theorem deriv_abs (x : ℝ) : deriv (|·|) x = SignType.sign x := by
-  obtain hx | rfl | hx := lt_trichotomy x 0
-  · rw [EventuallyEq.deriv_eq (f := fun x ↦ -x)]
-    · simp [hx]
-    · rw [EventuallyEq, eventually_iff_exists_mem]
-      exact ⟨Iic 0, Iic_mem_nhds hx, by simp [hx]⟩
-  · rw [deriv_zero_of_not_differentiableAt not_differentiableAt_abs_zero]
-    simp
-  · rw [EventuallyEq.deriv_eq (f := id)]
-    · simp [hx]
-    · rw [EventuallyEq, eventually_iff_exists_mem]
-      exact ⟨Ici 0, Ici_mem_nhds hx, by simp [hx]⟩
-
-theorem hasDerivAt_abs {x : ℝ} (hx : x ≠ 0) : HasDerivAt abs (SignType.sign x : ℝ) x := by
-  convert (differentiableAt_of_deriv_ne_zero ?_).hasDerivAt
-  · rw [deriv_abs]
-  · obtain hx | hx := hx.lt_or_lt
-    all_goals rw [deriv_abs]; simp [hx]
-
-theorem differentiableAt_abs {x : ℝ} (hx : x ≠ 0) : DifferentiableAt ℝ abs x :=
-  (hasDerivAt_abs hx).differentiableAt
-
-end abs
-
 lemma differentiableAt_comp_neg {a : 𝕜} :
     DifferentiableAt 𝕜 (fun x ↦ f (-x)) a ↔ DifferentiableAt 𝕜 f (-a) := by
   refine ⟨fun H ↦ ?_, fun H ↦ H.comp a differentiable_neg.differentiableAt⟩
