@@ -148,6 +148,12 @@ instance inst_ringOfIntegersAlgebra [Algebra K L] : Algebra (𝓞 K) (𝓞 L) :=
 -- diamond at `reducible_and_instances` #10906
 example : Algebra.id (𝓞 K) = inst_ringOfIntegersAlgebra K K := rfl
 
+instance inst_RingOfIntegersIsScalarTower {k K L : Type*} [Field k] [Field K] [Field L]
+    [Algebra k K] [Algebra k L] [Algebra K L] [IsScalarTower k K L] :
+    IsScalarTower (𝓞 k) (𝓞 K) (𝓞 L) :=
+  IsScalarTower.of_algebraMap_eq <| fun x => Subtype.val_inj.mp <|
+    IsScalarTower.algebraMap_apply k K L ((algebraMap (𝓞 k) k) x)
+
 namespace RingOfIntegers
 
 variable {K}
@@ -265,8 +271,8 @@ def mapRingHom {K L F : Type*} [Field K] [Field L] [FunLike F K L]
 def mapRingEquiv {K L E : Type*} [Field K] [Field L] [EquivLike E K L]
     [RingEquivClass E K L] (e : E) : (𝓞 K) ≃+* (𝓞 L) :=
   RingEquiv.ofRingHom (mapRingHom e) (mapRingHom (e : K ≃+* L).symm)
-    (by ext x; simpa [mapRingHom] using EquivLike.right_inv e x.1)
-      (by ext x; simpa [mapRingHom] using EquivLike.left_inv e x.1)
+    (RingHom.ext fun x => ext (EquivLike.right_inv e x.1))
+      (RingHom.ext fun x => ext (EquivLike.left_inv e x.1))
 
 /-- The algebra homomorphism `(𝓞 K) →ₐ[𝓞 k] (𝓞 L)` given by restricting a algebra homomorphism
   `f : K →ₐ[k] L` to `𝓞 K`. -/
@@ -280,8 +286,8 @@ def mapAlgHom {k K L F : Type*} [Field k] [Field K] [Field L] [Algebra k K]
 def mapAlgEquiv {k K L E : Type*} [Field k] [Field K] [Field L] [Algebra k K]
     [Algebra k L] [EquivLike E K L] [AlgEquivClass E k K L] (e : E) : (𝓞 K) ≃ₐ[𝓞 k] (𝓞 L) :=
   AlgEquiv.ofAlgHom (mapAlgHom e) (mapAlgHom (e : K ≃ₐ[k] L).symm)
-    (by ext x; simpa [mapAlgHom, mapRingHom] using EquivLike.right_inv e x.1)
-      (by ext x; simpa [mapAlgHom, mapRingHom] using EquivLike.left_inv e x.1)
+    (AlgHom.ext fun x => ext (EquivLike.right_inv e x.1))
+      (AlgHom.ext fun x => ext (EquivLike.left_inv e x.1))
 
 end RingOfIntegers
 
