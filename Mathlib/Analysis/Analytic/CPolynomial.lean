@@ -580,8 +580,7 @@ lemma cpolyomialOn : CPolynomialOn 𝕜 f s := fun _ _ ↦ f.cpolynomialAt
 
 lemma analyticOnNhd : AnalyticOnNhd 𝕜 f s := f.cpolyomialOn.analyticOnNhd
 
-lemma analyticOn : AnalyticOn 𝕜 f s :=
-  f.analyticOnNhd.analyticOn
+lemma analyticOn : AnalyticOn 𝕜 f s := f.analyticOnNhd.analyticOn
 
 @[deprecated (since := "2024-09-26")]
 alias analyticWithinOn := analyticOn

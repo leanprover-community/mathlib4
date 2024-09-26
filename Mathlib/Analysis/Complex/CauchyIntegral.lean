@@ -603,6 +603,12 @@ theorem analyticOnNhd_iff_differentiableOn {f : ℂ → E} {s : Set ℂ} (o : Is
     AnalyticOnNhd ℂ f s ↔ DifferentiableOn ℂ f s :=
   ⟨AnalyticOnNhd.differentiableOn, fun d _ zs ↦ d.analyticAt (o.mem_nhds zs)⟩
 
+/-- On an open set, `f : ℂ → E` is analytic iff it is differentiable -/
+theorem analyticOn_iff_differentiableOn {f : ℂ → E} {s : Set ℂ} (o : IsOpen s) :
+    AnalyticOn ℂ f s ↔ DifferentiableOn ℂ f s := by
+  rw [o.analyticOn_iff_analyticOnNhd]
+  exact analyticOnNhd_iff_differentiableOn o
+
 /-- `f : ℂ → E` is entire iff it's differentiable -/
 theorem analyticOnNhd_univ_iff_differentiable {f : ℂ → E} :
     AnalyticOnNhd ℂ f univ ↔ Differentiable ℂ f := by
