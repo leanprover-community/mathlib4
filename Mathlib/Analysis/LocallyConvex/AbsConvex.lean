@@ -342,7 +342,7 @@ theorem totallyBounded_absConvexHull
       rw [smul_add]
       rw [smul_sub]
       rw [← smul_assoc]
-      simp
+      simp?
       rw [add_comm]
       rw [two_smul]
       simp
