@@ -50,10 +50,7 @@ noncomputable def isColimitAux (hc : IsLimit c) [∀ i, Epi (c.π.app i)] :
       (h : fi.comap (c.π.app i) = fj.comap (c.π.app j))
     obtain ⟨k, ki, kj, _⟩ := IsCofilteredOrEmpty.cone_objs i j
     refine ⟨⟨k⟩, ki.op, kj.op, ?_⟩
-    dsimp only [comp_obj, op_obj, functorToPresheaves_obj_obj, CompHausLike.coe_of,
-      Functor.comp_map, op_map, Quiver.Hom.unop_op, functorToPresheaves_obj_map]
-    -- Note: we might want to remove the `simps` attribute from `FintypeCat.toProfinite`; keeping
-    -- `toProfinite_obj` in the `dsimp` block above causes the following `ext` to fail.
+    dsimp
     ext x
     obtain ⟨x, hx⟩ := ((Profinite.epi_iff_surjective (c.π.app k)).mp inferInstance) x
     rw [← hx]
