@@ -31,8 +31,8 @@ initial segment (or, equivalently, in any way). This total order is well founded
   `Ordinal.liftInitialSeg`.
   For a version registering that it is a principal segment embedding if `u < v`, see
   `Ordinal.liftPrincipalSeg`.
-* `Ordinal.omega` or `ω` is the order type of `ℕ`. This definition is universe polymorphic:
-  `Ordinal.omega.{u} : Ordinal.{u}` (contrast with `ℕ : Type`, which lives in a specific
+* `Ordinal.omega0` or `ω` is the order type of `ℕ`. This definition is universe polymorphic:
+  `Ordinal.omega0.{u} : Ordinal.{u}` (contrast with `ℕ : Type`, which lives in a specific
   universe). In some cases the universe level has to be given explicitly.
 
 * `o₁ + o₂` is the order on the disjoint union of `o₁` and `o₂` obtained by declaring that
@@ -701,27 +701,30 @@ set_option linter.deprecated false in
 theorem lift.initialSeg_coe : (lift.initialSeg.{u, v} : Ordinal → Ordinal) = lift.{v, u} :=
   rfl
 
-/-! ### The first infinite ordinal `omega` -/
+/-! ### The first infinite ordinal `omega0` -/
 
 
 /-- `ω` is the first infinite ordinal, defined as the order type of `ℕ`. -/
-def omega : Ordinal.{u} :=
+def omega0 : Ordinal.{u} :=
   lift <| @type ℕ (· < ·) _
 
-@[inherit_doc]
-scoped notation "ω" => Ordinal.omega
+@[deprecated Ordinal.omega0 (since := "2024-09-26")]
+alias omega := omega0
 
-/-- Note that the presence of this lemma makes `simp [omega]` form a loop. -/
+@[inherit_doc]
+scoped notation "ω" => Ordinal.omega0
+
+/-- Note that the presence of this lemma makes `simp [omega0]` form a loop. -/
 @[simp]
 theorem type_nat_lt : @type ℕ (· < ·) _ = ω :=
   (lift_id _).symm
 
 @[simp]
-theorem card_omega : card ω = ℵ₀ :=
+theorem card_omega0 : card ω = ℵ₀ :=
   rfl
 
 @[simp]
-theorem lift_omega : lift ω = ω :=
+theorem lift_omega0 : lift ω = ω :=
   lift_lift _
 
 /-!
