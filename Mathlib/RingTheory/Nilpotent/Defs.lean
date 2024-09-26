@@ -175,7 +175,7 @@ theorem pow_eq_zero [Zero R] [Pow R ℕ] [IsReduced R] {n : ℕ} (h : x ^ n = 0)
 
 @[simp]
 theorem pow_eq_zero_iff [MonoidWithZero R] [IsReduced R] {n : ℕ} (hn : n ≠ 0) :
-    x ^ n = 0 ↔ x = 0 := ⟨pow_eq_zero, fun h ↦ by rw [h]; exact zero_pow hn⟩
+    x ^ n = 0 ↔ x = 0 := ⟨pow_eq_zero, fun h ↦ h.symm ▸ zero_pow hn⟩
 
 theorem pow_ne_zero_iff [MonoidWithZero R] [IsReduced R] {n : ℕ} (hn : n ≠ 0) :
     x ^ n ≠ 0 ↔ x ≠ 0 := not_congr (pow_eq_zero_iff hn)
@@ -187,7 +187,7 @@ theorem pow_ne_zero [Zero R] [Pow R ℕ] [IsReduced R] (n : ℕ) (h : x ≠ 0) :
 @[simp]
 theorem pow_eq_zero_iff' [MonoidWithZero R] [IsReduced R] [Nontrivial R] {n : ℕ} :
     x ^ n = 0 ↔ x = 0 ∧ n ≠ 0 := by
-  by_cases hn : n = 0 <;> simp [hn]
+  cases n <;> simp
 
 end IsReduced
 
