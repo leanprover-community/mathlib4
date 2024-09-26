@@ -5,6 +5,7 @@ Authors: Daniel Weber
 -/
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 import Mathlib.Order.Partition.Finpartition
+import Mathlib.Tactic.Peel
 
 /-!
 # Orbits of function
@@ -19,7 +20,7 @@ namespace Orbit
 
 open Function
 
-variable {α : Type*} (f : α → α) (a b c : α) (i : ℕ)
+variable {α : Type*} (f g : α → α) (a b c : α) (i : ℕ)
 
 /--
 We say that `b` is reachable from `a` using `f`, and write `a ⇝[f] b`, if `f^i(a) = b` for some `i`.
@@ -53,7 +54,7 @@ instance {α : Type*} (f : α → α) : IsPreorder α (· ⇝[f] ·) where
     simp [← Function.iterate_add_apply]
 
 lemma reachable_of_reachable_of_nontrivial (h : a ≠ b) (hab : a ⇝[f] b) (hba : b ⇝[f] a)
-    (hac : a ⇝[f] c) : c ⇝[f] a := by
+    (c : α) (hac : a ⇝[f] c) : c ⇝[f] a := by
   obtain ⟨i, rfl⟩ := hab
   have ine : i ≠ 0 := fun nh ↦ by simp [nh] at h
   obtain ⟨j, hba⟩ := hba
@@ -95,29 +96,55 @@ variable [Fintype α] [DecidableEq α]
 def orbits : Finpartition (Finset.univ : Finset α) :=
   .ofSetoid (AntisymmRel.setoid _ (· ⇝[f] ·))
 
-lemma orbits_congr' {α : Type*} [Fintype α] [DecidableEq α] (f g : α → α) (s : Finset α)
-    (hs : s.card ≠ 1) (hfg : ∀ x ∈ s, f x = g x) (hf : s ∈ (orbits f).parts) :
+def iterations_eq_part (ha : ((orbits f).part a).Nontrivial) :
+    (Finset.range (Fintype.card α)).image (f^[·] a) = (orbits f).part a := by
+  ext y
+  simp [orbits, Finpartition.mem_parts_ofSetoid_iff, AntisymmRel, ← reachable_iff_reachable_small]
+  obtain ⟨b, hb, hne⟩ := ha.exists_ne a
+  simp only [orbits, Finpartition.mem_part_ofSetoid_iff_rel, AntisymmRel.setoid_r, AntisymmRel]
+    at hb
+  intro hay
+  apply reachable_of_reachable_of_nontrivial _ _ _ hne.symm hb.1 hb.2 y hay
+
+lemma orbits_congr' (s : Finset α) (hs : s.card ≠ 1) (hfg : ∀ x ∈ s, f x = g x)
+    (hf : s ∈ (orbits f).parts) :
     s ∈ (orbits g).parts := by
-  rcases hs.lt_or_lt  with hs | hs
-  · simp_all [← Finset.bot_eq_empty]
+  rcases hs.lt_or_lt with hs | hs
+  · simp_all
   rw [Finset.one_lt_card_iff_nontrivial] at hs
-  obtain ⟨x, hx⟩ := hs.nonempty
-  rw [Finset.mem_coe] at hx
-  obtain rfl := Finpartition.part_eq_of_mem _ hf hx
-  clear hf hx
-  suffices (scc f).part x = (scc g).part x by simp [this]
-  ext z
-  have := scc_part_eq_orbit_of_nontrivial f x hs
-  rw [← Finset.mem_coe, this]
-  simp_rw [← Finset.mem_coe, this] at hfg
-  simp only [Set.mem_setOf_eq, forall_exists_index, forall_apply_eq_imp_iff] at hfg
-  simp only [Set.mem_setOf_eq]
+  haveI : Nonempty α := hs.nonempty.to_type
+  rw [orbits, Finpartition.mem_parts_ofSetoid_iff] at hf ⊢
+  simp [AntisymmRel] at hf ⊢
+  obtain ⟨x, hx⟩ := hf
+  obtain ⟨z, hz, hne⟩ := hs.exists_ne x
+  obtain ⟨hxz, hzx⟩ := (hx z).mp hz
+  have mem_imp := reachable_of_reachable_of_nontrivial _ _ _ hne.symm hxz hzx
+  have hxitf : ∀ i, f^[i] x ⇝[f] x := fun i ↦ mem_imp _ (reachable_iterate ..)
+  have hxitfs : ∀ i, f^[i] x ∈ s := by simpa [hx]
+  have hxitgf : ∀ i, g^[i] x = f^[i] x := by
+    intro i
+    apply Eq.symm
+    apply iterate_congr
+    intro j _
+    simp only [hxitfs, hfg]
+  have hxitg : ∀ i, g^[i] x ⇝[g] x := by
+    peel hxitf with i hi
+    obtain ⟨j, hv⟩ := hi
+    conv_rhs => rw [← hv]
+    rw [← Function.iterate_add_apply, ← hxitgf, Function.iterate_add_apply]
+    simp
+  use x
+  intro y
+  rw [hx]
+  constructor
+  · rintro ⟨⟨i, rfl⟩, -⟩
+    simp [← hxitgf, hxitg]
+  · rintro ⟨⟨i, rfl⟩, -⟩
+    simp [hxitgf, hxitf]
 
-  sorry
-
-lemma scc_congr {α : Type*} [Fintype α] [DecidableEq α] (f g : α → α) (s : Finset α)
-    (hs : s.card ≠ 1) (hfg : ∀ x ∈ s, f x = g x) : s ∈ (scc f).parts ↔ s ∈ (scc g).parts := by
-  constructor <;> apply scc_congr' <;> simp_all
+lemma orbits_congr {α : Type*} [Fintype α] [DecidableEq α] (f g : α → α) (s : Finset α)
+    (hs : s.card ≠ 1) (hfg : ∀ x ∈ s, f x = g x) : s ∈ (orbits f).parts ↔ s ∈ (orbits g).parts := by
+  constructor <;> apply orbits_congr' <;> simp_all
 
 end Orbits
 

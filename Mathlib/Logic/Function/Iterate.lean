@@ -82,6 +82,15 @@ theorem iterate_mul (m : ℕ) : ∀ n, f^[m * n] = f^[m]^[n]
   | 0 => by simp only [Nat.mul_zero, iterate_zero]
   | n + 1 => by simp only [Nat.mul_succ, Nat.mul_one, iterate_one, iterate_add, iterate_mul m n]
 
+theorem iterate_congr (g : α → α) (x : α) (i : ℕ) (hi : ∀ j < i, f (f^[j] x) = g (f^[j] x)) :
+    f^[i] x = g^[i] x := by
+  induction i generalizing x
+  case zero =>
+    simp
+  case succ i hind =>
+    simp only [iterate_succ, comp_apply, ← id_eq _ ▸ iterate_zero .. ▸ hi 0 (by simp)]
+    apply hind _ fun j hj ↦ by simp [-iterate_succ, ← iterate_succ_apply, hi, hj]
+
 variable {f}
 
 theorem iterate_fixed {x} (h : f x = x) (n : ℕ) : f^[n] x = x :=

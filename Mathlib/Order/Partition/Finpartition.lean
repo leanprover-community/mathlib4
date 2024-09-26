@@ -455,6 +455,9 @@ variable [DecidableEq α] {s t u : Finset α} (P : Finpartition s) {a : α}
 theorem nonempty_of_mem_parts {a : Finset α} (ha : a ∈ P.parts) : a.Nonempty :=
   nonempty_iff_ne_empty.2 <| P.ne_bot ha
 
+@[simp]
+theorem not_empty_mem_parts : ∅ ∉ P.parts := Finset.not_nonempty_empty ∘ (nonempty_of_mem_parts P ·)
+
 lemma eq_of_mem_parts (ht : t ∈ P.parts) (hu : u ∈ P.parts) (hat : a ∈ t) (hau : a ∈ u) : t = u :=
   P.disjoint.elim ht hu <| not_disjoint_iff.2 ⟨a, hat, hau⟩
 
@@ -591,6 +594,12 @@ def ofSetoid (s : Setoid α) [DecidableRel s.r] : Finpartition (univ : Finset α
     simp only [filter_eq_empty_iff, not_forall, mem_univ, forall_true_left, true_and, not_not]
     use a; exact s.refl a
 
+theorem mem_parts_ofSetoid_iff {s : Setoid α} [DecidableRel s.r] {f : Finset α} :
+    f ∈ (ofSetoid s).parts ↔ ∃ x, ∀ y, (y ∈ f ↔ s.r x y) := by
+  simp [ofSetoid]
+  congr! with a
+  simp [Finset.ext_iff, iff_comm]
+
 @[simp]
 theorem mem_part_ofSetoid_iff_rel {s : Setoid α} [DecidableRel s.r] {b : α} :
     b ∈ (ofSetoid s).part a ↔ s.r a b := by
@@ -607,9 +616,7 @@ theorem mem_iff_rel_of_mem_parts {s : Setoid α} [DecidableRel s.r] {x y : α}
   obtain rfl := Finpartition.part_eq_of_mem _ hf hx
   apply mem_part_ofSetoid_iff_rel
 
-theorem mem_parts_ofSetoid_iff {s : Setoid α} [DecidableRel s.r] {f : Finset α} [Nonempty α] :
-    f ∈ (ofSetoid s).parts ↔ (∀ x ∈ f, ∀ y ∈ f, s.r x y) ∧ ∀ x ∉ f, ∃ y ∈ f, ¬s.r x y := by
-  sorry
+alias ⟨rel_mem_mem, mem_of_rel_mem⟩ := mem_iff_rel_of_mem_parts
 
 end Setoid
 
