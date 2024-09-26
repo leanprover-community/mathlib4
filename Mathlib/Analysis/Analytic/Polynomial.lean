@@ -51,7 +51,8 @@ theorem AnalyticAt.aeval_mvPolynomial (hf : ∀ i, AnalyticAt 𝕜 (f · i) z) (
   · simp_rw [map_add]; exact hp.add hq
   · simp_rw [map_mul, aeval_X]; exact hp.mul (hf i)
 
-theorem AnalyticOnNhd.aeval_mvPolynomial (hf : ∀ i, AnalyticOnNhd 𝕜 (f · i) s) (p : MvPolynomial σ A) :
+theorem AnalyticOnNhd.aeval_mvPolynomial
+    (hf : ∀ i, AnalyticOnNhd 𝕜 (f · i) s) (p : MvPolynomial σ A) :
     AnalyticOnNhd 𝕜 (fun x ↦ aeval (f x) p) s := fun x hx ↦ .aeval_mvPolynomial (hf · x hx) p
 
 theorem AnalyticOnNhd.eval_continuousLinearMap (f : E →L[𝕜] σ → B) (p : MvPolynomial σ B) :
@@ -72,6 +73,7 @@ theorem AnalyticOnNhd.eval_linearMap' (f : σ → E →ₗ[𝕜] B) (p : MvPolyn
     AnalyticOnNhd 𝕜 (fun x ↦ eval (f · x) p) Set.univ := AnalyticOnNhd.eval_linearMap (.pi f) p
 
 theorem AnalyticOnNhd.eval_mvPolynomial [Fintype σ] (p : MvPolynomial σ 𝕜) :
-    AnalyticOnNhd 𝕜 (eval · p) Set.univ := AnalyticOnNhd.eval_linearMap (.id (R := 𝕜) (M := σ → 𝕜)) p
+    AnalyticOnNhd 𝕜 (eval · p) Set.univ :=
+  AnalyticOnNhd.eval_linearMap (.id (R := 𝕜) (M := σ → 𝕜)) p
 
 end MvPolynomial

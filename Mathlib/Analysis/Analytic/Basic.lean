@@ -51,8 +51,8 @@ Additionally, let `f` be a function from `E` to `F`.
 * `AnalyticAt 𝕜 f x`: there exists a power series `p` such that holds `HasFPowerSeriesAt f p x`.
 * `AnalyticOnNhd 𝕜 f s`: the function `f` is analytic at every point of `s`.
 
-We also define versions of `HasFPowerSeriesOnBall`, `AnalyticAt`, and `AnalyticOnNhd` restricted to a
-set, similar to `ContinuousWithinAt`. See `Mathlib.Analysis.Analytic.Within` for basic properties.
+We also define versions of `HasFPowerSeriesOnBall`, `AnalyticAt`, and `AnalyticOnNhd` restricted to
+a set, similar to `ContinuousWithinAt`. See `Mathlib.Analysis.Analytic.Within` for basic properties.
 
 * `AnalyticWithinAt 𝕜 f s x` means a power series at `x` converges to `f` on `𝓝[s ∪ {x}] x`.
 * `AnalyticOn 𝕜 f s t` means `∀ x ∈ t, AnalyticWithinAt 𝕜 f s x`.
@@ -651,7 +651,8 @@ theorem AnalyticAt.congr (hf : AnalyticAt 𝕜 f x) (hg : f =ᶠ[𝓝 x] g) : An
 theorem analyticAt_congr (h : f =ᶠ[𝓝 x] g) : AnalyticAt 𝕜 f x ↔ AnalyticAt 𝕜 g x :=
   ⟨fun hf ↦ hf.congr h, fun hg ↦ hg.congr h.symm⟩
 
-theorem AnalyticOnNhd.mono {s t : Set E} (hf : AnalyticOnNhd 𝕜 f t) (hst : s ⊆ t) : AnalyticOnNhd 𝕜 f s :=
+theorem AnalyticOnNhd.mono {s t : Set E} (hf : AnalyticOnNhd 𝕜 f t) (hst : s ⊆ t) :
+    AnalyticOnNhd 𝕜 f s :=
   fun z hz => hf z (hst hz)
 
 theorem AnalyticOnNhd.congr' (hf : AnalyticOnNhd 𝕜 f s) (hg : f =ᶠ[𝓝ˢ s] g) :
@@ -691,7 +692,8 @@ theorem ContinuousLinearMap.comp_hasFPowerSeriesOnBall (g : F →L[𝕜] G)
 
 /-- If a function `f` is analytic on a set `s` and `g` is linear, then `g ∘ f` is analytic
 on `s`. -/
-theorem ContinuousLinearMap.comp_analyticOnNhd {s : Set E} (g : F →L[𝕜] G) (h : AnalyticOnNhd 𝕜 f s) :
+theorem ContinuousLinearMap.comp_analyticOnNhd
+    {s : Set E} (g : F →L[𝕜] G) (h : AnalyticOnNhd 𝕜 f s) :
     AnalyticOnNhd 𝕜 (g ∘ f) s := by
   rintro x hx
   rcases h x hx with ⟨p, r, hp⟩
@@ -1164,7 +1166,8 @@ protected theorem AnalyticAt.continuousAt (hf : AnalyticAt 𝕜 f x) : Continuou
   let ⟨_, hp⟩ := hf
   hp.continuousAt
 
-protected theorem AnalyticOnNhd.continuousOn {s : Set E} (hf : AnalyticOnNhd 𝕜 f s) : ContinuousOn f s :=
+protected theorem AnalyticOnNhd.continuousOn {s : Set E} (hf : AnalyticOnNhd 𝕜 f s) :
+    ContinuousOn f s :=
   fun x hx => (hf x hx).continuousAt.continuousWithinAt
 
 protected lemma AnalyticOn.continuousOn {f : E → F} {s : Set E} (h : AnalyticOn 𝕜 f s) :

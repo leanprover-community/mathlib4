@@ -341,7 +341,8 @@ theorem AnalyticWithinAt.curry_right
   AnalyticWithinAt.comp₂ fa  analyticWithinAt_const analyticWithinAt_id (fun _ hx ↦ hx)
 
 /-- Analytic functions on products are analytic in the first coordinate -/
-theorem AnalyticOnNhd.curry_left {f : E × F → G} {s : Set (E × F)} {y : F} (fa : AnalyticOnNhd 𝕜 f s) :
+theorem AnalyticOnNhd.curry_left {f : E × F → G} {s : Set (E × F)} {y : F}
+   (fa : AnalyticOnNhd 𝕜 f s) :
     AnalyticOnNhd 𝕜 (fun x ↦ f (x, y)) {x | (x, y) ∈ s} :=
   fun x m ↦ (fa (x, y) m).curry_left
 alias AnalyticOnNhd.along_fst := AnalyticOnNhd.curry_left
@@ -352,7 +353,8 @@ theorem AnalyticOn.curry_left
   fun x m ↦ (fa (x, y) m).curry_left
 
 /-- Analytic functions on products are analytic in the second coordinate -/
-theorem AnalyticOnNhd.curry_right {f : E × F → G} {x : E} {s : Set (E × F)} (fa : AnalyticOnNhd 𝕜 f s) :
+theorem AnalyticOnNhd.curry_right {f : E × F → G} {x : E} {s : Set (E × F)}
+    (fa : AnalyticOnNhd 𝕜 f s) :
     AnalyticOnNhd 𝕜 (fun y ↦ f (x, y)) {y | (x, y) ∈ s} :=
   fun y m ↦ (fa (x, y) m).curry_right
 alias AnalyticOnNhd.along_snd := AnalyticOnNhd.curry_right
@@ -570,7 +572,8 @@ lemma AnalyticOn.mul {f g : E → A} {s : Set E}
   fun _ m ↦ (hf _ m).mul (hg _ m)
 
 /-- Multiplication of analytic functions (valued in a normed `𝕜`-algebra) is analytic. -/
-lemma AnalyticOnNhd.mul {f g : E → A} {s : Set E} (hf : AnalyticOnNhd 𝕜 f s) (hg : AnalyticOnNhd 𝕜 g s) :
+lemma AnalyticOnNhd.mul {f g : E → A} {s : Set E}
+    (hf : AnalyticOnNhd 𝕜 f s) (hg : AnalyticOnNhd 𝕜 g s) :
     AnalyticOnNhd 𝕜 (fun x ↦ f x * g x) s :=
   fun _ m ↦ (hf _ m).mul (hg _ m)
 
@@ -747,7 +750,8 @@ theorem AnalyticOn.inv {f : E → 𝕝} {s : Set E}
   fun x m ↦ (fa x m).inv (f0 x m)
 
 /-- `(f x)⁻¹` is analytic away from `f x = 0` -/
-theorem AnalyticOnNhd.inv {f : E → 𝕝} {s : Set E} (fa : AnalyticOnNhd 𝕜 f s) (f0 : ∀ x ∈ s, f x ≠ 0) :
+theorem AnalyticOnNhd.inv {f : E → 𝕝} {s : Set E}
+    (fa : AnalyticOnNhd 𝕜 f s) (f0 : ∀ x ∈ s, f x ≠ 0) :
     AnalyticOnNhd 𝕜 (fun x ↦ (f x)⁻¹) s :=
   fun x m ↦ (fa x m).inv (f0 x m)
 

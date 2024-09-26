@@ -68,7 +68,8 @@ theorem HasFPowerSeriesOnBall.differentiableOn [CompleteSpace F]
     (h : HasFPowerSeriesOnBall f p x r) : DifferentiableOn 𝕜 f (EMetric.ball x r) := fun _ hy =>
   (h.analyticAt_of_mem hy).differentiableWithinAt
 
-theorem AnalyticOnNhd.differentiableOn (h : AnalyticOnNhd 𝕜 f s) : DifferentiableOn 𝕜 f s := fun y hy =>
+theorem AnalyticOnNhd.differentiableOn (h : AnalyticOnNhd 𝕜 f s) :
+    DifferentiableOn 𝕜 f s := fun y hy =>
   (h y hy).differentiableWithinAt
 
 theorem HasFPowerSeriesOnBall.hasFDerivAt [CompleteSpace F] (h : HasFPowerSeriesOnBall f p x r)
@@ -162,7 +163,8 @@ protected theorem HasFPowerSeriesAt.deriv (h : HasFPowerSeriesAt f p x) :
   h.hasDerivAt.deriv
 
 /-- If a function is analytic on a set `s`, so is its derivative. -/
-theorem AnalyticOnNhd.deriv [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) : AnalyticOnNhd 𝕜 (deriv f) s :=
+theorem AnalyticOnNhd.deriv [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) :
+    AnalyticOnNhd 𝕜 (deriv f) s :=
   (ContinuousLinearMap.apply 𝕜 F (1 : 𝕜)).comp_analyticOnNhd h.fderiv
 
 /-- If a function is analytic on a set `s`, so are its successive derivatives. -/
