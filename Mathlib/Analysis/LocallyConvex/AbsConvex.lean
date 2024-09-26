@@ -362,10 +362,6 @@ theorem totallyBounded_absConvexHull
     apply Set.add_subset_add_right
     apply hts'
   rw [add_self_eq_smul_two] at e7
-  have v0 : Convex ℝ V := by
-    apply Convex.inter
-    exact hS₂
-    exact Convex.neg hS₂
 /-
   have v1 : Convex ℝ ((2 : ℝ) • V) := Convex.smul v0 2
 
@@ -444,17 +440,20 @@ theorem totallyBounded_absConvexHull
       rw [e12]
       apply hS₃
       aesop
-  have e9 : ⋃ y ∈ t', t' + V + V ⊆ ⋃ y ∈ t', {x | (x, y) ∈ d'} := by
-    rw [← e2]
-    sorry
-    --aesop?
-    --apply iUnion_mono
+  --have e9' : ∀ y ∈ t'
+  have e9 : ⋃ y ∈ t', y +ᵥ ((2 : ℝ) • V) ⊆ ⋃ y ∈ t', {x | (x, y) ∈ d'} := by
+    apply biUnion_mono
+    exact fun ⦃a⦄ a ↦ a
+    intro y _
+    exact e8 y
   use t'
   constructor
   · exact htf'
-  · sorry
-
-
+  · apply subset_trans e7
+    aesop
+  apply Convex.inter
+  exact hS₂
+  exact Convex.neg hS₂
 end
 
 section AbsolutelyConvexSets
