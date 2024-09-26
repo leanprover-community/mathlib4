@@ -57,21 +57,20 @@ def lift (F : C → A) : C ⥤ Codiscrete A where
 /-- Any functor `C ⥤  Codiscrete A` has an underlying function.-/
 def invlift (F : C ⥤ Codiscrete A) : C → A := F.obj
 
-/-- For functors to a codiscrete category, a natural transformation is trivial.-/
-def natTrans {F G : C ⥤ Codiscrete A} (_ : ∀ c : C, F.obj c ⟶ G.obj c) :
+/-- Given two functors to a codiscrete category, there is a trivial natural transformation.-/
+def natTrans {F G : C ⥤ Codiscrete A} :
     F ⟶ G where
   app _ := ⟨⟩
 
-/-- For functors into a codiscrete category, a natural isomorphism is just a collection of
-isomorphisms, as the naturality squares are trivial.-/
-def natIso {F G : C ⥤ Codiscrete A} (_ : ∀ c : C, F.obj c ≅ G.obj c) :
+/-- Given two functors into a codiscrete category, the trivial natural transformation is an
+natural isomorphism.-/
+def natIso {F G : C ⥤ Codiscrete A} :
     F ≅ G where
-  hom := {
-    app := fun _ => ⟨⟩
-  }
-  inv := {
-    app := fun _ => ⟨⟩
-  }
+      hom := natTrans
+      inv := {
+        app := fun _ => ⟨⟩
+
+      }
 
 /-- Every functor `F` to a codiscrete category is naturally isomorphic {(actually, equal)?} to
   `Codiscrete.functor (F.obj)`. -/
@@ -94,7 +93,7 @@ protected def opposite (A : Type*) : (Codiscrete A)ᵒᵖ ≌ Codiscrete A :=
   inverse := F.rightOp
   unitIso := NatIso.ofComponents fun ⟨x⟩ =>
    Iso.refl _
-  counitIso := natIso fun c => Iso.refl c
+  counitIso := natIso
  }
 
 /-- Codiscrete.Functor turns a type into a codiscrete category-/
