@@ -6,7 +6,7 @@ Authors: Violeta Hernández Palacios
 import Mathlib.Data.List.Chain
 
 /-!
-# Group a list by a relation
+# Group consecutive elements in a list by a relation
 
 This file provides the basic API for `List.groupBy` which is defined in Core.
 The main results are the following:
