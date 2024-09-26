@@ -157,9 +157,9 @@ open UniformConvergence
 
 variable {α β : Type*} {𝔖 : Set (Set α)}
 
-instance [Nonempty β] : Nonempty (α →ᵤ β) := Pi.instNonempty _
+instance [Nonempty β] : Nonempty (α →ᵤ β) := Pi.instNonempty
 
-instance [Nonempty β] : Nonempty (α →ᵤ[𝔖] β) := Pi.instNonempty _
+instance [Nonempty β] : Nonempty (α →ᵤ[𝔖] β) := Pi.instNonempty
 
 instance [Subsingleton β] : Subsingleton (α →ᵤ β) :=
   inferInstanceAs <| Subsingleton <| α → β
