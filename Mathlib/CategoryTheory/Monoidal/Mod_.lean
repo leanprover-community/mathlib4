@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Monoidal.Mon_
 
 universe v₁ v₂ u₁ u₂
 
-open CategoryTheory MonoidalCategory Mon_Class
+open CategoryTheory MonoidalCategory Mon_Class IsMon_Hom
 
 variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 variable {C}
@@ -99,7 +99,7 @@ def comap {A B : Mon_ C} (f : A ⟶ B) : Mod_ B ⥤ Mod_ A where
       act := (f.hom ▷ M.X) ≫ M.act
       one_act := by
         slice_lhs 1 2 => rw [← comp_whiskerRight]
-        rw [f.one_hom, one_act]
+        rw [one_hom, one_act]
       assoc := by
         -- oh, for homotopy.io in a widget!
         slice_rhs 2 3 => rw [whisker_exchange]
@@ -109,7 +109,7 @@ def comap {A B : Mon_ C} (f : A ⟶ B) : Mod_ B ⥤ Mod_ A where
         slice_rhs 3 4 => rw [associator_inv_naturality_middle]
         slice_rhs 2 4 => rw [Iso.hom_inv_id_assoc]
         slice_rhs 1 2 => rw [← MonoidalCategory.comp_whiskerRight, ← whisker_exchange]
-        slice_rhs 1 2 => rw [← MonoidalCategory.comp_whiskerRight, ← tensorHom_def', ← f.mul_hom]
+        slice_rhs 1 2 => rw [← MonoidalCategory.comp_whiskerRight, ← tensorHom_def', ← mul_hom]
         rw [comp_whiskerRight, Category.assoc] }
   map g :=
     { hom := g.hom

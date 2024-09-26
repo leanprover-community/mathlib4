@@ -29,7 +29,7 @@ if the appropriate framework was available.
 
 universe v₁ v₂ u₁ u₂
 
-open CategoryTheory MonoidalCategory Mon_Class
+open CategoryTheory MonoidalCategory Mon_Class IsMon_Hom
 
 namespace CategoryTheory.Monoidal
 
@@ -48,16 +48,24 @@ instance (A : C ⥤ D) [Mon_Class A] (X : C) : Mon_Class (A.obj X) where
   mul_one := congr_app (mul_one' A) X
   mul_assoc := congr_app (mul_assoc' A) X
 
+@[simps]
+instance (A : C ⥤ D) [Mon_Class A] {X Y : C} (f : X ⟶ Y) : IsMon_Hom (A.map f) where
+  one_hom := by dsimp; rw [← η[A].naturality, tensorUnit_map]; dsimp; rw [Category.id_comp]
+  mul_hom := by dsimp; rw [← μ[A].naturality, tensorObj_map]
+
 /-- A monoid object in a functor category induces a functor to the category of monoid objects. -/
 @[simps!]
 def functorObj (A : Mon_ (C ⥤ D)) : C ⥤ Mon_ D where
   obj X := { X := A.X.obj X }
-  map f :=
-  { hom := A.X.map f
-    one_hom := by dsimp; rw [← η[A.X].naturality, tensorUnit_map]; dsimp; rw [Category.id_comp]
-    mul_hom := by dsimp; rw [← μ[A.X].naturality, tensorObj_map] }
+  map f := { hom := A.X.map f }
   map_id X := by ext; dsimp; rw [CategoryTheory.Functor.map_id]
   map_comp f g := by ext; dsimp; rw [Functor.map_comp]
+
+@[simps]
+instance (A B : C ⥤ D) [Mon_Class A] [Mon_Class B] {X : C} (f : A ⟶ B) [IsMon_Hom f] :
+    IsMon_Hom (f.app X) where
+  one_hom := congr_app (one_hom (f := f)) X
+  mul_hom := congr_app (mul_hom (f := f)) X
 
 /-- Functor translating a monoid object in a functor category
 to a functor into the category of monoid objects.
@@ -66,10 +74,7 @@ to a functor into the category of monoid objects.
 def functor : Mon_ (C ⥤ D) ⥤ C ⥤ Mon_ D where
   obj := functorObj
   map f :=
-  { app := fun X =>
-    { hom := f.hom.app X
-      one_hom := congr_app f.one_hom X
-      mul_hom := congr_app f.mul_hom X } }
+  { app := fun X => { hom := f.hom.app X } }
 
 @[simps]
 instance (F : C ⥤ Mon_ D) : Mon_Class (F ⋙ Mon_.forget D) where
@@ -91,15 +96,16 @@ def inverse : (C ⥤ Mon_ D) ⥤ Mon_ (C ⥤ D) where
   map α :=
   { hom :=
     { app := fun X => (α.app X).hom
-      naturality := fun X Y f => congr_arg Mon_Hom.hom (α.naturality f) } }
+      naturality := fun X Y f => congr_arg Mon_Hom.hom (α.naturality f) }
+    isMon_Hom := {} }
 
 /-- The unit for the equivalence `Mon_ (C ⥤ D) ≌ C ⥤ Mon_ D`.
 -/
 @[simps!]
 def unitIso : 𝟭 (Mon_ (C ⥤ D)) ≅ functor ⋙ inverse :=
   NatIso.ofComponents (fun A =>
-  { hom := { hom := { app := fun _ => 𝟙 _ } }
-    inv := { hom := { app := fun _ => 𝟙 _ } } })
+  { hom := { hom := { app := fun _ => 𝟙 _ }, isMon_Hom := {} }
+    inv := { hom := { app := fun _ => 𝟙 _ }, isMon_Hom := {} } })
 
 /-- The counit for the equivalence `Mon_ (C ⥤ D) ≌ C ⥤ Mon_ D`.
 -/
@@ -242,8 +248,8 @@ def inverse : (C ⥤ CommMon_ D) ⥤ CommMon_ (C ⥤ D) where
 @[simps!]
 def unitIso : 𝟭 (CommMon_ (C ⥤ D)) ≅ functor ⋙ inverse :=
   NatIso.ofComponents (fun A =>
-  { hom := { hom := { app := fun _ => 𝟙 _ }  }
-    inv := { hom := { app := fun _ => 𝟙 _ }  } })
+  { hom := { hom := { app := fun _ => 𝟙 _ }, isMon_Hom := {} }
+    inv := { hom := { app := fun _ => 𝟙 _ }, isMon_Hom := {} } })
 
 /-- The counit for the equivalence `CommMon_ (C ⥤ D) ≌ C ⥤ CommMon_ D`.
 -/

@@ -20,7 +20,7 @@ noncomputable section
 
 universe v₁ v₂ u₁ u₂ u
 
-open CategoryTheory MonoidalCategory Mon_Class
+open CategoryTheory MonoidalCategory Mon_Class IsMon_Hom
 
 variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C] [BraidedCategory C]
 
@@ -77,11 +77,11 @@ theorem hom_antipode {A B : Hopf_ C} (f : A ⟶ B) :
     slice_lhs 3 4 =>
       rw [← tensorHom_def]
     slice_lhs 3 4 =>
-      rw [← f.hom.mul_hom]
+      rw [← mul_hom]
     slice_lhs 1 3 =>
       rw [A.antipode_right]
     slice_lhs 2 3 =>
-      rw [f.hom.one_hom]
+      rw [one_hom]
 
 @[reassoc (attr := simp)]
 theorem one_antipode (A : Hopf_ C) : η[A.X.X.X] ≫ A.antipode = η[A.X.X.X] := by
@@ -272,8 +272,7 @@ theorem mul_antipode₁ (A : Hopf_ C) :
     erw [Bimon_.compatibility]
   slice_lhs 2 4 =>
     rw [antipode_left]
-  simp
-
+  simp [unitors_equal]
 
 /--
 Auxiliary calculation for `mul_antipode`.

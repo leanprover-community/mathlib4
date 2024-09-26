@@ -25,7 +25,7 @@ A monad "is just" a monoid in the category of endofunctors.
 
 namespace CategoryTheory
 
-open Category Mon_Class
+open Category Mon_Class IsMon_Hom
 
 universe v u -- morphism levels before object levels. See note [category_theory universes].
 
@@ -52,7 +52,7 @@ variable (C)
 @[simps]
 def monadToMon : Monad C ⥤ Mon_ (C ⥤ C) where
   obj := toMon
-  map f := { hom := f.toNatTrans }
+  map f := { hom := f.toNatTrans, isMon_Hom := {} }
 
 variable {C}
 
@@ -89,11 +89,11 @@ def monToMonad : Mon_ (C ⥤ C) ⥤ Monad C where
     { f.hom with
       app_η := by
         intro X
-        erw [← NatTrans.comp_app, f.one_hom]
+        erw [← NatTrans.comp_app, one_hom]
         simp only [Functor.id_obj, ofMon_obj, ofMon_η]
       app_μ := by
         intro Z
-        erw [← NatTrans.comp_app, f.mul_hom]
+        erw [← NatTrans.comp_app, mul_hom]
         dsimp
         simp only [Category.assoc, NatTrans.naturality, ofMon_obj, ofMon] }
 

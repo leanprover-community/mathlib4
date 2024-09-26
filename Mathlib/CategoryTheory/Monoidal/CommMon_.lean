@@ -161,8 +161,8 @@ def commMonToLaxBraided : CommMon_ C ⥤ LaxBraidedFunctor (Discrete PUnit.{u + 
   map f :=
     { app := fun _ => f.hom
       naturality := fun _ _ _ => by dsimp; rw [Category.id_comp, Category.comp_id]
-      unit := Mon_Hom.one_hom f
-      tensor := fun _ _ => Mon_Hom.mul_hom f }
+      unit := IsMon_Hom.one_hom
+      tensor := fun _ _ => IsMon_Hom.mul_hom }
 
 /-- Implementation of `CommMon_.equivLaxBraidedFunctorPUnit`. -/
 @[simps!]
@@ -188,8 +188,8 @@ attribute [local simp] counitIso_one counitIso_one_mul in
 def counitIso : commMonToLaxBraided C ⋙ laxBraidedToCommMon C ≅ 𝟭 (CommMon_ C) :=
   NatIso.ofComponents
     (fun F =>
-      { hom := { hom := 𝟙 _ }
-        inv := { hom := 𝟙 _ } })
+      { hom := { hom := 𝟙 _, isMon_Hom := {} }
+        inv := { hom := 𝟙 _, isMon_Hom := {} } })
 
 end EquivLaxBraidedFunctorPUnit
 

@@ -21,7 +21,7 @@ suppress_compilation
 
 universe v u
 
-open CategoryTheory
+open CategoryTheory IsMon_Hom
 
 open LinearMap
 
@@ -91,9 +91,9 @@ def functor : Mon_ (ModuleCat.{u} R) ⥤ AlgebraCat R where
   map {A B} f :=
     { f.hom.toAddMonoidHom with
       toFun := f.hom
-      map_one' := LinearMap.congr_fun f.one_hom (1 : R)
-      map_mul' := fun x y => LinearMap.congr_fun f.mul_hom (x ⊗ₜ y)
-      commutes' := fun r => LinearMap.congr_fun f.one_hom r }
+      map_one' := LinearMap.congr_fun (one_hom (f := f.hom)) (1 : R)
+      map_mul' := fun x y => LinearMap.congr_fun (mul_hom (f := f.hom)) (x ⊗ₜ y)
+      commutes' := fun r => LinearMap.congr_fun (one_hom (f := f.hom)) r }
 
 instance (A : Type u) [Ring A] [Algebra R A] : Mon_Class (ModuleCat.of R A) where
   one := Algebra.linearMap R A
@@ -155,14 +155,17 @@ def inverse : AlgebraCat.{u} R ⥤ Mon_ (ModuleCat.{u} R) where
   obj := inverseObj
   map f :=
     { hom := f.toLinearMap
-      one_hom := LinearMap.ext f.commutes
-      mul_hom := TensorProduct.ext <| LinearMap.ext₂ <| map_mul f }
+      isMon_Hom :=
+        { one_hom := LinearMap.ext f.commutes
+          mul_hom := TensorProduct.ext <| LinearMap.ext₂ <| map_mul f } }
 
 end MonModuleEquivalenceAlgebra
 
 open MonModuleEquivalenceAlgebra
 
-set_option maxHeartbeats 400000 in
+-- set_option trace.Meta.isDefEq true in
+-- set_option maxHeartbeats 400000 in
+-- count_heartbeats in
 /-- The category of internal monoid objects in `ModuleCat R`
 is equivalent to the category of "native" bundled `R`-algebras.
 -/
@@ -173,25 +176,23 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
     NatIso.ofComponents
       (fun A =>
         { hom :=
-            { hom :=
-                { toFun := _root_.id
-                  map_add' := fun x y => rfl
-                  map_smul' := fun r a => rfl }
-              mul_hom := by
-                -- Porting note: `ext` did not pick up `TensorProduct.ext`
-                refine TensorProduct.ext ?_
-                dsimp at *
-                rfl }
+            { hom := (LinearMap.id : ↑A.X →ₗ[R] ↑A.X)
+              isMon_Hom :=
+                { mul_hom := by
+                    -- Porting note: `ext` did not pick up `TensorProduct.ext`
+                    refine TensorProduct.ext' ?_
+                    intro (x : A.X) (y : A.X)
+                    change μ[A.X] (x ⊗ₜ[R] y) = μ[A.X] (x ⊗ₜ[R] y)
+                    rfl } }
           inv :=
-            { hom :=
-                { toFun := _root_.id
-                  map_add' := fun x y => rfl
-                  map_smul' := fun r a => rfl }
-              mul_hom := by
-                -- Porting note: `ext` did not pick up `TensorProduct.ext`
-                refine TensorProduct.ext ?_
-                dsimp at *
-                rfl } })
+            { hom := (LinearMap.id : ↑A.X →ₗ[R] ↑A.X)
+              isMon_Hom :=
+                { mul_hom := by
+                    -- Porting note: `ext` did not pick up `TensorProduct.ext`
+                    refine TensorProduct.ext' ?_
+                    intro (x : A.X) (y : A.X)
+                    change μ[A.X] (x ⊗ₜ[R] y) = μ[A.X] (x ⊗ₜ[R] y)
+                    rfl } } })
   counitIso :=
     NatIso.ofComponents
       (fun A =>

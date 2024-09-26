@@ -53,7 +53,7 @@ theorem limit_mul (F : J ⥤ Mon_ C) : μ[(limit F).X] =
 def limitCone (F : J ⥤ Mon_ C) : Cone F where
   pt := limit F
   π :=
-    { app := fun j => { hom := limit.π (F ⋙ Mon_.forget C) j }
+    { app := fun j => { hom := limit.π (F ⋙ Mon_.forget C) j, isMon_Hom := {} }
       naturality := fun j j' f => by ext; exact (limit.cone (F ⋙ Mon_.forget C)).π.naturality f }
 
 /-- The image of the proposed limit cone for `F : J ⥤ Mon_ C` under the forgetful functor
@@ -70,16 +70,17 @@ the proposed cone over a functor `F : J ⥤ Mon_ C` is a limit cone.
 def limitConeIsLimit (F : J ⥤ Mon_ C) : IsLimit (limitCone F) where
   lift s :=
     { hom := limit.lift (F ⋙ Mon_.forget C) ((Mon_.forget C).mapCone s)
-      mul_hom := by
-        dsimp
-        ext
-        simp only [Functor.comp_obj, forget_obj, Category.assoc, limit.lift_π, Functor.mapCone_pt,
-          Functor.mapCone_π_app, forget_map, Mon_Hom.mul_hom, limit.lift_map,
-          Cones.postcompose_obj_pt, Cones.postcompose_obj_π, NatTrans.comp_app,
-          Functor.const_obj_obj, tensorObj_obj,
-          MonFunctorCategoryEquivalence.instMon_ClassFunctorCompMon_Forget_mul_app]
-        slice_rhs 1 2 => rw [← MonoidalCategory.tensor_comp, limit.lift_π]
-        rfl }
+      isMon_Hom :=
+        { mul_hom := by
+            dsimp
+            ext
+            simp only [Functor.comp_obj, forget_obj, Category.assoc, limit.lift_π,
+              Functor.mapCone_pt, Functor.mapCone_π_app, forget_map, IsMon_Hom.mul_hom,
+              limit.lift_map, Cones.postcompose_obj_pt, Cones.postcompose_obj_π, NatTrans.comp_app,
+              Functor.const_obj_obj, tensorObj_obj,
+              MonFunctorCategoryEquivalence.instMon_ClassFunctorCompMon_Forget_mul_app]
+            slice_rhs 1 2 => rw [← MonoidalCategory.tensor_comp, limit.lift_π]
+            rfl } }
   fac s h := by ext; simp
   uniq s m w := by
     ext1

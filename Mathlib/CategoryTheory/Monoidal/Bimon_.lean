@@ -88,7 +88,7 @@ attribute [simps!] toMon_Comon_obj -- We add this after the fact to avoid a time
 def toMon_Comon_ : Bimon_ C ⥤ Mon_ (Comon_ C) where
   obj := toMon_Comon_obj C
   map f :=
-  { hom := (toComon_ C).map f }
+  { hom := (toComon_ C).map f, isMon_Hom := {} }
 
 @[simp]
 theorem Comon_forget_mapMon_obj_one  (M :  Mon_ (Comon_ C)) :
@@ -102,10 +102,11 @@ theorem Comon_forget_mapMon_obj_mul  (M :  Mon_ (Comon_ C)) :
 @[simps]
 def ofMon_Comon_obj (M : Mon_ (Comon_ C)) : Bimon_ C where
   X := (Comon_.forgetMonoidal C).toLaxMonoidalFunctor.mapMon.obj M
-  counit := { hom := M.X.counit }
+  counit := { hom := M.X.counit, isMon_Hom := {} }
   comul :=
-  { hom := M.X.comul,
-    mul_hom := by dsimp; simp [tensor_μ] }
+  { hom := M.X.comul
+    isMon_Hom :=
+      { mul_hom := by dsimp; simp [tensor_μ] } }
 
 /-- The backward direction of `Comon_ (Mon_ C) ≌ Mon_ (Comon_ C)` -/
 @[simps]
@@ -129,9 +130,9 @@ def equivMon_Comon_ : Bimon_ C ≌ Mon_ (Comon_ C) where
   functor := toMon_Comon_ C
   inverse := ofMon_Comon_ C
   unitIso := NatIso.ofComponents
-    (fun _ => Comon_.mkIso (Mon_.mkIso' (Mon_ClassIso.mk (Iso.refl _))))
+    (fun _ => Comon_.mkIso (Mon_.mkIso' (Mon_ClassIso.mk' (Iso.refl _) {})))
   counitIso := NatIso.ofComponents
-    (fun _ => Mon_.mkIso' (Mon_ClassIso.mk (Comon_.mkIso (Iso.refl _))))
+    (fun _ => Mon_.mkIso' (Mon_ClassIso.mk' (Comon_.mkIso (Iso.refl _)) {}))
 
 /-! # The trivial bimonoid -/
 
@@ -171,8 +172,8 @@ theorem mul_counit (M : Bimon_ C) :
       M.X.X ◁ (α_ _ _ _).hom ≫ (α_ _ _ _).inv ≫
       (μ[M.X.X] ⊗ μ[M.X.X]) =
     μ[M.X.X] ≫ M.comul.hom := by
-  have := (Mon_Hom.mul_hom M.comul).symm
-  simpa [-Mon_Hom.mul_hom, tensor_μ] using this
+  have := (IsMon_Hom.mul_hom (f := M.comul.hom)).symm
+  simpa [-IsMon_Hom.mul_hom, tensor_μ] using this
 
 @[reassoc (attr := simp)] theorem comul_counit_hom (M : Bimon_ C) :
     M.comul.hom ≫ (_ ◁ M.counit.hom) = (ρ_ _).inv := by

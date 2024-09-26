@@ -38,8 +38,8 @@ noncomputable def functor : Mon_ (Type u) ⥤ MonCat.{u} where
   obj A := MonCat.of A.X
   map f :=
     { toFun := f.hom
-      map_one' := congr_fun f.one_hom PUnit.unit
-      map_mul' := fun x y => congr_fun f.mul_hom (x, y) }
+      map_one' := congr_fun (IsMon_Hom.one_hom (f := f.hom)) PUnit.unit
+      map_mul' := fun x y => congr_fun (IsMon_Hom.mul_hom (f := f.hom)) (x, y) }
 
 @[simps]
 instance (A : Type u) [Monoid A] : Mon_Class A where
@@ -48,6 +48,8 @@ instance (A : Type u) [Monoid A] : Mon_Class A where
   one_mul := by ext ⟨_, _⟩; dsimp; simp
   mul_one := by ext ⟨_, _⟩; dsimp; simp
   mul_assoc := by ext ⟨⟨x, y⟩, z⟩; simp [mul_assoc]
+
+instance {X Y : MonCat.{u}} (f : X ⟶ Y) : @IsMon_Hom (Type u) _ _ X Y _ _ f where
 
 /-- Converting a bundled monoid to a monoid object in `Type`.
 -/

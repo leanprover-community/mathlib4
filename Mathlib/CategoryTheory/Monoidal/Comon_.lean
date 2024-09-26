@@ -175,35 +175,38 @@ open Opposite
 
 variable (C)
 
+@[simps]
+instance {A : Comon_ C} : Mon_Class (op A.X) where
+  one := A.counit.op
+  mul := A.comul.op
+  one_mul := by
+    rw [← op_whiskerRight, ← op_comp, counit_comul]
+    rfl
+  mul_one := by
+    rw [← op_whiskerLeft, ← op_comp, comul_counit]
+    rfl
+  mul_assoc := by
+    rw [← op_inv_associator, ← op_whiskerRight, ← op_comp, ← op_whiskerLeft, ← op_comp,
+      comul_assoc_flip, op_comp, op_comp_assoc]
+    rfl
+
 /--
 Turn a comonoid object into a monoid object in the opposite category.
 -/
-@[simps X isMon_Class_one isMon_Class_mul]
+@[simps! X isMon_Class_one isMon_Class_mul]
 def Comon_ToMon_OpOp_obj' (A : Comon_ C) : Mon_ (Cᵒᵖ) where
   X := op A.X
-  isMon_Class :=
-  { one := A.counit.op
-    mul := A.comul.op
-    one_mul := by
-      rw [← op_whiskerRight, ← op_comp, counit_comul]
-      rfl
-    mul_one := by
-      rw [← op_whiskerLeft, ← op_comp, comul_counit]
-      rfl
-    mul_assoc := by
-      rw [← op_inv_associator, ← op_whiskerRight, ← op_comp, ← op_whiskerLeft, ← op_comp,
-        comul_assoc_flip, op_comp, op_comp_assoc]
-      rfl }
+
+instance {X Y : Comon_ C} (f : X ⟶ Y) : IsMon_Hom f.hom.op where
+  one_hom := by apply Quiver.Hom.unop_inj; simp
+  mul_hom := by apply Quiver.Hom.unop_inj; simp [op_tensorHom]
 
 /--
 The contravariant functor turning comonoid objects into monoid objects in the opposite category.
 -/
 @[simps] def Comon_ToMon_OpOp : Comon_ C ⥤ (Mon_ (Cᵒᵖ))ᵒᵖ where
   obj A := op (Comon_ToMon_OpOp_obj' C A)
-  map := fun f => op <|
-    { hom := f.hom.op
-      one_hom := by apply Quiver.Hom.unop_inj; simp
-      mul_hom := by apply Quiver.Hom.unop_inj; simp [op_tensorHom] }
+  map := fun f => op ⟨f.hom.op⟩
 
 /--
 Turn a monoid object in the opposite category into a comonoid object.
