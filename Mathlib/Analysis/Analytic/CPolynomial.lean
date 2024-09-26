@@ -116,8 +116,14 @@ theorem CPolynomialAt.analyticAt (hf : CPolynomialAt 𝕜 f x) : AnalyticAt 𝕜
   let ⟨p, _, hp⟩ := hf
   ⟨p, hp.toHasFPowerSeriesAt⟩
 
+theorem CPolynomialAt.analyticWithinAt (hf : CPolynomialAt 𝕜 f x) : AnalyticWithinAt 𝕜 f x :=
+  hf.analyticAt.analyticWithinAt
+
 theorem CPolynomialOn.analyticOnNhd {s : Set E} (hf : CPolynomialOn 𝕜 f s) : AnalyticOnNhd 𝕜 f s :=
   fun x hx ↦ (hf x hx).analyticAt
+
+theorem CPolynomialOn.analyticOn {s : Set E} (hf : CPolynomialOn 𝕜 f s) : AnalyticOn 𝕜 f s :=
+  hf.analyticOnNhd.analyticOn
 
 theorem HasFiniteFPowerSeriesOnBall.congr (hf : HasFiniteFPowerSeriesOnBall f p x n r)
     (hg : EqOn f g (EMetric.ball x r)) : HasFiniteFPowerSeriesOnBall g p x n r :=

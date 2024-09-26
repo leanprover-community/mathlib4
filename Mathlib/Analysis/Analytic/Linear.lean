@@ -124,9 +124,17 @@ protected theorem analyticAt_bilinear (f : E →L[𝕜] F →L[𝕜] G) (x : E �
     AnalyticAt 𝕜 (fun x : E × F => f x.1 x.2) x :=
   (f.hasFPowerSeriesAt_bilinear x).analyticAt
 
+protected theorem analyticWithinAt_bilinear (f : E →L[𝕜] F →L[𝕜] G) (s : Set (E × F)) (x : E × F) :
+    AnalyticWithinAt 𝕜 (fun x : E × F => f x.1 x.2) s x :=
+  (f.analyticAt_bilinear x).analyticWithinAt
+
 protected theorem analyticOnNhd_bilinear (f : E →L[𝕜] F →L[𝕜] G) (s : Set (E × F)) :
     AnalyticOnNhd 𝕜 (fun x : E × F => f x.1 x.2) s :=
   fun x _ ↦ f.analyticAt_bilinear x
+
+protected theorem analyticOn_bilinear (f : E →L[𝕜] F →L[𝕜] G) (s : Set (E × F)) :
+    AnalyticOn 𝕜 (fun x : E × F => f x.1 x.2) s :=
+  (f.analyticOnNhd_bilinear s).analyticOn
 
 end ContinuousLinearMap
 

@@ -34,6 +34,10 @@ theorem analyticAt_cexp : AnalyticAt ℂ exp z :=
 theorem AnalyticAt.cexp (fa : AnalyticAt ℂ f x) : AnalyticAt ℂ (fun z ↦ exp (f z)) x :=
   analyticAt_cexp.comp fa
 
+theorem AnalyticWithinAt.cexp (fa : AnalyticWithinAt ℂ f s x) :
+    AnalyticWithinAt ℂ (fun z ↦ exp (f z)) s x :=
+  analyticAt_cexp.comp_analyticWithinAt fa
+
 /-- `exp ∘ f` is analytic -/
 theorem AnalyticOnNhd.cexp (fs : AnalyticOnNhd ℂ f s) : AnalyticOnNhd ℂ (fun z ↦ exp (f z)) s :=
   fun z n ↦ analyticAt_cexp.comp (fs z n)
@@ -52,6 +56,10 @@ theorem analyticAt_clog (m : z ∈ slitPlane) : AnalyticAt ℂ log z := by
 theorem AnalyticAt.clog (fa : AnalyticAt ℂ f x) (m : f x ∈ slitPlane) :
     AnalyticAt ℂ (fun z ↦ log (f z)) x :=
   (analyticAt_clog m).comp fa
+
+theorem AnalyticWithinAt.clog (fa : AnalyticWithinAt ℂ f s x) (m : f x ∈ slitPlane) :
+    AnalyticWithinAt ℂ (fun z ↦ log (f z)) s x :=
+  (analyticAt_clog m).comp_analyticWithinAt fa
 
 /-- `log` is analytic away from nonpositive reals -/
 theorem AnalyticOnNhd.clog (fs : AnalyticOnNhd ℂ f s) (m : ∀ z ∈ s, f z ∈ slitPlane) :
@@ -75,12 +83,8 @@ theorem AnalyticWithinAt.cpow (fa : AnalyticWithinAt ℂ f s x) (ga : AnalyticWi
 /-- `f z ^ g z` is analytic if `f z` is not a nonpositive real -/
 theorem AnalyticAt.cpow (fa : AnalyticAt ℂ f x) (ga : AnalyticAt ℂ g x)
     (m : f x ∈ slitPlane) : AnalyticAt ℂ (fun z ↦ f z ^ g z) x := by
-  have e : (fun z ↦ f z ^ g z) =ᶠ[𝓝 x] fun z ↦ exp (log (f z) * g z) := by
-    filter_upwards [(fa.continuousAt.eventually_ne (slitPlane_ne_zero m))]
-    intro z fz
-    simp only [fz, cpow_def, if_false]
-  rw [analyticAt_congr e]
-  exact ((fa.clog m).mul ga).cexp
+  rw [← analyticWithinAt_univ] at fa ga ⊢
+  exact fa.cpow ga m
 
 /-- `f z ^ g z` is analytic if `f z` avoids nonpositive reals -/
 theorem AnalyticOnNhd.cpow (fs : AnalyticOnNhd ℂ f s) (gs : AnalyticOnNhd ℂ g s)

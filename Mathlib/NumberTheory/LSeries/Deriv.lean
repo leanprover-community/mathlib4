@@ -154,3 +154,7 @@ lemma LSeries_differentiableOn (f : ℕ → ℂ) :
 lemma LSeries_analyticOnNhd (f : ℕ → ℂ) :
     AnalyticOnNhd ℂ (LSeries f) {s | abscissaOfAbsConv f < s.re} :=
   (LSeries_differentiableOn f).analyticOnNhd <| isOpen_re_gt_EReal _
+
+lemma LSeries_analyticOn (f : ℕ → ℂ) :
+    AnalyticOn ℂ (LSeries f) {s | abscissaOfAbsConv f < s.re} :=
+  (LSeries_analyticOnNhd f).analyticOn

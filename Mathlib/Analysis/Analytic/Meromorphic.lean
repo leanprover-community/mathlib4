@@ -241,6 +241,8 @@ lemma AnalyticOnNhd.meromorphicOn {f : 𝕜 → E} {U : Set 𝕜} (hf : Analytic
     MeromorphicOn f U :=
   fun x hx ↦ (hf x hx).meromorphicAt
 
+@[deprecated (since := "2024-09-26")]
+alias AnalyticOn.meromorphicOn := AnalyticOnNhd.meromorphicOn
 
 namespace MeromorphicOn
 

@@ -23,19 +23,30 @@ open Polynomial
 
 variable [NormedRing B] [NormedAlgebra 𝕜 B] [Algebra A B] {f : E → B}
 
-theorem AnalyticAt.aeval_polynomial (hf : AnalyticAt 𝕜 f z) (p : A[X]) :
-    AnalyticAt 𝕜 (fun x ↦ aeval (f x) p) z := by
+theorem AnalyticWithinAt.aeval_polynomial (hf : AnalyticWithinAt 𝕜 f s z) (p : A[X]) :
+    AnalyticWithinAt 𝕜 (fun x ↦ aeval (f x) p) s z := by
   refine p.induction_on (fun k ↦ ?_) (fun p q hp hq ↦ ?_) fun p i hp ↦ ?_
-  · simp_rw [aeval_C]; apply analyticAt_const
+  · simp_rw [aeval_C]; apply analyticWithinAt_const
   · simp_rw [aeval_add]; exact hp.add hq
   · convert hp.mul hf
     simp_rw [pow_succ, aeval_mul, ← mul_assoc, aeval_X]
 
+theorem AnalyticAt.aeval_polynomial (hf : AnalyticAt 𝕜 f z) (p : A[X]) :
+    AnalyticAt 𝕜 (fun x ↦ aeval (f x) p) z := by
+  rw [← analyticWithinAt_univ] at hf ⊢
+  exact hf.aeval_polynomial p
+
 theorem AnalyticOnNhd.aeval_polynomial (hf : AnalyticOnNhd 𝕜 f s) (p : A[X]) :
     AnalyticOnNhd 𝕜 (fun x ↦ aeval (f x) p) s := fun x hx ↦ (hf x hx).aeval_polynomial p
 
+theorem AnalyticOn.aeval_polynomial (hf : AnalyticOn 𝕜 f s) (p : A[X]) :
+    AnalyticOn 𝕜 (fun x ↦ aeval (f x) p) s := fun x hx ↦ (hf x hx).aeval_polynomial p
+
 theorem AnalyticOnNhd.eval_polynomial {A} [NormedCommRing A] [NormedAlgebra 𝕜 A] (p : A[X]) :
     AnalyticOnNhd 𝕜 (eval · p) Set.univ := analyticOnNhd_id.aeval_polynomial p
+
+theorem AnalyticOn.eval_polynomial {A} [NormedCommRing A] [NormedAlgebra 𝕜 A] (p : A[X]) :
+    AnalyticOn 𝕜 (eval · p) Set.univ := analyticOn_id.aeval_polynomial p
 
 end Polynomial
 

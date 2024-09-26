@@ -674,8 +674,14 @@ theorem AnalyticOnNhd.congr' (hf : AnalyticOnNhd 𝕜 f s) (hg : f =ᶠ[𝓝ˢ s
     AnalyticOnNhd 𝕜 g s :=
   fun z hz => (hf z hz).congr (mem_nhdsSet_iff_forall.mp hg z hz)
 
+@[deprecated (since := "2024-09-26")]
+alias AnalyticOn.congr' := AnalyticOnNhd.congr'
+
 theorem analyticOnNhd_congr' (h : f =ᶠ[𝓝ˢ s] g) : AnalyticOnNhd 𝕜 f s ↔ AnalyticOnNhd 𝕜 g s :=
   ⟨fun hf => hf.congr' h, fun hg => hg.congr' h.symm⟩
+
+@[deprecated (since := "2024-09-26")]
+alias analyticOn_congr' := analyticOnNhd_congr'
 
 theorem AnalyticOnNhd.congr (hs : IsOpen s) (hf : AnalyticOnNhd 𝕜 f s) (hg : s.EqOn f g) :
     AnalyticOnNhd 𝕜 g s :=
@@ -684,6 +690,9 @@ theorem AnalyticOnNhd.congr (hs : IsOpen s) (hf : AnalyticOnNhd 𝕜 f s) (hg : 
 
 theorem analyticOnNhd_congr (hs : IsOpen s) (h : s.EqOn f g) : AnalyticOnNhd 𝕜 f s ↔
     AnalyticOnNhd 𝕜 g s := ⟨fun hf => hf.congr hs h, fun hg => hg.congr hs h.symm⟩
+
+@[deprecated (since := "2024-09-26")]
+alias analyticOn_congr := analyticOnNhd_congr
 
 lemma AnalyticOn.mono {f : E → F} {s t : Set E} (h : AnalyticOn 𝕜 f t)
     (hs : s ⊆ t) : AnalyticOn 𝕜 f s :=
@@ -716,6 +725,9 @@ theorem ContinuousLinearMap.comp_analyticOnNhd
   rintro x hx
   rcases h x hx with ⟨p, r, hp⟩
   exact ⟨g.compFormalMultilinearSeries p, r, g.comp_hasFPowerSeriesOnBall hp⟩
+
+@[deprecated (since := "2024-09-26")]
+alias ContinuousLinearMap.comp_analyticOn := ContinuousLinearMap.comp_analyticOnNhd
 
 /-!
 ### Relation between analytic function and the partial sums of its power series
@@ -1198,6 +1210,9 @@ alias AnalyticWithinOn.continuousOn := AnalyticOn.continuousOn
 /-- Analytic everywhere implies continuous -/
 theorem AnalyticOnNhd.continuous {f : E → F} (fa : AnalyticOnNhd 𝕜 f univ) : Continuous f := by
   rw [continuous_iff_continuousOn_univ]; exact fa.continuousOn
+
+@[deprecated (since := "2024-09-26")]
+alias AnalyticOn.continuous := AnalyticOnNhd.continuous
 
 /-- In a complete space, the sum of a converging power series `p` admits `p` as a power series.
 This is not totally obvious as we need to check the convergence of the series. -/

@@ -373,6 +373,9 @@ theorem AnalyticOn.curry_left
     AnalyticOn 𝕜 (fun x ↦ f (x, y)) {x | (x, y) ∈ s} :=
   fun x m ↦ (fa (x, y) m).curry_left
 
+@[deprecated (since := "2024-09-26")]
+alias AnalyticWithinOn.curry_left := AnalyticOn.curry_left
+
 /-- Analytic functions on products are analytic in the second coordinate -/
 theorem AnalyticOnNhd.curry_right {f : E × F → G} {x : E} {s : Set (E × F)}
     (fa : AnalyticOnNhd 𝕜 f s) :
@@ -387,6 +390,9 @@ theorem AnalyticOn.curry_right
     {f : E × F → G} {x : E} {s : Set (E × F)} (fa : AnalyticOn 𝕜 f s) :
     AnalyticOn 𝕜 (fun y ↦ f (x, y)) {y | (x, y) ∈ s} :=
   fun y m ↦ (fa (x, y) m).curry_right
+
+@[deprecated (since := "2024-09-26")]
+alias AnalyticWithinOn.curry_right := AnalyticOn.curry_right
 
 /-!
 ### Analyticity in Pi spaces
@@ -770,6 +776,9 @@ lemma analyticAt_inv {z : 𝕝} (hz : z ≠ 0) : AnalyticAt 𝕜 Inv.inv z := by
 /-- `x⁻¹` is analytic away from zero -/
 lemma analyticOnNhd_inv : AnalyticOnNhd 𝕜 (fun z ↦ z⁻¹) {z : 𝕝 | z ≠ 0} := by
   intro z m; exact analyticAt_inv m
+
+lemma analyticOn_inv : AnalyticOn 𝕜 (fun z ↦ z⁻¹) {z : 𝕝 | z ≠ 0} :=
+  analyticOnNhd_inv.analyticOn
 
 /-- `(f x)⁻¹` is analytic away from `f x = 0` -/
 theorem AnalyticWithinAt.inv {f : E → 𝕝} {x : E} {s : Set E}

@@ -72,6 +72,10 @@ theorem AnalyticOnNhd.differentiableOn (h : AnalyticOnNhd 𝕜 f s) :
     DifferentiableOn 𝕜 f s := fun y hy =>
   (h y hy).differentiableWithinAt
 
+theorem AnalyticOn.differentiableOn (h : AnalyticOn 𝕜 f s) :
+    DifferentiableOn 𝕜 f s := fun y hy =>
+  (h y hy).differentiableWithinAt
+
 theorem HasFPowerSeriesOnBall.hasFDerivAt [CompleteSpace F] (h : HasFPowerSeriesOnBall f p x r)
     {y : E} (hy : (‖y‖₊ : ℝ≥0∞) < r) :
     HasFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin y 1)) (x + y) :=
@@ -102,6 +106,9 @@ theorem AnalyticOnNhd.fderiv [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) :
   rcases h y hy with ⟨p, r, hp⟩
   exact hp.fderiv.analyticAt
 
+@[deprecated (since := "2024-09-26")]
+alias AnalyticOn.fderiv := AnalyticOnNhd.fderiv
+
 /-- If a function is analytic on a set `s`, so are its successive Fréchet derivative. -/
 theorem AnalyticOnNhd.iteratedFDeriv [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) (n : ℕ) :
     AnalyticOnNhd 𝕜 (iteratedFDeriv 𝕜 n f) s := by
@@ -115,6 +122,9 @@ theorem AnalyticOnNhd.iteratedFDeriv [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f
     convert ContinuousLinearMap.comp_analyticOnNhd ?g IH.fderiv
     case g => exact ↑(continuousMultilinearCurryLeftEquiv 𝕜 (fun _ : Fin (n + 1) ↦ E) F).symm
     simp
+
+@[deprecated (since := "2024-09-26")]
+alias AnalyticOn.iteratedFDeriv := AnalyticOnNhd.iteratedFDeriv
 
 /-- An analytic function is infinitely differentiable. -/
 theorem AnalyticOnNhd.contDiffOn [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) {n : ℕ∞} :
@@ -170,12 +180,18 @@ theorem AnalyticOnNhd.deriv [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) :
     AnalyticOnNhd 𝕜 (deriv f) s :=
   (ContinuousLinearMap.apply 𝕜 F (1 : 𝕜)).comp_analyticOnNhd h.fderiv
 
+@[deprecated (since := "2024-09-26")]
+alias AnalyticOn.deriv := AnalyticOnNhd.deriv
+
 /-- If a function is analytic on a set `s`, so are its successive derivatives. -/
 theorem AnalyticOnNhd.iterated_deriv [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) (n : ℕ) :
     AnalyticOnNhd 𝕜 (_root_.deriv^[n] f) s := by
   induction n with
   | zero => exact h
   | succ n IH => simpa only [Function.iterate_succ', Function.comp_apply] using IH.deriv
+
+@[deprecated (since := "2024-09-26")]
+alias AnalyticOn.iterated_deriv := AnalyticOnNhd.iterated_deriv
 
 end deriv
 section fderiv
