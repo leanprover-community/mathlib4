@@ -34,8 +34,10 @@ theorem exists_prime_mul_pow_lt_factorial [LinearOrderedRing K] [FloorRing K] (n
 
 @[deprecated FloorSemiring.tendsto_mul_pow_div_factorial_sub (since := "2024-09-25")]
 theorem exists_prime_mul_pow_div_factorial_lt_one [LinearOrderedField K] [FloorRing K]
-    [TopologicalSpace K] [OrderTopology K] (n : ℕ) (a c : K) :
+    (n : ℕ) (a c : K) :
     ∃ p > n, p.Prime ∧ a * c ^ p / (p - 1)! < 1 :=
+  letI := Preorder.topology K
+  haveI : OrderTopology K := ⟨rfl⟩
   ((Filter.frequently_atTop.mpr Nat.exists_infinite_primes).and_eventually
     (eventually_lt_of_tendsto_lt zero_lt_one
       (FloorSemiring.tendsto_mul_pow_div_factorial_sub a c 1))).forall_exists_of_atTop
