@@ -209,14 +209,14 @@ lemma opShiftFunctorEquivalence_zero_unitIso_inv_app (X : Cᵒᵖ) :
     shiftFunctorCompIsoId_zero_zero_inv_app, assoc]
 
 -- TODO: remove dependency to these two abuse of defeq lemmas in
--- the proof of `opShiftFunctorEquivalence_add'_unitIso_inv_app`
+-- the proof of `opShiftFunctorEquivalence_unitIso_inv_app_eq`
 lemma shiftFunctorOpIso_add_neg_self (p : ℤ) :
     shiftFunctorOpIso C p (-p) (add_neg_cancel p) = Iso.refl _ := rfl
 
 lemma shiftFunctor_op (p : ℤ) :
     shiftFunctor Cᵒᵖ p = (shiftFunctor C (-p)).op := rfl
 
-lemma opShiftFunctorEquivalence_unitIso_inv_app_eq_add' (X : Cᵒᵖ) (m n p : ℤ) (h : m + n = p) :
+lemma opShiftFunctorEquivalence_unitIso_inv_app_eq (X : Cᵒᵖ) (m n p : ℤ) (h : m + n = p) :
     (opShiftFunctorEquivalence C p).unitIso.inv.app X =
       (((shiftFunctorAdd' Cᵒᵖ n m p (by omega)).hom.app X).unop⟦p⟧').op ≫
         ((shiftFunctorAdd' C m n p h).inv.app _).op ≫
