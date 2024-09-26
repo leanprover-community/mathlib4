@@ -58,7 +58,7 @@ theorem le_of_all_pow_lt_succ {x y : ℝ} (hx : 1 < x) (hy : 1 < y)
       _ ≤ x ^ N - y ^ N := hn N hNp
   linarith [h N hNp]
 
-/-- Like `le_of_all_pow_lt_succ`, but with a weaker assumption for y.
+/-- Like `le_of_all_pow_lt_succ`, but with a weaker assumption for `y`.
 -/
 theorem le_of_all_pow_lt_succ' {x y : ℝ} (hx : 1 < x) (hy : 0 < y)
     (h : ∀ n : ℕ, 0 < n → x ^ n - 1 < y ^ n) : x ≤ y := by
@@ -234,15 +234,14 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
   have H : x * (↑(2 * x.den) : ℚ) = (↑(2 * x.num) : ℚ) := by push_cast; linear_combination 2 * H₀
   set x2denom := 2 * x.den
   set x2num := 2 * x.num
-  have := x.pos
   have hx2pos : 0 < 2 * x.den := by positivity
   have hx2cnezr : (x2denom : ℝ) ≠ (0 : ℝ) := by positivity
   have : 0 < x.num := by rwa [Rat.num_pos]
   have hx2num_gt_one : (1 : ℚ) < (2 * x.num : ℤ) := by norm_cast; linarith
   apply mul_left_cancel₀ hx2cnezr
   calc
-    x2denom * f x = f (x2denom * x) :=
-        (h_f_commutes_with_pos_nat_mul x2denom hx2pos x hx).symm
+    x2denom * f x
+      = f (x2denom * x) := (h_f_commutes_with_pos_nat_mul x2denom hx2pos x hx).symm
     _ = f x2num := by congr; linear_combination H
     _ = x2num := fixed_point_of_gt_1 hx2num_gt_one H1 H2 H4 H5 ha1 hae
     _ = ((x2num : ℚ) : ℝ) := by norm_cast

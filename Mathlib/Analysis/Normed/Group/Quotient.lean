@@ -3,7 +3,7 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Riccardo Brasca
 -/
-import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.Topology.MetricSpace.HausdorffDistance
@@ -213,7 +213,7 @@ theorem quotient_nhd_basis (S : AddSubgroup M) :
     refine fun ε ↦ Set.ext <| forall_mk.2 fun x ↦ ?_
     rw [ball_zero_eq, mem_setOf_eq, norm_lt_iff, mem_image]
     exact exists_congr fun _ ↦ and_comm
-  rw [← mk_zero, nhds_eq, ← funext this]
+  rw [← QuotientAddGroup.mk_zero, nhds_eq, ← funext this]
   exact .map _ Metric.nhds_basis_ball
 
 /-- The seminormed group structure on the quotient by an additive subgroup. -/

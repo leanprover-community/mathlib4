@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2022 Scott Morrison. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Jireh Loreaux
+Authors: Kim Morrison, Jireh Loreaux
 -/
 import Mathlib.Algebra.Star.Center
 import Mathlib.Algebra.Star.StarAlgHom
@@ -594,6 +594,9 @@ theorem mul_mem_sup {S T : StarSubalgebra R A} {x y : A} (hx : x ∈ S) (hy : y 
 theorem map_sup (f : A →⋆ₐ[R] B) (S T : StarSubalgebra R A) : map f (S ⊔ T) = map f S ⊔ map f T :=
   (StarSubalgebra.gc_map_comap f).l_sup
 
+theorem map_inf (f : A →⋆ₐ[R] B) (hf : Function.Injective f) (S T : StarSubalgebra R A) :
+    map f (S ⊓ T) = map f S ⊓ map f T := SetLike.coe_injective (Set.image_inter hf)
+
 @[simp, norm_cast]
 theorem coe_inf (S T : StarSubalgebra R A) : (↑(S ⊓ T) : Set A) = (S : Set A) ∩ T :=
   rfl
@@ -627,6 +630,11 @@ theorem coe_iInf {ι : Sort*} {S : ι → StarSubalgebra R A} : (↑(⨅ i, S i)
 theorem mem_iInf {ι : Sort*} {S : ι → StarSubalgebra R A} {x : A} :
     (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
 
+theorem map_iInf {ι : Sort*} [Nonempty ι] (f : A →⋆ₐ[R] B) (hf : Function.Injective f)
+    (s : ι → StarSubalgebra R A) : map f (iInf s) = ⨅ (i : ι), map f (s i) := by
+  apply SetLike.coe_injective
+  simpa using (Set.injOn_of_injective hf).image_iInter_eq (s := SetLike.coe ∘ s)
+
 @[simp]
 theorem iInf_toSubalgebra {ι : Sort*} (S : ι → StarSubalgebra R A) :
     (⨅ i, S i).toSubalgebra = ⨅ i, (S i).toSubalgebra :=
@@ -650,9 +658,34 @@ namespace StarAlgHom
 open StarSubalgebra StarAlgebra
 
 variable {F R A B : Type*} [CommSemiring R] [StarRing R]
-variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
-variable [Semiring B] [Algebra R B] [StarRing B] [StarModule R B]
-variable [FunLike F A B] [AlgHomClass F R A B] [StarAlgHomClass F R A B] (f g : F)
+variable [Semiring A] [Algebra R A] [StarRing A]
+variable [Semiring B] [Algebra R B] [StarRing B]
+
+section
+variable [StarModule R A]
+
+theorem ext_adjoin {s : Set A} [FunLike F (adjoin R s) B]
+    [AlgHomClass F R (adjoin R s) B] [StarHomClass F (adjoin R s) B] {f g : F}
+    (h : ∀ x : adjoin R s, (x : A) ∈ s → f x = g x) : f = g := by
+  refine DFunLike.ext f g fun a =>
+    adjoin_induction' (p := fun y => f y = g y) a (fun x hx => ?_) (fun r => ?_)
+    (fun x y hx hy => ?_) (fun x y hx hy => ?_) fun x hx => ?_
+  · exact h ⟨x, subset_adjoin R s hx⟩ hx
+  · simp only [AlgHomClass.commutes]
+  · simp only [map_add, map_add, hx, hy]
+  · simp only [map_mul, map_mul, hx, hy]
+  · simp only [map_star, hx]
+
+theorem ext_adjoin_singleton {a : A} [FunLike F (adjoin R ({a} : Set A)) B]
+    [AlgHomClass F R (adjoin R ({a} : Set A)) B] [StarHomClass F (adjoin R ({a} : Set A)) B]
+    {f g : F} (h : f ⟨a, self_mem_adjoin_singleton R a⟩ = g ⟨a, self_mem_adjoin_singleton R a⟩) :
+    f = g :=
+  ext_adjoin fun x hx =>
+    (show x = ⟨a, self_mem_adjoin_singleton R a⟩ from
+          Subtype.ext <| Set.mem_singleton_iff.mp hx).symm ▸
+      h
+
+variable [FunLike F A B] [AlgHomClass F R A B] [StarHomClass F A B] (f g : F)
 
 /-- The equalizer of two star `R`-algebra homomorphisms. -/
 def equalizer : StarSubalgebra R A :=
@@ -670,31 +703,13 @@ theorem adjoin_le_equalizer {s : Set A} (h : s.EqOn f g) : adjoin R s ≤ StarAl
 theorem ext_of_adjoin_eq_top {s : Set A} (h : adjoin R s = ⊤) ⦃f g : F⦄ (hs : s.EqOn f g) : f = g :=
   DFunLike.ext f g fun _x => StarAlgHom.adjoin_le_equalizer f g hs <| h.symm ▸ trivial
 
+
+variable [StarModule R B]
+
 theorem map_adjoin (f : A →⋆ₐ[R] B) (s : Set A) :
     map f (adjoin R s) = adjoin R (f '' s) :=
   GaloisConnection.l_comm_of_u_comm Set.image_preimage (gc_map_comap f) StarAlgebra.gc
     StarAlgebra.gc fun _ => rfl
-
-theorem ext_adjoin {s : Set A} [FunLike F (adjoin R s) B]
-    [AlgHomClass F R (adjoin R s) B] [StarAlgHomClass F R (adjoin R s) B] {f g : F}
-    (h : ∀ x : adjoin R s, (x : A) ∈ s → f x = g x) : f = g := by
-  refine DFunLike.ext f g fun a =>
-    adjoin_induction' (p := fun y => f y = g y) a (fun x hx => ?_) (fun r => ?_)
-    (fun x y hx hy => ?_) (fun x y hx hy => ?_) fun x hx => ?_
-  · exact h ⟨x, subset_adjoin R s hx⟩ hx
-  · simp only [AlgHomClass.commutes]
-  · simp only [map_add, map_add, hx, hy]
-  · simp only [map_mul, map_mul, hx, hy]
-  · simp only [map_star, hx]
-
-theorem ext_adjoin_singleton {a : A} [FunLike F (adjoin R ({a} : Set A)) B]
-    [AlgHomClass F R (adjoin R ({a} : Set A)) B] [StarAlgHomClass F R (adjoin R ({a} : Set A)) B]
-    {f g : F} (h : f ⟨a, self_mem_adjoin_singleton R a⟩ = g ⟨a, self_mem_adjoin_singleton R a⟩) :
-    f = g :=
-  ext_adjoin fun x hx =>
-    (show x = ⟨a, self_mem_adjoin_singleton R a⟩ from
-          Subtype.ext <| Set.mem_singleton_iff.mp hx).symm ▸
-      h
 
 /-- Range of a `StarAlgHom` as a star subalgebra. -/
 protected def range
@@ -706,6 +721,9 @@ theorem range_eq_map_top (φ : A →⋆ₐ[R] B) : φ.range = (⊤ : StarSubalge
   StarSubalgebra.ext fun x =>
     ⟨by rintro ⟨a, ha⟩; exact ⟨a, by simp, ha⟩, by rintro ⟨a, -, ha⟩; exact ⟨a, ha⟩⟩
 
+end
+
+variable [StarModule R B]
 /-- Restriction of the codomain of a `StarAlgHom` to a star subalgebra containing the range. -/
 protected def codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) (hf : ∀ x, f x ∈ S) :
     A →⋆ₐ[R] S where

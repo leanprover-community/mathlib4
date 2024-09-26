@@ -247,7 +247,7 @@ elab "eta_reduce" : conv => runDefEqConvTactic etaReduceAll
 
 /-- Eta expand every sub-expression in the given expression.
 
-As a side-effect, beta reduces any pre-existing instances of eta expanded terms.  -/
+As a side-effect, beta reduces any pre-existing instances of eta expanded terms. -/
 partial def etaExpandAll (e : Expr) : MetaM Expr := do
   let betaOrApp (f : Expr) (args : Array Expr) : Expr :=
     if f.etaExpanded?.isSome then f.beta args else mkAppN f args

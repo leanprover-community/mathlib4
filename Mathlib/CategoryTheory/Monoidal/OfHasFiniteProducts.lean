@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Simon Hudon
+Authors: Kim Morrison, Simon Hudon
 -/
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
@@ -51,8 +51,8 @@ def monoidalOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : Monoidal
     tensorHom := fun f g ↦ Limits.prod.map f g
     tensorUnit := ⊤_ C
     associator := prod.associator
-    leftUnitor := fun P ↦ prod.leftUnitor P
-    rightUnitor := fun P ↦ prod.rightUnitor P
+    leftUnitor := fun P ↦ Limits.prod.leftUnitor P
+    rightUnitor := fun P ↦ Limits.prod.rightUnitor P
   }
   .ofTensorHom
     (pentagon := prod.pentagon)

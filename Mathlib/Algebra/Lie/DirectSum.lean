@@ -124,8 +124,8 @@ theorem lie_of_of_ne [DecidableEq ι] {i j : ι} (hij : i ≠ j) (x : L i) (y : 
   refine DFinsupp.ext fun k => ?_
   rw [bracket_apply]
   obtain rfl | hik := Decidable.eq_or_ne i k
-  · rw [of_eq_of_ne _ _ _ _ hij.symm, lie_zero, zero_apply]
-  · rw [of_eq_of_ne _ _ _ _ hik, zero_lie, zero_apply]
+  · rw [of_eq_of_ne _ _ _ hij.symm, lie_zero, zero_apply]
+  · rw [of_eq_of_ne _ _ _ hik, zero_lie, zero_apply]
 
 @[simp]
 theorem lie_of [DecidableEq ι] {i j : ι} (x : L i) (y : L j) :
@@ -173,7 +173,8 @@ def lieAlgebraComponent (j : ι) : (⨁ i, L i) →ₗ⁅R⁆ L j :=
     toFun := component R ι L j
     map_lie' := fun {x y} => by simp [component, lapply] }
 
-@[ext]
+-- Note(kmill): `ext` cannot generate an iff theorem here since `x` and `y` do not determine `R`.
+@[ext (iff := false)]
 theorem lieAlgebra_ext {x y : ⨁ i, L i}
     (h : ∀ i, lieAlgebraComponent R ι L i x = lieAlgebraComponent R ι L i y) : x = y :=
   DFinsupp.ext h
