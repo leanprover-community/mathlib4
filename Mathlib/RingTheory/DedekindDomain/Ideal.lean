@@ -892,7 +892,7 @@ theorem sup_eq_prod_inf_factors [DecidableEq (Ideal T)] (hI : I ≠ ⊥) (hJ : J
     · exact ne_bot_of_le_ne_bot hI le_sup_left
     · exact this
 
-theorem irreducible_pow_sup [DecidableEq (Ideal T)](hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ) :
+theorem irreducible_pow_sup [DecidableEq (Ideal T)] (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ) :
     J ^ n ⊔ I = J ^ min ((normalizedFactors I).count J) n := by
   rw [sup_eq_prod_inf_factors (pow_ne_zero n hJ.ne_zero) hI, min_comm,
     normalizedFactors_of_irreducible_pow hJ, normalize_eq J, replicate_inter, prod_replicate]
@@ -915,6 +915,18 @@ theorem irreducible_pow_sup_of_ge [DecidableRel fun (x : Ideal T) x_1 ↦ x ∣ 
     rw [← PartENat.natCast_inj, PartENat.natCast_get,
       multiplicity_eq_count_normalizedFactors hJ hI, normalize_eq J]
   · rwa [multiplicity_eq_count_normalizedFactors hJ hI, PartENat.coe_le_coe, normalize_eq J] at hn
+
+theorem Ideal.eq_prime_pow_mul_coprime [DecidableEq (Ideal T)] {P I : Ideal T}
+    [hpp : P.IsPrime] (hp0 : P ≠ ⊥) (hI : I ≠ ⊥) :
+    ∃ Q : Ideal T, P ⊔ Q = ⊤ ∧ I = P ^ (Multiset.count P (normalizedFactors I)) * Q := by
+  use (filter (¬ P = ·) (normalizedFactors I)).prod
+  constructor
+  · refine P.sup_multiset_prod_eq_top (fun p hpi ↦ ?_)
+    have hp : Prime p := prime_of_normalized_factor p (filter_subset _ (normalizedFactors I) hpi)
+    have hpm : p.IsMaximal := (isPrime_of_prime hp).isMaximal hp.ne_zero
+    exact (hpp.isMaximal hp0).coprime_of_ne hpm (of_mem_filter hpi)
+  · nth_rw 1 [← prod_normalizedFactors_eq_self hI, ← filter_add_not (P = ·) (normalizedFactors I)]
+    rw [prod_add, pow_count]
 
 end IsDedekindDomain
 

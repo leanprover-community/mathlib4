@@ -608,6 +608,11 @@ theorem sup_prod_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s
     (fun J K hJ hK => (sup_mul_eq_of_coprime_left hJ).trans hK)
     (by simp_rw [one_eq_top, sup_top_eq]) h
 
+theorem sup_multiset_prod_eq_top {s : Multiset (Ideal R)} (h : ∀  p ∈ s, I ⊔ p = ⊤) :
+    I ⊔ Multiset.prod s = ⊤ :=
+  Multiset.prod_induction (I ⊔ · = ⊤) s (fun _ _ hp hq ↦ (sup_mul_eq_of_coprime_left hp).trans hq)
+    (by simp only [one_eq_top, ge_iff_le, top_le_iff, le_top, sup_of_le_right]) h
+
 theorem sup_iInf_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s → I ⊔ J i = ⊤) :
     (I ⊔ ⨅ i ∈ s, J i) = ⊤ :=
   eq_top_iff.mpr <|
