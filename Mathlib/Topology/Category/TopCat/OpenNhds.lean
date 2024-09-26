@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Topology.Category.TopCat.Opens
 import Mathlib.Data.Set.Subsingleton
@@ -86,7 +86,7 @@ def inclusion (x : X) : OpenNhds x ⥤ Opens X :=
 theorem inclusion_obj (x : X) (U) (p) : (inclusion x).obj ⟨U, p⟩ = U :=
   rfl
 
-theorem openEmbedding {x : X} (U : OpenNhds x) : OpenEmbedding U.1.inclusion :=
+theorem openEmbedding {x : X} (U : OpenNhds x) : OpenEmbedding U.1.inclusion' :=
   U.1.openEmbedding
 
 /-- The preimage functor from neighborhoods of `f x` to neighborhoods of `x`. -/
@@ -144,9 +144,8 @@ def functorNhds (h : IsOpenMap f) (x : X) : OpenNhds x ⥤ OpenNhds (f x) where
   map i := h.functor.map i
 
 /-- An open map `f : X ⟶ Y` induces an adjunction between `OpenNhds x` and `OpenNhds (f x)`. -/
-def adjunctionNhds (h : IsOpenMap f) (x : X) : IsOpenMap.functorNhds h x ⊣ OpenNhds.map f x :=
-  Adjunction.mkOfUnitCounit
-    { unit := { app := fun U => homOfLE fun x hxU => ⟨x, hxU, rfl⟩ }
-      counit := { app := fun V => homOfLE fun y ⟨_, hfxV, hxy⟩ => hxy ▸ hfxV } }
+def adjunctionNhds (h : IsOpenMap f) (x : X) : IsOpenMap.functorNhds h x ⊣ OpenNhds.map f x where
+  unit := { app := fun U => homOfLE fun x hxU => ⟨x, hxU, rfl⟩ }
+  counit := { app := fun V => homOfLE fun y ⟨_, hfxV, hxy⟩ => hxy ▸ hfxV }
 
 end IsOpenMap

@@ -275,6 +275,16 @@ theorem map_iSup {ι : Sort*} (f : F) (s : ι → Submonoid M) : (iSup s).map f 
   (gc_map_comap f : GaloisConnection (map f) (comap f)).l_iSup
 
 @[to_additive]
+theorem map_inf (S T : Submonoid M) (f : F) (hf : Function.Injective f) :
+    (S ⊓ T).map f = S.map f ⊓ T.map f := SetLike.coe_injective (Set.image_inter hf)
+
+@[to_additive]
+theorem map_iInf {ι : Sort*} [Nonempty ι] (f : F) (hf : Function.Injective f)
+    (s : ι → Submonoid M) : (iInf s).map f = ⨅ i, (s i).map f := by
+  apply SetLike.coe_injective
+  simpa using (Set.injOn_of_injective hf).image_iInter_eq (s := SetLike.coe ∘ s)
+
+@[to_additive]
 theorem comap_inf (S T : Submonoid N) (f : F) : (S ⊓ T).comap f = S.comap f ⊓ T.comap f :=
   (gc_map_comap f : GaloisConnection (map f) (comap f)).u_inf
 
@@ -828,6 +838,11 @@ def codRestrict {S} [SetLike S N] [SubmonoidClass S N] (f : M →* N) (s : S) (h
   map_one' := Subtype.eq f.map_one
   map_mul' x y := Subtype.eq (f.map_mul x y)
 
+@[to_additive (attr := simp)]
+lemma injective_codRestrict {S} [SetLike S N] [SubmonoidClass S N] (f : M →* N) (s : S)
+    (h : ∀ x, f x ∈ s) : Function.Injective (f.codRestrict s h) ↔ Function.Injective f :=
+  ⟨fun H _ _ hxy ↦ H <| Subtype.eq hxy, fun H _ _ hxy ↦ H (congr_arg Subtype.val hxy)⟩
+
 /-- Restriction of a monoid hom to its range interpreted as a submonoid. -/
 @[to_additive "Restriction of an `AddMonoid` hom to its range interpreted as a submonoid."]
 def mrangeRestrict {N} [MulOneClass N] (f : M →* N) : M →* (mrange f) :=
@@ -850,8 +865,8 @@ that `f x = 1` -/
 def mker (f : F) : Submonoid M :=
   (⊥ : Submonoid N).comap f
 
-@[to_additive]
-theorem mem_mker (f : F) {x : M} : x ∈ mker f ↔ f x = 1 :=
+@[to_additive (attr := simp)]
+theorem mem_mker {f : F} {x : M} : x ∈ mker f ↔ f x = 1 :=
   Iff.rfl
 
 @[to_additive]
@@ -860,7 +875,7 @@ theorem coe_mker (f : F) : (mker f : Set M) = (f : M → N) ⁻¹' {1} :=
 
 @[to_additive]
 instance decidableMemMker [DecidableEq N] (f : F) : DecidablePred (· ∈ mker f) := fun x =>
-  decidable_of_iff (f x = 1) (mem_mker f)
+  decidable_of_iff (f x = 1) mem_mker
 
 @[to_additive]
 theorem comap_mker (g : N →* P) (f : M →* N) : g.mker.comap f = mker (comp g f) :=
@@ -909,10 +924,10 @@ theorem mker_inr : mker (inr M N) = ⊥ := by
   simp [mem_mker]
 
 @[to_additive (attr := simp)]
-lemma mker_fst : mker (fst M N) = .prod ⊥ ⊤ := SetLike.ext fun _ => (and_true_iff _).symm
+lemma mker_fst : mker (fst M N) = .prod ⊥ ⊤ := SetLike.ext fun _ => (iff_of_eq (and_true _)).symm
 
 @[to_additive (attr := simp)]
-lemma mker_snd : mker (snd M N) = .prod ⊤ ⊥ := SetLike.ext fun _ => (true_and_iff _).symm
+lemma mker_snd : mker (snd M N) = .prod ⊤ ⊥ := SetLike.ext fun _ => (iff_of_eq (true_and _)).symm
 
 /-- The `MonoidHom` from the preimage of a submonoid to itself. -/
 @[to_additive (attr := simps)

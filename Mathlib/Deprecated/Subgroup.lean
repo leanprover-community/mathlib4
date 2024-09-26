@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mitchell Rowett, Scott Morrison, Johan Commelin, Mario Carneiro,
+Authors: Johannes Hölzl, Mitchell Rowett, Kim Morrison, Johan Commelin, Mario Carneiro,
   Michael Howes
 -/
 import Mathlib.Algebra.Group.Subgroup.Basic
@@ -589,11 +589,11 @@ theorem normalClosure.is_normal : IsNormalSubgroup (normalClosure s) :=
 /-- The normal closure of s is the smallest normal subgroup containing s. -/
 theorem normalClosure_subset {s t : Set G} (ht : IsNormalSubgroup t) (h : s ⊆ t) :
     normalClosure s ⊆ t := fun a w => by
-  induction' w with x hx x _ ihx x y _ _ ihx ihy
-  · exact conjugatesOfSet_subset' ht h <| hx
-  · exact ht.toIsSubgroup.toIsSubmonoid.one_mem
-  · exact ht.toIsSubgroup.inv_mem ihx
-  · exact ht.toIsSubgroup.toIsSubmonoid.mul_mem ihx ihy
+  induction w with
+  | basic hx => exact conjugatesOfSet_subset' ht h <| hx
+  | one => exact ht.toIsSubgroup.toIsSubmonoid.one_mem
+  | inv _ ihx => exact ht.toIsSubgroup.inv_mem ihx
+  | mul _ _ ihx ihy => exact ht.toIsSubgroup.toIsSubmonoid.mul_mem ihx ihy
 
 theorem normalClosure_subset_iff {s t : Set G} (ht : IsNormalSubgroup t) :
     s ⊆ t ↔ normalClosure s ⊆ t :=

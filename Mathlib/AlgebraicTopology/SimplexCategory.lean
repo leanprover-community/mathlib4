@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Scott Morrison, Adam Topaz
+Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
 import Mathlib.Tactic.Linarith
 import Mathlib.CategoryTheory.Skeletal
@@ -239,9 +239,11 @@ def mkOfLeComp {n} (i j k : Fin (n+1)) (h₁ : i ≤ j) (h₂ : j ≤ k): ([2] :
       | 0, 2, _ => Fin.le_trans h₁ h₂
   }
 
+instance (Δ : SimplexCategory) : Subsingleton (Δ ⟶ [0]) where
+  allEq f g := by ext : 3; apply Subsingleton.elim (α := Fin 1)
+
 theorem hom_zero_zero (f : ([0] : SimplexCategory) ⟶ [0]) : f = 𝟙 _ := by
-  ext : 3
-  apply @Subsingleton.elim (Fin 1)
+  apply Subsingleton.elim
 
 end
 
@@ -842,7 +844,7 @@ theorem eq_id_of_mono {x : SimplexCategory} (i : x ⟶ x) [Mono i] : i = 𝟙 _ 
   apply isIso_of_bijective
   dsimp
   rw [Fintype.bijective_iff_injective_and_card i.toOrderHom, ← mono_iff_injective,
-    eq_self_iff_true, and_true_iff]
+    eq_self_iff_true, and_true]
   infer_instance
 
 theorem eq_id_of_epi {x : SimplexCategory} (i : x ⟶ x) [Epi i] : i = 𝟙 _ := by
@@ -852,7 +854,7 @@ theorem eq_id_of_epi {x : SimplexCategory} (i : x ⟶ x) [Epi i] : i = 𝟙 _ :=
   apply isIso_of_bijective
   dsimp
   rw [Fintype.bijective_iff_surjective_and_card i.toOrderHom, ← epi_iff_surjective,
-    eq_self_iff_true, and_true_iff]
+    eq_self_iff_true, and_true]
   infer_instance
 
 theorem eq_σ_of_epi {n : ℕ} (θ : mk (n + 1) ⟶ mk n) [Epi θ] : ∃ i : Fin (n + 1), θ = σ i := by

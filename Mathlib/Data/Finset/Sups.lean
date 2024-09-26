@@ -99,10 +99,11 @@ theorem forall_sups_iff {p : α → Prop} : (∀ c ∈ s ⊻ t, p c) ↔ ∀ a �
 theorem sups_subset_iff : s ⊻ t ⊆ u ↔ ∀ a ∈ s, ∀ b ∈ t, a ⊔ b ∈ u :=
   image₂_subset_iff
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem sups_nonempty : (s ⊻ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image₂_nonempty_iff
 
+@[aesop safe apply (rule_sets := [finsetNonempty])]
 protected theorem Nonempty.sups : s.Nonempty → t.Nonempty → (s ⊻ t).Nonempty :=
   Nonempty.image₂
 
@@ -245,10 +246,11 @@ theorem forall_infs_iff {p : α → Prop} : (∀ c ∈ s ⊼ t, p c) ↔ ∀ a �
 theorem infs_subset_iff : s ⊼ t ⊆ u ↔ ∀ a ∈ s, ∀ b ∈ t, a ⊓ b ∈ u :=
   image₂_subset_iff
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem infs_nonempty : (s ⊼ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image₂_nonempty_iff
 
+@[aesop safe apply (rule_sets := [finsetNonempty])]
 protected theorem Nonempty.infs : s.Nonempty → t.Nonempty → (s ⊼ t).Nonempty :=
   Nonempty.image₂
 
@@ -480,6 +482,8 @@ theorem disjSups_comm : s ○ t = t ○ s := by
     rw [sup_comm] at hs
     exact ⟨b, hb, a, ha, hd, hs⟩
 
+instance : @Std.Commutative (Finset α) (· ○ ·) := ⟨disjSups_comm⟩
+
 end DisjSups
 
 open FinsetFamily
@@ -490,11 +494,13 @@ variable [DecidableEq α]
 variable [DistribLattice α] [OrderBot α] [@DecidableRel α Disjoint] (s t u v : Finset α)
 
 theorem disjSups_assoc : ∀ s t u : Finset α, s ○ t ○ u = s ○ (t ○ u) := by
-  refine associative_of_commutative_of_le disjSups_comm ?_
+  refine (associative_of_commutative_of_le inferInstance ?_).assoc
   simp only [le_eq_subset, disjSups_subset_iff, mem_disjSups]
   rintro s t u _ ⟨a, ha, b, hb, hab, rfl⟩ c hc habc
   rw [disjoint_sup_left] at habc
   exact ⟨a, ha, _, ⟨b, hb, c, hc, habc.2, rfl⟩, hab.sup_right habc.1, (sup_assoc ..).symm⟩
+
+instance : @Std.Associative (Finset α) (· ○ ·) := ⟨disjSups_assoc⟩
 
 theorem disjSups_left_comm : s ○ (t ○ u) = t ○ (s ○ u) := by
   simp_rw [← disjSups_assoc, disjSups_comm s]
@@ -551,9 +557,10 @@ lemma forall_mem_diffs {p : α → Prop} : (∀ c ∈ s \\ t, p c) ↔ ∀ a ∈
 
 @[simp] lemma diffs_subset_iff : s \\ t ⊆ u ↔ ∀ a ∈ s, ∀ b ∈ t, a \ b ∈ u := image₂_subset_iff
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 lemma diffs_nonempty : (s \\ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty := image₂_nonempty_iff
 
+@[aesop safe apply (rule_sets := [finsetNonempty])]
 protected lemma Nonempty.diffs : s.Nonempty → t.Nonempty → (s \\ t).Nonempty := Nonempty.image₂
 
 lemma Nonempty.of_diffs_left : (s \\ t).Nonempty → s.Nonempty := Nonempty.of_image₂_left
@@ -625,10 +632,11 @@ lemma exists_compls_iff {p : α → Prop} : (∃ a ∈ sᶜˢ, p a) ↔ ∃ a �
 
 lemma compls_subset_iff : sᶜˢ ⊆ t ↔ s ⊆ tᶜˢ := by rw [← compls_subset_compls, compls_compls]
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 lemma compls_nonempty : sᶜˢ.Nonempty ↔ s.Nonempty := map_nonempty
 
 protected alias ⟨Nonempty.of_compls, Nonempty.compls⟩ := compls_nonempty
+attribute [aesop safe apply (rule_sets := [finsetNonempty])] Nonempty.compls
 
 @[simp] lemma compls_empty : (∅ : Finset α)ᶜˢ = ∅ := map_empty _
 @[simp] lemma compls_eq_empty : sᶜˢ = ∅ ↔ s = ∅ := map_eq_empty

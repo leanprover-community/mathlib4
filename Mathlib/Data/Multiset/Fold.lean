@@ -26,10 +26,10 @@ local notation a " * " b => op a b
 /-- `fold op b s` folds a commutative associative operation `op` over
   the multiset `s`. -/
 def fold : α → Multiset α → α :=
-  foldr op (left_comm _ hc.comm ha.assoc)
+  foldr op
 
 theorem fold_eq_foldr (b : α) (s : Multiset α) :
-    fold op b s = foldr op (left_comm _ hc.comm ha.assoc) b s :=
+    fold op b s = foldr op b s :=
   rfl
 
 @[simp]
@@ -37,10 +37,10 @@ theorem coe_fold_r (b : α) (l : List α) : fold op b l = l.foldr op b :=
   rfl
 
 theorem coe_fold_l (b : α) (l : List α) : fold op b l = l.foldl op b :=
-  (coe_foldr_swap op _ b l).trans <| by simp [hc.comm]
+  (coe_foldr_swap op b l).trans <| by simp [hc.comm]
 
 theorem fold_eq_foldl (b : α) (s : Multiset α) :
-    fold op b s = foldl op (right_comm _ hc.comm ha.assoc) b s :=
+    fold op b s = foldl op b s :=
   Quot.inductionOn s fun _ => coe_fold_l _ _ _
 
 @[simp]
@@ -49,7 +49,7 @@ theorem fold_zero (b : α) : (0 : Multiset α).fold op b = b :=
 
 @[simp]
 theorem fold_cons_left : ∀ (b a : α) (s : Multiset α), (a ::ₘ s).fold op b = a * s.fold op b :=
-  foldr_cons _ _
+  foldr_cons _
 
 theorem fold_cons_right (b a : α) (s : Multiset α) : (a ::ₘ s).fold op b = s.fold op b * a := by
   simp [hc.comm]
@@ -74,7 +74,7 @@ theorem fold_bind {ι : Type*} (s : Multiset ι) (t : ι → Multiset α) (b : �
   · rw [cons_bind, map_cons, map_cons, fold_cons_left, fold_cons_left, fold_add, ih]
 
 theorem fold_singleton (b a : α) : ({a} : Multiset α).fold op b = a * b :=
-  foldr_singleton _ _ _ _
+  foldr_singleton _ _ _
 
 theorem fold_distrib {f g : β → α} (u₁ u₂ : α) (s : Multiset β) :
     (s.map fun x => f x * g x).fold op (u₁ * u₂) = (s.map f).fold op u₁ * (s.map g).fold op u₂ :=

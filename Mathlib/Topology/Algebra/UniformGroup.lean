@@ -93,6 +93,33 @@ theorem UniformContinuous.mul [UniformSpace β] {f : β → α} {g : β → α} 
 theorem uniformContinuous_mul : UniformContinuous fun p : α × α => p.1 * p.2 :=
   uniformContinuous_fst.mul uniformContinuous_snd
 
+@[to_additive]
+theorem UniformContinuous.mul_const [UniformSpace β] {f : β → α} (hf : UniformContinuous f)
+    (a : α) : UniformContinuous fun x ↦ f x * a :=
+  hf.mul uniformContinuous_const
+
+@[to_additive]
+theorem UniformContinuous.const_mul [UniformSpace β] {f : β → α} (hf : UniformContinuous f)
+    (a : α) : UniformContinuous fun x ↦ a * f x :=
+  uniformContinuous_const.mul hf
+
+@[to_additive]
+theorem uniformContinuous_mul_left (a : α) : UniformContinuous fun b : α => a * b :=
+  uniformContinuous_id.const_mul _
+
+@[to_additive]
+theorem uniformContinuous_mul_right (a : α) : UniformContinuous fun b : α => b * a :=
+  uniformContinuous_id.mul_const _
+
+@[to_additive]
+theorem UniformContinuous.div_const [UniformSpace β] {f : β → α} (hf : UniformContinuous f)
+    (a : α) : UniformContinuous fun x ↦ f x / a :=
+  hf.div uniformContinuous_const
+
+@[to_additive]
+theorem uniformContinuous_div_const (a : α) : UniformContinuous fun b : α => b / a :=
+  uniformContinuous_id.div_const _
+
 @[to_additive UniformContinuous.const_nsmul]
 theorem UniformContinuous.pow_const [UniformSpace β] {f : β → α} (hf : UniformContinuous f) :
     ∀ n : ℕ, UniformContinuous fun x => f x ^ n

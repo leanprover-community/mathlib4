@@ -252,6 +252,14 @@ theorem map_iSup {ι : Sort*} (f : E →ₐ[F] K) (s : ι → IntermediateField 
     (iSup s).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
 
+theorem map_inf (s t : IntermediateField F E) (f : E →ₐ[F] K) :
+    (s ⊓ t).map f = s.map f ⊓ t.map f := SetLike.coe_injective (Set.image_inter f.injective)
+
+theorem map_iInf {ι : Sort*} [Nonempty ι] (f : E →ₐ[F] K) (s : ι → IntermediateField F E) :
+    (iInf s).map f = ⨅ i, (s i).map f := by
+  apply SetLike.coe_injective
+  simpa using (Set.injOn_of_injective f.injective).image_iInter_eq (s := SetLike.coe ∘ s)
+
 theorem _root_.AlgHom.fieldRange_eq_map (f : E →ₐ[F] K) :
     f.fieldRange = IntermediateField.map f ⊤ :=
   SetLike.ext' Set.image_univ.symm
@@ -997,6 +1005,11 @@ noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
 theorem adjoinRootEquivAdjoin_apply_root (h : IsIntegral F α) :
     adjoinRootEquivAdjoin F h (AdjoinRoot.root (minpoly F α)) = AdjoinSimple.gen F α :=
   AdjoinRoot.lift_root (aeval_gen_minpoly F α)
+
+@[simp]
+theorem adjoinRootEquivAdjoin_symm_apply_gen (h : IsIntegral F α) :
+    (adjoinRootEquivAdjoin F h).symm (AdjoinSimple.gen F α) = AdjoinRoot.root (minpoly F α) := by
+  rw [AlgEquiv.symm_apply_eq, adjoinRootEquivAdjoin_apply_root]
 
 theorem adjoin_root_eq_top (p : K[X]) [Fact (Irreducible p)] : K⟮AdjoinRoot.root p⟯ = ⊤ :=
   (eq_adjoin_of_eq_algebra_adjoin K _ ⊤ (AdjoinRoot.adjoinRoot_eq_top (f := p)).symm).symm
