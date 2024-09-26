@@ -116,7 +116,8 @@ theorem CPolynomialAt.analyticAt (hf : CPolynomialAt 𝕜 f x) : AnalyticAt 𝕜
   let ⟨p, _, hp⟩ := hf
   ⟨p, hp.toHasFPowerSeriesAt⟩
 
-theorem CPolynomialAt.analyticWithinAt (hf : CPolynomialAt 𝕜 f x) : AnalyticWithinAt 𝕜 f x :=
+theorem CPolynomialAt.analyticWithinAt {s : Set E} (hf : CPolynomialAt 𝕜 f x) :
+    AnalyticWithinAt 𝕜 f s x :=
   hf.analyticAt.analyticWithinAt
 
 theorem CPolynomialOn.analyticOnNhd {s : Set E} (hf : CPolynomialOn 𝕜 f s) : AnalyticOnNhd 𝕜 f s :=
