@@ -30,7 +30,7 @@ to it. In this way, one obtains bijectively all partitions of `{0, ..., n}`, and
 go on (up to relabelling).
 
 The main difficulty is to write down things in a precise language, namely to write
-`D^k g (f x) (D^{i₁} f (x) (v_{I₁}), ..., D^{iₖ} f (x) (v_{Iₖ}))` as a continuous multilinear maps
+`D^k g (f x) (D^{i₁} f (x) (v_{I₁}), ..., D^{iₖ} f (x) (v_{Iₖ}))` as a continuous multilinear map
 of the `vᵢ`. For this, instead of working with partitions of `{1, ..., n}` and ordering their
 parts, we work with partitions in which the ordering is part of the data -- this is equivalent,
 but much more convenient to implement. We call these `OrderedFinpartition n`.
@@ -688,3 +688,5 @@ def extendEquiv (n : ℕ) :
                 Nat.succ_eq_add_one, succ_pred]
               rfl
           · simp [hi]
+
+end OrderedFinpartition
