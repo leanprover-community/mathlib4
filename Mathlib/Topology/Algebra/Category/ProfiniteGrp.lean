@@ -166,7 +166,7 @@ instance : HasForget₂ ProfiniteGrp Grp where
 
 /-- A closed subgroup of a profinite group is profinite. -/
 def ofClosedSubgroup {G : ProfiniteGrp} (H : ClosedSubgroup G)  : ProfiniteGrp :=
-  letI : CompactSpace H := isCompact_iff_compactSpace.mp (IsClosed.isCompact H.isClosed')
+  letI : CompactSpace H := inferInstance
   of H.1
 
 end ProfiniteGrp

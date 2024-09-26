@@ -76,6 +76,10 @@ instance instInfClosedSubgroup : Inf (ClosedSubgroup G) :=
 instance instSemilatticeInfClosedSubgroup : SemilatticeInf (ClosedSubgroup G) :=
   SetLike.coe_injective.semilatticeInf ((↑) : ClosedSubgroup G → Set G) fun _ _ ↦ rfl
 
+@[to_additive]
+instance [CompactSpace G] (H : ClosedSubgroup G) : CompactSpace H :=
+  isCompact_iff_compactSpace.mp (IsClosed.isCompact H.isClosed')
+
 end ClosedSubgroup
 
 open scoped Pointwise
