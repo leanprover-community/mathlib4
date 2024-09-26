@@ -13,37 +13,6 @@ import Mathlib.Order.Filter.AtTopBot
 open Filter
 open scoped Nat
 
-theorem Nat.eventually_pow_lt_factorial_sub (c d : ℕ) : ∀ᶠ n in atTop, c ^ n < (n - d)! := by
-  rw [eventually_atTop]
-  refine ⟨2 * (c ^ 2 + d + 1), ?_⟩
-  intro n hn
-  obtain ⟨d', rfl⟩ := Nat.exists_eq_add_of_le hn
-  obtain (rfl | c0) := c.eq_zero_or_pos
-  · simp [Nat.factorial_pos]
-  refine (Nat.le_mul_of_pos_right _ (Nat.pow_pos (n := d') c0)).trans_lt ?_
-  convert_to (c ^ 2) ^ (c ^ 2 + d' + d + 1) < (c ^ 2 + (c ^ 2 + d' + d + 1) + 1)!
-  · rw [← pow_mul, ← pow_add]
-    congr 1
-    omega
-  · congr 1
-    omega
-  refine (lt_of_lt_of_le ?_ Nat.factorial_mul_pow_le_factorial).trans_le <|
-    (factorial_le (Nat.le_succ _))
-  rw [← one_mul (_ ^ _ : ℕ)]
-  apply Nat.mul_lt_mul_of_le_of_lt
-  · exact Nat.one_le_of_lt (Nat.factorial_pos _)
-  · exact Nat.pow_lt_pow_left (Nat.lt_succ_self _) (Nat.succ_ne_zero _)
-  · exact (Nat.factorial_pos _)
-
-theorem Nat.eventually_mul_pow_lt_factorial_sub (a c d : ℕ) :
-    ∀ᶠ n in atTop, a * c ^ n < (n - d)! := by
-  obtain ⟨n0, h⟩ := (Nat.eventually_pow_lt_factorial_sub (a * c) d).exists_forall_of_atTop
-  rw [eventually_atTop]
-  refine ⟨max n0 1, fun n hn => lt_of_le_of_lt ?_ (h n (le_of_max_le_left hn))⟩
-  rw [mul_pow]
-  refine Nat.mul_le_mul_right _ (Nat.le_self_pow ?_ _)
-  omega
-
 variable {K : Type*}
 
 theorem FloorSemiring.eventually_mul_pow_lt_factorial_sub [LinearOrderedRing K] [FloorSemiring K]
@@ -63,16 +32,3 @@ theorem FloorSemiring.eventually_mul_pow_div_factorial_lt [LinearOrderedField K]
   filter_upwards [eventually_mul_pow_lt_factorial_sub (a * ε⁻¹) c d] with n h
   rw [mul_right_comm, mul_inv_lt_iff hε] at h
   rwa [div_lt_iff (Nat.cast_pos.mpr (Nat.factorial_pos _))]
-
-namespace Nat
-
-@[deprecated (since := "2024-09-25")]
-theorem exists_pow_lt_factorial (c : ℕ) : ∃ n0 > 1, ∀ n ≥ n0, c ^ n < (n - 1)! :=
-  let ⟨n0, h⟩ := (eventually_pow_lt_factorial_sub c 1).exists_forall_of_atTop
-  ⟨max n0 2, by omega, fun n hn ↦ h n (by omega)⟩
-
-@[deprecated (since := "2024-09-25")]
-theorem exists_mul_pow_lt_factorial (a : ℕ) (c : ℕ) : ∃ n0, ∀ n ≥ n0, a * c ^ n < (n - 1)! :=
-  (eventually_mul_pow_lt_factorial_sub a c 1).exists_forall_of_atTop
-
-end Nat

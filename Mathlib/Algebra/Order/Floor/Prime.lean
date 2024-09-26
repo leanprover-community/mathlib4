@@ -16,7 +16,7 @@ TODO: delete this file.
 
 open scoped Nat
 
-@[deprecated (since := "2024-09-25")]
+@[deprecated eventually_mul_pow_lt_factorial_sub (since := "2024-09-25")]
 theorem Nat.exists_prime_mul_pow_lt_factorial (n a c : ℕ) :
     ∃ p > n, p.Prime ∧ a * c ^ p < (p - 1)! :=
   ((Filter.frequently_atTop.mpr Nat.exists_infinite_primes).and_eventually
@@ -26,13 +26,13 @@ namespace FloorRing
 
 variable {K : Type*}
 
-@[deprecated (since := "2024-09-25")]
+@[deprecated FloorSemiring.eventually_mul_pow_lt_factorial_sub (since := "2024-09-25")]
 theorem exists_prime_mul_pow_lt_factorial [LinearOrderedRing K] [FloorRing K] (n : ℕ) (a c : K) :
     ∃ p > n, p.Prime ∧ a * c ^ p < (p - 1)! :=
   ((Filter.frequently_atTop.mpr Nat.exists_infinite_primes).and_eventually
     (FloorSemiring.eventually_mul_pow_lt_factorial_sub a c 1)).forall_exists_of_atTop (n + 1)
 
-@[deprecated (since := "2024-09-25")]
+@[deprecated FloorSemiring.eventually_mul_pow_div_factorial_lt (since := "2024-09-25")]
 theorem exists_prime_mul_pow_div_factorial_lt_one [LinearOrderedField K] [FloorRing K]
     (n : ℕ) (a c : K) :
     ∃ p > n, p.Prime ∧ a * c ^ p / (p - 1)! < 1 :=
