@@ -250,7 +250,7 @@ lemma help (a b :E) (h : (2:ℝ)•a = (2:ℝ)•b) : a = b := by
   have e1 : (1/2 : ℝ) • ((2:ℝ)•a) = (1/2 : ℝ) •((2:ℝ)•b) := by
     apply help'
     exact h
-  simp at e1
+  simp only [one_div, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, inv_smul_smul₀] at e1
   exact e1
 
 variable (E 𝕜) {s : Set E}
@@ -334,7 +334,7 @@ theorem totallyBounded_absConvexHull
     rw [vadd_eq_add] at hz₂
     rw [mem_compRel]
     obtain ⟨z',⟨hz'₁,hz'₂⟩⟩ := hz₁
-    simp at hz'₂
+    simp only at hz'₂
     have e11 : (1 / 2 : ℝ) • (x + y) - x = -z' := by
       rw [smul_add]
       rw [add_sub_right_comm]
@@ -358,7 +358,7 @@ theorem totallyBounded_absConvexHull
       rw [two_smul]
       simp only [add_sub_add_right_eq_sub]
       rw [← hz₂]
-      simp
+      simp only [sub_add_cancel_left, neg_inj]
       exact id (Eq.symm hz'₂)
     use (1/2:ℝ)•(x+y)
     constructor
