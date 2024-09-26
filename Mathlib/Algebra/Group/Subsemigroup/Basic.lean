@@ -74,19 +74,27 @@ attribute [to_additive] MulMemClass
 
 attribute [aesop safe apply (rule_sets := [SetLike])] mul_mem add_mem
 
-/-- A subsemigroup of a magma `M` is a subset closed under multiplication. -/
-structure Subsemigroup (M : Type*) [Mul M] where
-  /-- The carrier of a subsemigroup. -/
-  carrier : Set M
+/-- A subsemigroup of a magma `M` is a subset closed under multiplication.
+
+Note that the bundled variant `Subsemigroup M` should be preferred. -/
+structure IsSubsemigroup {M : Type*} [Mul M] (s : Set M) : Prop where
   /-- The product of two elements of a subsemigroup belongs to the subsemigroup. -/
-  mul_mem' {a b} : a ∈ carrier → b ∈ carrier → a * b ∈ carrier
+  mul_mem' {a b} : a ∈ s → b ∈ s → a * b ∈ s
+
+/-- An additive subsemigroup of an additive magma `M` is a subset closed under addition.
+
+Note that the bundled variant `AddSubsemigroup M` should be preferred. -/
+structure IsAddSubsemigroup {M : Type*} [Add M] (s : Set M) : Prop where
+  /-- The sum of two elements of an additive subsemigroup belongs to the subsemigroup. -/
+  add_mem' {a b} : a ∈ s → b ∈ s → a + b ∈ s
+
+attribute [to_additive IsAddSubsemigroup] IsSubsemigroup
+
+/-- A subsemigroup of a magma `M` is a subset closed under multiplication. -/
+structure Subsemigroup (M : Type*) [Mul M] extends CarrierWrapper M, IsSubsemigroup carrier
 
 /-- An additive subsemigroup of an additive magma `M` is a subset closed under addition. -/
-structure AddSubsemigroup (M : Type*) [Add M] where
-  /-- The carrier of an additive subsemigroup. -/
-  carrier : Set M
-  /-- The sum of two elements of an additive subsemigroup belongs to the subsemigroup. -/
-  add_mem' {a b} : a ∈ carrier → b ∈ carrier → a + b ∈ carrier
+structure AddSubsemigroup (M : Type*) [Add M] extends CarrierWrapper M, IsAddSubsemigroup carrier
 
 attribute [to_additive AddSubsemigroup] Subsemigroup
 
@@ -94,10 +102,11 @@ namespace Subsemigroup
 
 @[to_additive]
 instance : SetLike (Subsemigroup M) M :=
-  ⟨Subsemigroup.carrier, fun p q h => by cases p; cases q; congr⟩
+  ⟨(·.carrier), fun p q h => by obtain ⟨⟨⟩, _⟩ := p; congr⟩
 
 @[to_additive]
-instance : MulMemClass (Subsemigroup M) M where mul_mem := fun {_ _ _} => Subsemigroup.mul_mem' _
+instance : MulMemClass (Subsemigroup M) M where
+  mul_mem := fun {s _ _} => s.mul_mem'
 
 initialize_simps_projections Subsemigroup (carrier → coe)
 initialize_simps_projections AddSubsemigroup (carrier → coe)
@@ -107,15 +116,15 @@ theorem mem_carrier {s : Subsemigroup M} {x : M} : x ∈ s.carrier ↔ x ∈ s :
   Iff.rfl
 
 @[to_additive (attr := simp)]
-theorem mem_mk {s : Set M} {x : M} (h_mul) : x ∈ mk s h_mul ↔ x ∈ s :=
+theorem mem_mk {s : Set M} {x : M} (h_mul) : x ∈ mk ⟨s⟩ h_mul ↔ x ∈ s :=
   Iff.rfl
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_set_mk (s : Set M) (h_mul) : (mk s h_mul : Set M) = s :=
+theorem coe_set_mk (s : Set M) (h_mul) : (mk ⟨s⟩ h_mul : Set M) = s :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem mk_le_mk {s t : Set M} (h_mul) (h_mul') : mk s h_mul ≤ mk t h_mul' ↔ s ⊆ t :=
+theorem mk_le_mk {s t : Set M} (h_mul) (h_mul') : mk ⟨s⟩ h_mul ≤ mk ⟨t⟩ h_mul' ↔ s ⊆ t :=
   Iff.rfl
 
 /-- Two subsemigroups are equal if they have the same elements. -/
@@ -145,7 +154,7 @@ variable (S)
 /-- A subsemigroup is closed under multiplication. -/
 @[to_additive "An `AddSubsemigroup` is closed under addition."]
 protected theorem mul_mem {x y : M} : x ∈ S → y ∈ S → x * y ∈ S :=
-  Subsemigroup.mul_mem' S
+  S.mul_mem'
 
 /-- The subsemigroup `M` of the magma `M`. -/
 @[to_additive "The additive subsemigroup `M` of the magma `M`."]
@@ -296,7 +305,7 @@ is preserved under multiplication, then `p` holds for all elements of the closur
   elements of the additive closure of `s`."]
 theorem closure_induction {p : M → Prop} {x} (h : x ∈ closure s) (mem : ∀ x ∈ s, p x)
     (mul : ∀ x y, p x → p y → p (x * y)) : p x :=
-  (@closure_le _ _ _ ⟨p, mul _ _⟩).2 mem h
+  (@closure_le _ _ _ ⟨⟨p⟩, ⟨mul _ _⟩⟩).2 mem h
 
 /-- A dependent version of `Subsemigroup.closure_induction`. -/
 @[to_additive (attr := elab_as_elim) "A dependent version of `AddSubsemigroup.closure_induction`. "]

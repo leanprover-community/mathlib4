@@ -159,7 +159,7 @@ preserved under addition and scalar multiplication, then `p` holds for all eleme
 @[elab_as_elim]
 theorem span_induction {p : M → Prop} (h : x ∈ span R s) (mem : ∀ x ∈ s, p x) (zero : p 0)
     (add : ∀ x y, p x → p y → p (x + y)) (smul : ∀ (a : R) (x), p x → p (a • x)) : p x :=
-  ((@span_le (p := ⟨⟨⟨p, by intros x y; exact add x y⟩, zero⟩, smul⟩)) s).2 mem h
+  ((@span_le (p := ⟨⟨p⟩, ⟨⟨by intros x y; exact add x y⟩, zero⟩, ⟨smul⟩⟩)) s).2 mem h
 
 /-- An induction principle for span membership. This is a version of `Submodule.span_induction`
 for binary predicates. -/
@@ -336,7 +336,8 @@ theorem span_smul_eq_of_isUnit (s : Set M) (r : R) (hr : IsUnit r) : span R (r �
 theorem coe_iSup_of_directed {ι} [Nonempty ι] (S : ι → Submodule R M)
     (H : Directed (· ≤ ·) S) : ((iSup S : Submodule R M) : Set M) = ⋃ i, S i :=
   let s : Submodule R M :=
-    { __ := AddSubmonoid.copy _ _ (AddSubmonoid.coe_iSup_of_directed H).symm
+    { __ := AddSubmonoid.copy _ _ (AddSubmonoid.coe_iSup_of_directed
+        (S := fun i ↦ (S i).toAddSubmonoid) H).symm
       smul_mem' := fun r _ hx ↦ have ⟨i, hi⟩ := Set.mem_iUnion.mp hx
         Set.mem_iUnion.mpr ⟨i, (S i).smul_mem' r hi⟩ }
   have : iSup S = s := le_antisymm

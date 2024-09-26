@@ -153,21 +153,25 @@ end OfTower
 
 end SetLike
 
-/-- A SubMulAction is a set which is closed under scalar multiplication. -/
-structure SubMulAction (R : Type u) (M : Type v) [SMul R M] : Type v where
-  /-- The underlying set of a `SubMulAction`. -/
-  carrier : Set M
+/-- A SubMulAction is a set which is closed under scalar multiplication.
+
+Note that the bundled variant `SubMulAction R` should be preferred. -/
+structure IsSubMulAction (R : Type u) {M : Type v} [SMul R M] (s : Set M) : Prop where
   /-- The carrier set is closed under scalar multiplication. -/
-  smul_mem' : ∀ (c : R) {x : M}, x ∈ carrier → c • x ∈ carrier
+  smul_mem' : ∀ (c : R) {x : M}, x ∈ s → c • x ∈ s
+
+/-- A SubMulAction is a set which is closed under scalar multiplication. -/
+structure SubMulAction (R : Type u) (M : Type v) [SMul R M] extends
+    CarrierWrapper M, IsSubMulAction R carrier : Type v
 
 namespace SubMulAction
 
 variable [SMul R M]
 
 instance : SetLike (SubMulAction R M) M :=
-  ⟨SubMulAction.carrier, fun p q h => by cases p; cases q; congr⟩
+  ⟨(·.carrier), fun p q h => by obtain ⟨⟨⟩⟩ := p; congr⟩
 
-instance : SMulMemClass (SubMulAction R M) R M where smul_mem := smul_mem' _
+instance : SMulMemClass (SubMulAction R M) R M where smul_mem {s} := s.smul_mem'
 
 @[simp]
 theorem mem_carrier {p : SubMulAction R M} {x : M} : x ∈ p.carrier ↔ x ∈ (p : Set M) :=

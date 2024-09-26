@@ -582,7 +582,8 @@ theorem submoduleMap_coe_apply (f : M →ₗ[R] M₁) {p : Submodule R M} (x : p
     ↑(f.submoduleMap p x) = f x := rfl
 
 theorem submoduleMap_surjective (f : M →ₗ[R] M₁) (p : Submodule R M) :
-    Function.Surjective (f.submoduleMap p) := f.toAddMonoidHom.addSubmonoidMap_surjective _
+    Function.Surjective (f.submoduleMap p) :=
+  f.toAddMonoidHom.addSubmonoidMap_surjective p.toAddSubmonoid
 
 variable [Semiring R₂] [AddCommMonoid M₂] [Module R₂ M₂] {σ₂₁ : R₂ →+* R}
 

@@ -291,21 +291,35 @@ end SubgroupClass
 end SubgroupClass
 
 /-- A subgroup of a group `G` is a subset containing 1, closed under multiplication
-and closed under multiplicative inverse. -/
-structure Subgroup (G : Type*) [Group G] extends Submonoid G where
+and closed under multiplicative inverse.
+
+Note that the bundled variant `Subgroup M` should be preferred. -/
+structure IsSubgroup {G : Type*} [Group G] (s : Set G) extends
+    IsSubmonoid s : Prop where
   /-- `G` is closed under inverses -/
-  inv_mem' {x} : x ∈ carrier → x⁻¹ ∈ carrier
+  inv_mem' {x} : x ∈ s → x⁻¹ ∈ s
+
+/-- An additive subgroup of an additive group `G` is a subset containing 0, closed
+under addition and additive inverse.
+
+Note that the bundled variant `AddSubgroup M` should be preferred. -/
+structure IsAddSubgroup {G : Type*} [AddGroup G] (s : Set G) extends
+    IsAddSubmonoid s : Prop where
+  /-- `G` is closed under negation -/
+  neg_mem' {x} : x ∈ s → -x ∈ s
+
+/-- A subgroup of a group `G` is a subset containing 1, closed under multiplication
+and closed under multiplicative inverse. -/
+structure Subgroup (G : Type*) [Group G] extends
+    CarrierWrapper G, IsSubgroup carrier, Submonoid G where
 
 /-- An additive subgroup of an additive group `G` is a subset containing 0, closed
 under addition and additive inverse. -/
-structure AddSubgroup (G : Type*) [AddGroup G] extends AddSubmonoid G where
-  /-- `G` is closed under negation -/
-  neg_mem' {x} : x ∈ carrier → -x ∈ carrier
+structure AddSubgroup (G : Type*) [AddGroup G] extends
+    CarrierWrapper G, IsAddSubgroup carrier, AddSubmonoid G where
 
-attribute [to_additive] Subgroup
-
--- Porting note: Removed, translation already exists
--- attribute [to_additive AddSubgroup.toAddSubmonoid] Subgroup.toSubmonoid
+attribute [to_additive] IsSubgroup Subgroup
+attribute [to_additive existing] Subgroup.toSubmonoid
 
 /-- Reinterpret a `Subgroup` as a `Submonoid`. -/
 add_decl_doc Subgroup.toSubmonoid
@@ -319,14 +333,14 @@ namespace Subgroup
 instance : SetLike (Subgroup G) G where
   coe s := s.carrier
   coe_injective' p q h := by
-    obtain ⟨⟨⟨hp,_⟩,_⟩,_⟩ := p
-    obtain ⟨⟨⟨hq,_⟩,_⟩,_⟩ := q
+    obtain ⟨⟨hp⟩⟩ := p
+    obtain ⟨⟨hq⟩⟩ := q
     congr
 
 -- Porting note: Below can probably be written more uniformly
 @[to_additive]
 instance : SubgroupClass (Subgroup G) G where
-  inv_mem := Subgroup.inv_mem' _
+  inv_mem {s} := s.inv_mem'
   one_mem _ := (Subgroup.toSubmonoid _).one_mem'
   mul_mem := (Subgroup.toSubmonoid _).mul_mem'
 
@@ -335,18 +349,18 @@ theorem mem_carrier {s : Subgroup G} {x : G} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
 @[to_additive (attr := simp)]
-theorem mem_mk {s : Set G} {x : G} (h_one) (h_mul) (h_inv) :
-    x ∈ mk ⟨⟨s, h_one⟩, h_mul⟩ h_inv ↔ x ∈ s :=
+theorem mem_mk {s : Set G} {x : G} (h) :
+    x ∈ mk ⟨s⟩ h ↔ x ∈ s :=
   Iff.rfl
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_set_mk {s : Set G} (h_one) (h_mul) (h_inv) :
-    (mk ⟨⟨s, h_one⟩, h_mul⟩ h_inv : Set G) = s :=
+theorem coe_set_mk {s : Set G} (h) :
+    (mk ⟨s⟩ h : Set G) = s :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem mk_le_mk {s t : Set G} (h_one) (h_mul) (h_inv) (h_one') (h_mul') (h_inv') :
-    mk ⟨⟨s, h_one⟩, h_mul⟩ h_inv ≤ mk ⟨⟨t, h_one'⟩, h_mul'⟩ h_inv' ↔ s ⊆ t :=
+theorem mk_le_mk {s t : Set G} (h) (h') :
+    mk ⟨s⟩ h ≤ mk ⟨t⟩ h' ↔ s ⊆ t :=
   Iff.rfl
 
 initialize_simps_projections Subgroup (carrier → coe)
@@ -584,7 +598,7 @@ theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem mk_eq_one {g : G} {h} : (⟨g, h⟩ : H) = 1 ↔ g = 1 := Submonoid.mk_eq_one ..
+theorem mk_eq_one {g : G} {h} : (⟨g, h⟩ : H) = 1 ↔ g = 1 := H.toSubmonoid.mk_eq_one ..
 
 /-- A subgroup of a group inherits a group structure. -/
 @[to_additive "An `AddSubgroup` of an `AddGroup` inherits an `AddGroup` structure."]
@@ -890,7 +904,7 @@ only require showing `p` is preserved by multiplication by elements in `k`. -/
       versions that only require showing `p` is preserved by addition by elements in `k`."]
 theorem closure_induction {p : G → Prop} {x} (h : x ∈ closure k) (mem : ∀ x ∈ k, p x) (one : p 1)
     (mul : ∀ x y, p x → p y → p (x * y)) (inv : ∀ x, p x → p x⁻¹) : p x :=
-  (@closure_le _ _ ⟨⟨⟨setOf p, fun {x y} ↦ mul x y⟩, one⟩, fun {x} ↦ inv x⟩ k).2 mem h
+  (@closure_le _ _ ⟨⟨setOf p⟩, ⟨⟨⟨fun {x y} ↦ mul x y⟩, one⟩, fun {x} ↦ inv x⟩⟩ k).2 mem h
 
 /-- A dependent version of `Subgroup.closure_induction`. -/
 @[to_additive (attr := elab_as_elim) "A dependent version of `AddSubgroup.closure_induction`. "]

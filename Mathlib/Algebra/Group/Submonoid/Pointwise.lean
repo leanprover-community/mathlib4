@@ -455,8 +455,8 @@ theorem mul_le {M N P : AddSubmonoid R} : M * N ≤ P ↔ ∀ m ∈ M, ∀ n ∈
 @[elab_as_elim]
 protected theorem mul_induction_on {M N : AddSubmonoid R} {C : R → Prop} {r : R} (hr : r ∈ M * N)
     (hm : ∀ m ∈ M, ∀ n ∈ N, C (m * n)) (ha : ∀ x y, C x → C y → C (x + y)) : C r :=
-  (@mul_le _ _ _ _ ⟨⟨setOf C, ha _ _⟩, by
-    simpa only [zero_mul] using hm _ (zero_mem _) _ (zero_mem _)⟩).2 hm hr
+  (@mul_le _ _ _ _ ⟨⟨setOf C⟩, ⟨⟨ha _ _⟩, by
+    simpa only [zero_mul] using hm _ (zero_mem _) _ (zero_mem _)⟩⟩).2 hm hr
 
 -- this proof is copied directly from `Submodule.span_mul_span`
 -- Porting note: proof rewritten

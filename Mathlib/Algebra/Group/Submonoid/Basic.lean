@@ -82,14 +82,26 @@ attribute [to_additive] OneMemClass
 
 attribute [aesop safe apply (rule_sets := [SetLike])] one_mem zero_mem
 
-section
+/-- A submonoid of a monoid `M` is a subset containing 1 and closed under multiplication.
+
+Note that the bundled variant `Submonoid M` should be preferred. -/
+structure IsSubmonoid {M : Type*} [MulOneClass M] (s : Set M) extends
+    IsSubsemigroup s : Prop where
+  /-- A submonoid contains `1`. -/
+  one_mem' : (1 : M) ∈ s
+
+/-- An additive submonoid of an additive monoid `M` is a subset containing 0 and
+  closed under addition.
+
+Note that the bundled variant `AddSubmonoid M` should be preferred. -/
+structure IsAddSubmonoid {M : Type*} [AddZeroClass M] (s : Set M) extends
+    IsAddSubsemigroup s : Prop where
+  /-- An additive submonoid contains `0`. -/
+  zero_mem' : (0 : M) ∈ s
 
 /-- A submonoid of a monoid `M` is a subset containing 1 and closed under multiplication. -/
-structure Submonoid (M : Type*) [MulOneClass M] extends Subsemigroup M where
-  /-- A submonoid contains `1`. -/
-  one_mem' : (1 : M) ∈ carrier
-
-end
+structure Submonoid (M : Type*) [MulOneClass M] extends
+    CarrierWrapper M, IsSubmonoid carrier, Subsemigroup M where
 
 /-- A submonoid of a monoid `M` can be considered as a subsemigroup of that monoid. -/
 add_decl_doc Submonoid.toSubsemigroup
@@ -99,15 +111,10 @@ and are closed under `(*)` -/
 class SubmonoidClass (S : Type*) (M : Type*) [MulOneClass M] [SetLike S M] extends
   MulMemClass S M, OneMemClass S M : Prop
 
-section
-
 /-- An additive submonoid of an additive monoid `M` is a subset containing 0 and
   closed under addition. -/
-structure AddSubmonoid (M : Type*) [AddZeroClass M] extends AddSubsemigroup M where
-  /-- An additive submonoid contains `0`. -/
-  zero_mem' : (0 : M) ∈ carrier
-
-end
+structure AddSubmonoid (M : Type*) [AddZeroClass M] extends
+    CarrierWrapper M, IsAddSubmonoid carrier, AddSubsemigroup M where
 
 /-- An additive submonoid of an additive monoid `M` can be considered as an
 additive subsemigroup of that additive monoid. -/
@@ -118,7 +125,8 @@ and are closed under `(+)` -/
 class AddSubmonoidClass (S : Type*) (M : Type*) [AddZeroClass M] [SetLike S M] extends
   AddMemClass S M, ZeroMemClass S M : Prop
 
-attribute [to_additive] Submonoid SubmonoidClass
+attribute [to_additive] IsSubmonoid Submonoid SubmonoidClass
+attribute [to_additive existing AddSubmonoid.toAddSubsemigroup] Submonoid.toSubsemigroup
 
 @[to_additive (attr := aesop safe apply (rule_sets := [SetLike]))]
 theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x : M}
@@ -135,11 +143,11 @@ namespace Submonoid
 @[to_additive]
 instance : SetLike (Submonoid M) M where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+  coe_injective' p q h := by obtain ⟨⟨⟩⟩ := p; congr;
 
 @[to_additive]
 instance : SubmonoidClass (Submonoid M) M where
-  one_mem := Submonoid.one_mem'
+  one_mem s := s.one_mem'
   mul_mem {s} := s.mul_mem'
 
 initialize_simps_projections Submonoid (carrier → coe)
@@ -150,24 +158,20 @@ initialize_simps_projections AddSubmonoid (carrier → coe)
 theorem mem_toSubsemigroup {s : Submonoid M} {x : M} : x ∈ s.toSubsemigroup ↔ x ∈ s :=
   Iff.rfl
 
--- Porting note: `x ∈ s.carrier` is now syntactically `x ∈ s.toSubsemigroup.carrier`,
--- which `simp` already simplifies to `x ∈ s.toSubsemigroup`. So we remove the `@[simp]` attribute
--- here, and instead add the simp lemma `mem_toSubsemigroup` to allow `simp` to do this exact
--- simplification transitively.
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem mem_carrier {s : Submonoid M} {x : M} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
 @[to_additive (attr := simp)]
-theorem mem_mk {s : Subsemigroup M} {x : M} (h_one) : x ∈ mk s h_one ↔ x ∈ s :=
+theorem mem_mk {s : Set M} {x : M} (h) : x ∈ mk ⟨s⟩ h ↔ x ∈ s :=
   Iff.rfl
 
 @[to_additive (attr := simp)]
-theorem coe_set_mk {s : Subsemigroup M} (h_one) : (mk s h_one : Set M) = s :=
+theorem coe_set_mk {s : Set M} (h) : (mk ⟨s⟩ h : Set M) = s :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem mk_le_mk {s t : Subsemigroup M} (h_one) (h_one') : mk s h_one ≤ mk t h_one' ↔ s ≤ t :=
+theorem mk_le_mk {s t : Set M} (h) (h') : mk ⟨s⟩ h ≤ mk ⟨t⟩ h' ↔ s ≤ t :=
   Iff.rfl
 
 /-- Two submonoids are equal if they have the same elements. -/
@@ -374,7 +378,7 @@ is preserved under multiplication, then `p` holds for all elements of the closur
       additive closure of `s`."]
 theorem closure_induction {p : M → Prop} {x} (h : x ∈ closure s) (mem : ∀ x ∈ s, p x) (one : p 1)
     (mul : ∀ x y, p x → p y → p (x * y)) : p x :=
-  (@closure_le _ _ _ ⟨⟨p, mul _ _⟩, one⟩).2 mem h
+  (@closure_le _ _ _ ⟨⟨p⟩, ⟨⟨mul _ _⟩, one⟩⟩).2 mem h
 
 /-- A dependent version of `Submonoid.closure_induction`. -/
 @[to_additive (attr := elab_as_elim) "A dependent version of `AddSubmonoid.closure_induction`. "]
@@ -427,7 +431,7 @@ lemma closure_eq_one_union (s : Set M) :
       exact Or.inr <| mul_mem hx hy
   · rintro x (hx | hx)
     · exact (show x = 1 by simpa using hx) ▸ one_mem (closure s)
-    · exact Subsemigroup.closure_le.mpr subset_closure hx
+    · exact Subsemigroup.closure_le.mpr (subset_closure : _ ⊆ ↑(closure s).toSubsemigroup) hx
 
 variable (M)
 

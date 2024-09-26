@@ -143,12 +143,19 @@ instance (priority := 75) toField {K} [Field K] [SetLike S K] [SubfieldClass S K
 
 end SubfieldClass
 
+/-- A subfield of `R` is a subset `s` that is a multiplicative submonoid and an additive subgroup.
+  Note in particular that it shares the same 0 and 1 as R.
+
+Note that the bundled variant `Subfield R` should be preferred. -/
+structure IsSubfield {K : Type*} [DivisionRing K] (s : Set K) extends IsSubring s : Prop where
+  /-- A subfield is closed under multiplicative inverses. -/
+  inv_mem' : ∀ x ∈ s, x⁻¹ ∈ s
+
 /-- `Subfield R` is the type of subfields of `R`. A subfield of `R` is a subset `s` that is a
   multiplicative submonoid and an additive subgroup. Note in particular that it shares the
   same 0 and 1 as R. -/
-structure Subfield (K : Type u) [DivisionRing K] extends Subring K where
-  /-- A subfield is closed under multiplicative inverses. -/
-  inv_mem' : ∀ x ∈ carrier, x⁻¹ ∈ carrier
+structure Subfield (K : Type u) [DivisionRing K] extends
+    CarrierWrapper K, IsSubfield carrier, Subring K, Submonoid K where
 
 /-- Reinterpret a `Subfield` as a `Subring`. -/
 add_decl_doc Subfield.toSubring
@@ -166,7 +173,7 @@ def toAddSubgroup (s : Subfield K) : AddSubgroup K :=
 
 instance : SetLike (Subfield K) K where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
+  coe_injective' p q h := by obtain ⟨⟨⟩⟩ := p; congr
 
 instance : SubfieldClass (Subfield K) K where
   add_mem {s} := s.add_mem'
@@ -182,15 +189,15 @@ theorem mem_carrier {s : Subfield K} {x : K} : x ∈ s.carrier ↔ x ∈ s :=
 
 -- Porting note: in lean 3, `S` was type `Set K`
 @[simp]
-theorem mem_mk {S : Subring K} {x : K} (h) : x ∈ (⟨S, h⟩ : Subfield K) ↔ x ∈ S :=
+theorem mem_mk {S : Set K} {x : K} (h) : x ∈ (⟨⟨S⟩, h⟩ : Subfield K) ↔ x ∈ S :=
   Iff.rfl
 
 @[simp]
-theorem coe_set_mk (S : Subring K) (h) : ((⟨S, h⟩ : Subfield K) : Set K) = S :=
+theorem coe_set_mk (S : Set K) (h) : ((⟨⟨S⟩, h⟩ : Subfield K) : Set K) = S :=
   rfl
 
 @[simp]
-theorem mk_le_mk {S S' : Subring K} (h h') : (⟨S, h⟩ : Subfield K) ≤ (⟨S', h'⟩ : Subfield K) ↔
+theorem mk_le_mk {S S' : Set K} (h h') : (⟨⟨S⟩, h⟩ : Subfield K) ≤ (⟨⟨S'⟩, h'⟩ : Subfield K) ↔
     S ≤ S' :=
   Iff.rfl
 
@@ -453,7 +460,7 @@ theorem coe_map : (s.map f : Set L) = f '' s :=
 @[simp]
 theorem mem_map {f : K →+* L} {s : Subfield K} {y : L} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y := by
   unfold map
-  simp only [mem_mk, Subring.mem_mk, Subring.mem_toSubsemiring, Subring.mem_map, mem_toSubring]
+  rfl
 
 theorem map_map (g : L →+* M) (f : K →+* L) : (s.map f).map g = s.map (g.comp f) :=
   SetLike.ext' <| Set.image_image _ _ _
@@ -622,8 +629,8 @@ theorem closure_induction {s : Set K} {p : K → Prop} {x} (h : x ∈ closure s)
     (one : p 1) (add : ∀ x y, p x → p y → p (x + y)) (neg : ∀ x, p x → p (-x))
     (inv : ∀ x, p x → p x⁻¹) (mul : ∀ x y, p x → p y → p (x * y)) : p x := by
     letI : Subfield K :=
-      ⟨⟨⟨⟨⟨p, by intro _ _; exact mul _ _⟩, one⟩,
-        by intro _ _; exact add _ _, @add_neg_cancel K _ 1 ▸ add _ _ one (neg _ one)⟩,
+      ⟨⟨p⟩, ⟨⟨⟨⟨by intro _ _; exact mul _ _⟩, one⟩,
+        ⟨by intro _ _; exact add _ _⟩, @add_neg_cancel K _ 1 ▸ add _ _ one (neg _ one)⟩,
           by intro _; exact neg _⟩, inv⟩
     exact (closure_le (t := this)).2 mem h
 
@@ -695,7 +702,7 @@ theorem comap_top (f : K →+* L) : (⊤ : Subfield L).comap f = ⊤ :=
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subfield K} (hS : Directed (· ≤ ·) S)
     {x : K} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
   let s : Subfield K :=
-    { __ := Subring.copy _ _ (Subring.coe_iSup_of_directed hS).symm
+    { __ := Subring.copy _ _ (Subring.coe_iSup_of_directed (S := fun i ↦ (S i).toSubring) hS).symm
       inv_mem' := fun _ hx ↦ have ⟨i, hi⟩ := Set.mem_iUnion.mp hx
         Set.mem_iUnion.mpr ⟨i, (S i).inv_mem hi⟩ }
   have : iSup S = s := le_antisymm

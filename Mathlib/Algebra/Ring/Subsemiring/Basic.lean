@@ -122,8 +122,16 @@ end SubsemiringClass
 variable [NonAssocSemiring S] [NonAssocSemiring T]
 
 /-- A subsemiring of a semiring `R` is a subset `s` that is both a multiplicative and an additive
+submonoid.
+
+Note that the bundled variant `Subsemiring R` should be preferred. -/
+structure IsSubsemiring {R : Type*} [NonAssocSemiring R] (s : Set R) extends
+    IsSubmonoid s, IsAddSubmonoid s : Prop
+
+/-- A subsemiring of a semiring `R` is a subset `s` that is both a multiplicative and an additive
 submonoid. -/
-structure Subsemiring (R : Type u) [NonAssocSemiring R] extends Submonoid R, AddSubmonoid R
+structure Subsemiring (R : Type u) [NonAssocSemiring R] extends
+    CarrierWrapper R, IsSubsemiring carrier, Submonoid R, AddSubmonoid R
 
 /-- Reinterpret a `Subsemiring` as a `Submonoid`. -/
 add_decl_doc Subsemiring.toSubmonoid
@@ -135,13 +143,13 @@ namespace Subsemiring
 
 instance : SetLike (Subsemiring R) R where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+  coe_injective' p q h := by obtain ⟨⟨⟩⟩ := p; congr
 
 instance : SubsemiringClass (Subsemiring R) R where
-  zero_mem := zero_mem'
-  add_mem {s} := AddSubsemigroup.add_mem' s.toAddSubmonoid.toAddSubsemigroup
-  one_mem {s} := Submonoid.one_mem' s.toSubmonoid
-  mul_mem {s} := Subsemigroup.mul_mem' s.toSubmonoid.toSubsemigroup
+  zero_mem {s} := s.zero_mem'
+  add_mem {s} := s.add_mem'
+  one_mem {s} := s.one_mem'
+  mul_mem {s} := s.mul_mem'
 
 @[simp]
 theorem mem_toSubmonoid {s : Subsemiring R} {x : R} : x ∈ s.toSubmonoid ↔ x ∈ s :=
@@ -346,7 +354,7 @@ theorem coe_carrier_toSubmonoid (s : Subsemiring R) : (s.toSubmonoid.carrier : S
 theorem mem_toAddSubmonoid {s : Subsemiring R} {x : R} : x ∈ s.toAddSubmonoid ↔ x ∈ s :=
   Iff.rfl
 
--- Porting note: new normal form is `coe_carrier_toSubmonoid` so removing `@[simp]`
+@[simp]
 theorem coe_toAddSubmonoid (s : Subsemiring R) : (s.toAddSubmonoid : Set R) = s :=
   rfl
 
@@ -744,7 +752,7 @@ of the closure of `s`. -/
 theorem closure_induction {s : Set R} {p : R → Prop} {x} (h : x ∈ closure s) (mem : ∀ x ∈ s, p x)
     (zero : p 0) (one : p 1) (add : ∀ x y, p x → p y → p (x + y))
     (mul : ∀ x y, p x → p y → p (x * y)) : p x :=
-  (@closure_le _ _ _ ⟨⟨⟨p, @mul⟩, one⟩, @add, zero⟩).2 mem h
+  (@closure_le _ _ _ ⟨⟨p⟩, ⟨⟨⟨@mul⟩, one⟩, ⟨@add⟩, zero⟩⟩).2 mem h
 
 @[elab_as_elim]
 theorem closure_induction' {s : Set R} {p : ∀ x, x ∈ closure s → Prop}

@@ -133,10 +133,18 @@ end SubringClass
 
 variable [Ring S] [Ring T]
 
+/-- A subring of `R` is a subset `s` that is a multiplicative submonoid and an additive subgroup.
+  Note in particular that it shares the same 0 and 1 as R.
+
+Note that the bundled variant `Subring R` should be preferred. -/
+structure IsSubring {R : Type*} [Ring R] (s : Set R) extends
+    IsSubsemiring s, IsAddSubgroup s : Prop
+
 /-- `Subring R` is the type of subrings of `R`. A subring of `R` is a subset `s` that is a
   multiplicative submonoid and an additive subgroup. Note in particular that it shares the
   same 0 and 1 as R. -/
-structure Subring (R : Type u) [Ring R] extends Subsemiring R, AddSubgroup R
+structure Subring (R : Type u) [Ring R] extends CarrierWrapper R, IsSubring carrier,
+    Subsemiring R, AddSubgroup R, Submonoid R
 
 /-- Reinterpret a `Subring` as a `Subsemiring`. -/
 add_decl_doc Subring.toSubsemiring
@@ -151,7 +159,7 @@ namespace Subring
 
 instance : SetLike (Subring R) R where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
+  coe_injective' p q h := by obtain ⟨⟨⟩⟩ := p; congr
 
 instance : SubringClass (Subring R) R where
   zero_mem s := s.zero_mem'
@@ -167,13 +175,13 @@ theorem mem_carrier {s : Subring R} {x : R} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
 @[simp]
-theorem mem_mk {S : Subsemiring R} {x : R} (h) : x ∈ (⟨S, h⟩ : Subring R) ↔ x ∈ S := Iff.rfl
+theorem mem_mk {S : Set R} {x : R} (h) : x ∈ (⟨⟨S⟩, h⟩ : Subring R) ↔ x ∈ S := Iff.rfl
 
-@[simp] theorem coe_set_mk (S : Subsemiring R) (h) : ((⟨S, h⟩ : Subring R) : Set R) = S := rfl
+@[simp] theorem coe_set_mk (S : Set R) (h) : ((⟨⟨S⟩, h⟩ : Subring R) : Set R) = S := rfl
 
 @[simp]
-theorem mk_le_mk {S S' : Subsemiring R} (h₁ h₂) :
-    (⟨S, h₁⟩ : Subring R) ≤ (⟨S', h₂⟩ : Subring R) ↔ S ≤ S' :=
+theorem mk_le_mk {S S' : Set R} (h₁ h₂) :
+    (⟨⟨S⟩, h₁⟩ : Subring R) ≤ (⟨⟨S'⟩, h₂⟩ : Subring R) ↔ S ≤ S' :=
   Iff.rfl
 
 /-- Two subrings are equal if they have the same elements. -/
@@ -257,7 +265,7 @@ end Subring
 
 /-- A `Subsemiring` containing -1 is a `Subring`. -/
 def Subsemiring.toSubring (s : Subsemiring R) (hneg : (-1 : R) ∈ s) : Subring R where
-  toSubsemiring := s
+  __ := s
   neg_mem' h := by
     rw [← neg_one_mul]
     exact mul_mem hneg h
@@ -757,7 +765,7 @@ elements of the closure of `s`. -/
 theorem closure_induction {s : Set R} {p : R → Prop} {x} (h : x ∈ closure s) (Hs : ∀ x ∈ s, p x)
     (zero : p 0) (one : p 1) (add : ∀ x y, p x → p y → p (x + y)) (neg : ∀ x : R, p x → p (-x))
     (mul : ∀ x y, p x → p y → p (x * y)) : p x :=
-  (@closure_le _ _ _ ⟨⟨⟨⟨p, @mul⟩, one⟩, @add, zero⟩, @neg⟩).2 Hs h
+  (@closure_le _ _ _ ⟨⟨p⟩, ⟨⟨⟨⟨@mul⟩, one⟩, ⟨@add⟩, zero⟩, @neg⟩⟩).2 Hs h
 
 @[elab_as_elim]
 theorem closure_induction' {s : Set R} {p : ∀ x, x ∈ closure s → Prop}
