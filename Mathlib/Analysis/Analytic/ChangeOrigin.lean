@@ -338,9 +338,15 @@ theorem AnalyticAt.exists_mem_nhds_analyticOnNhd (h : AnalyticAt 𝕜 f x) :
     ∃ s ∈ 𝓝 x, AnalyticOnNhd 𝕜 f s :=
   h.eventually_analyticAt.exists_mem
 
+@[deprecated (since := "2024-09-26")]
+alias AnalyticAt.exists_mem_nhds_analyticOn := AnalyticAt.exists_mem_nhds_analyticOnNhd
+
 /-- If we're analytic at a point, we're analytic in a nonempty ball -/
 theorem AnalyticAt.exists_ball_analyticOnNhd (h : AnalyticAt 𝕜 f x) :
     ∃ r : ℝ, 0 < r ∧ AnalyticOnNhd 𝕜 f (Metric.ball x r) :=
   Metric.isOpen_iff.mp (isOpen_analyticAt _ _) _ h
+
+@[deprecated (since := "2024-09-26")]
+alias AnalyticAt.exists_ball_analyticOn := AnalyticAt.exists_ball_analyticOnNhd
 
 end

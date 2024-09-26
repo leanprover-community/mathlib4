@@ -365,6 +365,9 @@ theorem AnalyticOnNhd.curry_left {f : E × F → G} {s : Set (E × F)} {y : F}
   fun x m ↦ (fa (x, y) m).curry_left
 alias AnalyticOnNhd.along_fst := AnalyticOnNhd.curry_left
 
+@[deprecated (since := "2024-09-26")]
+alias AnalyticOn.along_fst := AnalyticOnNhd.curry_left
+
 theorem AnalyticOn.curry_left
     {f : E × F → G} {s : Set (E × F)} {y : F} (fa : AnalyticOn 𝕜 f s) :
     AnalyticOn 𝕜 (fun x ↦ f (x, y)) {x | (x, y) ∈ s} :=
@@ -376,6 +379,9 @@ theorem AnalyticOnNhd.curry_right {f : E × F → G} {x : E} {s : Set (E × F)}
     AnalyticOnNhd 𝕜 (fun y ↦ f (x, y)) {y | (x, y) ∈ s} :=
   fun y m ↦ (fa (x, y) m).curry_right
 alias AnalyticOnNhd.along_snd := AnalyticOnNhd.curry_right
+
+@[deprecated (since := "2024-09-26")]
+alias AnalyticOn.along_snd := AnalyticOnNhd.curry_right
 
 theorem AnalyticOn.curry_right
     {f : E × F → G} {x : E} {s : Set (E × F)} (fa : AnalyticOn 𝕜 f s) :
