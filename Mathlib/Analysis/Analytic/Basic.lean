@@ -752,6 +752,11 @@ theorem analyticOnNhd_congr (hs : IsOpen s) (h : s.EqOn f g) : AnalyticOnNhd �
 @[deprecated (since := "2024-09-26")]
 alias analyticOn_congr := analyticOnNhd_congr
 
+theorem AnalyticWithinAt.mono_of_mem {f : E → F} {s t : Set E} {x : E}
+    (h : AnalyticWithinAt 𝕜 f s x) (hst : s ∈ 𝓝[t] x) : AnalyticWithinAt 𝕜 f t x := by
+  rcases h with ⟨p, hp⟩
+  exact ⟨p, hp.mono_of_mem hst⟩
+
 lemma AnalyticOn.mono {f : E → F} {s t : Set E} (h : AnalyticOn 𝕜 f t)
     (hs : s ⊆ t) : AnalyticOn 𝕜 f s :=
   fun _ m ↦ (h _ (hs m)).mono hs
