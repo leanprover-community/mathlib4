@@ -218,12 +218,9 @@ theorem absConvexHull_inter_neg_eq {s : Set E} :
     absConvexHull ℝ (s ∩ -s) = convexHull ℝ (s ∩ -s) := by
   rw [absConvexHull_eq_convexHull_union_neg, inter_neg, neg_neg, inter_comm, union_self]
 
-
 end
 
 section
-
---variable {E}
 
 variable [AddCommGroup E] [Module ℝ E]
 
@@ -246,7 +243,6 @@ lemma add_self_eq_smul_two {V : Set E} (h : Convex ℝ V) : V + V = (2 : ℝ) �
   rw [← half_add_half_of_convex v1]
   simp only [one_div, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, inv_smul_smul₀]
 
-
 lemma help' (a b :E) (h : a = b) : (1/2 : ℝ) • a = (1/2 : ℝ) •b := by
   exact congrArg (HSMul.hSMul (1 / 2)) h
 
@@ -257,42 +253,11 @@ lemma help (a b :E) (h : (2:ℝ)•a = (2:ℝ)•b) : a = b := by
   simp at e1
   exact e1
 
-
-/-
-lemma as (a b c :E) : a+b-c = a-c+b := by exact add_sub_right_comm a b c
-
-lemma as2 (x:E) : (1 / 2 : ℝ) • x - x = -(1 / 2) • x := calc
-  (1 / 2 : ℝ) • x - x = (1 / 2) • x - (1 : ℝ) • x := by rw [one_smul ℝ]
-  _ = ((1/2 : ℝ) - (1:ℝ)) • x := by rw [smul_sub]
-
-  _ = -(1 / 2) • x := by sorry
--/
-
 variable (E 𝕜) {s : Set E}
 variable [NontriviallyNormedField 𝕜]  [Module 𝕜 E]
 variable [SMulCommClass ℝ 𝕜 E]
 variable [TopologicalSpace E] [TopologicalAddGroup E]  [lcs : LocallyConvexSpace ℝ E]
   [ContinuousSMul ℝ E]
-
---#check TotallyBounded
---#check Set.Finite.isCompact_convexHull --(II.14 cor 1)
---#check IsCompact.totallyBounded
-
-/-
-theorem test (d : Set (E × E)) (hd : d ∈ (TopologicalAddGroup.toUniformSpace E).uniformity)
-    (y : E) : AbsConvex 𝕜 {x | (x, y) ∈ d} := by
-  constructor
-  · sorry
-  · intro a ha b hb t₁ t₂ ht₁ ht₂ ht
-    simp_all
--/
-
-
---theorem test (hs : Finite s) : TotallyBounded (convexHull ℝ s) := sorry
-
---#check convexHull_vadd
-
---#check Set.vaddSet
 
 -- TVS II.25 Prop3
 theorem totallyBounded_absConvexHull
@@ -302,11 +267,9 @@ theorem totallyBounded_absConvexHull
   letI := TopologicalAddGroup.toUniformSpace E
   obtain ⟨d,⟨hd₁, hd₂⟩⟩ := comp_mem_uniformity_sets hd'
   obtain ⟨N,⟨hN₁,hN₂⟩⟩ := hd₁
-  --obtain ⟨U,hU⟩ := hN₁
   obtain ⟨S,⟨hS₁,hS₂,hS₃⟩⟩ := (locallyConvexSpace_iff_exists_convex_subset_zero ℝ E).mp lcs N hN₁
   let V := S ∩ -S
   let d₂ := {(x,y) | y-x ∈ S} ∩ {(x,y) | y-x ∈ -S}
-  --have e1 : d₂ ∈ uniformity E := sorry
   obtain ⟨t,⟨htf,hts⟩⟩ := hs d₂ (by
     rw [uniformity_eq_comap_nhds_zero' E]
     simp_all only [Filter.inter_mem_iff, Filter.mem_comap, d₂]
@@ -362,39 +325,6 @@ theorem totallyBounded_absConvexHull
     apply Set.add_subset_add_right
     apply hts'
   rw [add_self_eq_smul_two] at e7
-/-
-  have v1 : Convex ℝ ((2 : ℝ) • V) := Convex.smul v0 2
-
-  have v2 : ((2 : ℝ) • V) = (2 • V) := by
-    rw [two_smul]
-
-    apply le_antisymm
-    · intro x hx
-      obtain ⟨r,⟨hr₁,hr₂⟩⟩ := hx
-      simp at hr₂
-      rw [← hr₂]
-      rw [two_smul]
-      exact add_mem_add hr₁ hr₁
-    · intro x hx
-      obtain ⟨r,⟨hr₁,⟨b,⟨hb₁,hb₂⟩⟩⟩⟩ := hx
-      simp at hb₂
-  have v3 : V + V = (2 : ℝ) • V := by
-    apply le_antisymm
-    · --
-      /-
-      intro a ha
-      obtain ⟨b,hb,c,hc,hbc⟩ := ha
-      simp at hbc
-      have h1 : (1/2:ℝ)•b + (1/2:ℝ)•c ∈ V := by
-      -/
-    · intro x ⟨r,⟨hr₁,hr₂⟩⟩
-      --obtain ⟨r,⟨hr₁,hr₂⟩⟩ := hx
-      simp at hr₂
-      rw [← hr₂]
-      rw [two_smul]
-      exact add_mem_add hr₁ hr₁
-  -/
-  --rw [← two_smul] at e7
   have e8 (y : E): y +ᵥ ((2 : ℝ) • V) ⊆ {x | (x, y) ∈ d'} := by
     intro x hx
     rw [mem_setOf_eq]
@@ -440,7 +370,6 @@ theorem totallyBounded_absConvexHull
       rw [e12]
       apply hS₃
       aesop
-  --have e9' : ∀ y ∈ t'
   have e9 : ⋃ y ∈ t', y +ᵥ ((2 : ℝ) • V) ⊆ ⋃ y ∈ t', {x | (x, y) ∈ d'} := by
     apply biUnion_mono
     exact fun ⦃a⦄ a ↦ a
