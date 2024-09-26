@@ -616,6 +616,9 @@ theorem HasFPowerSeriesAt.coeff_zero (hf : HasFPowerSeriesAt f pf x) (v : Fin 0 
     AnalyticOn 𝕜 f univ ↔ AnalyticOnNhd 𝕜 f univ := by
   simp only [AnalyticOn, analyticWithinAt_univ, AnalyticOnNhd]
 
+@[deprecated (since := "2024-09-26")]
+alias analyticWithinOn_univ := analyticOn_univ
+
 lemma AnalyticWithinAt.mono (hf : AnalyticWithinAt 𝕜 f s x) (h : t ⊆ s) :
     AnalyticWithinAt 𝕜 f t x := by
   obtain ⟨p, hp⟩ := hf
@@ -627,6 +630,9 @@ lemma AnalyticAt.analyticWithinAt (hf : AnalyticAt 𝕜 f x) : AnalyticWithinAt 
 
 lemma AnalyticOnNhd.analyticOn (hf : AnalyticOnNhd 𝕜 f s) : AnalyticOn 𝕜 f s :=
   fun x hx ↦ (hf x hx).analyticWithinAt
+
+@[deprecated (since := "2024-09-26")]
+alias AnalyticOnNhd.analyticWithinOn := AnalyticOnNhd.analyticOn
 
 lemma AnalyticWithinAt.congr_of_eventuallyEq {f g : E → F} {s : Set E} {x : E}
     (hf : AnalyticWithinAt 𝕜 f s x) (hs : g =ᶠ[𝓝[s] x] f) (hx : g x = f x) :
@@ -644,6 +650,9 @@ lemma AnalyticOn.congr {f g : E → F} {s : Set E}
     AnalyticOn 𝕜 g s :=
   fun x m ↦ (hf x m).congr hs (hs m)
 
+@[deprecated (since := "2024-09-26")]
+alias AnalyticWithinOn.congr := AnalyticOn.congr
+
 theorem AnalyticAt.congr (hf : AnalyticAt 𝕜 f x) (hg : f =ᶠ[𝓝 x] g) : AnalyticAt 𝕜 g x :=
   let ⟨_, hpf⟩ := hf
   (hpf.congr hg).analyticAt
@@ -654,6 +663,9 @@ theorem analyticAt_congr (h : f =ᶠ[𝓝 x] g) : AnalyticAt 𝕜 f x ↔ Analyt
 theorem AnalyticOnNhd.mono {s t : Set E} (hf : AnalyticOnNhd 𝕜 f t) (hst : s ⊆ t) :
     AnalyticOnNhd 𝕜 f s :=
   fun z hz => hf z (hst hz)
+
+@[deprecated (since := "2024-09-26")]
+alias AnalyticOnNhd.mono := AnalyticOnNhd.mono
 
 theorem AnalyticOnNhd.congr' (hf : AnalyticOnNhd 𝕜 f s) (hg : f =ᶠ[𝓝ˢ s] g) :
     AnalyticOnNhd 𝕜 g s :=
@@ -673,6 +685,9 @@ theorem analyticOnNhd_congr (hs : IsOpen s) (h : s.EqOn f g) : AnalyticOnNhd �
 lemma AnalyticOn.mono {f : E → F} {s t : Set E} (h : AnalyticOn 𝕜 f t)
     (hs : s ⊆ t) : AnalyticOn 𝕜 f s :=
   fun _ m ↦ (h _ (hs m)).mono hs
+
+@[deprecated (since := "2024-09-26")]
+alias AnalyticWithinOn.mono := AnalyticOn.mono
 
 /-!
 ### Composition with linear maps
@@ -1170,9 +1185,15 @@ protected theorem AnalyticOnNhd.continuousOn {s : Set E} (hf : AnalyticOnNhd �
     ContinuousOn f s :=
   fun x hx => (hf x hx).continuousAt.continuousWithinAt
 
+@[deprecated (since := "2024-09-26")]
+alias AnalyticOnNhd.continuousOn := AnalyticOnNhd.continuousOn
+
 protected lemma AnalyticOn.continuousOn {f : E → F} {s : Set E} (h : AnalyticOn 𝕜 f s) :
     ContinuousOn f s :=
   fun x m ↦ (h x m).continuousWithinAt
+
+@[deprecated (since := "2024-09-26")]
+alias AnalyticWithinOn.continuousOn := AnalyticOn.continuousOn
 
 /-- Analytic everywhere implies continuous -/
 theorem AnalyticOnNhd.continuous {f : E → F} (fa : AnalyticOnNhd 𝕜 f univ) : Continuous f := by

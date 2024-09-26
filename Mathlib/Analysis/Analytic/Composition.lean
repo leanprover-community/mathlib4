@@ -835,6 +835,9 @@ lemma AnalyticOn.comp {f : F → G} {g : E → F} {s : Set F}
     AnalyticOn 𝕜 (f ∘ g) t :=
   fun x m ↦ (hf _ (h m)).comp (hg x m) h
 
+@[deprecated (since := "2024-09-26")]
+alias AnalyticWithinOn.comp := AnalyticOn.comp
+
 /-- If two functions `g` and `f` are analytic respectively at `f x` and `x`, then `g ∘ f` is
 analytic at `x`. -/
 theorem AnalyticAt.comp {g : F → G} {f : E → F} {x : E} (hg : AnalyticAt 𝕜 g (f x))
@@ -871,10 +874,16 @@ theorem AnalyticOnNhd.comp {s : Set E} {t : Set F} {g : F → G} {f : E → F}
     AnalyticOnNhd 𝕜 (g ∘ f) s :=
   comp' (mono hg (Set.mapsTo'.mp st)) hf
 
+@[deprecated (since := "2024-09-26")]
+alias AnalyticOnNhd.comp := AnalyticOnNhd.comp
+
 lemma AnalyticOnNhd.comp_analyticOn {f : F → G} {g : E → F} {s : Set F}
     {t : Set E} (hf : AnalyticOnNhd 𝕜 f s) (hg : AnalyticOn 𝕜 g t) (h : Set.MapsTo g t s) :
     AnalyticOn 𝕜 (f ∘ g) t :=
   fun x m ↦ (hf _ (h m)).comp_analyticWithinAt (hg x m)
+
+@[deprecated (since := "2024-09-26")]
+alias AnalyticOnNhd.comp_analyticWithinOn := AnalyticOnNhd.comp_analyticOn
 
 /-!
 ### Associativity of the composition of formal multilinear series

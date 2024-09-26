@@ -72,6 +72,9 @@ theorem AnalyticOnNhd.differentiableOn (h : AnalyticOnNhd 𝕜 f s) :
     DifferentiableOn 𝕜 f s := fun y hy =>
   (h y hy).differentiableWithinAt
 
+@[deprecated (since := "2024-09-26")]
+alias AnalyticOnNhd.differentiableOn := AnalyticOnNhd.differentiableOn
+
 theorem HasFPowerSeriesOnBall.hasFDerivAt [CompleteSpace F] (h : HasFPowerSeriesOnBall f p x r)
     {y : E} (hy : (‖y‖₊ : ℝ≥0∞) < r) :
     HasFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin y 1)) (x + y) :=
@@ -143,6 +146,9 @@ lemma AnalyticOn.contDiffOn [CompleteSpace F] {f : E → F} {s : Set E}
     (h : AnalyticOn 𝕜 f s) {n : ℕ∞} : ContDiffOn 𝕜 n f s :=
   fun x m ↦ (h x m).contDiffWithinAt
 
+@[deprecated (since := "2024-09-26")]
+alias AnalyticWithinOn.contDiffOn := AnalyticOn.contDiffOn
+
 end fderiv
 
 section deriv
@@ -166,6 +172,9 @@ protected theorem HasFPowerSeriesAt.deriv (h : HasFPowerSeriesAt f p x) :
 theorem AnalyticOnNhd.deriv [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) :
     AnalyticOnNhd 𝕜 (deriv f) s :=
   (ContinuousLinearMap.apply 𝕜 F (1 : 𝕜)).comp_analyticOnNhd h.fderiv
+
+@[deprecated (since := "2024-09-26")]
+alias AnalyticOnNhd.deriv := AnalyticOnNhd.deriv
 
 /-- If a function is analytic on a set `s`, so are its successive derivatives. -/
 theorem AnalyticOnNhd.iterated_deriv [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) (n : ℕ) :
