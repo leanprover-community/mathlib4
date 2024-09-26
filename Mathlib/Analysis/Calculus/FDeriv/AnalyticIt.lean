@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Calculus.ContDiff.Basic
+import Mathlib.Analysis.Calculus.ContDiff.Defs
 
 /-!
 # Blank docstring to be filled in
