@@ -449,6 +449,44 @@ lemma _root_.Submodule.inf_genEigenspace (f : End R M) (p : Submodule R M) {k : 
       (genEigenspace (LinearMap.restrict f hfp) μ k).map p.subtype := by
   rw [f.genEigenspace_restrict _ _ _ hfp, Submodule.map_comap_eq, Submodule.range_subtype]
 
+lemma _root_.Submodule.inf_iInf_maxGenEigenspace_of_forall_mapsTo {ι : Type*} {μ : ι → R}
+    (f : ι → End R M) (p : Submodule R M) (hfp : ∀ i, MapsTo (f i) p p) :
+    p ⊓ ⨅ i, (f i).maxGenEigenspace (μ i) =
+    (⨅ i, maxGenEigenspace ((f i).restrict (hfp i)) (μ i)).map p.subtype := by
+  cases isEmpty_or_nonempty ι; · simp [iInf_of_isEmpty]
+  simp_rw [inf_iInf, maxGenEigenspace, ((f _).genEigenspace _).mono.directed_le.inf_iSup_eq,
+    p.inf_genEigenspace _ (hfp _), ← Submodule.map_iSup, Submodule.map_iInf _ p.injective_subtype]
+
+lemma iInf_maxGenEigenspace_restrict_map_subtype_eq
+    {ι : Type*} {μ : ι → R} (i : ι) (f : ι → End R M)
+    (h : ∀ j, MapsTo (f j) ((f i).maxGenEigenspace (μ i)) ((f i).maxGenEigenspace (μ i))) :
+    letI p := (f i).maxGenEigenspace (μ i)
+    letI q (j : ι) := maxGenEigenspace ((f j).restrict (h j)) (μ j)
+    (⨅ j, q j).map p.subtype = ⨅ j, (f j).maxGenEigenspace (μ j) := by
+  have : Nonempty ι := ⟨i⟩
+  set p := (f i).maxGenEigenspace (μ i)
+  have : ⨅ j, (f j).maxGenEigenspace (μ j) = p ⊓ ⨅ j, (f j).maxGenEigenspace (μ j) := by
+    refine le_antisymm ?_ inf_le_right
+    simpa only [le_inf_iff, le_refl, and_true] using iInf_le _ _
+  rw [Submodule.map_iInf _ p.injective_subtype, this, Submodule.inf_iInf]
+  simp_rw [maxGenEigenspace_def, Submodule.map_iSup,
+    ((f _).genEigenspace _).mono.directed_le.inf_iSup_eq, p.inf_genEigenspace (f _) (h _)]
+  rfl
+
+lemma mapsTo_restrict_maxGenEigenspace_restrict_of_mapsTo
+    {p : Submodule R M} (f g : End R M) (hf : MapsTo f p p) (hg : MapsTo g p p) {μ : R}
+    (h : MapsTo f (g.maxGenEigenspace μ) (g.maxGenEigenspace μ)) :
+    MapsTo (f.restrict hf)
+      (maxGenEigenspace (g.restrict hg) μ)
+      (maxGenEigenspace (g.restrict hg) μ) := by
+  intro ⟨x, hx⟩ hx'
+  have : μ • (1 : Module.End R p) = (μ • 1 : Module.End R M).restrict (fun _ ↦ p.smul_mem μ) := rfl
+  rw [SetLike.mem_coe, mem_maxGenEigenspace, this, LinearMap.restrict_sub] at hx' ⊢
+  simp_rw [LinearMap.pow_restrict _, LinearMap.restrict_apply, Submodule.mk_eq_zero] at hx' ⊢
+  replace hx' : x ∈ g.maxGenEigenspace μ := by simpa
+  suffices f x ∈ g.maxGenEigenspace μ by simpa
+  exact h hx'
+
 /-- If `p` is an invariant submodule of an endomorphism `f`, then the `μ`-eigenspace of the
 restriction of `f` to `p` is a submodule of the `μ`-eigenspace of `f`. -/
 theorem eigenspace_restrict_le_eigenspace (f : End R M) {p : Submodule R M} (hfp : ∀ x ∈ p, f x ∈ p)
