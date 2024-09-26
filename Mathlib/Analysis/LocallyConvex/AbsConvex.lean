@@ -347,7 +347,7 @@ theorem totallyBounded_absConvexHull
       rw [two_smul]
       simp
       rw [← hz₂]
-      simp
+      simp?
       exact id (Eq.symm hz'₂)
     have e12 : y - (1 / 2 : ℝ) • (x + y) = -z' := by
       apply help
