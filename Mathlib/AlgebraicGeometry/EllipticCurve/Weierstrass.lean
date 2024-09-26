@@ -565,7 +565,7 @@ lemma j_eq_zero (h : E.c₄ = 0) : E.j = 0 := by
 /-- If the ring is reduced, then the `j` of an elliptic curve is zero if and only if
 its `c₄` is zero. -/
 lemma j_eq_zero_iff [IsReduced R] : E.j = 0 ↔ E.c₄ = 0 := by
-  simp [j_eq_zero_iff']
+  rw [j_eq_zero_iff', IsReduced.pow_eq_zero_iff (show 3 ≠ 0 by norm_num)]
 
 lemma twoTorsionPolynomial_disc_ne_zero [Nontrivial R] [Invertible (2 : R)] :
     E.twoTorsionPolynomial.disc ≠ 0 :=
