@@ -61,7 +61,7 @@ instance decidableProbablePrime (n b : ℕ) : Decidable (ProbablePrime n b) :=
   Nat.decidable_dvd _ _
 
 instance decidablePsp (n b : ℕ) : Decidable (FermatPsp n b) :=
-  And.decidable
+  inferInstanceAs (Decidable (_ ∧ _))
 
 /-- If `n` passes the Fermat primality test to base `b`, then `n` is coprime with `b`, assuming that
 `n` and `b` are both positive.

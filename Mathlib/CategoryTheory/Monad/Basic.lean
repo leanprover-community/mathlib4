@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Bhavik Mehta, Adam Topaz
+Authors: Kim Morrison, Bhavik Mehta, Adam Topaz
 -/
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Functor.FullyFaithful
@@ -250,7 +250,7 @@ variable {C}
 -/
 /- Porting note: removed
 `@[simps (config := { rhsMd := semireducible })]`
-and replaced with `@[simps]` in the two declarations below-/
+and replaced with `@[simps]` in the two declarations below -/
 @[simps!]
 def MonadIso.toNatIso {M N : Monad C} (h : M ≅ N) : (M : C ⥤ C) ≅ N :=
   (monadToFunctor C).mapIso h

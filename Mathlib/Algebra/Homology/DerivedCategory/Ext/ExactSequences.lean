@@ -54,6 +54,7 @@ lemma preadditiveCoyoneda_homologySequenceδ_singleTriangle_apply
 variable (X)
 
 include hS in
+/-- Alternative formulation of `covariant_sequence_exact₂` -/
 lemma covariant_sequence_exact₂' (n : ℕ) :
     (ShortComplex.mk (AddCommGrp.ofHom ((mk₀ S.f).postcomp X (add_zero n)))
       (AddCommGrp.ofHom ((mk₀ S.g).postcomp X (add_zero n))) (by
@@ -74,6 +75,7 @@ section
 
 variable (n₀ n₁ : ℕ) (h : n₀ + 1 = n₁)
 
+/-- Alternative formulation of `covariant_sequence_exact₃` -/
 lemma covariant_sequence_exact₃' :
     (ShortComplex.mk (AddCommGrp.ofHom ((mk₀ S.g).postcomp X (add_zero n₀)))
       (AddCommGrp.ofHom (hS.extClass.postcomp X h)) (by
@@ -92,6 +94,7 @@ lemma covariant_sequence_exact₃' :
   · ext x
     exact preadditiveCoyoneda_homologySequenceδ_singleTriangle_apply hS x h
 
+/-- Alternative formulation of `covariant_sequence_exact₁` -/
 lemma covariant_sequence_exact₁' :
     (ShortComplex.mk
       (AddCommGrp.ofHom (hS.extClass.postcomp X h))

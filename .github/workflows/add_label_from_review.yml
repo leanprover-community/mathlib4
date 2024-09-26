@@ -7,50 +7,16 @@ on:
 jobs:
   add_ready_to_merge_label:
     name: Add ready-to-merge label
-    if: (startsWith(github.event.review.body, 'bors r+') || contains(toJSON(github.event.review.body), '\r\nbors r+') || startsWith(github.event.review.body, 'bors merge') || contains(toJSON(github.event.review.body), '\r\nbors merge'))
+    if: (startsWith(github.event.review.body, 'bors r+') || contains(toJSON(github.event.review.body), '\nbors r+') || startsWith(github.event.review.body, 'bors merge') || contains(toJSON(github.event.review.body), '\nbors merge'))
     runs-on: ubuntu-latest
     steps:
-      - uses: octokit/request-action@v2.x
-        name: Get PR head
-        id: get_pr_head
+      - id: user_permission
+        uses: actions-cool/check-user-permission@v2
         with:
-          route: GET /repos/:repository/pulls/:pull_number
-          repository: ${{ github.repository }}
-          pull_number: ${{ github.event.pull_request.number }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.TRIAGE_TOKEN }}
+          require: 'write'
+          token: ${{ secrets.TRIAGE_TOKEN }}
 
-      # Parse steps.get_pr_head.outputs.data, since it is a string
-      - id: parse_pr_head
-        name: Parse PR head
-        uses: gr2m/get-json-paths-action@v1.x
-        with:
-          json: ${{ steps.get_pr_head.outputs.data }}
-          head_user: 'head.user.login'
-
-      # we skip the rest if this PR is from a fork,
-      # since the GITHUB_TOKEN doesn't have write perms
-      - if: steps.parse_pr_head.outputs.head_user == 'leanprover-community'
-        uses: octokit/request-action@v2.x
-        name: Get comment author
-        id: get_user
-        with:
-          route: GET /repos/:repository/collaborators/:username/permission
-          repository: ${{ github.repository }}
-          username: ${{ github.event.review.user.login }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.TRIAGE_TOKEN }}
-
-      # Parse steps.get_user.outputs.data, since it is a string
-      - if: steps.parse_pr_head.outputs.head_user == 'leanprover-community'
-        id: parse_user
-        name: Parse comment author permission
-        uses: gr2m/get-json-paths-action@v1.x
-        with:
-          json: ${{ steps.get_user.outputs.data }}
-          permission: 'permission'
-
-      - if: (steps.parse_pr_head.outputs.head_user == 'leanprover-community') && (steps.parse_user.outputs.permission == 'admin')
+      - if: (steps.user_permission.outputs.require-result == 'true') || (github.event.review.user.login == 'leanprover-community-mathlib4-bot') || (github.event.review.user.login == 'leanprover-community-bot-assistant')
         uses: octokit/request-action@v2.x
         id: add_label
         name: Add label
@@ -62,7 +28,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.TRIAGE_TOKEN }}
 
-      - if: (steps.parse_pr_head.outputs.head_user == 'leanprover-community') && (steps.parse_user.outputs.permission == 'admin')
+      - if: (steps.user_permission.outputs.require-result == 'true') || (github.event.review.user.login == 'leanprover-community-mathlib4-bot') || (github.event.review.user.login == 'leanprover-community-bot-assistant')
         id: remove_labels
         name: Remove "awaiting-author"
         # we use curl rather than octokit/request-action so that the job won't fail
@@ -74,50 +40,16 @@ jobs:
 
   add_delegated_label:
     name: Add delegated label
-    if: (startsWith(github.event.review.body, 'bors d') || contains(toJSON(github.event.review.body), '\r\nbors d'))
+    if: (startsWith(github.event.review.body, 'bors d') || contains(toJSON(github.event.review.body), '\nbors d'))
     runs-on: ubuntu-latest
     steps:
-      - uses: octokit/request-action@v2.x
-        name: Get PR head
-        id: get_pr_head
+      - id: user_permission
+        uses: actions-cool/check-user-permission@v2
         with:
-          route: GET /repos/:repository/pulls/:pull_number
-          repository: ${{ github.repository }}
-          pull_number: ${{ github.event.pull_request.number }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.TRIAGE_TOKEN }}
+          require: 'write'
+          token: ${{ secrets.TRIAGE_TOKEN }}
 
-      # Parse steps.get_pr_head.outputs.data, since it is a string
-      - id: parse_pr_head
-        name: Parse PR head
-        uses: gr2m/get-json-paths-action@v1.x
-        with:
-          json: ${{ steps.get_pr_head.outputs.data }}
-          head_user: 'head.user.login'
-
-      # we skip the rest if this PR is from a fork,
-      # since the GITHUB_TOKEN doesn't have write perms
-      - if: steps.parse_pr_head.outputs.head_user == 'leanprover-community'
-        uses: octokit/request-action@v2.x
-        name: Get comment author
-        id: get_user
-        with:
-          route: GET /repos/:repository/collaborators/:username/permission
-          repository: ${{ github.repository }}
-          username: ${{ github.event.review.user.login }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.TRIAGE_TOKEN }}
-
-      # Parse steps.get_user.outputs.data, since it is a string
-      - if: steps.parse_pr_head.outputs.head_user == 'leanprover-community'
-        id: parse_user
-        name: Parse comment author permission
-        uses: gr2m/get-json-paths-action@v1.x
-        with:
-          json: ${{ steps.get_user.outputs.data }}
-          permission: 'permission'
-
-      - if: (steps.parse_pr_head.outputs.head_user == 'leanprover-community') && (steps.parse_user.outputs.permission == 'admin')
+      - if: (steps.user_permission.outputs.require-result == 'true') || (github.event.review.user.login == 'leanprover-community-mathlib4-bot') || (github.event.review.user.login == 'leanprover-community-bot-assistant')
         uses: octokit/request-action@v2.x
         id: add_label
         name: Add label
