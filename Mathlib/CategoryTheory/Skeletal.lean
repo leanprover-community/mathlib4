@@ -294,19 +294,17 @@ end
 variable {C}
 
 /-- An adjunction between thin categories gives an adjunction between their thin skeletons. -/
-def lowerAdjunction (R : D ⥤ C) (L : C ⥤ D) (h : L ⊣ R) : ThinSkeleton.map L ⊣ ThinSkeleton.map R :=
-  Adjunction.mkOfUnitCounit
-    { unit :=
-        {
-          app := fun X => by
-            letI := isIsomorphicSetoid C
-            exact Quotient.recOnSubsingleton X fun x => homOfLE ⟨h.unit.app x⟩ }
+def lowerAdjunction (R : D ⥤ C) (L : C ⥤ D) (h : L ⊣ R) :
+    ThinSkeleton.map L ⊣ ThinSkeleton.map R where
+  unit :=
+    { app := fun X => by
+        letI := isIsomorphicSetoid C
+        exact Quotient.recOnSubsingleton X fun x => homOfLE ⟨h.unit.app x⟩ }
       -- TODO: make quotient.rec_on_subsingleton' so the letI isn't needed
-      counit :=
-        {
-          app := fun X => by
-            letI := isIsomorphicSetoid D
-            exact Quotient.recOnSubsingleton X fun x => homOfLE ⟨h.counit.app x⟩ } }
+  counit :=
+    { app := fun X => by
+        letI := isIsomorphicSetoid D
+        exact Quotient.recOnSubsingleton X fun x => homOfLE ⟨h.counit.app x⟩ }
 
 end ThinSkeleton
 
