@@ -5,6 +5,7 @@ Authors: David Loeffler
 -/
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset
 
 /-!
 # Even and odd functions
@@ -16,6 +17,8 @@ These definitions are `Function.Even` and `Function.Odd`; and they are `protecte
 conflicting with the root-level definitions `Even` and `Odd` (which, for functions, mean that the
 function takes even resp. odd _values_, a wholly different concept).
 -/
+
+open scoped BigOperators
 
 namespace Function
 
@@ -122,14 +125,28 @@ lemma Odd.mul_odd [HasDistribNeg R] (hf : f.Odd) (hg : g.Odd) : (f * g).Even := 
 
 end mul
 
+section torsionfree
+
+-- need to redeclare variables since `InvolutiveNeg α` conflicts with `Neg α`
+variable {α β : Type*} [AddCommGroup β] [NoZeroSMulDivisors ℕ β] {f : α → β}
+
 /--
 If `f` is both even and odd, and its target is a torsion-free commutative additive group,
 then `f = 0`.
 -/
-lemma zero_of_even_and_odd [AddCommGroup β] [NoZeroSMulDivisors ℕ β]
-    {f : α → β} (he : f.Even) (ho : f.Odd) :
-    f = 0 := by
+lemma zero_of_even_and_odd [Neg α] (he : f.Even) (ho : f.Odd) : f = 0 := by
   ext r
   rw [Pi.zero_apply, ← neg_eq_self ℕ, ← ho, he]
+
+/-- The sum of the values of an odd function is 0. -/
+lemma Odd.sum_eq_zero [Fintype α] [InvolutiveNeg α] {f : α → β} (hf : f.Odd) : ∑ a, f a = 0 := by
+  simpa only [neg_eq_self ℕ, Finset.sum_neg_distrib, funext hf, Equiv.neg_apply] using
+    Equiv.sum_comp (.neg α) f
+
+/-- An odd function vanishes at zero. -/
+lemma Odd.map_zero [NegZeroClass α] (hf : f.Odd) : f 0 = 0 := by
+  simp only [← neg_eq_self ℕ, ← hf 0, neg_zero]
+
+end torsionfree
 
 end Function
