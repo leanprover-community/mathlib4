@@ -1078,7 +1078,7 @@ theorem moebius_mul_coe_zeta : (μ * ζ : ArithmeticFunction ℤ) = 1 := by
       moebius_apply_prime_pow hp (Nat.succ_ne_zero _), Nat.succ_inj', sum_ite_eq', mem_range,
       if_pos hn, neg_add_cancel]
     rw [one_apply_ne]
-    rw [Ne, pow_eq_one_iff]
+    rw [Ne, pow_eq_one_iff_left]
     · exact hp.ne_one
     · exact hn.ne'
   · rw [ZeroHom.map_zero, ZeroHom.map_zero]
