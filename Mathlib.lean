@@ -1947,6 +1947,7 @@ import Mathlib.Combinatorics.Hall.Basic
 import Mathlib.Combinatorics.Hall.Finite
 import Mathlib.Combinatorics.Hindman
 import Mathlib.Combinatorics.Optimization.ValuedCSP
+import Mathlib.Combinatorics.Orbits
 import Mathlib.Combinatorics.Pigeonhole
 import Mathlib.Combinatorics.Quiver.Arborescence
 import Mathlib.Combinatorics.Quiver.Basic
@@ -2597,6 +2598,7 @@ import Mathlib.Data.Vector.Defs
 import Mathlib.Data.Vector.MapLemmas
 import Mathlib.Data.Vector.Mem
 import Mathlib.Data.Vector.Snoc
+import Mathlib.Data.Vector.Transpose
 import Mathlib.Data.Vector.Zip
 import Mathlib.Data.Vector3
 import Mathlib.Data.W.Basic
