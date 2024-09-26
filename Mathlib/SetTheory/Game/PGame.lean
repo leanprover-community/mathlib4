@@ -428,7 +428,7 @@ lemma Identical.moveRight_symm : ∀ {x y}, x ≡ y →
     ∀ i, ∃ j, x.moveRight j ≡ y.moveRight i
   | mk _ _ _ _, mk _ _ _ _, ⟨_, hr⟩, i => hr.2 i
 
-/-- Uses `∈ₗ` `∈ᵣ` instead of `≡`. -/
+/-- Uses `∈ₗ` and `∈ᵣ` instead of `≡`. -/
 theorem identical_iff' : ∀ {x y : PGame}, x ≡ y ↔
     ((∀ i, x.moveLeft i ∈ₗ y) ∧ (∀ j, y.moveLeft j ∈ₗ x)) ∧
       ((∀ i, x.moveRight i ∈ᵣ y) ∧ (∀ j, y.moveRight j ∈ᵣ x))
