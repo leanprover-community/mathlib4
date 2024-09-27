@@ -78,15 +78,11 @@ def functorOfFun {A B : Type*} (f : A → B) : Codiscrete A ⥤ Codiscrete B := 
 open Opposite
 
 /-- A codiscrete category is equivalent to its opposite category. -/
-protected def opposite (A : Type*) : (Codiscrete A)ᵒᵖ ≌ Codiscrete A :=
- let F : (Codiscrete A)ᵒᵖ ⥤ Codiscrete A := lift fun (op (x)) => x
- {
-  functor := F
-  inverse := F.rightOp
-  unitIso := NatIso.ofComponents fun ⟨x⟩ =>
-   Iso.refl _
+def oppositeEquivalence (A : Type*) : (Codiscrete A)ᵒᵖ ≌ Codiscrete A where
+  functor := lift (fun x ↦ x.unop)
+  inverse := (lift (fun x ↦ x.unop)).rightOp
+  unitIso := NatIso.ofComponents (fun _ => by exact Iso.refl _)
   counitIso := natIso
- }
 
 /-- Codiscrete.Functor turns a type into a codiscrete category-/
 def functor : Type u ⥤ Cat.{0,u} where
