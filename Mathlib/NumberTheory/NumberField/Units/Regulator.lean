@@ -57,11 +57,11 @@ local instance : CommGroup (𝓞 K)ˣ := inferInstance
 set_option maxSynthPendingDepth 2 -- Note this is active for the remainder of the file.
 
 theorem regulator_eq_det' (e : {w : InfinitePlace K // w ≠ w₀} ≃ Fin (rank K)) :
-    regulator K = |(Matrix.of fun i ↦ (logEmbedding K) (fundSystem K (e i))).det| := by
+    regulator K = |(Matrix.of fun i ↦
+      logEmbedding K (Additive.ofMul (fundSystem K (e i)))).det| := by
   simp_rw [regulator, ZLattice.covolume_eq_det _
     (((basisModTorsion K).map (logEmbeddingEquiv K)).reindex e.symm), Basis.coe_reindex,
-    Function.comp_def, Basis.map_apply, ← fundSystem_mk, Equiv.symm_symm]
-  rfl
+    Function.comp_def, Basis.map_apply, ← fundSystem_mk, Equiv.symm_symm, logEmbeddingEquiv_apply]
 
 /-- Let `u : Fin (rank K) → (𝓞 K)ˣ` be a family of units and let `w₁` and `w₂` be two infinite
 places. Then, the two square matrices with entries `(mult w * log w (u i))_i, {w ≠ w_i}`, `i = 1,2`,

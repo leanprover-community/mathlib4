@@ -773,8 +773,12 @@ theorem mk_cons {s : Multiset α} (h : (a ::ₘ s).Nodup) :
 theorem cons_empty (a : α) : cons a ∅ (not_mem_empty _) = {a} := rfl
 
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
-theorem nonempty_cons (h : a ∉ s) : (cons a s h).Nonempty :=
+theorem cons_nonempty (h : a ∉ s) : (cons a s h).Nonempty :=
   ⟨a, mem_cons.2 <| Or.inl rfl⟩
+
+@[deprecated (since := "2024-09-19")] alias nonempty_cons := cons_nonempty
+
+@[simp] theorem cons_ne_empty (h : a ∉ s) : cons a s h ≠ ∅ := (cons_nonempty _).ne_empty
 
 @[simp]
 theorem nonempty_mk {m : Multiset α} {hm} : (⟨m, hm⟩ : Finset α).Nonempty ↔ m ≠ 0 := by
@@ -1098,7 +1102,7 @@ obtained by inserting an element in `t`. -/
 @[elab_as_elim]
 theorem Nonempty.cons_induction {α : Type*} {p : ∀ s : Finset α, s.Nonempty → Prop}
     (singleton : ∀ a, p {a} (singleton_nonempty _))
-    (cons : ∀ a s (h : a ∉ s) (hs), p s hs → p (Finset.cons a s h) (nonempty_cons h))
+    (cons : ∀ a s (h : a ∉ s) (hs), p s hs → p (Finset.cons a s h) (cons_nonempty h))
     {s : Finset α} (hs : s.Nonempty) : p s hs := by
   induction s using Finset.cons_induction with
   | empty => exact (not_nonempty_empty hs).elim
@@ -2089,10 +2093,11 @@ theorem mem_attach (s : Finset α) : ∀ x, x ∈ s.attach :=
 theorem attach_empty : attach (∅ : Finset α) = ∅ :=
   rfl
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem attach_nonempty_iff {s : Finset α} : s.attach.Nonempty ↔ s.Nonempty := by
   simp [Finset.Nonempty]
 
+@[aesop safe apply (rule_sets := [finsetNonempty])]
 protected alias ⟨_, Nonempty.attach⟩ := attach_nonempty_iff
 
 @[simp]
@@ -2498,6 +2503,8 @@ theorem filter_union_filter_neg_eq [∀ x, Decidable (¬p x)] (s : Finset α) :
 
 end
 
+variable {p q}
+
 lemma filter_inj : s.filter p = t.filter p ↔ ∀ ⦃a⦄, p a → (a ∈ s ↔ a ∈ t) := by
   simp [Finset.ext_iff]
 
@@ -2568,15 +2575,19 @@ theorem mem_range_le {n x : ℕ} (hx : x ∈ range n) : x ≤ n :=
 theorem mem_range_sub_ne_zero {n x : ℕ} (hx : x ∈ range n) : n - x ≠ 0 :=
   _root_.ne_of_gt <| Nat.sub_pos_of_lt <| mem_range.1 hx
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem nonempty_range_iff : (range n).Nonempty ↔ n ≠ 0 :=
   ⟨fun ⟨k, hk⟩ => (k.zero_le.trans_lt <| mem_range.1 hk).ne',
    fun h => ⟨0, mem_range.2 <| Nat.pos_iff_ne_zero.2 h⟩⟩
+
+@[aesop safe apply (rule_sets := [finsetNonempty])]
+protected alias ⟨_, Aesop.range_nonempty⟩ := nonempty_range_iff
 
 @[simp]
 theorem range_eq_empty_iff : range n = ∅ ↔ n = 0 := by
   rw [← not_nonempty_iff_eq_empty, nonempty_range_iff, not_not]
 
+@[aesop safe apply (rule_sets := [finsetNonempty])]
 theorem nonempty_range_succ : (range <| n + 1).Nonempty :=
   nonempty_range_iff.2 n.succ_ne_zero
 
@@ -2590,6 +2601,10 @@ theorem range_filter_eq {n m : ℕ} : (range n).filter (· = m) = if m < n then 
 lemma range_nontrivial {n : ℕ} (hn : 1 < n) : (Finset.range n).Nontrivial := by
   rw [Finset.Nontrivial, Finset.coe_range]
   exact ⟨0, Nat.zero_lt_one.trans hn, 1, hn, Nat.zero_ne_one⟩
+
+theorem exists_nat_subset_range (s : Finset ℕ) : ∃ n : ℕ, s ⊆ range n :=
+  s.induction_on (by simp)
+    fun a s _ ⟨n, hn⟩ => ⟨max (a + 1) n, insert_subset (by simp) (hn.trans (by simp))⟩
 
 end Range
 
@@ -2712,9 +2727,12 @@ theorem toFinset_union (s t : Multiset α) : (s ∪ t).toFinset = s.toFinset ∪
 theorem toFinset_eq_empty {m : Multiset α} : m.toFinset = ∅ ↔ m = 0 :=
   Finset.val_inj.symm.trans Multiset.dedup_eq_zero
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem toFinset_nonempty : s.toFinset.Nonempty ↔ s ≠ 0 := by
   simp only [toFinset_eq_empty, Ne, Finset.nonempty_iff_ne_empty]
+
+@[aesop safe apply (rule_sets := [finsetNonempty])]
+protected alias ⟨_, Aesop.toFinset_nonempty_of_ne⟩ := toFinset_nonempty
 
 @[simp]
 theorem toFinset_subset : s.toFinset ⊆ t.toFinset ↔ s ⊆ t := by
@@ -2845,9 +2863,12 @@ theorem toFinset_inter (l l' : List α) : (l ∩ l').toFinset = l.toFinset ∩ l
 theorem toFinset_eq_empty_iff (l : List α) : l.toFinset = ∅ ↔ l = nil := by
   cases l <;> simp
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem toFinset_nonempty_iff (l : List α) : l.toFinset.Nonempty ↔ l ≠ [] := by
   simp [Finset.nonempty_iff_ne_empty]
+
+@[aesop safe apply (rule_sets := [finsetNonempty])]
+alias ⟨_, Aesop.toFinset_nonempty_of_ne⟩ := toFinset_nonempty_iff
 
 @[simp]
 theorem toFinset_filter (s : List α) (p : α → Bool) :
@@ -3046,6 +3067,8 @@ You can add lemmas to the rule-set by tagging them with either:
 * `aesop safe apply (rule_sets := [finsetNonempty])` if they are always a good idea to follow or
 * `aesop unsafe apply (rule_sets := [finsetNonempty])` if they risk directing the search to a blind
   alley.
+
+TODO: should some of the lemmas be `aesop safe simp` instead?
 -/
 def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
     MetaM (Option Q(Finset.Nonempty $s)) := do

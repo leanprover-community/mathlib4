@@ -89,7 +89,7 @@ protected abbrev Constants :=
 /-- The type of symbols in a given language. -/
 -- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
-def Symbols :=
+abbrev Symbols :=
   (Σ l, L.Functions l) ⊕ (Σ l, L.Relations l)
 
 /-- The cardinality of a language is the cardinality of its type of symbols. -/
@@ -102,7 +102,7 @@ theorem card_eq_card_functions_add_card_relations :
     L.card =
       (Cardinal.sum fun l => Cardinal.lift.{v} #(L.Functions l)) +
         Cardinal.sum fun l => Cardinal.lift.{u} #(L.Relations l) := by
-  simp [card, Symbols]
+  simp only [card, mk_sum, mk_sigma, lift_sum]
 
 instance isRelational_sum [L.IsRelational] [L'.IsRelational] : IsRelational (L.sum L') :=
   fun _ => instIsEmptySum
@@ -111,7 +111,8 @@ instance isAlgebraic_sum [L.IsAlgebraic] [L'.IsAlgebraic] : IsAlgebraic (L.sum L
   fun _ => instIsEmptySum
 
 @[simp]
-theorem empty_card : Language.empty.card = 0 := by simp [card_eq_card_functions_add_card_relations]
+theorem empty_card : Language.empty.card = 0 := by simp only [card, mk_sum, mk_sigma, mk_eq_zero,
+  sum_const, mk_eq_aleph0, lift_id', mul_zero, add_zero]
 
 instance isEmpty_empty : IsEmpty Language.empty.Symbols := by
   simp only [Language.Symbols, isEmpty_sum, isEmpty_sigma]
@@ -132,12 +133,11 @@ theorem card_relations_sum (i : ℕ) :
       Cardinal.lift.{v'} #(L.Relations i) + Cardinal.lift.{v} #(L'.Relations i) := by
   simp [Language.sum]
 
-@[simp]
 theorem card_sum :
     (L.sum L').card = Cardinal.lift.{max u' v'} L.card + Cardinal.lift.{max u v} L'.card := by
-  simp only [card_eq_card_functions_add_card_relations, card_functions_sum, card_relations_sum,
-    sum_add_distrib', lift_add, lift_sum, lift_lift]
-  simp only [add_assoc, add_comm (Cardinal.sum fun i => (#(L'.Functions i)).lift)]
+  simp only [card, mk_sum, mk_sigma, card_functions_sum, sum_add_distrib', lift_add, lift_sum,
+    lift_lift, card_relations_sum, add_assoc,
+    add_comm (Cardinal.sum fun i => (#(L'.Functions i)).lift)]
 
 /-- Passes a `DecidableEq` instance on a type of function symbols through the  `Language`
 constructor. Despite the fact that this is proven by `inferInstance`, it is still needed -
@@ -474,7 +474,7 @@ def comp (hnp : N ↪[L] P) (hmn : M ↪[L] N) : M ↪[L] P where
   -- Porting note: should be done by autoparam?
   map_fun' := by intros; simp only [Function.comp_apply, map_fun]; trivial
   -- Porting note: should be done by autoparam?
-  map_rel' := by intros; rw [Function.comp.assoc, map_rel, map_rel]
+  map_rel' := by intros; rw [Function.comp_assoc, map_rel, map_rel]
 
 @[simp]
 theorem comp_apply (g : N ↪[L] P) (f : M ↪[L] N) (x : M) : g.comp f x = g (f x) :=
@@ -551,11 +551,11 @@ def symm (f : M ≃[L] N) : N ≃[L] M :=
       simp only [Equiv.toFun_as_coe]
       rw [Equiv.symm_apply_eq]
       refine Eq.trans ?_ (f.map_fun' f' (f.toEquiv.symm ∘ x)).symm
-      rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp]
+      rw [← Function.comp_assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp]
     map_rel' := fun n r {x} => by
       simp only [Equiv.toFun_as_coe]
       refine (f.map_rel' r (f.toEquiv.symm ∘ x)).symm.trans ?_
-      rw [← Function.comp.assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp] }
+      rw [← Function.comp_assoc, Equiv.toFun_as_coe, Equiv.self_comp_symm, Function.id_comp] }
 
 instance hasCoeToFun : CoeFun (M ≃[L] N) fun _ => M → N :=
   DFunLike.hasCoeToFun
@@ -648,7 +648,7 @@ def comp (hnp : N ≃[L] P) (hmn : M ≃[L] N) : M ≃[L] P :=
     -- Porting note: should be done by autoparam?
     map_fun' := by intros; simp only [Function.comp_apply, map_fun]; trivial
     -- Porting note: should be done by autoparam?
-    map_rel' := by intros; rw [Function.comp.assoc, map_rel, map_rel] }
+    map_rel' := by intros; rw [Function.comp_assoc, map_rel, map_rel] }
 
 @[simp]
 theorem comp_apply (g : N ≃[L] P) (f : M ≃[L] N) (x : M) : g.comp f x = g (f x) :=
@@ -830,8 +830,8 @@ def inducedStructureEquiv (e : M ≃ N) : @Language.Equiv L M N _ (inducedStruct
   letI : L.Structure N := inducedStructure e
   exact
   { e with
-    map_fun' := @fun n f x => by simp [← Function.comp.assoc e.symm e x]
-    map_rel' := @fun n r x => by simp [← Function.comp.assoc e.symm e x] }
+    map_fun' := @fun n f x => by simp [← Function.comp_assoc e.symm e x]
+    map_rel' := @fun n r x => by simp [← Function.comp_assoc e.symm e x] }
 
 @[simp]
 theorem toEquiv_inducedStructureEquiv (e : M ≃ N) :
