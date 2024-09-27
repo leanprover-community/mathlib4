@@ -35,7 +35,12 @@ It effectively says that every `FinEnum` is either `Empty` or `Option α`, up to
 by `Fin`s of equal cardinality.
 In contrast to the `Fintype` case, data can be transported along such an `Equiv`.
 Also, since order matters, the choice of element that gets replaced by `Option.none` has
-to be provided for every step. -/
+to be provided for every step.
+
+Since every `FinEnum` instance implies a `Fintype` instance and `Prop` is squashed already,
+`Fintype.induction_empty_option` can be used if a `Prop` needs to be constructed.
+Cf. `Data.Fintype.Option`
+-/
 def recEmptyOption {P : (α : Type u) → Sort v}
     (fin_choice : (n : ℕ) → Fin (n + 1))
     (of_equiv : {α β : Type u} → (_ : FinEnum α) → (_ : FinEnum β) → card β = card α → P α → P β )
@@ -92,8 +97,12 @@ theorem recEmptyOption_of_card_eq_succ {P : (α : Type u) → Sort v}
   · rcases Nat.succ.inj (n.prop.symm.trans ‹_›) with ⟨rfl⟩; rfl
 
 /-- A recursor principle for finite-and-enumerable types, analogous to `Nat.recOn`.
-It effectively says that every `FinEnum` is either `Empty` or `Option α`, up to an `Equiv`.
-In contrast to the `Fintype` case, data can be transported along such an `Equiv`. -/
+It effectively says that every `FinEnum` is either `Empty` or `Option α`, up to an `Equiv` mediated
+by `Fin`s of equal cardinality.
+In contrast to the `Fintype` case, data can be transported along such an `Equiv`.
+Also, since order matters, the choice of element that gets replaced by `Option.none` has
+to be provided for every step.
+-/
 abbrev recOnEmptyOption {P : (α : Type u) → Sort v}
     {α : Type u} (aenum : FinEnum α)
     (fin_choice : (n : ℕ) → Fin (n + 1))
