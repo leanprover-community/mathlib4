@@ -285,10 +285,9 @@ theorem totallyBounded_absConvexHull
   have e2 {t₁ : Set E} : ⋃ y ∈ t₁, {x | (x, y) ∈ d₂} = t₁ + V := by
     aesop
   rw [e2] at hts
-  have e4 : (absConvexHull ℝ) s ⊆ ((absConvexHull ℝ) t) + (absConvexHull ℝ) V :=
-    le_trans (absConvexHull_mono hts) (AbsConvex.hullAdd _)
-  rw [AbsConvex.absConvexHull_eq hS₂] at e4
-  rw [absConvexHull_eq_convexHull_union_neg (s := t)] at e4
+  have e4 : (absConvexHull ℝ) s ⊆ (convexHull ℝ) (t ∪ -t) + V := by
+    rw [← absConvexHull_eq_convexHull_union_neg (s := t), ← AbsConvex.absConvexHull_eq hS₂]
+    exact le_trans (absConvexHull_mono hts) (AbsConvex.hullAdd _)
   have e6 : TotallyBounded (uniformSpace := TopologicalAddGroup.toUniformSpace E)
       ((convexHull ℝ) (t ∪ -t)) := IsCompact.totallyBounded
         (Set.Finite.isCompact_convexHull (finite_union.mpr ⟨htf,Finite.neg htf⟩))
@@ -297,13 +296,9 @@ theorem totallyBounded_absConvexHull
     aesop
   )
   rw [e2] at hts'
-  have e7: (absConvexHull ℝ) s ⊆ t' + (V + V) := by
-    apply le_trans
-    apply e4
-    rw [← add_assoc]
-    apply Set.add_subset_add_right
-    apply hts'
-  rw [add_self_eq_smul_two] at e7
+  have e7: (absConvexHull ℝ) s ⊆ t' + (2 : ℝ) • V := by
+    rw [← add_self_eq_smul_two hS₂.2, ← add_assoc]
+    exact le_trans e4 (Set.add_subset_add_right hts')
   have e8 (y : E): y +ᵥ ((2 : ℝ) • V) ⊆ {x | (x, y) ∈ d'} := by
     intro x hx
     rw [mem_setOf_eq]
@@ -357,7 +352,6 @@ theorem totallyBounded_absConvexHull
   · exact htf'
   · apply subset_trans e7
     aesop
-  exact hS₂.2
 end
 
 section AbsolutelyConvexSets
