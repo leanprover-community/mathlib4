@@ -108,6 +108,88 @@ theorem directSum_isInteral_of_commute (hA : A.IsSymmetric) (hB : B.IsSymmetric)
 
 end Pair
 
+section Oliver
+
+/-
+
+
+I claim it is usually better to work within the lattice of submodules and so I think rather
+than proving
+a headline result in the language of DirectSum.IsInternal
+I'd prove the equivalent pair of conditions according to
+DirectSum.isInternal_submodule_iff_independent_and_iSup_eq_top
+[Feel free to disagree with me here; I mention this primarily because I use this language below]
+-/
+
+
+variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+  [FiniteDimensional 𝕜 E] {T : E →ₗ[𝕜] E}
+
+/-
+It's interesting that the following isn't Module.End.InnerProductSpace. It seems he is opening three
+distinct namespaces.
+-/
+open Module End InnerProductSpace
+
+/-Maybe I should prove a `LinearMap.IsSymmetric.pow` lemma as suggested by Jireh.
+What would that be? The name suggests it clearly. We'd want a theorem saying that if `T`
+is a symmetric operator then every nonnegative power `T^n` is also symmetric.
+-/
+
+example (hT : T.IsSymmetric) {n : ℕ} : (T ^ n).IsSymmetric := by
+/-It seems to be a good idea to try to do this by the method of induction employed by Jireh below.
+To see what is going on, note that the base case should be `LinearMap.IsSymmetric T^0`. We seem to
+need `pow_zero T`, which is a proof that `T^0=1`. I would like to include this fact in a
+proof that 1 is symmetric. We have `LinearMap.isSymmetric_id`.
+
+Ok, back up. We are trying to show that `T^0` is symmetric, and then assuming that `T^k` is
+symmetric, use this to show `T ^ (k + 1)` is symmetric. This should be easy since
+`T ^ (k + 1) = T * T^k = T^k * T` and so working with the inner products, one can reverse this.
+
+So `P : (n : ℕ) → m ≤ n → Prop` is what in this case? It should be `P n hn` is a proof that
+`(T ^ n).IsSymmetric`. The base should be that `(T ^ 0).IsSymmetric`. Can we make this clean?
+
+Maybe we can use a `refine` and provide a proof like the following one.
+-/
+  have : (T ^ 0).IsSymmetric := (pow_zero T).symm ▸ LinearMap.isSymmetric_id
+
+--this is pretty good. It's a term mode proof of the symmetry of `T ^ 0`. This can be in-lined!
+
+--refine Nat.le_induction ((pow_zero T).symm ▸ LinearMap.isSymmetric_id)
+
+sorry
+
+example (hT : T.IsSymmetric) {n : ℕ} {μ : 𝕜} (hn : 1 ≤ n) :
+    genEigenspace T μ n = genEigenspace T μ 1 := by
+  refine Nat.le_induction rfl (fun k hk ih ↦ ?_) n hn
+  refine ih ▸ le_antisymm (fun x hx ↦ ?_) ((genEigenspace T μ).mono k.le_succ)
+  obtain (rfl | hx_ne) := eq_or_ne x 0
+  · exact zero_mem _
+  · have hμ : HasEigenvalue T μ := hasEigenvalue_of_hasGenEigenvalue (k := k + 1) <|
+      (genEigenspace T μ (k + 1)).ne_bot_iff.mpr ⟨x, hx, hx_ne⟩
+    have hT' := LinearMap.isSymmetric_iff_isSelfAdjoint T |>.mp hT
+    have hTμ : ((T - μ • 1) ^ k).IsSymmetric  := by
+      rw [LinearMap.isSymmetric_iff_isSelfAdjoint]
+      refine .pow (hT'.sub (.smul ?_ ?_)) k -- no `LinearMap.IsSymmetric.pow` lemma?
+      · exact hT.conj_eigenvalue_eq_self hμ
+      · exact (LinearMap.isSymmetric_iff_isSelfAdjoint 1).mp LinearMap.isSymmetric_id
+    rw [mem_genEigenspace, ← norm_eq_zero, ← sq_eq_zero_iff, norm_sq_eq_inner (𝕜 := 𝕜)]
+    rw [hTμ, ← LinearMap.comp_apply, ← LinearMap.mul_eq_comp, ← pow_add]
+    simp [mem_genEigenspace .. |>.mp <| (genEigenspace T μ).mono (show k + 1 ≤ k + k by gcongr) hx]
+
+
+/-The following is the suggested starting result of Oliver.-/
+
+lemma iSup_iInf_maxGenEigenspace_eq_top_of_commute {ι K V : Type*}
+    [Field K] [AddCommGroup V] [Module K V] [FiniteDimensional K V]
+    (f : ι → End K V)
+    (h : Pairwise fun i j ↦ Commute (f i) (f j))
+    (h' : ∀ i, ⨆ μ, (f i).maxGenEigenspace μ = ⊤) :
+    ⨆ χ : ι → K, ⨅ i, (f i).maxGenEigenspace (χ i) = ⊤ := by
+sorry
+
+end Oliver
+
 end IsSymmetric
 
 end LinearMap
