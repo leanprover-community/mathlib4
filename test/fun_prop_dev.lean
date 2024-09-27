@@ -6,12 +6,15 @@ Authors: Tomáš Skřivan
 import Mathlib.Tactic.FunProp
 import Mathlib.Logic.Function.Basic
 import Mathlib.Data.FunLike.Basic
+import Aesop
 
 /-! # Tests for the `fun_prop` tactic
 
 This file is designed for development of fun_prop and does not depend on most of mathlib. It defines
 two function properties `Con` and `Lin` which roughly correspond to `Continuity` and `IsLinearMap`.
 -/
+
+set_option linter.style.longLine false
 
 open Function
 
@@ -25,18 +28,13 @@ set_option linter.unusedVariables false
 -- define function propositions --
 ----------------------------------
 
-class Obj (α : Type _) : Type where
-
-instance [Obj α] [Obj β] : Obj (α × β) := ⟨⟩
-instance [∀ x, Obj (E x)] : Obj ((x' : α) → E x') := ⟨⟩
-instance : Obj Nat := ⟨⟩
-
 @[fun_prop] opaque Con {α β} (f : α → β) : Prop
 @[fun_prop] opaque Lin {α β} (f : α → β) : Prop
 
 -- state basic lambda calculus rules --
 ---------------------------------------
 
+-- variable [Obj α] [Obj β] [Obj γ] [Obj δ] [∀ x, Obj (E x)]
 
 @[fun_prop] theorem Con_id : Con (id : α → α) := silentSorry
 @[fun_prop] theorem Con_const (y : β) : Con (fun x : α => y) := silentSorry
@@ -48,7 +46,7 @@ instance : Obj Nat := ⟨⟩
 
 -- Lin is missing `const` theorem
 @[fun_prop] theorem Lin_id : Lin (fun x : α => x) := silentSorry
-@[fun_prop] theorem Lin_const {β} [Obj β] [Zero β] : Lin (fun x : α => (0 : β)) := silentSorry
+@[fun_prop] theorem Lin_const {β} [Zero β] : Lin (fun x : α => (0 : β)) := silentSorry
 @[fun_prop] theorem Lin_apply (x : α) : Lin (fun f : α → β => f x) := silentSorry
 @[fun_prop] theorem Lin_applyDep (x : α) : Lin (fun f : (x' : α) → E x' => f x) := silentSorry
 @[fun_prop] theorem Lin_comp (f : β → γ) (g : α → β) (hf : Lin f) (hg : Lin g) : Lin (f ∘ g) := silentSorry
@@ -130,13 +128,10 @@ instance [HasUncurry β γ δ] : HasUncurry (α -o β) (α × γ) δ :=
   ⟨fun f p ↦ (↿(f p.1)) p.2⟩
 
 
-instance : Obj (α ->> β) := ⟨⟩
-instance : Obj (α -o β) := ⟨⟩
-
 -- morphism theorems i.e. theorems about `FunLike.coe` --
 ---------------------------------------------------------
 
--- this is some form of cartesion closedness with homs `α ->> β`
+-- this is some form of cartesian closedness with homs `α ->> β`
 @[fun_prop] theorem conHom_con' (f : α → β ->> γ) (g : α → β) (hf : Con f) (hg : Con g) : Con (fun x => (f x) (g x)) := silentSorry
 
 @[fun_prop] theorem conHom_lin_in_fn' (f : α → β ->> γ) (y : β) (hf : Lin f) : Lin (fun x => f x y) := silentSorry
@@ -165,7 +160,7 @@ example [Add β] (f : α → β → γ) (hx : ∀ y, Lin (f · y)) (hy : ∀ x, 
 example [Add α] (f : α → α → α → α) (hx : ∀ x y, Lin (f x y ·)) (hy : ∀ x z, Lin (f x · z)) (hz : ∀ y z, Lin (f · y z)) :
     Lin (fun x => fun y z ⊸ f z (x+x) y) := by fun_prop
 
--- the only analoge is this theorem but that is alredy provable
+-- the only analogue is this theorem but that is already provable
 example (f : α → β -o γ) (g : α → β) (hf : Lin (fun (x,y) => f x y)) (hg : Lin g) : Lin (fun x => (f x) (g x)) := by fun_prop
 
 
@@ -239,6 +234,7 @@ example (f : α → β ->> γ) (hf : Con fun (x,y) => f x y) (y) : Con fun x => 
 example (f : α → β ->> γ) (hf : Con fun (x,y) => f x y) : Con fun x y => f x y := by fun_prop
 example (f : α → β ->> γ) (hf : Con fun (x,y) => f x y) (x) : Con fun y => f x y := by fun_prop
 example (f : α → α ->> (α → α)) (hf : Con fun (x,y,z) => f x y z) (x) : Con fun y => f x y := by fun_prop
+example (f : α → α ->> (α → α)) (y : α) (hf : Con fun (x,y,z) => f x y z) : Con fun x => f y x x := by fun_prop
 example (f : α → α ->> (α → α)) (hf : Con fun (x,y,z) => f x y z) : Con fun x y => f y x x := by fun_prop
 
 example (f : α → β ->> γ) (hf : Con ↿f) (y) : Con fun x => f x y := by fun_prop
@@ -317,7 +313,7 @@ example (x) : Con fun (f : α ->> α) => f (f x) := by fun_prop
 example (x) : Con fun (f : α ->> α) => f (f (f x)) := by fun_prop
 
 
-example [Zero α] [Obj α] [Add α] : Lin (fun x : α => (0 : α) + x + (0 : α) + (0 : α) + x) := by fun_prop
+example [Zero α] [Add α] : Lin (fun x : α => (0 : α) + x + (0 : α) + (0 : α) + x) := by fun_prop
 
 noncomputable
 def foo : α ->> α ->> α := silentSorry
@@ -463,3 +459,97 @@ Issues:
 -/
 #guard_msgs in
 example : Con (fun x : α => f3 x) := by fun_prop (config:={maxTransitionDepth:=0})
+
+@[fun_prop] opaque Dif (𝕜:Type) [Add 𝕜] {α β} (f : α → β) : Prop
+
+variable {𝕜 : Type}
+@[fun_prop] theorem Dif_id [Add 𝕜] : Dif 𝕜 (id : α → α) := silentSorry
+@[fun_prop] theorem Dif_const [Add 𝕜] (y : β) : Dif 𝕜 (fun x : α => y) := silentSorry
+@[fun_prop] theorem Dif_apply [Add 𝕜] (x : α) : Dif 𝕜 (fun f : α → β => f x) := silentSorry
+@[fun_prop] theorem Dif_applyDep [Add 𝕜] (x : α) : Dif 𝕜 (fun f : (x' : α) → E x' => f x) := silentSorry
+@[fun_prop] theorem Dif_comp [Add 𝕜] (f : β → γ) (g : α → β) (hf : Dif 𝕜 f) (hg : Dif 𝕜 g) : Dif 𝕜 (fun x => f (g x)) := silentSorry
+@[fun_prop] theorem Dif_pi [Add 𝕜] (f : β → (i : α) → (E i)) (hf : ∀ i, Dif 𝕜 (fun x => f x i)) : Dif 𝕜 (fun x i => f x i) := silentSorry
+
+@[fun_prop]
+theorem Dif_Con [Add 𝕜] (f : α → β) (hf : Dif 𝕜 f) : Con f := silentSorry
+
+def f4 (a : α) := a
+
+example (hf : Dif Nat (f4 : α → α)) : Con (f4 : α → α) := by fun_prop (disch:=aesop)
+
+@[fun_prop]
+theorem f4_dif : Dif Nat (f4 : α → α) := silentSorry
+
+example (hf : Dif Nat (f4 : α → α)) : Con (f4 : α → α) := by fun_prop (disch:=aesop)
+
+
+-- Test abbrev transparency
+abbrev my_id {α} (a : α) := a
+example : Con (fun x : α => my_id x) := by fun_prop
+example (f : α → β) (hf : Con (my_id f)) : Con f := by fun_prop
+
+-- Testing some issues with bundled morphisms of multiple arguments
+structure Mor where
+  toFun : Int → Int → Int
+  hcon : Con (fun (x,y) => toFun x y)
+
+@[fun_prop]
+theorem Mor.toFun_Con (m : Mor) (f g : α → Int) (hf : Con f) (g : α → Int) (hg : Con g) :
+    Con (fun x => m.toFun (f x) (g x)) := by
+  have := m.hcon
+  fun_prop
+
+-- Test improved beta reduction of the head function when we interleave lambdas and lets
+example [Add α] (a : α) : Con (fun x0 : α =>
+  (fun x =>
+    let y := x + x
+    fun z : α =>
+      x + y + z) x0 a) := by fun_prop
+
+example [Add α] (a : α) :
+  let f := (fun x : α =>
+    let y := x + x
+    fun z : α =>
+      x + y + z)
+  Con (fun x => f x a) := by fun_prop
+
+example [Add α] (a a' : α) : Con (fun x0 : α =>
+  (fun x =>
+    let y := x + x
+    fun z : α =>
+      let h := x + y + z
+      fun w =>
+        w + x + y + z + h) x0 a a') := by fun_prop
+
+
+-- test that local function is being properly unfolded
+example [Add α] (a : α) :
+  let f := (fun x : α =>
+    let y := x + x
+    fun z : α =>
+      x + y + z)
+  Con (fun x =>
+    f x a) := by
+  fun_prop
+
+
+-- Test that local theorem is being used
+/--
+info: [Meta.Tactic.fun_prop] [✅️] Con fun x => f x y
+  [Meta.Tactic.fun_prop] candidate local theorems for f #[this : Con f]
+  [Meta.Tactic.fun_prop] removing argument to later use this : Con f
+  [Meta.Tactic.fun_prop] [✅️] applying: Con_comp
+    [Meta.Tactic.fun_prop] [✅️] Con fun f => f y
+      [Meta.Tactic.fun_prop] [✅️] applying: Con_apply
+    [Meta.Tactic.fun_prop] [✅️] Con fun x => f x
+      [Meta.Tactic.fun_prop] candidate local theorems for f #[this : Con f]
+      [Meta.Tactic.fun_prop] [✅️] applying: this : Con f
+-/
+#guard_msgs in
+example [Add α] (y : α):
+  let f := (fun x y : α => x+x+y)
+  Con (fun x => f x y) := by
+  intro f
+  have : Con f := by fun_prop
+  set_option trace.Meta.Tactic.fun_prop true in
+  fun_prop

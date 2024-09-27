@@ -381,7 +381,7 @@ variable [Preorder α]
 theorem setOf_minimal_subset (s : Set α) : {x | Minimal (· ∈ s) x} ⊆ s :=
   sep_subset ..
 
-theorem setOf_maximal_subset (s : Set α) : {x | Minimal (· ∈ s) x} ⊆ s :=
+theorem setOf_maximal_subset (s : Set α) : {x | Maximal (· ∈ s) x} ⊆ s :=
   sep_subset ..
 
 theorem Set.Subsingleton.maximal_mem_iff (h : s.Subsingleton) : Maximal (· ∈ s) x ↔ x ∈ s := by

@@ -929,6 +929,64 @@ lemma neg_sub {x y : EReal} (h1 : x ≠ ⊥ ∨ y ≠ ⊥) (h2 : x ≠ ⊤ ∨ y
     - (x - y) = - x + y := by
   rw [sub_eq_add_neg, neg_add _ _, sub_eq_add_neg, neg_neg] <;> simp_all
 
+/-! ### Addition and order -/
+
+lemma le_of_forall_lt_iff_le {x y : EReal} : (∀ z : ℝ, x < z → y ≤ z) ↔ y ≤ x := by
+  refine ⟨fun h ↦ WithBot.le_of_forall_lt_iff_le.1 ?_, fun h _ x_z ↦ h.trans x_z.le⟩
+  rw [WithTop.forall]
+  aesop
+
+lemma ge_of_forall_gt_iff_ge {x y : EReal} : (∀ z : ℝ, z < y → z ≤ x) ↔ y ≤ x := by
+  refine ⟨fun h ↦ WithBot.ge_of_forall_gt_iff_ge.1 ?_, fun h _ x_z ↦ x_z.le.trans h⟩
+  rw [WithTop.forall]
+  aesop
+
+/-- This lemma is superseded by `add_le_of_forall_add_le`. -/
+private lemma top_add_le_of_forall_add_le {a b : EReal} (h : ∀ c < ⊤, ∀ d < a, c + d ≤ b) :
+    ⊤ + a ≤ b := by
+  induction a with
+  | h_bot => exact add_bot ⊤ ▸ bot_le
+  | h_real a =>
+    refine top_add_coe a ▸ le_of_forall_lt_iff_le.1 fun c b_c ↦ ?_
+    specialize h (c - a + 1) (coe_lt_top (c - a + 1)) (a - 1)
+    rw [← coe_one, ← coe_sub, ← coe_sub, ← coe_add, ← coe_add, add_add_sub_cancel, sub_add_cancel,
+      EReal.coe_lt_coe_iff] at h
+    exact (not_le_of_lt b_c (h (sub_one_lt a))).rec
+  | h_top =>
+    refine top_add_top ▸ le_of_forall_lt_iff_le.1 fun c b_c ↦ ?_
+    specialize h c (coe_lt_top c) 0 zero_lt_top
+    rw [add_zero] at h
+    exact (not_le_of_lt b_c h).rec
+
+lemma add_le_of_forall_add_le {a b c : EReal} (h : ∀ d < a, ∀ e < b, d + e ≤ c) : a + b ≤ c := by
+  induction a with
+  | h_bot => exact bot_add b ▸ bot_le
+  | h_real a => induction b with
+    | h_bot => exact add_bot (a : EReal) ▸ bot_le
+    | h_real b =>
+      refine (@ge_of_forall_gt_iff_ge c (a+b)).1 fun d d_ab ↦ ?_
+      rw [← coe_add, EReal.coe_lt_coe_iff] at d_ab
+      rcases exists_between d_ab with ⟨e, e_d, e_ab⟩
+      have key₁ : (a + d - e : ℝ) < (a : EReal) := by apply EReal.coe_lt_coe_iff.2; linarith
+      have key₂ : (e - a : ℝ) < (b : EReal) := by apply EReal.coe_lt_coe_iff.2; linarith
+      apply le_of_eq_of_le _ (h (a + d - e) key₁ (e - a) key₂)
+      rw [← coe_add, ← coe_sub,  ← coe_sub, ← coe_add, sub_add_sub_cancel, add_sub_cancel_left]
+    | h_top =>
+      rw [add_comm (a : EReal) ⊤]
+      exact top_add_le_of_forall_add_le fun d d_top e e_a ↦ (add_comm d e ▸ h e e_a d d_top)
+  | h_top => exact top_add_le_of_forall_add_le h
+
+lemma le_add_of_forall_le_add {a b c : EReal} (h₁ : a ≠ ⊥ ∨ b ≠ ⊤) (h₂ : a ≠ ⊤ ∨ b ≠ ⊥)
+    (h : ∀ d > a, ∀ e > b, c ≤ d + e) :
+    c ≤ a + b := by
+  rw [← neg_le_neg_iff, neg_add h₁ h₂]
+  refine add_le_of_forall_add_le fun d d_a e e_b ↦ ?_
+  have h₃ : d ≠ ⊥ ∨ e ≠ ⊤ := Or.inr (ne_top_of_lt e_b)
+  have h₄ : d ≠ ⊤ ∨ e ≠ ⊥ := Or.inl (ne_top_of_lt d_a)
+  rw [← neg_neg d, neg_lt_iff_neg_lt, neg_neg a] at d_a
+  rw [← neg_neg e, neg_lt_iff_neg_lt, neg_neg b] at e_b
+  exact le_neg_of_le_neg <| neg_add h₃ h₄ ▸ h (- d) d_a (- e) e_b
+
 /-!
 ### Subtraction
 
@@ -1168,52 +1226,6 @@ lemma left_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
     c * (a + b) = c * a + c * b := by
   nth_rewrite 1 [EReal.mul_comm]; nth_rewrite 2 [EReal.mul_comm]; nth_rewrite 3 [EReal.mul_comm]
   exact right_distrib_of_nonneg ha hb
-
-lemma le_iff_le_forall_real_gt (x y : EReal) : (∀ z : ℝ, x < z → y ≤ z) ↔ y ≤ x := by
-  symm
-  refine ⟨fun h z x_lt_z ↦ le_trans h (le_of_lt x_lt_z), ?_⟩
-  intro h
-  induction x
-  · apply le_of_eq ((eq_bot_iff_forall_lt y).2 _)
-    intro z
-    specialize h (z-1) (bot_lt_coe (z-1))
-    apply lt_of_le_of_lt h
-    rw [EReal.coe_lt_coe_iff]
-    exact sub_one_lt z
-  · induction y
-    · exact bot_le
-    · norm_cast
-      norm_cast at h
-      by_contra x_lt_y
-      rcases exists_between (lt_of_not_le x_lt_y) with ⟨z, x_lt_z, z_lt_y⟩
-      specialize h z x_lt_z
-      exact not_le_of_lt z_lt_y h
-    · exfalso
-      specialize h (_+ 1) (EReal.coe_lt_coe_iff.2 (lt_add_one _))
-      exact not_le_of_lt (coe_lt_top (_ + 1)) h
-  · exact le_top
-
-lemma ge_iff_le_forall_real_lt (x y : EReal) : (∀ z : ℝ, z < y → z ≤ x) ↔ y ≤ x := by
-  refine ⟨fun h ↦ ?_, fun h z z_lt_y ↦ le_trans (le_of_lt z_lt_y) h⟩
-  induction x with
-  | h_bot =>
-    refine ((eq_bot_iff_forall_lt y).2 fun z ↦ ?_).le
-    refine lt_of_not_le fun z_le_y ↦ (not_le_of_lt (bot_lt_coe (z - 1)) (h (z - 1)
-      (lt_of_lt_of_le ?_ z_le_y)))
-    exact_mod_cast sub_one_lt z
-  | h_real x =>
-    induction y with
-    | h_bot => exact bot_le
-    | h_real y =>
-      norm_cast at h ⊢
-      by_contra! x_lt_y
-      rcases exists_between x_lt_y with ⟨z, x_lt_z, z_lt_y⟩
-      exact not_le_of_lt x_lt_z (h z z_lt_y)
-    | h_top =>
-      exfalso
-      norm_cast at h
-      exact not_le_of_lt (lt_add_one x) <| h (x + 1) (coe_lt_top (x + 1))
-  | h_top => exact le_top
 
 /-! ### Absolute value -/
 
@@ -1548,7 +1560,7 @@ lemma div_right_distrib_of_nonneg {a b c : EReal} (h : 0 ≤ a) (h' : 0 ≤ b) :
     (a + b) / c = (a / c) + (b / c) :=
   EReal.right_distrib_of_nonneg h h'
 
-/-! #### Division and Order s-/
+/-! #### Division and Order s -/
 
 lemma monotone_div_right_of_nonneg {b : EReal} (h : 0 ≤ b) : Monotone fun a ↦ a / b :=
   fun _ _ h' ↦ mul_le_mul_of_nonneg_right h' (inv_nonneg_of_nonneg h)
@@ -1668,3 +1680,5 @@ unsafe def positivity_coe_ennreal_ereal : expr → tactic strictness
 
 end Tactic
 -/
+
+set_option linter.style.longFile 1800

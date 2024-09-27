@@ -508,7 +508,7 @@ lemma ProperSpace.of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField
     simpa [_root_.smul_closedBall' this] using hr.smul (c ^ n)
   have hTop : Tendsto (fun n ↦ ‖c‖^n * r) atTop atTop :=
     Tendsto.atTop_mul_const rpos (tendsto_pow_atTop_atTop_of_one_lt hc)
-  exact .of_seq_closedBall hTop (eventually_of_forall hC)
+  exact .of_seq_closedBall hTop (Eventually.of_forall hC)
 
 @[deprecated (since := "2024-01-31")]
 alias properSpace_of_locallyCompactSpace := ProperSpace.of_locallyCompactSpace

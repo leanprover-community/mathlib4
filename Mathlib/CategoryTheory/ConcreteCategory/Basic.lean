@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2018 Scott Morrison. All rights reserved.
+Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Johannes Hölzl, Reid Barton, Sean Leather, Yury Kudryashov
+Authors: Kim Morrison, Johannes Hölzl, Reid Barton, Sean Leather, Yury Kudryashov
 -/
 import Mathlib.CategoryTheory.Types
 
@@ -83,8 +83,6 @@ section
 attribute [local instance] ConcreteCategory.hasCoeToSort
 
 variable {C : Type u} [Category.{v} C] [ConcreteCategory.{w} C]
-
--- Porting note: forget_obj_eq_coe has become a syntactic tautology.
 
 /-- In any concrete category, `(forget C).map` is injective. -/
 abbrev ConcreteCategory.instFunLike {X Y : C} : FunLike (X ⟶ Y) X Y where

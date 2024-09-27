@@ -121,10 +121,9 @@ theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [LocalRing R] :
           ∀ (φ : R →+* K), Surjective φ → ∀ f : R[X], f.Monic → ∀ a₀ : K,
             f.eval₂ φ a₀ = 0 → f.derivative.eval₂ φ a₀ ≠ 0 → ∃ a : R, f.IsRoot a ∧ φ a = a₀] := by
   tfae_have 3 → 2
-  · intro H
-    exact H (residue R) Ideal.Quotient.mk_surjective
+  | H => H (residue R) Ideal.Quotient.mk_surjective
   tfae_have 2 → 1
-  · intro H
+  | H => by
     constructor
     intro f hf a₀ h₁ h₂
     specialize H f hf (residue R a₀)
@@ -136,10 +135,10 @@ theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [LocalRing R] :
     rw [← Ideal.Quotient.eq_zero_iff_mem]
     rwa [← sub_eq_zero, ← RingHom.map_sub] at ha₂
   tfae_have 1 → 3
-  · intro hR K _K φ hφ f hf a₀ h₁ h₂
+  | hR, K, _K, φ, hφ, f, hf, a₀, h₁, h₂ => by
     obtain ⟨a₀, rfl⟩ := hφ a₀
     have H := HenselianLocalRing.is_henselian f hf a₀
-    simp only [← ker_eq_maximalIdeal φ hφ, eval₂_at_apply, RingHom.mem_ker φ] at H h₁ h₂
+    simp only [← ker_eq_maximalIdeal φ hφ, eval₂_at_apply, RingHom.mem_ker] at H h₁ h₂
     obtain ⟨a, ha₁, ha₂⟩ := H h₁ (by
       contrapose! h₂
       rwa [← mem_nonunits_iff, ← LocalRing.mem_maximalIdeal, ← LocalRing.ker_eq_maximalIdeal φ hφ,
@@ -201,7 +200,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
       have hfcI : ∀ n, f.eval (c n) ∈ I ^ (n + 1) := by
         intro n
         induction' n with n ih
-        · simpa only [Nat.zero_eq, Nat.rec_zero, zero_add, pow_one] using h₁
+        · simpa only [Nat.rec_zero, zero_add, pow_one] using h₁
         rw [← taylor_eval_sub (c n), hc, sub_eq_add_neg, sub_eq_add_neg,
           add_neg_cancel_comm]
         rw [eval_eq_sum, sum_over_range' _ _ _ (lt_add_of_pos_right _ zero_lt_two), ←

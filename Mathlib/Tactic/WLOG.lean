@@ -138,3 +138,5 @@ elab_rules : tactic
   let goal ← getMainGoal
   let { reductionGoal, hypothesisGoal .. } ← goal.wlog h P xs H
   replaceMainGoal [reductionGoal, hypothesisGoal]
+
+end Mathlib.Tactic

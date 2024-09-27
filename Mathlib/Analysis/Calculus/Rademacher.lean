@@ -64,7 +64,7 @@ variation, and is therefore ae differentiable, together with a Fubini argument.
 theorem memℒp_lineDeriv (hf : LipschitzWith C f) (v : E) :
     Memℒp (fun x ↦ lineDeriv ℝ f x v) ∞ μ :=
   memℒp_top_of_bound (aestronglyMeasurable_lineDeriv hf.continuous μ)
-    (C * ‖v‖) (eventually_of_forall (fun _x ↦ norm_lineDeriv_le_of_lipschitz ℝ hf))
+    (C * ‖v‖) (.of_forall fun _x ↦ norm_lineDeriv_le_of_lipschitz ℝ hf)
 
 variable [FiniteDimensional ℝ E] [IsAddHaarMeasure μ]
 

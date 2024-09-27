@@ -156,7 +156,7 @@ theorem tangentMap_chart_symm {p : TangentBundle I M} {q : TangentBundle I H}
 lemma mfderiv_chartAt_eq_tangentCoordChange {x y : M} (hsrc : x ∈ (chartAt H y).source) :
     mfderiv I I (chartAt H y) x = tangentCoordChange I x y x := by
   have := mdifferentiableAt_atlas I (ChartedSpace.chart_mem_atlas _) hsrc
-  simp [mfderiv, if_pos this, Function.comp.assoc]
+  simp [mfderiv, if_pos this, Function.comp_assoc]
 
 end Charts
 
@@ -198,7 +198,8 @@ theorem comp_symm_deriv {x : M'} (hx : x ∈ e.target) :
 
 /-- The derivative of a differentiable partial homeomorphism, as a continuous linear equivalence
 between the tangent spaces at `x` and `e x`. -/
-protected def mfderiv {x : M} (hx : x ∈ e.source) : TangentSpace I x ≃L[𝕜] TangentSpace I' (e x) :=
+protected def mfderiv (he : e.MDifferentiable I I') {x : M} (hx : x ∈ e.source) :
+    TangentSpace I x ≃L[𝕜] TangentSpace I' (e x) :=
   { mfderiv I I' e x with
     invFun := mfderiv I' I e.symm (e x)
     continuous_toFun := (mfderiv I I' e x).cont

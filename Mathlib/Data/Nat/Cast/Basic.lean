@@ -130,7 +130,7 @@ theorem map_ofNat' {A} [AddMonoidWithOne A] [FunLike F A B] [AddMonoidHomClass F
   { toFun := fun n ↦ n • (1 : A)
     map_zero' := zero_nsmul _
     map_add' := add_nsmul _ }
-  exact eq_natCast' f $ by simp [f]
+  exact eq_natCast' f <| by simp [f]
 
 end AddMonoidHomClass
 

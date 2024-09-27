@@ -86,11 +86,12 @@ def dual : FinPartOrd ⥤ FinPartOrd where
   map {X Y} := OrderHom.dual
 
 /-- The equivalence between `FinPartOrd` and itself induced by `OrderDual` both ways. -/
-@[simps! functor inverse]
-def dualEquiv : FinPartOrd ≌ FinPartOrd :=
-  CategoryTheory.Equivalence.mk dual dual
-    (NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X)
-    (NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X)
+@[simps]
+def dualEquiv : FinPartOrd ≌ FinPartOrd where
+  functor := dual
+  inverse := dual
+  unitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
+  counitIso := NatIso.ofComponents fun X => Iso.mk <| OrderIso.dualDual X
 
 end FinPartOrd
 

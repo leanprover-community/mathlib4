@@ -56,9 +56,10 @@ theorem contDiff_exp : ∀ {n}, ContDiff 𝕜 n exp := by
   -- Porting note: added `@` due to `∀ {n}` weirdness above
   refine @(contDiff_all_iff_nat.2 fun n => ?_)
   have : ContDiff ℂ (↑n) exp := by
-    induction' n with n ihn
-    · exact contDiff_zero.2 continuous_exp
-    · rw [contDiff_succ_iff_deriv]
+    induction n with
+    | zero => exact contDiff_zero.2 continuous_exp
+    | succ n ihn =>
+      rw [contDiff_succ_iff_deriv]
       use differentiable_exp
       rwa [deriv_exp]
   exact this.restrict_scalars 𝕜

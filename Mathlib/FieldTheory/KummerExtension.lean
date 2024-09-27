@@ -63,7 +63,7 @@ lemma root_X_pow_sub_C_ne_zero {n : ℕ} (hn : 1 < n) (a : K) :
 lemma root_X_pow_sub_C_ne_zero' {n : ℕ} {a : K} (hn : 0 < n) (ha : a ≠ 0) :
     (AdjoinRoot.root (X ^ n - C a)) ≠ 0 := by
   obtain (rfl|hn) := (Nat.succ_le_iff.mpr hn).eq_or_lt
-  · rw [← Nat.one_eq_succ_zero, pow_one]
+  · rw [pow_one]
     intro e
     refine mk_ne_zero_of_natDegree_lt (monic_X_sub_C a) (C_ne_zero.mpr ha) (by simp) ?_
     trans AdjoinRoot.mk (X - C a) (X - (X - C a))
@@ -197,7 +197,7 @@ theorem X_pow_sub_C_irreducible_of_odd
     {n : ℕ} (hn : Odd n) {a : K} (ha : ∀ p : ℕ, p.Prime → p ∣ n → ∀ b : K, b ^ p ≠ a) :
     Irreducible (X ^ n - C a) := by
   induction n using induction_on_primes generalizing K a with
-  | h₀ => simp at hn
+  | h₀ => simp [← Nat.not_even_iff_odd] at hn
   | h₁ => simpa using irreducible_X_sub_C a
   | h p n hp IH =>
     rw [mul_comm]
@@ -412,8 +412,8 @@ variable {α : L} (hα : α ^ n = algebraMap K L a)
 /-- Suppose `L/K` is the splitting field of `Xⁿ - a`, then a choice of `ⁿ√a` gives an equivalence of
 `L` with `K[n√a]`. -/
 noncomputable
-def adjoinRootXPowSubCEquiv :
-    K[n√a] ≃ₐ[K] L :=
+def adjoinRootXPowSubCEquiv (hζ : (primitiveRoots n K).Nonempty) (H : Irreducible (X ^ n - C a))
+    (hα : α ^ n = algebraMap K L a) : K[n√a] ≃ₐ[K] L :=
   AlgEquiv.ofBijective (AdjoinRoot.liftHom (X ^ n - C a) α (by simp [hα])) <| by
     haveI := Fact.mk H
     letI := isSplittingField_AdjoinRoot_X_pow_sub_C hζ H
@@ -450,7 +450,8 @@ variable (a) (L)
 
 /-- An arbitrary choice of `ⁿ√a` in the splitting field of `Xⁿ - a`. -/
 noncomputable
-abbrev rootOfSplitsXPowSubC : L :=
+abbrev rootOfSplitsXPowSubC (hn : 0 < n) (a : K)
+    (L) [Field L] [Algebra K L] [IsSplittingField K L (X ^ n - C a)] : L :=
   (rootOfSplits _ (IsSplittingField.splits L (X ^ n - C a))
       (by simpa [degree_X_pow_sub_C hn] using Nat.pos_iff_ne_zero.mp hn))
 
@@ -637,14 +638,11 @@ lemma isCyclic_tfae (K L) [Field K] [Field L] [Algebra K L] [FiniteDimensional K
         IsSplittingField K L (X ^ (finrank K L) - C a),
       ∃ (α : L), α ^ (finrank K L) ∈ Set.range (algebraMap K L) ∧ K⟮α⟯ = ⊤] := by
   tfae_have 1 → 3
-  · intro ⟨inst₁, inst₂⟩
-    exact exists_root_adjoin_eq_top_of_isCyclic K L hK
+  | ⟨inst₁, inst₂⟩ => exists_root_adjoin_eq_top_of_isCyclic K L hK
   tfae_have 3 → 2
-  · intro ⟨α, ⟨a, ha⟩, hα⟩
-    exact ⟨a, irreducible_X_pow_sub_C_of_root_adjoin_eq_top ha.symm hα,
+  | ⟨α, ⟨a, ha⟩, hα⟩ => ⟨a, irreducible_X_pow_sub_C_of_root_adjoin_eq_top ha.symm hα,
       isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top hK ha.symm hα⟩
   tfae_have 2 → 1
-  · intro ⟨a, H, inst⟩
-    exact ⟨isGalois_of_isSplittingField_X_pow_sub_C hK H L,
+  | ⟨a, H, inst⟩ => ⟨isGalois_of_isSplittingField_X_pow_sub_C hK H L,
       isCyclic_of_isSplittingField_X_pow_sub_C hK H L⟩
   tfae_finish

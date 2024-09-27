@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
+import Mathlib.Init
 import Lean.Elab.Command
 import Lean.Server.InfoUtils
 
@@ -38,7 +39,7 @@ There are three settings:
 The default value is `1`.
 -/
 register_option linter.haveLet : Nat := {
-  defValue := 1
+  defValue := 0
   descr := "enable the `have` vs `let` linter:\n\
             * 0 -- inactive;\n\
             * 1 -- active only on noisy declarations;\n\
@@ -128,3 +129,7 @@ def haveLetLinter : Linter where run := withSetOptionIn fun _stx => do
           You can disable this linter using `set_option linter.haveLet 0`"
 
 initialize addLinter haveLetLinter
+
+end haveLet
+
+end Mathlib.Linter

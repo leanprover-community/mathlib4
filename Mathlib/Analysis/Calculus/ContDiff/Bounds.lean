@@ -50,7 +50,7 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
     original spaces, which explains why we assume in the lemma that all spaces live in the same
     universe. -/
   induction' n with n IH generalizing Eu Fu Gu
-  · simp only [Nat.zero_eq, norm_iteratedFDerivWithin_zero, zero_add, Finset.range_one,
+  · simp only [norm_iteratedFDerivWithin_zero, zero_add, Finset.range_one,
       Finset.sum_singleton, Nat.choose_self, Nat.cast_one, one_mul, Nat.sub_zero, ← mul_assoc]
     apply B.le_opNorm₂
   · have In : (n : ℕ∞) + 1 ≤ n.succ := by simp only [Nat.cast_succ, le_refl]
@@ -304,7 +304,7 @@ theorem norm_iteratedFDerivWithin_prod_le [DecidableEq ι] [NormOneClass A'] {u 
       (g := (fun v ↦ v.multinomial *
           ∏ j ∈ insert i u, ‖iteratedFDerivWithin 𝕜 (v.count j) (f j) s x‖) ∘
         Sym.toMultiset ∘ Subtype.val ∘ (Finset.symInsertEquiv hi).symm)
-      (by simp) (by simp only [← comp_apply (g := Finset.symInsertEquiv hi), comp.assoc]; simp)]
+      (by simp) (by simp only [← comp_apply (g := Finset.symInsertEquiv hi), comp_assoc]; simp)]
     rw [← Finset.univ_sigma_univ, Finset.sum_sigma, Finset.sum_range]
     simp only [comp_apply, Finset.symInsertEquiv_symm_apply_coe]
     refine Finset.sum_le_sum ?_

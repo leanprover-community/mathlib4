@@ -174,6 +174,26 @@ instance normal_sup
     Normal F (E ⊔ E' : IntermediateField F K) :=
   iSup_bool_eq (f := Bool.rec E' E) ▸ normal_iSup (h := by rintro (_|_) <;> infer_instance)
 
+/-- An intersection of normal extensions is normal -/
+instance normal_iInf {ι : Type*} [hι : Nonempty ι]
+    (t : ι → IntermediateField F K) [h : ∀ i, Normal F (t i)] :
+    Normal F (⨅ i, t i : IntermediateField F K) := by
+  refine { toIsAlgebraic := ?_, splits' := fun x => ?_ }
+  · let f := inclusion (iInf_le t hι.some)
+    exact Algebra.IsAlgebraic.of_injective f f.injective
+  · have hx : ∀ i, Splits (algebraMap F (t i)) (minpoly F x) := by
+      intro i
+      rw [← minpoly.algHom_eq (inclusion (iInf_le t i)) (inclusion (iInf_le t i)).injective]
+      exact (h i).splits' (inclusion (iInf_le t i) x)
+    simp only [splits_iff_mem (splits_of_isScalarTower K (hx hι.some))] at hx ⊢
+    rintro y hy - ⟨-, ⟨i, rfl⟩, rfl⟩
+    exact hx i y hy
+
+instance normal_inf
+    (E E' : IntermediateField F K) [Normal F E] [Normal F E'] :
+    Normal F (E ⊓ E' : IntermediateField F K) :=
+  iInf_bool_eq (f := Bool.rec E' E) ▸ normal_iInf (h := by rintro (_|_) <;> infer_instance)
+
 variable {F K}
 variable {L : Type*} [Field L] [Algebra F L] [Algebra K L] [IsScalarTower F K L]
 
