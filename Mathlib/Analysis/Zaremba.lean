@@ -70,6 +70,9 @@ theorem cauchy_schwarz (hf : Memℒp f 2 μ) (hg : Memℒp g 2 μ) :
 
 end CauchySchwarzIntegral
 
+/-- Nonnegative function at least one near zero, whose Fourier transform is supported near 0. -/
+def γ (x : Fin 2 → ℝ) : ℝ≥0 := sorry
+
 example : ‖S‖ ^ 2 ≤ (measureUnivNNReal μ) ^ 2 * (measureUnivNNReal ν) ^ 2 / (K * Q) ^ 2 := by
   have : SFinite ν := sorry
   let f : (Fin 2 → ℤ) → ℂ := 1
@@ -83,7 +86,15 @@ example : ‖S‖ ^ 2 ≤ (measureUnivNNReal μ) ^ 2 * (measureUnivNNReal ν) ^ 
           ((measureUnivNNReal μ) * (measureUnivNNReal ν) ^ 2 / (K * Q) ^ 2) := ?_
     _ = _ := by ring
   gcongr
-  calc _ = ‖∫ (a : Fin 2 → ℤ), conj (g a) * g a ∂μ‖ := sorry
+  let μ' : Measure (Fin 2 → ℤ) := (γ ((N:ℝ)⁻¹ • (Int.cast ∘ a))) • Measure.count
+  have : SFinite μ' := sorry
+  have hμ : μ ≤ μ' := sorry
+  calc _ ≤ ∫ (a : Fin 2 → ℤ), ‖g a‖ ^ 2  ∂μ' := by
+          refine integral_mono_measure hμ ?hf ?hfi
+          · apply Filter.Eventually.of_forall (fun _ ↦ ?_)
+            positivity
+          · sorry -- integrability
+    _ = ‖∫ (a : Fin 2 → ℤ), conj (g a) * g a ∂μ'‖ := sorry
     _ ≤ _ := ?_
   dsimp only [g]
   simp_rw [← integral_conj]
@@ -97,7 +108,6 @@ example : ‖S‖ ^ 2 ≤ (measureUnivNNReal μ) ^ 2 * (measureUnivNNReal ν) ^ 
   conv =>
     enter [1, 2, a, 1, 2, x, 1]
     simp [conj_ofNat, -Matrix.vec2_dotProduct]
-    -- ring_nf (config := {red := .reducible})
     rw [add_comm]
     rw [← sub_eq_add_neg]
     rw [← mul_sub]
@@ -105,4 +115,7 @@ example : ‖S‖ ^ 2 ≤ (measureUnivNNReal μ) ^ 2 * (measureUnivNNReal ν) ^ 
   conv =>
     enter [1, 2, a, 1, 2, x, 1, 2, 1]
     rw [← Matrix.dotProduct_sub]
+  dsimp only [μ']
+  -- simp_rw [integral_smul_measure]
+  sorry
   sorry
