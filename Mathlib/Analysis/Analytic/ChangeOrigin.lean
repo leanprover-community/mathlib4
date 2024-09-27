@@ -297,7 +297,7 @@ variable [CompleteSpace F] {f : E → F} {p : FormalMultilinearSeries 𝕜 E F} 
   {x y : E} {r : ℝ≥0∞}
 
 /-- If a function admits a power series expansion `p` within a set `s` on a ball `B (x, r)`, then
-it  also admits a power series on any subball of this ball (even with a different center provided
+it also admits a power series on any subball of this ball (even with a different center provided
 it belongs to `s`), given by `p.changeOrigin`. -/
 theorem HasFPowerSeriesWithinOnBall.changeOrigin (hf : HasFPowerSeriesWithinOnBall f p s x r)
     (h : (‖y‖₊ : ℝ≥0∞) < r) (hy : x + y ∈ insert x s) :
