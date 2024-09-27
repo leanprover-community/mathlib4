@@ -5,7 +5,6 @@ Authors: Simon Hudon
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Control.Functor
-import Mathlib.Control.Basic
 
 /-!
 # `applicative` instances

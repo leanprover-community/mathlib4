@@ -6,7 +6,6 @@ Authors: Simon Hudon
 import Mathlib.Data.Option.Defs
 import Mathlib.Control.Functor
 import Batteries.Data.List.Basic
-import Mathlib.Control.Basic
 
 /-!
 # Traversable type class
