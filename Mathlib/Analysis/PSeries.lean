@@ -471,14 +471,14 @@ lemma Real.summable_one_div_int_add_rpow (a : ℝ) (s : ℝ) :
   simp_rw [summable_int_iff_summable_nat_and_neg, ← abs_neg (↑(-_ : ℤ) + a), neg_add,
     Int.cast_neg, neg_neg, Int.cast_natCast, summable_one_div_nat_add_rpow, and_self]
 
-theorem summable_pow_div_add {α : Type*} (x : α) [RCLike α] (p q k : ℕ) (hq : 1 < q) :
-    Summable fun n : ℕ => ‖(x ^ p / (↑n + k) ^ q)‖ := by
+theorem summable_pow_div_add {α : Type*} (x : α) [RCLike α] (q k : ℕ) (hq : 1 < q) :
+    Summable fun n : ℕ => ‖(x / (↑n + k) ^ q)‖ := by
   simp_rw [div_eq_mul_inv, norm_mul]
   apply Summable.mul_left
   simp_rw [inv_eq_one_div]
-  have := summable_nat_add_iff (f := fun x => ‖1/ (x^q : α)‖) k
-  simp only [hq, Nat.cast_add, one_div, norm_inv, norm_pow, Complex.norm_eq_abs,
-    RCLike.norm_natCast, Real.summable_nat_pow_inv, iff_true] at *
-  apply this
+  have := summable_nat_add_iff (f := fun x => ‖1 / (x ^ q : α)‖) k
+  simpa only [hq, Nat.cast_add, one_div, norm_inv, norm_pow, Complex.norm_eq_abs,
+    RCLike.norm_natCast, Real.summable_nat_pow_inv, iff_true]
+    using summable_nat_add_iff (f := fun x => ‖1 / (x ^ q : α)‖) k
 
 end shifted
