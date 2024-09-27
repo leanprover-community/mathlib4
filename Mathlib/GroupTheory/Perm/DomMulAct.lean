@@ -106,7 +106,7 @@ theorem stabilizer_card [Fintype ι] :
   · rfl
 
 /-- The cardinality of the set of permutations preserving a function -/
-theorem stabilizer_ncard [Fintype ι] :
+theorem stabilizer_ncard [Finite ι] :
     Set.ncard {g : Perm α | f ∘ g = f} = ∏ i, (Set.ncard {a | f a = i})! := by
   simp only [← Set.Nat.card_coe_set_eq, Set.coe_setOf, card_eq_fintype_card]
   exact stabilizer_card f
