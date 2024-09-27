@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.Topology.KrullDimension
 import Mathlib.Topology.Sober
+import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
