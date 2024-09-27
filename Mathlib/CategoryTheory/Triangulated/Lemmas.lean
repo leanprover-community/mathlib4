@@ -10,7 +10,7 @@ namespace CategoryTheory
 
 section LimitOnZ
 
-open Limits
+open Limits Category
 
 variable {C : Type u} [CategoryTheory.Category.{v, u} C] (F F' : ℤ ⥤ C)
 
@@ -65,7 +65,7 @@ noncomputable def Hom_of_almost_NatTrans_aux [HasLimit F] [HasLimit F']
     (Functor.Initial.limitIso (Inclusion_Iic a) F').hom
   exact limMap {app := fun b ↦ α b.1, naturality := nat}
 
-lemma Hom_of_almost_NatTrans_indep [HasLimit F] [HasLimit F']
+lemma Hom_of_almost_NatTrans_aux_indep [HasLimit F] [HasLimit F']
     (α : (n : ℤ) → (F.obj n ⟶ F'.obj n)) {a₁ a₂ : ℤ} (h : a₁ ≤ a₂)
     (nat : ∀ (b c : Set.Iic a₂) (u : b.1 ⟶ c.1), F.map u ≫ α c.1 = α b.1 ≫ F'.map u) :
     Hom_of_almost_NatTrans_aux F F' α a₁
@@ -86,20 +86,124 @@ lemma Hom_of_almost_NatTrans_indep [HasLimit F] [HasLimit F']
   change e₁.inv ≫ f₁ ≫ e'₁.hom = e₂.inv ≫ f₂ ≫ e'₂.hom
   set I : Set.Iic a₁ ⥤ Set.Iic a₂ := Monotone.functor
     (f := fun b ↦ ⟨b.1, le_trans (Set.mem_Iic.mp b.2) h⟩) (fun _ _ h ↦ h)
+  have : Functor.Initial I := by
+    have : I.Full :=
+      {map_surjective := fun u ↦ by existsi homOfLE (Subtype.mk_le_mk.mpr (leOfHom u)); rfl}
+    apply Functor.initial_of_exists_of_isCofiltered_of_fullyFaithful
+    intro d
+    existsi ⟨min a₁ d, by simp only [Set.mem_Iic, min_le_iff, le_refl, true_or]⟩
+    exact Nonempty.intro (homOfLE (min_le_right a₁ d))
+  set ι : Inclusion_Iic a₁ ⋙ F ≅ I ⋙ Inclusion_Iic a₂ ⋙ F :=
+    NatIso.ofComponents (fun _ ↦ Iso.refl _) (fun _ ↦ by simp [Inclusion_Iic, Monotone.functor, I])
+  set ι' : Inclusion_Iic a₁ ⋙ F' ≅ I ⋙ Inclusion_Iic a₂ ⋙ F' :=
+    NatIso.ofComponents (fun _ ↦ Iso.refl _) (fun _ ↦ by simp [Inclusion_Iic, Monotone.functor, I])
+  have heq : e₂ = (Functor.Initial.limitIso I (Inclusion_Iic a₂ ⋙ F)).symm ≪≫
+      (HasLimit.isoOfNatIso ι).symm ≪≫ e₁ := by
+    apply Iso.ext
+    rw [← cancel_mono e₁.inv, ← cancel_epi e₂.inv](Functor.Initial.limitIso (Inclusion_Iic ⋯.choose) F).inv
+    ext a
+    simp only [Functor.comp_obj, Monotone.functor_obj, Iso.inv_hom_id_assoc, Iso.trans_hom,
+      Iso.symm_hom, assoc, Iso.hom_inv_id, comp_id, HasLimit.isoOfNatIso_inv_π,
+      NatIso.ofComponents_inv_app, Iso.refl_inv, ι]
+    erw [comp_id, limit.pre_π, limit.pre_π, limit.pre_π]
+    rfl
+  have heq' : e'₂ = (Functor.Initial.limitIso I (Inclusion_Iic a₂ ⋙ F')).symm ≪≫
+      (HasLimit.isoOfNatIso ι').symm ≪≫ e'₁ := by
+    apply Iso.ext
+    rw [← cancel_mono e'₁.inv, ← cancel_epi e'₂.inv]
+    ext a
+    simp only [Functor.comp_obj, Monotone.functor_obj, Iso.inv_hom_id_assoc, Iso.trans_hom,
+      Iso.symm_hom, assoc, Iso.hom_inv_id, comp_id, HasLimit.isoOfNatIso_inv_π,
+      NatIso.ofComponents_inv_app, Iso.refl_inv, ι']
+    erw [comp_id, limit.pre_π, limit.pre_π, limit.pre_π]
+    rfl
+  rw [heq, heq']
+  simp only [Iso.trans_inv, Iso.symm_inv, Category.assoc, Iso.trans_hom, Iso.symm_hom,
+    Iso.cancel_iso_inv_left]
+  rw [← assoc, ← assoc, ← assoc, ← assoc]; congr 1
+  apply limit.hom_ext
+  intro a
+  simp only [Functor.comp_obj, Monotone.functor_obj, Category.assoc, HasLimit.isoOfNatIso_inv_π,
+    NatIso.ofComponents_inv_app, Iso.refl_inv, ι, ι']
+  erw [comp_id, limit.pre_π, limMap_π, limMap_π]
+  simp only [Functor.comp_obj, Monotone.functor_obj]
+  have h : α a.1 = α (I.obj a).1 := by simp [I]
+  rw [← h]; rw [← assoc, ← assoc]; congr 1
+  rw [← cancel_epi (HasLimit.isoOfNatIso ι).inv]
+  rw [← assoc, ← assoc]; erw [Iso.inv_hom_id]; rw [id_comp]
+  rw [← cancel_epi (Functor.Initial.limitIso I (Inclusion_Iic a₂ ⋙ F)).inv]
+  conv_rhs => rw [← assoc, Iso.inv_hom_id, id_comp]
+  simp only [Functor.comp_obj, Monotone.functor_obj, HasLimit.isoOfNatIso_inv_π]
+  erw [← assoc, limit.pre_π]
+  simp only [Functor.comp_obj, Monotone.functor_obj, NatIso.ofComponents_inv_app, Iso.refl_inv, ι]
+  erw [comp_id]
+
+noncomputable def Hom_of_almost_NatTrans [HasLimit F] [HasLimit F']
+    (α : (n : ℤ) → (F.obj n ⟶ F'.obj n))
+    (nat : ∃ a, ∀ (b c : Set.Iic a) (u : b.1 ⟶ c.1), F.map u ≫ α c.1 = α b.1 ≫ F'.map u) :
+    Limits.limit F ⟶ Limits.limit F' :=
+  Hom_of_almost_NatTrans_aux F F' α nat.choose nat.choose_spec
+
+lemma almost_id_almost_natTrans (α : (n : ℤ) → (F.obj n ⟶ F.obj n))
+    (isId : ∃ (a : ℤ), ∀ (b : Set.Iic a), α b.1 = 𝟙 (F.obj b)) :
+    ∃ a, ∀ (b c : Set.Iic a) (u : b.1 ⟶ c.1), F.map u ≫ α c.1 = α b.1 ≫ F.map u := by
+  use isId.choose
+  intro b c u
+  rw [isId.choose_spec b, isId.choose_spec c]
+  simp
+
+lemma Hom_of_almost_NatTrans_id [HasLimit F] (α : (n : ℤ) → (F.obj n ⟶ F.obj n))
+    (isId : ∃ (a : ℤ), ∀ (b : Set.Iic a), α b.1 = 𝟙 (F.obj b)) :
+    Hom_of_almost_NatTrans F F α (almost_id_almost_natTrans F α isId) = 𝟙 (limit F)
+    := by
+  simp only [Hom_of_almost_NatTrans]
+  set a := min isId.choose (almost_id_almost_natTrans F α isId).choose
+  have := Initial_inclusion_Iic a
+  rw [← Hom_of_almost_NatTrans_aux_indep F F α (a₁ := a) (min_le_right _ _)]
+  simp only [Hom_of_almost_NatTrans_aux]
+  rw [← cancel_mono (Functor.Initial.limitIso (Inclusion_Iic a) F).inv]
+  simp only [assoc, Iso.hom_inv_id, comp_id, id_comp]
+  ext j
+  erw [limit.pre_π]
+  simp only [Functor.comp_obj, Monotone.functor_obj, assoc, limMap_π]
+  erw [← assoc, limit.pre_π]
+  rw [isId.choose_spec ⟨j.1, Set.mem_Iic.mpr (le_trans j.2 (min_le_left _ _))⟩]
+  simp
+
+variable (F'' : ℤ ⥤ C)
+
+lemma comp_almost_natTrans (α : (n : ℤ) → (F.obj n ⟶ F'.obj n))
+    (β : (n : ℤ) → (F'.obj n ⟶ F''.obj n))
+    (nat₁ : ∃ a₁, ∀ (b c : Set.Iic a₁) (u : b.1 ⟶ c.1), F.map u ≫ α c.1 = α b.1 ≫ F'.map u)
+    (nat₂ : ∃ a₂, ∀ (b c : Set.Iic a₂) (u : b.1 ⟶ c.1), F'.map u ≫ β c.1 = β b.1 ≫ F''.map u) :
+    ∃ a, ∀ (b c : Set.Iic a) (u : b.1 ⟶ c.1), F.map u ≫ (fun n ↦ α n ≫ β n) c.1 =
+    (fun n ↦ α n ≫ β n) b.1 ≫ F''.map u := by
+  use min nat₁.choose nat₂.choose
+  intro b c u
+  erw [← assoc, nat₁.choose_spec ⟨b.1, Set.mem_Iic.mpr (le_trans b.2 (min_le_left _ _))⟩
+    ⟨c.1, Set.mem_Iic.mpr (le_trans c.2 (min_le_left _ _))⟩ u, assoc,
+    nat₂.choose_spec ⟨b.1, Set.mem_Iic.mpr (le_trans b.2 (min_le_right _ _))⟩
+    ⟨c.1, Set.mem_Iic.mpr (le_trans c.2 (min_le_right _ _))⟩ u, assoc]
+
+lemma Hom_of_almost_NatTrans_comp [HasLimit F] [HasLimit F'] [HasLimit F'']
+    (α : (n : ℤ) → (F.obj n ⟶ F'.obj n)) (β : (n : ℤ) → (F'.obj n ⟶ F''.obj n))
+    (nat₁ : ∃ a₁, ∀ (b c : Set.Iic a₁) (u : b.1 ⟶ c.1), F.map u ≫ α c.1 = α b.1 ≫ F'.map u)
+    (nat₂ : ∃ a₂, ∀ (b c : Set.Iic a₂) (u : b.1 ⟶ c.1), F'.map u ≫ β c.1 = β b.1 ≫ F''.map u) :
+    Hom_of_almost_NatTrans F F' α nat₁ ≫ Hom_of_almost_NatTrans F' F'' β nat₂ =
+    Hom_of_almost_NatTrans F F'' (fun n ↦ α n ≫ β n) (comp_almost_natTrans F F' F'' α β nat₁ nat₂)
+    := by
+  simp only [Hom_of_almost_NatTrans]
+  set a := min (min nat₁.choose nat₂.choose) (comp_almost_natTrans F F' F'' α β nat₁ nat₂).choose
+  have := Initial_inclusion_Iic a
+  rw [← Hom_of_almost_NatTrans_aux_indep F F'' (fun n ↦ α n ≫ β n) (a₁ := a) (min_le_right _ _),
+    ← Hom_of_almost_NatTrans_aux_indep F F' α (a₁ := a) (le_trans (min_le_left _ _)
+    (min_le_left _ _)), ← Hom_of_almost_NatTrans_aux_indep F' F'' β (a₁ := a)
+    (le_trans (min_le_left _ _) (min_le_right _ _))]
+  simp only [Hom_of_almost_NatTrans_aux, assoc, Iso.hom_inv_id_assoc, Iso.cancel_iso_inv_left]
   sorry
 
 
-/-
-lemma Hom_of_almost_NatTrans_indep [HasLimit F] [HasLimit F']
-    (α : (n : ℤ) → (F.obj n ⟶ F'.obj n)) {a₁ a₂ : ℤ}
-    (nat : ∀ (b c : Set.Iic (max a₁ a₂)) (u : b.1 ⟶ c.1), F.map u ≫ α c.1 = α b.1 ≫ F'.map u) :
-    Hom_of_almost_NatTrans_aux F F' α a₁
-    (fun b c u ↦ by refine nat ⟨b.1, le_trans (Set.mem_Iic.mp b.2) (le_max_left a₁ a₂)⟩
-                      ⟨c.1, le_trans (Set.mem_Iic.mp c.2) (le_max_left a₁ a₂)⟩ u) =
-    Hom_of_almost_NatTrans_aux F F' α a₂
-    (fun b c u ↦ by refine nat ⟨b.1, le_trans (Set.mem_Iic.mp b.2) (le_max_right a₁ a₂)⟩
-                      ⟨c.1, le_trans (Set.mem_Iic.mp c.2) (le_max_right a₁ a₂)⟩ u) := by sorry
--/
+
 
 end LimitOnZ
 
