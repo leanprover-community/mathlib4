@@ -61,11 +61,8 @@ def natTrans {F G : C ⥤ Codiscrete A} :
 natural isomorphism.-/
 def natIso {F G : C ⥤ Codiscrete A} :
     F ≅ G where
-      hom := natTrans
-      inv := {
-        app := fun _ => ⟨⟩
-
-      }
+  hom := natTrans
+  inv := natTrans
 
 /-- Every functor `F` to a codiscrete category is naturally isomorphic {(actually, equal)?} to
   `Codiscrete.functor (F.obj)`. -/
