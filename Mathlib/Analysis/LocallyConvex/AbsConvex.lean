@@ -233,13 +233,9 @@ lemma half_add_half_of_convex {V : Set E} (h : Convex ℝ V) : (1/2 : ℝ) • V
 lemma add_self_eq_smul_two {V : Set E} (h : Convex ℝ V) : V + V = (2 : ℝ) • V := by
   rw [← one_add_one_eq_two, Convex.add_smul h (zero_le_one' ℝ) (zero_le_one' ℝ), MulAction.one_smul]
 
-lemma help' (a b :E) (h : a = b) : (1/2 : ℝ) • a = (1/2 : ℝ) •b := by
-  exact congrArg (HSMul.hSMul (1 / 2)) h
-
 lemma help (a b :E) (h : (2:ℝ)•a = (2:ℝ)•b) : a = b := by
   have e1 : (1/2 : ℝ) • ((2:ℝ)•a) = (1/2 : ℝ) •((2:ℝ)•b) := by
-    apply help'
-    exact h
+    apply congrArg (HSMul.hSMul (1 / 2)) h
   simp only [one_div, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, inv_smul_smul₀] at e1
   exact e1
 
