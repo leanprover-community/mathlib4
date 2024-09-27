@@ -104,8 +104,8 @@ functor.-/
 def adj : objects ⊣ functor := mkOfHomEquiv
   {
     homEquiv := homEquiv
-    homEquiv_naturality_left_symm := fun _ _ => Eq.refl _
-    homEquiv_naturality_right := fun _ _ => Eq.refl _
+    homEquiv_naturality_left_symm := fun _ _ => rfl
+    homEquiv_naturality_right := fun _ _ => rfl
   }
 
 /-- A second proof of the same adjunction.  -/
