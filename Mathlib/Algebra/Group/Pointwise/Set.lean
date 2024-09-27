@@ -625,6 +625,7 @@ protected def smul [SMul α β] : SMul (Set α) (Set β) where smul := image2 (�
 scoped[Pointwise] attribute [instance] Set.smulSet Set.smul
 scoped[Pointwise] attribute [instance] Set.vaddSet Set.vadd
 
+/-- TODO: Think of a better name for this. -/
 @[to_additive] lemma mem_smul' [SMul α β] {a : α} {s : Set β} {y : β} :
     y ∈ a • s ↔ ∃ x ∈ s, a • x = y := mem_def
 
