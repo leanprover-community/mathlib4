@@ -539,7 +539,6 @@ noncomputable def comapQuotientEquiv (f : N →* M) :
     (comap f f.map_mul c).Quotient ≃* MonoidHom.mrange (c.mk'.comp f) :=
   (Con.congr comap_eq).trans <| quotientKerEquivRange <| c.mk'.comp f
 
-
 /-- The **third isomorphism theorem for monoids**. -/
 @[to_additive "The third isomorphism theorem for `AddMonoid`s."]
 def quotientQuotientEquivQuotient (c d : Con M) (h : c ≤ d) :
