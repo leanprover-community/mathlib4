@@ -1,5 +1,5 @@
 /-
-Copyright © 2024 Frédéric Marbach. All rights reserved.
+Copyright (c) 2024 Frédéric Marbach. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Marbach
 -/
@@ -14,8 +14,9 @@ This file defines *Lie derivations* and establishes some basic properties.
 
 ## Main definitions
 
-- `LieDerivation` : A Lie derivation `D` from the Lie `R`-algebra `L` to the `L`-module `M` is an
+- `LieDerivation`: A Lie derivation `D` from the Lie `R`-algebra `L` to the `L`-module `M` is an
 `R`-linear map that satisfies the Leibniz rule `D [a, b] = [a, D b] - [b, D a]`.
+- `LieDerivation.inner`: The natural map from a Lie module to the derivations taking values in it.
 
 ## Main statements
 
@@ -104,8 +105,7 @@ lemma apply_lie_eq_add (D : LieDerivation R L L) (a b : L) :
 theorem eqOn_lieSpan {s : Set L} (h : Set.EqOn D1 D2 s) :
     Set.EqOn D1 D2 (LieSubalgebra.lieSpan R L s) :=
     fun z hz =>
-      have zero : D1 0 = D2 0 :=
-        by simp only [map_zero]
+      have zero : D1 0 = D2 0 := by simp only [map_zero]
       have smul : ∀ (r : R), ∀ {x : L}, D1 x = D2 x → D1 (r • x) = D2 (r • x) :=
         fun _ _ hx => by simp only [map_smul, hx]
       have add : ∀ x y, D1 x = D2 x → D1 y = D2 y → D1 (x + y) = D2 (x + y) :=
@@ -119,6 +119,30 @@ are equal on the whole Lie algebra. -/
 theorem ext_of_lieSpan_eq_top (s : Set L) (hs : LieSubalgebra.lieSpan R L s = ⊤)
     (h : Set.EqOn D1 D2 s) : D1 = D2 :=
   ext fun _ => eqOn_lieSpan h <| hs.symm ▸ trivial
+
+section
+
+open Finset Nat
+
+/-- The general Leibniz rule for Lie derivatives. -/
+theorem iterate_apply_lie (D : LieDerivation R L L) (n : ℕ) (a b : L) :
+    D^[n] ⁅a, b⁆ = ∑ ij in antidiagonal n, choose n ij.1 • ⁅D^[ij.1] a, D^[ij.2] b⁆ := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [sum_antidiagonal_choose_succ_nsmul (M := L) (fun i j => ⁅D^[i] a, D^[j] b⁆) n]
+    simp only [Function.iterate_succ_apply', ih, map_sum, map_nsmul, apply_lie_eq_add, smul_add,
+      sum_add_distrib, add_right_inj]
+    refine sum_congr rfl fun ⟨i, j⟩ hij ↦ ?_
+    rw [n.choose_symm_of_eq_add (mem_antidiagonal.1 hij).symm]
+
+/-- Alternate version of the general Leibniz rule for Lie derivatives. -/
+theorem iterate_apply_lie' (D : LieDerivation R L L) (n : ℕ) (a b : L) :
+    D^[n] ⁅a, b⁆ = ∑ i in range (n + 1), n.choose i • ⁅D^[i] a, D^[n - i] b⁆ := by
+  rw [iterate_apply_lie D n a b]
+  exact sum_antidiagonal_eq_sum_range_succ (fun i j ↦ n.choose i • ⁅D^[i] a, D^[j] b⁆) n
+
+end
 
 instance instZero : Zero (LieDerivation R L M) where
   zero :=
@@ -224,6 +248,8 @@ theorem coe_smul_linearMap (r : S) (D : LieDerivation R L M) : ↑(r • D) = r 
 theorem smul_apply (r : S) (D : LieDerivation R L M) : (r • D) a = r • D a :=
   rfl
 
+instance instSMulBase : SMulBracketCommClass R L M := ⟨fun s l a ↦ (lie_smul s l a).symm⟩
+
 instance instSMulNat : SMulBracketCommClass ℕ L M := ⟨fun s l a => (lie_nsmul l a s).symm⟩
 
 instance instSMulInt : SMulBracketCommClass ℤ L M := ⟨fun s l a => (lie_zsmul l a s).symm⟩
@@ -284,11 +310,13 @@ instance : LieRing (LieDerivation R L L) where
   leibniz_lie d e f := by
     ext a; simp only [commutator_apply, add_apply, sub_apply, map_sub]; abel
 
-instance : SMulBracketCommClass R L L := ⟨fun s x y => (lie_smul s x y).symm⟩
-
 /-- The set of Lie derivations from a Lie algebra `L` to itself is a Lie algebra. -/
 instance instLieAlgebra : LieAlgebra R (LieDerivation R L L) where
   lie_smul := fun r d e => by ext a; simp only [commutator_apply, map_smul, smul_sub, smul_apply]
+
+@[simp] lemma lie_apply (D₁ D₂ : LieDerivation R L L) (x : L) :
+    ⁅D₁, D₂⁆ x = D₁ (D₂ x) - D₂ (D₁ x) :=
+  rfl
 
 end
 
@@ -312,5 +340,44 @@ instance instNoetherian [IsNoetherian R L] : IsNoetherian R (LieDerivation R L L
   isNoetherian_of_linearEquiv (LinearEquiv.ofInjective _ (toLinearMapLieHom_injective R L)).symm
 
 end
+
+section Inner
+
+variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
+    [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+
+/-- The natural map from a Lie module to the derivations taking values in it. -/
+@[simps!]
+def inner : M →ₗ[R] LieDerivation R L M where
+  toFun m :=
+    { __ := (LieModule.toEnd R L M : L →ₗ[R] Module.End R M).flip m
+      leibniz' := by simp }
+  map_add' m n := by ext; simp
+  map_smul' t m := by ext; simp
+
+instance instLieRingModule : LieRingModule L (LieDerivation R L M) where
+  bracket x D := inner R L M (D x)
+  add_lie x y D := by simp
+  lie_add x D₁ D₂ := by simp
+  leibniz_lie x y D := by simp
+
+@[simp] lemma lie_lieDerivation_apply (x y : L) (D : LieDerivation R L M) :
+    ⁅x, D⁆ y = ⁅y, D x⁆ :=
+  rfl
+
+@[simp] lemma lie_coe_lieDerivation_apply (x : L) (D : LieDerivation R L M) :
+    ⁅x, (D : L →ₗ[R] M)⁆ = ⁅x, D⁆ := by
+  ext; simp
+
+instance instLieModule : LieModule R L (LieDerivation R L M) where
+  smul_lie t x D := by ext; simp
+  lie_smul t x D := by ext; simp
+
+protected lemma leibniz_lie (x : L) (D₁ D₂ : LieDerivation R L L) :
+    ⁅x, ⁅D₁, D₂⁆⁆ = ⁅⁅x, D₁⁆, D₂⁆ + ⁅D₁, ⁅x, D₂⁆⁆ := by
+  ext y
+  simp [-lie_skew, ← lie_skew (D₁ x) (D₂ y), ← lie_skew (D₂ x) (D₁ y), sub_eq_neg_add]
+
+end Inner
 
 end LieDerivation

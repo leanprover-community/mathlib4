@@ -1,9 +1,10 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Scott Morrison
+Authors: Mario Carneiro, Kim Morrison
 -/
-import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.NormNum.Basic
+import Mathlib.Tactic.TryThis
 import Mathlib.Util.AtomM
 
 /-!
@@ -13,7 +14,10 @@ Evaluate expressions in the language of additive, commutative monoids and groups
 
 -/
 
-set_option autoImplicit true
+-- TODO: assert_not_exists NonUnitalNonAssociativeSemiring
+assert_not_exists OrderedAddCommMonoid
+assert_not_exists TopologicalSpace
+assert_not_exists PseudoMetricSpace
 
 namespace Mathlib.Tactic.Abel
 open Lean Elab Meta Tactic Qq
@@ -298,7 +302,7 @@ lemma subst_into_negg {α} [AddCommGroup α] (a ta t : α)
 def evalSMul' (eval : Expr → M (NormalExpr × Expr))
     (is_smulg : Bool) (orig e₁ e₂ : Expr) : M (NormalExpr × Expr) := do
   trace[abel] "Calling NormNum on {e₁}"
-  let ⟨e₁', p₁, _, _⟩ ← try Meta.NormNum.eval e₁ catch _ => pure { expr := e₁ }
+  let ⟨e₁', p₁, _⟩ ← try Meta.NormNum.eval e₁ catch _ => pure { expr := e₁ }
   let p₁ ← p₁.getDM (mkEqRefl e₁')
   match e₁'.int? with
   | some n => do
@@ -336,7 +340,7 @@ partial def eval (e : Expr) : M (NormalExpr × Expr) := do
     let (e₁, p₁) ← eval e
     let (e₂, p₂) ← evalNeg e₁
     return (e₂, ← iapp `Mathlib.Tactic.Abel.subst_into_neg #[e, e₁, e₂, p₁, p₂])
-  | (`AddMonoid.nsmul, #[_, _, e₁, e₂]) => do
+  | (``AddMonoid.nsmul, #[_, _, e₁, e₂]) => do
     let n ← if (← read).isGroup then mkAppM ``Int.ofNat #[e₁] else pure e₁
     let (e', p) ← eval <| ← iapp ``smul #[n, e₂]
     return (e', ← iapp ``unfold_smul #[e₁, e₂, e', p])
@@ -382,7 +386,7 @@ elab_rules : tactic | `(tactic| abel1 $[!%$tk]?) => withMainContext do
     | throwError "abel1 requires an equality goal"
   trace[abel] "running on an equality `{e₁} = {e₂}`."
   let c ← mkContext e₁
-  closeMainGoal <| ← AtomM.run tm <| ReaderT.run (r := c) do
+  closeMainGoal `abel1 <| ← AtomM.run tm <| ReaderT.run (r := c) do
     let (e₁', p₁) ← eval e₁
     trace[abel] "found `{p₁}`, a proof that `{e₁} = {e₁'.e}`"
     let (e₂', p₂) ← eval e₂
@@ -394,9 +398,9 @@ elab_rules : tactic | `(tactic| abel1 $[!%$tk]?) => withMainContext do
 
 @[inherit_doc abel1] macro (name := abel1!) "abel1!" : tactic => `(tactic| abel1 !)
 
-theorem term_eq [AddCommMonoid α] (n : ℕ) (x a : α) : term n x a = n • x + a := rfl
+theorem term_eq {α : Type*} [AddCommMonoid α] (n : ℕ) (x a : α) : term n x a = n • x + a := rfl
 /-- A type synonym used by `abel` to represent `n • x + a` in an additive commutative group. -/
-theorem termg_eq [AddCommGroup α] (n : ℤ) (x a : α) : termg n x a = n • x + a := rfl
+theorem termg_eq {α : Type*} [AddCommGroup α] (n : ℤ) (x a : α) : termg n x a = n • x + a := rfl
 
 /-- True if this represents an atomic expression. -/
 def NormalExpr.isAtom : NormalExpr → Bool
@@ -544,9 +548,9 @@ example [AddCommGroup α] (a : α) : (3 : ℤ) • a = a + (2 : ℤ) • a := by
 ```
 -/
 macro (name := abel) "abel" : tactic =>
-  `(tactic| first | abel1 | abel_nf; trace "Try this: abel_nf")
+  `(tactic| first | abel1 | try_this abel_nf)
 @[inherit_doc abel] macro "abel!" : tactic =>
-  `(tactic| first | abel1! | abel_nf!; trace "Try this: abel_nf!")
+  `(tactic| first | abel1! | try_this abel_nf!)
 
 /--
 The tactic `abel` evaluates expressions in abelian groups.
@@ -555,6 +559,8 @@ This is the conv tactic version, which rewrites a target which is an abel equali
 See also the `abel` tactic.
 -/
 macro (name := abelConv) "abel" : conv =>
-  `(conv| first | discharge => abel1 | abel_nf; tactic => trace "Try this: abel_nf")
+  `(conv| first | discharge => abel1 | try_this abel_nf)
 @[inherit_doc abelConv] macro "abel!" : conv =>
-  `(conv| first | discharge => abel1! | abel_nf!; tactic => trace "Try this: abel_nf!")
+  `(conv| first | discharge => abel1! | try_this abel_nf!)
+
+end Mathlib.Tactic.Abel

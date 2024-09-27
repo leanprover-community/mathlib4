@@ -25,7 +25,7 @@ because it is easier to use an equivalence in applications.
 ## TODO
 
 Some results in this file can be generalized to the case when `X` is a preconnected space. However,
-if `X` is empty, then any index `i` will work, so there is no 1-to-1 corespondence.
+if `X` is empty, then any index `i` will work, so there is no 1-to-1 correspondence.
 
 ## Keywords
 
@@ -79,3 +79,7 @@ def sigmaCodHomeomorph : C(X, Σ i, Y i) ≃ₜ Σ i, C(X, Y i) :=
     (.ofBijective _ ⟨embedding_sigmaMk_comp.inj, fun f ↦
       let ⟨i, g, hg⟩ := f.exists_lift_sigma; ⟨⟨i, g⟩, hg.symm⟩⟩)
     embedding_sigmaMk_comp.toInducing
+
+end ConnectedSpace
+
+end ContinuousMap
