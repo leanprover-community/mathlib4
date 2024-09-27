@@ -262,9 +262,8 @@ theorem totallyBounded_absConvexHull
   intro d' hd'
   letI := TopologicalAddGroup.toUniformSpace E
   obtain ⟨d,⟨⟨N,⟨hN₁,hN₂⟩⟩, hd₂⟩⟩ := comp_mem_uniformity_sets hd'
-  obtain ⟨S,⟨hS₁,hS₂,hS₃⟩⟩ := (locallyConvexSpace_iff_exists_absconvex_subset_zero E).mp lcs N hN₁
-  let V := S
-  let d₂ := {(x,y) | y-x ∈ S}
+  obtain ⟨V,⟨hS₁,hS₂,hS₃⟩⟩ := (locallyConvexSpace_iff_exists_absconvex_subset_zero E).mp lcs N hN₁
+  let d₂ := {(x,y) | y-x ∈ V}
   obtain ⟨t,⟨htf,hts⟩⟩ := hs d₂ (by
     rw [uniformity_eq_comap_nhds_zero' E]
     aesop)
