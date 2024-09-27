@@ -26,7 +26,6 @@ strongly cartesian morphisms lying over any given morphism in the base. This is 
 notion above, and we give an alternate constructor `IsFibered.of_exists_isCartesian'` for
 constructing a fibered category this way.
 
-
 ## Implementation
 
 The constructor of `IsPreFibered` is called `exists_isCartesian'`. The reason for the prime is that
