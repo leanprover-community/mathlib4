@@ -9,29 +9,39 @@ import Mathlib.Data.Finite.Card
 # Faa di Bruno formula
 
 The Faa di Bruno formula gives the iterated derivative of `g ∘ f` in terms of those of
-`g` and `f`. It is expressed in terms of partitions `I` of `{1, ..., n}`. For such a
-partition, denote by `k` its number of parts, write the parts as `I₁, ..., Iₖ` ordered so
-that `max I₁ < ... < max Iₖ`, and let `iₘ` be the number of elements of `Iₘ`. Then
-`D^n (g ∘ f) (x) (v_1, ..., v_n) =
-  ∑_{I partition of {1, ..., n}} D^k g (f x) (D^{i₁} f (x) (v_{I₁}), ..., D^{iₖ} f (x) (v_{Iₖ}))`
-where by `v_{Iₘ}` we mean the vectors `vᵢ` with indices in `Iₘ`.
+`g` and `f`. It is expressed in terms of partitions `I` of `{0, ..., n-1}`. For such a
+partition, denote by `k` its number of parts, write the parts as `I₀, ..., Iₖ₋₁` ordered so
+that `max I₀ < ... < max Iₖ₋₁`, and let `iₘ` be the number of elements of `Iₘ`. Then
+`D^n (g ∘ f) (x) (v_0, ..., v_{n-1}) =
+  ∑_{I partition of {0, ..., n-1}}
+    D^k g (f x) (D^{i₀} f (x) (v_{I₀}), ..., D^{iₖ₋₁} f (x) (v_{Iₖ₋₁}))`
+where by `v_{Iₘ}` we mean the vectors `vᵢ` with indices in `Iₘ`, i.e., the composition of `v`
+with the increasing embedding of `Fin iₘ` into `Fin n` with range `Iₘ`.
 
-For instance, for `n = 2`, there are 2 partitions of `{1, 2}`, given by `{1} {2}` and `{1, 2}`,
+For instance, for `n = 2`, there are 2 partitions of `{0, 1}`, given by `{0} {1}` and `{0, 1}`,
 and therefore
-`D^2(g ∘ f) (x) (v₁, v₂) = D^2 g (f x) (Df (x) v₁, Df (x) v₂) + Dg (f x) (D^2f (x) (v₁, v₂))`.
+`D^2(g ∘ f) (x) (v₀, v₁) = D^2 g (f x) (Df (x) v₀, Df (x) v₁) + Dg (f x) (D^2f (x) (v₀, v₁))`.
 
 The formula is straightforward to prove by induction, as differentiating
-`D^k g (f x) (D^{i₁} f (x) (v_{I₁}), ..., D^{i_k} f (x) (v_{Iₖ}))` gives a sum with `k + 1` terms
-where one differentiates either `D^k g (f x)`, or one of the `D^{iₘ} f (x)`, amounting to
-adding to the partition `I` either a new atom `{0}` to its left, or extending `Iₘ` by adding `0`
-to it. In this way, one obtains bijectively all partitions of `{0, ..., n}`, and the proof can
-go on (up to relabelling).
+`D^k g (f x) (D^{i₀} f (x) (v_{I₀}), ..., D^{iₖ₋₁} f (x) (v_{Iₖ₋₁}))` gives a sum
+with `k + 1` terms where one differentiates either `D^k g (f x)`, or one of the `D^{iₘ} f (x)`,
+amounting to adding to the partition `I` either a new atom `{-1}` to its left, or extending `Iₘ`
+by adding `-1` to it. In this way, one obtains bijectively all partitions of `{-1, ..., n}`,
+and the proof can go on (up to relabelling).
 
 The main difficulty is to write down things in a precise language, namely to write
-`D^k g (f x) (D^{i₁} f (x) (v_{I₁}), ..., D^{iₖ} f (x) (v_{Iₖ}))` as a continuous multilinear map
-of the `vᵢ`. For this, instead of working with partitions of `{1, ..., n}` and ordering their
+`D^k g (f x) (D^{i₀} f (x) (v_{I₀}), ..., D^{iₖ₋₁} f (x) (v_{Iₖ₋₁}))` as a continuous multilinear
+map of the `vᵢ`. For this, instead of working with partitions of `{0, ..., n-1}` and ordering their
 parts, we work with partitions in which the ordering is part of the data -- this is equivalent,
 but much more convenient to implement. We call these `OrderedFinpartition n`.
+
+Note that the implementation of `OrderedFinpartition` is very specific to the Faa di Bruno formula:
+as testified by the formula above, what matters is really the embedding of the parts in `Fin n`,
+and moreover the parts have to be ordered by `max I₀ < ... < max Iₖ₋₁` for the formula to hold
+in the general case where the iterated differential might not be symmetric. The defeqs with respect
+to `Fin.cons` are also important when doing the induction. For this reason, we do not expect this
+class to be useful beyond the Faa di Bruno formula, which is why it is in this file instead
+of a dedicated file in the `Combinatorics` folder.
 
 ## Main results
 
@@ -74,7 +84,9 @@ noncomputable section
 open Set Fin Function
 
 /-- A partition of `Fin n` into finitely many nonempty subsets, given by the increasing
-parameterization of these subsets. We order the subsets by increasing greatest element. -/
+parameterization of these subsets. We order the subsets by increasing greatest element.
+This definition is tailored-made for the Faa di Bruno formula, and probably not useful elsewhere,
+because of the specific parameterization by `Fin n` and the peculiar ordering. -/
 @[ext]
 structure OrderedFinpartition (n : ℕ) where
   /-- The number of parts in the partition -/
