@@ -271,21 +271,16 @@ theorem totallyBounded_absConvexHull
   have e1 (y : E) : {x | (x, y) ∈ d₂} = y +ᵥ V := by
     apply le_antisymm
     · intro x hx
-      --rw []
       use x-y
       constructor
       · rw [← Balanced.neg_mem_iff hS₂.1]
         aesop
-      · simp only [vadd_eq_add, add_sub_cancel] --rw [Set.mem_vadd', vadd_eq_add, add_sub_cancel]
+      · simp only [vadd_eq_add, add_sub_cancel]
     · intro x hx
-      rw [Set.mem_vadd'] at hx
-      simp
       obtain ⟨z,⟨hz₁,hz₂⟩⟩ := hx
-      rw [vadd_eq_add] at hz₂
+      simp only [vadd_eq_add] at hz₂
       have a1: y-x ∈ V := by
-        rw [← hz₂]
-        simp
-        rw [Balanced.neg_mem_iff hS₂.1]
+        rw [← hz₂, sub_add_cancel_left, Balanced.neg_mem_iff hS₂.1]
         exact hz₁
       aesop
   have e2 {t₁ : Set E} : ⋃ y ∈ t₁, {x | (x, y) ∈ d₂} = t₁ + V := by
@@ -301,10 +296,8 @@ theorem totallyBounded_absConvexHull
   rw [e5] at e4
   rw [absConvexHull_eq_convexHull_union_neg (s := t)] at e4
   have e6 : TotallyBounded (uniformSpace := TopologicalAddGroup.toUniformSpace E)
-      ((convexHull ℝ) (t ∪ -t)) := by
-    apply IsCompact.totallyBounded
-    apply Set.Finite.isCompact_convexHull
-    apply finite_union.mpr ⟨htf,Finite.neg htf⟩
+      ((convexHull ℝ) (t ∪ -t)) := IsCompact.totallyBounded
+        (Set.Finite.isCompact_convexHull (finite_union.mpr ⟨htf,Finite.neg htf⟩))
   obtain ⟨t',⟨htf',hts'⟩⟩ := e6 d₂ (by
     rw [uniformity_eq_comap_nhds_zero']
     aesop
@@ -320,10 +313,9 @@ theorem totallyBounded_absConvexHull
   have e8 (y : E): y +ᵥ ((2 : ℝ) • V) ⊆ {x | (x, y) ∈ d'} := by
     intro x hx
     rw [mem_setOf_eq]
-    rw [Set.mem_vadd'] at hx
     obtain ⟨z,⟨hz₁,hz₂⟩⟩ := hx
     apply hd₂
-    rw [vadd_eq_add] at hz₂
+    simp only [vadd_eq_add] at hz₂
     rw [mem_compRel]
     obtain ⟨z',⟨hz'₁,hz'₂⟩⟩ := hz₁
     simp only at hz'₂
