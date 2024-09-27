@@ -25,21 +25,26 @@ We use the following type variables in this file:
 * `ι`, `ι'` : finite index types with decidable equality;
 * `E`, `E₁` : families of normed vector spaces over `𝕜` indexed by `i : ι`;
 * `E'` : a family of normed vector spaces over `𝕜` indexed by `i' : ι'`;
-* `Ei` : a family of normed vector spaces over `𝕜` indexed by `i : Fin (Nat.succ n)`;
 * `G`, `G'` : normed vector spaces over `𝕜`.
 -/
 
-universe u v v' wE wE₁ wE' wEi wG wG'
+universe u v v' wE wE' wG wG'
 variable {𝕜 : Type u} {n : ℕ}
-  {E : Type wE} {E₁ : Type wE₁} {E' : Type wE'} {Ei : Type wEi}
+  {E : Type wE} {E' : Type wE'}
   {G : Type wG} {G' : Type wG'} {ι : Type v} {ι' : Type v'}
   [Fintype ι] [Fintype ι'] [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup E₁] [NormedSpace 𝕜 E₁]
   [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  [NormedAddCommGroup Ei] [NormedSpace 𝕜 Ei]
   [NormedAddCommGroup G] [NormedSpace 𝕜 G]
   [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
+
+/-- Applying a continuous alternating map to a vector is continuous in both coordinates. -/
+theorem ContinuousAlternatingMap.continuous_eval {𝕜 ι E F : Type*}
+    [NormedField 𝕜] [Finite ι] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [TopologicalSpace F] [AddCommGroup F] [TopologicalAddGroup F] [Module 𝕜 F] :
+    Continuous fun p : E [⋀^ι]→L[𝕜] F × (ι → E) => p.1 p.2 :=
+  .comp (ContinuousMultilinearMap.continuous_eval (𝕜 := 𝕜) (E := fun _ : ι ↦ E) (F := F))
+    (.prod_map continuous_toContinuousMultilinearMap continuous_id)
 
 /-!
 ### Continuity properties of alternating maps
@@ -296,12 +301,6 @@ The bound is `‖f m - f m'‖ ≤ ‖f‖ * card ι * ‖m - m'‖ * (max ‖m�
 lemma norm_image_sub_le (m₁ m₂ : ι → E) :
     ‖f m₁ - f m₂‖ ≤ ‖f‖ * (Fintype.card ι) * (max ‖m₁‖ ‖m₂‖) ^ (Fintype.card ι - 1) * ‖m₁ - m₂‖ :=
   f.1.norm_image_sub_le m₁ m₂
-
-/-- Applying a alternating map to a vector is continuous in both coordinates. -/
-lemma continuous_eval :
-    Continuous (fun p : E [⋀^ι]→L[𝕜] G × (ι → E) ↦ p.1 p.2) :=
-  (@ContinuousMultilinearMap.continuous_eval 𝕜 ι (fun _ ↦ E) G _ _ _ _ _ _).comp
-    (continuous_toContinuousMultilinearMap.prod_map continuous_id)
 
 open scoped Topology
 open filter
