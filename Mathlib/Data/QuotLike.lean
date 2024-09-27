@@ -77,6 +77,8 @@ open Lean Elab Term Meta Qq
 
 @[inherit_doc mkQ]
 elab "⟦" a:term "⟧" : term <= Q => do
+  synthesizeSyntheticMVars
+  let Q ← instantiateMVars Q
   if Q.isMVar then
     tryPostpone
     throwError "The output type must be known."
@@ -88,9 +90,6 @@ elab "⟦" a:term "⟧" : term <= Q => do
     tryPostpone
     throwError "Cannot find `QuotLike` instance for type `{Q}`."
   pure q(@mkQ $Q $α $r $inst $(← Qq.elabTermEnsuringTypeQ a q($α)))
-
-macro_rules
-| `(mkQ $a) => `(⟦$a⟧)
 
 open PrettyPrinter.Delaborator SubExpr in
 /-- Delaborator for `mkQ` -/
@@ -130,6 +129,8 @@ def mkQ'Impl : TermElab := fun stx typ? => do
     let α ← mkFreshTypeMVar
     let β ← mkFreshTypeMVar
     postponeElabTerm stx (some (← mkArrow α β))
+  synthesizeSyntheticMVars
+  let expectedType ← instantiateMVars expectedType
   let expectedType ← whnf expectedType
   let .forallE _ α _ _ := expectedType |
     if expectedType.isMVar then tryPostpone
@@ -201,6 +202,7 @@ def mkQ_Impl : TermElab := fun stx typ? => do
     let α ← mkFreshTypeMVar
     let β ← mkFreshTypeMVar
     postponeElabTerm stx (some (← mkArrow α β))
+  let expectedType ← instantiateMVars expectedType
   let expectedType ← whnf expectedType
   let .forallE _ α _ _ := expectedType |
     if expectedType.isMVar then tryPostpone
