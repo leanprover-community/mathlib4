@@ -265,23 +265,8 @@ theorem totallyBounded_absConvexHull
   obtain ⟨V,⟨hS₁,hS₂,hS₃⟩⟩ := (locallyConvexSpace_iff_exists_absconvex_subset_zero E).mp lcs N hN₁
   let d₂ := {(x,y) | y-x ∈ V}
   obtain ⟨t,⟨htf,hts⟩⟩ := hs d₂ (by
-    rw [uniformity_eq_comap_nhds_zero' E]
+    rw [uniformity_eq_comap_nhds_zero' E] -- d₂ is a uniformity
     aesop)
-  have e1' (x : E) : UniformSpace.ball x d₂ = x +ᵥ V := by
-    apply le_antisymm
-    · intro y hy
-      use y-x
-      constructor
-      · aesop
-      · simp only [vadd_eq_add, add_sub_cancel]
-    · intro y hy
-      obtain ⟨z,⟨hz₁,hz₂⟩⟩ := hy
-      simp only [vadd_eq_add] at hz₂
-      have a1: y-x ∈ V := by
-        rw [← hz₂, add_sub_cancel_left]
-        exact hz₁
-      rw [UniformSpace.ball]
-      aesop
   have s1 : SymmetricRel d₂ := by
     ext ⟨x,y⟩
     simp only [mem_preimage, Prod.swap_prod_mk]
@@ -295,7 +280,8 @@ theorem totallyBounded_absConvexHull
       rw [← Balanced.neg_mem_iff hS₂.1, neg_sub] at h
       exact h
   have e1 (y : E) : {x | (x, y) ∈ d₂} = y +ᵥ V := by
-    rw [← UniformSpace.ball_eq_of_symmetry s1, e1']
+    rw [← UniformSpace.ball_eq_of_symmetry s1, ← uniform_space_ball_eq_vadd]
+    rfl
   have e2 {t₁ : Set E} : ⋃ y ∈ t₁, {x | (x, y) ∈ d₂} = t₁ + V := by
     aesop
   rw [e2] at hts
