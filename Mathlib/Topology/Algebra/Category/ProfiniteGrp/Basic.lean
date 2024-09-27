@@ -177,7 +177,7 @@ def ofContinuousMulEquivProfiniteGrp {G : ProfiniteGrp.{u}} {H : Type v} [Topolo
   letI : TotallyDisconnectedSpace H := Homeomorph.totallyDisconnectedSpace e.toHomeomorph
   .of H
 
-/--The functor mapping a profinite group to its underlying profinite space-/
+/-- The functor mapping a profinite group to its underlying profinite space. -/
 def profiniteGrpToProfinite : ProfiniteGrp ⥤ Profinite where
   obj G := G.toProfinite
   map f := ⟨f, by continuity⟩
@@ -191,6 +191,8 @@ end ProfiniteGrp
 /-!
 # Limits in the category of profinite groups
 
+In this section, we construct limits in the category of profinite groups.
+
 * `ProfiniteGrp.limitCone` : The explicit limit cone in `ProfiniteGrp`.
 
 * `ProfiniteGrp.limitConeIsLimit`: `ProfiniteGrp.limitCone` is a limit cone.
@@ -198,8 +200,6 @@ end ProfiniteGrp
 -/
 
 section Limits
-
-/- In this section, we construct limits in the category of profinite groups. -/
 
 namespace ProfiniteGrp
 
@@ -262,7 +262,7 @@ instance : Limits.HasLimit F where
     { cone := limitCone F
       isLimit := limitConeIsLimit F }
 
-/--The abbreviation for the limit of `ProfiniteGrp`s. -/
+/-- The abbreviation for the limit of `ProfiniteGrp`s. -/
 abbrev limit : ProfiniteGrp := (ProfiniteGrp.limitCone F).pt
 
 end
