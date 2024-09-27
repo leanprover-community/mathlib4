@@ -153,8 +153,10 @@ form
 R --f--> p(a)
 ```
 admits a strongly cartesian lift `b ⟶ a` of `f`. -/
-lemma of_exists_isStronglyCartesian {p : 𝒳 ⥤ 𝒮} (h : ∀ (a : 𝒳) (R : 𝒮) (f : R ⟶ p.obj a),
-    ∃ (b : 𝒳) (φ : b ⟶ a), IsStronglyCartesian p f φ) : IsFibered p where
+lemma of_exists_isStronglyCartesian {p : 𝒳 ⥤ 𝒮}
+    (h : ∀ (a : 𝒳) (R : 𝒮) (f : R ⟶ p.obj a),
+      ∃ (b : 𝒳) (φ : b ⟶ a), IsStronglyCartesian p f φ) :
+    IsFibered p where
   exists_isCartesian' := by
     intro a R f
     obtain ⟨b, φ, hφ⟩ := h a R f
