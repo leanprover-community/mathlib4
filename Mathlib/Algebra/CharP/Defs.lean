@@ -11,6 +11,7 @@ import Mathlib.Data.Nat.Cast.Prod
 import Mathlib.Data.Nat.Find
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.ULift
+import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # Characteristic of semirings
