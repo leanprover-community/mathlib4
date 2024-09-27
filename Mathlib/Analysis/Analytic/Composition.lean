@@ -404,8 +404,8 @@ theorem id_comp (p : FormalMultilinearSeries 𝕜 E F) (v0 : Fin 0 → E) :
   · rw [hn]
     ext v
     simp only [comp_coeff_zero', id_apply_zero]
-    congr
-    exact ofFn_inj.mp rfl
+    congr with i
+    exact i.elim0
   · dsimp [FormalMultilinearSeries.comp]
     have n_pos : 0 < n := bot_lt_iff_ne_bot.mpr hn
     rw [Finset.sum_eq_single (Composition.single n n_pos)]
