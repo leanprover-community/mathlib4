@@ -140,12 +140,6 @@ instance [h : ∀ i : ι, Projective R (A i)] : Projective R (Π₀ i, A i) :=
       ext i x j
       simp only [comp_apply, id_apply, DFinsupp.lsingle_apply, DFinsupp.coprodMap_apply_single, hg]
 
-end Semiring
-
-section Ring
-
-variable {R : Type u} [Ring R] {P : Type v} [AddCommGroup P] [Module R P]
-
 /-- Free modules are projective. -/
 theorem Projective.of_basis {ι : Type*} (b : Basis ι R P) : Projective R P := by
   -- need P →ₗ (P →₀ R) for definition of projective.
@@ -159,9 +153,6 @@ theorem Projective.of_basis {ι : Type*} (b : Basis ι R P) : Projective R P := 
 instance (priority := 100) Projective.of_free [Module.Free R P] : Module.Projective R P :=
   .of_basis <| Module.Free.chooseBasis R P
 
-variable {R₀ M N} [CommRing R₀] [Algebra R₀ R] [AddCommGroup M] [Module R₀ M] [Module R M]
-variable [IsScalarTower R₀ R M] [AddCommGroup N] [Module R₀ N]
-
 theorem Projective.of_split [Module.Projective R M]
     (i : P →ₗ[R] M) (s : M →ₗ[R] P) (H : s.comp i = LinearMap.id) : Module.Projective R P := by
   obtain ⟨g, hg⟩ := projective_lifting_property (Finsupp.linearCombination R id) s
@@ -174,18 +165,26 @@ theorem Projective.of_equiv [Module.Projective R M]
     (e : M ≃ₗ[R] P) : Module.Projective R P :=
   Projective.of_split e.symm e.toLinearMap (by ext; simp)
 
+/-- A quotient of a projective module is projective iff it is a direct summand. -/
+theorem Projective.iff_split_of_projective [Module.Projective R M] (s : M →ₗ[R] P)
+    (hs : Function.Surjective s) :
+    Module.Projective R P ↔ ∃ i, s ∘ₗ i = LinearMap.id :=
+  ⟨fun _ ↦ projective_lifting_property _ _ hs, fun ⟨i, H⟩ ↦ Projective.of_split i s H⟩
+
+end Semiring
+
+section Ring
+
+variable {R : Type u} [Ring R] {P : Type v} [AddCommMonoid P] [Module R P]
+variable {R₀ M N} [CommRing R₀] [Algebra R₀ R] [AddCommGroup M] [Module R₀ M] [Module R M]
+variable [IsScalarTower R₀ R M] [AddCommGroup N] [Module R₀ N]
+
 /-- A module is projective iff it is the direct summand of a free module. -/
 theorem Projective.iff_split : Module.Projective R P ↔
     ∃ (M : Type max u v) (_ : AddCommGroup M) (_ : Module R M) (_ : Module.Free R M)
       (i : P →ₗ[R] M) (s : M →ₗ[R] P), s.comp i = LinearMap.id :=
   ⟨fun ⟨i, hi⟩ ↦ ⟨P →₀ R, _, _, inferInstance, i, Finsupp.linearCombination R id, LinearMap.ext hi⟩,
     fun ⟨_, _, _, _, i, s, H⟩ ↦ Projective.of_split i s H⟩
-
-/-- A quotient of a projective module is projective iff it is a direct summand. -/
-theorem Projective.iff_split_of_projective [Module.Projective R M] (s : M →ₗ[R] P)
-    (hs : Function.Surjective s) :
-    Module.Projective R P ↔ ∃ i, s ∘ₗ i = LinearMap.id :=
-  ⟨fun _ ↦ projective_lifting_property _ _ hs, fun ⟨i, H⟩ ↦ Projective.of_split i s H⟩
 
 set_option maxSynthPendingDepth 2 in
 open TensorProduct in
