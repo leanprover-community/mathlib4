@@ -53,15 +53,15 @@ namespace Comon_Class
 
 attribute [reassoc (attr := simp)] counit_comul comul_counit comul_assoc
 
-/-- The object is provided as an explicit argument. -/
+/-- A version of `counit_comul`, where the arugument is explicit. -/
 @[reassoc]
 theorem counit_comul' (X : C) [Comon_Class X] : Δ ≫ ε ▷ X = (λ_ X).inv := counit_comul
 
-/-- The object is provided as an explicit argument. -/
+/-- A version of `comul_counit`, where the arugument is explicit. -/
 @[reassoc]
 theorem comul_counit' (X : C) [Comon_Class X] : Δ ≫ X ◁ ε = (ρ_ X).inv := comul_counit
 
-/-- The object is provided as an explicit argument. -/
+/-- A version of `comul_assoc`, where the arugument is explicit. -/
 @[reassoc]
 theorem comul_assoc' (X : C) [Comon_Class X] :
     Δ ≫ X ◁ Δ = Δ ≫ Δ ▷ X ≫ (α_ X X X).hom :=

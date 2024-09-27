@@ -51,15 +51,15 @@ namespace Mon_Class
 
 attribute [reassoc (attr := simp)] one_mul mul_one mul_assoc
 
-/-- The object is provided as an explicit argument. -/
+/-- A version of `one_mul`, where the arugument is explicit. -/
 @[reassoc]
 theorem one_mul' (X : C) [Mon_Class X] : η ▷ X ≫ μ = (λ_ X).hom := one_mul
 
-/-- The object is provided as an explicit argument. -/
+/-- A version of `mul_one`, where the arugument is explicit. -/
 @[reassoc]
 theorem mul_one' (X : C) [Mon_Class X] : X ◁ η ≫ μ = (ρ_ X).hom := mul_one
 
-/-- The object is provided as an explicit argument. -/
+/-- A version of `mul_assoc`, where the arugument is explicit. -/
 @[reassoc]
 theorem mul_assoc' (X : C) [Mon_Class X] : μ ▷ X ≫ μ = (α_ X X X).hom ≫ X ◁ μ ≫ μ := mul_assoc
 

@@ -49,18 +49,21 @@ attribute [reassoc (attr := simp)] mul_comul one_comul mul_counit one_counit
 
 variable (M : C) [Bimon_Class M]
 
-/-- The object is provided as an explicit argument. -/
+/-- A version of `mul_comul`, where the arugument is explicit. -/
 theorem mul_comul' (M : C) [Bimon_Class M] :
     μ[M] ≫ Δ[M] = (Δ[M] ⊗ Δ[M]) ≫ tensor_μ M M M M ≫ (μ[M] ⊗ μ[M]) :=
   mul_comul
 
-/-- The object is provided as an explicit argument. -/
+/-- A version of `one_comul`, where the arugument is explicit. -/
+@[reassoc]
 theorem one_comul' (M : C) [Bimon_Class M] : η[M] ≫ Δ[M] = η[M ⊗ M] := one_comul
 
-/-- The object is provided as an explicit argument. -/
+/-- A version of `mul_counit`, where the arugument is explicit. -/
+@[reassoc]
 theorem mul_counit' (M : C) [Bimon_Class M] : μ[M] ≫ ε[M] = ε[M ⊗ M] := mul_counit
 
-/-- The object is provided as an explicit argument. -/
+/-- A version of `one_counit`, where the arugument is explicit. -/
+@[reassoc]
 theorem one_counit' (M : C) [Bimon_Class M] : η[M] ≫ ε[M] = 𝟙 (𝟙_ C) := one_counit
 
 end Bimon_Class
