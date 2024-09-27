@@ -291,6 +291,7 @@ unsafe def main (args : List String): IO UInt32 := do
   let labels := getMatchingLabels modifiedFiles
 
   -- Note: the github workflow uses `sed` to parse this output
+  -- if modified, the `sed` command might need adaption, too
   println s!"Applicable labels: {labels}"
 
   match labels with
@@ -307,5 +308,5 @@ unsafe def main (args : List String): IO UInt32 := do
       println s!"No PR-number provided, not adding labels. \
       (call `lake exe autolabel 150602` to add the labels to PR `150602`)"
   | _ =>
-    println s!"::notice::not adding multiple labels"
+    println s!"::notice::not adding multiple labels: {labels}"
   IO.Process.exit 0
