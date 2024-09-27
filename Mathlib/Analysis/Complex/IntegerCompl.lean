@@ -17,7 +17,11 @@ We also show that the upper half plane embeds into the integer complement.
 open UpperHalfPlane
 
 /--The complement of the integers in `ℂ`. -/
-def ℂ_ℤ := {z : ℂ // ¬ ∃ (n : ℤ), z = ↑n}
+def ComplexIntegerComplement := {z : ℂ // ¬ ∃ (n : ℤ), z = ↑n}
+
+namespace ComplexIntegerComplement
+
+scoped notation "ℂ_ℤ " => ComplexIntegerComplement
 
 noncomputable instance : UniformSpace ℂ_ℤ  :=  instUniformSpaceSubtype
 
@@ -58,3 +62,5 @@ lemma ℂ_ℤ_add_ne_zero (x : ℂ_ℤ) (a : ℤ) : x.1 + a ≠ 0 := by
 
 lemma ℂ_ℤ_not_zero (x : ℂ_ℤ) : x.1 ≠ 0 := by
   simpa using ℂ_ℤ_add_ne_zero x 0
+
+end ComplexIntegerComplement
