@@ -139,7 +139,7 @@ theorem length_eq_two {v : FreeMonoid α}: v.length = 2 ↔ ∃ c d,
 theorem length_mul (a b : FreeMonoid α) : (a * b).length = a.length + b.length :=
   List.length_append _ _
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem of_neq_one (a : α) : of a ≠ 1 := by
   intro h
   have := congrArg FreeMonoid.length h
