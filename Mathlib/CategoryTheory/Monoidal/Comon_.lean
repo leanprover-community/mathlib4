@@ -109,8 +109,8 @@ variable {C}
 @[simps]
 def mk' (X : C) [Comon_Class X] : Comon_ C where
   X := X
-  counit := Comon_Class.counit
-  comul := Comon_Class.comul
+  counit := ε
+  comul := Δ
 
 instance {M : Comon_ C} : Comon_Class M.X where
   counit := M.counit
