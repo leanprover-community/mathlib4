@@ -313,8 +313,8 @@ instance : BooleanAlgebra (T.Formula α) where
   top := Quot.mk _ ⊤
   le_top := Quot.ind imp_top
   compl := Quot.map Formula.not (fun _ _ h => h.not)
-  inf_compl_le_bot := Quot.ind inf_not_imp_bot
-  top_le_sup_compl := Quot.ind top_imp_sup_not
+  inf_compl_le_bot := Quot.ind (fun φ => φ.inf_not_iff_bot.mp)
+  top_le_sup_compl := Quot.ind (fun φ => φ.sup_not_iff_top.mpr)
 
 /-- Evaluates a formula modulo `T` as true or false in a nonempty model of `T`. -/
 @[simp]
