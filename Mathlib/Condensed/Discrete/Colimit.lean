@@ -184,7 +184,7 @@ def isoFinYoneda : toProfinite.op ⋙ F ≅ finYoneda F :=
 
 /--
 A presheaf `F`, which takes a profinite set written as a cofiltered limit to the corresponding
-colimit, is isomorphic to the presheaf `LocallyConstant - F(*)`.
+colimit, is isomorphic to the presheaf `LocallyConstant · F(*)`.
 -/
 def isoLocallyConstantOfIsColimit
     (hF : ∀ S : Profinite, IsColimit <| F.mapCocone S.asLimitCone.op) :
@@ -360,7 +360,7 @@ def isoFinYoneda : toLightProfinite.op ⋙ F ≅ finYoneda F :=
 
 /--
 A presheaf `F`, which takes a light profinite set written as a sequential limit to the corresponding
-colimit, is isomorphic to the presheaf `LocallyConstant - F(*)`.
+colimit, is isomorphic to the presheaf `LocallyConstant · F(*)`.
 -/
 def isoLocallyConstantOfIsColimit (hF : ∀ S : LightProfinite, IsColimit <|
     F.mapCocone (coconeRightOpOfCone S.asLimitCone)) :
