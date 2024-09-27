@@ -593,6 +593,8 @@ We show that a continuous linear map into continuous multilinear maps is continu
 
 namespace ContinuousLinearMap
 
+section Fintype
+
 variable {ι : Type*} {Em : ι → Type*} [∀ i, NormedAddCommGroup (Em i)] [∀ i, NormedSpace 𝕜 (Em i)]
   [Fintype ι] (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 Em F)
   {s : Set (G × (Π i, Em i))} {x : G × (Π i, Em i)}
@@ -639,24 +641,27 @@ lemma analyticWithinAt_uncurry_of_multilinear :
     AnalyticWithinAt 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s x :=
   f.analyticAt_uncurry_of_multilinear.analyticWithinAt
 
-@[nolint finiteFintype]
+end Fintype
+
+variable {ι : Type*} {Em : ι → Type*} [∀ i, NormedAddCommGroup (Em i)] [∀ i, NormedSpace 𝕜 (Em i)]
+  [Finite ι] (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 Em F)
+  {s : Set (G × (Π i, Em i))} {x : G × (Π i, Em i)}
+
+lemma continuous_uncurry_of_multilinear :
+    Continuous (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) := by
+  rcases nonempty_fintype ι
+  exact f.analyticOn_uncurry_of_multilinear.continuous
+
 lemma continuousOn_uncurry_of_multilinear :
     ContinuousOn (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s :=
-  f.analyticOn_uncurry_of_multilinear.continuousOn
+  f.continuous_uncurry_of_multilinear.continuousOn
 
-@[nolint finiteFintype]
-lemma continuous_uncurry_of_multilinear :
-    Continuous (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) :=
-  f.analyticOn_uncurry_of_multilinear.continuous
-
-@[nolint finiteFintype]
 lemma continuousAt_uncurry_of_multilinear :
     ContinuousAt (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) x :=
-  f.analyticAt_uncurry_of_multilinear.continuousAt
+  f.continuous_uncurry_of_multilinear.continuousAt
 
-@[nolint finiteFintype]
 lemma continuousWithinAt_uncurry_of_multilinear :
     ContinuousWithinAt (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s x :=
-  f.analyticWithinAt_uncurry_of_multilinear.continuousWithinAt
+  f.continuous_uncurry_of_multilinear.continuousWithinAt
 
 end ContinuousLinearMap
