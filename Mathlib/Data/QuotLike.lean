@@ -125,7 +125,7 @@ class HasQuot (Q : outParam Sort*) (α : Sort*) (r : outParam (α → α → Pro
 /-- The canonical quotient map. Inferred from the input type via typeclass `QuotLike.HasQuot`. -/
 syntax (name := mkQ') "mkQ'" : term
 
-@[term_elab QuotLike.mkQ']
+@[term_elab QuotLike.mkQ', inherit_doc QuotLike.mkQ']
 def mkQ'Impl : TermElab := fun stx typ? => do
   let .some expectedType := typ? |
     let α ← mkFreshTypeMVar
@@ -180,7 +180,7 @@ class HasQuotHint {Hint : Sort*} (hint : Hint)
 the hint and the input type via typeclass `QuotLike.HasQuotHint`. -/
 syntax:max (name := mkQ_) "mkQ_" term:max : term
 
-@[term_elab QuotLike.mkQ_]
+@[term_elab QuotLike.mkQ_, inherit_doc QuotLike.mkQ_]
 def mkQ_Impl : TermElab := fun stx typ? => do
   let `(mkQ_ $h) := stx | throwUnsupportedSyntax
   let h ← withSynthesize do elabTerm h none
