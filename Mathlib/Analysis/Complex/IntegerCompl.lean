@@ -21,7 +21,7 @@ def ComplexIntegerComplement := {z : ℂ // ¬ ∃ (n : ℤ), z = ↑n}
 
 namespace ComplexIntegerComplement
 
-scoped notation "ℂ_ℤ " => ComplexIntegerComplement
+local notation "ℂ_ℤ " => ComplexIntegerComplement
 
 noncomputable instance : UniformSpace ℂ_ℤ  :=  instUniformSpaceSubtype
 
