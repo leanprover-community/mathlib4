@@ -31,11 +31,11 @@ namespace Exchange
 open Nat Finset
 
 variable {Sys : Finset α → Prop} [Exchange Sys]
-variable {s₁ : Finset α} (hs₁ : Sys s₁)
-variable {s₂ : Finset α} (hs₂ : Sys s₂)
+variable {s₁ : Finset α} {s₂ : Finset α}
 
 -- TODO: Find a better name.
 theorem exchange_exists_superset_of_card_le
+    (hs₁ : Sys s₁) (hs₂ : Sys s₂)
     {n : ℕ} (hn₁ : n ≤ s₁.card) (hn₂ : s₂.card ≤ n) :
     ∃ s, Sys s ∧ s₂ ⊆ s ∧ (∀ e ∈ s, e ∈ s₁ ∨ e ∈ s₂) ∧ s.card = n := by
     induction n, hn₂ using le_induction with
@@ -47,13 +47,15 @@ theorem exchange_exists_superset_of_card_le
       intro _ h; simp [h₁ h] 
 
 -- TODO: Find a better name.
+-- TODO: Write document.
 theorem exchange_exists_feasible_superset_add_element_feasible'
-    (hs : s₂ ⊆ s₁)
+    (hs₁ : Sys s₁) (hs₂ : Sys s₂) (hs : s₂ ⊆ s₁)
     {n : ℕ} (hn : n = s₁.card - s₂.card)
     {a : α} (ha₁ : a ∈ s₁) (ha₂ : a ∉ s₂) :
     ∃ s, Sys s ∧ s₂ ⊆ s ∧ s ⊆ s₁ ∧ ∃ h : a ∉ s, Sys (cons a s h) := by
   induction n generalizing s₂ with
-  | zero => exact False.elim ((eq_of_subset_of_card_le hs (Nat.le_of_sub_eq_zero hn.symm) ▸ ha₂) ha₁)
+  | zero =>
+    exact False.elim ((eq_of_subset_of_card_le hs (Nat.le_of_sub_eq_zero hn.symm) ▸ ha₂) ha₁)
   | succ n ih =>
     rcases exchange_exists_superset_of_card_le hs₁ hs₂ (by omega) (le_succ _)
       with ⟨s, hs₁, hs₂, hs₃, hs₄⟩
