@@ -5,7 +5,6 @@ Authors: Yuyang Zhao
 -/
 import Mathlib.Logic.Relator
 import Mathlib.Logic.Unique
-import Mathlib.Util.Notation3
 import Qq.MetaM
 
 /-!
