@@ -200,7 +200,7 @@ theorem map_comp_coe (h : α → β) :
 
 @[simp]
 theorem map_comp_coe_apply (h : α → β) (s : Multiset α) :
-    h <$> s.toFinset = (h <$> s).toFinset :=
+    s.toFinset.image h = (h <$> s).toFinset :=
   congrFun (map_comp_coe h) s
 
 theorem map_traverse (g : α → G β) (h : β → γ) (s : Finset α) :
