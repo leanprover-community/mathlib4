@@ -63,7 +63,9 @@ theorem exchange_exists_feasible_superset_add_element_feasible'
     · use s₂; simp [hs₂, hs, ha₂]
       exact (eq_of_subset_of_card_le
         ((@cons_subset _ _ _ _ ha₂).mpr ⟨h, hs₄⟩) (hs₆ ▸ card_cons ha₂ ▸ le_rfl)) ▸ hs₃
-    · sorry
+    · rcases ih hs₃ (fun e h ↦ (hs₅ _ h).elim id (fun f ↦ hs f)) (by omega) h
+        with ⟨t, ht₁, ht₂, ht₃, ht₄, ht₅⟩
+      use t; simp [ht₁, ht₂, ht₃, ht₄, ht₅, subset_trans hs₄]
 
 theorem exchange_exists_feasible_superset_add_element_feasible := sorry
 
