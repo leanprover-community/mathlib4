@@ -29,7 +29,47 @@ universe v₁ v₂ u₁ u₂ u
 
 open CategoryTheory MonoidalCategory
 
-variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C]
+variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
+
+/-- A comonoid object internal to a monoidal category.
+
+When the monoidal category is preadditive, this is also sometimes called a "coalgebra object".
+-/
+class Comon_Class (X : C) where
+  /-- The counit morphism of a comonoid object. -/
+  counit : X ⟶ 𝟙_ C
+  /-- The comultiplication morphism of a comonoid object. -/
+  comul : X ⟶ X ⊗ X
+  counit_comul : comul ≫ counit ▷ X = (λ_ X).inv := by aesop_cat
+  comul_counit : comul ≫ X ◁ counit = (ρ_ X).inv := by aesop_cat
+  comul_assoc : comul ≫ X ◁ comul = comul ≫ (comul ▷ X) ≫ (α_ X X X).hom := by aesop_cat
+
+namespace Comon_Class
+
+@[inherit_doc] scoped notation "Δ" => Comon_Class.comul
+@[inherit_doc] scoped notation "Δ["M"]" => Comon_Class.comul (X := M)
+@[inherit_doc] scoped notation "ε" => Comon_Class.counit
+@[inherit_doc] scoped notation "ε["M"]" => Comon_Class.counit (X := M)
+
+attribute [reassoc (attr := simp)] counit_comul comul_counit comul_assoc
+
+/-- The object is provided as an explicit argument. -/
+@[reassoc]
+theorem counit_comul' (X : C) [Comon_Class X] : Δ ≫ ε ▷ X = (λ_ X).inv := counit_comul
+
+/-- The object is provided as an explicit argument. -/
+@[reassoc]
+theorem comul_counit' (X : C) [Comon_Class X] : Δ ≫ X ◁ ε = (ρ_ X).inv := comul_counit
+
+/-- The object is provided as an explicit argument. -/
+@[reassoc]
+theorem comul_assoc' (X : C) [Comon_Class X] :
+    Δ ≫ X ◁ Δ = Δ ≫ Δ ▷ X ≫ (α_ X X X).hom :=
+  comul_assoc
+
+end Comon_Class
+
+variable (C)
 
 /-- A comonoid object internal to a monoidal category.
 
@@ -51,6 +91,24 @@ attribute [reassoc (attr := simp)] Comon_.counit_comul Comon_.comul_counit
 attribute [reassoc (attr := simp)] Comon_.comul_assoc
 
 namespace Comon_
+
+variable {C}
+
+/-- Construct an object of `Comon_ C` from an object `X : C` and `Comon_Class X` instance. -/
+@[simps]
+def mk' (X : C) [Comon_Class X] : Comon_ C where
+  X := X
+  counit := Comon_Class.counit
+  comul := Comon_Class.comul
+
+instance {M : Comon_ C} : Comon_Class M.X where
+  counit := M.counit
+  comul := M.comul
+  counit_comul := M.counit_comul
+  comul_counit := M.comul_counit
+  comul_assoc := M.comul_assoc
+
+variable (C)
 
 /-- The trivial comonoid object. We later show this is terminal in `Comon_ C`.
 -/
@@ -250,6 +308,10 @@ instance monoidal [BraidedCategory C] : MonoidalCategory (Comon_ C) :=
 variable [BraidedCategory C]
 
 theorem tensorObj_X (A B : Comon_ C) : (A ⊗ B).X = A.X ⊗ B.X := rfl
+
+instance (A B : C) [Comon_Class A] [Comon_Class B] :
+    Comon_Class (A ⊗ B) :=
+  inferInstanceAs <| Comon_Class (Comon_.mk' A ⊗ Comon_.mk' B).X
 
 theorem tensorObj_counit (A B : Comon_ C) : (A ⊗ B).counit = (A.counit ⊗ B.counit) ≫ (λ_ _).hom :=
   rfl
