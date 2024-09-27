@@ -100,16 +100,17 @@ lemma imp_inf_iff {φ ψ θ : L.BoundedFormula α n} :
     fun ⟨h₁, h₂⟩ => imp_inf h₁ h₂⟩
 
 lemma inf_not_imp_bot (φ : L.BoundedFormula α n) :
-    φ ⊓ ∼φ ⟹[T] ⊥ := fun M v xs => by simp only [BoundedFormula.realize_imp,
-      BoundedFormula.realize_inf, BoundedFormula.realize_not, and_not_self,
-      BoundedFormula.realize_bot, imp_self]
+    φ ⊓ ∼φ ⟹[T] ⊥ := fun M v xs => by 
+  simp only [BoundedFormula.realize_imp,
+    BoundedFormula.realize_inf, BoundedFormula.realize_not, and_not_self,
+    BoundedFormula.realize_bot, imp_self]
 
 lemma top_imp_sup_not (φ : L.BoundedFormula α n) :
     ⊤ ⟹[T] φ ⊔ ∼φ := fun M v xs => by
-    simp only [BoundedFormula.realize_imp,
-      BoundedFormula.realize_top, BoundedFormula.realize_sup, BoundedFormula.realize_not,
-      true_implies]
-    exact or_not
+  simp only [BoundedFormula.realize_imp,
+    BoundedFormula.realize_top, BoundedFormula.realize_sup, BoundedFormula.realize_not,
+    true_implies]
+  exact or_not
 
 end Imp
 
