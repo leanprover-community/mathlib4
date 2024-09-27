@@ -658,7 +658,7 @@ section KrullDimension
 
 theorem PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim [CommRing R] :
     topologicalKrullDim (PrimeSpectrum R) = ringKrullDim R :=
-  krullDim_orderDual.symm.trans <| krullDim_eq_of_orderIso
+  Order.krullDim_orderDual.symm.trans <| Order.krullDim_eq_of_orderIso
   (PrimeSpectrum.pointsEquivIrreducibleCloseds R).symm
 
 end KrullDimension

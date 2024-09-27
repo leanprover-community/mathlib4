@@ -5,13 +5,7 @@ Authors: Jujian Zhang, Fangming Li, Joachim Breitner
 -/
 
 import Mathlib.Order.RelSeries
-<<<<<<< HEAD
-import Mathlib.Order.WithBot
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Nat.Lattice
-=======
 import Mathlib.Data.ENat.Lattice
->>>>>>> master
 
 /-!
 # Krull dimension of a preordered set and height of an element
@@ -227,7 +221,7 @@ lemma krullDim_nonpos_of_subsingleton [Subsingleton α] : krullDim α ≤ 0 := b
   · have := uniqueOfSubsingleton (Classical.choice hα)
     exact le_of_eq krullDim_eq_zero_of_unique
   · have := not_nonempty_iff.mp hα
-    exact le_of_lt $ lt_of_eq_of_lt krullDim_eq_bot_of_isEmpty $
+    exact le_of_lt <| lt_of_eq_of_lt krullDim_eq_bot_of_isEmpty <|
       Batteries.compareOfLessAndEq_eq_lt.mp rfl
 
 lemma krullDim_le_of_strictComono_and_surj
@@ -243,34 +237,6 @@ lemma krullDim_eq_of_orderIso (f : α ≃o β) : krullDim α = krullDim β :=
   le_antisymm (iSup_le fun i ↦ le_sSup ⟨i.reverse, rfl⟩) <|
     iSup_le fun i ↦ le_sSup ⟨i.reverse, rfl⟩
 
-<<<<<<< HEAD
-lemma mem_maximals_of_krullDim_eq_zero (h : krullDim α = 0) (a : α) :
-    a ∈ maximals (· ≤ ·) Set.univ := by
-  simp only [maximals, Set.mem_univ, true_implies, true_and]
-  intro b hab
-  by_contra hba
-  let x : LTSeries α := ⟨1, ![a, b], (by simpa [Unique.forall_iff] using lt_of_le_not_le hab hba)⟩
-  simpa using WithBot.one_le_coe.mp (x.length_le_krullDim.trans_eq h)
-
-lemma krullDim_eq_zero_iff_forall_mem_maximals_of_nonempty [Nonempty α] :
-    krullDim α = 0 ↔ ∀ a : α, a ∈ maximals (· ≤ ·) Set.univ := by
-  refine ⟨mem_maximals_of_krullDim_eq_zero, fun h ↦ ?_⟩
-  simp only [maximals, Set.mem_univ, true_implies, true_and] at h
-  have (p : LTSeries α) : p.length = 0 := by
-    by_contra hp
-    have : NeZero p.length := ⟨hp⟩
-    exact lt_irrefl _ ((h (p 0) (p.step 0).le).trans_lt (p.step 0))
-  simp only [krullDim, this, Nat.cast_zero, ciSup_const]
-
-lemma mem_minimals_of_krullDim_eq_zero (h : krullDim α = 0) (a : α) :
-    a ∈ minimals (· ≤ ·) Set.univ :=
-  mem_maximals_of_krullDim_eq_zero (krullDim_orderDual.trans h) a
-
-lemma krullDim_eq_zero_iff_forall_mem_minimals_of_nonempty [Nonempty α] :
-    krullDim α = 0 ↔ ∀ a : α, a ∈ minimals (· ≤ ·) Set.univ := by
-  rw [← krullDim_orderDual, krullDim_eq_zero_iff_forall_mem_maximals_of_nonempty]
-  rfl
-=======
 /--
 The Krull dimension is the supremum of the elements' heights.
 -/
@@ -289,7 +255,6 @@ lemma krullDim_eq_iSup_height : krullDim α = ⨆ (a : α), ↑(height a) := by
       simp only [WithBot.coe_le_coe, iSup_le_iff]
       intro x
       exact height_le fun p _ ↦ le_iSup_of_le p le_rfl
->>>>>>> master
 
 end krullDim
 
