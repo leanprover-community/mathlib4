@@ -206,8 +206,8 @@ theorem map_comp_coe_apply (h : α → β) (s : Multiset α) :
 theorem map_traverse (g : α → G β) (h : β → γ) (s : Finset α) :
     Functor.map h <$> traverse g s = traverse (Functor.map h ∘ g) s := by
   unfold traverse
-  simp only [map_comp_coe, functor_norm, ← Multiset.map_traverse, Functor.map_map,
-    map_comp_coe_apply]
+  simp only [Functor.map_map, fmap_def, map_comp_coe_apply, Multiset.fmap_def, ←
+    Multiset.map_traverse]
 
 end Traversable
 
