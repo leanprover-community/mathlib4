@@ -9,6 +9,20 @@ open scoped ComplexConjugate
 open scoped NNReal ENNReal Matrix Real
 open MeasureTheory Complex
 
+
+/-! Delaborator for complex conjugation -- to be added to Mathlib. -/
+open Lean PrettyPrinter Delaborator SubExpr in
+@[delab app.DFunLike.coe]
+def conjDelab : Delab := do
+  let f ← withNaryArg 4 delab
+  let Syntax.node _ _ #[starRingEndSyntax, cplxSyntax₁] := (f : Syntax) | failure
+  let Syntax.ident _ _ ``starRingEnd _ := starRingEndSyntax | failure
+  let Syntax.node _ _ #[cplxSyntax₂] := cplxSyntax₁ | failure
+  let Syntax.node _ _ #[cplxSyntax₃] := cplxSyntax₂ | failure
+  let Syntax.atom _ "ℂ" := cplxSyntax₃ | failure
+  let z ← withNaryArg 5 delab
+  `(conj $z)
+
 -- rename
 class WellDistributed {ι : Type*} [MeasurableSpace ι] (μ : Measure ι) : Prop where
   is_well_distributed : ∀ i : ι, μ {i} ≤ 1
@@ -27,8 +41,9 @@ variable (μ ν : Measure (Fin 2 → ℤ)) [IsFiniteMeasure μ]
   (hK : Q ^ 2 * K ^ 2 < N) (hq₁ : Q ≤ q) (hq₂ : q ≤ 2 * Q) (hβ₁ : K / (2 * N) ≤ |β|)
   (hβ₂ : |β| ≤ K / N)
   (hμN : ∀ x : Fin 2 → ℤ, μ {x} ≠ 0 → x ⬝ᵥ x ≤ N)
-  (hμN : ∀ y : Fin 2 → ℤ, μ {y} ≠ 0 → y ⬝ᵥ y ≤ N)
+  (hνN : ∀ y : Fin 2 → ℤ, ν {y} ≠ 0 → y ⬝ᵥ y ≤ N)
 
+-- FIXME why isn't this notation showing up?
 set_option quotPrecheck false in
 notation "θ" => (a:ℝ) / q + β
 
@@ -47,9 +62,6 @@ variable {α : Type*} {𝕜 : Type*} [RCLike 𝕜] [MeasurableSpace α]
   (μ : Measure α)
   (f g : α → 𝕜)
 
-
-example {z : ℂ} : ‖z‖^2=conj z * z := by exact?
-
 theorem cauchy_schwarz (hf : Memℒp f 2 μ) (hg : Memℒp g 2 μ) :
     ‖∫ a, f a * g a ∂μ‖ ^ 2 ≤ (∫ a, ‖f a‖ ^ 2 ∂μ) * (∫ a, ‖g a‖ ^ 2 ∂μ) :=
   sorry
@@ -58,8 +70,8 @@ theorem cauchy_schwarz (hf : Memℒp f 2 μ) (hg : Memℒp g 2 μ) :
 
 end CauchySchwarzIntegral
 
-
 example : ‖S‖ ^ 2 ≤ (measureUnivNNReal μ) ^ 2 * (measureUnivNNReal ν) ^ 2 / (K * Q) ^ 2 := by
+  have : SFinite ν := sorry
   let f : (Fin 2 → ℤ) → ℂ := 1
   have hf : Memℒp f 2 μ := sorry --indicatorConstLp (μ := μ) (s := Set.univ) 2 sorry sorry 1
   let g : (Fin 2 → ℤ) → ℂ := fun x ↦ ∫ y : Fin 2 → ℤ, exp (2 * π * I * θ * (x ⬝ᵥ y)) ∂ν
@@ -75,4 +87,22 @@ example : ‖S‖ ^ 2 ≤ (measureUnivNNReal μ) ^ 2 * (measureUnivNNReal ν) ^ 
     _ ≤ _ := ?_
   dsimp only [g]
   simp_rw [← integral_conj]
+  simp_rw [← integral_prod_mul]
+  rw [integral_integral_swap]
+  calc _ ≤ _ := norm_integral_le_integral_norm ..
+    _ ≤ _ := ?_
+  norm_cast
+  simp only [← exp_conj, ← exp_add]
+  set θ' := a / q + β
+  conv =>
+    enter [1, 2, a, 1, 2, x, 1]
+    simp [conj_ofNat, -Matrix.vec2_dotProduct]
+    -- ring_nf (config := {red := .reducible})
+    rw [add_comm]
+    rw [← sub_eq_add_neg]
+    rw [← mul_sub]
+  norm_cast
+  conv =>
+    enter [1, 2, a, 1, 2, x, 1, 2, 1]
+    rw [← Matrix.dotProduct_sub]
   sorry
