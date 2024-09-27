@@ -543,8 +543,9 @@ variable (f : F) (g : G)
 def ker : Ideal R :=
   Ideal.comap f ⊥
 
+variable {f} in
 /-- An element is in the kernel if and only if it maps to zero. -/
-theorem mem_ker {r} : r ∈ ker f ↔ f r = 0 := by rw [ker, Ideal.mem_comap, Submodule.mem_bot]
+@[simp] theorem mem_ker {r} : r ∈ ker f ↔ f r = 0 := by rw [ker, Ideal.mem_comap, Submodule.mem_bot]
 
 theorem ker_eq : (ker f : Set R) = Set.preimage f {0} :=
   rfl
@@ -623,13 +624,13 @@ theorem ker_isMaximal_of_surjective {R K F : Type*} [Ring R] [Field K]
     (hf : Function.Surjective f) : (ker f).IsMaximal := by
   refine
     Ideal.isMaximal_iff.mpr
-      ⟨fun h1 => one_ne_zero' K <| map_one f ▸ (mem_ker f).mp h1, fun J x hJ hxf hxJ => ?_⟩
+      ⟨fun h1 => one_ne_zero' K <| map_one f ▸ mem_ker.mp h1, fun J x hJ hxf hxJ => ?_⟩
   obtain ⟨y, hy⟩ := hf (f x)⁻¹
   have H : 1 = y * x - (y * x - 1) := (sub_sub_cancel _ _).symm
   rw [H]
   refine J.sub_mem (J.mul_mem_left _ hxJ) (hJ ?_)
   rw [mem_ker]
-  simp only [hy, map_sub, map_one, map_mul, inv_mul_cancel₀ (mt (mem_ker f).mpr hxf), sub_self]
+  simp only [hy, map_sub, map_one, map_mul, inv_mul_cancel₀ (mt mem_ker.mpr hxf :), sub_self]
 
 end RingHom
 
@@ -645,7 +646,7 @@ theorem map_eq_bot_iff_le_ker {I : Ideal R} (f : F) : I.map f = ⊥ ↔ I ≤ Ri
   rw [RingHom.ker, eq_bot_iff, map_le_iff_le_comap]
 
 theorem ker_le_comap {K : Ideal S} (f : F) : RingHom.ker f ≤ comap f K := fun _ hx =>
-  mem_comap.2 (((RingHom.mem_ker f).1 hx).symm ▸ K.zero_mem)
+  mem_comap.2 (RingHom.mem_ker.1 hx ▸ K.zero_mem)
 
 theorem map_isPrime_of_equiv {F' : Type*} [EquivLike F' R S] [RingEquivClass F' R S]
     (f : F') {I : Ideal R} [IsPrime I] : IsPrime (map f I) := by
@@ -744,15 +745,15 @@ def liftOfRightInverseAux (hf : Function.RightInverse f_inv f) (g : A →+* C)
   { AddMonoidHom.liftOfRightInverse f.toAddMonoidHom f_inv hf ⟨g.toAddMonoidHom, hg⟩ with
     toFun := fun b => g (f_inv b)
     map_one' := by
-      rw [← map_one g, ← sub_eq_zero, ← map_sub g, ← mem_ker g]
+      rw [← map_one g, ← sub_eq_zero, ← map_sub g, ← mem_ker]
       apply hg
-      rw [mem_ker f, map_sub f, sub_eq_zero, map_one f]
+      rw [mem_ker, map_sub f, sub_eq_zero, map_one f]
       exact hf 1
     map_mul' := by
       intro x y
-      rw [← map_mul g, ← sub_eq_zero, ← map_sub g, ← mem_ker g]
+      rw [← map_mul g, ← sub_eq_zero, ← map_sub g, ← mem_ker]
       apply hg
-      rw [mem_ker f, map_sub f, sub_eq_zero, map_mul f]
+      rw [mem_ker, map_sub f, sub_eq_zero, map_mul f]
       simp only [hf _] }
 
 @[simp]
@@ -782,7 +783,7 @@ See `RingHom.eq_liftOfRightInverse` for the uniqueness lemma.
 def liftOfRightInverse (hf : Function.RightInverse f_inv f) :
     { g : A →+* C // RingHom.ker f ≤ RingHom.ker g } ≃ (B →+* C) where
   toFun g := f.liftOfRightInverseAux f_inv hf g.1 g.2
-  invFun φ := ⟨φ.comp f, fun x hx => (mem_ker _).mpr <| by simp [(mem_ker _).mp hx]⟩
+  invFun φ := ⟨φ.comp f, fun x hx => mem_ker.mpr <| by simp [mem_ker.mp hx]⟩
   left_inv g := by
     ext
     simp only [comp_apply, liftOfRightInverseAux_comp_apply, Subtype.coe_mk]

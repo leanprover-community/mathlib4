@@ -353,13 +353,13 @@ def lift (g : ∀ i, G i ↪[L] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i 
   map_fun' F x := by
     obtain ⟨i, y, rfl⟩ := exists_quotient_mk'_sigma_mk'_eq G f x
     change _ = funMap F (Quotient.lift _ _ ∘ Quotient.mk _ ∘ Structure.Sigma.mk f i ∘ y)
-    rw [funMap_quotient_mk'_sigma_mk', ← Function.comp.assoc, Quotient.lift_comp_mk]
+    rw [funMap_quotient_mk'_sigma_mk', ← Function.comp_assoc, Quotient.lift_comp_mk]
     simp only [Quotient.lift_mk, Embedding.map_fun]
     rfl
   map_rel' R x := by
     obtain ⟨i, y, rfl⟩ := exists_quotient_mk'_sigma_mk'_eq G f x
     change RelMap R (Quotient.lift _ _ ∘ Quotient.mk _ ∘ Structure.Sigma.mk f i ∘ y) ↔ _
-    rw [relMap_quotient_mk'_sigma_mk' G f, ← (g i).map_rel R y, ← Function.comp.assoc,
+    rw [relMap_quotient_mk'_sigma_mk' G f, ← (g i).map_rel R y, ← Function.comp_assoc,
       Quotient.lift_comp_mk]
     rfl
 

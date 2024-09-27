@@ -29,6 +29,8 @@ namespace ShortComplex
 
 variable (S : ShortComplex C)
 
+lemma ext_mk₀_f_comp_ext_mk₀_g : (Ext.mk₀ S.f).comp (Ext.mk₀ S.g) (zero_add 0) = 0 := by simp
+
 namespace ShortExact
 
 variable {S}
