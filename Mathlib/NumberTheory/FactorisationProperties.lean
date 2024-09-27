@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Colin Jones
 -/
 import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.IsPrimePow
 import Mathlib.NumberTheory.Divisors
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.NormNum.Prime
@@ -161,6 +162,11 @@ theorem Prime.deficient_pow  (h : Prime n) : Deficient (n ^ m) := by
         = (n ^ m - 1) / (n - 1) := (Nat.geomSum_eq (Prime.two_le h) _)
       _ ≤ (n ^ m - 1) := Nat.div_le_self (n ^ m - 1) (n - 1)
       _ < n ^ m := sub_lt (pow_pos (Prime.pos h) m) (Nat.one_pos)
+
+theorem Prime.deficient_pow' (h : IsPrimePow n) : Deficient n := by
+  obtain ⟨p, ⟨k, ⟨h1, ⟨_, h3⟩⟩⟩⟩ := h
+  rw [← h3]
+  refine deficient_pow (Prime.nat_prime h1)
 
 theorem Prime.deficient (h : Prime n) : Deficient n := by
   rw [← pow_one n]
