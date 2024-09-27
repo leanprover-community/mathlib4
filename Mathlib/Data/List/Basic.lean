@@ -839,14 +839,6 @@ theorem getElem?_indexOf [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
 theorem indexOf_get? [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
     get? l (indexOf a l) = some a := by simp [h]
 
-@[deprecated (since := "2023-01-05")]
-theorem get_reverse_aux₁ :
-    ∀ (l r : List α) (i h1 h2), get (reverseAux l r) ⟨i + length l, h1⟩ = get r ⟨i, h2⟩
-  | [], r, i => fun h1 _ => rfl
-  | a :: l, r, i => by
-    rw [show i + length (a :: l) = i + 1 + length l from Nat.add_right_comm i (length l) 1]
-    exact fun h1 h2 => get_reverse_aux₁ l (a :: r) (i + 1) h1 (succ_lt_succ h2)
-
 theorem indexOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy : y ∈ l) :
     indexOf x l = indexOf y l ↔ x = y :=
   ⟨fun h => by
