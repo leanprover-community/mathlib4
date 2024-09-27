@@ -26,7 +26,7 @@ namespace ReflQuiv
 
 instance : CoeSort ReflQuiv (Type u) where coe := Bundled.α
 
-instance str' (C : ReflQuiv.{v, u}) : ReflQuiver.{v + 1, u} C := C.str
+instance (C : ReflQuiv.{v, u}) : ReflQuiver.{v + 1, u} C := C.str
 
 /-- The underlying quiver of a reflexive quiver.-/
 def toQuiv (C : ReflQuiv.{v, u}) : Quiv.{v, u} := Quiv.of C.α
@@ -111,6 +111,8 @@ category on the underlying quiver of a refl quiver to the free category on the r
 def FreeRefl.quotientFunctor (V) [ReflQuiver V] : Cat.free.obj (Quiv.of V) ⥤ FreeRefl V :=
   Quotient.functor (C := Cat.free.obj (Quiv.of V)) (FreeReflRel (V := V))
 
+/-- This is a specialization of `Quotient.lift_unique'` rather than `Quotient.lift_unique`, hence
+the prime in the name.-/
 theorem FreeRefl.lift_unique' {V} [ReflQuiver V] {D} [Category D] (F₁ F₂ : FreeRefl V ⥤ D)
     (h : quotientFunctor V ⋙ F₁ = quotientFunctor V ⋙ F₂) :
     F₁ = F₂ :=
@@ -190,12 +192,14 @@ def adj.counit.app (C : Cat) : Cat.freeRefl.obj (forget.obj C) ⥤ C := by
       Quiv.lift_map, Prefunctor.mapPath_toPath, composePath_toPath]
     rfl
 
-/-- This is used in the proof of both triangle equalities. -/
+/-- The counit of `ReflQuiv.adj` is closely related to the counit of `Quiv.adj`.-/
 @[simp]
 theorem adj.counit.component_eq (C : Cat) :
     Cat.FreeRefl.quotientFunctor C ⋙ adj.counit.app C =
     Quiv.adj.counit.app C := rfl
 
+/-- The counit of `ReflQuiv.adj` is closely related to the counit of `Quiv.adj`. For ease of use,
+we introduce primed version for unbundled categories.-/
 @[simp]
 theorem adj.counit.component_eq' (C) [Category C] :
     Cat.FreeRefl.quotientFunctor C ⋙ adj.counit.app (Cat.of C) =
