@@ -211,8 +211,7 @@ theorem injectiveSeminorm_le_projectiveSeminorm :
     existsi PUnit, inferInstance, inferInstance
     ext x
     simp only [Seminorm.zero_apply, Seminorm.comp_apply, coe_normSeminorm]
-    have heq : toDualContinuousMultilinearMap PUnit x = 0 := by ext _
-    rw [heq, norm_zero]
+    rw [Subsingleton.elim (toDualContinuousMultilinearMap PUnit x) 0, norm_zero]
   · intro p hp
     simp only [Set.mem_setOf_eq] at hp
     obtain ⟨G, _, _, h⟩ := hp
