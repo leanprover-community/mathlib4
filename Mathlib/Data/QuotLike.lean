@@ -47,7 +47,7 @@ class QuotLikeStruct (Q : Sort*) (α : outParam Sort*) (r : outParam (α → α 
   /-- The analogue of `Quot.ind`: every element of `Q` is of the form `mkQ a`. -/
   ind {motive : Q → Prop} : (∀ a : α, motive (mkQ a)) → ∀ q : Q, motive q := by exact Quot.ind
   /--
-  The analogue of `Quot.sound`: If `a` and `b` are related by the equivalence relation,
+  The analogue of `Quot.sound`: If `a` and `b` are related by the relation,
   then they have equal equivalence classes.
   -/
   sound {a b : α} : r a b → mkQ a = mkQ b := by exact Quot.sound
@@ -265,14 +265,14 @@ section
 variable {Q : Sort*} {α : Sort*} {r : α → α → Prop} [QuotLike Q α r]
 
 /--
-The analogue of `Quot.lift`: if `f : α → β` respects the equivalence relation `r`,
+The analogue of `Quot.lift`: if `f : α → β` respects the relation `r`,
 then it lifts to a function on `Q` such that `lift f h ⟦a⟧ = f a`.
 -/
 protected def lift {β : Sort*} (f : α → β) (h : ∀ (a b : α), r a b → f a = f b) : Q → β :=
   fun q ↦ Quot.lift f h (toQuot q)
 
 /--
-The analogue of `Quot.liftOn`: if `f : α → β` respects the equivalence relation `r`,
+The analogue of `Quot.liftOn`: if `f : α → β` respects the relation `r`,
 then it lifts to a function on `Q` such that `liftOn ⟦a⟧ f h = f a`.
 -/
 protected abbrev liftOn {β : Sort*} (q : Q) (f : α → β) (c : (a b : α) → r a b → f a = f b) : β :=
@@ -624,19 +624,19 @@ theorem eq_mkQ_iff_out [IsEquiv α r] {x : Q} {y : α} :
   rw [← eq (Q := Q), mkQ_out]
 
 variable (Q) in
-theorem out_mkQ_equiv [IsEquiv α r] (a : α) : r (out (⟦a⟧ : Q)) a :=
+theorem out_mkQ_rel [IsEquiv α r] (a : α) : r (out (⟦a⟧ : Q)) a :=
   exact (mkQ_out _)
 
 variable (Q) in
-theorem equiv_out_mkQ [IsEquiv α r] (a : α) : r a (out (⟦a⟧ : Q)) :=
+theorem rel_out_mkQ [IsEquiv α r] (a : α) : r a (out (⟦a⟧ : Q)) :=
   exact (mkQ_out _).symm
 
 variable (Q) in
-theorem out_equiv_out [IsEquiv α r] {x y : Q} : r (out x) (out y) ↔ x = y := by
+theorem out_rel_out [IsEquiv α r] {x y : Q} : r (out x) (out y) ↔ x = y := by
   rw [← eq_mkQ_iff_out (Q := Q), mkQ_out]
 
 theorem out_injective [IsEquiv α r] : Function.Injective (QuotLike.out : Q → α) :=
-  fun _ _ h ↦ out_equiv_out _ |>.1 <| h ▸ refl _
+  fun _ _ h ↦ out_rel_out _ |>.1 <| h ▸ refl _
 
 @[simp]
 theorem out_inj {x y : Q} [IsEquiv α r] : out x = out y ↔ x = y :=
