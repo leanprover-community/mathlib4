@@ -28,8 +28,14 @@ variable {β : Type*} [Ring β] (abv : β → α) [IsAbsoluteValue abv]
 def Cauchy :=
   @Quotient (CauSeq _ abv) CauSeq.equiv
 
+namespace Cauchy
+
 instance : QuotLike (Cauchy abv) (CauSeq _ abv) CauSeq.equiv where
-instance : QuotLike.HasQuot (Cauchy abv) (CauSeq _ abv) CauSeq.equiv where
+scoped instance : QuotLike.HasQuot (Cauchy abv) (CauSeq _ abv) CauSeq.equiv where
+
+end Cauchy
+
+open Cauchy
 
 variable {abv}
 
@@ -187,6 +193,8 @@ instance instRatCast : RatCast (Cauchy abv) where ratCast q := ofRat q
 @[simp, norm_cast] lemma ofRat_nnratCast (q : ℚ≥0) : ofRat (q : β) = (q : Cauchy abv) := rfl
 @[simp, norm_cast] lemma ofRat_ratCast (q : ℚ) : ofRat (q : β) = (q : Cauchy abv) := rfl
 
+open Cauchy
+
 open Classical in
 noncomputable instance : Inv (Cauchy abv) :=
   ⟨fun x =>
@@ -208,7 +216,7 @@ theorem inv_zero : (0 : (Cauchy abv))⁻¹ = 0 :=
   congr_arg mkQ <| by rw [dif_pos] <;> [rfl; exact zero_limZero]
 
 @[simp]
-theorem inv_mk {f : CauSeq _ abv} (hf) : (mkQ f)⁻¹ = mkQ' (inv f hf) :=
+theorem inv_mk {f : CauSeq _ abv} (hf) : ⟦f⟧⁻¹ = ⟦inv f hf⟧' :=
   congr_arg mkQ <| by rw [dif_neg]
 
 theorem cau_seq_zero_ne_one : ¬(0 : CauSeq _ abv) ≈ 1 := fun h =>

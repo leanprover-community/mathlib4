@@ -819,7 +819,7 @@ theorem omega_succ {n} : n ∈ omega.{u} → insert n n ∈ omega.{u} :=
   Quotient.inductionOn n fun x ⟨⟨n⟩, h⟩ =>
     ⟨⟨n + 1⟩,
       ZFSet.exact <|
-        show insert ⟦x⟧ ⟦x⟧ = insert ⟦ofNat n⟧ ⟦ofNat n⟧ by
+        show insert ⟦x⟧' ⟦x⟧' = insert ⟦ofNat n⟧ ⟦ofNat n⟧ by
           rw [ZFSet.sound h]
           rfl⟩
 

@@ -90,7 +90,7 @@ noncomputable instance : (fromSkeleton C).Faithful := by
   apply InducedCategory.faithful
 
 instance : (fromSkeleton C).EssSurj where
-  mem_essImage X := ⟨⟦X⟧, QuotLike.out_mkQ (Q := Skeleton C) X⟩
+  mem_essImage X := ⟨⟦X⟧, QuotLike.out_mkQ_equiv (Q := Skeleton C) X⟩
 
 -- Porting note: named this instance
 noncomputable instance fromSkeleton.isEquivalence : (fromSkeleton C).IsEquivalence where
@@ -132,6 +132,7 @@ def ThinSkeleton : Type u₁ :=
   Quotient (isIsomorphicSetoid C)
 
 instance : QuotLike (ThinSkeleton C) C IsIsomorphic where
+scoped instance : QuotLike.HasQuot (ThinSkeleton C) C IsIsomorphic where
 
 instance inhabitedThinSkeleton [Inhabited C] : Inhabited (ThinSkeleton C) :=
   ⟨⟦default⟧⟩
@@ -172,8 +173,8 @@ instance thin : Quiver.IsThin (ThinSkeleton C) := fun _ _ =>
 
 variable {C} {D}
 
-lemma out_mkQ (X : C) : Nonempty (QuotLike.out (⟦X⟧ : ThinSkeleton C) ≅ X) :=
-  QuotLike.out_mkQ (Q := ThinSkeleton C) X
+lemma out_mkQ (X : C) : Nonempty (QuotLike.out ⟦X⟧' ≅ X) :=
+  QuotLike.out_mkQ_equiv (Q := ThinSkeleton C) X
 
 /-- A functor `C ⥤ D` computably lowers to a functor `ThinSkeleton C ⥤ ThinSkeleton D`. -/
 @[simps]

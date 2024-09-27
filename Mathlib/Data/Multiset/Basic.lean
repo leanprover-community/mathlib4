@@ -494,7 +494,7 @@ theorem coe_le {l₁ l₂ : List α} : (l₁ : Multiset α) ≤ l₂ ↔ l₁ <+
 @[elab_as_elim]
 theorem leInductionOn {C : Multiset α → Multiset α → Prop} {s t : Multiset α} (h : s ≤ t)
     (H : ∀ {l₁ l₂ : List α}, l₁ <+ l₂ → C l₁ l₂) : C s t :=
-  QuotLike.inductionOn₂ s t (fun l₁ _ ⟨l, p, s⟩ => (show ⟦l⟧ = ⟦l₁⟧ from Quot.sound p) ▸ H s) h
+  QuotLike.inductionOn₂ s t (fun l₁ _ ⟨l, p, s⟩ => (show ⟦l⟧ = ⟦l₁⟧' from Quot.sound p) ▸ H s) h
 
 theorem zero_le (s : Multiset α) : 0 ≤ s :=
   Quot.inductionOn s fun l => (nil_sublist l).subperm

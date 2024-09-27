@@ -825,13 +825,13 @@ theorem mk_mul_mk {x y : α} : ⟦x⟧' * ⟦y⟧' = ⟦x * y⟧' :=
 instance instCommMonoid : CommMonoid (Associates α) where
   one := 1
   mul := (· * ·)
-  mul_one a' := Quotient.inductionOn a' fun a => show ⟦a * 1⟧ = ⟦a⟧ by simp
-  one_mul a' := Quotient.inductionOn a' fun a => show ⟦1 * a⟧ = ⟦a⟧ by simp
+  mul_one a' := Quotient.inductionOn a' fun a => show ⟦a * 1⟧ = ⟦a⟧' by simp
+  one_mul a' := Quotient.inductionOn a' fun a => show ⟦1 * a⟧ = ⟦a⟧' by simp
   mul_assoc a' b' c' :=
     Quotient.inductionOn₃ a' b' c' fun a b c =>
-      show ⟦a * b * c⟧ = ⟦a * (b * c)⟧ by rw [mul_assoc]
+      show ⟦a * b * c⟧ = ⟦a * (b * c)⟧' by rw [mul_assoc]
   mul_comm a' b' :=
-    Quotient.inductionOn₂ a' b' fun a b => show ⟦a * b⟧ = ⟦b * a⟧ by rw [mul_comm]
+    Quotient.inductionOn₂ a' b' fun a b => show ⟦a * b⟧ = ⟦b * a⟧' by rw [mul_comm]
 
 instance instPreorder : Preorder (Associates α) where
   le := Dvd.dvd

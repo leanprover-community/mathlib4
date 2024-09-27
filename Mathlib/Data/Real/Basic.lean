@@ -247,11 +247,22 @@ instance : Inhabited ℝ :=
   ⟨0⟩
 
 /-- Make a real number from a Cauchy sequence of rationals (by taking the equivalence class). -/
+@[deprecated (since := "2024-09-28")]
 def mk (x : CauSeq ℚ abs) : ℝ :=
-  ⟨CauSeq.Completion.mk x⟩
+  ⟨⟦x⟧⟩
 
-theorem mk_eq {f g : CauSeq ℚ abs} : mk f = mk g ↔ f ≈ g :=
-  ext_cauchy_iff.trans CauSeq.Completion.mk_eq
+instance : QuotLike ℝ (CauSeq ℚ abs) CauSeq.equiv where
+  mkQ x := ⟨⟦x⟧⟩
+  toQuot := cauchy
+  ind h := fun ⟨x⟩ ↦ x.inductionOn h
+  sound h := ext_cauchy (QuotLike.sound h)
+
+scoped instance : QuotLike.HasQuot ℝ (CauSeq ℚ abs) CauSeq.equiv where
+
+theorem mkQ_eq_mk_mkQ {f : CauSeq ℚ abs} : ⟦f⟧' = ⟨⟦f⟧⟩ := rfl
+
+theorem mk_eq {f g : CauSeq ℚ abs} : ⟦f⟧ = ⟦g⟧' ↔ f ≈ g := by
+  apply ext_cauchy_iff.trans (CauSeq.Completion.mk_eq (f := f) (g := g))
 
 private irreducible_def lt : ℝ → ℝ → Prop
   | ⟨x⟩, ⟨y⟩ =>
@@ -267,21 +278,24 @@ theorem lt_cauchy {f g} : (⟨⟦f⟧⟩ : ℝ) < ⟨⟦g⟧⟩ ↔ f < g :=
   show lt _ _ ↔ _ by rw [lt_def]; rfl
 
 @[simp]
-theorem mk_lt {f g : CauSeq ℚ abs} : mk f < mk g ↔ f < g :=
+theorem mk_lt {f g : CauSeq ℚ abs} : ⟦f⟧ < ⟦g⟧' ↔ f < g :=
   lt_cauchy
 
-theorem mk_zero : mk 0 = 0 := by rw [← ofCauchy_zero]; rfl
+theorem mk_zero : (⟦0⟧ : ℝ) = 0 := by rw [← ofCauchy_zero]; rfl
 
-theorem mk_one : mk 1 = 1 := by rw [← ofCauchy_one]; rfl
+theorem mk_one : (⟦1⟧ : ℝ) = 1 := by rw [← ofCauchy_one]; rfl
 
-theorem mk_add {f g : CauSeq ℚ abs} : mk (f + g) = mk f + mk g := by simp [mk, ← ofCauchy_add]
+theorem mk_add {f g : CauSeq ℚ abs} : ⟦f + g⟧ = ⟦f⟧' + ⟦g⟧' := by
+  simp [mkQ_eq_mk_mkQ, ← ofCauchy_add]
 
-theorem mk_mul {f g : CauSeq ℚ abs} : mk (f * g) = mk f * mk g := by simp [mk, ← ofCauchy_mul]
+theorem mk_mul {f g : CauSeq ℚ abs} : ⟦f * g⟧ = ⟦f⟧' * ⟦g⟧' := by
+  simp [mkQ_eq_mk_mkQ, ← ofCauchy_mul]
 
-theorem mk_neg {f : CauSeq ℚ abs} : mk (-f) = -mk f := by simp [mk, ← ofCauchy_neg]
+theorem mk_neg {f : CauSeq ℚ abs} : ⟦-f⟧ = -⟦f⟧' := by
+  simp [mkQ_eq_mk_mkQ, ← ofCauchy_neg]
 
 @[simp]
-theorem mk_pos {f : CauSeq ℚ abs} : 0 < mk f ↔ Pos f := by
+theorem mk_pos {f : CauSeq ℚ abs} : 0 < ⟦f⟧' ↔ Pos f := by
   rw [← mk_zero, mk_lt]
   exact iff_of_eq (congr_arg Pos (sub_zero f))
 
@@ -295,11 +309,11 @@ private theorem le_def' {x y : ℝ} : x ≤ y ↔ x < y ∨ x = y :=
   iff_of_eq <| le_def _ _
 
 @[simp]
-theorem mk_le {f g : CauSeq ℚ abs} : mk f ≤ mk g ↔ f ≤ g := by
+theorem mk_le {f g : CauSeq ℚ abs} : ⟦f⟧' ≤ ⟦g⟧' ↔ f ≤ g := by
   simp only [le_def', mk_lt, mk_eq]; rfl
 
 @[elab_as_elim]
-protected theorem ind_mk {C : Real → Prop} (x : Real) (h : ∀ y, C (mk y)) : C x := by
+protected theorem ind_mk {C : Real → Prop} (x : Real) (h : ∀ y, C ⟦y⟧) : C x := by
   cases' x with x
   induction' x using Quot.induction_on with x
   exact h x
@@ -402,7 +416,7 @@ theorem ofCauchy_sup (a b) : (⟨⟦a ⊔ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊔ ⟨
     rfl
 
 @[simp]
-theorem mk_sup (a b) : (mk (a ⊔ b) : ℝ) = mk a ⊔ mk b :=
+theorem mk_sup (a b) : (⟦a ⊔ b⟧ : ℝ) = ⟦a⟧ ⊔ ⟦b⟧ :=
   ofCauchy_sup _ _
 
 private irreducible_def inf : ℝ → ℝ → ℝ
@@ -417,7 +431,7 @@ theorem ofCauchy_inf (a b) : (⟨⟦a ⊓ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊓ ⟨
     rfl
 
 @[simp]
-theorem mk_inf (a b) : (mk (a ⊓ b) : ℝ) = mk a ⊓ mk b :=
+theorem mk_inf (a b) : (⟦a ⊓ b⟧ : ℝ) = ⟦a⟧ ⊓ ⟦b⟧ :=
   ofCauchy_inf _ _
 
 instance : DistribLattice ℝ :=
@@ -470,7 +484,7 @@ instance : DistribLattice ℝ :=
       induction' c using Real.ind_mk with c
       apply Eq.le
       simp only [← mk_sup, ← mk_inf]
-      exact congr_arg mk (CauSeq.sup_inf_distrib_left _ _ _).symm }
+      exact congr_arg mkQ (CauSeq.sup_inf_distrib_left _ _ _).symm }
 
 -- Extra instances to short-circuit type class resolution
 instance lattice : Lattice ℝ :=
@@ -548,7 +562,7 @@ converging to the same number may be printed differently.
 -/
 unsafe instance : Repr ℝ where reprPrec r _ := "Real.ofCauchy " ++ repr r.cauchy
 
-theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j) → x ≤ mk f := by
+theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j) → x ≤ ⟦f⟧' := by
   intro h
   induction' x using Real.ind_mk with x
   apply le_of_not_lt
@@ -562,13 +576,13 @@ theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j
   rwa [← sub_eq_add_neg, sub_self_div_two, sub_apply, sub_add_sub_cancel] at this
 
 theorem mk_le_of_forall_le {f : CauSeq ℚ abs} {x : ℝ} (h : ∃ i, ∀ j ≥ i, (f j : ℝ) ≤ x) :
-    mk f ≤ x := by
+    ⟦f⟧' ≤ x := by
   cases' h with i H
   rw [← neg_le_neg_iff, ← mk_neg]
   exact le_mk_of_forall_le ⟨i, fun j ij => by simp [H _ ij]⟩
 
 theorem mk_near_of_forall_near {f : CauSeq ℚ abs} {x : ℝ} {ε : ℝ}
-    (H : ∃ i, ∀ j ≥ i, |(f j : ℝ) - x| ≤ ε) : |mk f - x| ≤ ε :=
+    (H : ∃ i, ∀ j ≥ i, |(f j : ℝ) - x| ≤ ε) : |⟦f⟧' - x| ≤ ε :=
   abs_sub_le_iff.2
     ⟨sub_le_iff_le_add'.2 <|
         mk_le_of_forall_le <|
