@@ -3,8 +3,10 @@ Copyright (c) 2023 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
+import Mathlib.Algebra.Homology.ConcreteCategory
 import Mathlib.Algebra.Homology.Opposite
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import Mathlib.RepresentationTheory.Homological.Resolution
 import Mathlib.Tactic.CategoryTheory.Slice
 
@@ -73,10 +75,104 @@ noncomputable section
 
 universe u
 
-variable {k G : Type u} [CommRing k] {n : ℕ}
+variable {k G : Type u} [CommRing k]
 
-open CategoryTheory
+open CategoryTheory Limits
 
+namespace ShortComplex
+
+-- should these exist ? I can't find them
+@[simps]
+def ofHomLeft {V : Type u} [Category V] [HasZeroMorphisms V] {X Y : V} (Z : V) (f : X ⟶ Y) :
+    ShortComplex V where
+  X₁ := X
+  X₂ := Y
+  X₃ := Z
+  f := f
+  g := 0
+  zero := comp_zero
+
+@[simps]
+def ofHomRight {V : Type u} [Category V] [HasZeroMorphisms V] {X Y : V} (Z : V) (f : X ⟶ Y) :
+    ShortComplex V where
+  X₁ := Z
+  X₂ := X
+  X₃ := Y
+  f := 0
+  g := f
+  zero := zero_comp
+
+end ShortComplex
+namespace ChainComplex
+
+open HomologicalComplex
+
+@[simps]
+def ofSuccSc' {V : Type u} [Category V] [HasZeroMorphisms V] {α : Type*}
+    [AddRightCancelSemigroup α] [One α] (X : α → V) (d : ∀ i, X (i + 1) ⟶ X i)
+    (sq : ∀ n, d (n + 1) ≫ d n = 0) (i : α) :
+    ShortComplex V where
+  X₁ := X (i + 1 + 1)
+  X₂ := X (i + 1)
+  X₃ := X i
+  f := d (i + 1)
+  g := d i
+  zero := sq i
+
+def ofSuccSc'Iso {V : Type u} [Category V] [HasZeroMorphisms V]
+    (X : ℕ → V) (d : ∀ i, X (i + 1) ⟶ X i) {h} (i : ℕ) :
+    (of X d h).sc' (i + 2) (i + 1) i ≅ ofSuccSc' X d h i :=
+  ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _ )
+    (by simpa using (of_d _ _ _ _).symm) (by simp)
+
+def ofZeroSc'Iso {V : Type u} [Category V] [HasZeroMorphisms V]
+    (X : ℕ → V) (d : ∀ i, X (i + 1) ⟶ X i) {h} (i : ℕ) :
+    (of X d h).sc' 1 0 i ≅ ShortComplex.ofHomLeft (X i) (d 0) :=
+  ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _)
+    (by simpa using (of_d _ _ _ _).symm) (by simp)
+
+end ChainComplex
+
+namespace CochainComplex
+
+open HomologicalComplex
+
+@[simps]
+def ofSuccSc' {V : Type u} [Category V] [HasZeroMorphisms V] {α : Type*}
+    [AddRightCancelSemigroup α] [One α] (X : α → V) (d : ∀ i, X i ⟶ X (i + 1))
+    (sq : ∀ n, d n ≫ d (n + 1) = 0) (i : α) :
+    ShortComplex V where
+  X₁ := X i
+  X₂ := X (i + 1)
+  X₃ := X (i + 1 + 1)
+  f := d i
+  g := d (i + 1)
+  zero := sq i
+
+def ofSuccSc'Iso {V : Type u} [Category V] [HasZeroMorphisms V]
+    (X : ℕ → V) (d : ∀ i, X i ⟶ X (i + 1)) {h} (i : ℕ) :
+    (of X d h).sc' i (i + 1) (i + 2) ≅ ofSuccSc' X d h i :=
+  ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _ )
+    (by simp) (by simpa using (of_d _ _ _ _).symm)
+
+def ofZeroSc'Iso {V : Type u} [Category V] [HasZeroMorphisms V]
+    (X : ℕ → V) (d : ∀ i, X i ⟶ X (i + 1)) {h} (i : ℕ) :
+    (of X d h).sc' i 0 1 ≅ ShortComplex.ofHomRight (X i) (d 0) :=
+  ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _)
+    (by simp) (by simpa using (of_d _ _ _ _).symm)
+
+end CochainComplex
+namespace CategoryTheory.ShortComplex
+
+variable (R : Type u) [Ring R] {M : ShortComplex (ModuleCat R)}
+    (x : LinearMap.ker M.g)
+
+theorem forget₂_moduleCatCyclesIso_inv_eq {M : ShortComplex (ModuleCat R)}
+    (x : LinearMap.ker M.g) :
+    M.moduleCatCyclesIso.inv x = cyclesMk M x.1 x.2 := by
+  sorry
+
+end CategoryTheory.ShortComplex
 namespace groupCohomology
 
 variable [Group G]
@@ -117,7 +213,7 @@ open Rep groupCohomology
 /-- The differential in the complex of inhomogeneous cochains used to
 calculate group cohomology. -/
 @[simps]
-def d [Monoid G] (n : ℕ) (A : Rep k G) : ((Fin n → G) → A) →ₗ[k] (Fin (n + 1) → G) → A where
+def d [Monoid G] (A : Rep k G) (n : ℕ) : ((Fin n → G) → A) →ₗ[k] (Fin (n + 1) → G) → A where
   toFun f g :=
     A.ρ (g 0) (f fun i => g i.succ) +
       Finset.univ.sum fun j : Fin (n + 1) =>
@@ -129,10 +225,10 @@ def d [Monoid G] (n : ℕ) (A : Rep k G) : ((Fin n → G) → A) →ₗ[k] (Fin 
     ext x
     simp [Finset.smul_sum, ← smul_assoc, mul_comm r]
 
-variable [Group G] (n) (A : Rep k G)
+variable [Group G] (A : Rep k G) (n : ℕ)
 
 @[nolint checkType] theorem d_eq :
-    d n A =
+    d A n =
       (freeLiftEquiv (Fin n → G) A).toModuleIso.inv ≫
         (linearYonedaObjBarResolution A).d n (n + 1) ≫
           (freeLiftEquiv (Fin (n + 1) → G) A).toModuleIso.hom := by
@@ -147,7 +243,7 @@ end inhomogeneousCochains
 
 namespace groupCohomology
 
-variable [Group G] (n) (A : Rep k G)
+variable [Group G] (A : Rep k G) (n : ℕ)
 
 open inhomogeneousCochains
 
@@ -156,15 +252,19 @@ $$0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \
 which calculates the group cohomology of `A`. -/
 noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
   CochainComplex.of (fun n => ModuleCat.of k ((Fin n → G) → A))
-    (fun n => inhomogeneousCochains.d n A) fun n => by
+    (fun n => inhomogeneousCochains.d A n) fun n => by
     simp only [d_eq]
     slice_lhs 3 4 => { rw [Iso.hom_inv_id] }
     slice_lhs 2 4 => { rw [Category.id_comp, (linearYonedaObjBarResolution A).d_comp_d] }
     simp
 
+theorem inhomogeneousCochains.d_comp_d :
+    d A (n + 1) ∘ₗ d A n = 0 := by
+  simpa [CochainComplex.of] using (inhomogeneousCochains A).d_comp_d n (n + 1) (n + 2)
+
 @[simp]
-theorem inhomogeneousCochains.d_def (n : ℕ) :
-    (inhomogeneousCochains A).d n (n + 1) = inhomogeneousCochains.d n A :=
+theorem inhomogeneousCochains.d_def :
+    (inhomogeneousCochains A).d n (n + 1) = inhomogeneousCochains.d A n :=
   CochainComplex.of_d _ _ _ _
 
 def inhomogeneousCochainsBarIso : inhomogeneousCochains A ≅ linearYonedaObjBarResolution A := by
@@ -185,6 +285,25 @@ def inhomogeneousCochainsIso : inhomogeneousCochains A ≅ linearYonedaObjResolu
 /-- The `n`-cocycles `Zⁿ(G, A)` of a `k`-linear `G`-representation `A`, i.e. the kernel of the
 `n`th differential in the complex of inhomogeneous cochains. -/
 abbrev cocycles (n : ℕ) : ModuleCat k := (inhomogeneousCochains A).cycles n
+
+def cocyclesIso : ∀ (n : ℕ),
+    cocycles A n ≅ ModuleCat.of k (LinearMap.ker (inhomogeneousCochains.d A n))
+| 0 =>
+  (inhomogeneousCochains A).cyclesIsoSc' 0 0 1 (by aesop) (by aesop)
+    ≪≫ ShortComplex.cyclesMapIso
+    (CochainComplex.ofZeroSc'Iso ((inhomogeneousCochains A).X) _ 0)
+    ≪≫ ShortComplex.moduleCatCyclesIso _
+| n + 1 =>
+  (inhomogeneousCochains A).cyclesIsoSc' n (n + 1) (n + 2) (by aesop) (by aesop)
+    ≪≫ ShortComplex.cyclesMapIso
+    (CochainComplex.ofSuccSc'Iso ((inhomogeneousCochains A).X) _ n)
+    ≪≫ ShortComplex.moduleCatCyclesIso _
+
+/-
+theorem forget₂_cocyclesIso_inv_eq {n : ℕ} (x : (inhomogeneousCochains A).X n)
+    (hx : inhomogeneousCochains.d A n x = 0) :
+    ((cocyclesIso A n).inv ⟨x, hx⟩)
+    = HomologicalComplex.cyclesMk (inhomogeneousCochains A) x (n + 1) rfl _ := by-/
 
 /-- The natural inclusion of the `n`-cocycles `Zⁿ(G, A)` into the `n`-cochains `Cⁿ(G, A).` -/
 abbrev iCocycles (n : ℕ) : cocycles A n ⟶ ModuleCat.of k ((Fin n → G) → A) :=
