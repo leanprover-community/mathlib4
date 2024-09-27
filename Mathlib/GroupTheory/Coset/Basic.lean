@@ -350,7 +350,7 @@ variable [Group α] {s : Subgroup α}
 instance : QuotLike (α ⧸ s) α (leftRel s) where
 
 @[to_additive]
-instance : QuotLike.HasQuotHint s (α ⧸ s) α (leftRel s) where
+instance : QuotLike.Hint s (α ⧸ s) α (leftRel s) where
 
 @[to_additive]
 instance fintype [Fintype α] (s : Subgroup α) [DecidableRel (leftRel s).r] : Fintype (α ⧸ s) :=
@@ -446,7 +446,7 @@ theorem preimage_image_mk_eq_iUnion_image (N : Subgroup α) (s : Set α) :
 
 @[to_additive]
 theorem preimage_image_mk_eq_mul (N : Subgroup α) (s : Set α) :
-    mk ⁻¹' ((mk : α → α ⧸ N) '' s) = s * N := by
+    mkQ ⁻¹' ((mkQ : α → α ⧸ N) '' s) = s * N := by
   rw [preimage_image_mk_eq_iUnion_image, iUnion_subtype, ← image2_mul, ← iUnion_image_right]
   simp only [SetLike.mem_coe]
 

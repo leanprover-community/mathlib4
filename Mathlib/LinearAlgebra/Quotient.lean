@@ -47,7 +47,7 @@ instance hasQuotient : HasQuotient M (Submodule R M) :=
 namespace Quotient
 
 instance : QuotLike (M ⧸ p) M p.quotientRel where
-instance : QuotLike.HasQuotHint p (M ⧸ p) M p.quotientRel where
+instance : QuotLike.Hint p (M ⧸ p) M p.quotientRel where
 
 /-- Map associating to an element of `M` the corresponding element of `M/p`,
 when `p` is a submodule of `M`. -/
@@ -88,7 +88,7 @@ theorem mk_zero : ⟦0 : M⟧_p = 0 :=
   rfl
 
 @[simp]
-theorem mk_eq_zero : ⟦x⟧_p = 0 ↔ x ∈ p := by simpa using (Quotient.eq' p : ⟦x⟧ = 0 ↔ _)
+theorem mk_eq_zero : ⟦x⟧_p = 0 ↔ x ∈ p := by simpa using (Quotient.eq' p : ⟦x⟧_p = 0 ↔ _)
 
 instance addCommGroup : AddCommGroup (M ⧸ p) :=
   QuotientAddGroup.Quotient.addCommGroup p.toAddSubgroup
@@ -145,7 +145,7 @@ variable {S : Type*}
 -- TODO: leanprover-community/mathlib4#7432
 instance mulAction' [Monoid S] [SMul S R] [MulAction S M] [IsScalarTower S R M]
     (P : Submodule R M) : MulAction S (M ⧸ P) :=
-  { Function.Surjective.mulAction mk (surjective_quot_mk _) <| Submodule.Quotient.mk_smul P with
+  { Function.Surjective.mulAction mkQ QuotLike.surjective_mkQ <| Submodule.Quotient.mk_smul P with
     toSMul := instSMul' _ }
 
 -- Porting note: should this be marked as a `@[default_instance]`?
@@ -154,7 +154,7 @@ instance mulAction (P : Submodule R M) : MulAction R (M ⧸ P) :=
 
 instance smulZeroClass' [SMul S R] [SMulZeroClass S M] [IsScalarTower S R M] (P : Submodule R M) :
     SMulZeroClass S (M ⧸ P) :=
-  ZeroHom.smulZeroClass ⟨mk, mk_zero _⟩ <| Submodule.Quotient.mk_smul P
+  ZeroHom.smulZeroClass ⟨mkQ, mk_zero _⟩ <| Submodule.Quotient.mk_smul P
 
 -- Porting note: should this be marked as a `@[default_instance]`?
 instance smulZeroClass (P : Submodule R M) : SMulZeroClass R (M ⧸ P) :=
@@ -164,8 +164,8 @@ instance smulZeroClass (P : Submodule R M) : SMulZeroClass R (M ⧸ P) :=
 -- TODO: leanprover-community/mathlib4#7432
 instance distribSMul' [SMul S R] [DistribSMul S M] [IsScalarTower S R M] (P : Submodule R M) :
     DistribSMul S (M ⧸ P) :=
-  { Function.Surjective.distribSMul {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
-    (surjective_quot_mk _) (Submodule.Quotient.mk_smul P) with
+  { Function.Surjective.distribSMul {toFun := mkQ, map_zero' := rfl, map_add' := fun _ _ => rfl}
+    QuotLike.surjective_mkQ (Submodule.Quotient.mk_smul P) with
     toSMulZeroClass := smulZeroClass' _ }
 
 -- Porting note: should this be marked as a `@[default_instance]`?
@@ -176,8 +176,9 @@ instance distribSMul (P : Submodule R M) : DistribSMul R (M ⧸ P) :=
 -- TODO: leanprover-community/mathlib4#7432
 instance distribMulAction' [Monoid S] [SMul S R] [DistribMulAction S M] [IsScalarTower S R M]
     (P : Submodule R M) : DistribMulAction S (M ⧸ P) :=
-  { Function.Surjective.distribMulAction {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
-    (surjective_quot_mk _) (Submodule.Quotient.mk_smul P) with
+  { Function.Surjective.distribMulAction
+    {toFun := mkQ, map_zero' := rfl, map_add' := fun _ _ => rfl}
+    QuotLike.surjective_mkQ (Submodule.Quotient.mk_smul P) with
     toMulAction := mulAction' _ }
 
 -- Porting note: should this be marked as a `@[default_instance]`?
@@ -188,8 +189,8 @@ instance distribMulAction (P : Submodule R M) : DistribMulAction R (M ⧸ P) :=
 -- TODO: leanprover-community/mathlib4#7432
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] (P : Submodule R M) :
     Module S (M ⧸ P) :=
-  { Function.Surjective.module _ {toFun := mk, map_zero' := by rfl, map_add' := fun _ _ => by rfl}
-    (surjective_quot_mk _) (Submodule.Quotient.mk_smul P) with
+  { Function.Surjective.module _ {toFun := mkQ, map_zero' := by rfl, map_add' := fun _ _ => by rfl}
+    QuotLike.surjective_mkQ (Submodule.Quotient.mk_smul P) with
     toDistribMulAction := distribMulAction' _ }
 
 -- Porting note: should this be marked as a `@[default_instance]`?
@@ -210,30 +211,30 @@ def restrictScalarsEquiv [Ring S] [SMul S R] [Module S M] [IsScalarTower S R M]
 @[simp]
 theorem restrictScalarsEquiv_mk [Ring S] [SMul S R] [Module S M] [IsScalarTower S R M]
     (P : Submodule R M) (x : M) :
-    restrictScalarsEquiv S P (mk x : M ⧸ P) = (mk x : M ⧸ P) :=
+    restrictScalarsEquiv S P (⟦x⟧ : M ⧸ P) = (⟦x⟧ : M ⧸ P) :=
   rfl
 
 @[simp]
 theorem restrictScalarsEquiv_symm_mk [Ring S] [SMul S R] [Module S M] [IsScalarTower S R M]
     (P : Submodule R M) (x : M) :
-    (restrictScalarsEquiv S P).symm ((mk : M → M ⧸ P) x) = (mk : M → M ⧸ P) x :=
+    (restrictScalarsEquiv S P).symm ((mkQ : M → M ⧸ P) x) = (mkQ : M → M ⧸ P) x :=
   rfl
 
 end Module
 
-theorem mk_surjective : Function.Surjective (@mk _ _ _ _ _ p) := by
+theorem mk_surjective : Function.Surjective mkQ_ p := by
   rintro ⟨x⟩
   exact ⟨x, rfl⟩
 
 theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) := by
   obtain ⟨x, _, not_mem_s⟩ := SetLike.exists_of_lt h
-  refine ⟨⟨mk x, 0, ?_⟩⟩
+  refine ⟨⟨⟦x⟧, 0, ?_⟩⟩
   simpa using not_mem_s
 
 end Quotient
 
 instance QuotientBot.infinite [Infinite M] : Infinite (M ⧸ (⊥ : Submodule R M)) :=
-  Infinite.of_injective Submodule.Quotient.mk fun _x _y h =>
+  Infinite.of_injective mkQ fun _x _y h =>
     sub_eq_zero.mp <| (Submodule.Quotient.eq ⊥).mp h
 
 instance QuotientTop.unique : Unique (M ⧸ (⊤ : Submodule R M)) where
@@ -272,18 +273,18 @@ section
 
 variable {M₂ : Type*} [AddCommGroup M₂] [Module R M₂]
 
-theorem quot_hom_ext (f g : (M ⧸ p) →ₗ[R] M₂) (h : ∀ x : M, f (Quotient.mk x) = g (Quotient.mk x)) :
+theorem quot_hom_ext (f g : (M ⧸ p) →ₗ[R] M₂) (h : ∀ x : M, f ⟦x⟧ = g ⟦x⟧) :
     f = g :=
   LinearMap.ext fun x => Quotient.inductionOn' x h
 
 /-- The map from a module `M` to the quotient of `M` by a submodule `p` as a linear map. -/
 def mkQ : M →ₗ[R] M ⧸ p where
-  toFun := Quotient.mk
+  toFun := QuotLike.mkQ
   map_add' := by simp
   map_smul' := by simp
 
 @[simp]
-theorem mkQ_apply (x : M) : p.mkQ x = (Quotient.mk x : M ⧸ p) :=
+theorem mkQ_apply (x : M) : p.mkQ x = (⟦x⟧ : M ⧸ p) :=
   rfl
 
 theorem mkQ_surjective (A : Submodule R M) : Function.Surjective A.mkQ := by
@@ -308,7 +309,7 @@ def liftQ (f : M →ₛₗ[τ₁₂] M₂) (h : p ≤ ker f) : M ⧸ p →ₛₗ
     map_smul' := by rintro a ⟨x⟩; exact f.map_smulₛₗ a x }
 
 @[simp]
-theorem liftQ_apply (f : M →ₛₗ[τ₁₂] M₂) {h} (x : M) : p.liftQ f h (Quotient.mk x) = f x :=
+theorem liftQ_apply (f : M →ₛₗ[τ₁₂] M₂) {h} (x : M) : p.liftQ f h ⟦x⟧ = f x :=
   rfl
 
 @[simp]
@@ -321,7 +322,7 @@ def liftQSpanSingleton (x : M) (f : M →ₛₗ[τ₁₂] M₂) (h : f x = 0) : 
 
 @[simp]
 theorem liftQSpanSingleton_apply (x : M) (f : M →ₛₗ[τ₁₂] M₂) (h : f x = 0) (y : M) :
-    liftQSpanSingleton x f h (Quotient.mk y) = f y :=
+    liftQSpanSingleton x f h ⟦y⟧ = f y :=
   rfl
 
 @[simp]
@@ -356,7 +357,7 @@ def mapQ (f : M →ₛₗ[τ₁₂] M₂) (h : p ≤ comap f q) : M ⧸ p →ₛ
 
 @[simp]
 theorem mapQ_apply (f : M →ₛₗ[τ₁₂] M₂) {h} (x : M) :
-    mapQ p q f h (Quotient.mk x : M ⧸ p) = (Quotient.mk (f x) : M₂ ⧸ q) :=
+    mapQ p q f h (⟦x⟧ : M ⧸ p) = (⟦f x⟧ : M₂ ⧸ q) :=
   rfl
 
 theorem mapQ_mkQ (f : M →ₛₗ[τ₁₂] M₂) {h} : (mapQ p q f h).comp p.mkQ = q.mkQ.comp f := by
@@ -404,7 +405,7 @@ theorem comap_liftQ (f : M →ₛₗ[τ₁₂] M₂) (h) : q.comap (p.liftQ f h)
 theorem map_liftQ [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) (h) (q : Submodule R (M ⧸ p)) :
     q.map (p.liftQ f h) = (q.comap p.mkQ).map f :=
   le_antisymm (by rintro _ ⟨⟨x⟩, hxq, rfl⟩; exact ⟨x, hxq, rfl⟩)
-    (by rintro _ ⟨x, hxq, rfl⟩; exact ⟨Quotient.mk x, hxq, rfl⟩)
+    (by rintro _ ⟨x, hxq, rfl⟩; exact ⟨⟦x⟧, hxq, rfl⟩)
 
 theorem ker_liftQ (f : M →ₛₗ[τ₁₂] M₂) (h) : ker (p.liftQ f h) = (ker f).map (mkQ p) :=
   comap_liftQ _ _ _ _
@@ -535,12 +536,12 @@ def quotEquivOfEqBot (hp : p = ⊥) : (M ⧸ p) ≃ₗ[R] M :=
 
 @[simp]
 theorem quotEquivOfEqBot_apply_mk (hp : p = ⊥) (x : M) :
-    p.quotEquivOfEqBot hp (Quotient.mk x : M ⧸ p) = x :=
+    p.quotEquivOfEqBot hp (⟦x⟧ : M ⧸ p) = x :=
   rfl
 
 @[simp]
 theorem quotEquivOfEqBot_symm_apply (hp : p = ⊥) (x : M) :
-    (p.quotEquivOfEqBot hp).symm x = (Quotient.mk x : M ⧸ p) :=
+    (p.quotEquivOfEqBot hp).symm x = (⟦x⟧ : M ⧸ p) :=
   rfl
 
 @[simp]
@@ -562,8 +563,7 @@ def quotEquivOfEq (h : p = p') : (M ⧸ p) ≃ₗ[R] M ⧸ p' :=
 
 @[simp]
 theorem quotEquivOfEq_mk (h : p = p') (x : M) :
-    Submodule.quotEquivOfEq p p' h (Submodule.Quotient.mk x : M ⧸ p) =
-      (Submodule.Quotient.mk x : M ⧸ p') :=
+    Submodule.quotEquivOfEq p p' h (⟦x⟧ : M ⧸ p) = (⟦x⟧ : M ⧸ p') :=
   rfl
 
 @[simp]
