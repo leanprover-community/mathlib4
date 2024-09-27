@@ -28,8 +28,9 @@ it is right adjoint to `Cat.objects.`
 namespace CategoryTheory
 
 universe u v w
-/-- We start by introducting an alias for the type underlying a codiscrete category
-structure.-/
+
+/-- The type of objects in the category `Codiscrete A` is a type synonym for `A` and there is a unique
+morphism between any two objects in this category. -/
 def Codiscrete (A : Type u) : Type u := A
 
 namespace Codiscrete
