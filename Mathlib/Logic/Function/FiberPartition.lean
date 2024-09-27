@@ -6,7 +6,7 @@ Authors: Dagur Asgeirsson
 import Mathlib.Data.Set.Basic
 /-!
 
-This file defines the type `f.Fiber` of fibers of a function `f : Y → Z`, and provides some API
+This file defines the type `f.Fiber` of fibers of a function `f : Y → Z`, and provides some API
 to work with and construct terms of this type.
 
 Note: this API is designed to be useful when defining the counit of the adjunction between
@@ -25,7 +25,7 @@ def Fiber (f : Y → Z) : Type _ := Set.range (fun (x : Set.range f) ↦ f ⁻¹
 namespace Fiber
 
 /--
-Any `a : Fiber f` is of the form `f ⁻¹' {x}` for some `x` in the image of `f`. We define `a.image` 
+Any `a : Fiber f` is of the form `f ⁻¹' {x}` for some `x` in the image of `f`. We define `a.image`
 as an arbitrary such `x`.
 -/
 noncomputable def image (f : Y → Z) (a : Fiber f) : Z := a.2.choose.1
@@ -33,11 +33,11 @@ noncomputable def image (f : Y → Z) (a : Fiber f) : Z := a.2.choose.1
 lemma eq_fiber_image  (f : Y → Z) (a : Fiber f) : a.1 = f ⁻¹' {a.image} := a.2.choose_spec.symm
 
 /--
-Given `y : Y`, `Fiber.mk f y` is the fiber of `f` that `y` belongs to, as an element of `Fiber f`.
+Given `y : Y`, `Fiber.mk f y` is the fiber of `f` that `y` belongs to, as an element of `Fiber f`.
 -/
 def mk (f : Y → Z) (y : Y) : Fiber f := ⟨f ⁻¹' {f y}, by simp⟩
 
-/-- `y : Y` as a term of the type `Fiber.mk f y` -/
+/-- `y : Y` as a term of the type `Fiber.mk f y` -/
 def mkSelf (f : Y → Z) (y : Y) : (mk f y).val := ⟨y, rfl⟩
 
 lemma map_eq_image (f : Y → Z) (a : Fiber f) (x : a.1) : f x = a.image := by

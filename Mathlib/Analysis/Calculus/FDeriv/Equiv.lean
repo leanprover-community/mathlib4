@@ -87,7 +87,7 @@ theorem comp_differentiableWithinAt_iff {f : G → E} {s : Set G} {x : G} :
     ⟨fun H => ?_, fun H => iso.differentiable.differentiableAt.comp_differentiableWithinAt x H⟩
   have : DifferentiableWithinAt 𝕜 (iso.symm ∘ iso ∘ f) s x :=
     iso.symm.differentiable.differentiableAt.comp_differentiableWithinAt x H
-  rwa [← Function.comp.assoc iso.symm iso f, iso.symm_comp_self] at this
+  rwa [← Function.comp_assoc iso.symm iso f, iso.symm_comp_self] at this
 
 theorem comp_differentiableAt_iff {f : G → E} {x : G} :
     DifferentiableAt 𝕜 (iso ∘ f) x ↔ DifferentiableAt 𝕜 f x := by
@@ -107,7 +107,7 @@ theorem comp_hasFDerivWithinAt_iff {f : G → E} {s : Set G} {x : G} {f' : G →
     HasFDerivWithinAt (iso ∘ f) ((iso : E →L[𝕜] F).comp f') s x ↔ HasFDerivWithinAt f f' s x := by
   refine ⟨fun H => ?_, fun H => iso.hasFDerivAt.comp_hasFDerivWithinAt x H⟩
   have A : f = iso.symm ∘ iso ∘ f := by
-    rw [← Function.comp.assoc, iso.symm_comp_self]
+    rw [← Function.comp_assoc, iso.symm_comp_self]
     rfl
   have B : f' = (iso.symm : F →L[𝕜] E).comp ((iso : E →L[𝕜] F).comp f') := by
     rw [← ContinuousLinearMap.comp_assoc, iso.coe_symm_comp_coe, ContinuousLinearMap.id_comp]
@@ -174,7 +174,7 @@ theorem comp_right_differentiableWithinAt_iff {f : F → G} {s : Set F} {x : E} 
     apply H.comp (iso x) iso.symm.differentiableWithinAt
     intro y hy
     simpa only [mem_preimage, apply_symm_apply] using hy
-  rwa [Function.comp.assoc, iso.self_comp_symm] at this
+  rwa [Function.comp_assoc, iso.self_comp_symm] at this
 
 theorem comp_right_differentiableAt_iff {f : F → G} {x : E} :
     DifferentiableAt 𝕜 (f ∘ iso) x ↔ DifferentiableAt 𝕜 f (iso x) := by
@@ -198,7 +198,7 @@ theorem comp_right_hasFDerivWithinAt_iff {f : F → G} {s : Set F} {x : E} {f' :
   refine ⟨fun H => ?_, fun H => H.comp x iso.hasFDerivWithinAt (mapsTo_preimage _ s)⟩
   rw [← iso.symm_apply_apply x] at H
   have A : f = (f ∘ iso) ∘ iso.symm := by
-    rw [Function.comp.assoc, iso.self_comp_symm]
+    rw [Function.comp_assoc, iso.self_comp_symm]
     rfl
   have B : f' = (f'.comp (iso : E →L[𝕜] F)).comp (iso.symm : F →L[𝕜] E) := by
     rw [ContinuousLinearMap.comp_assoc, iso.coe_comp_coe_symm, ContinuousLinearMap.comp_id]

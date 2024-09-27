@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Scott Morrison, Ainsley Pahljina
+Authors: Mario Carneiro, Kim Morrison, Ainsley Pahljina
 -/
 import Mathlib.RingTheory.Fintype
 
@@ -24,7 +24,7 @@ primes using `lucas_lehmer_sufficiency`.
 ## History
 
 This development began as a student project by Ainsley Pahljina,
-and was then cleaned up for mathlib by Scott Morrison.
+and was then cleaned up for mathlib by Kim Morrison.
 The tactic for certified computation of Lucas-Lehmer residues was provided by Mario Carneiro.
 This tactic was ported by Thomas Murrills to Lean 4, and then it was converted to a `norm_num`
 extension and made to use kernel reductions by Kyle Miller.

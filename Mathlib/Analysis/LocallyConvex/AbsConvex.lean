@@ -42,38 +42,6 @@ open NNReal Pointwise Topology
 
 variable {𝕜 E F G ι : Type*}
 
-section NontriviallyNormedField
-
-variable (𝕜 E) {s : Set E}
-variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
-variable [TopologicalSpace E] [LocallyConvexSpace ℝ E] [ContinuousSMul 𝕜 E]
-
-theorem nhds_basis_abs_convex :
-    (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ Balanced 𝕜 s ∧ Convex ℝ s) id := by
-  refine
-    (LocallyConvexSpace.convex_basis_zero ℝ E).to_hasBasis (fun s hs => ?_) fun s hs =>
-      ⟨s, ⟨hs.1, hs.2.2⟩, rfl.subset⟩
-  refine ⟨convexHull ℝ (balancedCore 𝕜 s), ?_, convexHull_min (balancedCore_subset s) hs.2⟩
-  refine ⟨Filter.mem_of_superset (balancedCore_mem_nhds_zero hs.1) (subset_convexHull ℝ _), ?_⟩
-  refine ⟨(balancedCore_balanced s).convexHull, ?_⟩
-  exact convex_convexHull ℝ (balancedCore 𝕜 s)
-
-variable [ContinuousSMul ℝ E] [TopologicalAddGroup E]
-
-theorem nhds_basis_abs_convex_open :
-    (𝓝 (0 : E)).HasBasis (fun s => (0 : E) ∈ s ∧ IsOpen s ∧ Balanced 𝕜 s ∧ Convex ℝ s) id := by
-  refine (nhds_basis_abs_convex 𝕜 E).to_hasBasis ?_ ?_
-  · rintro s ⟨hs_nhds, hs_balanced, hs_convex⟩
-    refine ⟨interior s, ?_, interior_subset⟩
-    exact
-      ⟨mem_interior_iff_mem_nhds.mpr hs_nhds, isOpen_interior,
-        hs_balanced.interior (mem_interior_iff_mem_nhds.mpr hs_nhds), hs_convex.interior⟩
-  rintro s ⟨hs_zero, hs_open, hs_balanced, hs_convex⟩
-  exact ⟨s, ⟨hs_open.mem_nhds hs_zero, hs_balanced, hs_convex⟩, rfl.subset⟩
-
-end NontriviallyNormedField
-
 section AbsolutelyConvex
 
 variable (𝕜) [SeminormedRing 𝕜] [SMul 𝕜 E] [SMul ℝ E] [AddCommMonoid E]
@@ -162,6 +130,38 @@ theorem absConvexHull_nonempty_iff : (absConvexHull 𝕜 s).Nonempty ↔ s.Nonem
 protected alias ⟨_, Set.Nonempty.absConvexHull⟩ := absConvexHull_nonempty_iff
 
 end AbsolutelyConvex
+
+section NontriviallyNormedField
+
+variable (𝕜 E) {s : Set E}
+variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
+variable [TopologicalSpace E] [LocallyConvexSpace ℝ E] [ContinuousSMul 𝕜 E]
+
+theorem nhds_basis_abs_convex :
+    (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ AbsConvex 𝕜 s) id := by
+  refine
+    (LocallyConvexSpace.convex_basis_zero ℝ E).to_hasBasis (fun s hs => ?_) fun s hs =>
+      ⟨s, ⟨hs.1, hs.2.2⟩, rfl.subset⟩
+  refine ⟨convexHull ℝ (balancedCore 𝕜 s), ?_, convexHull_min (balancedCore_subset s) hs.2⟩
+  refine ⟨Filter.mem_of_superset (balancedCore_mem_nhds_zero hs.1) (subset_convexHull ℝ _), ?_⟩
+  refine ⟨(balancedCore_balanced s).convexHull, ?_⟩
+  exact convex_convexHull ℝ (balancedCore 𝕜 s)
+
+variable [ContinuousSMul ℝ E] [TopologicalAddGroup E]
+
+theorem nhds_basis_abs_convex_open :
+    (𝓝 (0 : E)).HasBasis (fun s => (0 : E) ∈ s ∧ IsOpen s ∧ AbsConvex 𝕜 s) id := by
+  refine (nhds_basis_abs_convex 𝕜 E).to_hasBasis ?_ ?_
+  · rintro s ⟨hs_nhds, hs_balanced, hs_convex⟩
+    refine ⟨interior s, ?_, interior_subset⟩
+    exact
+      ⟨mem_interior_iff_mem_nhds.mpr hs_nhds, isOpen_interior,
+        hs_balanced.interior (mem_interior_iff_mem_nhds.mpr hs_nhds), hs_convex.interior⟩
+  rintro s ⟨hs_zero, hs_open, hs_balanced, hs_convex⟩
+  exact ⟨s, ⟨hs_open.mem_nhds hs_zero, hs_balanced, hs_convex⟩, rfl.subset⟩
+
+end NontriviallyNormedField
 
 section
 
