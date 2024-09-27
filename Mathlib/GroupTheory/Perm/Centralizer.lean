@@ -130,12 +130,14 @@ lemma Subgroup.noncommPiCoprod_apply {G : Type*} [Group G] {ι : Type*} [Fintype
   simp only [Subgroup.noncommPiCoprod, MonoidHom.noncommPiCoprod,
     coeSubtype, MonoidHom.coe_mk, OneHom.coe_mk]
 
+/-- Variant of `MulHom.noncomCoprod_apply` with the product written in the other direction` -/
 theorem MulHom.noncommCoprod_apply' {M : Type*} {N : Type*}
     {P : Type*} [Mul M] [Mul N] [Semigroup P]
     (f : M →ₙ* P) (g : N →ₙ* P) (comm : ∀ (m : M) (n : N), Commute (f m) (g n)) (mn : M × N) :
     (f.noncommCoprod g comm) mn = g mn.2 * f mn.1 := by
   rw [← comm, MulHom.noncommCoprod_apply]
 
+/-- Variant of `MonoidHom.noncomCoprod_apply` with the product written in the other direction` -/
 theorem MonoidHom.noncommCoprod_apply' {M : Type*} {N : Type*}
     {P : Type*} [Monoid M] [Monoid N] [Monoid P]
     (f : M →* P) (g : N →* P) (comm : ∀ (m : M) (n : N), Commute (f m) (g n)) (mn : M × N) :
@@ -719,13 +721,16 @@ theorem mem_range_toPermHom_iff {τ} : τ ∈ (toPermHom g).range ↔
   · obtain ⟨a⟩ := Basis.nonempty g
     exact fun hτ ↦ ⟨toCentralizer a ⟨τ, hτ⟩, toCentralizer_rightInverse a ⟨τ, hτ⟩⟩
 
+/-- Unapplied variant of `Equiv.Perm.mem_range_toPermHom_iff` -/
 theorem mem_range_toPermHom_iff' {τ} : τ ∈ (toPermHom g).range ↔
     (fun (c : g.cycleFactorsFinset) ↦ (c : Perm α).support.card) ∘ τ =
       fun (c : g.cycleFactorsFinset) ↦ (c : Perm α).support.card := by
   rw [mem_range_toPermHom_iff, Function.funext_iff]
   simp only [Finset.coe_sort_coe, Subtype.forall, Function.comp_apply]
 
-theorem range_toPermHom_eq_range_toPermHom' : (toPermHom g).range = range_toPermHom' g := by
+/-- Computes the range of `Equiv.Perm.toPermHom g` -/
+theorem range_toPermHom_eq_range_toPermHom' :
+    (toPermHom g).range = range_toPermHom' g := by
   ext τ
   rw [mem_range_toPermHom_iff, mem_range_toPermHom'_iff]
 
