@@ -357,7 +357,7 @@ theorem cons_sublist_orderedInsert {l c : List α} {a : α} (hl : c <+ l) (ha : 
       | cons _ h => exact .cons _ <| ih h
       | cons₂    => exact absurd (ha _ <| mem_cons_self ..) hr
 
-theorem sublist_orderedInsert_sublist [IsTrans α r] {as bs} (x) (hs : as <+ bs) (hb : bs.Sorted r) :
+theorem Sublist.orderedInsert_sublist [IsTrans α r] {as bs} (x) (hs : as <+ bs) (hb : bs.Sorted r) :
     orderedInsert r x as <+ orderedInsert r x bs := by
   cases as with
   | nil => simp
@@ -368,16 +368,16 @@ theorem sublist_orderedInsert_sublist [IsTrans α r] {as bs} (x) (hs : as <+ bs)
       unfold orderedInsert
       cases hs <;> split_ifs with hr
       · exact .cons₂ _ <| .cons _ ‹a :: as <+ bs›
-      · have ih := sublist_orderedInsert_sublist x ‹a :: as <+ bs›  hb.of_cons
+      · have ih := orderedInsert_sublist x ‹a :: as <+ bs›  hb.of_cons
         simp only [hr, orderedInsert, ite_true] at ih
         exact .trans ih <| .cons _ (.refl _)
       · have hba := pairwise_cons.mp hb |>.left _ (mem_of_cons_sublist ‹a :: as <+ bs›)
         exact absurd (trans_of _ ‹r x b› hba) hr
-      · have ih := sublist_orderedInsert_sublist x ‹a :: as <+ bs› hb.of_cons
+      · have ih := orderedInsert_sublist x ‹a :: as <+ bs› hb.of_cons
         rw [orderedInsert, if_neg hr] at ih
         exact .cons _ ih
       · simp_all only [sorted_cons, cons_sublist_cons]
-      · exact .cons₂ _ <| sublist_orderedInsert_sublist x ‹as <+ bs› hb.of_cons
+      · exact .cons₂ _ <| orderedInsert_sublist x ‹as <+ bs› hb.of_cons
 
 section TotalAndTransitive
 
@@ -450,7 +450,7 @@ theorem sublist_insertionSort' {l c : List α} (hs : c.Sorted r) (hc : c <+~ l) 
       specialize ih (hs.erase _) _ (erase_cons_head a ‹List _› ▸ hc.erase a) h
       have hm := hc.mem_iff.mp <| mem_cons_self ..
       have he := orderedInsert_erase _ _ hm hs
-      exact he ▸ sublist_orderedInsert_sublist _ ih (sorted_insertionSort ..)
+      exact he ▸ Sublist.orderedInsert_sublist _ ih (sorted_insertionSort ..)
 
 /--
 Another statement of stability of insertion sort.
