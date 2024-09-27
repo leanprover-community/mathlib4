@@ -76,8 +76,8 @@ theorem add_pow [CommSemiring R] (x y : R) (n : ℕ) :
   (Commute.all x y).add_pow n
 
 /-- A special case of the **binomial theorem** -/
-theorem sub_pow [CommRing R] (x : R) (y : R) (n : ℕ) :
-    (x - y) ^ n = ∑ m ∈ range (n + 1), (-1) ^ (m + n) * n.choose m • x ^ m * y ^ (n - m) := by
+theorem sub_pow [CommRing R] (x y : R) (n : ℕ) :
+    (x - y) ^ n = ∑ m ∈ range (n + 1), (-1) ^ (m + n) * x ^ m * y ^ (n - m) * n.choose m := by
   rw [sub_eq_add_neg, add_pow]
   congr! 1 with m hm
   have : (-1 : R) ^ (n - m) = (-1) ^ (n + m) := by
