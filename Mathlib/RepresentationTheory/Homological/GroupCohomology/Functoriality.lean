@@ -335,7 +335,7 @@ def mapShortExact (X : ShortComplex (Rep k G)) (H : ShortExact X) :
     mono_f := letI := H.2; cochainsMap_f_map_mono X.f i
     epi_g := letI := H.3; cochainsMap_f_map_epi X.g i }
 
-theorem lol_aux {X : ShortComplex (Rep k G)} (H : ShortExact X) (n : ℕ)
+theorem δ_apply_aux {X : ShortComplex (Rep k G)} (H : ShortExact X) (n : ℕ)
     (y : (Fin n → G) → X.X₂) (x : (Fin (n + 1) → G) → X.X₁)
     (hx : X.f.hom ∘ x = inhomogeneousCochains.d X.X₂ n y) :
     inhomogeneousCochains.d X.X₁ (n + 1) x = 0 := by
@@ -351,16 +351,15 @@ theorem lol_aux {X : ShortComplex (Rep k G)} (H : ShortExact X) (n : ℕ)
   · simp only [CochainComplex.of_x, map_zero]
     exact this ▸ congr($(inhomogeneousCochains.d_comp_d X.X₂ n) y)
 
-theorem lol (X : ShortComplex (Rep k G)) (H : ShortExact X) (n : ℕ)
+theorem δ_apply (X : ShortComplex (Rep k G)) (H : ShortExact X) (n : ℕ)
     (z : (Fin n → G) → X.X₃) (hz : inhomogeneousCochains.d X.X₃ n z = 0)
     (y : (Fin n → G) → X.X₂) (hy : (cochainsMap X.X₂ X.X₃ (MonoidHom.id G) X.g.hom).f n y = z)
     (x : (Fin (n + 1) → G) → X.X₁) (hx : X.f.hom ∘ x = inhomogeneousCochains.d X.X₂ n y) :
     (mapShortExact X H).δ n (n + 1) rfl (groupCohomologyπ X.X₃ n <|
       (cocyclesIso X.X₃ n).inv ⟨z, hz⟩) = groupCohomologyπ X.X₁ (n + 1)
-      ((cocyclesIso X.X₁ (n + 1)).inv ⟨x, lol_aux H n y x hx⟩) := by
-  have lol' := ShortExact.δ_apply (C := ModuleCat k)
-    (mapShortExact X H) n (n + 1) rfl z ?_ y hy x ?_ (n + 2) (by simp)
-  convert lol'
-  all_goals sorry
+      ((cocyclesIso X.X₁ (n + 1)).inv ⟨x, δ_apply_aux H n y x hx⟩) := by
+  simp_rw [forget₂_cocyclesIso_inv_eq]
+  exact ShortExact.δ_apply (mapShortExact X H) n (n + 1) rfl z (by simpa using hz) y hy x
+    (by simpa using hx) (n + 2) (by simp)
 
 end groupCohomology

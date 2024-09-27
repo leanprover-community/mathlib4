@@ -164,13 +164,29 @@ def ofZeroSc'Iso {V : Type u} [Category V] [HasZeroMorphisms V]
 end CochainComplex
 namespace CategoryTheory.ShortComplex
 
-variable (R : Type u) [Ring R] {M : ShortComplex (ModuleCat R)}
+variable {R : Type u} [Ring R] {M : ShortComplex (ModuleCat R)}
     (x : LinearMap.ker M.g)
 
-theorem forget₂_moduleCatCyclesIso_inv_eq {M : ShortComplex (ModuleCat R)}
-    (x : LinearMap.ker M.g) :
-    M.moduleCatCyclesIso.inv x = cyclesMk M x.1 x.2 := by
-  sorry
+theorem forget₂_moduleCat_mapCyclesIso (M : ShortComplex (ModuleCat R)) :
+    (M.mapCyclesIso (forget₂ (ModuleCat R) Ab))
+      ≪≫ (forget₂ (ModuleCat R) Ab).mapIso M.moduleCatCyclesIso
+      = (ShortComplex.abCyclesIso _) := by
+  apply Iso.ext
+  rw [← Iso.inv_eq_inv]
+  refine (cancel_mono (M.map (forget₂ (ModuleCat R) Ab)).iCycles).1 ?_
+  simp only [Iso.trans_inv, Functor.mapIso_inv, ← Functor.map_comp,
+    moduleCatCyclesIso_inv_iCycles, map_X₂, map_X₃, map_g,
+    Category.assoc, mapCyclesIso, LeftHomologyData.cyclesIso_inv_comp_iCycles,
+    LeftHomologyData.map_i, abCyclesIso, ← Functor.map_comp]
+  erw [LeftHomologyData.cyclesIso_inv_comp_iCycles] -- ugh I cbf
+  rfl
+
+theorem moduleCatCyclesIso_inv_apply {M : ShortComplex (ModuleCat R)}
+    (x : M.X₂) (hx : M.g x = 0) :
+    M.moduleCatCyclesIso.inv ⟨x, hx⟩ = M.cyclesMk x hx := by
+  have := congr(Iso.inv $(forget₂_moduleCat_mapCyclesIso M))
+  rw [Iso.trans_inv, Iso.comp_inv_eq] at this
+  exact congr($this ⟨x, _⟩)
 
 end CategoryTheory.ShortComplex
 namespace groupCohomology
@@ -286,24 +302,24 @@ def inhomogeneousCochainsIso : inhomogeneousCochains A ≅ linearYonedaObjResolu
 `n`th differential in the complex of inhomogeneous cochains. -/
 abbrev cocycles (n : ℕ) : ModuleCat k := (inhomogeneousCochains A).cycles n
 
-def cocyclesIso : ∀ (n : ℕ),
-    cocycles A n ≅ ModuleCat.of k (LinearMap.ker (inhomogeneousCochains.d A n))
-| 0 =>
-  (inhomogeneousCochains A).cyclesIsoSc' 0 0 1 (by aesop) (by aesop)
-    ≪≫ ShortComplex.cyclesMapIso
-    (CochainComplex.ofZeroSc'Iso ((inhomogeneousCochains A).X) _ 0)
-    ≪≫ ShortComplex.moduleCatCyclesIso _
-| n + 1 =>
-  (inhomogeneousCochains A).cyclesIsoSc' n (n + 1) (n + 2) (by aesop) (by aesop)
-    ≪≫ ShortComplex.cyclesMapIso
-    (CochainComplex.ofSuccSc'Iso ((inhomogeneousCochains A).X) _ n)
-    ≪≫ ShortComplex.moduleCatCyclesIso _
+open HomologicalComplex
 
-/-
+def cocyclesIso (n : ℕ) :
+    cocycles A n ≅ ModuleCat.of k (LinearMap.ker (inhomogeneousCochains.d A n)) :=
+  ShortComplex.moduleCatCyclesIso _
+    ≪≫ (LinearEquiv.ofEq _ _ <| by
+    show LinearMap.ker (dFrom (inhomogeneousCochains A) _) = _
+    rw [dFrom_eq _ rfl, inhomogeneousCochains.d_def]
+    simp only [ModuleCat.coe_of, ModuleCat.hom_def, ModuleCat.comp_def]
+    rw [LinearMap.ker_comp_of_ker_eq_bot]
+    exact LinearEquiv.ker (xNextIso _ rfl).symm.toLinearEquiv).toModuleIso
+
 theorem forget₂_cocyclesIso_inv_eq {n : ℕ} (x : (inhomogeneousCochains A).X n)
     (hx : inhomogeneousCochains.d A n x = 0) :
     ((cocyclesIso A n).inv ⟨x, hx⟩)
-    = HomologicalComplex.cyclesMk (inhomogeneousCochains A) x (n + 1) rfl _ := by-/
+    = HomologicalComplex.cyclesMk (inhomogeneousCochains A) x (n + 1)
+      (CochainComplex.next _ _) (by simpa using hx) :=
+  ShortComplex.moduleCatCyclesIso_inv_apply _ _
 
 /-- The natural inclusion of the `n`-cocycles `Zⁿ(G, A)` into the `n`-cochains `Cⁿ(G, A).` -/
 abbrev iCocycles (n : ℕ) : cocycles A n ⟶ ModuleCat.of k ((Fin n → G) → A) :=
