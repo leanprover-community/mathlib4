@@ -163,7 +163,7 @@ theorem Prime.deficient_pow  (h : Prime n) : Deficient (n ^ m) := by
       _ ≤ (n ^ m - 1) := Nat.div_le_self (n ^ m - 1) (n - 1)
       _ < n ^ m := sub_lt (pow_pos (Prime.pos h) m) (Nat.one_pos)
 
-theorem Prime.deficient_pow' (h : IsPrimePow n) : Deficient n := by
+theorem _root_.IsPrimePow.deficient (h : IsPrimePow n) : Deficient n := by
   obtain ⟨p, k, hp, -, rfl⟩ := h
   exact hp.nat_prime.deficient_pow
 
