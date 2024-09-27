@@ -290,8 +290,6 @@ unsafe def main (args : List String): IO UInt32 := do
   -- find labels covering the modified files
   let labels := getMatchingLabels modifiedFiles
 
-  -- Note: the github workflow uses `sed` to parse this output
-  -- if modified, the `sed` command might need adaption, too
   println s!"::notice::Applicable labels: {labels}"
 
   match labels with
