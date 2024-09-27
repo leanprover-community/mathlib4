@@ -53,3 +53,20 @@ this : ∃ y, id y = ⟦id a⟧
 -- #check ((mkQ x : _) : Quotient s)
 
 end Quotient
+
+class HintClass (A B : Type*) where
+  r : B → B → Prop
+
+variable (A B : Type*) [HintClass A B] (b : B)
+
+def Q := Quot (α := B) (HintClass.r A)
+
+instance : QuotLike (Q A B) B (HintClass.r A) where
+
+instance : QuotLike.HasQuotHint A (Q A B) B (HintClass.r A) where
+
+/-- info: mkQ : B → Q A B -/
+#guard_msgs in #check (((mkQ_ A : _) : _ → _) : B → _)
+
+/-- info: ⟦b⟧ : Q A B -/
+#guard_msgs in #check (⟦b⟧_A : _)
