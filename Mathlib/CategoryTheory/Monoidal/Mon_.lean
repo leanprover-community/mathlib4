@@ -560,7 +560,7 @@ instance monMonoidal : MonoidalCategory (Mon_ C) where
   tensorHom_def := by intros; ext; simp [tensorHom_def]
 
 @[simps!]
-instance {M N : C} [Mon_Class M] [Mon_Class N] : Mon_Class (M ⊗ N : C) :=
+instance {M N : C} [Mon_Class M] [Mon_Class N] : Mon_Class (M ⊗ N) :=
   inferInstanceAs <| Mon_Class (Mon_.mk' M ⊗ Mon_.mk' N).X
 
 variable (C)
