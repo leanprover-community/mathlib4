@@ -239,7 +239,7 @@ to add the label to the PR.
 - `2`: invalid labels defined
 - `3`: ~labels do not cover all of `Mathlib/`~ (unused; only emitting warning)
 -/
-unsafe def main (args : List String): IO Unit := do
+unsafe def main (args : List String): IO UInt32 := do
   if args.length > 1 then
     println s!"::error:: autolabel: invalid number of arguments ({args.length}), \
     expected at most 1. Please run without arguments or provide the target PR's \
@@ -290,11 +290,13 @@ unsafe def main (args : List String): IO Unit := do
   -- find labels covering the modified files
   let labels := getMatchingLabels modifiedFiles
 
+  -- Note: the github workflow uses `sed` to parse this output
+  println s!"Applicable labels: {labels}"
+
   match labels with
   | #[] =>
-    println s!"No applicable labels found!"
+    println s!"No label to add"
   | #[label] =>
-    println s!"Exactly one label found: {label}"
     match prNumber? with
     | some n =>
       let _ ← IO.Process.run {
@@ -302,9 +304,8 @@ unsafe def main (args : List String): IO Unit := do
         args := #["pr", "edit", n, "--add-label", label] }
       println s!"Added label: {label}"
     | none =>
-      println s!"No PR-number provided, skipping adding labels. \
+      println s!"No PR-number provided, not adding labels. \
       (call `lake exe autolabel 150602` to add the labels to PR `150602`)"
-  | labels =>
-    println s!"Multiple labels found: {labels}"
-    println s!"Not adding any label."
+  | _ =>
+    println s!"Not adding multiple labels"
   IO.Process.exit 0

@@ -35,7 +35,10 @@ jobs:
           # the checkout dance, to avoid a detached head
           git checkout master
           git checkout -
-          lake exe autolabel "$NUMBER"
+
+          { LABELS="$(lake exe autolabel "$NUMBER" | tee /dev/fd/3 | sed -n "s/Applicable labels: #\[\(.*\)\].*/\1/p")"; } 3>&1
+
+          printf '## Autolabel\nModified files in this PR suggest the following lables:\n\n%s' "$LABELS" >> "${GITHUB_STEP_SUMMARY}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
