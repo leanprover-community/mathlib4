@@ -151,7 +151,7 @@ So `P : (n : ℕ) → m ≤ n → Prop` is what in this case? It should be `P n 
 
 Maybe we can use a `refine` and provide a proof like the following one.
 -/
-  have : (T ^ 0).IsSymmetric := (pow_zero T).symm ▸ LinearMap.isSymmetric_id
+  have : (T ^ 0).IsSymmetric := pow_zero T ▸ LinearMap.isSymmetric_id
 
 --this is pretty good. It's a term mode proof of the symmetry of `T ^ 0`. This can be in-lined!
 
