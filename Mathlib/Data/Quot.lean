@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Data.QuotLike
 import Mathlib.Logic.Relation
+import Mathlib.Util.Notation3
 
 /-!
 # Quotient types
