@@ -29,7 +29,7 @@ theorem Complex.closedEmbedding_coe_complex : ClosedEmbedding ((↑) : ℤ → �
   rw [Int.norm_eq_abs]
   exact Int.cast_abs
 
-lemma ℂ_ℤ_Isclosed : IsClosed (((↑) : ℤ → ℂ)'' ⊤) := by
+lemma ℂ_ℤ_Isclosed : IsClosed (((↑) : ℤ → ℂ) '' ⊤) := by
   simp only [Set.top_eq_univ, Set.image_univ]
   exact Complex.closedEmbedding_coe_complex.isClosed_range
 
