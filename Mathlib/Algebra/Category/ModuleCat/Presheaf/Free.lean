@@ -26,44 +26,6 @@ universe u v₁ u₁
 
 open CategoryTheory
 
--- this should be moved to `ModuleCat.Adjunctions`
-namespace ModuleCat
-
-section
-
-variable {R : Type u} [Ring R]
-
-/-- Constructor for elements in the module `(free R).obj X`. -/
-noncomputable def freeMk {X : Type u} (x : X) : (free R).obj X := Finsupp.single x 1
-
-@[ext 1200]
-lemma free_hom_ext {X : Type u} {M : ModuleCat.{u} R} {f g : (free R).obj X ⟶ M}
-    (h : ∀ (x : X), f (freeMk x) = g (freeMk x)) :
-    f = g :=
-  (Finsupp.lhom_ext' (fun x ↦ LinearMap.ext_ring (h x)))
-
-/-- The morphism of modules `(free R).obj X ⟶ M` corresponding
-to a map `f : X ⟶ M`. -/
-noncomputable def freeDesc {X : Type u} {M : ModuleCat.{u} R} (f : X ⟶ M) :
-    (free R).obj X ⟶ M :=
-  Finsupp.lift M R X f
-
-@[simp]
-lemma freeDesc_apply {X : Type u} {M : ModuleCat.{u} R} (f : X ⟶ M) (x : X) :
-    freeDesc f (freeMk x : of R (X →₀ R)) = f x := by
-  dsimp [freeDesc]
-  erw [Finsupp.lift_apply, Finsupp.sum_single_index]
-  all_goals simp
-
-@[simp]
-lemma free_map_apply {X Y : Type u} (f : X → Y) (x : X) :
-    (free R).map f (freeMk x) = freeMk (f x) := by
-  apply Finsupp.mapDomain_single
-
-end
-
-end ModuleCat
-
 namespace PresheafOfModules
 
 variable {C : Type u₁} [Category.{v₁} C] (R : Cᵒᵖ ⥤ RingCat.{u})
@@ -75,7 +37,7 @@ of modules over `R` which sends `X : Cᵒᵖ` to the free `R.obj X`-module on `F
 noncomputable def freeObj (F : Cᵒᵖ ⥤ Type u) : PresheafOfModules.{u} R where
   obj := fun X ↦ (ModuleCat.free (R.obj X)).obj (F.obj X)
   map := fun {X Y} f ↦ ModuleCat.freeDesc
-      (fun x ↦ ModuleCat.freeMk (R := R.obj Y) (F.map f x))
+      (fun x ↦ ModuleCat.freeMk (F.map f x))
   map_id := by aesop
 
 /-- The free presheaf of modules functors `(Cᵒᵖ ⥤ Type u) ⥤ PresheafOfModules.{u} R`. -/
@@ -135,8 +97,8 @@ noncomputable def freeAdjunction :
     free.{u} R ⊣ (toPresheaf R ⋙ (whiskeringRight _ _ _).obj (forget Ab)) :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ ↦ freeHomEquiv
-      homEquiv_naturality_left_symm := fun {F₁ F₂ G} f g ↦ free_hom_ext
-        (by ext; simp [freeHomEquiv, toPresheaf])
+      homEquiv_naturality_left_symm := fun {F₁ F₂ G} f g ↦
+        free_hom_ext (by ext; simp [freeHomEquiv, toPresheaf])
       homEquiv_naturality_right := fun {F G₁ G₂} f g ↦ rfl }
 
 variable (F G) in
