@@ -161,6 +161,57 @@ theorem nhds_basis_abs_convex_open :
   rintro s ⟨hs_zero, hs_open, hs_balanced, hs_convex⟩
   exact ⟨s, ⟨hs_open.mem_nhds hs_zero, hs_balanced, hs_convex⟩, rfl.subset⟩
 
+/-
+Below we use `locallyConvexSpace_iff_exists_convex_subset_zero ℝ E`
+
+Do we have `locallyConvexSpace_iff_exists_absconvex_subset_zero ℝ E` ?
+
+-/
+
+theorem deconstruct_locallyConvexSpace_iff_zero : LocallyConvexSpace ℝ E ↔
+    (𝓝 0 : Filter E).HasBasis (fun s : Set E => s ∈ (𝓝 0 : Filter E) ∧ Convex ℝ s) id := by
+  constructor
+  · intro h
+    apply @LocallyConvexSpace.convex_basis _ _ _ _ _ _ h 0
+  · intro h
+    apply LocallyConvexSpace.ofBasisZero ℝ E _ _ h fun _ => And.right
+
+theorem deconstruct_locallyConvexSpace_iff_exists_convex_subset_zero :
+    LocallyConvexSpace ℝ E ↔
+    ∀ U ∈ (𝓝 0 : Filter E), ∃ S ∈ (𝓝 0 : Filter E), Convex ℝ S ∧ S ⊆ U := by
+  apply (locallyConvexSpace_iff_zero ℝ E).trans
+  exact Filter.hasBasis_self
+
+theorem locallyConvexSpace_iff_zero_abs : LocallyConvexSpace ℝ E ↔
+    (𝓝 0 : Filter E).HasBasis (fun s => (0 : E) ∈ s ∧ IsOpen s ∧ AbsConvex ℝ s) id := by
+  constructor
+  · intro h
+    exact nhds_basis_abs_convex_open ℝ _
+  · intro h
+    apply LocallyConvexSpace.ofBasisZero ℝ E _ _ h
+    intro N ⟨_,⟨_,⟨_,hN₂⟩⟩⟩
+    exact hN₂
+
+theorem locallyConvexSpace_iff_zero_abs' : LocallyConvexSpace ℝ E ↔
+    (𝓝 0 : Filter E).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ AbsConvex ℝ s) id := by
+  constructor
+  · intro h
+    exact nhds_basis_abs_convex ℝ _
+  · intro h
+    apply LocallyConvexSpace.ofBasisZero ℝ E _ _ h
+    intro N ⟨_,⟨_,hN₂⟩⟩
+    exact hN₂
+
+theorem locallyConvexSpace_iff_exists_absconvex_subset_zero :
+    LocallyConvexSpace ℝ E ↔
+    ∀ U ∈ (𝓝 0 : Filter E), ∃ S ∈ (𝓝 0 : Filter E), AbsConvex ℝ S ∧ S ⊆ U := by
+  apply (locallyConvexSpace_iff_zero_abs' E).trans
+  rw [← Filter.hasBasis_self]
+
+  --apply Filter.hasBasis_self
+
+
+
 end NontriviallyNormedField
 
 section
