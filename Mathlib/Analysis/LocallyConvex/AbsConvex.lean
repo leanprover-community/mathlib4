@@ -344,14 +344,10 @@ theorem totallyBounded_absConvexHull
     use (1/2:ℝ)•(x+y)
     constructor
     · apply hN₂
-      simp only [mem_preimage]
-      rw [e11]
-      apply hS₃
+      rw [mem_preimage, e11]
       aesop
     · apply hN₂
-      simp only [mem_preimage]
-      rw [e12]
-      apply hS₃
+      rw [mem_preimage, e12]
       aesop
   have e9 : ⋃ y ∈ t', y +ᵥ ((2 : ℝ) • V) ⊆ ⋃ y ∈ t', {x | (x, y) ∈ d'} := by
     apply biUnion_mono
