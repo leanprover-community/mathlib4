@@ -633,7 +633,7 @@ end MonoidHom
 end MonoidHom
 
 @[simp] lemma Nat.sum_eq_listSum (l : List ℕ) : Nat.sum l = l.sum :=
-  (List.foldl_eq_foldr Nat.add_comm Nat.add_assoc _ _).symm
+  (List.foldl_eq_foldr _ _).symm
 
 namespace List
 
