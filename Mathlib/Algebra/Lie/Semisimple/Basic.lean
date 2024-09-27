@@ -140,6 +140,7 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
         apply add_mem
         -- Now `⁅a, y⁆ ∈ J` since `a ∈ I`, `y ∈ J`, and `J` is an ideal of `I`.
         · simp only [Submodule.mem_map, LieSubmodule.mem_toSubmodule, Subtype.exists]
+          -- TODO
           erw [Submodule.coe_subtype]
           simp only [exists_and_right, exists_eq_right, ha, lie_mem_left, exists_true_left]
           exact lie_mem_right R I J ⟨a, ha⟩ y hy
