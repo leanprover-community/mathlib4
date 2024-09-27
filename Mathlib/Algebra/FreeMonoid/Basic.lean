@@ -135,7 +135,7 @@ theorem length_eq_one : length a = 1 ↔ ∃ m, a = FreeMonoid.of m :=
 theorem length_eq_two {v : FreeMonoid α}: v.length = 2 ↔ ∃ c d,
     v = FreeMonoid.of c * FreeMonoid.of d := List.length_eq_two
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem length_mul (a b : FreeMonoid α) : (a * b).length = a.length + b.length :=
   List.length_append _ _
 
@@ -162,7 +162,7 @@ theorem symbols_one : symbols (1 : FreeMonoid α) = ∅ := rfl
 @[to_additive (attr := simp)]
 theorem symbols_of {m : α} : symbols (of m : FreeMonoid α) = {m} := rfl
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem symbols_mul {a b : FreeMonoid α} : symbols (a * b : FreeMonoid α) =
     (symbols a) ∪ (symbols b) := by
   simp only [symbols, List.mem_toFinset, Finset.mem_union]
