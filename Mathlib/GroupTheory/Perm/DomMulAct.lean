@@ -86,7 +86,6 @@ variable {f}
 lemma stabilizerMulEquiv_apply (g : (stabilizer (Perm α)ᵈᵐᵃ f)ᵐᵒᵖ) {a : α} {i : ι} (h : f a = i) :
     ((stabilizerMulEquiv f)) g i ⟨a, h⟩ = (mk.symm g.unop : Equiv.Perm α) a := rfl
 
-
 section Fintype
 
 variable [Fintype α] [DecidableEq α] [DecidableEq ι]
