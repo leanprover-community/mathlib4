@@ -9,6 +9,21 @@ if [ -z "$1" ]; then
   exit 1
 fi
 
+# TODO: The whole script ought to be rewritten in javascript, to avoid having to use curl for API calls.
+#
+# This is not meant to be run from the command line, only from CI.
+# The inputs must be prepared as:
+# env:
+#   TOKEN: ${{ secrets.LEAN_PR_TESTING }}
+#   GITHUB_CONTEXT: ${{ toJson(github) }}
+#   WORKFLOW_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}
+#   BUILD_OUTCOME: ${{ steps.build.outcome }}
+#   NOISY_OUTCOME: ${{ steps.noisy.outcome }}
+#   ARCHIVE_OUTCOME: ${{ steps.archive.outcome }}
+#   COUNTEREXAMPLES_OUTCOME: ${{ steps.counterexamples.outcome }}
+#   LINT_OUTCOME: ${{ steps.lint.outcome }}
+#   TEST_OUTCOME: ${{ steps.test.outcome }}
+
 # Adjust the branch pattern and URLs based on the repository.
 if [ "$1" == "lean" ]; then
   branch_prefix="lean-pr-testing"
