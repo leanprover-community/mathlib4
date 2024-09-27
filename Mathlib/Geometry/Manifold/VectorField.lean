@@ -8,6 +8,9 @@ import Mathlib.Geometry.Manifold.PoincareConjecture
 /-!
 # Glouglou
 
+All this should probably be extended to `Within` versions, as we will need them when defining
+things on manifolds possibly with boundary.
+
 -/
 
 noncomputable section
@@ -19,16 +22,22 @@ variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
+/-- The Lie bracket `[V, W] (x)` of two vector fields at a point, defined as
+`DW(x) (V x) - DV(x) (W x)`. -/
 def lieBracket (V W : E → E) (x : E) : E :=
   fderiv 𝕜 W x (V x) - fderiv 𝕜 V x (W x)
 
 lemma lieBracket_eq (V W : E → E) :
     lieBracket 𝕜 V W = fun x ↦ fderiv 𝕜 W x (V x) - fderiv 𝕜 V x (W x) := rfl
 
+/-- The Lie derivative of a function with respect to a vector field `L_V f(x)`. This is just
+`Df(x) (V x)`, but the notation emphasizes how this is linear in `f`.-/
 def lieDeriv (V : E → E) (f : E → F) (x : E) : F := fderiv 𝕜 f x (V x)
 
 lemma lieDeriv_eq (V : E → E) (f : E → F) : lieDeriv 𝕜 V f = fun x ↦ fderiv 𝕜 f x (V x) := rfl
 
+/-- The equation `L_V L_W f - L_W L_V f = L_{[V, W]} f`, which is the motivation for the definition
+of the Lie bracket. This requires the second derivative of `f` to be symmetric. -/
 lemma sub_eq_lieDeriv_lieBracket (V W : E → E) (f : E → F) (x : E)
     (hf : ∀ v w, fderiv 𝕜 (fderiv 𝕜 f) x v w = fderiv 𝕜 (fderiv 𝕜 f) x w v)
     (h'f : ContDiffAt 𝕜 2 f x) (hV : DifferentiableAt 𝕜 V x) (hW : DifferentiableAt 𝕜 W x) :
@@ -42,6 +51,9 @@ lemma sub_eq_lieDeriv_lieBracket (V W : E → E) (f : E → F) (x : E)
     ContinuousLinearMap.flip_apply, map_sub, hf]
   abel
 
+/-- The pullback of a vector field under a function, defined
+as `(f^* V) (x) = Df(x)^{-1} (V (f x))`. If `Df(x)` is not invertible, we use the junk value `0`.
+-/
 def pullback (f : E → F) (V : F → F) (x : E) : E := (fderiv 𝕜 f x).inverse (V (f x))
 
 variable {𝕜}
@@ -66,42 +78,63 @@ open Set
 
 variable [CompleteSpace E]
 
-theorem contDiffAt_continuousLinearMap_inv (n : ℕ∞) (M : E ≃L[𝕜] F) :
-    ContDiffAt 𝕜 n (ContinuousLinearMap.inverse : (E →L[𝕜] F) → (F →L[𝕜] E)) (M : E →L[𝕜] F) := by
-  sorry
-
-
-#exit
-
-lemma foo (f : E → F) (x : E) (h'f : ContDiffAt 𝕜 2 f x) (hf : ∃ M : E ≃L[𝕜] F, fderiv 𝕜 f x = M) :
+/-- If a `C^2` map has an invertible derivative at a point, then nearby derivatives can be written
+as continuous linear equivs, which depend in a `C^1` way on the point, as well as their inverse, and
+moreover one can compute the derivative of the inverse. -/
+lemma exists_continuousLinearEquiv_fderiv_symm_eq
+    (f : E → F) (x : E) (h'f : ContDiffAt 𝕜 2 f x) (hf : ∃ M : E ≃L[𝕜] F, M = fderiv 𝕜 f x) :
     ∃ N : E → (E ≃L[𝕜] F), ContDiffAt 𝕜 1 (fun y ↦ (N y : E →L[𝕜] F)) x
     ∧ ContDiffAt 𝕜 1 (fun y ↦ ((N y).symm : F →L[𝕜] E)) x
-    ∧ (∀ᶠ y in 𝓝 x, fderiv 𝕜 f y = N y)
+    ∧ (∀ᶠ y in 𝓝 x, N y = fderiv 𝕜 f y)
     ∧ ∀ v, fderiv 𝕜 (fun y ↦ ((N y).symm : F →L[𝕜] E)) x v
       = - (N x).symm  ∘L ((fderiv 𝕜 (fderiv 𝕜 f) x v)) ∘L (N x).symm := by
   classical
   rcases hf with ⟨M, hM⟩
   let U := {y | ∃ (N : E ≃L[𝕜] F), N = fderiv 𝕜 f y}
-  have : U ∈ 𝓝 x := by
+  have hU : U ∈ 𝓝 x := by
     have I : range ((↑) : (E ≃L[𝕜] F) → E →L[𝕜] F) ∈ 𝓝 (fderiv 𝕜 f x) := by
-      rw [hM]
+      rw [← hM]
       exact M.nhds
     have : ContinuousAt (fderiv 𝕜 f) x := (h'f.fderiv_right (m := 1) le_rfl).continuousAt
     exact this I
   let N : E → (E ≃L[𝕜] F) := fun x ↦ if h : x ∈ U then h.choose else M
-  refine ⟨N, ?_, ?_, ?_, ?_⟩
+  have eN : (fun y ↦ (N y : E →L[𝕜] F)) =ᶠ[𝓝 x] fun y ↦ fderiv 𝕜 f y := by
+    filter_upwards [hU] with y hy
+    simpa only [hy, ↓reduceDIte, N] using Exists.choose_spec hy
+  have hN : ContDiffAt 𝕜 1 (fun y ↦ (N y : E →L[𝕜] F)) x := by
+    have : ContDiffAt 𝕜 1 (fun y ↦ fderiv 𝕜 f y) x := h'f.fderiv_right (m := 1) (le_rfl)
+    apply this.congr_of_eventuallyEq eN
+  have hN' : ContDiffAt 𝕜 1 (fun y ↦ ((N y).symm : F →L[𝕜] E)) x := by
+    have : ContDiffAt 𝕜 1 (ContinuousLinearMap.inverse ∘ (fun y ↦ (N y : E →L[𝕜] F))) x :=
+      (contDiffAt_map_inverse (N x)).comp x hN
+    convert this with y
+    simp only [Function.comp_apply, ContinuousLinearMap.inverse_equiv]
+  refine ⟨N, hN, hN', eN, fun v ↦ ?_⟩
+  have A' y : ContinuousLinearMap.compL 𝕜 F E F (N y : E →L[𝕜] F) ((N y).symm : F →L[𝕜] E)
+      = ContinuousLinearMap.id 𝕜 F := by ext; simp
+  have : fderiv 𝕜 (fun y ↦ ContinuousLinearMap.compL 𝕜 F E F (N y : E →L[𝕜] F)
+      ((N y).symm : F →L[𝕜] E)) x v = 0 := by simp [A']
+  have I : (N x : E →L[𝕜] F) ∘L (fderiv 𝕜 (fun y ↦ ((N y).symm : F →L[𝕜] E)) x v) =
+      - (fderiv 𝕜 (fun y ↦ (N y : E →L[𝕜] F)) x v) ∘L ((N x).symm : F →L[𝕜] E) := by
+    rw [ContinuousLinearMap.fderiv_of_bilinear _ (hN.differentiableAt le_rfl)
+      (hN'.differentiableAt le_rfl)] at this
+    simpa [eq_neg_iff_add_eq_zero] using this
+  have B (M : F →L[𝕜] E) : M = ((N x).symm : F →L[𝕜] E) ∘L ((N x) ∘L M) := by
+    ext; simp
+  rw [B (fderiv 𝕜 (fun y ↦ ((N y).symm : F →L[𝕜] E)) x v), I]
+  simp only [ContinuousLinearMap.comp_neg, neg_inj, eN.fderiv_eq]
 
-
-#exit
-
-lemma glouk (f : E → F) (V W : F → F) (x : E)
+/-- The Lie bracket commutes with taking pullbacks. This requires the function to have symmetric
+second derivative. -/
+lemma lieBracket_pullback (f : E → F) (V W : F → F) (x : E)
     (hf : ∀ v w, fderiv 𝕜 (fderiv 𝕜 f) x v w = fderiv 𝕜 (fderiv 𝕜 f) x w v)
     (h'f : ContDiffAt 𝕜 2 f x) (hV : DifferentiableAt 𝕜 V (f x)) (hW : DifferentiableAt 𝕜 W (f x)) :
     lieBracket 𝕜 (pullback 𝕜 f V) (pullback 𝕜 f W) x = pullback 𝕜 f (lieBracket 𝕜 V W) x := by
-  by_cases h : ∃ M : E ≃L[𝕜] F, fderiv 𝕜 f x = M; swap
+  by_cases h : ∃ M : E ≃L[𝕜] F, M = fderiv 𝕜 f x; swap
   · simp [pullback_eq_of_not_exists h, lieBracket_eq]
-  rcases foo f x h'f h with ⟨M, -, M_symm_smooth, hM, M_diff⟩
-  have hMx : fderiv 𝕜 f x = M x := (mem_of_mem_nhds hM :)
+  rcases exists_continuousLinearEquiv_fderiv_symm_eq f x h'f h
+    with ⟨M, -, M_symm_smooth, hM, M_diff⟩
+  have hMx : M x = fderiv 𝕜 f x := (mem_of_mem_nhds hM :)
   have AV : fderiv 𝕜 (pullback 𝕜 f V) x =
       fderiv 𝕜 (fun y ↦ ((M y).symm : F →L[𝕜] E) (V (f y))) x := by
     apply Filter.EventuallyEq.fderiv_eq
@@ -113,24 +146,18 @@ lemma glouk (f : E → F) (V W : F → F) (x : E)
   have Af : DifferentiableAt 𝕜 f x := h'f.differentiableAt one_le_two
   simp only [lieBracket_eq, pullback_eq_of_fderiv_eq hMx, map_sub, AV, AW]
   rw [fderiv_clm_apply, fderiv_clm_apply]
-  · simp [fderiv.comp' x hW Af, hMx,
+  · simp [fderiv.comp' x hW Af, ← hMx,
       fderiv.comp' x hV Af, M_diff, hf]
   · exact M_symm_smooth.differentiableAt le_rfl
   · exact hV.comp x Af
   · exact M_symm_smooth.differentiableAt le_rfl
   · exact hW.comp x Af
 
-lemma glouk2 (f : E → F) (V : F → F) (g : F → G) (x : E) :
+/-- The equation `L_{f^* V} (g ∘ f) (x) = (L_V g) (f x)`, which is essentially the definition of
+the pullback. -/
+lemma lieDeriv_pullback (f : E → F) (V : F → F) (g : F → G) (x : E) :
     lieDeriv 𝕜 (pullback 𝕜 f V) (g ∘ f) x = lieDeriv 𝕜 V g (f x) := by
-
-
-
-
-
-
-#exit
-
-
+  sorry
 
 
 
