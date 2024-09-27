@@ -48,7 +48,7 @@ lemma UpperHalfPlane.ne_int (z : ℍ) : ∀ n : ℤ, z.1 ≠ n := by
   have h1 := z.2
   aesop
 
-instance : Coe ℍ ℂ_ℤ := ⟨fun x => ⟨x, by simpa using upper_half_plane_ne_int x⟩⟩
+instance : Coe ℍ ℂ_ℤ := ⟨fun x => ⟨x, by simpa using UpperHalfPlane.ne_int x⟩⟩
 
 lemma ℂ_ℤ_add_ne_zero (x : ℂ_ℤ) (a : ℤ) : x.1 + a ≠ 0 := by
   intro h
