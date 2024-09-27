@@ -71,7 +71,7 @@ def natIsoFunctor {F : C ⥤ Codiscrete A} : F ≅ lift (F.obj) := Iso.refl _
 
 end
 
--- /-- A function induces a functor between codiscrete categories.-/
+/-- A function induces a functor between codiscrete categories.-/
 def functorOfFun {A B : Type*} (f : A → B) : Codiscrete A ⥤ Codiscrete B := by
   exact lift f
 
