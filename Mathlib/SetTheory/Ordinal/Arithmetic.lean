@@ -332,6 +332,7 @@ theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : (typ
   rw [@enum_lt_enum _ r, Subtype.mk_lt_mk]
   apply lt_succ
 
+@[simp]
 theorem typein_ordinal (o : Ordinal.{u}) :
     @typein Ordinal (· < ·) _ o = Ordinal.lift.{u + 1} o := by
   refine Quotient.inductionOn o ?_
