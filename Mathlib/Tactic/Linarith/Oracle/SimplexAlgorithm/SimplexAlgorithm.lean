@@ -116,7 +116,7 @@ such exists.
 -/
 def runSimplexAlgorithm : SimplexAlgorithmM matType Unit := do
   while !(← checkSuccess) do
-    Lean.Core.checkSystem "Linarith.SimplexAlgorithm.runSimplexAlgorithm"
+    Lean.Core.checkSystem decl_name%.toString
     let ⟨exitIdx, enterIdx⟩ ← choosePivots
     doPivotOperation exitIdx enterIdx
 

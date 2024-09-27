@@ -305,10 +305,10 @@ from the `linarith` state.
 def elimVarM (a : ℕ) : LinarithM Unit := do
   let vs ← getMaxVar
   if (a ≤ vs) then
-    Lean.Core.checkSystem "Linarith.elimVarM"
+    Lean.Core.checkSystem decl_name%.toString
     let ⟨pos, neg, notPresent⟩ := splitSetByVarSign a (← getPCompSet)
     update (vs - 1) (← pos.foldlM (fun s p => do
-      Lean.Core.checkSystem "Linarith.elimVarM"
+      Lean.Core.checkSystem decl_name%.toString
       pure (s.union (elimWithSet a p neg))) notPresent)
   else
     pure ()

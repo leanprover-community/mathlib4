@@ -35,7 +35,7 @@ def getTableauImp : GaussM n m matType <| Tableau matType := do
   let mut col : Nat := 0
 
   while row < n && col < m do
-    Lean.Core.checkSystem "Linarith.SimplexAlgorithm.Gauss.getTable"
+    Lean.Core.checkSystem decl_name%.toString
     match ← findNonzeroRow row col with
     | .none =>
       free := free.push col

@@ -308,7 +308,7 @@ and `xy + -xy = 0` is a `.zero` overlap.
 -/
 def evalAddOverlap {a b : Q($α)} (va : ExProd sα a) (vb : ExProd sα b) :
     OptionT Lean.Core.CoreM (Overlap sα q($a + $b)) := do
-  Lean.Core.checkSystem "Mathlib.Tactic.Ring.evalAddOverlap"
+  Lean.Core.checkSystem decl_name%.toString
   match va, vb with
   | .const za ha, .const zb hb => do
     let ra := Result.ofRawRat za a ha; let rb := Result.ofRawRat zb b hb
@@ -354,7 +354,7 @@ theorem add_pf_add_gt (b₁ : R) (_ : a + b₂ = c) : a + (b₁ + b₂) = b₁ +
 -/
 partial def evalAdd {a b : Q($α)} (va : ExSum sα a) (vb : ExSum sα b) :
     Lean.Core.CoreM <| Result (ExSum sα) q($a + $b) := do
-  Lean.Core.checkSystem "Mathlib.Tactic.Ring.evalAdd"
+  Lean.Core.checkSystem decl_name%.toString
   match va, vb with
   | .zero, vb => return ⟨b, vb, q(add_pf_zero_add $b)⟩
   | va, .zero => return ⟨a, va, q(add_pf_add_zero $a)⟩
@@ -402,7 +402,7 @@ theorem mul_pp_pf_overlap {ea eb e : ℕ} (x : R) (_ : ea + eb = e) (_ : a₂ * 
 -/
 partial def evalMulProd {a b : Q($α)} (va : ExProd sα a) (vb : ExProd sα b) :
     Lean.Core.CoreM <| Result (ExProd sα) q($a * $b) := do
-  Lean.Core.checkSystem "Mathlib.Tactic.Ring.evalMulProd"
+  Lean.Core.checkSystem decl_name%.toString
   match va, vb with
   | .const za ha, .const zb hb =>
     if za = 1 then
@@ -570,7 +570,7 @@ theorem neg_mul {R} [Ring R] (a₁ : R) (a₂) {a₃ b : R}
 -/
 def evalNegProd {a : Q($α)} (rα : Q(Ring $α)) (va : ExProd sα a) :
     Lean.Core.CoreM <| Result (ExProd sα) q(-$a) := do
-  Lean.Core.checkSystem "Mathlib.Tactic.Ring.evalNegProd"
+  Lean.Core.checkSystem decl_name%.toString
   match va with
   | .const za ha =>
     let lit : Q(ℕ) := mkRawNatLit 1
@@ -754,7 +754,7 @@ In all other cases we use `evalPowProdAtom`.
 -/
 def evalPowProd {a : Q($α)} {b : Q(ℕ)} (va : ExProd sα a) (vb : ExProd sℕ b) :
     Lean.Core.CoreM <| Result (ExProd sα) q($a ^ $b) := do
-  Lean.Core.checkSystem "Mathlib.Tactic.Ring.evalPowProd"
+  Lean.Core.checkSystem decl_name%.toString
   let res : OptionT Lean.Core.CoreM (Result (ExProd sα) q($a ^ $b)) := do
     match va, vb with
     | .const 1, _ => return ⟨_, va, (q(one_pow (R := $α) $b) : Expr)⟩
@@ -973,7 +973,7 @@ def evalInvAtom (a : Q($α)) : AtomM (Result (ExBase sα) q($a⁻¹)) := do
 -/
 def ExProd.evalInv {a : Q($α)} (czα : Option Q(CharZero $α)) (va : ExProd sα a) :
     AtomM (Result (ExProd sα) q($a⁻¹)) := do
-  Lean.Core.checkSystem "Mathlib.Tactic.Ring.evalInv"
+  Lean.Core.checkSystem decl_name%.toString
   match va with
   | .const c hc =>
     let ra := Result.ofRawRat c a hc
