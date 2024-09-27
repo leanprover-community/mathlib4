@@ -13,7 +13,7 @@ In this file we define additional linters for mathlib.
 Perhaps these should be moved to Batteries in the future.
 -/
 
-namespace Std.Tactic.Lint
+namespace Batteries.Tactic.Lint
 open Lean Meta
 
 /--
@@ -45,7 +45,7 @@ Linter that checks whether a structure should be in Prop.
     | some _ => return none -- TODO: enforce `YYYY-MM-DD` format
     | none => return m!"`deprecated` attribute without `since` date"
 
-end Std.Tactic.Lint
+end Batteries.Tactic.Lint
 
 namespace Mathlib.Linter
 

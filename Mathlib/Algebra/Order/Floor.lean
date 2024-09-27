@@ -11,6 +11,7 @@ import Mathlib.Data.Nat.Cast.Order.Field
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Order.GaloisConnection
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Positivity
 
@@ -499,6 +500,46 @@ theorem floor_div_eq_div (m n : ℕ) : ⌊(m : α) / n⌋₊ = m / n := by
 
 end LinearOrderedSemifield
 
+section LinearOrderedField
+variable [LinearOrderedField α] [FloorSemiring α] {a b : α}
+
+lemma mul_lt_floor (hb₀ : 0 < b) (hb : b < 1) (hba : ⌈b / (1 - b)⌉₊ ≤ a) : b * a < ⌊a⌋₊ := by
+  calc
+    b * a < b * (⌊a⌋₊ + 1) := by gcongr; exacts [hb₀, lt_floor_add_one _]
+    _ ≤ ⌊a⌋₊ := by
+      rw [_root_.mul_add_one, ← le_sub_iff_add_le', ← one_sub_mul, ← div_le_iff₀' (by linarith),
+        ← ceil_le]
+      exact le_floor hba
+
+lemma ceil_lt_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉₊ / b < a) : ⌈a⌉₊ < b * a := by
+  obtain hab | hba := le_total a (b - 1)⁻¹
+  · calc
+      ⌈a⌉₊ ≤ (⌈(b - 1)⁻¹⌉₊ : α) := by gcongr
+      _ < b * a := by rwa [← div_lt_iff']; positivity
+  · rw [← sub_pos] at hb
+    calc
+      ⌈a⌉₊ < a + 1 := ceil_lt_add_one <| hba.trans' <| by positivity
+      _ = a + (b - 1) * (b - 1)⁻¹ := by rw [mul_inv_cancel₀]; positivity
+      _ ≤ a + (b - 1) * a := by gcongr; positivity
+      _ = b * a := by rw [sub_one_mul, add_sub_cancel]
+
+lemma ceil_le_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉₊ / b ≤ a) : ⌈a⌉₊ ≤ b * a := by
+  obtain rfl | hba := hba.eq_or_lt
+  · rw [mul_div_cancel₀, cast_le, ceil_le]
+    exact _root_.div_le_self (by positivity) hb.le
+    · positivity
+  · exact (ceil_lt_mul hb hba).le
+
+lemma div_two_lt_floor (ha : 1 ≤ a) : a / 2 < ⌊a⌋₊ := by
+  rw [div_eq_inv_mul]; refine mul_lt_floor ?_ ?_ ?_ <;> norm_num; assumption
+
+lemma ceil_lt_two_mul (ha : 2⁻¹ < a) : ⌈a⌉₊ < 2 * a :=
+  ceil_lt_mul one_lt_two (by norm_num at ha ⊢; exact ha)
+
+lemma ceil_le_two_mul (ha : 2⁻¹ ≤ a) : ⌈a⌉₊ ≤ 2 * a :=
+  ceil_le_mul one_lt_two (by norm_num at ha ⊢; exact ha)
+
+end LinearOrderedField
 end Nat
 
 /-- There exists at most one `FloorSemiring` structure on a linear ordered semiring. -/
@@ -1070,6 +1111,9 @@ theorem ceil_le_floor_add_one (a : α) : ⌈a⌉ ≤ ⌊a⌋ + 1 := by
 theorem le_ceil (a : α) : a ≤ ⌈a⌉ :=
   gc_ceil_coe.le_u_l a
 
+lemma le_ceil_iff : z ≤ ⌈a⌉ ↔ z - 1 < a := by rw [← sub_one_lt_iff, lt_ceil]; norm_cast
+lemma ceil_lt_iff : ⌈a⌉ < z ↔ a ≤ z - 1 := by rw [← le_sub_one_iff, ceil_le]; norm_cast
+
 @[simp]
 theorem ceil_intCast (z : ℤ) : ⌈(z : α)⌉ = z :=
   eq_of_forall_ge_iff fun a => by rw [ceil_le, Int.cast_le]
@@ -1199,6 +1243,56 @@ theorem ceil_eq_add_one_sub_fract (ha : fract a ≠ 0) : (⌈a⌉ : α) = a + 1 
 theorem ceil_sub_self_eq (ha : fract a ≠ 0) : (⌈a⌉ : α) - a = 1 - fract a := by
   rw [(or_iff_right ha).mp (fract_eq_zero_or_add_one_sub_ceil a)]
   abel
+
+section LinearOrderedField
+variable {k : Type*} [LinearOrderedField k] [FloorRing k] {a b : k}
+
+lemma mul_lt_floor (hb₀ : 0 < b) (hb : b < 1) (hba : ⌈b / (1 - b)⌉ ≤ a) : b * a < ⌊a⌋ := by
+  calc
+    b * a < b * (⌊a⌋ + 1) := by gcongr; exacts [hb₀, lt_floor_add_one _]
+    _ ≤ ⌊a⌋ := by
+      rwa [_root_.mul_add_one, ← le_sub_iff_add_le', ← one_sub_mul, ← div_le_iff₀' (by linarith),
+        ← ceil_le, le_floor]
+
+lemma ceil_div_ceil_inv_sub_one (ha : 1 ≤ a) : ⌈⌈(a - 1)⁻¹⌉ / a⌉ = ⌈(a - 1)⁻¹⌉ := by
+  obtain rfl | ha := ha.eq_or_lt
+  · simp
+  have : 0 < a - 1 := by linarith
+  have : 0 < ⌈(a - 1)⁻¹⌉ := ceil_pos.2 <| by positivity
+  refine le_antisymm (ceil_le.2 <| div_le_self (by positivity) ha.le) <| ?_
+  rw [le_ceil_iff, sub_lt_comm, div_eq_mul_inv, ← mul_one_sub,
+      ← lt_div_iff (sub_pos.2 <| inv_lt_one ha)]
+  convert ceil_lt_add_one _ using 1
+  field_simp
+
+lemma ceil_lt_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉ / b < a) : ⌈a⌉ < b * a := by
+  obtain hab | hba := le_total a (b - 1)⁻¹
+  · calc
+      ⌈a⌉ ≤ (⌈(b - 1)⁻¹⌉ : k) := by gcongr
+      _ < b * a := by rwa [← div_lt_iff']; positivity
+  · rw [← sub_pos] at hb
+    calc
+      ⌈a⌉ < a + 1 := ceil_lt_add_one _
+      _ = a + (b - 1) * (b - 1)⁻¹ := by rw [mul_inv_cancel₀]; positivity
+      _ ≤ a + (b - 1) * a := by gcongr; positivity
+      _ = b * a := by rw [sub_one_mul, add_sub_cancel]
+
+lemma ceil_le_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉ / b ≤ a) : ⌈a⌉ ≤ b * a := by
+  obtain rfl | hba := hba.eq_or_lt
+  · rw [ceil_div_ceil_inv_sub_one hb.le, mul_div_cancel₀]
+    positivity
+  · exact (ceil_lt_mul hb hba).le
+
+lemma div_two_lt_floor (ha : 1 ≤ a) : a / 2 < ⌊a⌋ := by
+  rw [div_eq_inv_mul]; refine mul_lt_floor ?_ ?_ ?_ <;> norm_num; assumption
+
+lemma ceil_lt_two_mul (ha : 2⁻¹ < a) : ⌈a⌉ < 2 * a :=
+  ceil_lt_mul one_lt_two (by norm_num at ha ⊢; exact ha)
+
+lemma ceil_le_two_mul (ha : 2⁻¹ ≤ a) : ⌈a⌉ ≤ 2 * a :=
+  ceil_le_mul one_lt_two (by norm_num at ha ⊢; exact ha)
+
+end LinearOrderedField
 
 /-! #### Intervals -/
 
