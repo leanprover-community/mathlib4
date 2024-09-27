@@ -423,7 +423,7 @@ def congr_iso {α : Type u_1} {β : Type u_2} (e : α ≃ β) : FreeMonoid α �
   all_goals
   intro x
   simp [map_map]
-  
+
 /-- given an isomorphism between α and β, convert a relation predicate to
 have an underlying type of β -/
 @[to_additive "given an isomorphism between α and β, convert a relation predicate to
