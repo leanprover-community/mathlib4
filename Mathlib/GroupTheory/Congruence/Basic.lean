@@ -566,7 +566,7 @@ theorem comap_rel {f : M → N} (H : ∀ x y, f (x * y) = f x * f y) {c : Con N}
   Iff.rfl
 
 @[to_additive]
-theorem comap_con'Gen_of_Bijective {M N : Type*} [Mul M] [Mul N] (f : M → N)
+theorem comap_conGen_of_Bijective {M N : Type*} [Mul M] [Mul N] (f : M → N)
     (hf : Function.Bijective f) (H : ∀ (x y : M), f (x * y) = f x * f y) (rel : N → N → Prop) :
     Con.comap f H (conGen rel) = conGen (fun x y ↦ rel (f x) (f y)) := by
   ext a b
@@ -971,9 +971,9 @@ noncomputable def quotientKerEquivOfSurjective (f : M →* P) (hf : Surjective f
   quotientKerEquivOfRightInverse _ _ hf.hasRightInverse.choose_spec
 
 /-- If e : M →* N is surjective then (c.comap e).Quotient ≃* c.Quotient
-with c : Con' N -/
+with c : Con N -/
 @[to_additive "If e : M →* N is surjective then (c.comap e).Quotient ≃* c.Quotient
-with c : AddCon' N"]
+with c : AddCon N"]
 noncomputable def comapQuotientEquivOfSurj(c : Con M) (f : N →* M) (hf : Function.Surjective f) :
     (Con.comap f f.map_mul c).Quotient ≃* c.Quotient :=
   (Con.congr Con.comap_eq).trans <| Con.quotientKerEquivOfSurjective
