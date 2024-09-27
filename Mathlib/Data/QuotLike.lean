@@ -19,6 +19,7 @@ directly using `Quot` and `Quotient` APIs.
 ## Main definitions
 
 * `QuotLike Q α r`      : the type `Q` is canonically isomorphic to `Quot α r`.
+                          used for deriving `QuotLike` instances from the output type.
 * `QuotLike.HasQuot`    : used for deriving `QuotLike` instances from the input type.
 * `QuotLike.Hint`       : used for deriving `QuotLike` instances from the hint.
 * `QuotLike.HasQuotHint`: used for deriving `QuotLike` instances from the hint and the input type.
@@ -62,15 +63,9 @@ abbrev QuotLike := QuotLikeStruct
 
 export QuotLikeStruct (mkQ)
 
-@[inherit_doc mkQ]
-notation3 "⟦" a "⟧" => mkQ a
-
-@[inherit_doc mkQ]
-macro "⟦" t:term " : " α:term "⟧" : term => `(⟦($t : $α)⟧)
-
 namespace QuotLike
 
-export QuotLikeStruct (mkQ toQuot)
+export QuotLikeStruct (toQuot)
 
 alias toQuot_mkQ := QuotLikeStruct.toQuot_mkQ
 alias ind := QuotLikeStruct.ind
@@ -80,6 +75,34 @@ attribute [elab_as_elim] ind
 attribute [simp] toQuot_mkQ
 
 open Lean Elab Term Meta Qq
+
+@[inherit_doc mkQ]
+elab "⟦" a:term "⟧" : term <= Q => do
+  if Q.isMVar then
+    tryPostpone
+    throwError "The output type must be known."
+  let v ← match ← inferType Q with | .sort v => pure v | _ => mkFreshLevelMVar
+  have Q : Q(Sort v) := Q
+  let α ← mkFreshExprMVarQ q(Sort $(← mkFreshLevelMVar))
+  let r ← mkFreshExprMVarQ q($α → $α → Prop)
+  let .some inst ← trySynthInstanceQ q(QuotLike $Q $α $r) |
+    tryPostpone
+    throwError "Cannot find `QuotLike` instance for type `{Q}`."
+  pure q(@mkQ $Q $α $r $inst $(← Qq.elabTermEnsuringTypeQ a q($α)))
+
+macro_rules
+| `(mkQ $a) => `(⟦$a⟧)
+
+open PrettyPrinter.Delaborator SubExpr in
+/-- Delaborator for `mkQ` -/
+@[delab app.QuotLikeStruct.mkQ]
+def delabMkQ : Delab := do
+  guard <| (← getExpr).isAppOfArity' ``mkQ 5
+  let a ← withNaryArg 4 delab
+  `(⟦$a⟧)
+
+@[inherit_doc mkQ]
+macro "⟦" a:term " : " α:term "⟧" : term => `(⟦($a : $α)⟧)
 
 /--
 `QuotLike.HasQuot` is used for deriving `QuotLike` instances from the input type.
@@ -102,7 +125,7 @@ class HasQuot (Q : outParam Sort*) (α : Sort*) (r : outParam (α → α → Pro
 /-- The canonical quotient map. Inferred from the input type via typeclass `QuotLike.HasQuot`. -/
 syntax (name := mkQ') "mkQ'" : term
 
-@[term_elab QuotLike.mkQ', inherit_doc QuotLike.mkQ']
+@[term_elab QuotLike.mkQ']
 def mkQ'Impl : TermElab := fun stx typ? => do
   let .some expectedType := typ? |
     let α ← mkFreshTypeMVar
@@ -137,6 +160,10 @@ macro "⟦" t:term " : " α:term "⟧'" : term => `(⟦($t : $α)⟧')
 ```
 scoped instance {α} (r : α → α → Prop) : QuotLike.Hint r (Quot r) α r where
 ```
+
+```
+instance (p : Submodule R M) : QuotLike.Hint p (M ⧸ p) M p.quotientRel where
+```
 -/
 class Hint {Hint : Sort*} (hint : Hint)
     (Q : outParam Sort*) (α : outParam Sort*) (r : outParam (α → α → Prop))
@@ -144,10 +171,6 @@ class Hint {Hint : Sort*} (hint : Hint)
 
 /--
 `QuotLike.HasQuotHint` is used for deriving `QuotLike` instances from the hint and the input type.
-
-```
-instance (p : Submodule R M) : QuotLike.HasQuotHint p (M ⧸ p) M p.quotientRel where
-```
 -/
 class HasQuotHint {Hint : Sort*} (hint : Hint)
     (Q : outParam Sort*) (α : Sort*) (r : outParam (α → α → Prop))
@@ -157,7 +180,7 @@ class HasQuotHint {Hint : Sort*} (hint : Hint)
 the hint and the input type via typeclass `QuotLike.HasQuotHint`. -/
 syntax:max (name := mkQ_) "mkQ_" term:max : term
 
-@[term_elab QuotLike.mkQ_, inherit_doc QuotLike.mkQ_]
+@[term_elab QuotLike.mkQ_]
 def mkQ_Impl : TermElab := fun stx typ? => do
   let `(mkQ_ $h) := stx | throwUnsupportedSyntax
   let h ← withSynthesize do elabTerm h none
@@ -173,7 +196,7 @@ def mkQ_Impl : TermElab := fun stx typ? => do
   let r ← mkFreshExprMVarQ q($α → $α → Prop)
   let inst ← mkFreshExprMVarQ q(QuotLike $Q $α $r)
   if let .some _ ← trySynthInstanceQ q(@Hint $H $h $Q $α $r $inst) then
-    return q(@mkQ $Q $α $r $inst)
+    return q(@QuotLikeStruct.mkQ $Q $α $r $inst)
 
   let .some expectedType := typ? |
     let α ← mkFreshTypeMVar
@@ -197,7 +220,7 @@ def mkQ_Impl : TermElab := fun stx typ? => do
     tryPostpone
     throwError "Cannot find an instance of `QuotLike.Hint` for hint `{h}` or \
                   an instance of `QuotLike.HasQuotHint` for input type `{α}` and hint `{h}`."
-  pure q(@mkQ $Q $α $r $inst)
+  pure q(@QuotLikeStruct.mkQ $Q $α $r $inst)
 
 /-- The canonical quotient map. Inferred from the hint via typeclass `QuotLike.Hint` or
 the hint and the input type via typeclass `QuotLike.HasQuotHint`. -/
@@ -214,7 +237,7 @@ namespace Quot
 instance instQuotLike {α} (r : α → α → Prop) : QuotLike (Quot r) α r where
 
 @[nolint defLemma docBlame]
-scoped instance instHint {α} (r : α → α → Prop) :
+scoped instance instQuotLikeHint {α} (r : α → α → Prop) :
     QuotLike.Hint r (Quot r) α r where
 
 end Quot
@@ -302,7 +325,7 @@ theorem rec_mkQ {motive : Q → Sort*}
     (f : (a : α) → motive ⟦a⟧)
     (h : (a b : α) → (p : r a b) → Eq.ndrec (f a) (sound p) = f b)
     (a : α) :
-    _root_.QuotLike.rec f h ⟦a⟧ = f a := by
+    _root_.QuotLike.rec (motive := motive) f h ⟦a⟧ = f a := by
   rw [_root_.QuotLike.rec, ← heq_iff_eq, eqRec_heq_iff_heq, lift_mkQ]
 
 /-- The analogue of `Quot.recOn` for `QuotLike`. See `Quot.recOn`. -/
@@ -336,7 +359,7 @@ theorem hrecOn_mkQ {motive : Q → Sort*}
     (a : α)
     (f : (a : α) → motive ⟦a⟧)
     (h : (a b : α) → r a b → HEq (f a) (f b)) :
-    QuotLike.hrecOn ⟦a⟧ f h = f a := by
+    QuotLike.hrecOn (motive := motive) ⟦a⟧ f h = f a := by
   simp
 
 end
@@ -469,7 +492,7 @@ protected def hrecOn₂ [IsRefl α ra] [IsRefl β rb] {motive : Qa → Qb → So
 theorem hrecOn₂_mkQ [IsRefl α ra] [IsRefl β rb] {motive : Qa → Qb → Sort*}
     (a : α) (b : β) (f : ∀ a b, motive ⟦a⟧ ⟦b⟧)
     (h : ∀ a₁ b₁ a₂ b₂, ra a₁ a₂ → rb b₁ b₂ → HEq (f a₁ b₁) (f a₂ b₂)) :
-    QuotLike.hrecOn₂ ⟦a⟧ ⟦b⟧ f h = f a b := by
+    QuotLike.hrecOn₂ (motive := motive) ⟦a⟧ ⟦b⟧ f h = f a b := by
   simp [QuotLike.hrecOn₂]
 
 @[elab_as_elim]
