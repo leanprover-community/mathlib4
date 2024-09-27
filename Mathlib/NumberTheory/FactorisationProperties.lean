@@ -164,9 +164,8 @@ theorem Prime.deficient_pow  (h : Prime n) : Deficient (n ^ m) := by
       _ < n ^ m := sub_lt (pow_pos (Prime.pos h) m) (Nat.one_pos)
 
 theorem Prime.deficient_pow' (h : IsPrimePow n) : Deficient n := by
-  obtain ⟨p, ⟨k, ⟨h1, ⟨_, h3⟩⟩⟩⟩ := h
-  rw [← h3]
-  refine deficient_pow (Prime.nat_prime h1)
+  obtain ⟨p, k, hp, -, rfl⟩ := h
+  exact hp.nat_prime.deficient_pow
 
 theorem Prime.deficient (h : Prime n) : Deficient n := by
   rw [← pow_one n]
