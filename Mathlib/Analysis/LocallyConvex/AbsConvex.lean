@@ -136,9 +136,9 @@ section NontriviallyNormedField
 variable (𝕜 E) {s : Set E}
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
-variable [TopologicalSpace E] [LocallyConvexSpace ℝ E] [ContinuousSMul 𝕜 E]
+variable [TopologicalSpace E]  [ContinuousSMul 𝕜 E]
 
-theorem nhds_basis_abs_convex :
+theorem nhds_basis_abs_convex [LocallyConvexSpace ℝ E] :
     (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ AbsConvex 𝕜 s) id := by
   refine
     (LocallyConvexSpace.convex_basis_zero ℝ E).to_hasBasis (fun s hs => ?_) fun s hs =>
@@ -150,7 +150,7 @@ theorem nhds_basis_abs_convex :
 
 variable [ContinuousSMul ℝ E] [TopologicalAddGroup E]
 
-theorem nhds_basis_abs_convex_open :
+theorem nhds_basis_abs_convex_open [LocallyConvexSpace ℝ E] :
     (𝓝 (0 : E)).HasBasis (fun s => (0 : E) ∈ s ∧ IsOpen s ∧ AbsConvex 𝕜 s) id := by
   refine (nhds_basis_abs_convex 𝕜 E).to_hasBasis ?_ ?_
   · rintro s ⟨hs_nhds, hs_balanced, hs_convex⟩
@@ -161,56 +161,15 @@ theorem nhds_basis_abs_convex_open :
   rintro s ⟨hs_zero, hs_open, hs_balanced, hs_convex⟩
   exact ⟨s, ⟨hs_open.mem_nhds hs_zero, hs_balanced, hs_convex⟩, rfl.subset⟩
 
-/-
-Below we use `locallyConvexSpace_iff_exists_convex_subset_zero ℝ E`
-
-Do we have `locallyConvexSpace_iff_exists_absconvex_subset_zero ℝ E` ?
-
--/
-
-theorem deconstruct_locallyConvexSpace_iff_zero : LocallyConvexSpace ℝ E ↔
-    (𝓝 0 : Filter E).HasBasis (fun s : Set E => s ∈ (𝓝 0 : Filter E) ∧ Convex ℝ s) id := by
-  constructor
-  · intro h
-    apply @LocallyConvexSpace.convex_basis _ _ _ _ _ _ h 0
-  · intro h
-    apply LocallyConvexSpace.ofBasisZero ℝ E _ _ h fun _ => And.right
-
-theorem deconstruct_locallyConvexSpace_iff_exists_convex_subset_zero :
-    LocallyConvexSpace ℝ E ↔
-    ∀ U ∈ (𝓝 0 : Filter E), ∃ S ∈ (𝓝 0 : Filter E), Convex ℝ S ∧ S ⊆ U := by
-  apply (locallyConvexSpace_iff_zero ℝ E).trans
-  exact Filter.hasBasis_self
-
 theorem locallyConvexSpace_iff_zero_abs : LocallyConvexSpace ℝ E ↔
-    (𝓝 0 : Filter E).HasBasis (fun s => (0 : E) ∈ s ∧ IsOpen s ∧ AbsConvex ℝ s) id := by
-  constructor
-  · intro h
-    exact nhds_basis_abs_convex_open ℝ _
-  · intro h
-    apply LocallyConvexSpace.ofBasisZero ℝ E _ _ h
-    intro N ⟨_,⟨_,⟨_,hN₂⟩⟩⟩
-    exact hN₂
-
-theorem locallyConvexSpace_iff_zero_abs' : LocallyConvexSpace ℝ E ↔
-    (𝓝 0 : Filter E).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ AbsConvex ℝ s) id := by
-  constructor
-  · intro h
-    exact nhds_basis_abs_convex ℝ _
-  · intro h
-    apply LocallyConvexSpace.ofBasisZero ℝ E _ _ h
-    intro N ⟨_,⟨_,hN₂⟩⟩
-    exact hN₂
+    (𝓝 0 : Filter E).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ AbsConvex ℝ s) id :=
+  ⟨fun _ => nhds_basis_abs_convex ℝ _,
+   fun h => LocallyConvexSpace.ofBasisZero ℝ E _ _ h fun _ ⟨_,⟨_,hN₂⟩⟩ => hN₂⟩
 
 theorem locallyConvexSpace_iff_exists_absconvex_subset_zero :
     LocallyConvexSpace ℝ E ↔
-    ∀ U ∈ (𝓝 0 : Filter E), ∃ S ∈ (𝓝 0 : Filter E), AbsConvex ℝ S ∧ S ⊆ U := by
-  apply (locallyConvexSpace_iff_zero_abs' E).trans
-  rw [← Filter.hasBasis_self]
-
-  --apply Filter.hasBasis_self
-
-
+    ∀ U ∈ (𝓝 0 : Filter E), ∃ S ∈ (𝓝 0 : Filter E), AbsConvex ℝ S ∧ S ⊆ U :=
+  (locallyConvexSpace_iff_zero_abs E).trans Filter.hasBasis_self
 
 end NontriviallyNormedField
 
@@ -303,20 +262,31 @@ theorem totallyBounded_absConvexHull
   intro d' hd'
   letI := TopologicalAddGroup.toUniformSpace E
   obtain ⟨d,⟨⟨N,⟨hN₁,hN₂⟩⟩, hd₂⟩⟩ := comp_mem_uniformity_sets hd'
-  obtain ⟨S,⟨hS₁,hS₂,hS₃⟩⟩ := (locallyConvexSpace_iff_exists_convex_subset_zero ℝ E).mp lcs N hN₁
-  let V := S ∩ -S
-  let d₂ := {(x,y) | y-x ∈ S} ∩ {(x,y) | y-x ∈ -S}
+  obtain ⟨S,⟨hS₁,hS₂,hS₃⟩⟩ := (locallyConvexSpace_iff_exists_absconvex_subset_zero E).mp lcs N hN₁
+  let V := S
+  let d₂ := {(x,y) | y-x ∈ S}
   obtain ⟨t,⟨htf,hts⟩⟩ := hs d₂ (by
     rw [uniformity_eq_comap_nhds_zero' E]
-    simp_all only [Filter.inter_mem_iff, Filter.mem_comap, d₂]
-    exact And.intro (by aesop) (by use -S; exact ⟨neg_mem_nhds_zero E hS₁, fun ⦃a⦄ a ↦ a⟩))
+    aesop)
   have e1 (y : E) : {x | (x, y) ∈ d₂} = y +ᵥ V := by
     apply le_antisymm
     · intro x hx
-      rw [Set.mem_vadd']
-      aesop
+      --rw []
+      use x-y
+      constructor
+      · rw [← Balanced.neg_mem_iff hS₂.1]
+        aesop
+      · simp only [vadd_eq_add, add_sub_cancel] --rw [Set.mem_vadd', vadd_eq_add, add_sub_cancel]
     · intro x hx
       rw [Set.mem_vadd'] at hx
+      simp
+      obtain ⟨z,⟨hz₁,hz₂⟩⟩ := hx
+      rw [vadd_eq_add] at hz₂
+      have a1: y-x ∈ V := by
+        rw [← hz₂]
+        simp
+        rw [Balanced.neg_mem_iff hS₂.1]
+        exact hz₁
       aesop
   have e2 {t₁ : Set E} : ⋃ y ∈ t₁, {x | (x, y) ∈ d₂} = t₁ + V := by
     aesop
@@ -327,10 +297,7 @@ theorem totallyBounded_absConvexHull
     le_trans e3 (AbsConvex.hullAdd _)
   have e5 : (absConvexHull ℝ) V = V := by
     rw [AbsConvex.absConvexHull_eq]
-    rw [← absConvexHull_eq_self]
-    rw [absConvexHull_inter_neg_eq]
-    rw [Convex.convexHull_eq]
-    exact Convex.inter hS₂ (Convex.neg hS₂)
+    exact hS₂
   rw [e5] at e4
   rw [absConvexHull_eq_convexHull_union_neg (s := t)] at e4
   have e6 : TotallyBounded (uniformSpace := TopologicalAddGroup.toUniformSpace E)
@@ -338,12 +305,7 @@ theorem totallyBounded_absConvexHull
     apply IsCompact.totallyBounded
     apply Set.Finite.isCompact_convexHull
     apply finite_union.mpr ⟨htf,Finite.neg htf⟩
-  have e0 : d₂ = symmetrizeRel {(x,y) | y-x ∈ S} := by
-    simp_all only [mem_neg, neg_sub, d₂]
-    rfl
   obtain ⟨t',⟨htf',hts'⟩⟩ := e6 d₂ (by
-    rw [e0]
-    apply symmetrize_mem_uniformity
     rw [uniformity_eq_comap_nhds_zero']
     aesop
   )
@@ -394,10 +356,14 @@ theorem totallyBounded_absConvexHull
     constructor
     · apply hN₂
       rw [mem_preimage, e11]
-      aesop
+      apply hS₃
+      rw [Balanced.neg_mem_iff hS₂.1]
+      exact hz'₁
     · apply hN₂
       rw [mem_preimage, e12]
-      aesop
+      apply hS₃
+      rw [Balanced.neg_mem_iff hS₂.1]
+      exact hz'₁
   have e9 : ⋃ y ∈ t', y +ᵥ ((2 : ℝ) • V) ⊆ ⋃ y ∈ t', {x | (x, y) ∈ d'} := by
     apply biUnion_mono
     exact fun ⦃a⦄ a ↦ a
@@ -408,9 +374,7 @@ theorem totallyBounded_absConvexHull
   · exact htf'
   · apply subset_trans e7
     aesop
-  apply Convex.inter
-  exact hS₂
-  exact Convex.neg hS₂
+  exact hS₂.2
 end
 
 section AbsolutelyConvexSets
