@@ -320,8 +320,7 @@ variable [BraidedCategory C]
 
 theorem tensorObj_X (A B : Comon_ C) : (A ⊗ B).X = A.X ⊗ B.X := rfl
 
-instance (A B : C) [Comon_Class A] [Comon_Class B] :
-    Comon_Class (A ⊗ B) :=
+instance (A B : C) [Comon_Class A] [Comon_Class B] : Comon_Class (A ⊗ B) :=
   inferInstanceAs <| Comon_Class (Comon_.mk' A ⊗ Comon_.mk' B).X
 
 theorem tensorObj_counit (A B : Comon_ C) : (A ⊗ B).counit = (A.counit ⊗ B.counit) ≫ (λ_ _).hom :=
