@@ -501,7 +501,7 @@ section ModuleAndAlgebra
 variable (R A B M N : Type*)
 
 /-- A module over a semiring is `Finite` if it is finitely generated as a module. -/
-class Module.Finite [Semiring R] [AddCommMonoid M] [Module R M] : Prop where
+protected class Module.Finite [Semiring R] [AddCommMonoid M] [Module R M] : Prop where
   out : (⊤ : Submodule R M).FG
 
 attribute [inherit_doc Module.Finite] Module.Finite.out
@@ -511,7 +511,7 @@ namespace Module
 variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 
 theorem finite_def {R M} [Semiring R] [AddCommMonoid M] [Module R M] :
-    Finite R M ↔ (⊤ : Submodule R M).FG :=
+    Module.Finite R M ↔ (⊤ : Submodule R M).FG :=
   ⟨fun h => h.1, fun h => ⟨h⟩⟩
 
 namespace Finite
@@ -529,46 +529,47 @@ theorem iff_addGroup_fg {G : Type*} [AddCommGroup G] : Module.Finite ℤ G ↔ A
 variable {R M N}
 
 /-- See also `Module.Finite.exists_fin'`. -/
-theorem exists_fin [Finite R M] : ∃ (n : ℕ) (s : Fin n → M), Submodule.span R (range s) = ⊤ :=
+lemma exists_fin [Module.Finite R M] : ∃ (n : ℕ) (s : Fin n → M), Submodule.span R (range s) = ⊤ :=
   Submodule.fg_iff_exists_fin_generating_family.mp out
 
 variable (R M) in
-lemma exists_fin' [Finite R M] : ∃ (n : ℕ) (f : (Fin n → R) →ₗ[R] M), Surjective f := by
+lemma exists_fin' [Module.Finite R M] : ∃ (n : ℕ) (f : (Fin n → R) →ₗ[R] M), Surjective f := by
   have ⟨n, s, hs⟩ := exists_fin (R := R) (M := M)
   refine ⟨n, Basis.constr (Pi.basisFun R _) ℕ s, ?_⟩
   rw [← LinearMap.range_eq_top, Basis.constr_range, hs]
 
-theorem of_surjective [hM : Finite R M] (f : M →ₗ[R] N) (hf : Surjective f) : Finite R N :=
+theorem of_surjective [hM : Module.Finite R M] (f : M →ₗ[R] N) (hf : Surjective f) :
+    Module.Finite R N :=
   ⟨by
     rw [← LinearMap.range_eq_top.2 hf, ← Submodule.map_top]
     exact hM.1.map f⟩
 
 instance quotient (R) {A M} [Semiring R] [AddCommGroup M] [Ring A] [Module A M] [Module R M]
-    [SMul R A] [IsScalarTower R A M] [Finite R M]
-    (N : Submodule A M) : Finite R (M ⧸ N) :=
+    [SMul R A] [IsScalarTower R A M] [Module.Finite R M]
+    (N : Submodule A M) : Module.Finite R (M ⧸ N) :=
   Module.Finite.of_surjective (N.mkQ.restrictScalars R) N.mkQ_surjective
 
 /-- The range of a linear map from a finite module is finite. -/
-instance range {F : Type*} [FunLike F M N] [SemilinearMapClass F (RingHom.id R) M N] [Finite R M]
-    (f : F) : Finite R (LinearMap.range f) :=
+instance range {F : Type*} [FunLike F M N] [SemilinearMapClass F (RingHom.id R) M N]
+    [Module.Finite R M] (f : F) : Module.Finite R (LinearMap.range f) :=
   of_surjective (SemilinearMapClass.semilinearMap f).rangeRestrict
     fun ⟨_, y, hy⟩ => ⟨y, Subtype.ext hy⟩
 
 /-- Pushforwards of finite submodules are finite. -/
-instance map (p : Submodule R M) [Finite R p] (f : M →ₗ[R] N) : Finite R (p.map f) :=
+instance map (p : Submodule R M) [Module.Finite R p] (f : M →ₗ[R] N) : Module.Finite R (p.map f) :=
   of_surjective (f.restrict fun _ => Submodule.mem_map_of_mem) fun ⟨_, _, hy, hy'⟩ =>
     ⟨⟨_, hy⟩, Subtype.ext hy'⟩
 
 variable (R)
 
-instance self : Finite R R :=
+instance self : Module.Finite R R :=
   ⟨⟨{1}, by simpa only [Finset.coe_singleton] using Ideal.span_singleton_one⟩⟩
 
 variable (M)
 
 theorem of_restrictScalars_finite (R A M : Type*) [CommSemiring R] [Semiring A] [AddCommMonoid M]
-    [Module R M] [Module A M] [Algebra R A] [IsScalarTower R A M] [hM : Finite R M] :
-    Finite A M := by
+    [Module R M] [Module A M] [Algebra R A] [IsScalarTower R A M] [hM : Module.Finite R M] :
+    Module.Finite A M := by
   rw [finite_def, Submodule.fg_def] at hM ⊢
   obtain ⟨S, hSfin, hSgen⟩ := hM
   refine ⟨S, hSfin, eq_top_iff.2 ?_⟩
@@ -578,24 +579,24 @@ theorem of_restrictScalars_finite (R A M : Type*) [CommSemiring R] [Semiring A] 
 
 variable {R M}
 
-instance prod [hM : Finite R M] [hN : Finite R N] : Finite R (M × N) :=
+instance prod [hM : Module.Finite R M] [hN : Module.Finite R N] : Module.Finite R (M × N) :=
   ⟨by
     rw [← Submodule.prod_top]
     exact hM.1.prod hN.1⟩
 
 instance pi {ι : Type*} {M : ι → Type*} [_root_.Finite ι] [∀ i, AddCommMonoid (M i)]
-    [∀ i, Module R (M i)] [h : ∀ i, Finite R (M i)] : Finite R (∀ i, M i) :=
+    [∀ i, Module R (M i)] [h : ∀ i, Module.Finite R (M i)] : Module.Finite R (∀ i, M i) :=
   ⟨by
     rw [← Submodule.pi_top]
     exact Submodule.fg_pi fun i => (h i).1⟩
 
-theorem equiv [Finite R M] (e : M ≃ₗ[R] N) : Finite R N :=
+theorem equiv [Module.Finite R M] (e : M ≃ₗ[R] N) : Module.Finite R N :=
   of_surjective (e : M →ₗ[R] N) e.surjective
 
-theorem equiv_iff (e : M ≃ₗ[R] N) : Finite R M ↔ Finite R N :=
+theorem equiv_iff (e : M ≃ₗ[R] N) : Module.Finite R M ↔ Module.Finite R N :=
   ⟨fun _ ↦ equiv e, fun _ ↦ equiv e.symm⟩
 
-instance ulift [Finite R M] : Finite R (ULift M) := equiv ULift.moduleEquiv.symm
+instance ulift [Module.Finite R M] : Module.Finite R (ULift M) := equiv ULift.moduleEquiv.symm
 
 theorem iff_fg {N : Submodule R M} : Module.Finite R N ↔ N.FG := Module.finite_def.trans (fg_top _)
 
@@ -603,7 +604,7 @@ variable (R M)
 
 instance bot : Module.Finite R (⊥ : Submodule R M) := iff_fg.mpr fg_bot
 
-instance top [Finite R M] : Module.Finite R (⊤ : Submodule R M) := iff_fg.mpr out
+instance top [Module.Finite R M] : Module.Finite R (⊤ : Submodule R M) := iff_fg.mpr out
 
 variable {M}
 
@@ -642,7 +643,7 @@ section Algebra
 
 theorem trans {R : Type*} (A M : Type*) [Semiring R] [Semiring A] [Module R A]
     [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M] :
-    ∀ [Finite R A] [Finite A M], Finite R M
+    ∀ [Module.Finite R A] [Module.Finite A M], Module.Finite R M
   | ⟨⟨s, hs⟩⟩, ⟨⟨t, ht⟩⟩ =>
     ⟨Submodule.fg_def.2
         ⟨Set.image2 (· • ·) (↑s : Set A) (↑t : Set M),

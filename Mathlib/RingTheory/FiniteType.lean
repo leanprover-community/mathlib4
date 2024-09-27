@@ -45,7 +45,7 @@ section Algebra
 
 -- see Note [lower instance priority]
 instance (priority := 100) finiteType {R : Type*} (A : Type*) [CommSemiring R] [Semiring A]
-    [Algebra R A] [hRA : Finite R A] : Algebra.FiniteType R A :=
+    [Algebra R A] [hRA : Module.Finite R A] : Algebra.FiniteType R A :=
   ⟨Subalgebra.fg_of_submodule_fg hRA.1⟩
 
 end Algebra
@@ -746,7 +746,7 @@ This is similar to `IsNoetherian.injective_of_surjective_endomorphism` but only 
 commutative case, but does not use a Noetherian hypothesis. -/
 @[deprecated OrzechProperty.injective_of_surjective_endomorphism (since := "2024-05-30")]
 theorem Module.Finite.injective_of_surjective_endomorphism {R : Type*} [CommRing R] {M : Type*}
-    [AddCommGroup M] [Module R M] [Finite R M] (f : M →ₗ[R] M)
+    [AddCommGroup M] [Module R M] [Module.Finite R M] (f : M →ₗ[R] M)
     (f_surj : Function.Surjective f) : Function.Injective f :=
   OrzechProperty.injective_of_surjective_endomorphism f f_surj
 

@@ -47,7 +47,7 @@ universe u v w x
 
 noncomputable section
 
-open Set FiniteDimensional TopologicalSpace Filter
+open Filter Module Set TopologicalSpace
 
 section Field
 
@@ -197,7 +197,7 @@ private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Fintype
   induction' hn : Fintype.card ι with n IH generalizing ι E
   · rw [Fintype.card_eq_zero_iff] at hn
     exact continuous_of_const fun x y => funext hn.elim
-  · haveI : FiniteDimensional 𝕜 E := of_fintype_basis ξ
+  · haveI : FiniteDimensional 𝕜 E := .of_fintype_basis ξ
     -- first step: thanks to the induction hypothesis, any n-dimensional subspace is equivalent
     -- to a standard space of dimension n, hence it is complete and therefore closed.
     have H₁ : ∀ s : Submodule 𝕜 E, finrank 𝕜 s = n → IsClosed (s : Set E) := by
@@ -264,7 +264,7 @@ continuous (see `LinearMap.continuous_of_finiteDimensional`), which in turn impl
 norms are equivalent in finite dimensions. -/
 theorem continuous_equivFun_basis [T2Space E] {ι : Type*} [Finite ι] (ξ : Basis ι 𝕜 E) :
     Continuous ξ.equivFun :=
-  haveI : FiniteDimensional 𝕜 E := of_fintype_basis ξ
+  haveI : FiniteDimensional 𝕜 E := .of_fintype_basis ξ
   ξ.equivFun.toLinearMap.continuous_of_finiteDimensional
 
 namespace LinearMap

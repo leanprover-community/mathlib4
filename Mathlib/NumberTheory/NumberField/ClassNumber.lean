@@ -41,7 +41,7 @@ variable {K}
 theorem classNumber_eq_one_iff : classNumber K = 1 ↔ IsPrincipalIdealRing (𝓞 K) :=
   card_classGroup_eq_one_iff
 
-open FiniteDimensional NumberField.InfinitePlace
+open Module NumberField.InfinitePlace
 
 open scoped nonZeroDivisors Real
 

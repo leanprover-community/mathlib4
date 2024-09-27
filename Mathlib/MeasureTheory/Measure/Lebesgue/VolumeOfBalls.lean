@@ -40,7 +40,7 @@ Using these formulas, we compute the volume of the unit balls in several cases.
 
 section general_case
 
-open MeasureTheory MeasureTheory.Measure FiniteDimensional ENNReal
+open MeasureTheory MeasureTheory.Measure Module ENNReal
 
 theorem MeasureTheory.measure_unitBall_eq_integral_div_gamma {E : Type*} {p : ℝ}
     [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E]
@@ -160,7 +160,7 @@ end general_case
 
 section LpSpace
 
-open Real Fintype ENNReal FiniteDimensional MeasureTheory MeasureTheory.Measure
+open Real Fintype ENNReal Module MeasureTheory MeasureTheory.Measure
 
 variable (ι : Type*) [Fintype ι] {p : ℝ}
 
@@ -350,7 +350,7 @@ end EuclideanSpace
 
 section InnerProductSpace
 
-open MeasureTheory MeasureTheory.Measure ENNReal Real FiniteDimensional
+open MeasureTheory MeasureTheory.Measure ENNReal Real Module
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E] [Nontrivial E]

@@ -28,7 +28,7 @@ For example, `Algebra.adjoin K {x}` might not include `x⁻¹`.
  - `F⟮α⟯`: adjoin a single element `α` to `F` (in scope `IntermediateField`).
 -/
 
-open FiniteDimensional Polynomial
+open Module Polynomial
 
 namespace IntermediateField
 
@@ -872,7 +872,7 @@ theorem adjoin_natCast (n : ℕ) : F⟮(n : E)⟯ = ⊥ :=
 
 section AdjoinRank
 
-open FiniteDimensional Module
+open Module Module
 
 variable {K L : IntermediateField F E}
 
@@ -1043,7 +1043,7 @@ theorem isAlgebraic_adjoin_simple {x : L} (hx : IsIntegral K x) : Algebra.IsAlge
   have := adjoin.finiteDimensional hx; Algebra.IsAlgebraic.of_finite K K⟮x⟯
 
 theorem adjoin.finrank {x : L} (hx : IsIntegral K x) :
-    FiniteDimensional.finrank K K⟮x⟯ = (minpoly K x).natDegree := by
+    Module.finrank K K⟮x⟯ = (minpoly K x).natDegree := by
   rw [PowerBasis.finrank (adjoin.powerBasis hx : _)]
   rfl
 
@@ -1178,7 +1178,7 @@ theorem card_algHom_adjoin_integral (h : IsIntegral F α) (h_sep : IsSeparable F
   exact h_sep
 
 -- Apparently `K⟮root f⟯ →+* K⟮root f⟯` is expensive to unify during instance synthesis.
-open FiniteDimensional AdjoinRoot in
+open Module AdjoinRoot in
 /-- Let `f, g` be monic polynomials over `K`. If `f` is irreducible, and `g(x) - α` is irreducible
 in `K⟮α⟯` with `α` a root of `f`, then `f(g(x))` is irreducible. -/
 theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g.Monic)
@@ -1226,7 +1226,7 @@ theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g
       rw [← finrank_top', ← this, adjoin.finrank]
       exact IsIntegral.of_finite _ _
     · simp [← key₂]
-  have := FiniteDimensional.finrank_mul_finrank K K⟮aeval (root p) g⟯ Kx
+  have := Module.finrank_mul_finrank K K⟮aeval (root p) g⟯ Kx
   rwa [key₁', key₂', (AdjoinRoot.powerBasis hp₁.ne_zero).finrank, powerBasis_dim, eq_comm] at this
 
 end AdjoinIntegralElement
