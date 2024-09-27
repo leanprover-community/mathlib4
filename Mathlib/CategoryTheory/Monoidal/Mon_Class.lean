@@ -70,8 +70,8 @@ attribute [reassoc (attr := simp)] mul_assoc
 instance trivial (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C] : Mon_Class (𝟙_ C) where
   one := 𝟙 _
   mul := (λ_ _).hom
-  mul_assoc := by coherence
-  mul_one := by coherence
+  mul_assoc := by monoidal_coherence
+  mul_one := by monoidal_coherence
 
 instance : Inhabited (Mon_Class (𝟙_ C)) :=
   ⟨trivial C⟩
@@ -592,7 +592,7 @@ def rightUnitor (X : C) [Mon_Class X] :
 theorem one_braiding (X Y : C) [Mon_Class X] [Mon_Class Y] : η ≫ (β_ X Y).hom = η := by
   simp only [instTensorObj_one, Category.assoc, BraidedCategory.braiding_naturality,
     braiding_tensorUnit_right, Iso.cancel_iso_inv_left]
-  coherence
+  monoidal
 
 end BraidedCategory
 

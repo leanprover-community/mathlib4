@@ -277,13 +277,13 @@ noncomputable def actLeft : R ⊗ P ⊗[S] Q ⟶ P ⊗[S] Q :=
           simp only [Category.assoc]
           slice_lhs 1 2 => rw [associator_inv_naturality_middle]
           slice_rhs 3 4 => rw [← comp_whiskerRight, middle_assoc, comp_whiskerRight]
-          coherence)
+          monoidal)
         (by
           dsimp
           slice_lhs 1 1 => rw [MonoidalCategory.whiskerLeft_comp]
           slice_lhs 2 3 => rw [associator_inv_naturality_right]
           slice_lhs 3 4 => rw [whisker_exchange]
-          coherence))
+          monoidal))
 
 theorem whiskerLeft_π_actLeft :
     (R ◁ coequalizer.π _ _) ≫ actLeft _ S P Q =
@@ -300,7 +300,7 @@ theorem one_act_left' : η ▷ _ ≫ actLeft R S P Q = (λ_ _).hom := by
   slice_lhs 1 2 => rw [associator_inv_naturality_left]
   slice_lhs 2 3 => rw [← comp_whiskerRight, one_act]
   slice_rhs 1 2 => rw [leftUnitor_naturality]
-  coherence
+  monoidal
 
 theorem left_assoc' :
     μ ▷ _ ≫ actLeft R S P Q = (α_ R R _).hom ≫ (R ◁ actLeft R S P Q) ≫ actLeft R S P Q := by
@@ -316,7 +316,7 @@ theorem left_assoc' :
       MonoidalCategory.whiskerLeft_comp, MonoidalCategory.whiskerLeft_comp]
   slice_rhs 4 5 => rw [whiskerLeft_π_actLeft]
   slice_rhs 3 4 => rw [associator_inv_naturality_middle]
-  coherence
+  monoidal
 
 @[simps]
 noncomputable instance : Mod_Class R (P ⊗[S] Q) where
@@ -571,7 +571,7 @@ theorem hom_left_act_hom' :
   slice_rhs 3 4 => erw [whiskerLeft_π_actLeft _ _ P (tensor T Q L)]
   slice_rhs 2 3 => erw [associator_inv_naturality_right]
   slice_rhs 3 4 => erw [whisker_exchange]
-  coherence
+  monoidal
 
 theorem hom_right_act_hom' :
     ↶ ≫ hom S T P Q L = hom S T P Q L ▷ U ≫ ↶ := by
@@ -596,7 +596,7 @@ theorem hom_right_act_hom' :
   slice_rhs 3 4 =>
     rw [← MonoidalCategory.whiskerLeft_comp, π_tensor_id_actRight,
       MonoidalCategory.whiskerLeft_comp, MonoidalCategory.whiskerLeft_comp]
-  coherence
+  monoidal
 
 /-- An auxiliary morphism for the definition of the underlying morphism of the inverse component of
 the associator isomorphism. -/
@@ -615,7 +615,7 @@ noncomputable def invAux : P ⊗ (Q ⊗[T] L) ⟶ (P ⊗[S] Q) ⊗[T] L :=
         slice_rhs 1 2 => rw [MonoidalCategory.whiskerLeft_comp]
         slice_rhs 2 3 => rw [associator_inv_naturality_right]
         slice_rhs 3 4 => rw [whisker_exchange]
-        coherence)
+        monoidal)
 
 /-- The underlying morphism of the inverse component of the associator isomorphism. -/
 noncomputable def inv : P ⊗[S] (Q ⊗[T] L) ⟶ (P ⊗[S] Q) ⊗[T] L :=
@@ -635,7 +635,7 @@ noncomputable def inv : P ⊗[S] (Q ⊗[T] L) ⟶ (P ⊗[S] Q) ⊗[T] L :=
           MonoidalCategory.whiskerLeft_comp, MonoidalCategory.whiskerLeft_comp]
       slice_rhs 4 6 => rw [id_tensor_π_preserves_coequalizer_inv_desc]
       slice_rhs 3 4 => rw [associator_inv_naturality_middle]
-      coherence)
+      monoidal)
 
 theorem hom_inv_id : hom S T P Q L ≫ inv S T P Q L = 𝟙 _ := by
   dsimp [hom, homAux, inv, invAux]
@@ -691,7 +691,7 @@ theorem hom_inv_id : hom R P ≫ inv R P = 𝟙 _ := by
   slice_lhs 2 3 => rw [associator_inv_naturality_left]
   slice_lhs 3 4 => rw [← comp_whiskerRight, Mon_Class.one_mul]
   slice_rhs 1 2 => rw [Category.comp_id]
-  coherence
+  monoidal
 
 theorem inv_hom_id : inv R P ≫ hom R P = 𝟙 _ := by
   dsimp [hom, inv]
@@ -746,7 +746,7 @@ theorem hom_inv_id : hom S P ≫ inv S P = 𝟙 _ := by
   slice_lhs 2 3 => rw [associator_naturality_right]
   slice_lhs 3 4 => rw [← MonoidalCategory.whiskerLeft_comp, Mon_Class.mul_one]
   slice_rhs 1 2 => rw [Category.comp_id]
-  coherence
+  monoidal
 
 theorem inv_hom_id : inv S P ≫ hom S P = 𝟙 _ := by
   dsimp [hom, inv]
@@ -874,7 +874,7 @@ theorem id_whiskerLeft_bimod {X Y : C} [Mon_Class X] [Mon_Class Y]
   slice_rhs 3 4 => rw [associator_inv_naturality_left]
   slice_rhs 4 5 => rw [← comp_whiskerRight, Mon_Class.one_mul]
   have : (λ_ (X ⊗ N)).inv ≫ (α_ (𝟙_ C) X N).inv ≫ ((λ_ X).hom ▷ N) = 𝟙 _ := by
-    coherence
+    monoidal
   slice_rhs 2 4 => rw [this]
   slice_rhs 1 2 => rw [Category.comp_id]
 
@@ -1066,7 +1066,7 @@ theorem pentagon_bimod {V W X Y Z : C}
     rw [← whisker_exchange]
   slice_rhs 3 5 => rw [π_tensor_id_preserves_coequalizer_inv_desc]
   slice_rhs 2 3 => rw [associator_naturality_right]
-  coherence
+  monoidal
 
 theorem triangle_bimod {X Y Z : C} [Mon_Class X] [Mon_Class Y] [Mon_Class Z]
   (M : C) [Mod_Class X M] [RightMod_Class Y M] [MiddleAssocClass X Y M]
