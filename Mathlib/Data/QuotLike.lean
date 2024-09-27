@@ -64,7 +64,7 @@ export QuotLikeStruct (mkQ)
 
 namespace QuotLike
 
-export QuotLikeStruct (toQuot)
+export QuotLikeStruct (mkQ toQuot)
 
 alias toQuot_mkQ := QuotLikeStruct.toQuot_mkQ
 alias ind := QuotLikeStruct.ind
@@ -105,16 +105,16 @@ macro "⟦" a:term " : " α:term "⟧" : term => `(⟦($a : $α)⟧)
 /--
 `QuotLike.HasQuot` is used for deriving `QuotLike` instances from the input type.
 
-The instances of `QuotLike.HasQuot` are usually defined as scoped or local instances.
-
-```
-scoped instance {α} [s : Setoid α] : QuotLike.HasQuot (Quotient s) α (· ≈ ·) where
-```
-
-It may also be defined for types that have specific uses.
+The instances of `QuotLike.HasQuot` may be defined for types that have specific uses.
 
 ```
 instance : QuotLike.HasQuot ZFSet PSet PSet.Equiv where
+```
+
+They are also usually defined as scoped or local instances.
+
+```
+scoped instance {α} [s : Setoid α] : QuotLike.HasQuot (Quotient s) α (· ≈ ·) where
 ```
 -/
 class HasQuot (Q : outParam Sort*) (α : Sort*) (r : outParam (α → α → Prop))
@@ -171,6 +171,11 @@ class Hint {Hint : Sort*} (hint : Hint)
 
 /--
 `QuotLike.HasQuotHint` is used for deriving `QuotLike` instances from the hint and the input type.
+
+```
+scoped instance [Group G] [MulAction G α] :
+    QuotLike.HasQuotHint G (MulAction.orbitRel.Quotient G α) α (MulAction.orbitRel G α) where
+```
 -/
 class HasQuotHint {Hint : Sort*} (hint : Hint)
     (Q : outParam Sort*) (α : Sort*) (r : outParam (α → α → Prop))
@@ -568,6 +573,10 @@ instance (priority := 800) [IsEquiv α r] [dec : DecidableRel r] : DecidableEq Q
     match dec a₁ a₂ with
     | isTrue  h₁ => isTrue (QuotLike.sound h₁)
     | isFalse h₂ => isFalse (fun h ↦ absurd (QuotLike.exact h) h₂)
+
+theorem surjective_mkQ :
+    Function.Surjective (mkQ (Q := Q)) :=
+  exists_rep
 
 @[simp]
 theorem surjective_lift {β : Sort*} {f : α → β} {h : ∀ a b, r a b → f a = f b} :
