@@ -232,7 +232,7 @@ theorem tendsto_pow_const_mul_const_pow_of_abs_lt_one (k : ℕ) {r : ℝ} (hr : 
 /--For `k ≠ 0` and a constant `r` the function `r / n ^ k` tends to zero. -/
 lemma tendsto_const_div_pow (r : ℝ) (k : ℕ) (hk : k ≠ 0) :
     Tendsto (fun n : ℕ => r / n ^ k) atTop (𝓝 0) := by
-  have h := Filter.Tendsto.const_mul r (l := atTop) (f := fun (n : ℕ ) => 1 / n^k) (c := 0) ?_
+  have h := Filter.Tendsto.const_mul r (l := atTop) (f := fun n : ℕ => 1 / n^k) (c := 0) ?_
   simp only [one_div, mul_zero] at *
   apply h.congr
   intro y
