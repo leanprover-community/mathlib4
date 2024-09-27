@@ -14,10 +14,10 @@ This file defines some normal forms of Weierstrass equations of elliptic curves.
 
 ## Main definitions and results
 
-The following normal form is in [silverman2009], section III.1, page 42.
+The following normal forms are in [silverman2009], section III.1, page 42.
 
-- `WeierstrassCurve.IsCharNeTwoNF` is a predicate asserts that a `WeierstrassCurve` is of form
-  $Y^2 = X^3 + a_2X^2 + a_4X + a_6$. It is the normal form of characteristic ≠ 2.
+- `WeierstrassCurve.IsCharNeTwoNF` is a predicate which asserts that a `WeierstrassCurve` is
+  of form $Y^2 = X^3 + a_2X^2 + a_4X + a_6$. It is the normal form of characteristic ≠ 2.
 
   If 2 is invertible in the ring (for example, if it is a field of characteristic not equal to 2),
   then for any `WeierstrassCurve` there exists a change of variables which will change
@@ -27,8 +27,8 @@ The following normal form is in [silverman2009], section III.1, page 42.
 
 The following normal forms are in [silverman2009], Appendix A, Proposition 1.1.
 
-- `WeierstrassCurve.IsCharNeTwoThreeNF` is a predicate asserts that a `WeierstrassCurve` is of form
-  $Y^2 = X^3 + a_4X + a_6$. It is the normal form of characteristic ≠ 2.
+- `WeierstrassCurve.IsCharNeTwoThreeNF` is a predicate which asserts that a `WeierstrassCurve` is
+  of form $Y^2 = X^3 + a_4X + a_6$. It is the normal form of characteristic ≠ 2.
   It is also the normal form of characteristic = 3 and j = 0.
 
   If 2 and 3 are invertible in the ring (for example, if it is a field of characteristic
@@ -39,15 +39,15 @@ The following normal forms are in [silverman2009], Appendix A, Proposition 1.1.
   `WeierstrassCurve.vcToCharNeTwoThreeNF_spec`.
 
   If the ring is of characteristic 3 and the $b_2$ of the curve is zero (for an elliptic curve,
-  it is equivalent to that j = 0), then there exists a change of variables which will change
+  this is equivalent to j = 0), then there exists a change of variables which will change
   it into such normal form (see `WeierstrassCurve.vcToCharThreeJZeroNF`
   and `WeierstrassCurve.vcToCharThreeJZeroNF_spec`).
 
-- `WeierstrassCurve.IsCharThreeJNeZeroNF` is a predicate asserts that a `WeierstrassCurve` is of
-  form $Y^2 = X^3 + a_2X^2 + a_6$. It is the normal form of characteristic = 3 and j ≠ 0.
+- `WeierstrassCurve.IsCharThreeJNeZeroNF` is a predicate which asserts that a `WeierstrassCurve` is
+  of form $Y^2 = X^3 + a_2X^2 + a_6$. It is the normal form of characteristic = 3 and j ≠ 0.
 
   If the field is of characteristic 3 and the $b_2$ of the curve is not zero (for an elliptic curve,
-  it is equivalent to that j ≠ 0), then there exists a change of variables which will change
+  this is equivalent to j ≠ 0), then there exists a change of variables which will change
   it into such normal form (see `WeierstrassCurve.vcToCharThreeNF`
   and `WeierstrassCurve.vcToCharThreeNF_spec_of_b₂_ne_zero`).
 
@@ -60,19 +60,19 @@ The following normal forms are in [silverman2009], Appendix A, Proposition 1.1.
   See also `WeierstrassCurve.vcToCharThreeNF` and
   `WeierstrassCurve.vcToCharThreeNF_spec`.
 
-- `WeierstrassCurve.IsCharTwoJZeroNF` is a predicate asserts that a `WeierstrassCurve` is of form
-  $Y^2 + a_3Y = X^3 + a_4X + a_6$. It is the normal form of characteristic = 2 and j = 0.
+- `WeierstrassCurve.IsCharTwoJZeroNF` is a predicate which asserts that a `WeierstrassCurve` is
+  of form $Y^2 + a_3Y = X^3 + a_4X + a_6$. It is the normal form of characteristic = 2 and j = 0.
 
   If the ring is of characteristic 2 and the $a_1$ of the curve is zero (for an elliptic curve,
-  it is equivalent to that j = 0), then there exists a change of variables which will change
+  this is equivalent to j = 0), then there exists a change of variables which will change
   it into such normal form (see `WeierstrassCurve.vcToCharTwoJZeroNF`
   and `WeierstrassCurve.vcToCharTwoJZeroNF_spec`).
 
-- `WeierstrassCurve.IsCharTwoJNeZeroNF` is a predicate asserts that a `WeierstrassCurve` is of form
-  $Y^2 + XY = X^3 + a_2X^2 + a_6$. It is the normal form of characteristic = 2 and j ≠ 0.
+- `WeierstrassCurve.IsCharTwoJNeZeroNF` is a predicate which asserts that a `WeierstrassCurve` is
+  of form $Y^2 + XY = X^3 + a_2X^2 + a_6$. It is the normal form of characteristic = 2 and j ≠ 0.
 
   If the field is of characteristic 2 and the $a_1$ of the curve is not zero (for an elliptic curve,
-  it is equivalent to that j ≠ 0), then there exists a change of variables which will change
+  this is equivalent to j ≠ 0), then there exists a change of variables which will change
   it into such normal form (see `WeierstrassCurve.vcToCharTwoJNeZeroNF`
   and `WeierstrassCurve.vcToCharTwoJNeZeroNF_spec`).
 
