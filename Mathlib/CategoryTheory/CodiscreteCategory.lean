@@ -29,8 +29,8 @@ namespace CategoryTheory
 
 universe u v w
 
-/-- The type of objects in the category `Codiscrete A` is a type synonym for `A` and there is a unique
-morphism between any two objects in this category. -/
+/-- The type of objects in the category `Codiscrete A` is a type synonym
+for `A` and there is a unique morphism between any two objects in this category. -/
 def Codiscrete (A : Type u) : Type u := A
 
 namespace Codiscrete
@@ -39,11 +39,6 @@ instance (A : Type*) : Category (Codiscrete A) where
   Hom _ _ := Unit
   id _ := ⟨⟩
   comp _ _ := ⟨⟩
-
-/-- A function induces a functor between codiscrete categories.-/
-def funToFunc {A B : Type*} (f : A → B) : Codiscrete A ⥤ Codiscrete B where
-  obj a := f a
-  map _ := ⟨⟩
 
 section
 variable {C : Type u} [Category.{v} C] {A : Type w}
@@ -83,6 +78,11 @@ def natIsoFunctor {F : C ⥤ Codiscrete A} : F ≅ lift (F.obj) where
   }
 
 end
+
+-- /-- A function induces a functor between codiscrete categories.-/
+def functorOfFun {A B : Type*} (f : A → B) : Codiscrete A ⥤ Codiscrete B := by
+  exact lift f
+
 open Opposite
 
 /-- A codiscrete category is equivalent to its opposite category. -/
@@ -99,7 +99,7 @@ protected def opposite (A : Type*) : (Codiscrete A)ᵒᵖ ≌ Codiscrete A :=
 /-- Codiscrete.Functor turns a type into a codiscrete category-/
 def functor : Type u ⥤ Cat.{0,u} where
   obj A := Cat.of (Codiscrete A)
-  map := funToFunc
+  map := functorOfFun
 
 open Adjunction Cat
 
