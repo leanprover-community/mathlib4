@@ -295,17 +295,17 @@ unsafe def main (args : List String): IO UInt32 := do
 
   match labels with
   | #[] =>
-    println s!"No label to add"
+    println s!"::notice title=Autolabel::no label to add"
   | #[label] =>
     match prNumber? with
     | some n =>
       let _ ← IO.Process.run {
         cmd := "gh",
         args := #["pr", "edit", n, "--add-label", label] }
-      println s!"Added label: {label}"
+      println s!"::notice title=Autolabel::added label: {label}"
     | none =>
       println s!"No PR-number provided, not adding labels. \
       (call `lake exe autolabel 150602` to add the labels to PR `150602`)"
   | _ =>
-    println s!"Not adding multiple labels"
+    println s!"::notice title=Autolabel::not adding multiple labels"
   IO.Process.exit 0
