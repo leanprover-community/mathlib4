@@ -269,25 +269,28 @@ lemma HasUnifEigenvalue.exp_ne_zero {f : End R M} {μ : R} {k : ℕ}
   rintro rfl
   simp [HasUnifEigenvalue, Nat.cast_zero, unifEigenspace_zero] at h
 
+-- Mathlib.Order.Hom.Basic
+@[simps]
+def WithTop.coeOrderHom {α : Type*} [Preorder α] : α →o WithTop α where
+  toFun := (↑)
+  monotone' := WithTop.coe_mono
+
 /-- If there exists a natural number `k` such that the kernel of `(f - μ • id) ^ k` is the
 maximal generalized eigenspace, then this value is the least such `k`. If not, this value is not
 meaningful. -/
 noncomputable def maxUnifEigenspaceIndex (f : End R M) (μ : R) :=
-  monotonicSequenceLimitIndex <| -- (f.unifEigenspace μ).comp <| by exact?
-    { toFun := (f.unifEigenspace μ ·),
-      monotone' := fun k l hkl ↦ unifEigenspace_mono f μ <| by simpa }
+  monotonicSequenceLimitIndex <| (f.unifEigenspace μ).comp <| WithTop.coeOrderHom
 
 /-- For an endomorphism of a Noetherian module, the maximal eigenspace is always of the form kernel
 `(f - μ • id) ^ k` for some `k`. -/
 lemma unifEigenspace_top [h : IsNoetherian R M] (f : End R M) (μ : R) :
-    unifEigenspace f μ ⊤ =
-      f.unifEigenspace μ (maxUnifEigenspaceIndex f μ) := by
+    unifEigenspace f μ ⊤ = f.unifEigenspace μ (maxUnifEigenspaceIndex f μ) := by
   rw [isNoetherian_iff] at h
-  have := WellFounded.iSup_eq_monotonicSequenceLimit h
-    { toFun := (f.unifEigenspace μ ·),
-      monotone' := fun k l hkl ↦ unifEigenspace_mono f μ <| by simpa }
+  have := WellFounded.iSup_eq_monotonicSequenceLimit h <|
+    (f.unifEigenspace μ).comp <| WithTop.coeOrderHom
   convert this using 1
-  simp only [unifEigenspace, le_top, iSup_pos, Nat.cast_le, OrderHom.coe_mk]
+  simp only [unifEigenspace, OrderHom.coe_mk, le_top, iSup_pos, OrderHom.comp_coe,
+    Function.comp_def]
   rw [iSup_prod', iSup_subtype', ← sSup_range, ← sSup_range]
   congr
   aesop
@@ -345,8 +348,8 @@ lemma maxUnifEigenspaceIndex_le_finrank [FiniteDimensional K V] (f : End K V) (�
   apply Nat.sInf_le
   intro n hn
   apply le_antisymm
-  · exact (f.unifEigenspace μ).monotone <| by simpa using hn
-  · dsimp
+  · exact (f.unifEigenspace μ).monotone <| WithTop.coeOrderHom.monotone hn
+  · show (f.unifEigenspace μ) n ≤ (f.unifEigenspace μ) (finrank K V)
     rw [unifEigenspace_nat, unifEigenspace_nat]
     apply ker_pow_le_ker_pow_finrank
 
