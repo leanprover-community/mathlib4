@@ -43,7 +43,7 @@ instance : LocallyCompactSpace ℂ_ℤ := IsOpen.locallyCompactSpace ℂ_ℤ_IsO
 
 instance : Coe ℂ_ℤ ℂ := ⟨fun x => x.1⟩
 
-lemma upper_half_plane_ne_int (z : ℍ) : ∀ n : ℤ, z.1 ≠ n := by
+lemma UpperHalfPlane.ne_int (z : ℍ) : ∀ n : ℤ, z.1 ≠ n := by
   intro n
   have h1 := z.2
   aesop
