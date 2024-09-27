@@ -345,7 +345,7 @@ def map (f : α → β) : FreeMonoid α →* FreeMonoid β where
 @[to_additive (attr := simp)]
 theorem map_of (f : α → β) (x : α) : map f (of x) = of (f x) := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem mem_map {m : β} : m ∈ map f a ↔ ∃ n ∈ a, f n = m := List.mem_map
 
 @[to_additive]
