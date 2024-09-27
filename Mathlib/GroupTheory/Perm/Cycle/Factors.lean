@@ -128,7 +128,6 @@ theorem cycleOf_eq_one_iff (f : Perm α) [DecidableRel f.SameCycle] : cycleOf f 
   · rw [hy, ite_self]
   · exact if_neg (mt SameCycle.apply_eq_self_iff (by tauto))
 
-
 @[simp]
 theorem cycleOf_self_apply (f : Perm α) [DecidableRel f.SameCycle] (x : α) :
     cycleOf f (f x) = cycleOf f x :=
