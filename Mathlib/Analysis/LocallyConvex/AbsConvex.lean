@@ -285,14 +285,9 @@ theorem totallyBounded_absConvexHull
   have e2 {t₁ : Set E} : ⋃ y ∈ t₁, {x | (x, y) ∈ d₂} = t₁ + V := by
     aesop
   rw [e2] at hts
-  have e3 : (absConvexHull ℝ) s ⊆ (absConvexHull ℝ) (t + V) := by
-    exact absConvexHull_mono hts
   have e4 : (absConvexHull ℝ) s ⊆ ((absConvexHull ℝ) t) + (absConvexHull ℝ) V :=
-    le_trans e3 (AbsConvex.hullAdd _)
-  have e5 : (absConvexHull ℝ) V = V := by
-    rw [AbsConvex.absConvexHull_eq]
-    exact hS₂
-  rw [e5] at e4
+    le_trans (absConvexHull_mono hts) (AbsConvex.hullAdd _)
+  rw [AbsConvex.absConvexHull_eq hS₂] at e4
   rw [absConvexHull_eq_convexHull_union_neg (s := t)] at e4
   have e6 : TotallyBounded (uniformSpace := TopologicalAddGroup.toUniformSpace E)
       ((convexHull ℝ) (t ∪ -t)) := IsCompact.totallyBounded
@@ -355,11 +350,8 @@ theorem totallyBounded_absConvexHull
       apply hS₃
       rw [Balanced.neg_mem_iff hS₂.1]
       exact hz'₁
-  have e9 : ⋃ y ∈ t', y +ᵥ ((2 : ℝ) • V) ⊆ ⋃ y ∈ t', {x | (x, y) ∈ d'} := by
-    apply biUnion_mono
-    exact fun ⦃a⦄ a ↦ a
-    intro y _
-    exact e8 y
+  have e9 : ⋃ y ∈ t', y +ᵥ ((2 : ℝ) • V) ⊆ ⋃ y ∈ t', {x | (x, y) ∈ d'} :=
+    biUnion_mono (fun ⦃a⦄ a ↦ a) (fun y _ ↦ e8 y)
   use t'
   constructor
   · exact htf'
