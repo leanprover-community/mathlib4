@@ -267,21 +267,35 @@ theorem totallyBounded_absConvexHull
   obtain ⟨t,⟨htf,hts⟩⟩ := hs d₂ (by
     rw [uniformity_eq_comap_nhds_zero' E]
     aesop)
-  have e1 (y : E) : {x | (x, y) ∈ d₂} = y +ᵥ V := by
+  have e1' (x : E) : UniformSpace.ball x d₂ = x +ᵥ V := by
     apply le_antisymm
-    · intro x hx
-      use x-y
+    · intro y hy
+      use y-x
       constructor
-      · rw [← Balanced.neg_mem_iff hS₂.1]
-        aesop
+      · aesop
       · simp only [vadd_eq_add, add_sub_cancel]
-    · intro x hx
-      obtain ⟨z,⟨hz₁,hz₂⟩⟩ := hx
+    · intro y hy
+      obtain ⟨z,⟨hz₁,hz₂⟩⟩ := hy
       simp only [vadd_eq_add] at hz₂
       have a1: y-x ∈ V := by
-        rw [← hz₂, sub_add_cancel_left, Balanced.neg_mem_iff hS₂.1]
+        rw [← hz₂, add_sub_cancel_left]
         exact hz₁
+      rw [UniformSpace.ball]
       aesop
+  have s1 : SymmetricRel d₂ := by
+    ext ⟨x,y⟩
+    simp only [mem_preimage, Prod.swap_prod_mk]
+    constructor
+    · intro h
+      simp only [mem_setOf_eq, d₂] at h
+      rw [← Balanced.neg_mem_iff hS₂.1, neg_sub] at h
+      exact h
+    · intro h
+      simp only [mem_setOf_eq, d₂] at h
+      rw [← Balanced.neg_mem_iff hS₂.1, neg_sub] at h
+      exact h
+  have e1 (y : E) : {x | (x, y) ∈ d₂} = y +ᵥ V := by
+    rw [← UniformSpace.ball_eq_of_symmetry s1, e1']
   have e2 {t₁ : Set E} : ⋃ y ∈ t₁, {x | (x, y) ∈ d₂} = t₁ + V := by
     aesop
   rw [e2] at hts
