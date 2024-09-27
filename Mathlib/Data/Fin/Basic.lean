@@ -397,6 +397,15 @@ theorem val_add_eq_ite {n : ℕ} (a b : Fin n) :
     Nat.mod_eq_of_lt (show ↑b < n from b.2)]
 --- Porting note: syntactically the same as the above
 
+lemma intCast_val_sub_eq_ite {n : ℕ} (a b : Fin n) :
+    ((a - b).val : ℤ) = a.val - b.val + if b ≤ a then 0 else n := by
+  split
+  · rw [Fin.sub_val_of_le]
+    omega
+    assumption
+  · rw [Fin.coe_sub_iff_lt.2 (Fin.not_le.1 ‹_›)]
+    omega
+
 section OfNatCoe
 
 @[simp]
@@ -423,8 +432,7 @@ in the same value. -/
 
 -- Porting note: this is syntactically the same as `cast_val_of_lt`
 
--- This is a special case of `CharP.cast_eq_zero` that doesn't require typeclass search
-@[simp high] lemma natCast_self (n : ℕ) [NeZero n] : (n : Fin n) = 0 := by ext; simp
+@[simp] lemma natCast_self (n : ℕ) [NeZero n] : (n : Fin n) = 0 := by ext; simp
 
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_self := natCast_self
