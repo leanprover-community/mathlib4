@@ -428,7 +428,7 @@ theorem id_comp (p : FormalMultilinearSeries 𝕜 E F) (v0 : Fin 0 → E) :
       rfl
     · simp
 
-/-- Variant of `id_comp` in which the zero coefficient is given by an equality hypothesis insead
+/-- Variant of `id_comp` in which the zero coefficient is given by an equality hypothesis instead
 of a definitional equality. Useful for rewriting or simplifying out in some situations. -/
 theorem id_comp' (p : FormalMultilinearSeries 𝕜 E F) (x : F) (v0 : Fin 0 → E) (h : x = p 0 v0) :
     (id 𝕜 F x).comp p = p := by
