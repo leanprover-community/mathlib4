@@ -58,10 +58,11 @@ theorem exchange_exists_feasible_superset_add_element_feasible'
     exact False.elim ((eq_of_subset_of_card_le hs (Nat.le_of_sub_eq_zero hn.symm) ▸ ha₂) ha₁)
   | succ n ih =>
     rcases exchange_exists_superset_of_card_le hs₁ hs₂ (by omega) (le_succ _)
-      with ⟨s, hs₁, hs₂, hs₃, hs₄⟩
+      with ⟨s, hs₃, hs₄, hs₅, hs₆⟩
     by_cases h : a ∈ s
-    · 
-      sorry
+    · use s₂; simp [hs₂, hs, ha₂]
+      exact (eq_of_subset_of_card_le
+        ((@cons_subset _ _ _ _ ha₂).mpr ⟨h, hs₄⟩) (hs₆ ▸ card_cons ha₂ ▸ le_rfl)) ▸ hs₃
     · sorry
 
 theorem exchange_exists_feasible_superset_add_element_feasible := sorry
