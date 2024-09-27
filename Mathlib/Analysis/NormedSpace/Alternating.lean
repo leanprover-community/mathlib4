@@ -3,7 +3,7 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov, Heather Macbeth, Patrick Massot
 -/
-import Mathlib.Topology.Algebra.Module.Alternating.Basic
+import Mathlib.Topology.Algebra.Module.Alternating.Topology
 import Mathlib.Analysis.NormedSpace.Multilinear.Basic
 
 /-!
@@ -136,33 +136,6 @@ as a linear isometry. -/
       E [⋀^ι]→L[𝕜] G →ₗ[𝕜] ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) G) with
     norm_map' := fun _ ↦ rfl }
 
-lemma embedding_toContinuousMultilinearMap :
-    Embedding (toContinuousMultilinearMap : E [⋀^ι]→L[𝕜] G →
-      ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) G) :=
-  toContinuousMultilinearMap_injective.embedding_induced
-
-lemma uniformEmbedding_toContinuousMultilinearMap :
-    UniformEmbedding (toContinuousMultilinearMap : E [⋀^ι]→L[𝕜] G →
-      ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) G) :=
-  ⟨⟨rfl⟩, toContinuousMultilinearMap_injective⟩
-
-lemma isClosed_range_toContinuousMultilinearMap :
-    IsClosed (Set.range (toContinuousMultilinearMap : E [⋀^ι]→L[𝕜] G →
-      ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) G)) := by
-  simp only [range_toContinuousMultilinearMap, Set.setOf_forall]
-  repeat apply isClosed_iInter; intro
-  exact isClosed_singleton.preimage (ContinuousMultilinearMap.continuous_eval_const _)
-
-lemma closedEmbedding_toContinuousMultilinearMap :
-    ClosedEmbedding (toContinuousMultilinearMap : E [⋀^ι]→L[𝕜] G →
-      ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) G) :=
-  ⟨embedding_toContinuousMultilinearMap, isClosed_range_toContinuousMultilinearMap⟩
-
-lemma continuous_toContinuousMultilinearMap :
-    Continuous (toContinuousMultilinearMap : E [⋀^ι]→L[𝕜] G →
-      ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) G) :=
-  embedding_toContinuousMultilinearMap.continuous
-
 lemma norm_def : ‖f‖ = sInf {c | 0 ≤ (c : ℝ) ∧ ∀ m, ‖f m‖ ≤ c * ∏ i, ‖m i‖} := rfl
 
 -- So that invocations of `le_cInf` make sense: we show that the set of
@@ -225,10 +198,10 @@ theorem le_opNorm_mul_pow_of_le (f : E [⋀^Fin n]→L[𝕜] G) (m : Fin n → E
 
 /-- The fundamental property of the operator norm of a continuous alternating map:
 `‖f m‖` is bounded by `‖f‖` times the product of the `‖m i‖`, `nnnorm` version. -/
-theorem le_op_nnnorm : ‖f m‖₊ ≤ ‖f‖₊ * ∏ i, ‖m i‖₊ := f.1.le_op_nnnorm m
+theorem le_opNNNorm : ‖f m‖₊ ≤ ‖f‖₊ * ∏ i, ‖m i‖₊ := f.1.le_opNNNorm m
 
-theorem le_of_op_nnnorm_le {C : ℝ≥0} (h : ‖f‖₊ ≤ C) : ‖f m‖₊ ≤ C * ∏ i, ‖m i‖₊ :=
-  f.1.le_of_op_nnnorm_le m h
+theorem le_of_opNNNorm_le {C : ℝ≥0} (h : ‖f‖₊ ≤ C) : ‖f m‖₊ ≤ C * ∏ i, ‖m i‖₊ :=
+  f.1.le_of_opNNNorm_le m h
 
 lemma opNorm_prod (f : E [⋀^ι]→L[𝕜] G) (g : E [⋀^ι]→L[𝕜] G') :
     ‖f.prod g‖ = max (‖f‖) (‖g‖) :=
@@ -306,10 +279,6 @@ def restrictScalarsₗᵢ : E [⋀^ι]→L[𝕜] G →ₗᵢ[𝕜'] E [⋀^ι]�
 
 variable {𝕜'}
 
-lemma continuous_restrictScalars :
-    Continuous (restrictScalars 𝕜' : E [⋀^ι]→L[𝕜] G → E [⋀^ι]→L[𝕜'] G) :=
-  (restrictScalarsₗᵢ 𝕜').continuous
-
 end restrict_scalars
 
 /-- The difference `f m₁ - f m₂` is controlled in terms of `‖f‖` and `‖m₁ - m₂‖`, precise version.
@@ -333,19 +302,6 @@ lemma continuous_eval :
     Continuous (fun p : E [⋀^ι]→L[𝕜] G × (ι → E) ↦ p.1 p.2) :=
   (@ContinuousMultilinearMap.continuous_eval 𝕜 ι (fun _ ↦ E) G _ _ _ _ _ _).comp
     (continuous_toContinuousMultilinearMap.prod_map continuous_id)
-
-lemma continuous_eval_left (m : ι → E) : Continuous fun p : E [⋀^ι]→L[𝕜] G ↦ p m :=
-  continuous_eval.comp₂ continuous_id continuous_const
-
-lemma hasSum_eval {α : Type*} {p : α → E [⋀^ι]→L[𝕜] G} {q : E [⋀^ι]→L[𝕜] G}
-    (h : HasSum p q) (m : ι → E) : HasSum (p · m) (q m) := by
-  dsimp only [HasSum] at h ⊢
-  convert ((continuous_eval_left m).tendsto _).comp h
-  simp
-
-lemma tsum_eval {α : Type*} {p : α → E [⋀^ι]→L[𝕜] G} (hp : Summable p)
-    (m : ι → E) : (∑' a, p a) m = ∑' a, p a m :=
-  (hasSum_eval hp.hasSum m).tsum_eq.symm
 
 open scoped Topology
 open filter
