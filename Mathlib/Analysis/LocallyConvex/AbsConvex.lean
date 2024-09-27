@@ -16,17 +16,19 @@ topological vector space has a basis consisting of absolutely convex sets.
 
 ## Main definitions
 
+* `absConvexHull`: the absolutely convex hull of a set `s` is the smallest absolutely convex set
+  containing `s`.
 * `gaugeSeminormFamily`: the seminorm family induced by all open absolutely convex neighborhoods
 of zero.
 
 ## Main statements
 
+* `absConvexHull_eq_convexHull_balancedHull`: when the locally convex space is a module, the
+  absolutely convex hull of a set `s` equals the convex hull of the balanced hull of `s`.
+* `absConvexHull_eq_convexHull_union_neg`: the convex hull of `s ∪ -s` is the absolute convex hull
+  of `s`.
 * `with_gaugeSeminormFamily`: the topology of a locally convex space is induced by the family
 `gaugeSeminormFamily`.
-
-## TODO
-
-* Define the disked hull
 
 ## Tags
 
@@ -103,11 +105,13 @@ theorem subset_absConvexHull : s ⊆ absConvexHull 𝕜 s :=
   (absConvexHull 𝕜).le_closure s
 
 theorem absConvex_absConvexHull : AbsConvex 𝕜 (absConvexHull 𝕜 s) :=
-    (absConvexHull 𝕜).isClosed_closure s
+  (absConvexHull 𝕜).isClosed_closure s
 
-theorem balanced_absConvexHull : Balanced 𝕜 ((absConvexHull 𝕜) s) := (absConvex_absConvexHull 𝕜 s).1
+theorem balanced_absConvexHull : Balanced 𝕜 ((absConvexHull 𝕜) s) :=
+  (absConvex_absConvexHull 𝕜 s).1
 
-theorem convex_absConvexHull : Convex ℝ ((absConvexHull 𝕜) s) := (absConvex_absConvexHull 𝕜 s).2
+theorem convex_absConvexHull : Convex ℝ ((absConvexHull 𝕜) s) :=
+  (absConvex_absConvexHull 𝕜 s).2
 
 theorem absConvexHull_eq_iInter :
     absConvexHull 𝕜 s = ⋂ (t : Set E) (_ : s ⊆ t) (_ : AbsConvex 𝕜 t), t := by
@@ -161,25 +165,23 @@ end AbsolutelyConvex
 
 section
 
-variable (𝕜) [NontriviallyNormedField 𝕜] --[NormOneClass 𝕜]
+variable (𝕜) [NontriviallyNormedField 𝕜]
 variable [AddCommGroup E] [Module ℝ E] [Module 𝕜 E]
-
-theorem absConvexHull_eq_convexHull_balancedHull  [SMulCommClass ℝ 𝕜 E] {s : Set E} :
-    absConvexHull 𝕜 s = convexHull ℝ (balancedHull 𝕜 s) := by
-  apply le_antisymm
-  · exact absConvexHull_min
-      (subset_trans (subset_convexHull ℝ s) (convexHull_mono (subset_balancedHull 𝕜)))
-      ⟨Balanced.convexHull (balancedHull.balanced s), convex_convexHull _ _⟩
-  · rw [← Convex.convexHull_eq (convex_absConvexHull 𝕜 s)]
-    exact convexHull_mono
-      (Balanced.balancedHull_subset_of_subset (balanced_absConvexHull 𝕜 s)
-        (subset_absConvexHull 𝕜 s))
 
 theorem AbsConvex.hullAdd {s t : Set E} :
     absConvexHull 𝕜 (s + t) ⊆ absConvexHull 𝕜 s + absConvexHull 𝕜 t :=
   absConvexHull_min (add_subset_add (subset_absConvexHull 𝕜 s) (subset_absConvexHull 𝕜 t))
     ⟨Balanced.add (balanced_absConvexHull 𝕜 s) (balanced_absConvexHull 𝕜 t),
       Convex.add (convex_absConvexHull 𝕜 s) (convex_absConvexHull 𝕜 t)⟩
+
+theorem absConvexHull_eq_convexHull_balancedHull [SMulCommClass ℝ 𝕜 E] {s : Set E} :
+    absConvexHull 𝕜 s = convexHull ℝ (balancedHull 𝕜 s) := le_antisymm
+  (absConvexHull_min
+      (subset_trans (subset_convexHull ℝ s) (convexHull_mono (subset_balancedHull 𝕜)))
+      ⟨Balanced.convexHull (balancedHull.balanced s), convex_convexHull _ _⟩)
+  (convexHull_min
+      (Balanced.balancedHull_subset_of_subset (balanced_absConvexHull 𝕜 s)
+      (subset_absConvexHull 𝕜 s)) (convex_absConvexHull 𝕜 s))
 
 end
 
