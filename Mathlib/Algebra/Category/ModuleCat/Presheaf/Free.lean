@@ -128,7 +128,6 @@ lemma free_hom_ext {ψ ψ' : freeObj F ⟶ G}
       freeAdjunctionUnit R F ≫ whiskerRight ((toPresheaf _).map ψ') _ ): ψ = ψ' :=
   freeHomEquiv.injective h
 
-
 variable (R) in
 /-- The free presheaf of modules functor is left adjoint to the forget functor
 `PresheafOfModules.{u} R ⥤ Cᵒᵖ ⥤ Type u`. -/
@@ -142,7 +141,8 @@ noncomputable def freeAdjunction :
 
 variable (F G) in
 @[simp]
-lemma freeAdjunction_homEquiv : (freeAdjunction R).homEquiv F G = freeHomEquiv := rfl
+lemma freeAdjunction_homEquiv : (freeAdjunction R).homEquiv F G = freeHomEquiv := by
+  simp [freeAdjunction, Adjunction.mkOfHomEquiv_homEquiv]
 
 variable (R F) in
 @[simp]
