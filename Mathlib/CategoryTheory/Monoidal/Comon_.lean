@@ -69,6 +69,17 @@ theorem comul_assoc' (X : C) [Comon_Class X] :
 
 end Comon_Class
 
+open scoped Comon_Class
+
+variable {M N : C} [Comon_Class M] [Comon_Class N]
+
+/-- The property that a morphism between comonoid objects is a comonoid morphism. -/
+class IsComon_Hom (f : M ⟶ N) : Prop where
+  hom_counit : f ≫ ε = ε := by aesop_cat
+  hom_comul : f ≫ Δ = Δ ≫ (f ⊗ f) := by aesop_cat
+
+attribute [reassoc (attr := simp)] IsComon_Hom.hom_counit IsComon_Hom.hom_comul
+
 variable (C)
 
 /-- A comonoid object internal to a monoidal category.
@@ -343,7 +354,7 @@ theorem tensorObj_comul (A B : Comon_ C) :
 /-- The forgetful functor from `Comon_ C` to `C` is monoidal when `C` is braided monoidal. -/
 def forgetMonoidal : MonoidalFunctor (Comon_ C) C :=
   { forget C with
-    ε := 𝟙 _
+    «ε» := 𝟙 _
     μ := fun X Y => 𝟙 _ }
 
 @[simp] theorem forgetMonoidal_toFunctor : (forgetMonoidal C).toFunctor = forget C := rfl
