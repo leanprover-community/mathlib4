@@ -173,6 +173,9 @@ theorem comap_eq_top_iff {I : Ideal S} : I.comap f = ⊤ ↔ I = ⊤ :=
 theorem map_bot : (⊥ : Ideal R).map f = ⊥ :=
   (gc_map_comap f).l_bot
 
+theorem ne_bot_of_map_ne_bot (hI : map f I ≠ ⊥) : I ≠ ⊥ :=
+  fun h => hI (Eq.mpr (congrArg (fun I ↦ map f I = ⊥) h) map_bot)
+
 variable (f I J K L)
 
 @[simp]
