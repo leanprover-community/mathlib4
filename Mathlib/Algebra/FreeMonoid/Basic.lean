@@ -159,7 +159,7 @@ def symbols (a : FreeMonoid α) : Finset α := List.toFinset a
 @[to_additive (attr := simp)]
 theorem symbols_one : symbols (1 : FreeMonoid α) = ∅ := rfl
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem symbols_of {m : α} : symbols (of m : FreeMonoid α) = {m} := rfl
 
 @[to_additive]
@@ -408,7 +408,7 @@ theorem reverse_mul {a b : FreeMonoid α} : reverse (a * b) = reverse b * revers
 theorem reverse_reverse {a : FreeMonoid α} : reverse (reverse a) = a := by
   apply List.reverse_reverse
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem reverse_length {a : FreeMonoid α} : a.reverse.length = a.length :=
   List.length_reverse _
 
