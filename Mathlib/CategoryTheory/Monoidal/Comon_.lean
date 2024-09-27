@@ -69,6 +69,8 @@ theorem comul_assoc' (X : C) [Comon_Class X] :
 
 end Comon_Class
 
+open scoped Comon_Class
+
 variable (C)
 
 /-- A comonoid object internal to a monoidal category.
@@ -98,8 +100,8 @@ variable {C}
 @[simps]
 def mk' (X : C) [Comon_Class X] : Comon_ C where
   X := X
-  counit := Comon_Class.counit
-  comul := Comon_Class.comul
+  counit := ε
+  comul := Δ
 
 instance {M : Comon_ C} : Comon_Class M.X where
   counit := M.counit
@@ -343,7 +345,7 @@ theorem tensorObj_comul (A B : Comon_ C) :
 /-- The forgetful functor from `Comon_ C` to `C` is monoidal when `C` is braided monoidal. -/
 def forgetMonoidal : MonoidalFunctor (Comon_ C) C :=
   { forget C with
-    ε := 𝟙 _
+    «ε» := 𝟙 _
     μ := fun X Y => 𝟙 _ }
 
 @[simp] theorem forgetMonoidal_toFunctor : (forgetMonoidal C).toFunctor = forget C := rfl
