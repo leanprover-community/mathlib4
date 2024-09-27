@@ -35,7 +35,6 @@ def Codiscrete (A : Type u) : Type u := A
 
 namespace Codiscrete
 
-
 instance (A : Type*) : Category (Codiscrete A) where
   Hom _ _ := Unit -- The hom types in the Codiscrete A are the unit type.
   id _ := ⟨⟩ -- This is the unique element of the unit type.
