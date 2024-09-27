@@ -20,49 +20,87 @@ non-truncated data.
 namespace FinEnum
 universe u v
 
-/-- The additional `Option.none` element doesn't negate enumerability. -/
-instance instFinEnumOption (α : Type u) [FinEnum α] : FinEnum (Option α) where
+/-- Inserting an `Option.none` anywhere in an enumeration yields another enumeration. -/
+def insertNone (α : Type u) [FinEnum α] (i : Fin (card α + 1)) : FinEnum (Option α) where
   card := card α + 1
-  equiv := by
-    refine ⟨Option.rec 0 (Fin.succ ∘ equiv), Fin.cases none (some ∘ equiv.symm), ?_, ?_⟩
-    <;> [apply Option.rec; apply Fin.cases] <;> simp[Fin.succ_ne_zero]
+  equiv := equiv.optionCongr.trans <| finSuccEquiv' i |>.symm
+
+/-- This is an arbitrary choice of insertion rank for a default instance.
+It keeps the mapping of the existing `α`-inhabitants intact, modulo `Fin.castSucc`. -/
+instance instFinEnumOptionLast (α : Type u) [FinEnum α] : FinEnum (Option α) :=
+  insertNone α (Fin.last <| card α)
 
 /-- A recursor principle for finite-and-enumerable types, analogous to `Nat.rec`.
-It effectively says that every `FinEnum` is either `Empty` or `Option α`, up to an `Equiv`.
-In contrast to the `Fintype` case, data can be transported along such an `Equiv`. -/
-def recEmptyOption {P : (α : Type u) → [FinEnum α] → Sort v}
-    (of_equiv : {α β : Type u} → [FinEnum α] → [FinEnum β] → α ≃ β → P α → P β)
+It effectively says that every `FinEnum` is either `Empty` or `Option α`, up to an `Equiv` mediated
+by `Fin`s of equal cardinality.
+In contrast to the `Fintype` case, data can be transported along such an `Equiv`.
+Also, since order matters, the choice of element that gets replaced by `Option.none` has
+to be provided for every step. -/
+def recEmptyOption {P : (α : Type u) → Sort v}
+    (fin_choice : (n : ℕ) → Fin (n + 1))
+    (of_equiv : {α β : Type u} → (_ : FinEnum α) → (_ : FinEnum β) → card β = card α → P α → P β )
     (h_empty : P PEmpty.{u + 1})
     (h_option : {α : Type u} → [FinEnum α] → P α → P (Option α))
     (α : Type u) [FinEnum α] :
-    P α := by
-  generalize cardeq : ‹FinEnum α›.card = card
-  induction card generalizing α
-  case zero =>
-    have fzeroeq := Equiv.trans Equiv.ulift.{u} <| cardeq ▸ equiv.symm
-    have emptyeq := Equiv.trans Equiv.ulift <| Equiv.equivOfIsEmpty (Fin Nat.zero) PEmpty.{u+1}
-    have fzerofe := FinEnum.ofEquiv _ emptyeq
-    exact of_equiv fzeroeq <| of_equiv emptyeq.symm h_empty
-  case succ n ih _ =>
-    have ⟨fe, fecardeq⟩ : { e : _ // e.card = n } := ⟨FinEnum.mk n Equiv.ulift.{u}, rfl⟩
-    have fsucceq := Equiv.trans Equiv.ulift.{u} <| cardeq ▸ equiv.symm
-    have optioeq :=
-      Equiv.trans
-        Equiv.ulift <|
-        Equiv.trans (@finSuccEquivLast n) <| Equiv.optionCongr Equiv.ulift.symm
-    have opsumeq := Equiv.optionEquivSumPUnit.{u,u} <| ULift (Fin n)
-    have fssumeq := Equiv.trans optioeq opsumeq
-    have fssumfe := @FinEnum.sum _ _ fe FinEnum.punit.{u}
-    have fsuccfe := FinEnum.ofEquiv _ fssumeq
-    exact of_equiv fsucceq <| of_equiv optioeq.symm <| h_option <| @ih _ fe fecardeq
+    P α :=
+  match cardeq : card α with
+  | 0 => of_equiv _ _ cardeq h_empty
+  | n + 1 =>
+    have := uliftId (α := Fin n)
+    have : card (ULift.{u} <| Fin n) = n := card_ulift.trans card_fin
+    of_equiv (insertNone _ <| fin_choice n) _
+      (cardeq.trans <| congrArg Nat.succ this.symm) <|
+        h_option (recEmptyOption fin_choice of_equiv h_empty h_option _)
+termination_by card α
+
+/--
+For a type whose `card` disappears, the recursion principle evaluates to whatever `of_equiv`
+makes of the base case.
+-/
+theorem recEmptyOption_of_card_eq_zero {P : (α : Type u) → Sort v}
+    (fin_choice : (n : ℕ) → Fin (n + 1))
+    (of_equiv : {α β : Type u} → (_ : FinEnum α) → (_ : FinEnum β) → card β = card α → P α → P β )
+    (h_empty : P PEmpty.{u + 1})
+    (h_option : {α : Type u} → [FinEnum α] → P α → P (Option α))
+    (α : Type u) [FinEnum α] [fe : FinEnum PEmpty.{u + 1}] (h : card α = 0) :
+    recEmptyOption fin_choice of_equiv h_empty h_option α =
+      of_equiv _ _ (h.trans <| card_eq_zero_of_IsEmpty _ |>.symm) h_empty := by
+  unfold recEmptyOption
+  split
+  · congr 1; exact Subsingleton.allEq _ _
+  · exact Nat.noConfusion <| h.symm.trans ‹_›
+
+/--
+For a type whose `card` has a predecessor `n`, the recursion principle evaluates to whatever
+`of_equiv` makes of the step result, where `Option.none` has been inserted into the
+`(fin_choice n)`th rank of the enumeration.
+-/
+theorem recEmptyOption_of_card_eq_succ {P : (α : Type u) → Sort v}
+    (fin_choice : (n : ℕ) → Fin (n + 1))
+    (of_equiv : {α β : Type u} → (_ : FinEnum α) → (_ : FinEnum β) → card β = card α → P α → P β )
+    (h_empty : P PEmpty.{u + 1})
+    (h_option : {α : Type u} → [FinEnum α] → P α → P (Option α))
+    (α : Type u) [FinEnum α] (n : {n : ℕ // card α = n + 1}) :
+    recEmptyOption fin_choice of_equiv h_empty h_option α =
+      of_equiv (insertNone _ <| fin_choice n) _
+        (n.prop.trans <| congrArg Nat.succ (card_ulift.trans card_fin).symm)
+        (h_option
+          (recEmptyOption fin_choice of_equiv h_empty h_option (ULift.{u} <| Fin n))) := by
+  conv => lhs; unfold recEmptyOption
+  split
+  · exact Nat.noConfusion <| n.prop.symm.trans ‹_›
+  · rcases Nat.succ.inj (n.prop.symm.trans ‹_›) with ⟨rfl⟩; rfl
 
 /-- A recursor principle for finite-and-enumerable types, analogous to `Nat.recOn`.
 It effectively says that every `FinEnum` is either `Empty` or `Option α`, up to an `Equiv`.
 In contrast to the `Fintype` case, data can be transported along such an `Equiv`. -/
-def recOnEmptyOption {P : (α : Type u) → [FinEnum α] → Sort v}
+abbrev recOnEmptyOption {P : (α : Type u) → Sort v}
     {α : Type u} (aenum : FinEnum α)
-    (of_equiv : {α β : Type u} → [FinEnum α] → [FinEnum β] → α ≃ β → P α → P β)
+    (fin_choice : (n : ℕ) → Fin (n + 1))
+    (of_equiv : {α β : Type u} → (_ : FinEnum α) → (_ : FinEnum β) → card β = card α → P α → P β )
     (h_empty : P PEmpty.{u + 1})
     (h_option : {α : Type u} → [FinEnum α] → P α → P (Option α)) :
-    P α := @recEmptyOption P of_equiv h_empty h_option α aenum
+    P α :=
+  @recEmptyOption P fin_choice of_equiv h_empty h_option α aenum
+
 end FinEnum
