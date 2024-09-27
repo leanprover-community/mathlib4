@@ -1,5 +1,6 @@
 import Mathlib.Tactic.Trace
-import Std.Tactic.GuardMsgs
+
+set_option linter.unusedTactic false
 
 /--
 info: 7

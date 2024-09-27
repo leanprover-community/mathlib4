@@ -3,12 +3,10 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.Order.ExtendFrom
+import Mathlib.Topology.Order.ExtendFrom
 import Mathlib.Topology.Algebra.Order.Compact
-import Mathlib.Topology.Algebra.Order.T5
-import Mathlib.Topology.LocalExtr
-
-#align_import analysis.calculus.local_extr from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
+import Mathlib.Topology.Order.LocalExtr
+import Mathlib.Topology.Order.T5
 
 /-!
 # Rolle's Theorem (topological part)
@@ -39,9 +37,9 @@ theorem exists_Ioo_extr_on_Icc (hab : a < b) (hfc : ContinuousOn f (Icc a b)) (h
   have ne : (Icc a b).Nonempty := nonempty_Icc.2 (le_of_lt hab)
   -- Consider absolute min and max points
   obtain ⟨c, cmem, cle⟩ : ∃ c ∈ Icc a b, ∀ x ∈ Icc a b, f c ≤ f x :=
-    isCompact_Icc.exists_forall_le ne hfc
+    isCompact_Icc.exists_isMinOn ne hfc
   obtain ⟨C, Cmem, Cge⟩ : ∃ C ∈ Icc a b, ∀ x ∈ Icc a b, f x ≤ f C :=
-    isCompact_Icc.exists_forall_ge ne hfc
+    isCompact_Icc.exists_isMaxOn ne hfc
   by_cases hc : f c = f a
   · by_cases hC : f C = f a
     · have : ∀ x ∈ Icc a b, f x = f a := fun x hx => le_antisymm (hC ▸ Cge x hx) (hc ▸ cle x hx)
@@ -49,11 +47,10 @@ theorem exists_Ioo_extr_on_Icc (hab : a < b) (hfc : ContinuousOn f (Icc a b)) (h
       rcases nonempty_Ioo.2 hab with ⟨c', hc'⟩
       refine ⟨c', hc', Or.inl fun x hx ↦ ?_⟩
       simp only [mem_setOf_eq, this x hx, this c' (Ioo_subset_Icc_self hc'), le_rfl]
-    · refine' ⟨C, ⟨lt_of_le_of_ne Cmem.1 <| mt _ hC, lt_of_le_of_ne Cmem.2 <| mt _ hC⟩, Or.inr Cge⟩
+    · refine ⟨C, ⟨lt_of_le_of_ne Cmem.1 <| mt ?_ hC, lt_of_le_of_ne Cmem.2 <| mt ?_ hC⟩, Or.inr Cge⟩
       exacts [fun h => by rw [h], fun h => by rw [h, hfI]]
-  · refine' ⟨c, ⟨lt_of_le_of_ne cmem.1 <| mt _ hc, lt_of_le_of_ne cmem.2 <| mt _ hc⟩, Or.inl cle⟩
+  · refine ⟨c, ⟨lt_of_le_of_ne cmem.1 <| mt ?_ hc, lt_of_le_of_ne cmem.2 <| mt ?_ hc⟩, Or.inl cle⟩
     exacts [fun h => by rw [h], fun h => by rw [h, hfI]]
-#align exists_Ioo_extr_on_Icc exists_Ioo_extr_on_Icc
 
 /-- A continuous function on a closed interval with `f a = f b`
 has a local extremum at some point of the corresponding open interval. -/
@@ -61,7 +58,6 @@ theorem exists_isLocalExtr_Ioo (hab : a < b) (hfc : ContinuousOn f (Icc a b)) (h
     ∃ c ∈ Ioo a b, IsLocalExtr f c :=
   let ⟨c, cmem, hc⟩ := exists_Ioo_extr_on_Icc hab hfc hfI
   ⟨c, cmem, hc.isLocalExtr <| Icc_mem_nhds cmem.1 cmem.2⟩
-#align exists_local_extr_Ioo exists_isLocalExtr_Ioo
 
 /-- If a function `f` is continuous on an open interval
 and tends to the same value at its endpoints, then it has an extremum on this open interval. -/

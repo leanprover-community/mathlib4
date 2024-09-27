@@ -10,9 +10,9 @@ import Mathlib.SetTheory.Ordinal.Basic
 # UnivLE and cardinals
 -/
 
-set_option autoImplicit true
-
 noncomputable section
+
+universe u v
 
 open Cardinal
 
