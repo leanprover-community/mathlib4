@@ -292,7 +292,7 @@ unsafe def main (args : List String): IO UInt32 := do
 
   -- Note: the github workflow uses `sed` to parse this output
   -- if modified, the `sed` command might need adaption, too
-  println s!"Applicable labels: {labels}"
+  println s!"::notice::Applicable labels: {labels}"
 
   match labels with
   | #[] =>
@@ -305,7 +305,7 @@ unsafe def main (args : List String): IO UInt32 := do
         args := #["pr", "edit", n, "--add-label", label] }
       println s!"::notice::added label: {label}"
     | none =>
-      println s!"No PR-number provided, not adding labels. \
+      println s!"::warning::no PR-number provided, not adding labels. \
       (call `lake exe autolabel 150602` to add the labels to PR `150602`)"
   | _ =>
     println s!"::notice::not adding multiple labels: {labels}"

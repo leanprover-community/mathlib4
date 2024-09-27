@@ -36,7 +36,7 @@ jobs:
           git checkout master
           git checkout -
           # find applicable labels, try to apply them if relevant, and store them as variable.
-          { LABELS="$(lake exe autolabel "$NUMBER" | tee /dev/fd/3 | sed -n "s/Applicable labels: #\[\(.*\)\].*/\1/p")"; } 3>&1
+          { LABELS="$(lake exe autolabel "$NUMBER" | tee /dev/fd/3 | sed -n "s/.*Applicable labels: #\[\(.*\)\].*/\1/p")"; } 3>&1
           # print github action step summary
           printf 'Modified files in this PR suggest the following labels:\n\n%s' "$LABELS" >> "${GITHUB_STEP_SUMMARY}"
         env:
