@@ -244,7 +244,7 @@ unsafe def main (args : List String): IO UInt32 := do
     println s!"::error:: autolabel: invalid number of arguments ({args.length}), \
     expected at most 1. Please run without arguments or provide the target PR's \
     number as a single argument!"
-    IO.Process.exit 1
+    return 1
   let prNumber? := args[0]?
 
   -- test: validate that all paths in `mathlibLabels` actually exist
@@ -267,7 +267,7 @@ unsafe def main (args : List String): IO UInt32 := do
           Please update `{ ``AutoLabel.mathlibLabels }`!"
         valid := false
   unless valid do
-    IO.Process.exit 2
+    return 2
 
   -- test: validate that the labels cover all of the `Mathlib/` folder
   let notMatchedPaths ← findUncoveredPaths "Mathlib" (exceptions := mathlibUnlabelled)
@@ -279,7 +279,7 @@ unsafe def main (args : List String): IO UInt32 := do
       s!"Incomplete `{ ``AutoLabel.mathlibLabels }`"
       s!"the following paths inside `Mathlib/` are not covered \
       by any label: {notMatchedPaths} Please modify `AutoLabel.mathlibLabels` accordingly!"
-    -- IO.Process.exit 3
+    -- return 3
 
   -- get the modified files
   let gitDiff ← IO.Process.run {
@@ -307,4 +307,4 @@ unsafe def main (args : List String): IO UInt32 := do
       (call `lake exe autolabel 150602` to add the labels to PR `150602`)"
   | _ =>
     println s!"::notice::not adding multiple labels: {labels}"
-  IO.Process.exit 0
+  return 0
