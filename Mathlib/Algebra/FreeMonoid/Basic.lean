@@ -120,7 +120,7 @@ def length (a : FreeMonoid α) : ℕ := List.length a
 @[to_additive (attr := simp)]
 theorem length_one : length (1 : FreeMonoid α) = 0 := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem eq_one_of_length_eq_zero (h : length a = 0) : a = 1 :=
   List.eq_nil_of_length_eq_zero h
 
@@ -135,7 +135,7 @@ theorem length_eq_one : length a = 1 ↔ ∃ m, a = FreeMonoid.of m :=
 theorem length_eq_two {v : FreeMonoid α}: v.length = 2 ↔ ∃ c d,
     v = FreeMonoid.of c * FreeMonoid.of d := List.length_eq_two
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem length_mul (a b : FreeMonoid α) : (a * b).length = a.length + b.length :=
   List.length_append _ _
 
@@ -159,10 +159,10 @@ def symbols (a : FreeMonoid α) : Finset α := List.toFinset a
 @[to_additive (attr := simp)]
 theorem symbols_one : symbols (1 : FreeMonoid α) = ∅ := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem symbols_of {m : α} : symbols (of m : FreeMonoid α) = {m} := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem symbols_mul {a b : FreeMonoid α} : symbols (a * b : FreeMonoid α) =
     (symbols a) ∪ (symbols b) := by
   simp only [symbols, List.mem_toFinset, Finset.mem_union]
@@ -400,15 +400,15 @@ def reverse : FreeMonoid α → FreeMonoid α := List.reverse
 @[to_additive (attr := simp)]
 theorem reverse_of {a : α} : reverse (of a) = of a := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem reverse_mul {a b : FreeMonoid α} : reverse (a * b) = reverse b * reverse a :=
   List.reverse_append _ _
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem reverse_reverse {a : FreeMonoid α} : reverse (reverse a) = a := by
   apply List.reverse_reverse
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem reverse_length {a : FreeMonoid α} : a.reverse.length = a.length :=
   List.length_reverse _
 
