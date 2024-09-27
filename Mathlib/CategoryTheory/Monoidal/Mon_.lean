@@ -176,7 +176,7 @@ theorem mkHom_hom {X Y : C} [Mon_Class X] [Mon_Class Y] (f : Mon_Hom X Y) :
 
 -- Porting note: added, as `Hom.ext` does not apply to a morphism.
 @[ext]
-lemma ext' {X Y : Mon_ C} {f g : X ⟶ Y} (w : f.hom = g.hom) : f = g :=
+lemma ext {X Y : Mon_ C} {f g : X ⟶ Y} (w : f.hom = g.hom) : f = g :=
   Mon_Hom.ext w
 
 @[simp]
