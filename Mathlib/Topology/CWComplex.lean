@@ -16,9 +16,9 @@ This file defines (relative) CW-complexes.
 ## Main definitions
 
 * `RelativeCWComplex`: A relative CW-complex is the colimit of an expanding sequence of subspaces
-`sk i` (called the `(i-1)`-skeleton) for `i ≥ 0`, where `sk 0` (i.e., the `(-1)`-skeleton) is an
-arbitrary topological space, and each `sk (n+1)` (i.e., the `n`-skeleton) is obtained from `sk n`
-(i.e., the `(n-1)`-skeleton) by attaching `n`-disks.
+  `sk i` (called the `(i-1)`-skeleton) for `i ≥ 0`, where `sk 0` (i.e., the `(-1)`-skeleton) is an
+  arbitrary topological space, and each `sk (n+1)` (i.e., the `n`-skeleton) is obtained from `sk n`
+  (i.e., the `(n-1)`-skeleton) by attaching `n`-disks.
 
 * `CWComplex`: A CW-complex is a relative CW-complex whose `sk 0` (i.e., `(-1)`-skeleton) is empty.
 
@@ -41,7 +41,7 @@ def sphereInclusion (n : ℤ) : 𝕊 n ⟶ 𝔻 (n + 1) where
     rw [isOpen_induced_iff, ← hst, ← hrs]
     tauto⟩
 
-/-- A type witnessing that `X'` is obtained from `X` by attaching generalized cells `f : S ⟶ D`. -/
+/-- A type witnessing that `X'` is obtained from `X` by attaching generalized cells `f : S ⟶ D` -/
 structure AttachGeneralizedCells {S D : TopCat.{u}} (f : S ⟶ D) (X X' : TopCat.{u}) where
   /-- The index type over the generalized `(n+1)`-cells -/
   cells : Type u
@@ -55,7 +55,7 @@ def AttachCells (n : ℤ) := AttachGeneralizedCells (sphereInclusion n)
 
 end RelativeCWComplex
 
-/-- A relative CW-complex contains an expanding sequence of subspaces `sk i` (called the
+/-- A relative CW-complex consists of an expanding sequence of subspaces `sk i` (called the
 `(i-1)`-skeleton) for `i ≥ 0`, where `sk 0` (i.e., the `(-1)`-skeleton) is an arbitrary topological
 space, and each `sk (n+1)` (i.e., the `n`-skeleton) is obtained from `sk n` (i.e., the
 `(n-1)`-skeleton) by attaching `n`-disks. -/
