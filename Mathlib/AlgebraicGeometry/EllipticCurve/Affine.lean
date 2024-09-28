@@ -5,6 +5,7 @@ Authors: David Kurniadi Angdinata
 -/
 import Mathlib.Algebra.Polynomial.Bivariate
 import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
+import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
 
 /-!
 # Affine coordinates for Weierstrass curves
@@ -192,7 +193,7 @@ lemma equation_zero : W.Equation 0 0 ↔ W.a₆ = 0 := by
   rw [Equation, evalEval_polynomial_zero, neg_eq_zero]
 
 lemma equation_iff_variableChange (x y : R) :
-    W.Equation x y ↔ (W.variableChange ⟨1, x, 0, y⟩).toAffine.Equation 0 0 := by
+    W.Equation x y ↔ (⟨1, x, 0, y⟩ • W).toAffine.Equation 0 0 := by
   rw [equation_iff', ← neg_eq_zero, equation_zero, variableChange_a₆, inv_one, Units.val_one]
   congr! 1
   ring1
@@ -268,7 +269,7 @@ lemma nonsingular_zero : W.Nonsingular 0 0 ↔ W.a₆ = 0 ∧ (W.a₃ ≠ 0 ∨ 
     or_comm]
 
 lemma nonsingular_iff_variableChange (x y : R) :
-    W.Nonsingular x y ↔ (W.variableChange ⟨1, x, 0, y⟩).toAffine.Nonsingular 0 0 := by
+    W.Nonsingular x y ↔ (⟨1, x, 0, y⟩ • W).toAffine.Nonsingular 0 0 := by
   rw [nonsingular_iff', equation_iff_variableChange, equation_zero, ← neg_ne_zero, or_comm,
     nonsingular_zero, variableChange_a₃, variableChange_a₄, inv_one, Units.val_one]
   simp only [variableChange]

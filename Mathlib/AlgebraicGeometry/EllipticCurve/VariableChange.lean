@@ -357,9 +357,11 @@ lemma variableChange_a₄ : (C • E).a₄ = C.u⁻¹ ^ 4 * (E.a₄ - C.s * E.a�
 lemma variableChange_a₆ : (C • E).a₆ = C.u⁻¹ ^ 6 * (E.a₆ + C.r * E.a₄ + C.r ^ 2 * E.a₂ + C.r ^ 3
     - C.t * E.a₃ - C.t ^ 2 - C.r * C.t * E.a₁) := rfl
 
+set_option linter.docPrime false in
 @[simp]
 lemma variableChange_Δ' : (C • E).Δ' = C.u⁻¹ ^ 12 * E.Δ' := rfl
 
+set_option linter.docPrime false in
 lemma inv_variableChange_Δ' : (C • E).Δ'⁻¹ = C.u ^ 12 * E.Δ'⁻¹ := by
   rw [variableChange_Δ', mul_inv, inv_pow, inv_inv]
 
