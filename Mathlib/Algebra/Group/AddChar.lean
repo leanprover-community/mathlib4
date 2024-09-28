@@ -306,7 +306,7 @@ lemma prod_eq_sum (s : Finset ι) (ψ : ι → AddChar A M) : ∏ i in s, ψ i =
 @[simp] lemma toMonoidHomEquiv_add (ψ φ : AddChar A M) :
     toMonoidHomEquiv (ψ + φ) = toMonoidHomEquiv ψ * toMonoidHomEquiv φ := rfl
 @[simp] lemma toMonoidHomEquiv_symm_mul (ψ φ : Multiplicative A →* M) :
-  toMonoidHomEquiv.symm (ψ * φ) = toMonoidHomEquiv.symm ψ + toMonoidHomEquiv.symm φ := rfl
+    toMonoidHomEquiv.symm (ψ * φ) = toMonoidHomEquiv.symm ψ + toMonoidHomEquiv.symm φ := rfl
 
 /-- The natural equivalence to `(Multiplicative A →* M)` is a monoid isomorphism. -/
 def toMonoidHomMulEquiv : AddChar A M ≃* (Multiplicative A →* M) :=
