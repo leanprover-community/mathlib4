@@ -133,7 +133,7 @@ theorem balancedHull.balanced (s : Set E) : Balanced 𝕜 (balancedHull 𝕜 s) 
   rw [← smul_assoc] at hx
   exact ⟨a • r, (SeminormedRing.norm_mul _ _).trans (mul_le_one ha (norm_nonneg r) hr), hx⟩
 
-theorem Balanced.hullAdd [NormOneClass 𝕜] {t : Set E} :
+theorem balancedHull_add_subset [NormOneClass 𝕜] {t : Set E} :
     balancedHull 𝕜 (s + t) ⊆ balancedHull 𝕜 s + balancedHull 𝕜 t :=
   balancedHull_subset_of_subset (add (balancedHull.balanced _) (balancedHull.balanced _))
     (add_subset_add (subset_balancedHull _) (subset_balancedHull _))
