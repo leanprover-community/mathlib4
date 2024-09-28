@@ -39,9 +39,13 @@ theorem nonempty_contains_emptyset_iff :
     (∃ s, Sys s) ↔ Sys ∅ :=
   ⟨fun h => nonempty_contains_emptyset h, fun h => ⟨∅, h⟩⟩
 
+section Induction
+
+variable (hS : Sys ∅)
+
+-- TODO: Find better name.
 -- TODO: Add doc.
 theorem induction_on_accessible'
-    (hS : Sys ∅)
     {p : ⦃s : Finset α⦄ → Sys s → Prop}
     (empty : p hS)
     (insert :
@@ -56,8 +60,8 @@ theorem induction_on_accessible'
     rcases Accessible.accessible hs (one_le_card.mp (by omega)) with ⟨t, ht₁, ht₂, ht₃⟩
     exact insert hs ht₃ ht₁ ht₂ (ih ht₃ (by omega))
 
+-- TODO: Find better name.
 theorem induction_on_accessible
-    (hS : Sys ∅)
     {p : ⦃s : Finset α⦄ → Sys s → Prop}
     (empty : p hS)
     (insert :
@@ -66,6 +70,8 @@ theorem induction_on_accessible
       s₂ ⊆ s₁ → s₂.card + 1 = s₁.card → p hs₂ → p hs₁) :
     ∀ {s : Finset α} (hs : Sys s), p hs
   | _, h => induction_on_accessible' hS empty insert h rfl
+
+end Induction
 
 end Accessible
 
