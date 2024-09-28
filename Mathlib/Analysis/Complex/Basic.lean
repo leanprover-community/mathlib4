@@ -212,7 +212,7 @@ theorem uniformEmbedding_equivRealProd : UniformEmbedding equivRealProd :=
   antilipschitz_equivRealProd.uniformEmbedding lipschitz_equivRealProd.uniformContinuous
 
 instance : CompleteSpace ℂ :=
-  (completeSpace_congr uniformEmbedding_equivRealProd).mpr inferInstance
+  (completeSpace_congr uniformEmbedding_equivRealProd.toUniformInducing).mpr inferInstance
 
 instance instT2Space : T2Space ℂ := TopologicalSpace.t2Space_of_metrizableSpace
 
