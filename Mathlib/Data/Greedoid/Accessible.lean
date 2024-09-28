@@ -17,7 +17,7 @@ class Accessible (Sys : Finset α → Prop) : Prop :=
 
 namespace Accessible
 
-variable (Sys : Finset α → Prop) [Accessible Sys]
+variable {Sys : Finset α → Prop} [Accessible Sys]
 
 -- TODO: Add doc.
 theorem nonempty_contains_emptyset'
@@ -28,6 +28,13 @@ theorem nonempty_contains_emptyset'
   | succ _ ih =>
     rcases Accessible.accessible hs (by rw[← card_ne_zero]; omega) with ⟨t, _, _, ht⟩
     exact ih ht (by omega)
+
+theorem nonempty_contains_emptyset
+    {s : Finset α} (hs : Sys s) :
+    Sys ∅ :=
+  nonempty_contains_emptyset' hs rfl
+
+
 
 end Accessible
 
