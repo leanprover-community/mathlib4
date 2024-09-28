@@ -45,14 +45,14 @@ variable {𝕜 E F G ι : Type*}
 section AbsolutelyConvex
 
 variable (𝕜) [SeminormedRing 𝕜] [SMul 𝕜 E] [SMul ℝ E] [AddCommMonoid E]
-/-- The type of absolutely convex sets. -/
+/-- A set is absolutely convex if it is balanced and convex. -/
 def AbsConvex (s : Set E) : Prop := Balanced 𝕜 s ∧ Convex ℝ s
 
 variable {𝕜}
 
-theorem absConvex_empty : AbsConvex 𝕜 (∅ : Set E) := ⟨balanced_empty, convex_empty⟩
+theorem AbsConvex.empty : AbsConvex 𝕜 (∅ : Set E) := ⟨balanced_empty, convex_empty⟩
 
-theorem absConvex_univ : AbsConvex 𝕜 (Set.univ : Set E) := ⟨balanced_univ, convex_univ⟩
+theorem AbsConvex.univ : AbsConvex 𝕜 (Set.univ : Set E) := ⟨balanced_univ, convex_univ⟩
 
 theorem AbsConvex.inter {s : Set E} {t : Set E} (hs : AbsConvex 𝕜 s) (ht : AbsConvex 𝕜 t) :
     AbsConvex 𝕜 (s ∩ t) := ⟨Balanced.inter hs.1 ht.1, Convex.inter hs.2 ht.2⟩
@@ -65,7 +65,7 @@ variable (𝕜)
 /-- The absolute convex hull of a set `s` is the minimal absolute convex set that includes `s`. -/
 @[simps! isClosed]
 def absConvexHull : ClosureOperator (Set E) :=
-    .ofCompletePred (AbsConvex 𝕜) fun _ ↦ absConvex_sInter
+  .ofCompletePred (AbsConvex 𝕜) fun _ ↦ absConvex_sInter
 
 variable (s : Set E)
 
@@ -75,10 +75,10 @@ theorem subset_absConvexHull : s ⊆ absConvexHull 𝕜 s :=
 theorem absConvex_absConvexHull : AbsConvex 𝕜 (absConvexHull 𝕜 s) :=
   (absConvexHull 𝕜).isClosed_closure s
 
-theorem balanced_absConvexHull : Balanced 𝕜 ((absConvexHull 𝕜) s) :=
+theorem balanced_absConvexHull : Balanced 𝕜 (absConvexHull 𝕜 s) :=
   (absConvex_absConvexHull 𝕜 s).1
 
-theorem convex_absConvexHull : Convex ℝ ((absConvexHull 𝕜) s) :=
+theorem convex_absConvexHull : Convex ℝ (absConvexHull 𝕜 s) :=
   (absConvex_absConvexHull 𝕜 s).2
 
 theorem absConvexHull_eq_iInter :
@@ -111,7 +111,7 @@ theorem absConvexHull_univ : absConvexHull 𝕜 (univ : Set E) = univ :=
 
 @[simp]
 theorem absConvexHull_empty : absConvexHull 𝕜 (∅ : Set E) = ∅ :=
-  absConvex_empty.absConvexHull_eq
+  AbsConvex.empty.absConvexHull_eq
 
 @[simp]
 theorem absConvexHull_empty_iff : absConvexHull 𝕜 s = ∅ ↔ s = ∅ := by
@@ -178,7 +178,7 @@ section
 variable (𝕜) [NontriviallyNormedField 𝕜]
 variable [AddCommGroup E] [Module ℝ E] [Module 𝕜 E]
 
-theorem AbsConvex.hullAdd {s t : Set E} :
+theorem absConvexHull_add_subset {s t : Set E} :
     absConvexHull 𝕜 (s + t) ⊆ absConvexHull 𝕜 s + absConvexHull 𝕜 t :=
   absConvexHull_min (add_subset_add (subset_absConvexHull 𝕜 s) (subset_absConvexHull 𝕜 t))
     ⟨Balanced.add (balanced_absConvexHull 𝕜 s) (balanced_absConvexHull 𝕜 t),
@@ -187,11 +187,11 @@ theorem AbsConvex.hullAdd {s t : Set E} :
 theorem absConvexHull_eq_convexHull_balancedHull [SMulCommClass ℝ 𝕜 E] {s : Set E} :
     absConvexHull 𝕜 s = convexHull ℝ (balancedHull 𝕜 s) := le_antisymm
   (absConvexHull_min
-      (subset_trans (subset_convexHull ℝ s) (convexHull_mono (subset_balancedHull 𝕜)))
-      ⟨Balanced.convexHull (balancedHull.balanced s), convex_convexHull _ _⟩)
+    ((subset_convexHull ℝ s).trans (convexHull_mono (subset_balancedHull 𝕜)))
+      ⟨Balanced.convexHull (balancedHull.balanced s), convex_convexHull ..⟩)
   (convexHull_min
-      (Balanced.balancedHull_subset_of_subset (balanced_absConvexHull 𝕜 s)
-      (subset_absConvexHull 𝕜 s)) (convex_absConvexHull 𝕜 s))
+    ((balanced_absConvexHull 𝕜 s).balancedHull_subset_of_subset (subset_absConvexHull 𝕜 s))
+      (convex_absConvexHull 𝕜 s))
 
 end
 
@@ -242,7 +242,8 @@ theorem ball_add_ball_subset_ball_comp (V : Set E) (y : E) :
     · rw [mem_preimage, e11]
       exact hz'₁
 
-lemma balancedHull_subseteq_convexHull {s : Set E} : balancedHull ℝ s ⊆ convexHull ℝ (s ∪ -s) := by
+lemma balancedHull_subset_convexHull_union_neg {s : Set E} :
+    balancedHull ℝ s ⊆ convexHull ℝ (s ∪ -s) := by
   intro a ha
   obtain ⟨r, hr, y, hy, rfl⟩ := mem_balancedHull_iff.1 ha
   apply segment_subset_convexHull (mem_union_left (-s) hy) (mem_union_right _ (neg_mem_neg.mpr hy))
@@ -260,14 +261,15 @@ lemma balancedHull_subseteq_convexHull {s : Set E} : balancedHull ℝ s ⊆ conv
         apply congrFun (congrArg HSMul.hSMul _) y
         ring_nf
 
-theorem absConvexHull_eq_convexHull_union_neg {s : Set E} :
-    absConvexHull ℝ s = convexHull ℝ (s ∪ -s) := by
+@[simp]
+theorem convexHull_union_neg_eq_absConvexHull {s : Set E} :
+    convexHull ℝ (s ∪ -s) = absConvexHull ℝ s := by
   rw [absConvexHull_eq_convexHull_balancedHull]
-  exact le_antisymm (by
-    rw [← Convex.convexHull_eq (convex_convexHull ℝ (s ∪ -s)) ]
-    exact convexHull_mono balancedHull_subseteq_convexHull)
-    (convexHull_mono (union_subset (subset_balancedHull ℝ)
-      (fun _ _ => by rw [mem_balancedHull_iff]; use -1; aesop)))
+  exact le_antisymm (convexHull_mono (union_subset (subset_balancedHull ℝ)
+    (fun _ _ => by rw [mem_balancedHull_iff]; use -1; aesop)))
+    (by
+      rw [← Convex.convexHull_eq (convex_convexHull ℝ (s ∪ -s))]
+      exact convexHull_mono balancedHull_subset_convexHull_union_neg)
 
 
 lemma add_self_eq_smul_two {V : Set E} (h : Convex ℝ V) : V + V = (2 : ℝ) • V := by
