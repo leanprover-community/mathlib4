@@ -189,7 +189,8 @@ section
 
 variable [AddCommGroup E] [Module ℝ E]
 
-lemma balancedHull_subset_convexHull_union_neg {s : Set E} : balancedHull ℝ s ⊆ convexHull ℝ (s ∪ -s) := by
+lemma balancedHull_subset_convexHull_union_neg {s : Set E} :
+    balancedHull ℝ s ⊆ convexHull ℝ (s ∪ -s) := by
   intro a ha
   obtain ⟨r, hr, y, hy, rfl⟩ := mem_balancedHull_iff.1 ha
   apply segment_subset_convexHull (mem_union_left (-s) hy) (mem_union_right _ (neg_mem_neg.mpr hy))
@@ -212,7 +213,7 @@ theorem absConvexHull_eq_convexHull_union_neg {s : Set E} :
   rw [absConvexHull_eq_convexHull_balancedHull]
   exact le_antisymm (by
     rw [← Convex.convexHull_eq (convex_convexHull ℝ (s ∪ -s)) ]
-    exact convexHull_mono balancedHull_subseteq_convexHull)
+    exact convexHull_mono balancedHull_subset_convexHull_union_neg)
     (convexHull_mono (union_subset (subset_balancedHull ℝ)
       (fun _ _ => by rw [mem_balancedHull_iff]; use -1; aesop)))
 
