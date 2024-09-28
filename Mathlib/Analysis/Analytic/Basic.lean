@@ -822,6 +822,13 @@ theorem HasFPowerSeriesOnBall.tendsto_partialSum
     Tendsto (fun n => p.partialSum n y) atTop (𝓝 (f (x + y))) :=
   (hf.hasSum hy).tendsto_sum_nat
 
+theorem HasFPowerSeriesAt.tendsto_partialSum
+    (hf : HasFPowerSeriesAt f p x) :
+    ∀ᶠ y in 𝓝 0, Tendsto (fun n => p.partialSum n y) atTop (𝓝 (f (x + y))) := by
+  rcases hf with ⟨r, hr⟩
+  filter_upwards [EMetric.ball_mem_nhds (0 : E) hr.r_pos] with y hy
+  exact hr.tendsto_partialSum hy
+
 open Finset in
 /-- If a function admits a power series expansion within a ball, then the partial sums
 `p.partialSum n z` converge to `f (x + y)` as `n → ∞` and `z → y`. Note that `x + z` doesn't need
