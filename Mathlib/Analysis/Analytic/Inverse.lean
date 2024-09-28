@@ -607,8 +607,8 @@ lemma HasFPowerSeriesAt.tendsto_partialSum_prod_of_comp
   congr
   rw [partialSum, eq_sub_iff_add_eq', Finset.range_eq_Ico,
         Finset.sum_eq_sum_Ico_succ_bot hn]
-  congr
-  exact ofFn_inj.mp rfl
+  congr with i
+  exact i.elim0
 
 lemma HasFPowerSeriesAt.eventually_hasSum_of_comp  {f : E → F} {g : F → G}
     {q : FormalMultilinearSeries 𝕜 F G} {p : FormalMultilinearSeries 𝕜 E F} {x : E}
