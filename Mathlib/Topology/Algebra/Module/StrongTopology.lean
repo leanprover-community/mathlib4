@@ -210,9 +210,9 @@ theorem nhds_zero_eq [TopologicalSpace F] [TopologicalAddGroup F] (𝔖 : Set (S
   nhds_zero_eq_of_basis _ _ _ (𝓝 0).basis_sets
 
 variable {F} in
-theorem gen_mem_nhds_zero [TopologicalSpace F] [TopologicalAddGroup F]
+theorem eventually_nhds_zero_mapsTo [TopologicalSpace F] [TopologicalAddGroup F]
     {𝔖 : Set (Set E)} {s : Set E} (hs : s ∈ 𝔖) {U : Set F} (hu : U ∈ 𝓝 0) :
-    {f : UniformConvergenceCLM σ F 𝔖 | MapsTo f s U} ∈ 𝓝 0 := by
+    ∀ᶠ f : UniformConvergenceCLM σ F 𝔖 in 𝓝 0, MapsTo f s U := by
   rw [nhds_zero_eq]
   apply_rules [mem_iInf_of_mem, mem_principal_self]
 
@@ -223,7 +223,7 @@ theorem isVonNBounded_image2_apply {R : Type*} [SeminormedRing R]
     {𝔖 : Set (Set E)} {S : Set (UniformConvergenceCLM σ F 𝔖)} (hS : IsVonNBounded R S)
     {s : Set E} (hs : s ∈ 𝔖) : IsVonNBounded R (Set.image2 (fun f x ↦ f x) S s) := by
   intro U hU
-  filter_upwards [hS (gen_mem_nhds_zero σ hs hU)] with c hc
+  filter_upwards [hS (eventually_nhds_zero_mapsTo σ hs hU)] with c hc
   rw [image2_subset_iff]
   intro f hf x hx
   rcases hc hf with ⟨g, hg, rfl⟩
@@ -366,10 +366,10 @@ protected theorem nhds_zero_eq [TopologicalSpace F] [TopologicalAddGroup F] :
         𝓟 {f : E →SL[σ] F | MapsTo f s U} :=
   UniformConvergenceCLM.nhds_zero_eq ..
 
-theorem gen_mem_nhds_zero [TopologicalSpace F] [TopologicalAddGroup F]
+theorem eventually_nhds_zero_mapsTo [TopologicalSpace F] [TopologicalAddGroup F]
     {s : Set E} (hs : IsVonNBounded 𝕜₁ s) {U : Set F} (hu : U ∈ 𝓝 0) :
-    {f : E →SL[σ] F | MapsTo f s U} ∈ 𝓝 0 := by
-  apply UniformConvergenceCLM.gen_mem_nhds_zero <;> assumption
+    ∀ᶠ f : E →SL[σ] F in 𝓝 0, MapsTo f s U :=
+  UniformConvergenceCLM.eventually_nhds_zero_mapsTo _ hs hu
 
 theorem isVonNBounded_image2_apply {R : Type*} [SeminormedRing R]
     [TopologicalSpace F] [TopologicalAddGroup F]
