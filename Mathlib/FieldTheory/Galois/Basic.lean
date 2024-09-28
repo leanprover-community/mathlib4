@@ -322,7 +322,7 @@ noncomputable def normalAutEquivQuotient [FiniteDimensional K L] [IsGalois K L]
   ext σ
   apply (((mem_fixingSubgroup_iff (L ≃ₐ[K] L)).trans ⟨fun h ⟨x, hx⟩ ↦ Subtype.val_inj.mp <|
     (restrictNormal_commutes σ (fixedField H) ⟨x, hx⟩).trans (h x hx) , _⟩).trans
-      AlgEquiv.ext_iff.symm).trans (MonoidHom.mem_ker (restrictNormalHom (fixedField H))).symm
+      AlgEquiv.ext_iff.symm)
   intro h x hx
   have hs : ((restrictNormalHom (fixedField H)) σ) ⟨x, hx⟩ = σ • x :=
     restrictNormal_commutes σ (fixedField H) ⟨x, hx⟩
