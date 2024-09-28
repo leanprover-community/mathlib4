@@ -111,8 +111,6 @@ end Pair
 section Oliver
 
 /-
-
-
 I claim it is usually better to work within the lattice of submodules and so I think rather
 than proving
 a headline result in the language of DirectSum.IsInternal
@@ -123,7 +121,7 @@ DirectSum.isInternal_submodule_iff_independent_and_iSup_eq_top
 
 
 variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-  [FiniteDimensional 𝕜 E] {T : E →ₗ[𝕜] E}
+  [FiniteDimensional 𝕜 E] {S T : E →ₗ[𝕜] E}
 
 /-
 It's interesting that the following isn't Module.End.InnerProductSpace. It seems he is opening three
@@ -134,9 +132,30 @@ open Module End InnerProductSpace
 /-Maybe I should prove a `LinearMap.IsSymmetric.pow` lemma as suggested by Jireh.
 What would that be? The name suggests it clearly. We'd want a theorem saying that if `T`
 is a symmetric operator then every nonnegative power `T^n` is also symmetric.
+
+First, we can prove that if two symmetric operators commute then their product is a symmetric
+operator. That should certainly be a lemma.
 -/
 
+example (hS : S.IsSymmetric) (hT : T.IsSymmetric) (hST : Commute S T) : (S * T).IsSymmetric := by
+  refine fun x y ↦ ?_
+  simp only [mul_apply]
+  --maybe first do this with calc block and then see what can be done.
+  --rw [IsSymmetric]
+  --this is a mess, actually. One notices at this point that there is a lemma about
+  --selfadjoint things that will do the job very easily.
+  --so the efficient way to provide the theorem below is indeed to convert over to
+  --selfadjointness and then prove it that way.
+
 example (hT : T.IsSymmetric) {n : ℕ} : (T ^ n).IsSymmetric := by
+  rw [LinearMap.isSymmetric_iff_isSelfAdjoint] at *
+  exact hT.pow n
+
+--term mode version
+
+example (hT : T.IsSymmetric) {n : ℕ} : (T ^ n).IsSymmetric :=
+  (isSymmetric_iff_isSelfAdjoint _).mpr <| (isSymmetric_iff_isSelfAdjoint _).mp hT |>.pow _
+
 /-It seems to be a good idea to try to do this by the method of induction employed by Jireh below.
 To see what is going on, note that the base case should be `LinearMap.IsSymmetric T^0`. We seem to
 need `pow_zero T`, which is a proof that `T^0=1`. I would like to include this fact in a
@@ -151,13 +170,34 @@ So `P : (n : ℕ) → m ≤ n → Prop` is what in this case? It should be `P n 
 
 Maybe we can use a `refine` and provide a proof like the following one.
 -/
-  have : (T ^ 0).IsSymmetric := pow_zero T ▸ LinearMap.isSymmetric_id
+ --have H : (T ^ 0).IsSymmetric := pow_zero T ▸ LinearMap.isSymmetric_id
+/-
+It's interesting in H above that the goal is used to enable the `▸` to work.
+There is some kind of unification going on.
 
---this is pretty good. It's a term mode proof of the symmetry of `T ^ 0`. This can be in-lined!
+What does "function expected" error mean in the following? I guess it means there has to be a
+function
+type to apply to the left hand side. The proof of the equality won't work. (I would have
+expected that `pow_zero` would have been the function...but that isn't applied to `1`, but
+to `T`.)
+-/
+-- have L : (T ^ 0) = id := one_eq_id (R := 𝕜) (M := E) ▸ (pow_zero T)
+/-
+For some reason, in what follows the `▸` isn't working. It should be a proof of the
+base case.
 
---refine Nat.le_induction ((pow_zero T).symm ▸ LinearMap.isSymmetric_id)
+Ok it works now. This time the function worked because we could use the `one_eq_id` equality
+to `▸` `id.isSymmetric` into `1.isSymmetric`.
+-/
 
-sorry
+--  refine Nat.le_induction (pow_zero T ▸ one_eq_id (R := 𝕜) (M := E) ▸ LinearMap.isSymmetric_id)
+--    (fun k hk ih ↦ ?_) n (Nat.zero_le _)
+--  rw [@iterate_succ]
+/-
+Now all that is left is the inductive step. To this end, we first need to be able to split
+`T ^ (k + 1) = T * T ^ k` somehow, and then invoke the products of symmetric ops are symmetric.
+-/
+
 
 example (hT : T.IsSymmetric) {n : ℕ} {μ : 𝕜} (hn : 1 ≤ n) :
     genEigenspace T μ n = genEigenspace T μ 1 := by
@@ -170,7 +210,7 @@ example (hT : T.IsSymmetric) {n : ℕ} {μ : 𝕜} (hn : 1 ≤ n) :
     have hT' := LinearMap.isSymmetric_iff_isSelfAdjoint T |>.mp hT
     have hTμ : ((T - μ • 1) ^ k).IsSymmetric  := by
       rw [LinearMap.isSymmetric_iff_isSelfAdjoint]
-      refine .pow (hT'.sub (.smul ?_ ?_)) k -- no `LinearMap.IsSymmetric.pow` lemma?
+      refine .pow (hT'.sub (.smul ?_ ?_)) k
       · exact hT.conj_eigenvalue_eq_self hμ
       · exact (LinearMap.isSymmetric_iff_isSelfAdjoint 1).mp LinearMap.isSymmetric_id
     rw [mem_genEigenspace, ← norm_eq_zero, ← sq_eq_zero_iff, norm_sq_eq_inner (𝕜 := 𝕜)]
@@ -178,7 +218,13 @@ example (hT : T.IsSymmetric) {n : ℕ} {μ : 𝕜} (hn : 1 ≤ n) :
     simp [mem_genEigenspace .. |>.mp <| (genEigenspace T μ).mono (show k + 1 ≤ k + k by gcongr) hx]
 
 
-/-The following is the suggested starting result of Oliver.-/
+/-The following is the suggested starting result of Oliver.
+Let's try to write a more or less nice proof of this.
+It seems to me that the point here is that some sup and inf versions of things are available
+for generalized eigenspaces already.
+Particularly:
+`DirectSum.isInternal_submodule_iff_independent_and_iSup_eq_top`
+-/
 
 lemma iSup_iInf_maxGenEigenspace_eq_top_of_commute {ι K V : Type*}
     [Field K] [AddCommGroup V] [Module K V] [FiniteDimensional K V]
