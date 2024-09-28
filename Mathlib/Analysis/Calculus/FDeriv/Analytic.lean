@@ -166,7 +166,6 @@ protected theorem HasFPowerSeriesOnBall.fderiv [CompleteSpace F]
   rw [← h.fderiv_eq, add_sub_cancel]
   simpa only [edist_eq_coe_nnnorm_sub, EMetric.mem_ball] using hz
 
-
 /-- If a function has a power series within a set on a ball, then so does its derivative. -/
 protected theorem HasFPowerSeriesWithinOnBall.fderivWithin [CompleteSpace F]
     (h : HasFPowerSeriesWithinOnBall f p s x r) (hu : UniqueDiffOn 𝕜 (insert x s)) :
@@ -189,7 +188,9 @@ protected theorem AnalyticAt.fderiv [CompleteSpace F] (h : AnalyticAt 𝕜 f x) 
   rcases h with ⟨p, r, hp⟩
   exact hp.fderiv.analyticAt
 
-/-- If a function is analytic on a set `s`, so is its Fréchet derivative. -/
+/-- If a function is analytic on a set `s`, so is its Fréchet derivative. See also
+`AnalyticOnNhd.fderiv_of_isOpen`, removing the completeness assumption but requiring the set
+to be open. -/
 protected theorem AnalyticOnNhd.fderiv [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) :
     AnalyticOnNhd 𝕜 (fderiv 𝕜 f) s :=
   fun y hy ↦ AnalyticAt.fderiv (h y hy)
@@ -197,7 +198,9 @@ protected theorem AnalyticOnNhd.fderiv [CompleteSpace F] (h : AnalyticOnNhd 𝕜
 @[deprecated (since := "2024-09-26")]
 alias AnalyticOn.fderiv := AnalyticOnNhd.fderiv
 
-/-- If a function is analytic on a set `s`, so are its successive Fréchet derivative. -/
+/-- If a function is analytic on a set `s`, so are its successive Fréchet derivative. See also
+`AnalyticOnNhd.iteratedFDeruv_of_isOpen`, removing the completeness assumption but requiring the set
+to be open.-/
 protected theorem AnalyticOnNhd.iteratedFDeriv [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) (n : ℕ) :
     AnalyticOnNhd 𝕜 (iteratedFDeriv 𝕜 n f) s := by
   induction n with
