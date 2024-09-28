@@ -844,6 +844,33 @@ theorem symm_trans_self (e : R ≃+* S) : e.symm.trans e = RingEquiv.refl S :=
 
 end RingEquiv
 
+namespace RingEquiv
+
+variable [NonAssocSemiring R] [NonAssocSemiring S]
+
+/-- If a ring homomorphism has an inverse, it is a ring isomorphism. -/
+@[simps]
+def ofRingHom (f : R →+* S) (g : S →+* R) (h₁ : f.comp g = RingHom.id S)
+    (h₂ : g.comp f = RingHom.id R) : R ≃+* S :=
+  { f with
+    toFun := f
+    invFun := g
+    left_inv := RingHom.ext_iff.1 h₂
+    right_inv := RingHom.ext_iff.1 h₁ }
+
+theorem coe_ringHom_ofRingHom (f : R →+* S) (g : S →+* R) (h₁ h₂) : ofRingHom f g h₁ h₂ = f :=
+  rfl
+
+@[simp]
+theorem ofRingHom_coe_ringHom (f : R ≃+* S) (g : S →+* R) (h₁ h₂) : ofRingHom (↑f) g h₁ h₂ = f :=
+  ext fun _ ↦ rfl
+
+theorem ofRingHom_symm (f : R →+* S) (g : S →+* R) (h₁ h₂) :
+    (ofRingHom f g h₁ h₂).symm = ofRingHom g f h₂ h₁ :=
+  rfl
+
+end RingEquiv
+
 namespace MulEquiv
 
 /-- If two rings are isomorphic, and the second doesn't have zero divisors,
