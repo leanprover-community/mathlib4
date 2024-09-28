@@ -47,7 +47,7 @@ theorem exchange_exists_superset_of_card_le
       intro _ h; simp [h₁ h] 
 
 -- TODO: Find a better name.
--- TODO: Write document.
+/-- A helper theorem for `exchange_exists_feasible_superset_add_element_feasible`. -/
 theorem exchange_exists_feasible_superset_add_element_feasible'
     (hs₁ : Sys s₁) (hs₂ : Sys s₂) (hs : s₂ ⊆ s₁)
     {n : ℕ} (hn : n = s₁.card - s₂.card)
@@ -67,9 +67,12 @@ theorem exchange_exists_feasible_superset_add_element_feasible'
         with ⟨t, ht₁, ht₂, ht₃, ht₄, ht₅⟩
       use t; simp [ht₁, ht₂, ht₃, ht₄, ht₅, subset_trans hs₄]
 
-theorem exchange_exists_feasible_superset_add_element_feasible := sorry
-
-
+-- TODO: Find a better name.
+theorem exchange_exists_feasible_superset_add_element_feasible
+    (hs₁ : Sys s₁) (hs₂ : Sys s₂) (hs : s₂ ⊆ s₁)
+    {a : α} (ha₁ : a ∈ s₁) (ha₂ : a ∉ s₂) :
+    ∃ s, Sys s ∧ s₂ ⊆ s ∧ s ⊆ s₁ ∧ ∃ h : a ∉ s, Sys (cons a s h) :=
+  exchange_exists_feasible_superset_add_element_feasible' hs₁ hs₂ hs rfl ha₁ ha₂
 
 end Exchange
 
