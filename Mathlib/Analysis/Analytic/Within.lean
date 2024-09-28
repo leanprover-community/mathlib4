@@ -11,7 +11,7 @@ import Mathlib.Analysis.Analytic.Constructions
 From `Mathlib.Analysis.Analytic.Basic`, we have the definitions
 
 1. `AnalyticWithinAt 𝕜 f s x` means a power series at `x` converges to `f` on `𝓝[insert x s] x`.
-2. `AnalyticWithinOn 𝕜 f s t` means `∀ x ∈ t, AnalyticWithinAt 𝕜 f s x`.
+2. `AnalyticOn 𝕜 f s t` means `∀ x ∈ t, AnalyticWithinAt 𝕜 f s x`.
 
 This means there exists an extension of `f` which is analytic and agrees with `f` on `s ∪ {x}`, but
 `f` is allowed to be arbitrary elsewhere.
@@ -56,10 +56,10 @@ lemma analyticWithinAt_of_singleton_mem {f : E → F} {s : Set E} {x : E} (h : {
       apply (hasFPowerSeriesOnBall_const (e := 0)).hasSum
       simp only [Metric.emetric_ball_top, mem_univ] }⟩
 
-/-- If `f` is `AnalyticWithinOn` near each point in a set, it is `AnalyticWithinOn` the set -/
-lemma analyticWithinOn_of_locally_analyticWithinOn {f : E → F} {s : Set E}
-    (h : ∀ x ∈ s, ∃ u, IsOpen u ∧ x ∈ u ∧ AnalyticWithinOn 𝕜 f (s ∩ u)) :
-    AnalyticWithinOn 𝕜 f s := by
+/-- If `f` is `AnalyticOn` near each point in a set, it is `AnalyticOn` the set -/
+lemma analyticOn_of_locally_analyticOn {f : E → F} {s : Set E}
+    (h : ∀ x ∈ s, ∃ u, IsOpen u ∧ x ∈ u ∧ AnalyticOn 𝕜 f (s ∩ u)) :
+    AnalyticOn 𝕜 f s := by
   intro x m
   rcases h x m with ⟨u, ou, xu, fu⟩
   rcases Metric.mem_nhds_iff.mp (ou.mem_nhds xu) with ⟨r, r0, ru⟩
@@ -79,10 +79,13 @@ lemma analyticWithinOn_of_locally_analyticWithinOn {f : E → F} {s : Set E}
             simp only [Metric.mem_ball, dist_self_add_left, yr]
         · simp only [EMetric.mem_ball, yr] }⟩
 
-/-- On open sets, `AnalyticOn` and `AnalyticWithinOn` coincide -/
-lemma IsOpen.analyticWithinOn_iff_analyticOn {f : E → F} {s : Set E} (hs : IsOpen s) :
-    AnalyticWithinOn 𝕜 f s ↔ AnalyticOn 𝕜 f s := by
-  refine ⟨?_, AnalyticOn.analyticWithinOn⟩
+@[deprecated (since := "2024-09-26")]
+alias analyticWithinOn_of_locally_analyticWithinOn := analyticOn_of_locally_analyticOn
+
+/-- On open sets, `AnalyticOnNhd` and `AnalyticOn` coincide -/
+lemma IsOpen.analyticOn_iff_analyticOnNhd {f : E → F} {s : Set E} (hs : IsOpen s) :
+    AnalyticOn 𝕜 f s ↔ AnalyticOnNhd 𝕜 f s := by
+  refine ⟨?_, AnalyticOnNhd.analyticOn⟩
   intro hf x m
   rcases Metric.mem_nhds_iff.mp (hs.mem_nhds m) with ⟨r, r0, rs⟩
   rcases hf x m with ⟨p, t, fp⟩
@@ -97,13 +100,16 @@ lemma IsOpen.analyticWithinOn_iff_analyticOn {f : E → F} {s : Set E} (hs : IsO
       apply rs
       simp only [Metric.mem_ball, dist_self_add_left, ym.1] }⟩
 
+@[deprecated (since := "2024-09-26")]
+alias IsOpen.analyticWithinOn_iff_analyticOn := IsOpen.analyticOn_iff_analyticOnNhd
+
 
 /-!
 ### Equivalence to analyticity of a local extension
 
 We show that `HasFPowerSeriesWithinOnBall`, `HasFPowerSeriesWithinAt`, and `AnalyticWithinAt` are
 equivalent to the existence of a local extension with full analyticity.  We do not yet show a
-result for `AnalyticWithinOn`, as this requires a bit more work to show that local extensions can
+result for `AnalyticOn`, as this requires a bit more work to show that local extensions can
 be stitched together.
 -/
 
