@@ -155,7 +155,7 @@ theorem Prime.deficient_pow  (h : Prime n) : Deficient (n ^ m) := by
     have h2 : ∑ i in image (fun x => n ^ x) (range m), i = ∑ i in range m, n^i := by
       rw [Finset.sum_image]
       rintro x _ y _
-      apply pow_injective_of_not_isUnit h.not_unit <| Prime.ne_zero h
+      apply pow_injective_of_not_unit h.not_unit <| Prime.ne_zero h
     rw [Deficient, h1, h2]
     calc
       ∑ i ∈ range m, n ^ i
