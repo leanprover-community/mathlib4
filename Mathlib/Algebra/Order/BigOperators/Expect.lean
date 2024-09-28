@@ -119,10 +119,10 @@ section LinearOrderedAddCommMonoid
 variable [LinearOrderedAddCommMonoid α] [Module ℚ≥0 α] [PosSMulMono ℚ≥0 α] {s : Finset ι}
   {f : ι → α} {a : α}
 
-lemma lt_of_lt_expect (hs : s.Nonempty) (h : a < 𝔼 i ∈ s, f i) : ∃ x ∈ s, a < f x := by
+lemma exists_lt_of_lt_expect (hs : s.Nonempty) (h : a < 𝔼 i ∈ s, f i) : ∃ x ∈ s, a < f x := by
   contrapose! h; exact expect_le hs h
 
-lemma lt_of_expect_lt (hs : s.Nonempty) (h : 𝔼 i ∈ s, f i < a) : ∃ x ∈ s, f x < a := by
+lemma exists_lt_of_expect_lt (hs : s.Nonempty) (h : 𝔼 i ∈ s, f i < a) : ∃ x ∈ s, f x < a := by
   contrapose! h; exact le_expect hs h
 
 end LinearOrderedAddCommMonoid
