@@ -848,30 +848,13 @@ theorem indexOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy
       simp only [h]
     simp only [indexOf_get] at x_eq_y; exact x_eq_y, fun h => by subst h; rfl⟩
 
-@[deprecated (since := "2024-08-15")]
-theorem getElem_reverse_aux₂ :
-    ∀ (l r : List α) (i : Nat) (h1) (h2),
-      (reverseAux l r)[length l - 1 - i]'h1 = l[i]'h2
-  | [], r, i, h1, h2 => absurd h2 (Nat.not_lt_zero _)
-  | a :: l, r, 0, h1, _ => by
-    have aux := get_reverse_aux₁ l (a :: r) 0
-    rw [Nat.zero_add] at aux
-    exact aux _ (zero_lt_succ _)
-  | a :: l, r, i + 1, h1, h2 => by
-    have aux := getElem_reverse_aux₂ l (a :: r) i
-    have heq : length (a :: l) - 1 - (i + 1) = length l - 1 - i := by rw [length]; omega
-    rw [← heq] at aux
-    apply aux
-
-@[deprecated (since := "2024-06-12")]
-theorem get_reverse_aux₂ (l r : List α) (i : Nat) (h1) (h2) :
-    get (reverseAux l r) ⟨length l - 1 - i, h1⟩ = get l ⟨i, h2⟩ := by
-  simp only [get_eq_getElem, h2, getElem_reverse_aux₂]
-
 @[deprecated getElem_reverse (since := "2024-06-12")]
 theorem get_reverse (l : List α) (i : Nat) (h1 h2) :
-    get (reverse l) ⟨length l - 1 - i, h1⟩ = get l ⟨i, h2⟩ :=
-  get_reverse_aux₂ _ _ _ _ _
+    get (reverse l) ⟨length l - 1 - i, h1⟩ = get l ⟨i, h2⟩ := by
+  rw [get_eq_getElem, get_eq_getElem, getElem_reverse]
+  congr
+  dsimp
+  omega
 
 theorem get_reverse' (l : List α) (n) (hn') :
     l.reverse.get n = l.get ⟨l.length - 1 - n, hn'⟩ := by
