@@ -45,7 +45,7 @@ variable {𝕜 E F G ι : Type*}
 section AbsolutelyConvex
 
 variable (𝕜) [SeminormedRing 𝕜] [SMul 𝕜 E] [SMul ℝ E] [AddCommMonoid E]
-/-- The type of absolutely convex sets. -/
+/-- A set is absolutely convex if it is balanced and convex. -/
 def AbsConvex (s : Set E) : Prop := Balanced 𝕜 s ∧ Convex ℝ s
 
 variable {𝕜}
