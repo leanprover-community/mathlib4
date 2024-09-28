@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Scott Morrison
+Authors: Patrick Massot, Kim Morrison
 -/
 import Mathlib.Algebra.Field.Subfield
 import Mathlib.Algebra.GroupWithZero.Divisibility

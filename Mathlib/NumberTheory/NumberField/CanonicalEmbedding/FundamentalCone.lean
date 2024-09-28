@@ -262,7 +262,7 @@ that `mixedEmbedding K x = a`. -/
 theorem exists_unique_preimage_of_integralPoint {a : mixedSpace K} (ha : a ∈ integralPoint K) :
     ∃! x : (𝓞 K), mixedEmbedding K x = a := by
   obtain ⟨_, ⟨x, rfl⟩⟩ := mem_integralPoint.mp ha
-  refine Function.Injective.exists_unique_of_mem_range ?_ (Set.mem_range_self x)
+  refine Function.Injective.existsUnique_of_mem_range ?_ (Set.mem_range_self x)
   exact (mixedEmbedding_injective K).comp RingOfIntegers.coe_injective
 
 theorem integralPoint_ne_zero (a : integralPoint K) :  (a : mixedSpace K) ≠ 0 := by

@@ -21,9 +21,10 @@ AUTO="no"
 usage() {
   echo "Usage: $0 <BUMPVERSION> <NIGHTLYDATE>"
   echo "       or"
-  echo "       $0 --bumpversion=<BUMPVERSION> --nightlydate=<NIGHTLYDATE> [--auto=<yes|no>]"
+  echo "       $0 --bumpversion=<BUMPVERSION> --nightlydate=<NIGHTLYDATE> --nightlysha=<SHA> [--auto=<yes|no>]"
   echo "BUMPVERSION: The upcoming release that we are targeting, e.g., 'v4.10.0'"
   echo "NIGHTLYDATE: The date of the nightly toolchain currently used on 'nightly-testing'"
+  echo "NIGHTLYSHA: The SHA of the nightly toolchain that we want to adapt to"
   echo "AUTO: Optional flag to specify automatic mode, default is 'no'"
   exit 1
 }
@@ -41,6 +42,10 @@ elif [ $# -ge 2 ]; then
         ;;
       --nightlydate=*)
         NIGHTLYDATE="${arg#*=}"
+        shift
+        ;;
+      --nightlysha=*)
+        NIGHTLYSHA="${arg#*=}"
         shift
         ;;
       --auto=*)
@@ -148,15 +153,14 @@ echo
 echo "### [auto] create a new branch 'bump/nightly-$NIGHTLYDATE' and merge the latest changes from 'origin/nightly-testing'"
 
 git checkout -b "bump/nightly-$NIGHTLYDATE"
-git merge origin/nightly-testing || true # ignore error if there are conflicts
+git merge $NIGHTLYSHA || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
   echo
   echo "### [auto] Conflict resolution"
-  echo "### Automatically choosing 'lean-toolchain' and 'lake-manifest.json' from the newer branch"
-  echo "### In this case, the newer branch is 'origin/nightly-testing'"
-  git checkout origin/nightly-testing -- lean-toolchain lake-manifest.json
+  echo "### Automatically choosing 'lean-toolchain' and 'lake-manifest.json' from 'nightly-testing'"
+  git checkout $NIGHTLYSHA -- lean-toolchain lake-manifest.json
   git add lean-toolchain lake-manifest.json
 fi
 
@@ -172,6 +176,8 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   echo
   echo "### [user] Conflict resolution"
   echo "We are merging the latest changes from 'origin/nightly-testing' into 'bump/nightly-$NIGHTLYDATE'"
+  echo "Specifically, we are merging the following version of 'origin/nightly-testing':"
+  echo "$NIGHTLYSHA"
   echo "There seem to be conflicts: please resolve them"
   echo ""
   echo "  1) Open `pwd` in a new terminal and run 'git status'"
