@@ -36,7 +36,6 @@ imposed, the property that the set of roots is closed under reflection forces th
 
  * When is the permutation representation faithful? basic counterexample: char 2 rank 2 one root.
  * Base change of root pairings (may need flatness; perhaps should go in a different file).
- * Isomorphism of root pairings.
  * Crystallographic root systems are isomorphic to base changes of root systems over `ℤ`: Take
    `M₀` and `N₀` to be the `ℤ`-span of roots and coroots.
 
@@ -615,21 +614,5 @@ def IsEmbedding {κ : Type*} (P : RootPairing ι R M N) (Q : RootPairing κ R M 
   ∀ i j, f (P.reflection_perm i j) = Q.reflection_perm (f i) (f j)
 
 end Embedding
-
-section BaseChange
-
-variable {S : Type*} [CommRing S] [Algebra R S] (P : RootPairing ι R M N)
-/-!
-/-- The base change of a root pairing. -/
-def baseChange : RootPairing ι S (S ⊗[R] M) (S ⊗[R] N) :=
-  { P.toPerfectPairing.baseChange with
-    root := P.root
-    coroot := P.coroot
-    root_coroot_two := P.root_coroot_two
-    mapsTo_preReflection_root := P.mapsTo_preReflection_root
-    mapsTo_preReflection_coroot := P.mapsTo_preReflection_coroot }
--/
-
-end BaseChange
 
 end RootPairing

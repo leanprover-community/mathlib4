@@ -3,7 +3,7 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.RootSystem.Defs
+import Mathlib.LinearAlgebra.RootSystem.RootPositive
 import Mathlib.Algebra.Ring.SumsOfSquares
 
 /-!
@@ -26,7 +26,7 @@ Weyl group.
 ## Main definitions:
 
  * `Polarization`: A distinguished linear map from the weight space to the coweight space.
- * `PolInner` : The bilinear form on weight space corresponding to `Polarization`.
+ * `CanonicalBilinear` : The bilinear form on weight space corresponding to `Polarization`.
 
 ## References:
 
@@ -35,9 +35,10 @@ Weyl group.
 
 ## Main results:
  * `polarization_self_sum_of_squares` : The inner product of any weight vector is a sum of squares.
- * `polInner_reflection_reflection_apply` : `PolInner` is invariant with respect to reflections.
- * `polInner_self_coroot`: Two times `PolInner` applied to a root is a multiple of the corresponding
-  coroot.
+ * `canonicalBilinear_reflection_reflection_apply` : `CanonicalBilinear` is invariant with respect
+   to reflections.
+ * `canonicalBilinear_self_coroot`: Two times `CanonicalBilinear` applied to a root is a multiple of
+   the corresponding coroot.
 
 ## Todo
 
@@ -79,6 +80,24 @@ theorem sum_of_squares_eq_zero_iff [LinearOrderedCommRing R] (s : Finset ι) (f 
     exact ⟨zero_eq_mul_self.mp hhi.symm, h.mp (by linarith)⟩
 --#find_home! sum_of_squares_eq_zero_iff -- here
 
+lemma rank_le_of_injective_smul [CommRing R] [AddCommGroup M] [Module R M]
+    (L L' : Submodule R M) {r : R} (hr : Injective fun (x : M) => r • x) (h : ∀ x ∈ L, r • x ∈ L') :
+    Module.rank R L ≤ Module.rank R L' := by
+  let f : L →ₗ[R] L' :=
+    {
+      toFun := fun x => ⟨r • x, h x x.2⟩
+      map_add' := fun x y => by simp
+      map_smul' := fun s x => by simp [← smul_assoc, mul_comm]
+    }
+  have hf : Injective f := by
+    intro x y hxy
+    have hx : f x = ⟨r • x, h x x.2⟩ := rfl
+    have hy : f y = ⟨r • y, h y y.2⟩ := rfl
+    rw [hx, hy] at hxy
+    simp only [Subtype.mk.injEq] at hxy
+    exact SetLike.coe_eq_coe.mp (hr (hr (congrArg (HSMul.hSMul r) hxy)))
+  exact LinearMap.rank_le_of_injective (R := R) (M := L) f hf
+
 namespace RootPairing
 
 section CommRing
@@ -97,20 +116,13 @@ def Polarization : M →ₗ[R] N where
     simp only [← toLin_toPerfectPairing, map_smul, LinearMap.smul_apply, RingHom.id_apply,
       Finset.smul_sum, smul_assoc]
 
-theorem polarization_self (x : M) :
-    P.toPerfectPairing x (P.Polarization x) =
-      ∑ (i : ι), P.toPerfectPairing x (P.coroot i) * P.toPerfectPairing x (P.coroot i) := by
-  simp
-
-theorem polarization_self_sum_of_squares (x : M) :
-    IsSumSq (P.toPerfectPairing x (P.Polarization x)) := by
-  rw [polarization_self]
-  exact isSumSq_of_sum_of_squares Finset.univ _
-
-theorem polarization_root_self (j : ι) :
-    P.toPerfectPairing (P.root j) (P.Polarization (P.root j)) =
-      ∑ (i : ι), (P.pairing j i) * (P.pairing j i) := by
-  simp
+theorem range_polarization_le_span_coroot :
+    LinearMap.range P.Polarization ≤ (span R (range P.coroot)) := by
+  intro y hy
+  obtain ⟨x, hx⟩ := hy
+  rw [← hx, Polarization_apply]
+  refine (mem_span_range_iff_exists_fun R).mpr ?_
+  use fun i => (P.toPerfectPairing x) (P.coroot i)
 
 /-!
 theorem polarization_reflection (i : ι) (x : M) :
@@ -125,18 +137,22 @@ theorem polarization_reflection (i : ι) (x : M) :
 
 /-- An invariant inner product on the weight space. -/
 @[simps]
-def PolInner : M →ₗ[R] M →ₗ[R] R where
+def CanonicalBilinear : M →ₗ[R] M →ₗ[R] R where
   toFun x := P.toLin x ∘ₗ P.Polarization
   map_add' x y := by simp only [map_add, LinearMap.add_comp]
   map_smul' r x := by simp only [LinearMapClass.map_smul, RingHom.id_apply, LinearMap.smul_comp]
 
-theorem polInner_symmetric (x y : M) :
-    P.PolInner x y = P.PolInner y x := by
-  simp [mul_comm]
+lemma canonicalBilinear_apply_apply (x y : M) : P.CanonicalBilinear x y =
+    ∑ (i : ι), P.toPerfectPairing y (P.coroot i) * P.toPerfectPairing x (P.coroot i) := by
+  simp
 
-theorem polInner_reflection_reflection_apply (i : ι) (x y : M) :
-    P.PolInner (P.reflection i x) (P.reflection i y) = P.PolInner x y := by
-  simp only [PolInner_apply, LinearMap.coe_comp, comp_apply, Polarization_apply, map_sum,
+lemma canonicalBilinear_symmetric :
+    LinearMap.IsSymm P.CanonicalBilinear := by
+  simp [LinearMap.IsSymm, mul_comm]
+
+lemma canonicalBilinear_reflection_reflection_apply (i : ι) (x y : M) :
+    P.CanonicalBilinear (P.reflection i x) (P.reflection i y) = P.CanonicalBilinear x y := by
+  simp only [CanonicalBilinear_apply, LinearMap.coe_comp, comp_apply, Polarization_apply, map_sum,
     LinearMapClass.map_smul, smul_eq_mul, reflection_coroot_perm, toLin_toPerfectPairing]
   exact Fintype.sum_equiv (P.reflection_perm i)
     (fun x_1 ↦ (P.toPerfectPairing y) (P.coroot ((P.reflection_perm i) x_1)) *
@@ -144,21 +160,9 @@ theorem polInner_reflection_reflection_apply (i : ι) (x y : M) :
     (fun x_1 ↦ (P.toPerfectPairing y) (P.coroot x_1) *
       (P.toPerfectPairing x) (P.coroot x_1)) (congrFun rfl)
 
--- TODO : polInner_weyl_invariant
-/-! lemma polInner_weyl_invariant (P : RootPairing ι R M N) [Finite ι]
-    (w : Subgroup.closure {P.reflection i | i : ι}) :
-    ∀ x y : M, P.PolInner (w.val x) (w.val y) = P.PolInner x y := by
-  induction w.val using Subgroup.closure_induction (x := w.val) with
-  | h => exact SetLike.coe_mem w
-  | mem => sorry
-  | one => simp
-  | mul => sorry
-  | inv => sorry
--/
-
-/-- SGA3 XXI Lemma 1.2.1 (10) -/
-lemma polInner_self_coroot (P : RootPairing ι R M N) (i : ι) :
-    (P.PolInner (P.root i) (P.root i)) • P.coroot i = 2 • P.Polarization (P.root i) := by
+/-- This is SGA3 XXI Lemma 1.2.1 (10), key for proving nondegeneracy and positivity. -/
+lemma canonicalBilinear_self_smul_coroot (P : RootPairing ι R M N) (i : ι) :
+    (P.CanonicalBilinear (P.root i) (P.root i)) • P.coroot i = 2 • P.Polarization (P.root i) := by
   have hP : P.Polarization (P.root i) =
       ∑ j : ι, P.pairing i (P.reflection_perm i j) • P.coroot (P.reflection_perm i j) := by
     simp_rw [Polarization_apply, root_coroot_eq_pairing]
@@ -171,23 +175,116 @@ lemma polInner_self_coroot (P : RootPairing ι R M N) (i : ι) :
   simp only [root_coroot_eq_pairing, pairing_reflection_perm, pairing_reflection_perm_self,
     ← reflection_perm_coroot, smul_sub, neg_smul, sub_neg_eq_add]
   rw [Finset.sum_add_distrib, ← add_assoc, ← sub_eq_iff_eq_add]
-  simp only [PolInner_apply, LinearMap.coe_comp, comp_apply, Polarization_apply,
+  simp only [CanonicalBilinear_apply, LinearMap.coe_comp, comp_apply, Polarization_apply,
     root_coroot_eq_pairing, map_sum, LinearMapClass.map_smul, Finset.sum_neg_distrib, ← smul_assoc]
   rw [Finset.sum_smul, add_neg_eq_zero.mpr rfl]
   exact sub_eq_zero_of_eq rfl
 
-lemma flip_polInner_self_root (P : RootPairing ι R M N) (i : ι) :
-    (P.flip.PolInner (P.coroot i) (P.coroot i)) • P.root i =
+lemma flip_canonicalBilinear_self_smul_root (P : RootPairing ι R M N) (i : ι) :
+    (P.flip.CanonicalBilinear (P.coroot i) (P.coroot i)) • P.root i =
       2 • P.flip.Polarization (P.coroot i) :=
-  polInner_self_coroot (P.flip) i
+  canonicalBilinear_self_smul_coroot (P.flip) i
+
+lemma canonicalBilinear_self_sum_of_squares (x : M) :
+    IsSumSq (P.CanonicalBilinear x x) :=
+  P.canonicalBilinear_apply_apply x x ▸ isSumSq_of_sum_of_squares Finset.univ _
+
+lemma canonicalBilinear_root_self (j : ι) :
+    P.CanonicalBilinear (P.root j) (P.root j) = ∑ (i : ι), (P.pairing j i) * (P.pairing j i) := by
+  simp
+
+-- TODO : canonicalBilinear_weyl_invariant
+/-! lemma canonicalBilinear_weyl_invariant (P : RootPairing ι R M N) [Finite ι]
+    (w : Subgroup.closure {P.reflection i | i : ι}) :
+    ∀ x y : M, P.CanonicalBilinear (w.val x) (w.val y) = P.CanonicalBilinear x y := by
+  induction w.val using Subgroup.closure_induction (x := w.val) with
+  | h => exact SetLike.coe_mem w
+  | mem => sorry
+  | one => simp
+  | mul => sorry
+  | inv => sorry
+
 
 lemma four_smul_flip_polarization_polarization (P : RootPairing ι R M N) (i : ι) :
     4 • P.flip.Polarization (P.Polarization (P.root i)) =
-    (P.PolInner (P.root i) (P.root i)) •
-      (P.flip.PolInner (P.coroot i) (P.coroot i)) • P.root i := by
-  rw [show 4 = 2 • 2 by rfl, smul_assoc, ← map_nsmul, ← polInner_self_coroot, map_smul,
-    flip_polInner_self_root, smul_comm]
+    (P.CanonicalBilinear (P.root i) (P.root i)) •
+      (P.flip.CanonicalBilinear (P.coroot i) (P.coroot i)) • P.root i := by
+  rw [show 4 = 2 • 2 by rfl, smul_assoc, ← map_nsmul, ← canonicalBilinear_self_coroot, map_smul,
+    flip_canonicalBilinear_self_root, smul_comm]
+-/
 
 end CommRing
+
+section LinearOrderedCommRing
+
+variable [Fintype ι] [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N]
+[Module R N] (P : RootPairing ι R M N)
+
+--use IsSumSq.nonneg ?
+theorem canonicalBilinear_self_non_neg (x : M) : 0 ≤ P.CanonicalBilinear x x :=
+  IsSumSq.nonneg (P.canonicalBilinear_self_sum_of_squares x)
+
+theorem canonicalBilinear_self_zero_iff (x : M) :
+    P.CanonicalBilinear x x = 0 ↔ ∀ i, P.toPerfectPairing x (P.coroot i) = 0 := by
+  simp only [CanonicalBilinear_apply, PerfectPairing.toLin_apply, LinearMap.coe_comp, comp_apply,
+    Polarization_apply, map_sum, map_smul, smul_eq_mul]
+  convert sum_of_squares_eq_zero_iff Finset.univ fun i => (P.toPerfectPairing x) (P.coroot i)
+  constructor
+  · intro x _
+    exact x
+  · rename_i i
+    intro x
+    refine x ?_
+    exact Finset.mem_univ i
+
+lemma canonicalBilinear_root_self_pos (j : ι) :
+    0 < P.CanonicalBilinear (P.root j) (P.root j) := by
+  simp only [LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_comp, comp_apply,
+    canonicalBilinear_apply_apply, toLin_toPerfectPairing]
+  refine Finset.sum_pos' (fun i _ => (sq (P.pairing j i)) ▸ sq_nonneg (P.pairing j i)) ?_
+  use j
+  exact ⟨Finset.mem_univ j, (by simp)⟩
+
+lemma canonicalBilinear_rootPositive : IsRootPositive P P.CanonicalBilinear where
+  zero_lt_apply_root i := P.canonicalBilinear_root_self_pos i
+  symm := P.canonicalBilinear_symmetric
+  apply_reflection_eq := P.canonicalBilinear_reflection_reflection_apply
+
+lemma prod_canonicalBilinear_root_self_pos :
+    0 < ∏ i, P.CanonicalBilinear (P.root i) (P.root i) :=
+  Finset.prod_pos fun i _ => canonicalBilinear_root_self_pos P i
+
+/-!
+-- injectivity from lemma: reflexive modules over a domain have no torsion
+
+lemma injective_smul {r : R} (hr : 0 < r) : Injective fun (x : M) => r • x := by
+  intro x y hxy
+  simp only at hxy
+
+  sorry
+
+lemma rank_polarization_eq_rank_span_coroot :
+    LinearMap.rank P.Polarization = Module.rank R (span R (range P.coroot)) := by
+  refine eq_of_le_of_le (rank_le_of_submodule (LinearMap.range P.Polarization)
+    (span R (range ⇑P.coroot)) P.range_polarization_le_span_coroot) ?_
+  refine rank_le_of_injective_smul (span R (range ⇑P.coroot)) (LinearMap.range P.Polarization)
+    (injective_smul P.prod_canonicalBilinear_root_self_pos) ?_
+
+
+  sorry
+
+
+lemma rank_eq_zero_iff :
+    Module.rank R M = 0 ↔ ∀ x : M, ∃ a : R, a ≠ 0 ∧ a • x = 0 := by
+
+theorem rank_quotient_add_rank_of_isDomain [IsDomain R] (M' : Submodule R M) :
+    Module.rank R (M ⧸ M') + Module.rank R M' = Module.rank R M := by
+
+lemma coxeter_weight_leq_4 (i j : ι) : coxeterWeight i j ≤ 4 := by
+  sorry
+
+-/
+
+end LinearOrderedCommRing
 
 end RootPairing

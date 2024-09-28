@@ -4,10 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
 import Mathlib.LinearAlgebra.RootSystem.Finite.Polarization
-import Mathlib.LinearAlgebra.RootSystem.RootPositive
-import Mathlib.Algebra.Ring.SumsOfSquares
-import Mathlib.Algebra.Module.LocalizedModule
-import Mathlib.RingTheory.Localization.FractionRing
 
 
 /-!
@@ -70,12 +66,33 @@ section LinearOrderedCommRing
 variable [Fintype ι] [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N]
 [Module R N] (P : RootPairing ι R M N)
 
-/-! Plan: base change of id "is" id
-base change of flip "is" flip
-flat base change takes bijective maps to bijective maps
+/-! From SGA3 lemma 1.2.1 (10), we have a linear map `Polarization: M → N`.
+
+Polarization maps the span of roots to the span of coroots. - done.
+
+This restricted map has torsion cokernel.
+
+I would like to say that the span of roots has `Module.rank` at least the span of coroots, since
+this map is almost surjective.
+
+From Mathlib.LinearAlgebra.Dimension.Localization:
+theorem rank_quotient_add_rank_of_isDomain [IsDomain R] (M' : Submodule R M) :
+    Module.rank R (M ⧸ M') + Module.rank R M' = Module.rank R M := by sorry
+
+Use M = span of coroots, M' = image of Polarization.
+Then, it suffices to show the quotient, i.e., the cokernel has rank zero.
+
+This should follow from the fact that there are no linearly independent sets of size one,
+since they are all killed by a certain positive element, i.e., a nonzero divisor.
+
+Thus, we have image of polarization has same rank as span of coroots.
+
+Note LinearMap.rank is just Module.rank of LinearMap.range.
+
+Also need: rank of source is at least rank of image: rank_le_domain
+(LinearAlgebra.Dimension.LinearMap)
 
 -/
-
 
 
 -- SGA3 first extends polarization to the span of roots over the field of fractions ℚ, and shows the
@@ -102,43 +119,14 @@ theorem polarization_injective : InjOn P.Polarization (span R (range P.root)) :=
   sorry
 -/
 
---use IsSumSq.nonneg ?
-theorem polInner_self_non_neg (x : M) : 0 ≤ P.PolInner x x := by
-  simp only [PolInner, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_comp, comp_apply,
-    polarization_self, toLin_toPerfectPairing]
-  exact Finset.sum_nonneg fun i _ =>
-    (sq (P.toPerfectPairing x (P.coroot i))) ▸ sq_nonneg (P.toPerfectPairing x (P.coroot i))
+-- this is a copy just for imports
+lemma prod_canonicalBilinear_root_self_pos' :
+    0 < ∏ i, P.CanonicalBilinear (P.root i) (P.root i) :=
+  Finset.prod_pos fun i _ => canonicalBilinear_root_self_pos P i
 
-theorem polInner_self_zero_iff (x : M) :
-    P.PolInner x x = 0 ↔ ∀ i, P.toPerfectPairing x (P.coroot i) = 0 := by
-  simp only [PolInner_apply, PerfectPairing.toLin_apply, LinearMap.coe_comp, comp_apply,
-    Polarization_apply, map_sum, map_smul, smul_eq_mul]
-  convert sum_of_squares_eq_zero_iff Finset.univ fun i => (P.toPerfectPairing x) (P.coroot i)
-  constructor
-  · intro x _
-    exact x
-  · rename_i i
-    intro x
-    refine x ?_
-    exact Finset.mem_univ i
 
 -- Use four_smul_flip_polarization_polarization to get injectivity of Polarization.
 
---lemma coxeter_weight_leq_4 :
-
-lemma polInner_root_self_pos (j : ι) :
-    0 < P.PolInner (P.root j) (P.root j) := by
-  simp only [PolInner, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.coe_comp, comp_apply,
-    polarization_root_self, toLin_toPerfectPairing]
-  refine Finset.sum_pos' (fun i _ => (sq (P.pairing j i)) ▸ sq_nonneg (P.pairing j i)) ?_
-  use j
-  refine ⟨Finset.mem_univ j, ?_⟩
-  simp only [pairing_same, Nat.ofNat_pos, mul_pos_iff_of_pos_left]
-
-lemma polInner_rootPositive : IsRootPositive P P.PolInner where
-  zero_lt_apply_root i := P.polInner_root_self_pos i
-  symm := P.polInner_symmetric
-  apply_reflection_eq := P.polInner_reflection_reflection_apply
 
 /-!
 lemma positive_definite_polInner {x : M} (hx : x ∈ span R (range P.root)) (h : P.PolInner x x = 0) :
