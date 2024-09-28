@@ -189,7 +189,7 @@ section
 
 variable [AddCommGroup E] [Module ℝ E]
 
-lemma balancedHull_subseteq_convexHull {s : Set E} : balancedHull ℝ s ⊆ convexHull ℝ (s ∪ -s) := by
+lemma balancedHull_subset_convexHull_union_neg {s : Set E} : balancedHull ℝ s ⊆ convexHull ℝ (s ∪ -s) := by
   intro a ha
   obtain ⟨r, hr, y, hy, rfl⟩ := mem_balancedHull_iff.1 ha
   apply segment_subset_convexHull (mem_union_left (-s) hy) (mem_union_right _ (neg_mem_neg.mpr hy))
