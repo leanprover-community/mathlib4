@@ -366,11 +366,18 @@ protected theorem nhds_zero_eq [TopologicalSpace F] [TopologicalAddGroup F] :
         𝓟 {f : E →SL[σ] F | MapsTo f s U} :=
   UniformConvergenceCLM.nhds_zero_eq ..
 
+/-- If `s` is a von Neumann bounded set and `U` is a neighbourhood of zero,
+then sufficiently small continuous linear maps map `s` to `U`. -/
 theorem eventually_nhds_zero_mapsTo [TopologicalSpace F] [TopologicalAddGroup F]
     {s : Set E} (hs : IsVonNBounded 𝕜₁ s) {U : Set F} (hu : U ∈ 𝓝 0) :
     ∀ᶠ f : E →SL[σ] F in 𝓝 0, MapsTo f s U :=
   UniformConvergenceCLM.eventually_nhds_zero_mapsTo _ hs hu
 
+/-- If `S` is a von Neumann bounded set of continuous linear maps `f : E →SL[σ] F`
+and `s` is a von Neumann bounded set in the domain,
+then the set `{f x | (f ∈ S) (x ∈ s)}` is von Neumann bounded.
+
+See also `isVonNBounded_iff` for an `Iff` version with stronger typeclass assumptions. -/
 theorem isVonNBounded_image2_apply {R : Type*} [SeminormedRing R]
     [TopologicalSpace F] [TopologicalAddGroup F]
     [Module R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜₂ R F]
@@ -380,7 +387,9 @@ theorem isVonNBounded_image2_apply {R : Type*} [SeminormedRing R]
 
 /-- A set `S` of continuous linear maps is von Neumann bounded
 iff for any von Neumann bounded set `s`,
-the set `{f x | (f ∈ S) (x ∈ s)}` is von Neumann bounded. -/
+the set `{f x | (f ∈ S) (x ∈ s)}` is von Neumann bounded.
+
+For the forward implication with weaker typeclass assumptions, see `isVonNBounded_image2_apply`. -/
 theorem isVonNBounded_iff {R : Type*} [NormedDivisionRing R]
     [TopologicalSpace F] [TopologicalAddGroup F]
     [Module R F] [ContinuousConstSMul R F] [SMulCommClass 𝕜₂ R F]
