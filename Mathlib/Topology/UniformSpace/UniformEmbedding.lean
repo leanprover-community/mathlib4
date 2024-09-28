@@ -304,7 +304,7 @@ instance SeparationQuotient.instCompleteSpace [CompleteSpace α] :
     CompleteSpace (SeparationQuotient α) :=
   completeSpace_iff.2 ‹_›
 
-theorem completeSpace_congr {e : α ≃ β} (he : UniformInducing e) :
+theorem completeSpace_congr {e : α ≃ β} (he : UniformEmbedding e) :
     CompleteSpace α ↔ CompleteSpace β :=
   he.completeSpace_congr e.surjective
 
@@ -319,7 +319,7 @@ theorem IsClosed.completeSpace_coe [CompleteSpace α] {s : Set α} (hs : IsClose
   hs.isComplete.completeSpace_coe
 
 theorem ULift.completeSpace_iff : CompleteSpace (ULift α) ↔ CompleteSpace α :=
-  completeSpace_congr (e := Equiv.ulift) ⟨rfl⟩
+  UniformInducing.completeSpace_congr ⟨rfl⟩ down_surjective
 
 /-- The lift of a complete space to another universe is still complete. -/
 instance ULift.instCompleteSpace [CompleteSpace α] : CompleteSpace (ULift α) :=
