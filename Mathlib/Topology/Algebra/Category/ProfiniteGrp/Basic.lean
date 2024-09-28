@@ -220,14 +220,12 @@ abbrev limitCone : Limits.Cone F where
 /-- `ProfiniteGrp.limitCone` is a limit cone. -/
 def limitConeIsLimit : Limits.IsLimit (limitCone F) where
   lift cone := {
-    toFun := ((Profinite.limitConeIsLimit (F ⋙ profiniteGrpToProfinite)).lift
-      (profiniteGrpToProfinite.mapCone cone)).toFun
+    ((Profinite.limitConeIsLimit (F ⋙ profiniteGrpToProfinite)).lift
+      (profiniteGrpToProfinite.mapCone cone)) with
     map_one' := Subtype.ext (funext fun j ↦ map_one (cone.π.app j))
     -- TODO: investigate whether it's possible to set up `ext` lemmas for the `TopCat`-related
     -- categories so that `by ext j; exact map_one (cone.π.app j)` works here, similarly below.
-    map_mul' := fun _ _ ↦ Subtype.ext (funext fun j ↦ map_mul (cone.π.app j) _ _)
-    continuous_toFun := ((Profinite.limitConeIsLimit (F ⋙ profiniteGrpToProfinite)).lift
-      (profiniteGrpToProfinite.mapCone cone)).continuous }
+    map_mul' := fun _ _ ↦ Subtype.ext (funext fun j ↦ map_mul (cone.π.app j) _ _) }
   uniq cone m h := by
     apply profiniteGrpToProfinite.map_injective
     simpa using (Profinite.limitConeIsLimit (F ⋙ profiniteGrpToProfinite)).uniq
