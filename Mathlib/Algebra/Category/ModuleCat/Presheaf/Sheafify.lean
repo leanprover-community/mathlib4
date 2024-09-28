@@ -16,7 +16,7 @@ of the underlying presheaf of abelian groups of `M₀`, i.e. we have a locally b
 map `φ : M₀.presheaf ⟶ A.val`, then we endow `A` with the structure of a
 sheaf of modules over `R`: this is `PresheafOfModules.sheafify α φ`.
 
-In many application, the morphism `α` shall be the identity, but this more
+In many applications, the morphism `α` shall be the identity, but this more
 general construction allows the sheafification of both the presheaf of rings
 and the presheaf of modules.
 
@@ -42,7 +42,7 @@ variable {R : Cᵒᵖ ⥤ RingCat.{u}} {M : PresheafOfModules.{v} R} {X : C} {P 
 /-- The scalar multiplication of family of elements of a presheaf of modules `M` over `R`
 by a family of elements of `R`. -/
 def smul : FamilyOfElements (M.presheaf ⋙ forget _) P := fun Y f hf =>
-  HSMul.hSMul (α := R.obj (Opposite.op Y)) (β := M.presheaf.obj (Opposite.op Y)) (r f hf) (m f hf)
+  HSMul.hSMul (α := R.obj (Opposite.op Y)) (β := M.obj (Opposite.op Y)) (r f hf) (m f hf)
 
 end smul
 
@@ -57,7 +57,7 @@ include hA
 
 lemma _root_.PresheafOfModules.Sheafify.app_eq_of_isLocallyInjective
     {Y : C} (r₀ r₀' : R₀.obj (Opposite.op Y))
-    (m₀ m₀' : M₀.presheaf.obj (Opposite.op Y))
+    (m₀ m₀' : M₀.obj (Opposite.op Y))
     (hr₀ : α.app _ r₀ = α.app _ r₀')
     (hm₀ : φ.app _ m₀ = φ.app _ m₀') :
     φ.app _ (r₀ • m₀) = φ.app _ (r₀' • m₀') := by
@@ -72,12 +72,12 @@ lemma _root_.PresheafOfModules.Sheafify.app_eq_of_isLocallyInjective
 
 lemma isCompatible_map_smul_aux {Y Z : C} (f : Y ⟶ X) (g : Z ⟶ Y)
     (r₀ : R₀.obj (Opposite.op Y)) (r₀' : R₀.obj (Opposite.op Z))
-    (m₀ : M₀.presheaf.obj (Opposite.op Y)) (m₀' : M₀.presheaf.obj (Opposite.op Z))
+    (m₀ : M₀.obj (Opposite.op Y)) (m₀' : M₀.obj (Opposite.op Z))
     (hr₀ : α.app _ r₀ = R.map f.op r) (hr₀' : α.app _ r₀' = R.map (f.op ≫ g.op) r)
     (hm₀ : φ.app _ m₀ = A.map f.op m) (hm₀' : φ.app _ m₀' = A.map (f.op ≫ g.op) m) :
-    φ.app _ (M₀.presheaf.map g.op (r₀ • m₀)) = φ.app _ (r₀' • m₀') := by
+    φ.app _ (M₀.map g.op (r₀ • m₀)) = φ.app _ (r₀' • m₀') := by
   rw [← PresheafOfModules.Sheafify.app_eq_of_isLocallyInjective α φ hA (R₀.map g.op r₀) r₀'
-    (M₀.presheaf.map g.op m₀) m₀', M₀.map_smul]
+    (M₀.map g.op m₀) m₀', M₀.map_smul]
   · rw [hr₀', R.map_comp, comp_apply, ← hr₀, NatTrans.naturality_apply]
   · rw [hm₀', A.map_comp, AddCommGrp.coe_comp, Function.comp_apply, ← hm₀]
     erw [NatTrans.naturality_apply]
@@ -244,7 +244,7 @@ protected lemma smul_add : smul α φ r (m + m') = smul α φ r m + smul α φ r
     refine J.intersection_covering (J.intersection_covering ?_ ?_) ?_
     all_goals apply Presheaf.imageSieve_mem
   apply A.isSeparated _ _ hS
-  rintro Y f ⟨⟨⟨r₀, hr₀⟩, ⟨m₀ : M₀.presheaf.obj _, hm₀⟩⟩, ⟨m₀' : M₀.presheaf.obj _, hm₀'⟩⟩
+  rintro Y f ⟨⟨⟨r₀, hr₀⟩, ⟨m₀ : M₀.obj _, hm₀⟩⟩, ⟨m₀' : M₀.obj _, hm₀'⟩⟩
   erw [(A.val.map f.op).map_add, map_smul_eq α φ r m f.op r₀ hr₀ m₀ hm₀,
     map_smul_eq α φ r m' f.op r₀ hr₀ m₀' hm₀',
     map_smul_eq α φ r (m + m') f.op r₀ hr₀ (m₀ + m₀')
@@ -269,7 +269,7 @@ protected lemma mul_smul : smul α φ (r * r') m = smul α φ r (smul α φ r' m
     refine J.intersection_covering (J.intersection_covering ?_ ?_) ?_
     all_goals apply Presheaf.imageSieve_mem
   apply A.isSeparated _ _ hS
-  rintro Y f ⟨⟨⟨r₀ : R₀.obj _, hr₀⟩, ⟨r₀' : R₀.obj _, hr₀'⟩⟩, ⟨m₀ : M₀.presheaf.obj _, hm₀⟩⟩
+  rintro Y f ⟨⟨⟨r₀ : R₀.obj _, hr₀⟩, ⟨r₀' : R₀.obj _, hr₀'⟩⟩, ⟨m₀ : M₀.obj _, hm₀⟩⟩
   erw [map_smul_eq α φ (r * r') m f.op (r₀ * r₀')
     (by rw [map_mul, map_mul, hr₀, hr₀']) m₀ hm₀, mul_smul,
     map_smul_eq α φ r (smul α φ r' m) f.op r₀ hr₀ (r₀' • m₀)
@@ -309,25 +309,28 @@ sheaf of abelian groups of a presheaf of modules `M₀` over `R₀`, this is
 the sheaf of modules over `R` which is obtained by endowing the sections of
 `A.val` with a scalar multiplication. -/
 noncomputable def sheafify : SheafOfModules.{v} R where
-  val :=
-    { presheaf := A.val
-      module := Sheafify.module α φ
-      map_smul := fun _ _ _ => by apply Sheafify.map_smul }
+  val := letI := Sheafify.module α φ; ofPresheaf A.val (Sheafify.map_smul _ _)
   isSheaf := A.cond
 
 /-- The canonical morphism from a presheaf of modules to its associated sheaf. -/
-@[simps]
-def toSheafify : M₀ ⟶ (restrictScalars α).obj (sheafify α φ).val where
-  hom := φ
-  map_smul X r₀ m₀ := by
+def toSheafify : M₀ ⟶ (restrictScalars α).obj (sheafify α φ).val :=
+  homMk φ (fun X r₀ m₀ ↦ by
     simpa using (Sheafify.map_smul_eq α φ (α.app _ r₀) (φ.app _ m₀) (𝟙 _)
-      r₀ (by aesop) m₀ (by simp)).symm
+      r₀ (by aesop) m₀ (by simp)).symm)
 
-instance : Presheaf.IsLocallyInjective J (toSheafify α φ).hom := by
-  dsimp; infer_instance
+@[simp]
+lemma toSheafify_app_apply (X : Cᵒᵖ) (x : M₀.obj X) :
+    DFunLike.coe (α := M₀.obj X) (β := fun _ ↦ A.val.obj X)
+      ((toSheafify α φ).app X) x = φ.app X x := rfl
 
-instance : Presheaf.IsLocallySurjective J (toSheafify α φ).hom := by
-  dsimp; infer_instance
+@[simp]
+lemma toPresheaf_map_toSheafify : (toPresheaf R₀).map (toSheafify α φ) = φ := rfl
+
+instance : IsLocallyInjective J (toSheafify α φ) := by
+  dsimp [IsLocallyInjective]; infer_instance
+
+instance : IsLocallySurjective J (toSheafify α φ) := by
+  dsimp [IsLocallySurjective]; infer_instance
 
 variable [J.WEqualsLocallyBijective AddCommGrp.{v}]
 
@@ -341,10 +344,10 @@ noncomputable def sheafifyHomEquiv' {F : PresheafOfModules.{v} R.val}
     (homEquivOfIsLocallyBijective (f := toSheafify α φ)
       (N := (restrictScalars α).obj F) hF)
 
-lemma comp_sheafifyHomEquiv'_symm_hom {F : PresheafOfModules.{v} R.val}
+lemma comp_toPresheaf_map_sheafifyHomEquiv'_symm_hom {F : PresheafOfModules.{v} R.val}
     (hF : Presheaf.IsSheaf J F.presheaf) (f : M₀ ⟶ (restrictScalars α).obj F) :
-    φ ≫ ((sheafifyHomEquiv' α φ hF).symm f).hom = f.hom :=
-  congr_arg Hom.hom ((sheafifyHomEquiv' α φ hF).apply_symm_apply f)
+    φ ≫ (toPresheaf R.val).map ((sheafifyHomEquiv' α φ hF).symm f) = (toPresheaf R₀).map f :=
+  (toPresheaf _).congr_map ((sheafifyHomEquiv' α φ hF).apply_symm_apply f)
 
 /-- The bijection
 `(sheafify α φ ⟶ F) ≃ (M₀ ⟶ (restrictScalars α).obj ((SheafOfModules.forget _).obj F))`
@@ -367,17 +370,15 @@ variable {M₀' : PresheafOfModules.{v} R₀} {A' : Sheaf J AddCommGrp.{v}}
 induced by morphisms `τ₀ : M₀ ⟶ M₀'` and `τ : A ⟶ A'`
 which satisfy `τ₀.hom ≫ φ' = φ ≫ τ.val`. -/
 @[simps]
-def sheafifyMap (fac : τ₀.hom ≫ φ' = φ ≫ τ.val) : sheafify α φ ⟶ sheafify α φ' where
-  val :=
-    { hom := τ.val
-      map_smul := by
-        let f := (sheafifyHomEquiv' α φ (by exact A'.cond)).symm (τ₀ ≫ toSheafify α φ')
-        have eq : τ.val = f.hom := ((J.W_of_isLocallyBijective φ).homEquiv _ A'.cond).injective
-          (by
-            dsimp [f]
-            erw [comp_sheafifyHomEquiv'_symm_hom]
-            simp only [← fac, toSheafify_hom, Hom.comp_hom])
-        convert f.map_smul }
+def sheafifyMap (fac : (toPresheaf R₀).map τ₀ ≫ φ' = φ ≫ τ.val) :
+    sheafify α φ ⟶ sheafify α φ' where
+  val := homMk τ.val (fun X r m ↦ by
+    let f := (sheafifyHomEquiv' α φ (by exact A'.cond)).symm (τ₀ ≫ toSheafify α φ')
+    suffices τ.val = (toPresheaf _).map f by simpa only [this] using (f.app X).map_smul r m
+    apply ((J.W_of_isLocallyBijective φ).homEquiv _ A'.cond).injective
+    dsimp [f]
+    erw [comp_toPresheaf_map_sheafifyHomEquiv'_symm_hom]
+    rw [← fac, Functor.map_comp, toPresheaf_map_toSheafify])
 
 end
 

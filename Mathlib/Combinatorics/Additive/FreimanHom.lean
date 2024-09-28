@@ -6,6 +6,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Group.Pointwise.Set
+import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.Order.BigOperators.Group.Multiset
 import Mathlib.Data.ZMod.Defs
 
@@ -248,6 +249,11 @@ lemma isMulFreimanIso_empty : IsMulFreimanIso n (∅ : Set α) (∅ : Set β) f 
   bijOn := hfAB
   map_prod_eq_map_prod s t _ _ _ _ := by
     rw [← map_multiset_prod, ← map_multiset_prod, EquivLike.apply_eq_iff_eq]
+
+@[to_additive]
+lemma IsMulFreimanHom.subtypeVal {S : Type*} [SetLike S α] [SubmonoidClass S α] {s : S} :
+    IsMulFreimanHom n (univ : Set s) univ Subtype.val :=
+  MonoidHomClass.isMulFreimanHom (SubmonoidClass.subtype s) (mapsTo_univ ..)
 
 end CommMonoid
 

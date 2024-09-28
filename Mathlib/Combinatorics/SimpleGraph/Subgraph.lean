@@ -606,7 +606,7 @@ theorem comap_monotone {G' : SimpleGraph W} (f : G →g G') : Monotone (Subgraph
     simp only [comap_verts, Set.mem_preimage]
     apply h.1
   · intro v w
-    simp (config := { contextual := true }) only [comap_adj, and_imp, true_and_iff]
+    simp (config := { contextual := true }) only [comap_adj, and_imp, true_and]
     intro
     apply h.2
 
@@ -615,7 +615,7 @@ theorem map_le_iff_le_comap {G' : SimpleGraph W} (f : G →g G') (H : G.Subgraph
   refine ⟨fun h ↦ ⟨fun v hv ↦ ?_, fun v w hvw ↦ ?_⟩, fun h ↦ ⟨fun v ↦ ?_, fun v w ↦ ?_⟩⟩
   · simp only [comap_verts, Set.mem_preimage]
     exact h.1 ⟨v, hv, rfl⟩
-  · simp only [H.adj_sub hvw, comap_adj, true_and_iff]
+  · simp only [H.adj_sub hvw, comap_adj, true_and]
     exact h.2 ⟨v, w, hvw, rfl, rfl⟩
   · simp only [map_verts, Set.mem_image, forall_exists_index, and_imp]
     rintro w hw rfl
@@ -767,7 +767,7 @@ theorem eq_singletonSubgraph_iff_verts_eq (H : G.Subgraph) {v : V} :
   refine ⟨fun h ↦ by rw [h, singletonSubgraph_verts], fun h ↦ ?_⟩
   ext
   · rw [h, singletonSubgraph_verts]
-  · simp only [Prop.bot_eq_false, singletonSubgraph_adj, Pi.bot_apply, iff_false_iff]
+  · simp only [Prop.bot_eq_false, singletonSubgraph_adj, Pi.bot_apply, iff_false]
     intro ha
     have ha1 := ha.fst_mem
     have ha2 := ha.snd_mem
@@ -784,7 +784,7 @@ theorem edgeSet_subgraphOfAdj {v w : V} (hvw : G.Adj v w) :
     (G.subgraphOfAdj hvw).edgeSet = {s(v, w)} := by
   ext e
   refine e.ind ?_
-  simp only [eq_comm, Set.mem_singleton_iff, Subgraph.mem_edgeSet, subgraphOfAdj_adj, iff_self_iff,
+  simp only [eq_comm, Set.mem_singleton_iff, Subgraph.mem_edgeSet, subgraphOfAdj_adj,
     forall₂_true_iff]
 
 lemma subgraphOfAdj_le_of_adj {v w : V} (H : G.Subgraph) (h : H.Adj v w) :
@@ -992,7 +992,7 @@ theorem deleteEdges_le : G'.deleteEdges s ≤ G' := by
 theorem deleteEdges_le_of_le {s s' : Set (Sym2 V)} (h : s ⊆ s') :
     G'.deleteEdges s' ≤ G'.deleteEdges s := by
   constructor <;> simp (config := { contextual := true }) only [deleteEdges_verts, deleteEdges_adj,
-    true_and_iff, and_imp, subset_rfl]
+    true_and, and_imp, subset_rfl]
   exact fun _ _ _ hs' hs ↦ hs' (h hs)
 
 @[simp]
@@ -1044,7 +1044,7 @@ variable {G' G'' : G.Subgraph} {s s' : Set V}
 theorem induce_mono (hg : G' ≤ G'') (hs : s ⊆ s') : G'.induce s ≤ G''.induce s' := by
   constructor
   · simp [hs]
-  · simp (config := { contextual := true }) only [induce_adj, true_and_iff, and_imp]
+  · simp (config := { contextual := true }) only [induce_adj, and_imp]
     intro v w hv hw ha
     exact ⟨hs hv, hs hw, hg.2 ha⟩
 
@@ -1065,7 +1065,7 @@ theorem induce_self_verts : G'.induce G'.verts = G' := by
   ext
   · simp
   · constructor <;>
-      simp (config := { contextual := true }) only [induce_adj, imp_true_iff, and_true_iff]
+      simp (config := { contextual := true }) only [induce_adj, imp_true_iff, and_true]
     exact fun ha ↦ ⟨G'.edge_vert ha, G'.edge_vert ha.symm⟩
 
 lemma le_induce_top_verts : G' ≤ (⊤ : G.Subgraph).induce G'.verts :=

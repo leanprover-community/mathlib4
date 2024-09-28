@@ -56,7 +56,7 @@ theorem injOn_insertNth_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
     · rfl
     · simp [hx.left] at h
     · simp [Ne.symm hx.left] at h
-    · simp only [true_and_iff, eq_self_iff_true, insertNth_succ_cons] at h
+    · simp only [true_and, eq_self_iff_true, insertNth_succ_cons] at h
       rw [Nat.succ_inj']
       refine IH hx.right ?_ ?_ (by injection h)
       · simpa [Nat.succ_le_succ_iff] using hn

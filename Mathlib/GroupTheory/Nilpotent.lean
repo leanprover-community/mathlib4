@@ -285,7 +285,7 @@ instance lowerCentralSeries_normal (n : ℕ) : Normal (lowerCentralSeries G n) :
 theorem lowerCentralSeries_antitone : Antitone (lowerCentralSeries G) := by
   refine antitone_nat_of_succ_le fun n x hx => ?_
   simp only [mem_lowerCentralSeries_succ_iff, exists_prop, mem_top, exists_true_left,
-    true_and_iff] at hx
+    true_and] at hx
   refine
     closure_induction hx ?_ (Subgroup.one_mem _) (@Subgroup.mul_mem _ _ _) (@Subgroup.inv_mem _ _ _)
   rintro y ⟨z, hz, a, ha⟩
@@ -811,16 +811,15 @@ theorem isNilpotent_of_finite_tfae :
         ∀ (p : ℕ) (_hp : Fact p.Prime) (P : Sylow p G), (↑P : Subgroup G).Normal,
         Nonempty
           ((∀ p : (Nat.card G).primeFactors, ∀ P : Sylow p G, (↑P : Subgroup G)) ≃* G)] := by
-  tfae_have 1 → 2
-  · exact @normalizerCondition_of_isNilpotent _ _
+  tfae_have 1 → 2 := @normalizerCondition_of_isNilpotent _ _
   tfae_have 2 → 3
-  · exact fun h H => NormalizerCondition.normal_of_coatom H h
+  | h, H => NormalizerCondition.normal_of_coatom H h
   tfae_have 3 → 4
-  · intro h p _ P; exact Sylow.normal_of_all_max_subgroups_normal h _
+  | h, p, _, P => Sylow.normal_of_all_max_subgroups_normal h _
   tfae_have 4 → 5
-  · exact fun h => Nonempty.intro (Sylow.directProductOfNormal fun {p hp hP} => h p hp hP)
+  | h => Nonempty.intro (Sylow.directProductOfNormal fun {p hp hP} => h p hp hP)
   tfae_have 5 → 1
-  · rintro ⟨e⟩; exact isNilpotent_of_product_of_sylow_group e
+  | ⟨e⟩ => isNilpotent_of_product_of_sylow_group e
   tfae_finish
 
 @[deprecated (since := "2024-06-05")] alias isNilpotent_of_finite_tFAE := isNilpotent_of_finite_tfae
