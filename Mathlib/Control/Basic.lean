@@ -18,8 +18,6 @@ variable {α β γ : Type u}
 
 section Functor
 
-variable {f : Type u → Type v} [Functor f] [LawfulFunctor f]
-
 attribute [functor_norm] Functor.map_map
 
 end Functor
