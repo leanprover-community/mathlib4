@@ -208,7 +208,7 @@ lemma help (a b : E) (h : (2:ℝ)•a = (2:ℝ)•b) : a = b := by
 open UniformSpace in
 open Uniformity in
 theorem ball_add_ball_subset_ball_comp (V : Set E) (y : E) :
-      ball y (((fun p : E × E => p.2 - p.1) ⁻¹' ((2 : ℝ) • V))) ⊆
+    ball y (((fun p : E × E => p.2 - p.1) ⁻¹' ((2 : ℝ) • V))) ⊆
       ball y (((fun p : E × E => p.2 - p.1) ⁻¹' V) ○ ((fun p : E × E => p.2 - p.1) ⁻¹' V)) := by
     intro x hx
     rw [uniform_space_ball_eq_vadd] at hx
