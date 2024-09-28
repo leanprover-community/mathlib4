@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.RingTheory.Localization.Integral
+import Mathlib.RingTheory.Localization.LocalizationLocalization
 
 /-!
 # Integrally closed rings
