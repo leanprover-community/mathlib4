@@ -575,7 +575,27 @@ universe u v w x
 
 open Filter
 
-variable (G : Type*) [CommGroup G] [TopologicalSpace G] [TopologicalGroup G]
+variable {G : Type*} [CommGroup G]
+
+@[to_additive]
+theorem uniform_space_ball_eq_smul (V : Set G) (x : G) :
+    UniformSpace.ball x ((fun p : G × G => p.2 / p.1) ⁻¹' V) = x • V := by
+  apply le_antisymm
+  · intro y hy
+    use y/x
+    constructor
+    · aesop
+    · simp only [smul_eq_mul, mul_div_cancel]
+  · intro y hy
+    obtain ⟨z,⟨hz₁,hz₂⟩⟩ := hy
+    simp only [smul_eq_mul] at hz₂
+    have a1: y/x ∈ V := by
+      rw [← hz₂, mul_div_cancel_left]
+      exact hz₁
+    rw [UniformSpace.ball]
+    aesop
+
+variable (G) [TopologicalSpace G] [TopologicalGroup G]
 
 section
 
