@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Topology.MetricSpace.Algebra
+import Mathlib.Topology.Algebra.UniformMulAction
 
 /-!
 # Lemmas for `BoundedSMul` over normed additive groups

@@ -1215,7 +1215,7 @@ theorem vector_get {n} : Primrec₂ (@Vector.get α n) :=
 
 theorem list_ofFn :
     ∀ {n} {f : Fin n → α → σ}, (∀ i, Primrec (f i)) → Primrec fun a => List.ofFn fun i => f i a
-  | 0, _, _ => const []
+  | 0, _, _ => by simp only [List.ofFn_zero]; exact const []
   | n + 1, f, hf => by
     simpa [List.ofFn_succ] using list_cons.comp (hf 0) (list_ofFn fun i => hf i.succ)
 

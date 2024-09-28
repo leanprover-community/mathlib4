@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Yaël Dillies
+Authors: Kim Morrison, Yaël Dillies
 -/
 import Mathlib.Order.Cover
 import Mathlib.Order.Interval.Finset.Defs
