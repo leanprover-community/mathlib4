@@ -9,6 +9,7 @@ import Mathlib.Analysis.Analytic.Within
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.Calculus.ContDiff.Defs
 import Mathlib.Analysis.Calculus.FDeriv.Add
+import Mathlib.Analysis.Calculus.FDeriv.Prod
 import Mathlib.Analysis.Normed.Module.Completion
 
 /-!
@@ -197,7 +198,7 @@ protected theorem AnalyticOnNhd.fderiv [CompleteSpace F] (h : AnalyticOnNhd 𝕜
 alias AnalyticOn.fderiv := AnalyticOnNhd.fderiv
 
 /-- If a function is analytic on a set `s`, so are its successive Fréchet derivative. -/
-theorem AnalyticOnNhd.iteratedFDeriv [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) (n : ℕ) :
+protected theorem AnalyticOnNhd.iteratedFDeriv [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) (n : ℕ) :
     AnalyticOnNhd 𝕜 (iteratedFDeriv 𝕜 n f) s := by
   induction n with
   | zero =>
@@ -223,7 +224,7 @@ lemma AnalyticOnNhd.hasFTaylorSeriesUpToOn [CompleteSpace F]
     exact (h.iteratedFDeriv m x hx).differentiableAt
 
 /-- An analytic function is infinitely differentiable. -/
-theorem AnalyticOnNhd.contDiffOn [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) {n : ℕ∞} :
+protected theorem AnalyticOnNhd.contDiffOn [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) {n : ℕ∞} :
     ContDiffOn 𝕜 n f s :=
   let t := { x | AnalyticAt 𝕜 f x }
   suffices ContDiffOn 𝕜 n f t from this.mono h
@@ -235,17 +236,17 @@ theorem AnalyticOnNhd.contDiffOn [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) 
     (fun m _ ↦ (H.iteratedFDeriv m).differentiableOn.congr
       fun _ hx ↦ iteratedFDerivWithin_of_isOpen _ t_open hx)
 
-theorem AnalyticAt.contDiffAt [CompleteSpace F] (h : AnalyticAt 𝕜 f x) {n : ℕ∞} :
+protected theorem AnalyticAt.contDiffAt [CompleteSpace F] (h : AnalyticAt 𝕜 f x) {n : ℕ∞} :
     ContDiffAt 𝕜 n f x := by
   obtain ⟨s, hs, hf⟩ := h.exists_mem_nhds_analyticOnNhd
   exact hf.contDiffOn.contDiffAt hs
 
-lemma AnalyticWithinAt.contDiffWithinAt [CompleteSpace F] {f : E → F} {s : Set E} {x : E}
+protected lemma AnalyticWithinAt.contDiffWithinAt [CompleteSpace F] {f : E → F} {s : Set E} {x : E}
     (h : AnalyticWithinAt 𝕜 f s x) {n : ℕ∞} : ContDiffWithinAt 𝕜 n f s x := by
   rcases h.exists_analyticAt with ⟨g, fx, fg, hg⟩
   exact hg.contDiffAt.contDiffWithinAt.congr (fg.mono (subset_insert _ _)) fx
 
-lemma AnalyticOn.contDiffOn [CompleteSpace F] {f : E → F} {s : Set E}
+protected lemma AnalyticOn.contDiffOn [CompleteSpace F] {f : E → F} {s : Set E}
     (h : AnalyticOn 𝕜 f s) {n : ℕ∞} : ContDiffOn 𝕜 n f s :=
   fun x m ↦ (h x m).contDiffWithinAt
 
@@ -302,7 +303,7 @@ theorem HasFPowerSeriesWithinOnBall.hasSum_derivSeries_of_hasFDerivWithinAt
 
 /-- If a function is analytic within a set with unique differentials, then so is its derivative.
 Note that this theorem does not require completeness of the space. -/
-theorem AnalyticOn.fderivWithin (h : AnalyticOn 𝕜 f s) (hu : UniqueDiffOn 𝕜 s) :
+protected theorem AnalyticOn.fderivWithin (h : AnalyticOn 𝕜 f s) (hu : UniqueDiffOn 𝕜 s) :
     AnalyticOn 𝕜 (fderivWithin 𝕜 f s) s := by
   intro x hx
   rcases h x hx with ⟨p, r, hr⟩
@@ -316,7 +317,7 @@ theorem AnalyticOn.fderivWithin (h : AnalyticOn 𝕜 f s) (hu : UniqueDiffOn �
 
 /-- If a function is analytic on a set `s`, so are its successive Fréchet derivative within this
 set. Note that this theorem does not require completeness of the space. -/
-theorem AnalyticOn.iteratedFDerivWithin (h : AnalyticOn 𝕜 f s)
+protected theorem AnalyticOn.iteratedFDerivWithin (h : AnalyticOn 𝕜 f s)
     (hu : UniqueDiffOn 𝕜 s) (n : ℕ) :
     AnalyticOn 𝕜 (iteratedFDerivWithin 𝕜 n f s) s := by
   induction n with
@@ -576,6 +577,30 @@ protected theorem hasFDerivAt [DecidableEq ι] : HasFDerivAt f (f.linearDeriv x)
   convert f.hasFiniteFPowerSeriesOnBall.hasFDerivAt (y := x) ENNReal.coe_lt_top
   rw [zero_add]
 
+/-- Given `f` a multilinear map, then the derivative of `x ↦ f (g₁ x, ..., gₙ x)` at `x` applied
+to a vector `v` is given by `∑ i, f (g₁ x, ..., g'ᵢ v, ..., gₙ x)`. Version inside a set. -/
+theorem _root_.HasFDerivWithinAt.multilinear_comp
+    [DecidableEq ι] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+    {g : ∀ i, G → E i} {g' : ∀ i, G →L[𝕜] E i} {s : Set G} {x : G}
+    (hg : ∀ i, HasFDerivWithinAt (g i) (g' i) s x) :
+    HasFDerivWithinAt (fun x ↦ f (fun i ↦ g i x))
+      ((∑ i : ι, (f.toContinuousLinearMap (fun j ↦ g j x) i) ∘L (g' i))) s x := by
+  convert (f.hasFDerivAt (fun j ↦ g j x)).comp_hasFDerivWithinAt x (hasFDerivWithinAt_pi.2 hg)
+  ext v
+  simp [linearDeriv]
+
+/-- Given `f` a multilinear map, then the derivative of `x ↦ f (g₁ x, ..., gₙ x)` at `x` applied
+to a vector `v` is given by `∑ i, f (g₁ x, ..., g'ᵢ v, ..., gₙ x)`. -/
+theorem _root_.HasFDerivAt.multilinear_comp
+    [DecidableEq ι] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+    {g : ∀ i, G → E i} {g' : ∀ i, G →L[𝕜] E i} {x : G}
+    (hg : ∀ i, HasFDerivAt (g i) (g' i) x) :
+    HasFDerivAt (fun x ↦ f (fun i ↦ g i x))
+      ((∑ i : ι, (f.toContinuousLinearMap (fun j ↦ g j x) i) ∘L (g' i))) x := by
+  convert (f.hasFDerivAt (fun j ↦ g j x)).comp x (hasFDerivAt_pi.2 hg)
+  ext v
+  simp [linearDeriv]
+
 /-- Technical lemma used in the proof of `hasFTaylorSeriesUpTo_iteratedFDeriv`, to compare sums
 over embedding of `Fin k` and `Fin (k + 1)`. -/
 private lemma _root_.Equiv.succ_embeddingFinSucc_fst_symm_apply {ι : Type*} [DecidableEq ι]
@@ -730,3 +755,73 @@ theorem hasSum_iteratedFDeriv [CharZero 𝕜] {y : E} (hy : y ∈ EMetric.ball 0
     mul_inv_cancel₀ <| cast_ne_zero.mpr n.factorial_ne_zero, one_smul]
 
 end HasFPowerSeriesOnBall
+
+/-!
+### Derivative of a linear map into multilinear maps
+-/
+
+namespace ContinuousLinearMap
+
+variable {ι : Type*} {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, NormedSpace 𝕜 (G i)]
+  [Fintype ι]  {H : Type*} [NormedAddCommGroup H]
+  [NormedSpace 𝕜 H]
+
+theorem hasFDerivAt_uncurry_of_multilinear [DecidableEq ι]
+    (f : E →L[𝕜] ContinuousMultilinearMap 𝕜 G F) (v : E × Π i, G i) :
+    HasFDerivAt (fun (p : E × Π i, G i) ↦ f p.1 p.2)
+      ((f.flipMultilinear v.2) ∘L (.fst _ _ _) +
+        ∑ i : ι, ((f v.1).toContinuousLinearMap v.2 i) ∘L (.proj _) ∘L (.snd _ _ _)) v := by
+  convert HasFDerivAt.multilinear_comp (f.continuousMultilinearMapOption)
+    (g := fun (_ : Option ι) p ↦ p) (g' := fun _ ↦ ContinuousLinearMap.id _ _) (x := v)
+    (fun _ ↦ hasFDerivAt_id _)
+  have I : f.continuousMultilinearMapOption.toContinuousLinearMap (fun _ ↦ v) none =
+      (f.flipMultilinear v.2) ∘L (.fst _ _ _) := by
+    simp [ContinuousMultilinearMap.toContinuousLinearMap, continuousMultilinearMapOption]
+    apply ContinuousLinearMap.ext (fun w ↦ ?_)
+    simp
+  have J : ∀ (i : ι), f.continuousMultilinearMapOption.toContinuousLinearMap (fun _ ↦ v) (some i)
+      = ((f v.1).toContinuousLinearMap v.2 i) ∘L (.proj _) ∘L (.snd _ _ _) := by
+    intro i
+    apply ContinuousLinearMap.ext (fun w ↦ ?_)
+    simp only [ContinuousMultilinearMap.toContinuousLinearMap, continuousMultilinearMapOption,
+      coe_mk', MultilinearMap.toLinearMap_apply, ContinuousMultilinearMap.coe_coe,
+      MultilinearMap.coe_mkContinuous, MultilinearMap.coe_mk, ne_eq, reduceCtorEq,
+      not_false_eq_true, Function.update_noteq, coe_comp', coe_snd', Function.comp_apply,
+      proj_apply]
+    congr
+    ext j
+    rcases eq_or_ne j i with rfl | hij
+    · simp
+    · simp [hij]
+  simp [I, J]
+
+/-- Given `f` a linear map into multilinear maps, then the derivative
+of `x ↦ f (a x) (b₁ x, ..., bₙ x)` at `x` applied to a vector `v` is given by
+`f (a' v) (b₁ x, ...., bₙ x) + ∑ i, f a (b₁ x, ..., b'ᵢ v, ..., bₙ x)`. Version inside a set. -/
+theorem _root_.HasFDerivWithinAt.linear_multilinear_comp
+    [DecidableEq ι] {a : H → E} {a' : H →L[𝕜] E}
+    {b : ∀ i, H → G i} {b' : ∀ i, H →L[𝕜] G i} {s : Set H} {x : H}
+    (ha : HasFDerivWithinAt a a' s x) (hb : ∀ i, HasFDerivWithinAt (b i) (b' i) s x)
+    (f : E →L[𝕜] ContinuousMultilinearMap 𝕜 G F) :
+    HasFDerivWithinAt (fun y ↦ f (a y) (fun i ↦ b i y))
+      ((f.flipMultilinear (fun i ↦ b i x)) ∘L a' +
+        ∑ i, ((f (a x)).toContinuousLinearMap (fun j ↦ b j x) i) ∘L (b' i)) s x := by
+  convert (hasFDerivAt_uncurry_of_multilinear f (a x, fun i ↦ b i x)).comp_hasFDerivWithinAt x
+    (ha.prod (hasFDerivWithinAt_pi.mpr hb))
+  ext v
+  simp
+
+/-- Given `f` a linear map into multilinear maps, then the derivative
+of `x ↦ f (a x) (b₁ x, ..., bₙ x)` at `x` applied to a vector `v` is given by
+`f (a' v) (b₁ x, ...., bₙ x) + ∑ i, f a (b₁ x, ..., b'ᵢ v, ..., bₙ x)`. -/
+theorem _root_.HasFDerivAt.linear_multilinear_comp [DecidableEq ι] {a : H → E} {a' : H →L[𝕜] E}
+    {b : ∀ i, H → G i} {b' : ∀ i, H →L[𝕜] G i} {x : H}
+    (ha : HasFDerivAt a a' x) (hb : ∀ i, HasFDerivAt (b i) (b' i) x)
+    (f : E →L[𝕜] ContinuousMultilinearMap 𝕜 G F) :
+    HasFDerivAt (fun y ↦ f (a y) (fun i ↦ b i y))
+      ((f.flipMultilinear (fun i ↦ b i x)) ∘L a' +
+        ∑ i, ((f (a x)).toContinuousLinearMap (fun j ↦ b j x) i) ∘L (b' i)) x := by
+  simp_rw [← hasFDerivWithinAt_univ] at ha hb ⊢
+  exact HasFDerivWithinAt.linear_multilinear_comp ha hb f
+
+end ContinuousLinearMap
