@@ -110,7 +110,7 @@ instance AbsConvexOpenSets.instNonempty : Nonempty (AbsConvexOpenSets 𝕜 E) :=
   rw [← exists_true_iff_nonempty]
   dsimp only [AbsConvexOpenSets]
   rw [Subtype.exists]
-  exact ⟨Set.univ, ⟨mem_univ 0, isOpen_univ, balanced_univ, convex_univ⟩, trivial⟩
+  exact ⟨Set.univ, ⟨mem_univ 0, isOpen_univ, Balanced.univ, convex_univ⟩, trivial⟩
 
 end AbsolutelyConvexSets
 

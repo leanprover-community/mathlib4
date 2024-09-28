@@ -77,10 +77,14 @@ theorem balanced_iff_closedBall_smul : Balanced 𝕜 s ↔ Metric.closedBall (0 
   simp [balanced_iff_smul_mem, smul_subset_iff]
 
 @[simp]
-theorem balanced_empty : Balanced 𝕜 (∅ : Set E) := fun _ _ => by rw [smul_set_empty]
+theorem Balanced.empty : Balanced 𝕜 (∅ : Set E) := fun _ _ => by rw [smul_set_empty]
+
+@[deprecated (since := "2024-09-28")] alias balanced_empty := Balanced.empty
 
 @[simp]
-theorem balanced_univ : Balanced 𝕜 (univ : Set E) := fun _a _ha => subset_univ _
+theorem Balanced.univ : Balanced 𝕜 (univ : Set E) := fun _a _ha => subset_univ _
+
+@[deprecated (since := "2024-09-28")] alias balanced_univ := Balanced.univ
 
 theorem Balanced.union (hA : Balanced 𝕜 A) (hB : Balanced 𝕜 B) : Balanced 𝕜 (A ∪ B) := fun _a ha =>
   smul_set_union.subset.trans <| union_subset_union (hA _ ha) <| hB _ ha
