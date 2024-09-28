@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Topology.Algebra.Module.Multilinear.Bounded
 import Mathlib.Topology.Algebra.Module.UniformConvergence
+import Mathlib.Topology.Algebra.SeparationQuotient
 
 /-!
 # Topology on continuous multilinear maps
@@ -65,12 +66,17 @@ section UniformAddGroup
 
 variable [UniformSpace F] [UniformAddGroup F]
 
-lemma uniformEmbedding_toUniformOnFun :
-    UniformEmbedding (toUniformOnFun : ContinuousMultilinearMap 𝕜 E F → _) where
-  inj := DFunLike.coe_injective
-  comap_uniformity := rfl
+lemma uniformInducing_toUniformOnFun :
+    UniformInducing (toUniformOnFun :
+      ContinuousMultilinearMap 𝕜 E F → ((Π i, E i) →ᵤ[{s | IsVonNBounded 𝕜 s}] F)) := ⟨rfl⟩
 
-lemma embedding_toUniformOnFun : Embedding (toUniformOnFun : ContinuousMultilinearMap 𝕜 E F → _) :=
+lemma uniformEmbedding_toUniformOnFun :
+    UniformEmbedding (toUniformOnFun : ContinuousMultilinearMap 𝕜 E F → _) :=
+  ⟨uniformInducing_toUniformOnFun, DFunLike.coe_injective⟩
+
+lemma embedding_toUniformOnFun :
+    Embedding (toUniformOnFun : ContinuousMultilinearMap 𝕜 E F →
+      ((Π i, E i) →ᵤ[{s | IsVonNBounded 𝕜 s}] F)) :=
   uniformEmbedding_toUniformOnFun.embedding
 
 theorem uniformContinuous_coe_fun [∀ i, ContinuousSMul 𝕜 (E i)] :
@@ -93,19 +99,33 @@ instance instUniformContinuousConstSMul {M : Type*}
   haveI := uniformContinuousConstSMul_of_continuousConstSMul M F
   uniformEmbedding_toUniformOnFun.uniformContinuousConstSMul fun _ _ ↦ rfl
 
+theorem uniformInducing_postcomp
+    {G : Type*} [AddCommGroup G] [UniformSpace G] [UniformAddGroup G] [Module 𝕜 G]
+    (g : F →L[𝕜] G) (hg : UniformInducing g) :
+    UniformInducing (g.compContinuousMultilinearMap :
+      ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜 E G) := by
+  rw [← uniformInducing_toUniformOnFun.of_comp_iff]
+  exact (UniformOnFun.postcomp_uniformInducing hg).comp uniformInducing_toUniformOnFun
+
 section CompleteSpace
 
-variable [∀ i, ContinuousSMul 𝕜 (E i)] [ContinuousConstSMul 𝕜 F] [CompleteSpace F] [T2Space F]
+variable [∀ i, ContinuousSMul 𝕜 (E i)] [ContinuousConstSMul 𝕜 F] [CompleteSpace F]
 
 open UniformOnFun in
 theorem completeSpace (h : RestrictGenTopology {s : Set (Π i, E i) | IsVonNBounded 𝕜 s}) :
     CompleteSpace (ContinuousMultilinearMap 𝕜 E F) := by
   classical
+  wlog hF : T2Space F generalizing F
+  · rw [(uniformInducing_postcomp (SeparationQuotient.mkCLM _ _)
+      SeparationQuotient.uniformInducing_mk).completeSpace_congr]
+    · exact this inferInstance
+    · intro f
+      use (SeparationQuotient.outCLM _ _).compContinuousMultilinearMap f
+      simp [DFunLike.ext_iff]
   have H : ∀ {m : Π i, E i},
       Continuous fun f : (Π i, E i) →ᵤ[{s | IsVonNBounded 𝕜 s}] F ↦ toFun _ f m :=
     (uniformContinuous_eval (isVonNBounded_covers) _).continuous
-  rw [completeSpace_iff_isComplete_range uniformEmbedding_toUniformOnFun.toUniformInducing,
-    range_toUniformOnFun]
+  rw [completeSpace_iff_isComplete_range uniformInducing_toUniformOnFun, range_toUniformOnFun]
   simp only [setOf_and, setOf_forall]
   apply_rules [IsClosed.isComplete, IsClosed.inter]
   · exact UniformOnFun.isClosed_setOf_continuous h
