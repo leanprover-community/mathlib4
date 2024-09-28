@@ -62,7 +62,7 @@ def Deficient (n : ℕ) : Prop := ∑ i ∈ properDivisors n, i < n
 def Pseudoperfect (n : ℕ) : Prop :=
   0 < n ∧ ∃ s ⊆ properDivisors n, ∑ i ∈ s, i = n
 
-/-- `n : ℕ` is a _weird_ number if and only if it is both abundant and pseudoperfect. -/
+/-- `n : ℕ` is a _weird_ number if and only if it is abundant but not pseudoperfect. -/
 def Weird (n : ℕ) : Prop := Abundant n ∧ ¬ Pseudoperfect n
 
 theorem not_pseudoperfect_iff_forall :
