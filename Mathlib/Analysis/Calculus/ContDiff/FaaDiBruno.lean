@@ -11,7 +11,7 @@ import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
 # Faa di Bruno formula
 
 The Faa di Bruno formula gives the iterated derivative of `g ∘ f` in terms of those of
-`g` and `f`. It is expressed in terms of partitions `I` of `{1, ..., n}`. For such a
+`g` and `f`. It is expressed in terms of partitions `I` of `{0, ..., n}`. For such a
 partition, denote by `k` its number of parts, write the parts as `I₁, ..., Iₖ` ordered so
 that `max I₁ < ... < max Iₖ`, and let `iₘ` be the number of elements of `Iₘ`. Then
 `D^n (g ∘ f) (x) (v_1, ..., v_n) =
