@@ -312,8 +312,8 @@ theorem totallyBounded_absConvexHull
     aesop
   rw [e2] at hts
   have e4 : (absConvexHull ℝ) s ⊆ (convexHull ℝ) (t ∪ -t) + V := by
-    rw [← absConvexHull_eq_convexHull_union_neg (s := t), ← AbsConvex.absConvexHull_eq hS₂]
-    exact le_trans (absConvexHull_mono hts) (AbsConvex.hullAdd _)
+    rw [convexHull_union_neg_eq_absConvexHull (s := t), ← AbsConvex.absConvexHull_eq hS₂]
+    exact le_trans (absConvexHull_mono hts) (absConvexHull_add_subset ℝ)
   have e6 : TotallyBounded (uniformSpace := TopologicalAddGroup.toUniformSpace E)
       ((convexHull ℝ) (t ∪ -t)) := IsCompact.totallyBounded
         (Set.Finite.isCompact_convexHull (finite_union.mpr ⟨htf,Finite.neg htf⟩))
