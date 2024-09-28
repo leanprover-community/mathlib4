@@ -178,6 +178,7 @@ instance (h : Function.Bijective (algebraMap R S)) : Fintype (ofBijectiveAlgebra
 instance (h : Function.Bijective (algebraMap R S)) : Fintype (ofBijectiveAlgebraMap h).rels :=
   inferInstanceAs (Fintype PEmpty)
 
+@[simp]
 lemma ofBijectiveAlgebraMap_jacobian (h : Function.Bijective (algebraMap R S)) :
     (ofBijectiveAlgebraMap h).jacobian = 1 := by
   have : (algebraMap (ofBijectiveAlgebraMap h).Ring S).mapMatrix
@@ -206,12 +207,14 @@ instance : Fintype (localizationAway S r).rels :=
 instance : DecidableEq (localizationAway S r).rels :=
   inferInstanceAs (DecidableEq Unit)
 
+@[simp]
 lemma localizationAway_jacobiMatrix :
     (localizationAway S r).jacobiMatrix = Matrix.diagonal (fun () ↦ MvPolynomial.C r) := by
   have h : (pderiv ()) (C r * X () - 1) = C r := by simp
   ext (i : Unit) (j : Unit) : 1
   rwa [jacobiMatrix_apply]
 
+@[simp]
 lemma localizationAway_jacobian : (localizationAway S r).jacobian = algebraMap R S r := by
   rw [jacobian_eq_jacobiMatrix_det, localizationAway_jacobiMatrix]
   simp [show Fintype.card (localizationAway r (S := S)).rels = 1 from rfl]
@@ -323,6 +326,7 @@ private lemma jacobiMatrix_comp_₂₂_det :
 end
 
 /-- The jacobian of the composition of presentations is the product of the jacobians. -/
+@[simp]
 lemma comp_jacobian_eq_jacobian_smul_jacobian : (Q.comp P).jacobian = P.jacobian • Q.jacobian := by
   cases nonempty_fintype Q.rels
   cases nonempty_fintype P.rels
@@ -352,6 +356,7 @@ noncomputable def baseChange : PreSubmersivePresentation T (T ⊗[R] S) where
   map_inj := P.map_inj
   relations_finite := P.relations_finite
 
+@[simp]
 lemma baseChange_jacobian : (P.baseChange T).jacobian = 1 ⊗ₜ P.jacobian := by
   classical
   cases nonempty_fintype P.rels
