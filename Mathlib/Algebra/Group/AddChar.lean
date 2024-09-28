@@ -417,9 +417,7 @@ lemma sub_apply' (ψ χ : AddChar A M) (a : A) : (ψ - χ) a = ψ a / χ a := by
   rw [sub_apply, map_neg_eq_inv, div_eq_mul_inv]
 
 @[simp] lemma zsmul_apply (n : ℤ) (ψ : AddChar A M) (a : A) : (n • ψ) a = ψ a ^ n := by
-  cases n
-  · simp
-  · simp [-neg_apply, neg_apply']
+  cases n <;> simp [-neg_apply, neg_apply']
 
 @[simp] lemma zpow_apply (ψ : AddChar A M) (n : ℤ) (a : A) : (ψ ^ n) a = ψ a ^ n := zsmul_apply ..
 
