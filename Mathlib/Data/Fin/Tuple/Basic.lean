@@ -1132,7 +1132,6 @@ theorem take_update_of_ge (v : (i : Fin n) → α i) (m : ℕ) (h : m ≤ n) (i 
 
 /-- Taking the first `m ≤ n` elements of an `append u v`, where `u` is a `n`-tuple, is the same as
 taking the first `m` elements of `u`. -/
-@[simp]
 theorem take_append_left {n' m : ℕ} {α : Sort*} (u : (i : Fin n) → α) (v : (i : Fin n') → α)
     (h : m ≤ n) : take (append u v) m (Nat.le_add_right_of_le h) = take u m h := by
   ext i
@@ -1141,7 +1140,6 @@ theorem take_append_left {n' m : ℕ} {α : Sort*} (u : (i : Fin n) → α) (v :
 
 /-- Taking the first `n + m` elements of an `append u v`, where `v` is a `n'`-tuple and `m ≤ n'`,
 is the same as appending `u` with the first `m` elements of `v`. -/
-@[simp]
 theorem take_append_right {n' m : ℕ} {α : Sort*} (u : (i : Fin n) → α) (v : (i : Fin n') → α)
     (h : m ≤ n') : take (append u v) (n + m) (Nat.add_le_add_left h n) = append u (take v m h) := by
   ext i
