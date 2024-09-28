@@ -166,6 +166,17 @@ theorem abs_rpow_le_exp_log_mul (x y : ℝ) : |x ^ y| ≤ exp (log x * y) := by
   · by_cases hy : y = 0 <;> simp [hx, hy, zero_le_one]
   · rw [rpow_def_of_pos (abs_pos.2 hx), log_abs]
 
+lemma rpow_inv_log_le_exp_one : x ^ (log x)⁻¹ ≤ exp 1 := by
+  calc
+    _ ≤ |x ^ (log x)⁻¹| := le_abs_self _
+    _ ≤ |x| ^ (log x)⁻¹ := abs_rpow_le_abs_rpow ..
+  rw [← log_abs]
+  obtain hx | hx := (abs_nonneg x).eq_or_gt
+  · simp [hx]
+  · rw [rpow_def_of_pos hx]
+    gcongr
+    exact mul_inv_le_one
+
 theorem norm_rpow_of_nonneg {x y : ℝ} (hx_nonneg : 0 ≤ x) : ‖x ^ y‖ = ‖x‖ ^ y := by
   simp_rw [Real.norm_eq_abs]
   exact abs_rpow_of_nonneg hx_nonneg
