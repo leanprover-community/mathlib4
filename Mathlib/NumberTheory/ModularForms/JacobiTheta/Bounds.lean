@@ -7,7 +7,7 @@ Authors: David Loeffler
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
 
 /-!
-# Asymptotic bounds for Jacobi theta functions
+# Asymptotic bounds for Jacobi theta functions
 
 The goal of this file is to establish some technical lemmas about the asymptotics of the sums
 
@@ -142,7 +142,7 @@ lemma isBigO_atTop_F_nat_zero_sub {a : ℝ} (ha : 0 ≤ a) : ∃ p, 0 < p ∧
       apply Eventually.isBigO
       filter_upwards [eventually_gt_atTop 0] with t ht
       exact F_nat_zero_le ha ht
-    refine ⟨π * a ^ 2, mul_pos pi_pos (sq_pos_of_ne_zero _ h), this.trans ?_⟩
+    refine ⟨π * a ^ 2, mul_pos pi_pos (sq_pos_of_ne_zero h), this.trans ?_⟩
     simpa only [neg_mul π (a ^ 2), mul_one] using (isBigO_refl _ _).mul isBigO_one_aux
 
 end k_eq_zero
@@ -159,7 +159,8 @@ lemma F_nat_one_le {a : ℝ} (ha : 0 ≤ a) {t : ℝ} (ht : 0 < t) :
     ‖F_nat 1 a t‖ ≤ rexp (-π * (a ^ 2 + 1) * t) / (1 - rexp (-π * t)) ^ 2
       + a * rexp (-π * a ^ 2 * t) / (1 - rexp (-π * t)) := by
   refine tsum_of_norm_bounded ?_ (f_le_g_nat 1 ha ht)
-  simp_rw [g_nat, pow_one, add_mul]
+  unfold g_nat
+  simp_rw [pow_one, add_mul]
   apply HasSum.add
   · have h0' : ‖rexp (-π * t)‖ < 1 := by
       simpa only [norm_eq_abs, abs_exp] using exp_lt_aux ht
@@ -250,8 +251,8 @@ lemma isBigO_atTop_F_int_zero_sub (a : UnitAddCircle) : ∃ p, 0 < p ∧
   obtain ⟨q, hq, hq'⟩ := isBigO_atTop_F_nat_zero_sub (sub_nonneg.mpr ha.2.le)
   have ha' : (a : UnitAddCircle) = 0 ↔ a = 0 := by
     rw [← AddCircle.coe_eq_coe_iff_of_mem_Ico (hp := ⟨zero_lt_one' ℝ⟩), QuotientAddGroup.mk_zero]
-    rw [zero_add]; exact ha
-    simp
+    · rw [zero_add]; exact ha
+    · simp
   simp_rw [ha']
   simp_rw [eq_false_intro (by linarith [ha.2] : 1 - a ≠ 0), if_false, sub_zero] at hq'
   refine ⟨_, lt_min hp hq, ?_⟩

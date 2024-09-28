@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Anne Baanen
 -/
 import Mathlib.Tactic.Ring.Basic
+import Mathlib.Tactic.TryThis
 import Mathlib.Tactic.Conv
 import Mathlib.Util.Qq
 
@@ -17,16 +18,13 @@ such as `sin (x + y) + sin (y + x) = 2 * sin (x + y)`.
 
 -/
 
-set_option autoImplicit true
-
--- In this file we would like to be able to use multi-character auto-implicits.
-set_option relaxedAutoImplicit true
-
 namespace Mathlib.Tactic
 open Lean hiding Rat
 open Qq Meta
 
 namespace Ring
+
+variable {u : Level} {arg : Q(Type u)} {sα : Q(CommSemiring $arg)} {a : Q($arg)}
 
 /-- True if this represents an atomic expression. -/
 def ExBase.isAtom : ExBase sα a → Bool
@@ -110,7 +108,7 @@ def rewrite (parent : Expr) (root := true) : M Simp.Result :=
     let post := Simp.postDefault #[]
     (·.1) <$> Simp.main parent nctx.ctx (methods := { pre, post })
 
-variable [CommSemiring R]
+variable {R : Type*} [CommSemiring R] {n d : ℕ}
 
 theorem add_assoc_rev (a b c : R) : a + (b + c) = a + b + c := (add_assoc ..).symm
 theorem mul_assoc_rev (a b c : R) : a * (b * c) = a * b * c := (mul_assoc ..).symm
@@ -134,7 +132,7 @@ Runs a tactic in the `RingNF.M` monad, given initial data:
 * `x`: the tactic to run
 -/
 partial def M.run
-    (s : IO.Ref AtomM.State) (cfg : RingNF.Config) (x : M α) : MetaM α := do
+    {α : Type} (s : IO.Ref AtomM.State) (cfg : RingNF.Config) (x : M α) : MetaM α := do
   let ctx := {
     simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}]
     congrTheorems := ← getSimpCongrTheorems
@@ -149,7 +147,7 @@ partial def M.run
       ``rat_rawCast_neg, ``rat_rawCast_pos].foldlM (·.addConst · (post := false)) thms
     let ctx' := { ctx with simpTheorems := #[thms] }
     pure fun r' : Simp.Result ↦ do
-      r'.mkEqTrans (← Simp.main r'.expr ctx' (methods := ← Lean.Meta.Simp.mkDefaultMethods)).1
+      r'.mkEqTrans (← Simp.main r'.expr ctx' (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
   let nctx := { ctx, simp }
   let rec
     /-- The recursive context. -/
@@ -198,6 +196,11 @@ which rewrites all ring expressions into a normal form.
   * `recursive`: if true, `ring_nf` will also recurse into atoms
 * `ring_nf` works as both a tactic and a conv tactic.
   In tactic mode, `ring_nf at h` can be used to rewrite in a hypothesis.
+
+This can be used non-terminally to normalize ring expressions in the goal such as
+`⊢ P (x + x + x)` ~> `⊢ P (x * 3)`, as well as being able to prove some equations that
+`ring` cannot because they involve ring reasoning inside a subterm, such as
+`sin (x + y) + sin (y + x) = 2 * sin (x + y)`.
 -/
 elab (name := ringNF) "ring_nf" tk:"!"? cfg:(config ?) loc:(location)? : tactic => do
   let mut cfg ← elabConfig cfg
@@ -240,7 +243,8 @@ elab (name := ring1NF) "ring1_nf" tk:"!"? cfg:(config ?) : tactic => do
 
 /--
 Tactic for evaluating expressions in *commutative* (semi)rings, allowing for variables in the
-exponent.
+exponent. If the goal is not appropriate for `ring` (e.g. not an equality) `ring_nf` will be
+suggested.
 
 * `ring!` will use a more aggressive reducibility setting to determine equality of atoms.
 * `ring1` fails if the target is not an equality.
@@ -250,12 +254,13 @@ For example:
 example (n : ℕ) (m : ℤ) : 2^(n+1) * m = 2 * 2^n * m := by ring
 example (a b : ℤ) (n : ℕ) : (a + b)^(n + 2) = (a^2 + b^2 + a * b + b * a) * (a + b)^n := by ring
 example (x y : ℕ) : x + id y = y + id x := by ring!
+example (x : ℕ) (h : x * 2 > 5): x + x > 5 := by ring; assumption -- suggests ring_nf
 ```
 -/
 macro (name := ring) "ring" : tactic =>
-  `(tactic| first | ring1 | ring_nf; trace "Try this: ring_nf")
+  `(tactic| first | ring1 | try_this ring_nf)
 @[inherit_doc ring] macro "ring!" : tactic =>
-  `(tactic| first | ring1! | ring_nf!; trace "Try this: ring_nf!")
+  `(tactic| first | ring1! | try_this ring_nf!)
 
 /--
 The tactic `ring` evaluates expressions in *commutative* (semi)rings.
@@ -264,6 +269,10 @@ This is the conv tactic version, which rewrites a target which is a ring equalit
 See also the `ring` tactic.
 -/
 macro (name := ringConv) "ring" : conv =>
-  `(conv| first | discharge => ring1 | ring_nf; tactic => trace "Try this: ring_nf")
+  `(conv| first | discharge => ring1 | try_this ring_nf)
 @[inherit_doc ringConv] macro "ring!" : conv =>
-  `(conv| first | discharge => ring1! | ring_nf!; tactic => trace "Try this: ring_nf!")
+  `(conv| first | discharge => ring1! | try_this ring_nf!)
+
+end RingNF
+
+end Mathlib.Tactic

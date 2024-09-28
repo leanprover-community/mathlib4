@@ -93,7 +93,7 @@ lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
     field_simp
   exact Integrable.comp_sub_right hg μ
 
-/-- The gaussian distribution pdf integrates to 1 when the variance is not zero.  -/
+/-- The gaussian distribution pdf integrates to 1 when the variance is not zero. -/
 lemma lintegral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
     ∫⁻ x, ENNReal.ofReal (gaussianPDFReal μ v x) = 1 := by
   rw [← ENNReal.toReal_eq_one_iff]
@@ -112,7 +112,7 @@ lemma lintegral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
     ring
   · positivity
 
-/-- The gaussian distribution pdf integrates to 1 when the variance is not zero.  -/
+/-- The gaussian distribution pdf integrates to 1 when the variance is not zero. -/
 lemma integral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
     ∫ x, gaussianPDFReal μ v x = 1 := by
   have h := lintegral_gaussianPDFReal_eq_one μ hv
@@ -131,7 +131,7 @@ lemma gaussianPDFReal_add {μ : ℝ} {v : ℝ≥0} (x y : ℝ) :
 
 lemma gaussianPDFReal_inv_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) (x : ℝ) :
     gaussianPDFReal μ v (c⁻¹ * x) = |c| * gaussianPDFReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v) x := by
-  simp only [gaussianPDFReal._eq_1, zero_lt_two, mul_nonneg_iff_of_pos_left, NNReal.zero_le_coe,
+  simp only [gaussianPDFReal.eq_1, zero_lt_two, mul_nonneg_iff_of_pos_left, NNReal.zero_le_coe,
     Real.sqrt_mul', one_div, mul_inv_rev, NNReal.coe_mul, NNReal.coe_mk, NNReal.coe_pos]
   rw [← mul_assoc]
   refine congr_arg₂ _ ?_ ?_
@@ -140,7 +140,7 @@ lemma gaussianPDFReal_inv_mul {μ : ℝ} {v : ℝ≥0} {c : ℝ} (hc : c ≠ 0) 
     ring_nf
     calc (Real.sqrt ↑v)⁻¹ * (Real.sqrt 2)⁻¹ * (Real.sqrt π)⁻¹
       = (Real.sqrt ↑v)⁻¹ * (Real.sqrt 2)⁻¹ * (Real.sqrt π)⁻¹ * (|c| * |c|⁻¹) := by
-          rw [mul_inv_cancel, mul_one]
+          rw [mul_inv_cancel₀, mul_one]
           simp only [ne_eq, abs_eq_zero, hc, not_false_eq_true]
     _ = (Real.sqrt ↑v)⁻¹ * (Real.sqrt 2)⁻¹ * (Real.sqrt π)⁻¹ * |c| * |c|⁻¹ := by ring
   · congr 1
@@ -217,10 +217,9 @@ lemma gaussianReal_absolutelyContinuous (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) 
 lemma gaussianReal_absolutelyContinuous' (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) :
     volume ≪ gaussianReal μ v := by
   rw [gaussianReal_of_var_ne_zero _ hv]
-  refine withDensity_absolutelyContinuous' ?_ ?_ ?_
+  refine withDensity_absolutelyContinuous' ?_ ?_
   · exact (measurable_gaussianPDF _ _).aemeasurable
   · exact ae_of_all _ (fun _ ↦ (gaussianPDF_pos _ hv _).ne')
-  · exact ae_of_all _ (fun _ ↦ ENNReal.ofReal_ne_top)
 
 lemma rnDeriv_gaussianReal (μ : ℝ) (v : ℝ≥0) :
     ∂(gaussianReal μ v)/∂volume =ₐₛ gaussianPDF μ v := by
@@ -284,7 +283,7 @@ lemma gaussianReal_map_const_mul (c : ℝ) :
     rw [Measure.map_const]
     simp only [ne_eq, measure_univ, one_smul, mul_eq_zero]
     convert (gaussianReal_zero_var 0).symm
-    simp only [ne_eq, zero_pow, mul_eq_zero, hv, or_false, not_false_eq_true]
+    simp only [ne_eq, zero_pow, mul_eq_zero, hv, or_false, not_false_eq_true, reduceCtorEq]
     rfl
   let e : ℝ ≃ᵐ ℝ := (Homeomorph.mulLeft₀ c hc).symm.toMeasurableEquiv
   have he' : ∀ x, HasDerivAt e ((fun _ ↦ c⁻¹) x) x := by
@@ -292,9 +291,8 @@ lemma gaussianReal_map_const_mul (c : ℝ) :
     exact fun _ ↦ HasDerivAt.const_mul _ (hasDerivAt_id _)
   change (gaussianReal μ v).map e.symm = gaussianReal (c * μ) (⟨c^2, sq_nonneg _⟩ * v)
   ext s' hs'
-  rw [MeasurableEquiv.gaussianReal_map_symm_apply hv e he' hs']
-  simp only [MeasurableEquiv.coe_mk, Equiv.coe_fn_mk, ne_eq, mul_eq_zero]
-  rw [gaussianReal_apply_eq_integral _ _ s']
+  rw [MeasurableEquiv.gaussianReal_map_symm_apply hv e he' hs',
+    gaussianReal_apply_eq_integral _ _ s']
   swap
   · simp only [ne_eq, mul_eq_zero, hv, or_false]
     rw [← NNReal.coe_inj]
@@ -304,7 +302,7 @@ lemma gaussianReal_map_const_mul (c : ℝ) :
     Equiv.coe_fn_symm_mk, gaussianPDFReal_inv_mul hc]
   congr with x
   suffices |c⁻¹| * |c| = 1 by rw [← mul_assoc, this, one_mul]
-  rw [abs_inv, inv_mul_cancel]
+  rw [abs_inv, inv_mul_cancel₀]
   rwa [ne_eq, abs_eq_zero]
 
 /-- The map of a Gaussian distribution by multiplication by a constant is a Gaussian. -/

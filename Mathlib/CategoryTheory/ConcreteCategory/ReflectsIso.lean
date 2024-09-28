@@ -1,12 +1,10 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Functor.ReflectsIso
-
-#align_import category_theory.concrete_category.reflects_isomorphisms from "leanprover-community/mathlib"@"73dd4b5411ec8fafb18a9d77c9c826907730af80"
 
 /-!
 A `forget₂ C D` forgetful functor between concrete categories `C` and `D`
@@ -36,6 +34,5 @@ theorem reflectsIsomorphisms_forget₂ [HasForget₂ C D] [(forget C).ReflectsIs
         have := @HasForget₂.forget_comp C D
         rwa [← this]
       apply isIso_of_reflects_iso f (forget C) }
-#align category_theory.reflects_isomorphisms_forget₂ CategoryTheory.reflectsIsomorphisms_forget₂
 
 end CategoryTheory

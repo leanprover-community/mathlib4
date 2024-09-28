@@ -8,8 +8,6 @@ import Mathlib.Combinatorics.Derangements.Basic
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Tactic.Ring
 
-#align_import combinatorics.derangements.finite from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
-
 /-!
 # Derangements on fintypes
 
@@ -30,8 +28,6 @@ This file contains lemmas that describe the cardinality of `derangements α` whe
 
 open derangements Equiv Fintype
 
-open BigOperators
-
 variable {α : Type*} [DecidableEq α] [Fintype α]
 
 instance : DecidablePred (derangements α) := fun _ => Fintype.decidableForallFintype
@@ -42,17 +38,18 @@ instance : Fintype (derangements α) := Subtype.fintype (fun (_ : Perm α) => �
 theorem card_derangements_invariant {α β : Type*} [Fintype α] [DecidableEq α] [Fintype β]
     [DecidableEq β] (h : card α = card β) : card (derangements α) = card (derangements β) :=
   Fintype.card_congr (Equiv.derangementsCongr <| equivOfCardEq h)
-#align card_derangements_invariant card_derangements_invariant
 
 theorem card_derangements_fin_add_two (n : ℕ) :
     card (derangements (Fin (n + 2))) =
       (n + 1) * card (derangements (Fin n)) + (n + 1) * card (derangements (Fin (n + 1))) := by
-  -- get some basic results about the size of fin (n+1) plus or minus an element
+  -- get some basic results about the size of Fin (n+1) plus or minus an element
   have h1 : ∀ a : Fin (n + 1), card ({a}ᶜ : Set (Fin (n + 1))) = card (Fin n) := by
     intro a
-    simp only [Fintype.card_fin, Finset.card_fin, Fintype.card_ofFinset, Finset.filter_ne' _ a,
-      Set.mem_compl_singleton_iff, Finset.card_erase_of_mem (Finset.mem_univ a),
-      add_tsub_cancel_right]
+    simp only
+      [card_ofFinset (s := Finset.filter (fun x => x ∈ ({a}ᶜ : Set (Fin (n + 1)))) Finset.univ),
+      Set.mem_compl_singleton_iff, Finset.filter_ne' _ a,
+      Finset.card_erase_of_mem (Finset.mem_univ a), Finset.card_fin, add_tsub_cancel_right,
+      card_fin]
   have h2 : card (Fin (n + 2)) = card (Option (Fin (n + 1))) := by simp only [card_fin, card_option]
   -- rewrite the LHS and substitute in our fintype-level equivalence
   simp only [card_derangements_invariant h2,
@@ -62,37 +59,32 @@ theorem card_derangements_fin_add_two (n : ℕ) :
     card_sigma,
     card_sum, card_derangements_invariant (h1 _), Finset.sum_const, nsmul_eq_mul, Finset.card_fin,
     mul_add, Nat.cast_id]
-#align card_derangements_fin_add_two card_derangements_fin_add_two
 
 /-- The number of derangements of an `n`-element set. -/
 def numDerangements : ℕ → ℕ
   | 0 => 1
   | 1 => 0
   | n + 2 => (n + 1) * (numDerangements n + numDerangements (n + 1))
-#align num_derangements numDerangements
 
 @[simp]
 theorem numDerangements_zero : numDerangements 0 = 1 :=
   rfl
-#align num_derangements_zero numDerangements_zero
 
 @[simp]
 theorem numDerangements_one : numDerangements 1 = 0 :=
   rfl
-#align num_derangements_one numDerangements_one
 
 theorem numDerangements_add_two (n : ℕ) :
     numDerangements (n + 2) = (n + 1) * (numDerangements n + numDerangements (n + 1)) :=
   rfl
-#align num_derangements_add_two numDerangements_add_two
 
 theorem numDerangements_succ (n : ℕ) :
     (numDerangements (n + 1) : ℤ) = (n + 1) * (numDerangements n : ℤ) - (-1) ^ n := by
-  induction' n with n hn
-  · rfl
-  · simp only [numDerangements_add_two, hn, pow_succ, Int.ofNat_mul, Int.ofNat_add, Int.ofNat_succ]
+  induction n with
+  | zero => rfl
+  | succ n hn =>
+    simp only [numDerangements_add_two, hn, pow_succ, Int.ofNat_mul, Int.ofNat_add]
     ring
-#align num_derangements_succ numDerangements_succ
 
 theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
     card (derangements (Fin n)) = numDerangements n := by
@@ -103,19 +95,16 @@ theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
   · rfl
   -- now we have n ≥ 2. rewrite everything in terms of card_derangements, so that we can use
   -- `card_derangements_fin_add_two`
-  rw [numDerangements_add_two, card_derangements_fin_add_two, mul_add,
-    hyp _ (Nat.lt_add_of_pos_right zero_lt_two), hyp _ (lt_add_one _)]
-#align card_derangements_fin_eq_num_derangements card_derangements_fin_eq_numDerangements
+  rw [numDerangements_add_two, card_derangements_fin_add_two, mul_add, hyp, hyp] <;> omega
 
 theorem card_derangements_eq_numDerangements (α : Type*) [Fintype α] [DecidableEq α] :
     card (derangements α) = numDerangements (card α) := by
   rw [← card_derangements_invariant (card_fin _)]
   exact card_derangements_fin_eq_numDerangements
-#align card_derangements_eq_num_derangements card_derangements_eq_numDerangements
 
 theorem numDerangements_sum (n : ℕ) :
     (numDerangements n : ℤ) =
-      ∑ k in Finset.range (n + 1), (-1 : ℤ) ^ k * Nat.ascFactorial (k + 1) (n - k) := by
+      ∑ k ∈ Finset.range (n + 1), (-1 : ℤ) ^ k * Nat.ascFactorial (k + 1) (n - k) := by
   induction' n with n hn; · rfl
   rw [Finset.sum_range_succ, numDerangements_succ, hn, Finset.mul_sum, tsub_self,
     Nat.ascFactorial_zero, Int.ofNat_one, mul_one, pow_succ', neg_one_mul, sub_eq_add_neg,
@@ -124,5 +113,4 @@ theorem numDerangements_sum (n : ℕ) :
   intro x hx
   have h_le : x ≤ n := Finset.mem_range_succ_iff.mp hx
   rw [Nat.succ_sub h_le, Nat.ascFactorial_succ, add_right_comm, add_tsub_cancel_of_le h_le,
-    Int.ofNat_mul, Int.ofNat_succ, mul_left_comm]
-#align num_derangements_sum numDerangements_sum
+    Int.ofNat_mul, Int.ofNat_add, mul_left_comm, Nat.cast_one]

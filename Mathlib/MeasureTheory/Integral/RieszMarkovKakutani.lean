@@ -11,7 +11,6 @@ import Mathlib.Topology.ContinuousFunction.ZeroAtInfty
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.MeasureTheory.Integral.Bochner
 
-
 /-!
 #  Riesz–Markov–Kakutani representation theorem
 
@@ -59,9 +58,8 @@ lemma exists_tsupport_one_of_isOpen_isClosed [NormalSpace X] {s t : Set X}
 /-- Given a positive linear functional Λ on X, for `K ⊆ X` compact define
 `λ(K) = inf {Λf | 1≤f on K}`. When X is a compact Hausdorff space, this will be shown to be a
 content, and will be shown to agree with the Riesz measure on the compact subsets `K ⊆ X`. -/
-def rieszContentAux : Compacts X → ℝ := fun K =>
-  sInf (Λ '' { f : C(X, ℝ) | HasCompactSupport f ∧ (∀ (x : X), 0 ≤ f x)
-  ∧ (∀ (x : X), x ∈ K → 1 ≤ f x) })
+def rieszContentAux : Compacts X → ℝ≥0 := fun K =>
+  sInf (Λ '' { f : X →ᵇ ℝ≥0 | ∀ x ∈ K, (1 : ℝ≥0) ≤ f x })
 
 section RieszMonotone
 
@@ -71,59 +69,16 @@ theorem rieszContentAux_image_nonempty (K : Compacts X) :
     (Λ '' { f : C(X, ℝ) | HasCompactSupport f ∧ (∀ (x : X), 0 ≤ f x) ∧ (∀ (x : X),
     x ∈ K → 1 ≤ f x) }).Nonempty := by
   rw [image_nonempty]
-  obtain ⟨V, hV⟩ := exists_compact_superset K.2
-  obtain ⟨f, hf⟩ := exists_tsupport_one_of_isOpen_isClosed isOpen_interior (IsCompact.isClosed K.2)
-    hV.2
-  use f
-  simp only [mem_setOf_eq]
-  constructor
-  · exact IsCompact.of_isClosed_subset hV.1 (isClosed_tsupport f)
-      (_root_.subset_trans hf.1 interior_subset)
-  constructor
-  · intro x
-    exact (Set.mem_Icc.mp (hf.2.2 x)).1
-  · intro x hx
-    apply le_of_eq
-    rw [← ContinuousMap.one_apply x]
-    exact (hf.2.1 hx).symm
-
-lemma rieszContentAux_nonneg {K : Compacts X} : 0 ≤ rieszContentAux Λ K := by
-  apply le_csInf
-  exact rieszContentAux_image_nonempty Λ K
-  intro b
-  simp only [mem_image, mem_setOf_eq, forall_exists_index, and_imp]
-  intro f _ hf _ hb
-  rw [← hb]
-  exact hΛ f hf
-
-lemma rieszContentAux_image_BddBelow (K : Compacts X) :
-    BddBelow (Λ '' { f : C(X, ℝ) | HasCompactSupport f ∧ (∀ (x : X), 0 ≤ f x)
-    ∧ (∀ (x : X), x ∈ K → 1 ≤ f x) }) := by
-  use 0
-  intro b
-  simp only [mem_image, mem_setOf_eq, forall_exists_index, and_imp]
-  intro f _ hf _ hb
-  rw [← hb]
-  exact hΛ f hf
+  use (1 : X →ᵇ ℝ≥0)
+  intro x _
+  simp only [BoundedContinuousFunction.coe_one, Pi.one_apply]; rfl
 
 /-- Riesz content λ (associated with a positive linear functional Λ) is
 monotone: if `K₁ ⊆ K₂` are compact subsets in X, then `λ(K₁) ≤ λ(K₂)`. -/
 theorem rieszContentAux_mono {K₁ K₂ : Compacts X} (h : K₁ ≤ K₂) :
-    rieszContentAux Λ K₁ ≤ rieszContentAux Λ K₂ := by
-  apply csInf_le_csInf (rieszContentAux_image_BddBelow Λ hΛ K₁) (rieszContentAux_image_nonempty Λ K₂)
-  simp only [image_subset_iff]
-  intro f hf
-  simp only [mem_setOf_eq] at hf
-  simp only [mem_preimage, mem_image, mem_setOf_eq]
-  use f
-  constructor
-  constructor
-  · exact hf.1
-  constructor
-  · exact hf.2.1
-  · intro x hx
-    exact hf.2.2 x (Set.mem_of_subset_of_mem h hx)
-  rfl
+    rieszContentAux Λ K₁ ≤ rieszContentAux Λ K₂ :=
+  csInf_le_csInf (OrderBot.bddBelow _) (rieszContentAux_image_nonempty Λ K₂)
+    (image_subset Λ (setOf_subset_setOf.mpr fun _ f_hyp x x_in_K₁ => f_hyp x (h x_in_K₁)))
 
 end RieszMonotone
 
@@ -131,12 +86,9 @@ section RieszSubadditive
 
 /-- Any bounded continuous nonnegative f such that `f ≥ 1` on K gives an upper bound on the
 content of K; namely `λ(K) ≤ Λ f`. -/
-theorem rieszContentAux_le {K : Compacts X} {f : C(X, ℝ)}
-    (h : HasCompactSupport f ∧ (∀ (x : X), 0 ≤ f x) ∧ ∀ (x : X), x ∈ K → 1 ≤ f x) :
-    rieszContentAux Λ K ≤ Λ f := by
-  apply csInf_le (rieszContentAux_image_BddBelow Λ hΛ K)
-  simp only [mem_image, mem_setOf_eq]
-  use f
+theorem rieszContentAux_le {K : Compacts X} {f : X →ᵇ ℝ≥0} (h : ∀ x ∈ K, (1 : ℝ≥0) ≤ f x) :
+    rieszContentAux Λ K ≤ Λ f :=
+  csInf_le (OrderBot.bddBelow _) ⟨f, ⟨h, rfl⟩⟩
 
 /-- The Riesz content can be approximated arbitrarily well by evaluating the positive linear
 functional on test functions: for any `ε > 0`, there exists a bounded continuous nonnegative
@@ -148,16 +100,9 @@ theorem exists_lt_rieszContentAux_add_pos (K : Compacts X) {ε : ℝ} (εpos : 0
   obtain ⟨α, ⟨⟨f, f_hyp⟩, α_hyp⟩⟩ :=
     exists_lt_of_csInf_lt (rieszContentAux_image_nonempty Λ K)
       (lt_add_of_pos_right (rieszContentAux Λ K) εpos)
-  use f
-  simp only [mem_setOf_eq] at f_hyp
-  constructor
-  · exact f_hyp.1.1
-  constructor
-  · exact f_hyp.1.2.1
-  constructor
-  · exact f_hyp.1.2.2
-  · rw [f_hyp.2]
-    exact α_hyp
+  refine ⟨f, f_hyp.left, ?_⟩
+  rw [f_hyp.right]
+  exact α_hyp
 
 /-- The Riesz content λ associated to a given positive linear functional Λ is
 finitely subadditive: `λ(K₁ ∪ K₂) ≤ λ(K₁) + λ(K₂)` for any compact subsets `K₁, K₂ ⊆ X`. -/
