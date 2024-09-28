@@ -199,6 +199,58 @@ section
 
 variable [AddCommGroup E] [Module ℝ E]
 
+lemma help (a b : E) (h : (2:ℝ)•a = (2:ℝ)•b) : a = b := by
+  have e1 : (1/2 : ℝ) • ((2:ℝ)•a) = (1/2 : ℝ) •((2:ℝ)•b) := by
+    apply congrArg (HSMul.hSMul (1 / 2)) h
+  simp only [one_div, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, inv_smul_smul₀] at e1
+  exact e1
+
+open UniformSpace in
+open Uniformity in
+theorem ball_add_ball_subset_ball_comp (V : Set E) (y : E) :
+      ball y (((fun p : E × E => p.2 - p.1) ⁻¹' ((2 : ℝ) • V))) ⊆
+      ball y (((fun p : E × E => p.2 - p.1) ⁻¹' V) ○ ((fun p : E × E => p.2 - p.1) ⁻¹' V)) := by
+    intro x hx
+    rw [uniform_space_ball_eq_vadd] at hx
+    obtain ⟨z,⟨hz₁,hz₂⟩⟩ := hx
+    simp at hz₂
+    obtain ⟨z',⟨hz'₁,hz'₂⟩⟩ := hz₁
+    simp only [vadd_eq_add] at hz'₂
+    use (1/2:ℝ)•(x+y)
+    have e11 : x-(1 / 2 : ℝ) • (x + y)  = z' := by
+      rw [smul_add]
+      --rw [add_sub_right_comm]
+      apply help
+      --rw [smul_add]
+      rw [smul_sub]
+      rw [smul_add]
+      rw [← smul_assoc]
+      simp only [one_div, smul_eq_mul, isUnit_iff_ne_zero, ne_eq, OfNat.ofNat_ne_zero,
+        not_false_eq_true, IsUnit.mul_inv_cancel, one_smul, smul_inv_smul₀, smul_neg]
+      rw [add_comm]
+      rw [two_smul]
+      simp only [add_sub_add_right_eq_sub]
+      rw [← hz₂]
+      simp only [add_sub_cancel_left]
+      exact id (Eq.symm hz'₂)
+    have e12 : (1 / 2 : ℝ) • (x + y) - y  = z' := by
+      apply help
+      rw [smul_sub]
+      simp only [one_div, smul_add, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, smul_inv_smul₀,
+        smul_neg]
+      rw [two_smul]
+      simp only [add_sub_add_right_eq_sub]
+      rw [← hz₂]
+      simp
+      exact id (Eq.symm hz'₂)
+    constructor
+    · simp only [mem_preimage]
+      rw [e12]
+      exact hz'₁
+    · simp only [mem_preimage]
+      rw [e11]
+      exact hz'₁
+
 lemma balancedHull_subseteq_convexHull {s : Set E} : balancedHull ℝ s ⊆ convexHull ℝ (s ∪ -s) := by
   intro a ha
   obtain ⟨r, hr, y, hy, rfl⟩ := mem_balancedHull_iff.1 ha
@@ -242,12 +294,6 @@ lemma half_add_half_of_convex {V : Set E} (h : Convex ℝ V) : (1/2 : ℝ) • V
 
 lemma add_self_eq_smul_two {V : Set E} (h : Convex ℝ V) : V + V = (2 : ℝ) • V := by
   rw [← one_add_one_eq_two, Convex.add_smul h (zero_le_one' ℝ) (zero_le_one' ℝ), MulAction.one_smul]
-
-lemma help (a b :E) (h : (2:ℝ)•a = (2:ℝ)•b) : a = b := by
-  have e1 : (1/2 : ℝ) • ((2:ℝ)•a) = (1/2 : ℝ) •((2:ℝ)•b) := by
-    apply congrArg (HSMul.hSMul (1 / 2)) h
-  simp only [one_div, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, inv_smul_smul₀] at e1
-  exact e1
 
 variable (E 𝕜) {s : Set E}
 variable [NontriviallyNormedField 𝕜]  [Module 𝕜 E]
@@ -300,51 +346,27 @@ theorem totallyBounded_absConvexHull
     rw [← add_self_eq_smul_two hS₂.2, ← add_assoc]
     exact le_trans e4 (Set.add_subset_add_right hts')
   have e8 (y : E): y +ᵥ ((2 : ℝ) • V) ⊆ {x | (x, y) ∈ d'} := by
+    rw [← uniform_space_ball_eq_vadd]
+    apply subset_trans (ball_add_ball_subset_ball_comp V y)
     intro x hx
     rw [mem_setOf_eq]
-    obtain ⟨z,⟨hz₁,hz₂⟩⟩ := hx
     apply hd₂
-    simp only [vadd_eq_add] at hz₂
     rw [mem_compRel]
-    obtain ⟨z',⟨hz'₁,hz'₂⟩⟩ := hz₁
-    simp only at hz'₂
-    have e11 : (1 / 2 : ℝ) • (x + y) - x = -z' := by
-      rw [smul_add]
-      rw [add_sub_right_comm]
-      apply help
-      rw [smul_add]
-      rw [smul_sub]
-      rw [← smul_assoc]
-      simp only [one_div, smul_eq_mul, isUnit_iff_ne_zero, ne_eq, OfNat.ofNat_ne_zero,
-        not_false_eq_true, IsUnit.mul_inv_cancel, one_smul, smul_inv_smul₀, smul_neg]
-      rw [add_comm]
-      rw [two_smul]
-      simp only [sub_add_cancel_right]
-      rw [← hz₂]
-      simp only [neg_add_rev, add_neg_cancel_comm_assoc, neg_inj]
-      exact id (Eq.symm hz'₂)
-    have e12 : y - (1 / 2 : ℝ) • (x + y) = -z' := by
-      apply help
-      rw [smul_sub]
-      simp only [one_div, smul_add, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, smul_inv_smul₀,
-        smul_neg]
-      rw [two_smul]
-      simp only [add_sub_add_right_eq_sub]
-      rw [← hz₂]
-      simp only [sub_add_cancel_left, neg_inj]
-      exact id (Eq.symm hz'₂)
-    use (1/2:ℝ)•(x+y)
+    rw [UniformSpace.ball] at hx
+    simp at hx
+    obtain ⟨z,hz⟩ := hx
+    use z
     constructor
     · apply hN₂
-      rw [mem_preimage, e11]
       apply hS₃
-      rw [Balanced.neg_mem_iff hS₂.1]
-      exact hz'₁
+      simp only
+      rw [← neg_sub, Balanced.neg_mem_iff hS₂.1]
+      exact hz.2
     · apply hN₂
-      rw [mem_preimage, e12]
       apply hS₃
-      rw [Balanced.neg_mem_iff hS₂.1]
-      exact hz'₁
+      simp only
+      rw [← neg_sub, Balanced.neg_mem_iff hS₂.1]
+      exact hz.1
   have e9 : ⋃ y ∈ t', y +ᵥ ((2 : ℝ) • V) ⊆ ⋃ y ∈ t', {x | (x, y) ∈ d'} :=
     biUnion_mono (fun ⦃a⦄ a ↦ a) (fun y _ ↦ e8 y)
   use t'
