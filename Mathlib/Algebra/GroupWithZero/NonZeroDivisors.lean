@@ -290,25 +290,24 @@ end MonoidWithZero
 section CommMonoidWithZero
 variable {M₀ : Type*} [CommMonoidWithZero M₀] {a : M₀}
 
-theorem mk_mem_nonZeroDivisors_associates : Associates.mk a ∈ (Associates M₀)⁰ ↔ a ∈ M₀⁰ := by
+theorem mk_mem_nonZeroDivisors_associates : ⟦a⟧ ∈ (Associates M₀)⁰ ↔ a ∈ M₀⁰ := by
   rw [mem_nonZeroDivisors_iff, mem_nonZeroDivisors_iff, ← not_iff_not]
   push_neg
   constructor
   · rintro ⟨⟨x⟩, hx₁, hx₂⟩
     refine ⟨x, ?_, ?_⟩
-    · rwa [← Associates.mk_eq_zero, ← Associates.mk_mul_mk, ← Associates.quot_mk_eq_mk]
-    · rwa [← Associates.mk_ne_zero, ← Associates.quot_mk_eq_mk]
-  · refine fun ⟨b, hb₁, hb₂⟩ ↦ ⟨Associates.mk b, ?_, by rwa [Associates.mk_ne_zero]⟩
+    · rwa [← Associates.mk_eq_zero, ← Associates.mk_mul_mk]
+    · rwa [← Associates.mk_ne_zero]
+  · refine fun ⟨b, hb₁, hb₂⟩ ↦ ⟨⟦b⟧, ?_, by rwa [Associates.mk_ne_zero]⟩
     rw [Associates.mk_mul_mk, hb₁, Associates.mk_zero]
 
 /-- The non-zero divisors of associates of a monoid with zero `M₀` are isomorphic to the associates
 of the non-zero divisors of `M₀` under the map `⟨⟦a⟧, _⟩ ↦ ⟦⟨a, _⟩⟧`. -/
 def associatesNonZeroDivisorsEquiv : (Associates M₀)⁰ ≃* Associates M₀⁰ where
-  toEquiv := .subtypeQuotientEquivQuotientSubtype (s₂ := Associated.setoid _)
-    (· ∈ nonZeroDivisors _)
-    (by simp [mem_nonZeroDivisors_iff, Quotient.forall, Associates.mk_mul_mk])
+  toEquiv := .subtypeQuotLikeEquivQuotLikeSubtype _ (· ∈ nonZeroDivisors _)
+    (by simp [mem_nonZeroDivisors_iff, QuotLike.forall, Associates.mk_mul_mk])
     (by simp [Associated.setoid])
-  map_mul' := by simp [Quotient.forall, Associates.mk_mul_mk]
+  map_mul' := by simp [QuotLike.forall, Associates.mk_mul_mk]
 
 @[simp]
 lemma associatesNonZeroDivisorsEquiv_mk_mk (a : M₀) (ha) :

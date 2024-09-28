@@ -32,6 +32,9 @@ reason about them using the existing `Setoid` and its infrastructure.
 setoid, equivalence, iseqv, relation, equivalence relation
 -/
 
+@[inherit_doc Quotient.mk]
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 attribute [refl] Setoid.refl
 attribute [symm] Setoid.symm
 attribute [trans] Setoid.trans
@@ -91,7 +94,7 @@ def ker (f : α → β) : Setoid α :=
 theorem ker_mk_eq (r : Setoid α) : ker (@Quotient.mk'' _ r) = r :=
   ext' fun _ _ => Quotient.eq
 
-theorem ker_apply_mk_out {f : α → β} (a : α) : f (haveI := Setoid.ker f; ⟦a⟧.out) = f a :=
+theorem ker_apply_mk_out {f : α → β} (a : α) : f (⟦a⟧ : Quotient (Setoid.ker f)).out = f a :=
   @Quotient.mk_out _ (Setoid.ker f) a
 
 theorem ker_apply_mk_out' {f : α → β} (a : α) :

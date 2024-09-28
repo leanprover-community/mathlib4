@@ -215,6 +215,11 @@ theorem Wrepr_equiv (x : q.P.W) : Wequiv (Wrepr x) x := by
 def Wsetoid : Setoid q.P.W :=
   ⟨Wequiv, @Wequiv.refl _ _, @Wequiv.symm _ _, @Wequiv.trans _ _⟩
 
+instance : IsEquiv q.P.W Wequiv where
+  refl := .refl
+  symm := .symm
+  trans := .trans
+
 attribute [local instance] Wsetoid
 
 /-- inductive type defined as initial algebra of a Quotient of Polynomial Functor -/
@@ -223,17 +228,19 @@ attribute [local instance] Wsetoid
 def Fix (F : Type u → Type u) [q : QPF F] :=
   Quotient (Wsetoid : Setoid q.P.W)
 
+instance {q : QPF F} : QuotLike (Fix F) q.P.W Wequiv where
+
 /-- recursor of a type defined by a qpf -/
 def Fix.rec {α : Type _} (g : F α → α) : Fix F → α :=
-  Quot.lift (recF g) (recF_eq_of_Wequiv g)
+  QuotLike.lift (recF g) (recF_eq_of_Wequiv g)
 
 /-- access the underlying W-type of a fixpoint data type -/
 def fixToW : Fix F → q.P.W :=
-  Quotient.lift Wrepr (recF_eq_of_Wequiv fun x => @PFunctor.W.mk q.P (repr x))
+  QuotLike.lift Wrepr (recF_eq_of_Wequiv fun x => @PFunctor.W.mk q.P (repr x))
 
 /-- constructor of a type defined by a qpf -/
 def Fix.mk (x : F (Fix F)) : Fix F :=
-  Quot.mk _ (PFunctor.W.mk (q.P.map fixToW (repr x)))
+  ⟦PFunctor.W.mk (q.P.map fixToW (repr x))⟧
 
 /-- destructor of a type defined by a qpf -/
 def Fix.dest : Fix F → F (Fix F) :=
@@ -248,8 +255,7 @@ theorem Fix.rec_eq {α : Type _} (g : F α → α) (x : F (Fix F)) :
     apply Wrepr_equiv
   conv =>
     lhs
-    rw [Fix.rec, Fix.mk]
-    dsimp
+    rw [Fix.rec, Fix.mk, QuotLike.lift_mkQ]
   cases' h : repr x with a f
   rw [PFunctor.map_eq, recF_eq, ← PFunctor.map_eq, PFunctor.W.dest_mk, PFunctor.map_map, abs_map,
     ← h, abs_repr, this]

@@ -329,19 +329,20 @@ section CommMonoidWithZero
 variable [CommMonoidWithZero α]
 variable [DecidableRel ((· ∣ ·) : α → α → Prop)]
 
+open scoped Associates
 theorem multiplicity_mk_eq_multiplicity
     [DecidableRel ((· ∣ ·) : Associates α → Associates α → Prop)] {a b : α} :
-    multiplicity (Associates.mk a) (Associates.mk b) = multiplicity a b := by
+    multiplicity ⟦a⟧' ⟦b⟧ = multiplicity a b := by
   by_cases h : Finite a b
   · rw [← PartENat.natCast_get (finite_iff_dom.mp h)]
     refine
         (multiplicity.unique
-            (show Associates.mk a ^ (multiplicity a b).get h ∣ Associates.mk b from ?_) ?_).symm <;>
+            (show ⟦a⟧' ^ (multiplicity a b).get h ∣ ⟦b⟧' from ?_) ?_).symm <;>
       rw [← Associates.mk_pow, Associates.mk_dvd_mk]
     · exact pow_multiplicity_dvd h
     · exact is_greatest
           ((PartENat.lt_coe_iff _ _).mpr (Exists.intro (finite_iff_dom.mp h) (Nat.lt_succ_self _)))
-  · suffices ¬Finite (Associates.mk a) (Associates.mk b) by
+  · suffices ¬Finite ⟦a⟧' ⟦b⟧' by
       rw [finite_iff_dom, PartENat.not_dom_iff_eq_top] at h this
       rw [h, this]
     refine

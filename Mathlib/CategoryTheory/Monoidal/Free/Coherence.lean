@@ -327,7 +327,7 @@ end
 
 instance : Groupoid.{u} (F C) :=
   { (inferInstance : Category (F C)) with
-    inv := Quotient.lift (fun f => ⟦inverseAux f⟧) (by aesop_cat) }
+    inv := fun {X Y} ↦ QuotLike.lift (fun f => ⟦inverseAux f⟧) (by subsingleton) }
 
 end Groupoid
 

@@ -130,57 +130,66 @@ def setoidHom (X Y : F C) : Setoid (X ⟶ᵐ Y) :=
     ⟨fun f => HomEquiv.refl f, @fun f g => HomEquiv.symm f g, @fun _ _ _ hfg hgh =>
       HomEquiv.trans hfg hgh⟩⟩
 
-attribute [instance] setoidHom
+instance (X Y : F C) : IsEquiv (X ⟶ᵐ Y) HomEquiv where
+  refl := .refl
+  symm := .symm
+  trans _ _ _ := .trans
 
 section
 
 open FreeMonoidalCategory.HomEquiv
 
-instance categoryFreeMonoidalCategory : Category.{u} (F C) where
+instance : Quiver (F C) where
   Hom X Y := Quotient (FreeMonoidalCategory.setoidHom X Y)
+
+instance (X Y : F C) : QuotLike (X ⟶ Y) (X ⟶ᵐ Y) HomEquiv where
+
+instance categoryFreeMonoidalCategory : Category.{u} (F C) where
   id X := ⟦Hom.id X⟧
-  comp := Quotient.map₂ Hom.comp (fun _ _ hf _ _ hg ↦ HomEquiv.comp hf hg)
+  comp := QuotLike.map₂ Hom.comp (fun _ _ hf _ _ hg ↦ HomEquiv.comp hf hg)
   id_comp := by
     rintro X Y ⟨f⟩
-    exact Quotient.sound (id_comp f)
+    exact QuotLike.sound (id_comp f)
   comp_id := by
     rintro X Y ⟨f⟩
-    exact Quotient.sound (comp_id f)
+    exact QuotLike.sound (comp_id f)
   assoc := by
     rintro W X Y Z ⟨f⟩ ⟨g⟩ ⟨h⟩
-    exact Quotient.sound (assoc f g h)
+    exact QuotLike.sound (assoc f g h)
 
 instance : MonoidalCategory (F C) where
-  tensorObj X Y := FreeMonoidalCategory.tensor X Y
-  tensorHom := Quotient.map₂ Hom.tensor (fun _ _ hf _ _ hg ↦ HomEquiv.tensor hf hg)
-  whiskerLeft X _ _ f := Quot.map (fun f ↦ Hom.whiskerLeft X f) (fun f f' ↦ .whiskerLeft X f f') f
-  whiskerRight f Y := Quot.map (fun f ↦ Hom.whiskerRight f Y) (fun f f' ↦ .whiskerRight f f' Y) f
+  tensorObj := FreeMonoidalCategory.tensor
+  tensorHom := QuotLike.map₂ Hom.tensor (fun _ _ hf _ _ hg ↦ HomEquiv.tensor hf hg)
+  whiskerLeft X _ _ f :=
+    QuotLike.map (fun f ↦ Hom.whiskerLeft X f) (fun f f' ↦ .whiskerLeft X f f') f
+  whiskerRight f Y :=
+    QuotLike.map (fun f ↦ Hom.whiskerRight f Y) (fun f f' ↦ .whiskerRight f f' Y) f
   tensorHom_def := by
     rintro W X Y Z ⟨f⟩ ⟨g⟩
-    exact Quotient.sound (tensorHom_def _ _)
-  tensor_id X Y := Quot.sound tensor_id
+    exact QuotLike.sound (tensorHom_def _ _)
+  tensor_id X Y := QuotLike.sound tensor_id
   tensor_comp := @fun X₁ Y₁ Z₁ X₂ Y₂ Z₂ => by
     rintro ⟨f₁⟩ ⟨f₂⟩ ⟨g₁⟩ ⟨g₂⟩
-    exact Quotient.sound (tensor_comp _ _ _ _)
-  whiskerLeft_id X Y := Quot.sound (HomEquiv.whiskerLeft_id X Y)
-  id_whiskerRight X Y := Quot.sound (HomEquiv.id_whiskerRight X Y)
+    exact QuotLike.sound (tensor_comp _ _ _ _)
+  whiskerLeft_id X Y := QuotLike.sound (HomEquiv.whiskerLeft_id X Y)
+  id_whiskerRight X Y := QuotLike.sound (HomEquiv.id_whiskerRight X Y)
   tensorUnit := FreeMonoidalCategory.unit
   associator X Y Z :=
-    ⟨⟦Hom.α_hom X Y Z⟧, ⟦Hom.α_inv X Y Z⟧, Quotient.sound α_hom_inv, Quotient.sound α_inv_hom⟩
+    ⟨⟦Hom.α_hom X Y Z⟧, ⟦Hom.α_inv X Y Z⟧, QuotLike.sound α_hom_inv, QuotLike.sound α_inv_hom⟩
   associator_naturality := @fun X₁ X₂ X₃ Y₁ Y₂ Y₃ => by
     rintro ⟨f₁⟩ ⟨f₂⟩ ⟨f₃⟩
-    exact Quotient.sound (associator_naturality _ _ _)
-  leftUnitor X := ⟨⟦Hom.l_hom X⟧, ⟦Hom.l_inv X⟧, Quotient.sound l_hom_inv, Quotient.sound l_inv_hom⟩
+    exact QuotLike.sound (associator_naturality _ _ _)
+  leftUnitor X := ⟨⟦Hom.l_hom X⟧, ⟦Hom.l_inv X⟧, QuotLike.sound l_hom_inv, QuotLike.sound l_inv_hom⟩
   leftUnitor_naturality := @fun X Y => by
     rintro ⟨f⟩
-    exact Quotient.sound (l_naturality _)
+    exact QuotLike.sound (l_naturality _)
   rightUnitor X :=
-    ⟨⟦Hom.ρ_hom X⟧, ⟦Hom.ρ_inv X⟧, Quotient.sound ρ_hom_inv, Quotient.sound ρ_inv_hom⟩
+    ⟨⟦Hom.ρ_hom X⟧, ⟦Hom.ρ_inv X⟧, QuotLike.sound ρ_hom_inv, QuotLike.sound ρ_inv_hom⟩
   rightUnitor_naturality := @fun X Y => by
     rintro ⟨f⟩
-    exact Quotient.sound (ρ_naturality _)
-  pentagon W X Y Z := Quotient.sound pentagon
-  triangle X Y := Quotient.sound triangle
+    exact QuotLike.sound (ρ_naturality _)
+  pentagon W X Y Z := QuotLike.sound pentagon
+  triangle X Y := QuotLike.sound triangle
 
 @[simp]
 theorem mk_comp {X Y Z : F C} (f : X ⟶ᵐ Y) (g : Y ⟶ᵐ Z) :
@@ -238,12 +247,6 @@ theorem tensor_eq_tensor {X Y : F C} : X.tensor Y = X ⊗ Y :=
 theorem unit_eq_unit : FreeMonoidalCategory.unit = 𝟙_ (F C) :=
   rfl
 
-/-- The abbreviation for `⟦f⟧`. -/
-/- This is useful since the notation `⟦f⟧` often behaves like an element of the quotient set,
-but not like a morphism. This is why we need weird `@CategoryStruct.comp (F C) ...` in the
-statement in `mk_comp` above. -/
-abbrev homMk {X Y : F C} (f : X ⟶ᵐ Y) : X ⟶ Y := ⟦f⟧
-
 theorem Hom.inductionOn {motive : {X Y : F C} → (X ⟶ Y) → Prop} {X Y : F C} (t : X ⟶ Y)
     (id : (X : F C) → motive (𝟙 X))
     (α_hom : (X Y Z : F C) → motive (α_ X Y Z).hom)
@@ -256,7 +259,7 @@ theorem Hom.inductionOn {motive : {X Y : F C} → (X ⟶ Y) → Prop} {X Y : F C
     (whiskerLeft : (X : F C) → {Y Z : F C} → (f : Y ⟶ Z) → motive f → motive (X ◁ f))
     (whiskerRight : {X Y : F C} → (f : X ⟶ Y) → (Z : F C) → motive f → motive (f ▷ Z)) :
     motive t := by
-  apply Quotient.inductionOn
+  apply QuotLike.inductionOn
   intro f
   induction f with
   | id X => exact id X
@@ -270,10 +273,7 @@ theorem Hom.inductionOn {motive : {X Y : F C} → (X ⟶ Y) → Prop} {X Y : F C
   | whiskerLeft X f hf => exact whiskerLeft X _ (hf ⟦f⟧)
   | whiskerRight f X hf => exact whiskerRight _ X (hf ⟦f⟧)
   | @tensor W X Y Z f g hf hg =>
-      have : homMk f ⊗ homMk g = homMk f ▷ X ≫ Y ◁ homMk g :=
-        Quotient.sound (HomEquiv.tensorHom_def f g)
-      change motive (homMk f ⊗ homMk g)
-      rw [this]
+      rw [mk_tensor, MonoidalCategory.tensorHom_def]
       exact comp _ _ (whiskerRight _ _ (hf ⟦f⟧)) (whiskerLeft _ _ (hg ⟦g⟧))
 
 section Functor
@@ -310,7 +310,7 @@ def projectMapAux : ∀ {X Y : F C}, (X ⟶ᵐ Y) → (projectObj f X ⟶ projec
 -- Porting note: this declaration generates the same panic.
 /-- Auxiliary definition for `FreeMonoidalCategory.project`. -/
 def projectMap (X Y : F C) : (X ⟶ Y) → (projectObj f X ⟶ projectObj f Y) :=
-  Quotient.lift (projectMapAux f) <| by
+  QuotLike.lift (projectMapAux f) <| by
     intro f g h
     induction h with
     | refl => rfl
@@ -364,18 +364,19 @@ def project : MonoidalFunctor (F C) D where
   -- Porting note: `map_comp` and `μ_natural` were proved in mathlib3 by tidy, using induction.
   -- We probably don't expect `aesop_cat` to handle this yet, see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Aesop.20and.20cases
   -- In any case I don't understand why we need to specify `using Quotient.recOn`.
+  -- Note: It's `QuotLike.recOn` now.
   map_comp := by rintro _ _ _ ⟨_⟩ ⟨_⟩; rfl
   ε := 𝟙 _
   μ X Y := 𝟙 _
   μ_natural_left := fun f _ => by
-    induction' f using Quotient.recOn
+    induction' f using QuotLike.recOn
     · dsimp
       simp only [Category.comp_id, Category.id_comp]
       rw [← tensorHom_id, ← tensorHom_id]
       rfl
     · rfl
   μ_natural_right := fun _ f => by
-    induction' f using Quotient.recOn
+    induction' f using QuotLike.recOn
     · dsimp
       simp only [Category.comp_id, Category.id_comp]
       rw [← id_tensorHom, ← id_tensorHom]

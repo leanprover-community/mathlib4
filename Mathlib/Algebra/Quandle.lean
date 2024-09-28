@@ -503,7 +503,7 @@ For a homomorphism `f : R →◃ Conj G`, how does
 `EnvelGroup.map f : EnvelGroup R →* G` work?  Let's think of `G` as
 being a 2-category with one object, a 1-morphism per element of `G`,
 and a single 2-morphism called `Eq.refl` for each 1-morphism.  We
-define the map using a "higher `Quotient.lift`" -- not only do we
+define the map using a "higher `QuotLike.lift`" -- not only do we
 evaluate elements of `PreEnvelGroup` as expressions in `G` (this is
 `toEnvelGroup.mapAux`), but we evaluate elements of
 `PreEnvelGroup'` as expressions of 2-morphisms of `G` (this is
@@ -590,20 +590,28 @@ instance PreEnvelGroup.setoid (R : Type*) [Rack R] : Setoid (PreEnvelGroup R) wh
     · apply PreEnvelGroupRel.refl
     · apply PreEnvelGroupRel.symm
     · apply PreEnvelGroupRel.trans
+
+instance (R : Type*) [Rack R] : IsEquiv (PreEnvelGroup R) (PreEnvelGroupRel R) where
+  refl _ := .refl
+  symm _ _ := .symm
+  trans _ _ _ := .trans
+
 /-- The universal enveloping group for the rack R.
 -/
 def EnvelGroup (R : Type*) [Rack R] :=
   Quotient (PreEnvelGroup.setoid R)
 
+instance (R : Type*) [Rack R] : QuotLike (EnvelGroup R) (PreEnvelGroup R) (PreEnvelGroupRel R) where
+
 -- Define the `Group` instances in two steps so `inv` can be inferred correctly.
 -- TODO: is there a non-invasive way of defining the instance directly?
 instance (R : Type*) [Rack R] : DivInvMonoid (EnvelGroup R) where
   mul a b :=
-    Quotient.liftOn₂ a b (fun a b => ⟦PreEnvelGroup.mul a b⟧) fun a b a' b' ⟨ha⟩ ⟨hb⟩ =>
+    QuotLike.liftOn₂ a b (fun a b => ⟦PreEnvelGroup.mul a b⟧) fun a b a' b' ⟨ha⟩ ⟨hb⟩ =>
       Quotient.sound (PreEnvelGroupRel'.congr_mul ha hb).rel
   one := ⟦unit⟧
   inv a :=
-    Quotient.liftOn a (fun a => ⟦PreEnvelGroup.inv a⟧) fun a a' ⟨ha⟩ =>
+    QuotLike.liftOn a (fun a => ⟦PreEnvelGroup.inv a⟧) fun a a' ⟨ha⟩ =>
       Quotient.sound (PreEnvelGroupRel'.congr_inv ha).rel
   mul_assoc a b c :=
     Quotient.inductionOn₃ a b c fun a b c => Quotient.sound (PreEnvelGroupRel'.assoc a b c).rel
@@ -663,35 +671,35 @@ More precisely, the `EnvelGroup` functor is left adjoint to `Quandle.Conj`.
 def toEnvelGroup.map {R : Type*} [Rack R] {G : Type*} [Group G] :
     (R →◃ Quandle.Conj G) ≃ (EnvelGroup R →* G) where
   toFun f :=
-    { toFun := fun x =>
-        Quotient.liftOn x (toEnvelGroup.mapAux f) fun a b ⟨hab⟩ =>
+    { toFun :=
+        QuotLike.lift (toEnvelGroup.mapAux f) fun a b ⟨hab⟩ =>
           toEnvelGroup.mapAux.well_def f hab
       map_one' := by
-        change Quotient.liftOn ⟦Rack.PreEnvelGroup.unit⟧ (toEnvelGroup.mapAux f) _ = 1
-        simp only [Quotient.lift_mk, mapAux]
+        change QuotLike.liftOn ⟦Rack.PreEnvelGroup.unit⟧ (toEnvelGroup.mapAux f) _ = 1
+        simp only [QuotLike.lift_mkQ, mapAux]
       map_mul' := fun x y =>
-        Quotient.inductionOn₂ x y fun x y => by
+        QuotLike.inductionOn₂ x y fun x y => by
           simp only [toEnvelGroup.mapAux]
-          change Quotient.liftOn ⟦mul x y⟧ (toEnvelGroup.mapAux f) _ = _
+          change QuotLike.liftOn ⟦mul x y⟧ (toEnvelGroup.mapAux f) _ = _
           simp [toEnvelGroup.mapAux] }
   invFun F := (Quandle.Conj.map F).comp (toEnvelGroup R)
   left_inv f := by ext; rfl
   right_inv F :=
-    MonoidHom.ext fun x =>
-      Quotient.inductionOn x fun x => by
+    MonoidHom.ext <|
+      QuotLike.ind fun x => by
+        simp only [MonoidHom.coe_mk, OneHom.coe_mk, QuotLike.lift_mkQ]
         induction x with
         | unit => exact F.map_one.symm
         | incl => rfl
         | mul x y ih_x ih_y =>
           have hm : ⟦x.mul y⟧ = @Mul.mul (EnvelGroup R) _ ⟦x⟧ ⟦y⟧ := rfl
-          simp only [MonoidHom.coe_mk, OneHom.coe_mk, Quotient.lift_mk]
           suffices ∀ x y, F (Mul.mul x y) = F (x) * F (y) by
-            simp_all only [MonoidHom.coe_mk, OneHom.coe_mk, Quotient.lift_mk, hm]
+            simp_all only
             rw [← ih_x, ← ih_y, mapAux]
           exact F.map_mul
         | inv x ih_x =>
           have hm : ⟦x.inv⟧ = @Inv.inv (EnvelGroup R) _ ⟦x⟧ := rfl
-          rw [hm, F.map_inv, MonoidHom.map_inv, ih_x]
+          rw [hm, F.map_inv, mapAux, ih_x]
 
 /-- Given a homomorphism from a rack to a group, it factors through the enveloping group.
 -/

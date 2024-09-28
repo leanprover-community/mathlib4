@@ -392,6 +392,9 @@ def Finsets (α : Type*) :=
 
 namespace Finsets
 
+instance : QuotLike (Finsets α) (Lists α) Lists.Equiv where
+instance : QuotLike.HasQuot (Finsets α) (Lists α) Lists.Equiv where
+
 instance : EmptyCollection (Finsets α) :=
   ⟨⟦Lists.of' Lists'.nil⟧⟩
 

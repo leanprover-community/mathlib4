@@ -66,10 +66,10 @@ instance Quotient.group : Group (G ⧸ N) :=
 /-- The group homomorphism from `G` to `G/N`. -/
 @[to_additive "The additive group homomorphism from `G` to `G/N`."]
 def mk' : G →* G ⧸ N :=
-  MonoidHom.mk' QuotientGroup.mk fun _ _ => rfl
+  MonoidHom.mk' mkQ fun _ _ => rfl
 
 @[to_additive (attr := simp)]
-theorem coe_mk' : (mk' N : G → G ⧸ N) = mk :=
+theorem coe_mk' : (mk' N : G → G ⧸ N) = mkQ :=
   rfl
 
 @[to_additive (attr := simp)]
@@ -132,7 +132,7 @@ theorem eq_iff_div_mem {N : Subgroup G} [nN : N.Normal] {x y : G} :
 @[to_additive]
 instance Quotient.commGroup {G : Type*} [CommGroup G] (N : Subgroup G) : CommGroup (G ⧸ N) :=
   { toGroup := have := N.normal_of_comm; QuotientGroup.Quotient.group N
-    mul_comm := fun a b => Quotient.inductionOn₂' a b fun a b => congr_arg mk (mul_comm a b) }
+    mul_comm := fun a b => Quotient.inductionOn₂' a b fun a b => congr_arg mkQ (mul_comm a b) }
 
 local notation " Q " => G ⧸ N
 
@@ -184,7 +184,7 @@ theorem lift_mk {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (g : 
   rfl
 
 @[to_additive (attr := simp)]
-theorem lift_mk' {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (mk g : Q) = φ g :=
+theorem lift_mk' {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (mkQ g : Q) = φ g :=
   rfl
 -- TODO: replace `mk` with `mk'`)
 
@@ -288,7 +288,7 @@ def congr (e : G ≃* H) (he : G'.map e = H') : G ⧸ G' ≃* H ⧸ H' :=
         MulEquiv.coe_monoidHom_refl, map_id_apply] }
 
 @[simp]
-theorem congr_mk (e : G ≃* H) (he : G'.map ↑e = H') (x) : congr G' H' e he (mk x) = e x :=
+theorem congr_mk (e : G ≃* H) (he : G'.map ↑e = H') (x) : congr G' H' e he ⟦x⟧ = e x :=
   rfl
 
 theorem congr_mk' (e : G ≃* H) (he : G'.map ↑e = H') (x) :
@@ -327,7 +327,7 @@ theorem kerLift_mk (g : G) : (kerLift φ) g = φ g :=
   lift_mk _ _ _
 
 @[to_additive (attr := simp)]
-theorem kerLift_mk' (g : G) : (kerLift φ) (mk g) = φ g :=
+theorem kerLift_mk' (g : G) : (kerLift φ) ⟦g⟧ = φ g :=
   lift_mk' _ _ _
 
 @[to_additive]
@@ -352,7 +352,7 @@ theorem rangeKerLift_injective : Injective (rangeKerLift φ) := fun a b =>
 @[to_additive]
 theorem rangeKerLift_surjective : Surjective (rangeKerLift φ) := by
   rintro ⟨_, g, rfl⟩
-  use mk g
+  use ⟦g⟧
   rfl
 
 /-- **Noether's first isomorphism theorem** (a definition): the canonical isomorphism between
@@ -369,7 +369,7 @@ with a right inverse `ψ : H → G`. -/
 def quotientKerEquivOfRightInverse (ψ : H → G) (hφ : RightInverse ψ φ) : G ⧸ ker φ ≃* H :=
   { kerLift φ with
     toFun := kerLift φ
-    invFun := mk ∘ ψ
+    invFun := mkQ ∘ ψ
     left_inv := fun x => kerLift_injective φ (by rw [Function.comp_apply, kerLift_mk', hφ])
     right_inv := hφ }
 
@@ -397,7 +397,7 @@ def quotientMulEquivOfEq {M N : Subgroup G} [M.Normal] [N.Normal] (h : M = N) : 
 
 @[to_additive (attr := simp)]
 theorem quotientMulEquivOfEq_mk {M N : Subgroup G} [M.Normal] [N.Normal] (h : M = N) (x : G) :
-    QuotientGroup.quotientMulEquivOfEq h (QuotientGroup.mk x) = QuotientGroup.mk x :=
+    QuotientGroup.quotientMulEquivOfEq h ⟦x⟧ = ⟦x⟧ :=
   rfl
 
 /-- Let `A', A, B', B` be subgroups of `G`. If `A' ≤ B'` and `A ≤ B`,

@@ -599,12 +599,12 @@ on an encodable type. -/
 def Quotient.rep (q : Quotient s) : α :=
   choose (exists_rep q)
 
-theorem Quotient.rep_spec (q : Quotient s) : ⟦q.rep⟧ = q :=
+theorem Quotient.rep_spec (q : Quotient s) : Quotient.mk _ q.rep = q :=
   choose_spec (exists_rep q)
 
 /-- The quotient of an encodable space by a decidable equivalence relation is encodable. -/
 def encodableQuotient : Encodable (Quotient s) :=
   ⟨fun q => encode q.rep, fun n => Quotient.mk'' <$> decode n, by
-    rintro ⟨l⟩; dsimp; rw [encodek]; exact congr_arg some ⟦l⟧.rep_spec⟩
+    rintro ⟨l⟩; dsimp; rw [encodek]; exact congr_arg some (Quotient.mk _ l).rep_spec⟩
 
 end Quotient

@@ -162,9 +162,11 @@ Fix F a b = F a b (Fix F a b)
 def Fix {n : ℕ} (F : TypeVec (n + 1) → Type*) [q : MvQPF F] (α : TypeVec n) :=
   Quotient (wSetoid α : Setoid (q.P.W α))
 
+instance {q : MvQPF F} (α : TypeVec n) : QuotLike (Fix F α) (q.P.W α) WEquiv where
+
 /-- `Fix F` is a functor -/
 def Fix.map {α β : TypeVec n} (g : α ⟹ β) : Fix F α → Fix F β :=
-  Quotient.lift (fun x : q.P.W α => ⟦q.P.wMap g x⟧) fun _a _b h => Quot.sound (wEquiv_map _ _ _ h)
+  QuotLike.lift (fun x : q.P.W α => ⟦q.P.wMap g x⟧) fun _a _b h => Quot.sound (wEquiv_map _ _ _ h)
 
 instance Fix.mvfunctor : MvFunctor (Fix F) where map := Fix.map
 
@@ -172,15 +174,15 @@ variable {α : TypeVec.{u} n}
 
 /-- Recursor for `Fix F` -/
 def Fix.rec {β : Type u} (g : F (α ::: β) → β) : Fix F α → β :=
-  Quot.lift (recF g) (recF_eq_of_wEquiv α g)
+  QuotLike.lift (recF g) (recF_eq_of_wEquiv α g)
 
 /-- Access W-type underlying `Fix F`  -/
 def fixToW : Fix F α → q.P.W α :=
-  Quotient.lift wrepr (recF_eq_of_wEquiv α fun x => q.P.wMk' (repr x))
+  QuotLike.lift wrepr (recF_eq_of_wEquiv α fun x => q.P.wMk' (repr x))
 
 /-- Constructor for `Fix F` -/
 def Fix.mk (x : F (append1 α (Fix F α))) : Fix F α :=
-  Quot.mk _ (q.P.wMk' (appendFun id fixToW <$$> repr x))
+  ⟦q.P.wMk' (appendFun id fixToW <$$> repr x)⟧
 
 /-- Destructor for `Fix F` -/
 def Fix.dest : Fix F α → F (append1 α (Fix F α)) :=
@@ -196,8 +198,7 @@ theorem Fix.rec_eq {β : Type u} (g : F (append1 α β) → β) (x : F (append1 
     apply wrepr_equiv
   conv =>
     lhs
-    rw [Fix.rec, Fix.mk]
-    dsimp
+    rw [Fix.rec, Fix.mk, QuotLike.lift_mkQ]
   cases' h : repr x with a f
   rw [MvPFunctor.map_eq, recF_eq', ← MvPFunctor.map_eq, MvPFunctor.wDest'_wMk']
   rw [← MvPFunctor.comp_map, abs_map, ← h, abs_repr, ← appendFun_comp, id_comp, this]

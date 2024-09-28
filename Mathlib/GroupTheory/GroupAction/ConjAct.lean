@@ -280,7 +280,7 @@ theorem orbitRel_conjAct : (orbitRel (ConjAct G) G).Rel = IsConj :=
   funext₂ fun g h => by rw [orbitRel_apply, mem_orbit_conjAct]
 
 theorem orbit_eq_carrier_conjClasses (g : G) :
-    orbit (ConjAct G) g = (ConjClasses.mk g).carrier := by
+    orbit (ConjAct G) g = (⟦g⟧ : ConjClasses _).carrier := by
   ext h
   rw [ConjClasses.mem_carrier_iff_mk_eq, ConjClasses.mk_eq_mk_iff_isConj, mem_orbit_conjAct]
 
