@@ -95,7 +95,7 @@ protected theorem Decomposition.inductionOn {p : M → Prop} (h_zero : p 0)
     (h_homogeneous : ∀ {i} (m : ℳ i), p (m : M)) (h_add : ∀ m m' : M, p m → p m' → p (m + m')) :
     ∀ m, p m := by
   let ℳ' : ι → AddSubmonoid M := fun i ↦
-    (⟨⟨ℳ i, fun x y ↦ AddMemClass.add_mem x y⟩, (ZeroMemClass.zero_mem _)⟩ : AddSubmonoid M)
+    (⟨⟨ℳ i⟩, ⟨fun x y ↦ AddMemClass.add_mem x y⟩, (ZeroMemClass.zero_mem _)⟩ : AddSubmonoid M)
   haveI t : DirectSum.Decomposition ℳ' :=
     { decompose' := DirectSum.decompose ℳ
       left_inv := fun _ ↦ (decompose ℳ).left_inv _

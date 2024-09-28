@@ -15,13 +15,19 @@ More lemmas about `adjoin` can be found in `RingTheory.Adjoin`.
 
 universe u u' v w w'
 
-/-- A subalgebra is a sub(semi)ring that includes the range of `algebraMap`. -/
-structure Subalgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A] extends
-  Subsemiring A : Type v where
+/-- A subalgebra is a sub(semi)ring that includes the range of `algebraMap`.
+
+Note that the bundled variant `Subalgebra R` should be preferred. -/
+structure IsSubalgebra (R : Type u) {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
+    (s : Set A) extends IsSubsemiring s : Prop where
   /-- The image of `algebraMap` is contained in the underlying set of the subalgebra -/
-  algebraMap_mem' : ∀ r, algebraMap R A r ∈ carrier
+  algebraMap_mem' : ∀ r, algebraMap R A r ∈ s
   zero_mem' := (algebraMap R A).map_zero ▸ algebraMap_mem' 0
   one_mem' := (algebraMap R A).map_one ▸ algebraMap_mem' 1
+
+/-- A subalgebra is a sub(semi)ring that includes the range of `algebraMap`. -/
+structure Subalgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A] extends
+    CarrierWrapper A, IsSubalgebra R carrier, Subsemiring A, Submonoid A : Type v where
 
 /-- Reinterpret a `Subalgebra` as a `Subsemiring`. -/
 add_decl_doc Subalgebra.toSubsemiring
@@ -34,7 +40,7 @@ variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Alg
 
 instance : SetLike (Subalgebra R A) A where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+  coe_injective' p q h := by obtain ⟨⟨⟩⟩ := p; congr
 
 instance SubsemiringClass : SubsemiringClass (Subalgebra R A) A where
   add_mem {s} := add_mem (s := s.toSubsemiring)
@@ -472,8 +478,8 @@ theorem coe_toSubalgebra (p : Submodule R A) (h_one h_mul) :
 -- @[simp] -- Porting note: as a result, it is no longer a great simp lemma
 theorem toSubalgebra_mk (s : Submodule R A) (h1 hmul) :
     s.toSubalgebra h1 hmul =
-      Subalgebra.mk ⟨⟨⟨s, @hmul⟩, h1⟩, s.add_mem, s.zero_mem⟩
-        (by intro r; rw [Algebra.algebraMap_eq_smul_one]; apply s.smul_mem _ h1) :=
+      Subalgebra.mk ⟨(s : Set A)⟩ ⟨⟨⟨⟨@hmul⟩, h1⟩, ⟨s.add_mem'⟩, s.zero_mem'⟩,
+        (by intro r; rw [Algebra.algebraMap_eq_smul_one]; apply s.smul_mem _ h1)⟩ :=
   rfl
 
 @[simp]

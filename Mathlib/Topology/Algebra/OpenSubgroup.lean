@@ -70,9 +70,9 @@ instance : SetLike (OpenSubgroup G) G where
 
 @[to_additive]
 instance : SubgroupClass (OpenSubgroup G) G where
-  mul_mem := Subsemigroup.mul_mem' _
+  mul_mem {U} := U.mul_mem'
   one_mem U := U.one_mem'
-  inv_mem := Subgroup.inv_mem' _
+  inv_mem {U} := U.inv_mem'
 
 /-- Coercion from `OpenSubgroup G` to `Opens G`. -/
 @[to_additive (attr := coe) "Coercion from `OpenAddSubgroup G` to `Opens G`."]

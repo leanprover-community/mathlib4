@@ -99,4 +99,9 @@ def nonneg (R : Type*) [OrderedSemiring R] : Subsemiring R where
   add_mem' := add_nonneg
   zero_mem' := le_rfl
 
+@[simp]
+theorem mem_nonneg [OrderedSemiring R] {x : R} :
+    x ∈ nonneg R ↔ 0 ≤ x :=
+  Iff.rfl
+
 end Subsemiring

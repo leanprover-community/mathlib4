@@ -856,7 +856,7 @@ theorem mem_radical_of_pow_mem {I : Ideal R} {x : R} {m : ℕ} (hx : x ^ m ∈ r
   radical_idem I ▸ ⟨m, hx⟩
 
 theorem disjoint_powers_iff_not_mem (y : R) (hI : I.IsRadical) :
-    Disjoint (Submonoid.powers y : Set R) ↑I ↔ y ∉ I.1 := by
+    Disjoint (Submonoid.powers y : Set R) ↑I ↔ y ∉ I := by
   refine ⟨fun h => Set.disjoint_left.1 h (Submonoid.mem_powers _),
       fun h => disjoint_iff.mpr (eq_bot_iff.mpr ?_)⟩
   rintro x ⟨⟨n, rfl⟩, hx'⟩

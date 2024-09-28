@@ -41,12 +41,18 @@ open Polynomial
 
 open Polynomial
 
+/-- A intermediate field is a subset `S` of `L` such that there is a field tower `L / S / K`.
+
+Note that the bundled variant `IntermediateField R` should be preferred. -/
+structure IsIntermediateField (K : Type*) {L : Type*} [Field K] [Field L] [Algebra K L] (s : Set L)
+    extends IsSubalgebra K s : Prop where
+  inv_mem' : ∀ x ∈ s, x⁻¹ ∈ s
+
 variable (K L L' : Type*) [Field K] [Field L] [Field L'] [Algebra K L] [Algebra K L']
 
 /-- `S : IntermediateField K L` is a subset of `L` such that there is a field
 tower `L / S / K`. -/
-structure IntermediateField extends Subalgebra K L where
-  inv_mem' : ∀ x ∈ carrier, x⁻¹ ∈ carrier
+structure IntermediateField extends CarrierWrapper L, IsIntermediateField K carrier, Subalgebra K L
 
 /-- Reinterpret an `IntermediateField` as a `Subalgebra`. -/
 add_decl_doc IntermediateField.toSubalgebra
@@ -96,8 +102,8 @@ theorem coe_toSubfield : (S.toSubfield : Set L) = S :=
   rfl
 
 @[simp]
-theorem mem_mk (s : Subsemiring L) (hK : ∀ x, algebraMap K L x ∈ s) (hi) (x : L) :
-    x ∈ IntermediateField.mk (Subalgebra.mk s hK) hi ↔ x ∈ s :=
+theorem mem_mk (s : Set L) (h) (x : L) :
+    x ∈ IntermediateField.mk (K := K) ⟨s⟩ h ↔ x ∈ s :=
   Iff.rfl
 
 @[simp]
@@ -112,7 +118,7 @@ theorem mem_toSubfield (s : IntermediateField K L) (x : L) : x ∈ s.toSubfield 
 definitional equalities. -/
 protected def copy (S : IntermediateField K L) (s : Set L) (hs : s = ↑S) :
     IntermediateField K L where
-  toSubalgebra := S.toSubalgebra.copy s (hs : s = S.toSubalgebra.carrier)
+  __ := S.toSubalgebra.copy s (hs : s = S.toSubalgebra.carrier)
   inv_mem' :=
     have hs' : (S.toSubalgebra.copy s hs).carrier = S.toSubalgebra.carrier := hs
     hs'.symm ▸ S.inv_mem'
@@ -330,7 +336,7 @@ theorem coe_smul {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] 
 
 @[simp] lemma coe_algebraMap_apply (x : K) : ↑(algebraMap K S x) = algebraMap K L x := rfl
 
-instance {R : Type*} [Semiring R] [Algebra L R] : SMul S R := S.instSMulSubtypeMem
+instance {R : Type*} [Semiring R] [Algebra L R] : SMul S R := S.toSubalgebra.instSMulSubtypeMem
 
 instance isScalarTower_bot {R : Type*} [Semiring R] [Algebra L R] : IsScalarTower S L R :=
   IsScalarTower.subalgebra _ _ _ S.toSubalgebra
@@ -347,7 +353,7 @@ instance {E} [Semiring E] [Algebra L E] : Algebra S E := inferInstanceAs (Algebr
 
 section shortcut_instances
 variable {E} [Field E] [Algebra L E] (T : IntermediateField S E) {S}
-instance : Algebra S T := T.algebra
+instance : Algebra S T := T.toSubalgebra.algebra
 instance : Module S T := Algebra.toModule
 instance : SMul S T := Algebra.toSMul
 instance [Algebra K E] [IsScalarTower K L E] : IsScalarTower K S T := T.isScalarTower
@@ -423,9 +429,12 @@ namespace AlgHom
 variable (f : L →ₐ[K] L')
 
 /-- The range of an algebra homomorphism, as an intermediate field. -/
-@[simps toSubalgebra]
 def fieldRange : IntermediateField K L' :=
   { f.range, (f : L →+* L').fieldRange with }
+
+@[simp]
+theorem fieldRange_toSubalgebra : f.fieldRange.toSubalgebra = f.range :=
+  rfl
 
 @[simp]
 theorem coe_fieldRange : ↑f.fieldRange = Set.range f :=

@@ -126,11 +126,18 @@ end NonUnitalSubringClass
 
 variable [NonUnitalNonAssocRing S] [NonUnitalNonAssocRing T]
 
+/-- A non-unital subring of `R` is a subset `s` that is a multiplicative subsemigroup and an
+additive subgroup. Note in particular that it shares the same 0 as R.
+
+Note that the bundled variant `NonUnitalSubring R` should be preferred. -/
+structure IsNonUnitalSubring {R : Type*} [NonUnitalNonAssocRing R] (s : Set R) extends
+    IsNonUnitalSubsemiring s, IsAddSubgroup s : Prop
+
 /-- `NonUnitalSubring R` is the type of non-unital subrings of `R`. A non-unital subring of `R`
 is a subset `s` that is a multiplicative subsemigroup and an additive subgroup. Note in particular
 that it shares the same 0 as R. -/
 structure NonUnitalSubring (R : Type u) [NonUnitalNonAssocRing R] extends
-  NonUnitalSubsemiring R, AddSubgroup R
+    CarrierWrapper R, IsNonUnitalSubring carrier, NonUnitalSubsemiring R, AddSubgroup R
 
 /-- Reinterpret a `NonUnitalSubring` as a `NonUnitalSubsemiring`. -/
 add_decl_doc NonUnitalSubring.toNonUnitalSubsemiring
@@ -146,7 +153,7 @@ def toSubsemigroup (s : NonUnitalSubring R) : Subsemigroup R :=
 
 instance : SetLike (NonUnitalSubring R) R where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
+  coe_injective' p q h := by obtain ⟨⟨⟩⟩ := p; congr
 
 instance : NonUnitalSubringClass (NonUnitalSubring R) R where
   zero_mem s := s.zero_mem'
@@ -158,18 +165,18 @@ theorem mem_carrier {s : NonUnitalSubring R} {x : R} : x ∈ s.toNonUnitalSubsem
   Iff.rfl
 
 @[simp]
-theorem mem_mk {S : NonUnitalSubsemiring R} {x : R} (h) :
-    x ∈ (⟨S, h⟩ : NonUnitalSubring R) ↔ x ∈ S :=
+theorem mem_mk {S : Set R} {x : R} (h) :
+    x ∈ (⟨⟨S⟩, h⟩ : NonUnitalSubring R) ↔ x ∈ S :=
   Iff.rfl
 
 @[simp]
-theorem coe_set_mk (S : NonUnitalSubsemiring R) (h) :
-    ((⟨S, h⟩ : NonUnitalSubring R) : Set R) = S :=
+theorem coe_set_mk (S : Set R) (h) :
+    ((⟨⟨S⟩, h⟩ : NonUnitalSubring R) : Set R) = S :=
   rfl
 
 @[simp]
-theorem mk_le_mk {S S' : NonUnitalSubsemiring R} (h h') :
-    (⟨S, h⟩ : NonUnitalSubring R) ≤ (⟨S', h'⟩ : NonUnitalSubring R) ↔ S ≤ S' :=
+theorem mk_le_mk {S S' : Set R} (h h') :
+    (⟨⟨S⟩, h⟩ : NonUnitalSubring R) ≤ (⟨⟨S'⟩, h'⟩ : NonUnitalSubring R) ↔ S ≤ S' :=
   Iff.rfl
 
 /-- Two non-unital subrings are equal if they have the same elements. -/
@@ -680,7 +687,7 @@ elements of the closure of `s`. -/
 theorem closure_induction {s : Set R} {p : R → Prop} {x} (h : x ∈ closure s) (mem : ∀ x ∈ s, p x)
     (zero : p 0) (add : ∀ x y, p x → p y → p (x + y)) (neg : ∀ x : R, p x → p (-x))
     (mul : ∀ x y, p x → p y → p (x * y)) : p x :=
-  (@closure_le _ _ _ ⟨⟨⟨⟨p, add _ _⟩, zero⟩, mul _ _⟩, neg _⟩).2 mem h
+  (@closure_le _ _ _ ⟨⟨p⟩, ⟨⟨⟨⟨add _ _⟩, zero⟩, ⟨mul _ _⟩⟩, neg _⟩⟩).2 mem h
 
 /-- The difference with `NonUnitalSubring.closure_induction` is that this acts on the
 subtype. -/

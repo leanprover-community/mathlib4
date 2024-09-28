@@ -33,7 +33,7 @@ protected def op (H : Subgroup G) : Subgroup Gᵐᵒᵖ where
   (Subgroup (MulOpposite _) _) _ (@Subgroup.op _ _ _))) _`
 compared to the keys for `Submonoid.smul`
 `SMul (@Subtype _ (@Membership.mem _ (Submonoid _ _) _ _)) _` -/
-@[to_additive] instance instSMul (H : Subgroup G) : SMul H.op G := Submonoid.smul ..
+@[to_additive] instance instSMul (H : Subgroup G) : SMul H.op G := H.op.toSubmonoid.smul
 
 @[to_additive (attr := simp)]
 theorem mem_op {x : Gᵐᵒᵖ} {S : Subgroup G} : x ∈ S.op ↔ x.unop ∈ S := Iff.rfl

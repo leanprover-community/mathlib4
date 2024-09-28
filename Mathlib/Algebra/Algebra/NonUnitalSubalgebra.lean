@@ -40,10 +40,18 @@ end NonUnitalSubalgebraClass
 
 end NonUnitalSubalgebraClass
 
+/-- A non-unital subalgebra is a sub(semi)ring that is also a submodule.
+
+Note that the bundled variant `NonUnitalSubalgebra R` should be preferred. -/
+structure IsNonUnitalSubalgebra (R : Type u) {A : Type v} [CommSemiring R]
+    [NonUnitalNonAssocSemiring A] [Module R A] (s : Set A) extends
+    IsNonUnitalSubsemiring s, IsSubmodule R s : Prop where
+
 /-- A non-unital subalgebra is a sub(semi)ring that is also a submodule. -/
 structure NonUnitalSubalgebra (R : Type u) (A : Type v) [CommSemiring R]
     [NonUnitalNonAssocSemiring A] [Module R A]
-    extends NonUnitalSubsemiring A, Submodule R A : Type v
+    extends CarrierWrapper A, IsNonUnitalSubalgebra R carrier,
+    NonUnitalSubsemiring A, Submodule R A, Subsemigroup A : Type v
 
 /-- Reinterpret a `NonUnitalSubalgebra` as a `NonUnitalSubsemiring`. -/
 add_decl_doc NonUnitalSubalgebra.toNonUnitalSubsemiring
@@ -62,7 +70,7 @@ variable [Module R A] [Module R B] [Module R C]
 
 instance : SetLike (NonUnitalSubalgebra R A) A where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
+  coe_injective' p q h := by obtain ⟨⟨⟩⟩ := p; congr
 
 instance instNonUnitalSubsemiringClass :
     NonUnitalSubsemiringClass (NonUnitalSubalgebra R A) A where
@@ -148,7 +156,7 @@ instance instNonUnitalSubringClass : NonUnitalSubringClass (NonUnitalSubalgebra 
 
 /-- A non-unital subalgebra over a ring is also a `Subring`. -/
 def toNonUnitalSubring (S : NonUnitalSubalgebra R A) : NonUnitalSubring A where
-  toNonUnitalSubsemiring := S.toNonUnitalSubsemiring
+  __ := S.toNonUnitalSubsemiring
   neg_mem' := neg_mem (s := S)
 
 @[simp]
@@ -399,7 +407,7 @@ theorem coe_toNonUnitalSubalgebra (p : Submodule R A) (h_mul) :
 
 theorem toNonUnitalSubalgebra_mk (p : Submodule R A) hmul :
     p.toNonUnitalSubalgebra hmul =
-      NonUnitalSubalgebra.mk ⟨⟨⟨p, p.add_mem⟩, p.zero_mem⟩, hmul _ _⟩ p.smul_mem' :=
+      NonUnitalSubalgebra.mk ⟨p⟩ ⟨⟨⟨⟨p.add_mem⟩, p.zero_mem⟩, ⟨hmul _ _⟩⟩, ⟨p.smul_mem'⟩⟩ :=
   rfl
 
 @[simp]
@@ -423,7 +431,7 @@ variable [NonUnitalNonAssocSemiring C] [Module R C] [FunLike F A B] [NonUnitalAl
 
 /-- Range of an `NonUnitalAlgHom` as a non-unital subalgebra. -/
 protected def range (φ : F) : NonUnitalSubalgebra R B where
-  toNonUnitalSubsemiring := NonUnitalRingHom.srange (φ : A →ₙ+* B)
+  __ := NonUnitalRingHom.srange (φ : A →ₙ+* B)
   smul_mem' := fun r a => by rintro ⟨a, rfl⟩; exact ⟨r • a, map_smul φ r a⟩
 
 @[simp]
@@ -946,7 +954,8 @@ variable {ι : Type*}
 theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalSubalgebra R A}
     (dir : Directed (· ≤ ·) S) : ↑(iSup S) = ⋃ i, (S i : Set A) :=
   let K : NonUnitalSubalgebra R A :=
-    { __ := NonUnitalSubsemiring.copy _ _ (NonUnitalSubsemiring.coe_iSup_of_directed dir).symm
+    { __ := NonUnitalSubsemiring.copy _ _ (NonUnitalSubsemiring.coe_iSup_of_directed
+        (S := (fun i ↦ (S i).toNonUnitalSubsemiring)) dir).symm
       smul_mem' := fun r _x hx ↦
         let ⟨i, hi⟩ := Set.mem_iUnion.1 hx
         Set.mem_iUnion.2 ⟨i, (S i).smul_mem' r hi⟩ }
@@ -1101,7 +1110,7 @@ variable (R)
 
 /-- The centralizer of a set as a non-unital subalgebra. -/
 def centralizer (s : Set A) : NonUnitalSubalgebra R A where
-  toNonUnitalSubsemiring := NonUnitalSubsemiring.centralizer s
+  __ := NonUnitalSubsemiring.centralizer s
   smul_mem' := Set.smul_mem_centralizer
 
 @[simp, norm_cast]
@@ -1129,7 +1138,7 @@ variable {R : Type*} [NonUnitalNonAssocSemiring R]
 /-- A non-unital subsemiring is a non-unital `ℕ`-subalgebra. -/
 def nonUnitalSubalgebraOfNonUnitalSubsemiring (S : NonUnitalSubsemiring R) :
     NonUnitalSubalgebra ℕ R where
-  toNonUnitalSubsemiring := S
+  __ := S
   smul_mem' n _x hx := nsmul_mem (S := S) hx n
 
 @[simp]
@@ -1145,7 +1154,7 @@ variable {R : Type*} [NonUnitalNonAssocRing R]
 
 /-- A non-unital subring is a non-unital `ℤ`-subalgebra. -/
 def nonUnitalSubalgebraOfNonUnitalSubring (S : NonUnitalSubring R) : NonUnitalSubalgebra ℤ R where
-  toNonUnitalSubsemiring := S.toNonUnitalSubsemiring
+  __ := S.toNonUnitalSubsemiring
   smul_mem' n _x hx := zsmul_mem (K := S) hx n
 
 @[simp]

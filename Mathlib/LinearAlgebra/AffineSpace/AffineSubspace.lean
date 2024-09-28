@@ -205,8 +205,7 @@ def directionOfNonempty {s : AffineSubspace k P} (h : (s : Set P).Nonempty) : Su
 theorem directionOfNonempty_eq_direction {s : AffineSubspace k P} (h : (s : Set P).Nonempty) :
     directionOfNonempty h = s.direction := by
   refine le_antisymm ?_ (Submodule.span_le.2 Set.Subset.rfl)
-  rw [← SetLike.coe_subset_coe, directionOfNonempty, direction, Submodule.coe_set_mk,
-    AddSubmonoid.coe_set_mk]
+  rw [← SetLike.coe_subset_coe, directionOfNonempty, direction, Submodule.coe_set_mk]
   exact vsub_set_subset_vectorSpan k _
 
 /-- The set of vectors in the direction of a nonempty affine subspace is given by `vsub_set`. -/

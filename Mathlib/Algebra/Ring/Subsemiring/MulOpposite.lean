@@ -19,11 +19,13 @@ namespace Subsemiring
 variable {ι : Sort*} {R : Type*} [NonAssocSemiring R]
 
 /-- Pull a subsemiring back to an opposite subsemiring along `MulOpposite.unop` -/
-@[simps toSubmonoid]
 protected def op (S : Subsemiring R) : Subsemiring Rᵐᵒᵖ where
-  toSubmonoid := S.toSubmonoid.op
+  __ := S.toSubmonoid.op
   add_mem' {x} {y} hx hy := add_mem (show x.unop ∈ S from hx) (show y.unop ∈ S from hy)
   zero_mem' := zero_mem S
+
+@[simp]
+theorem op_toSubmonoid (S : Subsemiring R) : S.op.toSubmonoid = S.toSubmonoid.op := rfl
 
 @[simp, norm_cast]
 theorem op_coe (S : Subsemiring R) : S.op = MulOpposite.unop ⁻¹' (S : Set R) := rfl
@@ -32,12 +34,14 @@ theorem op_coe (S : Subsemiring R) : S.op = MulOpposite.unop ⁻¹' (S : Set R) 
 theorem mem_op {x : Rᵐᵒᵖ} {S : Subsemiring R} : x ∈ S.op ↔ x.unop ∈ S := Iff.rfl
 
 /-- Pull an opposite subsemiring back to a subsemiring along `MulOpposite.op` -/
-@[simps toSubmonoid]
 protected def unop (S : Subsemiring Rᵐᵒᵖ) : Subsemiring R where
-  toSubmonoid := S.toSubmonoid.unop
+  __ := S.toSubmonoid.unop
   add_mem' {x} {y} hx hy := add_mem
     (show MulOpposite.op x ∈ S from hx) (show MulOpposite.op y ∈ S from hy)
   zero_mem' := zero_mem S
+
+@[simp]
+theorem unop_toSubmonoid (S : Subsemiring Rᵐᵒᵖ) : S.unop.toSubmonoid = S.toSubmonoid.unop := rfl
 
 @[simp, norm_cast]
 theorem unop_coe (S : Subsemiring Rᵐᵒᵖ) : S.unop = MulOpposite.op ⁻¹' (S : Set Rᵐᵒᵖ) := rfl

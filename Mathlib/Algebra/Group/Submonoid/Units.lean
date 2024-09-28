@@ -43,7 +43,7 @@ open Pointwise in
 /-- The units of `S`, packaged as a subgroup of `Mˣ`. -/
 @[to_additive " The additive units of `S`, packaged as an additive subgroup of `AddUnits M`. "]
 def Submonoid.units (S : Submonoid M) : Subgroup Mˣ where
-  toSubmonoid := S.comap (coeHom M) ⊓ (S.comap (coeHom M))⁻¹
+  __ := S.comap (coeHom M) ⊓ (S.comap (coeHom M))⁻¹
   inv_mem' ha := ⟨ha.2, ha.1⟩
 
 /-- A subgroup of units represented as a submonoid of `M`. -/
@@ -308,7 +308,7 @@ noncomputable def ofUnitsTopEquiv : (⊤ : Subgroup Mˣ).ofUnits ≃* Mˣ :=
 variable {G : Type*}  [Group G]
 
 @[to_additive]
-lemma mem_units_iff_val_mem (H : Subgroup G) (x : Gˣ) : x ∈ H.units ↔ (x : G) ∈ H := by
+lemma mem_units_iff_val_mem (H : Subgroup G) (x : Gˣ) : x ∈ H.toSubmonoid.units ↔ (x : G) ∈ H := by
   simp_rw [Submonoid.mem_units_iff, mem_toSubmonoid, val_inv_eq_inv_val, inv_mem_iff, and_self]
 
 @[to_additive]
@@ -316,7 +316,8 @@ lemma mem_ofUnits_iff_toUnits_mem (H : Subgroup Gˣ) (x : G) : x ∈ H.ofUnits �
   simp_rw [mem_ofUnits_iff, toUnits.surjective.exists, val_toUnits_apply, exists_eq_right]
 
 @[to_additive (attr := simp)]
-lemma mem_iff_toUnits_mem_units (H : Subgroup G) (x : G) : toUnits x ∈ H.units ↔ x ∈ H := by
+lemma mem_iff_toUnits_mem_units (H : Subgroup G) (x : G) :
+    toUnits x ∈ H.toSubmonoid.units ↔ x ∈ H := by
   simp_rw [mem_units_iff_val_mem, val_toUnits_apply]
 
 @[to_additive (attr := simp)]
@@ -326,7 +327,7 @@ lemma val_mem_ofUnits_iff_mem (H : Subgroup Gˣ) (x : Gˣ) : (x : G) ∈ H.ofUni
 /-- The equivalence between the greatest subgroup of units contained within `T` and `T` itself. -/
 @[to_additive " The equivalence between the greatest subgroup of additive units
 contained within `T` and `T` itself. "]
-def unitsEquivSelf (H : Subgroup G) : H.units ≃* H :=
-  H.unitsEquivUnitsType.trans (toUnits (G := H)).symm
+def unitsEquivSelf (H : Subgroup G) : H.toSubmonoid.units ≃* H :=
+  H.toSubmonoid.unitsEquivUnitsType.trans (toUnits (G := H)).symm
 
 end Subgroup

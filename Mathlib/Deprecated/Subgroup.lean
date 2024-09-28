@@ -38,16 +38,17 @@ section Group
 
 variable [Group G] [AddGroup A]
 
-/-- `s` is an additive subgroup: a set containing 0 and closed under addition and negation. -/
-structure IsAddSubgroup (s : Set A) extends IsAddSubmonoid s : Prop where
-  /-- The proposition that `s` is closed under negation. -/
-  neg_mem {a} : a ∈ s → -a ∈ s
-
-/-- `s` is a subgroup: a set containing 1 and closed under multiplication and inverse. -/
 @[to_additive]
-structure IsSubgroup (s : Set G) extends IsSubmonoid s : Prop where
-  /-- The proposition that `s` is closed under inverse. -/
-  inv_mem {a} : a ∈ s → a⁻¹ ∈ s
+theorem IsSubgroup.mul_mem {s : Set G} (h : IsSubgroup s) {a b : G} : a ∈ s → b ∈ s → a * b ∈ s :=
+  h.mul_mem'
+
+@[to_additive]
+theorem IsSubgroup.one_mem {s : Set G} (h : IsSubgroup s) : 1 ∈ s :=
+  h.one_mem'
+
+@[to_additive]
+theorem IsSubgroup.inv_mem {s : Set G} (h : IsSubgroup s) {a : G} : a ∈ s → a⁻¹ ∈ s :=
+  h.inv_mem'
 
 @[to_additive]
 theorem IsSubgroup.div_mem {s : Set G} (hs : IsSubgroup s) {x y : G} (hx : x ∈ s) (hy : y ∈ s) :
@@ -57,7 +58,7 @@ theorem Additive.isAddSubgroup {s : Set G} (hs : IsSubgroup s) : @IsAddSubgroup 
   @IsAddSubgroup.mk (Additive G) _ _ (Additive.isAddSubmonoid hs.toIsSubmonoid) hs.inv_mem
 
 theorem Additive.isAddSubgroup_iff {s : Set G} : @IsAddSubgroup (Additive G) _ s ↔ IsSubgroup s :=
-  ⟨by rintro ⟨⟨h₁, h₂⟩, h₃⟩; exact @IsSubgroup.mk G _ _ ⟨h₁, @h₂⟩ @h₃, fun h =>
+  ⟨by rintro ⟨⟨⟨h₁⟩, h₂⟩, h₃⟩; exact @IsSubgroup.mk G _ _ ⟨⟨h₁⟩, @h₂⟩ @h₃, fun h =>
     Additive.isAddSubgroup h⟩
 
 theorem Multiplicative.isSubgroup {s : Set A} (hs : IsAddSubgroup s) :
@@ -66,7 +67,7 @@ theorem Multiplicative.isSubgroup {s : Set A} (hs : IsAddSubgroup s) :
 
 theorem Multiplicative.isSubgroup_iff {s : Set A} :
     @IsSubgroup (Multiplicative A) _ s ↔ IsAddSubgroup s :=
-  ⟨by rintro ⟨⟨h₁, h₂⟩, h₃⟩; exact @IsAddSubgroup.mk A _ _ ⟨h₁, @h₂⟩ @h₃, fun h =>
+  ⟨by rintro ⟨⟨⟨h₁⟩, h₂⟩, h₃⟩; exact @IsAddSubgroup.mk A _ _ ⟨⟨h₁⟩, @h₂⟩ @h₃, fun h =>
     Multiplicative.isSubgroup h⟩
 
 @[to_additive of_add_neg]
@@ -76,12 +77,12 @@ theorem IsSubgroup.of_div (s : Set G) (one_mem : (1 : G) ∈ s)
     have : 1 * a⁻¹ ∈ s := div_mem one_mem ha
     convert this using 1
     rw [one_mul]
-  { inv_mem := inv_mem _
-    mul_mem := fun {a b} ha hb => by
+  { inv_mem' := inv_mem _
+    mul_mem' := fun {a b} ha hb => by
       have : a * b⁻¹⁻¹ ∈ s := div_mem ha (inv_mem b hb)
       convert this
       rw [inv_inv]
-    one_mem }
+    one_mem' := one_mem }
 
 theorem IsAddSubgroup.of_sub (s : Set A) (zero_mem : (0 : A) ∈ s)
     (sub_mem : ∀ {a b : A}, a ∈ s → b ∈ s → a - b ∈ s) : IsAddSubgroup s :=
@@ -92,20 +93,20 @@ theorem IsAddSubgroup.of_sub (s : Set A) (zero_mem : (0 : A) ∈ s)
 theorem IsSubgroup.inter {s₁ s₂ : Set G} (hs₁ : IsSubgroup s₁) (hs₂ : IsSubgroup s₂) :
     IsSubgroup (s₁ ∩ s₂) :=
   { IsSubmonoid.inter hs₁.toIsSubmonoid hs₂.toIsSubmonoid with
-    inv_mem := fun hx => ⟨hs₁.inv_mem hx.1, hs₂.inv_mem hx.2⟩ }
+    inv_mem' := fun hx => ⟨hs₁.inv_mem hx.1, hs₂.inv_mem hx.2⟩ }
 
 @[to_additive]
 theorem IsSubgroup.iInter {ι : Sort*} {s : ι → Set G} (hs : ∀ y : ι, IsSubgroup (s y)) :
     IsSubgroup (Set.iInter s) :=
   { IsSubmonoid.iInter fun y => (hs y).toIsSubmonoid with
-    inv_mem := fun h =>
+    inv_mem' := fun h =>
       Set.mem_iInter.2 fun y => IsSubgroup.inv_mem (hs _) (Set.mem_iInter.1 h y) }
 
 @[to_additive]
 theorem isSubgroup_iUnion_of_directed {ι : Type*} [Nonempty ι] {s : ι → Set G}
     (hs : ∀ i, IsSubgroup (s i)) (directed : ∀ i j, ∃ k, s i ⊆ s k ∧ s j ⊆ s k) :
     IsSubgroup (⋃ i, s i) :=
-  { inv_mem := fun ha =>
+  { inv_mem' := fun ha =>
       let ⟨i, hi⟩ := Set.mem_iUnion.1 ha
       Set.mem_iUnion.2 ⟨i, (hs i).inv_mem hi⟩
     toIsSubmonoid := isSubmonoid_iUnion_of_directed (fun i => (hs i).toIsSubmonoid) directed }
@@ -200,7 +201,7 @@ theorem mem_trivial {g : G} : g ∈ trivial G ↔ g = 1 :=
   mem_singleton_iff
 
 @[to_additive]
-theorem trivial_normal : IsNormalSubgroup (trivial G) := by refine ⟨⟨⟨?_, ?_⟩, ?_⟩, ?_⟩ <;> simp
+theorem trivial_normal : IsNormalSubgroup (trivial G) := by refine ⟨⟨⟨⟨?_⟩, ?_⟩, ?_⟩, ?_⟩ <;> simp
 
 @[to_additive]
 theorem eq_trivial_iff {s : Set G} (hs : IsSubgroup s) : s = trivial G ↔ ∀ x ∈ s, x = (1 : G) := by
@@ -208,7 +209,7 @@ theorem eq_trivial_iff {s : Set G} (hs : IsSubgroup s) : s = trivial G ↔ ∀ x
   exact ⟨fun h x => (h x).1, fun h x => ⟨h x, fun hx => hx.symm ▸ hs.toIsSubmonoid.one_mem⟩⟩
 
 @[to_additive]
-theorem univ_subgroup : IsNormalSubgroup (@univ G) := by refine ⟨⟨⟨?_, ?_⟩, ?_⟩, ?_⟩ <;> simp
+theorem univ_subgroup : IsNormalSubgroup (@univ G) := by refine ⟨⟨⟨⟨?_⟩, ?_⟩, ?_⟩, ?_⟩ <;> simp
 
 /-- The underlying set of the center of a group. -/
 @[to_additive addCenter "The underlying set of the center of an additive group."]
@@ -221,10 +222,10 @@ theorem mem_center {a : G} : a ∈ center G ↔ ∀ g, g * a = a * g :=
 
 @[to_additive add_center_normal]
 theorem center_normal : IsNormalSubgroup (center G) :=
-  { one_mem := by simp [center]
-    mul_mem := fun ha hb g => by
+  { one_mem' := by simp [center]
+    mul_mem' := fun ha hb g => by
       rw [← mul_assoc, mem_center.2 ha g, mul_assoc, mem_center.2 hb g, ← mul_assoc]
-    inv_mem := fun {a} ha g =>
+    inv_mem' := fun {a} ha g =>
       calc
         g * a⁻¹ = a⁻¹ * (g * a) * a⁻¹ := by simp [ha g]
         _ = a⁻¹ * g := by rw [← mul_assoc, mul_assoc]; simp
@@ -245,11 +246,11 @@ def normalizer (s : Set G) : Set G :=
 
 @[to_additive]
 theorem normalizer_isSubgroup (s : Set G) : IsSubgroup (normalizer s) :=
-  { one_mem := by simp [normalizer]
-    mul_mem := fun {a b}
+  { one_mem' := by simp [normalizer]
+    mul_mem' := fun {a b}
       (ha : ∀ n, n ∈ s ↔ a * n * a⁻¹ ∈ s) (hb : ∀ n, n ∈ s ↔ b * n * b⁻¹ ∈ s) n =>
       by rw [mul_inv_rev, ← mul_assoc, mul_assoc a, mul_assoc a, ← ha, ← hb]
-    inv_mem := fun {a} (ha : ∀ n, n ∈ s ↔ a * n * a⁻¹ ∈ s) n => by
+    inv_mem' := fun {a} (ha : ∀ n, n ∈ s ↔ a * n * a⁻¹ ∈ s) n => by
       rw [ha (a⁻¹ * n * a⁻¹⁻¹)]; simp [mul_assoc] }
 
 @[to_additive subset_add_normalizer]
@@ -319,10 +320,10 @@ theorem inv_iff_ker' {f : G → H} (hf : IsGroupHom f) (a b : G) : f a = f b ↔
 @[to_additive]
 theorem image_subgroup {f : G → H} (hf : IsGroupHom f) {s : Set G} (hs : IsSubgroup s) :
     IsSubgroup (f '' s) :=
-  { mul_mem := fun {a₁ a₂} ⟨b₁, hb₁, eq₁⟩ ⟨b₂, hb₂, eq₂⟩ =>
+  { mul_mem' := fun {a₁ a₂} ⟨b₁, hb₁, eq₁⟩ ⟨b₂, hb₂, eq₂⟩ =>
       ⟨b₁ * b₂, hs.mul_mem hb₁ hb₂, by simp [eq₁, eq₂, hf.map_mul]⟩
-    one_mem := ⟨1, hs.toIsSubmonoid.one_mem, hf.map_one⟩
-    inv_mem := fun {a} ⟨b, hb, Eq⟩ =>
+    one_mem' := ⟨1, hs.toIsSubmonoid.one_mem, hf.map_one⟩
+    inv_mem' := fun {a} ⟨b, hb, Eq⟩ =>
       ⟨b⁻¹, hs.inv_mem hb, by
         rw [hf.map_inv]
         simp [*]⟩ }
@@ -337,16 +338,16 @@ attribute [local simp] IsSubmonoid.one_mem IsSubgroup.inv_mem
 @[to_additive]
 theorem preimage {f : G → H} (hf : IsGroupHom f) {s : Set H} (hs : IsSubgroup s) :
     IsSubgroup (f ⁻¹' s) where
-  one_mem := by simp [hf.map_one, hs.one_mem]
-  mul_mem := by simp_all [hf.map_mul, hs.mul_mem]
-  inv_mem := by simp_all [hf.map_inv]
+  one_mem' := by simp [hf.map_one, hs.one_mem]
+  mul_mem' := by simp_all [hf.map_mul, hs.mul_mem]
+  inv_mem' := by simp_all [hf.map_inv]
 
 @[to_additive]
 theorem preimage_normal {f : G → H} (hf : IsGroupHom f) {s : Set H} (hs : IsNormalSubgroup s) :
     IsNormalSubgroup (f ⁻¹' s) :=
-  { one_mem := by simp [hf.map_one, hs.toIsSubgroup.one_mem]
-    mul_mem := by simp (config := { contextual := true }) [hf.map_mul, hs.toIsSubgroup.mul_mem]
-    inv_mem := by simp (config := { contextual := true }) [hf.map_inv, hs.toIsSubgroup.inv_mem]
+  { one_mem' := by simp [hf.map_one, hs.toIsSubgroup.one_mem]
+    mul_mem' := by simp (config := { contextual := true }) [hf.map_mul, hs.toIsSubgroup.mul_mem]
+    inv_mem' := by simp (config := { contextual := true }) [hf.map_inv, hs.toIsSubgroup.inv_mem]
     normal := by simp (config := { contextual := true }) [hs.normal, hf.map_mul, hf.map_inv] }
 
 @[to_additive]
@@ -427,9 +428,9 @@ theorem mem_closure {a : G} : a ∈ s → a ∈ closure s :=
 
 @[to_additive]
 theorem closure.isSubgroup (s : Set G) : IsSubgroup (closure s) :=
-  { one_mem := InClosure.one
-    mul_mem := InClosure.mul
-    inv_mem := InClosure.inv }
+  { one_mem' := InClosure.one
+    mul_mem' := InClosure.mul
+    inv_mem' := InClosure.inv }
 
 @[to_additive]
 theorem subset_closure {s : Set G} : s ⊆ closure s := fun _ => mem_closure
@@ -501,9 +502,9 @@ theorem mclosure_inv_subset {s : Set G} : Monoid.Closure (Inv.inv ⁻¹' s) ⊆ 
 theorem closure_eq_mclosure {s : Set G} : closure s = Monoid.Closure (s ∪ Inv.inv ⁻¹' s) :=
   Set.Subset.antisymm
     (@closure_subset _ _ _ (Monoid.Closure (s ∪ Inv.inv ⁻¹' s))
-      { one_mem := (Monoid.closure.isSubmonoid _).one_mem
-        mul_mem := (Monoid.closure.isSubmonoid _).mul_mem
-        inv_mem := fun hx =>
+      { one_mem' := (Monoid.closure.isSubmonoid _).one_mem
+        mul_mem' := (Monoid.closure.isSubmonoid _).mul_mem
+        inv_mem' := fun hx =>
           Monoid.InClosure.recOn hx
             (fun {x} hx =>
               Or.casesOn hx
@@ -608,15 +609,10 @@ end Group
 @[to_additive "Create a bundled additive subgroup from a set `s` and `[IsAddSubgroup s]`."]
 def Subgroup.of [Group G] {s : Set G} (h : IsSubgroup s) : Subgroup G where
   carrier := s
-  one_mem' := h.1.1
-  mul_mem' := h.1.2
-  inv_mem' := h.2
+  toIsSubgroup := h
 
 @[to_additive]
-theorem Subgroup.isSubgroup [Group G] (K : Subgroup G) : IsSubgroup (K : Set G) :=
-  { one_mem := K.one_mem'
-    mul_mem := K.mul_mem'
-    inv_mem := K.inv_mem' }
+theorem Subgroup.isSubgroup [Group G] (K : Subgroup G) : IsSubgroup (K : Set G) := K.2
 
 -- this will never fire if it's an instance
 @[to_additive]

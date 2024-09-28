@@ -25,7 +25,7 @@ namespace Submonoid
 protected def op (x : Submonoid M) : Submonoid Mᵐᵒᵖ where
   carrier := MulOpposite.unop ⁻¹' x
   mul_mem' ha hb := x.mul_mem hb ha
-  one_mem' := Submonoid.one_mem' _
+  one_mem' := x.one_mem'
 
 @[to_additive (attr := simp)]
 theorem mem_op {x : Mᵐᵒᵖ} {S : Submonoid M} : x ∈ S.op ↔ x.unop ∈ S := Iff.rfl
@@ -36,7 +36,7 @@ theorem mem_op {x : Mᵐᵒᵖ} {S : Submonoid M} : x ∈ S.op ↔ x.unop ∈ S 
 protected def unop (x : Submonoid Mᵐᵒᵖ) : Submonoid M where
   carrier := MulOpposite.op ⁻¹' x
   mul_mem' ha hb := x.mul_mem hb ha
-  one_mem' := Submonoid.one_mem' _
+  one_mem' := x.one_mem'
 
 @[to_additive (attr := simp)]
 theorem mem_unop {x : M} {S : Submonoid Mᵐᵒᵖ} : x ∈ S.unop ↔ MulOpposite.op x ∈ S := Iff.rfl

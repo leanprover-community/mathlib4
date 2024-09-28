@@ -32,9 +32,17 @@ variable {G : Type u''} {S : Type u'} {R : Type u} {M : Type v} {ι : Type w}
 
 /-- A submodule of a module is one which is closed under vector operations.
   This is a sufficient condition for the subset of vectors in the submodule
+  to themselves form a module.
+
+Note that the bundled variant `Submodule R` should be preferred. -/
+structure IsSubmodule (R : Type u) {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
+    (s : Set M) extends IsAddSubmonoid s, IsSubMulAction R s : Prop
+
+/-- A submodule of a module is one which is closed under vector operations.
+  This is a sufficient condition for the subset of vectors in the submodule
   to themselves form a module. -/
 structure Submodule (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Module R M] extends
-  AddSubmonoid M, SubMulAction R M : Type v
+    CarrierWrapper M, IsSubmodule R carrier, AddSubmonoid M, SubMulAction R M : Type v
 
 /-- Reinterpret a `Submodule` as an `AddSubmonoid`. -/
 add_decl_doc Submodule.toAddSubmonoid
@@ -48,14 +56,14 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 instance setLike : SetLike (Submodule R M) M where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+  coe_injective' p q h := by obtain ⟨⟨⟩⟩ := p; congr
 
 instance addSubmonoidClass : AddSubmonoidClass (Submodule R M) M where
-  zero_mem _ := AddSubmonoid.zero_mem' _
-  add_mem := AddSubsemigroup.add_mem' _
+  zero_mem {s} := s.zero_mem'
+  add_mem {s} := s.add_mem'
 
 instance smulMemClass : SMulMemClass (Submodule R M) R M where
-  smul_mem {s} c _ h := SubMulAction.smul_mem' s.toSubMulAction c h
+  smul_mem {s} := s.smul_mem'
 
 @[simp]
 theorem mem_toAddSubmonoid (p : Submodule R M) (x : M) : x ∈ p.toAddSubmonoid ↔ x ∈ p :=
@@ -64,11 +72,11 @@ theorem mem_toAddSubmonoid (p : Submodule R M) (x : M) : x ∈ p.toAddSubmonoid 
 variable {p q : Submodule R M}
 
 @[simp]
-theorem mem_mk {S : AddSubmonoid M} {x : M} (h) : x ∈ (⟨S, h⟩ : Submodule R M) ↔ x ∈ S :=
+theorem mem_mk {S : Set M} {x : M} (h) : x ∈ (⟨⟨S⟩, h⟩ : Submodule R M) ↔ x ∈ S :=
   Iff.rfl
 
 @[simp]
-theorem coe_set_mk (S : AddSubmonoid M) (h) : ((⟨S, h⟩ : Submodule R M) : Set M) = S :=
+theorem coe_set_mk (S : Set M) (h) : ((⟨⟨S⟩, h⟩ : Submodule R M) : Set M) = S :=
   rfl
 
 @[simp] theorem eta (h) : ({p with smul_mem' := h} : Submodule R M) = p :=
@@ -76,8 +84,8 @@ theorem coe_set_mk (S : AddSubmonoid M) (h) : ((⟨S, h⟩ : Submodule R M) : Se
 
 -- Porting note: replaced `S ⊆ S' : Set` with `S ≤ S'`
 @[simp]
-theorem mk_le_mk {S S' : AddSubmonoid M} (h h') :
-    (⟨S, h⟩ : Submodule R M) ≤ (⟨S', h'⟩ : Submodule R M) ↔ S ≤ S' :=
+theorem mk_le_mk {S S' : Set M} (h h') :
+    (⟨⟨S⟩, h⟩ : Submodule R M) ≤ (⟨⟨S'⟩, h'⟩ : Submodule R M) ↔ S ≤ S' :=
   Iff.rfl
 
 @[ext]

@@ -40,7 +40,7 @@ variable [Semiring C] [StarRing C] [Algebra R C] [StarModule R C]
 
 instance setLike : SetLike (StarSubalgebra R A) A where
   coe S := S.carrier
-  coe_injective' p q h := by obtain ⟨⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩, _⟩ := p; cases q; congr
+  coe_injective' p q h := by obtain ⟨⟨⟨⟩⟩⟩ := p; cases q; congr
 
 instance starMemClass : StarMemClass (StarSubalgebra R A) A where
   star_mem {s} := s.star_mem'

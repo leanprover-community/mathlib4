@@ -284,9 +284,9 @@ theorem mem_sSup_of_mem {S : Set (Submodule R M)} {s : Submodule R M} (hs : s �
 theorem toAddSubmonoid_sSup (s : Set (Submodule R M)) :
     (sSup s).toAddSubmonoid = sSup (toAddSubmonoid '' s) := by
   let p : Submodule R M :=
-    { toAddSubmonoid := sSup (toAddSubmonoid '' s)
+    { __ := sSup (toAddSubmonoid '' s)
       smul_mem' := fun t {m} h ↦ by
-        simp_rw [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup, sSup_eq_iSup'] at h ⊢
+        simp_rw [AddSubmonoid.mem_carrier, sSup_eq_iSup'] at h ⊢
         refine AddSubmonoid.iSup_induction'
           (C := fun x _ ↦ t • x ∈ ⨆ p : toAddSubmonoid '' s, (p : AddSubmonoid M)) ?_ ?_
           (fun x y _ _ ↦ ?_) h

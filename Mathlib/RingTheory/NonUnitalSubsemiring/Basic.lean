@@ -80,9 +80,16 @@ instance toNonUnitalCommSemiring {R} [NonUnitalCommSemiring R] [SetLike S R]
 end NonUnitalSubsemiringClass
 
 /-- A non-unital subsemiring of a non-unital semiring `R` is a subset `s` that is both an additive
+submonoid and a semigroup.
+
+Note that the bundled variant `NonUnitalSubsemiring R` should be preferred. -/
+structure IsNonUnitalSubsemiring {R : Type*} [NonUnitalNonAssocSemiring R] (s : Set R) extends
+    IsAddSubmonoid s, IsSubsemigroup s : Prop
+
+/-- A non-unital subsemiring of a non-unital semiring `R` is a subset `s` that is both an additive
 submonoid and a semigroup. -/
-structure NonUnitalSubsemiring (R : Type u) [NonUnitalNonAssocSemiring R] extends AddSubmonoid R,
-  Subsemigroup R
+structure NonUnitalSubsemiring (R : Type u) [NonUnitalNonAssocSemiring R] extends
+    CarrierWrapper R, IsNonUnitalSubsemiring carrier, AddSubmonoid R, Subsemigroup R
 
 /-- Reinterpret a `NonUnitalSubsemiring` as a `Subsemigroup`. -/
 add_decl_doc NonUnitalSubsemiring.toSubsemigroup
@@ -94,12 +101,12 @@ namespace NonUnitalSubsemiring
 
 instance : SetLike (NonUnitalSubsemiring R) R where
   coe s := s.carrier
-  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+  coe_injective' p q h := by obtain ⟨⟨⟩⟩ := p; congr
 
 instance : NonUnitalSubsemiringClass (NonUnitalSubsemiring R) R where
-  zero_mem {s} := AddSubmonoid.zero_mem' s.toAddSubmonoid
-  add_mem {s} := AddSubsemigroup.add_mem' s.toAddSubmonoid.toAddSubsemigroup
-  mul_mem {s} := mul_mem' s
+  zero_mem {s} := s.zero_mem'
+  add_mem {s} := s.add_mem'
+  mul_mem {s} := s.mul_mem'
 
 theorem mem_carrier {s : NonUnitalSubsemiring R} {x : R} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
@@ -623,7 +630,7 @@ of the closure of `s`. -/
 @[elab_as_elim]
 theorem closure_induction {s : Set R} {p : R → Prop} {x} (h : x ∈ closure s) (mem : ∀ x ∈ s, p x)
     (zero : p 0) (add : ∀ x y, p x → p y → p (x + y)) (mul : ∀ x y, p x → p y → p (x * y)) : p x :=
-  (@closure_le _ _ _ ⟨⟨⟨p, fun {a b} => add a b⟩, zero⟩, fun {a b} => mul a b⟩).2 mem h
+  (@closure_le _ _ _ ⟨⟨p⟩, ⟨⟨⟨fun {a b} => add a b⟩, zero⟩, ⟨fun {a b} => mul a b⟩⟩⟩).2 mem h
 
 /-- An induction principle for closure membership for predicates with two arguments. -/
 @[elab_as_elim]

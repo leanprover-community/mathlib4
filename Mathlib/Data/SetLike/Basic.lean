@@ -215,3 +215,8 @@ theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
   rw [lt_iff_le_not_le, not_le_iff_exists]
 
 end SetLike
+
+/-- `CarrierWrapper A` is a wrapper around `Set A` -/
+structure CarrierWrapper (A : Type*) where
+  /-- The carrier of a set-like object. -/
+  carrier : Set A

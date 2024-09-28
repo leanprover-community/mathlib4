@@ -265,7 +265,7 @@ theorem Group.fg_iff_monoid_fg : Group.FG G ↔ Monoid.FG G :=
 
 @[to_additive (attr := simp)]
 theorem Group.fg_iff_subgroup_fg (H : Subgroup G) : Group.FG H ↔ H.FG :=
-  (fg_iff_monoid_fg.trans (Monoid.fg_iff_submonoid_fg _)).trans
+  (fg_iff_monoid_fg.trans (Monoid.fg_iff_submonoid_fg H.toSubmonoid)).trans
     (Subgroup.fg_iff_submonoid_fg _).symm
 
 theorem GroupFG.iff_add_fg : Group.FG G ↔ AddGroup.FG (Additive G) :=

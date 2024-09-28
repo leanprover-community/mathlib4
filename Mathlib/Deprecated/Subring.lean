@@ -33,18 +33,25 @@ open Group
 
 variable {R : Type u} [Ring R]
 
-/-- `S` is a subring: a set containing 1 and closed under multiplication, addition and additive
-inverse. -/
-structure IsSubring (S : Set R) extends IsAddSubgroup S, IsSubmonoid S : Prop
-
 /-- Construct a `Subring` from a set satisfying `IsSubring`. -/
 def IsSubring.subring {S : Set R} (hs : IsSubring S) : Subring R where
   carrier := S
-  one_mem' := hs.one_mem
-  mul_mem' := hs.mul_mem
-  zero_mem' := hs.zero_mem
-  add_mem' := hs.add_mem
-  neg_mem' := hs.neg_mem
+  toIsSubring := hs
+
+theorem IsSubring.mul_mem {s : Set R} (h : IsSubring s) {a b : R} : a ∈ s → b ∈ s → a * b ∈ s :=
+  h.mul_mem'
+
+theorem IsSubring.one_mem {s : Set R} (h : IsSubring s) : 1 ∈ s :=
+  h.one_mem'
+
+theorem IsSubring.add_mem {s : Set R} (h : IsSubring s) {a b : R} : a ∈ s → b ∈ s → a + b ∈ s :=
+  h.add_mem'
+
+theorem IsSubring.zero_mem {s : Set R} (h : IsSubring s) : 0 ∈ s :=
+  h.zero_mem'
+
+theorem IsSubring.neg_mem {s : Set R} (h : IsSubring s) {a : R} : a ∈ s → -a ∈ s :=
+  h.neg_mem'
 
 namespace RingHom
 
@@ -79,8 +86,8 @@ theorem IsSubring.iInter {ι : Sort*} {S : ι → Set R} (h : ∀ y : ι, IsSubr
 theorem isSubring_iUnion_of_directed {ι : Type*} [Nonempty ι] {s : ι → Set R}
     (h : ∀ i, IsSubring (s i)) (directed : ∀ i j, ∃ k, s i ⊆ s k ∧ s j ⊆ s k) :
     IsSubring (⋃ i, s i) :=
-  { toIsAddSubgroup := isAddSubgroup_iUnion_of_directed (fun i ↦ (h i).toIsAddSubgroup) directed
-    toIsSubmonoid := isSubmonoid_iUnion_of_directed (fun i ↦ (h i).toIsSubmonoid) directed }
+  { __ := isAddSubgroup_iUnion_of_directed (fun i ↦ (h i).toIsAddSubgroup) directed
+    __ := isSubmonoid_iUnion_of_directed (fun i ↦ (h i).toIsSubmonoid) directed }
 
 namespace Ring
 
@@ -154,8 +161,8 @@ protected theorem InClosure.recOn {C : R → Prop} {x : R} (hx : x ∈ closure s
 
 theorem closure.isSubring : IsSubring (closure s) :=
   { AddGroup.closure.isAddSubgroup _ with
-    one_mem := AddGroup.mem_closure <| IsSubmonoid.one_mem <| Monoid.closure.isSubmonoid _
-    mul_mem := fun {a _} ha hb ↦ AddGroup.InClosure.recOn hb
+    one_mem' := AddGroup.mem_closure <| IsSubmonoid.one_mem <| Monoid.closure.isSubmonoid _
+    mul_mem' := fun {a _} ha hb ↦ AddGroup.InClosure.recOn hb
       (fun {c} hc ↦ AddGroup.InClosure.recOn ha
         (fun hd ↦ AddGroup.subset_closure ((Monoid.closure.isSubmonoid _).mul_mem hd hc))
         ((zero_mul c).symm ▸ (AddGroup.closure.isAddSubgroup _).zero_mem)
