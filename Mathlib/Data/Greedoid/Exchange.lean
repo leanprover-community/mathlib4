@@ -19,7 +19,7 @@ def ExchangeProperty (Sys : Finset α → Prop) : Prop :=
 /-- A set system satisfies the exchange property if there is some element `x` in some feasible
     `s₁`, which is not in `s₂` with smaller cardinaliy, and `s₂ ∪ {x}` is also feasible.
     This implies that all maximal feasible sets are actually maximum. -/
-class Exchange (Sys : Finset α → Prop) : Prop :=
+class Exchange (Sys : Finset α → Prop) : Prop where
   exchange :
     ⦃s₁ : Finset α⦄ → Sys s₁ →
     ⦃s₂ : Finset α⦄ → Sys s₂ →
