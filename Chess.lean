@@ -1,4 +1,9 @@
+import Batteries
 import Mathlib
+
+attribute [simp] Int.max_eq_left Int.max_eq_right
+
+open List
 
 def Fin.range (n : Nat) : List (Fin n) :=
   (List.range n).attach.map fun ⟨i, h⟩ => ⟨i, by simpa using h⟩
@@ -12,9 +17,32 @@ def Fin.range (n : Nat) : List (Fin n) :=
 @[simp] theorem Fin.getElem_range (n : Nat) (i : Nat) (h : i < (Fin.range n).length) : (Fin.range n)[i] = ⟨i, by simpa using h⟩ := by
   simp [Fin.range, List.getElem_map, List.getElem_range]
 
+-- This name is already occupied in Mathlib.
+theorem Fin.range_succ' (n : Nat) : Fin.range (n+1) = (Fin.range n).map castSucc ++ [⟨n, by simp⟩] := by
+  apply List.ext_getElem
+  · simp
+  · intro i h₁ h₂
+    simp [getElem_append]
+    split
+    · rfl
+    · simp_all
+      omega
+
+theorem Fin.getElem?_range (n : Nat) (i : Nat) :
+    (Fin.range n)[i]? = if h : i < n then some ⟨i, by simpa using h⟩ else none := by
+  split <;> simp_all
+
 @[simp] theorem Fin.mem_range (n : Nat) (i : Fin n) : i ∈ Fin.range n := by
   simp only [range, List.mem_map, List.mem_attach, true_and, Subtype.exists, List.mem_range]
   refine ⟨i, by simp, rfl⟩
+
+@[simp] theorem Fin.map_val_range (n : Nat) :
+    (Fin.range n).map val = List.range n := by
+  apply List.ext_getElem <;> simp
+
+theorem List.range_attach_map_fin_mk (n : Nat) :
+    (range n).attach.map (fun ⟨i, h⟩ => ⟨i, by simpa using h⟩) = Fin.range n := by
+  apply List.ext_getElem <;> simp
 
 def toFin? (x : Int) : Option (Fin 8) :=
   if 0 ≤ x then if h : x.toNat < 8 then some ⟨x.toNat, h⟩ else none else none
@@ -33,15 +61,7 @@ def toFin? (x : Int) : Option (Fin 8) :=
       simp
   · simp only [reduceCtorEq, false_iff]
     omega
-namespace List
 
-@[simp] theorem map_set {α β : Type} (f : α → β) (l : List α) (i : Nat) (a : α) :
-    (l.set i a).map f = (l.map f).set i (f a) := by
-  cases l with
-  | nil => simp
-  | cons x l => cases i <;> simp
-
-end List
 
 @[simp] theorem boole_pos_iff [Decidable p] : (0 < if p then 1 else 0) ↔ p := by
   split <;> simp_all
@@ -75,15 +95,13 @@ theorem List.apply_getElem_le_sum_map_nat (f : α → Nat) (l : List α) (i : Na
       simp_all
       omega
 
+namespace List
+
+
+end List
+
 namespace Array
 
-@[simp] theorem getElem_toList (a : Array α) (i : Nat) (h : i < a.size) : a.toList[i] = a[i] := rfl
-
-@[simp] theorem getElem_mk (data : List α) (i : Nat) (h : i < data.length) : (Array.mk data)[i] = data[i] := rfl
-
-@[simp] theorem map_mk (f : α → β) (data : List α) :
-    Array.map f (Array.mk data) = Array.mk (List.map f data) := by
-  ext <;> simp
 
 @[simp] theorem map_set (f : α → β) (xs : Array α) (i : Fin xs.size) (a : α) :
     (xs.set i a).map f = (xs.map f).set (Fin.cast (by simp) i) (f a) := by
@@ -129,83 +147,69 @@ theorem apply_getElem_le_sum_map_nat (f : α → Nat) (l : Array α) (i : Nat) (
 
 end Array
 
-structure Vec (n : Nat) (α : Type _) where
-  toArray : Array α
-  size : toArray.size = n
 
-namespace Vec
+open Batteries (Vector)
 
-@[simp] theorem size_toArray (v : Vec n α) : v.toArray.size = n := by
-  simp [set, v.size]
 
-instance [Repr α] : Repr (Vec n α) where
-  reprPrec v n := reprPrec v.1 n
+namespace Batteries.Vector
 
-instance : GetElem (Vec n α) Nat α (fun _ i => i < n) where
-  getElem v i h := v.1[i]'(Nat.lt_of_lt_of_eq h v.2.symm)
+@[simp] theorem size_toArray (v : Vector α n) : v.toArray.size = n := by
+  simp [v.size_eq]
 
-@[simp] theorem getElem_toArray (v : Vec n α) (i : Nat) (h : i < v.toArray.size) : v.toArray[i] = v[i]'(by simpa using h) := rfl
+@[simp] theorem getElem_toArray (v : Vector α n) (i : Nat) (h : i < v.toArray.size) : v.toArray[i] = v[i]'(by simpa using h) := rfl
 
-@[simp] theorem getElem_mk (data : Array α) (size : data.size = n) (i : Nat) (h : i < n) : (Vec.mk data size)[i] = data[i] := rfl
+def replicate (n : Nat) (v : α) : Vector α n := ⟨Array.mkArray n v, by simp⟩
 
-def replicate (n : Nat) (v : α) : Vec n α := ⟨Array.mkArray n v, by simp⟩
+instance : Inhabited (Vector α 0) := ⟨⟨#[], rfl⟩⟩
+instance [Inhabited α] : Inhabited (Vector α n) := ⟨replicate n default⟩
 
-instance : Inhabited (Vec 0 α) := ⟨⟨#[], rfl⟩⟩
-instance [Inhabited α] : Inhabited (Vec n α) := ⟨replicate n default⟩
-
-def set (v : Vec n α) (i : Fin n) (a : α) : Vec n α :=
-  ⟨v.1.set ⟨i, Nat.lt_of_lt_of_eq i.2 v.2.symm⟩ a, by simp [Array.set, v.2]⟩
-
-@[simp] theorem toArray_set (v : Vec n α) (i : Fin n) (a : α) : (v.set i a).toArray = v.toArray.set (Fin.cast v.2.symm i) a := rfl
+@[simp] theorem toArray_set (v : Vector α n) (i : Fin n) (a : α) : (v.set i a).toArray = v.toArray.set (Fin.cast v.2.symm i) a := rfl
 
 @[simp] theorem set_mk {data : Array α} {size : data.size = n} :
     (mk data size).set i a = mk (data.set (Fin.cast size.symm i) a) (by simp [size]) := rfl
 
-@[simp] theorem getElem_set (v : Vec n α) (i : Fin n) (a : α) (j : Nat) (h : j < n) : (v.set i a)[j] = if i = j then a else v[j] := by
+@[simp] theorem getElem_set (v : Vector α n) (i : Fin n) (a : α) (j : Nat) (h : j < n) : (v.set i a)[j] = if i = j then a else v[j] := by
   cases v
   simp [Array.getElem_set, Fin.ext_iff]  -- Annoying that we need to use `ext_iff` here.
 
-def map (f : α → β) (v : Vec n α) : Vec n β :=
-  ⟨v.1.map f, by simp [v.2]⟩
+@[simp] theorem toArray_map (f : α → β) (v : Vector α n) : (v.map f).toArray = v.toArray.map f := rfl
 
-@[simp] theorem toArray_map (f : α → β) (v : Vec n α) : (v.map f).toArray = v.toArray.map f := rfl
-
-@[simp] theorem getElem_map (f : α → β) (v : Vec n α) (i : Nat) (h : i < n) : (v.map f)[i] = f v[i] := by
+@[simp] theorem getElem_map (f : α → β) (v : Vector α n) (i : Nat) (h : i < n) : (v.map f)[i] = f v[i] := by
   simp [map]
 
-@[simp] theorem map_set (f : α → β) (v : Vec n α) (i : Fin n) (a : α) : (v.set i a).map f = (v.map f).set i (f a) := by
+@[simp] theorem map_set (f : α → β) (v : Vector α n) (i : Fin n) (a : α) : (v.set i a).map f = (v.map f).set i (f a) := by
   simp [map]
 
-def countP (p : α → Bool) (v : Vec n α) : Nat :=
+def countP (p : α → Bool) (v : Vector α n) : Nat :=
   v.toArray.countP p
 
-theorem countP_set (p : α → Bool) (l : Vec n α) (i : Fin n) (a : α) :
+theorem countP_set (p : α → Bool) (l : Vector α n) (i : Fin n) (a : α) :
     (l.set i a).countP p = l.countP p - (if p l[i] then 1 else 0) + (if p a then 1 else 0) := by
   simp [countP, Array.countP_set]
 
-@[simp] theorem countP_pos_iff (p : α → Bool) (l : Vec n α) :
+@[simp] theorem countP_pos_iff (p : α → Bool) (l : Vector α n) :
     0 < l.countP p ↔ ∃ (i : Nat) (h : i < n), p l[i] := by
   simp [countP]
 
-@[simp] theorem one_le_countP_iff (p : α → Bool) (l : Vec n α) : 1 ≤ l.countP p ↔ ∃ (i : Nat) (h : i < n), p l[i] :=
+@[simp] theorem one_le_countP_iff (p : α → Bool) (l : Vector α n) : 1 ≤ l.countP p ↔ ∃ (i : Nat) (h : i < n), p l[i] :=
   countP_pos_iff p l
 
-def sum [Zero α] [Add α] (v : Vec n α) : α :=
+def sum [Zero α] [Add α] (v : Vector α n) : α :=
   v.toArray.sum
 
-@[simp] theorem sum_set (v : Vec n Nat) (i : Fin n) (a : Nat) :
+@[simp] theorem sum_set (v : Vector Nat n) (i : Fin n) (a : Nat) :
     (v.set i a).sum = v.sum - v[i] + a := by
   simp [sum]
 
-theorem getElem_le_sum_nat (l : Vec n Nat) (i : Nat) (h : i < n) : l[i] ≤ l.sum := by
+theorem getElem_le_sum_nat (l : Vector Nat n) (i : Nat) (h : i < n) : l[i] ≤ l.sum := by
   simp [sum]
   apply Array.getElem_le_sum_nat
 
-theorem apply_getElem_le_sum_map_nat (f : α → Nat) (l : Vec n α) (i : Nat) (h : i < n) : f l[i] ≤ (l.map f).sum := by
+theorem apply_getElem_le_sum_map_nat (f : α → Nat) (l : Vector α n) (i : Nat) (h : i < n) : f l[i] ≤ (l.map f).sum := by
   have := (l.map f).getElem_le_sum_nat i (by simpa using h)
   simpa using this
 
-end Vec
+end Batteries.Vector
 
 namespace Chess
 
@@ -222,7 +226,7 @@ deriving Repr, DecidableEq
 
 structure Position where
   whiteToMove : Bool
-  board : Vec 8 (Vec 8 (Option (Bool × Piece)))
+  board : Vector (Vector (Option (Bool × Piece)) 8) 8
 deriving Repr
 
 -- So much missing API:
@@ -398,15 +402,15 @@ theorem countPieces_set (p : Position) (x y : Fin 8) (piece : Piece) :
   simp [countPieces]
   simp [Position.set]
   cases h : p.occupied x y
-  · rw [Vec.countP_set]
+  · rw [Vector.countP_set]
     · simp [h, ← Nat.add_assoc]
       rw [Nat.sub_add_cancel]
-      apply Vec.apply_getElem_le_sum_map_nat
+      apply Vector.apply_getElem_le_sum_map_nat
   · simp
-    rw [Vec.countP_set]
+    rw [Vector.countP_set]
     simp [h]
     rw [Nat.sub_add_cancel, Nat.sub_add_cancel]
-    · apply Vec.apply_getElem_le_sum_map_nat
+    · apply Vector.apply_getElem_le_sum_map_nat
     · simp
       refine ⟨y.1, y.2, by simpa using h⟩
 
@@ -417,9 +421,9 @@ theorem occupied_erase (p : Position) (x y : Fin 8) :
   · rename_i x'' y'' hx hy
     simp only [toFin?_eq_some_iff] at hx hy
     subst hx hy
-    simp only [Fin.getElem_fin, Vec.getElem_set]
+    simp only [Fin.getElem_fin, Vector.getElem_set]
     split <;> rename_i h₁
-    · simp only [Vec.getElem_set]
+    · simp only [Vector.getElem_set]
       split <;> rename_i h₂
       · simp_all
       · simp_all [Ne.symm h₂]
