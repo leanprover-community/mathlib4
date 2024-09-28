@@ -111,7 +111,6 @@ lemma dens_image [Fintype β] [DecidableEq β] {f : α → β} (hf : Bijective f
   simpa [map_eq_image, -dens_map_equiv] using dens_map_equiv (.ofBijective f hf)
 
 @[simp] lemma card_mul_dens (s : Finset α) : Fintype.card α * s.dens = s.card := by
-
   cases isEmpty_or_nonempty α
   · simp [Subsingleton.elim s ∅]
   rw [dens, mul_div_cancel₀]
