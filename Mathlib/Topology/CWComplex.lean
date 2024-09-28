@@ -47,8 +47,8 @@ structure AttachGeneralizedCells {S D : TopCat.{u}} (f : S ⟶ D) (X X' : TopCat
   cells : Type u
   /-- For each generalized `(n+1)`-cell, we have an attaching map from its boundary to `X`. -/
   attachMaps : cells → (S ⟶ X)
-  /-- `X'` is the pushout obtained from `X` along `sigmaAttachMap`. -/
-  iso_pushout : X' ≅ Limits.pushout (Limits.Sigma.map fun _ ↦ f) (Limits.Sigma.desc attachMaps)
+  /-- `X'` is the pushout of `∐ S ⟶ X` and `∐ S ⟶ ∐ D`. -/
+  iso_pushout : X' ≅ Limits.pushout (Limits.Sigma.desc attachMaps) (Limits.Sigma.map fun _ ↦ f)
 
 /-- A type witnessing that `X'` is obtained from `X` by attaching `(n+1)`-disks -/
 def AttachCells (n : ℤ) := AttachGeneralizedCells (sphereInclusion n)
@@ -78,7 +78,7 @@ noncomputable section Topology
 /-- The inclusion map from `X` to `X'`, given that `X'` is obtained from `X` by attaching
 `(n+1)`-disks -/
 def AttachCells.inclusion {X X' : TopCat.{u}} {n : ℤ} (att : AttachCells n X X') : X ⟶ X' :=
-  Limits.pushout.inr (Limits.Sigma.map fun _ ↦ sphereInclusion n) (Limits.Sigma.desc att.attachMaps)
+  Limits.pushout.inl (Limits.Sigma.desc att.attachMaps) (Limits.Sigma.map fun _ ↦ sphereInclusion n)
     ≫ att.iso_pushout.inv
 
 /-- The inclusion map from `sk n` (i.e., the `(n-1)`-skeleton) to `sk (n+1)` (i.e., the
