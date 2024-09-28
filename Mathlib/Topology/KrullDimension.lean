@@ -14,11 +14,11 @@ collection of all its subsets that are closed and irreducible. Unfolding this de
 the length of longest series of closed irreducible subsets ordered by inclusion.
 -/
 
-open TopologicalSpace
+open TopologicalSpace Order
 
 /--
 The Krull dimension of a topological space is the supremum of lengths of chains of
 closed irreducible sets.
 -/
 noncomputable def topologicalKrullDim (T : Type*) [TopologicalSpace T] : WithBot ℕ∞ :=
-  Order.krullDim (IrreducibleCloseds T)
+  krullDim (IrreducibleCloseds T)
