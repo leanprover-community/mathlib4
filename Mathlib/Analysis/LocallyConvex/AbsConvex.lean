@@ -177,8 +177,8 @@ theorem absConvexHull_add_subset {s t : Set E} :
 theorem absConvexHull_eq_convexHull_balancedHull [SMulCommClass ℝ 𝕜 E] {s : Set E} :
     absConvexHull 𝕜 s = convexHull ℝ (balancedHull 𝕜 s) := le_antisymm
   (absConvexHull_min
-      (subset_trans (subset_convexHull ℝ s) (convexHull_mono (subset_balancedHull 𝕜)))
-      ⟨Balanced.convexHull (balancedHull.balanced s), convex_convexHull _ _⟩)
+    ((subset_convexHull ℝ s).trans (convexHull_mono (subset_balancedHull 𝕜)))
+      ⟨Balanced.convexHull (balancedHull.balanced s), convex_convexHull ..⟩)
   (convexHull_min
     ((balanced_absConvexHull 𝕜 s).balancedHull_subset_of_subset (subset_absConvexHull 𝕜 s))
       (convex_absConvexHull 𝕜 s))
