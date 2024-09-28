@@ -10,7 +10,6 @@ import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
-import Mathlib.Tactic.FieldSimp
 
 /-!
 # Sums of binomial coefficients
