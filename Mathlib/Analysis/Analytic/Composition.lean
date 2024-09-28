@@ -404,8 +404,8 @@ theorem id_comp (p : FormalMultilinearSeries 𝕜 E F) (v0 : Fin 0 → E) :
   · rw [hn]
     ext v
     simp only [comp_coeff_zero', id_apply_zero]
-    congr
-    exact ofFn_inj.mp rfl
+    congr with i
+    exact i.elim0
   · dsimp [FormalMultilinearSeries.comp]
     have n_pos : 0 < n := bot_lt_iff_ne_bot.mpr hn
     rw [Finset.sum_eq_single (Composition.single n n_pos)]
@@ -428,7 +428,7 @@ theorem id_comp (p : FormalMultilinearSeries 𝕜 E F) (v0 : Fin 0 → E) :
       rfl
     · simp
 
-/-- Variant of `id_comp` in which the zero coefficient is given by an equality hypothesis insead
+/-- Variant of `id_comp` in which the zero coefficient is given by an equality hypothesis instead
 of a definitional equality. Useful for rewriting or simplifying out in some situations. -/
 theorem id_comp' (p : FormalMultilinearSeries 𝕜 E F) (x : F) (v0 : Fin 0 → E) (h : x = p 0 v0) :
     (id 𝕜 F x).comp p = p := by
@@ -1180,7 +1180,7 @@ def sigmaEquivSigmaPi (n : ℕ) :
       · intro i
         dsimp [Composition.sigmaCompositionAux]
         rw [getElem_of_eq (splitWrtComposition_join _ _ _)]
-        · simp only [getElem_ofFn]
+        · simp only [List.getElem_ofFn]
         · simp only [map_ofFn]
           rfl
       · congr

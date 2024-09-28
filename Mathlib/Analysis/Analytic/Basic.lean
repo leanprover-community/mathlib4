@@ -399,7 +399,7 @@ every point of `s`. -/
 def AnalyticOnNhd (f : E → F) (s : Set E) :=
   ∀ x, x ∈ s → AnalyticAt 𝕜 f x
 
-/-- `f` is analytic within `s` if it is analytic within `s` at each point of `t`.  Note that
+/-- `f` is analytic within `s` if it is analytic within `s` at each point of `s`.  Note that
 this is weaker than `AnalyticOnNhd 𝕜 f s`, as `f` is allowed to be arbitrary outside `s`. -/
 def AnalyticOn (f : E → F) (s : Set E) : Prop :=
   ∀ x ∈ s, AnalyticWithinAt 𝕜 f s x
@@ -490,8 +490,8 @@ lemma HasFPowerSeriesWithinOnBall.congr {f g : E → F} {p : FormalMultilinearSe
     refine ⟨hy, ?_⟩
     simpa [edist_eq_coe_nnnorm_sub] using h'y
 
-/-- Variant of `HasFPowerSeriesWithinOnBall.congr` where one does not separate the congruence
-property between `s` and `x`, requesting it instead of `insert x s`. -/
+/-- Variant of `HasFPowerSeriesWithinOnBall.congr` in which one requests equality on `insert x s`
+instead of separating `x` and `s`. -/
 lemma HasFPowerSeriesWithinOnBall.congr' {f g : E → F} {p : FormalMultilinearSeries 𝕜 E F}
     {s : Set E} {x : E} {r : ℝ≥0∞} (h : HasFPowerSeriesWithinOnBall f p s x r)
     (h' : EqOn g f (insert x s ∩ EMetric.ball x r)) :
@@ -603,8 +603,8 @@ lemma HasFPowerSeriesAt.hasFPowerSeriesWithinAt (hf : HasFPowerSeriesAt f p x) :
   rw [← hasFPowerSeriesWithinAt_univ] at hf
   apply hf.mono (subset_univ _)
 
-theorem HasFPowerSeriesWithinAt.mono_of_mem {f : E → F} {p : FormalMultilinearSeries 𝕜 E F}
-    {s t : Set E} {x : E} (h : HasFPowerSeriesWithinAt f p s x) (hst : s ∈ 𝓝[t] x) :
+theorem HasFPowerSeriesWithinAt.mono_of_mem
+    (h : HasFPowerSeriesWithinAt f p s x) (hst : s ∈ 𝓝[t] x) :
     HasFPowerSeriesWithinAt f p t x := by
   rcases h with ⟨r, hr⟩
   rcases EMetric.mem_nhdsWithin_iff.1 hst with ⟨r', r'_pos, hr'⟩
@@ -620,14 +620,12 @@ theorem HasFPowerSeriesWithinAt.mono_of_mem {f : E → F} {p : FormalMultilinear
     add_sub_cancel_left, hy, and_true] at h'y ⊢
   exact h'y.2
 
-@[simp] lemma hasFPowerSeriesWithinOnBall_insert_self {f : E → F}
-    {p : FormalMultilinearSeries 𝕜 E F} {s : Set E} {x : E} {r : ℝ≥0∞} :
+@[simp] lemma hasFPowerSeriesWithinOnBall_insert_self :
     HasFPowerSeriesWithinOnBall f p (insert x s) x r ↔ HasFPowerSeriesWithinOnBall f p s x r := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩  <;>
   exact ⟨h.r_le, h.r_pos, fun {y} ↦ by simpa only [insert_idem] using h.hasSum (y := y)⟩
 
-@[simp] theorem hasFPowerSeriesAt_insert {f : E → F} {p : FormalMultilinearSeries 𝕜 E F}
-    {s : Set E} {x y : E} :
+@[simp] theorem hasFPowerSeriesWithinAt_insert {y : E} :
     HasFPowerSeriesWithinAt f p (insert y s) x ↔ HasFPowerSeriesWithinAt f p s x := by
   rcases eq_or_ne x y with rfl | hy
   · simp [HasFPowerSeriesWithinAt]
@@ -752,7 +750,7 @@ theorem analyticOnNhd_congr (hs : IsOpen s) (h : s.EqOn f g) : AnalyticOnNhd �
 @[deprecated (since := "2024-09-26")]
 alias analyticOn_congr := analyticOnNhd_congr
 
-theorem AnalyticWithinAt.mono_of_mem {f : E → F} {s t : Set E} {x : E}
+theorem AnalyticWithinAt.mono_of_mem
     (h : AnalyticWithinAt 𝕜 f s x) (hst : s ∈ 𝓝[t] x) : AnalyticWithinAt 𝕜 f t x := by
   rcases h with ⟨p, hp⟩
   exact ⟨p, hp.mono_of_mem hst⟩
@@ -779,7 +777,7 @@ theorem ContinuousLinearMap.comp_hasFPowerSeriesWithinOnBall (g : F →L[𝕜] G
     HasFPowerSeriesWithinOnBall (g ∘ f) (g.compFormalMultilinearSeries p) s x r where
   r_le := h.r_le.trans (p.radius_le_radius_continuousLinearMap_comp _)
   r_pos := h.r_pos
-  hasSum := fun hy h'y => by
+  hasSum hy h'y := by
     simpa only [ContinuousLinearMap.compFormalMultilinearSeries_apply,
       ContinuousLinearMap.compContinuousMultilinearMap_coe, Function.comp_apply] using
       g.hasSum (h.hasSum hy h'y)
@@ -794,7 +792,7 @@ theorem ContinuousLinearMap.comp_hasFPowerSeriesOnBall (g : F →L[𝕜] G)
 
 /-- If a function `f` is analytic on a set `s` and `g` is linear, then `g ∘ f` is analytic
 on `s`. -/
-theorem ContinuousLinearMap.comp_analyticOn {s : Set E} (g : F →L[𝕜] G) (h : AnalyticOn 𝕜 f s) :
+theorem ContinuousLinearMap.comp_analyticOn (g : F →L[𝕜] G) (h : AnalyticOn 𝕜 f s) :
     AnalyticOn 𝕜 (g ∘ f) s := by
   rintro x hx
   rcases h x hx with ⟨p, r, hp⟩

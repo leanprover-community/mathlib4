@@ -297,7 +297,7 @@ variable [CompleteSpace F] {f : E → F} {p : FormalMultilinearSeries 𝕜 E F} 
   {x y : E} {r : ℝ≥0∞}
 
 /-- If a function admits a power series expansion `p` within a set `s` on a ball `B (x, r)`, then
-it  also admits a power series on any subball of this ball (even with a different center provided
+it also admits a power series on any subball of this ball (even with a different center provided
 it belongs to `s`), given by `p.changeOrigin`. -/
 theorem HasFPowerSeriesWithinOnBall.changeOrigin (hf : HasFPowerSeriesWithinOnBall f p s x r)
     (h : (‖y‖₊ : ℝ≥0∞) < r) (hy : x + y ∈ insert x s) :
@@ -306,7 +306,7 @@ theorem HasFPowerSeriesWithinOnBall.changeOrigin (hf : HasFPowerSeriesWithinOnBa
     apply le_trans _ p.changeOrigin_radius
     exact tsub_le_tsub hf.r_le le_rfl
   r_pos := by simp [h]
-  hasSum := fun {z} h'z hz => by
+  hasSum {z} h'z hz := by
     have : f (x + y + z) =
         FormalMultilinearSeries.sum (FormalMultilinearSeries.changeOrigin p y) z := by
       rw [mem_emetric_ball_zero_iff, lt_tsub_iff_right, add_comm] at hz
