@@ -189,12 +189,14 @@ section
 
 open Real
 
-variable {x y z : ℝ} {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ}
+variable {x : ℝ} {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {s : Set E}
 
 /-- `exp` is entire -/
 theorem analyticOnNhd_rexp : AnalyticOnNhd ℝ exp univ := by
   rw [Real.exp_eq_exp_ℝ]
   exact fun x _ ↦ NormedSpace.exp_analytic x
+
+theorem analyticOn_rexp : AnalyticOn ℝ exp univ := analyticOnNhd_rexp.analyticOn
 
 /-- `exp` is analytic at any point -/
 theorem analyticAt_rexp : AnalyticAt ℝ exp x :=
@@ -204,10 +206,17 @@ theorem analyticAt_rexp : AnalyticAt ℝ exp x :=
 theorem AnalyticAt.rexp {x : E} (fa : AnalyticAt ℝ f x) : AnalyticAt ℝ (fun z ↦ exp (f z)) x :=
   analyticAt_rexp.comp fa
 
+theorem AnalyticWithinAt.rexp {x : E} (fa : AnalyticWithinAt ℝ f s x) :
+    AnalyticWithinAt ℝ (fun z ↦ exp (f z)) s x :=
+  analyticAt_rexp.comp_analyticWithinAt fa
+
 /-- `exp ∘ f` is analytic -/
 theorem AnalyticOnNhd.rexp {s : Set E} (fs : AnalyticOnNhd ℝ f s) :
     AnalyticOnNhd ℝ (fun z ↦ exp (f z)) s :=
   fun z n ↦ analyticAt_rexp.comp (fs z n)
+
+theorem AnalyticOn.rexp (fs : AnalyticOn ℝ f s) : AnalyticOn ℝ (fun z ↦ exp (f z)) s :=
+  analyticOnNhd_rexp.comp_analyticOn fs (mapsTo_univ _ _)
 
 end
 
