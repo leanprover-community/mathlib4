@@ -779,7 +779,7 @@ lemma smul_set_iInter_subset (a : α) (t : ι → Set β) : a • ⋂ i, t i ⊆
 
 @[to_additive]
 lemma smul_set_sInter_subset (a : α) (S : Set (Set β)) :
-    a • ⋂₀ S ⊆ ⋂ s ∈ S, (fun x => a • x) '' s := image_sInter_subset S (fun x => a • x)
+    a • ⋂₀ S ⊆ ⋂ s ∈ S, a • s := image_sInter_subset S (fun x => a • x)
 
 @[to_additive]
 lemma smul_set_iInter₂_subset (a : α) (t : ∀ i, κ i → Set β) :
