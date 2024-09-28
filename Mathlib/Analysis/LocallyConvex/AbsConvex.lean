@@ -78,7 +78,7 @@ theorem absConvex_absConvexHull : AbsConvex 𝕜 (absConvexHull 𝕜 s) :=
 theorem balanced_absConvexHull : Balanced 𝕜 (absConvexHull 𝕜 s) :=
   (absConvex_absConvexHull 𝕜 s).1
 
-theorem convex_absConvexHull : Convex ℝ ((absConvexHull 𝕜) s) :=
+theorem convex_absConvexHull : Convex ℝ (absConvexHull 𝕜 s) :=
   (absConvex_absConvexHull 𝕜 s).2
 
 theorem absConvexHull_eq_iInter :
