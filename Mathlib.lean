@@ -2660,7 +2660,7 @@ import Mathlib.FieldTheory.Finite.Polynomial
 import Mathlib.FieldTheory.Finite.Trace
 import Mathlib.FieldTheory.Finiteness
 import Mathlib.FieldTheory.Fixed
-import Mathlib.FieldTheory.Galois
+import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.FieldTheory.IntermediateField.Algebraic
 import Mathlib.FieldTheory.IntermediateField.Basic
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
@@ -4654,6 +4654,7 @@ import Mathlib.Topology.LocallyConstant.Algebra
 import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.Topology.LocallyFinite
 import Mathlib.Topology.Maps.Basic
+import Mathlib.Topology.Maps.OpenQuotient
 import Mathlib.Topology.Maps.Proper.Basic
 import Mathlib.Topology.Maps.Proper.UniversallyClosed
 import Mathlib.Topology.MetricSpace.Algebra
