@@ -25,6 +25,7 @@ require "leanprover-community" / "LeanSearchClient" @ git "main"
   (as well as `Archive`, `Counterexamples` and `test`).
 -/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
+  ⟨`linter.docPrime, true⟩,
   ⟨`linter.hashCommand, true⟩,
   ⟨`linter.oldObtain, true,⟩,
   ⟨`linter.refine, true⟩,
@@ -34,7 +35,8 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.style.longLine, true⟩,
   ⟨`linter.style.longFile, .ofNat 1500⟩,
   ⟨`linter.style.missingEnd, true⟩,
-  ⟨`linter.style.setOption, true⟩
+  ⟨`linter.style.setOption, true⟩,
+  ⟨`aesop.warn.applyIff, false⟩ -- This became a problem after https://github.com/leanprover-community/aesop/commit/29cf094e84ae9852f0011b47b6ddc684ffe4be5f
 ]
 
 /-- These options are passed as `leanOptions` to building mathlib, as well as the
@@ -82,6 +84,16 @@ lean_lib docs where
 /-!
 ## Executables provided by Mathlib
 -/
+
+/--
+`lake exe autolabel 150100` adds a topic label to PR `150100` if there is a unique choice.
+This requires GitHub CLI `gh` to be installed!
+
+Calling `lake exe autolabel` without a PR number will print the result without applying
+any labels online.
+-/
+lean_exe autolabel where
+  srcDir := "scripts"
 
 /-- `lake exe cache get` retrieves precompiled `.olean` files from a central server. -/
 lean_exe cache where

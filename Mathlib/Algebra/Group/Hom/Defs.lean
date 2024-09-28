@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hughes,
+Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Pi.Basic
@@ -143,8 +143,9 @@ homomorphisms.
 
 You should also extend this typeclass when you extend `AddMonoidHom`.
 -/
-class AddMonoidHomClass (F M N : Type*) [AddZeroClass M] [AddZeroClass N] [FunLike F M N]
-  extends AddHomClass F M N, ZeroHomClass F M N : Prop
+class AddMonoidHomClass (F : Type*) (M N : outParam Type*)
+    [AddZeroClass M] [AddZeroClass N] [FunLike F M N]
+    extends AddHomClass F M N, ZeroHomClass F M N : Prop
 
 -- Instances and lemmas are defined below through `@[to_additive]`.
 end add_zero

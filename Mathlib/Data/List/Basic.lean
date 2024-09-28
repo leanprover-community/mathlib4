@@ -3,6 +3,7 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
+import Mathlib.Control.Basic
 import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.List.Defs
@@ -34,8 +35,6 @@ variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : Lis
 /-- `≤` implies not `>` for lists. -/
 @[deprecated (since := "2024-07-27")]
 theorem le_eq_not_gt [LT α] : ∀ l₁ l₂ : List α, (l₁ ≤ l₂) = ¬l₂ < l₁ := fun _ _ => rfl
-
-@[deprecated (since := "2024-06-07")] alias toArray_data := Array.toList_toArray
 
 -- Porting note: Delete this attribute
 -- attribute [inline] List.head!
