@@ -104,6 +104,14 @@ theorem Balanced.balancedHull_subset_of_subset (ht : Balanced 𝕜 t) (h : s ⊆
   obtain ⟨r, hr, y, hy, rfl⟩ := mem_balancedHull_iff.1 hx
   exact ht.smul_mem hr (h hy)
 
+@[mono, gcongr]
+theorem balancedHull_mono (hst : s ⊆ t) : balancedHull 𝕜 s ⊆ balancedHull 𝕜 t := by
+  intro x hx
+  rw [mem_balancedHull_iff] at *
+  obtain ⟨r, hr₁, hr₂⟩ := hx
+  use r
+  exact ⟨hr₁, smul_set_mono hst hr₂⟩
+
 end SMul
 
 section Module
