@@ -235,6 +235,15 @@ theorem eqOn_zero_of_preconnected_of_frequently_eq_zero (hf : AnalyticOnNhd 𝕜
   hf.eqOn_zero_of_preconnected_of_eventuallyEq_zero hU h₀
     ((hf z₀ h₀).frequently_zero_iff_eventually_zero.1 hfw)
 
+theorem eqOn_zero_or_eventually_ne_zero_of_preconnected (hf : AnalyticOnNhd 𝕜 f U)
+    (hU : IsPreconnected U) : EqOn f 0 U ∨ ∀ᶠ x in codiscreteWithin U, f x ≠ 0 := by
+  simp only [or_iff_not_imp_right, ne_eq, eventually_iff, mem_codiscreteWithin,
+    disjoint_principal_right, not_forall]
+  rintro ⟨x, hx, hx2⟩
+  refine hf.eqOn_zero_of_preconnected_of_frequently_eq_zero hU hx fun nh ↦ hx2 ?_
+  filter_upwards [nh] with a ha
+  simp_all
+
 theorem eqOn_zero_of_preconnected_of_mem_closure (hf : AnalyticOnNhd 𝕜 f U) (hU : IsPreconnected U)
     (h₀ : z₀ ∈ U) (hfz₀ : z₀ ∈ closure ({z | f z = 0} \ {z₀})) : EqOn f 0 U :=
   hf.eqOn_zero_of_preconnected_of_frequently_eq_zero hU h₀
@@ -251,6 +260,12 @@ theorem eqOn_of_preconnected_of_frequently_eq (hf : AnalyticOnNhd 𝕜 f U) (hg 
     hfg.mono fun z h => by rw [Pi.sub_apply, h, sub_self]
   simpa [sub_eq_zero] using fun z hz =>
     (hf.sub hg).eqOn_zero_of_preconnected_of_frequently_eq_zero hU h₀ hfg' hz
+
+theorem eqOn_or_eventually_ne_of_preconnected (hf : AnalyticOnNhd 𝕜 f U) (hg : AnalyticOnNhd 𝕜 g U)
+    (hU : IsPreconnected U) : EqOn f g U ∨ ∀ᶠ x in codiscreteWithin U, f x ≠ g x :=
+  (eqOn_zero_or_eventually_ne_zero_of_preconnected (hf.sub hg) hU).imp
+    (fun h _ hx ↦ eq_of_sub_eq_zero (h hx))
+    (by simp only [Pi.sub_apply, ne_eq, sub_eq_zero, imp_self])
 
 theorem eqOn_of_preconnected_of_mem_closure (hf : AnalyticOnNhd 𝕜 f U) (hg : AnalyticOnNhd 𝕜 g U)
     (hU : IsPreconnected U) (h₀ : z₀ ∈ U) (hfg : z₀ ∈ closure ({z | f z = g z} \ {z₀})) :
