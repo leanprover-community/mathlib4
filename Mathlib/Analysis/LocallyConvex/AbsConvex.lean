@@ -75,7 +75,7 @@ theorem subset_absConvexHull : s ⊆ absConvexHull 𝕜 s :=
 theorem absConvex_absConvexHull : AbsConvex 𝕜 (absConvexHull 𝕜 s) :=
   (absConvexHull 𝕜).isClosed_closure s
 
-theorem balanced_absConvexHull : Balanced 𝕜 ((absConvexHull 𝕜) s) :=
+theorem balanced_absConvexHull : Balanced 𝕜 (absConvexHull 𝕜 s) :=
   (absConvex_absConvexHull 𝕜 s).1
 
 theorem convex_absConvexHull : Convex ℝ ((absConvexHull 𝕜) s) :=
