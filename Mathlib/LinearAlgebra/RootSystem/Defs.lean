@@ -146,6 +146,12 @@ protected def flip : RootPairing ι R N M :=
 lemma flip_flip : P.flip.flip = P :=
   rfl
 
+/-- Roots written as functionals on the coweight space. -/
+abbrev root' (i : ι) : Dual R N := P.toPerfectPairing (P.root i)
+
+/-- Coroots written as functionals on the weight space. -/
+abbrev coroot' (i : ι) : Dual R M := P.toPerfectPairing.flip (P.coroot i)
+
 /-- This is the pairing between roots and coroots. -/
 def pairing : R := P.toPerfectPairing (P.root i) (P.coroot j)
 

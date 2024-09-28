@@ -20,7 +20,7 @@ Weyl group.
 
 ## Main definitions:
  * `Polarization`: A distinguished linear map from the weight space to the coweight space.
- * `CanonicalBilinear` : The bilinear form on weight space corresponding to `Polarization`.
+ * `RootForm` : The bilinear form on weight space corresponding to `Polarization`.
 
 ## References:
  * SGAIII Exp. XXI
@@ -28,9 +28,9 @@ Weyl group.
 
 ## Main results:
  * `polarization_self_sum_of_squares` : The inner product of any weight vector is a sum of squares.
- * `canonicalBilinear_reflection_reflection_apply` : `CanonicalBilinear` is invariant with respect
+ * `rootForm_reflection_reflection_apply` : `RootForm` is invariant with respect
    to reflections.
- * `canonicalBilinear_self_smul_coroot`: The inner product of a root with itself times the
+ * `rootForm_self_smul_coroot`: The inner product of a root with itself times the
    corresponding coroot is equal to two times Polarization applied to the root.
 
 ## TODO (possibly in other files)
@@ -41,22 +41,12 @@ Weyl group.
   we restrict to weights between 0 and 4.
 -/
 
-open Set Function
+open Function
 open Module hiding reflection
 
 noncomputable section
 
 variable {ι R M N : Type*}
-
-lemma isSumSq_of_sum_of_squares [Mul R] [AddCommMonoid R] (s : Finset ι) (f : ι → R) :
-    IsSumSq (∑ i ∈ s, f i * f i) := by
-  induction s using Finset.cons_induction with
-  | empty =>
-    simpa only [Finset.sum_empty] using IsSumSq.zero
-  | cons i s his h =>
-    simp only [Finset.sum_cons]
-    exact IsSumSq.sq_add (f i) (∑ i ∈ s, f i * f i) h
---#find_home! isSumSq_of_sum_of_squares --returns this file
 
 namespace RootPairing
 
@@ -66,44 +56,58 @@ variable [Fintype ι] [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N
 (P : RootPairing ι R M N)
 
 /-- An invariant linear map from weight space to coweight space. -/
-@[simps]
-def Polarization : M →ₗ[R] N where
-  toFun m := ∑ (i : ι), P.toPerfectPairing m (P.coroot i) • (P.coroot i)
-  map_add' x y := by
-    simp only [← toLin_toPerfectPairing, map_add, PerfectPairing.toLin_apply, LinearMap.add_apply,
-      add_smul, Finset.sum_add_distrib]
-  map_smul' r x := by
-    simp only [← toLin_toPerfectPairing, map_smul, LinearMap.smul_apply, RingHom.id_apply,
-      Finset.smul_sum, smul_assoc]
+def Polarization : M →ₗ[R] N :=
+  ∑ i, LinearMap.toSpanSingleton R N (P.coroot i) ∘ₗ P.coroot' i
+
+@[simp]
+lemma Polarization_apply (x : M) :
+    P.Polarization x = ∑ i, P.toPerfectPairing x (P.coroot i) • P.coroot i := by
+  simp [Polarization]
+
+/-- An invariant linear map from coweight space to weight space. -/
+def CoPolarization : N →ₗ[R] M :=
+  ∑ i, LinearMap.toSpanSingleton R M (P.root i) ∘ₗ P.root' i
+
+@[simp]
+lemma CoPolarization_apply (x : N) :
+    P.CoPolarization x = ∑ i, P.toPerfectPairing (P.root i) x • P.root i := by
+  simp [CoPolarization]
+
+lemma CoPolarization_eq : P.CoPolarization = P.flip.Polarization := by
+  ext x
+  simp only [CoPolarization, LinearMap.coeFn_sum, LinearMap.coe_comp, Finset.sum_apply, comp_apply,
+    LinearMap.toSpanSingleton_apply, Polarization, PerfectPairing.flip_apply_apply]
+  exact rfl
 
 /-- An invariant inner product on the weight space. -/
-@[simps]
-def CanonicalBilinear : M →ₗ[R] M →ₗ[R] R where
-  toFun x := P.toLin x ∘ₗ P.Polarization
-  map_add' x y := by simp only [map_add, LinearMap.add_comp]
-  map_smul' r x := by simp only [LinearMapClass.map_smul, RingHom.id_apply, LinearMap.smul_comp]
+def RootForm : LinearMap.BilinForm R M :=
+  ∑ i, (LinearMap.lsmul R R).compl₁₂ (P.coroot' i) (P.coroot' i)
 
-lemma canonicalBilinear_apply_apply (x y : M) : P.CanonicalBilinear x y =
-    ∑ (i : ι), P.toPerfectPairing y (P.coroot i) * P.toPerfectPairing x (P.coroot i) := by
-  simp
+/-- An invariant inner product on the coweight space. -/
+def CorootForm : LinearMap.BilinForm R N :=
+  ∑ i, (LinearMap.lsmul R R).compl₁₂ (P.root' i) (P.root' i)
 
-lemma canonicalBilinear_symmetric :
-    LinearMap.IsSymm P.CanonicalBilinear := by
+@[simp]
+lemma rootForm_apply_apply (x y : M) : P.RootForm x y =
+    ∑ (i : ι), P.toPerfectPairing x (P.coroot i) * P.toPerfectPairing y (P.coroot i) := by
+  simp [RootForm]
+
+lemma rootForm_symmetric :
+    LinearMap.IsSymm P.RootForm := by
   simp [LinearMap.IsSymm, mul_comm]
 
-lemma canonicalBilinear_reflection_reflection_apply (i : ι) (x y : M) :
-    P.CanonicalBilinear (P.reflection i x) (P.reflection i y) = P.CanonicalBilinear x y := by
-  simp only [CanonicalBilinear_apply, LinearMap.coe_comp, comp_apply, Polarization_apply, map_sum,
-    LinearMapClass.map_smul, smul_eq_mul, reflection_coroot_perm, toLin_toPerfectPairing]
+lemma rootForm_reflection_reflection_apply (i : ι) (x y : M) :
+    P.RootForm (P.reflection i x) (P.reflection i y) = P.RootForm x y := by
+  simp only [rootForm_apply_apply, reflection_coroot_perm]
   exact Fintype.sum_equiv (P.reflection_perm i)
-    (fun x_1 ↦ (P.toPerfectPairing y) (P.coroot ((P.reflection_perm i) x_1)) *
-      (P.toPerfectPairing x) (P.coroot ((P.reflection_perm i) x_1)))
-    (fun x_1 ↦ (P.toPerfectPairing y) (P.coroot x_1) *
-      (P.toPerfectPairing x) (P.coroot x_1)) (congrFun rfl)
+    (fun x_1 ↦ (P.toPerfectPairing x) (P.coroot ((P.reflection_perm i) x_1)) *
+      (P.toPerfectPairing y) (P.coroot ((P.reflection_perm i) x_1)))
+    (fun x_1 ↦ (P.toPerfectPairing x) (P.coroot x_1) *
+      (P.toPerfectPairing y) (P.coroot x_1)) (congrFun rfl)
 
 /-- This is SGA3 XXI Lemma 1.2.1 (10), key for proving nondegeneracy and positivity. -/
-lemma canonicalBilinear_self_smul_coroot (P : RootPairing ι R M N) (i : ι) :
-    (P.CanonicalBilinear (P.root i) (P.root i)) • P.coroot i = 2 • P.Polarization (P.root i) := by
+lemma rootForm_self_smul_coroot (P : RootPairing ι R M N) (i : ι) :
+    (P.RootForm (P.root i) (P.root i)) • P.coroot i = 2 • P.Polarization (P.root i) := by
   have hP : P.Polarization (P.root i) =
       ∑ j : ι, P.pairing i (P.reflection_perm i j) • P.coroot (P.reflection_perm i j) := by
     simp_rw [Polarization_apply, root_coroot_eq_pairing]
@@ -116,22 +120,22 @@ lemma canonicalBilinear_self_smul_coroot (P : RootPairing ι R M N) (i : ι) :
   simp only [root_coroot_eq_pairing, pairing_reflection_perm, pairing_reflection_perm_self,
     ← reflection_perm_coroot, smul_sub, neg_smul, sub_neg_eq_add]
   rw [Finset.sum_add_distrib, ← add_assoc, ← sub_eq_iff_eq_add]
-  simp only [CanonicalBilinear_apply, LinearMap.coe_comp, comp_apply, Polarization_apply,
+  simp only [rootForm_apply_apply, LinearMap.coe_comp, comp_apply, Polarization_apply,
     root_coroot_eq_pairing, map_sum, LinearMapClass.map_smul, Finset.sum_neg_distrib, ← smul_assoc]
   rw [Finset.sum_smul, add_neg_eq_zero.mpr rfl]
   exact sub_eq_zero_of_eq rfl
 
-lemma flip_canonicalBilinear_self_smul_root (P : RootPairing ι R M N) (i : ι) :
-    (P.flip.CanonicalBilinear (P.coroot i) (P.coroot i)) • P.root i =
+lemma flip_rootForm_self_smul_root (P : RootPairing ι R M N) (i : ι) :
+    (P.flip.RootForm (P.coroot i) (P.coroot i)) • P.root i =
       2 • P.flip.Polarization (P.coroot i) :=
-  canonicalBilinear_self_smul_coroot (P.flip) i
+  rootForm_self_smul_coroot (P.flip) i
 
-lemma canonicalBilinear_self_sum_of_squares (x : M) :
-    IsSumSq (P.CanonicalBilinear x x) :=
-  P.canonicalBilinear_apply_apply x x ▸ isSumSq_of_sum_of_squares Finset.univ _
+lemma rootForm_self_sum_of_squares (x : M) :
+    IsSumSq (P.RootForm x x) :=
+  P.rootForm_apply_apply x x ▸ isSumSq_sum_mul_self Finset.univ _
 
-lemma canonicalBilinear_root_self (j : ι) :
-    P.CanonicalBilinear (P.root j) (P.root j) = ∑ (i : ι), (P.pairing j i) * (P.pairing j i) := by
+lemma rootForm_root_self (j : ι) :
+    P.RootForm (P.root j) (P.root j) = ∑ (i : ι), (P.pairing j i) * (P.pairing j i) := by
   simp
 
 end CommRing
