@@ -208,14 +208,15 @@ lemma balancedHull_subset_convexHull_union_neg {s : Set E} :
         apply congrFun (congrArg HSMul.hSMul _) y
         ring_nf
 
-theorem absConvexHull_eq_convexHull_union_neg {s : Set E} :
-    absConvexHull ℝ s = convexHull ℝ (s ∪ -s) := by
+@[simp]
+theorem convexHull_union_neg_eq_absConvexHull {s : Set E} :
+    convexHull ℝ (s ∪ -s) = absConvexHull ℝ s := by
   rw [absConvexHull_eq_convexHull_balancedHull]
-  exact le_antisymm (by
-    rw [← Convex.convexHull_eq (convex_convexHull ℝ (s ∪ -s)) ]
-    exact convexHull_mono balancedHull_subset_convexHull_union_neg)
-    (convexHull_mono (union_subset (subset_balancedHull ℝ)
-      (fun _ _ => by rw [mem_balancedHull_iff]; use -1; aesop)))
+  exact le_antisymm (convexHull_mono (union_subset (subset_balancedHull ℝ)
+    (fun _ _ => by rw [mem_balancedHull_iff]; use -1; aesop)))
+    (by
+      rw [← Convex.convexHull_eq (convex_convexHull ℝ (s ∪ -s))]
+      exact convexHull_mono balancedHull_subset_convexHull_union_neg)
 
 end
 
