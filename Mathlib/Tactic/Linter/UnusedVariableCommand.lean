@@ -1,6 +1,7 @@
 import Lean.Elab.Command
 import Lean.Linter.Util
 import Mathlib.adomaniLeanUtils.inspect_syntax
+import Mathlib.adomaniLeanUtils.inspect_rec
 
 /-!
 #  The "unusedVariableCommand" linter
@@ -173,8 +174,8 @@ elab "included_variables" plumb:(ppSpace "plumb")? : tactic => Tactic.withMainCo
         liftCommandElabM do
           elabCommand dh
           elabCommand (← `(#check $(mkIdent `DoneHere)))
-        dbg_trace plb
-        logInfo dh
+        --dbg_trace plb
+        --logInfo dh
         --IO.eprint s!"{plb}"
         --dbg_trace "{plb}"
         --throwError m!"{plb.foldl (m!"{·}\n" ++ m!"{·}") ""}"
@@ -251,39 +252,45 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
     return
   if (← get).messages.hasErrors then
     return
-  if stx[1].isOfKind ``Lean.Parser.Command.example then logInfo "skipping examples"; return
+  if stx[1].isOfKind ``Lean.Parser.Command.example then
+    logInfo "skipping examples: they have access to all the variables anyway"
+    return
   unless stx.isOfKind ``declaration do
     return
   let renStx ← stx.replaceM fun s => do
     match s.getKind with
       | ``declId =>
-        let nm := s[0].getId
-        let nid ← `(declId| $(mkIdentFrom s[0] (nm ++ `_hello)))
+        let nid ← `(declId| $(mkIdentFrom s[0] (s[0].getId ++ `_hello)))
         return some nid
       | ``declValSimple =>
         let newPf ← `(declValSimple| := by included_variables plumb; sorry)
         return some newPf
       | _ => return none
+
   --logInfo renStx
-  let mut msgs := #[]
-  --let s ← get
+  --let mut msgs := #[]
+  let s ← get
   --logInfo renStx
     --renStx ← `()
   elabCommand renStx
-  elabCommand (← `(#print $(mkIdent `DoneHere)))
-  msgs := (← get).messages.toArray --.filter (·.severity == .information)
+  --elabCommand (← `(#print $(mkIdent `DoneHere)))
+  --msgs := (← get).messages.toArray --.filter (·.severity == .information)
   --set s
-  dbg_trace "msgs: '{← msgs.mapM (·.toString)}'"
-  dbg_trace "stdOut: '{← (← IO.getStderr).getLine}'"
-  dbg_trace "{((← getEnv).find? `DoneHere).isSome}"
+  --dbg_trace "msgs: '{← msgs.mapM (·.toString)}'"
+  --dbg_trace "stdOut: '{← (← IO.getStderr).getLine}'"
+  --dbg_trace "{((← getEnv).find? `DoneHere).isSome}"
   --logInfo m!"{← msgs.mapM (·.toString)}"
   if let .defnInfo val := ((← getEnv).find? `DoneHere).getD default then
-    dbg_trace "defnInfo"
-    dbg_trace val.value
-    dbg_trace "\nvalues:\n{easyStr val.value}\n"
+    let varAsStrings := easyStr val.value
+    --dbg_trace "defnInfo"
+    --dbg_trace val.value
+    dbg_trace "\nvalues:\n{varAsStrings}\n"
     --dbg_trace val.value.find? (·.isLit)
   else
     dbg_trace "not a defnInfo"
+  set s
+
+#eval (default : ConstantInfo).ctorName
 
 #check Expr.find?
 --#check visit
