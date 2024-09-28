@@ -55,7 +55,7 @@ uniform convergence, bounded convergence
 -/
 
 
-open scoped Topology UniformConvergence
+open scoped Topology UniformConvergence Uniformity
 
 section General
 
@@ -73,13 +73,12 @@ uniform convergence on the elements of `𝔖`".
 If the continuous linear image of any element of `𝔖` is bounded, this makes `E →SL[σ] F` a
 topological vector space. -/
 @[nolint unusedArguments]
-def UniformConvergenceCLM [TopologicalSpace F] [TopologicalAddGroup F] (_ : Set (Set E)) :=
-  E →SL[σ] F
+def UniformConvergenceCLM [TopologicalSpace F] (_ : Set (Set E)) := E →SL[σ] F
 
 namespace UniformConvergenceCLM
 
-instance instFunLike [TopologicalSpace F] [TopologicalAddGroup F]
-    (𝔖 : Set (Set E)) : FunLike (UniformConvergenceCLM σ F 𝔖) E F :=
+instance instFunLike [TopologicalSpace F] (𝔖 : Set (Set E)) :
+    FunLike (UniformConvergenceCLM σ F 𝔖) E F :=
   ContinuousLinearMap.funLike
 
 instance instContinuousSemilinearMapClass [TopologicalSpace F] [TopologicalAddGroup F]
@@ -206,6 +205,16 @@ theorem tendsto_iff_tendstoUniformlyOn {ι : Type*} {p : Filter ι} [UniformSpac
     Filter.Tendsto a p (𝓝 a₀) ↔ ∀ s ∈ 𝔖, TendstoUniformlyOn (a · ·) a₀ p s := by
   rw [(embedding_coeFn σ F 𝔖).tendsto_nhds_iff, UniformOnFun.tendsto_iff_tendstoUniformlyOn]
   rfl
+
+theorem uniformInducing_postcomp
+    {G : Type*} [AddCommGroup G] [UniformSpace G] [UniformAddGroup G]
+    {𝕜₃ : Type*} [NormedField 𝕜₃] [Module 𝕜₃ G]
+    {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] [UniformSpace F] [UniformAddGroup F]
+    (g : F →SL[τ] G) (hg : UniformInducing g) (𝔖 : Set (Set E)) :
+    UniformInducing (α := UniformConvergenceCLM σ F 𝔖) (β := UniformConvergenceCLM ρ G 𝔖)
+      g.comp where
+  comap_uniformity := by
+    rw []
 
 variable {𝔖₁ 𝔖₂ : Set (Set E)}
 
