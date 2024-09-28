@@ -72,6 +72,7 @@ For a **pivot** `p : Fin (n + 1)`,
   satisfied.
 * `Fin.append a b` : append two tuples.
 * `Fin.repeat n a` : repeat a tuple `n` times.
+* `Fin.take m h` : take the first `h : m ≤ n` elements of a tuple.
 
 -/
 
@@ -1091,10 +1092,9 @@ theorem take_zero (v : (i : Fin n) → α i) : take v 0 (Nat.zero_le n) = fun i 
 theorem take_eq_self (v : (i : Fin n) → α i) :
     take v n (le_refl n) = v := by ext i; simp [take]
 
-/-- Taking `m + 1` elements is equal to taking `m` elements and appending the `(m + 1)`th one. -/
+/-- Taking `m + 1` elements is equal to taking `m` elements and adding the `(m + 1)`th one. -/
 theorem take_succ_eq_snoc (v : (i : Fin n) → α i) (m : ℕ) (h : m < n) :
-    take v m.succ h = @snoc m (fun i ↦ α (castLE h i))
-        (take v m (le_of_lt h)) (v ⟨m, h⟩) := by
+    take v m.succ h = snoc (take v m (le_of_lt h)) (v ⟨m, h⟩) := by
   ext i
   induction m with
   | zero =>
@@ -1115,9 +1115,9 @@ theorem take_update_of_lt (v : (i : Fin n) → α i) (m : ℕ) (h : m ≤ n) (i 
   ext j
   by_cases h' : j = i
   · rw [h']
-    simp only [take_def, update_same]
+    simp only [take, update_same]
   · have : castLE h j ≠ castLE h i := by simp [h']
-    simp only [take_def, update_noteq h', update_noteq this]
+    simp only [take, update_noteq h', update_noteq this]
 
 /-- `take` is the same after `update` for indices outside the range of `take`. -/
 @[simp]
@@ -1128,11 +1128,43 @@ theorem take_update_of_ge (v : (i : Fin n) → α i) (m : ℕ) (h : m ≤ n) (i 
     refine ne_of_val_ne ?_
     simp only [coe_castLE]
     exact Nat.ne_of_lt (lt_of_lt_of_le j.isLt hi)
-  simp only [take_def, update_noteq this]
+  simp only [take, update_noteq this]
+
+/-- Taking the first `m ≤ n` elements of an `append u v`, where `u` is a `n`-tuple, is the same as
+taking the first `m` elements of `u`. -/
+@[simp]
+theorem take_append_left {n' m : ℕ} {α : Sort*} (u : (i : Fin n) → α) (v : (i : Fin n') → α)
+    (h : m ≤ n) : take (append u v) m (Nat.le_add_right_of_le h) = take u m h := by
+  ext i
+  have : castLE (Nat.le_add_right_of_le h) i = castAdd n' (castLE h i) := rfl
+  simp only [take, append_left, this]
+
+/-- Taking the first `n + m` elements of an `append u v`, where `v` is a `n'`-tuple and `m ≤ n'`,
+is the same as appending `u` with the first `m` elements of `v`. -/
+@[simp]
+theorem take_append_right {n' m : ℕ} {α : Sort*} (u : (i : Fin n) → α) (v : (i : Fin n') → α)
+    (h : m ≤ n') : take (append u v) (n + m) (Nat.add_le_add_left h n) = append u (take v m h) := by
+  ext i
+  by_cases h' : i < n
+  · have : castLE (Nat.add_le_add_left h n) i = castAdd n' ⟨i.val, h'⟩ := by
+      simp only [castAdd_mk]
+      rfl
+    rw [take, this, append_left]
+    have : i = castAdd m ⟨i.val, h'⟩ := by simp only [castAdd_mk]
+    conv_rhs => rw [this, append_left]
+  · simp only [not_lt] at h'
+    let j := subNat n (cast (Nat.add_comm _ _) i) h'
+    have : i = natAdd n j := by simp [j]
+    conv_rhs => rw [this, append_right, take]
+    have : castLE (Nat.add_le_add_left h n) i = natAdd n (castLE h j) := by
+      simp_all only [natAdd_subNat_cast, j]
+      ext : 1
+      simp_all only [coe_castLE, coe_natAdd, coe_subNat, coe_cast, Nat.add_sub_cancel']
+    rw [take, this, append_right]
 
 @[simp]
 theorem take_init {α : Fin (n + 1) → Sort*} (v : (i : Fin (n + 1)) → α i) (m : ℕ) (h : m ≤ n) :
-    take v m (Nat.le_succ_of_le h) = take (init v) m h := by
+    take (init v) m h = take v m (Nat.le_succ_of_le h) := by
   ext i
   simp only [take, init]
   congr
