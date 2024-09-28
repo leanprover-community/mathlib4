@@ -239,12 +239,12 @@ to add the label to the PR.
 - `2`: invalid labels defined
 - `3`: ~labels do not cover all of `Mathlib/`~ (unused; only emitting warning)
 -/
-unsafe def main (args : List String): IO Unit := do
+unsafe def main (args : List String): IO UInt32 := do
   if args.length > 1 then
     println s!"::error:: autolabel: invalid number of arguments ({args.length}), \
     expected at most 1. Please run without arguments or provide the target PR's \
     number as a single argument!"
-    IO.Process.exit 1
+    return 1
   let prNumber? := args[0]?
 
   -- test: validate that all paths in `mathlibLabels` actually exist
@@ -267,7 +267,7 @@ unsafe def main (args : List String): IO Unit := do
           Please update `{ ``AutoLabel.mathlibLabels }`!"
         valid := false
   unless valid do
-    IO.Process.exit 2
+    return 2
 
   -- test: validate that the labels cover all of the `Mathlib/` folder
   let notMatchedPaths ← findUncoveredPaths "Mathlib" (exceptions := mathlibUnlabelled)
@@ -279,7 +279,7 @@ unsafe def main (args : List String): IO Unit := do
       s!"Incomplete `{ ``AutoLabel.mathlibLabels }`"
       s!"the following paths inside `Mathlib/` are not covered \
       by any label: {notMatchedPaths} Please modify `AutoLabel.mathlibLabels` accordingly!"
-    -- IO.Process.exit 3
+    -- return 3
 
   -- get the modified files
   let gitDiff ← IO.Process.run {
@@ -290,21 +290,21 @@ unsafe def main (args : List String): IO Unit := do
   -- find labels covering the modified files
   let labels := getMatchingLabels modifiedFiles
 
+  println s!"::notice::Applicable labels: {labels}"
+
   match labels with
   | #[] =>
-    println s!"No applicable labels found!"
+    println s!"::warning::no label to add"
   | #[label] =>
-    println s!"Exactly one label found: {label}"
     match prNumber? with
     | some n =>
       let _ ← IO.Process.run {
         cmd := "gh",
         args := #["pr", "edit", n, "--add-label", label] }
-      println s!"Added label: {label}"
+      println s!"::notice::added label: {label}"
     | none =>
-      println s!"No PR-number provided, skipping adding labels. \
+      println s!"::warning::no PR-number provided, not adding labels. \
       (call `lake exe autolabel 150602` to add the labels to PR `150602`)"
-  | labels =>
-    println s!"Multiple labels found: {labels}"
-    println s!"Not adding any label."
-  IO.Process.exit 0
+  | _ =>
+    println s!"::notice::not adding multiple labels: {labels}"
+  return 0
