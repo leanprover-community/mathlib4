@@ -205,7 +205,7 @@ theorem nhds_zero_eq_of_basis [TopologicalSpace F] [TopologicalAddGroup F] (𝔖
 
 theorem nhds_zero_eq [TopologicalSpace F] [TopologicalAddGroup F] (𝔖 : Set (Set E)) :
     𝓝 (0 : UniformConvergenceCLM σ F 𝔖) =
-      ⨅ (s : Set E) (_ : s ∈ 𝔖) (t : Set F) (_ : t ∈ 𝓝 0),
+      ⨅ s ∈ 𝔖, ⨅ t ∈ 𝓝 (0 : F),
         𝓟 {f : UniformConvergenceCLM σ F 𝔖 | MapsTo f s t} :=
   nhds_zero_eq_of_basis _ _ _ (𝓝 0).basis_sets
 
