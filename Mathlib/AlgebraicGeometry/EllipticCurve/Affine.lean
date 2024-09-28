@@ -272,7 +272,7 @@ lemma nonsingular_iff_variableChange (x y : R) :
     W.Nonsingular x y ↔ ((⟨1, x, 0, y⟩ : VariableChange R) • W).toAffine.Nonsingular 0 0 := by
   rw [nonsingular_iff', equation_iff_variableChange, equation_zero, ← neg_ne_zero, or_comm,
     nonsingular_zero, variableChange_a₃, variableChange_a₄, inv_one, Units.val_one]
-  simp only [variableChange]
+  simp only [variableChange_def]
   congr! 3 <;> ring1
 
 lemma nonsingular_zero_of_Δ_ne_zero (h : W.Equation 0 0) (hΔ : W.Δ ≠ 0) : W.Nonsingular 0 0 := by
