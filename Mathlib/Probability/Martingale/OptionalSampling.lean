@@ -66,7 +66,7 @@ theorem condexp_stopping_time_ae_eq_restrict_eq_const_of_le_const (h : Martingal
     rw [Set.inter_comm _ t, IsStoppingTime.measurableSet_inter_eq_iff]
   · suffices {x : Ω | τ x = i} = ∅ by simp [this]; norm_cast
     ext1 x
-    simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false_iff]
+    simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
     rintro rfl
     exact hin (hτ_le x)
 
@@ -88,7 +88,7 @@ theorem stoppedValue_ae_eq_condexp_of_le_const_of_countable_range (h : Martingal
     stoppedValue f τ =ᵐ[μ] μ[f n|hτ.measurableSpace] := by
   have : Set.univ = ⋃ i ∈ Set.range τ, {x | τ x = i} := by
     ext1 x
-    simp only [Set.mem_univ, Set.mem_range, true_and_iff, Set.iUnion_exists, Set.iUnion_iUnion_eq',
+    simp only [Set.mem_univ, Set.mem_range, Set.iUnion_exists, Set.iUnion_iUnion_eq',
       Set.mem_iUnion, Set.mem_setOf_eq, exists_apply_eq_apply']
   nth_rw 1 [← @Measure.restrict_univ Ω _ μ]
   rw [this, ae_eq_restrict_biUnion_iff _ h_countable_range]

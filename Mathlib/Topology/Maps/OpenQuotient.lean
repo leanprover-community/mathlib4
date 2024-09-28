@@ -3,7 +3,7 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Constructions
+import Mathlib.Topology.Maps.Basic
 
 /-!
 # Open quotient maps
@@ -56,9 +56,5 @@ theorem continuous_comp_iff (h : IsOpenQuotientMap f) {g : Y → Z} :
 theorem continuousAt_comp_iff (h : IsOpenQuotientMap f) {g : Y → Z} {x : X} :
     ContinuousAt (g ∘ f) x ↔ ContinuousAt g (f x) := by
   simp only [ContinuousAt, ← h.map_nhds_eq, tendsto_map'_iff, comp_def]
-
-theorem prodMap {T : Type*} [TopologicalSpace T] {g : Z → T} (hf : IsOpenQuotientMap f)
-    (hg : IsOpenQuotientMap g) : IsOpenQuotientMap (Prod.map f g) :=
-  ⟨.prodMap hf.1 hg.1, .prod_map hf.2 hg.2, .prod hf.3 hg.3⟩
 
 end IsOpenQuotientMap

@@ -42,6 +42,8 @@ The Coq code is available at the following address: <http://www.lri.fr/~sboldo/e
 
 noncomputable section
 
+open InnerProductSpace
+
 open RCLike Real Filter
 
 open LinearMap (ker range)
@@ -216,8 +218,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
         θ * θ * ‖w - v‖ ^ 2 - 2 * θ * inner (u - v) (w - v) =
           θ * (θ * ‖w - v‖ ^ 2 - 2 * inner (u - v) (w - v)) := by ring
       rw [eq₂] at this
-      have := le_of_sub_nonneg (nonneg_of_mul_nonneg_right this hθ₁)
-      exact this
+      exact le_of_sub_nonneg (nonneg_of_mul_nonneg_right this hθ₁)
     by_cases hq : q = 0
     · rw [hq] at this
       have : p ≤ 0 := by
@@ -278,7 +279,7 @@ theorem exists_norm_eq_iInf_of_complete_subspace (h : IsComplete (↑K : Set E))
 Let `u` be a point in a real inner product space, and let `K` be a nonempty subspace.
 Then point `v` minimizes the distance `‖u - v‖` over points in `K` if and only if
 for all `w ∈ K`, `⟪u - v, w⟫ = 0` (i.e., `u - v` is orthogonal to the subspace `K`).
-This is superceded by `norm_eq_iInf_iff_inner_eq_zero` that gives the same conclusion over
+This is superseded by `norm_eq_iInf_iff_inner_eq_zero` that gives the same conclusion over
 any `RCLike` field.
 -/
 theorem norm_eq_iInf_iff_real_inner_eq_zero (K : Submodule ℝ F) {u : F} {v : F} (hv : v ∈ K) :
@@ -1187,7 +1188,7 @@ theorem OrthogonalFamily.isInternal_iff_of_isComplete [DecidableEq ι] {V : ι �
     (hc : IsComplete (↑(iSup V) : Set E)) : DirectSum.IsInternal V ↔ (iSup V)ᗮ = ⊥ := by
   haveI : CompleteSpace (↥(iSup V)) := hc.completeSpace_coe
   simp only [DirectSum.isInternal_submodule_iff_independent_and_iSup_eq_top, hV.independent,
-    true_and_iff, Submodule.orthogonal_eq_bot_iff]
+    true_and, Submodule.orthogonal_eq_bot_iff]
 
 /-- An orthogonal family of subspaces of `E` satisfies `DirectSum.IsInternal` (that is,
 they provide an internal direct sum decomposition of `E`) if and only if their span has trivial

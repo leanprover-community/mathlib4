@@ -79,7 +79,7 @@ variable {R : Type*} [NonAssocSemiring R] [NoZeroDivisors R] [CharZero R] {a : R
 
 @[simp]
 theorem add_self_eq_zero {a : R} : a + a = 0 ↔ a = 0 := by
-  simp only [(two_mul a).symm, mul_eq_zero, two_ne_zero, false_or_iff]
+  simp only [(two_mul a).symm, mul_eq_zero, two_ne_zero, false_or]
 
 end
 

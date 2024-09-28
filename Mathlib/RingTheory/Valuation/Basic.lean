@@ -412,6 +412,14 @@ theorem isEquiv_of_map_strictMono [LinearOrderedCommMonoidWithZero Γ₀]
     (H : StrictMono f) : IsEquiv (v.map f H.monotone) v := fun _x _y =>
   ⟨H.le_iff_le.mp, fun h => H.monotone h⟩
 
+theorem isEquiv_iff_val_lt_val [LinearOrderedCommGroupWithZero Γ₀]
+    [LinearOrderedCommGroupWithZero Γ'₀] {v : Valuation K Γ₀} {v' : Valuation K Γ'₀} :
+    v.IsEquiv v' ↔ ∀ {x y : K}, v x < v y ↔ v' x < v' y := by
+  simp only [IsEquiv, le_iff_le_iff_lt_iff_lt]
+  exact forall_comm
+
+alias ⟨IsEquiv.lt_iff_lt, _⟩ := isEquiv_iff_val_lt_val
+
 theorem isEquiv_of_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
     [LinearOrderedCommGroupWithZero Γ'₀] (v : Valuation K Γ₀) (v' : Valuation K Γ'₀)
     (h : ∀ {x : K}, v x ≤ 1 ↔ v' x ≤ 1) : v.IsEquiv v' := by
@@ -498,10 +506,10 @@ theorem isEquiv_tfae [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGr
     (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
     [v.IsEquiv v', ∀ {x}, v x ≤ 1 ↔ v' x ≤ 1, ∀ {x}, v x = 1 ↔ v' x = 1, ∀ {x}, v x < 1 ↔ v' x < 1,
         ∀ {x}, v (x - 1) < 1 ↔ v' (x - 1) < 1].TFAE := by
-  tfae_have 1 ↔ 2; · apply isEquiv_iff_val_le_one
-  tfae_have 1 ↔ 3; · apply isEquiv_iff_val_eq_one
-  tfae_have 1 ↔ 4; · apply isEquiv_iff_val_lt_one
-  tfae_have 1 ↔ 5; · apply isEquiv_iff_val_sub_one_lt_one
+  tfae_have 1 ↔ 2 := isEquiv_iff_val_le_one ..
+  tfae_have 1 ↔ 3 := isEquiv_iff_val_eq_one ..
+  tfae_have 1 ↔ 4 := isEquiv_iff_val_lt_one ..
+  tfae_have 1 ↔ 5 := isEquiv_iff_val_sub_one_lt_one ..
   tfae_finish
 
 end
@@ -831,13 +839,3 @@ end Supp
 
 -- end of section
 end AddValuation
-
-section ValuationNotation
-
-/-- Notation for `WithZero (Multiplicative ℕ)` -/
-scoped[DiscreteValuation] notation "ℕₘ₀" => WithZero (Multiplicative ℕ)
-
-/-- Notation for `WithZero (Multiplicative ℤ)` -/
-scoped[DiscreteValuation] notation "ℤₘ₀" => WithZero (Multiplicative ℤ)
-
-end ValuationNotation

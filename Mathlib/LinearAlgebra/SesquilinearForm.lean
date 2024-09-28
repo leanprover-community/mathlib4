@@ -458,6 +458,37 @@ theorem IsAdjointPair.smul (c : R) (h : IsAdjointPair B B' f g) :
 
 end AddCommGroup
 
+section OrthogonalMap
+
+variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+  (B : LinearMap.BilinForm R M) (f : Module.End R M)
+
+/-- A linear transformation `f` is orthogonal with respect to a bilinear form `B` if `B` is
+bi-invariant with respect to `f`. -/
+def IsOrthogonal : Prop :=
+  ∀ x y, B (f x) (f y) = B x y
+
+variable {B f}
+
+@[simp]
+lemma _root_.LinearEquiv.isAdjointPair_symm_iff {f : M ≃ₗ[R] M} :
+    LinearMap.IsAdjointPair B B f f.symm ↔ B.IsOrthogonal f :=
+  ⟨fun hf x y ↦ by simpa using hf x (f y), fun hf x y ↦ by simpa using hf x (f.symm y)⟩
+
+lemma isOrthogonal_of_forall_apply_same
+    (h : IsLeftRegular (2 : R)) (hB : B.IsSymm) (hf : ∀ x, B (f x) (f x) = B x x) :
+    B.IsOrthogonal f := by
+  intro x y
+  suffices 2 * B (f x) (f y) = 2 * B x y from h this
+  have := hf (x + y)
+  simp only [map_add, add_apply, hf x, hf y, show B y x = B x y from hB.eq y x] at this
+  rw [show B (f y) (f x) = B (f x) (f y) from hB.eq (f y) (f x)] at this
+  simp only [add_assoc, add_right_inj] at this
+  simp only [← add_assoc, add_left_inj] at this
+  simpa only [← two_mul] using this
+
+end OrthogonalMap
+
 end AdjointPair
 
 /-! ### Self-adjoint pairs -/
