@@ -1071,6 +1071,74 @@ theorem contractNth_apply_of_ne (j : Fin (n + 1)) (op : α → α → α) (g : F
 
 end ContractNth
 
+section Take
+
+variable {n : ℕ} {α : Fin n → Sort*}
+
+/-- Take the first `m` elements of an `n`-tuple where `m ≤ n`, returning an `m`-tuple. -/
+def take (v : (i : Fin n) → α i) (m : ℕ) (h : m ≤ n) : (i : Fin m) → α (castLE h i) :=
+  fun i ↦ v (castLE h i)
+
+@[simp]
+theorem take_def (v : (i : Fin n) → α i) (m : ℕ) (h : m ≤ n) (i : Fin m) :
+    (take v m h) i = v (castLE h i) := rfl
+
+@[simp]
+theorem take_zero (v : (i : Fin n) → α i) : take v 0 (Nat.zero_le n) = fun i ↦ elim0 i := by
+  ext i; exact elim0 i
+
+@[simp]
+theorem take_eq_self (v : (i : Fin n) → α i) :
+    take v n (le_refl n) = v := by ext i; simp [take]
+
+/-- Taking `m + 1` elements is equal to taking `m` elements and appending the `(m + 1)`th one. -/
+theorem take_succ_eq_snoc (v : (i : Fin n) → α i) (m : ℕ) (h : m < n) :
+    take v m.succ h = @snoc m (fun i ↦ α (castLE h i))
+        (take v m (le_of_lt h)) (v ⟨m, h⟩) := by
+  ext i
+  induction m with
+  | zero =>
+    have h' : i = 0 := by
+      ext
+      simp only [Nat.succ_eq_add_one, Nat.reduceAdd, coe_fin_one]
+    subst h'
+    simp [take, snoc, castLE]
+  | succ m _ =>
+    induction i using reverseInduction with
+    | last => simp [take, snoc, castLT]; congr
+    | cast i _ => simp [snoc_cast_add]
+
+/-- `take` commutes with `update` for indices in the range of `take`. -/
+@[simp]
+theorem take_update_of_lt (v : (i : Fin n) → α i) (m : ℕ) (h : m ≤ n) (i : Fin m)
+    (x : α (castLE h i)) : take (update v (castLE h i) x) m h = update (take v m h) i x := by
+  ext j
+  by_cases h' : j = i
+  · rw [h']
+    simp only [take_def, update_same]
+  · have : castLE h j ≠ castLE h i := by simp [h']
+    simp only [take_def, update_noteq h', update_noteq this]
+
+/-- `take` is the same after `update` for indices outside the range of `take`. -/
+@[simp]
+theorem take_update_of_ge (v : (i : Fin n) → α i) (m : ℕ) (h : m ≤ n) (i : Fin n) (hi : i ≥ m)
+    (x : α i) : take (update v i x) m h = take v m h := by
+  ext j
+  have : castLE h j ≠ i := by
+    refine ne_of_val_ne ?_
+    simp only [coe_castLE]
+    exact Nat.ne_of_lt (lt_of_lt_of_le j.isLt hi)
+  simp only [take_def, update_noteq this]
+
+@[simp]
+theorem take_init {α : Fin (n + 1) → Sort*} (v : (i : Fin (n + 1)) → α i) (m : ℕ) (h : m ≤ n) :
+    take v m (Nat.le_succ_of_le h) = take (init v) m h := by
+  ext i
+  simp only [take, init]
+  congr
+
+end Take
+
 /-- To show two sigma pairs of tuples agree, it to show the second elements are related via
 `Fin.cast`. -/
 theorem sigma_eq_of_eq_comp_cast {α : Type*} :
