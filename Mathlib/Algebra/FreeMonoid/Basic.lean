@@ -155,7 +155,7 @@ def prodAux {M} [Monoid M] : List M → M
 @[to_additive]
 lemma prodAux_eq : ∀ l : List M, FreeMonoid.prodAux l = l.prod
   | [] => rfl
-  | (_ :: xs) => congr_arg (fun x => List.foldl (· * ·) x xs) (one_mul _).symm
+  | (_ :: xs) => by simp [prodAux, List.prod_eq_foldl]
 
 /-- Equivalence between maps `α → M` and monoid homomorphisms `FreeMonoid α →* M`. -/
 @[to_additive "Equivalence between maps `α → A` and additive monoid homomorphisms
