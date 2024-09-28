@@ -118,7 +118,6 @@ lemma dens_image [Fintype β] [DecidableEq β] {f : α → β} (hf : Bijective f
   exact mod_cast Fintype.card_ne_zero
 
 @[simp] lemma dens_mul_card (s : Finset α) : s.dens * Fintype.card α = s.card := by
-
   rw [mul_comm, card_mul_dens]
 
 section Semifield
