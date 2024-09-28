@@ -44,7 +44,7 @@ def sphereInclusion (n : ℤ) : 𝕊 n ⟶ 𝔻 (n + 1) where
 /-- A type witnessing that `X'` is obtained from `X` by attaching generalized cells `f : S ⟶ D`. -/
 structure AttachGeneralizedCells {S D : TopCat.{u}} (f : S ⟶ D) (X X' : TopCat.{u}) where
   /-- The index type over the generalized `(n+1)`-cells -/
-  cells : Type
+  cells : Type u
   /-- For each generalized `(n+1)`-cell, we have an attaching map from its boundary to `X`. -/
   attachMaps : cells → (S ⟶ X)
   /-- `X'` is the pushout obtained from `X` along `sigmaAttachMap`. -/
