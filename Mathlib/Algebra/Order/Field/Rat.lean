@@ -8,8 +8,6 @@ import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Data.NNRat.Defs
 
-#align_import data.rat.basic from "leanprover-community/mathlib"@"a59dad53320b73ef180174aae867addd707ef00e"
-
 /-!
 # The rational numbers form a linear ordered field
 
@@ -40,9 +38,7 @@ deriving instance CanonicallyLinearOrderedSemifield, LinearOrderedSemifield,
 namespace NNRat
 
 @[simp, norm_cast] lemma coe_inv (q : ℚ≥0) : ((q⁻¹ : ℚ≥0) : ℚ) = (q : ℚ)⁻¹ := rfl
-#align nnrat.coe_inv NNRat.coe_inv
 @[simp, norm_cast] lemma coe_div (p q : ℚ≥0) : ((p / q : ℚ≥0) : ℚ) = p / q := rfl
-#align nnrat.coe_div NNRat.coe_div
 
 lemma inv_def (q : ℚ≥0) : q⁻¹ = divNat q.den q.num := by ext; simp [Rat.inv_def', num_coe, den_coe]
 lemma div_def (p q : ℚ≥0) : p / q = divNat (p.num * q.den) (p.den * q.num) := by

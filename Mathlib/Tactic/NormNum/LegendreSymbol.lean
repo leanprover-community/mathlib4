@@ -5,8 +5,6 @@ Authors: Michael Stoll
 -/
 import Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol
 
-#align_import number_theory.legendre_symbol.norm_num from "leanprover-community/mathlib"@"e2621d935895abe70071ab828a4ee6e26a52afe4"
-
 /-!
 # A `norm_num` extension for Jacobi and Legendre symbols
 
@@ -54,7 +52,6 @@ namespace Mathlib.Meta.NormNum
 /-- The Jacobi symbol restricted to natural numbers in both arguments. -/
 def jacobiSymNat (a b : ℕ) : ℤ :=
   jacobiSym a b
-#align norm_num.jacobi_sym_nat Mathlib.Meta.NormNum.jacobiSymNat
 
 /-!
 ### API Lemmas
@@ -67,11 +64,9 @@ arguments, in a form that is suitable for constructing proofs in `norm_num`.
 /-- Base cases: `b = 0`, `b = 1`, `a = 0`, `a = 1`. -/
 theorem jacobiSymNat.zero_right (a : ℕ) : jacobiSymNat a 0 = 1 := by
   rw [jacobiSymNat, jacobiSym.zero_right]
-#align norm_num.jacobi_sym_nat.zero_right Mathlib.Meta.NormNum.jacobiSymNat.zero_right
 
 theorem jacobiSymNat.one_right (a : ℕ) : jacobiSymNat a 1 = 1 := by
   rw [jacobiSymNat, jacobiSym.one_right]
-#align norm_num.jacobi_sym_nat.one_right Mathlib.Meta.NormNum.jacobiSymNat.one_right
 
 theorem jacobiSymNat.zero_left (b : ℕ) (hb : Nat.beq (b / 2) 0 = false) : jacobiSymNat 0 b = 0 := by
   rw [jacobiSymNat, Nat.cast_zero, jacobiSym.zero_left ?_]
@@ -80,30 +75,23 @@ theorem jacobiSymNat.zero_left (b : ℕ) (hb : Nat.beq (b / 2) 0 = false) : jaco
     _ ≤ 2 * (b / 2) :=
       Nat.mul_le_mul_left _ (Nat.succ_le.mpr (Nat.pos_of_ne_zero (Nat.ne_of_beq_eq_false hb)))
     _ ≤ b           := Nat.mul_div_le b 2
-#align norm_num.jacobi_sym_nat.zero_left_even Mathlib.Meta.NormNum.jacobiSymNat.zero_left
-#align norm_num.jacobi_sym_nat.zero_left_odd Mathlib.Meta.NormNum.jacobiSymNat.zero_left
 
 theorem jacobiSymNat.one_left (b : ℕ) : jacobiSymNat 1 b = 1 := by
   rw [jacobiSymNat, Nat.cast_one, jacobiSym.one_left]
-#align norm_num.jacobi_sym_nat.one_left_even Mathlib.Meta.NormNum.jacobiSymNat.one_left
-#align norm_num.jacobi_sym_nat.one_left_odd Mathlib.Meta.NormNum.jacobiSymNat.one_left
 
 /-- Turn a Legendre symbol into a Jacobi symbol. -/
 theorem LegendreSym.to_jacobiSym (p : ℕ) (pp : Fact p.Prime) (a r : ℤ)
     (hr : IsInt (jacobiSym a p) r) : IsInt (legendreSym p a) r := by
   rwa [@jacobiSym.legendreSym.to_jacobiSym p pp a]
-#align norm_num.legendre_sym.to_jacobi_sym Mathlib.Meta.NormNum.LegendreSym.to_jacobiSym
 
 /-- The value depends only on the residue class of `a` mod `b`. -/
 theorem JacobiSym.mod_left (a : ℤ) (b ab' : ℕ) (ab r b' : ℤ) (hb' : (b : ℤ) = b')
     (hab : a % b' = ab) (h : (ab' : ℤ) = ab) (hr : jacobiSymNat ab' b = r) : jacobiSym a b = r := by
   rw [← hr, jacobiSymNat, jacobiSym.mod_left, hb', hab, ← h]
-#align norm_num.jacobi_sym.mod_left Mathlib.Meta.NormNum.JacobiSym.mod_left
 
 theorem jacobiSymNat.mod_left (a b ab : ℕ) (r : ℤ) (hab : a % b = ab) (hr : jacobiSymNat ab b = r) :
     jacobiSymNat a b = r := by
   rw [← hr, jacobiSymNat, jacobiSymNat, _root_.jacobiSym.mod_left a b, ← hab]; rfl
-#align norm_num.jacobi_sym_nat.mod_left Mathlib.Meta.NormNum.jacobiSymNat.mod_left
 
 /-- The symbol vanishes when both entries are even (and `b / 2 ≠ 0`). -/
 theorem jacobiSymNat.even_even (a b : ℕ) (hb₀ : Nat.beq (b / 2) 0 = false) (ha : a % 2 = 0)
@@ -115,7 +103,6 @@ theorem jacobiSymNat.even_even (a b : ℕ) (hb₀ : Nat.beq (b / 2) 0 = false) (
   change 2 ∣ (a : ℤ).gcd b at h
   rw [hf, ← even_iff_two_dvd] at h
   exact Nat.not_even_one h
-#align norm_num.jacobi_sym_nat.even_even Mathlib.Meta.NormNum.jacobiSymNat.even_even
 
 /-- When `a` is odd and `b` is even, we can replace `b` by `b / 2`. -/
 theorem jacobiSymNat.odd_even (a b c : ℕ) (r : ℤ) (ha : a % 2 = 1) (hb : b % 2 = 0) (hc : b / 2 = c)
@@ -129,14 +116,12 @@ theorem jacobiSymNat.odd_even (a b c : ℕ) (r : ℤ) (ha : a % 2 = 1) (hb : b %
     -- for `jacobiSym.mul_right`
     rwa [← Nat.mod_add_div b 2, hb, hc, Nat.zero_add, jacobiSymNat, jacobiSym.mul_right,
       ← jacobiSym.legendreSym.to_jacobiSym, ha', one_mul]
-#align norm_num.jacobi_sym_nat.odd_even Mathlib.Meta.NormNum.jacobiSymNat.odd_even
 
 /-- If `a` is divisible by `4` and `b` is odd, then we can remove the factor `4` from `a`. -/
 theorem jacobiSymNat.double_even (a b c : ℕ) (r : ℤ) (ha : a % 4 = 0) (hb : b % 2 = 1)
     (hc : a / 4 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = r := by
   simp only [jacobiSymNat, ← hr, ← hc, Int.ofNat_ediv, Nat.cast_ofNat]
   exact (jacobiSym.div_four_left (mod_cast ha) hb).symm
-#align norm_num.jacobi_sym_nat.double_even Mathlib.Meta.NormNum.jacobiSymNat.double_even
 
 /-- If `a` is even and `b` is odd, then we can remove a factor `2` from `a`,
 but we may have to change the sign, depending on `b % 8`.
@@ -146,59 +131,49 @@ theorem jacobiSymNat.even_odd₁ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : 
   simp only [jacobiSymNat, ← hr, ← hc, Int.ofNat_ediv, Nat.cast_ofNat]
   rw [← jacobiSym.even_odd (mod_cast ha), if_neg (by simp [hb])]
   rw [← Nat.mod_mod_of_dvd, hb]; norm_num
-#align norm_num.jacobi_sym_nat.even_odd₁ Mathlib.Meta.NormNum.jacobiSymNat.even_odd₁
 
 theorem jacobiSymNat.even_odd₇ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 7)
     (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = r := by
   simp only [jacobiSymNat, ← hr, ← hc, Int.ofNat_ediv, Nat.cast_ofNat]
   rw [← jacobiSym.even_odd (mod_cast ha), if_neg (by simp [hb])]
   rw [← Nat.mod_mod_of_dvd, hb]; norm_num
-#align norm_num.jacobi_sym_nat.even_odd₇ Mathlib.Meta.NormNum.jacobiSymNat.even_odd₇
 
 theorem jacobiSymNat.even_odd₃ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 3)
     (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = -r := by
   simp only [jacobiSymNat, ← hr, ← hc, Int.ofNat_ediv, Nat.cast_ofNat]
   rw [← jacobiSym.even_odd (mod_cast ha), if_pos (by simp [hb])]
   rw [← Nat.mod_mod_of_dvd, hb]; norm_num
-#align norm_num.jacobi_sym_nat.even_odd₃ Mathlib.Meta.NormNum.jacobiSymNat.even_odd₃
 
 theorem jacobiSymNat.even_odd₅ (a b c : ℕ) (r : ℤ) (ha : a % 2 = 0) (hb : b % 8 = 5)
     (hc : a / 2 = c) (hr : jacobiSymNat c b = r) : jacobiSymNat a b = -r := by
   simp only [jacobiSymNat, ← hr, ← hc, Int.ofNat_ediv, Nat.cast_ofNat]
   rw [← jacobiSym.even_odd (mod_cast ha), if_pos (by simp [hb])]
   rw [← Nat.mod_mod_of_dvd, hb]; norm_num
-#align norm_num.jacobi_sym_nat.even_odd₅ Mathlib.Meta.NormNum.jacobiSymNat.even_odd₅
 
 /-- Use quadratic reciproity to reduce to smaller `b`. -/
 theorem jacobiSymNat.qr₁ (a b : ℕ) (r : ℤ) (ha : a % 4 = 1) (hb : b % 2 = 1)
     (hr : jacobiSymNat b a = r) : jacobiSymNat a b = r := by
   rwa [jacobiSymNat, jacobiSym.quadratic_reciprocity_one_mod_four ha (Nat.odd_iff.mpr hb)]
-#align norm_num.jacobi_sym_nat.qr₁ Mathlib.Meta.NormNum.jacobiSymNat.qr₁
 
 theorem jacobiSymNat.qr₁_mod (a b ab : ℕ) (r : ℤ) (ha : a % 4 = 1) (hb : b % 2 = 1)
     (hab : b % a = ab) (hr : jacobiSymNat ab a = r) : jacobiSymNat a b = r :=
   jacobiSymNat.qr₁ _ _ _ ha hb <| jacobiSymNat.mod_left _ _ ab r hab hr
-#align norm_num.jacobi_sym_nat.qr₁_mod Mathlib.Meta.NormNum.jacobiSymNat.qr₁_mod
 
 theorem jacobiSymNat.qr₁' (a b : ℕ) (r : ℤ) (ha : a % 2 = 1) (hb : b % 4 = 1)
     (hr : jacobiSymNat b a = r) : jacobiSymNat a b = r := by
   rwa [jacobiSymNat, ← jacobiSym.quadratic_reciprocity_one_mod_four hb (Nat.odd_iff.mpr ha)]
-#align norm_num.jacobi_sym_nat.qr₁' Mathlib.Meta.NormNum.jacobiSymNat.qr₁'
 
 theorem jacobiSymNat.qr₁'_mod (a b ab : ℕ) (r : ℤ) (ha : a % 2 = 1) (hb : b % 4 = 1)
     (hab : b % a = ab) (hr : jacobiSymNat ab a = r) : jacobiSymNat a b = r :=
   jacobiSymNat.qr₁' _ _ _ ha hb <| jacobiSymNat.mod_left _ _ ab r hab hr
-#align norm_num.jacobi_sym_nat.qr₁'_mod Mathlib.Meta.NormNum.jacobiSymNat.qr₁'_mod
 
 theorem jacobiSymNat.qr₃ (a b : ℕ) (r : ℤ) (ha : a % 4 = 3) (hb : b % 4 = 3)
     (hr : jacobiSymNat b a = r) : jacobiSymNat a b = -r := by
   rwa [jacobiSymNat, jacobiSym.quadratic_reciprocity_three_mod_four ha hb, neg_inj]
-#align norm_num.jacobi_sym_nat.qr₃ Mathlib.Meta.NormNum.jacobiSymNat.qr₃
 
 theorem jacobiSymNat.qr₃_mod (a b ab : ℕ) (r : ℤ) (ha : a % 4 = 3) (hb : b % 4 = 3)
     (hab : b % a = ab) (hr : jacobiSymNat ab a = r) : jacobiSymNat a b = -r :=
   jacobiSymNat.qr₃ _ _ _ ha hb <| jacobiSymNat.mod_left _ _ ab r hab hr
-#align norm_num.jacobi_sym_nat.qr₃_mod Mathlib.Meta.NormNum.jacobiSymNat.qr₃_mod
 
 theorem isInt_jacobiSym : {a na : ℤ} → {b nb : ℕ} → {r : ℤ} →
     IsInt a na → IsNat b nb → jacobiSym na nb = r → IsInt (jacobiSym a b) r
@@ -297,7 +272,6 @@ partial def proveJacobiSymOdd (ea eb : Q(ℕ)) : (er : Q(ℤ)) × Q(jacobiSymNat
             have ha : Q(Nat.mod $ea 4 = 3) := (q(Eq.refl 3) : Expr)
             have hb : Q(Nat.mod $eb 4 = 3) := (q(Eq.refl 3) : Expr)
             ⟨er', q(jacobiSymNat.qr₃_mod $ea $eb $eab $er $ha $hb $hab $p)⟩
-#align norm_num.prove_jacobi_sym_odd Mathlib.Meta.NormNum.proveJacobiSymOdd
 
 /-- This evaluates `r := jacobiSymNat a b` and produces a proof term for the equality
 by removing powers of `2` from `b` and then calling `proveJacobiSymOdd`. -/
@@ -343,7 +317,6 @@ partial def proveJacobiSymNat (ea eb : Q(ℕ)) : (er : Q(ℤ)) × Q(jacobiSymNat
         ⟨er, q(jacobiSymNat.mod_left $ea $eb $eab $er $hab $p)⟩
       else
         proveJacobiSymOdd ea eb
-#align norm_num.prove_jacobi_sym_nat Mathlib.Meta.NormNum.proveJacobiSymNat
 
 /-- This evaluates `r := jacobiSym a b` and produces a proof term for the equality.
 This is done by reducing to `r := jacobiSymNat (a % b) b`. -/
@@ -365,7 +338,6 @@ partial def proveJacobiSym (ea : Q(ℤ)) (eb : Q(ℕ)) : (er : Q(ℤ)) × Q(jaco
     have hab' : Q(($eab' : ℤ) = $eab) := (q(Eq.refl $eab) : Expr)
     have ⟨er, p⟩ := proveJacobiSymNat eab' eb
     ⟨er, q(JacobiSym.mod_left $ea $eb $eab' $eab $er $eb' $hb' $hab $hab' $p)⟩
-#align norm_num.prove_jacobi_sym Mathlib.Meta.NormNum.proveJacobiSym
 
 end Mathlib.Meta.NormNum
 
@@ -394,7 +366,6 @@ def evalJacobiSym : NormNumExt where eval {u α} e := do
     have ⟨er, pr⟩ := proveJacobiSym ea eb
     haveI' : $e =Q jacobiSym $a $b := ⟨⟩
     return .isInt _ er er.intLit! q(isInt_jacobiSym $pa $pb $pr)
-#align tactic.norm_num.eval_jacobi_sym Tactic.NormNum.evalJacobiSym
 
 /-- This is the `norm_num` plug-in that evaluates Jacobi symbols on natural numbers. -/
 @[norm_num jacobiSymNat _ _]

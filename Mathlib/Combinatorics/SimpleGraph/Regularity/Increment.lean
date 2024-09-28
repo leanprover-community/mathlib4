@@ -6,8 +6,6 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Chunk
 import Mathlib.Combinatorics.SimpleGraph.Regularity.Energy
 
-#align_import combinatorics.simple_graph.regularity.increment from "leanprover-community/mathlib"@"bf7ef0e83e5b7e6c1169e97f055e58a2e4e9d52d"
-
 /-!
 # Increment partition for Szemerédi Regularity Lemma
 
@@ -55,7 +53,6 @@ with a slightly higher energy. This is helpful since the energy is bounded by a 
 not-too-big uniform equipartition. -/
 noncomputable def increment : Finpartition (univ : Finset α) :=
   P.bind fun _ => chunk hP G ε
-#align szemeredi_regularity.increment SzemerediRegularity.increment
 
 open Finpartition Finpartition.IsEquipartition
 
@@ -75,7 +72,6 @@ theorem card_increment (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) (hP
     Nat.sub_add_cancel ((Nat.le_succ _).trans a_add_one_le_four_pow_parts_card), ← add_mul]
   congr
   rw [filter_card_add_filter_neg_card_eq_card, card_attach]
-#align szemeredi_regularity.card_increment SzemerediRegularity.card_increment
 
 variable (hP G ε)
 
@@ -85,7 +81,6 @@ theorem increment_isEquipartition : (increment hP G ε).IsEquipartition := by
   rw [mem_coe, increment, mem_bind] at hA
   obtain ⟨U, hU, hA⟩ := hA
   exact card_eq_of_mem_parts_chunk hA
-#align szemeredi_regularity.increment_is_equipartition SzemerediRegularity.increment_isEquipartition
 
 /-- The contribution to `Finpartition.energy` of a pair of distinct parts of a `Finpartition`. -/
 private noncomputable def distinctPairs (x : {x // x ∈ P.parts.offDiag}) :
@@ -98,7 +93,7 @@ private theorem distinctPairs_increment :
     P.parts.offDiag.attach.biUnion (distinctPairs hP G ε) ⊆ (increment hP G ε).parts.offDiag := by
   rintro ⟨Ui, Vj⟩
   simp only [distinctPairs, increment, mem_offDiag, bind_parts, mem_biUnion, Prod.exists,
-    exists_and_left, exists_prop, mem_product, mem_attach, true_and_iff, Subtype.exists, and_imp,
+    exists_and_left, exists_prop, mem_product, mem_attach, true_and, Subtype.exists, and_imp,
     mem_offDiag, forall_exists_index, exists₂_imp, Ne]
   refine fun U V hUV hUi hVj => ⟨⟨_, hUV.1, hUi⟩, ⟨_, hUV.2.1, hVj⟩, ?_⟩
   rintro rfl
@@ -133,10 +128,6 @@ lemma le_sum_distinctPairs_edgeDensity_sq (x : {i // i ∈ P.parts.offDiag}) (h�
   · rw [add_zero]
     exact edgeDensity_chunk_uniform hPα hPε _ _
   · exact edgeDensity_chunk_not_uniform hPα hPε hε₁ (mem_offDiag.1 x.2).2.2 h
-#align szemeredi_regularity.pair_contrib_lower_bound SzemerediRegularity.le_sum_distinctPairs_edgeDensity_sq
-
-#noalign szemeredi_regularity.off_diag_pairs_le_increment_energy
-#noalign szemeredi_regularity.uniform_add_nonuniform_eq_off_diag_pairs
 
 /-- The increment partition has energy greater than the original one by a known fixed amount. -/
 theorem energy_increment (hP : P.IsEquipartition) (hP₇ : 7 ≤ P.parts.card)
@@ -175,7 +166,7 @@ theorem energy_increment (hP : P.IsEquipartition) (hP₇ : 7 ≤ P.parts.card)
     _ = (6/7 * P.parts.card ^ 2) * ε ^ 5 * (7 / 24) := by ring
     _ ≤ P.parts.offDiag.card * ε ^ 5 * (22 / 75) := by
         gcongr ?_ * _ * ?_
-        · rw [← mul_div_right_comm, div_le_iff (by norm_num), offDiag_card]
+        · rw [← mul_div_right_comm, div_le_iff₀ (by norm_num), offDiag_card]
           norm_cast
           rw [tsub_mul]
           refine le_tsub_of_add_le_left ?_
@@ -183,6 +174,5 @@ theorem energy_increment (hP : P.IsEquipartition) (hP₇ : 7 ≤ P.parts.card)
         · norm_num
     _ = (P.parts.offDiag.card * ε * (ε ^ 4 / 3) - P.parts.offDiag.card * (ε ^ 5 / 25)) := by ring
     _ ≤ ((nonUniforms P G ε).card * (ε ^ 4 / 3) - P.parts.offDiag.card * (ε ^ 5 / 25)) := by gcongr
-#align szemeredi_regularity.energy_increment SzemerediRegularity.energy_increment
 
 end SzemerediRegularity

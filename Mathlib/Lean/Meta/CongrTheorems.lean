@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Lean.Meta.Tactic.Cleanup
-import Lean.Meta.Tactic.Cases
 import Lean.Meta.Tactic.Refl
 import Mathlib.Logic.IsEmpty
 
@@ -62,7 +61,7 @@ where
       | .eq | .heq =>
         forallBoundedTelescope type (some 3) fun params' type' => do
           let #[x, y, eq] := params' | unreachable!
-          -- See if we can prove `eq` from previous parameters.
+          -- See if we can prove `Eq` from previous parameters.
           let g := (← mkFreshExprMVar (← inferType eq)).mvarId!
           let g ← g.clear eq.fvarId!
           if (← observing? <| prove g args).isSome then
@@ -129,7 +128,7 @@ instance {α : Sort u} [inst : FastIsEmpty α] {β : (x : α) → Sort v} :
 
 instance {α : Sort u} {β : (x : α) → Sort v} [inst : ∀ x, FastSubsingleton (β x)] :
     FastSubsingleton ((x : α) → β x) where
-  inst := have := λ x => (inst x).inst; inferInstance
+  inst := have := fun x ↦ (inst x).inst; inferInstance
 
 /--
 Runs `mx` in a context where all local `Subsingleton` and `IsEmpty` instances
@@ -285,8 +284,8 @@ where
     let rec loop (i : Nat)
         (ftyx ftyy : Expr) (xs ys : Array Expr) (fixed' : Array Bool) : MetaM α := do
       if i < numVars then
-        let ftyx ← whnf ftyx
-        let ftyy ← whnf ftyy
+        let ftyx ← whnfD ftyx
+        let ftyy ← whnfD ftyy
         unless ftyx.isForall do
           throwError "doubleTelescope: function doesn't have enough parameters"
         withLocalDeclD ftyx.bindingName! ftyx.bindingDomain! fun fvarx => do

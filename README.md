@@ -3,6 +3,7 @@
 ![GitHub CI](https://github.com/leanprover-community/mathlib4/workflows/continuous%20integration/badge.svg?branch=master)
 [![Bors enabled](https://bors.tech/images/badge_small.svg)](https://mathlib-bors-ca18eefec4cb.herokuapp.com/repositories/16)
 [![project chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://leanprover.zulipchat.com)
+[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/leanprover-community/mathlib4)
 
 [Mathlib](https://leanprover-community.github.io) is a user maintained library for the [Lean theorem prover](https://leanprover.github.io).
 It contains both programming infrastructure and mathematics,
@@ -11,6 +12,9 @@ as well as tactics that use the former and allow to develop the latter.
 ## Installation
 
 You can find detailed instructions to install Lean, mathlib, and supporting tools on [our website](https://leanprover-community.github.io/get_started.html).
+Alternatively, click on the button below to open a Gitpod workspace containing the project.
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/leanprover-community/mathlib4)
 
 ## Using `mathlib4` as a dependency
 
@@ -84,13 +88,17 @@ Call `lake exe cache` to see its help menu.
 
 ### Building HTML documentation
 
-Building HTML documentation locally is straightforward, but it may take a while:
+Building HTML documentation locally is straightforward, but it may take a while (>20 minutes):
 
 ```shell
-lake -Kdoc=on build Mathlib:docs
+lake -R -Kdoc=on update doc-gen4
+lake build Mathlib:docs
 ```
 
 The HTML files can then be found in `build/doc`.
+
+Warning: these commands will make a change to `lake-manifest.json`
+which should *not* be committed to Mathlib.
 
 ## Transitioning from Lean 3
 
@@ -132,7 +140,6 @@ For a list containing more detailed information, see https://leanprover-communit
 * Gabriel Ebner (@gebner): tactics, infrastructure, core, formal languages
 * Sébastien Gouëzel (@sgouezel): topology, calculus, geometry, analysis, measure theory
 * Markus Himmel (@TwoFX): category theory
-* Chris Hughes (@ChrisHughes24): algebra
 * Yury G. Kudryashov (@urkud): analysis, topology, measure theory
 * Robert Y. Lewis (@robertylewis): tactics, documentation
 * Jireh Loreaux (@j-loreaux): analysis, topology, operator algebras
@@ -146,8 +153,9 @@ For a list containing more detailed information, see https://leanprover-communit
 * Adam Topaz (@adamtopaz): algebra, category theory, algebraic geometry
 * Eric Wieser (@eric-wieser): algebra, infrastructure
 
-## Emeritus maintainers:
+## Past maintainers:
 
 * Jeremy Avigad (@avigad): analysis
 * Johannes Hölzl (@johoelzl): measure theory, topology
 * Simon Hudon (@cipher1024): tactics
+* Chris Hughes (@ChrisHughes24): algebra
