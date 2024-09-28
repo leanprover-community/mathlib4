@@ -177,41 +177,35 @@ open scoped BigOperators
 def evalFinsetExpect : PositivityExt where eval {u α} zα pα e := do
   match e with
   | ~q(@Finset.expect $ι _ $instα $instmod $s $f) =>
-    let (lhs, _, (rhs : Q($α))) ← lambdaMetaTelescope f
-    let so : Option Q(Finset.Nonempty $s) ← do
-      try
-        let _fi ← synthInstanceQ q(Fintype $ι)
-        let _no ← synthInstanceQ q(Nonempty $ι)
-        match s with
-        | ~q(@univ _ $fi) => pure (some q(Finset.univ_nonempty (α := $ι)))
-        | _ => pure none
-      catch _ => do
-        let .some fv ← findLocalDeclWithType? q(Finset.Nonempty $s) | pure none
-        pure (some (.fvar fv))
-    match ← core zα pα rhs, so with
-    | .nonnegative pb, _ => do
+    let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
+    have body : Q($α) := .betaRev f #[i]
+    let rbody ← core zα pα body
+    let p_pos : Option Q(0 < $e) := ← (do
+      let .positive pbody := rbody | pure none -- Fail if the body is not provably positive
+      let .some ps ← proveFinsetNonempty s | pure none
+      let .some pα' ← trySynthInstanceQ q(OrderedCancelAddCommMonoid $α) | pure none
+      let .some instαordsmul ← trySynthInstanceQ q(PosSMulStrictMono ℚ≥0 $α) | pure none
+      assumeInstancesCommute
+      let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars #[i] pbody
+      return some q(@expect_pos $ι $α $pα' $instmod $s $f $instαordsmul (fun i _ ↦ $pr i) $ps))
+    -- Try to show that the sum is positive
+    if let some p_pos := p_pos then
+      return .positive p_pos
+    -- Fall back to showing that the sum is nonnegative
+    else
+      let pbody ← rbody.toNonneg
+      let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
       let instαordmon ← synthInstanceQ q(OrderedAddCommMonoid $α)
       let instαordsmul ← synthInstanceQ q(PosSMulMono ℚ≥0 $α)
       assumeInstancesCommute
-      let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars lhs pb
       return .nonnegative q(@expect_nonneg $ι $α $instαordmon $instmod $s $f $instαordsmul
         fun i _ ↦ $pr i)
-    | .positive pb, .some (fi : Q(Finset.Nonempty $s)) => do
-      let instαordmon ← synthInstanceQ q(OrderedCancelAddCommMonoid $α)
-      let instαordsmul ← synthInstanceQ q(PosSMulStrictMono ℚ≥0 $α)
-      assumeInstancesCommute
-      let pr : Q(∀ i, 0 < $f i) ← mkLambdaFVars lhs pb
-      return .positive q(@expect_pos $ι $α $instαordmon $instmod $s $f $instαordsmul
-        (fun i _ ↦ $pr i) $fi)
-    | _, _ => pure .none
   | _ => throwError "not Finset.expect"
 
 example (n : ℕ) (a : ℕ → ℚ) : 0 ≤ 𝔼 j ∈ range n, a j^2 := by positivity
 example (a : ULift.{2} ℕ → ℚ) (s : Finset (ULift.{2} ℕ)) : 0 ≤ 𝔼 j ∈ s, a j^2 := by positivity
 example (n : ℕ) (a : ℕ → ℚ) : 0 ≤ 𝔼 j : Fin 8, 𝔼 i ∈ range n, (a j^2 + i ^ 2) := by positivity
 example (n : ℕ) (a : ℕ → ℚ) : 0 < 𝔼 j : Fin (n + 1), (a j^2 + 1) := by positivity
-example (a : ℕ → ℚ) : 0 < 𝔼 j ∈ ({1} : Finset ℕ), (a j^2 + 1) := by
-  have : Finset.Nonempty {1} := singleton_nonempty 1
-  positivity
+example (a : ℕ → ℚ) : 0 < 𝔼 j ∈ ({1} : Finset ℕ), (a j^2 + 1) := by positivity
 
 end Mathlib.Meta.Positivity
