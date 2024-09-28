@@ -679,66 +679,52 @@ end Field
 
 section AlgEquiv
 
+open RingHom RingEquiv
+
 variable {A₁ B₁ A₂ B₂ : Type*} [Field A₁] [Ring B₁] [Field A₂] [Ring B₂]
     [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
     (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁))
 
-variable (B₁) in
-private lemma unfoldAlg : haveI : Algebra A₂ B₁ := algebraComp B₁ e₁.symm.toRingHom;
-  algebraMap A₂ B₁ = (algebraMap A₁ B₁).comp e₁.symm.toRingHom := rfl
-
-variable (B₁) in
-private lemma decomp : haveI : Algebra A₂ B₁ := algebraComp B₁ e₁.symm.toRingHom;
-  (algebraMap A₂ B₁).comp e₁ = algebraMap A₁ B₁ := by
-    rw [unfoldAlg, RingHom.comp_assoc, ← RingEquiv.toRingHom_eq_coe,
-      RingEquiv.symm_toRingHom_comp_toRingHom e₁]; rfl
-
-include he
-open RingHom RingEquiv in
+include he in
 lemma IsSeparable.of_equiv_equiv
     {x : B₁} (h : IsSeparable A₁ x) : IsSeparable A₂ (e₂ x) := by
   letI := e₁.toRingHom.toAlgebra
   letI : Algebra A₂ B₁ := algebraComp B₁ e₁.symm.toRingHom
+  have unfoldAlg : algebraMap A₂ B₁ = (algebraMap A₁ B₁).comp e₁.symm.toRingHom := rfl
   haveI : IsScalarTower A₁ A₂ B₁ := by
-    refine IsScalarTower.of_algebraMap_eq ?_
-    suffices (algebraMap A₁ B₁) = (algebraMap A₂ B₁).comp (algebraMap A₁ A₂) from by
-      rw [this]
-      exact fun _ ↦ rfl
-    rw [unfoldAlg, comp_assoc]
-    have : algebraMap A₁ A₂ = e₁.toRingHom := rfl
-    rw [this, symm_toRingHom_comp_toRingHom]; rfl
+    refine IsScalarTower.of_algebraMap_eq <| fun x ↦ ?_
+    show (algebraMap A₁ B₁) x = (algebraMap A₂ B₁).comp (e₁.toRingHom) x
+    rw [unfoldAlg, comp_assoc, symm_toRingHom_comp_toRingHom]; rfl
   let e : B₁ ≃ₐ[A₂] B₂ :=
     { e₂ with
       commutes' := by
-        suffices e₂.toRingHom.comp (algebraMap A₂ B₁) = (algebraMap A₂ B₂) from by
-          rw [← this]
-          exact fun _ ↦ rfl
+        intro x
+        show e₂.toRingHom.comp (algebraMap A₂ B₁) x = (algebraMap A₂ B₂) x
         rw [unfoldAlg, ← comp_assoc]
         apply_fun fun x ↦ x.comp e₁.symm.toRingHom at he
         rw [comp_assoc, ← toRingHom_eq_coe, toRingHom_comp_symm_toRingHom] at he
-        exact _root_.id he.symm
+        exact congrFun (congrArg DFunLike.coe (id he.symm)) x
       }
   exact (AlgEquiv.isSeparable_iff e).mpr <| IsSeparable.tower_top A₂ h
 
-include e₁
-lemma IsSeparable.of_equiv' {x : B₁} (h : IsSeparable A₁ x) :
-    haveI : Algebra A₂ B₁ := algebraComp B₁ e₁.symm.toRingHom; IsSeparable A₂ x := by
-  haveI : Algebra A₂ B₁ := algebraComp B₁ e₁.symm.toRingHom
-  have : (algebraMap A₂ B₁).comp e₁.toRingHom =
-    (RingEquiv.refl B₁).toRingHom.comp (algebraMap A₁ B₁) := by
-    simp only [RingEquiv.toRingHom_eq_coe, RingEquiv.coe_ringHom_refl, RingHomCompTriple.comp_eq]
-    have := decomp B₁ e₁
-    -- exact this
-    sorry
-  have base := IsSeparable.of_equiv_equiv e₁ (RingEquiv.refl B₁) this h
-  simp at base
-  -- exact base
-  sorry
+lemma IsSeparable.of_equiv {x : B₁} (h : IsSeparable A₁ x) :
+    letI : Algebra A₂ B₁ := algebraComp B₁ e₁.symm.toRingHom; IsSeparable A₂ x := by
+  letI : Algebra A₂ B₁ := algebraComp B₁ e₁.symm.toRingHom
+  have unfoldAlg : algebraMap A₂ B₁ = (algebraMap A₁ B₁).comp e₁.symm.toRingHom := rfl
+  have decomp : (algebraMap A₂ B₁).comp e₁ = algebraMap A₁ B₁ := by
+    rw [unfoldAlg, comp_assoc, ← toRingHom_eq_coe, symm_toRingHom_comp_toRingHom e₁]; rfl
+  exact IsSeparable.of_equiv_equiv e₁ (refl B₁) decomp h
 
+include he in
 lemma Algebra.IsSeparable.of_equiv_equiv
     [Algebra.IsSeparable A₁ B₁] : Algebra.IsSeparable A₂ B₂ :=
   ⟨fun x ↦ (e₂.apply_symm_apply x) ▸ _root_.IsSeparable.of_equiv_equiv e₁ e₂ he
     (Algebra.IsSeparable.isSeparable _ _)⟩
+
+lemma Algebra.IsSeparable.of_equiv [Algebra.IsSeparable A₁ B₁] :
+    letI : Algebra A₂ B₁ := algebraComp B₁ e₁.symm.toRingHom;Algebra.IsSeparable A₂ B₁ :=
+  letI : Algebra A₂ B₁ := algebraComp B₁ e₁.symm.toRingHom
+  ⟨fun x ↦ _root_.IsSeparable.of_equiv e₁ (x := x) (Algebra.IsSeparable.isSeparable _ _)⟩
 
 end AlgEquiv
 
