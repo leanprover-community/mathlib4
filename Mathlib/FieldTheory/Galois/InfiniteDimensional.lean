@@ -173,6 +173,7 @@ theorem adjoin_simple_map [IsGalois k K] (f : K →ₐ[k] K) (x : K) :
     adjoin k {f x} = adjoin k {x} := by
   simpa only [Set.image_singleton] using adjoin_map f { x }
 
+/--The `AlgEquiv` version of `adjoin_simple_map`-/
 @[simp]
 theorem adjoin_simple_map' [IsGalois k K] (f : K ≃ₐ[k] K) (x : K) :
     adjoin k {f x} = adjoin k {x} :=
