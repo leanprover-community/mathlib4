@@ -216,12 +216,7 @@ lemma Algebra.trace_quotient_eq_of_isDedekindDomain (x) [IsDedekindDomain R] [Is
   haveI : IsIntegrallyClosed Sₚ := isIntegrallyClosed_of_isLocalization _ _ e
   have : IsPrincipalIdealRing Rₚ := by
     by_cases hp : p = ⊥
-    · have : IsFractionRing R Rₚ := by
-        delta IsFractionRing
-        convert inferInstanceAs (IsLocalization p.primeCompl Rₚ)
-        ext; simp [hp, Ideal.primeCompl, mem_nonZeroDivisors_iff_ne_zero]
-      letI : Field Rₚ := IsFractionRing.toField R
-      infer_instance
+    · infer_instance
     · have := (IsDedekindDomain.isDedekindDomainDvr R).2 p hp inferInstance
       infer_instance
   haveI : Module.Free Rₚ Sₚ := Module.free_of_finite_type_torsion_free'
