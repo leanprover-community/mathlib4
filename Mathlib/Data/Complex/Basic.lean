@@ -644,9 +644,6 @@ variable {α : Type*}
 @[simp] lemma ofReal_comp_pow (f : α → ℝ) (n : ℕ) : ofReal' ∘ (f ^ n) = ofReal' ∘ f ^ n :=
   map_comp_pow ofReal ..
 
-@[simp] lemma ofReal_comp_zpow (f : α → ℝ) (n : ℤ) : ofReal' ∘ (f ^ n) = ofReal' ∘ f ^ n :=
-  map_comp_zpow ofReal ..
-
 @[simp]
 theorem I_sq : I ^ 2 = -1 := by rw [sq, I_mul_I]
 
