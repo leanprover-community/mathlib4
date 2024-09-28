@@ -559,6 +559,9 @@ theorem lt_iff_lt {a b} : f a < f b ↔ a < b :=
 theorem eq_iff_eq {a b} : f a = f b ↔ a = b :=
   f.injective.eq_iff
 
+@[gcongr] protected alias ⟨_, GCongr.orderEmbedding_apply_le_apply⟩ := le_iff_le
+@[gcongr] protected alias ⟨_, GCongr.orderEmbedding_apply_lt_apply⟩ := lt_iff_lt
+
 protected theorem monotone : Monotone f :=
   OrderHomClass.monotone f
 
@@ -920,6 +923,8 @@ variable [LE α] [LE β] [LE γ]
 theorem le_iff_le (e : α ≃o β) {x y : α} : e x ≤ e y ↔ x ≤ y :=
   e.map_rel_iff
 
+@[gcongr] protected alias ⟨_, GCongr.orderIso_apply_le_apply⟩ := le_iff_le
+
 theorem le_symm_apply (e : α ≃o β) {x : α} {y : β} : x ≤ e.symm y ↔ e x ≤ y :=
   e.rel_symm_apply
 
@@ -939,6 +944,8 @@ protected theorem strictMono (e : α ≃o β) : StrictMono e :=
 @[simp]
 theorem lt_iff_lt (e : α ≃o β) {x y : α} : e x < e y ↔ x < y :=
   e.toOrderEmbedding.lt_iff_lt
+
+@[gcongr] protected alias ⟨_, GCongr.orderIso_apply_lt_apply⟩ := lt_iff_lt
 
 /-- Converts an `OrderIso` into a `RelIso (<) (<)`. -/
 def toRelIsoLT (e : α ≃o β) : ((· < ·) : α → α → Prop) ≃r ((· < ·) : β → β → Prop) :=
