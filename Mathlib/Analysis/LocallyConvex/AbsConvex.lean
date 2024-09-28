@@ -50,7 +50,7 @@ def AbsConvex (s : Set E) : Prop := Balanced 𝕜 s ∧ Convex ℝ s
 
 variable {𝕜}
 
-theorem absConvex_empty : AbsConvex 𝕜 (∅ : Set E) := ⟨balanced_empty, convex_empty⟩
+theorem AbsConvex.empty : AbsConvex 𝕜 (∅ : Set E) := ⟨balanced_empty, convex_empty⟩
 
 theorem absConvex_univ : AbsConvex 𝕜 (Set.univ : Set E) := ⟨balanced_univ, convex_univ⟩
 
