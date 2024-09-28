@@ -3,8 +3,6 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 -/
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.Relation.Trans
 import Batteries.Tactic.Alias
 
 /-!
@@ -20,58 +18,6 @@ set_option linter.deprecated false
 
 universe u v
 variable {α : Sort u}
-
-/- Eq, Ne, HEq, Iff -/
-
--- attribute [refl] HEq.refl -- FIXME This is still rejected after #857
-attribute [trans] HEq.trans
-attribute [trans] heq_of_eq_of_heq
-attribute [refl] Iff.refl
-attribute [trans] Iff.trans
-
-section Relation
-
-variable {α : Sort u} {β : Sort v} (r : β → β → Prop)
-
-/-- Local notation for an arbitrary binary relation `r`. -/
-local infix:50 " ≺ " => r
-
-/-- A reflexive relation relates every element to itself. -/
-def Reflexive := ∀ x, x ≺ x
-
-/-- A relation is symmetric if `x ≺ y` implies `y ≺ x`. -/
-def Symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x
-
-/-- A relation is transitive if `x ≺ y` and `y ≺ z` together imply `x ≺ z`. -/
-def Transitive := ∀ ⦃x y z⦄, x ≺ y → y ≺ z → x ≺ z
-
-lemma Equivalence.reflexive {r : β → β → Prop} (h : Equivalence r) : Reflexive r := h.refl
-
-lemma Equivalence.symmetric {r : β → β → Prop} (h : Equivalence r) : Symmetric r := fun _ _ ↦ h.symm
-
-lemma Equivalence.transitive {r : β → β → Prop} (h : Equivalence r) : Transitive r :=
-  fun _ _ _ ↦ h.trans
-
-/-- A relation is total if for all `x` and `y`, either `x ≺ y` or `y ≺ x`. -/
-def Total := ∀ x y, x ≺ y ∨ y ≺ x
-
-/-- Irreflexive means "not reflexive". -/
-def Irreflexive := ∀ x, ¬ x ≺ x
-
-/-- A relation is antisymmetric if `x ≺ y` and `y ≺ x` together imply that `x = y`. -/
-def AntiSymmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x → x = y
-
-/-- An empty relation does not relate any elements. -/
-@[nolint unusedArguments]
-def EmptyRelation := fun _ _ : α ↦ False
-
-theorem InvImage.trans (f : α → β) (h : Transitive r) : Transitive (InvImage r f) :=
-  fun (a₁ a₂ a₃ : α) (h₁ : InvImage r f a₁ a₂) (h₂ : InvImage r f a₂ a₃) ↦ h h₁ h₂
-
-theorem InvImage.irreflexive (f : α → β) (h : Irreflexive r) : Irreflexive (InvImage r f) :=
-  fun (a : α) (h₁ : InvImage r f a a) ↦ h (f a) h₁
-
-end Relation
 
 section Binary
 
@@ -107,26 +53,7 @@ def LeftDistributive  := ∀ a b c, a * (b + c) = a * b + a * c
 @[deprecated (since := "2024-09-03")] -- unused in Mathlib
 def RightDistributive := ∀ a b c, (a + b) * c = a * c + b * c
 
-def RightCommutative (h : β → α → β) := ∀ b a₁ a₂, h (h b a₁) a₂ = h (h b a₂) a₁
-def LeftCommutative (h : α → β → β) := ∀ a₁ a₂ b, h a₁ (h a₂ b) = h a₂ (h a₁ b)
-
-theorem left_comm : Commutative f → Associative f → LeftCommutative f :=
-  fun hcomm hassoc a b c ↦
-    calc  a*(b*c)
-      _ = (a*b)*c := Eq.symm (hassoc a b c)
-      _ = (b*a)*c := hcomm a b ▸ rfl
-      _ = b*(a*c) := hassoc b a c
-
-theorem right_comm : Commutative f → Associative f → RightCommutative f :=
-  fun hcomm hassoc a b c ↦
-    calc (a*b)*c
-      _ = a*(b*c) := hassoc a b c
-      _ = a*(c*b) := hcomm b c ▸ rfl
-      _ = (a*c)*b := Eq.symm (hassoc a c b)
-
 end Binary
-
--- Everything below this line is deprecated
 
 @[deprecated (since := "2024-09-03")] alias not_of_eq_false := of_eq_false
 @[deprecated (since := "2024-09-03")] -- unused in Mathlib
