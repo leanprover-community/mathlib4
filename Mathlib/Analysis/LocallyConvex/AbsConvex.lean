@@ -180,8 +180,8 @@ theorem absConvexHull_eq_convexHull_balancedHull [SMulCommClass ℝ 𝕜 E] {s :
       (subset_trans (subset_convexHull ℝ s) (convexHull_mono (subset_balancedHull 𝕜)))
       ⟨Balanced.convexHull (balancedHull.balanced s), convex_convexHull _ _⟩)
   (convexHull_min
-      (Balanced.balancedHull_subset_of_subset (balanced_absConvexHull 𝕜 s)
-      (subset_absConvexHull 𝕜 s)) (convex_absConvexHull 𝕜 s))
+    ((balanced_absConvexHull 𝕜 s).balancedHull_subset_of_subset (subset_absConvexHull 𝕜 s))
+      (convex_absConvexHull 𝕜 s))
 
 end
 
