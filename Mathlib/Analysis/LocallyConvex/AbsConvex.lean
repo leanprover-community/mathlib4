@@ -213,18 +213,14 @@ theorem ball_add_ball_subset_ball_comp (V : Set E) (y : E) :
     intro x hx
     rw [uniform_space_ball_eq_vadd] at hx
     obtain ⟨z,⟨hz₁,hz₂⟩⟩ := hx
-    simp at hz₂
+    simp only [vadd_eq_add] at hz₂
     obtain ⟨z',⟨hz'₁,hz'₂⟩⟩ := hz₁
     simp only [vadd_eq_add] at hz'₂
     use (1/2:ℝ)•(x+y)
     have e11 : x-(1 / 2 : ℝ) • (x + y)  = z' := by
       rw [smul_add]
-      --rw [add_sub_right_comm]
       apply help
-      --rw [smul_add]
-      rw [smul_sub]
-      rw [smul_add]
-      rw [← smul_assoc]
+      rw [smul_sub, smul_add, ← smul_assoc]
       simp only [one_div, smul_eq_mul, isUnit_iff_ne_zero, ne_eq, OfNat.ofNat_ne_zero,
         not_false_eq_true, IsUnit.mul_inv_cancel, one_smul, smul_inv_smul₀, smul_neg]
       rw [add_comm]
@@ -238,17 +234,13 @@ theorem ball_add_ball_subset_ball_comp (V : Set E) (y : E) :
       rw [smul_sub]
       simp only [one_div, smul_add, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, smul_inv_smul₀,
         smul_neg]
-      rw [two_smul]
-      simp only [add_sub_add_right_eq_sub]
-      rw [← hz₂]
-      simp
+      rw [two_smul, add_sub_add_right_eq_sub, ← hz₂]
+      rw [add_sub_cancel_left]
       exact id (Eq.symm hz'₂)
     constructor
-    · simp only [mem_preimage]
-      rw [e12]
+    · rw [mem_preimage, e12]
       exact hz'₁
-    · simp only [mem_preimage]
-      rw [e11]
+    · rw [mem_preimage, e11]
       exact hz'₁
 
 lemma balancedHull_subseteq_convexHull {s : Set E} : balancedHull ℝ s ⊆ convexHull ℝ (s ∪ -s) := by
