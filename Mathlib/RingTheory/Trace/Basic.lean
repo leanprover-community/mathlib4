@@ -5,7 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.RingTheory.Trace.Defs
 import Mathlib.LinearAlgebra.Determinant
-import Mathlib.FieldTheory.Galois
+import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 import Mathlib.LinearAlgebra.Vandermonde
 import Mathlib.FieldTheory.Minpoly.MinpolyDiv
