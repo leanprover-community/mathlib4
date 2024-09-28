@@ -1243,6 +1243,11 @@ theorem image_sInter_subset (S : Set (Set α)) (f : α → β) : f '' ⋂₀ S �
   rw [sInter_eq_biInter]
   apply image_iInter₂_subset
 
+theorem image2_sInter_subset (t : Set α) (S : Set (Set β)) (f : α → β → γ) :
+    Set.image2 f t (⋂₀ S) ⊆ ⋂ s ∈ S, Set.image2 f  t s := by
+  rw [sInter_eq_biInter]
+  aesop
+
 /-! ### `restrictPreimage` -/
 
 
