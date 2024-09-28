@@ -184,7 +184,7 @@ theorem absConvexHull_eq_convexHull_balancedHull [SMulCommClass ℝ 𝕜 E] {s :
       (convex_absConvexHull 𝕜 s))
 
 /- In general equality doesn't hold here - e.g. consider `s := {(-1,1),(1,1)}` in `ℝ²` -/
-theorem absConvexHull_eq_balancedHull_convexHull {s : Set E} :
+theorem balancedHull_convexHull_subseteq_absConvexHull {s : Set E} :
     balancedHull 𝕜 (convexHull ℝ s) ⊆ absConvexHull 𝕜 s :=
   Balanced.balancedHull_subset_of_subset (balanced_absConvexHull 𝕜 s)
     (convexHull_min (subset_absConvexHull 𝕜 s) (convex_absConvexHull 𝕜 s))
