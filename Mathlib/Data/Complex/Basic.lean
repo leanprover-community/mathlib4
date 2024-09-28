@@ -628,6 +628,25 @@ def ofReal : ℝ →+* ℂ where
 theorem ofReal_eq_coe (r : ℝ) : ofReal r = r :=
   rfl
 
+variable {α : Type*}
+
+@[simp] lemma ofReal_comp_add (f g : α → ℝ) : ofReal' ∘ (f + g) = ofReal' ∘ f + ofReal' ∘ g :=
+  map_comp_add ofReal ..
+
+@[simp] lemma ofReal_comp_sub (f g : α → ℝ) : ofReal' ∘ (f - g) = ofReal' ∘ f - ofReal' ∘ g :=
+  map_comp_sub ofReal ..
+
+@[simp] lemma ofReal_comp_neg (f : α → ℝ) : ofReal' ∘ (-f) = - ofReal' ∘ f := map_comp_neg ofReal _
+
+@[simp] lemma ofReal_comp_mul (f g : α → ℝ) : ofReal' ∘ (f * g) = ofReal' ∘ f * ofReal' ∘ g :=
+  map_comp_mul ofReal ..
+
+@[simp] lemma ofReal_comp_pow (f : α → ℝ) (n : ℕ) : ofReal' ∘ (f ^ n) = ofReal' ∘ f ^ n :=
+  map_comp_pow ofReal ..
+
+@[simp] lemma ofReal_comp_zpow (f : α → ℝ) (n : ℤ) : ofReal' ∘ (f ^ n) = ofReal' ∘ f ^ n :=
+  map_comp_zpow ofReal ..
+
 @[simp]
 theorem I_sq : I ^ 2 = -1 := by rw [sq, I_mul_I]
 
