@@ -18,12 +18,7 @@ variable {α β γ : Type u}
 
 section Functor
 
-variable {f : Type u → Type v} [Functor f] [LawfulFunctor f]
-@[functor_norm]
-theorem Functor.map_map (m : α → β) (g : β → γ) (x : f α) : g <$> m <$> x = (g ∘ m) <$> x :=
-  (comp_map _ _ _).symm
--- order of implicits
--- order of implicits
+attribute [functor_norm] Functor.map_map
 
 end Functor
 
@@ -66,10 +61,6 @@ end Applicative
 section Monad
 
 variable {m : Type u → Type v} [Monad m] [LawfulMonad m]
-
-theorem map_bind (x : m α) {g : α → m β} {f : β → γ} :
-    f <$> (x >>= g) = x >>= fun a => f <$> g a := by
-  rw [← bind_pure_comp, bind_assoc]; simp [bind_pure_comp]
 
 theorem seq_bind_eq (x : m α) {g : β → m γ} {f : α → β} :
     f <$> x >>= g = x >>= g ∘ f :=
