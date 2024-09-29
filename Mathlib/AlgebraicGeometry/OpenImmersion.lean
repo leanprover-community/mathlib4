@@ -446,7 +446,7 @@ instance forgetToTopPreservesOfLeft : PreservesLimit (cospan f g) Scheme.forgetT
   apply @Limits.compPreservesLimit (K := cospan f g) (F := forget)
     (G := LocallyRingedSpace.forgetToTop) ?_ ?_
   · infer_instance
-  apply @preservesLimitOfIsoDiagram (F := _) _ _ _ _ _ _ (diagramIsoCospan.{u} _).symm ?_
+  apply @preservesLimitOfIsoDiagram (F := _) _ _ _ _ (diagramIsoCospan.{u} _).symm ?_
   dsimp [LocallyRingedSpace.forgetToTop]
   infer_instance
 
