@@ -439,7 +439,7 @@ theorem π_ιInvApp_π (i j : D.J) (U : Opens (D.U i).carrier) :
   -- Porting note: originally, the proof of monotonicity was left a blank and proved in the end
   -- but Lean 4 doesn't like this any more, so the proof is restructured
   rw [← @cancel_mono (f := (componentwiseDiagram 𝖣.diagram.multispan _).map
-    (Quiver.Hom.op (WalkingMultispan.Hom.snd (i, j))) ≫ 𝟙 _) _ _ (by
+    (Quiver.Hom.op (WalkingMultispan.Hom.snd (i, j))) ≫ 𝟙 _) _ (by
     rw [Category.comp_id]
     apply (config := { allowSynthFailures := true }) mono_comp
     change Mono ((_ ≫ D.f j i).c.app _)
