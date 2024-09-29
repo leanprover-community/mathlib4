@@ -28,8 +28,11 @@ protected def op (H : Subgroup G) : Subgroup Gᵐᵒᵖ where
   mul_mem' ha hb := H.mul_mem hb ha
   inv_mem' := H.inv_mem
 
-#adaptation_note /-- After lean4#5020, some instances need to be copied to obtain the correct
-discrimination tree key. -/
+/- We redeclare this instance to get keys
+`SMul (@Subtype (MulOpposite _) (@Membership.mem (MulOpposite _)
+  (Subgroup (MulOpposite _) _) _ (@Subgroup.op _ _ _))) _`
+compared to the keys for `Submonoid.smul`
+`SMul (@Subtype _ (@Membership.mem _ (Submonoid _ _) _ _)) _` -/
 @[to_additive] instance instSMul (H : Subgroup G) : SMul H.op G := Submonoid.smul ..
 
 @[to_additive (attr := simp)]
@@ -178,7 +181,7 @@ theorem op_closure (s : Set G) : (closure s).op = closure (MulOpposite.unop ⁻�
 @[to_additive]
 theorem unop_closure (s : Set Gᵐᵒᵖ) : (closure s).unop = closure (MulOpposite.op ⁻¹' s) := by
   rw [← op_inj, op_unop, op_closure]
-  rfl
+  simp_rw [Set.preimage_preimage, MulOpposite.op_unop, Set.preimage_id']
 
 /-- Bijection between a subgroup `H` and its opposite. -/
 @[to_additive (attr := simps!) "Bijection between an additive subgroup `H` and its opposite."]
