@@ -32,7 +32,7 @@ instance instTopologicalSpace : TopologicalSpace (E [⋀^ι]→L[𝕜] F) :=
   .induced toContinuousMultilinearMap inferInstance
 
 lemma isClosed_range_toContinuousMultilinearMap [ContinuousSMul 𝕜 E] [T2Space F] :
-    IsClosed (Set.range (toContinuousMultilinearMap : E [⋀^ι]→L[𝕜] F →
+    IsClosed (Set.range (toContinuousMultilinearMap : (E [⋀^ι]→L[𝕜] F) →
       ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F)) := by
   simp only [range_toContinuousMultilinearMap, setOf_forall]
   repeat refine isClosed_iInter fun _ ↦ ?_
@@ -149,7 +149,8 @@ theorem hasBasis_nhds_zero :
 variable [ContinuousSMul 𝕜 E]
 
 lemma closedEmbedding_toContinuousMultilinearMap [T2Space F] :
-    ClosedEmbedding (toContinuousMultilinearMap : (E [⋀^ι]→L[𝕜] F → _)) :=
+    ClosedEmbedding (toContinuousMultilinearMap :
+      (E [⋀^ι]→L[𝕜] F) → ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F) :=
   ⟨embedding_toContinuousMultilinearMap, isClosed_range_toContinuousMultilinearMap⟩
 
 @[continuity, fun_prop]
