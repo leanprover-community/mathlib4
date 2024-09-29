@@ -836,7 +836,7 @@ theorem mem_sep {p : ZFSet.{u} → Prop} {x y : ZFSet.{u}} :
 
 @[simp]
 theorem sep_empty (p : ZFSet → Prop) : (∅ : ZFSet).sep p = ∅ :=
-  (eq_empty _).mpr fun k h ↦ not_mem_empty _ (mem_sep.mp h).1
+  (eq_empty _).mpr fun _ h ↦ not_mem_empty _ (mem_sep.mp h).1
 
 @[simp]
 theorem toSet_sep (a : ZFSet) (p : ZFSet → Prop) :
