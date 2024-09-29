@@ -158,8 +158,7 @@ def toCharNeTwoNF : VariableChange R where
   s := ⅟2 * -W.a₁
   t := ⅟2 * -W.a₃
 
-theorem toCharNeTwoNF_spec :
-    (W.variableChange W.toCharNeTwoNF).IsCharNeTwoNF := by
+theorem toCharNeTwoNF_spec : (W.variableChange W.toCharNeTwoNF).IsCharNeTwoNF := by
   constructor <;> simp [← mul_assoc]
 
 theorem exists_variableChange_isCharNeTwoNF :
@@ -252,8 +251,7 @@ It is the composition of an explicit change of variables with `toCharNeTwoNF`. -
 def toCharNeTwoThreeNF : VariableChange R :=
   ⟨1, ⅟3 * -(W.variableChange W.toCharNeTwoNF).a₂, 0, 0⟩ * W.toCharNeTwoNF
 
-theorem toCharNeTwoThreeNF_spec :
-    (W.variableChange W.toCharNeTwoThreeNF).IsCharNeTwoThreeNF := by
+theorem toCharNeTwoThreeNF_spec : (W.variableChange W.toCharNeTwoThreeNF).IsCharNeTwoThreeNF := by
   rw [toCharNeTwoThreeNF]; erw [variableChange_comp]
   have H := W.toCharNeTwoNF_spec
   set W' := W.variableChange W.toCharNeTwoNF
@@ -362,7 +360,7 @@ there is an explicit change of variables, which changes it to $Y^2 = X^3 + a_4X 
 (`IsCharNeTwoThreeNF`) if its j = 0.
 This is in fact given by `toCharNeTwoNF`. -/
 def toCharThreeJZeroNF : VariableChange R :=
-  have h : (2 : R) * 2 = 1 := by linear_combination 1 * CharP.cast_eq_zero R 3
+  have h : (2 : R) * 2 = 1 := by linear_combination CharP.cast_eq_zero R 3
   letI : Invertible (2 : R) := ⟨2, h, h⟩
   W.toCharNeTwoNF
 
@@ -375,22 +373,20 @@ def toCharThreeNF : VariableChange K :=
   ⟨1, (W₁.variableChange W₁.toCharThreeJZeroNF).a₄ /
     (W₁.variableChange W₁.toCharThreeJZeroNF).a₂, 0, 0⟩ * W₁.toCharThreeJZeroNF
 
-lemma toCharThreeJZeroNF_a₂ :
-    (W.variableChange W.toCharThreeJZeroNF).a₂ = W.b₂ := by
-  simp_rw [toCharThreeJZeroNF, toCharNeTwoNF, variableChange_a₂, inv_one,
-    Units.val_one, b₂]
+lemma toCharThreeJZeroNF_a₂ : (W.variableChange W.toCharThreeJZeroNF).a₂ = W.b₂ := by
+  simp_rw [toCharThreeJZeroNF, toCharNeTwoNF, variableChange_a₂, inv_one, Units.val_one, b₂]
   linear_combination (-W.a₂ - W.a₁ ^ 2) * CharP.cast_eq_zero R 3
 
 theorem toCharThreeJZeroNF_spec (hb₂ : W.b₂ = 0) :
     (W.variableChange W.toCharThreeJZeroNF).IsCharNeTwoThreeNF := by
-  have h : (2 : R) * 2 = 1 := by linear_combination 1 * CharP.cast_eq_zero R 3
+  have h : (2 : R) * 2 = 1 := by linear_combination CharP.cast_eq_zero R 3
   letI : Invertible (2 : R) := ⟨2, h, h⟩
   have H := W.toCharNeTwoNF_spec
   exact ⟨H.a₁, hb₂ ▸ W.toCharThreeJZeroNF_a₂, H.a₃⟩
 
 theorem toCharThreeNF_spec_of_b₂_ne_zero (hb₂ : W₁.b₂ ≠ 0) :
     (W₁.variableChange W₁.toCharThreeNF).IsCharThreeJNeZeroNF := by
-  have h : (2 : K) * 2 = 1 := by linear_combination 1 * CharP.cast_eq_zero K 3
+  have h : (2 : K) * 2 = 1 := by linear_combination CharP.cast_eq_zero K 3
   letI : Invertible (2 : K) := ⟨2, h, h⟩
   rw [toCharThreeNF]; erw [variableChange_comp]
   rw [← toCharThreeJZeroNF_a₂] at hb₂
@@ -408,8 +404,7 @@ theorem toCharThreeNF_spec_of_b₂_zero (hb₂ : W₁.b₂ = 0) :
   erw [one_mul]
   exact W₁.toCharThreeJZeroNF_spec hb₂
 
-theorem toCharThreeNF_spec :
-    (W₁.variableChange W₁.toCharThreeNF).IsCharThreeNF := by
+theorem toCharThreeNF_spec : (W₁.variableChange W₁.toCharThreeNF).IsCharThreeNF := by
   by_cases hb₂ : W₁.b₂ = 0
   · exact Or.inr (W₁.toCharThreeNF_spec_of_b₂_zero hb₂)
   · exact Or.inl (W₁.toCharThreeNF_spec_of_b₂_ne_zero hb₂)
@@ -643,8 +638,7 @@ $Y^2 + a_3Y = X^3 + a_4X + a_6$ (`IsCharTwoJZeroNF`). -/
 def toCharTwoNF [DecidableEq K] : VariableChange K :=
   if ha₁ : W₁.a₁ = 0 then W₁.toCharTwoJZeroNF else W₁.toCharTwoJNeZeroNF ha₁
 
-theorem toCharTwoNF_spec [DecidableEq K] :
-    (W₁.variableChange W₁.toCharTwoNF).IsCharTwoNF := by
+theorem toCharTwoNF_spec [DecidableEq K] : (W₁.variableChange W₁.toCharTwoNF).IsCharTwoNF := by
   by_cases ha₁ : W₁.a₁ = 0
   · rw [toCharTwoNF, dif_pos ha₁]
     exact Or.inr (W₁.toCharTwoJZeroNF_spec ha₁)
