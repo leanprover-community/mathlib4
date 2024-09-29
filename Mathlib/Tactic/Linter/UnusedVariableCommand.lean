@@ -101,11 +101,10 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
       let (used, all) ← usedVarsRef.get
       let sorted := used.toArray.qsort (·.toString < ·.toString)
       let unused := all.toList.filter (!sorted.contains ·.1)
-      for (_uniq, user) in unused do
-        --if user.isAtom then
-          logInfoAt user m!"'{_uniq.eraseMacroScopes}' is unused"
-        --else
-        --  logInfoAt user m!"'{user}' is unused"
+      for (uniq, user) in unused do
+        match uniq.eraseMacroScopes with
+          | .anonymous => logInfoAt user m!"'{user}' is unused"
+          | x          => logInfoAt user m!"'{x}' is unused"
   --
   if (stx.find? (·.isOfKind ``Lean.Parser.Command.variable)).isSome then
     let scope ← getScope
