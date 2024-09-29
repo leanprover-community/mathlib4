@@ -235,6 +235,12 @@ In other words, it is a type with the following structures: additive commutative
 multiplication by zero law (`MulZeroClass`). -/
 class NonUnitalCommSemiring (α : Type u) extends NonUnitalSemiring α, CommSemigroup α
 
+-- see Note [lower instance priority]
+instance (priority := 100) NonUnitalCommSemiring.toNonUnitalNonAssocCommSemiring
+    [NonUnitalCommSemiring α] :
+    NonUnitalNonAssocCommSemiring α :=
+  { ‹NonUnitalCommSemiring α› with }
+
 /-- A commutative semiring is a semiring with commutative multiplication. -/
 class CommSemiring (R : Type u) extends Semiring R, CommMonoid R
 
