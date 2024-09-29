@@ -23,8 +23,9 @@ This file defines (relative) CW-complexes.
 
 ## References
 
-The definition of CW-complexes follows David Wärn's suggestion at
-https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there-code-for-X.3F/topic/Do.20we.20have.20CW.20complexes.3F/near/231769080
+* [R. Fritsch and R. Piccinini, *Cellular Structures in Topology*][fritsch-piccinini1990]
+* The definition of CW-complexes follows David Wärn's suggestion on
+  [Zulip](https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there-code-for-X.3F/topic/Do.20we.20have.20CW.20complexes.3F/near/231769080).
 -/
 
 open CategoryTheory TopCat
