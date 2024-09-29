@@ -123,7 +123,7 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
       for (uniq, user) in pairs do
         newVarsDict := newVarsDict.insert uniq user
       (used, newVarsDict)
-  if let some decl := stx.find? (·.isOfKind ``declaration) then
+  if let some decl := stx.find? (#[``declaration, `lemma].contains <|·.getKind) then
     if decl[1].isOfKind ``Lean.Parser.Command.example then
       logInfo "skipping examples: they have access to all the variables anyway"
       return
