@@ -987,24 +987,24 @@ end Range
 
 section Subsingleton
 
-variable {s : Set α}
+variable {s : Set α} {f : α → β}
 
 /-- The image of a subsingleton is a subsingleton. -/
 theorem Subsingleton.image (hs : s.Subsingleton) (f : α → β) : (f '' s).Subsingleton :=
   fun _ ⟨_, hx, Hx⟩ _ ⟨_, hy, Hy⟩ => Hx ▸ Hy ▸ congr_arg f (hs hx hy)
 
 /-- The preimage of a subsingleton under an injective map is a subsingleton. -/
-theorem Subsingleton.preimage {s : Set β} (hs : s.Subsingleton) {f : α → β}
+theorem Subsingleton.preimage {s : Set β} (hs : s.Subsingleton)
     (hf : Function.Injective f) : (f ⁻¹' s).Subsingleton := fun _ ha _ hb => hf <| hs ha hb
 
 /-- If the image of a set under an injective map is a subsingleton, the set is a subsingleton. -/
-theorem subsingleton_of_image {f : α → β} (hf : Function.Injective f) (s : Set α)
+theorem subsingleton_of_image (hf : Function.Injective f) (s : Set α)
     (hs : (f '' s).Subsingleton) : s.Subsingleton :=
   (hs.preimage hf).anti <| subset_preimage_image _ _
 
 /-- If the preimage of a set under a surjective map is a subsingleton,
 the set is a subsingleton. -/
-theorem subsingleton_of_preimage {f : α → β} (hf : Function.Surjective f) (s : Set β)
+theorem subsingleton_of_preimage (hf : Function.Surjective f) (s : Set β)
     (hs : (f ⁻¹' s).Subsingleton) : s.Subsingleton := fun fx hx fy hy => by
   rcases hf fx, hf fy with ⟨⟨x, rfl⟩, ⟨y, rfl⟩⟩
   exact congr_arg f (hs hx hy)
@@ -1013,17 +1013,22 @@ theorem subsingleton_range {α : Sort*} [Subsingleton α] (f : α → β) : (ran
   forall_mem_range.2 fun x => forall_mem_range.2 fun y => congr_arg f (Subsingleton.elim x y)
 
 /-- The preimage of a nontrivial set under a surjective map is nontrivial. -/
-theorem Nontrivial.preimage {s : Set β} (hs : s.Nontrivial) {f : α → β}
+theorem Nontrivial.preimage {s : Set β} (hs : s.Nontrivial)
     (hf : Function.Surjective f) : (f ⁻¹' s).Nontrivial := by
   rcases hs with ⟨fx, hx, fy, hy, hxy⟩
   rcases hf fx, hf fy with ⟨⟨x, rfl⟩, ⟨y, rfl⟩⟩
   exact ⟨x, hx, y, hy, mt (congr_arg f) hxy⟩
 
 /-- The image of a nontrivial set under an injective map is nontrivial. -/
-theorem Nontrivial.image (hs : s.Nontrivial) {f : α → β} (hf : Function.Injective f) :
+theorem Nontrivial.image (hs : s.Nontrivial) (hf : Function.Injective f) :
     (f '' s).Nontrivial :=
   let ⟨x, hx, y, hy, hxy⟩ := hs
   ⟨f x, mem_image_of_mem f hx, f y, mem_image_of_mem f hy, hf.ne hxy⟩
+
+theorem Nontrivial.image_of_injOn (hs : s.Nontrivial) (hf : s.InjOn f) :
+    (f '' s).Nontrivial := by
+  obtain ⟨x, hx, y, hy, hxy⟩ := hs
+  exact ⟨f x, mem_image_of_mem _ hx, f y, mem_image_of_mem _ hy, (hxy <| hf hx hy ·)⟩
 
 /-- If the image of a set is nontrivial, the set is nontrivial. -/
 theorem nontrivial_of_image (f : α → β) (s : Set α) (hs : (f '' s).Nontrivial) : s.Nontrivial :=
@@ -1031,11 +1036,16 @@ theorem nontrivial_of_image (f : α → β) (s : Set α) (hs : (f '' s).Nontrivi
   ⟨x, hx, y, hy, mt (congr_arg f) hxy⟩
 
 @[simp]
-theorem image_nontrivial {f : α → β} (hf : f.Injective) : (f '' s).Nontrivial ↔ s.Nontrivial :=
+theorem image_nontrivial (hf : f.Injective) : (f '' s).Nontrivial ↔ s.Nontrivial :=
   ⟨nontrivial_of_image f s, fun h ↦ h.image hf⟩
 
+@[simp]
+theorem InjOn.image_nontrivial_iff (hf : s.InjOn f) :
+    (f '' s).Nontrivial ↔ s.Nontrivial :=
+  ⟨nontrivial_of_image f s, fun h ↦ h.image_of_injOn hf⟩
+
 /-- If the preimage of a set under an injective map is nontrivial, the set is nontrivial. -/
-theorem nontrivial_of_preimage {f : α → β} (hf : Function.Injective f) (s : Set β)
+theorem nontrivial_of_preimage (hf : Function.Injective f) (s : Set β)
     (hs : (f ⁻¹' s).Nontrivial) : s.Nontrivial :=
   (hs.image hf).mono <| image_preimage_subset _ _
 
@@ -1090,13 +1100,17 @@ theorem Surjective.range_comp {ι' : Sort*} {f : ι → ι'} (hf : Surjective f)
     range (g ∘ f) = range g :=
   ext fun y => (@Surjective.exists _ _ _ hf fun x => g x = y).symm
 
-theorem Injective.mem_range_iff_exists_unique (hf : Injective f) {b : β} :
+theorem Injective.mem_range_iff_existsUnique (hf : Injective f) {b : β} :
     b ∈ range f ↔ ∃! a, f a = b :=
   ⟨fun ⟨a, h⟩ => ⟨a, h, fun _ ha => hf (ha.trans h.symm)⟩, ExistsUnique.exists⟩
 
-theorem Injective.exists_unique_of_mem_range (hf : Injective f) {b : β} (hb : b ∈ range f) :
-    ∃! a, f a = b :=
-  hf.mem_range_iff_exists_unique.mp hb
+alias ⟨Injective.existsUnique_of_mem_range, _⟩ := Injective.mem_range_iff_existsUnique
+
+@[deprecated (since := "2024-09-25")]
+alias Injective.mem_range_iff_exists_unique := Injective.mem_range_iff_existsUnique
+
+@[deprecated (since := "2024-09-25")]
+alias Injective.exists_unique_of_mem_range := Injective.existsUnique_of_mem_range
 
 theorem Injective.compl_image_eq (hf : Injective f) (s : Set α) :
     (f '' s)ᶜ = f '' sᶜ ∪ (range f)ᶜ := by

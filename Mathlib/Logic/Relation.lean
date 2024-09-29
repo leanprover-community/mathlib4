@@ -100,7 +100,7 @@ theorem Transitive.comap (h : Transitive r) (f : α → β) : Transitive (r on f
   fun _ _ _ hab hbc ↦ h hab hbc
 
 theorem Equivalence.comap (h : Equivalence r) (f : α → β) : Equivalence (r on f) :=
-  ⟨h.reflexive.comap f, @(h.symmetric.comap f), @(h.transitive.comap f)⟩
+  ⟨fun a ↦ h.refl (f a), h.symm, h.trans⟩
 
 end Comap
 
