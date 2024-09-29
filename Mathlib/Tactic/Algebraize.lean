@@ -22,7 +22,7 @@ add the instance `IsScalarTower A B C` if possible.
 
 After having added suitable `Algebra` and `IsScalarTower` instances, the tactic will search through
 the local context for `RingHom` properties that can be converted to properties of the corresponding
-`Algebra`. For example, given `f : A →+* B` and `hf : f.FiniteType`, then `algebraize f` will add
+`Algebra`. For example, given `f : A →+* B` and `hf : f.FiniteType`, then `algebraize [f]` will add
 the instance `Algebra A B` and the corresponding property `Algebra.FiniteType A B`. The tactic knows
 which `RingHom` properties have a corresponding `Algebra` property through the `algebraize`
 attribute.
