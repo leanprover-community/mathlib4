@@ -142,7 +142,7 @@ theorem row_mulVec_eq_const [Fintype m] [NonUnitalNonAssocSemiring α]  (v w : m
 theorem mulVec_col_eq_const [Fintype m] [NonUnitalNonAssocSemiring α] (v w : m → α) :
     v ᵥ* Matrix.col ι w = Function.const _ (v ⬝ᵥ w) := rfl
 
-theorem row_mul_col_eq [Fintype m] [Mul α] [AddCommMonoid α] (v w : m → α) :
+theorem row_mul_col [Fintype m] [Mul α] [AddCommMonoid α] (v w : m → α) :
     row ι v * col ι w = of fun _ _ => v ⬝ᵥ w :=
   rfl
 
