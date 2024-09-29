@@ -356,52 +356,74 @@ def truncation (n : ℕ) : SSet ⥤ SSet.Truncated n :=
 instance {n} : Inhabited (SSet.Truncated n) :=
   ⟨(truncation n).obj <| Δ[0]⟩
 
-section adjunctions
+
 open SimplexCategory
 
+noncomputable section
+
+/-- The n-skeleton as an endofunctor on `SSet`. -/
+abbrev sk (n : ℕ) : SSet ⥤ SSet := truncation.{u} n ⋙ lan (Truncated.inclusion.op)
+
+/-- The n-coskeleton as an endofunctor on `SSet`. -/
+abbrev cosk (n : ℕ) : SSet ⥤ SSet := truncation.{u} n ⋙ ran (Truncated.inclusion.op)
+
+
+/-- The n-skeleton as a functor `SSet.Truncated n ⥤ SSet`. -/
+protected abbrev Truncated.sk (n : ℕ) : SSet.Truncated n ⥤ SSet.{u} := lan (Truncated.inclusion.op)
+
+/-- The n-coskeleton as a functor `SSet.Truncated n ⥤ SSet`. -/
+protected abbrev Truncated.cosk (n : ℕ) : SSet.Truncated n ⥤ SSet.{u} :=
+  ran (Truncated.inclusion.op)
+
+end
+
+section adjunctions
+
+
 /-- The adjunction between the n-skeleton and n-truncation.-/
-noncomputable def skAdj (n : ℕ) : lan (Truncated.inclusion.op) ⊣ truncation.{u} n :=
+noncomputable def skAdj (n : ℕ) : Truncated.sk n ⊣ truncation.{u} n :=
   lanAdjunction _ _
 
 /-- The adjunction between n-truncation and the n-coskeleton.-/
-noncomputable def coskAdj (n : ℕ) : truncation.{u} n ⊣ ran Truncated.inclusion.op :=
+noncomputable def coskAdj (n : ℕ) : truncation.{u} n ⊣ Truncated.cosk n :=
   ranAdjunction _ _
 
-instance coskeleton_reflective (n) : IsIso ((coskAdj n).counit) :=
+namespace Truncated
+
+
+instance cosk_reflective (n) : IsIso ((coskAdj n).counit) :=
   reflective' Truncated.inclusion.op
 
-instance skeleton_reflective (n) : IsIso ((skAdj n).unit) :=
+instance sk_reflective (n) : IsIso ((skAdj n).unit) :=
   coreflective' Truncated.inclusion.op
 
 /-- Since `Truncated.inclusion` is fully faithful, so is right Kan extension along it.-/
-noncomputable def coskeleton.fullyFaithful (n) :
-    (ran (H := Type u) (Truncated.inclusion (n := n)).op).FullyFaithful := by
+noncomputable def cosk.fullyFaithful (n) :
+    (Truncated.cosk n).FullyFaithful := by
   apply Adjunction.fullyFaithfulROfIsIsoCounit (coskAdj n)
 
-instance coskeleton.full (n) : (ran (H := Type u) (Truncated.inclusion (n := n)).op).Full :=
-  FullyFaithful.full (coskeleton.fullyFaithful _)
+instance cosk.full (n) : (Truncated.cosk n).Full := FullyFaithful.full (cosk.fullyFaithful _)
 
-instance coskeleton.faithful (n) : (ran (H := Type u) (Truncated.inclusion (n := n)).op).Faithful :=
-  FullyFaithful.faithful (coskeleton.fullyFaithful _)
+instance cosk.faithful (n) : (Truncated.cosk n).Faithful :=
+  FullyFaithful.faithful (cosk.fullyFaithful _)
 
-noncomputable instance coskAdj.reflective (n) :
-    Reflective (ran (H := Type u) (Truncated.inclusion (n := n)).op) :=
+noncomputable instance coskAdj.reflective (n) : Reflective (Truncated.cosk n) :=
   Reflective.mk (truncation _) (coskAdj _)
 
-/-- Since `Truncated.inclusion` is fully faithful,  so is left Kan extension along it.-/
-noncomputable def skeleton.fullyFaithful (n) :
-    (lan (H := Type u) (Truncated.inclusion (n := n)).op).FullyFaithful :=
-  Adjunction.fullyFaithfulLOfIsIsoUnit (skAdj _)
+/-- Since `Truncated.inclusion` is fully faithful, so is left Kan extension along it.-/
+noncomputable def sk.fullyFaithful (n) :
+    (Truncated.sk n).FullyFaithful :=
+  Adjunction.fullyFaithfulLOfIsIsoUnit (skAdj n)
 
-instance skeleton.full (n) : (lan (H := Type u) (Truncated.inclusion (n := n)).op).Full :=
-  FullyFaithful.full (skeleton.fullyFaithful _)
+instance skeleton.full (n) : (Truncated.sk n).Full := FullyFaithful.full (sk.fullyFaithful _)
 
-instance skeleton.faithful (n) : (lan (H := Type u) (Truncated.inclusion (n := n)).op).Faithful :=
-  FullyFaithful.faithful (skeleton.fullyFaithful _)
+instance skeleton.faithful (n) : (Truncated.sk n).Faithful :=
+  FullyFaithful.faithful (sk.fullyFaithful _)
 
-noncomputable instance skAdj.coreflective (n) :
-    Coreflective (lan (H := Type u) (Truncated.inclusion (n := n)).op) :=
-  Coreflective.mk (truncation _) (skAdj _)
+noncomputable instance skAdj.coreflective (n) : Coreflective (Truncated.sk n)
+  := Coreflective.mk (truncation _) (skAdj _)
+
+end Truncated
 
 end adjunctions
 
