@@ -4,7 +4,7 @@ import Mathlib.Order.Monotone.Basic
 
 section LeftCancelMonoid
 
-variable {M : Type*} [LeftCancelMonoid M] [Monoid.IsTorsionFree M] {x : M} {m n : ℕ}
+variable {M : Type*} [LeftCancelMonoid M] [IsMulTorsionFree M] {x : M} {m n : ℕ}
 
 /-- Earlier, this name was used for what's now called `pow_right_injective₀`. -/
 @[to_additive nsmul_left_injective]
@@ -21,7 +21,7 @@ end LeftCancelMonoid
 
 section DivisionMonoid
 
-variable {G : Type*} [DivisionMonoid G] [Monoid.IsTorsionFree G] {x : G} {n : ℤ}
+variable {G : Type*} [DivisionMonoid G] [IsMulTorsionFree G] {x : G} {n : ℤ}
 
 /-- In a division monoid without roots of unity, `x ^ n = 1` iff `x = 1` or `n = 0`.
 The additive version is not a `simp` lemma, because it's a special case of `smul_eq_zero`. -/
@@ -35,7 +35,7 @@ end DivisionMonoid
 
 section Group
 
-variable {G : Type*} [Group G] [Monoid.IsTorsionFree G] {x y : G} {m n : ℤ}
+variable {G : Type*} [Group G] [IsMulTorsionFree G] {x y : G} {m n : ℤ}
 
 @[to_additive zsmul_left_injective]
 theorem zpow_right_injective (hx : x ≠ 1) : Function.Injective fun n : ℤ ↦ x ^ n := by
@@ -51,7 +51,7 @@ end Group
 
 section CommGroup
 
-variable {G : Type*} [CommGroup G] [Monoid.IsTorsionFree G] {x y : G} {n : ℤ}
+variable {G : Type*} [CommGroup G] [IsMulTorsionFree G] {x y : G} {n : ℤ}
 
 @[to_additive zsmul_right_injective]
 theorem zpow_left_injective (hn : n ≠ 0) : Function.Injective fun x : G ↦ x ^ n := by

@@ -21,7 +21,7 @@ variable {α M R : Type*}
 
 namespace MonoidHom
 
-variable [Monoid R] [HasDistribNeg R] [Monoid M] [Monoid.IsTorsionFree M]
+variable [Monoid R] [HasDistribNeg R] [Monoid M] [IsMulTorsionFree M]
 
 theorem map_neg_one (f : R →* M) : f (-1) = 1 :=
   (pow_eq_one_iff_left (Nat.succ_ne_zero 1)).1 <| by rw [← map_pow, neg_one_sq, map_one]
@@ -32,7 +32,7 @@ theorem map_neg (f : R →* M) (x : R) : f (-x) = f x := by
 
 end MonoidHom
 
-theorem MonoidHom.map_sub_swap [Ring R] [Monoid M] [Monoid.IsTorsionFree M] (f : R →* M) (x y : R) :
+theorem MonoidHom.map_sub_swap [Ring R] [Monoid M] [IsMulTorsionFree M] (f : R →* M) (x y : R) :
     f (x - y) = f (y - x) := by
   rw [← map_neg, neg_sub]
 

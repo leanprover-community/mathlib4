@@ -196,9 +196,9 @@ theorem pow_lt_one_iff {x : M} {n : ℕ} (hn : n ≠ 0) : x ^ n < 1 ↔ x < 1 :=
   lt_iff_lt_of_le_iff_le (one_le_pow_iff hn)
 
 @[to_additive]
-instance Monoid.IsTorsionFree.of_linearOrderedMonoid : IsTorsionFree M where
-  pow_ne_one _x _n hx hn := hx.lt_or_lt.elim (fun hlt ↦ (pow_lt_one' hlt hn.ne').ne) fun hlt ↦
-    (one_lt_pow' hlt hn.ne').ne'
+instance IsMulTorsionFree.of_linearOrderedMonoid : IsMulTorsionFree M where
+  eq_one_of_pow_eq_one _x _n hxn hn := by
+    simpa only [le_antisymm_iff, pow_le_one_iff hn, one_le_pow_iff hn] using hxn
 
 end CovariantLE
 
