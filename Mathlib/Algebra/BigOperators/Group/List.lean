@@ -83,6 +83,7 @@ variable [MulOneClass M] {l : List M} {a : M}
 theorem prod_singleton : [a].prod = a :=
   mul_one a
 
+@[to_additive]
 theorem prod_one_cons : (1 :: l).prod = l.prod := by
   rw [prod, foldr, one_mul]
 
