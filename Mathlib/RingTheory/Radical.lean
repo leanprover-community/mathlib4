@@ -46,6 +46,12 @@ variable {M : Type*} [CancelCommMonoidWithZero M] [NormalizationMonoid M]
 def primeFactors (a : M) : Finset M :=
   (normalizedFactors a).toFinset
 
+theorem primeFactors_eq_of_associated {a b : M} (h : Associated a b) :
+    primeFactors a = primeFactors b := by
+  unfold primeFactors
+  rw [normalizedFactors_eq_of_associated h]
+
+
 /--
 Radical of an element `a` in a unique factorization monoid is the product of
 the prime factors of `a`.
@@ -62,10 +68,8 @@ theorem radical_one_eq : radical (1 : M) = 1 := by
   rw [radical, primeFactors, normalizedFactors_one, Multiset.toFinset_zero, Finset.prod_empty]
 
 theorem radical_eq_of_associated {a b : M} (h : Associated a b) : radical a = radical b := by
-  rcases iff_iff_and_or_not_and_not.mp h.eq_zero_iff with (⟨rfl, rfl⟩ | ⟨ha, hb⟩)
-  · rfl
-  · simp_rw [radical, primeFactors]
-    rw [(associated_iff_normalizedFactors_eq_normalizedFactors ha hb).mp h]
+  unfold radical
+  rw [primeFactors_eq_of_associated h]
 
 theorem radical_unit_eq_one {a : M} (h : IsUnit a) : radical a = 1 :=
   (radical_eq_of_associated (associated_one_iff_isUnit.mpr h)).trans radical_one_eq
