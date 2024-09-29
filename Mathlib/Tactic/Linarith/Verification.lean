@@ -191,6 +191,7 @@ def proveFalseByLinarith (transparency : TransparencyMode) (oracle : Certificate
   | _, [] => throwError "no args to linarith"
   | g, l@(h::_) => do
       trace[linarith.detail] "Beginning work in `proveFalseByLinarith`."
+      Lean.Core.checkSystem decl_name%.toString
       -- for the elimination to work properly, we must add a proof of `-1 < 0` to the list,
       -- along with negated equality proofs.
       let l' ← addNegEqProofs l

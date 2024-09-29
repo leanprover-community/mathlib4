@@ -401,6 +401,13 @@ theorem Normal.of_conjugate_fixed {G : Type*} [Group G] {H : Subgroup G}
     ← mul_assoc, inv_mul_cancel, one_mul]
   exact hn
 
+theorem normalCore_eq_iInf_conjAct (H : Subgroup G) :
+    H.normalCore = ⨅ (g : ConjAct G), g • H := by
+  ext g
+  simp only [Subgroup.normalCore, Subgroup.mem_iInf, Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
+  refine ⟨fun h x ↦ h x⁻¹, fun h x ↦ ?_⟩
+  simpa only [ConjAct.toConjAct_inv, inv_inv] using h x⁻¹
+
 end Group
 
 section GroupWithZero
