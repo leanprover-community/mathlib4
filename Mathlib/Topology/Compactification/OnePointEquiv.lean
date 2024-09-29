@@ -10,8 +10,7 @@ import Mathlib.Topology.Compactification.OnePoint
 # One-point compactification and projectivization
 
 We construct a set-theoretic equivalence between
-`OnePoint K` and the projectivization `ℙ K (Fin 2 → K)`
-for an arbitrary field `K`.
+`OnePoint K` and the projectivization `ℙ K (Fin 2 → K)` for an arbitrary field `K`.
 
 (This equivalence can be extended to a homeomorphism
 in the case `K = ℝ`, where `OnePoint ℝ` gets the topology of one-point compactification.
@@ -31,7 +30,6 @@ This result is to be added in a different file.)
 one-point extension, projectivization
 -/
 
-
 open scoped LinearAlgebra.Projectivization OnePoint
 open Projectivization Classical
 
@@ -45,14 +43,14 @@ Hence `÷` projects down to a map `divSlope` from `ℙ K (Fin 2 → K)` to `OneP
 that takes a line through the origin and returns its slope. For a vertical line
 the slope is `∞`.
 -/
-
+variable {K : Type*}
 /-- A modified division from a `DivisionRing` to its `OnePoint` extension. With notation `÷`
 for `divOnePoint`, we have in particular that `1 ÷ 0 = ∞`. -/
-noncomputable def divOnePoint {K : Type} [DivisionRing K] (a : K) (r : K): OnePoint K :=
-  ite (r ≠ 0) (a / r) ∞
+noncomputable def divOnePoint [DivisionRing K] (a : K) (r : K): OnePoint K :=
+  if r ≠ 0 then a / r else ∞
 
 /-- Uncurried version of `divOnePoint`, with nonzeroness assumption. -/
-noncomputable def divOnePoint' {K : Type} [DivisionRing K]
+noncomputable def divOnePoint' [DivisionRing K]
   (u : {v : Fin 2 → K // v ≠ 0}) : OnePoint K :=
   if u.1 1 ≠ 0 then some (u.1 0 / u.1 1) else ∞
 
@@ -61,7 +59,7 @@ the ordinary division `/` of a `DivisionRing`. -/
 infix:50 " ÷ " => divOnePoint
 
 /-- `divOnePoint` can be lifted to the projective line (see `divSlope`.) -/
-lemma divOnePoint_lifts {K : Type} [Field K] (a b : {v : Fin 2 → K // v ≠ 0})
+lemma divOnePoint_lifts [Field K] (a b : {v : Fin 2 → K // v ≠ 0})
     (h : ∃ c : Kˣ, (fun m : Kˣ ↦ m • b.1) c = a.1) :
     (fun u ↦ u.1 0 ÷ u.1 1) a = (fun u ↦ u.1 0 ÷ u.1 1) b := by
   obtain ⟨c,hc⟩ := h
@@ -80,7 +78,7 @@ lemma divOnePoint_lifts {K : Type} [Field K] (a b : {v : Fin 2 → K // v ≠ 0}
     ring
 
 /-- Equivalence between the projective line and the one-point extension. -/
-noncomputable def divSlope {K : Type} [Field K] (p : ℙ K (Fin 2 → K)) : OnePoint K :=
+noncomputable def divSlope [Field K] (p : ℙ K (Fin 2 → K)) : OnePoint K :=
   Quotient.lift (fun u => divOnePoint (u.1 0) (u.1 1)) divOnePoint_lifts p
 
 /-! ### Equivalence
@@ -88,18 +86,18 @@ We establish the equivalence between `OnePoint K` and `ℙ K (Fin 2 → K)` for 
 -/
 
 /-- In a nonzero pair, if one coordinate is 0 then the other is nonzero. -/
-lemma not_both_zero {K : Type} [Zero K]
+lemma not_both_zero [Zero K]
     (a : Fin 2 → K) (ha : a ≠ 0) (h : a 1 = 0) : a 0 ≠ 0 := by
   intro hc; apply ha; ext s
   cases (Nat.le_one_iff_eq_zero_or_eq_one.mp (Fin.is_le s)) with
   |inl hl => simp_all [Fin.eq_of_val_eq (j := 0) hl]
   |inr hr => simp_all [Fin.eq_of_val_eq (j := 1) hr]
 
-instance {K : Type} [DivisionRing K] : Setoid ({v : Fin 2 → K // v ≠ 0}) :=
+instance [DivisionRing K] : Setoid ({v : Fin 2 → K // v ≠ 0}) :=
   projectivizationSetoid K (Fin 2 → K)
 
 /-- `divSlope` respects projective equivalence. -/
-lemma divSlope_inj_lifted {K : Type} [Field K]
+lemma divSlope_inj_lifted [Field K]
     (a b : {v : Fin 2 → K // v ≠ 0}) :
     divSlope ⟦a⟧ = divSlope ⟦b⟧ →
     (⟦a⟧ : Quotient (projectivizationSetoid K (Fin 2 → K))) = ⟦b⟧ := by
@@ -134,17 +132,17 @@ lemma divSlope_inj_lifted {K : Type} [Field K]
     field_simp
 
 /-- Over any field `K`, `divSlope` is injective. -/
-lemma divSlope_injective {K : Type} [Field K] : Function.Injective (@divSlope K _) :=
+lemma divSlope_injective [Field K] : Function.Injective (@divSlope K _) :=
   Quotient.ind (fun a ↦ Quotient.ind (divSlope_inj_lifted a))
 
 /-- An inverse of `divSlope`. -/
-def slope_inv {K : Type} [DivisionRing K] (p : OnePoint K) : ℙ K (Fin 2 → K) := match p with
+def slope_inv [DivisionRing K] (p : OnePoint K) : ℙ K (Fin 2 → K) := match p with
 |some t => mk' K ⟨![t, 1], by simp⟩
 |∞      => mk' K ⟨![1, 0], by simp⟩
 
 
 /-- `slope_inv` is an inverse of `divSlope`. -/
-lemma divSlope_inv {K : Type} [Field K] : Function.LeftInverse (@divSlope K _) slope_inv := by
+lemma divSlope_inv [Field K] : Function.LeftInverse (@divSlope K _) slope_inv := by
   intro a
   have g₀ :       divOnePoint' ⟨![(1:K), 0], by simp⟩ = ∞  := by unfold divOnePoint'; simp
   have g₁ (t:K) : divOnePoint' ⟨![t, 1], by simp⟩ = some t := by unfold divOnePoint'; simp
@@ -153,13 +151,13 @@ lemma divSlope_inv {K : Type} [Field K] : Function.LeftInverse (@divSlope K _) s
   |some t => exact g₁ t
 
 /-- `divSlope` is surjective. -/
-lemma divSlope_surjective {K : Type} [Field K]:
+lemma divSlope_surjective [Field K]:
     Function.Surjective (@divSlope K _) :=
   fun r ↦ ⟨slope_inv r, divSlope_inv r⟩
 
 /-- An equivalence between the one-point extension of a field `K`
 and the projective line over `K`. -/
-noncomputable def divSlope_equiv {K : Type} [Field K] :
+noncomputable def divSlope_equiv [Field K] :
   OnePoint K ≃ ℙ K (Fin 2 → K) where
   toFun     := slope_inv
   invFun    := divSlope
