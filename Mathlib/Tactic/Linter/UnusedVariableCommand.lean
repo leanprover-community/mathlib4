@@ -1,7 +1,5 @@
 import Lean.Elab.Command
 import Lean.Linter.Util
-import Mathlib.adomaniLeanUtils.inspect_syntax
-import Mathlib.adomaniLeanUtils.inspect_rec
 
 /-!
 #  The "unusedVariableCommand" linter
@@ -53,73 +51,6 @@ namespace UnusedVariableCommand
 
 initialize usedVarsRef : IO.Ref NameSet ← IO.mkRef {}
 
-open Lean.Parser.Term in
-/-- Return identifier names in the given bracketed binder. -/
-def getBracketedBinderIdsAndTypes (stx : Syntax) : CommandElabM (Array Name × Array Name) := do
-  let (ids, stxs) := match stx with
-    | `(bracketedBinderF|($ids* $[: $ty?]? $(annot?)?)) =>
-      (ids.map Syntax.getId, [ty?.map (·.raw), annot?.map (·.raw)])
-    | `(bracketedBinderF|{$ids* $[: $ty?]?})             =>
-      (ids.map Syntax.getId, [ty?.map (·.raw)])
-    | `(bracketedBinderF|⦃$ids* : $ty⦄)                   =>
-      (ids.map Syntax.getId, [ty])
-    | `(bracketedBinderF|[$id : $ty])                     => (#[id.getId], [ty])
-    | `(bracketedBinderF|[$_])                           => (#[Name.anonymous], [])
-    | _                                                  => default --throwUnsupportedSyntax
-  if ids.isEmpty then throwUnsupportedSyntax
-  let x := stxs.reduceOption.map (·.filterMap fun d => if d.isIdent then some d.getId else none)
-  return (ids, x.toArray.flatten)
-
-
-
-def showInfoTree : Info → MessageData
-  | .ofTacticInfo i => m!"TacticInfo stx: '{i.stx}'"
-  | .ofTermInfo i => m!"TermInfo expr: '{i.expr}' expType: '{i.expectedType?}' stx: '{i.stx}'"
-  | .ofCommandInfo i => m!"CommandInfo stx: '{i.stx}'"
-  | .ofMacroExpansionInfo i => m!"MacroExpansionInfo stx: '{i.stx}'"
-  | .ofOptionInfo i => m!"OptionInfo stx: '{i.stx}'"
-  | .ofFieldInfo i => m!"FieldInfo stx: '{i.stx}'"
-  | .ofCompletionInfo i => m!"CompletionInfo stx: '{i.stx}'"
-  | .ofUserWidgetInfo i => m!"UserWidgetInfo stx: '{i.stx}'"
-  | .ofCustomInfo i => m!"CustomInfo stx: '{i.stx}'"
-  | .ofFVarAliasInfo i => m!"FVarAliasInfo username: '{i.userName}'"
-  | .ofFieldRedeclInfo i => m!"FieldRedeclInfo stx: '{i.stx}'"
-  | .ofOmissionInfo i => m!"OmissionInfo stx: '{i.stx}'"
-
-/--  `treeM ex` takes an expression and returns a pair consisting of
-*  `MessageData` for the non-`Expr` arguments of `ex`,
-*  an array of the `Expr` arguments to `ex`.
-
-If `ex` is of the form `(Expr.app ..)`, then the array of arguments is `ex.getAppArgs`.
--/
-def treeM : InfoTree → MessageData × Array InfoTree
-  | .context i t =>
-    let ctx := if let .parentDeclCtx n := i then m!"parentDeclCtx {n}" else "commandCtx"
-    (m!"context '{ctx}'", #[t])
-  | .node i children => (m!"node '{showInfoTree i}'", children.toArray)
-  | .hole _mvarId => (m!"hole _", #[])
-
-/--  `treeR ex` recursively formats the output of `treeM`. -/
-partial
-def treeR (stx : InfoTree) (indent : MessageData := "\n") (sep : MessageData := "  ") :
-    MessageData :=
-  let (msg, es) := treeM stx
-  let mes := es.map (treeR (indent := indent ++ sep) (sep := sep))
-  mes.foldl (fun x y => (x.compose indent).compose ((m!"|-").compose y)) msg
-
-/-- `inspect ex` calls `logInfo` on the output of `treeR ex`.
-Setting to `false` the optional boolean argument `ctor?` omits printing the various `ctorName`s. -/
-def IT.inspect {m : Type → Type} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions m]
-    (stx : InfoTree) : m Unit :=
-  logInfo (m!"inspecting InfoTree: 'stx'\n\n".compose (treeR stx (sep := "|   ")))
-
-elab (name := inspectStx) "inspectit " cmd:command : command => do
-  Command.elabCommand cmd
-  let its ← getInfoTrees
-  for it in its do
-    logInfo (m!"inspect infotrees: '{← it.format}'\n\n".compose (treeR it (sep := "|   ")))
-
-
 /-- returns the unique `Name`, the user `Name` and the `Expr` of each `variable` that is
 present in the current context. -/
 def includedVariables : TermElabM (Array (Name × Name × Expr)) := do
@@ -133,6 +64,7 @@ def includedVariables : TermElabM (Array (Name × Name × Expr)) := do
       for (x, y) in c.sectionVars do
         if y == a then fd := x
       varIds := varIds.push (a, fd, b)
+      usedVarsRef.modify (·.insert a)
   return varIds
 
 elab "included_variables" plumb:(ppSpace "plumb")? : tactic => Tactic.withMainContext do
@@ -165,81 +97,15 @@ elab "included_variables" plumb:(ppSpace "plumb")? : tactic => Tactic.withMainCo
         --let s : TSyntaxArray `term  := default
         --let hi := mkIdent `n
         --let pexS ← Term.exprToSyntax pex
+        dbg_trace "decls: {(← getLCtx).decls.toArray.toList.reduceOption.map (·.userName)}"
+        let newName := `DoneHere ++ (← liftCommandElabM do liftCoreM do mkFreshUserName `D) ++
+          ((← getLCtx).decls.toArray.toList.reduceOption.getLastD default).userName
+        dbg_trace "newName: {newName}"
         let dh ← `(command|
-          def $(mkIdent `DoneHere) : $(mkIdent `Array) $(mkIdent `String) := $(⟨ps⟩))
-            --#[`hi].push `hi) --#[$s,*])
-        --logInfo m!"pex: {pex}\npexS: {pexS}"
-        --let dh ← `(command| def $(mkIdent `DoneHere) : $(mkIdent `Array) $(mkIdent `String) := $pexS) --$(⟨ps⟩)) --#[$s,*])
-        --liftCommandElabM do elabCommand (← `(#check $(⟨ps⟩)))
+          def $(mkIdent newName) : $(mkIdent `Array) $(mkIdent `String) := $(⟨ps⟩))
         liftCommandElabM do
           elabCommand dh
-          elabCommand (← `(#check $(mkIdent `DoneHere)))
-        --dbg_trace plb
-        --logInfo dh
-        --IO.eprint s!"{plb}"
-        --dbg_trace "{plb}"
-        --throwError m!"{plb.foldl (m!"{·}\n" ++ m!"{·}") ""}"
---#check mkNameLit
---#check Meta.mkAppM
---#check Term.exprToSyntax
---#check Name.eraseMacroScopes
-set_option pp.rawOnError true
-variable (n : Nat)
-example : n = n := by
-  included_variables plumb
-  rfl
-  --exact .intro
---include n in
---#check #[n]
---#print DoneHere
-
-#check mkArray
-partial
-def getFVars : InfoTree → TermElabM NameSet
-  | .context (.commandCtx c) t => do
-    --let metavarCtx := c.mctx
-    --dbg_trace "context, commandCtx"
-    --for (mv, d) in metavarCtx.decls do
-    --  dbg_trace d.type
-    let fvs ← includedVariables
-    if !fvs.isEmpty then
-    --  dbg_trace "oh no!"
-    --else
-      dbg_trace "\n** included vars: {fvs}\n"
-    getFVars t
-  | .context _i t => do
-    let fvs ← includedVariables
-    if !fvs.isEmpty then
-    --  dbg_trace "oh no!"
-    --else
-      dbg_trace "\n** included vars: {fvs}\n"
-    getFVars t
-  | .node i ts => do
-    let fvs ← includedVariables
-    if !fvs.isEmpty then
-    --  dbg_trace "oh no!"
-    --else
-      dbg_trace "\n** included vars: {fvs}\n"
-    let base := (← ts.toArray.mapM getFVars)
-    if let .ofTermInfo ti := i then
-      --dbg_trace "TermInfo"
-      --dbg_trace "elaborator: ({ti.elaborator}, {ti.stx})"
-      --dbg_trace "decls names:\n{ti.lctx.decls.toList.reduceOption.map fun d => (d.fvarId.name, d.userName)}\nExpr and extype:\n'{(ti.expr, ti.expectedType?)}'"
-      let is := i.stx.filterMap fun d => if d.isIdent then some d.getId else none
-      --dbg_trace "this stage: {is} {[i.stx.getPos?, i.stx.getTailPos?].reduceOption}"
-      --dbg_trace "FVars names:\n{ti.lctx.getFVarIds.map (·.name)}\n"
-      --dbg_trace "fvars: {ti.lctx.getFVars}"
-      --Meta.inspect i.stx
-      return base.foldl (·.append ·) (.ofList is.toList)
-    if let .ofCommandInfo ti := i then
-      --dbg_trace "CommandInfo {ti.stx}"
-    --if let .ofContextInfo ti := i then
-    --  dbg_trace "ContextInfo {ti.stx}"
-
-      return base.foldl (·.append ·) {}
-    else return base.foldl (·.append ·) {}
-  | .hole _m => dbg_trace _m.name; return {}
---#check declId
+          elabCommand (← `(#check $(mkIdent newName)))
 
 def easyStr : Expr → Array String
   | .app f g => easyStr f ++ easyStr g
@@ -273,6 +139,7 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
   --logInfo renStx
     --renStx ← `()
   elabCommand renStx
+  dbg_trace "elaborated renStx"
   --elabCommand (← `(#print $(mkIdent `DoneHere)))
   --msgs := (← get).messages.toArray --.filter (·.severity == .information)
   --set s
@@ -289,70 +156,6 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
   else
     dbg_trace "not a defnInfo"
   set s
-
-#eval (default : ConstantInfo).ctorName
-
-#check Expr.find?
---#check visit
-
-@[inherit_doc Mathlib.Linter.linter.unusedVariableCommand]
-def unusedVariableCommandLinter1 : Linter where run := withSetOptionIn fun stx ↦ do
-  unless Linter.getLinterValue linter.unusedVariableCommand (← getOptions) do
-    return
-  if (← get).messages.hasErrors then
-    return
-  let its := (← getInfoTrees).toArray
-  --for it in its do IT.inspect it
-  --dbg_trace "showInfoTree"
-  --dbg_trace its.map showInfoTree
-  --dbg_trace "\n"
-  dbg_trace "getFVars output:\n{(← liftTermElabM do its.mapM getFVars).map (·.toArray)}\n"
-  dbg_trace "UIds: {(← getScope).varUIds}"
-  let varsInScope := (← getScope).varDecls
---  let (consVars1, typeVars1) := (← varsInScope.mapM getBracketedBinderIdsAndTypes).unzip
-  let consVars := (← varsInScope.mapM getBracketedBinderIds)
-  let mut varIdsToStx : Std.HashMap Name String.Range := {}
-  for v in varsInScope do
-    let vs ← getBracketedBinderIds v
-    for w in vs do
-      varIdsToStx := varIdsToStx.insert w (v.raw.getRange?.getD default)
-  --let varsIdsInScope := Array.flatten <| ← varsInScope.mapM getBracketedBinderIds
-  match getODS stx with
-    | none => pure ()
-    | some ds =>
-      -- `include`d variables are added by
-
-      let vars := ds[0].getArgs
-      let varsInDecl := Array.flatten <| ← vars.mapM getBracketedBinderIds
-      for v in (← getScope).includedVars do
-        --dbg_trace "available vars: {(← getScope).varUIds}"
-        let vVarIdx := (← getScope).varUIds.findIdx? (· == v) |>.getD 0
-        let varName := consVars.getD vVarIdx default --.anonymous
-        dbg_trace "included {v} <--> {varName}"
---      if stx.isOfKind ``Lean.Parser.Command.include then
---        for v in stx[1].getArgs do
-        --usedVarsRef.modify (·.insert varName)
-        --idx := idx+1
-      let explicitIdents := ds[1].filterMap fun i => if i.isIdent then some i.getId else none
-      for (e, _rg) in varIdsToStx do
-        if explicitIdents.contains e && ! varsInDecl.contains e then
-          usedVarsRef.modify (·.insert e)
-          --dbg_trace "inserted {e}"
-  if isTerminalCommand stx then
-    --dbg_trace (← usedVarsRef.get).toArray
-    let usedVars ← usedVarsRef.get
-    for (e, rg) in varIdsToStx do
-      if !usedVars.contains e then
-        --dbg_trace e
-        --let rg := varIdsToStx[e]?.getD default
-        Linter.logLint linter.unusedVariableCommand (.ofRange rg) m!"'{e}' is unused"
-      --dbg_trace (varsInDecl, explicitIdents)
-      --let mut usedVars : NameSet := {}
-      --for e in explicitIdents do
-        --if varsInDecl.contains e then --continue
-          --usedVars := usedVars.insert e
-      --Linter.logLint linter.unusedVariableCommand (vars.getD 0 default)
-      --  (m!"Used variables: '{usedVars.toArray}'")
 
 initialize addLinter unusedVariableCommandLinter
 
