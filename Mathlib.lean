@@ -4408,7 +4408,8 @@ import Mathlib.Topology.AlexandrovDiscrete
 import Mathlib.Topology.Algebra.Affine
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.Algebra.Rat
-import Mathlib.Topology.Algebra.Category.ProfiniteGrp
+import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
+import Mathlib.Topology.Algebra.ClosedSubgroup
 import Mathlib.Topology.Algebra.ConstMulAction
 import Mathlib.Topology.Algebra.Constructions
 import Mathlib.Topology.Algebra.Constructions.DomMulAct
@@ -4502,6 +4503,7 @@ import Mathlib.Topology.Bornology.Basic
 import Mathlib.Topology.Bornology.BoundedOperation
 import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Topology.Bornology.Hom
+import Mathlib.Topology.CWComplex
 import Mathlib.Topology.Category.Born
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.Topology.Category.CompHaus.EffectiveEpi
