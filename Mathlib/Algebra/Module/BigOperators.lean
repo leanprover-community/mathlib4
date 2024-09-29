@@ -54,6 +54,6 @@ lemma sum_piFinset_apply (f : κ → α) (s : Finset κ) (i : ι) :
   classical
   rw [Finset.sum_comp]
   simp only [eval_image_piFinset_const, card_filter_piFinset_const s, ite_smul, zero_smul, smul_sum,
-    sum_ite_mem, inter_self]
+    Finset.sum_ite_mem, inter_self]
 
 end Fintype

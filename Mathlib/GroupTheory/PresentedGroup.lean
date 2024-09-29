@@ -66,11 +66,11 @@ local notation "F" => FreeGroup.lift f
 
 theorem closure_rels_subset_ker (h : ∀ r ∈ rels, FreeGroup.lift f r = 1) :
     Subgroup.normalClosure rels ≤ MonoidHom.ker F :=
-  Subgroup.normalClosure_le_normal fun x w ↦ (MonoidHom.mem_ker _).2 (h x w)
+  Subgroup.normalClosure_le_normal fun x w ↦ MonoidHom.mem_ker.2 (h x w)
 
 theorem to_group_eq_one_of_mem_closure (h : ∀ r ∈ rels, FreeGroup.lift f r = 1) :
     ∀ x ∈ Subgroup.normalClosure rels, F x = 1 :=
-  fun _ w ↦ (MonoidHom.mem_ker _).1 <| closure_rels_subset_ker h w
+  fun _ w ↦ MonoidHom.mem_ker.1 <| closure_rels_subset_ker h w
 
 /-- The extension of a map `f : α → G` that satisfies the given relations to a group homomorphism
 from `PresentedGroup rels → G`. -/
