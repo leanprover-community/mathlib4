@@ -832,7 +832,7 @@ This is an alias of `Nat.leRec`, specialized to `Prop`. -/
 @[elab_as_elim]
 lemma le_induction {m : ℕ} {P : ∀ n, m ≤ n → Prop} (base : P m m.le_refl)
     (succ : ∀ n hmn, P n hmn → P (n + 1) (le_succ_of_le hmn)) : ∀ n hmn, P n hmn :=
-  @Nat.leRec (motive := P) base succ
+  @Nat.leRec (motive := P) _ base succ
 
 /-- Induction principle deriving the next case from the two previous ones. -/
 def twoStepInduction {P : ℕ → Sort*} (zero : P 0) (one : P 1)
