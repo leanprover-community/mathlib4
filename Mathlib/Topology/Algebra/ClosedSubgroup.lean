@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Jujian Zhang. All rights reserved.
+Copyright (c) 2024 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
@@ -75,6 +75,10 @@ instance instInfClosedSubgroup : Inf (ClosedSubgroup G) :=
 @[to_additive]
 instance instSemilatticeInfClosedSubgroup : SemilatticeInf (ClosedSubgroup G) :=
   SetLike.coe_injective.semilatticeInf ((↑) : ClosedSubgroup G → Set G) fun _ _ ↦ rfl
+
+@[to_additive]
+instance [CompactSpace G] (H : ClosedSubgroup G) : CompactSpace H :=
+  isCompact_iff_compactSpace.mp (IsClosed.isCompact H.isClosed')
 
 end ClosedSubgroup
 
