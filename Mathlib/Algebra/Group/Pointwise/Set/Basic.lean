@@ -190,6 +190,10 @@ theorem iUnion_inv (s : ι → Set α) : (⋃ i, s i)⁻¹ = ⋃ i, (s i)⁻¹ :
   preimage_iUnion
 
 @[to_additive (attr := simp)]
+theorem sUnion_inv (S : Set (Set α)) : (⋃₀ S)⁻¹ = ⋃ s ∈ S, s⁻¹ :=
+  preimage_sUnion
+
+@[to_additive (attr := simp)]
 theorem compl_inv : sᶜ⁻¹ = s⁻¹ᶜ :=
   preimage_compl
 
@@ -383,6 +387,14 @@ theorem iUnion_mul (s : ι → Set α) (t : Set α) : (⋃ i, s i) * t = ⋃ i, 
 @[to_additive]
 theorem mul_iUnion (s : Set α) (t : ι → Set α) : (s * ⋃ i, t i) = ⋃ i, s * t i :=
   image2_iUnion_right _ _ _
+
+@[to_additive]
+theorem sUnion_mul (S : Set (Set α)) (t : Set α) : (⋃₀ S) * t = ⋃ s ∈ S, s * t :=
+  image2_sUnion_left _ _ _
+
+@[to_additive]
+theorem mul_sUnion (s : Set α) (T : Set (Set α)) : (s * ⋃₀ T) = ⋃ t ∈ T, s * t :=
+  image2_sUnion_right _ _ _
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
@@ -580,6 +592,14 @@ theorem iUnion_div (s : ι → Set α) (t : Set α) : (⋃ i, s i) / t = ⋃ i, 
 theorem div_iUnion (s : Set α) (t : ι → Set α) : (s / ⋃ i, t i) = ⋃ i, s / t i :=
   image2_iUnion_right _ _ _
 
+@[to_additive]
+theorem sUnion_div (S : Set (Set α)) (t : Set α) : (⋃₀ S) / t = ⋃ s ∈ S, s / t :=
+  image2_sUnion_left _ _ _
+
+@[to_additive]
+theorem div_sUnion (s : Set α) (T : Set (Set α)) : (s / ⋃₀ T) = ⋃ t ∈ T, s / t :=
+  image2_sUnion_right _ _ _
+
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
@@ -718,6 +738,14 @@ lemma smul_iUnion (s : Set α) (t : ι → Set β) : (s • ⋃ i, t i) = ⋃ i,
   image2_iUnion_right _ _ _
 
 @[to_additive]
+lemma sUnion_smul (S : Set (Set α)) (t : Set β) : (⋃₀ S) • t = ⋃ s ∈ S, s • t :=
+  image2_sUnion_left _ _ _
+
+@[to_additive]
+lemma smul_sUnion (s : Set α) (T : Set (Set β)) : (s • ⋃₀ T) = ⋃ t ∈ T, s • t :=
+  image2_sUnion_right _ _ _
+
+@[to_additive]
 lemma iUnion₂_smul (s : ∀ i, κ i → Set α) (t : Set β) :
     (⋃ i, ⋃ j, s i j) • t = ⋃ i, ⋃ j, s i j • t := image2_iUnion₂_left _ _ _
 
@@ -798,6 +826,11 @@ lemma smul_set_inter_subset : a • (t₁ ∩ t₂) ⊆ a • t₁ ∩ a • t�
 @[to_additive]
 lemma smul_set_iUnion (a : α) (s : ι → Set β) : a • ⋃ i, s i = ⋃ i, a • s i :=
   image_iUnion
+
+@[to_additive]
+lemma smul_set_sUnion (a : α) (S : Set (Set β)) : a • ⋃₀ S = ⋃ s ∈ S, a • s := by
+  convert image_sUnion
+  exact Eq.symm (sUnion_image (image fun x ↦ a • x) S)
 
 @[to_additive]
 lemma smul_set_iUnion₂ (a : α) (s : ∀ i, κ i → Set β) :
@@ -899,6 +932,12 @@ lemma iUnion_vsub (s : ι → Set β) (t : Set β) : (⋃ i, s i) -ᵥ t = ⋃ i
 
 lemma vsub_iUnion (s : Set β) (t : ι → Set β) : (s -ᵥ ⋃ i, t i) = ⋃ i, s -ᵥ t i :=
   image2_iUnion_right _ _ _
+
+lemma sUnion_vsub (S : Set (Set β)) (t : Set β) : (⋃₀ S) -ᵥ t = ⋃ s ∈ S, s -ᵥ t :=
+  image2_sUnion_left _ _ _
+
+lemma vsub_sUnion (s : Set β) (T : Set (Set β)) : (s -ᵥ ⋃₀ T) = ⋃ t ∈ T, s -ᵥ t :=
+  image2_sUnion_right _ _ _
 
 lemma iUnion₂_vsub (s : ∀ i, κ i → Set β) (t : Set β) :
     (⋃ i, ⋃ j, s i j) -ᵥ t = ⋃ i, ⋃ j, s i j -ᵥ t := image2_iUnion₂_left _ _ _
