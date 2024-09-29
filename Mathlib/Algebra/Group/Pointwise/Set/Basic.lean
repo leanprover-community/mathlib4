@@ -602,6 +602,14 @@ theorem iInter_div_subset (s : ι → Set α) (t : Set α) : (⋂ i, s i) / t �
 theorem div_iInter_subset (s : Set α) (t : ι → Set α) : (s / ⋂ i, t i) ⊆ ⋂ i, s / t i :=
   image2_iInter_subset_right _ _ _
 
+@[to_additive]
+theorem sInter_div_subset (S : Set (Set α)) (t : Set α) : (⋂₀ S) / t ⊆ ⋂ s ∈ S, s / t :=
+  image2_sInter_subset_left _ _ _
+
+@[to_additive]
+theorem div_sInter_subset (s : Set α) (T : Set (Set α)) : (s / ⋂₀ T) ⊆ ⋂ t ∈ T, s / t :=
+  image2_sInter_subset_right _ _ _
+
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
