@@ -298,7 +298,7 @@ lemma restrict_eq (σ : K ≃ₐ[k] K) (x : K) (Lx : FiniteGaloisIntermediateFie
   exact id this.symm
 
 /--Define the coordinate map from `lim Gal(L/k)` to a specific `Gal(L/k)`-/
-def proj (L : FiniteGaloisIntermediateField k K) :
+noncomputable def proj (L : FiniteGaloisIntermediateField k K) :
     ProfiniteGrp.limit (profinGalFunctor k K) →* (L.val ≃ₐ[k] L.val) where
   toFun g := g.val (op L)
   map_one' := rfl
