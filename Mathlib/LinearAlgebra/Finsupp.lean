@@ -365,7 +365,7 @@ theorem supported_iUnion {δ : Type*} (s : δ → Set α) :
   · exact zero_mem _
   · refine fun x a l _ _ => add_mem ?_
     by_cases h : ∃ i, x ∈ s i
-    · simp only [mem_comap, coe_comp, coeSubtype, Function.comp_apply, restrictDom_apply,
+    · simp only [mem_comap, coe_comp, coe_subtype, Function.comp_apply, restrictDom_apply,
         mem_iUnion, h, filter_single_of_pos]
       cases' h with i hi
       exact le_iSup (fun i => supported M R (s i)) i (single_mem_supported R _ hi)
