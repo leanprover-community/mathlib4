@@ -114,7 +114,7 @@ theorem absConvexHull_empty : absConvexHull 𝕜 (∅ : Set E) = ∅ :=
   AbsConvex.empty.absConvexHull_eq
 
 @[simp]
-theorem absConvexHull_empty_iff : absConvexHull 𝕜 s = ∅ ↔ s = ∅ := by
+theorem absConvexHull_eq_empty : absConvexHull 𝕜 s = ∅ ↔ s = ∅ := by
   constructor
   · intro h
     rw [← Set.subset_empty_iff, ← h]
