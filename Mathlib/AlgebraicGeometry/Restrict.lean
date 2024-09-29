@@ -217,7 +217,7 @@ def Scheme.restrictFunctor : X.Opens ⥤ Over X where
   (X.restrictFunctor.obj U).hom = U.ι := rfl
 
 lemma Scheme.restrictFunctor_map_left {U V : X.Opens} (i : U ⟶ V) :
-  (X.restrictFunctor.map i).left = IsOpenImmersion.lift (V.ι) U.ι (by simpa using i.le) := rfl
+    (X.restrictFunctor.map i).left = IsOpenImmersion.lift (V.ι) U.ι (by simpa using i.le) := rfl
 
 -- Porting note: the `by ...` used to be automatically done by unification magic
 @[reassoc]
