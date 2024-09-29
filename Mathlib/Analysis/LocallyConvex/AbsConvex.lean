@@ -58,7 +58,7 @@ theorem AbsConvex.inter {s : Set E} {t : Set E} (hs : AbsConvex 𝕜 s) (ht : Ab
     AbsConvex 𝕜 (s ∩ t) := ⟨Balanced.inter hs.1 ht.1, Convex.inter hs.2 ht.2⟩
 
 theorem absConvex_sInter {S : Set (Set E)} (h : ∀ s ∈ S, AbsConvex 𝕜 s) : AbsConvex 𝕜 (⋂₀ S) :=
-  ⟨balanced_sInter (fun s hs => (h s hs).1), convex_sInter (fun s hs => (h s hs).2)⟩
+  ⟨Balanced.sInter (fun s hs => (h s hs).1), convex_sInter (fun s hs => (h s hs).2)⟩
 
 variable (𝕜)
 
@@ -125,9 +125,9 @@ theorem absConvexHull_eq_empty : absConvexHull 𝕜 s = ∅ ↔ s = ∅ := by
 @[simp]
 theorem absConvexHull_nonempty : (absConvexHull 𝕜 s).Nonempty ↔ s.Nonempty := by
   rw [nonempty_iff_ne_empty, nonempty_iff_ne_empty, Ne, Ne]
-  exact not_congr absConvexHull_empty_iff
+  exact not_congr absConvexHull_eq_empty
 
-protected alias ⟨_, Set.Nonempty.absConvexHull⟩ := absConvexHull_nonempty_iff
+protected alias ⟨_, Set.Nonempty.absConvexHull⟩ := absConvexHull_nonempty
 
 end AbsolutelyConvex
 
