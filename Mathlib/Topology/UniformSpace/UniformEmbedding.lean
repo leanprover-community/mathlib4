@@ -111,8 +111,8 @@ theorem UniformInducing.prod {α' : Type*} {β' : Type*} [UniformSpace α'] [Uni
     UniformInducing fun p : α × β => (e₁ p.1, e₂ p.2) :=
   ⟨by simp [Function.comp_def, uniformity_prod, ← h₁.1, ← h₂.1, comap_inf, comap_comap]⟩
 
-theorem UniformInducing.denseInducing {f : α → β} (h : UniformInducing f) (hd : DenseRange f) :
-    DenseInducing f :=
+theorem UniformInducing.isDenseInducing {f : α → β} (h : UniformInducing f) (hd : DenseRange f) :
+    IsDenseInducing f :=
   { dense := hd
     induced := h.inducing.induced }
 
@@ -232,7 +232,7 @@ theorem closedEmbedding_of_spaced_out {α} [TopologicalSpace α] [DiscreteTopolo
       isClosed_range := isClosed_range_of_spaced_out hs hf }
 
 theorem closure_image_mem_nhds_of_uniformInducing {s : Set (α × α)} {e : α → β} (b : β)
-    (he₁ : UniformInducing e) (he₂ : DenseInducing e) (hs : s ∈ 𝓤 α) :
+    (he₁ : UniformInducing e) (he₂ : IsDenseInducing e) (hs : s ∈ 𝓤 α) :
     ∃ a, closure (e '' { a' | (a, a') ∈ s }) ∈ 𝓝 b := by
   obtain ⟨U, ⟨hU, hUo, hsymm⟩, hs⟩ :
     ∃ U, (U ∈ 𝓤 β ∧ IsOpen U ∧ SymmetricRel U) ∧ Prod.map e e ⁻¹' U ⊆ s := by
@@ -408,11 +408,11 @@ variable {α : Type*} {β : Type*} {γ : Type*} [UniformSpace α] [UniformSpace 
   {e : β → α} (h_e : UniformInducing e) (h_dense : DenseRange e) {f : β → γ}
   (h_f : UniformContinuous f)
 
-local notation "ψ" => DenseInducing.extend (UniformInducing.denseInducing h_e h_dense) f
+local notation "ψ" => IsDenseInducing.extend (UniformInducing.isDenseInducing h_e h_dense) f
 
 include h_e h_dense h_f in
 theorem uniformly_extend_exists [CompleteSpace γ] (a : α) : ∃ c, Tendsto f (comap e (𝓝 a)) (𝓝 c) :=
-  let de := h_e.denseInducing h_dense
+  let de := h_e.isDenseInducing h_dense
   have : Cauchy (𝓝 a) := cauchy_nhds
   have : Cauchy (comap e (𝓝 a)) :=
     this.comap' (le_of_eq h_e.comap_uniformity) (de.comap_nhds_neBot _)
@@ -437,7 +437,7 @@ theorem uniform_extend_subtype [CompleteSpace γ] {p : α → Prop} {e : α → 
 
 include h_e h_f in
 theorem uniformly_extend_spec [CompleteSpace γ] (a : α) : Tendsto f (comap e (𝓝 a)) (𝓝 (ψ a)) := by
-  simpa only [DenseInducing.extend] using
+  simpa only [IsDenseInducing.extend] using
     tendsto_nhds_limUnder (uniformly_extend_exists h_e ‹_› h_f _)
 
 include h_f in
@@ -446,7 +446,7 @@ theorem uniformContinuous_uniformly_extend [CompleteSpace γ] : UniformContinuou
   have h_pnt : ∀ {a m}, m ∈ 𝓝 a → ∃ c ∈ f '' (e ⁻¹' m), (c, ψ a) ∈ s ∧ (ψ a, c) ∈ s :=
     fun {a m} hm =>
     have nb : NeBot (map f (comap e (𝓝 a))) :=
-      ((h_e.denseInducing h_dense).comap_nhds_neBot _).map _
+      ((h_e.isDenseInducing h_dense).comap_nhds_neBot _).map _
     have :
       f '' (e ⁻¹' m) ∩ ({ c | (c, ψ a) ∈ s } ∩ { c | (ψ a, c) ∈ s }) ∈ map f (comap e (𝓝 a)) :=
       inter_mem (image_mem_map <| preimage_mem_comap <| hm)
@@ -471,9 +471,9 @@ variable [T0Space γ]
 
 include h_f in
 theorem uniformly_extend_of_ind (b : β) : ψ (e b) = f b :=
-  DenseInducing.extend_eq_at _ h_f.continuous.continuousAt
+  IsDenseInducing.extend_eq_at _ h_f.continuous.continuousAt
 
 theorem uniformly_extend_unique {g : α → γ} (hg : ∀ b, g (e b) = f b) (hc : Continuous g) : ψ = g :=
-  DenseInducing.extend_unique _ hg hc
+  IsDenseInducing.extend_unique _ hg hc
 
 end UniformExtension
