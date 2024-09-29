@@ -4,14 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Andrew Zipperer, Haitao Zhang, Minchao Wu, Yury Kudryashov
 -/
 import Mathlib.Data.Set.Function
-import Mathlib.Data.Set.Prod
-import Mathlib.Logic.Function.Conjugate
 
 /-!
 # Monotone functions over sets
 -/
 
-variable {α β γ : Type*} {ι : Sort*} {π : α → Type*}
+variable {α β γ : Type*}
 
 open Equiv Equiv.Perm Function
 
@@ -57,7 +55,7 @@ end Order
 /-! ### Monotonicity lemmas -/
 section Mono
 
-variable {s s₁ s₂ : Set α} {f f₁ f₂ : α → β} [Preorder α] [Preorder β]
+variable {s s₂ : Set α} {f : α → β} [Preorder α] [Preorder β]
 
 theorem _root_.MonotoneOn.mono (h : MonotoneOn f s) (h' : s₂ ⊆ s) : MonotoneOn f s₂ :=
   fun _ hx _ hy => h (h' hx) (h' hy)
@@ -155,8 +153,6 @@ end strictMono
 namespace Function
 
 open Set
-
-variable {fa : α → α} {fb : β → β} {f : α → β} {g : β → γ} {s t : Set α}
 
 theorem monotoneOn_of_rightInvOn_of_mapsTo {α β : Type*} [PartialOrder α] [LinearOrder β]
     {φ : β → α} {ψ : α → β} {t : Set β} {s : Set α} (hφ : MonotoneOn φ t)
