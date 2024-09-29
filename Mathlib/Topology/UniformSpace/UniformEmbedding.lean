@@ -318,12 +318,12 @@ theorem IsClosed.completeSpace_coe [CompleteSpace α] {s : Set α} (hs : IsClose
     CompleteSpace s :=
   hs.isComplete.completeSpace_coe
 
-theorem ULift.completeSpace_iff : CompleteSpace (ULift α) ↔ CompleteSpace α :=
-  UniformInducing.completeSpace_congr ⟨rfl⟩ down_surjective
+theorem completeSpace_ulift_iff : CompleteSpace (ULift α) ↔ CompleteSpace α :=
+  UniformInducing.completeSpace_congr ⟨rfl⟩ ULift.down_surjective
 
 /-- The lift of a complete space to another universe is still complete. -/
 instance ULift.instCompleteSpace [CompleteSpace α] : CompleteSpace (ULift α) :=
-  completeSpace_iff.2 ‹_›
+  completeSpace_ulift_iff.2 ‹_›
 
 theorem completeSpace_extension {m : β → α} (hm : UniformInducing m) (dense : DenseRange m)
     (h : ∀ f : Filter β, Cauchy f → ∃ x : α, map m f ≤ 𝓝 x) : CompleteSpace α :=
