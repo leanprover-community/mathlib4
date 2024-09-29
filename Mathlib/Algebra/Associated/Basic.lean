@@ -35,7 +35,7 @@ variable {M N : Type*}
 
 section Prime
 
-variable {M : Type*} [CommMonoidWithZero M]
+variable [CommMonoidWithZero M]
 
 /-- An element `p` of a commutative monoid with zero (e.g., a ring) is called *prime*,
 if it's not zero, not a unit, and `p ∣ a * b → p ∣ a ∨ p ∣ b` for all `a`, `b`. -/
