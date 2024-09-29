@@ -100,7 +100,7 @@ lemma Hom_of_almost_NatTrans_aux_indep [HasLimit F] [HasLimit F']
   have heq : e₂ = (Functor.Initial.limitIso I (Inclusion_Iic a₂ ⋙ F)).symm ≪≫
       (HasLimit.isoOfNatIso ι).symm ≪≫ e₁ := by
     apply Iso.ext
-    rw [← cancel_mono e₁.inv, ← cancel_epi e₂.inv](Functor.Initial.limitIso (Inclusion_Iic ⋯.choose) F).inv
+    rw [← cancel_mono e₁.inv, ← cancel_epi e₂.inv]
     ext a
     simp only [Functor.comp_obj, Monotone.functor_obj, Iso.inv_hom_id_assoc, Iso.trans_hom,
       Iso.symm_hom, assoc, Iso.hom_inv_id, comp_id, HasLimit.isoOfNatIso_inv_π,
@@ -200,10 +200,8 @@ lemma Hom_of_almost_NatTrans_comp [HasLimit F] [HasLimit F'] [HasLimit F'']
     (min_le_left _ _)), ← Hom_of_almost_NatTrans_aux_indep F' F'' β (a₁ := a)
     (le_trans (min_le_left _ _) (min_le_right _ _))]
   simp only [Hom_of_almost_NatTrans_aux, assoc, Iso.hom_inv_id_assoc, Iso.cancel_iso_inv_left]
-  sorry
-
-
-
+  rw [← cancel_mono (Functor.Initial.limitIso (Inclusion_Iic a) F'').inv]
+  simp; ext _; simp
 
 end LimitOnZ
 

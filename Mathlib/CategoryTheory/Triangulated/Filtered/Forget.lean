@@ -86,11 +86,8 @@ noncomputable def ForgetInductiveSystem_aux (X : C) : ℤ ⥤ C where
   obj a := (@shiftFunctor C _ _ _ Shift₂ a).obj X
   map := by
     intro a b f
-    set n := (b - a).natAbs
-    have : a + (b - a).natAbs = b := by
-      rw [← Int.eq_natAbs_of_zero_le (sub_nonneg.mpr (leOfHom f)), add_sub_cancel]
-    simp only
-    exact power_of_alpha X a b (b - a).natAbs this
+    exact power_of_alpha X a b (b - a).natAbs
+      (by rw [← Int.eq_natAbs_of_zero_le (sub_nonneg.mpr (leOfHom f)), add_sub_cancel])
   map_id a := by
     simp only [id_eq, eq_mpr_eq_cast, sub_self, Int.natAbs_zero]
     rw [power_of_alpha_zero', Iso.refl_hom]
@@ -133,6 +130,18 @@ noncomputable def ForgetInductiveSystem (X : C) : ℤ ⥤ hP.Core' where
         exact h this
       exact HalfForgetMapComp' ((ForgetInductiveSystem_aux X).map f)
         ((ForgetInductiveSystem_aux X).map g) this
+
+lemma ForgetInductiveSystem_iso_of_le (X : C) (a : ℤ) [IsLE X a] {b c : Set.Iic (-a)}
+    (u : b ⟶ c) : IsIso ((ForgetInductiveSystem X).map u) := by
+  apply IsIso.mk
+  set f : (ForgetInductiveSystem X).obj c.1 ⟶ (ForgetInductiveSystem X).obj b.1 := by
+    have hX₁ : IsLE ((@shiftFunctor C _ _ _ Shift₂ c.1).obj X) 0 := sorry
+    have hX₂ : IsLE ((@shiftFunctor C _ _ _ Shift₂ b.1).obj X) 0 := sorry
+    simp only [ForgetInductiveSystem, ForgetInductiveSystem_aux]
+    have := HalfForgetObj_prop ((@shiftFunctor C _ _ _ Shift₂ c.1).obj X)
+      (HalfForgetObj ((@shiftFunctor C _ _ _ Shift₂ b.1).obj X)).1
+
+
 
 noncomputable abbrev ForgetInductiveSystemMap {X Y : C} (f : X ⟶ Y) (a : ℤ) :
     (ForgetInductiveSystem X).obj a ⟶ (ForgetInductiveSystem Y).obj a :=
