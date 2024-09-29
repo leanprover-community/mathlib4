@@ -682,14 +682,19 @@ section AlgEquiv
 open RingHom RingEquiv
 
 variable {A₁ B₁ A₂ B₂ : Type*} [Field A₁] [Ring B₁] [Field A₂] [Ring B₂]
-    [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
+    [alg1 : Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
     (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁))
 include he
 
 lemma IsSeparable.of_equiv_equiv
     {x : B₁} (h : IsSeparable A₁ x) : IsSeparable A₂ (e₂ x) := by
   letI := e₁.toRingHom.toAlgebra
-  letI : Algebra A₂ B₁ := algebraComp B₁ e₁.symm.toRingHom
+  letI : Algebra A₂ B₁ := {
+    (algebraMap A₁ B₁).comp e₁.symm.toRingHom with
+      smul := fun a b ↦ ((algebraMap A₁ B₁).comp e₁.symm.toRingHom a) * b
+      commutes' := fun r x ↦ (alg1.commutes) (e₁.symm.toRingHom r) x
+      smul_def' := fun _ _ ↦ rfl
+  }
   have unfoldAlg : algebraMap A₂ B₁ = (algebraMap A₁ B₁).comp e₁.symm.toRingHom := rfl
   haveI : IsScalarTower A₁ A₂ B₁ := by
     refine IsScalarTower.of_algebraMap_eq <| fun x ↦ ?_

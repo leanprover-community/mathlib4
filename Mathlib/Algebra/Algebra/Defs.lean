@@ -361,11 +361,3 @@ theorem algebraMap.coe_smul (A B C : Type*) [SMul A B] [CommSemiring B] [Semirin
   ((a • b : B) : C) = (a • b) • 1 := Algebra.algebraMap_eq_smul_one _
   _ = a • (b • 1) := smul_assoc ..
   _ = a • (b : C) := congrArg _ (Algebra.algebraMap_eq_smul_one b).symm
-
-def algebraComp {A₁ A₂ : Type*} (B₁ : Type*) [CommSemiring A₁] [Semiring B₁] [CommSemiring A₂]
-    [alg1 : Algebra A₁ B₁] (e₁ : A₂ →+* A₁) : Algebra A₂ B₁ := {
-    (algebraMap A₁ B₁).comp e₁ with
-      smul := fun a b ↦ ((algebraMap A₁ B₁).comp e₁ a) * b
-      commutes' := fun r x ↦ (alg1.commutes) (e₁ r) x
-      smul_def' := fun _ _ ↦ rfl
-  }
