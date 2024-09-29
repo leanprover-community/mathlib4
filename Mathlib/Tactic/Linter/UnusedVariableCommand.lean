@@ -117,7 +117,7 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
       (used, newVarsDict)
   if let some decl := stx.find? (#[``declaration, `lemma].contains <|·.getKind) then
     if decl[1].isOfKind ``Lean.Parser.Command.example then
-      logInfo "skipping examples: they have access to all the variables anyway"
+      --logInfo "skipping examples: they have access to all the variables anyway"
       return
     --dbg_trace "processing: {decl[1].getKind}"
     let renStx ← stx.replaceM fun s => match s.getKind with
