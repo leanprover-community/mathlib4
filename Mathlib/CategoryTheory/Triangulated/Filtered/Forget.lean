@@ -106,6 +106,18 @@ noncomputable def ForgetInductiveSystem_aux (X : C) : ℤ ⥤ C where
     exact (power_of_alpha_assoc X a b c (b - a).natAbs (c - b).natAbs
       (by rw [hab, add_sub_cancel]) (by rw [hbc, add_sub_cancel])).symm
 
+lemma ForgetInductiveSystem_aux_prop (X : C) (a : ℤ) [IsLE X a] {b c : Set.Iic (-a)}
+    (u : b ⟶ c) (Y : C) [IsGE Y 0] : Function.Bijective
+    (fun (f : (ForgetInductiveSystem_aux X).obj c ⟶ Y) ↦
+    ((ForgetInductiveSystem_aux X).map u ≫ f)) := by
+  have : IsLE X (a + b.1 - b.1) := by rw [add_sub_cancel_right]; infer_instance
+  have : IsGE Y (a + b.1 + ↑(c.1 - b.1).natAbs) := by
+    rw [← Int.eq_natAbs_of_zero_le (sub_nonneg.mpr (leOfHom u)), add_assoc, add_sub_cancel]
+    refine isGE_of_GE Y _ 0 ?_
+    have := Set.mem_Iic.mp c.2; linarith
+  refine adj_left_extended X Y b.1 c.1 (a + b) (c.1 - b.1).natAbs
+    (by rw [← Int.eq_natAbs_of_zero_le (sub_nonneg.mpr (leOfHom u)), add_sub_cancel])
+
 noncomputable def ForgetInductiveSystem (X : C) : ℤ ⥤ hP.Core' where
   obj a := HalfForgetObj ((ForgetInductiveSystem_aux X).obj a)
   map f := HalfForgetMap ((ForgetInductiveSystem_aux X).map f)
@@ -131,17 +143,49 @@ noncomputable def ForgetInductiveSystem (X : C) : ℤ ⥤ hP.Core' where
       exact HalfForgetMapComp' ((ForgetInductiveSystem_aux X).map f)
         ((ForgetInductiveSystem_aux X).map g) this
 
+lemma ForgetInductiveSystem_prop (X : C) (a : ℤ) [IsLE X a] {b c : Set.Iic (-a)}
+    (u : b ⟶ c) (Y : C) [IsGE Y 0] : Function.Bijective
+    (fun (f : ((ForgetInductiveSystem X).obj c).1 ⟶ Y) ↦
+    ((fullSubcategoryInclusion _).map ((ForgetInductiveSystem X).map u) ≫ f)) := by
+  simp only [ForgetInductiveSystem, fullSubcategoryInclusion.obj, fullSubcategoryInclusion.map]
+  have : IsLE ((ForgetInductiveSystem_aux X).obj b.1) 0 := by
+    simp only [ForgetInductiveSystem_aux]
+    have : IsLE X (-b.1) := isLE_of_LE X a (-b) (by have := Set.mem_Iic.mp b.2; linarith)
+    refine isLE_shift X (-b) b.1 0 (by linarith)
+  have : IsLE ((ForgetInductiveSystem_aux X).obj c.1) 0 := by
+    simp only [ForgetInductiveSystem_aux]
+    have : IsLE X (-c.1) := isLE_of_LE X a (-c) (by have := Set.mem_Iic.mp c.2; linarith)
+    refine isLE_shift X (-c) c.1 0 (by linarith)
+  rw [← Function.Bijective.of_comp_iff'
+    (HalfForgetObj_prop ((ForgetInductiveSystem_aux X).obj b) Y) _]
+  have heq : (fun (f : (HalfForgetObj ((ForgetInductiveSystem_aux X).obj b.1)).obj ⟶ Y) ↦
+      IdToHalfForgetApp ((ForgetInductiveSystem_aux X).obj b.1) ≫ f) ∘
+      (fun f ↦ HalfForgetMap ((ForgetInductiveSystem_aux X).map u) ≫ f) =
+      (fun (f : (ForgetInductiveSystem_aux X).obj c ⟶ Y) ↦
+      ((ForgetInductiveSystem_aux X).map u ≫ f)) ∘
+      (fun (f : (HalfForgetObj ((ForgetInductiveSystem_aux X).obj c.1)).obj ⟶ Y) ↦
+      IdToHalfForgetApp ((ForgetInductiveSystem_aux X).obj c.1) ≫ f) := by
+    ext g
+    simp only [Function.comp_apply]
+    conv_lhs => rw [← assoc, HalfForgetMap_prop, assoc]
+  rw [heq]
+  apply Function.Bijective.comp
+  · exact ForgetInductiveSystem_aux_prop X a u Y
+  · exact HalfForgetObj_prop ((ForgetInductiveSystem_aux X).obj c) Y
+
 lemma ForgetInductiveSystem_iso_of_le (X : C) (a : ℤ) [IsLE X a] {b c : Set.Iic (-a)}
     (u : b ⟶ c) : IsIso ((ForgetInductiveSystem X).map u) := by
   apply IsIso.mk
-  set f : (ForgetInductiveSystem X).obj c.1 ⟶ (ForgetInductiveSystem X).obj b.1 := by
-    have hX₁ : IsLE ((@shiftFunctor C _ _ _ Shift₂ c.1).obj X) 0 := sorry
-    have hX₂ : IsLE ((@shiftFunctor C _ _ _ Shift₂ b.1).obj X) 0 := sorry
-    simp only [ForgetInductiveSystem, ForgetInductiveSystem_aux]
-    have := HalfForgetObj_prop ((@shiftFunctor C _ _ _ Shift₂ c.1).obj X)
-      (HalfForgetObj ((@shiftFunctor C _ _ _ Shift₂ b.1).obj X)).1
-
-
+  have bij := ForgetInductiveSystem_prop X a u ((ForgetInductiveSystem X).obj b).1
+  obtain ⟨f, hf⟩ := bij.2 (𝟙 ((ForgetInductiveSystem X).obj b))
+  use f
+  constructor
+  · exact hf
+  · have bij' := ForgetInductiveSystem_prop X a u ((ForgetInductiveSystem X).obj c).1
+    apply bij'.1
+    simp only [fullSubcategoryInclusion.obj, fullSubcategoryInclusion.map] at hf ⊢
+    conv_lhs => erw [← assoc]; rw [hf]; erw [id_comp]
+    erw [comp_id]
 
 noncomputable abbrev ForgetInductiveSystemMap {X Y : C} (f : X ⟶ Y) (a : ℤ) :
     (ForgetInductiveSystem X).obj a ⟶ (ForgetInductiveSystem Y).obj a :=
@@ -160,13 +204,66 @@ lemma ForgetInductiveSystemMap_naturality {X Y : C} (f : X ⟶ Y) {a b : ℤ} (u
   conv_rhs => rw [← HalfForgetMapComp]
   rw [power_of_alpha_naturality f]
 
+lemma ForgetInductiveSystemMap_naturality' {X Y : C} (f : X ⟶ Y) (a : ℤ) [IsLE X a] [IsLE Y a]
+    {b c : Set.Iic (-a)} (u : b ⟶ c) :
+    (ForgetInductiveSystem X).map u ≫ ForgetInductiveSystemMap f c.1 =
+    ForgetInductiveSystemMap f b.1 ≫ (ForgetInductiveSystem Y).map u := by
+  have : IsLE X (- c.1) := isLE_of_LE X a (-c) (by have := Set.mem_Iic.mp c.2; linarith)
+  have : IsLE Y (- c.1) := isLE_of_LE Y a (-c) (by have := Set.mem_Iic.mp c.2; linarith)
+  exact ForgetInductiveSystemMap_naturality f u
+
+lemma ForgetInductiveSystem_hasLimit (X : C) : HasLimit (ForgetInductiveSystem X) := by
+  set a := (hP.LE_exhaustive X).choose
+  have : IsLE X a := {le := (hP.LE_exhaustive X).choose_spec}
+  exact HasLimit_of_transition_eventually_iso
+    (ForgetInductiveSystem X) (a := -a) (fun _ _ u ↦ ForgetInductiveSystem_iso_of_le X a u)
+
 /- The definition of the functor `Forget`.-/
 
-noncomputable def ForgetObj (X : C) : hP.Core' := sorry
-    --Limits.limit (ForgetInductiveSystem X)
-    --need to prove that this has a limit, use CategoryTheory.Functor.Initial.limitIso',
-    -- CategoryTheory.Functor.Initial.hasLimit_of_comp and the fact that all transition
-    -- maps are isos for `a` small enough.
+@[simp]
+noncomputable def ForgetObj (X : C) : hP.Core' := by
+  have := ForgetInductiveSystem_hasLimit X
+  exact Limits.limit (ForgetInductiveSystem X)
+
+@[simp]
+noncomputable def ForgetMap {X Y : C} (f : X ⟶ Y) : ForgetObj X ⟶ ForgetObj Y := by
+  have := ForgetInductiveSystem_hasLimit X
+  have := ForgetInductiveSystem_hasLimit Y
+  set a := (hP.LE_exhaustive X).choose
+  have : IsLE X a := {le := (hP.LE_exhaustive X).choose_spec}
+  set b := (hP.LE_exhaustive Y).choose
+  have : IsLE Y b := {le := (hP.LE_exhaustive Y).choose_spec}
+  refine Hom_of_almost_NatTrans _ _ (ForgetInductiveSystemMap f) ?_
+  use -max a b
+  have : IsLE X (max a b) := isLE_of_LE X a (max a b) (le_max_left _ _)
+  have : IsLE Y (max a b) := isLE_of_LE Y b (max a b) (le_max_right _ _)
+  exact (fun _ _ u ↦ ForgetInductiveSystemMap_naturality' f (max a b) u)
+
+noncomputable def Forget : C ⥤ hP.Core' where
+  obj X := ForgetObj X
+  map f := ForgetMap f
+  map_id X := by
+    have := ForgetInductiveSystem_hasLimit X
+    refine Hom_of_almost_NatTrans_id _ _ ?_
+    use 0
+    simp only [ForgetInductiveSystemMap, ForgetInductiveSystem_aux, Functor.map_id, Subtype.forall,
+      Set.mem_Iic]
+    exact fun _ _ ↦ HalfForgetMapId
+  map_comp := by
+    intro X Y Z f g
+    have := ForgetInductiveSystem_hasLimit X
+    have := ForgetInductiveSystem_hasLimit Y
+    have := ForgetInductiveSystem_hasLimit Z
+    simp only [ForgetObj, ForgetMap]
+    have heq : ForgetInductiveSystemMap (f ≫ g) = fun n ↦ ForgetInductiveSystemMap f n ≫
+        ForgetInductiveSystemMap g n := by
+      ext n
+      simp only [ForgetInductiveSystemMap, ForgetInductiveSystem_aux, Functor.map_comp]
+      sorry
+    simp_rw [heq]
+    exact (Hom_of_almost_NatTrans_comp (ForgetInductiveSystem X) (ForgetInductiveSystem Y)
+      (ForgetInductiveSystem Z) _ _ _ _).symm
+
 
 end FilteredTriangulated
 
