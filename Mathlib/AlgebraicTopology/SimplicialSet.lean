@@ -361,19 +361,18 @@ open SimplexCategory
 
 noncomputable section
 
-/-- The n-skeleton as an endofunctor on `SSet`. -/
-abbrev sk (n : ℕ) : SSet ⥤ SSet := truncation.{u} n ⋙ lan (Truncated.inclusion.op)
-
-/-- The n-coskeleton as an endofunctor on `SSet`. -/
-abbrev cosk (n : ℕ) : SSet ⥤ SSet := truncation.{u} n ⋙ ran (Truncated.inclusion.op)
-
-
 /-- The n-skeleton as a functor `SSet.Truncated n ⥤ SSet`. -/
 protected abbrev Truncated.sk (n : ℕ) : SSet.Truncated n ⥤ SSet.{u} := lan (Truncated.inclusion.op)
 
 /-- The n-coskeleton as a functor `SSet.Truncated n ⥤ SSet`. -/
 protected abbrev Truncated.cosk (n : ℕ) : SSet.Truncated n ⥤ SSet.{u} :=
   ran (Truncated.inclusion.op)
+
+/-- The n-skeleton as an endofunctor on `SSet`. -/
+abbrev sk (n : ℕ) : SSet ⥤ SSet := truncation.{u} n ⋙ Truncated.sk n
+
+/-- The n-coskeleton as an endofunctor on `SSet`. -/
+abbrev cosk (n : ℕ) : SSet ⥤ SSet := truncation.{u} n ⋙ Truncated.cosk n
 
 end
 
