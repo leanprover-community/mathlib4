@@ -1175,6 +1175,10 @@ instance uniqueUnits : Unique (Ideal R)ˣ where
   default := 1
   uniq u := Units.ext (show (u : Ideal R) = 1 by rw [isUnit_iff.mp u.isUnit, one_eq_top])
 
+@[simp]
+theorem dvd_bot (I : Ideal R) : I ∣ ⊥ :=
+  ⟨0, by simp⟩
+
 end Dvd
 
 end MulAndRadical
