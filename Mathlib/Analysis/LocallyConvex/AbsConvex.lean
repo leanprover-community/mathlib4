@@ -60,6 +60,10 @@ theorem AbsConvex.inter {s : Set E} {t : Set E} (hs : AbsConvex 𝕜 s) (ht : Ab
 theorem absConvex_sInter {S : Set (Set E)} (h : ∀ s ∈ S, AbsConvex 𝕜 s) : AbsConvex 𝕜 (⋂₀ S) :=
   ⟨Balanced.sInter (fun s hs => (h s hs).1), convex_sInter (fun s hs => (h s hs).2)⟩
 
+theorem absConvex_iInter {ι : Sort*} {s : ι → Set E} (h : ∀ i, AbsConvex 𝕜 (s i)) :
+    AbsConvex 𝕜 (⋂ i, s i) :=
+  sInter_range s ▸ absConvex_sInter <| forall_mem_range.2 h
+
 variable (𝕜)
 
 /-- The absolute convex hull of a set `s` is the minimal absolute convex set that includes `s`. -/
