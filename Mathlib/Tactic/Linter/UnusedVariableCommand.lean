@@ -69,7 +69,14 @@ def includedVariables (plumb : Bool) : TermElabM (Array (Name × Name × Expr)) 
         usedVarsRef.modify fun (used, varsDict) => (used.insert a, varsDict)
   return varIds
 
-elab "included_variables" plumb:(ppSpace &"plumb")? : tactic => Tactic.withMainContext do
+/--
+The tactic `included_variables` reports which variables are included in the current declaration.
+
+The variant `included_variables plumb` is intended only for the internal use of the
+unused variable command linter: besides printing the message, `plumb` also adds records that
+the variables included in the current declaration really are included.
+-/
+elab "included_variables" plumb:(ppSpace &"plumb")? : tactic => do
     let (_plb, usedUserIds) := (← includedVariables plumb.isSome).unzip
     let msgs ← usedUserIds.mapM fun (userName, expr) =>
       return m!"'{userName}' of type '{← Meta.inferType expr}'"
@@ -77,7 +84,10 @@ elab "included_variables" plumb:(ppSpace &"plumb")? : tactic => Tactic.withMainC
       logInfo m!"{msgs.foldl (m!"{·}\n" ++ m!"* {·}") "Included variables:"}"
 
 open Lean.Parser.Term in
-/-- Return identifier names in the given bracketed binder. -/
+/--
+Like `Lean.Elab.Command.getBracketedBinderIds`, but returns the identifier `Syntax`,
+rather than the `Name`, in the given bracketed binder.
+-/
 def getBracketedBinderIds : Syntax → CommandElabM (Array Syntax)
   | `(bracketedBinderF|($ids* $[: $ty?]? $(_annot?)?)) => return ids
   | `(bracketedBinderF|{$ids* $[: $ty?]?})             => return ids
@@ -85,7 +95,6 @@ def getBracketedBinderIds : Syntax → CommandElabM (Array Syntax)
   | `(bracketedBinderF|[$id : $_])                     => return #[id]
   | `(bracketedBinderF|[$f])                           => return #[f]
   | _                                                  => throwUnsupportedSyntax
-
 
 @[inherit_doc Mathlib.Linter.linter.unusedVariableCommand]
 def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx ↦ do
@@ -105,21 +114,24 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
         match uniq.eraseMacroScopes with
           | .anonymous => logInfoAt user m!"'{user}' is unused"
           | x          => logInfoAt user m!"'{x}' is unused"
-  --
+  -- if there is a `variable` command in `stx`, then we update `usedVarsRef` with all the
+  -- information that is available
   if (stx.find? (·.isOfKind ``Lean.Parser.Command.variable)).isSome then
     let scope ← getScope
     let pairs := scope.varUIds.zip (← scope.varDecls.mapM getBracketedBinderIds).flatten
-    --dbg_trace "pairs: {pairs}"
     usedVarsRef.modify fun (used, varsDict) => Id.run do
       let mut newVarsDict := varsDict
       for (uniq, user) in pairs do
         newVarsDict := newVarsDict.insert uniq user
       (used, newVarsDict)
+  -- on all declarations that are not examples, we "rename" them, so that we can elaborate
+  -- their syntax again, and we replace `:= proof-term` by `:= by included_variables plumb: sorry`
+  -- in order to update the `usedVarsRef` counter.
+  -- TODO: find a way to deal with proofs that use the equation compiler directly.
   if let some decl := stx.find? (#[``declaration, `lemma].contains <|·.getKind) then
+    -- skip examples, since they have access to all the variables
     if decl[1].isOfKind ``Lean.Parser.Command.example then
-      --logInfo "skipping examples: they have access to all the variables anyway"
       return
-    --dbg_trace "processing: {decl[1].getKind}"
     let renStx ← stx.replaceM fun s => match s.getKind with
         | ``declId        => return some (← `(declId| $(mkIdentFrom s[0] (s[0].getId ++ `_hello))))
         | ``declValSimple => return some (← `(declValSimple| := by included_variables plumb; sorry))
