@@ -43,7 +43,7 @@ variable {α β γ δ : Type*} [TopologicalSpace α] [TopologicalSpace β] [Topo
 
 variable {f g : C(α, β)}
 
-@[deprecated map_continuousAt (since := "2024-09-29")]
+/-- Deprecated. Use `map_continuousAt` instead. -/
 protected theorem continuousAt (f : C(α, β)) (x : α) : ContinuousAt f x :=
   map_continuousAt f x
 
