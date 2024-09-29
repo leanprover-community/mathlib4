@@ -164,7 +164,7 @@ and searches through the local context to find any additional properties of thes
 which it tries to add the corresponding `Algebra` properties to the context. It only looks for
 properties that have been tagged with the `algebraize` attribute, and uses this tag to find the
 corresponding `Algebra` property. -/
-def searchContext (t : Array Expr) : TacticM Unit := withMainContext do
+def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
   let ctx ← getLCtx
   ctx.forM fun decl => do
     if decl.isImplementationDetail then return
@@ -208,7 +208,7 @@ def searchContext (t : Array Expr) : TacticM Unit := withMainContext do
 structure Config where
   /-- If true (default), the tactic will search the local context for `RingHom` properties
     that can be converted to `Algebra` properties. -/
-  searchContext : Bool := true
+  properties : Bool := true
 deriving Inhabited
 
 /-- Function elaborating `Algebraize.Config`. -/
@@ -230,7 +230,7 @@ See the `algebraize` tag for instructions on what properties can be added.
 The tactic also comes with a configuration option `searchContext`. If set to `true` (default), the
 tactic searches through the local context for `RingHom` properties that can be converted to
 `Algebra` properties. The macro `algebraize'` calls
-`algebraize (config := {searchContext := false})`,
+`algebraize (config := {properties := false})`,
 so in other words it only adds `Algebra` and `IsScalarTower` instances. -/
 syntax "algebraize" (config)? (ppSpace colGt term:max)* : tactic
 
@@ -253,8 +253,8 @@ elab_rules : tactic
       | _ => continue
 
     -- Search through the local context to find other instances of algebraize
-    if cfg.searchContext then
-      searchContext t
+    if cfg.properties then
+      addProperties t
 
 /-- Version of `algebraize`, which only adds `Algebra` instances and `IsScalarTower` instances,
 but does not try to add any instances about any properties tagged with
@@ -263,6 +263,6 @@ syntax "algebraize_only" (ppSpace colGt term:max)* : tactic
 
 macro_rules
   | `(tactic| algebraize_only $[$t:term]*) =>
-    `(tactic| algebraize (config := {searchContext := false}) $t*)
+    `(tactic| algebraize (config := {properties := false}) $t*)
 
 end Mathlib.Tactic
