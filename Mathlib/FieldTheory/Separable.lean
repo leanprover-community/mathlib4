@@ -686,24 +686,22 @@ variable {A₁ B₁ A₂ B₂ : Type*} [Field A₁] [Ring B₁] [Field A₂] [Ri
     (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁))
 include he
 
-lemma IsSeparable.of_equiv_equiv
-    {x : B₁} (h : IsSeparable A₁ x) : IsSeparable A₂ (e₂ x) :=
+lemma IsSeparable.of_equiv_equiv {x : B₁} (h : IsSeparable A₁ x) : IsSeparable A₂ (e₂ x) :=
   letI := e₁.toRingHom.toAlgebra
   letI : Algebra A₂ B₁ :=
     { (algebraMap A₁ B₁).comp e₁.symm.toRingHom with
         smul := fun a b ↦ ((algebraMap A₁ B₁).comp e₁.symm.toRingHom a) * b
         commutes' := fun r x ↦ (alg1.commutes) (e₁.symm.toRingHom r) x
-        smul_def' := fun _ _ ↦ rfl}
+        smul_def' := fun _ _ ↦ rfl }
   haveI : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq <| fun x ↦
       (algebraMap A₁ B₁).congr_arg <| id ((e₁.symm_apply_apply x).symm)
   let e : B₁ ≃ₐ[A₂] B₂ :=
     { e₂ with
       commutes' := fun x ↦ by
-        simpa [RingHom.algebraMap_toAlgebra] using DFunLike.congr_fun he.symm (e₁.symm x)}
+        simpa [RingHom.algebraMap_toAlgebra] using DFunLike.congr_fun he.symm (e₁.symm x) }
   (AlgEquiv.isSeparable_iff e).mpr <| IsSeparable.tower_top A₂ h
 
-lemma Algebra.IsSeparable.of_equiv_equiv
-    [Algebra.IsSeparable A₁ B₁] : Algebra.IsSeparable A₂ B₂ :=
+lemma Algebra.IsSeparable.of_equiv_equiv [Algebra.IsSeparable A₁ B₁] : Algebra.IsSeparable A₂ B₂ :=
   ⟨fun x ↦ (e₂.apply_symm_apply x) ▸ _root_.IsSeparable.of_equiv_equiv e₁ e₂ he
     (Algebra.IsSeparable.isSeparable _ _)⟩
 
