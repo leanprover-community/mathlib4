@@ -82,27 +82,27 @@ theorem isSymmetric_zero : (0 : E →ₗ[𝕜] E).IsSymmetric := fun x y =>
 theorem isSymmetric_id : (LinearMap.id : E →ₗ[𝕜] E).IsSymmetric := fun _ _ => rfl
 
 @[aesop safe apply]
-theorem IsSymmetric.add {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric) :
+theorem isSymmetric.add {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric) :
     (T + S).IsSymmetric := by
   intro x y
   rw [LinearMap.add_apply, inner_add_left, hT x y, hS x y, ← inner_add_right]
   rfl
 
 @[aesop safe apply]
-theorem IsSymmetric.sub {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric) :
+theorem isSymmetric.sub {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric) :
     (T - S).IsSymmetric := by
   intro x y
   rw [LinearMap.sub_apply, inner_sub_left, hT x y, hS x y, ← inner_sub_right]
   rfl
 
 @[aesop safe apply]
-theorem IsSymmetric.smul {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) {c : ℝ} :
+theorem isSymmetric.smul {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) {c : ℝ} :
     (RCLike.ofReal (K := 𝕜) c) • T |>.IsSymmetric := by
   intro x y
   simp only [smul_apply, inner_smul_left, conj_ofReal, hT x y, inner_smul_right]
 
 @[aesop safe apply]
-lemma IsSymmetric.mul_of_comm {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric)
+lemma isSymmetric.mul_of_comm {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric)
     (hST : Commute S T) : (S * T).IsSymmetric := by
   refine fun x y ↦ ?_
   nth_rw 1 [hST]
@@ -110,11 +110,11 @@ lemma IsSymmetric.mul_of_comm {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS 
   rw [← hS, hT]
 
 @[aesop safe apply]
-lemma IsSymmetric.pow {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (n : ℕ) : (T ^ n).IsSymmetric := by
+lemma isSymmetric.pow {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (n : ℕ) : (T ^ n).IsSymmetric := by
   refine Nat.le_induction (pow_zero T ▸ one_eq_id (R := 𝕜) (M := E) ▸ isSymmetric_id)
     (fun k _ ih ↦ ?_) n (Nat.zero_le _)
   rw [iterate_succ, ← mul_eq_comp]
-  exact IsSymmetric.mul_of_comm hT ih <| _root_.id <| Commute.symm <| Commute.pow_right rfl _
+  exact isSymmetric.mul_of_comm hT ih <| _root_.id <| Commute.symm <| Commute.pow_right rfl _
 
 /-- For a symmetric operator `T`, the function `fun x ↦ ⟪T x, x⟫` is real-valued. -/
 @[simp]
