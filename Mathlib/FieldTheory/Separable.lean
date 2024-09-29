@@ -687,30 +687,20 @@ variable {A₁ B₁ A₂ B₂ : Type*} [Field A₁] [Ring B₁] [Field A₂] [Ri
 include he
 
 lemma IsSeparable.of_equiv_equiv
-    {x : B₁} (h : IsSeparable A₁ x) : IsSeparable A₂ (e₂ x) := by
+    {x : B₁} (h : IsSeparable A₁ x) : IsSeparable A₂ (e₂ x) :=
   letI := e₁.toRingHom.toAlgebra
-  letI : Algebra A₂ B₁ := {
-    (algebraMap A₁ B₁).comp e₁.symm.toRingHom with
-      smul := fun a b ↦ ((algebraMap A₁ B₁).comp e₁.symm.toRingHom a) * b
-      commutes' := fun r x ↦ (alg1.commutes) (e₁.symm.toRingHom r) x
-      smul_def' := fun _ _ ↦ rfl
-  }
-  have unfoldAlg : algebraMap A₂ B₁ = (algebraMap A₁ B₁).comp e₁.symm.toRingHom := rfl
-  haveI : IsScalarTower A₁ A₂ B₁ := by
-    refine IsScalarTower.of_algebraMap_eq <| fun x ↦ ?_
-    show (algebraMap A₁ B₁) x = (algebraMap A₂ B₁).comp (e₁.toRingHom) x
-    rw [unfoldAlg, comp_assoc, symm_toRingHom_comp_toRingHom]; rfl
+  letI : Algebra A₂ B₁ :=
+    { (algebraMap A₁ B₁).comp e₁.symm.toRingHom with
+        smul := fun a b ↦ ((algebraMap A₁ B₁).comp e₁.symm.toRingHom a) * b
+        commutes' := fun r x ↦ (alg1.commutes) (e₁.symm.toRingHom r) x
+        smul_def' := fun _ _ ↦ rfl}
+  haveI : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq <| fun x ↦
+      (algebraMap A₁ B₁).congr_arg <| id ((e₁.symm_apply_apply x).symm)
   let e : B₁ ≃ₐ[A₂] B₂ :=
     { e₂ with
-      commutes' := by
-        intro x
-        show e₂.toRingHom.comp (algebraMap A₂ B₁) x = (algebraMap A₂ B₂) x
-        rw [unfoldAlg, ← comp_assoc]
-        apply_fun fun x ↦ x.comp e₁.symm.toRingHom at he
-        rw [comp_assoc, ← toRingHom_eq_coe, toRingHom_comp_symm_toRingHom] at he
-        exact congrFun (congrArg DFunLike.coe (id he.symm)) x
-      }
-  exact (AlgEquiv.isSeparable_iff e).mpr <| IsSeparable.tower_top A₂ h
+      commutes' := fun x ↦ by
+        simpa [RingHom.algebraMap_toAlgebra] using DFunLike.congr_fun he.symm (e₁.symm x)}
+  (AlgEquiv.isSeparable_iff e).mpr <| IsSeparable.tower_top A₂ h
 
 lemma Algebra.IsSeparable.of_equiv_equiv
     [Algebra.IsSeparable A₁ B₁] : Algebra.IsSeparable A₂ B₂ :=
