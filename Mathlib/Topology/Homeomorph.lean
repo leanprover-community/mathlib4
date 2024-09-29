@@ -308,7 +308,7 @@ protected theorem t2Space [T2Space X] (h : X ≃ₜ Y) : T2Space Y :=
 protected theorem t3Space [T3Space X] (h : X ≃ₜ Y) : T3Space Y :=
   h.symm.embedding.t3Space
 
-protected theorem denseEmbedding (h : X ≃ₜ Y) : DenseEmbedding h :=
+protected theorem isDenseEmbedding (h : X ≃ₜ Y) : IsDenseEmbedding h :=
   { h.embedding with dense := h.surjective.denseRange }
 
 @[simp]
@@ -901,7 +901,7 @@ protected lemma quotientMap : QuotientMap f := (hf.homeomorph f).quotientMap
 protected lemma embedding : Embedding f := (hf.homeomorph f).embedding
 protected lemma openEmbedding : OpenEmbedding f := (hf.homeomorph f).openEmbedding
 protected lemma closedEmbedding : ClosedEmbedding f := (hf.homeomorph f).closedEmbedding
-protected lemma denseEmbedding : DenseEmbedding f := (hf.homeomorph f).denseEmbedding
+protected lemma isDenseEmbedding : IsDenseEmbedding f := (hf.homeomorph f).isDenseEmbedding
 
 end IsHomeomorph
 

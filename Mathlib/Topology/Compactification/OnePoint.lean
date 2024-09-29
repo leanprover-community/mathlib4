@@ -426,7 +426,7 @@ theorem denseRange_coe [NoncompactSpace X] : DenseRange ((↑) : X → OnePoint 
   rw [DenseRange, ← compl_infty]
   exact dense_compl_singleton _
 
-theorem denseEmbedding_coe [NoncompactSpace X] : DenseEmbedding ((↑) : X → OnePoint X) :=
+theorem isDenseEmbedding_coe [NoncompactSpace X] : IsDenseEmbedding ((↑) : X → OnePoint X) :=
   { openEmbedding_coe with dense := denseRange_coe }
 
 @[simp, norm_cast]
@@ -507,7 +507,7 @@ example [WeaklyLocallyCompactSpace X] [T2Space X] : T4Space (OnePoint X) := infe
 
 /-- If `X` is not a compact space, then `OnePoint X` is a connected space. -/
 instance [PreconnectedSpace X] [NoncompactSpace X] : ConnectedSpace (OnePoint X) where
-  toPreconnectedSpace := denseEmbedding_coe.toIsDenseInducing.preconnectedSpace
+  toPreconnectedSpace := isDenseEmbedding_coe.toIsDenseInducing.preconnectedSpace
   toNonempty := inferInstance
 
 /-- If `X` is an infinite type with discrete topology (e.g., `ℕ`), then the identity map from
