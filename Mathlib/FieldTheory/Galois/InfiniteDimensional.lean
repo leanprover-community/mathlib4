@@ -31,7 +31,7 @@ In a field extension `K/k`
 
 -/
 
-open CategoryTheory Topology Opposite
+open CategoryTheory Opposite
 open scoped IntermediateField
 
 variable (k K : Type*) [Field k] [Field K] [Algebra k K]
