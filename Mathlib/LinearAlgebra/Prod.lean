@@ -657,6 +657,31 @@ theorem snd_comp_prodComm :
 
 end prodComm
 
+/-- Product of modules is associative up to linear isomorphism. -/
+@[simps apply]
+def prodAssoc (R M₁ M₂ M₃ : Type*) [Semiring R]
+    [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
+    [Module R M₁] [Module R M₂] [Module R M₃] : ((M₁ × M₂) × M₃) ≃ₗ[R] (M₁ × (M₂ × M₃)) :=
+  { AddEquiv.prodAssoc with
+    map_smul' := fun _r ⟨_m, _n⟩ => rfl }
+
+section prodAssoc
+
+variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
+variable [Module R M] [Module R M₂] [Module R M₃]
+
+theorem fst_comp_prodAssoc :
+    (LinearMap.fst R M (M₂ × M₃)).comp (prodAssoc R M M₂ M₃).toLinearMap =
+    (LinearMap.fst R M M₂).comp (LinearMap.fst R (M × M₂) M₃) := by
+  ext <;> simp
+
+theorem snd_comp_prodAssoc :
+    (LinearMap.snd R M (M₂ × M₃)).comp (prodAssoc R M M₂ M₃).toLinearMap =
+    (LinearMap.snd R M M₂).prodMap (LinearMap.id : M₃ →ₗ[R] M₃):= by
+  ext <;> simp
+
+end prodAssoc
+
 section
 
 variable (R M M₂ M₃ M₄)

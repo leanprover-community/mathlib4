@@ -587,7 +587,24 @@ theorem coe_prodComm : ⇑(prodComm : M × N ≃* N × M) = Prod.swap :=
 theorem coe_prodComm_symm : ⇑(prodComm : M × N ≃* N × M).symm = Prod.swap :=
   rfl
 
-variable {M' N' : Type*} [MulOneClass M'] [MulOneClass N']
+variable {M' : Type*} [MulOneClass M']
+
+/-- The equivalence between `(M × N) × M'` and `M × (N × M')` is multiplicative. -/
+@[to_additive prodAssoc
+      "The equivalence between `(M × N) × M'` and `M × (N × M')` is additive."]
+def prodAssoc : (M × N) × M'≃* M × (N × M') :=
+  { Equiv.prodAssoc M N M' with map_mul' := fun ⟨_, _⟩ ⟨_, _⟩ => rfl }
+
+@[to_additive (attr := simp) coe_prodAssoc]
+theorem coe_prodAssoc : ⇑(prodAssoc : (M × N) × M'≃* M × (N × M')) = Equiv.prodAssoc M N M' :=
+  rfl
+
+@[to_additive (attr := simp) coe_prodAssoc_symm]
+theorem coe_prodAssoc_symm :
+    ⇑(prodAssoc : (M × N) × M'≃* M × (N × M')).symm = (Equiv.prodAssoc M N M').symm :=
+  rfl
+
+variable {N' : Type*} [MulOneClass N']
 
 section
 
