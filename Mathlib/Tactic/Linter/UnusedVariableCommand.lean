@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2024 Damiano Testa. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Damiano Testa
+-/
+
 import Lean.Elab.Command
 import Lean.Linter.Util
 
@@ -9,27 +15,6 @@ is globally unused.
 -/
 
 open Lean Parser Elab Command
-
-namespace Lean.Syntax
-/-!
-# `Syntax` filters
--/
-
-partial
-def filterMapM {m : Type → Type} {α : Type} [Monad m] (stx : Syntax) (f : Syntax → m (Option α)) :
-    m (Array α) := do
-  let nargs := (← stx.getArgs.mapM (·.filterMapM f)).flatten
-  match ← f stx with
-    | some new => return nargs.push new
-    | none => return nargs
-
-def filterMap {α : Type} (stx : Syntax) (f : Syntax → Option α) : Array α :=
-  stx.filterMapM (m := Id) f
-
-def filter (stx : Syntax) (f : Syntax → Bool) : Array Syntax :=
-  stx.filterMap (fun s => if f s then some s else none)
-
-end Lean.Syntax
 
 namespace Mathlib.Linter
 
@@ -44,6 +29,14 @@ register_option linter.unusedVariableCommand : Bool := {
 
 namespace UnusedVariableCommand
 
+/--
+`usedVarsRef` collects the unique names of the variables that have been used somewhere
+in its `NameSet` factor and the mapping from unique names to the `Syntax` node of the
+corresponding variable in its second factor.
+
+There is an exception, though: for variables introduced with `variable ... in`, the `Syntax`
+node is the whole `variable` command.
+-/
 initialize usedVarsRef : IO.Ref (NameSet × NameMap Syntax) ← IO.mkRef ({}, {})
 
 /-- returns the unique `Name`, the user `Name` and the `Expr` of each `variable` that is
