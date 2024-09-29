@@ -286,27 +286,36 @@ theorem completeSpace_iff_isComplete_range {f : α → β} (hf : UniformInducing
     CompleteSpace α ↔ IsComplete (range f) := by
   rw [completeSpace_iff_isComplete_univ, ← isComplete_image_iff hf, image_univ]
 
+alias ⟨_, UniformInducing.completeSpace⟩ := completeSpace_iff_isComplete_range
+
 theorem UniformInducing.isComplete_range [CompleteSpace α] {f : α → β} (hf : UniformInducing f) :
     IsComplete (range f) :=
   (completeSpace_iff_isComplete_range hf).1 ‹_›
 
+/-- If `f` is a surjective uniform inducing map,
+then its domain is a complete space iff its codomain is a complete space.
+See also `_root_.completeSpace_congr` for a version that assumes `f` to be an equivalence. -/
+theorem UniformInducing.completeSpace_congr {f : α → β} (hf : UniformInducing f)
+    (hsurj : f.Surjective) : CompleteSpace α ↔ CompleteSpace β := by
+  rw [completeSpace_iff_isComplete_range hf, hsurj.range_eq, completeSpace_iff_isComplete_univ]
+
 theorem SeparationQuotient.completeSpace_iff :
-    CompleteSpace (SeparationQuotient α) ↔ CompleteSpace α := by
-  rw [completeSpace_iff_isComplete_univ, ← range_mk,
-    ← completeSpace_iff_isComplete_range uniformInducing_mk]
+    CompleteSpace (SeparationQuotient α) ↔ CompleteSpace α :=
+  .symm <| uniformInducing_mk.completeSpace_congr surjective_mk
 
 instance SeparationQuotient.instCompleteSpace [CompleteSpace α] :
     CompleteSpace (SeparationQuotient α) :=
   completeSpace_iff.2 ‹_›
 
+/-- See also `UniformInducing.completeSpace_congr`
+for a version that works for non-injective maps. -/
 theorem completeSpace_congr {e : α ≃ β} (he : UniformEmbedding e) :
-    CompleteSpace α ↔ CompleteSpace β := by
-  rw [completeSpace_iff_isComplete_range he.toUniformInducing, e.range_eq_univ,
-    completeSpace_iff_isComplete_univ]
+    CompleteSpace α ↔ CompleteSpace β :=
+  he.completeSpace_congr e.surjective
 
-theorem completeSpace_coe_iff_isComplete {s : Set α} : CompleteSpace s ↔ IsComplete s :=
-  (completeSpace_iff_isComplete_range uniformEmbedding_subtype_val.toUniformInducing).trans <| by
-    rw [Subtype.range_coe]
+theorem completeSpace_coe_iff_isComplete {s : Set α} : CompleteSpace s ↔ IsComplete s := by
+  rw [completeSpace_iff_isComplete_range uniformEmbedding_subtype_val.toUniformInducing,
+    Subtype.range_coe]
 
 alias ⟨_, IsComplete.completeSpace_coe⟩ := completeSpace_coe_iff_isComplete
 
@@ -314,10 +323,12 @@ theorem IsClosed.completeSpace_coe [CompleteSpace α] {s : Set α} (hs : IsClose
     CompleteSpace s :=
   hs.isComplete.completeSpace_coe
 
+theorem completeSpace_ulift_iff : CompleteSpace (ULift α) ↔ CompleteSpace α :=
+  UniformInducing.completeSpace_congr ⟨rfl⟩ ULift.down_surjective
+
 /-- The lift of a complete space to another universe is still complete. -/
-instance ULift.completeSpace [h : CompleteSpace α] : CompleteSpace (ULift α) :=
-  haveI : UniformEmbedding (@Equiv.ulift α) := ⟨⟨rfl⟩, ULift.down_injective⟩
-  (completeSpace_congr this).2 h
+instance ULift.instCompleteSpace [CompleteSpace α] : CompleteSpace (ULift α) :=
+  completeSpace_ulift_iff.2 ‹_›
 
 theorem completeSpace_extension {m : β → α} (hm : UniformInducing m) (dense : DenseRange m)
     (h : ∀ f : Filter β, Cauchy f → ∃ x : α, map m f ≤ 𝓝 x) : CompleteSpace α :=

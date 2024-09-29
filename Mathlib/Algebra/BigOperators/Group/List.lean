@@ -189,21 +189,14 @@ theorem prod_isUnit_iff {α : Type*} [CommMonoid α] {L : List α} :
     exact fun m' h' ↦ Or.elim (eq_or_mem_of_mem_cons h') (fun H => H.substr h.1) fun H => ih h.2 _ H
 
 @[to_additive (attr := simp)]
-theorem prod_take_mul_prod_drop : ∀ (L : List M) (i : ℕ), (L.take i).prod * (L.drop i).prod = L.prod
-  | [], i => by simp [Nat.zero_le]
-  | L, 0 => by simp
-  | h :: t, n + 1 => by
-    dsimp
-    rw [prod_cons, prod_cons, mul_assoc, prod_take_mul_prod_drop t]
+theorem prod_take_mul_prod_drop (L : List M) (i : ℕ) :
+    (L.take i).prod * (L.drop i).prod = L.prod := by
+  simp [← prod_append]
 
 @[to_additive (attr := simp)]
-theorem prod_take_succ :
-    ∀ (L : List M) (i : ℕ) (p : i < L.length), (L.take (i + 1)).prod = (L.take i).prod * L[i]
-  | [], i, p => by cases p
-  | h :: t, 0, _ => rfl
-  | h :: t, n + 1, p => by
-    dsimp
-    rw [prod_cons, prod_cons, prod_take_succ t n (Nat.lt_of_succ_lt_succ p), mul_assoc]
+theorem prod_take_succ (L : List M) (i : ℕ) (p : i < L.length) :
+    (L.take (i + 1)).prod = (L.take i).prod * L[i] := by
+  simp [take_succ, p]
 
 /-- A list with product not one must have positive length. -/
 @[to_additive "A list with sum not zero must have positive length."]
@@ -273,9 +266,9 @@ last. -/
 @[to_additive
 "A variant of `sum_range_succ` which pulls off the first term in the sum rather than the last."]
 lemma prod_range_succ' (f : ℕ → M) (n : ℕ) :
-    ((range n.succ).map f).prod = f 0 * ((range n).map fun i ↦ f i.succ).prod :=
-  Nat.recOn n (show 1 * f 0 = f 0 * 1 by rw [one_mul, mul_one]) fun _ hd => by
-    rw [List.prod_range_succ, hd, mul_assoc, ← List.prod_range_succ]
+    ((range n.succ).map f).prod = f 0 * ((range n).map fun i ↦ f i.succ).prod := by
+  rw [range_succ_eq_map]
+  simp [Function.comp_def]
 
 @[to_additive] lemma prod_eq_one (hl : ∀ x ∈ l, x = 1) : l.prod = 1 := by
   induction l with
