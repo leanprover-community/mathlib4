@@ -847,7 +847,7 @@ theorem le_graph_of_le {f g : E →ₗ.[R] F} (h : f ≤ g) : f.graph ≤ g.grap
   rw [mem_graph_iff] at hx ⊢
   cases' hx with y hx
   use ⟨y, h.1 y.2⟩
-  simp only [hx, Submodule.coe_mk, eq_self_iff_true, true_and_iff]
+  simp only [hx, Submodule.coe_mk, eq_self_iff_true, true_and]
   convert hx.2 using 1
   refine (h.2 ?_).symm
   simp only [hx.1, Submodule.coe_mk]

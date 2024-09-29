@@ -299,7 +299,7 @@ theorem measure_preimage_lt_top_of_memℒp (hp_pos : p ≠ 0) (hp_ne_top : p ≠
   · suffices h_empty : f ⁻¹' {y} = ∅ by
       rw [h_empty, measure_empty]; exact ENNReal.coe_lt_top
     ext1 x
-    rw [Set.mem_preimage, Set.mem_singleton_iff, mem_empty_iff_false, iff_false_iff]
+    rw [Set.mem_preimage, Set.mem_singleton_iff, mem_empty_iff_false, iff_false]
     refine fun hxy => hyf ?_
     rw [mem_range, Set.mem_range]
     exact ⟨x, hxy⟩
@@ -703,13 +703,13 @@ protected theorem denseEmbedding (hp_ne_top : p ≠ ∞) :
   convert SimpleFunc.tendsto_approxOn_range_Lp hp_ne_top (Lp.stronglyMeasurable f).measurable hfi'
   rw [toLp_coeFn f (Lp.memℒp f)]
 
-protected theorem denseInducing (hp_ne_top : p ≠ ∞) :
-    DenseInducing ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
-  (simpleFunc.denseEmbedding hp_ne_top).toDenseInducing
+protected theorem isDenseInducing (hp_ne_top : p ≠ ∞) :
+    IsDenseInducing ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
+  (simpleFunc.denseEmbedding hp_ne_top).toIsDenseInducing
 
 protected theorem denseRange (hp_ne_top : p ≠ ∞) :
     DenseRange ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
-  (simpleFunc.denseInducing hp_ne_top).dense
+  (simpleFunc.isDenseInducing hp_ne_top).dense
 
 protected theorem dense (hp_ne_top : p ≠ ∞) : Dense (Lp.simpleFunc E p μ : Set (Lp E p μ)) := by
   simpa only [denseRange_subtype_val] using simpleFunc.denseRange (E := E) (μ := μ) hp_ne_top
@@ -773,7 +773,7 @@ theorem denseRange_coeSimpleFuncNonnegToLpNonneg [hp : Fact (1 ≤ p)] (hp_ne_to
   rw [mem_closure_iff_seq_limit]
   have hg_memℒp : Memℒp (g : α → G) p μ := Lp.memℒp (g : Lp G p μ)
   have zero_mem : (0 : G) ∈ (range (g : α → G) ∪ {0} : Set G) ∩ { y | 0 ≤ y } := by
-    simp only [union_singleton, mem_inter_iff, mem_insert_iff, eq_self_iff_true, true_or_iff,
+    simp only [union_singleton, mem_inter_iff, mem_insert_iff, eq_self_iff_true, true_or,
       mem_setOf_eq, le_refl, and_self_iff]
   have : SeparableSpace ((range (g : α → G) ∪ {0}) ∩ { y | 0 ≤ y } : Set G) := by
     apply IsSeparable.separableSpace

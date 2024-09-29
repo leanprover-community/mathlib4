@@ -855,6 +855,10 @@ instance instTopologicalSpace (N : Subgroup G) : TopologicalSpace (G ⧸ N) :=
   instTopologicalSpaceQuotient
 
 @[to_additive]
+instance [CompactSpace G] (N : Subgroup G) : CompactSpace (G ⧸ N) :=
+  Quotient.compactSpace
+
+@[to_additive]
 theorem quotientMap_mk (N : Subgroup G) : QuotientMap (mk : G → G ⧸ N) :=
   quotientMap_quot_mk
 

@@ -3,7 +3,6 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 import Mathlib.RingTheory.Localization.Integral
 
 /-!
@@ -275,3 +274,10 @@ theorem isIntegrallyClosedOfFiniteExtension [IsDomain R] [FiniteDimensional K L]
   (integralClosure_eq_bot_iff L).mp integralClosure_idem
 
 end integralClosure
+
+/-- Any field is integral closed. -/
+/- Although `infer_instance` can find this if you import Mathlib, in this file they have not been
+  proven yet. However, it is used to prove a fundamental property of `IsIntegrallyClosed`,
+  and it is not desirable to involve more content from other files. -/
+instance Field.instIsIntegrallyClosed (K : Type*) [Field K] : IsIntegrallyClosed K :=
+  (isIntegrallyClosed_iff K).mpr fun {x} _ ↦ ⟨x, rfl⟩

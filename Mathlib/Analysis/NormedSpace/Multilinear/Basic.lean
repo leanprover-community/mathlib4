@@ -189,7 +189,6 @@ theorem norm_image_sub_le_of_bound' [DecidableEq ι] {C : ℝ} (hC : 0 ≤ C)
       rw [B, A, ← f.map_sub]
       apply le_trans (H _)
       gcongr with j
-      · exact fun j _ => norm_nonneg _
       by_cases h : j = i
       · rw [h]
         simp
@@ -764,6 +763,12 @@ theorem norm_mkPiAlgebraFin_zero : ‖ContinuousMultilinearMap.mkPiAlgebraFin �
   · convert ratio_le_opNorm (ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 0 A) fun _ => (1 : A)
     simp
 
+theorem norm_mkPiAlgebraFin_le :
+    ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n A‖ ≤ max 1 ‖(1 : A)‖ := by
+  cases n
+  · exact norm_mkPiAlgebraFin_zero.le.trans (le_max_right _ _)
+  · exact (norm_mkPiAlgebraFin_le_of_pos (Nat.zero_lt_succ _)).trans (le_max_left _ _)
+
 @[simp]
 theorem norm_mkPiAlgebraFin [NormOneClass A] :
     ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n A‖ = 1 := by
@@ -1241,7 +1246,6 @@ lemma norm_iteratedFDerivComponent_le {α : Type*} [Fintype α]
   _ ≤ ‖f‖ * ∏ _i : {a : ι // a ∉ s}, ‖x‖ := by
       gcongr
       · exact MultilinearMap.mkContinuousMultilinear_norm_le _ (norm_nonneg _) _
-      · exact fun _ _ ↦ norm_nonneg _
       · exact norm_le_pi_norm _ _
   _ = ‖f‖ * ‖x‖ ^ (Fintype.card {a : ι // a ∉ s}) := by rw [prod_const, card_univ]
   _ = ‖f‖ * ‖x‖ ^ (Fintype.card ι - Fintype.card α) := by simp [Fintype.card_congr e]
