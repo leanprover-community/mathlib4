@@ -137,16 +137,6 @@ First, we can prove that if two symmetric operators commute then their product i
 operator. That should certainly be a lemma.
 -/
 
-example (hS : S.IsSymmetric) (hT : T.IsSymmetric) (hST : Commute S T) : (S * T).IsSymmetric := by
-  refine fun x y ↦ ?_
-  simp only [mul_apply]
-  --maybe first do this with calc block and then see what can be done.
-  --rw [IsSymmetric]
-  --this is a mess, actually. One notices at this point that there is a lemma about
-  --selfadjoint things that will do the job very easily.
-  --so the efficient way to provide the theorem below is indeed to convert over to
-  --selfadjointness and then prove it that way.
-
 example (hT : T.IsSymmetric) {n : ℕ} : (T ^ n).IsSymmetric := by
   rw [LinearMap.isSymmetric_iff_isSelfAdjoint] at *
   exact hT.pow n
@@ -154,7 +144,7 @@ example (hT : T.IsSymmetric) {n : ℕ} : (T ^ n).IsSymmetric := by
 --term mode version
 
 example (hT : T.IsSymmetric) {n : ℕ} : (T ^ n).IsSymmetric :=
-  (isSymmetric_iff_isSelfAdjoint _).mpr <| (isSymmetric_iff_isSelfAdjoint _).mp hT |>.pow _
+   (isSymmetric_iff_isSelfAdjoint _).mpr <| (isSymmetric_iff_isSelfAdjoint _).mp hT |>.pow _
 
 /-It seems to be a good idea to try to do this by the method of induction employed by Jireh below.
 To see what is going on, note that the base case should be `LinearMap.IsSymmetric T^0`. We seem to
@@ -196,7 +186,34 @@ to `▸` `id.isSymmetric` into `1.isSymmetric`.
 /-
 Now all that is left is the inductive step. To this end, we first need to be able to split
 `T ^ (k + 1) = T * T ^ k` somehow, and then invoke the products of symmetric ops are symmetric.
+
+Here is the `IsSelfAdjoint` version of the .pow lemma:
+
+@[aesop safe apply]
+theorem pow {x : R} (hx : IsSelfAdjoint x) (n : ℕ) : IsSelfAdjoint (x ^ n) := by
+  simp only [isSelfAdjoint_iff, star_pow, hx.star_eq]
+
+This might be reproducible in our setting. Alas it is not. It uses `star A = A`.
+We will need some calculation simplifications for this.
 -/
+
+variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+   {S T : E →ₗ[𝕜] E}
+
+lemma comm_mul (hS : S.IsSymmetric) (hT : T.IsSymmetric) (hST : Commute S T) :
+    (S * T).IsSymmetric := by
+  refine fun x y ↦ ?_
+  nth_rw 1 [hST]
+  simp only [mul_apply]
+  rw [← hS x (T y), hT]
+
+lemma pow (hT : T.IsSymmetric) (n : ℕ) : (T ^ n).IsSymmetric := by
+  refine Nat.le_induction (pow_zero T ▸ one_eq_id (R := 𝕜) (M := E) ▸ isSymmetric_id)
+    (fun k _ ih ↦ ?_) n (Nat.zero_le _)
+  rw [iterate_succ, ← mul_eq_comp]
+  exact comm_mul ih hT <| _root_.id <| Commute.symm <| Commute.pow_right rfl k
+
+variable [FiniteDimensional 𝕜 E]
 
 
 example (hT : T.IsSymmetric) {n : ℕ} {μ : 𝕜} (hn : 1 ≤ n) :
@@ -224,16 +241,72 @@ It seems to me that the point here is that some sup and inf versions of things a
 for generalized eigenspaces already.
 Particularly:
 `DirectSum.isInternal_submodule_iff_independent_and_iSup_eq_top`
+So probably want to use `DirectSum.IsInternal.submodule_iSup_eq_top`.
+
+Note that Oliver has a Lie Theoretic version ready that is more general than for commuting things.
+It may be good to just hitch our result to that one, which will require proving
+some independence. I'm not sure what that will do for the understandability of the code,
+but if the goal is to be able to build up the library, then stacking things on top of general
+results is probably most efficient. Talk to Jireh about the relative benefit of such dependencies.
+
+
 -/
 
 lemma iSup_iInf_maxGenEigenspace_eq_top_of_commute {ι K V : Type*}
-    [Field K] [AddCommGroup V] [Module K V] [FiniteDimensional K V]
+    [Fintype ι] [Field K] [DecidableEq K] [AddCommGroup V] [Module K V] [FiniteDimensional K V]
     (f : ι → End K V)
     (h : Pairwise fun i j ↦ Commute (f i) (f j))
     (h' : ∀ i, ⨆ μ, (f i).maxGenEigenspace μ = ⊤) :
     ⨆ χ : ι → K, ⨅ i, (f i).maxGenEigenspace (χ i) = ⊤ := by
-sorry
+/-
+So it seems to me that we could simplify this by using `DirectSum.IsInternal.submodule_iSup_eq_top`.
+The trouble is that this immediately throws the error that it cannot determine an instance
+of `DecidableEq ι → K`, and this persists even if I include an instance of `Fintype ι`.
+Is this result true even if `ι` isn't a Fintype? It turns out that the codomain needs
+to have a `DecidableEq` instance in order for the arrow type to have such an instance.
 
+Maybe the following isn't such a good idea
+
+apply DirectSum.IsInternal.submodule_iSup_eq_top
+
+since afterward we have
+
+rw [DirectSum.isInternal_submodule_iff_independent_and_iSup_eq_top]
+
+splits this into one of two goals, one of which is to get the iSup statement we would
+have converted *from* and the other an independence statement. So this is strange.
+The `DirectSum.IsInternal.submodule_iSup_eq_top` gets the weaker statement from the
+DirectSum.IsInternal.
+
+We want to do the opposite...show that the entire system is spanned by the iSup, and then
+show independence of the family. This is the usual trivial intersection and spanning
+theorem we do with undergraduates for pairs of subspaces.
+
+Oliver was probably able to do this very part more generally, since he told us
+that the only thing left would be independence.
+
+Looking at the local context, this ought to be easy. What does `h'` say? For a given operator in the
+commuting tuple, the maximal gen eigenspaces of that operator span the space.
+
+So if we take an arbitrary vector in the space, there is a function χ from ι into 𝕜 that
+will locate that vector in all of the respective gen eigenspaces of these.
+
+On paper, one would just start with `v` and then an arbitrary `i` and locate the `v` in
+an appropriate eigenspace. Then one would define the `χ` retroactively.
+
+This makes me wonder why `Fintype` is even needed? We should be able to build the function
+retroactively...by some sort of transfinite induction... (this would require
+handling limit ordinals as well as successor ordinals). For now, the invariance
+at prior levels will allow for induction to work. This then involved defining the
+new function at the next level...which was annoying if I remember correctly.
+
+Is there a glib way to do this? I think the Fintype induction will be needed...
+
+-/
+
+
+
+sorry
 end Oliver
 
 end IsSymmetric
