@@ -379,7 +379,7 @@ theorem minpoly_sub_one_eq_cyclotomic_comp [Algebra K A] [IsDomain A] {ζ : A}
     minpoly K (ζ - 1) = (cyclotomic n K).comp (X + 1) := by
   haveI := IsCyclotomicExtension.neZero' n K A
   rw [show ζ - 1 = ζ + algebraMap K A (-1) by simp [sub_eq_add_neg],
-    minpoly.add_algebraMap ((integral {n} K A).isIntegral ζ),
+    minpoly.add_algebraMap ζ,
     hζ.minpoly_eq_cyclotomic_of_irreducible h]
   simp
 
