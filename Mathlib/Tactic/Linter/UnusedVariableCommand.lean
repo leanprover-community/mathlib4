@@ -45,26 +45,20 @@ def includedVariables (plumb : Bool) : TermElabM (Array (Name × Name × Expr)) 
   let fvs := c.sectionFVars
   let mut varIds := #[]
   let lctx ← getLCtx
-  --dbg_trace "fvs: {fvs.toList}"
   for (a, b) in fvs do
-    --dbg_trace "{(lctx.findFVar? b).isSome}: {a} --> {b}?"
     let ref ← getRef
     if (lctx.findFVar? b).isNone then
       usedVarsRef.modify fun (used, varsDict) =>
         (used, if varsDict.contains a then
           varsDict
         else
-          --let rg := ref.getRange?.getD default
-          --dbg_trace "ext {(rg.start, rg.stop)} with '{a.eraseMacroScopes.toString}' from {a}"
           varsDict.insert a (.ofRange (ref.getRange?.getD default)))
     if (lctx.findFVar? b).isSome then
       let mut fd := .anonymous
       for (x, y) in c.sectionVars do
-        --dbg_trace "going over {x}"
         if y == a then fd := x
       varIds := varIds.push (a, fd, b)
       if plumb then
-        --dbg_trace "inserting {a}"
         usedVarsRef.modify fun (used, varsDict) => (used.insert a, varsDict)
   return varIds
 
