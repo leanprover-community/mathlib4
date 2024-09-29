@@ -35,7 +35,9 @@ universe u
 
 namespace RelativeCWComplex
 
-/-- The inclusion map from the `n`-sphere to the `(n + 1)`-disk -/
+/-- The inclusion map from the `n`-sphere to the `(n + 1)`-disk. (For `n = -1`, this
+involves the empty space `𝕊 (-1)`. This is the reason why `sphere` takes `n : ℤ` as
+an input rather than `n : ℕ`.) -/
 def sphereInclusion (n : ℤ) : 𝕊 n ⟶ 𝔻 (n + 1) where
   toFun := fun ⟨p, hp⟩ ↦ ⟨p, le_of_eq hp⟩
   continuous_toFun := ⟨fun t ⟨s, ⟨r, hro, hrs⟩, hst⟩ ↦ by
