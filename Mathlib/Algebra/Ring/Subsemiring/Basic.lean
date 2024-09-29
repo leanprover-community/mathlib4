@@ -791,7 +791,7 @@ theorem mem_closure_iff_exists_list {R} [Semiring R] {s : Set R} {x} :
           ⟨[t], List.forall_mem_singleton.2 ht1, by
             rw [List.map_singleton, List.sum_singleton, ht2]⟩
         Submonoid.closure_induction hx
-          (fun x hx => ⟨[x], List.forall_mem_singleton.2 hx, one_mul x⟩)
+          (fun x hx => ⟨[x], List.forall_mem_singleton.2 hx, List.prod_singleton⟩)
           ⟨[], List.forall_mem_nil _, rfl⟩ fun x y ⟨t, ht1, ht2⟩ ⟨u, hu1, hu2⟩ =>
           ⟨t ++ u, List.forall_mem_append.2 ⟨ht1, hu1⟩, by rw [List.prod_append, ht2, hu2]⟩)
       ⟨[], List.forall_mem_nil _, rfl⟩ fun x y ⟨L, HL1, HL2⟩ ⟨M, HM1, HM2⟩ =>
