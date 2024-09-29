@@ -113,7 +113,7 @@ theorem copy_eq (f : C(X, Y)) (f' : X → Y) (h : f' = f) : f.copy f' h = f :=
 
 variable {f g : C(X, Y)}
 
-@[deprecated map_continuous (since := "2024-09-29")]
+/-- Deprecated. Use `map_continuous` instead. -/
 protected theorem continuous (f : C(X, Y)) : Continuous f :=
   f.continuous_toFun
 
