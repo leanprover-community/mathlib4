@@ -292,6 +292,9 @@ theorem UniformInducing.isComplete_range [CompleteSpace α] {f : α → β} (hf 
     IsComplete (range f) :=
   (completeSpace_iff_isComplete_range hf).1 ‹_›
 
+/-- If `f` is a surjective uniform inducing map,
+then its domain is a complete space iff its codomain is a complete space.
+See also `_root_.completeSpace_congr` for a version that assumes `f` to be an equivalence. -/
 theorem UniformInducing.completeSpace_congr {f : α → β} (hf : UniformInducing f)
     (hsurj : f.Surjective) : CompleteSpace α ↔ CompleteSpace β := by
   rw [completeSpace_iff_isComplete_range hf, hsurj.range_eq, completeSpace_iff_isComplete_univ]
@@ -304,6 +307,8 @@ instance SeparationQuotient.instCompleteSpace [CompleteSpace α] :
     CompleteSpace (SeparationQuotient α) :=
   completeSpace_iff.2 ‹_›
 
+/-- See also `UniformInducing.completeSpace_congr`
+for a version that works for non-injective maps. -/
 theorem completeSpace_congr {e : α ≃ β} (he : UniformEmbedding e) :
     CompleteSpace α ↔ CompleteSpace β :=
   he.completeSpace_congr e.surjective
