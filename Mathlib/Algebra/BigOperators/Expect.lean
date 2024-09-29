@@ -416,7 +416,7 @@ end AddCommMonoid
 section Semiring
 variable [Semiring M] [Module ℚ≥0 M]
 
-@[simp] lemma expect_one [Nonempty ι] : 𝔼 _i : ι, (1 : M) = 1 := expect_const _
+lemma expect_one [Nonempty ι] : 𝔼 _i : ι, (1 : M) = 1 := expect_const _
 
 end Semiring
 end Fintype
