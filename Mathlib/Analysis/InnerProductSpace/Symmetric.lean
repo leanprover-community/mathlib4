@@ -102,10 +102,6 @@ theorem isSymmetric.smul {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) {c : 𝕜} 
   simp only [smul_apply, inner_smul_left, hc, hT x y, inner_smul_right]
 
 @[aesop safe apply]
-theorem IsSymmetric.smul {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) {c : ℝ} :
-    (RCLike.ofReal (K := 𝕜) c) • T |>.IsSymmetric := by aesop
-
-@[aesop safe apply]
 lemma isSymmetric.mul_of_comm {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric)
     (hST : Commute S T) : (S * T).IsSymmetric := by
   refine fun x y ↦ ?_
