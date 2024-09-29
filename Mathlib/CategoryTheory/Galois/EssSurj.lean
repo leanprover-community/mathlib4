@@ -14,7 +14,7 @@ import Mathlib.Topology.Algebra.OpenSubgroup
 Let `F : C ⥤ FintypeCat` be a fiber functor of a Galois category `C` and denote by
 `H` the induced functor `C ⥤ Action FintypeCat (Aut F)`.
 
-In this file we show that the essential image of `H` are the finite `Aut F`-sets where
+In this file we show that the essential image of `H` consists of the finite `Aut F`-sets where
 the `Aut F` action is continuous.
 
 ## Main results
@@ -113,7 +113,7 @@ variable (V : OpenSubgroup (Aut F)) {U : OpenSubgroup (Aut F)}
 
 ### Strategy outline
 
-Let `A` be object of `C` with fiber `Aut F`-isomorphic to `Aut F ⧸ U` for an open normal
+Let `A` be an object of `C` with fiber `Aut F`-isomorphic to `Aut F ⧸ U` for an open normal
 subgroup `U`. Then for any open subgroup `V` of `Aut F`, `V ⧸ (U ⊓ V)` acts on `A`. This
 induces the diagram `quotientDiag`. Now assume `U ≤ V`. Then we can also postcompose
 the diagram `quotientDiag` with `F`. The goal of this section is to compute that the colimit
@@ -247,6 +247,7 @@ lemma exists_lift_of_quotient_openSubgroup (V : OpenSubgroup (Aut F)) :
 If `X` is a finite, discrete `Aut F`-set with continuous `Aut F`-action, then
 there exists `A : C` such that `F.obj A ≅ X` as `Aut F`-sets.
 -/
+@[stacks 0BN4 "Essential surjectivity part"]
 theorem exists_lift_of_continuous (X : Action FintypeCat (MonCat.of (Aut F)))
     [TopologicalSpace X.V] [DiscreteTopology X.V] [ContinuousSMul (Aut F) X.V] :
     ∃ A, Nonempty ((functorToAction F).obj A ≅ X) := by
