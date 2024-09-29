@@ -1100,13 +1100,17 @@ theorem Surjective.range_comp {ι' : Sort*} {f : ι → ι'} (hf : Surjective f)
     range (g ∘ f) = range g :=
   ext fun y => (@Surjective.exists _ _ _ hf fun x => g x = y).symm
 
-theorem Injective.mem_range_iff_exists_unique (hf : Injective f) {b : β} :
+theorem Injective.mem_range_iff_existsUnique (hf : Injective f) {b : β} :
     b ∈ range f ↔ ∃! a, f a = b :=
   ⟨fun ⟨a, h⟩ => ⟨a, h, fun _ ha => hf (ha.trans h.symm)⟩, ExistsUnique.exists⟩
 
-theorem Injective.exists_unique_of_mem_range (hf : Injective f) {b : β} (hb : b ∈ range f) :
-    ∃! a, f a = b :=
-  hf.mem_range_iff_exists_unique.mp hb
+alias ⟨Injective.existsUnique_of_mem_range, _⟩ := Injective.mem_range_iff_existsUnique
+
+@[deprecated (since := "2024-09-25")]
+alias Injective.mem_range_iff_exists_unique := Injective.mem_range_iff_existsUnique
+
+@[deprecated (since := "2024-09-25")]
+alias Injective.exists_unique_of_mem_range := Injective.existsUnique_of_mem_range
 
 theorem Injective.compl_image_eq (hf : Injective f) (s : Set α) :
     (f '' s)ᶜ = f '' sᶜ ∪ (range f)ᶜ := by

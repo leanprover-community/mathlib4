@@ -348,7 +348,7 @@ theorem List.norm_prod_le' : ∀ {l : List α}, l ≠ [] → ‖l.prod‖ ≤ (l
   | [], h => (h rfl).elim
   | [a], _ => by simp
   | a::b::l, _ => by
-    rw [List.map_cons, List.prod_cons, @List.prod_cons _ _ _ ‖a‖]
+    rw [List.map_cons, List.prod_cons, List.prod_cons (a := ‖a‖)]
     refine le_trans (norm_mul_le _ _) (mul_le_mul_of_nonneg_left ?_ (norm_nonneg _))
     exact List.norm_prod_le' (List.cons_ne_nil b l)
 
