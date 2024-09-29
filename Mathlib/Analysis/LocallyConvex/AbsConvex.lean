@@ -67,7 +67,7 @@ variable (𝕜)
 def absConvexHull : ClosureOperator (Set E) :=
   .ofCompletePred (AbsConvex 𝕜) fun _ ↦ absConvex_sInter
 
-variable (s : Set E)
+variable {𝕜} {s : Set E}
 
 theorem subset_absConvexHull : s ⊆ absConvexHull 𝕜 s :=
   (absConvexHull 𝕜).le_closure s
@@ -76,16 +76,16 @@ theorem absConvex_absConvexHull : AbsConvex 𝕜 (absConvexHull 𝕜 s) :=
   (absConvexHull 𝕜).isClosed_closure s
 
 theorem balanced_absConvexHull : Balanced 𝕜 (absConvexHull 𝕜 s) :=
-  (absConvex_absConvexHull 𝕜 s).1
+  absConvex_absConvexHull.1
 
 theorem convex_absConvexHull : Convex ℝ (absConvexHull 𝕜 s) :=
-  (absConvex_absConvexHull 𝕜 s).2
+  absConvex_absConvexHull.2
 
 theorem absConvexHull_eq_iInter :
     absConvexHull 𝕜 s = ⋂ (t : Set E) (_ : s ⊆ t) (_ : AbsConvex 𝕜 t), t := by
   simp [absConvexHull, iInter_subtype, iInter_and]
 
-variable {𝕜 s} {t : Set E} {x y : E}
+variable {t : Set E} {x y : E}
 
 theorem mem_absConvexHull_iff : x ∈ absConvexHull 𝕜 s ↔ ∀ t, s ⊆ t → AbsConvex 𝕜 t → x ∈ t := by
   simp_rw [absConvexHull_eq_iInter, mem_iInter]
@@ -118,7 +118,7 @@ theorem absConvexHull_eq_empty : absConvexHull 𝕜 s = ∅ ↔ s = ∅ := by
   constructor
   · intro h
     rw [← Set.subset_empty_iff, ← h]
-    exact subset_absConvexHull 𝕜 _
+    exact subset_absConvexHull
   · rintro rfl
     exact absConvexHull_empty
 
@@ -170,24 +170,23 @@ variable [AddCommGroup E] [Module ℝ E] [Module 𝕜 E]
 
 theorem absConvexHull_add_subset {s t : Set E} :
     absConvexHull 𝕜 (s + t) ⊆ absConvexHull 𝕜 s + absConvexHull 𝕜 t :=
-  absConvexHull_min (add_subset_add (subset_absConvexHull 𝕜 s) (subset_absConvexHull 𝕜 t))
-    ⟨Balanced.add (balanced_absConvexHull 𝕜 s) (balanced_absConvexHull 𝕜 t),
-      Convex.add (convex_absConvexHull 𝕜 s) (convex_absConvexHull 𝕜 t)⟩
+  absConvexHull_min (add_subset_add subset_absConvexHull subset_absConvexHull)
+    ⟨Balanced.add balanced_absConvexHull balanced_absConvexHull,
+      Convex.add convex_absConvexHull convex_absConvexHull⟩
 
 theorem absConvexHull_eq_convexHull_balancedHull [SMulCommClass ℝ 𝕜 E] {s : Set E} :
     absConvexHull 𝕜 s = convexHull ℝ (balancedHull 𝕜 s) := le_antisymm
   (absConvexHull_min
     ((subset_convexHull ℝ s).trans (convexHull_mono (subset_balancedHull 𝕜)))
       ⟨Balanced.convexHull (balancedHull.balanced s), convex_convexHull ..⟩)
-  (convexHull_min
-    ((balanced_absConvexHull 𝕜 s).balancedHull_subset_of_subset (subset_absConvexHull 𝕜 s))
-      (convex_absConvexHull 𝕜 s))
+  (convexHull_min (balanced_absConvexHull.balancedHull_subset_of_subset subset_absConvexHull)
+      convex_absConvexHull)
 
 /-- In general, equality doesn't hold here - e.g. consider `s := {(-1, 1), (1, 1)}` in `ℝ²`. -/
 theorem balancedHull_convexHull_subseteq_absConvexHull {s : Set E} :
     balancedHull 𝕜 (convexHull ℝ s) ⊆ absConvexHull 𝕜 s :=
-  (balanced_absConvexHull 𝕜 s).balancedHull_subset_of_subset
-    (convexHull_min (subset_absConvexHull 𝕜 s) (convex_absConvexHull 𝕜 s))
+  balanced_absConvexHull.balancedHull_subset_of_subset
+    (convexHull_min subset_absConvexHull convex_absConvexHull)
 
 end
 
