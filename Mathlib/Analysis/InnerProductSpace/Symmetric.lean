@@ -85,6 +85,19 @@ theorem IsSymmetric.add {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.Is
   rw [LinearMap.add_apply, inner_add_left, hT x y, hS x y, ← inner_add_right]
   rfl
 
+lemma IsSymmetric.mul_of_comm {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric)
+    (hST : Commute S T) : (S * T).IsSymmetric := by
+  refine fun x y ↦ ?_
+  nth_rw 1 [hST]
+  simp only [mul_apply]
+  rw [← hS, hT]
+
+lemma IsSymmetric.pow {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (n : ℕ) : (T ^ n).IsSymmetric := by
+  refine Nat.le_induction (pow_zero T ▸ one_eq_id (R := 𝕜) (M := E) ▸ isSymmetric_id)
+    (fun k _ ih ↦ ?_) n (Nat.zero_le _)
+  rw [iterate_succ, ← mul_eq_comp]
+  exact IsSymmetric.mul_of_comm hT ih <| _root_.id <| Commute.symm <| Commute.pow_right rfl _
+
 /-- For a symmetric operator `T`, the function `fun x ↦ ⟪T x, x⟫` is real-valued. -/
 @[simp]
 theorem IsSymmetric.coe_reApplyInnerSelf_apply {T : E →L[𝕜] E} (hT : IsSymmetric (T : E →ₗ[𝕜] E))
