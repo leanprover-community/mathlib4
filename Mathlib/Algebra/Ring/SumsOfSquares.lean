@@ -3,10 +3,9 @@ Copyright (c) 2024 Florent Schaffhauser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Florent Schaffhauser
 -/
-import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Group.Submonoid.Basic
-import Mathlib.Algebra.Group.Even
-import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
 # Sums of squares
@@ -61,6 +60,15 @@ theorem IsSumSq.add [AddMonoid R] {S1 S2 : R} (p1 : IsSumSq S1)
 
 @[deprecated (since := "2024-08-09")] alias isSumSq.add := IsSumSq.add
 
+/-- A finite sum of squares is a sum of squares. -/
+theorem isSumSq_sum_mul_self {ι : Type*} [AddCommMonoid R] (s : Finset ι) (f : ι → R) :
+    IsSumSq (∑ i ∈ s, f i * f i) := by
+  induction s using Finset.cons_induction with
+  | empty =>
+    simpa only [Finset.sum_empty] using IsSumSq.zero
+  | cons i s his h =>
+    exact (Finset.sum_cons (β := R) his) ▸ IsSumSq.sq_add (f i) (∑ i ∈ s, f i * f i) h
+
 variable (R) in
 /--
 In an additive monoid with multiplication `R`, the type `sumSqIn R` is the submonoid of sums of
@@ -109,3 +117,16 @@ theorem IsSumSq.nonneg {R : Type*} [LinearOrderedSemiring R] [ExistsAddOfLE R] {
   | sq_add x S _ ih  => apply add_nonneg ?_ ih; simp only [← pow_two x, sq_nonneg]
 
 @[deprecated (since := "2024-08-09")] alias isSumSq.nonneg := IsSumSq.nonneg
+
+theorem sum_mul_self_eq_zero_iff {ι : Type*} {R} [LinearOrderedCommRing R] (s : Finset ι)
+    (f : ι → R) : ∑ i ∈ s, f i * f i = 0 ↔ ∀ i ∈ s, f i = 0 := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons i s his h =>
+    simp only [Finset.sum_cons, Finset.mem_cons, forall_eq_or_imp]
+    refine ⟨fun hc => ?_, fun hz => by simpa [hz.1] using h.mpr hz.2⟩
+    have hhi : f i * f i ≤ 0 := by
+      rw [← hc, le_add_iff_nonneg_right]
+      exact Finset.sum_nonneg fun i _ ↦ mul_self_nonneg (f i)
+    have hiz : f i * f i = 0 := (eq_of_le_of_le (mul_self_nonneg (f i)) hhi).symm
+    exact ⟨zero_eq_mul_self.mp hiz.symm, h.mp (by rw [← hc, hiz, zero_add])⟩

@@ -3,7 +3,7 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.RootSystem.Finite.Polarization
+import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 
 
 /-!
@@ -120,9 +120,9 @@ theorem polarization_injective : InjOn P.Polarization (span R (range P.root)) :=
 -/
 
 -- this is a copy just for imports
-lemma prod_canonicalBilinear_root_self_pos' :
-    0 < ∏ i, P.CanonicalBilinear (P.root i) (P.root i) :=
-  Finset.prod_pos fun i _ => canonicalBilinear_root_self_pos P i
+lemma prod_rootForm_root_self_pos_copy :
+    0 < ∏ i, P.RootForm (P.root i) (P.root i) :=
+  Finset.prod_pos fun i _ => rootForm_root_self_pos P i
 
 
 -- Use four_smul_flip_polarization_polarization to get injectivity of Polarization.
