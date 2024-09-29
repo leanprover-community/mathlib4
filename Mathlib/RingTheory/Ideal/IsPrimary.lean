@@ -39,7 +39,7 @@ lemma isPrimary_iff' {I : Ideal R} :
     I.IsPrimary ↔ Submodule.IsPrimary I := by
   rw [isPrimary_iff, Submodule.isPrimary_iff]
   simp only [ne_eq, mem_radical_iff, smul_eq_mul, and_congr_right_iff,
-             ← Submodule.ideal_span_singleton_smul, smul_eq_mul, mul_top, span_singleton_le_iff_mem]
+    ← Submodule.ideal_span_singleton_smul, smul_eq_mul, mul_top, span_singleton_le_iff_mem]
   intro
   constructor <;>
   · intro h r x hrx
