@@ -243,7 +243,7 @@ end Truncated
 
 section Truncation
 
-/-- The skeleton functor from simplicial objects to truncated simplicial objects. -/
+/-- The truncation functor from simplicial objects to truncated simplicial objects. -/
 def truncation (n : ℕ) : SimplicialObject C ⥤ SimplicialObject.Truncated C n :=
   (whiskeringLeft _ _ _).obj SimplexCategory.Truncated.inclusion.op
 
@@ -576,13 +576,13 @@ variable {C}
 
 end Truncated
 
-section Skeleton
+section Truncation
 
-/-- The skeleton functor from cosimplicial objects to truncated cosimplicial objects. -/
-def sk (n : ℕ) : CosimplicialObject C ⥤ CosimplicialObject.Truncated C n :=
+/-- The truncation functor from cosimplicial objects to truncated cosimplicial objects. -/
+def truncation (n : ℕ) : CosimplicialObject C ⥤ CosimplicialObject.Truncated C n :=
   (whiskeringLeft _ _ _).obj SimplexCategory.Truncated.inclusion
 
-end Skeleton
+end Truncation
 
 variable (C)
 

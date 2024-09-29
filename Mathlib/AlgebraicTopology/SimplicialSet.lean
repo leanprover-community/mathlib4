@@ -351,7 +351,7 @@ lemma Truncated.hom_ext {n : ℕ} {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n
 
 /-- The truncation functor on simplicial sets. -/
 def truncation (n : ℕ) : SSet ⥤ SSet.Truncated n :=
-  (whiskeringLeft _ _ _).obj (SimplexCategory.Δ.ι n).op
+  (whiskeringLeft _ _ _).obj SimplexCategory.Truncated.inclusion.op
 
 instance {n} : Inhabited (SSet.Truncated n) :=
   ⟨(truncation n).obj <| Δ[0]⟩
@@ -360,44 +360,48 @@ section adjunctions
 open SimplexCategory
 
 /-- The adjunction between the n-skeleton and n-truncation.-/
-noncomputable def skAdj (n) : lan (Δ.ι n).op ⊣ truncation.{u} n := lanAdjunction _ _
+noncomputable def skAdj (n : ℕ) : lan (Truncated.inclusion.op) ⊣ truncation.{u} n :=
+  lanAdjunction _ _
 
 /-- The adjunction between n-truncation and the n-coskeleton.-/
-noncomputable def coskAdj (n) : truncation.{u} n ⊣ ran (Δ.ι n).op := ranAdjunction _ _
+noncomputable def coskAdj (n : ℕ) : truncation.{u} n ⊣ ran Truncated.inclusion.op :=
+  ranAdjunction _ _
 
 instance coskeleton_reflective (n) : IsIso ((coskAdj n).counit) :=
-  reflective' (Δ.ι n).op
+  reflective' Truncated.inclusion.op
 
 instance skeleton_reflective (n) : IsIso ((skAdj n).unit) :=
-  coreflective' (Δ.ι n).op
+  coreflective' Truncated.inclusion.op
 
-/-- Since the inclusion Δ.ι n is fully faithful, so is right Kan extension along it.-/
+/-- Since `Truncated.inclusion` is fully faithful, so is right Kan extension along it.-/
 noncomputable def coskeleton.fullyFaithful (n) :
-    (ran (H := Type u) (Δ.ι n).op).FullyFaithful := by
+    (ran (H := Type u) (Truncated.inclusion (n := n)).op).FullyFaithful := by
   apply Adjunction.fullyFaithfulROfIsIsoCounit (coskAdj n)
 
-instance coskeleton.full (k) : (ran (H := Type u) (Δ.ι k).op).Full :=
-  FullyFaithful.full (coskeleton.fullyFaithful k)
+instance coskeleton.full (n) : (ran (H := Type u) (Truncated.inclusion (n := n)).op).Full :=
+  FullyFaithful.full (coskeleton.fullyFaithful _)
 
-instance coskeleton.faithful (k) : (ran (H := Type u) (Δ.ι k).op).Faithful :=
-  FullyFaithful.faithful (coskeleton.fullyFaithful k)
+instance coskeleton.faithful (n) : (ran (H := Type u) (Truncated.inclusion (n := n)).op).Faithful :=
+  FullyFaithful.faithful (coskeleton.fullyFaithful _)
 
-noncomputable instance coskAdj.reflective (k) : Reflective (ran (H := Type u) (Δ.ι k).op) :=
-  Reflective.mk (truncation k) (coskAdj k)
+noncomputable instance coskAdj.reflective (n) :
+    Reflective (ran (H := Type u) (Truncated.inclusion (n := n)).op) :=
+  Reflective.mk (truncation _) (coskAdj _)
 
-/-- Since the inclusion Δ.ι n is fully faithful, so is left Kan extension along it.-/
-noncomputable def skeleton.fullyFaithful (k) :
-    (lan (H := Type u) (Δ.ι k).op).FullyFaithful :=
-  Adjunction.fullyFaithfulLOfIsIsoUnit (skAdj k)
+/-- Since `Truncated.inclusion` is fully faithful,  so is left Kan extension along it.-/
+noncomputable def skeleton.fullyFaithful (n) :
+    (lan (H := Type u) (Truncated.inclusion (n := n)).op).FullyFaithful :=
+  Adjunction.fullyFaithfulLOfIsIsoUnit (skAdj _)
 
-instance skeleton.full (k) : (lan (H := Type u) (Δ.ι k).op).Full :=
-  FullyFaithful.full (skeleton.fullyFaithful k)
+instance skeleton.full (n) : (lan (H := Type u) (Truncated.inclusion (n := n)).op).Full :=
+  FullyFaithful.full (skeleton.fullyFaithful _)
 
-instance skeleton.faithful (k) : (lan (H := Type u) (Δ.ι k).op).Faithful :=
-  FullyFaithful.faithful (skeleton.fullyFaithful k)
+instance skeleton.faithful (n) : (lan (H := Type u) (Truncated.inclusion (n := n)).op).Faithful :=
+  FullyFaithful.faithful (skeleton.fullyFaithful _)
 
-noncomputable instance skAdj.coreflective (k) : Coreflective (lan (H := Type u) (Δ.ι k).op) :=
-  Coreflective.mk (truncation k) (skAdj k)
+noncomputable instance skAdj.coreflective (n) :
+    Coreflective (lan (H := Type u) (Truncated.inclusion (n := n)).op) :=
+  Coreflective.mk (truncation _) (skAdj _)
 
 end adjunctions
 
