@@ -339,7 +339,7 @@ lemma toAlgEquivAux_eq_liftNormal [IsGalois k K]
   rw [toAlgEquivAux_def g x L hx]
   exact (AlgEquiv.liftNormal_commutes (proj L g) _ ⟨x, hx⟩).symm
 
-protected lemma AlgEquiv.aut_inv (ϕ : L ≃ₐ[F] L) : ϕ⁻¹ = ϕ.symm := rfl
+protected lemma AlgEquiv.aut_inv (ϕ : K ≃ₐ[k] K) : ϕ⁻¹ = ϕ.symm := rfl
 
 /--Turn `toAlgEquivAux` into an algEquiv by using `proj_lift` repeatedly-/
 @[simps]
