@@ -181,10 +181,6 @@ open scoped Bundle Manifold
 
 section
 
-#check Bundle.smooth_zeroSection
-
-#check ChartedSpace.LiftPropWithinAt
-
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {H : Type*} [TopologicalSpace H] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     (I : ModelWithCorners 𝕜 E H)
@@ -210,6 +206,11 @@ lemma smooth_foobar :
   rw [foobar_eq_tangentMap_prod_tangentMap]
   exact smooth_fst.tangentMap.prod_mk smooth_snd.tangentMap
 
+lemma mapsTo_fst_prod {α β : Type*} {u : Set α} {v : Set β} : Set.MapsTo (Prod.fst) (u ×ˢ v) u :=
+  fun _ hx ↦ (Set.mem_prod.1 hx).1
+
+open scoped Topology
+
 lemma smooth_foobar_symm :
     Smooth (I.tangent.prod I'.tangent) (I.prod I').tangent (foobar I I' M M').symm := by
   simp only [Smooth, ContMDiff, Prod.forall]
@@ -217,39 +218,15 @@ lemma smooth_foobar_symm :
   rw [contMDiffAt_totalSpace]
   refine ⟨?_, ?_⟩
   · exact ContMDiffAt.prod_map (smoothAt_proj (TangentSpace I)) (smoothAt_proj (TangentSpace I'))
-
-  /-
-  let g : M' → M × M' := fun m ↦ (a.1, m)
-  have A' : Smooth I'.tangent (I.prod I').tangent (tangentMap I' (I.prod I') g) := by
-    apply Smooth.tangentMap
-    exact smooth_const.prod_mk smooth_id
-  have B' : tangentMap I' (I.prod I') g = fun p ↦ ⟨(a.1, p.1), (0, p.2)⟩ := by
-    ext p : 1
-    exact tangentMap_prod_right I I'
-  rw [B'] at A'
-  have C' := A' b
-  have Z' := ((contMDiffAt_totalSpace _ _).1 C').2
-  simp only [modelWithCornersSelf_prod, TangentBundle.trivializationAt_apply,
-    PartialHomeomorph.extend, prodChartedSpace_chartAt, PartialHomeomorph.prod_toPartialEquiv,
-    PartialEquiv.prod, PartialHomeomorph.toFun_eq_coe, PartialHomeomorph.coe_coe_symm,
-    modelWithCorners_prod_toPartialEquiv, ModelWithCorners.toPartialEquiv_coe,
-    ModelWithCorners.toPartialEquiv_coe_symm, ModelWithCorners.source_eq, Set.univ_prod_univ,
-    ModelWithCorners.target_eq, PartialEquiv.coe_trans, comp_def, PartialEquiv.coe_trans_symm,
-    PartialEquiv.coe_symm_mk, modelWithCorners_prod_coe, comp_apply] at Z'
-  -/
-
-
-
-
   simp only [foobar, Equiv.coe_fn_symm_mk, TangentBundle.trivializationAt_apply,
     PartialHomeomorph.extend, prodChartedSpace_chartAt, PartialHomeomorph.prod_toPartialEquiv,
     PartialEquiv.prod, PartialHomeomorph.toFun_eq_coe, PartialHomeomorph.coe_coe_symm,
     modelWithCorners_prod_toPartialEquiv, ModelWithCorners.toPartialEquiv_coe,
     ModelWithCorners.toPartialEquiv_coe_symm, ModelWithCorners.source_eq, Set.univ_prod_univ,
     ModelWithCorners.target_eq, PartialEquiv.coe_trans, comp_def, PartialEquiv.coe_trans_symm,
-    PartialEquiv.coe_symm_mk, modelWithCorners_prod_coe, comp_apply,]
+    PartialEquiv.coe_symm_mk, modelWithCorners_prod_coe, comp_apply]
   simp_rw [DifferentiableWithinAt.fderivWithin_prod sorry sorry sorry]
-  simp
+  simp only [ContinuousLinearMap.prod_apply]
   convert_to ContMDiffAt (I.tangent.prod I'.tangent) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) ⊤
     (fun (x : TangentBundle I M × TangentBundle I' M') ↦
     ((fderivWithin 𝕜 (fun x_1 ↦ I ((chartAt H a.proj) ((chartAt H x.1.proj).symm (I.symm x_1.1))))
@@ -278,9 +255,9 @@ lemma smooth_foobar_symm :
       ModelWithCorners.toPartialEquiv_coe_symm, ModelWithCorners.source_eq, Set.univ_prod_univ,
       ModelWithCorners.target_eq, PartialEquiv.coe_trans, comp_def, PartialEquiv.coe_trans_symm,
       PartialEquiv.coe_symm_mk, modelWithCorners_prod_coe, comp_apply] at Z
-    simp_rw [DifferentiableWithinAt.fderivWithin_prod sorry sorry sorry] at Z
-    simp at Z
-    have W : ContMDiff (𝓘(𝕜, E × E')) (𝓘(𝕜, E)) ⊤ (Prod.fst : E × E' → E) := sorry
+    have W : ContMDiff (𝓘(𝕜, E × E')) (𝓘(𝕜, E)) ⊤ (Prod.fst : E × E' → E) := by
+      rw [contMDiff_iff_contDiff]
+      exact contDiff_fst
     have U := ContMDiffAt.comp a W.contMDiffAt Z
     simp [Function.comp_def] at U
     clear Z
@@ -289,17 +266,55 @@ lemma smooth_foobar_symm :
     have U' := U.comp (a, b) this
     clear U
     simp [F, Function.comp_def] at U'
-    convert U' using 2 with p
+    apply U'.congr_of_eventuallyEq
+    filter_upwards [chart_source_mem_nhds (ModelProd (ModelProd H E) (ModelProd H' E')) (a, b)]
+      with p hp
     clear U' this F W C B A
+    simp only [prodChartedSpace_chartAt, PartialHomeomorph.prod_toPartialEquiv,
+      PartialEquiv.prod_source, Set.mem_prod, TangentBundle.mem_chart_source_iff] at hp
     let φ (x : E) := I ((chartAt H a.proj) ((chartAt H p.1.proj).symm (I.symm x)))
+    have D0 : DifferentiableWithinAt 𝕜 φ (Set.range I) (I ((chartAt H p.1.proj) p.1.proj)) := by
+      apply ContDiffWithinAt.differentiableWithinAt (n := ⊤) _ le_top
+      apply contDiffWithinAt_ext_coord_change
+      simp [hp.1]
+    have D : DifferentiableWithinAt 𝕜 (φ ∘ (Prod.fst : E × E' → E)) (Set.range (Prod.map ↑I ↑I'))
+        (I ((chartAt H p.1.proj) p.1.proj), I' ((chartAt H' b.proj) b.proj)) := by
+      apply DifferentiableWithinAt.comp (t := Set.range I)
+      · exact D0
+      · exact differentiableWithinAt_fst
+      · intro x hx
+        simp only [Set.range_prod_map, Set.mem_prod, Set.mem_range] at hx
+        exact hx.1
+    let φ' (x : E') := I' ((chartAt H' b.proj) ((chartAt H' b.proj).symm (I'.symm x)))
+    have D0' : DifferentiableWithinAt 𝕜 φ' (Set.range I')
+        (I' ((chartAt H' b.proj) b.proj)) := by
+      apply ContDiffWithinAt.differentiableWithinAt (n := ⊤) _ le_top
+      apply contDiffWithinAt_ext_coord_change
+      simp [hp.2]
+    have D' : DifferentiableWithinAt 𝕜 (φ' ∘ Prod.snd) (Set.range (Prod.map I I'))
+        (I ((chartAt H p.1.proj) p.1.proj), I' ((chartAt H' b.proj) b.proj)) := by
+      apply DifferentiableWithinAt.comp (t := Set.range I')
+      · exact D0'
+      · exact differentiableWithinAt_snd
+      · intro x hx
+        simp only [Set.range_prod_map, Set.mem_prod, Set.mem_range] at hx
+        exact hx.2
+    have U w : UniqueDiffWithinAt 𝕜 (Set.range (Prod.map I I'))
+        (I ((chartAt H p.1.proj) p.1.proj), I' w) := by
+      simp only [Set.range_prod_map]
+      apply UniqueDiffWithinAt.prod
+      · exact ModelWithCorners.uniqueDiffWithinAt_image I
+      · exact ModelWithCorners.uniqueDiffWithinAt_image I'
+    rw [DifferentiableWithinAt.fderivWithin_prod _ _ (U _)]; rotate_left
+    · exact D
+    · exact D'
     change fderivWithin 𝕜 (φ ∘ Prod.fst) _ _ _ = fderivWithin 𝕜 (φ ∘ Prod.fst) _ _ _
-    rw [Set.range_prod_map]
-    rw [fderivWithin.comp (t := Set.range I), fderivWithin.comp (t := Set.range I)]
-    simp
-    rw [fderivWithin_fst, fderivWithin_fst]
-    · simp
-    · apply UniqueDiffWithinAt.prod
-      exact ModelWithCorners.uniqueDiffWithinAt_image I
+    rw [Set.range_prod_map] at U ⊢
+    rw [fderivWithin.comp _ (by exact D0) differentiableWithinAt_fst mapsTo_fst_prod (U _),
+      fderivWithin.comp _ (by exact D0) differentiableWithinAt_fst mapsTo_fst_prod (U _)]
+    simp [fderivWithin_fst, U]
+
+
 
 
 
