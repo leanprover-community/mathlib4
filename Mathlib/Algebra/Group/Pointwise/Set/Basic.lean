@@ -734,6 +734,14 @@ lemma smul_iInter_subset (s : Set α) (t : ι → Set β) : (s • ⋂ i, t i) �
   image2_iInter_subset_right _ _ _
 
 @[to_additive]
+lemma sInter_smul_subset (S : Set (Set α)) (t : Set β) : ⋂₀ S • t ⊆ ⋂ s ∈ S, s • t :=
+  image2_sInter_left_subset S t (fun a x => a • x)
+
+@[to_additive]
+lemma smul_sInter_subset (s : Set α) (T : Set (Set β)) : s • ⋂₀ T ⊆ ⋂ t ∈ T, s • t :=
+  image2_sInter_right_subset s T (fun a x => a • x)
+
+@[to_additive]
 lemma iInter₂_smul_subset (s : ∀ i, κ i → Set α) (t : Set β) :
     (⋂ i, ⋂ j, s i j) • t ⊆ ⋂ i, ⋂ j, s i j • t := image2_iInter₂_subset_left _ _ _
 
@@ -802,15 +810,6 @@ lemma smul_set_iInter_subset (a : α) (t : ι → Set β) : a • ⋂ i, t i ⊆
 @[to_additive]
 lemma smul_set_sInter_subset (a : α) (S : Set (Set β)) :
     a • ⋂₀ S ⊆ ⋂ s ∈ S, a • s := image_sInter_subset S (fun x => a • x)
-
-@[to_additive]
-lemma smul_sInter_subset (s : Set α) (T : Set (Set β)) :
-    s • ⋂₀ T ⊆ ⋂ t ∈ T, s • t := image2_sInter_right_subset s T (fun a x => a • x)
-
-@[to_additive]
-lemma sInter_smul_subset (S : Set (Set α)) (t : Set β) :
-    ⋂₀ S • t ⊆ ⋂ s ∈ S, s • t := image2_sInter_left_subset S t (fun a x => a • x)
-
 
 @[to_additive]
 lemma smul_set_iInter₂_subset (a : α) (t : ∀ i, κ i → Set β) :
