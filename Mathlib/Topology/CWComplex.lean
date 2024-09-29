@@ -78,11 +78,11 @@ namespace RelativeCWComplex
 
 noncomputable section Topology
 
-/-- The inclusion map from `X` to `X'`, given that `X'` is obtained from `X` by attaching
-`(n + 1)`-disks -/
-def AttachCells.inclusion {X X' : TopCat.{u}} {n : ℤ} (att : AttachCells n X X') : X ⟶ X' :=
-  Limits.pushout.inl (Limits.Sigma.desc att.attachMaps)
-    (Limits.Sigma.map fun _ ↦ sphereInclusion n) ≫ att.iso_pushout.inv
+/-- The inclusion map from `X` to `X'`, when `X'` is obtained from `X`
+by attaching generalized cells `f : S ⟶ D`. -/
+def AttachGeneralizedCells.inclusion {S D : TopCat.{u}} {f : S ⟶ D} {X X' : TopCat.{u}}
+    (att : AttachGeneralizedCells f X X') : X ⟶ X' :=
+  Limits.pushout.inl _ _ ≫ att.iso_pushout.inv
 
 /-- The inclusion map from `sk n` (i.e., the $(n-1)$-skeleton) to `sk (n + 1)` (i.e., the
 $n$-skeleton) of a relative CW-complex -/
