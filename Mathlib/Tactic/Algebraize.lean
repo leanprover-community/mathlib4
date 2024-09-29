@@ -11,13 +11,13 @@ import Mathlib.Algebra.Algebra.Tower
 ## Algebraize tactic
 
 This file defines the `algebraize` tactic. The basic functionality of this tactic is to
-automatically add `Algebra` instances given `RingHom`s. For example, `algebraize f g` where
+automatically add `Algebra` instances given `RingHom`s. For example, `algebraize [f, g]` where
 `f : A →+* B` and `g : B →+* C` are `RingHom`s, will add the instances `Algebra A B` and
 `Algebra B C` corresponding to these `RingHom`s.
 
 ## Further functionality
 
-When given a composition of `RingHom`s, e.g. `algebraize (g.comp f)`, the tactic will also try to
+When given a composition of `RingHom`s, e.g. `algebraize [g.comp f]`, the tactic will also try to
 add the instance `IsScalarTower A B C` if possible.
 
 After having added suitable `Algebra` and `IsScalarTower` instances, the tactic will search through
@@ -218,26 +218,34 @@ end Algebraize
 
 open Algebraize Lean.Parser.Tactic
 
+/-- A list of terms passed to `algebraize` as argument. -/
+syntax algebraizeTermSeq := " [" withoutPosition(term,*,?) "]"
+
 /-- Tactic that, given `RingHom`s, adds the corresponding `Algebra` and (if possible)
 `IsScalarTower` instances, as well as `Algebra` corresponding to `RingHom` properties available
 as hypotheses.
 
-Example: given `f : A →+* B` and `g : B →+* C`, and `hf : f.FiniteType`, `algebraize f g` will add
-the instances `Algebra A B`, `Algebra B C`, and `Algebra.FiniteType A B`.
+Example: given `f : A →+* B` and `g : B →+* C`, and `hf : f.FiniteType`, `algebraize [f, g]` will
+add the instances `Algebra A B`, `Algebra B C`, and `Algebra.FiniteType A B`.
 
 See the `algebraize` tag for instructions on what properties can be added.
 
-The tactic also comes with a configuration option `searchContext`. If set to `true` (default), the
+The tactic also comes with a configuration option `properties`. If set to `true` (default), the
 tactic searches through the local context for `RingHom` properties that can be converted to
 `Algebra` properties. The macro `algebraize'` calls
 `algebraize (config := {properties := false})`,
 so in other words it only adds `Algebra` and `IsScalarTower` instances. -/
-syntax "algebraize" (config)? (ppSpace colGt term:max)* : tactic
+syntax "algebraize" (ppSpace config)? (ppSpace algebraizeTermSeq)? : tactic
 
 elab_rules : tactic
-  | `(tactic| algebraize $[$config]? $[$t:term]*) => do
+  | `(tactic| algebraize $[$config]? $args) => do
     let cfg ← elabAlgebraizeConfig (mkOptionalNode config)
-    let t ← t.mapM fun i => Term.elabTerm i none
+    let t ← match args with
+    | `(algebraizeTermSeq| [$rs,*]) => rs.getElems.mapM fun i => Term.elabTerm i none
+    | _ =>
+      throwError ""
+    if t.size == 0 then
+      logWarningAt args "`algebraize []` without arguments has no effect!"
     -- We loop through the given terms and add algebra instances
     for f in t do
       let ft ← inferType f
@@ -255,14 +263,18 @@ elab_rules : tactic
     -- Search through the local context to find other instances of algebraize
     if cfg.properties then
       addProperties t
+  | `(tactic| algebraize $[$config]?) => do
+    throwError "`algebraize` expects a list of arguments: `algebraize [f]`"
 
 /-- Version of `algebraize`, which only adds `Algebra` instances and `IsScalarTower` instances,
 but does not try to add any instances about any properties tagged with
 `@[algebraize]`, like for example `Finite` or `IsIntegral`. -/
-syntax "algebraize_only" (ppSpace colGt term:max)* : tactic
+syntax "algebraize_only" (ppSpace algebraizeTermSeq)? : tactic
 
 macro_rules
-  | `(tactic| algebraize_only $[$t:term]*) =>
-    `(tactic| algebraize (config := {properties := false}) $t*)
+  | `(tactic| algebraize_only $args) =>
+    `(tactic| algebraize (config := {properties := false}) $args)
+  | `(tactic| algebraize_only) =>
+    `(tactic| algebraize (config := {properties := false}))
 
 end Mathlib.Tactic

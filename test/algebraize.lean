@@ -46,7 +46,7 @@ set_option tactic.hygienic false
 example (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) : True := by
   fail_if_success -- Check that this instance is not available by default
     have h : Algebra A B := inferInstance
-  algebraize f
+  algebraize [f]
   guard_hyp algInst := f.toAlgebra
   trivial
 
@@ -55,7 +55,7 @@ example (A B C : Type*) [CommRing A] [CommRing B] [CommRing C] (f : A →+* B) (
     True := by
   fail_if_success -- Check that this instance is not available by default
     have h : Algebra A C := inferInstance
-  algebraize (g.comp f)
+  algebraize [g.comp f]
   guard_hyp algInst := (g.comp f).toAlgebra
   trivial
 
@@ -64,22 +64,22 @@ example (A B C : Type*) [CommRing A] [CommRing B] [CommRing C] (f : A →+* B) (
     True := by
   fail_if_success -- Check that this instance is not available by default
     have h : IsScalarTower A B C := inferInstance
-  algebraize f g (g.comp f)
+  algebraize [f, g, g.comp f]
   guard_hyp scalarTowerInst := IsScalarTower.of_algebraMap_eq' rfl
   trivial
 
 example (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) (hf : f.testProperty1) : True := by
-  algebraize f
+  algebraize [f]
   guard_hyp algebraizeInst : Algebra.testProperty1 A B
   trivial
 
 example (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) (hf : f.testProperty2) : True := by
-  algebraize f
+  algebraize [f]
   guard_hyp algebraizeInst : Module.testProperty2 A B
   trivial
 
 example (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) (hf : f.testProperty3) : True := by
-  algebraize f
+  algebraize [f]
   guard_hyp algebraizeInst : Algebra.testProperty3 A B
   trivial
 
@@ -90,7 +90,7 @@ example (A B C : Type*) [CommRing A] [CommRing B] [CommRing C] (f : A →+* B) (
     have h : Algebra.Flat A C := inferInstance
   fail_if_success
     have h : IsScalarTower A B C := inferInstance
-  algebraize f g (g.comp f)
+  algebraize [f, g, g.comp f]
   guard_hyp algebraizeInst : Algebra.testProperty1 A C
   guard_hyp scalarTowerInst := IsScalarTower.of_algebraMap_eq' rfl
   trivial
