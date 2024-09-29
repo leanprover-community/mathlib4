@@ -96,7 +96,7 @@ theorem isSymmetric.sub {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.Is
   rfl
 
 @[aesop safe apply]
-theorem isSymmetric.smul {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) {c : ℝ} :
+theorem isSymmetric.smul {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (c : ℝ) :
     (RCLike.ofReal (K := 𝕜) c) • T |>.IsSymmetric := by
   intro x y
   simp only [smul_apply, inner_smul_left, conj_ofReal, hT x y, inner_smul_right]
