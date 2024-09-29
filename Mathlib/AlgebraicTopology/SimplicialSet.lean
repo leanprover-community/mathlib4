@@ -419,8 +419,8 @@ instance skeleton.full (n) : (Truncated.sk n).Full := FullyFaithful.full (sk.ful
 instance skeleton.faithful (n) : (Truncated.sk n).Faithful :=
   FullyFaithful.faithful (sk.fullyFaithful _)
 
-noncomputable instance skAdj.coreflective (n) : Coreflective (Truncated.sk n)
-  := Coreflective.mk (truncation _) (skAdj _)
+noncomputable instance skAdj.coreflective (n) : Coreflective (Truncated.sk n) :=
+  Coreflective.mk (truncation _) (skAdj _)
 
 end Truncated
 
