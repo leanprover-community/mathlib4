@@ -6,7 +6,7 @@ Authors: Aaron Anderson, Alex J. Best, Johan Commelin, Eric Rodriguez, Ruben Van
 import Mathlib.Algebra.CharP.Algebra
 import Mathlib.Data.ZMod.Algebra
 import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.FieldTheory.Galois
+import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
 
 /-!
