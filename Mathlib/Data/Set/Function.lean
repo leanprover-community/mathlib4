@@ -166,8 +166,7 @@ end restrict
 /-! ### Equality on a set -/
 section equality
 
-variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {p : Set γ} {f f₁ f₂ f₃ : α → β} {g g₁ g₂ : β → γ}
-  {f' f₁' f₂' : β → α} {g' : γ → β} {a : α} {b : β}
+variable {s s₁ s₂ : Set α} {f₁ f₂ f₃ : α → β} {g : β → γ} {a : α}
 
 @[simp]
 theorem eqOn_empty (f₁ f₂ : α → β) : EqOn f₁ f₂ ∅ := fun _ => False.elim
@@ -233,7 +232,7 @@ alias ⟨EqOn.comp_eq, _⟩ := eqOn_range
 
 end equality
 
-variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {p : Set γ} {f f₁ f₂ f₃ : α → β} {g g₁ g₂ : β → γ}
+variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {p : Set γ} {f f₁ f₂ : α → β} {g g₁ g₂ : β → γ}
   {f' f₁' f₂' : β → α} {g' : γ → β} {a : α} {b : β}
 
 section MapsTo
@@ -449,8 +448,6 @@ theorem preimage_restrictPreimage {u : Set t} :
     t.restrictPreimage f ⁻¹' u = (fun a : f ⁻¹' t ↦ f a) ⁻¹' (Subtype.val '' u) := by
   rw [← preimage_preimage (g := f) (f := Subtype.val), ← image_val_preimage_restrictPreimage,
     preimage_image_eq _ Subtype.val_injective]
-
-variable {U : ι → Set β}
 
 lemma restrictPreimage_injective (hf : Injective f) : Injective (t.restrictPreimage f) :=
   fun _ _ e => Subtype.coe_injective <| hf <| Subtype.mk.inj e
