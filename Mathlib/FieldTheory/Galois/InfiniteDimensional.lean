@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Jujian Zhang. All rights reserved.
+Copyright (c) 2024 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Yuyang Zhao, Jujian Zhang
 -/
@@ -11,25 +11,19 @@ import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
 
 /-!
 
-# Galois Group as a Profinite Group
-
-In this file, we prove that in a field extension `K/k`, there is a continuous isomorphism between
-`Gal(K/k)` the limit of `Gal(L/k)`, where `L` is a finite galois intermediate field ordered by
-inverse inclusion, thus making `Gal(K/k)` profinite because the limit is profinite.
-
 # Main definitions and results
 
-In `K/k`
+In a field extension `K/k`
 
-* `FiniteGaloisIntermediateField` : The type of finite Galois intermediateField of `K/k`
+* `FiniteGaloisIntermediateField` : The type of a finite Galois intermediate field of `K/k`
 
 * `finGal L` : For a `FiniteGaloisIntermediateField` `L`, make `Gal(L/k)` into a FiniteGrp
 
-* `finGalMap L₁ ⟶ L₂` : For `FiniteGaloisIntermediateField` `L₁ L₂` ordered by inverse inclusion,
+* `finGalMap` : For `FiniteGaloisIntermediateField` s `L₁` and `L₂` with `L₂ ≤ L₁`
   giving the restriction of `Gal(L₁/k)` to `Gal(L₂/k)`
 
 * `finGalFunctor` : Mapping `FiniteGaloisIntermediateField` ordered by inverse inclusion to its
-  corresponding Galois Group as FiniteGrp
+  corresponding Galois Group as `FiniteGrp`.
 
 # TODO
 
@@ -37,25 +31,12 @@ In `K/k`
 
 -/
 
-variable {F L : Type*} [Field F] [Field L] [Algebra F L]
-
-open scoped Topology in
-private lemma krullTopology_mem_nhds_one (s : Set (L ≃ₐ[F] L)) :
-    s ∈ 𝓝 1 ↔ ∃ S : IntermediateField F L,
-    FiniteDimensional F S ∧ (S.fixingSubgroup : Set (L ≃ₐ[F] L)) ⊆ s := by
-  rw [GroupFilterBasis.nhds_one_eq]
-  constructor
-  · rintro ⟨-, ⟨-, ⟨S, fin, rfl⟩, rfl⟩, hS⟩
-    exact ⟨S, fin, hS⟩
-  · rintro ⟨S, fin, hS⟩
-    exact ⟨S.fixingSubgroup, ⟨S.fixingSubgroup, ⟨S, fin, rfl⟩, rfl⟩, hS⟩
-
 open CategoryTheory Topology Opposite
 open scoped IntermediateField
 
 variable (k K : Type*) [Field k] [Field K] [Algebra k K]
 
-/--The type of finite Galois intermediateField of `K/k`-/
+/-- The type of a finite Galois intermediate field of `K/k` -/
 @[ext]
 structure FiniteGaloisIntermediateField where
   /--extend from `IntermediateField`-/
@@ -182,7 +163,7 @@ def finGal (L : FiniteGaloisIntermediateField k K) : FiniteGrp :=
   letI := AlgEquiv.fintype k L
   FiniteGrp.of <| L ≃ₐ[k] L
 
-/--For `FiniteGaloisIntermediateField` `L₁ L₂` ordered by inverse inclusion,
+/-- For `FiniteGaloisIntermediateField` s `L₁` and `L₂` with `L₂ ≤ L₁`
   giving the restriction of `Gal(L₁/k)` to `Gal(L₂/k)`-/
 noncomputable def finGalMap {L₁ L₂ : (FiniteGaloisIntermediateField k K)ᵒᵖ}
     (le : L₁ ⟶ L₂) : L₁.unop.finGal ⟶ L₂.unop.finGal :=
@@ -215,8 +196,8 @@ lemma map_comp {L₁ L₂ L₃ : (FiniteGaloisIntermediateField k K)ᵒᵖ}
 end finGalMap
 
 variable (k K) in
-/--Mapping `FiniteGaloisIntermediateField` ordered by inverse inclusion to its
-  corresponding Galois Group as FiniteGrp-/
+/-- Mapping `FiniteGaloisIntermediateField` ordered by inverse inclusion to its
+  corresponding Galois Group as `FiniteGrp`. -/
 noncomputable def finGalFunctor : (FiniteGaloisIntermediateField k K)ᵒᵖ ⥤ FiniteGrp where
   obj L := L.unop.finGal
   map := finGalMap
