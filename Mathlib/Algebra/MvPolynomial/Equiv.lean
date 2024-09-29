@@ -255,6 +255,18 @@ def sumAlgEquiv : MvPolynomial (S₁ ⊕ S₂) R ≃ₐ[R] MvPolynomial S₁ (Mv
       simp only [sumRingEquiv, mvPolynomialEquivMvPolynomial, Equiv.toFun_as_coe,
         Equiv.coe_fn_mk, B, sumToIter_C, A] }
 
+lemma sumAlgEquiv_comp_rename_inr :
+    (sumAlgEquiv R S₁ S₂).toAlgHom.comp (rename Sum.inr) = IsScalarTower.toAlgHom R
+        (MvPolynomial S₂ R) (MvPolynomial S₁ (MvPolynomial S₂ R)) := by
+  ext i
+  simp
+
+lemma sumAlgEquiv_comp_rename_inl :
+    (sumAlgEquiv R S₁ S₂).toAlgHom.comp (rename Sum.inl) =
+      MvPolynomial.mapAlgHom (Algebra.ofId _ _) := by
+  ext i
+  simp
+
 section
 
 -- this speeds up typeclass search in the lemma below

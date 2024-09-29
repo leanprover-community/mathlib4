@@ -138,8 +138,8 @@ end LinearOrder
 section bdd_range
 variable [Preorder α] [Nonempty α] [Preorder β] {f : α → β}
 
-lemma StrictMono.not_bddAbove_range [NoMaxOrder α] [SuccOrder β] [IsSuccArchimedean β]
-    (hf : StrictMono f) : ¬ BddAbove (Set.range f) := by
+lemma StrictMono.not_bddAbove_range_of_isSuccArchimedean [NoMaxOrder α] [SuccOrder β]
+    [IsSuccArchimedean β] (hf : StrictMono f) : ¬ BddAbove (Set.range f) := by
   rintro ⟨m, hm⟩
   have hm' : ∀ a, f a ≤ m := fun a ↦ hm <| Set.mem_range_self _
   obtain ⟨a₀⟩ := ‹Nonempty α›
@@ -152,14 +152,29 @@ lemma StrictMono.not_bddAbove_range [NoMaxOrder α] [SuccOrder β] [IsSuccArchim
   rintro b _ ⟨a, hba⟩
   exact (h a).imp (fun a' ↦ (succ_le_of_lt hba).trans_lt)
 
-lemma StrictMono.not_bddBelow_range [NoMinOrder α] [PredOrder β] [IsPredArchimedean β]
-    (hf : StrictMono f) : ¬ BddBelow (Set.range f) := hf.dual.not_bddAbove_range
+@[deprecated StrictMono.not_bddAbove_range_of_isSuccArchimedean (since := "2024-09-21")]
+alias StrictMono.not_bddAbove_range := StrictMono.not_bddAbove_range_of_isSuccArchimedean
 
-lemma StrictAnti.not_bddAbove_range [NoMinOrder α] [SuccOrder β] [IsSuccArchimedean β]
-    (hf : StrictAnti f) : ¬ BddAbove (Set.range f) := hf.dual_right.not_bddBelow_range
+lemma StrictMono.not_bddBelow_range_of_isPredArchimedean [NoMinOrder α] [PredOrder β]
+    [IsPredArchimedean β] (hf : StrictMono f) : ¬ BddBelow (Set.range f) :=
+  hf.dual.not_bddAbove_range_of_isSuccArchimedean
 
-lemma StrictAnti.not_bddBelow_range [NoMaxOrder α] [PredOrder β] [IsPredArchimedean β]
-    (hf : StrictAnti f) : ¬ BddBelow (Set.range f) := hf.dual_right.not_bddAbove_range
+@[deprecated StrictMono.not_bddBelow_range_of_isPredArchimedean (since := "2024-09-21")]
+alias StrictMono.not_bddBelow_range := StrictMono.not_bddBelow_range_of_isPredArchimedean
+
+lemma StrictAnti.not_bddBelow_range_of_isSuccArchimedean [NoMinOrder α] [SuccOrder β]
+    [IsSuccArchimedean β] (hf : StrictAnti f) : ¬ BddAbove (Set.range f) :=
+  hf.dual_right.not_bddBelow_range_of_isPredArchimedean
+
+@[deprecated StrictAnti.not_bddBelow_range_of_isSuccArchimedean (since := "2024-09-21")]
+alias StrictAnti.not_bddAbove_range := StrictAnti.not_bddBelow_range_of_isSuccArchimedean
+
+lemma StrictAnti.not_bddBelow_range_of_isPredArchimedean [NoMaxOrder α] [PredOrder β]
+    [IsPredArchimedean β] (hf : StrictAnti f) : ¬ BddBelow (Set.range f) :=
+  hf.dual_right.not_bddAbove_range_of_isSuccArchimedean
+
+@[deprecated StrictAnti.not_bddBelow_range_of_isPredArchimedean (since := "2024-09-21")]
+alias StrictAnti.not_bddBelow_range := StrictAnti.not_bddBelow_range_of_isPredArchimedean
 
 end bdd_range
 

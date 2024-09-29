@@ -703,13 +703,13 @@ protected theorem denseEmbedding (hp_ne_top : p ≠ ∞) :
   convert SimpleFunc.tendsto_approxOn_range_Lp hp_ne_top (Lp.stronglyMeasurable f).measurable hfi'
   rw [toLp_coeFn f (Lp.memℒp f)]
 
-protected theorem denseInducing (hp_ne_top : p ≠ ∞) :
-    DenseInducing ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
-  (simpleFunc.denseEmbedding hp_ne_top).toDenseInducing
+protected theorem isDenseInducing (hp_ne_top : p ≠ ∞) :
+    IsDenseInducing ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
+  (simpleFunc.denseEmbedding hp_ne_top).toIsDenseInducing
 
 protected theorem denseRange (hp_ne_top : p ≠ ∞) :
     DenseRange ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
-  (simpleFunc.denseInducing hp_ne_top).dense
+  (simpleFunc.isDenseInducing hp_ne_top).dense
 
 protected theorem dense (hp_ne_top : p ≠ ∞) : Dense (Lp.simpleFunc E p μ : Set (Lp E p μ)) := by
   simpa only [denseRange_subtype_val] using simpleFunc.denseRange (E := E) (μ := μ) hp_ne_top
