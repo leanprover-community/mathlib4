@@ -20,6 +20,45 @@ Also the special case in terms of `deriv` when the domain is 1-dimensional.
 
 As an application, we show that continuous multilinear maps are smooth. We also compute their
 iterated derivatives, in `ContinuousMultilinearMap.iteratedFDeriv_eq`.
+
+## Main definitions and results
+
+* `AnalyticAt.differentiableAt` : an analytic function at a point is differentiable there.
+* `AnalyticOnNhd.fderiv` : in a complete space, if a function is analytic on a
+  neighborhood of a set `s`, so is its derivative.
+* `AnalyticOnNhd.fderiv_of_isOpen` : if a function is analytic on a neighborhood of an
+  open set `s`, so is its derivative.
+* `AnalyticOn.fderivWithin` : if a function is analytic on a set of unique differentiability,
+  so is its derivative within this set.
+* `PartialHomeomorph.analyticAt_symm` : if a partial homeomorphism `f` is analytic at a
+  point `f.symm a`, with invertible derivative, then its inverse is analytic at `a`.
+
+## Comments on completeness
+
+Some theorems need a complete space, some don't, for the following reason.
+
+(1) If a function is analytic at a point `x`, then it is differentiable there (with derivative given
+by the first term in the power series). There is no issue of convergence here.
+
+(2) If a function has a power series on a ball `B (x, r)`, there is no guarantee that the power
+series for the derivative will converge at `y ≠ x`, if the space is not complete. So, to deduce
+that `f` is differentiable at `y`, one needs completeness in general.
+
+(3) However, if a function `f` has a power series on a ball `B (x, r)`, and is a priori known to be
+differentiable at some point `y ≠ x`, then the power series for the derivative of `f` will
+automatically converge at `y`, towards the given derivative: this follows from the facts that this
+is true in the completion (thanks to the previous point) and that the map to the completion is
+an embedding.
+
+(4) Therefore, if one assumes `AnalyticOn 𝕜 f s` where `s` is an open set, then `f` is analytic
+therefore differentiable at every point of `s`, by (1), so by (3) the power series for its
+derivative converges on whole balls. Therefore, the derivative of `f` is also analytic on `s`. The
+same holds if `s` is merely a set with unique differentials.
+
+(5) However, this does not work for `AnalyticOnNhd 𝕜 f s`, as we don't get for free
+differentiability at points in a neighborhood of `s`. Therefore, the theorem that deduces
+`AnalyticOnNhd 𝕜 (fderiv 𝕜 f) s` from `AnalyticOnNhd 𝕜 f s` requires completeness of the space.
+
 -/
 
 open Filter Asymptotics Set
@@ -152,7 +191,6 @@ theorem HasFPowerSeriesOnBall.fderiv_eq [CompleteSpace F] (h : HasFPowerSeriesOn
     fderiv 𝕜 f (x + y) = continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin y 1) :=
   (h.hasFDerivAt hy).fderiv
 
-/-- If a function has a power series on a ball, then so does its derivative. -/
 protected theorem HasFPowerSeriesOnBall.fderiv [CompleteSpace F]
     (h : HasFPowerSeriesOnBall f p x r) :
     HasFPowerSeriesOnBall (fderiv 𝕜 f) p.derivSeries x r := by
@@ -217,6 +255,10 @@ protected theorem AnalyticOnNhd.iteratedFDeriv [CompleteSpace F] (h : AnalyticOn
 @[deprecated (since := "2024-09-26")]
 alias AnalyticOn.iteratedFDeriv := AnalyticOnNhd.iteratedFDeriv
 
+/-- If a function is analytic on a neighborhood of a set `s`, then it has a Taylor series given
+by the sequence of its derivatives. Note that, if the function were just analytic on `s`, then
+one would have to use instead the sequence of derivatives inside the set, as in
+`AnalyticOn.hasFTaylorSeriesUpToOn`. -/
 lemma AnalyticOnNhd.hasFTaylorSeriesUpToOn [CompleteSpace F]
     (n : ℕ∞) (h : AnalyticOnNhd 𝕜 f s) :
     HasFTaylorSeriesUpToOn n f (ftaylorSeries 𝕜 f) s := by
@@ -333,16 +375,19 @@ protected theorem AnalyticOn.iteratedFDerivWithin (h : AnalyticOn 𝕜 f s)
     apply AnalyticOnNhd.comp_analyticOn _ (IH.fderivWithin hu) (mapsTo_univ _ _)
     apply LinearIsometryEquiv.analyticOnNhd
 
+lemma AnalyticOn.hasFTaylorSeriesUpToOn {n : ℕ∞}
+    (h : AnalyticOn 𝕜 f s) (hu : UniqueDiffOn 𝕜 s) :
+    HasFTaylorSeriesUpToOn n f (ftaylorSeriesWithin 𝕜 f s) s := by
+  refine ⟨fun x _hx ↦ rfl, fun m _hm x hx ↦ ?_, fun m _hm x hx ↦ ?_⟩
+  · have := (h.iteratedFDerivWithin hu m x hx).differentiableWithinAt.hasFDerivWithinAt
+    rwa [insert_eq_of_mem hx] at this
+  · exact (h.iteratedFDerivWithin hu m x hx).continuousWithinAt
+
 lemma AnalyticOn.exists_hasFTaylorSeriesUpToOn
     (h : AnalyticOn 𝕜 f s) (hu : UniqueDiffOn 𝕜 s) :
     ∃ (p : E → FormalMultilinearSeries 𝕜 E F),
-    HasFTaylorSeriesUpToOn ⊤ f p s ∧ ∀ i, AnalyticOn 𝕜 (fun x ↦ p x i) s := by
-  refine ⟨ftaylorSeriesWithin 𝕜 f s, ?_, fun i ↦ ?_⟩
-  · refine ⟨fun x _hx ↦ rfl, fun m _hm x hx ↦ ?_, fun m _hm x hx ↦ ?_⟩
-    · have := (h.iteratedFDerivWithin hu m x hx).differentiableWithinAt.hasFDerivWithinAt
-      rwa [insert_eq_of_mem hx] at this
-    · exact (h.iteratedFDerivWithin hu m x hx).continuousWithinAt
-  · apply h.iteratedFDerivWithin hu
+      HasFTaylorSeriesUpToOn ⊤ f p s ∧ ∀ i, AnalyticOn 𝕜 (fun x ↦ p x i) s :=
+  ⟨ftaylorSeriesWithin 𝕜 f s, h.hasFTaylorSeriesUpToOn hu, h.iteratedFDerivWithin hu⟩
 
 theorem AnalyticOnNhd.fderiv_of_isOpen (h : AnalyticOnNhd 𝕜 f s) (hs : IsOpen s) :
     AnalyticOnNhd 𝕜 (fderiv 𝕜 f) s := by
@@ -364,8 +409,8 @@ theorem PartialHomeomorph.analyticAt_symm' (f : PartialHomeomorph E F) {a : E}
   have : p 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm i := by simp [← h', hp.fderiv_eq]
   exact (f.hasFPowerSeriesAt_symm h0 hp this).analyticAt
 
-/-- If a partial homeomorphism `f` is analytic at a point `a`, with invertible derivative, then
-its inverse is analytic at `f a`. -/
+/-- If a partial homeomorphism `f` is analytic at a point `f.symm a`, with invertible derivative,
+then its inverse is analytic at `a`. -/
 theorem PartialHomeomorph.analyticAt_symm (f : PartialHomeomorph E F) {a : F}
     {i : E ≃L[𝕜] F} (h0 : a ∈ f.target) (h : AnalyticAt 𝕜 f (f.symm a))
     (h' : fderiv 𝕜 f (f.symm a) = i) :
@@ -393,13 +438,18 @@ protected theorem HasFPowerSeriesAt.deriv (h : HasFPowerSeriesAt f p x) :
     deriv f x = p 1 fun _ => 1 :=
   h.hasDerivAt.deriv
 
-/-- If a function is analytic on a set `s`, so is its derivative. -/
-theorem AnalyticOnNhd.deriv [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) :
+/-- If a function is analytic on a set `s` in a complete space, so is its derivative. -/
+protected theorem AnalyticOnNhd.deriv [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) :
     AnalyticOnNhd 𝕜 (deriv f) s :=
   (ContinuousLinearMap.apply 𝕜 F (1 : 𝕜)).comp_analyticOnNhd h.fderiv
 
 @[deprecated (since := "2024-09-26")]
 alias AnalyticOn.deriv := AnalyticOnNhd.deriv
+
+/-- If a function is analytic on an open set `s`, so is its derivative. -/
+theorem AnalyticOnNhd.deriv_of_isOpen (h : AnalyticOnNhd 𝕜 f s) (hs : IsOpen s) :
+    AnalyticOnNhd 𝕜 (deriv f) s :=
+  (ContinuousLinearMap.apply 𝕜 F (1 : 𝕜)).comp_analyticOnNhd (h.fderiv_of_isOpen hs)
 
 /-- If a function is analytic on a set `s`, so are its successive derivatives. -/
 theorem AnalyticOnNhd.iterated_deriv [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) (n : ℕ) :
