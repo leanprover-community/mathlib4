@@ -402,6 +402,14 @@ theorem iInter_mul_subset (s : ι → Set α) (t : Set α) : (⋂ i, s i) * t �
 theorem mul_iInter_subset (s : Set α) (t : ι → Set α) : (s * ⋂ i, t i) ⊆ ⋂ i, s * t i :=
   image2_iInter_subset_right _ _ _
 
+@[to_additive]
+lemma mul_sInter_subset (s : Set α) (T : Set (Set α)) :
+    s * ⋂₀ T ⊆ ⋂ t ∈ T, s * t := image2_sInter_right_subset s T (fun a b => a * b)
+
+@[to_additive]
+lemma sInter_mul_subset (S : Set (Set α)) (t : Set α) :
+    ⋂₀ S * t ⊆ ⋂ s ∈ S, s * t := image2_sInter_left_subset S t (fun a b => a * b)
+
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
