@@ -207,7 +207,7 @@ protected theorem uniformEmbedding (h : α ≃ᵤ β) : UniformEmbedding h :=
   ⟨h.uniformInducing, h.injective⟩
 
 theorem completeSpace_iff (h : α ≃ᵤ β) : CompleteSpace α ↔ CompleteSpace β :=
-  completeSpace_congr h.uniformInducing
+  completeSpace_congr h.uniformEmbedding
 
 /-- Uniform equiv given a uniform embedding. -/
 noncomputable def ofUniformEmbedding (f : α → β) (hf : UniformEmbedding f) : α ≃ᵤ Set.range f where
