@@ -1392,29 +1392,35 @@ end SubgroupClass
 
 section ListMultisetFinset
 
-variable {S M ι : Type*} [SeminormedAddGroup S] [SeminormedAddCommGroup M]
+variable {S M ι : Type*} [SeminormedGroup S] [SeminormedCommGroup M]
 
-lemma List.iSup_nnnorm_mem_map_of_ne_nil {l : List S} (hl : l ≠ []) :
+@[to_additive List.iSup_nnnorm_mem_map_of_ne_nil]
+lemma List.iSup_mul_nnnorm_mem_map_of_ne_nil {l : List S} (hl : l ≠ []) :
     ⨆ x ∈ l, ‖x‖₊ ∈ l.map (‖·‖₊) :=
   List.iSup_mem_map_of_ne_nil _ hl
 
-lemma List.iSup_norm_mem_map_of_ne_nil {l : List S} (hl : l ≠ []) :
+@[to_additive List.iSup_norm_mem_map_of_ne_nil]
+lemma List.iSup_mul_norm_mem_map_of_ne_nil {l : List S} (hl : l ≠ []) :
     ⨆ x ∈ l, ‖x‖ ∈ l.map (‖·‖) :=
   List.iSup_mem_map_of_exists_sSup_empty_le _ (by simpa using List.exists_mem_of_ne_nil _ hl)
 
-lemma Multiset.iSup_nnnorm_mem_map_of_ne_zero {s : Multiset M} (hs : s ≠ 0) :
+@[to_additive Multiset.iSup_nnnorm_mem_map_of_ne_zero]
+lemma Multiset.iSup_mul_nnnorm_mem_map_of_ne_zero {s : Multiset M} (hs : s ≠ 0) :
     ⨆ x ∈ s, ‖x‖₊ ∈ s.map (‖·‖₊) :=
   Multiset.iSup_mem_map_of_ne_zero _ hs
 
-lemma Multiset.iSup_norm_mem_map_of_ne_zero {s : Multiset M} (hs : s ≠ 0) :
+@[to_additive Multiset.iSup_norm_mem_map_of_ne_zero ]
+lemma Multiset.iSup_mul_norm_mem_map_of_ne_zero {s : Multiset M} (hs : s ≠ 0) :
     ⨆ x ∈ s, ‖x‖ ∈ s.map (‖·‖) :=
   Multiset.iSup_mem_map_of_exists_sSup_empty_le _ (by simpa using Multiset.exists_mem_of_ne_zero hs)
 
 /-- A finset achieves its maximum under a norm for some element. -/
-lemma Finset.Nonempty.iSup_nnnorm_mem_image {s : Finset ι} (hs : s.Nonempty) (f : ι → M) :
+@[to_additive Finset.Nonempty.iSup_nnnorm_mem_image "A finset achieves its maximum under a
+norm for some element"]
+lemma Finset.Nonempty.iSup_mul_nnnorm_mem_image {s : Finset ι} (hs : s.Nonempty) (f : ι → M) :
     ⨆ x ∈ s, ‖f x‖₊ ∈ s.image (‖f ·‖₊) := by
   have : Nonempty ι := nonempty_of_exists hs
-  have := (s.1.map f).iSup_nnnorm_mem_map_of_ne_zero
+  have := (s.1.map f).iSup_mul_nnnorm_mem_map_of_ne_zero
     (by simpa [Finset.nonempty_iff_ne_empty] using hs)
   have keyl (i : M) : ⨆ (_ : i ∈ Multiset.map f s.val), ‖i‖₊ = ⨆ (_ : i ∈ f '' s), ‖i‖₊ := by
     simp
@@ -1425,10 +1431,12 @@ lemma Finset.Nonempty.iSup_nnnorm_mem_image {s : Finset ι} (hs : s.Nonempty) (f
   · simp
 
 /-- A finset achieves its maximum under a norm for some element. -/
-lemma Finset.Nonempty.iSup_norm_mem_image {s : Finset ι} (hs : s.Nonempty) (f : ι → M) :
+@[to_additive Finset.Nonempty.iSup_norm_mem_image "A finset achieves its maximum under a
+norm for some element"]
+lemma Finset.Nonempty.iSup_mul_norm_mem_image {s : Finset ι} (hs : s.Nonempty) (f : ι → M) :
     ⨆ x ∈ s, ‖f x‖ ∈ s.image (‖f ·‖) := by
   have : Nonempty ι := nonempty_of_exists hs
-  have := (s.1.map f).iSup_norm_mem_map_of_ne_zero
+  have := (s.1.map f).iSup_mul_norm_mem_map_of_ne_zero
     (by simpa [Finset.nonempty_iff_ne_empty] using hs)
   have keyl (i : M) : ⨆ (_ : i ∈ Multiset.map f s.val), ‖i‖ = ⨆ (_ : i ∈ f '' s), ‖i‖ := by
     simp
