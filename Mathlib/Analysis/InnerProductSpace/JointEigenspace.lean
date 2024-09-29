@@ -200,7 +200,7 @@ We will need some calculation simplifications for this.
 variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
    {S T : E →ₗ[𝕜] E}
 
-lemma comm_mul (hS : S.IsSymmetric) (hT : T.IsSymmetric) (hST : Commute S T) :
+lemma mul_of_comm (hS : S.IsSymmetric) (hT : T.IsSymmetric) (hST : Commute S T) :
     (S * T).IsSymmetric := by
   refine fun x y ↦ ?_
   nth_rw 1 [hST]
@@ -211,7 +211,7 @@ lemma pow (hT : T.IsSymmetric) (n : ℕ) : (T ^ n).IsSymmetric := by
   refine Nat.le_induction (pow_zero T ▸ one_eq_id (R := 𝕜) (M := E) ▸ isSymmetric_id)
     (fun k _ ih ↦ ?_) n (Nat.zero_le _)
   rw [iterate_succ, ← mul_eq_comp]
-  exact comm_mul ih hT <| _root_.id <| Commute.symm <| Commute.pow_right rfl _
+  exact mul_of_comm ih hT <| _root_.id <| Commute.symm <| Commute.pow_right rfl _
 
 variable [FiniteDimensional 𝕜 E]
 
