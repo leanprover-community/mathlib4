@@ -255,15 +255,16 @@ noncomputable def Forget : C ⥤ hP.Core' where
     have := ForgetInductiveSystem_hasLimit Y
     have := ForgetInductiveSystem_hasLimit Z
     simp only [ForgetObj, ForgetMap]
-    have heq : ForgetInductiveSystemMap (f ≫ g) = fun n ↦ ForgetInductiveSystemMap f n ≫
-        ForgetInductiveSystemMap g n := by
-      ext n
-      simp only [ForgetInductiveSystemMap, ForgetInductiveSystem_aux, Functor.map_comp]
-      sorry
-    simp_rw [heq]
-    exact (Hom_of_almost_NatTrans_comp (ForgetInductiveSystem X) (ForgetInductiveSystem Y)
-      (ForgetInductiveSystem Z) _ _ _ _).symm
-
+    rw [Hom_of_almost_NatTrans_comp]
+    set a := (hP.LE_exhaustive Y).choose
+    have : IsLE Y a := {le := (hP.LE_exhaustive Y).choose_spec}
+    use (-a)
+    simp only [ForgetInductiveSystemMap, ForgetInductiveSystem_aux, Functor.map_comp]
+    intro b
+    have : IsLE ((@shiftFunctor C _ _ _ Shift₂ b.1).obj Y) 0 := by
+      have : IsLE Y (-b.1) := isLE_of_LE Y a (-b.1) (by have := Set.mem_Iic.mp b.2; linarith)
+      exact isLE_shift Y (-b.1) b 0 (by linarith)
+    rw [HalfForgetMapComp]
 
 end FilteredTriangulated
 
