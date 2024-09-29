@@ -25,7 +25,7 @@ def filterMapM {m : Type → Type} {α : Type} [Monad m] (stx : Syntax) (f : Syn
     | some new => return nargs.push new
     | none => return nargs
 
-def filterMap {α : Type _} (stx : Syntax) (f : Syntax → Option α) : Array α :=
+def filterMap {α : Type} (stx : Syntax) (f : Syntax → Option α) : Array α :=
   stx.filterMapM (m := Id) f
 
 def filter (stx : Syntax) (f : Syntax → Bool) : Array Syntax :=
