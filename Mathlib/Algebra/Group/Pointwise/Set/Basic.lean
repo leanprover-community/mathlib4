@@ -182,6 +182,10 @@ theorem iInter_inv (s : ι → Set α) : (⋂ i, s i)⁻¹ = ⋂ i, (s i)⁻¹ :
   preimage_iInter
 
 @[to_additive (attr := simp)]
+theorem sInter_inv (S : Set (Set α)) : (⋂₀ S)⁻¹ = ⋂ s ∈ S, s⁻¹ :=
+  preimage_sInter
+
+@[to_additive (attr := simp)]
 theorem iUnion_inv (s : ι → Set α) : (⋃ i, s i)⁻¹ = ⋃ i, (s i)⁻¹ :=
   preimage_iUnion
 
