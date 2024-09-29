@@ -324,7 +324,7 @@ theorem MDifferentiableAt.mfderiv_prod {f : M → M'} {g : M → M''} {x : M}
   classical
   simp_rw [mfderiv, if_pos (hf.prod_mk hg), if_pos hf, if_pos hg]
   exact hf.differentiableWithinAt_writtenInExtChartAt.fderivWithin_prod
-    hg.differentiableWithinAt_writtenInExtChartAt (I.unique_diff _ (mem_range_self _))
+    hg.differentiableWithinAt_writtenInExtChartAt (I.uniqueDiffOn _ (mem_range_self _))
 
 variable (I I' I'')
 
@@ -334,11 +334,21 @@ theorem mfderiv_prod_left {x₀ : M} {y₀ : M'} :
   refine ((mdifferentiableAt_id I).mfderiv_prod (mdifferentiableAt_const I I')).trans ?_
   rw [mfderiv_id, mfderiv_const, ContinuousLinearMap.inl]
 
+theorem tangentMap_prod_left {p : TangentBundle I M} {y₀ : M'} :
+    tangentMap I (I.prod I') (fun x => (x, y₀)) p = ⟨(p.1, y₀), (p.2, 0)⟩ := by
+  simp only [tangentMap, mfderiv_prod_left, TotalSpace.mk_inj]
+  rfl
+
 theorem mfderiv_prod_right {x₀ : M} {y₀ : M'} :
     mfderiv I' (I.prod I') (fun y => (x₀, y)) y₀ =
       ContinuousLinearMap.inr 𝕜 (TangentSpace I x₀) (TangentSpace I' y₀) := by
   refine ((mdifferentiableAt_const I' I).mfderiv_prod (mdifferentiableAt_id I')).trans ?_
   rw [mfderiv_id, mfderiv_const, ContinuousLinearMap.inr]
+
+theorem tangentMap_prod_right {p : TangentBundle I' M'} {x₀ : M} :
+    tangentMap I' (I.prod I') (fun y => (x₀, y)) p = ⟨(x₀, p.1), (0, p.2)⟩ := by
+  simp only [tangentMap, mfderiv_prod_right, TotalSpace.mk_inj]
+  rfl
 
 /-- The total derivative of a function in two variables is the sum of the partial derivatives.
   Note that to state this (without casts) we need to be able to see through the definition of

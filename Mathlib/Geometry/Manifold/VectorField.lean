@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Geometry.Manifold.PoincareConjecture
+import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
 
 /-!
 # Glouglou
@@ -73,6 +74,25 @@ theorem fderiv.comp'
     (hf : DifferentiableAt 𝕜 f x) :
     fderiv 𝕜 (fun y ↦ g (f y)) x = (fderiv 𝕜 g (f x)).comp (fderiv 𝕜 f x) :=
   fderiv.comp x hg hf
+
+lemma fderiv_pullback (f : E → F) (V : F → F) (x : E) (h'f : ∃ M : E ≃L[𝕜] F, M = fderiv 𝕜 f x) :
+    fderiv 𝕜 f x (pullback 𝕜 f V x) = V (f x) := by
+  rcases h'f with ⟨M, hM⟩
+  simp [pullback_eq_of_fderiv_eq hM, ← hM]
+
+/-- The equation `L_{f^* V} (g ∘ f) (x) = (L_V g) (f x)`, which is essentially the definition of
+the pullback.
+Note that `hf` can probably be removed, as it's implied by `h'f`.
+-/
+lemma lieDeriv_pullback (f : E → F) (V : F → F) (g : F → G) (x : E)
+    (hg : DifferentiableAt 𝕜 g (f x))
+    (hf : DifferentiableAt 𝕜 f x) (h'f : ∃ M : E ≃L[𝕜] F, M = fderiv 𝕜 f x) :
+    lieDeriv 𝕜 (pullback 𝕜 f V) (g ∘ f) x = lieDeriv 𝕜 V g (f x) := by
+  rcases h'f with ⟨M, hM⟩
+  rw [lieDeriv, lieDeriv, fderiv.comp _ hg hf]
+  simp only [ContinuousLinearMap.coe_comp', Function.comp_apply]
+  rw [fderiv_pullback]
+  exact ⟨M, hM⟩
 
 open Set
 
@@ -153,21 +173,197 @@ lemma lieBracket_pullback (f : E → F) (V W : F → F) (x : E)
   · exact M_symm_smooth.differentiableAt le_rfl
   · exact hW.comp x Af
 
-/-- The equation `L_{f^* V} (g ∘ f) (x) = (L_V g) (f x)`, which is essentially the definition of
-the pullback. -/
-lemma lieDeriv_pullback (f : E → F) (V : F → F) (g : F → G) (x : E) :
-    lieDeriv 𝕜 (pullback 𝕜 f V) (g ∘ f) x = lieDeriv 𝕜 V g (f x) := by
-  sorry
-
-
-
-
-
-
-
-
-
-
-
-
 end LieBracketVectorField
+
+open Bundle Filter Function
+
+open scoped Bundle Manifold
+
+section
+
+#check Bundle.smooth_zeroSection
+
+#check ChartedSpace.LiftPropWithinAt
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {H : Type*} [TopologicalSpace H] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    (I : ModelWithCorners 𝕜 E H)
+    {H' : Type*} [TopologicalSpace H'] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+    (I' : ModelWithCorners 𝕜 E' H')
+    (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
+    (M' : Type*) [TopologicalSpace M'] [ChartedSpace H' M'] [SmoothManifoldWithCorners I' M']
+
+
+def foobar : TangentBundle (I.prod I') (M × M') ≃ (TangentBundle I M) × (TangentBundle I' M') where
+  toFun p := (⟨p.1.1, p.2.1⟩, ⟨p.1.2, p.2.2⟩)
+  invFun p := ⟨(p.1.1, p.2.1), (p.1.2, p.2.2)⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+lemma foobar_eq_tangentMap_prod_tangentMap :
+    foobar I I' M M' = fun (p : TangentBundle (I.prod I') (M × M')) ↦
+      (tangentMap (I.prod I') I Prod.fst p, tangentMap (I.prod I') I' Prod.snd p) := by
+  simp only [tangentMap_prod_fst, tangentMap_prod_snd]; rfl
+
+lemma smooth_foobar :
+    Smooth (I.prod I').tangent (I.tangent.prod I'.tangent) (foobar I I' M M') := by
+  rw [foobar_eq_tangentMap_prod_tangentMap]
+  exact smooth_fst.tangentMap.prod_mk smooth_snd.tangentMap
+
+lemma smooth_foobar_symm :
+    Smooth (I.tangent.prod I'.tangent) (I.prod I').tangent (foobar I I' M M').symm := by
+  simp only [Smooth, ContMDiff, Prod.forall]
+  intro a b
+  rw [contMDiffAt_totalSpace]
+  refine ⟨?_, ?_⟩
+  · exact ContMDiffAt.prod_map (smoothAt_proj (TangentSpace I)) (smoothAt_proj (TangentSpace I'))
+
+  /-
+  let g : M' → M × M' := fun m ↦ (a.1, m)
+  have A' : Smooth I'.tangent (I.prod I').tangent (tangentMap I' (I.prod I') g) := by
+    apply Smooth.tangentMap
+    exact smooth_const.prod_mk smooth_id
+  have B' : tangentMap I' (I.prod I') g = fun p ↦ ⟨(a.1, p.1), (0, p.2)⟩ := by
+    ext p : 1
+    exact tangentMap_prod_right I I'
+  rw [B'] at A'
+  have C' := A' b
+  have Z' := ((contMDiffAt_totalSpace _ _).1 C').2
+  simp only [modelWithCornersSelf_prod, TangentBundle.trivializationAt_apply,
+    PartialHomeomorph.extend, prodChartedSpace_chartAt, PartialHomeomorph.prod_toPartialEquiv,
+    PartialEquiv.prod, PartialHomeomorph.toFun_eq_coe, PartialHomeomorph.coe_coe_symm,
+    modelWithCorners_prod_toPartialEquiv, ModelWithCorners.toPartialEquiv_coe,
+    ModelWithCorners.toPartialEquiv_coe_symm, ModelWithCorners.source_eq, Set.univ_prod_univ,
+    ModelWithCorners.target_eq, PartialEquiv.coe_trans, comp_def, PartialEquiv.coe_trans_symm,
+    PartialEquiv.coe_symm_mk, modelWithCorners_prod_coe, comp_apply] at Z'
+  -/
+
+
+
+
+  simp only [foobar, Equiv.coe_fn_symm_mk, TangentBundle.trivializationAt_apply,
+    PartialHomeomorph.extend, prodChartedSpace_chartAt, PartialHomeomorph.prod_toPartialEquiv,
+    PartialEquiv.prod, PartialHomeomorph.toFun_eq_coe, PartialHomeomorph.coe_coe_symm,
+    modelWithCorners_prod_toPartialEquiv, ModelWithCorners.toPartialEquiv_coe,
+    ModelWithCorners.toPartialEquiv_coe_symm, ModelWithCorners.source_eq, Set.univ_prod_univ,
+    ModelWithCorners.target_eq, PartialEquiv.coe_trans, comp_def, PartialEquiv.coe_trans_symm,
+    PartialEquiv.coe_symm_mk, modelWithCorners_prod_coe, comp_apply,]
+  simp_rw [DifferentiableWithinAt.fderivWithin_prod sorry sorry sorry]
+  simp
+  convert_to ContMDiffAt (I.tangent.prod I'.tangent) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) ⊤
+    (fun (x : TangentBundle I M × TangentBundle I' M') ↦
+    ((fderivWithin 𝕜 (fun x_1 ↦ I ((chartAt H a.proj) ((chartAt H x.1.proj).symm (I.symm x_1.1))))
+          (Set.range (Prod.map ↑I ↑I')) (I ((chartAt H x.1.proj) x.1.proj), I' ((chartAt H' x.2.proj) x.2.proj)))
+        (x.1.snd, x.2.snd),
+      (fderivWithin 𝕜 (fun x_1 ↦ I' ((chartAt H' b.proj) ((chartAt H' x.2.proj).symm (I'.symm x_1.2))))
+          (Set.range (Prod.map I I')) (I ((chartAt H x.1.proj) x.1.proj), I' ((chartAt H' x.2.proj) x.2.proj)))
+        (x.1.snd, x.2.snd))) (a, b)
+  · sorry
+  · sorry
+  apply ContMDiffAt.prod_mk
+  · let f : M → M × M' := fun m ↦ (m, b.1)
+    have A : Smooth I.tangent (I.prod I').tangent (tangentMap I (I.prod I') f) := by
+      apply Smooth.tangentMap
+      exact smooth_id.prod_mk smooth_const
+    have B : tangentMap I (I.prod I') f = fun p ↦ ⟨(p.1, b.1), (p.2, 0)⟩ := by
+      ext p : 1
+      exact tangentMap_prod_left I I'
+    rw [B] at A
+    have C := A a
+    have Z := ((contMDiffAt_totalSpace _ _).1 C).2
+    simp only [modelWithCornersSelf_prod, TangentBundle.trivializationAt_apply,
+      PartialHomeomorph.extend, prodChartedSpace_chartAt, PartialHomeomorph.prod_toPartialEquiv,
+      PartialEquiv.prod, PartialHomeomorph.toFun_eq_coe, PartialHomeomorph.coe_coe_symm,
+      modelWithCorners_prod_toPartialEquiv, ModelWithCorners.toPartialEquiv_coe,
+      ModelWithCorners.toPartialEquiv_coe_symm, ModelWithCorners.source_eq, Set.univ_prod_univ,
+      ModelWithCorners.target_eq, PartialEquiv.coe_trans, comp_def, PartialEquiv.coe_trans_symm,
+      PartialEquiv.coe_symm_mk, modelWithCorners_prod_coe, comp_apply] at Z
+    simp_rw [DifferentiableWithinAt.fderivWithin_prod sorry sorry sorry] at Z
+    simp at Z
+    have W : ContMDiff (𝓘(𝕜, E × E')) (𝓘(𝕜, E)) ⊤ (Prod.fst : E × E' → E) := sorry
+    have U := ContMDiffAt.comp a W.contMDiffAt Z
+    simp [Function.comp_def] at U
+    clear Z
+    let F : TangentBundle I M × TangentBundle I' M' → TangentBundle I M := Prod.fst
+    have : ContMDiffAt (I.tangent.prod I'.tangent) I.tangent ⊤ F (a, b) := smoothAt_fst
+    have U' := U.comp (a, b) this
+    clear U
+    simp [F, Function.comp_def] at U'
+    convert U' using 2 with p
+    clear U' this F W C B A
+    let φ (x : E) := I ((chartAt H a.proj) ((chartAt H p.1.proj).symm (I.symm x)))
+    change fderivWithin 𝕜 (φ ∘ Prod.fst) _ _ _ = fderivWithin 𝕜 (φ ∘ Prod.fst) _ _ _
+    rw [Set.range_prod_map]
+    rw [fderivWithin.comp (t := Set.range I), fderivWithin.comp (t := Set.range I)]
+    simp
+    rw [fderivWithin_fst, fderivWithin_fst]
+    · simp
+    · apply UniqueDiffWithinAt.prod
+      exact ModelWithCorners.uniqueDiffWithinAt_image I
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#exit
+
+  rw [contMDiffAt_iff]
+  simp only [foobar, Equiv.coe_fn_symm_mk, extChartAt, PartialHomeomorph.extend,
+    modelWithCorners_prod_toPartialEquiv, modelWithCornersSelf_partialEquiv, PartialEquiv.coe_trans,
+    PartialEquiv.prod_coe, ModelWithCorners.toPartialEquiv_coe, PartialEquiv.refl_coe, id_eq,
+    PartialHomeomorph.toFun_eq_coe, prodChartedSpace_chartAt, PartialHomeomorph.prod_toPartialEquiv,
+    PartialEquiv.coe_trans_symm, modelWithCorners_prod_coe, modelWithCornersSelf_coe, comp_apply,
+    TangentBundle.coe_chartAt_fst]
+  refine ⟨?_, ?_⟩
+  · rw [FiberBundle.continuousAt_totalSpace]
+    refine ⟨?_, ?_⟩
+    · apply Continuous.continuousAt
+      apply Continuous.prod_map
+      · exact FiberBundle.continuous_proj E (TangentSpace I)
+      · exact FiberBundle.continuous_proj E' (TangentSpace I')
+    · simp [trivializationAt, FiberBundle.trivializationAt', FiberBundleCore.localTrivAt]
+      sorry
+  · simp [chartAt, Function.comp_def]
+
+
+
+#exit
+
+/-- The invariant vector field associated to a vector in the Lie alebra. -/
+def invariantVectorField (v : TangentSpace I (1 : G)) (g : G) : TangentSpace I g :=
+  mfderiv I I (fun a ↦ g * a) (1 : G) v
+
+
+def foo : TangentBundle I G → TangentBundle (I.prod I) (G × G) :=
+  tangent_map (fun g ↦ )
+
+theorem contMDiff_invariantVectorField (v : TangentSpace I (1 : G)) :
+    ContMDiff I I.tangent ⊤
+      (fun (g : G) ↦ (invariantVectorField v g : TangentBundle I G)) := by
+  have Z := smooth_mul I (G := G)
+  have T := ContMDiff.contMDiff_tangentMap Z (m := ⊤) le_rfl
+  let f : G → TangentBundle I G := fun g ↦ TotalSpace.mk' E g 0
+  have sf : Smooth I I.tangent f := smooth_zeroSection _ _
+  let f' : G → TangentBundle I G := fun g ↦ TotalSpace.mk' E 1 v
+  have sf' : Smooth I I.tangent f' := smooth_const
+  let F : G → (TangentBundle I G × TangentBundle I G) := fun g ↦ (f g, f' g)
+  have : Smooth I (I.tangent.prod I.tangent) F := by
+    exact Smooth.prod_mk sf sf'
+
+
+
+
+
+
+
+end
