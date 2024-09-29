@@ -14,7 +14,7 @@ import Mathlib.FieldTheory.SeparableClosure
 
 # Main definitions and results
 
-In a Galois extension `K/k`
+In a field extension `K/k`
 
 * `FiniteGaloisIntermediateField` : The type of a finite Galois intermediate field of `K/k`
 
@@ -37,7 +37,7 @@ open scoped IntermediateField
 
 variable (k K : Type*) [Field k] [Field K] [Algebra k K]
 
-/--The type of finite Galois intermediateField of `K/k`-/
+/-- The type of a finite Galois intermediate field of `K/k` -/
 @[ext]
 structure FiniteGaloisIntermediateField where
   /--extend from `IntermediateField`-/
@@ -164,7 +164,7 @@ def finGal (L : FiniteGaloisIntermediateField k K) : FiniteGrp :=
   letI := AlgEquiv.fintype k L
   FiniteGrp.of <| L ≃ₐ[k] L
 
-/--For `FiniteGaloisIntermediateField` `L₁ L₂` ordered by inverse inclusion,
+/-- For `FiniteGaloisIntermediateField` s `L₁` and `L₂` with `L₂ ≤ L₁`
   giving the restriction of `Gal(L₁/k)` to `Gal(L₂/k)`-/
 noncomputable def finGalMap {L₁ L₂ : (FiniteGaloisIntermediateField k K)ᵒᵖ}
     (le : L₁ ⟶ L₂) : L₁.unop.finGal ⟶ L₂.unop.finGal :=
@@ -197,8 +197,8 @@ lemma map_comp {L₁ L₂ L₃ : (FiniteGaloisIntermediateField k K)ᵒᵖ}
 end finGalMap
 
 variable (k K) in
-/--Mapping `FiniteGaloisIntermediateField` ordered by inverse inclusion to its
-  corresponding Galois Group as FiniteGrp-/
+/-- Mapping `FiniteGaloisIntermediateField` ordered by inverse inclusion to its
+  corresponding Galois Group as `FiniteGrp`. -/
 noncomputable def finGalFunctor : (FiniteGaloisIntermediateField k K)ᵒᵖ ⥤ FiniteGrp where
   obj L := L.unop.finGal
   map := finGalMap
