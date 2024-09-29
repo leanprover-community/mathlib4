@@ -56,7 +56,7 @@ instance topologicalSpaceUnbundled (X : TopCat) : TopologicalSpace X :=
 instance instFunLike (X Y : TopCat) : FunLike (X ⟶ Y) X Y :=
   inferInstanceAs <| FunLike C(X, Y) X Y
 
-instance instMonoidHomClass (X Y : TopCat) : ContinuousMapClass (X ⟶ Y) X Y :=
+instance instContinuousMapClass (X Y : TopCat) : ContinuousMapClass (X ⟶ Y) X Y :=
   inferInstanceAs <| ContinuousMapClass C(X, Y) X Y
 
 -- Porting note (#10618): simp can prove this; removed simp
