@@ -517,12 +517,11 @@ instance {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) [IsOpenImmersion f] :
 
 variable {X Y : Scheme.{u}}
 
-/-- The restriction of a morphism `f : X ⟶ Y` to open sets on the source and target. -/
-def Scheme.Hom.resLE {X Y : Scheme.{u}} (f : Hom X Y) (U : Y.Opens) (V : X.Opens)
-    (e : V ≤ f ⁻¹ᵁ U) : V.toScheme ⟶ U.toScheme :=
-  (X.restrictFunctor.map (homOfLE e)).left ≫ f ∣_ U
-
 namespace Scheme.Hom
+
+/-- The restriction of a morphism `f : X ⟶ Y` to open sets on the source and target. -/
+def resLE (f : Hom X Y) (U : Y.Opens) (V : X.Opens) (e : V ≤ f ⁻¹ᵁ U) : V.toScheme ⟶ U.toScheme :=
+  (X.restrictFunctor.map (homOfLE e)).left ≫ f ∣_ U
 
 variable (f : X ⟶ Y) {U U' : Y.Opens} {V V' : X.Opens} (e : V ≤ f ⁻¹ᵁ U)
 
