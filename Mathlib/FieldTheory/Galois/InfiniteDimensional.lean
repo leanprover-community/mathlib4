@@ -11,6 +11,12 @@ import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
 
 /-!
 
+# Galois Group as a profinite group
+
+In this file, we prove that in a field extension `K/k`, there is a continuous isomorphism between
+`Gal(K/k)` and the limit of `Gal(L/k)`, where `L` is a finite galois intermediate field ordered by
+inverse inclusion, thus making `Gal(K/k)` profinite because the limit is profinite.
+
 # Main definitions and results
 
 In a field extension `K/k`
