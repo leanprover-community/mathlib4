@@ -178,6 +178,17 @@ instance krullTopology (K L : Type*) [Field K] [Field L] [Algebra K L] :
 instance (K L : Type*) [Field K] [Field L] [Algebra K L] : TopologicalGroup (L ≃ₐ[K] L) :=
   GroupFilterBasis.isTopologicalGroup (galGroupBasis K L)
 
+open scoped Topology in
+lemma krullTopology_mem_nhds_one (K L : Type*) [Field K] [Field L] [Algebra K L]
+    (s : Set (L ≃ₐ[K] L)) : s ∈ 𝓝 1 ↔ ∃ S : IntermediateField K L,
+    FiniteDimensional K S ∧ (S.fixingSubgroup : Set (L ≃ₐ[K] L)) ⊆ s := by
+  rw [GroupFilterBasis.nhds_one_eq]
+  constructor
+  · rintro ⟨-, ⟨-, ⟨S, fin, rfl⟩, rfl⟩, hS⟩
+    exact ⟨S, fin, hS⟩
+  · rintro ⟨S, fin, hS⟩
+    exact ⟨S.fixingSubgroup, ⟨S.fixingSubgroup, ⟨S, fin, rfl⟩, rfl⟩, hS⟩
+
 section KrullT2
 
 open scoped Topology Filter
