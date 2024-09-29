@@ -979,7 +979,6 @@ lemma triangle_to_yoneda_comp_arrows₄_exact_of_distinguished (Z : C) {X₁ X�
              exact Nonempty.intro (Iso.refl _)
            exact Functor.IsHomological.exact (F := preadditiveYoneda.obj Z) _ dT'
 
-/- Old version with the Yoneda functor.
 lemma existence_omega_aux (n : ℕ) : ∀ (X : C) [IsLE X 0], Finset.card (support X) = n →
     ∃ (Y : hP.Core') (s : X ⟶ Y.1),
     ∀ (Z : C), IsGE Z 0 → IsIso ((preadditiveYoneda.obj Z).map (Quiver.Hom.op s)) := by
@@ -1091,112 +1090,15 @@ lemma existence_omega_aux (n : ℕ) : ∀ (X : C) [IsLE X 0], Finset.card (suppo
     · exact shift_omega_epi s₁ 0 1 (fun Z hZ ↦ @IsIso.epi_of_iso _ _ _ _ _ (hY₁ Z hZ)) Z hZ
     · exact hY₃ Z hZ
     · exact hY₁ Z hZ
-    · exact shift_omega_mono s₃ 0 (-1) (fun Z hZ ↦ @IsIso.mono_of_iso _ _ _ _ _ (hY₃ Z hZ)) Z hZ-/
-
-lemma existence_omega_aux (n : ℕ) : ∀ (X : C) [IsLE X 0], Finset.card (support X) = n →
-    ∃ (Y : hP.Core') (s : X ⟶ Y.1),
-    ∀ (Z : C), IsGE Z 0 → Function.Bijective (fun (f : Y.1 ⟶ Z) ↦ s ≫ f) := by
-  refine Nat.strongRec ?_ n
-  intro n hn X _ hX
-  by_cases h : n = 0
-  · existsi 0, 0
-    intro Z _
-    have hX : IsZero X := by rw [isZero_iff_empty_support, ← Finset.card_eq_zero, hX, h]
-    have h₀  : IsZero (ιCore'.obj (0 : hP.Core')) := by
-      apply Functor.map_isZero
-      exact isZero_zero _
-    constructor
-    · intro f f' h
-      rw [IsZero.eq_zero_of_src h₀ f, IsZero.eq_of_src h₀ f']
-    · intro g
-      rw [IsZero.eq_zero_of_src hX g]
-      use 0
-      simp only [comp_zero]
-  · set b := sSup (support X).toSet
-    set T := (triangleGELT b).obj X
-    set dT := triangleGELT_distinguished b X
-    have hb : b ∈ support X := by
-      dsimp [b]; rw [← Finset.mem_coe]
-      apply Set.Nonempty.csSup_mem
-      · rw [← hX, ← ne_eq, Finset.card_ne_zero, ← Finset.coe_nonempty] at h
-        exact h
-      · exact Finset.finite_toSet _
-    have : b ≤ 0 := by
-      apply csSup_le (Finset.coe_nonempty.mp ⟨b, hb⟩)
-      have : IsLE X 0 := inferInstance
-      rw [isLE_iff_support_bounded_above] at this
-      exact fun _ hn ↦ Set.mem_Iic.mp (this hn)
-    have : IsLE T.obj₃ 0 := by
-      have : IsLE T.obj₃ (b - 1) := by dsimp [T]; infer_instance
-      exact isLE_of_LE _ (b - 1) 0 (by linarith)
-    have : IsLE T.obj₁ 0 := by
-      have : IsLE T.obj₂ 0 := by dsimp [T]; infer_instance
-      exact LE_ext₁ _ dT 0
-    have h₁ : Finset.card (support T.obj₁) = 1 := by
-      dsimp [T]
-      rw [support_truncGE, Finset.card_eq_one]
-      existsi b
-      rw [Finset.eq_singleton_iff_unique_mem]
-      simp only [Finset.mem_filter, le_refl, and_true, and_imp]
-      constructor
-      · exact hb
-      · exact fun _ hn hbn ↦ le_antisymm (le_csSup (Finset.bddAbove _) hn) hbn
-    have h₃ : Finset.card (support T.obj₃) < n := by
-      have heq : support T.obj₃ = Finset.erase (support X) b := by
-        ext n
-        simp only [Finset.mem_erase, ne_eq]
-        dsimp [T]; rw [support_truncLT, Finset.mem_filter]
-        constructor
-        · exact fun h ↦ ⟨ne_of_lt h.2, h.1⟩
-        · intro h
-          rw [and_iff_right h.2, lt_iff_le_and_ne, ne_eq, and_iff_left h.1]
-          exact le_csSup (Finset.bddAbove _) (Finset.mem_coe.mpr h.2)
-      rw [heq, ← hX]
-      exact Finset.card_erase_lt_of_mem hb
-    obtain ⟨Y₁, s₁, hY₁⟩ := existence_omega_support_singleton T.obj₁ h₁
-    obtain ⟨Y₃, s₃, hY₃⟩ := hn _ h₃ T.obj₃ rfl
-    have : IsLE Y₁.1 0 := {le := Y₁.2.1}
-    have : IsLE Y₃.1 0 := {le := Y₃.2.1}
-    have : IsGE Y₁.1 0 := {ge := Y₁.2.2}
-    have : IsGE Y₃.1 0 := {ge := Y₃.2.2}
-    have := hY₃ (Y₁.1⟦(1 : ℤ)⟧) inferInstance
-    set w : Y₃.obj ⟶ Y₁.obj⟦(1 : ℤ)⟧ := inv (((preadditiveYoneda.obj (Y₁.obj⟦(1 : ℤ)⟧)).map s₃.op))
-      (T.mor₃ ≫ s₁⟦1⟧') with hwdef
-    have hw : s₃ ≫ w = T.mor₃ ≫ s₁⟦1⟧' := by
-      change ((preadditiveYoneda.obj ((shiftFunctor C 1).obj Y₁.obj)).map s₃.op) w = _
-      rw [hwdef]
-      change (_ ≫ ((preadditiveYoneda.obj ((shiftFunctor C 1).obj Y₁.obj)).map s₃.op)) _ = _
-      rw [IsIso.inv_hom_id]
-      simp only [preadditiveYoneda_obj, Functor.comp_obj, preadditiveYonedaObj_obj,
-        ModuleCat.forget₂_obj, AddCommGrp.coe_of, AddCommGrp.coe_id', id_eq]
-    obtain ⟨Y₂, u, v, dT'⟩ := distinguished_cocone_triangle₂ w
-    obtain ⟨s₂, hu, hv⟩ := complete_distinguished_triangle_morphism₂ _ _ dT dT' s₁ s₃ hw.symm
-    have hY₂ : tCore.P Y₂ := by
-      constructor
-      · refine (@LE_ext₂ C _ _ _ _ _ _ _ _ dT' 0 ?_ ?_).le
-        simp only [Triangle.mk_obj₁]; infer_instance
-        simp only [Triangle.mk_obj₃]; infer_instance
-      · refine (@GE_ext₂ C _ _ _ _ _ _ _ _ dT' 0 ?_ ?_).ge
-        simp only [Triangle.mk_obj₁]; infer_instance
-        simp only [Triangle.mk_obj₃]; infer_instance
-    existsi ⟨Y₂, hY₂⟩, s₂
-    intro Z hZ
-    refine Abelian.isIso_of_epi_of_isIso_of_isIso_of_mono (R₁ := triangle_to_yoneda_comp_arrows₄ Z
-      u v w) (R₂ := triangle_to_yoneda_comp_arrows₄ Z T.mor₁ T.mor₂ T.mor₃)
-      (triangle_to_yoneda_comp_arrows₄_exact_of_distinguished Z u v w dT')
-      (triangle_to_yoneda_comp_arrows₄_exact_of_distinguished Z T.mor₁ T.mor₂ T.mor₃ dT)
-      (triangle_to_yoneda_comp_arrows₄_hom Z u v w T.mor₁ T.mor₂ T.mor₃
-      (Triangle.homMk T (Triangle.mk u v w) s₁ s₂ s₃ hu hv hw.symm)) ?_ ?_ ?_ ?_
-    · exact shift_omega_epi s₁ 0 1 (fun Z hZ ↦ @IsIso.epi_of_iso _ _ _ _ _ (hY₁ Z hZ)) Z hZ
-    · exact hY₃ Z hZ
-    · exact hY₁ Z hZ
     · exact shift_omega_mono s₃ 0 (-1) (fun Z hZ ↦ @IsIso.mono_of_iso _ _ _ _ _ (hY₃ Z hZ)) Z hZ
 
-
 lemma existence_omega (X : C) [IsLE X 0] : ∃ (Y : hP.Core') (s : X ⟶ Y.1),
-    ∀ (Z : C), IsGE Z 0 → --IsIso ((preadditiveYoneda.obj Z).map (Quiver.Hom.op s)) :=
-    Function.Bijective (fun (f : Y.1 ⟶ Z) ↦ s ≫ f) := sorry
---  existence_omega_aux (Finset.card (support X)) X rfl
+    ∀ (Z : C), IsGE Z 0 → Function.Bijective (fun (f : Y.1 ⟶ Z) ↦ s ≫ f) := by
+  obtain ⟨Y, s, h⟩ := existence_omega_aux (Finset.card (support X)) X rfl
+  use Y, s
+  simp only [preadditiveYoneda_obj, Functor.comp_obj, preadditiveYonedaObj_obj,
+    ModuleCat.forget₂_obj, Functor.comp_map, preadditiveYonedaObj_map, Quiver.Hom.unop_op,
+    ModuleCat.forget₂_map] at h
 
 end FilteredTriangulated
 
