@@ -105,8 +105,8 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
       let unused := all.toList.filter (!sorted.contains ·.1)
       for (uniq, user) in unused do
         match uniq.eraseMacroScopes with
-          | .anonymous => logInfoAt user m!"'{user}' is unused"
-          | x          => logInfoAt user m!"'{x}' is unused"
+          | .anonymous => Linter.logLint linter.unusedVariableCommand user m!"'{user}' is unused"
+          | x          => Linter.logLint linter.unusedVariableCommand user m!"'{x}' is unused"
   -- if there is a `variable` command in `stx`, then we update `usedVarsRef` with all the
   -- information that is available
   if (stx.find? (·.isOfKind ``Lean.Parser.Command.variable)).isSome then
