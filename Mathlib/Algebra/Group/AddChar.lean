@@ -195,6 +195,16 @@ instance instZero : Zero (AddChar A M) := ⟨1⟩
 
 lemma one_eq_zero : (1 : AddChar A M) = (0 : AddChar A M) := rfl
 
+@[simp, norm_cast] lemma coe_eq_one : ⇑ψ = 1 ↔ ψ = 0 := by rw [← coe_zero, DFunLike.coe_fn_eq]
+
+@[simp] lemma toMonoidHomEquiv_zero : toMonoidHomEquiv (0 : AddChar A M) = 1 := rfl
+@[simp] lemma toMonoidHomEquiv_symm_one :
+    toMonoidHomEquiv.symm (1 : Multiplicative A →* M) = 0 := rfl
+
+@[simp] lemma toAddMonoidHomEquiv_zero : toAddMonoidHomEquiv (0 : AddChar A M) = 0 := rfl
+@[simp] lemma toAddMonoidHomEquiv_symm_zero :
+    toAddMonoidHomEquiv.symm (0 : A →+ Additive M) = 0 := rfl
+
 instance instInhabited : Inhabited (AddChar A M) := ⟨1⟩
 
 /-- Composing a `MonoidHom` with an `AddChar` yields another `AddChar`. -/
@@ -252,6 +262,8 @@ set_option linter.deprecated false in
 lemma isNontrivial_iff_ne_trivial (ψ : AddChar A M) : IsNontrivial ψ ↔ ψ ≠ 1 :=
   not_forall.symm.trans (DFunLike.ext_iff (f := ψ) (g := 1)).symm.not
 
+noncomputable instance : DecidableEq (AddChar A M) := Classical.decEq _
+
 end Basic
 
 section toCommMonoid
@@ -290,6 +302,11 @@ lemma sum_apply (s : Finset ι) (ψ : ι → AddChar A M) (a : A) :
 lemma mul_eq_add (ψ χ : AddChar A M) : ψ * χ = ψ + χ := rfl
 lemma pow_eq_nsmul (ψ : AddChar A M) (n : ℕ) : ψ ^ n = n • ψ := rfl
 lemma prod_eq_sum (s : Finset ι) (ψ : ι → AddChar A M) : ∏ i in s, ψ i = ∑ i in s, ψ i := rfl
+
+@[simp] lemma toMonoidHomEquiv_add (ψ φ : AddChar A M) :
+    toMonoidHomEquiv (ψ + φ) = toMonoidHomEquiv ψ * toMonoidHomEquiv φ := rfl
+@[simp] lemma toMonoidHomEquiv_symm_mul (ψ φ : Multiplicative A →* M) :
+    toMonoidHomEquiv.symm (ψ * φ) = toMonoidHomEquiv.symm ψ + toMonoidHomEquiv.symm φ := rfl
 
 /-- The natural equivalence to `(Multiplicative A →* M)` is a monoid isomorphism. -/
 def toMonoidHomMulEquiv : AddChar A M ≃* (Multiplicative A →* M) :=
@@ -356,8 +373,8 @@ instance : AddCommGroup (AddChar A M) := Additive.addCommGroup
 
 @[simp] lemma inv_apply (ψ : AddChar A M) (a : A) : ψ⁻¹ a = ψ (-a) := rfl
 @[simp] lemma neg_apply (ψ : AddChar A M) (a : A) : (-ψ) a = ψ (-a) := rfl
-@[simp] lemma div_apply (ψ χ : AddChar A M) (a : A) : (ψ / χ) a = ψ a * χ (-a) := rfl
-@[simp] lemma sub_apply (ψ χ : AddChar A M) (a : A) : (ψ - χ) a = ψ a * χ (-a) := rfl
+lemma div_apply (ψ χ : AddChar A M) (a : A) : (ψ / χ) a = ψ a * χ (-a) := rfl
+lemma sub_apply (ψ χ : AddChar A M) (a : A) : (ψ - χ) a = ψ a * χ (-a) := rfl
 
 end fromAddCommGroup
 
@@ -387,8 +404,7 @@ lemma map_zsmul_eq_zpow (ψ : AddChar A M) (n : ℤ) (a : A) : ψ (n • a) = (�
 
 end fromAddGrouptoDivisionMonoid
 
-section fromAddGrouptoDivisionCommMonoid
-
+section fromAddCommGrouptoDivisionCommMonoid
 variable {A M : Type*} [AddCommGroup A] [DivisionCommMonoid M]
 
 lemma inv_apply' (ψ : AddChar A M) (a : A) : ψ⁻¹ a = (ψ a)⁻¹ := by rw [inv_apply, map_neg_eq_inv]
@@ -400,13 +416,18 @@ lemma div_apply' (ψ χ : AddChar A M) (a : A) : (ψ / χ) a = ψ a / χ a := by
 lemma sub_apply' (ψ χ : AddChar A M) (a : A) : (ψ - χ) a = ψ a / χ a := by
   rw [sub_apply, map_neg_eq_inv, div_eq_mul_inv]
 
+@[simp] lemma zsmul_apply (n : ℤ) (ψ : AddChar A M) (a : A) : (n • ψ) a = ψ a ^ n := by
+  cases n <;> simp [-neg_apply, neg_apply']
+
+@[simp] lemma zpow_apply (ψ : AddChar A M) (n : ℤ) (a : A) : (ψ ^ n) a = ψ a ^ n := zsmul_apply ..
+
 lemma map_sub_eq_div (ψ : AddChar A M) (a b : A) : ψ (a - b) = ψ a / ψ b :=
   ψ.toMonoidHom.map_div _ _
 
 lemma injective_iff {ψ : AddChar A M} : Injective ψ ↔ ∀ ⦃x⦄, ψ x = 1 → x = 0 :=
   ψ.toMonoidHom.ker_eq_bot_iff.symm.trans eq_bot_iff
 
-end fromAddGrouptoDivisionCommMonoid
+end fromAddCommGrouptoDivisionCommMonoid
 
 section MonoidWithZero
 variable {A M₀ : Type*} [AddGroup A] [MonoidWithZero M₀] [Nontrivial M₀]
