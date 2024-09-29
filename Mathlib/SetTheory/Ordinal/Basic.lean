@@ -701,7 +701,7 @@ set_option linter.deprecated false in
 theorem lift.initialSeg_coe : (lift.initialSeg.{u, v} : Ordinal → Ordinal) = lift.{v, u} :=
   rfl
 
-/-! ### The first infinite ordinal `omega0` -/
+/-! ### The first infinite ordinal ω -/
 
 
 /-- `ω` is the first infinite ordinal, defined as the order type of `ℕ`. -/

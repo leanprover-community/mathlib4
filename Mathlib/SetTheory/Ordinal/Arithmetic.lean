@@ -2252,7 +2252,7 @@ theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
 
 end Ordinal
 
-/-! ### Properties of `omega0` -/
+/-! ### Properties of ω -/
 
 
 namespace Cardinal

@@ -60,7 +60,7 @@ instance : One ONote :=
   ⟨oadd 0 1 0⟩
 
 /-- Notation for ω -/
-def omega0 : ONote :=
+def omega : ONote :=
   oadd 1 1 0
 
 /-- The ordinal denoted by a notation -/
