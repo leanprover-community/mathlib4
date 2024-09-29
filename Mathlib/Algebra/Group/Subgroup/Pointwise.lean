@@ -401,7 +401,7 @@ theorem Normal.of_conjugate_fixed {G : Type*} [Group G] {H : Subgroup G}
     ← mul_assoc, inv_mul_cancel, one_mul]
   exact hn
 
-theorem normalCore_eq_iInf_conjAct {G : Type*} [Group G] (H : Subgroup G) :
+theorem normalCore_eq_iInf_conjAct (H : Subgroup G) :
     H.normalCore = ⨅ (g : ConjAct G), g • H := by
   ext g
   simp only [Subgroup.normalCore, Subgroup.mem_iInf, Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
