@@ -24,6 +24,11 @@ A proper submodule `S : Submodule R M` is primary iff
 This is a generalization of `Ideal.IsPrimary`. For brevity, the pointwise instances are used
 to define the nilpotency of `r : R`.
 
+## References
+
+* [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
+  Chapter 4, Exercise 21.
+
 -/
 
 open Pointwise
@@ -37,7 +42,7 @@ variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 /-- A proper submodule `S : Submodule R M` is primary iff
   `r • x ∈ S` implies `x ∈ S` or `∃ n : ℕ, r ^ n • (⊤ : Submodule R M) ≤ S`.
   This generalizes `Ideal.IsPrimary`. -/
-def IsPrimary (S : Submodule R M) : Prop :=
+protected def IsPrimary (S : Submodule R M) : Prop :=
   S ≠ ⊤ ∧ ∀ {r : R} {x : M}, r • x ∈ S → x ∈ S ∨ ∃ n : ℕ, (r ^ n • ⊤ : Submodule R M) ≤ S
 
 variable {S : Submodule R M}
