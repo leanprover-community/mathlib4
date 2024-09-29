@@ -47,7 +47,7 @@ variable {K : Type*}
 /-- A modified division from a `DivisionRing` to its `OnePoint` extension. With notation `÷`
 for `divOnePoint`, we have in particular that `1 ÷ 0 = ∞`. -/
 noncomputable def divOnePoint [DivisionRing K] (a : K) (r : K): OnePoint K :=
-  ite (r ≠ 0) (a / r) ∞
+  if r ≠ 0 then a / r else ∞
 
 /-- Uncurried version of `divOnePoint`, with nonzeroness assumption. -/
 noncomputable def divOnePoint' [DivisionRing K]
