@@ -308,11 +308,12 @@
   "Mathlib.RingTheory.PolynomialAlgebra": ["Mathlib.Data.Matrix.DMatrix"],
   "Mathlib.RingTheory.MvPolynomial.Homogeneous":
   ["Mathlib.Algebra.DirectSum.Internal"],
-  "Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs":
-  ["Mathlib.Tactic.Algebraize"],
-  "Mathlib.RingTheory.Finiteness": ["Mathlib.Tactic.Algebraize"],
   "Mathlib.RingTheory.KrullDimension.Basic":
   ["Mathlib.Algebra.MvPolynomial.CommRing", "Mathlib.Algebra.Polynomial.Basic"],
+  "Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs":
+  ["Mathlib.Tactic.Algebraize"],
+  "Mathlib.RingTheory.Finiteness":
+  ["Mathlib.Algebra.Algebra.RestrictScalars", "Mathlib.Tactic.Algebraize"],
   "Mathlib.RingTheory.Binomial": ["Mathlib.Algebra.Order.Floor"],
   "Mathlib.RepresentationTheory.FdRep":
   ["Mathlib.CategoryTheory.Monoidal.Rigid.Braided"],
