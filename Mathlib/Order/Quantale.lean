@@ -29,9 +29,9 @@ However, when considering morphisms between quantales, usually only the supremum
 is required to be preserved. Hence, it is conseptually cleaner to define it as a
 complete sup-semilattice. (In literature, both variants occur.)
 
-* `is_integral`: a quantale for which `1 = ⊤`
-* `is_comm`: a commutative quantale, satisfying `x * y = y * x`
-* `is_idem`: an idempotent quantale, satisfying `x * x = x`
+* `IsIntegral`: a quantale for which `1 = ⊤`
+* `IsComm`: a commutative quantale, satisfying `x * y = y * x`
+* `IsIdem`: an idempotent quantale, satisfying `x * x = x`
 
 ## Naming conventions
 
@@ -92,13 +92,13 @@ namespace Quantale
 /- Basic definitions on quantales -/
 
 /-- A quantale is integral if its unit and top element coincide -/
-def is_integral [Quantale α] := (⊤ : α) = 1
+def IsIntegral [Quantale α] := (⊤ : α) = 1
 
 /-- A quantale is commutative if its monoid satisfies `x * y = y * x` -/
-def is_comm [Quantale α] := ∀ x y : α , x * y = y * x
+def IsComm [Quantale α] := ∀ x y : α , x * y = y * x
 
 /-- A quantale is idempotent if its monoid satisfies `x * x = x` -/
-def is_idem [Quantale α] := ∀ x : α, x * x = x
+def IsIdem [Quantale α] := ∀ x : α, x * x = x
 
 variable {α : Type _}
 variable [Quantale α]
@@ -112,17 +112,17 @@ def left_residuation (x y : α) := sSup { z | z * x ≤ y }
 /-- Notation for left-residuation in quantales.
     I.e. `x ⇨ₗ y = sSup { z | z * x ≤ y }`.
 -/
-infixr:60 " ⇨ₗ " => l_residuation
+infixr:60 " ⇨ₗ " => left_residuation
 
 /-- Left- and right- residuation operators on a quantale are similar to the Heyting operator
     on complete lattices, but for a non-commutative logic.
     I.e. `x ⇨ᵣ y = sSup { z | x * z ≤ y }`.
 -/
-def r_residuation (x y : α) := sSup { z | x * z ≤ y }
+def right_residuation (x y : α) := sSup { z | x * z ≤ y }
 /-- Notation for right-residuation in quantales.
     I.e. `x ⇨ᵣ y = sSup { z | x * z ≤ y }`.
 -/
-infixr:60 " ⇨ᵣ " => r_residuation
+infixr:60 " ⇨ᵣ " => right_residuation
 
 end Quantale
 
