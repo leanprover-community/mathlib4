@@ -20,11 +20,12 @@ open Complex Finset Polynomial
 
 variable {ι : Type*} [Fintype ι]
 
-theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
+theorem linearIndependent_exp' (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i))
     (u_inj : Function.Injective u) (v : ι → ℂ) (hv : ∀ i, IsIntegral ℚ (v i))
-    (h : ∑ i, v i * exp (u i) = 0) : v = 0 := by
+    (h : ∑ i, v i * exp (u i) = 0) : ∀ i, v i = 0 := by
+  rw [funext_iff.symm, ← Pi.zero_def]
   by_contra! v0
-  obtain ⟨w, w0, m, p, p0, w', h⟩ := linear_independent_exp_aux u hu u_inj v hv v0 h
+  obtain ⟨w, w0, m, p, p0, w', h⟩ := linearIndependent_exp_aux u hu u_inj v hv v0 h
   have m0 : m ≠ 0 := by
     rintro rfl; rw [Fin.sum_univ_zero, add_zero, Int.cast_eq_zero] at h
     exact w0 h
@@ -192,6 +193,11 @@ theorem linear_independent_exp (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
       Nat.not_dvd_of_pos_of_lt (Int.natAbs_pos.mpr w0)
         (((le_max_right _ _).trans (le_max_right _ _)).trans_lt hqN)⟩
 
+theorem linearIndependent_exp (u : ι → integralClosure ℚ ℂ) (u_inj : u.Injective) :
+    LinearIndependent (integralClosure ℚ ℂ) fun i ↦ exp (u i) :=
+  Fintype.linearIndependent_iff.mpr fun v h ↦ mod_cast
+    linearIndependent_exp' (u ·) (u · |>.2) (fun i j ↦ by simpa using @u_inj i j) (v ·) (v · |>.2) h
+
 theorem transcendental_exp {a : ℂ} (a0 : a ≠ 0) (ha : IsAlgebraic ℤ a) :
     Transcendental ℤ (exp a) := by
   intro h
@@ -199,34 +205,27 @@ theorem transcendental_exp {a : ℂ} (a0 : a ≠ 0) (ha : IsAlgebraic ℤ a) :
     isAlgebraic_iff_isIntegral.mp (ha.tower_top_of_injective (algebraMap ℤ ℚ).injective_int)
   have is_integral_expa : IsIntegral ℚ (exp a) :=
     isAlgebraic_iff_isIntegral.mp (h.tower_top_of_injective (algebraMap ℤ ℚ).injective_int)
-  have := linear_independent_exp (fun i : Bool => if i then a else 0) ?_ ?_
-      (fun i : Bool => if i then 1 else -exp a) ?_ ?_
-  · simpa [ite_eq_iff] using congr_fun this True
-  · intro i; dsimp only; split_ifs
+  refine by
+    simpa [Fin.forall_fin_succ] using linearIndependent_exp' ![a, 0] ?_ ?_ ![1, -exp a] ?_ ?_
+  · intro i; fin_cases i
     exacts [is_integral_a, isIntegral_zero]
-  · intro i j; dsimp
-    split_ifs with h_1 h_2 h_2 <;>
-      simp only [IsEmpty.forall_iff, forall_true_left, a0, a0.symm, *]
-  · intro i; dsimp; split_ifs; exacts [isIntegral_one, is_integral_expa.neg]
-  simp
+  · intro i j; fin_cases i, j <;> simp [a0.symm, *]
+  · intro i; fin_cases i; exacts [isIntegral_one, is_integral_expa.neg]
+  · simp
 
 theorem transcendental_e : Transcendental ℤ (exp 1) :=
   transcendental_exp one_ne_zero isAlgebraic_one
 
 theorem transcendental_pi : Transcendental ℤ Real.pi := by
   intro h
-  have := linear_independent_exp (fun i : Bool => if i then Real.pi * I else 0) ?_ ?_
-      (fun _ : Bool => 1) ?_ ?_
-  · simpa only [Pi.zero_apply, one_ne_zero] using congr_fun this False
-  · intro i; dsimp only; split_ifs
+  refine by
+    simpa [Fin.forall_fin_succ] using linearIndependent_exp' ![Real.pi * I, 0] ?_ ?_ ![1, 1] ?_ ?_
+  · intro i; fin_cases i
     · have isAlgebraic_pi := h.tower_top_of_injective (algebraMap ℤ ℚ).injective_int
       have isIntegral_pi : IsIntegral ℚ (Real.pi : ℂ) := by
         simpa only [coe_algebraMap] using isAlgebraic_pi.isIntegral.algebraMap
       exact isIntegral_pi.mul Complex.isIntegral_rat_I
     · exact isIntegral_zero
-  · intro i j; dsimp
-    split_ifs <;>
-      simp only [IsEmpty.forall_iff, forall_true_left, *, ofReal_eq_zero, mul_eq_zero,
-        Real.pi_ne_zero, I_ne_zero, or_false, zero_eq_mul]
-  · intro i; dsimp; exact isIntegral_one
-  simp
+  · intro i j; fin_cases i, j <;> simp [Real.pi_ne_zero]
+  · intro i; fin_cases i <;> exact isIntegral_one
+  · simp
