@@ -232,7 +232,24 @@ alias ⟨EqOn.comp_eq, _⟩ := eqOn_range
 
 end equality
 
-variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {p : Set γ} {f f₁ f₂ : α → β} {g g₁ g₂ : β → γ}
+/-! ### Congruence lemmas for monotonicity and antitonicity -/
+
+/-! ### Monotonicity lemmas -/
+section Mono
+
+lemma MonotoneOn_insert_iff {a : α} :
+    MonotoneOn f (insert a s) ↔
+       (∀ b ∈ s, b ≤ a → f b ≤ f a) ∧ (∀ b ∈ s, a ≤ b → f a ≤ f b) ∧ MonotoneOn f s := by
+  simp [MonotoneOn, forall_and]
+
+lemma AntitoneOn_insert_iff {a : α} :
+    AntitoneOn f (insert a s) ↔
+       (∀ b ∈ s, b ≤ a → f a ≤ f b) ∧ (∀ b ∈ s, a ≤ b → f b ≤ f a) ∧ AntitoneOn f s :=
+  @MonotoneOn_insert_iff α βᵒᵈ _ _ _ _ _
+
+end Mono
+
+variable {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {p : Set γ} {f f₁ f₂ f₃ : α → β} {g g₁ g₂ : β → γ}
   {f' f₁' f₂' : β → α} {g' : γ → β} {a : α} {b : β}
 
 section MapsTo
