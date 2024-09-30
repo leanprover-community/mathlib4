@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
+Authors: Kim Morrison, Joël Riou
 -/
 import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 import Mathlib.Algebra.Category.Ring.Basic
@@ -95,6 +95,19 @@ lemma comp_app {M₁ M₂ M₃ : PresheafOfModules R} (f : M₁ ⟶ M₂) (g : M
 lemma naturality_apply (f : M₁ ⟶ M₂) {X Y : Cᵒᵖ} (g : X ⟶ Y) (x : M₁.obj X) :
     Hom.app f Y (M₁.map g x) = M₂.map g (Hom.app f X x) :=
   congr_fun ((forget _).congr_map (Hom.naturality f g)) x
+
+/-- Constructor for isomorphisms in the category of presheaves of modules. -/
+@[simps!]
+def isoMk (app : ∀ (X : Cᵒᵖ), M₁.obj X ≅ M₂.obj X)
+    (naturality : ∀ ⦃X Y : Cᵒᵖ⦄ (f : X ⟶ Y),
+      M₁.map f ≫ (ModuleCat.restrictScalars (R.map f)).map (app Y).hom =
+        (app X).hom ≫ M₂.map f := by aesop_cat) : M₁ ≅ M₂ where
+  hom := { app := fun X ↦ (app X).hom }
+  inv :=
+    { app := fun X ↦ (app X).inv
+      naturality := fun {X Y} f ↦ by
+        rw [← cancel_epi (app X).hom, ← reassoc_of% (naturality f), Iso.map_hom_inv_id,
+          Category.comp_id, Iso.hom_inv_id_assoc]}
 
 /-- The underlying presheaf of abelian groups of a presheaf of modules. -/
 def presheaf : Cᵒᵖ ⥤ Ab where
