@@ -552,7 +552,6 @@ lemma max_lt (h₁ : a < c) (h₂ : b < c) : max a b < c := by
   cases le_total a b <;> simp [max_eq_left, max_eq_right, *]
 
 section Ord
-variable {o : Ordering}
 
 lemma compare_lt_iff_lt : compare a b = .lt ↔ a < b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]

@@ -324,7 +324,7 @@ theorem singleton_mul : {a} * t = (a * ·) '' t :=
 theorem singleton_mul_singleton : ({a} : Set α) * {b} = {a * b} :=
   image2_singleton
 
-@[to_additive (attr := mono)]
+@[to_additive (attr := mono, gcongr)]
 theorem mul_subset_mul : s₁ ⊆ t₁ → s₂ ⊆ t₂ → s₁ * s₂ ⊆ t₁ * t₂ :=
   image2_subset
 
@@ -512,7 +512,7 @@ theorem singleton_div : {a} / t = (· / ·) a '' t :=
 theorem singleton_div_singleton : ({a} : Set α) / {b} = {a / b} :=
   image2_singleton
 
-@[to_additive (attr := mono)]
+@[to_additive (attr := mono, gcongr)]
 theorem div_subset_div : s₁ ⊆ t₁ → s₂ ⊆ t₂ → s₁ / s₂ ⊆ t₁ / t₂ :=
   image2_subset
 
@@ -659,7 +659,7 @@ lemma singleton_smul : ({a} : Set α) • t = a • t := image2_singleton_left
 @[to_additive (attr := simp high)]
 lemma singleton_smul_singleton : ({a} : Set α) • ({b} : Set β) = {a • b} := image2_singleton
 
-@[to_additive (attr := mono)]
+@[to_additive (attr := mono, gcongr)]
 lemma smul_subset_smul : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ • t₁ ⊆ s₂ • t₂ := image2_subset
 
 @[to_additive] lemma smul_subset_smul_left : t₁ ⊆ t₂ → s • t₁ ⊆ s • t₂ := image2_subset_left
@@ -749,9 +749,7 @@ lemma smul_set_nonempty : (a • s).Nonempty ↔ s.Nonempty := image_nonempty
 @[to_additive (attr := simp)]
 lemma smul_set_singleton : a • ({b} : Set β) = {a • b} := image_singleton
 
-@[to_additive]
-lemma smul_set_mono : s ⊆ t → a • s ⊆ a • t :=
-  image_subset _
+@[to_additive (attr := gcongr)] lemma smul_set_mono : s ⊆ t → a • s ⊆ a • t := image_subset _
 
 @[to_additive]
 lemma smul_set_subset_iff : a • s ⊆ t ↔ ∀ ⦃b⦄, b ∈ s → a • b ∈ t :=
@@ -760,6 +758,10 @@ lemma smul_set_subset_iff : a • s ⊆ t ↔ ∀ ⦃b⦄, b ∈ s → a • b �
 @[to_additive]
 lemma smul_set_union : a • (t₁ ∪ t₂) = a • t₁ ∪ a • t₂ :=
   image_union _ _ _
+
+@[to_additive]
+lemma smul_set_insert (a : α) (b : β) (s : Set β) : a • insert b s = insert (a • b) (a • s) :=
+  image_insert_eq ..
 
 @[to_additive]
 lemma smul_set_inter_subset : a • (t₁ ∩ t₂) ⊆ a • t₁ ∩ a • t₂ :=
@@ -1106,6 +1108,12 @@ theorem isUnit_iff : IsUnit s ↔ ∃ a, s = {a} ∧ IsUnit a := by
 
 @[to_additive (attr := simp)]
 lemma univ_div_univ : (univ / univ : Set α) = univ := by simp [div_eq_mul_inv]
+
+@[to_additive] lemma subset_div_left (ht : 1 ∈ t) : s ⊆ s / t := by
+  rw [div_eq_mul_inv]; exact subset_mul_left _ <| by simpa
+
+@[to_additive] lemma inv_subset_div_right (hs : 1 ∈ s) : t⁻¹ ⊆ s / t := by
+  rw [div_eq_mul_inv]; exact subset_mul_right _ hs
 
 end DivisionMonoid
 
