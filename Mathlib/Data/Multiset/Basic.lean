@@ -2682,26 +2682,11 @@ theorem disjoint_map_map {f : α → γ} {g : β → γ} {s : Multiset α} {t : 
     Disjoint (s.map f) (t.map g) ↔ ∀ a ∈ s, ∀ b ∈ t, f a ≠ g b := by
   simp [Disjoint, @eq_comm _ (f _) (g _)]
 
-lemma notmem_singleton_cons_le [DecidableEq α] {a : α} {s : Multiset α} (h : a ∉ s)
+lemma cons_le_of_not_mem [DecidableEq α] {a : α} {s : Multiset α} (h : a ∉ s)
     {t : Multiset α} (ha : a ∈ t) (hs : s ≤ t) :
     a ::ₘ s ≤ t := by
   rw [← cons_erase ha, cons_le_cons_iff]
   exact (cons_erase ha ▸ (@le_cons_of_not_mem _ _ (t.erase a) _ h)).mp hs
-
-lemma notmem_replicate_add_left_le [DecidableEq α] {a : α} {n : ℕ} {s : Multiset α} (h : a ∉ s)
-    {t : Multiset α} (ha : replicate n a ≤ t) (hs : s ≤ t) :
-    replicate n a + s ≤ t := by
-  cases n with
-  | zero => simp [hs]
-  | succ n =>
-    simp [le_iff_count]; intro x; by_cases h' : x = a
-    · simp [h', count_eq_zero_of_not_mem h, le_count_iff_replicate_le.mpr ha]
-    · simp [h', count_replicate, Ne.symm h', count_le_of_le x hs]
-
-lemma notmem_replicate_add_right_le [DecidableEq α] {a : α} {n : ℕ} {s : Multiset α} (h : a ∉ s)
-    {t : Multiset α} (ha : replicate n a ≤ t) (hs : s ≤ t) :
-    s + replicate n a ≤ t :=
-  add_comm s _ ▸ notmem_replicate_add_left_le h ha hs
 
 theorem add_le_of_disjoint
     [DecidableEq α] {s t : Multiset α} (h : s.Disjoint t) {u : Multiset α}
