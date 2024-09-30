@@ -25,7 +25,7 @@ theorem ofReal_sum (f : α → ℝ) : ((∑ i ∈ s, f i : ℝ) : ℂ) = ∑ i �
   map_sum ofReal _ _
 
 @[simp, norm_cast]
-lemma ofReal_expect (f : α → ℝ) : ↑(𝔼 i ∈ s, f i) = 𝔼 i ∈ s, (f i : ℂ) :=
+lemma ofReal_expect (f : α → ℝ) : (𝔼 i ∈ s, f i : ℝ) = 𝔼 i ∈ s, (f i : ℂ) :=
   map_expect ofReal ..
 
 @[simp]
