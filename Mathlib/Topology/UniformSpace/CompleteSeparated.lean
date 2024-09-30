@@ -27,8 +27,8 @@ theorem IsComplete.isClosed [UniformSpace α] [T0Space α] {s : Set α} (h : IsC
     rcases h f this inf_le_right with ⟨y, ys, fy⟩
     rwa [(tendsto_nhds_unique' ha inf_le_left fy : a = y)]
 
-theorem UniformEmbedding.toClosedEmbedding [UniformSpace α] [UniformSpace β] [CompleteSpace α]
-    [T0Space β] {f : α → β} (hf : UniformEmbedding f) :
+theorem IsUniformEmbedding.toClosedEmbedding [UniformSpace α] [UniformSpace β] [CompleteSpace α]
+    [T0Space β] {f : α → β} (hf : IsUniformEmbedding f) :
     ClosedEmbedding f :=
   ⟨hf.embedding, hf.toUniformInducing.isComplete_range.isClosed⟩
 

@@ -420,14 +420,14 @@ variable [EMetricSpace α]
 variable [FunLike F α β]
 
 /-- A dilation from a metric space is a uniform embedding -/
-protected theorem uniformEmbedding [PseudoEMetricSpace β] [DilationClass F α β] (f : F) :
-    UniformEmbedding f :=
-  (antilipschitz f).uniformEmbedding (lipschitz f).uniformContinuous
+protected theorem isUniformEmbedding [PseudoEMetricSpace β] [DilationClass F α β] (f : F) :
+    IsUniformEmbedding f :=
+  (antilipschitz f).isUniformEmbedding (lipschitz f).uniformContinuous
 
 /-- A dilation from a metric space is an embedding -/
 protected theorem embedding [PseudoEMetricSpace β] [DilationClass F α β] (f : F) :
     Embedding (f : α → β) :=
-  (Dilation.uniformEmbedding f).embedding
+  (Dilation.isUniformEmbedding f).embedding
 
 /-- A dilation from a complete emetric space is a closed embedding -/
 protected theorem closedEmbedding [CompleteSpace α] [EMetricSpace β] [DilationClass F α β] (f : F) :

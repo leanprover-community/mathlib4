@@ -147,9 +147,9 @@ protected theorem uniformInducing (hf : AntilipschitzWith K f) (hfc : UniformCon
     UniformInducing f :=
   ⟨le_antisymm hf.comap_uniformity_le hfc.le_comap⟩
 
-protected theorem uniformEmbedding {α : Type*} {β : Type*} [EMetricSpace α] [PseudoEMetricSpace β]
+protected theorem isUniformEmbedding {α : Type*} {β : Type*} [EMetricSpace α] [PseudoEMetricSpace β]
     {K : ℝ≥0} {f : α → β} (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) :
-    UniformEmbedding f :=
+    IsUniformEmbedding f :=
   ⟨hf.uniformInducing hfc, hf.injective⟩
 
 theorem isComplete_range [CompleteSpace α] (hf : AntilipschitzWith K f)
@@ -164,7 +164,7 @@ theorem isClosed_range {α β : Type*} [PseudoEMetricSpace α] [EMetricSpace β]
 theorem closedEmbedding {α : Type*} {β : Type*} [EMetricSpace α] [EMetricSpace β] {K : ℝ≥0}
     {f : α → β} [CompleteSpace α] (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) :
     ClosedEmbedding f :=
-  { (hf.uniformEmbedding hfc).embedding with isClosed_range := hf.isClosed_range hfc }
+  { (hf.isUniformEmbedding hfc).embedding with isClosed_range := hf.isClosed_range hfc }
 
 theorem subtype_coe (s : Set α) : AntilipschitzWith 1 ((↑) : s → α) :=
   AntilipschitzWith.id.restrict s

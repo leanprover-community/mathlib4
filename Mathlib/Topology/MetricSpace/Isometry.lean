@@ -162,12 +162,12 @@ protected theorem injective (h : Isometry f) : Injective f :=
   h.antilipschitz.injective
 
 /-- An isometry from an emetric space is a uniform embedding -/
-protected theorem uniformEmbedding (hf : Isometry f) : UniformEmbedding f :=
-  hf.antilipschitz.uniformEmbedding hf.lipschitz.uniformContinuous
+protected theorem isUniformEmbedding (hf : Isometry f) : IsUniformEmbedding f :=
+  hf.antilipschitz.isUniformEmbedding hf.lipschitz.uniformContinuous
 
 /-- An isometry from an emetric space is an embedding -/
 protected theorem embedding (hf : Isometry f) : Embedding f :=
-  hf.uniformEmbedding.embedding
+  hf.isUniformEmbedding.embedding
 
 /-- An isometry from a complete emetric space is a closed embedding -/
 theorem closedEmbedding [CompleteSpace α] [EMetricSpace γ] {f : α → γ} (hf : Isometry f) :
@@ -226,8 +226,8 @@ end Isometry
 -- namespace
 /-- A uniform embedding from a uniform space to a metric space is an isometry with respect to the
 induced metric space structure on the source space. -/
-theorem UniformEmbedding.to_isometry {α β} [UniformSpace α] [MetricSpace β] {f : α → β}
-    (h : UniformEmbedding f) : (letI := h.comapMetricSpace f; Isometry f) :=
+theorem IsUniformEmbedding.to_isometry {α β} [UniformSpace α] [MetricSpace β] {f : α → β}
+    (h : IsUniformEmbedding f) : (letI := h.comapMetricSpace f; Isometry f) :=
   let _ := h.comapMetricSpace f
   Isometry.of_dist_eq fun _ _ => rfl
 

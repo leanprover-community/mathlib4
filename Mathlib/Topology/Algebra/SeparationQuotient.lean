@@ -435,7 +435,7 @@ theorem outCLM_uniformInducing : UniformInducing (outCLM K E) := by
   rw [← uniformInducing_mk.uniformInducing_comp_iff, mk_comp_outCLM]
   exact uniformInducing_id
 
-theorem outCLM_uniformEmbedding : UniformEmbedding (outCLM K E) where
+theorem outCLM_isUniformEmbedding : IsUniformEmbedding (outCLM K E) where
   inj := outCLM_injective K E
   toUniformInducing := outCLM_uniformInducing K E
 
