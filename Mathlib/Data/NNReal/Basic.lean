@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.Order.BigOperators.Expect
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Field.Canonical.Basic
 import Mathlib.Algebra.Order.Nonneg.Field
@@ -55,6 +56,7 @@ This file defines `ℝ≥0` as a localized notation for `NNReal`.
 assert_not_exists Star
 
 open Function
+open scoped BigOperators
 
 -- to ensure these instances are computable
 /-- Nonnegative real numbers. -/
@@ -281,6 +283,10 @@ theorem coe_multiset_prod (s : Multiset ℝ≥0) : ((s.prod : ℝ≥0) : ℝ) = 
 @[simp, norm_cast]
 theorem coe_sum {α} {s : Finset α} {f : α → ℝ≥0} : ↑(∑ a ∈ s, f a) = ∑ a ∈ s, (f a : ℝ) :=
   map_sum toRealHom _ _
+
+@[simp, norm_cast]
+lemma coe_expect {ι : Type*} (s : Finset ι) (f : ι → ℝ≥0) : 𝔼 i ∈ s, f i = 𝔼 i ∈ s, (f i : ℝ) :=
+  map_expect toRealHom ..
 
 theorem _root_.Real.toNNReal_sum_of_nonneg {α} {s : Finset α} {f : α → ℝ}
     (hf : ∀ a, a ∈ s → 0 ≤ f a) :
