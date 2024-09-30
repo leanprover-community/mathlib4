@@ -933,7 +933,7 @@ lemma vsub_iUnion (s : Set β) (t : ι → Set β) : (s -ᵥ ⋃ i, t i) = ⋃ i
   image2_iUnion_right _ _ _
 
 lemma sUnion_vsub (S : Set (Set β)) (t : Set β) : ⋃₀ S -ᵥ t = ⋃ s ∈ S, s -ᵥ t :=
-  image2_sUnion_left _ _ _
+  image2_sUnion_left ..
 
 lemma vsub_sUnion (s : Set β) (T : Set (Set β)) : s -ᵥ ⋃₀ T = ⋃ t ∈ T, s -ᵥ t :=
   image2_sUnion_right _ _ _
