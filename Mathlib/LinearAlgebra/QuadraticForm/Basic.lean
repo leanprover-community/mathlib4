@@ -812,10 +812,8 @@ section AssociatedHom
 variable [CommRing R] [AddCommGroup M] [Module R M]
 
 /-- If `2` is invertible in `R`, then it is also invertible in `End_R M`. -/
-instance [Invertible (2 : R)] : Invertible (2 : Module.End R M) := by
-  rw [show 2 = algebraMap R (Module.End R M) 2 from
-        LinearMap.ext fun _ ↦ by simp only [Module.End.ofNat_apply, map_ofNat]]
-  exact Invertible.map (algebraMap R (Module.End R M)) 2
+instance [Invertible (2 : R)] : Invertible (2 : Module.End R M) :=
+  map_ofNat (algebraMap R (Module.End R M)) 2 ▸ Invertible.map (algebraMap R (Module.End R M)) 2
 
 /-- If `2` is invertible in `R`, then applying the inverse of `2` in `End_R M` to an element
 of `M` is the same as multplying by the inverse of `2` in `R`. -/
