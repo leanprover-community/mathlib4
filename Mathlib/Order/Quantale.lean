@@ -107,7 +107,8 @@ variable [Quantale α]
 on complete lattices, but for a non-commutative logic.
 I.e. `x ⇨ₗ y = sSup { z | z * x ≤ y }`.
 -/
-def l_residuation (x y : α) := sSup { z | z * x ≤ y }
+def left_residuation (x y : α) := sSup { z | z * x ≤ y }
+
 /-- Notation for left-residuation in quantales.
     I.e. `x ⇨ₗ y = sSup { z | z * x ≤ y }`.
 -/
