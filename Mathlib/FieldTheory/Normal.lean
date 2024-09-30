@@ -369,35 +369,6 @@ theorem AlgEquiv.restrictNormalHom_id (F K : Type*)
   rw [AlgEquiv.restrictNormal_commutes]
   simp only [Algebra.id.map_eq_id, RingHom.id_apply]
 
-namespace IsScalarTower
-
-theorem algEquivRestrictNormalHom_eq (F K₁ K₂ K₃ : Type*)
-    [Field F] [Field K₁] [Field K₂] [Field K₃]
-    [Algebra F K₁] [Algebra F K₂] [Algebra F K₃] [Algebra K₁ K₂] [Algebra K₁ K₃] [Algebra K₂ K₃]
-    [IsScalarTower F K₁ K₃] [IsScalarTower F K₁ K₂] [IsScalarTower F K₂ K₃] [IsScalarTower K₁ K₂ K₃]
-    [Normal F K₁] [Normal F K₂] :
-    AlgEquiv.restrictNormalHom (F := F) (K₁ := K₃) K₁ =
-    (AlgEquiv.restrictNormalHom (F := F) (K₁ := K₂) K₁).comp
-    (AlgEquiv.restrictNormalHom (F := F) (K₁ := K₃) K₂) := by
-  ext f x
-  dsimp [AlgEquiv.restrictNormalHom]
-  apply (algebraMap K₁ K₃).injective
-  conv_rhs => rw [IsScalarTower.algebraMap_eq K₁ K₂ K₃]
-  simp only [AlgEquiv.restrictNormal_commutes, RingHom.coe_comp, Function.comp_apply,
-    EmbeddingLike.apply_eq_iff_eq]
-  exact IsScalarTower.algebraMap_apply K₁ K₂ K₃ x
-
-theorem algEquivRestrictNormalHom_apply (F K₁ K₂ : Type*) {K₃ : Type*}
-    [Field F] [Field K₁] [Field K₂] [Field K₃]
-    [Algebra F K₁] [Algebra F K₂] [Algebra F K₃] [Algebra K₁ K₂] [Algebra K₁ K₃] [Algebra K₂ K₃]
-    [IsScalarTower F K₁ K₃] [IsScalarTower F K₁ K₂] [IsScalarTower F K₂ K₃] [IsScalarTower K₁ K₂ K₃]
-    [Normal F K₁] [Normal F K₂] (f : K₃ ≃ₐ[F] K₃) :
-    AlgEquiv.restrictNormalHom K₁ f =
-    (AlgEquiv.restrictNormalHom K₁) (AlgEquiv.restrictNormalHom K₂ f) := by
-  rw [IsScalarTower.algEquivRestrictNormalHom_eq F K₁ K₂ K₃, MonoidHom.comp_apply]
-
-end IsScalarTower
-
 open IntermediateField in
 theorem Normal.minpoly_eq_iff_mem_orbit [h : Normal F E] {x y : E} :
     minpoly F x = minpoly F y ↔ x ∈ MulAction.orbit (E ≃ₐ[F] E) y := by
