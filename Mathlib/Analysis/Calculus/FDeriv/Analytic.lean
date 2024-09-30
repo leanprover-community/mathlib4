@@ -138,6 +138,12 @@ theorem AnalyticOnNhd.contDiffOn [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f s) 
     (fun m _ ↦ (H.iteratedFDeriv m).differentiableOn.congr
       fun _ hx ↦ iteratedFDerivWithin_of_isOpen _ t_open hx)
 
+/-- An analytic function on the whole space is infinitely differentiable there. -/
+theorem AnalyticOnNhd.contDiff [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f univ) {n : ℕ∞} :
+    ContDiff 𝕜 n f := by
+  rw [← contDiffOn_univ]
+  exact h.contDiffOn
+
 theorem AnalyticAt.contDiffAt [CompleteSpace F] (h : AnalyticAt 𝕜 f x) {n : ℕ∞} :
     ContDiffAt 𝕜 n f x := by
   obtain ⟨s, hs, hf⟩ := h.exists_mem_nhds_analyticOnNhd

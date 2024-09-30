@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Algebra.Quasispectrum
-import Mathlib.Topology.ContinuousFunction.Compact
-import Mathlib.Topology.ContinuousFunction.ContinuousMapZero
+import Mathlib.Topology.ContinuousMap.Compact
+import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
 import Mathlib.Topology.UniformSpace.CompactConvergence
 
