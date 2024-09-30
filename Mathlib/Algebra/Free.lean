@@ -6,7 +6,6 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
-import Mathlib.Data.List.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.AdaptationNote
 
