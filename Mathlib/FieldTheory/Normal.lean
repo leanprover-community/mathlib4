@@ -371,7 +371,7 @@ theorem AlgEquiv.restrictNormalHom_id (F K : Type*)
 
 namespace IsScalarTower
 
-theorem algEquivRestrictNormalHom_eq (F K₁ K₂ K₃ : Type*)
+theorem AlgEquiv.restrictNormalHom_comp (F K₁ K₂ K₃ : Type*)
     [Field F] [Field K₁] [Field K₂] [Field K₃]
     [Algebra F K₁] [Algebra F K₂] [Algebra F K₃] [Algebra K₁ K₂] [Algebra K₁ K₃] [Algebra K₂ K₃]
     [IsScalarTower F K₁ K₃] [IsScalarTower F K₁ K₂] [IsScalarTower F K₂ K₃] [IsScalarTower K₁ K₂ K₃]
@@ -380,21 +380,19 @@ theorem algEquivRestrictNormalHom_eq (F K₁ K₂ K₃ : Type*)
     (AlgEquiv.restrictNormalHom (F := F) (K₁ := K₂) K₁).comp
     (AlgEquiv.restrictNormalHom (F := F) (K₁ := K₃) K₂) := by
   ext f x
-  dsimp [AlgEquiv.restrictNormalHom]
   apply (algebraMap K₁ K₃).injective
-  conv_rhs => rw [IsScalarTower.algebraMap_eq K₁ K₂ K₃]
-  simp only [AlgEquiv.restrictNormal_commutes, RingHom.coe_comp, Function.comp_apply,
-    EmbeddingLike.apply_eq_iff_eq]
-  exact IsScalarTower.algebraMap_apply K₁ K₂ K₃ x
+  rw [IsScalarTower.algebraMap_eq K₁ K₂ K₃]
+  simp only [AlgEquiv.restrictNormalHom, MonoidHom.mk'_apply, RingHom.coe_comp, Function.comp_apply,
+    ← algebraMap_apply, AlgEquiv.restrictNormal_commutes, MonoidHom.coe_comp]
 
-theorem algEquivRestrictNormalHom_apply (F K₁ K₂ : Type*) {K₃ : Type*}
+theorem AlgEquiv.restrictNormalHom_comp_apply (K₁ K₂ : Type*) {F K₃ : Type*}
     [Field F] [Field K₁] [Field K₂] [Field K₃]
     [Algebra F K₁] [Algebra F K₂] [Algebra F K₃] [Algebra K₁ K₂] [Algebra K₁ K₃] [Algebra K₂ K₃]
     [IsScalarTower F K₁ K₃] [IsScalarTower F K₁ K₂] [IsScalarTower F K₂ K₃] [IsScalarTower K₁ K₂ K₃]
     [Normal F K₁] [Normal F K₂] (f : K₃ ≃ₐ[F] K₃) :
     AlgEquiv.restrictNormalHom K₁ f =
     (AlgEquiv.restrictNormalHom K₁) (AlgEquiv.restrictNormalHom K₂ f) := by
-  rw [IsScalarTower.algEquivRestrictNormalHom_eq F K₁ K₂ K₃, MonoidHom.comp_apply]
+  rw [IsScalarTower.AlgEquiv.restrictNormalHom_comp F K₁ K₂ K₃, MonoidHom.comp_apply]
 
 end IsScalarTower
 
