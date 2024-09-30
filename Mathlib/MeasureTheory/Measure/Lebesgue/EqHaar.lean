@@ -607,7 +607,6 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero_aux1 (s : Set E) (x : E)
     rintro r (rpos : 0 < r)
     rw [← affinity_unitClosedBall rpos.le, singleton_add, ← image_vadd]
     gcongr
-    exact smul_set_mono t_bound
   have B :
     Tendsto (fun r : ℝ => μ (closedBall x r) / μ ({x} + r • u)) (𝓝[>] 0)
       (𝓝 (μ (closedBall x 1) / μ ({x} + u))) := by

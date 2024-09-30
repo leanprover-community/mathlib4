@@ -301,7 +301,7 @@ theorem fst_image_prod (s : Set β) {t : Set α} (ht : t.Nonempty) : Prod.fst ''
     let ⟨x, hx⟩ := ht
     ⟨(y, x), ⟨hy, hx⟩, rfl⟩
 
-lemma mapsTo_fst_prod {s : Set α} {t : Set β} : MapsTo (Prod.fst) (s ×ˢ t) s :=
+lemma mapsTo_fst_prod {s : Set α} {t : Set β} : MapsTo Prod.fst (s ×ˢ t) s :=
   fun _ hx ↦ (mem_prod.1 hx).1
 
 theorem prod_subset_preimage_snd (s : Set α) (t : Set β) : s ×ˢ t ⊆ Prod.snd ⁻¹' t :=
@@ -315,7 +315,7 @@ theorem snd_image_prod {s : Set α} (hs : s.Nonempty) (t : Set β) : Prod.snd ''
     let ⟨x, x_in⟩ := hs
     ⟨(x, y), ⟨x_in, y_in⟩, rfl⟩
 
-lemma mapsTo_snd_prod {s : Set α} {t : Set β} : MapsTo (Prod.snd) (s ×ˢ t) t :=
+lemma mapsTo_snd_prod {s : Set α} {t : Set β} : MapsTo Prod.snd (s ×ˢ t) t :=
   fun _ hx ↦ (mem_prod.1 hx).2
 
 theorem prod_diff_prod : s ×ˢ t \ s₁ ×ˢ t₁ = s ×ˢ (t \ t₁) ∪ (s \ s₁) ×ˢ t := by

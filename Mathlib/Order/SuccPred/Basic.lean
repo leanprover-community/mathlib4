@@ -927,7 +927,7 @@ lemma gc_pred_succ : GaloisConnection (pred : α → α) succ := fun _ _ ↦ pre
 
 end Preorder
 
-variable [PartialOrder α] [SuccOrder α] [PredOrder α] {a b : α}
+variable [PartialOrder α] [SuccOrder α] [PredOrder α] {a : α}
 
 @[simp]
 theorem succ_pred_of_not_isMin (h : ¬IsMin a) : succ (pred a) = a :=
