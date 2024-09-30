@@ -112,8 +112,8 @@ theorem of_injective : Function.Injective (@of α) := List.singleton_injective
 section Length
 variable {a : FreeMonoid α}
 
-/-- the length of a free monoid element: 1.length = 0 and (a * b).length = a.length + b.length -/
-@[to_additive "the length of a additive free monoid element: 1.length = 0 and (a + b).length =
+/-- The length of a free monoid element: 1.length = 0 and (a * b).length = a.length + b.length -/
+@[to_additive "The length of a additive free monoid element: 1.length = 0 and (a + b).length =
   a.length + b.length"]
 def length (a : FreeMonoid α) : ℕ := List.length a
 
