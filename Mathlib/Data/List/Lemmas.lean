@@ -30,7 +30,7 @@ theorem tail_reverse_eq_reverse_dropLast (l : List α) :
   · rw [getElem?_eq_none, getElem?_eq_none]
     all_goals (simp; omega)
 
-zsh:1: command not found: qa
+@[deprecated (since := "2024-08-19")] alias nthLe_tail := getElem_tail
 
 theorem injOn_insertNth_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
     Set.InjOn (fun k => insertNth k x l) { n | n ≤ l.length } := by
