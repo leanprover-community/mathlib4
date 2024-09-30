@@ -49,7 +49,7 @@ noncomputable def tensorObjMap {X Y : Cᵒᵖ} (f : X ⟶ Y) : M₁.obj X ⊗ M�
 @[simps obj]
 noncomputable def tensorObj : PresheafOfModules (R ⋙ forget₂ _ _) where
   obj X := M₁.obj X ⊗ M₂.obj X
-  map {X Y} f := tensorObjMap M₁ M₂ f
+  map f := tensorObjMap M₁ M₂ f
   map_id X := ModuleCat.MonoidalCategory.tensor_ext (by
     intro m₁ m₂
     dsimp [tensorObjMap]
