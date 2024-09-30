@@ -222,6 +222,9 @@ theorem aleph'_omega0 : aleph' ω = ℵ₀ :=
     simp only [aleph'_le_of_limit omega0_isLimit, lt_omega0, exists_imp, aleph0_le]
     exact forall_swap.trans (forall_congr' fun n => by simp only [forall_eq, aleph'_nat])
 
+@[deprecated (since := "2024-09-30")]
+alias aleph'_omega := aleph'_omega0
+
 set_option linter.deprecated false in
 /-- `aleph'` and `aleph_idx` form an equivalence between `Ordinal` and `Cardinal` -/
 @[deprecated aleph' (since := "2024-08-28")]

@@ -685,6 +685,9 @@ theorem cof_omega0 : cof ω = ℵ₀ :=
     rw [← card_omega0]
     apply cof_le_card
 
+@[deprecated (since := "2024-09-30")]
+alias cof_omega := cof_omega0
+
 theorem cof_eq' (r : α → α → Prop) [IsWellOrder α r] (h : IsLimit (type r)) :
     ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ #S = cof (type r) :=
   let ⟨S, H, e⟩ := cof_eq r

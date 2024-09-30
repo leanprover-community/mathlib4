@@ -550,9 +550,15 @@ theorem one_add_omega0 : 1 + ω = ω := by
     cases a <;> cases b <;> intro H <;> cases' H with _ _ H _ _ H <;>
       [exact H.elim; exact Nat.succ_pos _; exact Nat.succ_lt_succ H]
 
+@[deprecated (since := "2024-09-30")]
+alias one_add_omega := one_add_omega0
+
 @[simp]
 theorem one_add_of_omega0_le {o} (h : ω ≤ o) : 1 + o = o := by
   rw [← Ordinal.add_sub_cancel_of_le h, ← add_assoc, one_add_omega0]
+
+@[deprecated (since := "2024-09-30")]
+alias one_add_of_omega_le := one_add_of_omega0_le
 
 /-! ### Multiplication of ordinals -/
 
@@ -2284,27 +2290,48 @@ theorem lt_add_of_limit {a b c : Ordinal.{u}} (h : IsLimit c) :
 theorem lt_omega0 {o : Ordinal} : o < ω ↔ ∃ n : ℕ, o = n := by
   simp_rw [← Cardinal.ord_aleph0, Cardinal.lt_ord, lt_aleph0, card_eq_nat]
 
+@[deprecated (since := "2024-09-30")]
+alias lt_omega := lt_omega0
+
 theorem nat_lt_omega0 (n : ℕ) : ↑n < ω :=
   lt_omega0.2 ⟨_, rfl⟩
+
+@[deprecated (since := "2024-09-30")]
+alias nat_lt_omega := nat_lt_omega0
 
 theorem omega0_pos : 0 < ω :=
   nat_lt_omega0 0
 
+@[deprecated (since := "2024-09-30")]
+alias omega_pos := omega0_pos
+
 theorem omega0_ne_zero : ω ≠ 0 :=
   omega0_pos.ne'
 
+@[deprecated (since := "2024-09-30")]
+alias omega_ne_zero := omega0_ne_zero
+
 theorem one_lt_omega0 : 1 < ω := by simpa only [Nat.cast_one] using nat_lt_omega0 1
+
+@[deprecated (since := "2024-09-30")]
+alias one_lt_omega := one_lt_omega0
 
 theorem omega0_isLimit : IsLimit ω :=
   ⟨omega0_ne_zero, fun o h => by
     let ⟨n, e⟩ := lt_omega0.1 h
     rw [e]; exact nat_lt_omega0 (n + 1)⟩
 
+@[deprecated (since := "2024-09-30")]
+alias omega_isLimit := omega0_isLimit
+
 theorem omega0_le {o : Ordinal} : ω ≤ o ↔ ∀ n : ℕ, ↑n ≤ o :=
   ⟨fun h n => (nat_lt_omega0 _).le.trans h, fun H =>
     le_of_forall_lt fun a h => by
       let ⟨n, e⟩ := lt_omega0.1 h
       rw [e, ← succ_le_iff]; exact H (n + 1)⟩
+
+@[deprecated (since := "2024-09-30")]
+alias omega_le := omega0_le
 
 @[simp]
 theorem iSup_natCast : iSup Nat.cast = ω :=
@@ -2325,6 +2352,9 @@ theorem nat_lt_limit {o} (h : IsLimit o) : ∀ n : ℕ, ↑n < o
 theorem omega0_le_of_isLimit {o} (h : IsLimit o) : ω ≤ o :=
   omega0_le.2 fun n => le_of_lt <| nat_lt_limit h n
 
+@[deprecated (since := "2024-09-30")]
+alias omega_le_of_isLimit := omega0_le_of_isLimit
+
 theorem isLimit_iff_omega0_dvd {a : Ordinal} : IsLimit a ↔ a ≠ 0 ∧ ω ∣ a := by
   refine ⟨fun l => ⟨l.1, ⟨a / ω, le_antisymm ?_ (mul_div_le _ _)⟩⟩, fun h => ?_⟩
   · refine (limit_le l).2 fun x hx => le_of_lt ?_
@@ -2339,6 +2369,9 @@ theorem isLimit_iff_omega0_dvd {a : Ordinal} : IsLimit a ↔ a ≠ 0 ∧ ω ∣ 
     refine mul_isLimit_left omega0_isLimit (Ordinal.pos_iff_ne_zero.2 <| mt ?_ a0)
     intro e
     simp only [e, mul_zero]
+
+@[deprecated (since := "2024-09-30")]
+alias isLimit_iff_omega_dvd := isLimit_iff_omega0_dvd
 
 theorem add_mul_limit_aux {a b c : Ordinal} (ba : b + a = a) (l : IsLimit c)
     (IH : ∀ c' < c, (a + b) * succ c' = a * succ c' + b) : (a + b) * c = a * c :=
@@ -2380,6 +2413,9 @@ theorem add_le_of_forall_add_lt {a b c : Ordinal} (hb : 0 < b) (h : ∀ d < b, a
 
 theorem IsNormal.apply_omega0 {f : Ordinal.{u} → Ordinal.{v}} (hf : IsNormal f) :
     ⨆ n : ℕ, f n = f ω := by rw [← iSup_natCast, hf.map_iSup]
+
+@[deprecated (since := "2024-09-30")]
+alias IsNormal.apply_omega := IsNormal.apply_omega0
 
 @[simp]
 theorem iSup_add_nat (o : Ordinal) : ⨆ n : ℕ, o + n = o + ω :=
