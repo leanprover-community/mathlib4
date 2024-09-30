@@ -828,13 +828,12 @@ lemma smul_set_iUnion (a : α) (s : ι → Set β) : a • ⋃ i, s i = ⋃ i, a
   image_iUnion
 
 @[to_additive]
-lemma smul_set_sUnion (a : α) (S : Set (Set β)) : a • ⋃₀ S = ⋃ s ∈ S, a • s := by
-  convert image_sUnion
-  exact Eq.symm (sUnion_image (image fun x ↦ a • x) S)
-
-@[to_additive]
 lemma smul_set_iUnion₂ (a : α) (s : ∀ i, κ i → Set β) :
     a • ⋃ i, ⋃ j, s i j = ⋃ i, ⋃ j, a • s i j := image_iUnion₂ _ _
+
+@[to_additive]
+lemma smul_set_sUnion (a : α) (S : Set (Set β)) : a • ⋃₀ S = ⋃ s ∈ S, a • s := by
+  rw [sUnion_eq_biUnion, smul_set_iUnion₂]
 
 @[to_additive]
 lemma smul_set_iInter_subset (a : α) (t : ι → Set β) : a • ⋂ i, t i ⊆ ⋂ i, a • t i :=
@@ -842,7 +841,7 @@ lemma smul_set_iInter_subset (a : α) (t : ι → Set β) : a • ⋂ i, t i ⊆
 
 @[to_additive]
 lemma smul_set_sInter_subset (a : α) (S : Set (Set β)) :
-    a • ⋂₀ S ⊆ ⋂ s ∈ S, a • s := image_sInter_subset S (fun x => a • x)
+    a • ⋂₀ S ⊆ ⋂ s ∈ S, a • s := image_sInter_subset S ..
 
 @[to_additive]
 lemma smul_set_iInter₂_subset (a : α) (t : ∀ i, κ i → Set β) :
