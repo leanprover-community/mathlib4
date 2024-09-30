@@ -129,18 +129,6 @@ section CommGroup
 
 variable {M ι : Type*} [SeminormedCommGroup M] [IsUltrametricDist M]
 
-/-- Nonarchimedean norm of a product is less than or equal the norm of any term in the product. -/
-@[to_additive "Nonarchimedean norm of a sum is less than or equal the norm of any term in the sum."]
-lemma _root_.Finset.nnnorm_prod_le_sup_nnnorm (s : Finset ι) (f : ι → M) :
-    ‖∏ i ∈ s, f i‖₊ ≤ s.sup (‖f ·‖₊) := by
-  induction s using Finset.cons_induction_on with
-  | h₁ => simp
-  | @h₂ a s ha IH =>
-    simp only [Finset.prod_cons, Finset.sup_cons, le_sup_iff]
-    refine (le_total ‖∏ i ∈ s, f i‖ ‖f a‖).imp ?_ ?_ <;> intro h
-    · exact (norm_mul_le_max _ _).trans (by simp [h])
-    · exact (norm_mul_le_max _ _).trans (by simpa [h] using IH)
-
 /-- Nonarchimedean norm of a product is less than or equal the norm of any term in the product.
 This version is phrased using `Finset.sup'` and `Finset.Nonempty` due to `Finset.sup`
 operating over an `OrderBot`, which `ℝ` is not.
@@ -158,6 +146,17 @@ lemma _root_.Finset.Nonempty.norm_prod_le_sup'_norm {s : Finset ι} (hs : s.None
   refine (le_total ‖∏ i ∈ s, f i‖ ‖f a‖).imp ?_ ?_ <;> intro h
   · exact (norm_mul_le_max _ _).trans (by simp [h])
   · exact ⟨b, hb, (norm_mul_le_max _ _).trans (by simpa [h] using IH)⟩
+
+/-- Nonarchimedean norm of a product is less than or equal the norm of any term in the product. -/
+@[to_additive "Nonarchimedean norm of a sum is less than or equal the norm of any term in the sum."]
+lemma _root_.Finset.nnnorm_prod_le_sup_nnnorm (s : Finset ι) (f : ι → M) :
+    ‖∏ i ∈ s, f i‖₊ ≤ s.sup (‖f ·‖₊) := by
+  rcases s.eq_empty_or_nonempty with rfl|hs
+  · simp
+  rw [← Finset.sup'_eq_sup hs, ← NNReal.coe_le_coe,
+    Finset.comp_sup'_eq_sup'_comp hs toReal coe_mono.map_sup]
+  simpa only [coe_nnnorm', Function.comp_apply, Finset.le_sup'_iff] using
+    hs.norm_prod_le_sup'_norm f
 
 /-- Nonarchimedean norm of a product is less than or equal the norm of any term in the product. -/
 @[to_additive "Nonarchimedean norm of a sum is less than or equal the norm of any term in the sum."]
