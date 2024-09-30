@@ -11,9 +11,9 @@ import Mathlib.Topology.Bases
 
 This file defines three properties of functions:
 
-* `DenseRange f`      means `f` has dense image;
-* `IsDenseInducing i` means `i` is also `Inducing`, namely it induces the topology on its codomain;
-* `IsDenseEmbedding e`  means `e` is further an `Embedding`, namely it is injective and `Inducing`.
+* `DenseRange f`       means `f` has dense image;
+* `IsDenseInducing i`  means `i` is also `Inducing`, namely it induces the topology on its codomain;
+* `IsDenseEmbedding e` means `e` is further an `Embedding`, namely it is injective and `Inducing`.
 
 The main theorem `continuous_extend` gives a criterion for a function
 `f : X → Z` to a T₃ space Z to extend along a dense embedding
