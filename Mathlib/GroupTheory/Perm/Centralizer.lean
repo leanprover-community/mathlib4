@@ -126,13 +126,6 @@ end
 
 open scoped Pointwise
 
-@[to_additive instDecidablePredMemSetFixedByAddOfDecidableEq]
-instance {α β : Type*} [Monoid α] [DecidableEq β] [MulAction α β] (a : α) :
-    DecidablePred fun b : β => b ∈ MulAction.fixedBy β a := by
-  intro b
-  simp only [MulAction.mem_fixedBy, Equiv.Perm.smul_def]
-  infer_instance
-
 namespace Equiv.Perm
 
 open MulAction Equiv Subgroup
