@@ -685,8 +685,7 @@ protected theorem uniformEmbedding : UniformEmbedding ((↑) : Lp.simpleFunc E p
 protected theorem uniformInducing : UniformInducing ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
   simpleFunc.uniformEmbedding.toUniformInducing
 
-protected theorem isDenseEmbedding (hp_ne_top : p ≠ ∞) :
-    IsDenseEmbedding ((↑) : Lp.simpleFunc E p μ → Lp E p μ) := by
+lemma isDenseEmbedding (hp_ne_top : p ≠ ∞) : IsDenseEmbedding ((↑) : Lp.simpleFunc E p μ → Lp E p μ) := by
   borelize E
   apply simpleFunc.uniformEmbedding.isDenseEmbedding
   intro f
