@@ -300,7 +300,7 @@ This lemma creates
 - the existing instance `MeasureTheory.Measure.instMeasureSpacePUnit`.
 
 However, we've decided not to refactor until one of these diamonds starts creating issues, see
-https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Hausdorff.20measure.20normalisation  
+https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Hausdorff.20measure.20normalisation
 -/
 instance (priority := 100) measureSpaceOfInnerProductSpace [NormedAddCommGroup E]
     [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E] :
