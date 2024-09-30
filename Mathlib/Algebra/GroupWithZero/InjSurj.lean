@@ -19,7 +19,7 @@ variable {M₀ G₀ M₀' G₀' : Type*}
 
 section MulZeroClass
 
-variable [MulZeroClass M₀] {a b : M₀}
+variable [MulZeroClass M₀]
 
 /-- Pull back a `MulZeroClass` instance along an injective function.
 See note [reducible non-instances]. -/
