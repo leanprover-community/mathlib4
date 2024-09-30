@@ -390,9 +390,9 @@ lemma fixingSubgroup_fixedField (H : ClosedSubgroup (K ≃ₐ[k] K)) [IsGalois k
   have := hL.out
   let L' : FiniteGaloisIntermediateField k K := {
     normalClosure k L K with
-    to_finiteDimensional := normalClosure.is_finiteDimensional k L K
-    to_isGalois := IsGalois.normalClosure k L K }
-  letI := L'.to_finiteDimensional
+    finiteDimensional := normalClosure.is_finiteDimensional k L K
+    isGalois := IsGalois.normalClosure k L K }
+  letI := L'.finiteDimensional
   have compl : σ • L'.1.fixingSubgroup.carrier ⊆ H.carrierᶜ :=
     fun ⦃a⦄ d ↦ sub ((Set.set_smul_subset_set_smul_iff.mpr <| eq ▸ (fun σ h =>
     (mem_fixingSubgroup_iff (K ≃ₐ[k] K)).mpr fun y hy => (mem_fixingSubgroup_iff (K ≃ₐ[k] K)).mp
@@ -482,8 +482,8 @@ theorem open_iff_finite (L : IntermediateField k K) [IsGalois k K] :
     have := hM.out
     let L' : FiniteGaloisIntermediateField k K := {
       normalClosure k M K with
-      to_finiteDimensional := normalClosure.is_finiteDimensional k M K
-      to_isGalois := IsGalois.normalClosure k M K }
+      finiteDimensional := normalClosure.is_finiteDimensional k M K
+      isGalois := IsGalois.normalClosure k M K }
     have : L'.1.fixingSubgroup.carrier ⊆ (IntermediateFieldEquivClosedSubgroup.1.1 L).carrier := by
       have : M ≤ L'.1 := IntermediateField.le_normalClosure M
       rw [←  fixedField_fixingSubgroup L'.1, IntermediateField.le_iff_le] at this
