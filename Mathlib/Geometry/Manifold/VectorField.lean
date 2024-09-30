@@ -198,7 +198,7 @@ theorem contMDiff_invariantVectorField (v : TangentSpace I (1 : G)) :
   let F₁ : G → (TangentBundle I G × TangentBundle I G) := fun g ↦ (fg g, fv g)
   have S₁ : Smooth I (I.tangent.prod I.tangent) F₁ := Smooth.prod_mk sfg sfv
   let F₂ : (TangentBundle I G × TangentBundle I G) → TangentBundle (I.prod I) (G × G) :=
-    (equivTangentBundleProd I I G G).symm
+    (equivTangentBundleProd I G I G).symm
   have S₂ : Smooth (I.tangent.prod I.tangent) (I.prod I).tangent F₂ :=
     smooth_equivTangentBundleProd_symm
   let F₃ : TangentBundle (I.prod I) (G × G) → TangentBundle I G :=
