@@ -25,8 +25,9 @@ reflexive.
 * `IsReflexivePair` is the predicate that f and g have a common section.
 * `WalkingReflexivePair` is the diagram indexing pairs with a common section.
 * A `reflexiveCofork` is a cocone on a diagram indexed by `WalkingReflexivePair`.
-* `WalkingReflexivePair.inclusionWalkingReflexivePair` is the inclustion functor.
-  It acts on reflexive pair as forgetting the common section.
+* `WalkingReflexivePair.inclusionWalkingReflexivePair` is the inclustion functor from
+  `WalkingParallelPair` to `WalkingReflexivePair`. It acts on reflexive pairs as forgetting
+  the common section.
 * `HasReflexiveCoequalizers` is the predicate that a category has all colimits of reflexive pairs.
 * `ofIsReflexivePairColimitEquiv`: an isomorphism promoting the coequalizer of a reflexive pair to
   the colimit of a diagram out of the walking reflexive pair
