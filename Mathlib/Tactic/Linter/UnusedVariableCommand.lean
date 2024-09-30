@@ -5,6 +5,7 @@ Authors: Damiano Testa
 -/
 
 import Lean.Elab.Command
+--import Mathlib.adomaniLeanUtils.inspect
 
 /-!
 #  The "unusedVariableCommand" linter
@@ -161,6 +162,7 @@ def shadowLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let decl? := (stx.find? (·.isOfKind ``Lean.Parser.Command.declId)).getD default
   let decl := ((← getEnv).find? decl?[0].getId).getD default
   let type := decl.type
+  --type.inspect
   let bindNames := getForAllBinderNames type
   let mut reps := #[]
   let mut seen : NameSet := {}
