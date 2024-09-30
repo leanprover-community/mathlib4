@@ -57,19 +57,12 @@ addition is - I think - relevant future work.
 
 -/
 
-/-- A quantale is a monoid distributing over a complete sup-semilattice.
+/-- A quantale generally is defined as a monoid distributing over a complete sup-semilattice.
+    However, as it is common to also consider constructs like ⊤ and ⊥ on quantales,
+    we use the (equivalent) definition of a monoid distributing over a complete lattice.
+    Since every sup-semilattice is a complete lattice, we get the ensuing lemmas for free this way.
 
-    Technically, I would prefer to define it as
-    `class Quantale (α : Type*) extends Monoid α, CompleteSemilatticeSup α where ...`
-    however, if I do that currently, the elements ⊤ and ⊥ are not automatically defined.
-    I could do that separately, but it seems more sensible to push the definition
-    of those to CompleteSemmilatticeSup in the library, as they are already making
-    sense there and having them should not break anything (in theory).
-
-    The reason not to consider a quantale as a complete lattice, is because the
-    morphisms between quantales usually only preserve the join and not the inf.
-    In fact, when seen as a generalization of locales, the monoid multiplication
-    usually takes the place of the inf.
+    Morphisms over quantales will usually focus on preserving the supremum and the monoid.
 -/
 class Quantale (α : Type*) extends Monoid α, CompleteLattice α where
   /-- Multiplication is distributive over join in a quantale -/
