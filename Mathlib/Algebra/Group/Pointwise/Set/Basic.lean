@@ -393,7 +393,7 @@ theorem sUnion_mul (S : Set (Set α)) (t : Set α) : (⋃₀ S) * t = ⋃ s ∈ 
   image2_sUnion_left _ _ _
 
 @[to_additive]
-theorem mul_sUnion (s : Set α) (T : Set (Set α)) : (s * ⋃₀ T) = ⋃ t ∈ T, s * t :=
+theorem mul_sUnion (s : Set α) (T : Set (Set α)) : s * ⋃₀ T = ⋃ t ∈ T, s * t :=
   image2_sUnion_right _ _ _
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
