@@ -19,7 +19,7 @@ namespace Accessible
 
 variable {Sys : Finset α → Prop} [Accessible Sys]
 
--- TODO: Add doc.
+/-- A helper lemma for `nonempty_contains_emptyset`.-/
 theorem nonempty_contains_emptyset'
     {s : Finset α} (hs : Sys s) {n : ℕ} (hn : n = s.card) :
     Sys ∅ := by
@@ -44,7 +44,7 @@ section Induction
 variable (hS : Sys ∅)
 
 -- TODO: Find better name.
--- TODO: Add doc.
+/-- A helper lemma for `induction_on_accessible`.-/
 theorem induction_on_accessible'
     {p : ⦃s : Finset α⦄ → Sys s → Prop}
     (empty : p hS)
@@ -72,6 +72,35 @@ theorem induction_on_accessible
   | _, h => induction_on_accessible' hS empty insert h rfl
 
 end Induction
+
+-- TODO: Find better name.
+theorem construction_on_accessible
+    [DecidableEq α] {s : Finset α} (hs : Sys s) :
+    ∃ l : List α, l.Nodup ∧ Multiset.ofList l = s.val ∧ ∀ l', l' <:+ l →
+      ∃ s', Multiset.ofList l' = s'.val ∧ Sys s' := by
+  have hS := nonempty_contains_emptyset ⟨s, hs⟩
+  induction hs using induction_on_accessible hS with
+  | empty => use []; simp; use ∅; simp [hS]
+  | insert hs₁ hs₂ h₁ h₂ h₃ =>
+    rename_i s₁ s₂
+    rcases h₃ with ⟨l₀, hl₀₁, hl₀₂, hl₀₃⟩
+    have h₄ : ∃! a, a ∈ s ∧ a ∉ l₀ := by sorry
+    let x : α := s.choose (· ∉ l₀) h₄
+    have hx : x ∉ l₀ := choose_property _ _ h₄
+    use x :: l₀
+    apply And.intro (by simp [hl₀₁, hx])
+    apply And.intro (Multiset.eq_of_le_of_card_le _ _)
+    · intro l' hl'
+      rw [List.suffix_cons_iff] at hl'
+      apply hl'.elim _ (fun h => hl₀₃ _ h)
+      intro hl'; use s₁; simp [hs₁, hl']
+      apply Multiset.eq_of_le_of_card_le
+      · sorry
+      · simp [← h₂]
+        sorry
+    · sorry
+    · simp [← h₂]
+      sorry
 
 end Accessible
 
