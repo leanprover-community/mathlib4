@@ -990,8 +990,9 @@ lemma comapQuotientEquivOfSurj_symm_mk (c : Con M) {f : N →* M} (hf : Function
 
 @[simp]
 lemma comapQuotientEquivOfSurj_symm_mk' (c : Con M) (f : N ≃* M) (x : N) :
-    (comapQuotientEquivOfSurj c f f.surjective).symm (@Quotient.mk M c.toSetoid (f x)) = x :=
-  (MulEquiv.symm_apply_eq (@comapQuotientEquivOfSurj M N _ _ c f _)).mpr rfl
+    (comapQuotientEquivOfSurj c f f.surjective).symm (@Quotient.mk M c.toSetoid (f x)) = x := by
+  simp only [MonoidHom.coe_coe]
+  exact(MulEquiv.symm_apply_eq (@comapQuotientEquivOfSurj M N _ _ c f _)).mpr rfl
 
 /-- The **second isomorphism theorem for monoids**. -/
 @[to_additive "The second isomorphism theorem for `AddMonoid`s."]
