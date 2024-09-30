@@ -32,6 +32,8 @@ open PGame
 
 universe u
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 -- Porting note: moved the setoid instance to PGame.lean
 
 /-- The type of combinatorial games. In ZFC, a combinatorial game is constructed from

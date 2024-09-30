@@ -49,6 +49,8 @@ open Sum (inl inr)
 
 local notation "ℓ_infty_ℝ" => lp (fun n : ℕ => ℝ) ∞
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 universe u v w
 
 attribute [local instance] metricSpaceSum

@@ -162,6 +162,8 @@ attribute [local instance] DirectLimit.setoid
 -- Porting note (#10754): Added local instance
 attribute [local instance] DirectLimit.sigmaStructure
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 
 instance [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] [Inhabited ι]
     [Inhabited (G default)] : Inhabited (DirectLimit G f) :=

@@ -1351,6 +1351,8 @@ theorem Perm.extendDomain_trans (e e' : Perm α') :
 
 end
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 /-- Subtype of the quotient is equivalent to the quotient of the subtype. Let `α` be a setoid with
 equivalence relation `~`. Let `p₂` be a predicate on the quotient type `α/~`, and `p₁` be the lift
 of this predicate to `α`: `p₁ a ↔ p₂ ⟦a⟧`. Let `~₂` be the restriction of `~` to `{x // p₁ x}`.

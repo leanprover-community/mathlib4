@@ -46,6 +46,8 @@ attribute [local instance] Path.Homotopic.setoid
 -- Porting note: removed this attribute
 --attribute [local reducible] FundamentalGroupoid
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 /-- Get an isomorphism between the fundamental groups at two points given a path -/
 def fundamentalGroupMulEquivOfPath (p : Path x₀ x₁) :
     FundamentalGroup X x₀ ≃* FundamentalGroup X x₁ :=

@@ -62,6 +62,8 @@ noncomputable section
 
 open Nat multiplicity padicNorm CauSeq CauSeq.Completion Metric
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 /-- The type of Cauchy sequences of rationals with respect to the `p`-adic norm. -/
 abbrev PadicSeq (p : ℕ) :=
   CauSeq _ (padicNorm p)

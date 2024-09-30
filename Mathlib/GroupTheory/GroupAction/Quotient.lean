@@ -288,6 +288,8 @@ instance isPretransitive_quotient (G) [Group G] (H : Subgroup G) : IsPretransiti
 
 variable {α}
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 @[to_additive]
 instance finite_quotient_of_pretransitive_of_finite_quotient [IsPretransitive α β] {H : Subgroup α}
     [Finite (α ⧸ H)] : Finite <| orbitRel.Quotient H β := by

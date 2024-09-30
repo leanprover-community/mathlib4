@@ -740,6 +740,8 @@ namespace Associates
 
 open Associated
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 /-- The canonical quotient map from a monoid `α` into the `Associates` of `α` -/
 protected abbrev mk {α : Type*} [Monoid α] (a : α) : Associates α :=
   ⟦a⟧

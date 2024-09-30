@@ -370,6 +370,8 @@ noncomputable def Quotient.out'RelEmbedding {_ : Setoid α} {r : α → α → P
     (fun a b => Quotient.liftOn₂' a b r H) ↪r r :=
   { Quotient.outRelEmbedding H with toFun := Quotient.out' }
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 @[simp]
 theorem acc_lift₂_iff [Setoid α] {r : α → α → Prop}
     {H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂} {a} :

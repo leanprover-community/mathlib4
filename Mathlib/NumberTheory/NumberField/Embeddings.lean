@@ -707,6 +707,8 @@ lemma mem_orbit_iff [IsGalois k K] {w w' : InfinitePlace K} :
   rw [← mk_embedding w, comap_mk, smul_mk, comap_mk]
   congr 1; ext1; simp
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 /-- The orbits of infinite places under the action of the galois group are indexed by
 the infinite places of the base field. -/
 noncomputable

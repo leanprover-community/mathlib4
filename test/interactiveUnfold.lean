@@ -56,7 +56,8 @@ info: Unfolds for 5 / 3:
 /--
 info: Unfolds for 1 + 1:
 · Ordinal.type (Sum.Lex EmptyRelation EmptyRelation)
-· ⟦{ α := PUnit.{u_1 + 1} ⊕ PUnit.{u_1 + 1}, r := Sum.Lex EmptyRelation EmptyRelation, wo := ⋯ }⟧
+· Quotient.mk Ordinal.isEquivalent
+  { α := PUnit.{u_1 + 1} ⊕ PUnit.{u_1 + 1}, r := Sum.Lex EmptyRelation EmptyRelation, wo := ⋯ }
 · Quot.mk Setoid.r { α := PUnit.{u_1 + 1} ⊕ PUnit.{u_1 + 1}, r := Sum.Lex EmptyRelation EmptyRelation, wo := ⋯ }
 -/
 #guard_msgs in

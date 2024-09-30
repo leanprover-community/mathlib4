@@ -147,6 +147,8 @@ namespace Surreal
 
 open SetTheory PGame
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 /-- Powers of the surreal number `half`. -/
 def powHalf (n : ℕ) : Surreal :=
   ⟦⟨PGame.powHalf n, PGame.numeric_powHalf n⟩⟧

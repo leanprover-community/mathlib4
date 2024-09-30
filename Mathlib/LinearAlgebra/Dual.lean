@@ -1249,6 +1249,8 @@ theorem quotDualCoannihilatorToDual_injective (W : Submodule R (Dual R M)) :
     Function.Injective W.quotDualCoannihilatorToDual :=
   LinearMap.ker_eq_bot.mp (ker_liftQ_eq_bot _ _ _ le_rfl)
 
+local notation3:arg (priority := high) "⟦" a "⟧" => _root_.Quotient.mk _ a
+
 theorem flip_quotDualCoannihilatorToDual_injective (W : Submodule R (Dual R M)) :
     Function.Injective W.quotDualCoannihilatorToDual.flip :=
   fun _ _ he ↦ Subtype.ext <| LinearMap.ext fun m ↦ DFunLike.congr_fun he ⟦m⟧

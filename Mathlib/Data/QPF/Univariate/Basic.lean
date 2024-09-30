@@ -254,6 +254,8 @@ theorem Fix.rec_eq {α : Type _} (g : F α → α) (x : F (Fix F)) :
   rw [PFunctor.map_eq, recF_eq, ← PFunctor.map_eq, PFunctor.W.dest_mk, PFunctor.map_map, abs_map,
     ← h, abs_repr, this]
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 theorem Fix.ind_aux (a : q.P.A) (f : q.P.B a → q.P.W) :
     Fix.mk (abs ⟨a, fun x => ⟦f x⟧⟩) = ⟦⟨a, f⟩⟧ := by
   have : Fix.mk (abs ⟨a, fun x => ⟦f x⟧⟩) = ⟦Wrepr ⟨a, f⟩⟧ := by

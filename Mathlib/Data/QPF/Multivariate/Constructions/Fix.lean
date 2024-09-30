@@ -162,6 +162,8 @@ Fix F a b = F a b (Fix F a b)
 def Fix {n : ℕ} (F : TypeVec (n + 1) → Type*) [q : MvQPF F] (α : TypeVec n) :=
   Quotient (wSetoid α : Setoid (q.P.W α))
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 /-- `Fix F` is a functor -/
 def Fix.map {α β : TypeVec n} (g : α ⟹ β) : Fix F α → Fix F β :=
   Quotient.lift (fun x : q.P.W α => ⟦q.P.wMap g x⟧) fun _a _b h => Quot.sound (wEquiv_map _ _ _ h)

@@ -599,6 +599,8 @@ on an encodable type. -/
 def Quotient.rep (q : Quotient s) : α :=
   choose (exists_rep q)
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 theorem Quotient.rep_spec (q : Quotient s) : ⟦q.rep⟧ = q :=
   choose_spec (exists_rep q)
 

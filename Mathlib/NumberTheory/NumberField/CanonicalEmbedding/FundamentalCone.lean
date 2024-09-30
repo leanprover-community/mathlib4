@@ -338,6 +338,8 @@ def quotIntNorm :
     rw [← Nat.cast_inj (R := ℝ), intNorm_coe, intNorm_coe, ← hu, integralPoint_torsionSMul_smul_coe,
       norm_unit_smul]
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 @[simp]
 theorem quotIntNorm_apply (a : integralPoint K) : quotIntNorm ⟦a⟧ = intNorm a := rfl
 

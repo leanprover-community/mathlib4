@@ -147,6 +147,8 @@ noncomputable def toPGameEmbedding : Ordinal.{u} ↪o PGame.{u} where
   inj' := toPGame_injective
   map_rel_iff' := @toPGame_le_iff
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 /-- Converts an ordinal into the corresponding game. -/
 noncomputable abbrev toGame (o : Ordinal) : Game := ⟦o.toPGame⟧
 

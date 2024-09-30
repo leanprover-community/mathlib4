@@ -296,6 +296,8 @@ instance {X : Type u} [Inhabited X] : Inhabited (FundamentalGroupoid X) :=
 
 attribute [local instance] Path.Homotopic.setoid
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 instance : CategoryTheory.Groupoid (FundamentalGroupoid X) where
   Hom x y := Path.Homotopic.Quotient x.as y.as
   id x := ⟦Path.refl x.as⟧

@@ -88,6 +88,8 @@ local macro "matrix_simp" : tactic =>
   `(tactic| simp only [Matrix.head_cons, Matrix.tail_cons, Matrix.smul_empty, Matrix.smul_cons,
     Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_two])
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 universe u v
 
 /-! ## Weierstrass curves -/

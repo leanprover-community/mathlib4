@@ -454,6 +454,8 @@ variable (G α)
 abbrev orbitRel.Quotient : Type _ :=
   _root_.Quotient <| orbitRel G α
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 /-- An action is pretransitive if and only if the quotient by `MulAction.orbitRel` is a
 subsingleton. -/
 @[to_additive "An additive action is pretransitive if and only if the quotient by

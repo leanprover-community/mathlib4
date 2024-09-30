@@ -418,6 +418,8 @@ local instance : CommGroup (𝓞 K)ˣ := inferInstance
 -/
 set_option maxSynthPendingDepth 2 -- Note this is active for the remainder of the file.
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 /-- The linear equivalence between `(𝓞 K)ˣ ⧸ (torsion K)` as an additive `ℤ`-module and
 `unitLattice` . -/
 def logEmbeddingEquiv :

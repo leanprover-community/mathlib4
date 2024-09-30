@@ -172,6 +172,8 @@ theorem intCast_eq (z1 z2 : ℤ) : (z1 : ℤ_[p]) = z2 ↔ z1 = z2 := by
 
 @[deprecated (since := "2024-04-05")] alias coe_int_eq := intCast_eq
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 /-- A sequence of integers that is Cauchy with respect to the `p`-adic norm converges to a `p`-adic
 integer. -/
 def ofIntSeq (seq : ℕ → ℤ) (h : IsCauSeq (padicNorm p) fun n => seq n) : ℤ_[p] :=

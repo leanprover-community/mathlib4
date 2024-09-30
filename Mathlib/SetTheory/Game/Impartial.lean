@@ -57,6 +57,8 @@ instance impartial_star : Impartial star := by
 theorem neg_equiv_self (G : PGame) [h : G.Impartial] : G ≈ -G :=
   (impartial_def.1 h).1
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 @[simp]
 theorem mk'_neg_equiv_self (G : PGame) [G.Impartial] : -(⟦G⟧ : Game) = ⟦G⟧ :=
   game_eq (Equiv.symm (neg_equiv_self G))

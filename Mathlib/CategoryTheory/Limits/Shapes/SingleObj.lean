@@ -81,6 +81,8 @@ lemma Types.Quot.Rel.iff_orbitRel (x y : J.obj (SingleObj.star G)) :
   show (∃ g : G, y = g • x) ↔ (∃ g : G, g • x = y)
   conv => lhs; simp only [h]
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 /-- The explicit quotient construction of the colimit of `J : SingleObj G ⥤ Type u` is
 equivalent to the quotient of `J.obj (SingleObj.star G)` by the induced action. -/
 @[simps]

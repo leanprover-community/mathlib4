@@ -217,6 +217,8 @@ theorem equiv_iff_sameRay {v₁ v₂ : RayVector R M} : v₁ ≈ v₂ ↔ SameRa
 
 variable (R)
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 -- Porting note: Removed `protected` here, not in namespace
 /-- The ray given by a nonzero vector. -/
 def rayOfNeZero (v : M) (h : v ≠ 0) : Module.Ray R M :=

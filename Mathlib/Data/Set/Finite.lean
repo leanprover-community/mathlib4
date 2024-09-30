@@ -497,6 +497,8 @@ theorem finite_toSet_toFinset [DecidableEq α] (s : Multiset α) :
 
 end Multiset
 
+local notation3:arg (priority := high) "⟦" a "⟧" => Quotient.mk _ a
+
 @[simp]
 theorem List.finite_toSet (l : List α) : { x | x ∈ l }.Finite :=
   (show Multiset α from ⟦l⟧).finite_toSet
