@@ -195,20 +195,13 @@ abbrev cocycles (n : ℕ) : ModuleCat k := (inhomogeneousCochains A).cycles n
 open HomologicalComplex
 
 def cocyclesIso (n : ℕ) :
-    cocycles A n ≅ ModuleCat.of k (LinearMap.ker (inhomogeneousCochains.d A n)) :=
+    cocycles A n ≅ ModuleCat.of k (LinearMap.ker ((inhomogeneousCochains A).dFrom n)) :=
   ShortComplex.moduleCatCyclesIso _
-    ≪≫ (LinearEquiv.ofEq _ _ <| by
-    show LinearMap.ker (dFrom (inhomogeneousCochains A) _) = _
-    rw [dFrom_eq _ rfl, inhomogeneousCochains.d_def]
-    simp only [ModuleCat.coe_of, ModuleCat.hom_def, ModuleCat.comp_def]
-    rw [LinearMap.ker_comp_of_ker_eq_bot]
-    exact LinearEquiv.ker (xNextIso _ rfl).symm.toLinearEquiv).toModuleIso
 
 theorem forget₂_cocyclesIso_inv_eq {n : ℕ} (x : (inhomogeneousCochains A).X n)
-    (hx : inhomogeneousCochains.d A n x = 0) :
+    (hx : (inhomogeneousCochains A).dFrom n x = 0) :
     ((cocyclesIso A n).inv ⟨x, hx⟩)
-    = HomologicalComplex.cyclesMk (inhomogeneousCochains A) x (n + 1)
-      (CochainComplex.next _ _) (by simpa using hx) :=
+    = HomologicalComplex.cyclesMk (inhomogeneousCochains A) x _ rfl (by simp_all) :=
   ShortComplex.moduleCatCyclesIso_inv_apply _ _
 
 /-- The natural inclusion of the `n`-cocycles `Zⁿ(G, A)` into the `n`-cochains `Cⁿ(G, A).` -/

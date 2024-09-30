@@ -351,15 +351,48 @@ theorem δ_apply_aux {X : ShortComplex (Rep k G)} (H : ShortExact X) (n : ℕ)
   · simp only [CochainComplex.of_x, map_zero]
     exact this ▸ congr($(inhomogeneousCochains.d_comp_d X.X₂ n) y)
 
+theorem δ_apply_aux₀ {X : ShortComplex (Rep k G)} (H : ShortExact X) (y : X.X₂) (x : G → X.X₁)
+    (hx : X.f.hom ∘ x = dZero X.X₂ y) :
+    dOne X.X₁ x = 0 := by
+  have h0 := δ_apply_aux H 0 ((zeroCochainsLEquiv X.X₂).symm y) ((oneCochainsLEquiv X.X₁).symm x)
+  have hy := congr($((CommSq.horiz_inv ⟨(shortComplexH1Iso X.X₂).hom.comm₁₂⟩).w) y)
+  have h := congr($((Iso.eq_inv_comp _).2 (shortComplexH1Iso X.X₁).hom.comm₂₃) x)
+  simp only [ModuleCat.coe_comp, Function.comp_apply] at h0 hy
+  exact h.trans <| (twoCochainsLEquiv X.X₁).map_eq_zero_iff.2 <| h0 (hy.trans <| hx ▸ rfl).symm
+
+theorem δ_apply_aux₁ {X : ShortComplex (Rep k G)} (H : ShortExact X) (y : G → X.X₂)
+    (x : G × G → X.X₁) (hx : X.f.hom ∘ x = dOne X.X₂ y) :
+    dTwo X.X₁ x = 0 := by
+  have h1 := δ_apply_aux H 1 ((oneCochainsLEquiv X.X₂).symm y) ((twoCochainsLEquiv X.X₁).symm x)
+  have hy := congr($((CommSq.horiz_inv ⟨(shortComplexH2Iso X.X₂).hom.comm₁₂⟩).w) y)
+  have h := congr($((Iso.eq_inv_comp _).2 (shortComplexH2Iso X.X₁).hom.comm₂₃) x)
+  simp only [ModuleCat.coe_comp, Function.comp_apply] at h1 hy
+  exact h.trans <| (threeCochainsLEquiv X.X₁).map_eq_zero_iff.2 <| h1 (hy.trans <| hx ▸ rfl).symm
+
+#exit
+
 theorem δ_apply (X : ShortComplex (Rep k G)) (H : ShortExact X) (n : ℕ)
-    (z : (Fin n → G) → X.X₃) (hz : inhomogeneousCochains.d X.X₃ n z = 0)
+    (z : (Fin n → G) → X.X₃) (hz : (inhomogeneousCochains X.X₃).dFrom n z = 0)
     (y : (Fin n → G) → X.X₂) (hy : (cochainsMap X.X₂ X.X₃ (MonoidHom.id G) X.g.hom).f n y = z)
-    (x : (Fin (n + 1) → G) → X.X₁) (hx : X.f.hom ∘ x = inhomogeneousCochains.d X.X₂ n y) :
+    (x : (Fin (n + 1) → G) → X.X₁)
+    (hx : ((inhomogeneousCochains X.X₂).xNextIso _).inv (X.f.hom ∘ x)
+      = (inhomogeneousCochains X.X₂).dFrom n y) :
     (mapShortExact X H).δ n (n + 1) rfl (groupCohomologyπ X.X₃ n <|
       (cocyclesIso X.X₃ n).inv ⟨z, hz⟩) = groupCohomologyπ X.X₁ (n + 1)
       ((cocyclesIso X.X₁ (n + 1)).inv ⟨x, δ_apply_aux H n y x hx⟩) := by
   simp_rw [forget₂_cocyclesIso_inv_eq]
-  exact ShortExact.δ_apply (mapShortExact X H) n (n + 1) rfl z (by simpa using hz) y hy x
+  exact ShortExact.δ_apply (mapShortExact X H) n _ rfl z (by simpa using hz) y hy x
     (by simpa using hx) (n + 2) (by simp)
+
+theorem δ_0_apply (X : ShortComplex (Rep k G)) (H : ShortExact X)
+    (z : X.X₃) (hz : z ∈ X.X₃.ρ.invariants) (y : X.X₂) (hy : X.g.hom y = z)
+    (x : G → X.X₁) (hx : X.f.hom ∘ x = dZero X.X₂ y) :
+    (mapShortExact X H).δ 0 1 rfl (groupCohomologyπ X.X₃ 0 <|
+      (isoZeroCocycles X.X₃).inv ⟨z, hz⟩) = groupCohomologyπ X.X₁ 1
+      ((isoOneCocycles X.X₁).inv ⟨x, δ_apply_aux₀ H y _ hx⟩) := by
+  have := δ_apply X H 0 ((zeroCochainsLEquiv X.X₃).symm z) ?_
+    ((zeroCochainsLEquiv X.X₂).symm y) ?_ ((oneCochainsLEquiv X.X₁).symm x) ?_
+  convert this
+
 
 end groupCohomology
