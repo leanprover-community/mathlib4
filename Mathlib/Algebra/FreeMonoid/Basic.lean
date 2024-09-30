@@ -162,8 +162,8 @@ theorem symbols_one : symbols (1 : FreeMonoid α) = ∅ := rfl
 theorem symbols_of {m : α} : symbols (of m : FreeMonoid α) = {m} := rfl
 
 @[to_additive (attr := simp)]
-theorem symbols_mul {a b : FreeMonoid α} : symbols (a * b : FreeMonoid α) =
-    (symbols a) ∪ (symbols b) := by
+theorem symbols_mul (a b : FreeMonoid α) :
+    symbols (a * b : FreeMonoid α) = symbols a ∪ symbols b := by
   simp only [symbols, List.mem_toFinset, Finset.mem_union]
   apply List.toFinset_append
 
