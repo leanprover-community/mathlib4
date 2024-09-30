@@ -135,7 +135,7 @@ lemma subset_adjoin [IsGalois k K] (s : Set K) [Finite s] :
     s ⊆ (adjoin k s).toIntermediateField :=
   (IntermediateField.subset_adjoin k s).trans (IntermediateField.le_normalClosure _)
 
-@[simp]
+@[simp, nolint simpNF]
 theorem adjoin_le_iff [IsGalois k K] {s : Set K} [Finite s]
     {L : FiniteGaloisIntermediateField k K} : adjoin k s ≤ L ↔ s ≤ L.toIntermediateField := by
   simp only [le_iff, adjoin_val, IntermediateField.normalClosure_le_iff_of_normal,
