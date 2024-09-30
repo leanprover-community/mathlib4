@@ -176,7 +176,8 @@ theorem perm_option_to_list {o₁ o₂ : Option α} : o₁.toList ~ o₂.toList 
   cases' o₁ with a <;> cases' o₂ with b; · rfl
   · cases p.length_eq
   · cases p.length_eq
-  · exact Option.mem_toList.1 (p.symm.subset <| by simp)
+  · #adaptation_note /-- Fixing explicitness of Option.mem_toList in nightly-2024-10-01. -/
+    exact (Option.mem_toList _ _).1 (p.symm.subset <| by simp)
 
 alias ⟨subperm.of_cons, subperm.cons⟩ := subperm_cons
 
