@@ -126,7 +126,7 @@ theorem length_eq_zero : length a = 0 ↔ a = 1 := List.length_eq_zero
 @[to_additive (attr := simp)]
 theorem length_of (m : α) : length (of m) = 1 := rfl
 
-@[to_additive]
+@[to_additive existing]
 theorem length_eq_one : length a = 1 ↔ ∃ m, a = FreeMonoid.of m :=
   List.length_eq_one
 
