@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.Normed.Algebra.Spectrum
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
-import Mathlib.Topology.ContinuousFunction.StoneWeierstrass
+import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 /-!
 # Uniqueness of the continuous functional calculus

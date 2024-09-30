@@ -7,7 +7,7 @@ import Mathlib.MeasureTheory.Integral.IntegrableOn
 import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.Topology.MetricSpace.ThickenedIndicator
-import Mathlib.Topology.ContinuousFunction.ContinuousMapZero
+import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 
 /-!
