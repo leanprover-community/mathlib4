@@ -308,7 +308,7 @@ protected theorem t2Space [T2Space X] (h : X ≃ₜ Y) : T2Space Y :=
 protected theorem t3Space [T3Space X] (h : X ≃ₜ Y) : T3Space Y :=
   h.symm.embedding.t3Space
 
-protected theorem isDenseEmbedding (h : X ≃ₜ Y) : IsDenseEmbedding h :=
+theorem isDenseEmbedding (h : X ≃ₜ Y) : IsDenseEmbedding h :=
   { h.embedding with dense := h.surjective.denseRange }
 
 @[deprecated (since := "2024-09-30")]
