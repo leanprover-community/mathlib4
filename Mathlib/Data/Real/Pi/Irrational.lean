@@ -10,6 +10,25 @@ import Mathlib.Data.Real.Irrational
 # `Real.pi` is irrational
 
 The main result of this file is `irrational_pi`.
+
+The proof is adapted from https://en.wikipedia.org/wiki/Proof_that_%CF%80_is_irrational#Cartwright's_proof.
+
+The proof idea is as follows.
+* Define a sequence of integrals `I n θ = ∫ x in (-1)..1, (1 - x ^ 2) ^ n * cos (x * θ)`.
+* Give a recursion formula for `I (n + 2) θ * θ ^ 2` in terms of `I n θ` and `I (n + 1) θ`.
+  Note we do not find it helpful to define `J` as in the above proof, and instead work directly
+  with `I`.
+* Define polynomials with integer coefficients `sinPoly n` and `cosPoly n` such that
+  `I n θ * θ ^ (2 * n + 1) = n ! * (sinPoly n θ * sin θ + cosPoly n θ * cos θ)`.
+  Note that in the informal proof, these polynomials are not defined explicitly, but we find it
+  useful to define them by recursion.
+* Show that both these polynomials have degree bounded by `n`.
+* Show that `0 < I n (π / 2) ≤ 2` for all `n`.
+* Now we can finish: if `π / 2` is rational, write it as `a / b` with `a, b > 0`. Then
+  `b ^ (2 * n + 1) * sinPoly n (a / b)` is a positive integer by the degree bound. But it is equal
+  to `a ^ (2 * n + 1) / n ! * I n (π / 2) ≤ 2 * a * (2 * n + 1) / n !`, which converges to 0 as
+  `n → ∞`.
+
 -/
 
 noncomputable section
@@ -17,6 +36,7 @@ noncomputable section
 open intervalIntegral MeasureTheory.MeasureSpace Set Polynomial Real
 open scoped Nat
 
+/-- The sequence of integrals used for Cartwright's proof of irrationality of `π`. -/
 private def I (n : ℕ) (θ : ℝ) : ℝ := ∫ x in (-1)..1, (1 - x ^ 2) ^ n * cos (x * θ)
 
 variable {n : ℕ} {θ : ℝ}
@@ -25,6 +45,16 @@ private lemma I_zero : I 0 θ * θ = 2 * sin θ := by
   rw [mul_comm, I]
   simp [mul_integral_comp_mul_right, two_mul]
 
+/--
+Auxiliary for the proof that `π` is irrational.
+While it is most natural to give the recursive formula for `I (n + 2) θ`, as well as give the second
+base case of `I 1 θ`, it is in fact more convenient to give the recursive formula for `I (n + 1) θ`
+in terms of `I n θ` and `I (n - 1) θ` (note the natural subtraction!).
+Despite the usually inconvenient subtraction, this in fact allows deducing both of the above facts
+with significantly fewer analysis computations.
+In addition, note the `0 ^ n` on the right hand side - this is intentional, and again allows
+combining the proof of the "usual" recursion formula and the base case `I 1 θ`.
+-/
 private lemma recursion' (n : ℕ) :
     I (n + 1) θ * θ ^ 2 = - (2 * 2 * ((n + 1) * (0 ^ n * cos θ))) +
       2 * (n + 1) * (2 * n + 1) * I n θ - 4 * (n + 1) * n * I (n - 1) θ := by
@@ -84,6 +114,10 @@ private lemma recursion' (n : ℕ) :
     ring!
   all_goals exact Continuous.intervalIntegrable (by fun_prop) _ _
 
+/--
+Auxiliary for the proof that `π` is irrational.
+The recursive formula for `I (n + 2) θ * θ ^ 2` in terms of `I n θ` and `I (n + 1) θ`.
+-/
 private lemma recursion (n : ℕ) :
     I (n + 2) θ * θ ^ 2 =
       2 * (n + 2) * (2 * n + 3) * I (n + 1) θ - 4 * (n + 2) * (n + 1) * I n θ := by
@@ -91,20 +125,41 @@ private lemma recursion (n : ℕ) :
   simp
   ring!
 
+/--
+Auxiliary for the proof that `π` is irrational.
+The second base case for the induction on `n`, giving an explicit formula for `I 1 θ`.
+-/
 private lemma I_one : I 1 θ * θ ^ 3 = 4 * sin θ - 4 * θ * cos θ := by
   rw [_root_.pow_succ, ← mul_assoc, recursion' 0, sub_mul, add_mul, mul_assoc _ (I 0 θ), I_zero]
   ring
 
+/--
+Auxiliary for the proof that `π` is irrational.
+The first of the two integer-coefficient polynomials that describe the behaviour of the
+sequence of integrals `I`.
+While not given in the informal proof, these are easy to deduce from the recursion formulae.
+-/
 private def sinPoly : ℕ → ℤ[X]
   | 0 => C 2
   | 1 => C 4
   | (n+2) => ((2 : ℤ) * (2 * n + 3)) • sinPoly (n + 1) + monomial 2 (-4) * sinPoly n
 
+/--
+Auxiliary for the proof that `π` is irrational.
+The second of the two integer-coefficient polynomials that describe the behaviour of the
+sequence of integrals `I`.
+While not given in the informal proof, these are easy to deduce from the recursion formulae.
+-/
 private def cosPoly : ℕ → ℤ[X]
   | 0 => 0
   | 1 => monomial 1 (-4)
   | (n+2) => ((2 : ℤ) * (2 * n + 3)) • cosPoly (n + 1) + monomial 2 (-4) * cosPoly n
 
+/--
+Auxiliary for the proof that `π` is irrational.
+Prove a degree bound for `sinPoly n` by induction. Note this is where we find the value in an
+explicit description of `sinPoly`.
+-/
 private lemma sinPoly_natDegree_le : ∀ n : ℕ, (sinPoly n).natDegree ≤ n
   | 0 => by simp [sinPoly]
   | 1 => by simp only [natDegree_C, mul_one, zero_le', sinPoly]
@@ -115,6 +170,11 @@ private lemma sinPoly_natDegree_le : ∀ n : ℕ, (sinPoly n).natDegree ≤ n
       refine natDegree_mul_le.trans ?_
       simpa [add_comm 2] using sinPoly_natDegree_le n
 
+/--
+Auxiliary for the proof that `π` is irrational.
+Prove a degree bound for `cosPoly n` by induction. Note this is where we find the value in an
+explicit description of `cosPoly`.
+-/
 private lemma cosPoly_natDegree_le : ∀ n : ℕ, (cosPoly n).natDegree ≤ n
   | 0 => by simp [cosPoly]
   | 1 => (natDegree_monomial_le _).trans (by simp)
@@ -124,6 +184,11 @@ private lemma cosPoly_natDegree_le : ∀ n : ℕ, (cosPoly n).natDegree ≤ n
       · exact (cosPoly_natDegree_le (n + 1)).trans (by simp)
       exact natDegree_mul_le.trans (by simp [add_comm 2, cosPoly_natDegree_le n])
 
+/--
+Auxiliary for the proof that `π` is irrational.
+The key lemma: the sequence of integrals `I` can be written as a linear combination of `sin` and
+`cos`, with coefficients given by the polynomials `sinPoly` and `cosPoly`.
+-/
 private lemma sinPoly_add_cosPoly_eval (θ : ℝ) :
     ∀ n : ℕ,
       I n θ * θ ^ (2 * n + 1) = n ! * ((sinPoly n).eval₂ (Int.castRingHom _) θ * sin θ +
@@ -136,8 +201,12 @@ private lemma sinPoly_add_cosPoly_eval (θ : ℝ) :
             4 * (n + 2) * (n + 1) * θ ^ 2 * (I n θ * θ ^ (2 * n + 1)) := by rw [recursion]; ring
         _ = _ := by simp [sinPoly_add_cosPoly_eval, sinPoly, cosPoly, Nat.factorial_succ]; ring
 
-open BigOperators
-
+/--
+Auxiliary for the proof that `π` is irrational.
+For a polynomial `p` with natural degree `≤ k` and integer coefficients, evaluating `p` at a
+rational `a / b` gives a rational of the form `z / b ^ k`.
+TODO: should this be moved elsewhere? It uses none of the pi-specific definitions.
+-/
 private lemma is_integer {p : ℤ[X]} (a b : ℤ) {k : ℕ} (hp : p.natDegree ≤ k) :
     ∃ z : ℤ, p.eval₂ (Int.castRingHom ℝ) (a / b) * b ^ k = z := by
   rcases eq_or_ne b 0 with rfl | hb
@@ -157,6 +226,11 @@ private lemma is_integer {p : ℤ[X]} (a b : ℤ) {k : ℕ} (hp : p.natDegree �
 
 open Filter
 
+/--
+Auxiliary for the proof that `π` is irrational.
+The integrand in the definition of `I` is nonnegative and takes a positive value at least one point,
+so the integral is positive.
+-/
 private lemma I_pos : 0 < I n (π / 2) := by
   refine integral_pos (by norm_num) (Continuous.continuousOn (by continuity)) ?_ ⟨0, by simp⟩
   refine fun x hx => mul_nonneg (pow_nonneg ?_ _) ?_
@@ -165,6 +239,11 @@ private lemma I_pos : 0 < I n (π / 2) := by
   refine cos_nonneg_of_neg_pi_div_two_le_of_le ?_ ?_ <;>
   nlinarith [hx.1, hx.2, pi_pos]
 
+/--
+Auxiliary for the proof that `π` is irrational.
+The integrand in the definition of `I` is bounded by 1 and the interval has length 2, so the
+integral is bounded above by `2`.
+-/
 private lemma I_le (n : ℕ) : I n (π / 2) ≤ 2 := by
   rw [← norm_of_nonneg I_pos.le]
   refine (norm_integral_le_of_norm_le_const ?_).trans (show (1 : ℝ) * _ ≤ _ by norm_num)
@@ -175,13 +254,19 @@ private lemma I_le (n : ℕ) : I n (π / 2) ≤ 2 := by
   rw [abs_le]
   constructor <;> nlinarith
 
-private lemma my_tendsto_pow_div_factorial_at_top (a : ℝ) :
+/--
+Auxiliary for the proof that `π` is irrational.
+For any real `a`, we have that `a ^ (2n+1) / n!` tends to `0` as `n → ∞`.  This is just a
+reformulation of tendsto_pow_div_factorial_atTop, which asserts the same for `a ^ n / n!`
+-/
+private lemma tendsto_pow_div_factorial_at_top_aux (a : ℝ) :
     Tendsto (fun n => (a : ℝ) ^ (2 * n + 1) / n !) atTop (nhds 0) := by
   rw [← mul_zero a]
   refine ((tendsto_pow_div_factorial_atTop (a ^ 2)).const_mul a).congr (fun x => ?_)
   rw [← pow_mul, mul_div_assoc', _root_.pow_succ']
 
-private lemma not_irrational.exists_rep {x : ℝ} :
+/-- If `x` is rational, it can be written as `a / b` with `a : ℤ` and `b : ℕ` satisfying `b > 0`. -/
+private lemma not_irrational_exists_rep {x : ℝ} :
     ¬Irrational x → ∃ (a : ℤ) (b : ℕ), 0 < b ∧ x = a / b := by
   rw [Irrational, not_not, mem_range]
   rintro ⟨q, rfl⟩
@@ -191,14 +276,14 @@ private lemma not_irrational.exists_rep {x : ℝ} :
   apply Irrational.of_div_nat 2
   rw [Nat.cast_two]
   by_contra h'
-  obtain ⟨a, b, hb, h⟩ := not_irrational.exists_rep h'
+  obtain ⟨a, b, hb, h⟩ := not_irrational_exists_rep h'
   have ha : (0 : ℝ) < a := by
     have : 0 < (a : ℝ) / b := h ▸ pi_div_two_pos
     rwa [lt_div_iff (by positivity), zero_mul] at this
   have k (n : ℕ) : 0 < (a : ℝ) ^ (2 * n + 1) / n ! := by positivity
   have j : ∀ᶠ n : ℕ in atTop, (a : ℝ) ^ (2 * n + 1) / n ! * I n (π / 2) < 1 := by
     have := eventually_lt_of_tendsto_lt (show (0 : ℝ) < 1 / 2 by norm_num)
-              (my_tendsto_pow_div_factorial_at_top a)
+              (tendsto_pow_div_factorial_at_top_aux a)
     filter_upwards [this] with n hn
     rw [lt_div_iff (zero_lt_two : (0 : ℝ) < 2)] at hn
     exact hn.trans_le' (mul_le_mul_of_nonneg_left (I_le _) (by positivity))
