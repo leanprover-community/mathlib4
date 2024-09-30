@@ -49,8 +49,8 @@ variable (k K : Type*) [Field k] [Field K] [Algebra k K]
 /-- The type of a finite Galois intermediate field of `K/k` -/
 @[ext]
 structure FiniteGaloisIntermediateField extends IntermediateField k K where
-  [to_finiteDimensional : FiniteDimensional k toIntermediateField]
-  [to_isGalois : IsGalois k toIntermediateField]
+  [finiteDimensional : FiniteDimensional k toIntermediateField]
+  [isGalois : IsGalois k toIntermediateField]
 
 namespace FiniteGaloisIntermediateField
 
@@ -61,9 +61,9 @@ instance : CoeSort (FiniteGaloisIntermediateField k K) (Type _) where
   coe L := L.toIntermediateField
 
 instance (L : FiniteGaloisIntermediateField k K) : FiniteDimensional k L :=
-  L.to_finiteDimensional
+  L.finiteDimensional
 
-instance (L : FiniteGaloisIntermediateField k K) : IsGalois k L := L.to_isGalois
+instance (L : FiniteGaloisIntermediateField k K) : IsGalois k L := L.isGalois
 
 variable {k K}
 
@@ -121,12 +121,12 @@ variable (k) in
 noncomputable def adjoin [IsGalois k K] (s : Set K) [Finite s] :
     FiniteGaloisIntermediateField k K := {
   normalClosure k (IntermediateField.adjoin k (s : Set K)) K with
-  to_finiteDimensional :=
+  finiteDimensional :=
     letI : FiniteDimensional k (IntermediateField.adjoin k (s : Set K)) :=
       IntermediateField.finiteDimensional_adjoin <| fun z _ =>
         IsAlgebraic.isIntegral (Algebra.IsAlgebraic.isAlgebraic z)
     normalClosure.is_finiteDimensional k (IntermediateField.adjoin k (s : Set K)) K
-  to_isGalois := IsGalois.normalClosure k (IntermediateField.adjoin k (s : Set K)) K }
+  isGalois := IsGalois.normalClosure k (IntermediateField.adjoin k (s : Set K)) K }
 
 @[simp]
 lemma adjoin_val [IsGalois k K] (s : Set K) [Finite s] :
