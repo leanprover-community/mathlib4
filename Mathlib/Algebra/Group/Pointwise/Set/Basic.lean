@@ -954,7 +954,7 @@ lemma vsub_iInter_subset (s : Set β) (t : ι → Set β) : (s -ᵥ ⋂ i, t i) 
 lemma sInter_vsub_subset (S : Set (Set β)) (t : Set β) : ⋂₀ S -ᵥ t ⊆ ⋂ s ∈ S, s -ᵥ t :=
   image2_sInter_subset_left _ _ _
 
-lemma vsub_sInter_subset (s : Set β) (T : Set (Set β)) : (s -ᵥ ⋂₀ T) ⊆ ⋂ t ∈ T, s -ᵥ t :=
+lemma vsub_sInter_subset (s : Set β) (T : Set (Set β)) : s -ᵥ ⋂₀ T ⊆ ⋂ t ∈ T, s -ᵥ t :=
   image2_sInter_subset_right _ _ _
 
 lemma iInter₂_vsub_subset (s : ∀ i, κ i → Set β) (t : Set β) :
