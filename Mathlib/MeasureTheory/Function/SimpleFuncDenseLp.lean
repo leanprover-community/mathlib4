@@ -23,7 +23,7 @@ by a sequence of simple functions.
   measurable and `Memℒp` (for `p < ∞`), then the simple functions
   `SimpleFunc.approxOn f hf s 0 h₀ n` may be considered as elements of `Lp E p μ`, and they tend
   in Lᵖ to `f`.
-* `Lp.simpleFunc.denseEmbedding`: the embedding `coeToLp` of the `Lp` simple functions into
+* `Lp.simpleFunc.isDenseEmbedding`: the embedding `coeToLp` of the `Lp` simple functions into
   `Lp` is dense.
 * `Lp.simpleFunc.induction`, `Lp.induction`, `Memℒp.induction`, `Integrable.induction`: to prove
   a predicate for all elements of one of these classes of functions, it suffices to check that it
@@ -685,10 +685,10 @@ protected theorem uniformEmbedding : UniformEmbedding ((↑) : Lp.simpleFunc E p
 protected theorem uniformInducing : UniformInducing ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
   simpleFunc.uniformEmbedding.toUniformInducing
 
-protected theorem denseEmbedding (hp_ne_top : p ≠ ∞) :
-    DenseEmbedding ((↑) : Lp.simpleFunc E p μ → Lp E p μ) := by
+lemma isDenseEmbedding (hp_ne_top : p ≠ ∞) :
+    IsDenseEmbedding ((↑) : Lp.simpleFunc E p μ → Lp E p μ) := by
   borelize E
-  apply simpleFunc.uniformEmbedding.denseEmbedding
+  apply simpleFunc.uniformEmbedding.isDenseEmbedding
   intro f
   rw [mem_closure_iff_seq_limit]
   have hfi' : Memℒp f p μ := Lp.memℒp f
@@ -703,9 +703,12 @@ protected theorem denseEmbedding (hp_ne_top : p ≠ ∞) :
   convert SimpleFunc.tendsto_approxOn_range_Lp hp_ne_top (Lp.stronglyMeasurable f).measurable hfi'
   rw [toLp_coeFn f (Lp.memℒp f)]
 
+@[deprecated (since := "2024-09-30")]
+alias denseEmbedding := isDenseEmbedding
+
 protected theorem isDenseInducing (hp_ne_top : p ≠ ∞) :
     IsDenseInducing ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
-  (simpleFunc.denseEmbedding hp_ne_top).toIsDenseInducing
+  (simpleFunc.isDenseEmbedding hp_ne_top).toIsDenseInducing
 
 protected theorem denseRange (hp_ne_top : p ≠ ∞) :
     DenseRange ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=

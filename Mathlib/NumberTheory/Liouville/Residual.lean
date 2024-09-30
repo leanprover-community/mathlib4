@@ -53,7 +53,7 @@ theorem setOf_liouville_eq_irrational_inter_iInter_iUnion :
 theorem eventually_residual_liouville : ∀ᶠ x in residual ℝ, Liouville x := by
   rw [Filter.Eventually, setOf_liouville_eq_irrational_inter_iInter_iUnion]
   refine eventually_residual_irrational.and ?_
-  refine residual_of_dense_Gδ ?_ (Rat.denseEmbedding_coe_real.dense.mono ?_)
+  refine residual_of_dense_Gδ ?_ (Rat.isDenseEmbedding_coe_real.dense.mono ?_)
   · exact .iInter fun n => IsOpen.isGδ <|
           isOpen_iUnion fun a => isOpen_iUnion fun b => isOpen_iUnion fun _hb => isOpen_ball
   · rintro _ ⟨r, rfl⟩

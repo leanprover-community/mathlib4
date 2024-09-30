@@ -219,9 +219,12 @@ protected theorem UniformEmbedding.embedding {f : α → β} (h : UniformEmbeddi
   { toInducing := h.toUniformInducing.inducing
     inj := h.inj }
 
-theorem UniformEmbedding.denseEmbedding {f : α → β} (h : UniformEmbedding f) (hd : DenseRange f) :
-    DenseEmbedding f :=
+theorem UniformEmbedding.isDenseEmbedding {f : α → β} (h : UniformEmbedding f) (hd : DenseRange f) :
+    IsDenseEmbedding f :=
   { h.embedding with dense := hd }
+
+@[deprecated (since := "2024-09-30")]
+alias UniformEmbedding.denseEmbedding := UniformEmbedding.isDenseEmbedding
 
 theorem closedEmbedding_of_spaced_out {α} [TopologicalSpace α] [DiscreteTopology α]
     [T0Space β] {f : α → β} {s : Set (β × β)} (hs : s ∈ 𝓤 β)
@@ -246,9 +249,9 @@ theorem closure_image_mem_nhds_of_uniformInducing {s : Set (α × α)} {e : α �
   exact ⟨e x, hxV, mem_image_of_mem e hxU⟩
 
 theorem uniformEmbedding_subtypeEmb (p : α → Prop) {e : α → β} (ue : UniformEmbedding e)
-    (de : DenseEmbedding e) : UniformEmbedding (DenseEmbedding.subtypeEmb p e) :=
+    (de : IsDenseEmbedding e) : UniformEmbedding (IsDenseEmbedding.subtypeEmb p e) :=
   { comap_uniformity := by
-      simp [comap_comap, Function.comp_def, DenseEmbedding.subtypeEmb, uniformity_subtype,
+      simp [comap_comap, Function.comp_def, IsDenseEmbedding.subtypeEmb, uniformity_subtype,
         ue.comap_uniformity.symm]
     inj := (de.subtype p).inj }
 
@@ -434,14 +437,15 @@ theorem uniform_extend_subtype [CompleteSpace γ] {p : α → Prop} {e : α → 
     {s : Set α} (hf : UniformContinuous fun x : Subtype p => f x.val) (he : UniformEmbedding e)
     (hd : ∀ x : β, x ∈ closure (range e)) (hb : closure (e '' s) ∈ 𝓝 b) (hs : IsClosed s)
     (hp : ∀ x ∈ s, p x) : ∃ c, Tendsto f (comap e (𝓝 b)) (𝓝 c) := by
-  have de : DenseEmbedding e := he.denseEmbedding hd
-  have de' : DenseEmbedding (DenseEmbedding.subtypeEmb p e) := de.subtype p
-  have ue' : UniformEmbedding (DenseEmbedding.subtypeEmb p e) := uniformEmbedding_subtypeEmb _ he de
+  have de : IsDenseEmbedding e := he.isDenseEmbedding hd
+  have de' : IsDenseEmbedding (IsDenseEmbedding.subtypeEmb p e) := de.subtype p
+  have ue' : UniformEmbedding (IsDenseEmbedding.subtypeEmb p e) :=
+    uniformEmbedding_subtypeEmb _ he de
   have : b ∈ closure (e '' { x | p x }) :=
     (closure_mono <| monotone_image <| hp) (mem_of_mem_nhds hb)
   let ⟨c, hc⟩ := uniformly_extend_exists ue'.toUniformInducing de'.dense hf ⟨b, this⟩
   replace hc : Tendsto (f ∘ Subtype.val (p := p)) (((𝓝 b).comap e).comap Subtype.val) (𝓝 c) := by
-    simpa only [nhds_subtype_eq_comap, comap_comap, DenseEmbedding.subtypeEmb_coe] using hc
+    simpa only [nhds_subtype_eq_comap, comap_comap, IsDenseEmbedding.subtypeEmb_coe] using hc
   refine ⟨c, (tendsto_comap'_iff ?_).1 hc⟩
   rw [Subtype.range_coe_subtype]
   exact ⟨_, hb, by rwa [← de.toInducing.closure_eq_preimage_closure_image, hs.closure_eq]⟩
