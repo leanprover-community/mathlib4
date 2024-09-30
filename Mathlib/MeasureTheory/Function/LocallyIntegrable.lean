@@ -130,7 +130,7 @@ theorem LocallyIntegrableOn.aestronglyMeasurable [SecondCountableTopology X]
 /-- If `s` is locally closed (e.g. open or closed), then `f` is locally integrable on `s` iff it is
 integrable on every compact subset contained in `s`. -/
 theorem locallyIntegrableOn_iff [LocallyCompactSpace X] (hs : IsLocallyClosed s) :
-    LocallyIntegrableOn f s μ ↔ ∀ (k : Set X), k ⊆ s → (IsCompact k → IntegrableOn f k μ) := by
+    LocallyIntegrableOn f s μ ↔ ∀ (k : Set X), k ⊆ s → IsCompact k → IntegrableOn f k μ := by
   refine ⟨fun hf k hk ↦ hf.integrableOn_compact_subset hk, fun hf x hx ↦ ?_⟩
   rcases hs with ⟨U, Z, hU, hZ, rfl⟩
   rcases exists_compact_subset hU hx.1 with ⟨K, hK, hxK, hKU⟩
