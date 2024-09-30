@@ -241,10 +241,10 @@ theorem contMDiffWithinAt_prod_iff (f : M → M' × N') :
       ContMDiffWithinAt I I' n (Prod.fst ∘ f) s x ∧ ContMDiffWithinAt I J' n (Prod.snd ∘ f) s x :=
   ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.prod_mk h.2⟩
 
-theorem contMDiffWithinAt_prod_module_iff (f : M → E × E') :
-    ContMDiffWithinAt I 𝓘(𝕜, E × E') n f s x ↔
-      ContMDiffWithinAt I 𝓘(𝕜, E) n (Prod.fst ∘ f) s x ∧
-      ContMDiffWithinAt I 𝓘(𝕜, E') n (Prod.snd ∘ f) s x := by
+theorem contMDiffWithinAt_prod_module_iff (f : M → F₁ × F₂) :
+    ContMDiffWithinAt I 𝓘(𝕜, F₁ × F₂) n f s x ↔
+      ContMDiffWithinAt I 𝓘(𝕜, F₁) n (Prod.fst ∘ f) s x ∧
+      ContMDiffWithinAt I 𝓘(𝕜, F₂) n (Prod.snd ∘ f) s x := by
   rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
   exact contMDiffWithinAt_prod_iff f
 
@@ -253,9 +253,9 @@ theorem contMDiffAt_prod_iff (f : M → M' × N') :
       ContMDiffAt I I' n (Prod.fst ∘ f) x ∧ ContMDiffAt I J' n (Prod.snd ∘ f) x := by
   simp_rw [← contMDiffWithinAt_univ]; exact contMDiffWithinAt_prod_iff f
 
-theorem contMDiffAt_prod_module_iff (f : M → E × E') :
-    ContMDiffAt I 𝓘(𝕜, E × E') n f x ↔
-      ContMDiffAt I 𝓘(𝕜, E) n (Prod.fst ∘ f) x ∧ ContMDiffAt I 𝓘(𝕜, E') n (Prod.snd ∘ f) x := by
+theorem contMDiffAt_prod_module_iff (f : M → F₁ × F₂) :
+    ContMDiffAt I 𝓘(𝕜, F₁ × F₂) n f x ↔
+      ContMDiffAt I 𝓘(𝕜, F₁) n (Prod.fst ∘ f) x ∧ ContMDiffAt I 𝓘(𝕜, F₂) n (Prod.snd ∘ f) x := by
   rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
   exact contMDiffAt_prod_iff f
 
@@ -266,9 +266,9 @@ theorem contMDiffOn_prod_iff (f : M → M' × N') :
       fun x hx ↦ ((contMDiffWithinAt_prod_iff f).1 (h x hx)).2⟩ ,
     fun h x hx ↦ (contMDiffWithinAt_prod_iff f).2 ⟨h.1 x hx, h.2 x hx⟩⟩
 
-theorem contMDiffOn_prod_module_iff (f : M → E × E') :
-    ContMDiffOn I 𝓘(𝕜, E × E') n f s ↔
-      ContMDiffOn I 𝓘(𝕜, E) n (Prod.fst ∘ f) s ∧ ContMDiffOn I 𝓘(𝕜, E') n (Prod.snd ∘ f) s := by
+theorem contMDiffOn_prod_module_iff (f : M → F₁ × F₂) :
+    ContMDiffOn I 𝓘(𝕜, F₁ × F₂) n f s ↔
+      ContMDiffOn I 𝓘(𝕜, F₁) n (Prod.fst ∘ f) s ∧ ContMDiffOn I 𝓘(𝕜, F₂) n (Prod.snd ∘ f) s := by
   rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
   exact contMDiffOn_prod_iff f
 
@@ -277,9 +277,9 @@ theorem contMDiff_prod_iff (f : M → M' × N') :
       ContMDiff I I' n (Prod.fst ∘ f) ∧ ContMDiff I J' n (Prod.snd ∘ f) :=
   ⟨fun h => ⟨h.fst, h.snd⟩, fun h => by convert h.1.prod_mk h.2⟩
 
-theorem contMDiff_prod_module_iff (f : M → E × E') :
-    ContMDiff I 𝓘(𝕜, E × E') n f ↔
-      ContMDiff I 𝓘(𝕜, E) n (Prod.fst ∘ f) ∧ ContMDiff I 𝓘(𝕜, E') n (Prod.snd ∘ f) := by
+theorem contMDiff_prod_module_iff (f : M → F₁ × F₂) :
+    ContMDiff I 𝓘(𝕜, F₁ × F₂) n f ↔
+      ContMDiff I 𝓘(𝕜, F₁) n (Prod.fst ∘ f) ∧ ContMDiff I 𝓘(𝕜, F₂) n (Prod.snd ∘ f) := by
   rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
   exact contMDiff_prod_iff f
 

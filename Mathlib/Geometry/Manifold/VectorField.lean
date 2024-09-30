@@ -218,6 +218,7 @@ lemma smooth_foobar_symm :
   rw [contMDiffAt_totalSpace]
   refine ⟨?_, ?_⟩
   · exact ContMDiffAt.prod_map (smoothAt_proj (TangentSpace I)) (smoothAt_proj (TangentSpace I'))
+  apply (contMDiffAt_prod_module_iff (I := (I.tangent.prod I'.tangent)) (E := E) (E' := E') (𝕜 := 𝕜) _).2
   simp only [foobar, Equiv.coe_fn_symm_mk, TangentBundle.trivializationAt_apply,
     PartialHomeomorph.extend, prodChartedSpace_chartAt, PartialHomeomorph.prod_toPartialEquiv,
     PartialEquiv.prod, PartialHomeomorph.toFun_eq_coe, PartialHomeomorph.coe_coe_symm,
