@@ -890,7 +890,7 @@ def sUnion : ZFSet → ZFSet :=
 prefix:110 "⋃₀ " => ZFSet.sUnion
 
 /-- The intersection operator, the collection of elements in all of the elements of a ZFC set. We
-special-case `⋂₀ ∅ = ∅`. -/
+define `⋂₀ ∅ = ∅`. -/
 def sInter (x : ZFSet) : ZFSet := (⋃₀ x).sep (fun y => ∀ z ∈ x, y ∈ z)
 
 @[inherit_doc]
