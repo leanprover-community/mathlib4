@@ -158,7 +158,7 @@ def addIsScalarTowerInstanceFromRingHomComp (fn : Expr) : TacticM Unit := withMa
     let mvar ← mvarid.define nm tower
       (← mkAppOptM ``IsScalarTower.of_algebraMap_eq'
         #[l[0]!, l[1]!, l[2]!, none, none, none, none, none, none, h])
-    let (_, mvar) ← mvar.intro1P
+    --let (_, mvar) ← mvar.intro1P
     return [mvar]
 
 /-- This function takes an array of expressions `t`, all of which are assumed to be `RingHom`s,
