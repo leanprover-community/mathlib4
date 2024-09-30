@@ -593,7 +593,7 @@ theorem div_iUnion (s : Set α) (t : ι → Set α) : (s / ⋃ i, t i) = ⋃ i, 
   image2_iUnion_right _ _ _
 
 @[to_additive]
-theorem sUnion_div (S : Set (Set α)) (t : Set α) : (⋃₀ S) / t = ⋃ s ∈ S, s / t :=
+theorem sUnion_div (S : Set (Set α)) (t : Set α) : ⋃₀ S / t = ⋃ s ∈ S, s / t :=
   image2_sUnion_left _ _ _
 
 @[to_additive]
