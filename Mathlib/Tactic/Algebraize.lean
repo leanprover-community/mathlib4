@@ -132,7 +132,7 @@ def addAlgebraInstanceFromRingHom (f ft : Expr) : TacticM Unit := withMainContex
   -- The type of the corresponding algebra instance
   let alg ← mkAppOptM ``Algebra #[l[0]!, l[1]!, none, none]
   -- If the instance already exists, we do not do anything
-  -- unless (← synthInstance? alg).isSome do
+  unless (← synthInstance? alg).isSome do
   liftMetaTactic fun mvarid => do
     let nm ← mkFreshBinderNameForTactic `algInst
     let mvar ← mvarid.define nm alg (← mkAppM ``RingHom.toAlgebra #[f])
@@ -145,7 +145,7 @@ def addIsScalarTowerInstanceFromRingHomComp (fn : Expr) : TacticM Unit := withMa
   let (_, l) := fn.getAppFnArgs
   let tower ← mkAppOptM ``IsScalarTower #[l[0]!, l[1]!, l[2]!, none, none, none]
   -- If the instance already exists, we do not do anything
-  -- unless (← synthInstance? tower).isSome do
+  unless (← synthInstance? tower).isSome do
   liftMetaTactic fun mvarid => do
     let nm ← mkFreshBinderNameForTactic `scalarTowerInst
     let h ← mkFreshExprMVar (← mkAppM ``Eq #[
@@ -155,10 +155,10 @@ def addIsScalarTowerInstanceFromRingHomComp (fn : Expr) : TacticM Unit := withMa
         ← mkAppOptM ``algebraMap #[l[0]!, l[1]!, none, none, none]]])
     -- Note: this could fail, but then `algebraize` will just continue, and won't add this instance
     h.mvarId!.refl
-    let mvar ← mvarid.define nm tower
-      (← mkAppOptM ``IsScalarTower.of_algebraMap_eq'
-        #[l[0]!, l[1]!, l[2]!, none, none, none, none, none, none, h])
-    --let (_, mvar) ← mvar.intro1P
+    let val ← mkAppOptM ``IsScalarTower.of_algebraMap_eq'
+      #[l[0]!, l[1]!, l[2]!, none, none, none, none, none, none, h]
+    let mvar ← mvarid.define nm tower val
+    let (_, mvar) ← mvar.intro1P
     return [mvar]
 
 /-- This function takes an array of expressions `t`, all of which are assumed to be `RingHom`s,
@@ -190,6 +190,7 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
         let pargs := pargs.set! 0 args[0]!
         let pargs := pargs.set! 1 args[1]!
         let tp ← mkAppOptM p pargs -- This should be the type `Algebra.Property A B`
+        unless (← synthInstance? tp).isSome do
         liftMetaTactic fun mvarid => do
           let nm ← mkFreshBinderNameForTactic `algebraizeInst
           let mvar ← mvarid.define nm tp decl.toExpr
@@ -201,9 +202,11 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
       else
         let pargs := pargs.set! (n - 1) decl.toExpr
         let val ← mkAppOptM p pargs
+        -- let tp : Expr := _ -- TODO: How to get the type of the target of `p`?
+        -- unless (← synthInstance? tp).isSome do
         liftMetaTactic fun mvarid => do
           let nm ← mkFreshBinderNameForTactic `algebraizeInst
-          -- let mvar ← mvarid.define nm _ val -- TODO: How to get the type of the target of `p`?
+          -- let mvar ← mvarid.define nm tp val
           -- let (_, mvar) ← mvar.intro1P
           let (_, mvar) ← mvarid.note nm val
           return [mvar]
