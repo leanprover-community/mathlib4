@@ -84,23 +84,26 @@ theorem construction_on_accessible
   | insert hs₁ hs₂ h₁ h₂ h₃ =>
     rename_i s₁ s₂
     rcases h₃ with ⟨l₀, hl₀₁, hl₀₂, hl₀₃⟩
-    have h₄ : ∃! a, a ∈ s ∧ a ∉ l₀ := by sorry
-    let x : α := s.choose (· ∉ l₀) h₄
+    have h₄ : ∃! a, a ∈ s₁ ∧ a ∉ l₀ := by sorry
+    let x : α := s₁.choose (· ∉ l₀) h₄
     have hx : x ∉ l₀ := choose_property _ _ h₄
     use x :: l₀
+    have h₅ : ↑(x :: l₀) ≤ s₁.val := by
+      rw [Multiset.le_iff_count]
+      intro a
+      by_cases ha : a = x
+      · simp_all [Multiset.nodup_iff_count_eq_one.mp s₁.nodup x (choose_mem _ _ h₄)]
+      · simp [ha]; rw [← Multiset.coe_count, hl₀₂]
+        exact Multiset.count_le_of_le _ (val_le_iff.mpr h₁)
     apply And.intro (by simp [hl₀₁, hx])
-    apply And.intro (Multiset.eq_of_le_of_card_le _ _)
+    apply And.intro (Multiset.eq_of_le_of_card_le h₅ _)
     · intro l' hl'
       rw [List.suffix_cons_iff] at hl'
       apply hl'.elim _ (fun h => hl₀₃ _ h)
       intro hl'; use s₁; simp [hs₁, hl']
-      apply Multiset.eq_of_le_of_card_le
-      · sorry
-      · simp [← h₂]
-        sorry
-    · sorry
-    · simp [← h₂]
-      sorry
+      apply Multiset.eq_of_le_of_card_le h₅
+      simp [← h₂, ← card_val s₂, ← hl₀₂]
+    · simp [← h₂, ← card_val s₂, ← hl₀₂]
 
 end Accessible
 
