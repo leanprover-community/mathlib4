@@ -39,7 +39,6 @@ specified declaration should be one of the following:
 1. An inductive type (i.e. the `Algebra` property itself), in this case it is assumed that the
 `RingHom` and the `Algebra` property are definitionally the same, and the tactic will construct the
 `Algebra` property by giving the `RingHom` property as a term.
-
 2. A constructor for the `Algebra` property. In this case it is assumed that the `RingHom` property
 is the last argument of the constructor, and that no other explicit argument is needed. The tactic
 then constructs the `Algebra` property by applying the constructor to the `RingHom` property.
@@ -64,11 +63,10 @@ class RingHom.Flat {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R â†
   out : f.toAlgebra.Flat := by infer_instance
 ```
 
-## Algebraize'
+## algebraize_only
 
 To avoid searching through the local context and adding corresponding `Algebra` properties, use
-`algebraize'` which only adds `Algebra` and `IsScalarTower` instances.
-
+`algebraize_only` which only adds `Algebra` and `IsScalarTower` instances.
 -/
 
 open Lean Elab Tactic Term Meta
@@ -96,10 +94,10 @@ properties. Using an (optional) parameter, it will also generate a `Name` of a d
 will help the `algebraize` tactic access the corresponding `Algebra` property.
 
 There are two cases for what declaration corresponding to this `Name` can be.
+
 1. An inductive type (i.e. the `Algebra` property itself), in this case it is assumed that the
 `RingHom` and the `Algebra` property are definitionally the same, and the tactic will construct the
 `Algebra` property by giving the `RingHom` property as a term.
-
 2. A constructor for the `Algebra` property. In this case it is assumed that the `RingHom` property
 is the last argument of the constructor, and that no other explicit argument is needed. The tactic
 then constructs the `Algebra` property by applying the constructor to the `RingHom` property.
@@ -252,7 +250,7 @@ See the `algebraize` tag for instructions on what properties can be added.
 
 The tactic also comes with a configuration option `properties`. If set to `true` (default), the
 tactic searches through the local context for `RingHom` properties that can be converted to
-`Algebra` properties. The macro `algebraize'` calls
+`Algebra` properties. The macro `algebraize_only` calls
 `algebraize (config := {properties := false})`,
 so in other words it only adds `Algebra` and `IsScalarTower` instances. -/
 syntax "algebraize" (ppSpace config)? (ppSpace algebraizeTermSeq)? : tactic
