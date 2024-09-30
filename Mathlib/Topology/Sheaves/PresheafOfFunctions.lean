@@ -6,7 +6,7 @@ Authors: Kim Morrison
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.Topology.Category.TopCommRingCat
-import Mathlib.Topology.ContinuousFunction.Algebra
+import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
 # Presheaves of functions

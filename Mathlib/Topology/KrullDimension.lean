@@ -12,19 +12,16 @@ import Mathlib.Topology.Sets.Closeds
 The Krull dimension of a topological space is the order theoretic Krull dimension applied to the
 collection of all its subsets that are closed and irreducible. Unfolding this definition, it is
 the length of longest series of closed irreducible subsets ordered by inclusion.
-
-TODO: The Krull dimension of `Spec(R)` equals the Krull dimension of `R`, for `R` a commutative
-  ring.
 -/
 
-open TopologicalSpace
+open TopologicalSpace Order
 
 /--
 The Krull dimension of a topological space is the supremum of lengths of chains of
 closed irreducible sets.
 -/
 noncomputable def topologicalKrullDim (T : Type*) [TopologicalSpace T] : WithBot ℕ∞ :=
-  Order.krullDim (IrreducibleCloseds T)
+  krullDim (IrreducibleCloseds T)
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
@@ -53,7 +50,7 @@ to the Krull dimension of `Y`.
 -/
 theorem ClosedEmbedding.topologicalKrullDim_le (f : X → Y) (hf : ClosedEmbedding f) :
     topologicalKrullDim X ≤ topologicalKrullDim Y :=
-  Order.krullDim_le_of_strictMono _ (IrreducibleCloseds.map_strictMono hf)
+  krullDim_le_of_strictMono _ (IrreducibleCloseds.map_strictMono hf)
 
 /-- The topological Krull dimension is invariant under homeomorphisms -/
 theorem IsHomeomorph.topologicalKrullDim_eq (f : X → Y) (h : IsHomeomorph f) :
