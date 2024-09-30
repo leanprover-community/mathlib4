@@ -60,6 +60,8 @@ structure MeasurableEmbedding [MeasurableSpace α] [MeasurableSpace β] (f : α 
   /-- The image of a measurable set under a measurable embedding is a measurable set. -/
   protected measurableSet_image' : ∀ ⦃s⦄, MeasurableSet s → MeasurableSet (f '' s)
 
+attribute [fun_prop] MeasurableEmbedding.measurable
+
 namespace MeasurableEmbedding
 
 variable {mα : MeasurableSpace α} [MeasurableSpace β] [MeasurableSpace γ] {f : α → β} {g : β → γ}
@@ -155,7 +157,7 @@ instance instEquivLike : EquivLike (α ≃ᵐ β) α β where
 theorem coe_toEquiv (e : α ≃ᵐ β) : (e.toEquiv : α → β) = e :=
   rfl
 
-@[measurability]
+@[measurability, fun_prop]
 protected theorem measurable (e : α ≃ᵐ β) : Measurable (e : α → β) :=
   e.measurable_toFun
 

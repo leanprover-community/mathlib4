@@ -534,7 +534,7 @@ variable [MeasurableSpace α] [MeasurableSpace β] [DiscreteMeasurableSpace α] 
 @[measurability] lemma MeasurableSet.of_discrete : MeasurableSet s :=
   DiscreteMeasurableSpace.forall_measurableSet _
 
-@[measurability] lemma Measurable.of_discrete : Measurable f := fun _ _ ↦ .of_discrete
+@[measurability, fun_prop] lemma Measurable.of_discrete : Measurable f := fun _ _ ↦ .of_discrete
 
 @[deprecated MeasurableSet.of_discrete (since := "2024-08-25")]
 lemma measurableSet_discrete (s : Set α) : MeasurableSet s := .of_discrete
