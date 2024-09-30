@@ -556,7 +556,7 @@ theorem normal_iff_isGalois (L : IntermediateField k K) [IsGalois k K] :
         intro l
         dsimp only [f]
         simp only [IntermediateFieldEquivClosedSubgroup, Equiv.toFun_as_coe, Equiv.coe_fn_mk] at h
-        rw [←restrict_fixedField L.fixingSubgroup (FiniteGaloisIntermediateField.adjoin k {l.1}),
+        rw [← restrict_fixedField L.fixingSubgroup (FiniteGaloisIntermediateField.adjoin k {l.1}),
           fixedField_fixingSubgroup L]
         exact inf_le_left
       · intro l hl
