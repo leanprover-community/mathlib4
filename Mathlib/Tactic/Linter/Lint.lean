@@ -348,7 +348,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if let some init := stx.getTailPos? then
     -- the last line: we subtract 1, since the last line is expected to be empty
     let lastLine := ((← getFileMap).toPosition init).line
-    if lastLine ≤ defValue && defValue < linterBound then
+    if lastLine ≤ defValue then
       logWarningAt stx <| .tagged linter.style.longFile.name
         m!"The default value of the `longFile` linter is {defValue}.\n\
           This file is {lastLine} lines long which does not exceed the allowed bound.\n\

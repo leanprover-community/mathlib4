@@ -1777,4 +1777,4 @@ def withTopWithBot' [BoundedOrder β] (f : LatticeHom α β) :
 
 end LatticeHom
 
-set_option linter.style.longFile 1800
+set_option linter.style.longFile 1900
