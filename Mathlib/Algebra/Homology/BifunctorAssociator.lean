@@ -49,16 +49,14 @@ variable {C₁ C₂ C₁₂ C₂₃ C₃ C₄ : Type*}
   [G₂₃.PreservesZeroMorphisms] [∀ (X₂ : C₂), (G₂₃.obj X₂).PreservesZeroMorphisms]
   [F.PreservesZeroMorphisms] [∀ (X₁ : C₁), (F.obj X₁).Additive]
   (associator : bifunctorComp₁₂ F₁₂ G ≅ bifunctorComp₂₃ F G₂₃)
-  {ι₁ ι₂ ι₃ ι₁₂ ι₂₃ ι₄ : Type*}
-  [DecidableEq ι₁₂] [DecidableEq ι₂₃] [DecidableEq ι₄]
+  {ι₁ ι₂ ι₃ ι₁₂ ι₂₃ ι₄ : Type*} [DecidableEq ι₄]
   {c₁ : ComplexShape ι₁} {c₂ : ComplexShape ι₂} {c₃ : ComplexShape ι₃}
   (K₁ : HomologicalComplex C₁ c₁) (K₂ : HomologicalComplex C₂ c₂)
   (K₃ : HomologicalComplex C₃ c₃)
   (c₁₂ : ComplexShape ι₁₂) (c₂₃ : ComplexShape ι₂₃) (c₄ : ComplexShape ι₄)
   [TotalComplexShape c₁ c₂ c₁₂] [TotalComplexShape c₁₂ c₃ c₄]
   [TotalComplexShape c₂ c₃ c₂₃] [TotalComplexShape c₁ c₂₃ c₄]
-  [HasMapBifunctor K₁ K₂ F₁₂ c₁₂] [HasMapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄]
-  [HasMapBifunctor K₂ K₃ G₂₃ c₂₃] [HasMapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄]
+  [HasMapBifunctor K₁ K₂ F₁₂ c₁₂] [HasMapBifunctor K₂ K₃ G₂₃ c₂₃]
   [ComplexShape.Associative c₁ c₂ c₃ c₁₂ c₂₃ c₄]
 
 variable (F₁₂ G) in
@@ -88,6 +86,12 @@ instance :
       (ComplexShape.π c₁ c₂ c₁₂) :=
   inferInstanceAs (HasMapBifunctor K₁ K₂ F₁₂ c₁₂)
 
+section
+
+variable [DecidableEq ι₁₂] [DecidableEq ι₂₃]
+  [HasMapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄]
+  [HasMapBifunctor K₁ (mapBifunctor K₂ K₃ G₂₃ c₂₃) F c₄]
+
 instance :
     (((GradedObject.mapBifunctor G ι₁₂ ι₃).obj (GradedObject.mapBifunctorMapObj F₁₂
         (ComplexShape.π c₁ c₂ c₁₂) K₁.X K₂.X)).obj K₃.X).HasMap
@@ -111,7 +115,11 @@ noncomputable def mapBifunctorAssociatorX
     (GradedObject.mapBifunctorAssociator (associator := associator)
       (H₁₂ := H₁₂) (H₂₃ := H₂₃))
 
+end
+
 namespace mapBifunctor₁₂
+
+variable [DecidableEq ι₁₂] [HasMapBifunctor (mapBifunctor K₁ K₂ F₁₂ c₁₂) K₃ G c₄]
 
 section
 
