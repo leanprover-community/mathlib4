@@ -263,7 +263,7 @@ noncomputable def tensorLift : M₁ ⊗ M₂ ⟶ M₃ :=
   TensorProduct.lift (LinearMap.mk₂ R f h₁ h₂ h₃ h₄)
 
 @[simp]
-lemma tensorLift_apply (m : M₁) (n : M₂) :
+lemma tensorLift_tmul (m : M₁) (n : M₂) :
     tensorLift f h₁ h₂ h₃ h₄ (m ⊗ₜ n) = f m n := rfl
 
 end
