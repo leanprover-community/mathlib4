@@ -192,7 +192,7 @@ theorem deriv_abs_neg {x : ℝ} (hx : x < 0) : deriv (|·|) x = -1 := (hasDerivA
 theorem deriv_abs_pos {x : ℝ} (hx : 0 < x) : deriv (|·|) x = 1 := (hasDerivAt_abs_pos hx).deriv
 
 theorem deriv_abs_zero : deriv (|·|) (0 : ℝ) = 0 :=
-    deriv_zero_of_not_differentiableAt not_differentiableAt_abs_zero
+  deriv_zero_of_not_differentiableAt not_differentiableAt_abs_zero
 
 theorem deriv_abs (x : ℝ) : deriv (|·|) x = SignType.sign x := by
   obtain rfl | hx := eq_or_ne x 0
