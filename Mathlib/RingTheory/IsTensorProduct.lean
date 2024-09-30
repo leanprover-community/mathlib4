@@ -424,7 +424,7 @@ noncomputable def Algebra.pushoutDesc [H : Algebra.IsPushout R S R' S'] {A : Typ
       rw [mul_add, map_add, map_add, mul_add, e₁, e₂]
 
 @[simp]
-theorem Algebra.pushoutDesc_left [H : Algebra.IsPushout R S R' S'] {A : Type*} [Semiring A]
+theorem Algebra.pushoutDesc_left [Algebra.IsPushout R S R' S'] {A : Type*} [Semiring A]
     [Algebra R A] (f : S →ₐ[R] A) (g : R' →ₐ[R] A) (H) (x : S) :
     Algebra.pushoutDesc S' f g H (algebraMap S S' x) = f x := by
   letI := Module.compHom A f.toRingHom
@@ -442,7 +442,7 @@ theorem Algebra.lift_algHom_comp_left [Algebra.IsPushout R S R' S'] {A : Type*} 
   AlgHom.ext fun x => (Algebra.pushoutDesc_left S' f g H x : _)
 
 @[simp]
-theorem Algebra.pushoutDesc_right [H : Algebra.IsPushout R S R' S'] {A : Type*} [Semiring A]
+theorem Algebra.pushoutDesc_right [Algebra.IsPushout R S R' S'] {A : Type*} [Semiring A]
     [Algebra R A] (f : S →ₐ[R] A) (g : R' →ₐ[R] A) (H) (x : R') :
     Algebra.pushoutDesc S' f g H (algebraMap R' S' x) = g x :=
   letI := Module.compHom A f.toRingHom

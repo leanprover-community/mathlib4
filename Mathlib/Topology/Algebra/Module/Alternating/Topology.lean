@@ -24,6 +24,22 @@ namespace ContinuousAlternatingMap
 variable {𝕜 E F ι : Type*} [NormedField 𝕜]
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [AddCommGroup F] [Module 𝕜 F]
 
+section IsClosedRange
+
+variable [TopologicalSpace F] [TopologicalAddGroup F]
+
+instance instTopologicalSpace : TopologicalSpace (E [⋀^ι]→L[𝕜] F) :=
+  .induced toContinuousMultilinearMap inferInstance
+
+lemma isClosed_range_toContinuousMultilinearMap [ContinuousSMul 𝕜 E] [T2Space F] :
+    IsClosed (Set.range (toContinuousMultilinearMap : (E [⋀^ι]→L[𝕜] F) →
+      ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F)) := by
+  simp only [range_toContinuousMultilinearMap, setOf_forall]
+  repeat refine isClosed_iInter fun _ ↦ ?_
+  exact isClosed_singleton.preimage (ContinuousMultilinearMap.continuous_eval_const _)
+
+end IsClosedRange
+
 section UniformAddGroup
 
 variable [UniformSpace F] [UniformAddGroup F]
@@ -67,11 +83,8 @@ theorem completeSpace (h : RestrictGenTopology {s : Set (ι → E) | IsVonNBound
     CompleteSpace (E [⋀^ι]→L[𝕜] F) := by
   have := ContinuousMultilinearMap.completeSpace (F := F) h
   rw [completeSpace_iff_isComplete_range
-    uniformEmbedding_toContinuousMultilinearMap.toUniformInducing, range_toContinuousMultilinearMap]
-  simp only [setOf_forall]
-  apply IsClosed.isComplete
-  repeat refine isClosed_iInter fun _ ↦ ?_
-  exact isClosed_singleton.preimage (ContinuousMultilinearMap.continuous_eval_const _)
+    uniformEmbedding_toContinuousMultilinearMap.toUniformInducing]
+  apply isClosed_range_toContinuousMultilinearMap.isComplete
 
 instance instCompleteSpace [TopologicalAddGroup E] [SequentialSpace (ι → E)] :
     CompleteSpace (E [⋀^ι]→L[𝕜] F) :=
@@ -99,9 +112,6 @@ end RestrictScalars
 end UniformAddGroup
 
 variable [TopologicalSpace F] [TopologicalAddGroup F]
-
-instance instTopologicalSpace : TopologicalSpace (E [⋀^ι]→L[𝕜] F) :=
-  .induced toContinuousMultilinearMap inferInstance
 
 lemma embedding_toContinuousMultilinearMap :
     Embedding (toContinuousMultilinearMap : (E [⋀^ι]→L[𝕜] F → _)) :=
@@ -137,6 +147,11 @@ theorem hasBasis_nhds_zero :
   hasBasis_nhds_zero_of_basis (Filter.basis_sets _)
 
 variable [ContinuousSMul 𝕜 E]
+
+lemma closedEmbedding_toContinuousMultilinearMap [T2Space F] :
+    ClosedEmbedding (toContinuousMultilinearMap :
+      (E [⋀^ι]→L[𝕜] F) → ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F) :=
+  ⟨embedding_toContinuousMultilinearMap, isClosed_range_toContinuousMultilinearMap⟩
 
 @[continuity, fun_prop]
 theorem continuous_eval_const (x : ι → E) :

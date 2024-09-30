@@ -121,9 +121,9 @@ uses the `SetLike.instMembership` instance. -/
 def delabSubtypeSetLike : Delab := whenPPOption getPPNotation do
   let #[_, .lam n _ body _] := (← getExpr).getAppArgs | failure
   guard <| body.isAppOf ``Membership.mem
-  let #[_, _, inst, .bvar 0, _] := body.getAppArgs | failure
+  let #[_, _, inst, _, .bvar 0] := body.getAppArgs | failure
   guard <| inst.isAppOfArity ``instMembership 3
-  let S ← withAppArg <| withBindingBody n <| withNaryArg 4 delab
+  let S ← withAppArg <| withBindingBody n <| withNaryArg 3 delab
   `(↥$S)
 
 end Delab

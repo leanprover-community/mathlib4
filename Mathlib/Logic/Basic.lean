@@ -435,8 +435,7 @@ end Equality
 section Quantifiers
 section Dependent
 
-variable {α : Sort*} {β : α → Sort*} {γ : ∀ a, β a → Sort*} {δ : ∀ a b, γ a b → Sort*}
-  {ε : ∀ a b c, δ a b c → Sort*}
+variable {α : Sort*} {β : α → Sort*} {γ : ∀ a, β a → Sort*}
 
 theorem pi_congr {β' : α → Sort _} (h : ∀ a, β a = β' a) : (∀ a, β a) = ∀ a, β' a :=
   (funext h : β = β') ▸ rfl
@@ -462,7 +461,7 @@ theorem Exists₃.imp {p q : ∀ a b, γ a b → Prop} (h : ∀ a b c, p a b c �
 
 end Dependent
 
-variable {α β : Sort*} {p q : α → Prop}
+variable {α β : Sort*} {p : α → Prop}
 
 theorem forall_swap {p : α → β → Prop} : (∀ x y, p x y) ↔ ∀ y x, p x y :=
   ⟨fun f x y ↦ f y x, fun f x y ↦ f y x⟩
@@ -745,7 +744,7 @@ noncomputable def Exists.classicalRecOn {α : Sort*} {p : α → Prop} (h : ∃ 
 /-! ### Declarations about bounded quantifiers -/
 section BoundedQuantifiers
 
-variable {α : Sort*} {r p q : α → Prop} {P Q : ∀ x, p x → Prop} {b : Prop}
+variable {α : Sort*} {r p q : α → Prop} {P Q : ∀ x, p x → Prop}
 
 theorem bex_def : (∃ (x : _) (_ : p x), q x) ↔ ∃ x, p x ∧ q x :=
   ⟨fun ⟨x, px, qx⟩ ↦ ⟨x, px, qx⟩, fun ⟨x, px, qx⟩ ↦ ⟨x, px, qx⟩⟩
