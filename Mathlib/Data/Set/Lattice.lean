@@ -1591,7 +1591,6 @@ theorem image2_sUnion_right (s : Set α) (T : Set (Set β)) :
     image2 f s (⋃₀ T) = ⋃ t ∈ T, image2 f s t := by
   aesop
 
-
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem image2_iUnion₂_left (s : ∀ i, κ i → Set α) (t : Set β) :
