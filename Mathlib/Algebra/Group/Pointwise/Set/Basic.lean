@@ -742,7 +742,7 @@ lemma sUnion_smul (S : Set (Set α)) (t : Set β) : (⋃₀ S) • t = ⋃ s ∈
   image2_sUnion_left _ _ _
 
 @[to_additive]
-lemma smul_sUnion (s : Set α) (T : Set (Set β)) : (s • ⋃₀ T) = ⋃ t ∈ T, s • t :=
+lemma smul_sUnion (s : Set α) (T : Set (Set β)) : s • ⋃₀ T = ⋃ t ∈ T, s • t :=
   image2_sUnion_right _ _ _
 
 @[to_additive]
