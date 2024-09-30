@@ -501,12 +501,10 @@ theorem length_thinkN (s : Computation α) [_h : Terminates s] (n) :
     length (thinkN s n) = length s + n :=
   (results_thinkN n (results_of_terminates _)).length
 
--- False positive of the linter.
-set_option linter.style.multiGoal false in
 theorem eq_thinkN {s : Computation α} {a n} (h : Results s a n) : s = thinkN (pure a) n := by
   revert s
-  induction n with | zero => _ | succ n IH => _
-  all_goals intro s; apply recOn s (fun a' => _) fun s => _ <;> intro a h
+  induction n with | zero => _ | succ n IH => _ <;>
+  intro s <;> apply recOn s (fun a' => _) fun s => _ <;> intro a h
   · rw [← eq_of_pure_mem h.mem]
     rfl
   · cases' of_results_think h with n h

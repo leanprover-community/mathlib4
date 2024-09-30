@@ -1601,12 +1601,10 @@ def trStmts₁ : Λ' → Finset Λ'
   | Q@(Λ'.pred q₁ q₂) => insert Q <| trStmts₁ q₁ ∪ insert (unrev q₂) (trStmts₁ q₂)
   | Q@(Λ'.ret _) => {Q}
 
--- TODO: investigate why the linter fails here
-set_option linter.style.multiGoal false in
 theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trStmts₁ q := by
   induction q with
   | move _ _ _ q q_ih => _ | clear _ _ q q_ih => _ | copy q q_ih => _ | push _ _ q q_ih => _
-  | read q q_ih => _ | succ q q_ih => _ | pred q₁ q₂ q₁_ih q₂_ih => _ | ret => _
+  | read q q_ih => _ | succ q q_ih => _ | pred q₁ q₂ q₁_ih q₂_ih => _ | ret => _ <;>
   all_goals
     simp (config := { contextual := true }) only [trStmts₁, Finset.mem_insert, Finset.mem_union,
       or_imp, Finset.mem_singleton, Finset.Subset.refl, imp_true_iff, true_and]
@@ -1798,14 +1796,12 @@ theorem ret_supports {S k} (H₁ : contSupp k ⊆ S) : TM2.SupportsStmt S (tr (�
     · refine H₁ (R _ <| L _ <| R _ <| R _ <| L _ W)
     · exact H₁ (R _ <| L _ <| R _ <| R _ <| R _ <| Finset.mem_singleton_self _)
 
--- TODO: investigate why the linter fails here
-set_option linter.style.multiGoal false in
 theorem trStmts₁_supports {S q} (H₁ : (q : Λ').Supports S) (HS₁ : trStmts₁ q ⊆ S) :
     Supports (trStmts₁ q) S := by
   have W := fun {q} => trStmts₁_self q
   induction q with
   | move _ _ _ q q_ih => _ | clear _ _ q q_ih => _ | copy q q_ih => _ | push _ _ q q_ih => _
-  | read q q_ih => _ | succ q q_ih => _ | pred q₁ q₂ q₁_ih q₂_ih => _ | ret => _
+  | read q q_ih => _ | succ q q_ih => _ | pred q₁ q₂ q₁_ih q₂_ih => _ | ret => _ <;>
   all_goals simp [trStmts₁, -Finset.singleton_subset_iff] at HS₁ ⊢
   any_goals
     cases' Finset.insert_subset_iff.1 HS₁ with h₁ h₂
