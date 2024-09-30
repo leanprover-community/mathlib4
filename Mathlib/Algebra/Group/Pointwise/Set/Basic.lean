@@ -623,7 +623,7 @@ theorem div_iInter_subset (s : Set α) (t : ι → Set α) : (s / ⋂ i, t i) �
   image2_iInter_subset_right _ _ _
 
 @[to_additive]
-theorem sInter_div_subset (S : Set (Set α)) (t : Set α) : (⋂₀ S) / t ⊆ ⋂ s ∈ S, s / t :=
+theorem sInter_div_subset (S : Set (Set α)) (t : Set α) : ⋂₀ S / t ⊆ ⋂ s ∈ S, s / t :=
   image2_sInter_subset_left _ _ _
 
 @[to_additive]
