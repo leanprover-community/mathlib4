@@ -74,6 +74,17 @@ theorem add_pow [CommSemiring R] (x y : R) (n : ℕ) :
     (x + y) ^ n = ∑ m ∈ range (n + 1), x ^ m * y ^ (n - m) * n.choose m :=
   (Commute.all x y).add_pow n
 
+/-- A special case of the **binomial theorem** -/
+theorem sub_pow [CommRing R] (x y : R) (n : ℕ) :
+    (x - y) ^ n = ∑ m ∈ range (n + 1), (-1) ^ (m + n) * x ^ m * y ^ (n - m) * n.choose m := by
+  rw [sub_eq_add_neg, add_pow]
+  congr! 1 with m hm
+  have : (-1 : R) ^ (n - m) = (-1) ^ (n + m) := by
+    rw [mem_range] at hm
+    simp [show n + m = n - m + 2 * m by omega, pow_add]
+  rw [neg_pow, this]
+  ring
+
 namespace Nat
 
 /-- The sum of entries in a row of Pascal's triangle -/
