@@ -452,10 +452,11 @@ lemma _root_.Submodule.inf_genEigenspace (f : End R M) (p : Submodule R M) {k : 
 lemma _root_.Submodule.inf_iInf_maxGenEigenspace_of_forall_mapsTo {ι : Type*} {μ : ι → R}
     (f : ι → End R M) (p : Submodule R M) (hfp : ∀ i, MapsTo (f i) p p) :
     p ⊓ ⨅ i, (f i).maxGenEigenspace (μ i) =
-    (⨅ i, maxGenEigenspace ((f i).restrict (hfp i)) (μ i)).map p.subtype := by
-  cases isEmpty_or_nonempty ι; · simp [iInf_of_isEmpty]
-  simp_rw [inf_iInf, maxGenEigenspace, ((f _).genEigenspace _).mono.directed_le.inf_iSup_eq,
-    p.inf_genEigenspace _ (hfp _), ← Submodule.map_iSup, Submodule.map_iInf _ p.injective_subtype]
+      (⨅ i, maxGenEigenspace ((f i).restrict (hfp i)) (μ i)).map p.subtype := by
+  cases isEmpty_or_nonempty ι
+  · simp [iInf_of_isEmpty]
+  · simp_rw [inf_iInf, maxGenEigenspace, ((f _).genEigenspace _).mono.directed_le.inf_iSup_eq,
+      p.inf_genEigenspace _ (hfp _), ← Submodule.map_iSup, Submodule.map_iInf _ p.injective_subtype]
 
 lemma iInf_maxGenEigenspace_restrict_map_subtype_eq
     {ι : Type*} {μ : ι → R} (i : ι) (f : ι → End R M)
