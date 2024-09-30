@@ -6,7 +6,7 @@ Authors: Kyle Miller
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Combinatorics.SimpleGraph.Dart
 import Mathlib.Combinatorics.SimpleGraph.Finite
-import Mathlib.Data.ZMod.Parity
+import Mathlib.Data.ZMod.Basic
 
 /-!
 # Degree-sum formula and handshaking lemma
