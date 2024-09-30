@@ -110,7 +110,7 @@ theorem AEMeasurable.mul_const [MeasurableMul M] (hf : AEMeasurable f μ) (c : M
     AEMeasurable (fun x => f x * c) μ :=
   (measurable_mul_const c).comp_aemeasurable hf
 
-@[to_additive (attr := aesop safe 20 apply (rule_sets := [Measurable]))]
+@[to_additive (attr := fun_prop, aesop safe 20 apply (rule_sets := [Measurable]))]
 theorem Measurable.mul' [MeasurableMul₂ M] (hf : Measurable f) (hg : Measurable g) :
     Measurable (f * g) :=
   measurable_mul.comp (hf.prod_mk hg)
@@ -261,7 +261,7 @@ theorem AEMeasurable.div_const [MeasurableDiv G] (hf : AEMeasurable f μ) (c : G
     AEMeasurable (fun x => f x / c) μ :=
   (MeasurableDiv.measurable_div_const c).comp_aemeasurable hf
 
-@[to_additive (attr := aesop safe 20 apply (rule_sets := [Measurable]))]
+@[to_additive (attr := fun_prop, aesop safe 20 apply (rule_sets := [Measurable]))]
 theorem Measurable.div' [MeasurableDiv₂ G] (hf : Measurable f) (hg : Measurable g) :
     Measurable (f / g) :=
   measurable_div.comp (hf.prod_mk hg)
@@ -271,7 +271,7 @@ theorem Measurable.div [MeasurableDiv₂ G] (hf : Measurable f) (hg : Measurable
     Measurable fun a => f a / g a :=
   measurable_div.comp (hf.prod_mk hg)
 
-@[to_additive (attr := aesop safe 20 apply (rule_sets := [Measurable]))]
+@[to_additive (attr := fun_prop, aesop safe 20 apply (rule_sets := [Measurable]))]
 theorem AEMeasurable.div' [MeasurableDiv₂ G] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (f / g) μ :=
   measurable_div.comp_aemeasurable (hf.prod_mk hg)
