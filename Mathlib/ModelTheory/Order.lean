@@ -358,6 +358,7 @@ instance : @OrderedStructure L M _ (L.leOfStructure M) _ := by
   intros
   rfl
 
+/-- The order structure on an ordered language is decidable. -/
 -- This should not be a global instance,
 -- because it will match with any `LE` typeclass search
 @[local instance]
