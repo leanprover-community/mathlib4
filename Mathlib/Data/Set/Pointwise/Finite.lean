@@ -51,6 +51,13 @@ def fintypeMul [DecidableEq α] (s t : Set α) [Fintype s] [Fintype t] : Fintype
 
 end Mul
 
+section Div
+variable [Div α] {s t : Set α}
+
+@[to_additive] lemma Finite.div : s.Finite → t.Finite → (s / t).Finite := .image2 _
+
+end Div
+
 section Monoid
 
 variable [Monoid α] {s t : Set α}
@@ -109,20 +116,34 @@ section Cancel
 variable [Mul α] [IsLeftCancelMul α] [IsRightCancelMul α] {s t : Set α}
 
 @[to_additive]
-theorem infinite_mul : (s * t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infinite ∧ s.Nonempty :=
-  infinite_image2 (fun _ _ => (mul_left_injective _).injOn) fun _ _ =>
-    (mul_right_injective _).injOn
+lemma finite_mul : (s * t).Finite ↔ s.Finite ∧ t.Finite ∨ s = ∅ ∨ t = ∅ :=
+  finite_image2 (fun _ _ ↦ (mul_left_injective _).injOn) fun _ _ ↦ (mul_right_injective _).injOn
 
 @[to_additive]
-lemma finite_mul : (s * t).Finite ↔ s.Finite ∧ t.Finite ∨ s = ∅ ∨ t = ∅ :=
-  finite_image2  (fun _ _ ↦ (mul_left_injective _).injOn)
-    fun _ _ ↦ (mul_right_injective _).injOn
+lemma infinite_mul : (s * t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infinite ∧ s.Nonempty :=
+  infinite_image2 (fun _ _ => (mul_left_injective _).injOn) fun _ _ => (mul_right_injective _).injOn
 
 end Cancel
 
 section Group
 
-variable [Group α] [MulAction α β] {a : α} {s : Set β}
+variable [Group α] {s t : Set α}
+
+@[to_additive] lemma finite_inv : s⁻¹.Finite ↔ s.Finite := by
+  rw [← image_inv, finite_image_iff inv_injective.injOn]
+
+@[to_additive] lemma infinite_inv : s⁻¹.Infinite ↔ s.Infinite := finite_inv.not
+
+@[to_additive]
+lemma finite_div : (s / t).Finite ↔ s.Finite ∧ t.Finite ∨ s = ∅ ∨ t = ∅ :=
+  finite_image2 (fun _ _ ↦ div_left_injective.injOn) fun _ _ ↦ div_right_injective.injOn
+
+@[to_additive]
+lemma infinite_div : (s / t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infinite ∧ s.Nonempty :=
+  infinite_image2 (fun _ _ ↦ div_left_injective.injOn) fun _ _ ↦ div_right_injective.injOn
+
+
+variable [MulAction α β] {a : α} {s : Set β}
 
 @[to_additive (attr := simp)]
 theorem finite_smul_set : (a • s).Finite ↔ s.Finite :=
