@@ -1086,25 +1086,6 @@ theorem seq_of_forall_finite_exists {γ : Type*} {P : γ → Set γ → Prop}
 
 end
 
-namespace List
-variable (α) [Finite α] (n : ℕ)
-
-lemma finite_length_eq : {l : List α | l.length = n}.Finite := by
-  induction n with
-  | zero => simp [List.length_eq_zero]
-  | succ n ih =>
-    suffices {l : List α | l.length = n + 1} = Set.univ.image2 (· :: ·) {l | l.length = n} by
-      rw [this]; exact Set.finite_univ.image2 _ ih
-    ext (_ | _) <;> simp [n.succ_ne_zero.symm]
-
-lemma finite_length_lt : {l : List α | l.length < n}.Finite := by
-  convert (Finset.range n).finite_toSet.biUnion fun i _ ↦ finite_length_eq α i; ext; simp
-
-lemma finite_length_le : {l : List α | l.length ≤ n}.Finite := by
-  simpa [Nat.lt_succ_iff] using finite_length_lt α (n + 1)
-
-end List
-
 /-! ### Cardinality -/
 
 theorem empty_card : Fintype.card (∅ : Set α) = 0 :=
@@ -1547,6 +1528,7 @@ protected theorem bddBelow [SemilatticeInf α] [Nonempty α] (s : Finset α) : B
 
 end Finset
 
+section LinearOrder
 variable [LinearOrder α] {s : Set α}
 
 /-- If a linear order does not contain any triple of elements `x < y < z`, then this type
@@ -1586,5 +1568,26 @@ theorem DirectedOn.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} {f
   rw [Set.biUnion_eq_iUnion] at hs
   haveI := hn.coe_sort
   simpa using (directed_comp.2 hc.directed_val).exists_mem_subset_of_finset_subset_biUnion hs
+
+end LinearOrder
+
+namespace List
+variable (α) [Finite α] (n : ℕ)
+
+lemma finite_length_eq : {l : List α | l.length = n}.Finite := by
+  induction n with
+  | zero => simp [List.length_eq_zero]
+  | succ n ih =>
+    suffices {l : List α | l.length = n + 1} = Set.univ.image2 (· :: ·) {l | l.length = n} by
+      rw [this]; exact Set.finite_univ.image2 _ ih
+    ext (_ | _) <;> simp [n.succ_ne_zero.symm]
+
+lemma finite_length_lt : {l : List α | l.length < n}.Finite := by
+  convert (Finset.range n).finite_toSet.biUnion fun i _ ↦ finite_length_eq α i; ext; simp
+
+lemma finite_length_le : {l : List α | l.length ≤ n}.Finite := by
+  simpa [Nat.lt_succ_iff] using finite_length_lt α (n + 1)
+
+end List
 
 set_option linter.style.longFile 1700
