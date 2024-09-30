@@ -500,7 +500,7 @@ lemma finsupp_apply {ρ : Representation k G A} {α : Type*} (g : G) :
   simp only [finsupp_apply, Finsupp.coe_lsum, LinearMap.coe_comp, Function.comp_apply, map_zero,
     Finsupp.sum_single_index, Finsupp.lsingle_apply]
 
-noncomputable def free (k G : Type*) [CommSemiring k] [Monoid G] (α : Type*) :
+noncomputable abbrev free (k G : Type*) [CommSemiring k] [Monoid G] (α : Type*) :
     Representation k G (α →₀ G →₀ k) :=
   finsupp (leftRegular k G) α
 

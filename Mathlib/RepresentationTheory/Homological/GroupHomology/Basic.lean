@@ -3,8 +3,10 @@ Copyright (c) 2023 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
+import Mathlib.Algebra.Homology.ConcreteCategory
 import Mathlib.Algebra.Homology.Opposite
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import Mathlib.RepresentationTheory.Homological.Resolution
 import Mathlib.RepresentationTheory.Invariants
 import Mathlib.Tactic.CategoryTheory.Slice
@@ -222,62 +224,29 @@ open Finsupp
         refine LinearMap.ext_iff.1 (Finsupp.lhom_ext fun i a => ?_) x
         simp [coinvariantsTensorFreeToFinsupp_apply a i 1 1]
 
-def d (n : ℕ) : ((Fin (n + 1) → G) →₀ A) →ₗ[k] (Fin n → G) →₀ A :=
-  Finsupp.lsum (R := k) k fun g => Finsupp.lsingle (fun i => g i.succ) ∘ₗ A.ρ (g 0)⁻¹
-    + Finset.univ.sum fun j : Fin (n + 1) =>
-      (-1 : k) ^ ((j : ℕ) + 1) • Finsupp.lsingle (Fin.contractNth j (· * ·) g)
-
-theorem d_apply (n : ℕ) (x : (Fin (n + 1) → G) →₀ A) :
-    A.d n x = x.sum fun g a => Finsupp.single (fun i => g i.succ) (A.ρ (g 0)⁻¹ a)
-      + Finset.univ.sum fun j : Fin (n + 1) =>
-        (-1 : k) ^ ((j : ℕ) + 1) • Finsupp.single (Fin.contractNth j (· * ·) g) a := by
-  ext
-  simp [d]
-
-@[simp]
-theorem d_single (n : ℕ) (g : Fin (n + 1) → G) (a : A) :
-    A.d n (Finsupp.single g a) = Finsupp.single (fun i => g i.succ) (A.ρ (g 0)⁻¹ a)
-      + Finset.univ.sum fun j : Fin (n + 1) =>
-        (-1 : k) ^ ((j : ℕ) + 1) • Finsupp.single (Fin.contractNth j (· * ·) g) a := by
-  rw [d_apply, Finsupp.sum_single_index]
-  simp
-
-variable (k G)
-
-@[simps] def coinvariants : Rep k G ⥤ ModuleCat k where
-  obj := fun A => ModuleCat.of k (Representation.coinvariants A.ρ)
-  map := fun f => coinvariantsMap f
-  map_id := fun X => by
-    ext x
-    refine Quotient.inductionOn' x (fun y => rfl)
-  map_comp := fun f g => by
-    ext x
-    refine Quotient.inductionOn' x (fun y => rfl)
-
-instance : (coinvariants k G).Additive where
+instance : (Rep.coinvariantsFunctor k G).Additive where
   map_add := fun {_ _ _ _} => LinearMap.ext fun x => Quotient.inductionOn' x (fun _ => rfl)
 
-variable {k G}
-
 abbrev coinvariantsFinsuppIso (A : Rep k G) (α : Type u) :
-    (coinvariants k G).obj (A.finsupp α) ≅ ModuleCat.of k (α →₀ (coinvariants k G).obj A) :=
+    (coinvariantsFunctor k G).obj (A.finsupp α)
+      ≅ ModuleCat.of k (α →₀ (coinvariantsFunctor k G).obj A) :=
   (coinvariantsFinsuppLEquiv A α).toModuleIso
 
 abbrev coinvariantsTensorLeftRegular (A : Rep k G) :
-    (coinvariants k G).obj (A ⊗ Rep.leftRegular k G) ≅ A.V :=
+    (coinvariantsFunctor k G).obj (A ⊗ Rep.leftRegular k G) ≅ A.V :=
   A.coinvariantsTensorLEquiv.toModuleIso
 
 open MonoidalCategory
 
 abbrev coinvariantsTensorFreeIso (A : Rep k G) (α : Type u) [DecidableEq α] :
-    (coinvariants k G).obj (A ⊗ Rep.free k G α)
+    (coinvariantsFunctor k G).obj (A ⊗ Rep.free k G α)
       ≅ ModuleCat.of k (α →₀ A) :=
   (A.coinvariantsTensorFreeLEquiv α).toModuleIso
 
 variable (k G)
 
 @[simps] def tensor : Rep k G ⥤ Rep k G ⥤ ModuleCat k :=
-{ obj := fun A => MonoidalCategory.tensorLeft A ⋙ coinvariants k G
+{ obj := fun A => MonoidalCategory.tensorLeft A ⋙ coinvariantsFunctor k G
   map := fun f => {
     app := fun A => coinvariantsMap (f ⊗ 𝟙 A)
     naturality := fun A B g => (coinvariants_whisker_comm f g).symm }
@@ -285,12 +254,12 @@ variable (k G)
     ext B : 1
     dsimp only
     rw [MonoidalCategory.tensor_id]
-    exact (coinvariants k G).map_id _
+    exact (coinvariantsFunctor k G).map_id _
   map_comp := fun f g => NatTrans.ext <| by
     ext B : 1
     dsimp only
     rw [MonoidalCategory.comp_tensor_id]
-    exact (coinvariants k G).map_comp _ _ }
+    exact (coinvariantsFunctor k G).map_comp _ _ }
 
 instance (A : Rep k G) : ((tensor k G).obj A).Additive := by
   unfold tensor
@@ -303,13 +272,13 @@ def Tor (n : ℕ) : Rep k G ⥤ Rep k G ⥤ ModuleCat k where
 variable {k G}
 variable (A : Rep k G)
 
-def tensorChainComplex (α : Type*) [AddRightCancelSemigroup α] [One α] :
-  ChainComplex (Rep k G) α ⥤ ChainComplex (ModuleCat k) α :=
-Functor.mapHomologicalComplex ((tensor k G).obj A) _
-
 def torIso (B : Rep k G) (P : ProjectiveResolution B) (n : ℕ) :
-    ((Tor k G n).obj A).obj B ≅ ((tensorChainComplex A ℕ).obj P.complex).homology n :=
+    ((Tor k G n).obj A).obj B
+      ≅ ((((tensor k G).obj A).mapHomologicalComplex _).obj P.complex).homology n :=
   ProjectiveResolution.isoLeftDerivedObj P ((tensor k G).obj A) n
+
+def tensorBarResolution := (((tensor k G).obj A).mapHomologicalComplex _).obj
+  (Rep.barResolution k G)
 
 end Rep
 
@@ -317,42 +286,67 @@ namespace groupHomology
 open Rep
 variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G) {n : ℕ}
 
-def tensorBarResolution := (tensorChainComplex A ℕ).obj (groupHomology.barResolution k G)
+namespace inhomogeneousChains
 
-def tensorStdResolution := (tensorChainComplex A ℕ).obj (groupCohomology.resolution k G)
+def d (n : ℕ) : ((Fin (n + 1) → G) →₀ A) →ₗ[k] (Fin n → G) →₀ A :=
+  Finsupp.lsum (R := k) k fun g => Finsupp.lsingle (fun i => g i.succ) ∘ₗ A.ρ (g 0)⁻¹
+    + Finset.univ.sum fun j : Fin (n + 1) =>
+      (-1 : k) ^ ((j : ℕ) + 1) • Finsupp.lsingle (Fin.contractNth j (· * ·) g)
 
-open groupHomology Finsupp
+theorem d_apply (n : ℕ) (x : (Fin (n + 1) → G) →₀ A) :
+    d A n x = x.sum fun g a => Finsupp.single (fun i => g i.succ) (A.ρ (g 0)⁻¹ a)
+      + Finset.univ.sum fun j : Fin (n + 1) =>
+        (-1 : k) ^ ((j : ℕ) + 1) • Finsupp.single (Fin.contractNth j (· * ·) g) a := by
+  ext
+  simp [d]
+
+@[simp]
+theorem d_single (n : ℕ) (g : Fin (n + 1) → G) (a : A) :
+    d A n (Finsupp.single g a) = Finsupp.single (fun i => g i.succ) (A.ρ (g 0)⁻¹ a)
+      + Finset.univ.sum fun j : Fin (n + 1) =>
+        (-1 : k) ^ ((j : ℕ) + 1) • Finsupp.single (Fin.contractNth j (· * ·) g) a := by
+  rw [d_apply, Finsupp.sum_single_index]
+  simp
 
 theorem d_eq [DecidableEq G] :
-    A.d n = (coinvariantsTensorFreeIso A (Fin (n + 1) → G)).inv ≫
+    d A n = (coinvariantsTensorFreeIso A (Fin (n + 1) → G)).inv ≫
       (tensorBarResolution A).d (n + 1) n ≫ (coinvariantsTensorFreeIso A (Fin n → G)).hom := by
   ext g a : 2
   show _ = A.coinvariantsTensorFreeToFinsupp (Fin n → G) ((tensorBarResolution A).d _ _
     (A.finsuppToCoinvariantsTensorFree _ _))
-  simp only [Finsupp.lsingle_apply, finsuppToCoinvariantsTensorFree_apply, tensorBarResolution,
-    tensorChainComplex, Functor.mapHomologicalComplex_obj_X, ChainComplex.of_x,
+  unfold tensorBarResolution
+  simp only [Finsupp.lsingle_apply, finsuppToCoinvariantsTensorFree_apply,
+    Functor.mapHomologicalComplex_obj_X, ChainComplex.of_x,
     Functor.mapHomologicalComplex_obj_d, barResolution.d_def]
   show _ = A.coinvariantsTensorFreeToFinsupp (Fin n → G)
-    (Submodule.Quotient.mk (a ⊗ₜ[k] hom (groupHomology.d k G n) (single _ _)))
-  have := groupHomology.d_single (k := k) g
+    (Submodule.Quotient.mk (a ⊗ₜ[k] hom (barResolution.d k G n) (Finsupp.single _ _)))
+  have := barResolution.d_single (k := k) _ g
   simp_all [TensorProduct.tmul_add, TensorProduct.tmul_sum, Submodule.Quotient.mk_sum, d,
     coinvariantsTensorFreeToFinsupp_apply (α := Fin n → G) a]
+
+end inhomogeneousChains
 
 noncomputable abbrev inhomogeneousChains [DecidableEq G] :
     ChainComplex (ModuleCat k) ℕ :=
   ChainComplex.of (fun n => ModuleCat.of k ((Fin n → G) →₀ A))
-    (fun n => A.d n) fun n => by
-    simp only [d_eq]
+    (fun n => inhomogeneousChains.d A n) fun n => by
+    simp only [inhomogeneousChains.d_eq]
     slice_lhs 3 4 => { rw [Iso.hom_inv_id] }
     slice_lhs 2 4 => { rw [Category.id_comp, (tensorBarResolution A).d_comp_d] }
     simp
 
+open inhomogeneousChains
+
+theorem inhomogeneousChains.d_comp_d [DecidableEq G] :
+    d A n ∘ₗ d A (n + 1) = 0 := by
+  simpa [ChainComplex.of] using (inhomogeneousChains A).d_comp_d (n + 2) (n + 1) n
+
 @[simp]
 theorem inhomogeneousChains.d_def [DecidableEq G] (n : ℕ) :
-    (inhomogeneousChains A).d (n + 1) n = A.d n :=
+    (inhomogeneousChains A).d (n + 1) n = d A n :=
   ChainComplex.of_d _ _ _ _
 
-def inhomogeneousChainsIsotensorBar [DecidableEq G] :
+def inhomogeneousChainsBarIso [DecidableEq G] :
     inhomogeneousChains A ≅ tensorBarResolution A := by
   refine HomologicalComplex.Hom.isoOfComponents ?_ ?_
   · intro i
@@ -364,10 +358,25 @@ def inhomogeneousChainsIsotensorBar [DecidableEq G] :
 
 variable [DecidableEq G]
 
-def inhomogeneousChainsIsotensorStd  : inhomogeneousChains A ≅ tensorStdResolution A :=
-  inhomogeneousChainsIsotensorBar A ≪≫ (tensorChainComplex A ℕ).mapIso (barResolutionIso k G)
-
 abbrev cycles (n : ℕ) : ModuleCat k := (inhomogeneousChains A).cycles n
+
+open HomologicalComplex
+
+def cyclesIso (n : ℕ) :
+    cycles A (n + 1) ≅ ModuleCat.of k (LinearMap.ker (inhomogeneousChains.d A n)) :=
+  ShortComplex.moduleCatCyclesIso _ ≪≫ (LinearEquiv.ofEq _ _ <| by
+    show LinearMap.ker (dFrom (inhomogeneousChains A) _) = _
+    rw [dFrom_eq _ rfl, inhomogeneousChains.d_def]
+    simp only [ModuleCat.coe_of, ModuleCat.hom_def, ModuleCat.comp_def]
+    rw [LinearMap.ker_comp_of_ker_eq_bot]
+    exact LinearEquiv.ker (xNextIso _ rfl).symm.toLinearEquiv).toModuleIso
+
+theorem forget₂_cyclesIso_inv_eq {n : ℕ} (x : (inhomogeneousChains A).X (n + 1))
+    (hx : inhomogeneousChains.d A n x = 0) :
+    ((cyclesIso A n).inv ⟨x, hx⟩)
+    = HomologicalComplex.cyclesMk (inhomogeneousChains A) x n
+      (ChainComplex.next_nat_succ _) (by simpa using hx) :=
+  ShortComplex.moduleCatCyclesIso_inv_apply _ _
 
 abbrev iCycles (n : ℕ) : cycles A n ⟶ ModuleCat.of k ((Fin n → G) →₀ A) :=
   (inhomogeneousChains A).iCycles n
@@ -400,5 +409,5 @@ abbrev groupHomologyι (n : ℕ) :
 
 def groupHomologyIsoTor [Group G] (A : Rep k G) (n : ℕ) :
     groupHomology A n ≅ ((Tor k G n).obj A).obj (Rep.trivial k G k) :=
-  isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousChainsIsotensorStd A)).hom n ≪≫
-    (torIso A (Rep.trivial k G k) (groupCohomology.projectiveResolution k G) n).symm
+  isoOfQuasiIsoAt (HomotopyEquiv.ofIso (inhomogeneousChainsBarIso A)).hom n ≪≫
+    (torIso A (Rep.trivial k G k) (barResolution.projectiveResolution k G) n).symm

@@ -124,7 +124,7 @@ where the vertical arrows are `oneChainsLEquiv` and `zeroChainsLEquiv` respectiv
 theorem dZero_comp_eq [DecidableEq G] :
     dZero A ∘ₗ oneChainsLEquiv A = zeroChainsLEquiv A ∘ₗ (inhomogeneousChains A).d 1 0 :=
   Finsupp.lhom_ext fun f a => by
-  simp [ModuleCat.coe_of, zeroChainsLEquiv, oneChainsLEquiv, A.d_apply,
+  simp [ModuleCat.coe_of, zeroChainsLEquiv, oneChainsLEquiv, inhomogeneousChains.d_apply,
     Unique.eq_default (α := Fin 0 → G), sub_eq_add_neg]
 
 /-- Let `C(G, A)` denote the complex of inhomogeneous chains of `A : Rep k G`. This lemma
@@ -149,7 +149,7 @@ theorem domLCongr_single {M R : Type*} [Semiring R] [AddCommMonoid M] [Module R 
 theorem dOne_comp_eq [DecidableEq G] :
     dOne A ∘ₗ twoChainsLEquiv A = oneChainsLEquiv A ∘ₗ (inhomogeneousChains A).d 2 1 :=
   Finsupp.lhom_ext fun f a => by
-  simp [d_apply, ModuleCat.coe_of, oneChainsLEquiv, twoChainsLEquiv,
+  simp [inhomogeneousChains.d_apply, ModuleCat.coe_of, oneChainsLEquiv, twoChainsLEquiv,
     Fin.contractNth_last _ (show 1 = Fin.last 1 by rfl), -Finsupp.domLCongr_apply,
     domLCongr_single, sub_eq_add_neg, add_assoc]
 
@@ -173,7 +173,7 @@ theorem dTwo_comp_eq [DecidableEq G] :
     dTwo A ∘ₗ threeChainsLEquiv A
       = twoChainsLEquiv A ∘ₗ (inhomogeneousChains A).d 3 2 :=
   Finsupp.lhom_ext fun f a => by
-  simpa [d_apply, ModuleCat.coe_of, twoChainsLEquiv, threeChainsLEquiv,
+  simpa [inhomogeneousChains.d_apply, ModuleCat.coe_of, twoChainsLEquiv, threeChainsLEquiv,
     Fin.contractNth_last _ (show 2 = Fin.last 2 by ext; rfl), -Finsupp.domLCongr_apply,
     domLCongr_single, dTwo, Fin.sum_univ_three, Fin.contractNth, pow_succ, Fin.tail_def,
     sub_eq_add_neg, add_assoc] using ffs _ _ _

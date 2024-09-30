@@ -170,6 +170,7 @@ lemma chainsMap_comp {k G H K : Type u} [CommRing k] [Group G] [Group H] [Group 
   intro x
   simp [Rep.coe_def, ModuleCat.ofHom_comp, Function.comp.assoc]
 
+@[simp]
 lemma chainsMap_eq_mapRange {A B : Rep k G} (i : ℕ) (φ : A ⟶ B) :
     (chainsMap A B (MonoidHom.id G) φ.hom).f i = Finsupp.mapRange.linearMap φ.hom := by
   ext x
@@ -418,5 +419,33 @@ def mapShortExact (X : ShortComplex (Rep k G)) (H : ShortExact X) :
           (forget₂ (Rep k G) (ModuleCat k)).map_mono X.f)
     mono_f := chainsMap_f_map_mono X.f i
     epi_g := chainsMap_f_map_epi X.g i }
+
+theorem δ_succ_apply_aux {X : ShortComplex (Rep k G)} (H : ShortExact X) (n : ℕ)
+    (y : (Fin (n + 2) → G) →₀ X.X₂) (x : (Fin (n + 1) → G) →₀ X.X₁)
+    (hx : Finsupp.mapRange.linearMap X.f.hom x = inhomogeneousChains.d X.X₂ (n + 1) y) :
+    inhomogeneousChains.d X.X₁ n x = 0 := by
+  letI := H.2
+  simp only [coe_def] at hx
+  have := congr($((chainsMap X.X₁ X.X₂ (MonoidHom.id G) X.f.hom).comm (n + 1) n) x)
+  simp only [ChainComplex.of_x, ModuleCat.coe_of, ModuleCat.hom_def, chainsMap_eq_mapRange,
+    inhomogeneousChains.d_def, ModuleCat.comp_def, LinearMap.coe_comp,
+    Function.comp_apply, hx] at this
+  apply (ModuleCat.mono_iff_injective ((chainsMap X.X₁ X.X₂ (MonoidHom.id G) X.f.hom).f n)).1
+  · infer_instance
+  · simp only [ChainComplex.of_x, chainsMap_eq_mapRange, map_zero]
+    exact this ▸ congr($(inhomogeneousChains.d_comp_d X.X₂) y)
+
+theorem δ_succ_apply (X : ShortComplex (Rep k G)) (H : ShortExact X) (n : ℕ)
+    (z : (Fin (n + 2) → G) →₀ X.X₃) (hz : inhomogeneousChains.d X.X₃ (n + 1) z = 0)
+    (y : (Fin (n + 2) → G) →₀ X.X₂)
+    (hy : (chainsMap X.X₂ X.X₃ (MonoidHom.id G) X.g.hom).f (n + 2) y = z)
+    (x : (Fin (n + 1) → G) →₀ X.X₁)
+    (hx : Finsupp.mapRange.linearMap X.f.hom x = inhomogeneousChains.d X.X₂ (n + 1) y) :
+    (mapShortExact X H).δ (n + 2) (n + 1) rfl (groupHomologyπ X.X₃ (n + 2) <|
+      (cyclesIso X.X₃ (n + 1)).inv ⟨z, hz⟩) = groupHomologyπ X.X₁ (n + 1)
+      ((cyclesIso X.X₁ n).inv ⟨x, δ_succ_apply_aux H n y x hx⟩) := by
+  simp_rw [forget₂_cyclesIso_inv_eq]
+  exact ShortExact.δ_apply (mapShortExact X H) (n + 2) (n + 1) rfl z (by simpa using hz) y hy x
+    (by simpa using hx) n (by simp)
 
 end groupHomology

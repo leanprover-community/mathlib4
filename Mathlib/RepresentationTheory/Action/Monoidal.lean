@@ -3,6 +3,7 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.CategoryTheory.Monoidal.Linear
 import Mathlib.CategoryTheory.Monoidal.Rigid.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Rigid.OfEquivalence
@@ -255,6 +256,60 @@ each factor. -/
 noncomputable def diagonalSucc (G : Type u) [Monoid G] (n : ℕ) :
     diagonal G (n + 1) ≅ leftRegular G ⊗ diagonal G n :=
   mkIso (Fin.consEquiv _).symm.toIso fun _ => rfl
+
+/-- An isomorphism of `G`-sets `Gⁿ⁺¹ ≅ G × Gⁿ`, where `G` acts by left multiplication on `Gⁿ⁺¹` and
+`G` but trivially on `Gⁿ`. The map sends `(g₀, ..., gₙ) ↦ (g₀, (g₀⁻¹g₁, g₁⁻¹g₂, ..., gₙ₋₁⁻¹gₙ))`,
+and the inverse is `(g₀, (g₁, ..., gₙ)) ↦ (g₀, g₀g₁, g₀g₁g₂, ..., g₀g₁...gₙ).` -/
+noncomputable def diagonalSucc' (G : Type u) [Group G] :
+    ∀ n : ℕ, diagonal G (n + 1) ≅ leftRegular G ⊗ Action.trivial G (Fin n → G)
+  | 0 =>
+    diagonalOneIsoLeftRegular G ≪≫
+      (ρ_ _).symm ≪≫ tensorIso (Iso.refl _) (tensorUnitIso (Equiv.equivOfUnique PUnit _).toIso)
+  | n + 1 =>
+    diagonalSucc _ _ ≪≫
+      tensorIso (Iso.refl _) (diagonalSucc' G n) ≪≫
+        leftRegularTensorIso _ _ ≪≫
+          tensorIso (Iso.refl _)
+            (mkIso (Fin.insertNthEquiv (fun _ => G) 0).toIso fun _ => rfl)
+
+-- to move
+theorem type_tensorObj {X Y : Type u} : (X ⊗ Y) = (X × Y) := rfl
+
+theorem diagonalSucc'_hom_apply {G : Type u} [Group G] {n : ℕ} (f : Fin (n + 1) → G) :
+    (diagonalSucc' G n).hom.hom f = (f 0, fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) := by
+  induction' n with n hn
+  · exact Prod.ext rfl (funext fun x => Fin.elim0 x)
+  · refine Prod.ext rfl (funext fun x => ?_)
+    induction' x using Fin.cases with i
+    <;> simp_all only [diagonalSucc', Iso.trans_hom, tensorIso_hom, Iso.refl_hom,
+        id_tensorHom, comp_hom, instMonoidalCategory_whiskerLeft_hom, types_comp_apply,
+        whiskerLeft_apply]
+    <;> rfl
+
+theorem diagonalSucc'_hom_apply' {G : Type u} [Group G] {n : ℕ} (f : Fin (n + 1) → G) :
+    hom (diagonalSucc' G n).hom f = (f 0, fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) :=
+  diagonalSucc'_hom_apply _
+
+theorem diagonalSucc'_inv_apply {G : Type u} [Group G] {n : ℕ} (g : G) (f : Fin n → G) :
+    (diagonalSucc' G n).inv.hom (g, f) = (g • Fin.partialProd f : Fin (n + 1) → G) := by
+  revert g
+  induction' n with n hn
+  · intro g
+    funext (x : Fin 1)
+    simp only [Subsingleton.elim x 0, Pi.smul_apply, Fin.partialProd_zero, smul_eq_mul, mul_one]
+    rfl
+  · intro g
+    funext x
+    induction' x using Fin.cases with i
+    · simp_all only [Pi.smul_apply, Fin.partialProd_zero, smul_eq_mul, mul_one]
+      rfl
+    · dsimp [diagonalSucc', -instMonoidalCategory_tensorObj_V] at *
+      simp_all only [Fin.partialProd_succ', ← mul_assoc]
+      rfl
+
+theorem diagonalSucc'_inv_apply' {G : Type u} [Group G] {n : ℕ} (g : G) (f : Fin n → G) :
+    Action.hom (diagonalSucc' G n).inv (g, f) = (g • Fin.partialProd f : Fin (n + 1) → G) :=
+  diagonalSucc'_inv_apply _ _
 
 end Action
 

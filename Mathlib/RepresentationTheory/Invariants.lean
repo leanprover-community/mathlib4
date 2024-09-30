@@ -324,6 +324,7 @@ def coinvariantsHomEquiv :
   left_inv := fun x => Submodule.linearMap_qext _ rfl
   right_inv := fun x => Action.Hom.ext rfl
 
+variable (k G) in
 @[simps]
 def coinvariantsFunctor : Rep k G ⥤ ModuleCat k where
   obj A := ModuleCat.of k (A.ρ.coinvariants)
@@ -339,7 +340,7 @@ abbrev coinf := Rep.of (A.ρ.coinf S)
 
 noncomputable abbrev coinfMap {A B : Rep k G} (φ : A ⟶ B) :
     coinf A S ⟶ coinf B S :=
-  mkHom' (coinvariantsFunctor.map ((Action.res _ S.subtype).map φ))
+  mkHom' ((coinvariantsFunctor k S).map ((Action.res _ S.subtype).map φ))
     fun g => QuotientGroup.induction_on g fun g =>
     Submodule.linearMap_qext _ <| by
       ext x
