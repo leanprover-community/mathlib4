@@ -8,9 +8,13 @@ open Nat Finset
 
 variable {α : Type*}
 
+/-- The accessible property of greedoid. -/
 def AccessibleProperty (Sys : Finset α → Prop) : Prop :=
   ⦃s : Finset α⦄ → Sys s → s.Nonempty → ∃ t, t ⊆ s ∧ t.card + 1 = s.card ∧ Sys t
 
+/-- A set system is accessible if there is some element `x` in `s` which `s \ {x}` is also in the
+    set system, for each nonempty set `s` of the set system.
+    This automatically implies that nonempty accessible set systems contain an empty set. -/
 class Accessible (Sys : Finset α → Prop) : Prop where
   accessible :
     ⦃s : Finset α⦄ → Sys s → s.Nonempty → ∃ t, t ⊆ s ∧ t.card + 1 = s.card ∧ Sys t

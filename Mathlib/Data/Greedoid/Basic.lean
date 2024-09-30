@@ -3,8 +3,8 @@ Copyright (c) 2024 Jihoon Hyun. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jihoon Hyun
 -/
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Finset.Card
+import Mathlib.Data.Greedoid.Accessible
+import Mathlib.Data.Greedoid.Exchange
 
 /-!
 This file contains the definition of `ExchangeProperty` and `AccessibleProperty`, along with the
@@ -26,34 +26,6 @@ namespace Greedoid
 
 open Nat Finset
 
-/-- The exchange property of greedoid.
-    Note that the exchange property also hold for (finite) matroids. -/
-def ExchangeProperty {α : Type*} (Sys : Finset α → Prop) :=
-  ⦃s₁ : Finset α⦄ → Sys s₁ →
-  ⦃s₂ : Finset α⦄ → Sys s₂ →
-  s₂.card < s₁.card →
-    ∃ x ∈ s₁, ∃ h : x ∉ s₂, Sys (cons x s₂ h)
-
-/-- A set system satisfies the exchange property if there is some element `x` in some feasible
-    `s₁` which is not in `s₂` with smaller cardinality, and `s₂ ∪ {x}` is also feasible.
-    This implies that all maximal feasible sets are actually maximum. -/
-class Exchange {α : Type*} (Sys : Finset α → Prop) : Prop :=
-  exchange :
-    ⦃s₁ : Finset α⦄ → Sys s₁ →
-    ⦃s₂ : Finset α⦄ → Sys s₂ →
-    s₂.card < s₁.card →
-      ∃ x ∈ s₁, ∃ h : x ∉ s₂, Sys (cons x s₂ h)
-
-/-- The accessible property of greedoid -/
-def AccessibleProperty {α : Type*} (Sys : Finset α → Prop) : Prop :=
-  ⦃s : Finset α⦄ → Sys s → s.Nonempty → ∃ t, t ⊆ s ∧ t.card + 1 = s.card ∧ Sys t
-
-/-- A set system is accessible if there is some element `x` in `s` which `s \ {x}` is also in the
-    set system, for each nonempty set `s` of the set system.
-    This automatically implies that nonempty accessible set systems contain an empty set. -/
-class Accessible {α : Type*} (Sys : Finset α → Prop) : Prop where
-  accessible : ⦃s : Finset α⦄ → Sys s → s.Nonempty → ∃ t, t ⊆ s ∧ t.card + 1 = s.card ∧ Sys t
-
 end Greedoid
 
 /-- Greedoid is a nonempty (finite) set system satisfying both accessible and exchange property. -/
@@ -73,7 +45,7 @@ variable {α : Type*}
 
 /-- Definition of `Finset` in `Greedoid`.
     This is often called 'feasible'· -/
-protected def Greedoid.mem (s : Finset α) (G : Greedoid α) := G.feasible_set s
+protected def Greedoid.mem (G : Greedoid α) (s : Finset α) := G.feasible_set s
 
 instance : Membership (Finset α) (Greedoid α) :=
   ⟨Greedoid.mem⟩
