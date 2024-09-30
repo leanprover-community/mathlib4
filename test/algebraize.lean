@@ -80,7 +80,7 @@ example (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) (hf : f.testProp
 
 example (A B : Type*) [CommRing A] [CommRing B] (f : A →+* B) (hf : f.testProperty3) : True := by
   algebraize [f]
-  guard_hyp algebraizeInst : Algebra.testProperty3 A B -- := hf -- TODO
+  guard_hyp algebraizeInst : Algebra.testProperty3 A B := ⟨hf⟩
   trivial
 
 /-- Synthesize from morphism property of a composition (and check that tower is also synthesized). -/
