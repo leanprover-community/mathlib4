@@ -131,7 +131,8 @@ def addAlgebraInstanceFromRingHom (f ft : Expr) : TacticM Unit := withMainContex
   let (_, l) := ft.getAppFnArgs
   -- The type of the corresponding algebra instance
   let alg ← mkAppOptM ``Algebra #[l[0]!, l[1]!, none, none]
-  unless (← synthInstance? alg).isSome do -- If the instance already exists, we do not do anything
+  -- If the instance already exists, we do not do anything
+  unless (← synthInstance? alg).isSome do
   liftMetaTactic fun mvarid => do
     let nm ← mkFreshBinderNameForTactic `algInst
     let mvar ← mvarid.define nm alg (← mkAppM ``RingHom.toAlgebra #[f])
@@ -143,7 +144,8 @@ the instance `IsScalarTower A B C` to the context (if it does not already exist)
 def addIsScalarTowerInstanceFromRingHomComp (fn : Expr) : TacticM Unit := withMainContext do
   let (_, l) := fn.getAppFnArgs
   let tower ← mkAppOptM ``IsScalarTower #[l[0]!, l[1]!, l[2]!, none, none, none]
-  unless (← synthInstance? tower).isSome do -- If the instance already exists, we do not do anything
+  -- If the instance already exists, we do not do anything
+  unless (← synthInstance? tower).isSome do
   liftMetaTactic fun mvarid => do
     let nm ← mkFreshBinderNameForTactic `scalarTowerInst
     let h ← mkFreshExprMVar (← mkAppM ``Eq #[
@@ -153,9 +155,9 @@ def addIsScalarTowerInstanceFromRingHomComp (fn : Expr) : TacticM Unit := withMa
         ← mkAppOptM ``algebraMap #[l[0]!, l[1]!, none, none, none]]])
     -- Note: this could fail, but then `algebraize` will just continue, and won't add this instance
     h.mvarId!.refl
-    let mvar ← mvarid.define nm tower
-      (← mkAppOptM ``IsScalarTower.of_algebraMap_eq'
-        #[l[0]!, l[1]!, l[2]!, none, none, none, none, none, none, h])
+    let val ← mkAppOptM ``IsScalarTower.of_algebraMap_eq'
+      #[l[0]!, l[1]!, l[2]!, none, none, none, none, none, none, h]
+    let mvar ← mvarid.define nm tower val
     let (_, mvar) ← mvar.intro1P
     return [mvar]
 
@@ -184,10 +186,12 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
       /- If the attribute points to the corresponding `Algebra` property itself, we assume that it
       is definitionally the same as the `RingHom` property. Then, we just need to construct its type
       and the local declaration will already give a valid term. -/
-      if cinfo.isInductive then
+      match cinfo with
+      | .inductInfo _ =>
         let pargs := pargs.set! 0 args[0]!
         let pargs := pargs.set! 1 args[1]!
         let tp ← mkAppOptM p pargs -- This should be the type `Algebra.Property A B`
+        unless (← synthInstance? tp).isSome do
         liftMetaTactic fun mvarid => do
           let nm ← mkFreshBinderNameForTactic `algebraizeInst
           let mvar ← mvarid.define nm tp decl.toExpr
@@ -196,15 +200,28 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
       /- Otherwise, the attribute points to a constructor of the `Algebra` property. In this case,
       we assume that the `RingHom` property is the last argument of the constructor (and that
       this is all we need to supply explicitly). -/
-      else
+      | .ctorInfo ctor =>
+        -- construct the desired value
         let pargs := pargs.set! (n - 1) decl.toExpr
         let val ← mkAppOptM p pargs
+
+        -- construct the expected type
+        let alg ← mkAppOptM ``Algebra #[args[0]!, args[1]!, none, none]
+        let algInst := (← synthInstance? alg)
+        let mut argsType := Array.mkArray (ctor.numParams) (none : Option Expr)
+        argsType := argsType.set! 0 args[0]!
+        argsType := argsType.set! 1 args[1]!
+        argsType := argsType.set! (ctor.numParams - 1) algInst
+        let tp := ← mkAppOptM ctor.induct argsType
+
+        unless (← synthInstance? tp).isSome do
         liftMetaTactic fun mvarid => do
           let nm ← mkFreshBinderNameForTactic `algebraizeInst
-          -- let mvar ← mvarid.define nm _ val -- TODO: How to get the type of the target of `p`?
-          -- let (_, mvar) ← mvar.intro1P
-          let (_, mvar) ← mvarid.note nm val
+          let mvar ← mvarid.define nm tp val
+          let (_, mvar) ← mvar.intro1P
           return [mvar]
+      | _ => logError s!"bad argument to `algebraize` attribute: {p}. \
+        Only supporting inductive types or constructors."
     | none => return
 
 /-- Configuration for `algebraize`. -/
