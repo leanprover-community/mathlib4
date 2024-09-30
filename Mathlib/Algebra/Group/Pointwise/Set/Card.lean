@@ -19,7 +19,8 @@ section Mul
 variable [Mul M] {s t : Set M}
 
 @[to_additive]
-lemma cardinalMk_mul_le : #(s * t) ≤ #s * #t := by rw [← image2_mul]; exact Cardinal.mk_image2_le
+lemma _root_.Cardinal.mk_mul_le : #(s * t) ≤ #s * #t := by
+  rw [← image2_mul]; exact Cardinal.mk_image2_le
 
 variable [IsCancelMul M]
 
@@ -33,10 +34,10 @@ lemma natCard_mul_le : Nat.card (s * t) ≤ Nat.card s * Nat.card t := by
     rw [← Cardinal.toNat_mul]
     gcongr
     · exact Cardinal.mul_lt_aleph0 hs.lt_aleph0 ht.lt_aleph0
-    · exact cardinalMk_mul_le
+    · exact Cardinal.mk_mul_le
   all_goals simp
 
-@[to_additive (attr := deprecated (since := "2024-09-30"))] alias card_mul_le := cardinalMk_mul_le
+@[to_additive (attr := deprecated (since := "2024-09-30"))] alias card_mul_le := Cardinal.mk_mul_le
 
 end Mul
 
@@ -44,7 +45,7 @@ section InvolutiveInv
 variable [InvolutiveInv G] {s t : Set G}
 
 @[to_additive (attr := simp)]
-lemma cardinalMk_inv (s : Set G) : #↥(s⁻¹) = #s := by
+lemma _root_.Cardinal.mk_inv (s : Set G) : #↥(s⁻¹) = #s := by
   rw [← image_inv, Cardinal.mk_image_eq_of_injOn _ _ inv_injective.injOn]
 
 @[to_additive (attr := simp)]
@@ -59,10 +60,10 @@ section DivisionMonoid
 variable [DivisionMonoid M] {s t : Set M}
 
 @[to_additive]
-lemma cardinalMk_div_le : #(s / t) ≤ #s * #t := by
-  rw [div_eq_mul_inv, ← cardinalMk_inv t]; exact cardinalMk_mul_le
+lemma _root_.Cardinal.mk_div_le : #(s / t) ≤ #s * #t := by
+  rw [div_eq_mul_inv, ← Cardinal.mk_inv t]; exact Cardinal.mk_mul_le
 
-@[to_additive (attr := deprecated (since := "2024-09-30"))] alias card_div_le := cardinalMk_div_le
+@[to_additive (attr := deprecated (since := "2024-09-30"))] alias card_div_le := Cardinal.mk_div_le
 
 end DivisionMonoid
 
@@ -76,7 +77,7 @@ lemma natCard_div_le : Nat.card (s / t) ≤ Nat.card s * Nat.card t := by
 variable [MulAction G α]
 
 @[to_additive (attr := simp)]
-lemma cardinalMk_smul_set (a : G) (s : Set α) : #↥(a • s) = #s :=
+lemma _root_.Cardinal.mk_smul_set (a : G) (s : Set α) : #↥(a • s) = #s :=
   Cardinal.mk_image_eq_of_injOn _ _ (MulAction.injective a).injOn
 
 @[to_additive (attr := simp)]
@@ -84,7 +85,7 @@ lemma natCard_smul_set (a : G) (s : Set α) : Nat.card ↥(a • s) = Nat.card s
   Nat.card_image_of_injective (MulAction.injective a) _
 
 @[to_additive (attr := deprecated (since := "2024-09-30"))]
-alias card_smul_set := cardinalMk_smul_set
+alias card_smul_set := Cardinal.mk_smul_set
 
 end Group
 end Set
