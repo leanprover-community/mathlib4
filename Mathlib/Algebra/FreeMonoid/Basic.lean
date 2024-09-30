@@ -120,9 +120,8 @@ def length (a : FreeMonoid α) : ℕ := List.length a
 @[to_additive (attr := simp)]
 theorem length_one : length (1 : FreeMonoid α) = 0 := rfl
 
-@[to_additive]
-theorem eq_one_of_length_eq_zero (h : length a = 0) : a = 1 :=
-  List.eq_nil_of_length_eq_zero h
+@[to_additive (attr := simp)]
+theorem length_eq_zero : length a = 0 ↔ a = 1 := List.length_eq_zero
 
 @[to_additive (attr := simp)]
 theorem length_of {m : α}: length (of m) = 1 := rfl
