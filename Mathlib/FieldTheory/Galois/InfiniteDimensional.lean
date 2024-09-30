@@ -6,6 +6,7 @@ Authors: Nailin Guan, Yuyang Zhao, Jujian Zhang
 
 import Mathlib.Algebra.Category.Grp.FiniteGrp
 import Mathlib.CategoryTheory.Category.Preorder
+import Mathlib.FieldTheory.KrullTopology
 import Mathlib.FieldTheory.NormalClosure
 import Mathlib.FieldTheory.SeparableClosure
 import Mathlib.Topology.Algebra.ClosedSubgroup
@@ -258,7 +259,7 @@ section
 variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
 
 private lemma restrict_eq (σ : E ≃ₐ[F] E) (x : E) (Lx : FiniteGaloisIntermediateField F E)
-    (hLx : x ∈ Lx.val) : σ x = (AlgEquiv.restrictNormalHom Lx σ) ⟨x, hLx⟩ := by
+    (hLx : x ∈ Lx.toIntermediateField) : σ x = (AlgEquiv.restrictNormalHom Lx σ) ⟨x, hLx⟩ := by
   have := AlgEquiv.restrictNormal_commutes σ Lx ⟨x, hLx⟩
   convert this
   exact id this.symm
@@ -268,6 +269,8 @@ end
 namespace InfiniteGalois
 
 open Pointwise
+
+instance : TopologicalSpace (K ≃ₐ[k] K) := inferInstance
 
 lemma fixingSubgroup_isClosed (L : IntermediateField k K) [IsGalois k K] :
     IsClosed (L.fixingSubgroup : Set (K ≃ₐ[k] K)) where
@@ -551,14 +554,14 @@ theorem normal_iff_isGalois (L : IntermediateField k K) [IsGalois k K] :
       apply le_antisymm
       · apply iSup_le
         intro l
-        dsimp [f]
+        dsimp only [f]
         simp only [IntermediateFieldEquivClosedSubgroup, Equiv.toFun_as_coe, Equiv.coe_fn_mk] at h
-        rw [← restrict_fixedField L.fixingSubgroup (FiniteGaloisIntermediateField.adjoin k {l.1}),
+        rw [←restrict_fixedField L.fixingSubgroup (FiniteGaloisIntermediateField.adjoin k {l.1}),
           fixedField_fixingSubgroup L]
         exact inf_le_left
       · intro l hl
         apply le_iSup f ⟨l,hl⟩
-        dsimp [f]
+        dsimp only [f]
         rw [← restrict_fixedField L.fixingSubgroup (FiniteGaloisIntermediateField.adjoin k {l}),
           fixedField_fixingSubgroup L]
         simp only [IntermediateField.mem_inf, hl, true_and]
