@@ -10,12 +10,13 @@ import Mathlib.Algebra.Group.Defs
 # Theory of quantales
 
 Quantales are the non-commutative generalization of locales/frames and as such are linked
-to topology. Applications are found throughout logic, quantum mechanics, and computer science.
-Intuitively, as described by [vickers1989], open sets of a topology form a frame, and can be
-considered as modeling what is `observable` in a system. Quantales come into play when making
-an observation may change the system itself. Traditionally, one would write `x ⊓ y` to describe
-making observations `x` and `y`, but when the order becomes important due to changes in the
-system caused by the observation, it makes more sense to write `x * y` and consider `*` as
+to point-free topology and order theory. Applications are found throughout logic,
+quantum mechanics, and computer science. Intuitively, as described by [vickers1989],
+open sets of a topology form a frame, and can be considered as modeling what is `observable`
+in a system. Quantales come into play when making an observation may change the system itself.
+Traditionally, one would write `x ⊓ y` to describe making observations `x` and `y` at the same
+time, but when the order of observation becomes important due to changes in the system caused
+by the observation, it makes more sense to write `x * y` or `x + y` and consider `*` or `+` as
 a possibly non-commutative monoid.
 
 ## Main definitions
@@ -48,6 +49,12 @@ complete sup-semilattice. (In literature, both variants occur.)
 
 ## TODO
 
+Additive quantales and multiplicative quantales both occur in literature.
+For sequences of actions, usually a multiplicative quantale is used, but for
+describing timing of actions (for example) the additive quantale of max-plus algebra
+a.k.a. tropical algebra, can be used. Therefore, extending the definitions with
+addition is - I think - relevant future work.
+
 -/
 
 /-- A quantale is a monoid distributing over a complete sup-semilattice.
@@ -64,7 +71,6 @@ complete sup-semilattice. (In literature, both variants occur.)
     In fact, when seen as a generalization of locales, the monoid multiplication
     usually takes the place of the inf.
 -/
-
 class Quantale (α : Type*) extends Monoid α, CompleteLattice α where
   /-- Multiplication is distributive over join in a quantale -/
   protected mul_sSup_eq_iSup_mul (x : α) (s : Set α) : x * sSup s = ⨆ y ∈ s, x * y
