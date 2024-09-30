@@ -2700,8 +2700,8 @@ lemma notmem_replicate_add_left_le [DecidableEq α] {a : α} {n : ℕ} {s : Mult
 
 lemma notmem_replicate_add_right_le [DecidableEq α] {a : α} {n : ℕ} {s : Multiset α} (h : a ∉ s)
     {t : Multiset α} (ha : replicate n a ≤ t) (hs : s ≤ t) :
-    s + replicate n a ≤ t := by
-  exact add_comm s _ ▸ notmem_replicate_add_left_le h ha hs
+    s + replicate n a ≤ t :=
+  add_comm s _ ▸ notmem_replicate_add_left_le h ha hs
 
 theorem add_le_of_disjoint
     [DecidableEq α] {s t : Multiset α} (h : s.Disjoint t) {u : Multiset α}
