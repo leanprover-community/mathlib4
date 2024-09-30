@@ -682,7 +682,7 @@ section AlgEquiv
 open RingHom RingEquiv
 
 variable {A₁ B₁ A₂ B₂ : Type*} [Field A₁] [Ring B₁] [Field A₂] [Ring B₂]
-    [alg1 : Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
+    [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
     (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁))
 include he
 
