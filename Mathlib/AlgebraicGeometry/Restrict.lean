@@ -528,6 +528,10 @@ variable (f : X ⟶ Y) {U U' : Y.Opens} {V V' : X.Opens} (e : V ≤ f ⁻¹ᵁ U
 lemma resLE_eq_morphismRestrict : f.resLE U (f ⁻¹ᵁ U) le_rfl = f ∣_ U := by
   simp [Scheme.Hom.resLE]
 
+@[simp]
+lemma resLE_comp_ι : f.resLE U V e ≫ U.ι = V.ι ≫ f := by
+  simp [resLE, restrictFunctor_map_ofRestrict_assoc]
+
 @[reassoc (attr := simp)]
 lemma map_resLE (i : V' ⟶ V) :
     (X.restrictFunctor.map i).left ≫ f.resLE U V e = f.resLE U V' (i.le.trans e) := by
