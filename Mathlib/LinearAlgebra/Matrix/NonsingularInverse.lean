@@ -611,12 +611,12 @@ theorem inv_diagonal (v : n → α) : (diagonal v)⁻¹ = diagonal (Ring.inverse
 
 end Diagonal
 
-/-- The inverse of a `1x1` or `0x0` matrix is always diagonal.
+/-- The inverse of a 1×1 or 0×0 matrix is always diagonal.
 
 While we could write this as `of fun _ _ => Ring.inverse (A default default)` on the RHS, this is
 less useful because:
 
-* It wouldn't work for `0x0` matrices.
+* It wouldn't work for 0×0 matrices.
 * More things are true about diagonal matrices than constant matrices, and so more lemmas exist.
 
 `Matrix.diagonal_unique` can be used to reach this form, while `Ring.inverse_eq_inv` can be used
