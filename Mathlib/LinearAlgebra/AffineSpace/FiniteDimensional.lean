@@ -371,7 +371,7 @@ alias ⟨Collinear.finrank_le_one, _⟩ := collinear_iff_finrank_le_one
 
 /-- A subset of a collinear set is collinear. -/
 theorem Collinear.subset {s₁ s₂ : Set P} (hs : s₁ ⊆ s₂) (h : Collinear k s₂) : Collinear k s₁ :=
-  (rank_le_of_submodule (vectorSpan k s₁) (vectorSpan k s₂) (vectorSpan_mono k hs)).trans h
+  (Submodule.rank_mono (vectorSpan_mono k hs)).trans h
 
 /-- The `vectorSpan` of collinear points is finite-dimensional. -/
 theorem Collinear.finiteDimensional_vectorSpan {s : Set P} (h : Collinear k s) :
@@ -634,7 +634,7 @@ alias ⟨Coplanar.finrank_le_two, _⟩ := coplanar_iff_finrank_le_two
 
 /-- A subset of a coplanar set is coplanar. -/
 theorem Coplanar.subset {s₁ s₂ : Set P} (hs : s₁ ⊆ s₂) (h : Coplanar k s₂) : Coplanar k s₁ :=
-  (rank_le_of_submodule (vectorSpan k s₁) (vectorSpan k s₂) (vectorSpan_mono k hs)).trans h
+  (Submodule.rank_mono (vectorSpan k s₁) (vectorSpan k s₂) (vectorSpan_mono k hs)).trans h
 
 /-- Collinear points are coplanar. -/
 theorem Collinear.coplanar {s : Set P} (h : Collinear k s) : Coplanar k s :=

@@ -386,12 +386,12 @@ theorem Submodule.finrank_map_le
     finrank R (p.map f) ≤ finrank R p :=
   finrank_le_finrank_of_rank_le_rank (lift_rank_map_le _ _) (rank_lt_aleph0 _ _)
 
-theorem Submodule.finrank_le_finrank_of_le {s t : Submodule R M} [Module.Finite R t] (hst : s ≤ t) :
+theorem Submodule.finrank_mono {s t : Submodule R M} [Module.Finite R t] (hst : s ≤ t) :
     finrank R s ≤ finrank R t :=
-  calc
-    finrank R s = finrank R (s.comap t.subtype) :=
-      (Submodule.comapSubtypeEquivOfLe hst).finrank_eq.symm
-    _ ≤ finrank R t := Submodule.finrank_le _
+  Cardinal.toNat_le_toNat (Submodule.rank_mono hst) (rank_lt_aleph0 R ↥t)
+
+@[deprecated (since := "2024-09-30")]
+alias Submodule.finrank_le_finrank_of_le := Submodule.finrank_mono
 
 end
 
