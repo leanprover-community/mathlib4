@@ -70,6 +70,28 @@ noncomputable abbrev LocallyConstant.adjunction :
     CondensedSet.LocallyConstant.functor ⊣ Condensed.underlying (Type (u+1)) :=
   CompHausLike.LocallyConstant.adjunction _ _
 
+noncomputable instance : PreservesFiniteCoproducts profiniteToCompHaus :=
+  inferInstanceAs (PreservesFiniteCoproducts (CompHausLike.toCompHausLike _))
+
+noncomputable instance : PreservesFiniteProducts profiniteToCompHaus.op :=
+  inferInstanceAs (PreservesFiniteProducts (CompHausLike.toCompHausLike _).op)
+
+open Condensed
+
+lemma isoLocallyConstantOfIsColimit_hom (X : CondensedSet.{u}) (hX : ∀ S : Profinite.{u},
+    (IsColimit <| (profiniteToCompHaus.op ⋙ X.val).mapCocone S.asLimitCone.op)) :
+    (isoLocallyConstantOfIsColimit (profiniteToCompHaus.op ⋙ X.val) hX).inv =
+    whiskerLeft profiniteToCompHaus.op (LocallyConstant.adjunction.counit.app X).val := by
+  ext S : 2
+  simp only [op_obj, toProfinite_obj, comp_obj, CompHausLike.toCompHausLike_obj,
+    CompHausLike.coe_of, functorToPresheaves_obj_obj, isoLocallyConstantOfIsColimit,
+    lanPresheafNatIso, Iso.trans_inv, leftKanExtensionUniqueOfIso_inv, Iso.symm_inv, Category.assoc,
+    NatTrans.comp_app, pointwiseLeftKanExtension_obj, NatIso.ofComponents_inv_app,
+    NatIso.ofComponents_hom_app, lanPresheafIso_hom, Opposite.op_unop, underlying_obj,
+    functor_obj_val, id_obj, adjunction_counit, counit_app_val, whiskerLeft_app]
+  rw [Iso.inv_comp_eq]
+  simp only [lanPresheafIso_hom, Opposite.op_unop]
+
 open CondensedSet.LocallyConstant List in
 theorem isDiscrete_tfae  (X : CondensedSet.{u}) :
     TFAE
