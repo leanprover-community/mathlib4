@@ -16,6 +16,36 @@ things on manifolds possibly with boundary.
 
 noncomputable section
 
+namespace ContinuousLinearMap
+
+variable {𝕜 :Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [TopologicalSpace E] [AddCommGroup E] [Module 𝕜 E]
+  {F : Type*} [TopologicalSpace F] [AddCommGroup F] [Module 𝕜 F]
+  {G : Type*} [TopologicalSpace G] [AddCommGroup G] [Module 𝕜 G]
+
+def IsInvertible (f : E →L[𝕜] F) : Prop :=
+  ∃ (M : E ≃L[𝕜] F), M = f
+
+/-- Given an invertible continuous linear map, choose an equiv of which it is the direct
+direction. -/
+def IsInvertible.toEquiv {f : E →L[𝕜] F} (hf : f.IsInvertible) : E ≃L[𝕜] F :=
+  hf.choose
+
+lemma IsInvertible.toEquiv_eq {f : E →L[𝕜] F} (hf : f.IsInvertible) :
+    hf.toEquiv = f :=
+  hf.choose_spec
+
+@[simp] lemma isInvertible_equiv {f : E ≃L[𝕜] F} : IsInvertible (f : E →L[𝕜] F) := ⟨f, rfl⟩
+
+lemma IsInvertible.comp {g : F →L[𝕜] G} {f : E →L[𝕜] F}
+    (hg : g.IsInvertible) (hf : f.IsInvertible) : (g ∘L f).IsInvertible := by
+  rcases hg with ⟨N, rfl⟩
+  rcases hf with ⟨M, rfl⟩
+  exact ⟨M.trans N, rfl⟩
+
+end ContinuousLinearMap
+
+
 section LieBracketVectorField
 
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
@@ -27,6 +57,9 @@ variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
 `DW(x) (V x) - DV(x) (W x)`. -/
 def lieBracket (V W : E → E) (x : E) : E :=
   fderiv 𝕜 W x (V x) - fderiv 𝕜 V x (W x)
+
+def lieBracketWithin (V W : E → E) (s : Set E) (x : E) : E :=
+  fderivWithin 𝕜 W s x (V x) - fderivWithin 𝕜 V s x (W x)
 
 lemma lieBracket_eq (V W : E → E) :
     lieBracket 𝕜 V W = fun x ↦ fderiv 𝕜 W x (V x) - fderiv 𝕜 V x (W x) := rfl
@@ -61,11 +94,14 @@ variable {𝕜}
 
 lemma pullback_eq_of_fderiv_eq
     {f : E → F} {M : E ≃L[𝕜] F} {x : E} (hf : M = fderiv 𝕜 f x) (V : F → F) :
-    pullback 𝕜 f V x = M.symm (V (f x)) := by simp [pullback, ← hf]
+    pullback 𝕜 f V x = M.symm (V (f x)) := by
+  simp [pullback, ← hf]
 
 lemma pullback_eq_of_not_exists {f : E → F} {x : E}
-    (h : ¬(∃ M : E ≃L[𝕜] F, M = fderiv 𝕜 f x)) (V : F → F) :
-    pullback 𝕜 f V x = 0 := by simp [pullback, h]
+    (h : ¬(fderiv 𝕜 f x).IsInvertible) (V : F → F) :
+    pullback 𝕜 f V x = 0 := by
+  simp only [ContinuousLinearMap.IsInvertible] at h
+  simp [pullback, h]
 
 open scoped Topology Filter
 
@@ -75,7 +111,7 @@ theorem fderiv.comp'
     fderiv 𝕜 (fun y ↦ g (f y)) x = (fderiv 𝕜 g (f x)).comp (fderiv 𝕜 f x) :=
   fderiv.comp x hg hf
 
-lemma fderiv_pullback (f : E → F) (V : F → F) (x : E) (h'f : ∃ M : E ≃L[𝕜] F, M = fderiv 𝕜 f x) :
+lemma fderiv_pullback (f : E → F) (V : F → F) (x : E) (h'f : (fderiv 𝕜 f x).IsInvertible) :
     fderiv 𝕜 f x (pullback 𝕜 f V x) = V (f x) := by
   rcases h'f with ⟨M, hM⟩
   simp [pullback_eq_of_fderiv_eq hM, ← hM]
@@ -86,7 +122,7 @@ Note that `hf` can probably be removed, as it's implied by `h'f`.
 -/
 lemma lieDeriv_pullback (f : E → F) (V : F → F) (g : F → G) (x : E)
     (hg : DifferentiableAt 𝕜 g (f x))
-    (hf : DifferentiableAt 𝕜 f x) (h'f : ∃ M : E ≃L[𝕜] F, M = fderiv 𝕜 f x) :
+    (hf : DifferentiableAt 𝕜 f x) (h'f : (fderiv 𝕜 f x).IsInvertible) :
     lieDeriv 𝕜 (pullback 𝕜 f V) (g ∘ f) x = lieDeriv 𝕜 V g (f x) := by
   rcases h'f with ⟨M, hM⟩
   rw [lieDeriv, lieDeriv, fderiv.comp _ hg hf]
@@ -102,7 +138,7 @@ variable [CompleteSpace E]
 as continuous linear equivs, which depend in a `C^1` way on the point, as well as their inverse, and
 moreover one can compute the derivative of the inverse. -/
 lemma exists_continuousLinearEquiv_fderiv_symm_eq
-    (f : E → F) (x : E) (h'f : ContDiffAt 𝕜 2 f x) (hf : ∃ M : E ≃L[𝕜] F, M = fderiv 𝕜 f x) :
+    (f : E → F) (x : E) (h'f : ContDiffAt 𝕜 2 f x) (hf : (fderiv 𝕜 f x).IsInvertible) :
     ∃ N : E → (E ≃L[𝕜] F), ContDiffAt 𝕜 1 (fun y ↦ (N y : E →L[𝕜] F)) x
     ∧ ContDiffAt 𝕜 1 (fun y ↦ ((N y).symm : F →L[𝕜] E)) x
     ∧ (∀ᶠ y in 𝓝 x, N y = fderiv 𝕜 f y)
@@ -150,7 +186,7 @@ lemma lieBracket_pullback (f : E → F) (V W : F → F) (x : E)
     (hf : ∀ v w, fderiv 𝕜 (fderiv 𝕜 f) x v w = fderiv 𝕜 (fderiv 𝕜 f) x w v)
     (h'f : ContDiffAt 𝕜 2 f x) (hV : DifferentiableAt 𝕜 V (f x)) (hW : DifferentiableAt 𝕜 W (f x)) :
     lieBracket 𝕜 (pullback 𝕜 f V) (pullback 𝕜 f W) x = pullback 𝕜 f (lieBracket 𝕜 V W) x := by
-  by_cases h : ∃ M : E ≃L[𝕜] F, M = fderiv 𝕜 f x; swap
+  by_cases h : (fderiv 𝕜 f x).IsInvertible; swap
   · simp [pullback_eq_of_not_exists h, lieBracket_eq]
   rcases exists_continuousLinearEquiv_fderiv_symm_eq f x h'f h
     with ⟨M, -, M_symm_smooth, hM, M_diff⟩
@@ -175,9 +211,80 @@ lemma lieBracket_pullback (f : E → F) (V W : F → F) (x : E)
 
 end LieBracketVectorField
 
-open Bundle Filter Function Set
+section LieBracketManifold
 
-open scoped Bundle Manifold
+open Set Function
+open scoped Manifold
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {H : Type*} [TopologicalSpace H] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {I : ModelWithCorners 𝕜 E H}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
+  {H' : Type*} [TopologicalSpace H'] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {I' : ModelWithCorners 𝕜 E' H'}
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M'] [SmoothManifoldWithCorners I' M']
+  {H'' : Type*} [TopologicalSpace H''] {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace 𝕜 E'']
+  {I'' : ModelWithCorners 𝕜 E'' H''}
+  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M''] [SmoothManifoldWithCorners I'' M'']
+
+variable (I I')
+
+def mpullbackWithin (f : M → M') (V : Π (x : M'), TangentSpace I' x) (s : Set M) (x : M) :
+    TangentSpace I x :=
+  (mfderivWithin I I' f s x).inverse (V (f x))
+
+lemma mpullbackWithin_comp (g : M' → M'') (f : M → M') (V : Π (x : M''), TangentSpace I'' x)
+    (s : Set M) (t : Set M') (x₀ : M) (hg : MDifferentiableWithinAt I' I'' g t (f x₀))
+    (hf : MDifferentiableWithinAt I I' f s x₀) (h : Set.MapsTo f s t)
+    (hu : UniqueMDiffWithinAt I s x₀)
+    (hg' : (mfderivWithin I' I'' g t (f x₀)).IsInvertible)
+    (hf' : (mfderivWithin I I' f s x₀).IsInvertible) :
+    mpullbackWithin I I'' (g ∘ f) V s x₀ =
+      mpullbackWithin I I' f (mpullbackWithin I' I'' g V t) s x₀ := by
+  simp only [mpullbackWithin, comp_apply]
+  rw [mfderivWithin_comp _ hg hf h hu]
+  rcases hg' with ⟨N, hN⟩
+  rcases hf' with ⟨M, hM⟩
+  simp [← hM, ← hN]
+
+lemma mpullbackWithin_eq_iff (f : M → M') (V W : Π (x : M'), TangentSpace I' x)
+    (s : Set M) (x₀ : M) (hf : (mfderivWithin I I' f s x₀).IsInvertible) :
+    mpullbackWithin I I' f V s x₀ = mpullbackWithin I I' f W s x₀ ↔ V (f x₀) = W (f x₀) := by
+  rcases hf with ⟨M, hM⟩
+  simp [mpullbackWithin, ← hM]
+
+def mlieBracketWithin (V W : Π (x : M), TangentSpace I x) (s : Set M) (x₀ : M) :
+     TangentSpace I x₀ := by
+  let t : Set E := ((extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target)
+  let V' := mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm V t
+  let W' := mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm W t
+  let Z := lieBracketWithin 𝕜 V' W' t
+  exact mpullbackWithin I 𝓘(𝕜, E) (extChartAt I x₀) Z (s ∩ (extChartAt I x₀).source) x₀
+
+/-- The Lie bracket of vector fields on manifolds is well defined, i.e., it is invariant under
+diffeomorphisms.
+TODO: write a version localized to sets. -/
+lemma key (f : M → M') (V W : Π (x : M'), TangentSpace I' x) (x₀ : M) :
+    mpullbackWithin I I' f (mlieBracketWithin I' V W univ) univ x₀ =
+      mlieBracketWithin I (mpullbackWithin I I' f V univ) (mpullbackWithin I I' f W univ)
+      univ x₀ := by
+  simp [mlieBracketWithin, comp_def]
+
+
+
+
+
+#exit
+
+
+
+end LieBracketManifold
+
+
+section LieGroup
+
+open Bundle Filter Function Set
+open scoped Manifold
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {H : Type*} [TopologicalSpace H] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
@@ -212,3 +319,5 @@ theorem contMDiff_invariantVectorField (v : TangentSpace I (1 : G)) :
   · simp only [comp_apply, tangentMap, F₃, F₂, F₁]
     rw [mfderiv_prod_eq_add_apply _ _ _ (smooth_mul I (G := G)).mdifferentiableAt]
     simp [invariantVectorField]
+
+end LieGroup
