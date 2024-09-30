@@ -6,8 +6,8 @@ Authors: Kim Morrison, Heather Macbeth
 import Mathlib.Algebra.Algebra.Subalgebra.Unitization
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Topology.Algebra.StarSubalgebra
-import Mathlib.Topology.ContinuousFunction.ContinuousMapZero
-import Mathlib.Topology.ContinuousFunction.Weierstrass
+import Mathlib.Topology.ContinuousMap.ContinuousMapZero
+import Mathlib.Topology.ContinuousMap.Weierstrass
 
 /-!
 # The Stone-Weierstrass theorem
