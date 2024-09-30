@@ -56,16 +56,14 @@ lemma natCard_inv (s : Set G) : Nat.card ↥(s⁻¹) = Nat.card s := by
 
 end InvolutiveInv
 
-section DivisionMonoid
-variable [DivisionMonoid M] {s t : Set M}
+section DivInvMonoid
+variable [DivInvMonoid M] {s t : Set M}
 
 @[to_additive]
 lemma _root_.Cardinal.mk_div_le : #(s / t) ≤ #s * #t := by
-  rw [div_eq_mul_inv, ← Cardinal.mk_inv t]; exact Cardinal.mk_mul_le
+  rw [← image2_div]; exact Cardinal.mk_image2_le
 
-@[to_additive (attr := deprecated (since := "2024-09-30"))] alias card_div_le := Cardinal.mk_div_le
-
-end DivisionMonoid
+end DivInvMonoid
 
 section Group
 variable [Group G] {s t : Set G}
@@ -73,6 +71,8 @@ variable [Group G] {s t : Set G}
 @[to_additive]
 lemma natCard_div_le : Nat.card (s / t) ≤ Nat.card s * Nat.card t := by
   rw [div_eq_mul_inv, ← natCard_inv t]; exact natCard_mul_le
+
+@[to_additive (attr := deprecated (since := "2024-09-30"))] alias card_div_le := natCard_div_le
 
 variable [MulAction G α]
 
