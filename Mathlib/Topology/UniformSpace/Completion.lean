@@ -186,6 +186,9 @@ theorem isDenseInducing_pureCauchy : IsDenseInducing (pureCauchy : α → Cauchy
 theorem isDenseEmbedding_pureCauchy : IsDenseEmbedding (pureCauchy : α → CauchyFilter α) :=
   uniformEmbedding_pureCauchy.isDenseEmbedding denseRange_pureCauchy
 
+@[deprecated (since := "2024-09-30")]
+alias denseEmbedding_pureCauchy := isDenseEmbedding_pureCauchy
+
 theorem nonempty_cauchyFilter_iff : Nonempty (CauchyFilter α) ↔ Nonempty α := by
   constructor <;> rintro ⟨c⟩
   · have := eq_univ_iff_forall.1 isDenseEmbedding_pureCauchy.toIsDenseInducing.closure_range c
@@ -379,6 +382,9 @@ instance separableSpace_completion [SeparableSpace α] : SeparableSpace (Complet
 
 theorem isDenseEmbedding_coe [T0Space α] : IsDenseEmbedding ((↑) : α → Completion α) :=
   { isDenseInducing_coe with inj := separated_pureCauchy_injective }
+
+@[deprecated (since := "2024-09-30")]
+alias denseEmbedding_coe := isDenseEmbedding_coe
 
 theorem denseRange_coe₂ :
     DenseRange fun x : α × β => ((x.1 : Completion α), (x.2 : Completion β)) :=

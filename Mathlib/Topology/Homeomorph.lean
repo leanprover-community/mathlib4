@@ -311,6 +311,9 @@ protected theorem t3Space [T3Space X] (h : X ≃ₜ Y) : T3Space Y :=
 protected theorem isDenseEmbedding (h : X ≃ₜ Y) : IsDenseEmbedding h :=
   { h.embedding with dense := h.surjective.denseRange }
 
+@[deprecated (since := "2024-09-30")]
+alias denseEmbedding := isDenseEmbedding
+
 @[simp]
 theorem isOpen_preimage (h : X ≃ₜ Y) {s : Set Y} : IsOpen (h ⁻¹' s) ↔ IsOpen s :=
   h.quotientMap.isOpen_preimage
@@ -902,6 +905,9 @@ protected lemma embedding : Embedding f := (hf.homeomorph f).embedding
 protected lemma openEmbedding : OpenEmbedding f := (hf.homeomorph f).openEmbedding
 protected lemma closedEmbedding : ClosedEmbedding f := (hf.homeomorph f).closedEmbedding
 protected lemma isDenseEmbedding : IsDenseEmbedding f := (hf.homeomorph f).isDenseEmbedding
+
+@[deprecated (since := "2024-09-30")]
+alias denseEmbedding := isDenseEmbedding
 
 end IsHomeomorph
 

@@ -223,6 +223,9 @@ theorem UniformEmbedding.isDenseEmbedding {f : α → β} (h : UniformEmbedding 
     IsDenseEmbedding f :=
   { h.embedding with dense := hd }
 
+@[deprecated (since := "2024-09-30")]
+alias UniformEmbedding.denseEmbedding := UniformEmbedding.isDenseEmbedding
+
 theorem closedEmbedding_of_spaced_out {α} [TopologicalSpace α] [DiscreteTopology α]
     [T0Space β] {f : α → β} {s : Set (β × β)} (hs : s ∈ 𝓤 β)
     (hf : Pairwise fun x y => (f x, f y) ∉ s) : ClosedEmbedding f := by

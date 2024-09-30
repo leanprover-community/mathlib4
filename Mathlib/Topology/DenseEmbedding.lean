@@ -212,6 +212,9 @@ lemma IsDenseEmbedding.mk' [TopologicalSpace α] [TopologicalSpace β] (e : α �
     (H : ∀ (a : α), ∀ s ∈ 𝓝 a, ∃ t ∈ 𝓝 (e a), ∀ b, e b ∈ t → b ∈ s) : IsDenseEmbedding e :=
   { IsDenseInducing.mk' e c dense H with inj }
 
+@[deprecated (since := "2024-09-30")]
+alias DenseEmbedding.mk' := IsDenseEmbedding.mk'
+
 namespace IsDenseEmbedding
 
 open TopologicalSpace
@@ -258,14 +261,20 @@ protected theorem subtype (de : IsDenseEmbedding e) (p : α → Prop) :
 theorem dense_image (de : IsDenseEmbedding e) {s : Set α} : Dense (e '' s) ↔ Dense s :=
   de.toIsDenseInducing.dense_image
 
+protected lemma id {α : Type*} [TopologicalSpace α] : IsDenseEmbedding (id : α → α) :=
+  { embedding_id with dense := denseRange_id }
+
 end IsDenseEmbedding
 
-theorem IsDenseEmbedding.id {α : Type*} [TopologicalSpace α] : IsDenseEmbedding (id : α → α) :=
-  { embedding_id with dense := denseRange_id }
+@[deprecated (since := "2024-09-30")]
+alias denseEmbedding_id := IsDenseEmbedding.id
 
 theorem Dense.isDenseEmbedding_val [TopologicalSpace α] {s : Set α} (hs : Dense s) :
     IsDenseEmbedding ((↑) : s → α) :=
   { embedding_subtype_val with dense := hs.denseRange_val }
+
+@[deprecated (since := "2024-09-30")]
+alias Dense.denseEmbedding_val := Dense.isDenseEmbedding_val
 
 theorem isClosed_property [TopologicalSpace β] {e : α → β} {p : β → Prop} (he : DenseRange e)
     (hp : IsClosed { x | p x }) (h : ∀ a, p (e a)) : ∀ b, p b :=

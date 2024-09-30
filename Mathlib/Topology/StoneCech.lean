@@ -158,6 +158,9 @@ theorem isDenseEmbedding_pure : @IsDenseEmbedding _ _ ⊥ _ (pure : α → Ultra
   letI : TopologicalSpace α := ⊥
   { isDenseInducing_pure with inj := ultrafilter_pure_injective }
 
+@[deprecated (since := "2024-09-30")]
+alias denseEmbedding_pure := isDenseEmbedding_pure
+
 end Embedding
 
 section Extension

@@ -703,6 +703,9 @@ protected theorem isDenseEmbedding (hp_ne_top : p ≠ ∞) :
   convert SimpleFunc.tendsto_approxOn_range_Lp hp_ne_top (Lp.stronglyMeasurable f).measurable hfi'
   rw [toLp_coeFn f (Lp.memℒp f)]
 
+@[deprecated (since := "2024-09-30")]
+alias denseEmbedding := isDenseEmbedding
+
 protected theorem isDenseInducing (hp_ne_top : p ≠ ∞) :
     IsDenseInducing ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
   (simpleFunc.isDenseEmbedding hp_ne_top).toIsDenseInducing
