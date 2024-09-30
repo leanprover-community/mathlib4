@@ -95,55 +95,6 @@ as a product of factorials.
 
 -/
 
-section noncommProd
-
-open MonoidHom Subgroup Finset
-
-@[to_additive]
-lemma MonoidHom.commute_noncommPiCoprod
-    {ι : Type*} [Fintype ι] {H : ι → Type*} [∀ i, Monoid (H i)] {P : Type*} [Monoid P]
-    (f : (i : ι) → H i →* P) (comm) (p : P) (hcomm : ∀ i (x : H i), Commute p (f i x))
-    (h : (i : ι) → H i) :
-    Commute p (MonoidHom.noncommPiCoprod f comm h) := by
-  dsimp only [MonoidHom.noncommPiCoprod, MonoidHom.coe_mk, OneHom.coe_mk]
-  apply Finset.noncommProd_induction
-  · exact fun x y ↦ Commute.mul_right
-  · exact Commute.one_right _
-  · exact fun x _ ↦ hcomm x (h x) 
-
-@[to_additive]
-lemma MonoidHom.noncommPiCoprod_apply {ι : Type*} [Fintype ι]
-    {H : ι → Type*} [∀ i, Monoid (H i)]
-    {P : Type*} [Monoid P] (f : (i : ι) → (H i) →* P) (comm)
-    (u : (i : ι) → H i) :
-    MonoidHom.noncommPiCoprod f comm u = Finset.noncommProd Finset.univ (fun i ↦ f i (u i))
-      (Pairwise.set_pairwise (fun ⦃i j⦄ a ↦ comm a (u i) (u j)) _) := by
-  dsimp only [MonoidHom.noncommPiCoprod, MonoidHom.coe_mk, OneHom.coe_mk]
-
-@[to_additive]
-lemma Subgroup.noncommPiCoprod_apply {G : Type*} [Group G] {ι : Type*} [Fintype ι]
-    {H : ι → Subgroup G} (comm) (u : (i : ι) → H i) :
-    Subgroup.noncommPiCoprod comm u = Finset.noncommProd Finset.univ (fun i ↦ u i)
-      (fun i _ j _ h ↦ comm h _ _ (u i).prop (u j).prop) := by
-  simp only [Subgroup.noncommPiCoprod, MonoidHom.noncommPiCoprod,
-    coeSubtype, MonoidHom.coe_mk, OneHom.coe_mk]
-
-/-- Variant of `MulHom.noncomCoprod_apply` with the product written in the other direction` -/
-theorem MulHom.noncommCoprod_apply' {M : Type*} {N : Type*}
-    {P : Type*} [Mul M] [Mul N] [Semigroup P]
-    (f : M →ₙ* P) (g : N →ₙ* P) (comm : ∀ (m : M) (n : N), Commute (f m) (g n)) (mn : M × N) :
-    (f.noncommCoprod g comm) mn = g mn.2 * f mn.1 := by
-  rw [← comm, MulHom.noncommCoprod_apply]
-
-/-- Variant of `MonoidHom.noncomCoprod_apply` with the product written in the other direction` -/
-theorem MonoidHom.noncommCoprod_apply' {M : Type*} {N : Type*}
-    {P : Type*} [Monoid M] [Monoid N] [Monoid P]
-    (f : M →* P) (g : N →* P) (comm : ∀ (m : M) (n : N), Commute (f m) (g n)) (mn : M × N) :
-    (f.noncommCoprod g comm) mn = g mn.2 * f mn.1 := by
-  rw [← comm, MonoidHom.noncommCoprod_apply]
-
-end noncommProd
-
 section
 
 variable {G : Type*} [Group G] (g : G)
