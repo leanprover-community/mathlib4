@@ -1620,7 +1620,7 @@ theorem image2_sInter_subset_left (S : Set (Set α)) (t : Set β) :
 theorem image2_sInter_subset_right (s : Set α) (T : Set (Set β)) :
     image2 f s (⋂₀ T) ⊆ ⋂ t ∈ T, image2 f s t := by
   simp_rw [image2_subset_iff, mem_iInter]
-  exact fun x hx y hy i => (by aesop)
+  exact fun x hx y hy i => by aesop
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
