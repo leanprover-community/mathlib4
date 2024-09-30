@@ -3,7 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-
+--TODO: removing the first import caused troubles with instance inference in
+-- `Mathlib.Topology.Sheaves.Stalks`. investigate why?
+import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.LinearAlgebra.StdBasis
