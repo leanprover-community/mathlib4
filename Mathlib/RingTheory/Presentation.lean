@@ -150,6 +150,8 @@ variable (R) in
 /-- The canonical `R`-presentation of `R` with no generators and no relations. -/
 noncomputable def id : Presentation.{t, w} R R := ofBijectiveAlgebraMap Function.bijective_id
 
+instance : (id R).IsFinite := ofBijectiveAlgebraMap_isFinite (R := R) Function.bijective_id
+
 lemma id_dimension : (Presentation.id R).dimension = 0 :=
   ofBijectiveAlgebraMap_dimension (R := R) Function.bijective_id
 
@@ -273,20 +275,60 @@ end BaseChange
 
 section Composition
 
+/-!
+### Composition of presentations
+
+Let `S` be an `R`-algebra with presentation `P` and `T` be an `S`-algebra with
+presentation `Q`. In this section we construct a presentation of `T` as an `R`-algebra.
+
+For the underlying generators see `Algebra.Generators.comp`. The family of relations is
+indexed by `Q.rels ⊕ P.rels`.
+
+We have two canonical maps:
+`MvPolynomial P.vars R →ₐ[R] MvPolynomial (Q.vars ⊕ P.vars) R` induced by `Sum.inr`
+and `aux : MvPolynomial (Q.vars ⊕ P.vars) R →ₐ[R] MvPolynomial Q.vars S` induced by
+the evaluation `MvPolynomial P.vars R →ₐ[R] S` (see below).
+
+Now `i : P.rels` is mapped to the image of `P.relation i` under the first map and
+`j : Q.rels` is mapped to a pre-image under `aux` of `Q.relation j` (see `comp_relation_aux`
+for the construction of the pre-image and `comp_relation_aux_map` for a proof that it is indeed
+a pre-image).
+
+The evaluation map factors as:
+`MvPolynomial (Q.vars ⊕ P.vars) R →ₐ[R] MvPolynomial Q.vars S →ₐ[R] T`, where
+the first map is `aux`. The goal is to compute that the kernel of this composition
+is spanned by the relations indexed by `Q.rels ⊕ P.rels` (`span_range_relation_eq_ker_comp`).
+One easily sees that this kernel is the pre-image under `aux` of the kernel of the evaluation
+of `Q`, where the latter is by assumption spanned by the relations `Q.relation j`.
+
+Since `aux` is surjective (`aux_surjective`), the pre-image is the sum of the ideal spanned
+by the constructed pre-images of the `Q.relation j` and the kernel of `aux`. It hence
+remains to show that the kernel of `aux` is spanned by the image of the `P.relation i`
+under the canonical map `MvPolynomial P.vars R →ₐ[R] MvPolynomial (Q.vars ⊕ P.vars) R`. By
+assumption this span is the kernel of the evaluation map of `P`. For this, we use the isomorphism
+`MvPolynomial (Q.vars ⊕ P.vars) R ≃ₐ[R] MvPolynomial Q.vars (MvPolynomial P.vars R)` and
+`MvPolynomial.ker_map`.
+
+-/
+
 variable {T} [CommRing T] [Algebra S T]
 variable (Q : Presentation S T) (P : Presentation R S)
 
+/-- The evaluation map `MvPolynomial (Q.vars ⊕ P.vars) →ₐ[R] T` factors via this map. For more
+details, see the module docstring at the beginning of the section. -/
+private noncomputable def aux : MvPolynomial (Q.vars ⊕ P.vars) R →ₐ[R] MvPolynomial Q.vars S :=
+  aeval (Sum.elim X (MvPolynomial.C ∘ P.val))
+
+/-- A choice of pre-image of `Q.relation r` under `aux`. -/
 private noncomputable def comp_relation_aux (r : Q.rels) : MvPolynomial (Q.vars ⊕ P.vars) R :=
   Finsupp.sum (Q.relation r)
     (fun x j ↦ (MvPolynomial.rename Sum.inr <| P.σ j) * monomial (x.mapDomain Sum.inl) 1)
-
-private noncomputable def aux : MvPolynomial (Q.vars ⊕ P.vars) R →ₐ[R] MvPolynomial Q.vars S :=
-  aeval (Sum.elim X (MvPolynomial.C ∘ P.val))
 
 @[simp]
 private lemma aux_X (i : Q.vars ⊕ P.vars) : (Q.aux P) (X i) = Sum.elim X (C ∘ P.val) i :=
   aeval_X (Sum.elim X (C ∘ P.val)) i
 
+/-- The pre-images constructed in `comp_relation_aux` are indeed pre-images under `aux`. -/
 private lemma comp_relation_aux_map (r : Q.rels) :
     (Q.aux P) (Q.comp_relation_aux P r) = Q.relation r := by
   simp only [aux, comp_relation_aux, Generators.comp_vars, Sum.elim_inl, map_finsupp_sum]
@@ -294,10 +336,8 @@ private lemma comp_relation_aux_map (r : Q.rels) :
   conv_rhs => rw [← Finsupp.sum_single (Q.relation r)]
   congr
   ext u s m
-  show _ = coeff m (monomial u s)
-  simp only [aeval, AlgHom.coe_mk, coe_eval₂Hom]
-  rw [monomial_eq, IsScalarTower.algebraMap_eq R S, algebraMap_eq, ← eval₂_comp_left, ← aeval_def,
-    P.aeval_val_σ]
+  simp only [MvPolynomial.single_eq_monomial, aeval, AlgHom.coe_mk, coe_eval₂Hom]
+  rw [monomial_eq, IsScalarTower.algebraMap_eq R S, algebraMap_eq, ← eval₂_comp_left, ← aeval_def]
   simp [Finsupp.prod_mapDomain_index_inj (Sum.inl_injective)]
 
 private lemma aux_surjective : Function.Surjective (Q.aux P) := fun p ↦ by
