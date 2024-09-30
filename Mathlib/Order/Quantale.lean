@@ -104,8 +104,8 @@ variable {α : Type _}
 variable [Quantale α]
 
 /-- Left- and right- residuation operators on a quantale are similar to the Heyting operator
-    on complete lattices, but for a non-commutative logic.
-    I.e. `x ⇨ₗ y = sSup { z | z * x ≤ y }`.
+on complete lattices, but for a non-commutative logic.
+I.e. `x ⇨ₗ y = sSup { z | z * x ≤ y }`.
 -/
 def l_residuation (x y : α) := sSup { z | z * x ≤ y }
 /-- Notation for left-residuation in quantales.
