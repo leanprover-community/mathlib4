@@ -7,7 +7,7 @@ import Mathlib.Topology.MetricSpace.Defs
 import Mathlib.Topology.MetricSpace.Ultra.Basic
 
 /-!
-## Ultrametric spaces are totally disconnected
+# Ultrametric spaces are totally disconnected
 
 In a metric space with an ultrametric, the space is totally disconnected.
 
