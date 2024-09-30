@@ -55,8 +55,8 @@ def reduceModIdeal (f : M →ₗ[R] N) :
   toFun := f.reduceModIdealAux I
   map_add' := by simp
   map_smul' r x := by
-    refine Quotient.inductionOn' r (fun r ↦ ?_)
-    refine Quotient.inductionOn' x (fun x ↦ ?_)
+    refine Quotient.inductionOn r (fun r ↦ ?_)
+    refine Quotient.inductionOn x (fun x ↦ ?_)
     simp only [Submodule.Quotient.mk''_eq_mk, Ideal.Quotient.mk_eq_mk, Module.Quotient.mk_smul_mk,
       Submodule.Quotient.mk_smul, LinearMapClass.map_smul, reduceModIdealAux_apply,
       RingHomCompTriple.comp_apply]

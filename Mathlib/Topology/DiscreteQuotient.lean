@@ -403,7 +403,7 @@ def discreteQuotient : DiscreteQuotient X where
 /-- The (locally constant) function from the discrete quotient associated to a locally constant
 function. -/
 def lift : LocallyConstant f.discreteQuotient α :=
-  ⟨fun a => Quotient.liftOn' a f fun _ _ => id, fun _ => isOpen_discrete _⟩
+  ⟨fun a => Quotient.liftOn a f fun _ _ => id, fun _ => isOpen_discrete _⟩
 
 @[simp]
 theorem lift_comp_proj : f.lift ∘ f.discreteQuotient.proj = f := rfl

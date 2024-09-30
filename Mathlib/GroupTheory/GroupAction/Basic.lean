@@ -480,7 +480,7 @@ variable {G α}
 /-- The orbit corresponding to an element of the quotient by `MulAction.orbitRel` -/
 @[to_additive "The orbit corresponding to an element of the quotient by `AddAction.orbitRel`"]
 nonrec def orbitRel.Quotient.orbit (x : orbitRel.Quotient G α) : Set α :=
-  Quotient.liftOn' x (orbit G) fun _ _ => MulAction.orbit_eq_iff.2
+  Quotient.liftOn x (orbit G) fun _ _ => MulAction.orbit_eq_iff.2
 
 @[to_additive (attr := simp)]
 theorem orbitRel.Quotient.orbit_mk (a : α) :
@@ -490,7 +490,7 @@ theorem orbitRel.Quotient.orbit_mk (a : α) :
 @[to_additive]
 theorem orbitRel.Quotient.mem_orbit {a : α} {x : orbitRel.Quotient G α} :
     a ∈ x.orbit ↔ Quotient.mk'' a = x := by
-  induction x using Quotient.inductionOn'
+  induction x using Quotient.inductionOn
   rw [Quotient.eq'']
   rfl
 
@@ -552,7 +552,7 @@ lemma orbitRel.Quotient.orbit.coe_smul {g : G} {x : orbitRel.Quotient G α} {a :
 @[to_additive]
 instance (x : orbitRel.Quotient G α) : IsPretransitive G x.orbit where
   exists_smul_eq := by
-    induction x using Quotient.inductionOn'
+    induction x using Quotient.inductionOn
     rintro ⟨y, yh⟩ ⟨z, zh⟩
     rw [orbitRel.Quotient.mem_orbit, Quotient.eq''] at yh zh
     rcases yh with ⟨g, rfl⟩

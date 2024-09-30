@@ -73,7 +73,7 @@ abbrev mk : M → M ⧸ N :=
 theorem mk_eq_zero' {m : M} : mk (N := N) m = 0 ↔ m ∈ N :=
   Submodule.Quotient.mk_eq_zero N.toSubmodule
 
-theorem is_quotient_mk (m : M) : Quotient.mk'' m = (mk m : M ⧸ N) :=
+theorem is_quotient_mk (m : M) : ⟦m⟧ = (mk m : M ⧸ N) :=
   rfl
 
 variable [LieAlgebra R L] [LieModule R L M] (I J : LieIdeal R L)
@@ -108,7 +108,7 @@ instance lieQuotientLieModule : LieModule R L (M ⧸ N) :=
 instance lieQuotientHasBracket : Bracket (L ⧸ I) (L ⧸ I) :=
   ⟨by
     intro x y
-    apply Quotient.liftOn₂' x y fun x' y' => mk ⁅x', y'⁆
+    apply Quotient.liftOn₂ x y fun x' y' => mk ⁅x', y'⁆
     intro x₁ x₂ y₁ y₂ h₁ h₂
     apply (Submodule.Quotient.eq I.toSubmodule).2
     rw [Submodule.quotientRel_r_def] at h₁ h₂
@@ -125,7 +125,7 @@ theorem mk_bracket (x y : L) : mk ⁅x, y⁆ = ⁅(mk x : L ⧸ I), (mk y : L �
 
 instance lieQuotientLieRing : LieRing (L ⧸ I) where
   add_lie := by
-    intro x' y' z'; refine Quotient.inductionOn₃' x' y' z' ?_; intro x y z
+    intro x' y' z'; refine Quotient.inductionOn₃ x' y' z' ?_; intro x y z
     repeat'
       first
       | rw [is_quotient_mk]
@@ -133,7 +133,7 @@ instance lieQuotientLieRing : LieRing (L ⧸ I) where
       | rw [← Submodule.Quotient.mk_add (R := R) (M := L)]
     apply congr_arg; apply add_lie
   lie_add := by
-    intro x' y' z'; refine Quotient.inductionOn₃' x' y' z' ?_; intro x y z
+    intro x' y' z'; refine Quotient.inductionOn₃ x' y' z' ?_; intro x y z
     repeat'
       first
       | rw [is_quotient_mk]
@@ -141,11 +141,11 @@ instance lieQuotientLieRing : LieRing (L ⧸ I) where
       | rw [← Submodule.Quotient.mk_add (R := R) (M := L)]
     apply congr_arg; apply lie_add
   lie_self := by
-    intro x'; refine Quotient.inductionOn' x' ?_; intro x
+    intro x'; refine Quotient.inductionOn x' ?_; intro x
     rw [is_quotient_mk, ← mk_bracket]
     apply congr_arg; apply lie_self
   leibniz_lie := by
-    intro x' y' z'; refine Quotient.inductionOn₃' x' y' z' ?_; intro x y z
+    intro x' y' z'; refine Quotient.inductionOn₃ x' y' z' ?_; intro x y z
     repeat'
       first
       | rw [is_quotient_mk]
@@ -155,7 +155,7 @@ instance lieQuotientLieRing : LieRing (L ⧸ I) where
 
 instance lieQuotientLieAlgebra : LieAlgebra R (L ⧸ I) where
   lie_smul := by
-    intro t x' y'; refine Quotient.inductionOn₂' x' y' ?_; intro x y
+    intro t x' y'; refine Quotient.inductionOn₂ x' y' ?_; intro x y
     repeat'
       first
       | rw [is_quotient_mk]
@@ -196,7 +196,7 @@ theorem map_mk'_eq_bot_le : map (mk' N) N' = ⊥ ↔ N' ≤ N := by
 See note [partially-applied ext lemmas]. -/
 @[ext]
 theorem lieModuleHom_ext ⦃f g : M ⧸ N →ₗ⁅R,L⁆ M⦄ (h : f.comp (mk' N) = g.comp (mk' N)) : f = g :=
-  LieModuleHom.ext fun x => Quotient.inductionOn' x <| LieModuleHom.congr_fun h
+  LieModuleHom.ext fun x => Quotient.inductionOn x <| LieModuleHom.congr_fun h
 
 lemma toEnd_comp_mk' (x : L) :
     LieModule.toEnd R L (M ⧸ N) x ∘ₗ mk' N = mk' N ∘ₗ LieModule.toEnd R L M x :=

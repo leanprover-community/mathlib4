@@ -67,7 +67,7 @@ variable (C D)
 /-- Construct the skeleton category as the induced category on the isomorphism classes, and derive
 its category structure.
 -/
-def Skeleton : Type u₁ := InducedCategory C Quotient.out
+def Skeleton : Type u₁ := InducedCategory (C := Quotient (isIsomorphicSetoid C)) C Quotient.out
 
 instance [Inhabited C] : Inhabited (Skeleton C) :=
   ⟨⟦default⟧⟩

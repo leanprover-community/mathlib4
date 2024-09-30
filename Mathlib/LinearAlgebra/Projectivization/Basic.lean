@@ -82,7 +82,7 @@ open FiniteDimensional
 
 /-- Consider an element of the projectivization as a submodule of `V`. -/
 protected def submodule (v : ℙ K V) : Submodule K V :=
-  (Quotient.liftOn' v fun v => K ∙ (v : V)) <| by
+  (Quotient.liftOn v fun v => K ∙ (v : V)) <| by
     rintro ⟨a, ha⟩ ⟨b, hb⟩ ⟨x, rfl : x • b = a⟩
     exact Submodule.span_singleton_group_smul_eq _ x _
 
@@ -112,7 +112,7 @@ variable {K}
 /-- An induction principle for `Projectivization`. Use as `induction v`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 theorem ind {P : ℙ K V → Prop} (h : ∀ (v : V) (h : v ≠ 0), P (mk K v h)) : ∀ p, P p :=
-  Quotient.ind' <| Subtype.rec <| h
+  Quotient.ind <| Subtype.rec <| h
 
 @[simp]
 theorem submodule_mk (v : V) (hv : v ≠ 0) : (mk K v hv).submodule = K ∙ v :=

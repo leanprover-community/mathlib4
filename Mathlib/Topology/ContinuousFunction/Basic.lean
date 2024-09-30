@@ -489,7 +489,7 @@ variable (hf : QuotientMap f) (g : C(X, Z)) (h : Function.FactorsThrough g f)
 /-- Descend a continuous map, which is constant on the fibres, along a quotient map. -/
 @[simps]
 noncomputable def lift : C(Y, Z) where
-  toFun := ((fun i ↦ Quotient.liftOn' i g (fun _ _ (hab : f _ = f _) ↦ h hab)) :
+  toFun := ((fun i ↦ Quotient.liftOn i g (fun _ _ (hab : f _ = f _) ↦ h hab)) :
     Quotient (Setoid.ker f) → Z) ∘ hf.homeomorph.symm
   continuous_toFun := Continuous.comp (continuous_quot_lift _ g.2) (Homeomorph.continuous _)
 

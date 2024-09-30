@@ -24,7 +24,7 @@ variable (v : Valuation R Γ₀)
 /-- If `hJ : J ⊆ supp v` then `onQuotVal hJ` is the induced function on `R / J` as a function.
 Note: it's just the function; the valuation is `onQuot hJ`. -/
 def onQuotVal {J : Ideal R} (hJ : J ≤ supp v) : R ⧸ J → Γ₀ := fun q =>
-  Quotient.liftOn' q v fun a b h =>
+  Quotient.liftOn q v fun a b h =>
     calc
       v a = v (b + -(-a + b)) := by simp
       _ = v b :=
@@ -35,8 +35,8 @@ def onQuot {J : Ideal R} (hJ : J ≤ supp v) : Valuation (R ⧸ J) Γ₀ where
   toFun := v.onQuotVal hJ
   map_zero' := v.map_zero
   map_one' := v.map_one
-  map_mul' xbar ybar := Quotient.ind₂' v.map_mul xbar ybar
-  map_add_le_max' xbar ybar := Quotient.ind₂' v.map_add xbar ybar
+  map_mul' xbar ybar := Quotient.ind₂ v.map_mul xbar ybar
+  map_add_le_max' xbar ybar := Quotient.ind₂ v.map_add xbar ybar
 
 @[simp]
 theorem onQuot_comap_eq {J : Ideal R} (hJ : J ≤ supp v) :

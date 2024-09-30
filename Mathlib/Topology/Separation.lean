@@ -332,7 +332,7 @@ def specializationOrder (X) [TopologicalSpace X] [T0Space X] : PartialOrder X :=
   { specializationPreorder X, PartialOrder.lift (OrderDual.toDual ∘ 𝓝) nhds_injective with }
 
 instance SeparationQuotient.instT0Space : T0Space (SeparationQuotient X) :=
-  ⟨fun x y => Quotient.inductionOn₂' x y fun _ _ h =>
+  ⟨fun x y => Quotient.inductionOn₂ x y fun _ _ h =>
     SeparationQuotient.mk_eq_mk.2 <| SeparationQuotient.inducing_mk.inseparable_iff.1 h⟩
 
 theorem minimal_nonempty_closed_subsingleton [T0Space X] {s : Set X} (hs : IsClosed s)

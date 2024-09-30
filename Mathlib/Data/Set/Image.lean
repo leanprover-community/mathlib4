@@ -819,7 +819,7 @@ theorem range_quot_lift {r : ι → ι → Prop} (hf : ∀ x y, r x y → f x = 
 
 -- Porting note: the `Setoid α` instance is not being filled in
 @[simp]
-theorem range_quotient_mk [sa : Setoid α] : (range (α := Quotient sa) fun x : α => ⟦x⟧) = univ :=
+theorem range_quotient_mk {s : Setoid α} : range (Quotient.mk s) = univ :=
   range_quot_mk _
 
 @[simp]
@@ -831,12 +831,13 @@ theorem range_quotient_lift [s : Setoid ι] (hf) :
 theorem range_quotient_mk' {s : Setoid α} : range (Quotient.mk' : α → Quotient s) = univ :=
   range_quot_mk _
 
-@[simp] lemma Quotient.range_mk'' {sa : Setoid α} : range (Quotient.mk'' (s₁ := sa)) = univ :=
+@[deprecated range_quotient_mk (since := "2024-08-30")]
+lemma Quotient.range_mk'' {sa : Setoid α} : range (Quotient.mk'' (s₁ := sa)) = univ :=
   range_quotient_mk
 
 @[simp]
 theorem range_quotient_lift_on' {s : Setoid ι} (hf) :
-    (range fun x : Quotient s => Quotient.liftOn' x f hf) = range f :=
+    (range fun x : Quotient s => Quotient.liftOn x f hf) = range f :=
   range_quot_lift _
 
 instance canLift (c) (p) [CanLift α β c p] :
