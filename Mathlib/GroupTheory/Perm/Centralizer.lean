@@ -99,6 +99,7 @@ section
 
 variable {G : Type*} [Group G] (g : G)
 
+/-
 theorem Subgroup.centralizer_eq_comap_stabilizer :
     Subgroup.centralizer {g} = Subgroup.comap ConjAct.toConjAct.toMonoidHom
       (MulAction.stabilizer (ConjAct G) g) := by
@@ -108,6 +109,7 @@ theorem Subgroup.centralizer_eq_comap_stabilizer :
   simp only [mem_centralizer_iff, Set.mem_singleton_iff, forall_eq, ConjAct.toConjAct_smul]
   rw [eq_comm]
   exact Iff.symm mul_inv_eq_iff_eq_mul
+-/
 
 theorem Subgroup.nat_card_centralizer_nat_card_stabilizer :
     Nat.card (Subgroup.centralizer {g}) =
@@ -132,12 +134,13 @@ theorem Subgroup.nat_card_centralizer_nat_card_stabilizer :
   /- rw [Set.preimage_equiv_eq_image_symm ((MulAction.stabilizer (ConjAct G) g) : Set (ConjAct G))
     (ConjAct.toConjAct.toEquiv)] -/
 
+/-
 variable {g} in
 lemma Subgroup.mem_centralizer_singleton_iff {k : G} :
     k ∈ Subgroup.centralizer {g} ↔ k * g = g * k := by
   simp only [mem_centralizer_iff, Set.mem_singleton_iff, forall_eq]
   rw [eq_comm]
-
+-/
 end
 
 open scoped Pointwise
