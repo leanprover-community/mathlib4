@@ -904,7 +904,7 @@ protected lemma quotientMap : QuotientMap f := (hf.homeomorph f).quotientMap
 protected lemma embedding : Embedding f := (hf.homeomorph f).embedding
 protected lemma openEmbedding : OpenEmbedding f := (hf.homeomorph f).openEmbedding
 protected lemma closedEmbedding : ClosedEmbedding f := (hf.homeomorph f).closedEmbedding
-protected lemma isDenseEmbedding : IsDenseEmbedding f := (hf.homeomorph f).isDenseEmbedding
+lemma isDenseEmbedding : IsDenseEmbedding f := (hf.homeomorph f).isDenseEmbedding
 
 @[deprecated (since := "2024-09-30")]
 alias denseEmbedding := isDenseEmbedding
