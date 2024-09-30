@@ -1615,7 +1615,7 @@ theorem image2_iInter_subset_right (s : Set α) (t : ι → Set β) :
 theorem image2_sInter_subset_left (S : Set (Set α)) (t : Set β) :
     image2 f (⋂₀ S) t ⊆ ⋂ s ∈ S, image2 f s t := by
   simp_rw [image2_subset_iff, mem_sInter]
-  exact fun x hx y hy i => (by aesop)
+  exact fun x hx y hy i => by aesop
 
 theorem image2_sInter_subset_right (s : Set α) (T : Set (Set β)) :
     image2 f s (⋂₀ T) ⊆ ⋂ t ∈ T, image2 f s t := by
