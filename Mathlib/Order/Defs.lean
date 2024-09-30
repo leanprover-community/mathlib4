@@ -499,7 +499,6 @@ lemma eq_min (h₁ : c ≤ a) (h₂ : c ≤ b) (h₃ : ∀ {d}, d ≤ a → d �
 lemma min_comm (a b : α) : min a b = min b a :=
   eq_min (min_le_right a b) (min_le_left a b) fun h₁ h₂ => le_min h₂ h₁
 
-set_option linter.style.multiGoal false in
 lemma min_assoc (a b c : α) : min (min a b) c = min a (min b c) := by
   apply eq_min
   · apply le_trans; apply min_le_left; apply min_le_left
@@ -527,7 +526,6 @@ lemma eq_max (h₁ : a ≤ c) (h₂ : b ≤ c) (h₃ : ∀ {d}, a ≤ d → b �
 lemma max_comm (a b : α) : max a b = max b a :=
   eq_max (le_max_right a b) (le_max_left a b) fun h₁ h₂ => max_le h₂ h₁
 
-set_option linter.style.multiGoal false in
 lemma max_assoc (a b c : α) : max (max a b) c = max a (max b c) := by
   apply eq_max
   · apply le_trans; apply le_max_left a b; apply le_max_left
