@@ -230,7 +230,7 @@ variable {A}
 
 theorem comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FiniteType) (hg : Surjective g) :
     (g.comp f).FiniteType := by
-  algebraize_only [f, g, g.comp f]
+  algebraize_only [f, g.comp f]
   exact Algebra.FiniteType.of_surjective hf
     { g with
       toFun := g

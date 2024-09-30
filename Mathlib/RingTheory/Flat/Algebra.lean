@@ -75,7 +75,7 @@ variable {R : Type u} {S : Type v} {T : Type w} [CommRing R] [CommRing S] [CommR
   (f : R →+* S) (g : S →+* T)
 
 /-- Composition of flat ring homomorphisms is flat. -/
-instance comp [h : RingHom.Flat f] [RingHom.Flat g] : RingHom.Flat (g.comp f) where
+instance comp [RingHom.Flat f] [RingHom.Flat g] : RingHom.Flat (g.comp f) where
   out := by
     algebraize_only [f, g, g.comp f]
     exact Algebra.Flat.comp R S T
