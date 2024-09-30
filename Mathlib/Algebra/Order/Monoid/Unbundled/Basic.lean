@@ -1350,4 +1350,11 @@ protected theorem mul_le_iff_le_one_left [MulOneClass α] [i : @Std.Commutative 
     [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α} (ha : MulLECancellable a) :
     b * a ≤ a ↔ b ≤ 1 := by rw [i.comm, ha.mul_le_iff_le_one_right]
 
+@[to_additive] lemma of_mul_right [Semigroup α] [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α}
+    (h : MulLECancellable (a * b)) : MulLECancellable b :=
+  fun c d hcd ↦ h <| by rw [mul_assoc, mul_assoc]; exact mul_le_mul_left' hcd _
+
+@[to_additive] lemma of_mul_left [CommSemigroup α] [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α}
+    (h : MulLECancellable (a * b)) : MulLECancellable a := (mul_comm a b ▸ h).of_mul_right
+
 end MulLECancellable
