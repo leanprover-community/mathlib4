@@ -711,8 +711,7 @@ def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα _pα e := do
   | _, _, _ => throwError "not ENNReal.ofNNReal"
 
 private lemma ennreal_one_pos : (0 : ℝ≥0∞) < 1 := zero_lt_one
-private lemma ofNat_pos {n : ℕ} [n.AtLeastTwo] : 0 < (no_index OfNat.ofNat n : ℝ≥0∞) :=
-  Nat.ofNat_pos
+private lemma ofNat_pos {n : ℕ} [n.AtLeastTwo] : 0 < (OfNat.ofNat n : ℝ≥0∞) := Nat.ofNat_pos
 
 /-- The `positivity` extension which identifies expressions of the form `OfNat.ofNat n : ℝ≥0∞`. -/
 @[positivity OfNat.ofNat _] def evalOfNatENNReal : PositivityExt where eval {u} α _z _p e := do
