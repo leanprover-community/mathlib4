@@ -250,8 +250,8 @@ theorem image_intrinsicInterior (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
   let f := ((affineSpan 𝕜 s).isometryEquivMap φ).toHomeomorph
   have : φ.toAffineMap ∘ (↑) ∘ f.symm = (↑) := funext isometryEquivMap.apply_symm_apply
   rw [intrinsicInterior, intrinsicInterior, ← φ.coe_toAffineMap, ← map_span φ.toAffineMap s, ← this,
-    ← Function.comp.assoc, image_comp, image_comp, f.symm.image_interior, f.image_symm,
-    ← preimage_comp, Function.comp.assoc, f.symm_comp_self, AffineIsometry.coe_toAffineMap,
+    ← Function.comp_assoc, image_comp, image_comp, f.symm.image_interior, f.image_symm,
+    ← preimage_comp, Function.comp_assoc, f.symm_comp_self, AffineIsometry.coe_toAffineMap,
     Function.comp_id, preimage_comp, φ.injective.preimage_image]
 
 @[simp]
@@ -263,8 +263,8 @@ theorem image_intrinsicFrontier (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
   let f := ((affineSpan 𝕜 s).isometryEquivMap φ).toHomeomorph
   have : φ.toAffineMap ∘ (↑) ∘ f.symm = (↑) := funext isometryEquivMap.apply_symm_apply
   rw [intrinsicFrontier, intrinsicFrontier, ← φ.coe_toAffineMap, ← map_span φ.toAffineMap s, ← this,
-    ← Function.comp.assoc, image_comp, image_comp, f.symm.image_frontier, f.image_symm,
-    ← preimage_comp, Function.comp.assoc, f.symm_comp_self, AffineIsometry.coe_toAffineMap,
+    ← Function.comp_assoc, image_comp, image_comp, f.symm.image_frontier, f.image_symm,
+    ← preimage_comp, Function.comp_assoc, f.symm_comp_self, AffineIsometry.coe_toAffineMap,
     Function.comp_id, preimage_comp, φ.injective.preimage_image]
 
 @[simp]
@@ -276,8 +276,8 @@ theorem image_intrinsicClosure (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
   let f := ((affineSpan 𝕜 s).isometryEquivMap φ).toHomeomorph
   have : φ.toAffineMap ∘ (↑) ∘ f.symm = (↑) := funext isometryEquivMap.apply_symm_apply
   rw [intrinsicClosure, intrinsicClosure, ← φ.coe_toAffineMap, ← map_span φ.toAffineMap s, ← this,
-    ← Function.comp.assoc, image_comp, image_comp, f.symm.image_closure, f.image_symm,
-    ← preimage_comp, Function.comp.assoc, f.symm_comp_self, AffineIsometry.coe_toAffineMap,
+    ← Function.comp_assoc, image_comp, image_comp, f.symm.image_closure, f.image_symm,
+    ← preimage_comp, Function.comp_assoc, f.symm_comp_self, AffineIsometry.coe_toAffineMap,
     Function.comp_id, preimage_comp, φ.injective.preimage_image]
 
 end AffineIsometry
