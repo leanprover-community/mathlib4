@@ -791,11 +791,128 @@ section DiscreteUniformity
 
 open Filter
 
+omit [UniformSpace α]
+
+def Base : FilterBasis (ℕ × ℕ)  where
+  sets := by
+    letI F (n : ℕ) : Set (ℕ × ℕ) := ⋃ i : Icc 0 n, {((i : ℕ), (i : ℕ))}
+    letI V (n : ℕ) : Set (ℕ × ℕ) := (F n ∪ ((Ici n) ×ˢ (Ici n)))
+    exact range V
+  nonempty := by
+    fconstructor
+    use ({(0,0)} ∪ ((Ici (0 : ℕ)) ×ˢ (Ici (0 : ℕ))))
+    -- simp_all
+    use 0
+    simp only [iUnion_singleton_eq_range, Ici_prod_Ici, Prod.mk_zero_zero, singleton_union, mem_Ici,
+      le_refl, insert_eq_of_mem, union_eq_right]
+    rw [Icc_self]
+    rw [range_subset_iff]
+    intro y
+    cases' y with z hz
+    simp
+    cases hz
+    exact Preorder.le_refl 0
+  inter_sets := by
+    intro S T
+    simp
+    intro n hn m hm
+    use max n m
+    sorry
+
+
+
+example [TopologicalSpace β] (h : ∀ b : β, IsOpen {b}) : DiscreteTopology β := by
+  rw [discreteTopology_iff_nhds]
+  intro b
+  exact (isOpen_singleton_iff_nhds_eq_pure b).mp (h b)
+
+example [TopologicalSpace β] (H: DiscreteTopology β) : ∀ b : β, IsOpen {b} := by
+  intro b
+  simp_all only [isOpen_discrete]
+
+def uniformity' : Filter (ℕ × ℕ) where
+  sets := by
+    let F (n : ℕ) : Set (ℕ × ℕ) := ⋃ i : Icc 0 n, {((i : ℕ), (i : ℕ))}-- ∪ ⋃ Ico n
+    let V (n : ℕ) : Set (ℕ × ℕ) := F n ∪ ((Ici n) ×ˢ (Ici n))
+    use range V
+  univ_sets := by
+    simp
+    use 0
+    ext ⟨x1, x2⟩
+    refine ⟨fun hx ↦ trivial, fun hx ↦ ?_⟩
+    · simp
+      match (x1, x2) with
+      | (0, 0) => simp
+      | (0, m + 1) =>
+        right
+        exact right_eq_inf.mp rfl
+      | (k + 1, m + 1) =>
+        right
+        exact right_eq_inf.mp rfl
+      | (k + 1 , 0) =>
+        right
+        exact right_eq_inf.mp rfl
+  sets_of_superset := _
+  inter_sets := _
+
+-- example : UniformSpace ℕ :=
+--   { (⊥ : TopologicalSpace ℕ) with
+--     uniformity where
+
+--     symm := sorry,
+--     comp := sorry,
+--     nhds_eq_comap_uniformity := sorry}
+
+-- omit [IsCountablyGenerated (𝓤 α)]
+
+lemma bar /- (hdisc : @UniformSpace.toTopologicalSpace α = ⊥) -/
+  (hdisc : ∀ x, (@UniformSpace.toTopologicalSpace α).IsOpen {x})
+  --(S : Set (α × α)) --(hS : S ∈ 𝓤 α)
+  : ∀ x,  ∃ S ∈ 𝓤 α, ∀ (y : α), (x, y) ∈ S → y = x := by
+  -- : ∀ x, Prod.fst ⁻¹' {x} ∩ S = {(x, x)} := by
+  intro x
+  have := nhds_eq_comap_uniformity (x := x)
+  simp_rw [Filter.ext_iff, Filter.mem_comap] at this
+  replace this := (this ({x})).mp ?_
+  simp only [subset_singleton_iff, mem_preimage] at this
+  obtain ⟨t, ⟨ht_mem, ht⟩⟩ := this
+  · use t
+  · have := (isOpen_singleton_iff_nhds_eq_pure x).mp (hdisc x)
+    rw [this]
+    rfl
+
+omit [UniformSpace α] in
+lemma trivial (S T : Set (α × α)) (x : α) (hS : ∀ (y : α), (x, y) ∈ S → y = x) (hST : T ⊆ S) :
+  ∀ (y : α), (x, y) ∈ T → y = x := by
+  intro y hy
+  apply hS y
+  exact hST hy
+
+
+def foo (S : Set (β × β)) (T₁ T₂ : Set β) (hS : ∀ x, ∃ S ∈ 𝓤 α, ∀ (y : α), (x, y) ∈ S → y = x)
+   (hT : T₁ ×ˢ T₂ ⊆ S) : ∃ x : β, T₁ = {x} := sorry
+
+
+/-- A Cauchy filter in a discrete uniform space is contained in a principal filter-/
+theorem DiscreteTopology.cauchy_le_pure /- {X : Type _} -/--{uX : UniformSpace X}
+    (hS : ∀ a, ∃ S ∈ 𝓤 α, ∀ (b : α), (a, b) ∈ S → a = b)
+     {ℱ : Filter α} (hℱ : Cauchy ℱ) : ∃ a : α, ℱ = pure a := by
+  rcases hℱ with ⟨ℱ_ne_bot, ℱ_le⟩
+  simp_rw [Filter.le_def, mem_prod_iff] at ℱ_le
+  rw [Filter.ne_bot] at ℱ_ne_bot
+  -- rw [hX, bot_uniformity, le_principal_iff, mem_prod_iff] at ℱ_le
+  -- rw [Filter.le_def/- , bot_uniformity -/] at α_le
+  -- obtain ⟨S, ⟨hS, ⟨T, ⟨hT, H⟩⟩⟩⟩ := α_le
+  obtain ⟨x, rfl⟩ := eq_singleton_left_of_prod_subset_idRel (α_ne_bot.nonempty_of_mem hS)
+    (Filter.nonempty_of_mem hT) H
+  exact ⟨x, α_ne_bot.le_pure_iff.mp <| le_pure_iff.mpr hS⟩
+
 /-- A Cauchy filter in a discrete uniform space is contained in a principal filter-/
 theorem DiscreteUnif.cauchy_le_pure {X : Type _} {uX : UniformSpace X}
     (hX : uX = ⊥) {α : Filter X} (hα : Cauchy α) : ∃ x : X, α = pure x := by
   rcases hα with ⟨α_ne_bot, α_le⟩
   rw [hX, bot_uniformity, le_principal_iff, mem_prod_iff] at α_le
+  -- rw [Filter.le_def/- , bot_uniformity -/] at α_le
   obtain ⟨S, ⟨hS, ⟨T, ⟨hT, H⟩⟩⟩⟩ := α_le
   obtain ⟨x, rfl⟩ := eq_singleton_left_of_prod_subset_idRel (α_ne_bot.nonempty_of_mem hS)
     (Filter.nonempty_of_mem hT) H
