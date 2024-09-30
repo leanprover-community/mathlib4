@@ -81,29 +81,28 @@ theorem construction_on_accessible
   have hS := nonempty_contains_emptyset ⟨s, hs⟩
   induction hs using induction_on_accessible hS with
   | empty => use []; simp; use ∅; simp [hS]
-  | insert hs₁ hs₂ h₁ h₂ h₃ =>
-    rename_i s₁ s₂
-    rcases h₃ with ⟨l₀, hl₀₁, hl₀₂, hl₀₃⟩
-    have h₄ : ∃! a, a ∈ s₁ ∧ a ∉ l₀ := by sorry
-    let x : α := s₁.choose (· ∉ l₀) h₄
-    have hx : x ∉ l₀ := choose_property _ _ h₄
-    use x :: l₀
-    have h₅ : ↑(x :: l₀) ≤ s₁.val := by
-      rw [Multiset.le_iff_count]
-      intro a
+  | insert hs hs₂ h₁ h₂ h₃ =>
+    rename_i s₁ s₂; clear hs₂; rcases h₃ with ⟨l₀, hl₀₁, hl₀₂, hl₀₃⟩
+    have h₃ : ∃! a, a ∈ s₁ ∧ a ∉ l₀ := by
+      have h₃ : (s₁ \ s₂).card = 1 := by rw [card_sdiff h₁]; omega
+      rcases card_eq_one.mp h₃ with ⟨a, ha⟩; rw [eq_singleton_iff_unique_mem] at ha
+      rcases ha with ⟨h₄, h₅⟩; simp at h₄ h₅
+      rw [← @mem_val _ _ s₂, ← hl₀₂, Multiset.mem_coe] at h₄
+      use a; simp [h₄, h₅]; intro _ h₁ h₂; apply h₅ _ h₁
+      intro h; apply h₂; rw [← Multiset.mem_coe, hl₀₂, mem_val]; exact h
+    let x : α := s₁.choose (· ∉ l₀) h₃; have hx : x ∉ l₀ := choose_property _ _ h₃; use x :: l₀
+    have h₄ : ↑(x :: l₀) ≤ s₁.val := by
+      rw [Multiset.le_iff_count]; intro a
       by_cases ha : a = x
-      · simp_all [Multiset.nodup_iff_count_eq_one.mp s₁.nodup x (choose_mem _ _ h₄)]
+      · simp_all [Multiset.nodup_iff_count_eq_one.mp s₁.nodup x (choose_mem _ _ h₃)]
       · simp [ha]; rw [← Multiset.coe_count, hl₀₂]
         exact Multiset.count_le_of_le _ (val_le_iff.mpr h₁)
-    apply And.intro (by simp [hl₀₁, hx])
-    apply And.intro (Multiset.eq_of_le_of_card_le h₅ _)
-    · intro l' hl'
-      rw [List.suffix_cons_iff] at hl'
-      apply hl'.elim _ (fun h => hl₀₃ _ h)
-      intro hl'; use s₁; simp [hs₁, hl']
-      apply Multiset.eq_of_le_of_card_le h₅
+    have h₅ : Multiset.card s₁.val ≤ Multiset.card (Multiset.ofList (x :: l₀)) := by
       simp [← h₂, ← card_val s₂, ← hl₀₂]
-    · simp [← h₂, ← card_val s₂, ← hl₀₂]
+    have h₆ := Multiset.eq_of_le_of_card_le h₄ h₅
+    apply And.intro (by simp [hl₀₁, hx]) (And.intro h₆ _)
+    intro l' hl'; rw [List.suffix_cons_iff] at hl'; apply hl'.elim _ (fun h => hl₀₃ _ h)
+    intro hl'; use s₁; simp [hs, hl', h₆]
 
 end Accessible
 
