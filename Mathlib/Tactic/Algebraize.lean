@@ -190,7 +190,8 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
         let tp ← mkAppOptM p pargs -- This should be the type `Algebra.Property A B`
         liftMetaTactic fun mvarid => do
           let nm ← mkFreshBinderNameForTactic `algebraizeInst
-          let (_, mvar) ← mvarid.note nm decl.toExpr tp
+          let mvar ← mvarid.define nm tp decl.toExpr
+          let (_, mvar) ← mvar.intro1P
           return [mvar]
       /- Otherwise, the attribute points to a constructor of the `Algebra` property. In this case,
       we assume that the `RingHom` property is the last argument of the constructor (and that
@@ -200,6 +201,8 @@ def addProperties (t : Array Expr) : TacticM Unit := withMainContext do
         let val ← mkAppOptM p pargs
         liftMetaTactic fun mvarid => do
           let nm ← mkFreshBinderNameForTactic `algebraizeInst
+          -- let mvar ← mvarid.define nm _ val -- TODO: How to get the type of the target of `p`?
+          -- let (_, mvar) ← mvar.intro1P
           let (_, mvar) ← mvarid.note nm val
           return [mvar]
     | none => return
