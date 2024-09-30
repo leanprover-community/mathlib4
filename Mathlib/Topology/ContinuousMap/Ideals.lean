@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Topology.Algebra.Algebra
-import Mathlib.Topology.ContinuousFunction.Compact
+import Mathlib.Topology.ContinuousMap.Compact
 import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Analysis.Normed.Ring.Units
