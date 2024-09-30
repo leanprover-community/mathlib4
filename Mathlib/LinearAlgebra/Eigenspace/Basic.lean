@@ -475,18 +475,16 @@ lemma iInf_maxGenEigenspace_restrict_map_subtype_eq
   rfl
 
 lemma mapsTo_restrict_maxGenEigenspace_restrict_of_mapsTo
-    {p : Submodule R M} (f g : End R M) (hf : MapsTo f p p) (hg : MapsTo g p p) {μ : R}
-    (h : MapsTo f (g.maxGenEigenspace μ) (g.maxGenEigenspace μ)) :
+    {p : Submodule R M} (f g : End R M) (hf : MapsTo f p p) (hg : MapsTo g p p) {μ₁ μ₂ : R}
+    (h : MapsTo f (g.maxGenEigenspace μ₁) (g.maxGenEigenspace μ₂)) :
     MapsTo (f.restrict hf)
-      (maxGenEigenspace (g.restrict hg) μ)
-      (maxGenEigenspace (g.restrict hg) μ) := by
-  intro ⟨x, hx⟩ hx'
-  have : μ • (1 : Module.End R p) = (μ • 1 : Module.End R M).restrict (fun _ ↦ p.smul_mem μ) := rfl
-  rw [SetLike.mem_coe, mem_maxGenEigenspace, this, LinearMap.restrict_sub] at hx' ⊢
-  simp_rw [LinearMap.pow_restrict _, LinearMap.restrict_apply, Submodule.mk_eq_zero] at hx' ⊢
-  replace hx' : x ∈ g.maxGenEigenspace μ := by simpa
-  suffices f x ∈ g.maxGenEigenspace μ by simpa
-  exact h hx'
+      (maxGenEigenspace (g.restrict hg) μ₁)
+      (maxGenEigenspace (g.restrict hg) μ₂) := by
+  intro x hx
+  simp_rw [SetLike.mem_coe, mem_maxGenEigenspace, ← LinearMap.restrict_smul_one _,
+    LinearMap.restrict_sub _, LinearMap.pow_restrict _, LinearMap.restrict_apply,
+    Submodule.mk_eq_zero, ← mem_maxGenEigenspace] at hx ⊢
+  exact h hx
 
 /-- If `p` is an invariant submodule of an endomorphism `f`, then the `μ`-eigenspace of the
 restriction of `f` to `p` is a submodule of the `μ`-eigenspace of `f`. -/
