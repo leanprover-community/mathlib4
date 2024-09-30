@@ -292,7 +292,7 @@ volume `1` to the parallelepiped spanned by any orthonormal basis. We define the
 some arbitrary choice of orthonormal basis. The fact that it works with any orthonormal basis
 is proved in `orthonormalBasis.volume_parallelepiped`.
 
-This lemma creates
+This instance creates
 
 - a potential non-defeq diamond with the natural instance for `MeasureSpace (ULift E)`,
   which does not exist in Mathlib at the moment;
