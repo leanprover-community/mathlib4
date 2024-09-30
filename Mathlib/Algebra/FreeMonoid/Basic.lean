@@ -408,7 +408,7 @@ theorem reverse_reverse {a : FreeMonoid α} : reverse (reverse a) = a := by
   apply List.reverse_reverse
 
 @[to_additive (attr := simp)]
-theorem reverse_length {a : FreeMonoid α} : a.reverse.length = a.length :=
+theorem length_reverse {a : FreeMonoid α} : a.reverse.length = a.length :=
   List.length_reverse _
 
 end Reverse
