@@ -607,6 +607,24 @@ theorem inv_diagonal (v : n → α) : (diagonal v)⁻¹ = diagonal (Ring.inverse
 
 end Diagonal
 
+section Woodbury
+
+variable [Fintype m] [DecidableEq m]
+variable (A : Matrix n n α) (U : Matrix n m α) (C : Matrix m m α) (V : Matrix m n α)
+
+/-- The **Woodbury Identity** (`⁻¹` version). -/
+theorem add_mul_mul_inv_eq_sub (hA : IsUnit A) (hC : IsUnit C) (hAC : IsUnit (C⁻¹ + V * A⁻¹ * U)) :
+    (A + U * C * V)⁻¹ = A⁻¹ - A⁻¹ * U * (C⁻¹ + V * A⁻¹ * U)⁻¹ * V * A⁻¹ := by
+  obtain ⟨_⟩ := hA.nonempty_invertible
+  obtain ⟨_⟩ := hC.nonempty_invertible
+  obtain ⟨iAC⟩ := hAC.nonempty_invertible
+  simp only [← invOf_eq_nonsing_inv] at iAC
+  letI := invertibleAddMulMul A U C V
+  simp only [← invOf_eq_nonsing_inv]
+  apply invOf_add_mul_mul
+
+end Woodbury
+
 @[simp]
 theorem inv_inv_inv (A : Matrix n n α) : A⁻¹⁻¹⁻¹ = A⁻¹ := by
   by_cases h : IsUnit A.det

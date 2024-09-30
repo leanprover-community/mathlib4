@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.Normed.Ring.Units
 import Mathlib.Algebra.Algebra.Spectrum
-import Mathlib.Topology.ContinuousFunction.Algebra
+import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
 # Units of continuous functions
