@@ -183,7 +183,7 @@ instance : Membership α (FreeMonoid α) := ⟨mem⟩
 theorem mem_one_iff : m ∈ (1 : FreeMonoid α) ↔ False := List.mem_nil_iff _
 
 @[to_additive]
-theorem mem_of {n : α} : m ∈ (of n) ↔ m = n := List.mem_singleton
+theorem mem_of {n : α} : m ∈ of n ↔ m = n := List.mem_singleton
 
 @[to_additive]
 theorem mem_of_self : m ∈ of m := List.mem_singleton_self _
