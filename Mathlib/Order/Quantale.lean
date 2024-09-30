@@ -37,8 +37,8 @@ complete sup-semilattice. (In literature, both variants occur.)
 
 ## Notation
 
-* `x ⇨ₗ y` : `sSup { z | z * x ≤ y }`, the left-residuation of `y` over `x`  ;
-* `x ⇨ᵣ y` : `sSup { z | x * z ≤ y }`, the right-residuation of `y` over `x` ;
+* `x ⇨ₗ y` : `sSup { z | z * x ≤ y }`, the left-residuation of `y` over `x`;
+* `x ⇨ᵣ y` : `sSup { z | x * z ≤ y }`, the right-residuation of `y` over `x`;
 
 ## References
 
