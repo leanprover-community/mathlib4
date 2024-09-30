@@ -286,24 +286,20 @@ instance instSMulMemClass : SMulMemClass (IntermediateField F L) F L :=
   ⟨fun _ _ hx ↦ smul_mem _ hx⟩
 
 @[simp]
-lemma normal_map {F L : Type*} [Field F] [Field L] [Algebra F L] [Normal F L]
-    (K : IntermediateField F L) (σ : L →ₐ[F] L) :
-    normalClosure F (K.map σ) L = normalClosure F K L := by
+lemma normalClosure_map (K : IntermediateField F L) (σ : L →ₐ[F] L) :
+    normalClosure F (K.map σ) L = normalClosure F K L :=
   have (σ : L ≃ₐ[F] L) : normalClosure F (K.map (σ : L →ₐ[F] L)) L = normalClosure F K L := by
     simp_rw [normalClosure_def'', map_map]
     exact (Equiv.mulRight σ).iSup_congr fun _ ↦ rfl
-  simpa only [Algebra.IsAlgebraic.algEquivEquivAlgHom_symm_apply] using
-    this ((Algebra.IsAlgebraic.algEquivEquivAlgHom _ _).symm σ)
+  this ((Algebra.IsAlgebraic.algEquivEquivAlgHom _ _).symm σ)
 
 @[simp]
-theorem normalClosure_le_iff_of_normal {k K : Type*} [Field k] [Field K]
-    [Algebra k K] {L₁ L₂ : IntermediateField k K} [Normal k L₂] [Normal k K] :
-    normalClosure k L₁ K ≤ L₂ ↔ L₁ ≤ L₂ := by
-  constructor
-  all_goals intro h
+theorem normalClosure_le_iff_of_normal {K₁ K₂ : IntermediateField F L} [Normal F K₂] :
+    normalClosure F K₁ L ≤ K₂ ↔ K₁ ≤ K₂ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [normalClosure_le_iff] at h
-    simpa only [fieldRange_val] using h L₁.val
-  · rw [← normalClosure_of_normal L₂]
-    exact normalClosure_mono L₁ L₂ h
+    simpa only [fieldRange_val] using h K₁.val
+  · rw [← normalClosure_of_normal K₂]
+    exact normalClosure_mono K₁ K₂ h
 
 end IntermediateField
