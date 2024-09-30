@@ -26,16 +26,11 @@ variable [IsCancelMul M]
 
 @[to_additive]
 lemma natCard_mul_le : Nat.card (s * t) ≤ Nat.card s * Nat.card t := by
-  classical
   obtain h | h := (s * t).infinite_or_finite
   · simp [Set.Infinite.card_eq_zero h]
-  obtain ⟨hs, ht⟩ | rfl | rfl := finite_mul.1 h
-  · unfold Nat.card
-    rw [← Cardinal.toNat_mul]
-    gcongr
-    · exact Cardinal.mul_lt_aleph0 hs.lt_aleph0 ht.lt_aleph0
-    · exact Cardinal.mk_mul_le
-  all_goals simp
+  simp only [Nat.card, ← Cardinal.toNat_mul]
+  refine Cardinal.toNat_le_toNat Cardinal.mk_mul_le ?_
+  aesop (add simp [Cardinal.mul_lt_aleph0_iff, finite_mul])
 
 @[to_additive (attr := deprecated (since := "2024-09-30"))] alias card_mul_le := Cardinal.mk_mul_le
 
