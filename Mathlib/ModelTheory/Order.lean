@@ -358,10 +358,13 @@ instance : @OrderedStructure L M _ (L.leOfStructure M) _ := by
   intros
   rfl
 
-instance [h : DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a,b])] :
-    DecidableRel (@LE.le M (L.leOfStructure M)) := by
-  letI := L.leOfStructure M
-  exact h
+-- This should not be a global instance,
+-- because it will match with any `LE` typeclass search
+@[local instance]
+def decidableLEOfStructure
+    [h : DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a,b])] :
+    have := L.leOfStructure M
+    DecidableRel ((· : M) ≤ ·) := h
 
 /-- Any model of a theory of preorders is a preorder. -/
 def preorderOfModels [h : M ⊨ L.preorderTheory] : Preorder M where
