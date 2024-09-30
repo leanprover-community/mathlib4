@@ -365,6 +365,13 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
           You can extend the allowed length of the file using \
           `set_option linter.style.longFile {candidate}`.\n\
           You can completely disable this linter by setting the length limit to `0`."
+    else
+    if linterBound != candidate then
+      logWarningAt stx <| .tagged linter.style.longFile.name
+        m!"This file is {lastLine} lines long. \
+          The current limit is {linterBound}, but it is expected to be {candidate}:\n\
+          `set_option linter.style.longFile {candidate}`.\n\
+          You can completely disable this linter by setting the length limit to `0`."
 
 initialize addLinter longFileLinter
 
