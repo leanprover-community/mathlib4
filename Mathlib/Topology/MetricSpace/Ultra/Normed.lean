@@ -62,34 +62,6 @@ lemma isUltrametricDist_of_isNonarchimedean_nnnorm {S' : Type*} [SeminormedAddGr
     (h : IsNonarchimedean ((↑) ∘ (nnnorm : S' → ℝ≥0))) : IsUltrametricDist S' :=
   isUltrametricDist_of_forall_nnnorm_add_le_max_nnnorm h
 
-@[to_additive]
-lemma _root_.List.nnnorm_prod_le_iSup_nnnorm (l : List S) :
-    ‖l.prod‖₊ ≤ ⨆ x ∈ l, ‖x‖₊ := by
-  rw [le_ciSup_iff']
-  · intro b h
-    induction l with
-    | nil => simp
-    | cons x xs IH =>
-      rw [List.prod_cons]
-      refine (nnnorm_mul_le_max _ _).trans (max_le ((h x).trans' ?_) (IH fun y ↦ (h y).trans' ?_))
-      · simp [le_ciSup_iff' (Set.finite_range _).bddAbove]
-      · rw [le_ciSup_iff' (Set.finite_range _).bddAbove]
-        intro c hy
-        rw [ciSup_le_iff']
-        · intro
-          solve_by_elim
-        · refine ⟨‖c‖₊, ?_⟩
-          rintro z ⟨hz, rfl⟩
-          solve_by_elim
-  · exact (Set.finite_range_iSup_mem l.finite_toSet _).bddAbove
-
-@[to_additive]
-lemma _root_.List.norm_prod_le_iSup_norm (l : List S) :
-    ‖l.prod‖ ≤ ⨆ x ∈ l, ‖x‖ := by
-  have := l.nnnorm_prod_le_iSup_nnnorm
-  rw [← Subtype.coe_le_coe] at this
-  simpa using this
-
 /-- All triangles are isosceles in an ultrametric normed group. -/
 @[to_additive "All triangles are isosceles in an ultrametric normed additive group."]
 lemma norm_mul_eq_max_of_norm_ne_norm
@@ -176,54 +148,17 @@ section CommGroup
 
 variable {M ι : Type*} [SeminormedCommGroup M] [IsUltrametricDist M]
 
-@[to_additive]
-lemma _root_.Multiset.nnnorm_prod_le_iSup_nnnorm (s : Multiset M) :
-    ‖s.prod‖₊ ≤ ⨆ i ∈ s, ‖i‖₊ :=
-  Quotient.inductionOn s (by simpa using List.nnnorm_prod_le_iSup_nnnorm)
-
-@[to_additive]
-lemma _root_.Multiset.norm_prod_le_iSup_norm (s : Multiset M) :
-    ‖s.prod‖ ≤ ⨆ i ∈ s, ‖i‖ :=
-  Quotient.inductionOn s (by simpa using List.norm_prod_le_iSup_norm)
-
-/-- Nonarchimedean norm of a product is less than or equal the norm of any term in the product. -/
-@[to_additive "Nonarchimedean norm of a sum is less than or equal the norm of any term in the sum."]
-lemma _root_.Finset.nnnorm_prod_le_iSup_nnnorm (s : Finset ι) (f : ι → M) :
-    ‖∏ i ∈ s, f i‖₊ ≤ ⨆ i ∈ s, ‖f i‖₊ := by
-  refine ((s.1.map f).nnnorm_prod_le_iSup_nnnorm).trans_eq ?_
-  rcases isEmpty_or_nonempty ι
-  · simp
-  rcases s.eq_empty_or_nonempty with rfl|hs
-  · simp
-  have : Set.Nonempty (s : Set ι) := hs
-  have keyl (i : M) : ⨆ (_ : i ∈ Multiset.map f s.val), ‖i‖₊ = ⨆ (_ : i ∈ f '' s), ‖i‖₊ := by
-    simp
-  rw [iSup_congr keyl, ciSup_image this]
-  · congr
-  · simpa [bddAbove_def] using (s.image _).finite_toSet.bddAbove
-  · simp
-
-/-- Nonarchimedean norm of a product is less than or equal the norm of any term in the product. -/
-@[to_additive "Nonarchimedean norm of a sum is less than or equal the norm of any term in the sum."]
-lemma _root_.Finset.norm_prod_le_iSup_norm (s : Finset ι) (f : ι → M) :
-    ‖∏ i ∈ s, f i‖ ≤ ⨆ i ∈ s, ‖f i‖ := by
-  have := s.nnnorm_prod_le_iSup_nnnorm f
-  rw [← Subtype.coe_le_coe] at this
-  simpa using this
-
 /-- Nonarchimedean norm of a product is less than or equal the norm of any term in the product. -/
 @[to_additive "Nonarchimedean norm of a sum is less than or equal the norm of any term in the sum."]
 lemma _root_.Finset.nnnorm_prod_le_sup_nnnorm (s : Finset ι) (f : ι → M) :
     ‖∏ i ∈ s, f i‖₊ ≤ s.sup (‖f ·‖₊) := by
-  refine (s.nnnorm_prod_le_iSup_nnnorm _).trans ?_
-  rw [ciSup_le_iff']
-  · intro i
-    classical
-    rw [ciSup_eq_ite]
-    split_ifs with hi
-    · exact Finset.le_sup (f := (‖f ·‖₊)) hi
-    · simp
-  · exact (Set.finite_range_iSup_mem s.finite_toSet _).bddAbove
+  induction s using Finset.cons_induction_on with
+  | h₁ => simp
+  | @h₂ a s ha IH =>
+    simp only [Finset.prod_cons, Finset.sup_cons, le_sup_iff]
+    refine (le_total ‖∏ i ∈ s, f i‖ ‖f a‖).imp ?_ ?_ <;> intro h
+    · exact (norm_mul_le_max _ _).trans (by simp [h])
+    · exact (norm_mul_le_max _ _).trans (by simpa [h] using IH)
 
 /-- Nonarchimedean norm of a product is less than or equal the norm of any term in the product.
 This version is phrased using `Finset.sup'` and `Finset.Nonempty` due to `Finset.sup`
@@ -234,76 +169,26 @@ This version is phrased using `Finset.sup'` and `Finset.Nonempty` due to `Finset
 operating over an `OrderBot`, which `ℝ` is not. "]
 lemma _root_.Finset.Nonempty.norm_prod_le_sup'_norm {s : Finset ι} (hs : s.Nonempty) (f : ι → M) :
     ‖∏ i ∈ s, f i‖ ≤ s.sup' hs (‖f ·‖) := by
-  refine (s.norm_prod_le_iSup_norm _).trans ?_
-  classical
-  simp_rw [ciSup_eq_ite]
-  obtain ⟨i, -⟩ := id hs
-  have : Nonempty ι := ⟨i⟩
-  refine ciSup_le ?_
-  intro i'
-  split_ifs with hi
-  · exact Finset.le_sup' (f := (‖f ·‖)) hi
-  · simpa using hs
-
-/-- Nonarchimedean norm of a product is less than or equal the norm of any term in the product. -/
-@[to_additive "Nonarchimedean norm of a sum is less than or equal the norm of any term in the sum."]
-lemma _root_.Fintype.nnnorm_prod_le_sup_norm (s : Finset ι) (f : ι → M) :
-    ‖∏ i ∈ s, f i‖₊ ≤ s.sup (‖f ·‖₊) := by
-  refine (s.nnnorm_prod_le_iSup_nnnorm _).trans ?_
-  rw [ciSup_le_iff']
-  · intro i
-    classical
-    rw [ciSup_eq_ite]
-    split_ifs with hi
-    · exact Finset.le_sup (f := (‖f ·‖₊)) hi
-    · simp
-  · exact (Set.finite_range_iSup_mem s.finite_toSet _).bddAbove
-
-/-- Nonarchimedean norm of a product is less than or equal the norm of any term in the product. -/
-@[to_additive "Nonarchimedean norm of a sum is less than or equal the norm of any term in the sum."]
-lemma _root_.Fintype.nnnorm_prod_le_iSup_nnnorm [Fintype ι] (f : ι → M) :
-    ‖∏ i, f i‖₊ ≤ ⨆ i, ‖f i‖₊ := by
-  simpa using Finset.nnnorm_prod_le_iSup_nnnorm Finset.univ f
-
-/-- Nonarchimedean norm of a product is less than or equal the norm of any term in the product. -/
-@[to_additive "Nonarchimedean norm of a sum is less than or equal the norm of any term in the sum."]
-lemma _root_.Fintype.norm_prod_le_iSup_norm [Fintype ι] (f : ι → M) :
-    ‖∏ i, f i‖ ≤ ⨆ i, ‖f i‖ := by
-  simpa using Finset.norm_prod_le_iSup_norm Finset.univ f
-
-/-- Nonarchimedean norm of a product is less than or equal the norm of any term in the product. -/
-@[to_additive "Nonarchimedean norm of a sum is less than or equal the norm of any term in the sum."]
-lemma _root_.nnnorm_finprod_le_iSup_nnnorm (f : ι → M) :
-    ‖∏ᶠ i, f i‖₊ ≤ ⨆ i, ‖f i‖₊ := by
-  classical
-  rw [finprod_def]
-  split_ifs with h
-  · refine (h.toFinset.nnnorm_prod_le_iSup_nnnorm f).trans ?_
-    rw [ciSup_le_iff']
-    · intro
-      rw [ciSup_le_iff' (Set.finite_range _).bddAbove]
-      intro
-      refine le_ciSup (f := (‖f ·‖₊))
-        (((h.image (‖f ·‖₊)).union (Set.finite_singleton 0)).subset ?_).bddAbove  _
-      intro
-      simp only [Set.mem_range, Set.union_singleton, Set.mem_insert_iff, Set.mem_image,
-        Function.mem_support, ne_eq, forall_exists_index]
-      rintro i rfl
-      refine (eq_or_ne _ _).imp_right (fun hi ↦ ⟨i, mt ?_ hi, rfl⟩)
-      simp (config := {contextual := true})
-    · refine (Set.finite_range_iSup_mem (h.subset ?_) _).bddAbove
-      change {x | x ∈ h.toFinset.val} ⊆ _
-      intro _ ha -- needed becaues `(Function.support f).Finite` doesn't simplify as expected
-      simpa using ha
+  simp only [Finset.le_sup'_iff]
+  refine Finset.Nonempty.cons_induction ?_ ?_ hs
   · simp
+  rintro a s ha _ ⟨b, hb, IH⟩
+  simp only [Finset.prod_cons, Finset.mem_cons, exists_eq_or_imp]
+  refine (le_total ‖∏ i ∈ s, f i‖ ‖f a‖).imp ?_ ?_ <;> intro h
+  · exact (norm_mul_le_max _ _).trans (by simp [h])
+  · exact ⟨b, hb, (norm_mul_le_max _ _).trans (by simpa [h] using IH)⟩
 
 /-- Nonarchimedean norm of a product is less than or equal the norm of any term in the product. -/
 @[to_additive "Nonarchimedean norm of a sum is less than or equal the norm of any term in the sum."]
-lemma _root_.norm_finprod_le_iSup_norm (f : ι → M) :
-    ‖∏ᶠ i, f i‖ ≤ ⨆ i, ‖f i‖ := by
-  have := nnnorm_finprod_le_iSup_nnnorm f
-  rw [← Subtype.coe_le_coe] at this
-  simpa using this
+lemma _root_.Fintype.nnnorm_prod_le_sup_univ_norm [Fintype ι] (f : ι → M) :
+    ‖∏ i, f i‖₊ ≤ Finset.univ.sup (‖f ·‖₊) := by
+  simpa using Finset.univ.nnnorm_prod_le_sup_nnnorm f
+
+/-- Nonarchimedean norm of a product is less than or equal the norm of any term in the product. -/
+@[to_additive "Nonarchimedean norm of a sum is less than or equal the norm of any term in the sum."]
+lemma _root_.Fintype.norm_prod_le_sup'_univ_norm [Nonempty ι] [Fintype ι] (f : ι → M) :
+    ‖∏ i, f i‖ ≤ Finset.univ.sup' Finset.univ_nonempty (‖f ·‖) := by
+  simpa using Finset.univ_nonempty.norm_prod_le_sup'_norm f
 
 end CommGroup
 
