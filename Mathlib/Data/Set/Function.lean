@@ -1414,12 +1414,12 @@ end Set
 
 section strictMono
 
-lemma strictMonoOn_insert_iff [Preorder α] [Preorder β] {f : α → β} (s : Set α) (a : α) :
+lemma strictMonoOn_insert_iff [Preorder α] [Preorder β] {f : α → β} {s : Set α} {a : α} :
     StrictMonoOn f (insert a s) ↔
        (∀ b ∈ s, b < a → f b < f a) ∧ (∀ b ∈ s, a < b → f a < f b) ∧ StrictMonoOn f s := by
   simp [StrictMonoOn, forall_and]
 
-lemma strictAntiOn_insert_iff [Preorder α] [Preorder β] {f : α → β} (s : Set α) (a : α) :
+lemma strictAntiOn_insert_iff [Preorder α] [Preorder β] {f : α → β} {s : Set α} {a : α} :
     StrictAntiOn f (insert a s) ↔
        (∀ b ∈ s, b < a → f a < f b) ∧ (∀ b ∈ s, a < b → f b < f a) ∧ StrictAntiOn f s :=
   @strictMonoOn_insert_iff α βᵒᵈ _ _ _ _ _
