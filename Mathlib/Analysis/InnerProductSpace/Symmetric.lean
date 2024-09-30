@@ -75,11 +75,15 @@ theorem IsSymmetric.apply_clm {T : E →L[𝕜] E} (hT : IsSymmetric (T : E →�
   hT x y
 
 @[simp]
-theorem isSymmetric.zero : (0 : E →ₗ[𝕜] E).IsSymmetric := fun x y =>
+protected theorem IsSymmetric.zero : (0 : E →ₗ[𝕜] E).IsSymmetric := fun x y =>
   (inner_zero_right x : ⟪x, 0⟫ = 0).symm ▸ (inner_zero_left y : ⟪0, y⟫ = 0)
 
+@[deprecated (since := "2024-09-30")] alias isSymmetric_zero := IsSymmetric.zero
+
 @[simp]
-theorem isSymmetric.id : (LinearMap.id : E →ₗ[𝕜] E).IsSymmetric := fun _ _ => rfl
+protected theorem IsSymmetric.id : (LinearMap.id : E →ₗ[𝕜] E).IsSymmetric := fun _ _ => rfl
+
+@[deprecated (since := "2024-09-30")] alias isSymmetric_id := IsSymmetric.id
 
 @[aesop safe apply]
 theorem IsSymmetric.add {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric) :
