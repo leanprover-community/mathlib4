@@ -156,12 +156,11 @@ def shadowLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
-  unless #[``declaration, `lemma].contains stx.getKind do
+  unless (stx.find? (#[``declaration, `lemma].contains <|·.getKind)).isSome do
     return
   let decl? := (stx.find? (·.isOfKind ``Lean.Parser.Command.declId)).getD default
   let decl := ((← getEnv).find? decl?[0].getId).getD default
   let type := decl.type
-  --type.inspect
   let bindNames := getForAllBinderNames type
   let mut reps := #[]
   let mut seen : NameSet := {}
