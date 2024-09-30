@@ -222,9 +222,6 @@ lemma germ_stalkPullbackHom
         ((pullback C f).obj F).germ ⟨x, show x ∈ (Opens.map f).obj U from hU⟩ := by
   simp [stalkPullbackHom, germ, stalkFunctor, stalkPushforward]
 
--- todo: introcuded with algebraize
-set_option synthInstance.maxHeartbeats 0 in
-
 /-- The morphism `(f⁻¹ℱ)(U) ⟶ ℱ_{f(x)}` for some `U ∋ x`. -/
 def germToPullbackStalk (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : U) :
     ((pullback C f).obj F).obj (op U) ⟶ F.stalk ((f : X → Y) (x : X)) :=
@@ -233,9 +230,6 @@ def germToPullbackStalk (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : U) :
       ι :=
         { app := fun V => F.germ ⟨((f : X → Y) (x : X)), V.hom.unop.le x.2⟩
           naturality := fun _ _ i => by erw [Category.comp_id]; exact F.germ_res i.left.unop _ } }
-
--- todo: introcuded with algebraize
-set_option synthInstance.maxHeartbeats 0 in
 
 variable {C} in
 @[ext]
@@ -251,9 +245,6 @@ lemma pullback_obj_obj_ext {Z : C} {f : X ⟶ Y} {F : Y.Presheaf C} (U : (Opens 
   rintro ⟨⟨V⟩, ⟨⟩, ⟨b⟩⟩
   simpa [pushforwardPullbackAdjunction, Functor.lanAdjunction_unit]
     using h V (leOfHom b)
-
--- todo: introcuded with algebraize
-set_option synthInstance.maxHeartbeats 0 in
 
 @[reassoc (attr := simp)]
 lemma pushforwardPullbackAdjunction_unit_pullback_map_germToPullbackStalk
