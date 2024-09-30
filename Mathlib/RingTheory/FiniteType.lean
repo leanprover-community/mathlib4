@@ -230,11 +230,6 @@ variable {A}
 
 theorem comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FiniteType) (hg : Surjective g) :
     (g.comp f).FiniteType := by
-  letI algInst : Algebra A B := f.toAlgebra
-  letI algInst : Algebra B C := g.toAlgebra
-  letI algInst : Algebra A C := (g.comp f).toAlgebra
-  letI scalarTowerInst : IsScalarTower A B C :=
-    IsScalarTower.of_algebraMap_eq' (Eq.refl (algebraMap A C))
   algebraize_only [f, g, g.comp f]
   exact Algebra.FiniteType.of_surjective hf
     { g with
@@ -248,11 +243,6 @@ theorem of_surjective (f : A →+* B) (hf : Surjective f) : f.FiniteType := by
 
 theorem comp {g : B →+* C} {f : A →+* B} (hg : g.FiniteType) (hf : f.FiniteType) :
     (g.comp f).FiniteType := by
-  letI algInst : Algebra A B := f.toAlgebra
-  letI algInst : Algebra B C := g.toAlgebra
-  letI algInst : Algebra A C := (g.comp f).toAlgebra
-  letI scalarTowerInst : IsScalarTower A B C :=
-    IsScalarTower.of_algebraMap_eq' (Eq.refl (algebraMap A C))
   algebraize_only [f, g, g.comp f]
   exact Algebra.FiniteType.trans hf hg
 
@@ -263,12 +253,6 @@ alias _root_.RingHom.Finite.to_finiteType := of_finite
 
 theorem of_comp_finiteType {f : A →+* B} {g : B →+* C} (h : (g.comp f).FiniteType) :
     g.FiniteType := by
-  letI algInst : Algebra A B := f.toAlgebra
-  letI algInst : Algebra B C := g.toAlgebra
-  letI algInst : Algebra A C := (g.comp f).toAlgebra
-  letI scalarTowerInst : IsScalarTower A B C :=
-    IsScalarTower.of_algebraMap_eq' (Eq.refl (algebraMap A C))
-  letI : Algebra.FiniteType A C := h
   algebraize [f, g, g.comp f]
   exact Algebra.FiniteType.of_restrictScalars_finiteType A B C
 

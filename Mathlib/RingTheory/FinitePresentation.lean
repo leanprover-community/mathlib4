@@ -416,9 +416,6 @@ variable {A}
 
 theorem comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FinitePresentation) (hg : Surjective g)
     (hker : g.ker.FG) : (g.comp f).FinitePresentation := by
-  letI algInst : Algebra A B := f.toAlgebra
-  letI algInst : Algebra A C := (g.comp f).toAlgebra
-  letI : Algebra.FinitePresentation A B := hf
   algebraize [f, g.comp f]
   exact Algebra.FinitePresentation.of_surjective
     (f :=
@@ -438,26 +435,12 @@ theorem of_finiteType [IsNoetherianRing A] {f : A →+* B} : f.FiniteType ↔ f.
 theorem comp {g : B →+* C} {f : A →+* B} (hg : g.FinitePresentation) (hf : f.FinitePresentation) :
     (g.comp f).FinitePresentation := by
   -- Porting note: specify `Algebra` instances to get `SMul`
-  letI algInst : Algebra A B := f.toAlgebra
-  letI algInst : Algebra B C := g.toAlgebra
-  letI algInst : Algebra A C := (g.comp f).toAlgebra
-  letI scalarTowerInst : IsScalarTower A B C :=
-    IsScalarTower.of_algebraMap_eq' (Eq.refl (algebraMap A C))
-  letI : Algebra.FinitePresentation A B := hf
-  letI : Algebra.FinitePresentation B C := hg
   algebraize [f, g, g.comp f]
   exact Algebra.FinitePresentation.trans A B C
 
 theorem of_comp_finiteType (f : A →+* B) {g : B →+* C} (hg : (g.comp f).FinitePresentation)
     (hf : f.FiniteType) : g.FinitePresentation := by
   -- Porting note: need to specify some instances
-  letI algInst : Algebra A B := f.toAlgebra
-  letI algInst : Algebra B C := g.toAlgebra
-  letI algInst : Algebra A C := (g.comp f).toAlgebra
-  letI scalarTowerInst : IsScalarTower A B C :=
-    IsScalarTower.of_algebraMap_eq' (Eq.refl (algebraMap A C))
-  letI : Algebra.FiniteType A B := hf
-  letI : Algebra.FinitePresentation A C := hg
   algebraize [f, g, g.comp f]
   exact Algebra.FinitePresentation.of_restrict_scalars_finitePresentation A B C
 
