@@ -137,4 +137,41 @@ initialize addLinter unusedVariableCommandLinter
 
 end UnusedVariableCommand
 
+/-- The "shadow" linter emits a warning when there are assumptions with repeated names. -/
+register_option linter.shadow : Bool := {
+  defValue := true
+  descr := "enable the shadow linter"
+}
+
+/-- extracts the binder names of nested `forallE`s.  Should deal better with instances. -/
+def getForAllBinderNames : Expr → Array Name
+  | .forallE name _ rest _ => #[name] ++ getForAllBinderNames rest
+  | _ => #[]
+
+namespace Shadow
+
+@[inherit_doc Mathlib.Linter.linter.shadow]
+def shadowLinter : Linter where run := withSetOptionIn fun stx ↦ do
+  unless Linter.getLinterValue linter.shadow (← getOptions) do
+    return
+  if (← get).messages.hasErrors then
+    return
+  unless #[``declaration, `lemma].contains stx.getKind do
+    return
+  let decl? := (stx.find? (·.isOfKind ``Lean.Parser.Command.declId)).getD default
+  let decl := ((← getEnv).find? decl?[0].getId).getD default
+  let type := decl.type
+  --type.inspect
+  let bindNames := getForAllBinderNames type
+  let mut reps := #[]
+  let mut seen : NameSet := {}
+  for nm in bindNames do
+    if seen.contains nm then reps := reps.push nm else seen := seen.insert nm
+  if ! reps.isEmpty then
+    Linter.logLint linter.shadow stx m!"Repeated binder names: {reps}"
+
+initialize addLinter shadowLinter
+
+end Shadow
+
 end Mathlib.Linter
