@@ -1612,16 +1612,6 @@ theorem image2_iInter_subset_right (s : Set α) (t : ι → Set β) :
   simp_rw [image2_subset_iff, mem_iInter]
   exact fun x hx y hy i => mem_image2_of_mem hx (hy _)
 
-theorem image2_sInter_subset_left (S : Set (Set α)) (t : Set β) :
-    image2 f (⋂₀ S) t ⊆ ⋂ s ∈ S, image2 f s t := by
-  simp_rw [image2_subset_iff, mem_sInter]
-  exact fun x hx y hy i => by aesop
-
-theorem image2_sInter_subset_right (s : Set α) (T : Set (Set β)) :
-    image2 f s (⋂₀ T) ⊆ ⋂ t ∈ T, image2 f s t := by
-  simp_rw [image2_subset_iff, mem_iInter]
-  exact fun x hx y hy i => by aesop
-
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem image2_iInter₂_subset_left (s : ∀ i, κ i → Set α) (t : Set β) :
@@ -1635,6 +1625,16 @@ theorem image2_iInter₂_subset_right (s : Set α) (t : ∀ i, κ i → Set β) 
     image2 f s (⋂ (i) (j), t i j) ⊆ ⋂ (i) (j), image2 f s (t i j) := by
   simp_rw [image2_subset_iff, mem_iInter]
   exact fun x hx y hy i j => mem_image2_of_mem hx (hy _ _)
+
+theorem image2_sInter_subset_left (S : Set (Set α)) (t : Set β) :
+    image2 f (⋂₀ S) t ⊆ ⋂ s ∈ S, image2 f s t := by
+  rw [sInter_eq_biInter]
+  exact image2_iInter₂_subset_left ..
+
+theorem image2_sInter_subset_right (s : Set α) (T : Set (Set β)) :
+    image2 f s (⋂₀ T) ⊆ ⋂ t ∈ T, image2 f s t := by
+  rw [sInter_eq_biInter]
+  exact image2_iInter₂_subset_right ..
 
 theorem prod_eq_biUnion_left : s ×ˢ t = ⋃ a ∈ s, (fun b => (a, b)) '' t := by
   rw [iUnion_image_left, image2_mk_eq_prod]
