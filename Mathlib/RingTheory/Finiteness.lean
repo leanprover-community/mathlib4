@@ -780,11 +780,14 @@ theorem of_surjective (f : A →+* B) (hf : Surjective f) : f.Finite :=
   Module.Finite.of_surjective (Algebra.linearMap A B) hf
 
 theorem comp {g : B →+* C} {f : A →+* B} (hg : g.Finite) (hf : f.Finite) : (g.comp f).Finite := by
-  algebraize [f, g, g.comp f]
+  algebraize_only [f, g, g.comp f]
+  letI : Module.Finite B C := hg
+  letI : Module.Finite A B := hf
   exact Module.Finite.trans B C
 
 theorem of_comp_finite {f : A →+* B} {g : B →+* C} (h : (g.comp f).Finite) : g.Finite := by
-  algebraize [f, g, g.comp f]
+  algebraize_only [f, g, g.comp f]
+  letI : Module.Finite A C := h
   exact Module.Finite.of_restrictScalars_finite A B C
 
 end Finite

@@ -253,7 +253,8 @@ alias _root_.RingHom.Finite.to_finiteType := of_finite
 
 theorem of_comp_finiteType {f : A →+* B} {g : B →+* C} (h : (g.comp f).FiniteType) :
     g.FiniteType := by
-  algebraize [f, g, g.comp f]
+  algebraize_only [f, g, g.comp f]
+  letI : Algebra.FiniteType A C := h
   exact Algebra.FiniteType.of_restrictScalars_finiteType A B C
 
 end FiniteType

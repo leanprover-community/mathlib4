@@ -131,7 +131,8 @@ def addAlgebraInstanceFromRingHom (f ft : Expr) : TacticM Unit := withMainContex
   let (_, l) := ft.getAppFnArgs
   -- The type of the corresponding algebra instance
   let alg ← mkAppOptM ``Algebra #[l[0]!, l[1]!, none, none]
-  unless (← synthInstance? alg).isSome do -- If the instance already exists, we do not do anything
+  -- If the instance already exists, we do not do anything
+  -- unless (← synthInstance? alg).isSome do
   liftMetaTactic fun mvarid => do
     let nm ← mkFreshBinderNameForTactic `algInst
     let mvar ← mvarid.define nm alg (← mkAppM ``RingHom.toAlgebra #[f])
@@ -143,7 +144,8 @@ the instance `IsScalarTower A B C` to the context (if it does not already exist)
 def addIsScalarTowerInstanceFromRingHomComp (fn : Expr) : TacticM Unit := withMainContext do
   let (_, l) := fn.getAppFnArgs
   let tower ← mkAppOptM ``IsScalarTower #[l[0]!, l[1]!, l[2]!, none, none, none]
-  unless (← synthInstance? tower).isSome do -- If the instance already exists, we do not do anything
+  -- If the instance already exists, we do not do anything
+  -- unless (← synthInstance? tower).isSome do
   liftMetaTactic fun mvarid => do
     let nm ← mkFreshBinderNameForTactic `scalarTowerInst
     let h ← mkFreshExprMVar (← mkAppM ``Eq #[
