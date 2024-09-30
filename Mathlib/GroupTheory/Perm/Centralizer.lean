@@ -2,14 +2,12 @@
 Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
-
 -/
 
 import Mathlib.GroupTheory.NoncommCoprod
 import Mathlib.GroupTheory.NoncommPiCoprod
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
--- import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.Perm.ConjAct
 import Mathlib.GroupTheory.Perm.Cycle.PossibleTypes
 import Mathlib.GroupTheory.Perm.DomMulAct
@@ -109,9 +107,9 @@ lemma MonoidHom.commute_noncommPiCoprod
     Commute p (MonoidHom.noncommPiCoprod f comm h) := by
   dsimp only [MonoidHom.noncommPiCoprod, MonoidHom.coe_mk, OneHom.coe_mk]
   apply Finset.noncommProd_induction
-  exact fun x y ↦ Commute.mul_right
-  exact Commute.one_right _
-  exact fun x _ ↦ hcomm x (h x)
+  · exact fun x y ↦ Commute.mul_right
+  · exact Commute.one_right _
+  · exact fun x _ ↦ hcomm x (h x) 
 
 @[to_additive]
 lemma MonoidHom.noncommPiCoprod_apply {ι : Type*} [Fintype ι]
@@ -175,25 +173,7 @@ lemma Subgroup.mem_centralizer_singleton_iff {k : G} :
   simp only [mem_centralizer_iff, Set.mem_singleton_iff, forall_eq]
   rw [eq_comm]
 
-
 end
-
-section Disjoint
-
-lemma Set.disjoint_of_le_iff_left_eq_empty {α : Type*} {u v : Set α} (h : u ⊆ v) :
-    Disjoint u v ↔ u = ∅ := by
-  simp only [disjoint_iff, inf_eq_left.mpr h, Set.bot_eq_empty]
-
-lemma Finset.disjoint_of_le_iff_left_eq_empty {α : Type*} {u v : Set α} (h : u ⊆ v) :
-    Disjoint u v ↔ u = ∅ := by
-  simp only [disjoint_iff, inf_eq_left.mpr h, Set.bot_eq_empty]
-
-lemma disjoint_of_le_iff_left_eq_bot
-    {α : Type*} [SemilatticeInf α] [OrderBot α] {a b : α} (h : a ≤ b) :
-    Disjoint a b ↔ a = ⊥ := by
-  simp only [disjoint_iff, inf_eq_left.mpr h]
-
-end Disjoint
 
 open scoped Pointwise
 
@@ -283,7 +263,6 @@ lemma support_zpowers_of_mem_cycleFactorsFinset_le
   simp only [← hm]
   apply subset_trans (support_zpow_le _ _) (mem_cycleFactorsFinset_support_le c.prop)
 
-
 theorem support_ofSubtype {p : α → Prop} [DecidablePred p]
     (u : Perm (Subtype p)) :
     (ofSubtype u).support = u.support.map (Function.Embedding.subtype p) := by
@@ -293,22 +272,6 @@ theorem support_ofSubtype {p : α → Prop} [DecidablePred p]
   by_cases hx : p x
   · simp only [forall_prop_of_true hx, ofSubtype_apply_of_mem u hx, ← Subtype.coe_inj]
   · simp only [forall_prop_of_false hx, true_iff, ofSubtype_apply_of_not_mem u hx]
-
-/- theorem Disjoint.disjoint_noncommProd' {ι : Type*} {k : ι → Perm α} {s : Finset ι}
-    (hs : Set.Pairwise s fun i j ↦ Disjoint (k i) (k j))
-    (f : Perm α) (hf : ∀ i ∈ s, f.Disjoint (k i)) :
-    f.Disjoint (s.noncommProd k (hs.imp (fun _ _ ↦ Perm.Disjoint.commute))) := by
-  classical
-  induction s using Finset.induction_on with
-  | empty => simp
-  | @insert i s hi hrec =>
-    have hs' : (s : Set ι).Pairwise fun i j ↦ Disjoint (k i) (k j) :=
-      hs.mono (by simp only [Finset.coe_insert, Set.subset_insert])
-    rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi]
-    apply Equiv.Perm.Disjoint.mul_right (hf i _) (hrec hs' _)
-    · simp
-    · intro j hj
-      exact hf j (Finset.mem_insert_of_mem hj) -/
 
 theorem Disjoint.support_noncommProd
     {ι : Type*} {k : ι → Perm α} {s : Finset ι}
