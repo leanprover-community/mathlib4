@@ -273,7 +273,7 @@ protected theorem tsub_eq_of_eq_add_rev (hb : AddLECancellable b) (h : a = b + c
 /-- Weaker version of `AddLECancellable.tsub_eq_of_eq_add_rev` assuming that `a = b + c` itself is
 cancellable rather than `b`. -/
 protected lemma tsub_eq_of_eq_add_rev' [CovariantClass α α (· + ·) (· ≤ ·)]
-    (ha : AddLECancellable a) (h : a = b + c) : a - b = c := 
+    (ha : AddLECancellable a) (h : a = b + c) : a - b = c :=
   ha.tsub_eq_of_eq_add' <| by rw [add_comm, h]
 
 @[simp]
