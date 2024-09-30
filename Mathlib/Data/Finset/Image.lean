@@ -695,6 +695,12 @@ theorem fin_mono {n} : Monotone (Finset.fin n) := fun s t h x => by simpa using 
 theorem fin_map {n} {s : Finset ℕ} : (s.fin n).map Fin.valEmbedding = s.filter (· < n) := by
   simp [Finset.fin, Finset.map_map]
 
+/--
+If a finset `t` is a subset of the image of another finset `s` under `f`, then it is equal to the
+image of a subset of `s`.
+
+For the version where `s` is a set, see `subset_set_image_iff`.
+-/
 theorem subset_image_iff [DecidableEq β] {s : Finset α} {t : Finset β} {f : α → β} :
     t ⊆ s.image f ↔ ∃ s' : Finset α, s' ⊆ s ∧ s'.image f = t := by
   refine ⟨fun ht => ?_, fun ⟨s', hs', h⟩ => h ▸ image_subset_image hs'⟩
