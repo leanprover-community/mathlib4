@@ -139,7 +139,7 @@ theorem length_mul (a b : FreeMonoid α) : (a * b).length = a.length + b.length 
   List.length_append _ _
 
 @[to_additive]
-theorem of_neq_one (a : α) : of a ≠ 1 := by
+theorem of_ne_one (a : α) : of a ≠ 1 := by
   intro h
   have := congrArg FreeMonoid.length h
   simp only [length_of, length_one, Nat.succ_ne_self] at this
