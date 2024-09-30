@@ -47,9 +47,9 @@ def noncommCoprod (comm : ∀ m n, Commute (f m) (g n)) : M × N →ₙ* P where
   map_mul' mn mn' := by simpa using (comm _ _).mul_mul_mul_comm _ _
 
 /-- Variant of `MulHom.noncommCoprod_apply` with the product written in the other direction` -/
-@[to_additive 
+@[to_additive
   "Variant of `AddHom.noncommCoprod_apply`, with the product written in the other direction"]
-theorem noncommCoprod_apply' (comm) (mn : M × N) : 
+theorem noncommCoprod_apply' (comm) (mn : M × N) :
     (f.noncommCoprod g comm) mn = g mn.2 * f mn.1 := by
   rw [← comm, noncommCoprod_apply]
 
@@ -82,7 +82,7 @@ def noncommCoprod : M × N →* P where
   __ := f.toMulHom.noncommCoprod g.toMulHom comm
 
 /-- Variant of `MonoidHom.noncomCoprod_apply` with the product written in the other direction` -/
-@[to_additive 
+@[to_additive
   "Variant of `AddMonoidHom.noncomCoprod_apply` with the product written in the other direction"]
 theorem noncommCoprod_apply' (comm) (mn : M × N) :
     (f.noncommCoprod g comm) mn = g mn.2 * f mn.1 := by

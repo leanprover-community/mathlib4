@@ -115,12 +115,12 @@ theorem Subgroup.nat_card_centralizer_nat_card_stabilizer :
   simp only [← SetLike.coe_sort_coe, Set.Nat.card_coe_set_eq]
   rw [Subgroup.centralizer_eq_comap_stabilizer, Subgroup.coe_comap,
     MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_coe]
-  -- I need to use erw 
+  -- I need to use erw
   erw [Set.preimage_equiv_eq_image_symm]
-  exact Set.ncard_image_of_injective _ ConjAct.ofConjAct.injective 
+  exact Set.ncard_image_of_injective _ ConjAct.ofConjAct.injective
   -- Other approaches
   /- Approach 2, avoids `erw`, but is awkward
-  suffices ConjAct.toConjAct ⁻¹' (MulAction.stabilizer  (ConjAct G) g : Set (ConjAct G)) = 
+  suffices ConjAct.toConjAct ⁻¹' (MulAction.stabilizer  (ConjAct G) g : Set (ConjAct G)) =
     ConjAct.toConjAct.symm '' (MulAction.stabilizer (ConjAct G) g : Set (ConjAct G)) by
     rw [this]
     exact Set.ncard_image_of_injective _ ConjAct.ofConjAct.injective
@@ -129,7 +129,7 @@ theorem Subgroup.nat_card_centralizer_nat_card_stabilizer :
   -- Approach 3
   /- rw [Set.preimage_equiv_eq_image_symm] -- does not work, even with full arguments -/
   -- Approach 4
-  /- rw [Set.preimage_equiv_eq_image_symm ((MulAction.stabilizer (ConjAct G) g) : Set (ConjAct G)) 
+  /- rw [Set.preimage_equiv_eq_image_symm ((MulAction.stabilizer (ConjAct G) g) : Set (ConjAct G))
     (ConjAct.toConjAct.toEquiv)] -/
 
 variable {g} in
