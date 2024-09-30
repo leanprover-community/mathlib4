@@ -2361,11 +2361,11 @@ open UniformSpace Function
 
 instance toInner {𝕜' E' : Type*} [TopologicalSpace 𝕜'] [UniformSpace E'] [Inner 𝕜' E'] :
     Inner 𝕜' (Completion E') where
-  inner := curry <| (denseInducing_coe.prod denseInducing_coe).extend (uncurry inner)
+  inner := curry <| (isDenseInducing_coe.prod isDenseInducing_coe).extend (uncurry inner)
 
 @[simp]
 theorem inner_coe (a b : E) : inner (a : Completion E) (b : Completion E) = (inner a b : 𝕜) :=
-  (denseInducing_coe.prod denseInducing_coe).extend_eq
+  (isDenseInducing_coe.prod isDenseInducing_coe).extend_eq
     (continuous_inner : Continuous (uncurry inner : E × E → 𝕜)) (a, b)
 
 protected theorem continuous_inner :
@@ -2378,9 +2378,9 @@ protected theorem continuous_inner :
   rw [Completion.toInner, inner, uncurry_curry _]
   change
     Continuous
-      (((denseInducing_toCompl E).prod (denseInducing_toCompl E)).extend fun p : E × E =>
+      (((isDenseInducing_toCompl E).prod (isDenseInducing_toCompl E)).extend fun p : E × E =>
         inner' p.1 p.2)
-  exact (denseInducing_toCompl E).extend_Z_bilin (denseInducing_toCompl E) this
+  exact (isDenseInducing_toCompl E).extend_Z_bilin (isDenseInducing_toCompl E) this
 
 protected theorem Continuous.inner {α : Type*} [TopologicalSpace α] {f g : α → Completion E}
     (hf : Continuous f) (hg : Continuous g) : Continuous (fun x : α => inner (f x) (g x) : α → 𝕜) :=

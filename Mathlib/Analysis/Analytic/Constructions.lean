@@ -649,6 +649,61 @@ lemma AnalyticOnNhd.pow {f : E → A} {s : Set E} (hf : AnalyticOnNhd 𝕜 f s) 
     AnalyticOnNhd 𝕜 (fun x ↦ f x ^ n) s :=
   fun _ m ↦ (hf _ m).pow n
 
+
+/-!
+### Restriction of scalars
+-/
+
+section
+
+variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+  [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
+  [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
+  {f : E → F} {p : FormalMultilinearSeries 𝕜' E F} {x : E} {s : Set E} {r : ℝ≥0∞}
+
+lemma HasFPowerSeriesWithinOnBall.restrictScalars (hf : HasFPowerSeriesWithinOnBall f p s x r) :
+    HasFPowerSeriesWithinOnBall f (p.restrictScalars 𝕜) s x r :=
+  ⟨hf.r_le.trans (FormalMultilinearSeries.radius_le_of_le (fun n ↦ by simp)), hf.r_pos, hf.hasSum⟩
+
+lemma HasFPowerSeriesOnBall.restrictScalars (hf : HasFPowerSeriesOnBall f p x r) :
+    HasFPowerSeriesOnBall f (p.restrictScalars 𝕜) x r :=
+  ⟨hf.r_le.trans (FormalMultilinearSeries.radius_le_of_le (fun n ↦ by simp)), hf.r_pos, hf.hasSum⟩
+
+lemma HasFPowerSeriesWithinAt.restrictScalars (hf : HasFPowerSeriesWithinAt f p s x) :
+    HasFPowerSeriesWithinAt f (p.restrictScalars 𝕜) s x := by
+  rcases hf with ⟨r, hr⟩
+  exact ⟨r, hr.restrictScalars⟩
+
+lemma HasFPowerSeriesAt.restrictScalars (hf : HasFPowerSeriesAt f p x) :
+    HasFPowerSeriesAt f (p.restrictScalars 𝕜) x := by
+  rcases hf with ⟨r, hr⟩
+  exact ⟨r, hr.restrictScalars⟩
+
+lemma AnalyticWithinAt.restrictScalars (hf : AnalyticWithinAt 𝕜' f s x) :
+    AnalyticWithinAt 𝕜 f s x := by
+  rcases hf with ⟨p, hp⟩
+  exact ⟨p.restrictScalars 𝕜, hp.restrictScalars⟩
+
+lemma AnalyticAt.restrictScalars (hf : AnalyticAt 𝕜' f x) :
+    AnalyticAt 𝕜 f x := by
+  rcases hf with ⟨p, hp⟩
+  exact ⟨p.restrictScalars 𝕜, hp.restrictScalars⟩
+
+lemma AnalyticOn.restrictScalars (hf : AnalyticOn 𝕜' f s) :
+    AnalyticOn 𝕜 f s :=
+  fun x hx ↦ (hf x hx).restrictScalars
+
+lemma AnalyticOnNhd.restrictScalars (hf : AnalyticOnNhd 𝕜' f s) :
+    AnalyticOnNhd 𝕜 f s :=
+  fun x hx ↦ (hf x hx).restrictScalars
+
+end
+
+
+/-!
+### Inversion is analytic
+-/
+
 section Geometric
 
 variable (𝕜 A : Type*) [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
@@ -756,6 +811,11 @@ lemma analyticAt_inverse {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     · simp only [Units.inv_eq_val_inv, Units.inv_mul, sub_self, f2, f3]
       exact analyticAt_inverse_one_sub 𝕜 A
     · exact analyticAt_const.sub (analyticAt_const.mul analyticAt_id)
+
+lemma analyticOnNhd_inverse {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A] :
+    AnalyticOnNhd 𝕜 Ring.inverse {x : A | IsUnit x} :=
+  fun _ hx ↦ analyticAt_inverse (IsUnit.unit hx)
 
 lemma hasFPowerSeriesOnBall_inv_one_sub
     (𝕜 𝕝 : Type*) [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝] :
