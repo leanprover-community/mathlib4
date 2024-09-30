@@ -25,7 +25,8 @@ reflexive.
 * `IsReflexivePair` is the predicate that f and g have a common section.
 * `WalkingReflexivePair` is the diagram indexing pairs with a common section.
 * A `reflexiveCofork` is a cocone on a diagram indexed by `WalkingReflexivePair`.
-* `WalkingReflexivePair.inclusionWalkingParallelPair` is the functor forgetting the common section.
+* `WalkingReflexivePair.inclusionWalkingReflexivePair` is the inclustion functor.
+  It acts on reflexive pair as forgetting the common section.
 * `HasReflexiveCoequalizers` is the predicate that a category has all colimits of reflexive pairs.
 * `ofIsReflexivePairColimitEquiv`: an isomorphism promoting the coequalizer of a reflexive pair to
   the colimit of a diagram out of the walking reflexive pair
@@ -33,7 +34,7 @@ reflexive.
 ## Main statements
 
 * `IsKernelPair.isReflexivePair`: A kernel pair is a reflexive pair
-* `fromWalkingParallelPair_final`: The functor forgetting the reflexion is final.
+* `WalkingParallelPair.inclusionWalkingReflexivePair_final`: The inclusion functor is final.
 * `hasReflexiveCoequalizers_iff`: A category has coequalizers of reflexive pairs if and only iff it
   has all colimits of shape `WalkingReflexivePair`.
 
@@ -254,7 +255,7 @@ theorem walkingReflexivePairHom_right_comp_reflexion : right.comp reflexion = ri
 namespace WalkingParallelPair
 
 /-- The forgetful functor forgetting the common section -/
-def inclusionWalkingParallelPair : WalkingParallelPair ⥤ WalkingReflexivePair :=
+def inclusionWalkingReflexivePair : WalkingParallelPair ⥤ WalkingReflexivePair :=
   { obj := fun x => match x with
       | one => WalkingReflexivePair.zero
       | zero => WalkingReflexivePair.one
@@ -268,34 +269,34 @@ def inclusionWalkingParallelPair : WalkingParallelPair ⥤ WalkingReflexivePair 
 variable {C : Type u} [Category.{v} C]
 
 @[simp]
-lemma whisker_inclusionWalkingParallelPair_zero (F : WalkingReflexivePair ⥤ C) :
-    F.obj (inclusionWalkingParallelPair.obj WalkingParallelPair.one) =
+lemma whisker_inclusionWalkingReflexivePair_zero (F : WalkingReflexivePair ⥤ C) :
+    F.obj (inclusionWalkingReflexivePair.obj WalkingParallelPair.one) =
       F.obj WalkingReflexivePair.zero :=
   rfl
 
 @[simp]
-lemma whisker_inclusionWalkingParallelPair_one (F : WalkingReflexivePair ⥤ C) :
-    F.obj (inclusionWalkingParallelPair.obj WalkingParallelPair.zero) =
+lemma whisker_inclusionWalkingReflexivePair_one (F : WalkingReflexivePair ⥤ C) :
+    F.obj (inclusionWalkingReflexivePair.obj WalkingParallelPair.zero) =
       F.obj WalkingReflexivePair.one :=
   rfl
 
 @[simp]
-lemma whisker_inclusionWalkingParallelPair_left (F : WalkingReflexivePair ⥤ C) :
-    F.map (inclusionWalkingParallelPair.map WalkingParallelPairHom.left) = F.map left := rfl
+lemma whisker_inclusionWalkingReflexivePair_left (F : WalkingReflexivePair ⥤ C) :
+    F.map (inclusionWalkingReflexivePair.map WalkingParallelPairHom.left) = F.map left := rfl
 
 @[simp]
-lemma whisker_inclusionWalkingParallelPair_right (F : WalkingReflexivePair ⥤ C) :
-    F.map (inclusionWalkingParallelPair.map WalkingParallelPairHom.right) = F.map right := rfl
+lemma whisker_inclusionWalkingReflexivePair_right (F : WalkingReflexivePair ⥤ C) :
+    F.map (inclusionWalkingReflexivePair.map WalkingParallelPairHom.right) = F.map right := rfl
 
 /-- The forgetful functor is a final functor -/
-instance inclusionWalkingParallelPair_final : Functor.Final inclusionWalkingParallelPair := by
+instance inclusionWalkingReflexivePair_final : Functor.Final inclusionWalkingReflexivePair := by
   constructor
-  set e₀ : (StructuredArrow WalkingReflexivePair.one inclusionWalkingParallelPair) :=
+  set e₀ : (StructuredArrow WalkingReflexivePair.one inclusionWalkingReflexivePair) :=
     StructuredArrow.mk (Y := WalkingParallelPair.zero) (id WalkingReflexivePair.one)
-  set e₁ : (StructuredArrow WalkingReflexivePair.zero inclusionWalkingParallelPair) :=
+  set e₁ : (StructuredArrow WalkingReflexivePair.zero inclusionWalkingReflexivePair) :=
     StructuredArrow.mk (Y := WalkingParallelPair.one) (id WalkingReflexivePair.zero)
   intro x
-  have h : Inhabited (StructuredArrow x inclusionWalkingParallelPair) := by
+  have h : Inhabited (StructuredArrow x inclusionWalkingReflexivePair) := by
     · constructor
       cases x with
       | one => exact e₀
@@ -305,7 +306,7 @@ instance inclusionWalkingParallelPair_final : Functor.Final inclusionWalkingPara
               intro p h₁ h₂ t
               rcases t with ⟨l, y, f⟩
               cases y <;> cases f
-              · set r : StructuredArrow WalkingReflexivePair.zero inclusionWalkingParallelPair :=
+              · set r : StructuredArrow WalkingReflexivePair.zero inclusionWalkingReflexivePair :=
                   StructuredArrow.mk (Y := WalkingParallelPair.zero) reflexion
                 change r ∈ p
                 suffices f : r ⟶  e₁ by exact (h₂ f).mpr h₁
@@ -314,9 +315,9 @@ instance inclusionWalkingParallelPair_final : Functor.Final inclusionWalkingPara
     | one => apply IsConnected.of_induct (j₀ := e₀)
              intro p h₁ h₂ t
              rcases t with ⟨l, y, f⟩
-             set rₗ : StructuredArrow WalkingReflexivePair.one inclusionWalkingParallelPair :=
+             set rₗ : StructuredArrow WalkingReflexivePair.one inclusionWalkingReflexivePair :=
                 StructuredArrow.mk (Y := WalkingParallelPair.one) left
-             set rᵣ : StructuredArrow WalkingReflexivePair.one inclusionWalkingParallelPair :=
+             set rᵣ : StructuredArrow WalkingReflexivePair.one inclusionWalkingReflexivePair :=
                 StructuredArrow.mk (Y := WalkingParallelPair.one) right
              have hrₗ : rₗ ∈ p := by
               · suffices f : e₀ ⟶  rₗ by exact (h₂ f).mp h₁
@@ -329,11 +330,11 @@ instance inclusionWalkingParallelPair_final : Functor.Final inclusionWalkingPara
              · exact h₁
              · exact hrₗ
              · exact hrᵣ
-             · set v : StructuredArrow WalkingReflexivePair.one inclusionWalkingParallelPair :=
+             · set v : StructuredArrow WalkingReflexivePair.one inclusionWalkingReflexivePair :=
                 StructuredArrow.mk (Y := WalkingParallelPair.zero) left_reflexion
                suffices f : v ⟶  rₗ by exact (h₂ f).mpr hrₗ
                exact StructuredArrow.homMk (WalkingParallelPairHom.left)
-             · set v : StructuredArrow WalkingReflexivePair.one inclusionWalkingParallelPair :=
+             · set v : StructuredArrow WalkingReflexivePair.one inclusionWalkingReflexivePair :=
                 StructuredArrow.mk (Y := WalkingParallelPair.zero) right_reflexion
                suffices f : v ⟶  rᵣ by exact (h₂ f).mpr hrᵣ
                exact StructuredArrow.homMk (WalkingParallelPairHom.right)
@@ -382,9 +383,10 @@ noncomputable def ofIsReflexivePair (f g : A ⟶ B) [IsReflexivePair f g] :
 
 /-- The natural isomorphism between the diagram obtained by forgetting the reflexion of
 `ofIsReflexivePair f g` and the original parallel pair. -/
-noncomputable def inclusionWalkingParallelPairOfIsReflexivePairIso
+noncomputable def inclusionWalkingReflexivePairOfIsReflexivePairIso
     (f g : A ⟶ B) [IsReflexivePair f g] :
-    WalkingParallelPair.inclusionWalkingParallelPair ⋙ (ofIsReflexivePair f g) ≅ parallelPair f g :=
+    WalkingParallelPair.inclusionWalkingReflexivePair ⋙ (ofIsReflexivePair f g) ≅
+      parallelPair f g :=
   diagramIsoParallelPair _
 
 end Limits
@@ -448,7 +450,7 @@ lemma app_one_eq_π (G : ReflexiveCofork F) : G.ι.app zero = G.π := rfl
 /-- The underlying `Cofork` of a `ReflexiveCofork`. -/
 def toCofork (G : ReflexiveCofork F) : (Cofork (F.map left) (F.map right)) :=
   Cocones.precompose (diagramIsoParallelPair (_ ⋙ F)).symm.hom |>.obj
-    <| G.whisker WalkingParallelPair.inclusionWalkingParallelPair
+    <| G.whisker WalkingParallelPair.inclusionWalkingReflexivePair
 
 @[simp]
 lemma toCofork.π (G : ReflexiveCofork F) : Cofork.π (G.toCofork) = G.π := by
@@ -459,31 +461,31 @@ end ReflexiveCofork
 
 /-- Forgetting the reflexion yields an equivalence between cocones over a bundled reflexive pair and
 coforks on the underlying parallel pair. -/
-noncomputable def inclusionWalkingParallelPairEquivCocone :
+noncomputable def inclusionWalkingReflexivePairEquivCocone :
     Cocone F ≌ Cofork (F.map left) (F.map right) :=
   (Functor.Final.coconesEquiv _ F).symm.trans
     (Cocones.precomposeEquivalence
-      (diagramIsoParallelPair (WalkingParallelPair.inclusionWalkingParallelPair ⋙ F))).symm
+      (diagramIsoParallelPair (WalkingParallelPair.inclusionWalkingReflexivePair ⋙ F))).symm
 
 instance reflexivePair_hasColimit_of_hasCoequalizer
     [h : HasCoequalizer (F.map left) (F.map right)] : HasColimit F := by
-  suffices _ : HasColimit (WalkingParallelPair.inclusionWalkingParallelPair ⋙ F) by
-    · apply Functor.Final.hasColimit_of_comp WalkingParallelPair.inclusionWalkingParallelPair
+  suffices _ : HasColimit (WalkingParallelPair.inclusionWalkingReflexivePair ⋙ F) by
+    · apply Functor.Final.hasColimit_of_comp WalkingParallelPair.inclusionWalkingReflexivePair
   exact @Limits.hasColimitOfIso _ _ _ _ _ _ h <| diagramIsoParallelPair _
 
 /-- The colimit of a functor out of the walking reflexive pair is the same as the colimit of the
 underlying parallel pair. -/
-noncomputable def inclusionWalkingParallelPairColimitEquiv
+noncomputable def inclusionWalkingReflexivePairColimitEquiv
     [HasCoequalizer (F.map left) (F.map right)] :
     colimit F ≅ coequalizer (F.map left) (F.map right) :=
-  (Functor.Final.colimitIso WalkingParallelPair.inclusionWalkingParallelPair F).symm.trans
+  (Functor.Final.colimitIso WalkingParallelPair.inclusionWalkingReflexivePair F).symm.trans
     <| HasColimit.isoOfNatIso
       <| diagramIsoParallelPair
-        <| WalkingParallelPair.inclusionWalkingParallelPair ⋙ F
+        <| WalkingParallelPair.inclusionWalkingReflexivePair ⋙ F
 
 @[simp]
-lemma inclusionWalkingParallelPairEquiv_obj (G : ReflexiveCofork F) :
-    inclusionWalkingParallelPairEquivCocone.functor.obj G = G.toCofork := rfl
+lemma inclusionWalkingReflexivePairEquiv_obj (G : ReflexiveCofork F) :
+    inclusionWalkingReflexivePairEquivCocone.functor.obj G = G.toCofork := rfl
 
 /-- A reflexive cofork is a colimit cocone if and only if the underlying cofork is. -/
 noncomputable def ReflexiveCofork.isColimitEquiv (G : ReflexiveCofork F) :
@@ -496,16 +498,16 @@ variable {A B : C} {f g : A ⟶ B} [IsReflexivePair f g]
 instance ofIsReflexivePairHasColimit_of_hasCoequalizer [HasCoequalizer f g] :
     HasColimit (ofIsReflexivePair f g) := by
   suffices _ : HasColimit
-      <| WalkingParallelPair.inclusionWalkingParallelPair ⋙ (ofIsReflexivePair f g) by
-    · apply Functor.Final.hasColimit_of_comp WalkingParallelPair.inclusionWalkingParallelPair
-  exact Limits.hasColimitOfIso <| inclusionWalkingParallelPairOfIsReflexivePairIso f g
+      <| WalkingParallelPair.inclusionWalkingReflexivePair ⋙ (ofIsReflexivePair f g) by
+    · apply Functor.Final.hasColimit_of_comp WalkingParallelPair.inclusionWalkingReflexivePair
+  exact Limits.hasColimitOfIso <| inclusionWalkingReflexivePairOfIsReflexivePairIso f g
 
 /-- The coequalizer of a reflexive pair can be promoted to the colimit of a diagram out of the
 walking reflexive pair -/
 noncomputable def ofIsReflexivePairColimitEquiv [HasCoequalizer f g] :
     colimit (ofIsReflexivePair f g) ≅ coequalizer f g :=
   (Functor.Final.colimitIso _ _).symm.trans
-    <| HasColimit.isoOfNatIso <| inclusionWalkingParallelPairOfIsReflexivePairIso _ _
+    <| HasColimit.isoOfNatIso <| inclusionWalkingReflexivePairOfIsReflexivePairIso _ _
 
 end Limits
 
@@ -528,7 +530,7 @@ theorem hasReflexiveCoequalizers_iff :
     set F := @ofIsReflexivePair _ _ _ _ _ _ h₁
     exact @Limits.hasColimitOfIso _ _ _ _ _ _
       (Functor.Final.comp_hasColimit _)
-      (diagramIsoParallelPair (WalkingParallelPair.inclusionWalkingParallelPair ⋙ F)).symm
+      (diagramIsoParallelPair (WalkingParallelPair.inclusionWalkingReflexivePair ⋙ F)).symm
   · intro h
     exact ⟨by infer_instance⟩
 
