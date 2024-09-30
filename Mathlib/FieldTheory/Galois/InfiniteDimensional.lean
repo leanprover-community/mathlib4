@@ -147,15 +147,14 @@ theorem adjoin_map [IsGalois k K] (f : K →ₐ[k] K) (s : Set K) [Finite s] :
   rw [← IntermediateField.adjoin_map, IntermediateField.normalClosure_map]
 
 @[simp]
-theorem adjoin_simple_map [IsGalois k K] (f : K →ₐ[k] K) (x : K) :
+theorem adjoin_simple_map_algHom [IsGalois k K] (f : K →ₐ[k] K) (x : K) :
     adjoin k {f x} = adjoin k {x} := by
   simpa only [Set.image_singleton] using adjoin_map f { x }
 
-/-- The `AlgEquiv` version of `adjoin_simple_map`. -/
 @[simp]
-theorem adjoin_simple_map' [IsGalois k K] (f : K ≃ₐ[k] K) (x : K) :
+theorem adjoin_simple_map_algEquiv [IsGalois k K] (f : K ≃ₐ[k] K) (x : K) :
     adjoin k {f x} = adjoin k {x} :=
-  adjoin_simple_map (f : K →ₐ[k] K) x
+  adjoin_simple_map_algHom (f : K →ₐ[k] K) x
 
 /-- The (finite) Galois group `Gal(K / k)` associated to a
 `L : FiniteGaloisIntermediateField k K` `L`. -/
