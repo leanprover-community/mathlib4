@@ -7,13 +7,14 @@ import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Topology.MetricSpace.Ultra.Basic
 
 /-!
-## Ultrametric norms
+# Ultrametric norms
 
-This file describes behavior of norms in ultrametric spaces.
+This file contains results on the behavior of norms in ultrametric spaces.
 
 ## Main results
 
-* A normed additive group has an ultrametric iff the norm is nonarchimedean
+* `IsUltrametricDist.isUltrametricDist_of_isNonarchimedean_norm`:
+  a normed additive group has an ultrametric iff the norm is nonarchimedean
 
 ## Implementation details
 
@@ -24,7 +25,7 @@ in `NNReal` is 0, so easier to make statements about maxima of empty sets.
 
 ultrametric, nonarchimedean
 -/
-open Metric IsUltrametricDist NNReal
+open Metric NNReal
 
 namespace IsUltrametricDist
 
@@ -35,14 +36,14 @@ variable {S S' ι : Type*} [SeminormedGroup S] [SeminormedGroup S'] [IsUltrametr
 @[to_additive]
 lemma norm_mul_le_max (x y : S) :
     ‖x * y‖ ≤ max ‖x‖ ‖y‖ := by
-  simpa [dist_eq_norm_div] using dist_triangle_max x 1 y⁻¹
+  simpa only [le_max_iff, dist_eq_norm_div, div_inv_eq_mul, div_one, one_mul] using
+    dist_triangle_max x 1 y⁻¹
 
 @[to_additive]
 lemma isUltrametricDist_of_forall_norm_mul_le_max_norm
-    (h : ∀ x y : S', ‖x * y‖ ≤ max ‖x‖ ‖y‖) : IsUltrametricDist S' := by
-  constructor
-  intro x y z
-  simpa [dist_eq_norm_div] using h (x / y) (y / z)
+    (h : ∀ x y : S', ‖x * y‖ ≤ max ‖x‖ ‖y‖) : IsUltrametricDist S' where
+  dist_triangle_max x y z := by
+    simpa only [dist_eq_norm_div, le_max_iff, div_mul_div_cancel] using h (x / y) (y / z)
 
 lemma isUltrametricDist_of_isNonarchimedean_norm {S' : Type*} [SeminormedAddGroup S']
     (h : IsNonarchimedean (norm : S' → ℝ)) : IsUltrametricDist S' :=
@@ -66,58 +67,38 @@ lemma isUltrametricDist_of_isNonarchimedean_nnnorm {S' : Type*} [SeminormedAddGr
 @[to_additive "All triangles are isosceles in an ultrametric normed additive group."]
 lemma norm_mul_eq_max_of_norm_ne_norm
     {x y : S} (h : ‖x‖ ≠ ‖y‖) : ‖x * y‖ = max ‖x‖ ‖y‖ := by
-  rcases le_total ‖x‖ ‖y‖ with hxy|hxy  -- instead of wlog, which would require mul_comm
-  · rw [max_eq_right hxy]
-    refine le_antisymm ((norm_mul_le_max x y).trans ?_) ?_
-    · simp [h, hxy]
-    · simpa [(lt_of_le_of_ne hxy h).not_le] using norm_mul_le_max x⁻¹ (x * y)
-  · rw [max_eq_left hxy]
-    refine le_antisymm ((norm_mul_le_max x y).trans ?_) ?_
-    · simp [h, hxy]
-    · simpa [(lt_of_le_of_ne hxy (Ne.symm h)).not_le] using norm_mul_le_max (x * y) y⁻¹
+  rw [← div_inv_eq_mul, ← dist_eq_norm_div, dist_eq_max_of_dist_ne_dist _ 1 _ (by simp [h])]
+  simp only [dist_one_right, dist_one_left, norm_inv']
 
 @[to_additive]
 lemma norm_eq_of_mul_norm_lt_max {x y : S} (h : ‖x * y‖ < max ‖x‖ ‖y‖) :
-    ‖x‖ = ‖y‖ := by
-  contrapose! h
-  rw [norm_mul_eq_max_of_norm_ne_norm h]
+    ‖x‖ = ‖y‖ :=
+  not_ne_iff.mp (h.ne ∘ norm_mul_eq_max_of_norm_ne_norm)
 
 /-- All triangles are isosceles in an ultrametric normed group. -/
 @[to_additive "All triangles are isosceles in an ultrametric normed additive group."]
 lemma nnnorm_mul_eq_max_of_nnnorm_ne_nnnorm
     {x y : S} (h : ‖x‖₊ ≠ ‖y‖₊) : ‖x * y‖₊ = max ‖x‖₊ ‖y‖₊ := by
-  rw [ne_eq] at h
-  rw [Subtype.ext_iff] at h ⊢
-  simpa using norm_mul_eq_max_of_norm_ne_norm h
+  simpa only [← NNReal.coe_inj, NNReal.coe_max] using
+    norm_mul_eq_max_of_norm_ne_norm (NNReal.coe_injective.ne h)
 
 @[to_additive]
 lemma nnnorm_eq_of_mul_nnnorm_lt_max {x y : S} (h : ‖x * y‖₊ < max ‖x‖₊ ‖y‖₊) :
-    ‖x‖₊ = ‖y‖₊ := by
-  contrapose! h
-  rw [nnnorm_mul_eq_max_of_nnnorm_ne_nnnorm h]
+    ‖x‖₊ = ‖y‖₊ :=
+  not_ne_iff.mp (h.ne ∘ nnnorm_mul_eq_max_of_nnnorm_ne_nnnorm)
 
 /-- All triangles are isosceles in an ultrametric normed group. -/
 @[to_additive "All triangles are isosceles in an ultrametric normed additive group."]
 lemma norm_div_eq_max_of_norm_div_ne_norm_div (x y z : S) (h : ‖x / y‖ ≠ ‖y / z‖) :
     ‖x / z‖ = max ‖x / y‖ ‖y / z‖ := by
-  simpa using norm_mul_eq_max_of_norm_ne_norm h
-
-/-- All triangles are isosceles in an ultrametric normed group. This is a primed lemma since
-it discusses the multiplicative norm, while the unprimed lemma is for the additive norm. -/
-@[to_additive dist_eq_max_of_dist_ne_dist "All triangles are isosceles in an ultrametric normed
-additive group."]
-lemma dist_eq_max_of_dist_ne_dist' (x y z : S) (h : dist x y ≠ dist y z) :
-    dist x z = max (dist x y) (dist y z) := by
-  simp only [dist_eq_norm_div] at h ⊢
-  exact norm_div_eq_max_of_norm_div_ne_norm_div _ _ _ h
+  simpa only [div_mul_div_cancel] using norm_mul_eq_max_of_norm_ne_norm h
 
 /-- All triangles are isosceles in an ultrametric normed group. -/
 @[to_additive "All triangles are isosceles in an ultrametric normed additive group."]
 lemma nnnorm_div_eq_max_of_nnnorm_div_ne_nnnorm_div (x y z : S) (h : ‖x / y‖₊ ≠ ‖y / z‖₊) :
     ‖x / z‖₊ = max ‖x / y‖₊ ‖y / z‖₊ := by
-  rw [ne_eq] at h
-  rw [Subtype.ext_iff] at h ⊢
-  simpa using norm_mul_eq_max_of_norm_ne_norm h
+  simpa only [← NNReal.coe_inj, NNReal.coe_max] using
+    norm_div_eq_max_of_norm_div_ne_norm_div _ _ _ (NNReal.coe_injective.ne h)
 
 @[to_additive]
 lemma nnnorm_pow_le (x : S) (n : ℕ) :
@@ -134,7 +115,7 @@ lemma norm_pow_le (x : S) (n : ℕ) :
 @[to_additive]
 lemma nnnorm_zpow_le (x : S) (z : ℤ) :
     ‖x ^ z‖₊ ≤ ‖x‖₊ := by
-  induction z <;>
+  cases z <;>
   simpa using nnnorm_pow_le _ _
 
 @[to_additive]
