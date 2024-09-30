@@ -435,7 +435,7 @@ def map_rel (e : α ≃ β) (rel : FreeMonoid α → FreeMonoid α → Prop) :
 one with underlying type α -/
 @[to_additive "given an isomorphism between α and β, pull back a relation predicate with underlying
 type β to one with underlying type α "]
-def comap_rel (e : α ≃ β) (rel : FreeMonoid β → FreeMonoid β → Prop) :
+def comapRel (e : α ≃ β) (rel : FreeMonoid β → FreeMonoid β → Prop) :
     FreeMonoid α → FreeMonoid α → Prop :=
   fun a b ↦ rel (FreeMonoid.congr_iso e a) (FreeMonoid.congr_iso e b)
 
