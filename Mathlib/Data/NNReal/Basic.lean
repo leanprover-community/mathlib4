@@ -281,7 +281,7 @@ theorem coe_multiset_prod (s : Multiset ℝ≥0) : ((s.prod : ℝ≥0) : ℝ) = 
   map_multiset_prod toRealHom s
 
 @[simp, norm_cast]
-theorem coe_sum {α} {s : Finset α} {f : α → ℝ≥0} : ↑(∑ a ∈ s, f a) = ∑ a ∈ s, (f a : ℝ) :=
+theorem coe_sum {ι : Type*} (s : Finset ι) (f : ι → ℝ≥0) : ∑ i ∈ s, f i = ∑ i ∈ s, (f i : ℝ) :=
   map_sum toRealHom _ _
 
 @[simp, norm_cast]
