@@ -297,7 +297,7 @@ This instance creates
 - a potential non-defeq diamond with the natural instance for `MeasureSpace (ULift E)`,
   which does not exist in Mathlib at the moment;
 
-- the existing instance `MeasureTheory.Measure.instMeasureSpacePUnit`.
+- a diamond with the existing instance `MeasureTheory.Measure.instMeasureSpacePUnit`.
 
 However, we've decided not to refactor until one of these diamonds starts creating issues, see
 https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Hausdorff.20measure.20normalisation
