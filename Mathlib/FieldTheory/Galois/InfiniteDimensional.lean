@@ -23,7 +23,11 @@ In a field extension `K/k`
 
 * `FiniteGaloisIntermediateField` : The type of a finite Galois intermediate field of `K/k`
 
-* `finGaloisGroup L` : For a `FiniteGaloisIntermediateField` `L`, make `Gal(L/k)` into a FiniteGrp
+* `adjoin` : The finite Galois intermediate field obtained from the normal closure of adjoining a
+  `s : Set K` to `k`.
+
+* `finGaloisGroup L` : The (finite) Galois group `Gal(K / k)` associated to a
+  `L : FiniteGaloisIntermediateField k K` `L`.
 
 * `finGaloisGroupMap` : For `FiniteGaloisIntermediateField` s `L₁` and `L₂` with `L₂ ≤ L₁`
   giving the restriction of `Gal(L₁/k)` to `Gal(L₂/k)`
@@ -108,7 +112,7 @@ instance : OrderBot (FiniteGaloisIntermediateField k K) where
 
 @[simp]
 lemma le_iff (L₁ L₂ : FiniteGaloisIntermediateField k K) :
-    L₁.toIntermediateField ≤ L₂.toIntermediateField ↔ L₁ ≤ L₂ :=
+    L₁ ≤ L₂ ↔ L₁.toIntermediateField ≤ L₂.toIntermediateField :=
   Iff.rfl
 
 variable (k) in
@@ -138,7 +142,7 @@ lemma subset_adjoin [IsGalois k K] (s : Set K) [Finite s] :
 @[simp]
 theorem adjoin_le_iff [IsGalois k K] {s : Set K} [Finite s]
     {L : FiniteGaloisIntermediateField k K} : adjoin k s ≤ L ↔ s ≤ L.toIntermediateField := by
-  simp only [← le_iff, adjoin_val, IntermediateField.normalClosure_le_iff_of_normal,
+  simp only [le_iff, adjoin_val, IntermediateField.normalClosure_le_iff_of_normal,
     IntermediateField.adjoin_le_iff, Set.le_eq_subset]
 
 @[simp, nolint simpNF]
