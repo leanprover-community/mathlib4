@@ -108,6 +108,9 @@ variable [Quantale α]
     I.e. `x ⇨ₗ y = sSup { z | z * x ≤ y }`.
 -/
 def l_residuation (x y : α) := sSup { z | z * x ≤ y }
+/-- Notation for left-residuation in quantales.
+    I.e. `x ⇨ₗ y = sSup { z | z * x ≤ y }`.
+-/
 infixr:60 " ⇨ₗ " => l_residuation
 
 /-- Left- and right- residuation operators on a quantale are similar to the Heyting operator
@@ -115,6 +118,9 @@ infixr:60 " ⇨ₗ " => l_residuation
     I.e. `x ⇨ᵣ y = sSup { z | x * z ≤ y }`.
 -/
 def r_residuation (x y : α) := sSup { z | x * z ≤ y }
+/-- Notation for right-residuation in quantales.
+    I.e. `x ⇨ᵣ y = sSup { z | x * z ≤ y }`.
+-/
 infixr:60 " ⇨ᵣ " => r_residuation
 
 end Quantale
