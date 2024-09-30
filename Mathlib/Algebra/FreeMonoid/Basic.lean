@@ -182,7 +182,7 @@ instance : Membership α (FreeMonoid α) := ⟨mem⟩
 @[to_additive]
 theorem mem_one_iff : m ∈ (1 : FreeMonoid α) ↔ False := List.mem_nil_iff _
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem mem_of {n : α} : m ∈ of n ↔ m = n := List.mem_singleton
 
 @[to_additive]
