@@ -356,10 +356,8 @@ theorem tangentMap_prod_right {p : TangentBundle I' M'} {x₀ : M} :
 theorem mfderiv_prod_eq_add {f : M × M' → M''} {p : M × M'}
     (hf : MDifferentiableAt (I.prod I') I'' f p) :
     mfderiv (I.prod I') I'' f p =
-      show E × E' →L[𝕜] E'' from
         mfderiv (I.prod I') I'' (fun z : M × M' => f (z.1, p.2)) p +
           mfderiv (I.prod I') I'' (fun z : M × M' => f (p.1, z.2)) p := by
-  dsimp only
   erw [mfderiv_comp_of_eq hf ((mdifferentiableAt_fst I I').prod_mk (mdifferentiableAt_const _ _))
       rfl,
     mfderiv_comp_of_eq hf ((mdifferentiableAt_const _ _).prod_mk (mdifferentiableAt_snd I I')) rfl,
@@ -370,6 +368,42 @@ theorem mfderiv_prod_eq_add {f : M × M' → M''} {p : M × M'}
   symm
   convert ContinuousLinearMap.comp_id <| mfderiv (.prod I I') I'' f (p.1, p.2)
   exact ContinuousLinearMap.coprod_inl_inr
+
+/-- The total derivative of a function in two variables is the sum of the partial derivatives.
+  Note that to state this (without casts) we need to be able to see through the definition of
+  `TangentSpace`. Version in terms of the one-variable derivatives. -/
+theorem mfderiv_prod_eq_add_comp {f : M × M' → M''} {p : M × M'}
+    (hf : MDifferentiableAt (I.prod I') I'' f p) :
+    mfderiv (I.prod I') I'' f p =
+        (mfderiv I I'' (fun z : M => f (z, p.2)) p.1) ∘L (id (ContinuousLinearMap.fst 𝕜 E E') :
+          (TangentSpace (I.prod I') p) →L[𝕜] (TangentSpace I p.1)) +
+        (mfderiv I' I'' (fun z : M' => f (p.1, z)) p.2) ∘L (id (ContinuousLinearMap.snd 𝕜 E E') :
+          (TangentSpace (I.prod I') p) →L[𝕜] (TangentSpace I' p.2)) := by
+  rw [mfderiv_prod_eq_add _ _ _ hf]
+  congr
+  · have : (fun z : M × M' => f (z.1, p.2)) = (fun z : M => f (z, p.2)) ∘ Prod.fst := rfl
+    rw [this, mfderiv_comp (I' := I)]
+    · simp only [mfderiv_fst, id_eq]
+      rfl
+    · exact hf.comp _ (smooth_id.prod_mk smooth_const).mdifferentiableAt
+    · exact mdifferentiableAt_fst I I'
+  · have : (fun z : M × M' => f (p.1, z.2)) = (fun z : M' => f (p.1, z)) ∘ Prod.snd := rfl
+    rw [this, mfderiv_comp (I' := I')]
+    · simp only [mfderiv_snd, id_eq]
+      rfl
+    · exact hf.comp _ (smooth_const.prod_mk smooth_id).mdifferentiableAt
+    · exact mdifferentiableAt_snd I I'
+
+/-- The total derivative of a function in two variables is the sum of the partial derivatives.
+  Note that to state this (without casts) we need to be able to see through the definition of
+  `TangentSpace`. Version in terms of the one-variable derivatives. -/
+theorem mfderiv_prod_eq_add_apply {f : M × M' → M''} {p : M × M'} {v : TangentSpace (I.prod I') p}
+    (hf : MDifferentiableAt (I.prod I') I'' f p) :
+    mfderiv (I.prod I') I'' f p v =
+      (mfderiv I I'' (fun z : M => f (z, p.2)) p.1 v.1) +
+      (mfderiv I' I'' (fun z : M' => f (p.1, z)) p.2 v.2) := by
+  rw [mfderiv_prod_eq_add_comp _ _ _ hf]
+  rfl
 
 end Prod
 
