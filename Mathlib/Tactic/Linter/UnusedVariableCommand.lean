@@ -90,6 +90,17 @@ def getBracketedBinderIds : Syntax → CommandElabM (Array Syntax)
   | `(bracketedBinderF|[$f])                           => return #[f]
   | _                                                  => throwUnsupportedSyntax
 
+open Lean.Parser.Term in
+def getBracketedBinderIds' : Syntax → CommandElabM (Array Syntax)
+  | `(bracketedBinderF|($ids* $[: $ty?]? $(_annot?)?)) =>
+    return if ty?.isSome then ids else ids.map fun _ => .missing
+  | `(bracketedBinderF|{$ids* $[: $ty?]?})             =>
+    return if ty?.isSome then ids else ids.map fun _ => .missing
+  | `(bracketedBinderF|⦃$ids* : $_⦄)                   => return ids
+  | `(bracketedBinderF|[$id : $_])                     => return #[id]
+  | `(bracketedBinderF|[$f])                           => return #[.missing]
+  | _                                                  => throwUnsupportedSyntax
+
 @[inherit_doc Mathlib.Linter.linter.unusedVariableCommand]
 def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless Linter.getLinterValue linter.unusedVariableCommand (← getOptions) do
@@ -139,7 +150,7 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
     elabCommand renStx
     set s
 
-initialize addLinter unusedVariableCommandLinter
+--initialize addLinter unusedVariableCommandLinter
 
 end UnusedVariableCommand
 
@@ -148,6 +159,8 @@ register_option linter.shadow : Bool := {
   defValue := true
   descr := "enable the shadow linter"
 }
+
+--initialize allVarsRef : IO.Ref (Array Syntax) ← IO.mkRef #[]
 
 /-- extracts the binder names of nested `forallE`s.  Should deal better with instances. -/
 def getForAllBinderNames : Expr → Array Name
@@ -162,6 +175,35 @@ def shadowLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
+  if stx.isOfKind ``Command.variable then
+    match stx with
+      | `(variable $s*) =>
+        --dbg_trace s
+        let newVs := (← s.mapM UnusedVariableCommand.getBracketedBinderIds').flatten
+        --dbg_trace newVs
+        --allVarsRef.modify fun vs => vs ++ newVs.flatten
+        let sc := (← getScope).varDecls
+        let sc := (← sc.mapM (getBracketedBinderIds ·.raw)).flatten
+        --dbg_trace "sc before: {sc}, {newVs.size}"
+
+        let sc := sc.shrink (sc.size - newVs.size)
+        --dbg_trace sc
+        for v in newVs do
+          if (!v.getId.isAnonymous) && sc.contains v.getId then logInfoAt v m!"repeated variable '{v}'"
+      | _ => return
+        --let ns : NameSet := .ofList sc.toList
+        --if sc.size
+  --if Parser.isTerminalCommand stx then
+  --  let mut groups := #[]
+  --  let mut left ← allVarsRef.get
+  --  while ! left.isEmpty do
+  --    let curr := left.getD 0 default
+  --    let (eqs, rest) := left.partition (·.getId == curr.getId)
+  --    groups := groups.push eqs
+  --    left := rest
+  --  for g in groups do
+  --    for a in g do
+  --      logInfoAt a m!"'{a}' is a repeated binder name"
   unless (stx.find? (#[``declaration, `lemma].contains <|·.getKind)).isSome do
     return
   let decl? := (stx.find? (·.isOfKind ``Lean.Parser.Command.declId)).getD default
