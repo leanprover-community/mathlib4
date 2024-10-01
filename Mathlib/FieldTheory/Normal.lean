@@ -355,10 +355,14 @@ theorem AlgEquiv.restrict_liftNormal (χ : K₁ ≃ₐ[F] K₁) [Normal F K₁] 
     (algebraMap K₁ E).injective
       (Eq.trans (AlgEquiv.restrictNormal_commutes _ K₁ x) (χ.liftNormal_commutes E x))
 
+/-- The the group homomorphism given by restriction of algebra isomorphisms to a normal subfield
+is surjective. -/
 theorem AlgEquiv.restrictNormalHom_surjective [Normal F K₁] [Normal F E] :
     Function.Surjective (AlgEquiv.restrictNormalHom K₁ : (E ≃ₐ[F] E) → K₁ ≃ₐ[F] K₁) := fun χ =>
   ⟨χ.liftNormal E, χ.restrict_liftNormal E⟩
 
+/-- The the group homomorphism given by restriction of algebra isomorphisms to itself
+is the identity map. -/
 @[simp]
 theorem AlgEquiv.restrictNormalHom_id (F K : Type*)
     [Field F] [Field K] [Algebra F K] [Normal F K] :
@@ -371,6 +375,10 @@ theorem AlgEquiv.restrictNormalHom_id (F K : Type*)
 
 namespace IsScalarTower
 
+/-- In a scalar tower `K₃/K₂/K₁/F` with `K₁` and `K₂` are normal over `F`, the group homomorphism
+given by the restriction of algebra isomorphisms of `K₃` to `K₁` is equal to the composition of
+the group homomorphism given by the restriction of algebra isomorphisms of `K₃` to `K₂` and
+the group homomorphism given by the restriction of algebra isomorphisms of `K₂` to `K₁` -/
 theorem AlgEquiv.restrictNormalHom_comp (F K₁ K₂ K₃ : Type*)
     [Field F] [Field K₁] [Field K₂] [Field K₃]
     [Algebra F K₁] [Algebra F K₂] [Algebra F K₃] [Algebra K₁ K₂] [Algebra K₁ K₃] [Algebra K₂ K₃]
