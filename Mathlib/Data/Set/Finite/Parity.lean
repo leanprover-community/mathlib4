@@ -14,7 +14,7 @@ This file contains lemmas concerning finite sets and parity of their cardinality
 
 namespace Set.Finite
 
-variable {V : Type _} {s : Set V}
+variable {V : Type*} {s : Set V}
 
 lemma one_lt_ncard_of_nonempty_of_even (hs : Set.Finite s) (hn : Set.Nonempty s)
     (he : Even (Nat.card s)) : 1 < s.ncard := by
