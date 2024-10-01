@@ -5,9 +5,9 @@ Authors: Damiano Testa
 -/
 
 import Lean.Elab.Command
---import Mathlib.adomaniLeanUtils.inspect
 
 /-!
+--import Mathlib.adomaniLeanUtils.inspect
 #  The "unusedVariableCommand" linter
 
 The "unusedVariableCommand" linter emits a warning when a variable declared in `variable ...`
