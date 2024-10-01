@@ -60,7 +60,7 @@ theorem AbsConvex.inter {s t : Set E} (hs : AbsConvex 𝕜 s) (ht : AbsConvex �
 theorem AbsConvex.sInter {S : Set (Set E)} (h : ∀ s ∈ S, AbsConvex 𝕜 s) : AbsConvex 𝕜 (⋂₀ S) :=
   ⟨.sInter fun s hs => (h s hs).1, convex_sInter fun s hs => (h s hs).2⟩
 
-theorem absConvex_iInter {ι : Sort*} {s : ι → Set E} (h : ∀ i, AbsConvex 𝕜 (s i)) :
+theorem AbsConvex.iInter {ι : Sort*} {s : ι → Set E} (h : ∀ i, AbsConvex 𝕜 (s i)) :
     AbsConvex 𝕜 (⋂ i, s i) :=
   sInter_range s ▸ absConvex_sInter <| forall_mem_range.2 h
 
