@@ -237,10 +237,9 @@ lemma odd_matches_node_outside {u : Set V} {c : ConnectedComponent (Subgraph.del
     Finset.card_image_of_injective _ (Subtype.val_injective), Set.toFinset_card] at hMeven ⊢
   exact hMeven
 
-
 end Finite
 
-lemma isClique_even_iff_matches [DecidableEq V] (u : Set V) (hu : Set.Finite u)
+lemma isClique_even_iff_exists_isMatching [DecidableEq V] (u : Set V) (hu : Set.Finite u)
     (hc : G.IsClique u) : Even (Nat.card u) ↔ ∃ (M : Subgraph G), M.verts = u ∧ M.IsMatching := by
   haveI : Fintype u := hu.fintype
   refine ⟨?_ , by
@@ -250,9 +249,8 @@ lemma isClique_even_iff_matches [DecidableEq V] (u : Set V) (hu : Set.Finite u)
     simpa [Nat.card_eq_card_finite_toFinset hu, Set.toFinite_toFinset,
       Set.toFinset_card] using hMr.even_card⟩
   intro he
-  cases' Set.eq_empty_or_nonempty u with h h
-  · subst h
-    let empty : Subgraph G := {
+  obtain rfl | h := u.eq_empty_or_nonempty
+  · let empty : Subgraph G := {
       verts := ∅,
       Adj := fun _ _ ↦ False,
       adj_sub := False.elim,
@@ -286,7 +284,7 @@ decreasing_by
     exact ⟨hxy.1, by simp only [Set.mem_diff, Set.mem_insert_iff, Set.mem_singleton_iff, true_or,
       not_true_eq_false, and_false, not_false_eq_true]⟩⟩
 
-lemma completeGraph_even_iff_matches [Fintype V] [DecidableEq V] :
+lemma completeGraph_even_iff_exists_isMatching [Fintype V] [DecidableEq V] :
     Even (Nat.card V) ↔ ∃ (M : Subgraph (completeGraph V)), M.verts = Set.univ ∧ M.IsMatching := by
   simpa [Nat.card_eq_fintype_card, (set_fintype_card_eq_univ_iff _).mpr rfl] using
     isClique_even_iff_matches (Set.univ : Set V) Set.finite_univ IsClique.completeGraph
