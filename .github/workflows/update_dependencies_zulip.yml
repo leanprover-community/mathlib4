@@ -40,7 +40,7 @@ jobs:
                 });
               }
             } else {
-              output += "No PR found for this run!";
+              output += "No PR found for this run! Please run `lake update` on master and make a PR.";
             }
             return output;
 
