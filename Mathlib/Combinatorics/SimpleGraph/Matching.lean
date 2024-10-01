@@ -250,13 +250,8 @@ lemma isClique_even_iff_exists_isMatching [DecidableEq V] (u : Set V) (hu : Set.
       Set.toFinset_card] using hMr.even_card⟩
   intro he
   obtain rfl | h := u.eq_empty_or_nonempty
-  · let empty : Subgraph G := {
-      verts := ∅,
-      Adj := fun _ _ ↦ False,
-      adj_sub := False.elim,
-      edge_vert := False.elim }
-    use empty
-    simp only [true_and]
+  · use ⊥
+    simp only [Subgraph.verts_bot, true_and]
     intro _ h
     contradiction
   · obtain ⟨x, y, hxy⟩ := Set.Finite.two_of_even_of_nonempty hu h he
@@ -264,7 +259,7 @@ lemma isClique_even_iff_exists_isMatching [DecidableEq V] (u : Set V) (hu : Set.
     have hu'e := Set.Finite.even_card_diff_pair hu he hxy.1 hxy.2.1 hxy.2.2
     have hu'c := hc.subset (Set.diff_subset : u' ⊆ u)
     have hu'f := Set.Finite.diff hu {x, y}
-    obtain ⟨M, hM⟩ := (isClique_even_iff_matches u' hu'f hu'c).mp hu'e
+    obtain ⟨M, hM⟩ := (isClique_even_iff_exists_isMatching u' hu'f hu'c).mp hu'e
     use M ⊔ subgraphOfAdj _ (hc hxy.1 hxy.2.1 hxy.2.2)
     simp only [Subgraph.verts_sup, hM.1, subgraphOfAdj_verts]
     refine ⟨by
@@ -287,7 +282,7 @@ decreasing_by
 lemma completeGraph_even_iff_exists_isMatching [Fintype V] [DecidableEq V] :
     Even (Nat.card V) ↔ ∃ (M : Subgraph (completeGraph V)), M.verts = Set.univ ∧ M.IsMatching := by
   simpa [Nat.card_eq_fintype_card, (set_fintype_card_eq_univ_iff _).mpr rfl] using
-    isClique_even_iff_matches (Set.univ : Set V) Set.finite_univ IsClique.completeGraph
+    isClique_even_iff_exists_isMatching (Set.univ : Set V) Set.finite_univ IsClique.completeGraph
 
 end ConnectedComponent
 
