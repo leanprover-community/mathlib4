@@ -412,8 +412,8 @@ private lemma logC_zero {b : ℕ} :
     rw [logC, dif_pos hb]
     split
     next q e heq =>
-      rw [logC.step, dif_pos (zero_lt_of_lt hb)] at heq
-      rw [(Prod.mk.inj heq).2]
+    rw [logC.step, dif_pos (zero_lt_of_lt hb)] at heq
+    rw [(Prod.mk.inj heq).2]
 
 /--
 The result of `Nat.logC` agrees with the result of `Nat.log`. The former will be computed more
