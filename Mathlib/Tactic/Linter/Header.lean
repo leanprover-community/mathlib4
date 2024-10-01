@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Damiano Testa
+Authors: Michael Rothgang, Damiano Testa
 -/
 import Lean.Elab.Command
 
@@ -20,7 +20,11 @@ import*
 module doc-string*
 rest
 ```
-It emits a warning if the first non-`import` command is not a module doc-string.
+It emits a warning if
+* the copyright statement is malformed;
+* `Mathlib.Tactic` is imported;
+* any import in `Lake` is present;
+* the first non-`import` command is not a module doc-string.
 
 The linter allows `import`-only files and does not require a copyright statement in `Mathlib.Init`.
 
@@ -59,7 +63,8 @@ def firstNonImport? : Syntax → Option Syntax
   | .node _ ``Lean.Parser.Module.module #[_header, .node _ `null args] => args[0]?
   | _=> some .missing  -- this is unreachable, if the input comes from `testParseModule`
 
-/-- Returns the array of all `import` identifiers in `s`. -/
+/-- `getImportIds s` takes as input `s : Syntax`.
+It returns the array of all `import` identifiers in `s`. -/
 partial
 def getImportIds (s : Syntax) : Array Syntax :=
   let rest : Array Syntax := (s.getArgs.map getImportIds).flatten
@@ -180,7 +185,8 @@ def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.
     msgs := msgs.push (toSyntax copyright "-/", s!"Copyright too short!")
   return msgs
 
-/-- checks the `Syntax` `imps` for broad imports. -/
+/-- checks the `Syntax` `imports` for broad imports: either `Mathlib.Tactic` or any import
+starting with `Lake`. -/
 def broadImportsCheck (imports : Array Syntax)  : Array (Syntax × String) := Id.run do
   let mut msgs := #[]
   for i in imports do
@@ -198,10 +204,23 @@ def broadImportsCheck (imports : Array Syntax)  : Array (Syntax × String) := Id
 /--
 The "header" style linter checks that a file starts with
 ```
+/-
+Copyright ...
+Apache ...
+Authors ...
+-/
+
 import*
-/-! doc-module -/*
+module doc-string*
+rest
 ```
-It emits a warning if the first command after the last import is not a module doc-string.
+It emits a warning if
+* the copyright statement is malformed;
+* `Mathlib.Tactic` is imported;
+* any import in `Lake` is present;
+* the first non-`import` command is not a module doc-string.
+
+The linter allows `import`-only files and does not require a copyright statement in `Mathlib.Init`.
 -/
 register_option linter.style.header : Bool := {
   defValue := false
