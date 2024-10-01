@@ -720,14 +720,14 @@ theorem fst_invOf (x : tsze R M) [Invertible x] [Invertible x.fst] : (⅟x).fst 
   convert (rfl : _ = ⅟ x.fst)
 
 theorem mul_left_eq_one (r : R) (x : tsze R M) (h : r * x.fst = 1) :
-    (inl r + inr (-(r •> x.snd <• r)) : tsze R M) * x = 1 := by
+    (inl r + inr (-((r •> x.snd) <• r))) * x = 1 := by
   ext <;> dsimp
   · rw [add_zero, h]
   · rw [add_zero, zero_add, smul_neg, op_smul_op_smul, h, op_one, one_smul,
       add_neg_cancel]
 
 theorem mul_right_eq_one (x : tsze R M) (r : R) (h : x.fst * r = 1) :
-    x * (inl r + inr (-(r •> (x.snd <• r))) : tsze R M) = 1 := by
+    x * (inl r + inr (-(r •> (x.snd <• r)))) = 1 := by
   ext <;> dsimp
   · rw [add_zero, h]
   · rw [add_zero, zero_add, smul_neg, smul_smul, h, one_smul, neg_add_cancel]
