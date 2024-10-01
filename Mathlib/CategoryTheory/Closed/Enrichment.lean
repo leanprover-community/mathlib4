@@ -106,7 +106,7 @@ theorem comp_id (x y : V) : (ρ_ _).inv ≫ ((ihom x).obj y) ◁ (id y) ≫ (com
   exact (uncurry_id_eq_ev x y).symm
 
 /-- For V closed monoidal, build an instance of V as a V-category -/
-instance : EnrichedCategory V V where
+scoped instance : EnrichedCategory V V where
   Hom := fun x => (ihom x).obj
   id := id
   comp := comp
