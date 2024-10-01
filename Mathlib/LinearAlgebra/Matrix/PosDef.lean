@@ -463,7 +463,7 @@ protected theorem inv [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) : M�
   · simp
 
 @[simp]
-protected theorem _root_.Matrix.posDef_inv_iff [DecidableEq n] {M : Matrix n n 𝕜} :
+theorem _root_.Matrix.posDef_inv_iff [DecidableEq n] {M : Matrix n n 𝕜} :
     M⁻¹.PosDef ↔ M.PosDef :=
   ⟨fun h =>
     letI := (Matrix.isUnit_nonsing_inv_iff.1 <| h.isUnit).invertible
