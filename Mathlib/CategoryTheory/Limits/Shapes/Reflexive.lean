@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta
+Authors: Bhavik Mehta, Robin Carlier
 -/
 import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
@@ -187,115 +187,88 @@ inductive WalkingReflexivePair : Type where
 
 open WalkingReflexivePair
 
+namespace WalkingReflexivePair
 /-- The type of morphisms for the diagram indexing reflexive (co)equalizers -/
-inductive WalkingReflexivePairHom : (WalkingReflexivePair → WalkingReflexivePair → Type)
-  | left : WalkingReflexivePairHom one zero
-  | right : WalkingReflexivePairHom one zero
-  | reflexion : WalkingReflexivePairHom zero one
-  | left_reflexion : WalkingReflexivePairHom one one
-  | right_reflexion : WalkingReflexivePairHom one one
-  | id (X : WalkingReflexivePair) : WalkingReflexivePairHom X X
+inductive Hom : (WalkingReflexivePair → WalkingReflexivePair → Type)
+  | left : Hom one zero
+  | right : Hom one zero
+  | reflexion : Hom zero one
+  | leftCompReflexion : Hom one one
+  | rightCompReflexion : Hom one one
+  | id (X : WalkingReflexivePair) : Hom X X
   deriving DecidableEq
 
-attribute [-simp, nolint simpNF] WalkingReflexivePairHom.id.sizeOf_spec
-
-open WalkingReflexivePairHom
+attribute [-simp, nolint simpNF] Hom.id.sizeOf_spec
 
 /-- Composition of morphisms in the diagram indexing reflexive (co)equalizers -/
-def WalkingReflexivePairHom.comp :
-    ∀ { X Y Z : WalkingReflexivePair } (_ : WalkingReflexivePairHom X Y)
-      (_ : WalkingReflexivePairHom Y Z), WalkingReflexivePairHom X Z
+def Hom.comp :
+    ∀ { X Y Z : WalkingReflexivePair } (_ : Hom X Y)
+      (_ : Hom Y Z), Hom X Z
   | _, _, _, id _, h => h
   | _, _, _, h, id _ => h
   | _, _, _, reflexion, left => id zero
   | _, _, _, reflexion, right => id zero
-  | _, _, _, reflexion, right_reflexion => reflexion
-  | _, _, _, reflexion, left_reflexion => reflexion
-  | _, _, _, left, reflexion => left_reflexion
-  | _, _, _, right, reflexion => right_reflexion
-  | _, _, _, right_reflexion, right_reflexion => right_reflexion
-  | _, _, _, right_reflexion, left_reflexion => right_reflexion
-  | _, _, _, right_reflexion, right => right
-  | _, _, _, right_reflexion, left => right
-  | _, _, _, left_reflexion, left => left
-  | _, _, _, left_reflexion, right => left
-  | _, _, _, left_reflexion, right_reflexion => left_reflexion
-  | _, _, _, left_reflexion, left_reflexion => left_reflexion
+  | _, _, _, reflexion, rightCompReflexion => reflexion
+  | _, _, _, reflexion, leftCompReflexion => reflexion
+  | _, _, _, left, reflexion => leftCompReflexion
+  | _, _, _, right, reflexion => rightCompReflexion
+  | _, _, _, rightCompReflexion, rightCompReflexion => rightCompReflexion
+  | _, _, _, rightCompReflexion, leftCompReflexion => rightCompReflexion
+  | _, _, _, rightCompReflexion, right => right
+  | _, _, _, rightCompReflexion, left => right
+  | _, _, _, leftCompReflexion, left => left
+  | _, _, _, leftCompReflexion, right => left
+  | _, _, _, leftCompReflexion, rightCompReflexion => leftCompReflexion
+  | _, _, _, leftCompReflexion, leftCompReflexion => leftCompReflexion
 
-theorem WalkingReflexivePairHom.id_comp
-    {X Y : WalkingReflexivePair} (g : WalkingReflexivePairHom X Y) : comp (id X) g = g := by
-  cases g <;> rfl
+instance category : SmallCategory WalkingReflexivePair where
+  Hom := Hom
+  id := Hom.id
+  comp := Hom.comp
+  comp_id := by intro _ _ f; cases f <;> rfl
+  id_comp := by intro _ _ f; cases f <;> rfl
+  assoc := by intro _ _ _ _ f g h; cases f <;> cases g <;> cases h <;> rfl
 
-theorem WalkingReflexivePairHom.comp_id
-    {X Y : WalkingReflexivePair} (f : WalkingReflexivePairHom X Y) : comp f (id Y) = f := by
-  cases f <;> rfl
 
-theorem WalkingReflexivePairHom.assoc {X Y Z W : WalkingReflexivePair}
-    (f : WalkingReflexivePairHom X Y) (g: WalkingReflexivePairHom Y Z)
-    (h : WalkingReflexivePairHom Z W) : comp (comp f g) h = comp f (comp g h) := by
-  cases f <;> cases g <;> cases h <;> rfl
-
-instance walkingReflexivePairCategory : SmallCategory WalkingReflexivePair where
-  Hom := WalkingReflexivePairHom
-  id := id
-  comp := comp
-  comp_id := comp_id
-  id_comp := id_comp
-  assoc := assoc
+open Hom
 
 @[simp]
-theorem walkingReflexivePairHom_id (X : WalkingReflexivePair) :
-    WalkingReflexivePairHom.id X = 𝟙 X := by rfl
+theorem Hom_id (X : WalkingReflexivePair) :
+    Hom.id X = 𝟙 X := by rfl
 
-@[simp]
-theorem walkingReflexivePairHom_left_comp_reflexion : left.comp reflexion = left_reflexion := rfl
+@[reassoc (attr := simp)]
+theorem reflexion_comp_left : reflexion ≫ left = 𝟙 zero := rfl
 
-@[simp]
-theorem walkingReflexivePairHom_right_comp_reflexion : right.comp reflexion = right_reflexion := rfl
+@[reassoc (attr := simp)]
+theorem reflexion_comp_right : reflexion ≫ right = 𝟙 zero := rfl
+
+end WalkingReflexivePair
 
 namespace WalkingParallelPair
 
 /-- The forgetful functor forgetting the common section -/
-def inclusionWalkingReflexivePair : WalkingParallelPair ⥤ WalkingReflexivePair :=
-  { obj := fun x => match x with
-      | one => WalkingReflexivePair.zero
-      | zero => WalkingReflexivePair.one
-    map := fun f => match f with
-      | WalkingParallelPairHom.left => left
-      | WalkingParallelPairHom.right => right
-      | WalkingParallelPairHom.id _ => WalkingReflexivePairHom.id _
-    map_comp := by
-      intro _ _ _ f g; cases f <;> cases g <;> rfl }
+@[simps!]
+def inclusionWalkingReflexivePair : WalkingParallelPair ⥤ WalkingReflexivePair where
+  obj := fun x => match x with
+    | one => WalkingReflexivePair.zero
+    | zero => WalkingReflexivePair.one
+  map := fun f => match f with
+    | .left => WalkingReflexivePair.Hom.left
+    | .right => WalkingReflexivePair.Hom.right
+    | .id _ => WalkingReflexivePair.Hom.id _
+  map_comp := by
+    intro _ _ _ f g; cases f <;> cases g <;> rfl
 
 variable {C : Type u} [Category.{v} C]
 
-@[simp]
-lemma whisker_inclusionWalkingReflexivePair_zero (F : WalkingReflexivePair ⥤ C) :
-    F.obj (inclusionWalkingReflexivePair.obj WalkingParallelPair.one) =
-      F.obj WalkingReflexivePair.zero :=
-  rfl
-
-@[simp]
-lemma whisker_inclusionWalkingReflexivePair_one (F : WalkingReflexivePair ⥤ C) :
-    F.obj (inclusionWalkingReflexivePair.obj WalkingParallelPair.zero) =
-      F.obj WalkingReflexivePair.one :=
-  rfl
-
-@[simp]
-lemma whisker_inclusionWalkingReflexivePair_left (F : WalkingReflexivePair ⥤ C) :
-    F.map (inclusionWalkingReflexivePair.map WalkingParallelPairHom.left) = F.map left := rfl
-
-@[simp]
-lemma whisker_inclusionWalkingReflexivePair_right (F : WalkingReflexivePair ⥤ C) :
-    F.map (inclusionWalkingReflexivePair.map WalkingParallelPairHom.right) = F.map right := rfl
-
-/-- The forgetful functor is a final functor -/
+open WalkingReflexivePair WalkingReflexivePair.Hom
+/-- The inclusion functor is a final functor -/
 instance inclusionWalkingReflexivePair_final : Functor.Final inclusionWalkingReflexivePair := by
   constructor
-  set e₀ : (StructuredArrow WalkingReflexivePair.one inclusionWalkingReflexivePair) :=
-    StructuredArrow.mk (Y := WalkingParallelPair.zero) (id WalkingReflexivePair.one)
-  set e₁ : (StructuredArrow WalkingReflexivePair.zero inclusionWalkingReflexivePair) :=
-    StructuredArrow.mk (Y := WalkingParallelPair.one) (id WalkingReflexivePair.zero)
+  set e₀ : (StructuredArrow .one inclusionWalkingReflexivePair) :=
+    StructuredArrow.mk (Y := zero) (𝟙 _)
+  set e₁ : (StructuredArrow .zero inclusionWalkingReflexivePair) :=
+    StructuredArrow.mk (Y := one) (𝟙 _)
   intro x
   have h : Inhabited (StructuredArrow x inclusionWalkingReflexivePair) := by
     · constructor
@@ -304,41 +277,39 @@ instance inclusionWalkingReflexivePair_final : Functor.Final inclusionWalkingRef
       | zero => exact e₁
   cases x with
     | zero => apply IsConnected.of_induct (j₀ := e₁)
-              intro p h₁ h₂ t
-              rcases t with ⟨l, y, f⟩
+              rintro p h₁ h₂ ⟨l, y, f⟩
               cases y <;> cases f
-              · set r : StructuredArrow WalkingReflexivePair.zero inclusionWalkingReflexivePair :=
-                  StructuredArrow.mk (Y := WalkingParallelPair.zero) reflexion
+              · set r : StructuredArrow .zero inclusionWalkingReflexivePair :=
+                  StructuredArrow.mk (Y := zero) reflexion
                 change r ∈ p
                 suffices f : r ⟶  e₁ by exact (h₂ f).mpr h₁
-                exact StructuredArrow.homMk (WalkingParallelPairHom.left)
+                exact StructuredArrow.homMk .left
               · exact h₁
     | one => apply IsConnected.of_induct (j₀ := e₀)
-             intro p h₁ h₂ t
-             rcases t with ⟨l, y, f⟩
+             rintro p h₁ h₂ ⟨l, y, f⟩
              set rₗ : StructuredArrow WalkingReflexivePair.one inclusionWalkingReflexivePair :=
-                StructuredArrow.mk (Y := WalkingParallelPair.one) left
+                StructuredArrow.mk (Y := one) left
              set rᵣ : StructuredArrow WalkingReflexivePair.one inclusionWalkingReflexivePair :=
-                StructuredArrow.mk (Y := WalkingParallelPair.one) right
+                StructuredArrow.mk (Y := one) right
              have hrₗ : rₗ ∈ p := by
               · suffices f : e₀ ⟶  rₗ by exact (h₂ f).mp h₁
-                exact StructuredArrow.homMk WalkingParallelPairHom.left
+                exact StructuredArrow.homMk .left
              have hrᵣ : rᵣ ∈ p := by
               · suffices f : e₀ ⟶  rᵣ by exact (h₂ f).mp h₁
-                exact StructuredArrow.homMk WalkingParallelPairHom.right
+                exact StructuredArrow.homMk .right
              cases y <;> cases f
              rotate_right 3
              · exact h₁
              · exact hrₗ
              · exact hrᵣ
-             · set v : StructuredArrow WalkingReflexivePair.one inclusionWalkingReflexivePair :=
-                StructuredArrow.mk (Y := WalkingParallelPair.zero) left_reflexion
+             · set v : StructuredArrow .one inclusionWalkingReflexivePair :=
+                StructuredArrow.mk (Y := zero) leftCompReflexion
                suffices f : v ⟶  rₗ by exact (h₂ f).mpr hrₗ
-               exact StructuredArrow.homMk (WalkingParallelPairHom.left)
-             · set v : StructuredArrow WalkingReflexivePair.one inclusionWalkingReflexivePair :=
-                StructuredArrow.mk (Y := WalkingParallelPair.zero) right_reflexion
+               exact StructuredArrow.homMk .left
+             · set v : StructuredArrow .one inclusionWalkingReflexivePair :=
+                StructuredArrow.mk (Y := .zero) rightCompReflexion
                suffices f : v ⟶  rᵣ by exact (h₂ f).mpr hrᵣ
-               exact StructuredArrow.homMk (WalkingParallelPairHom.right)
+               exact StructuredArrow.homMk .right
 
 end WalkingParallelPair
 
@@ -348,15 +319,15 @@ namespace Limits
 
 open WalkingReflexivePair
 
-open WalkingReflexivePairHom
-
 variable {C : Type u} [Category.{v} C]
 
 variable {A B : C}
 
 /-- Bundle the data of a parallel pair along with a common section as a functor out of the walking
 reflexive pair -/
-def reflexivePair (f g : A ⟶ B) (s : B ⟶ A) (sl : s ≫ f = 𝟙 B) (sr : s ≫ g = 𝟙 B) :
+@[simps]
+def reflexivePair (f g : A ⟶ B) (s : B ⟶ A)
+    (sl : s ≫ f = 𝟙 B := by aesop_cat) (sr : s ≫ g = 𝟙 B := by aesop_cat) :
     (WalkingReflexivePair ⥤ C) where
   obj x :=
     match x with
@@ -364,23 +335,21 @@ def reflexivePair (f g : A ⟶ B) (s : B ⟶ A) (sl : s ≫ f = 𝟙 B) (sr : s 
     | one => A
   map h :=
     match h with
-    | WalkingReflexivePairHom.id _ => 𝟙 _
-    | left => f
-    | right => g
-    | reflexion => s
-    | right_reflexion => g ≫ s
-    | left_reflexion => f ≫ s
+    | .id _ => 𝟙 _
+    | .left => f
+    | .right => g
+    | .reflexion => s
+    | .rightCompReflexion => g ≫ s
+    | .leftCompReflexion => f ≫ s
   map_comp := by
     rintro _ _ _ ⟨⟩ g <;> cases g <;>
-    simp only [Category.id_comp, Category.comp_id, Category.assoc, sl, sr] <;>
-    try {rfl}
-    iterate simp only [Category.id_comp, Category.comp_id, ← Category.assoc, sl, sr] <;> try {rfl}
+      simp only [Category.id_comp, Category.comp_id, Category.assoc, sl, sr,
+        reassoc_of% sl, reassoc_of% sr] <;> rfl
 
 /-- (Noncomputably) bundle the data of a reflexive pair as a functor out of the walking reflexive
 pair -/
 noncomputable def ofIsReflexivePair (f g : A ⟶ B) [IsReflexivePair f g] :
-    (WalkingReflexivePair ⥤ C) :=
-  reflexivePair f g (commonSection f g) (section_comp_left f g) (section_comp_right f g)
+    WalkingReflexivePair ⥤ C := reflexivePair f g (commonSection f g)
 
 /-- The natural isomorphism between the diagram obtained by forgetting the reflexion of
 `ofIsReflexivePair f g` and the original parallel pair. -/
@@ -394,53 +363,59 @@ end Limits
 
 namespace Limits
 
-open WalkingReflexivePair
-
-open WalkingReflexivePairHom
-
 variable {C : Type u} [Category.{v} C]
 
-@[simp]
-theorem reflexivePair_reflexion_comp_left (F : WalkingReflexivePair ⥤ C) :
-    F.map reflexion ≫ F.map left = 𝟙 F.obj zero :=
-  (F.map_id zero).symm.trans (F.map_comp reflexion left)|>.symm
+namespace reflexivePair
 
-@[simp]
-theorem reflexivePair_reflexion_comp_right (F : WalkingReflexivePair ⥤ C) :
-    F.map reflexion ≫ F.map right = 𝟙 F.obj zero :=
-  (F.map_id zero).symm.trans (F.map_comp reflexion right)|>.symm
+open WalkingReflexivePair WalkingReflexivePair.Hom
 
-@[simp]
-theorem reflexivePair_left_comp_reflexion (F : WalkingReflexivePair ⥤ C) :
-    F.map left_reflexion = F.map left ≫ F.map reflexion := F.map_comp left reflexion
 
-@[simp]
-theorem reflexivePair_right_comp_reflexion (F : WalkingReflexivePair ⥤ C) :
-    F.map right_reflexion = F.map right ≫ F.map reflexion := F.map_comp right reflexion
+@[reassoc (attr := simp)]
+theorem map_reflexion_comp_map_left (F : WalkingReflexivePair ⥤ C) :
+    F.map reflexion ≫ F.map left = 𝟙 (F.obj zero) := by
+  rw [← F.map_comp, reflexion_comp_left, F.map_id]
+
+@[reassoc (attr := simp)]
+theorem map_reflexion_comp_map_right (F : WalkingReflexivePair ⥤ C) :
+    F.map reflexion ≫ F.map right = 𝟙 (F.obj zero) := by
+  rw [← F.map_comp, reflexion_comp_right, F.map_id]
+
+@[reassoc (attr := simp)]
+theorem map_leftCompReflexion (F : WalkingReflexivePair ⥤ C) :
+    F.map .leftCompReflexion = F.map left ≫ F.map reflexion := F.map_comp left reflexion
+
+@[reassoc (attr := simp)]
+theorem map_rightCompReflexion (F : WalkingReflexivePair ⥤ C) :
+    F.map rightCompReflexion = F.map right ≫ F.map reflexion := F.map_comp right reflexion
 
 /-- Any functor out of `WalkingReflexivePair` is isomorphic to the reflexive pair built out of the
 images of its morphisms -/
 def diagramIsoReflexivePair (F : WalkingReflexivePair ⥤ C) :
-    F ≅ reflexivePair (F.map left) (F.map right) (F.map reflexion)
-    ((F.map_id zero).symm.trans (F.map_comp reflexion left)).symm
-    ((F.map_id zero).symm.trans (F.map_comp reflexion right)).symm :=
-  NatIso.ofComponents (fun j => eqToIso <| by cases j <;> rfl) <| by
-      rintro _ _ f; cases f <;> aesop_cat
+    F ≅ reflexivePair (F.map left) (F.map right) (F.map reflexion) :=
+  NatIso.ofComponents (fun x ↦ match x with
+    | zero => Iso.refl _
+    | one => Iso.refl _)
+  (fun f ↦ by cases f <;> simp)
 
 variable {F : WalkingReflexivePair ⥤ C}
 
 /-- Any functor out of the WalkingReflexivePair yields a reflexive pair -/
-instance to_isReflexivePair :
-    IsReflexivePair (F.map left) (F.map right) :=
-  ⟨F.map reflexion, reflexivePair_reflexion_comp_left F, reflexivePair_reflexion_comp_right F⟩
+instance to_isReflexivePair : IsReflexivePair (F.map .left) (F.map .right) :=
+  ⟨F.map .reflexion, map_reflexion_comp_map_left F, map_reflexion_comp_map_right F⟩
+
+end reflexivePair
 
 /-- A `ReflexiveCofork` is a cocone over a `WalkingReflexivePair`-shaped diagram. -/
 abbrev ReflexiveCofork (F : WalkingReflexivePair ⥤ C) := Cocone F
 
 namespace ReflexiveCofork
 
+open WalkingReflexivePair WalkingReflexivePair.Hom
+
+variable {F : WalkingReflexivePair ⥤ C}
+
 /-- The tail morphism of a reflexive cofork. -/
-def π (G : ReflexiveCofork F) := G.ι.app zero
+abbrev π (G : ReflexiveCofork F) := G.ι.app zero
 
 lemma condition (G : ReflexiveCofork F) : F.map left ≫ G.π = F.map right ≫ G.π := by
   erw [Cocone.w G left, Cocone.w G right]
@@ -459,6 +434,10 @@ lemma toCofork.π (G : ReflexiveCofork F) : Cofork.π (G.toCofork) = G.π := by
   aesop_cat
 
 end ReflexiveCofork
+
+open WalkingReflexivePair WalkingReflexivePair.Hom
+
+variable {F : WalkingReflexivePair ⥤ C}
 
 /-- Forgetting the reflexion yields an equivalence between cocones over a bundled reflexive pair and
 coforks on the underlying parallel pair. -/
@@ -516,8 +495,6 @@ namespace Limits
 
 open WalkingReflexivePair
 
-open WalkingReflexivePairHom
-
 variable {C : Type u} [Category.{v} C]
 
 /-- A category has coequalizers of reflexive pairs if and only if it has all colimits indexed by the
@@ -536,7 +513,5 @@ theorem hasReflexiveCoequalizers_iff :
     exact ⟨by infer_instance⟩
 
 end Limits
-
-open Limits
 
 end CategoryTheory
