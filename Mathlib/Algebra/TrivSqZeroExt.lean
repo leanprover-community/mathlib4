@@ -763,6 +763,14 @@ def invertibleEquivInvertibleFst (x : tsze R M) : Invertible x ≃ Invertible x.
 theorem isUnit_iff_isUnit_fst {x : tsze R M} : IsUnit x ↔ IsUnit x.fst := by
   simp only [← nonempty_invertible_iff_isUnit, (invertibleEquivInvertibleFst x).nonempty_congr]
 
+@[simp]
+theorem isUnit_inl_iff {r : R} : IsUnit (inl r : tsze R M) ↔ IsUnit r := by
+  rw [isUnit_iff_isUnit_fst, fst_inl]
+
+@[simp]
+theorem isUnit_inr_iff {m : M} : IsUnit (inr m : tsze R M) ↔ Subsingleton R := by
+  simp_rw [isUnit_iff_isUnit_fst, fst_inr, isUnit_zero_iff, subsingleton_iff_zero_eq_one]
+
 end Invertible
 
 section DivisionSemiring
