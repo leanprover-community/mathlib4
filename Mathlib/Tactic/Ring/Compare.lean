@@ -80,27 +80,27 @@ generality simply to require `OrderedCommSemiring`/`StrictOrderedCommSemiring`. 
 
 section Lemma
 
-theorem add_le_add_right' {α : Type*} [OrderedCommSemiring α] {b c : α} (bc : b ≤ c) (a : α) :
+theorem add_le_add_right {α : Type*} [OrderedCommSemiring α] {b c : α} (bc : b ≤ c) (a : α) :
     b + a ≤ c + a :=
   _root_.add_le_add_right bc a
 
-theorem add_le_of_nonpos_left' {α : Type*} [OrderedCommSemiring α] (a : α) {b : α} (h : b ≤ 0) :
+theorem add_le_of_nonpos_left {α : Type*} [OrderedCommSemiring α] (a : α) {b : α} (h : b ≤ 0) :
     b + a ≤ a :=
   _root_.add_le_of_nonpos_left h
 
-theorem le_add_of_nonneg_left' {α : Type*} [OrderedCommSemiring α] (a : α) {b : α} (h : 0 ≤ b) :
+theorem le_add_of_nonneg_left {α : Type*} [OrderedCommSemiring α] (a : α) {b : α} (h : 0 ≤ b) :
     a ≤ b + a :=
   _root_.le_add_of_nonneg_left h
 
-theorem add_lt_add_right' {α : Type*} [StrictOrderedCommSemiring α] {b c : α} (bc : b < c) (a : α) :
+theorem add_lt_add_right {α : Type*} [StrictOrderedCommSemiring α] {b c : α} (bc : b < c) (a : α) :
     b + a < c + a :=
   _root_.add_lt_add_right bc a
 
-theorem add_lt_of_neg_left' {α : Type*} [StrictOrderedCommSemiring α] (a : α) {b : α} (h : b < 0) :
+theorem add_lt_of_neg_left {α : Type*} [StrictOrderedCommSemiring α] (a : α) {b : α} (h : b < 0) :
     b + a < a :=
   _root_.add_lt_of_neg_left a h
 
-theorem lt_add_of_pos_left' {α : Type*} [StrictOrderedCommSemiring α] (a : α) {b : α} (h : 0 < b) :
+theorem lt_add_of_pos_left {α : Type*} [StrictOrderedCommSemiring α] (a : α) {b : α} (h : 0 < b) :
     a < b + a :=
   _root_.lt_add_of_pos_left a h
 
@@ -131,19 +131,19 @@ def evalLE {v : Level} {α : Q(Type v)} (_ : Q(OrderedCommSemiring $α)) {a b : 
     let rxa := NormNum.Result.ofRawRat ca xa hypa
     let rxb := NormNum.Result.ofRawRat cb xb hypb
     let NormNum.Result.isTrue pf ← NormNum.evalLE.core lα rxa rxb | return .error tooSmall
-    pure <| .ok (q(add_le_add_right' (a := $a') $pf):)
+    pure <| .ok (q(add_le_add_right (a := $a') $pf):)
   /- For a numeral `c ≤ 0`, `c + x ≤ x` -/
   | .add (.const (e := xa) ca hypa) va', _ => do
     unless va'.eq vb do return .error notComparable
     let rxa := NormNum.Result.ofRawRat ca xa hypa
     let NormNum.Result.isTrue pf ← NormNum.evalLE.core lα rxa rz | return .error tooSmall
-    pure <| .ok (q(add_le_of_nonpos_left' (a := $b) $pf):)
+    pure <| .ok (q(add_le_of_nonpos_left (a := $b) $pf):)
   /- For a numeral `0 ≤ c`, `x ≤ c + x` -/
   | _, .add (.const (e := xb) cb hypb) vb' => do
     unless va.eq vb' do return .error notComparable
     let rxb := NormNum.Result.ofRawRat cb xb hypb
     let NormNum.Result.isTrue pf ← NormNum.evalLE.core lα rz rxb | return .error tooSmall
-    pure <| .ok (q(le_add_of_nonneg_left' (a := $a) $pf):)
+    pure <| .ok (q(le_add_of_nonneg_left (a := $a) $pf):)
   | _, _ => return .error notComparable
 
 /-- In a commutative semiring, given `Ring.ExSum` objects `va`, `vb` which differ by a positive
@@ -166,20 +166,20 @@ def evalLT {v : Level} {α : Q(Type v)} (_ : Q(StrictOrderedCommSemiring $α)) {
     let rxa := NormNum.Result.ofRawRat ca xa hypa
     let rxb := NormNum.Result.ofRawRat cb xb hypb
     let NormNum.Result.isTrue pf ← NormNum.evalLT.core lα rxa rxb | return .error tooSmall
-    pure <| .ok (q(add_lt_add_right' $pf $a'):)
+    pure <| .ok (q(add_lt_add_right $pf $a'):)
   /- For a numeral `c < 0`, `c + x < x` -/
   | .add (.const (e := xa) ca hypa) va', _ => do
     unless va'.eq vb do return .error notComparable
     let rxa := NormNum.Result.ofRawRat ca xa hypa
     let NormNum.Result.isTrue pf ← NormNum.evalLT.core lα rxa rz | return .error tooSmall
     have pf : Q($xa < 0) := pf
-    pure <| .ok (q(add_lt_of_neg_left' $b $pf):)
+    pure <| .ok (q(add_lt_of_neg_left $b $pf):)
   /- For a numeral `0 < c`, `x < c + x` -/
   | _, .add (.const (e := xb) cb hypb) vb' => do
     unless va.eq vb' do return .error notComparable
     let rxb := NormNum.Result.ofRawRat cb xb hypb
     let NormNum.Result.isTrue pf ← NormNum.evalLT.core lα rz rxb | return .error tooSmall
-    pure <| .ok (q(lt_add_of_pos_left' $a $pf):)
+    pure <| .ok (q(lt_add_of_pos_left $a $pf):)
   | _, _ => return .error notComparable
 
 theorem le_congr {α : Type*} [LE α] {a b c d : α} (h1 : a = b) (h2 : b ≤ c) (h3 : d = c) :
