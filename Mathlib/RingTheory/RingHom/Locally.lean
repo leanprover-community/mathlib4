@@ -60,7 +60,7 @@ lemma locally_iff_finite (f : R →+* S) :
 
 variable {P}
 
-/-- If `P` respects isomorphisms, to check `P` holds locally for `f`, it suffices
+/-- If `P` respects isomorphisms, to check `P` holds locally for `f : R →+* S `, it suffices
 to check `P` holds on a standard open cover. -/
 lemma locally_of_exists (hP : RespectsIso P) (f : R →+* S) {ι : Type*} (s : ι → S)
     (hsone : Ideal.span (Set.range s) = ⊤)
