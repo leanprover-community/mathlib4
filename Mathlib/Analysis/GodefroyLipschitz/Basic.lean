@@ -1,6 +1,7 @@
 import Mathlib.Analysis.GodefroyLipschitz.Annexe
+import Mathlib.Analysis.Normed.Module.WeakDual
 
-open Real NNReal Set Filter Topology FiniteDimensional MeasureTheory Module Submodule
+open Real NNReal Set Filter Topology FiniteDimensional MeasureTheory Metric Module Submodule
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
@@ -68,6 +69,7 @@ theorem aux (a b c : ℝ) (ha : |a| ≤ c) (hb : |b| ≤ c) (h : a - b = 2 * c) 
     have hb : -c < b := lt_of_le_of_ne hb hb'.symm
     linarith
 
+omit [NormedSpace ℝ E] [NormedSpace ℝ F] in
 theorem Isometry.map_norm_sub {φ : E → F} (hφ : Isometry φ) (x y : E) :
     ‖φ x - φ y‖ = ‖x - y‖ := by
   rw [← dist_eq_norm, hφ.dist_eq, dist_eq_norm]
@@ -125,47 +127,26 @@ theorem exists_inverse (φ : ℝ → F) (hφ : Isometry φ) (φz : φ 0 = 0) :
           linarith [abs_le.1 this |>.2]
       simpa [map_sub, h1] using this
   choose! f nf hf using this
-  obtain ⟨g, ψ, hψ, hg⟩ : ∃ (g : F →L[ℝ] ℝ) (ψ : ℕ → ℕ), StrictMono ψ ∧
-      ∀ y, Tendsto (fun n ↦ f (ψ n) y) atTop (𝓝 (g y)) := by sorry
-  refine ⟨g, le_antisymm (g.opNorm_le_bound (by norm_num) fun y ↦ ?_) ?_, fun t ↦ ?_⟩
-  · apply le_of_tendsto ((continuous_norm.tendsto _).comp (hg y))
-    rw [eventually_atTop]
-    exact ⟨1, fun c hc ↦ nf (ψ c) (hc.trans (hψ.id_le c)) ▸ (f (ψ c)).le_opNorm _⟩
-  · have : ∀ n ≥ 1, ‖f (ψ n) (φ 1)‖ = 1 := by
-      intro n hn
-      rw [hf (ψ n) (hn.trans (hψ.id_le n)), norm_one]
-      rw [mem_Icc]
-      constructor
-      · linarith
-      · norm_cast
-        exact hn.trans <| hψ.id_le n
-    have : 1 = ‖g (φ 1)‖ := by
-      have aux1 : Tendsto (fun n ↦ ‖f (ψ n) (φ 1)‖) atTop (𝓝 1) := by
-        apply tendsto_const_nhds.congr'
-        rw [EventuallyEq, eventually_atTop]
-        exact ⟨1, fun n hn ↦ (this n hn).symm⟩
-      have aux2 := (continuous_norm.tendsto _).comp <| hg (φ 1)
-      exact tendsto_nhds_unique aux1 aux2
-    rw [this]
-    apply g.unit_le_opNorm
-    rw [hφ.norm_map_of_map_zero φz, norm_one]
-  · rcases eq_or_ne t 0 with rfl | ht
-    · rw [φz, _root_.map_zero]
-    · have aux1 : Tendsto (fun n ↦ f (ψ n) (φ t)) atTop (𝓝 t) := by
-        apply tendsto_const_nhds.congr'
-        rw [EventuallyEq, eventually_atTop]
-        use ⌈|t|⌉₊
-        intro b hb
-        have : t ∈ Icc (-(ψ b) : ℝ) (ψ b) := by
-          rw [mem_Icc]
-          exact abs_le.1 (Nat.ceil_le.1 (hb.trans (hψ.id_le b)))
-        refine (hf _ ?_ _ this).symm
-        apply le_trans _ (hψ.id_le b)
-        apply le_trans _ hb
-        rw [Nat.one_le_ceil_iff]
-        positivity
-      have aux2 := hg (φ t)
-      exact tendsto_nhds_unique aux2 aux1
+  have : IsCompact (WeakDual.toNormedDual (𝕜 := ℝ) (E := F) ⁻¹' closedBall 0 1) :=
+    WeakDual.isCompact_closedBall _ _ _
+  obtain ⟨g, hg⟩ : ∃ g : WeakDual ℝ F, MapClusterPt g atTop f := by
+    have aux : atTop.map f ≤ 𝓟 (WeakDual.toNormedDual ⁻¹' closedBall 0 1) := sorry
+    obtain ⟨g, -, hg⟩ := this.exists_clusterPt aux
+    exact ⟨g, hg⟩
+  refine ⟨WeakDual.toNormedDual g, ?_, ?_⟩
+  have : ∀ t, WeakDual.toNormedDual g (φ t) = t := sorry
+
+  -- refine ⟨WeakDual.toNormedDual g, ng, fun t ↦ (eq_of_mem_singleton ?_).symm⟩
+  -- rw [← closedBall_zero, closedBall_eq_bInter_ball]
+  -- refine mem_biInter fun ε (hε : 0 < ε) ↦ ?_
+  -- · have := mapClusterPt_iff.1 hg
+  --     ((fun (y : WeakDual ℝ F) ↦ y (φ t))⁻¹' (ball ((WeakDual.toNormedDual g) (φ t)) ε))
+  --     ((isOpen_ball.preimage (WeakDual.eval_continuous _)).mem_nhds (mem_ball_self hε))
+  --   rw [frequently_atTop] at this
+  --   obtain ⟨b, b_ge, hb⟩ := this (Nat.ceil |t|)
+  --   have hfb : f b (φ t) = t := sorry
+  --   nth_rw 2 [← hfb]
+  --   exact hb
 
 theorem norm_normalize {x : E} (hx : x ≠ 0) : ‖(1 / ‖x‖) • x‖ = 1 := by
   rw [norm_smul, norm_div, norm_one, norm_norm, one_div_mul_cancel (norm_ne_zero_iff.2 hx)]
@@ -198,15 +179,16 @@ theorem exists_inverse' [FiniteDimensional ℝ E] [Nontrivial E]
     have := (tendsto_differentiable hu htu).eventually_ne (norm_ne_zero_iff.2 hz)
     rcases eventually_atTop.1 this with ⟨N, hN⟩
     exact ⟨fderiv ℝ (‖·‖) (u N), ⟨u N, hu N, rfl⟩, hN N (le_refl N)⟩
-  let b := BasisOfSpan (span_eq_top_of_ne_zero aux3)
+  let b := (Basis.ofSpan (span_eq_top_of_ne_zero aux3))
   have hb i : ∃ y : E, ‖y‖ = 1 ∧ DifferentiableAt ℝ (‖·‖) y ∧ b i = fderiv ℝ (‖·‖) y := by
     obtain ⟨y, dy, hy⟩ : ∃ y : E, DifferentiableAt ℝ (‖·‖) y ∧ b i = fderiv ℝ (‖·‖) y :=
-      basisOfSpan_subset (span_eq_top_of_ne_zero aux3) ⟨i, rfl⟩
+      Basis.ofSpan_subset (span_eq_top_of_ne_zero aux3) ⟨i, rfl⟩
     have yn : y ≠ 0 := ne_zero_of_differentiableAt_norm dy
     refine ⟨(1 / ‖y‖) • y, norm_normalize yn,
       (differentiableAt_norm_smul (one_div_ne_zero (norm_ne_zero_iff.2 yn))).1 dy, ?_⟩
     rw [fderiv_norm_smul_pos (one_div_pos.2 <| norm_pos_iff.2 yn), hy]
   choose y ny dy hy using hb
+  classical
   let c := (b.dualBasis).map (evalEquiv ℝ E).symm
   have b_map_c i j : b i (c j) = if i = j then 1 else 0 := by
     calc
@@ -217,7 +199,7 @@ theorem exists_inverse' [FiniteDimensional ℝ E] [Nontrivial E]
     { toFun := fun z ↦ ∑ i, (f (y i) z) • (c i)
       map_add' := fun _ ↦ by simp [Finset.sum_add_distrib, add_smul]
       map_smul' := fun _ ↦ by simp [Finset.smul_sum, smul_smul]
-      cont := continuous_finset_sum (@Finset.univ (Fin _) _) fun _ ↦ by fun_prop }
+      cont := continuous_finset_sum (@Finset.univ _ _) fun _ ↦ by fun_prop }
   use T
   have lipfφ {x : E} (nx : ‖x‖ = 1) : LipschitzWith 1 ((f x) ∘ φ) := by
     convert (f x).lipschitz.comp hφ.lipschitz

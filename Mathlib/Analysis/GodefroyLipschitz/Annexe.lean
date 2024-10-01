@@ -15,9 +15,21 @@ theorem dense_of_ae {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
 
 section tkt
 
-theorem mem_span_dual {𝕜 E : Type*} [Field 𝕜] [AddCommGroup E] [Module 𝕜 E] [FiniteDimensional 𝕜 E]
-    {n : ℕ} {L : Fin n → E →ₗ[𝕜] 𝕜} {K : E →ₗ[𝕜] 𝕜}
-    (h : ⨅ i, ker (L i) ≤ ker K) : K ∈ span 𝕜 (range L) := by
+variable {ι 𝕜 E : Type*} [Field 𝕜] [AddCommGroup E] [Module 𝕜 E]
+
+open LinearMap Set FiniteDimensional
+
+theorem pi_liftQ_eq_liftQ_pi {ι R M : Type*} [Ring R] [AddCommGroup M] [Module R M] {N : ι → Type*}
+    [∀ i, AddCommGroup (N i)] [∀ i, Module R (N i)]
+    (f : (i : ι) → M →ₗ[R] (N i)) {p : Submodule R M} (h : ∀ i, p ≤ ker (f i)) :
+    LinearMap.pi (fun i ↦ p.liftQ (f i) (h i)) =
+      p.liftQ (LinearMap.pi f) (LinearMap.ker_pi f ▸ le_iInf h) := by
+  ext x i
+  simp
+
+theorem _root_.FiniteDimensional.mem_span_of_iInf_ker_le_ker [FiniteDimensional 𝕜 E]
+    {L : ι → E →ₗ[𝕜] 𝕜} {K : E →ₗ[𝕜] 𝕜}
+    (h : ⨅ i, LinearMap.ker (L i) ≤ ker K) : K ∈ span 𝕜 (range L) := by
   by_contra hK
   rcases exists_dual_map_eq_bot_of_nmem hK inferInstance with ⟨φ, φne, hφ⟩
   let φs := (Module.evalEquiv 𝕜 E).symm φ
@@ -27,23 +39,24 @@ theorem mem_span_dual {𝕜 E : Type*} [Field 𝕜] [AddCommGroup E] [Module �
     exact ⟨L i, Submodule.subset_span ⟨i, rfl⟩, (apply_evalEquiv_symm_apply 𝕜 E _ φ).symm⟩
   simp only [apply_evalEquiv_symm_apply, φs, φne] at this
 
-theorem mem_span_dual' {𝕜 E : Type*} [Field 𝕜] [AddCommGroup E] [Module 𝕜 E]
-    {n : ℕ} {L : Fin n → E →ₗ[𝕜] 𝕜} {K : E →ₗ[𝕜] 𝕜}
+/-- Given some linear forms $L_1, ..., L_n, K$ over a vector space $E$, if
+$\bigcap_{i=1}^n \mathrm{ker}(L_i) \subseteq \mathrm{ker}(K)$, then $K$ is in the space generated
+by $L_1, ..., L_n$. -/
+theorem _root_.mem_span_of_iInf_ker_le_ker [Finite ι] {L : ι → E →ₗ[𝕜] 𝕜} {K : E →ₗ[𝕜] 𝕜}
     (h : ⨅ i, ker (L i) ≤ ker K) : K ∈ span 𝕜 (range L) := by
-  let φ : E →ₗ[𝕜] Fin n → 𝕜 := LinearMap.pi L
+  have _ := Fintype.ofFinite ι
+  let φ : E →ₗ[𝕜] ι → 𝕜 := LinearMap.pi L
   let p := ⨅ i, ker (L i)
   have p_eq : p = ker φ := (ker_pi L).symm
-  let ψ : (E ⧸ p) →ₗ[𝕜] Fin n → 𝕜 := p.liftQ φ p_eq.le
+  let ψ : (E ⧸ p) →ₗ[𝕜] ι → 𝕜 := p.liftQ φ p_eq.le
   have _ : FiniteDimensional 𝕜 (E ⧸ p) := of_injective ψ (ker_eq_bot.1 (ker_liftQ_eq_bot' p φ p_eq))
   let L' i : (E ⧸ p) →ₗ[𝕜] 𝕜 := p.liftQ (L i) (iInf_le _ i)
   let K' : (E ⧸ p) →ₗ[𝕜] 𝕜 := p.liftQ K h
   have : ⨅ i, ker (L' i) ≤ ker K' := by
-    have : LinearMap.pi L' = ψ := by
-      ext x i
-      simp [L', ψ, φ]
-    simp_rw [← ker_pi, this, ψ, ker_liftQ_eq_bot' p φ p_eq]
+    simp_rw [← ker_pi, L', pi_liftQ_eq_liftQ_pi, ker_liftQ_eq_bot' p φ p_eq]
     exact bot_le
-  obtain ⟨c, hK'⟩ := (mem_span_range_iff_exists_fun 𝕜).1 (mem_span_dual this)
+  obtain ⟨c, hK'⟩ :=
+    (mem_span_range_iff_exists_fun 𝕜).1 (FiniteDimensional.mem_span_of_iInf_ker_le_ker this)
   refine (mem_span_range_iff_exists_fun 𝕜).2 ⟨c, ?_⟩
   conv_lhs => enter [2]; intro i; rw [← p.liftQ_mkQ (L i) (iInf_le _ i)]
   rw [← p.liftQ_mkQ K h]
@@ -59,6 +72,12 @@ variable {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V]
 variable {s t : Set V}
 
 namespace Basis
+
+noncomputable instance [Module.Finite K V] (hs : LinearIndependent K ((↑) : s → V)) (hst : s ⊆ t) :
+    Fintype (hs.extend hst) := by
+  refine Classical.choice (Cardinal.lt_aleph0_iff_fintype.1 ?_)
+  refine lt_of_le_of_lt (LinearIndependent.cardinal_le_rank' (hs.linearIndependent_extend hst)) ?_
+  exact rank_lt_aleph0 K V
 
 /-- If `s` is a family of linearly independent vectors contained in a set `t` spanning `V`,
 then one can get a basis of `V` containing `s` and contained in `t`. -/
@@ -125,9 +144,10 @@ theorem span_eq_top_of_ne_zero {R M : Type*} [CommRing R] [AddCommGroup M]
     [Module R M] [IsReflexive R M]
     {s : Set (M →ₗ[R] R)} [Free R ((M →ₗ[R] R) ⧸ (span R s))]
     (h : ∀ z : M, z ≠ 0 → ∃ f ∈ s, f z ≠ 0) :
-    span R s = ⊤ := by
-  by_contra! hn
-  rcases exists_dual_map_eq_bot_of_lt_top hn.lt_top inferInstance with ⟨φ, φne, hφ⟩
+    ⊤ ≤ span R s := by
+  by_contra hn
+  replace hn := (ne_of_not_le hn).symm.lt_top
+  rcases exists_dual_map_eq_bot_of_lt_top hn inferInstance with ⟨φ, φne, hφ⟩
   let φs := (Module.evalEquiv R M).symm φ
   have : ∀ f ∈ s, f φs = 0 := by
     intro f hf
