@@ -44,37 +44,36 @@ that takes a line through the origin and returns its slope. For a vertical line
 the slope is `∞`.
 -/
 variable {K : Type*}
-/-- A modified division from a `DivisionRing` to its `OnePoint` extension. With notation `÷`
-for `divOnePoint`, we have in particular that `1 ÷ 0 = ∞`. -/
-noncomputable def divOnePoint [DivisionRing K] (a : K) (r : K): OnePoint K :=
+/-- A modified division from a structure with `Zero` and `Div` to its
+ `OnePoint` extension. With notation `÷` for `divOnePoint`,
+  we have in particular that `1 ÷ 0 = ∞`. -/
+noncomputable def divOnePoint [Zero K] [Div K] (a : K) (r : K): OnePoint K :=
   if r ≠ 0 then a / r else ∞
 
 /-- Uncurried version of `divOnePoint`, with nonzeroness assumption. -/
-noncomputable def divOnePoint' [DivisionRing K]
+noncomputable def divOnePoint' [Zero K] [Div K]
   (u : {v : Fin 2 → K // v ≠ 0}) : OnePoint K :=
   if u.1 1 ≠ 0 then some (u.1 0 / u.1 1) else ∞
 
 /-- Notation `÷` showing that `divOnePoint` is distinct from
-the ordinary division `/` of a `DivisionRing`. -/
+ ordinary division `/`. -/
 infix:50 " ÷ " => divOnePoint
 
 /-- `divOnePoint` can be lifted to the projective line (see `divSlope`.) -/
 lemma divOnePoint_lifts [Field K] (a b : {v : Fin 2 → K // v ≠ 0})
-    (h : ∃ c : Kˣ, (fun m : Kˣ ↦ m • b.1) c = a.1) :
-    (fun u ↦ u.1 0 ÷ u.1 1) a = (fun u ↦ u.1 0 ÷ u.1 1) b := by
+    (h : ∃ c : Kˣ, (fun m : Kˣ ↦ m.1 • b.1) c = a.1) :
+    (a.1 0 ÷ a.1 1) = (b.1 0 ÷ b.1 1) := by
   obtain ⟨c,hc⟩ := h
-  simp_all only
   rw [← hc]
-  unfold divOnePoint; simp only [ne_eq, Fin.isValue, Pi.smul_apply, ite_not]
+  simp only [divOnePoint, ne_eq, Fin.isValue, Pi.smul_apply, ite_not]
   split_ifs with hbc hb hb
   · rfl
-  · simp_all only [ne_eq, OnePoint.infty_ne_coe]
+  · simp only [ne_eq, OnePoint.infty_ne_coe]
     exact hb <| (Units.mul_right_eq_zero c).mp hbc
   · rw [hb] at hbc
     simp at hbc
   · apply congrArg some
     field_simp
-    show c * b.1 0 * b.1 1 = b.1 0 * (c * b.1 1)
     ring
 
 /-- Equivalence between the projective line and the one-point extension. -/
@@ -85,51 +84,38 @@ noncomputable def divSlope [Field K] (p : ℙ K (Fin 2 → K)) : OnePoint K :=
 We establish the equivalence between `OnePoint K` and `ℙ K (Fin 2 → K)` for a field `K`.
 -/
 
-/-- In a nonzero pair, if one coordinate is 0 then the other is nonzero. -/
-lemma not_both_zero [Zero K]
-    (a : Fin 2 → K) (ha : a ≠ 0) (h : a 1 = 0) : a 0 ≠ 0 := by
-  intro hc; apply ha; ext s
-  cases (Nat.le_one_iff_eq_zero_or_eq_one.mp (Fin.is_le s)) with
-  |inl hl => simp_all [Fin.eq_of_val_eq (j := 0) hl]
-  |inr hr => simp_all [Fin.eq_of_val_eq (j := 1) hr]
+/-- Extensionality for functions from `Fin 2`. -/
+lemma funext_fin2 [Zero K] {a b : Fin 2 → K} (h₀ : a 0 = b 0) (h₁ : a 1 = b 1) : a = b :=
+  funext <| fun j => by fin_cases j <;> simp[h₀,h₁]
 
-instance [DivisionRing K] : Setoid ({v : Fin 2 → K // v ≠ 0}) :=
+local instance [DivisionRing K] : Setoid ({v : Fin 2 → K // v ≠ 0}) :=
   projectivizationSetoid K (Fin 2 → K)
 
 /-- `divSlope` respects projective equivalence. -/
-lemma divSlope_inj_lifted [Field K]
-    (a b : {v : Fin 2 → K // v ≠ 0}) :
-    divSlope ⟦a⟧ = divSlope ⟦b⟧ →
-    (⟦a⟧ : Quotient (projectivizationSetoid K (Fin 2 → K))) = ⟦b⟧ := by
-  unfold divSlope
-  intro h
-  repeat rw [Quotient.lift_mk] at h
-  apply Quotient.sound
-  unfold divOnePoint at h
-  split_ifs at h with g₀ g₁ g₂
-  · use Units.mk ((a.1 1) / (b.1 1)) ((b.1 1) / (a.1 1)) (by field_simp) (by field_simp)
-    ext s
-    cases (Nat.le_one_iff_eq_zero_or_eq_one.mp (Fin.is_le s)) with
-    |inl hl =>
-      simp_all only [ne_eq, Fin.eq_of_val_eq (j := 0) hl, Fin.val_zero, Pi.smul_apply,
-        Units.smul_mk_apply, smul_eq_mul]
+lemma divSlope_inj_lifted [Field K] (a b : {v : Fin 2 → K // v ≠ 0})
+    (h : divSlope ⟦a⟧ = divSlope ⟦b⟧) : (⟦a⟧ : Quotient (projectivizationSetoid K _)) = ⟦b⟧ :=
+  Quotient.sound <| by
+  by_cases ga : a.1 1 = 0
+  · by_cases gb : b.1 1 = 0
+    · simp only [ne_eq, Decidable.not_not]
+      have h₀ : a.1 0 ≠ 0 := fun hc => False.elim <| a.2 <|funext_fin2 hc ga
+      have h₁ : b.1 0 ≠ 0 := fun hc => False.elim <| b.2 <|funext_fin2 hc gb
+      use Units.mk ((a.1 0) / (b.1 0)) ((b.1 0) / (a.1 0)) (by field_simp) (by field_simp)
+      apply List.ofFn_inj.mp
+      simp only [List.ofFn_succ, Pi.smul_apply, Fin.succ_zero_eq_one]
+      rw [ga, gb]
       field_simp
-      have h' : (a.1 0 / a.1 1) = (b.1 0 / b.1 1) := Option.some_injective K h
-      field_simp at h'
-      rw [h', mul_comm]
-    |inr hr => simp_all [Fin.eq_of_val_eq (j := 1) hr]
-  · simp at h
-  · simp at h
-  · simp_all only [ne_eq, Decidable.not_not]
-    have h₀ : a.1 0 ≠ 0 := not_both_zero _ a.2 g₀
-    have h₁ : b.1 0 ≠ 0 := not_both_zero _ b.2 g₂
-    use Units.mk ((a.1 0) / (b.1 0)) ((b.1 0) / (a.1 0)) (by field_simp) (by field_simp)
-    simp only [ne_eq, Fin.isValue, Units.smul_mk_apply]
-    apply List.ofFn_inj.mp
-    simp only [Fin.isValue, List.ofFn_succ, Pi.smul_apply, smul_eq_mul,
-      Fin.succ_zero_eq_one, List.ofFn_zero, List.cons.injEq, and_true]
-    rw [g₀, g₂]
-    field_simp
+    · simp_all[divSlope, divOnePoint]
+  · by_cases gb : b.1 1 = 0
+    · simp_all[divSlope, divOnePoint]
+    · use Units.mk (a.1 1 / b.1 1) (b.1 1 / a.1 1) (by field_simp) (by field_simp)
+      ext s
+      fin_cases s
+      · simp_all only [divSlope, divOnePoint, ite_not, Quotient.lift_mk, smul_eq_mul]
+        have h' : a.1 0 / a.1 1 = b.1 0 / b.1 1 := Option.some_injective K h
+        field_simp at *
+        rw [h', mul_comm]
+      · simp_all
 
 /-- Over any field `K`, `divSlope` is injective. -/
 lemma divSlope_injective [Field K] : Function.Injective (@divSlope K _) :=
@@ -144,8 +130,8 @@ def slope_inv [DivisionRing K] (p : OnePoint K) : ℙ K (Fin 2 → K) := match p
 /-- `slope_inv` is an inverse of `divSlope`. -/
 lemma divSlope_inv [Field K] : Function.LeftInverse (@divSlope K _) slope_inv := by
   intro a
-  have g₀ :       divOnePoint' ⟨![(1:K), 0], by simp⟩ = ∞  := by unfold divOnePoint'; simp
-  have g₁ (t:K) : divOnePoint' ⟨![t, 1], by simp⟩ = some t := by unfold divOnePoint'; simp
+  have g₀       : divOnePoint' ⟨![(1:K), 0], by simp⟩ =      ∞ := by simp[divOnePoint']
+  have g₁ (t:K) : divOnePoint' ⟨![    t, 1], by simp⟩ = some t := by simp[divOnePoint']
   cases a with
   |none => exact g₀
   |some t => exact g₁ t
