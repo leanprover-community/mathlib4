@@ -556,26 +556,3 @@ instance IsStandardSmoothOfRelativeDimension.baseChange
 end BaseChange
 
 end Algebra
-
-namespace RingHom
-
-variable {R : Type u} [CommRing R]
-variable {S : Type v} [CommRing S]
-
-/-- A ring homomorphism `R →+* S` is standard smooth if `S` is standard smooth as `R`-algebra. -/
-def IsStandardSmooth (f : R →+* S) : Prop :=
-  @Algebra.IsStandardSmooth.{t, w} _ _ _ _ f.toAlgebra
-
-/-- A ring homomorphism `R →+* S` is standard smooth of relative dimension `n` if
-`S` is standard smooth of relative dimension `n` as `R`-algebra. -/
-def IsStandardSmoothOfRelativeDimension (f : R →+* S) : Prop :=
-  @Algebra.IsStandardSmoothOfRelativeDimension.{t, w} n _ _ _ _ f.toAlgebra
-
-lemma IsStandardSmoothOfRelativeDimension.isStandardSmooth (f : R →+* S)
-    (hf : IsStandardSmoothOfRelativeDimension.{t, w} n f) :
-    IsStandardSmooth.{t, w} f :=
-  letI : Algebra R S := f.toAlgebra
-  letI : Algebra.IsStandardSmoothOfRelativeDimension.{t, w} n R S := hf
-  Algebra.IsStandardSmoothOfRelativeDimension.isStandardSmooth n
-
-end RingHom

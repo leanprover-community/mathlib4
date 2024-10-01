@@ -159,6 +159,9 @@ protected lemma ext {f g : X ⟶ Y} (h_base : f.1.base = g.1.base)
   LocallyRingedSpace.Hom.ext <| SheafedSpace.ext _ _ h_base
     (TopCat.Presheaf.ext fun U ↦ by simpa using h_app U)
 
+lemma preimage_le {U V : Opens Y} (e : U ≤ V) : f ⁻¹ᵁ U ≤ f ⁻¹ᵁ V :=
+  leOfHom ((Opens.map f.val.base).map <| homOfLE e)
+
 lemma preimage_iSup {ι} (U : ι → Opens Y) : f ⁻¹ᵁ iSup U = ⨆ i, f ⁻¹ᵁ U i :=
   Opens.ext (by simp)
 

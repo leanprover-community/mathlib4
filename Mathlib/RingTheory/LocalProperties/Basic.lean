@@ -201,19 +201,23 @@ lemma RingHom.HoldsForLocalizationAway.containsIdentities (hPl : HoldsForLocaliz
   introv R
   exact hPl.of_bijective _ _ Function.bijective_id
 
-theorem RingHom.PropertyIsLocal.respectsIso (hP : RingHom.PropertyIsLocal @P) :
-    RingHom.RespectsIso @P := by
-  constructor
-  · intro R S T _ _ _ f e hf
+lemma RingHom.StableUnderCompositionWithLocalizationAway.respectsIso
+    (hP : StableUnderCompositionWithLocalizationAway P) :
+    RespectsIso P where
+  left {R S T} _ _ _ f e hf := by
     letI := e.toRingHom.toAlgebra
     have : IsLocalization.Away (1 : S) T :=
       IsLocalization.away_of_isUnit_of_bijective _ isUnit_one e.bijective
-    exact hP.StableUnderCompositionWithLocalizationAway.left T (1 : S) f hf
-  · intro R S T _ _ _ f e hf
+    exact hP.left T (1 : S) f hf
+  right {R S T} _ _ _ f e hf := by
     letI := e.toRingHom.toAlgebra
     have : IsLocalization.Away (1 : R) S :=
       IsLocalization.away_of_isUnit_of_bijective _ isUnit_one e.bijective
-    exact hP.StableUnderCompositionWithLocalizationAway.right S (1 : R) f hf
+    exact hP.right S (1 : R) f hf
+
+theorem RingHom.PropertyIsLocal.respectsIso (hP : RingHom.PropertyIsLocal @P) :
+    RingHom.RespectsIso @P :=
+  hP.StableUnderCompositionWithLocalizationAway.respectsIso
 
 -- Almost all arguments are implicit since this is not intended to use mid-proof.
 theorem RingHom.LocalizationPreserves.away (H : RingHom.LocalizationPreserves @P) (r : R)
@@ -256,6 +260,11 @@ lemma RingHom.OfLocalizationSpanTarget.ofIsLocalization
   rw [← RingHom.comp_assoc, RingEquiv.toRingHom_eq_coe, AlgEquiv.toRingEquiv_eq_coe,
     AlgEquiv.toRingEquiv_toRingHom, Localization.coe_algEquiv_symm, IsLocalization.map_comp,
     RingHom.comp_id]
+
+lemma RingHom.StableUnderBaseChange.localizationPreserves (hP : StableUnderBaseChange P) :
+    LocalizationPreserves P := by
+  introv R hf
+  exact hP.isLocalization_map _ _ _ hf
 
 end RingHom
 
