@@ -223,7 +223,11 @@ theorem Module.End.iSup_genEigenspace_restrict_eq_top
     ← Submodule.map_iSup, Submodule.comap_map_eq_of_injective h_inj] at this
   exact this.symm
 
-lemma Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_commute {ι : Type*} [FiniteDimensional K V]
+/-- Given a family of endomorphisms `i ↦ f i` which are compatible in the sense that every maximal
+generalised eigenspace of `f i` is invariant wrt `f j`, if each `f i` is triangularizable, the
+family is simultaneously triangularizable. -/
+lemma Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo
+    {ι : Type*} [FiniteDimensional K V]
     (f : ι → End K V)
     (h : ∀ i j φ, MapsTo (f i) ((f j).maxGenEigenspace φ) ((f j).maxGenEigenspace φ))
     (h' : ∀ i, ⨆ μ, (f i).maxGenEigenspace μ = ⊤) :

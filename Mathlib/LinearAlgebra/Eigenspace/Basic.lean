@@ -449,6 +449,10 @@ lemma _root_.Submodule.inf_genEigenspace (f : End R M) (p : Submodule R M) {k : 
       (genEigenspace (LinearMap.restrict f hfp) μ k).map p.subtype := by
   rw [f.genEigenspace_restrict _ _ _ hfp, Submodule.map_comap_eq, Submodule.range_subtype]
 
+/-- Given a family of endomorphisms `i ↦ f i`, a family of candidate eigenvalues `i ↦ μ i`, and a
+submodule `p` which is invariant wrt every `f i`, the intersection of `p` with the simultaneous
+maximal generalised eigenspace (taken over all `i`), is the same as the simultaneous maximal
+generalised eigenspace of the `f i` restricted to `p`. -/
 lemma _root_.Submodule.inf_iInf_maxGenEigenspace_of_forall_mapsTo {ι : Type*} {μ : ι → R}
     (f : ι → End R M) (p : Submodule R M) (hfp : ∀ i, MapsTo (f i) p p) :
     p ⊓ ⨅ i, (f i).maxGenEigenspace (μ i) =
@@ -458,6 +462,10 @@ lemma _root_.Submodule.inf_iInf_maxGenEigenspace_of_forall_mapsTo {ι : Type*} {
   · simp_rw [inf_iInf, maxGenEigenspace, ((f _).genEigenspace _).mono.directed_le.inf_iSup_eq,
       p.inf_genEigenspace _ (hfp _), ← Submodule.map_iSup, Submodule.map_iInf _ p.injective_subtype]
 
+/-- Given a family of endomorphisms `i ↦ f i`, a family of candidate eigenvalues `i ↦ μ i`, and a
+distinguished index `i` whose maximal generalised `μ i`-eigenspace is invariant wrt every `f j`,
+taking simultaneous maximal generalised eigenspaces is unaffected by first restricting to the
+distinguished generalised `μ i`-eigenspace. -/
 lemma iInf_maxGenEigenspace_restrict_map_subtype_eq
     {ι : Type*} {μ : ι → R} (i : ι) (f : ι → End R M)
     (h : ∀ j, MapsTo (f j) ((f i).maxGenEigenspace (μ i)) ((f i).maxGenEigenspace (μ i))) :
