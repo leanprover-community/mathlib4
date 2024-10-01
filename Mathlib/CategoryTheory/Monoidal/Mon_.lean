@@ -34,13 +34,15 @@ class Mon_Class (X : C) where
   one : 𝟙_ C ⟶ X
   /-- The multiplication morphism of a monoid object. -/
   mul : X ⊗ X ⟶ X
-  one_mul : one ▷ X ≫ mul = (λ_ X).hom := by aesop_cat
-  mul_one : X ◁ one ≫ mul = (ρ_ X).hom := by aesop_cat
+  /- For the names of the conditions below, the unprimed names are reserved for the version where
+  the argument `X` is explicit. -/
+  one_mul' : one ▷ X ≫ mul = (λ_ X).hom := by aesop_cat
+  mul_one' : X ◁ one ≫ mul = (ρ_ X).hom := by aesop_cat
   -- Obviously there is some flexibility stating this axiom.
   -- This one has left- and right-hand sides matching the statement of `Monoid.mul_assoc`,
   -- and chooses to place the associator on the right-hand side.
   -- The heuristic is that unitors and associators "don't have much weight".
-  mul_assoc : (mul ▷ X) ≫ mul = (α_ X X X).hom ≫ (X ◁ mul) ≫ mul := by aesop_cat
+  mul_assoc' : (mul ▷ X) ≫ mul = (α_ X X X).hom ≫ (X ◁ mul) ≫ mul := by aesop_cat
 
 namespace Mon_Class
 
@@ -49,19 +51,17 @@ namespace Mon_Class
 @[inherit_doc] scoped notation "η" => Mon_Class.one
 @[inherit_doc] scoped notation "η["M"]" => Mon_Class.one (X := M)
 
-attribute [reassoc (attr := simp)] one_mul mul_one mul_assoc
+/- The simp attribute is reserved for the unprimed versions. -/
+attribute [reassoc] one_mul' mul_one' mul_assoc'
 
-/-- A version of `one_mul`, where the argument is explicit. -/
-@[reassoc]
-theorem one_mul' (X : C) [Mon_Class X] : η ▷ X ≫ μ = (λ_ X).hom := one_mul
+@[reassoc (attr := simp)]
+theorem one_mul (X : C) [Mon_Class X] : η ▷ X ≫ μ = (λ_ X).hom := one_mul'
 
-/-- A version of `mul_one`, where the argument is explicit. -/
-@[reassoc]
-theorem mul_one' (X : C) [Mon_Class X] : X ◁ η ≫ μ = (ρ_ X).hom := mul_one
+@[reassoc (attr := simp)]
+theorem mul_one (X : C) [Mon_Class X] : X ◁ η ≫ μ = (ρ_ X).hom := mul_one'
 
-/-- A version of `mul_assoc`, where the argument is explicit. -/
-@[reassoc]
-theorem mul_assoc' (X : C) [Mon_Class X] : μ ▷ X ≫ μ = (α_ X X X).hom ≫ X ◁ μ ≫ μ := mul_assoc
+@[reassoc (attr := simp)]
+theorem mul_assoc (X : C) [Mon_Class X] : μ ▷ X ≫ μ = (α_ X X X).hom ≫ X ◁ μ ≫ μ := mul_assoc'
 
 end Mon_Class
 
@@ -106,9 +106,9 @@ def mk' (X : C) [Mon_Class X] : Mon_ C where
 instance {M : Mon_ C} : Mon_Class M.X where
   one := M.one
   mul := M.mul
-  one_mul := M.one_mul
-  mul_one := M.mul_one
-  mul_assoc := M.mul_assoc
+  one_mul' := M.one_mul
+  mul_one' := M.mul_one
+  mul_assoc' := M.mul_assoc
 
 variable (C)
 

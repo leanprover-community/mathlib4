@@ -40,9 +40,11 @@ class Comon_Class (X : C) where
   counit : X ⟶ 𝟙_ C
   /-- The comultiplication morphism of a comonoid object. -/
   comul : X ⟶ X ⊗ X
-  counit_comul : comul ≫ counit ▷ X = (λ_ X).inv := by aesop_cat
-  comul_counit : comul ≫ X ◁ counit = (ρ_ X).inv := by aesop_cat
-  comul_assoc : comul ≫ X ◁ comul = comul ≫ (comul ▷ X) ≫ (α_ X X X).hom := by aesop_cat
+  /- For the names of the conditions below, the unprimed names are reserved for the version where
+  the argument `X` is explicit. -/
+  counit_comul' : comul ≫ counit ▷ X = (λ_ X).inv := by aesop_cat
+  comul_counit' : comul ≫ X ◁ counit = (ρ_ X).inv := by aesop_cat
+  comul_assoc' : comul ≫ X ◁ comul = comul ≫ (comul ▷ X) ≫ (α_ X X X).hom := by aesop_cat
 
 namespace Comon_Class
 
@@ -51,21 +53,19 @@ namespace Comon_Class
 @[inherit_doc] scoped notation "ε" => Comon_Class.counit
 @[inherit_doc] scoped notation "ε["M"]" => Comon_Class.counit (X := M)
 
-attribute [reassoc (attr := simp)] counit_comul comul_counit comul_assoc
+/- The simp attribute is reserved for the unprimed versions. -/
+attribute [reassoc] counit_comul' comul_counit' comul_assoc'
 
-/-- A version of `counit_comul`, where the argument is explicit. -/
-@[reassoc]
-theorem counit_comul' (X : C) [Comon_Class X] : Δ ≫ ε ▷ X = (λ_ X).inv := counit_comul
+@[reassoc (attr := simp)]
+theorem counit_comul (X : C) [Comon_Class X] : Δ ≫ ε ▷ X = (λ_ X).inv := counit_comul'
 
-/-- A version of `comul_counit`, where the argument is explicit. -/
-@[reassoc]
-theorem comul_counit' (X : C) [Comon_Class X] : Δ ≫ X ◁ ε = (ρ_ X).inv := comul_counit
+@[reassoc (attr := simp)]
+theorem comul_counit (X : C) [Comon_Class X] : Δ ≫ X ◁ ε = (ρ_ X).inv := comul_counit'
 
-/-- A version of `comul_assoc`, where the argument is explicit. -/
-@[reassoc]
-theorem comul_assoc' (X : C) [Comon_Class X] :
+@[reassoc (attr := simp)]
+theorem comul_assoc (X : C) [Comon_Class X] :
     Δ ≫ X ◁ Δ = Δ ≫ Δ ▷ X ≫ (α_ X X X).hom :=
-  comul_assoc
+  comul_assoc'
 
 end Comon_Class
 
@@ -106,9 +106,9 @@ def mk' (X : C) [Comon_Class X] : Comon_ C where
 instance {M : Comon_ C} : Comon_Class M.X where
   counit := M.counit
   comul := M.comul
-  counit_comul := M.counit_comul
-  comul_counit := M.comul_counit
-  comul_assoc := M.comul_assoc
+  counit_comul' := M.counit_comul
+  comul_counit' := M.comul_counit
+  comul_assoc' := M.comul_assoc
 
 variable (C)
 
