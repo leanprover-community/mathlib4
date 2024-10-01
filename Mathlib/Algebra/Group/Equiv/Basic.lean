@@ -130,7 +130,6 @@ instance (priority := 100) instMonoidHomClass
         _ = e (EquivLike.inv e (1 : N)) := by rw [← map_mul, one_mul]
         _ = 1 := EquivLike.right_inv e 1 }
 
-variable [EquivLike F α β]
 variable {F}
 
 @[to_additive (attr := simp)]
