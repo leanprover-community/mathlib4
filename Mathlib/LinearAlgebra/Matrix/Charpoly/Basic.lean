@@ -119,7 +119,7 @@ lemma charpoly_fromBlocks_zero₂₁ :
     det_fromBlocks_zero₂₁]
 
 lemma toSquareBlock_charmatrix {α : Type*} [DecidableEq α] {b : n → α} {a : α}  :
-    (M.toSquareBlock b a).charmatrix = M.charmatrix.toSquareBlock _ _ := by
+    (M.toSquareBlock b a).charmatrix = M.charmatrix.toSquareBlock b a := by
   ext i j : 1
   simp [charmatrix_apply, toSquareBlock_def, diagonal_apply, Subtype.ext_iff]
 
