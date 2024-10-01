@@ -348,6 +348,15 @@ lemma locally_localizationPreserves (hPi : RespectsIso P) (hPl : LocalizationPre
     apply hPl
     exact hs a.val a.property
 
+/-- If `P` is preserved by localizations and stable under composition with localization
+away maps, then `Locally P` is a local property of ring homomorphisms. -/
+lemma locally_propertyIsLocal (hPl : LocalizationPreserves P)
+    (hPa : StableUnderCompositionWithLocalizationAway P) : PropertyIsLocal (Locally P) where
+  LocalizationPreserves := locally_localizationPreserves hPa.respectsIso hPl
+  StableUnderCompositionWithLocalizationAway :=
+    locally_stableUnderCompositionWithLocalizationAway hPa
+  OfLocalizationSpanTarget := locally_ofLocalizationSpanTarget hPa.respectsIso
+
 end Stability
 
 end RingHom
