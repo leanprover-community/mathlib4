@@ -282,11 +282,8 @@ lemma normal_iff_forall_map_eq : Normal F K ↔ ∀ σ : L →ₐ[F] L, K.map σ
 lemma normal_iff_forall_map_eq' : Normal F K ↔ ∀ σ : L ≃ₐ[F] L, K.map ↑σ = K :=
 ⟨fun h σ ↦ normal_iff_forall_map_eq.1 h σ, fun h ↦ normal_iff_forall_map_le'.2 (fun σ ↦ (h σ).le)⟩
 
-instance instSMulMemClass : SMulMemClass (IntermediateField F L) F L :=
-  ⟨fun _ _ hx ↦ smul_mem _ hx⟩
-
 @[simp]
-lemma normalClosure_map (K : IntermediateField F L) (σ : L →ₐ[F] L) :
+lemma normalClosure_map_eq (K : IntermediateField F L) (σ : L →ₐ[F] L) :
     normalClosure F (K.map σ) L = normalClosure F K L :=
   have (σ : L ≃ₐ[F] L) : normalClosure F (K.map (σ : L →ₐ[F] L)) L = normalClosure F K L := by
     simp_rw [normalClosure_def'', map_map]
