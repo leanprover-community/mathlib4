@@ -113,7 +113,7 @@ section Length
 variable {a : FreeMonoid α}
 
 /-- The length of a free monoid element: 1.length = 0 and (a * b).length = a.length + b.length -/
-@[to_additive "The length of a additive free monoid element: 1.length = 0 and (a + b).length =
+@[to_additive "The length of an additive free monoid element: 1.length = 0 and (a + b).length =
   a.length + b.length"]
 def length (a : FreeMonoid α) : ℕ := List.length a
 
