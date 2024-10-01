@@ -442,7 +442,8 @@ lemma Integrable.of_finite [Finite α] [MeasurableSingletonClass α] [IsFiniteMe
     Integrable f μ := ⟨.of_finite, .of_finite⟩
 
 /-- This lemma is a special case of `Integrable.of_finite`. -/
-@[deprecated Integrable.of_finite] -- Eternal deprecation for discoverability, don't remove
+-- Eternal deprecation for discoverability, don't remove
+@[deprecated Integrable.of_finite, nolint deprecatedNoSince]
 lemma Integrable.of_isEmpty [IsEmpty α] {f : α → β} : Integrable f μ := .of_finite
 
 @[deprecated (since := "2024-02-05")] alias integrable_of_fintype := Integrable.of_finite
