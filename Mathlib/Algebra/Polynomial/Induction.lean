@@ -26,12 +26,11 @@ open Polynomial
 
 universe u v w x y z
 
-variable {R : Type u} {S : Type v} {T : Type w} {ι : Type x} {k : Type y} {A : Type z} {a b : R}
-  {m n : ℕ}
+variable {R : Type u}
 
 section Semiring
 
-variable [Semiring R] {p q r : R[X]}
+variable [Semiring R]
 
 @[elab_as_elim]
 protected theorem induction_on {M : R[X] → Prop} (p : R[X]) (h_C : ∀ a, M (C a))
