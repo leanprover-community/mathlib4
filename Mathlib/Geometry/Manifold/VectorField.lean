@@ -43,6 +43,17 @@ lemma IsInvertible.comp {g : F →L[𝕜] G} {f : E →L[𝕜] F}
   rcases hf with ⟨M, rfl⟩
   exact ⟨M.trans N, rfl⟩
 
+lemma IsInvertible.inverse_comp {g : F →L[𝕜] G} {f : E →L[𝕜] F}
+    (hg : g.IsInvertible) (hf : f.IsInvertible) : (g ∘L f).inverse = f.inverse ∘L g.inverse := by
+  rcases hg with ⟨N, rfl⟩
+  rcases hf with ⟨M, rfl⟩
+  simp only [ContinuousLinearEquiv.comp_coe, inverse_equiv, ContinuousLinearEquiv.coe_inj]
+  rfl
+
+lemma IsInvertible.inverse_comp_apply {g : F →L[𝕜] G} {f : E →L[𝕜] F} {v : G}
+    (hg : g.IsInvertible) (hf : f.IsInvertible) : (g ∘L f).inverse v = f.inverse (g.inverse v) := by
+  simp only [hg.inverse_comp hf, coe_comp', Function.comp_apply]
+
 end ContinuousLinearMap
 
 
@@ -105,6 +116,7 @@ lemma pullback_eq_of_not_exists {f : E → F} {x : E}
 
 open scoped Topology Filter
 
+/-- A variant for the derivative of a composition, written without `∘`. -/
 theorem fderiv.comp'
     {f : E → F} {g : F → G} (x : E) (hg : DifferentiableAt 𝕜 g (f x))
     (hf : DifferentiableAt 𝕜 f x) :
@@ -233,6 +245,9 @@ def mpullbackWithin (f : M → M') (V : Π (x : M'), TangentSpace I' x) (s : Set
     TangentSpace I x :=
   (mfderivWithin I I' f s x).inverse (V (f x))
 
+lemma mpullbackWithin_apply (f : M → M') (V : Π (x : M'), TangentSpace I' x) (s : Set M) (x : M) :
+    mpullbackWithin I I' f V s x = (mfderivWithin I I' f s x).inverse (V (f x)) := rfl
+
 lemma mpullbackWithin_comp (g : M' → M'') (f : M → M') (V : Π (x : M''), TangentSpace I'' x)
     (s : Set M) (t : Set M') (x₀ : M) (hg : MDifferentiableWithinAt I' I'' g t (f x₀))
     (hf : MDifferentiableWithinAt I I' f s x₀) (h : Set.MapsTo f s t)
@@ -255,20 +270,75 @@ lemma mpullbackWithin_eq_iff (f : M → M') (V W : Π (x : M'), TangentSpace I' 
 
 def mlieBracketWithin (V W : Π (x : M), TangentSpace I x) (s : Set M) (x₀ : M) :
      TangentSpace I x₀ := by
-  let t : Set E := ((extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target)
+  let t : Set E := (extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target
   let V' := mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm V t
   let W' := mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm W t
   let Z := lieBracketWithin 𝕜 V' W' t
   exact mpullbackWithin I 𝓘(𝕜, E) (extChartAt I x₀) Z (s ∩ (extChartAt I x₀).source) x₀
 
+lemma mlieBracketWithin_def (V W : Π (x : M), TangentSpace I x) (s : Set M) :
+    mlieBracketWithin I V W s = fun x₀ ↦
+    mpullbackWithin I 𝓘(𝕜, E) (extChartAt I x₀)
+      (lieBracketWithin 𝕜
+        (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm V
+          ((extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target))
+        (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm W
+          ((extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target))
+        ((extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target))
+    (s ∩ (extChartAt I x₀).source) x₀ := rfl
+
 /-- The Lie bracket of vector fields on manifolds is well defined, i.e., it is invariant under
 diffeomorphisms.
 TODO: write a version localized to sets. -/
-lemma key (f : M → M') (V W : Π (x : M'), TangentSpace I' x) (x₀ : M) :
-    mpullbackWithin I I' f (mlieBracketWithin I' V W univ) univ x₀ =
-      mlieBracketWithin I (mpullbackWithin I I' f V univ) (mpullbackWithin I I' f W univ)
-      univ x₀ := by
-  simp [mlieBracketWithin, comp_def]
+lemma key (f : M → M') (V W : Π (x : M'), TangentSpace I' x) (x₀ : M) (s : Set M) (t : Set M')
+    (hu : UniqueMDiffWithinAt I s x₀) :
+    mpullbackWithin I I' f (mlieBracketWithin I' V W t) s x₀ =
+      mlieBracketWithin I (mpullbackWithin I I' f V s) (mpullbackWithin I I' f W s) s x₀ := by
+  suffices mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm
+        (mpullbackWithin I I' f (mlieBracketWithin I' V W t) s)
+        ((extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target) (extChartAt I x₀ x₀) =
+      mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm
+        (mlieBracketWithin I (mpullbackWithin I I' f V s) (mpullbackWithin I I' f W s) s)
+        ((extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target) (extChartAt I x₀ x₀) by
+    rw [mpullbackWithin_eq_iff] at this
+    · convert this <;> simp
+    · sorry
+  rw [← mpullbackWithin_comp]; rotate_left
+  · sorry
+  · sorry
+  · sorry
+  · apply UniqueDiffWithinAt.uniqueMDiffWithinAt
+    exact uniqueMDiffWithinAt_iff.mp hu
+  · sorry
+  · sorry
+  rw [mpullbackWithin_apply, mpullbackWithin_apply]
+  conv_rhs => rw [mlieBracketWithin, mpullbackWithin_apply]
+  have Ex : (extChartAt I x₀).symm ((extChartAt I x₀) x₀) = x₀ := by simp
+  simp only [comp_apply, Ex]
+  rw [← ContinuousLinearMap.IsInvertible.inverse_comp_apply]; rotate_left
+  · sorry
+  · sorry
+  rw [← mfderivWithin_comp]; rotate_left
+  · sorry
+  · sorry
+  · sorry
+  · sorry
+  have : mfderivWithin 𝓘(𝕜, E) 𝓘(𝕜, E)
+      ((extChartAt I ((extChartAt I x₀).symm ((extChartAt I x₀) x₀))) ∘ ↑(extChartAt I x₀).symm)
+      (↑(extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target) ((extChartAt I x₀) x₀) =
+    ContinuousLinearMap.id _ _:= sorry
+  rw [this]
+  simp
+
+
+
+
+
+
+
+
+
+
 
 
 

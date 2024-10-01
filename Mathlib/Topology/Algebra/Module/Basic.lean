@@ -2270,6 +2270,16 @@ theorem inverse_equiv (e : M ≃L[R] M₂) : inverse (e : M →L[R] M₂) = e.sy
 theorem inverse_non_equiv (f : M →L[R] M₂) (h : ¬∃ e' : M ≃L[R] M₂, ↑e' = f) : inverse f = 0 :=
   dif_neg h
 
+@[simp] theorem inverse_zero : inverse (0 : M →L[R] M₂) = 0 := by
+  by_cases h : ∃ e' : M ≃L[R] M₂, (e' : M →L[R] M₂) = 0
+  · rcases h with ⟨e', he'⟩
+    simp only [← he', inverse_equiv]
+    ext v
+    apply e'.injective
+    rw [← ContinuousLinearEquiv.coe_coe, he']
+    rfl
+  · exact inverse_non_equiv _ h
+
 end
 
 section
@@ -2307,6 +2317,10 @@ theorem to_ring_inverse (e : M ≃L[R] M₂) (f : M →L[R] M₂) :
 theorem ring_inverse_eq_map_inverse : Ring.inverse = @inverse R M M _ _ _ _ _ _ _ := by
   ext
   simp [to_ring_inverse (ContinuousLinearEquiv.refl R M)]
+
+@[simp] theorem inverse_id : (id R M).inverse = id R M := by
+  rw [← ring_inverse_eq_map_inverse]
+  exact Ring.inverse_one _
 
 end
 
