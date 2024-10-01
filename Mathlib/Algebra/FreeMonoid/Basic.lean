@@ -188,7 +188,7 @@ theorem mem_of {n : α} : m ∈ of n ↔ m = n := List.mem_singleton
 @[to_additive]
 theorem mem_of_self : m ∈ of m := List.mem_singleton_self _
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem mem_mul {a b : FreeMonoid α} : m ∈ (a * b) ↔ m ∈ a ∨ m ∈ b := List.mem_append
 
 @[to_additive]
