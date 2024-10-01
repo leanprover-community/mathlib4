@@ -275,7 +275,7 @@ private lemma jacobiMatrix_comp_₁₂ : (Q.comp P).jacobiMatrix.toBlocks₁₂ 
   ext i j : 1
   simp [Matrix.toBlocks₁₂, jacobiMatrix_comp_inl_inr]
 
-variable (σ : Type*)
+section Q
 
 variable [Fintype Q.rels]
 
@@ -294,7 +294,10 @@ private lemma jacobiMatrix_comp_₁₁_det :
   simp only [Matrix.map_apply, RingHom.mapMatrix_apply, ← Q.jacobiMatrix_comp_inl_inl P]
   apply aeval_sum_elim
 
-omit [Fintype Q.rels]
+end Q
+
+section P
+
 variable [Fintype P.rels]
 
 private lemma jacobiMatrix_comp_inr_inr (i j : P.rels) :
@@ -322,6 +325,8 @@ private lemma jacobiMatrix_comp_₂₂_det :
   · simp only [map_mul, rename_X, eval₂_mul, hp, eval₂_X]
     erw [Generators.comp_val]
     simp
+
+end P
 
 end
 

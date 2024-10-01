@@ -3,7 +3,7 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.RingHomProperties
+import Mathlib.RingTheory.LocalProperties.Basic
 import Mathlib.RingTheory.Smooth.StandardSmooth
 
 /-!
@@ -127,12 +127,8 @@ lemma isStandardSmoothOfRelativeDimension_stableUnderBaseChange :
       convert this; ext; simp_rw [Algebra.smul_def]; rfl
     infer_instance
 
-section Localization
-
-variable {Rᵣ Sᵣ : Type*} [CommRing Rᵣ] [CommRing Sᵣ] [Algebra R Rᵣ] [Algebra S Sᵣ]
-
-lemma IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway (r : R)
-    [IsLocalization.Away r Rᵣ] :
+lemma IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway {Rᵣ : Type*} [CommRing Rᵣ]
+    [Algebra R Rᵣ] (r : R) [IsLocalization.Away r Rᵣ] :
     IsStandardSmoothOfRelativeDimension.{0, 0} 0 (algebraMap R Rᵣ) := by
   have : (algebraMap R Rᵣ).toAlgebra = ‹Algebra R Rᵣ› := by
     ext
@@ -141,20 +137,37 @@ lemma IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway (r : R)
   rw [IsStandardSmoothOfRelativeDimension, this]
   exact Algebra.IsStandardSmoothOfRelativeDimension.localization_away r
 
-variable {R S Rᵣ Sᵣ : Type u} [CommRing R] [CommRing S] [CommRing Rᵣ]
-  [CommRing Sᵣ] [Algebra R Rᵣ] [Algebra S Sᵣ]
-  (f : R →+* S) (M : Submonoid R) [IsLocalization M Rᵣ] [IsLocalization (M.map f) Sᵣ]
+lemma isStandardSmooth_localizationPreserves : LocalizationPreserves IsStandardSmooth.{t, w} :=
+  isStandardSmooth_stableUnderBaseChange.localizationPreserves
 
-lemma IsStandardSmooth.isLocalization_map (hf : IsStandardSmooth.{t, w} f) :
-    IsStandardSmooth.{t, w} (IsLocalization.map Sᵣ f M.le_comap_map : Rᵣ →+* Sᵣ) :=
-  (isStandardSmooth_stableUnderBaseChange).isLocalization_map _ _ _ hf
+lemma isStandardSmoothOfRelativeDimension_localizationPreserves :
+    LocalizationPreserves (IsStandardSmoothOfRelativeDimension.{t, w} n) :=
+  (isStandardSmoothOfRelativeDimension_stableUnderBaseChange n).localizationPreserves
 
-lemma IsStandardSmoothOfRelativeDimension.isLocalization_map
-    (hf : IsStandardSmoothOfRelativeDimension.{t, w} n f) :
-    IsStandardSmoothOfRelativeDimension.{t, w} n
-      (IsLocalization.map Sᵣ f M.le_comap_map : Rᵣ →+* Sᵣ) :=
-  (isStandardSmoothOfRelativeDimension_stableUnderBaseChange n).isLocalization_map _ _ _ hf
+lemma isStandardSmooth_holdsForLocalizationAway :
+    HoldsForLocalizationAway IsStandardSmooth.{0, 0} := by
+  introv R h
+  exact (IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway r).isStandardSmooth
 
-end Localization
+lemma isStandardSmoothOfRelativeDimension_holdsForLocalizationAway :
+    HoldsForLocalizationAway (IsStandardSmoothOfRelativeDimension.{0, 0} 0) := by
+  introv R h
+  exact IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway r
+
+lemma isStandardSmooth_stableUnderCompositionWithLocalizationAway :
+    StableUnderCompositionWithLocalizationAway IsStandardSmooth.{0, 0} :=
+  isStandardSmooth_stableUnderComposition.stableUnderCompositionWithLocalizationAway
+    isStandardSmooth_holdsForLocalizationAway
+
+lemma isStandardSmoothOfRelativeDimension_stableUnderCompositionWithLocalizationAway :
+    StableUnderCompositionWithLocalizationAway (IsStandardSmoothOfRelativeDimension.{0, 0} n) where
+  left _ S T _ _ _ _ s _ _ hf :=
+    have : (algebraMap S T).IsStandardSmoothOfRelativeDimension 0 :=
+      IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway s
+    zero_add n ▸ IsStandardSmoothOfRelativeDimension.comp this hf
+  right R S _ _ _ _ _ r _ _ hf :=
+    have : (algebraMap R S).IsStandardSmoothOfRelativeDimension 0 :=
+      IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway r
+    add_zero n ▸ IsStandardSmoothOfRelativeDimension.comp hf this
 
 end RingHom

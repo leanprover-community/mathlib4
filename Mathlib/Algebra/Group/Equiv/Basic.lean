@@ -130,7 +130,6 @@ instance (priority := 100) instMonoidHomClass
         _ = e (EquivLike.inv e (1 : N)) := by rw [← map_mul, one_mul]
         _ = 1 := EquivLike.right_inv e 1 }
 
-variable [EquivLike F α β]
 variable {F}
 
 @[to_additive (attr := simp)]
@@ -436,6 +435,8 @@ theorem self_trans_symm (e : M ≃* N) : e.trans e.symm = refl M :=
 
 end trans
 
+section unique
+
 /-- The `MulEquiv` between two monoids with a unique element. -/
 @[to_additive "The `AddEquiv` between two `AddMonoid`s with a unique element."]
 def mulEquivOfUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N] : M ≃* N :=
@@ -447,6 +448,8 @@ def mulEquivOfUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N] : M ≃* N :=
 instance {M N} [Unique M] [Unique N] [Mul M] [Mul N] : Unique (M ≃* N) where
   default := mulEquivOfUnique
   uniq _ := ext fun _ => Subsingleton.elim _ _
+
+end unique
 
 end Mul
 
