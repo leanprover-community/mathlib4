@@ -40,6 +40,11 @@ convenience.
 
 The case for `Monotone`/`Antitone` pairs of functions over a `LinearOrder` is not deduced in this
 file because it is easily deducible from the `Monovary` API.
+
+## TODO
+
+Add equality cases for when the permute function is injective. This comes from the following fact:
+If `Monovary f g`, `Injective g` and `σ` is a permutation, then `Monovary f (g ∘ σ) ↔ σ = 1`.
 -/
 
 
