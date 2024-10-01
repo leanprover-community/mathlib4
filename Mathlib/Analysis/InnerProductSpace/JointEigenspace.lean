@@ -315,6 +315,18 @@ Ok I was being very silly. This just required applying x to default. Grr.
     congr! with x hx
     · simp
     · simp [dif_neg hx]
+
+Now what is
+`specialize H {x // x ≠ i} (Fintype.card_subtype_lt (x := i) (by simp))`
+ `(Subtype.restrict (· ≠ i) f) (hf ·) (hC · ·)`
+doing?
+
+The `specialize` tactic should replace H with a version with a bunch of universals
+instantiated.
+
+So this is very different than the theorem before. There is no longer
+an `IsSymmetric` assumption...
+
 -/
 
 lemma iSup_iInf_maxGenEigenspace_eq_top_of_commute {ι K V : Type*}
@@ -333,8 +345,20 @@ lemma iSup_iInf_maxGenEigenspace_eq_top_of_commute {ι K V : Type*}
       simpa [ciInf_unique, ← (Equiv.funUnique m K).symm.iSup_comp] using x default
   · have i := Classical.arbitrary m
     classical
+    specialize H {x // x ≠ i} (Fintype.card_subtype_lt (x := i) (by simp))
+     (Subtype.restrict (· ≠ i) f) (fun _ _ _ ↦ hf <| by simpa [Subtype.coe_ne_coe]) (hC ·)
 
-    sorry
+
+
+    --rw [← (Equiv.funSplitAt i K).symm.iSup_comp, iSup_prod, iSup_comm]
+    --convert H with γ
+    --rw [← iSup_eigenspace_restrict (T i) (hT i) (iInf_eigenspace_invariant_of_commute hC i γ)]
+    --congr! with μ
+    --rw [← Module.End.genEigenspace_one, ← Submodule.inf_genEigenspace _ _ _ (k := 1), inf_comm,
+    --  iInf_split_single _ i, iInf_subtype]
+    --congr! with x hx
+    --· simp
+    --· simp [dif_neg hx]
 /-
 This might be doable using the fintype induction on `ι`. Let's set this up and see.
 So for the first bullet, `n` has either no or one element.
