@@ -1942,14 +1942,13 @@ protected theorem preimage_symm_preimage (e : M₁ ≃SL[σ₁₂] M₂) (s : Se
     e ⁻¹' (e.symm ⁻¹' s) = s :=
   e.symm.symm_preimage_preimage s
 
-protected theorem isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂]
+lemma isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂]
     [AddCommGroup E₁] [AddCommGroup E₂] [Module R₁ E₁] [Module R₂ E₂] [UniformAddGroup E₁]
     [UniformAddGroup E₂] (e : E₁ ≃SL[σ₁₂] E₂) : IsUniformEmbedding e :=
   e.toLinearEquiv.toEquiv.isUniformEmbedding e.toContinuousLinearMap.uniformContinuous
     e.symm.toContinuousLinearMap.uniformContinuous
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding := isUniformEmbedding
+@[deprecated (since := "2024-10-01")] alias uniformEmbedding := isUniformEmbedding
 
 protected theorem _root_.LinearEquiv.isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E₁]
     [UniformSpace E₂] [AddCommGroup E₁] [AddCommGroup E₂] [Module R₁ E₁] [Module R₂ E₂]

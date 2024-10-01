@@ -162,11 +162,10 @@ protected theorem injective (h : Isometry f) : Injective f :=
   h.antilipschitz.injective
 
 /-- An isometry from an emetric space is a uniform embedding -/
-protected theorem isUniformEmbedding (hf : Isometry f) : IsUniformEmbedding f :=
+lemma isUniformEmbedding (hf : Isometry f) : IsUniformEmbedding f :=
   hf.antilipschitz.isUniformEmbedding hf.lipschitz.uniformContinuous
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding := isUniformEmbedding
+@[deprecated (since := "2024-10-01")] alias uniformEmbedding := isUniformEmbedding
 
 /-- An isometry from an emetric space is an embedding -/
 protected theorem embedding (hf : Isometry f) : Embedding f :=
