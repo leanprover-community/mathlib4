@@ -25,7 +25,7 @@ of zero.
 
 * `absConvexHull_eq_convexHull_balancedHull`: when the locally convex space is a module, the
   absolutely convex hull of a set `s` equals the convex hull of the balanced hull of `s`.
-* `absConvexHull_eq_convexHull_union_neg`: the convex hull of `s ∪ -s` is the absolute convex hull
+* `convexHull_union_neg_eq_absConvexHull`: the convex hull of `s ∪ -s` is the absolute convex hull
   of `s`.
 * `with_gaugeSeminormFamily`: the topology of a locally convex space is induced by the family
 `gaugeSeminormFamily`.
