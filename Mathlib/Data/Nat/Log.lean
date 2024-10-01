@@ -355,7 +355,7 @@ take far too long to compute in the first place.
 Adapted from https://downloads.haskell.org/~ghc/9.0.1/docs/html/libraries/ghc-bignum-1.0/GHC-Num-BigNat.html#v:bigNatLogBase-35-
 -/
 @[pp_nodot] def logC (b m : ℕ) : ℕ :=
-  if h : 1 < b then match step b h with | (_, e) => e else 0 where
+  if h : 1 < b then let (_, e) := step b h; e else 0 where
   /--
   An auxiliary definition for `Nat.logC`, where the base of the logarithm is _squared_ in each
   loop. This allows significantly faster computation of the logarithm: it takes logarithmic time
@@ -365,8 +365,8 @@ Adapted from https://downloads.haskell.org/~ghc/9.0.1/docs/html/libraries/ghc-bi
     if h : m < pw
     then (m, 0)
     else
-      match step (pw * pw) (Nat.mul_lt_mul_of_lt_of_lt hpw hpw) with
-      | (q, e) => if q < pw then (q, 2 * e) else (q / pw, 2 * e + 1)
+      let (q, e) := step (pw * pw) (Nat.mul_lt_mul_of_lt_of_lt hpw hpw)
+      if q < pw then (q, 2 * e) else (q / pw, 2 * e + 1)
   termination_by m / pw
   decreasing_by
     have : m / (pw * pw) < m / pw := logC_aux hpw (le_of_not_lt h)
