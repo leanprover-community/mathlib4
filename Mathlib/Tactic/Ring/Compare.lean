@@ -34,22 +34,51 @@ namespace Mathlib.Tactic.Ring
 
 open Lean Qq Meta
 
-/-- Inductive type carrying the two kinds of errors which can arise in the metaprograms
-`Mathlib.Tactic.Ring.evalLE` and `Mathlib.Tactic.Ring.evalLT`. -/
-inductive ExceptType | tooSmall | notComparable
-export ExceptType (tooSmall notComparable)
+/-! Rather than having the metaprograms `Mathlib.Tactic.Ring.evalLE` and
+`Mathlib.Tactic.Ring.evalLT` perform all type class inference at the point of use, we record in
+advance, as `abbrev`s, a few type class deductions which will certainly be necessary.  They add no
+new information (they can already be proved by `inferInstance`).
 
-/-- For use in `Mathlib.Tactic.Ring.proveLE` (to short-circuit typeclass inference):
-`OrderedCommSemiring` implies `CommSemiring`. -/
+This helps in speeding up the metaprograms in this file substantially -- about a 50% reduction in
+heartbeat count in representative test cases -- since otherwise a substantial fraction of their
+runtime is devoted to type class inference. -/
+
+section Typeclass
+
+/-- `OrderedCommSemiring` implies `CommSemiring`. -/
 abbrev tc₁ (α : Type*) [OrderedCommSemiring α] : CommSemiring α := inferInstance
 
-/-- For use in `Mathlib.Tactic.Ring.proveLE` (to short-circuit typeclass inference):
-`OrderedCommSemiring` implies `AddMonoidWithOne`. -/
+/-- `OrderedCommSemiring` implies `AddMonoidWithOne`. -/
 abbrev tc₂ (α : Type*) [OrderedCommSemiring α] : AddMonoidWithOne α := inferInstance
 
-/-- For use in `Mathlib.Tactic.Ring.proveLE` (to short-circuit typeclass inference):
-`OrderedCommSemiring` implies `LE`. -/
+/-- `OrderedCommSemiring` implies `LE`. -/
 abbrev tc₃ (α : Type*) [OrderedCommSemiring α] : LE α := inferInstance
+
+/-- `StrictOrderedCommSemiring` implies `CommSemiring`. -/
+abbrev tc₄ (α : Type*) [StrictOrderedCommSemiring α] : CommSemiring α := inferInstance
+
+/-- `StrictOrderedCommSemiring` implies `AddMonoidWithOne`. -/
+abbrev tc₅ (α : Type*) [StrictOrderedCommSemiring α] : AddMonoidWithOne α := inferInstance
+
+/-- `StrictOrderedCommSemiring` implies `LT`. -/
+abbrev tc₆ (α : Type*) [StrictOrderedCommSemiring α] : LT α := inferInstance
+
+end Typeclass
+
+/-! The lemmas like `add_le_add_right` in the root namespace are stated under minimal type classes,
+typically just `[CovariantClass α α (swap (· + ·)) (· ≤ ·)]` or similar.  Here we restate these
+lemmas under stronger type class assumptions (`[OrderedCommSemiring α]` or similar), which helps in
+speeding up the metaprograms in this file (`Mathlib.Tactic.Ring.proveLT` and
+`Mathlib.Tactic.Ring.proveLE`) substantially -- about a 50% reduction in heartbeat count in
+representative test cases -- since otherwise a substantial fraction of their runtime is devoted to
+type class inference.
+
+These metaprograms at least require `CommSemiring`, `LE`/`LT`, and all
+`CovariantClass`/`ContravariantClass` permutations for addition, and in their main use case (in
+`linear_combination`) the `Preorder` type class is also required, so it is rather little loss of
+generality simply to require `OrderedCommSemiring`/`StrictOrderedCommSemiring`. -/
+
+section Lemma
 
 theorem add_le_add_right' {α : Type*} [OrderedCommSemiring α] {b c : α} (bc : b ≤ c) (a : α) :
     b + a ≤ c + a :=
@@ -62,6 +91,25 @@ theorem add_le_of_nonpos_left' {α : Type*} [OrderedCommSemiring α] (a : α) {b
 theorem le_add_of_nonneg_left' {α : Type*} [OrderedCommSemiring α] (a : α) {b : α} (h : 0 ≤ b) :
     a ≤ b + a :=
   _root_.le_add_of_nonneg_left h
+
+theorem add_lt_add_right' {α : Type*} [StrictOrderedCommSemiring α] {b c : α} (bc : b < c) (a : α) :
+    b + a < c + a :=
+  _root_.add_lt_add_right bc a
+
+theorem add_lt_of_neg_left' {α : Type*} [StrictOrderedCommSemiring α] (a : α) {b : α} (h : b < 0) :
+    b + a < a :=
+  _root_.add_lt_of_neg_left a h
+
+theorem lt_add_of_pos_left' {α : Type*} [StrictOrderedCommSemiring α] (a : α) {b : α} (h : 0 < b) :
+    a < b + a :=
+  _root_.lt_add_of_pos_left a h
+
+end Lemma
+
+/-- Inductive type carrying the two kinds of errors which can arise in the metaprograms
+`Mathlib.Tactic.Ring.evalLE` and `Mathlib.Tactic.Ring.evalLT`. -/
+inductive ExceptType | tooSmall | notComparable
+export ExceptType (tooSmall notComparable)
 
 /-- In a commutative semiring, given `Ring.ExSum` objects `va`, `vb` which differ by a positive
 constant, construct a proof of `$a < $b`, where `a` (resp. `b`) is the expression in the semiring to
@@ -97,30 +145,6 @@ def evalLE {v : Level} {α : Q(Type v)} (_ : Q(OrderedCommSemiring $α)) {a b : 
     let NormNum.Result.isTrue pf ← NormNum.evalLE.core lα rz rxb | return .error tooSmall
     pure <| .ok (q(le_add_of_nonneg_left' (a := $a) $pf):)
   | _, _ => return .error notComparable
-
-/-- For use in `Mathlib.Tactic.Ring.proveLT` (to short-circuit typeclass inference):
-`StrictOrderedCommSemiring` implies `CommSemiring`. -/
-abbrev tc₄ (α : Type*) [StrictOrderedCommSemiring α] : CommSemiring α := inferInstance
-
-/-- For use in `Mathlib.Tactic.Ring.proveLT` (to short-circuit typeclass inference):
-`StrictOrderedCommSemiring` implies `AddMonoidWithOne`. -/
-abbrev tc₅ (α : Type*) [StrictOrderedCommSemiring α] : AddMonoidWithOne α := inferInstance
-
-/-- For use in `Mathlib.Tactic.Ring.proveLT` (to short-circuit typeclass inference):
-`StrictOrderedCommSemiring` implies `LT`. -/
-abbrev tc₆ (α : Type*) [StrictOrderedCommSemiring α] : LT α := inferInstance
-
-theorem add_lt_add_right' {α : Type*} [StrictOrderedCommSemiring α] {b c : α} (bc : b < c) (a : α) :
-    b + a < c + a :=
-  _root_.add_lt_add_right bc a
-
-theorem add_lt_of_neg_left' {α : Type*} [StrictOrderedCommSemiring α] (a : α) {b : α} (h : b < 0) :
-    b + a < a :=
-  _root_.add_lt_of_neg_left a h
-
-theorem lt_add_of_pos_left' {α : Type*} [StrictOrderedCommSemiring α] (a : α) {b : α} (h : 0 < b) :
-    a < b + a :=
-  _root_.lt_add_of_pos_left a h
 
 /-- In a commutative semiring, given `Ring.ExSum` objects `va`, `vb` which differ by a positive
 constant, construct a proof of `$a < $b`, where `a` (resp. `b`) is the expression in the semiring to
