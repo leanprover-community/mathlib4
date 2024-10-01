@@ -85,7 +85,7 @@ theorem balanced_absConvexHull : Balanced 𝕜 (absConvexHull 𝕜 s) :=
 theorem convex_absConvexHull : Convex ℝ (absConvexHull 𝕜 s) :=
   absConvex_absConvexHull.2
 
-variable (𝕜 s) in 
+variable (𝕜 s) in
 theorem absConvexHull_eq_iInter :
     absConvexHull 𝕜 s = ⋂ (t : Set E) (_ : s ⊆ t) (_ : AbsConvex 𝕜 t), t := by
   simp [absConvexHull, iInter_subtype, iInter_and]
@@ -157,7 +157,7 @@ variable [ContinuousSMul ℝ E] [TopologicalAddGroup E]
 
 theorem nhds_hasBasis_absConvex_open :
     (𝓝 (0 : E)).HasBasis (fun s => (0 : E) ∈ s ∧ IsOpen s ∧ AbsConvex 𝕜 s) id := by
-  refine (nhds_basis_abs_convex 𝕜 E).to_hasBasis ?_ ?_
+  refine (nhds_hasBasis_absConvex 𝕜 E).to_hasBasis ?_ ?_
   · rintro s ⟨hs_nhds, hs_balanced, hs_convex⟩
     refine ⟨interior s, ?_, interior_subset⟩
     exact
@@ -297,7 +297,7 @@ variable [SMulCommClass ℝ 𝕜 E] [LocallyConvexSpace ℝ E]
 /-- The topology of a locally convex space is induced by the gauge seminorm family. -/
 theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) := by
   refine SeminormFamily.withSeminorms_of_hasBasis _ ?_
-  refine (nhds_basis_abs_convex_open 𝕜 E).to_hasBasis (fun s hs => ?_) fun s hs => ?_
+  refine (nhds_hasBasis_absConvex_open 𝕜 E).to_hasBasis (fun s hs => ?_) fun s hs => ?_
   · refine ⟨s, ⟨?_, rfl.subset⟩⟩
     convert (gaugeSeminormFamily _ _).basisSets_singleton_mem ⟨s, hs⟩ one_pos
     rw [gaugeSeminormFamily_ball, Subtype.coe_mk]
