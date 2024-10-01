@@ -172,8 +172,8 @@ end Symbols
 section Mem
 variable {m : α}
 
-/-- membership in a free monoid element -/
-@[to_additive "membership in a free monoid element"]
+/-- Membership in a free monoid element -/
+@[to_additive "Membership in a free monoid element"]
 def mem (a : FreeMonoid α) (m : α) := m ∈ toList a
 
 @[to_additive]
