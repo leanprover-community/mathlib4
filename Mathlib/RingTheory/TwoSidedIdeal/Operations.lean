@@ -106,7 +106,8 @@ def ker : TwoSidedIdeal R :=
     (by rintro _ _ (h : f _ = 0); simp [h])
 
 lemma mem_ker {x : R} : x ∈ ker f ↔ f x = 0 := by
-  delta ker; rw [mem_mk']; rfl
+  delta ker; rw [mem_mk']
+  · rfl
   · rintro _ _ (h1 : f _ = 0) (h2 : f _ = 0); simp [h1, h2]
   · rintro _ (h : f _ = 0); simp [h]
   · rintro _ _ (h : f _ = 0); simp [h]
