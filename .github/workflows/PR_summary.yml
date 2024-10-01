@@ -68,11 +68,13 @@ jobs:
           printf '%s\n' "${graphAndHighPercentReports}" | sed -n '/^Import changes exceeding/,$p'
         )
         # if there are files with large increase in transitive imports, then we add the `large-import` label
-        [ -n "${high_percentages}" ] && {
+        if [ -n "${high_percentages}" ]
+        then
           high_percentages=$'\n\n'"${high_percentages}"
           gh pr edit "${PR}" --add-label large-import
-        } || # otherwise, we remove the label
+        else # otherwise, we remove the label
           gh pr edit "${PR}" --remove-label large-import
+        fi
 
         if [ "$(printf '%s' "${importCount}" | wc -l)" -gt 12 ]
         then
