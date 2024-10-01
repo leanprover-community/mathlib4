@@ -653,7 +653,12 @@ theorem Cauchy.coeff_tendsto {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ
 /- For every Cauchy filter of Laurent series, there is a `N` such that the `n`-th coefficient
 vanishes for all `n ≤ N` and almost all series in the filter. This is an auxiliary lemma used
 to construct the limit of the Cauchy filter as a Laurent series, ensuring that the support of the
-limit is `PWO`.-/
+limit is `PWO`.
+The result is true also for more general Hahn Series indexed over a partially ordered group `Γ`
+beyond the special case `Γ = ℤ`, that corresponds to Laurent Series: nevertheless the proof below
+does not generalise, as it relies on the study of the `X`-adic valuation attached to the height-one
+prime `X`, and this is peculiar to the one-variable setting. In the future we should prove this
+result in full generality and deduce the case `Γ = ℤ` from that one.-/
 lemma Cauchy.exists_lb_eventual_support {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) :
     ∃ N, ∀ᶠ f : LaurentSeries K in ℱ, ∀ n < N, f.coeff n = (0 : K) := by
   let entourage : Set (LaurentSeries K × LaurentSeries K) :=
