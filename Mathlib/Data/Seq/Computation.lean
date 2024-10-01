@@ -695,7 +695,7 @@ theorem length_bind (s : Computation α) (f : α → Computation β) [_T1 : Term
 theorem of_results_bind {s : Computation α} {f : α → Computation β} {b k} :
     Results (bind s f) b k → ∃ a m n, Results s a m ∧ Results (f a) b n ∧ k = n + m := by
   induction k generalizing s with | zero => _ | succ n IH => _
-  all_goals apply recOn s (fun a => _) fun s' => _ <;> intro e h
+    <;> apply recOn s (fun a => _) fun s' => _ <;> intro e h
   · simp only [ret_bind] at h
     exact ⟨e, _, _, results_pure _, h, rfl⟩
   · have := congr_arg head (eq_thinkN h)
