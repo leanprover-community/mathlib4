@@ -67,52 +67,35 @@ This exists to streamline the proof of MonoidalClosed.assoc -/
 @[simp]
 lemma comp_eq (x y z : V) : comp x y z = curry (compTranspose x y z) := rfl
 
-/-- Associativity of V-composition. Used to prove that V is enriched in itself. -/
-theorem assoc (x y z w : V) : (α_ _ _ _).inv ≫ comp x y z ▷ _ ≫ comp x z w =
-    _ ◁ comp y z w ≫ comp x y w := by
-  apply uncurry_injective;
-  simp only [uncurry_natural_left, comp_eq]
-  rw [uncurry_curry, uncurry_curry]; dsimp
-  rw [associator_inv_naturality_middle_assoc]
-  rw [← comp_whiskerRight_assoc]
-  rw [← uncurry_eq, uncurry_curry]
-  rw [associator_inv_naturality_right_assoc]
-  rw [whisker_exchange_assoc]
-  rw [← uncurry_eq, uncurry_curry]
-  simp only [comp_whiskerRight, tensorLeft_obj, Category.assoc, pentagon_inv_assoc,
-    whiskerRight_tensor, Iso.hom_inv_id_assoc]
-
-/-- Left unitality of V-composition. Used to prove that V is enriched in itself. -/
-theorem id_comp (x y : V) : (λ_ _).inv ≫ id x ▷ (ihom x).obj y ≫ comp x x y = 𝟙 _ := by
-  apply uncurry_injective; simp only [uncurry_natural_left, comp_eq, id_eq]
-  rw [uncurry_curry]
-  rw [whisker_assoc_symm];
-  simp only [compTranpose_eq, Category.assoc]
-  rw [Iso.hom_inv_id_assoc]
-  rw [← comp_whiskerRight_assoc]
-  rw [← uncurry_eq, uncurry_curry]
-  simp only [Functor.id_obj, triangle_assoc_comp_right_assoc, whiskerLeft_inv_hom_assoc]
-  exact (uncurry_id_eq_ev x y).symm
-
-/-- Right unitality of V-composition. Used to prove that V is enriched in itself. -/
-theorem comp_id (x y : V) : (ρ_ _).inv ≫ ((ihom x).obj y) ◁ (id y) ≫ (comp x y y) = 𝟙 _ := by
-  apply uncurry_injective; simp only[uncurry_natural_left, comp_eq, id_eq];
-  rw [uncurry_curry]; simp only [compTranpose_eq, Category.assoc];
-  rw [associator_inv_naturality_right_assoc]
-  rw [whisker_exchange_assoc]; dsimp;
-  rw [← uncurry_eq, uncurry_curry];
-  simp only [whiskerLeft_rightUnitor_inv, MonoidalCategory.whiskerRight_id, Category.assoc,
-    Iso.inv_hom_id, Category.comp_id, Iso.hom_inv_id_assoc, Iso.inv_hom_id_assoc]
-  exact (uncurry_id_eq_ev x y).symm
-
 /-- For V closed monoidal, build an instance of V as a V-category -/
 scoped instance : EnrichedCategory V V where
   Hom := fun x => (ihom x).obj
   id := id
   comp := comp
-  id_comp := id_comp
-  comp_id := comp_id
-  assoc := assoc
+  id_comp := fun _ _ => by
+    apply uncurry_injective; simp only [uncurry_natural_left, comp_eq, id_eq]
+    rw [uncurry_curry, whisker_assoc_symm]; simp only [compTranpose_eq, Category.assoc]
+    rw [Iso.hom_inv_id_assoc, ← comp_whiskerRight_assoc, ← uncurry_eq, uncurry_curry]
+    simp only [Functor.id_obj, triangle_assoc_comp_right_assoc, whiskerLeft_inv_hom_assoc]
+    exact (uncurry_id_eq_ev _ _).symm
+  comp_id := fun _ _ => by
+    apply uncurry_injective
+    simp only [uncurry_natural_left, comp_eq, id_eq]
+    rw [uncurry_curry]; simp only [compTranpose_eq, Category.assoc]
+    rw [associator_inv_naturality_right_assoc, whisker_exchange_assoc]; dsimp
+    rw [← uncurry_eq, uncurry_curry]
+    simp only [whiskerLeft_rightUnitor_inv, MonoidalCategory.whiskerRight_id, Category.assoc,
+      Iso.inv_hom_id, Category.comp_id, Iso.hom_inv_id_assoc, Iso.inv_hom_id_assoc]
+    exact (uncurry_id_eq_ev _ _).symm
+  assoc := fun _ _ _ _ => by
+    apply uncurry_injective
+    simp only [uncurry_natural_left, comp_eq]
+    rw [uncurry_curry, uncurry_curry]; dsimp
+    rw [associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc,
+      ← uncurry_eq, uncurry_curry, associator_inv_naturality_right_assoc, whisker_exchange_assoc,
+      ← uncurry_eq, uncurry_curry]
+    simp only [comp_whiskerRight, tensorLeft_obj, Category.assoc, pentagon_inv_assoc,
+      whiskerRight_tensor, Iso.hom_inv_id_assoc]
 
 end MonoidalClosed
 
