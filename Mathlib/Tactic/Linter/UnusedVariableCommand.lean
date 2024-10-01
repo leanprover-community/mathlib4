@@ -100,7 +100,6 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
   -- we look inside `stx` to find a terminal command.
   -- This simplifies testing: writing `open Nat in #exit` prints the current linter output
   if (stx.find? (Parser.isTerminalCommand ·)).isSome then
-    liftTermElabM do
       let (used, all) ← usedVarsRef.get
       let sorted := used.toArray.qsort (·.toString < ·.toString)
       let unused := all.toList.filter (!sorted.contains ·.1)
@@ -130,14 +129,12 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
         | ``declId        => return some (← `(declId| $(mkIdentFrom s[0] (s[0].getId ++ `_hello))))
         | ``declValSimple => return some (← `(declValSimple| := by included_variables plumb; sorry))
         | _               => return none
+    let toFalse := mkIdent `toFalse
     let renStx ← renStx.replaceM fun s => match s with
-        | `(def $d $vs* : $t := $pf) => return some (← `(theorem $d $vs* : toFalse $t := $pf))
-        --| ``declValSimple => return some (← `(declValSimple| := by included_variables plumb; sorry))
+        | `(def $d $vs* : $t := $pf) => return some (← `(theorem $d $vs* : $toFalse $t := $pf))
         | _               => return none
-    logInfo renStx
     let s ← get
-    elabCommand (← `(def $(mkIdent `toFalse) (S : Sort _) := False))
-    --elabCommand (← `(def $(mkIdent `toFalse) (S : Sort _) := sorry))
+    elabCommand (← `(def $toFalse (S : Sort _) := False))
     elabCommand renStx
     set s
 
