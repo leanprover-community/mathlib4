@@ -21,13 +21,8 @@ a possibly non-commutative monoid.
 
 ## Main definitions
 
-* class `Quantale`: a monoid distributing over a complete sup-semilattice.
-  I.e satisfying `x * (sSup s) = ⨆ y ∈ s, x * y` and `(sSup s) * y = ⨆ x ∈ s, x * y`
-
-Conceptually, every complete sup-semilattice is of course a complete lattice.
-However, when considering morphisms between quantales, usually only the supremum
-is required to be preserved. Hence, it is conseptually cleaner to define it as a
-complete sup-semilattice. (In literature, both variants occur.)
+* class `Quantale`: a monoid distributing over a complete sup-semilattice,
+  i.e satisfying `x * (sSup s) = ⨆ y ∈ s, x * y` and `(sSup s) * y = ⨆ x ∈ s, x * y`
 
 * `IsIntegral`: a quantale for which `1 = ⊤`
 * `IsComm`: a commutative quantale, satisfying `x * y = y * x`
@@ -105,7 +100,7 @@ def left_residuation (x y : α) := sSup { z | z * x ≤ y }
 /-- Notation for left-residuation in quantales.
     I.e. `x ⇨ₗ y = sSup { z | z * x ≤ y }`.
 -/
-infixr:60 " ⇨ₗ " => left_residuation
+scoped infixr:60 " ⇨ₗ " => left_residuation
 
 /-- Left- and right- residuation operators on a quantale are similar to the Heyting operator
     on complete lattices, but for a non-commutative logic.
@@ -115,7 +110,7 @@ def right_residuation (x y : α) := sSup { z | x * z ≤ y }
 /-- Notation for right-residuation in quantales.
     I.e. `x ⇨ᵣ y = sSup { z | x * z ≤ y }`.
 -/
-infixr:60 " ⇨ᵣ " => right_residuation
+scoped infixr:60 " ⇨ᵣ " => right_residuation
 
 end Quantale
 
