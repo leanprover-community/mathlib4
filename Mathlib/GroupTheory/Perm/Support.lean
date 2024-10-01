@@ -121,7 +121,7 @@ theorem disjoint_prod_right (l : List (Perm α)) (h : ∀ g ∈ l, Disjoint f g)
 theorem disjoint_noncommProd_right {ι : Type*} {k : ι → Perm α} {s : Finset ι}
     (hs : Set.Pairwise s fun i j ↦ Commute (k i) (k j))
     (hg : ∀ i ∈ s, g.Disjoint (k i)) :
-    Disjoint g (s.noncommProd k (hs)) := 
+    Disjoint g (s.noncommProd k (hs)) :=
   noncommProd_induction s k hs g.Disjoint (fun _ _ ↦ Disjoint.mul_right) (disjoint_one_right g) hg
 
 open scoped List in

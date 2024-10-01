@@ -216,7 +216,7 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
         · rwa [Subtype.coe_mk, Perm.mul_apply, (hd1 (τ x)).resolve_right hxτ,
             mem_coe, mem_support]
 
-theorem mem_fixedPoints_iff_apply_mem_of_mem_centralizer {g p : Perm α} 
+theorem mem_fixedPoints_iff_apply_mem_of_mem_centralizer {g p : Perm α}
     (hp : p ∈ Subgroup.centralizer {g}) {x : α} :
     x ∈ Function.fixedPoints g ↔ p x ∈ Function.fixedPoints g :=  by
   simp only [Subgroup.mem_centralizer_singleton_iff] at hp
