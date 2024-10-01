@@ -2361,7 +2361,7 @@ lemma _root_.Set.pairwiseDisjoint_filter [DecidableEq β] (f : α → β) (s : S
 
 theorem filter_cons {a : α} (s : Finset α) (ha : a ∉ s) :
     filter p (cons a s ha) =
-      if p a then cons a (filter p s) (mem_filter.not.mpr <| mt And.left ha) else filter p s := by
+      if p a then cons a (filter p s) ((mem_of_mem_filter _).mt ha) else filter p s := by
   split_ifs with h
   · rw [filter_cons_of_pos _ _ _ ha h]
   · rw [filter_cons_of_neg _ _ _ ha h]
@@ -2430,6 +2430,8 @@ theorem subset_union_elim {s : Finset α} {t₁ t₂ : Set α} (h : ↑s ⊆ t�
       exact ⟨Or.resolve_left (h hx) hx₂, hx₂⟩
 
 section Classical
+
+open scoped Classical
 
 -- Porting note: The notation `{ x ∈ s | p x }` in Lean 4 is hardcoded to be about `Set`.
 -- So at the moment the whole `Sep`-class is useless, as it doesn't have notation.
