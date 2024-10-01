@@ -159,22 +159,6 @@ lemma _root_.Finset.nnnorm_prod_le_sup_nnnorm (s : Finset ι) (f : ι → M) :
   · simpa only [← Finset.sup'_eq_sup hs, Finset.le_sup'_iff, coe_le_coe, coe_nnnorm']
       using hs.norm_prod_le_sup'_norm f
 
-/-- Nonarchimedean norm of a product is less than or equal to the largest norm of a term in the
-product. -/
-@[to_additive "Nonarchimedean norm of a sum is less than or equal to the largest norm of a term in
-the sum."]
-lemma _root_.Fintype.nnnorm_prod_le_sup_univ_norm [Fintype ι] (f : ι → M) :
-    ‖∏ i, f i‖₊ ≤ Finset.univ.sup (‖f ·‖₊) :=
-  Finset.univ.nnnorm_prod_le_sup_nnnorm f
-
-/-- Nonarchimedean norm of a product is less than or equal to the largest norm of a term in the
-product. -/
-@[to_additive "Nonarchimedean norm of a sum is less than or equal to the largest norm of a term in
-the sum."]
-lemma _root_.Fintype.norm_prod_le_sup'_univ_norm [Nonempty ι] [Fintype ι] (f : ι → M) :
-    ‖∏ i, f i‖ ≤ Finset.univ.sup' Finset.univ_nonempty (‖f ·‖) :=
-  Finset.univ_nonempty.norm_prod_le_sup'_norm f
-
 /--
 Generalised ultrametric triangle inequality for finite products in commutative groups with
 an ultrametric norm.
