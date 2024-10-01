@@ -149,11 +149,11 @@ def counit : functor ⋙ objects ⟶ 𝟭 (Type*) := {
   }
 
 /--Left triangle equality of the adjunction Cat.objects ⊣ Codiscrete.functor -/
-def leftTriangleComponents {X : Cat} :
+theorem left_triangle_components {X : Cat} :
     objects.map (unit.app X) ≫ counit.app (objects.obj X) = 𝟙 (objects.obj X) := rfl
 
 /--Right triangle equality of the adjunction Cat.objects ⊣ Codiscrete.functor -/
-def rightTriangleComponents {Y : Type u} :
+theorem right_triangle_components {Y : Type u} :
     unit.app (functor.obj Y) ≫ functor.map (counit.app Y) = 𝟙 (functor.obj Y) := rfl
 
 end Codiscrete
