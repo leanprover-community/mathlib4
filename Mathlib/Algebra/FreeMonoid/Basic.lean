@@ -107,7 +107,7 @@ theorem toList_of_mul (x : α) (xs : FreeMonoid α) : toList (of x * xs) = x :: 
 @[to_additive]
 theorem of_injective : Function.Injective (@of α) := List.singleton_injective
 
-/-! ### length -/
+/-! ### Length -/
 
 section Length
 variable {a : FreeMonoid α}
