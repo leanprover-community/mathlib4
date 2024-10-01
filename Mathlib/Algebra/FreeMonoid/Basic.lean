@@ -217,8 +217,9 @@ theorem recOn_of_mul {C : FreeMonoid α → Sort*} (x : α) (xs : FreeMonoid α)
 /-! ### induction -/
 section induction_principles
 
-/-- an induction principle on free monoids, with cases for one, ofs, and multiplication -/
-@[to_additive (attr := elab_as_elim, induction_eliminator)]
+/-- An induction principle on free monoids, with cases for `1`, `FreeMonoid.of` and `*`. -/
+@[to_additive (attr := elab_as_elim, induction_eliminator)
+"An induction principle on free monoids, with cases for `0`, `FreeAddMonoid.of` and `+`."]
 protected theorem inductionOn {C : FreeMonoid α → Prop} (z : FreeMonoid α) (one : C 1)
     (of : ∀ (x : α), C (FreeMonoid.of x)) (mul : ∀ (x y : FreeMonoid α), C x → C y → C (x * y)) :
   C z := List.rec one (fun _ _ ih => mul [_] _ (of _) ih) z
