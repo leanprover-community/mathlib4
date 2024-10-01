@@ -319,6 +319,7 @@ theorem log_le_clog (b n : ℕ) : log b n ≤ clog b n := by
     exact (Nat.pow_le_pow_iff_right hb).1
       ((pow_log_le_self b n.succ_ne_zero).trans <| le_pow_clog hb _)
 
+/-! ### Computating the logarithm efficiently -/
 section computation
 
 private lemma logC_aux {m b : ℕ} (hb : 1 < b) (hbm : b ≤ m) : m / (b * b) < m / b := by
@@ -330,9 +331,9 @@ private lemma logC_aux {m b : ℕ} (hb : 1 < b) (hbm : b ≤ m) : m / (b * b) < 
 set_option linter.unusedVariables false in
 /--
 An alternate definition for `Nat.log` which computes more efficiently. For mathematical purposes,
-use `Nat.log` instead, and see `log_eq_logC`.
+use `Nat.log` instead, and see `Nat.log_eq_logC`.
 
-Note a tail-recursive version of Nat.log is also possible:
+Note a tail-recursive version of `Nat.log` is also possible:
 ```
 def logTR (b n : ℕ) : ℕ :=
   let rec go : ℕ → ℕ → ℕ | n, acc => if h : b ≤ n ∧ 1 < b then go (n / b) (acc + 1) else acc
@@ -407,8 +408,12 @@ private lemma logC_zero {b : ℕ} :
       rw [logC.step, dif_pos (zero_lt_of_lt hb)] at heq
       rw [(Prod.mk.inj heq).2]
 
-@[csimp]
-theorem logC_eq_log : log = logC := by
+/--
+The result of `Nat.logC` agrees with the result of `Nat.log`. The former will be computed more
+efficiently, but the latter is easier to prove things about and has more lemmas.
+This lemma is tagged @[csimp] so that the code generated for `Nat.log` uses `Nat.logC` instead.
+-/
+@[csimp] theorem logC_eq_log : log = logC := by
   ext b m
   rcases le_or_lt b 1 with hb | hb
   case inl => rw [logC_small_base hb, Nat.log_of_left_le_one hb]
