@@ -3,9 +3,11 @@ Copyright (c) 2023 Parth Shastri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parth Shastri, Gabriel Ebner, Mario Carneiro
 -/
+import Mathlib.Init
 import Lean.Elab.Command
 import Lean.Compiler.CSimpAttr
 import Lean.Util.FoldConsts
+import Lean.Data.AssocList
 
 /-!
 # Define the `compile_inductive%` command.
@@ -229,6 +231,7 @@ end Mathlib.Util
 -- `Nat.rec` already has a `@[csimp]` lemma in Lean.
 compile_def% Nat.recOn
 compile_def% Nat.brecOn
+compile_inductive% Prod
 compile_inductive% List
 compile_inductive% PUnit
 compile_inductive% PEmpty

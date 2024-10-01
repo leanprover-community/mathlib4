@@ -28,7 +28,7 @@ theory. These instances enable lemmas such as `mul_pos` to fire on `ℤₘ₀`.
 assert_not_exists Ring
 
 -- this makes `mul_lt_mul_left`, `mul_pos` etc work on `ℤₘ₀`
-instance {α : Type*} [Mul α] [Preorder α] [CovariantClass α α (· * ·) (· < ·)]:
+instance {α : Type*} [Mul α] [Preorder α] [CovariantClass α α (· * ·) (· < ·)] :
     PosMulStrictMono (WithZero α) where
   elim := @fun
     | ⟨(x : α), hx⟩, 0, (b : α), _ => by
@@ -39,7 +39,7 @@ instance {α : Type*} [Mul α] [Preorder α] [CovariantClass α α (· * ·) (·
         exact mul_lt_mul_left' h x
 
 open Function in
-instance {α : Type*} [Mul α] [Preorder α] [CovariantClass α α (swap (· * ·)) (· < ·)]:
+instance {α : Type*} [Mul α] [Preorder α] [CovariantClass α α (swap (· * ·)) (· < ·)] :
     MulPosStrictMono (WithZero α) where
   elim := @fun
     | ⟨(x : α), hx⟩, 0, (b : α), _ => by
@@ -49,7 +49,7 @@ instance {α : Type*} [Mul α] [Preorder α] [CovariantClass α α (swap (· * �
         norm_cast at h ⊢
         exact mul_lt_mul_right' h x
 
-instance {α : Type*} [Mul α] [Preorder α] [CovariantClass α α (· * ·) (· ≤ ·)]:
+instance {α : Type*} [Mul α] [Preorder α] [CovariantClass α α (· * ·) (· ≤ ·)] :
     PosMulMono (WithZero α) where
   elim := @fun
     | ⟨0, _⟩, a, b, _ => by
@@ -65,7 +65,7 @@ instance {α : Type*} [Mul α] [Preorder α] [CovariantClass α α (· * ·) (·
 
 -- This makes `lt_mul_of_le_of_one_lt'` work on `ℤₘ₀`
 open Function in
-instance {α : Type*} [Mul α] [Preorder α] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]:
+instance {α : Type*} [Mul α] [Preorder α] [CovariantClass α α (swap (· * ·)) (· ≤ ·)] :
     MulPosMono (WithZero α) where
   elim := @fun
     | ⟨0, _⟩, a, b, _ => by

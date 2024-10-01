@@ -3,17 +3,16 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Jujian Zhang
 -/
-import Mathlib.RingTheory.Noetherian
-import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.DirectSum.Finsupp
-import Mathlib.Algebra.Module.Projective
-import Mathlib.Algebra.Module.Injective
+import Mathlib.Algebra.DirectSum.Module
+import Mathlib.Algebra.Exact
 import Mathlib.Algebra.Module.CharacterModule
+import Mathlib.Algebra.Module.Injective
+import Mathlib.Algebra.Module.Projective
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.Algebra.Module.Projective
-
-#align_import ring_theory.flat from "leanprover-community/mathlib"@"62c0a4ef1441edb463095ea02a06e87f3dfe135c"
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+import Mathlib.RingTheory.Noetherian
 
 /-!
 # Flat modules
@@ -71,9 +70,12 @@ the canonical map `I ⊗ M →ₗ M` is injective. -/
 @[mk_iff] class Flat : Prop where
   out : ∀ ⦃I : Ideal R⦄ (_ : I.FG),
     Function.Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))
-#align module.flat Module.Flat
 
 namespace Flat
+
+variable {R} in
+instance instSubalgebraToSubmodule {S : Type v} [Ring S] [Algebra R S]
+    (A : Subalgebra R S) [Flat R A] : Flat R (Subalgebra.toSubmodule A) := ‹Flat R A›
 
 instance self (R : Type u) [CommRing R] : Flat R R :=
   ⟨by
@@ -83,7 +85,6 @@ instance self (R : Type u) [CommRing R] : Flat R R :=
     ext x
     simp only [Function.comp_apply, LinearEquiv.coe_toEquiv, rid_symm_apply, comp_apply, mul_one,
       lift.tmul, Submodule.subtype_apply, Algebra.id.smul_eq_mul, lsmul_apply]⟩
-#align module.flat.self Module.Flat.self
 
 /-- An `R`-module `M` is flat iff for all finitely generated ideals `I` of `R`, the
 tensor product of the inclusion `I → R` and the identity `M → M` is injective. See
@@ -171,7 +172,7 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
     apply TensorProduct.ext'
     intro a m
     simp only [ρ, ψ, φ, η, η₁, coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-      directSumRight_symm_lof_tmul, rTensor_tmul, Submodule.coeSubtype, lid_tmul, map_smul]
+      directSumRight_symm_lof_tmul, rTensor_tmul, Submodule.coe_subtype, lid_tmul, map_smul]
     rw [DirectSum.component.of, DirectSum.component.of]
     by_cases h₂ : j = i
     · subst j; simp
@@ -268,6 +269,72 @@ lemma iff_lTensor_preserves_injective_linearMap [Small.{v} R] :
     ∀ ⦃N N' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
       (L : N →ₗ[R] N'), Function.Injective L → Function.Injective (L.lTensor M) := by
   simp_rw [iff_rTensor_preserves_injective_linearMap, LinearMap.lTensor_inj_iff_rTensor_inj]
+
+variable (M) in
+lemma lTensor_exact [Small.{v} R] [flat : Flat R M] ⦃N N' N'' : Type v⦄
+    [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N''] [Module R N] [Module R N'] [Module R N'']
+    ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄ (exact : Function.Exact f g) :
+    Function.Exact (f.lTensor M) (g.lTensor M) := by
+  let π : N' →ₗ[R] N' ⧸ LinearMap.range f := Submodule.mkQ _
+  let ι : N' ⧸ LinearMap.range f →ₗ[R] N'' :=
+    Submodule.subtype _ ∘ₗ (LinearMap.quotKerEquivRange g).toLinearMap ∘ₗ
+      Submodule.quotEquivOfEq (LinearMap.range f) (LinearMap.ker g)
+        (LinearMap.exact_iff.mp exact).symm
+
+  suffices exact1 : Function.Exact (f.lTensor M) (π.lTensor M) by
+    rw [show g = ι.comp π by aesop, lTensor_comp]
+    exact exact1.comp_injective
+      (inj := iff_lTensor_preserves_injective_linearMap R M |>.mp flat _ <| by
+        simpa [ι] using Subtype.val_injective)
+      (h0 := map_zero _)
+
+  exact _root_.lTensor_exact _ (fun x => by simp [π]) Quotient.surjective_Quotient_mk''
+
+variable (M) in
+lemma rTensor_exact [Small.{v} R] [flat : Flat R M] ⦃N N' N'' : Type v⦄
+    [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N''] [Module R N] [Module R N'] [Module R N'']
+    ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄ (exact : Function.Exact f g) :
+    Function.Exact (f.rTensor M) (g.rTensor M) := by
+  let π : N' →ₗ[R] N' ⧸ LinearMap.range f := Submodule.mkQ _
+  let ι : N' ⧸ LinearMap.range f →ₗ[R] N'' :=
+    Submodule.subtype _ ∘ₗ (LinearMap.quotKerEquivRange g).toLinearMap ∘ₗ
+      Submodule.quotEquivOfEq (LinearMap.range f) (LinearMap.ker g)
+        (LinearMap.exact_iff.mp exact).symm
+
+  suffices exact1 : Function.Exact (f.rTensor M) (π.rTensor M) by
+    rw [show g = ι.comp π by aesop, rTensor_comp]
+    exact exact1.comp_injective
+      (inj := iff_rTensor_preserves_injective_linearMap R M |>.mp flat _ <| by
+        simpa [ι] using Subtype.val_injective)
+      (h0 := map_zero _)
+
+  exact _root_.rTensor_exact _ (fun x => by simp [π]) Quotient.surjective_Quotient_mk''
+
+/--
+M is flat if and only if `M ⊗ -` is a left exact functor.
+-/
+lemma iff_lTensor_exact [Small.{v} R] :
+    Flat R M ↔
+    ∀ ⦃N N' N'' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N'']
+      [Module R N] [Module R N'] [Module R N''] ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄,
+        Function.Exact f g → Function.Exact (f.lTensor M) (g.lTensor M) := by
+  refine ⟨fun _ => lTensor_exact M, fun H => iff_lTensor_preserves_injective_linearMap R M |>.mpr
+    fun N' N'' _ _ _ _ L hL => LinearMap.ker_eq_bot |>.mp <| eq_bot_iff |>.mpr
+      fun x (hx : _ = 0) => ?_⟩
+  simpa [Eq.comm] using @H PUnit N' N'' _ _ _ _ _ _ 0 L (fun x => by aesop) x |>.mp hx
+
+/--
+M is flat if and only if `- ⊗ M` is a left exact functor.
+-/
+lemma iff_rTensor_exact [Small.{v} R] :
+    Flat R M ↔
+    ∀ ⦃N N' N'' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N'']
+      [Module R N] [Module R N'] [Module R N''] ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄,
+        Function.Exact f g → Function.Exact (f.rTensor M) (g.rTensor M) := by
+  refine ⟨fun _ => rTensor_exact M, fun H => iff_rTensor_preserves_injective_linearMap R M |>.mpr
+    fun N' N'' _ _ _ _ L hL => LinearMap.ker_eq_bot |>.mp <| eq_bot_iff |>.mpr
+      fun x (hx : _ = 0) => ?_⟩
+  simpa [Eq.comm] using @H PUnit N' N'' _ _ _ _ _ _ 0 L (fun x => by aesop) x |>.mp hx
 
 end Flat
 

@@ -5,8 +5,6 @@ Authors: Joseph Myers, Yury Kudryashov
 -/
 import Mathlib.Analysis.MeanInequalities
 
-#align_import imo.imo2020_q2 from "leanprover-community/mathlib"@"5f25c089cb34db4db112556f23c50d12da81b297"
-
 /-!
 # IMO 2020 Q2
 
@@ -42,4 +40,3 @@ theorem imo2020_q2 (a b c d : ℝ) (hd0 : 0 < d) (hdc : d ≤ c) (hcb : c ≤ b)
         (lt_add_of_pos_right _ (by apply_rules [add_pos, mul_pos, zero_lt_one] <;> linarith))
     _ = (a + b + c + d) ^ 3 := by ring
     _ = 1 := by simp [h1]
-#align imo2020_q2 imo2020_q2

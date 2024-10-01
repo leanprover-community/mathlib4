@@ -20,7 +20,7 @@ import Mathlib.Analysis.Complex.HalfPlane
 * We prove similar results for iterated derivatives (`LSeries.iteratedDeriv`).
 
 * We use this to show that `LSeries f` is holomorphic on the right half-plane of
-  absolute convergence (`LSeries.analyticOn`).
+  absolute convergence (`LSeries.analyticOnNhd`).
 
 ## Implementation notes
 
@@ -122,7 +122,7 @@ is the same as that of `f`. -/
 lemma LSeries.absicssaOfAbsConv_logPowMul {f : ℕ → ℂ} {m : ℕ} :
     abscissaOfAbsConv (logMul^[m] f) = abscissaOfAbsConv f := by
   induction' m with n ih
-  · simp only [Nat.zero_eq, Function.iterate_zero, id_eq]
+  · simp only [Function.iterate_zero, id_eq]
   · simp only [ih, Function.iterate_succ', Function.comp_def, abscissaOfAbsConv_logMul]
 
 /-- If `re s` is greater than the abscissa of absolute convergence of `f`, then
@@ -130,7 +130,7 @@ the `m`th derivative of this L-series is `(-1)^m` times the L-series of `log^m *
 lemma LSeries_iteratedDeriv {f : ℕ → ℂ} (m : ℕ) {s : ℂ} (h : abscissaOfAbsConv f < s.re) :
     iteratedDeriv m (LSeries f) s = (-1) ^ m * LSeries (logMul^[m] f) s := by
   induction' m with m ih generalizing s
-  · simp only [Nat.zero_eq, iteratedDeriv_zero, pow_zero, Function.iterate_zero, id_eq, one_mul]
+  · simp only [iteratedDeriv_zero, pow_zero, Function.iterate_zero, id_eq, one_mul]
   · have ih' : {s | abscissaOfAbsConv f < re s}.EqOn (iteratedDeriv m (LSeries f))
         ((-1) ^ m * LSeries (logMul^[m] f)) := fun _ hs ↦ ih hs
     have := derivWithin_congr ih' (ih h)
@@ -151,6 +151,10 @@ lemma LSeries_differentiableOn (f : ℕ → ℂ) :
   fun _ hz ↦ (LSeries_hasDerivAt hz).differentiableAt.differentiableWithinAt
 
 /-- The L-series of `f` is holomorphic on its open half-plane of absolute convergence. -/
+lemma LSeries_analyticOnNhd (f : ℕ → ℂ) :
+    AnalyticOnNhd ℂ (LSeries f) {s | abscissaOfAbsConv f < s.re} :=
+  (LSeries_differentiableOn f).analyticOnNhd <| isOpen_re_gt_EReal _
+
 lemma LSeries_analyticOn (f : ℕ → ℂ) :
     AnalyticOn ℂ (LSeries f) {s | abscissaOfAbsConv f < s.re} :=
-  (LSeries_differentiableOn f).analyticOn <| isOpen_re_gt_EReal _
+  (LSeries_analyticOnNhd f).analyticOn

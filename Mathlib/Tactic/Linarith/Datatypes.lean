@@ -311,7 +311,7 @@ structure CertificateOracle : Type where
   `hyps` by eliminating all variables ≤ `max_var`.
   If successful, it returns a map `coeff : Nat → Nat` as a certificate.
   This map represents that we can find a contradiction by taking the sum `∑ (coeff i) * hyps[i]`. -/
-  produceCertificate (hyps : List Comp) (max_var : Nat) : MetaM (Batteries.HashMap Nat Nat)
+  produceCertificate (hyps : List Comp) (max_var : Nat) : MetaM (Std.HashMap Nat Nat)
 
 /-!
 ### Auxiliary functions
@@ -368,3 +368,5 @@ def mkSingleCompZeroOf (c : Nat) (h : Expr) : MetaM (Ineq × Expr) := do
     let ex ← synthesizeUsingTactic' cpos (← `(tactic| norm_num))
     let e' ← mkAppM iq.toConstMulName #[h, ex]
     return (iq, e')
+
+end Linarith

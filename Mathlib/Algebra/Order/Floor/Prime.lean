@@ -5,7 +5,7 @@ Authors: Yuyang Zhao
 -/
 
 import Mathlib.Algebra.Order.Floor
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Basic
 
 /-!
 # Existence of a sufficiently large prime for which `a * c ^ p / (p - 1)! < 1`

@@ -8,6 +8,7 @@ set_option linter.unusedVariables false
 
 section CC1
 
+open Mathlib (Vector)
 open Mathlib.Tactic.CC
 
 open Lean Meta Elab Tactic
@@ -216,6 +217,8 @@ end CC3
 section CC4
 
 universe u
+
+open Mathlib
 
 axiom app : {α : Type u} → {n m : Nat} → Vector α m → Vector α n → Vector α (m + n)
 

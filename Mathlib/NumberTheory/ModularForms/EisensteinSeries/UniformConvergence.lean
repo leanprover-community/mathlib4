@@ -8,7 +8,7 @@ import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Analysis.PSeries
 import Mathlib.Order.Interval.Finset.Box
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
 
 /-!
 # Uniform convergence of Eisenstein series
@@ -29,7 +29,7 @@ We then show in `summable_one_div_rpow_max` that the sum of `max (|c|, |d|) ^ (-
 
 noncomputable section
 
-open Complex UpperHalfPlane Set Finset
+open Complex UpperHalfPlane Set Finset CongruenceSubgroup
 
 open scoped UpperHalfPlane
 
@@ -56,14 +56,14 @@ lemma r1_pos : 0 < r1 z := by
   dsimp only [r1]
   positivity
 
-/-- For `c, d ∈ ℝ` with `1 ≤ d ^ 2`, we have `r1 z ≤ |c * z + d| ^ 2`.  -/
+/-- For `c, d ∈ ℝ` with `1 ≤ d ^ 2`, we have `r1 z ≤ |c * z + d| ^ 2`. -/
 lemma r1_aux_bound (c : ℝ) {d : ℝ} (hd : 1 ≤ d ^ 2) :
     r1 z ≤ (c * z.re + d) ^ 2 + (c * z.im) ^ 2 := by
   have H1 : (c * z.re + d) ^ 2 + (c * z.im) ^ 2 =
     c ^ 2 * (z.re ^ 2 + z.im ^ 2) + d * 2 * c * z.re + d ^ 2 := by ring
   have H2 : (c ^ 2 * (z.re ^ 2 + z.im ^ 2) + d * 2 * c * z.re + d ^ 2) * (z.re ^ 2 + z.im ^ 2)
     - z.im ^ 2 = (c * (z.re ^ 2 + z.im ^ 2) + d * z.re) ^ 2 + (d ^ 2 - 1) * z.im ^ 2 := by ring
-  rw [r1, H1, div_le_iff (by positivity), ← sub_nonneg, H2]
+  rw [r1, H1, div_le_iff₀ (by positivity), ← sub_nonneg, H2]
   exact add_nonneg (sq_nonneg _) (mul_nonneg (sub_nonneg.mpr hd) (sq_nonneg _))
 
 /-- This function is used to give an upper bound on the summands in Eisenstein series; it is
@@ -194,3 +194,5 @@ lemma eisensteinSeries_tendstoLocallyUniformlyOn {k : ℤ} {N : ℕ} (hk : 3 ≤
     Set.mem_univ, forall_const]
 
 end summability
+
+end EisensteinSeries

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2023 Scott Morrison. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 
 -- First import Aesop and Qq
@@ -11,16 +11,17 @@ import Qq
 -- Tools for analysing imports, like `#find_home`, `#minimize_imports`, ...
 import ImportGraph.Imports
 
--- Currently we don't need to import all of ProofWidgets,
--- but without this, if you don't run `lake build ProofWidgets` then `make test` will fail.
--- Hopefully `lake` will be able to handle tests later.
-import ProofWidgets
+-- Import common Batteries tactics and commands
+import Batteries.Tactic.Where
+import Batteries.Tactic.Basic
+
+-- Import syntax for leansearch
+import LeanSearchClient
 
 -- Import Mathlib-specific linters.
 import Mathlib.Tactic.Linter.Lint
 
 -- Now import all tactics defined in Mathlib that do not require theory files.
-import Mathlib.Mathport.Rename
 import Mathlib.Tactic.ApplyCongr
 -- ApplyFun imports `Mathlib.Order.Monotone.Basic`
 -- import Mathlib.Tactic.ApplyFun
@@ -36,8 +37,8 @@ import Mathlib.Tactic.ClearExclamation
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Clear_
 import Mathlib.Tactic.Coe
-import Mathlib.Tactic.Congr!
-import Mathlib.Tactic.Congrm
+import Mathlib.Tactic.CongrExclamation
+import Mathlib.Tactic.CongrM
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
@@ -46,7 +47,7 @@ import Mathlib.Tactic.DefEqTransformations
 import Mathlib.Tactic.DeprecateMe
 import Mathlib.Tactic.DeriveToExpr
 import Mathlib.Tactic.Eqns
-import Mathlib.Tactic.Existsi
+import Mathlib.Tactic.ExistsI
 import Mathlib.Tactic.ExtractGoal
 import Mathlib.Tactic.ExtractLets
 import Mathlib.Tactic.FailIfNoProgress
@@ -93,6 +94,7 @@ import Mathlib.Tactic.Simps.Basic
 -- import Mathlib.Tactic.SlimCheck
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.Spread
+import Mathlib.Tactic.Subsingleton
 import Mathlib.Tactic.Substs
 import Mathlib.Tactic.SuccessIfFailWithMsg
 import Mathlib.Tactic.SudoSetOption
@@ -109,7 +111,7 @@ import Mathlib.Tactic.UnsetOption
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.Variable
 import Mathlib.Tactic.Widget.Calc
-import Mathlib.Tactic.Widget.Congrm
+import Mathlib.Tactic.Widget.CongrM
 import Mathlib.Tactic.Widget.Conv
 import Mathlib.Tactic.WLOG
 import Mathlib.Util.AssertExists

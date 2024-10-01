@@ -6,8 +6,7 @@ Authors: Jalex Stark, Yury Kudryashov
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Real.Basic
 import Mathlib.Tactic.FieldSimp
-
-#align_import wiedijk_100_theorems.inverse_triangle_sum from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
+import Mathlib.Tactic.Ring
 
 /-!
 # Sum of the Reciprocals of the Triangular Numbers
@@ -35,4 +34,3 @@ theorem Theorems100.inverse_triangle_sum :
   have A : (n + 1 + 1 : ℚ) ≠ 0 := by norm_cast
   field_simp
   ring
-#align theorem_100.inverse_triangle_sum Theorems100.inverse_triangle_sum

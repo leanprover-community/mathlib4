@@ -8,8 +8,6 @@ import Mathlib.Algebra.Order.Group.Synonym
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Data.Prod.Lex
 
-#align_import algebra.order.monoid.prod from "leanprover-community/mathlib"@"2258b40dacd2942571c8ce136215350c702dc78f"
-
 /-! # Products of ordered monoids -/
 
 assert_not_exists MonoidWithZero
@@ -35,7 +33,7 @@ instance [LE α] [LE β] [Mul α] [Mul β] [ExistsMulOfLE α] [ExistsMulOfLE β]
   ⟨fun h =>
     let ⟨c, hc⟩ := exists_mul_of_le h.1
     let ⟨d, hd⟩ := exists_mul_of_le h.2
-    ⟨(c, d), ext hc hd⟩⟩
+    ⟨(c, d), Prod.ext hc hd⟩⟩
 
 @[to_additive]
 instance [CanonicallyOrderedCommMonoid α] [CanonicallyOrderedCommMonoid β] :

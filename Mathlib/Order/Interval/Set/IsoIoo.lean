@@ -7,8 +7,6 @@ import Mathlib.Order.Monotone.Odd
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Tactic.FieldSimp
 
-#align_import data.set.intervals.iso_Ioo from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
-
 /-!
 # Order isomorphism between a linear ordered field and `(-1, 1)`
 
@@ -42,4 +40,3 @@ def orderIsoIooNegOneOne (k : Type*) [LinearOrderedField k] : k ≃o Ioo (-1 : k
   · refine fun x ↦ Subtype.ext ?_
     have : 0 < 1 - |(x : k)| := sub_pos.2 (abs_lt.2 x.2)
     field_simp [abs_div, this.ne', abs_of_pos this]
-#align order_iso_Ioo_neg_one_one orderIsoIooNegOneOne
