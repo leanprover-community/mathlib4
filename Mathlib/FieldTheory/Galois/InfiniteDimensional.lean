@@ -344,6 +344,11 @@ lemma toAlgEquivAux_eq_liftNormal [IsGalois k K]
 
 protected lemma AlgEquiv.aut_inv (ϕ : K ≃ₐ[k] K) : ϕ⁻¹ = ϕ.symm := rfl
 
+instance instSMulMemClass : SMulMemClass (IntermediateField k K) k K where
+  smul_mem := by
+    intro _ _ _ hx
+    exact IntermediateField.smul_mem _ hx
+
 /--Turn `toAlgEquivAux` into an algEquiv by using `proj_lift` repeatedly-/
 @[simps]
 noncomputable def toAlgEquiv [IsGalois k K]
