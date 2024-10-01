@@ -91,15 +91,19 @@ def getBracketedBinderIds : Syntax → CommandElabM (Array Syntax)
   | _                                                  => throwUnsupportedSyntax
 
 open Lean.Parser.Term in
+/--
+similar to `getBracketedBinderIds`, but replaces syntax representing a binder update with
+`.missing` instead of the corresponding variable: a binder update does not count as a repetition.
+-/
 def getBracketedBinderIds' : Syntax → CommandElabM (Array Syntax)
   | `(bracketedBinderF|($ids* $[: $ty?]? $(_annot?)?)) =>
     return if ty?.isSome then ids else ids.map fun _ => .missing
   | `(bracketedBinderF|{$ids* $[: $ty?]?})             =>
     return if ty?.isSome then ids else ids.map fun _ => .missing
-  | `(bracketedBinderF|⦃$ids* : $_⦄)                   => return ids
-  | `(bracketedBinderF|[$id : $_])                     => return #[id]
-  | `(bracketedBinderF|[$f])                           => return #[.missing]
-  | _                                                  => throwUnsupportedSyntax
+  | `(bracketedBinderF|⦃$ids* : $_⦄) => return ids
+  | `(bracketedBinderF|[$id : $_]) => return #[id]
+  | `(bracketedBinderF|[$_]) => return #[.missing]
+  | _ => throwUnsupportedSyntax
 
 @[inherit_doc Mathlib.Linter.linter.unusedVariableCommand]
 def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx ↦ do
@@ -175,35 +179,19 @@ def shadowLinter : Linter where run := withSetOptionIn fun stx ↦ do
     return
   if (← get).messages.hasErrors then
     return
+  -- on each variable command, we check if there are new, non-updated, binders that have the
+  -- same name as binders that are already present and we flag them.
   if stx.isOfKind ``Command.variable then
     match stx with
       | `(variable $s*) =>
-        --dbg_trace s
         let newVs := (← s.mapM UnusedVariableCommand.getBracketedBinderIds').flatten
-        --dbg_trace newVs
-        --allVarsRef.modify fun vs => vs ++ newVs.flatten
         let sc := (← getScope).varDecls
         let sc := (← sc.mapM (getBracketedBinderIds ·.raw)).flatten
-        --dbg_trace "sc before: {sc}, {newVs.size}"
-
         let sc := sc.shrink (sc.size - newVs.size)
-        --dbg_trace sc
         for v in newVs do
           if (!v.getId.isAnonymous) && sc.contains v.getId then logInfoAt v m!"repeated variable '{v}'"
       | _ => return
-        --let ns : NameSet := .ofList sc.toList
-        --if sc.size
-  --if Parser.isTerminalCommand stx then
-  --  let mut groups := #[]
-  --  let mut left ← allVarsRef.get
-  --  while ! left.isEmpty do
-  --    let curr := left.getD 0 default
-  --    let (eqs, rest) := left.partition (·.getId == curr.getId)
-  --    groups := groups.push eqs
-  --    left := rest
-  --  for g in groups do
-  --    for a in g do
-  --      logInfoAt a m!"'{a}' is a repeated binder name"
+
   unless (stx.find? (#[``declaration, `lemma].contains <|·.getKind)).isSome do
     return
   let decl? := (stx.find? (·.isOfKind ``Lean.Parser.Command.declId)).getD default
