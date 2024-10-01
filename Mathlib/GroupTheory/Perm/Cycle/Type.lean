@@ -69,6 +69,23 @@ theorem cycleType_eq {σ : Perm α} (l : List (Perm α)) (h0 : l.prod = σ)
   · simpa [hl] using h2
   · simp [hl, h0]
 
+theorem CycleType.count_def {σ : Perm α} (n : ℕ) :
+    σ.cycleType.count n =
+      Fintype.card {c : σ.cycleFactorsFinset // (c : Perm α).support.card = n } := by
+  -- work on the LHS
+  rw [cycleType, Multiset.count_eq_card_filter_eq]
+  -- rewrite the `Fintype.card` as a `Finset.card`
+  rw [Fintype.subtype_card, Finset.univ_eq_attach, Finset.filter_attach',
+    Finset.card_map, Finset.card_attach]
+  simp only [Function.comp_apply, Finset.card, Finset.filter_val,
+    Multiset.filter_map, Multiset.card_map]
+  apply congr_arg
+  ext c
+  apply congr_arg₂ _ rfl
+  apply Multiset.filter_congr
+  intro d h
+  simp only [Function.comp_apply, eq_comm, Finset.mem_val.mp h, exists_const]
+
 @[simp] -- Porting note: new attr
 theorem cycleType_eq_zero {σ : Perm α} : σ.cycleType = 0 ↔ σ = 1 := by
   simp [cycleType_def, cycleFactorsFinset_eq_empty_iff]

@@ -101,64 +101,7 @@ namespace Equiv.Perm
 
 open MulAction Equiv Subgroup
 
-variable {α : Type*} {g : Equiv.Perm α}
-
-variable [DecidableEq α] [Fintype α]
-
-theorem mem_support_iff_mem_support_of_mem_cycleFactorsFinset {x : α} :
-    x ∈ g.support ↔
-    ∃ c ∈ g.cycleFactorsFinset, x ∈ c.support := by
-  constructor
-  · intro h
-    use g.cycleOf x, cycleOf_mem_cycleFactorsFinset_iff.mpr h
-    rw [mem_support_cycleOf_iff]
-    refine ⟨SameCycle.refl g x, h⟩
-  · rintro ⟨c, hc, hx⟩
-    exact mem_cycleFactorsFinset_support_le hc hx
-
-theorem isCycleOn_support_of_mem_cycleFactorsFinset (c : g.cycleFactorsFinset) :
-    IsCycleOn g (c : Perm α).support := by
-  suffices Finset.Nonempty (c : Perm α).support by
-    obtain ⟨x, hx⟩ := this
-    convert isCycleOn_support_cycleOf g x
-    exact cycle_is_cycleOf hx c.prop
-  rw [← Finset.card_pos]
-  apply lt_of_lt_of_le Nat.zero_lt_two
-  exact IsCycle.two_le_card_support (mem_cycleFactorsFinset_iff.mp c.prop).1
-
-theorem CycleType.count_def (n : ℕ) :
-    g.cycleType.count n =
-      Fintype.card {c : g.cycleFactorsFinset // (c : Perm α).support.card = n } := by
-  -- work on the LHS
-  rw [cycleType, Multiset.count_eq_card_filter_eq]
-  -- rewrite the `Fintype.card` as a `Finset.card`
-  rw [Fintype.subtype_card, Finset.univ_eq_attach, Finset.filter_attach',
-    Finset.card_map, Finset.card_attach]
-  simp only [Function.comp_apply, Finset.card, Finset.filter_val,
-    Multiset.filter_map, Multiset.card_map]
-  apply congr_arg
-  ext c
-  apply congr_arg₂ _ rfl
-  apply Multiset.filter_congr
-  intro d h
-  simp only [Function.comp_apply, eq_comm, Finset.mem_val.mp h, exists_const]
-
-lemma support_zpowers_of_mem_cycleFactorsFinset_le
-    {c : g.cycleFactorsFinset} (v : zpowers (c : Perm α)) :
-    (v : Perm α).support ⊆ g.support := by
-  obtain ⟨m, hm⟩ := v.prop
-  simp only [← hm]
-  apply subset_trans (support_zpow_le _ _) (mem_cycleFactorsFinset_support_le c.prop)
-
-theorem support_ofSubtype {p : α → Prop} [DecidablePred p]
-    (u : Perm (Subtype p)) :
-    (ofSubtype u).support = u.support.map (Function.Embedding.subtype p) := by
-  ext x
-  simp only [mem_support, ne_eq, Finset.mem_map, Function.Embedding.coe_subtype, Subtype.exists,
-    exists_and_right, exists_eq_right, not_iff_comm, not_exists, not_not]
-  by_cases hx : p x
-  · simp only [forall_prop_of_true hx, ofSubtype_apply_of_mem u hx, ← Subtype.coe_inj]
-  · simp only [forall_prop_of_false hx, true_iff, ofSubtype_apply_of_not_mem u hx]
+variable {α : Type*} [DecidableEq α] [Fintype α] {g : Equiv.Perm α}
 
 theorem Disjoint.support_noncommProd
     {ι : Type*} {k : ι → Perm α} {s : Finset ι}
@@ -178,6 +121,9 @@ theorem Disjoint.support_noncommProd
     apply hs _ _ (ne_of_mem_of_not_mem hj hi).symm <;>
       simp only [Finset.coe_insert, Set.mem_insert_iff, Finset.mem_coe, hj, or_true, true_or]
 
+#find_home! 
+  Equiv.Perm.Disjoint.support_noncommProd
+
 theorem Disjoint.cycleType_mul
     {f g : Perm α} (h : f.Disjoint g) :
     (f * g).cycleType = f.cycleType + g.cycleType := by
@@ -186,6 +132,9 @@ theorem Disjoint.cycleType_mul
   simp only [Finset.union_val, Function.comp_apply]
   rw [← Multiset.add_eq_union_iff_disjoint.mpr _, Multiset.map_add]
   simp only [Finset.disjoint_val, Disjoint.disjoint_cycleFactorsFinset h]
+
+#find_home! 
+  Equiv.Perm.Disjoint.cycleType_mul
 
 theorem Disjoint.cycleType_noncommProd
     {ι : Type*} {k : ι → Perm α} {s : Finset ι}
@@ -205,6 +154,9 @@ theorem Disjoint.cycleType_noncommProd
     intro j hj
     apply hs _ _ (ne_of_mem_of_not_mem hj hi).symm <;>
       simp only [Finset.coe_insert, Set.mem_insert_iff, Finset.mem_coe, hj, or_true, true_or]
+
+#find_home! 
+  Equiv.Perm.Disjoint.cycleType_noncommProd
 
 namespace OnCycleFactors
 

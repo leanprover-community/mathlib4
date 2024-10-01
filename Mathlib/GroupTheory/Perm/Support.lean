@@ -370,6 +370,15 @@ lemma ofSubtype_eq_iff {g c : Equiv.Perm α} {s : Finset α}
     · rw [ofSubtype_apply_of_not_mem (p := (· ∈ s)) _ ha, eq_comm, ← not_mem_support]
       exact Finset.not_mem_mono hc ha
 
+theorem support_ofSubtype {p : α → Prop} [DecidablePred p] (u : Perm (Subtype p)) :
+    (ofSubtype u).support = u.support.map (Function.Embedding.subtype p) := by
+  ext x
+  simp only [mem_support, ne_eq, Finset.mem_map, Function.Embedding.coe_subtype, Subtype.exists,
+    exists_and_right, exists_eq_right, not_iff_comm, not_exists, not_not]
+  by_cases hx : p x
+  · simp only [forall_prop_of_true hx, ofSubtype_apply_of_mem u hx, ← Subtype.coe_inj]
+  · simp only [forall_prop_of_false hx, true_iff, ofSubtype_apply_of_not_mem u hx]
+
 -- @[simp] -- Porting note (#10618): simp can prove this
 theorem pow_apply_mem_support {n : ℕ} {x : α} : (f ^ n) x ∈ f.support ↔ x ∈ f.support := by
   simp only [mem_support, ne_eq, apply_pow_apply_eq_iff]
