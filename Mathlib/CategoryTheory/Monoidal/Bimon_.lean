@@ -38,33 +38,33 @@ A bimonoid object in a braided category `C` is a object that is simultaneously m
 objects, and structure morphisms of them satisfy appropriate consistency conditions.
 -/
 class Bimon_Class (M : C) extends Mon_Class M, Comon_Class M where
-  mul_comul : μ[M] ≫ Δ[M] = (Δ[M] ⊗ Δ[M]) ≫ tensor_μ M M M M ≫ (μ[M] ⊗ μ[M]) := by aesop_cat
-  one_comul : η[M] ≫ Δ[M] = η[M ⊗ M] := by aesop_cat
-  mul_counit : μ[M] ≫ ε[M] = ε[M ⊗ M] := by aesop_cat
-  one_counit : η[M] ≫ ε[M] = 𝟙 (𝟙_ C) := by aesop_cat
+  /- For the names of the conditions below, the unprimed names are reserved for the version where
+  the argument `M` is explicit. -/
+  mul_comul' : μ[M] ≫ Δ[M] = (Δ[M] ⊗ Δ[M]) ≫ tensor_μ M M M M ≫ (μ[M] ⊗ μ[M]) := by aesop_cat
+  one_comul' : η[M] ≫ Δ[M] = η[M ⊗ M] := by aesop_cat
+  mul_counit' : μ[M] ≫ ε[M] = ε[M ⊗ M] := by aesop_cat
+  one_counit' : η[M] ≫ ε[M] = 𝟙 (𝟙_ C) := by aesop_cat
 
 namespace Bimon_Class
 
-attribute [reassoc (attr := simp)] mul_comul one_comul mul_counit one_counit
+/- The simp attribute is reserved for the unprimed versions. -/
+attribute [reassoc] mul_comul' one_comul' mul_counit' one_counit'
 
 variable (M : C) [Bimon_Class M]
 
-/-- A version of `mul_comul`, where the argument is explicit. -/
-theorem mul_comul' (M : C) [Bimon_Class M] :
+@[reassoc (attr := simp)]
+theorem mul_comul (M : C) [Bimon_Class M] :
     μ[M] ≫ Δ[M] = (Δ[M] ⊗ Δ[M]) ≫ tensor_μ M M M M ≫ (μ[M] ⊗ μ[M]) :=
-  mul_comul
+  mul_comul'
 
-/-- A version of `one_comul`, where the argument is explicit. -/
-@[reassoc]
-theorem one_comul' (M : C) [Bimon_Class M] : η[M] ≫ Δ[M] = η[M ⊗ M] := one_comul
+@[reassoc (attr := simp)]
+theorem one_comul (M : C) [Bimon_Class M] : η[M] ≫ Δ[M] = η[M ⊗ M] := one_comul'
 
-/-- A version of `mul_counit`, where the argument is explicit. -/
-@[reassoc]
-theorem mul_counit' (M : C) [Bimon_Class M] : μ[M] ≫ ε[M] = ε[M ⊗ M] := mul_counit
+@[reassoc (attr := simp)]
+theorem mul_counit (M : C) [Bimon_Class M] : μ[M] ≫ ε[M] = ε[M ⊗ M] := mul_counit'
 
-/-- A version of `one_counit`, where the argument is explicit. -/
-@[reassoc]
-theorem one_counit' (M : C) [Bimon_Class M] : η[M] ≫ ε[M] = 𝟙 (𝟙_ C) := one_counit
+@[reassoc (attr := simp)]
+theorem one_counit (M : C) [Bimon_Class M] : η[M] ≫ ε[M] = 𝟙 (𝟙_ C) := one_counit'
 
 end Bimon_Class
 
