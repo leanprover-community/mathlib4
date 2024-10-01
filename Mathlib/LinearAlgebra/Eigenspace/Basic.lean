@@ -135,7 +135,7 @@ lemma mem_unifEigenspace_one {f : End R M} {μ : R} {x : M} :
   rw [unifEigenspace_one, LinearMap.mem_ker, LinearMap.sub_apply,
     sub_eq_zero, LinearMap.smul_apply, LinearMap.one_apply]
 
-@[simp]
+-- `simp` can prove this using `unifEigenspace_zero`
 lemma mem_unifEigenspace_zero {f : End R M} {μ : R} {x : M} :
     x ∈ f.unifEigenspace μ 0 ↔ x = 0 := by
   rw [← Nat.cast_zero, mem_unifEigenspace_nat, pow_zero, LinearMap.mem_ker, LinearMap.one_apply]
@@ -268,12 +268,6 @@ lemma HasUnifEigenvalue.exp_ne_zero {f : End R M} {μ : R} {k : ℕ}
     (h : f.HasUnifEigenvalue μ k) : k ≠ 0 := by
   rintro rfl
   simp [HasUnifEigenvalue, Nat.cast_zero, unifEigenspace_zero] at h
-
--- Mathlib.Order.Hom.Basic
-@[simps]
-def WithTop.coeOrderHom {α : Type*} [Preorder α] : α →o WithTop α where
-  toFun := (↑)
-  monotone' := WithTop.coe_mono
 
 /-- If there exists a natural number `k` such that the kernel of `(f - μ • id) ^ k` is the
 maximal generalized eigenspace, then this value is the least such `k`. If not, this value is not
