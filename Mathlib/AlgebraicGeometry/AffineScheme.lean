@@ -739,8 +739,8 @@ section Factorization
 
 variable {X : Scheme.{u}} {A : CommRingCat}
 
-/-- If `X ⟶ Spec A` is a morphism of schemes, then `Spec` of this ring is the scheme-theoretic
-image of `f` and `f` factors as
+/-- If `X ⟶ Spec A` is a morphism of schemes, then `Spec` of `specTargetImage f` is the
+scheme-theoretic image of `f` and `f` factors as
 `specTargetImageFactorization f ≫ Spec.map (specTargetImageRingHom f)`
 (see `specTargetImageFactorization_comp`). -/
 def specTargetImage (f : X ⟶ Spec A) : CommRingCat :=
@@ -751,8 +751,8 @@ the inclusion of `Spec (specTargetImage f)` into `X`. -/
 def specTargetImageFactorization (f : X ⟶ Spec A) : X ⟶ Spec (specTargetImage f) :=
   (ΓSpec.adjunction).homEquiv X (op <| specTargetImage f) (Opposite.op (RingHom.kerLift _))
 
-/-- If `f : X ⟶ Spec A` is a morphism of schemes, the induced morphism on spectra of this
-ring homomorphism is the inclusion of the scheme-theoretic image of `f` into `Spec A`. -/
+/-- If `f : X ⟶ Spec A` is a morphism of schemes, the induced morphism on spectra of
+`specTargetImageRingHom f` is the inclusion of the scheme-theoretic image of `f` into `Spec A`. -/
 def specTargetImageRingHom (f : X ⟶ Spec A) : A ⟶ specTargetImage f :=
   Ideal.Quotient.mk (RingHom.ker _)
 
@@ -789,9 +789,8 @@ open RingHom
 
 variable {Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y)
 
-/-- If `f : X ⟶ Y` is a morphism of schemes with affine target, this is the scheme-theoretic
-image of `f` and `f` factors as
-`affineTargetImageFactorization f ≫ affineTargetImageInclusion f`
+/-- The scheme-theoretic image of a morphism `f : X ⟶ Y` with affine target.
+`f` factors as `affineTargetImageFactorization f ≫ affineTargetImageInclusion f`
 (see `affineTargetImageFactorization_comp`). -/
 def affineTargetImage (f : X ⟶ Y) : Scheme.{u} :=
   Spec <| specTargetImage (f ≫ Y.isoSpec.hom)
@@ -817,8 +816,8 @@ lemma affineTargetImageInclusion_app_surjective :
   · apply Function.Bijective.surjective
     apply ConcreteCategory.bijective_of_isIso
 
-/-- If `f : X ⟶ Y` has affine image, this is the induced morphism from `X` to the
-scheme-theoretic image of `f`. -/
+/-- The induced morphism from `X` to the scheme-theoretic image
+of a morphism `f : X ⟶ Y` with affine target. -/
 def affineTargetImageFactorization (f : X ⟶ Y) : X ⟶ affineTargetImage f :=
   specTargetImageFactorization (f ≫ Y.isoSpec.hom)
 
