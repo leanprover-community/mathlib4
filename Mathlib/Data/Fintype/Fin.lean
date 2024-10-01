@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Order.Interval.Finset.Fin
-import Mathlib.Algebra.Ring.Defs
 
 /-!
 # The structure of `Fintype (Fin n)`
