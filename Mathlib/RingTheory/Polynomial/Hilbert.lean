@@ -3,7 +3,6 @@ Copyright (c) 2024 Fangming Li. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fangming Li, Jujian Zhang
 -/
-import Mathlib.Algebra.Module.Rat
 import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.RingTheory.PowerSeries.WellKnown
 
