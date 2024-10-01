@@ -351,9 +351,17 @@ but performs worse for large numbers than `Nat.logC`:
 The definition `Nat.logC` is not tail-recursive, however, but the stack limit will only be reached
 if the output size is around 2^10000, meaning the input will be around 2^(2^10000), which will
 take far too long to compute in the first place.
+
+Adapted from https://downloads.haskell.org/~ghc/9.0.1/docs/html/libraries/ghc-bignum-1.0/GHC-Num-BigNat.html#v:bigNatLogBase-35-
 -/
 @[pp_nodot] def logC (b m : ℕ) : ℕ :=
-  let rec step (pw : ℕ) (hpw : 1 < pw) : ℕ × ℕ :=
+  if h : 1 < b then match step b h with | (_, e) => e else 0 where
+  /--
+  An auxiliary definition for `Nat.logC`, where the base of the logarithm is _squared_ in each
+  loop. This allows significantly faster computation of the logarithm: it takes logarithmic time
+  in the size of the output, rather than linear time.
+  -/
+  step (pw : ℕ) (hpw : 1 < pw) : ℕ × ℕ :=
     if h : m < pw
     then (m, 0)
     else
@@ -363,7 +371,6 @@ take far too long to compute in the first place.
   decreasing_by
     have : m / (pw * pw) < m / pw := logC_aux hpw (le_of_not_lt h)
     decreasing_trivial
-  if h : 1 < b then match step b h with | (_, e) => e else 0
 
 private lemma logC_step {m pw q e : ℕ} (hpw : 1 < pw) (hqe : logC.step m pw hpw = (q, e)) :
     pw ^ e * q ≤ m ∧ q < pw ∧ (m < pw ^ e * (q + 1)) ∧ (0 < m → 0 < q) := by
