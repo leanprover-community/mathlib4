@@ -699,21 +699,38 @@ end PartialOrder
 namespace MeasureTheory
 variable {X : Type*} [MeasurableSpace X] {μ : Measure X} {s : Set X}
 theorem IntegrableOn.iff_ofReal {f : X → ℝ} :
-IntegrableOn f s μ ↔ IntegrableOn (fun x ↦ (f x : ℂ)) s μ :=
+    IntegrableOn f s μ ↔ IntegrableOn (fun x ↦ (f x : ℂ)) s μ :=
     MeasureTheory.Integrable.iff_ofReal
 
 theorem IntegrableOn.ofReal {f : X → ℝ} (hf : IntegrableOn f s μ) :
     IntegrableOn (fun x => (f x : ℂ)) s μ := IntegrableOn.iff_ofReal.1 hf
 
-theorem IntegrableOn.re_im_iff {f : X → ℂ} :
+theorem IntegrableOn.re_im_iff {f : X → ℂ} (hs: MeasurableSet s):
     IntegrableOn (fun x => (f x).re) s μ ∧ IntegrableOn (fun x => (f x).im) s μ ↔
       IntegrableOn f s μ := by
-  sorry
+  refine ⟨?_, fun hf => ⟨hf.re, hf.im⟩⟩
+  rintro ⟨hre, him⟩
+  have h : IntegrableOn (fun x ↦ (f x).re + Complex.I*(f x).im) s μ := by
+    apply Integrable.add
+    rw [← IntegrableOn, ← IntegrableOn.iff_ofReal]
+    exact hre
+    apply Integrable.smul Complex.I
+    rw [← IntegrableOn, ← IntegrableOn.iff_ofReal]
+    exact him
+  have h1 : EqOn (fun x ↦ ((f x).re : ℂ) + Complex.I*((f x).im : ℂ)) (fun x ↦ f x) s := by
+    intro x _
+    dsimp
+    have (y: ℂ) : y.re + Complex.I*y.im = y := by
+      apply Complex.ext
+      all_goals simp
+    exact this (f x)
 
-theorem IntegrableOn.re {f : X → ℂ} (hf : IntegrableOn f s μ) :
-IntegrableOn (fun x => (f x).re) s μ  := (IntegrableOn.re_im_iff.2 hf).left
+  apply IntegrableOn.congr_fun h h1 hs
 
-theorem IntegrableOn.im {f : X → ℂ} (hf : IntegrableOn f s μ) :
-IntegrableOn (fun x => (f x).im) s μ := (IntegrableOn.re_im_iff.2 hf).right
+theorem IntegrableOn.re {f : X → ℂ} (hf : IntegrableOn f s μ) (hs : MeasurableSet s):
+    IntegrableOn (fun x => (f x).re) s μ  := ((IntegrableOn.re_im_iff hs).2 hf).left
+
+theorem IntegrableOn.im {f : X → ℂ} (hf : IntegrableOn f s μ) (hs: MeasurableSet s):
+    IntegrableOn (fun x => (f x).im) s μ := ((IntegrableOn.re_im_iff hs).2 hf).right
 
 end MeasureTheory
