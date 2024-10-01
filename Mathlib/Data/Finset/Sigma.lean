@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Data.Finset.Lattice
-import Mathlib.Data.Finset.SetLattice
+import Mathlib.Order.CompleteLattice.Finset
 import Mathlib.Data.Set.Sigma
 
 /-!
