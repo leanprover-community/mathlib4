@@ -59,8 +59,8 @@ theorem map₂_span_span (f : M →ₗ[R] N →ₗ[R] P) (s : Set M) (t : Set N)
     on_goal 1 =>
       intro a ha
       apply @span_induction' R N _ _ _ t
-      on_goal 1 => intro b hb
-      · exact subset_span ⟨_, ‹_›, _, ‹_›, rfl⟩
+      · intro b hb
+        exact subset_span ⟨_, ‹_›, _, ‹_›, rfl⟩
     all_goals
       intros
       simp only [*, add_mem, smul_mem, zero_mem, _root_.map_zero, map_add,
