@@ -398,7 +398,7 @@ section Reverse
 def reverse : FreeMonoid α → FreeMonoid α := List.reverse
 
 @[to_additive (attr := simp)]
-theorem reverse_of {a : α} : reverse (of a) = of a := rfl
+theorem reverse_of (a : α) : reverse (of a) = of a := rfl
 
 @[to_additive]
 theorem reverse_mul {a b : FreeMonoid α} : reverse (a * b) = reverse b * reverse a :=
