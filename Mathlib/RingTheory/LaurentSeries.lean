@@ -28,7 +28,7 @@ import Mathlib.Topology.UniformSpace.Cauchy
 the underlying `RatFunc.coeAlgHom`.
 * Study of the `X`-Adic valuation on the ring of Laurent series over a field
 * In `LaurentSeries.uniformContinuous_coeff` we show that sending a Laurent series to its `d`th
-coefficient in uniformly continuous, ensuring that it sends a Cauchy filter `ℱ` in `LaurentSeries K`
+coefficient is uniformly continuous, ensuring that it sends a Cauchy filter `ℱ` in `LaurentSeries K`
 to a Cauchy filter in `K`: since this latter is given the discrete topology, this provides an
 element `LaurentSeries.Cauchy.coeff ℱ d` in `K` that serves as `d`th coefficient of the Laurent
 series to which the filter `ℱ` converges.
@@ -42,7 +42,8 @@ series to which the filter `ℱ` converges.
 `LaurentSeries.valuation_le_iff_coeff_lt_eq_zero`.
 * Every Laurent series of valuation less than `(1 : ℤₘ₀)` comes from a power series, see
 `LaurentSeries.val_le_one_iff_eq_coe`.
-* The uniform space of `LaurentSeries` over a field is complete.
+* The uniform space of `LaurentSeries` over a field is complete, formalized in the instance
+`instLaurentSeriesComplete`.
 
 ## Implementation details
 * Since `LaurentSeries` is just an abbreviation of `HahnSeries ℤ _`, the definition of the
@@ -708,7 +709,7 @@ theorem Cauchy.coeff_support_bddBelow {ℱ : Filter (LaurentSeries K)} (hℱ : C
 of the filter. Its `d`-th coefficient is defined as the limit of `Cauchy.coeff hℱ d`, which is
 again Cauchy but valued in the discrete space `K`. That sufficiently negative coefficients vanish
 follows from `Cauchy.coeff_support_bddBelow` -/
-def Cauchy.mk_LaurentSeries {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) : LaurentSeries K :=
+def Cauchy.limit {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) : LaurentSeries K :=
   HahnSeries.mk (coeff hℱ) <| Set.IsWF.isPWO (coeff_support_bddBelow _).wellFoundedOn_lt
 
 /- The following lemma shows that for every `d` smaller than the minimum between the integers
@@ -759,11 +760,11 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter (LaurentSeries K)} (hℱ : C
 
 open scoped Topology
 
-/- The main result showing that the Cauchy filter tends to the `hℱ.mk_LaurentSeries`-/
+/- The main result showing that the Cauchy filter tends to the `Cauchy.limit`-/
 theorem Cauchy.eventually_mem_nhds {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ)
-    {U : Set (LaurentSeries K)} (hU : U ∈ 𝓝 (Cauchy.mk_LaurentSeries hℱ)) : ∀ᶠ f in ℱ, f ∈ U := by
+    {U : Set (LaurentSeries K)} (hU : U ∈ 𝓝 (Cauchy.limit hℱ)) : ∀ᶠ f in ℱ, f ∈ U := by
   obtain ⟨γ, hU₁⟩ := Valued.mem_nhds.mp hU
-  suffices ∀ᶠ f in ℱ, f ∈ {y : LaurentSeries K | Valued.v (y - mk_LaurentSeries hℱ) < ↑γ} by
+  suffices ∀ᶠ f in ℱ, f ∈ {y : LaurentSeries K | Valued.v (y - limit hℱ) < ↑γ} by
     apply this.mono fun _ hf ↦ hU₁ hf
   set D := -(Multiplicative.toAdd (WithZero.unzero γ.ne_zero) - 1) with hD₀
   have hD : ((Multiplicative.ofAdd (-D) : Multiplicative ℤ) : ℤₘ₀) < γ := by
@@ -777,8 +778,8 @@ theorem Cauchy.eventually_mem_nhds {ℱ : Filter (LaurentSeries K)} (hℱ : Cauc
   rw [HahnSeries.sub_coeff, sub_eq_zero, hf n hn |>.symm]; rfl
 
 /- Laurent Series with coefficients in a field are complete w.r.t. the `X`-adic valuation -/
-instance : CompleteSpace (LaurentSeries K) :=
-  ⟨fun hℱ ↦ ⟨Cauchy.mk_LaurentSeries hℱ, fun _ hS ↦ Cauchy.eventually_mem_nhds hℱ hS⟩⟩
+instance instLaurentSeriesComplete : CompleteSpace (LaurentSeries K) :=
+  ⟨fun hℱ ↦ ⟨Cauchy.limit hℱ, fun _ hS ↦ Cauchy.eventually_mem_nhds hℱ hS⟩⟩
 
 end Complete
 
