@@ -364,7 +364,7 @@ theorem AlgEquiv.restrictNormalHom_id (F K : Type*)
     [Field F] [Field K] [Algebra F K] [Normal F K] :
     AlgEquiv.restrictNormalHom (F := F) (K₁ := K) K = MonoidHom.id (K ≃ₐ[F] K) := by
   ext f x
-  dsimp [restrictNormalHom]
+  dsimp only [restrictNormalHom, MonoidHom.mk'_apply, MonoidHom.id_apply]
   apply (algebraMap K K).injective
   rw [AlgEquiv.restrictNormal_commutes]
   simp only [Algebra.id.map_eq_id, RingHom.id_apply]
