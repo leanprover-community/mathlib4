@@ -798,6 +798,7 @@ variable [SMulCommClass R Rᵐᵒᵖ M]
 @[simp] theorem invOf_eq_inv (x : tsze R M) [Invertible x] : ⅟x = x⁻¹ := by
   letI := invertibleFstOfInvertible x
   ext <;> simp [fst_invOf, snd_invOf]
+
 protected theorem mul_inv_cancel {x : tsze R M} (hx : fst x ≠ 0) : x * x⁻¹ = 1 := by
   have : Invertible x.fst := Units.invertible (.mk0 _ hx)
   have := invertibleOfInvertibleFst x
