@@ -227,20 +227,18 @@ instance module [Semiring S] [AddCommMonoid R] [AddCommMonoid M] [Module S R] [M
   Prod.instModule
 
 /-- The trivial square-zero extension is nontrivial if it is over a nontrivial ring. -/
-lemma instNontrivial_of_left {R M : Type*} [Nontrivial R] [Nonempty M] :
-    Nontrivial (TrivSqZeroExt R M) where
-  exists_pair_ne := by
-    inhabit M
-    obtain ⟨x, y, h⟩ := exists_pair_ne R
-    exact ⟨⟨x, default⟩, ⟨y, default⟩, mt (congr_arg TrivSqZeroExt.fst) h⟩
+instance instNontrivial_of_left {R M : Type*} [Nontrivial R] [Nonempty M] :
+    Nontrivial (TrivSqZeroExt R M) := by
+  inhabit M
+  have : Zero M := ⟨default⟩
+  exact inl_injective.nontrivial
 
 /-- The trivial square-zero extension is nontrivial if it is over a nontrivial module. -/
-lemma instNontrivial_of_right {R M : Type*} [Nonempty R] [Nontrivial M] :
-    Nontrivial (TrivSqZeroExt R M) where
-  exists_pair_ne := by
-    inhabit R
-    obtain ⟨x, y, h⟩ := exists_pair_ne M
-    exact ⟨⟨default, x⟩, ⟨default, y⟩, mt (congr_arg TrivSqZeroExt.snd) h⟩
+instance instNontrivial_of_right {R M : Type*} [Nonempty R] [Nontrivial M] :
+    Nontrivial (TrivSqZeroExt R M) := by
+  inhabit R
+  have : Zero R := ⟨default⟩
+  exact inr_injective.nontrivial
 
 @[simp]
 theorem fst_zero [Zero R] [Zero M] : (0 : tsze R M).fst = 0 :=
