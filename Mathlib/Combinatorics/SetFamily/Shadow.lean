@@ -77,7 +77,7 @@ theorem shadow_singleton_empty : ∂ ({∅} : Finset (Finset α)) = ∅ :=
 
 @[simp]
 theorem shadow_singleton (a : α) : ∂ {{a}} = {∅} := by
-  simp only [sup_singleton, image_singleton, erase_singleton, shadow]
+  simp [shadow]
 
 /-- The shadow is monotone. -/
 @[mono]
