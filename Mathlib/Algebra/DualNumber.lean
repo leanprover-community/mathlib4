@@ -58,9 +58,6 @@ namespace DualNumber
 
 open TrivSqZeroExt
 
-instance {R : Type*} [Nontrivial R] : Nontrivial (R[ε]) :=
-  instNontrivial_of_left
-
 @[simp]
 theorem fst_eps [Zero R] [One R] : fst ε = (0 : R) :=
   fst_inr _ _
