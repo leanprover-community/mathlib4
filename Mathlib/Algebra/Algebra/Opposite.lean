@@ -48,7 +48,6 @@ instance instAlgebra : Algebra R Aᵐᵒᵖ where
 @[simp]
 theorem algebraMap_apply (c : R) : algebraMap R Aᵐᵒᵖ c = op (algebraMap R A c) :=
   rfl
-#align mul_opposite.algebra_map_apply MulOpposite.algebraMap_apply
 
 end MulOpposite
 

@@ -29,7 +29,7 @@ open Complex LSeries
 ### Dirichlet convolution of two functions
 -/
 
-open BigOperators Nat
+open Nat
 
 /-- We turn any function `ℕ → R` into an `ArithmeticFunction R` by setting its value at `0`
 to be zero. -/
@@ -77,7 +77,7 @@ lemma ArithmeticFunction.coe_mul {R : Type*} [Semiring R] (f g : ArithmeticFunct
 namespace LSeries
 
 lemma convolution_def {R : Type*} [Semiring R] (f g : ℕ → R) :
-    f ⍟ g = fun n ↦ ∑ p in n.divisorsAntidiagonal, f p.1 * g p.2 := by
+    f ⍟ g = fun n ↦ ∑ p ∈ n.divisorsAntidiagonal, f p.1 * g p.2 := by
   ext n
   simp only [convolution, toArithmeticFunction, ArithmeticFunction.mul_apply,
     ArithmeticFunction.coe_mk, mul_ite, mul_zero, ite_mul, zero_mul]
@@ -97,7 +97,7 @@ lemma convolution_map_zero {R : Type*} [Semiring R] (f g : ℕ → R) : (f ⍟ g
 /-- We give an expression of the `LSeries.term` of the convolution of two functions
 in terms of a sum over `Nat.divisorsAntidiagonal`. -/
 lemma term_convolution (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
-    term (f ⍟ g) s n = ∑ p in n.divisorsAntidiagonal, term f s p.1 * term g s p.2 := by
+    term (f ⍟ g) s n = ∑ p ∈ n.divisorsAntidiagonal, term f s p.1 * term g s p.2 := by
   rcases eq_or_ne n 0 with rfl | hn
   · simp only [term_zero, divisorsAntidiagonal_zero, Finset.sum_empty]
   -- now `n ≠ 0`
@@ -109,7 +109,7 @@ lemma term_convolution (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
 
 open Set in
 /-- We give an expression of the `LSeries.term` of the convolution of two functions
-in terms of an a priori infinte sum over all pairs `(k, m)` with `k * m = n`
+in terms of an a priori infinite sum over all pairs `(k, m)` with `k * m = n`
 (the set we sum over is infinite when `n = 0`). This is the version needed for the
 proof that `L (f ⍟ g) = L f * L g`. -/
 lemma term_convolution' (f g : ℕ → ℂ) (s : ℂ) :
