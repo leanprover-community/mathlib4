@@ -652,7 +652,7 @@ theorem IsSeparable.tower_bot {x : K} (h : IsSeparable F (algebraMap K E x)) : I
 variable (K E) in
 theorem Algebra.isSeparable_tower_bot_of_isSeparable [h : Algebra.IsSeparable F E] :
     Algebra.IsSeparable F K :=
-  ⟨fun _ ↦ IsSeparable.tower_bot (h.isSeparable _)⟩
+  ⟨fun _ ↦ IsSeparable.tower_bot (h.isSeparable _ _)⟩
 
 end IsScalarTower
 

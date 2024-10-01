@@ -1331,24 +1331,11 @@ local notation a " ⋆ " b => op a b
 /-- Notation for `foldl op a l`. -/
 local notation l " <*> " a => foldl op a l
 
-theorem foldl_assoc : ∀ {l : List α} {a₁ a₂}, (l <*> a₁ ⋆ a₂) = a₁ ⋆ l <*> a₂
-  | [], a₁, a₂ => rfl
-  | a :: l, a₁, a₂ =>
-    calc
-      ((a :: l) <*> a₁ ⋆ a₂) = l <*> a₁ ⋆ a₂ ⋆ a := by simp only [foldl_cons, ha.assoc]
-      _ = a₁ ⋆ (a :: l) <*> a₂ := by rw [foldl_assoc, foldl_cons]
-
 theorem foldl_op_eq_op_foldr_assoc :
     ∀ {l : List α} {a₁ a₂}, ((l <*> a₁) ⋆ a₂) = a₁ ⋆ l.foldr (· ⋆ ·) a₂
   | [], a₁, a₂ => rfl
   | a :: l, a₁, a₂ => by
     simp only [foldl_cons, foldr_cons, foldl_assoc, ha.assoc]; rw [foldl_op_eq_op_foldr_assoc]
-
-theorem foldr_assoc : ∀ {l : List α} {a₁ a₂}, l.foldr op (op a₁ a₂) = op (l.foldr op a₁) a₂
-  | [], a₁, a₂ => rfl
-  | a :: l, a₁, a₂ => by
-    simp only [foldr_cons, ha.assoc]
-    rw [foldr_assoc]
 
 variable [hc : Std.Commutative op]
 
