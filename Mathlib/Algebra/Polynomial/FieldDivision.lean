@@ -645,37 +645,3 @@ theorem Irreducible.natDegree_pos {F : Type*} [Field F] {f : F[X]} (h : Irreduci
   by_cases hx : x = 0
   · rw [← hf, hx, map_zero] at h; exact not_irreducible_zero h
   exact h.1 (hf ▸ isUnit_C.2 (Ne.isUnit hx))
-
-instance {K : Type*} [Field K] : IsPrincipalIdealRing K[X] where
-  principal I := by
-    rcases eq_or_ne I ⊥ with rfl|hb
-    · exact bot_isPrincipal
-    rcases eq_or_ne I ⊤ with rfl|ht
-    · exact top_isPrincipal
-    obtain ⟨x, hxI, hx0, hx⟩ : ∃ x ∈ I, x ≠ 0 ∧ ∀ y ∈ I, y ≠ 0 → x.natDegree ≤ y.natDegree := by
-      have : {n | ∃ x ∈ I, x ≠ 0 ∧ x.natDegree = n}.Nonempty := by
-        rw [Submodule.ne_bot_iff] at hb
-        obtain ⟨x, hx, hx'⟩ := hb
-        exact ⟨_, _, hx, hx', rfl⟩
-      have := Nat.sInf_mem this
-      simp only [ne_eq, Set.mem_setOf_eq] at this
-      obtain ⟨x, hx, hx', hi⟩ := this
-      refine ⟨x, hx, hx', fun y hy hy0 ↦ hi.le.trans ?_⟩
-      exact csInf_le (OrderBot.bddBelow _) ⟨_, hy, hy0, rfl⟩
-    refine ⟨x, le_antisymm (fun f hf ↦ ?_) ((Ideal.span_singleton_le_iff_mem _).mpr hxI)⟩
-    rcases eq_or_ne x.natDegree 0 with hn|hn
-    · rw [Polynomial.natDegree_eq_zero] at hn
-      obtain ⟨a, rfl⟩ := hn
-      rw [Ideal.submodule_span_eq, Ideal.span_singleton_eq_top.mpr]
-      · simp
-      · rw [Polynomial.isUnit_C]
-        simpa only [isUnit_iff_ne_zero, ne_eq, _root_.map_eq_zero] using hx0
-    rw [← EuclideanDomain.div_add_mod f x]
-    have hr : f % x ∈ I := by
-      convert Ideal.sub_mem _ hf (Ideal.mul_mem_right (f / x) I hxI) using 1
-      rw [eq_comm, sub_eq_iff_eq_add, add_comm]
-      exact (EuclideanDomain.div_add_mod f x).symm
-    rcases eq_or_ne (f % x) 0 with hr0|hr0
-    · rw [hr0, add_zero]
-      exact Ideal.mul_mem_right (f / x) _ (Ideal.mem_span_singleton_self _)
-    exact absurd (natDegree_mod_lt _ hn) (hx _ hr hr0).not_lt
