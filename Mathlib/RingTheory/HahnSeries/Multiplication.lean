@@ -231,7 +231,7 @@ theorem add_smul [AddCommMonoid R] [SMulWithZero R V] {x y : HahnSeries Γ R}
   rw [smul_coeff_left hwf, HahnSeries.add_coeff', of_symm_add]
   · simp_all only [Pi.add_apply, HahnSeries.add_coeff']
     rw [smul_coeff_left hwf Set.subset_union_right,
-    smul_coeff_left hwf Set.subset_union_left]
+      smul_coeff_left hwf Set.subset_union_left]
     simp only [HahnSeries.add_coeff, h, sum_add_distrib]
   · intro b
     simp_all only [Set.isPWO_union, HahnSeries.isPWO_support, and_self, HahnSeries.mem_support,
