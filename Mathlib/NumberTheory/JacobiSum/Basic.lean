@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
 import Mathlib.NumberTheory.GaussSum
+import Mathlib.NumberTheory.MulChar.Lemmas
+import Mathlib.RingTheory.RootsOfUnity.Lemmas
 
 /-!
 # Jacobi Sums
@@ -226,3 +228,73 @@ lemma jacobiSum_mul_jacobiSum_inv (h : ringChar F' ≠ ringChar F) {χ φ : MulC
     ← mul_inv, gaussSum_mul_gaussSum_eq_card Hχφ ψ.prim]
 
 end field_field
+
+section image
+
+variable {F R : Type*} [Fintype F] [Field F] [CommRing R] [IsDomain R]
+
+/-- If `χ` and `φ` are multiplicative characters on a finite field `F` satisfying `χ^n = φ^n = 1`
+and with values in an integral domain `R`, and `μ` is a primitive `n`th root of unity in `R`,
+then the Jacobi sum `J(χ,φ)` is in `ℤ[μ] ⊆ R`. -/
+lemma jacobiSum_mem_algebraAdjoin_of_pow_eq_one {n : ℕ} (hn : n ≠ 0) {χ φ : MulChar F R}
+    (hχ : χ ^ n = 1) (hφ : φ ^ n = 1) {μ : R} (hμ : IsPrimitiveRoot μ n) :
+    jacobiSum χ φ ∈ Algebra.adjoin ℤ {μ} :=
+  Subalgebra.sum_mem _ fun _ _ ↦ Subalgebra.mul_mem _
+    (MulChar.apply_mem_algebraAdjoin_of_pow_eq_one hn hχ hμ _)
+    (MulChar.apply_mem_algebraAdjoin_of_pow_eq_one hn hφ hμ _)
+
+open Algebra in
+private
+lemma MulChar.exists_apply_sub_one_eq_mul_sub_one {n : ℕ} (hn : n ≠ 0) {χ : MulChar F R} {μ : R}
+    (hχ : χ ^ n = 1) (hμ : IsPrimitiveRoot μ n) {x : F} (hx : x ≠ 0) :
+    ∃ z ∈ Algebra.adjoin ℤ {μ}, χ x - 1 = z * (μ - 1) := by
+  obtain ⟨k, _, hk⟩ := exists_apply_eq_pow hn hχ hμ hx
+  refine hk ▸ ⟨(Finset.range k).sum (μ ^ ·), ?_, (geom_sum_mul μ k).symm⟩
+  exact Subalgebra.sum_mem _ fun m _ ↦ Subalgebra.pow_mem _ (self_mem_adjoin_singleton _ μ) _
+
+private
+lemma MulChar.exists_apply_sub_one_mul_apply_sub_one {n : ℕ} (hn : n ≠ 0) {χ ψ : MulChar F R}
+    {μ : R} (hχ : χ ^ n = 1) (hψ : ψ ^ n = 1) (hμ : IsPrimitiveRoot μ n) (x : F) :
+    ∃ z ∈ Algebra.adjoin ℤ {μ}, (χ x - 1) * (ψ (1 - x) - 1) = z * (μ - 1) ^ 2 := by
+  rcases eq_or_ne x 0 with rfl | hx₀
+  · exact ⟨0, Subalgebra.zero_mem _, by rw [sub_zero, ψ.map_one, sub_self, mul_zero, zero_mul]⟩
+  rcases eq_or_ne x 1 with rfl | hx₁
+  · exact ⟨0, Subalgebra.zero_mem _, by rw [χ.map_one, sub_self, zero_mul, zero_mul]⟩
+  obtain ⟨z₁, hz₁, Hz₁⟩ := MulChar.exists_apply_sub_one_eq_mul_sub_one hn hχ hμ hx₀
+  obtain ⟨z₂, hz₂, Hz₂⟩ :=
+    MulChar.exists_apply_sub_one_eq_mul_sub_one hn hψ hμ (sub_ne_zero_of_ne hx₁.symm)
+  rewrite [Hz₁, Hz₂, sq]
+  exact ⟨z₁ * z₂, Subalgebra.mul_mem _ hz₁ hz₂, mul_mul_mul_comm ..⟩
+
+/-- If `χ` and `ψ` are multiplicative characters of order dividing `n` on a finite field `F`
+with values in an integral domain `R` and `μ` is a primitive `n`th root of unity in `R`,
+then `J(χ,ψ) = -1 + z*(μ - 1)^2` for some `z ∈ ℤ[μ] ⊆ R`. (We assume that `#F ≡ 1 mod n`.)
+Note that we do not state this as a divisbility in `R`, as this would give a weaker statement. -/
+lemma exists_jacobiSum_eq_neg_one_add [DecidableEq F] {n : ℕ} (hn : 2 < n) {χ ψ : MulChar F R}
+    {μ : R} (hχ : χ ^ n = 1) (hψ : ψ ^ n = 1) (hn' : n ∣ Fintype.card F - 1)
+    (hμ : IsPrimitiveRoot μ n) :
+    ∃ z ∈ Algebra.adjoin ℤ {μ}, jacobiSum χ ψ = -1 + z * (μ - 1) ^ 2 := by
+  obtain ⟨q, hq⟩ := hn'
+  rw [Nat.sub_eq_iff_eq_add NeZero.one_le] at hq
+  obtain ⟨z₁, hz₁, Hz₁⟩ := hμ.self_sub_one_pow_dvd_order hn
+  by_cases hχ₀ : χ = 1 <;> by_cases hψ₀ : ψ = 1
+  · rw [hχ₀, hψ₀, jacobiSum_one_one]
+    refine ⟨q * z₁, Subalgebra.mul_mem _ (Subalgebra.natCast_mem _ q) hz₁, ?_⟩
+    rw [hq, Nat.cast_add, Nat.cast_mul, Hz₁]
+    ring
+  · refine ⟨0, Subalgebra.zero_mem _, ?_⟩
+    rw [hχ₀, jacobiSum_one_nontrivial hψ₀, zero_mul, add_zero]
+  · refine ⟨0, Subalgebra.zero_mem _, ?_⟩
+    rw [jacobiSum_comm, hψ₀, jacobiSum_one_nontrivial hχ₀, zero_mul, add_zero]
+  · rw [jacobiSum_eq_aux, MulChar.sum_eq_zero_of_ne_one hχ₀, MulChar.sum_eq_zero_of_ne_one hψ₀, hq]
+    have H := MulChar.exists_apply_sub_one_mul_apply_sub_one (by omega) hχ hψ hμ
+    have Hcs x := (H x).choose_spec
+    refine ⟨-q * z₁ + ∑ x ∈ (univ \ {0, 1} : Finset F), (H x).choose, ?_, ?_⟩
+    · refine Subalgebra.add_mem _ (Subalgebra.mul_mem _ (Subalgebra.neg_mem _ ?_) hz₁) ?_
+      · exact Subalgebra.natCast_mem ..
+      · exact Subalgebra.sum_mem _ fun x _ ↦ (Hcs x).1
+    · conv => enter [1, 2, 2, x]; rw [(Hcs x).2]
+      rw [← Finset.sum_mul, Nat.cast_add, Nat.cast_mul, Hz₁]
+      ring
+
+end image
