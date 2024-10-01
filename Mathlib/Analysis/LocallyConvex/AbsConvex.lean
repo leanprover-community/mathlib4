@@ -62,14 +62,14 @@ theorem AbsConvex.sInter {S : Set (Set E)} (h : ∀ s ∈ S, AbsConvex 𝕜 s) :
 
 theorem AbsConvex.iInter {ι : Sort*} {s : ι → Set E} (h : ∀ i, AbsConvex 𝕜 (s i)) :
     AbsConvex 𝕜 (⋂ i, s i) :=
-  sInter_range s ▸ absConvex_sInter <| forall_mem_range.2 h
+  sInter_range s ▸ AbsConvex.sInter <| forall_mem_range.2 h
 
 variable (𝕜)
 
 /-- The absolute convex hull of a set `s` is the minimal absolute convex set that includes `s`. -/
 @[simps! isClosed]
 def absConvexHull : ClosureOperator (Set E) :=
-  .ofCompletePred (AbsConvex 𝕜) fun _ ↦ absConvex_sInter
+  .ofCompletePred (AbsConvex 𝕜) fun _ ↦ AbsConvex.sInter
 
 variable {𝕜} {s : Set E}
 
