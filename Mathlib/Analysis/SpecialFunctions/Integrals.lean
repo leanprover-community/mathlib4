@@ -202,13 +202,6 @@ theorem integrableOn_Ioo_cpow_iff {s : ℂ} {t : ℝ} (ht : 0 < t) :
     simp [Complex.abs_cpow_eq_rpow_re_of_pos ha.1]
   rwa [integrableOn_Ioo_rpow_iff ht] at B
 
-/-- A real-valued function is interval integrable iff the complex-valued analog is. -/
-lemma intervalIntegrable_iff_ofReal {μ : Measure ℝ} {a b : ℝ} {f : ℝ → ℝ}  (hab: a ≤ b):
-    IntervalIntegrable f μ a b ↔ IntervalIntegrable (fun x ↦ (f x : ℂ)) μ a b := by
-    repeat rw [intervalIntegrable_iff_integrableOn_Ioc_of_le]
-    apply integrableOn_iff_ofReal
-    all_goals exact hab
-
 @[simp]
 theorem intervalIntegrable_id : IntervalIntegrable (fun x => x) μ a b :=
   continuous_id.intervalIntegrable a b

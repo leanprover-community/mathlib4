@@ -128,10 +128,6 @@ theorem integrableOn_congr_fun (hst : EqOn f g s) (hs : MeasurableSet s) :
     IntegrableOn f s μ ↔ IntegrableOn g s μ :=
   ⟨fun h => h.congr_fun hst hs, fun h => h.congr_fun hst.symm hs⟩
 
-theorem integrableOn_iff_ofReal {X : Type*} [MeasurableSpace X] {μ : Measure X} {s : Set X}
-    {f : X → ℝ} : IntegrableOn f s μ ↔ IntegrableOn (fun x ↦ (f x : ℂ)) s μ :=
-    MeasureTheory.Integrable.iff_ofReal
-
 theorem Integrable.integrableOn (h : Integrable f μ) : IntegrableOn f s μ :=
   h.mono_measure <| Measure.restrict_le_self
 
@@ -699,3 +695,25 @@ theorem integrableOn_Iic_iff_integrableOn_Iio :
   integrableOn_Iic_iff_integrableOn_Iio' (by rw [measure_singleton]; exact ENNReal.zero_ne_top)
 
 end PartialOrder
+
+namespace MeasureTheory
+variable {X : Type*} [MeasurableSpace X] {μ : Measure X} {s : Set X}
+theorem IntegrableOn.iff_ofReal {f : X → ℝ} :
+IntegrableOn f s μ ↔ IntegrableOn (fun x ↦ (f x : ℂ)) s μ :=
+    MeasureTheory.Integrable.iff_ofReal
+
+theorem IntegrableOn.ofReal {f : X → ℝ} (hf : IntegrableOn f s μ) :
+    IntegrableOn (fun x => (f x : ℂ)) s μ := IntegrableOn.iff_ofReal.1 hf
+
+theorem IntegrableOn.re_im_iff {f : X → ℂ} :
+    IntegrableOn (fun x => (f x).re) s μ ∧ IntegrableOn (fun x => (f x).im) s μ ↔
+      IntegrableOn f s μ := by
+  sorry
+
+theorem IntegrableOn.re {f : X → ℂ} (hf : IntegrableOn f s μ) :
+IntegrableOn (fun x => (f x).re) s μ  := (IntegrableOn.re_im_iff.2 hf).left
+
+theorem IntegrableOn.im {f : X → ℂ} (hf : IntegrableOn f s μ) :
+IntegrableOn (fun x => (f x).im) s μ := (IntegrableOn.re_im_iff.2 hf).right
+
+end MeasureTheory

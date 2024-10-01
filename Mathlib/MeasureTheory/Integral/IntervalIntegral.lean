@@ -315,6 +315,13 @@ theorem comp_sub_left (hf : IntervalIntegrable f volume a b) (c : ℝ) :
     IntervalIntegrable (fun x => f (c - x)) volume (c - a) (c - b) := by
   simpa only [neg_sub, ← sub_eq_add_neg] using iff_comp_neg.mp (hf.comp_add_left c)
 
+/-- A real-valued function is interval integrable iff the complex-valued analog is. -/
+lemma iff_ofReal {f : ℝ → ℝ} (hab: a ≤ b) :
+    IntervalIntegrable f μ a b ↔ IntervalIntegrable (fun x ↦ (f x : ℂ)) μ a b := by
+  repeat rw [intervalIntegrable_iff_integrableOn_Ioc_of_le]
+  apply integrableOn_iff_ofReal
+  all_goals exact hab
+
 end IntervalIntegrable
 
 /-!
