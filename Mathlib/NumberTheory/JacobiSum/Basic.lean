@@ -325,8 +325,7 @@ theorem gaussSum_pow_eq_prod_jacobiSum {χ : MulChar F R} {ψ : AddChar F R} (h�
     (hψ : ψ.IsPrimitive) :
     gaussSum χ ψ ^ orderOf χ =
       χ (-1) * Fintype.card F * ∏ i ∈ Ico 1 (orderOf χ - 1), jacobiSum χ (χ ^ i) := by
-  let n := orderOf χ
-  have := gaussSum_pow_eq_prod_jacobiSum_aux χ ψ (n := n - 1) (by omega) (by omega)
+  have := gaussSum_pow_eq_prod_jacobiSum_aux χ ψ (n := orderOf χ - 1) (by omega) (by omega)
   apply_fun (gaussSum χ ψ * ·) at this
   rw [← pow_succ', Nat.sub_one_add_one_eq_of_pos (by omega)] at this
   have hχ₁ : χ ≠ 1 :=
