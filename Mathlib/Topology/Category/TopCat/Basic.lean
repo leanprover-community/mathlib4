@@ -5,6 +5,7 @@ Authors: Patrick Massot, Kim Morrison, Mario Carneiro
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.Topology.ContinuousMap.Basic
+import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
 # Category instance for topological spaces
