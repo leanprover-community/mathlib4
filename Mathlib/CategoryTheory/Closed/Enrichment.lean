@@ -33,12 +33,12 @@ namespace MonoidalClosed
 variable {V : Type u} [Category.{u₁, u} V] [MonoidalCategory V] [MonoidalClosed V]
 
 /-- The V-identity morphism
-  𝟙_ V ⟶ hom(V, v)
+  `𝟙_ V ⟶ hom(V, v)`
 used to equip V with the structure of a V-category -/
 def id (x : V) : 𝟙_ V ⟶ (ihom x).obj x := curry (ρ_ x).hom
 
 /-- The *uncurried* composition morphism
-  x ⊗ (hom(x, y) ⊗ hom(y, z)) ⟶ (x ⊗ hom(x, y)) ⊗ hom(y, z) ⟶ y ⊗ hom(y, z) ⟶ z.
+  `x ⊗ (hom(x, y) ⊗ hom(y, z)) ⟶ (x ⊗ hom(x, y)) ⊗ hom(y, z) ⟶ y ⊗ hom(y, z) ⟶ z`.
 The V-composition morphism is defined as the adjoint transpose of this map. -/
 def compTranspose (x y z : V) :=
   (α_ x ((ihom x).obj y) ((ihom y).obj z)).inv ≫
@@ -46,7 +46,7 @@ def compTranspose (x y z : V) :=
     (ihom.ev y).app z
 
 /-- The V-composition morphism
-  hom(x, y) ⊗ hom(y, z) ⟶ hom(x, z)
+  `hom(x, y) ⊗ hom(y, z) ⟶ hom(x, z)`
 used to equip V with the structure of a V-category -/
 def comp (x y z : V) := curry (compTranspose x y z)
 
