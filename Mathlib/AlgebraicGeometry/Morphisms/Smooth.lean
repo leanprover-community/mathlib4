@@ -31,6 +31,11 @@ The reason why we choose the definition via `IsStandardSmooth`, is because verif
 - The definition `RingHom.IsStandardSmooth` depends on universe levels for the generators and
 relations. For morphisms of schemes we set both to `0` to avoid unnecessary complications.
 
+## Notes
+
+This contribution was created as part of the AIM workshop "Formalizing algebraic geometry" in
+June 2024.
+
 -/
 
 
