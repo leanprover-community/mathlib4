@@ -207,6 +207,7 @@ protected lemma ConvexOn.locallyLipschitz (hf : ConvexOn ℝ univ f) : LocallyLi
 protected lemma ConcaveOn.locallyLipschitz (hf : ConcaveOn ℝ univ f) : LocallyLipschitz f := by
   simpa using hf.locallyLipschitzOn_interior
 
+-- Commented out since `intrinsicInterior` is not imported (but should be once these are proved)
 -- proof_wanted ConvexOn.locallyLipschitzOn_intrinsicInterior (hf : ConvexOn ℝ C f) :
 --     ContinuousOn f (intrinsicInterior ℝ C)
 
