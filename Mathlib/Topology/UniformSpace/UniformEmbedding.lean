@@ -219,9 +219,12 @@ protected theorem UniformEmbedding.embedding {f : α → β} (h : UniformEmbeddi
   { toInducing := h.toUniformInducing.inducing
     inj := h.inj }
 
-theorem UniformEmbedding.denseEmbedding {f : α → β} (h : UniformEmbedding f) (hd : DenseRange f) :
-    DenseEmbedding f :=
+theorem UniformEmbedding.isDenseEmbedding {f : α → β} (h : UniformEmbedding f) (hd : DenseRange f) :
+    IsDenseEmbedding f :=
   { h.embedding with dense := hd }
+
+@[deprecated (since := "2024-09-30")]
+alias UniformEmbedding.denseEmbedding := UniformEmbedding.isDenseEmbedding
 
 theorem closedEmbedding_of_spaced_out {α} [TopologicalSpace α] [DiscreteTopology α]
     [T0Space β] {f : α → β} {s : Set (β × β)} (hs : s ∈ 𝓤 β)
@@ -246,9 +249,9 @@ theorem closure_image_mem_nhds_of_uniformInducing {s : Set (α × α)} {e : α �
   exact ⟨e x, hxV, mem_image_of_mem e hxU⟩
 
 theorem uniformEmbedding_subtypeEmb (p : α → Prop) {e : α → β} (ue : UniformEmbedding e)
-    (de : DenseEmbedding e) : UniformEmbedding (DenseEmbedding.subtypeEmb p e) :=
+    (de : IsDenseEmbedding e) : UniformEmbedding (IsDenseEmbedding.subtypeEmb p e) :=
   { comap_uniformity := by
-      simp [comap_comap, Function.comp_def, DenseEmbedding.subtypeEmb, uniformity_subtype,
+      simp [comap_comap, Function.comp_def, IsDenseEmbedding.subtypeEmb, uniformity_subtype,
         ue.comap_uniformity.symm]
     inj := (de.subtype p).inj }
 
@@ -286,27 +289,36 @@ theorem completeSpace_iff_isComplete_range {f : α → β} (hf : UniformInducing
     CompleteSpace α ↔ IsComplete (range f) := by
   rw [completeSpace_iff_isComplete_univ, ← isComplete_image_iff hf, image_univ]
 
+alias ⟨_, UniformInducing.completeSpace⟩ := completeSpace_iff_isComplete_range
+
 theorem UniformInducing.isComplete_range [CompleteSpace α] {f : α → β} (hf : UniformInducing f) :
     IsComplete (range f) :=
   (completeSpace_iff_isComplete_range hf).1 ‹_›
 
+/-- If `f` is a surjective uniform inducing map,
+then its domain is a complete space iff its codomain is a complete space.
+See also `_root_.completeSpace_congr` for a version that assumes `f` to be an equivalence. -/
+theorem UniformInducing.completeSpace_congr {f : α → β} (hf : UniformInducing f)
+    (hsurj : f.Surjective) : CompleteSpace α ↔ CompleteSpace β := by
+  rw [completeSpace_iff_isComplete_range hf, hsurj.range_eq, completeSpace_iff_isComplete_univ]
+
 theorem SeparationQuotient.completeSpace_iff :
-    CompleteSpace (SeparationQuotient α) ↔ CompleteSpace α := by
-  rw [completeSpace_iff_isComplete_univ, ← range_mk,
-    ← completeSpace_iff_isComplete_range uniformInducing_mk]
+    CompleteSpace (SeparationQuotient α) ↔ CompleteSpace α :=
+  .symm <| uniformInducing_mk.completeSpace_congr surjective_mk
 
 instance SeparationQuotient.instCompleteSpace [CompleteSpace α] :
     CompleteSpace (SeparationQuotient α) :=
   completeSpace_iff.2 ‹_›
 
+/-- See also `UniformInducing.completeSpace_congr`
+for a version that works for non-injective maps. -/
 theorem completeSpace_congr {e : α ≃ β} (he : UniformEmbedding e) :
-    CompleteSpace α ↔ CompleteSpace β := by
-  rw [completeSpace_iff_isComplete_range he.toUniformInducing, e.range_eq_univ,
-    completeSpace_iff_isComplete_univ]
+    CompleteSpace α ↔ CompleteSpace β :=
+  he.completeSpace_congr e.surjective
 
-theorem completeSpace_coe_iff_isComplete {s : Set α} : CompleteSpace s ↔ IsComplete s :=
-  (completeSpace_iff_isComplete_range uniformEmbedding_subtype_val.toUniformInducing).trans <| by
-    rw [Subtype.range_coe]
+theorem completeSpace_coe_iff_isComplete {s : Set α} : CompleteSpace s ↔ IsComplete s := by
+  rw [completeSpace_iff_isComplete_range uniformEmbedding_subtype_val.toUniformInducing,
+    Subtype.range_coe]
 
 alias ⟨_, IsComplete.completeSpace_coe⟩ := completeSpace_coe_iff_isComplete
 
@@ -314,10 +326,12 @@ theorem IsClosed.completeSpace_coe [CompleteSpace α] {s : Set α} (hs : IsClose
     CompleteSpace s :=
   hs.isComplete.completeSpace_coe
 
+theorem completeSpace_ulift_iff : CompleteSpace (ULift α) ↔ CompleteSpace α :=
+  UniformInducing.completeSpace_congr ⟨rfl⟩ ULift.down_surjective
+
 /-- The lift of a complete space to another universe is still complete. -/
-instance ULift.completeSpace [h : CompleteSpace α] : CompleteSpace (ULift α) :=
-  haveI : UniformEmbedding (@Equiv.ulift α) := ⟨⟨rfl⟩, ULift.down_injective⟩
-  (completeSpace_congr this).2 h
+instance ULift.instCompleteSpace [CompleteSpace α] : CompleteSpace (ULift α) :=
+  completeSpace_ulift_iff.2 ‹_›
 
 theorem completeSpace_extension {m : β → α} (hm : UniformInducing m) (dense : DenseRange m)
     (h : ∀ f : Filter β, Cauchy f → ∃ x : α, map m f ≤ 𝓝 x) : CompleteSpace α :=
@@ -423,14 +437,15 @@ theorem uniform_extend_subtype [CompleteSpace γ] {p : α → Prop} {e : α → 
     {s : Set α} (hf : UniformContinuous fun x : Subtype p => f x.val) (he : UniformEmbedding e)
     (hd : ∀ x : β, x ∈ closure (range e)) (hb : closure (e '' s) ∈ 𝓝 b) (hs : IsClosed s)
     (hp : ∀ x ∈ s, p x) : ∃ c, Tendsto f (comap e (𝓝 b)) (𝓝 c) := by
-  have de : DenseEmbedding e := he.denseEmbedding hd
-  have de' : DenseEmbedding (DenseEmbedding.subtypeEmb p e) := de.subtype p
-  have ue' : UniformEmbedding (DenseEmbedding.subtypeEmb p e) := uniformEmbedding_subtypeEmb _ he de
+  have de : IsDenseEmbedding e := he.isDenseEmbedding hd
+  have de' : IsDenseEmbedding (IsDenseEmbedding.subtypeEmb p e) := de.subtype p
+  have ue' : UniformEmbedding (IsDenseEmbedding.subtypeEmb p e) :=
+    uniformEmbedding_subtypeEmb _ he de
   have : b ∈ closure (e '' { x | p x }) :=
     (closure_mono <| monotone_image <| hp) (mem_of_mem_nhds hb)
   let ⟨c, hc⟩ := uniformly_extend_exists ue'.toUniformInducing de'.dense hf ⟨b, this⟩
   replace hc : Tendsto (f ∘ Subtype.val (p := p)) (((𝓝 b).comap e).comap Subtype.val) (𝓝 c) := by
-    simpa only [nhds_subtype_eq_comap, comap_comap, DenseEmbedding.subtypeEmb_coe] using hc
+    simpa only [nhds_subtype_eq_comap, comap_comap, IsDenseEmbedding.subtypeEmb_coe] using hc
   refine ⟨c, (tendsto_comap'_iff ?_).1 hc⟩
   rw [Subtype.range_coe_subtype]
   exact ⟨_, hb, by rwa [← de.toInducing.closure_eq_preimage_closure_image, hs.closure_eq]⟩

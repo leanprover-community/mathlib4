@@ -111,7 +111,7 @@ theorem coe_inv (x : K) : (x : hat K)⁻¹ = ((x⁻¹ : K) : hat K) := by
   · conv_lhs => dsimp [Inv.inv]
     rw [if_neg]
     · exact hatInv_extends h
-    · exact fun H => h (denseEmbedding_coe.inj H)
+    · exact fun H => h (isDenseEmbedding_coe.inj H)
 
 variable [UniformAddGroup K]
 

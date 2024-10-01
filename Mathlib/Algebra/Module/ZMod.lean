@@ -5,7 +5,6 @@ Authors: Lawrence Wu
 -/
 import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.Data.ZMod.Basic
-import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
 # The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`
@@ -92,9 +91,8 @@ theorem toZModSubmodule_symm :
     ⇑((toZModSubmodule n).symm : _ ≃o AddSubgroup M) = Submodule.toAddSubgroup :=
   rfl
 
-@[simp]
-theorem coe_toZModSubmodule (S : AddSubgroup M) : (toZModSubmodule n S : Set M) = S :=
-  rfl
+@[simp] lemma coe_toZModSubmodule (S : AddSubgroup M) : (toZModSubmodule n S : Set M) = S := rfl
+@[simp] lemma mem_toZModSubmodule {S : AddSubgroup M} : x ∈ toZModSubmodule n S ↔ x ∈ S := .rfl
 
 @[simp]
 theorem toZModSubmodule_toAddSubgroup (S : AddSubgroup M) :
