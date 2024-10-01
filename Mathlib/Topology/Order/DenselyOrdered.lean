@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Topology.Order.IsLUB
+import Mathlib.Order.SuccPred.Limit
 
 /-!
 # Order topology on a densely ordered set
@@ -212,22 +213,8 @@ theorem left_nhdsWithin_Ioo_neBot {a b : α} (H : a < b) : NeBot (𝓝[Ioo a b] 
 theorem right_nhdsWithin_Ioo_neBot {a b : α} (H : a < b) : NeBot (𝓝[Ioo a b] b) :=
   (isLUB_Ioo H).nhdsWithin_neBot (nonempty_Ioo.2 H)
 
-theorem comap_coe_nhdsWithin_Iio_of_Ioo_subset (hb : s ⊆ Iio b)
-    (hs : s.Nonempty → ∃ a < b, Ioo a b ⊆ s) : comap ((↑) : s → α) (𝓝[<] b) = atTop := by
-  nontriviality
-  haveI : Nonempty s := nontrivial_iff_nonempty.1 ‹_›
-  rcases hs (nonempty_subtype.1 ‹_›) with ⟨a, h, hs⟩
-  ext u; constructor
-  · rintro ⟨t, ht, hts⟩
-    obtain ⟨x, ⟨hxa : a ≤ x, hxb : x < b⟩, hxt : Ioo x b ⊆ t⟩ :=
-      (mem_nhdsWithin_Iio_iff_exists_mem_Ico_Ioo_subset h).mp ht
-    obtain ⟨y, hxy, hyb⟩ := exists_between hxb
-    refine mem_of_superset (mem_atTop ⟨y, hs ⟨hxa.trans_lt hxy, hyb⟩⟩) ?_
-    rintro ⟨z, hzs⟩ (hyz : y ≤ z)
-    exact hts (hxt ⟨hxy.trans_le hyz, hb hzs⟩)
-  · intro hu
-    obtain ⟨x : s, hx : ∀ z, x ≤ z → z ∈ u⟩ := mem_atTop_sets.1 hu
-    exact ⟨Ioo x b, Ioo_mem_nhdsWithin_Iio' (hb x.2), fun z hz => hx _ hz.1.le⟩
+theorem comap_coe_nhdsWithin_Iio_of_Ioo_subset {s : Set α} {b : α} (hb : s ⊆ Iio b)
+    (hs : s.Nonempty → ∃ a < b, Ioo a b ⊆ s) : comap ((↑) : s → α) (𝓝[<] b) = atTop :=
 
 set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 theorem comap_coe_nhdsWithin_Ioi_of_Ioo_subset (ha : s ⊆ Ioi a)
