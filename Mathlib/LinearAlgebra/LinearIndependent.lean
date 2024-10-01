@@ -591,8 +591,7 @@ theorem LinearIndependent.units_smul {v : ι → M} (hv : LinearIndependent R v)
     exact (hgs i hi).symm ▸ zero_smul _ _
   · rw [← hsum, Finset.sum_congr rfl _]
     intros
-    erw [Pi.smul_apply, smul_assoc]
-    rfl
+    rw [Pi.smul_apply', smul_assoc, Units.smul_def]
 
 lemma LinearIndependent.eq_of_pair {x y : M} (h : LinearIndependent R ![x, y])
     {s t s' t' : R} (h' : s • x + t • y = s' • x + t' • y) : s = s' ∧ t = t' := by

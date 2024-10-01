@@ -24,7 +24,7 @@ In this file we define Galois extensions as extensions which are both separable 
 
 - `IntermediateField.fixingSubgroup_fixedField` : If `E/F` is finite dimensional (but not
   necessarily Galois) then `fixingSubgroup (fixedField H) = H`
-- `IntermediateField.fixedField_fixingSubgroup`: If `E/F` is finite dimensional and Galois
+- `IsGalois.fixedField_fixingSubgroup`: If `E/F` is finite dimensional and Galois
   then `fixedField (fixingSubgroup K) = K`
 
 Together, these two results prove the Galois correspondence.

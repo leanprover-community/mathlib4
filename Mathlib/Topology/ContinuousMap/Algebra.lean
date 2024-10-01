@@ -14,7 +14,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.Star
 import Mathlib.Topology.Algebra.UniformGroup
-import Mathlib.Topology.ContinuousFunction.Ordered
+import Mathlib.Topology.ContinuousMap.Ordered
 import Mathlib.Topology.UniformSpace.CompactConvergence
 
 /-!
