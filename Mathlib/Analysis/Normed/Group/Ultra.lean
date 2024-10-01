@@ -175,6 +175,37 @@ lemma _root_.Fintype.norm_prod_le_sup'_univ_norm [Nonempty ι] [Fintype ι] (f :
     ‖∏ i, f i‖ ≤ Finset.univ.sup' Finset.univ_nonempty (‖f ·‖) := by
   simpa using Finset.univ_nonempty.norm_prod_le_sup'_norm f
 
+/--
+Generalised ultrametric triangle inequality for finite products in commutative groups with
+an ultrametric norm.
+-/
+@[to_additive "Generalised ultrametric triangle inequality for finite sums in additive commutative
+groups with an ultrametric norm."]
+lemma nnnorm_prod_le_of_forall_le {s : Finset ι} {f : ι → M} {C : ℝ≥0}
+    (hC : ∀ i ∈ s, ‖f i‖₊ ≤ C) : ‖∏ i ∈ s, f i‖₊ ≤ C :=
+  (s.nnnorm_prod_le_sup_nnnorm f).trans <| Finset.sup_le hC
+
+/--
+Generalised ultrametric triangle inequality for nonempty finite products in commutative groups with
+an ultrametric norm.
+-/
+@[to_additive "Generalised ultrametric triangle inequality for nonempty finite sums in additive
+commutative groups with an ultrametric norm."]
+lemma norm_prod_le_of_forall_le_of_nonempty {s : Finset ι} (hs : s.Nonempty) {f : ι → M} {C : ℝ}
+    (hC : ∀ i ∈ s, ‖f i‖ ≤ C) : ‖∏ i ∈ s, f i‖ ≤ C :=
+  (hs.norm_prod_le_sup'_norm f).trans (Finset.sup'_le hs _ hC)
+
+/--
+Generalised ultrametric triangle inequality for finite products in commutative groups with
+an ultrametric norm.
+-/
+@[to_additive "Generalised ultrametric triangle inequality for finite sums in additive commutative
+groups with an ultrametric norm."]
+lemma norm_prod_le_of_forall_le_of_nonneg {s : Finset ι} {f : ι → M} {C : ℝ}
+    (h_nonneg : 0 ≤ C) (hC : ∀ i ∈ s, ‖f i‖ ≤ C) : ‖∏ i ∈ s, f i‖ ≤ C := by
+  lift C to NNReal using h_nonneg
+  exact nnnorm_prod_le_of_forall_le hC
+
 end CommGroup
 
 end IsUltrametricDist
