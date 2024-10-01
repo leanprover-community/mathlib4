@@ -222,22 +222,13 @@ theorem gcd_eq (h : a ≡ b [MOD m]) : gcd a m = gcd b m := by
     dvd_antisymm (dvd_gcd ((h.dvd_iff h1).mp (gcd_dvd_left a m)) h1)
       (dvd_gcd ((h.dvd_iff h2).mpr (gcd_dvd_left b m)) h2)
 
-lemma _root_.Int.eq_zero_of_abs_lt_dvd {m x : ℤ} (h1 : m ∣ x) (h2 : |x| < m) : x = 0 := by
-  by_contra h
-  have := Int.natAbs_le_of_dvd_ne_zero h1 h
-  rw [Int.abs_eq_natAbs] at h2
-  omega
-
 lemma eq_of_abs_lt (h : a ≡ b [MOD m]) (h2 : |(b : ℤ) - a| < m) : a = b := by
   apply Int.ofNat.inj
   rw [eq_comm, ← sub_eq_zero]
   exact Int.eq_zero_of_abs_lt_dvd h.dvd h2
 
-lemma abs_sub_lt_of_lt_lt {m a b : ℕ} (ha : a < m) (hb : b < m) : |(b : ℤ) - a| < m := by
-  rw [abs_lt]; omega
-
 lemma eq_of_lt_of_lt (h : a ≡ b [MOD m]) (ha : a < m) (hb : b < m) : a = b :=
-  h.eq_of_abs_lt <| abs_sub_lt_of_lt_lt ha hb
+  h.eq_of_abs_lt <| Int.abs_sub_lt_of_lt_lt ha hb
 
 /-- To cancel a common factor `c` from a `ModEq` we must divide the modulus `m` by `gcd m c` -/
 lemma cancel_left_div_gcd (hm : 0 < m) (h : c * a ≡ c * b [MOD m]) :  a ≡ b [MOD m / gcd m c] := by
