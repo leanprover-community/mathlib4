@@ -197,50 +197,31 @@ end
 
 section
 
-variable [AddCommGroup E] [Module ℝ E]
+variable [AddCommGroup E]
 
 open UniformSpace in
 open Uniformity in
 theorem ball_add_ball_subset_ball_comp (V : Set E) (y : E) :
-    ball y (((fun p : E × E => p.2 - p.1) ⁻¹' ((2 : ℝ) • V))) ⊆
+    ball y (((fun p : E × E => p.2 - p.1) ⁻¹' (V + V))) ⊆
       ball y (((fun p : E × E => p.2 - p.1) ⁻¹' V) ○ ((fun p : E × E => p.2 - p.1) ⁻¹' V)) := by
     intro x hx
     rw [uniform_space_ball_eq_vadd] at hx
     obtain ⟨z,⟨hz₁,hz₂⟩⟩ := hx
     simp only [vadd_eq_add] at hz₂
-    obtain ⟨z',⟨hz'₁,hz'₂⟩⟩ := hz₁
-    simp only [vadd_eq_add] at hz'₂
-    use (1/2:ℝ)•(x+y)
-    have help (a b : E) (h : (2:ℝ)•a = (2:ℝ)•b) : a = b := by
-      have e1 : (1/2 : ℝ) • ((2:ℝ)•a) = (1/2 : ℝ) •((2:ℝ)•b) := by
-        apply congrArg (HSMul.hSMul (1 / 2)) h
-      simp only [one_div, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, inv_smul_smul₀] at e1
-      exact e1
-    have e11 : x-(1 / 2 : ℝ) • (x + y)  = z' := by
-      rw [smul_add]
-      apply help
-      rw [smul_sub, smul_add, ← smul_assoc]
-      simp only [one_div, smul_eq_mul, isUnit_iff_ne_zero, ne_eq, OfNat.ofNat_ne_zero,
-        not_false_eq_true, IsUnit.mul_inv_cancel, one_smul, smul_inv_smul₀, smul_neg]
-      rw [add_comm]
-      rw [two_smul]
-      simp only [add_sub_add_right_eq_sub]
-      rw [← hz₂]
-      simp only [add_sub_cancel_left]
-      exact id (Eq.symm hz'₂)
-    have e12 : (1 / 2 : ℝ) • (x + y) - y  = z' := by
-      apply help
-      rw [smul_sub]
-      simp only [one_div, smul_add, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, smul_inv_smul₀,
-        smul_neg]
-      rw [two_smul, add_sub_add_right_eq_sub, ← hz₂]
-      rw [add_sub_cancel_left]
-      exact id (Eq.symm hz'₂)
+    obtain ⟨z',⟨hz'₁,⟨z'',hz''₁, hz''₂⟩⟩⟩ := hz₁
+    simp only [vadd_eq_add] at hz''₂
+    use x - z' -- (1/2:ℝ)•(x+y)
+    simp
+    rw [← hz₂]
+    rw [← hz''₂]
     constructor
-    · rw [mem_preimage, e12]
-      exact hz'₁
-    · rw [mem_preimage, e11]
-      exact hz'₁
+    · rw [add_sub_assoc]
+      rw [add_comm z']
+      simp
+      exact hz''₁
+    · exact hz'₁
+
+variable [Module ℝ E]
 
 lemma balancedHull_subset_convexHull_union_neg {s : Set E} :
     balancedHull ℝ s ⊆ convexHull ℝ (s ∪ -s) := by
@@ -322,10 +303,10 @@ theorem totallyBounded_absConvexHull
     aesop
   )
   rw [e2] at hts'
-  have e7: (absConvexHull ℝ) s ⊆ t' + (2 : ℝ) • V := by
-    rw [← add_self_eq_smul_two hS₂.2, ← add_assoc]
+  have e7: (absConvexHull ℝ) s ⊆ t' + (V + V) := by
+    rw [← add_assoc]
     exact le_trans e4 (Set.add_subset_add_right hts')
-  have e8 (y : E): y +ᵥ ((2 : ℝ) • V) ⊆ {x | (x, y) ∈ d'} := by
+  have e8 (y : E): y +ᵥ (V + V) ⊆ {x | (x, y) ∈ d'} := by
     rw [← uniform_space_ball_eq_vadd]
     apply subset_trans (ball_add_ball_subset_ball_comp V y)
     intro x hx
@@ -347,7 +328,7 @@ theorem totallyBounded_absConvexHull
       simp only
       rw [← neg_sub, Balanced.neg_mem_iff hS₂.1]
       exact hz.1
-  have e9 : ⋃ y ∈ t', y +ᵥ ((2 : ℝ) • V) ⊆ ⋃ y ∈ t', {x | (x, y) ∈ d'} :=
+  have e9 : ⋃ y ∈ t', y +ᵥ (V+V) ⊆ ⋃ y ∈ t', {x | (x, y) ∈ d'} :=
     biUnion_mono (fun ⦃a⦄ a ↦ a) (fun y _ ↦ e8 y)
   use t'
   constructor
