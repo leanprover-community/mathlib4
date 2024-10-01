@@ -52,19 +52,16 @@ def comp (x y z : V) := curry (compTranspose x y z)
 
 /-- Unfold the definition of id.
 This exists to streamline the proofs of MonoidalClosed.id_comp and MonoidalClosed.comp_id -/
-@[simp]
 lemma id_eq (x : V) : id x = curry (ρ_ x).hom := rfl
 
 /-- Unfold the definition of compTranspose.
 This exists to streamline the proof of MonoidalClosed.assoc -/
-@[simp]
 lemma compTranpose_eq (x y z : V) : compTranspose x y z = (α_ _ _ _).inv ≫
     (ihom.ev x).app y ▷ _ ≫ (ihom.ev y).app z :=
   rfl
 
 /-- Unfold the definition of comp.
 This exists to streamline the proof of MonoidalClosed.assoc -/
-@[simp]
 lemma comp_eq (x y z : V) : comp x y z = curry (compTranspose x y z) := rfl
 
 /-- For V closed monoidal, build an instance of V as a V-category -/
@@ -90,9 +87,9 @@ scoped instance : EnrichedCategory V V where
   assoc := fun _ _ _ _ => by
     apply uncurry_injective
     simp only [uncurry_natural_left, comp_eq]
-    rw [uncurry_curry, uncurry_curry]; dsimp
-    rw [associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc,
-      ← uncurry_eq, uncurry_curry, associator_inv_naturality_right_assoc, whisker_exchange_assoc,
+    rw [uncurry_curry, uncurry_curry]; simp only [compTranpose_eq, Category.assoc]
+    rw [associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc]; dsimp
+    rw [← uncurry_eq, uncurry_curry, associator_inv_naturality_right_assoc, whisker_exchange_assoc,
       ← uncurry_eq, uncurry_curry]
     simp only [comp_whiskerRight, tensorLeft_obj, Category.assoc, pentagon_inv_assoc,
       whiskerRight_tensor, Iso.hom_inv_id_assoc]
