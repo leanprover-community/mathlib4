@@ -318,11 +318,40 @@ theorem IsBaseChange.comp {f : M →ₗ[R] N} (hf : IsBaseChange S f) {g : N →
   ext
   rfl
 
+/-- If `N` is the base change of `M` to `S` and `O` the base change of `M` to `T`, then
+`O` is the base change of `N` to `T`. -/
+lemma IsBaseChange.of_comp {f : M →ₗ[R] N} (hf : IsBaseChange S f) {h : N →ₗ[S] O}
+    (hc : IsBaseChange T ((h : N →ₗ[R] O) ∘ₗ f)) :
+    IsBaseChange T h := by
+  apply IsBaseChange.of_lift_unique
+  intro Q _ _ _ _ r
+  letI : Module R Q := inferInstanceAs (Module R (RestrictScalars R S Q))
+  haveI : IsScalarTower R S Q := IsScalarTower.of_algebraMap_smul fun r ↦ congrFun rfl
+  haveI : IsScalarTower R T Q := IsScalarTower.of_algebraMap_smul fun r x ↦ by
+    simp [IsScalarTower.algebraMap_apply R S T]
+  let r' : M →ₗ[R] Q := r ∘ₗ f
+  let q : O →ₗ[T] Q := hc.lift r'
+  refine ⟨q, ?_, ?_⟩
+  · apply hf.algHom_ext'
+    simp [LinearMap.comp_assoc, hc.lift_comp]
+  · intro q' hq'
+    apply hc.algHom_ext'
+    apply_fun LinearMap.restrictScalars R at hq'
+    rw [← LinearMap.comp_assoc]
+    rw [show q'.restrictScalars R ∘ₗ h.restrictScalars R = _ from hq', hc.lift_comp]
+
+/-- If `N` is the base change `M` to `S`, then `O` is the base change of `M` to `T` if and
+only if `O` is the base change of `N` to `T`. -/
+lemma IsBaseChange.comp_iff {f : M →ₗ[R] N} (hf : IsBaseChange S f) {h : N →ₗ[S] O} :
+    IsBaseChange T ((h : N →ₗ[R] O) ∘ₗ f) ↔ IsBaseChange T h :=
+  ⟨fun hc ↦ IsBaseChange.of_comp hf hc, fun hh ↦ IsBaseChange.comp hf hh⟩
+
 variable {R' S' : Type*} [CommSemiring R'] [CommSemiring S']
 variable [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S']
 variable [IsScalarTower R R' S'] [IsScalarTower R S S']
 
 open IsScalarTower (toAlgHom)
+open IsScalarTower (algebraMap_apply)
 
 variable (R S R' S')
 
@@ -470,5 +499,34 @@ theorem Algebra.IsPushout.algHom_ext [H : Algebra.IsPushout R S R' S'] {A : Type
     exact (AlgHom.congr_fun h₂ s : _)
   · intro s₁ s₂ e₁ e₂
     rw [map_add, map_add, e₁, e₂]
+
+/--
+Let the following be a commutative diagram of rings
+```
+  R  →  S  →  T
+  ↓     ↓     ↓
+  R' →  S' →  T'
+```
+where the left-hand square is a pushout. Then the following are equivalent:
+- the big rectangle is a pushout.
+- the right-hand square is a pushout.
+
+Note that this is essentially the isomorphism `T ⊗[S] (S ⊗[R] R') ≃ₐ[T] T ⊗[R] R'`.
+-/
+lemma Algebra.IsPushout.comp_iff {T' : Type*} [CommRing T'] [Algebra R T']
+    [Algebra S' T'] [Algebra S T'] [Algebra T T'] [Algebra R' T']
+    [IsScalarTower R T T'] [IsScalarTower S T T'] [IsScalarTower S S' T']
+    [IsScalarTower R R' T'] [IsScalarTower R S' T'] [IsScalarTower R' S' T']
+    [Algebra.IsPushout R S R' S'] :
+    Algebra.IsPushout R T R' T' ↔ Algebra.IsPushout S T S' T' := by
+  let f : R' →ₗ[R] S' := (IsScalarTower.toAlgHom R R' S').toLinearMap
+  haveI : IsScalarTower R S T' := IsScalarTower.of_algebraMap_eq <| fun x ↦ by
+    rw [algebraMap_apply R S' T', algebraMap_apply R S S', ← algebraMap_apply S S' T']
+  have heq : (toAlgHom S S' T').toLinearMap.restrictScalars R ∘ₗ f =
+      (toAlgHom R R' T').toLinearMap := by
+    ext x
+    simp [f, ← IsScalarTower.algebraMap_apply]
+  rw [isPushout_iff, isPushout_iff, ← heq, IsBaseChange.comp_iff]
+  exact Algebra.IsPushout.out
 
 end IsBaseChange

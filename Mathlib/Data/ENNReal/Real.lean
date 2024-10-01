@@ -235,7 +235,7 @@ lemma ofNat_le_ofReal {n : ℕ} [n.AtLeastTwo] {p : ℝ} :
     no_index (OfNat.ofNat n) ≤ ENNReal.ofReal p ↔ OfNat.ofNat n ≤ p :=
   natCast_le_ofReal (NeZero.ne n)
 
-@[simp]
+@[simp, norm_cast]
 lemma ofReal_le_natCast {r : ℝ} {n : ℕ} : ENNReal.ofReal r ≤ n ↔ r ≤ n :=
   coe_le_coe.trans Real.toNNReal_le_natCast
 
