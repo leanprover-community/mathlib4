@@ -85,6 +85,7 @@ theorem balanced_absConvexHull : Balanced 𝕜 (absConvexHull 𝕜 s) :=
 theorem convex_absConvexHull : Convex ℝ (absConvexHull 𝕜 s) :=
   absConvex_absConvexHull.2
 
+variable (𝕜 s) in 
 theorem absConvexHull_eq_iInter :
     absConvexHull 𝕜 s = ⋂ (t : Set E) (_ : s ⊆ t) (_ : AbsConvex 𝕜 t), t := by
   simp [absConvexHull, iInter_subtype, iInter_and]
