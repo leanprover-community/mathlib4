@@ -371,9 +371,6 @@ theorem completeSpace_congr {e : α ≃ β} (he : IsUniformEmbedding e) :
     CompleteSpace α ↔ CompleteSpace β :=
   he.completeSpace_congr e.surjective
 
-@[deprecated (since := "2024-10-01")]
-alias completeSpace_congr := completeSpace_congr
-
 theorem completeSpace_coe_iff_isComplete {s : Set α} : CompleteSpace s ↔ IsComplete s := by
   rw [completeSpace_iff_isComplete_range isUniformEmbedding_subtype_val.toUniformInducing,
     Subtype.range_coe]
