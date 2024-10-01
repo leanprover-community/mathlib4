@@ -75,7 +75,16 @@ lemma isLittleOTVS_one [ContinuousSMul 𝕜 E] {f : α → E} {l : Filter α} :
         simpa using egauge_ball_le_of_one_lt_norm (r := r) (E := 𝕜) hc (.inr one_ne_zero)
       _ < 1 := ‹_›
   · intro hf U hU
-    sorry
+    refine ⟨ball 0 1, ball_mem_nhds _ one_pos, fun ε hε ↦ ?_⟩
+    rcases NormedField.exists_norm_lt 𝕜 hε.bot_lt with ⟨c, hc₀, hcε⟩
+    replace hc₀ : c ≠ 0 := by simpa using hc₀
+    filter_upwards [hf ((set_smul_mem_nhds_zero_iff hc₀).2 hU)] with a ha
+    calc
+      egauge 𝕜 U (f a) ≤ ‖c‖₊ := egauge_le_of_mem_smul ha
+      _ ≤ ε := mod_cast hcε.le
+      _ ≤ ε * egauge 𝕜 (ball (0 : 𝕜) 1) 1 := by
+        apply le_mul_of_one_le_right'
+        simpa using le_egauge_ball_one 𝕜 (1 : 𝕜)
 
 lemma IsLittleOTVS.tendsto_inv_smul [ContinuousSMul 𝕜 E] {f : α → 𝕜} {g : α → E} {l : Filter α}
     (h : IsLittleOTVS 𝕜 g f l) : Tendsto (fun x ↦ (f x)⁻¹ • g x) l (𝓝 0) := by
