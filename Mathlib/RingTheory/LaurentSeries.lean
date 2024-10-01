@@ -623,7 +623,7 @@ section Complete
 
 open Filter
 
-open scoped DiscreteValuation
+open scoped Multiplicative
 
 variable {K : Type*} [Field K]
 
