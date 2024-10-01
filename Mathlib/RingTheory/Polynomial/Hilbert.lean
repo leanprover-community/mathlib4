@@ -13,7 +13,7 @@ import Mathlib.RingTheory.PowerSeries.WellKnown
 Given any `p : ℤ[X]` and `d : ℕ`, there exists some `h : ℚ[X]` such that for any
 large enough `n : ℕ`, `PowerSeries.coeff ℤ n (p * (@invOneSubPow ℤ _ d))` is equal
 to `h.eval (n : ℚ)`. This `h` is unique and is called the Hilbert polynomial with
-respect to `p` and `d + 1` (`Polynomial.hilbert p d`).
+respect to `p` and `d` (`Polynomial.hilbert p d`).
 -/
 
 open BigOperators
