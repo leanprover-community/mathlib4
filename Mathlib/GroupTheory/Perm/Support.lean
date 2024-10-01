@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Aaron Anderson, Yakov Pechersky
 -/
 import Mathlib.Algebra.Group.Commute.Basic
+import Mathlib.Data.Finset.NoncommProd
 import Mathlib.Data.Fintype.Card
 import Mathlib.GroupTheory.Perm.Basic
 
@@ -116,6 +117,12 @@ theorem disjoint_prod_right (l : List (Perm α)) (h : ∀ g ∈ l, Disjoint f g)
   · exact disjoint_one_right _
   · rw [List.prod_cons]
     exact (h _ (List.mem_cons_self _ _)).mul_right (ih fun g hg => h g (List.mem_cons_of_mem _ hg))
+
+theorem disjoint_noncommProd_right {ι : Type*} {k : ι → Perm α} {s : Finset ι}
+    (hs : Set.Pairwise s fun i j ↦ Commute (k i) (k j))
+    (hg : ∀ i ∈ s, g.Disjoint (k i)) :
+    Disjoint g (s.noncommProd k (hs)) := 
+  noncommProd_induction s k hs g.Disjoint (fun _ _ ↦ Disjoint.mul_right) (disjoint_one_right g) hg
 
 open scoped List in
 theorem disjoint_prod_perm {l₁ l₂ : List (Perm α)} (hl : l₁.Pairwise Disjoint) (hp : l₁ ~ l₂) :

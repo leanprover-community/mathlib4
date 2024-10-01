@@ -95,35 +95,6 @@ as a product of factorials.
 
 -/
 
-section
-
-variable {G : Type*} [Group G] (g : G)
-
-theorem Subgroup.nat_card_centralizer_nat_card_stabilizer :
-    Nat.card (Subgroup.centralizer {g}) =
-      Nat.card (MulAction.stabilizer (ConjAct G) g) := by
-  simp only [← SetLike.coe_sort_coe, Set.Nat.card_coe_set_eq]
-  rw [Subgroup.centralizer_eq_comap_stabilizer, Subgroup.coe_comap,
-    MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_coe]
-  -- I need to use erw
-  erw [Set.preimage_equiv_eq_image_symm]
-  exact Set.ncard_image_of_injective _ ConjAct.ofConjAct.injective
-  -- Other approaches
-  /- Approach 2, avoids `erw`, but is awkward
-  suffices ConjAct.toConjAct ⁻¹' (MulAction.stabilizer  (ConjAct G) g : Set (ConjAct G)) =
-    ConjAct.toConjAct.symm '' (MulAction.stabilizer (ConjAct G) g : Set (ConjAct G)) by
-    rw [this]
-    exact Set.ncard_image_of_injective _ ConjAct.ofConjAct.injective
-  exact Set.preimage_equiv_eq_image_symm ((MulAction.stabilizer (ConjAct G) g) : Set (ConjAct G))
-      (ConjAct.toConjAct (G := G)).toEquiv  -/
-  -- Approach 3
-  /- rw [Set.preimage_equiv_eq_image_symm] -- does not work, even with full arguments -/
-  -- Approach 4
-  /- rw [Set.preimage_equiv_eq_image_symm ((MulAction.stabilizer (ConjAct G) g) : Set (ConjAct G))
-    (ConjAct.toConjAct.toEquiv)] -/
-
-end
-
 open scoped Pointwise
 
 namespace Equiv.Perm
@@ -131,32 +102,6 @@ namespace Equiv.Perm
 open MulAction Equiv Subgroup
 
 variable {α : Type*} {g : Equiv.Perm α}
-
-theorem mem_fixedPoints_iff_apply_mem_of_mem_centralizer
-    {p : Perm α} (hp : p ∈ Subgroup.centralizer {g}) {x} :
-    x ∈ Function.fixedPoints g ↔ p x ∈ Function.fixedPoints g :=  by
-  simp only [mem_centralizer_singleton_iff] at hp
-  simp only [Function.mem_fixedPoints_iff]
-  rw [← mul_apply, ← hp, mul_apply]
-  simp only [EmbeddingLike.apply_eq_iff_eq]
-
-lemma disjoint_ofSubtype_of_memFixedPoints_self [DecidableEq α]
-    (u : Perm (Function.fixedPoints g)) :
-    Disjoint (ofSubtype u) g := by
-  rw [disjoint_iff_eq_or_eq]
-  intro x
-  by_cases hx : x ∈ Function.fixedPoints g
-  · right; exact hx
-  · left; rw [ofSubtype_apply_of_not_mem u hx]
-
-theorem Disjoint.disjoint_noncommProd {ι : Type*} {k : ι → Perm α} {s : Finset ι}
-    (hs : Set.Pairwise s fun i j ↦ Commute (k i) (k j))
-    (f : Perm α) (hf : ∀ i ∈ s, f.Disjoint (k i)) :
-    f.Disjoint (s.noncommProd k (hs)) := by
-  apply Finset.noncommProd_induction
-  · exact fun g h ↦ Disjoint.mul_right
-  · exact disjoint_one_right f
-  · exact hf
 
 variable [DecidableEq α] [Fintype α]
 
@@ -228,7 +173,7 @@ theorem Disjoint.support_noncommProd
       hs.mono (by simp only [Finset.coe_insert, Set.subset_insert])
     rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, Finset.biUnion_insert]
     rw [Equiv.Perm.Disjoint.support_mul, hrec hs']
-    apply Disjoint.disjoint_noncommProd
+    apply disjoint_noncommProd_right
     intro j hj
     apply hs _ _ (ne_of_mem_of_not_mem hj hi).symm <;>
       simp only [Finset.coe_insert, Set.mem_insert_iff, Finset.mem_coe, hj, or_true, true_or]
@@ -256,7 +201,7 @@ theorem Disjoint.cycleType_noncommProd
       hs.mono (by simp only [Finset.coe_insert, Set.subset_insert])
     rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, Finset.sum_insert hi]
     rw [Equiv.Perm.Disjoint.cycleType_mul, hrec hs']
-    apply Disjoint.disjoint_noncommProd
+    apply disjoint_noncommProd_right
     intro j hj
     apply hs _ _ (ne_of_mem_of_not_mem hj hi).symm <;>
       simp only [Finset.coe_insert, Set.mem_insert_iff, Finset.mem_coe, hj, or_true, true_or]
