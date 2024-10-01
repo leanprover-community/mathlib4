@@ -147,13 +147,11 @@ protected theorem uniformInducing (hf : AntilipschitzWith K f) (hfc : UniformCon
     UniformInducing f :=
   ⟨le_antisymm hf.comap_uniformity_le hfc.le_comap⟩
 
-protected theorem isUniformEmbedding {α : Type*} {β : Type*} [EMetricSpace α] [PseudoEMetricSpace β]
-    {K : ℝ≥0} {f : α → β} (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) :
-    IsUniformEmbedding f :=
+lemma isUniformEmbedding {α β : Type*} [EMetricSpace α] [PseudoEMetricSpace β] {K : ℝ≥0} {f : α → β}
+    (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) : IsUniformEmbedding f :=
   ⟨hf.uniformInducing hfc, hf.injective⟩
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding := isUniformEmbedding
+@[deprecated (since := "2024-10-01")] alias uniformEmbedding := isUniformEmbedding
 
 theorem isComplete_range [CompleteSpace α] (hf : AntilipschitzWith K f)
     (hfc : UniformContinuous f) : IsComplete (range f) :=

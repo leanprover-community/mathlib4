@@ -203,11 +203,9 @@ protected theorem uniformInducing (h : α ≃ᵤ β) : UniformInducing h :=
 theorem comap_eq (h : α ≃ᵤ β) : UniformSpace.comap h ‹_› = ‹_› :=
   h.uniformInducing.comap_uniformSpace
 
-protected theorem isUniformEmbedding (h : α ≃ᵤ β) : IsUniformEmbedding h :=
-  ⟨h.uniformInducing, h.injective⟩
+theorem isUniformEmbedding (h : α ≃ᵤ β) : IsUniformEmbedding h := ⟨h.uniformInducing, h.injective⟩
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding := isUniformEmbedding
+@[deprecated (since := "2024-10-01")] alias uniformEmbedding := isUniformEmbedding
 
 theorem completeSpace_iff (h : α ≃ᵤ β) : CompleteSpace α ↔ CompleteSpace β :=
   completeSpace_congr h.isUniformEmbedding
