@@ -127,7 +127,8 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
       return
     let renStx ← stx.replaceM fun s => match s.getKind with
         | ``declId        => return some (← `(declId| $(mkIdentFrom s[0] (s[0].getId ++ `_hello))))
-        | ``declValSimple => return some (← `(declValSimple| := by included_variables plumb; sorry))
+        | ``declValSimple | ``declValEqns | ``whereStructInst =>
+          return some (← `(declValSimple| := by included_variables plumb; sorry))
         | _               => return none
     let toFalse := mkIdent `toFalse
     let renStx ← renStx.replaceM fun s => match s with
