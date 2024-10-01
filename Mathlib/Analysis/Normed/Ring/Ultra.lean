@@ -7,22 +7,29 @@ import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Group.Ultra
 
 /-!
-# Ultrametric norms on rings with a multiplicative norm
+# Ultrametric norms on rings where the norm of one is one
 
 This file contains results on the behavior of norms in ultrametric normed rings.
-The norm must be multiplicative, not just submultiplicative.
+The norm must send one to one.
 
 ## Main results
 
 * `norm_intCast_le_one`:
-  the norm of the image of an integer in the division ring is always less than or equal to one
+  the norm of the image of an integer in the ring is always less than or equal to one
 
 ## Implementation details
 
-A `[NormedRing R]` only assumes a submultiplicative norm. The weakest ring-like structure
-that has a bundled multiplicative norm is `[NormedDivisionRing K]`.
-Since the statements below hold in a multiplicative norm context, we can state them
+A `[NormedRing R]` only assumes a submultiplicative norm and does not have `[NormOneClass R]`.
+The weakest ring-like structure that has a bundled norm such that `‖1‖ = 1` is
+`[NormedDivisionRing K]`.
+Since the statements below hold in any context, we can state them
 in an unbundled fashion using `[NormOneClass R]`.
+In fact one can actually prove all these lemmas only assuming
+`{R : Type*} [SeminormedAddGroup R] [One R] [NormOneClass R] [IsUltrametricDist R]`.
+But one has to give the typeclass machinery a little help in order to get it to recognise that there
+is a coercion from `ℕ` or `ℤ` to `R`.
+Instead, we use weakest pre-existing typeclass that implies both
+`[SeminormedAddGroup R]` and `[AddGroupWithOne R]`, which is `[SeminormedRing R]`.
 
 ## Tags
 
