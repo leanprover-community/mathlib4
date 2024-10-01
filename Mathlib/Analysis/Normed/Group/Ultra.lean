@@ -139,33 +139,38 @@ operating over an `OrderBot`, which `ℝ` is not. "]
 lemma _root_.Finset.Nonempty.norm_prod_le_sup'_norm {s : Finset ι} (hs : s.Nonempty) (f : ι → M) :
     ‖∏ i ∈ s, f i‖ ≤ s.sup' hs (‖f ·‖) := by
   simp only [Finset.le_sup'_iff]
-  refine Finset.Nonempty.cons_induction ?_ ?_ hs
-  · simp
-  rintro a s ha _ ⟨b, hb, IH⟩
-  simp only [Finset.prod_cons, Finset.mem_cons, exists_eq_or_imp]
-  refine (le_total ‖∏ i ∈ s, f i‖ ‖f a‖).imp ?_ ?_ <;> intro h
-  · exact (norm_mul_le_max _ _).trans (by simp [h])
-  · exact ⟨b, hb, (norm_mul_le_max _ _).trans (by simpa [h] using IH)⟩
+  induction hs using Finset.Nonempty.cons_induction with
+  | singleton j => simp only [Finset.mem_singleton, Finset.prod_singleton, exists_eq_left, le_refl]
+  | cons j t hj _ IH =>
+      simp only [Finset.prod_cons, Finset.mem_cons, exists_eq_or_imp]
+      refine (le_total ‖∏ i ∈ t, f i‖ ‖f j‖).imp ?_ ?_ <;> intro h
+      · exact (norm_mul_le_max _ _).trans (max_eq_left h).le
+      · exact ⟨_, IH.choose_spec.left, (norm_mul_le_max _ _).trans <|
+          ((max_eq_right h).le.trans IH.choose_spec.right)⟩
 
-/-- Nonarchimedean norm of a product is less than or equal the norm of any term in the product. -/
-@[to_additive "Nonarchimedean norm of a sum is less than or equal the norm of any term in the sum."]
+/-- Nonarchimedean norm of a product is less than or equal to the largest norm of a term in the
+product. -/
+@[to_additive "Nonarchimedean norm of a sum is less than or equal to the largest norm of a term in
+the sum."]
 lemma _root_.Finset.nnnorm_prod_le_sup_nnnorm (s : Finset ι) (f : ι → M) :
     ‖∏ i ∈ s, f i‖₊ ≤ s.sup (‖f ·‖₊) := by
   rcases s.eq_empty_or_nonempty with rfl|hs
-  · simp
-  rw [← Finset.sup'_eq_sup hs, ← NNReal.coe_le_coe,
-    Finset.comp_sup'_eq_sup'_comp hs toReal coe_mono.map_sup]
-  simpa only [coe_nnnorm', Function.comp_apply, Finset.le_sup'_iff] using
-    hs.norm_prod_le_sup'_norm f
+  · simp only [Finset.prod_empty, nnnorm_one', Finset.sup_empty, bot_eq_zero', le_refl]
+  · simpa only [← Finset.sup'_eq_sup hs, Finset.le_sup'_iff, coe_le_coe, coe_nnnorm']
+      using hs.norm_prod_le_sup'_norm f
 
-/-- Nonarchimedean norm of a product is less than or equal the norm of any term in the product. -/
-@[to_additive "Nonarchimedean norm of a sum is less than or equal the norm of any term in the sum."]
+/-- Nonarchimedean norm of a product is less than or equal to the largest norm of a term in the
+product. -/
+@[to_additive "Nonarchimedean norm of a sum is less than or equal to the largest norm of a term in
+the sum."]
 lemma _root_.Fintype.nnnorm_prod_le_sup_univ_norm [Fintype ι] (f : ι → M) :
     ‖∏ i, f i‖₊ ≤ Finset.univ.sup (‖f ·‖₊) := by
   simpa using Finset.univ.nnnorm_prod_le_sup_nnnorm f
 
-/-- Nonarchimedean norm of a product is less than or equal the norm of any term in the product. -/
-@[to_additive "Nonarchimedean norm of a sum is less than or equal the norm of any term in the sum."]
+/-- Nonarchimedean norm of a product is less than or equal to the largest norm of a term in the
+product. -/
+@[to_additive "Nonarchimedean norm of a sum is less than or equal to the largest norm of a term in
+the sum."]
 lemma _root_.Fintype.norm_prod_le_sup'_univ_norm [Nonempty ι] [Fintype ι] (f : ι → M) :
     ‖∏ i, f i‖ ≤ Finset.univ.sup' Finset.univ_nonempty (‖f ·‖) := by
   simpa using Finset.univ_nonempty.norm_prod_le_sup'_norm f
