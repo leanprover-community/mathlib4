@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Category.Cat
@@ -11,9 +11,7 @@ import Mathlib.CategoryTheory.PathCategory
 # The category of quivers
 
 The category of (bundled) quivers, and the free/forgetful adjunction between `Cat` and `Quiv`.
-
 -/
-
 
 universe v u
 
@@ -51,6 +49,12 @@ def forget : Cat.{v, u} ⥤ Quiv.{v, u} where
   obj C := Quiv.of C
   map F := F.toPrefunctor
 
+/-- The identity in the category of quivers equals the identity prefunctor.-/
+theorem id_eq_id (X : Quiv) : 𝟙 X = 𝟭q X := rfl
+
+/-- Composition in the category of quivers equals prefunctor composition.-/
+theorem comp_eq_comp {X Y Z : Quiv} (F : X ⟶ Y) (G : Y ⟶ Z) : F ≫ G = F ⋙q G := rfl
+
 end Quiv
 
 namespace Cat
@@ -65,14 +69,14 @@ def free : Quiv.{v, u} ⥤ Cat.{max u v, u} where
       map_comp := fun f g => F.mapPath_comp f g }
   map_id V := by
     change (show Paths V ⥤ _ from _) = _
-    ext; swap
-    · apply eq_conj_eqToHom
+    ext
     · rfl
+    · exact eq_conj_eqToHom _
   map_comp {U _ _} F G := by
     change (show Paths U ⥤ _ from _) = _
-    ext; swap
-    · apply eq_conj_eqToHom
+    ext
     · rfl
+    · exact eq_conj_eqToHom _
 
 end Cat
 
@@ -105,9 +109,9 @@ def adj : Cat.free ⊣ Quiv.forget :=
             exact Category.id_comp _ }
       homEquiv_naturality_left_symm := fun {V _ _} f g => by
         change (show Paths V ⥤ _ from _) = _
-        ext; swap
-        · apply eq_conj_eqToHom
-        · rfl }
+        ext
+        · rfl
+        · apply eq_conj_eqToHom }
 
 end Quiv
 

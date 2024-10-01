@@ -77,7 +77,7 @@ theorem hasFDerivAt_tsum_of_isPreconnected (hu : Summable u) (hs : IsOpen s)
       apply Summable.hasSum
       exact summable_of_summable_hasFDerivAt_of_isPreconnected hu hs h's hf hf' hx₀ hf0 hy
     refine hasFDerivAt_of_tendstoUniformlyOn hs (tendstoUniformlyOn_tsum hu hf')
-      (fun t y hy => ?_) A _ hx
+      (fun t y hy => ?_) A hx
     exact HasFDerivAt.sum fun n _ => hf n y hy
 
 /-- Consider a series of functions `∑' n, f n x` on a preconnected open set. If the series converges
