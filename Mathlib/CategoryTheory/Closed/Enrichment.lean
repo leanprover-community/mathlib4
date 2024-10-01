@@ -56,8 +56,8 @@ lemma id_eq (x : V) : id x = curry (ρ_ x).hom := rfl
 
 /-- Unfold the definition of compTranspose.
 This exists to streamline the proof of MonoidalClosed.assoc -/
-lemma compTranpose_eq (x y z : V) : compTranspose x y z = (α_ _ _ _).inv ≫
-    (ihom.ev x).app y ▷ _ ≫ (ihom.ev y).app z :=
+lemma compTranpose_eq (x y z : V)
+    : compTranspose x y z = (α_ _ _ _).inv ≫ (ihom.ev x).app y ▷ _ ≫ (ihom.ev y).app z :=
   rfl
 
 /-- Unfold the definition of comp.
