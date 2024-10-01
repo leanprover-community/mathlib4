@@ -115,3 +115,5 @@ instance : EnrichedCategory V V where
   assoc := assoc
 
 end MonoidalClosed
+
+end CategoryTheory
