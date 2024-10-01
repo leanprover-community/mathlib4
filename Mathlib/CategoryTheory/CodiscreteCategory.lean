@@ -116,7 +116,7 @@ open Adjunction Cat
 /-- For a category `C` and type `A`, there is an equivalence between functions `objects.obj C ⟶ A`
 and functors `C ⥤ Codiscrete A`.-/
 def equivFunctorToCodiscrete {C : Type u} [Category.{v} C] {A : Type w} :
-  (C → A) ≃ (C ⥤ Codiscrete A) where
+    (C → A) ≃ (C ⥤ Codiscrete A) where
   toFun := lift
   invFun := invlift
   left_inv _ := rfl
