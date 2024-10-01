@@ -31,8 +31,8 @@ section Field
 
 variable {K : Type*} [Field K]
 
--- TODO: generalize to `Invertible r` when #12125 is merged
-lemma isUnit_fst {r : K} (hr : r ≠ 0) :
+-- TODO: delete when #12125 is merged
+lemma isUnit_inl {r : K} (hr : r ≠ 0) :
     IsUnit (.inl r : K[ε]) :=
   hr.isUnit.map (TrivSqZeroExt.inlAlgHom K K K)
 
@@ -42,7 +42,7 @@ lemma isUnit_or_isNilpotent (a : K[ε]) : IsUnit a ∨ IsNilpotent a := by
     ext <;> simp [ha]
   · refine Or.inl ?_
     rw [← TrivSqZeroExt.inl_fst_add_inr_snd_eq a]
-    exact (isNilpotent_inr _).isUnit_add_left_of_commute (isUnit_fst ha) (.all _ _)
+    exact (isNilpotent_inr _).isUnit_add_left_of_commute (isUnit_inl ha) (.all _ _)
 
 instance instLocalRing : LocalRing K[ε] where
   isUnit_or_isUnit_of_add_one := by
