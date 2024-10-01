@@ -252,61 +252,103 @@ results is probably most efficient. Talk to Jireh about the relative benefit of 
 
 -/
 
+/-
+:= by
+  have _ := Fintype.ofFinite n
+*why the _ here? We don't need a named instance?*
+  revert T
+*This gives us access to the T.*
+  change ∀ T, _
+*This change statement doesn't apparently do anything at all in the version below...*
+  refine Fintype.induction_subsingleton_or_nontrivial n (fun m _ hhm T hT _ ↦ ?_)
+    (fun m hm hmm H T hT hC ↦ ?_)
+*This is a much more targeted approach than using the intro.*
+  · obtain (hm | hm) := isEmpty_or_nonempty m
+*Before I did by_cases case : Nonempty m...the above is better, because the obtain is like a have*
+*followed by a rcases...*
+    · simp
+*apparently, this is a terminal simp! This is good to know, although I might forget later!*
+    · have := uniqueOfSubsingleton (Classical.choice hm)
+*What does this unique thing do?*
+      simpa only [ciInf_unique, ← (Equiv.funUnique m 𝕜).symm.iSup_comp]
+        using hT default |>.orthogonalComplement_iSup_eigenspaces_eq_bot
+*Let's try to finally understand `simpa`, here. Here is the docs version:
+simpa [rules, ⋯] using e will simplify the goal and the type of e using rules,
+then try to close the goal using e.
+
+Simplifying the type of e makes it more likely to match the goal (which has also been simplified).
+This construction also tends to be more robust under changes to the simp lemma set.
+
+simpa [rules, ⋯] will simplify the goal and the type of a hypothesis this if present in the context
+then try to close the goal using the assumption tactic.
+
+So `simpa` tries to simplify e and the goal simultaneously and then use (the simplified) `e` to
+close the goal. Without specifying `e`, simpa uses the `this` hypothesis for this purpose.
+
+So now we need to dissect
+
+`simpa only [ciInf_unique, ← (Equiv.funUnique m 𝕜).symm.iSup_comp]`
+`using hT default |>.orthogonalComplement_iSup_eigenspaces_eq_bot`
+
+The `ciInf` is a proof that `⨅ i, s i = s default`.
+The `Equiv.funUnique m K` is a proof that `(α → β) ≃ β`, i.e. the unique element of `α`
+allows us to identify the arrow type with `β` via an equivalence (bijection). The `.symm`
+I guess turns around the map sending `β` into this arrow type. Finally, `iSup_comp` gives
+`{g : ι' → α} (e : ι ≃ ι') : ⨆ x, g (e x) = ⨆ y, g y`, so one can just sup over the elements of
+`β` in this situation and doing so over the arrow type isn't necessary. I remember using this
+in the original.
+
+Ok I was being very silly. This just required applying x to default. Grr.
+
+*
+  · have i := Classical.arbitrary m
+    classical
+    specialize H {x // x ≠ i} (Fintype.card_subtype_lt (x := i) (by simp))
+      (Subtype.restrict (· ≠ i) T) (hT ·) (hC · ·)
+    simp only [Submodule.orthogonal_eq_bot_iff] at *
+    rw [← (Equiv.funSplitAt i 𝕜).symm.iSup_comp, iSup_prod, iSup_comm]
+    convert H with γ
+    rw [← iSup_eigenspace_restrict (T i) (hT i) (iInf_eigenspace_invariant_of_commute hC i γ)]
+    congr! with μ
+    rw [← Module.End.genEigenspace_one, ← Submodule.inf_genEigenspace _ _ _ (k := 1), inf_comm,
+      iInf_split_single _ i, iInf_subtype]
+    congr! with x hx
+    · simp
+    · simp [dif_neg hx]
+-/
+
 lemma iSup_iInf_maxGenEigenspace_eq_top_of_commute {ι K V : Type*}
-    [Fintype ι] [Field K] [DecidableEq K] [AddCommGroup V] [Module K V] [FiniteDimensional K V]
-    (f : ι → End K V)
-    (h : Pairwise fun i j ↦ Commute (f i) (f j))
+    [Finite ι] [Field K] [DecidableEq K] [AddCommGroup V] [Module K V] [FiniteDimensional K V]
+    (f : ι → End K V) (h : Pairwise fun i j ↦ Commute (f i) (f j))
     (h' : ∀ i, ⨆ μ, (f i).maxGenEigenspace μ = ⊤) :
     ⨆ χ : ι → K, ⨅ i, (f i).maxGenEigenspace (χ i) = ⊤ := by
+  have _ := Fintype.ofFinite ι
+  revert f
+  --change ∀ f, _
+  refine Fintype.induction_subsingleton_or_nontrivial ι (fun m _ hhm f hf x ↦ ?_)
+    (fun m hm hmm H f hf hC ↦ ?_)
+  · obtain (hm | hm) := isEmpty_or_nonempty m
+    · simp
+    · have := uniqueOfSubsingleton (Classical.choice hm)
+      simpa [ciInf_unique, ← (Equiv.funUnique m K).symm.iSup_comp] using x default
+  · have i := Classical.arbitrary m
+    classical
+
+    sorry
 /-
-So it seems to me that we could simplify this by using `DirectSum.IsInternal.submodule_iSup_eq_top`.
-The trouble is that this immediately throws the error that it cannot determine an instance
-of `DecidableEq ι → K`, and this persists even if I include an instance of `Fintype ι`.
-Is this result true even if `ι` isn't a Fintype? It turns out that the codomain needs
-to have a `DecidableEq` instance in order for the arrow type to have such an instance.
+This might be doable using the fintype induction on `ι`. Let's set this up and see.
+So for the first bullet, `n` has either no or one element.
 
-Maybe the following isn't such a good idea
-
-apply DirectSum.IsInternal.submodule_iSup_eq_top
-
-since afterward we have
-
-rw [DirectSum.isInternal_submodule_iff_independent_and_iSup_eq_top]
-
-splits this into one of two goals, one of which is to get the iSup statement we would
-have converted *from* and the other an independence statement. So this is strange.
-The `DirectSum.IsInternal.submodule_iSup_eq_top` gets the weaker statement from the
-DirectSum.IsInternal.
-
-We want to do the opposite...show that the entire system is spanned by the iSup, and then
-show independence of the family. This is the usual trivial intersection and spanning
-theorem we do with undergraduates for pairs of subspaces.
-
-Oliver was probably able to do this very part more generally, since he told us
-that the only thing left would be independence.
-
-Looking at the local context, this ought to be easy. What does `h'` say? For a given operator in the
-commuting tuple, the maximal gen eigenspaces of that operator span the space.
-
-So if we take an arbitrary vector in the space, there is a function χ from ι into 𝕜 that
-will locate that vector in all of the respective gen eigenspaces of these.
-
-On paper, one would just start with `v` and then an arbitrary `i` and locate the `v` in
-an appropriate eigenspace. Then one would define the `χ` retroactively.
-
-This makes me wonder why `Fintype` is even needed? We should be able to build the function
-retroactively...by some sort of transfinite induction... (this would require
-handling limit ordinals as well as successor ordinals). For now, the invariance
-at prior levels will allow for induction to work. This then involved defining the
-new function at the next level...which was annoying if I remember correctly.
-
-Is there a glib way to do this? I think the Fintype induction will be needed...
-
+What does `∀ (i : n), ⨆ μ, (f i).maxGenEigenspace μ = ⊤` mean in each case?
+If `n` has no elements, then what is `f i`? If `n` is the empty type, then it has
+no terms of type `n`, so this is vacuously true, because it never gets off the ground.
+If `n` has one element, then this says that `⨆ μ, (f i).maxGenEigenspace μ = ⊤` where `i`
+is this single term of type `n`. Is there a way to do this without a case split on the
+`Subsingleton` instance? Let's look around `Subsingleton` to see...
 -/
 
 
 
-sorry
 end Oliver
 
 end IsSymmetric
