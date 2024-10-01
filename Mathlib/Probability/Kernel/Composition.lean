@@ -803,7 +803,7 @@ lemma map_prodMkLeft (γ : Type*) [MeasurableSpace γ] (κ : Kernel α β) (f : 
   · simp [map_of_not_measurable _ hf]
 
 lemma map_prodMkRight (κ : Kernel α β) (γ : Type*) {mγ : MeasurableSpace γ} (f : β → δ) :
-    (map (prodMkRight γ κ) f : Kernel (α × γ) δ) = prodMkRight γ (map κ f) := by
+    map (prodMkRight γ κ) f = prodMkRight γ (map κ f) := by
   by_cases hf : Measurable f
   · simp only [map, hf, ↓reduceDIte]
     rfl
