@@ -67,7 +67,11 @@ jobs:
         high_percentages=$(
           printf '%s\n' "${graphAndHighPercentReports}" | sed -n '/^Import changes exceeding/,$p'
         )
-        [ -n "${high_percentages}" ] && high_percentages=$'\n\n'"${high_percentages}"
+        # if there are files with large increase in transitive imports, then we add the `large-import` label
+        [ -n "${high_percentages}" ] && {
+          high_percentages=$'\n\n'"${high_percentages}"
+          gh pr edit "${PR}" --add-label large-import
+        }
 
         if [ "$(printf '%s' "${importCount}" | wc -l)" -gt 12 ]
         then
