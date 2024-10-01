@@ -77,7 +77,31 @@ universe u
 variable {k G : Type u} [CommRing k]
 
 open CategoryTheory Limits
+namespace HomologicalComplex
 
+theorem cyclesIsoSc'_cyclesMk {C : Type u} [Category C] [ConcreteCategory C] [HasForget₂ C Ab]
+    [Abelian C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology] {ι : Type*}
+    {c : ComplexShape ι} (K : HomologicalComplex C c) {i j k : ι} (x : (forget₂ C Ab).obj (K.X j))
+    (hi : c.prev j = i) (hk : c.next j = k) (hx : ((forget₂ C Ab).map (K.d j k)) x = 0) :
+    ((forget₂ C Ab).map (K.cyclesIsoSc' i j k hi hk).hom) (K.cyclesMk x k hk hx)
+      = (K.sc' i j k).cyclesMk x (by simp_all) := by
+  apply (AddCommGrp.mono_iff_injective ((forget₂ C Ab).map (K.sc' i j k).iCycles)).1 inferInstance
+  rw [(K.sc' i j k).i_cyclesMk x (by simp_all), ← Function.comp_apply (f := (forget₂ C Ab).map _),
+    ← AddCommGrp.coe_comp, ← Functor.map_comp]
+  simp
+
+theorem cyclesIsoSc'_inv_cyclesMk {C : Type u} [Category C] [ConcreteCategory C] [HasForget₂ C Ab]
+    [Abelian C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology] {ι : Type*}
+    {c : ComplexShape ι} (K : HomologicalComplex C c) {i j k : ι} (x : (forget₂ C Ab).obj (K.X j))
+    (hi : c.prev j = i) (hk : c.next j = k) (hx : ((forget₂ C Ab).map (K.d j k)) x = 0) :
+    ((forget₂ C Ab).map (K.cyclesIsoSc' i j k hi hk).inv) ((K.sc' i j k).cyclesMk x (by simp_all))
+      = K.cyclesMk x k hk hx := by
+  apply (AddCommGrp.mono_iff_injective ((forget₂ C Ab).map (K.iCycles j))).1 inferInstance
+  rw [K.i_cyclesMk x k hk hx, ← Function.comp_apply (f := (forget₂ C Ab).map _),
+    ← AddCommGrp.coe_comp, ← Functor.map_comp]
+  simpa using (K.sc' i j k).i_cyclesMk x (by simp_all)
+
+end HomologicalComplex
 namespace groupCohomology
 
 variable [Group G]
@@ -195,18 +219,37 @@ abbrev cocycles (n : ℕ) : ModuleCat k := (inhomogeneousCochains A).cycles n
 open HomologicalComplex
 
 def cocyclesIso (n : ℕ) :
-    cocycles A n ≅ ModuleCat.of k (LinearMap.ker ((inhomogeneousCochains A).dFrom n)) :=
-  ShortComplex.moduleCatCyclesIso _
+    cocycles A n ≅ ModuleCat.of k (LinearMap.ker (inhomogeneousCochains.d A n)) :=
+  (inhomogeneousCochains A).cyclesIsoSc' _ _ _ (by aesop) (by aesop)
+  ≪≫ ShortComplex.moduleCatCyclesIso _ ≪≫ (LinearEquiv.ofEq _ _ <| by simp).toModuleIso
 
-theorem forget₂_cocyclesIso_inv_eq {n : ℕ} (x : (inhomogeneousCochains A).X n)
-    (hx : (inhomogeneousCochains A).dFrom n x = 0) :
-    ((cocyclesIso A n).inv ⟨x, hx⟩)
-    = HomologicalComplex.cyclesMk (inhomogeneousCochains A) x _ rfl (by simp_all) :=
-  ShortComplex.moduleCatCyclesIso_inv_apply _ _
+theorem cocyclesIso_inv_eq {n : ℕ} (x : (inhomogeneousCochains A).X n)
+    (hx : inhomogeneousCochains.d A n x = 0) :
+    (cocyclesIso A n).inv ⟨x, hx⟩
+    = HomologicalComplex.cyclesMk (inhomogeneousCochains A) x (n + 1)
+      (CochainComplex.next _ _) (by simpa using hx) :=
+  congr(((inhomogeneousCochains A).cyclesIsoSc' _ _ _ (by aesop) (by aesop)).inv
+    $(ShortComplex.moduleCatCyclesIso_inv_apply x (by simpa using hx))).trans
+    ((inhomogeneousCochains A).cyclesIsoSc'_inv_cyclesMk x rfl (CochainComplex.next _ _) _)
 
 /-- The natural inclusion of the `n`-cocycles `Zⁿ(G, A)` into the `n`-cochains `Cⁿ(G, A).` -/
 abbrev iCocycles (n : ℕ) : cocycles A n ⟶ ModuleCat.of k ((Fin n → G) → A) :=
   (inhomogeneousCochains A).iCycles n
+
+@[elementwise (attr := simp), reassoc (attr := simp)]
+theorem cocyclesIso_inv_comp_iCocycles (n : ℕ) :
+    (cocyclesIso A n).inv ≫ iCocycles A n = Submodule.subtype _ := by
+  simp only [cocyclesIso, shortComplexFunctor'_obj_X₂, CochainComplex.of_x,
+    shortComplexFunctor'_obj_X₃, shortComplexFunctor'_obj_g, Iso.trans_inv,
+    LinearEquiv.toModuleIso_inv, LinearEquiv.ofEq_symm, Category.assoc, cyclesIsoSc'_inv_iCycles,
+    ShortComplex.moduleCatCyclesIso_inv_iCycles]
+  rfl
+
+@[elementwise (attr := simp), reassoc (attr := simp)]
+theorem cocyclesIso_hom_comp_subtype :
+    (cocyclesIso A n).hom ≫ ModuleCat.ofHom (Submodule.subtype _) = iCocycles _ _ := by
+  simp only [← Iso.eq_inv_comp, cocyclesIso_inv_comp_iCocycles]
+  rfl
 
 /-- This is the map from `i`-cochains to `j`-cocycles induced by the differential in the complex of
 inhomogeneous cochains. -/
