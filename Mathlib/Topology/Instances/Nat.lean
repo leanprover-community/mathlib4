@@ -34,6 +34,9 @@ theorem pairwise_one_le_dist : Pairwise fun m n : ℕ => 1 ≤ dist m n := fun _
 theorem isUniformEmbedding_coe_real : IsUniformEmbedding ((↑) : ℕ → ℝ) :=
   isUniformEmbedding_bot_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
 
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_coe_real := isUniformEmbedding_coe_real
+
 theorem closedEmbedding_coe_real : ClosedEmbedding ((↑) : ℕ → ℝ) :=
   closedEmbedding_of_pairwise_le_dist zero_lt_one pairwise_one_le_dist
 

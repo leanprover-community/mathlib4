@@ -439,6 +439,9 @@ theorem outCLM_isUniformEmbedding : IsUniformEmbedding (outCLM K E) where
   inj := outCLM_injective K E
   toUniformInducing := outCLM_uniformInducing K E
 
+@[deprecated (since := "2024-10-01")]
+alias outCLM_uniformEmbedding := outCLM_isUniformEmbedding
+
 theorem outCLM_uniformContinuous : UniformContinuous (outCLM K E) :=
   (outCLM_uniformInducing K E).uniformContinuous
 

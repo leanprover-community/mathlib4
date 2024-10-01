@@ -682,6 +682,9 @@ protected theorem uniformContinuous : UniformContinuous ((↑) : Lp.simpleFunc E
 protected theorem isUniformEmbedding : IsUniformEmbedding ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
   isUniformEmbedding_comap Subtype.val_injective
 
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding := isUniformEmbedding
+
 protected theorem uniformInducing : UniformInducing ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
   simpleFunc.isUniformEmbedding.toUniformInducing
 

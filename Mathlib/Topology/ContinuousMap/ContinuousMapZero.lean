@@ -273,6 +273,9 @@ lemma isUniformEmbedding_toContinuousMap :
   comap_uniformity := rfl
   inj _ _ h := ext fun x ↦ congr($(h) x)
 
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_toContinuousMap := isUniformEmbedding_toContinuousMap
+
 instance [T1Space R] [CompleteSpace C(X, R)] : CompleteSpace C(X, R)₀ :=
   completeSpace_iff_isComplete_range isUniformEmbedding_toContinuousMap.toUniformInducing
     |>.mpr closedEmbedding_toContinuousMap.isClosed_range.isComplete
@@ -282,6 +285,9 @@ lemma isUniformEmbedding_comp {Y : Type*} [UniformSpace Y] [Zero Y] (g : C(Y, R)
   isUniformEmbedding_toContinuousMap.of_comp_iff.mp <|
     ContinuousMap.isUniformEmbedding_comp g.toContinuousMap hg |>.comp
       isUniformEmbedding_toContinuousMap
+
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_comp := isUniformEmbedding_comp
 
 /-- The uniform equivalence `C(X, R)₀ ≃ᵤ C(Y, R)₀` induced by a homeomorphism of the domains
 sending `0 : X` to `0 : Y`. -/

@@ -62,6 +62,9 @@ theorem uniformInducing_equivBoundedOfCompact : UniformInducing (equivBoundedOfC
 theorem isUniformEmbedding_equivBoundedOfCompact : IsUniformEmbedding (equivBoundedOfCompact α β) :=
   { uniformInducing_equivBoundedOfCompact α β with inj := (equivBoundedOfCompact α β).injective }
 
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_equivBoundedOfCompact := isUniformEmbedding_equivBoundedOfCompact
+
 /-- When `α` is compact, the bounded continuous maps `α →ᵇ 𝕜` are
 additively equivalent to `C(α, 𝕜)`.
 -/

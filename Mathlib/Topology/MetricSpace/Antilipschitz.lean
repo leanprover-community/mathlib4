@@ -152,6 +152,9 @@ protected theorem isUniformEmbedding {α : Type*} {β : Type*} [EMetricSpace α]
     IsUniformEmbedding f :=
   ⟨hf.uniformInducing hfc, hf.injective⟩
 
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding := isUniformEmbedding
+
 theorem isComplete_range [CompleteSpace α] (hf : AntilipschitzWith K f)
     (hfc : UniformContinuous f) : IsComplete (range f) :=
   (hf.uniformInducing hfc).isComplete_range

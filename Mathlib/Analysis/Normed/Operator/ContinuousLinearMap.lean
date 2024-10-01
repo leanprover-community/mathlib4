@@ -157,6 +157,9 @@ theorem ContinuousLinearMap.isUniformEmbedding_of_bound {K : ℝ≥0} (hf : ∀ 
     IsUniformEmbedding f :=
   (AddMonoidHomClass.antilipschitz_of_bound f hf).isUniformEmbedding f.uniformContinuous
 
+@[deprecated (since := "2024-10-01")]
+alias ContinuousLinearMap.uniformEmbedding_of_bound := ContinuousLinearMap.isUniformEmbedding_of_bound
+
 end Normed
 
 /-! ## Homotheties -/

@@ -383,6 +383,9 @@ protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
   toUniformInducing := UniformFun.postcomp_uniformInducing hf.toUniformInducing
   inj _ _ H := funext fun _ ↦ hf.inj (congrFun H _)
 
+@[deprecated (since := "2024-10-01")]
+alias postcomp_uniformEmbedding := postcomp_isUniformEmbedding
+
 -- Porting note: had to add a type annotation at `((f ∘ ·) : ((α → γ) → (α → β)))`
 /-- If `u` is a uniform structures on `β` and `f : γ → β`, then
 `𝒰(α, γ, comap f u) = comap (fun g ↦ f ∘ g) 𝒰(α, γ, u₁)`. -/
@@ -882,6 +885,9 @@ protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
     (hf : IsUniformEmbedding f) : IsUniformEmbedding (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖) where
   toUniformInducing := UniformOnFun.postcomp_uniformInducing hf.toUniformInducing
   inj _ _ H := funext fun _ ↦ hf.inj (congrFun H _)
+
+@[deprecated (since := "2024-10-01")]
+alias postcomp_uniformEmbedding := postcomp_isUniformEmbedding
 
 /-- Turn a uniform isomorphism `γ ≃ᵤ β` into a uniform isomorphism `(α →ᵤ[𝔖] γ) ≃ᵤ (α →ᵤ[𝔖] β)`
 by post-composing. -/
