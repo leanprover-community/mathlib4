@@ -130,7 +130,14 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
         | ``declId        => return some (← `(declId| $(mkIdentFrom s[0] (s[0].getId ++ `_hello))))
         | ``declValSimple => return some (← `(declValSimple| := by included_variables plumb; sorry))
         | _               => return none
+    let renStx ← renStx.replaceM fun s => match s with
+        | `(def $d $vs* : $t := $pf) => return some (← `(theorem $d $vs* : toFalse $t := $pf))
+        --| ``declValSimple => return some (← `(declValSimple| := by included_variables plumb; sorry))
+        | _               => return none
+    logInfo renStx
     let s ← get
+    elabCommand (← `(def $(mkIdent `toFalse) (S : Sort _) := False))
+    --elabCommand (← `(def $(mkIdent `toFalse) (S : Sort _) := sorry))
     elabCommand renStx
     set s
 
