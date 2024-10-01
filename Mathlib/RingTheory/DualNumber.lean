@@ -31,6 +31,7 @@ section Field
 
 variable {K : Type*} [Field K]
 
+-- TODO: generalize to `Invertible r` when #12125 is merged
 lemma isUnit_fst {r : K} (hr : r ≠ 0) :
     IsUnit (.inl r : K[ε]) :=
   hr.isUnit.map (TrivSqZeroExt.inlAlgHom K K K)
