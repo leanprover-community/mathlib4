@@ -25,6 +25,8 @@ composition, base change, etc., so is `Locally P`.
 ## Main results
 
 - `RingHom.locally_ofLocalizationSpanTarget`: `Locally P` is local on the target.
+- `RingHom.locally_holdsForLocalizationAway`: `Locally P` holds for localization away maps
+  if `P` does.
 - `RingHom.locally_stableUnderBaseChange`: `Locally P` is stable under base change if `P` is.
 - `RingHom.locally_stableUnderComposition`: `Locally P` is stable under composition
   if `P` is and `P` is preserved under localizations.
@@ -199,6 +201,19 @@ lemma locally_respectsIso (hPi : RespectsIso P) : RespectsIso (Locally P) where
       exact hs a ha
   right {R S T} _ _ _ f e := fun ⟨s, hsone, hs⟩ ↦
     ⟨s, hsone, fun a ha ↦ (RingHom.comp_assoc _ _ _).symm ▸ hPi.right _ _ (hs a ha)⟩
+
+/-- If `P` holds for localization away maps, then so does `Locally P`. -/
+lemma locally_holdsForLocalizationAway (hPa : HoldsForLocalizationAway P) :
+    HoldsForLocalizationAway (Locally P) := by
+  introv R _
+  use {1}
+  simp only [Set.mem_singleton_iff, forall_eq, Ideal.span_singleton_one, exists_const]
+  let e : S ≃ₐ[R] (Localization.Away (1 : S)) :=
+    (IsLocalization.atUnits S (Submonoid.powers 1) (by simp)).restrictScalars R
+  haveI : IsLocalization.Away r (Localization.Away (1 : S)) :=
+    IsLocalization.isLocalization_of_algEquiv (Submonoid.powers r) e
+  rw [← IsScalarTower.algebraMap_eq]
+  apply hPa _ r
 
 /-- If `P` preserves localizations, then `Locally P` is stable under composition if `P` is. -/
 lemma locally_stableUnderComposition (hPi : RespectsIso P) (hPl : LocalizationPreserves P)
