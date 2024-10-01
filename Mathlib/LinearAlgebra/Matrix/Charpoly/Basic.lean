@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.LinearAlgebra.Matrix.Adjugate
+import Mathlib.LinearAlgebra.Matrix.Block
 import Mathlib.RingTheory.PolynomialAlgebra
 
 /-!
@@ -85,6 +86,11 @@ lemma charmatrix_fromBlocks :
   simp only [charmatrix]
   ext (i|i) (j|j) : 2 <;> simp [diagonal]
 
+lemma BlockTriangular.charmatrix {α : Type*} [Preorder α] {M : Matrix n n R} {b : n → α}
+    (h : M.BlockTriangular b) :
+    M.charmatrix.BlockTriangular b :=
+  (blockTriangular_diagonal _).sub fun i j h' => by simpa using h h'
+
 /-- The characteristic polynomial of a matrix `M` is given by $\det (t I - M)$.
 -/
 def charpoly (M : Matrix n n R) : R[X] :=
@@ -111,6 +117,19 @@ lemma charpoly_fromBlocks_zero₂₁ :
     (fromBlocks M₁₁ M₁₂ 0 M₂₂).charpoly = (M₁₁.charpoly * M₂₂.charpoly) := by
   simp only [charpoly, charmatrix_fromBlocks, Matrix.map_zero _ (Polynomial.C_0), neg_zero,
     det_fromBlocks_zero₂₁]
+
+lemma toSquareBlock_charmatrix {α : Type*} [DecidableEq α] {b : n → α} {a : α}  :
+    (M.toSquareBlock b a).charmatrix = M.charmatrix.toSquareBlock _ _ := by
+  ext i j : 1
+  simp [charmatrix_apply, toSquareBlock_def, diagonal_apply, Subtype.ext_iff]
+
+lemma BlockTriangular.charpoly {α : Type*} {b : n → α} [LinearOrder α] (h : M.BlockTriangular b) :
+    M.charpoly = ∏ a ∈ image b univ, (M.toSquareBlock b a).charpoly := by
+  simp only [Matrix.charpoly, h.charmatrix.det, toSquareBlock_charmatrix]
+
+lemma charpoly_of_upperTriangular [LinearOrder n] (M : Matrix n n R) (h : M.BlockTriangular id) :
+    M.charpoly = ∏ i : n, (X - C (M i i)) := by
+  simp [charpoly, det_of_upperTriangular h.charmatrix]
 
 -- This proof follows http://drorbn.net/AcademicPensieve/2015-12/CayleyHamilton.pdf
 /-- The **Cayley-Hamilton Theorem**, that the characteristic polynomial of a matrix,
