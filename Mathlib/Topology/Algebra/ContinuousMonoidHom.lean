@@ -575,7 +575,8 @@ protected lemma quotientMap (f : M ≃ₜ* N) : QuotientMap f := f.toHomeomorph.
 protected lemma embedding (f : M ≃ₜ* N) : Embedding f := f.toHomeomorph.embedding
 protected lemma openEmbedding (f : M ≃ₜ* N) : OpenEmbedding f := f.toHomeomorph.openEmbedding
 protected lemma closedEmbedding (f : M ≃ₜ* N) : ClosedEmbedding f := f.toHomeomorph.closedEmbedding
-protected lemma denseEmbedding (f : M ≃ₜ* N) : DenseEmbedding f := f.toHomeomorph.denseEmbedding
+protected lemma isDenseEmbedding (f : M ≃ₜ* N) : IsDenseEmbedding f :=
+  f.toHomeomorph.isDenseEmbedding
 
 end map
 
