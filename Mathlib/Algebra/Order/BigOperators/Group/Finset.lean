@@ -221,6 +221,16 @@ theorem abs_sum_of_nonneg' {G : Type*} [LinearOrderedAddCommGroup G] {f : ι →
     (hf : ∀ i, 0 ≤ f i) : |∑ i ∈ s, f i| = ∑ i ∈ s, f i := by
   rw [abs_of_nonneg (Finset.sum_nonneg' hf)]
 
+section CommMonoid
+variable [CommMonoid α] [LE α] [CovariantClass α α (· * ·) (· ≤ ·)] {s : Finset ι} {f : ι → α}
+
+@[to_additive (attr := simp)]
+lemma mulLECancellable_prod :
+    MulLECancellable (∏ i ∈ s, f i) ↔ ∀ ⦃i⦄, i ∈ s → MulLECancellable (f i) := by
+  induction' s using Finset.cons_induction with i s hi ih <;> simp [*]
+
+end CommMonoid
+
 section Pigeonhole
 
 variable [DecidableEq β]

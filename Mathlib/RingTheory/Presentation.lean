@@ -179,6 +179,7 @@ private lemma span_range_relation_eq_ker_localizationAway :
   show Ideal.span {C r * X () - 1} = Ideal.comap _ (RingHom.ker (mvPolynomialQuotientEquiv S r))
   simp [RingHom.ker_equiv, ← RingHom.ker_eq_comap_bot]
 
+variable (S) in
 /-- If `S` is the localization of `R` away from `r`, we can construct a natural
 presentation of `S` as `R`-algebra with a single generator `X` and the relation `r * X - 1 = 0`. -/
 @[simps relation, simps (config := .lemmasOnly) rels]
@@ -190,12 +191,15 @@ noncomputable def localizationAway : Presentation R S where
     simp only [Generators.localizationAway_vars, Set.range_const]
     apply span_range_relation_eq_ker_localizationAway r
 
-instance localizationAway_isFinite : (localizationAway r (S := S)).IsFinite where
+instance localizationAway_isFinite : (localizationAway S r).IsFinite where
   finite_vars := inferInstanceAs <| Finite Unit
   finite_rels := inferInstanceAs <| Finite Unit
 
+instance : Fintype (localizationAway S r).rels :=
+  inferInstanceAs (Fintype Unit)
+
 @[simp]
-lemma localizationAway_dimension_zero : (localizationAway r (S := S)).dimension = 0 := by
+lemma localizationAway_dimension_zero : (localizationAway S r).dimension = 0 := by
   simp [Presentation.dimension, localizationAway, Generators.localizationAway_vars]
 
 end Localization
@@ -408,7 +412,12 @@ noncomputable def comp : Presentation R T where
     (fun rp ↦ MvPolynomial.rename Sum.inr <| P.relation rp)
   span_range_relation_eq_ker := Q.span_range_relation_eq_ker_comp P
 
-lemma comp_relation_map (r : Q.rels) :
+@[simp]
+lemma comp_relation_inr (r : P.rels) :
+    (Q.comp P).relation (Sum.inr r) = rename Sum.inr (P.relation r) :=
+  rfl
+
+lemma comp_aeval_relation_inl (r : Q.rels) :
     aeval (Sum.elim X (MvPolynomial.C ∘ P.val)) ((Q.comp P).relation (Sum.inl r)) =
       Q.relation r := by
   show (Q.aux P) _ = _
