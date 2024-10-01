@@ -12,11 +12,6 @@ import Mathlib.RingTheory.EuclideanDomain
 
 This file starts looking like the ring theory of $R[X]$
 
-## Main results
-
-* `instIsPrincipalIdealRingPolynomial`:
-  Over a field `K`, the ring `K[X]` is a principal ideal ring.
-
 -/
 
 
