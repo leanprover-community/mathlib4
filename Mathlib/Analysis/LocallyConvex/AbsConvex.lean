@@ -201,16 +201,16 @@ variable [AddCommGroup E]
 
 open UniformSpace in
 open Uniformity in
-theorem ball_add_ball_subset_ball_comp (V : Set E) (y : E) :
-    ball y (((fun p : E × E => p.2 - p.1) ⁻¹' (V + V))) ⊆
-      ball y (((fun p : E × E => p.2 - p.1) ⁻¹' V) ○ ((fun p : E × E => p.2 - p.1) ⁻¹' V)) := by
+theorem ball_add_ball_subset_ball_comp {V W : Set E} {y : E} :
+    ball y (((fun p : E × E => p.2 - p.1) ⁻¹' (V + W))) ⊆
+      ball y (((fun p : E × E => p.2 - p.1) ⁻¹' W) ○ ((fun p : E × E => p.2 - p.1) ⁻¹' V)) := by
     intro x hx
     rw [uniform_space_ball_eq_vadd] at hx
     obtain ⟨z,⟨hz₁,hz₂⟩⟩ := hx
     simp only [vadd_eq_add] at hz₂
     obtain ⟨z',⟨hz'₁,⟨z'',hz''₁, hz''₂⟩⟩⟩ := hz₁
     simp only [vadd_eq_add] at hz''₂
-    use x - z' -- (1/2:ℝ)•(x+y)
+    use x - z'
     simp
     rw [← hz₂]
     rw [← hz''₂]
@@ -308,7 +308,7 @@ theorem totallyBounded_absConvexHull
     exact le_trans e4 (Set.add_subset_add_right hts')
   have e8 (y : E): y +ᵥ (V + V) ⊆ {x | (x, y) ∈ d'} := by
     rw [← uniform_space_ball_eq_vadd]
-    apply subset_trans (ball_add_ball_subset_ball_comp V y)
+    apply subset_trans ball_add_ball_subset_ball_comp
     intro x hx
     rw [mem_setOf_eq]
     apply hd₂
