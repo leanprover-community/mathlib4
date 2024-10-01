@@ -209,9 +209,10 @@ theorem mulSupport_mul [MulOneClass M] (f g : α → M) :
 @[to_additive]
 theorem mulSupport_pow [Monoid M] (f : α → M) (n : ℕ) :
     (mulSupport fun x => f x ^ n) ⊆ mulSupport f := by
-  induction' n with n hfn
-  · simp [pow_zero, mulSupport_one]
-  · simpa only [pow_succ'] using (mulSupport_mul f _).trans (union_subset Subset.rfl hfn)
+  induction n with
+  | zero => simp [pow_zero, mulSupport_one]
+  | succ n hfn =>
+    simpa only [pow_succ'] using (mulSupport_mul f _).trans (union_subset Subset.rfl hfn)
 
 section DivisionMonoid
 

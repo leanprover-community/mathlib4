@@ -7,7 +7,6 @@ Authors: Jujian Zhang, Junyan Xu
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.Grp.Injective
 import Mathlib.Topology.Instances.AddCircle
-import Mathlib.Topology.Instances.Rat
 import Mathlib.LinearAlgebra.Isomorphisms
 
 /-!
@@ -141,7 +140,7 @@ protected lemma int.divByNat_self (n : ℕ) :
   obtain rfl | h0 := eq_or_ne n 0
   · apply map_zero
   exact (AddCircle.coe_eq_zero_iff _).mpr
-    ⟨1, by simp [mul_inv_cancel (Nat.cast_ne_zero (R := ℚ).mpr h0)]⟩
+    ⟨1, by simp [mul_inv_cancel₀ (Nat.cast_ne_zero (R := ℚ).mpr h0)]⟩
 
 variable {A}
 

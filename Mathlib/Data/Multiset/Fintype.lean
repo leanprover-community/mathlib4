@@ -130,7 +130,7 @@ namespace Multiset
     have : card (s.1.filter fun x ↦ a = x.1) ≤ card (s.1.filter fun x ↦ a = x.1) - 1 := by
       simpa [Finset.card, eq_comm] using Finset.card_mono h
     omega
-  exact Nat.le_of_pred_lt (han.trans_lt $ by simpa using hsm hn)
+  exact Nat.le_of_pred_lt (han.trans_lt <| by simpa using hsm hn)
 
 end Multiset
 
@@ -188,8 +188,7 @@ theorem Multiset.map_univ_coeEmbedding (m : Multiset α) :
   ext ⟨x, i⟩
   simp only [Fin.exists_iff, Finset.mem_map, Finset.mem_univ, Multiset.coeEmbedding_apply,
     Prod.mk.inj_iff, exists_true_left, Multiset.exists_coe, Multiset.coe_mk, Fin.val_mk,
-    exists_prop, exists_eq_right_right, exists_eq_right, Multiset.mem_toEnumFinset, iff_self_iff,
-    true_and_iff]
+    exists_prop, exists_eq_right_right, exists_eq_right, Multiset.mem_toEnumFinset, true_and]
 
 @[simp]
 theorem Multiset.map_univ_coe (m : Multiset α) :

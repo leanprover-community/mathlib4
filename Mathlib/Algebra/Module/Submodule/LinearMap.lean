@@ -75,8 +75,10 @@ theorem subtype_apply (x : p) : p.subtype x = x :=
   rfl
 
 @[simp]
-theorem coeSubtype : (Submodule.subtype p : p → M) = Subtype.val :=
+theorem coe_subtype : (Submodule.subtype p : p → M) = Subtype.val :=
   rfl
+
+@[deprecated (since := "2024-09-27")] alias coeSubtype := coe_subtype
 
 theorem injective_subtype : Injective p.subtype :=
   Subtype.coe_injective
@@ -229,9 +231,10 @@ variable {f' : M →ₗ[R] M}
 
 theorem pow_apply_mem_of_forall_mem {p : Submodule R M} (n : ℕ) (h : ∀ x ∈ p, f' x ∈ p) (x : M)
     (hx : x ∈ p) : (f' ^ n) x ∈ p := by
-  induction' n with n ih generalizing x
-  · simpa
-  · simpa only [iterate_succ, coe_comp, Function.comp_apply, restrict_apply] using ih _ (h _ hx)
+  induction n generalizing x with
+  | zero => simpa
+  | succ n ih =>
+    simpa only [iterate_succ, coe_comp, Function.comp_apply, restrict_apply] using ih _ (h _ hx)
 
 theorem pow_restrict {p : Submodule R M} (n : ℕ) (h : ∀ x ∈ p, f' x ∈ p)
     (h' := pow_apply_mem_of_forall_mem n h) :

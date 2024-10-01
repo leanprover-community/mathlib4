@@ -84,6 +84,7 @@ noncomputable def mapBifunctorLeftUnitorCofanIsColimit (j : J) :
         exact mapBifunctorObjSingle₀ObjIsInitial _ _ _ _ hi)
     (fun s m hm => by simp [← hm ⟨⟨0, j⟩, hp j⟩])
 
+include e hp in
 lemma mapBifunctorLeftUnitor_hasMap :
     HasMap (((mapBifunctor F I J).obj ((single₀ I).obj X)).obj Y) p :=
   CofanMapObjFun.hasMap _ _ _ (mapBifunctorLeftUnitorCofanIsColimit F X e p hp Y)
@@ -200,6 +201,7 @@ noncomputable def mapBifunctorRightUnitorCofanIsColimit (j : J) :
       rw [← hm ⟨⟨j, 0⟩, hp j⟩, mapBifunctorRightUnitorCofan_inj, assoc, ← Functor.map_comp_assoc,
         Iso.inv_hom_id, Functor.map_id, id_comp, Iso.inv_hom_id_app_assoc])
 
+include e hp in
 lemma mapBifunctorRightUnitor_hasMap :
     HasMap (((mapBifunctor F J I).obj X).obj ((single₀ I).obj Y)) p :=
   CofanMapObjFun.hasMap _ _ _ (mapBifunctorRightUnitorCofanIsColimit F Y e p hp X)
@@ -269,8 +271,8 @@ structure TriangleIndexData (r : I₁ × I₂ × I₃ → J) (π : I₁ × I₃ 
   h₁ (i₁ : I₁) : p₁₂ (i₁, 0) = i₁
   h₃ (i₃ : I₃) : p₂₃ (0, i₃) = i₃
 
-variable {r : I₁ × I₂ × I₃ → J} {π : I₁ × I₃ → J}
-  (τ : TriangleIndexData r π)
+variable {r : I₁ × I₂ × I₃ → J} {π : I₁ × I₃ → J} (τ : TriangleIndexData r π)
+include τ
 
 namespace TriangleIndexData
 
@@ -320,10 +322,10 @@ variable {C₁ C₂ C₃ D I₁ I₂ I₃ J : Type*} [Category C₁] [Category C
   [HasGoodTrifunctor₁₂Obj F₁ G τ.ρ₁₂ X₁ ((single₀ I₂).obj X₂) X₃]
   [HasGoodTrifunctor₂₃Obj G F₂ τ.ρ₂₃ X₁ ((single₀ I₂).obj X₂) X₃]
   [HasMap (((mapBifunctor G I₁ I₃).obj X₁).obj X₃) π]
-  (triangle : ∀ (X₁ : C₁) (X₃ : C₃), ((associator.hom.app X₁).app X₂).app X₃ ≫
-    (G.obj X₁).map (e₂.hom.app X₃) = (G.map (e₁.hom.app X₁)).app X₃)
 
-lemma mapBifunctor_triangle :
+lemma mapBifunctor_triangle
+    (triangle : ∀ (X₁ : C₁) (X₃ : C₃), ((associator.hom.app X₁).app X₂).app X₃ ≫
+    (G.obj X₁).map (e₂.hom.app X₃) = (G.map (e₁.hom.app X₁)).app X₃) :
     (mapBifunctorAssociator associator τ.ρ₁₂ τ.ρ₂₃ X₁ ((single₀ I₂).obj X₂) X₃).hom ≫
     mapBifunctorMapMap G π (𝟙 X₁) (mapBifunctorLeftUnitor F₂ X₂ e₂ τ.p₂₃ τ.h₃ X₃).hom =
       mapBifunctorMapMap G π (mapBifunctorRightUnitor F₁ X₂ e₁ τ.p₁₂ τ.h₁ X₁).hom (𝟙 X₃) := by

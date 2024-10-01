@@ -41,7 +41,7 @@ namespace IsRightDerivabilityStructure
 
 section
 
-variable (Φ : LocalizerMorphism W₁ W₂) [Φ.IsLocalizedEquivalence]
+variable (Φ : LocalizerMorphism W₁ W₂)
   [W₁.IsMultiplicative] [∀ X₂, IsConnected (Φ.RightResolution X₂)]
   [Φ.arrow.HasRightResolutions] [W₂.ContainsIdentities]
 
@@ -87,7 +87,7 @@ lemma isConnected :
   refine ⟨RightResolution.mk ρ.w.left ρ.hw.1, ?_⟩
   have := zigzag_obj_of_zigzag
     (fromRightResolution Φ L x ⋙ w.costructuredArrowDownwardsPrecomp x y g fac)
-      (isPreconnected_zigzag  (RightResolution.mk (𝟙 _) (W₂.id_mem _))
+      (isPreconnected_zigzag (RightResolution.mk (𝟙 _) (W₂.id_mem _))
         (RightResolution.mk ρ.w.right ρ.hw.2))
   refine Zigzag.trans ?_ (Zigzag.trans this ?_)
   · exact Zigzag.of_hom (eqToHom (by aesop))
@@ -104,7 +104,7 @@ end Constructor
 /-- If a localizer morphism `Φ` is a localized equivalence, then it is a right
 derivability structure if the categories of right resolutions are connected and the
 categories of right resolutions of arrows are nonempty. -/
-lemma mk' : Φ.IsRightDerivabilityStructure := by
+lemma mk' [Φ.IsLocalizedEquivalence] : Φ.IsRightDerivabilityStructure := by
   rw [Φ.isRightDerivabilityStructure_iff (Φ.functor ⋙ W₂.Q) W₂.Q (𝟭 _)
     (Functor.rightUnitor _).symm, TwoSquare.guitartExact_iff_isConnected_downwards]
   intro X₂ X₃ g

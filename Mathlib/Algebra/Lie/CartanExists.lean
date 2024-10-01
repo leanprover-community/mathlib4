@@ -32,7 +32,7 @@ namespace LieAlgebra
 section CommRing
 
 variable {K R L M : Type*}
-variable [Field K] [CommRing R] [Nontrivial R]
+variable [Field K] [CommRing R]
 variable [LieRing L] [LieAlgebra K L] [LieAlgebra R L]
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 variable [Module.Finite K L]
@@ -83,7 +83,7 @@ def lieCharpoly : Polynomial R[X] :=
 lemma lieCharpoly_monic : (lieCharpoly R M x y).Monic :=
   (polyCharpoly_monic _ _).map _
 
-lemma lieCharpoly_natDegree : (lieCharpoly R M x y).natDegree = finrank R M := by
+lemma lieCharpoly_natDegree [Nontrivial R] : (lieCharpoly R M x y).natDegree = finrank R M := by
   rw [lieCharpoly, (polyCharpoly_monic _ _).natDegree_map, polyCharpoly_natDegree]
 
 variable {R} in
@@ -97,7 +97,7 @@ lemma lieCharpoly_map_eval (r : R) :
     map_add, map_mul, aeval_C, Algebra.id.map_eq_id, RingHom.id_apply, aeval_X, aux,
     MvPolynomial.coe_aeval_eq_eval, polyCharpoly_map_eq_charpoly, LieHom.coe_toLinearMap]
 
-lemma lieCharpoly_coeff_natDegree (i j : ℕ) (hij : i + j = finrank R M) :
+lemma lieCharpoly_coeff_natDegree [Nontrivial R] (i j : ℕ) (hij : i + j = finrank R M) :
     ((lieCharpoly R M x y).coeff i).natDegree ≤ j := by
   classical
   rw [← mul_one j, lieCharpoly, coeff_map]
@@ -210,7 +210,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     obtain hz₀|hz₀ := eq_or_ne z 0
     · -- If `z = 0`, then `⁅α • u + x, x⁆` vanishes and we use our assumption `x ≠ 0`.
       refine ⟨⟨x, self_mem_engel K x⟩, ?_, ?_⟩
-      · simpa [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero] using hx₀
+      · exact Subtype.coe_ne_coe.mp hx₀
       · dsimp only [z] at hz₀
         simp only [coe_bracket_of_module, hz₀, LieHom.map_zero, LinearMap.zero_apply]
     -- If `z ≠ 0`, then `⁅α • u + x, z⁆` vanishes per axiom of Lie algebras
@@ -320,7 +320,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     rw [← hn]
     clear hn
     induction n with
-    | zero => simp only [Nat.zero_eq, pow_zero, LinearMap.one_apply]
+    | zero => simp only [pow_zero, LinearMap.one_apply]
     | succ n ih => rw [pow_succ', pow_succ', LinearMap.mul_apply, ih]; rfl
   classical
   -- Now let `n` be the smallest power such that `⁅v, _⁆ ^ n` kills `z'`.

@@ -192,7 +192,7 @@ protected theorem lowerSemicontinuous (s : Set α) :
   simpa only [UniformOnFun.tendsto_iff_tendstoUniformlyOn, mem_image, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂, tendstoUniformlyOn_singleton_iff_tendsto] using @tendsto_id _ (𝓝 f)
 
-/-- The map `(eVariationOn · s)` is lower semicontinuous for uniform convergence on `s`.  -/
+/-- The map `(eVariationOn · s)` is lower semicontinuous for uniform convergence on `s`. -/
 theorem lowerSemicontinuous_uniformOn (s : Set α) :
     LowerSemicontinuous fun f : α →ᵤ[{s}] E => eVariationOn f s := fun f ↦ by
   apply @lowerSemicontinuous_aux _ _ _ _ (UniformOnFun α E {s}) id (𝓝 f) f s _
@@ -292,7 +292,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
         apply Finset.sum_congr rfl fun i _hi => ?_
         dsimp only [w]
         simp only [← Npos, Nat.not_lt_zero, Nat.add_succ_sub_one, add_zero, if_false,
-          add_eq_zero_iff, Nat.one_ne_zero, false_and_iff, Nat.succ_add_sub_one, zero_add]
+          add_eq_zero, Nat.one_ne_zero, false_and, Nat.succ_add_sub_one, zero_add]
         rw [add_comm 1 i]
       _ = ∑ i ∈ Finset.Ico 1 (n + 1), edist (f (w (i + 1))) (f (w i)) := by
         rw [Finset.range_eq_Ico]
@@ -317,7 +317,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
         congr 1
         · congr 1
           · apply Finset.sum_congr rfl fun i hi => ?_
-            simp only [Finset.mem_Ico, zero_le', true_and_iff] at hi
+            simp only [Finset.mem_Ico, zero_le', true_and] at hi
             dsimp only [w]
             have A : i + 1 < N := Nat.lt_pred_iff.1 hi
             have B : i < N := Nat.lt_of_succ_lt A
@@ -633,19 +633,20 @@ protected theorem add {f : α → E} {s : Set α} (hf : LocallyBoundedVariationO
   symm
   refine additive_of_isTotal ((· : α) ≤ ·) (variationOnFromTo f s) (· ∈ s) ?_ ?_ ha hb hc
   · rintro x y _xs _ys
-    simp only [variationOnFromTo.eq_neg_swap f s y x, Subtype.coe_mk, add_right_neg,
+    simp only [variationOnFromTo.eq_neg_swap f s y x, Subtype.coe_mk, add_neg_cancel,
       forall_true_left]
   · rintro x y z xy yz xs ys zs
     rw [variationOnFromTo.eq_of_le f s xy, variationOnFromTo.eq_of_le f s yz,
       variationOnFromTo.eq_of_le f s (xy.trans yz),
       ← ENNReal.toReal_add (hf x y xs ys) (hf y z ys zs), eVariationOn.Icc_add_Icc f xy yz ys]
 
-protected theorem edist_zero_of_eq_zero {f : α → E} {s : Set α} (hf : LocallyBoundedVariationOn f s)
+variable {f s} in
+protected theorem edist_zero_of_eq_zero (hf : LocallyBoundedVariationOn f s)
     {a b : α} (ha : a ∈ s) (hb : b ∈ s) (h : variationOnFromTo f s a b = 0) :
     edist (f a) (f b) = 0 := by
   wlog h' : a ≤ b
   · rw [edist_comm]
-    apply this f s hf hb ha _ (le_of_not_le h')
+    apply this hf hb ha _ (le_of_not_le h')
     rw [variationOnFromTo.eq_neg_swap, h, neg_zero]
   · apply le_antisymm _ (zero_le _)
     rw [← ENNReal.ofReal_zero, ← h, variationOnFromTo.eq_of_le f s h',
@@ -765,12 +766,12 @@ theorem LipschitzOnWith.comp_locallyBoundedVariationOn {f : E → F} {C : ℝ≥
 
 theorem LipschitzWith.comp_boundedVariationOn {f : E → F} {C : ℝ≥0} (hf : LipschitzWith C f)
     {g : α → E} {s : Set α} (h : BoundedVariationOn g s) : BoundedVariationOn (f ∘ g) s :=
-  (hf.lipschitzOnWith univ).comp_boundedVariationOn (mapsTo_univ _ _) h
+  hf.lipschitzOnWith.comp_boundedVariationOn (mapsTo_univ _ _) h
 
 theorem LipschitzWith.comp_locallyBoundedVariationOn {f : E → F} {C : ℝ≥0}
     (hf : LipschitzWith C f) {g : α → E} {s : Set α} (h : LocallyBoundedVariationOn g s) :
     LocallyBoundedVariationOn (f ∘ g) s :=
-  (hf.lipschitzOnWith univ).comp_locallyBoundedVariationOn (mapsTo_univ _ _) h
+  hf.lipschitzOnWith.comp_locallyBoundedVariationOn (mapsTo_univ _ _) h
 
 theorem LipschitzOnWith.locallyBoundedVariationOn {f : ℝ → E} {C : ℝ≥0} {s : Set ℝ}
     (hf : LipschitzOnWith C f s) : LocallyBoundedVariationOn f s :=
@@ -779,7 +780,7 @@ theorem LipschitzOnWith.locallyBoundedVariationOn {f : ℝ → E} {C : ℝ≥0} 
 
 theorem LipschitzWith.locallyBoundedVariationOn {f : ℝ → E} {C : ℝ≥0} (hf : LipschitzWith C f)
     (s : Set ℝ) : LocallyBoundedVariationOn f s :=
-  (hf.lipschitzOnWith s).locallyBoundedVariationOn
+  hf.lipschitzOnWith.locallyBoundedVariationOn
 
 end LipschitzOnWith
 

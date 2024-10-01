@@ -15,8 +15,6 @@ import Mathlib.Tactic.Recall
 See `Statement.lean` for background.
 -/
 
-set_option autoImplicit true
-
 macro "◾" : tactic => `(tactic| aesop)
 macro "◾" : term => `(term| by aesop)
 
@@ -30,17 +28,19 @@ attribute [local simp] normalized hasNestedIf hasConstantIf hasRedundantIf disjo
 
 attribute [local simp] apply_ite ite_eq_iff'
 
+variable {b : Bool} {f : ℕ → Bool} {i : ℕ} {t e : IfExpr}
+
 /-!
 Simp lemmas for `eval`.
 We don't want a `simp` lemma for `(ite i t e).eval` in general, only once we know the shape of `i`.
 -/
-@[simp] theorem eval_lit : (lit b).eval f  = b := rfl
-@[simp] theorem eval_var : (var i).eval f  = f i := rfl
+@[simp] theorem eval_lit : (lit b).eval f = b := rfl
+@[simp] theorem eval_var : (var i).eval f = f i := rfl
 @[simp] theorem eval_ite_lit :
     (ite (.lit b) t e).eval f = bif b then t.eval f else e.eval f := rfl
 @[simp] theorem eval_ite_var :
     (ite (.var i) t e).eval f = bif f i then t.eval f else e.eval f := rfl
-@[simp] theorem eval_ite_ite :
+@[simp] theorem eval_ite_ite {a b c d e : IfExpr} :
     (ite (ite a b c) d e).eval f = (ite a (ite b d e) (ite c d e)).eval f := by
   cases h : eval f a <;> simp_all [eval]
 

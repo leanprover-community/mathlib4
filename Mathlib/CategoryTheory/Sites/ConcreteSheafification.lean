@@ -153,7 +153,8 @@ theorem res_mk_eq_mk_pullback {Y X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x :
   ext i
   simp only [Functor.op_obj, unop_op, pullback_obj, diagram_obj, Functor.comp_obj,
     diagramPullback_app, Meq.equiv_apply, Meq.pullback_apply]
-  erw [← comp_apply, Multiequalizer.lift_ι, Meq.equiv_symm_eq_apply]
+  rw [← comp_apply, Multiequalizer.lift_ι]
+  erw [Meq.equiv_symm_eq_apply]
   cases i; rfl
 
 theorem toPlus_mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : P.obj (op X)) :
@@ -162,7 +163,8 @@ theorem toPlus_mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : P.obj (op X))
   let e : S ⟶ ⊤ := homOfLE (OrderTop.le_top _)
   rw [← colimit.w _ e.op]
   delta Cover.toMultiequalizer
-  erw [comp_apply, comp_apply]
+  rw [comp_apply]
+  erw [comp_apply]
   apply congr_arg
   dsimp [diagram]
   apply Concrete.multiequalizer_ext
@@ -347,7 +349,7 @@ theorem exists_of_sep (P : Cᵒᵖ ⥤ D)
   use mk w
   ext I
   dsimp [Meq.mk]
-  erw [ht, res_mk_eq_mk_pullback]
+  rw [ht, res_mk_eq_mk_pullback]
   -- Use the separatedness of `P⁺` to prove that this is indeed a gluing of our
   -- original local sections.
   apply sep P (T I)
@@ -369,7 +371,7 @@ theorem exists_of_sep (P : Cᵒᵖ ⥤ D)
     ⟨I.Y, _, _, I.hf, Sieve.downward_closed _ II.hf _, rfl⟩⟩
   let IB : S.Arrow := IA.fromMiddle
   let IC : (T IB).Arrow := IA.toMiddle
-  let ID : (T I).Arrow := ⟨IV.Y, IV.f ≫ II.f, Sieve.downward_closed (T I).sieve II.hf IV.f⟩
+  let ID : (T I).Arrow := ⟨IV.Y, IV.f ≫ II.f, Sieve.downward_closed (T I).1 II.hf IV.f⟩
   change t IB IC = t I ID
   apply inj IV.Y
   erw [toPlus_apply (T I) (t I) ID, toPlus_apply (T IB) (t IB) IC, ← ht, ← ht]
@@ -554,8 +556,8 @@ variable (D)
 noncomputable def plusPlusSheaf : (Cᵒᵖ ⥤ D) ⥤ Sheaf J D where
   obj P := ⟨J.sheafify P, J.sheafify_isSheaf P⟩
   map η := ⟨J.sheafifyMap η⟩
-  map_id _ := Sheaf.Hom.ext _ _ <| J.sheafifyMap_id _
-  map_comp _ _ := Sheaf.Hom.ext _ _ <| J.sheafifyMap_comp _ _
+  map_id _ := Sheaf.Hom.ext <| J.sheafifyMap_id _
+  map_comp _ _ := Sheaf.Hom.ext <| J.sheafifyMap_comp _ _
 
 instance plusPlusSheaf_preservesZeroMorphisms [Preadditive D] :
     (plusPlusSheaf J D).PreservesZeroMorphisms where
@@ -571,7 +573,7 @@ noncomputable def plusPlusAdjunction : plusPlusSheaf J D ⊣ sheafToPresheaf J D
     { homEquiv := fun P Q =>
         { toFun := fun e => J.toSheafify P ≫ e.val
           invFun := fun e => ⟨J.sheafifyLift e Q.2⟩
-          left_inv := fun e => Sheaf.Hom.ext _ _ <| (J.sheafifyLift_unique _ _ _ rfl).symm
+          left_inv := fun e => Sheaf.Hom.ext <| (J.sheafifyLift_unique _ _ _ rfl).symm
           right_inv := fun e => J.toSheafify_sheafifyLift _ _ }
       homEquiv_naturality_left_symm := by
         intro P Q R η γ; ext1; dsimp; symm
@@ -588,13 +590,5 @@ instance presheaf_mono_of_mono {F G : Sheaf J D} (f : F ⟶ G) [Mono f] : Mono f
 
 theorem Sheaf.Hom.mono_iff_presheaf_mono {F G : Sheaf J D} (f : F ⟶ G) : Mono f ↔ Mono f.1 :=
   ⟨fun m => by infer_instance, fun m => by exact Sheaf.Hom.mono_of_presheaf_mono J D f⟩
-
--- Porting note: added to ease the port of CategoryTheory.Sites.LeftExact
--- in mathlib, this was `by refl`, but here it would timeout
-@[simps! hom_app inv_app]
-noncomputable
-def GrothendieckTopology.sheafificationIsoPresheafToSheafCompSheafToPreasheaf :
-    J.sheafification D ≅ plusPlusSheaf J D ⋙ sheafToPresheaf J D :=
-  NatIso.ofComponents fun P => Iso.refl _
 
 end CategoryTheory

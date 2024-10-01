@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.Topology.Sheaves.Sheaf
@@ -42,7 +42,7 @@ The important special case is when
 that preserves limits and reflects isomorphisms.
 Then to check the sheaf condition it suffices to check it on the underlying sheaf of types.
 
-Another useful example is the forgetful functor `TopCommRing ⥤ Top`.
+Another useful example is the forgetful functor `TopCommRingCat ⥤ TopCat`.
 
 See <https://stacks.math.columbia.edu/tag/0073>.
 In fact we prove a stronger version with arbitrary target category.

@@ -106,7 +106,7 @@ variable {A : Type*} {B : Type*} [i : SetLike A B]
 instance : CoeTC A (Set B) where coe := SetLike.coe
 
 instance (priority := 100) instMembership : Membership B A :=
-  ⟨fun x p => x ∈ (p : Set B)⟩
+  ⟨fun p x => x ∈ (p : Set B)⟩
 
 instance (priority := 100) : CoeSort A (Type _) :=
   ⟨fun p => { x : B // x ∈ p }⟩
@@ -121,9 +121,9 @@ uses the `SetLike.instMembership` instance. -/
 def delabSubtypeSetLike : Delab := whenPPOption getPPNotation do
   let #[_, .lam n _ body _] := (← getExpr).getAppArgs | failure
   guard <| body.isAppOf ``Membership.mem
-  let #[_, _, inst, .bvar 0, _] := body.getAppArgs | failure
+  let #[_, _, inst, _, .bvar 0] := body.getAppArgs | failure
   guard <| inst.isAppOfArity ``instMembership 3
-  let S ← withAppArg <| withBindingBody n <| withNaryArg 4 delab
+  let S ← withAppArg <| withBindingBody n <| withNaryArg 3 delab
   `(↥$S)
 
 end Delab

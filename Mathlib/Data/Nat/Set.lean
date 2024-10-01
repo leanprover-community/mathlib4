@@ -35,10 +35,9 @@ theorem range_rec {α : Type*} (x : α) (f : ℕ → α → α) :
   convert (range_of_succ (fun n => Nat.rec x f n : ℕ → α)).symm using 4
   dsimp
   rename_i n
-  induction' n with n ihn
-  · rfl
-  · dsimp at ihn ⊢
-    rw [ihn]
+  induction n with
+  | zero => rfl
+  | succ n ihn => dsimp at ihn ⊢; rw [ihn]
 
 theorem range_casesOn {α : Type*} (x : α) (f : ℕ → α) :
     (Set.range fun n => Nat.casesOn n x f : Set α) = {x} ∪ Set.range f :=

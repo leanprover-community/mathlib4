@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2018 Scott Morrison. All rights reserved.
+Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Reid Barton
+Authors: Kim Morrison, Reid Barton
 -/
 import Mathlib.Data.TypeMax
 import Mathlib.Logic.UnivLE
@@ -257,9 +257,6 @@ theorem limit_ext (x y : limit F) (w : ∀ j, limit.π F j x = limit.π F j y) :
 theorem limit_ext' (F : J ⥤ Type v) (x y : limit F) (w : ∀ j, limit.π F j x = limit.π F j y) :
     x = y :=
   limit_ext F x y w
-
-theorem limit_ext_iff (x y : limit F) : x = y ↔ ∀ j, limit.π F j x = limit.π F j y :=
-  ⟨fun t _ => t ▸ rfl, limit_ext _ _ _⟩
 
 theorem limit_ext_iff' (F : J ⥤ Type v) (x y : limit F) :
     x = y ↔ ∀ j, limit.π F j x = limit.π F j y :=
@@ -551,7 +548,7 @@ theorem colimit_sound' {j j' : J} {x : F.obj j} {x' : F.obj j'} {j'' : J}
 variable {F} in
 theorem colimit_eq {j j' : J} {x : F.obj j} {x' : F.obj j'}
     (w : colimit.ι F j x = colimit.ι F j' x') :
-      EqvGen (Quot.Rel F) ⟨j, x⟩ ⟨j', x'⟩ := by
+      Relation.EqvGen (Quot.Rel F) ⟨j, x⟩ ⟨j', x'⟩ := by
   apply Quot.eq.1
   simpa using congr_arg (colimitEquivQuot F) w
 
@@ -645,6 +642,7 @@ private noncomputable def limitOfSurjectionsSurjective.preimage
     | 0 => a
     | n+1 => (hF n (preimage a n)).choose
 
+include hF in
 open limitOfSurjectionsSurjective in
 /-- Auxiliary lemma. Use `limit_of_surjections_surjective` instead. -/
 lemma surjective_π_app_zero_of_surjective_map_aux :

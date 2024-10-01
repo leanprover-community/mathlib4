@@ -6,7 +6,6 @@ Authors: Chris Bailey
 import Mathlib.Data.Nat.Notation
 import Mathlib.Data.String.Defs
 import Mathlib.Tactic.Basic
-import Batteries.Data.List.Lemmas
 
 /-!
 # Miscellaneous lemmas about strings

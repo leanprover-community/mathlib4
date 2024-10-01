@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Int.Cast.Defs
-import Mathlib.Tactic.Cases
 import Mathlib.Algebra.NeZero
 import Mathlib.Logic.Function.Basic
 
@@ -47,16 +46,12 @@ variable {R : Type*}
 theorem charZero_of_inj_zero [AddGroupWithOne R] (H : ∀ n : ℕ, (n : R) = 0 → n = 0) :
     CharZero R :=
   ⟨@fun m n h => by
-    induction' m with m ih generalizing n
-    · rw [H n]
-      rw [← h, Nat.cast_zero]
-
-    cases' n with n
-    · apply H
-      rw [h, Nat.cast_zero]
-
-    simp only [Nat.cast_succ, add_right_cancel_iff] at h
-    rwa [ih]⟩
+    induction m generalizing n with
+    | zero => rw [H n]; rw [← h, Nat.cast_zero]
+    | succ m ih =>
+      cases n
+      · apply H; rw [h, Nat.cast_zero]
+      · simp only [Nat.cast_succ, add_right_cancel_iff] at h; rwa [ih]⟩
 
 namespace Nat
 

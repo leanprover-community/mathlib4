@@ -54,12 +54,7 @@ product measure, Tonelli's theorem, Fubini-Tonelli theorem
 
 noncomputable section
 
-open scoped Classical
-open Topology ENNReal MeasureTheory
-
-open Set Function Real ENNReal
-
-open MeasureTheory MeasurableSpace MeasureTheory.Measure
+open Topology ENNReal MeasureTheory Set Function Real ENNReal MeasurableSpace MeasureTheory.Measure
 
 open TopologicalSpace hiding generateFrom
 
@@ -146,6 +141,7 @@ theorem isPiSystem_prod :
   a measurable function. `measurable_measure_prod_mk_left` is strictly more general. -/
 theorem measurable_measure_prod_mk_left_finite [IsFiniteMeasure ν] {s : Set (α × β)}
     (hs : MeasurableSet s) : Measurable fun x => ν (Prod.mk x ⁻¹' s) := by
+  classical
   refine induction_on_inter (C := fun s => Measurable fun x => ν (Prod.mk x ⁻¹' s))
     generateFrom_prod.symm isPiSystem_prod ?_ ?_ ?_ ?_ hs
   · simp
@@ -326,6 +322,7 @@ theorem prod_apply {s : Set (α × β)} (hs : MeasurableSet s) :
 do not need the sets to be measurable. -/
 @[simp]
 theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t := by
+  classical
   apply le_antisymm
   · set S := toMeasurable μ s
     set T := toMeasurable ν t
@@ -386,7 +383,7 @@ instance prod.instIsFiniteMeasure {α β : Type*} {mα : MeasurableSpace α} {m�
     IsFiniteMeasure (μ.prod ν) := by
   constructor
   rw [← univ_prod_univ, prod_prod]
-  exact mul_lt_top (measure_lt_top _ _).ne (measure_lt_top _ _).ne
+  exact mul_lt_top (measure_lt_top _ _) (measure_lt_top _ _)
 
 instance {α β : Type*} [MeasureSpace α] [MeasureSpace β] [IsFiniteMeasure (volume : Measure α)]
     [IsFiniteMeasure (volume : Measure β)] : IsFiniteMeasure (volume : Measure (α × β)) :=
@@ -415,7 +412,7 @@ instance prod.instIsFiniteMeasureOnCompacts {α β : Type*} [TopologicalSpace α
     exact ⟨⟨y, hxy⟩, ⟨x, hxy⟩⟩
   apply lt_of_le_of_lt (measure_mono this)
   rw [hL, prod_prod]
-  exact mul_lt_top (hK.image continuous_fst).measure_ne_top (hK.image continuous_snd).measure_ne_top
+  exact mul_lt_top (hK.image continuous_fst).measure_lt_top (hK.image continuous_snd).measure_lt_top
 
 instance {X Y : Type*}
     [TopologicalSpace X] [MeasureSpace X] [IsFiniteMeasureOnCompacts (volume : Measure X)]
@@ -452,9 +449,9 @@ theorem measure_ae_null_of_prod_null {s : Set (α × β)} (h : μ.prod ν s = 0)
   rw [measure_prod_null mt] at ht
   rw [eventuallyLE_antisymm_iff]
   exact
-    ⟨EventuallyLE.trans_eq (eventually_of_forall fun x => (measure_mono (preimage_mono hst) : _))
+    ⟨EventuallyLE.trans_eq (Eventually.of_forall fun x => (measure_mono (preimage_mono hst) : _))
         ht,
-      eventually_of_forall fun x => zero_le _⟩
+      Eventually.of_forall fun x => zero_le _⟩
 
 theorem AbsolutelyContinuous.prod [SFinite ν'] (h1 : μ ≪ μ') (h2 : ν ≪ ν') :
     μ.prod ν ≪ μ'.prod ν' := by
@@ -469,13 +466,17 @@ theorem ae_ae_of_ae_prod {p : α × β → Prop} (h : ∀ᵐ z ∂μ.prod ν, p 
     ∀ᵐ x ∂μ, ∀ᵐ y ∂ν, p (x, y) :=
   measure_ae_null_of_prod_null h
 
-theorem ae_ae_eq_curry_of_prod {f g : α × β → γ} (h : f =ᵐ[μ.prod ν] g) :
+theorem ae_ae_eq_curry_of_prod {γ : Type*} {f g : α × β → γ} (h : f =ᵐ[μ.prod ν] g) :
     ∀ᵐ x ∂μ, curry f x =ᵐ[ν] curry g x :=
   ae_ae_of_ae_prod h
 
-theorem ae_ae_eq_of_ae_eq_uncurry {f g : α → β → γ} (h : uncurry f =ᵐ[μ.prod ν] uncurry g) :
-    ∀ᵐ x ∂μ, f x =ᵐ[ν] g x :=
+theorem ae_ae_eq_of_ae_eq_uncurry {γ : Type*} {f g : α → β → γ}
+    (h : uncurry f =ᵐ[μ.prod ν] uncurry g) : ∀ᵐ x ∂μ, f x =ᵐ[ν] g x :=
   ae_ae_eq_curry_of_prod h
+
+theorem ae_prod_iff_ae_ae {p : α × β → Prop} (hp : MeasurableSet {x | p x}) :
+    (∀ᵐ z ∂μ.prod ν, p z) ↔ ∀ᵐ x ∂μ, ∀ᵐ y ∂ν, p (x, y) :=
+  measure_prod_null hp.compl
 
 theorem ae_prod_mem_iff_ae_ae_mem {s : Set (α × β)} (hs : MeasurableSet s) :
     (∀ᵐ z ∂μ.prod ν, z ∈ s) ↔ ∀ᵐ x ∂μ, ∀ᵐ y ∂ν, (x, y) ∈ s :=
@@ -519,7 +520,7 @@ lemma _root_.MeasureTheory.NullMeasurableSet.right_of_prod {s : Set α} {t : Set
 /-- If `Prod.snd ⁻¹' t` is a null measurable set and `μ ≠ 0`, then `t` is a null measurable set. -/
 lemma _root_.MeasureTheory.NullMeasurableSet.of_preimage_snd [NeZero μ] {t : Set β}
     (h : NullMeasurableSet (Prod.snd ⁻¹' t) (μ.prod ν)) : NullMeasurableSet t ν :=
-  .right_of_prod (by rwa [univ_prod]) (NeZero.ne _)
+  .right_of_prod (by rwa [univ_prod]) (NeZero.ne (μ univ))
 
 /-- `Prod.snd ⁻¹' t` is null measurable w.r.t. `μ.prod ν` iff `t` is null measurable w.r.t. `ν`
 provided that `μ ≠ 0`. -/
@@ -540,7 +541,7 @@ noncomputable def FiniteSpanningSetsIn.prod {ν : Measure β} {C : Set (Set α)}
     ⟨fun n => hμ.set n.unpair.1 ×ˢ hν.set n.unpair.2, fun n =>
       mem_image2_of_mem (hμ.set_mem _) (hν.set_mem _), fun n => ?_, ?_⟩
   · rw [prod_prod]
-    exact mul_lt_top (hμ.finite _).ne (hν.finite _).ne
+    exact mul_lt_top (hμ.finite _) (hν.finite _)
   · simp_rw [iUnion_unpair_prod, hμ.spanning, hν.spanning, univ_prod_univ]
 
 lemma prod_sum_left {ι : Type*} (m : ι → Measure α) (μ : Measure β) [SFinite μ] :
@@ -640,6 +641,12 @@ theorem prod_apply_symm {s : Set (α × β)} (hs : MeasurableSet s) :
   rw [← prod_swap, map_apply measurable_swap hs, prod_apply (measurable_swap hs)]
   rfl
 
+theorem ae_ae_comm {p : α → β → Prop} (h : MeasurableSet {x : α × β | p x.1 x.2}) :
+    (∀ᵐ x ∂μ, ∀ᵐ y ∂ν, p x y) ↔ ∀ᵐ y ∂ν, ∀ᵐ x ∂μ, p x y := calc
+  _ ↔ ∀ᵐ x ∂μ.prod ν, p x.1 x.2 := .symm <| ae_prod_iff_ae_ae h
+  _ ↔ ∀ᵐ x ∂ν.prod μ, p x.2 x.1 := by rw [← prod_swap, ae_map_iff (by fun_prop) h]; rfl
+  _ ↔ ∀ᵐ y ∂ν, ∀ᵐ x ∂μ, p x y := ae_prod_iff_ae_ae <| measurable_swap h
+
 /-- If `s ×ˢ t` is a null measurable set and `ν t ≠ 0`, then `s` is a null measurable set. -/
 lemma _root_.MeasureTheory.NullMeasurableSet.left_of_prod {s : Set α} {t : Set β}
     (h : NullMeasurableSet (s ×ˢ t) (μ.prod ν)) (ht : ν t ≠ 0) : NullMeasurableSet s μ := by
@@ -650,7 +657,7 @@ lemma _root_.MeasureTheory.NullMeasurableSet.left_of_prod {s : Set α} {t : Set 
 /-- If `Prod.fst ⁻¹' s` is a null measurable set and `ν ≠ 0`, then `s` is a null measurable set. -/
 lemma _root_.MeasureTheory.NullMeasurableSet.of_preimage_fst [NeZero ν] {s : Set α}
     (h : NullMeasurableSet (Prod.fst ⁻¹' s) (μ.prod ν)) : NullMeasurableSet s μ :=
-  .left_of_prod (by rwa [prod_univ]) (NeZero.ne _)
+  .left_of_prod (by rwa [prod_univ]) (NeZero.ne (ν univ))
 
 /-- `Prod.fst ⁻¹' s` is null measurable w.r.t. `μ.prod ν` iff `s` is null measurable w.r.t. `μ`
 provided that `ν ≠ 0`. -/
@@ -717,6 +724,7 @@ theorem restrict_prod_eq_prod_univ (s : Set α) :
   rw [this, Measure.prod_restrict, ← this]
 
 theorem prod_dirac (y : β) : μ.prod (dirac y) = map (fun x => (x, y)) μ := by
+  classical
   rw [← sum_sFiniteSeq μ, prod_sum_left, map_sum measurable_prod_mk_right.aemeasurable]
   congr
   ext1 i
@@ -725,6 +733,7 @@ theorem prod_dirac (y : β) : μ.prod (dirac y) = map (fun x => (x, y)) μ := by
     dirac_apply' _ ht, ← indicator_mul_right _ fun _ => sFiniteSeq μ i s, Pi.one_apply, mul_one]
 
 theorem dirac_prod (x : α) : (dirac x).prod ν = map (Prod.mk x) ν := by
+  classical
   rw [← sum_sFiniteSeq ν, prod_sum_right, map_sum measurable_prod_mk_left.aemeasurable]
   congr
   ext1 i
@@ -779,22 +788,29 @@ namespace MeasurePreserving
 variable {δ : Type*} [MeasurableSpace δ] {μa : Measure α} {μb : Measure β} {μc : Measure γ}
   {μd : Measure δ}
 
+/-- Let `f : α → β` be a measure preserving map.
+For a.e. all `a`, let `g a : γ → δ` be a measure preserving map.
+Also suppose that `g` is measurable as a function of two arguments.
+Then the map `fun (a, c) ↦ (f a, g a c)` is a measure preserving map
+for the product measures on `α × γ` and `β × δ`.
+
+Some authors call a map of the form `fun (a, c) ↦ (f a, g a c)` a *skew product* over `f`,
+thus the choice of a name.
+-/
 theorem skew_product [SFinite μa] [SFinite μc] {f : α → β} (hf : MeasurePreserving f μa μb)
-    {g : α → γ → δ} (hgm : Measurable (uncurry g)) (hg : ∀ᵐ x ∂μa, map (g x) μc = μd) :
+    {g : α → γ → δ} (hgm : Measurable (uncurry g)) (hg : ∀ᵐ a ∂μa, map (g a) μc = μd) :
     MeasurePreserving (fun p : α × γ => (f p.1, g p.1 p.2)) (μa.prod μc) (μb.prod μd) := by
-  classical
   have : Measurable fun p : α × γ => (f p.1, g p.1 p.2) := (hf.1.comp measurable_fst).prod_mk hgm
+  use this
   /- if `μa = 0`, then the lemma is trivial, otherwise we can use `hg`
     to deduce `SFinite μd`. -/
-  rcases eq_or_ne μa 0 with (rfl | ha)
-  · rw [← hf.map_eq, zero_prod, Measure.map_zero, zero_prod]
-    exact ⟨this, by simp only [Measure.map_zero]⟩
+  rcases eq_zero_or_neZero μa with rfl | _
+  · simp [← hf.map_eq]
   have sf : SFinite μd := by
-    rcases (ae_neBot.2 ha).nonempty_of_mem hg with ⟨x, hx : map (g x) μc = μd⟩
-    rw [← hx]
+    obtain ⟨a, ha⟩ : ∃ a, map (g a) μc = μd := hg.exists
+    rw [← ha]
     infer_instance
   -- Thus we can use the integral formula for the product measure, and compute things explicitly
-  refine ⟨this, ?_⟩
   ext s hs
   rw [map_apply this hs, prod_apply (this hs), prod_apply hs,
     ← hf.lintegral_comp (measurable_measure_prod_mk_left hs)]
@@ -809,7 +825,7 @@ protected theorem prod [SFinite μa] [SFinite μc] {f : α → β} {g : γ → �
     (hf : MeasurePreserving f μa μb) (hg : MeasurePreserving g μc μd) :
     MeasurePreserving (Prod.map f g) (μa.prod μc) (μb.prod μd) :=
   have : Measurable (uncurry fun _ : α => g) := hg.1.comp measurable_snd
-  hf.skew_product this <| Filter.eventually_of_forall fun _ => hg.map_eq
+  hf.skew_product this <| ae_of_all _ fun _ => hg.map_eq
 
 end MeasurePreserving
 
@@ -996,6 +1012,9 @@ theorem fst_map_prod_mk {X : α → β} {Y : α → γ} {μ : Measure α}
     (hY : Measurable Y) : (μ.map fun a => (X a, Y a)).fst = μ.map X :=
   fst_map_prod_mk₀ hY.aemeasurable
 
+@[gcongr]
+theorem fst_mono {μ : Measure (α × β)} (h : ρ ≤ μ) : ρ.fst ≤ μ.fst := map_mono h measurable_fst
+
 /-- Marginal measure on `β` obtained from a measure on `ρ` `α × β`, defined by `ρ.map Prod.snd`. -/
 noncomputable def snd (ρ : Measure (α × β)) : Measure β :=
   ρ.map Prod.snd
@@ -1039,6 +1058,9 @@ theorem snd_map_prod_mk₀ {X : α → β} {Y : α → γ} {μ : Measure α} (hX
 theorem snd_map_prod_mk {X : α → β} {Y : α → γ} {μ : Measure α} (hX : Measurable X) :
     (μ.map fun a => (X a, Y a)).snd = μ.map Y :=
   snd_map_prod_mk₀ hX.aemeasurable
+
+@[gcongr]
+theorem snd_mono {μ : Measure (α × β)} (h : ρ ≤ μ) : ρ.snd ≤ μ.snd := map_mono h measurable_snd
 
 @[simp] lemma fst_map_swap : (ρ.map Prod.swap).fst = ρ.snd := by
   rw [Measure.fst, Measure.map_map measurable_fst measurable_swap]

@@ -46,10 +46,10 @@ open Filter MeasureTheory Measure FiniteDimensional Metric Set Asymptotics
 
 open scoped NNReal ENNReal Topology
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [MeasurableSpace E] [BorelSpace E]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] {C D : ℝ≥0} {f g : E → ℝ} {s : Set E}
-  {μ : Measure E} [IsAddHaarMeasure μ]
+  {μ : Measure E}
 
 namespace LipschitzWith
 
@@ -60,7 +60,16 @@ This follows from the one-dimensional result that a Lipschitz function on `ℝ` 
 variation, and is therefore ae differentiable, together with a Fubini argument.
 -/
 
-theorem ae_lineDifferentiableAt (hf : LipschitzWith C f) (v : E) :
+
+theorem memℒp_lineDeriv (hf : LipschitzWith C f) (v : E) :
+    Memℒp (fun x ↦ lineDeriv ℝ f x v) ∞ μ :=
+  memℒp_top_of_bound (aestronglyMeasurable_lineDeriv hf.continuous μ)
+    (C * ‖v‖) (.of_forall fun _x ↦ norm_lineDeriv_le_of_lipschitz ℝ hf)
+
+variable [FiniteDimensional ℝ E] [IsAddHaarMeasure μ]
+
+theorem ae_lineDifferentiableAt
+    (hf : LipschitzWith C f) (v : E) :
     ∀ᵐ p ∂μ, LineDifferentiableAt ℝ f p v := by
   let L : ℝ →L[ℝ] E := ContinuousLinearMap.smulRight (1 : ℝ →L[ℝ] ℝ) v
   suffices A : ∀ p, ∀ᵐ (t : ℝ) ∂volume, LineDifferentiableAt ℝ f (p + t • v) v from
@@ -75,11 +84,6 @@ theorem ae_lineDifferentiableAt (hf : LipschitzWith C f) (v : E) :
   simp only [LineDifferentiableAt]
   convert h's.comp 0 this with _ t
   simp only [LineDifferentiableAt, add_assoc, Function.comp_apply, add_smul]
-
-theorem memℒp_lineDeriv (hf : LipschitzWith C f) (v : E) :
-    Memℒp (fun x ↦ lineDeriv ℝ f x v) ∞ μ :=
-  memℒp_top_of_bound (aestronglyMeasurable_lineDeriv hf.continuous μ)
-    (C * ‖v‖) (eventually_of_forall (fun _x ↦ norm_lineDeriv_le_of_lipschitz ℝ hf))
 
 theorem locallyIntegrable_lineDeriv (hf : LipschitzWith C f) (v : E) :
     LocallyIntegrable (fun x ↦ lineDeriv ℝ f x v) μ :=
@@ -254,7 +258,10 @@ theorem ae_exists_fderiv_of_countable
 
 /-- If a Lipschitz functions has line derivatives in a dense set of directions, all of them given by
 a single continuous linear map `L`, then it admits `L` as Fréchet derivative. -/
-theorem hasFderivAt_of_hasLineDerivAt_of_closure {f : E → F}
+-- We redeclare `E` here as we do not need the `[MeasurableSpace E]` instance
+-- available in the rest of the file.
+theorem hasFderivAt_of_hasLineDerivAt_of_closure
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [ProperSpace E] {f : E → F}
     (hf : LipschitzWith C f) {s : Set E} (hs : sphere 0 1 ⊆ closure s)
     {L : E →L[ℝ] F} {x : E} (hL : ∀ v ∈ s, HasLineDerivAt ℝ f (L v) x v) :
     HasFDerivAt f L x := by
@@ -280,8 +287,8 @@ theorem hasFderivAt_of_hasLineDerivAt_of_closure {f : E → F}
   rcases eq_or_ne v 0 with rfl|v_ne
   · simp
   obtain ⟨w, ρ, w_mem, hvw, hρ⟩ : ∃ w ρ, w ∈ sphere 0 1 ∧ v = ρ • w ∧ ρ = ‖v‖ := by
-    refine ⟨‖v‖⁻¹ • v, ‖v‖, by simp [norm_smul, inv_mul_cancel (norm_ne_zero_iff.2 v_ne)], ?_, rfl⟩
-    simp [smul_smul, mul_inv_cancel (norm_ne_zero_iff.2 v_ne)]
+    refine ⟨‖v‖⁻¹ • v, ‖v‖, by simp [norm_smul, inv_mul_cancel₀ (norm_ne_zero_iff.2 v_ne)], ?_, rfl⟩
+    simp [smul_smul, mul_inv_cancel₀ (norm_ne_zero_iff.2 v_ne)]
   have norm_rho : ‖ρ‖ = ρ := by rw [hρ, norm_norm]
   have rho_pos : 0 ≤ ρ := by simp [hρ]
   obtain ⟨y, yq, hy⟩ : ∃ y ∈ q, ‖w - y‖ < δ := by simpa [← dist_eq_norm] using hq w_mem
@@ -321,7 +328,7 @@ theorem ae_differentiableAt_of_real (hf : LipschitzWith C f) :
 
 end LipschitzWith
 
-variable [FiniteDimensional ℝ F]
+variable [FiniteDimensional ℝ E] [FiniteDimensional ℝ F] [IsAddHaarMeasure μ]
 
 namespace LipschitzOnWith
 
