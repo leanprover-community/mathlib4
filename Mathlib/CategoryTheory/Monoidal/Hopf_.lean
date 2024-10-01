@@ -43,7 +43,7 @@ namespace Hopf_Class
 @[inherit_doc] scoped notation "𝒮["X"]" => Hopf_Class.antipode (X := X)
 
 /- The simp attribute is reserved for the unprimed versions. -/
-attribute [reassoc (attr := simp)] antipode_left' antipode_right'
+attribute [reassoc] antipode_left' antipode_right'
 
 /-- The object is provided as an explicit argument. -/
 @[reassoc (attr := simp)]
