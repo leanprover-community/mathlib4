@@ -1,6 +1,23 @@
+/-
+Copyright (c) 2024 Jihoon Hyun. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jihoon Hyun
+-/
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Card
 import Init.Data.Nat.Basic
+
+/-!
+This file contains the definition of `AccessibleProperty` and `Accessible` typeclass,
+along with some main properties of accessible set systems.
+
+# Accessible
+A set system `S` is accessible if there is some `x ∈ s` which `s \ {x} ∈ S` for each `s ∈ S`.
+This is equivalent to saying that `S` is accessible if there is some `t ⊆ s` which `t ∈ S` and
+`t.card + 1 = s.card`, for each `s ∈ S`.
+This file uses the latter definition to remove a `DecidableEq` condition which is required
+when using the former definition.
+-/
 
 namespace Greedoid
 
