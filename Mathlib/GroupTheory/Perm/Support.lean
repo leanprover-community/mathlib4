@@ -417,6 +417,23 @@ theorem support_prod_of_pairwise_disjoint (l : List (Perm α)) (h : l.Pairwise D
     have : Disjoint hd tl.prod := disjoint_prod_right _ h.left
     simp [this.support_mul, hl h.right]
 
+theorem support_noncommProd {ι : Type*} {k : ι → Perm α} {s : Finset ι}
+    (hs : Set.Pairwise s fun i j ↦ Disjoint (k i) (k j)) :
+    (s.noncommProd k (hs.imp (fun _ _ ↦ Perm.Disjoint.commute))).support =
+      s.biUnion fun i ↦ (k i).support := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | @insert i s hi hrec =>
+    have hs' : (s : Set ι).Pairwise fun i j ↦ Disjoint (k i) (k j) :=
+      hs.mono (by simp only [Finset.coe_insert, Set.subset_insert])
+    rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, Finset.biUnion_insert]
+    rw [Equiv.Perm.Disjoint.support_mul, hrec hs']
+    apply disjoint_noncommProd_right
+    intro j hj
+    apply hs _ _ (ne_of_mem_of_not_mem hj hi).symm <;>
+      simp only [Finset.coe_insert, Set.mem_insert_iff, Finset.mem_coe, hj, or_true, true_or]
+
 theorem support_prod_le (l : List (Perm α)) : l.prod.support ≤ (l.map support).foldr (· ⊔ ·) ⊥ := by
   induction' l with hd tl hl
   · simp

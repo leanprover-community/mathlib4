@@ -223,6 +223,33 @@ theorem cycleType_le_of_mem_cycleFactorsFinset {f g : Perm α} (hf : f ∈ g.cyc
   refine map_le_map ?_
   simpa only [Finset.singleton_val, singleton_le, Finset.mem_val] using hf
 
+theorem Disjoint.cycleType_mul {f g : Perm α} (h : f.Disjoint g) :
+    (f * g).cycleType = f.cycleType + g.cycleType := by
+  simp only [Perm.cycleType]
+  rw [h.cycleFactorsFinset_mul_eq_union]
+  simp only [Finset.union_val, Function.comp_apply]
+  rw [← Multiset.add_eq_union_iff_disjoint.mpr _, Multiset.map_add]
+  simp only [Finset.disjoint_val, Disjoint.disjoint_cycleFactorsFinset h]
+
+theorem Disjoint.cycleType_noncommProd {ι : Type*} {k : ι → Perm α} {s : Finset ι}
+    (hs : Set.Pairwise s fun i j ↦ Disjoint (k i) (k j))
+    (hs' : Set.Pairwise s fun i j ↦ Commute (k i) (k j) :=
+      hs.imp (fun _ _ ↦ Perm.Disjoint.commute)) :
+    (s.noncommProd k hs').cycleType = s.sum fun i ↦ (k i).cycleType := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | @insert i s hi hrec =>
+    have hs' : (s : Set ι).Pairwise fun i j ↦ Disjoint (k i) (k j) :=
+      hs.mono (by simp only [Finset.coe_insert, Set.subset_insert])
+    rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, Finset.sum_insert hi]
+    rw [Equiv.Perm.Disjoint.cycleType_mul, hrec hs']
+    apply disjoint_noncommProd_right
+    intro j hj
+    apply hs _ _ (ne_of_mem_of_not_mem hj hi).symm <;>
+      simp only [Finset.coe_insert, Set.mem_insert_iff, Finset.mem_coe, hj, or_true, true_or]
+
+
 theorem cycleType_mul_inv_mem_cycleFactorsFinset_eq_sub
     {f g : Perm α} (hf : f ∈ g.cycleFactorsFinset) :
     (g * f⁻¹).cycleType = g.cycleType - f.cycleType :=
