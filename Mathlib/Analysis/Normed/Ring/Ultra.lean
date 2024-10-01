@@ -38,33 +38,33 @@ variable {R : Type*} [SeminormedRing R] [NormOneClass R] [IsUltrametricDist R]
 
 lemma norm_add_one_le_max_norm_one (x : R) :
     ‖x + 1‖ ≤ max ‖x‖ 1 := by
-  simpa using norm_add_le_max x 1
+  simpa only [le_max_iff, norm_one] using norm_add_le_max x 1
 
 lemma nnnorm_add_one_le_max_nnnorm_one (x : R) :
-    ‖x + 1‖₊ ≤ max ‖x‖₊ 1 := by
-  simpa using norm_add_le_max x 1
+    ‖x + 1‖₊ ≤ max ‖x‖₊ 1 :=
+  norm_add_one_le_max_norm_one _
 
+variable (R)
 lemma nnnorm_natCast_le_one (n : ℕ) :
     ‖(n : R)‖₊ ≤ 1 := by
   induction n with
-  | zero => simp
-  | succ n hn => simpa [hn] using nnnorm_add_one_le_max_nnnorm_one (n : R)
+  | zero => simp only [Nat.cast_zero, nnnorm_zero, zero_le]
+  | succ n hn => simpa only [Nat.cast_add, Nat.cast_one, hn, max_eq_right] using
+    nnnorm_add_one_le_max_nnnorm_one (n : R)
 
 lemma norm_natCast_le_one (n : ℕ) :
-    ‖(n : R)‖ ≤ 1 := by
-  rw [← Real.toNNReal_le_toNNReal_iff zero_le_one]
-  simpa using nnnorm_natCast_le_one n
+    ‖(n : R)‖ ≤ 1 :=
+  nnnorm_natCast_le_one R n
 
 lemma nnnorm_intCast_le_one (z : ℤ) :
     ‖(z : R)‖₊ ≤ 1 := by
-  induction z
-  · simpa using nnnorm_natCast_le_one _
-  · simpa only [Int.cast_negSucc, Nat.cast_one, nnnorm_neg] using nnnorm_natCast_le_one _
+  induction z <;>
+  simpa only [Int.ofNat_eq_coe, Int.cast_natCast, Int.cast_negSucc, Nat.cast_one, nnnorm_neg]
+    using nnnorm_natCast_le_one _ _
 
 lemma norm_intCast_le_one (z : ℤ) :
-    ‖(z : R)‖ ≤ 1 := by
-  rw [← Real.toNNReal_le_toNNReal_iff zero_le_one]
-  simpa using nnnorm_intCast_le_one z
+    ‖(z : R)‖ ≤ 1 :=
+  nnnorm_intCast_le_one _ z
 
 end NormOneClass
 
