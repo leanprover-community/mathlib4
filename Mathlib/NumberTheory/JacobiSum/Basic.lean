@@ -257,7 +257,7 @@ theorem gaussSum_pow_eq_prod_jacobiSum {χ : MulChar F R} {ψ : AddChar F R} (h�
         rw [ih, Finset.prod_Ico_succ_top hi, mul_rotate, mul_assoc]
   -- get equality for `i = n-1`
   have gauss_pow_n_sub := pow_gauss' (n - 1) (by simp only [mem_Ico]; omega)
-  apply_fun (gaussSum χ ψ * .) at gauss_pow_n_sub
+  apply_fun (gaussSum χ ψ * ·) at gauss_pow_n_sub
   rw [← pow_succ', Nat.sub_one_add_one_eq_of_pos (by omega)] at gauss_pow_n_sub
   have hχ₁ : χ ≠ 1 :=
     fun h ↦ ((orderOf_one (G := MulChar F R) ▸ h ▸ hχ).trans_lt Nat.one_lt_two).false
