@@ -150,7 +150,7 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx â†
     elabCommand renStx
     set s
 
---initialize addLinter unusedVariableCommandLinter
+initialize addLinter unusedVariableCommandLinter
 
 end UnusedVariableCommand
 
