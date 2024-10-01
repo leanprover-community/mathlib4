@@ -438,9 +438,7 @@ protected theorem half_lt_self (hz : a ≠ 0) (ht : a ≠ ∞) : a / 2 < a := by
 protected theorem half_le_self : a / 2 ≤ a :=
   le_add_self.trans_eq <| ENNReal.add_halves _
 
-theorem sub_half (h : a ≠ ∞) : a - a / 2 = a / 2 := by
-  lift a to ℝ≥0 using h
-  exact sub_eq_of_add_eq (mul_ne_top coe_ne_top <| by simp) (ENNReal.add_halves a)
+theorem sub_half (h : a ≠ ∞) : a - a / 2 = a / 2 := ENNReal.sub_eq_of_eq_add' h a.add_halves.symm
 
 @[simp]
 theorem one_sub_inv_two : (1 : ℝ≥0∞) - 2⁻¹ = 2⁻¹ := by
