@@ -51,7 +51,6 @@ private def add :
     SkewMonoidAlgebra k G → SkewMonoidAlgebra k G → SkewMonoidAlgebra k G
   | ⟨a⟩, ⟨b⟩ => ⟨a + b⟩
 
-@[irreducible]
 private def smul {S : Type*} [SMulZeroClass S k] :
     S → SkewMonoidAlgebra k G → SkewMonoidAlgebra k G
   | s, ⟨b⟩ => ⟨s • b⟩
@@ -60,7 +59,6 @@ instance instZero : Zero (SkewMonoidAlgebra k G) := ⟨⟨0⟩⟩
 
 instance instAdd : Add (SkewMonoidAlgebra k G) := ⟨add⟩
 
-unseal smul in
 instance instSMulZeroClass {S : Type*} [SMulZeroClass S k] :
     SMulZeroClass S (SkewMonoidAlgebra k G) where
   smul s f := smul s f
