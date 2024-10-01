@@ -323,7 +323,7 @@ register_option linter.style.longFile : Nat := {
 /-- The number of lines that the `longFile` linter considers the default. -/
 register_option linter.style.longFileDefValue : Nat := {
   defValue := 1500
-  descr := "the expected number of lines of each file"
+  descr := "a soft upper bound on the number of lines of each file"
 }
 
 namespace Style.longFile

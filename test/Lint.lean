@@ -294,5 +294,3 @@ note: this linter can be disabled with `set_option linter.style.longLine false`
 #guard_msgs in
 set_option linter.style.longLine true in
 #check "                              \"                                                            "
-
--- The tests for the `longFile` linter are in `test/longFile.lean`
