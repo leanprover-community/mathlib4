@@ -613,7 +613,7 @@ theorem mem_span_latticeBasis (x : (mixedSpace K)) :
   rfl
 
 theorem span_latticeBasis :
-    (Submodule.span ℤ (Set.range (latticeBasis K))) = (mixedEmbedding.integerLattice K) :=
+    Submodule.span ℤ (Set.range (latticeBasis K)) = mixedEmbedding.integerLattice K :=
   Submodule.ext_iff.mpr (mem_span_latticeBasis K)
 
 instance : DiscreteTopology (mixedEmbedding.integerLattice K) := by
