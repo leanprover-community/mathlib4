@@ -53,8 +53,8 @@ theorem Perm.subset_congr_right {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l
 
 /-- Variant of `Perm.foldr_eq` with explicit commutativity argument. -/
 theorem Perm.foldr_eq' {f : α → β → β} {l₁ l₂ : List α} (p : l₁ ~ l₂)
-    (comm : ∀ x ∈ l₁, ∀ y ∈ l₁, ∀ (z), f y (f x z) = f x (f y z))
-    (init) : foldr f init l₁ = foldr f init l₂ := by
+    (comm : ∀ x ∈ l₁, ∀ y ∈ l₁, ∀ z, f y (f x z) = f x (f y z))
+    (init : β) : foldr f init l₁ = foldr f init l₂ := by
   induction p using recOnSwap' generalizing init with
   | nil => simp
   | cons x _p IH =>

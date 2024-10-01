@@ -5,7 +5,7 @@ Authors: Ivan Sadofschi Costa
 -/
 import Mathlib.Topology.Order
 import Mathlib.Topology.Sets.Opens
-import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # Any T0 space embeds in a product of copies of the Sierpinski space.

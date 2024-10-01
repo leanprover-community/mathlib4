@@ -583,7 +583,7 @@ theorem Basis.ofZLatticeBasis_repr_apply (x : L) (i : ι) :
     exact DFunLike.congr_fun (LinearMap.congr_fun this x) i
   refine Basis.ext b fun i ↦ ?_
   simp_rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_restrictScalars,
-    LinearEquiv.coe_coe, coeSubtype, ← b.ofZLatticeBasis_apply K, repr_self,
+    LinearEquiv.coe_coe, coe_subtype, ← b.ofZLatticeBasis_apply K, repr_self,
     Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, Algebra.linearMap_apply, map_one]
 
 theorem Basis.ofZLatticeBasis_span :

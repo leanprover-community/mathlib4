@@ -263,9 +263,9 @@ end NonUnitalStarAlgHom
 
 namespace StarAlgEquiv
 
-variable {F A B : Type*} [NormedRing A] [NormedSpace ℂ A] [SMulCommClass ℂ A A]
+variable {F A B : Type*} [NonUnitalNormedRing A] [NormedSpace ℂ A] [SMulCommClass ℂ A A]
 variable [IsScalarTower ℂ A A] [CompleteSpace A] [StarRing A] [CStarRing A] [StarModule ℂ A]
-variable [NormedRing B] [NormedSpace ℂ B] [SMulCommClass ℂ B B] [IsScalarTower ℂ B B]
+variable [NonUnitalNormedRing B] [NormedSpace ℂ B] [SMulCommClass ℂ B B] [IsScalarTower ℂ B B]
 variable [CompleteSpace B] [StarRing B] [CStarRing B] [StarModule ℂ B] [EquivLike F A B]
 variable [NonUnitalAlgEquivClass F ℂ A B] [StarHomClass F A B]
 
