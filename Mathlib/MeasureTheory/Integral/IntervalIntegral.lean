@@ -319,7 +319,7 @@ theorem comp_sub_left (hf : IntervalIntegrable f volume a b) (c : ℝ) :
 lemma iff_ofReal {f : ℝ → ℝ} (hab: a ≤ b) :
     IntervalIntegrable f μ a b ↔ IntervalIntegrable (fun x ↦ (f x : ℂ)) μ a b := by
   repeat rw [intervalIntegrable_iff_integrableOn_Ioc_of_le]
-  apply integrableOn_iff_ofReal
+  apply IntegrableOn.iff_ofReal
   all_goals exact hab
 
 end IntervalIntegrable
