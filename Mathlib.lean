@@ -1203,7 +1203,6 @@ import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Field.InfiniteSum
 import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Analysis.Normed.Field.ProperSpace
-import Mathlib.Analysis.Normed.Field.Ultra
 import Mathlib.Analysis.Normed.Field.UnitBall
 import Mathlib.Analysis.Normed.Group.AddCircle
 import Mathlib.Analysis.Normed.Group.AddTorsor
@@ -1259,6 +1258,7 @@ import Mathlib.Analysis.Normed.Order.UpperLower
 import Mathlib.Analysis.Normed.Ring.Seminorm
 import Mathlib.Analysis.Normed.Ring.SeminormFromBounded
 import Mathlib.Analysis.Normed.Ring.SeminormFromConst
+import Mathlib.Analysis.Normed.Ring.Ultra
 import Mathlib.Analysis.Normed.Ring.Units
 import Mathlib.Analysis.NormedSpace.BallAction
 import Mathlib.Analysis.NormedSpace.ConformalLinearMap
