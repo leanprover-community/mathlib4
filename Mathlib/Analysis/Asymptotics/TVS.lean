@@ -1,9 +1,21 @@
+/-
+Copyright (c) 2023 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.Convex.EGauge
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 import Mathlib.Analysis.Seminorm
 import Mathlib.Tactic.Peel
+
+/-!
+# Asymptotics in a Topological Vector Space
+
+This file defines `IsLittleOTVS` as a generalization of `IsLittleO` from normed spaces to toplogical
+spaces.
+-/
 
 open Set Filter Asymptotics Metric
 open scoped Topology Pointwise ENNReal NNReal
@@ -63,8 +75,7 @@ lemma isLittleOTVS_one [ContinuousSMul 𝕜 E] {f : α → E} {l : Filter α} :
         simpa using egauge_ball_le_of_one_lt_norm (r := r) (E := 𝕜) hc (.inr one_ne_zero)
       _ < 1 := ‹_›
   · intro hf U hU
-    
-    
+    sorry
 
 lemma IsLittleOTVS.tendsto_inv_smul [ContinuousSMul 𝕜 E] {f : α → 𝕜} {g : α → E} {l : Filter α}
     (h : IsLittleOTVS 𝕜 g f l) : Tendsto (fun x ↦ (f x)⁻¹ • g x) l (𝓝 0) := by
@@ -121,7 +132,7 @@ lemma isLittleOTVS_iff_isLittleO {E F : Type*} [NormedAddCommGroup E] [NormedAdd
     filter_upwards [hδ (δ / ‖c‖₊) (div_pos hδ₀ hc₀).ne'] with x hx
     suffices (‖f x‖₊ / ε : ℝ≥0∞) ≤ ‖g x‖₊ by
       rw [← ENNReal.coe_div hε.ne'] at this
-      rw [← div_le_iff' (NNReal.coe_pos.2 hε)]
+      rw [← div_le_iff₀' (NNReal.coe_pos.2 hε)]
       exact_mod_cast this
     calc
       (‖f x‖₊ / ε : ℝ≥0∞) ≤ egauge 𝕜 (ball 0 ε) (f x) := div_le_egauge_ball 𝕜 _ _
@@ -143,3 +154,5 @@ lemma isLittleOTVS_iff_isLittleO {E F : Type*} [NormedAddCommGroup E] [NormedAdd
       _ ≤ 1 * 1 * δ * ‖g x‖₊ := by gcongr <;> exact ENNReal.div_self_le_one
       _ = δ * ‖g x‖₊ := by simp
       _ ≤ δ * egauge 𝕜 (ball 0 1) (g x) := by gcongr; apply le_egauge_ball_one
+
+end TVS
