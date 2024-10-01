@@ -142,7 +142,7 @@ theorem adjoin_simple_le_iff [IsGalois k K] {x : K} {L : FiniteGaloisIntermediat
 theorem adjoin_map [IsGalois k K] (f : K →ₐ[k] K) (s : Set K) [Finite s] :
     adjoin k (f '' s) = adjoin k s := by
   apply val_injective; dsimp [adjoin_val]
-  rw [← IntermediateField.adjoin_map, IntermediateField.normalClosure_map]
+  rw [← IntermediateField.adjoin_map, IntermediateField.normalClosure_map_eq]
 
 @[simp]
 theorem adjoin_simple_map_algHom [IsGalois k K] (f : K →ₐ[k] K) (x : K) :
