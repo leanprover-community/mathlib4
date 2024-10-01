@@ -6,6 +6,7 @@ import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.Linter.OldObtain
 import Mathlib.Tactic.Linter.RefineLinter
 import Mathlib.Tactic.Linter.UnusedTactic
+import Mathlib.Tactic.Linter.UnusedVariableCommand
 import Mathlib.Tactic.Linter.Style
 
 /-!
