@@ -384,7 +384,7 @@ protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
   inj _ _ H := funext fun _ ↦ hf.inj (congrFun H _)
 
 @[deprecated (since := "2024-10-01")]
-alias postcomp_uniformEmbedding := postcomp_isUniformEmbedding
+alias postcomp_uniformEmbedding := UniformFun.postcomp_isUniformEmbedding
 
 -- Porting note: had to add a type annotation at `((f ∘ ·) : ((α → γ) → (α → β)))`
 /-- If `u` is a uniform structures on `β` and `f : γ → β`, then
@@ -887,7 +887,7 @@ protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
   inj _ _ H := funext fun _ ↦ hf.inj (congrFun H _)
 
 @[deprecated (since := "2024-10-01")]
-alias postcomp_uniformEmbedding := postcomp_isUniformEmbedding
+alias postcomp_uniformEmbedding := UniformOnFun.postcomp_isUniformEmbedding
 
 /-- Turn a uniform isomorphism `γ ≃ᵤ β` into a uniform isomorphism `(α →ᵤ[𝔖] γ) ≃ᵤ (α →ᵤ[𝔖] β)`
 by post-composing. -/
