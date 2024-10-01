@@ -11,7 +11,7 @@ open Filter
 class ContinuousEvalConst (F : Type*) (X Y : outParam Type*) [FunLike F X Y]
     [TopologicalSpace F] [TopologicalSpace Y] : Prop where
   continuous_eval_const (x : X) : Continuous fun f : F ↦ f x
-    
+
 section ContinuousEvalConst
 
 variable {F X Y Z : Type*} [FunLike F X Y] [TopologicalSpace F] [TopologicalSpace Y]
@@ -41,7 +41,6 @@ class ContinuousEval (F : Type*) (X Y : outParam Type*) [FunLike F X Y]
     [TopologicalSpace F] [TopologicalSpace X] [TopologicalSpace Y] : Prop where
   continuous_eval : Continuous fun fx : F × X ↦ fx.1 fx.2
 
-
 variable {F X Y Z : Type*} [FunLike F X Y]
   [TopologicalSpace F] [TopologicalSpace X] [TopologicalSpace Y] [ContinuousEval F X Y]
   [TopologicalSpace Z] {f : Z → F} {g : Z → X} {s : Set Z} {z : Z}
@@ -49,6 +48,9 @@ variable {F X Y Z : Type*} [FunLike F X Y]
 protected theorem Continuous.eval (hf : Continuous f) (hg : Continuous g) :
     Continuous fun z ↦ f z (g z) :=
   ContinuousEval.continuous_eval.comp (hf.prod_mk hg)
+
+instance (priority := 100) ContinuousEval.toContinuousMapClass : ContinuousMapClass F X Y where
+  map_continuous _ := continuous_const.eval continuous_id
 
 protected theorem Filter.Tendsto.eval {α : Type*} {l : Filter α} {f : α → F} {f₀ : F}
     {g : α → X} {x₀ : X} (hf : Tendsto f l (𝓝 f₀)) (hg : Tendsto g l (𝓝 x₀)) :
