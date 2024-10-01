@@ -156,16 +156,15 @@ def mk' (carrier : Set R)
         rw [show a + c - (b + d) = (a - b) + (c - d) by abel]
         exact add_mem h1 h2 }
 
-lemma mem_mk' (carrier : Set R)
-    (zero_mem : 0 ∈ carrier)
-    (add_mem : ∀ {x y}, x ∈ carrier → y ∈ carrier → x + y ∈ carrier)
-    (neg_mem : ∀ {x}, x ∈ carrier → -x ∈ carrier)
-    (mul_mem_left : ∀ {x y}, y ∈ carrier → x * y ∈ carrier)
-    (mul_mem_right : ∀ {x y}, x ∈ carrier → x * y ∈ carrier)
-    (x : R) :
-    x ∈ mk' carrier zero_mem add_mem neg_mem mul_mem_left mul_mem_right ↔ x ∈ carrier := by
+lemma mem_mk' (carrier : Set R) (h₁ h₂ h₃ h₄ h₅) (x : R) :
+    x ∈ mk' carrier h₁ h₂ h₃ h₄ h₅ ↔ x ∈ carrier := by
   rw [mem_iff]
   simp [mk']
+
+@[simp]
+lemma coe_mk' (carrier : Set R) (h₁ h₂ h₃ h₄ h₅) :
+    (mk' carrier h₁ h₂ h₃ h₄ h₅ : Set R) = carrier :=
+  Set.ext <| mem_mk' carrier h₁ h₂ h₃ h₄ h₅
 
 instance : SMulMemClass (TwoSidedIdeal R) R R where
   smul_mem _ _ h := TwoSidedIdeal.mul_mem_left _ _ _ h

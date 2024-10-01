@@ -107,10 +107,6 @@ def ker : TwoSidedIdeal R :=
 
 lemma mem_ker {x : R} : x ∈ ker f ↔ f x = 0 := by
   delta ker; rw [mem_mk']; rfl
-  · rintro _ _ (h1 : f _ = 0) (h2 : f _ = 0); simp [h1, h2]
-  · rintro _ (h : f _ = 0); simp [h]
-  · rintro _ _ (h : f _ = 0); simp [h]
-  · rintro _ _ (h : f _ = 0); simp [h]
 
 end NonUnitalNonAssocRing
 
@@ -247,6 +243,31 @@ lemma mem_asIdealOpposite {I : TwoSidedIdeal R} {x : Rᵐᵒᵖ} :
     x ∈ asIdealOpposite I ↔ x.unop ∈ I := by
   simpa [asIdealOpposite, asIdeal, TwoSidedIdeal.mem_iff, RingCon.op_iff] using
     ⟨I.ringCon.symm, I.ringCon.symm⟩
+
+/-- Bundle an `Ideal` that is already two-sided as a `TwoSidedIdeal`. -/
+def ofIdeal (I : Ideal R) (mul_mem_right : ∀ {x y}, x ∈ I → x * y ∈ I) : TwoSidedIdeal R :=
+  TwoSidedIdeal.mk' I I.zero_mem I.add_mem I.neg_mem (I.smul_mem _) mul_mem_right
+
+lemma mem_ofIdeal {I : Ideal R} {h} {x : R} :
+    x ∈ ofIdeal I h ↔ x ∈ I := by
+  simp [ofIdeal, mem_mk']
+
+@[simp]
+lemma coe_ofIdeal (I : Ideal R) (h) : (ofIdeal I h : Set R) = I := by
+  simp [ofIdeal]
+
+@[simp]
+lemma ofIdeal_asIdeal (I : TwoSidedIdeal R) (h) : ofIdeal (asIdeal I) h = I := by
+  ext
+  simp [mem_ofIdeal, mem_asIdeal]
+
+@[simp]
+lemma asIdeal_ofIdeal (I : Ideal R) (h) : asIdeal (ofIdeal I h) = I := by
+  ext
+  simp [mem_ofIdeal, mem_asIdeal]
+
+instance : CanLift (Ideal R) (TwoSidedIdeal R) asIdeal (fun I => ∀ {x y}, x ∈ I → x * y ∈ I) where
+  prf I mul_mem_right := ⟨ofIdeal I mul_mem_right, asIdeal_ofIdeal ..⟩
 
 end Ring
 
