@@ -115,7 +115,8 @@ open Adjunction Cat
 
 /-- For a category `C` and type `A`, there is an equivalence between functions `objects.obj C ⟶ A`
 and functors `C ⥤ Codiscrete A`.-/
-def homEquiv (C : Cat) (A : Type*) : (objects.obj C ⟶ A) ≃ (C ⟶ functor.obj A) where
+def equivFunctorToCodiscrete {C : Type u} [Category.{v} C] {A : Type w} :
+  (C → A) ≃ (C ⥤ Codiscrete A) where
   toFun := lift
   invFun := invlift
   left_inv _ := rfl
@@ -125,7 +126,7 @@ def homEquiv (C : Cat) (A : Type*) : (objects.obj C ⟶ A) ≃ (C ⟶ functor.ob
 functor.-/
 def adj : objects ⊣ functor := mkOfHomEquiv
   {
-    homEquiv := homEquiv
+    homEquiv := fun _ _ => equivFunctorToCodiscrete
     homEquiv_naturality_left_symm := fun _ _ => rfl
     homEquiv_naturality_right := fun _ _ => rfl
   }
@@ -135,7 +136,7 @@ def unit : 𝟭 Cat ⟶ objects ⋙ functor where
   app := by
     simp only [Functor.id_obj, Functor.comp_obj]
     intro C
-    apply (homEquiv C (objects.obj C)).toFun
+    apply lift
     exact fun a ↦ a
 
 /--Conit of the adjunction Cat.objects ⊣ Codiscrete.functor -/
@@ -143,17 +144,17 @@ def counit : functor ⋙ objects ⟶ 𝟭 (Type*) := {
     app := by
       intro A
       simp only [Functor.comp_obj, Functor.id_obj]
-      apply (homEquiv (functor.obj A) A).invFun
+      apply invlift
       exact functor.map fun a ↦ a
   }
 
 /--Left triangle equality of the adjunction Cat.objects ⊣ Codiscrete.functor -/
 def leftTriangleComponents {X : Cat} :
-objects.map (unit.app X) ≫ counit.app (objects.obj X) = 𝟙 (objects.obj X) := rfl
+  objects.map (unit.app X) ≫ counit.app (objects.obj X) = 𝟙 (objects.obj X) := rfl
 
 /--Right triangle equality of the adjunction Cat.objects ⊣ Codiscrete.functor -/
 def rightTriangleComponents {Y : Type u} :
-unit.app (functor.obj Y) ≫ functor.map (counit.app Y) = 𝟙 (functor.obj Y) := rfl
+  unit.app (functor.obj Y) ≫ functor.map (counit.app Y) = 𝟙 (functor.obj Y) := rfl
 
 end Codiscrete
 
