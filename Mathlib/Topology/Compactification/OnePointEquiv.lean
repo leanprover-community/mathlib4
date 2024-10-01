@@ -85,11 +85,8 @@ We establish the equivalence between `OnePoint K` and `ℙ K (Fin 2 → K)` for 
 -/
 
 /-- Extensionality for functions from `Fin 2`. -/
-lemma funext_fin2 [Zero K] {a b : Fin 2 → K} (h₀ : a 0 = b 0) (h₁ : a 1 = b 1) : a = b :=
+lemma funext_fin2 {a b : Fin 2 → K} (h₀ : a 0 = b 0) (h₁ : a 1 = b 1) : a = b :=
   funext <| fun j => by fin_cases j <;> simp[h₀,h₁]
-
-local instance [DivisionRing K] : Setoid ({v : Fin 2 → K // v ≠ 0}) :=
-  projectivizationSetoid K (Fin 2 → K)
 
 /-- `divSlope` respects projective equivalence. -/
 lemma divSlope_inj_lifted [Field K] (a b : {v : Fin 2 → K // v ≠ 0})
