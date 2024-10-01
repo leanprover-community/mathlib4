@@ -261,6 +261,11 @@ lemma RingHom.OfLocalizationSpanTarget.ofIsLocalization
     AlgEquiv.toRingEquiv_toRingHom, Localization.coe_algEquiv_symm, IsLocalization.map_comp,
     RingHom.comp_id]
 
+lemma RingHom.StableUnderBaseChange.localizationPreserves (hP : StableUnderBaseChange P) :
+    LocalizationPreserves P := by
+  introv R hf
+  exact hP.isLocalization_map _ _ _ hf
+
 end RingHom
 
 end Properties
