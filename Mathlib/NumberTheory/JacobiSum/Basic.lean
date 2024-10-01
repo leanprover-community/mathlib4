@@ -303,36 +303,34 @@ section GaussSum
 
 variable {F R : Type*} [Fintype F] [Field F] [CommRing R] [IsDomain R]
 
+lemma gaussSum_pow_eq_prod_jacobiSum_aux (χ : MulChar F R) (ψ : AddChar F R) {n : ℕ}
+    (hn₁ : 0 < n) (hn₂ : n < orderOf χ) :
+    gaussSum χ ψ ^ n = gaussSum (χ ^ n) ψ * ∏ j ∈ Ico 1 n, jacobiSum χ (χ ^ j) := by
+  induction n, hn₁ using Nat.le_induction with
+  | base => simp only [pow_one, le_refl, Ico_eq_empty_of_le, prod_empty, mul_one]
+  | succ n hn ih =>
+      specialize ih <| lt_trans (Nat.lt_succ_self n) hn₂
+      have gauss_rw : gaussSum (χ ^ n) ψ * gaussSum χ ψ =
+            jacobiSum χ (χ ^ n) * gaussSum (χ ^ (n + 1)) ψ := by
+        have hχn : χ * (χ ^ n) ≠ 1 :=
+          pow_succ' χ n ▸ pow_ne_one_of_lt_orderOf n.add_one_ne_zero hn₂
+        rw [mul_comm, ← jacobiSum_mul_nontrivial hχn, mul_comm, ← pow_succ']
+      apply_fun (· * gaussSum χ ψ) at ih
+      rw [mul_right_comm, ← pow_succ, gauss_rw] at ih
+      rw [ih, Finset.prod_Ico_succ_top hn, mul_rotate, mul_assoc]
+
 /-- If `χ` is a multiplicative character of order `n ≥ 2` on a finite field `F`,
 then `g(χ)^n = χ(-1) * #F * J(χ,χ) * J(χ,χ²) * ... * J(χ,χⁿ⁻²)`. -/
 theorem gaussSum_pow_eq_prod_jacobiSum {χ : MulChar F R} {ψ : AddChar F R} (hχ : 2 ≤ orderOf χ)
     (hψ : ψ.IsPrimitive) :
     gaussSum χ ψ ^ orderOf χ =
       χ (-1) * Fintype.card F * ∏ i ∈ Ico 1 (orderOf χ - 1), jacobiSum χ (χ ^ i) := by
-  -- show `g(χ)^i = g(χ^i) * J(χ,χ)*...*J(χ,χ^(i-1))` for `1 ≤ i < n` by induction
   let n := orderOf χ
-  have pow_gauss' : ∀ i ∈ Ico 1 n, (gaussSum χ ψ) ^ i =
-      gaussSum (χ ^ i) ψ * ∏ j ∈ Ico 1 i, jacobiSum χ (χ ^ j) := by
-    intro i hi
-    obtain ⟨one_le_i, i_lt_n⟩ := mem_Ico.mp hi; clear hi -- otherwise error below
-    induction i, one_le_i using Nat.le_induction with
-    | base => simp only [pow_one, le_refl, Ico_eq_empty_of_le, prod_empty, mul_one]
-    | succ i hi ih =>
-        specialize ih <| lt_trans (Nat.lt_succ_self i) i_lt_n
-        have gauss_rw : gaussSum (χ ^ i) ψ * gaussSum χ ψ =
-            jacobiSum χ (χ ^ i) * gaussSum (χ ^ (i + 1)) ψ := by
-          have hχi : χ * (χ ^ i) ≠ 1 :=
-            pow_succ' χ i ▸ pow_ne_one_of_lt_orderOf i.add_one_ne_zero i_lt_n
-          rw [mul_comm, ← jacobiSum_mul_nontrivial hχi, mul_comm, ← pow_succ']
-        apply_fun (· * gaussSum χ ψ) at ih
-        rw [mul_right_comm, ← pow_succ, gauss_rw] at ih
-        rw [ih, Finset.prod_Ico_succ_top hi, mul_rotate, mul_assoc]
-  -- get equality for `i = n-1`
-  have gauss_pow_n_sub := pow_gauss' (n - 1) (by simp only [mem_Ico]; omega)
-  apply_fun (gaussSum χ ψ * ·) at gauss_pow_n_sub
-  rw [← pow_succ', Nat.sub_one_add_one_eq_of_pos (by omega)] at gauss_pow_n_sub
+  have := gaussSum_pow_eq_prod_jacobiSum_aux χ ψ (n := n - 1) (by omega) (by omega)
+  apply_fun (gaussSum χ ψ * ·) at this
+  rw [← pow_succ', Nat.sub_one_add_one_eq_of_pos (by omega)] at this
   have hχ₁ : χ ≠ 1 :=
     fun h ↦ ((orderOf_one (G := MulChar F R) ▸ h ▸ hχ).trans_lt Nat.one_lt_two).false
-  rw [gauss_pow_n_sub, ← mul_assoc, gaussSum_mul_gaussSum_pow_orderOf_sub_one hχ₁ hψ]
+  rw [this, ← mul_assoc, gaussSum_mul_gaussSum_pow_orderOf_sub_one hχ₁ hψ]
 
 end GaussSum
