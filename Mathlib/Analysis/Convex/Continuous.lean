@@ -16,14 +16,11 @@ open FiniteDimensional Metric Set List Bornology
 open scoped Topology
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {C : Set E} {f : E → ℝ} {x₀ : E} {ε r : ℝ}
+  {C : Set E} {f : E → ℝ} {x₀ : E} {ε r r' M : ℝ}
 
-lemma ConvexOn.exists_lipschitzOnWith_of_isBounded (hf : ConvexOn ℝ (ball x₀ r) f) (hε : 0 < ε)
-    (hf' : IsBounded (f '' ball x₀ r)) : ∃ K, LipschitzOnWith K f (ball x₀ (r - ε)) := by
-  rw [isBounded_iff_subset_ball 0] at hf'
-  simp only [Set.subset_def, mem_image, mem_ball, dist_zero_right, Real.norm_eq_abs,
-    forall_exists_index, and_imp, forall_apply_eq_imp_iff₂] at hf'
-  obtain ⟨M, hM⟩ := hf'
+lemma ConvexOn.lipschitzOnWith_of_abs_le (hf : ConvexOn ℝ (ball x₀ r) f) (hε : 0 < ε)
+    (hM : ∀ a, dist a x₀ < r → |f a| ≤ M) :
+    LipschitzOnWith (2 * M / ε).toNNReal f (ball x₀ (r - ε)) := by
   set K := 2 * M / ε with hK
   have oneside {x y : E} (hx : x ∈ ball x₀ (r - ε)) (hy : y ∈ ball x₀ (r - ε)) :
       f x - f y ≤ K * ‖x - y‖ := by
@@ -59,16 +56,30 @@ lemma ConvexOn.exists_lipschitzOnWith_of_isBounded (hf : ConvexOn ℝ (ball x₀
       _ ≤ _ := by
         rw [sub_eq_add_neg (f _), two_mul]
         gcongr
-        · exact (le_abs_self _).trans <| (hM _ hz).le
-        · exact (neg_le_abs _).trans <| (hM _ hx').le
-  refine ⟨K.toNNReal, .of_dist_le' fun x hx y hy ↦ ?_⟩
+        · exact (le_abs_self _).trans <| hM _ hz
+        · exact (neg_le_abs _).trans <| hM _ hx'
+  refine .of_dist_le' fun x hx y hy ↦ ?_
   simp_rw [dist_eq_norm_sub, Real.norm_eq_abs, abs_sub_le_iff]
   exact ⟨oneside hx hy, norm_sub_rev x _ ▸ oneside hy hx⟩
 
-lemma ConcaveOn.exists_lipschitzOnWith_of_isBounded (hf : ConcaveOn ℝ (ball x₀ r) f) (hε : 0 < ε)
-    (hf' : IsBounded (f '' ball x₀ r)) : ∃ K, LipschitzOnWith K f (ball x₀ (r - ε)) := by
+lemma ConcaveOn.lipschitzOnWith_of_abs_le (hf : ConcaveOn ℝ (ball x₀ r) f) (hε : 0 < ε)
+    (hM : ∀ a, dist a x₀ < r → |f a| ≤ M) :
+    LipschitzOnWith (2 * M / ε).toNNReal f (ball x₀ (r - ε)) := by
+  simpa using hf.neg.lipschitzOnWith_of_abs_le hε <| by simpa using hM
+
+lemma ConvexOn.exists_lipschitzOnWith_of_isBounded (hf : ConvexOn ℝ (ball x₀ r) f) (hr : r' < r)
+    (hf' : IsBounded (f '' ball x₀ r)) : ∃ K, LipschitzOnWith K f (ball x₀ r') := by
+  rw [isBounded_iff_subset_ball 0] at hf'
+  simp only [Set.subset_def, mem_image, mem_ball, dist_zero_right, Real.norm_eq_abs,
+    forall_exists_index, and_imp, forall_apply_eq_imp_iff₂] at hf'
+  obtain ⟨M, hM⟩ := hf'
+  rw [← sub_sub_cancel r r']
+  exact ⟨_, hf.lipschitzOnWith_of_abs_le (sub_pos.2 hr) fun a ha ↦ (hM a ha).le⟩
+
+lemma ConcaveOn.exists_lipschitzOnWith_of_isBounded (hf : ConcaveOn ℝ (ball x₀ r) f) (hr : r' < r)
+    (hf' : IsBounded (f '' ball x₀ r)) : ∃ K, LipschitzOnWith K f (ball x₀ r') := by
   replace hf' : IsBounded ((-f) '' ball x₀ r) := by convert hf'.neg; ext; simp [neg_eq_iff_eq_neg]
-  simpa using hf.neg.exists_lipschitzOnWith_of_isBounded hε hf'
+  simpa using hf.neg.exists_lipschitzOnWith_of_isBounded hr hf'
 
 lemma ConvexOn.isBoundedUnder_abs (hf : ConvexOn ℝ C f) {x₀ : E} (hC : C ∈ 𝓝 x₀) :
     (𝓝 x₀).IsBoundedUnder (· ≤ ·) |f| ↔ (𝓝 x₀).IsBoundedUnder (· ≤ ·) f := by
@@ -141,7 +152,7 @@ lemma ConvexOn.continuousOn_tfae (hC : IsOpen C) (hC' : C.Nonempty) (hf : Convex
     obtain ⟨ε, hε, hεD⟩ := Metric.mem_nhds_iff.1 <| Filter.inter_mem (hC.mem_nhds hx) hr
     simp only [preimage_setOf_eq, Pi.abs_apply, subset_inter_iff, hC.nhdsWithin_eq hx] at hεD ⊢
     obtain ⟨K, hK⟩ := exists_lipschitzOnWith_of_isBounded (hf.subset hεD.1 (convex_ball ..))
-      (half_pos hε) <| isBounded_iff_forall_norm_le.2 ⟨r, by simpa using hεD.2⟩
+      (half_lt_self hε) <| isBounded_iff_forall_norm_le.2 ⟨r, by simpa using hεD.2⟩
     exact ⟨K, _, ball_mem_nhds _ (by simpa), hK⟩
   tfae_finish
 
