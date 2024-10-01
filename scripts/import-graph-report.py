@@ -40,7 +40,7 @@ def compare_counts(base_file, head_file, changed_files_txt):
         diff = head_count - base_count
         percent = (diff / base_count) * 100
         if high_import_threshold < percent:
-            high_pct.append(f'| +{percent:.2f}% | {file} |')
+            high_pct.append(f'| +{percent:.2f}% | `{file}` |')
         if diff < 0:  # Dependencies went down
             changes.append((file, base_count, head_count, diff, percent))
         elif diff > new_files:  # Dependencies went up by more than the number of new files
