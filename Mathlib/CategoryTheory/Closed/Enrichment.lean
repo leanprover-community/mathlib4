@@ -92,7 +92,7 @@ theorem id_comp (x y : V) : (λ_ _).inv ≫ id x ▷ (ihom x).obj y ≫ comp x x
   rw [← comp_whiskerRight_assoc]
   rw [← uncurry_eq, uncurry_curry]
   simp only [Functor.id_obj, triangle_assoc_comp_right_assoc, whiskerLeft_inv_hom_assoc]
-  exact Eq.symm (uncurry_id_eq_ev x y)
+  exact (uncurry_id_eq_ev x y).symm
 
 /-- Right unitality of V-composition. Used to prove that V is enriched in itself. -/
 theorem comp_id (x y : V) : (ρ_ _).inv ≫ ((ihom x).obj y) ◁ (id y) ≫ (comp x y y) = 𝟙 _ := by
@@ -103,7 +103,7 @@ theorem comp_id (x y : V) : (ρ_ _).inv ≫ ((ihom x).obj y) ◁ (id y) ≫ (com
   rw [← uncurry_eq, uncurry_curry];
   simp only [whiskerLeft_rightUnitor_inv, MonoidalCategory.whiskerRight_id, Category.assoc,
     Iso.inv_hom_id, Category.comp_id, Iso.hom_inv_id_assoc, Iso.inv_hom_id_assoc]
-  exact Eq.symm (uncurry_id_eq_ev x y)
+  exact (uncurry_id_eq_ev x y).symm
 
 /-- For V closed monoidal, build an instance of V as a V-category -/
 instance : EnrichedCategory V V where
