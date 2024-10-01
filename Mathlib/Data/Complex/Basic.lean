@@ -638,6 +638,12 @@ variable {α : Type*}
 
 @[simp] lemma ofReal_comp_neg (f : α → ℝ) : ofReal' ∘ (-f) = -(ofReal' ∘ f) := map_comp_neg ofReal _
 
+lemma ofReal_comp_nsmul (n : ℕ) (f : α → ℝ) : ofReal' ∘ (n • f) = n • (ofReal' ∘ f) :=
+  map_comp_nsmul ofReal ..
+
+lemma ofReal_comp_zsmul (n : ℤ) (f : α → ℝ) : ofReal' ∘ (n • f) = n • (ofReal' ∘ f) :=
+  map_comp_zsmul ofReal ..
+
 @[simp] lemma ofReal_comp_mul (f g : α → ℝ) : ofReal' ∘ (f * g) = ofReal' ∘ f * ofReal' ∘ g :=
   map_comp_mul ofReal ..
 
