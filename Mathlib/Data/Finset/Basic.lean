@@ -30,7 +30,7 @@ For an explanation of `Finset` design decisions, please see `Mathlib/Data/Finset
 
 ### Equivalences between finsets
 
-* The `Mathlib/Logic/Equiv/Defs.lean` files describe a general type of equivalence, so look in there
+* The `Mathlib/Logic/Equiv/Defs.lean` file describes a general type of equivalence, so look in there
   for any lemmas. There is some API for rewriting sums and products from `s` to `t` given that
   `s ≃ t`.
   TODO: examples
