@@ -42,7 +42,6 @@ open scoped IntermediateField
 variable (k K : Type*) [Field k] [Field K] [Algebra k K]
 
 /-- The type of intermediate fields of `K/k` that are finite and Galois over `k` -/
-@[ext]
 structure FiniteGaloisIntermediateField extends IntermediateField k K where
   [finiteDimensional : FiniteDimensional k toIntermediateField]
   [isGalois : IsGalois k toIntermediateField]
