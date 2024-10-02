@@ -2,7 +2,7 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen,
-Kim Morrison, Chris Hughes, Anne Baanen, Junyan Xu
+Scott Morrison, Chris Hughes, Anne Baanen, Junyan Xu
 -/
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.Dimension.Finite

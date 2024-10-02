@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Kim Morrison. All rights reserved.
+Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison, Justus Springer
+Authors: Scott Morrison, Justus Springer
 -/
 import Mathlib.Topology.Category.TopCat.OpenNhds
 import Mathlib.Topology.Sheaves.Presheaf
@@ -59,8 +59,6 @@ open CategoryTheory.Limits
 open TopologicalSpace
 
 open Opposite
-
-open scoped AlgebraicGeometry
 
 variable {C : Type u} [Category.{v} C]
 variable [HasColimits.{v} C]

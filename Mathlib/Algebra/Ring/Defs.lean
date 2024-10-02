@@ -371,7 +371,7 @@ end NonAssocRing
 
 section Ring
 
-variable [Ring α]
+variable [Ring α] {a b c d e : α}
 
 -- A (unital, associative) ring is a not-necessarily-unital ring
 -- see Note [lower instance priority]

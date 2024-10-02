@@ -5,7 +5,7 @@ Authors: Riccardo Brasca
 -/
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 import Mathlib.NumberTheory.NumberField.Basic
-import Mathlib.FieldTheory.Galois.Basic
+import Mathlib.FieldTheory.Galois
 
 /-!
 # Cyclotomic extensions

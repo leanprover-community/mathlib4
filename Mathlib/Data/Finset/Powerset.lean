@@ -234,12 +234,9 @@ theorem powersetCard_succ_insert [DecidableEq α] {x : α} {s : Finset α} (h : 
   have : x ∉ t := fun H => h (ht H)
   simp [card_insert_of_not_mem this, Nat.succ_inj']
 
-@[simp]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 lemma powersetCard_nonempty : (powersetCard n s).Nonempty ↔ n ≤ s.card := by
   aesop (add simp [Finset.Nonempty, exists_subset_card_eq, card_le_card])
-
-@[aesop safe apply (rule_sets := [finsetNonempty])]
-alias ⟨_, powersetCard_nonempty_of_le⟩ := powersetCard_nonempty
 
 @[simp]
 theorem powersetCard_self (s : Finset α) : powersetCard s.card s = {s} := by

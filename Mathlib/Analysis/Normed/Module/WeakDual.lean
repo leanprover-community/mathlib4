@@ -5,7 +5,6 @@ Authors: Kalle Kytölä, Yury Kudryashov
 -/
 import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
-import Mathlib.Topology.Algebra.Module.WeakDual
 
 /-!
 # Weak dual of normed space

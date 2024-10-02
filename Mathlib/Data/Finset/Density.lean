@@ -110,23 +110,23 @@ lemma dens_image [Fintype β] [DecidableEq β] {f : α → β} (hf : Bijective f
     (s.image f).dens = s.dens := by
   simpa [map_eq_image, -dens_map_equiv] using dens_map_equiv (.ofBijective f hf)
 
-@[simp] lemma card_mul_dens (s : Finset α) : Fintype.card α * s.dens = s.card := by
+lemma card_mul_dens (s : Finset α) : Fintype.card α * s.dens = s.card := by
   cases isEmpty_or_nonempty α
   · simp [Subsingleton.elim s ∅]
   rw [dens, mul_div_cancel₀]
   exact mod_cast Fintype.card_ne_zero
 
-@[simp] lemma dens_mul_card (s : Finset α) : s.dens * Fintype.card α = s.card := by
+lemma dens_mul_card (s : Finset α) : s.dens * Fintype.card α = s.card := by
   rw [mul_comm, card_mul_dens]
 
 section Semifield
 variable [Semifield 𝕜] [CharZero 𝕜]
 
-@[simp] lemma natCast_card_mul_nnratCast_dens (s : Finset α) :
-    (Fintype.card α * s.dens : 𝕜) = s.card := mod_cast s.card_mul_dens
+lemma natCast_card_mul_nnratCast_dens (s : Finset α) : (Fintype.card α * s.dens : 𝕜) = s.card :=
+  mod_cast s.card_mul_dens
 
-@[simp] lemma nnratCast_dens_mul_natCast_card (s : Finset α) :
-    (s.dens * Fintype.card α : 𝕜) = s.card := mod_cast s.dens_mul_card
+lemma nnratCast_dens_mul_natCast_card (s : Finset α) : s.dens * Fintype.card α = s.card :=
+  mod_cast s.dens_mul_card
 
 @[norm_cast] lemma nnratCast_dens (s : Finset α) : (s.dens : 𝕜) = s.card / Fintype.card α := by
   simp [dens]

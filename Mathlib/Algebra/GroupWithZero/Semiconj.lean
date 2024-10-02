@@ -13,7 +13,7 @@ import Mathlib.Algebra.Group.Semiconj.Units
 
 assert_not_exists DenselyOrdered
 
-variable {G₀ : Type*}
+variable {α M₀ G₀ M₀' G₀' F F' : Type*}
 
 namespace SemiconjBy
 

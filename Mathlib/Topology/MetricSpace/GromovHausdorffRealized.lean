@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.MetricSpace.Gluing
 import Mathlib.Topology.MetricSpace.HausdorffDistance
-import Mathlib.Topology.ContinuousMap.Bounded
+import Mathlib.Topology.ContinuousFunction.Bounded
 
 /-!
 # The Gromov-Hausdorff distance is realized

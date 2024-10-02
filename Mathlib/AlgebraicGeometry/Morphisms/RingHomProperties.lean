@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.Basic
-import Mathlib.RingTheory.LocalProperties.Basic
+import Mathlib.RingTheory.LocalProperties
 
 /-!
 
@@ -228,8 +228,9 @@ theorem of_source_openCover [IsAffine Y]
   | basicOpen U r H =>
     simp_rw [Scheme.affineBasicOpen_coe,
       ← f.appLE_map (U := ⊤) le_top (homOfLE (X.basicOpen_le r)).op]
+    apply (isLocal_ringHomProperty P).StableUnderComposition _ _ H
     have := U.2.isLocalization_basicOpen r
-    exact (isLocal_ringHomProperty P).StableUnderCompositionWithLocalizationAway.left _ r _ H
+    apply (isLocal_ringHomProperty P).HoldsForLocalizationAway _ r
   | openCover U s hs H =>
     apply (isLocal_ringHomProperty P).OfLocalizationSpanTarget.ofIsLocalization
       (isLocal_ringHomProperty P).respectsIso _ _ hs
@@ -282,16 +283,16 @@ instance : IsLocalAtSource P := by
     fun i ↦ iff_of_source_openCover (P := P) (f := 𝒰.map i ≫ f) (𝒰.obj i).affineCover]
   simp [Scheme.OpenCover.affineRefinement, Sigma.forall]
 
-lemma containsIdentities (hP : RingHom.ContainsIdentities Q) : P.ContainsIdentities where
+instance : P.ContainsIdentities where
   id_mem X := by
     rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
     intro U
     have : IsAffine (𝟙 X ⁻¹ᵁ U.1) := U.2
     rw [morphismRestrict_id, iff_of_isAffine (P := P), Scheme.id_app]
-    apply hP
+    exact (isLocal_ringHomProperty P).HoldsForLocalizationAway.of_bijective _ _
+      Function.bijective_id
 
-lemma stableUnderComposition (hP : RingHom.StableUnderComposition Q) :
-    P.IsStableUnderComposition where
+instance : P.IsStableUnderComposition where
   comp_mem {X Y Z} f g hf hg := by
     wlog hZ : IsAffine Z generalizing X Y Z
     · rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
@@ -310,7 +311,7 @@ lemma stableUnderComposition (hP : RingHom.StableUnderComposition Q) :
       rw [← Category.assoc]
       exact this _ (comp_of_isOpenImmersion _ _ _ hf) inferInstance
     rw [iff_of_isAffine (P := P)] at hf hg ⊢
-    exact hP _ _ hg hf
+    exact (isLocal_ringHomProperty P).StableUnderComposition _ _ hg hf
 
 theorem of_comp
     (H : ∀ {R S T : Type u} [CommRing R] [CommRing S] [CommRing T],
@@ -338,16 +339,10 @@ theorem of_comp
   rw [iff_of_isAffine (P := P)] at h ⊢
   exact H _ _ h
 
-lemma isMultiplicative (hPc : RingHom.StableUnderComposition Q)
-    (hPi : RingHom.ContainsIdentities Q) :
-    P.IsMultiplicative where
-  comp_mem := (stableUnderComposition hPc).comp_mem
-  id_mem := (containsIdentities hPi).id_mem
+instance : P.IsMultiplicative where
 
 include Q in
-lemma of_isOpenImmersion (hP : RingHom.ContainsIdentities Q) [IsOpenImmersion f] : P f :=
-  haveI : P.ContainsIdentities := containsIdentities hP
-  IsLocalAtSource.of_isOpenImmersion f
+lemma of_isOpenImmersion [IsOpenImmersion f] : P f := IsLocalAtSource.of_isOpenImmersion f
 
 lemma stableUnderBaseChange (hP : RingHom.StableUnderBaseChange Q) : P.StableUnderBaseChange := by
   apply HasAffineProperty.stableUnderBaseChange

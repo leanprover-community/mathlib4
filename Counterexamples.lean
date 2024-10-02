@@ -3,7 +3,6 @@ import Counterexamples.CharPZeroNeCharZero
 import Counterexamples.CliffordAlgebraNotInjective
 import Counterexamples.Cyclotomic105
 import Counterexamples.DirectSumIsInternal
-import Counterexamples.GameMultiplication
 import Counterexamples.Girard
 import Counterexamples.HomogeneousPrimeNotPrime
 import Counterexamples.LinearOrderWithPosMulPosEqZero

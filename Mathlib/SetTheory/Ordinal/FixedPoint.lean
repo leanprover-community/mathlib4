@@ -48,48 +48,44 @@ finitely many functions in the family to `a`.
 
 `Ordinal.nfpFamily_fp` shows this is a fixed point, `Ordinal.le_nfpFamily` shows it's at
 least `a`, and `Ordinal.nfpFamily_le_fp` shows this is the least ordinal with these properties. -/
-def nfpFamily (f : ι → Ordinal.{max u v} → Ordinal.{max u v}) (a : Ordinal.{max u v}) : Ordinal :=
-  ⨆ i, List.foldr f a i
+def nfpFamily (f : ι → Ordinal → Ordinal) (a : Ordinal) : Ordinal :=
+  sup (List.foldr f a)
 
 theorem nfpFamily_eq_sup (f : ι → Ordinal.{max u v} → Ordinal.{max u v}) (a : Ordinal.{max u v}) :
-    nfpFamily.{u, v} f a = ⨆ i, List.foldr f a i :=
+    nfpFamily.{u, v} f a = sup.{u, v} (List.foldr f a) :=
   rfl
 
 theorem foldr_le_nfpFamily (f : ι → Ordinal → Ordinal)
     (a l) : List.foldr f a l ≤ nfpFamily.{u, v} f a :=
-  Ordinal.le_iSup _ _
+  le_sup.{u, v} _ _
 
 theorem le_nfpFamily (f : ι → Ordinal → Ordinal) (a) : a ≤ nfpFamily f a :=
-  Ordinal.le_iSup _ []
+  le_sup _ []
 
 theorem lt_nfpFamily {a b} : a < nfpFamily.{u, v} f b ↔ ∃ l, a < List.foldr f b l :=
-  Ordinal.lt_iSup
+  lt_sup.{u, v}
 
 theorem nfpFamily_le_iff {a b} : nfpFamily.{u, v} f a ≤ b ↔ ∀ l, List.foldr f a l ≤ b :=
-  Ordinal.iSup_le_iff
+  sup_le_iff
 
 theorem nfpFamily_le {a b} : (∀ l, List.foldr f a l ≤ b) → nfpFamily.{u, v} f a ≤ b :=
-  Ordinal.iSup_le
+  sup_le.{u, v}
 
-theorem nfpFamily_monotone (hf : ∀ i, Monotone (f i)) : Monotone (nfpFamily.{u, v} f) := by
-  intro _ _ h
-  apply Ordinal.iSup_le
-  intro l
-  exact (List.foldr_monotone hf l h).trans (Ordinal.le_iSup _ l)
+theorem nfpFamily_monotone (hf : ∀ i, Monotone (f i)) : Monotone (nfpFamily.{u, v} f) :=
+  fun _ _ h => sup_le.{u, v} fun l => (List.foldr_monotone hf l h).trans (le_sup.{u, v} _ l)
 
 theorem apply_lt_nfpFamily (H : ∀ i, IsNormal (f i)) {a b} (hb : b < nfpFamily.{u, v} f a) (i) :
     f i b < nfpFamily.{u, v} f a :=
   let ⟨l, hl⟩ := lt_nfpFamily.1 hb
-  Ordinal.lt_iSup.2 ⟨i::l, (H i).strictMono hl⟩
+  lt_sup.2 ⟨i::l, (H i).strictMono hl⟩
 
 theorem apply_lt_nfpFamily_iff [Nonempty ι] (H : ∀ i, IsNormal (f i)) {a b} :
-    (∀ i, f i b < nfpFamily.{u, v} f a) ↔ b < nfpFamily.{u, v} f a := by
-  constructor
-  · intro h
-    exact lt_nfpFamily.2 <|
-      let ⟨l, hl⟩ := Ordinal.lt_iSup.1 <| h <| Classical.arbitrary ι
-      ⟨l, (H _).le_apply.trans_lt hl⟩
-  · exact apply_lt_nfpFamily H
+    (∀ i, f i b < nfpFamily.{u, v} f a) ↔ b < nfpFamily.{u, v} f a :=
+  ⟨fun h =>
+    lt_nfpFamily.2 <|
+      let ⟨l, hl⟩ := lt_sup.1 <| h <| Classical.arbitrary ι
+      ⟨l, ((H _).self_le b).trans_lt hl⟩,
+    apply_lt_nfpFamily H⟩
 
 theorem nfpFamily_le_apply [Nonempty ι] (H : ∀ i, IsNormal (f i)) {a b} :
     (∃ i, nfpFamily.{u, v} f a ≤ f i b) ↔ nfpFamily.{u, v} f a ≤ b := by
@@ -98,33 +94,33 @@ theorem nfpFamily_le_apply [Nonempty ι] (H : ∀ i, IsNormal (f i)) {a b} :
   exact apply_lt_nfpFamily_iff H
 
 theorem nfpFamily_le_fp (H : ∀ i, Monotone (f i)) {a b} (ab : a ≤ b) (h : ∀ i, f i b ≤ b) :
-    nfpFamily.{u, v} f a ≤ b := by
-  apply Ordinal.iSup_le
-  intro l
-  induction' l with i l IH generalizing a
-  · exact ab
-  · exact (H i (IH ab)).trans (h i)
+    nfpFamily.{u, v} f a ≤ b :=
+  sup_le fun l => by
+    by_cases hι : IsEmpty ι
+    · rwa [Unique.eq_default l]
+    · induction' l with i l IH generalizing a
+      · exact ab
+      exact (H i (IH ab)).trans (h i)
 
 theorem nfpFamily_fp {i} (H : IsNormal (f i)) (a) :
     f i (nfpFamily.{u, v} f a) = nfpFamily.{u, v} f a := by
-  rw [nfpFamily, H.map_iSup]
-  apply le_antisymm <;> refine Ordinal.iSup_le fun l => ?_
-  · exact Ordinal.le_iSup _ (i::l)
-  · exact H.le_apply.trans (Ordinal.le_iSup _ _)
+  unfold nfpFamily
+  rw [@IsNormal.sup.{u, v, v} _ H _ _ ⟨[]⟩]
+  apply le_antisymm <;> refine Ordinal.sup_le fun l => ?_
+  · exact le_sup _ (i::l)
+  · exact (H.self_le _).trans (le_sup _ _)
 
 theorem apply_le_nfpFamily [hι : Nonempty ι] {f : ι → Ordinal → Ordinal} (H : ∀ i, IsNormal (f i))
     {a b} : (∀ i, f i b ≤ nfpFamily.{u, v} f a) ↔ b ≤ nfpFamily.{u, v} f a := by
   refine ⟨fun h => ?_, fun h i => ?_⟩
   · cases' hι with i
-    exact (H i).le_apply.trans (h i)
+    exact ((H i).self_le b).trans (h i)
   rw [← nfpFamily_fp (H i)]
   exact (H i).monotone h
 
 theorem nfpFamily_eq_self {f : ι → Ordinal → Ordinal} {a} (h : ∀ i, f i a = a) :
-    nfpFamily f a = a := by
-  apply (Ordinal.iSup_le ?_).antisymm (le_nfpFamily f a)
-  intro l
-  rw [List.foldr_fixed' h l]
+    nfpFamily f a = a :=
+  le_antisymm (sup_le fun l => by rw [List.foldr_fixed' h l]) <| le_nfpFamily f a
 
 -- Todo: This is actually a special case of the fact the intersection of club sets is a club set.
 /-- A generalization of the fixed point lemma for normal functions: any family of normal functions
@@ -177,7 +173,7 @@ theorem le_iff_derivFamily (H : ∀ i, IsNormal (f i)) {a} :
     (∀ i, f i a ≤ a) ↔ ∃ o, derivFamily.{u, v} f o = a :=
   ⟨fun ha => by
     suffices ∀ (o) (_ : a ≤ derivFamily.{u, v} f o), ∃ o, derivFamily.{u, v} f o = a from
-      this a (derivFamily_isNormal _).le_apply
+      this a ((derivFamily_isNormal _).self_le _)
     intro o
     induction' o using limitRecOn with o IH o l IH
     · intro h₁
@@ -238,23 +234,23 @@ theorem nfpBFamily_eq_nfpFamily {o : Ordinal} (f : ∀ b < o, Ordinal → Ordina
 theorem foldr_le_nfpBFamily {o : Ordinal}
     (f : ∀ b < o, Ordinal → Ordinal) (a l) :
     List.foldr (familyOfBFamily o f) a l ≤ nfpBFamily.{u, v} o f a :=
-  Ordinal.le_iSup _ _
+  le_sup.{u, v} _ _
 
 theorem le_nfpBFamily {o : Ordinal} (f : ∀ b < o, Ordinal → Ordinal) (a) :
     a ≤ nfpBFamily.{u, v} o f a :=
-  Ordinal.le_iSup _ []
+  le_sup.{u, v} _ []
 
 theorem lt_nfpBFamily {a b} :
     a < nfpBFamily.{u, v} o f b ↔ ∃ l, a < List.foldr (familyOfBFamily o f) b l :=
-  Ordinal.lt_iSup
+  lt_sup.{u, v}
 
 theorem nfpBFamily_le_iff {o : Ordinal} {f : ∀ b < o, Ordinal → Ordinal} {a b} :
     nfpBFamily.{u, v} o f a ≤ b ↔ ∀ l, List.foldr (familyOfBFamily o f) a l ≤ b :=
-  Ordinal.iSup_le_iff
+  sup_le_iff.{u, v}
 
 theorem nfpBFamily_le {o : Ordinal} {f : ∀ b < o, Ordinal → Ordinal} {a b} :
     (∀ l, List.foldr (familyOfBFamily o f) a l ≤ b) → nfpBFamily.{u, v} o f a ≤ b :=
-  Ordinal.iSup_le.{u, v}
+  sup_le.{u, v}
 
 theorem nfpBFamily_monotone (hf : ∀ i hi, Monotone (f i hi)) : Monotone (nfpBFamily.{u, v} o f) :=
   nfpFamily_monotone fun _ => hf _ _
@@ -292,7 +288,7 @@ theorem apply_le_nfpBFamily (ho : o ≠ 0) (H : ∀ i hi, IsNormal (f i hi)) {a 
     (∀ i hi, f i hi b ≤ nfpBFamily.{u, v} o f a) ↔ b ≤ nfpBFamily.{u, v} o f a := by
   refine ⟨fun h => ?_, fun h i hi => ?_⟩
   · have ho' : 0 < o := Ordinal.pos_iff_ne_zero.2 ho
-    exact (H 0 ho').le_apply.trans (h 0 ho')
+    exact ((H 0 ho').self_le b).trans (h 0 ho')
   · rw [← nfpBFamily_fp (H i hi)]
     exact (H i hi).monotone h
 
@@ -372,20 +368,6 @@ def nfp (f : Ordinal → Ordinal) : Ordinal → Ordinal :=
 theorem nfp_eq_nfpFamily (f : Ordinal → Ordinal) : nfp f = nfpFamily fun _ : Unit => f :=
   rfl
 
-theorem iSup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) (a : Ordinal.{u}) :
-    ⨆ n : ℕ, f^[n] a = nfp f a := by
-  apply le_antisymm
-  · rw [Ordinal.iSup_le_iff]
-    intro n
-    rw [← List.length_replicate n Unit.unit, ← List.foldr_const f a]
-    exact Ordinal.le_iSup _ _
-  · apply Ordinal.iSup_le
-    intro l
-    rw [List.foldr_const f a l]
-    exact Ordinal.le_iSup _ _
-
-set_option linter.deprecated false in
-@[deprecated (since := "2024-08-27")]
 theorem sup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) (a : Ordinal.{u}) :
     (sup fun n : ℕ => f^[n] a) = nfp f a := by
   refine le_antisymm ?_ (sup_le fun l => ?_)
@@ -397,28 +379,28 @@ theorem sup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) (a : Ordinal.{u}) :
     exact le_sup _ _
 
 theorem iterate_le_nfp (f a n) : f^[n] a ≤ nfp f a := by
-  rw [← iSup_iterate_eq_nfp]
-  exact Ordinal.le_iSup _ n
+  rw [← sup_iterate_eq_nfp]
+  exact le_sup _ n
 
 theorem le_nfp (f a) : a ≤ nfp f a :=
   iterate_le_nfp f a 0
 
 theorem lt_nfp {a b} : a < nfp f b ↔ ∃ n, a < f^[n] b := by
-  rw [← iSup_iterate_eq_nfp]
-  exact Ordinal.lt_iSup
+  rw [← sup_iterate_eq_nfp]
+  exact lt_sup
 
 theorem nfp_le_iff {a b} : nfp f a ≤ b ↔ ∀ n, f^[n] a ≤ b := by
-  rw [← iSup_iterate_eq_nfp]
-  exact Ordinal.iSup_le_iff
+  rw [← sup_iterate_eq_nfp]
+  exact sup_le_iff
 
 theorem nfp_le {a b} : (∀ n, f^[n] a ≤ b) → nfp f a ≤ b :=
   nfp_le_iff.2
 
 @[simp]
-theorem nfp_id : nfp id = id := by
-  ext
-  simp_rw [← iSup_iterate_eq_nfp, iterate_id]
-  exact ciSup_const
+theorem nfp_id : nfp id = id :=
+  funext fun a => by
+    simp_rw [← sup_iterate_eq_nfp, iterate_id]
+    exact sup_const a
 
 theorem nfp_monotone (hf : Monotone f) : Monotone (nfp f) :=
   nfpFamily_monotone fun _ => hf
@@ -438,7 +420,7 @@ theorem IsNormal.nfp_fp {f} (H : IsNormal f) : ∀ a, f (nfp f a) = nfp f a :=
   @nfpFamily_fp Unit (fun _ => f) Unit.unit H
 
 theorem IsNormal.apply_le_nfp {f} (H : IsNormal f) {a b} : f b ≤ nfp f a ↔ b ≤ nfp f a :=
-  ⟨H.le_apply.trans, fun h => by simpa only [H.nfp_fp] using H.le_iff.2 h⟩
+  ⟨le_trans (H.self_le _), fun h => by simpa only [H.nfp_fp] using H.le_iff.2 h⟩
 
 theorem nfp_eq_self {f : Ordinal → Ordinal} {a} (h : f a = a) : nfp f a = a :=
   nfpFamily_eq_self fun _ => h
@@ -495,9 +477,8 @@ theorem deriv_eq_id_of_nfp_eq_id {f : Ordinal → Ordinal} (h : nfp f = id) : de
   (IsNormal.eq_iff_zero_and_succ (deriv_isNormal _) IsNormal.refl).2 <| by simp [h]
 
 theorem nfp_zero_left (a) : nfp 0 a = a := by
-  rw [← iSup_iterate_eq_nfp]
-  apply (Ordinal.iSup_le ?_).antisymm (Ordinal.le_iSup _ 0)
-  intro n
+  rw [← sup_iterate_eq_nfp]
+  apply (sup_le fun n => ?_).antisymm (le_sup (fun n => 0^[n] a) 0)
   induction' n with n _
   · rfl
   · rw [Function.iterate_succ']
@@ -522,7 +503,7 @@ end
 
 @[simp]
 theorem nfp_add_zero (a) : nfp (a + ·) 0 = a * omega := by
-  simp_rw [← iSup_iterate_eq_nfp, ← iSup_mul_nat]
+  simp_rw [← sup_iterate_eq_nfp, ← sup_mul_nat]
   congr; funext n
   induction' n with n hn
   · rw [Nat.cast_zero, mul_zero, iterate_zero_apply]
@@ -561,7 +542,7 @@ theorem deriv_add_eq_mul_omega_add (a b : Ordinal.{u}) : deriv (a + ·) b = a * 
 
 @[simp]
 theorem nfp_mul_one {a : Ordinal} (ha : 0 < a) : nfp (a * ·) 1 = (a^omega) := by
-  rw [← iSup_iterate_eq_nfp, ← iSup_pow ha]
+  rw [← sup_iterate_eq_nfp, ← sup_opow_nat ha]
   congr
   funext n
   induction' n with n hn

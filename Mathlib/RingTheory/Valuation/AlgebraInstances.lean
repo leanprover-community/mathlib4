@@ -25,7 +25,7 @@ of a field with a valuation, as well as their unit balls.
 
 open Function Valuation
 
-open scoped Multiplicative
+open scoped DiscreteValuation
 
 variable {K : Type*} [Field K] (v : Valuation K ℤₘ₀) (L : Type*) [Field L] [Algebra K L]
 

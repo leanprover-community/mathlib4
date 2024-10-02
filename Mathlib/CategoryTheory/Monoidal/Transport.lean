@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Kim Morrison. All rights reserved.
+Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
+Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 
@@ -87,7 +87,7 @@ The functor `F` must preserve all the data parts of the monoidal structure betwe
 categories.
 
 -/
-def induced [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
+abbrev induced [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
     (fData : InducingFunctorData F) :
     MonoidalCategory.{v₂} D where
   tensorHom_def {X₁ Y₁ X₂ Y₂} f g := F.map_injective <| by
@@ -135,7 +135,7 @@ def fromInduced [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
 
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/
-@[simps (config := .lemmasOnly)]
+@[simps]
 def transportStruct (e : C ≌ D) : MonoidalCategoryStruct.{v₂} D where
   tensorObj X Y := e.functor.obj (e.inverse.obj X ⊗ e.inverse.obj Y)
   whiskerLeft X _ _ f := e.functor.map (e.inverse.obj X ◁ e.inverse.map f)
@@ -144,17 +144,16 @@ def transportStruct (e : C ≌ D) : MonoidalCategoryStruct.{v₂} D where
   tensorUnit := e.functor.obj (𝟙_ C)
   associator X Y Z :=
     e.functor.mapIso
-      (whiskerRightIso (e.unitIso.app _).symm _ ≪≫
+      (((e.unitIso.app _).symm ⊗ Iso.refl _) ≪≫
         α_ (e.inverse.obj X) (e.inverse.obj Y) (e.inverse.obj Z) ≪≫
-        whiskerLeftIso _ (e.unitIso.app _))
+        (Iso.refl _ ⊗ e.unitIso.app _))
   leftUnitor X :=
-    e.functor.mapIso ((whiskerRightIso (e.unitIso.app _).symm _) ≪≫ λ_ (e.inverse.obj X)) ≪≫
+    e.functor.mapIso (((e.unitIso.app _).symm ⊗ Iso.refl _) ≪≫ λ_ (e.inverse.obj X)) ≪≫
       e.counitIso.app _
   rightUnitor X :=
-    e.functor.mapIso ((whiskerLeftIso _ (e.unitIso.app _).symm) ≪≫ ρ_ (e.inverse.obj X)) ≪≫
+    e.functor.mapIso ((Iso.refl _ ⊗ (e.unitIso.app _).symm) ≪≫ ρ_ (e.inverse.obj X)) ≪≫
       e.counitIso.app _
 
-attribute [local simp] transportStruct in
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/
 def transport (e : C ≌ D) : MonoidalCategory.{v₂} D :=

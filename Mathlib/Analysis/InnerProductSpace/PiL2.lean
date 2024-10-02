@@ -679,28 +679,6 @@ section ToMatrix
 variable [DecidableEq ι]
 
 section
-open scoped Matrix
-
-/-- A version of `OrthonormalBasis.toMatrix_orthonormalBasis_mem_unitary` that works for bases with
-different index types. -/
-@[simp]
-theorem OrthonormalBasis.toMatrix_orthonormalBasis_conjTranspose_mul_self [Fintype ι']
-    (a : OrthonormalBasis ι' 𝕜 E) (b : OrthonormalBasis ι 𝕜 E) :
-    (a.toBasis.toMatrix b)ᴴ * a.toBasis.toMatrix b = 1 := by
-  ext i j
-  convert a.repr.inner_map_map (b i) (b j)
-  rw [orthonormal_iff_ite.mp b.orthonormal i j]
-  rfl
-
-/-- A version of `OrthonormalBasis.toMatrix_orthonormalBasis_mem_unitary` that works for bases with
-different index types. -/
-@[simp]
-theorem OrthonormalBasis.toMatrix_orthonormalBasis_self_mul_conjTranspose [Fintype ι']
-    (a : OrthonormalBasis ι 𝕜 E) (b : OrthonormalBasis ι' 𝕜 E) :
-    a.toBasis.toMatrix b * (a.toBasis.toMatrix b)ᴴ = 1 := by
-  classical
-  rw [Matrix.mul_eq_one_comm_of_equiv (a.toBasis.indexEquiv b.toBasis),
-    a.toMatrix_orthonormalBasis_conjTranspose_mul_self b]
 
 variable (a b : OrthonormalBasis ι 𝕜 E)
 
@@ -708,7 +686,10 @@ variable (a b : OrthonormalBasis ι 𝕜 E)
 theorem OrthonormalBasis.toMatrix_orthonormalBasis_mem_unitary :
     a.toBasis.toMatrix b ∈ Matrix.unitaryGroup ι 𝕜 := by
   rw [Matrix.mem_unitaryGroup_iff']
-  exact a.toMatrix_orthonormalBasis_conjTranspose_mul_self b
+  ext i j
+  convert a.repr.inner_map_map (b i) (b j)
+  rw [orthonormal_iff_ite.mp b.orthonormal i j]
+  rfl
 
 /-- The determinant of the change-of-basis matrix between two orthonormal bases `a`, `b` has
 unit length. -/
@@ -947,7 +928,7 @@ theorem LinearIsometry.extend_apply (L : S →ₗᵢ[𝕜] V) (s : S) : L.extend
   simp only [add_right_eq_self, LinearIsometry.coe_toLinearMap,
     LinearIsometryEquiv.coe_toLinearIsometry, LinearIsometry.coe_comp, Function.comp_apply,
     orthogonalProjection_mem_subspace_eq_self, LinearMap.coe_comp, ContinuousLinearMap.coe_coe,
-    Submodule.coe_subtype, LinearMap.add_apply, Submodule.coe_eq_zero,
+    Submodule.coeSubtype, LinearMap.add_apply, Submodule.coe_eq_zero,
     LinearIsometryEquiv.map_eq_zero_iff, Submodule.coe_subtypeₗᵢ,
     orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero, Submodule.orthogonal_orthogonal,
     Submodule.coe_mem]

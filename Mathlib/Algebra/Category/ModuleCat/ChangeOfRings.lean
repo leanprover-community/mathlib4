@@ -155,11 +155,11 @@ def restrictScalarsId'App (hf : f = RingHom.id R) (M : ModuleCat R) :
 
 variable (hf : f = RingHom.id R)
 
-@[simp] lemma restrictScalarsId'App_hom_apply (M : ModuleCat R) (x : M) :
+lemma restrictScalarsId'App_hom_apply (M : ModuleCat R) (x : M) :
     (restrictScalarsId'App f hf M).hom x = x :=
   rfl
 
-@[simp] lemma restrictScalarsId'App_inv_apply (M : ModuleCat R) (x : M) :
+lemma restrictScalarsId'App_inv_apply (M : ModuleCat R) (x : M) :
     (restrictScalarsId'App f hf M).inv x = x :=
   rfl
 
@@ -202,11 +202,11 @@ def restrictScalarsComp'App (hgf : gf = g.comp f) (M : ModuleCat R₃) :
 
 variable (hgf : gf = g.comp f)
 
-@[simp] lemma restrictScalarsComp'App_hom_apply (M : ModuleCat R₃) (x : M) :
+lemma restrictScalarsComp'App_hom_apply (M : ModuleCat R₃) (x : M) :
     (restrictScalarsComp'App f g gf hgf M).hom x = x :=
   rfl
 
-@[simp] lemma restrictScalarsComp'App_inv_apply (M : ModuleCat R₃) (x : M) :
+lemma restrictScalarsComp'App_inv_apply (M : ModuleCat R₃) (x : M) :
     (restrictScalarsComp'App f g gf hgf M).inv x = x :=
   rfl
 

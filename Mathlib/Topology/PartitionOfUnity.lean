@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Topology.ContinuousMap.Algebra
+import Mathlib.SetTheory.Ordinal.Basic
+import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.Topology.Compactness.Paracompact
 import Mathlib.Topology.ShrinkingLemma
 import Mathlib.Topology.UrysohnsLemma

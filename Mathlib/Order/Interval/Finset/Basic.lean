@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Kim Morrison. All rights reserved.
+Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison, Yaël Dillies
+Authors: Scott Morrison, Yaël Dillies
 -/
 import Mathlib.Order.Cover
 import Mathlib.Order.Interval.Finset.Defs
@@ -17,7 +17,7 @@ respectively, `⩿` and `⋖`, which then leads to a characterization of monoton
 functions whose domain is a locally finite order. In particular, this file proves:
 
 * `le_iff_transGen_wcovBy`: `≤` is the transitive closure of `⩿`
-* `lt_iff_transGen_covBy`: `<` is the transitive closure of `⋖`
+* `lt_iff_transGen_covBy`: `≤` is the transitive closure of `⩿`
 * `monotone_iff_forall_wcovBy`: Characterization of monotone functions
 * `strictMono_iff_forall_covBy`: Characterization of strictly monotone functions
 
@@ -51,26 +51,17 @@ section LocallyFiniteOrder
 
 variable [LocallyFiniteOrder α]
 
-@[simp]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem nonempty_Icc : (Icc a b).Nonempty ↔ a ≤ b := by
   rw [← coe_nonempty, coe_Icc, Set.nonempty_Icc]
 
-@[aesop safe apply (rule_sets := [finsetNonempty])]
-alias ⟨_, Aesop.nonempty_Icc_of_le⟩ := nonempty_Icc
-
-@[simp]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem nonempty_Ico : (Ico a b).Nonempty ↔ a < b := by
   rw [← coe_nonempty, coe_Ico, Set.nonempty_Ico]
 
-@[aesop safe apply (rule_sets := [finsetNonempty])]
-alias ⟨_, Aesop.nonempty_Ico_of_lt⟩ := nonempty_Ico
-
-@[simp]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem nonempty_Ioc : (Ioc a b).Nonempty ↔ a < b := by
   rw [← coe_nonempty, coe_Ioc, Set.nonempty_Ioc]
-
-@[aesop safe apply (rule_sets := [finsetNonempty])]
-alias ⟨_, Aesop.nonempty_Ioc_of_lt⟩ := nonempty_Ioc
 
 -- TODO: This is nonsense. A locally finite order is never densely ordered
 @[simp]
@@ -340,11 +331,8 @@ variable [LocallyFiniteOrderTop α]
 
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 lemma nonempty_Ici : (Ici a).Nonempty := ⟨a, mem_Ici.2 le_rfl⟩
-@[simp]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 lemma nonempty_Ioi : (Ioi a).Nonempty ↔ ¬ IsMax a := by simp [Finset.Nonempty]
-
-@[aesop safe apply (rule_sets := [finsetNonempty])]
-alias ⟨_, Aesop.nonempty_Ioi_of_not_isMax⟩ := nonempty_Ioi
 
 theorem Ici_subset_Ici : Ici a ⊆ Ici b ↔ b ≤ a := by
   simpa [← coe_subset] using Set.Ici_subset_Ici
@@ -378,13 +366,8 @@ section LocallyFiniteOrderBot
 
 variable [LocallyFiniteOrderBot α]
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
-lemma nonempty_Iic : (Iic a).Nonempty := ⟨a, mem_Iic.2 le_rfl⟩
-@[simp]
-lemma nonempty_Iio : (Iio a).Nonempty ↔ ¬ IsMin a := by simp [Finset.Nonempty]
-
-@[aesop safe apply (rule_sets := [finsetNonempty])]
-alias ⟨_, Aesop.nonempty_Iio_of_not_isMin⟩ := nonempty_Iio
+@[simp] lemma nonempty_Iic : (Iic a).Nonempty := ⟨a, mem_Iic.2 le_rfl⟩
+@[simp] lemma nonempty_Iio : (Iio a).Nonempty ↔ ¬ IsMin a := by simp [Finset.Nonempty]
 
 theorem Iic_subset_Iic : Iic a ⊆ Iic b ↔ a ≤ b := by
   simpa [← coe_subset] using Set.Iic_subset_Iic
@@ -683,7 +666,7 @@ variable [LinearOrder α]
 
 section LocallyFiniteOrder
 
-variable [LocallyFiniteOrder α]
+variable [LocallyFiniteOrder α] {a b : α}
 
 theorem Ico_subset_Ico_iff {a₁ b₁ a₂ b₂ : α} (h : a₁ < b₁) :
     Ico a₁ b₁ ⊆ Ico a₂ b₂ ↔ a₂ ≤ a₁ ∧ b₁ ≤ b₂ := by
@@ -790,7 +773,7 @@ end LinearOrder
 
 section Lattice
 
-variable [Lattice α] [LocallyFiniteOrder α] {a a₁ a₂ b b₁ b₂ x : α}
+variable [Lattice α] [LocallyFiniteOrder α] {a a₁ a₂ b b₁ b₂ c x : α}
 
 theorem uIcc_toDual (a b : α) : [[toDual a, toDual b]] = [[a, b]].map toDual.toEmbedding :=
   Icc_toDual _ _
@@ -862,7 +845,7 @@ end Lattice
 
 section DistribLattice
 
-variable [DistribLattice α] [LocallyFiniteOrder α] {a b c : α}
+variable [DistribLattice α] [LocallyFiniteOrder α] {a a₁ a₂ b b₁ b₂ c x : α}
 
 theorem eq_of_mem_uIcc_of_mem_uIcc : a ∈ [[b, c]] → b ∈ [[a, c]] → a = b := by
   simp_rw [mem_uIcc]
@@ -883,7 +866,7 @@ end DistribLattice
 
 section LinearOrder
 
-variable [LinearOrder α] [LocallyFiniteOrder α] {a a₁ a₂ b b₁ b₂ c : α}
+variable [LinearOrder α] [LocallyFiniteOrder α] {a a₁ a₂ b b₁ b₂ c x : α}
 
 theorem Icc_min_max : Icc (min a b) (max a b) = [[a, b]] :=
   rfl

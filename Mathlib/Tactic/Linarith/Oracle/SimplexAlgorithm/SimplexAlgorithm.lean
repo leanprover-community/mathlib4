@@ -21,7 +21,7 @@ inductive SimplexAlgorithmException
 
 /-- The monad for the Simplex Algorithm. -/
 abbrev SimplexAlgorithmM (matType : Nat → Nat → Type) [UsableInSimplexAlgorithm matType] :=
-  ExceptT SimplexAlgorithmException <| StateT (Tableau matType) Lean.CoreM
+  ExceptT SimplexAlgorithmException <| StateM (Tableau matType)
 
 variable {matType : Nat → Nat → Type} [UsableInSimplexAlgorithm matType]
 
@@ -77,7 +77,7 @@ def chooseEnteringVar : SimplexAlgorithmM matType Nat := do
 
   /- If there is no such variable the solution does not exist for sure. -/
   match enterIdxOpt with
-  | .none => throwThe SimplexAlgorithmException SimplexAlgorithmException.infeasible
+  | .none => throw SimplexAlgorithmException.infeasible
   | .some enterIdx => return enterIdx
 
 /--
@@ -116,7 +116,6 @@ such exists.
 -/
 def runSimplexAlgorithm : SimplexAlgorithmM matType Unit := do
   while !(← checkSuccess) do
-    Lean.Core.checkSystem decl_name%.toString
     let ⟨exitIdx, enterIdx⟩ ← choosePivots
     doPivotOperation exitIdx enterIdx
 

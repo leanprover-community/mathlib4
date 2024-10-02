@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison, Yuma Mizuno, Oleksandr Manzyuk
+Authors: Scott Morrison, Yuma Mizuno, Oleksandr Manzyuk
 -/
 import Mathlib.CategoryTheory.Monoidal.Free.Coherence
 import Mathlib.Lean.Meta
@@ -186,10 +186,9 @@ elab (name := liftable_prefixes) "liftable_prefixes" : tactic => do
     (max 256 (synthInstance.maxSize.get opts))) do
   evalTactic (← `(tactic|
     (simp (config := {failIfUnchanged := false}) only
-      [monoidalComp, bicategoricalComp, Category.assoc, BicategoricalCoherence.iso,
+      [monoidalComp, Category.assoc, BicategoricalCoherence.hom,
       MonoidalCoherence.iso, Iso.trans, Iso.symm, Iso.refl,
-      MonoidalCategory.whiskerRightIso, MonoidalCategory.whiskerLeftIso,
-      Bicategory.whiskerRightIso, Bicategory.whiskerLeftIso]) <;>
+      MonoidalCategory.whiskerRightIso, MonoidalCategory.whiskerLeftIso]) <;>
     (apply (cancel_epi (𝟙 _)).1 <;> try infer_instance) <;>
     (simp (config := {failIfUnchanged := false}) only
       [assoc_liftHom, Mathlib.Tactic.BicategoryCoherence.assoc_liftHom₂])))

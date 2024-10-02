@@ -2,8 +2,7 @@ name: Weekly Technical Debt Counters
 
 on:
   schedule:
-    - cron: '0 4 * * 1'  # Run at 04:00 UTC every Monday
-  workflow_dispatch:
+    - cron: '0 4 * * 1'  # Run at 04:00 every Monday
 
 jobs:
   run-script:

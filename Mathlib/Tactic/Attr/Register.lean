@@ -84,6 +84,3 @@ register_simp_attr nontriviality
 
 /-- A stub attribute for `is_poly`. -/
 register_label_attr is_poly
-
-/-- A simp set for the `fin_omega` wrapper around `omega`. -/
-register_simp_attr fin_omega

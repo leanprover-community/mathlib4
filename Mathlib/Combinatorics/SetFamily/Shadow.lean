@@ -75,10 +75,7 @@ theorem shadow_empty : ∂ (∅ : Finset (Finset α)) = ∅ :=
 theorem shadow_singleton_empty : ∂ ({∅} : Finset (Finset α)) = ∅ :=
   rfl
 
-@[simp]
-theorem shadow_singleton (a : α) : ∂ {{a}} = {∅} := by
-  simp [shadow]
-
+--TODO: Prove `∂ {{a}} = {∅}` quickly using `covers` and `GradeOrder`
 /-- The shadow is monotone. -/
 @[mono]
 theorem shadow_monotone : Monotone (shadow : Finset (Finset α) → Finset (Finset α)) := fun _ _ =>

@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Data.Int.ModEq
 import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!

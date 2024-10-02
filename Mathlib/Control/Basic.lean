@@ -214,6 +214,8 @@ class CommApplicative (m : Type u → Type v) [Applicative m] extends LawfulAppl
 
 open Functor
 
+variable {m}
+
 theorem CommApplicative.commutative_map {m : Type u → Type v} [h : Applicative m]
     [CommApplicative m] {α β γ} (a : m α) (b : m β) {f : α → β → γ} :
   f <$> a <*> b = flip f <$> b <*> a :=

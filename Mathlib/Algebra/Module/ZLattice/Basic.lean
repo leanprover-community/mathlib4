@@ -36,7 +36,7 @@ of `ℤ`-rank equal to the `K`-rank of `E`
 ## Implementation Notes
 
 A `ZLattice` could be defined either as a `AddSubgroup E` or a `Submodule ℤ E`. However, the module
-aspect appears to be the more useful one (especially in computations involving basis) and is also
+aspects appears to be the most useful one (especially in computations involving basis) and is also
 consistent with the `ZSpan` construction of `ℤ`-lattices.
 
 -/
@@ -583,7 +583,7 @@ theorem Basis.ofZLatticeBasis_repr_apply (x : L) (i : ι) :
     exact DFunLike.congr_fun (LinearMap.congr_fun this x) i
   refine Basis.ext b fun i ↦ ?_
   simp_rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.coe_restrictScalars,
-    LinearEquiv.coe_coe, coe_subtype, ← b.ofZLatticeBasis_apply K, repr_self,
+    LinearEquiv.coe_coe, coeSubtype, ← b.ofZLatticeBasis_apply K, repr_self,
     Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, Algebra.linearMap_apply, map_one]
 
 theorem Basis.ofZLatticeBasis_span :

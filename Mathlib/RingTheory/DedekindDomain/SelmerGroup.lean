@@ -67,7 +67,7 @@ namespace IsDedekindDomain
 
 noncomputable section
 
-open scoped Multiplicative nonZeroDivisors
+open scoped DiscreteValuation nonZeroDivisors
 
 universe u v
 

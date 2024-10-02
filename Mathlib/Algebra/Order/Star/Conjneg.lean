@@ -13,7 +13,7 @@ import Mathlib.Algebra.Star.Conjneg
 
 open scoped ComplexConjugate
 
-variable {G R : Type*} [AddGroup G]
+variable {ι G R : Type*} [AddGroup G]
 
 section OrderedCommSemiring
 variable [OrderedCommSemiring R] [StarRing R] [StarOrderedRing R] {f : G → R}

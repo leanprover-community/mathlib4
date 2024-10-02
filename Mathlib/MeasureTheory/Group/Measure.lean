@@ -5,7 +5,7 @@ Authors: Floris van Doorn
 -/
 import Mathlib.MeasureTheory.Constructions.Prod.Basic
 import Mathlib.MeasureTheory.Group.Action
-import Mathlib.Topology.ContinuousMap.CocompactMap
+import Mathlib.Topology.ContinuousFunction.CocompactMap
 
 /-!
 # Measures on Groups

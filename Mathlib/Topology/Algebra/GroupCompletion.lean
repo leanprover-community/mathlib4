@@ -181,8 +181,8 @@ theorem continuous_toCompl : Continuous (toCompl : α → Completion α) :=
 
 variable (α)
 
-theorem isDenseInducing_toCompl : IsDenseInducing (toCompl : α → Completion α) :=
-  isDenseInducing_coe
+theorem denseInducing_toCompl : DenseInducing (toCompl : α → Completion α) :=
+  denseInducing_coe
 
 variable {α}
 

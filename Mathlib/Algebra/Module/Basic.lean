@@ -101,7 +101,9 @@ section NoZeroSMulDivisors
 
 section Module
 
-instance [AddCommGroup M] [NoZeroSMulDivisors ℤ M] : NoZeroSMulDivisors ℕ M :=
+variable [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
+
+instance [NoZeroSMulDivisors ℤ M] : NoZeroSMulDivisors ℕ M :=
   ⟨fun {c x} hcx ↦ by rwa [← Nat.cast_smul_eq_nsmul ℤ c x, smul_eq_zero, Nat.cast_eq_zero] at hcx⟩
 
 end Module

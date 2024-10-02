@@ -32,7 +32,7 @@ assert_not_exists DenselyOrdered
 
 open scoped Int
 
-variable {M : Type*}
+variable {M G : Type*}
 
 namespace SemiconjBy
 

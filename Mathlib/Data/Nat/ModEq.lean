@@ -3,8 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Group.Unbundled.Int
+import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Int.GCD
+import Mathlib.Data.Int.Order.Lemmas
+import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # Congruences modulo a natural number
@@ -22,7 +24,6 @@ and proves basic properties about it such as the Chinese Remainder Theorem
 ModEq, congruence, mod, MOD, modulo
 -/
 
-assert_not_exists OrderedAddCommMonoid
 assert_not_exists Function.support
 
 namespace Nat
@@ -36,8 +37,8 @@ notation:50 a " ≡ " b " [MOD " n "]" => ModEq n a b
 
 variable {m n a b c d : ℕ}
 
--- Since `ModEq` is semi-reducible, we need to provide the decidable instance manually
-instance : Decidable (ModEq n a b) := inferInstanceAs <| Decidable (a % n = b % n)
+-- Porting note: This instance should be derivable automatically
+instance : Decidable (ModEq n a b) := decEq (a % n) (b % n)
 
 namespace ModEq
 
@@ -90,7 +91,7 @@ theorem mod_modEq (a n) : a % n ≡ a [MOD n] :=
 namespace ModEq
 
 lemma of_dvd (d : m ∣ n) (h : a ≡ b [MOD n]) : a ≡ b [MOD m] :=
-  modEq_of_dvd <| Int.ofNat_dvd.mpr d |>.trans h.dvd
+  modEq_of_dvd <| d.natCast.trans h.dvd
 
 protected theorem mul_left' (c : ℕ) (h : a ≡ b [MOD n]) : c * a ≡ c * b [MOD c * n] := by
   unfold ModEq at *; rw [mul_mod_mul_left, mul_mod_mul_left, h]
@@ -121,7 +122,7 @@ protected theorem pow (m : ℕ) (h : a ≡ b [MOD n]) : a ^ m ≡ b ^ m [MOD n] 
 @[gcongr]
 protected theorem add (h₁ : a ≡ b [MOD n]) (h₂ : c ≡ d [MOD n]) : a + c ≡ b + d [MOD n] := by
   rw [modEq_iff_dvd, Int.ofNat_add, Int.ofNat_add, add_sub_add_comm]
-  exact Int.dvd_add h₁.dvd h₂.dvd
+  exact dvd_add h₁.dvd h₂.dvd
 
 @[gcongr]
 protected theorem add_left (c : ℕ) (h : a ≡ b [MOD n]) : c + a ≡ c + b [MOD n] :=
@@ -135,7 +136,7 @@ protected theorem add_left_cancel (h₁ : a ≡ b [MOD n]) (h₂ : a + c ≡ b +
     c ≡ d [MOD n] := by
   simp only [modEq_iff_dvd, Int.ofNat_add] at *
   rw [add_sub_add_comm] at h₂
-  convert Int.dvd_sub h₂ h₁ using 1
+  convert _root_.dvd_sub h₂ h₁ using 1
   rw [add_sub_cancel_left]
 
 protected theorem add_left_cancel' (c : ℕ) (h : c + a ≡ c + b [MOD n]) : a ≡ b [MOD n] :=
@@ -154,8 +155,7 @@ protected theorem add_right_cancel' (c : ℕ) (h : a + c ≡ b + c [MOD n]) : a 
 For cancelling left multiplication in the modulus, see `Nat.ModEq.of_mul_left`. -/
 protected theorem mul_left_cancel' {a b c m : ℕ} (hc : c ≠ 0) :
     c * a ≡ c * b [MOD c * m] → a ≡ b [MOD m] := by
-  simp only [modEq_iff_dvd, Int.natCast_mul, ← Int.mul_sub]
-  exact fun h => (Int.dvd_of_mul_dvd_mul_left (Int.ofNat_ne_zero.mpr hc) h)
+  simp [modEq_iff_dvd, ← mul_sub, mul_dvd_mul_iff_left (by simp [hc] : (c : ℤ) ≠ 0)]
 
 protected theorem mul_left_cancel_iff' {a b c m : ℕ} (hc : c ≠ 0) :
     c * a ≡ c * b [MOD c * m] ↔ a ≡ b [MOD m] :=
@@ -166,8 +166,7 @@ protected theorem mul_left_cancel_iff' {a b c m : ℕ} (hc : c ≠ 0) :
 For cancelling right multiplication in the modulus, see `Nat.ModEq.of_mul_right`. -/
 protected theorem mul_right_cancel' {a b c m : ℕ} (hc : c ≠ 0) :
     a * c ≡ b * c [MOD m * c] → a ≡ b [MOD m] := by
-  simp only [modEq_iff_dvd, Int.natCast_mul, ← Int.sub_mul]
-  exact fun h => (Int.dvd_of_mul_dvd_mul_right (Int.ofNat_ne_zero.mpr hc) h)
+  simp [modEq_iff_dvd, ← sub_mul, mul_dvd_mul_iff_right (by simp [hc] : (c : ℤ) ≠ 0)]
 
 protected theorem mul_right_cancel_iff' {a b c m : ℕ} (hc : c ≠ 0) :
     a * c ≡ b * c [MOD m * c] ↔ a ≡ b [MOD m] :=
@@ -205,10 +204,10 @@ namespace ModEq
 theorem le_of_lt_add (h1 : a ≡ b [MOD m]) (h2 : a < b + m) : a ≤ b :=
   (le_total a b).elim id fun h3 =>
     Nat.le_of_sub_eq_zero
-      (eq_zero_of_dvd_of_lt ((modEq_iff_dvd' h3).mp h1.symm) (by omega))
+      (eq_zero_of_dvd_of_lt ((modEq_iff_dvd' h3).mp h1.symm) ((tsub_lt_iff_left h3).mpr h2))
 
 theorem add_le_of_lt (h1 : a ≡ b [MOD m]) (h2 : a < b) : a + m ≤ b :=
-  le_of_lt_add (add_modEq_right.trans h1) (by omega)
+  le_of_lt_add (add_modEq_right.trans h1) (add_lt_add_right h2 m)
 
 theorem dvd_iff (h : a ≡ b [MOD m]) (hdm : d ∣ m) : d ∣ a ↔ d ∣ b := by
   simp only [← modEq_zero_iff_dvd]
@@ -228,7 +227,9 @@ lemma eq_of_abs_lt (h : a ≡ b [MOD m]) (h2 : |(b : ℤ) - a| < m) : a = b := b
   exact Int.eq_zero_of_abs_lt_dvd h.dvd h2
 
 lemma eq_of_lt_of_lt (h : a ≡ b [MOD m]) (ha : a < m) (hb : b < m) : a = b :=
-  h.eq_of_abs_lt <| Int.abs_sub_lt_of_lt_lt ha hb
+  h.eq_of_abs_lt <| abs_sub_lt_iff.2
+    ⟨(sub_le_self _ <| Int.natCast_nonneg _).trans_lt <| Int.ofNat_lt.2 hb,
+    (sub_le_self _ <| Int.natCast_nonneg _).trans_lt <| Int.ofNat_lt.2 ha⟩
 
 /-- To cancel a common factor `c` from a `ModEq` we must divide the modulus `m` by `gcd m c` -/
 lemma cancel_left_div_gcd (hm : 0 < m) (h : c * a ≡ c * b [MOD m]) :  a ≡ b [MOD m / gcd m c] := by
@@ -240,7 +241,7 @@ lemma cancel_left_div_gcd (hm : 0 < m) (h : c * a ≡ c * b [MOD m]) :  a ≡ b 
   · show (m / d : ℤ) ∣ c / d * (b - a)
     rw [mul_comm, ← Int.mul_ediv_assoc (b - a) (Int.natCast_dvd_natCast.mpr hcd), mul_comm]
     apply Int.ediv_dvd_ediv (Int.natCast_dvd_natCast.mpr hmd)
-    rw [Int.mul_sub]
+    rw [mul_sub]
     exact modEq_iff_dvd.mp h
   · show Int.gcd (m / d) (c / d) = 1
     simp only [← Int.natCast_div, Int.gcd_natCast_natCast (m / d) (c / d), gcd_div hmd hcd,
@@ -298,18 +299,18 @@ def chineseRemainder' (h : a ≡ b [MOD gcd n m]) : { k // k ≡ a [MOD n] ∧ k
         have hcoedvd : ∀ t, (gcd n m : ℤ) ∣ t * (b - a) := fun t => h.dvd.mul_left _
         have := gcd_eq_gcd_ab n m
         constructor <;> rw [Int.emod_def, ← sub_add] <;>
-            refine Int.dvd_add ?_ (dvd_mul_of_dvd_left ?_ _) <;>
+            refine dvd_add ?_ (dvd_mul_of_dvd_left ?_ _) <;>
           try norm_cast
         · rw [← sub_eq_iff_eq_add'] at this
-          rw [← this, Int.sub_mul, ← add_sub_assoc, add_comm, add_sub_assoc, ← Int.mul_sub,
+          rw [← this, sub_mul, ← add_sub_assoc, add_comm, add_sub_assoc, ← mul_sub,
             Int.add_ediv_of_dvd_left, Int.mul_ediv_cancel_left _ hnonzero,
-            Int.mul_ediv_assoc _ h.dvd, ← sub_sub, sub_self, zero_sub, Int.dvd_neg, mul_assoc]
+            Int.mul_ediv_assoc _ h.dvd, ← sub_sub, sub_self, zero_sub, dvd_neg, mul_assoc]
           · exact dvd_mul_right _ _
           norm_cast
           exact dvd_mul_right _ _
         · exact dvd_lcm_left n m
         · rw [← sub_eq_iff_eq_add] at this
-          rw [← this, Int.sub_mul, sub_add, ← Int.mul_sub, Int.sub_ediv_of_dvd,
+          rw [← this, sub_mul, sub_add, ← mul_sub, Int.sub_ediv_of_dvd,
             Int.mul_ediv_cancel_left _ hnonzero, Int.mul_ediv_assoc _ h.dvd, ← sub_add, sub_self,
             zero_add, mul_assoc]
           · exact dvd_mul_right _ _
@@ -406,7 +407,7 @@ protected theorem add_div_of_dvd_right {a b c : ℕ} (hca : c ∣ a) : (a + b) /
     add_div_eq_of_add_mod_lt
       (by
         rw [Nat.mod_eq_zero_of_dvd hca, zero_add]
-        exact Nat.mod_lt _ (zero_lt_of_ne_zero h))
+        exact Nat.mod_lt _ (pos_iff_ne_zero.mpr h))
 
 protected theorem add_div_of_dvd_left {a b c : ℕ} (hca : c ∣ b) : (a + b) / c = a / c + b / c := by
   rwa [add_comm, Nat.add_div_of_dvd_right, add_comm]
@@ -429,24 +430,27 @@ theorem odd_mul_odd {n m : ℕ} : n % 2 = 1 → m % 2 = 1 → n * m % 2 = 1 := b
 
 theorem odd_mul_odd_div_two {m n : ℕ} (hm1 : m % 2 = 1) (hn1 : n % 2 = 1) :
     m * n / 2 = m * (n / 2) + m / 2 :=
+  have hm0 : 0 < m := Nat.pos_of_ne_zero fun h => by simp_all
   have hn0 : 0 < n := Nat.pos_of_ne_zero fun h => by simp_all
   mul_right_injective₀ two_ne_zero <| by
     dsimp
     rw [mul_add, two_mul_odd_div_two hm1, mul_left_comm, two_mul_odd_div_two hn1,
-      two_mul_odd_div_two (Nat.odd_mul_odd hm1 hn1), Nat.mul_sub, mul_one, ←
-      Nat.add_sub_assoc (by omega), Nat.sub_add_cancel (Nat.le_mul_of_pos_right m hn0)]
+      two_mul_odd_div_two (Nat.odd_mul_odd hm1 hn1), mul_tsub, mul_one, ←
+      add_tsub_assoc_of_le (succ_le_of_lt hm0),
+      tsub_add_cancel_of_le (le_mul_of_one_le_right (Nat.zero_le _) hn0)]
 
 theorem odd_of_mod_four_eq_one {n : ℕ} : n % 4 = 1 → n % 2 = 1 := by
-  simpa [ModEq] using @ModEq.of_mul_left 2 n 1 2
+  simpa [ModEq, show 2 * 2 = 4 by norm_num] using @ModEq.of_mul_left 2 n 1 2
 
 theorem odd_of_mod_four_eq_three {n : ℕ} : n % 4 = 3 → n % 2 = 1 := by
-  simpa [ModEq] using @ModEq.of_mul_left 2 n 3 2
+  simpa [ModEq, show 2 * 2 = 4 by norm_num, show 3 % 4 = 3 by norm_num] using
+    @ModEq.of_mul_left 2 n 3 2
 
 /-- A natural number is odd iff it has residue `1` or `3` mod `4`-/
 theorem odd_mod_four_iff {n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3 :=
   have help : ∀ m : ℕ, m < 4 → m % 2 = 1 → m = 1 ∨ m = 3 := by decide
   ⟨fun hn =>
-    help (n % 4) (mod_lt n (by omega)) <| (mod_mod_of_dvd n (by decide : 2 ∣ 4)).trans hn,
+    help (n % 4) (mod_lt n (by norm_num)) <| (mod_mod_of_dvd n (by decide : 2 ∣ 4)).trans hn,
     fun h => Or.elim h odd_of_mod_four_eq_one odd_of_mod_four_eq_three⟩
 
 lemma mod_eq_of_modEq {a b n} (h : a ≡ b [MOD n]) (hb : b < n) : a % n = b :=

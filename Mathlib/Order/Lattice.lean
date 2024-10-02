@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Data.Bool.Basic
 import Mathlib.Order.Monotone.Basic
 import Mathlib.Order.ULift
-import Mathlib.Tactic.GCongr.CoreAttrs
+import Mathlib.Tactic.GCongr.Core
 
 /-!
 # (Semi-)lattices

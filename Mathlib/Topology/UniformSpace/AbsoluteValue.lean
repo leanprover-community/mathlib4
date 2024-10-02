@@ -5,7 +5,7 @@ Authors: Patrick Massot
 -/
 import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Topology.UniformSpace.OfFun
+import Mathlib.Topology.UniformSpace.Basic
 
 /-!
 # Uniform structure induced by an absolute value

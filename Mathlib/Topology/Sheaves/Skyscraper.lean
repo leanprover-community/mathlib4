@@ -34,7 +34,6 @@ TODO: generalize universe level when calculating stalks, after generalizing univ
 noncomputable section
 
 open TopologicalSpace TopCat CategoryTheory CategoryTheory.Limits Opposite
-open scoped AlgebraicGeometry
 
 universe u v w
 

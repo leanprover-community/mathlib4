@@ -933,8 +933,9 @@ end Actions
 
 section RestrictScalarsAsLinearMap
 
-variable {R S M N P : Type*} [Semiring R] [Semiring S] [AddCommMonoid M] [AddCommMonoid N]
-  [Module R M] [Module R N] [Module S M] [Module S N] [CompatibleSMul M N R S]
+variable {R S M N : Type*} [Semiring R] [Semiring S] [AddCommGroup M] [AddCommGroup N] [Module R M]
+   [Module R N] [Module S M] [Module S N]
+  [LinearMap.CompatibleSMul M N R S]
 
 variable (R S M N) in
 @[simp]
@@ -947,9 +948,7 @@ theorem restrictScalars_add (f g : M →ₗ[S] N) :
   rfl
 
 @[simp]
-theorem restrictScalars_neg {M N : Type*} [AddCommGroup M] [AddCommGroup N]
-    [Module R M] [Module R N] [Module S M] [Module S N] [CompatibleSMul M N R S]
-    (f : M →ₗ[S] N) : (-f).restrictScalars R = -f.restrictScalars R :=
+theorem restrictScalars_neg (f : M →ₗ[S] N) : (-f).restrictScalars R = -f.restrictScalars R :=
   rfl
 
 variable {R₁ : Type*} [Semiring R₁] [Module R₁ N] [SMulCommClass S R₁ N] [SMulCommClass R R₁ N]
@@ -957,18 +956,6 @@ variable {R₁ : Type*} [Semiring R₁] [Module R₁ N] [SMulCommClass S R₁ N]
 @[simp]
 theorem restrictScalars_smul (c : R₁) (f : M →ₗ[S] N) :
     (c • f).restrictScalars R = c • f.restrictScalars R :=
-  rfl
-
-@[simp]
-lemma restrictScalars_comp [AddCommMonoid P] [Module S P] [Module R P]
-    [CompatibleSMul N P R S] [CompatibleSMul M P R S] (f : N →ₗ[S] P) (g : M →ₗ[S] N) :
-    (f ∘ₗ g).restrictScalars R = f.restrictScalars R ∘ₗ g.restrictScalars R := by
-  rfl
-
-@[simp]
-lemma restrictScalars_trans {T : Type*} [CommSemiring T] [Module T M] [Module T N]
-    [CompatibleSMul M N S T] [CompatibleSMul M N R T] (f : M →ₗ[T] N) :
-    (f.restrictScalars S).restrictScalars R = f.restrictScalars R :=
   rfl
 
 variable (S M N R R₁)

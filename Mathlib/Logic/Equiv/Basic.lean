@@ -9,7 +9,6 @@ import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Subtype
 import Mathlib.Data.Sum.Basic
-import Mathlib.Init.Algebra.Classes
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Function.Conjugate
 import Mathlib.Tactic.Coe
@@ -1579,6 +1578,8 @@ theorem Function.Injective.map_swap [DecidableEq α] [DecidableEq β] {f : α �
 namespace Equiv
 
 section
+
+variable (P : α → Sort w) (e : α ≃ β)
 
 /-- Transport dependent functions through an equivalence of the base space.
 -/
