@@ -161,6 +161,7 @@ lemma mem_mk' (carrier : Set R) (h₁ h₂ h₃ h₄ h₅) (x : R) :
   rw [mem_iff]
   simp [mk']
 
+set_option linter.docPrime false in
 @[simp]
 lemma coe_mk' (carrier : Set R) (h₁ h₂ h₃ h₄ h₅) :
     (mk' carrier h₁ h₂ h₃ h₄ h₅ : Set R) = carrier :=
