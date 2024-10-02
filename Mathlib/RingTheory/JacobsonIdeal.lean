@@ -431,7 +431,6 @@ def jacobson (I : TwoSidedIdeal R) : TwoSidedIdeal R :=
   TwoSidedIdeal.ofIdeal (asIdeal I).jacobson (Ideal.jacobson_mul_mem_right <| I.mul_mem_right _ _)
 
 lemma jacobson_asIdeal (I : TwoSidedIdeal R) : asIdeal I.jacobson = (asIdeal I).jacobson := by
-  ext
-  simp [jacobson, mem_asIdeal, mem_ofIdeal]
+  ext; simp [jacobson]
 
 end TwoSidedIdeal

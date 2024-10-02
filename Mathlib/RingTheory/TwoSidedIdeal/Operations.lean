@@ -221,6 +221,7 @@ def asIdeal : TwoSidedIdeal R →o Ideal R where
     smul_mem' := fun r x hx => I.mul_mem_left r x hx }
   monotone' _ _ h _ h' := h h'
 
+@[simp]
 lemma mem_asIdeal {I : TwoSidedIdeal R} {x : R} :
     x ∈ asIdeal I ↔ x ∈ I := by simp [asIdeal]
 
@@ -248,9 +249,10 @@ lemma mem_asIdealOpposite {I : TwoSidedIdeal R} {x : Rᵐᵒᵖ} :
 def ofIdeal (I : Ideal R) (mul_mem_right : ∀ {x y}, x ∈ I → x * y ∈ I) : TwoSidedIdeal R :=
   TwoSidedIdeal.mk' I I.zero_mem I.add_mem I.neg_mem (I.smul_mem _) mul_mem_right
 
+@[simp]
 lemma mem_ofIdeal {I : Ideal R} {h} {x : R} :
     x ∈ ofIdeal I h ↔ x ∈ I := by
-  simp [ofIdeal, mem_mk']
+  simp [ofIdeal]
 
 @[simp]
 lemma coe_ofIdeal (I : Ideal R) (h) : (ofIdeal I h : Set R) = I := by
@@ -259,12 +261,12 @@ lemma coe_ofIdeal (I : Ideal R) (h) : (ofIdeal I h : Set R) = I := by
 @[simp]
 lemma ofIdeal_asIdeal (I : TwoSidedIdeal R) (h) : ofIdeal (asIdeal I) h = I := by
   ext
-  simp [mem_ofIdeal, mem_asIdeal]
+  simp
 
 @[simp]
 lemma asIdeal_ofIdeal (I : Ideal R) (h) : asIdeal (ofIdeal I h) = I := by
   ext
-  simp [mem_ofIdeal, mem_asIdeal]
+  simp
 
 instance : CanLift (Ideal R) (TwoSidedIdeal R) asIdeal (fun I => ∀ {x y}, x ∈ I → x * y ∈ I) where
   prf I mul_mem_right := ⟨ofIdeal I mul_mem_right, asIdeal_ofIdeal ..⟩
@@ -286,7 +288,7 @@ def orderIsoIdeal : TwoSidedIdeal R ≃o Ideal R where
   right_inv J := SetLike.ext fun x ↦ mem_span_iff.trans
     ⟨fun h ↦ mem_mk' _ _ _ _ _ _ _ |>.1 <| h (mk'
       J J.zero_mem J.add_mem J.neg_mem (J.mul_mem_left _) (J.mul_mem_right _))
-      (fun x => by simp [mem_mk']), by aesop⟩
+      (fun x => by simp), by aesop⟩
 
 end CommRing
 

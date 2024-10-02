@@ -156,6 +156,7 @@ def mk' (carrier : Set R)
         rw [show a + c - (b + d) = (a - b) + (c - d) by abel]
         exact add_mem h1 h2 }
 
+@[simp]
 lemma mem_mk' (carrier : Set R) (h₁ h₂ h₃ h₄ h₅) (x : R) :
     x ∈ mk' carrier h₁ h₂ h₃ h₄ h₅ ↔ x ∈ carrier := by
   rw [mem_iff]
