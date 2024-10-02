@@ -97,6 +97,8 @@ open SeparationQuotient Metric Set Topology NNReal
 
 variable {M N : Type*} [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
 
+namespace SeparationQuotient
+
 /-- The null space with respect to the norm. -/
 def nullSpace : AddSubgroup M where
   carrier := {x : M | ‖x‖ = 0}
@@ -142,16 +144,16 @@ instance : Nonempty (@nullSpace M).carrier := ⟨0, nullSpace.zero_mem'⟩
 noncomputable instance normOnSeparationQuotient : Norm (SeparationQuotient M) where
   norm x := sInf (norm '' { m | mk m = x })
 
-theorem SeparationQuotient.norm_eq (x : SeparationQuotient M) :
+theorem norm_eq (x : SeparationQuotient M) :
     ‖x‖ = sInf (norm '' { m : M | mk m = x }) := rfl
 
-theorem SeparationQuotient.norm_eq_infDist (x : SeparationQuotient M) :
+theorem norm_eq_infDist (x : SeparationQuotient M) :
     ‖x‖ = infDist 0 { m : M | mk m = x } := by
-  simp only [SeparationQuotient.norm_eq, infDist_eq_iInf, sInf_image', dist_zero_left]
+  simp only [norm_eq, infDist_eq_iInf, sInf_image', dist_zero_left]
 
 /-- An alternative definition of the norm on the quotient group: the norm of `mk x` is
 equal to the distance from `x` to `nullSpace`. -/
-theorem SeparationQuotient.norm_mk (x : M) : ‖mk x‖ = infDist x (nullSpace).carrier := by
+theorem norm_mk (x : M) : ‖mk x‖ = infDist x (nullSpace).carrier := by
   rw [norm_eq_infDist, ← infDist_image (IsometryEquiv.subLeft x).isometry,
     IsometryEquiv.subLeft_apply, sub_zero, ← IsometryEquiv.preimage_symm]
   congr 1 with y
@@ -231,7 +233,7 @@ theorem quotient_norm_eq_zero_iff (m : M) :
   rw [← mem_closure_iff_infDist_zero]
   exact ⟨0, nullSpace.zero_mem'⟩
 
-theorem SeparationQuotient.norm_lt_iff {x : SeparationQuotient M} {r : ℝ} :
+theorem norm_lt_iff {x : SeparationQuotient M} {r : ℝ} :
     ‖x‖ < r ↔ ∃ m : M, mk m = x ∧ ‖m‖ < r := by
   rw [isGLB_lt_iff (isGLB_quotient_norm _), exists_mem_image]
   rfl
@@ -294,7 +296,7 @@ theorem quotient_nhd_basis :
   exact .map _ Metric.nhds_basis_ball
 
 /-- The seminormed group structure on the quotient by an additive subgroup. -/
-noncomputable instance SeparationQuotient.normedAddCommGroupQuotient :
+noncomputable instance normedAddCommGroupQuotient :
     NormedAddCommGroup (SeparationQuotient M) where
   dist x y := ‖x - y‖
   dist_self x := by simp only [norm_mk_zero, sub_self]
@@ -320,6 +322,8 @@ noncomputable instance SeparationQuotient.normedAddCommGroupQuotient :
 example : (instTopologicalSpaceQuotient : TopologicalSpace <| SeparationQuotient M) =
       normedAddCommGroupQuotient.toUniformSpace.toTopologicalSpace :=
   rfl
+
+end SeparationQuotient
 
 namespace SeparationQuotientAddGroup
 
