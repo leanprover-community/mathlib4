@@ -49,6 +49,16 @@ end NonarchimedeanGroup.auxiliary
 namespace TopologicalGroup
 variable {G : Type*} [TopologicalSpace G] [Group G]
 
+variable {y : G} {U : Set G} in
+@[to_additive]
+lemma non_empty_intersection_coset (hy :  y ∈ U)
+    (V : OpenSubgroup G) : (U ∩ (y • (V : Set G))).Nonempty := by
+  simp only [Set.inter_nonempty]
+  use y
+  refine ⟨hy, ?_⟩
+  simp only [Set.mem_smul_set_iff_inv_smul_mem, smul_eq_mul, inv_mul_cancel, SetLike.mem_coe,
+    one_mem V]
+
 variable {x y : G} {U : Set G} {A : Opens G} in
 @[to_additive]
 lemma non_empty_intersection_compl_coset (hx : x ∈ U)
@@ -62,16 +72,6 @@ lemma non_empty_intersection_compl_coset (hx : x ∈ U)
   have subempty : (V : Set G) ∩ A = ∅ := Disjoint.inter_eq dva
   rw [subempty] at mem
   simp at mem
-
-variable {y : G} {U : Set G} in
-@[to_additive]
-lemma non_empty_intersection_coset (hy :  y ∈ U)
-    (V : OpenSubgroup G) : (U ∩ (y • (V : Set G))).Nonempty := by
-  simp only [Set.inter_nonempty]
-  use y
-  refine ⟨hy, ?_⟩
-  simp only [Set.mem_smul_set_iff_inv_smul_mem, smul_eq_mul, inv_mul_cancel, SetLike.mem_coe,
-    one_mem V]
 
 end TopologicalGroup
 
