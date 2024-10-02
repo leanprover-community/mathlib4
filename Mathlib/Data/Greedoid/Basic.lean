@@ -64,6 +64,8 @@ theorem feasible_set_inj {G₁ G₂ : Greedoid α} :
     G₁.ground_set = G₂.ground_set ∧ G₁.feasible = G₂.feasible ↔ G₁ = G₂ :=
   ⟨fun h => by apply eq_of_veq <;> simp [h], fun h => by simp [h]⟩
 
+
+
 variable {G : Greedoid α}
 
 variable {s : Finset α}
@@ -88,20 +90,22 @@ protected theorem accessible_property :
         rcases ih with ⟨t, ht₁, ht₂⟩
         rcases ht₁ with ⟨ht₁, ht₃⟩
         rcases h'' t ht₁ ht₃ with ⟨u, hu₁, hu₂, hu₃⟩
-        rcases G.exchange_property hu₁ ht₁ hu₃ with ⟨x, hx₁, hx₂, hx₃⟩
-        use t.cons x hx₂
-        simp [F, ht₂, hx₃]; omega
+        rcases G.exchange_property hu₁ ht₁ hu₃ with ⟨_, _, hx₁, hx₂⟩
+        use t.cons _ hx₁
+        simp [F, ht₂, hx₂]; omega
     rcases h₁ s.card with ⟨t, ht₁, ht₂⟩
     simp [F, ht₂] at ht₁
   rcases hF' with ⟨u, hu₁, hu₂⟩
-  rcases hu₁ with ⟨hu₁, hu₃⟩
+  rcases hu₁ with ⟨_, hu₁⟩
   rcases ExchangeProperty.exists_superset_of_card_le
-    G.exchange_property hs₁ G.contains_emptyset (le_of_lt hu₃) (zero_le _)
+    G.exchange_property hs₁ G.contains_emptyset (le_of_lt hu₁) (zero_le _)
     with ⟨t, ht₁, _, ht₂, ht₃⟩
   simp at ht₂
-  -- TODO: Fill missing parts.
-
-  sorry
+  rw [← ht₃] at hu₁
+  rcases G.exchange_property hs₁ ht₁ hu₁ with ⟨_, _, hx₁, hx₂⟩
+  have h : (t.cons _ hx₁).card < s.card := by
+    by_contra h''; simp at h''; apply h' _ ht₂ _ ht₁; omega
+  have := card_cons _ ▸ ht₃ ▸ hu₂ _ hx₂ h; omega
 
 instance : Accessible G.feasible := ⟨G.accessible_property⟩
 
@@ -110,11 +114,13 @@ section Membership
 @[simp]
 theorem system_feasible_set_mem_mem : G.feasible s ↔ s ∈ G := by rfl
 
-theorem mem_accessible (hs₁ : s ∈ G) (hs₂ : s.Nonempty) :
+theorem mem_accessible
+    (hs₁ : s ∈ G) (hs₂ : s.Nonempty) :
     ∃ t, t ⊆ s ∧ t.card + 1 = s.card ∧ t ∈ G :=
   G.accessible_property hs₁ hs₂
 
-theorem mem_exchange (hs : s₂.card < s₁.card) :
+theorem mem_exchange
+    (hs₁ : G.feasible s₁) (hs₂ : G.feasible s₂) (hs : s₂.card < s₁.card) :
     ∃ x ∈ s₁, ∃ h : x ∉ s₂, cons x s₂ h ∈ G :=
   G.exchange_property hs₁ hs₂ hs
 
@@ -122,7 +128,5 @@ end Membership
 
 @[simp]
 theorem emptyset_feasible : ∅ ∈ G := G.contains_emptyset
-
-
 
 end Greedoid
