@@ -415,30 +415,4 @@ theorem length_reverse {a : FreeMonoid α} : a.reverse.length = a.length :=
 
 end Reverse
 
-/-- if two types are isomorphic, the free monoids over those types are isomorphic -/
-@[to_additive "if two types are isomorphic, the additive free monoids over those types are
-isomorphic"]
-def congrIso {α : Type u_1} {β : Type u_2} (e : α ≃ β) : FreeMonoid α ≃* FreeMonoid β := by
-  apply MulEquiv.mk' ⟨FreeMonoid.map e.toFun, FreeMonoid.map e.invFun, _, _⟩
-  · simp
-  all_goals
-  intro x
-  simp [map_map]
-
-/-- given an isomorphism between α and β, convert a relation predicate to
-have an underlying type of β -/
-@[to_additive "given an isomorphism between α and β, convert a relation predicate to
-have an underlying type of β"]
-def mapRel (e : α ≃ β) (rel : FreeMonoid α → FreeMonoid α → Prop) :
-    FreeMonoid β → FreeMonoid β  → Prop :=
-  fun a b ↦ rel (FreeMonoid.congr_iso e.symm a) (FreeMonoid.congr_iso e.symm b)
-
-/-- given an isomorphism between α and β, pull back a relation predicate with underlying type β to
-one with underlying type α -/
-@[to_additive "given an isomorphism between α and β, pull back a relation predicate with underlying
-type β to one with underlying type α "]
-def comapRel (e : α ≃ β) (rel : FreeMonoid β → FreeMonoid β → Prop) :
-    FreeMonoid α → FreeMonoid α → Prop :=
-  fun a b ↦ rel (FreeMonoid.congr_iso e a) (FreeMonoid.congr_iso e b)
-
 end FreeMonoid
