@@ -817,25 +817,25 @@ theorem ssubset_iff_exists_cons_subset : s ⊂ t ↔ ∃ (a : _) (h : a ∉ s), 
 
 /-- Split the added element of cons off a Pi type. -/
 @[simps!]
-def cons_pi_prod {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s) :
-    (Π i ∈ cons a s has, f i) → f a × Π i ∈ s, f i :=
-  fun x => (x a (mem_cons_self a s), fun i hi => x i (mem_cons_of_mem hi))
+def consPiProd {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s)
+    (x : Π i ∈ cons a s has, f i) : f a × Π i ∈ s, f i :=
+  (x a (mem_cons_self a s), fun i hi => x i (mem_cons_of_mem hi))
 
 open Classical in
 /-- Combine a product with a pi type to pi of cons. -/
-noncomputable def prod_pi_cons {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s) :
-    (f a × Π i ∈ s, f i) → (Π i ∈ cons a s has, f i) :=
-  fun x => (fun i hi =>
-    if h : i = a then cast (congrArg f h.symm) x.1 else x.2 i (mem_of_mem_cons_of_ne has hi h))
+noncomputable def prodPiCons {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s)
+    (x : f a × Π i ∈ s, f i) : (Π i ∈ cons a s has, f i) :=
+  fun i hi =>
+    if h : i = a then cast (congrArg f h.symm) x.1 else x.2 i (mem_of_mem_cons_of_ne has hi h)
 
 /-- The equivalence between pi types on cons and the product. -/
-noncomputable def cons_pi_equiv {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s) :
+noncomputable def consPiEquiv {s : Finset α} (f : α → Type*) {a : α} (has : a ∉ s) :
     (Π i ∈ cons a s has, f i) ≃ f a × Π i ∈ s, f i where
-  toFun := cons_pi_prod f has
-  invFun := prod_pi_cons f has
+  toFun := consPiProd f has
+  invFun := prodPiCons f has
   left_inv _ := by
     ext i _
-    dsimp only [prod_pi_cons, cons_pi_prod]
+    dsimp only [prodPiCons, consPiProd]
     by_cases h : i = a
     · rw [dif_pos h]
       subst h
@@ -843,8 +843,8 @@ noncomputable def cons_pi_equiv {s : Finset α} (f : α → Type*) {a : α} (has
     · rw [dif_neg h]
   right_inv _ := by
     ext _ hi
-    · simp [prod_pi_cons]
-    · simp only [cons_pi_prod_snd, prod_pi_cons]
+    · simp [prodPiCons]
+    · simp only [consPiProd_snd, prodPiCons]
       exact dif_neg (ne_of_mem_of_not_mem hi has)
 
 end Cons
