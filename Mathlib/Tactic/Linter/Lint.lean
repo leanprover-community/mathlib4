@@ -354,7 +354,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if let some init := stx.getTailPos? then
     -- the last line: we subtract 1, since the last line is expected to be empty
     let lastLine := ((← getFileMap).toPosition init).line
-    -- in this case, the file has an allowed length, and the linter option is unnecessarily set
+    -- In this case, the file has an allowed length, and the linter option is unnecessarily set.
     if lastLine ≤ defValue && defValue < linterBound then
       logWarningAt stx <| .tagged linter.style.longFile.name
         m!"The default value of the `longFile` linter is {defValue}.\n\
@@ -366,7 +366,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- `candidate` is necessarily bigger than `lastLine` and hence bigger than `defValue`
     let candidate := (lastLine / 100) * 100 + 200
     let candidate := max candidate defValue
-    -- in this case, the file is longer than the default and also than what the option says
+    -- In this case, the file is longer than the default and also than what the option says.
     if defValue ≤ linterBound && linterBound < lastLine then
       logWarningAt stx <| .tagged linter.style.longFile.name
         m!"This file is {lastLine} lines long, but the limit is {linterBound}.\n\n\
