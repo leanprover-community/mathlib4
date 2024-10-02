@@ -2098,7 +2098,6 @@ variants which this lemma would not apply to:
 * `Matrix.conjTranspose_intCast_smul`
 * `Matrix.conjTranspose_inv_natCast_smul`
 * `Matrix.conjTranspose_inv_intCast_smul`
-* `Matrix.conjTranspose_rat_smul`
 * `Matrix.conjTranspose_ratCast_smul`
 -/
 @[simp]
