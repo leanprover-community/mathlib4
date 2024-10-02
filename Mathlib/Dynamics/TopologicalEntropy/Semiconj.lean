@@ -16,17 +16,6 @@ First, a uniformly continuous semiconjugacy descreases the entropy of subsets:
 
 Second, the entropy of `Set.univ` for a subsystem is equal to the entropy of the subset, which
 justifies the implementation of the entropy of a subset: `subset_restriction_entropy`.
-
-TODO: Investigate the consequences of `image_entropy` for embeddings.
-
-TODO: There are some interesting related results about the entropy of fibered systems.
-
-/- TODO : Is it possible to have an implicit instance of UniformSpace X instead of an explicit
-  argument ?-/
-
-/- TODO : Try to get a lower bound on the entropy of the image. What is a right hypothesis on φ ?
-  Of course UX ≤ UniformSpace.comap φ UY works, but are there "natural" statements
-  (proper map...) ? -/
 -/
 
 namespace Dynamics
