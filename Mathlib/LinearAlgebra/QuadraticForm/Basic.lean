@@ -580,8 +580,8 @@ def _root_.LinearMap.compQuadraticMap' [CommSemiring S] [Algebra S R] [Module S 
   _root_.LinearMap.compQuadraticMap f Q.restrictScalars
 
 
-/-- When `N₁` and `N₂` are equivalent, quadratic maps on `M` into `N₁` are equivalent to quadratic
-maps into `N₂`. -/
+/-- When `N` and `P` are equivalent, quadratic maps on `M` into `N` are equivalent to quadratic
+maps on `M` into `P`. -/
 @[simps]
 def congr₂ (e : N ≃ₗ[R] P) : QuadraticMap R M N ≃ₗ[R] QuadraticMap R M P where
   toFun Q := e.compQuadraticMap Q
