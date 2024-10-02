@@ -141,6 +141,18 @@ lemma le_one_iff_eq_zero_or_eq_one : ∀ {n : ℕ}, n ≤ 1 ↔ n = 0 ∨ n = 1 
 
 lemma one_le_of_lt (h : a < b) : 1 ≤ b := Nat.lt_of_le_of_lt (Nat.zero_le _) h
 
+protected lemma min_left_comm (a b c : ℕ) : min a (min b c) = min b (min a c) := by
+  rw [← Nat.min_assoc, ← Nat.min_assoc, b.min_comm]
+
+protected lemma max_left_comm (a b c : ℕ) : max a (max b c) = max b (max a c) := by
+  rw [← Nat.max_assoc, ← Nat.max_assoc, b.max_comm]
+
+protected lemma min_right_comm (a b c : ℕ) : min (min a b) c = min (min a c) b := by
+  rw [Nat.min_assoc, Nat.min_assoc, b.min_comm]
+
+protected lemma max_right_comm (a b c : ℕ) : max (max a b) c = max (max a c) b := by
+  rw [Nat.max_assoc, Nat.max_assoc, b.max_comm]
+
 @[simp] lemma min_eq_zero_iff : min m n = 0 ↔ m = 0 ∨ n = 0 := by omega
 @[simp] lemma max_eq_zero_iff : max m n = 0 ↔ m = 0 ∧ n = 0 := by omega
 
