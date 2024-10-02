@@ -151,9 +151,9 @@ theorem Splits.comp_X_sub_C {i : L →+* F} (a : L) {f : L[X]}
     intro g irr dvd
     rw [map_comp, Polynomial.map_sub, map_X, map_C, dvd_comp_X_sub_C_iff] at dvd
     have := h (irr.map (algEquivAevalXAddC _)) dvd
-    change degree (g.comp (X + C (i a))) = 1 at this
     rw [degree_eq_natDegree irr.ne_zero]
-    rwa [degree_eq_natDegree (fun h => WithBot.bot_ne_one (h ▸ this)),
+    rwa [algEquivAevalXAddC_apply, ← comp_eq_aeval,
+      degree_eq_natDegree (fun h => WithBot.bot_ne_one (h ▸ this)),
       natDegree_comp, natDegree_X_add_C, mul_one] at this
 
 theorem Splits.comp_X_add_C {i : L →+* F} (a : L) {f : L[X]}
