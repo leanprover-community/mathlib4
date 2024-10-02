@@ -116,7 +116,7 @@ instance : TotallyDisconnectedSpace G := by
   by_contra con
   obtain ⟨y, hyu, hneq⟩ : ∃ y : G, (y ∈ connectedComponent x) ∧ (y ≠ x) := by
     by_contra! con2
-    exact con <| Set.mem_unique_to_singleton mem_connectedComponent con2
+    exact con <| (Set.Nonempty.subset_singleton_iff ⟨x, mem_connectedComponent⟩).mp con2
   exact non_singleton_set_disconnected G x y (connectedComponent x) mem_connectedComponent hyu
     hneq isConnected_connectedComponent
 
