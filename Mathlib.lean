@@ -629,6 +629,7 @@ import Mathlib.Algebra.Order.Module.Pointwise
 import Mathlib.Algebra.Order.Module.Rat
 import Mathlib.Algebra.Order.Module.Synonym
 import Mathlib.Algebra.Order.Monoid.Basic
+import Mathlib.Algebra.Order.Monoid.Canonical.Basic
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Monoid.NatCast
