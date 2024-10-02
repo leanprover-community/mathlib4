@@ -321,6 +321,8 @@ example : (instTopologicalSpaceQuotient : TopologicalSpace <| SeparationQuotient
       normedAddCommGroupQuotient.toUniformSpace.toTopologicalSpace :=
   rfl
 
+namespace SeparationQuotientAddGroup
+
 open NormedAddGroupHom
 
 /-- The morphism from a seminormed group to the quotient by the null space. -/
@@ -394,7 +396,9 @@ theorem norm_trivial_separaationQuotient_mk (h : (@nullSpace M _).carrier = Set.
     exact (mk_eq_zero_iff x).mpr this
   · exact fun N => fun hN => fun _ => hN
 
-namespace NormedAddGroupHom
+end SeparationQuotientAddGroup
+
+namespace SeparationQuotientAddGroup
 
 /-- `IsQuotient f`, for `f : M ⟶ N` means that `N` is isomorphic to the quotient of `M`
 by the kernel of `f`. -/
@@ -415,7 +419,7 @@ noncomputable def lift {N : Type*} [SeminormedAddCommGroup N] (f : NormedAddGrou
       simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, AddCommGroupHom_lift_apply,
         AddMonoidHom.coe_coe]
       rw [quotient_norm_mk_eq]
-      exact le_opNorm f v'}
+      exact NormedAddGroupHom.le_opNorm f v'}
 
 theorem lift_mk {N : Type*} [SeminormedAddCommGroup N] (f : NormedAddGroupHom M N)
     (hf : ∀ s ∈ nullSpace, f s = 0) (m : M) : lift f hf (normedMk m) = f m := rfl
@@ -458,7 +462,7 @@ theorem IsQuotient.norm_le {f : NormedAddGroupHom M N} (hquot : IsQuotient f) (m
 
 theorem norm_lift_le {N : Type*} [SeminormedAddCommGroup N] (f : NormedAddGroupHom M N)
     (hf : ∀ s ∈ nullSpace, f s = 0) : ‖lift f hf‖ ≤ ‖f‖ :=
-  opNorm_le_bound _ (norm_nonneg f) (norm_lift_apply_le f hf)
+  NormedAddGroupHom.opNorm_le_bound _ (norm_nonneg f) (norm_lift_apply_le f hf)
 
 -- Porting note (#11215): TODO: deprecate?
 theorem lift_norm_le {N : Type*} [SeminormedAddCommGroup N](f : NormedAddGroupHom M N)
@@ -467,10 +471,11 @@ theorem lift_norm_le {N : Type*} [SeminormedAddCommGroup N](f : NormedAddGroupHo
 
 theorem lift_normNoninc {N : Type*} [SeminormedAddCommGroup N] (f : NormedAddGroupHom M N)
     (hf : ∀ s ∈ nullSpace, f s = 0) (fb : f.NormNoninc) : (lift f hf).NormNoninc := fun x => by
-  have fb' : ‖f‖ ≤ (1 : ℝ≥0) := NormNoninc.normNoninc_iff_norm_le_one.mp fb
-  simpa using le_of_opNorm_le _ (f.lift_norm_le _ fb') _
+  have fb' : ‖f‖ ≤ (1 : ℝ≥0) := NormedAddGroupHom.NormNoninc.normNoninc_iff_norm_le_one.mp fb
+  simpa using NormedAddGroupHom.le_of_opNorm_le _
+    (SeparationQuotientAddGroup.lift_norm_le f _ fb') _
 
-end NormedAddGroupHom
+end SeparationQuotientAddGroup
 
 /-!
 ### Submodules and ideals
