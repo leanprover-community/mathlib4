@@ -245,32 +245,6 @@ lemma mem_asIdealOpposite {I : TwoSidedIdeal R} {x : Rᵐᵒᵖ} :
   simpa [asIdealOpposite, asIdeal, TwoSidedIdeal.mem_iff, RingCon.op_iff] using
     ⟨I.ringCon.symm, I.ringCon.symm⟩
 
-/-- Bundle an `Ideal` that is already two-sided as a `TwoSidedIdeal`. -/
-def ofIdeal (I : Ideal R) (mul_mem_right : ∀ {x y}, x ∈ I → x * y ∈ I) : TwoSidedIdeal R :=
-  TwoSidedIdeal.mk' I I.zero_mem I.add_mem I.neg_mem (I.smul_mem _) mul_mem_right
-
-@[simp]
-lemma mem_ofIdeal {I : Ideal R} {h} {x : R} :
-    x ∈ ofIdeal I h ↔ x ∈ I := by
-  simp [ofIdeal]
-
-@[simp]
-lemma coe_ofIdeal (I : Ideal R) (h) : (ofIdeal I h : Set R) = I := by
-  simp [ofIdeal]
-
-@[simp]
-lemma ofIdeal_asIdeal (I : TwoSidedIdeal R) (h) : ofIdeal (asIdeal I) h = I := by
-  ext
-  simp
-
-@[simp]
-lemma asIdeal_ofIdeal (I : Ideal R) (h) : asIdeal (ofIdeal I h) = I := by
-  ext
-  simp
-
-instance : CanLift (Ideal R) (TwoSidedIdeal R) asIdeal (fun I => ∀ {x y}, x ∈ I → x * y ∈ I) where
-  prf I mul_mem_right := ⟨ofIdeal I mul_mem_right, asIdeal_ofIdeal ..⟩
-
 end Ring
 
 section CommRing
@@ -293,3 +267,34 @@ def orderIsoIdeal : TwoSidedIdeal R ≃o Ideal R where
 end CommRing
 
 end TwoSidedIdeal
+
+namespace Ideal
+variable {R : Type*} [Ring R]
+
+/-- Bundle an `Ideal` that is already two-sided as a `TwoSidedIdeal`. -/
+def toTwoSided (I : Ideal R) (mul_mem_right : ∀ {x y}, x ∈ I → x * y ∈ I) : TwoSidedIdeal R :=
+  TwoSidedIdeal.mk' I I.zero_mem I.add_mem I.neg_mem (I.smul_mem _) mul_mem_right
+
+@[simp]
+lemma mem_toTwoSided {I : Ideal R} {h} {x : R} :
+    x ∈ I.toTwoSided h ↔ x ∈ I := by
+  simp [toTwoSided]
+
+@[simp]
+lemma coe_toTwoSided (I : Ideal R) (h) : (I.toTwoSided h : Set R) = I := by
+  simp [toTwoSided]
+
+@[simp]
+lemma toTwoSided_asIdeal (I : TwoSidedIdeal R) (h) : (TwoSidedIdeal.asIdeal I).toTwoSided h = I :=
+  by ext; simp
+
+@[simp]
+lemma asIdeal_toTwoSided (I : Ideal R) (h) : TwoSidedIdeal.asIdeal (I.toTwoSided h) = I := by
+  ext
+  simp
+
+instance : CanLift (Ideal R) (TwoSidedIdeal R) TwoSidedIdeal.asIdeal
+    (fun I => ∀ {x y}, x ∈ I → x * y ∈ I) where
+  prf I mul_mem_right := ⟨I.toTwoSided mul_mem_right, asIdeal_toTwoSided ..⟩
+
+end Ideal
