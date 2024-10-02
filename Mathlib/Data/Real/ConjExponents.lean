@@ -18,6 +18,8 @@ analysis, especially when dealing with `L^p` spaces.
 * `Real.conjExponent`: Conjugate exponent of a real number.
 * `NNReal.IsConjExponent`: Predicate for two nonnegative real numbers to be conjugate.
 * `NNReal.conjExponent`: Conjugate exponent of a nonnegative real number.
+* `ENNReal.IsConjExponent`: Predicate for two extended nonnegative real numbers to be conjugate.
+* `ENNReal.conjExponent`: Conjugate exponent of an extended nonnegative real number.
 
 ## TODO
 
