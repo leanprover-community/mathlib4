@@ -15,18 +15,15 @@ This is the unique function `g` such that `f a - f b = g a - g b` for all `a` an
 Fourier transform, except in the `0`-th frequency where the Fourier transform of `g` vanishes.
 -/
 
-open Function
-open Fintype (card)
-open scoped BigOperators Pointwise NNRat
+open Finset Function
+open scoped BigOperators
 
-variable {ι F G K : Type*}
+variable {ι H F G : Type*}
 
-namespace Finset
+namespace Fintype
 
 section AddCommGroup
-variable [AddCommGroup G] [Module ℚ≥0 G] [Field K] [Module ℚ≥0 K] {s : Finset ι}
-
-variable [Fintype ι]
+variable [Fintype ι] [AddCommGroup G] [Module ℚ≥0 G] [AddCommGroup H] [Module ℚ≥0 H]
 
 /-- The balancing of a function, namely the function minus its average. -/
 def balance (f : ι → G) : ι → G := f - Function.const _ (𝔼 y, f y)
@@ -52,8 +49,8 @@ lemma balance_apply (f : ι → G) (x : ι) : balance f x = f x - 𝔼 y, f y :=
 @[simp] lemma balance_idem (f : ι → G) : balance (balance f) = balance f := by
   cases isEmpty_or_nonempty ι <;> ext x <;> simp [balance, expect_sub_distrib, univ_nonempty]
 
-@[simp] lemma map_balance [FunLike F G K] [LinearMapClass F ℚ≥0 G K] (g : F) (f : ι → G) (a : ι) :
+@[simp] lemma map_balance [FunLike F G H] [LinearMapClass F ℚ≥0 G H] (g : F) (f : ι → G) (a : ι) :
     g (balance f a) = balance (g ∘ f) a := by simp [balance, map_expect]
 
 end AddCommGroup
-end Finset
+end Fintype
