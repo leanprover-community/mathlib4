@@ -31,24 +31,9 @@ theorem sum_Ico_by_parts (hmn : m < n) :
     rw [← sum_Ico_sub_bot _ hmn, ← sum_Ico_succ_sub_top _ (Nat.le_sub_one_of_lt hmn),
       Nat.sub_add_cancel (pos_of_gt hmn), sub_add_cancel]
   rw [sum_eq_sum_Ico_succ_bot hmn]
-  -- Porting note: the following used to be done with `conv`
-  have h₃ : (Finset.sum (Ico (m + 1) n) fun i => f i • g i) =
-             (Finset.sum (Ico (m + 1) n) fun i =>
-                f i • ((Finset.sum (Finset.range (i + 1)) g) -
-                        (Finset.sum (Finset.range i) g))) := by
-    congr; funext; rw [← sum_range_succ_sub_sum g]
-  rw [h₃]
+  conv in (occs := 3) (f _ • g _) => rw [← sum_range_succ_sub_sum g]
   simp_rw [smul_sub, sum_sub_distrib, h₂, h₁]
-  -- Porting note: the following used to be done with `conv`
-  have h₄ : ((((Finset.sum (Ico m (n - 1)) fun i => f i • Finset.sum (range (i + 1)) fun i => g i) +
-      f (n - 1) • Finset.sum (range n) fun i => g i) -
-      f m • Finset.sum (range (m + 1)) fun i => g i) -
-      Finset.sum (Ico m (n - 1)) fun i => f (i + 1) • Finset.sum (range (i + 1)) fun i => g i) =
-      f (n - 1) • (range n).sum g - f m • (range (m + 1)).sum g +
-      Finset.sum (Ico m (n - 1)) (fun i => f i • (range (i + 1)).sum g -
-      f (i + 1) • (range (i + 1)).sum g) := by
-    rw [← add_sub, add_comm, ← add_sub, ← sum_sub_distrib]
-  rw [h₄]
+  conv_lhs => congr; rfl; rw [← add_sub, add_comm, ← add_sub, ← sum_sub_distrib]
   have : ∀ i, f i • G (i + 1) - f (i + 1) • G (i + 1) = -((f (i + 1) - f i) • G (i + 1)) := by
     intro i
     rw [sub_smul]
