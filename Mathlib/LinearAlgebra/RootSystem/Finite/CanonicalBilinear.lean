@@ -61,7 +61,7 @@ def Polarization : M →ₗ[R] N :=
 
 @[simp]
 lemma Polarization_apply (x : M) :
-    P.Polarization x = ∑ i, P.toPerfectPairing x (P.coroot i) • P.coroot i := by
+    P.Polarization x = ∑ i, P.coroot' i x • P.coroot i := by
   simp [Polarization]
 
 /-- An invariant linear map from coweight space to weight space. -/
@@ -70,14 +70,11 @@ def CoPolarization : N →ₗ[R] M :=
 
 @[simp]
 lemma CoPolarization_apply (x : N) :
-    P.CoPolarization x = ∑ i, P.toPerfectPairing (P.root i) x • P.root i := by
+    P.CoPolarization x = ∑ i, P.root' i x • P.root i := by
   simp [CoPolarization]
 
-lemma CoPolarization_eq : P.CoPolarization = P.flip.Polarization := by
-  ext x
-  simp only [CoPolarization, LinearMap.coeFn_sum, LinearMap.coe_comp, Finset.sum_apply, comp_apply,
-    LinearMap.toSpanSingleton_apply, Polarization, PerfectPairing.flip_apply_apply]
-  exact rfl
+lemma CoPolarization_eq : P.CoPolarization = P.flip.Polarization :=
+  rfl
 
 /-- An invariant inner product on the weight space. -/
 def RootForm : LinearMap.BilinForm R M :=
@@ -87,37 +84,35 @@ def RootForm : LinearMap.BilinForm R M :=
 def CorootForm : LinearMap.BilinForm R N :=
   ∑ i, (LinearMap.lsmul R R).compl₁₂ (P.root' i) (P.root' i)
 
-@[simp]
 lemma rootForm_apply_apply (x y : M) : P.RootForm x y =
-    ∑ (i : ι), P.toPerfectPairing x (P.coroot i) * P.toPerfectPairing y (P.coroot i) := by
+    ∑ (i : ι), P.coroot' i x * P.coroot' i y := by
   simp [RootForm]
 
 lemma rootForm_symmetric :
     LinearMap.IsSymm P.RootForm := by
-  simp [LinearMap.IsSymm, mul_comm]
+  simp [LinearMap.IsSymm, mul_comm, rootForm_apply_apply]
 
+@[simp]
 lemma rootForm_reflection_reflection_apply (i : ι) (x y : M) :
     P.RootForm (P.reflection i x) (P.reflection i y) = P.RootForm x y := by
-  simp only [rootForm_apply_apply, reflection_coroot_perm]
+  simp only [rootForm_apply_apply, coroot'_reflection]
   exact Fintype.sum_equiv (P.reflection_perm i)
-    (fun x_1 ↦ (P.toPerfectPairing x) (P.coroot ((P.reflection_perm i) x_1)) *
-      (P.toPerfectPairing y) (P.coroot ((P.reflection_perm i) x_1)))
-    (fun x_1 ↦ (P.toPerfectPairing x) (P.coroot x_1) *
-      (P.toPerfectPairing y) (P.coroot x_1)) (congrFun rfl)
+    (fun j ↦ (P.coroot' (P.reflection_perm i j) x) * (P.coroot' (P.reflection_perm i j) y))
+    (fun j ↦ P.coroot' j x * P.coroot' j y) (congrFun rfl)
 
 /-- This is SGA3 XXI Lemma 1.2.1 (10), key for proving nondegeneracy and positivity. -/
-lemma rootForm_self_smul_coroot (P : RootPairing ι R M N) (i : ι) :
+lemma rootForm_self_smul_coroot (i : ι) :
     (P.RootForm (P.root i) (P.root i)) • P.coroot i = 2 • P.Polarization (P.root i) := by
   have hP : P.Polarization (P.root i) =
       ∑ j : ι, P.pairing i (P.reflection_perm i j) • P.coroot (P.reflection_perm i j) := by
-    simp_rw [Polarization_apply, root_coroot_eq_pairing]
+    simp_rw [Polarization_apply, root_coroot'_eq_pairing]
     exact (Fintype.sum_equiv (P.reflection_perm i)
-          (fun j ↦ P.pairing i ((P.reflection_perm i) j) • P.coroot ((P.reflection_perm i) j))
+          (fun j ↦ P.pairing i (P.reflection_perm i j) • P.coroot (P.reflection_perm i j))
           (fun j ↦ P.pairing i j • P.coroot j) (congrFun rfl)).symm
   rw [two_nsmul]
   nth_rw 2 [hP]
   rw [Polarization_apply]
-  simp only [root_coroot_eq_pairing, pairing_reflection_perm, pairing_reflection_perm_self,
+  simp only [root_coroot'_eq_pairing, pairing_reflection_perm, pairing_reflection_perm_self_left,
     ← reflection_perm_coroot, smul_sub, neg_smul, sub_neg_eq_add]
   rw [Finset.sum_add_distrib, ← add_assoc, ← sub_eq_iff_eq_add]
   simp only [rootForm_apply_apply, LinearMap.coe_comp, comp_apply, Polarization_apply,
@@ -125,9 +120,8 @@ lemma rootForm_self_smul_coroot (P : RootPairing ι R M N) (i : ι) :
   rw [Finset.sum_smul, add_neg_eq_zero.mpr rfl]
   exact sub_eq_zero_of_eq rfl
 
-lemma flip_rootForm_self_smul_root (P : RootPairing ι R M N) (i : ι) :
-    (P.flip.RootForm (P.coroot i) (P.coroot i)) • P.root i =
-      2 • P.flip.Polarization (P.coroot i) :=
+lemma corootForm_self_smul_root (i : ι) :
+    (P.CorootForm (P.coroot i) (P.coroot i)) • P.root i = 2 • P.CoPolarization (P.coroot i) :=
   rootForm_self_smul_coroot (P.flip) i
 
 lemma rootForm_self_sum_of_squares (x : M) :
@@ -136,7 +130,7 @@ lemma rootForm_self_sum_of_squares (x : M) :
 
 lemma rootForm_root_self (j : ι) :
     P.RootForm (P.root j) (P.root j) = ∑ (i : ι), (P.pairing j i) * (P.pairing j i) := by
-  simp
+  simp [rootForm_apply_apply]
 
 end CommRing
 
