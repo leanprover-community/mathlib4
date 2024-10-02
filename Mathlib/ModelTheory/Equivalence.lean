@@ -9,12 +9,11 @@ import Mathlib.ModelTheory.Satisfiability
 # Equivalence of Formulas
 
 ## Main Definitions
+- `FirstOrder.Language.Theory.Implies`: `φ ⟹[T] ψ` indicates that `φ` implies `ψ` in models of `T`.
 - `FirstOrder.Language.Theory.SemanticallyEquivalent`: `φ ⇔[T] ψ` indicates that `φ` and `ψ` are
   equivalent formulas or sentences in models of `T`.
 
 ## TODO
-- Add a definition of implication modulo a theory `T`, with `φ ⇒[T] ψ` defined analogously to
-  `φ ⇔[T] ψ`.
 - Construct the quotient of `L.Formula α` modulo `⇔[T]` and its Boolean Algebra structure.
 
 -/
@@ -37,14 +36,97 @@ namespace Theory
 /-- Two (bounded) formulas are semantically equivalent over a theory `T` when they have the same
 interpretation in every model of `T`. (This is also known as logical equivalence, which also has a
 proof-theoretic definition.) -/
+def Implies (T : L.Theory) (φ ψ : L.BoundedFormula α n) : Prop :=
+  T ⊨ᵇ φ.imp ψ
+
+@[inherit_doc FirstOrder.Language.Theory.Implies]
+scoped[FirstOrder] notation:25 φ " ⟹[" T "] " ψ => Language.Theory.Implies T φ ψ
+
+namespace Implies
+
+@[refl]
+protected theorem refl (φ : L.BoundedFormula α n) : φ ⟹[T] φ := fun _ _ _ => id
+
+instance : IsRefl (L.BoundedFormula α n) T.Implies := ⟨Implies.refl⟩
+
+@[trans]
+protected theorem trans {φ ψ θ : L.BoundedFormula α n} (h1 : φ ⟹[T] ψ) (h2 : ψ ⟹[T] θ) :
+    φ ⟹[T] θ := fun M v xs => (h2 M v xs) ∘ (h1 M v xs)
+
+instance : IsTrans (L.BoundedFormula α n) T.Implies := ⟨fun _ _ _ => Implies.trans⟩
+
+end Implies
+
+section Implies
+
+lemma bot_implies (φ : L.BoundedFormula α n) : ⊥ ⟹[T] φ := fun M v xs => by
+  simp only [BoundedFormula.realize_imp, BoundedFormula.realize_bot, false_implies]
+
+lemma implies_top (φ : L.BoundedFormula α n) : φ ⟹[T] ⊤ := fun M v xs => by
+  simp only [BoundedFormula.realize_imp, BoundedFormula.realize_top, implies_true]
+
+lemma implies_sup_left {φ ψ : L.BoundedFormula α n} : φ ⟹[T] φ ⊔ ψ := fun M v xs => by
+  simp only [BoundedFormula.realize_imp, BoundedFormula.realize_sup]
+  exact Or.inl
+
+lemma implies_sup_right {φ ψ : L.BoundedFormula α n} : ψ ⟹[T] φ ⊔ ψ := fun M v xs => by
+  simp only [BoundedFormula.realize_imp, BoundedFormula.realize_sup]
+  exact Or.inr
+
+lemma sup_implies {φ ψ θ : L.BoundedFormula α n} (h₁ : φ ⟹[T] θ) (h₂ : ψ ⟹[T] θ) :
+    φ ⊔ ψ ⟹[T] θ := fun M v xs => by
+  simp only [BoundedFormula.realize_imp, BoundedFormula.realize_sup]
+  exact fun h => h.elim (h₁ M v xs) (h₂ M v xs)
+
+lemma inf_implies_left {φ ψ : L.BoundedFormula α n} : φ ⊓ ψ ⟹[T] φ := fun M v xs => by
+  simp only [BoundedFormula.realize_imp, BoundedFormula.realize_inf]
+  exact And.left
+
+lemma inf_implies_right {φ ψ : L.BoundedFormula α n} : φ ⊓ ψ ⟹[T] ψ := fun M v xs => by
+  simp only [BoundedFormula.realize_imp, BoundedFormula.realize_inf]
+  exact And.right
+
+lemma implies_inf {φ ψ θ : L.BoundedFormula α n} (h₁ : φ ⟹[T] ψ) (h₂ : φ ⟹[T] θ) :
+    φ ⟹[T] ψ ⊓ θ := fun M v xs => by
+  simp only [BoundedFormula.realize_imp, BoundedFormula.realize_inf]
+  exact fun h => ⟨h₁ M v xs h, h₂ M v xs h⟩
+
+lemma inf_not_implies_bot (φ : L.BoundedFormula α n) :
+    φ ⊓ ∼φ ⟹[T] ⊥ := fun M v xs => by simp only [BoundedFormula.realize_imp,
+      BoundedFormula.realize_inf, BoundedFormula.realize_not, and_not_self,
+      BoundedFormula.realize_bot, imp_self]
+
+lemma top_implies_sup_not (φ : L.BoundedFormula α n) :
+    ⊤ ⟹[T] φ ⊔ ∼φ := fun M v xs => by
+    simp only [BoundedFormula.realize_imp,
+      BoundedFormula.realize_top, BoundedFormula.realize_sup, BoundedFormula.realize_not,
+      true_implies]
+    exact or_not
+
+end Implies
+
+/-- Two (bounded) formulas are semantically equivalent over a theory `T` when they have the same
+interpretation in every model of `T`. (This is also known as logical equivalence, which also has a
+proof-theoretic definition.) -/
 def SemanticallyEquivalent (T : L.Theory) (φ ψ : L.BoundedFormula α n) : Prop :=
   T ⊨ᵇ φ.iff ψ
 
 @[inherit_doc FirstOrder.Language.Theory.SemanticallyEquivalent]
 scoped[FirstOrder] notation:25 φ " ⇔[" T "] " ψ => Language.Theory.SemanticallyEquivalent T φ ψ
 
+theorem semanticallyEquivalent_iff_implies_and_implies {φ ψ : L.BoundedFormula α n} :
+    (φ ⇔[T] ψ) ↔ (φ ⟹[T] ψ) ∧ (ψ ⟹[T] φ) := by
+  simp only [Implies, ModelsBoundedFormula, BoundedFormula.realize_imp, ← forall_and,
+    SemanticallyEquivalent, BoundedFormula.realize_iff, iff_iff_implies_and_implies]
+
+theorem implies_antisymm {φ ψ : L.BoundedFormula α n} (h₁ : φ ⟹[T] ψ) (h₂ : ψ ⟹[T] φ) :
+    φ ⇔[T] ψ :=
+  semanticallyEquivalent_iff_implies_and_implies.2 ⟨h₁, h₂⟩
 
 namespace SemanticallyEquivalent
+
+protected theorem implies {φ ψ : L.BoundedFormula α n} (h : φ ⇔[T] ψ) :
+    φ ⟹[T] ψ := (semanticallyEquivalent_iff_implies_and_implies.1 h).1
 
 @[refl]
 protected theorem refl (φ : L.BoundedFormula α n) : φ ⇔[T] φ :=
@@ -59,6 +141,9 @@ protected theorem symm {φ ψ : L.BoundedFormula α n}
   rw [BoundedFormula.realize_iff, Iff.comm, ← BoundedFormula.realize_iff]
   exact h M v xs
 
+instance : IsSymm (L.BoundedFormula α n) T.SemanticallyEquivalent :=
+  ⟨fun _ _ => SemanticallyEquivalent.symm⟩
+
 @[trans]
 protected theorem trans {φ ψ θ : L.BoundedFormula α n}
     (h1 : φ ⇔[T] ψ) (h2 : ψ ⇔[T] θ) :
@@ -67,6 +152,9 @@ protected theorem trans {φ ψ θ : L.BoundedFormula α n}
   have h2' := h2 M v xs
   rw [BoundedFormula.realize_iff] at *
   exact ⟨h2'.1 ∘ h1'.1, h1'.2 ∘ h2'.2⟩
+
+instance : IsTrans (L.BoundedFormula α n) T.SemanticallyEquivalent :=
+  ⟨fun _ _ _ => SemanticallyEquivalent.trans⟩
 
 theorem realize_bd_iff {φ ψ : L.BoundedFormula α n} (h : φ ⇔[T] ψ)
     {v : α → M} {xs : Fin n → M} : φ.Realize v xs ↔ ψ.Realize v xs :=
@@ -106,6 +194,20 @@ protected theorem imp {φ ψ φ' ψ' : L.BoundedFormula α n} (h : φ ⇔[T] ψ)
     BoundedFormula.realize_imp]
   exact fun M v xs => imp_congr h.realize_bd_iff h'.realize_bd_iff
 
+protected theorem sup {φ ψ φ' ψ' : L.BoundedFormula α n}
+    (h : φ ⇔[T] ψ) (h' : φ' ⇔[T] ψ') :
+    (φ ⊔ φ') ⇔[T] (ψ ⊔ ψ') := by
+  simp_rw [SemanticallyEquivalent, ModelsBoundedFormula, BoundedFormula.realize_iff,
+    BoundedFormula.realize_sup]
+  exact fun M v xs => or_congr h.realize_bd_iff h'.realize_bd_iff
+
+protected theorem inf {φ ψ φ' ψ' : L.BoundedFormula α n}
+    (h : φ ⇔[T] ψ) (h' : φ' ⇔[T] ψ') :
+    (φ ⊓ φ') ⇔[T] (ψ ⊓ ψ') := by
+  simp_rw [SemanticallyEquivalent, ModelsBoundedFormula, BoundedFormula.realize_iff,
+    BoundedFormula.realize_inf]
+  exact fun M v xs => and_congr h.realize_bd_iff h'.realize_bd_iff
+
 end SemanticallyEquivalent
 
 /-- Semantic equivalence forms an equivalence relation on formulas. -/
@@ -117,7 +219,7 @@ end Theory
 
 namespace BoundedFormula
 
-variable (φ ψ : L.BoundedFormula α n)
+variable (φ ψ χ : L.BoundedFormula α n)
 
 theorem semanticallyEquivalent_not_not : φ ⇔[T] φ.not.not := fun M v xs => by
   simp
@@ -128,14 +230,38 @@ theorem imp_semanticallyEquivalent_not_sup : (φ.imp ψ) ⇔[T] (φ.not ⊔ ψ) 
 theorem sup_semanticallyEquivalent_not_inf_not : (φ ⊔ ψ) ⇔[T] (φ.not ⊓ ψ.not).not :=
   fun M v xs => by simp [imp_iff_not_or]
 
+theorem not_sup_semanticallyEquivalent_inf_not : (φ ⊔ ψ).not ⇔[T] (φ.not ⊓ ψ.not) :=
+  fun M v xs => by simp [imp_iff_not_or]
+
 theorem inf_semanticallyEquivalent_not_sup_not : (φ ⊓ ψ) ⇔[T] (φ.not ⊔ ψ.not).not :=
   fun M v xs => by simp
+
+theorem not_inf_semanticallyEquivalent_sup_not : (φ ⊓ ψ).not ⇔[T] (φ.not ⊔ ψ.not) :=
+  fun M v xs => by simp [imp_iff_not_or]
+
+theorem inf_sup_left_semanticallyEquivalent : χ ⊓ (φ ⊔ ψ) ⇔[T] (χ ⊓ φ) ⊔ (χ ⊓ ψ) :=
+  fun M v xs => by simp [and_or_left]
+
+theorem sup_inf_right_semanticallyEquivalent : (φ ⊔ ψ) ⊓ χ ⇔[T] (φ ⊓ χ) ⊔ (ψ ⊓ χ) :=
+  fun M v xs => by simp [or_and_right]
+
+theorem inf_sup_right_semanticallyEquivalent : (φ ⊓ ψ) ⊔ χ ⇔[T] (φ ⊔ χ) ⊓ (ψ ⊔ χ) :=
+  fun M v xs => by simp [and_or_right]
+
+theorem sup_inf_left_semanticallyEquivalent : χ ⊔ (φ ⊓ ψ) ⇔[T] (χ ⊔ φ) ⊓ (χ ⊔ ψ) :=
+  fun M v xs => by simp [or_and_left]
 
 theorem all_semanticallyEquivalent_not_ex_not (φ : L.BoundedFormula α (n + 1)) :
     φ.all ⇔[T] φ.not.ex.not := fun M v xs => by simp
 
+theorem not_all_semanticallyEquivalent_ex_not (φ : L.BoundedFormula α (n + 1)) :
+    φ.all.not ⇔[T] φ.not.ex := fun M v xs => by simp
+
 theorem ex_semanticallyEquivalent_not_all_not (φ : L.BoundedFormula α (n + 1)) :
     φ.ex ⇔[T] φ.not.all.not := fun M v xs => by simp
+
+theorem not_ex_semanticallyEquivalent_all_not (φ : L.BoundedFormula α (n + 1)) :
+    φ.ex.not ⇔[T] φ.not.all := fun M v xs => by simp
 
 theorem semanticallyEquivalent_all_liftAt : φ ⇔[T] (φ.liftAt 1 n).all :=
   fun M v xs => by
