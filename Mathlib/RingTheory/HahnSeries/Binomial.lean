@@ -239,7 +239,7 @@ theorem coeff_mul_one_sub_single {x : HahnSeries Γ R} {g g' : Γ} {r : R} :
     (x * (1 - single g r)).coeff (g + g') = x.coeff (g + g') - r * x.coeff g' := by
   rw [mul_one_sub, sub_coeff, sub_right_inj, add_comm, mul_single_coeff_add, mul_comm]
 
-theorem support_one_sub_single_npow' {g : Γ} {r : R} {n : ℕ} :
+theorem support_one_sub_single_npow_zero {g : Γ} {r : R} {n : ℕ} :
     ((1 - single g r) ^ n).support ⊆ AddSubmonoid.closure {0, g} :=
   (support_pow_subset_closure (1 - (single g) r) n).trans
     (AddSubmonoid.closure_mono (supp_one_sub_single r))
@@ -257,7 +257,7 @@ theorem _root_.AddSubmonoid.closure_insert_zero_eq {Γ} [AddZeroClass Γ] {g : �
 
 theorem support_one_sub_single_npow (g : Γ) (r : R) {n : ℕ} :
     ((1 - single g r) ^ n).support ⊆ AddSubmonoid.closure {g} :=
-  support_one_sub_single_npow'.trans AddSubmonoid.closure_insert_zero
+  support_one_sub_single_npow_zero.trans AddSubmonoid.closure_insert_zero
 
 theorem _root_.AddSubmonoid.neg_not_in_closure {Γ} [OrderedAddCommMonoid Γ] {g g' : Γ} (hg : 0 ≤ g)
     (hg' : g' < 0) : ¬ g' ∈ AddSubmonoid.closure {g} := by

@@ -73,17 +73,17 @@ theorem nsmul_coeff {x : HahnSeries Γ R} {n : ℕ} : (n • x).coeff = n • x.
   | zero => simp
   | succ n ih => simp [add_nsmul, ih]
 
-theorem add_coeffTop {x y : HahnSeries Γ R} {a : WithTop Γ} :
+theorem add_coeffTop_apply {x y : HahnSeries Γ R} {a : WithTop Γ} :
     (x + y).coeffTop a = x.coeffTop a + y.coeffTop a := by
   match a with
   | ⊤ => simp
   | (a : Γ) => simp
 
 @[simp]
-theorem add_coeffTop' {x y : HahnSeries Γ R} :
+theorem add_coeffTop {x y : HahnSeries Γ R} :
     (x + y).coeffTop = x.coeffTop + y.coeffTop := by
   ext
-  exact add_coeffTop
+  exact add_coeffTop_apply
 
 @[simp]
 protected lemma map_add [AddMonoid S] (f : R →+ S) {x y : HahnSeries Γ R} :

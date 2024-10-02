@@ -255,6 +255,21 @@ section SMul
 
 variable [PartialOrder Γ] [PartialOrder Γ'] [AddCommMonoid V]
 
+instance [Zero R] [SMulWithZero R V] : SMul R (SummableFamily Γ' V β) :=
+  ⟨fun r t =>
+    { toFun := r • t
+      isPWO_iUnion_support' := t.isPWO_iUnion_support.mono (Set.iUnion_mono fun i =>
+        Pi.smul_apply r t i ▸ Function.support_const_smul_subset r _)
+      finite_co_support' := by
+        intro g
+        refine (t.finite_co_support g).subset ?_
+        intro i hi
+        simp only [Pi.smul_apply, smul_coeff, ne_eq, Set.mem_setOf_eq] at hi
+        simp only [Function.mem_support, ne_eq]
+        exact right_ne_zero_of_smul hi
+    }
+  ⟩
+
 theorem smul_support_subset_prod [AddCommMonoid R] [SMulWithZero R V] (s : SummableFamily Γ R α)
     (t : SummableFamily Γ' V β) (gh : Γ × Γ') :
     (Function.support fun (i : α × β) ↦ (s i.1).coeff gh.1 • (t i.2).coeff gh.2) ⊆
@@ -394,7 +409,8 @@ theorem smul_apply [AddCommMonoid R] [SMulWithZero R V] {x : HahnSeries Γ R}
   rfl
 
 @[simp]
-theorem hsum_smul' [Semiring R] [Module R V] {x : HahnSeries Γ R} {s : SummableFamily Γ' V α} :
+theorem hsum_smul_module [Semiring R] [Module R V] {x : HahnSeries Γ R}
+    {s : SummableFamily Γ' V α} :
     (x • s).hsum = (HahnModule.of R).symm (x • HahnModule.of R s.hsum) := by
   rw [smul_eq, hsum_equiv, hsum_family_smul, hsum_single]
 
@@ -416,7 +432,7 @@ instance : Module (HahnSeries Γ R) (SummableFamily Γ' V α) where
 
 theorem hsum_smul {x : HahnSeries Γ R} {s : SummableFamily Γ R α} :
     (x • s).hsum = x * s.hsum := by
-  rw [hsum_smul', of_symm_smul_of_eq_mul]
+  rw [hsum_smul_module, of_symm_smul_of_eq_mul]
 
 /-- The summation of a `summable_family` as a `LinearMap`. -/
 @[simps]
@@ -551,20 +567,18 @@ theorem pi_finite_co_support {σ : Type*} (s : Finset σ) {R} [CommSemiring R] (
       simp only [mem_coe, mem_addAntidiagonal, Set.mem_iUnion, mem_support, ne_eq,
         mem_cons, Set.mem_setOf_eq, exists_prop, Prod.exists]
       use hhx.choose.1, hhx.choose.2
-      refine ⟨?h.left, hhx.choose_spec.2⟩
-      constructor
+      refine ⟨⟨?_, ?_⟩, hhx.choose_spec.2⟩
       · use x a (mem_cons_self a s')
         exact left_ne_zero_of_mul hhx.choose_spec.2
-      · constructor
-        · use fun i hi => x i (mem_cons_of_mem hi)
-          have h := right_ne_zero_of_mul hhx.choose_spec.2
-          have hor' :
-              ∏ x_1 ∈ s', (if h : x_1 = a ∨ x_1 ∈ s' then t x_1 (x x_1 (mem_cons.mpr h)) else 1) =
-              ∏ x_1 ∈ s', (if h : x_1 ∈ s' then t x_1 (x x_1 (mem_cons_of_mem h)) else 1) :=
-            prod_congr rfl fun i hi => (by simp [hi])
-          simp_rw [hor'] at h
-          convert h
-        · exact (mem_addAntidiagonal.mp hhx.choose_spec.1).2.2
+      · refine ⟨?_, (mem_addAntidiagonal.mp hhx.choose_spec.1).2.2⟩
+        use fun i hi => x i (mem_cons_of_mem hi)
+        have h := right_ne_zero_of_mul hhx.choose_spec.2
+        have hpr :
+            ∏ x_1 ∈ s', (if h : x_1 = a ∨ x_1 ∈ s' then t x_1 (x x_1 (mem_cons.mpr h)) else 1) =
+            ∏ x_1 ∈ s', (if h : x_1 ∈ s' then t x_1 (x x_1 (mem_cons_of_mem h)) else 1) :=
+          prod_congr rfl fun i hi => (by simp [hi])
+        simp_rw [hpr, ne_eq] at h
+        convert h
 
 open Classical in
 /-- A summable family made from pointwise multiplication along a finite collection of summable
