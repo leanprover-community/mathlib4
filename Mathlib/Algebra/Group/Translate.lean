@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 /-!
 # Translation operator
@@ -37,6 +39,7 @@ lemma translate_translate (a b : G) (f : G → α) : τ a (τ b f) = τ (a + b) 
 
 lemma translate_add (a b : G) (f : G → α) : τ (a + b) f = τ a (τ b f) := by ext; simp [sub_sub]
 
+/-- See `translate_add`-/
 lemma translate_add' (a b : G) (f : G → α) : τ (a + b) f = τ b (τ a f) := by
   rw [add_comm, translate_add]
 
@@ -45,6 +48,9 @@ lemma translate_comm (a b : G) (f : G → α) : τ a (τ b f) = τ b (τ a f) :=
 
 -- We make `simp` push the `τ` outside
 @[simp] lemma comp_translate (a : G) (f : G → α) (g : α → β) : g ∘ τ a f = τ a (g ∘ f) := rfl
+
+lemma translate_eq_domAddActMk_vadd (a : G) (f : G → α) : τ a f = DomAddAct.mk (-a) +ᵥ f := by
+  ext; simp [DomAddAct.vadd_apply, sub_eq_neg_add]
 
 @[simp]
 lemma translate_smul_right [SMul H α] (a : G) (f : G → α) (c : H) : τ a (c • f) = c • τ a f := rfl
