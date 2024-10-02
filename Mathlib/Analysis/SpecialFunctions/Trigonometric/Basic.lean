@@ -661,7 +661,7 @@ theorem sqrtTwoAddSeries_monotone_left {x y : ℝ} (h : x ≤ y) :
 theorem cos_pi_over_two_pow : ∀ n : ℕ, cos (π / 2 ^ (n + 1)) = sqrtTwoAddSeries 0 n / 2
   | 0 => by simp
   | n + 1 => by
-    have A : (1 : ℝ) < 2 ^ (n + 1) := one_lt_pow one_lt_two n.succ_ne_zero
+    have A : (1 : ℝ) < 2 ^ (n + 1) := one_lt_pow₀ one_lt_two n.succ_ne_zero
     have B : π / 2 ^ (n + 1) < π := div_lt_self pi_pos A
     have C : 0 < π / 2 ^ (n + 1) := by positivity
     rw [pow_succ, div_mul_eq_div_div, cos_half, cos_pi_over_two_pow n, sqrtTwoAddSeries,
@@ -690,7 +690,7 @@ theorem sin_pi_over_two_pow_succ (n : ℕ) :
     exact (sqrtTwoAddSeries_lt_two _).le
   refine mul_nonneg (sin_nonneg_of_nonneg_of_le_pi ?_ ?_) zero_le_two
   · positivity
-  · exact div_le_self pi_pos.le <| one_le_pow_of_one_le one_le_two _
+  · exact div_le_self pi_pos.le <| one_le_pow₀ one_le_two
 
 @[simp]
 theorem cos_pi_div_four : cos (π / 4) = √2 / 2 := by

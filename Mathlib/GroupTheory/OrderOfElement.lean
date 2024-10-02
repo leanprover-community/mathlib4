@@ -1031,8 +1031,8 @@ theorem orderOf_abs_ne_one (h : |x| ≠ 1) : orderOf x = 0 := by
   intro n hn hx
   replace hx : |x| ^ n = 1 := by simpa only [abs_one, abs_pow] using congr_arg abs hx
   cases' h.lt_or_lt with h h
-  · exact ((pow_lt_one (abs_nonneg x) h hn.ne').ne hx).elim
-  · exact ((one_lt_pow h hn.ne').ne' hx).elim
+  · exact ((pow_lt_one₀ (abs_nonneg x) h hn.ne').ne hx).elim
+  · exact ((one_lt_pow₀ h hn.ne').ne' hx).elim
 
 theorem LinearOrderedRing.orderOf_le_two : orderOf x ≤ 2 := by
   cases' ne_or_eq |x| 1 with h h

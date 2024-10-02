@@ -307,7 +307,7 @@ theorem minkowskiBound_lt_boundOfDiscBdd : minkowskiBound K ↑1 < boundOfDiscBd
     ENNReal.ofReal_one, one_mul, mixedEmbedding.finrank, volume_fundamentalDomain_latticeBasis,
     coe_mul, ENNReal.coe_pow, coe_ofNat, show sqrt N = (1 : ℝ≥0∞) * sqrt N by rw [one_mul]]
   gcongr
-  · exact pow_le_one _ (by positivity) (by norm_num)
+  · exact pow_le_one₀ (by positivity) (by norm_num)
   · rwa [sqrt_le_sqrt, ← NNReal.coe_le_coe, coe_nnnorm, Int.norm_eq_abs, ← Int.cast_abs,
       NNReal.coe_natCast, ← Int.cast_natCast, Int.cast_le]
   · exact one_le_two

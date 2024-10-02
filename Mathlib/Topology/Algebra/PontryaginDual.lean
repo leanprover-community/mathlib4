@@ -54,7 +54,7 @@ instance [LocallyCompactSpace G] : LocallyCompactSpace (PontryaginDual G) := by
   have hVn : ∀ n x, x ∈ Vn n ↔ |Complex.arg x| < Real.pi / 2 ^ (n + 1) := by
     refine fun n x ↦ ⟨?_, fun hx ↦ ⟨Complex.arg x, hx, Circle.exp_arg x⟩⟩
     rintro ⟨t, ht : |t| < _, rfl⟩
-    have ht' := ht.trans_le (div_le_self Real.pi_nonneg (one_le_pow_of_one_le one_le_two (n + 1)))
+    have ht' := ht.trans_le (div_le_self Real.pi_nonneg (one_le_pow₀ one_le_two))
     rwa [Circle.arg_exp (neg_lt_of_abs_lt ht') (lt_of_abs_lt ht').le]
   refine ContinuousMonoidHom.locallyCompactSpace_of_hasBasis Vn ?_ ?_
   · intro n x h1 h2
