@@ -16,12 +16,12 @@ In this file we present a proof of Hadamard's three-lines Theorem.
 
 - `norm_le_interp_of_mem_verticalClosedStrip` :
 Hadamard three-line theorem: If `f` is a bounded function, continuous on
-`re ⁻¹' [l,u]` and differentiable on `re ⁻¹' (l,u)`, then for
+`re ⁻¹' [l, u]` and differentiable on `re ⁻¹' (l, u)`, then for
 `M(x) := sup ((norm ∘ f) '' (re ⁻¹' {x}))`, that is `M(x)` is the supremum of the absolute value of
-`f` along the vertical lines `re z = x`, we have that `∀ z ∈ re ⁻¹' [l,u]` the inequality
+`f` along the vertical lines `re z = x`, we have that `∀ z ∈ re ⁻¹' [l, u]` the inequality
 `‖f(z)‖ ≤ M(0) ^ (1 - ((z.re - l) / (u - l))) * M(1) ^ ((z.re - l) / (u - l))` holds.
 This can be seen to be equivalent to the statement
-that `log M(re z)` is a convex function on `[0,1]`.
+that `log M(re z)` is a convex function on `[0, 1]`.
 
 - `norm_le_interp_of_mem_verticalClosedStrip'` :
 Variant of the above lemma in simpler terms. In particular, it makes no mention of the helper
@@ -39,14 +39,14 @@ functions defined in this file.
     The supremum function on vertical lines defined by : `sSup {|f(z)| : z.re = x}`
 
 - `Complex.HadamardThreeLines.interpStrip` :
-    The interpolation between the `sSupNormIm` on the edges of the vertical strip `re⁻¹ [0,1]`.
+    The interpolation between the `sSupNormIm` on the edges of the vertical strip `re⁻¹ [0, 1]`.
 
 - `Complex.HadamardThreeLines.interpStrip` :
     The interpolation between the `sSupNormIm` on the edges of any vertical strip.
 
 - `Complex.HadamardThreeLines.invInterpStrip` :
     Inverse of the interpolation between the `sSupNormIm` on the edges of the
-    vertical strip `re⁻¹ [0,1]`.
+    vertical strip `re⁻¹ [0, 1]`.
 
 - `Complex.HadamardThreeLines.F` :
     Function defined by `f` times `invInterpStrip`. Convenient form for proofs.
@@ -364,10 +364,10 @@ lemma norm_le_interpStrip_of_mem_verticalStrip_zero [NormedSpace ℂ E] (z : ℂ
       · simpa [sub_eq_zero] using (ne_comm.mpr (ne_of_lt hz.2))
 
 /--
-**Hadamard three-line theorem** on `re ⁻¹' [0,1]`: If `f` is a bounded function, continuous on the
-closed strip `re ⁻¹' [0,1]` and differentiable on open strip `re ⁻¹' (0,1)`, then for
+**Hadamard three-line theorem** on `re ⁻¹' [0, 1]`: If `f` is a bounded function, continuous on the
+closed strip `re ⁻¹' [0, 1]` and differentiable on open strip `re ⁻¹' (0, 1)`, then for
 `M(x) := sup ((norm ∘ f) '' (re ⁻¹' {x}))` we have that for all `z` in the closed strip
-`re ⁻¹' [0,1]` the inequality `‖f(z)‖ ≤ M(0) ^ (1 - z.re) * M(1) ^ z.re` holds. -/
+`re ⁻¹' [0, 1]` the inequality `‖f(z)‖ ≤ M(0) ^ (1 - z.re) * M(1) ^ z.re` holds. -/
 lemma norm_le_interpStrip_of_mem_verticalClosedStrip₀₁ [NormedSpace ℂ E] (f : ℂ → E) {z : ℂ}
     (hz : z ∈ verticalClosedStrip 0 1) (hd : DiffContOnCl ℂ f (verticalStrip 0 1))
     (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1))) :
@@ -377,11 +377,11 @@ lemma norm_le_interpStrip_of_mem_verticalClosedStrip₀₁ [NormedSpace ℂ E] (
     (Continuous.comp_continuousOn' continuous_norm (diffContOnCl_interpStrip f).2)
   rwa [verticalClosedStrip, ← closure_Ioo zero_ne_one, ← closure_preimage_re] at hz
 
-/-- **Hadamard three-line theorem** on `re ⁻¹' [0,1]` (Variant in simpler terms): Let `f` be a
-bounded function, continuous on the closed strip `re ⁻¹' [0,1]` and differentiable on open strip
-`re ⁻¹' (0,1)`. If, for all `z.re = 0`, `‖f z‖ ≤ a` for some `a ∈ ℝ` and, similarly, for all
+/-- **Hadamard three-line theorem** on `re ⁻¹' [0, 1]` (Variant in simpler terms): Let `f` be a
+bounded function, continuous on the closed strip `re ⁻¹' [0, 1]` and differentiable on open strip
+`re ⁻¹' (0, 1)`. If, for all `z.re = 0`, `‖f z‖ ≤ a` for some `a ∈ ℝ` and, similarly, for all
 `z.re = 1`, `‖f z‖ ≤ b` for some `b ∈ ℝ` then for all `z` in the closed strip
-`re ⁻¹' [0,1]` the inequality `‖f(z)‖ ≤ a ^ (1 - z.re) * b ^ z.re` holds. -/
+`re ⁻¹' [0, 1]` the inequality `‖f(z)‖ ≤ a ^ (1 - z.re) * b ^ z.re` holds. -/
 lemma norm_le_interp_of_mem_verticalClosedStrip₀₁' [NormedSpace ℂ E] (f : ℂ → E) {z : ℂ} {a b : ℝ}
     (hz : z ∈ verticalClosedStrip 0 1) (hd : DiffContOnCl ℂ f (verticalStrip 0 1))
     (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1)))
@@ -397,12 +397,11 @@ lemma norm_le_interp_of_mem_verticalClosedStrip₀₁' [NormedSpace ℂ E] (f : 
       rcases h with ⟨h0, h1⟩
       rw [ne_comm] at h0 h1
       simp_rw [interpStrip_eq_of_pos f _ (lt_of_le_of_ne (sSupNormIm_nonneg f 0) h0)
-      (lt_of_le_of_ne (sSupNormIm_nonneg f 1) h1)]
+        (lt_of_le_of_ne (sSupNormIm_nonneg f 1) h1)]
       simp only [norm_eq_abs, map_mul]
       rw [abs_cpow_eq_rpow_re_of_pos ((Ne.le_iff_lt h0).mp (sSupNormIm_nonneg f _)) _]
       rw [abs_cpow_eq_rpow_re_of_pos ((Ne.le_iff_lt h1).mp (sSupNormIm_nonneg f _)) _]
       simp only [sub_re, one_re, le_refl]
-
   apply (norm_le_interpStrip_of_mem_verticalClosedStrip₀₁ f hz hd hB).trans (this.trans _)
   apply mul_le_mul_of_nonneg _ _ (Real.rpow_nonneg (sSupNormIm_nonneg f _) _)
   · apply (Real.rpow_nonneg _ _)
@@ -426,12 +425,11 @@ lemma norm_le_interp_of_mem_verticalClosedStrip₀₁' [NormedSpace ℂ E] (f : 
         simp only [mem_preimage, one_re, mem_singleton_iff, comp_apply,
           and_self]
 
-
 /-- An auxiliary function to prove the general statement of Hadamard's three lines theorem. -/
 def scale (f : ℂ → E) (l u : ℝ) : ℂ → E := fun z ↦ f (l + z • (u - l))
 
-/-- The transformation on ℂ that is used for `scale` maps the strip ``re ⁻¹' (l,u)``
-  to the strip ``re ⁻¹' (0,1)``. -/
+/-- The transformation on ℂ that is used for `scale` maps the strip ``re ⁻¹' (l, u)``
+  to the strip ``re ⁻¹' (0, 1)``. -/
 lemma scale_id_mem_verticalStrip_of_mem_verticalStrip {l u : ℝ} (hul : l < u) {z : ℂ}
     (hz : z ∈ verticalStrip 0 1) : l + z * (u - l)  ∈ verticalStrip l u := by
   simp only [verticalStrip, mem_preimage, mem_Ioo] at hz
@@ -445,9 +443,8 @@ lemma scale_id_mem_verticalStrip_of_mem_verticalStrip {l u : ℝ} (hul : l < u) 
   simp only [sub_pos]
   exact hul
 
-
-/-- The transformation on ℂ that is used for `scale` maps the closed strip ``re ⁻¹' [l,u]``
-  to the closed strip ``re ⁻¹' [0,1]``. -/
+/-- The transformation on ℂ that is used for `scale` maps the closed strip ``re ⁻¹' [l, u]``
+  to the closed strip ``re ⁻¹' [0, 1]``. -/
 lemma scale_id_mem_verticalClosedStrip_of_mem_verticalClosedStrip {l u : ℝ} (hul : l < u) {z : ℂ}
     (hz : z ∈ verticalClosedStrip 0 1) : l + z * (u - l)  ∈ verticalClosedStrip l u := by
   simp only [verticalClosedStrip, mem_preimage, add_re, ofReal_re, mul_re, sub_re, sub_im,
@@ -457,13 +454,11 @@ lemma scale_id_mem_verticalClosedStrip_of_mem_verticalClosedStrip {l u : ℝ} (h
   simp only [sub_pos, hul, mul_nonneg_iff_of_pos_right, hz₁, true_and]
   rw [add_comm, ← sub_le_sub_iff_right l, add_sub_assoc, sub_self, add_zero]
   nth_rewrite 2 [← one_mul (u - l)]
+  have := sub_nonneg.2 hul.le
   gcongr
-  simp only [sub_nonneg]
-  exact le_of_lt hul
 
-
-/-- If z is on the closed strip `re ⁻¹' [l,u]`, then `(z - l) / (u - l)` is on the closed strip
-  `re ⁻¹' [0,1]`. -/
+/-- If z is on the closed strip `re ⁻¹' [l, u]`, then `(z - l) / (u - l)` is on the closed strip
+  `re ⁻¹' [0, 1]`. -/
 lemma mem_verticalClosedStrip_of_scale_id_mem_verticalClosedStrip {z : ℂ} {l u : ℝ} (hul : l < u)
     (hz : z ∈ verticalClosedStrip l u) : z / (u - l) - l / (u - l) ∈ verticalClosedStrip 0 1 := by
   simp only [verticalClosedStrip, Complex.div_re, mem_preimage, sub_re, mem_Icc,
@@ -481,7 +476,6 @@ lemma mem_verticalClosedStrip_of_scale_id_mem_verticalClosedStrip {z : ℂ} {l u
       div_le_one (by simp[hul]), sub_le_sub_iff_right l]
     exact hz.2
 
-
 /-- The function `scale f l u` is `diffContOnCl`. -/
 lemma scale_diffContOnCl [NormedSpace ℂ E] {f : ℂ → E} {l u : ℝ} (hul : l < u)
     (hd : DiffContOnCl ℂ f (verticalStrip l u)) :
@@ -495,8 +489,7 @@ lemma scale_diffContOnCl [NormedSpace ℂ E] {f : ℂ → E} {l u : ℝ} (hul : 
     intro z hz
     exact scale_id_mem_verticalStrip_of_mem_verticalStrip hul hz
 
-
-/-- The norm of the function `scale f l u` is bounded above on the closed strip `re⁻¹' [0,1]`. -/
+/-- The norm of the function `scale f l u` is bounded above on the closed strip `re⁻¹' [0, 1]`. -/
 lemma scale_bddAbove {f : ℂ → E} {l u : ℝ} (hul : l < u)
     (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip l u))) :
     BddAbove ((norm ∘ (scale f l u)) '' (verticalClosedStrip 0 1)) := by
@@ -512,7 +505,6 @@ lemma scale_bddAbove {f : ℂ → E} {l u : ℝ} (hul : l < u)
     simp only [and_true]
     exact scale_id_mem_verticalClosedStrip_of_mem_verticalClosedStrip hul hw₁
   exact hR ‖f (↑l + w * (↑u - ↑l))‖ this
-
 
 /-- A bound to the norm of `f` on the line `z.re = l` induces a bound to the norm of
   `scale f l u z` on the line `z.re = 0`. -/
@@ -552,7 +544,6 @@ noncomputable def interpStrip' (f : ℂ → E) (l u : ℝ) (z : ℂ) : ℂ :=
   if (sSupNormIm f l) = 0 ∨ (sSupNormIm f u) = 0
     then 0
     else (sSupNormIm f l) ^ (1 - ((z - l) / (u - l))) * (sSupNormIm f u) ^ ((z - l) / (u - l))
-
 
 /-- The supremum of the norm of `scale f l u` on the line `z.re = 0` is the same as the supremum
   of `f` on the line `z.re = l`. -/
@@ -608,7 +599,7 @@ lemma sSupNormIm_scale_right (f : ℂ → E) {l u : ℝ} (hul : l < u) :
   rw [this]
 
 /-- A technical lemma relating the bounds given by the three lines lemma on a general strip
-to the bounds for its scaled version on the strip ``re ⁻¹' [0,1]`. -/
+to the bounds for its scaled version on the strip ``re ⁻¹' [0, 1]`. -/
 lemma interpStrip_scale (f : ℂ → E) {l u : ℝ} (hul: l < u) (z : ℂ)  : interpStrip (scale f l u)
     ((z - ↑l) / (↑u - ↑l)) = interpStrip' f l u z := by
   simp only [interpStrip, interpStrip']
@@ -616,7 +607,7 @@ lemma interpStrip_scale (f : ℂ → E) {l u : ℝ} (hul: l < u) (z : ℂ)  : in
 
 /--
 **Hadamard three-line theorem**: If `f` is a bounded function, continuous on the
-closed strip `re ⁻¹' [l,u]` and differentiable on open strip `re ⁻¹' (l,u)`, then for
+closed strip `re ⁻¹' [l, u]` and differentiable on open strip `re ⁻¹' (l, u)`, then for
 `M(x) := sup ((norm ∘ f) '' (re ⁻¹' {x}))` we have that for all `z` in the closed strip
 `re ⁻¹' [a,b]` the inequality
 `‖f(z)‖ ≤ M(0) ^ (1 - ((z.re - l) / (u - l))) * M(1) ^ ((z.re - l) / (u - l))`
@@ -633,12 +624,11 @@ lemma norm_le_interpStrip_of_mem_verticalClosedStrip [NormedSpace ℂ E] {l u : 
   rw [fun_arg_eq hul, div_sub_div_same, interpStrip_scale f hul z] at hgoal
   exact hgoal
 
-
 /-- **Hadamard three-line theorem** (Variant in simpler terms): Let `f` be a
-bounded function, continuous on the closed strip `re ⁻¹' [l,u]` and differentiable on open strip
-`re ⁻¹' (l,u)`. If, for all `z.re = l`, `‖f z‖ ≤ a` for some `a ∈ ℝ` and, similarly, for all
+bounded function, continuous on the closed strip `re ⁻¹' [l, u]` and differentiable on open strip
+`re ⁻¹' (l, u)`. If, for all `z.re = l`, `‖f z‖ ≤ a` for some `a ∈ ℝ` and, similarly, for all
 `z.re = u`, `‖f z‖ ≤ b` for some `b ∈ ℝ` then for all `z` in the closed strip
-`re ⁻¹' [l,u]` the inequality
+`re ⁻¹' [l, u]` the inequality
 `‖f(z)‖ ≤ a ^ (1 - (z.re - l) / (u - l)) * b ^ ((z.re - l) / (u - l))`
 holds. -/
 lemma norm_le_interp_of_mem_verticalClosedStrip' [NormedSpace ℂ E] {f : ℂ → E} {z : ℂ} {a b l u : ℝ}
