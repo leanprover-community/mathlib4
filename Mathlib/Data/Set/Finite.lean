@@ -1528,6 +1528,7 @@ protected theorem bddBelow [SemilatticeInf α] [Nonempty α] (s : Finset α) : B
 
 end Finset
 
+section LinearOrder
 variable [LinearOrder α] {s : Set α}
 
 /-- If a linear order does not contain any triple of elements `x < y < z`, then this type
@@ -1567,5 +1568,20 @@ theorem DirectedOn.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} {f
   rw [Set.biUnion_eq_iUnion] at hs
   haveI := hn.coe_sort
   simpa using (directed_comp.2 hc.directed_val).exists_mem_subset_of_finset_subset_biUnion hs
+
+end LinearOrder
+
+namespace List
+variable (α) [Finite α] (n : ℕ)
+
+lemma finite_length_eq : {l : List α | l.length = n}.Finite := Vector.finite
+
+lemma finite_length_lt : {l : List α | l.length < n}.Finite := by
+  convert (Finset.range n).finite_toSet.biUnion fun i _ ↦ finite_length_eq α i; ext; simp
+
+lemma finite_length_le : {l : List α | l.length ≤ n}.Finite := by
+  simpa [Nat.lt_succ_iff] using finite_length_lt α (n + 1)
+
+end List
 
 set_option linter.style.longFile 1700
