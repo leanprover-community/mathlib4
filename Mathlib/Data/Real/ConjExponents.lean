@@ -221,8 +221,6 @@ protected lemma Real.IsConjExponent.toNNReal {p q : ℝ} (hpq : p.IsConjExponent
   inv_add_inv_conj := by rw [← toNNReal_inv, ← toNNReal_inv, ← toNNReal_add hpq.inv_nonneg
     hpq.symm.inv_nonneg, hpq.inv_add_inv_conj, toNNReal_one]
 
-
-
 namespace ENNReal
 
 /-- Two nonnegative real exponents `p, q` are conjugate if they are `> 1` and satisfy the equality
