@@ -430,7 +430,7 @@ theorem lift_unique {N : Type*} [SeminormedAddCommGroup N] (f : NormedAddGroupHo
   rfl
 
 /-- `normedMk` satisfies `IsQuotient`. -/
-theorem isQuotientQuotient : IsQuotient (@normedMk M _) := by
+theorem isQuotientSeparationQuotient : IsQuotient (@normedMk M _) := by
   constructor
   · exact surjective_normedMk
   · rw [ker_normedMk]
