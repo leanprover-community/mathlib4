@@ -5,6 +5,7 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Tactic.Module
 
 /-!
 # Inner product space derived from a norm
