@@ -37,6 +37,7 @@ import Mathlib.Algebra.AlgebraicCard
 import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.Associated.OrderedCommMonoid
 import Mathlib.Algebra.BigOperators.Associated
+import Mathlib.Algebra.BigOperators.Balance
 import Mathlib.Algebra.BigOperators.Expect
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.Finprod
