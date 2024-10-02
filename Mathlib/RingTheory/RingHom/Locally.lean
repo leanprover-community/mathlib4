@@ -29,6 +29,54 @@ composition, base change, etc., so is `Locally P`.
 
 universe u v
 
+section
+
+variable {R : Type*} [CommRing R]
+
+/-- Given a set `s` in a ring `R` and for every `t : s` a set `p t` of fractions in
+a localization of `R` at `t`, this is the function sending a pair `(t, y)`, with
+`t : s` and `y : t a`, to `t` multiplied with a numerator of `y`. The range
+of this function spans the unit ideal, if `s` and every `p t` do. -/
+noncomputable def IsLocalization.Away.mulNumerator (s : Set R)
+    {Rₜ : s → Type*} [∀ t, CommRing (Rₜ t)] [∀ t, Algebra R (Rₜ t)]
+    [∀ t, IsLocalization.Away t.val (Rₜ t)]
+    (p : (t : s) → Set (Rₜ t)) (x : (t : s) × p t) : R :=
+  x.1 * (IsLocalization.Away.sec x.1.1 x.2.1).1
+
+lemma IsLocalization.Away.span_range_mulNumerator_eq_top {s : Set R}
+    (hsone : Ideal.span s = ⊤) {Rₜ : s → Type*} [∀ t, CommRing (Rₜ t)] [∀ t, Algebra R (Rₜ t)]
+    [∀ t, IsLocalization.Away t.val (Rₜ t)]
+    {p : (t : s) → Set (Rₜ t)} (htone : ∀ (r : s), Ideal.span (p r) = ⊤) :
+    Ideal.span (Set.range (IsLocalization.Away.mulNumerator s p)) = ⊤ := by
+  rw [← Ideal.radical_eq_top, eq_top_iff, ← hsone, Ideal.span_le]
+  intro a ha
+  haveI : IsLocalization (Submonoid.powers a) (Rₜ ⟨a, ha⟩) :=
+    inferInstanceAs <| IsLocalization.Away (⟨a, ha⟩ : s).val (Rₜ ⟨a, ha⟩)
+  have h₁ : Ideal.span (p ⟨a, ha⟩) ≤ Ideal.span
+      (algebraMap R (Rₜ ⟨a, ha⟩) '' Set.range (IsLocalization.Away.mulNumerator s p)) := by
+    rw [Ideal.span_le]
+    intro x hx
+    rw [SetLike.mem_coe, IsLocalization.mem_span_map (Submonoid.powers a)]
+    refine ⟨a * (IsLocalization.Away.sec a x).1, Ideal.subset_span ⟨⟨⟨a, ha⟩, ⟨x, hx⟩⟩, rfl⟩, ?_⟩
+    use ⟨a ^ ((IsLocalization.Away.sec a x).2 + 1), _, rfl⟩
+    rw [IsLocalization.eq_mk'_iff_mul_eq, map_pow, map_mul, ← map_pow, pow_add, map_mul,
+      ← mul_assoc, IsLocalization.Away.sec_spec a x, mul_comm, pow_one]
+  have h₂ : IsLocalization.mk' (Rₜ ⟨a, ha⟩) 1 (1 : Submonoid.powers a) ∈ Ideal.span
+      (algebraMap R (Rₜ ⟨a, ha⟩) ''
+        (Set.range <| IsLocalization.Away.mulNumerator s p)) := by
+    rw [IsLocalization.mk'_one]
+    apply h₁
+    simp [htone]
+  rw [IsLocalization.mem_span_map (Submonoid.powers a)] at h₂
+  obtain ⟨y, hy, ⟨-, m, rfl⟩, hyz⟩ := h₂
+  rw [IsLocalization.eq] at hyz
+  obtain ⟨⟨-, n, rfl⟩, hc⟩ := hyz
+  simp only [← mul_assoc, OneMemClass.coe_one, one_mul, mul_one] at hc
+  use n + m
+  simpa [pow_add, hc] using Ideal.mul_mem_left _ _ hy
+
+end
+
 open TensorProduct
 
 namespace RingHom
@@ -119,49 +167,14 @@ lemma locally_iff_of_localizationSpanTarget (hPi : RespectsIso P)
 
 section OfLocalizationSpanTarget
 
-/-- Given a set `s` in a ring `S` and for every `a : s` a set `t a` of fractions in
-`Localization.Away r`, this is the function sending a pair `(a, x)`, with
-`a : s` and `x : t a`, to `a` multiplied with a numerator of `x`. The range
-of this function spans the unit ideal, if `s` and every `t a` do. -/
-noncomputable def Localization.mulNumerator (s : Set S)
-    (t : (r : s) → Set (Localization.Away r.val)) (p : (a : s) × t a) : S :=
-  p.1 * (IsLocalization.Away.sec p.1.1 p.2.1).1
-
-lemma Localization.span_range_mulNumerator_eq_top {s : Set S} (hsone : Ideal.span s = ⊤)
-    {t : (r : s) → Set (Localization.Away r.val)} (htone : ∀ (r : s), Ideal.span (t r) = ⊤) :
-    Ideal.span (Set.range (Localization.mulNumerator s t)) = ⊤ := by
-  rw [← Ideal.radical_eq_top, eq_top_iff, ← hsone, Ideal.span_le]
-  intro a ha
-  have h₁ : Ideal.span (t ⟨a, ha⟩) ≤ Ideal.span
-      (algebraMap S (Localization.Away a) '' Set.range (Localization.mulNumerator s t)) := by
-    rw [Ideal.span_le]
-    intro x hx
-    rw [SetLike.mem_coe, IsLocalization.mem_span_map (Submonoid.powers a)]
-    refine ⟨a * (IsLocalization.Away.sec a x).1, Ideal.subset_span ⟨⟨⟨a, ha⟩, ⟨x, hx⟩⟩, rfl⟩, ?_⟩
-    use ⟨a ^ ((IsLocalization.Away.sec a x).2 + 1), _, rfl⟩
-    rw [IsLocalization.eq_mk'_iff_mul_eq, map_pow, map_mul, ← map_pow, pow_add, map_mul,
-      ← mul_assoc, IsLocalization.Away.sec_spec a x, mul_comm, pow_one]
-  have h₂ : IsLocalization.mk' (Localization.Away a) 1 (1 : Submonoid.powers a) ∈ Ideal.span
-      (algebraMap S (Localization.Away a) '' (Set.range <| Localization.mulNumerator s t)) := by
-    rw [IsLocalization.mk'_one]
-    apply h₁
-    simp [htone]
-  rw [IsLocalization.mem_span_map (Submonoid.powers a)] at h₂
-  obtain ⟨y, hy, ⟨-, m, rfl⟩, hyz⟩ := h₂
-  rw [IsLocalization.eq] at hyz
-  obtain ⟨⟨-, n, rfl⟩, hc⟩ := hyz
-  simp only [← mul_assoc, OneMemClass.coe_one, one_mul, mul_one] at hc
-  use n + m
-  simpa [pow_add, hc] using Ideal.mul_mem_left _ _ hy
-
 /-- `Locally P` is local on the target. -/
 lemma locally_ofLocalizationSpanTarget (hP : RespectsIso P) :
     OfLocalizationSpanTarget (Locally P) := by
   intro R S _ _ f s hsone hs
   choose t htone ht using hs
   rw [locally_iff_exists hP]
-  refine ⟨(a : s) × t a, Localization.mulNumerator s t,
-      Localization.span_range_mulNumerator_eq_top hsone htone,
+  refine ⟨(a : s) × t a, IsLocalization.Away.mulNumerator s t,
+      IsLocalization.Away.span_range_mulNumerator_eq_top hsone htone,
       fun ⟨a, b⟩ ↦ Localization.Away b.val, inferInstance, inferInstance, fun ⟨a, b⟩ ↦ ?_, ?_⟩
   · haveI : IsLocalization.Away ((algebraMap S (Localization.Away a.val))
         (IsLocalization.Away.sec a.val b.val).1) (Localization.Away b.val) := by
