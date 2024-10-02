@@ -239,7 +239,7 @@ lemma odd_matches_node_outside {u : Set V} {c : ConnectedComponent (Subgraph.del
 
 end Finite
 
-lemma isClique_even_iff_exists_isMatching [DecidableEq V] (u : Set V) (hu : Set.Finite u)
+lemma IsClique.even_card_iff_exists_isMatching [DecidableEq V] (u : Set V) (hu : Set.Finite u)
     (hc : G.IsClique u) : Even (Nat.card u) ↔ ∃ (M : Subgraph G), M.verts = u ∧ M.IsMatching := by
   haveI : Fintype u := hu.fintype
   refine ⟨?_ , by

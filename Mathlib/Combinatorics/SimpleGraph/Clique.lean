@@ -94,7 +94,7 @@ theorem IsClique.subset (h : t ⊆ s) : G.IsClique s → G.IsClique t := Set.Pai
 theorem isClique_bot_iff : (⊥ : SimpleGraph α).IsClique s ↔ (s : Set α).Subsingleton :=
   Set.pairwise_bot_iff
 
-lemma IsClique.completeGraph : (completeGraph α).IsClique s := by
+protected lemma IsClique.completeGraph : (completeGraph α).IsClique s := by
   intro x _ y _ a_2 a_3
   simp_all only [Set.mem_univ, ne_eq, not_true_eq_false]
 
