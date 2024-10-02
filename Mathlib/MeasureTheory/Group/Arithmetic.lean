@@ -120,7 +120,7 @@ lemma Measurable.mul' [MeasurableMul₂ M] {f g : α → β → M} {h : α → �
     (hg : Measurable ↿g) (hh : Measurable h) : Measurable fun a ↦ (f a * g a) (h a) := by
   simp; fun_prop
 
-@[to_additive (attr := aesop safe 20 apply (rule_sets := [Measurable]))]
+@[to_additive (attr := fun_prop, aesop safe 20 apply (rule_sets := [Measurable]))]
 theorem AEMeasurable.mul' [MeasurableMul₂ M] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (f * g) μ :=
   measurable_mul.comp_aemeasurable (hf.prod_mk hg)
