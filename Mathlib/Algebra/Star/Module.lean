@@ -82,10 +82,11 @@ rather than `nnqsmul` and `qsmul` because the latter are reserved to the actions
 discoverability.
 -/
 
-@[simp] lemma star_nnrat_smul [AddCommMonoid R] [StarAddMonoid R] [Module ℚ≥0 R] (q : ℚ≥0) (x : R) :
+@[simp high]
+lemma star_nnrat_smul [AddCommMonoid R] [StarAddMonoid R] [Module ℚ≥0 R] (q : ℚ≥0) (x : R) :
     star (q • x) = q • star x := map_nnrat_smul (starAddEquiv : R ≃+ R) _ _
 
-@[simp] lemma star_rat_smul [AddCommGroup R] [StarAddMonoid R] [Module ℚ R] (q : ℚ) (x : R) :
+@[simp high] lemma star_rat_smul [AddCommGroup R] [StarAddMonoid R] [Module ℚ R] (q : ℚ) (x : R) :
     star (q • x) = q • star x :=
   map_rat_smul (starAddEquiv : R ≃+ R) _ _
 
