@@ -28,15 +28,6 @@ Gouvêa, F. Q. (2020) p-adic Numbers An Introduction. 3rd edition.
   Cham, Springer International Publishing.
 -/
 
-namespace Set
-
-lemma mem_unique_to_singleton {X : Type*} {U : Set X} {x : X} (hx : x ∈ U)
-    (h : ∀ y : X, y ∈ U → y = x) : U = {x} := by
-  ext
-  constructor <;> simp_all
-
-end Set
-
 open Pointwise TopologicalSpace
 
 namespace NonarchimedeanGroup.auxiliary
