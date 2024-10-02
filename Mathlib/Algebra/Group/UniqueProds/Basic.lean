@@ -70,12 +70,15 @@ variable {G H : Type*} [Mul G] [Mul H] {A B : Finset G} {a0 b0 : G}
 theorem of_subsingleton [Subsingleton G] : UniqueMul A B a0 b0 := by
   simp [UniqueMul, eq_iff_true_of_subsingleton]
 
-@[to_additive]
+@[to_additive of_card_le_one]
 theorem of_card_le_one (hA : A.Nonempty) (hB : B.Nonempty) (hA1 : A.card ≤ 1) (hB1 : B.card ≤ 1) :
     ∃ a ∈ A, ∃ b ∈ B, UniqueMul A B a b := by
   rw [Finset.card_le_one_iff] at hA1 hB1
   obtain ⟨a, ha⟩ := hA; obtain ⟨b, hb⟩ := hB
   exact ⟨a, ha, b, hb, fun _ _ ha' hb' _ ↦ ⟨hA1 ha' ha, hB1 hb' hb⟩⟩
+
+@[deprecated (since := "2024-09-23")]
+alias _root_.UniqueAdd.of_card_nonpos := UniqueAdd.of_card_le_one
 
 @[to_additive]
 theorem mt (h : UniqueMul A B a0 b0) :
@@ -113,7 +116,7 @@ theorem iff_existsUnique (aA : a0 ∈ A) (bB : b0 ∈ B) :
         exact Prod.mk.inj_iff.mp (J (x, y) ⟨Finset.mk_mem_product hx hy, l⟩))⟩
 
 open Finset in
-@[to_additive]
+@[to_additive iff_card_le_one]
 theorem iff_card_le_one [DecidableEq G] (ha0 : a0 ∈ A) (hb0 : b0 ∈ B) :
     UniqueMul A B a0 b0 ↔ ((A ×ˢ B).filter (fun p ↦ p.1 * p.2 = a0 * b0)).card ≤ 1 := by
   simp_rw [card_le_one_iff, mem_filter, mem_product]
@@ -123,6 +126,9 @@ theorem iff_card_le_one [DecidableEq G] (ha0 : a0 ∈ A) (hb0 : b0 ∈ B) :
     · rw [h1.1, h2.1]
     · rw [h1.2, h2.2]
   · exact Prod.ext_iff.1 (@h (a, b) (a0, b0) ⟨⟨ha, hb⟩, he⟩ ⟨⟨ha0, hb0⟩, rfl⟩)
+
+@[deprecated (since := "2024-09-23")]
+alias _root_.UniqueAdd.iff_card_nonpos := UniqueAdd.iff_card_le_one
 
 -- Porting note: mathport warning: expanding binder collection
 --  (ab «expr ∈ » [finset.product/multiset.product/set.prod/list.product](A, B)) -/

@@ -526,7 +526,7 @@ lemma ceil_lt_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉₊ / b < a) : ⌈a⌉�
 lemma ceil_le_mul (hb : 1 < b) (hba : ⌈(b - 1)⁻¹⌉₊ / b ≤ a) : ⌈a⌉₊ ≤ b * a := by
   obtain rfl | hba := hba.eq_or_lt
   · rw [mul_div_cancel₀, cast_le, ceil_le]
-    exact _root_.div_le_self (by positivity) hb.le
+    · exact _root_.div_le_self (by positivity) hb.le
     · positivity
   · exact (ceil_lt_mul hb hba).le
 
