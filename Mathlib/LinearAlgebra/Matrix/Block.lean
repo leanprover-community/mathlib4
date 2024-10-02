@@ -85,6 +85,18 @@ theorem BlockTriangular.add (hM : BlockTriangular M b) (hN : BlockTriangular N b
 theorem BlockTriangular.sub (hM : BlockTriangular M b) (hN : BlockTriangular N b) :
     BlockTriangular (M - N) b := fun i j h => by simp_rw [Matrix.sub_apply, hM h, hN h, sub_zero]
 
+lemma BlockTriangular.add_iff_right (hM : BlockTriangular M b) :
+    BlockTriangular (M + N) b ↔ BlockTriangular N b := ⟨(by simpa using ·.sub hM), hM.add⟩
+
+lemma BlockTriangular.add_iff_left (hN : BlockTriangular N b) :
+    BlockTriangular (M + N) b ↔ BlockTriangular M b := by rw [add_comm, hN.add_iff_right]
+
+lemma BlockTriangular.sub_iff_right (hM : BlockTriangular M b) :
+    BlockTriangular (M - N) b ↔ BlockTriangular N b := ⟨(by simpa using hM.sub ·), hM.sub⟩
+
+lemma BlockTriangular.sub_iff_left (hN : BlockTriangular N b) :
+    BlockTriangular (M - N) b ↔ BlockTriangular M b := ⟨(by simpa using ·.add hN), (·.sub hN)⟩
+
 end LT
 
 section Preorder

@@ -86,10 +86,13 @@ lemma charmatrix_fromBlocks :
   simp only [charmatrix]
   ext (i|i) (j|j) : 2 <;> simp [diagonal]
 
-lemma BlockTriangular.charmatrix {α : Type*} [Preorder α] {M : Matrix n n R} {b : n → α}
-    (h : M.BlockTriangular b) :
-    M.charmatrix.BlockTriangular b :=
-  (blockTriangular_diagonal _).sub fun i j h' => by simpa using h h'
+@[simp]
+lemma charmatrix_blockTriangular_iff {α : Type*} [Preorder α] {M : Matrix n n R} {b : n → α} :
+    M.charmatrix.BlockTriangular b ↔ M.BlockTriangular b := by
+  rw [charmatrix, scalar_apply, RingHom.mapMatrix_apply, (blockTriangular_diagonal _).sub_iff_right]
+  simp [BlockTriangular]
+
+alias ⟨BlockTriangular.of_charmatrix, BlockTriangular.charmatrix⟩ := charmatrix_blockTriangular_iff
 
 /-- The characteristic polynomial of a matrix `M` is given by $\det (t I - M)$.
 -/
