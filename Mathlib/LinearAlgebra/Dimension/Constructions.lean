@@ -372,7 +372,7 @@ variable [StrongRankCondition R]
 /-- The dimension of a submodule is bounded by the dimension of the ambient space. -/
 theorem Submodule.finrank_le [Module.Finite R M] (s : Submodule R M) :
     finrank R s ≤ finrank R M :=
-  toNat_le_toNat (rank_submodule_le s) (rank_lt_aleph0 _ _)
+  toNat_le_toNat (Submodule.rank_le s) (rank_lt_aleph0 _ _)
 
 /-- The dimension of a quotient is bounded by the dimension of the ambient space. -/
 theorem Submodule.finrank_quotient_le [Module.Finite R M] (s : Submodule R M) :

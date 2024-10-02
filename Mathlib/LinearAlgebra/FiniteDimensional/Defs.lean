@@ -148,7 +148,7 @@ instance finiteDimensional_submodule [FiniteDimensional K V] (S : Submodule K V)
   · exact
       iff_fg.1
         (IsNoetherian.iff_rank_lt_aleph0.2
-          (lt_of_le_of_lt (rank_submodule_le _) (_root_.rank_lt_aleph0 K V)))
+          ((Submodule.rank_le _).trans_lt (_root_.rank_lt_aleph0 K V)))
   · infer_instance
 
 /-- A quotient of a finite-dimensional space is also finite-dimensional. -/

@@ -332,9 +332,11 @@ theorem rank_range_of_surjective (f : M →ₗ[R] M') (h : Surjective f) :
     Module.rank R (LinearMap.range f) = Module.rank R M' := by
   rw [LinearMap.range_eq_top.2 h, rank_top]
 
-theorem rank_submodule_le (s : Submodule R M) : Module.rank R s ≤ Module.rank R M := by
+theorem Submodule.rank_le (s : Submodule R M) : Module.rank R s ≤ Module.rank R M := by
   rw [← rank_top R M]
-  exact Submodule.rank_mono le_top
+  exact rank_mono le_top
+
+@[deprecated (since := "2024-10-02")] alias rank_submodule_le := Submodule.rank_le
 
 theorem LinearMap.lift_rank_le_of_surjective (f : M →ₗ[R] M') (h : Surjective f) :
     lift.{v} (Module.rank R M') ≤ lift.{v'} (Module.rank R M) := by

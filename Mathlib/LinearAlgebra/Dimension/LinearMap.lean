@@ -34,7 +34,7 @@ abbrev rank (f : V →ₗ[K] V') : Cardinal :=
   Module.rank K (LinearMap.range f)
 
 theorem rank_le_range (f : V →ₗ[K] V') : rank f ≤ Module.rank K V' :=
-  rank_submodule_le _
+  Submodule.rank_le _
 
 theorem rank_le_domain (f : V →ₗ[K] V₁) : rank f ≤ Module.rank K V :=
   rank_range_le _
