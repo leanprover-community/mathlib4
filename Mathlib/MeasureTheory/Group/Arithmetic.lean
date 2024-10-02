@@ -87,8 +87,8 @@ export MeasurableMul₂ (measurable_mul)
 
 section Mul
 
-variable {M α : Type*} [MeasurableSpace M] [Mul M] {m : MeasurableSpace α} {f g : α → M}
-  {μ : Measure α}
+variable {M α β : Type*} [MeasurableSpace M] [Mul M] {m : MeasurableSpace α}
+  {mβ : MeasurableSpace β} {f g : α → M} {μ : Measure α}
 
 @[to_additive (attr := fun_prop, measurability)]
 theorem Measurable.const_mul [MeasurableMul M] (hf : Measurable f) (c : M) :
@@ -111,14 +111,14 @@ theorem AEMeasurable.mul_const [MeasurableMul M] (hf : AEMeasurable f μ) (c : M
   (measurable_mul_const c).comp_aemeasurable hf
 
 @[to_additive (attr := fun_prop, aesop safe 20 apply (rule_sets := [Measurable]))]
-theorem Measurable.mul' [MeasurableMul₂ M] (hf : Measurable f) (hg : Measurable g) :
-    Measurable (f * g) :=
-  measurable_mul.comp (hf.prod_mk hg)
-
-@[to_additive (attr := fun_prop, aesop safe 20 apply (rule_sets := [Measurable]))]
 theorem Measurable.mul [MeasurableMul₂ M] (hf : Measurable f) (hg : Measurable g) :
     Measurable fun a => f a * g a :=
   measurable_mul.comp (hf.prod_mk hg)
+
+@[to_additive (attr := fun_prop, aesop safe 20 apply (rule_sets := [Measurable]))]
+lemma Measurable.mul' [MeasurableMul₂ M] {f g : α → β → M} {h : α → β} (hf : Measurable ↿f)
+    (hg : Measurable ↿g) (hh : Measurable h) : Measurable fun a ↦ (f a * g a) (h a) := by
+  simp; fun_prop
 
 @[to_additive (attr := aesop safe 20 apply (rule_sets := [Measurable]))]
 theorem AEMeasurable.mul' [MeasurableMul₂ M] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
@@ -238,8 +238,8 @@ export MeasurableDiv₂ (measurable_div)
 
 section Div
 
-variable {G α : Type*} [MeasurableSpace G] [Div G] {m : MeasurableSpace α} {f g : α → G}
-  {μ : Measure α}
+variable {G α β : Type*} [MeasurableSpace G] [Div G] {m : MeasurableSpace α}
+  {mβ : MeasurableSpace β} {f g : α → G} {μ : Measure α}
 
 @[to_additive (attr := measurability)]
 theorem Measurable.const_div [MeasurableDiv G] (hf : Measurable f) (c : G) :
@@ -262,14 +262,14 @@ theorem AEMeasurable.div_const [MeasurableDiv G] (hf : AEMeasurable f μ) (c : G
   (MeasurableDiv.measurable_div_const c).comp_aemeasurable hf
 
 @[to_additive (attr := fun_prop, aesop safe 20 apply (rule_sets := [Measurable]))]
-theorem Measurable.div' [MeasurableDiv₂ G] (hf : Measurable f) (hg : Measurable g) :
-    Measurable (f / g) :=
-  measurable_div.comp (hf.prod_mk hg)
-
-@[to_additive (attr := fun_prop, aesop safe 20 apply (rule_sets := [Measurable]))]
 theorem Measurable.div [MeasurableDiv₂ G] (hf : Measurable f) (hg : Measurable g) :
     Measurable fun a => f a / g a :=
   measurable_div.comp (hf.prod_mk hg)
+
+@[to_additive (attr := fun_prop, aesop safe 20 apply (rule_sets := [Measurable]))]
+lemma Measurable.div' [MeasurableDiv₂ G] {f g : α → β → G} {h : α → β} (hf : Measurable ↿f)
+    (hg : Measurable ↿g) (hh : Measurable h) : Measurable fun a ↦ (f a / g a) (h a) := by
+  simp; fun_prop
 
 @[to_additive (attr := fun_prop, aesop safe 20 apply (rule_sets := [Measurable]))]
 theorem AEMeasurable.div' [MeasurableDiv₂ G] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
