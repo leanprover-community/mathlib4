@@ -189,14 +189,14 @@ lemma F_edge_le_one (f : ℂ → E) (ε : ℝ) (hε : ε > 0) (z : ℂ)
   rcases hz with hz0 | hz1
   -- `z.re = 0`
   · simp only [hz0, zero_sub, Real.rpow_neg_one, neg_zero, Real.rpow_zero, mul_one,
-      inv_mul_le_iff (sSupNormIm_eps_pos f hε 0)]
+      inv_mul_le_iff₀ (sSupNormIm_eps_pos f hε 0)]
     rw [← hz0]
     apply le_of_lt (norm_lt_sSupNormIm_eps f ε hε _ _ hB)
     simp only [verticalClosedStrip, mem_preimage, zero_le_one, left_mem_Icc, hz0]
   -- `z.re = 1`
   · rw [mem_singleton_iff] at hz1
     simp only [hz1, one_mul, Real.rpow_zero, sub_self, Real.rpow_neg_one,
-      inv_mul_le_iff (sSupNormIm_eps_pos f hε 1), mul_one]
+      inv_mul_le_iff₀ (sSupNormIm_eps_pos f hε 1), mul_one]
     rw [← hz1]
     apply le_of_lt (norm_lt_sSupNormIm_eps f ε hε _ _ hB)
     simp only [verticalClosedStrip, mem_preimage, zero_le_one, hz1, right_mem_Icc]

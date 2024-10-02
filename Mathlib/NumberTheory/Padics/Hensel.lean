@@ -401,7 +401,7 @@ private theorem soln_dist_to_a : ‖soln - a‖ = ‖F.eval a‖ / ‖F.derivati
   tendsto_nhds_unique (newton_seq_dist_tendsto' hnorm) (newton_seq_dist_tendsto hnorm hnsol)
 
 private theorem soln_dist_to_a_lt_deriv : ‖soln - a‖ < ‖F.derivative.eval a‖ := by
-  rw [soln_dist_to_a, div_lt_iff (deriv_norm_pos _), ← sq] <;> assumption
+  rw [soln_dist_to_a, div_lt_iff₀ (deriv_norm_pos _), ← sq] <;> assumption
 
 private theorem soln_unique (z : ℤ_[p]) (hev : F.eval z = 0)
     (hnlt : ‖z - a‖ < ‖F.derivative.eval a‖) : z = soln :=

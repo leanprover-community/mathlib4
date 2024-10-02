@@ -139,7 +139,7 @@ theorem gauge_le_eq (hs₁ : Convex ℝ s) (hs₀ : (0 : E) ∈ s) (hs₂ : Abso
     suffices (r⁻¹ * δ) • δ⁻¹ • x ∈ s by rwa [smul_smul, mul_inv_cancel_right₀ δ_pos.ne'] at this
     rw [mem_smul_set_iff_inv_smul_mem₀ δ_pos.ne'] at hδ
     refine hs₁.smul_mem_of_zero_mem hs₀ hδ ⟨by positivity, ?_⟩
-    rw [inv_mul_le_iff hr', mul_one]
+    rw [inv_mul_le_iff₀ hr', mul_one]
     exact hδr.le
   · have hε' := (lt_add_iff_pos_right a).2 (half_pos hε)
     exact
