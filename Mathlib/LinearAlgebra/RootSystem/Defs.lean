@@ -433,7 +433,7 @@ lemma two_nsmul_reflection_eq_of_perm_eq (hij : P.reflection_perm i = P.reflecti
     2 • ⇑(P.reflection i) = 2 • P.reflection j := by
   ext x
   suffices 2 • P.toLin x (P.coroot i) • P.root i = 2 • P.toLin x (P.coroot j) • P.root j by
-    simpa [reflection_apply]
+    simpa [reflection_apply, smul_sub]
   calc 2 • P.toLin x (P.coroot i) • P.root i
       = P.toLin x (P.coroot i) • ((2 : R) • P.root i) := ?_
     _ = P.toLin x (P.coroot i) • (P.pairing i j • P.root j) := ?_

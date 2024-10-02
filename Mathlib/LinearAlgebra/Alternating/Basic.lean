@@ -603,8 +603,8 @@ theorem map_perm [DecidableEq ι] [Fintype ι] (v : ι → M) (σ : Equiv.Perm �
   -- Porting note: `apply` → `induction'`
   induction' σ using Equiv.Perm.swap_induction_on' with s x y hxy hI
   · simp
-  · -- Porting note: `← Function.comp.assoc` & `-Equiv.Perm.sign_swap'` are required.
-    simpa [← Function.comp.assoc, g.map_swap (v ∘ s) hxy,
+  · -- Porting note: `← Function.comp_assoc` & `-Equiv.Perm.sign_swap'` are required.
+    simpa [← Function.comp_assoc, g.map_swap (v ∘ s) hxy,
       Equiv.Perm.sign_swap hxy, -Equiv.Perm.sign_swap'] using hI
 
 theorem map_congr_perm [DecidableEq ι] [Fintype ι] (σ : Equiv.Perm ι) :
