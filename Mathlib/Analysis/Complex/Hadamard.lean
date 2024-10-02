@@ -304,7 +304,7 @@ lemma norm_le_interpStrip_of_mem_verticalClosedStrip_eps (ε : ℝ) (hε : ε > 
     ‖f z‖ ≤  ‖((ε + sSupNormIm f 0) ^ (1-z) * (ε + sSupNormIm f 1) ^ z : ℂ)‖ := by
   simp only [F, abs_invInterpStrip _ _ hε, norm_smul, norm_mul, norm_eq_abs,
     ← ofReal_add, abs_cpow_eq_rpow_re_of_pos (sSupNormIm_eps_pos f hε _) _, sub_re, one_re]
-  rw [← mul_inv_le_iff, ← one_mul (((ε + sSupNormIm f 1) ^ z.re)), ← mul_inv_le_iff',
+  rw [← mul_inv_le_iff₀', ← one_mul (((ε + sSupNormIm f 1) ^ z.re)), ← mul_inv_le_iff₀,
     ← Real.rpow_neg_one, ← Real.rpow_neg_one]
   · simp only [← Real.rpow_mul (le_of_lt (sSupNormIm_eps_pos f hε _)),
     mul_neg, mul_one, neg_sub, mul_assoc]

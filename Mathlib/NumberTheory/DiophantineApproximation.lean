@@ -422,9 +422,9 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
   obtain ⟨hcop, _, h⟩ := h
   obtain ⟨hv₀, hv₀'⟩ := aux₀ (zero_lt_two.trans_le hv)
   have hv₁ : 0 < 2 * v - 1 := by linarith only [hv]
-  rw [← one_div, lt_div_iff₀ (mul_pos hv₀ hv₀'), ← abs_of_pos (mul_pos hv₀ hv₀'), ← abs_mul, sub_mul,
-    ← mul_assoc, ← mul_assoc, div_mul_cancel₀ _ hv₀.ne', abs_sub_comm, abs_lt, lt_sub_iff_add_lt,
-    sub_lt_iff_lt_add, mul_assoc] at h
+  rw [← one_div, lt_div_iff₀ (mul_pos hv₀ hv₀'), ← abs_of_pos (mul_pos hv₀ hv₀'), ← abs_mul,
+    sub_mul, ← mul_assoc, ← mul_assoc, div_mul_cancel₀ _ hv₀.ne', abs_sub_comm, abs_lt,
+    lt_sub_iff_add_lt, sub_lt_iff_lt_add, mul_assoc] at h
   have hu₀ : 0 ≤ u - ⌊ξ⌋ * v := by
     -- Porting note: this abused the definitional equality `-1 + 1 = 0`
     -- refine' (mul_nonneg_iff_of_pos_right hv₁).mp ((lt_iff_add_one_le (-1 : ℤ) _).mp _)

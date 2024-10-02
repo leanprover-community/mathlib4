@@ -175,20 +175,21 @@ theorem strictConvexOn_rpow {p : ℝ} (hp : 1 < p) : StrictConvexOn ℝ (Ici 0) 
   have hy' : 0 < y ^ p := rpow_pos_of_pos hy _
   trans p * y ^ (p - 1)
   · have q : 0 < y - x := by rwa [sub_pos]
-    rw [div_lt_iff₀ q, ← div_lt_div_right hy', _root_.sub_div, div_self hy'.ne', ← div_rpow hx hy.le,
-      sub_lt_comm, ← add_sub_cancel_right (x / y) 1, add_comm, add_sub_assoc, ← div_mul_eq_mul_div,
-      mul_div_assoc, ← rpow_sub hy, sub_sub_cancel_left, rpow_neg_one, mul_assoc, ← div_eq_inv_mul,
-      sub_eq_add_neg, ← mul_neg, ← neg_div, neg_sub, _root_.sub_div, div_self hy.ne']
+    rw [div_lt_iff₀ q, ← div_lt_div_right hy', _root_.sub_div, div_self hy'.ne',
+      ← div_rpow hx hy.le, sub_lt_comm, ← add_sub_cancel_right (x / y) 1, add_comm, add_sub_assoc,
+      ← div_mul_eq_mul_div, mul_div_assoc, ← rpow_sub hy, sub_sub_cancel_left, rpow_neg_one,
+      mul_assoc, ← div_eq_inv_mul, sub_eq_add_neg, ← mul_neg, ← neg_div, neg_sub, _root_.sub_div,
+      div_self hy.ne']
     apply one_add_mul_self_lt_rpow_one_add _ _ hp
     · rw [le_sub_iff_add_le, neg_add_cancel, div_nonneg_iff]
       exact Or.inl ⟨hx, hy.le⟩
     · rw [sub_ne_zero]
       exact ((div_lt_one hy).mpr hxy).ne
   · have q : 0 < z - y := by rwa [sub_pos]
-    rw [lt_div_iff₀ q, ← div_lt_div_right hy', _root_.sub_div, div_self hy'.ne', ← div_rpow hz hy.le,
-      lt_sub_iff_add_lt', ← add_sub_cancel_right (z / y) 1, add_comm _ 1, add_sub_assoc,
-      ← div_mul_eq_mul_div, mul_div_assoc, ← rpow_sub hy, sub_sub_cancel_left, rpow_neg_one,
-      mul_assoc, ← div_eq_inv_mul, _root_.sub_div, div_self hy.ne']
+    rw [lt_div_iff₀ q, ← div_lt_div_right hy', _root_.sub_div, div_self hy'.ne',
+      ← div_rpow hz hy.le, lt_sub_iff_add_lt', ← add_sub_cancel_right (z / y) 1, add_comm _ 1,
+      add_sub_assoc, ← div_mul_eq_mul_div, mul_div_assoc, ← rpow_sub hy, sub_sub_cancel_left,
+      rpow_neg_one, mul_assoc, ← div_eq_inv_mul, _root_.sub_div, div_self hy.ne']
     apply one_add_mul_self_lt_rpow_one_add _ _ hp
     · rw [le_sub_iff_add_le, neg_add_cancel, div_nonneg_iff]
       exact Or.inl ⟨hz, hy.le⟩

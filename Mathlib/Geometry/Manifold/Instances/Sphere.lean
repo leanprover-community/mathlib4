@@ -185,7 +185,7 @@ theorem stereoInvFun_ne_north_pole (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) :
   rw [← inner_lt_one_iff_real_of_norm_one _ hv]
   · have hw : ⟪v, w⟫_ℝ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
     have hw' : (‖(w : E)‖ ^ 2 + 4)⁻¹ * (‖(w : E)‖ ^ 2 - 4) < 1 := by
-      rw [inv_mul_lt_iff']
+      rw [inv_mul_lt_iff₀']
       · linarith
       positivity
     simpa [real_inner_comm, inner_add_right, inner_smul_right, real_inner_self_eq_norm_mul_norm, hw,
