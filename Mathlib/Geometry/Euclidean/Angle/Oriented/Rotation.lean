@@ -65,9 +65,8 @@ def rotation (θ : Real.Angle) : V ≃ₗᵢ[ℝ] V :=
       · simp only [o.rightAngleRotation_rightAngleRotation, o.rotationAux_apply,
           Function.comp_apply, id, LinearEquiv.coe_coe, LinearIsometry.coe_toLinearMap,
           LinearIsometryEquiv.coe_toLinearEquiv, map_smul, map_sub, LinearMap.coe_comp,
-          LinearMap.id_coe, LinearMap.smul_apply, LinearMap.sub_apply, ← mul_smul, add_smul,
-          smul_add, smul_neg, smul_sub, mul_comm, sq]
-        abel
+          LinearMap.id_coe, LinearMap.smul_apply, LinearMap.sub_apply]
+        module
       · simp)
     (by
       ext x
@@ -75,10 +74,8 @@ def rotation (θ : Real.Angle) : V ≃ₗᵢ[ℝ] V :=
       · simp only [o.rightAngleRotation_rightAngleRotation, o.rotationAux_apply,
           Function.comp_apply, id, LinearEquiv.coe_coe, LinearIsometry.coe_toLinearMap,
           LinearIsometryEquiv.coe_toLinearEquiv, map_add, map_smul, LinearMap.coe_comp,
-          LinearMap.id_coe, LinearMap.smul_apply, LinearMap.sub_apply,
-          add_smul, smul_neg, smul_sub, smul_smul]
-        ring_nf
-        abel
+          LinearMap.id_coe, LinearMap.smul_apply, LinearMap.sub_apply]
+        module
       · simp)
 
 theorem rotation_apply (θ : Real.Angle) (x : V) :
@@ -146,11 +143,9 @@ theorem rotation_pi_div_two : o.rotation (π / 2 : ℝ) = J := by
 @[simp]
 theorem rotation_rotation (θ₁ θ₂ : Real.Angle) (x : V) :
     o.rotation θ₁ (o.rotation θ₂ x) = o.rotation (θ₁ + θ₂) x := by
-  simp only [o.rotation_apply, ← mul_smul, Real.Angle.cos_add, Real.Angle.sin_add, add_smul,
-    sub_smul, LinearIsometryEquiv.trans_apply, smul_add, LinearIsometryEquiv.map_add,
-    LinearIsometryEquiv.map_smul, rightAngleRotation_rightAngleRotation, smul_neg]
-  ring_nf
-  abel
+  simp only [o.rotation_apply, Real.Angle.cos_add, Real.Angle.sin_add, LinearIsometryEquiv.map_add,
+    LinearIsometryEquiv.trans_apply, map_smul, rightAngleRotation_rightAngleRotation]
+  module
 
 /-- Rotating twice is equivalent to rotating by the sum of the angles. -/
 @[simp]
