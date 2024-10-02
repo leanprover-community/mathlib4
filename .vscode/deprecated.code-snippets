@@ -1,4 +1,11 @@
 {
+	"Deprecation for mathlib": {
+		"scope": "lean4",
+		"prefix": "deprecated",
+		"body": [
+			"@[deprecated $1 (since := \"${CURRENT_YEAR}-${CURRENT_MONTH}-${CURRENT_DATE}\")]"
+		]
+	},
 	"Deprecated alias for mathlib": {
 		"scope": "lean4",
 		"prefix": "deprecated alias",
