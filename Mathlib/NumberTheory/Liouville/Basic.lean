@@ -143,7 +143,7 @@ theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : 
     @exists_one_le_pow_mul_dist ℤ ℕ ℝ _ _ _ (fun y => fR.eval y) α ζ |fR.derivative.eval xm| ?_ z0
       (fun y hy => ?_) fun z a hq => ?_
   -- 1: the denominators are positive -- essentially by definition;
-  · exact fun a => one_le_pow_of_one_le ((le_add_iff_nonneg_left 1).mpr a.cast_nonneg) _
+  · exact fun a => one_le_pow₀ ((le_add_iff_nonneg_left 1).mpr a.cast_nonneg)
   -- 2: the polynomial `fR` is Lipschitz at `α` -- as its derivative continuous;
   · rw [mul_comm]
     rw [Real.closedBall_eq_Icc] at hy

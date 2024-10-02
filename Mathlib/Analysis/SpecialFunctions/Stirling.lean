@@ -102,7 +102,7 @@ theorem log_stirlingSeq_diff_le_geo_sum (n : ℕ) :
     · simp_rw [← _root_.pow_succ'] at this
       exact this
     rw [one_div, inv_pow]
-    exact inv_lt_one (one_lt_pow ((lt_add_iff_pos_left 1).mpr <| by positivity) two_ne_zero)
+    exact inv_lt_one (one_lt_pow₀ ((lt_add_iff_pos_left 1).mpr <| by positivity) two_ne_zero)
   have hab (k : ℕ) : (1 : ℝ) / (2 * ↑(k + 1) + 1) * ((1 / (2 * ↑(n + 1) + 1)) ^ 2) ^ ↑(k + 1) ≤
       (((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2) ^ ↑(k + 1) := by
     refine mul_le_of_le_one_left (pow_nonneg h_nonneg ↑(k + 1)) ?_

@@ -210,7 +210,7 @@ theorem measure_isClosed_eq_of_forall_lintegral_eq_of_isFiniteMeasure {Ω : Type
     have whole := h 1
     simp only [BoundedContinuousFunction.coe_one, Pi.one_apply, ENNReal.coe_one, lintegral_const,
       one_mul] at whole
-    simpa [← whole] using IsFiniteMeasure.measure_univ_lt_top
+    simp [← whole]
   have obs_μ := HasOuterApproxClosed.tendsto_lintegral_apprSeq F_closed μ
   have obs_ν := HasOuterApproxClosed.tendsto_lintegral_apprSeq F_closed ν
   simp_rw [h] at obs_μ

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Scott Morrison, Adam Topaz
+Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
 import Mathlib.Tactic.Linarith
 import Mathlib.CategoryTheory.Skeletal
@@ -173,9 +173,11 @@ without identifying `n` with `[n].len`.
 def mkHom {n m : ℕ} (f : Fin (n + 1) →o Fin (m + 1)) : ([n] : SimplexCategory) ⟶ [m] :=
   SimplexCategory.Hom.mk f
 
+instance (Δ : SimplexCategory) : Subsingleton (Δ ⟶ [0]) where
+  allEq f g := by ext : 3; apply Subsingleton.elim (α := Fin 1)
+
 theorem hom_zero_zero (f : ([0] : SimplexCategory) ⟶ [0]) : f = 𝟙 _ := by
-  ext : 3
-  apply @Subsingleton.elim (Fin 1)
+  apply Subsingleton.elim
 
 end
 

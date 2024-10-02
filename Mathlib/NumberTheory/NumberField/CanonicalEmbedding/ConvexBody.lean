@@ -94,8 +94,7 @@ theorem convexBodyLTFactor_ne_zero : convexBodyLTFactor K ≠ 0 :=
   mul_ne_zero (pow_ne_zero _ two_ne_zero) (pow_ne_zero _ pi_ne_zero)
 
 theorem one_le_convexBodyLTFactor : 1 ≤ convexBodyLTFactor K :=
-  one_le_mul (one_le_pow_of_one_le one_le_two _)
-    (one_le_pow_of_one_le (le_trans one_le_two Real.two_le_pi) _)
+  one_le_mul (one_le_pow₀ one_le_two) (one_le_pow₀ (one_le_two.trans Real.two_le_pi))
 
 /-- The volume of `(ConvexBodyLt K f)` where `convexBodyLT K f` is the set of points `x`
 such that `‖x w‖ < f w` for all infinite places `w`. -/
@@ -212,8 +211,7 @@ theorem convexBodyLT'Factor_ne_zero : convexBodyLT'Factor K ≠ 0 :=
   mul_ne_zero (pow_ne_zero _ two_ne_zero) (pow_ne_zero _ pi_ne_zero)
 
 theorem one_le_convexBodyLT'Factor : 1 ≤ convexBodyLT'Factor K :=
-  one_le_mul (one_le_pow_of_one_le one_le_two _)
-    (one_le_pow_of_one_le (le_trans one_le_two Real.two_le_pi) _)
+  one_le_mul (one_le_pow₀ one_le_two) (one_le_pow₀ (one_le_two.trans Real.two_le_pi))
 
 theorem convexBodyLT'_volume :
     volume (convexBodyLT' K f w₀) = convexBodyLT'Factor K * ∏ w, (f w) ^ (mult w) := by
@@ -312,8 +310,8 @@ theorem convexBodySumFun_smul (c : ℝ) (x : mixedSpace K) :
 
 theorem convexBodySumFun_eq_zero_iff (x : mixedSpace K) :
     convexBodySumFun x = 0 ↔ x = 0 := by
-  rw [← normAtPlace_eq_zero, convexBodySumFun, Finset.sum_eq_zero_iff_of_nonneg fun _ _ =>
-    mul_nonneg (Nat.cast_pos.mpr mult_pos).le (normAtPlace_nonneg _ _)]
+  rw [← forall_normAtPlace_eq_zero_iff, convexBodySumFun, Finset.sum_eq_zero_iff_of_nonneg
+    fun _ _ ↦ mul_nonneg (Nat.cast_pos.mpr mult_pos).le (normAtPlace_nonneg _ _)]
   conv =>
     enter [1, w, hw]
     rw [mul_left_mem_nonZeroDivisors_eq_zero_iff
