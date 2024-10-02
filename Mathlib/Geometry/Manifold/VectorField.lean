@@ -14,6 +14,8 @@ things on manifolds possibly with boundary.
 
 -/
 
+open scoped Topology
+
 noncomputable section
 
 namespace ContinuousLinearMap
@@ -64,6 +66,10 @@ variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
+
+/- TODO: do this in the `VectorField` namespace. And copy the whole API
+of `fderiv`, `fderivWithin`. -/
+
 /-- The Lie bracket `[V, W] (x)` of two vector fields at a point, defined as
 `DW(x) (V x) - DV(x) (W x)`. -/
 def lieBracket (V W : E → E) (x : E) : E :=
@@ -72,9 +78,25 @@ def lieBracket (V W : E → E) (x : E) : E :=
 def lieBracketWithin (V W : E → E) (s : Set E) (x : E) : E :=
   fderivWithin 𝕜 W s x (V x) - fderivWithin 𝕜 V s x (W x)
 
+variable {𝕜}
+
 lemma lieBracket_eq (V W : E → E) :
     lieBracket 𝕜 V W = fun x ↦ fderiv 𝕜 W x (V x) - fderiv 𝕜 V x (W x) := rfl
 
+lemma lieBracketWithin_eq (V W : E → E) (s : Set E) :
+    lieBracketWithin 𝕜 V W s =
+      fun x ↦ fderivWithin 𝕜 W s x (V x) - fderivWithin 𝕜 V s x (W x) := rfl
+
+lemma lieBracketWithin_eq_zero_of_eq_zero (V W : E → E) (s : Set E) (x : E)
+    (hV : V x = 0) (hW : W x = 0) : lieBracketWithin 𝕜 V W s x = 0 := by
+  simp [lieBracketWithin, hV, hW]
+
+lemma lieBracketWithin_eq_of_eventually_eq (V W V' W' : E → E) (s : Set E) (x : E)
+    (hV : V =ᶠ[𝓝[s] x] V') (hVx : V x = V' x) (hW : W =ᶠ[𝓝[s] x] W') (hWx : W x = W' x) :
+    lieBracketWithin 𝕜 V W s x = lieBracketWithin 𝕜 V' W' s x := by
+  simp only [lieBracketWithin, hVx, hWx, hW.fderivWithin_eq, hV.fderivWithin_eq]
+
+variable (𝕜) in
 /-- The Lie derivative of a function with respect to a vector field `L_V f(x)`. This is just
 `Df(x) (V x)`, but the notation emphasizes how this is linear in `f`.-/
 def lieDeriv (V : E → E) (f : E → F) (x : E) : F := fderiv 𝕜 f x (V x)
@@ -96,12 +118,11 @@ lemma sub_eq_lieDeriv_lieBracket (V W : E → E) (f : E → F) (x : E)
     ContinuousLinearMap.flip_apply, map_sub, hf]
   abel
 
+variable (𝕜) in
 /-- The pullback of a vector field under a function, defined
 as `(f^* V) (x) = Df(x)^{-1} (V (f x))`. If `Df(x)` is not invertible, we use the junk value `0`.
 -/
 def pullback (f : E → F) (V : F → F) (x : E) : E := (fderiv 𝕜 f x).inverse (V (f x))
-
-variable {𝕜}
 
 lemma pullback_eq_of_fderiv_eq
     {f : E → F} {M : E ≃L[𝕜] F} {x : E} (hf : M = fderiv 𝕜 f x) (V : F → F) :
