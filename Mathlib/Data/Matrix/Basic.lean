@@ -2166,7 +2166,6 @@ theorem conjTranspose_ratCast_smul [DivisionRing R] [AddCommGroup α] [StarAddMo
     (c : ℚ) (M : Matrix m n α) : ((c : R) • M)ᴴ = (c : R) • Mᴴ :=
   Matrix.ext <| by simp
 
-@[simp]
 theorem conjTranspose_rat_smul [AddCommGroup α] [StarAddMonoid α] [Module ℚ α] (c : ℚ)
     (M : Matrix m n α) : (c • M)ᴴ = c • Mᴴ :=
   Matrix.ext <| by simp
