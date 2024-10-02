@@ -303,7 +303,7 @@ theorem Irreducible.map {x : α} (h : Irreducible x) : Irreducible (f x) :=
 theorem MulEquiv.irreducible_iff (f : F) {a : α} :
     Irreducible (f a) ↔ Irreducible a :=
   let f := MulEquivClass.toMulEquiv f
-  ⟨by simpa only [symm_apply_apply] using Irreducible.map f.symm (x := f a) , Irreducible.map f⟩
+  ⟨by simpa only [symm_apply_apply] using Irreducible.map f.symm (x := f a), Irreducible.map f⟩
 
 end
 
