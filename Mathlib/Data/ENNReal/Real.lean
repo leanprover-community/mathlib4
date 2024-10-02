@@ -571,6 +571,47 @@ See also `ENNReal.mul_iInf` that assumes `[Nonempty ι]` but does not require `x
 theorem mul_iInf_of_ne {ι} {f : ι → ℝ≥0∞} {x : ℝ≥0∞} (h0 : x ≠ 0) (h : x ≠ ∞) :
     x * iInf f = ⨅ i, x * f i := by simpa only [mul_comm] using iInf_mul_of_ne h0 h
 
+/-- If `f g : ι → ℝ≥0∞` take real values, and `∀ (i j : ι), a ≤ f i * g j`, then
+  `a ≤ iInf f * iInf g`. -/
+theorem le_iInf_mul_iInf {ι : Sort _} [hι : Nonempty ι] {a : ℝ≥0∞} {f g : ι → ℝ≥0∞}
+    (hf : ∀ x, f x ≠ ⊤) (hg : ∀ x, g x ≠ ⊤) (H : ∀ i j : ι, a ≤ f i * g j) :
+    a ≤ iInf f * iInf g := by
+  have hg' : iInf g ≠ ⊤ := by rw [ne_eq, iInf_eq_top, not_forall]; exact ⟨hι.some, hg hι.some⟩
+  rw [iInf_mul hg']
+  refine le_iInf ?_
+  intro i
+  rw [mul_iInf (hf i)]
+  exact le_iInf (H i)
+
+/-- If `u v : ι → ℝ≥0∞` take real values and are antitone, then `iInf (u * v) ≤ iInf u * iInf v`. -/
+theorem iInf_mul_le_mul_iInf {u v : ℕ → ℝ≥0∞} (hu_top : ∀ x, u x ≠ ⊤) (hu : Antitone u)
+    (hv_top : ∀ x, v x ≠ ⊤) (hv : Antitone v) : iInf (u * v) ≤ iInf u * iInf v := by
+  rw [iInf_le_iff]
+  intro b hb
+  apply le_iInf_mul_iInf hu_top hv_top
+  intro m n
+  exact le_trans (hb (max m n)) (mul_le_mul' (hu (le_max_left _ _)) (hv (le_max_right _ _)))
+
+theorem iSup_tail_seq (u : ℕ → ℝ≥0∞) (n : ℕ) :
+    (⨆ (k : ℕ) (_ : n ≤ k), u k) = ⨆ k : { k : ℕ // n ≤ k }, u k := by rw [iSup_subtype]
+
+theorem le_iSup_prop (u : ℕ → ℝ≥0∞) {n k : ℕ} (hnk : n ≤ k) : u k ≤ ⨆ (k : ℕ) (_ : n ≤ k), u k := by
+  apply le_iSup_of_le k
+  rw [ciSup_pos hnk]
+
+/-- The function sending `n : ℕ` to `⨆ (k : ℕ) (x : n ≤ k), u k` is antitone. -/
+theorem Antitone.iSup {u : ℕ → ℝ≥0∞} : Antitone fun n : ℕ ↦ ⨆ (k : ℕ) (_ : n ≤ k), u k :=
+  antitone_nat_of_succ_le (fun n ↦ iSup₂_le_iff.mpr
+    fun _ hk ↦ le_iSup_prop u (le_trans (Nat.le_succ n) hk))
+
+/-- If `u : ℕ → ℝ≥0∞` is bounded above by a real number, then its `supr` is finite. -/
+theorem iSup_le_top_of_bddAbove {u : ℕ → ℝ≥0∞} {B : ℝ≥0} (hu : ∀ x, u x ≤ B) (n : ℕ) :
+    (⨆ (k : ℕ) (_ : n ≤ k), u k) ≠ ⊤ :=
+  haveI h_le : (⨆ (k : ℕ) (_ : n ≤ k), u k) ≤ B := by
+    rw [iSup_tail_seq]
+    exact iSup_le fun m ↦ hu m
+  ne_top_of_le_ne_top coe_ne_top h_le
+
 /-! `supr_mul`, `mul_supr` and variants are in `Topology.Instances.ENNReal`. -/
 
 end iInf
