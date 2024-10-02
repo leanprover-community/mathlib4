@@ -5,6 +5,7 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Algebra.Module.LinearMap.Rat
 import Mathlib.Tactic.Module
 
 /-!
@@ -199,39 +200,12 @@ theorem add_left (x y z : E) : inner_ 𝕜 (x + y) z = inner_ 𝕜 x z + inner_ 
   simp only [inner_, map_add, map_sub, map_neg, map_mul, map_ofNat] at H ⊢
   linear_combination H / 8
 
-theorem nat (n : ℕ) (x y : E) : inner_ 𝕜 ((n : 𝕜) • x) y = (n : 𝕜) * inner_ 𝕜 x y := by
-  induction' n with n ih
-  · simp only [inner_, zero_sub, Nat.cast_zero, zero_mul,
-      eq_self_iff_true, zero_smul, zero_add, mul_zero, sub_self, norm_neg, smul_zero]
-  · simp only [Nat.cast_succ, add_smul, one_smul]
-    rw [add_left, ih, add_mul, one_mul]
-
-private theorem nat_prop (r : ℕ) : innerProp' E (r : 𝕜) := fun x y => by
-  simp only [map_natCast]; exact nat r x y
-
-private theorem int_prop (n : ℤ) : innerProp' E (n : 𝕜) := by
-  intro x y
-  rw [← n.sign_mul_natAbs]
-  simp only [Int.cast_natCast, map_natCast, map_intCast, Int.cast_mul, map_mul, mul_smul]
-  obtain hn | rfl | hn := lt_trichotomy n 0
-  · rw [Int.sign_eq_neg_one_of_neg hn, innerProp_neg_one ((n.natAbs : 𝕜) • x), nat]
-    simp only [map_neg, neg_mul, one_mul, mul_eq_mul_left_iff, Int.natAbs_eq_zero,
-      eq_self_iff_true, Int.cast_one, map_one, neg_inj, Nat.cast_eq_zero, Int.cast_neg]
-  · simp only [inner_, Int.cast_zero, zero_sub, Nat.cast_zero, zero_mul,
-      eq_self_iff_true, Int.sign_zero, zero_smul, zero_add, mul_zero, smul_zero,
-      sub_self, norm_neg, Int.natAbs_zero]
-  · rw [Int.sign_eq_one_of_pos hn]
-    simp only [one_mul, mul_eq_mul_left_iff, Int.natAbs_eq_zero, eq_self_iff_true,
-      Int.cast_one, one_smul, Nat.cast_eq_zero, nat]
-
 private theorem rat_prop (r : ℚ) : innerProp' E (r : 𝕜) := by
   intro x y
-  have : (r.den : 𝕜) ≠ 0 := by
-    haveI : CharZero 𝕜 := RCLike.charZero_rclike
-    exact mod_cast r.pos.ne'
-  rw [← r.num_div_den, ← mul_right_inj' this, ← nat r.den _ y, smul_smul, Rat.cast_div]
-  simp only [map_natCast, Rat.cast_natCast, map_intCast, Rat.cast_intCast, map_div₀]
-  rw [← mul_assoc, mul_div_cancel₀ _ this, int_prop _ x, map_intCast]
+  let hom : 𝕜 →ₗ[ℚ] 𝕜 := AddMonoidHom.toRatLinearMap <|
+    AddMonoidHom.mk' (fun r ↦ inner_ 𝕜 (r • x) y) <| fun a b ↦ by
+      simpa [add_smul] using add_left (a • x) (b • x) y
+  simpa [hom, Rat.smul_def] using map_smul hom r 1
 
 private theorem real_prop (r : ℝ) : innerProp' E (r : 𝕜) := by
   intro x y
@@ -244,7 +218,8 @@ private theorem real_prop (r : ℝ) : innerProp' E (r : 𝕜) := by
 
 private theorem I_prop : innerProp' E (I : 𝕜) := by
   by_cases hI : (I : 𝕜) = 0
-  · rw [hI, ← Nat.cast_zero]; exact nat_prop _
+  · rw [hI]
+    simpa using real_prop (𝕜 := 𝕜) 0
   intro x y
   have hI' : (-I : 𝕜) * I = 1 := by rw [← inv_I, inv_mul_cancel₀ hI]
   rw [conj_I, inner_, inner_, mul_left_comm]
