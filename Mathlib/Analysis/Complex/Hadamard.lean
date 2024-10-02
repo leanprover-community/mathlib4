@@ -301,147 +301,14 @@ lemma diffContOnCl_interpStrip :
       · apply differentiableAt_id'
       · left; simp only [Ne, ofReal_eq_zero]; rwa [eq_comm]
 
-lemma norm_le_interpStrip_of_mem_verticalClosedStrip_eps [NormedSpace ℂ E] (ε : ℝ) (hε : ε > 0)
-    (z : ℂ) (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1)))
-    (hd : DiffContOnCl ℂ f (verticalStrip 0 1)) (hz : z ∈ verticalClosedStrip 0 1) :
-    ‖f z‖ ≤  ‖((ε + sSupNormIm f 0) ^ (1-z) * (ε + sSupNormIm f 1) ^ z : ℂ)‖ := by
-  simp only [F, abs_invInterpStrip _ _ hε, norm_smul, norm_mul, norm_eq_abs,
-    ← ofReal_add, abs_cpow_eq_rpow_re_of_pos (sSupNormIm_eps_pos f hε _) _, sub_re, one_re]
-  rw [← mul_inv_le_iff, ← one_mul (((ε + sSupNormIm f 1) ^ z.re)), ← mul_inv_le_iff',
-    ← Real.rpow_neg_one, ← Real.rpow_neg_one]
-  · simp only [← Real.rpow_mul (le_of_lt (sSupNormIm_eps_pos f hε _)),
-    mul_neg, mul_one, neg_sub, mul_assoc]
-    simpa [F, abs_invInterpStrip _ _ hε, norm_smul, mul_comm] using
-      norm_mul_invInterpStrip_le_one_of_mem_verticalClosedStrip f ε hε z hd hB hz
-  · simp only [Real.rpow_pos_of_pos (sSupNormIm_eps_pos f hε _) z.re]
-  · simp only [Real.rpow_pos_of_pos (sSupNormIm_eps_pos f hε _) (1-z.re)]
-
-lemma eventuallyle [NormedSpace ℂ E] (z : ℂ)
-    (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1)))
-    (hd : DiffContOnCl ℂ f (verticalStrip 0 1)) (hz : z ∈ verticalStrip 0 1) :
-    (fun _ : ℝ ↦ ‖f z‖) ≤ᶠ[𝓝[>] 0]
-    (fun ε ↦ ‖((ε + sSupNormIm f 0) ^ (1 - z) * (ε + sSupNormIm f 1) ^ z : ℂ)‖) := by
-  filter_upwards [self_mem_nhdsWithin] with ε (hε : 0 < ε) using
-    norm_le_interpStrip_of_mem_verticalClosedStrip_eps f ε hε z hB hd
-      (mem_of_mem_of_subset hz (preimage_mono Ioo_subset_Icc_self))
-
-lemma norm_le_interpStrip_of_mem_verticalStrip_zero [NormedSpace ℂ E] (z : ℂ)
-    (hd : DiffContOnCl ℂ f (verticalStrip 0 1))
-    (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1))) (hz : z ∈ verticalStrip 0 1) :
-    ‖f z‖ ≤ ‖interpStrip f z‖ := by
-  apply tendsto_le_of_eventuallyLE _ _ (eventuallyle f z hB hd hz)
-  · apply tendsto_inf_left
-    simp only [tendsto_const_nhds_iff]
-  -- Proof that we can let epsilon tend to zero.
-  · rw [interpStrip_eq_of_mem_verticalStrip _ _ hz]
-    convert ContinuousWithinAt.tendsto _ using 2
-    · simp only [ofReal_zero, zero_add]
-    · simp_rw [← ofReal_add, norm_eq_abs]
-      have : ∀ x ∈ Ioi 0, (x + sSupNormIm f 0) ^ (1 - z.re) * (x + (sSupNormIm f 1)) ^ z.re
-          = abs (↑(x + sSupNormIm f 0) ^ (1 - z) * ↑(x + sSupNormIm f 1) ^ z) := by
-              intro x hx
-              simp only [map_mul]
-              repeat rw [abs_cpow_eq_rpow_re_of_nonneg (le_of_lt (sSupNormIm_eps_pos f hx _)) _]
-              · simp only [sub_re, one_re]
-              · simpa using (ne_comm.mpr (ne_of_lt hz.1))
-              · simpa [sub_eq_zero] using (ne_comm.mpr (ne_of_lt hz.2))
-      apply tendsto_nhdsWithin_congr this _
-      simp only [zero_add]
-      rw [map_mul, abs_cpow_eq_rpow_re_of_nonneg (sSupNormIm_nonneg _ _) _,
-        abs_cpow_eq_rpow_re_of_nonneg (sSupNormIm_nonneg _ _) _]
-      · apply Tendsto.mul
-        · apply Tendsto.rpow_const
-          · nth_rw 2 [← zero_add (sSupNormIm f 0)]
-            exact Tendsto.add_const (sSupNormIm f 0) (tendsto_nhdsWithin_of_tendsto_nhds
-              (Continuous.tendsto continuous_id' _))
-          · right; simp only [sub_nonneg, le_of_lt hz.2]
-        · apply Tendsto.rpow_const
-          · nth_rw 2 [← zero_add (sSupNormIm f 1)]
-            exact Tendsto.add_const (sSupNormIm f 1) (tendsto_nhdsWithin_of_tendsto_nhds
-              (Continuous.tendsto continuous_id' _))
-          · right; simp only [sub_nonneg, le_of_lt hz.1]
-      · simpa using (ne_comm.mpr (ne_of_lt hz.1))
-      · simpa [sub_eq_zero] using (ne_comm.mpr (ne_of_lt hz.2))
-
-/--
-**Hadamard three-line theorem** on `re ⁻¹' [0, 1]`: If `f` is a bounded function, continuous on the
-closed strip `re ⁻¹' [0, 1]` and differentiable on open strip `re ⁻¹' (0, 1)`, then for
-`M(x) := sup ((norm ∘ f) '' (re ⁻¹' {x}))` we have that for all `z` in the closed strip
-`re ⁻¹' [0, 1]` the inequality `‖f(z)‖ ≤ M(0) ^ (1 - z.re) * M(1) ^ z.re` holds. -/
-lemma norm_le_interpStrip_of_mem_verticalClosedStrip₀₁ [NormedSpace ℂ E] (f : ℂ → E) {z : ℂ}
-    (hz : z ∈ verticalClosedStrip 0 1) (hd : DiffContOnCl ℂ f (verticalStrip 0 1))
-    (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1))) :
-    ‖f z‖ ≤ ‖interpStrip f z‖ := by
-  apply le_on_closure (fun w hw ↦ norm_le_interpStrip_of_mem_verticalStrip_zero f w hd hB hw)
-    (Continuous.comp_continuousOn' continuous_norm hd.2)
-    (Continuous.comp_continuousOn' continuous_norm (diffContOnCl_interpStrip f).2)
-  rwa [verticalClosedStrip, ← closure_Ioo zero_ne_one, ← closure_preimage_re] at hz
-
-/-- **Hadamard three-line theorem** on `re ⁻¹' [0, 1]` (Variant in simpler terms): Let `f` be a
-bounded function, continuous on the closed strip `re ⁻¹' [0, 1]` and differentiable on open strip
-`re ⁻¹' (0, 1)`. If, for all `z.re = 0`, `‖f z‖ ≤ a` for some `a ∈ ℝ` and, similarly, for all
-`z.re = 1`, `‖f z‖ ≤ b` for some `b ∈ ℝ` then for all `z` in the closed strip
-`re ⁻¹' [0, 1]` the inequality `‖f(z)‖ ≤ a ^ (1 - z.re) * b ^ z.re` holds. -/
-lemma norm_le_interp_of_mem_verticalClosedStrip₀₁' [NormedSpace ℂ E] (f : ℂ → E) {z : ℂ} {a b : ℝ}
-    (hz : z ∈ verticalClosedStrip 0 1) (hd : DiffContOnCl ℂ f (verticalStrip 0 1))
-    (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1)))
-    (ha : ∀ z ∈ re ⁻¹' {0}, ‖f z‖ ≤ a) (hb : ∀ z ∈ re ⁻¹' {1}, ‖f z‖ ≤ b) :
-    ‖f z‖ ≤ a ^ (1 - z.re) * b ^ z.re := by
-  have : ‖interpStrip f z‖ ≤ (sSupNormIm f 0) ^ (1 - z.re) * (sSupNormIm f 1) ^ z.re := by
-    by_cases h : sSupNormIm f 0 = 0 ∨ sSupNormIm f 1 = 0
-    · rw [interpStrip_eq_of_zero f z h, norm_zero, mul_nonneg_iff]
-      left
-      exact ⟨Real.rpow_nonneg (sSupNormIm_nonneg f _) _,
-        Real.rpow_nonneg (sSupNormIm_nonneg f _) _ ⟩
-    · push_neg at h
-      rcases h with ⟨h0, h1⟩
-      rw [ne_comm] at h0 h1
-      simp_rw [interpStrip_eq_of_pos f _ (lt_of_le_of_ne (sSupNormIm_nonneg f 0) h0)
-        (lt_of_le_of_ne (sSupNormIm_nonneg f 1) h1)]
-      simp only [norm_eq_abs, map_mul]
-      rw [abs_cpow_eq_rpow_re_of_pos ((Ne.le_iff_lt h0).mp (sSupNormIm_nonneg f _)) _]
-      rw [abs_cpow_eq_rpow_re_of_pos ((Ne.le_iff_lt h1).mp (sSupNormIm_nonneg f _)) _]
-      simp only [sub_re, one_re, le_refl]
-  apply (norm_le_interpStrip_of_mem_verticalClosedStrip₀₁ f hz hd hB).trans (this.trans _)
-  apply mul_le_mul_of_nonneg _ _ (Real.rpow_nonneg (sSupNormIm_nonneg f _) _)
-  · apply (Real.rpow_nonneg _ _)
-    specialize hb 1
-    simp only [mem_preimage, one_re, mem_singleton_iff, forall_true_left] at hb
-    exact (norm_nonneg _).trans hb
-  · apply Real.rpow_le_rpow (sSupNormIm_nonneg f _) _ (sub_nonneg.mpr hz.2)
-    · rw [sSupNormIm]
-      apply csSup_le _
-      · simpa [comp_apply, mem_image, forall_exists_index,
-          and_imp, forall_apply_eq_imp_iff₂] using ha
-      · use ‖(f 0)‖, 0
-        simp only [mem_preimage, zero_re, mem_singleton_iff, comp_apply,
-          and_self]
-  · apply Real.rpow_le_rpow (sSupNormIm_nonneg f _) _ hz.1
-    · rw [sSupNormIm]
-      apply csSup_le _
-      · simpa [comp_apply, mem_image, forall_exists_index,
-          and_imp, forall_apply_eq_imp_iff₂] using hb
-      · use ‖(f 1)‖, 1
-        simp only [mem_preimage, one_re, mem_singleton_iff, comp_apply,
-          and_self]
+/-- The correct generalization of `interpStrip` to produce bounds in the general case. -/
+noncomputable def interpStrip' (f : ℂ → E) (l u : ℝ) (z : ℂ) : ℂ :=
+  if (sSupNormIm f l) = 0 ∨ (sSupNormIm f u) = 0
+    then 0
+    else (sSupNormIm f l) ^ (1 - ((z - l) / (u - l))) * (sSupNormIm f u) ^ ((z - l) / (u - l))
 
 /-- An auxiliary function to prove the general statement of Hadamard's three lines theorem. -/
 def scale (f : ℂ → E) (l u : ℝ) : ℂ → E := fun z ↦ f (l + z • (u - l))
-
-/-- The transformation on ℂ that is used for `scale` maps the strip ``re ⁻¹' (l, u)``
-  to the strip ``re ⁻¹' (0, 1)``. -/
-lemma scale_id_mem_verticalStrip_of_mem_verticalStrip {l u : ℝ} (hul : l < u) {z : ℂ}
-    (hz : z ∈ verticalStrip 0 1) : l + z * (u - l)  ∈ verticalStrip l u := by
-  simp only [verticalStrip, mem_preimage, mem_Ioo] at hz
-  simp only [verticalStrip, mem_preimage, add_re, ofReal_re, mul_re, sub_re, sub_im, ofReal_im,
-    sub_self, mul_zero, sub_zero, mem_Ioo, lt_add_iff_pos_right]
-  obtain ⟨hz₁, hz₂⟩ := hz
-  simp only [hz₁, mul_pos_iff_of_pos_left, sub_pos, hul, true_and]
-  rw [add_comm, ← sub_lt_sub_iff_right l, add_sub_assoc, sub_self, add_zero]
-  nth_rewrite 2 [← one_mul (u - l)]
-  gcongr
-  simp only [sub_pos]
-  exact hul
 
 /-- The transformation on ℂ that is used for `scale` maps the closed strip ``re ⁻¹' [l, u]``
   to the closed strip ``re ⁻¹' [0, 1]``. -/
@@ -456,38 +323,6 @@ lemma scale_id_mem_verticalClosedStrip_of_mem_verticalClosedStrip {l u : ℝ} (h
   nth_rewrite 2 [← one_mul (u - l)]
   have := sub_nonneg.2 hul.le
   gcongr
-
-/-- If z is on the closed strip `re ⁻¹' [l, u]`, then `(z - l) / (u - l)` is on the closed strip
-  `re ⁻¹' [0, 1]`. -/
-lemma mem_verticalClosedStrip_of_scale_id_mem_verticalClosedStrip {z : ℂ} {l u : ℝ} (hul : l < u)
-    (hz : z ∈ verticalClosedStrip l u) : z / (u - l) - l / (u - l) ∈ verticalClosedStrip 0 1 := by
-  simp only [verticalClosedStrip, Complex.div_re, mem_preimage, sub_re, mem_Icc,
-    sub_nonneg, tsub_le_iff_right, ofReal_re, ofReal_im, sub_im, sub_self, mul_zero, zero_div,
-    add_zero]
-  simp only [verticalClosedStrip] at hz
-  norm_cast
-  simp_rw [Complex.normSq_ofReal, mul_div_assoc, div_mul_eq_div_div_swap,
-    div_self (by linarith : u - l ≠ 0), ← div_eq_mul_one_div]
-  constructor
-  · gcongr
-    · apply le_of_lt; simp [hul]
-    · exact hz.1
-  · rw [← sub_le_sub_iff_right (l / (u - l)), add_sub_assoc, sub_self, add_zero, div_sub_div_same,
-      div_le_one (by simp[hul]), sub_le_sub_iff_right l]
-    exact hz.2
-
-/-- The function `scale f l u` is `diffContOnCl`. -/
-lemma scale_diffContOnCl [NormedSpace ℂ E] {f : ℂ → E} {l u : ℝ} (hul : l < u)
-    (hd : DiffContOnCl ℂ f (verticalStrip l u)) :
-    DiffContOnCl ℂ (scale f l u) (verticalStrip 0 1) := by
-  unfold scale
-  apply DiffContOnCl.comp (s := verticalStrip l u) hd
-  · apply DiffContOnCl.const_add
-    apply DiffContOnCl.smul_const
-    exact Differentiable.diffContOnCl differentiable_id'
-  · rw [MapsTo]
-    intro z hz
-    exact scale_id_mem_verticalStrip_of_mem_verticalStrip hul hz
 
 /-- The norm of the function `scale f l u` is bounded above on the closed strip `re⁻¹' [0, 1]`. -/
 lemma scale_bddAbove {f : ℂ → E} {l u : ℝ} (hul : l < u)
@@ -521,29 +356,6 @@ lemma scale_bound_right {f : ℂ → E} {l u b : ℝ} (hb : ∀ z ∈ re ⁻¹' 
   simp only [scale, mem_preimage, mem_singleton_iff, smul_eq_mul]
   intro z hz
   exact hb (↑l + z * (↑u - ↑l)) (by simp [hz])
-
-/-- A technical lemma needed in the proof. -/
-private lemma fun_arg_eq {l u : ℝ} (hul : l < u) (z : ℂ) :
-    (↑l + (z / (↑u - ↑l) - ↑l / (↑u - ↑l)) * (↑u - ↑l)) = z := by
-  rw [sub_mul, div_mul_comm, div_self (by norm_cast; linarith),
-    div_mul_comm, div_self (by norm_cast; linarith)]
-  simp
-
-/-- Another technical lemma needed in the proof. -/
-private lemma bound_exp_eq {l u : ℝ} (hul : l < u) (z : ℂ) :
-    (z / (↑u - ↑l)).re - ((l : ℂ) / (↑u - ↑l)).re = (z.re - l) / (u - l) := by
-  norm_cast
-  rw [Complex.div_re, Complex.normSq_ofReal, Complex.ofReal_re, Complex.ofReal_im, mul_div_assoc,
-    div_mul_eq_div_div_swap, div_self (by norm_cast; linarith),
-    ← div_eq_mul_one_div]
-  simp only [mul_zero, zero_div, add_zero]
-  rw [← div_sub_div_same]
-
-/-- The correct generalization of `interpStrip` to produce bounds in the general case. -/
-noncomputable def interpStrip' (f : ℂ → E) (l u : ℝ) (z : ℂ) : ℂ :=
-  if (sSupNormIm f l) = 0 ∨ (sSupNormIm f u) = 0
-    then 0
-    else (sSupNormIm f l) ^ (1 - ((z - l) / (u - l))) * (sSupNormIm f u) ^ ((z - l) / (u - l))
 
 /-- The supremum of the norm of `scale f l u` on the line `z.re = 0` is the same as the supremum
   of `f` on the line `z.re = l`. -/
@@ -605,6 +417,195 @@ lemma interpStrip_scale (f : ℂ → E) {l u : ℝ} (hul: l < u) (z : ℂ)  : in
   simp only [interpStrip, interpStrip']
   simp_rw [sSupNormIm_scale_left f hul, sSupNormIm_scale_right f hul]
 
+variable [NormedSpace ℂ E]
+
+lemma norm_le_interpStrip_of_mem_verticalClosedStrip_eps (ε : ℝ) (hε : ε > 0) (z : ℂ)
+    (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1)))
+    (hd : DiffContOnCl ℂ f (verticalStrip 0 1)) (hz : z ∈ verticalClosedStrip 0 1) :
+    ‖f z‖ ≤  ‖((ε + sSupNormIm f 0) ^ (1-z) * (ε + sSupNormIm f 1) ^ z : ℂ)‖ := by
+  simp only [F, abs_invInterpStrip _ _ hε, norm_smul, norm_mul, norm_eq_abs,
+    ← ofReal_add, abs_cpow_eq_rpow_re_of_pos (sSupNormIm_eps_pos f hε _) _, sub_re, one_re]
+  rw [← mul_inv_le_iff, ← one_mul (((ε + sSupNormIm f 1) ^ z.re)), ← mul_inv_le_iff',
+    ← Real.rpow_neg_one, ← Real.rpow_neg_one]
+  · simp only [← Real.rpow_mul (le_of_lt (sSupNormIm_eps_pos f hε _)),
+    mul_neg, mul_one, neg_sub, mul_assoc]
+    simpa [F, abs_invInterpStrip _ _ hε, norm_smul, mul_comm] using
+      norm_mul_invInterpStrip_le_one_of_mem_verticalClosedStrip f ε hε z hd hB hz
+  · simp only [Real.rpow_pos_of_pos (sSupNormIm_eps_pos f hε _) z.re]
+  · simp only [Real.rpow_pos_of_pos (sSupNormIm_eps_pos f hε _) (1-z.re)]
+
+lemma eventuallyle (z : ℂ) (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1)))
+    (hd : DiffContOnCl ℂ f (verticalStrip 0 1)) (hz : z ∈ verticalStrip 0 1) :
+    (fun _ : ℝ ↦ ‖f z‖) ≤ᶠ[𝓝[>] 0]
+    (fun ε ↦ ‖((ε + sSupNormIm f 0) ^ (1 - z) * (ε + sSupNormIm f 1) ^ z : ℂ)‖) := by
+  filter_upwards [self_mem_nhdsWithin] with ε (hε : 0 < ε) using
+    norm_le_interpStrip_of_mem_verticalClosedStrip_eps f ε hε z hB hd
+      (mem_of_mem_of_subset hz (preimage_mono Ioo_subset_Icc_self))
+
+lemma norm_le_interpStrip_of_mem_verticalStrip_zero (z : ℂ)
+    (hd : DiffContOnCl ℂ f (verticalStrip 0 1))
+    (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1))) (hz : z ∈ verticalStrip 0 1) :
+    ‖f z‖ ≤ ‖interpStrip f z‖ := by
+  apply tendsto_le_of_eventuallyLE _ _ (eventuallyle f z hB hd hz)
+  · apply tendsto_inf_left
+    simp only [tendsto_const_nhds_iff]
+  -- Proof that we can let epsilon tend to zero.
+  · rw [interpStrip_eq_of_mem_verticalStrip _ _ hz]
+    convert ContinuousWithinAt.tendsto _ using 2
+    · simp only [ofReal_zero, zero_add]
+    · simp_rw [← ofReal_add, norm_eq_abs]
+      have : ∀ x ∈ Ioi 0, (x + sSupNormIm f 0) ^ (1 - z.re) * (x + (sSupNormIm f 1)) ^ z.re
+          = abs (↑(x + sSupNormIm f 0) ^ (1 - z) * ↑(x + sSupNormIm f 1) ^ z) := by
+              intro x hx
+              simp only [map_mul]
+              repeat rw [abs_cpow_eq_rpow_re_of_nonneg (le_of_lt (sSupNormIm_eps_pos f hx _)) _]
+              · simp only [sub_re, one_re]
+              · simpa using (ne_comm.mpr (ne_of_lt hz.1))
+              · simpa [sub_eq_zero] using (ne_comm.mpr (ne_of_lt hz.2))
+      apply tendsto_nhdsWithin_congr this _
+      simp only [zero_add]
+      rw [map_mul, abs_cpow_eq_rpow_re_of_nonneg (sSupNormIm_nonneg _ _) _,
+        abs_cpow_eq_rpow_re_of_nonneg (sSupNormIm_nonneg _ _) _]
+      · apply Tendsto.mul
+        · apply Tendsto.rpow_const
+          · nth_rw 2 [← zero_add (sSupNormIm f 0)]
+            exact Tendsto.add_const (sSupNormIm f 0) (tendsto_nhdsWithin_of_tendsto_nhds
+              (Continuous.tendsto continuous_id' _))
+          · right; simp only [sub_nonneg, le_of_lt hz.2]
+        · apply Tendsto.rpow_const
+          · nth_rw 2 [← zero_add (sSupNormIm f 1)]
+            exact Tendsto.add_const (sSupNormIm f 1) (tendsto_nhdsWithin_of_tendsto_nhds
+              (Continuous.tendsto continuous_id' _))
+          · right; simp only [sub_nonneg, le_of_lt hz.1]
+      · simpa using (ne_comm.mpr (ne_of_lt hz.1))
+      · simpa [sub_eq_zero] using (ne_comm.mpr (ne_of_lt hz.2))
+
+/--
+**Hadamard three-line theorem** on `re ⁻¹' [0, 1]`: If `f` is a bounded function, continuous on the
+closed strip `re ⁻¹' [0, 1]` and differentiable on open strip `re ⁻¹' (0, 1)`, then for
+`M(x) := sup ((norm ∘ f) '' (re ⁻¹' {x}))` we have that for all `z` in the closed strip
+`re ⁻¹' [0, 1]` the inequality `‖f(z)‖ ≤ M(0) ^ (1 - z.re) * M(1) ^ z.re` holds. -/
+lemma norm_le_interpStrip_of_mem_verticalClosedStrip₀₁ (f : ℂ → E) {z : ℂ}
+    (hz : z ∈ verticalClosedStrip 0 1) (hd : DiffContOnCl ℂ f (verticalStrip 0 1))
+    (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1))) :
+    ‖f z‖ ≤ ‖interpStrip f z‖ := by
+  apply le_on_closure (fun w hw ↦ norm_le_interpStrip_of_mem_verticalStrip_zero f w hd hB hw)
+    (Continuous.comp_continuousOn' continuous_norm hd.2)
+    (Continuous.comp_continuousOn' continuous_norm (diffContOnCl_interpStrip f).2)
+  rwa [verticalClosedStrip, ← closure_Ioo zero_ne_one, ← closure_preimage_re] at hz
+
+/-- **Hadamard three-line theorem** on `re ⁻¹' [0, 1]` (Variant in simpler terms): Let `f` be a
+bounded function, continuous on the closed strip `re ⁻¹' [0, 1]` and differentiable on open strip
+`re ⁻¹' (0, 1)`. If, for all `z.re = 0`, `‖f z‖ ≤ a` for some `a ∈ ℝ` and, similarly, for all
+`z.re = 1`, `‖f z‖ ≤ b` for some `b ∈ ℝ` then for all `z` in the closed strip
+`re ⁻¹' [0, 1]` the inequality `‖f(z)‖ ≤ a ^ (1 - z.re) * b ^ z.re` holds. -/
+lemma norm_le_interp_of_mem_verticalClosedStrip₀₁' (f : ℂ → E) {z : ℂ} {a b : ℝ}
+    (hz : z ∈ verticalClosedStrip 0 1) (hd : DiffContOnCl ℂ f (verticalStrip 0 1))
+    (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1)))
+    (ha : ∀ z ∈ re ⁻¹' {0}, ‖f z‖ ≤ a) (hb : ∀ z ∈ re ⁻¹' {1}, ‖f z‖ ≤ b) :
+    ‖f z‖ ≤ a ^ (1 - z.re) * b ^ z.re := by
+  have : ‖interpStrip f z‖ ≤ (sSupNormIm f 0) ^ (1 - z.re) * (sSupNormIm f 1) ^ z.re := by
+    by_cases h : sSupNormIm f 0 = 0 ∨ sSupNormIm f 1 = 0
+    · rw [interpStrip_eq_of_zero f z h, norm_zero, mul_nonneg_iff]
+      left
+      exact ⟨Real.rpow_nonneg (sSupNormIm_nonneg f _) _,
+        Real.rpow_nonneg (sSupNormIm_nonneg f _) _ ⟩
+    · push_neg at h
+      rcases h with ⟨h0, h1⟩
+      rw [ne_comm] at h0 h1
+      simp_rw [interpStrip_eq_of_pos f _ (lt_of_le_of_ne (sSupNormIm_nonneg f 0) h0)
+        (lt_of_le_of_ne (sSupNormIm_nonneg f 1) h1)]
+      simp only [norm_eq_abs, map_mul]
+      rw [abs_cpow_eq_rpow_re_of_pos ((Ne.le_iff_lt h0).mp (sSupNormIm_nonneg f _)) _]
+      rw [abs_cpow_eq_rpow_re_of_pos ((Ne.le_iff_lt h1).mp (sSupNormIm_nonneg f _)) _]
+      simp only [sub_re, one_re, le_refl]
+  apply (norm_le_interpStrip_of_mem_verticalClosedStrip₀₁ f hz hd hB).trans (this.trans _)
+  apply mul_le_mul_of_nonneg _ _ (Real.rpow_nonneg (sSupNormIm_nonneg f _) _)
+  · apply (Real.rpow_nonneg _ _)
+    specialize hb 1
+    simp only [mem_preimage, one_re, mem_singleton_iff, forall_true_left] at hb
+    exact (norm_nonneg _).trans hb
+  · apply Real.rpow_le_rpow (sSupNormIm_nonneg f _) _ (sub_nonneg.mpr hz.2)
+    · rw [sSupNormIm]
+      apply csSup_le _
+      · simpa [comp_apply, mem_image, forall_exists_index,
+          and_imp, forall_apply_eq_imp_iff₂] using ha
+      · use ‖(f 0)‖, 0
+        simp only [mem_preimage, zero_re, mem_singleton_iff, comp_apply,
+          and_self]
+  · apply Real.rpow_le_rpow (sSupNormIm_nonneg f _) _ hz.1
+    · rw [sSupNormIm]
+      apply csSup_le _
+      · simpa [comp_apply, mem_image, forall_exists_index,
+          and_imp, forall_apply_eq_imp_iff₂] using hb
+      · use ‖(f 1)‖, 1
+        simp only [mem_preimage, one_re, mem_singleton_iff, comp_apply,
+          and_self]
+
+/-- The transformation on ℂ that is used for `scale` maps the strip ``re ⁻¹' (l, u)``
+  to the strip ``re ⁻¹' (0, 1)``. -/
+lemma scale_id_mem_verticalStrip_of_mem_verticalStrip {l u : ℝ} (hul : l < u) {z : ℂ}
+    (hz : z ∈ verticalStrip 0 1) : l + z * (u - l)  ∈ verticalStrip l u := by
+  simp only [verticalStrip, mem_preimage, mem_Ioo] at hz
+  simp only [verticalStrip, mem_preimage, add_re, ofReal_re, mul_re, sub_re, sub_im, ofReal_im,
+    sub_self, mul_zero, sub_zero, mem_Ioo, lt_add_iff_pos_right]
+  obtain ⟨hz₁, hz₂⟩ := hz
+  simp only [hz₁, mul_pos_iff_of_pos_left, sub_pos, hul, true_and]
+  rw [add_comm, ← sub_lt_sub_iff_right l, add_sub_assoc, sub_self, add_zero]
+  nth_rewrite 2 [← one_mul (u - l)]
+  gcongr
+  simp only [sub_pos]
+  exact hul
+
+/-- If z is on the closed strip `re ⁻¹' [l, u]`, then `(z - l) / (u - l)` is on the closed strip
+  `re ⁻¹' [0, 1]`. -/
+lemma mem_verticalClosedStrip_of_scale_id_mem_verticalClosedStrip {z : ℂ} {l u : ℝ} (hul : l < u)
+    (hz : z ∈ verticalClosedStrip l u) : z / (u - l) - l / (u - l) ∈ verticalClosedStrip 0 1 := by
+  simp only [verticalClosedStrip, Complex.div_re, mem_preimage, sub_re, mem_Icc,
+    sub_nonneg, tsub_le_iff_right, ofReal_re, ofReal_im, sub_im, sub_self, mul_zero, zero_div,
+    add_zero]
+  simp only [verticalClosedStrip] at hz
+  norm_cast
+  simp_rw [Complex.normSq_ofReal, mul_div_assoc, div_mul_eq_div_div_swap,
+    div_self (by linarith : u - l ≠ 0), ← div_eq_mul_one_div]
+  constructor
+  · gcongr
+    · apply le_of_lt; simp [hul]
+    · exact hz.1
+  · rw [← sub_le_sub_iff_right (l / (u - l)), add_sub_assoc, sub_self, add_zero, div_sub_div_same,
+      div_le_one (by simp[hul]), sub_le_sub_iff_right l]
+    exact hz.2
+
+/-- The function `scale f l u` is `diffContOnCl`. -/
+lemma scale_diffContOnCl {f : ℂ → E} {l u : ℝ} (hul : l < u)
+    (hd : DiffContOnCl ℂ f (verticalStrip l u)) :
+    DiffContOnCl ℂ (scale f l u) (verticalStrip 0 1) := by
+  unfold scale
+  apply DiffContOnCl.comp (s := verticalStrip l u) hd
+  · apply DiffContOnCl.const_add
+    apply DiffContOnCl.smul_const
+    exact Differentiable.diffContOnCl differentiable_id'
+  · rw [MapsTo]
+    intro z hz
+    exact scale_id_mem_verticalStrip_of_mem_verticalStrip hul hz
+
+/-- A technical lemma needed in the proof. -/
+private lemma fun_arg_eq {l u : ℝ} (hul : l < u) (z : ℂ) :
+    (↑l + (z / (↑u - ↑l) - ↑l / (↑u - ↑l)) * (↑u - ↑l)) = z := by
+  rw [sub_mul, div_mul_comm, div_self (by norm_cast; linarith),
+    div_mul_comm, div_self (by norm_cast; linarith)]
+  simp
+
+/-- Another technical lemma needed in the proof. -/
+private lemma bound_exp_eq {l u : ℝ} (hul : l < u) (z : ℂ) :
+    (z / (↑u - ↑l)).re - ((l : ℂ) / (↑u - ↑l)).re = (z.re - l) / (u - l) := by
+  norm_cast
+  rw [Complex.div_re, Complex.normSq_ofReal, Complex.ofReal_re, Complex.ofReal_im, mul_div_assoc,
+    div_mul_eq_div_div_swap, div_self (by norm_cast; linarith),
+    ← div_eq_mul_one_div]
+  simp only [mul_zero, zero_div, add_zero]
+  rw [← div_sub_div_same]
+
 /--
 **Hadamard three-line theorem**: If `f` is a bounded function, continuous on the
 closed strip `re ⁻¹' [l, u]` and differentiable on open strip `re ⁻¹' (l, u)`, then for
@@ -612,7 +613,7 @@ closed strip `re ⁻¹' [l, u]` and differentiable on open strip `re ⁻¹' (l, 
 `re ⁻¹' [a,b]` the inequality
 `‖f(z)‖ ≤ M(0) ^ (1 - ((z.re - l) / (u - l))) * M(1) ^ ((z.re - l) / (u - l))`
 holds. -/
-lemma norm_le_interpStrip_of_mem_verticalClosedStrip [NormedSpace ℂ E] {l u : ℝ} (hul: l < u)
+lemma norm_le_interpStrip_of_mem_verticalClosedStrip {l u : ℝ} (hul: l < u)
     {f : ℂ → E} {z : ℂ}
     (hz : z ∈ verticalClosedStrip l u) (hd : DiffContOnCl ℂ f (verticalStrip l u))
     (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip l u))) :
@@ -631,7 +632,7 @@ bounded function, continuous on the closed strip `re ⁻¹' [l, u]` and differen
 `re ⁻¹' [l, u]` the inequality
 `‖f(z)‖ ≤ a ^ (1 - (z.re - l) / (u - l)) * b ^ ((z.re - l) / (u - l))`
 holds. -/
-lemma norm_le_interp_of_mem_verticalClosedStrip' [NormedSpace ℂ E] {f : ℂ → E} {z : ℂ} {a b l u : ℝ}
+lemma norm_le_interp_of_mem_verticalClosedStrip' {f : ℂ → E} {z : ℂ} {a b l u : ℝ}
     (hul : l < u) (hz : z ∈ verticalClosedStrip l u) (hd : DiffContOnCl ℂ f (verticalStrip l u))
     (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip l u)))
     (ha : ∀ z ∈ re ⁻¹' {l}, ‖f z‖ ≤ a) (hb : ∀ z ∈ re ⁻¹' {u}, ‖f z‖ ≤ b) :
