@@ -455,6 +455,11 @@ lemma isClosedMap_swap : IsClosedMap (Prod.swap : X × Y → Y × X) := fun s hs
   rw [image_swap_eq_preimage_swap]
   exact hs.preimage continuous_swap
 
+theorem isOpenMap_swap : IsOpenMap (Prod.swap : X × Y → Y × X) := by
+  intro s hs
+  rw [image_swap_eq_preimage_swap]
+  exact hs.preimage continuous_swap
+
 theorem Continuous.uncurry_left {f : X → Y → Z} (x : X) (h : Continuous (uncurry f)) :
     Continuous (f x) :=
   h.comp (Continuous.Prod.mk _)
@@ -468,6 +473,12 @@ theorem Continuous.uncurry_right {f : X → Y → Z} (y : Y) (h : Continuous (un
 
 theorem continuous_curry {g : X × Y → Z} (x : X) (h : Continuous g) : Continuous (curry g x) :=
   Continuous.uncurry_left x h
+
+theorem IsOpen.curry_left {s : Set (X × Y)} (hs : IsOpen s) (x : X) : IsOpen ((x, ·) ⁻¹' s) :=
+  hs.preimage (Continuous.Prod.mk _)
+
+theorem IsOpen.curry_right {s : Set (X × Y)} (hs : IsOpen s) (y : Y) : IsOpen ((·, y) ⁻¹' s) :=
+  (hs.preimage continuous_swap).curry_left y
 
 theorem IsOpen.prod {s : Set X} {t : Set Y} (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ×ˢ t) :=
   (hs.preimage continuous_fst).inter (ht.preimage continuous_snd)

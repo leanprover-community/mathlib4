@@ -698,6 +698,14 @@ theorem measurable_prod {f : α → β × γ} :
 theorem measurable_swap : Measurable (Prod.swap : α × β → β × α) :=
   Measurable.prod measurable_snd measurable_fst
 
+theorem MeasurableSet.curry_left {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
+    {s : Set (α × β)} (hs : MeasurableSet s) (x : α) : MeasurableSet ((x, ·) ⁻¹' s) :=
+  hs.preimage measurable_prod_mk_left
+
+theorem MeasurableSet.curry_right {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
+    {s : Set (α × β)} (hs : MeasurableSet s) (y : β) : MeasurableSet ((·, y) ⁻¹' s) :=
+  (hs.preimage measurable_swap).curry_left y
+
 theorem measurable_swap_iff {_ : MeasurableSpace γ} {f : α × β → γ} :
     Measurable (f ∘ Prod.swap) ↔ Measurable f :=
   ⟨fun hf => hf.comp measurable_swap, fun hf => hf.comp measurable_swap⟩
