@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.DualNumber
-import Mathlib.Algebra.EuclideanDomain.Field
-import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.RingTheory.LocalRing.Basic
+import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.RingTheory.Nilpotent.Basic
 
 /-!
@@ -16,6 +14,8 @@ import Mathlib.RingTheory.Nilpotent.Basic
 
 * `DualNumber.instLocalRing`
 The dual numbers over a field `K` form a local ring.
+* `DualNumber.instPrincipalIdealRing`
+The dual numbers over a field `K` form a principal ideal ring.
 
 -/
 
@@ -86,9 +86,54 @@ open TrivSqZeroExt
 
 variable {K : Type*} [Field K]
 
-instance instLocalRing : LocalRing K[ε] :=
+instance : LocalRing K[ε] :=
   .of_isUnit_or_isUnit_one_sub_self fun _ ↦
     (isUnit_or_isNilpotent _).imp_right IsNilpotent.isUnit_one_sub
+
+lemma isMaximal_span_singleton_eps :
+    (Ideal.span {ε} : Ideal K[ε]).IsMaximal := by
+  rw [Ideal.isMaximal_iff]
+  simp only [Ideal.mem_span_singleton', TrivSqZeroExt.ext_iff, fst_mul, fst_eps, mul_zero, fst_one,
+    zero_ne_one, TrivSqZeroExt.snd_mul, snd_eps, smul_eq_mul, mul_one, MulOpposite.op_zero,
+    zero_smul, add_zero, snd_one, false_and, exists_const, not_false_eq_true,
+    Ideal.span_singleton_le_iff_mem, exists_and_left, not_and, not_exists, true_and]
+  intro I x _ IH hx
+  rw [← Ideal.eq_top_iff_one]
+  rcases isUnit_or_isNilpotent x with hx'|hx'
+  · exact Ideal.eq_top_of_isUnit_mem _ hx hx'
+  · simp only [← isNilpotent_fst_iff, isNilpotent_iff_eq_zero] at hx'
+    exact absurd rfl (IH hx'.symm (.inl (snd x)))
+
+lemma maximalIdeal_eq_span_singleton_eps :
+    LocalRing.maximalIdeal K[ε] = Ideal.span {ε} :=
+  (LocalRing.eq_maximalIdeal isMaximal_span_singleton_eps).symm
+
+lemma isMaximal_iff_span_singleton_eps {I : Ideal K[ε]} :
+    I.IsMaximal ↔ I = .span {ε} := by
+  rw [← maximalIdeal_eq_span_singleton_eps]
+  constructor
+  · exact LocalRing.eq_maximalIdeal
+  · rintro rfl
+    infer_instance
+
+instance : IsPrincipalIdealRing K[ε] where
+  principal I := by
+    rcases eq_or_ne I ⊥ with rfl|hb
+    · exact bot_isPrincipal
+    rcases eq_or_ne I ⊤ with rfl|ht
+    · exact top_isPrincipal
+    obtain ⟨x, hxI, hx0⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hb
+    refine ⟨x, le_antisymm ?_ ((Ideal.span_singleton_le_iff_mem I).mpr hxI)⟩
+    rcases isUnit_or_isNilpotent x with hx|hx
+    · simp [Ideal.eq_top_of_isUnit_mem _ hxI hx] at ht
+    simp only [← isNilpotent_fst_iff, isNilpotent_iff_eq_zero] at hx
+    rw [← inl_fst_add_inr_snd_eq x, hx, inl_zero, zero_add, inr_eq_smul_eps,
+      Ideal.submodule_span_eq, ← inl_mul_eq_smul, Ideal.span_singleton_mul_left_unit,
+      ← maximalIdeal_eq_span_singleton_eps]
+    · exact LocalRing.le_maximalIdeal ht
+    · contrapose! hx0
+      simp only [isUnit_inl_iff, isUnit_iff_ne_zero, ne_eq, not_not] at hx0
+      ext <;> simp [hx, hx0]
 
 end Field
 
