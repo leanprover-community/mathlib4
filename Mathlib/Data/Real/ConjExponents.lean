@@ -237,6 +237,14 @@ structure IsConjExponent (p q : ℝ≥0∞) : Prop where
 /-- The conjugate exponent of `p` is `q = p/(p - 1)`, so that `1/p + 1/q = 1`. -/
 noncomputable def conjExponent (p : ℝ≥0∞) : ℝ≥0∞ := 1 + (p - 1)⁻¹
 
+lemma coe_conjExponent {p : ℝ≥0} (hp : 1 < p) : p.conjExponent = conjExponent p := by
+  rw [NNReal.conjExponent, conjExponent]
+  norm_cast
+  rw [← coe_inv (tsub_pos_of_lt hp).ne']
+  norm_cast
+  field_simp [(tsub_pos_of_lt hp).ne']
+  rw [tsub_add_cancel_of_le hp.le]
+
 variable {a b p q : ℝ≥0∞} (h : p.IsConjExponent q)
 
 @[simp, norm_cast] lemma isConjExponent_coe {p q : ℝ≥0} :
