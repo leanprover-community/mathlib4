@@ -555,19 +555,8 @@ theorem biproduct.isoCoproduct_hom {f : J → C} [HasBiproduct f] :
     (biproduct.isoCoproduct f).hom = biproduct.desc (Sigma.ι f) :=
   biproduct.hom_ext' _ _ fun j => by simp [← Iso.eq_comp_inv]
 
-/-- If a category has finite biproducts, its `colim` and `lim` functor on finite diagrams
-are isomorophic. -/
-@[simps!]
-def HasFiniteBiproducts.colimIsoLim [HasFiniteBiproducts C] [Finite J] :
-    colim (J := Discrete J) (C := C) ≅ lim :=
-  NatIso.ofComponents (fun F => (Sigma.isoColimit F).symm ≪≫
-      (biproduct.isoCoproduct _).symm ≪≫ biproduct.isoProduct _ ≪≫ Pi.isoLimit F)
-    fun η => colimit.hom_ext fun ⟨i⟩ => limit.hom_ext fun ⟨j⟩ => by
-      by_cases h : i = j <;>
-       simp_all [h, Sigma.isoColimit, Pi.isoLimit, biproduct.ι_π, biproduct.ι_π_assoc]
-
 /-- If a category has biproducts of a shape `J`, its `colim` and `lim` functor on diagrams over `J`
-are isomorophic. -/
+are isomorphic. -/
 @[simps!]
 def HasBiproductsOfShape.colimIsoLim [HasBiproductsOfShape J C] :
     colim (J := Discrete J) (C := C) ≅ lim :=
