@@ -314,15 +314,37 @@ theorem natCast_sub (m n : ℕ) : ↑(m - n) = (m - n : ℝ≥0∞) := by
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_sub := natCast_sub
 
+/-- See `ENNReal.sub_eq_of_eq_add'` for a version assuming that `a = c + b` itself is finite rather
+than `b`. -/
 protected theorem sub_eq_of_eq_add (hb : b ≠ ∞) : a = c + b → a - b = c :=
   (cancel_of_ne hb).tsub_eq_of_eq_add
 
+/-- Weaker version of `ENNReal.sub_eq_of_eq_add` assuming that `a = c + b` itself is finite rather
+han `b`. -/
+protected lemma sub_eq_of_eq_add' (ha : a ≠ ∞) : a = c + b → a - b = c :=
+  (cancel_of_ne ha).tsub_eq_of_eq_add'
+
+/-- See `ENNReal.eq_sub_of_add_eq'` for a version assuming that `b = a + c` itself is finite rather
+than `c`. -/
 protected theorem eq_sub_of_add_eq (hc : c ≠ ∞) : a + c = b → a = b - c :=
   (cancel_of_ne hc).eq_tsub_of_add_eq
 
+/-- Weaker version of `ENNReal.eq_sub_of_add_eq` assuming that `b = a + c` itself is finite rather
+than `c`. -/
+protected lemma eq_sub_of_add_eq' (hb : b ≠ ∞) : a + c = b → a = b - c :=
+  (cancel_of_ne hb).eq_tsub_of_add_eq'
+
+/-- See `ENNReal.sub_eq_of_eq_add_rev'` for a version assuming that `a = b + c` itself is finite
+rather than `b`. -/
 protected theorem sub_eq_of_eq_add_rev (hb : b ≠ ∞) : a = b + c → a - b = c :=
   (cancel_of_ne hb).tsub_eq_of_eq_add_rev
 
+/-- Weaker version of `ENNReal.sub_eq_of_eq_add_rev` assuming that `a = b + c` itself is finite
+rather than `b`. -/
+protected lemma sub_eq_of_eq_add_rev' (ha : a ≠ ∞) : a = b + c → a - b = c :=
+  (cancel_of_ne ha).tsub_eq_of_eq_add_rev'
+
+@[deprecated ENNReal.sub_eq_of_eq_add (since := "2024-09-30")]
 theorem sub_eq_of_add_eq (hb : b ≠ ∞) (hc : a + b = c) : c - b = a :=
   ENNReal.sub_eq_of_eq_add hb hc.symm
 
@@ -338,7 +360,7 @@ protected theorem sub_add_eq_add_sub (hab : b ≤ a) (b_ne_top : b ≠ ∞) :
     a - b + c = a + c - b := by
   by_cases c_top : c = ∞
   · simpa [c_top] using ENNReal.eq_sub_of_add_eq b_ne_top rfl
-  refine (sub_eq_of_add_eq b_ne_top ?_).symm
+  refine ENNReal.eq_sub_of_add_eq b_ne_top ?_
   simp only [add_assoc, add_comm c b]
   simpa only [← add_assoc] using (add_left_inj c_top).mpr <| tsub_add_cancel_of_le hab
 
