@@ -72,6 +72,14 @@ end TrivSqZeroExt
 
 namespace DualNumber
 
+lemma fst_eq_zero_iff_eps_dvd {R : Type*} [Semiring R] {x : R[ε]} :
+    x.fst = 0 ↔ ε ∣ x := by
+  simp_rw [dvd_def, TrivSqZeroExt.ext_iff, TrivSqZeroExt.fst_mul, TrivSqZeroExt.snd_mul,
+    fst_eps, snd_eps, zero_mul, zero_smul, zero_add, MulOpposite.smul_eq_mul_unop,
+    MulOpposite.unop_op, one_mul, exists_and_left, iff_self_and]
+  intro
+  exact ⟨.inl x.snd, rfl⟩
+
 lemma isNilpotent_eps {R : Type*} [Semiring R] :
     IsNilpotent (ε : R[ε]) :=
   TrivSqZeroExt.isNilpotent_inr 1
@@ -88,12 +96,7 @@ instance : LocalRing K[ε] :=
 
 lemma isNilpotent_iff_eps_dvd {x : K[ε]} :
     IsNilpotent x ↔ ε ∣ x := by
-  simp only [isNilpotent_iff_isNilpotent_fst, isNilpotent_iff_eq_zero, dvd_def,
-    TrivSqZeroExt.ext_iff, fst_mul, fst_eps, zero_mul, TrivSqZeroExt.snd_mul, smul_eq_mul, snd_eps,
-    MulOpposite.smul_eq_mul_unop, MulOpposite.unop_op, one_mul, zero_add, exists_and_left,
-    iff_self_and]
-  intro
-  exact ⟨inl (snd _), rfl⟩
+  simp only [isNilpotent_iff_isNilpotent_fst, isNilpotent_iff_eq_zero, fst_eq_zero_iff_eps_dvd]
 
 lemma isMaximal_span_singleton_eps :
     (Ideal.span {ε} : Ideal K[ε]).IsMaximal := by
