@@ -46,9 +46,7 @@ lemma open_subgroup_separating
 
 end NonarchimedeanGroup.auxiliary
 
-namespace NonarchimedeanGroup
-open NonarchimedeanGroup.auxiliary
-
+namespace TopologicalGroup
 variable {G : Type*} [TopologicalSpace G] [Group G]
 
 variable {x y : G} {U : Set G} {A : Opens G} in
@@ -75,7 +73,13 @@ lemma non_empty_intersection_coset (hy :  y ∈ U)
   simp only [Set.mem_smul_set_iff_inv_smul_mem, smul_eq_mul, inv_mul_cancel, SetLike.mem_coe,
     one_mem V]
 
-variable [TopologicalGroup G] [NonarchimedeanGroup G] [T2Space G]
+end TopologicalGroup
+
+namespace NonarchimedeanGroup
+open NonarchimedeanGroup.auxiliary TopologicalGroup
+
+variable {G : Type*} [TopologicalSpace G] [Group G]
+  [TopologicalGroup G] [NonarchimedeanGroup G] [T2Space G]
 
 variable {x y : G} {U : Set G} in
 /-- In a nonarchimedean group, any set which contains two distinct points is disconnected. -/
