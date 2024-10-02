@@ -75,20 +75,28 @@ theorem star_ratCast_smul [DivisionRing R] [AddCommGroup M] [Module R M] [StarAd
 @[deprecated (since := "2024-04-17")]
 alias star_rat_cast_smul := star_ratCast_smul
 
-@[simp] lemma star_nnqsmul [AddCommMonoid R] [StarAddMonoid R] [Module ℚ≥0 R] (q : ℚ≥0) (x : R) :
+/-!
+Per the naming convention, these two lemmas call `(q • ·)` `nnrat_smul` and `rat_smul` respectively,
+rather than `nnqsmul` and `qsmul` because the latter are reserved to the actions coming from
+`DivisionSemiring` and `DivisionRing`. We provide aliases with `nnqsmul` and `qsmul` for
+discoverability.
+-/
+
+@[simp] lemma star_nnrat_smul [AddCommMonoid R] [StarAddMonoid R] [Module ℚ≥0 R] (q : ℚ≥0) (x : R) :
     star (q • x) = q • star x := map_nnrat_smul (starAddEquiv : R ≃+ R) _ _
 
-@[simp] lemma star_qsmul [AddCommGroup R] [StarAddMonoid R] [Module ℚ R] (q : ℚ) (x : R) :
+@[simp] lemma star_rat_smul [AddCommGroup R] [StarAddMonoid R] [Module ℚ R] (q : ℚ) (x : R) :
     star (q • x) = q • star x :=
   map_rat_smul (starAddEquiv : R ≃+ R) _ _
 
-@[deprecated (since := "2024-10-02")] alias star_rat_smul := star_qsmul
+alias star_nnqsmul := star_nnrat_smul
+alias star_qsmul := star_rat_smul
 
 instance StarAddMonoid.toStarModuleNNRat [AddCommMonoid R] [Module ℚ≥0 R] [StarAddMonoid R] :
-    StarModule ℚ≥0 R where star_smul := star_nnqsmul
+    StarModule ℚ≥0 R where star_smul := star_nnrat_smul
 
 instance StarAddMonoid.toStarModuleRat [AddCommGroup R] [Module ℚ R] [StarAddMonoid R] :
-    StarModule ℚ R where star_smul := star_qsmul
+    StarModule ℚ R where star_smul := star_rat_smul
 
 end SMulLemmas
 
