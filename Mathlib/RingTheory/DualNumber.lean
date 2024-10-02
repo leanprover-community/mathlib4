@@ -28,29 +28,18 @@ lemma isNilpotent_inr [Semiring R] [AddCommMonoid M]
     IsNilpotent (.inr x : TrivSqZeroExt R M) := by
   refine ⟨2, by simp [pow_two]⟩
 
-lemma isNilpotent_fst_iff [CommSemiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
-    [IsCentralScalar R M] {x : TrivSqZeroExt R M} :
+lemma isNilpotent_fst_iff [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
+    [SMulCommClass R Rᵐᵒᵖ M] {x : TrivSqZeroExt R M} :
     IsNilpotent x.fst ↔ IsNilpotent x := by
   constructor <;> rintro ⟨n, hn⟩
-  · refine ⟨2 * n, ?_⟩
-    rw [pow_mul, ← inl_fst_add_inr_snd_eq x]
-    simp only [pow_two, mul_add, add_mul, inr_mul_inr, add_zero, mul_comm, add_assoc, ← two_mul]
-    ring_nf
-    rw [add_pow]
-    refine Finset.sum_eq_zero ?_
-    simp only [Finset.mem_range, inl_pow]
-    rintro (_|_|k) hk
-    · simp [← pow_mul _ 2, mul_comm 2, pow_mul _ n, hn]
-    · simp only [zero_add, lt_add_iff_pos_left] at hk
-      simp only [zero_add, pow_one, Nat.choose_one_right]
-      ring_nf
-      rw [mul_right_comm (inl _), ← inl_mul, ← pow_succ', mul_two (n - 1), add_assoc,
-          Nat.sub_add_cancel hk, add_comm, pow_add]
-      simp [hn]
-    · rw [add_assoc, ← two_mul, mul_one, add_comm, pow_add, mul_pow, mul_pow]
-      simp [pow_two]
+  · refine ⟨n * 2, ?_⟩
+    rw [pow_mul]
+    ext
+    · rw [fst_pow, fst_pow, hn, zero_pow two_ne_zero, fst_zero]
+    · rw [pow_two, snd_mul, fst_pow, hn, MulOpposite.op_zero, zero_smul, zero_smul, zero_add,
+        snd_zero]
   · refine ⟨n, ?_⟩
-    simp [← fst_pow, hn]
+    rw [← fst_pow, hn, fst_zero]
 
 lemma isUnit_or_isNilpotent_of_isMaximal_isNilpotent [CommSemiring R] [AddCommGroup M]
     [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
