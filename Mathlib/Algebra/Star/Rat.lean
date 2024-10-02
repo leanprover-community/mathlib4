@@ -17,7 +17,7 @@ instance NNRat.instStarRing : StarRing ℚ≥0 := starRingOfComm
 instance Rat.instTrivialStar : TrivialStar ℚ := ⟨fun _ ↦ rfl⟩
 instance NNRat.instTrivialStar : TrivialStar ℚ≥0 := ⟨fun _ ↦ rfl⟩
 
-variable {α R : Type*}
+variable {R : Type*}
 
 open MulOpposite
 
