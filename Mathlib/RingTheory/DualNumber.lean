@@ -23,30 +23,37 @@ namespace TrivSqZeroExt
 
 variable {R M : Type*}
 
-lemma isNilpotent_inr [Semiring R] [AddCommMonoid M]
-    [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M] (x : M) :
-    IsNilpotent (.inr x : TrivSqZeroExt R M) := by
-  refine ⟨2, by simp [pow_two]⟩
+section Semiring
+variable [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 
-lemma isNilpotent_fst_iff [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
-    [SMulCommClass R Rᵐᵒᵖ M] {x : TrivSqZeroExt R M} :
-    IsNilpotent x.fst ↔ IsNilpotent x := by
+lemma isNilpotent_iff_isNilpotent_fst {x : TrivSqZeroExt R M} :
+    IsNilpotent x ↔ IsNilpotent x.fst := by
   constructor <;> rintro ⟨n, hn⟩
+  · refine ⟨n, ?_⟩
+    rw [← fst_pow, hn, fst_zero]
   · refine ⟨n * 2, ?_⟩
     rw [pow_mul]
     ext
     · rw [fst_pow, fst_pow, hn, zero_pow two_ne_zero, fst_zero]
     · rw [pow_two, snd_mul, fst_pow, hn, MulOpposite.op_zero, zero_smul, zero_smul, zero_add,
         snd_zero]
-  · refine ⟨n, ?_⟩
-    rw [← fst_pow, hn, fst_zero]
+
+@[simp]
+lemma isNilpotent_inl_iff (r : R) : IsNilpotent (.inl r : TrivSqZeroExt R M) ↔ IsNilpotent r := by
+  rw [isNilpotent_iff_isNilpotent_fst, fst_inl]
+
+@[simp]
+lemma isNilpotent_inr (x : M) : IsNilpotent (.inr x : TrivSqZeroExt R M) := by
+  refine ⟨2, by simp [pow_two]⟩
+
+end Semiring
 
 lemma isUnit_or_isNilpotent_of_isMaximal_isNilpotent [CommSemiring R] [AddCommGroup M]
     [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
     (h : ∀ I : Ideal R, I.IsMaximal → IsNilpotent I)
     (a : TrivSqZeroExt R M) :
     IsUnit a ∨ IsNilpotent a := by
-  rw [isUnit_iff_isUnit_fst, ← isNilpotent_fst_iff]
+  rw [isUnit_iff_isUnit_fst, isNilpotent_iff_isNilpotent_fst]
   refine (em _).imp_right fun ha ↦ ?_
   obtain ⟨I, hI, haI⟩ := exists_max_ideal_of_mem_nonunits (mem_nonunits_iff.mpr ha)
   refine (h _ hI).imp fun n hn ↦ ?_
@@ -81,8 +88,8 @@ instance : LocalRing K[ε] :=
 
 lemma isNilpotent_iff_eps_dvd {x : K[ε]} :
     IsNilpotent x ↔ ε ∣ x := by
-  simp only [← isNilpotent_fst_iff, isNilpotent_iff_eq_zero, dvd_def, TrivSqZeroExt.ext_iff,
-    fst_mul, fst_eps, zero_mul, TrivSqZeroExt.snd_mul, smul_eq_mul, snd_eps,
+  simp only [isNilpotent_iff_isNilpotent_fst, isNilpotent_iff_eq_zero, dvd_def,
+    TrivSqZeroExt.ext_iff, fst_mul, fst_eps, zero_mul, TrivSqZeroExt.snd_mul, smul_eq_mul, snd_eps,
     MulOpposite.smul_eq_mul_unop, MulOpposite.unop_op, one_mul, zero_add, exists_and_left,
     iff_self_and]
   intro
@@ -91,13 +98,13 @@ lemma isNilpotent_iff_eps_dvd {x : K[ε]} :
 lemma isMaximal_span_singleton_eps :
     (Ideal.span {ε} : Ideal K[ε]).IsMaximal := by
   rw [Ideal.isMaximal_iff]
-  simp only [Ideal.mem_span_singleton, ← isNilpotent_iff_eps_dvd, ← isNilpotent_fst_iff, fst_one,
-    isNilpotent_iff_eq_zero, one_ne_zero, not_false_eq_true, true_and]
+  simp only [Ideal.mem_span_singleton, ← isNilpotent_iff_eps_dvd, isNilpotent_iff_isNilpotent_fst,
+    fst_one, isNilpotent_iff_eq_zero, one_ne_zero, not_false_eq_true, true_and]
   intro I x _ IH hx
   rw [← Ideal.eq_top_iff_one]
   rcases isUnit_or_isNilpotent x with hx'|hx'
   · exact Ideal.eq_top_of_isUnit_mem _ hx hx'
-  · simp only [← isNilpotent_fst_iff, isNilpotent_iff_eq_zero] at hx'
+  · simp only [isNilpotent_iff_isNilpotent_fst, isNilpotent_iff_eq_zero] at hx'
     exact absurd hx' IH
 
 lemma maximalIdeal_eq_span_singleton_eps :
@@ -122,7 +129,7 @@ instance : IsPrincipalIdealRing K[ε] where
     refine ⟨x, le_antisymm ?_ ((Ideal.span_singleton_le_iff_mem I).mpr hxI)⟩
     rcases isUnit_or_isNilpotent x with hx|hx
     · simp [Ideal.eq_top_of_isUnit_mem _ hxI hx] at ht
-    simp only [← isNilpotent_fst_iff, isNilpotent_iff_eq_zero] at hx
+    simp only [isNilpotent_iff_isNilpotent_fst, isNilpotent_iff_eq_zero] at hx
     rw [← inl_fst_add_inr_snd_eq x, hx, inl_zero, zero_add, inr_eq_smul_eps,
       Ideal.submodule_span_eq, ← inl_mul_eq_smul, Ideal.span_singleton_mul_left_unit,
       ← maximalIdeal_eq_span_singleton_eps]
