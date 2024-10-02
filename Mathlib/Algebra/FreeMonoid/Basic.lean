@@ -214,7 +214,8 @@ theorem recOn_of_mul {C : FreeMonoid α → Sort*} (x : α) (xs : FreeMonoid α)
     (ih : ∀ x xs, C xs → C (of x * xs)) : @recOn α C (of x * xs) h0 ih = ih x xs (recOn xs h0 ih) :=
   rfl
 
-/-! ### induction -/
+/-! ### Induction -/
+
 section induction_principles
 
 /-- An induction principle on free monoids, with cases for `1`, `FreeMonoid.of` and `*`. -/
