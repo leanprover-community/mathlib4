@@ -185,8 +185,7 @@ theorem End_algebraMap_isUnit_inv_apply_eq_iff {x : R}
     mpr := fun H =>
       H.symm ▸ by
         apply_fun ⇑h.unit.val using ((Module.End_isUnit_iff _).mp h).injective
-        erw [End_isUnit_apply_inv_apply_of_isUnit]
-        rfl }
+        simpa using End_isUnit_apply_inv_apply_of_isUnit h (x • m') }
 
 theorem End_algebraMap_isUnit_inv_apply_eq_iff' {x : R}
     (h : IsUnit (algebraMap R (Module.End S M) x)) (m m' : M) :
@@ -195,8 +194,7 @@ theorem End_algebraMap_isUnit_inv_apply_eq_iff' {x : R}
     mpr := fun H =>
       H.symm ▸ by
         apply_fun (↑h.unit : M → M) using ((Module.End_isUnit_iff _).mp h).injective
-        erw [End_isUnit_apply_inv_apply_of_isUnit]
-        rfl }
+        simpa using End_isUnit_apply_inv_apply_of_isUnit h (x • m') |>.symm }
 
 end
 

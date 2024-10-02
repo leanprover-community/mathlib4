@@ -291,7 +291,7 @@ theorem IsQF.induction_on_sup_not {P : L.BoundedFormula α n → Prop} {φ : L.B
       ∀ {φ₁ φ₂ : L.BoundedFormula α n}, (φ₁ ⇔[∅] φ₂) → (P φ₁ ↔ P φ₂)) :
     P φ :=
   IsQF.recOn h hf @(ha) fun {φ₁ φ₂} _ _ h1 h2 =>
-    (hse (φ₁.imp_semanticallyEquivalent_not_sup φ₂)).2 (hsup (hnot h1) h2)
+    (hse (φ₁.imp_iff_not_sup φ₂)).2 (hsup (hnot h1) h2)
 
 theorem IsQF.induction_on_inf_not {P : L.BoundedFormula α n → Prop} {φ : L.BoundedFormula α n}
     (h : IsQF φ) (hf : P (⊥ : L.BoundedFormula α n))
@@ -302,10 +302,10 @@ theorem IsQF.induction_on_inf_not {P : L.BoundedFormula α n → Prop} {φ : L.B
     P φ :=
   h.induction_on_sup_not hf ha
     (fun {φ₁ φ₂} h1 h2 =>
-      (hse (φ₁.sup_semanticallyEquivalent_not_inf_not φ₂)).2 (hnot (hinf (hnot h1) (hnot h2))))
+      (hse (φ₁.sup_iff_not_inf_not φ₂)).2 (hnot (hinf (hnot h1) (hnot h2))))
     (fun {_} => hnot) fun {_ _} => hse
 
-theorem semanticallyEquivalent_toPrenex (φ : L.BoundedFormula α n) :
+theorem iff_toPrenex (φ : L.BoundedFormula α n) :
     φ ⇔[∅] φ.toPrenex := fun M v xs => by
   rw [realize_iff, realize_toPrenex]
 
@@ -317,7 +317,7 @@ theorem induction_on_all_ex {P : ∀ {m}, L.BoundedFormula α m → Prop} (φ : 
       (φ₁ ⇔[∅] φ₂) → (P φ₁ ↔ P φ₂)) :
     P φ := by
   suffices h' : ∀ {m} {φ : L.BoundedFormula α m}, φ.IsPrenex → P φ from
-    (hse φ.semanticallyEquivalent_toPrenex).2 (h' φ.toPrenex_isPrenex)
+    (hse φ.iff_toPrenex).2 (h' φ.toPrenex_isPrenex)
   intro m φ hφ
   induction hφ with
   | of_isQF hφ => exact hqf hφ
@@ -332,7 +332,7 @@ theorem induction_on_exists_not {P : ∀ {m}, L.BoundedFormula α m → Prop} (�
       (φ₁ ⇔[∅] φ₂) → (P φ₁ ↔ P φ₂)) :
     P φ :=
   φ.induction_on_all_ex (fun {_ _} => hqf)
-    (fun {_ φ} hφ => (hse φ.all_semanticallyEquivalent_not_ex_not).2 (hnot (hex (hnot hφ))))
+    (fun {_ φ} hφ => (hse φ.all_iff_not_ex_not).2 (hnot (hex (hnot hφ))))
     (fun {_ _} => hex) fun {_ _ _} => hse
 
 /-- A universal formula is a formula defined by applying only universal quantifiers to a

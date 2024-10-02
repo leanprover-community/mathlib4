@@ -180,15 +180,18 @@ theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyFilter α)
       ⟨mem_range_self y, hy⟩
     exact ⟨_, this⟩
 
-theorem denseInducing_pureCauchy : DenseInducing (pureCauchy : α → CauchyFilter α) :=
-  uniformInducing_pureCauchy.denseInducing denseRange_pureCauchy
+theorem isDenseInducing_pureCauchy : IsDenseInducing (pureCauchy : α → CauchyFilter α) :=
+  uniformInducing_pureCauchy.isDenseInducing denseRange_pureCauchy
 
-theorem denseEmbedding_pureCauchy : DenseEmbedding (pureCauchy : α → CauchyFilter α) :=
-  uniformEmbedding_pureCauchy.denseEmbedding denseRange_pureCauchy
+theorem isDenseEmbedding_pureCauchy : IsDenseEmbedding (pureCauchy : α → CauchyFilter α) :=
+  uniformEmbedding_pureCauchy.isDenseEmbedding denseRange_pureCauchy
+
+@[deprecated (since := "2024-09-30")]
+alias denseEmbedding_pureCauchy := isDenseEmbedding_pureCauchy
 
 theorem nonempty_cauchyFilter_iff : Nonempty (CauchyFilter α) ↔ Nonempty α := by
   constructor <;> rintro ⟨c⟩
-  · have := eq_univ_iff_forall.1 denseEmbedding_pureCauchy.toDenseInducing.closure_range c
+  · have := eq_univ_iff_forall.1 isDenseEmbedding_pureCauchy.toIsDenseInducing.closure_range c
     obtain ⟨_, ⟨_, a, _⟩⟩ := mem_closure_iff.1 this _ isOpen_univ trivial
     exact ⟨a⟩
   · exact ⟨pureCauchy c⟩
@@ -224,7 +227,7 @@ open Classical in
 /-- Extend a uniformly continuous function `α → β` to a function `CauchyFilter α → β`.
 Outputs junk when `f` is not uniformly continuous. -/
 def extend (f : α → β) : CauchyFilter α → β :=
-  if UniformContinuous f then denseInducing_pureCauchy.extend f
+  if UniformContinuous f then isDenseInducing_pureCauchy.extend f
   else fun x => f (nonempty_cauchyFilter_iff.1 ⟨x⟩).some
 
 section T0Space
@@ -365,7 +368,7 @@ theorem coe_injective [T0Space α] : Function.Injective ((↑) : α → Completi
 
 variable {α}
 
-theorem denseInducing_coe : DenseInducing ((↑) : α → Completion α) :=
+theorem isDenseInducing_coe : IsDenseInducing ((↑) : α → Completion α) :=
   { (uniformInducing_coe α).inducing with dense := denseRange_coe }
 
 /-- The uniform bijection between a complete space and its uniform completion. -/
@@ -375,10 +378,13 @@ def UniformCompletion.completeEquivSelf [CompleteSpace α] [T0Space α] : Comple
 open TopologicalSpace
 
 instance separableSpace_completion [SeparableSpace α] : SeparableSpace (Completion α) :=
-  Completion.denseInducing_coe.separableSpace
+  Completion.isDenseInducing_coe.separableSpace
 
-theorem denseEmbedding_coe [T0Space α] : DenseEmbedding ((↑) : α → Completion α) :=
-  { denseInducing_coe with inj := separated_pureCauchy_injective }
+theorem isDenseEmbedding_coe [T0Space α] : IsDenseEmbedding ((↑) : α → Completion α) :=
+  { isDenseInducing_coe with inj := separated_pureCauchy_injective }
+
+@[deprecated (since := "2024-09-30")]
+alias denseEmbedding_coe := isDenseEmbedding_coe
 
 theorem denseRange_coe₂ :
     DenseRange fun x : α × β => ((x.1 : Completion α), (x.2 : Completion β)) :=

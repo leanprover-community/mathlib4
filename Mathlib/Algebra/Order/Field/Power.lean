@@ -31,7 +31,7 @@ theorem zpow_le_of_le (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n := by
   calc
     a ^ m = a ^ m * 1 := (mul_one _).symm
     _ ≤ a ^ m * a ^ k :=
-      mul_le_mul_of_nonneg_left (one_le_pow_of_one_le ha _) (zpow_nonneg ha₀.le _)
+      mul_le_mul_of_nonneg_left (one_le_pow₀ ha) (zpow_nonneg ha₀.le _)
     _ = a ^ n := by rw [← zpow_natCast, ← zpow_add₀ ha₀.ne', hk, add_sub_cancel]
 
 theorem zpow_le_one_of_nonpos (ha : 1 ≤ a) (hn : n ≤ 0) : a ^ n ≤ 1 :=
@@ -48,7 +48,7 @@ theorem Nat.zpow_ne_zero_of_pos {a : ℕ} (h : 0 < a) (n : ℤ) : (a : α) ^ n �
   (Nat.zpow_pos_of_pos h n).ne'
 
 theorem one_lt_zpow (ha : 1 < a) : ∀ n : ℤ, 0 < n → 1 < a ^ n
-  | (n : ℕ), h => (zpow_natCast _ _).symm.subst (one_lt_pow ha <| Int.natCast_ne_zero.mp h.ne')
+  | (n : ℕ), h => (zpow_natCast _ _).symm.subst (one_lt_pow₀ ha <| Int.natCast_ne_zero.mp h.ne')
   | -[_+1], h => ((Int.negSucc_not_pos _).mp h).elim
 
 theorem zpow_strictMono (hx : 1 < a) : StrictMono (a ^ · : ℤ → α) :=
@@ -79,7 +79,7 @@ theorem zpow_le_iff_le (hx : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n :=
 
 @[simp]
 theorem div_pow_le (ha : 0 ≤ a) (hb : 1 ≤ b) (k : ℕ) : a / b ^ k ≤ a :=
-  div_le_self ha <| one_le_pow_of_one_le hb _
+  div_le_self ha <| one_le_pow₀ hb
 
 theorem zpow_injective (h₀ : 0 < a) (h₁ : a ≠ 1) : Injective (a ^ · : ℤ → α) := by
   rcases h₁.lt_or_lt with (H | H)
