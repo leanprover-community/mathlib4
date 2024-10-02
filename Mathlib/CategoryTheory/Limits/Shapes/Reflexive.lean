@@ -302,7 +302,7 @@ instance inclusionWalkingReflexivePair_final : Functor.Final inclusionWalkingRef
       | zero => exact e₁
   cases x with
     | zero => apply IsConnected.of_induct (j₀ := e₁)
-              rintro p h₁ h₂ ⟨l, y, f⟩
+              rintro p h₁ h₂ ⟨_, y, f⟩
               cases y <;> cases f
               · set r : StructuredArrow .zero inclusionWalkingReflexivePair :=
                   StructuredArrow.mk (Y := zero) reflexion
@@ -311,7 +311,7 @@ instance inclusionWalkingReflexivePair_final : Functor.Final inclusionWalkingRef
                 exact StructuredArrow.homMk .left
               · exact h₁
     | one => apply IsConnected.of_induct (j₀ := e₀)
-             rintro p h₁ h₂ ⟨l, y, f⟩
+             rintro p h₁ h₂ ⟨_, y, f⟩
              set rₗ : StructuredArrow WalkingReflexivePair.one inclusionWalkingReflexivePair :=
                 StructuredArrow.mk (Y := one) left
              set rᵣ : StructuredArrow WalkingReflexivePair.one inclusionWalkingReflexivePair :=
@@ -423,7 +423,7 @@ def mkNatTrans (u : F.obj one ⟶ A) (v : F.obj zero ⟶ B)
   app := fun x ↦ match x with
     | zero => v
     | one => u
-  naturality := by intro x y f
+  naturality := by intro _ _ f
                    cases f with
                      | id => simp
                      | left => simp [h₁]
@@ -449,7 +449,7 @@ def mkNatTrans' (u : A ⟶ F.obj one) (v : B ⟶ F.obj zero)
   app := fun x ↦ match x with
     | zero => v
     | one => u
-  naturality := by intro x y f
+  naturality := by intro _ _ f
                    cases f with
                      | id => simp
                      | left => simp [h₁]
@@ -474,7 +474,7 @@ def mkNatIso (u : F.obj one ≅ A) (v : F.obj zero ≅ B)
   NatIso.ofComponents (fun x ↦ match x with
     | zero => v
     | one => u)
-  (by intro x y f
+  (by intro _ _ f
       cases f with
         | id => simp
         | left => simp [h₁]
@@ -647,14 +647,14 @@ walking reflexive pair. -/
 theorem hasReflexiveCoequalizers_iff :
     (HasColimitsOfShape WalkingReflexivePair C) ↔ (HasReflexiveCoequalizers C) := by
   constructor
-  · intro h
+  · intro _
     constructor
     intro _ _ f g h₁
     set F := @ofIsReflexivePair _ _ _ _ _ _ h₁
     exact @Limits.hasColimitOfIso _ _ _ _ _ _
       (Functor.Final.comp_hasColimit _)
       (diagramIsoParallelPair (WalkingParallelPair.inclusionWalkingReflexivePair ⋙ F)).symm
-  · intro h
+  · intro _
     exact ⟨by infer_instance⟩
 
 end Limits
