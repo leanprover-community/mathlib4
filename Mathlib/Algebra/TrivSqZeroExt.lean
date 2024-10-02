@@ -147,6 +147,12 @@ theorem snd_comp_inr [Zero R] : snd ∘ (inr : M → tsze R M) = id :=
 
 end
 
+theorem fst_surjective [Nonempty M] : Function.Surjective (fst : tsze R M → R) :=
+  Prod.fst_surjective
+
+theorem snd_surjective [Nonempty R] : Function.Surjective (snd : tsze R M → M) :=
+  Prod.snd_surjective
+
 theorem inl_injective [Zero M] : Function.Injective (inl : R → tsze R M) :=
   Function.LeftInverse.injective <| fst_inl _
 
@@ -228,17 +234,13 @@ instance module [Semiring S] [AddCommMonoid R] [AddCommMonoid M] [Module S R] [M
 
 /-- The trivial square-zero extension is nontrivial if it is over a nontrivial ring. -/
 instance instNontrivial_of_left {R M : Type*} [Nontrivial R] [Nonempty M] :
-    Nontrivial (TrivSqZeroExt R M) := by
-  inhabit M
-  have : Zero M := ⟨default⟩
-  exact inl_injective.nontrivial
+    Nontrivial (TrivSqZeroExt R M) :=
+  fst_surjective.nontrivial
 
 /-- The trivial square-zero extension is nontrivial if it is over a nontrivial module. -/
 instance instNontrivial_of_right {R M : Type*} [Nonempty R] [Nontrivial M] :
-    Nontrivial (TrivSqZeroExt R M) := by
-  inhabit R
-  have : Zero R := ⟨default⟩
-  exact inr_injective.nontrivial
+    Nontrivial (TrivSqZeroExt R M) :=
+  snd_surjective.nontrivial
 
 @[simp]
 theorem fst_zero [Zero R] [Zero M] : (0 : tsze R M).fst = 0 :=
