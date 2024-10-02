@@ -225,6 +225,9 @@ theorem jacobson_mono {I J : Ideal R} : I ≤ J → I.jacobson ≤ J.jacobson :=
   erw [mem_sInf] at hx ⊢
   exact fun K ⟨hK, hK_max⟩ => hx ⟨Trans.trans h hK, hK_max⟩
 
+/-- The Jacobson radical of a two-sided ideal is two-sided.
+
+It is preferable to use `TwoSidedIdeal.jacobson` instead of this lemma. -/
 theorem jacobson_mul_mem_right {I : Ideal R}
     (mul_mem_right : ∀ {x y}, x ∈ I → x * y ∈ I) :
     ∀ {x y}, x ∈ I.jacobson → x * y ∈ I.jacobson := by
@@ -430,7 +433,7 @@ variable {R : Type u} [Ring R]
 def jacobson (I : TwoSidedIdeal R) : TwoSidedIdeal R :=
   TwoSidedIdeal.ofIdeal (asIdeal I).jacobson (Ideal.jacobson_mul_mem_right <| I.mul_mem_right _ _)
 
-lemma jacobson_asIdeal (I : TwoSidedIdeal R) : asIdeal I.jacobson = (asIdeal I).jacobson := by
+lemma asIdeal_jacobson (I : TwoSidedIdeal R) : asIdeal I.jacobson = (asIdeal I).jacobson := by
   ext; simp [jacobson]
 
 end TwoSidedIdeal

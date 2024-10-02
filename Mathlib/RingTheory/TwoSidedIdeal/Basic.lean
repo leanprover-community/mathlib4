@@ -157,16 +157,16 @@ def mk' (carrier : Set R)
         exact add_mem h1 h2 }
 
 @[simp]
-lemma mem_mk' (carrier : Set R) (h₁ h₂ h₃ h₄ h₅) (x : R) :
-    x ∈ mk' carrier h₁ h₂ h₃ h₄ h₅ ↔ x ∈ carrier := by
+lemma mem_mk' (carrier : Set R) (zero_mem add_mem neg_mem mul_mem_left mul_mem_right) (x : R) :
+    x ∈ mk' carrier zero_mem add_mem neg_mem mul_mem_left mul_mem_right ↔ x ∈ carrier := by
   rw [mem_iff]
   simp [mk']
 
 set_option linter.docPrime false in
 @[simp]
-lemma coe_mk' (carrier : Set R) (h₁ h₂ h₃ h₄ h₅) :
-    (mk' carrier h₁ h₂ h₃ h₄ h₅ : Set R) = carrier :=
-  Set.ext <| mem_mk' carrier h₁ h₂ h₃ h₄ h₅
+lemma coe_mk' (carrier : Set R) (zero_mem add_mem neg_mem mul_mem_left mul_mem_right) :
+    (mk' carrier zero_mem add_mem neg_mem mul_mem_left mul_mem_right : Set R) = carrier :=
+  Set.ext <| mem_mk' carrier zero_mem add_mem neg_mem mul_mem_left mul_mem_right
 
 instance : SMulMemClass (TwoSidedIdeal R) R R where
   smul_mem _ _ h := TwoSidedIdeal.mul_mem_left _ _ _ h
