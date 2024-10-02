@@ -3,6 +3,7 @@ import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.Linter.GlobalAttributeIn
 -- This file imports Batteries.Tactic.Lint, where the `env_linter` attribute is defined.
 import Mathlib.Tactic.Linter.Lint
+import Mathlib.Tactic.Linter.Multigoal
 import Mathlib.Tactic.Linter.OldObtain
 import Mathlib.Tactic.Linter.RefineLinter
 import Mathlib.Tactic.Linter.UnusedTactic
