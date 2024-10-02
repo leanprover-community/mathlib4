@@ -86,6 +86,8 @@ lemma charmatrix_fromBlocks :
   simp only [charmatrix]
   ext (i|i) (j|j) : 2 <;> simp [diagonal]
 
+-- TODO: importing block triangular here is somewhat expensive, if more lemmas about it are added
+-- to this file, it may be worth extracting things out to Charpoly/Block.lean
 @[simp]
 lemma charmatrix_blockTriangular_iff {α : Type*} [Preorder α] {M : Matrix n n R} {b : n → α} :
     M.charmatrix.BlockTriangular b ↔ M.BlockTriangular b := by
