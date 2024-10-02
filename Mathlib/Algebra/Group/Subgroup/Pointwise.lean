@@ -392,6 +392,13 @@ theorem Normal.conjAct {G : Type*} [Group G] {H : Subgroup G} (hH : H.Normal) (g
 theorem smul_normal (g : G) (H : Subgroup G) [h : Normal H] : MulAut.conj g • H = H :=
   h.conjAct g
 
+theorem normalCore_eq_iInf_conjAct (H : Subgroup G) :
+    H.normalCore = ⨅ (g : ConjAct G), g • H := by
+  ext g
+  simp only [Subgroup.normalCore, Subgroup.mem_iInf, Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
+  refine ⟨fun h x ↦ h x⁻¹, fun h x ↦ ?_⟩
+  simpa only [ConjAct.toConjAct_inv, inv_inv] using h x⁻¹
+
 end Group
 
 section GroupWithZero

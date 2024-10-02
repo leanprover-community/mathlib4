@@ -250,22 +250,22 @@ variable (K) in
 /-- The set of images by `mixedEmbedding` of algebraic integers of `K` contained in the
 fundamental cone. -/
 def integralPoint : Set (mixedSpace K) :=
-  fundamentalCone K ∩ (mixedEmbedding.integerLattice K)
+  fundamentalCone K ∩ mixedEmbedding.integerLattice K
 
 theorem mem_integralPoint {a : mixedSpace K} :
-    a ∈ integralPoint K ↔ a ∈ fundamentalCone K ∧ ∃ x : (𝓞 K), mixedEmbedding K x = a:= by
+    a ∈ integralPoint K ↔ a ∈ fundamentalCone K ∧ ∃ x : 𝓞 K, mixedEmbedding K x = a := by
   simp only [integralPoint, Set.mem_inter_iff, SetLike.mem_coe, LinearMap.mem_range,
     AlgHom.toLinearMap_apply, RingHom.toIntAlgHom_coe, RingHom.coe_comp, Function.comp_apply]
 
 /-- If `a` is an integral point, then there is a *unique* algebraic integer in `𝓞 K` such
 that `mixedEmbedding K x = a`. -/
 theorem exists_unique_preimage_of_integralPoint {a : mixedSpace K} (ha : a ∈ integralPoint K) :
-    ∃! x : (𝓞 K), mixedEmbedding K x = a := by
+    ∃! x : 𝓞 K, mixedEmbedding K x = a := by
   obtain ⟨_, ⟨x, rfl⟩⟩ := mem_integralPoint.mp ha
   refine Function.Injective.existsUnique_of_mem_range ?_ (Set.mem_range_self x)
   exact (mixedEmbedding_injective K).comp RingOfIntegers.coe_injective
 
-theorem integralPoint_ne_zero (a : integralPoint K) :  (a : mixedSpace K) ≠ 0 := by
+theorem integralPoint_ne_zero (a : integralPoint K) : (a : mixedSpace K) ≠ 0 := by
   by_contra!
   exact a.prop.1.2 (this.symm ▸ mixedEmbedding.norm.map_zero')
 

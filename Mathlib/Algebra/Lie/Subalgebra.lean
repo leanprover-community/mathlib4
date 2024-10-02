@@ -224,7 +224,7 @@ variable [Module R M]
 `L`, we may regard `M` as a Lie module of `L'` by restriction. -/
 instance lieModule [LieModule R L M] : LieModule R L' M where
   smul_lie t x m := by
-    rw [coe_bracket_of_module]; erw [smul_lie]; simp only [coe_bracket_of_module]
+    rw [coe_bracket_of_module, Submodule.coe_smul_of_tower, smul_lie, coe_bracket_of_module]
   lie_smul t x m := by simp only [coe_bracket_of_module, lie_smul]
 
 /-- An `L`-equivariant map of Lie modules `M → N` is `L'`-equivariant for any Lie subalgebra

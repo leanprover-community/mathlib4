@@ -331,29 +331,34 @@ section
 variable (𝕜 E)
 
 /-- The identity formal multilinear series, with all coefficients equal to `0` except for `n = 1`
-where it is (the continuous multilinear version of) the identity. -/
-def id : FormalMultilinearSeries 𝕜 E E
-  | 0 => 0
+where it is (the continuous multilinear version of) the identity. We allow an arbitrary
+constant coefficient `x`. -/
+def id (x : E) : FormalMultilinearSeries 𝕜 E E
+  | 0 => ContinuousMultilinearMap.uncurry0 𝕜 _ x
   | 1 => (continuousMultilinearCurryFin1 𝕜 E E).symm (ContinuousLinearMap.id 𝕜 E)
   | _ => 0
 
+@[simp] theorem id_apply_zero (x : E) (v : Fin 0 → E) :
+    (FormalMultilinearSeries.id 𝕜 E x) 0 v = x := rfl
+
 /-- The first coefficient of `id 𝕜 E` is the identity. -/
 @[simp]
-theorem id_apply_one (v : Fin 1 → E) : (FormalMultilinearSeries.id 𝕜 E) 1 v = v 0 :=
+theorem id_apply_one (x : E) (v : Fin 1 → E) : (FormalMultilinearSeries.id 𝕜 E x) 1 v = v 0 :=
   rfl
 
 /-- The `n`th coefficient of `id 𝕜 E` is the identity when `n = 1`. We state this in a dependent
 way, as it will often appear in this form. -/
-theorem id_apply_one' {n : ℕ} (h : n = 1) (v : Fin n → E) :
-    (id 𝕜 E) n v = v ⟨0, h.symm ▸ zero_lt_one⟩ := by
+theorem id_apply_one' (x : E) {n : ℕ} (h : n = 1) (v : Fin n → E) :
+    (id 𝕜 E x) n v = v ⟨0, h.symm ▸ zero_lt_one⟩ := by
   subst n
   apply id_apply_one
 
 /-- For `n ≠ 1`, the `n`-th coefficient of `id 𝕜 E` is zero, by definition. -/
 @[simp]
-theorem id_apply_ne_one {n : ℕ} (h : n ≠ 1) : (FormalMultilinearSeries.id 𝕜 E) n = 0 := by
+theorem id_apply_of_one_lt (x : E) {n : ℕ} (h : 1 < n) :
+    (FormalMultilinearSeries.id 𝕜 E x) n = 0 := by
   cases' n with n
-  · rfl
+  · contradiction
   · cases n
     · contradiction
     · rfl
@@ -361,11 +366,11 @@ theorem id_apply_ne_one {n : ℕ} (h : n ≠ 1) : (FormalMultilinearSeries.id �
 end
 
 @[simp]
-theorem comp_id (p : FormalMultilinearSeries 𝕜 E F) : p.comp (id 𝕜 E) = p := by
+theorem comp_id (p : FormalMultilinearSeries 𝕜 E F) (x : E) : p.comp (id 𝕜 E x) = p := by
   ext1 n
   dsimp [FormalMultilinearSeries.comp]
   rw [Finset.sum_eq_single (Composition.ones n)]
-  · show compAlongComposition p (id 𝕜 E) (Composition.ones n) = p n
+  · show compAlongComposition p (id 𝕜 E x) (Composition.ones n) = p n
     ext v
     rw [compAlongComposition_apply]
     apply p.congr (Composition.ones_length n)
@@ -375,49 +380,59 @@ theorem comp_id (p : FormalMultilinearSeries 𝕜 E F) : p.comp (id 𝕜 E) = p 
     rw [Fin.ext_iff, Fin.coe_castLE, Fin.val_mk]
   · show
     ∀ b : Composition n,
-      b ∈ Finset.univ → b ≠ Composition.ones n → compAlongComposition p (id 𝕜 E) b = 0
+      b ∈ Finset.univ → b ≠ Composition.ones n → compAlongComposition p (id 𝕜 E x) b = 0
     intro b _ hb
     obtain ⟨k, hk, lt_k⟩ : ∃ (k : ℕ), k ∈ Composition.blocks b ∧ 1 < k :=
       Composition.ne_ones_iff.1 hb
     obtain ⟨i, hi⟩ : ∃ (i : Fin b.blocks.length), b.blocks[i] = k :=
       List.get_of_mem hk
-
     let j : Fin b.length := ⟨i.val, b.blocks_length ▸ i.prop⟩
     have A : 1 < b.blocksFun j := by convert lt_k
     ext v
     rw [compAlongComposition_apply, ContinuousMultilinearMap.zero_apply]
     apply ContinuousMultilinearMap.map_coord_zero _ j
     dsimp [applyComposition]
-    rw [id_apply_ne_one _ _ (ne_of_gt A)]
+    rw [id_apply_of_one_lt _ _ _ A]
     rfl
   · simp
 
 @[simp]
-theorem id_comp (p : FormalMultilinearSeries 𝕜 E F) (h : p 0 = 0) : (id 𝕜 F).comp p = p := by
+theorem id_comp (p : FormalMultilinearSeries 𝕜 E F) (v0 : Fin 0 → E) :
+    (id 𝕜 F (p 0 v0)).comp p = p := by
   ext1 n
   by_cases hn : n = 0
-  · rw [hn, h]
+  · rw [hn]
     ext v
-    rw [comp_coeff_zero', id_apply_ne_one _ _ zero_ne_one]
-    rfl
+    simp only [comp_coeff_zero', id_apply_zero]
+    congr with i
+    exact i.elim0
   · dsimp [FormalMultilinearSeries.comp]
     have n_pos : 0 < n := bot_lt_iff_ne_bot.mpr hn
     rw [Finset.sum_eq_single (Composition.single n n_pos)]
-    · show compAlongComposition (id 𝕜 F) p (Composition.single n n_pos) = p n
+    · show compAlongComposition (id 𝕜 F (p 0 v0)) p (Composition.single n n_pos) = p n
       ext v
-      rw [compAlongComposition_apply, id_apply_one' _ _ (Composition.single_length n_pos)]
+      rw [compAlongComposition_apply, id_apply_one' _ _ _ (Composition.single_length n_pos)]
       dsimp [applyComposition]
       refine p.congr rfl fun i him hin => congr_arg v <| ?_
       ext; simp
     · show
-      ∀ b : Composition n,
-        b ∈ Finset.univ → b ≠ Composition.single n n_pos → compAlongComposition (id 𝕜 F) p b = 0
+      ∀ b : Composition n, b ∈ Finset.univ → b ≠ Composition.single n n_pos →
+        compAlongComposition (id 𝕜 F (p 0 v0)) p b = 0
       intro b _ hb
-      have A : b.length ≠ 1 := by simpa [Composition.eq_single_iff_length] using hb
+      have A : 1 < b.length := by
+        have : b.length ≠ 1 := by simpa [Composition.eq_single_iff_length] using hb
+        have : 0 < b.length := Composition.length_pos_of_pos b n_pos
+        omega
       ext v
-      rw [compAlongComposition_apply, id_apply_ne_one _ _ A]
+      rw [compAlongComposition_apply, id_apply_of_one_lt _ _ _ A]
       rfl
     · simp
+
+/-- Variant of `id_comp` in which the zero coefficient is given by an equality hypothesis instead
+of a definitional equality. Useful for rewriting or simplifying out in some situations. -/
+theorem id_comp' (p : FormalMultilinearSeries 𝕜 E F) (x : F) (v0 : Fin 0 → E) (h : x = p 0 v0) :
+    (id 𝕜 F x).comp p = p := by
+  simp [h]
 
 /-! ### Summability properties of the composition of formal power series -/
 
@@ -634,11 +649,12 @@ theorem compChangeOfVariables_sum {α : Type*} [AddCommMonoid α] (m M N : ℕ)
 
 /-- The auxiliary set corresponding to the composition of partial sums asymptotically contains
 all possible compositions. -/
-theorem compPartialSumTarget_tendsto_atTop :
-    Tendsto (fun N => compPartialSumTarget 0 N N) atTop atTop := by
+theorem compPartialSumTarget_tendsto_prod_atTop :
+    Tendsto (fun (p : ℕ × ℕ) => compPartialSumTarget 0 p.1 p.2) atTop atTop := by
   apply Monotone.tendsto_atTop_finset
   · intro m n hmn a ha
-    have : ∀ i, i < m → i < n := fun i hi => lt_of_lt_of_le hi hmn
+    have : ∀ i, i < m.1 → i < n.1 := fun i hi => lt_of_lt_of_le hi hmn.1
+    have : ∀ i, i < m.2 → i < n.2 := fun i hi => lt_of_lt_of_le hi hmn.2
     aesop
   · rintro ⟨n, c⟩
     simp only [mem_compPartialSumTarget_iff]
@@ -650,29 +666,35 @@ theorem compPartialSumTarget_tendsto_atTop :
     apply hn
     simp only [Finset.mem_image_of_mem, Finset.mem_coe, Finset.mem_univ]
 
+/-- The auxiliary set corresponding to the composition of partial sums asymptotically contains
+all possible compositions. -/
+theorem compPartialSumTarget_tendsto_atTop :
+    Tendsto (fun N => compPartialSumTarget 0 N N) atTop atTop := by
+  apply Tendsto.comp compPartialSumTarget_tendsto_prod_atTop tendsto_atTop_diagonal
+
 /-- Composing the partial sums of two multilinear series coincides with the sum over all
 compositions in `compPartialSumTarget 0 N N`. This is precisely the motivation for the
 definition of `compPartialSumTarget`. -/
 theorem comp_partialSum (q : FormalMultilinearSeries 𝕜 F G) (p : FormalMultilinearSeries 𝕜 E F)
-    (N : ℕ) (z : E) :
-    q.partialSum N (∑ i ∈ Finset.Ico 1 N, p i fun _j => z) =
-      ∑ i ∈ compPartialSumTarget 0 N N, q.compAlongComposition p i.2 fun _j => z := by
+    (M N : ℕ) (z : E) :
+    q.partialSum M (∑ i ∈ Finset.Ico 1 N, p i fun _j => z) =
+      ∑ i ∈ compPartialSumTarget 0 M N, q.compAlongComposition p i.2 fun _j => z := by
   -- we expand the composition, using the multilinearity of `q` to expand along each coordinate.
   suffices H :
-    (∑ n ∈ Finset.range N,
+    (∑ n ∈ Finset.range M,
         ∑ r ∈ Fintype.piFinset fun i : Fin n => Finset.Ico 1 N,
           q n fun i : Fin n => p (r i) fun _j => z) =
-      ∑ i ∈ compPartialSumTarget 0 N N, q.compAlongComposition p i.2 fun _j => z by
+      ∑ i ∈ compPartialSumTarget 0 M N, q.compAlongComposition p i.2 fun _j => z by
     simpa only [FormalMultilinearSeries.partialSum, ContinuousMultilinearMap.map_sum_finset] using H
   -- rewrite the first sum as a big sum over a sigma type, in the finset
   -- `compPartialSumTarget 0 N N`
   rw [Finset.range_eq_Ico, Finset.sum_sigma']
   -- use `compChangeOfVariables_sum`, saying that this change of variables respects sums
-  apply compChangeOfVariables_sum 0 N N
+  apply compChangeOfVariables_sum 0 M N
   rintro ⟨k, blocks_fun⟩ H
-  apply congr _ (compChangeOfVariables_length 0 N N H).symm
+  apply congr _ (compChangeOfVariables_length 0 M N H).symm
   intros
-  rw [← compChangeOfVariables_blocksFun 0 N N H]
+  rw [← compChangeOfVariables_blocksFun 0 M N H]
   rfl
 
 end FormalMultilinearSeries
