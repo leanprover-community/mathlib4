@@ -85,7 +85,6 @@ noncomputable def tensorDistrib :
       (QuadraticMap.associated : QuadraticForm A M₁ →ₗ[A] BilinForm A M₁)
       (QuadraticMap.associated : QuadraticForm R M₂ →ₗ[R] BilinForm R M₂)
   toQ ∘ₗ tmulB ∘ₗ toB
---
 
 -- TODO: make the RHS `MulOpposite.op (Q₂ m₂) • Q₁ m₁` so that this has a nicer defeq for
 -- `R = A` of `Q₁ m₁ * Q₂ m₂`.
