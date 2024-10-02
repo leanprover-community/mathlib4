@@ -3,7 +3,7 @@ Copyright (c) 2024 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine, Pietro Monticone
 -/
-import Mathlib.Dynamics.TopologicalEntropy.NetEntropy
+import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
 
 /-!
 # Topological entropy of the image of a set under a semiconjugacy
@@ -33,6 +33,10 @@ namespace Dynamics
 
 open Function Set Uniformity UniformSpace
 
+lemma test {X Y : Type*} (f : X → Y) {V : Set (Y × Y)} {x : X} :
+    f ⁻¹' ball (f x) V = ball x (Prod.map f f ⁻¹' V) :=
+  ext fun x ↦ by simp only [ball, mem_preimage, Prod.map_apply]
+
 variable {X Y : Type*} {S : X → X} {T : Y → Y} {φ : X → Y}
 
 lemma IsDynCoverOf.preimage (h : Semiconj φ S T) {F : Set X} {V : Set (Y × Y)}
@@ -40,30 +44,21 @@ lemma IsDynCoverOf.preimage (h : Semiconj φ S T) {F : Set X} {V : Set (Y × Y)}
     ∃ s : Finset X, IsDynCoverOf S F ((Prod.map φ φ) ⁻¹' (V ○ V)) n s ∧ s.card ≤ t.card := by
   classical
   rcases isEmpty_or_nonempty X with _ | _
-  · use ∅
-    simp [eq_empty_of_isEmpty F]
+  · exact ⟨∅, eq_empty_of_isEmpty F ▸ ⟨isDynCoverOf_empty, Finset.card_empty ▸ zero_le t.card⟩⟩
   rcases h'.nonempty_inter with ⟨s, s_cover, s_card, s_inter⟩
-  replace s_inter := fun (x : Y) (h : x ∈ s) ↦ nonempty_def.1 (s_inter x h)
-  choose! g gs_cover using s_inter
-  have (y : Y) (a : y ∈ φ '' F) : ∃ x ∈ F, φ x = y := a
-  choose! f f_section using this
-  use Finset.image (f  ∘ g) s
+  choose! g gs_cover using fun (x : Y) (h : x ∈ s) ↦ nonempty_def.1 (s_inter x h)
+  choose! f f_section using fun (y : Y) (a : y ∈ φ '' F) ↦ a
+  use Finset.image (f ∘ g) s
   apply And.intro _ (Finset.card_image_le.trans s_card)
   simp only [IsDynCoverOf, Finset.mem_coe, image_subset_iff, preimage_iUnion₂] at s_cover ⊢
   apply s_cover.trans
   rw [← Semiconj.preimage_dynEntourage h (V ○ V) n, Finset.set_biUnion_finset_image]
   refine iUnion₂_mono fun i i_s ↦ ?_
-  specialize s_cover (mem_image_of_mem φ x_F)
-  simp only [Finset.mem_coe, mem_iUnion, exists_prop] at s_cover
-  rcases s_cover with ⟨y, y_s, hy⟩
-  use y, y_s
-  specialize gs_cover y y_s
-  rw [(f_section (g y) gs_cover.2).2]
-  exact (dynEntourage_comp_subset T V V n)
-    (mem_comp_of_mem_ball (V_symm.dynEntourage T n) gs_cover.1 hy)
-
--- Finir preuve
--- Utiliser une seule fois AOC ?
+  rw [comp_apply, ← test, (f_section (g i) (gs_cover i i_s).2).2]
+  refine preimage_mono fun x x_i ↦ mem_ball_dynEntourage_comp T n V_symm x (g i) ⟨i, ?_⟩
+  replace gs_cover := (gs_cover i i_s).1
+  rw [mem_ball_symmetry (V_symm.dynEntourage T n)] at x_i gs_cover
+  exact ⟨x_i, gs_cover⟩
 
 lemma IsDynCoverOf.image (h : Semiconj φ S T) {F : Set X} {V : Set (Y × Y)} {n : ℕ} {s : Finset X}
     (h' : IsDynCoverOf S F ((Prod.map φ φ) ⁻¹' V) n s) :
@@ -78,8 +73,6 @@ lemma IsDynCoverOf.image (h : Semiconj φ S T) {F : Set X} {V : Set (Y × Y)} {n
   rw [← Semiconj.preimage_dynEntourage h V n]
   ext x
   simp only [ball, mem_preimage, Prod.map_apply]
-
--- TODO : check DynEntourage file and tweak the lemma ?
 
 lemma le_coverMincard_image (h : Semiconj φ S T) (F : Set X) {V : Set (Y × Y)}
     (V_symm : SymmetricRel V) (n : ℕ) :
@@ -138,7 +131,7 @@ theorem coverEntropy_image (u : UniformSpace Y) {S : X → X} {T : Y → Y} {φ 
   · refine iSup₂_le fun V V_uni ↦ (coverEntropyEntourage_image_le h F V).trans ?_
     apply @coverEntropyEntourage_le_coverEntropy X (comap φ u) S F
     rw [uniformity_comap φ, mem_comap]
-    exact ⟨V, V_uni, Set.Subset.refl _⟩
+    exact ⟨V, V_uni, Subset.refl _⟩
   · refine iSup₂_le (fun U U_uni ↦ ?_)
     simp only [uniformity_comap φ, mem_comap] at U_uni
     rcases U_uni with ⟨V, V_uni, V_sub⟩
@@ -154,7 +147,7 @@ theorem coverEntropyInf_image (u : UniformSpace Y) {S : X → X} {T : Y → Y} {
   · refine iSup₂_le fun V V_uni ↦ (coverEntropyInfEntourage_image_le h F V).trans ?_
     apply @coverEntropyInfEntourage_le_coverEntropyInf X (comap φ u) S F
     rw [uniformity_comap φ, mem_comap]
-    exact ⟨V, V_uni, Set.Subset.refl _⟩
+    exact ⟨V, V_uni, Subset.refl _⟩
   · refine iSup₂_le (fun U U_uni ↦ ?_)
     simp only [uniformity_comap φ, mem_comap] at U_uni
     rcases U_uni with ⟨V, V_uni, V_sub⟩
