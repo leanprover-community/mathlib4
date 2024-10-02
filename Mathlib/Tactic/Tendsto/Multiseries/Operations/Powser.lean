@@ -1,7 +1,7 @@
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.Analytic.Constructions
 import Mathlib.Tactic.Tendsto.Multiseries.BasicNew
-import Mathlib.Tactic.Tendsto.Multiseries.OperationsNew
+import Mathlib.Tactic.Tendsto.Multiseries.Operations.Mul
 import Mathlib.Tactic.Tendsto.Multiseries.TrimmingNew
 
 set_option linter.unusedVariables false
@@ -80,8 +80,8 @@ theorem tail_analytic {s_hd : ℝ} {s_tl : LazySeries}
 noncomputable def apply (s : LazySeries) {basis : Basis}
     (ms : PreMS basis) : PreMS basis :=
   match basis with
-  | [] => default -- We can not substitute constant (and any other PreMS with nonnegative
-                  -- leading exponent to series
+  | [] => default -- We can not substitute constant (and PreMS with nonnegative
+                  -- leading exponent) to series
   | basis_hd :: basis_tl =>
     let T := PreMS (basis_hd :: basis_tl) × LazySeries
     let g : T → CoList.OutType (PreMS (basis_hd :: basis_tl)) T := fun (cur_power, cur_s) =>
@@ -95,13 +95,14 @@ noncomputable def apply (s : LazySeries) {basis : Basis}
 
 #check AnalyticAt
 
+@[simp]
 theorem apply_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
     apply .nil ms = CoList.nil := by
   sorry
 
+@[simp]
 theorem apply_cons {s_hd : ℝ} {s_tl : LazySeries}
-    {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
-    (h_neg : ms.hasNegativeLeading) (h_trimmed : ms.isTrimmed) :
+    {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
     (apply (.cons s_hd s_tl) ms) = .cons (0, PreMS.const s_hd _) ((apply s_tl ms).mul ms) := by
   -- simp [apply]
   -- conv =>
@@ -109,6 +110,15 @@ theorem apply_cons {s_hd : ℝ} {s_tl : LazySeries}
   --   rw [CoList.corec_cons _ _ (by rfl)]
   --   simp
   sorry
+
+@[simp]
+theorem apply_cons_leadingExp {s_hd : ℝ} {s_tl : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
+    (apply (.cons s_hd s_tl) ms).leadingExp = 0 := by
+  simp [leadingExp]
+
+theorem apply_leadingExp_le_zero {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} :
+    (apply s ms).leadingExp ≤ 0 := by
+  apply s.casesOn <;> simp [leadingExp]
 
 theorem apply_isApproximation {s : LazySeries} (h_analytic : AnalyticAt ℝ s.toFun 0) {basis : Basis}
     {ms : PreMS basis}
@@ -120,12 +130,13 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : AnalyticAt ℝ s.to
   cases basis with
   | nil => cases h_neg
   | cons basis_hd basis_tl =>
+    simp [hasNegativeLeading] at h_neg
     let motive : (F : ℝ → ℝ) → (ms : PreMS (basis_hd :: basis_tl)) → Prop := fun F' ms' =>
       ∃ (s : LazySeries), (AnalyticAt ℝ s.toFun 0) ∧
         ∃ X Y fX fY, F' =ᶠ[atTop] fX + fY * s.toFun ∘ F ∧ ms' = PreMS.add X ((s.apply ms).mul Y) ∧
         X.wellOrdered ∧ X.isApproximation fX (basis_hd :: basis_tl) ∧
         Y.wellOrdered ∧ Y.isApproximation fY (basis_hd :: basis_tl)
-    apply isApproximation_coind motive
+    apply isApproximation.coind motive
     · intro f ms' ih
       simp [motive] at ih
       obtain ⟨s, h_analytic, ⟨X, Y, fX, fY, hf_eq, h_ms_eq, hX_wo, hX_approx, hY_wo, hY_approx⟩⟩ := ih
@@ -155,7 +166,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : AnalyticAt ℝ s.to
           have hY_approx' := isApproximation_cons hY_approx
           obtain ⟨YC, hY_coef, hY_comp, hY_tl⟩ := hY_approx'
           have hY_wo' := wellOrdered_cons hY_wo
-          obtain ⟨hY_coef_wo, hY_tl_wo, hY_comp_wo⟩ := hY_wo'
+          obtain ⟨hY_coef_wo, hY_comp_wo, hY_tl_wo⟩ := hY_wo'
           revert h_ms_eq hf_eq h_analytic
           apply s.casesOn
           · intro h_analytic hf_eq h_ms_eq
@@ -166,9 +177,9 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : AnalyticAt ℝ s.to
               simpa [toFun_nil]
           · intro s_hd s_tl h_analytic hf_eq h_ms_eq
             right
-            simp at h_ms_eq
-            rw [apply_cons h_neg h_trimmed] at h_ms_eq
-            simp only [mul_cons_cons, mul_assoc, zero_add] at h_ms_eq
+            simp [-apply_cons] at h_ms_eq -- TODO: rewrite
+            rw [apply_cons] at h_ms_eq
+            simp only [mul_cons_cons, mul_assoc', zero_add] at h_ms_eq
             use Y_deg
             use (const s_hd basis_tl).mul Y_coef
             use (mulMonomial Y_tl (const s_hd basis_tl) 0).add ((apply s_tl ms).mul (ms.mul (CoList.cons (Y_deg, Y_coef) Y_tl)))
@@ -176,7 +187,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : AnalyticAt ℝ s.to
             constructor
             · exact h_ms_eq
             · constructor
-              · apply mul_isApproximation
+              · apply mul_isApproximation (MS.wellOrderedBasis_tail h_basis)
                 · apply const_isApproximation_const
                   simp [MS.wellOrderedBasis] at h_basis
                   exact h_basis.right.left
@@ -211,15 +222,16 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : AnalyticAt ℝ s.to
                   constructor
                   · rfl
                   constructor
-                  · exact mulMonomial_wellOrdered hY_tl_wo
+                  · apply mulMonomial_wellOrdered hY_tl_wo
+                    exact const_wellOrdered
                   constructor
                   · simp [MS.wellOrderedBasis] at h_basis
-                    have := mulMonomial_isApproximation Y_tl (const s_hd basis_tl) 0 hY_tl
+                    have := mulMonomial_isApproximation h_basis (m_coef := const s_hd basis_tl) (m_deg := 0) hY_tl
                       (const_isApproximation_const h_basis.right.left)
                     simpa using this
                   constructor
                   · apply mul_wellOrdered h_wo hY_wo
-                  apply mul_isApproximation
+                  apply mul_isApproximation h_basis
                   · exact h_approx
                   · exact hY_approx
       · intro (X_deg, X_coef) X_tl h_ms_eq hX_wo hX_approx
@@ -227,7 +239,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : AnalyticAt ℝ s.to
         have hX_approx' := isApproximation_cons hX_approx
         obtain ⟨XC, hX_coef, hX_comp, hX_tl⟩ := hX_approx'
         have hX_wo' := wellOrdered_cons hX_wo
-        obtain ⟨hX_coef_wo, hX_tl_wo, hX_comp_wo⟩ := hX_wo'
+        obtain ⟨hX_coef_wo, hX_comp_wo, hX_tl_wo⟩ := hX_wo'
         revert h_ms_eq hY_wo hY_approx
         apply Y.casesOn
         · intro _ hY_approx h_ms_eq
@@ -285,7 +297,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : AnalyticAt ℝ s.to
           have hY_approx' := isApproximation_cons hY_approx
           obtain ⟨YC, hY_coef, hY_comp, hY_tl⟩ := hY_approx'
           have hY_wo' := wellOrdered_cons hY_wo
-          obtain ⟨hY_coef_wo, hY_tl_wo, hY_comp_wo⟩ := hY_wo'
+          obtain ⟨hY_coef_wo, hY_comp_wo, hY_tl_wo⟩ := hY_wo'
           revert h_ms_eq hf_eq h_analytic
           apply s.casesOn
           · intro h_analytic hf_eq h_ms_eq
@@ -340,7 +352,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : AnalyticAt ℝ s.to
               · apply isApproximation.nil
                 rfl
           · intro s_hd s_tl h_analytic hf_eq h_ms_eq
-            simp only [apply_cons h_neg h_trimmed, zero_add, mul_assoc, mul_cons_cons] at h_ms_eq
+            simp only [apply_cons, zero_add, mul_assoc, mul_cons_cons] at h_ms_eq
             have h_out : ms'.out = ?_ := by simp only [h_ms_eq]; exact add_out_eq
             simp [add_out] at h_out
             split_ifs at h_out with h1 h2
@@ -375,10 +387,19 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : AnalyticAt ℝ s.to
                   ((apply (CoList.cons s_hd s_tl) ms).mul (CoList.cons (Y_deg, Y_coef) Y_tl))) := by
                 rw [h_ms_eq]
                 congr
-                simp only [apply_cons h_neg h_trimmed, mul_cons, mulMonomial_cons,
-                  zero_add, mul_assoc]
+                simp only [apply_cons, mul_cons, mulMonomial_cons,
+                  zero_add, mul_assoc']
                 rw [cons_add]
-                · sorry
+                · simp
+                  conv => lhs; arg 2; arg 2; simp [leadingExp]
+                  conv => rhs; arg 1; rw [← zero_add Y_deg]
+                  rw [WithBot.coe_add, ← add_assoc]
+                  apply WithBot.add_lt_add_right (by simp)
+                  conv => rhs; arg 1; rw [← zero_add 0]
+                  rw [WithBot.coe_add]
+                  apply WithBot.add_lt_add_of_le_of_lt (by simp)
+                  · apply apply_leadingExp_le_zero
+                  · exact h_neg
               use X_tl
               use .cons (Y_deg, Y_coef) Y_tl
               use fun x ↦ fX x - basis_hd x ^ X_deg * XC x
@@ -394,11 +415,18 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : AnalyticAt ℝ s.to
                 apply eventuallyEq_iff_sub.mp
                 exact hf_eq
               constructor
-              · --simp only [cons_add]
-                simp only [apply_cons h_neg h_trimmed, mul_cons, mulMonomial_cons,
-                  zero_add, mul_assoc]
+              · simp
                 rw [cons_add]
-                · sorry
+                · simp
+                  conv => lhs; arg 2; arg 2; simp [leadingExp]
+                  conv => rhs; arg 1; rw [← zero_add Y_deg]
+                  rw [WithBot.coe_add, ← add_assoc]
+                  apply WithBot.add_lt_add_right (by simp)
+                  conv => rhs; arg 1; rw [← zero_add 0]
+                  rw [WithBot.coe_add]
+                  apply WithBot.add_lt_add_of_le_of_lt (by simp)
+                  · apply apply_leadingExp_le_zero
+                  · exact h_neg
               constructor
               · exact hX_tl_wo
               constructor
@@ -416,7 +444,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : AnalyticAt ℝ s.to
               constructor
               · exact h_ms_eq
               constructor
-              · apply mul_isApproximation
+              · apply mul_isApproximation (MS.wellOrderedBasis_tail h_basis)
                 · simp [MS.wellOrderedBasis] at h_basis
                   apply const_isApproximation_const h_basis.right.left
                 · exact hY_coef
@@ -456,12 +484,13 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : AnalyticAt ℝ s.to
                 ring_nf!
                 rfl
               constructor
-              · sorry --rfl
+              · simp [add_assoc']
               constructor
               · apply add_wellOrdered
                 · exact hX_wo
                 apply mulMonomial_wellOrdered
-                exact hY_tl_wo
+                · exact hY_tl_wo
+                · exact const_wellOrdered
               constructor
               · apply add_isApproximation
                 · exact hX_approx
@@ -469,7 +498,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : AnalyticAt ℝ s.to
                     arg 1
                     ext x
                     rw [show s_hd = (fun x ↦ s_hd * (basis_hd x)^(0 : ℝ)) x by simp]
-                  apply mulMonomial_isApproximation
+                  apply mulMonomial_isApproximation h_basis
                   · exact hY_tl
                   · apply const_isApproximation_const
                     simp [MS.wellOrderedBasis] at h_basis
@@ -478,7 +507,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : AnalyticAt ℝ s.to
               · apply mul_wellOrdered
                 · exact h_wo
                 · exact hY_wo
-              · apply mul_isApproximation
+              · apply mul_isApproximation h_basis
                 · exact h_approx
                 · exact hY_approx
             · have h : X_deg = Y_deg := by linarith
@@ -495,7 +524,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : AnalyticAt ℝ s.to
               constructor
               · apply add_isApproximation
                 · exact hX_coef
-                · apply mul_isApproximation
+                · apply mul_isApproximation (MS.wellOrderedBasis_tail h_basis)
                   · apply const_isApproximation_const
                     simp [MS.wellOrderedBasis] at h_basis
                     exact h_basis.right.left
@@ -536,12 +565,13 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : AnalyticAt ℝ s.to
                 ring_nf!
                 rfl
               constructor
-              · sorry --rfl
+              · simp [add_assoc']
               constructor
               · apply add_wellOrdered
                 · exact hX_tl_wo
                 · apply mulMonomial_wellOrdered
-                  exact hY_tl_wo
+                  · exact hY_tl_wo
+                  · exact const_wellOrdered
               constructor
               · apply add_isApproximation
                 · exact hX_tl
@@ -549,7 +579,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : AnalyticAt ℝ s.to
                     arg 1
                     ext x
                     rw [show s_hd = (fun x ↦ s_hd * (basis_hd x)^(0 : ℝ)) x by simp]
-                  apply mulMonomial_isApproximation
+                  apply mulMonomial_isApproximation h_basis
                   · exact hY_tl
                   · apply const_isApproximation_const
                     simp [MS.wellOrderedBasis] at h_basis
@@ -558,7 +588,7 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : AnalyticAt ℝ s.to
               · apply mul_wellOrdered
                 · exact h_wo
                 · exact hY_wo
-              · apply mul_isApproximation
+              · apply mul_isApproximation h_basis
                 · exact h_approx
                 · exact hY_approx
     · simp [motive]
@@ -580,166 +610,6 @@ theorem apply_isApproximation {s : LazySeries} (h_analytic : AnalyticAt ℝ s.to
       · apply one_isApproximation_one h_basis
 
 end LazySeries
-
-open LazySeries
-
--- 1/(1-t), i.e. ones
-def LazySeries.inv' : LazySeries :=
-  let g : Unit → CoList.OutType ℝ Unit := fun () => .cons 1 ()
-  CoList.corec g ()
-
--- 1/(1+t), i.e. [1, -1, 1, -1, ...]
-def LazySeries.inv : LazySeries :=
-  let g : Bool → CoList.OutType ℝ Bool := fun b => .cons (b.casesOn 1 (-1)) !b
-  CoList.corec g false
-
-theorem LazySeries.inv'_eq_cons_self : LazySeries.inv' = .cons 1 LazySeries.inv' := by
-  simp [inv']
-  conv =>
-    lhs
-    rw [CoList.corec_cons (by rfl)]
-
-example (x : ℝ) (hx : |x| < 1) : LazySeries.inv'.toFun x = 1/(1 - x) := by
-  simp [toFun]
-  have h_inv' : inv'.toFormalMultilinearSeries = formalMultilinearSeries_geometric ℝ ℝ := by
-    have h_inv'_get : ∀ n, inv'.get n = .some 1 := by
-      intro n
-      induction n with
-      | zero =>
-        rw [inv'_eq_cons_self]
-        simp
-      | succ m ih =>
-        simp at ih ⊢
-        rw [inv'_eq_cons_self]
-        simpa
-    ext n f
-    simp only [toFormalMultilinearSeries, h_inv'_get, one_smul, formalMultilinearSeries_geometric]
-  rw [h_inv']
-  have := (hasFPowerSeriesOnBall_inv_one_sub ℝ ℝ).hasSum (show x ∈ _ by
-    apply EMetric.mem_ball.mpr
-    simp [edist, PseudoMetricSpace.edist]
-    exact hx
-  )
-  simp at this
-  simp [FormalMultilinearSeries.sum]
-  exact HasSum.tsum_eq this
-
-#eval! LazySeries.inv.take 10
-
-noncomputable def inv {basis : Basis} (ms : PreMS basis) : PreMS basis :=
-  match basis with
-  | [] => ms⁻¹
-  | basis_hd :: basis_tl =>
-    ms.casesOn'
-    (nil := .nil)
-    (cons := fun (deg, coef) tl =>
-      mulMonomial (LazySeries.inv.apply (mulMonomial tl coef.inv (-deg))) coef.inv (-deg)
-    )
-
-theorem inv_toFun (x : ℝ) (hx : |x| < 1) : LazySeries.inv.toFun x = (1 + x)⁻¹ := by
-  sorry
-
-
-theorem inv_analytic : AnalyticAt ℝ (toFun LazySeries.inv) 0 := by
-  sorry
-
-theorem inv_isApproximation {basis : Basis} {F : ℝ → ℝ} {ms : PreMS basis}
-    (h_basis : MS.wellOrderedBasis basis) (h_wo : ms.wellOrdered)
-    (h_trimmed : ms.isTrimmed) (h_approx : ms.isApproximation F basis) : ms.inv.isApproximation (F⁻¹) basis := by
-  cases basis with
-  | nil =>
-    unfold inv
-    simp only [isApproximation] at *
-    apply EventuallyEq.inv h_approx
-  | cons basis_hd basis_tl =>
-    unfold inv
-    revert h_trimmed h_approx
-    apply ms.casesOn
-    · intro h_trimmed h_approx
-      replace h_approx := isApproximation_nil h_approx
-      simp
-      apply isApproximation.nil
-      conv =>
-        rhs
-        ext x
-        simp
-        rw [← inv_zero]
-      apply EventuallyEq.inv h_approx
-    · intro (deg, coef) tl h_trimmed h_approx
-      replace h_trimmed := isTrimmed_cons h_trimmed
-      obtain ⟨h_coef_trimmed, h_ne_zero⟩ := h_trimmed
-      replace h_approx := isApproximation_cons h_approx
-      obtain ⟨C, h_coef, h_comp, h_tl⟩ := h_approx
-      simp only [CoList.casesOn_cons]
-      have hC_ne_zero : ∀ᶠ x in atTop, C x ≠ 0 := by
-
-        apply
-      let X : PreMS (basis_hd :: basis_tl) := mulMonomial tl coef.inv (-deg)
-      let g : ℝ → ℝ := fun x ↦ (C x)⁻¹ * basis_hd x ^ (-deg) * (F x - basis_hd x ^ deg * C x)
-      have hg_tendsto : Tendsto g atTop (nhds 0) := by
-        sorry
-      have hg_lt : ∀ᶠ x in atTop, |g x| < 1 := by
-        have := LinearOrderedAddCommGroup.tendsto_nhds.mp hg_tendsto 1 (by linarith)
-        simpa only [sub_zero] using this
-      have hg : (LazySeries.inv.toFun ∘ g) =ᶠ[atTop] fun x ↦ (1 + g x)⁻¹ := by
-        simp only [EventuallyEq]
-        apply Eventually.mono hg_lt
-        intro x h
-        simp
-        rw [inv_toFun]
-        exact h
-      have hX_approx : X.isApproximation g := by
-        sorry
-      have := apply_isApproximation inv_analytic (h_approx := hX_approx)
-      specialize this h_wo
-      specialize this (by
-        focus
-        sorry -- X has negative leading because of well-order
-      )
-      specialize this (by
-        sorry -- mulMonomial keeps trimmed
-      )
-      replace this := isApproximation_of_EventuallyEq this hg
-      have : F⁻¹ = fun x ↦ (C x)⁻¹ * (basis_hd x)^(-deg) * (1 + g x)⁻¹ := by
-        have h_pos : ∀ x, 0 ≤ basis_hd x := by sorry
-        ext x
-        simp [g]
-        conv =>
-          rhs
-          arg 1
-          arg 2
-          rw [Real.rpow_neg (h_pos _)]
-        rw [← mul_inv, ← mul_inv]
-        congr
-        rw [mul_add]
-        simp
-        conv =>
-        rhs; rhs
-        rw [show C x * basis_hd x ^ deg * ((C x)⁻¹ * basis_hd x ^ (-deg) * (F x - basis_hd x ^ deg * C x)) =
-          C x * basis_hd x ^ deg * (C x)⁻¹ * basis_hd x ^ (-deg) * (F x - basis_hd x ^ deg * C x) by ring]
-        lhs
-        lhs
-        rw [show C x * basis_hd x ^ deg * (C x)⁻¹ = C x * (C x)⁻¹ * basis_hd x ^ deg by ring]
-        rw [mul_inv_cancel₀]
-
-
-
-      unfold Function.comp at this
-      simp at this
-
-      conv at this =>
-        arg 1
-        ext x
-        rw [inv_toFun]
-
-
-
-      apply isApproximation_mul
-
-
-
-
-
 
 end PreMS
 

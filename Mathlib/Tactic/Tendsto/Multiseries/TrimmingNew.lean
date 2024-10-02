@@ -57,12 +57,17 @@ theorem isTrimmed_cons {basis_hd : _} {basis_tl : _} {deg : ℝ} {coef : PreMS b
   · rfl
   · rfl
 
-inductive hasNegativeLeading : {basis : Basis} → (ms : PreMS basis) → Prop
-| nil {basis_hd : ℝ → ℝ} {basis_tl : List (ℝ → ℝ)} :
-  hasNegativeLeading (basis := basis_hd :: basis_tl) .nil
-| cons {basis_hd : ℝ → ℝ} {basis_tl : List (ℝ → ℝ)} {deg : ℝ} {coef : PreMS basis_tl}
-    {tl : PreMS (basis_hd :: basis_tl)} (h : deg < 0) :
-  hasNegativeLeading (basis := basis_hd :: basis_tl) (.cons (deg, coef) tl)
+def hasNegativeLeading {basis : Basis} (ms : PreMS basis) : Prop :=
+  match basis with
+  | [] => False
+  | _ :: _ => ms.leadingExp < 0
+
+-- inductive hasNegativeLeading : {basis : Basis} → (ms : PreMS basis) → Prop
+-- | nil {basis_hd : ℝ → ℝ} {basis_tl : List (ℝ → ℝ)} :
+--   hasNegativeLeading (basis := basis_hd :: basis_tl) .nil
+-- | cons {basis_hd : ℝ → ℝ} {basis_tl : List (ℝ → ℝ)} {deg : ℝ} {coef : PreMS basis_tl}
+--     {tl : PreMS (basis_hd :: basis_tl)} (h : deg < 0) :
+--   hasNegativeLeading (basis := basis_hd :: basis_tl) (.cons (deg, coef) tl)
 
 def isPartiallyTrimmed {basis : Basis} (ms : PreMS basis) : Prop :=
   ms.hasNegativeLeading ∨ ms.isTrimmed
@@ -71,17 +76,21 @@ def isPartiallyTrimmed {basis : Basis} (ms : PreMS basis) : Prop :=
 theorem hasNegativeLeading_tendsto_zero {basis : Basis} {ms : PreMS basis} {F : ℝ → ℝ}
     (h_neg : ms.hasNegativeLeading) (h_approx : ms.isApproximation F basis) :
     Filter.Tendsto F Filter.atTop (nhds 0) := by
-  cases h_neg with
-  | nil =>
-    replace h_approx := isApproximation_nil h_approx
-    apply Filter.Tendsto.congr' h_approx.symm
-    apply tendsto_const_nhds
-  | cons h_deg =>
-    rename_i deg coef tl
-    replace h_approx := isApproximation_cons h_approx
-    obtain ⟨_, _, h_comp, _⟩ := h_approx
-    specialize h_comp 0 (by linarith)
-    simpa using h_comp
+  cases basis with
+  | nil => simp [hasNegativeLeading] at h_neg
+  | cons =>
+    simp [hasNegativeLeading] at h_neg
+    revert h_neg h_approx
+    apply ms.casesOn
+    · intro _ h_approx
+      replace h_approx := isApproximation_nil h_approx
+      apply Filter.Tendsto.congr' h_approx.symm
+      apply tendsto_const_nhds
+    · intro (deg, coef) tl h_neg h_approx
+      simp [leadingExp] at h_neg
+      replace h_approx := isApproximation_cons h_approx
+      obtain ⟨_, _, h_comp, _⟩ := h_approx
+      apply majorated_tendsto_zero_of_neg h_neg h_comp
 
 namespace Trimming
 
@@ -132,7 +141,7 @@ def PreMS.trim {basis : Basis} (ms : PreMS basis) (stepsLeft := maxUnfoldingStep
                 h_wo := by
                   intro h_wo
                   replace h_wo := wellOrdered_cons h_wo
-                  exact tl_trimmed.h_wo h_wo.right.left
+                  exact tl_trimmed.h_wo h_wo.right.right
                 h_approx := by
                   intro F h_approx
                   replace h_approx := isApproximation_cons h_approx
@@ -226,7 +235,7 @@ def PreMS.trim {basis : Basis} (ms : PreMS basis) (stepsLeft := maxUnfoldingStep
                   h_wo := by
                     intro h_wo
                     replace h_wo := wellOrdered_cons h_wo
-                    exact tl_trimmed.h_wo h_wo.right.left
+                    exact tl_trimmed.h_wo h_wo.right.right
                   h_approx := by
                     intro F h_approx
                     replace h_approx := isApproximation_cons h_approx

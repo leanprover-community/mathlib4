@@ -140,7 +140,7 @@ theorem PreMS.IsEquivalent_leadingTerm {basis : Basis} {ms : PreMS basis} {F : �
     · intro (deg, coef) tl h_wo h_approx h_trimmed
       obtain ⟨C, h_coef, h_comp, h_tl⟩ := isApproximation_cons h_approx
       obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := isTrimmed_cons h_trimmed
-      obtain ⟨h_coef_wo, h_tl_wo, h_comp_wo⟩ := wellOrdered_cons h_wo
+      obtain ⟨h_coef_wo, h_comp_wo, h_tl_wo⟩ := wellOrdered_cons h_wo
       simp [MS.wellOrderedBasis] at h_basis
       let coef_ih := coef.IsEquivalent_leadingTerm (F := C) h_coef_wo h_coef h_coef_trimmed
         h_basis.right.left
@@ -157,7 +157,7 @@ theorem PreMS.IsEquivalent_leadingTerm {basis : Basis} {ms : PreMS basis} {F : �
         · intro (tl_deg, tl_coef) tl_tl h_tl h_comp_wo
           replace h_tl := isApproximation_cons h_tl
           obtain ⟨tl_C, h_tl_coef, h_tl_comp, h_tl_tl⟩ := h_tl
-          have : tl_deg < deg := h_comp_wo _ _ _ (by rfl)
+          simp [leadingExp] at h_comp_wo
           let deg' := (deg + tl_deg) / 2
           specialize h_tl_comp deg' (by simp only [deg']; linarith)
           apply IsLittleO.trans h_tl_comp
@@ -232,7 +232,5 @@ def MS.findLimit (ms : MS) (h_basis : MS.wellOrderedBasis ms.basis) :
   let trimmed ← MS.trim ms
   let r ← MS.findLimitTrimmed trimmed.result (trimmed.h_eq_basis ▸ h_basis) trimmed.h_trimmed
   return (trimmed.h_eq_F ▸ r)
-
-#print axioms MS.findLimit
 
 end TendstoTactic

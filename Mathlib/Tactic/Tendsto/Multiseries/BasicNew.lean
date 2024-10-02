@@ -7,6 +7,8 @@ set_option linter.style.longLine false
 
 namespace TendstoTactic
 
+open Filter Asymptotics -- TODO: remove unnecesary prefixes
+
 abbrev Basis := List (ℝ → ℝ)
 
 abbrev PreMS (basis : Basis) : Type :=
@@ -33,7 +35,16 @@ theorem leadingExp_eq_bot {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreM
   · intros
     simp [leadingExp]
 
--- theorem leadingExp_eq_real
+theorem leadingExp_eq_coe {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
+    {deg : ℝ} (h : ms.leadingExp = ↑deg) : ∃ (a : PreMS basis_tl × PreMS (basis_hd :: basis_tl)), ms = .cons (deg, a.1) a.2 := by
+  revert h
+  apply ms.casesOn
+  · intro h
+    simp [leadingExp] at h
+  · intro (deg', coef) tl h
+    simp [leadingExp] at h
+    subst h
+    use (coef, tl)
 
 inductive wellOrdered : {basis : Basis} → (PreMS basis) → Prop
 | const (ms : PreMS []) : wellOrdered ms
@@ -97,8 +108,8 @@ theorem wellOrdered.cons_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : 
 
 theorem wellOrdered.cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
     {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)} (h_coef : coef.wellOrdered)
-    (h_tl : tl.wellOrdered)
-    (h_comp : ∀ tl_deg tl_coef tl_tl, (tl = .cons (tl_deg, tl_coef) tl_tl) → tl_deg < deg) :
+    (h_comp : tl.leadingExp < deg)
+    (h_tl : tl.wellOrdered) :
     wellOrdered (basis := basis_hd :: basis_tl) <| .cons (deg, coef) tl := by
   cases h_tl with | colist _ h_tl_coef h_tl_tl =>
   constructor
@@ -122,7 +133,7 @@ theorem wellOrdered.cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
         focus
         simp at hj
       · intro (tl_deg, tl_coef) tl_tl h_comp h_tl_tl hi hj
-        specialize h_comp _ _ _ (by rfl)
+        simp [leadingExp] at h_comp
         cases i with
         | zero =>
           simp at hi
@@ -150,13 +161,19 @@ theorem wellOrdered.cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
 theorem wellOrdered_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ} {coef : PreMS basis_tl}
     {tl : PreMS (basis_hd :: basis_tl)}
     (h : wellOrdered (basis := basis_hd :: basis_tl) (.cons (deg, coef) tl)) :
-    coef.wellOrdered ∧ tl.wellOrdered ∧
-      (∀ tl_deg tl_coef tl_tl, tl = .cons (tl_deg, tl_coef) tl_tl → (tl_deg < deg)) := by
+    coef.wellOrdered ∧ tl.leadingExp < deg ∧ tl.wellOrdered := by
   cases h with | colist _ h_coef h_comp =>
   constructor
   · specialize h_coef 0 (deg, coef)
     simpa using h_coef
   constructor
+  · revert h_comp
+    apply tl.casesOn
+    · simp [leadingExp]
+    · intro (tl_deg, tl_coef) tl_tl h_comp
+      simp [leadingExp]
+      specialize h_comp 0 1 (deg, coef) (tl_deg, tl_coef) (by linarith)
+      simpa using h_comp
   · constructor
     · intro i x hx
       specialize h_coef (i + 1) x
@@ -166,20 +183,17 @@ theorem wellOrdered_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
       specialize h_comp (i + 1) (j + 1) x y
       simp at h_comp hx hy
       exact h_comp h_lt hx hy
-  · intro tl_deg tl_coef tl_tl h_tl_eq
-    subst h_tl_eq
-    specialize h_comp 0 1 (deg, coef) (tl_deg, tl_coef) (by linarith)
-    simpa using h_comp
 
-theorem wellOrdered_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+
+theorem wellOrdered.coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (motive : (ms : PreMS (basis_hd :: basis_tl)) → Prop)
     (h_survive : ∀ ms, motive ms →
       (ms = .nil) ∨
       (
-        ∃ deg coef tl, ms = .cons (deg, coef) tl ∧
+        ∃ deg coef, ∃ (tl : PreMS (basis_hd :: basis_tl)), ms = .cons (deg, coef) tl ∧
         coef.wellOrdered ∧
-        (∀ tl_deg tl_coef tl_tl, tl = .cons (tl_deg, tl_coef) tl_tl → (tl_deg < deg)) ∧
-        (motive tl)
+        tl.leadingExp < deg ∧
+        motive tl
       )
     ) {ms : PreMS (basis_hd :: basis_tl)}
     (h : motive ms) : ms.wellOrdered := by
@@ -234,7 +248,7 @@ theorem wellOrdered_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
           simp at hy
         · intro (tl_deg, tl_coef) tl_tl h_comp hy
           simp at hy
-          specialize h_comp _ _ _ (by rfl)
+          simp [leadingExp] at h_comp
           simpa [← hx, ← hy]
     | succ l ih =>
       simp at hx hy ih
@@ -253,7 +267,7 @@ theorem wellOrdered_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
           simp at hy
         · intro (tl_deg, tl_coef) tl_tl h_comp hy
           simp at hy
-          specialize h_comp _ _ _ (by rfl)
+          simp [leadingExp] at h_comp
           rw [← hy]
           linarith
 
@@ -261,40 +275,112 @@ def allLt {basis_hd : ℝ → ℝ} {basis_tl : Basis} (ms : PreMS (basis_hd :: b
     Prop :=
   ms.all fun (deg, coef) ↦ deg < a
 
-theorem wellOrdered_cons_allLt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
-    {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
-    {tl : PreMS (basis_hd :: basis_tl)} {a : ℝ}
-    (h_wo : wellOrdered (basis := basis_hd :: basis_tl) (CoList.cons (deg, coef) tl))
-    (h_lt : deg < a) :
-    allLt (basis_hd := basis_hd) (CoList.cons (deg, coef) tl) a := by
+theorem wellOrdered_allLt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)} {a : ℝ}
+    (h_wo : ms.wellOrdered) (h_lt : ms.leadingExp < a) : ms.allLt a := by
   simp only [allLt]
   let motive : PreMS (basis_hd :: basis_tl) → Prop := fun ms =>
-    ∀ deg coef tl, ms = .cons (deg, coef) tl → deg < a ∧
-      wellOrdered (basis := basis_hd :: basis_tl) (.cons (deg, coef) tl)
+    ms.leadingExp < a ∧ ms.wellOrdered
   apply CoList.all.coind motive
   · intro (deg, coef) tl ih
-    simp only [motive] at ih
-    specialize ih deg coef tl (by rfl)
+    simp [motive, leadingExp] at ih
     obtain ⟨h_lt, h_wo⟩ := ih
+    obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := wellOrdered_cons h_wo
     constructor
     · exact h_lt
     simp only [motive]
-    intro tl_deg tl_coef tl_tl h_tl_eq
-    replace h_wo := wellOrdered_cons h_wo
-    obtain ⟨_, h_tl_wo, h_comp⟩ := h_wo
-    specialize h_comp tl_deg tl_coef tl_tl h_tl_eq
     constructor
-    · linarith
-    · rwa [← h_tl_eq]
+    · trans
+      · exact h_comp
+      · simp [h_lt]
+    · exact h_tl_wo
   · simp only [motive]
-    intro deg' coef' tl' h
-    simp at h
-    obtain ⟨⟨h1, h2⟩, h3⟩ := h
-    subst h1 h2 h3
     constructor
     · exact h_lt
     · exact h_wo
 
+theorem wellOrdered_cons_allLt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
+    {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)} {a : ℝ}
+    (h_wo : wellOrdered (basis := basis_hd :: basis_tl) (CoList.cons (deg, coef) tl))
+    (h_lt : deg < a) :
+    allLt (basis_hd := basis_hd) (CoList.cons (deg, coef) tl) a := by
+  apply wellOrdered_allLt h_wo
+  simpa [leadingExp]
+
+def majorated (f basis_hd : ℝ → ℝ) (deg : ℝ) : Prop :=
+  ∀ deg', deg < deg' → f =o[Filter.atTop] (fun x ↦ (basis_hd x)^deg')
+
+theorem majorated_of_EventuallyEq {f g basis_hd : ℝ → ℝ} {deg : ℝ} (h_eq : g =ᶠ[Filter.atTop] f)
+    (h : majorated f basis_hd deg) : majorated g basis_hd deg := by
+  simp only [majorated] at *
+  intro deg' h_deg
+  specialize h deg' h_deg
+  exact Filter.EventuallyEq.trans_isLittleO h_eq h
+
+-- to upstream?
+theorem majorated_self {f : ℝ → ℝ} {deg : ℝ}
+    (h : Filter.Tendsto f Filter.atTop Filter.atTop) :
+    majorated (fun x ↦ (f x)^deg) f deg := by
+  simp only [majorated]
+  intro deg' h_deg
+  apply (isLittleO_iff_tendsto' _).mpr
+  · have : (fun x ↦ f x ^ deg / f x ^ deg') =ᶠ[atTop] fun x ↦ (f x)^(deg - deg') := by
+      apply Eventually.mono <| Tendsto.eventually_gt_atTop h 0
+      intro x h
+      simp only
+      rw [← Real.rpow_sub h]
+    apply Tendsto.congr' this.symm
+    conv =>
+      arg 1
+      rw [show (fun x ↦ f x ^ (deg - deg')) = ((fun x ↦ x^(-(deg' - deg))) ∘ f) by ext; simp]
+    apply Tendsto.comp _ h
+    apply tendsto_rpow_neg_atTop
+    linarith
+  · apply Eventually.mono <| Tendsto.eventually_gt_atTop h 0
+    intro x h1 h2
+    absurd h2
+    exact (Real.rpow_pos_of_pos h1 _).ne.symm
+
+theorem majorated_of_lt {f basis_hd : ℝ → ℝ} {deg1 deg2 : ℝ}
+    (h_lt : deg1 < deg2) (h : majorated f basis_hd deg1) :
+    majorated f basis_hd deg2 := by
+  simp [majorated] at *
+  intro deg' h_deg
+  apply h _ (by linarith)
+
+theorem majorated_tendsto_zero_of_neg {f basis_hd : ℝ → ℝ} {deg : ℝ}
+    (h_lt : deg < 0) (h : majorated f basis_hd deg) :
+    Tendsto f atTop (nhds 0) := by
+  simp [majorated] at h
+  specialize h 0 (by linarith)
+  simpa using h
+
+theorem add_majorated {f g basis_hd : ℝ → ℝ} {f_deg g_deg : ℝ} (hf : majorated f basis_hd f_deg)
+    (hg : majorated g basis_hd g_deg) (h_pos : ∀ᶠ x in Filter.atTop, 0 < basis_hd x)
+    : majorated (f + g) basis_hd (f_deg ⊔ g_deg) := by
+  simp only [majorated] at *
+  intro deg h_deg
+  simp at h_deg
+  apply Asymptotics.IsLittleO.add
+  · exact hf _ h_deg.left
+  · exact hg _ h_deg.right
+
+theorem mul_majorated {f g basis_hd : ℝ → ℝ} {f_deg g_deg : ℝ} (hf : majorated f basis_hd f_deg)
+    (hg : majorated g basis_hd g_deg) (h_pos : ∀ᶠ x in Filter.atTop, 0 < basis_hd x)
+    : majorated (f * g) basis_hd (f_deg + g_deg) := by
+  simp only [majorated] at *
+  intro deg h_deg
+  let ε := (deg - f_deg - g_deg) / 2
+  specialize hf (f_deg + ε) (by dsimp [ε]; linarith)
+  specialize hg (g_deg + ε) (by dsimp [ε]; linarith)
+  apply Asymptotics.IsLittleO.trans_eventuallyEq (g₁ := fun x ↦ basis_hd x ^ (f_deg + ε) * basis_hd x ^ (g_deg + ε))
+  · exact Asymptotics.IsLittleO.mul hf hg
+  · simp only [Filter.EventuallyEq]
+    apply Filter.Eventually.mono h_pos
+    intro x hx
+    conv =>
+      rhs
+      rw [show deg = (f_deg + ε) + (g_deg + ε) by dsimp [ε]; ring_nf]
+      rw [Real.rpow_add hx]
 
 noncomputable def partialSumsFrom (Cs : CoList (ℝ → ℝ)) (degs : CoList ℝ) (basis_fun : ℝ → ℝ)
     (init : ℝ → ℝ) : CoList (ℝ → ℝ) :=
@@ -420,8 +506,10 @@ def isApproximation (F : ℝ → ℝ) (basis : Basis) (ms : PreMS basis) : Prop 
       let degs' : CoList (Option ℝ) := (degs.map .some).append (.cons .none .nil);
       (partialSums Cs degs basis_hd).zip degs' |>.all fun (ps, deg?) =>
         match deg? with
-        | .some deg => ∀ deg', deg < deg' → (fun x ↦ F x - ps x) =o[Filter.atTop]
-          fun x ↦ (basis_hd x)^deg'
+        | .some deg =>
+          -- ∀ deg', deg < deg' → (fun x ↦ F x - ps x) =o[Filter.atTop]
+          --   fun x ↦ (basis_hd x)^deg'
+          majorated (fun x ↦ F x - ps x) basis_hd deg
         | .none => (fun x ↦ F x - ps x) =ᶠ[Filter.atTop] 0
     )
 
@@ -440,7 +528,8 @@ theorem isApproximation_cons {F basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg 
     (h : isApproximation F (basis_hd :: basis_tl) (.cons (deg, coef) tl)) :
     ∃ C,
       isApproximation C basis_tl coef ∧
-      (∀ deg', deg < deg' → F =o[Filter.atTop] (fun x ↦ (basis_hd x)^deg')) ∧
+      -- (∀ deg', deg < deg' → F =o[Filter.atTop] (fun x ↦ (basis_hd x)^deg')) ∧
+      majorated F basis_hd deg ∧
       isApproximation (fun x ↦ F x - (basis_hd x)^deg * (C x)) (basis_hd :: basis_tl) tl := by
   unfold isApproximation at h
   obtain ⟨Cs, h_alal, h_coef, h_comp⟩ := h
@@ -480,14 +569,15 @@ private structure isApproximation_coind_auxT (motive : (F : ℝ → ℝ) → (ba
   F : ℝ → ℝ
   h : motive F basis_hd basis_tl val
 
-theorem isApproximation_coind' (motive : (F : ℝ → ℝ) → (basis_hd : ℝ → ℝ) →
+theorem isApproximation.coind' (motive : (F : ℝ → ℝ) → (basis_hd : ℝ → ℝ) →
     (basis_tl : Basis) → (ms : PreMS (basis_hd :: basis_tl)) → Prop)
     (h_survive : ∀ basis_hd basis_tl F ms, motive F basis_hd basis_tl ms →
       (ms = .nil ∧ F =ᶠ[Filter.atTop] 0) ∨
       (
         ∃ deg coef tl C, ms = .cons (deg, coef) tl ∧
         (isApproximation C basis_tl coef) ∧
-        (∀ deg', deg < deg' → F =o[Filter.atTop] fun x ↦ (basis_hd x)^deg') ∧
+        -- (∀ deg', deg < deg' → F =o[Filter.atTop] fun x ↦ (basis_hd x)^deg') ∧
+        majorated F basis_hd deg ∧
         (motive (fun x ↦ F x - (basis_hd x)^deg * (C x)) basis_hd basis_tl tl)
       )
     ) {basis_hd : ℝ → ℝ} {basis_tl : Basis} {F : ℝ → ℝ} {ms : PreMS (basis_hd :: basis_tl)}
@@ -501,7 +591,8 @@ theorem isApproximation_coind' (motive : (F : ℝ → ℝ) → (basis_hd : ℝ �
       fun h =>
         have spec : ∃ C,
             isApproximation C basis_tl coef ∧
-            (∀ (deg' : ℝ), deg < deg' → F =o[Filter.atTop] fun x ↦ basis_hd x ^ deg') ∧
+            -- (∀ (deg' : ℝ), deg < deg' → F =o[Filter.atTop] fun x ↦ basis_hd x ^ deg') ∧
+            majorated F basis_hd deg ∧
             motive (fun x ↦ F x - basis_hd x ^ deg * C x) basis_hd basis_tl tl := by
           specialize h_survive _ _ _ _ h
           simp at h_survive
@@ -663,14 +754,15 @@ theorem isApproximation_coind' (motive : (F : ℝ → ℝ) → (basis_hd : ℝ �
         simp
 
 -- without basis in motive
-theorem isApproximation_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+theorem isApproximation.coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (motive : (F : ℝ → ℝ) → (ms : PreMS (basis_hd :: basis_tl)) → Prop)
     (h_survive : ∀ F ms, motive F ms →
       (ms = .nil ∧ F =ᶠ[Filter.atTop] 0) ∨
       (
         ∃ deg coef tl C, ms = .cons (deg, coef) tl ∧
         (isApproximation C basis_tl coef) ∧
-        (∀ deg', deg < deg' → F =o[Filter.atTop] fun x ↦ (basis_hd x)^deg') ∧
+        -- (∀ deg', deg < deg' → F =o[Filter.atTop] fun x ↦ (basis_hd x)^deg') ∧
+        majorated F basis_hd deg ∧
         (motive (fun x ↦ F x - (basis_hd x)^deg * (C x)) tl)
       )
     ) {F : ℝ → ℝ} {ms : PreMS (basis_hd :: basis_tl)}
@@ -679,7 +771,7 @@ theorem isApproximation_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (basis_tl : Basis) → (ms : PreMS (basis_hd :: basis_tl)) → Prop :=
     fun F' basis_hd' basis_tl' ms' =>
       ∃ (h_hd : basis_hd' = basis_hd) (h_tl : basis_tl' = basis_tl), motive F' (h_tl ▸ (h_hd ▸ ms'))
-  apply isApproximation_coind' motive'
+  apply isApproximation.coind' motive'
   · intro basis_hd' basis_tl' F' ms' ih
     simp [motive'] at ih ⊢
     obtain ⟨h_hd, h_tl, ih⟩ := ih
@@ -716,7 +808,7 @@ theorem isApproximation.nil {F : ℝ → ℝ} {basis_hd : ℝ → ℝ} {basis_tl
 theorem isApproximation.cons {F : ℝ → ℝ} {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
     {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
     (C : ℝ → ℝ) (h_coef : coef.isApproximation C basis_tl)
-    (h_comp : (∀ deg', deg < deg' → F =o[Filter.atTop] (fun x ↦ (basis_hd x)^deg')))
+    (h_comp : majorated F basis_hd deg)
     (h_tl : tl.isApproximation (fun x ↦ F x - (basis_hd x)^deg * (C x)) (basis_hd :: basis_tl)) :
     isApproximation F (basis_hd :: basis_tl) (.cons (deg, coef) tl) := by
   simp [isApproximation] at h_tl ⊢
@@ -757,7 +849,7 @@ theorem isApproximation_of_EventuallyEq {basis : Basis} {ms : PreMS basis} {F F'
     let motive : (F : ℝ → ℝ) → (ms : PreMS (basis_hd :: basis_tl)) → Prop :=
       fun F' ms =>
         ∃ F, F =ᶠ[Filter.atTop] F' ∧ isApproximation F (basis_hd :: basis_tl) ms
-    apply isApproximation_coind motive
+    apply isApproximation.coind motive
     · intro F' ms ih
       revert ih
       apply ms.casesOn
