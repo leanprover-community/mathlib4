@@ -19,7 +19,6 @@ implementing one of the possible definitions of the Lie algebra attached to a Li
 
 -/
 
-
 noncomputable section
 
 open scoped LieGroup Manifold Derivation
@@ -60,6 +59,16 @@ theorem toDerivation_injective :
 instance : FunLike (LeftInvariantDerivation I G) C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯ where
   coe f := f.toDerivation
   coe_injective' _ _ h := toDerivation_injective <| DFunLike.ext' h
+
+/-- Short-cut instance to speed up type-class search -/
+@[local instance] lemma foo : AddMonoidHomClass (Derivation 𝕜 C^⊤⟮I, G; 𝓘(𝕜, 𝕜), 𝕜⟯
+    C^⊤⟮I, G; 𝓘(𝕜, 𝕜), 𝕜⟯) C^⊤⟮I, G; 𝓘(𝕜, 𝕜), 𝕜⟯ C^⊤⟮I, G; 𝓘(𝕜, 𝕜), 𝕜⟯ :=
+  Derivation.instAddMonoidHomClass
+
+/-- Short-cut instance to speed up type-class search -/
+@[local instance] lemma bar : AddHomClass (Derivation 𝕜 C^⊤⟮I, G; 𝓘(𝕜, 𝕜), 𝕜⟯ C^⊤⟮I, G; 𝓘(𝕜, 𝕜), 𝕜⟯)
+    C^⊤⟮I, G; 𝓘(𝕜, 𝕜), 𝕜⟯ C^⊤⟮I, G; 𝓘(𝕜, 𝕜), 𝕜⟯ :=
+  AddMonoidHomClass.toAddHomClass
 
 instance : LinearMapClass (LeftInvariantDerivation I G) 𝕜 C^∞⟮I, G; 𝕜⟯ C^∞⟮I, G; 𝕜⟯ where
   map_add f := map_add f.1
@@ -122,10 +131,10 @@ instance : Add (LeftInvariantDerivation I G) where
       simp only [map_add, Derivation.coe_add, left_invariant', Pi.add_apply]⟩
 
 instance : Neg (LeftInvariantDerivation I G) where
-  neg X := ⟨-X, fun g => by simp [left_invariant']⟩
+  neg X := ⟨-X, fun g => by simp only [map_neg, left_invariant']⟩ -- 220 -> 80ms
 
 instance : Sub (LeftInvariantDerivation I G) where
-  sub X Y := ⟨X - Y, fun g => by simp [left_invariant']⟩
+  sub X Y := ⟨X - Y, fun g => by simp only [map_sub, left_invariant']⟩ -- 600 -> 110ms
 
 @[simp]
 theorem coe_add : ⇑(X + Y) = X + Y :=

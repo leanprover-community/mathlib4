@@ -44,7 +44,7 @@ namespace ModelWithCorners
 /-! #### Model with corners -/
 
 protected theorem hasMFDerivAt {x} : HasMFDerivAt I 𝓘(𝕜, E) I x (ContinuousLinearMap.id _ _) :=
-  ⟨I.continuousAt, (hasFDerivWithinAt_id _ _).congr' I.rightInvOn (mem_range_self _)⟩
+  ⟨I.continuousAt, (hasFDerivWithinAt_id _ _).congr' I.rightInvOn (mem_range_self x)⟩
 
 protected theorem hasMFDerivWithinAt {s x} :
     HasMFDerivWithinAt I 𝓘(𝕜, E) I s x (ContinuousLinearMap.id _ _) :=
@@ -61,10 +61,10 @@ protected theorem mdifferentiableOn {s} : MDifferentiableOn I 𝓘(𝕜, E) I s 
 
 protected theorem mdifferentiable : MDifferentiable I 𝓘(𝕜, E) I := fun _ => I.mdifferentiableAt
 
-theorem hasMFDerivWithinAt_symm {x} (hx : x ∈ range I) :
+theorem hasMFDerivWithinAt_symm {x : E} (hx : x ∈ range I) :
     HasMFDerivWithinAt 𝓘(𝕜, E) I I.symm (range I) x (ContinuousLinearMap.id _ _) :=
   ⟨I.continuousWithinAt_symm,
-    (hasFDerivWithinAt_id _ _).congr' (fun _y hy => I.rightInvOn hy.1) ⟨hx, mem_range_self _⟩⟩
+    (hasFDerivWithinAt_id _ _).congr' (fun _y hy ↦ I.rightInvOn hy.1) ⟨hx, mem_range_self x⟩⟩
 
 theorem mdifferentiableOn_symm : MDifferentiableOn 𝓘(𝕜, E) I I.symm (range I) := fun _x hx =>
   (I.hasMFDerivWithinAt_symm hx).mdifferentiableWithinAt

@@ -48,7 +48,7 @@ theorem dist_eq_iff_dist_orthogonalProjection_eq {s : AffineSubspace ℝ P} [Non
     mul_self_inj_of_nonneg dist_nonneg dist_nonneg,
     dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p3 hp1,
     dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq p3 hp2]
-  simp
+  simp only [add_left_inj] -- 62 -> 12ms
 
 /-- `p` is equidistant from a set of points in `s` if and only if its
 `orthogonalProjection` is. -/
