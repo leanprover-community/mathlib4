@@ -173,7 +173,8 @@ theorem opNorm_neg (f : E →SL[σ₁₂] F) : ‖-f‖ = ‖f‖ := by simp onl
 
 @[deprecated (since := "2024-02-02")] alias op_norm_neg := opNorm_neg
 
-theorem opNorm_nonneg (f : E →SL[σ₁₂] F) : 0 ≤ ‖f‖ := Real.sInf_nonneg fun _ ↦ And.left
+theorem opNorm_nonneg (f : E →SL[σ₁₂] F) : 0 ≤ ‖f‖ :=
+  Real.sInf_nonneg fun _ ↦ And.left
 
 @[deprecated (since := "2024-02-02")] alias op_norm_nonneg := opNorm_nonneg
 

@@ -124,17 +124,19 @@ noncomputable instance : InfSet ℝ :=
 
 theorem sInf_def (s : Set ℝ) : sInf s = -sSup (-s) := rfl
 
-protected theorem is_glb_sInf (h₁ : s.Nonempty) (h₂ : BddBelow s) : IsGLB s (sInf s) := by
+protected theorem isGLB_sInf (h₁ : s.Nonempty) (h₂ : BddBelow s) : IsGLB s (sInf s) := by
   rw [sInf_def, ← isLUB_neg', neg_neg]
   exact Real.isLUB_sSup h₁.neg h₂.neg
+
+@[deprecated (since := "2024-10-02")] alias is_glb_sInf := isGLB_sInf
 
 noncomputable instance : ConditionallyCompleteLinearOrder ℝ where
   __ := Real.linearOrder
   __ := Real.lattice
   le_csSup s a hs ha := (Real.isLUB_sSup ⟨a, ha⟩ hs).1 ha
   csSup_le s a hs ha := (Real.isLUB_sSup hs ⟨a, ha⟩).2 ha
-  csInf_le s a hs ha := (Real.is_glb_sInf ⟨a, ha⟩ hs).1 ha
-  le_csInf s a hs ha := (Real.is_glb_sInf hs ⟨a, ha⟩).2 ha
+  csInf_le s a hs ha := (Real.isGLB_sInf ⟨a, ha⟩ hs).1 ha
+  le_csInf s a hs ha := (Real.isGLB_sInf hs ⟨a, ha⟩).2 ha
   csSup_of_not_bddAbove s hs := by simp [hs, sSup_def]
   csInf_of_not_bddBelow s hs := by simp [hs, sInf_def, sSup_def]
 
@@ -223,7 +225,7 @@ protected lemma le_sInf (hs : ∀ x ∈ s, a ≤ x) (ha : a ≤ 0) : a ≤ sInf 
   exacts [ha.trans_eq sInf_empty.symm, le_csInf hs' hs]
 
 /-- As `⨅ i, f i = 0` when the domain of the real-valued function `f` is empty, it suffices to show
-that all values of `f` are at least some nonnegative number `a` to show that `a ≤ ⨅ i, f i`.
+that all values of `f` are at least some nonpositive number `a` to show that `a ≤ ⨅ i, f i`.
 
 See also `le_ciInf`. -/
 protected lemma le_iInf (hf : ∀ i, a ≤ f i) (ha : a ≤ 0) : a ≤ ⨅ i, f i :=
