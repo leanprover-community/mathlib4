@@ -75,8 +75,8 @@ instance : FunLike (RingCon R) R (R → Prop) :=
       rcases x with ⟨⟨x, _⟩, _⟩
       rcases y with ⟨⟨y, _⟩, _⟩
       congr!
-      rw [Setoid.ext_iff,(show x.Rel = y.Rel from h)]
-      simp}
+      rw [Setoid.ext_iff, (show x.Rel = y.Rel from h)]
+      simp }
 
 theorem rel_eq_coe : c.r = c :=
   rfl
@@ -418,7 +418,6 @@ end Quotient
 
 The API in this section is copied from `Mathlib/GroupTheory/Congruence.lean`
 -/
-
 
 section Lattice
 
