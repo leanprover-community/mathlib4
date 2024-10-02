@@ -608,6 +608,14 @@ theorem le_iff_exists_add {s t : Multiset α} : s ≤ t ↔ ∃ u, t = s + u :=
       ⟨l, Quot.sound p⟩,
     fun ⟨_u, e⟩ => e.symm ▸ le_add_right _ _⟩
 
+theorem add_le_add_of_le_of_le {a b : Multiset α} (h₁ : a ≤ b) {c d : Multiset α} (h₂ : c ≤ d) :
+    a + c ≤ b + d := by
+  rcases le_iff_exists_add.mp h₂ with ⟨m, rfl⟩
+  rcases le_iff_exists_add.mp h₁ with ⟨n, rfl⟩
+  rw [← zero_add (a + c), add_comm a n, add_comm c, add_assoc n, ← add_assoc _ m, add_comm _ m,
+    add_assoc m, ← add_assoc n]
+  exact add_le_add_right (zero_le _) _
+
 @[simp]
 theorem cons_add (a : α) (s t : Multiset α) : a ::ₘ s + t = a ::ₘ (s + t) := by
   rw [← singleton_add, ← singleton_add, add_assoc]
