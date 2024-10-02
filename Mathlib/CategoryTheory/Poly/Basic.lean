@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 David Spivak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Spivak, Shaowei Lin
+Authors: David Spivak, Shaowei Lin, Solomon Bothwell, André Muricy.  
 -/
 import Init.Prelude
 import Mathlib.CategoryTheory.Category.Basic
