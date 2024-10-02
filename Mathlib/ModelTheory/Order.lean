@@ -364,7 +364,7 @@ instance : @OrderedStructure L M _ (L.leOfStructure M) _ := by
 @[local instance]
 def decidableLEOfStructure
     [h : DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a,b])] :
-    have := L.leOfStructure M
+    letI := L.leOfStructure M
     DecidableRel ((· : M) ≤ ·) := h
 
 /-- Any model of a theory of preorders is a preorder. -/
