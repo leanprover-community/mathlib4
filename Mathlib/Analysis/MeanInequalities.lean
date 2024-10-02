@@ -668,8 +668,8 @@ lemma compact_inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1
     𝔼 i ∈ s, w i * f i ≤ (𝔼 i ∈ s, w i) ^ (1 - p⁻¹) * (𝔼 i ∈ s, w i * f i ^ p) ^ p⁻¹ := by
   simp_rw [expect_eq_sum_div_card]
   rw [div_rpow, div_rpow, div_mul_div_comm, ← rpow_add', sub_add_cancel, rpow_one]
-  gcongr
-  · exact inner_le_weight_mul_Lp_of_nonneg s hp _ _ hw hf
+  · gcongr
+    exact inner_le_weight_mul_Lp_of_nonneg s hp _ _ hw hf
   any_goals simp
   · exact sum_nonneg fun i _ ↦ by have := hw i; have := hf i; positivity
   · exact sum_nonneg fun i _ ↦ by have := hw i; positivity
