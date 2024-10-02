@@ -90,19 +90,26 @@ instance : LocalRing K[ε] :=
   .of_isUnit_or_isUnit_one_sub_self fun _ ↦
     (isUnit_or_isNilpotent _).imp_right IsNilpotent.isUnit_one_sub
 
+lemma isNilpotent_iff_eps_dvd {x : K[ε]} :
+    IsNilpotent x ↔ ε ∣ x := by
+  simp only [← isNilpotent_fst_iff, isNilpotent_iff_eq_zero, dvd_def, TrivSqZeroExt.ext_iff,
+    fst_mul, fst_eps, zero_mul, TrivSqZeroExt.snd_mul, smul_eq_mul, snd_eps,
+    MulOpposite.smul_eq_mul_unop, MulOpposite.unop_op, one_mul, zero_add, exists_and_left,
+    iff_self_and]
+  intro
+  exact ⟨inl (snd _), rfl⟩
+
 lemma isMaximal_span_singleton_eps :
     (Ideal.span {ε} : Ideal K[ε]).IsMaximal := by
   rw [Ideal.isMaximal_iff]
-  simp only [Ideal.mem_span_singleton', TrivSqZeroExt.ext_iff, fst_mul, fst_eps, mul_zero, fst_one,
-    zero_ne_one, TrivSqZeroExt.snd_mul, snd_eps, smul_eq_mul, mul_one, MulOpposite.op_zero,
-    zero_smul, add_zero, snd_one, false_and, exists_const, not_false_eq_true,
-    Ideal.span_singleton_le_iff_mem, exists_and_left, not_and, not_exists, true_and]
+  simp only [Ideal.mem_span_singleton, ← isNilpotent_iff_eps_dvd, ← isNilpotent_fst_iff, fst_one,
+    isNilpotent_iff_eq_zero, one_ne_zero, not_false_eq_true, true_and]
   intro I x _ IH hx
   rw [← Ideal.eq_top_iff_one]
   rcases isUnit_or_isNilpotent x with hx'|hx'
   · exact Ideal.eq_top_of_isUnit_mem _ hx hx'
   · simp only [← isNilpotent_fst_iff, isNilpotent_iff_eq_zero] at hx'
-    exact absurd rfl (IH hx'.symm (.inl (snd x)))
+    exact absurd hx' IH
 
 lemma maximalIdeal_eq_span_singleton_eps :
     LocalRing.maximalIdeal K[ε] = Ideal.span {ε} :=
@@ -134,6 +141,26 @@ instance : IsPrincipalIdealRing K[ε] where
     · contrapose! hx0
       simp only [isUnit_inl_iff, isUnit_iff_ne_zero, ne_eq, not_not] at hx0
       ext <;> simp [hx, hx0]
+
+lemma exists_mul_left_or_mul_right (a b : K[ε]) :
+    ∃ c, a * c = b ∨ b * c = a := by
+  rcases isUnit_or_isNilpotent a with ha|ha
+  · lift a to K[ε]ˣ using ha
+    exact ⟨a⁻¹ * b, by simp⟩
+  rcases isUnit_or_isNilpotent b with hb|hb
+  · lift b to K[ε]ˣ using hb
+    exact ⟨b⁻¹ * a, by simp⟩
+  rw [isNilpotent_iff_eps_dvd] at ha hb
+  obtain ⟨x, rfl⟩ := ha
+  obtain ⟨y, rfl⟩ := hb
+  rw [← inl_fst_add_inr_snd_eq x, ← inl_fst_add_inr_snd_eq y]
+  simp only [inr_eq_smul_eps, mul_add, Algebra.mul_smul_comm, eps_mul_eps, smul_zero, add_zero,
+    mul_assoc]
+  rcases eq_or_ne (fst x) 0 with hx|hx
+  · refine ⟨ε, Or.inr ?_⟩
+    simp [hx, mul_comm, ← mul_assoc]
+  refine ⟨inl ((fst x)⁻¹ * fst y), Or.inl (congr_arg (ε * ·) ?_)⟩
+  simp [← inl_mul, ← mul_assoc, mul_inv_cancel₀ hx]
 
 end Field
 
