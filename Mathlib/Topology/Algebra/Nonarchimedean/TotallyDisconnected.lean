@@ -32,11 +32,12 @@ open Pointwise TopologicalSpace
 
 namespace NonarchimedeanGroup.auxiliary
 
-variable (G : Type*) [TopologicalSpace G] [Group G] [NonarchimedeanGroup G] [T2Space G]
+variable {G : Type*} [TopologicalSpace G] [Group G] [NonarchimedeanGroup G] [T2Space G]
 
+variable {t : G} in
 @[to_additive]
 lemma open_subgroup_separating
-    (t : G) (ht : t ≠ 1) : ∃ (A : Opens G) (V : OpenSubgroup G),
+    (ht : t ≠ 1) : ∃ (A : Opens G) (V : OpenSubgroup G),
     t ∈ A ∧ 1 ∈ V ∧ Disjoint (A : Set G) V := by
   rcases (t2_separation ht) with ⟨A, B, opena, openb, diff, one, disj⟩
   obtain ⟨V, hV⟩ := NonarchimedeanGroup.is_nonarchimedean B (IsOpen.mem_nhds openb one)
@@ -48,11 +49,12 @@ end NonarchimedeanGroup.auxiliary
 namespace NonarchimedeanGroup
 open NonarchimedeanGroup.auxiliary
 
-variable (G : Type*) [TopologicalSpace G] [Group G]
+variable {G : Type*} [TopologicalSpace G] [Group G]
 
+variable {x y : G} {U : Set G} {A : Opens G} in
 @[to_additive]
-lemma non_empty_intersection_compl_coset (x y : G) (U : Set G) (hx : x ∈ U)
-    (A : Opens G) (quot : (y⁻¹ * x) ∈ A ) (V : OpenSubgroup G) (dva : Disjoint (V : Set G) A) :
+lemma non_empty_intersection_compl_coset (hx : x ∈ U)
+    (quot : (y⁻¹ * x) ∈ A ) (V : OpenSubgroup G) (dva : Disjoint (V : Set G) A) :
     (U ∩ ((y • (V : Set G))ᶜ)).Nonempty := by
   simp_rw [Set.inter_nonempty, Set.mem_compl_iff]
   use x, hx
@@ -63,8 +65,9 @@ lemma non_empty_intersection_compl_coset (x y : G) (U : Set G) (hx : x ∈ U)
   rw [subempty] at mem
   simp at mem
 
+variable {y : G} {U : Set G} in
 @[to_additive]
-lemma non_empty_intersection_coset (y : G) (U : Set G) (hy :  y ∈ U)
+lemma non_empty_intersection_coset (hy :  y ∈ U)
     (V : OpenSubgroup G) : (U ∩ (y • (V : Set G))).Nonempty := by
   simp only [Set.inter_nonempty]
   use y
@@ -74,9 +77,10 @@ lemma non_empty_intersection_coset (y : G) (U : Set G) (hy :  y ∈ U)
 
 variable [TopologicalGroup G] [NonarchimedeanGroup G] [T2Space G]
 
+variable {x y : G} {U : Set G} in
 /-- In a nonarchimedean group, any set which contains two distinct points is disconnected. -/
 @[to_additive]
-theorem non_singleton_set_disconnected (x y : G) (U : Set G)
+theorem non_singleton_set_disconnected
     (hx : x ∈ U) (hy :  y ∈ U) (hxy : y ≠ x) : ¬ IsConnected U := by
   obtain ⟨A , V, ha, _ , dav⟩ : ∃ (A : Opens G) (V : OpenSubgroup G), y⁻¹ * x ∈ A ∧ 1 ∈ V ∧
           Disjoint (A : Set G) V := by
@@ -85,15 +89,15 @@ theorem non_singleton_set_disconnected (x y : G) (U : Set G)
         rw [← inv_mul_cancel y] at con
         apply mul_left_cancel at con
         exact hxy (id (Eq.symm con))
-    exact open_subgroup_separating G (y⁻¹ * x) ht
+    exact open_subgroup_separating ht
   obtain ⟨u , v, ou, ov, Uuv, Uu, Uv, emptyUuv⟩ : ∃ u v : Set G, (IsOpen u) ∧ (IsOpen v) ∧
       (U ⊆ u ∪ v) ∧ ((U ∩ u).Nonempty) ∧ ((U ∩ v).Nonempty) ∧ (¬(U ∩ (u ∩ v)).Nonempty) := by
     use (y • (V : Set G)) , (y • (V : Set G))ᶜ
     simp_rw [(IsOpen.smul (OpenSubgroup.isOpen V) y), isOpen_compl_iff,
         IsClosed.smul (OpenSubgroup.isClosed V) y,
         Set.union_compl_self, Set.subset_univ,
-        non_empty_intersection_coset G y U hy V,
-        non_empty_intersection_compl_coset G x y U hx A ha V dav.symm,
+        non_empty_intersection_coset hy V,
+        non_empty_intersection_compl_coset hx ha V dav.symm,
         Set.inter_compl_self, Set.inter_empty, Set.not_nonempty_empty, not_false_eq_true,
         and_self]
   rintro ⟨_, h2⟩
@@ -108,7 +112,7 @@ instance : TotallyDisconnectedSpace G := by
   obtain ⟨y, hyu, hneq⟩ : ∃ y : G, (y ∈ connectedComponent x) ∧ (y ≠ x) := by
     by_contra! con2
     exact con <| (Set.Nonempty.subset_singleton_iff ⟨x, mem_connectedComponent⟩).mp con2
-  exact non_singleton_set_disconnected G x y (connectedComponent x) mem_connectedComponent hyu
+  exact non_singleton_set_disconnected mem_connectedComponent hyu
     hneq isConnected_connectedComponent
 
 end NonarchimedeanGroup
