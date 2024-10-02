@@ -778,37 +778,10 @@ instance (N : LieSubmodule K L M) [IsTriangularizable K L M] : IsTriangularizabl
 See also `LieModule.iSup_genWeightSpace_eq_top'`. -/
 lemma iSup_genWeightSpace_eq_top [IsTriangularizable K L M] :
     ⨆ χ : L → K, genWeightSpace M χ = ⊤ := by
-  generalize h_dim : finrank K M = n
-  induction n using Nat.strongRecOn generalizing M with | ind n ih => ?_
-  obtain h' | ⟨y : L, hy : ¬ ∃ φ, genWeightSpaceOf M φ y = ⊤⟩ :=
-    forall_or_exists_not (fun (x : L) ↦ ∃ (φ : K), genWeightSpaceOf M φ x = ⊤)
-  · choose χ hχ using h'
-    replace hχ : genWeightSpace M χ = ⊤ := by simpa only [genWeightSpace, hχ] using iInf_top
-    exact eq_top_iff.mpr <| hχ ▸ le_iSup (genWeightSpace M) χ
-  · replace hy : ∀ φ, finrank K (genWeightSpaceOf M φ y) < n := fun φ ↦ by
-      simp_rw [not_exists, ← lt_top_iff_ne_top] at hy; exact h_dim ▸ Submodule.finrank_lt (hy φ)
-    replace ih : ∀ φ, ⨆ χ : L → K, genWeightSpace (genWeightSpaceOf M φ y) χ = ⊤ :=
-      fun φ ↦ ih _ (hy φ) (genWeightSpaceOf M φ y) rfl
-    replace ih : ∀ φ, ⨆ (χ : L → K) (_ : χ y = φ),
-        genWeightSpace (genWeightSpaceOf M φ y) χ = ⊤ := by
-      intro φ
-      suffices ∀ χ : L → K, χ y ≠ φ → genWeightSpace (genWeightSpaceOf M φ y) χ = ⊥ by
-        specialize ih φ; rw [iSup_split, biSup_congr this] at ih; simpa using ih
-      intro χ hχ
-      rw [eq_bot_iff, ← (genWeightSpaceOf M φ y).ker_incl, LieModuleHom.ker,
-        ← LieSubmodule.map_le_iff_le_comap, map_genWeightSpace_eq_of_injective
-        (genWeightSpaceOf M φ y).injective_incl, LieSubmodule.range_incl, ← disjoint_iff_inf_le]
-      exact (disjoint_genWeightSpaceOf K L M hχ).mono_left
-        (genWeightSpace_le_genWeightSpaceOf M y χ)
-    replace ih : ∀ φ, ⨆ (χ : L → K) (_ : χ y = φ), genWeightSpace M χ = genWeightSpaceOf M φ y := by
-      intro φ
-      have (χ : L → K) (hχ : χ y = φ) : genWeightSpace M χ =
-          (genWeightSpace (genWeightSpaceOf M φ y) χ).map (genWeightSpaceOf M φ y).incl := by
-        rw [← hχ, genWeightSpace_genWeightSpaceOf_map_incl]
-      simp_rw [biSup_congr this, ← LieSubmodule.map_iSup, ih, LieModuleHom.map_top,
-        LieSubmodule.range_incl]
-    simpa only [← ih, iSup_comm (ι := K), iSup_iSup_eq_right] using
-      iSup_genWeightSpaceOf_eq_top K L M y
+  simp only [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.iSup_coe_toSubmodule,
+    LieSubmodule.iInf_coe_toSubmodule, LieSubmodule.top_coeSubmodule, genWeightSpace]
+  exact Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo (toEnd K L M)
+    (fun x y φ z ↦ (genWeightSpaceOf M φ y).lie_mem) (IsTriangularizable.iSup_eq_top)
 
 lemma iSup_genWeightSpace_eq_top' [IsTriangularizable K L M] :
     ⨆ χ : Weight K L M, genWeightSpace M χ = ⊤ := by

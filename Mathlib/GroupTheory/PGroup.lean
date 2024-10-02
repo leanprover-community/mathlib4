@@ -136,7 +136,7 @@ theorem nontrivial_iff_card [Finite G] : Nontrivial G ↔ ∃ n > 0, Nat.card G 
       hk⟩,
     fun ⟨k, hk0, hk⟩ =>
     Finite.one_lt_card_iff_nontrivial.1 <|
-      hk.symm ▸ one_lt_pow (Fact.out (p := p.Prime)).one_lt (ne_of_gt hk0)⟩
+      hk.symm ▸ one_lt_pow₀ (Fact.out (p := p.Prime)).one_lt (ne_of_gt hk0)⟩
 
 variable {α : Type*} [MulAction G α]
 
