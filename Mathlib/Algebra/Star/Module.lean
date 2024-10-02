@@ -82,15 +82,28 @@ rather than `nnqsmul` and `qsmul` because the latter are reserved to the actions
 discoverability.
 -/
 
+/-- Note that this lemma holds for an arbitrary `ℚ≥0`-action, rather than merely one coming from a
+`DivisionSemiring`. We keep both the `nnqsmul` and `nnrat_smul` naming conventions for
+discoverability. See `star_nnqsmul`. -/
 @[simp high]
 lemma star_nnrat_smul [AddCommMonoid R] [StarAddMonoid R] [Module ℚ≥0 R] (q : ℚ≥0) (x : R) :
     star (q • x) = q • star x := map_nnrat_smul (starAddEquiv : R ≃+ R) _ _
 
+/-- Note that this lemma holds for an arbitrary `ℚ`-action, rather than merely one coming from a
+`DivisionRing`. We keep both the `qsmul` and `rat_smul` naming conventions for discoverability.
+See `star_qsmul`. -/
 @[simp high] lemma star_rat_smul [AddCommGroup R] [StarAddMonoid R] [Module ℚ R] (q : ℚ) (x : R) :
     star (q • x) = q • star x :=
   map_rat_smul (starAddEquiv : R ≃+ R) _ _
 
+/-- Note that this lemma holds for an arbitrary `ℚ≥0`-action, rather than merely one coming from a
+`DivisionSemiring`. We keep both the `nnqsmul` and `nnrat_smul` naming conventions for
+discoverability. See `star_nnrat_smul`. -/
 alias star_nnqsmul := star_nnrat_smul
+
+/-- Note that this lemma holds for an arbitrary `ℚ`-action, rather than merely one coming from a
+`DivisionRing`. We keep both the `qsmul` and `rat_smul` naming conventions for
+discoverability. See `star_rat_smul`. -/
 alias star_qsmul := star_rat_smul
 
 instance StarAddMonoid.toStarModuleNNRat [AddCommMonoid R] [Module ℚ≥0 R] [StarAddMonoid R] :
