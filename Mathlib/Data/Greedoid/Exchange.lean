@@ -54,7 +54,7 @@ theorem exists_superset_of_card_le
       rcases ih (by omega) with ⟨s, hs, h₁, h₂, rfl⟩
       rcases hS hs₁ hs hn₁ with ⟨a, ha₁, ha₂, ha₃⟩
       use cons a s ha₂; simp_all
-      intro _ h; simp [h₁ h] 
+      intro _ h; simp [h₁ h]
 
 -- TODO: Find a better name.
 /-- A helper lemma for `feasible_superset_add_element_feasible`. -/

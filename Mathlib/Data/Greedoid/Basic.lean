@@ -79,7 +79,7 @@ protected theorem accessible_property :
   let F : Set (Finset α) :=
     {t | G.feasible t ∧ t.card < s.card}
   have hF : ∅ ∈ F := by simp [F, G.contains_emptyset, hs₂]
-  let F' : Finset α → Prop := fun t ↦ 
+  let F' : Finset α → Prop := fun t ↦
     t ∈ F ∧ ∀ t', G.feasible t' → t'.card < s.card → t'.card ≤ t.card
   have hF' : ∃ x, F' x := by
     by_contra h''; simp [F', F] at h''
@@ -130,3 +130,4 @@ end Membership
 theorem emptyset_feasible : ∅ ∈ G := G.contains_emptyset
 
 end Greedoid
+
