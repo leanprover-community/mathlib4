@@ -724,12 +724,18 @@ section Factorization
 
 variable {X : Scheme.{u}} {A : CommRingCat}
 
+/-- If `X ⟶ Spec A` is a morphism of schemes, then `Spec` of `A ⧸ specTargetImage f`
+is the scheme-theoretic image of `f`. For this quotient as an object of `CommRingCat` see
+`specTargetImage` below. -/
+def specTargetImageIdeal (f : X ⟶ Spec A) : Ideal A :=
+  (RingHom.ker <| (((ΓSpec.adjunction).homEquiv X (op A)).symm f).unop)
+
 /-- If `X ⟶ Spec A` is a morphism of schemes, then `Spec` of `specTargetImage f` is the
 scheme-theoretic image of `f` and `f` factors as
 `specTargetImageFactorization f ≫ Spec.map (specTargetImageRingHom f)`
 (see `specTargetImageFactorization_comp`). -/
 def specTargetImage (f : X ⟶ Spec A) : CommRingCat :=
-  CommRingCat.of (A ⧸ (RingHom.ker <| (((ΓSpec.adjunction).homEquiv X (op A)).symm f).unop))
+  CommRingCat.of (A ⧸ specTargetImageIdeal f)
 
 /-- If `f : X ⟶ Spec A` is a morphism of schemes, then `f` factors via
 the inclusion of `Spec (specTargetImage f)` into `X`. -/
@@ -739,7 +745,7 @@ def specTargetImageFactorization (f : X ⟶ Spec A) : X ⟶ Spec (specTargetImag
 /-- If `f : X ⟶ Spec A` is a morphism of schemes, the induced morphism on spectra of
 `specTargetImageRingHom f` is the inclusion of the scheme-theoretic image of `f` into `Spec A`. -/
 def specTargetImageRingHom (f : X ⟶ Spec A) : A ⟶ specTargetImage f :=
-  Ideal.Quotient.mk (RingHom.ker _)
+  Ideal.Quotient.mk (specTargetImageIdeal f)
 
 variable (f : X ⟶ Spec A)
 
@@ -753,7 +759,7 @@ lemma specTargetImageFactorization_app_injective :
   show Function.Injective <| ((ΓSpec.adjunction.homEquiv X _) φ'.op).app ⊤
   rw [ΓSpec_adjunction_homEquiv_eq]
   apply (RingHom.kerLift_injective φ).comp
-  exact ((ConcreteCategory.isIso_iff_bijective (inv (toSpecΓ _))).mp inferInstance).injective
+  exact ((ConcreteCategory.isIso_iff_bijective (Scheme.ΓSpecIso _).hom).mp inferInstance).injective
 
 @[reassoc (attr := simp)]
 lemma specTargetImageFactorization_comp :

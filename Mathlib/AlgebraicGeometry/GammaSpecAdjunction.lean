@@ -468,23 +468,13 @@ theorem toOpen_unit_app_val_c_app' {X : Scheme.{u}} (U : Opens (PrimeSpectrum Γ
 end ΓSpec
 
 lemma toSpecΓ_ΓSpec_adjunction_homEquiv {X : Scheme.{u}} {B : CommRingCat} (φ : B ⟶ Γ(X, ⊤)) :
-    toSpecΓ B ≫ ((ΓSpec.adjunction.homEquiv X (op B)) φ.op).app ⊤ = φ := by
-  rw [AlgebraicGeometry.ΓSpec.adjunction_homEquiv]
-  erw [AlgebraicGeometry.ΓSpec.locallyRingedSpaceAdjunction_homEquiv_apply']
-  show toSpecΓ B ≫ _ ≫ (identityToΓSpec.app X.toLocallyRingedSpace).val.c.app (op ⊤) = φ
-  rw [← LocallyRingedSpace.SpecΓIdentity_inv_app]
-  convert_to φ ≫ LocallyRingedSpace.SpecΓIdentity.inv.app
-    (LocallyRingedSpace.Γ.obj (op X.toLocallyRingedSpace)) ≫
-      (identityToΓSpec.app X.toLocallyRingedSpace).val.c.app (op ⊤) = φ
-  · simp only [LocallyRingedSpace.Γ_obj, Opens.map_top, LocallyRingedSpace.SpecΓIdentity_inv_app,
-      Spec.locallyRingedSpaceMap_val, Spec.sheafedSpaceMap_c_app]
-    rw [← Category.assoc, ← Category.assoc, Spec_Γ_naturality]
-    simp
-  · rw [ΓSpec.left_triangle X.toLocallyRingedSpace]
-    simp
+    (Scheme.ΓSpecIso B).inv ≫ ((ΓSpec.adjunction.homEquiv X (op B)) φ.op).app ⊤ = φ := by
+  simp only [Adjunction.homEquiv_apply, Scheme.Spec_map, Opens.map_top, Scheme.comp_app,
+    ΓSpec.adjunction_unit_app_app_top]
+  simp
 
 lemma ΓSpec_adjunction_homEquiv_eq {X : Scheme.{u}} {B : CommRingCat} (φ : B ⟶ Γ(X, ⊤)) :
-    (((ΓSpec.adjunction.homEquiv X (op B)) φ.op).app ⊤) = inv (toSpecΓ B) ≫ φ := by
+    (((ΓSpec.adjunction.homEquiv X (op B)) φ.op).app ⊤) = (Scheme.ΓSpecIso B).hom ≫ φ := by
   simp_rw [← toSpecΓ_ΓSpec_adjunction_homEquiv φ]
   simp
 
