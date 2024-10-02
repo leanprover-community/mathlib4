@@ -1,21 +1,37 @@
 /-
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson
+Authors: Aaron Anderson, Metin Ersin Arıcan
+Authors: Aaron Anderson, Metin Ersin Arıcan
 -/
 import Mathlib.ModelTheory.Equivalence
 
 /-!
 # Quantifier Complexity
 
-This file defines quantifier complexity of first-order formulas, and constructs prenex normal forms.
+This file defines quantifier complexity of first-order formulas, and constructs disjunctive normal
+forms, conjunctive normal forms and prenex normal forms.
 
 ## Main Definitions
 
 - `FirstOrder.Language.BoundedFormula.IsAtomic` defines atomic formulas - those which are
   constructed only from terms and relations.
+- `FirstOrder.Language.BoundedFormula.IsLiteral` defines literals - those which are `⊥`, `⊤`,
+  atomic formulas or negation of atomic formulas.
+- `FirstOrder.Language.BoundedFormula.IsConjunctive` defines conjunctive formulas - those which are
+  constructed only from literals and conjunctions.
+- `FirstOrder.Language.BoundedFormula.IsDisjunctive` defines disjunctive formulas - those which are
+  constructed only from literals and disjunctions.
+- `FirstOrder.Language.BoundedFormula.IsDNF` defines formulas in disjunctive normal form - those
+  which are disjunctions of conjunctive formulas.
+- `FirstOrder.Language.BoundedFormula.IsCNF` defines formulas in conjunctive normal form - those
+  which are conjunctions of disjunctive formulas.
 - `FirstOrder.Language.BoundedFormula.IsQF` defines quantifier-free formulas - those which are
   constructed only from atomic formulas and boolean operations.
+- `FirstOrder.Language.BoundedFormula.toDNF` constructs a disjunctive normal form of a given
+  quantifier-free formula.
+- `FirstOrder.Language.BoundedFormula.toCNF` constructs a conjunctive normal form of a given
+  quantifier-free formula.
 - `FirstOrder.Language.BoundedFormula.IsPrenex` defines when a formula is in prenex normal form -
   when it consists of a series of quantifiers applied to a quantifier-free formula.
 - `FirstOrder.Language.BoundedFormula.toPrenex` constructs a prenex normal form of a given formula.
@@ -23,9 +39,19 @@ This file defines quantifier complexity of first-order formulas, and constructs 
 
 ## Main Results
 
+- `FirstOrder.Language.BoundedFormula.toDNF_semanticallyEquivalent` shows that the disjunctive
+  normal form of a formula is semantically equivalent to the original formula.
+- `FirstOrder.Language.BoundedFormula.toCNF_semanticallyEquivalent` shows that the conjunctive
+  normal form of a formula is semantically equivalent to the original formula.
 - `FirstOrder.Language.BoundedFormula.realize_toPrenex` shows that the prenex normal form of a
   formula has the same realization as the original formula.
 
+## TODO
+
+- `FirstOrder.Language.BoundedFormula.IsDNF.components` which gives the literals of a DNF as
+  a list of lists.
+- `FirstOrder.Language.BoundedFormula.IsCNF.components` which gives the literals of a CNF as
+  a list of lists.
 -/
 
 universe u v w u' v'
@@ -43,6 +69,59 @@ variable {v : α → M} {xs : Fin l → M}
 open FirstOrder Structure Fin
 
 namespace BoundedFormula
+
+/-- An auxilary definition to `FirstOrder.Language.BoundedFormula.simpleNot` and
+  `FirstOrder.Language.BoundedFormula.simpleNot_semanticallyEquivalent_not`.-/
+def simpleNotAux : {n : ℕ} → (φ : L.BoundedFormula α n) → {ψ : L.BoundedFormula α n // ψ ⇔[∅] ∼φ}
+  | _, ⊥ => .mk ⊤ (by rfl)
+  | _, equal t₁ t₂ => .mk ∼(equal t₁ t₂) (by rfl)
+  | _, rel r tv => .mk ∼(rel r tv) (by rfl)
+
+  | _, ⊤ => .mk ⊥ (by apply semanticallyEquivalent_not_not)
+  | _, ∼(equal t₁ t₂) => .mk (equal t₁ t₂) (by apply semanticallyEquivalent_not_not)
+  | _, ∼(rel r tv) => .mk (rel r tv) (by apply semanticallyEquivalent_not_not)
+
+  | _, BoundedFormula.inf φ ψ =>
+    .mk (φ.simpleNotAux ⊔ ψ.simpleNotAux) (by
+      symm
+      trans
+      · exact not_inf_semanticallyEquivalent_sup_not φ ψ
+      · exact Theory.SemanticallyEquivalent.sup φ.simpleNotAux.2.symm ψ.simpleNotAux.2.symm
+    )
+  | _, BoundedFormula.sup φ ψ =>
+    .mk (φ.simpleNotAux ⊓ ψ.simpleNotAux) (by
+      symm
+      trans
+      · exact not_sup_semanticallyEquivalent_inf_not φ ψ
+      · exact Theory.SemanticallyEquivalent.inf φ.simpleNotAux.2.symm ψ.simpleNotAux.2.symm
+    )
+
+  | _, ∀' φ =>
+    .mk (∃' φ.simpleNotAux) (by
+      symm
+      trans
+      · exact not_all_semanticallyEquivalent_ex_not φ
+      · exact Theory.SemanticallyEquivalent.ex φ.simpleNotAux.2.symm
+    )
+  | _, ∃' φ =>
+    .mk (∀' φ.simpleNotAux) (by
+      symm
+      trans
+      · exact not_ex_semanticallyEquivalent_all_not φ
+      · exact Theory.SemanticallyEquivalent.all φ.simpleNotAux.2.symm
+    )
+
+  | _, φ => .mk ∼φ (by rfl)
+
+/-- An auxilary operation which is semantically equivalent to
+  `FirstOrder.Language.BoundedFormula.not`. It takes a bounded formula `φ`, assuming that any
+  negation symbol inside `φ` occurs in front of an atomic formula or `⊥`, it applies negation to
+  `φ`, pushes the negation inwards through `⊓`, `⊔`, `∀'`, `∃'`, and eliminates double negations.-/
+def simpleNot (φ : L.BoundedFormula α n) : L.BoundedFormula α n :=
+  φ.simpleNotAux.1
+
+theorem simpleNot_semanticallyEquivalent_not (φ : L.BoundedFormula α n) : simpleNot φ ⇔[∅] ∼φ :=
+  φ.simpleNotAux.2
 
 /-- An atomic formula is either equality or a relation symbol applied to terms.
 Note that `⊥` and `⊤` are not considered atomic in this convention. -/
@@ -65,6 +144,200 @@ theorem IsAtomic.liftAt {k m : ℕ} (h : IsAtomic φ) : (φ.liftAt k m).IsAtomic
 
 theorem IsAtomic.castLE {h : l ≤ n} (hφ : IsAtomic φ) : (φ.castLE h).IsAtomic :=
   IsAtomic.recOn hφ (fun _ _ => IsAtomic.equal _ _) fun _ _ => IsAtomic.rel _ _
+
+protected theorem IsAtomic.simpleNot_eq_not {φ : L.BoundedFormula α n} (hφ : φ.IsAtomic) :
+    φ.simpleNot = ∼φ := by
+  induction hφ with
+  | equal t₁ t₂ => rfl
+  | rel R ts => rfl
+
+protected theorem IsAtomic.simpleNot_of_not_eq {φ : L.BoundedFormula α n} (hφ : φ.IsAtomic) :
+    φ.not.simpleNot = φ := by
+  induction hφ with
+  | equal t₁ t₂ => rfl
+  | rel R ts => rfl
+
+/-- A literal is either `⊥`, `⊤`, an atomic formula or the negation of an atomic formula. -/
+inductive IsLiteral : L.BoundedFormula α n → Prop
+  | falsum : IsLiteral BoundedFormula.falsum
+  | of_isAtomic {φ : L.BoundedFormula α n} (h : φ.IsAtomic) : IsLiteral φ
+  | not_falsum : IsLiteral BoundedFormula.falsum.not
+  | of_not_of_isAtomic {φ : L.BoundedFormula α n} (h : φ.IsAtomic) : IsLiteral φ.not
+
+theorem IsAtomic.isLiteral {φ : L.BoundedFormula α n} (hφ : φ.IsAtomic) : IsLiteral φ :=
+  IsLiteral.of_isAtomic hφ
+
+protected theorem IsLiteral.simpleNot {φ : L.BoundedFormula α n} (hφ : φ.IsLiteral) :
+    φ.simpleNot.IsLiteral := by
+  induction hφ with
+  | falsum =>
+    exact IsLiteral.not_falsum
+  | of_isAtomic hφ =>
+    rw [hφ.simpleNot_eq_not]
+    exact IsLiteral.of_not_of_isAtomic hφ
+  | not_falsum =>
+    exact IsLiteral.falsum
+  | of_not_of_isAtomic hφ =>
+    rw [hφ.simpleNot_of_not_eq]
+    exact hφ.isLiteral
+
+/-- A conjunctive formula is a conjunction of literals. -/
+inductive IsConjunctive : L.BoundedFormula α n → Prop
+  | of_isLiteral {φ : L.BoundedFormula α n} (h : φ.IsLiteral) : IsConjunctive φ
+  | inf {φ ψ : L.BoundedFormula α n} (hφ : IsConjunctive φ) (hψ : IsConjunctive ψ) :
+    IsConjunctive (φ ⊓ ψ)
+
+theorem IsLiteral.isConjunctive {φ : L.BoundedFormula α n} (hφ : φ.IsLiteral) : IsConjunctive φ :=
+  IsConjunctive.of_isLiteral hφ
+
+theorem IsAtomic.isConjunctive {φ : L.BoundedFormula α n} (hφ : φ.IsAtomic) : IsConjunctive φ :=
+  IsLiteral.isConjunctive (IsAtomic.isLiteral hφ)
+
+/-- A disjunctive formula is a disjunction of literals. -/
+inductive IsDisjunctive : L.BoundedFormula α n → Prop
+  | of_isLiteral {φ : L.BoundedFormula α n} (h : φ.IsLiteral) : IsDisjunctive φ
+  | sup {φ ψ : L.BoundedFormula α n} (hφ : IsDisjunctive φ) (hψ : IsDisjunctive ψ) :
+    IsDisjunctive (φ ⊔ ψ)
+
+theorem IsLiteral.isDisjunctive {φ : L.BoundedFormula α n} (hφ : φ.IsLiteral) : IsDisjunctive φ :=
+  IsDisjunctive.of_isLiteral hφ
+
+theorem IsAtomic.isDisjunctive {φ : L.BoundedFormula α n} (hφ : φ.IsAtomic) : IsDisjunctive φ :=
+  IsLiteral.isDisjunctive (IsAtomic.isLiteral hφ)
+
+protected theorem IsConjunctive.simpleNot {φ : L.BoundedFormula α n} (hφ : φ.IsConjunctive) :
+    φ.simpleNot.IsDisjunctive := by
+  induction hφ with
+  | of_isLiteral hφ =>
+    apply IsDisjunctive.of_isLiteral
+    exact IsLiteral.simpleNot hφ
+  | inf hφ hψ hφ_ih hψ_ih =>
+    dsimp only [simpleNot, simpleNotAux]
+    exact IsDisjunctive.sup hφ_ih hψ_ih
+
+protected theorem IsDisjunctive.simpleNot {φ : L.BoundedFormula α n} (hφ : φ.IsDisjunctive) :
+    φ.simpleNot.IsConjunctive := by
+  induction hφ with
+  | of_isLiteral hφ =>
+    apply IsConjunctive.of_isLiteral
+    exact IsLiteral.simpleNot hφ
+  | sup hφ hψ hφ_ih hψ_ih =>
+    dsimp only [simpleNot, simpleNotAux]
+    exact IsConjunctive.inf hφ_ih hψ_ih
+
+/-- A DNF formula is a disjunction of conjunctive formulas i.e., it is a formula in disjunctive
+  normal form. -/
+inductive IsDNF : L.BoundedFormula α n → Prop
+  | of_isConjunctive {φ : L.BoundedFormula α n} (h : φ.IsConjunctive) : IsDNF φ
+  | sup {φ ψ : L.BoundedFormula α n} (hφ : IsDNF φ) (hψ : IsDNF ψ) : IsDNF (φ ⊔ ψ)
+
+theorem IsConjunctive.isDNF {φ : L.BoundedFormula α n} (hφ : φ.IsConjunctive) : IsDNF φ :=
+  IsDNF.of_isConjunctive hφ
+
+/-- A CNF formula is a conjunction of disjunctive formulas i.e., it is a formula in conjunctive
+  normal form. -/
+inductive IsCNF : L.BoundedFormula α n → Prop
+  | of_isDisjunctive {φ : L.BoundedFormula α n} (h : φ.IsDisjunctive) : IsCNF φ
+  | inf {φ ψ : L.BoundedFormula α n} (hφ : IsCNF φ) (hψ : IsCNF ψ) : IsCNF (φ ⊓ ψ)
+
+theorem IsDisjunctive.isCNF {φ : L.BoundedFormula α n} (hφ : φ.IsDisjunctive) : IsCNF φ :=
+  IsCNF.of_isDisjunctive hφ
+
+protected theorem IsDNF.simpleNot {φ : L.BoundedFormula α n} (hφ : φ.IsDNF) :
+    φ.simpleNot.IsCNF := by
+  induction hφ with
+  | of_isConjunctive hφ =>
+    apply IsCNF.of_isDisjunctive
+    exact IsConjunctive.simpleNot hφ
+  | sup hφ hψ hφ_ih hψ_ih =>
+    dsimp only [simpleNot, simpleNotAux]
+    exact IsCNF.inf hφ_ih hψ_ih
+
+namespace IsCNF
+
+protected theorem simpleNot {φ : L.BoundedFormula α n} (hφ : φ.IsCNF) : φ.simpleNot.IsDNF := by
+  induction hφ with
+  | of_isDisjunctive hφ =>
+    apply IsDNF.of_isConjunctive
+    exact IsDisjunctive.simpleNot hφ
+  | inf hφ hψ hφ_ih hψ_ih =>
+    dsimp only [simpleNot, simpleNotAux]
+    exact IsDNF.sup hφ_ih hψ_ih
+
+/-- An auxilary definition to `FirstOrder.Language.BoundedFormula.IsCNF.sup` and
+  `FirstOrder.Language.BoundedFormula.IsCNF.sup_semanticallyEquivalent_sup`. -/
+protected def supAux (φ ψ : L.BoundedFormula α n) : {χ : L.BoundedFormula α n // χ ⇔[∅] φ ⊔ ψ} :=
+  match φ with
+  | BoundedFormula.inf φ₁ φ₂ =>
+    .mk ((IsCNF.supAux φ₁ ψ).1 ⊓ (IsCNF.supAux φ₂ ψ).1) (by
+      trans; exact Theory.SemanticallyEquivalent.inf (IsCNF.supAux φ₁ ψ).2 (IsCNF.supAux φ₂ ψ).2
+      dsimp only [Theory.SemanticallyEquivalent, Theory.ModelsBoundedFormula, BoundedFormula.inf]
+      intros
+      simp only [realize_iff, realize_not, realize_inf, realize_sup, realize_imp]
+      tauto
+    )
+  | φ =>
+    match ψ with
+    | BoundedFormula.inf ψ₁ ψ₂ =>
+      .mk ((IsCNF.supAux φ ψ₁).1 ⊓ (IsCNF.supAux φ ψ₂).1) (by
+        trans; exact Theory.SemanticallyEquivalent.inf (IsCNF.supAux φ ψ₁).2 (IsCNF.supAux φ ψ₂).2
+        dsimp only [Theory.SemanticallyEquivalent, Theory.ModelsBoundedFormula, BoundedFormula.inf]
+        intros
+        simp only [realize_iff, realize_not, realize_inf, realize_sup, realize_imp]
+        tauto
+      )
+    | ψ => .mk (φ ⊔ ψ) (by rfl)
+
+/-- An auxilary operation which is semantically equivalent to
+  `FirstOrder.Language.BoundedFormula.sup`. It takes bounded formulas `φ` and `ψ`, assuming that any
+  negation symbol inside them occurs in front of an atomic formula or `⊥`, it applies `⊔` and
+  pushes it inwards by distributing it over `⊓`. -/
+protected def sup (φ ψ : L.BoundedFormula α n) : L.BoundedFormula α n :=
+  (IsCNF.supAux φ ψ).1
+
+protected theorem sup_semanticallyEquivalent_sup (φ ψ : L.BoundedFormula α n) :
+    IsCNF.sup φ ψ ⇔[∅] φ ⊔ ψ :=
+  (IsCNF.supAux φ ψ).2
+
+protected lemma sup_of_isLiteral_eq {φ ψ : L.BoundedFormula α n} (hφ : φ.IsLiteral)
+    (hψ : ψ.IsLiteral) : IsCNF.sup φ ψ = φ ⊔ ψ := by
+  unfold IsCNF.sup IsCNF.supAux
+  split
+  · contradiction
+  · split
+    · contradiction
+    · rfl
+
+protected lemma sup_of_isDisjunctive_eq {φ ψ : L.BoundedFormula α n} (hφ : φ.IsDisjunctive)
+    (hψ : ψ.IsDisjunctive) : IsCNF.sup φ ψ = φ ⊔ ψ := by
+  unfold IsCNF.sup IsCNF.supAux
+  split
+  · contradiction
+  · split
+    · contradiction
+    · rfl
+
+/-- When `FirstOrder.Language.BoundedFormula.IsCNF.sup` is applied to formulas in CNF, the result
+  is also a formula in CNF. -/
+protected theorem sup_isCNF {φ ψ : L.BoundedFormula α n} (hφ : φ.IsCNF) (hψ : ψ.IsCNF) :
+    (IsCNF.sup φ ψ).IsCNF := by
+  induction hφ with
+  | of_isDisjunctive hφ =>
+      induction hψ with
+      | of_isDisjunctive hψ =>
+        rw [IsCNF.sup_of_isDisjunctive_eq hφ hψ]
+        apply IsCNF.of_isDisjunctive
+        exact IsDisjunctive.sup hφ hψ
+      | inf _ _ hψ₁_ih hψ₂_ih =>
+        unfold IsCNF.sup IsCNF.supAux
+        split
+        · contradiction
+        · exact IsCNF.inf hψ₁_ih hψ₂_ih
+  | inf _ _ hφ₁_ih hφ₂_ih =>
+      unfold IsCNF.sup IsCNF.supAux
+      exact IsCNF.inf hφ₁_ih hφ₂_ih
+
+end IsCNF
 
 /-- A quantifier-free formula is a formula defined without quantifiers. These are all equivalent
 to boolean combinations of atomic formulas. -/
@@ -103,6 +376,115 @@ protected theorem castLE {h : l ≤ n} (hφ : IsQF φ) : (φ.castLE h).IsQF :=
   IsQF.recOn hφ isQF_bot (fun ih => ih.castLE.isQF) fun _ _ ih1 ih2 => ih1.imp ih2
 
 end IsQF
+
+mutual
+
+/-- Given a quantifier free formula, it produces a semantically equivalent formula in DNF. -/
+def toDNF (φ : L.BoundedFormula α n) : L.BoundedFormula α n :=
+  match φ with
+  | φ ⟹ ψ /- ⇔[∅] ∼φ ⊔ ψ -/ => (toCNF φ).simpleNot ⊔ (toDNF ψ)
+  | _ => φ
+
+/-- Given a quantifier free formula, it produces a semantically equivalent formula in CNF. -/
+def toCNF (φ : L.BoundedFormula α n) : L.BoundedFormula α n :=
+  match φ with
+  | φ ⟹ ψ /- ⇔[∅] ∼φ ⊔ ψ ⇔[∅] ∼(φ ⊓ ∼ψ) -/ => IsCNF.sup (toDNF φ).simpleNot (toCNF ψ)
+  | _ => φ
+
+end
+
+mutual
+
+theorem toDNF_semanticallyEquivalent (φ : L.BoundedFormula α n) : toDNF φ ⇔[∅] φ := by
+  match φ with
+  | ⊥ => rfl
+  | equal t₁ t₂ => rfl
+  | rel R ts => rfl
+  | ∀' φ => rfl
+  | φ₁ ⟹ φ₂ =>
+    dsimp only [toDNF]
+    symm
+    trans; exact imp_semanticallyEquivalent_not_sup φ₁ φ₂
+    apply Theory.SemanticallyEquivalent.sup
+    · symm
+      trans; exact simpleNot_semanticallyEquivalent_not _
+      apply Theory.SemanticallyEquivalent.not
+      exact toCNF_semanticallyEquivalent φ₁
+    · symm
+      exact toDNF_semanticallyEquivalent φ₂
+
+theorem toCNF_semanticallyEquivalent (φ : L.BoundedFormula α n) : toCNF φ ⇔[∅] φ := by
+  match φ with
+  | ⊥ => rfl
+  | equal t₁ t₂ => rfl
+  | rel R ts => rfl
+  | ∀' φ => rfl
+  | φ₁ ⟹ φ₂ =>
+    dsimp only [toCNF]
+    trans; exact IsCNF.sup_semanticallyEquivalent_sup _ _
+    symm
+    trans; exact imp_semanticallyEquivalent_not_sup φ₁ φ₂
+    apply Theory.SemanticallyEquivalent.sup
+    · symm
+      trans; exact simpleNot_semanticallyEquivalent_not _
+      apply Theory.SemanticallyEquivalent.not
+      exact toDNF_semanticallyEquivalent φ₁
+    · symm
+      exact toCNF_semanticallyEquivalent φ₂
+
+end
+
+protected theorem IsAtomic.toDNF_eq {φ : L.BoundedFormula α n} (h : φ.IsAtomic) : toDNF φ = φ := by
+  induction h with
+  | equal t₁ t₂ => rfl
+  | rel R ts => rfl
+
+protected theorem IsAtomic.toCNF_eq {φ : L.BoundedFormula α n} (h : φ.IsAtomic) : toCNF φ = φ := by
+  induction h with
+  | equal t₁ t₂ => rfl
+  | rel R ts => rfl
+
+mutual
+
+theorem IsQF.toDNF_isDNF {φ : L.BoundedFormula α n} (hφ : φ.IsQF) : φ.toDNF.IsDNF := by
+  match hφ with
+  | falsum =>
+    dsimp only [toDNF]
+    apply IsDNF.of_isConjunctive
+    apply IsConjunctive.of_isLiteral
+    exact IsLiteral.falsum
+  | of_isAtomic hφ =>
+    rw [IsAtomic.toDNF_eq hφ]
+    apply IsDNF.of_isConjunctive
+    apply IsConjunctive.of_isLiteral
+    exact IsLiteral.of_isAtomic hφ
+  | imp hφ hψ =>
+    dsimp [toDNF]
+    apply IsDNF.sup
+    · apply IsCNF.simpleNot
+      exact toCNF_isCNF hφ
+    · exact toDNF_isDNF hψ
+
+theorem IsQF.toCNF_isCNF {φ : L.BoundedFormula α n} (hφ : φ.IsQF) : φ.toCNF.IsCNF := by
+  match hφ with
+  | falsum =>
+    dsimp only [toCNF]
+    apply IsCNF.of_isDisjunctive
+    apply IsDisjunctive.of_isLiteral
+    exact IsLiteral.falsum
+  | of_isAtomic hφ =>
+    rw [IsAtomic.toCNF_eq hφ]
+    apply IsCNF.of_isDisjunctive
+    apply IsDisjunctive.of_isLiteral
+    exact IsLiteral.of_isAtomic hφ
+  | imp hφ hψ =>
+    dsimp [toCNF]
+    apply IsCNF.sup_isCNF
+    · apply IsDNF.simpleNot
+      exact toDNF_isDNF hφ
+    · exact toCNF_isCNF hψ
+
+end
 
 theorem not_all_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.all.IsQF := fun con => by
   cases' con with _ con
