@@ -423,7 +423,7 @@ def ofNatIsoRight {F : C ⥤ D} {G H : D ⥤ C} (adj : F ⊣ G) (iso : G ≅ H) 
 /-- The isomorpism which an adjunction `F ⊣ G` induces on `G ⋙ yoneda`. This states that
 `Adjunction.homEquiv` is natural in both arguments. -/
 @[simps!]
-def yonedaIso {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₁} D]
+def compYonedaIso {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₁} D]
     {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) :
     G ⋙ yoneda ≅ yoneda ⋙ (whiskeringLeft _ _ _).obj F.op :=
   NatIso.ofComponents fun X => NatIso.ofComponents fun Y => (adj.homEquiv Y.unop X).toIso.symm
@@ -431,7 +431,7 @@ def yonedaIso {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v�
 /-- The isomorpism which an adjunction `F ⊣ G` induces on `F.op ⋙ coyoneda`. This states that
 `Adjunction.homEquiv` is natural in both arguments. -/
 @[simps!]
-def coyonedaIso {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₁} D]
+def compCoyonedaIso {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₁} D]
     {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) :
     F.op ⋙ coyoneda ≅ coyoneda ⋙ (whiskeringLeft _ _ _).obj G :=
   NatIso.ofComponents fun X => NatIso.ofComponents fun Y => (adj.homEquiv X.unop Y).toIso
