@@ -431,7 +431,7 @@ variable {R : Type u} [Ring R]
 
 /-- The Jacobson radical of `I` is the infimum of all maximal (left) ideals containing `I`. -/
 def jacobson (I : TwoSidedIdeal R) : TwoSidedIdeal R :=
-  TwoSidedIdeal.ofIdeal (asIdeal I).jacobson (Ideal.jacobson_mul_mem_right <| I.mul_mem_right _ _)
+  (asIdeal I).jacobson.toTwoSided (Ideal.jacobson_mul_mem_right <| I.mul_mem_right _ _)
 
 lemma asIdeal_jacobson (I : TwoSidedIdeal R) : asIdeal I.jacobson = (asIdeal I).jacobson := by
   ext; simp [jacobson]
