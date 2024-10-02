@@ -14,12 +14,14 @@ import Mathlib.Order.Hom.Basic
 
 variable {G₀} [GroupWithZero G₀] [Preorder G₀] [ZeroLEOneClass G₀] {a b c d : G₀}
 
-/-- `Equiv.mulLeft₀` as an order_iso. -/
+/-- `Equiv.mulLeft₀` as an order isomorphism. -/
 @[simps! (config := { simpRhs := true })]
-def OrderIso.mulLeft₀ [PosMulMono G₀] [PosMulReflectLE G₀] (a : G₀) (ha : 0 < a) : G₀ ≃o G₀ :=
-  { Equiv.mulLeft₀ a ha.ne' with map_rel_iff' := @fun _ _ => mul_le_mul_left ha }
+def OrderIso.mulLeft₀ [PosMulMono G₀] [PosMulReflectLE G₀] (a : G₀) (ha : 0 < a) : G₀ ≃o G₀ where
+  toEquiv := .mulLeft₀ a ha.ne'
+  map_rel_iff' := mul_le_mul_left ha
 
-/-- `Equiv.mulRight₀` as an order_iso. -/
+/-- `Equiv.mulRight₀` as an order isomorphism. -/
 @[simps! (config := { simpRhs := true })]
-def OrderIso.mulRight₀ [MulPosMono G₀] [MulPosReflectLE G₀] (a : G₀) (ha : 0 < a) : G₀ ≃o G₀ :=
-  { Equiv.mulRight₀ a ha.ne' with map_rel_iff' := @fun _ _ => mul_le_mul_right ha }
+def OrderIso.mulRight₀ [MulPosMono G₀] [MulPosReflectLE G₀] (a : G₀) (ha : 0 < a) : G₀ ≃o G₀ where
+  toEquiv := .mulRight₀ a ha.ne'
+  map_rel_iff' := mul_le_mul_right ha
