@@ -125,7 +125,7 @@ lemma charmatrix_toSquareBlock {α : Type*} [DecidableEq α] {b : n → α} {a :
 
 lemma BlockTriangular.charpoly {α : Type*} {b : n → α} [LinearOrder α] (h : M.BlockTriangular b) :
     M.charpoly = ∏ a ∈ image b univ, (M.toSquareBlock b a).charpoly := by
-  simp only [Matrix.charpoly, h.charmatrix.det, toSquareBlock_charmatrix]
+  simp only [Matrix.charpoly, h.charmatrix.det, charmatrix_toSquareBlock]
 
 lemma charpoly_of_upperTriangular [LinearOrder n] (M : Matrix n n R) (h : M.BlockTriangular id) :
     M.charpoly = ∏ i : n, (X - C (M i i)) := by
