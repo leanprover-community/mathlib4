@@ -2,14 +2,12 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen,
-Scott Morrison, Chris Hughes, Anne Baanen, Junyan Xu
+Kim Morrison, Chris Hughes, Anne Baanen, Junyan Xu
 -/
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.Dimension.Finite
 import Mathlib.SetTheory.Cardinal.Subfield
 import Mathlib.LinearAlgebra.Dimension.RankNullity
-
-#align_import linear_algebra.dimension from "leanprover-community/mathlib"@"47a5f8186becdbc826190ced4312f8199f9db6a5"
 
 /-!
 # Dimension of vector spaces
@@ -38,7 +36,7 @@ universe u₀ u v v' v'' u₁' w w'
 variable {K R : Type u} {V V₁ V₂ V₃ : Type v} {V' V'₁ : Type v'} {V'' : Type v''}
 variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
 
-open BigOperators Cardinal Basis Submodule Function Set
+open Cardinal Basis Submodule Function Set
 
 section Module
 
@@ -53,7 +51,6 @@ variable [AddCommGroup V₁] [Module K V₁]
 theorem Basis.finite_ofVectorSpaceIndex_of_rank_lt_aleph0 (h : Module.rank K V < ℵ₀) :
     (Basis.ofVectorSpaceIndex K V).Finite :=
   finite_def.2 <| (Basis.ofVectorSpace K V).nonempty_fintype_index_of_rank_lt_aleph0 h
-#align basis.finite_of_vector_space_index_of_rank_lt_aleph_0 Basis.finite_ofVectorSpaceIndex_of_rank_lt_aleph0
 
 /-- Also see `rank_quotient_add_rank`. -/
 theorem rank_quotient_add_rank_of_divisionRing (p : Submodule K V) :
@@ -89,12 +86,12 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
   congr 1
   apply LinearEquiv.rank_eq
   let L : V₁ →ₗ[K] ker (coprod db eb) := by -- Porting note: this is needed to avoid a timeout
-    refine' LinearMap.codRestrict _ (prod cd (-ce)) _
+    refine LinearMap.codRestrict _ (prod cd (-ce)) ?_
     · intro c
       simp only [add_eq_zero_iff_eq_neg, LinearMap.prod_apply, mem_ker, Pi.prod, coprod_apply,
         neg_neg, map_neg, neg_apply]
       exact LinearMap.ext_iff.1 eq c
-  refine' LinearEquiv.ofBijective L ⟨_, _⟩
+  refine LinearEquiv.ofBijective L ⟨?_, ?_⟩
   · rw [← ker_eq_bot, ker_codRestrict, ker_prod, hgd, bot_inf_eq]
   · rw [← range_eq_top, eq_top_iff, range_codRestrict, ← map_le_iff_le_comap, Submodule.map_top,
       range_subtype]
@@ -106,7 +103,6 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
     rcases h hde with ⟨c, h₁, h₂⟩
     refine ⟨c, h₁, ?_⟩
     rw [h₂, _root_.neg_neg]
-#align rank_add_rank_split rank_add_rank_split
 
 end
 
@@ -128,8 +124,8 @@ theorem linearIndependent_of_top_le_span_of_card_eq_finrank {ι : Type*} [Fintyp
     by_contra gx_ne_zero
     -- We'll derive a contradiction by showing `b '' (univ \ {i})` of cardinality `n - 1`
     -- spans a vector space of dimension `n`.
-    refine' not_le_of_gt (span_lt_top_of_card_lt_finrank
-      (show (b '' (Set.univ \ {i})).toFinset.card < finrank K V from _)) _
+    refine not_le_of_gt (span_lt_top_of_card_lt_finrank
+      (show (b '' (Set.univ \ {i})).toFinset.card < finrank K V from ?_)) ?_
     · calc
         (b '' (Set.univ \ {i})).toFinset.card = ((Set.univ \ {i}).toFinset.image b).card := by
           rw [Set.toFinset_card, Fintype.card_ofFinset]
@@ -139,32 +135,31 @@ theorem linearIndependent_of_top_le_span_of_card_eq_finrank {ι : Type*} [Fintyp
         _ = finrank K V := card_eq
     -- We already have that `b '' univ` spans the whole space,
     -- so we only need to show that the span of `b '' (univ \ {i})` contains each `b j`.
-    refine' spans.trans (span_le.mpr _)
+    refine spans.trans (span_le.mpr ?_)
     rintro _ ⟨j, rfl, rfl⟩
     -- The case that `j ≠ i` is easy because `b j ∈ b '' (univ \ {i})`.
     by_cases j_eq : j = i
     swap
-    · refine' subset_span ⟨j, (Set.mem_diff _).mpr ⟨Set.mem_univ _, _⟩, rfl⟩
+    · refine subset_span ⟨j, (Set.mem_diff _).mpr ⟨Set.mem_univ _, ?_⟩, rfl⟩
       exact mt Set.mem_singleton_iff.mp j_eq
     -- To show `b i ∈ span (b '' (univ \ {i}))`, we use that it's a weighted sum
     -- of the other `b j`s.
     rw [j_eq, SetLike.mem_coe, show b i = -((g i)⁻¹ • (s.erase i).sum fun j => g j • b j) from _]
-    · refine' neg_mem (smul_mem _ _ (sum_mem fun k hk => _))
+    · refine neg_mem (smul_mem _ _ (sum_mem fun k hk => ?_))
       obtain ⟨k_ne_i, _⟩ := Finset.mem_erase.mp hk
-      refine' smul_mem _ _ (subset_span ⟨k, _, rfl⟩)
+      refine smul_mem _ _ (subset_span ⟨k, ?_, rfl⟩)
       simp_all only [Set.mem_univ, Set.mem_diff, Set.mem_singleton_iff, and_self, not_false_eq_true]
     -- To show `b i` is a weighted sum of the other `b j`s, we'll rewrite this sum
     -- to have the form of the assumption `dependent`.
     apply eq_neg_of_add_eq_zero_left
     calc
       (b i + (g i)⁻¹ • (s.erase i).sum fun j => g j • b j) =
-          (g i)⁻¹ • (g i • b i + (s.erase i).sum fun j => g j • b j) :=
-        by rw [smul_add, ← mul_smul, inv_mul_cancel gx_ne_zero, one_smul]
+          (g i)⁻¹ • (g i • b i + (s.erase i).sum fun j => g j • b j) := by
+        rw [smul_add, ← mul_smul, inv_mul_cancel₀ gx_ne_zero, one_smul]
       _ = (g i)⁻¹ • (0 : V) := congr_arg _ ?_
       _ = 0 := smul_zero _
     -- And then it's just a bit of manipulation with finite sums.
     rwa [← Finset.insert_erase i_mem_s, Finset.sum_insert (Finset.not_mem_erase _ _)] at dependent
-#align linear_independent_of_top_le_span_of_card_eq_finrank linearIndependent_of_top_le_span_of_card_eq_finrank
 
 /-- A finite family of vectors is linearly independent if and only if
 its cardinality equals the dimension of its span. -/
@@ -185,31 +180,25 @@ theorem linearIndependent_iff_card_eq_finrank_span {ι : Type*} [Fintype ι] {b 
         simp [f, Set.mem_image, Set.mem_range]
       rw [hf] at h
       have hx : (x : V) ∈ span K (Set.range b) := x.property
-      conv at hx =>
-        arg 2
-        rw [h]
+      simp_rw [h] at hx
       simpa [f, mem_map] using hx
     have hi : LinearMap.ker f = ⊥ := ker_subtype _
     convert (linearIndependent_of_top_le_span_of_card_eq_finrank hs hc).map' _ hi
-#align linear_independent_iff_card_eq_finrank_span linearIndependent_iff_card_eq_finrank_span
 
 theorem linearIndependent_iff_card_le_finrank_span {ι : Type*} [Fintype ι] {b : ι → V} :
     LinearIndependent K b ↔ Fintype.card ι ≤ (Set.range b).finrank K := by
   rw [linearIndependent_iff_card_eq_finrank_span, (finrank_range_le_card _).le_iff_eq]
-#align linear_independent_iff_card_le_finrank_span linearIndependent_iff_card_le_finrank_span
 
 /-- A family of `finrank K V` vectors forms a basis if they span the whole space. -/
 noncomputable def basisOfTopLeSpanOfCardEqFinrank {ι : Type*} [Fintype ι] (b : ι → V)
     (le_span : ⊤ ≤ span K (Set.range b)) (card_eq : Fintype.card ι = finrank K V) : Basis ι K V :=
   Basis.mk (linearIndependent_of_top_le_span_of_card_eq_finrank le_span card_eq) le_span
-#align basis_of_top_le_span_of_card_eq_finrank basisOfTopLeSpanOfCardEqFinrank
 
 @[simp]
 theorem coe_basisOfTopLeSpanOfCardEqFinrank {ι : Type*} [Fintype ι] (b : ι → V)
     (le_span : ⊤ ≤ span K (Set.range b)) (card_eq : Fintype.card ι = finrank K V) :
     ⇑(basisOfTopLeSpanOfCardEqFinrank b le_span card_eq) = b :=
   Basis.coe_mk _ _
-#align coe_basis_of_top_le_span_of_card_eq_finrank coe_basisOfTopLeSpanOfCardEqFinrank
 
 /-- A finset of `finrank K V` vectors forms a basis if they span the whole space. -/
 @[simps! repr_apply]
@@ -218,7 +207,6 @@ noncomputable def finsetBasisOfTopLeSpanOfCardEqFinrank {s : Finset V}
   basisOfTopLeSpanOfCardEqFinrank ((↑) : ↥(s : Set V) → V)
     ((@Subtype.range_coe_subtype _ fun x => x ∈ s).symm ▸ le_span)
     (_root_.trans (Fintype.card_coe _) card_eq)
-#align finset_basis_of_top_le_span_of_card_eq_finrank finsetBasisOfTopLeSpanOfCardEqFinrank
 
 /-- A set of `finrank K V` vectors forms a basis if they span the whole space. -/
 @[simps! repr_apply]
@@ -226,7 +214,6 @@ noncomputable def setBasisOfTopLeSpanOfCardEqFinrank {s : Set V} [Fintype s]
     (le_span : ⊤ ≤ span K s) (card_eq : s.toFinset.card = finrank K V) : Basis s K V :=
   basisOfTopLeSpanOfCardEqFinrank ((↑) : s → V) ((@Subtype.range_coe_subtype _ s).symm ▸ le_span)
     (_root_.trans s.toFinset_card.symm card_eq)
-#align set_basis_of_top_le_span_of_card_eq_finrank setBasisOfTopLeSpanOfCardEqFinrank
 
 end Basis
 
@@ -260,8 +247,8 @@ theorem max_aleph0_card_le_rank_fun_nat : max ℵ₀ #K ≤ Module.rank K (ℕ �
     contrapose! card_K
     exact (power_lt_aleph0 card_K <| nat_lt_aleph0 _).le
   obtain ⟨e⟩ := lift_mk_le'.mp (card_ιL.trans_eq (lift_uzero #ιL).symm)
-  have rep_e := bK.total_repr (bL ∘ e)
-  rw [Finsupp.total_apply, Finsupp.sum] at rep_e
+  have rep_e := bK.linearCombination_repr (bL ∘ e)
+  rw [Finsupp.linearCombination_apply, Finsupp.sum] at rep_e
   set c := bK.repr (bL ∘ e)
   set s := c.support
   let f i (j : s) : L := ⟨bK j i, Subfield.subset_closure ⟨(j, i), rfl⟩⟩

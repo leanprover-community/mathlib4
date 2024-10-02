@@ -2,7 +2,11 @@
 Copyright (c) 2023 J. W. Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: J. W. Gerbscheid
+-/
 
+import Mathlib.Init
+
+/-!
 The combined state and list monad transformer.
 `StateListT σ α` is equivalent to `StateT σ (ListT α)` but more efficient.
 
@@ -168,3 +172,5 @@ instance StateListT.monadControl : MonadControl m (StateListT σ m) where
   stM      := StateList σ
   liftWith := fun f => do let s ← get; liftM (f (fun x => x s))
   restoreM := fun x _ => x
+
+end Mathlib.Meta.FunProp

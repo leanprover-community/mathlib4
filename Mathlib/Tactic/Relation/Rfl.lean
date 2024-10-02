@@ -3,6 +3,7 @@ Copyright (c) 2022 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen
 -/
+import Mathlib.Init
 import Lean.Meta.Tactic.Rfl
 
 /-!
@@ -40,3 +41,5 @@ def _root_.Lean.Expr.relSidesIfRefl? (e : Expr) : MetaM (Option (Name × Expr ×
       | some n => return some (n, lhs, rhs)
       | none => return none
   return none
+
+end Mathlib.Tactic

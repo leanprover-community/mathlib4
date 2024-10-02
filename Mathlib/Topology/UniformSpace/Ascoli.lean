@@ -3,6 +3,7 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
+import Mathlib.Topology.UniformSpace.CompactConvergence
 import Mathlib.Topology.UniformSpace.Equicontinuity
 import Mathlib.Topology.UniformSpace.Equiv
 
@@ -38,7 +39,7 @@ a family of compact subsets of `X`, and `α` is a uniform space.
   embeddings instead of subspaces with the subspace topology. This is done because, in practice,
   one would rarely work with `X →ᵤ[𝔖] α` directly, so we need to provide API for bringing back the
   statements to various other types, such as `C(X, Y)` or `E →L[𝕜] F`. To counteract this, all
-  statements (as well as most proofs!) are documented quite thouroughly.
+  statements (as well as most proofs!) are documented quite thoroughly.
 
 * A lot of statements assume `∀ K ∈ 𝔖, EquicontinuousOn F K` instead of the more natural
   `EquicontinuousOn F (⋃₀ 𝔖)`. This is in order to keep the most generality, as the first statement
@@ -88,7 +89,7 @@ theorem Equicontinuous.comap_uniformFun_eq [CompactSpace X] (F_eqcont : Equicont
   refine le_antisymm (UniformSpace.comap_mono UniformFun.uniformContinuous_toFun) ?_
   -- A bit of rewriting to get a nice intermediate statement.
   change comap _ _ ≤ comap _ _
-  simp_rw [Pi.uniformity, Filter.comap_iInf, comap_comap, Function.comp]
+  simp_rw [Pi.uniformity, Filter.comap_iInf, comap_comap, Function.comp_def]
   refine ((UniformFun.hasBasis_uniformity X α).comap (Prod.map F F)).ge_iff.mpr ?_
   -- Core of the proof: we need to show that, for any entourage `U` in `α`,
   -- the set `𝐓(U) := {(i,j) : ι × ι | ∀ x : X, (F i x, F j x) ∈ U}` belongs to the filter
@@ -219,7 +220,7 @@ theorem EquicontinuousOn.comap_uniformOnFun_eq {𝔖 : Set (Set X)} (𝔖_compac
   have H1 : (UniformOnFun.uniformSpace X α 𝔖).comap F =
       ⨅ (K ∈ 𝔖), (UniformFun.uniformSpace _ _).comap (K.restrict ∘ F) := by
     simp_rw [UniformOnFun.uniformSpace, UniformSpace.comap_iInf, ← UniformSpace.comap_comap,
-      UniformFun.ofFun, Equiv.coe_fn_mk, UniformOnFun.toFun, UniformOnFun.ofFun, Function.comp,
+      UniformFun.ofFun, Equiv.coe_fn_mk, UniformOnFun.toFun, UniformOnFun.ofFun, Function.comp_def,
       UniformFun, Equiv.coe_fn_symm_mk]
   -- Now, note that a similar fact is true for the uniform structure on `X → α` induced by
   -- the map `(⋃₀ 𝔖).restrict : (X → α) → ((⋃₀ 𝔖) → α)`: it is equal to the one induced by
@@ -337,7 +338,7 @@ theorem EquicontinuousOn.tendsto_uniformOnFun_iff_pi'
   -- `K ∈ 𝔖`, where we can apply `Equicontinuous.tendsto_uniformFun_iff_pi`.
   rw [← Filter.tendsto_comap_iff (g := (⋃₀ 𝔖).restrict), ← nhds_induced]
   simp_rw [UniformOnFun.topologicalSpace_eq, Pi.induced_restrict_sUnion 𝔖 (π := fun _ ↦ α),
-    nhds_iInf, nhds_induced, tendsto_iInf, tendsto_comap_iff]
+    _root_.nhds_iInf, nhds_induced, tendsto_iInf, tendsto_comap_iff]
   congrm ∀ K (hK : K ∈ 𝔖), ?_
   have : CompactSpace K := isCompact_iff_compactSpace.mp (𝔖_compact K hK)
   rw [← (equicontinuous_restrict_iff _ |>.mpr <| F_eqcont K hK).tendsto_uniformFun_iff_pi]
@@ -378,7 +379,7 @@ theorem EquicontinuousOn.isClosed_range_pi_of_uniformOnFun'
     mapClusterPt_iff_ultrafilter, range_comp, Subtype.coe_injective.surjective_comp_right.forall,
     ← restrict_eq, ← EquicontinuousOn.tendsto_uniformOnFun_iff_pi' 𝔖_compact F_eqcont]
   exact fun f ⟨u, _, hu⟩ ↦ mem_image_of_mem _ <| H.mem_of_tendsto hu <|
-    eventually_of_forall mem_range_self
+    Eventually.of_forall mem_range_self
 
 /-- Let `X` be a topological space, `𝔖` a covering of `X` by compact subsets, and
 `α` a uniform space. An equicontinuous subset of `X → α` is closed in the topology of uniform
@@ -482,3 +483,19 @@ theorem ArzelaAscoli.isCompact_closure_of_closedEmbedding [TopologicalSpace ι] 
   exact ArzelaAscoli.compactSpace_of_closedEmbedding 𝔖_compact
     (F_clemb.comp isClosed_closure.closedEmbedding_subtype_val) cls_eqcont
     fun K hK x hx ↦ (cls_pointwiseCompact K hK x hx).imp fun Q hQ ↦ ⟨hQ.1, by simpa using hQ.2⟩
+
+/-- A version of the **Arzela-Ascoli theorem**.
+
+If an equicontinuous family of continuous functions is compact in the pointwise topology, then it
+is compact in the compact open topology. -/
+theorem ArzelaAscoli.isCompact_of_equicontinuous
+    (S : Set C(X, α)) (hS1 : IsCompact (ContinuousMap.toFun '' S))
+    (hS2 : Equicontinuous ((↑) : S → X → α)) : IsCompact S := by
+  suffices h : Inducing (Equiv.Set.image (↑) S DFunLike.coe_injective) by
+    rw [isCompact_iff_compactSpace] at hS1 ⊢
+    exact (Equiv.toHomeomorphOfInducing _ h).symm.compactSpace
+  rw [← inducing_subtype_val.of_comp_iff, ← EquicontinuousOn.inducing_uniformOnFun_iff_pi _ _ _]
+  · exact ContinuousMap.uniformEmbedding_toUniformOnFunIsCompact.inducing.comp inducing_subtype_val
+  · exact eq_univ_iff_forall.mpr (fun x ↦ mem_sUnion_of_mem (mem_singleton x) isCompact_singleton)
+  · exact fun _ ↦ id
+  · exact fun K _ ↦ hS2.equicontinuousOn K

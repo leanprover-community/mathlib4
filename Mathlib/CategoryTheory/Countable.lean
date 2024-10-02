@@ -35,6 +35,8 @@ attribute [instance] CountableCategory.countableObj CountableCategory.countableH
 instance countablerCategoryDiscreteOfCountable (J : Type*) [Countable J] :
     CountableCategory (Discrete J) where
 
+instance : CountableCategory ℕ where
+
 namespace CountableCategory
 
 variable (α : Type u) [Category.{v} α] [CountableCategory α]
@@ -66,7 +68,8 @@ instance : Countable (HomAsType α) := Countable.of_equiv α (equivShrink.{0} α
 
 instance {i j : HomAsType α} : Countable (i ⟶ j) :=
   Countable.of_equiv ((ShrinkHoms.equivalence _).inverse.obj i ⟶
-    (ShrinkHoms.equivalence _).inverse.obj j) (equivOfFullyFaithful _).symm
+    (ShrinkHoms.equivalence _).inverse.obj j)
+    (Functor.FullyFaithful.ofFullyFaithful _).homEquiv.symm
 
 instance : CountableCategory (HomAsType α) where
 
@@ -77,6 +80,8 @@ noncomputable def homAsTypeEquiv : HomAsType α ≌ α :=
 end CountableCategory
 
 instance (α : Type*) [Category α] [FinCategory α] : CountableCategory α where
+
+instance : CountableCategory ℕ where
 
 open Opposite
 

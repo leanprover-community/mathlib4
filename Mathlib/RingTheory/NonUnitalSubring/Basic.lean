@@ -67,8 +67,6 @@ non-unital subring
 -/
 
 
-open scoped BigOperators
-
 universe u v w
 
 section Basic
@@ -296,7 +294,7 @@ protected theorem multiset_sum_mem {R} [NonUnitalNonAssocRing R] (s : NonUnitalS
 /-- Sum of elements in a `NonUnitalSubring` of a `NonUnitalRing` indexed by a `Finset`
 is in the `NonUnitalSubring`. -/
 protected theorem sum_mem {R : Type*} [NonUnitalNonAssocRing R] (s : NonUnitalSubring R)
-    {ι : Type*} {t : Finset ι} {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∑ i in t, f i) ∈ s :=
+    {ι : Type*} {t : Finset ι} {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∑ i ∈ t, f i) ∈ s :=
   sum_mem h
 
 /-- A non-unital subring of a non-unital ring inherits a non-unital ring structure -/
@@ -693,9 +691,9 @@ theorem closure_induction' {s : Set R} {p : closure s → Prop} (a : closure s)
     (mul : ∀ x y, p x → p y → p (x * y)) : p a :=
   Subtype.recOn a fun b hb => by
     refine Exists.elim ?_ fun (hb : b ∈ closure s) (hc : p ⟨b, hb⟩) => hc
-    refine'
+    refine
       closure_induction hb (fun x hx => ⟨subset_closure hx, mem x hx⟩)
-        ⟨zero_mem (closure s), zero⟩ _ _ _
+        ⟨zero_mem (closure s), zero⟩ ?_ ?_ ?_
     · rintro x y ⟨hx, hpx⟩ ⟨hy, hpy⟩
       exact ⟨add_mem hx hy, add _ _ hpx hpy⟩
     · rintro x ⟨hx, hpx⟩
@@ -712,8 +710,8 @@ theorem closure_induction₂ {s : Set R} {p : R → R → Prop} {a b : R} (ha : 
     (Hadd_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ + y₂))
     (Hmul_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ * x₂) y)
     (Hmul_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ * y₂)) : p a b := by
-  refine' closure_induction hb _ (H0_right _) (Hadd_right a) (Hneg_right a) (Hmul_right a)
-  refine' closure_induction ha Hs (fun x _ => H0_left x) _ _ _
+  refine closure_induction hb ?_ (H0_right _) (Hadd_right a) (Hneg_right a) (Hmul_right a)
+  refine closure_induction ha Hs (fun x _ => H0_left x) ?_ ?_ ?_
   · exact fun x y H₁ H₂ z zs => Hadd_left x y z (H₁ z zs) (H₂ z zs)
   · exact fun x hx z zs => Hneg_left x z (hx z zs)
   · exact fun x y H₁ H₂ z zs => Hmul_left x y z (H₁ z zs) (H₂ z zs)
@@ -745,14 +743,14 @@ theorem mem_closure_iff {s : Set R} {x} :
           mul_mem hx hy)
       (zero_mem _) (fun x y hx hy => add_mem hx hy) fun x hx => neg_mem hx⟩
 
-/-- If all elements of `s : Set A` commute pairwise, then `closure s` is a commutative ring.  -/
+/-- If all elements of `s : Set A` commute pairwise, then `closure s` is a commutative ring. -/
 def closureNonUnitalCommRingOfComm {R : Type u} [NonUnitalRing R] {s : Set R}
     (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) : NonUnitalCommRing (closure s) :=
   { (closure s).toNonUnitalRing with
     mul_comm := fun x y => by
       ext
       simp only [NonUnitalSubring.val_mul]
-      refine'
+      refine
         closure_induction₂ x.prop y.prop hcomm
           (fun x => by simp only [mul_zero, zero_mul])
           (fun x => by simp only [mul_zero, zero_mul])
@@ -801,6 +799,14 @@ theorem map_sup (s t : NonUnitalSubring R) (f : F) : (s ⊔ t).map f = s.map f �
 theorem map_iSup {ι : Sort*} (f : F) (s : ι → NonUnitalSubring R) :
     (iSup s).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
+
+theorem map_inf (s t : NonUnitalSubring R) (f : F) (hf : Function.Injective f) :
+    (s ⊓ t).map f = s.map f ⊓ t.map f := SetLike.coe_injective (Set.image_inter hf)
+
+theorem map_iInf {ι : Sort*} [Nonempty ι] (f : F) (hf : Function.Injective f)
+    (s : ι → NonUnitalSubring R) : (iInf s).map f = ⨅ i, (s i).map f := by
+  apply SetLike.coe_injective
+  simpa using (Set.injOn_of_injective hf).image_iInter_eq (s := SetLike.coe ∘ s)
 
 theorem comap_inf (s t : NonUnitalSubring S) (f : F) : (s ⊓ t).comap f = s.comap f ⊓ t.comap f :=
   (gc_map_comap f).u_inf

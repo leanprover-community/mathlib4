@@ -5,7 +5,6 @@ Authors: Damiano Testa
 -/
 
 import Lean.Elab.Command
-import Lean.Linter.Util
 import Batteries.Lean.HashSet
 
 /-!
@@ -29,16 +28,13 @@ For example, `#guard true` and `#check_tactic True ~> True by skip` trigger a me
 There is a list of silent `#`-command that are allowed.
 -/
 register_option linter.hashCommand : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the `#`-command linter"
 }
 
 namespace HashCommandLinter
 
 open Lean Elab
-
-/-- Gets the value of the `linter.hashCommand` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.hashCommand o
 
 open Command in
 /-- Exactly like `withSetOptionIn`, but recursively discards nested uses of `in`.
@@ -56,21 +52,20 @@ private partial def withSetOptionIn' (cmd : CommandElab) : CommandElab := fun st
     cmd stx
 
 /-- `allowed_commands` is the `HashSet` of `#`-commands that are allowed in 'Mathlib'. -/
-private abbrev allowed_commands : HashSet String :=
-  { "#align", "#align_import", "#noalign", "#adaptation_note" }
+private abbrev allowed_commands : Std.HashSet String := { "#adaptation_note" }
 
 /-- Checks that no command beginning with `#` is present in 'Mathlib',
 except for the ones in `allowed_commands`.
 
 If `warningAsError` is `true`, then the linter logs an info (rather than a warning).
-This means that CI will eventually fail on `#`-commands, but not stop it from continuing.
+This means that CI will eventually fail on `#`-commands, but does not stop it from continuing.
 
 However, in order to avoid local clutter, when `warningAsError` is `false`, the linter
 logs a warning only for the `#`-commands that do not already emit a message. -/
 def hashCommandLinter : Linter where run := withSetOptionIn' fun stx => do
   let mod := (← getMainModule).components
-  if getLinterHash (← getOptions) &&
-    ((← get).messages.msgs.size == 0 || warningAsError.get (← getOptions)) &&
+  if Linter.getLinterValue linter.hashCommand (← getOptions) &&
+    ((← get).messages.toList.isEmpty || warningAsError.get (← getOptions)) &&
     -- we check that the module is either not in `test` or, is `test.HashCommandLinter`
     (mod.getD 0 default != `test || (mod == [`test, `HashCommandLinter]))
     then

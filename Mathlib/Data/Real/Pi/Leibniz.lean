@@ -6,23 +6,21 @@ Authors: Benjamin Davidson, Jeremy Tan
 import Mathlib.Analysis.Complex.AbelLimit
 import Mathlib.Analysis.SpecialFunctions.Complex.Arctan
 
-#align_import data.real.pi.leibniz from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
-
 /-! ### Leibniz's series for `π` -/
 
 namespace Real
 
 open Filter Finset
 
-open scoped BigOperators Topology
+open scoped Topology
 
 /-- **Leibniz's series for `π`**. The alternating sum of odd number reciprocals is `π / 4`,
 proved by using Abel's limit theorem to extend the Maclaurin series of `arctan` to 1. -/
 theorem tendsto_sum_pi_div_four :
-    Tendsto (fun k => ∑ i in range k, (-1 : ℝ) ^ i / (2 * i + 1)) atTop (𝓝 (π / 4)) := by
+    Tendsto (fun k => ∑ i ∈ range k, (-1 : ℝ) ^ i / (2 * i + 1)) atTop (𝓝 (π / 4)) := by
   -- The series is alternating with terms of decreasing magnitude, so it converges to some limit
   obtain ⟨l, h⟩ :
-      ∃ l, Tendsto (fun n ↦ ∑ i in range n, (-1 : ℝ) ^ i / (2 * i + 1)) atTop (𝓝 l) := by
+      ∃ l, Tendsto (fun n ↦ ∑ i ∈ range n, (-1 : ℝ) ^ i / (2 * i + 1)) atTop (𝓝 l) := by
     apply Antitone.tendsto_alternating_series_of_tendsto_zero
     · exact antitone_iff_forall_lt.mpr fun _ _ _ ↦ by gcongr
     · apply Tendsto.inv_tendsto_atTop; apply tendsto_atTop_add_const_right
@@ -55,6 +53,5 @@ theorem tendsto_sum_pi_div_four :
     norm_cast
   -- But `arctan` is continuous everywhere, so the limit is `arctan 1 = π / 4`
   rwa [tendsto_nhds_unique abel ((continuous_arctan.tendsto 1).mono_left m), arctan_one] at h
-#align real.tendsto_sum_pi_div_four Real.tendsto_sum_pi_div_four
 
 end Real

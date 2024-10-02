@@ -3,6 +3,7 @@ Copyright (c) 2023 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Init
 import Batteries.Tactic.Lint
 
 /-!
@@ -24,10 +25,12 @@ However, note that Unicode has a rather restricted character set for superscript
 parser for complex expressions.
 -/
 
-set_option autoImplicit true
+universe u
 
 namespace Mathlib.Tactic
-open Lean Parser PrettyPrinter
+
+open Lean Parser PrettyPrinter Std
+
 namespace Superscript
 
 instance : Hashable Char := ⟨fun c => hash c.1⟩
@@ -35,9 +38,9 @@ instance : Hashable Char := ⟨fun c => hash c.1⟩
 /-- A bidirectional character mapping. -/
 structure Mapping where
   /-- Map from "special" (e.g. superscript) characters to "normal" characters. -/
-  toNormal : HashMap Char Char := {}
+  toNormal : Std.HashMap Char Char := {}
   /-- Map from "normal" text to "special" (e.g. superscript) characters. -/
-  toSpecial : HashMap Char Char := {}
+  toSpecial : Std.HashMap Char Char := {}
   deriving Inhabited
 
 /-- Constructs a mapping (intended for compile time use). Panics on violated invariants. -/
@@ -125,10 +128,10 @@ partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
       let mut pos := start
       while pos < stopTk do
         let c := input.get pos
-        let c' := m.toNormal.find! c
+        let c' := m.toNormal[c]!
         newStr := newStr.push c'
         pos := pos + c
-        if String.csize c != String.csize c' then
+        if c.utf8Size != c'.utf8Size then
           aligns := aligns.push (newStr.endPos, pos)
       newStr := newStr.push ' '
       if stopWs.1 - stopTk.1 != 1 then
@@ -210,7 +213,7 @@ def scriptParser.formatter (name : String) (m : Mapping) (k : SyntaxNodeKind) (p
   Formatter.node.formatter k p
   let st ← get
   let transformed : Except String _ := st.stack.mapM (·.mapStringsM fun s => do
-    let .some s := s.toList.mapM (m.toSpecial.insert ' ' ' ').find? | .error s
+    let .some s := s.toList.mapM (m.toSpecial.insert ' ' ' ').get? | .error s
     .ok ⟨s⟩)
   match transformed with
   | .error err =>
@@ -278,3 +281,5 @@ initialize
   registerAlias `subscript ``subscript subscript
   registerAliasCore Formatter.formatterAliasesRef `subscript subscript.formatter
   registerAliasCore Parenthesizer.parenthesizerAliasesRef `subscript subscript.parenthesizer
+
+end Mathlib.Tactic

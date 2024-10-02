@@ -87,7 +87,7 @@ variable {W}
 for a morphism property `W`. The fact it is an equivalence relation is not
 formalized, but it would follow easily from `LeftFraction₂.map_eq_iff`. -/
 def LeftFraction₂Rel {X Y : C} (z₁ z₂ : W.LeftFraction₂ X Y) : Prop :=
-  ∃ (Z : C)  (t₁ : z₁.Y' ⟶ Z) (t₂ : z₂.Y' ⟶ Z) (_ : z₁.s ≫ t₁ = z₂.s ≫ t₂)
+  ∃ (Z : C) (t₁ : z₁.Y' ⟶ Z) (t₂ : z₂.Y' ⟶ Z) (_ : z₁.s ≫ t₁ = z₂.s ≫ t₂)
     (_ : z₁.f ≫ t₁ = z₂.f ≫ t₂) (_ : z₁.f' ≫ t₁ = z₂.f' ≫ t₂), W (z₁.s ≫ t₁)
 
 namespace LeftFraction₂
@@ -171,13 +171,13 @@ end LeftFraction₃
 
 namespace LeftFraction₂Rel
 
-variable {X Y : C} {z₁ z₂ : W.LeftFraction₂ X Y} (h : LeftFraction₂Rel z₁ z₂)
+variable {X Y : C} {z₁ z₂ : W.LeftFraction₂ X Y}
 
-lemma fst : LeftFractionRel z₁.fst z₂.fst := by
+lemma fst (h : LeftFraction₂Rel z₁ z₂) : LeftFractionRel z₁.fst z₂.fst := by
   obtain ⟨Z, t₁, t₂, hst, hft, _, ht⟩ := h
   exact ⟨Z, t₁, t₂, hst, hft, ht⟩
 
-lemma snd : LeftFractionRel z₁.snd z₂.snd := by
+lemma snd (h : LeftFraction₂Rel z₁ z₂) : LeftFractionRel z₁.snd z₂.snd := by
   obtain ⟨Z, t₁, t₂, hst, _, hft', ht⟩ := h
   exact ⟨Z, t₁, t₂, hst, hft', ht⟩
 
@@ -205,7 +205,7 @@ lemma map_eq_iff {X Y : C} (φ ψ : W.LeftFraction₂ X Y) :
       rw [← reassoc_of% hst, ← reassoc_of% hα, ← reassoc_of% hst']
     obtain ⟨Z''', u', hu', fac'⟩ := HasLeftCalculusOfFractions.ext _ _ _ ψ.hs hα'
     simp only [Category.assoc] at fac fac'
-    refine' ⟨Z''', t₁' ≫ α.s ≫ u ≫ u', t₂' ≫ α.s ≫ u ≫ u', _, _, _, _⟩
+    refine ⟨Z''', t₁' ≫ α.s ≫ u ≫ u', t₂' ≫ α.s ≫ u ≫ u', ?_, ?_, ?_, ?_⟩
     · rw [reassoc_of% hst']
     · rw [reassoc_of% fac, reassoc_of% hft, fac']
     · rw [reassoc_of% hft']
@@ -242,8 +242,8 @@ lemma exists_leftFraction₂ [W.HasLeftCalculusOfFractions] :
   obtain ⟨ψ₂, hψ₂⟩ := φ.snd.exists_leftFraction
   obtain ⟨α, hα⟩ := (RightFraction.mk _ ψ₁.hs ψ₂.s).exists_leftFraction
   dsimp at hψ₁ hψ₂ hα
-  refine' ⟨LeftFraction₂.mk (ψ₁.f ≫ α.f) (ψ₂.f ≫ α.s) (ψ₂.s ≫ α.s)
-      (W.comp_mem _ _ ψ₂.hs α.hs), _, _⟩
+  refine ⟨LeftFraction₂.mk (ψ₁.f ≫ α.f) (ψ₂.f ≫ α.s) (ψ₂.s ≫ α.s)
+      (W.comp_mem _ _ ψ₂.hs α.hs), ?_, ?_⟩
   · dsimp
     rw [hα, reassoc_of% hψ₁]
   · rw [reassoc_of% hψ₂]
@@ -275,7 +275,7 @@ lemma exists_leftFraction₂ {X Y : C} (f f' : L.obj X ⟶ L.obj Y) :
   have : IsIso (L.map (φ'.s ≫ α.s)) := by
     rw [L.map_comp]
     infer_instance
-  refine' ⟨ψ, _, _⟩
+  refine ⟨ψ, ?_, ?_⟩
   · rw [← cancel_mono (L.map (φ'.s ≫ α.s)), LeftFraction.map_comp_map_s,
       hα, L.map_comp, hφ, LeftFraction.map_comp_map_s_assoc,
       L.map_comp]
@@ -304,7 +304,7 @@ lemma exists_leftFraction₃ {X Y : C} (f f' f'' : L.obj X ⟶ L.obj Y) :
   have : IsIso (L.map (β.s ≫ γ.s)) := by
     rw [L.map_comp]
     infer_instance
-  refine' ⟨ψ, _, _, _⟩
+  refine ⟨ψ, ?_, ?_, ?_⟩
   · rw [← cancel_mono (L.map (β.s ≫ γ.s)), LeftFraction.map_comp_map_s, hα, hγ,
       L.map_comp, LeftFraction.map_comp_map_s_assoc, L.map_comp]
   · rw [← cancel_mono (L.map (β.s ≫ γ.s)), LeftFraction.map_comp_map_s, hα', hγ,

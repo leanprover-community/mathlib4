@@ -1,7 +1,7 @@
-import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Data.Nat.Notation
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Init.Function
+import Mathlib.Logic.Function.Defs
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Matrix.Basic
 
@@ -267,5 +267,6 @@ use `set_option maxRecDepth <num>` to increase limit
 use `set_option diagnostics true` to get diagnostic information
 -/
 #guard_msgs (error) in
-example (_h₁ : Function.Injective (funFamily ((List.range 128).map (fun _ => 0)).sum)) : true = true := by
+example (_h₁ : Function.Injective (funFamily ((List.range 128).map (fun _ => 0)).sum)) :
+    true = true := by
   apply_fun funFamily 0

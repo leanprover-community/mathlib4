@@ -38,8 +38,9 @@ run_cmd Elab.Command.liftTermElabM <|
   Meta.check <| toExpr (Foo.l [Foo.l [], Foo.l [Foo.l []]])
 
 /--
-error: failed to synthesize instance
+error: failed to synthesize
   ToExpr (Bool → Nat)
+Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
 inductive Bar
@@ -56,6 +57,7 @@ instance {α : Type u} [ToExpr α] [ToLevel.{u+1}] : ToExpr (Bool → α) where
 
 deriving instance ToExpr for Bar
 
+set_option linter.unusedTactic false in
 example : True := by
   run_tac do
     let f : Bool → Nat | false => 0 | true => 1
