@@ -4588,7 +4588,7 @@ import Mathlib.Topology.ContinuousMap.BoundedCompactlySupported
 import Mathlib.Topology.ContinuousMap.CocompactMap
 import Mathlib.Topology.ContinuousMap.Compact
 import Mathlib.Topology.ContinuousMap.CompactlySupported
-import Mathlib.Topology.ContinuousMap.ContinuousEvalClass
+import Mathlib.Topology.ContinuousMap.ContinuousEval
 import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 import Mathlib.Topology.ContinuousMap.Ideals
 import Mathlib.Topology.ContinuousMap.LocallyConstant
