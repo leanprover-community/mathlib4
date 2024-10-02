@@ -162,7 +162,7 @@ theorem contDiff_stereoInvFunAux : ContDiff ℝ ⊤ (stereoInvFunAux v) := by
   have h₁ : ContDiff ℝ ⊤ fun w : E => (‖w‖ ^ 2 + 4)⁻¹ := by
     refine (h₀.add contDiff_const).inv ?_
     intro x
-    nlinarith
+    positivity
   have h₂ : ContDiff ℝ ⊤ fun w => (4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v := by
     refine (contDiff_const.smul contDiff_id).add ?_
     exact (h₀.sub contDiff_const).smul contDiff_const
@@ -185,9 +185,9 @@ theorem stereoInvFun_ne_north_pole (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) :
   rw [← inner_lt_one_iff_real_of_norm_one _ hv]
   · have hw : ⟪v, w⟫_ℝ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
     have hw' : (‖(w : E)‖ ^ 2 + 4)⁻¹ * (‖(w : E)‖ ^ 2 - 4) < 1 := by
-      refine (inv_mul_lt_iff' ?_).mpr ?_
-      · positivity
-      linarith
+      rw [inv_mul_lt_iff']
+      · linarith
+      positivity
     simpa [real_inner_comm, inner_add_right, inner_smul_right, real_inner_self_eq_norm_mul_norm, hw,
       hv] using hw'
   · simpa using stereoInvFunAux_mem hv w.2
