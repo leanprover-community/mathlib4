@@ -195,6 +195,40 @@ instance instGroup [Group G] [TopologicalGroup G] : Group (SeparationQuotient G)
 instance instCommGroup [CommGroup G] [TopologicalGroup G] : CommGroup (SeparationQuotient G) :=
   surjective_mk.commGroup mk mk_one mk_mul mk_inv mk_div mk_pow mk_zpow
 
+/-- Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient. -/
+theorem nhds_eq [AddCommGroup G] [TopologicalAddGroup G] (x : G) :
+    nhds (mk x) = Filter.map mk (nhds x) := by
+  apply le_antisymm ((SeparationQuotient.isOpenMap_mk).nhds_le x) continuous_quot_mk.continuousAt
+
+/-- `SeparationQuotient.mk` as a `GroupHom`. -/
+@[to_additive (attr := simps) "`SeparationQuotient.mk` as an `AddGroupHom`."]
+def mkGroupHom [CommGroup G] [TopologicalGroup G]  : G →* SeparationQuotient G where
+  toFun := mk
+  map_mul' := mk_mul
+  map_one' := mk_one
+
+variable {H : Type*} [TopologicalSpace H]
+
+@[to_additive]
+noncomputable def CommGroupHom_lift [CommGroup G] [TopologicalGroup G] [CommGroup H]
+    [TopologicalGroup H] (f : MonoidHom G H) (hf : ∀ x y, Inseparable x y → f x = f y) :
+    MonoidHom (SeparationQuotient G) H where
+  toFun := SeparationQuotient.lift f hf
+  map_one' := by
+    rw [← (@MonoidHom.map_one G H _ _ f), ← SeparationQuotient.lift_mk hf 1, ← mk_one]
+  map_mul' {x y} := by
+    simp only
+    obtain ⟨x', hx'⟩ := surjective_mk x
+    obtain ⟨y', hy'⟩ := surjective_mk y
+    rw [← hx', ← hy', SeparationQuotient.lift_mk hf x', SeparationQuotient.lift_mk hf y', ← mk_mul,
+      SeparationQuotient.lift_mk hf (x' * y')]
+    exact MonoidHom.map_mul f x' y'
+
+@[to_additive (attr := simp)]
+theorem CommGroupHom_lift_apply [CommGroup G] [TopologicalGroup G] [CommGroup H]
+    [TopologicalGroup H] (f : MonoidHom G H) (hf : ∀ x y, Inseparable x y → f x = f y) (x : G) :
+    CommGroupHom_lift f hf (mk x) = f x := rfl
+
 end Group
 
 section UniformGroup
