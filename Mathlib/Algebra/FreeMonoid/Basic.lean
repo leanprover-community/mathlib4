@@ -225,7 +225,7 @@ protected theorem inductionOn {C : FreeMonoid α → Prop} (z : FreeMonoid α) (
     (of : ∀ (x : α), C (FreeMonoid.of x)) (mul : ∀ (x y : FreeMonoid α), C x → C y → C (x * y)) :
   C z := List.rec one (fun _ _ ih => mul [_] _ (of _) ih) z
 
-/-- An induction principle for free monoids which mirrors induction on lists, with cases anaologous 
+/-- An induction principle for free monoids which mirrors induction on lists, with cases anaologous
 to the empty list and cons -/
 @[to_additive (attr := elab_as_elim) "An induction principle for free monoids which mirrors
 induction on lists, with cases anaologous to the empty list and cons"]
