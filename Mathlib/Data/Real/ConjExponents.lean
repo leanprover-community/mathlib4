@@ -116,6 +116,8 @@ lemma one_sub_inv_inv (ha₀ : 0 < a) (ha₁ : a < 1) : (1 - a)⁻¹.IsConjExpon
 
 end IsConjExponent
 
+lemma isConjExponent_comm : p.IsConjExponent q ↔ q.IsConjExponent p := ⟨.symm, .symm⟩
+
 lemma isConjExponent_iff_eq_conjExponent (hp : 1 < p) : p.IsConjExponent q ↔ q = p / (p - 1) :=
   ⟨IsConjExponent.conj_eq, fun h ↦ ⟨hp, by field_simp [h]⟩⟩
 
@@ -205,6 +207,8 @@ lemma one_sub_inv_inv (ha₀ : a ≠ 0) (ha₁ : a < 1) : (1 - a)⁻¹.IsConjExp
   (inv_one_sub_inv ha₀ ha₁).symm
 
 end IsConjExponent
+
+lemma isConjExponent_comm : p.IsConjExponent q ↔ q.IsConjExponent p := ⟨.symm, .symm⟩
 
 lemma isConjExponent_iff_eq_conjExponent (h : 1 < p) : p.IsConjExponent q ↔ q = p / (p - 1) := by
   rw [← isConjExponent_coe, Real.isConjExponent_iff_eq_conjExponent (mod_cast h), ← coe_inj,
@@ -322,6 +326,8 @@ lemma top_one : IsConjExponent ∞ 1 := ⟨by simp⟩
 lemma one_top : IsConjExponent 1 ∞ := ⟨by simp⟩
 
 end IsConjExponent
+
+lemma isConjExponent_comm : p.IsConjExponent q ↔ q.IsConjExponent p := ⟨.symm, .symm⟩
 
 lemma isConjExponent_iff_eq_conjExponent (hp : 1 ≤ p) : p.IsConjExponent q ↔ q = 1 + (p - 1)⁻¹ :=
   ⟨fun h ↦ h.conj_eq, by rintro rfl; exact .conjExponent hp⟩
