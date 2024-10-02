@@ -149,12 +149,12 @@ theorem antidiagonal.snd_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagon
 /-- The set `antidiagonal n` is equivalent to `Fin (n+1)`, via the first projection. --/
 @[simps]
 def antidiagonalEquivFin (n : ℕ) : antidiagonal n ≃ Fin (n + 1) where
-  toFun := fun ⟨⟨i, j⟩, h⟩ ↦ ⟨i, antidiagonal.fst_lt h⟩
+  toFun := fun ⟨⟨i, _⟩, h⟩ ↦ ⟨i, antidiagonal.fst_lt h⟩
   invFun := fun ⟨i, h⟩ ↦ ⟨⟨i, n - i⟩, by
     rw [mem_antidiagonal, add_comm, Nat.sub_add_cancel]
     exact Nat.le_of_lt_succ h⟩
   left_inv := by rintro ⟨⟨i, j⟩, h⟩; ext; rfl
-  right_inv x := rfl
+  right_inv _ := rfl
 
 end Nat
 

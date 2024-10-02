@@ -81,7 +81,7 @@ theorem lift_succ (a : Ordinal.{v}) : lift.{u} (succ a) = succ (lift.{u} a) := b
 instance add_contravariantClass_le : ContravariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· ≤ ·) :=
   ⟨fun a b c =>
     inductionOn a fun α r hr =>
-      inductionOn b fun β₁ s₁ hs₁ =>
+      inductionOn b fun β₁ s₁ _ =>
         inductionOn c fun β₂ s₂ hs₂ ⟨f⟩ =>
           ⟨have fl : ∀ a, f (Sum.inl a) = Sum.inl a := fun a => by
               simpa only [InitialSeg.trans_apply, InitialSeg.leAdd_apply] using
@@ -400,7 +400,7 @@ theorem IsNormal.le_iff_eq {f} (H : IsNormal f) {a} : f a ≤ a ↔ f a = a :=
 
 theorem IsNormal.le_set {f o} (H : IsNormal f) (p : Set Ordinal) (p0 : p.Nonempty) (b)
     (H₂ : ∀ o, b ≤ o ↔ ∀ a ∈ p, a ≤ o) : f b ≤ o ↔ ∀ a ∈ p, f a ≤ o :=
-  ⟨fun h a pa => (H.le_iff.2 ((H₂ _).1 le_rfl _ pa)).trans h, fun h => by
+  ⟨fun h _ pa => (H.le_iff.2 ((H₂ _).1 le_rfl _ pa)).trans h, fun h => by
     -- Porting note: `refine'` didn't work well so `induction` is used
     induction b using limitRecOn with
     | H₁ =>
@@ -433,7 +433,7 @@ theorem IsNormal.isLimit {f} (H : IsNormal f) {o} (l : IsLimit o) : IsLimit (f o
     (succ_le_of_lt h₂).trans_lt (H.lt_iff.2 h₁)⟩
 
 theorem add_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a + b ≤ c ↔ ∀ b' < b, a + b' ≤ c :=
-  ⟨fun h b' l => (add_le_add_left l.le _).trans h, fun H =>
+  ⟨fun h _ l => (add_le_add_left l.le _).trans h, fun H =>
     le_of_not_lt <| by
       -- Porting note: `induction` tactics are required because of the parser bug.
       induction a using inductionOn with
@@ -562,10 +562,9 @@ theorem one_add_of_omega_le {o} (h : ω ≤ o) : 1 + o = o := by
 instance monoid : Monoid Ordinal.{u} where
   mul a b :=
     Quotient.liftOn₂ a b
-      (fun ⟨α, r, wo⟩ ⟨β, s, wo'⟩ => ⟦⟨β × α, Prod.Lex s r, inferInstance⟩⟧ :
+      (fun ⟨α, r, _⟩ ⟨β, s, _⟩ => ⟦⟨β × α, Prod.Lex s r, inferInstance⟩⟧ :
         WellOrder → WellOrder → Ordinal)
-      fun ⟨α₁, r₁, o₁⟩ ⟨α₂, r₂, o₂⟩ ⟨β₁, s₁, p₁⟩ ⟨β₂, s₂, p₂⟩ ⟨f⟩ ⟨g⟩ =>
-      Quot.sound ⟨RelIso.prodLexCongr g f⟩
+      fun ⟨_, _, _⟩ _ _ _ ⟨f⟩ ⟨g⟩ => Quot.sound ⟨RelIso.prodLexCongr g f⟩
   one := 1
   mul_assoc a b c :=
     Quotient.inductionOn₃ a b c fun ⟨α, r, _⟩ ⟨β, s, _⟩ ⟨γ, t, _⟩ =>
@@ -704,7 +703,7 @@ private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder 
         Sum.lex_inl_inl] using h
 
 theorem mul_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a * b ≤ c ↔ ∀ b' < b, a * b' ≤ c :=
-  ⟨fun h b' l => (mul_le_mul_left' l.le _).trans h, fun H =>
+  ⟨fun h _ l => (mul_le_mul_left' l.le _).trans h, fun H =>
     -- Porting note: `induction` tactics are required because of the parser bug.
     le_of_not_lt <| by
       induction a using inductionOn with
@@ -719,7 +718,7 @@ theorem mul_isNormal {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) :=
       beta_reduce
       rw [mul_succ]
       simpa only [add_zero] using (add_lt_add_iff_left (a * b)).2 h,
-    fun b l c => mul_le_of_limit l⟩
+    fun _ l _ => mul_le_of_limit l⟩
 
 theorem lt_mul_of_limit {a b c : Ordinal} (h : IsLimit c) : a < b * c ↔ ∃ c' < c, a < b * c' := by
   -- Porting note: `bex_def` is required.
@@ -1415,7 +1414,7 @@ theorem bsup_le_iff {o f a} : bsup.{u, v} o f ≤ a ↔ ∀ i h, f i h ≤ a :=
   sup_le_iff.trans
     ⟨fun h i hi => by
       rw [← familyOfBFamily_enum o f]
-      exact h _, fun h i => h _ _⟩
+      exact h _, fun h _ => h _ _⟩
 
 theorem bsup_le {o : Ordinal} {f : ∀ b < o, Ordinal} {a} :
     (∀ i h, f i h ≤ a) → bsup.{u, v} o f ≤ a :=
@@ -2301,7 +2300,7 @@ theorem omega_isLimit : IsLimit ω :=
     rw [e]; exact nat_lt_omega (n + 1)⟩
 
 theorem omega_le {o : Ordinal} : ω ≤ o ↔ ∀ n : ℕ, ↑n ≤ o :=
-  ⟨fun h n => (nat_lt_omega _).le.trans h, fun H =>
+  ⟨fun h _ => (nat_lt_omega _).le.trans h, fun H =>
     le_of_forall_lt fun a h => by
       let ⟨n, e⟩ := lt_omega.1 h
       rw [e, ← succ_le_iff]; exact H (n + 1)⟩

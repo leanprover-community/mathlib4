@@ -57,7 +57,7 @@ theorem isTopologicalBasis_Iic_principal :
   { exists_subset_inter := by
       rintro _ ⟨s, rfl⟩ _ ⟨t, rfl⟩ l hl
       exact ⟨Iic (𝓟 s) ∩ Iic (𝓟 t), ⟨s ∩ t, by simp⟩, hl, Subset.rfl⟩
-    sUnion_eq := sUnion_eq_univ_iff.2 fun l => ⟨Iic ⊤, ⟨univ, congr_arg Iic principal_univ⟩,
+    sUnion_eq := sUnion_eq_univ_iff.2 fun _ => ⟨Iic ⊤, ⟨univ, congr_arg Iic principal_univ⟩,
       mem_Iic.2 le_top⟩
     eq_generateFrom := rfl }
 

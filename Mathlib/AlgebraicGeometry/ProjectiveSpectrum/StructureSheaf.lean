@@ -180,9 +180,9 @@ def structurePresheafInCommRing : Presheaf CommRingCat (ProjectiveSpectrum.top �
   map i :=
     { toFun := (structureSheafInType 𝒜).1.map i
       map_zero' := rfl
-      map_add' := fun x y => rfl
+      map_add' := fun _ _ => rfl
       map_one' := rfl
-      map_mul' := fun x y => rfl }
+      map_mul' := fun _ _ => rfl }
 
 -- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
 attribute [nolint simpNF]
@@ -192,7 +192,7 @@ attribute [nolint simpNF]
 valued structure presheaf. -/
 def structurePresheafCompForget :
     structurePresheafInCommRing 𝒜 ⋙ forget CommRingCat ≅ (structureSheafInType 𝒜).1 :=
-  NatIso.ofComponents (fun U => Iso.refl _) (by aesop_cat)
+  NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
 
 end ProjectiveSpectrum.StructureSheaf
 

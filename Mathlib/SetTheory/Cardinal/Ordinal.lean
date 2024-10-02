@@ -205,7 +205,7 @@ theorem aleph'_nat : ∀ n : ℕ, aleph' n = n
 
 theorem aleph'_le_of_limit {o : Ordinal} (l : o.IsLimit) {c} :
     aleph' o ≤ c ↔ ∀ o' < o, aleph' o' ≤ c :=
-  ⟨fun h o' h' => (aleph'_le.2 <| h'.le).trans h, fun h => by
+  ⟨fun h _ h' => (aleph'_le.2 <| h'.le).trans h, fun h => by
     rw [← aleph'.apply_symm_apply c, aleph'_le, limit_le l]
     intro x h'
     rw [← aleph'_le, aleph'.apply_symm_apply]
@@ -304,7 +304,7 @@ theorem exists_aleph {c : Cardinal} : ℵ₀ ≤ c ↔ ∃ o, c = aleph o :=
     ⟨aleph'.symm c - ω, by
       rw [aleph_eq_aleph', Ordinal.add_sub_cancel_of_le, aleph'.apply_symm_apply]
       rwa [← aleph0_le_aleph', aleph'.apply_symm_apply]⟩,
-    fun ⟨o, e⟩ => e.symm ▸ aleph0_le_aleph _⟩
+    fun ⟨_, e⟩ => e.symm ▸ aleph0_le_aleph _⟩
 
 theorem aleph'_isNormal : IsNormal (ord ∘ aleph') :=
   ⟨fun o => ord_lt_ord.2 <| aleph'_lt.2 <| lt_succ o, fun o l a => by

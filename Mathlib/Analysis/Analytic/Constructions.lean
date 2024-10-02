@@ -456,7 +456,7 @@ lemma HasFPowerSeriesWithinOnBall.pi
     apply FormalMultilinearSeries.le_radius_pi (fun i ↦ ?_)
     exact (hf i).r_le
   r_pos := hr
-  hasSum {y} m hy := Pi.hasSum.2 (fun i ↦ (hf i).hasSum m hy)
+  hasSum {_} m hy := Pi.hasSum.2 (fun i ↦ (hf i).hasSum m hy)
 
 lemma hasFPowerSeriesWithinOnBall_pi_iff (hr : 0 < r) :
     HasFPowerSeriesWithinOnBall (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) s e r

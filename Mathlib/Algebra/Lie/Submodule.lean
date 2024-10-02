@@ -885,7 +885,7 @@ Submodules. -/
   invFun := comap e
   left_inv := fun N ↦ by ext; simp
   right_inv := fun N ↦ by ext; simp [e.apply_eq_iff_eq_symm_apply]
-  map_rel_iff' := fun {N N'} ↦ Set.image_subset_image_iff e.injective
+  map_rel_iff' := fun {_ _} ↦ Set.image_subset_image_iff e.injective
 
 end LieSubmodule
 
@@ -1386,7 +1386,7 @@ def LieSubalgebra.topEquiv : (⊤ : LieSubalgebra R L) ≃ₗ⁅R⁆ L :=
   { (⊤ : LieSubalgebra R L).incl with
     invFun := fun x ↦ ⟨x, Set.mem_univ x⟩
     left_inv := fun x ↦ by ext; rfl
-    right_inv := fun x ↦ rfl }
+    right_inv := fun _ ↦ rfl }
 
 @[simp]
 theorem LieSubalgebra.topEquiv_apply (x : (⊤ : LieSubalgebra R L)) : LieSubalgebra.topEquiv x = x :=

@@ -356,7 +356,7 @@ def Cancels (u : ℤˣ) (w : NormalWord d) : Prop :=
 def unitsSMulWithCancel (u : ℤˣ) (w : NormalWord d) : Cancels u w → NormalWord d :=
   consRecOn w
     (by simp [Cancels, ofGroup]; tauto)
-    (fun g u' w h1 h2 _ can =>
+    (fun g _ w _ _ _ can =>
       (toSubgroupEquiv φ u ⟨g, can.1⟩ : G) • w)
 
 /-- Multiplying `t^u` by a `NormalWord`, `w` and putting the result in normal form. -/

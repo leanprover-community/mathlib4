@@ -57,7 +57,7 @@ for empty graphs, since there are no pairs of adjacent vertices. -/
 theorem bot_strongly_regular : (⊥ : SimpleGraph V).IsSRGWith (Fintype.card V) 0 ℓ 0 where
   card := rfl
   regular := bot_degree
-  of_adj := fun v w h => h.elim
+  of_adj := fun _ _ h => h.elim
   of_not_adj := fun v w _h => by
     simp only [card_eq_zero, Fintype.card_ofFinset, forall_true_left, not_false_iff, bot_adj]
     ext

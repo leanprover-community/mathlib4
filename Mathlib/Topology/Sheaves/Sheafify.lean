@@ -66,7 +66,7 @@ sending each section to its germs.
 (This forms the unit of the adjunction.)
 -/
 def toSheafify : F ⟶ F.sheafify.1 where
-  app U f := ⟨fun x => F.germ x f, PrelocalPredicate.sheafifyOf ⟨f, fun x => rfl⟩⟩
+  app _ f := ⟨fun x => F.germ x f, PrelocalPredicate.sheafifyOf ⟨f, fun _ => rfl⟩⟩
   naturality U U' f := by
     ext x
     apply Subtype.ext -- Porting note: Added `apply`

@@ -866,7 +866,7 @@ variable [DivisionMonoid α] {s t : Finset α}
 
 @[to_additive (attr := simp)]
 theorem coe_zpow (s : Finset α) : ∀ n : ℤ, ↑(s ^ n) = (s : Set α) ^ n
-  | Int.ofNat n => coe_pow _ _
+  | Int.ofNat _ => coe_pow _ _
   | Int.negSucc n => by
     refine (coe_inv _).trans ?_
     exact congr_arg Inv.inv (coe_pow _ _)

@@ -34,7 +34,7 @@ theorem coe_dvd : ↑u ∣ a :=
     associates of `b`. -/
 theorem dvd_mul_right : a ∣ b * u ↔ a ∣ b :=
   Iff.intro (fun ⟨c, Eq⟩ ↦ ⟨c * ↑u⁻¹, by rw [← mul_assoc, ← Eq, Units.mul_inv_cancel_right]⟩)
-    fun ⟨c, Eq⟩ ↦ Eq.symm ▸ (_root_.dvd_mul_right _ _).mul_right _
+    fun ⟨_, Eq⟩ ↦ Eq.symm ▸ (_root_.dvd_mul_right _ _).mul_right _
 
 /-- In a monoid, an element `a` divides an element `b` iff all associates of `a` divide `b`. -/
 theorem mul_right_dvd : a * u ∣ b ↔ a ∣ b :=

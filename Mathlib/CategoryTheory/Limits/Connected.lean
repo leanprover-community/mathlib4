@@ -64,12 +64,12 @@ namespace ProdPreservesConnectedLimits
 
 /-- (Impl). The obvious natural transformation from (X × K -) to K. -/
 @[simps]
-def γ₂ {K : J ⥤ C} (X : C) : K ⋙ prod.functor.obj X ⟶ K where app Y := Limits.prod.snd
+def γ₂ {K : J ⥤ C} (X : C) : K ⋙ prod.functor.obj X ⟶ K where app _ := Limits.prod.snd
 
 /-- (Impl). The obvious natural transformation from (X × K -) to X -/
 @[simps]
 def γ₁ {K : J ⥤ C} (X : C) : K ⋙ prod.functor.obj X ⟶ (Functor.const J).obj X where
-  app Y := Limits.prod.fst
+  app _ := Limits.prod.fst
 
 /-- (Impl).
 Given a cone for (X × K -), produce a cone for K using the natural transformation `γ₂` -/

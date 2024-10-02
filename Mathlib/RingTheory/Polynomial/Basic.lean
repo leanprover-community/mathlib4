@@ -788,7 +788,7 @@ variable (σ) {r : R}
 namespace Polynomial
 
 theorem prime_C_iff : Prime (C r) ↔ Prime r :=
-  ⟨comap_prime C (evalRingHom (0 : R)) fun r => eval_C, fun hr => by
+  ⟨comap_prime C (evalRingHom (0 : R)) fun _ => eval_C, fun hr => by
     have := hr.1
     rw [← Ideal.span_singleton_prime] at hr ⊢
     · rw [← Set.image_singleton, ← Ideal.map_span]
@@ -912,7 +912,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
       let ⟨N, HN⟩ := hm
       let ⟨s, hs⟩ := I.is_fg_degreeLE N
       have hm2 : ∀ k, I.leadingCoeffNth k ≤ M := fun k =>
-        Or.casesOn (le_or_lt k N) (fun h => HN ▸ I.leadingCoeffNth_mono h) fun h x hx =>
+        Or.casesOn (le_or_lt k N) (fun h => HN ▸ I.leadingCoeffNth_mono h) fun h _ hx =>
           Classical.by_contradiction fun hxm =>
             haveI : IsNoetherian R R := inst
             have : ¬M < I.leadingCoeffNth k := by

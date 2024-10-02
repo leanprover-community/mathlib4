@@ -440,7 +440,7 @@ def natTransEquivCompatibleFamily {P : Cᵒᵖ ⥤ Type v₁} :
       rw [← FunctorToTypes.naturality _ _ α g.op]
       rfl
   invFun t :=
-    { app := fun Y f => t.1 _ f.2
+    { app := fun _ f => t.1 _ f.2
       naturality := fun Y Z g => by
         ext ⟨f, hf⟩
         apply t.2.to_sieveCompatible _ }
@@ -656,7 +656,7 @@ theorem isSheafFor_subsieve (P : Cᵒᵖ ⥤ Type w) {S : Sieve X} {R : Presieve
     (h : (S : Presieve X) ≤ R) (trans : ∀ ⦃Y⦄ (f : Y ⟶ X),
       IsSheafFor P (S.pullback f : Presieve Y)) :
     IsSheafFor P R :=
-  isSheafFor_subsieve_aux P h (by simpa using trans (𝟙 _)) fun Y f _ => (trans f).isSeparatedFor
+  isSheafFor_subsieve_aux P h (by simpa using trans (𝟙 _)) fun _ f _ => (trans f).isSeparatedFor
 
 section Arrows
 

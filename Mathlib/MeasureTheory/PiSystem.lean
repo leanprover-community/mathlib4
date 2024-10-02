@@ -540,9 +540,9 @@ theorem le_def {α} {a b : DynkinSystem α} : a ≤ b ↔ a.Has ≤ b.Has :=
 
 instance : PartialOrder (DynkinSystem α) :=
   { DynkinSystem.instLEDynkinSystem with
-    le_refl := fun a b => le_rfl
-    le_trans := fun a b c hab hbc => le_def.mpr (le_trans hab hbc)
-    le_antisymm := fun a b h₁ h₂ => ext fun s => ⟨h₁ s, h₂ s⟩ }
+    le_refl := fun _ _ => le_rfl
+    le_trans := fun _ _ _ hab hbc => le_def.mpr (le_trans hab hbc)
+    le_antisymm := fun _ _ h₁ h₂ => ext fun s => ⟨h₁ s, h₂ s⟩ }
 
 /-- Every measurable space (σ-algebra) forms a Dynkin system -/
 def ofMeasurableSpace (m : MeasurableSpace α) : DynkinSystem α where
@@ -588,7 +588,7 @@ def toMeasurableSpace (h_inter : ∀ s₁ s₂, d.Has s₁ → d.Has s₂ → d.
     MeasurableSpace α where
   MeasurableSet' := d.Has
   measurableSet_empty := d.has_empty
-  measurableSet_compl s h := d.has_compl h
+  measurableSet_compl _ h := d.has_compl h
   measurableSet_iUnion f hf := by
     rw [← iUnion_disjointed]
     exact
@@ -647,7 +647,7 @@ theorem generate_inter {s : Set (Set α)} (hs : IsPiSystem s) {t₁ t₂ : Set �
   additionally that it is non-empty, but we drop this condition in the formalization).
 -/
 theorem generateFrom_eq {s : Set (Set α)} (hs : IsPiSystem s) :
-    generateFrom s = (generate s).toMeasurableSpace fun t₁ t₂ => generate_inter hs :=
+    generateFrom s = (generate s).toMeasurableSpace fun _ _ => generate_inter hs :=
   le_antisymm (generateFrom_le fun t ht => GenerateHas.basic t ht)
     (ofMeasurableSpace_le_ofMeasurableSpace_iff.mp <| by
       rw [ofMeasurableSpace_toMeasurableSpace]

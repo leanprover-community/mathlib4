@@ -352,7 +352,7 @@ def unitsCentralizerEquiv (x : Mˣ) :
           have : (u : ConjAct Mˣ) • x = x := u.2
           rwa [ConjAct.smul_def, mul_inv_eq_iff_eq_mul, Units.ext_iff, eq_comm] at this⟩,
         map_one' := rfl,
-        map_mul' := fun a b ↦ rfl }
+        map_mul' := fun _ _ ↦ rfl }
     invFun := fun u ↦
       ⟨ConjAct.toConjAct (Units.map (Submonoid.centralizer ({↑x} : Set M)).subtype u), by
       change _ • _ = _

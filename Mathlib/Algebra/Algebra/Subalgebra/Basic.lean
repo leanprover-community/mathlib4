@@ -280,8 +280,8 @@ instance (priority := 500) algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A]
         Algebra.algebraMap_eq_smul_one]
       exact algebraMap_mem S
           _ with
-    commutes' := fun c x => Subtype.eq <| Algebra.commutes _ _
-    smul_def' := fun c x => Subtype.eq <| Algebra.smul_def _ _ }
+    commutes' := fun _ _ => Subtype.eq <| Algebra.commutes _ _
+    smul_def' := fun _ _ => Subtype.eq <| Algebra.smul_def _ _ }
 
 instance algebra : Algebra R S := S.algebra'
 

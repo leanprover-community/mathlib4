@@ -109,8 +109,8 @@ def continuousLinearMap :
   invFun p := ⟨p.1, .comp (e₂.symmL 𝕜₂ p.1) (p.2.comp (e₁.continuousLinearMapAt 𝕜₁ p.1))⟩
   source := Bundle.TotalSpace.proj ⁻¹' (e₁.baseSet ∩ e₂.baseSet)
   target := (e₁.baseSet ∩ e₂.baseSet) ×ˢ Set.univ
-  map_source' := fun ⟨x, L⟩ h => ⟨h, Set.mem_univ _⟩
-  map_target' := fun ⟨x, f⟩ h => h.1
+  map_source' := fun ⟨_, _⟩ h => ⟨h, Set.mem_univ _⟩
+  map_target' := fun ⟨_, _⟩ h => h.1
   left_inv' := fun ⟨x, L⟩ ⟨h₁, h₂⟩ => by
     simp only [TotalSpace.mk_inj]
     ext (v : E₁ x)

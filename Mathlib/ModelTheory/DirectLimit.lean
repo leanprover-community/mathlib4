@@ -72,7 +72,7 @@ theorem coe_natLERec (m n : ℕ) (h : m ≤ n) :
       Embedding.comp_apply, ih]
 
 instance natLERec.directedSystem : DirectedSystem G' fun i j h => natLERec f' i j h :=
-  ⟨fun i x _ => congr (congr rfl (Nat.leRecOn_self _)) rfl,
+  ⟨fun _ _ _ => congr (congr rfl (Nat.leRecOn_self _)) rfl,
    fun hij hjk => by simp [Nat.leRecOn_trans hij hjk]⟩
 
 end DirectedSystem
@@ -104,7 +104,7 @@ variable [DirectedSystem G fun i j h => f i j h]
 
 @[simp]
 theorem unify_sigma_mk_self {α : Type*} {i : ι} {x : α → G i} :
-    (unify f (fun a => .mk f i (x a)) i fun j ⟨a, hj⟩ =>
+    (unify f (fun a => .mk f i (x a)) i fun _ ⟨_, hj⟩ =>
       _root_.trans (le_of_eq hj.symm) (refl _)) = x := by
   ext a
   rw [unify]
@@ -127,7 +127,7 @@ namespace DirectLimit
 def setoid [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] : Setoid (Σˣ f) where
   r := fun ⟨i, x⟩ ⟨j, y⟩ => ∃ (k : ι) (ik : i ≤ k) (jk : j ≤ k), f i k ik x = f j k jk y
   iseqv :=
-    ⟨fun ⟨i, x⟩ => ⟨i, refl i, refl i, rfl⟩, @fun ⟨i, x⟩ ⟨j, y⟩ ⟨k, ik, jk, h⟩ =>
+    ⟨fun ⟨i, _⟩ => ⟨i, refl i, refl i, rfl⟩, @fun ⟨_, _⟩ ⟨_, _⟩ ⟨k, ik, jk, h⟩ =>
       ⟨k, jk, ik, h.symm⟩,
       @fun ⟨i, x⟩ ⟨j, y⟩ ⟨k, z⟩ ⟨ij, hiij, hjij, hij⟩ ⟨jk, hjjk, hkjk, hjk⟩ => by
         obtain ⟨ijk, hijijk, hjkijk⟩ := directed_of (· ≤ ·) ij jk

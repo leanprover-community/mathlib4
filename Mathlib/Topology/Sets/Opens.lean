@@ -343,7 +343,7 @@ theorem isCompactElement_iff (s : Opens α) :
 def comap (f : C(α, β)) : FrameHom (Opens β) (Opens α) where
   toFun s := ⟨f ⁻¹' s, s.2.preimage f.continuous⟩
   map_sSup' s := ext <| by simp only [coe_sSup, preimage_iUnion, biUnion_image, coe_mk]
-  map_inf' a b := rfl
+  map_inf' _ _ := rfl
   map_top' := rfl
 
 @[simp]
@@ -381,8 +381,8 @@ theorem comap_injective [T0Space β] : Injective (comap : C(α, β) → FrameHom
 def _root_.Homeomorph.opensCongr (f : α ≃ₜ β) : Opens α ≃o Opens β where
   toFun := Opens.comap f.symm.toContinuousMap
   invFun := Opens.comap f.toContinuousMap
-  left_inv := fun U => ext <| f.toEquiv.preimage_symm_preimage _
-  right_inv := fun U => ext <| f.toEquiv.symm_preimage_preimage _
+  left_inv := fun _ => ext <| f.toEquiv.preimage_symm_preimage _
+  right_inv := fun _ => ext <| f.toEquiv.symm_preimage_preimage _
   map_rel_iff' := by
     simp only [← SetLike.coe_subset_coe]; exact f.symm.surjective.preimage_subset_preimage_iff
 

@@ -1182,7 +1182,7 @@ elements of `M`. -/
 noncomputable def unitsTypeEquivIsUnitSubmonoid [Monoid M] : Mˣ ≃* IsUnit.submonoid M where
   toFun x := ⟨x, Units.isUnit x⟩
   invFun x := x.prop.unit
-  left_inv x := IsUnit.unit_of_val_units _
+  left_inv _ := IsUnit.unit_of_val_units _
   right_inv x := by simp_rw [IsUnit.unit_spec]
   map_mul' x y := by simp_rw [Units.val_mul]; rfl
 

@@ -311,7 +311,7 @@ instance Prod.pseudoEMetricSpaceMax [PseudoEMetricSpace β] : PseudoEMetricSpace
   edist x y := edist x.1 y.1 ⊔ edist x.2 y.2
   edist_self x := by simp
   edist_comm x y := by simp [edist_comm]
-  edist_triangle x y z :=
+  edist_triangle _ _ _ :=
     max_le (le_trans (edist_triangle _ _ _) (add_le_add (le_max_left _ _) (le_max_left _ _)))
       (le_trans (edist_triangle _ _ _) (add_le_add (le_max_right _ _) (le_max_right _ _)))
   uniformity_edist := uniformity_prod.trans <| by

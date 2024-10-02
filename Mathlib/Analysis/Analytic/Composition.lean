@@ -186,7 +186,7 @@ def compAlongComposition {n : ℕ} (p : FormalMultilinearSeries 𝕜 E F) (c : C
     simp only [applyComposition_update, ContinuousMultilinearMap.map_smul]
   cont :=
     f.cont.comp <|
-      continuous_pi fun i => (coe_continuous _).comp <| continuous_pi fun j => continuous_apply _
+      continuous_pi fun _ => (coe_continuous _).comp <| continuous_pi fun _ => continuous_apply _
 
 @[simp]
 theorem compAlongComposition_apply {n : ℕ} (p : FormalMultilinearSeries 𝕜 E F) (c : Composition n)

@@ -200,7 +200,7 @@ theorem rank_R [Fintype σ] : Module.rank K (R σ K) = Fintype.card (σ → K) :
       refine forall_congr' fun n => le_tsub_iff_right ?_
       exact Fintype.card_pos_iff.2 ⟨0⟩
     _ = #(σ → { n // n < Fintype.card K }) :=
-      (@Equiv.subtypePiEquivPi σ (fun _ => ℕ) fun s n => n < Fintype.card K).cardinal_eq
+      (@Equiv.subtypePiEquivPi σ (fun _ => ℕ) fun _ n => n < Fintype.card K).cardinal_eq
     _ = #(σ → Fin (Fintype.card K)) :=
       (Equiv.arrowCongr (Equiv.refl σ) Fin.equivSubtype.symm).cardinal_eq
     _ = #(σ → K) := (Equiv.arrowCongr (Equiv.refl σ) (Fintype.equivFin K).symm).cardinal_eq

@@ -78,7 +78,7 @@ theorem Spec.topMap_comp {R S T : CommRingCat.{u}} (f : R ⟶ S) (g : S ⟶ T) :
 @[simps! obj map]
 def Spec.toTop : CommRingCat.{u}ᵒᵖ ⥤ TopCat where
   obj R := Spec.topObj (unop R)
-  map {R S} f := Spec.topMap f.unop
+  map {_ _} f := Spec.topMap f.unop
 
 /-- The spectrum of a commutative ring, as a `SheafedSpace`.
 -/

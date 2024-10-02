@@ -157,7 +157,7 @@ This sets `a ⇨ b := sSup {c | c ⊓ a ≤ b}` and `aᶜ := a ⇨ ⊥`. -/
 abbrev ofMinimalAxioms (minAx : MinimalAxioms α) : Frame α where
   __ := minAx
   himp a b := sSup {c | c ⊓ a ≤ b}
-  le_himp_iff a b c :=
+  le_himp_iff _ b c :=
     ⟨fun h ↦ (inf_le_inf_right _ h).trans (by simp [minAx.sSup_inf_eq]), fun h ↦ le_sSup h⟩
   himp_bot _ := rfl
 
@@ -193,7 +193,7 @@ This sets `a \ b := sInf {c | a ≤ b ⊔ c}` and `￢a := ⊤ \ a`. -/
 abbrev ofMinimalAxioms (minAx : MinimalAxioms α) : Coframe α where
   __ := minAx
   sdiff a b := sInf {c | a ≤ b ⊔ c}
-  sdiff_le_iff a b c :=
+  sdiff_le_iff a b _ :=
     ⟨fun h ↦ (sup_le_sup_left h _).trans' (by simp [minAx.sup_sInf_eq]), fun h ↦ sInf_le h⟩
   top_sdiff _ := rfl
 

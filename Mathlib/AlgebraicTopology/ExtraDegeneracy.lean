@@ -181,7 +181,7 @@ open SSet.standardSimplex in
 protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
     SimplicialObject.Augmented.ExtraDegeneracy (standardSimplex.obj Δ) where
   s' _ := objMk (OrderHom.const _ 0)
-  s  n f := (objEquiv _ _).symm
+  s  _ f := (objEquiv _ _).symm
     (shift (objEquiv _ _ f))
   s'_comp_ε := by
     dsimp

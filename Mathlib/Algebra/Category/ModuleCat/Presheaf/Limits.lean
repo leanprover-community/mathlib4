@@ -63,7 +63,7 @@ taking a limit in the category of modules over `R.obj X` for all `X`. -/
 @[simps]
 noncomputable def limitPresheafOfModules : PresheafOfModules R where
   obj X := limit (F ⋙ evaluation R X)
-  map {X Y} f := limMap (whiskerLeft F (restriction R f)) ≫
+  map {_ Y} f := limMap (whiskerLeft F (restriction R f)) ≫
     (preservesLimitIso (ModuleCat.restrictScalars (R.map f)) (F ⋙ evaluation R Y)).inv
   map_id X := by
     dsimp

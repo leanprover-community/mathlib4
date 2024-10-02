@@ -286,7 +286,7 @@ as a `σ`-semilinear map for any ring homomorphism `σ` which we know is the ide
 @[simps]
 def id' {σ : R →+* R} [RingHomId σ] : M →ₛₗ[σ] M where
   toFun x := x
-  map_add' x y := rfl
+  map_add' _ _ := rfl
   map_smul' r x := by
     have := (RingHomId.eq_id : σ = _)
     subst this

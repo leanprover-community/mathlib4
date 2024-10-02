@@ -440,7 +440,7 @@ factors uniquely through a morphism `RingQuot r →+* T`.
 irreducible_def lift {r : R → R → Prop} :
   { f : R →+* T // ∀ ⦃x y⦄, r x y → f x = f y } ≃ (RingQuot r →+* T) :=
   { toFun := fun f ↦ preLift f.prop
-    invFun := fun F ↦ ⟨F.comp (mkRingHom r), fun x y h ↦ congr_arg F (mkRingHom_rel h)⟩
+    invFun := fun F ↦ ⟨F.comp (mkRingHom r), fun _ _ h ↦ congr_arg F (mkRingHom_rel h)⟩
     left_inv := fun f ↦ by
       ext
       simp only [preLift_def, mkRingHom_def, RingHom.coe_comp, RingHom.coe_mk, MonoidHom.coe_mk,
@@ -464,7 +464,7 @@ theorem lift_unique (f : R →+* T) {r : R → R → Prop} (w : ∀ ⦃x y⦄, r
   simp [h]
 
 theorem eq_lift_comp_mkRingHom {r : R → R → Prop} (f : RingQuot r →+* T) :
-    f = lift ⟨f.comp (mkRingHom r), fun x y h ↦ congr_arg f (mkRingHom_rel h)⟩ := by
+    f = lift ⟨f.comp (mkRingHom r), fun _ _ h ↦ congr_arg f (mkRingHom_rel h)⟩ := by
   conv_lhs => rw [← lift.apply_symm_apply f]
   rw [lift_def]
   rfl
@@ -619,7 +619,7 @@ theorem liftAlgHom_unique (f : A →ₐ[S] B) {s : A → A → Prop} (w : ∀ �
   simp [h]
 
 theorem eq_liftAlgHom_comp_mkAlgHom {s : A → A → Prop} (f : RingQuot s →ₐ[S] B) :
-    f = liftAlgHom S ⟨f.comp (mkAlgHom S s), fun x y h ↦ congr_arg f (mkAlgHom_rel S h)⟩ := by
+    f = liftAlgHom S ⟨f.comp (mkAlgHom S s), fun _ _ h ↦ congr_arg f (mkAlgHom_rel S h)⟩ := by
   conv_lhs => rw [← (liftAlgHom S).apply_symm_apply f]
   rw [liftAlgHom]
   rfl

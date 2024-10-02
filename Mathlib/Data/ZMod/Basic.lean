@@ -519,7 +519,7 @@ variable {m n : ℕ}
 
 @[simp]
 theorem val_eq_zero : ∀ {n : ℕ} (a : ZMod n), a.val = 0 ↔ a = 0
-  | 0, a => Int.natAbs_eq_zero
+  | 0, _ => Int.natAbs_eq_zero
   | n + 1, a => by
     rw [Fin.ext_iff]
     exact Iff.rfl
@@ -1139,7 +1139,7 @@ theorem valMinAbs_def_pos {n : ℕ} [NeZero n] (x : ZMod n) :
 
 @[simp, norm_cast]
 theorem coe_valMinAbs : ∀ {n : ℕ} (x : ZMod n), (x.valMinAbs : ZMod n) = x
-  | 0, x => Int.cast_id
+  | 0, _ => Int.cast_id
   | k@(n + 1), x => by
     rw [valMinAbs_def_pos]
     split_ifs
@@ -1331,9 +1331,9 @@ instance instField : Field (ZMod p) where
   mul_inv_cancel := mul_inv_cancel_aux p
   inv_zero := inv_zero p
   nnqsmul := _
-  nnqsmul_def := fun q a => rfl
+  nnqsmul_def := fun _ _ => rfl
   qsmul := _
-  qsmul_def := fun a x => rfl
+  qsmul_def := fun _ _ => rfl
 
 /-- `ZMod p` is an integral domain when `p` is prime. -/
 instance (p : ℕ) [hp : Fact p.Prime] : IsDomain (ZMod p) := by

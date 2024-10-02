@@ -86,7 +86,7 @@ def inverse : (C ⥤ Mon_ D) ⥤ Mon_ (C ⥤ D) where
   map α :=
   { hom :=
     { app := fun X => (α.app X).hom
-      naturality := fun X Y f => congr_arg Mon_.Hom.hom (α.naturality f) } }
+      naturality := fun _ _ f => congr_arg Mon_.Hom.hom (α.naturality f) } }
 
 /-- The unit for the equivalence `Mon_ (C ⥤ D) ≌ C ⥤ Mon_ D`.
 -/
@@ -170,7 +170,7 @@ private def inverse : (C ⥤ Comon_ D) ⥤ Comon_ (C ⥤ D) where
   map α :=
   { hom :=
     { app := fun X => (α.app X).hom
-      naturality := fun X Y f => congr_arg Comon_.Hom.hom (α.naturality f) }
+      naturality := fun _ _ f => congr_arg Comon_.Hom.hom (α.naturality f) }
     hom_counit := by ext x; dsimp; rw [(α.app x).hom_counit]
     hom_comul := by ext x; dsimp; rw [(α.app x).hom_comul] }
 

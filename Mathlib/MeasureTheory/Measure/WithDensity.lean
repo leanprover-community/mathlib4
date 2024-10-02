@@ -32,7 +32,7 @@ variable {α : Type*} {m0 : MeasurableSpace α} {μ : Measure α}
 measure such that for a measurable set `s` we have `μ.withDensity f s = ∫⁻ a in s, f a ∂μ`. -/
 noncomputable
 def Measure.withDensity {m : MeasurableSpace α} (μ : Measure α) (f : α → ℝ≥0∞) : Measure α :=
-  Measure.ofMeasurable (fun s _ => ∫⁻ a in s, f a ∂μ) (by simp) fun s hs hd =>
+  Measure.ofMeasurable (fun s _ => ∫⁻ a in s, f a ∂μ) (by simp) fun _ hs hd =>
     lintegral_iUnion hs hd _
 
 @[simp]

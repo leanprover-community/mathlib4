@@ -137,7 +137,7 @@ protected lemma mk' {P : MorphismProperty Scheme} [P.RespectsIso]
 the target. -/
 instance inf (P Q : MorphismProperty Scheme) [IsLocalAtTarget P] [IsLocalAtTarget Q] :
     IsLocalAtTarget (P ⊓ Q) where
-  iff_of_openCover' {X Y} f 𝒰 :=
+  iff_of_openCover' {_ _} f 𝒰 :=
     ⟨fun h i ↦ ⟨(iff_of_openCover' f 𝒰).mp h.left i, (iff_of_openCover' f 𝒰).mp h.right i⟩,
      fun h ↦ ⟨(iff_of_openCover' f 𝒰).mpr (fun i ↦ (h i).left),
       (iff_of_openCover' f 𝒰).mpr (fun i ↦ (h i).right)⟩⟩
@@ -222,7 +222,7 @@ protected lemma mk' {P : MorphismProperty Scheme} [P.RespectsIso]
 the target. -/
 instance inf (P Q : MorphismProperty Scheme) [IsLocalAtSource P] [IsLocalAtSource Q] :
     IsLocalAtSource (P ⊓ Q) where
-  iff_of_openCover' {X Y} f 𝒰 :=
+  iff_of_openCover' {_ _} f 𝒰 :=
     ⟨fun h i ↦ ⟨(iff_of_openCover' f 𝒰).mp h.left i, (iff_of_openCover' f 𝒰).mp h.right i⟩,
      fun h ↦ ⟨(iff_of_openCover' f 𝒰).mpr (fun i ↦ (h i).left),
       (iff_of_openCover' f 𝒰).mpr (fun i ↦ (h i).right)⟩⟩
@@ -323,7 +323,7 @@ theorem arrow_mk_iso_iff
 
 theorem respectsIso_mk {P : AffineTargetMorphismProperty}
     (h₁ : ∀ {X Y Z} (e : X ≅ Y) (f : Y ⟶ Z) [IsAffine Z], P f → P (e.hom ≫ f))
-    (h₂ : ∀ {X Y Z} (e : Y ≅ Z) (f : X ⟶ Y) [h : IsAffine Y],
+    (h₂ : ∀ {X Y Z} (e : Y ≅ Z) (f : X ⟶ Y) [IsAffine Y],
       P f → @P _ _ (f ≫ e.hom) (isAffine_of_isIso e.inv)) :
     P.toProperty.RespectsIso := by
   apply MorphismProperty.RespectsIso.mk

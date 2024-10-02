@@ -46,8 +46,8 @@ section
 def monoidalOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : MonoidalCategory C :=
   letI : MonoidalCategoryStruct C := {
     tensorObj := fun X Y ↦ X ⨯ Y
-    whiskerLeft := fun X _ _ g ↦ Limits.prod.map (𝟙 _) g
-    whiskerRight := fun {_ _} f Y ↦ Limits.prod.map f (𝟙 _)
+    whiskerLeft := fun _ _ _ g ↦ Limits.prod.map (𝟙 _) g
+    whiskerRight := fun {_ _} f _ ↦ Limits.prod.map f (𝟙 _)
     tensorHom := fun f g ↦ Limits.prod.map f g
     tensorUnit := ⊤_ C
     associator := prod.associator
@@ -168,8 +168,8 @@ section
 def monoidalOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] : MonoidalCategory C :=
   letI : MonoidalCategoryStruct C := {
     tensorObj := fun X Y ↦ X ⨿ Y
-    whiskerLeft := fun X _ _ g ↦ Limits.coprod.map (𝟙 _) g
-    whiskerRight := fun {_ _} f Y ↦ Limits.coprod.map f (𝟙 _)
+    whiskerLeft := fun _ _ _ g ↦ Limits.coprod.map (𝟙 _) g
+    whiskerRight := fun {_ _} f _ ↦ Limits.coprod.map f (𝟙 _)
     tensorHom := fun f g ↦ Limits.coprod.map f g
     tensorUnit := ⊥_ C
     associator := coprod.associator

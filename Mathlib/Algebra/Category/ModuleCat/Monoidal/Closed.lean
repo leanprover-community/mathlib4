@@ -38,7 +38,7 @@ def monoidalClosedHomEquiv (M N P : ModuleCat.{u} R) :
     rw [Function.comp_apply]
     -- This used to be `rw` and was longer (?), but we need `erw` after leanprover/lean4#2644
     erw [MonoidalCategory.braiding_hom_apply, TensorProduct.lift.tmul]
-  right_inv f := rfl
+  right_inv _ := rfl
 
 instance : MonoidalClosed (ModuleCat.{u} R) where
   closed M :=

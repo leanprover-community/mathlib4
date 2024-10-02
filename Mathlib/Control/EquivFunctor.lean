@@ -81,7 +81,7 @@ end
 
 instance (priority := 100) ofLawfulFunctor (f : Type u₀ → Type u₁) [Functor f] [LawfulFunctor f] :
     EquivFunctor f where
-  map {α β} e := Functor.map e
+  map {_ _} e := Functor.map e
   map_refl' α := by
     ext
     apply LawfulFunctor.id_map

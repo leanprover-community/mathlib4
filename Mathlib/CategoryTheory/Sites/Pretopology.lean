@@ -83,9 +83,9 @@ variable (C)
 
 instance : PartialOrder (Pretopology C) :=
   { Pretopology.LE with
-    le_refl := fun K => le_def.mpr le_rfl
-    le_trans := fun K₁ K₂ K₃ h₁₂ h₂₃ => le_def.mpr (le_trans h₁₂ h₂₃)
-    le_antisymm := fun K₁ K₂ h₁₂ h₂₁ => Pretopology.ext (le_antisymm h₁₂ h₂₁) }
+    le_refl := fun _ => le_def.mpr le_rfl
+    le_trans := fun _ _ _ h₁₂ h₂₃ => le_def.mpr (le_trans h₁₂ h₂₃)
+    le_antisymm := fun _ _ h₁₂ h₂₁ => Pretopology.ext (le_antisymm h₁₂ h₂₁) }
 
 instance : OrderTop (Pretopology C) where
   top :=
@@ -105,7 +105,7 @@ See <https://stacks.math.columbia.edu/tag/00ZC>, or [MM92] Chapter III, Section 
 -/
 def toGrothendieck (K : Pretopology C) : GrothendieckTopology C where
   sieves X S := ∃ R ∈ K X, R ≤ (S : Presieve _)
-  top_mem' X := ⟨Presieve.singleton (𝟙 _), K.has_isos _, fun _ _ _ => ⟨⟩⟩
+  top_mem' _ := ⟨Presieve.singleton (𝟙 _), K.has_isos _, fun _ _ _ => ⟨⟩⟩
   pullback_stable' X Y S g := by
     rintro ⟨R, hR, RS⟩
     refine ⟨_, K.pullbacks g _ hR, ?_⟩
@@ -152,7 +152,7 @@ def gi : GaloisInsertion (toGrothendieck C) (ofGrothendieck C) where
     · rintro h X S ⟨R, hR, RS⟩
       apply J.superset_covering _ (h _ hR)
       rwa [Sieve.giGenerate.gc]
-  le_l_u J X S hS := ⟨S, J.superset_covering (Sieve.le_generate S.arrows) hS, le_rfl⟩
+  le_l_u J _ S hS := ⟨S, J.superset_covering (Sieve.le_generate S.arrows) hS, le_rfl⟩
   choice x _ := toGrothendieck C x
   choice_eq _ _ := rfl
 
@@ -164,7 +164,7 @@ See <https://stacks.math.columbia.edu/tag/07GE>
 -/
 def trivial : Pretopology C where
   coverings X S := ∃ (Y : _) (f : Y ⟶ X) (_ : IsIso f), S = Presieve.singleton f
-  has_isos X Y f i := ⟨_, _, i, rfl⟩
+  has_isos _ _ _ i := ⟨_, _, i, rfl⟩
   pullbacks X Y f S := by
     rintro ⟨Z, g, i, rfl⟩
     refine ⟨pullback g f, pullback.snd _ _, ?_, ?_⟩

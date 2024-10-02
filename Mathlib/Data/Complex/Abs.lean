@@ -226,7 +226,7 @@ theorem range_normSq : range normSq = Ici 0 :=
 
 local notation "abs'" => _root_.abs
 
-theorem isCauSeq_re (f : CauSeq ℂ Complex.abs) : IsCauSeq abs' fun n => (f n).re := fun ε ε0 =>
+theorem isCauSeq_re (f : CauSeq ℂ Complex.abs) : IsCauSeq abs' fun n => (f n).re := fun _ ε0 =>
   (f.cauchy ε0).imp fun i H j ij =>
     lt_of_le_of_lt (by simpa using abs_re_le_abs (f j - f i)) (H _ ij)
 
@@ -257,7 +257,7 @@ theorem equiv_limAux (f : CauSeq ℂ Complex.abs) :
   (exists_forall_ge_and
   (CauSeq.equiv_lim ⟨_, isCauSeq_re f⟩ _ (half_pos ε0))
         (CauSeq.equiv_lim ⟨_, isCauSeq_im f⟩ _ (half_pos ε0))).imp
-    fun i H j ij => by
+    fun _ H j ij => by
     cases' H _ ij with H₁ H₂
     apply lt_of_le_of_lt (abs_le_abs_re_add_abs_im _)
     dsimp [limAux] at *

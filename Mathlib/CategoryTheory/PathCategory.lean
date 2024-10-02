@@ -37,7 +37,7 @@ namespace Paths
 
 instance categoryPaths : Category.{max u₁ v₁} (Paths V) where
   Hom := fun X Y : V => Quiver.Path X Y
-  id X := Quiver.Path.nil
+  id _ := Quiver.Path.nil
   comp f g := Quiver.Path.comp f g
 
 variable {V}
@@ -57,7 +57,7 @@ def lift {C} [Category C] (φ : V ⥤q C) : Paths V ⥤ C where
   map {X} {Y} f :=
     @Quiver.Path.rec V _ X (fun Y _ => φ.obj X ⟶ φ.obj Y) (𝟙 <| φ.obj X)
       (fun _ f ihp => ihp ≫ φ.map f) Y f
-  map_id X := rfl
+  map_id _ := rfl
   map_comp f g := by
     induction g with
     | nil =>
@@ -221,7 +221,7 @@ def quotientPathsEquiv : Quotient (pathsHomRel C) ≌ C where
         apply Quot.sound
         apply Quotient.CompClosure.of
         simp [Category.comp_id, Category.id_comp, pathsHomRel])
-  counitIso := NatIso.ofComponents (fun X => Iso.refl _) (fun f => by simp [Quot.liftOn_mk])
+  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp [Quot.liftOn_mk])
   functor_unitIso_comp X := by
     cases X
     simp only [pathsHomRel, pathComposition_obj, pathComposition_map, Functor.id_obj,

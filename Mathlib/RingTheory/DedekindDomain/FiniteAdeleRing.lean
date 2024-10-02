@@ -355,7 +355,7 @@ instance : Algebra (R_hat R K) (FiniteAdeleRing R K) where
   map_zero' := by ext; rfl
   map_add' _ _ := by ext; rfl
   commutes' _ _ := mul_comm _ _
-  smul_def' r x := rfl
+  smul_def' _ _ := rfl
 
 instance : CoeFun (FiniteAdeleRing R K)
     (fun _ ↦ ∀ (v : HeightOneSpectrum R), adicCompletion K v) where

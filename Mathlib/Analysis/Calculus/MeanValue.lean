@@ -1039,14 +1039,14 @@ of the real line. If `f` is differentiable on the interior of `D` and `f'` is no
 lemma monotoneOn_of_hasDerivWithinAt_nonneg {D : Set ℝ} (hD : Convex ℝ D) {f f' : ℝ → ℝ}
     (hf : ContinuousOn f D) (hf' : ∀ x ∈ interior D, HasDerivWithinAt f (f' x) (interior D) x)
     (hf'₀ : ∀ x ∈ interior D, 0 ≤ f' x) : MonotoneOn f D :=
-  monotoneOn_of_deriv_nonneg hD hf (fun x hx ↦ (hf' _ hx).differentiableWithinAt) fun x hx ↦ by
+  monotoneOn_of_deriv_nonneg hD hf (fun _ hx ↦ (hf' _ hx).differentiableWithinAt) fun x hx ↦ by
     rw [deriv_eqOn isOpen_interior hf' hx]; exact hf'₀ _ hx
 
 /-- Let `f : ℝ → ℝ` be a differentiable function. If `f'` is nonnegative, then
 `f` is a monotone function. -/
 lemma monotone_of_hasDerivAt_nonneg {f f' : ℝ → ℝ} (hf : ∀ x, HasDerivAt f (f' x) x)
     (hf' : 0 ≤ f') : Monotone f :=
-  monotone_of_deriv_nonneg (fun x ↦ (hf _).differentiableAt) fun x ↦ by
+  monotone_of_deriv_nonneg (fun _ ↦ (hf _).differentiableAt) fun x ↦ by
     rw [(hf _).deriv]; exact hf' _
 
 /-- Let `f` be a function continuous on a convex (or, equivalently, connected) subset `D`
@@ -1114,14 +1114,14 @@ of the real line. If `f` is differentiable on the interior of `D` and `f'` is no
 lemma antitoneOn_of_hasDerivWithinAt_nonpos {D : Set ℝ} (hD : Convex ℝ D) {f f' : ℝ → ℝ}
     (hf : ContinuousOn f D) (hf' : ∀ x ∈ interior D, HasDerivWithinAt f (f' x) (interior D) x)
     (hf'₀ : ∀ x ∈ interior D, f' x ≤ 0) : AntitoneOn f D :=
-  antitoneOn_of_deriv_nonpos hD hf (fun x hx ↦ (hf' _ hx).differentiableWithinAt) fun x hx ↦ by
+  antitoneOn_of_deriv_nonpos hD hf (fun _ hx ↦ (hf' _ hx).differentiableWithinAt) fun x hx ↦ by
     rw [deriv_eqOn isOpen_interior hf' hx]; exact hf'₀ _ hx
 
 /-- Let `f : ℝ → ℝ` be a differentiable function. If `f'` is nonpositive, then `f` is an antitone
 function. -/
 lemma antitone_of_hasDerivAt_nonpos {f f' : ℝ → ℝ} (hf : ∀ x, HasDerivAt f (f' x) x)
     (hf' : f' ≤ 0) : Antitone f :=
-  antitone_of_deriv_nonpos (fun x ↦ (hf _).differentiableAt) fun x ↦ by
+  antitone_of_deriv_nonpos (fun _ ↦ (hf _).differentiableAt) fun x ↦ by
     rw [(hf _).deriv]; exact hf' _
 
 /-! ### Functions `f : E → ℝ` -/

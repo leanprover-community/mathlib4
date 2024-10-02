@@ -266,7 +266,7 @@ theorem IsCompact.nullMeasurableSet [T2Space α] {μ} (h : IsCompact s) : NullMe
 then they can't be separated by a Borel measurable set. -/
 theorem Inseparable.mem_measurableSet_iff {x y : γ} (h : Inseparable x y) {s : Set γ}
     (hs : MeasurableSet s) : x ∈ s ↔ y ∈ s :=
-  hs.induction_on_open (C := fun s ↦ (x ∈ s ↔ y ∈ s)) (fun _ ↦ h.mem_open_iff) (fun s _ ↦ Iff.not)
+  hs.induction_on_open (C := fun s ↦ (x ∈ s ↔ y ∈ s)) (fun _ ↦ h.mem_open_iff) (fun _ _ ↦ Iff.not)
     fun _ _ _ h ↦ by simp [h]
 
 /-- If `K` is a compact set in an R₁ space and `s ⊇ K` is a Borel measurable superset,

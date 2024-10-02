@@ -108,7 +108,7 @@ naturality 2-cell is an isomorphism. -/
 noncomputable def mkOfOplax' {F G : OplaxFunctor B C} (η : OplaxNatTrans F G)
     [∀ a b (f : a ⟶ b), IsIso (η.naturality f)] : StrongOplaxNatTrans F G where
   app := η.app
-  naturality := fun f => asIso (η.naturality _)
+  naturality := fun _ => asIso (η.naturality _)
 
 variable (F : OplaxFunctor B C)
 

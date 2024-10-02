@@ -118,7 +118,7 @@ instance instLieRingModule : LieRingModule (A ⊗[R] L) (A ⊗[R] M) where
 
 instance instLieModule : LieModule A (A ⊗[R] L) (A ⊗[R] M) where
   smul_lie t x m := by simp only [bracket_def, map_smul, LinearMap.smul_apply]
-  lie_smul t x m := map_smul _ _ _
+  lie_smul _ _ _ := map_smul _ _ _
 
 end ExtendScalars
 

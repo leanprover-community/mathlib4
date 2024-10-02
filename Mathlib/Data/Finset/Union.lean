@@ -69,7 +69,7 @@ lemma coe_disjiUnion {h} : (s.disjiUnion t h : Set β) = ⋃ x ∈ (s : Set α),
 lemma disjiUnion_disjiUnion (s : Finset α) (f : α → Finset β) (g : β → Finset γ) (h1 h2) :
     (s.disjiUnion f h1).disjiUnion g h2 =
       s.attach.disjiUnion
-        (fun a ↦ ((f a).disjiUnion g) fun b hb c hc ↦
+        (fun a ↦ ((f a).disjiUnion g) fun _ hb _ hc ↦
             h2 (mem_disjiUnion.mpr ⟨_, a.prop, hb⟩) (mem_disjiUnion.mpr ⟨_, a.prop, hc⟩))
         fun a _ b _ hab ↦
         disjoint_left.mpr fun x hxa hxb ↦ by

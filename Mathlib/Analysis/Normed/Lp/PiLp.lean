@@ -740,7 +740,7 @@ def _root_.LinearIsometryEquiv.piLpCurry :
   toLinearEquiv :=
     WithLp.linearEquiv _ _ _
       ≪≫ₗ LinearEquiv.piCurry 𝕜 α
-      ≪≫ₗ (LinearEquiv.piCongrRight fun i => (WithLp.linearEquiv _ _ _).symm)
+      ≪≫ₗ (LinearEquiv.piCongrRight fun _ => (WithLp.linearEquiv _ _ _).symm)
       ≪≫ₗ (WithLp.linearEquiv _ _ _).symm
   norm_map' := (WithLp.equiv p _).symm.surjective.forall.2 fun x => by
     simp_rw [← coe_nnnorm, NNReal.coe_inj]

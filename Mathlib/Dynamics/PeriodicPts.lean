@@ -181,7 +181,7 @@ theorem Semiconj.mapsTo_ptsOfPeriod {g : α → β} (h : Semiconj g fa fb) (n : 
 
 theorem bijOn_ptsOfPeriod (f : α → α) {n : ℕ} (hn : 0 < n) :
     BijOn f (ptsOfPeriod f n) (ptsOfPeriod f n) :=
-  ⟨(Commute.refl f).mapsTo_ptsOfPeriod n, fun x hx y hy hxy => hx.eq_of_apply_eq_same hy hn hxy,
+  ⟨(Commute.refl f).mapsTo_ptsOfPeriod n, fun _ hx _ hy hxy => hx.eq_of_apply_eq_same hy hn hxy,
     fun x hx =>
     ⟨f^[n.pred] x, hx.apply_iterate _, by
       rw [← comp_apply (f := f), comp_iterate_pred_of_pos f hn, hx.eq]⟩⟩

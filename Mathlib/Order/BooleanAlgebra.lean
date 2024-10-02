@@ -692,8 +692,8 @@ instance Prop.instBooleanAlgebra : BooleanAlgebra Prop where
   __ := Prop.instHeytingAlgebra
   __ := GeneralizedHeytingAlgebra.toDistribLattice
   compl := Not
-  himp_eq p q := propext imp_iff_or_not
-  inf_compl_le_bot p H := H.2 H.1
+  himp_eq _ _ := propext imp_iff_or_not
+  inf_compl_le_bot _ H := H.2 H.1
   top_le_sup_compl p _ := Classical.em p
 
 instance Prod.instBooleanAlgebra [BooleanAlgebra α] [BooleanAlgebra β] :
@@ -760,8 +760,8 @@ protected abbrev Function.Injective.booleanAlgebra [Sup α] [Inf α] [Top α] [B
   compl := compl
   himp := himp
   top := ⊤
-  le_top a := (@le_top β _ _ _).trans map_top.ge
-  bot_le a := map_bot.le.trans bot_le
+  le_top _ := (@le_top β _ _ _).trans map_top.ge
+  bot_le _ := map_bot.le.trans bot_le
   inf_compl_le_bot a := ((map_inf _ _).trans <| by rw [map_compl, inf_compl_eq_bot, map_bot]).le
   top_le_sup_compl a := ((map_sup _ _).trans <| by rw [map_compl, sup_compl_eq_top, map_top]).ge
   sdiff_eq a b := by

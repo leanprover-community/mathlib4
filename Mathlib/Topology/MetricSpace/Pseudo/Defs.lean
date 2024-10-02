@@ -59,7 +59,7 @@ def UniformSpace.ofDist (dist : α → α → ℝ) (dist_self : ∀ x : α, dist
 abbrev Bornology.ofDist {α : Type*} (dist : α → α → ℝ) (dist_comm : ∀ x y, dist x y = dist y x)
     (dist_triangle : ∀ x y z, dist x z ≤ dist x y + dist y z) : Bornology α :=
   Bornology.ofBounded { s : Set α | ∃ C, ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → dist x y ≤ C }
-    ⟨0, fun x hx y => hx.elim⟩ (fun s ⟨c, hc⟩ t h => ⟨c, fun x hx y hy => hc (h hx) (h hy)⟩)
+    ⟨0, fun _ hx _ => hx.elim⟩ (fun _ ⟨c, hc⟩ _ h => ⟨c, fun _ hx _ hy => hc (h hx) (h hy)⟩)
     (fun s hs t ht => by
       rcases s.eq_empty_or_nonempty with rfl | ⟨x, hx⟩
       · rwa [empty_union]
@@ -1013,8 +1013,8 @@ section Real
 instance Real.pseudoMetricSpace : PseudoMetricSpace ℝ where
   dist x y := |x - y|
   dist_self := by simp [abs_zero]
-  dist_comm x y := abs_sub_comm _ _
-  dist_triangle x y z := abs_sub_le _ _ _
+  dist_comm _ _ := abs_sub_comm _ _
+  dist_triangle _ _ _ := abs_sub_le _ _ _
 
 theorem Real.dist_eq (x y : ℝ) : dist x y = |x - y| := rfl
 

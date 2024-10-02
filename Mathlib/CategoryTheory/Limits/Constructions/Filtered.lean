@@ -58,7 +58,7 @@ def liftToFinsetColimitCocone [HasFilteredColimitsOfSize.{w, w} C] (F : Discrete
     { desc := fun s =>
         colimit.desc (liftToFinsetObj F)
           { pt := s.pt
-            ι := { app := fun t => Sigma.desc fun x => s.ι.app x } }
+            ι := { app := fun _ => Sigma.desc fun x => s.ι.app x } }
       uniq := fun s m h => by
         apply colimit.hom_ext
         rintro t

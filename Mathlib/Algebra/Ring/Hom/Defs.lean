@@ -258,7 +258,7 @@ instance : MonoidWithZero (α →ₙ+* α) where
   mul := comp
   mul_one := comp_id
   one_mul := id_comp
-  mul_assoc f g h := comp_assoc _ _ _
+  mul_assoc _ _ _ := comp_assoc _ _ _
   zero := 0
   mul_zero := comp_zero
   zero_mul := zero_comp
@@ -595,9 +595,9 @@ lemma mul_def (f g : α →+* α) : f * g = f.comp g := rfl
 instance instMonoid : Monoid (α →+* α) where
   mul_one := comp_id
   one_mul := id_comp
-  mul_assoc f g h := comp_assoc _ _ _
+  mul_assoc _ _ _ := comp_assoc _ _ _
   npow n f := (npowRec n f).copy f^[n] <| by induction n <;> simp [npowRec, *]
-  npow_succ n f := DFunLike.coe_injective <| Function.iterate_succ _ _
+  npow_succ _ _ := DFunLike.coe_injective <| Function.iterate_succ _ _
 
 @[simp, norm_cast] lemma coe_pow (f : α →+* α) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
 

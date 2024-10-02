@@ -97,7 +97,7 @@ and cover the whole open ray `(0, +∞)`. -/
 def finiteSpanningSetsIn_volumeIoiPow_range_Iio (n : ℕ) :
     FiniteSpanningSetsIn (volumeIoiPow n) (range Iio) where
   set k := Iio ⟨k + 1, mem_Ioi.2 k.cast_add_one_pos⟩
-  set_mem k := mem_range_self _
+  set_mem _ := mem_range_self _
   finite k := by simp [volumeIoiPow_apply_Iio]
   spanning := iUnion_eq_univ_iff.2 fun x ↦ ⟨⌊x.1⌋₊, Nat.lt_floor_add_one x.1⟩
 

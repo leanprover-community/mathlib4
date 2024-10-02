@@ -997,7 +997,7 @@ def moveRightSymm :
 /-- The identity relabelling. -/
 @[refl]
 def refl (x : PGame) : x ≡r x :=
-  ⟨Equiv.refl _, Equiv.refl _, fun i => refl _, fun j => refl _⟩
+  ⟨Equiv.refl _, Equiv.refl _, fun _ => refl _, fun _ => refl _⟩
 termination_by x
 
 instance (x : PGame) : Inhabited (x ≡r x) :=

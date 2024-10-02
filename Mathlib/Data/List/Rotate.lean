@@ -51,7 +51,7 @@ theorem rotate'_cons_succ (l : List α) (a : α) (n : ℕ) :
 @[simp]
 theorem length_rotate' : ∀ (l : List α) (n : ℕ), (l.rotate' n).length = l.length
   | [], _ => by simp
-  | a :: l, 0 => rfl
+  | _ :: _, 0 => rfl
   | a :: l, n + 1 => by rw [List.rotate', length_rotate' (l ++ [a]) n]; simp
 
 theorem rotate'_eq_drop_append_take :
@@ -116,7 +116,7 @@ theorem length_rotate (l : List α) (n : ℕ) : (l.rotate n).length = l.length :
 
 @[simp]
 theorem rotate_replicate (a : α) (n : ℕ) (k : ℕ) : (replicate n a).rotate k = replicate n a :=
-  eq_replicate.2 ⟨by rw [length_rotate, length_replicate], fun b hb =>
+  eq_replicate.2 ⟨by rw [length_rotate, length_replicate], fun _ hb =>
     eq_of_mem_replicate <| mem_rotate.1 hb⟩
 
 theorem rotate_eq_drop_append_take {l : List α} {n : ℕ} :

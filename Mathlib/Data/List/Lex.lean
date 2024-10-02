@@ -67,11 +67,11 @@ instance isOrderConnected (r : α → α → Prop) [IsOrderConnected α r] [IsTr
     IsOrderConnected (List α) (Lex r) where
   conn := aux where
     aux
-    | _, [], c :: l₃, nil => Or.inr nil
-    | _, [], c :: l₃, rel _ => Or.inr nil
-    | _, [], c :: l₃, cons _ => Or.inr nil
-    | _, b :: l₂, c :: l₃, nil => Or.inl nil
-    | a :: l₁, b :: l₂, c :: l₃, rel h => (IsOrderConnected.conn _ b _ h).imp rel rel
+    | _, [], _ :: _, nil => Or.inr nil
+    | _, [], _ :: _, rel _ => Or.inr nil
+    | _, [], _ :: _, cons _ => Or.inr nil
+    | _, _ :: _, _ :: _, nil => Or.inl nil
+    | _ :: _, b :: _, _ :: _, rel h => (IsOrderConnected.conn _ b _ h).imp rel rel
     | a :: l₁, b :: l₂, _ :: l₃, cons h => by
       rcases trichotomous_of r a b with (ab | rfl | ab)
       · exact Or.inl (rel ab)
@@ -83,8 +83,8 @@ instance isTrichotomous (r : α → α → Prop) [IsTrichotomous α r] :
   trichotomous := aux where
     aux
     | [], [] => Or.inr (Or.inl rfl)
-    | [], b :: l₂ => Or.inl nil
-    | a :: l₁, [] => Or.inr (Or.inr nil)
+    | [], _ :: _ => Or.inl nil
+    | _ :: _, [] => Or.inr (Or.inr nil)
     | a :: l₁, b :: l₂ => by
       rcases trichotomous_of r a b with (ab | rfl | ab)
       · exact Or.inl (rel ab)
@@ -106,7 +106,7 @@ instance isStrictTotalOrder (r : α → α → Prop) [IsStrictTotalOrder α r] :
 
 instance decidableRel [DecidableEq α] (r : α → α → Prop) [DecidableRel r] : DecidableRel (Lex r)
   | l₁, [] => isFalse fun h => by cases h
-  | [], b :: l₂ => isTrue Lex.nil
+  | [], _ :: _ => isTrue Lex.nil
   | a :: l₁, b :: l₂ => by
     haveI := decidableRel r l₁ l₂
     refine decidable_of_iff (r a b ∨ a = b ∧ Lex r l₁ l₂) ⟨fun h => ?_, fun h => ?_⟩

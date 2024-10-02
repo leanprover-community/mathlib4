@@ -163,7 +163,7 @@ def lift : W.Localization ⥤ D :=
 
 @[simp]
 theorem fac : W.Q ⋙ lift G hG = G :=
-  Functor.ext (fun X => rfl)
+  Functor.ext (fun _ => rfl)
     (by
       intro X Y f
       simp only [Functor.comp_map, eqToHom_refl, comp_id, id_comp]
@@ -197,7 +197,7 @@ localization with respect to a morphism_property `W` -/
 def objEquiv : C ≃ W.Localization where
   toFun := W.Q.obj
   invFun X := X.as.obj
-  left_inv X := rfl
+  left_inv _ := rfl
   right_inv := by
     rintro ⟨⟨X⟩⟩
     rfl

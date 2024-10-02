@@ -188,7 +188,7 @@ lemma lift_unique' (F₁ F₂ : Quotient r ⥤ D) (h : functor r ⋙ F₁ = func
 
 /-- The original functor factors through the induced functor. -/
 def lift.isLift : functor r ⋙ lift r F H ≅ F :=
-  NatIso.ofComponents fun X ↦ Iso.refl _
+  NatIso.ofComponents fun _ ↦ Iso.refl _
 
 @[simp]
 theorem lift.isLift_hom (X : C) : (lift.isLift r F H).hom.app X = 𝟙 (F.obj X) :=

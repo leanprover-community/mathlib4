@@ -215,8 +215,8 @@ def costructuredArrowDownwardsPrecomp
     dsimp
     rw [← CostructuredArrow.w φ, structuredArrowDownwards_map]
     rfl)
-  map_id A := rfl
-  map_comp φ φ' := rfl
+  map_id _ := rfl
+  map_comp _ _ := rfl
 
 end
 

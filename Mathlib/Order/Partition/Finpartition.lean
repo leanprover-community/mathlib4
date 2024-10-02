@@ -221,8 +221,8 @@ instance : LE (Finpartition a) :=
 
 instance : PartialOrder (Finpartition a) :=
   { (inferInstance : LE (Finpartition a)) with
-    le_refl := fun P b hb ↦ ⟨b, hb, le_rfl⟩
-    le_trans := fun P Q R hPQ hQR b hb ↦ by
+    le_refl := fun _ b hb ↦ ⟨b, hb, le_rfl⟩
+    le_trans := fun _ Q R hPQ hQR b hb ↦ by
       obtain ⟨c, hc, hbc⟩ := hPQ hb
       obtain ⟨d, hd, hcd⟩ := hQR hc
       exact ⟨d, hd, hbc.trans hcd⟩
@@ -428,7 +428,7 @@ variable [GeneralizedBooleanAlgebra α] [DecidableEq α] {a b c : α} (P : Finpa
 def avoid (b : α) : Finpartition (a \ b) :=
   ofErase
     (P.parts.image (· \ b))
-    (P.disjoint.image_finset_of_le fun a ↦ sdiff_le).supIndep
+    (P.disjoint.image_finset_of_le fun _ ↦ sdiff_le).supIndep
     (by rw [sup_image, id_comp, Finset.sup_sdiff_right, ← Function.id_def, P.sup_parts])
 
 @[simp]

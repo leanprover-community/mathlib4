@@ -195,7 +195,7 @@ theorem consCases_cons {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀
 def consInduction {α : Sort*} {P : ∀ {n : ℕ}, (Fin n → α) → Sort v} (h0 : P Fin.elim0)
     (h : ∀ {n} (x₀) (x : Fin n → α), P x → P (Fin.cons x₀ x)) : ∀ {n : ℕ} (x : Fin n → α), P x
   | 0, x => by convert h0
-  | n + 1, x => consCases (fun x₀ x ↦ h _ _ <| consInduction h0 h _) x
+  | _ + 1, x => consCases (fun _ _ ↦ h _ _ <| consInduction h0 h _) x
 
 theorem cons_injective_of_injective {α} {x₀ : α} {x : Fin n → α} (hx₀ : x₀ ∉ Set.range x)
     (hx : Function.Injective x) : Function.Injective (cons x₀ x : Fin n.succ → α) := by
@@ -710,7 +710,7 @@ def snocInduction {α : Sort*}
     (h0 : P Fin.elim0)
     (h : ∀ {n} (x : Fin n → α) (x₀), P x → P (Fin.snoc x x₀)) : ∀ {n : ℕ} (x : Fin n → α), P x
   | 0, x => by convert h0
-  | n + 1, x => snocCases (fun x₀ x ↦ h _ _ <| snocInduction h0 h _) x
+  | _ + 1, x => snocCases (fun _ _ ↦ h _ _ <| snocInduction h0 h _) x
 
 end TupleRight
 
@@ -947,7 +947,7 @@ def find : ∀ {n : ℕ} (p : Fin n → Prop) [DecidablePred p], Option (Fin n)
 /-- If `find p = some i`, then `p i` holds -/
 theorem find_spec :
     ∀ {n : ℕ} (p : Fin n → Prop) [DecidablePred p] {i : Fin n} (_ : i ∈ Fin.find p), p i
-  | 0, p, I, i, hi => Option.noConfusion hi
+  | 0, _, _, _, hi => Option.noConfusion hi
   | n + 1, p, I, i, hi => by
     rw [find] at hi
     cases' h : find fun i : Fin n ↦ p (i.castLT (Nat.lt_succ_of_lt i.2)) with j
@@ -965,7 +965,7 @@ theorem find_spec :
 /-- `find p` does not return `none` if and only if `p i` holds at some index `i`. -/
 theorem isSome_find_iff :
     ∀ {n : ℕ} {p : Fin n → Prop} [DecidablePred p], (find p).isSome ↔ ∃ i, p i
-  | 0, p, _ => iff_of_false (fun h ↦ Bool.noConfusion h) fun ⟨i, _⟩ ↦ Fin.elim0 i
+  | 0, _, _ => iff_of_false (fun h ↦ Bool.noConfusion h) fun ⟨i, _⟩ ↦ Fin.elim0 i
   | n + 1, p, _ =>
     ⟨fun h ↦ by
       rw [Option.isSome_iff_exists] at h
@@ -990,7 +990,7 @@ the indices where `p` holds. -/
 theorem find_min :
     ∀ {n : ℕ} {p : Fin n → Prop} [DecidablePred p] {i : Fin n} (_ : i ∈ Fin.find p) {j : Fin n}
       (_ : j < i), ¬p j
-  | 0, p, _, i, hi, _, _, _ => Option.noConfusion hi
+  | 0, _, _, _, hi, _, _, _ => Option.noConfusion hi
   | n + 1, p, _, i, hi, ⟨j, hjn⟩, hj, hpj => by
     rw [find] at hi
     cases' h : find fun i : Fin n ↦ p (i.castLT (Nat.lt_succ_of_lt i.2)) with k

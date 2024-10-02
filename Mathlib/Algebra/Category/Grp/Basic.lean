@@ -145,7 +145,7 @@ example {R S : Grp} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [h]
   "Universe lift functor for additive groups."]
 def uliftFunctor : Grp.{u} ⥤ Grp.{max u v} where
   obj X := Grp.of (ULift.{v, u} X)
-  map {X Y} f := Grp.ofHom <|
+  map {_ _} f := Grp.ofHom <|
     MulEquiv.ulift.symm.toMonoidHom.comp <| f.comp MulEquiv.ulift.toMonoidHom
   map_id X := by rfl
   map_comp {X Y Z} f g := by rfl
@@ -287,7 +287,7 @@ example {R S : CommGrp} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [
   "Universe lift functor for additive commutative groups."]
 def uliftFunctor : CommGrp.{u} ⥤ CommGrp.{max u v} where
   obj X := CommGrp.of (ULift.{v, u} X)
-  map {X Y} f := CommGrp.ofHom <|
+  map {_ _} f := CommGrp.ofHom <|
     MulEquiv.ulift.symm.toMonoidHom.comp <| f.comp MulEquiv.ulift.toMonoidHom
   map_id X := by rfl
   map_comp {X Y Z} f g := by rfl

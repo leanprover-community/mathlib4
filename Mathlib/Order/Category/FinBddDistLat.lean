@@ -82,7 +82,7 @@ example {X Y : FinBddDistLat} : (X ⟶ Y) = BoundedLatticeHom X Y :=
 @[simps]
 def dual : FinBddDistLat ⥤ FinBddDistLat where
   obj X := of Xᵒᵈ
-  map {X Y} := BoundedLatticeHom.dual
+  map {_ _} := BoundedLatticeHom.dual
 
 /-- The equivalence between `FinBddDistLat` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]

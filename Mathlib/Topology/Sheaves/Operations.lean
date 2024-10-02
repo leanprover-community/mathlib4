@@ -46,7 +46,7 @@ variable {F : X.Presheaf CommRingCat.{w}} (G : F.SubmonoidPresheaf)
 /-- The localization of a presheaf of `CommRing`s with respect to a `SubmonoidPresheaf`. -/
 protected noncomputable def SubmonoidPresheaf.localizationPresheaf : X.Presheaf CommRingCat where
   obj U := CommRingCat.of <| Localization (G.obj U)
-  map {U V} i := CommRingCat.ofHom <| IsLocalization.map _ (F.map i) (G.map i)
+  map {_ _} i := CommRingCat.ofHom <| IsLocalization.map _ (F.map i) (G.map i)
   map_id U := by
     simp_rw [F.map_id]
     ext x

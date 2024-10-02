@@ -1584,7 +1584,7 @@ variable [LinearOrderedRing α] [FloorRing α]
 instance (priority := 100) FloorRing.toFloorSemiring : FloorSemiring α where
   floor a := ⌊a⌋.toNat
   ceil a := ⌈a⌉.toNat
-  floor_of_neg {a} ha := Int.toNat_of_nonpos (Int.floor_nonpos ha.le)
+  floor_of_neg {_} ha := Int.toNat_of_nonpos (Int.floor_nonpos ha.le)
   gc_floor {a n} ha := by rw [Int.le_toNat (Int.floor_nonneg.2 ha), Int.le_floor, Int.cast_natCast]
   gc_ceil a n := by rw [Int.toNat_le, Int.ceil_le, Int.cast_natCast]
 

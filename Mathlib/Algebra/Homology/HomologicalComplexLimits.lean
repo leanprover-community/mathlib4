@@ -66,7 +66,7 @@ noncomputable def coneOfHasLimitEval : Cone F where
         dsimp
         rw [(F.obj j).shape _ _ h, comp_zero, zero_comp] }
   π :=
-    { app := fun j => { f := fun n => limit.π _ j }
+    { app := fun j => { f := fun _ => limit.π _ j }
       naturality := fun i j φ => by
         ext n
         dsimp

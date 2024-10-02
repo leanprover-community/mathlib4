@@ -432,9 +432,9 @@ predistance is given by the candidate. Then, we will identify points at `0` pred
 to obtain a genuine metric space. -/
 def premetricOptimalGHDist : PseudoMetricSpace (X ⊕ Y) where
   dist p q := optimalGHDist X Y (p, q)
-  dist_self x := candidates_refl (optimalGHDist_mem_candidatesB X Y)
-  dist_comm x y := candidates_symm (optimalGHDist_mem_candidatesB X Y)
-  dist_triangle x y z := candidates_triangle (optimalGHDist_mem_candidatesB X Y)
+  dist_self _ := candidates_refl (optimalGHDist_mem_candidatesB X Y)
+  dist_comm _ _ := candidates_symm (optimalGHDist_mem_candidatesB X Y)
+  dist_triangle _ _ _ := candidates_triangle (optimalGHDist_mem_candidatesB X Y)
   -- Porting note (#10888): added proof for `edist_dist`
   edist_dist x y := by
     simp only

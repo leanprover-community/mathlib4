@@ -131,7 +131,7 @@ end Hom
 
 instance smallCategory : SmallCategory.{0} SimplexCategory where
   Hom n m := SimplexCategory.Hom n m
-  id m := SimplexCategory.Hom.id _
+  id _ := SimplexCategory.Hom.id _
   comp f g := SimplexCategory.Hom.comp g f
 
 @[simp]

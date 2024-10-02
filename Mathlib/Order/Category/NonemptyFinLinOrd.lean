@@ -86,7 +86,7 @@ instance hasForgetToLinOrd : HasForget₂ NonemptyFinLinOrd LinOrd :=
 instance hasForgetToFinPartOrd : HasForget₂ NonemptyFinLinOrd FinPartOrd where
   forget₂ :=
     { obj := fun X => FinPartOrd.of X
-      map := @fun X Y => id }
+      map := @fun _ _ => id }
 
 /-- Constructs an equivalence between nonempty finite linear orders from an order isomorphism
 between them. -/
@@ -233,5 +233,5 @@ theorem nonemptyFinLinOrd_dual_comp_forget_to_linOrd :
 def nonemptyFinLinOrdDualCompForgetToFinPartOrd :
     NonemptyFinLinOrd.dual ⋙ forget₂ NonemptyFinLinOrd FinPartOrd ≅
       forget₂ NonemptyFinLinOrd FinPartOrd ⋙ FinPartOrd.dual where
-  hom := { app := fun X => OrderHom.id }
-  inv := { app := fun X => OrderHom.id }
+  hom := { app := fun _ => OrderHom.id }
+  inv := { app := fun _ => OrderHom.id }

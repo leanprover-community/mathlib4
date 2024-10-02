@@ -30,7 +30,7 @@ instance functorHasRightDual [RightRigidCategory D] (F : C ⥤ D) : HasRightDual
       map_comp := fun f g => by simp [comp_rightAdjointMate] }
   exact :=
     { evaluation' :=
-        { app := fun X => ε_ _ _
+        { app := fun _ => ε_ _ _
           naturality := fun X Y f => by
             dsimp
             rw [Category.comp_id, Functor.map_inv, ← id_tensor_comp_tensor_id, Category.assoc,
@@ -38,7 +38,7 @@ instance functorHasRightDual [RightRigidCategory D] (F : C ⥤ D) : HasRightDual
               rightAdjointMate_comp_evaluation, ← MonoidalCategory.whiskerLeft_comp_assoc,
               IsIso.hom_inv_id, MonoidalCategory.whiskerLeft_id, Category.id_comp] }
       coevaluation' :=
-        { app := fun X => η_ _ _
+        { app := fun _ => η_ _ _
           naturality := fun X Y f => by
             dsimp
             rw [Functor.map_inv, Category.id_comp, ← id_tensor_comp_tensor_id,
@@ -55,12 +55,12 @@ instance functorHasLeftDual [LeftRigidCategory D] (F : C ⥤ D) : HasLeftDual F 
       map_comp := fun f g => by simp [comp_leftAdjointMate] }
   exact :=
     { evaluation' :=
-        { app := fun X => ε_ _ _
+        { app := fun _ => ε_ _ _
           naturality := fun X Y f => by
             dsimp
             simp [tensorHom_def, leftAdjointMate_comp_evaluation] }
       coevaluation' :=
-        { app := fun X => η_ _ _
+        { app := fun _ => η_ _ _
           naturality := fun X Y f => by
             dsimp
             simp [tensorHom_def, coevaluation_comp_leftAdjointMate_assoc] } }

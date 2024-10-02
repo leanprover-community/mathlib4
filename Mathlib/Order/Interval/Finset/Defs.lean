@@ -875,8 +875,8 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
   -- Porting note: the proofs below got much worse
   finset_mem_Icc a b x :=
     match a, b, x with
-    | ⊤, ⊤, x => mem_singleton.trans (le_antisymm_iff.trans and_comm)
-    | ⊤, (b : α), x =>
+    | ⊤, ⊤, _ => mem_singleton.trans (le_antisymm_iff.trans and_comm)
+    | ⊤, (b : α), _ =>
       iff_of_false (not_mem_empty _) fun h => (h.1.trans h.2).not_lt <| coe_lt_top _
     | (a : α), ⊤, ⊤ => by simp [WithTop.some, WithTop.top, insertNone]
     | (a : α), ⊤, (x : α) => by
@@ -891,7 +891,7 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
         erw [aux]
   finset_mem_Ico a b x :=
     match a, b, x with
-    | ⊤, b, x => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans_lt h.2
+    | ⊤, _, _ => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans_lt h.2
     | (a : α), ⊤, ⊤ => by simp [some, Embedding.some]
     | (a : α), ⊤, (x : α) => by
         simp only [Embedding.some, mem_map, mem_Ici, Embedding.coeFn_mk, coe_le_coe, aux,
@@ -905,7 +905,7 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
                                       erw [aux]
   finset_mem_Ioc a b x :=
     match a, b, x with
-    | ⊤, b, x => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans_le h.2
+    | ⊤, _, _ => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans_le h.2
     | (a : α), ⊤, ⊤ => by simp [some, insertNone, top]
     | (a : α), ⊤, (x : α) => by simp [some, Embedding.some, insertNone, aux]
                                 -- This used to be in the above `simp` before
@@ -918,7 +918,7 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
                                       erw [aux]
   finset_mem_Ioo a b x :=
     match a, b, x with
-    | ⊤, b, x => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans h.2
+    | ⊤, _, _ => iff_of_false (not_mem_empty _) fun h => not_top_lt <| h.1.trans h.2
     | (a : α), ⊤, ⊤ => by simp [some, Embedding.some, insertNone]
     | (a : α), ⊤, (x : α) => by simp [some, Embedding.some, insertNone, aux, top]
                                 -- This used to be in the above `simp` before

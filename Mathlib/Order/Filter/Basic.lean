@@ -289,8 +289,8 @@ section Join
 def join (f : Filter (Filter α)) : Filter α where
   sets := { s | { t : Filter α | s ∈ t } ∈ f }
   univ_sets := by simp only [mem_setOf_eq, univ_sets, ← Filter.mem_sets, setOf_true]
-  sets_of_superset hx xy := mem_of_superset hx fun f h => mem_of_superset h xy
-  inter_sets hx hy := mem_of_superset (inter_mem hx hy) fun f ⟨h₁, h₂⟩ => inter_mem h₁ h₂
+  sets_of_superset hx xy := mem_of_superset hx fun _ h => mem_of_superset h xy
+  inter_sets hx hy := mem_of_superset (inter_mem hx hy) fun _ ⟨h₁, h₂⟩ => inter_mem h₁ h₂
 
 @[simp]
 theorem mem_join {s : Set α} {f : Filter (Filter α)} : s ∈ join f ↔ { t | s ∈ t } ∈ f :=
@@ -304,9 +304,9 @@ variable {f g : Filter α} {s t : Set α}
 
 instance : PartialOrder (Filter α) where
   le f g := ∀ ⦃U : Set α⦄, U ∈ g → U ∈ f
-  le_antisymm a b h₁ h₂ := filter_eq <| Subset.antisymm h₂ h₁
-  le_refl a := Subset.rfl
-  le_trans a b c h₁ h₂ := Subset.trans h₂ h₁
+  le_antisymm _ _ h₁ h₂ := filter_eq <| Subset.antisymm h₂ h₁
+  le_refl _ := Subset.rfl
+  le_trans _ _ _ h₁ h₂ := Subset.trans h₂ h₁
 
 theorem le_def : f ≤ g ↔ ∀ x ∈ g, x ∈ f :=
   Iff.rfl
@@ -1163,7 +1163,7 @@ lemma frequently_mem_iff_neBot {l : Filter α} {s : Set α} : (∃ᶠ x in l, x 
 
 theorem frequently_iff_forall_eventually_exists_and {p : α → Prop} {f : Filter α} :
     (∃ᶠ x in f, p x) ↔ ∀ {q : α → Prop}, (∀ᶠ x in f, q x) → ∃ x, p x ∧ q x :=
-  ⟨fun hp q hq => (hp.and_eventually hq).exists, fun H hp => by
+  ⟨fun hp _ hq => (hp.and_eventually hq).exists, fun H hp => by
     simpa only [and_not_self_iff, exists_false] using H hp⟩
 
 theorem frequently_iff {f : Filter α} {P : α → Prop} :
@@ -1743,7 +1743,7 @@ variable {f : α → β} {l : Filter β} {p : α → Prop} {s : Set α}
 
 theorem mem_comap' : s ∈ comap f l ↔ { y | ∀ ⦃x⦄, f x = y → x ∈ s } ∈ l :=
   ⟨fun ⟨t, ht, hts⟩ => mem_of_superset ht fun y hy x hx => hts <| mem_preimage.2 <| by rwa [hx],
-    fun h => ⟨_, h, fun x hx => hx rfl⟩⟩
+    fun h => ⟨_, h, fun _ hx => hx rfl⟩⟩
 
 -- TODO: it would be nice to use `kernImage` much more to take advantage of common name and API,
 -- and then this would become `mem_comap'`

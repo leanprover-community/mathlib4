@@ -1034,7 +1034,7 @@ to the appropriate `CovariantClass`. -/
 (i.e. `c + a < c + b → a < b`) is a `left_cancel AddSemigroup`."]
 def Contravariant.toLeftCancelSemigroup [ContravariantClass α α (· * ·) (· ≤ ·)] :
     LeftCancelSemigroup α :=
-  { ‹Semigroup α› with mul_left_cancel := fun a b c => mul_left_cancel'' }
+  { ‹Semigroup α› with mul_left_cancel := fun _ _ _ => mul_left_cancel'' }
 
 /- This is not instance, since we want to have an instance from `RightCancelSemigroup`s
 to the appropriate `CovariantClass`. -/
@@ -1045,7 +1045,7 @@ to the appropriate `CovariantClass`. -/
 (`a + c < b + c → a < b`) is a `right_cancel AddSemigroup`."]
 def Contravariant.toRightCancelSemigroup [ContravariantClass α α (swap (· * ·)) (· ≤ ·)] :
     RightCancelSemigroup α :=
-  { ‹Semigroup α› with mul_right_cancel := fun a b c => mul_right_cancel'' }
+  { ‹Semigroup α› with mul_right_cancel := fun _ _ _ => mul_right_cancel'' }
 
 end PartialOrder
 

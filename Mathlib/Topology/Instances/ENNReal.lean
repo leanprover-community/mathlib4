@@ -153,7 +153,7 @@ theorem tendsto_nhds_top_iff_nat {m : α → ℝ≥0∞} {f : Filter α} :
   tendsto_nhds_top_iff_nnreal.trans
     ⟨fun h n => by simpa only [ENNReal.coe_natCast] using h n, fun h x =>
       let ⟨n, hn⟩ := exists_nat_gt x
-      (h n).mono fun y => lt_trans <| by rwa [← ENNReal.coe_natCast, coe_lt_coe]⟩
+      (h n).mono fun _ => lt_trans <| by rwa [← ENNReal.coe_natCast, coe_lt_coe]⟩
 
 theorem tendsto_nhds_top {m : α → ℝ≥0∞} {f : Filter α} (h : ∀ n : ℕ, ∀ᶠ a in f, ↑n < m a) :
     Tendsto m f (𝓝 ∞) :=

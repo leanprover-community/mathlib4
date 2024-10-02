@@ -178,7 +178,7 @@ theorem biproduct_ι_comp_leftDistributor_inv {J : Type} [Fintype J] (X : C) (f 
 
 theorem leftDistributor_assoc {J : Type} [Fintype J] (X Y : C) (f : J → C) :
     (asIso (𝟙 X) ⊗ leftDistributor Y f) ≪≫ leftDistributor X _ =
-      (α_ X Y (⨁ f)).symm ≪≫ leftDistributor (X ⊗ Y) f ≪≫ biproduct.mapIso fun j => α_ X Y _ := by
+      (α_ X Y (⨁ f)).symm ≪≫ leftDistributor (X ⊗ Y) f ≪≫ biproduct.mapIso fun _ => α_ X Y _ := by
   ext
   simp only [Category.comp_id, Category.assoc, eqToHom_refl, Iso.trans_hom, Iso.symm_hom,
     asIso_hom, comp_zero, comp_dite, Preadditive.sum_comp, Preadditive.comp_sum, tensor_sum,
@@ -234,7 +234,7 @@ theorem biproduct_ι_comp_rightDistributor_inv {J : Type} [Fintype J] (f : J →
 
 theorem rightDistributor_assoc {J : Type} [Fintype J] (f : J → C) (X Y : C) :
     (rightDistributor f X ⊗ asIso (𝟙 Y)) ≪≫ rightDistributor _ Y =
-      α_ (⨁ f) X Y ≪≫ rightDistributor f (X ⊗ Y) ≪≫ biproduct.mapIso fun j => (α_ _ X Y).symm := by
+      α_ (⨁ f) X Y ≪≫ rightDistributor f (X ⊗ Y) ≪≫ biproduct.mapIso fun _ => (α_ _ X Y).symm := by
   ext
   simp only [Category.comp_id, Category.assoc, eqToHom_refl, Iso.symm_hom, Iso.trans_hom,
     asIso_hom, comp_zero, comp_dite, Preadditive.sum_comp, Preadditive.comp_sum, sum_tensor,
@@ -250,7 +250,7 @@ theorem leftDistributor_rightDistributor_assoc {J : Type _} [Fintype J]
     (leftDistributor X f ⊗ asIso (𝟙 Y)) ≪≫ rightDistributor _ Y =
       α_ X (⨁ f) Y ≪≫
         (asIso (𝟙 X) ⊗ rightDistributor _ Y) ≪≫
-          leftDistributor X _ ≪≫ biproduct.mapIso fun j => (α_ _ _ _).symm := by
+          leftDistributor X _ ≪≫ biproduct.mapIso fun _ => (α_ _ _ _).symm := by
   ext
   simp only [Category.comp_id, Category.assoc, eqToHom_refl, Iso.symm_hom, Iso.trans_hom,
     asIso_hom, comp_zero, comp_dite, Preadditive.sum_comp, Preadditive.comp_sum, sum_tensor,

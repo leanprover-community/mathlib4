@@ -118,7 +118,7 @@ theorem isNat_minFac_4 : {n n' k : ℕ} →
 
 /-- The `norm_num` extension which identifies expressions of the form `minFac n`. -/
 @[norm_num Nat.minFac _] partial def evalMinFac :
-  NormNumExt where eval {u α} e := do
+  NormNumExt where eval {_ _} e := do
   let .app (.const ``Nat.minFac _) (n : Q(ℕ)) ← whnfR e | failure
   let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
   let ⟨nn, pn⟩ ← deriveNat n sℕ
@@ -175,7 +175,7 @@ theorem isNat_prime_2 : {n n' : ℕ} →
 theorem isNat_not_prime {n n' : ℕ} (h : IsNat n n') : ¬n'.Prime → ¬n.Prime := isNat.natElim h
 
 /-- The `norm_num` extension which identifies expressions of the form `Nat.Prime n`. -/
-@[norm_num Nat.Prime _] def evalNatPrime : NormNumExt where eval {u α} e := do
+@[norm_num Nat.Prime _] def evalNatPrime : NormNumExt where eval {_ _} e := do
   let .app (.const `Nat.Prime _) (n : Q(ℕ)) ← whnfR e | failure
   let ⟨nn, pn⟩ ← deriveNat n _
   let n' := nn.natLit!

@@ -184,7 +184,7 @@ protected def pointwiseMulAction : MulAction α (Submonoid M) where
   one_smul S := by
     change S.map _ = S
     simpa only [map_one] using S.map_id
-  mul_smul a₁ a₂ S :=
+  mul_smul _ _ S :=
     (congr_arg (fun f : Monoid.End M => S.map f) (MonoidHom.map_mul _ _ _)).trans
       (S.map_map _ _).symm
 
@@ -484,7 +484,7 @@ theorem mul_bot (S : AddSubmonoid R) : S * ⊥ = ⊥ :=
 
 @[simp]
 theorem bot_mul (S : AddSubmonoid R) : ⊥ * S = ⊥ :=
-  eq_bot_iff.2 <| mul_le.2 fun m hm n hn => by
+  eq_bot_iff.2 <| mul_le.2 fun m hm n _ => by
     rw [AddSubmonoid.mem_bot] at hm ⊢; rw [hm, zero_mul]
 
 @[mono]

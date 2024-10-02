@@ -98,7 +98,7 @@ protected theorem induction_on {C : FreeCommRing α → Prop} (z : FreeCommRing 
     (fun m => Multiset.induction_on m h1 fun a m ih => by
       convert hm (of a) _ (hb a) ih
       apply of_cons)
-    (fun m ih => hn _ ih) ha
+    (fun _ ih => hn _ ih) ha
 
 section lift
 

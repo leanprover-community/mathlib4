@@ -71,7 +71,7 @@ theorem mem_destutter' (a) : a ∈ l.destutter' R a := by
   · assumption
 
 theorem destutter'_is_chain : ∀ l : List α, ∀ {a b}, R a b → (l.destutter' R b).Chain R a
-  | [], a, b, h => chain_singleton.mpr h
+  | [], _, _, h => chain_singleton.mpr h
   | c :: l, a, b, h => by
     rw [destutter']
     split_ifs with hbc

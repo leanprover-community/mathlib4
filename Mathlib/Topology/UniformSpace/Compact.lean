@@ -70,7 +70,7 @@ theorem unique_uniformity_of_compact [t : TopologicalSpace γ] [CompactSpace γ]
 /-- The unique uniform structure inducing a given compact topological structure. -/
 def uniformSpaceOfCompactT2 [TopologicalSpace γ] [CompactSpace γ] [T2Space γ] : UniformSpace γ where
   uniformity := 𝓝ˢ (diagonal γ)
-  symm := continuous_swap.tendsto_nhdsSet fun x => Eq.symm
+  symm := continuous_swap.tendsto_nhdsSet fun _ => Eq.symm
   comp := by
     /-  This is the difficult part of the proof. We need to prove that, for each neighborhood `W`
         of the diagonal `Δ`, there exists a smaller neighborhood `V` such that `V ○ V ⊆ W`.

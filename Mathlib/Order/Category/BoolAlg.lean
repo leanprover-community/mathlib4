@@ -86,7 +86,7 @@ def Iso.mk {α β : BoolAlg.{u}} (e : α ≃o β) : α ≅ β where
 @[simps]
 def dual : BoolAlg ⥤ BoolAlg where
   obj X := of Xᵒᵈ
-  map {X Y} := BoundedLatticeHom.dual
+  map {_ _} := BoundedLatticeHom.dual
 
 /-- The equivalence between `BoolAlg` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]

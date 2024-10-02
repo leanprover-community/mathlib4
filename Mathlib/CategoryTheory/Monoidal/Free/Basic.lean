@@ -158,7 +158,7 @@ instance : MonoidalCategory (F C) where
   tensorHom_def := by
     rintro W X Y Z ⟨f⟩ ⟨g⟩
     exact Quotient.sound (tensorHom_def _ _)
-  tensor_id X Y := Quot.sound tensor_id
+  tensor_id _ _ := Quot.sound tensor_id
   tensor_comp := @fun X₁ Y₁ Z₁ X₂ Y₂ Z₂ => by
     rintro ⟨f₁⟩ ⟨f₂⟩ ⟨g₁⟩ ⟨g₂⟩
     exact Quotient.sound (tensor_comp _ _ _ _)
@@ -179,8 +179,8 @@ instance : MonoidalCategory (F C) where
   rightUnitor_naturality := @fun X Y => by
     rintro ⟨f⟩
     exact Quotient.sound (ρ_naturality _)
-  pentagon W X Y Z := Quotient.sound pentagon
-  triangle X Y := Quotient.sound triangle
+  pentagon _ _ _ _ := Quotient.sound pentagon
+  triangle _ _ := Quotient.sound triangle
 
 @[simp]
 theorem mk_comp {X Y Z : F C} (f : X ⟶ᵐ Y) (g : Y ⟶ᵐ Z) :
@@ -366,7 +366,7 @@ def project : MonoidalFunctor (F C) D where
   -- In any case I don't understand why we need to specify `using Quotient.recOn`.
   map_comp := by rintro _ _ _ ⟨_⟩ ⟨_⟩; rfl
   ε := 𝟙 _
-  μ X Y := 𝟙 _
+  μ _ _ := 𝟙 _
   μ_natural_left := fun f _ => by
     induction' f using Quotient.recOn
     · dsimp

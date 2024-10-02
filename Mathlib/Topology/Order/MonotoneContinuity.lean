@@ -253,7 +253,7 @@ theorem continuousAt_of_monotoneOn_of_image_mem_nhds [DenselyOrdered β] {f : α
 theorem Monotone.continuous_of_denseRange [DenselyOrdered β] {f : α → β} (h_mono : Monotone f)
     (h_dense : DenseRange f) : Continuous f :=
   continuous_iff_continuousAt.mpr fun a =>
-    continuousAt_of_monotoneOn_of_closure_image_mem_nhds (fun x _ y _ hxy => h_mono hxy)
+    continuousAt_of_monotoneOn_of_closure_image_mem_nhds (fun _ _ _ _ hxy => h_mono hxy)
         univ_mem <|
       by simp only [image_univ, h_dense.closure_eq, univ_mem]
 

@@ -100,7 +100,7 @@ instance concreteCategory : ConcreteCategory.{v} (CoalgebraCat.{v} R) where
     { obj := fun M => M
       map := fun f => f.toCoalgHom }
   forget_faithful :=
-    { map_injective := fun {M N} => DFunLike.coe_injective.comp <| Hom.toCoalgHom_injective _ _ }
+    { map_injective := fun {_ _} => DFunLike.coe_injective.comp <| Hom.toCoalgHom_injective _ _ }
 
 instance hasForgetToModule : HasForget₂ (CoalgebraCat R) (ModuleCat R) where
   forget₂ :=

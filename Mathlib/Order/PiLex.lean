@@ -57,7 +57,7 @@ theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (β i)] {r} (hwf : WellFounded
   ⟨i, fun j hj => ⟨h'.1 j, not_not.1 fun h => hl j (lt_of_le_not_le (h'.1 j) h) hj⟩, hi⟩
 
 theorem lex_lt_of_lt [∀ i, PartialOrder (β i)] {r} (hwf : WellFounded r) {x y : ∀ i, β i}
-    (hlt : x < y) : Pi.Lex r (@fun i => (· < ·)) x y := by
+    (hlt : x < y) : Pi.Lex r (@fun _ => (· < ·)) x y := by
   simp_rw [Pi.Lex, le_antisymm_iff]
   exact lex_lt_of_lt_of_preorder hwf hlt
 
@@ -205,7 +205,7 @@ instance [LinearOrder ι] [IsWellOrder ι (· < ·)] [Nonempty ι] [∀ i, Parti
 smaller than the original function. -/
 theorem lex_desc {α} [Preorder ι] [DecidableEq ι] [Preorder α] {f : ι → α} {i j : ι} (h₁ : i ≤ j)
     (h₂ : f j < f i) : toLex (f ∘ Equiv.swap i j) < toLex f :=
-  ⟨i, fun k hik => congr_arg f (Equiv.swap_apply_of_ne_of_ne hik.ne (hik.trans_le h₁).ne), by
+  ⟨i, fun _ hik => congr_arg f (Equiv.swap_apply_of_ne_of_ne hik.ne (hik.trans_le h₁).ne), by
     simpa only [Pi.toLex_apply, Function.comp_apply, Equiv.swap_apply_left] using h₂⟩
 
 end Pi

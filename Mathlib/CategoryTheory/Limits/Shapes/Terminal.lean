@@ -332,11 +332,11 @@ abbrev initial.to [HasInitial C] (P : C) : ⊥_ C ⟶ P :=
 
 /-- A terminal object is terminal. -/
 def terminalIsTerminal [HasTerminal C] : IsTerminal (⊤_ C) where
-  lift s := terminal.from _
+  lift _ := terminal.from _
 
 /-- An initial object is initial. -/
 def initialIsInitial [HasInitial C] : IsInitial (⊥_ C) where
-  desc s := initial.to _
+  desc _ := initial.to _
 
 instance uniqueToTerminal [HasTerminal C] (P : C) : Unique (P ⟶ ⊤_ C) :=
   isTerminalEquivUnique _ (⊤_ C) terminalIsTerminal P
@@ -378,22 +378,22 @@ instance initial.isSplitEpi_to {Y : C} [HasInitial C] (f : Y ⟶ ⊥_ C) : IsSpl
 /-- An initial object is terminal in the opposite category. -/
 def terminalOpOfInitial {X : C} (t : IsInitial X) : IsTerminal (Opposite.op X) where
   lift s := (t.to s.pt.unop).op
-  uniq s m _ := Quiver.Hom.unop_inj (t.hom_ext _ _)
+  uniq _ _ _ := Quiver.Hom.unop_inj (t.hom_ext _ _)
 
 /-- An initial object in the opposite category is terminal in the original category. -/
 def terminalUnopOfInitial {X : Cᵒᵖ} (t : IsInitial X) : IsTerminal X.unop where
   lift s := (t.to (Opposite.op s.pt)).unop
-  uniq s m _ := Quiver.Hom.op_inj (t.hom_ext _ _)
+  uniq _ _ _ := Quiver.Hom.op_inj (t.hom_ext _ _)
 
 /-- A terminal object is initial in the opposite category. -/
 def initialOpOfTerminal {X : C} (t : IsTerminal X) : IsInitial (Opposite.op X) where
   desc s := (t.from s.pt.unop).op
-  uniq s m _ := Quiver.Hom.unop_inj (t.hom_ext _ _)
+  uniq _ _ _ := Quiver.Hom.unop_inj (t.hom_ext _ _)
 
 /-- A terminal object in the opposite category is initial in the original category. -/
 def initialUnopOfTerminal {X : Cᵒᵖ} (t : IsTerminal X) : IsInitial X.unop where
   desc s := (t.from (Opposite.op s.pt)).unop
-  uniq s m _ := Quiver.Hom.op_inj (t.hom_ext _ _)
+  uniq _ _ _ := Quiver.Hom.op_inj (t.hom_ext _ _)
 
 instance hasInitial_op_of_hasTerminal [HasTerminal C] : HasInitial Cᵒᵖ :=
   (initialOpOfTerminal terminalIsTerminal).hasInitial
@@ -413,7 +413,7 @@ instance {J : Type*} [Category J] {C : Type*} [Category C] [HasTerminal C] :
     { cone :=
         { pt := ⊤_ C
           π := { app := fun _ => terminal.from _ } }
-      isLimit := { lift := fun s => terminal.from _ } }
+      isLimit := { lift := fun _ => terminal.from _ } }
 
 /-- The limit of the constant `⊤_ C` functor is `⊤_ C`. -/
 @[simps hom]
@@ -423,7 +423,7 @@ def limitConstTerminal {J : Type*} [Category J] {C : Type*} [Category C] [HasTer
   inv :=
     limit.lift ((CategoryTheory.Functor.const J).obj (⊤_ C))
       { pt := ⊤_ C
-        π := { app := fun j => terminal.from _ } }
+        π := { app := fun _ => terminal.from _ } }
 
 @[reassoc (attr := simp)]
 theorem limitConstTerminal_inv_π {J : Type*} [Category J] {C : Type*} [Category C] [HasTerminal C]
@@ -437,7 +437,7 @@ instance {J : Type*} [Category J] {C : Type*} [Category C] [HasInitial C] :
     { cocone :=
         { pt := ⊥_ C
           ι := { app := fun _ => initial.to _ } }
-      isColimit := { desc := fun s => initial.to _ } }
+      isColimit := { desc := fun _ => initial.to _ } }
 
 /-- The colimit of the constant `⊥_ C` functor is `⊥_ C`. -/
 @[simps inv]
@@ -446,7 +446,7 @@ def colimitConstInitial {J : Type*} [Category J] {C : Type*} [Category C] [HasIn
   hom :=
     colimit.desc ((CategoryTheory.Functor.const J).obj (⊥_ C))
       { pt := ⊥_ C
-        ι := { app := fun j => initial.to _ } }
+        ι := { app := fun _ => initial.to _ } }
   inv := initial.to _
 
 @[reassoc (attr := simp)]
@@ -566,7 +566,7 @@ def coneOfDiagramTerminal {X : J} (hX : IsTerminal X) (F : J ⥤ C)
     [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : Cone F where
   pt := F.obj X
   π :=
-    { app := fun i => inv (F.map (hX.from _))
+    { app := fun _ => inv (F.map (hX.from _))
       naturality := by
         intro i j f
         dsimp
@@ -635,7 +635,7 @@ def coconeOfDiagramInitial {X : J} (hX : IsInitial X) (F : J ⥤ C)
     [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : Cocone F where
   pt := F.obj X
   ι :=
-    { app := fun i => inv (F.map (hX.to _))
+    { app := fun _ => inv (F.map (hX.to _))
       naturality := by
         intro i j f
         dsimp

@@ -95,7 +95,7 @@ theorem opow_natCast (a : Ordinal) (n : ℕ) : a ^ (n : Ordinal) = a ^ n := by
 theorem opow_isNormal {a : Ordinal} (h : 1 < a) : IsNormal (a ^ ·) :=
   have a0 : 0 < a := zero_lt_one.trans h
   ⟨fun b => by simpa only [mul_one, opow_succ] using (mul_lt_mul_iff_left (opow_pos b a0)).2 h,
-    fun b l c => opow_le_of_limit (ne_of_gt a0) l⟩
+    fun _ l _ => opow_le_of_limit (ne_of_gt a0) l⟩
 
 theorem opow_lt_opow_iff_right {a b c : Ordinal} (a1 : 1 < a) : a ^ b < a ^ c ↔ b < c :=
   (opow_isNormal a1).lt_iff

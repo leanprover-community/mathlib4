@@ -172,9 +172,9 @@ def evaluation : C ⥤ (C ⥤ D) ⥤ D where
   obj X :=
     { obj := fun F => F.obj X
       map := fun α => α.app X }
-  map {X} {Y} f :=
+  map {_} {_} f :=
     { app := fun F => F.map f
-      naturality := fun {F} {G} α => Eq.symm (α.naturality f) }
+      naturality := fun {_} {_} α => Eq.symm (α.naturality f) }
 
 /-- The "evaluation of `F` at `X`" functor,
 as a functor `C × (C ⥤ D) ⥤ D`.
@@ -194,7 +194,7 @@ variable {C}
 /-- The constant functor followed by the evaluation functor is just the identity. -/
 @[simps!]
 def Functor.constCompEvaluationObj (X : C) : Functor.const C ⋙ (evaluation C D).obj X ≅ 𝟭 D :=
-  NatIso.ofComponents fun Y => Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
 end
 
@@ -220,12 +220,12 @@ def prod' (F : A ⥤ B) (G : A ⥤ C) : A ⥤ B × C where
 /-- The product `F.prod' G` followed by projection on the first component is isomorphic to `F` -/
 @[simps!]
 def prod'CompFst (F : A ⥤ B) (G : A ⥤ C) : F.prod' G ⋙ CategoryTheory.Prod.fst B C ≅ F :=
-  NatIso.ofComponents fun X => Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
 /-- The product `F.prod' G` followed by projection on the second component is isomorphic to `G` -/
 @[simps!]
 def prod'CompSnd (F : A ⥤ B) (G : A ⥤ C) : F.prod' G ⋙ CategoryTheory.Prod.snd B C ≅ G :=
-  NatIso.ofComponents fun X => Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
 section
 
@@ -296,7 +296,7 @@ end Equivalence
 /-- `F.flip` composed with evaluation is the same as evaluating `F`. -/
 @[simps!]
 def flipCompEvaluation (F : A ⥤ B ⥤ C) (a) : F.flip ⋙ (evaluation _ _).obj a ≅ F.obj a :=
-  NatIso.ofComponents fun b => eqToIso rfl
+  NatIso.ofComponents fun _ => eqToIso rfl
 
 variable (A B C)
 

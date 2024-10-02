@@ -379,7 +379,7 @@ theorem closure_induction_right {s : Set M} {p : (m : M) → m ∈ closure s →
   closure_induction_left (s := MulOpposite.unop ⁻¹' s)
     (p := fun m hm => p m.unop <| by rwa [← op_closure] at hm)
     one
-    (fun _x hx _y hy => mul_right _ _ _ hx)
+    (fun _x hx _y _ => mul_right _ _ _ hx)
     (by rwa [← op_closure])
 
 @[to_additive (attr := elab_as_elim)]

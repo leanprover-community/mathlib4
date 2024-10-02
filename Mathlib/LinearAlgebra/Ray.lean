@@ -200,7 +200,7 @@ variable (R M)
 instance RayVector.Setoid : Setoid (RayVector R M) where
   r x y := SameRay R (x : M) y
   iseqv :=
-    ⟨fun x => SameRay.refl _, fun h => h.symm, by
+    ⟨fun _ => SameRay.refl _, fun h => h.symm, by
       intros x y z hxy hyz
       exact hxy.trans hyz fun hy => (y.2 hy).elim⟩
 

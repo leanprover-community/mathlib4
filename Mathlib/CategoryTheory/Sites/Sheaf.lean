@@ -97,7 +97,7 @@ def conesEquivSieveCompatibleFamily :
     (S.arrows.diagram.op ⋙ P).cones.obj E ≃
       { x : FamilyOfElements (P ⋙ coyoneda.obj E) (S : Presieve X) // x.SieveCompatible } where
   toFun π :=
-    ⟨fun Y f h => π.app (op ⟨Over.mk f, h⟩), fun X Y f g hf => by
+    ⟨fun _ f h => π.app (op ⟨Over.mk f, h⟩), fun X Y f g hf => by
       apply (id_comp _).symm.trans
       dsimp
       exact π.naturality (Quiver.Hom.op (Over.homMk _ (by rfl)))⟩
@@ -109,8 +109,8 @@ def conesEquivSieveCompatibleFamily :
         rw [id_comp]
         convert rfl
         rw [Over.w] }
-  left_inv π := rfl
-  right_inv x := rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 -- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] CategoryTheory.Presheaf.conesEquivSieveCompatibleFamily_apply_coe
@@ -419,8 +419,8 @@ def sheafEquivSheafOfTypes : Sheaf J (Type w) ≌ SheafOfTypes J where
   inverse :=
     { obj := fun S => ⟨S.val, (isSheaf_iff_isSheaf_of_type _ _).2 S.2⟩
       map := fun f => ⟨f.val⟩ }
-  unitIso := NatIso.ofComponents fun X => Iso.refl _
-  counitIso := NatIso.ofComponents fun X => Iso.refl _
+  unitIso := NatIso.ofComponents fun _ => Iso.refl _
+  counitIso := NatIso.ofComponents fun _ => Iso.refl _
 
 instance : Inhabited (Sheaf (⊥ : GrothendieckTopology C) (Type w)) :=
   ⟨(sheafEquivSheafOfTypes _).inverse.obj default⟩
@@ -481,7 +481,7 @@ instance Sheaf.Hom.addCommGroup : AddCommGroup (P ⟶ Q) :=
     (fun _ _ => by aesop_cat) (fun _ _ => by aesop_cat)
 
 instance : Preadditive (Sheaf J A) where
-  homGroup P Q := Sheaf.Hom.addCommGroup
+  homGroup _ _ := Sheaf.Hom.addCommGroup
 
 end Preadditive
 
@@ -515,7 +515,7 @@ section MultiequalizerConditions
 
 /-- When `P` is a sheaf and `S` is a cover, the associated multifork is a limit. -/
 def isLimitOfIsSheaf {X : C} (S : J.Cover X) (hP : IsSheaf J P) : IsLimit (S.multifork P) where
-  lift := fun E : Multifork _ => hP.amalgamate S (fun I => E.ι _)
+  lift := fun E : Multifork _ => hP.amalgamate S (fun _ => E.ι _)
     (fun _ _ r => E.condition ⟨_, _, r⟩)
   fac := by
     rintro (E : Multifork _) (a | b)

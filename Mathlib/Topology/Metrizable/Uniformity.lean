@@ -79,7 +79,7 @@ noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x 
           append_assoc, append_assoc]
         rw [length_cons, length_append, length_singleton]
   -- Porting note: `edist_dist` is no longer inferred
-  edist_dist x y := rfl
+  edist_dist _ _ := rfl
 
 theorem dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x x = 0)
     (dist_comm : ∀ x y, d x y = d y x) (x y : X) :

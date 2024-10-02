@@ -249,7 +249,7 @@ theorem x_pos (n) : 0 < xn a1 n :=
 
 theorem eq_pell_lem : ∀ (n) (b : ℤ√(d a1)), 1 ≤ b → IsPell b →
     b ≤ pellZd a1 n → ∃ n, b = pellZd a1 n
-  | 0, b => fun h1 _ hl => ⟨0, @Zsqrtd.le_antisymm _ (dnsq a1) _ _ hl h1⟩
+  | 0, _ => fun h1 _ hl => ⟨0, @Zsqrtd.le_antisymm _ (dnsq a1) _ _ hl h1⟩
   | n + 1, b => fun h1 hp h =>
     have a1p : (0 : ℤ√(d a1)) ≤ ⟨a, 1⟩ := trivial
     have am1p : (0 : ℤ√(d a1)) ≤ ⟨a, -1⟩ := show (_ : Nat) ≤ _ by simp; exact Nat.pred_le _
@@ -353,7 +353,7 @@ theorem xy_coprime (n) : (xn a1 n).Coprime (yn a1 n) :=
     exact Nat.dvd_sub (le_of_lt <| Nat.lt_of_sub_eq_succ p) (kx.mul_left _) (ky.mul_left _)
 
 theorem strictMono_y : StrictMono (yn a1)
-  | m, 0, h => absurd h <| Nat.not_lt_zero _
+  | _, 0, h => absurd h <| Nat.not_lt_zero _
   | m, n + 1, h => by
     have : yn a1 m ≤ yn a1 n :=
       Or.elim (lt_or_eq_of_le <| Nat.le_of_succ_le_succ h) (fun hl => le_of_lt <| strictMono_y hl)
@@ -363,7 +363,7 @@ theorem strictMono_y : StrictMono (yn a1)
     exact mul_le_mul this (le_of_lt a1) (Nat.zero_le _) (Nat.zero_le _)
 
 theorem strictMono_x : StrictMono (xn a1)
-  | m, 0, h => absurd h <| Nat.not_lt_zero _
+  | _, 0, h => absurd h <| Nat.not_lt_zero _
   | m, n + 1, h => by
     have : xn a1 m ≤ xn a1 n :=
       Or.elim (lt_or_eq_of_le <| Nat.le_of_succ_le_succ h) (fun hl => le_of_lt <| strictMono_x hl)
@@ -657,7 +657,7 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
             (fun h =>
               lt_trans
                 (eq_of_xn_modEq_lem3 npos h (le_of_lt (Nat.lt_of_succ_le j2n)) jn
-                    fun ⟨a1, n1, i0, j2⟩ => by
+                    fun ⟨_, n1, _, j2⟩ => by
                       rw [n1, j2] at j2n; exact absurd j2n (by decide))
                 s)
             fun h => by rw [h]; exact s
@@ -703,8 +703,8 @@ theorem eq_of_xn_modEq' {i j n} (ipos : 0 < i) (hin : i ≤ n) (j4n : j ≤ 4 * 
   have i2n : i ≤ 2 * n := by apply le_trans hin; rw [two_mul]; apply Nat.le_add_left
   (le_or_gt j (2 * n)).imp
     (fun j2n : j ≤ 2 * n =>
-      eq_of_xn_modEq a1 j2n i2n h fun a2 n1 =>
-        ⟨fun j0 i2 => by rw [n1, i2] at hin; exact absurd hin (by decide), fun _ i0 =>
+      eq_of_xn_modEq a1 j2n i2n h fun _ n1 =>
+        ⟨fun _ i2 => by rw [n1, i2] at hin; exact absurd hin (by decide), fun _ i0 =>
           _root_.ne_of_gt ipos i0⟩)
     fun j2n : 2 * n < j =>
     suffices i = 4 * n - j by rw [this, add_tsub_cancel_of_le j4n]
@@ -713,7 +713,7 @@ theorem eq_of_xn_modEq' {i j n} (ipos : 0 < i) (hin : i ≤ n) (j4n : j ≤ 4 * 
       (h.symm.trans <| by
         let t := xn_modEq_x4n_sub a1 j42n
         rwa [tsub_tsub_cancel_of_le j4n] at t)
-      fun a2 n1 =>
+      fun _ n1 =>
       ⟨fun i0 => absurd i0 (_root_.ne_of_gt ipos), fun i2 => by
         rw [n1, i2] at hin
         exact absurd hin (by decide)⟩

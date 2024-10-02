@@ -236,13 +236,13 @@ def toGrothendieck (K : Coverage C) : GrothendieckTopology C where
       intro Z g hg
       rw [← Sieve.pullback_comp]
       exact hS hg
-  transitive' X S hS R hR := .transitive _ _ _ hS hR
+  transitive' _ _ hS _ hR := .transitive _ _ _ hS hR
 
 instance : PartialOrder (Coverage C) where
   le A B := A.covering ≤ B.covering
-  le_refl A X := le_refl _
-  le_trans A B C h1 h2 X := le_trans (h1 X) (h2 X)
-  le_antisymm A B h1 h2 := Coverage.ext <| funext <|
+  le_refl _ _ := le_refl _
+  le_trans _ _ _ h1 h2 X := le_trans (h1 X) (h2 X)
+  le_antisymm _ _ h1 h2 := Coverage.ext <| funext <|
     fun X => le_antisymm (h1 X) (h2 X)
 
 variable (C) in

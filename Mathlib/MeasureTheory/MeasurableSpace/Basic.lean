@@ -67,7 +67,7 @@ variable {m m₁ m₂ : MeasurableSpace α} {m' : MeasurableSpace β} {f : α �
 protected def map (f : α → β) (m : MeasurableSpace α) : MeasurableSpace β where
   MeasurableSet' s := MeasurableSet[m] <| f ⁻¹' s
   measurableSet_empty := m.measurableSet_empty
-  measurableSet_compl s hs := m.measurableSet_compl _ hs
+  measurableSet_compl _ hs := m.measurableSet_compl _ hs
   measurableSet_iUnion f hf := by simpa only [preimage_iUnion] using m.measurableSet_iUnion _ hf
 
 lemma map_def {s : Set β} : MeasurableSet[m.map f] s ↔ MeasurableSet[m] (f ⁻¹' s) := Iff.rfl
@@ -85,7 +85,7 @@ theorem map_comp {f : α → β} {g : β → γ} : (m.map f).map g = m.map (g �
 protected def comap (f : α → β) (m : MeasurableSpace β) : MeasurableSpace α where
   MeasurableSet' s := ∃ s', MeasurableSet[m] s' ∧ f ⁻¹' s' = s
   measurableSet_empty := ⟨∅, m.measurableSet_empty, rfl⟩
-  measurableSet_compl := fun s ⟨s', h₁, h₂⟩ => ⟨s'ᶜ, m.measurableSet_compl _ h₁, h₂ ▸ rfl⟩
+  measurableSet_compl := fun _ ⟨s', h₁, h₂⟩ => ⟨s'ᶜ, m.measurableSet_compl _ h₁, h₂ ▸ rfl⟩
   measurableSet_iUnion s hs :=
     let ⟨s', hs'⟩ := Classical.axiom_of_choice hs
     ⟨⋃ i, s' i, m.measurableSet_iUnion _ fun i => (hs' i).left, by simp [hs']⟩

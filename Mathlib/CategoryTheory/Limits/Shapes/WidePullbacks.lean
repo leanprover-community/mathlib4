@@ -461,22 +461,22 @@ def widePushoutShapeUnop : (WidePushoutShape J)ᵒᵖ ⥤ WidePullbackShape J :=
 /-- The inverse of the unit isomorphism of the equivalence
 `widePushoutShapeOpEquiv : (WidePushoutShape J)ᵒᵖ ≌ WidePullbackShape J` -/
 def widePushoutShapeOpUnop : widePushoutShapeUnop J ⋙ widePullbackShapeOp J ≅ 𝟭 _ :=
-  NatIso.ofComponents fun X => Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
 /-- The counit isomorphism of the equivalence
 `widePullbackShapeOpEquiv : (WidePullbackShape J)ᵒᵖ ≌ WidePushoutShape J` -/
 def widePushoutShapeUnopOp : widePushoutShapeOp J ⋙ widePullbackShapeUnop J ≅ 𝟭 _ :=
-  NatIso.ofComponents fun X => Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
 /-- The inverse of the unit isomorphism of the equivalence
 `widePullbackShapeOpEquiv : (WidePullbackShape J)ᵒᵖ ≌ WidePushoutShape J` -/
 def widePullbackShapeOpUnop : widePullbackShapeUnop J ⋙ widePushoutShapeOp J ≅ 𝟭 _ :=
-  NatIso.ofComponents fun X => Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
 /-- The counit isomorphism of the equivalence
 `widePushoutShapeOpEquiv : (WidePushoutShape J)ᵒᵖ ≌ WidePullbackShape J` -/
 def widePullbackShapeUnopOp : widePullbackShapeOp J ⋙ widePushoutShapeUnop J ≅ 𝟭 _ :=
-  NatIso.ofComponents fun X => Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
 /-- The duality equivalence `(WidePushoutShape J)ᵒᵖ ≌ WidePullbackShape J` -/
 @[simps]

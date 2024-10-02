@@ -322,7 +322,7 @@ variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 def id : LaxMonoidalFunctor.{v₁, v₁} C C :=
   { 𝟭 C with
     ε := 𝟙 _
-    μ := fun X Y => 𝟙 _ }
+    μ := fun _ _ => 𝟙 _ }
 
 instance : Inhabited (LaxMonoidalFunctor C C) :=
   ⟨id C⟩
@@ -338,7 +338,7 @@ variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 def id : OplaxMonoidalFunctor.{v₁, v₁} C C :=
   { 𝟭 C with
     η := 𝟙 _
-    δ := fun X Y => 𝟙 _ }
+    δ := fun _ _ => 𝟙 _ }
 
 instance : Inhabited (OplaxMonoidalFunctor C C) :=
   ⟨id C⟩
@@ -457,7 +457,7 @@ variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 def id : MonoidalFunctor.{v₁, v₁} C C :=
   { 𝟭 C with
     ε := 𝟙 _
-    μ := fun X Y => 𝟙 _ }
+    μ := fun _ _ => 𝟙 _ }
 
 instance : Inhabited (MonoidalFunctor C C) :=
   ⟨id C⟩
@@ -558,7 +558,7 @@ variable (C)
 def diag : MonoidalFunctor C (C × C) :=
   { Functor.diag C with
     ε := 𝟙 _
-    μ := fun X Y => 𝟙 _ }
+    μ := fun _ _ => 𝟙 _ }
 
 end MonoidalFunctor
 

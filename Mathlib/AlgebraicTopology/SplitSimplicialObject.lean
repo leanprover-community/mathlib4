@@ -339,7 +339,7 @@ instance : Category (Split C) where
   Hom := Split.Hom
   id S :=
     { F := 𝟙 _
-      f := fun n => 𝟙 _ }
+      f := fun _ => 𝟙 _ }
   comp Φ₁₂ Φ₂₃ :=
     { F := Φ₁₂.F ≫ Φ₂₃.F
       f := fun n => Φ₁₂.f n ≫ Φ₂₃.f n

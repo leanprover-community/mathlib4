@@ -553,8 +553,8 @@ theorem smul_eq_map [SMul K β] (k : K) (f : α →ₛ β) : k • f = f.map (k 
 
 instance instPreorder [Preorder β] : Preorder (α →ₛ β) :=
   { SimpleFunc.instLE with
-    le_refl := fun f a => le_rfl
-    le_trans := fun f g h hfg hgh a => le_trans (hfg _) (hgh a) }
+    le_refl := fun _ _ => le_rfl
+    le_trans := fun _ _ _ hfg hgh a => le_trans (hfg _) (hgh a) }
 
 instance instPartialOrder [PartialOrder β] : PartialOrder (α →ₛ β) :=
   { SimpleFunc.instPreorder with
@@ -855,8 +855,8 @@ def lintegralₗ {m : MeasurableSpace α} : (α →ₛ ℝ≥0∞) →ₗ[ℝ≥
       map_add' := by simp [lintegral, mul_add, Finset.sum_add_distrib]
       map_smul' := fun c μ => by
         simp [lintegral, mul_left_comm _ c, Finset.mul_sum, Measure.smul_apply c] }
-  map_add' f g := LinearMap.ext fun μ => add_lintegral f g
-  map_smul' c f := LinearMap.ext fun μ => const_mul_lintegral f c
+  map_add' f g := LinearMap.ext fun _ => add_lintegral f g
+  map_smul' c f := LinearMap.ext fun _ => const_mul_lintegral f c
 
 @[simp]
 theorem zero_lintegral : (0 : α →ₛ ℝ≥0∞).lintegral μ = 0 :=

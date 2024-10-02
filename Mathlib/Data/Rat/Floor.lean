@@ -103,14 +103,14 @@ def evalIntFloor : NormNumExt where eval {u αZ} e := do
   | 0, ~q(ℤ), ~q(@Int.floor $α $instR $instF $x) =>
     match ← derive x with
     | .isBool .. => failure
-    | .isNat sα nb pb => do
+    | .isNat _ _ pb => do
       assertInstancesCommute
       return .isNat q(inferInstance) _ q(isNat_intFloor $x _ $pb)
-    | .isNegNat sα nb pb => do
+    | .isNegNat _ _ pb => do
       assertInstancesCommute
       -- floor always keeps naturals negative, so we can shortcut `.isInt`
       return .isNegNat q(inferInstance) _ q(isInt_intFloor _ _ $pb)
-    | .isRat dα q n d h => do
+    | .isRat _ q n d h => do
       let _i ← synthInstanceQ q(LinearOrderedField $α)
       assertInstancesCommute
       have z : Q(ℤ) := mkRawIntLit ⌊q⌋

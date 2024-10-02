@@ -41,7 +41,7 @@ variable [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
 variable [∀ i, LieRingModule L (M i)] [∀ i, LieModule R L (M i)]
 
 instance : LieRingModule L (⨁ i, M i) where
-  bracket x m := m.mapRange (fun i m' => ⁅x, m'⁆) fun i => lie_zero x
+  bracket x m := m.mapRange (fun _ m' => ⁅x, m'⁆) fun _ => lie_zero x
   add_lie x y m := by
     refine DFinsupp.ext fun _ => ?_ -- Porting note: Originally `ext`
     simp only [mapRange_apply, add_apply, add_lie]
@@ -96,7 +96,7 @@ variable [∀ i, LieRing (L i)] [∀ i, LieAlgebra R (L i)]
 
 instance lieRing : LieRing (⨁ i, L i) :=
   { (inferInstance : AddCommGroup _) with
-    bracket := zipWith (fun i => fun x y => ⁅x, y⁆) fun i => lie_zero 0
+    bracket := zipWith (fun _ => fun x y => ⁅x, y⁆) fun _ => lie_zero 0
     add_lie := fun x y z => by
       refine DFinsupp.ext fun _ => ?_ -- Porting note: Originally `ext`
       simp only [zipWith_apply, add_apply, add_lie]

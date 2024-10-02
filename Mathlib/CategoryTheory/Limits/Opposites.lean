@@ -849,7 +849,7 @@ def CokernelCofork.IsColimit.ofπOp {X Y Q : C} (p : Y ⟶ Q) {f : X ⟶ Y}
     IsLimit (KernelFork.ofι p.op (show p.op ≫ f.op = 0 by rw [← op_comp, w, op_zero])) :=
   KernelFork.IsLimit.ofι _ _
     (fun x hx => (h.desc (CokernelCofork.ofπ x.unop (Quiver.Hom.op_inj hx))).op)
-    (fun x hx => Quiver.Hom.unop_inj (Cofork.IsColimit.π_desc h))
+    (fun _ _ => Quiver.Hom.unop_inj (Cofork.IsColimit.π_desc h))
     (fun x hx b hb => Quiver.Hom.unop_inj (Cofork.IsColimit.hom_ext h
       (by simpa only [Quiver.Hom.unop_op, Cofork.IsColimit.π_desc] using Quiver.Hom.op_inj hb)))
 
@@ -860,7 +860,7 @@ def CokernelCofork.IsColimit.ofπUnop {X Y Q : Cᵒᵖ} (p : Y ⟶ Q) {f : X ⟶
     IsLimit (KernelFork.ofι p.unop (show p.unop ≫ f.unop = 0 by rw [← unop_comp, w, unop_zero])) :=
   KernelFork.IsLimit.ofι _ _
     (fun x hx => (h.desc (CokernelCofork.ofπ x.op (Quiver.Hom.unop_inj hx))).unop)
-    (fun x hx => Quiver.Hom.op_inj (Cofork.IsColimit.π_desc h))
+    (fun _ _ => Quiver.Hom.op_inj (Cofork.IsColimit.π_desc h))
     (fun x hx b hb => Quiver.Hom.op_inj (Cofork.IsColimit.hom_ext h
       (by simpa only [Quiver.Hom.op_unop, Cofork.IsColimit.π_desc] using Quiver.Hom.unop_inj hb)))
 
@@ -871,7 +871,7 @@ def KernelFork.IsLimit.ofιOp {K X Y : C} (i : K ⟶ X) {f : X ⟶ Y}
       (show f.op ≫ i.op = 0 by rw [← op_comp, w, op_zero])) :=
   CokernelCofork.IsColimit.ofπ _ _
     (fun x hx => (h.lift (KernelFork.ofι x.unop (Quiver.Hom.op_inj hx))).op)
-    (fun x hx => Quiver.Hom.unop_inj (Fork.IsLimit.lift_ι h))
+    (fun _ _ => Quiver.Hom.unop_inj (Fork.IsLimit.lift_ι h))
     (fun x hx b hb => Quiver.Hom.unop_inj (Fork.IsLimit.hom_ext h (by
       simpa only [Quiver.Hom.unop_op, Fork.IsLimit.lift_ι] using Quiver.Hom.op_inj hb)))
 
@@ -883,7 +883,7 @@ def KernelFork.IsLimit.ofιUnop {K X Y : Cᵒᵖ} (i : K ⟶ X) {f : X ⟶ Y}
       (show f.unop ≫ i.unop = 0 by rw [← unop_comp, w, unop_zero])) :=
   CokernelCofork.IsColimit.ofπ _ _
     (fun x hx => (h.lift (KernelFork.ofι x.op (Quiver.Hom.unop_inj hx))).unop)
-    (fun x hx => Quiver.Hom.op_inj (Fork.IsLimit.lift_ι h))
+    (fun _ _ => Quiver.Hom.op_inj (Fork.IsLimit.lift_ι h))
     (fun x hx b hb => Quiver.Hom.op_inj (Fork.IsLimit.hom_ext h (by
       simpa only [Quiver.Hom.op_unop, Fork.IsLimit.lift_ι] using Quiver.Hom.unop_inj hb)))
 

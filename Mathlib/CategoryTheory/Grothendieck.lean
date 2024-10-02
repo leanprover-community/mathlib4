@@ -105,7 +105,7 @@ attribute [local simp] eqToHom_map
 instance : Category (Grothendieck F) where
   Hom X Y := Grothendieck.Hom X Y
   id X := Grothendieck.id X
-  comp := @fun X Y Z f g => Grothendieck.comp f g
+  comp := @fun _ _ _ f g => Grothendieck.comp f g
   comp_id := @fun X Y f => by
     dsimp; ext
     · simp
@@ -147,7 +147,7 @@ variable (F)
 @[simps!]
 def forget : Grothendieck F ⥤ C where
   obj X := X.1
-  map := @fun X Y f => f.1
+  map := @fun _ _ f => f.1
 
 end
 
@@ -225,7 +225,7 @@ universe v
 over category `Over E`. -/
 def functor {E : Cat.{v,u}} : (E ⥤ Cat.{v,u}) ⥤ Over (T := Cat.{v,u}) E where
   obj F := Over.mk (X := E) (Y := Cat.of (Grothendieck F)) (Grothendieck.forget F)
-  map {F G} α := Over.homMk (X:= E) (Grothendieck.map α) Grothendieck.functor_comp_forget
+  map {_ _} α := Over.homMk (X:= E) (Grothendieck.map α) Grothendieck.functor_comp_forget
   map_id F := by
     ext
     exact Grothendieck.map_id_eq (F := F)

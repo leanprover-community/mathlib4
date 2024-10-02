@@ -224,7 +224,7 @@ theorem Hom.comm {A B : HomologicalComplex V c} (f : A.Hom B) (i j : ι) :
   · rw [A.shape i j hij, B.shape i j hij, comp_zero, zero_comp]
 
 instance (A B : HomologicalComplex V c) : Inhabited (Hom A B) :=
-  ⟨{ f := fun i => 0 }⟩
+  ⟨{ f := fun _ => 0 }⟩
 
 /-- Identity chain map. -/
 def id (A : HomologicalComplex V c) : Hom A A where f _ := 𝟙 _
@@ -273,7 +273,7 @@ theorem hom_f_injective {C₁ C₂ : HomologicalComplex V c} :
     Function.Injective fun f : Hom C₁ C₂ => f.f := by aesop_cat
 
 instance (X Y : HomologicalComplex V c) : Zero (X ⟶ Y) :=
-  ⟨{ f := fun i => 0}⟩
+  ⟨{ f := fun _ => 0}⟩
 
 @[simp]
 theorem zero_f (C D : HomologicalComplex V c) (i : ι) : (0 : C ⟶ D).f i = 0 :=
@@ -346,7 +346,7 @@ instance : (forget V c).Faithful where
 just picking out the `i`-th object. -/
 @[simps!]
 def forgetEval (i : ι) : forget V c ⋙ GradedObject.eval i ≅ eval V c i :=
-  NatIso.ofComponents fun X => Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
 end
 

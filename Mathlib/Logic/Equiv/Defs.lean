@@ -534,7 +534,7 @@ def piUnique [Unique α] (β : α → Sort*) : (∀ i, β i) ≃ β default wher
   toFun f := f default
   invFun := uniqueElim
   left_inv f := by ext i; cases Unique.eq_default i; rfl
-  right_inv x := rfl
+  right_inv _ := rfl
 
 /-- If `α` has a unique term, then the type of function `α → β` is equivalent to `β`. -/
 @[simps! (config := .asFn) apply symm_apply]
@@ -716,7 +716,7 @@ end
 variable {p : α → Prop} {q : β → Prop} (e : α ≃ β)
 
 protected lemma forall_congr_right : (∀ a, q (e a)) ↔ ∀ b, q b :=
-  ⟨fun h a ↦ by simpa using h (e.symm a), fun h b ↦ h _⟩
+  ⟨fun h a ↦ by simpa using h (e.symm a), fun h _ ↦ h _⟩
 
 protected lemma forall_congr_left : (∀ a, p a) ↔ ∀ b, p (e.symm b) :=
   e.symm.forall_congr_right.symm
@@ -730,7 +730,7 @@ protected lemma forall_congr' (h : ∀ b, p (e.symm b) ↔ q b) : (∀ a, p a) �
   e.forall_congr_left.trans (by simp [h])
 
 protected lemma exists_congr_right : (∃ a, q (e a)) ↔ ∃ b, q b :=
-  ⟨fun ⟨b, h⟩ ↦ ⟨_, h⟩, fun ⟨a, h⟩ ↦ ⟨e.symm a, by simpa using h⟩⟩
+  ⟨fun ⟨_, h⟩ ↦ ⟨_, h⟩, fun ⟨a, h⟩ ↦ ⟨e.symm a, by simpa using h⟩⟩
 
 protected lemma exists_congr_left : (∃ a, p a) ↔ ∃ b, p (e.symm b) :=
   e.symm.exists_congr_right.symm

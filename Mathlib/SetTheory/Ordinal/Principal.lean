@@ -158,7 +158,7 @@ theorem exists_lt_add_of_not_principal_add {a} (ha : ¬Principal (· + ·) a) :
 
 theorem principal_add_iff_add_lt_ne_self {a} :
     Principal (· + ·) a ↔ ∀ b < a, ∀ c < a, b + c ≠ a :=
-  ⟨fun ha b hb c hc => (ha hb hc).ne, fun H => by
+  ⟨fun ha _ hb _ hc => (ha hb hc).ne, fun H => by
     by_contra! ha
     rcases exists_lt_add_of_not_principal_add ha with ⟨b, hb, c, hc, rfl⟩
     exact (H b hb c hc).irrefl⟩

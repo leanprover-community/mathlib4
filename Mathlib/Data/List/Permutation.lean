@@ -53,7 +53,7 @@ namespace List
 
 theorem permutationsAux2_fst (t : α) (ts : List α) (r : List β) :
     ∀ (ys : List α) (f : List α → β), (permutationsAux2 t ts r ys f).1 = ys ++ ts
-  | [], f => rfl
+  | [], _ => rfl
   | y :: ys, f => by simp [permutationsAux2, permutationsAux2_fst t _ _ ys]
 
 @[simp]

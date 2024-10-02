@@ -522,9 +522,9 @@ instance instField [IsDomain K] : Field (RatFunc K) where
   mul_inv_cancel _ := mul_inv_cancel
   zpow := zpowRec
   nnqsmul := _
-  nnqsmul_def := fun q a => rfl
+  nnqsmul_def := fun _ _ => rfl
   qsmul := _
-  qsmul_def := fun q a => rfl
+  qsmul_def := fun _ _ => rfl
 
 section IsFractionRing
 
@@ -547,7 +547,7 @@ instance (R : Type*) [CommSemiring R] [Algebra R K[X]] : Algebra R (RatFunc K) w
     rw [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
     rw [mk_one', ← mk_smul, mk_def_of_ne (c • p) hq, mk_def_of_ne p hq, ←
       ofFractionRing_mul, IsLocalization.mul_mk'_eq_mk'_of_mul, Algebra.smul_def]
-  commutes' c x := mul_comm _ _
+  commutes' _ _ := mul_comm _ _
 
 variable {K}
 
@@ -717,7 +717,7 @@ theorem algebraMap_ne_zero {x : K[X]} (hx : x ≠ 0) : algebraMap K[X] (RatFunc 
 theorem liftOn_div {P : Sort v} (p q : K[X]) (f : K[X] → K[X] → P) (f0 : ∀ p, f p 0 = f 0 1)
     (H' : ∀ {p q p' q'} (_hq : q ≠ 0) (_hq' : q' ≠ 0), q' * p = q * p' → f p q = f p' q')
     (H : ∀ {p q p' q'} (_hq : q ∈ K[X]⁰) (_hq' : q' ∈ K[X]⁰), q' * p = q * p' → f p q = f p' q' :=
-      fun {p q p' q'} hq hq' h => H' (nonZeroDivisors.ne_zero hq) (nonZeroDivisors.ne_zero hq') h) :
+      fun {_ _ _ _} hq hq' h => H' (nonZeroDivisors.ne_zero hq) (nonZeroDivisors.ne_zero hq') h) :
     (RatFunc.liftOn (algebraMap _ (RatFunc K) p / algebraMap _ _ q)) f @H = f p q := by
   rw [← mk_eq_div, liftOn_mk _ _ f f0 @H']
 
@@ -735,7 +735,7 @@ then `P` holds on all elements of `RatFunc K`.
 See also `induction_on'`, which is a recursion principle defined in terms of `RatFunc.mk`.
 -/
 protected theorem induction_on {P : RatFunc K → Prop} (x : RatFunc K)
-    (f : ∀ (p q : K[X]) (hq : q ≠ 0), P (algebraMap _ (RatFunc K) p / algebraMap _ _ q)) : P x :=
+    (f : ∀ (p q : K[X]) (_ : q ≠ 0), P (algebraMap _ (RatFunc K) p / algebraMap _ _ q)) : P x :=
   x.induction_on' fun p q hq => by simpa using f p q hq
 
 theorem ofFractionRing_mk' (x : K[X]) (y : K[X]⁰) :

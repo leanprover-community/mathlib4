@@ -114,7 +114,7 @@ theorem remainder_lt' (n : ℕ) {m : ℝ} (m1 : 1 < m) :
         -- 3. the first series is summable
         (remainder_summable m1 n)
         -- 4. the second series is summable, since its terms grow quickly
-        (summable_one_div_pow_of_le m1 fun j => le_self_add)
+        (summable_one_div_pow_of_le m1 fun _ => le_self_add)
     -- split the sum in the exponent and massage
     _ = ∑' i : ℕ, (1 / m) ^ i * (1 / m ^ (n + 1)!) := by
       simp only [pow_add, one_div, mul_inv, inv_pow]

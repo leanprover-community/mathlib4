@@ -567,7 +567,7 @@ open FormalMultilinearSeries
 
 protected theorem hasFiniteFPowerSeriesOnBall :
     HasFiniteFPowerSeriesOnBall f f.toFormalMultilinearSeries 0 (Fintype.card ι + 1) ⊤ :=
-  .mk' (fun m hm ↦ dif_neg (Nat.succ_le_iff.mp hm).ne) ENNReal.zero_lt_top fun y _ ↦ by
+  .mk' (fun _ hm ↦ dif_neg (Nat.succ_le_iff.mp hm).ne) ENNReal.zero_lt_top fun y _ ↦ by
     rw [Finset.sum_eq_single_of_mem _ (Finset.self_mem_range_succ _), zero_add]
     · rw [toFormalMultilinearSeries, dif_pos rfl]; rfl
     · intro m _ ne; rw [toFormalMultilinearSeries, dif_neg ne.symm]; rfl

@@ -451,9 +451,9 @@ def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
   toFun := fun ⟨B, ha, hB⟩ => ⟨stabilizer G B, hB.stabilizer_le ha⟩
   invFun := fun ⟨H, hH⟩ =>
     ⟨MulAction.orbit H a, MulAction.mem_orbit_self a, IsBlock.of_orbit hH⟩
-  left_inv := fun ⟨B, ha, hB⟩ =>
+  left_inv := fun ⟨_, ha, hB⟩ =>
     (id (propext Subtype.mk_eq_mk)).mpr (hB.orbit_stabilizer_eq ha)
-  right_inv := fun ⟨H, hH⟩ =>
+  right_inv := fun ⟨_, hH⟩ =>
     (id (propext Subtype.mk_eq_mk)).mpr (stabilizer_orbit_eq hH)
   map_rel_iff' := by
     rintro ⟨B, ha, hB⟩; rintro ⟨B', ha', hB'⟩

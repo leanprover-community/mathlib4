@@ -31,7 +31,7 @@ namespace Complex
 lemma continuousOn_one_add_mul_inv {z : ℂ} (hz : 1 + z ∈ slitPlane) :
     ContinuousOn (fun t : ℝ ↦ (1 + t • z)⁻¹) (Set.Icc 0 1) :=
   ContinuousOn.inv₀ (by fun_prop)
-    (fun t ht ↦ slitPlane_ne_zero <| StarConvex.add_smul_mem starConvex_one_slitPlane hz ht.1 ht.2)
+    (fun _ ht ↦ slitPlane_ne_zero <| StarConvex.add_smul_mem starConvex_one_slitPlane hz ht.1 ht.2)
 
 open intervalIntegral in
 /-- Represent `log (1 + z)` as an integral over the unit interval -/

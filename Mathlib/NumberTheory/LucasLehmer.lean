@@ -554,7 +554,7 @@ theorem isNat_not_lucasLehmerTest : {p np : ℕ} →
 /-- Calculate `LucasLehmer.LucasLehmerTest p` for `2 ≤ p` by using kernel reduction for the
 `sMod'` function. -/
 @[norm_num LucasLehmer.LucasLehmerTest (_ : ℕ)]
-def evalLucasLehmerTest : NormNumExt where eval {u α} e := do
+def evalLucasLehmerTest : NormNumExt where eval {_ _} e := do
   let .app _ (p : Q(ℕ)) ← Meta.whnfR e | failure
   let ⟨ep, hp⟩ ← deriveNat p _
   let np := ep.natLit!

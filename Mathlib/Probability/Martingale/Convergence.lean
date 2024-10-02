@@ -191,7 +191,7 @@ theorem Submartingale.exists_ae_tendsto_of_bdd [IsFiniteMeasure μ] (hf : Submar
 
 theorem Submartingale.exists_ae_trim_tendsto_of_bdd [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (hbdd : ∀ n, eLpNorm (f n) 1 μ ≤ R) :
-    ∀ᵐ ω ∂μ.trim (sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _ : ⨆ n, ℱ n ≤ m0),
+    ∀ᵐ ω ∂μ.trim (sSup_le fun _ ⟨_, hn⟩ => hn ▸ ℱ.le _ : ⨆ n, ℱ n ≤ m0),
       ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c) := by
   letI := (⨆ n, ℱ n)
   rw [ae_iff, trim_measurableSet_eq]

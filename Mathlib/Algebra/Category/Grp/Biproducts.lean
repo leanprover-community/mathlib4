@@ -112,7 +112,7 @@ def productLimitCone : Limits.LimitCone (Discrete.functor f) where
       π := Discrete.natTrans fun j => Pi.evalAddMonoidHom (fun j => f j) j.as }
   isLimit :=
     { lift := lift.{_, u} f
-      fac := fun s j => rfl
+      fac := fun _ _ => rfl
       uniq := fun s m w => by
         ext x
         funext j

@@ -150,7 +150,7 @@ theorem eventually_smallSets_eventually {p : α → Prop} :
     (∀ᶠ s in l.smallSets, ∀ᶠ x in l', x ∈ s → p x) ↔ ∀ᶠ x in l ⊓ l', p x :=
   calc
     _ ↔ ∃ s ∈ l, ∀ᶠ x in l', x ∈ s → p x :=
-      eventually_smallSets' fun s t hst ht => ht.mono fun x hx hs => hx (hst hs)
+      eventually_smallSets' fun _ _ hst ht => ht.mono fun _ hx hs => hx (hst hs)
     _ ↔ ∃ s ∈ l, ∃ t ∈ l', ∀ x, x ∈ t → x ∈ s → p x := by simp only [eventually_iff_exists_mem]
     _ ↔ ∀ᶠ x in l ⊓ l', p x := by simp only [eventually_inf, and_comm, mem_inter_iff, ← and_imp]
 

@@ -433,7 +433,7 @@ namespace Localization
 
 noncomputable instance : Category (Localization W) where
   Hom X Y := Localization.Hom W X Y
-  id X := Localization.Hom.mk (ofHom W (𝟙 _))
+  id _ := Localization.Hom.mk (ofHom W (𝟙 _))
   comp f g := f.comp g
   comp_id := by
     rintro (X Y : C) f
@@ -581,7 +581,7 @@ when `W` has a left calculus of fractions. -/
 noncomputable def lift (F : C ⥤ E) (hF : W.IsInvertedBy F) :
     Localization W ⥤ E where
   obj X := F.obj X
-  map {X Y : C} f := f.map F hF
+  map {_ _ : C} f := f.map F hF
   map_id := by
     intro (X : C)
     dsimp
@@ -605,7 +605,7 @@ noncomputable def lift (F : C ⥤ E) (hF : W.IsInvertedBy F) :
     rw [F.map_comp, F.map_comp, map_comp_map_s_assoc]
 
 lemma fac (F : C ⥤ E) (hF : W.IsInvertedBy F) : Q W ⋙ lift F hF = F :=
-  Functor.ext (fun X => rfl) (fun X Y f => by
+  Functor.ext (fun _ => rfl) (fun X Y f => by
     dsimp [lift]
     rw [Q_map, Hom.map_mk, id_comp, comp_id, map_ofHom])
 

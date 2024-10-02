@@ -97,7 +97,7 @@ a point `x` of the space `X` a point of the locale of opens of `X`. -/
 @[simps]
 def localePointOfSpacePoint (x : X) : PT (Opens X) where
   toFun := (x ∈ ·)
-  map_inf' a b := rfl
+  map_inf' _ _ := rfl
   map_top' := rfl
   map_sSup' S := by simp [Prop.exists_iff]
 

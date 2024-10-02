@@ -45,7 +45,7 @@ noncomputable def ContDiffBumpBase.ofInnerProductSpace : ContDiffBumpBase E wher
     · refine smoothTransition.contDiffAt.comp _ (ContDiffAt.div ?_ ?_ hR.ne')
       · exact contDiffAt_fst.sub (contDiffAt_snd.norm ℝ hx)
       · exact contDiffAt_fst.sub contDiffAt_const
-  eq_one R hR x hx := smoothTransition.one_of_one_le <| (one_le_div <| sub_pos.2 hR).2 <|
+  eq_one _ hR _ hx := smoothTransition.one_of_one_le <| (one_le_div <| sub_pos.2 hR).2 <|
     sub_le_sub_left hx _
   support R hR := by
     ext x

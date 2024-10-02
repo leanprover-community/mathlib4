@@ -151,7 +151,7 @@ def lift : (∀ i, M i →* N) ≃ (CoprodI M →* N) where
             FreeMonoid.lift _ (FreeMonoid.of _ * FreeMonoid.of _) =
               FreeMonoid.lift _ (FreeMonoid.of _)
           simp only [MonoidHom.map_mul, FreeMonoid.lift_eval_of]
-  invFun f i := f.comp of
+  invFun f _ := f.comp of
   left_inv := by
     intro fi
     ext i x

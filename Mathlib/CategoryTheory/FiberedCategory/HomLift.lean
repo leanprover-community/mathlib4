@@ -180,25 +180,25 @@ instance lift_comp_eqToHom {R S S' : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a �
 lemma comp_eqToHom_lift_iff {R S : 𝒮} {a' a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : a' = a) :
     p.IsHomLift f (eqToHom h ≫ φ) ↔ p.IsHomLift f φ where
   mp hφ' := by subst h; simpa using hφ'
-  mpr hφ := inferInstance
+  mpr _ := inferInstance
 
 @[simp]
 lemma eqToHom_comp_lift_iff {R S : 𝒮} {a b b' : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : b = b') :
     p.IsHomLift f (φ ≫ eqToHom h) ↔ p.IsHomLift f φ where
   mp hφ' := by subst h; simpa using hφ'
-  mpr hφ := inferInstance
+  mpr _ := inferInstance
 
 @[simp]
 lemma lift_eqToHom_comp_iff {R' R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : R' = R) :
     p.IsHomLift (eqToHom h ≫ f) φ ↔ p.IsHomLift f φ where
   mp hφ' := by subst h; simpa using hφ'
-  mpr hφ := inferInstance
+  mpr _ := inferInstance
 
 @[simp]
 lemma lift_comp_eqToHom_iff {R S S' : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (h : S = S') :
     p.IsHomLift (f ≫ eqToHom h) φ ↔ p.IsHomLift f φ where
   mp := fun hφ' => by subst h; simpa using hφ'
-  mpr := fun hφ => inferInstance
+  mpr := fun _ => inferInstance
 
 section
 

@@ -140,8 +140,8 @@ are (multiplicatively) equivalent to automorphisms of that object.
 def unitsEndEquivAut : (End X)ˣ ≃* Aut X where
   toFun f := ⟨f.1, f.2, f.4, f.3⟩
   invFun f := ⟨f.1, f.2, f.4, f.3⟩
-  left_inv := fun ⟨f₁, f₂, f₃, f₄⟩ => rfl
-  right_inv := fun ⟨f₁, f₂, f₃, f₄⟩ => rfl
+  left_inv := fun ⟨_, _, _, _⟩ => rfl
+  right_inv := fun ⟨_, _, _, _⟩ => rfl
   map_mul' f g := by cases f; cases g; rfl
 
 /-- The inclusion of `Aut X` to `End X` as a monoid homomorphism. -/

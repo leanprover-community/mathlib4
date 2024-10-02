@@ -38,9 +38,9 @@ protected def partialOrder : PartialOrder ℂ where
     dsimp
     rw [lt_iff_le_not_le]
     tauto
-  le_refl x := ⟨le_rfl, rfl⟩
-  le_trans x y z h₁ h₂ := ⟨h₁.1.trans h₂.1, h₁.2.trans h₂.2⟩
-  le_antisymm z w h₁ h₂ := ext (h₁.1.antisymm h₂.1) h₁.2
+  le_refl _ := ⟨le_rfl, rfl⟩
+  le_trans _ _ _ h₁ h₂ := ⟨h₁.1.trans h₂.1, h₁.2.trans h₂.2⟩
+  le_antisymm _ _ h₁ h₂ := ext (h₁.1.antisymm h₂.1) h₁.2
 
 namespace _root_.ComplexOrder
 

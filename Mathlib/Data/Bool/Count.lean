@@ -40,7 +40,7 @@ theorem count_true_add_count_false (l : List Bool) : count true l + count false 
 
 theorem Chain.count_not :
     ∀ {b : Bool} {l : List Bool}, Chain (· ≠ ·) b l → count (!b) l = count b l + length l % 2
-  | b, [], _h => rfl
+  | _, [], _h => rfl
   | b, x :: l, h => by
     obtain rfl : b = !x := Bool.eq_not_iff.2 (rel_of_chain_cons h)
     rw [Bool.not_not, count_cons_self, count_cons_of_ne x.not_ne_self,

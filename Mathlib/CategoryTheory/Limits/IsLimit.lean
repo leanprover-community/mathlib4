@@ -191,7 +191,7 @@ variable {t : Cone F}
 
 theorem hom_lift (h : IsLimit t) {W : C} (m : W ⟶ t.pt) :
     m = h.lift { pt := W, π := { app := fun b => m ≫ t.π.app b } } :=
-  h.uniq { pt := W, π := { app := fun b => m ≫ t.π.app b } } m fun b => rfl
+  h.uniq { pt := W, π := { app := fun b => m ≫ t.π.app b } } m fun _ => rfl
 
 /-- Two morphisms into a limit are equal if their compositions with
   each cone morphism are equal. -/

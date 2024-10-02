@@ -65,7 +65,7 @@ theorem cardinal_mk_le_max : #L ≤ max #R ℵ₀ :=
     _ = Cardinal.sum fun p : R[X] => #{x : L | x ∈ p.aroots L} := by
       rw [← mk_sigma]; rfl
     _ ≤ Cardinal.sum.{u, u} fun _ : R[X] => ℵ₀ :=
-      (sum_le_sum _ _ fun p => (Multiset.finite_toSet _).lt_aleph0.le)
+      (sum_le_sum _ _ fun _ => (Multiset.finite_toSet _).lt_aleph0.le)
     _ = #(R[X]) * ℵ₀ := sum_const' _ _
     _ ≤ max (max #(R[X]) ℵ₀) ℵ₀ := mul_le_max _ _
     _ ≤ max (max (max #R ℵ₀) ℵ₀) ℵ₀ :=

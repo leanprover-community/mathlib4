@@ -51,7 +51,7 @@ theorem piecewise_mem_Icc' {s : Set ι} [∀ j, Decidable (j ∈ s)] {f₁ f₂ 
 
 section Nonempty
 
-theorem pi_univ_Ioi_subset [Nonempty ι]: (pi univ fun i ↦ Ioi (x i)) ⊆ Ioi x := fun z hz ↦
+theorem pi_univ_Ioi_subset [Nonempty ι]: (pi univ fun i ↦ Ioi (x i)) ⊆ Ioi x := fun _ hz ↦
   ⟨fun i ↦ le_of_lt <| hz i trivial, fun h ↦
     (‹Nonempty ι›.elim) fun i ↦ not_lt_of_le (h i) (hz i trivial)⟩
 

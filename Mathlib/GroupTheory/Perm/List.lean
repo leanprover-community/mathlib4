@@ -257,7 +257,7 @@ theorem formPerm_eq_of_isRotated {l l' : List α} (hd : Nodup l) (h : l ~r l') :
 theorem formPerm_append_pair : ∀ (l : List α) (a b : α),
     formPerm (l ++ [a, b]) = formPerm (l ++ [a]) * swap a b
   | [], _, _ => rfl
-  | [x], _, _ => rfl
+  | [_], _, _ => rfl
   | x::y::l, a, b => by
     simpa [mul_assoc] using formPerm_append_pair (y::l) a b
 

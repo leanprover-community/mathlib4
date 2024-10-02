@@ -146,7 +146,7 @@ lemma zero_pow_eq (n : ℕ) : (0 : M₀) ^ n = if n = 0 then 1 else 0 := by
   · rw [h, pow_zero]
   · rw [zero_pow h]
 
-lemma pow_eq_zero_of_le : ∀ {m n} (hmn : m ≤ n) (ha : a ^ m = 0), a ^ n = 0
+lemma pow_eq_zero_of_le : ∀ {m n} (_ : m ≤ n) (_ : a ^ m = 0), a ^ n = 0
   | _, _, Nat.le.refl, ha => ha
   | _, _, Nat.le.step hmn, ha => by rw [pow_succ, pow_eq_zero_of_le hmn ha, zero_mul]
 

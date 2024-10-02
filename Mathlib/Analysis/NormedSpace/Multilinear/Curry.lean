@@ -169,8 +169,8 @@ def continuousMultilinearCurryLeftEquiv :
       Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G :=
   LinearIsometryEquiv.ofBounds
     { toFun := ContinuousMultilinearMap.curryLeft
-      map_add' := fun f₁ f₂ => rfl
-      map_smul' := fun c f => rfl
+      map_add' := fun _ _ => rfl
+      map_smul' := fun _ _ => rfl
       invFun := ContinuousLinearMap.uncurryLeft
       left_inv := ContinuousMultilinearMap.uncurry_curryLeft
       right_inv := ContinuousLinearMap.curry_uncurryLeft }
@@ -283,8 +283,8 @@ def continuousMultilinearCurryRightEquiv :
       ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →L[𝕜] G) :=
   LinearIsometryEquiv.ofBounds
     { toFun := ContinuousMultilinearMap.curryRight
-      map_add' := fun f₁ f₂ => rfl
-      map_smul' := fun c f => rfl
+      map_add' := fun _ _ => rfl
+      map_smul' := fun _ _ => rfl
       invFun := ContinuousMultilinearMap.uncurryRight
       left_inv := ContinuousMultilinearMap.uncurry_curryRight
       right_inv := ContinuousMultilinearMap.curry_uncurryRight }

@@ -21,6 +21,14 @@ left adjoints of `Nat.pow b`. See `pow_le_iff_le_log` and `le_pow_iff_clog_le`.
 
 namespace Nat
 
+#adaptation_note
+/--
+After leanprover/lean4#5338 we just unused argument warnings,
+but these are used in the decreasing by blocks.
+If instead we inline the `have` blocks, the unusedHavesSuffices linter triggers.
+-/
+set_option linter.unusedVariables false
+
 /-! ### Floor logarithm -/
 
 

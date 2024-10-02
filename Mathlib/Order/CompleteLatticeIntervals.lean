@@ -241,10 +241,10 @@ variable [CompleteLattice α] {a : α}
 instance instCompleteLattice : CompleteLattice (Iic a) where
   sSup S := ⟨sSup ((↑) '' S), by simpa using fun b hb _ ↦ hb⟩
   sInf S := ⟨a ⊓ sInf ((↑) '' S), by simp⟩
-  le_sSup S b hb := le_sSup <| mem_image_of_mem Subtype.val hb
-  sSup_le S b hb := sSup_le <| fun c' ⟨c, hc, hc'⟩ ↦ hc' ▸ hb c hc
-  sInf_le S b hb := inf_le_of_right_le <| sInf_le <| mem_image_of_mem Subtype.val hb
-  le_sInf S b hb := le_inf_iff.mpr ⟨b.property, le_sInf fun d' ⟨d, hd, hd'⟩  ↦ hd' ▸ hb d hd⟩
+  le_sSup _ _ hb := le_sSup <| mem_image_of_mem Subtype.val hb
+  sSup_le _ _ hb := sSup_le <| fun _ ⟨c, hc, hc'⟩ ↦ hc' ▸ hb c hc
+  sInf_le _ _ hb := inf_le_of_right_le <| sInf_le <| mem_image_of_mem Subtype.val hb
+  le_sInf _ b hb := le_inf_iff.mpr ⟨b.property, le_sInf fun _ ⟨d, hd, hd'⟩  ↦ hd' ▸ hb d hd⟩
   le_top := by simp
   bot_le := by simp
 

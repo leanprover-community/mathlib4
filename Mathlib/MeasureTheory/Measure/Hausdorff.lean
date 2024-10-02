@@ -268,7 +268,7 @@ theorem mono_pre (m : Set X → ℝ≥0∞) {r r' : ℝ≥0∞} (h : r ≤ r') :
   le_pre.2 fun _ hs => pre_le (hs.trans h)
 
 theorem mono_pre_nat (m : Set X → ℝ≥0∞) : Monotone fun k : ℕ => pre m k⁻¹ :=
-  fun k l h => le_pre.2 fun s hs => pre_le (hs.trans <| by simpa)
+  fun k l h => le_pre.2 fun _ hs => pre_le (hs.trans <| by simpa)
 
 theorem tendsto_pre (m : Set X → ℝ≥0∞) (s : Set X) :
     Tendsto (fun r => pre m r s) (𝓝[>] 0) (𝓝 <| mkMetric' m s) := by

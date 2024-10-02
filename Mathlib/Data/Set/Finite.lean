@@ -1009,7 +1009,7 @@ theorem eq_finite_iUnion_of_finite_subset_iUnion {ι} {s : ι → Set α} {t : S
       I.Finite ∧
         ∃ σ : { i | i ∈ I } → Set α, (∀ i, (σ i).Finite) ∧ (∀ i, σ i ⊆ s i) ∧ t = ⋃ i, σ i :=
   let ⟨I, Ifin, hI⟩ := finite_subset_iUnion tfin h
-  ⟨I, Ifin, fun x => s x ∩ t, fun i => tfin.subset inter_subset_right, fun i =>
+  ⟨I, Ifin, fun x => s x ∩ t, fun _ => tfin.subset inter_subset_right, fun _ =>
     inter_subset_left, by
     ext x
     rw [mem_iUnion]
@@ -1111,7 +1111,7 @@ theorem card_image_of_inj_on {s : Set α} [Fintype s] {f : α → β} [Fintype (
     _ = s.toFinset.card :=
       Finset.card_image_of_injOn fun x hx y hy hxy =>
         H x (mem_toFinset.1 hx) y (mem_toFinset.1 hy) hxy
-    _ = Fintype.card s := (Fintype.card_of_finset' _ fun a => mem_toFinset).symm
+    _ = Fintype.card s := (Fintype.card_of_finset' _ fun _ => mem_toFinset).symm
 
 theorem card_image_of_injective (s : Set α) [Fintype s] {f : α → β} [Fintype (f '' s)]
     (H : Function.Injective f) : Fintype.card (f '' s) = Fintype.card s :=

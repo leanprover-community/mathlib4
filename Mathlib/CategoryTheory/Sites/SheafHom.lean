@@ -84,7 +84,7 @@ def presheafHomSectionsEquiv : (presheafHom F G).sections ≃ (F ⟶ G) where
           (Over.homMk f : Over.mk f ⟶ Over.mk (𝟙 X₁)).op)
         rw [← s.2 f.op, presheafHom_map_app_op_mk_id]
         rfl }
-  invFun f := ⟨fun X => whiskerLeft _ f, fun _ => rfl⟩
+  invFun f := ⟨fun _ => whiskerLeft _ f, fun _ => rfl⟩
   left_inv s := by
     dsimp
     ext ⟨X⟩ ⟨Y : Over X⟩
@@ -92,7 +92,7 @@ def presheafHomSectionsEquiv : (presheafHom F G).sections ≃ (F ⟶ G) where
     dsimp at H ⊢
     rw [← H]
     apply presheafHom_map_app_op_mk_id
-  right_inv f := rfl
+  right_inv _ := rfl
 
 variable {F G}
 

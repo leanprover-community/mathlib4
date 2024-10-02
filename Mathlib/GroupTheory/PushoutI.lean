@@ -454,7 +454,7 @@ theorem summand_smul_def' {i : ι} (g : G i) (w : NormalWord d) :
 noncomputable instance mulAction : MulAction (PushoutI φ) (NormalWord d) :=
   MulAction.ofEndHom <|
     lift
-      (fun i => MulAction.toEndHom)
+      (fun _ => MulAction.toEndHom)
       MulAction.toEndHom <| by
     intro i
     simp only [MulAction.toEndHom, DFunLike.ext_iff, MonoidHom.coe_comp, MonoidHom.coe_mk,

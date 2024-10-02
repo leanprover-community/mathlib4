@@ -321,7 +321,7 @@ def ofι (I : MulticospanIndex.{w} C) (P : C) (ι : ∀ a, P ⟶ I.left a)
   π :=
     { app := fun x =>
         match x with
-        | WalkingMulticospan.left a => ι _
+        | WalkingMulticospan.left _ => ι _
         | WalkingMulticospan.right b => ι (I.fstTo b) ≫ I.fst b
       naturality := by
         rintro (_ | _) (_ | _) (_ | _ | _) <;>
@@ -415,8 +415,8 @@ noncomputable def ofPiFork (c : Fork I.fstPiMap I.sndPiMap) : Multifork I where
   π :=
     { app := fun x =>
         match x with
-        | WalkingMulticospan.left a => c.ι ≫ Pi.π _ _
-        | WalkingMulticospan.right b => c.ι ≫ I.fstPiMap ≫ Pi.π _ _
+        | WalkingMulticospan.left _ => c.ι ≫ Pi.π _ _
+        | WalkingMulticospan.right _ => c.ι ≫ I.fstPiMap ≫ Pi.π _ _
       naturality := by
         rintro (_ | _) (_ | _) (_ | _ | _)
         · simp
@@ -518,7 +518,7 @@ def ofπ (I : MultispanIndex.{w} C) (P : C) (π : ∀ b, I.right b ⟶ P)
     { app := fun x =>
         match x with
         | WalkingMultispan.left a => I.fst a ≫ π _
-        | WalkingMultispan.right b => π _
+        | WalkingMultispan.right _ => π _
       naturality := by
         rintro (_ | _) (_ | _) (_ | _ | _) <;> dsimp <;>
           simp only [Functor.map_id, MultispanIndex.multispan_obj_left,

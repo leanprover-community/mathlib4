@@ -472,8 +472,8 @@ def mapTermRel {g : ℕ → ℕ} (ft : ∀ n, L.Term (α ⊕ (Fin n)) → L'.Ter
 
 /-- Raises all of the `Fin`-indexed variables of a formula greater than or equal to `m` by `n'`. -/
 def liftAt : ∀ {n : ℕ} (n' _m : ℕ), L.BoundedFormula α n → L.BoundedFormula α (n + n') :=
-  fun {n} n' m φ =>
-  φ.mapTermRel (fun k t => t.liftAt n' m) (fun _ => id) fun _ =>
+  fun {_} n' m φ =>
+  φ.mapTermRel (fun _ t => t.liftAt n' m) (fun _ => id) fun _ =>
     castLE (by rw [add_assoc, add_comm 1, add_assoc])
 
 @[simp]
