@@ -13,13 +13,6 @@ main subject `Greedoid α`.
 # Greedoid
 Greedoid is a set system, i.e., a family of sets, over a finite ground set, which satisfies both
 exchange and accessible properties.
-
-## Exchange Property and Accessible Property of Greedoid
-If a set system `S` satisfies the exchange property, then there is some element `x ∈ s₂ \ s₁`
-which `s₁ ∪ {x} ∈ S`, for every set `s₁, s₂ ∈ S` satisfying `s₁.card < s₂.card`.
-If a set system `S` satisfies the accessible property, then there is some element `x ∈ s`
-which `s \ {x} ∈ S` for every nonempty set `s ∈ S`.
-These two properties are defined in this file as `ExchangeProperty` and `AccessibleProperty`.
 -/
 
 namespace Greedoid
@@ -35,7 +28,6 @@ structure Greedoid (α : Type*) where
   /-- The feasible set of the greedoid. -/
   feasible_set : Finset α → Prop
   contains_emptyset : feasible_set ∅
-  accessible_property : Greedoid.AccessibleProperty feasible_set
   exchange_property : Greedoid.ExchangeProperty feasible_set
   subset_ground : ∀ s, feasible_set s → s ⊆ ground_set
 
@@ -60,7 +52,7 @@ open Nat List Finset
 
 theorem eq_of_veq : ∀ {G₁ G₂ : Greedoid α},
     G₁.ground_set = G₂.ground_set → G₁.feasible_set = G₂.feasible_set → G₁ = G₂
-  | ⟨_, _, _, _, _, _⟩, ⟨_, _, _, _, _, _⟩, h₁, h₂ => by cases h₁; cases h₂; rfl
+  | ⟨_, _, _, _, _⟩, ⟨_, _, _, _, _⟩, h₁, h₂ => by cases h₁; cases h₂; rfl
 
 @[simp]
 theorem feasible_set_injective :
@@ -77,6 +69,35 @@ variable {G : Greedoid α}
 variable {s : Finset α}
 variable {s₁ : Finset α} (hs₁ : s₁ ∈ G)
 variable {s₂ : Finset α} (hs₂ : s₂ ∈ G)
+
+protected theorem accessible_property :
+    AccessibleProperty G.feasible_set := by
+  intro s hs₁ hs₂
+  by_contra h'; simp at h'
+  let F : Set (Finset α) :=
+    {t | G.feasible_set t ∧ t.card < s.card}
+  have hF : ∅ ∈ F := by simp [F, G.contains_emptyset, hs₂]
+  let F' : Finset α → Prop := fun t ↦ 
+    t ∈ F ∧ ∀ t', G.feasible_set t' → t'.card < s.card → t'.card ≤ t.card
+  have hF' : ∃ x, F' x := by
+    by_contra h''; simp [F', F] at h''
+    have h₁ : ∀ n, ∃ t, t ∈ F ∧ t.card = n := by
+      intro n; induction n with
+      | zero => use ∅; simp [hF]
+      | succ n ih =>
+        rcases ih with ⟨t, ht₁, ht₂⟩
+        rcases ht₁ with ⟨ht₁, ht₃⟩
+        rcases h'' t ht₁ ht₃ with ⟨u, hu₁, hu₂, hu₃⟩
+        rcases G.exchange_property hu₁ ht₁ hu₃ with ⟨x, hx₁, hx₂, hx₃⟩
+        use t.cons x hx₂
+        simp [F, ht₂, hx₃]; omega
+    rcases h₁ s.card with ⟨t, ht₁, ht₂⟩
+    simp [F, ht₂] at ht₁
+  rcases hF' with ⟨u, hu₁, hu₂⟩
+  rcases hu₁ with ⟨hu₁, hu₃⟩
+  -- TODO: Fill missing parts.
+
+  sorry
 
 instance : Accessible G.feasible_set := ⟨G.accessible_property⟩
 
