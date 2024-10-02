@@ -199,6 +199,8 @@ inductive Hom : (WalkingReflexivePair → WalkingReflexivePair → Type)
   deriving DecidableEq
 
 attribute [-simp, nolint simpNF] Hom.id.sizeOf_spec
+attribute [-simp, nolint simpNF] Hom.leftCompReflexion.sizeOf_spec
+attribute [-simp, nolint simpNF] Hom.rightCompReflexion.sizeOf_spec
 
 /-- Composition of morphisms in the diagram indexing reflexive (co)equalizers -/
 def Hom.comp :
@@ -262,14 +264,6 @@ lemma map_reflexion_comp_map_left (F : WalkingReflexivePair ⥤ C) :
 lemma map_reflexion_comp_map_right (F : WalkingReflexivePair ⥤ C) :
     F.map reflexion ≫ F.map right = 𝟙 (F.obj zero) := by
   rw [← F.map_comp, reflexion_comp_right, F.map_id]
-
-@[reassoc (attr := simp)]
-lemma map_leftCompReflexion (F : WalkingReflexivePair ⥤ C) :
-    F.map .leftCompReflexion = F.map left ≫ F.map reflexion := F.map_comp left reflexion
-
-@[reassoc (attr := simp)]
-lemma map_rightCompReflexion (F : WalkingReflexivePair ⥤ C) :
-    F.map rightCompReflexion = F.map right ≫ F.map reflexion := F.map_comp right reflexion
 
 end FunctorsOutOfWalkingReflexivePair
 
@@ -415,22 +409,16 @@ variable (f g : A ⟶ B) (s : B ⟶ A) (sl : s ≫ f = 𝟙 B) (sr : s ≫ g = �
 
 @[simp] lemma map_reflexion : (reflexivePair f g s sl sr).map reflexion = s := rfl
 
-@[reassoc (attr := simp)] lemma map_leftCompReflexion :
-  (reflexivePair f g s sl sr).map leftCompReflexion = f ≫ s := rfl
-
-@[reassoc (attr := simp)] lemma map_rightCompReflexion :
-  (reflexivePair f g s sl sr).map rightCompReflexion = g ≫ s := rfl
-
 section NatTrans
 
 variable (F : WalkingReflexivePair ⥤ C)
 
-/-- A constructor for natural transforms to a diagram of the form `reflexivePair f g s` --/
+/-- A constructor for natural transforms to a diagram of the form `reflexivePair f g s`. -/
 @[simps]
 def mkNatTrans (u : F.obj one ⟶ A) (v : F.obj zero ⟶ B)
-  (h₁ : (F.map left) ≫ v = u ≫ f := by aesop_cat)
-  (h₂ : (F.map right) ≫ v = u ≫ g := by aesop_cat)
-  (h₃ : (F.map reflexion) ≫ u = v ≫ s := by aesop_cat):
+    (h₁ : (F.map left) ≫ v = u ≫ f := by aesop_cat)
+    (h₂ : (F.map right) ≫ v = u ≫ g := by aesop_cat)
+    (h₃ : (F.map reflexion) ≫ u = v ≫ s := by aesop_cat) :
     F ⟶ (reflexivePair f g s sl sr) where
   app := fun x ↦ match x with
     | zero => v
@@ -451,12 +439,12 @@ def mkNatTrans (u : F.obj one ⟶ A) (v : F.obj zero ⟶ B)
                                                reassoc_of% h₂]
 
 /-- A version of `mkNatTrans` for natural transforms from a `reflexivePair` rather than to a
-`reflexivePair` --/
+`reflexivePair`. -/
 @[simps]
 def mkNatTrans' (u : A ⟶ F.obj one) (v : B ⟶ F.obj zero)
-  (h₁ : u ≫ (F.map left) = f ≫ v := by aesop_cat)
-  (h₂ : u ≫ (F.map right) = g ≫ v := by aesop_cat)
-  (h₃ : s ≫ u = v ≫ (F.map reflexion)  := by aesop_cat):
+    (h₁ : u ≫ (F.map left) = f ≫ v := by aesop_cat)
+    (h₂ : u ≫ (F.map right) = g ≫ v := by aesop_cat)
+    (h₃ : s ≫ u = v ≫ (F.map reflexion)  := by aesop_cat) :
     (reflexivePair f g s sl sr) ⟶ F where
   app := fun x ↦ match x with
     | zero => v
@@ -476,11 +464,12 @@ def mkNatTrans' (u : A ⟶ F.obj one) (v : B ⟶ F.obj zero)
                                                map_left, map_reflexion, Category.assoc, h₃,
                                                reassoc_of% h₂]
 
+/-- Constructor for natural isomorphisms with a `reflexivePair`. -/
 @[simps!]
 def mkNatIso (u : F.obj one ≅ A) (v : F.obj zero ≅ B)
-  (h₁ : (F.map left) ≫ v.hom = u.hom ≫ f := by aesop_cat)
-  (h₂ : (F.map right) ≫ v.hom = u.hom ≫ g := by aesop_cat)
-  (h₃ : (F.map reflexion) ≫ u.hom = v.hom ≫ s := by aesop_cat):
+    (h₁ : (F.map left) ≫ v.hom = u.hom ≫ f := by aesop_cat)
+    (h₂ : (F.map right) ≫ v.hom = u.hom ≫ g := by aesop_cat)
+    (h₃ : (F.map reflexion) ≫ u.hom = v.hom ≫ s := by aesop_cat) :
     F ≅ (reflexivePair f g s sl sr) :=
   NatIso.ofComponents (fun x ↦ match x with
     | zero => v
@@ -500,6 +489,8 @@ def mkNatIso (u : F.obj one ≅ A) (v : F.obj zero ≅ B)
                                  map_left, map_reflexion, Category.assoc, h₃,
                                  reassoc_of% h₂])
 
+/-- Every functor out of `WalkingReflexivePair` is isomorphic to the `reflexivePair` given by
+its components -/
 @[simps!]
 def diagramIsoReflexivePair :
     F ≅ reflexivePair (F.map left) (F.map right) (F.map reflexion) :=
@@ -507,15 +498,16 @@ def diagramIsoReflexivePair :
 
 end NatTrans
 
+/-- A `reflexivePair` composed with a functor is isomorphic to the `reflexivePair` obtained by
+applying the functor at each map. -/
 @[simps!]
 def compRightIso {D : Type u₂} [Category.{v₂} D] {A B : C}
-    (f g : A ⟶ B) (s : B ⟶ A) (sl : s ≫ f = 𝟙 B) (sr : s ≫ g = 𝟙 B)
-    (F : C ⥤ D) : (reflexivePair f g s sl sr) ⋙ F ≅ reflexivePair (F.map f) (F.map g) (F.map s)
+    (f g : A ⟶ B) (s : B ⟶ A) (sl : s ≫ f = 𝟙 B) (sr : s ≫ g = 𝟙 B) (F : C ⥤ D) :
+    (reflexivePair f g s sl sr) ⋙ F ≅ reflexivePair (F.map f) (F.map g) (F.map s)
       (by simp only [← Functor.map_comp, sl, Functor.map_id])
       (by simp only [← Functor.map_comp, sr, Functor.map_id]) :=
   mkNatIso _ _ _ _ _ _ (Iso.refl _) (Iso.refl _)
 
-@[simp]
 lemma whiskerRightMkNatTrans {D : Type u₂} [Category.{v₂} D] {A B : C}
     (f g : A ⟶ B) (s : B ⟶ A) (sl : s ≫ f = 𝟙 B) (sr : s ≫ g = 𝟙 B)
     (F : WalkingReflexivePair ⥤ C)
@@ -533,7 +525,6 @@ lemma whiskerRightMkNatTrans {D : Type u₂} [Category.{v₂} D] {A B : C}
   ext x; cases x <;> simp
 
 /-- Counterpart of `whiskerRightMkNatTrans` for `MkNatTrans'` --/
-@[simp]
 lemma whiskerRightMkNatTrans' {D : Type u₂} [Category.{v₂} D] {A B : C}
     (f g : A ⟶ B) (s : B ⟶ A) {sl : s ≫ f = 𝟙 B} {sr : s ≫ g = 𝟙 B}
     (F : WalkingReflexivePair ⥤ C)
