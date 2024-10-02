@@ -2698,10 +2698,11 @@ theorem add_le_of_disjoint
     rw [cons_add, le_iff_count]; intro x
     rcases disjoint_cons_left.mp h with ⟨h₁, h₂⟩
     by_cases h' : x = a
-    · simp [h', count_eq_zero_of_not_mem h₁]
-      have := count_cons a a s ▸ (le_iff_count.mp hs a); simp at this
+    · rw [h', count_cons_self, count_add, count_eq_zero_of_not_mem h₁, add_zero]
+      have := count_cons a a s ▸ (le_iff_count.mp hs a); simp only [↓reduceIte] at this
       exact this
-    · simp [h', count_add _ s t ▸ (le_iff_count.mp (ih h₂ (le_trans (le_cons_self s a) hs) ht) x)]
+    · rw [count_cons_of_ne h']
+      exact count_add _ s t ▸ (le_iff_count.mp (ih h₂ (le_trans (le_cons_self s a) hs) ht) x)
 
 /-- `Pairwise r m` states that there exists a list of the elements s.t. `r` holds pairwise on this
 list. -/
