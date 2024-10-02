@@ -33,9 +33,8 @@ def Subalgebra.IsAlgebraic.toIntermediateField {S : Subalgebra K L} (hS : S.IsAl
 abbrev Algebra.IsAlgebraic.toIntermediateField (S : Subalgebra K L) [Algebra.IsAlgebraic K S] :
     IntermediateField K L := (S.isAlgebraic_iff.mpr ‹_›).toIntermediateField
 
-/-- The algebraic closure of a field `K` in an extension `L`. Definitionally, this is exactly
-  `integralClosure K L` as an intermediate field. We choose the name `algClosure` to
-  distinguish the intermediate field from the subalgebra, and from `AlgebraicClosure`. -/
+/-- The algebraic closure of a field `K` in an extension `L`, the subalgebra `integralClosure K L`
+upgraded to an intermediate field (when `K` and `L` are both fields). -/
 def algebraicClosure : IntermediateField K L :=
   Algebra.IsAlgebraic.toIntermediateField (integralClosure K L)
 
