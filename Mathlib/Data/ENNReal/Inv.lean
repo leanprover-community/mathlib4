@@ -659,6 +659,10 @@ lemma sSup_mul {a : ℝ≥0∞} : sSup s * a = ⨆ b ∈ s, b * a := by
 lemma iSup_div (f : ι → ℝ≥0∞) (a : ℝ≥0∞) : iSup f / a = ⨆ i, f i / a := iSup_mul ..
 lemma sSup_div (s : Set ℝ≥0∞) (a : ℝ≥0∞) : sSup s / a = ⨆ b ∈ s, b / a := sSup_mul ..
 
+/-- Very general version for distributivity of multiplication over an infimum.
+
+See `ENNReal.mul_iInf_of_ne` for the special case assuming `a ≠ 0` and `a ≠ ∞`, and
+`ENNReal.mul_iInf` for the special case assuming `Nonempty ι`. -/
 lemma mul_iInf' (hinfty : a = ∞ → ⨅ i, f i = 0 → ∃ i, f i = 0) (h₀ : a = 0 → Nonempty ι) :
     a * ⨅ i, f i = ⨅ i, a * f i := by
   obtain rfl | ha₀ := eq_or_ne a 0
@@ -671,36 +675,53 @@ lemma mul_iInf' (hinfty : a = ∞ → ⨅ i, f i = 0 → ∃ i, f i = 0) (h₀ :
       exact fun i ↦ top_mul fun hi ↦ hf ⟨i, hi⟩
   · exact (mulLeftOrderIso _ <| isUnit_iff.2 ⟨ha₀, ha⟩).map_iInf _
 
+/-- Very general version for distributivity of multiplication over an infimum.
+
+See `ENNReal.iInf_mul_of_ne` for the special case assuming `a ≠ 0` and `a ≠ ∞`, and
+`ENNReal.iInf_mul` for the special case assuming `Nonempty ι`. -/
 lemma iInf_mul' (hinfty : a = ∞ → ⨅ i, f i = 0 → ∃ i, f i = 0) (h₀ : a = 0 → Nonempty ι) :
     (⨅ i, f i) * a = ⨅ i, f i * a := by simpa only [mul_comm a] using mul_iInf' hinfty h₀
 
 /-- If `a ≠ 0` and `a ≠ ∞`, then right multiplication by `a` maps infimum to infimum.
 
-See also `ENNReal.iInf_mul` that assumes `[Nonempty ι]` but does not require `a ≠ 0`. -/
+See `ENNReal.mul_iInf'` for the general case, and `ENNReal.iInf_mul` for another special case that
+assumes `Nonempty ι` but does not require `a ≠ 0`, and `ENNReal`. -/
 lemma mul_iInf_of_ne (ha₀ : a ≠ 0) (ha : a ≠ ∞) : a * ⨅ i, f i = ⨅ i, a * f i :=
   mul_iInf' (by simp [ha]) (by simp [ha₀])
 
 /-- If `a ≠ 0` and `a ≠ ∞`, then right multiplication by `a` maps infimum to infimum.
 
-See also `ENNReal.iInf_mul` that assumes `[Nonempty ι]` but does not require `a ≠ 0`. -/
+See `ENNReal.iInf_mul'` for the general case, and `ENNReal.iInf_mul` for another special case that
+assumes `Nonempty ι` but does not require `a ≠ 0`. -/
 lemma iInf_mul_of_ne (ha₀ : a ≠ 0) (ha : a ≠ ∞) : (⨅ i, f i) * a = ⨅ i, f i * a :=
   iInf_mul' (by simp [ha]) (by simp [ha₀])
 
+/-- See `ENNReal.mul_iInf'` for the general case, and `ENNReal.mul_iInf_of_ne` for another special
+case that assumes `a ≠ 0` but does not require `Nonempty ι`. -/
 lemma mul_iInf [Nonempty ι] (hinfty : a = ∞ → ⨅ i, f i = 0 → ∃ i, f i = 0) :
     a * ⨅ i, f i = ⨅ i, a * f i := mul_iInf' hinfty fun _ ↦ ‹Nonempty ι›
 
+/-- See `ENNReal.iInf_mul'` for the general case, and `ENNReal.iInf_mul_of_ne` for another special
+case that assumes `a ≠ 0` but does not require `Nonempty ι`. -/
 lemma iInf_mul [Nonempty ι] (hinfty : a = ∞ → ⨅ i, f i = 0 → ∃ i, f i = 0) :
     (⨅ i, f i) * a = ⨅ i, f i * a := iInf_mul' hinfty fun _ ↦ ‹Nonempty ι›
 
+/-- Very general version for distributivity of division over an infimum.
+
+See `ENNReal.iInf_div_of_ne` for the special case assuming `a ≠ 0` and `a ≠ ∞`, and
+`ENNReal.iInf_div` for the special case assuming `Nonempty ι`. -/
 lemma iInf_div' (hinfty : a = 0 → ⨅ i, f i = 0 → ∃ i, f i = 0) (h₀ : a = ∞ → Nonempty ι) :
     (⨅ i, f i) / a = ⨅ i, f i / a := iInf_mul' (by simpa) (by simpa)
 
 /-- If `a ≠ 0` and `a ≠ ∞`, then division by `a` maps infimum to infimum.
 
-See also `ENNReal.iInf_div` that assumes `[Nonempty ι]` but does not require `a ≠ ∞`. -/
+See `ENNReal.iInf_div'` for the general case, and `ENNReal.iInf_div` for another special case that
+assumes `Nonempty ι` but does not require `a ≠ ∞`. -/
 lemma iInf_div_of_ne (ha₀ : a ≠ 0) (ha : a ≠ ∞) : (⨅ i, f i) / a = ⨅ i, f i / a :=
   iInf_div' (by simp [ha₀]) (by simp [ha])
 
+/-- See `ENNReal.iInf_div'` for the general case, and `ENNReal.iInf_div_of_ne` for another special
+case that assumes `a ≠ ∞` but does not require `Nonempty ι`. -/
 lemma iInf_div [Nonempty ι] (hinfty : a = 0 → ⨅ i, f i = 0 → ∃ i, f i = 0) :
     (⨅ i, f i) / a = ⨅ i, f i / a := iInf_div' hinfty fun _ ↦ ‹Nonempty ι›
 
