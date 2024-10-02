@@ -290,17 +290,17 @@ theorem irreducible_mul_iff {a b : M} :
     · rwa [irreducible_mul_isUnit hb]
     · rwa [irreducible_isUnit_mul ha]
 
-variable [Monoid β] {F : Type*} [EquivLike F α β] [MulEquivClass F α β] (f : F)
+variable [Monoid N] {F : Type*} [EquivLike F M N] [MulEquivClass F M N] (f : F)
 
 open MulEquiv
 
-theorem Irreducible.map {x : α} (h : Irreducible x) : Irreducible (f x) :=
+theorem Irreducible.map {x : M} (h : Irreducible x) : Irreducible (f x) :=
   let f := MulEquivClass.toMulEquiv f
   ⟨fun g ↦ h.1 (symm_apply_apply f x ▸ g.map f.symm), fun a b g ↦
     .elim (h.2 _ _ (symm_apply_apply f x ▸ map_mul f.symm a b ▸ congrArg f.symm g))
     (fun h ↦ .inl (apply_symm_apply f a ▸ h.map f)) (fun h ↦ .inr (apply_symm_apply f b ▸ h.map f))⟩
 
-theorem MulEquiv.irreducible_iff  (f : F) {a : α} :
+theorem MulEquiv.irreducible_iff (f : F) {a : M} :
     Irreducible (f a) ↔ Irreducible a :=
   let f := MulEquivClass.toMulEquiv f
   ⟨by simpa only [symm_apply_apply] using Irreducible.map f.symm (x := f a) , Irreducible.map f⟩
