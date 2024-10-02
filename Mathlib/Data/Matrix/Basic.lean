@@ -492,6 +492,11 @@ theorem diagonal_conjTranspose [AddMonoid α] [StarAddMonoid α] (v : n → α) 
   rw [conjTranspose, diagonal_transpose, diagonal_map (star_zero _)]
   rfl
 
+theorem diagonal_unique [Unique m] [DecidableEq m] [Zero α] (d : m → α) :
+    diagonal d = of fun _ _ => d default := by
+  ext i j
+  rw [Subsingleton.elim i default, Subsingleton.elim j default, diagonal_apply_eq _ _, of_apply]
+
 section One
 
 variable [Zero α] [One α]
