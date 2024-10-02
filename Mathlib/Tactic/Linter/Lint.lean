@@ -320,6 +320,12 @@ register_option linter.style.longFile : Nat := {
   descr := "enable the longFile linter"
 }
 
+/-- The number of lines that the `longFile` linter considers the default. -/
+register_option linter.style.longFileDefValue : Nat := {
+  defValue := 1500
+  descr := "a soft upper bound on the number of lines of each file"
+}
+
 namespace Style.longFile
 
 @[inherit_doc Mathlib.Linter.linter.style.longFile]
@@ -327,7 +333,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let linterBound := linter.style.longFile.get (← getOptions)
   if linterBound == 0 then
     return
-  let defValue := 1500
+  let defValue := linter.style.longFileDefValue.get (← getOptions)
   let smallOption := match stx with
       | `(set_option linter.style.longFile $x) => TSyntax.getNat ⟨x.raw⟩ ≤ defValue
       | _ => false
