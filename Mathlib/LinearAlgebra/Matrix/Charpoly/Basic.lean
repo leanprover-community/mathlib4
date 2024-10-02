@@ -118,7 +118,7 @@ lemma charpoly_fromBlocks_zero₂₁ :
   simp only [charpoly, charmatrix_fromBlocks, Matrix.map_zero _ (Polynomial.C_0), neg_zero,
     det_fromBlocks_zero₂₁]
 
-lemma toSquareBlock_charmatrix {α : Type*} [DecidableEq α] {b : n → α} {a : α}  :
+lemma charmatrix_toSquareBlock {α : Type*} [DecidableEq α] {b : n → α} {a : α} :
     (M.toSquareBlock b a).charmatrix = M.charmatrix.toSquareBlock b a := by
   ext i j : 1
   simp [charmatrix_apply, toSquareBlock_def, diagonal_apply, Subtype.ext_iff]
