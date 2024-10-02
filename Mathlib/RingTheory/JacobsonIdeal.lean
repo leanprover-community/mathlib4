@@ -235,12 +235,8 @@ theorem jacobson_mul_mem_right {I : Ideal R}
   intro 𝔪 𝔪_mem
   by_cases r𝔪 : r ∈ 𝔪
   · apply 𝔪.smul_mem _ r𝔪
-  let 𝔪₀ : Ideal R := {
-    carrier := { a : R | a*r ∈ 𝔪 }
-    add_mem' := by simp (config := {contextual := true}) [add_mul, add_mem]
-    zero_mem' := by simp
-    smul_mem' := by simp (config := {contextual := true}) [mul_assoc, mul_mem_left]
-  }
+  -- 𝔪₀ := { a : R | a*r ∈ 𝔪 }
+  let 𝔪₀ : Ideal R := Submodule.comap (DistribMulAction.toLinearMap R (S := Rᵐᵒᵖ) R (.op r)) 𝔪
   suffices x ∈ 𝔪₀ by simpa [𝔪₀] using this
   have I𝔪₀ : I ≤ 𝔪₀ := fun i iI =>
     𝔪_mem.left (mul_mem_right iI)
