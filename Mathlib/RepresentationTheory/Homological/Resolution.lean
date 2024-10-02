@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Category.ModuleCat.Projective
+import Mathlib.Algebra.Homology.ConcreteCategory
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 import Mathlib.AlgebraicTopology.ExtraDegeneracy
 import Mathlib.CategoryTheory.Abelian.Ext
@@ -66,6 +67,60 @@ suppress_compilation
 noncomputable section
 
 universe u v w
+
+open CategoryTheory
+
+namespace HomologicalComplex
+theorem cyclesIsoSc'_cyclesMk {C : Type u} [Category C] [ConcreteCategory C] [HasForget₂ C Ab]
+    [Abelian C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology] {ι : Type*}
+    {c : ComplexShape ι} (K : HomologicalComplex C c) {i j k : ι} (x : (forget₂ C Ab).obj (K.X j))
+    (hi : c.prev j = i) (hk : c.next j = k) (hx : ((forget₂ C Ab).map (K.d j k)) x = 0) :
+    ((forget₂ C Ab).map (K.cyclesIsoSc' i j k hi hk).hom) (K.cyclesMk x k hk hx)
+      = (K.sc' i j k).cyclesMk x (by simp_all) := by
+  apply (AddCommGrp.mono_iff_injective ((forget₂ C Ab).map (K.sc' i j k).iCycles)).1 inferInstance
+  rw [(K.sc' i j k).i_cyclesMk x (by simp_all), ← Function.comp_apply (f := (forget₂ C Ab).map _),
+    ← AddCommGrp.coe_comp, ← Functor.map_comp]
+  simp
+
+theorem cyclesIsoSc'_inv_cyclesMk {C : Type u} [Category C] [ConcreteCategory C] [HasForget₂ C Ab]
+    [Abelian C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology] {ι : Type*}
+    {c : ComplexShape ι} (K : HomologicalComplex C c) {i j k : ι} (x : (forget₂ C Ab).obj (K.X j))
+    (hi : c.prev j = i) (hk : c.next j = k) (hx : ((forget₂ C Ab).map (K.d j k)) x = 0) :
+    ((forget₂ C Ab).map (K.cyclesIsoSc' i j k hi hk).inv) ((K.sc' i j k).cyclesMk x (by simp_all))
+      = K.cyclesMk x k hk hx := by
+  apply (AddCommGrp.mono_iff_injective ((forget₂ C Ab).map (K.iCycles j))).1 inferInstance
+  rw [K.i_cyclesMk x k hk hx, ← Function.comp_apply (f := (forget₂ C Ab).map _),
+    ← AddCommGrp.coe_comp, ← Functor.map_comp]
+  simpa using (K.sc' i j k).i_cyclesMk x (by simp_all)
+
+end HomologicalComplex
+namespace LinearEquiv
+
+variable {R₁ R₂ R₃ R₄ M₁ M₂ M₃ M₄ : Type*}
+    [Semiring R₁] [Semiring R₂] [Semiring R₃] [Semiring R₄]
+    [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
+    {module_M₁ : Module R₁ M₁} {module_M₂ : Module R₂ M₂} {module_M₃ : Module R₃ M₃}
+    {module_M₄ : Module R₄ M₄} {σ₁₂ : R₁ →+* R₂} {σ₂₁ : R₂ →+* R₁} {σ₂₄ : R₂ →+* R₄}
+    {σ₁₃ : R₁ →+* R₃} {σ₃₄ : R₃ →+* R₄} {σ₄₃ : R₄ →+* R₃} {σ₁₄ : R₁ →+* R₄} {σ₂₃ : R₂ →+* R₃}
+    {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
+    {re₃₄ : RingHomInvPair σ₃₄ σ₄₃} {re₄₃ : RingHomInvPair σ₄₃ σ₃₄}
+    [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
+    [RingHomCompTriple σ₂₄ σ₄₃ σ₂₃] [RingHomCompTriple σ₂₁ σ₁₃ σ₂₃]
+    [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₁₄ σ₄₃ σ₁₃]
+    {e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂} {e₃₄ : M₃ ≃ₛₗ[σ₃₄] M₄} (f : M₂ →ₛₗ[σ₂₄] M₄) (g : M₁ →ₛₗ[σ₁₃] M₃)
+
+theorem symm_comp_eq_comp_symm_iff :
+    e₃₄.symm.toLinearMap.comp f = g.comp (e₁₂.symm.toLinearMap)
+      ↔ f.comp e₁₂.toLinearMap = e₃₄.toLinearMap.comp g := by
+  rw [LinearEquiv.eq_comp_toLinearMap_symm, LinearMap.comp_assoc,
+    LinearEquiv.toLinearMap_symm_comp_eq]
+
+def kerLEquivOfCompEqComp (H : f.comp e₁₂.toLinearMap = e₃₄.toLinearMap.comp g) :
+    LinearMap.ker f ≃ₛₗ[σ₂₁] LinearMap.ker g :=
+  LinearEquiv.ofSubmodules e₁₂.symm _ _ <| by
+    simp [Submodule.map_equiv_eq_comap_symm, ← LinearMap.ker_comp, H]
+
+end LinearEquiv
 
 variable {k G : Type u} [CommRing k] {n : ℕ}
 

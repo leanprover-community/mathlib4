@@ -680,6 +680,37 @@ open ShortComplex
 
 section H0
 variable (A) [DecidableEq G]
+/-
+def d0LEquivInvariants :
+    LinearMap.ker (inhomogeneousCochains.d A 0) ≃ₗ[k] invariants A.ρ :=
+  LinearEquiv.ofSubmodules (zeroCochainsLEquiv A) _ _ (by
+    have := (((LinearEquiv.symm_comp_eq_comp_symm_iff _ _).2 (dZero_comp_eq A))).symm
+    simp_all [Submodule.map_equiv_eq_comap_symm, ← LinearMap.ker_comp, dZero_ker_eq_invariants])
+
+@[simp] theorem subtype_comp_d0LEquivInvariants :
+    A.ρ.invariants.subtype ∘ₗ (d0LEquivInvariants A).toLinearMap
+      = (zeroCochainsLEquiv A).toLinearMap ∘ₗ Submodule.subtype _ := by ext; rfl
+-/
+
+abbrev isoZeroCycles : cycles A 0 ≅ ModuleCat.of k A :=
+  (inhomogeneousChains A).iCyclesIso _ 0 (by aesop) (by aesop)
+    ≪≫ (zeroChainsLEquiv A).toModuleIso
+
+lemma isoZeroCycles_eq_moduleCatCyclesIso_trans :
+    isoZeroCycles A = moduleCatCyclesIso _ ≪≫
+      ((LinearEquiv.ofEq _ _ (LinearMap.ker_eq_top.2 (by aesop)))
+      ≪≫ₗ Submodule.topEquiv ≪≫ₗ zeroChainsLEquiv _).toModuleIso := by
+  ext : 1
+  rw [← Iso.inv_eq_inv]
+  apply (cancel_mono ((inhomogeneousChains A).iCycles _)).1
+  simp only [Iso.trans_inv, HomologicalComplex.iCyclesIso, HomologicalComplex.iCycles,
+    asIso_inv, Category.assoc, IsIso.inv_hom_id, moduleCatCyclesIso_inv_iCycles]
+  rfl
+
+@[reassoc, elementwise]
+lemma isoZeroCycles_inv_comp_iCycles :
+    (isoZeroCycles A).inv ≫ iCycles A 0 = (zeroChainsLEquiv A).toModuleIso.inv := by
+  simp
 
 lemma mkQ_comp_dZero : (coinvariantsKer A.ρ).mkQ ∘ₗ dZero A = 0 := by
   rw [← dZero_range_eq_coinvariantsKer]
@@ -766,11 +797,28 @@ lemma isoOneCycles_hom_comp_subtype :
   rw [cyclesMap_i, HomologicalComplex.cyclesIsoSc'_hom_iCycles_assoc]
 
 @[reassoc (attr := simp)]
+lemma isoOneCycles_inv_comp_iCycles :
+    (isoOneCycles A).inv ≫ iCycles A 1 =
+      ModuleCat.ofHom (oneCycles A).subtype ≫ (oneChainsLEquiv A).toModuleIso.inv := by
+  rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, isoOneCycles_hom_comp_subtype]
+
+@[reassoc (attr := simp)]
 lemma toCycles_comp_isoOneCycles_hom :
     toCycles A 2 1 ≫ (isoOneCycles A).hom =
       (twoChainsLEquiv A).toModuleIso.hom ≫
         ModuleCat.ofHom (shortComplexH1 A).moduleCatToCycles := by
   simp [isoOneCycles]
+  rfl
+
+lemma cyclesSuccIso_0_trans_eq :
+    cyclesSuccIso A 0 ≪≫ (LinearEquiv.kerLEquivOfCompEqComp _ _ <| by
+      simpa using dZero_comp_eq A).symm.toModuleIso = isoOneCycles A := by
+  ext : 1
+  rw [← Iso.inv_eq_inv]
+  apply (cancel_mono (HomologicalComplex.iCycles _ _)).1
+  simp only [CochainComplex.of_x, Nat.reduceAdd, Iso.trans_inv, LinearEquiv.toModuleIso_inv,
+    LinearEquiv.symm_symm, Category.assoc, cyclesSuccIso_inv_comp_iCycles,
+    isoOneCycles_inv_comp_iCycles, ModuleCat.of_coe]
   rfl
 
 /-- The 1st group homology of `A`, defined as the 1st homology of the complex of inhomogeneous
@@ -819,11 +867,28 @@ lemma isoTwoCycles_hom_comp_subtype :
   rw [cyclesMap_i, HomologicalComplex.cyclesIsoSc'_hom_iCycles_assoc]
 
 @[reassoc (attr := simp)]
+lemma isoTwoCycles_inv_comp_iCycles :
+    (isoTwoCycles A).inv ≫ iCycles A 2 =
+      ModuleCat.ofHom (twoCycles A).subtype ≫ (twoChainsLEquiv A).toModuleIso.inv := by
+  rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, isoTwoCycles_hom_comp_subtype]
+
+@[reassoc (attr := simp)]
 lemma toCycles_comp_isoTwoCycles_hom :
     toCycles A 3 2 ≫ (isoTwoCycles A).hom =
       (threeChainsLEquiv A).toModuleIso.hom ≫
         ModuleCat.ofHom (shortComplexH2 A).moduleCatToCycles := by
   simp [isoTwoCycles]
+  rfl
+
+lemma cyclesSuccIso_2_trans_eq :
+    cyclesSuccIso A 1 ≪≫ (LinearEquiv.kerLEquivOfCompEqComp _ _ <| by
+      simpa using dOne_comp_eq A).symm.toModuleIso = isoTwoCycles A := by
+  ext : 1
+  rw [← Iso.inv_eq_inv]
+  apply (cancel_mono (HomologicalComplex.iCycles _ _)).1
+  simp only [CochainComplex.of_x, Nat.reduceAdd, Iso.trans_inv, LinearEquiv.toModuleIso_inv,
+    LinearEquiv.symm_symm, Category.assoc, cyclesSuccIso_inv_comp_iCycles,
+    isoTwoCycles_inv_comp_iCycles, ModuleCat.of_coe]
   rfl
 
 /-- The 2nd group homology of `A`, defined as the 2nd homology of the complex of inhomogeneous

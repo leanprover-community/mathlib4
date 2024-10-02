@@ -111,6 +111,12 @@ lemma cochainsMap_id :
     cochainsMap A A (MonoidHom.id _) (Action.Hom.hom <| 𝟙 A) = 𝟙 (inhomogeneousCochains A) := by
   rfl
 
+@[simp]
+lemma cochainsMap_eq_compLeft {A B : Rep k G} (f : A ⟶ B) (i : ℕ) :
+    (cochainsMap A B (MonoidHom.id G) f.hom).f i = f.hom.compLeft _ := by
+  ext
+  rfl
+
 lemma cochainsMap_comp {k G H K : Type u} [CommRing k] [Group G] [Group H] [Group K]
     (A : Rep k K) (B : Rep k H) (C : Rep k G) (f : H →* K) (g : G →* H) (φ : A →ₗ[k] B)
     (ψ : B →ₗ[k] C) [IsPairMap A B f φ] [IsPairMap B C g ψ] :
@@ -387,6 +393,55 @@ theorem δ₀_apply (X : ShortComplex (Rep k G)) (H : ShortExact X)
     (mapShortExact X H).δ 0 1 rfl (groupCohomologyπ X.X₃ 0 <|
       (isoZeroCocycles X.X₃).inv ⟨z, hz⟩) = groupCohomologyπ X.X₁ 1
       ((isoOneCocycles X.X₁).inv ⟨x, δ₀_apply_aux H y _ hx⟩) := by
-  sorry
+  have h0z : (inhomogeneousCochains.d X.X₃ 0) ((zeroCochainsLEquiv X.X₃).symm z) = 0 := by
+    have := congr($((LinearEquiv.symm_comp_eq_comp_symm_iff _ _).2 (dZero_comp_eq X.X₃)) z)
+    simp_all [← dZero_ker_eq_invariants, ModuleCat.coe_of]
+  have h1x : (inhomogeneousCochains.d X.X₁ 1) ((oneCochainsLEquiv X.X₁).symm x) = 0 := by
+    have := congr($((LinearEquiv.symm_comp_eq_comp_symm_iff _ _).2 (dOne_comp_eq X.X₁)) x)
+    simp_all [δ₀_apply_aux H y x hx, ModuleCat.coe_of]
+  have := δ_apply X H 0 ((zeroCochainsLEquiv X.X₃).symm z) h0z
+    ((zeroCochainsLEquiv X.X₂).symm y) (hy ▸ rfl) ((oneCochainsLEquiv X.X₁).symm x) ?_
+  convert this
+  · rw [← cocyclesIso_0_trans_eq]
+    simp only [Nat.reduceAdd, Iso.trans_inv, LinearEquiv.toModuleIso_inv, ModuleCat.coe_comp,
+      Function.comp_apply, CochainComplex.of_x]
+    rfl
+  · rw [← cocyclesIso_1_trans_eq]
+    simp only [Nat.reduceAdd, Iso.trans_inv, LinearEquiv.toModuleIso_inv, ModuleCat.coe_comp,
+      Function.comp_apply, CochainComplex.of_x]
+    rfl
+  · have := (congr($((LinearEquiv.symm_comp_eq_comp_symm_iff _ _).2 (dZero_comp_eq X.X₂)) y)).symm
+    simp_all [ModuleCat.coe_of]
+    ext i
+    simp [← hx, oneCochainsLEquiv]
+
+theorem δ₁_apply (X : ShortComplex (Rep k G)) (H : ShortExact X)
+    (z : G → X.X₃) (hz : z ∈ oneCocycles X.X₃) (y : G → X.X₂) (hy : X.g.hom ∘ y = z)
+    (x : G × G → X.X₁) (hx : X.f.hom ∘ x = dOne X.X₂ y) :
+    (mapShortExact X H).δ 1 2 rfl (groupCohomologyπ X.X₃ 1 <|
+      (isoOneCocycles X.X₃).inv ⟨z, hz⟩) = groupCohomologyπ X.X₁ 2
+      ((isoTwoCocycles X.X₁).inv ⟨x, δ₁_apply_aux H y _ hx⟩) := by
+  have h1z : (inhomogeneousCochains.d X.X₃ 1) ((oneCochainsLEquiv X.X₃).symm z) = 0 := by
+    have := congr($((LinearEquiv.symm_comp_eq_comp_symm_iff _ _).2 (dOne_comp_eq X.X₃)) z)
+    simp_all [ModuleCat.coe_of, oneCocycles]
+  have h2x : (inhomogeneousCochains.d X.X₁ 2) ((twoCochainsLEquiv X.X₁).symm x) = 0 := by
+    have := congr($((LinearEquiv.symm_comp_eq_comp_symm_iff _ _).2 (dTwo_comp_eq X.X₁)) x)
+    simp_all [δ₁_apply_aux H y x hx, ModuleCat.coe_of]
+  have := δ_apply X H 1 ((oneCochainsLEquiv X.X₃).symm z) h1z
+    ((oneCochainsLEquiv X.X₂).symm y) (hy ▸ rfl) ((twoCochainsLEquiv X.X₁).symm x) ?_
+  convert this
+  · rw [← cocyclesIso_1_trans_eq]
+    simp only [Nat.reduceAdd, Iso.trans_inv, LinearEquiv.toModuleIso_inv, ModuleCat.coe_comp,
+      Function.comp_apply, CochainComplex.of_x]
+    rfl
+  · rw [← cocyclesIso_2_trans_eq]
+    simp only [Nat.reduceAdd, Iso.trans_inv, LinearEquiv.toModuleIso_inv, ModuleCat.coe_comp,
+      Function.comp_apply, CochainComplex.of_x]
+    rfl
+  · have := (congr($((LinearEquiv.symm_comp_eq_comp_symm_iff _ _).2 (dOne_comp_eq X.X₂)) y)).symm
+    simp_all [ModuleCat.coe_of]
+    ext i
+    simp [← hx, twoCochainsLEquiv]
+
 
 end groupCohomology

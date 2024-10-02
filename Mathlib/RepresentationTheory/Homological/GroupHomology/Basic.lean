@@ -362,24 +362,36 @@ abbrev cycles (n : ℕ) : ModuleCat k := (inhomogeneousChains A).cycles n
 
 open HomologicalComplex
 
-def cyclesIso (n : ℕ) :
+def cyclesSuccIso (n : ℕ) :
     cycles A (n + 1) ≅ ModuleCat.of k (LinearMap.ker (inhomogeneousChains.d A n)) :=
-  ShortComplex.moduleCatCyclesIso _ ≪≫ (LinearEquiv.ofEq _ _ <| by
-    show LinearMap.ker (dFrom (inhomogeneousChains A) _) = _
-    rw [dFrom_eq _ rfl, inhomogeneousChains.d_def]
-    simp only [ModuleCat.coe_of, ModuleCat.hom_def, ModuleCat.comp_def]
-    rw [LinearMap.ker_comp_of_ker_eq_bot]
-    exact LinearEquiv.ker (xNextIso _ rfl).symm.toLinearEquiv).toModuleIso
+  (inhomogeneousChains A).cyclesIsoSc' _ _ _ (by aesop) (by aesop)
+  ≪≫ ShortComplex.moduleCatCyclesIso _ ≪≫ (LinearEquiv.ofEq _ _ <| by simp).toModuleIso
 
-theorem forget₂_cyclesIso_inv_eq {n : ℕ} (x : (inhomogeneousChains A).X (n + 1))
-    (hx : inhomogeneousChains.d A n x = 0) :
-    ((cyclesIso A n).inv ⟨x, hx⟩)
-    = HomologicalComplex.cyclesMk (inhomogeneousChains A) x n
-      (ChainComplex.next_nat_succ _) (by simpa using hx) :=
-  ShortComplex.moduleCatCyclesIso_inv_apply _ _
+theorem cyclesSuccIso_inv_eq {n : ℕ} (x : LinearMap.ker (inhomogeneousChains.d A n)) :
+    (cyclesSuccIso A n).inv x
+    = HomologicalComplex.cyclesMk (inhomogeneousChains A) x.1 n
+      (ChainComplex.next_nat_succ _) (by simp) :=
+  congr(((inhomogeneousChains A).cyclesIsoSc' _ _ _ (by aesop) (by aesop)).inv
+    $(ShortComplex.moduleCatCyclesIso_inv_apply x.1 (by simp))).trans
+    ((inhomogeneousChains A).cyclesIsoSc'_inv_cyclesMk x.1 (ChainComplex.prev _ _)
+    (ChainComplex.next_nat_succ _) <| by aesop)
 
 abbrev iCycles (n : ℕ) : cycles A n ⟶ ModuleCat.of k ((Fin n → G) →₀ A) :=
   (inhomogeneousChains A).iCycles n
+
+@[elementwise (attr := simp), reassoc (attr := simp)]
+theorem cyclesSuccIso_inv_comp_iCycles (n : ℕ) :
+    (cyclesSuccIso A n).inv ≫ iCycles A (n + 1) = Submodule.subtype _ := by
+  simp only [cyclesSuccIso, shortComplexFunctor'_obj_X₂, CochainComplex.of_x,
+    shortComplexFunctor'_obj_X₃, shortComplexFunctor'_obj_g, Iso.trans_inv,
+    LinearEquiv.toModuleIso_inv, LinearEquiv.ofEq_symm, Category.assoc, cyclesIsoSc'_inv_iCycles,
+    ShortComplex.moduleCatCyclesIso_inv_iCycles]
+  rfl
+
+@[elementwise (attr := simp), reassoc (attr := simp)]
+theorem cyclesSuccIso_hom_comp_subtype :
+    (cyclesSuccIso A n).hom ≫ Submodule.subtype _ = iCycles _ _ := by
+  simp only [← Iso.eq_inv_comp, cyclesSuccIso_inv_comp_iCycles]
 
 abbrev toCycles (i j : ℕ) : ModuleCat.of k ((Fin i → G) →₀ A) ⟶ cycles A j :=
   (inhomogeneousChains A).toCycles i j

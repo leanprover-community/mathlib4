@@ -77,31 +77,14 @@ universe u
 variable {k G : Type u} [CommRing k]
 
 open CategoryTheory Limits
-namespace HomologicalComplex
+namespace ModuleCat
 
-theorem cyclesIsoSc'_cyclesMk {C : Type u} [Category C] [ConcreteCategory C] [HasForget₂ C Ab]
-    [Abelian C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology] {ι : Type*}
-    {c : ComplexShape ι} (K : HomologicalComplex C c) {i j k : ι} (x : (forget₂ C Ab).obj (K.X j))
-    (hi : c.prev j = i) (hk : c.next j = k) (hx : ((forget₂ C Ab).map (K.d j k)) x = 0) :
-    ((forget₂ C Ab).map (K.cyclesIsoSc' i j k hi hk).hom) (K.cyclesMk x k hk hx)
-      = (K.sc' i j k).cyclesMk x (by simp_all) := by
-  apply (AddCommGrp.mono_iff_injective ((forget₂ C Ab).map (K.sc' i j k).iCycles)).1 inferInstance
-  rw [(K.sc' i j k).i_cyclesMk x (by simp_all), ← Function.comp_apply (f := (forget₂ C Ab).map _),
-    ← AddCommGrp.coe_comp, ← Functor.map_comp]
-  simp
+variable {R : Type u} [Ring R] {M : Type*} [AddCommGroup M] [Module R M] (S : Submodule R M)
 
-theorem cyclesIsoSc'_inv_cyclesMk {C : Type u} [Category C] [ConcreteCategory C] [HasForget₂ C Ab]
-    [Abelian C] [(forget₂ C Ab).Additive] [(forget₂ C Ab).PreservesHomology] {ι : Type*}
-    {c : ComplexShape ι} (K : HomologicalComplex C c) {i j k : ι} (x : (forget₂ C Ab).obj (K.X j))
-    (hi : c.prev j = i) (hk : c.next j = k) (hx : ((forget₂ C Ab).map (K.d j k)) x = 0) :
-    ((forget₂ C Ab).map (K.cyclesIsoSc' i j k hi hk).inv) ((K.sc' i j k).cyclesMk x (by simp_all))
-      = K.cyclesMk x k hk hx := by
-  apply (AddCommGrp.mono_iff_injective ((forget₂ C Ab).map (K.iCycles j))).1 inferInstance
-  rw [K.i_cyclesMk x k hk hx, ← Function.comp_apply (f := (forget₂ C Ab).map _),
-    ← AddCommGrp.coe_comp, ← Functor.map_comp]
-  simpa using (K.sc' i j k).i_cyclesMk x (by simp_all)
+instance : Mono (ModuleCat.ofHom S.subtype) :=
+  (ModuleCat.mono_iff_injective _).2 fun _ _ h => Subtype.ext_iff.2 h
 
-end HomologicalComplex
+end ModuleCat
 namespace groupCohomology
 
 variable [Group G]
@@ -247,9 +230,8 @@ theorem cocyclesIso_inv_comp_iCocycles (n : ℕ) :
 
 @[elementwise (attr := simp), reassoc (attr := simp)]
 theorem cocyclesIso_hom_comp_subtype :
-    (cocyclesIso A n).hom ≫ ModuleCat.ofHom (Submodule.subtype _) = iCocycles _ _ := by
+    (cocyclesIso A n).hom ≫ Submodule.subtype _ = iCocycles _ _ := by
   simp only [← Iso.eq_inv_comp, cocyclesIso_inv_comp_iCocycles]
-  rfl
 
 /-- This is the map from `i`-cochains to `j`-cocycles induced by the differential in the complex of
 inhomogeneous cochains. -/

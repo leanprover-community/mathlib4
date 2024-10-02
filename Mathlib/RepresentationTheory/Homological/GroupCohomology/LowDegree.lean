@@ -691,6 +691,16 @@ open ShortComplex
 
 section H0
 
+def d0LEquivInvariants :
+    LinearMap.ker (inhomogeneousCochains.d A 0) ≃ₗ[k] invariants A.ρ :=
+  LinearEquiv.ofSubmodules (zeroCochainsLEquiv A) _ _ (by
+    have := (((LinearEquiv.symm_comp_eq_comp_symm_iff _ _).2 (dZero_comp_eq A))).symm
+    simp_all [Submodule.map_equiv_eq_comap_symm, ← LinearMap.ker_comp, dZero_ker_eq_invariants])
+
+@[simp] theorem subtype_comp_d0LEquivInvariants :
+    A.ρ.invariants.subtype ∘ₗ (d0LEquivInvariants A).toLinearMap
+      = (zeroCochainsLEquiv A).toLinearMap ∘ₗ Submodule.subtype _ := by ext; rfl
+
 @[simp]
 lemma dZero_comp_H0_subtype : dZero A ∘ₗ (H0 A).subtype = 0 := by
   ext ⟨x, hx⟩ g
@@ -734,6 +744,22 @@ lemma isoZeroCocycles_hom_comp_subtype :
       iCocycles A 0 ≫ (zeroCochainsLEquiv A).toModuleIso.hom := by
   dsimp [isoZeroCocycles]
   apply KernelFork.mapOfIsLimit_ι
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma isoZeroCocycles_inv_comp_iCocycles :
+    (isoZeroCocycles A).inv ≫ iCocycles A 0 =
+      ModuleCat.ofHom A.ρ.invariants.subtype ≫ (zeroCochainsLEquiv A).toModuleIso.inv := by
+  rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, isoZeroCocycles_hom_comp_subtype]
+
+theorem cocyclesIso_0_trans_eq :
+    cocyclesIso A 0 ≪≫ (d0LEquivInvariants A).toModuleIso = isoZeroCocycles A := by
+  ext : 1
+  rw [← Iso.inv_eq_inv]
+  apply (cancel_mono (HomologicalComplex.iCycles _ _)).1
+  simp only [CochainComplex.of_x, Nat.reduceAdd, Iso.trans_inv, LinearEquiv.toModuleIso_inv,
+    Category.assoc, cocyclesIso_inv_comp_iCocycles, isoZeroCocycles_inv_comp_iCocycles,
+    ModuleCat.of_coe]
+  rfl
 
 /-- The 0th group cohomology of `A`, defined as the 0th cohomology of the complex of inhomogeneous
 cochains, is isomorphic to the invariants of the representation on `A`. -/
@@ -789,6 +815,17 @@ lemma toCocycles_comp_isoOneCocycles_hom :
   simp [isoOneCocycles]
   rfl
 
+lemma cocyclesIso_1_trans_eq :
+    cocyclesIso A 1 ≪≫ (LinearEquiv.kerLEquivOfCompEqComp _ _ <| by
+      simpa using dOne_comp_eq A).symm.toModuleIso = isoOneCocycles A := by
+  ext : 1
+  rw [← Iso.inv_eq_inv]
+  apply (cancel_mono (HomologicalComplex.iCycles _ _)).1
+  simp only [CochainComplex.of_x, Nat.reduceAdd, Iso.trans_inv, LinearEquiv.toModuleIso_inv,
+    LinearEquiv.symm_symm, Category.assoc, cocyclesIso_inv_comp_iCocycles,
+    isoOneCocycles_inv_comp_iCocycles, ModuleCat.of_coe]
+  rfl
+
 /-- The 1st group cohomology of `A`, defined as the 1st cohomology of the complex of inhomogeneous
 cochains, is isomorphic to `oneCocycles A ⧸ oneCoboundaries A`, which is a simpler type. -/
 def isoH1 : groupCohomology A 1 ≅ ModuleCat.of k (H1 A) :=
@@ -833,11 +870,28 @@ lemma isoTwoCocycles_hom_comp_subtype :
   rw [cyclesMap_i, HomologicalComplex.cyclesIsoSc'_hom_iCycles_assoc]
 
 @[reassoc (attr := simp)]
+lemma isoTwoCocycles_inv_comp_iCocycles :
+    (isoTwoCocycles A).inv ≫ iCocycles A 2 =
+      ModuleCat.ofHom (twoCocycles A).subtype ≫ (twoCochainsLEquiv A).toModuleIso.inv := by
+  rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, isoTwoCocycles_hom_comp_subtype]
+
+@[reassoc (attr := simp)]
 lemma toCocycles_comp_isoTwoCocycles_hom :
     toCocycles A 1 2 ≫ (isoTwoCocycles A).hom =
       (oneCochainsLEquiv A).toModuleIso.hom ≫
         ModuleCat.ofHom (shortComplexH2 A).moduleCatToCycles := by
   simp [isoTwoCocycles]
+  rfl
+
+lemma cocyclesIso_2_trans_eq :
+    cocyclesIso A 2 ≪≫ (LinearEquiv.kerLEquivOfCompEqComp _ _ <| by
+      simpa using dTwo_comp_eq A).symm.toModuleIso = isoTwoCocycles A := by
+  ext : 1
+  rw [← Iso.inv_eq_inv]
+  apply (cancel_mono (HomologicalComplex.iCycles _ _)).1
+  simp only [CochainComplex.of_x, Nat.reduceAdd, Iso.trans_inv, LinearEquiv.toModuleIso_inv,
+    LinearEquiv.symm_symm, Category.assoc, cocyclesIso_inv_comp_iCocycles,
+    isoTwoCocycles_inv_comp_iCocycles, ModuleCat.of_coe]
   rfl
 
 /-- The 2nd group cohomology of `A`, defined as the 2nd cohomology of the complex of inhomogeneous
