@@ -231,7 +231,9 @@ theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v
     orthogonalProjection_mem_subspace_eq_self]
   have h₁ : orthogonalProjection (ℝ ∙ v)ᗮ v = 0 :=
     orthogonalProjection_orthogonalComplement_singleton_eq_zero v
+  -- Porting note: was innerSL _ and now just inner
   have h₂ : inner v w = (0 : ℝ) := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
+  -- Porting note: was innerSL _ and now just inner
   have h₃ : inner v v = (1 : ℝ) := by simp [real_inner_self_eq_norm_mul_norm, hv]
   rw [h₁, h₂, h₃]
   match_scalars
