@@ -166,7 +166,7 @@ instance Monoid.measurablePow (M : Type*) [Monoid M] [MeasurableSpace M] [Measur
     MeasurablePow M ℕ :=
   ⟨measurable_from_prod_countable fun n => by
       induction' n with n ih
-      · simp only [Nat.zero_eq, pow_zero, ← Pi.one_def, measurable_one]
+      · simp only [pow_zero, ← Pi.one_def, measurable_one]
       · simp only [pow_succ]
         exact ih.mul measurable_id⟩
 
@@ -588,7 +588,7 @@ instance AddMonoid.measurableSMul_nat₂ (M : Type*) [AddMonoid M] [MeasurableSp
     suffices Measurable fun p : M × ℕ => p.2 • p.1 by apply this.comp measurable_swap
     refine measurable_from_prod_countable fun n => ?_
     induction' n with n ih
-    · simp only [Nat.zero_eq, zero_smul, ← Pi.zero_def, measurable_zero]
+    · simp only [zero_smul, ← Pi.zero_def, measurable_zero]
     · simp only [succ_nsmul]
       exact ih.add measurable_id⟩
 
@@ -836,23 +836,23 @@ variable [MeasurableSpace α] [Mul α] [Div α] [Inv α]
 @[to_additive] -- See note [lower instance priority]
 instance (priority := 100) DiscreteMeasurableSpace.toMeasurableMul [DiscreteMeasurableSpace α] :
     MeasurableMul α where
-  measurable_const_mul _ := measurable_discrete _
-  measurable_mul_const _ := measurable_discrete _
+  measurable_const_mul _ := .of_discrete
+  measurable_mul_const _ := .of_discrete
 
 @[to_additive DiscreteMeasurableSpace.toMeasurableAdd₂] -- See note [lower instance priority]
 instance (priority := 100) DiscreteMeasurableSpace.toMeasurableMul₂
-    [DiscreteMeasurableSpace (α × α)] : MeasurableMul₂ α := ⟨measurable_discrete _⟩
+    [DiscreteMeasurableSpace (α × α)] : MeasurableMul₂ α := ⟨.of_discrete⟩
 
 @[to_additive] -- See note [lower instance priority]
 instance (priority := 100) DiscreteMeasurableSpace.toMeasurableInv [DiscreteMeasurableSpace α] :
-    MeasurableInv α := ⟨measurable_discrete _⟩
+    MeasurableInv α := ⟨.of_discrete⟩
 
 @[to_additive] -- See note [lower instance priority]
 instance (priority := 100) DiscreteMeasurableSpace.toMeasurableDiv [DiscreteMeasurableSpace α] :
     MeasurableDiv α where
-  measurable_const_div _ := measurable_discrete _
-  measurable_div_const _ := measurable_discrete _
+  measurable_const_div _ := .of_discrete
+  measurable_div_const _ := .of_discrete
 
 @[to_additive DiscreteMeasurableSpace.toMeasurableSub₂] -- See note [lower instance priority]
 instance (priority := 100) DiscreteMeasurableSpace.toMeasurableDiv₂
-    [DiscreteMeasurableSpace (α × α)] : MeasurableDiv₂ α := ⟨measurable_discrete _⟩
+    [DiscreteMeasurableSpace (α × α)] : MeasurableDiv₂ α := ⟨.of_discrete⟩

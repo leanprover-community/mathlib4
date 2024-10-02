@@ -60,7 +60,7 @@ def ofTendstoOfBoundedRange {α : Type*} {l : Filter α} [l.NeBot] (f : E' → F
     (g : α → E' →SL[σ₁₂] F) (hf : Tendsto (fun a x => g a x) l (𝓝 f))
     (hg : IsBounded (Set.range g)) : E' →SL[σ₁₂] F :=
   ofMemClosureImageCoeBounded f hg <| mem_closure_of_tendsto hf <|
-    eventually_of_forall fun _ => mem_image_of_mem _ <| Set.mem_range_self _
+    Eventually.of_forall fun _ => mem_image_of_mem _ <| Set.mem_range_self _
 
 /-- If a Cauchy sequence of continuous linear map converges to a continuous linear map pointwise,
 then it converges to the same map in norm. This lemma is used to prove that the space of continuous
@@ -184,13 +184,13 @@ section
 variable (h_e : UniformInducing e)
 
 /-- Extension of a continuous linear map `f : E →SL[σ₁₂] F`, with `E` a normed space and `F` a
-complete normed space, along a uniform and dense embedding `e : E →L[𝕜] Fₗ`.  -/
+complete normed space, along a uniform and dense embedding `e : E →L[𝕜] Fₗ`. -/
 def extend : Fₗ →SL[σ₁₂] F :=
   -- extension of `f` is continuous
   have cont := (uniformContinuous_uniformly_extend h_e h_dense f.uniformContinuous).continuous
   -- extension of `f` agrees with `f` on the domain of the embedding `e`
   have eq := uniformly_extend_of_ind h_e h_dense f.uniformContinuous
-  { toFun := (h_e.denseInducing h_dense).extend f
+  { toFun := (h_e.isDenseInducing h_dense).extend f
     map_add' := by
       refine h_dense.induction_on₂ ?_ ?_
       · exact isClosed_eq (cont.comp continuous_add)
@@ -208,10 +208,10 @@ def extend : Fₗ →SL[σ₁₂] F :=
         exact ContinuousLinearMap.map_smulₛₗ _ _ _
     cont }
 
--- Porting note: previously `(h_e.denseInducing h_dense)` was inferred.
+-- Porting note: previously `(h_e.isDenseInducing h_dense)` was inferred.
 @[simp]
 theorem extend_eq (x : E) : extend f e h_dense h_e (e x) = f x :=
-  DenseInducing.extend_eq (h_e.denseInducing h_dense) f.cont _
+  IsDenseInducing.extend_eq (h_e.isDenseInducing h_dense) f.cont _
 
 theorem extend_unique (g : Fₗ →SL[σ₁₂] F) (H : g.comp e = f) : extend f e h_dense h_e = g :=
   ContinuousLinearMap.coeFn_injective <|

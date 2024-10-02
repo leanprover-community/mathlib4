@@ -390,6 +390,12 @@ lemma integral_toReal_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ 
     ∫ x, (μ.rnDeriv ν x).toReal ∂ν = (μ Set.univ).toReal := by
   rw [← integral_univ, setIntegral_toReal_rnDeriv hμν Set.univ]
 
+lemma integral_toReal_rnDeriv' [IsFiniteMeasure μ] [SigmaFinite ν] :
+    ∫ x, (μ.rnDeriv ν x).toReal ∂ν = (μ Set.univ).toReal - (μ.singularPart ν Set.univ).toReal := by
+  rw [← ENNReal.toReal_sub_of_le (μ.singularPart_le ν Set.univ) (measure_ne_top _ _),
+    ← Measure.sub_apply .univ (Measure.singularPart_le μ ν), Measure.measure_sub_singularPart,
+    ← Measure.setIntegral_toReal_rnDeriv_eq_withDensity, integral_univ]
+
 end integral
 
 lemma rnDeriv_mul_rnDeriv {κ : Measure α} [SigmaFinite μ] [SigmaFinite ν] [SigmaFinite κ]
@@ -399,6 +405,16 @@ lemma rnDeriv_mul_rnDeriv {κ : Measure α} [SigmaFinite μ] [SigmaFinite ν] [S
   · exact (Measure.measurable_rnDeriv _ _).aemeasurable
   · exact rnDeriv_ne_top _ _
   · rw [Measure.withDensity_rnDeriv_eq _ _ hμν]
+
+lemma rnDeriv_mul_rnDeriv' {κ : Measure α} [SigmaFinite μ] [SigmaFinite ν] [SigmaFinite κ]
+    (hνκ : ν ≪ κ) :
+    μ.rnDeriv ν * ν.rnDeriv κ =ᵐ[ν] μ.rnDeriv κ := by
+  obtain ⟨h_meas, h_sing, hμν⟩ := Measure.haveLebesgueDecomposition_spec μ ν
+  filter_upwards [hνκ <| Measure.rnDeriv_add' (μ.singularPart ν) (ν.withDensity (μ.rnDeriv ν)) κ,
+    hνκ <| Measure.rnDeriv_withDensity_left_of_absolutelyContinuous hνκ h_meas.aemeasurable,
+    Measure.rnDeriv_eq_zero_of_mutuallySingular h_sing hνκ] with x hx1 hx2 hx3
+  nth_rw 2 [hμν]
+  rw [hx1, Pi.add_apply, hx2, Pi.mul_apply, hx3, Pi.zero_apply, zero_add]
 
 lemma rnDeriv_le_one_of_le (hμν : μ ≤ ν) [SigmaFinite ν] : μ.rnDeriv ν ≤ᵐ[ν] 1 := by
   refine ae_le_of_forall_setLIntegral_le_of_sigmaFinite (μ.measurable_rnDeriv ν) fun s _ _ ↦ ?_
@@ -552,6 +568,11 @@ theorem integral_rnDeriv_smul [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ 
   · rw [integral_undef hf, integral_undef]
     contrapose! hf
     exact (integrable_rnDeriv_smul_iff hμν).mp hf
+
+lemma setIntegral_rnDeriv_smul [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν)
+    [SigmaFinite μ] {f : α → E} {s : Set α} (hs : MeasurableSet s) :
+    ∫ x in s, (μ.rnDeriv ν x).toReal • f x ∂ν = ∫ x in s, f x ∂μ := by
+  simp_rw [← integral_indicator hs, Set.indicator_smul, integral_rnDeriv_smul hμν]
 
 end IntegralRNDerivMul
 

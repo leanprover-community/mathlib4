@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Patrick Massot
 -/
 import Mathlib.Algebra.GroupWithZero.Indicator
+import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Topology.Separation
 
@@ -212,15 +213,8 @@ theorem comp₂_left (hf : HasCompactMulSupport f)
     (hf₂ : HasCompactMulSupport f₂) (hm : m 1 1 = 1) :
     HasCompactMulSupport fun x => m (f x) (f₂ x) := by
   rw [hasCompactMulSupport_iff_eventuallyEq] at hf hf₂ ⊢
-  #adaptation_note /-- `nightly-2024-03-11`
-  If we *either* (1) remove the type annotations on the
-  binders in the following `fun` or (2) revert `simp only` to `simp_rw`, `to_additive` fails
-  because an `OfNat.ofNat 1` is not replaced with `0`. Notably, as of this nightly, what used to
-  look like `OfNat.ofNat (nat_lit 1) x` in the proof term now looks like
-  `OfNat.ofNat (OfNat.ofNat (α := ℕ) (nat_lit 1)) x`, and this seems to trip up `to_additive`.
-  -/
-  filter_upwards [hf, hf₂] using fun x (hx : f x = (1 : α → β) x) (hx₂ : f₂ x = (1 : α → γ) x) => by
-    simp only [hx, hx₂, Pi.one_apply, hm]
+  filter_upwards [hf, hf₂] with x hx hx₂
+  simp_rw [hx, hx₂, Pi.one_apply, hm]
 
 @[to_additive]
 lemma isCompact_preimage [TopologicalSpace β]
@@ -306,7 +300,22 @@ variable {f f' : α → β} {x : α}
 theorem HasCompactMulSupport.mul (hf : HasCompactMulSupport f) (hf' : HasCompactMulSupport f') :
     HasCompactMulSupport (f * f') := hf.comp₂_left hf' (mul_one 1)
 
+@[to_additive, simp]
+protected lemma HasCompactMulSupport.one {α β : Type*} [TopologicalSpace α] [One β] :
+    HasCompactMulSupport (1 : α → β) := by
+  simp [HasCompactMulSupport, mulTSupport]
+
 end Monoid
+
+section DivisionMonoid
+
+@[to_additive]
+protected lemma HasCompactMulSupport.inv' {α β : Type*} [TopologicalSpace α] [DivisionMonoid β]
+    {f : α → β} (hf : HasCompactMulSupport f) :
+    HasCompactMulSupport (f⁻¹) := by
+  simpa only [HasCompactMulSupport, mulTSupport, mulSupport_inv'] using hf
+
+end DivisionMonoid
 
 section SMulZeroClass
 

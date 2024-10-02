@@ -155,7 +155,7 @@ theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : Higher
         omega
       · intro h
         simp only [Fin.pred, Fin.subNat, Fin.ext_iff, Nat.succ_add_sub_one,
-          Fin.val_zero, add_eq_zero, false_and] at h
+          Fin.val_zero, add_eq_zero, false_and, reduceCtorEq] at h
       · simp only [Fin.pred, Fin.subNat, Nat.pred_eq_sub_one, Nat.succ_add_sub_one]
         omega
 

@@ -1,12 +1,13 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Johan Commelin
+Authors: Kim Morrison, Johan Commelin
 -/
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.LinearAlgebra.TensorProduct.Tower
+import Mathlib.GroupTheory.MonoidLocalization.Basic
+import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.RingTheory.Adjoin.Basic
-import Mathlib.LinearAlgebra.DirectSum.Finsupp
+import Mathlib.RingTheory.Finiteness
 
 /-!
 # The tensor product of R-algebras
@@ -33,6 +34,8 @@ multiplication is characterized by `(a₁ ⊗ₜ b₁) * (a₂ ⊗ₜ b₂) = (a
 * [C. Kassel, *Quantum Groups* (§II.4)][Kassel1995]
 
 -/
+
+assert_not_exists Equiv.Perm.cycleType
 
 suppress_compilation
 
@@ -462,7 +465,7 @@ theorem ext ⦃f g : (A ⊗[R] B) →ₐ[S] C⦄
   ext a b
   have := congr_arg₂ HMul.hMul (AlgHom.congr_fun ha a) (AlgHom.congr_fun hb b)
   dsimp at *
-  rwa [← _root_.map_mul, ← _root_.map_mul, tmul_mul_tmul, one_mul, mul_one] at this
+  rwa [← map_mul, ← map_mul, tmul_mul_tmul, one_mul, mul_one] at this
 
 theorem ext' {g h : A ⊗[R] B →ₐ[S] C} (H : ∀ a b, g (a ⊗ₜ b) = h (a ⊗ₜ b)) : g = h :=
   ext (AlgHom.ext fun _ => H _ _) (AlgHom.ext fun _ => H _ _)
@@ -693,8 +696,8 @@ def lift (f : A →ₐ[S] C) (g : B →ₐ[R] C) (hfg : ∀ x y, Commute (f x) (
           map_smul' := fun c g => LinearMap.ext fun x => rfl }
       LinearMap.flip <| (restr ∘ₗ LinearMap.mul S C ∘ₗ f.toLinearMap).flip ∘ₗ g)
     (fun a₁ a₂ b₁ b₂ => show f (a₁ * a₂) * g (b₁ * b₂) = f a₁ * g b₁ * (f a₂ * g b₂) by
-      rw [_root_.map_mul, _root_.map_mul, (hfg a₂ b₁).mul_mul_mul_comm])
-    (show f 1 * g 1 = 1 by rw [_root_.map_one, _root_.map_one, one_mul])
+      rw [map_mul, map_mul, (hfg a₂ b₁).mul_mul_mul_comm])
+    (show f 1 * g 1 = 1 by rw [map_one, map_one, one_mul])
 
 @[simp]
 theorem lift_tmul (f : A →ₐ[S] C) (g : B →ₐ[R] C) (hfg : ∀ x y, Commute (f x) (g y))
@@ -779,7 +782,7 @@ Note that if `A` is commutative this can be instantiated with `S = A`.
 -/
 protected nonrec def rid : A ⊗[R] R ≃ₐ[S] A :=
   algEquivOfLinearEquivTensorProduct (AlgebraTensorModule.rid R S A)
-    (fun a₁ a₂ r₁ r₂ => smul_mul_smul r₁ r₂ a₁ a₂ |>.symm)
+    (fun a₁ a₂ r₁ r₂ => smul_mul_smul_comm r₁ a₁ r₂ a₂ |>.symm)
     (one_smul R _)
 
 @[simp] theorem rid_toLinearEquiv :
@@ -1212,11 +1215,6 @@ theorem Subalgebra.finite_sup {K L : Type*} [CommSemiring K] [CommSemiring L] [A
     Module.Finite K ↥(E1 ⊔ E2) := by
   rw [← E1.range_val, ← E2.range_val, ← Algebra.TensorProduct.productMap_range]
   exact Module.Finite.range (Algebra.TensorProduct.productMap E1.val E2.val).toLinearMap
-
-@[deprecated Subalgebra.finite_sup (since := "2024-04-11")]
-theorem Subalgebra.finiteDimensional_sup {K L : Type*} [Field K] [CommRing L] [Algebra K L]
-    (E1 E2 : Subalgebra K L) [FiniteDimensional K E1] [FiniteDimensional K E2] :
-    FiniteDimensional K (E1 ⊔ E2 : Subalgebra K L) := Subalgebra.finite_sup E1 E2
 
 namespace TensorProduct.Algebra
 

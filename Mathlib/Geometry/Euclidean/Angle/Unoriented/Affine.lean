@@ -134,7 +134,7 @@ nonrec theorem angle_le_pi (p1 p2 p3 : P) : ∠ p1 p2 p3 ≤ π :=
 @[simp] lemma angle_self_right (p₀ p : P) : ∠ p p₀ p₀ = π / 2 := by rw [angle_comm, angle_self_left]
 
 /-- The angle ∠ABA at a point is `0`, unless `A = B`. -/
-theorem angle_self_of_ne (h : p ≠ p₀) : ∠ p p₀ p = 0 := angle_self $ vsub_ne_zero.2 h
+theorem angle_self_of_ne (h : p ≠ p₀) : ∠ p p₀ p = 0 := angle_self <| vsub_ne_zero.2 h
 
 @[deprecated (since := "2024-02-14")] alias angle_eq_left := angle_self_left
 @[deprecated (since := "2024-02-14")] alias angle_eq_right := angle_self_right

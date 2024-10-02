@@ -640,8 +640,7 @@ theorem map_eq_zero_iff {x : E} : e x = 0 ↔ x = 0 :=
   e.toLinearEquiv.map_eq_zero_iff
 
 @[simp]
-theorem symm_symm : e.symm.symm = e :=
-  ext fun _ => rfl
+theorem symm_symm : e.symm.symm = e := rfl
 
 @[simp]
 theorem toLinearEquiv_symm : e.toLinearEquiv.symm = e.symm.toLinearEquiv :=

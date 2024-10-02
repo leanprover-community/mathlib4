@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
+Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.MonoidAlgebra.Degree
 import Mathlib.Algebra.Polynomial.Coeff
@@ -236,6 +236,12 @@ theorem natDegree_natCast (n : ℕ) : natDegree (n : R[X]) = 0 := by
 
 @[deprecated (since := "2024-04-17")]
 alias natDegree_nat_cast := natDegree_natCast
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem natDegree_ofNat (n : ℕ) [Nat.AtLeastTwo n] :
+    natDegree (no_index (OfNat.ofNat n : R[X])) = 0 :=
+  natDegree_natCast _
 
 theorem degree_natCast_le (n : ℕ) : degree (n : R[X]) ≤ 0 := degree_le_of_natDegree_le (by simp)
 
@@ -614,13 +620,21 @@ theorem degree_add_eq_left_of_degree_lt (h : degree q < degree p) : degree (p + 
 theorem degree_add_eq_right_of_degree_lt (h : degree p < degree q) : degree (p + q) = degree q := by
   rw [add_comm, degree_add_eq_left_of_degree_lt h]
 
+theorem natDegree_add_eq_left_of_degree_lt (h : degree q < degree p) :
+    natDegree (p + q) = natDegree p :=
+  natDegree_eq_of_degree_eq (degree_add_eq_left_of_degree_lt h)
+
 theorem natDegree_add_eq_left_of_natDegree_lt (h : natDegree q < natDegree p) :
     natDegree (p + q) = natDegree p :=
-  natDegree_eq_of_degree_eq (degree_add_eq_left_of_degree_lt (degree_lt_degree h))
+  natDegree_add_eq_left_of_degree_lt (degree_lt_degree h)
+
+theorem natDegree_add_eq_right_of_degree_lt (h : degree p < degree q) :
+    natDegree (p + q) = natDegree q :=
+  natDegree_eq_of_degree_eq (degree_add_eq_right_of_degree_lt h)
 
 theorem natDegree_add_eq_right_of_natDegree_lt (h : natDegree p < natDegree q) :
     natDegree (p + q) = natDegree q :=
-  natDegree_eq_of_degree_eq (degree_add_eq_right_of_degree_lt (degree_lt_degree h))
+  natDegree_add_eq_right_of_degree_lt (degree_lt_degree h)
 
 theorem degree_add_C (hp : 0 < degree p) : degree (p + C a) = degree p :=
   add_comm (C a) p ▸ degree_add_eq_right_of_degree_lt <| lt_of_le_of_lt degree_C_le hp
@@ -945,11 +959,11 @@ theorem natDegree_mul_le_of_le (hp : natDegree p ≤ m) (hg : natDegree q ≤ n)
 natDegree_mul_le.trans <| add_le_add ‹_› ‹_›
 
 theorem natDegree_pow_le {p : R[X]} {n : ℕ} : (p ^ n).natDegree ≤ n * p.natDegree := by
-  induction' n with i hi
-  · simp
-  · rw [pow_succ, Nat.succ_mul]
-    apply le_trans natDegree_mul_le
-    exact add_le_add_right hi _
+  induction n with
+  | zero => simp
+  | succ i hi =>
+    rw [pow_succ, Nat.succ_mul]
+    apply le_trans natDegree_mul_le (add_le_add_right hi _)
 
 theorem natDegree_pow_le_of_le (n : ℕ) (hp : natDegree p ≤ m) :
     natDegree (p ^ n) ≤ n * m :=
@@ -958,9 +972,10 @@ theorem natDegree_pow_le_of_le (n : ℕ) (hp : natDegree p ≤ m) :
 @[simp]
 theorem coeff_pow_mul_natDegree (p : R[X]) (n : ℕ) :
     (p ^ n).coeff (n * p.natDegree) = p.leadingCoeff ^ n := by
-  induction' n with i hi
-  · simp
-  · rw [pow_succ, pow_succ, Nat.succ_mul]
+  induction n with
+  | zero => simp
+  | succ i hi =>
+    rw [pow_succ, pow_succ, Nat.succ_mul]
     by_cases hp1 : p.leadingCoeff ^ i = 0
     · rw [hp1, zero_mul]
       by_cases hp2 : p ^ i = 0

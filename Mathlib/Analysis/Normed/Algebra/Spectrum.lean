@@ -272,7 +272,7 @@ variable (𝕜)
 /-- In a Banach algebra `A` over a nontrivially normed field `𝕜`, for any `a : A` the
 power series with coefficients `a ^ n` represents the function `(1 - z • a)⁻¹` in a disk of
 radius `‖a‖₊⁻¹`. -/
-theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [CompleteSpace A] (a : A) :
+theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [HasSummableGeomSeries A] (a : A) :
     HasFPowerSeriesOnBall (fun z : 𝕜 => Ring.inverse (1 - z • a))
       (fun n => ContinuousMultilinearMap.mkPiRing 𝕜 (Fin n) (a ^ n)) 0 ‖a‖₊⁻¹ :=
   { r_le := by
@@ -280,7 +280,7 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [CompleteSpace A] (a : A) :
         le_radius_of_bound_nnreal _ (max 1 ‖(1 : A)‖₊) fun n => ?_
       rw [← norm_toNNReal, norm_mkPiRing, norm_toNNReal]
       cases' n with n
-      · simp only [Nat.zero_eq, le_refl, mul_one, or_true_iff, le_max_iff, pow_zero]
+      · simp only [le_refl, mul_one, or_true, le_max_iff, pow_zero]
       · refine
           le_trans (le_trans (mul_le_mul_right' (nnnorm_pow_le' a n.succ_pos) (r ^ n.succ)) ?_)
             (le_max_left _ _)
@@ -297,7 +297,7 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [CompleteSpace A] (a : A) :
             simpa only [← coe_inv h, mem_ball_zero_iff, Metric.emetric_ball_nnreal] using hy
           rwa [← coe_nnnorm, ← Real.lt_toNNReal_iff_coe_lt, Real.toNNReal_one, nnnorm_smul,
             ← NNReal.lt_inv_iff_mul_lt h]
-      simpa [← smul_pow, (NormedRing.summable_geometric_of_norm_lt_one _ norm_lt).hasSum_iff] using
+      simpa [← smul_pow, (summable_geometric_of_norm_lt_one norm_lt).hasSum_iff] using
         (NormedRing.inverse_one_sub _ norm_lt).symm }
 
 variable {𝕜}
@@ -573,11 +573,14 @@ section BoundarySpectrum
 
 local notation "σ" => spectrum
 
-variable {𝕜 A SA : Type*} [NormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
-variable [SetLike SA A] [SubringClass SA A] [instSMulMem : SMulMemClass SA 𝕜 A]
-variable (S : SA) [hS : IsClosed (S : Set A)] (x : S)
+variable {𝕜 A SA : Type*} [NormedRing A] [CompleteSpace A] [SetLike SA A] [SubringClass SA A]
 
-open Topology Filter
+open Topology Filter Set
+
+section NormedField
+
+variable [NormedField 𝕜] [NormedAlgebra 𝕜 A] [instSMulMem : SMulMemClass SA 𝕜 A]
+variable (S : SA) [hS : IsClosed (S : Set A)] (x : S)
 
 open SubalgebraClass in
 include instSMulMem in
@@ -596,15 +599,13 @@ lemma _root_.Subalgebra.isUnit_of_isUnit_val_of_eventually {l : Filter S} {a : S
     all_goals ext; simp
   apply hS.mem_of_tendsto hla₂
   rw [Filter.eventually_map]
-  apply hl.mp <| eventually_of_forall fun x hx ↦ ?_
+  apply hl.mono fun x hx ↦ ?_
   suffices Ring.inverse (val S x) = (val S ↑hx.unit⁻¹) from this ▸ Subtype.property _
   rw [← (hx.map (val S)).unit_spec, Ring.inverse_unit (hx.map (val S)).unit, val]
   apply Units.mul_eq_one_iff_inv_eq.mp
   simpa [-IsUnit.mul_val_inv] using congr(($hx.mul_val_inv : A))
 
-open Set
-
-/-- If `S` is a closed subalgebra of a Banach algebra `A`, then for any
+/-- If `S : Subalgebra 𝕜 A` is a closed subalgebra of a Banach algebra `A`, then for any
 `x : S`, the boundary of the spectrum of `x` relative to `S` is a subset of the spectrum of
 `↑x : A` relative to `A`. -/
 lemma _root_.Subalgebra.frontier_spectrum : frontier (σ 𝕜 x) ⊆ σ 𝕜 (x : A) := by
@@ -676,6 +677,25 @@ lemma Subalgebra.spectrum_isBounded_connectedComponentIn {z : 𝕜} (hz : z ∈ 
     rw [spectrum_sUnion_connectedComponentIn S]
     exact subset_biUnion_of_mem (mem_diff_of_mem hz hz') |>.trans subset_union_right
 
+end NormedField
+
+variable [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 A] [SMulMemClass SA 𝕜 A]
+variable (S : SA) [hS : IsClosed (S : Set A)] (x : S)
+
+/-- Let `S` be a closed subalgebra of a Banach algebra `A`. If for `x : S` the complement of the
+spectrum of `↑x : A` is connected, then `spectrum 𝕜 x = spectrum 𝕜 (x : A)`. -/
+lemma Subalgebra.spectrum_eq_of_isPreconnected_compl (h : IsPreconnected (σ 𝕜 (x : A))ᶜ) :
+    σ 𝕜 x = σ 𝕜 (x : A) := by
+  nontriviality A
+  suffices σ 𝕜 x \ σ 𝕜 (x : A) = ∅ by
+    rw [spectrum_sUnion_connectedComponentIn, this]
+    simp
+  refine eq_empty_of_forall_not_mem fun z hz ↦ NormedSpace.unbounded_univ 𝕜 𝕜 ?_
+  obtain ⟨hz, hz'⟩ := mem_diff _ |>.mp hz
+  have := (spectrum.isBounded (x : A)).union <|
+    h.connectedComponentIn hz' ▸ spectrum_isBounded_connectedComponentIn S x hz
+  simpa
+
 end BoundarySpectrum
 
 namespace SpectrumRestricts
@@ -719,6 +739,26 @@ lemma real_iff [Algebra ℂ A] {a : A} :
   · obtain ⟨x, -, rfl⟩ := h.algebraMap_image.symm ▸ hx
     simp
   · exact .of_subset_range_algebraMap Complex.ofReal_re fun x hx ↦ ⟨x.re, (h x hx).symm⟩
+
+lemma nnreal_le_iff [Algebra ℝ A] {a : A}
+    (ha : SpectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
+    (∀ x ∈ spectrum ℝ≥0 a, r ≤ x) ↔ ∀ x ∈ spectrum ℝ a, r ≤ x := by
+  simp [← ha.algebraMap_image]
+
+lemma nnreal_lt_iff [Algebra ℝ A] {a : A}
+    (ha : SpectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
+    (∀ x ∈ spectrum ℝ≥0 a, r < x) ↔ ∀ x ∈ spectrum ℝ a, r < x := by
+  simp [← ha.algebraMap_image]
+
+lemma le_nnreal_iff [Algebra ℝ A] {a : A}
+    (ha : SpectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
+    (∀ x ∈ spectrum ℝ≥0 a, x ≤ r) ↔ ∀ x ∈ spectrum ℝ a, x ≤ r := by
+  simp [← ha.algebraMap_image]
+
+lemma lt_nnreal_iff [Algebra ℝ A] {a : A}
+    (ha : SpectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
+    (∀ x ∈ spectrum ℝ≥0 a, x < r) ↔ ∀ x ∈ spectrum ℝ a, x < r := by
+  simp [← ha.algebraMap_image]
 
 lemma nnreal_iff_spectralRadius_le [Algebra ℝ A] {a : A} {t : ℝ≥0} (ht : spectralRadius ℝ a ≤ t) :
     SpectrumRestricts a ContinuousMap.realToNNReal ↔
@@ -796,6 +836,16 @@ lemma real_iff [Module ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] {a
     QuasispectrumRestricts a Complex.reCLM ↔ ∀ x ∈ σₙ ℂ a, x = x.re := by
   rw [quasispectrumRestricts_iff_spectrumRestricts_inr,
     Unitization.quasispectrum_eq_spectrum_inr' _ ℂ, SpectrumRestricts.real_iff]
+
+lemma le_nnreal_iff [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {a : A}
+    (ha : QuasispectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
+    (∀ x ∈ quasispectrum ℝ≥0 a, x ≤ r) ↔ ∀ x ∈ quasispectrum ℝ a, x ≤ r := by
+  simp [← ha.algebraMap_image]
+
+lemma lt_nnreal_iff [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {a : A}
+    (ha : QuasispectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
+    (∀ x ∈ quasispectrum ℝ≥0 a, x < r) ↔ ∀ x ∈ quasispectrum ℝ a, x < r := by
+  simp [← ha.algebraMap_image]
 
 end QuasispectrumRestricts
 
