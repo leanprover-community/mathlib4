@@ -191,8 +191,8 @@ theorem mem_of_self : m ∈ of m := List.mem_singleton_self _
 @[to_additive (attr := simp)]
 theorem mem_mul {a b : FreeMonoid α} : m ∈ (a * b) ↔ m ∈ a ∨ m ∈ b := List.mem_append
 
-@[to_additive]
-theorem mem_symbols [DecidableEq α] {a : FreeMonoid α}: m ∈ FreeMonoid.symbols a ↔ m ∈ a :=
+@[to_additive (attr := simp)]
+theorem mem_symbols [DecidableEq α] {a : FreeMonoid α}: m ∈ symbols a ↔ m ∈ a :=
   List.mem_toFinset
 
 end Mem
