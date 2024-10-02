@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
 import Mathlib.Data.ENNReal.Basic
-import Mathlib.Topology.ContinuousFunction.Bounded
+import Mathlib.Topology.ContinuousMap.Bounded
 import Mathlib.Topology.MetricSpace.Thickening
 
 /-!
