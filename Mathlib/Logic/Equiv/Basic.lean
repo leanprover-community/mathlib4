@@ -1580,8 +1580,6 @@ namespace Equiv
 
 section
 
-variable (P : α → Sort w) (e : α ≃ β)
-
 /-- Transport dependent functions through an equivalence of the base space.
 -/
 @[simps apply, simps (config := .lemmasOnly) symm_apply]

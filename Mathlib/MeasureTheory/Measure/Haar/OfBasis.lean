@@ -290,7 +290,18 @@ end Fintype
 /-- A finite dimensional inner product space has a canonical measure, the Lebesgue measure giving
 volume `1` to the parallelepiped spanned by any orthonormal basis. We define the measure using
 some arbitrary choice of orthonormal basis. The fact that it works with any orthonormal basis
-is proved in `orthonormalBasis.volume_parallelepiped`. -/
+is proved in `orthonormalBasis.volume_parallelepiped`.
+
+This instance creates:
+
+- a potential non-defeq diamond with the natural instance for `MeasureSpace (ULift E)`,
+  which does not exist in Mathlib at the moment;
+
+- a diamond with the existing instance `MeasureTheory.Measure.instMeasureSpacePUnit`.
+
+However, we've decided not to refactor until one of these diamonds starts creating issues, see
+https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Hausdorff.20measure.20normalisation
+-/
 instance (priority := 100) measureSpaceOfInnerProductSpace [NormedAddCommGroup E]
     [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E] :
     MeasureSpace E where volume := (stdOrthonormalBasis ℝ E).toBasis.addHaar

@@ -546,6 +546,12 @@ theorem coe_of (R : Type u) [CommRing R] : (CommRingCat.of R : Type u) = R :=
 instance hasForgetToRingCat : HasForget₂ CommRingCat RingCat :=
   BundledHom.forget₂ _ _
 
+@[simp] lemma forgetToRingCat_obj (A : CommRingCat.{u}) :
+    ((forget₂ _ RingCat).obj A : Type _) = A := rfl
+
+@[simp] lemma forgetToRingCat_map_apply {A B : CommRingCat.{u}} (f : A ⟶ B) (a : A) :
+    DFunLike.coe (α := A) (β := fun _ ↦ B) ((forget₂ _ RingCat).map f) a = f a := rfl
+
 /-- The forgetful functor from commutative rings to (multiplicative) commutative monoids. -/
 instance hasForgetToCommSemiRingCat : HasForget₂ CommRingCat CommSemiRingCat :=
   HasForget₂.mk' (fun R : CommRingCat => CommSemiRingCat.of R) (fun R => rfl)
