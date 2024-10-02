@@ -106,10 +106,10 @@ theorem _root_.Continuous.inner_ {f g : ℝ → E} (hf : Continuous f) (hg : Con
 
 theorem inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) := by
   simp only [inner_, normSq_apply, ofNat_re, ofNat_im, map_sub, map_add, map_zero, map_mul,
-    ofReal_re, ofReal_im, mul_re, inv_re,  mul_im, I_re, inv_im]
+    ofReal_re, ofReal_im, mul_re, inv_re, mul_im, I_re, inv_im]
+  have h₁ : ‖x - x‖ = 0 := by simp
   have h₂ : ‖x + x‖ = 2 * ‖x‖ := by rw [← two_smul 𝕜, norm_smul, RCLike.norm_two]
-  have h₃ : ‖x - x‖ = 0 := by simp
-  rw [h₂, h₃]
+  rw [h₁, h₂]
   ring
 
 theorem inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y := by
@@ -118,11 +118,7 @@ theorem inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y :=
   by_cases hI : (I : 𝕜) = 0
   · simp only [hI, neg_zero, zero_mul]
   have hI' := I_mul_I_of_nonzero hI
-  -- Porting note: this replaces `norm_I_of_ne_zero` which does not exist in Lean 4
-  have : ‖(I : 𝕜)‖ = 1 := by
-    rw [← mul_self_inj_of_nonneg (norm_nonneg I) zero_le_one, one_mul, ← norm_mul,
-      hI', norm_neg, norm_one]
-  have I_smul (v : E) : ‖(I:𝕜) • v‖ = ‖v‖ := by rw [norm_smul, this, one_mul]
+  have I_smul (v : E) : ‖(I : 𝕜) • v‖ = ‖v‖ := by rw [norm_smul, norm_I_of_ne_zero hI, one_mul]
   have h₁ : ‖(I : 𝕜) • y - x‖ = ‖(I : 𝕜) • x + y‖ := by
     convert I_smul ((I : 𝕜) • x + y) using 2
     linear_combination (norm := module) congr(-$hI' • x)
@@ -144,7 +140,7 @@ private theorem add_left_aux2 (x y z : E) : ‖2 • x + y‖ * ‖2 • x + y�
   convert parallelogram_identity (x + y - z) (x + z) using 4 <;> abel
 
 private theorem add_left_aux3 (y z : E) :
-    ‖2 • z + y‖ * ‖2 • z + y‖ + ‖y‖ * ‖y‖ = 2 * (‖y + z‖ * ‖y + z‖ + ‖z‖ * ‖z‖)  := by
+    ‖2 • z + y‖ * ‖2 • z + y‖ + ‖y‖ * ‖y‖ = 2 * (‖y + z‖ * ‖y + z‖ + ‖z‖ * ‖z‖) := by
   convert parallelogram_identity (y + z) z using 4 <;> abel
 
 private theorem add_left_aux4 (y z : E) :
