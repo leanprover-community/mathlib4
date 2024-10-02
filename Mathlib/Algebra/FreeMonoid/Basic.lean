@@ -378,7 +378,7 @@ instance uniqueUnits : Unique (FreeMonoid α)ˣ where
     (List.append_eq_nil.mp this).1
 
 @[to_additive]
-theorem map_surjective (f : α → β) : Function.Surjective f → Function.Surjective (map f) := by
+theorem map_surjective {f : α → β} : Function.Surjective f → Function.Surjective (map f) := by
   intro fs d
   induction' d using FreeMonoid.inductionOn' with head tail ih
   · use 1
