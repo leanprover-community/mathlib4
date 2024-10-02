@@ -195,8 +195,7 @@ theorem tendsto_div_of_monotone_of_tendsto_div_floor_pow (u : ℕ → ℝ) (l : 
   have H : ∀ n : ℕ, (0 : ℝ) < ⌊c k ^ n⌋₊ := by
     intro n
     refine zero_lt_one.trans_le ?_
-    simp only [Real.rpow_natCast, Nat.one_le_cast, Nat.one_le_floor_iff,
-      one_le_pow_of_one_le (cone k).le n]
+    simp only [Real.rpow_natCast, Nat.one_le_cast, Nat.one_le_floor_iff, one_le_pow₀ (cone k).le]
   have A :
     Tendsto (fun n : ℕ => (⌊c k ^ (n + 1)⌋₊ : ℝ) / c k ^ (n + 1) * c k / (⌊c k ^ n⌋₊ / c k ^ n))
       atTop (𝓝 (1 * c k / 1)) := by
@@ -223,12 +222,12 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
   have B : c ^ 2 * ((1 : ℝ) - c⁻¹ ^ 2)⁻¹ ≤ c ^ 3 * (c - 1)⁻¹ := by
     rw [← div_eq_mul_inv, ← div_eq_mul_inv, div_le_div_iff _ (sub_pos.2 hc)]
     swap
-    · exact sub_pos.2 (pow_lt_one (inv_nonneg.2 cpos.le) (inv_lt_one hc) two_ne_zero)
+    · exact sub_pos.2 (pow_lt_one₀ (inv_nonneg.2 cpos.le) (inv_lt_one hc) two_ne_zero)
     have : c ^ 3 = c ^ 2 * c := by ring
     simp only [mul_sub, this, mul_one, inv_pow, sub_le_sub_iff_left]
     rw [mul_assoc, mul_comm c, ← mul_assoc, mul_inv_cancel₀ (sq_pos_of_pos cpos).ne', one_mul]
     simpa using pow_le_pow_right hc.le one_le_two
-  have C : c⁻¹ ^ 2 < 1 := pow_lt_one (inv_nonneg.2 cpos.le) (inv_lt_one hc) two_ne_zero
+  have C : c⁻¹ ^ 2 < 1 := pow_lt_one₀ (inv_nonneg.2 cpos.le) (inv_lt_one hc) two_ne_zero
   calc
     (∑ i ∈ (range N).filter (j < c ^ ·), (1 : ℝ) / (c ^ i) ^ 2) ≤
         ∑ i ∈ Ico ⌊Real.log j / Real.log c⌋₊ N, (1 : ℝ) / (c ^ i) ^ 2 := by
@@ -258,7 +257,7 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
         field_simp [(Real.log_pos hc).ne']
         ring
       rw [Real.rpow_sub A, I]
-      have : c ^ 2 - 1 ≠ 0 := (sub_pos.2 (one_lt_pow hc two_ne_zero)).ne'
+      have : c ^ 2 - 1 ≠ 0 := (sub_pos.2 (one_lt_pow₀ hc two_ne_zero)).ne'
       field_simp [hj.ne', (zero_lt_one.trans hc).ne']
       ring
     _ ≤ c ^ 3 * (c - 1)⁻¹ / j ^ 2 := by gcongr
@@ -292,7 +291,7 @@ theorem sum_div_nat_floor_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c :
       rw [mul_div_assoc', mul_one, div_le_div_iff]; rotate_left
       · apply sq_pos_of_pos
         refine zero_lt_one.trans_le ?_
-        simp only [Nat.le_floor, one_le_pow_of_one_le, hc.le, Nat.one_le_cast, Nat.cast_one]
+        simp only [Nat.le_floor, one_le_pow₀, hc.le, Nat.one_le_cast, Nat.cast_one]
       · exact sq_pos_of_pos (pow_pos cpos _)
       rw [one_mul, ← mul_pow]
       gcongr

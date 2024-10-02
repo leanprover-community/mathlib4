@@ -11,6 +11,7 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Geometry.Manifold.Algebra.LieGroup
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.MFDeriv.Basic
+import Mathlib.Tactic.Module
 
 /-!
 # Manifold structure on the sphere
@@ -161,7 +162,7 @@ theorem contDiff_stereoInvFunAux : ContDiff ℝ ⊤ (stereoInvFunAux v) := by
   have h₁ : ContDiff ℝ ⊤ fun w : E => (‖w‖ ^ 2 + 4)⁻¹ := by
     refine (h₀.add contDiff_const).inv ?_
     intro x
-    nlinarith
+    positivity
   have h₂ : ContDiff ℝ ⊤ fun w => (4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v := by
     refine (contDiff_const.smul contDiff_id).add ?_
     exact (h₀.sub contDiff_const).smul contDiff_const
@@ -184,9 +185,9 @@ theorem stereoInvFun_ne_north_pole (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) :
   rw [← inner_lt_one_iff_real_of_norm_one _ hv]
   · have hw : ⟪v, w⟫_ℝ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
     have hw' : (‖(w : E)‖ ^ 2 + 4)⁻¹ * (‖(w : E)‖ ^ 2 - 4) < 1 := by
-      refine (inv_mul_lt_iff' ?_).mpr ?_
-      · nlinarith
-      linarith
+      rw [inv_mul_lt_iff']
+      · linarith
+      positivity
     simpa [real_inner_comm, inner_add_right, inner_smul_right, real_inner_self_eq_norm_mul_norm, hw,
       hv] using hw'
   · simpa using stereoInvFunAux_mem hv w.2
@@ -195,6 +196,7 @@ theorem continuous_stereoInvFun (hv : ‖v‖ = 1) : Continuous (stereoInvFun hv
   continuous_induced_rng.2 (contDiff_stereoInvFunAux.continuous.comp continuous_subtype_val)
 
 open scoped InnerProductSpace in
+attribute [-simp] AddSubgroupClass.coe_norm Submodule.coe_norm in
 theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) ≠ v) :
     stereoInvFun hv (stereoToFun v x) = x := by
   ext
@@ -212,57 +214,35 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
     · simp [← split]
     · simp [norm_smul, hv, ← sq, sq_abs]
     · exact sq _
-  -- two facts which will be helpful for clearing denominators in the main calculation
-  have ha : 1 - a ≠ 0 := by
+  -- a fact which will be helpful for clearing denominators in the main calculation
+  have ha : 0 < 1 - a := by
     have : a < 1 := (inner_lt_one_iff_real_of_norm_one hv (by simp)).mpr hx.symm
     linarith
-  -- the core of the problem is these two algebraic identities:
-  have h₁ : (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 + 4)⁻¹ * 4 * (2 / (1 - a)) = 1 := by
-    -- TODO(#15486): used to be `field_simp`, but was really slow
-    -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
-    simp (disch := field_simp_discharge) only [AddSubgroupClass.coe_norm, div_mul_eq_mul_div,
-      div_add', inv_div, mul_div_assoc', div_div, div_eq_iff, one_mul]
-    simp only [Submodule.coe_norm] at *; nlinarith only [pythag]
-  have h₂ : (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 + 4)⁻¹ * (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 - 4) = a := by
-    -- TODO(#15486): used to be `field_simp`, but was really slow
-    -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
-    simp (disch := field_simp_discharge) only [AddSubgroupClass.coe_norm, div_mul_eq_mul_div,
-      div_add', inv_div, div_sub', mul_div_assoc', div_div, div_eq_iff]
-    transitivity (1 - a) ^ 2 * (a * (2 ^ 2 * ‖y‖ ^ 2 + 4 * (1 - a) ^ 2))
-    · congr
-      simp only [Submodule.coe_norm] at *
-      nlinarith only [pythag]
-    ring!
-  convert
-    congr_arg₂ Add.add (congr_arg (fun t => t • (y : E)) h₁) (congr_arg (fun t => t • v) h₂) using 1
-  · simp only [innerSL_apply, norm_smul, norm_div, RCLike.norm_ofNat, Real.norm_eq_abs,
-      AddSubgroupClass.coe_norm, mul_pow, div_pow, sq_abs, SetLike.val_smul, mul_smul, a]
-    -- Porting note: used to be simp only [split, add_comm] but get maxRec errors
-    rw [split, add_comm]
-    ac_rfl
-  -- Porting note: this branch did not exit in ml3
-  · rw [split, add_comm]
-    congr
-    dsimp
-    rw [one_smul]
+  rw [split, Submodule.coe_smul_of_tower]
+  simp only [norm_smul, norm_div, RCLike.norm_ofNat, Real.norm_eq_abs, abs_of_nonneg ha.le]
+  match_scalars
+  · field_simp
+    linear_combination 4 * (1 - a) * pythag
+  · field_simp
+    linear_combination 4 * (a - 1) ^ 3 * pythag
 
 theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v (stereoInvFun hv w) = w := by
-  have : 2 / (1 - (‖(w : E)‖ ^ 2 + 4)⁻¹ * (‖(w : E)‖ ^ 2 - 4)) * (‖(w : E)‖ ^ 2 + 4)⁻¹ * 4 = 1 := by
-    -- TODO(#15486): used to be `field_simp`, but was really slow
-    -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
-    simp (disch := field_simp_discharge) only [inv_eq_one_div, div_mul_eq_mul_div, one_mul,
-      sub_div', add_sub_sub_cancel, div_div_eq_mul_div, mul_div_assoc', mul_one, div_div,
-      div_eq_iff]
-    ring
-  convert congr_arg (· • w) this
-  · have h₁ : orthogonalProjection (ℝ ∙ v)ᗮ v = 0 :=
-      orthogonalProjection_orthogonalComplement_singleton_eq_zero v
-    -- Porting note: was innerSL _ and now just inner
-    have h₃ : inner v w = (0 : ℝ) := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
-    -- Porting note: was innerSL _ and now just inner
-    have h₄ : inner v v = (1 : ℝ) := by simp [real_inner_self_eq_norm_mul_norm, hv]
-    simp [h₁, h₃, h₄, ContinuousLinearMap.map_add, ContinuousLinearMap.map_smul, mul_smul]
-  · simp
+  simp only [stereoToFun, stereoInvFun, stereoInvFunAux, smul_add, map_add, map_smul, innerSL_apply,
+    orthogonalProjection_mem_subspace_eq_self]
+  have h₁ : orthogonalProjection (ℝ ∙ v)ᗮ v = 0 :=
+    orthogonalProjection_orthogonalComplement_singleton_eq_zero v
+  -- Porting note: was innerSL _ and now just inner
+  have h₂ : inner v w = (0 : ℝ) := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
+  -- Porting note: was innerSL _ and now just inner
+  have h₃ : inner v v = (1 : ℝ) := by simp [real_inner_self_eq_norm_mul_norm, hv]
+  rw [h₁, h₂, h₃]
+  match_scalars
+  -- TODO(#15486): used to be `field_simp`, but was really slow
+  -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
+  simp (disch := field_simp_discharge) only [add_div', add_sub_sub_cancel, div_div,
+    div_div_eq_mul_div, div_eq_iff, div_mul_eq_mul_div, inv_eq_one_div,
+    mul_div_assoc', mul_one, mul_zero, one_mul, smul_eq_mul, sub_div', zero_add, zero_div, zero_mul]
+  ring
 
 /-- Stereographic projection from the unit sphere in `E`, centred at a unit vector `v` in `E`;
 this is the version as a partial homeomorphism. -/

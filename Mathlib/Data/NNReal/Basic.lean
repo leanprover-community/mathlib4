@@ -3,16 +3,13 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.BigOperators.Expect
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Field.Canonical.Basic
-import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.Order.Nonneg.Floor
+import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Real.Pointwise
 import Mathlib.Order.ConditionallyCompleteLattice.Group
-import Mathlib.Tactic.Bound.Attribute
-import Mathlib.Tactic.GCongr.CoreAttrs
-import Mathlib.Algebra.Ring.Regular
 
 /-!
 # Nonnegative real numbers
@@ -55,6 +52,7 @@ This file defines `ℝ≥0` as a localized notation for `NNReal`.
 assert_not_exists Star
 
 open Function
+open scoped BigOperators
 
 -- to ensure these instances are computable
 /-- Nonnegative real numbers. -/
@@ -278,22 +276,26 @@ theorem coe_multiset_sum (s : Multiset ℝ≥0) : ((s.sum : ℝ≥0) : ℝ) = (s
 theorem coe_multiset_prod (s : Multiset ℝ≥0) : ((s.prod : ℝ≥0) : ℝ) = (s.map (↑)).prod :=
   map_multiset_prod toRealHom s
 
+variable {ι : Type*} {s : Finset ι} {f : ι → ℝ}
+
 @[simp, norm_cast]
-theorem coe_sum {α} {s : Finset α} {f : α → ℝ≥0} : ↑(∑ a ∈ s, f a) = ∑ a ∈ s, (f a : ℝ) :=
+theorem coe_sum (s : Finset ι) (f : ι → ℝ≥0) : ∑ i ∈ s, f i = ∑ i ∈ s, (f i : ℝ) :=
   map_sum toRealHom _ _
 
-theorem _root_.Real.toNNReal_sum_of_nonneg {α} {s : Finset α} {f : α → ℝ}
-    (hf : ∀ a, a ∈ s → 0 ≤ f a) :
+@[simp, norm_cast]
+lemma coe_expect (s : Finset ι) (f : ι → ℝ≥0) : 𝔼 i ∈ s, f i = 𝔼 i ∈ s, (f i : ℝ) :=
+  map_expect toRealHom ..
+
+theorem _root_.Real.toNNReal_sum_of_nonneg (hf : ∀ i ∈ s, 0 ≤ f i) :
     Real.toNNReal (∑ a ∈ s, f a) = ∑ a ∈ s, Real.toNNReal (f a) := by
   rw [← coe_inj, NNReal.coe_sum, Real.coe_toNNReal _ (Finset.sum_nonneg hf)]
   exact Finset.sum_congr rfl fun x hxs => by rw [Real.coe_toNNReal _ (hf x hxs)]
 
 @[simp, norm_cast]
-theorem coe_prod {α} {s : Finset α} {f : α → ℝ≥0} : ↑(∏ a ∈ s, f a) = ∏ a ∈ s, (f a : ℝ) :=
+theorem coe_prod (s : Finset ι) (f : ι → ℝ≥0) : ↑(∏ a ∈ s, f a) = ∏ a ∈ s, (f a : ℝ) :=
   map_prod toRealHom _ _
 
-theorem _root_.Real.toNNReal_prod_of_nonneg {α} {s : Finset α} {f : α → ℝ}
-    (hf : ∀ a, a ∈ s → 0 ≤ f a) :
+theorem _root_.Real.toNNReal_prod_of_nonneg (hf : ∀ a, a ∈ s → 0 ≤ f a) :
     Real.toNNReal (∏ a ∈ s, f a) = ∏ a ∈ s, Real.toNNReal (f a) := by
   rw [← coe_inj, NNReal.coe_prod, Real.coe_toNNReal _ (Finset.prod_nonneg hf)]
   exact Finset.prod_congr rfl fun x hxs => by rw [Real.coe_toNNReal _ (hf x hxs)]
@@ -944,7 +946,7 @@ theorem iInf_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨅ i, f i = 0 := by
 @[simp]
 theorem iInf_const_zero {α : Sort*} : ⨅ _ : α, (0 : ℝ≥0) = 0 := by
   rw [← coe_inj, coe_iInf]
-  exact Real.ciInf_const_zero
+  exact Real.iInf_const_zero
 
 theorem iInf_mul (f : ι → ℝ≥0) (a : ℝ≥0) : iInf f * a = ⨅ i, f i * a := by
   rw [← coe_inj, NNReal.coe_mul, coe_iInf, coe_iInf]

@@ -151,6 +151,26 @@ end Ring
 
 end RingSeminorm
 
+/-- If `f` is a ring seminorm on `a`, then `∀ {n : ℕ}, n ≠ 0 → f (a ^ n) ≤ f a ^ n`. -/
+theorem map_pow_le_pow {F α : Type*} [Ring α] [FunLike F α ℝ] [RingSeminormClass F α ℝ] (f : F)
+    (a : α) : ∀ {n : ℕ}, n ≠ 0 → f (a ^ n) ≤ f a ^ n
+  | 0, h => absurd rfl h
+  | 1, _ => by simp only [pow_one, le_refl]
+  | n + 2, _ => by
+    simp only [pow_succ _ (n + 1)];
+      exact
+        le_trans (map_mul_le_mul f _ a)
+          (mul_le_mul_of_nonneg_right (map_pow_le_pow _ _ n.succ_ne_zero) (apply_nonneg f a))
+
+/-- If `f` is a ring seminorm on `a` with `f 1 ≤ 1`, then `∀ (n : ℕ), f (a ^ n) ≤ f a ^ n`. -/
+theorem map_pow_le_pow' {F α : Type*} [Ring α] [FunLike F α ℝ] [RingSeminormClass F α ℝ] {f : F}
+    (hf1 : f 1 ≤ 1) (a : α) : ∀ n : ℕ, f (a ^ n) ≤ f a ^ n
+  | 0 => by simp only [pow_zero, hf1]
+  | n + 1 => by
+    simp only [pow_succ _ n];
+      exact le_trans (map_mul_le_mul f _ a)
+        (mul_le_mul_of_nonneg_right (map_pow_le_pow' hf1 _ n) (apply_nonneg f a))
+
 /-- The norm of a `NonUnitalSeminormedRing` as a `RingSeminorm`. -/
 def normRingSeminorm (R : Type*) [NonUnitalSeminormedRing R] : RingSeminorm R :=
   { normAddGroupSeminorm R with
@@ -368,3 +388,36 @@ lemma MulRingNorm.apply_natAbs_eq {R : Type*} [Ring R] (x : ℤ) (f : MulRingNor
     f x := by
   obtain ⟨n, rfl | rfl⟩ := eq_nat_or_neg x <;>
   simp only [natAbs_neg, natAbs_ofNat, cast_neg, cast_natCast, map_neg_eq_map]
+
+/-- The seminorm on a `SeminormedRing`, as a `RingSeminorm`. -/
+def SeminormedRing.toRingSeminorm (R : Type*) [SeminormedRing R] : RingSeminorm R where
+  toFun     := norm
+  map_zero' := norm_zero
+  add_le'   := norm_add_le
+  mul_le'   := norm_mul_le
+  neg'      := norm_neg
+
+/-- The norm on a `NormedRing`, as a `RingNorm`. -/
+@[simps]
+def NormedRing.toRingNorm (R : Type*) [NormedRing R] : RingNorm R where
+  toFun     := norm
+  map_zero' := norm_zero
+  add_le'   := norm_add_le
+  mul_le'   := norm_mul_le
+  neg'      := norm_neg
+  eq_zero_of_map_eq_zero' x hx := by rw [← norm_eq_zero]; exact hx
+
+@[simp]
+theorem NormedRing.toRingNorm_apply (R : Type*) [NormedRing R] (x : R) :
+    (NormedRing.toRingNorm R) x = ‖x‖ :=
+  rfl
+
+/-- The norm on a `NormedField`, as a `MulRingNorm`. -/
+def NormedField.toMulRingNorm (R : Type*) [NormedField R] : MulRingNorm R where
+  toFun     := norm
+  map_zero' := norm_zero
+  map_one'  := norm_one
+  add_le'   := norm_add_le
+  map_mul'  := norm_mul
+  neg'      := norm_neg
+  eq_zero_of_map_eq_zero' x hx := by rw [← norm_eq_zero]; exact hx
