@@ -108,7 +108,7 @@ theorem inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) := by
   simp only [inner_, normSq_apply, ofNat_re, ofNat_im, map_sub, map_add, map_zero, map_mul,
     ofReal_re, ofReal_im, mul_re, inv_re, mul_im, I_re, inv_im]
   have h₁ : ‖x - x‖ = 0 := by simp
-  have h₂ : ‖x + x‖ = 2 * ‖x‖ := by rw [← two_smul 𝕜, norm_smul, RCLike.norm_two]
+  have h₂ : ‖x + x‖ = 2 • ‖x‖ := by convert norm_nsmul 𝕜 2 x using 2; module
   rw [h₁, h₂]
   ring
 
@@ -205,16 +205,12 @@ private theorem I_prop : innerProp' E (I : 𝕜) := by
   · rw [hI]
     simpa using real_prop (𝕜 := 𝕜) 0
   intro x y
-  have hI' : (-I : 𝕜) * I = 1 := by rw [← inv_I, inv_mul_cancel₀ hI]
-  rw [conj_I, inner_, inner_, mul_left_comm]
-  congr 1
-  rw [smul_smul, I_mul_I_of_nonzero hI, neg_one_smul]
-  rw [mul_sub, mul_add, mul_sub, mul_assoc I (𝓚 ‖I • x - y‖), ← mul_assoc (-I) I, hI', one_mul,
-    mul_assoc I (𝓚 ‖I • x + y‖), ← mul_assoc (-I) I, hI', one_mul]
+  have hI' := I_mul_I_of_nonzero hI
+  rw [conj_I, inner_, inner_, mul_left_comm, smul_smul, hI', neg_one_smul]
   have h₁ : ‖-x - y‖ = ‖x + y‖ := by rw [← neg_add', norm_neg]
   have h₂ : ‖-x + y‖ = ‖x - y‖ := by rw [← neg_sub, norm_neg, sub_eq_neg_add]
   rw [h₁, h₂]
-  ring
+  linear_combination (- 𝓚 ‖(I : 𝕜) • x - y‖ ^ 2 + 𝓚 ‖(I : 𝕜) • x + y‖ ^ 2) * hI' / 4
 
 theorem innerProp (r : 𝕜) : innerProp' E r := by
   intro x y
