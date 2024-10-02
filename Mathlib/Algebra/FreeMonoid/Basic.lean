@@ -180,7 +180,7 @@ def mem (a : FreeMonoid α) (m : α) := m ∈ toList a
 instance : Membership α (FreeMonoid α) := ⟨mem⟩
 
 @[to_additive]
-theorem not_mem_one : ¬ m ∈ (1 : FreeMonoid α) := List.not_mem_nil
+theorem not_mem_one : ¬ m ∈ (1 : FreeMonoid α) := List.not_mem_nil _
 
 @[to_additive (attr := simp)]
 theorem mem_of {n : α} : m ∈ of n ↔ m = n := List.mem_singleton
