@@ -9,7 +9,7 @@ import Mathlib.Topology.Sets.Compacts
 /-!
 # Additional results on topological groups
 
-A result on topological groups that have been separated out
+A result on topological groups that has been separated out
 as it requires more substantial imports developing positive compacts.
 -/
 
