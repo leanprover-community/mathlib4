@@ -112,24 +112,28 @@ lemma locally_of (hP : RespectsIso P) (f : R →+* S) (hf : P f) : Locally P f :
   exact hP.left f e hf
 
 /-- If `P` is local on the target, then `Locally P` coincides with `P`. -/
-lemma locally_eq_of_localizationSpanTarget (hPi : RespectsIso P)
+lemma locally_iff_of_localizationSpanTarget (hPi : RespectsIso P)
     (hPs : OfLocalizationSpanTarget P) {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) :
     Locally P f ↔ P f :=
   ⟨fun ⟨s, hsone, hs⟩ ↦ hPs f s hsone (fun a ↦ hs a.val a.property), locally_of hPi f⟩
 
 section OfLocalizationSpanTarget
 
-private noncomputable abbrev locallyAuxFun (s : Set S) (t : (r : s) → Set (Localization.Away r.val))
-    (p : (a : s) × t a) : S :=
+/-- Given a set `s` in a ring `S` and for every `a : s` a set `t a` of fractions in
+`Localization.Away r`, this is the function sending a pair `(a, x)`, with
+`a : s` and `x : t a`, to `a` multiplied with a numerator of `x`. The range
+of this function spans the unit ideal, if `s` and every `t a` do. -/
+noncomputable def Localization.mulNumerator (s : Set S)
+    (t : (r : s) → Set (Localization.Away r.val)) (p : (a : s) × t a) : S :=
   p.1 * (IsLocalization.Away.sec p.1.1 p.2.1).1
 
-private lemma span_range_locallyAuxFun_eq_top {s : Set S} (hsone : Ideal.span s = ⊤)
+lemma Localization.span_range_mulNumerator_eq_top {s : Set S} (hsone : Ideal.span s = ⊤)
     {t : (r : s) → Set (Localization.Away r.val)} (htone : ∀ (r : s), Ideal.span (t r) = ⊤) :
-    Ideal.span (Set.range (locallyAuxFun s t)) = ⊤ := by
+    Ideal.span (Set.range (Localization.mulNumerator s t)) = ⊤ := by
   rw [← Ideal.radical_eq_top, eq_top_iff, ← hsone, Ideal.span_le]
   intro a ha
   have h₁ : Ideal.span (t ⟨a, ha⟩) ≤ Ideal.span
-      (algebraMap S (Localization.Away a) '' Set.range (locallyAuxFun s t)) := by
+      (algebraMap S (Localization.Away a) '' Set.range (Localization.mulNumerator s t)) := by
     rw [Ideal.span_le]
     intro x hx
     rw [SetLike.mem_coe, IsLocalization.mem_span_map (Submonoid.powers a)]
@@ -138,7 +142,7 @@ private lemma span_range_locallyAuxFun_eq_top {s : Set S} (hsone : Ideal.span s 
     rw [IsLocalization.eq_mk'_iff_mul_eq, map_pow, map_mul, ← map_pow, pow_add, map_mul,
       ← mul_assoc, IsLocalization.Away.sec_spec a x, mul_comm, pow_one]
   have h₂ : IsLocalization.mk' (Localization.Away a) 1 (1 : Submonoid.powers a) ∈ Ideal.span
-      (algebraMap S (Localization.Away a) '' (Set.range <| locallyAuxFun s t)) := by
+      (algebraMap S (Localization.Away a) '' (Set.range <| Localization.mulNumerator s t)) := by
     rw [IsLocalization.mk'_one]
     apply h₁
     simp [htone]
@@ -156,7 +160,8 @@ lemma locally_ofLocalizationSpanTarget (hP : RespectsIso P) :
   intro R S _ _ f s hsone hs
   choose t htone ht using hs
   rw [locally_iff_exists hP]
-  refine ⟨(a : s) × t a, locallyAuxFun s t, span_range_locallyAuxFun_eq_top hsone htone,
+  refine ⟨(a : s) × t a, Localization.mulNumerator s t,
+      Localization.span_range_mulNumerator_eq_top hsone htone,
       fun ⟨a, b⟩ ↦ Localization.Away b.val, inferInstance, inferInstance, fun ⟨a, b⟩ ↦ ?_, ?_⟩
   · haveI : IsLocalization.Away ((algebraMap S (Localization.Away a.val))
         (IsLocalization.Away.sec a.val b.val).1) (Localization.Away b.val) := by
