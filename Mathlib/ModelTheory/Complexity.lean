@@ -56,20 +56,27 @@ theorem not_all_isAtomic (φ : L.BoundedFormula α (n + 1)) : ¬φ.all.IsAtomic 
 
 theorem not_ex_isAtomic (φ : L.BoundedFormula α (n + 1)) : ¬φ.ex.IsAtomic := fun con => by cases con
 
-theorem IsAtomic.relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsAtomic)
+namespace IsAtomic
+
+theorem relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsAtomic)
     (f : α → β ⊕ (Fin n)) : (φ.relabel f).IsAtomic :=
   IsAtomic.recOn h (fun _ _ => IsAtomic.equal _ _) fun _ _ => IsAtomic.rel _ _
 
-theorem IsAtomic.liftAt {k m : ℕ} (h : IsAtomic φ) : (φ.liftAt k m).IsAtomic :=
+theorem liftAt {k m : ℕ} (h : IsAtomic φ) : (φ.liftAt k m).IsAtomic :=
   IsAtomic.recOn h (fun _ _ => IsAtomic.equal _ _) fun _ _ => IsAtomic.rel _ _
 
-theorem IsAtomic.castLE {h : l ≤ n} (hφ : IsAtomic φ) : (φ.castLE h).IsAtomic :=
+theorem castLE {h : l ≤ n} (hφ : IsAtomic φ) : (φ.castLE h).IsAtomic :=
   IsAtomic.recOn hφ (fun _ _ => IsAtomic.equal _ _) fun _ _ => IsAtomic.rel _ _
+
+theorem toFormula (h : φ.IsAtomic) : φ.toFormula.IsAtomic :=
+  IsAtomic.recOn h (fun _ _ => IsAtomic.equal _ _) fun _ _ => IsAtomic.rel _ _
+
+end IsAtomic
 
 /-- A quantifier-free formula is a formula defined without quantifiers. These are all equivalent
 to boolean combinations of atomic formulas. -/
 inductive IsQF : L.BoundedFormula α n → Prop
-  | falsum : IsQF falsum
+  | falsum : IsQF ⊥
   | of_isAtomic {φ} (h : IsAtomic φ) : IsQF φ
   | imp {φ₁ φ₂} (h₁ : IsQF φ₁) (h₂ : IsQF φ₂) : IsQF (φ₁.imp φ₂)
 
@@ -102,6 +109,9 @@ protected theorem liftAt {k m : ℕ} (h : IsQF φ) : (φ.liftAt k m).IsQF :=
 protected theorem castLE {h : l ≤ n} (hφ : IsQF φ) : (φ.castLE h).IsQF :=
   IsQF.recOn hφ isQF_bot (fun ih => ih.castLE.isQF) fun _ _ ih1 ih2 => ih1.imp ih2
 
+theorem toFormula (h : φ.IsQF) : φ.toFormula.IsQF :=
+  IsQF.recOn h isQF_bot (fun ih => ih.toFormula.isQF) fun _ _ ih1 ih2 => ih1.imp ih2
+
 end IsQF
 
 theorem not_all_isQF (φ : L.BoundedFormula α (n + 1)) : ¬φ.all.IsQF := fun con => by
@@ -126,27 +136,35 @@ theorem IsQF.isPrenex {φ : L.BoundedFormula α n} : IsQF φ → IsPrenex φ :=
 theorem IsAtomic.isPrenex {φ : L.BoundedFormula α n} (h : IsAtomic φ) : IsPrenex φ :=
   h.isQF.isPrenex
 
-theorem IsPrenex.induction_on_all_not {P : ∀ {n}, L.BoundedFormula α n → Prop}
+namespace IsPrenex
+
+theorem induction_on_all_not {P : ∀ {n}, L.BoundedFormula α n → Prop}
     {φ : L.BoundedFormula α n} (h : IsPrenex φ)
     (hq : ∀ {m} {ψ : L.BoundedFormula α m}, ψ.IsQF → P ψ)
     (ha : ∀ {m} {ψ : L.BoundedFormula α (m + 1)}, P ψ → P ψ.all)
     (hn : ∀ {m} {ψ : L.BoundedFormula α m}, P ψ → P ψ.not) : P φ :=
   IsPrenex.recOn h hq (fun _ => ha) fun _ ih => hn (ha (hn ih))
 
-theorem IsPrenex.relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsPrenex)
+theorem relabel {m : ℕ} {φ : L.BoundedFormula α m} (h : φ.IsPrenex)
     (f : α → β ⊕ (Fin n)) : (φ.relabel f).IsPrenex :=
   IsPrenex.recOn h (fun h => (h.relabel f).isPrenex) (fun _ h => by simp [h.all])
     fun _ h => by simp [h.ex]
 
-theorem IsPrenex.castLE (hφ : IsPrenex φ) : ∀ {n} {h : l ≤ n}, (φ.castLE h).IsPrenex :=
+theorem castLE (hφ : IsPrenex φ) : ∀ {n} {h : l ≤ n}, (φ.castLE h).IsPrenex :=
   IsPrenex.recOn (motive := @fun l φ _ => ∀ (n : ℕ) (h : l ≤ n), (φ.castLE h).IsPrenex) hφ
     (@fun _ _ ih _ _ => ih.castLE.isPrenex)
     (@fun _ _ _ ih _ _ => (ih _ _).all)
     (@fun _ _ _ ih _ _ => (ih _ _).ex) _ _
 
-theorem IsPrenex.liftAt {k m : ℕ} (h : IsPrenex φ) : (φ.liftAt k m).IsPrenex :=
+theorem liftAt {k m : ℕ} (h : IsPrenex φ) : (φ.liftAt k m).IsPrenex :=
   IsPrenex.recOn h (fun ih => ih.liftAt.isPrenex) (fun _ ih => ih.castLE.all)
     fun _ ih => ih.castLE.ex
+
+theorem toFormula (h : φ.IsPrenex) : φ.toFormula.IsPrenex :=
+  IsPrenex.recOn h (fun ih => ih.toFormula.isPrenex) (fun _ ih => (ih.relabel _).all)
+    fun _ ih => (ih.relabel _).ex
+
+end IsPrenex
 
 -- Porting note: universes in different order
 /-- An auxiliary operation to `FirstOrder.Language.BoundedFormula.toPrenex`.

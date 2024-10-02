@@ -369,6 +369,12 @@ theorem models_of_models_theory {T' : L.Theory}
   let M' : ModelType T' := ⟨M⟩
   exact hφ M'
 
+theorem ModelsBoundedFormula.mono
+    {T' : L.Theory} {φ : L.BoundedFormula α n} (TT' : T ⊆ T') (h : T ⊨ᵇ φ) :
+    T' ⊨ᵇ φ := fun M _ _ => by
+  have : M ⊨ T := Theory.Model.mono inferInstance TT'
+  exact h.realize_boundedFormula M
+
 /-- An alternative statement of the Compactness Theorem. A formula `φ` is modeled by a
 theory iff there is a finite subset `T0` of the theory such that `φ` is modeled by `T0` -/
 theorem models_iff_finset_models {φ : L.Sentence} :

@@ -431,6 +431,12 @@ theorem realize_restrictFreeVar [DecidableEq α] {n : ℕ} {φ : L.BoundedFormul
     simp [ih1, ih2]
   | all _ ih3 => simp [restrictFreeVar, Realize, ih3]
 
+@[simp]
+theorem realize_restrictFreeVar_id [DecidableEq α] {n : ℕ} {φ : L.BoundedFormula α n}
+    {v : α → M} {xs : Fin n → M} :
+    (φ.restrictFreeVar id).Realize (v ∘ (↑)) xs ↔ φ.Realize v xs :=
+  Set.inclusion_eq_id (refl _) ▸ realize_restrictFreeVar _
+
 theorem realize_constantsVarsEquiv [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
     {n} {φ : L[[α]].BoundedFormula β n} {v : β → M} {xs : Fin n → M} :
     (constantsVarsEquiv φ).Realize (Sum.elim (fun a => ↑(L.con a)) v) xs ↔ φ.Realize v xs := by

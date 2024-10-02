@@ -77,10 +77,16 @@ theorem realize_iff {φ ψ : L.Formula α} {M : Type*} [Nonempty M]
     φ.Realize v ↔ ψ.Realize v :=
   h.realize_bd_iff
 
-theorem models_sentence_iff {φ ψ : L.Sentence} {M : Type*} [Nonempty M]
+theorem realize_sentence_iff {φ ψ : L.Sentence} {M : Type*} [Nonempty M]
     [L.Structure M] [M ⊨ T] (h : φ ⇔[T] ψ) :
     M ⊨ φ ↔ M ⊨ ψ :=
   h.realize_iff
+
+theorem models_sentence_iff {φ ψ : L.Sentence} (h : φ ⇔[T] ψ) :
+    T ⊨ᵇ φ ↔ T ⊨ᵇ ψ := by
+  rw [iff_eq_eq]
+  refine forall_congr (fun M => ?_)
+  simp only [h.realize_bd_iff]
 
 protected theorem all {φ ψ : L.BoundedFormula α (n + 1)}
     (h : φ ⇔[T] ψ) : φ.all ⇔[T] ψ.all := by
@@ -105,6 +111,9 @@ protected theorem imp {φ ψ φ' ψ' : L.BoundedFormula α n} (h : φ ⇔[T] ψ)
   simp_rw [SemanticallyEquivalent, ModelsBoundedFormula, BoundedFormula.realize_iff,
     BoundedFormula.realize_imp]
   exact fun M v xs => imp_congr h.realize_bd_iff h'.realize_bd_iff
+
+protected theorem mono {T' : L.Theory} {φ ψ : L.BoundedFormula α n} (TT' : T ⊆ T') (h : φ ⇔[T] ψ) :
+    φ ⇔[T'] ψ := ModelsBoundedFormula.mono TT' h
 
 end SemanticallyEquivalent
 
