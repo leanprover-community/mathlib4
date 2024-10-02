@@ -21,7 +21,8 @@ inverse inclusion, thus making `Gal(K/k)` profinite because the limit is profini
 
 In a field extension `K/k`
 
-* `FiniteGaloisIntermediateField` : The type of a finite Galois intermediate field of `K/k`
+* `FiniteGaloisIntermediateField` : The type of intermediate fields of `K/k`
+  that are finite and Galois over `k`
 
 * `adjoin` : The finite Galois intermediate field obtained from the normal closure of adjoining a
   `s : Set K` to `k`.
@@ -46,8 +47,7 @@ open scoped IntermediateField
 
 variable (k K : Type*) [Field k] [Field K] [Algebra k K]
 
-/-- The type of a finite Galois intermediate field of `K/k` -/
-@[ext]
+/-- The type of intermediate fields of `K/k` that are finite and Galois over `k` -/
 structure FiniteGaloisIntermediateField extends IntermediateField k K where
   [finiteDimensional : FiniteDimensional k toIntermediateField]
   [isGalois : IsGalois k toIntermediateField]
@@ -71,10 +71,10 @@ lemma val_injective : Function.Injective (toIntermediateField (k := k) (K := K))
   rintro ⟨⟩ ⟨⟩ eq
   simpa only [mk.injEq] using eq
 
-/--Make the Finite Galois IntermediateField of `K/k` into an lattice-/
+/-- Turns the collection of finite Galois IntermediateFields of `K/k` into a lattice. -/
 
 instance (L₁ L₂ : IntermediateField k K) [IsGalois k L₁] [IsGalois k L₂] :
-    IsGalois k ↑(L₁ ⊔ L₂) := {}
+    IsGalois k ↑(L₁ ⊔ L₂) where
 
 instance (L₁ L₂ : IntermediateField k K) [FiniteDimensional k L₁] :
     FiniteDimensional k ↑(L₁ ⊓ L₂) :=
