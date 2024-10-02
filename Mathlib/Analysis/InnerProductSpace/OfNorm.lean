@@ -99,18 +99,6 @@ private def innerProp' (r : 𝕜) : Prop :=
 
 variable {E}
 
-theorem innerProp_neg_one : innerProp' E ((-1 : ℤ) : 𝕜) := by
-  intro x y
-  simp only [inner_, map_one, map_neg, Int.cast_neg, Int.cast_one]
-  have h₁ : ‖(-1 : 𝕜) • x - y‖ = ‖x + y‖ := by convert norm_neg (x + y) using 2; module
-  have h₂ : ‖(-1 : 𝕜) • x + y‖ = ‖x - y‖ := by convert norm_neg (x - y) using 2; module
-  have h₃ : ‖(I : 𝕜) • (-1 : 𝕜) • x + y‖ = ‖(I : 𝕜) • x - y‖ := by
-    convert norm_neg ((I : 𝕜) • x - y) using 2; module
-  have h₄ : ‖(I : 𝕜) • (-1 : 𝕜) • x - y‖ = ‖(I : 𝕜) • x + y‖ := by
-    convert norm_neg ((I : 𝕜) • x + y) using 2; module
-  rw [h₁, h₂, h₃, h₄]
-  ring
-
 theorem _root_.Continuous.inner_ {f g : ℝ → E} (hf : Continuous f) (hg : Continuous g) :
     Continuous fun x => inner_ 𝕜 (f x) (g x) := by
   unfold inner_
