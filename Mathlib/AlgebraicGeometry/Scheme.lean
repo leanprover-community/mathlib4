@@ -165,6 +165,10 @@ lemma preimage_iSup {ι} (U : ι → Opens Y) : f ⁻¹ᵁ iSup U = ⨆ i, f ⁻
 lemma preimage_iSup_eq_top {ι} {U : ι → Opens Y} (hU : iSup U = ⊤) :
     ⨆ i, f ⁻¹ᵁ U i = ⊤ := f.preimage_iSup U ▸ hU ▸ rfl
 
+lemma preimage_le_preimage_of_le {U U' : Y.Opens} (hUU' : U ≤ U') :
+    f ⁻¹ᵁ U ≤ f ⁻¹ᵁ U' :=
+  fun _ ha ↦ hUU' ha
+
 end Hom
 
 @[simp]
