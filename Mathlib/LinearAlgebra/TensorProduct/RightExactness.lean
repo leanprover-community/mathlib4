@@ -6,6 +6,7 @@ Authors: Antoine Chambert-Loir
 
 import Mathlib.Algebra.Exact
 import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.Ideal.Quotient
 
 /-! # Right-exactness properties of tensor product
 
@@ -170,14 +171,15 @@ variable {f : M →ₗ[R] N} {g : N →ₗ[R] P}
     (hfg : Exact f g) (hg : Function.Surjective g)
 
 /-- The direct map in `lTensor.equiv` -/
-noncomputable def lTensor.toFun :
+noncomputable def lTensor.toFun (hfg : Exact f g) :
     Q ⊗[R] N ⧸ LinearMap.range (lTensor Q f) →ₗ[R] Q ⊗[R] P :=
   Submodule.liftQ _ (lTensor Q g) <| by
     rw [LinearMap.range_le_iff_comap, ← LinearMap.ker_comp,
       ← lTensor_comp, hfg.linearMap_comp_eq_zero, lTensor_zero, ker_zero]
 
 /-- The inverse map in `lTensor.equiv_of_rightInverse` (computably, given a right inverse)-/
-noncomputable def lTensor.inverse_of_rightInverse {h : P → N} (hgh : Function.RightInverse h g) :
+noncomputable def lTensor.inverse_of_rightInverse {h : P → N} (hfg : Exact f g)
+    (hgh : Function.RightInverse h g) :
     Q ⊗[R] P →ₗ[R] Q ⊗[R] N ⧸ LinearMap.range (lTensor Q f) :=
   TensorProduct.lift <| LinearMap.flip <| {
     toFun := fun p ↦ Submodule.mkQ _ ∘ₗ ((TensorProduct.mk R _ _).flip (h p))
@@ -259,6 +261,7 @@ noncomputable def lTensor.equiv :
     ((Q ⊗[R] N) ⧸ (LinearMap.range (lTensor Q f))) ≃ₗ[R] (Q ⊗[R] P) :=
   lTensor.linearEquiv_of_rightInverse Q hfg (Function.rightInverse_surjInv hg)
 
+include hfg hg in
 /-- Tensoring an exact pair on the left gives an exact pair -/
 theorem lTensor_exact : Exact (lTensor Q f) (lTensor Q g) := by
   rw [exact_iff, ← Submodule.ker_mkQ (p := range (lTensor Q f)),
@@ -275,14 +278,15 @@ lemma lTensor_mkQ (N : Submodule R M) :
   exact lTensor_exact Q (LinearMap.exact_subtype_mkQ N) (Submodule.mkQ_surjective N)
 
 /-- The direct map in `rTensor.equiv` -/
-noncomputable def rTensor.toFun :
+noncomputable def rTensor.toFun (hfg : Exact f g) :
     N ⊗[R] Q ⧸ range (rTensor Q f) →ₗ[R] P ⊗[R] Q :=
   Submodule.liftQ _ (rTensor Q g) <| by
     rw [range_le_iff_comap, ← ker_comp, ← rTensor_comp,
       hfg.linearMap_comp_eq_zero, rTensor_zero, ker_zero]
 
 /-- The inverse map in `rTensor.equiv_of_rightInverse` (computably, given a right inverse) -/
-noncomputable def rTensor.inverse_of_rightInverse {h : P → N} (hgh : Function.RightInverse h g) :
+noncomputable def rTensor.inverse_of_rightInverse {h : P → N} (hfg : Exact f g)
+    (hgh : Function.RightInverse h g) :
     P ⊗[R] Q →ₗ[R] N ⊗[R] Q ⧸ LinearMap.range (rTensor Q f) :=
   TensorProduct.lift  {
     toFun := fun p ↦ Submodule.mkQ _ ∘ₗ TensorProduct.mk R _ _ (h p)
@@ -364,6 +368,7 @@ noncomputable def rTensor.equiv :
     ((N ⊗[R] Q) ⧸ (LinearMap.range (rTensor Q f))) ≃ₗ[R] (P ⊗[R] Q) :=
   rTensor.linearEquiv_of_rightInverse Q hfg (Function.rightInverse_surjInv hg)
 
+include hfg hg in
 /-- Tensoring an exact pair on the right gives an exact pair -/
 theorem rTensor_exact : Exact (rTensor Q f) (rTensor Q g) := by
   rw [exact_iff, ← Submodule.ker_mkQ (p := range (rTensor Q f)),
@@ -385,10 +390,12 @@ variable {M' N' P' : Type*}
     {f' : M' →ₗ[R] N'} {g' : N' →ₗ[R] P'}
     (hfg' : Exact f' g') (hg' : Function.Surjective g')
 
+include hg hg' in
 theorem TensorProduct.map_surjective : Function.Surjective (TensorProduct.map g g') := by
   rw [← lTensor_comp_rTensor, coe_comp]
   exact Function.Surjective.comp (lTensor_surjective _ hg') (rTensor_surjective _ hg)
 
+include hg hg' hfg hfg' in
 /-- Kernel of a product map (right-exactness of tensor product) -/
 theorem TensorProduct.map_ker :
     ker (TensorProduct.map g g') = range (lTensor N f') ⊔ range (rTensor N' f) := by
@@ -540,7 +547,7 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
           simp only [map_zero, smul_eq_mul, mul_zero]
         | tmul x y =>
           use (a • x) ⊗ₜ[R] (b * y)
-          simp only [LinearMap.lTensor_tmul, Submodule.coeSubtype, smul_eq_mul, tmul_mul_tmul]
+          simp only [LinearMap.lTensor_tmul, Submodule.coe_subtype, smul_eq_mul, tmul_mul_tmul]
           with_unfolding_all rfl
         | add x y hx hy =>
           obtain ⟨x', hx'⟩ := hx
@@ -559,7 +566,7 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
         rw [map_zero]
         apply zero_mem
     | tmul a b =>
-        simp only [LinearMap.rTensor_tmul, Submodule.coeSubtype]
+        simp only [LinearMap.rTensor_tmul, Submodule.coe_subtype]
         suffices (a : A) ⊗ₜ[R] b = ((1 : A) ⊗ₜ[R] b) * ((a : A) ⊗ₜ[R] (1 : B)) by
           simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
             Submodule.mem_toAddSubmonoid, Submodule.restrictScalars_mem]
@@ -608,7 +615,7 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
           simp only [map_zero, smul_eq_mul, mul_zero]
         | tmul x y =>
           use (a * x) ⊗ₜ[R] (b •y)
-          simp only [LinearMap.lTensor_tmul, Submodule.coeSubtype, smul_eq_mul, tmul_mul_tmul]
+          simp only [LinearMap.lTensor_tmul, Submodule.coe_subtype, smul_eq_mul, tmul_mul_tmul]
           rfl
         | add x y hx hy =>
           obtain ⟨x', hx'⟩ := hx
@@ -627,7 +634,7 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
         rw [map_zero]
         apply zero_mem
     | tmul a b =>
-        simp only [LinearMap.lTensor_tmul, Submodule.coeSubtype]
+        simp only [LinearMap.lTensor_tmul, Submodule.coe_subtype]
         suffices a ⊗ₜ[R] (b : B) = (a ⊗ₜ[R] (1 : B)) * ((1 : A) ⊗ₜ[R] (b : B)) by
           rw [this]
           simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,

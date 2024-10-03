@@ -585,14 +585,14 @@ theorem wbtw_iff_left_eq_or_right_mem_image_Ici {x y z : P} :
     · rw [Set.mem_image]
       refine Or.inr ⟨r⁻¹, one_le_inv hr0' hr1, ?_⟩
       simp only [lineMap_apply, smul_smul, vadd_vsub]
-      rw [inv_mul_cancel hr0'.ne', one_smul, vsub_vadd]
+      rw [inv_mul_cancel₀ hr0'.ne', one_smul, vsub_vadd]
     · simp
   · rcases h with (rfl | ⟨r, ⟨hr, rfl⟩⟩)
     · exact wbtw_self_left _ _ _
     · rw [Set.mem_Ici] at hr
       refine ⟨r⁻¹, ⟨inv_nonneg.2 (zero_le_one.trans hr), inv_le_one hr⟩, ?_⟩
       simp only [lineMap_apply, smul_smul, vadd_vsub]
-      rw [inv_mul_cancel (one_pos.trans_le hr).ne', one_smul, vsub_vadd]
+      rw [inv_mul_cancel₀ (one_pos.trans_le hr).ne', one_smul, vsub_vadd]
 
 theorem Wbtw.right_mem_image_Ici_of_left_ne {x y z : P} (h : Wbtw R x y z) (hne : x ≠ y) :
     z ∈ lineMap x y '' Set.Ici (1 : R) :=

@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell
 -/
 import Mathlib.Data.Finsupp.Multiset
-import Mathlib.NumberTheory.Padics.PadicVal
+import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Data.Nat.PrimeFin
+import Mathlib.NumberTheory.Padics.PadicVal.Defs
 
 /-!
 # Prime factorizations
@@ -170,7 +172,7 @@ theorem factorization_prod {α : Type*} {S : Finset α} {g : α → ℕ} (hS : �
     · simp
     · intro x T hxS hTS hxT IH
       have hT : T.prod g ≠ 0 := prod_ne_zero_iff.mpr fun x hx => hS x (hTS hx)
-      simp [prod_insert hxT, sum_insert hxT, ← IH, factorization_mul (hS x hxS) hT]
+      simp [prod_insert hxT, sum_insert hxT, IH, factorization_mul (hS x hxS) hT]
 
 /-- For any `p`, the power of `p` in `n^k` is `k` times the power in `n` -/
 @[simp]

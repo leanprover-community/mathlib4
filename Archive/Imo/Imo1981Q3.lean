@@ -130,6 +130,7 @@ satisfying `NatPredicate m n N` are `fib K` and `fib (K+1)`, respectively.
 -/
 variable {K : ℕ} (HK : N < fib K + fib (K + 1)) {N}
 
+include HK in
 theorem m_n_bounds {m n : ℕ} (h1 : NatPredicate N m n) : m ≤ fib K ∧ n ≤ fib (K + 1) := by
   obtain ⟨k : ℕ, hm : m = fib k, hn : n = fib (k + 1)⟩ := h1.imp_fib m
   by_cases h2 : k < K + 1
@@ -156,6 +157,7 @@ theorem m_n_bounds {m n : ℕ} (h1 : NatPredicate N m n) : m ≤ fib K ∧ n ≤
 We spell out the consequences of this result for `specifiedSet N` here.
 -/
 variable {M : ℕ} (HM : M = fib K ^ 2 + fib (K + 1) ^ 2)
+include HK HM
 
 theorem k_bound {m n : ℤ} (h1 : ProblemPredicate N m n) : m ^ 2 + n ^ 2 ≤ M := by
   have h2 : 0 ≤ m := h1.m_range.left.le

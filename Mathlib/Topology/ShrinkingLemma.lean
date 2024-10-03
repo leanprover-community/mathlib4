@@ -26,14 +26,11 @@ We prove two versions of the lemma:
 normal space, shrinking lemma
 -/
 
-
 open Set Function
-
-open scoped Classical
 
 noncomputable section
 
-variable {ι X : Type*} [TopologicalSpace X] [NormalSpace X]
+variable {ι X : Type*} [TopologicalSpace X]
 
 namespace ShrinkingLemma
 
@@ -70,9 +67,11 @@ variable {u : ι → Set X} {s : Set X}
 
 instance : CoeFun (PartialRefinement u s) fun _ => ι → Set X := ⟨toFun⟩
 
-protected theorem subset (v : PartialRefinement u s) (i : ι) : v i ⊆ u i :=
-  if h : i ∈ v.carrier then subset_closure.trans (v.closure_subset h) else (v.apply_eq h).le
+protected theorem subset (v : PartialRefinement u s) (i : ι) : v i ⊆ u i := by
+  classical
+  exact if h : i ∈ v.carrier then subset_closure.trans (v.closure_subset h) else (v.apply_eq h).le
 
+open Classical in
 instance : PartialOrder (PartialRefinement u s) where
   le v₁ v₂ := v₁.carrier ⊆ v₂.carrier ∧ ∀ i ∈ v₁.carrier, v₁ i = v₂ i
   le_refl v := ⟨Subset.refl _, fun _ _ => rfl⟩
@@ -80,7 +79,7 @@ instance : PartialOrder (PartialRefinement u s) where
     ⟨Subset.trans h₁₂.1 h₂₃.1, fun i hi => (h₁₂.2 i hi).trans (h₂₃.2 i <| h₁₂.1 hi)⟩
   le_antisymm v₁ v₂ h₁₂ h₂₁ :=
     have hc : v₁.carrier = v₂.carrier := Subset.antisymm h₁₂.1 h₂₁.1
-    PartialRefinement.ext _ _
+    PartialRefinement.ext
       (funext fun x =>
         if hx : x ∈ v₁.carrier then h₁₂.2 _ hx
         else (v₁.apply_eq hx).trans (Eq.symm <| v₂.apply_eq <| hc ▸ hx))
@@ -98,6 +97,7 @@ their carriers. -/
 def chainSupCarrier (c : Set (PartialRefinement u s)) : Set ι :=
   ⋃ v ∈ c, carrier v
 
+open Classical in
 /-- Choice of an element of a nonempty chain of partial refinements. If `i` belongs to one of
 `carrier v`, `v ∈ c`, then `find c ne i` is one of these partial refinements. -/
 def find (c : Set (PartialRefinement u s)) (ne : c.Nonempty) (i : ι) : PartialRefinement u s :=
@@ -154,7 +154,8 @@ theorem le_chainSup {c : Set (PartialRefinement u s)} (hc : IsChain (· ≤ ·) 
 
 /-- If `s` is a closed set, `v` is a partial refinement, and `i` is an index such that
 `i ∉ v.carrier`, then there exists a partial refinement that is strictly greater than `v`. -/
-theorem exists_gt (v : PartialRefinement u s) (hs : IsClosed s) (i : ι) (hi : i ∉ v.carrier) :
+theorem exists_gt [NormalSpace X] (v : PartialRefinement u s) (hs : IsClosed s) (i : ι)
+    (hi : i ∉ v.carrier) :
     ∃ v' : PartialRefinement u s, v < v' := by
   have I : (s ∩ ⋂ (j) (_ : j ≠ i), (v j)ᶜ) ⊆ v i := by
     simp only [subset_def, mem_inter_iff, mem_iInter, and_imp]
@@ -164,6 +165,7 @@ theorem exists_gt (v : PartialRefinement u s) (hs : IsClosed s) (i : ι) (hi : i
   have C : IsClosed (s ∩ ⋂ (j) (_ : j ≠ i), (v j)ᶜ) :=
     IsClosed.inter hs (isClosed_biInter fun _ _ => isClosed_compl_iff.2 <| v.isOpen _)
   rcases normal_exists_closure_subset C (v.isOpen i) I with ⟨vi, ovi, hvi, cvi⟩
+  classical
   refine ⟨⟨update v i vi, insert i v.carrier, ?_, ?_, ?_, ?_⟩, ?_, ?_⟩
   · intro j
     rcases eq_or_ne j i with (rfl| hne) <;> simp [*, v.isOpen]
@@ -192,7 +194,7 @@ end ShrinkingLemma
 
 open ShrinkingLemma
 
-variable {u : ι → Set X} {s : Set X}
+variable {u : ι → Set X} {s : Set X} [NormalSpace X]
 
 /-- **Shrinking lemma**. A point-finite open cover of a closed subset of a normal space can be
 "shrunk" to a new open cover so that the closure of each new open set is contained in the
@@ -204,13 +206,12 @@ theorem exists_subset_iUnion_closure_subset (hs : IsClosed s) (uo : ∀ i, IsOpe
   have : ∀ c : Set (PartialRefinement u s),
       IsChain (· ≤ ·) c → c.Nonempty → ∃ ub, ∀ v ∈ c, v ≤ ub :=
     fun c hc ne => ⟨.chainSup c hc ne uf us, fun v hv => PartialRefinement.le_chainSup _ _ _ _ hv⟩
-  rcases zorn_nonempty_partialOrder this with ⟨v, hv⟩
+  rcases zorn_le_nonempty this with ⟨v, hv⟩
   suffices ∀ i, i ∈ v.carrier from
     ⟨v, v.subset_iUnion, fun i => v.isOpen _, fun i => v.closure_subset (this i)⟩
-  contrapose! hv
-  rcases hv with ⟨i, hi⟩
+  refine fun i ↦ by_contra fun hi ↦ ?_
   rcases v.exists_gt hs i hi with ⟨v', hlt⟩
-  exact ⟨v', hlt.le, hlt.ne'⟩
+  exact hv.not_lt hlt
 
 /-- **Shrinking lemma**. A point-finite open cover of a closed subset of a normal space can be
 "shrunk" to a new closed cover so that each new closed set is contained in the corresponding

@@ -333,7 +333,7 @@ theorem graph_injective : Injective (graph : (α → β) → Rel α β) := by
 
 @[simp] lemma graph_inj {f g : α → β} : f.graph = g.graph ↔ f = g := graph_injective.eq_iff
 
-theorem graph_id : graph id = @Eq α := by simp  (config := { unfoldPartialApp := true }) [graph]
+theorem graph_id : graph id = @Eq α := by simp (config := { unfoldPartialApp := true }) [graph]
 
 theorem graph_comp {f : β → γ} {g : α → β} : graph (f ∘ g) = Rel.comp (graph g) (graph f) := by
   ext x y

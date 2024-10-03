@@ -83,7 +83,7 @@ theorem quotientInfEquivSupQuotient_surjective (p p' : Submodule R M) :
   rw [← range_eq_top, quotientInfToSupQuotient, range_liftQ, eq_top_iff']
   rintro ⟨x, hx⟩; rcases mem_sup.1 hx with ⟨y, hy, z, hz, rfl⟩
   use ⟨y, hy⟩; apply (Submodule.Quotient.eq _).2
-  simp only [mem_comap, map_sub, coeSubtype, coe_inclusion, sub_add_cancel_left, neg_mem_iff, hz]
+  simp only [mem_comap, map_sub, coe_subtype, coe_inclusion, sub_add_cancel_left, neg_mem_iff, hz]
 
 /--
 Second Isomorphism Law : the canonical map from `p/(p ∩ p')` to `(p+p')/p'` as a linear isomorphism.
@@ -122,7 +122,7 @@ theorem quotientInfEquivSupQuotient_symm_apply_eq_zero_iff {p p' : Submodule R M
     (quotientInfEquivSupQuotient p p').symm (Submodule.Quotient.mk x) = 0 ↔ (x : M) ∈ p' :=
   (LinearEquiv.symm_apply_eq _).trans <| by
     -- porting note (#10745): was `simp`.
-    rw [_root_.map_zero, Quotient.mk_eq_zero, mem_comap, Submodule.coeSubtype]
+    rw [_root_.map_zero, Quotient.mk_eq_zero, mem_comap, Submodule.coe_subtype]
 
 theorem quotientInfEquivSupQuotient_symm_apply_right (p p' : Submodule R M) {x : ↥(p ⊔ p')}
     (hx : (x : M) ∈ p') : (quotientInfEquivSupQuotient p p').symm (Submodule.Quotient.mk x)
@@ -161,8 +161,9 @@ def quotientQuotientEquivQuotient : ((M ⧸ S) ⧸ T.map S.mkQ) ≃ₗ[R] M ⧸ 
   { quotientQuotientEquivQuotientAux S T h with
     toFun := quotientQuotientEquivQuotientAux S T h
     invFun := mapQ _ _ (mkQ S) (le_comap_map _ _)
-    left_inv := fun x => Quotient.inductionOn' x fun x => Quotient.inductionOn' x fun x => by simp
-    right_inv := fun x => Quotient.inductionOn' x fun x => by simp }
+    left_inv := fun x => Quotient.inductionOn' x fun x => Quotient.inductionOn' x fun x =>
+      by simp [Quotient.mk''_eq_mk]
+    right_inv := fun x => Quotient.inductionOn' x fun x => by simp [Quotient.mk''_eq_mk] }
 
 /-- Essentially the same equivalence as in the third isomorphism theorem,
 except restated in terms of suprema/addition of submodules instead of `≤`. -/
