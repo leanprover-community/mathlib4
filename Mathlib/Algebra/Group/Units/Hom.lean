@@ -226,6 +226,9 @@ class IsLocalRingHom (f : F) : Prop where
 theorem IsUnit.of_map (f : F) [IsLocalRingHom f] (a : R) (h : IsUnit (f a)) : IsUnit a :=
   IsLocalRingHom.map_nonunit a h
 
+-- TODO : remove alias, change the parenthesis of `f` and `a`
+alias isUnit_of_map_unit := IsUnit.of_map
+
 variable [MonoidHomClass F R S]
 
 @[simp]
@@ -235,5 +238,16 @@ theorem isUnit_map_iff (f : F) [IsLocalRingHom f] (a : R) : IsUnit (f a) ↔ IsU
 theorem isLocalRingHom_of_leftInverse [FunLike G S R] [MonoidHomClass G S R]
     {f : F} (g : G) (hfg : Function.LeftInverse g f) : IsLocalRingHom f where
   map_nonunit a ha := by rwa [isUnit_map_of_leftInverse g hfg] at ha
+
+instance MonoidHom.isLocalRingHom_comp (g : S →* T) (f : R →* S) [IsLocalRingHom g]
+    [IsLocalRingHom f] : IsLocalRingHom (g.comp f) where
+  map_nonunit a := IsLocalRingHom.map_nonunit a ∘ IsLocalRingHom.map_nonunit (f := g) (f a)
+
+instance isLocalRingHom_toMonoidHom (f : F) [ IsLocalRingHom f] : IsLocalRingHom (f : R →* S) :=
+  ⟨IsLocalRingHom.map_nonunit (f := f)⟩
+
+theorem MonoidHom.isLocalRingHom_of_comp (f : R →* S) (g : S →* T) [IsLocalRingHom (g.comp f)] :
+    IsLocalRingHom f :=
+  ⟨fun _ ha => (isUnit_map_iff (g.comp f) _).mp (ha.map g)⟩
 
 end IsLocalRingHom

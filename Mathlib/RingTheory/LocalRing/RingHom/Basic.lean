@@ -24,24 +24,9 @@ variable [Semiring R] [Semiring S] [Semiring T]
 instance isLocalRingHom_id (R : Type*) [Semiring R] : IsLocalRingHom (RingHom.id R) where
   map_nonunit _ := id
 
-instance isLocalRingHom_comp (g : S →+* T) (f : R →+* S) [IsLocalRingHom g] [IsLocalRingHom f] :
-    IsLocalRingHom (g.comp f) where
-  map_nonunit a := IsLocalRingHom.map_nonunit a ∘ IsLocalRingHom.map_nonunit (f a)
-
-instance isLocalRingHom_equiv (f : R ≃+* S) : IsLocalRingHom (f : R →+* S) where
-  map_nonunit a ha := by
-    convert RingHom.isUnit_map (f.symm : S →+* R) ha
-    exact (RingEquiv.symm_apply_apply f a).symm
-
-@[simp]
-theorem isUnit_of_map_unit (f : R →+* S) [IsLocalRingHom f] (a) (h : IsUnit (f a)) : IsUnit a :=
-  IsLocalRingHom.map_nonunit a h
-
-theorem of_irreducible_map (f : R →+* S) [h : IsLocalRingHom f] {x} (hfx : Irreducible (f x)) :
-    Irreducible x :=
-  ⟨fun h => hfx.not_unit <| IsUnit.map f h, fun p q hx =>
-    let ⟨H⟩ := h
-    Or.imp (H p) (H q) <| hfx.isUnit_or_isUnit <| f.map_mul p q ▸ congr_arg f hx⟩
+instance RingHom.isLocalRingHom_comp (g : S →+* T) (f : R →+* S) [IsLocalRingHom g]
+    [IsLocalRingHom f] : IsLocalRingHom (g.comp f) where
+  map_nonunit a := IsLocalRingHom.map_nonunit a ∘ IsLocalRingHom.map_nonunit (f := g) (f a)
 
 theorem isLocalRingHom_of_comp (f : R →+* S) (g : S →+* T) [IsLocalRingHom (g.comp f)] :
     IsLocalRingHom f :=
@@ -129,6 +114,10 @@ instance (priority := 100) {K R} [DivisionRing K] [CommRing R] [Nontrivial R]
 end LocalRing
 
 namespace RingEquiv
+
+instance {A B F: Type*} [CommSemiring A] [LocalRing A] [CommSemiring B] [EquivLike F A B]
+  [RingEquivClass F A B] (f : F) : IsLocalRingHom (f : A →+* B) :=
+  ⟨IsLocalRingHom.map_nonunit (f := f)⟩
 
 protected theorem localRing {A B : Type*} [CommSemiring A] [LocalRing A] [CommSemiring B]
     (e : A ≃+* B) : LocalRing B :=
