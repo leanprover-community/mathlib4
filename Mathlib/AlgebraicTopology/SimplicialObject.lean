@@ -5,6 +5,7 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
 import Mathlib.AlgebraicTopology.SimplexCategory
 import Mathlib.CategoryTheory.Comma.Arrow
+import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Opposites
 
@@ -23,7 +24,7 @@ open Opposite
 
 open CategoryTheory
 
-open CategoryTheory.Limits
+open CategoryTheory.Limits CategoryTheory.Functor
 
 universe v u v' u'
 
@@ -248,6 +249,33 @@ def truncation (n : ℕ) : SimplicialObject C ⥤ SimplicialObject.Truncated C n
   (whiskeringLeft _ _ _).obj SimplexCategory.Truncated.inclusion.op
 
 end Truncation
+
+
+noncomputable section
+
+/-- The n-skeleton as a functor `SimplicialObject.Truncated C n ⥤ SimplicialObject C`. -/
+protected abbrev Truncated.sk (n : ℕ) [ ∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
+    SimplexCategory.Truncated.inclusion.op.HasLeftKanExtension F] :
+    SimplicialObject.Truncated C n ⥤ SimplicialObject C :=
+  lan (SimplexCategory.Truncated.inclusion.op)
+
+/-- The n-coskeleton as a functor `SimplicialObject.Truncated C n ⥤ SimplicialObject C`. -/
+protected abbrev Truncated.cosk (n : ℕ) [ ∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
+    SimplexCategory.Truncated.inclusion.op.HasRightKanExtension F] :
+    SimplicialObject.Truncated C n ⥤ SimplicialObject C :=
+  ran (SimplexCategory.Truncated.inclusion.op)
+
+/-- The n-skeleton as an endofunctor on `SimplicialObject C`. -/
+abbrev sk (n : ℕ) [ ∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
+    SimplexCategory.Truncated.inclusion.op.HasLeftKanExtension F] :
+    SimplicialObject C ⥤ SimplicialObject C := truncation n ⋙ Truncated.sk n
+
+/-- The n-coskeleton as an endofunctor on `SimplicialObject C`. -/
+abbrev cosk (n : ℕ) [ ∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
+    SimplexCategory.Truncated.inclusion.op.HasRightKanExtension F] :
+    SimplicialObject C ⥤ SimplicialObject C := truncation n ⋙ Truncated.cosk n
+
+end
 
 variable (C)
 

@@ -362,17 +362,18 @@ open SimplexCategory
 noncomputable section
 
 /-- The n-skeleton as a functor `SSet.Truncated n ⥤ SSet`. -/
-protected abbrev Truncated.sk (n : ℕ) : SSet.Truncated n ⥤ SSet.{u} := lan (Truncated.inclusion.op)
+protected abbrev Truncated.sk (n : ℕ) : SSet.Truncated n ⥤ SSet.{u} :=
+  SimplicialObject.Truncated.sk n
 
 /-- The n-coskeleton as a functor `SSet.Truncated n ⥤ SSet`. -/
 protected abbrev Truncated.cosk (n : ℕ) : SSet.Truncated n ⥤ SSet.{u} :=
-  ran (Truncated.inclusion.op)
+  SimplicialObject.Truncated.cosk n
 
 /-- The n-skeleton as an endofunctor on `SSet`. -/
-abbrev sk (n : ℕ) : SSet ⥤ SSet := truncation.{u} n ⋙ Truncated.sk n
+abbrev sk (n : ℕ) : SSet ⥤ SSet := SimplicialObject.sk n
 
 /-- The n-coskeleton as an endofunctor on `SSet`. -/
-abbrev cosk (n : ℕ) : SSet ⥤ SSet := truncation.{u} n ⋙ Truncated.cosk n
+abbrev cosk (n : ℕ) : SSet ⥤ SSet := SimplicialObject.cosk n
 
 end
 
