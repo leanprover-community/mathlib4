@@ -24,6 +24,10 @@ variable [Semiring R] [Semiring S] [Semiring T]
 instance isLocalRingHom_id (R : Type*) [Semiring R] : IsLocalRingHom (RingHom.id R) where
   map_nonunit _ := id
 
+instance isLocalRingHom_toRingHom{F : Type*} [FunLike F R S]
+   [RingHomClass F R S] (f : F) [IsLocalRingHom f] : IsLocalRingHom (f : R →+* S) :=
+  ⟨IsLocalRingHom.map_nonunit (f := f)⟩
+
 instance RingHom.isLocalRingHom_comp (g : S →+* T) (f : R →+* S) [IsLocalRingHom g]
     [IsLocalRingHom f] : IsLocalRingHom (g.comp f) where
   map_nonunit a := IsLocalRingHom.map_nonunit a ∘ IsLocalRingHom.map_nonunit (f := g) (f a)
@@ -114,10 +118,6 @@ instance (priority := 100) {K R} [DivisionRing K] [CommRing R] [Nontrivial R]
 end LocalRing
 
 namespace RingEquiv
-
-instance {A B F: Type*} [CommSemiring A] [LocalRing A] [CommSemiring B] [EquivLike F A B]
-  [RingEquivClass F A B] (f : F) : IsLocalRingHom (f : A →+* B) :=
-  ⟨IsLocalRingHom.map_nonunit (f := f)⟩
 
 protected theorem localRing {A B : Type*} [CommSemiring A] [LocalRing A] [CommSemiring B]
     (e : A ≃+* B) : LocalRing B :=

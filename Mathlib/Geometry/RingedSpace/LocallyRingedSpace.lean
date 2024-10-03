@@ -89,11 +89,8 @@ noncomputable def Hom.stalkMap {X Y : LocallyRingedSpace.{u}} (f : Hom X Y) (x :
     Y.presheaf.stalk (f.1.1 x) ⟶ X.presheaf.stalk x :=
   f.val.stalkMap x
 
-instance {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) : IsLocalRingHom (f.stalkMap x) :=
-  f.2 x
-
 instance isLocalRingHomStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
-    IsLocalRingHom (f.val.stalkMap x) :=
+    IsLocalRingHom (f.stalkMap x) :=
   f.2 x
 
 /-- The identity morphism on a locally ringed space. -/
@@ -271,7 +268,7 @@ theorem preimage_basicOpen {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) {U : Ope
   · rintro ⟨y, hy : IsUnit _, rfl⟩
     erw [RingedSpace.mem_basicOpen _ _ ⟨f.1.base y.1, y.2⟩]
     erw [← PresheafedSpace.stalkMap_germ_apply] at hy
-    exact (isUnit_map_iff (f.val.stalkMap _) _).mp hy
+    exact (isUnit_map_iff (f.stalkMap _) _).mp hy
 
 -- This actually holds for all ringed spaces with nontrivial stalks.
 theorem basicOpen_zero (X : LocallyRingedSpace.{u}) (U : Opens X.carrier) :
