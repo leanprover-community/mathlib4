@@ -3,16 +3,17 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Real.Star
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Module.Rat
+import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.Algebra.Periodic
+import Mathlib.Data.Real.Star
 import Mathlib.Topology.Algebra.Order.Archimedean
 import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.Algebra.Star
+import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.Instances.Int
-import Mathlib.Topology.Order.Bornology
 import Mathlib.Topology.Metrizable.Basic
+import Mathlib.Topology.Order.Bornology
 
 /-!
 # Topological properties of ℝ

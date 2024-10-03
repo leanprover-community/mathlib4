@@ -1995,8 +1995,7 @@ theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : Measurabl
       rcases h₁ hL with ⟨g, g_le, g_top, gL⟩
       refine ⟨g, fun x => (g_le x).trans ?_, g_top, gL⟩
       simp only [SimpleFunc.coe_add, Pi.add_apply, le_add_iff_nonneg_right, zero_le']
-    obtain ⟨L₁, L₂, hL₁, hL₂, hL⟩ :
-      ∃ L₁ L₂ : ℝ≥0∞, (L₁ < ∫⁻ x, f₁ x ∂μ) ∧ (L₂ < ∫⁻ x, f₂ x ∂μ) ∧ L < L₁ + L₂ :=
+    obtain ⟨L₁, hL₁, L₂, hL₂, hL⟩ : ∃ L₁ < ∫⁻ x, f₁ x ∂μ, ∃ L₂ < ∫⁻ x, f₂ x ∂μ, L < L₁ + L₂ :=
       ENNReal.exists_lt_add_of_lt_add hL hf₁ hf₂
     rcases h₁ hL₁ with ⟨g₁, g₁_le, g₁_top, hg₁⟩
     rcases h₂ hL₂ with ⟨g₂, g₂_le, g₂_top, hg₂⟩

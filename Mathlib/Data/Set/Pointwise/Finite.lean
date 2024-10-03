@@ -26,16 +26,6 @@ theorem finite_one : (1 : Set α).Finite :=
 
 end One
 
-section InvolutiveInv
-
-variable [InvolutiveInv α] {s : Set α}
-
-@[to_additive]
-theorem Finite.inv (hs : s.Finite) : s⁻¹.Finite :=
-  hs.preimage inv_injective.injOn
-
-end InvolutiveInv
-
 section Mul
 
 variable [Mul α] {s t : Set α}
@@ -109,20 +99,52 @@ section Cancel
 variable [Mul α] [IsLeftCancelMul α] [IsRightCancelMul α] {s t : Set α}
 
 @[to_additive]
-theorem infinite_mul : (s * t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infinite ∧ s.Nonempty :=
-  infinite_image2 (fun _ _ => (mul_left_injective _).injOn) fun _ _ =>
-    (mul_right_injective _).injOn
+lemma finite_mul : (s * t).Finite ↔ s.Finite ∧ t.Finite ∨ s = ∅ ∨ t = ∅ :=
+  finite_image2 (fun _ _ ↦ (mul_left_injective _).injOn) fun _ _ ↦ (mul_right_injective _).injOn
 
 @[to_additive]
-lemma finite_mul : (s * t).Finite ↔ s.Finite ∧ t.Finite ∨ s = ∅ ∨ t = ∅ :=
-  finite_image2  (fun _ _ ↦ (mul_left_injective _).injOn)
-    fun _ _ ↦ (mul_right_injective _).injOn
+lemma infinite_mul : (s * t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infinite ∧ s.Nonempty :=
+  infinite_image2 (fun _ _ => (mul_left_injective _).injOn) fun _ _ => (mul_right_injective _).injOn
 
 end Cancel
 
+section InvolutiveInv
+variable [InvolutiveInv α] {s : Set α}
+
+@[to_additive (attr := simp)] lemma finite_inv : s⁻¹.Finite ↔ s.Finite := by
+  rw [← image_inv, finite_image_iff inv_injective.injOn]
+
+@[to_additive (attr := simp)] lemma infinite_inv : s⁻¹.Infinite ↔ s.Infinite := finite_inv.not
+
+@[to_additive] alias ⟨Finite.of_inv, Finite.inv⟩ := finite_inv
+
+end InvolutiveInv
+
+section Div
+variable [Div α] {s t : Set α}
+
+@[to_additive] lemma Finite.div : s.Finite → t.Finite → (s / t).Finite := .image2 _
+
+/-- Division preserves finiteness. -/
+@[to_additive "Subtraction preserves finiteness."]
+def fintypeDiv [DecidableEq α] (s t : Set α) [Fintype s] [Fintype t] : Fintype (s / t) :=
+  Set.fintypeImage2 _ _ _
+
+end Div
+
 section Group
 
-variable [Group α] [MulAction α β] {a : α} {s : Set β}
+variable [Group α] {s t : Set α}
+
+@[to_additive]
+lemma finite_div : (s / t).Finite ↔ s.Finite ∧ t.Finite ∨ s = ∅ ∨ t = ∅ :=
+  finite_image2 (fun _ _ ↦ div_left_injective.injOn) fun _ _ ↦ div_right_injective.injOn
+
+@[to_additive]
+lemma infinite_div : (s / t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infinite ∧ s.Nonempty :=
+  infinite_image2 (fun _ _ ↦ div_left_injective.injOn) fun _ _ ↦ div_right_injective.injOn
+
+variable [MulAction α β] {a : α} {s : Set β}
 
 @[to_additive (attr := simp)]
 theorem finite_smul_set : (a • s).Finite ↔ s.Finite :=
@@ -132,11 +154,8 @@ theorem finite_smul_set : (a • s).Finite ↔ s.Finite :=
 theorem infinite_smul_set : (a • s).Infinite ↔ s.Infinite :=
   infinite_image_iff (MulAction.injective _).injOn
 
-alias ⟨Finite.of_smul_set, _⟩ := finite_smul_set
-
-alias ⟨_, Infinite.smul_set⟩ := infinite_smul_set
-
-attribute [to_additive] Finite.of_smul_set Infinite.smul_set
+@[to_additive] alias ⟨Finite.of_smul_set, _⟩ := finite_smul_set
+@[to_additive] alias ⟨_, Infinite.smul_set⟩ := infinite_smul_set
 
 end Group
 
