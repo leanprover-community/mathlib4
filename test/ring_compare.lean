@@ -72,7 +72,7 @@ set_option maxHeartbeats 750 in
 example : x + y - x + 1 < y + (4:K) := by ring_lt
 
 /--
-error: ring failed, ring expressions not equal up to a constant
+error: ring failed, ring expressions not equal up to an additive constant
 K : Type u_1
 inst✝ : LinearOrderedField K
 x y : K
@@ -92,7 +92,7 @@ x y : K
 example : x + y + 4 ≤ y + x + 3 := by ring_le
 
 /--
-error: ring failed, ring expressions not equal up to a constant
+error: ring failed, ring expressions not equal up to an additive constant
 K : Type u_1
 inst✝ : LinearOrderedField K
 x y : K
