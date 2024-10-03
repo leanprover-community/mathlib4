@@ -647,7 +647,7 @@ variable {M EM HM : Type*} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] [Topolo
 space of `E₁ ×ᵇ E₂`, then its smoothness can be checked by checking the smoothness of (1) the map
 `TotalSpace.prod_fst ∘ φ` into the total space of `E₁`, and (ii) the map `TotalSpace.prod_snd ∘ φ`
 into the total space of `E₂`. -/
-theorem Bundle.Pullback.smooth_of_smooth_fst_comp__of_smooth_snd_comp
+theorem Bundle.Prod.smooth_of_smooth_fst_comp_of_smooth_snd_comp
     {φ : M → TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)}
     (h1 : Smooth IM (IB.prod 𝓘(𝕜, F₁)) (TotalSpace.prod_fst F₁ E₁ F₂ E₂ ∘ φ))
     (h2 : Smooth IM (IB.prod 𝓘(𝕜, F₂)) (TotalSpace.prod_snd F₁ E₁ F₂ E₂ ∘ φ)) :
