@@ -108,7 +108,7 @@ end PartialBoundedOrder
 
 section SemilatticeInfBot
 
-variable [SemilatticeInf α] [OrderBot α] {a b c d : α}
+variable [SemilatticeInf α] [OrderBot α] {a b c : α}
 
 theorem disjoint_iff_inf_le : Disjoint a b ↔ a ⊓ b ≤ ⊥ :=
   ⟨fun hd ↦ hd inf_le_left inf_le_right, fun h _ ha hb ↦ (le_inf ha hb).trans h⟩
@@ -267,7 +267,7 @@ end PartialBoundedOrder
 
 section SemilatticeSupTop
 
-variable [SemilatticeSup α] [OrderTop α] {a b c d : α}
+variable [SemilatticeSup α] [OrderTop α] {a b c : α}
 
 theorem codisjoint_iff_le_sup : Codisjoint a b ↔ ⊤ ≤ a ⊔ b :=
   @disjoint_iff_inf_le αᵒᵈ _ _ _ _
@@ -401,7 +401,7 @@ namespace IsCompl
 
 section BoundedPartialOrder
 
-variable [PartialOrder α] [BoundedOrder α] {x y z : α}
+variable [PartialOrder α] [BoundedOrder α] {x y : α}
 
 @[symm]
 protected theorem symm (h : IsCompl x y) : IsCompl y x :=
@@ -419,7 +419,7 @@ end BoundedPartialOrder
 
 section BoundedLattice
 
-variable [Lattice α] [BoundedOrder α] {x y z : α}
+variable [Lattice α] [BoundedOrder α] {x y : α}
 
 theorem of_le (h₁ : x ⊓ y ≤ ⊥) (h₂ : ⊤ ≤ x ⊔ y) : IsCompl x y :=
   ⟨disjoint_iff_inf_le.mpr h₁, codisjoint_iff_le_sup.mpr h₂⟩
