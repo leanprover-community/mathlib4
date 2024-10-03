@@ -117,5 +117,4 @@ def preservesFiniteColimitsOfEvaluation {D : Type*} [Category D] {E : Type*} [Ca
     PreservesFiniteColimits F :=
   ⟨fun J _ _ => preservesColimitsOfShapeOfEvaluation F J fun k => (h k).preservesFiniteColimits _⟩
 
-
 end CategoryTheory
