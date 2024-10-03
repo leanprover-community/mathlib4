@@ -147,6 +147,9 @@ protected theorem monotone (f : F) : Monotone f := fun _ _ => map_rel f
 
 protected theorem mono (f : F) : Monotone f := fun _ _ => map_rel f
 
+@[gcongr] protected lemma GCongr.mono (f : F) {a b : α} (hab : a ≤ b) : f a ≤ f b :=
+  OrderHomClass.mono f hab
+
 /-- Turn an element of a type `F` satisfying `OrderHomClass F α β` into an actual
 `OrderHom`. This is declared as the default coercion from `F` to `α →o β`. -/
 @[coe]
@@ -558,9 +561,6 @@ theorem lt_iff_lt {a b} : f a < f b ↔ a < b :=
 
 theorem eq_iff_eq {a b} : f a = f b ↔ a = b :=
   f.injective.eq_iff
-
-@[gcongr] protected alias ⟨_, GCongr.orderEmbedding_apply_le_apply⟩ := le_iff_le
-@[gcongr] protected alias ⟨_, GCongr.orderEmbedding_apply_lt_apply⟩ := lt_iff_lt
 
 protected theorem monotone : Monotone f :=
   OrderHomClass.monotone f
