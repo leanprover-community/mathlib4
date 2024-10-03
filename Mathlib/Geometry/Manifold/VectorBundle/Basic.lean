@@ -621,6 +621,39 @@ instance Bundle.Prod.smoothVectorBundle : SmoothVectorBundle (F₁ × F₂) (E�
       simp only [Trivialization.baseSet_prod, mfld_simps]
       mfld_set_tac
 
+-- move these
+def Bundle.TotalSpace.prod_fst : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → TotalSpace F₁ E₁ :=
+  fun ⟨x, v⟩ ↦ ⟨x, v.1⟩
+def Bundle.TotalSpace.prod_snd : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → TotalSpace F₂ E₂ :=
+  fun ⟨x, v⟩ ↦ ⟨x, v.2⟩
+
+/-- For smooth vector bundles `E₁` and `E₂` over a manifold `B`, the natural projection from the
+total space of `E₁ ×ᵇ E₂` to the total space of `E₁` is smooth. -/
+theorem Bundle.Prod.smooth_fst :
+    Smooth (IB.prod 𝓘(𝕜, F₁ × F₂)) (IB.prod 𝓘(𝕜, F₁)) (TotalSpace.prod_fst F₁ E₁ F₂ E₂) := by
+  sorry
+
+/-- For smooth vector bundles `E₁` and `E₂` over a manifold `B`, the natural projection from the
+total space of `E₁ ×ᵇ E₂` to the total space of `E₂` is smooth. -/
+theorem Bundle.Prod.smooth_snd :
+    Smooth (IB.prod 𝓘(𝕜, F₁ × F₂)) (IB.prod 𝓘(𝕜, F₂)) (TotalSpace.prod_snd F₁ E₁ F₂ E₂) := by
+  sorry
+
+variable {M EM HM : Type*} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] [TopologicalSpace HM]
+  {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
+  [SmoothManifoldWithCorners IM M]
+
+/-- Given a smooth vector bundles `E₁`, `E₂` over a manifold `B`, if `φ` is a map into the total
+space of `E₁ ×ᵇ E₂`, then its smoothness can be checked by checking the smoothness of (1) the map
+`TotalSpace.prod_fst ∘ φ` into the total space of `E₁`, and (ii) the map `TotalSpace.prod_snd ∘ φ`
+into the total space of `E₂`. -/
+theorem Bundle.Pullback.smooth_of_smooth_fst_comp__of_smooth_snd_comp
+    {φ : M → TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)}
+    (h1 : Smooth IM (IB.prod 𝓘(𝕜, F₁)) (TotalSpace.prod_fst F₁ E₁ F₂ E₂ ∘ φ))
+    (h2 : Smooth IM (IB.prod 𝓘(𝕜, F₂)) (TotalSpace.prod_snd F₁ E₁ F₂ E₂ ∘ φ)) :
+    Smooth IM (IB.prod 𝓘(𝕜, F₁ × F₂)) φ := by
+  sorry
+
 end Prod
 
 end WithTopology
