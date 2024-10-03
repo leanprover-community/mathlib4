@@ -7,15 +7,48 @@ import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
 
 /-!
 # Topological entropy of the image of a set under a semiconjugacy
-The main lemma is `image_entropy`/`image_entropy'`: the entropy of the image of a set by a
-semiconjugacy is the entropy of the set for the inverse image filter. This lemma needs very little
-hypotheses, and generalizes many important results.
+Consider two dynamical systems `(X, S)` and `(Y, T)` related via a semiconjugacy `φ`:
 
-First, a uniformly continuous semiconjugacy descreases the entropy of subsets:
-`image_entropy_uniformContinuous_le`, `image_entropy'_uniformContinuous_le`.
 
-Second, the entropy of `Set.univ` for a subsystem is equal to the entropy of the subset, which
-justifies the implementation of the entropy of a subset: `subset_restriction_entropy`.
+```
+X ---S--> X
+|         |
+φ         φ
+|         |
+v         v
+Y ---T--> Y
+```
+
+We relate the topological entropy of a subset `F ⊆ X` with the topological entropy
+of its image `φ '' F ⊆ Y`.
+
+The best-known theorem is that, if all maps are uniformly continuous, then
+`coverEntropy T (φ '' F) ≤ coverEntropy S F`. This is theorem
+`coverEntropy_image_le_of_uniformContinuous` herein. We actually prove the much more general
+statement that `coverEntropy T (φ '' F) = coverEntropy S F` if `X` is endowed with the pullback
+by `φ` of the uniform structure of `Y`.
+
+This more general statement has another direct consequence: if `F` is invariant by `T`, then the
+topological entropy of the restriction of `T` to `F` is exactly `coverEntropy T F`. This
+corollary is essential: in most references, the entropy of an invariant subset `F` is
+defined as the entropy of the restriction to of the system `F`. We chose instead to give a direct
+definition of the topological entropy of a subset, so as to avoid working with subtypes. Theorem
+`coverEntropy_restrict` shows a posteriori that this choice is coherent with the literature.
+
+## Implementation notes
+We used only the definition of the topological entropy using covers; the simplest version of
+`IsDynCoverOf.image` for nets fails.
+
+## Main results
+- `coverEntropy_image`/`coverEntropyInf_image`: the entropy of `φ '' F` equals the entropy of `F`
+if `X` is endowed with the pullback by `φ` of the uniform structure of `Y`.
+- `coverEntropy_image_le_of_uniformContinuous`/`coverEntropyInf_image_le_of_uniformContinuous`:
+the entropy of `φ '' F` is lower than the entropy of `F` if `φ` is uniformly continuous.
+- `coverEntropy_restrict`: the entropy of the restriction of `S` to an invariant set `F` is
+`coverEntropy S F`.
+
+## Tags
+entropy, semiconjugacy
 -/
 
 namespace Dynamics
@@ -28,40 +61,45 @@ lemma test {X Y : Type*} (f : X → Y) {V : Set (Y × Y)} {x : X} :
 
 variable {X Y : Type*} {S : X → X} {T : Y → Y} {φ : X → Y}
 
+lemma IsDynCoverOf.image (h : Semiconj φ S T) {F : Set X} {V : Set (Y × Y)} {n : ℕ} {s : Finset X}
+    (h' : IsDynCoverOf S F ((Prod.map φ φ) ⁻¹' V) n s) :
+    ∃ t : Finset Y, IsDynCoverOf T (φ '' F) V n t ∧ t.card ≤ s.card := by
+  classical
+  -- If `s` is a dynamical cover of `F`, then its image by `φ` is a cover of `φ '' F`.
+  use s.image φ
+  apply And.intro _ Finset.card_image_le
+  simp only [IsDynCoverOf, image_subset_iff, preimage_iUnion₂]
+  apply h'.trans
+  simp only [Finset.mem_coe, Finset.set_biUnion_finset_image]
+  refine iUnion₂_mono fun i _ ↦ subset_of_eq ?_
+  rw [← h.preimage_dynEntourage V n]
+  ext x
+  simp only [ball, mem_preimage, Prod.map_apply]
+
 lemma IsDynCoverOf.preimage (h : Semiconj φ S T) {F : Set X} {V : Set (Y × Y)}
     (V_symm : SymmetricRel V) {n : ℕ} {t : Finset Y} (h' : IsDynCoverOf T (φ '' F) V n t) :
     ∃ s : Finset X, IsDynCoverOf S F ((Prod.map φ φ) ⁻¹' (V ○ V)) n s ∧ s.card ≤ t.card := by
   classical
   rcases isEmpty_or_nonempty X with _ | _
   · exact ⟨∅, eq_empty_of_isEmpty F ▸ ⟨isDynCoverOf_empty, Finset.card_empty ▸ zero_le t.card⟩⟩
+  -- If `t` is a dynamical cover of `φ '' F`, then we want to choose one preimage by `φ` for each
+  -- element of `t`. This is complicated by the fact that `t` may not be a subset of `φ '' F`,
+  -- and may not even be in the range of `φ`. Hence, we first modify `t` to make it a subset
+  -- of `φ '' F`. This requires taking larger entourages.
   rcases h'.nonempty_inter with ⟨s, s_cover, s_card, s_inter⟩
   choose! g gs_cover using fun (x : Y) (h : x ∈ s) ↦ nonempty_def.1 (s_inter x h)
   choose! f f_section using fun (y : Y) (a : y ∈ φ '' F) ↦ a
-  use Finset.image (f ∘ g) s
+  use s.image (f ∘ g)
   apply And.intro _ (Finset.card_image_le.trans s_card)
   simp only [IsDynCoverOf, Finset.mem_coe, image_subset_iff, preimage_iUnion₂] at s_cover ⊢
   apply s_cover.trans
-  rw [← Semiconj.preimage_dynEntourage h (V ○ V) n, Finset.set_biUnion_finset_image]
+  rw [← h.preimage_dynEntourage (V ○ V) n, Finset.set_biUnion_finset_image]
   refine iUnion₂_mono fun i i_s ↦ ?_
   rw [comp_apply, ← test, (f_section (g i) (gs_cover i i_s).2).2]
   refine preimage_mono fun x x_i ↦ mem_ball_dynEntourage_comp T n V_symm x (g i) ⟨i, ?_⟩
   replace gs_cover := (gs_cover i i_s).1
   rw [mem_ball_symmetry (V_symm.dynEntourage T n)] at x_i gs_cover
   exact ⟨x_i, gs_cover⟩
-
-lemma IsDynCoverOf.image (h : Semiconj φ S T) {F : Set X} {V : Set (Y × Y)} {n : ℕ} {s : Finset X}
-    (h' : IsDynCoverOf S F ((Prod.map φ φ) ⁻¹' V) n s) :
-    ∃ t : Finset Y, IsDynCoverOf T (φ '' F) V n t ∧ t.card ≤ s.card := by
-  classical
-  use Finset.image φ s
-  apply And.intro _ Finset.card_image_le
-  simp only [IsDynCoverOf, image_subset_iff, preimage_iUnion₂]
-  apply h'.trans
-  simp only [Finset.mem_coe, Finset.set_biUnion_finset_image]
-  refine iUnion₂_mono fun i _ ↦ subset_of_eq ?_
-  rw [← Semiconj.preimage_dynEntourage h V n]
-  ext x
-  simp only [ball, mem_preimage, Prod.map_apply]
 
 lemma le_coverMincard_image (h : Semiconj φ S T) (F : Set X) {V : Set (Y × Y)}
     (V_symm : SymmetricRel V) (n : ℕ) :
@@ -113,6 +151,8 @@ lemma coverEntropyInfEntourage_image_le (h : Semiconj φ S T) (F : Set X) (V : S
   apply monotone_div_right_of_nonneg (Nat.cast_nonneg' n)
   exact log_monotone (ENat.toENNReal_mono (coverMincard_image_le h F V n))
 
+/-- The entropy of `φ '' F` equals the entropy of `F` if `X` is endowed with the pullback by `φ`
+  of the uniform structure of `Y`.-/
 theorem coverEntropy_image (u : UniformSpace Y) {S : X → X} {T : Y → Y} {φ : X → Y}
     (h : Semiconj φ S T) (F : Set X) :
     coverEntropy T (φ '' F) = @coverEntropy X (comap φ u) S F := by
@@ -129,6 +169,8 @@ theorem coverEntropy_image (u : UniformSpace Y) {S : X → X} {T : Y → Y} {φ 
     apply (le_coverEntropyEntourage_image h F W_symm).trans
     exact coverEntropyEntourage_le_coverEntropy T (φ '' F) W_uni
 
+/-- The entropy of `φ '' F` equals the entropy of `F` if `X` is endowed with the pullback by `φ`
+  of the uniform structure of `Y`. This version uses a `liminf`.-/
 theorem coverEntropyInf_image (u : UniformSpace Y) {S : X → X} {T : Y → Y} {φ : X → Y}
     (h : Semiconj φ S T) (F : Set X) :
     coverEntropyInf T (φ '' F) = @coverEntropyInf X (comap φ u) S F := by
@@ -145,18 +187,23 @@ theorem coverEntropyInf_image (u : UniformSpace Y) {S : X → X} {T : Y → Y} {
     apply (le_coverEntropyInfEntourage_image h F W_symm).trans
     exact coverEntropyInfEntourage_le_coverEntropyInf T (φ '' F) W_uni
 
+/-- The entropy of `φ '' F` is lower than entropy of `F` if  `φ` is uniformly continuous.-/
 theorem coverEntropy_image_le_of_uniformContinuous [UniformSpace X] [UniformSpace Y] {S : X → X}
     {T : Y → Y} {φ : X → Y} (h : Semiconj φ S T) (h' : UniformContinuous φ) (F : Set X) :
     coverEntropy T (φ '' F) ≤ coverEntropy S F := by
   rw [coverEntropy_image _ h F]
   exact coverEntropy_antitone S F (uniformContinuous_iff.1 h')
 
+/-- The entropy of `φ '' F` is lower than entropy of `F` if  `φ` is uniformly continuous. This
+  version uses a `liminf`.-/
 theorem coverEntropyInf_image_le_of_uniformContinuous [UniformSpace X] [UniformSpace Y] {S : X → X}
     {T : Y → Y} {φ : X → Y} (h : Semiconj φ S T) (h' : UniformContinuous φ) (F : Set X) :
     coverEntropyInf T (φ '' F) ≤ coverEntropyInf S F := by
   rw [coverEntropyInf_image _ h F]
   exact coverEntropyInf_antitone S F (uniformContinuous_iff.1 h')
 
+/-- The entropy of the restriction of `T` to an invariant set `F` is `coverEntropy S F`. This
+theorem justifies our definition of `coverEntropy T F`.-/
 theorem coverEntropy_restrict [UniformSpace X] {T : X → X} {F : Set X} (h : MapsTo T F F) :
     coverEntropy (MapsTo.restrict T F F h) univ = coverEntropy T F := by
   rw [← coverEntropy_image _ (MapsTo.val_restrict_apply h) univ, image_univ,
