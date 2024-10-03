@@ -64,7 +64,7 @@ theorem cycleType_eq {σ : Perm α} (l : List (Perm α)) (h0 : l.prod = σ)
     σ.cycleType = l.map (Finset.card ∘ support) := by
   have hl : l.Nodup := nodup_of_pairwise_disjoint_cycles h1 h2
   rw [cycleType_eq' l.toFinset]
-  · simp [List.dedup_eq_self.mpr hl, (· ∘ ·)]
+  · simp [List.dedup_eq_self.mpr hl, Function.comp_def]
   · simpa using h1
   · simpa [hl] using h2
   · simp [hl, h0]
@@ -133,6 +133,11 @@ theorem sum_cycleType (σ : Perm α) : σ.cycleType.sum = σ.support.card := by
   | base_one => simp
   | base_cycles σ hσ => rw [hσ.cycleType, sum_coe, List.sum_singleton]
   | induction_disjoint σ τ hd _ hσ hτ => rw [hd.cycleType, sum_add, hσ, hτ, hd.card_support_mul]
+
+theorem card_fixedPoints (σ : Equiv.Perm α) :
+    Fintype.card (Function.fixedPoints σ) = Fintype.card α - σ.cycleType.sum := by
+  rw [Equiv.Perm.sum_cycleType, ← Finset.card_compl, Fintype.card_ofFinset]
+  congr; aesop
 
 theorem sign_of_cycleType' (σ : Perm α) :
     sign σ = (σ.cycleType.map fun n => -(-1 : ℤˣ) ^ n).prod := by

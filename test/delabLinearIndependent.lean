@@ -10,7 +10,7 @@ variable (h : LinearIndependent K (fun b => b : s → V)) in
 #guard_msgs in #check h
 
 variable (h : LinearIndependent K (Subtype.val : s → V)) in
-/-- info: h : LinearIndependent (ι := { x // x ∈ s }) K Subtype.val -/
+/-- info: h : LinearIndependent K Subtype.val -/
 #guard_msgs in #check h
 
 variable (h : LinearIndependent K (by exact Subtype.val : s → V)) in

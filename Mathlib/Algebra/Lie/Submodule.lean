@@ -72,12 +72,12 @@ instance : Zero (LieSubmodule R L M) :=
 instance : Inhabited (LieSubmodule R L M) :=
   ⟨0⟩
 
-instance coeSubmodule : CoeOut (LieSubmodule R L M) (Submodule R M) :=
+instance (priority := high) coeSort : CoeSort (LieSubmodule R L M) (Type w) where
+  coe N := { x : M // x ∈ N }
+
+instance (priority := mid) coeSubmodule : CoeOut (LieSubmodule R L M) (Submodule R M) :=
   ⟨toSubmodule⟩
 
-instance instCanLiftSubmoduleLieSubmodule : CanLift (Submodule R M) (LieSubmodule R L M) (·)
-    (fun N ↦ ∀ {x : L} {m : M}, m ∈ N → ⁅x, m⁆ ∈ N) where
-  prf N hN := ⟨⟨N, hN⟩, rfl⟩
 
 @[norm_cast]
 theorem coe_toSubmodule : ((N : Submodule R M) : Set M) = N :=
@@ -109,7 +109,7 @@ theorem mem_coe {x : M} : x ∈ (N : Set M) ↔ x ∈ N :=
 protected theorem zero_mem : (0 : M) ∈ N :=
   zero_mem N
 
--- Porting note (#10618): @[simp] can prove this
+@[simp]
 theorem mk_eq_zero {x} (h : x ∈ N) : (⟨x, h⟩ : N) = 0 ↔ x = 0 :=
   Subtype.ext_iff_val
 
@@ -156,17 +156,6 @@ instance : LieRingModule L N where
   lie_add := by intro x m n; apply SetCoe.ext; apply lie_add
   leibniz_lie := by intro x y m; apply SetCoe.ext; apply leibniz_lie
 
-instance module' {S : Type*} [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
-    Module S N :=
-  N.toSubmodule.module'
-
-instance : Module R N :=
-  N.toSubmodule.module
-
-instance {S : Type*} [Semiring S] [SMul S R] [SMul Sᵐᵒᵖ R] [Module S M] [Module Sᵐᵒᵖ M]
-    [IsScalarTower S R M] [IsScalarTower Sᵐᵒᵖ R M] [IsCentralScalar S M] : IsCentralScalar S N :=
-  N.toSubmodule.isCentralScalar
-
 @[simp, norm_cast]
 theorem coe_zero : ((0 : N) : M) = (0 : M) :=
   rfl
@@ -188,8 +177,19 @@ theorem coe_smul (t : R) (m : N) : (↑(t • m) : M) = t • (m : M) :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_bracket (x : L) (m : N) : (↑⁅x, m⁆ : M) = ⁅x, ↑m⁆ :=
+theorem coe_bracket (x : L) (m : N) :
+    (↑⁅x, m⁆ : M) = ⁅x, ↑m⁆ :=
   rfl
+
+-- Copying instances from `Submodule` for correct discrimination keys
+instance [IsNoetherian R M] (N : LieSubmodule R L M) : IsNoetherian R N :=
+  inferInstanceAs <| IsNoetherian R N.toSubmodule
+
+instance [IsArtinian R M] (N : LieSubmodule R L M) : IsArtinian R N :=
+  inferInstanceAs <| IsArtinian R N.toSubmodule
+
+instance [NoZeroSMulDivisors R M] : NoZeroSMulDivisors R N :=
+  inferInstanceAs <| NoZeroSMulDivisors R N.toSubmodule
 
 variable [LieAlgebra R L] [LieModule R L M]
 
@@ -246,7 +246,8 @@ instance LieIdeal.lieRingModule {R L : Type*} [CommRing R] [LieRing L] [LieAlgeb
 
 @[simp]
 theorem LieIdeal.coe_bracket_of_module {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
-    (I : LieIdeal R L) [LieRingModule L M] (x : I) (m : M) : ⁅x, m⁆ = ⁅(↑x : L), m⁆ :=
+    (I : LieIdeal R L) [LieRingModule L M] (x : I) (m : M) :
+    ⁅x, m⁆ = ⁅(↑x : L), m⁆ :=
   LieSubalgebra.coe_bracket_of_module (I : LieSubalgebra R L) x m
 
 /-- Transfer the `LieModule` instance from the coercion `LieIdeal → LieSubalgebra`. -/
@@ -320,6 +321,9 @@ theorem coeSubmodule_le_coeSubmodule : (N : Submodule R M) ≤ N' ↔ N ≤ N' :
 
 instance : Bot (LieSubmodule R L M) :=
   ⟨0⟩
+
+instance instUniqueBot : Unique (⊥ : LieSubmodule R L M) :=
+  inferInstanceAs <| Unique (⊥ : Submodule R M)
 
 @[simp]
 theorem bot_coe : ((⊥ : LieSubmodule R L M) : Set M) = {0} :=
@@ -543,10 +547,11 @@ theorem mem_sup (x : M) : x ∈ N ⊔ N' ↔ ∃ y ∈ N, ∃ z ∈ N', y + z = 
 
 nonrec theorem eq_bot_iff : N = ⊥ ↔ ∀ m : M, m ∈ N → m = 0 := by rw [eq_bot_iff]; exact Iff.rfl
 
-instance subsingleton_of_bot : Subsingleton (LieSubmodule R L ↑(⊥ : LieSubmodule R L M)) := by
+instance subsingleton_of_bot : Subsingleton (LieSubmodule R L (⊥ : LieSubmodule R L M)) := by
   apply subsingleton_of_bot_eq_top
-  ext ⟨x, hx⟩; change x ∈ ⊥ at hx; rw [Submodule.mem_bot] at hx; subst hx
-  simp only [true_iff_iff, eq_self_iff_true, Submodule.mk_eq_zero, LieSubmodule.mem_bot, mem_top]
+  ext ⟨_, hx⟩
+  simp only [mem_bot, mk_eq_zero, mem_top, iff_true]
+  exact hx
 
 instance : IsModularLattice (LieSubmodule R L M) where
   sup_inf_le_assoc_of_le _ _ := by
@@ -826,9 +831,9 @@ theorem comap_incl_eq_top : N₂.comap N.incl = ⊤ ↔ N ≤ N₂ := by
     LieSubmodule.top_coeSubmodule, Submodule.comap_subtype_eq_top, coeSubmodule_le_coeSubmodule]
 
 theorem comap_incl_eq_bot : N₂.comap N.incl = ⊥ ↔ N ⊓ N₂ = ⊥ := by
-  simp only [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.coeSubmodule_comap,
-    LieSubmodule.incl_coe, LieSubmodule.bot_coeSubmodule, ← Submodule.disjoint_iff_comap_eq_bot,
-    disjoint_iff, inf_coe_toSubmodule]
+  simp only [← coe_toSubmodule_eq_iff, coeSubmodule_comap, incl_coe, bot_coeSubmodule,
+    inf_coe_toSubmodule]
+  rw [← Submodule.disjoint_iff_comap_eq_bot, disjoint_iff]
 
 @[mono]
 theorem map_mono (h : N ≤ N₂) : N.map f ≤ N₂.map f :=
@@ -983,9 +988,9 @@ same as ideals of `L` contained in `I`. -/
 instance subsingleton_of_bot : Subsingleton (LieIdeal R (⊥ : LieIdeal R L)) := by
   apply subsingleton_of_bot_eq_top
   ext ⟨x, hx⟩
-  rw [LieSubmodule.bot_coeSubmodule, Submodule.mem_bot] at hx
+  rw [LieSubmodule.mem_bot] at hx
   subst hx
-  simp only [Submodule.mk_eq_zero, LieSubmodule.mem_bot, LieSubmodule.mem_top]
+  simp only [LieSubmodule.mk_eq_zero, LieSubmodule.mem_bot, LieSubmodule.mem_top]
 
 end LieIdeal
 
@@ -1044,6 +1049,7 @@ theorem ker_le_comap : f.ker ≤ J.comap f :=
 theorem ker_coeSubmodule : LieSubmodule.toSubmodule (ker f) = LinearMap.ker (f : L →ₗ[R] L') :=
   rfl
 
+variable {f} in
 @[simp]
 theorem mem_ker {x : L} : x ∈ ker f ↔ f x = 0 :=
   show x ∈ LieSubmodule.toSubmodule (f.ker) ↔ _ by
@@ -1151,9 +1157,12 @@ theorem map_sup_ker_eq_map : LieIdeal.map f (I ⊔ f.ker) = LieIdeal.map f I := 
   suffices LieIdeal.map f (I ⊔ f.ker) ≤ LieIdeal.map f I by
     exact le_antisymm this (LieIdeal.map_mono le_sup_left)
   apply LieSubmodule.lieSpan_mono
-  rintro x ⟨y, hy₁, hy₂⟩; rw [← hy₂]
-  erw [LieSubmodule.mem_sup] at hy₁;obtain ⟨z₁, hz₁, z₂, hz₂, hy⟩ := hy₁; rw [← hy]
-  rw [f.coe_toLinearMap, f.map_add, f.mem_ker.mp hz₂, add_zero]; exact ⟨z₁, hz₁, rfl⟩
+  rintro x ⟨y, hy₁, hy₂⟩
+  rw [← hy₂]
+  erw [LieSubmodule.mem_sup] at hy₁
+  obtain ⟨z₁, hz₁, z₂, hz₂, hy⟩ := hy₁
+  rw [← hy]
+  rw [f.coe_toLinearMap, f.map_add, LieHom.mem_ker.mp hz₂, add_zero]; exact ⟨z₁, hz₁, rfl⟩
 
 @[simp]
 theorem map_sup_ker_eq_map' :
@@ -1245,7 +1254,7 @@ theorem ker_eq_bot : f.ker = ⊥ ↔ Function.Injective f := by
 variable {f}
 
 @[simp]
-theorem mem_ker (m : M) : m ∈ f.ker ↔ f m = 0 :=
+theorem mem_ker {m : M} : m ∈ f.ker ↔ f m = 0 :=
   Iff.rfl
 
 @[simp]
@@ -1253,7 +1262,7 @@ theorem ker_id : (LieModuleHom.id : M →ₗ⁅R,L⁆ M).ker = ⊥ :=
   rfl
 
 @[simp]
-theorem comp_ker_incl : f.comp f.ker.incl = 0 := by ext ⟨m, hm⟩; exact (mem_ker m).mp hm
+theorem comp_ker_incl : f.comp f.ker.incl = 0 := by ext ⟨m, hm⟩; exact mem_ker.mp hm
 
 theorem le_ker_iff_map (M' : LieSubmodule R L M) : M' ≤ f.ker ↔ LieSubmodule.map f M' = ⊥ := by
   rw [ker, eq_bot_iff, LieSubmodule.map_le_iff_le_comap]
@@ -1266,11 +1275,11 @@ def range : LieSubmodule R L N :=
   (LieSubmodule.map f ⊤).copy (Set.range f) Set.image_univ.symm
 
 @[simp]
-theorem coe_range : (f.range : Set N) = Set.range f :=
+theorem coe_range : f.range = Set.range f :=
   rfl
 
 @[simp]
-theorem coeSubmodule_range : (f.range : Submodule R N) = LinearMap.range (f : M →ₗ[R] N) :=
+theorem coeSubmodule_range : f.range = LinearMap.range (f : M →ₗ[R] N) :=
   rfl
 
 @[simp]
@@ -1306,13 +1315,17 @@ variable [AddCommGroup M] [Module R M] [LieRingModule L M]
 variable (N : LieSubmodule R L M)
 
 @[simp]
-theorem ker_incl : N.incl.ker = ⊥ := by simp [← LieSubmodule.coe_toSubmodule_eq_iff]
+theorem ker_incl : N.incl.ker = ⊥ := (LieModuleHom.ker_eq_bot N.incl).mpr <| injective_incl N
 
 @[simp]
-theorem range_incl : N.incl.range = N := by simp [← LieSubmodule.coe_toSubmodule_eq_iff]
+theorem range_incl : N.incl.range = N := by
+  simp only [← coe_toSubmodule_eq_iff, LieModuleHom.coeSubmodule_range, incl_coe]
+  rw [Submodule.range_subtype]
 
 @[simp]
-theorem comap_incl_self : comap N.incl N = ⊤ := by simp [← LieSubmodule.coe_toSubmodule_eq_iff]
+theorem comap_incl_self : comap N.incl N = ⊤ := by
+  simp only [← coe_toSubmodule_eq_iff, coeSubmodule_comap, incl_coe, top_coeSubmodule]
+  rw [Submodule.comap_subtype_self]
 
 theorem map_incl_top : (⊤ : LieSubmodule R L N).map N.incl = N := by simp
 

@@ -347,7 +347,7 @@ lemma ker_comapₗ [Semiring R] [AddCommMonoid Z] [Module R Z] (f : C(X, Y))
     LinearMap.ker (comapₗ R f : LocallyConstant Y Z →ₗ[R] LocallyConstant X Z) = ⊥ :=
   LinearMap.ker_eq_bot_of_injective <| comap_injective _ hfs
 
-/-- `LocallyConstant.congrLeft` as a linear equivalence. -/
+/-- `LocallyConstant.congrLeft` as a linear equivalence. -/
 @[simps!]
 def congrLeftₗ (R : Type*) [Semiring R] [AddCommMonoid Z] [Module R Z] (e : X ≃ₜ Y) :
     LocallyConstant X Z ≃ₗ[R] LocallyConstant Y Z where
@@ -362,7 +362,7 @@ def congrLeftRingEquiv [Semiring Z] (e : X ≃ₜ Y) :
   __ := comapMonoidHom ⟨_, e.symm.continuous⟩
   __ := comapAddMonoidHom ⟨_, e.symm.continuous⟩
 
-/-- `LocallyConstant.congrLeft` as an `AlgEquiv`. -/
+/-- `LocallyConstant.congrLeft` as an `AlgEquiv`. -/
 @[simps!]
 def congrLeftₐ (R : Type*) [CommSemiring R] [Semiring Z] [Algebra R Z] (e : X ≃ₜ Y) :
     LocallyConstant X Z ≃ₐ[R] LocallyConstant Y Z where
@@ -406,7 +406,7 @@ def mapₐ (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y] [Semiring Z] 
   toRingHom := mapRingHom f
   commutes' _ := by aesop
 
-/-- `LocallyConstant.congrRight` as a linear equivalence. -/
+/-- `LocallyConstant.congrRight` as a linear equivalence. -/
 @[simps!]
 def congrRightₗ (R : Type*) [Semiring R] [AddCommMonoid Y] [Module R Y]
     [AddCommMonoid Z] [Module R Z] (e : Y ≃ₗ[R] Z) :
@@ -422,7 +422,7 @@ def congrRightRingEquiv [Semiring Y] [Semiring Z] (e : Y ≃+* Z) :
   __ := mapMonoidHom e.toMonoidHom
   __ := mapAddMonoidHom e.toAddMonoidHom
 
-/-- `LocallyConstant.congrRight` as an `AlgEquiv`. -/
+/-- `LocallyConstant.congrRight` as an `AlgEquiv`. -/
 @[simps!]
 def congrRightₐ (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y] [Semiring Z] [Algebra R Z]
     (e : Y ≃ₐ[R] Z) : LocallyConstant X Y ≃ₐ[R] LocallyConstant X Z where

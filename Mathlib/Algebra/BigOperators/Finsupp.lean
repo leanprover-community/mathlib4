@@ -249,12 +249,12 @@ theorem sum_apply [Zero M] [AddCommMonoid N] {f : α →₀ M} {g : α → M →
   finset_sum_apply _ _ _
 
 -- Porting note: inserted ⇑ on the rhs
-theorem coe_finset_sum [AddCommMonoid N] (S : Finset ι) (f : ι → α →₀ N) :
+@[simp, norm_cast] theorem coe_finset_sum [AddCommMonoid N] (S : Finset ι) (f : ι → α →₀ N) :
     ⇑(∑ i ∈ S, f i) = ∑ i ∈ S, ⇑(f i) :=
   map_sum (coeFnAddHom : (α →₀ N) →+ _) _ _
 
 -- Porting note: inserted ⇑ on the rhs
-theorem coe_sum [Zero M] [AddCommMonoid N] (f : α →₀ M) (g : α → M → β →₀ N) :
+@[simp, norm_cast] theorem coe_sum [Zero M] [AddCommMonoid N] (f : α →₀ M) (g : α → M → β →₀ N) :
     ⇑(f.sum g) = f.sum fun a₁ b => ⇑(g a₁ b) :=
   coe_finset_sum _ _
 
@@ -346,9 +346,8 @@ def liftAddHom [AddZeroClass M] [AddCommMonoid N] : (α → M →+ N) ≃+ ((α 
     ext
     simp [singleAddHom]
   right_inv F := by
-  -- Porting note: This was `ext` and used the wrong lemma
-    apply Finsupp.addHom_ext'
-    simp [singleAddHom, AddMonoidHom.comp, Function.comp]
+    ext
+    simp [singleAddHom, AddMonoidHom.comp, Function.comp_def]
   map_add' F G := by
     ext x
     exact sum_add

@@ -12,6 +12,7 @@ import Mathlib.Data.List.Perm
 import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.List.Range
 import Mathlib.Data.List.Rotate
+import Mathlib.Data.List.Pairwise
 
 /-!
 # Sums and products from lists
@@ -137,23 +138,28 @@ theorem rel_prod {R : M → N → Prop} (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· * 
   rel_foldl hf h
 
 @[to_additive]
+theorem prod_hom_nonempty {l : List M} {F : Type*} [FunLike F M N] [MulHomClass F M N] (f : F)
+    (hl : l ≠ []) : (l.map f).prod = f l.prod :=
+  match l, hl with | x :: xs, hl => by induction xs generalizing x <;> aesop
+
+@[to_additive]
 theorem prod_hom (l : List M) {F : Type*} [FunLike F M N] [MonoidHomClass F M N] (f : F) :
     (l.map f).prod = f l.prod := by
   simp only [prod, foldl_map, ← map_one f]
   exact l.foldl_hom f (· * ·) (· * f ·) 1 (fun x y => (map_mul f x y).symm)
 
 @[to_additive]
+theorem prod_hom₂_nonempty {l : List ι} (f : M → N → P)
+    (hf : ∀ a b c d, f (a * b) (c * d) = f a c * f b d) (f₁ : ι → M) (f₂ : ι → N) (hl : l ≠ []) :
+    (l.map fun i => f (f₁ i) (f₂ i)).prod = f (l.map f₁).prod (l.map f₂).prod := by
+  match l, hl with | x :: xs, hl => induction xs generalizing x <;> aesop
+
+@[to_additive]
 theorem prod_hom₂ (l : List ι) (f : M → N → P) (hf : ∀ a b c d, f (a * b) (c * d) = f a c * f b d)
     (hf' : f 1 1 = 1) (f₁ : ι → M) (f₂ : ι → N) :
     (l.map fun i => f (f₁ i) (f₂ i)).prod = f (l.map f₁).prod (l.map f₂).prod := by
-  simp only [prod, foldl_map]
-  -- Porting note: next 3 lines used to be
-  -- convert l.foldl_hom₂ (fun a b => f a b) _ _ _ _ _ fun a b i => _
-  -- · exact hf'.symm
-  -- · exact hf _ _ _ _
-  rw [← l.foldl_hom₂ (fun a b => f a b), hf']
-  intros
-  exact hf _ _ _ _
+  rw [prod, prod, prod, foldl_map, foldl_map, foldl_map,
+    ← l.foldl_hom₂ f _ _ (fun x y => x * f (f₁ y) (f₂ y)) _ _ (by simp [hf]), hf']
 
 @[to_additive (attr := simp)]
 theorem prod_map_mul {α : Type*} [CommMonoid α] {l : List ι} {f g : ι → α} :
@@ -183,21 +189,14 @@ theorem prod_isUnit_iff {α : Type*} [CommMonoid α] {L : List α} :
     exact fun m' h' ↦ Or.elim (eq_or_mem_of_mem_cons h') (fun H => H.substr h.1) fun H => ih h.2 _ H
 
 @[to_additive (attr := simp)]
-theorem prod_take_mul_prod_drop : ∀ (L : List M) (i : ℕ), (L.take i).prod * (L.drop i).prod = L.prod
-  | [], i => by simp [Nat.zero_le]
-  | L, 0 => by simp
-  | h :: t, n + 1 => by
-    dsimp
-    rw [prod_cons, prod_cons, mul_assoc, prod_take_mul_prod_drop t]
+theorem prod_take_mul_prod_drop (L : List M) (i : ℕ) :
+    (L.take i).prod * (L.drop i).prod = L.prod := by
+  simp [← prod_append]
 
 @[to_additive (attr := simp)]
-theorem prod_take_succ :
-    ∀ (L : List M) (i : ℕ) (p : i < L.length), (L.take (i + 1)).prod = (L.take i).prod * L[i]
-  | [], i, p => by cases p
-  | h :: t, 0, _ => rfl
-  | h :: t, n + 1, p => by
-    dsimp
-    rw [prod_cons, prod_cons, prod_take_succ t n (Nat.lt_of_succ_lt_succ p), mul_assoc]
+theorem prod_take_succ (L : List M) (i : ℕ) (p : i < L.length) :
+    (L.take (i + 1)).prod = (L.take i).prod * L[i] := by
+  simp [take_succ, p]
 
 /-- A list with product not one must have positive length. -/
 @[to_additive "A list with sum not zero must have positive length."]
@@ -267,9 +266,9 @@ last. -/
 @[to_additive
 "A variant of `sum_range_succ` which pulls off the first term in the sum rather than the last."]
 lemma prod_range_succ' (f : ℕ → M) (n : ℕ) :
-    ((range n.succ).map f).prod = f 0 * ((range n).map fun i ↦ f i.succ).prod :=
-  Nat.recOn n (show 1 * f 0 = f 0 * 1 by rw [one_mul, mul_one]) fun _ hd => by
-    rw [List.prod_range_succ, hd, mul_assoc, ← List.prod_range_succ]
+    ((range n.succ).map f).prod = f 0 * ((range n).map fun i ↦ f i.succ).prod := by
+  rw [range_succ_eq_map]
+  simp [Function.comp_def]
 
 @[to_additive] lemma prod_eq_one (hl : ∀ x ∈ l, x = 1) : l.prod = 1 := by
   induction l with
@@ -343,7 +342,7 @@ lemma prod_map_erase [DecidableEq α] (f : α → M) {a} :
     · simp only [map, erase_cons_tail (not_beq_of_ne ne.symm), prod_cons, prod_map_erase _ h,
         mul_left_comm (f a) (f b)]
 
-@[to_additive] lemma Perm.prod_eq (h : Perm l₁ l₂) : prod l₁ = prod l₂ := h.fold_op_eq
+@[to_additive] lemma Perm.prod_eq (h : Perm l₁ l₂) : prod l₁ = prod l₂ := h.foldl_op_eq
 
 @[to_additive] lemma prod_reverse (l : List M) : prod l.reverse = prod l := (reverse_perm l).prod_eq
 
@@ -595,7 +594,7 @@ theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
         obtain ⟨a', ha'⟩ := List.mem_map.1 hn
         split_ifs at ha' with ha
         · simp only [ha.symm, mem_filter, mem_dedup, find?, mem_cons, true_or, hp,
-            and_false, false_and] at ha'
+            and_false, false_and, reduceCtorEq] at ha'
         · exact ha'.2.symm
 
 theorem sum_map_count_dedup_eq_length (l : List α) :
@@ -627,7 +626,7 @@ end MonoidHom
 end MonoidHom
 
 @[simp] lemma Nat.sum_eq_listSum (l : List ℕ) : Nat.sum l = l.sum :=
-  (List.foldl_eq_foldr Nat.add_comm Nat.add_assoc _ _).symm
+  (List.foldl_eq_foldr _ _).symm
 
 namespace List
 

@@ -3,8 +3,8 @@ Copyright (c) 2024 Iván Renison, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Iván Renison, Bhavik Mehta
 -/
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Combinatorics.SimpleGraph.Hasse
-import Mathlib.Data.Set.Pointwise.Basic
 
 /-!
 # Definition of circulant graphs

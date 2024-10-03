@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Quotient
@@ -59,10 +59,12 @@ def lift {C} [Category C] (φ : V ⥤q C) : Paths V ⥤ C where
       (fun _ f ihp => ihp ≫ φ.map f) Y f
   map_id X := rfl
   map_comp f g := by
-    induction' g with _ _ g' p ih _ _ _
-    · rw [Category.comp_id]
+    induction g with
+    | nil =>
+      rw [Category.comp_id]
       rfl
-    · have : f ≫ Quiver.Path.cons g' p = (f ≫ g').cons p := by apply Quiver.Path.comp_cons
+    | cons g' p ih =>
+      have : f ≫ Quiver.Path.cons g' p = (f ≫ g').cons p := by apply Quiver.Path.comp_cons
       rw [this]
       simp only at ih ⊢
       rw [ih, Category.assoc]
@@ -98,10 +100,12 @@ theorem lift_unique {C} [Category C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
     rfl
   · rintro X Y f
     dsimp [lift]
-    induction' f with _ _ p f' ih
-    · simp only [Category.comp_id]
+    induction f with
+    | nil =>
+      simp only [Category.comp_id]
       apply Functor.map_id
-    · simp only [Category.comp_id, Category.id_comp] at ih ⊢
+    | cons p f' ih =>
+      simp only [Category.comp_id, Category.id_comp] at ih ⊢
       -- Porting note: Had to do substitute `p.cons f'` and `f'.toPath` by their fully qualified
       -- versions in this `have` clause (elsewhere too).
       have : Φ.map (Quiver.Path.cons p f') = Φ.map p ≫ Φ.map (Quiver.Hom.toPath f') := by

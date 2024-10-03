@@ -3,10 +3,10 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Alex J. Best, Johan Commelin, Eric Rodriguez, Ruben Van de Velde
 -/
+import Mathlib.Algebra.Algebra.ZMod
 import Mathlib.Algebra.CharP.Algebra
-import Mathlib.Data.ZMod.Algebra
 import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.FieldTheory.Galois
+import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
 
 /-!
@@ -92,7 +92,7 @@ theorem finrank {n} (h : n ≠ 0) : FiniteDimensional.finrank (ZMod p) (GaloisFi
   set g_poly := (X ^ p ^ n - X : (ZMod p)[X])
   have hp : 1 < p := h_prime.out.one_lt
   have aux : g_poly ≠ 0 := FiniteField.X_pow_card_pow_sub_X_ne_zero _ h hp
-  -- Porting note: in the statment of `key`, replaced `g_poly` by its value otherwise the
+  -- Porting note: in the statement of `key`, replaced `g_poly` by its value otherwise the
   -- proof fails
   have key : Fintype.card (g_poly.rootSet (GaloisField p n)) = g_poly.natDegree :=
     card_rootSet_eq_natDegree (galois_poly_separable p _ (dvd_pow (dvd_refl p) h))

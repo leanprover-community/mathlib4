@@ -76,9 +76,9 @@ theorem sum_mem (I : Ideal α) {ι : Type*} {t : Finset ι} {f : ι → α} :
 theorem eq_top_of_unit_mem (x y : α) (hx : x ∈ I) (h : y * x = 1) : I = ⊤ :=
   eq_top_iff.2 fun z _ =>
     calc
-      z = z * (y * x) := by simp [h]
-      _ = z * y * x := Eq.symm <| mul_assoc z y x
-      _ ∈ I := I.mul_mem_left _ hx
+      z * y * x ∈ I := I.mul_mem_left _ hx
+      _ = z * (y * x) := mul_assoc z y x
+      _ = z := by rw [h, mul_one]
 
 theorem eq_top_of_isUnit_mem {x} (hx : x ∈ I) (h : IsUnit x) : I = ⊤ :=
   let ⟨y, hy⟩ := h.exists_left_inv
@@ -489,6 +489,9 @@ theorem mul_mem_right (h : a ∈ I) : a * b ∈ I :=
   mul_comm b a ▸ I.mul_mem_left b h
 
 variable {b}
+
+lemma mem_of_dvd (hab : a ∣ b) (ha : a ∈ I) : b ∈ I := by
+  obtain ⟨c, rfl⟩ := hab; exact I.mul_mem_right _ ha
 
 theorem pow_mem_of_mem (ha : a ∈ I) (n : ℕ) (hn : 0 < n) : a ^ n ∈ I :=
   Nat.casesOn n (Not.elim (by decide))

@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Lattice
+import Batteries.Data.List.Pairwise
 
 /-!
 # Erasure of duplicates in a list
@@ -95,7 +96,7 @@ theorem dedup_eq_nil (l : List α) : l.dedup = [] ↔ l = [] := by
   induction' l with a l hl
   · exact Iff.rfl
   · by_cases h : a ∈ l
-    · simp only [List.dedup_cons_of_mem h, hl, List.ne_nil_of_mem h]
+    · simp only [List.dedup_cons_of_mem h, hl, List.ne_nil_of_mem h, reduceCtorEq]
     · simp only [List.dedup_cons_of_not_mem h, List.cons_ne_nil]
 
 protected theorem Nodup.dedup {l : List α} (h : l.Nodup) : l.dedup = l :=

@@ -50,7 +50,7 @@ instance : CoeTC (Ultrafilter α) (Filter α) :=
   ⟨Ultrafilter.toFilter⟩
 
 instance : Membership (Set α) (Ultrafilter α) :=
-  ⟨fun s f => s ∈ (f : Filter α)⟩
+  ⟨fun f s => s ∈ (f : Filter α)⟩
 
 theorem unique (f : Ultrafilter α) {g : Filter α} (h : g ≤ f) (hne : NeBot g := by infer_instance) :
     g = f :=
@@ -464,5 +464,9 @@ theorem ofComapInfPrincipal_eq_of_map (h : m '' s ∈ g) : (ofComapInfPrincipal 
     _ = (Filter.map m <| Filter.comap m g) ⊓ (𝓟 <| m '' s) := by rw [map_principal]
     _ ≤ ↑g ⊓ (𝓟 <| m '' s) := inf_le_inf_right _ map_comap_le
     _ = ↑g := inf_of_le_left (le_principal_iff.mpr h)
+
+theorem eq_of_le_pure {X : Type _} {α : Filter X} (hα : α.NeBot) {x y : X}
+    (hx : α ≤ pure x) (hy : α ≤ pure y) : x = y :=
+  Filter.pure_injective (hα.le_pure_iff.mp hx ▸ hα.le_pure_iff.mp hy)
 
 end Ultrafilter

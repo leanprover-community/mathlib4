@@ -136,7 +136,7 @@ def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     exact ⟨max_eq_left xprop, fun i _ => rfl⟩
   right_inv' x hx := update_eq_iff.2 ⟨max_eq_left hx, fun i _ => rfl⟩
   source_eq := rfl
-  unique_diff' := by
+  uniqueDiffOn' := by
     have : UniqueDiffOn ℝ _ :=
       UniqueDiffOn.pi (Fin n) (fun _ => ℝ) _ _ fun i (_ : i ∈ ({0} : Set (Fin n))) =>
         uniqueDiffOn_Ici 0
@@ -151,7 +151,7 @@ model for manifolds with corners -/
 def modelWithCornersEuclideanQuadrant (n : ℕ) :
     ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n) where
   toFun := Subtype.val
-  invFun x := ⟨fun i => max (x i) 0, fun i => by simp only [le_refl, or_true_iff, le_max_iff]⟩
+  invFun x := ⟨fun i => max (x i) 0, fun i => by simp only [le_refl, or_true, le_max_iff]⟩
   source := univ
   target := { x | ∀ i, 0 ≤ x i }
   map_source' x _ := x.property
@@ -159,7 +159,7 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
   left_inv' x _ := by ext i; simp only [Subtype.coe_mk, x.2 i, max_eq_left]
   right_inv' x hx := by ext1 i; simp only [hx i, max_eq_left]
   source_eq := rfl
-  unique_diff' := by
+  uniqueDiffOn' := by
     have this : UniqueDiffOn ℝ _ :=
       UniqueDiffOn.univ_pi (Fin n) (fun _ => ℝ) _ fun _ => uniqueDiffOn_Ici 0
     simpa only [pi_univ_Ici] using this
