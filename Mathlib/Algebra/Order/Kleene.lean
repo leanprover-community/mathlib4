@@ -8,6 +8,7 @@ import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Algebra.Group.Idem
 
 /-!
 # Kleene Algebras
@@ -57,7 +58,7 @@ variable {α β ι : Type*} {π : ι → Type*}
 
 /-- An idempotent semiring is a semiring with the additional property that addition is idempotent.
 -/
-class IdemSemiring (α : Type u) extends Semiring α, SemilatticeSup α where
+class IdemSemiring (α : Type u) extends Semiring α, SemilatticeSup α, AddIdemSemigroup α where
   protected sup := (· + ·)
   protected add_eq_sup : ∀ a b : α, a + b = a ⊔ b := by
     intros
@@ -118,7 +119,8 @@ abbrev IdemSemiring.ofSemiring [Semiring α] (h : ∀ a : α, a + a = a) : IdemS
       simp only
       rwa [add_assoc, hbc]
     bot := 0
-    bot_le := zero_add }
+    bot_le := zero_add
+    add_idem := h }
 
 section IdemSemiring
 
@@ -131,7 +133,7 @@ theorem add_eq_sup (a b : α) : a + b = a ⊔ b :=
 --               So, this theorem should be scoped.
 scoped[Computability] attribute [simp] add_eq_sup
 
-theorem add_idem (a : α) : a + a = a := by simp
+--theorem add_idem (a : α) : a + a = a := by simp
 
 theorem nsmul_eq_self : ∀ {n : ℕ} (_ : n ≠ 0) (a : α), n • a = a
   | 0, h => (h rfl).elim
@@ -251,7 +253,8 @@ namespace Prod
 
 instance instIdemSemiring [IdemSemiring α] [IdemSemiring β] : IdemSemiring (α × β) :=
   { Prod.instSemiring, Prod.instSemilatticeSup _ _, Prod.instOrderBot _ _ with
-    add_eq_sup := fun _ _ ↦ Prod.ext (add_eq_sup _ _) (add_eq_sup _ _) }
+    add_eq_sup := fun _ _ ↦ Prod.ext (add_eq_sup _ _) (add_eq_sup _ _)
+    add_idem := by simp }
 
 instance [IdemCommSemiring α] [IdemCommSemiring β] : IdemCommSemiring (α × β) :=
   { Prod.instCommSemiring, Prod.instIdemSemiring with }
@@ -284,7 +287,8 @@ namespace Pi
 
 instance instIdemSemiring [∀ i, IdemSemiring (π i)] : IdemSemiring (∀ i, π i) :=
   { Pi.semiring, Pi.instSemilatticeSup, Pi.instOrderBot with
-    add_eq_sup := fun _ _ ↦ funext fun _ ↦ add_eq_sup _ _ }
+    add_eq_sup := fun _ _ ↦ funext fun _ ↦ add_eq_sup _ _
+    add_idem := by intros; ext; simp }
 
 instance [∀ i, IdemCommSemiring (π i)] : IdemCommSemiring (∀ i, π i) :=
   { Pi.commSemiring, Pi.instIdemSemiring with }
@@ -323,7 +327,8 @@ protected abbrev idemSemiring [IdemSemiring α] [Zero β] [One β] [Add β] [Mul
     ‹Bot β› with
     add_eq_sup := fun a b ↦ hf <| by erw [sup, add, add_eq_sup]
     bot := ⊥
-    bot_le := fun a ↦ bot.trans_le <| @bot_le _ _ _ <| f a }
+    bot_le := fun a ↦ bot.trans_le <| @bot_le _ _ _ <| f a
+    add_idem := by intro; apply hf; simp_all }
 
 -- See note [reducible non-instances]
 /-- Pullback an `IdemCommSemiring` instance along an injective function. -/

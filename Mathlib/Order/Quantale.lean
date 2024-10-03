@@ -5,6 +5,7 @@ Authors: Pieter Cuijpers
 -/
 import Mathlib.Order.CompleteLattice
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.Group.Idem
 import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
@@ -127,15 +128,11 @@ class AddCommQuantale (α : Type*) extends AddQuantale α, CommSemigroup α
 class CommQuantale (α : Type*) extends Quantale α, CommSemigroup α
 
 /-- An idempotent additive quantale is a quantale such that `x + x = x` -/
-class AddIdemQuantale (α : Type*) extends AddQuantale α where
-  /- addition is idempotent in an idempotent additive quantale -/
-  protected add_idem (x : α) : x + x = x
+class AddIdemQuantale (α : Type*) extends AddQuantale α, AddIdemSemigroup α
 
 /-- An idempotent quantale is a quantale such that `x * x = x` -/
 @[to_additive]
-class IdemQuantale (α : Type*) extends Quantale α where
-  /- multiplication is idempotent in an idempotent quantale -/
-  protected mul_idem (x : α) : x * x = x
+class IdemQuantale (α : Type*) extends Quantale α, IdemSemigroup α
 
 /-- An idempotent integral additive quantale is an idempotent additive quantale as well as
     an integral quantale. A basic result from quantale theory is that such a quantale is
@@ -174,16 +171,6 @@ variable [IntegralQuantale α]
 theorem top_eq_one : (⊤ : α) = 1 := IntegralQuantale.top_eq_one
 
 end IntegralQuantale
-
-section IdemQuantale
-
-variable (α : Type _)
-variable [IdemQuantale α]
-
-@[to_additive]
-theorem mul_idem : ∀ x : α, x * x = x := IdemQuantale.mul_idem
-
-end IdemQuantale
 
 namespace Quantale
 
