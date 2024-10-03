@@ -7,7 +7,7 @@ import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
 
 /-!
 # Topological entropy of the image of a set under a semiconjugacy
-Consider two dynamical systems `(X, S)` and `(Y, T)` related via a semiconjugacy `φ`:
+Consider two dynamical systems `(X, S)` and `(Y, T)` together with a semiconjugacy `φ`:
 
 
 ```
@@ -28,15 +28,15 @@ The best-known theorem is that, if all maps are uniformly continuous, then
 statement that `coverEntropy T (φ '' F) = coverEntropy S F` if `X` is endowed with the pullback
 by `φ` of the uniform structure of `Y`.
 
-This more general statement has another direct consequence: if `F` is invariant by `T`, then the
-topological entropy of the restriction of `T` to `F` is exactly `coverEntropy T F`. This
-corollary is essential: in most references, the entropy of an invariant subset `F` is
-defined as the entropy of the restriction to of the system `F`. We chose instead to give a direct
+This more general statement has another direct consequence: if `F` is `S`-invariant, then the
+topological entropy of the restriction of `S` to `F` is exactly `coverEntropy S F`. This
+corollary is essential: in most references, the entropy of an invariant subset (or subsystem) `F` is
+defined as the entropy of the restriction to `F` of the system. We chose instead to give a direct
 definition of the topological entropy of a subset, so as to avoid working with subtypes. Theorem
-`coverEntropy_restrict` shows a posteriori that this choice is coherent with the literature.
+`coverEntropy_restrict` shows that this choice is coherent with the literature.
 
 ## Implementation notes
-We used only the definition of the topological entropy using covers; the simplest version of
+We use only the definition of the topological entropy using covers; the simplest version of
 `IsDynCoverOf.image` for nets fails.
 
 ## Main results
@@ -55,10 +55,6 @@ namespace Dynamics
 
 open Function Set Uniformity UniformSpace
 
-lemma test {X Y : Type*} (f : X → Y) {V : Set (Y × Y)} {x : X} :
-    f ⁻¹' ball (f x) V = ball x (Prod.map f f ⁻¹' V) :=
-  ext fun x ↦ by simp only [ball, mem_preimage, Prod.map_apply]
-
 variable {X Y : Type*} {S : X → X} {T : Y → Y} {φ : X → Y}
 
 lemma IsDynCoverOf.image (h : Semiconj φ S T) {F : Set X} {V : Set (Y × Y)} {n : ℕ} {s : Finset X}
@@ -72,9 +68,7 @@ lemma IsDynCoverOf.image (h : Semiconj φ S T) {F : Set X} {V : Set (Y × Y)} {n
   apply h'.trans
   simp only [Finset.mem_coe, Finset.set_biUnion_finset_image]
   refine iUnion₂_mono fun i _ ↦ subset_of_eq ?_
-  rw [← h.preimage_dynEntourage V n]
-  ext x
-  simp only [ball, mem_preimage, Prod.map_apply]
+  rw [← h.preimage_dynEntourage V n, ball_preimage]
 
 lemma IsDynCoverOf.preimage (h : Semiconj φ S T) {F : Set X} {V : Set (Y × Y)}
     (V_symm : SymmetricRel V) {n : ℕ} {t : Finset Y} (h' : IsDynCoverOf T (φ '' F) V n t) :
@@ -95,7 +89,7 @@ lemma IsDynCoverOf.preimage (h : Semiconj φ S T) {F : Set X} {V : Set (Y × Y)}
   apply s_cover.trans
   rw [← h.preimage_dynEntourage (V ○ V) n, Finset.set_biUnion_finset_image]
   refine iUnion₂_mono fun i i_s ↦ ?_
-  rw [comp_apply, ← test, (f_section (g i) (gs_cover i i_s).2).2]
+  rw [comp_apply, ball_preimage, (f_section (g i) (gs_cover i i_s).2).2]
   refine preimage_mono fun x x_i ↦ mem_ball_dynEntourage_comp T n V_symm x (g i) ⟨i, ?_⟩
   replace gs_cover := (gs_cover i i_s).1
   rw [mem_ball_symmetry (V_symm.dynEntourage T n)] at x_i gs_cover
@@ -161,7 +155,7 @@ theorem coverEntropy_image (u : UniformSpace Y) {S : X → X} {T : Y → Y} {φ 
     apply @coverEntropyEntourage_le_coverEntropy X (comap φ u) S F
     rw [uniformity_comap φ, mem_comap]
     exact ⟨V, V_uni, Subset.refl _⟩
-  · refine iSup₂_le (fun U U_uni ↦ ?_)
+  · refine iSup₂_le fun U U_uni ↦ ?_
     simp only [uniformity_comap φ, mem_comap] at U_uni
     rcases U_uni with ⟨V, V_uni, V_sub⟩
     rcases comp_symm_mem_uniformity_sets V_uni with ⟨W, W_uni, W_symm, W_V⟩
@@ -179,7 +173,7 @@ theorem coverEntropyInf_image (u : UniformSpace Y) {S : X → X} {T : Y → Y} {
     apply @coverEntropyInfEntourage_le_coverEntropyInf X (comap φ u) S F
     rw [uniformity_comap φ, mem_comap]
     exact ⟨V, V_uni, Subset.refl _⟩
-  · refine iSup₂_le (fun U U_uni ↦ ?_)
+  · refine iSup₂_le fun U U_uni ↦ ?_
     simp only [uniformity_comap φ, mem_comap] at U_uni
     rcases U_uni with ⟨V, V_uni, V_sub⟩
     rcases comp_symm_mem_uniformity_sets V_uni with ⟨W, W_uni, W_symm, W_V⟩
@@ -206,7 +200,6 @@ theorem coverEntropyInf_image_le_of_uniformContinuous [UniformSpace X] [UniformS
 theorem justifies our definition of `coverEntropy T F`.-/
 theorem coverEntropy_restrict [UniformSpace X] {T : X → X} {F : Set X} (h : MapsTo T F F) :
     coverEntropy (MapsTo.restrict T F F h) univ = coverEntropy T F := by
-  rw [← coverEntropy_image _ (MapsTo.val_restrict_apply h) univ, image_univ,
-    Subtype.range_coe_subtype, setOf_mem_eq]
+  rw [← coverEntropy_image _ (MapsTo.val_restrict_apply h) univ, image_univ, Subtype.range_val]
 
 end Dynamics
