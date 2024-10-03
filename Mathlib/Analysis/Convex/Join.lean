@@ -116,11 +116,8 @@ theorem convexJoin_assoc_aux (s t u : Set E) :
     linear_combination (norm := module) congr(-$hab₂ • (a₁ • x + b₁ • y))
   refine
     ⟨x, hx, (a₂ * b₁ / (a₂ * b₁ + b₂)) • y + (b₂ / (a₂ * b₁ + b₂)) • z,
-      ⟨y, hy, z, hz, _, _, ?_, ?_, ?_, rfl⟩,
+      ⟨y, hy, z, hz, _, _, by positivity, by positivity, by field_simp, rfl⟩,
       a₂ * a₁, a₂ * b₁ + b₂, by positivity, by positivity, ?_, ?_⟩
-  · positivity
-  · positivity
-  · field_simp
   · linear_combination a₂ * hab₁ + hab₂
   · match_scalars <;> field_simp
 
