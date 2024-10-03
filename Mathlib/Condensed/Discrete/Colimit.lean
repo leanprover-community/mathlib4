@@ -272,8 +272,8 @@ lemma isoLocallyConstantOfIsColimit_inv (X : Profinite.{u}ᵒᵖ ⥤ Type (u+1))
   intro x
   erw [incl_of_counitAppApp]
   simp only [counitAppAppImage, CompHausLike.coe_of]
-  letI : Fintype (fiber.{u, u+1} f x) := @Fintype.ofInjective _ _
-    (inferInstanceAs (Fintype Y.unop)) (sigmaIncl.{u, u+1} f x).1 Subtype.val_injective
+  letI : Fintype (fiber.{u, u+1} f x) :=
+    Fintype.ofInjective (sigmaIncl.{u, u+1} f x).1 Subtype.val_injective
   apply injective_of_mono (isoFinYonedaComponents X (fiber.{u, u+1} f x)).hom
   ext y
   simp only [isoFinYonedaComponents_hom_apply, ← FunctorToTypes.map_comp_apply, ← op_comp]
@@ -537,8 +537,8 @@ lemma isoLocallyConstantOfIsColimit_inv (X : LightProfinite.{u}ᵒᵖ ⥤ Type u
   intro x
   erw [incl_of_counitAppApp]
   simp only [counitAppAppImage, CompHausLike.coe_of]
-  letI : Fintype (fiber.{u, u} f x) := @Fintype.ofInjective _ _
-    (inferInstanceAs (Fintype Y.unop)) (sigmaIncl.{u, u} f x).1 Subtype.val_injective
+  letI : Fintype (fiber.{u, u} f x) :=
+    Fintype.ofInjective (sigmaIncl.{u, u} f x).1 Subtype.val_injective
   apply injective_of_mono (isoFinYonedaComponents X (fiber.{u, u} f x)).hom
   ext y
   simp only [isoFinYonedaComponents_hom_apply, ← FunctorToTypes.map_comp_apply, ← op_comp]
