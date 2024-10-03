@@ -5,7 +5,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.LocalRing.RingHom.Defs
+import Mathlib.Algebra.Group.Units.Hom
 
 /-!
 # Localizations of commutative rings at the complement of a prime ideal

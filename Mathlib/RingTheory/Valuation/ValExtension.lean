@@ -5,7 +5,7 @@ Authors: Jiedong Jiang, Bichang Lei
 -/
 import Mathlib.RingTheory.Valuation.Integers
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
-import Mathlib.RingTheory.LocalRing.RingHom.Defs
+import Mathlib.Algebra.Group.Units.Hom
 
 /-!
 # Extension of Valuation
