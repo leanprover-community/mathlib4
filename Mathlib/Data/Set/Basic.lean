@@ -1958,7 +1958,7 @@ open Set
 
 namespace Function
 
-variable {ι : Sort*} {α : Type*} {β : Type*} {f : α → β}
+variable {α : Type*} {β : Type*}
 
 theorem Injective.nonempty_apply_iff {f : Set α → Set β} (hf : Injective f) (h2 : f ∅ = ∅)
     {s : Set α} : (f s).Nonempty ↔ s.Nonempty := by
@@ -2141,7 +2141,7 @@ end Monotone
 
 /-! ### Disjoint sets -/
 
-variable {α β : Type*} {s t u : Set α} {f : α → β}
+variable {α : Type*} {s t u : Set α}
 
 namespace Disjoint
 
