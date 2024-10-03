@@ -133,11 +133,9 @@ lemma coverEntropyEntourage_image_le (h : Semiconj φ S T) (F : Set X) (V : Set 
     (Nat.cast_nonneg' n) (log_monotone (ENat.toENNReal_mono (coverMincard_image_le h F V n)))))
 
 lemma coverEntropyInfEntourage_image_le (h : Semiconj φ S T) (F : Set X) (V : Set (Y × Y)) :
-    coverEntropyInfEntourage T (φ '' F) V
-      ≤ coverEntropyInfEntourage S F ((Prod.map φ φ) ⁻¹' V) := by
-  refine (liminf_le_liminf) (Eventually.of_forall fun n ↦ ?_)
-  apply monotone_div_right_of_nonneg (Nat.cast_nonneg' n)
-  exact log_monotone (ENat.toENNReal_mono (coverMincard_image_le h F V n))
+    coverEntropyInfEntourage T (φ '' F) V ≤ coverEntropyInfEntourage S F ((Prod.map φ φ) ⁻¹' V) :=
+  (liminf_le_liminf) (Eventually.of_forall fun n ↦ (monotone_div_right_of_nonneg
+    (Nat.cast_nonneg' n) (log_monotone (ENat.toENNReal_mono (coverMincard_image_le h F V n)))))
 
 /-- The entropy of `φ '' F` equals the entropy of `F` if `X` is endowed with the pullback by `φ`
   of the uniform structure of `Y`.-/
