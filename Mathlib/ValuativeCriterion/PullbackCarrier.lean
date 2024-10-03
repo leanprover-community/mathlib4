@@ -28,6 +28,15 @@ namespace Triplet
 protected lemma ext {t₁ t₂ : Triplet f g} (ex : t₁.x = t₂.x) (ey : t₁.y = t₂.y) : t₁ = t₂ := by
   cases t₁; cases t₂; aesop
 
+/-- Make a triplet from `x : X` and `y : Y` such that `f x = g y`. -/
+@[simps]
+def mk' (x : X) (y : Y) (h : f.val.base x = g.val.base y) : Triplet f g where
+  x := x
+  y := y
+  s := g.val.base y
+  hx := h
+  hy := rfl
+
 variable (T : Triplet f g)
 
 /-- Given `x : X` and `y : Y` such that `f x = s = g y`, this is `κ(x) ⊗[κ(s)] κ(y)`. -/
@@ -116,6 +125,20 @@ def SpecTensorTo :
     (Spec.map (pushout.inr _ _) ≫ Y.fromSpecResidueField T.y)
     (SpecTensorTo_comm _)
 
+@[simp]
+lemma specTensorTo_val_base_fst (p : Spec (T.tensor)) :
+    (pullback.fst f g).val.base (T.SpecTensorTo.val.base p) = T.x := by
+  simp only [SpecTensorTo, residueFieldCongr_inv]
+  rw [← Scheme.comp_val_base_apply]
+  simp
+
+@[simp]
+lemma specTensorTo_val_base_snd (p : Spec (T.tensor)) :
+    (pullback.snd f g).val.base (T.SpecTensorTo.val.base p) = T.y := by
+  simp only [SpecTensorTo, residueFieldCongr_inv]
+  rw [← Scheme.comp_val_base_apply]
+  simp
+
 /-- Given `t : X ×ₛ Y`, it maps to `X` and `Y` with same image in `S`, yielding a `Triplet f g`. -/
 def ofPoint (t : ↑(pullback f g)) : Triplet f g :=
   ⟨(pullback.fst f g).1.base t, (pullback.snd f g).1.base t, _, rfl,
@@ -194,22 +217,31 @@ lemma Triplet.ofPoint_SpectensorTo (T : Triplet f g) (p : Spec T.tensor) :
     rw [this]
     exact fromSpecResidueField_apply T.y _
 
--- Is this in mathlib?
-instance fromSpecResidueField_is_preimmesion (x : X) : AlgebraicGeometry.IsPreimmersion (X.fromSpecResidueField x) := sorry
-
 @[reassoc (attr := simp)]
 lemma tensorCongr_SpecTensorTo {T T' : Triplet f g} (h : T = T') :
     Spec.map (Triplet.tensorCongr h).hom ≫ T.SpecTensorTo = T'.SpecTensorTo := by
   subst h
   simp only [Triplet.tensorCongr_refl, Iso.refl_hom, Spec.map_id, Category.id_comp]
 
+lemma isPullback_Spec_map_isPushout {A B C P : CommRingCat} (f : A ⟶ B) (g : A ⟶ C)
+    (inl : B ⟶ P) (inr : C ⟶ P) (h : IsPushout f g inl inr) :
+    IsPullback (Spec.map inl) (Spec.map inr) (Spec.map f) (Spec.map g) :=
+  IsPullback.map Scheme.Spec h.op.flip
+
+lemma isPullback_Spec_map_pushout {A B C : CommRingCat} (f : A ⟶ B) (g : A ⟶ C) :
+    IsPullback (Spec.map (pushout.inl f g))
+      (Spec.map (pushout.inr f g)) (Spec.map f) (Spec.map g) := by
+  apply isPullback_Spec_map_isPushout
+  exact IsPushout.of_hasPushout f g
+
 -- This should be a general lemma on adjuction
 lemma is_pullback (T : Triplet f g) : CategoryTheory.IsPullback
     (Spec.map (pushout.inl _ _))
-      (Spec.map (pushout.inr ((S.residueFieldCongr T.hx).inv ≫ f.residueFieldMap T.x) ((S.residueFieldCongr T.hy).inv ≫ g.residueFieldMap T.y)))
+      (Spec.map (pushout.inr ((S.residueFieldCongr T.hx).inv ≫ f.residueFieldMap T.x)
+          ((S.residueFieldCongr T.hy).inv ≫ g.residueFieldMap T.y)))
         (Spec.map ((S.residueFieldCongr T.hx).inv ≫ f.residueFieldMap T.x))
-          (Spec.map ((S.residueFieldCongr T.hy).inv ≫ g.residueFieldMap T.y)) := by
-  sorry
+          (Spec.map ((S.residueFieldCongr T.hy).inv ≫ g.residueFieldMap T.y)) :=
+  isPullback_Spec_map_pushout _ _
 
 lemma Triplet.Spec_ofPointTensor_SpecTensorTo (T : Triplet f g) (p : Spec T.tensor) :
     Spec.map ((Triplet.tensorCongr (T.ofPoint_SpectensorTo p)).inv
@@ -226,7 +258,7 @@ lemma Triplet.Spec_ofPointTensor_SpecTensorTo (T : Triplet f g) (p : Spec T.tens
             ≫ Spec.map (tensorCongr (T.ofPoint_SpectensorTo p)).hom
               ≫ (ofPoint (T.SpecTensorTo.val.base p)).SpecTensorTo := by
     simp only [tensorCongr_inv, tensorCongr_SpecTensorTo]
-    rw [← hom.residueFieldMap_fromSpecResidueField T.SpecTensorTo p, ofPointtensor_SpectensorTo]
+    rw [← Hom.residueFieldMap_fromSpecResidueField T.SpecTensorTo p, ofPointtensor_SpectensorTo]
 
   have Spec_κ_p_to_X_eq : Spec.map (T.SpecTensorTo.residueFieldMap p)
       ≫ Spec.map (ofPointTensor (T.SpecTensorTo.val.base p))
@@ -288,33 +320,77 @@ def carrierEquiv : ↑(pullback f g) ≃ Σ T : Triplet f g, Spec T.tensor where
       simp only [Triplet.tensorCongr_inv, comp_coeBase, TopCat.coe_comp, Function.comp_apply,
         Spec.map_comp, Category.assoc]
 
+@[simp]
+lemma carrierEquiv_symm_fst (T : Triplet f g) (p : Spec T.tensor) :
+    (pullback.fst f g).val.base (carrierEquiv.symm ⟨T, p⟩) = T.x := by
+  simp [carrierEquiv]
+
+@[simp]
+lemma carrierEquiv_symm_snd (T : Triplet f g) (p : Spec T.tensor) :
+    (pullback.snd f g).val.base (carrierEquiv.symm ⟨T, p⟩) = T.y := by
+  simp [carrierEquiv]
+
 -- move me to `Mathlib\Algebra\Category\Ring\Constructions.lean`
 lemma CommRingCat.nontrivial_pushout_of_isField {A B C : CommRingCat.{u}}
     (hA : IsField A) (f : A ⟶ B) (g : A ⟶ C)
     [Nontrivial B] [Nontrivial C] : Nontrivial ↑(pushout f g) := sorry -- by linear algebra
 
+instance {A : CommRingCat} [Nontrivial A] : Nonempty (Spec A) :=
+  inferInstanceAs <| Nonempty (PrimeSpectrum A)
+
+instance (T : Triplet f g) : Nontrivial T.tensor := by
+  apply CommRingCat.nontrivial_pushout_of_isField
+  exact Field.toIsField _
+
 lemma Triplet.exists_preimage (T : Triplet f g) :
     ∃ x : ↑(pullback f g),
-    (pullback.fst f g).1.base x = T.x ∧ (pullback.snd f g).1.base x = T.y := sorry
+    (pullback.fst f g).1.base x = T.x ∧ (pullback.snd f g).1.base x = T.y := by
+  have : Nonempty (Spec T.tensor) := inferInstance
+  obtain ⟨p⟩ := this
+  let a : ↑(pullback f g) := carrierEquiv.symm ⟨T, p⟩
+  use a
+  simp [a]
 
 variable (f g)
 
 -- via `Triplet.exists_preimage`
-lemma range_fst : Set.range (pullback.fst f g).1.base = f.1.base ⁻¹' Set.range g.1.base := sorry
+lemma range_fst : Set.range (pullback.fst f g).1.base = f.1.base ⁻¹' Set.range g.1.base := by
+  ext x
+  constructor
+  · rintro ⟨a, rfl⟩
+    simp only [Set.mem_preimage, Set.mem_range, ← Scheme.comp_val_base_apply, pullback.condition]
+    simp
+  · intro ⟨y, hy⟩
+    obtain ⟨a, ha⟩ := Triplet.exists_preimage (Triplet.mk' x y hy.symm)
+    use a, ha.left
 
 -- via `Triplet.exists_preimage`
-lemma range_snd : Set.range (pullback.snd f g).1.base = g.1.base ⁻¹' Set.range f.1.base := sorry
+lemma range_snd : Set.range (pullback.snd f g).1.base = g.1.base ⁻¹' Set.range f.1.base := by
+  ext x
+  constructor
+  · rintro ⟨a, rfl⟩
+    simp only [Set.mem_preimage, Set.mem_range, ← Scheme.comp_val_base_apply, ← pullback.condition]
+    simp
+  · intro ⟨y, hy⟩
+    obtain ⟨a, ha⟩ := Triplet.exists_preimage (Triplet.mk' y x hy)
+    use a, ha.right
 
 -- via `Triplet.exists_preimage`
-lemma range_base :
-    Set.range (pullback.fst f g ≫ f).1.base = Set.range f.1.base ∩ Set.range f.1.base := sorry
+lemma range_fst_comp :
+    Set.range (pullback.fst f g ≫ f).1.base = Set.range f.1.base ∩ Set.range g.1.base := by
+  simp [Set.range_comp, range_fst, Set.image_preimage_eq_range_inter]
+
+-- via `Triplet.exists_preimage`
+lemma range_snd_comp :
+    Set.range (pullback.snd f g ≫ g).1.base = Set.range f.1.base ∩ Set.range g.1.base := by
+  rw [← pullback.condition, range_fst_comp]
 
 -- via `Triplet.exists_preimage`
 lemma range_map {X Y S X' Y' S' : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) (f' : X' ⟶ S')
     (g' : Y' ⟶ S') (i₁ : X ⟶ X') (i₂ : Y ⟶ Y') (i₃ : S ⟶ S') (e₁ : f ≫ i₃ = i₁ ≫ f')
-  (e₂ : g ≫ i₃ = i₂ ≫ g') [Mono i₃] :
-  Set.range (pullback.map f g f' g' i₁ i₂ i₃ e₁ e₂).1.base =
-    (pullback.fst f' g').val.base ⁻¹' Set.range i₁.val.base ∩
-      (pullback.snd f' g').val.base ⁻¹' Set.range i₂.val.base := sorry
+    (e₂ : g ≫ i₃ = i₂ ≫ g') [Mono i₃] :
+    Set.range (pullback.map f g f' g' i₁ i₂ i₃ e₁ e₂).1.base =
+      (pullback.fst f' g').val.base ⁻¹' Set.range i₁.val.base ∩
+        (pullback.snd f' g').val.base ⁻¹' Set.range i₂.val.base := sorry
 
 end AlgebraicGeometry.Scheme.Pullback
