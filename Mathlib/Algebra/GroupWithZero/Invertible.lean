@@ -52,9 +52,8 @@ def invertibleOfNonzero {a : α} (h : a ≠ 0) : Invertible a :=
 theorem invOf_eq_inv (a : α) [Invertible a] : ⅟ a = a⁻¹ :=
   invOf_eq_right_inv (mul_inv_cancel₀ (Invertible.ne_zero a))
 
-@[simp]
-theorem inv_mul_cancel_of_invertible (a : α) [Invertible a] : a⁻¹ * a = 1 :=
-  inv_mul_cancel₀ (Invertible.ne_zero a)
+theorem inv_mul_cancel_of_invertible (a : α) [IsUnit a] : a⁻¹ * a = 1 :=
+  inv_mul_cancel₀ (IsUnit.ne_zero ‹_›)
 
 @[simp]
 theorem mul_inv_cancel_of_invertible (a : α) [Invertible a] : a * a⁻¹ = 1 :=

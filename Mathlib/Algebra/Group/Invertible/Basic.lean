@@ -27,7 +27,7 @@ def unitOfInvertible [Monoid α] (a : α) [Invertible a] : αˣ where
   val_inv := by simp
   inv_val := by simp
 
-@[instance]
+@[instance, simp]
 theorem isUnit_of_invertible [Monoid α] (a : α) [Invertible a] : IsUnit a :=
   ⟨unitOfInvertible a, rfl⟩
 
