@@ -42,8 +42,7 @@ structure Codiscrete (α : Type u) where
   as : α
 
 @[simp]
-theorem Codiscrete.mk_as {α : Type u} (X : Codiscrete α) : Codiscrete.mk X.as = X := by
-  rfl
+theorem Codiscrete.mk_as {α : Type u} (X : Codiscrete α) : Codiscrete.mk X.as = X := rfl
 
 /-- `Codiscrete α` is equivalent to the original type `α`. -/
 @[simps]
