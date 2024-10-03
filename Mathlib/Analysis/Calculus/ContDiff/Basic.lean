@@ -837,38 +837,38 @@ theorem ContDiffWithinAt.clm_comp {g : X → F →L[𝕜] G} {f : X → E →L[�
     ContDiffWithinAt 𝕜 n (fun x => (g x).comp (f x)) s x :=
   (isBoundedBilinearMap_comp (E := E) (G := G)).contDiff.comp_contDiffWithinAt₂ hg hf
 
-theorem ContDiff.clm_apply {f : E → F →L[𝕜] G} {g : E → F} {n : ℕ∞} (hf : ContDiff 𝕜 n f)
+theorem ContDiff.clm_apply {f : E → F →L[𝕜] G} {g : E → F} (hf : ContDiff 𝕜 n f)
     (hg : ContDiff 𝕜 n g) : ContDiff 𝕜 n fun x => (f x) (g x) :=
   isBoundedBilinearMap_apply.contDiff.comp₂ hf hg
 
-theorem ContDiffOn.clm_apply {f : E → F →L[𝕜] G} {g : E → F} {n : ℕ∞} (hf : ContDiffOn 𝕜 n f s)
+theorem ContDiffOn.clm_apply {f : E → F →L[𝕜] G} {g : E → F} (hf : ContDiffOn 𝕜 n f s)
     (hg : ContDiffOn 𝕜 n g s) : ContDiffOn 𝕜 n (fun x => (f x) (g x)) s :=
   isBoundedBilinearMap_apply.contDiff.comp_contDiffOn₂ hf hg
 
-theorem ContDiffAt.clm_apply {f : E → F →L[𝕜] G} {g : E → F} {n : ℕ∞} (hf : ContDiffAt 𝕜 n f x)
+theorem ContDiffAt.clm_apply {f : E → F →L[𝕜] G} {g : E → F} (hf : ContDiffAt 𝕜 n f x)
     (hg : ContDiffAt 𝕜 n g x) : ContDiffAt 𝕜 n (fun x => (f x) (g x)) x :=
   isBoundedBilinearMap_apply.contDiff.comp_contDiffAt₂ hf hg
 
-theorem ContDiffWithinWithinAt.clm_apply {f : E → F →L[𝕜] G} {g : E → F} {n : ℕ∞}
+theorem ContDiffWithinAt.clm_apply {f : E → F →L[𝕜] G} {g : E → F}
     (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g s x) :
     ContDiffWithinAt 𝕜 n (fun x => (f x) (g x)) s x :=
   isBoundedBilinearMap_apply.contDiff.comp_contDiffWithinAt₂ hf hg
 
 -- Porting note: In Lean 3 we had to give implicit arguments in proofs like the following,
 -- to speed up elaboration. In Lean 4 this isn't necessary anymore.
-theorem ContDiff.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G} {n : ℕ∞} (hf : ContDiff 𝕜 n f)
+theorem ContDiff.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G} (hf : ContDiff 𝕜 n f)
     (hg : ContDiff 𝕜 n g) : ContDiff 𝕜 n fun x => (f x).smulRight (g x) :=
   isBoundedBilinearMap_smulRight.contDiff.comp₂ hf hg
 
-theorem ContDiffOn.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G} {n : ℕ∞} (hf : ContDiffOn 𝕜 n f s)
+theorem ContDiffOn.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G} (hf : ContDiffOn 𝕜 n f s)
     (hg : ContDiffOn 𝕜 n g s) : ContDiffOn 𝕜 n (fun x => (f x).smulRight (g x)) s :=
   (isBoundedBilinearMap_smulRight (E := F)).contDiff.comp_contDiffOn₂ hf hg
 
-theorem ContDiffAt.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G} {n : ℕ∞} (hf : ContDiffAt 𝕜 n f x)
+theorem ContDiffAt.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G} (hf : ContDiffAt 𝕜 n f x)
     (hg : ContDiffAt 𝕜 n g x) : ContDiffAt 𝕜 n (fun x => (f x).smulRight (g x)) x :=
   (isBoundedBilinearMap_smulRight (E := F)).contDiff.comp_contDiffAt₂ hf hg
 
-theorem ContDiffWithinAt.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G} {n : ℕ∞}
+theorem ContDiffWithinAt.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G}
     (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g s x) :
     ContDiffWithinAt 𝕜 n (fun x => (f x).smulRight (g x)) s x :=
   (isBoundedBilinearMap_smulRight (E := F)).contDiff.comp_contDiffWithinAt₂ hf hg
