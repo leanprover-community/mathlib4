@@ -127,7 +127,7 @@ separable degree, degree, separable closure, purely inseparable
 
 -/
 
-open FiniteDimensional Polynomial IntermediateField Field Finsupp
+open Module Polynomial IntermediateField Field Finsupp
 
 noncomputable section
 
@@ -756,7 +756,7 @@ private theorem LinearIndependent.map_pow_expChar_pow_of_fd_isSeparable
   have h' := h.coe_range
   let ι' := h'.extend (Set.range v).subset_univ
   let b : Basis ι' F E := Basis.extend h'
-  letI : Fintype ι' := fintypeBasisIndex b
+  letI : Fintype ι' := FiniteDimensional.fintypeBasisIndex b
   have H := linearIndependent_of_top_le_span_of_card_eq_finrank
     (span_map_pow_expChar_pow_eq_top_of_isSeparable q n b.span_eq).ge
     (finrank_eq_card_basis b).symm

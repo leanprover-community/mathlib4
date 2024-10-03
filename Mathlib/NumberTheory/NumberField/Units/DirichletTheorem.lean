@@ -354,7 +354,7 @@ section statements
 variable [NumberField K]
 
 open scoped Classical
-open dirichletUnitTheorem FiniteDimensional
+open dirichletUnitTheorem Module
 
 /-- The unit rank of the number field `K`, it is equal to `card (InfinitePlace K) - 1`. -/
 def rank : ℕ := Fintype.card (InfinitePlace K) - 1
@@ -462,13 +462,13 @@ instance : Monoid.FG (𝓞 K)ˣ := by
   infer_instance
 
 theorem rank_modTorsion :
-    FiniteDimensional.finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
+    Module.finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
   rw [← LinearEquiv.finrank_eq (logEmbeddingEquiv K).symm, unitLattice_rank]
 
 /-- A basis of the quotient `(𝓞 K)ˣ ⧸ (torsion K)` seen as an additive ℤ-module. -/
 def basisModTorsion : Basis (Fin (rank K)) ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
   Basis.reindex (Module.Free.chooseBasis ℤ _) (Fintype.equivOfCardEq <| by
-    rw [← FiniteDimensional.finrank_eq_card_chooseBasisIndex, rank_modTorsion, Fintype.card_fin])
+    rw [← Module.finrank_eq_card_chooseBasisIndex, rank_modTorsion, Fintype.card_fin])
 
 /-- The basis of the `unitLattice` obtained by mapping `basisModTorsion` via `logEmbedding`. -/
 def basisUnitLattice : Basis (Fin (rank K)) ℤ (unitLattice K) :=

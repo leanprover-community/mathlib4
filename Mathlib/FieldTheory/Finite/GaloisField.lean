@@ -88,7 +88,7 @@ instance : Fintype (GaloisField p n) := by
   dsimp only [GaloisField]
   exact FiniteDimensional.fintypeOfFintype (ZMod p) (GaloisField p n)
 
-theorem finrank {n} (h : n ≠ 0) : FiniteDimensional.finrank (ZMod p) (GaloisField p n) = n := by
+theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = n := by
   set g_poly := (X ^ p ^ n - X : (ZMod p)[X])
   have hp : 1 < p := h_prime.out.one_lt
   have aux : g_poly ≠ 0 := FiniteField.X_pow_card_pow_sub_X_ne_zero _ h hp
@@ -139,7 +139,7 @@ theorem finrank {n} (h : n ≠ 0) : FiniteDimensional.finrank (ZMod p) (GaloisFi
 
 theorem card (h : n ≠ 0) : Fintype.card (GaloisField p n) = p ^ n := by
   let b := IsNoetherian.finsetBasis (ZMod p) (GaloisField p n)
-  rw [Module.card_fintype b, ← FiniteDimensional.finrank_eq_card_basis b, ZMod.card, finrank p h]
+  rw [Module.card_fintype b, ← Module.finrank_eq_card_basis b, ZMod.card, finrank p h]
 
 theorem splits_zmod_X_pow_sub_X : Splits (RingHom.id (ZMod p)) (X ^ p - X) := by
   have hp : 1 < p := h_prime.out.one_lt
