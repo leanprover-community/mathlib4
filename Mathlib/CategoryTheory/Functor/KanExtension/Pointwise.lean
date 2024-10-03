@@ -343,6 +343,25 @@ instance : (pointwiseLeftKanExtension L F).IsLeftKanExtension
 instance : HasLeftKanExtension L F :=
   HasLeftKanExtension.mk _ (pointwiseLeftKanExtensionUnit L F)
 
+@[simps]
+def costructuredArrowMapCocone (G : D ⥤ H) (α : F ⟶ L ⋙ G) (Y : D) :
+    Cocone (CostructuredArrow.proj L Y ⋙ F) where
+  pt := G.obj Y
+  ι := {
+    app := fun f ↦ α.app f.left ≫ G.map f.hom
+    naturality := by simp [← G.map_comp] }
+
+lemma pointwiseLeftKanExtension_desc_app (G : D ⥤ H) (α :  F ⟶ L ⋙ G) (Y : D) :
+    ((pointwiseLeftKanExtension L F).descOfIsLeftKanExtension (pointwiseLeftKanExtensionUnit L F)
+      G α |>.app Y) = colimit.desc _ (costructuredArrowMapCocone L F G α Y) := by
+  let β : L.pointwiseLeftKanExtension F ⟶ G :=
+    { app := fun Y ↦ colimit.desc _ (costructuredArrowMapCocone L F G α Y) }
+  have h : (pointwiseLeftKanExtension L F).descOfIsLeftKanExtension
+      (pointwiseLeftKanExtensionUnit L F) G α = β := by
+    apply hom_ext_of_isLeftKanExtension (α := pointwiseLeftKanExtensionUnit L F)
+    aesop
+  exact NatTrans.congr_app h Y
+
 variable {F L}
 
 /-- If `F` admits a pointwise left Kan extension along `L`, then any left Kan extension of `F`
