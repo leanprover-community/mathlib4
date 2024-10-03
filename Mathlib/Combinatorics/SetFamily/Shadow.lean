@@ -50,7 +50,7 @@ namespace Finset
 
 section Shadow
 
-variable [DecidableEq α] {𝒜 : Finset (Finset α)} {s t : Finset α} {a : α} {k r : ℕ}
+variable [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s t : Finset α} {a : α} {k r : ℕ}
 
 /-- The shadow of a set family `𝒜` is all sets we can get by removing one element from any set in
 `𝒜`, and the (`k` times) iterated shadow (`shadow^[k]`) is all sets we can get by removing `k`
@@ -75,11 +75,16 @@ theorem shadow_empty : ∂ (∅ : Finset (Finset α)) = ∅ :=
 theorem shadow_singleton_empty : ∂ ({∅} : Finset (Finset α)) = ∅ :=
   rfl
 
---TODO: Prove `∂ {{a}} = {∅}` quickly using `covers` and `GradeOrder`
+@[simp]
+theorem shadow_singleton (a : α) : ∂ {{a}} = {∅} := by
+  simp [shadow]
+
 /-- The shadow is monotone. -/
 @[mono]
 theorem shadow_monotone : Monotone (shadow : Finset (Finset α) → Finset (Finset α)) := fun _ _ =>
   sup_mono
+
+@[gcongr] lemma shadow_mono (h𝒜ℬ : 𝒜 ⊆ ℬ) : ∂ 𝒜 ⊆ ∂ ℬ := shadow_monotone h𝒜ℬ
 
 /-- `t` is in the shadow of `𝒜` iff there is a `s ∈ 𝒜` from which we can remove one element to
 get `t`. -/

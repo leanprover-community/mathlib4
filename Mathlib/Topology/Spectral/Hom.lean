@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # Spectral maps
@@ -57,9 +57,9 @@ end Unbundled
 
 /-- The type of spectral maps from `α` to `β`. -/
 structure SpectralMap (α β : Type*) [TopologicalSpace α] [TopologicalSpace β] where
-  /-- function between topological spaces-/
+  /-- function between topological spaces -/
   toFun : α → β
-  /-- proof that `toFun` is a spectral map-/
+  /-- proof that `toFun` is a spectral map -/
   spectral' : IsSpectralMap toFun
 
 section
@@ -69,7 +69,7 @@ section
 You should extend this class when you extend `SpectralMap`. -/
 class SpectralMapClass (F α β : Type*) [TopologicalSpace α] [TopologicalSpace β]
     [FunLike F α β] : Prop where
-  /-- statement that `F` is a type of spectral maps-/
+  /-- statement that `F` is a type of spectral maps -/
   map_spectral (f : F) : IsSpectralMap f
 
 end

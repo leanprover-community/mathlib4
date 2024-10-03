@@ -11,7 +11,7 @@ import Mathlib.RingTheory.Unramified.Basic
 
 # Etale morphisms
 
-An `R`-algebra `A` is formally étale if for every `R`-algebra,
+An `R`-algebra `A` is formally étale if for every `R`-algebra `B`,
 every square-zero ideal `I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists
 exactly one lift `A →ₐ[R] B`.
 It is étale if it is formally étale and of finite presentation.
@@ -139,6 +139,7 @@ variable [Algebra R S] [Algebra R Sₘ] [Algebra S Sₘ] [Algebra R Rₘ] [Algeb
 variable [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
 /-! and that Rₘ and Sₘ are localizations of R and S at M. -/
 variable [IsLocalization M Rₘ] [IsLocalization (M.map (algebraMap R S)) Sₘ]
+include M
 
 -- Porting note: no longer supported
 -- attribute [local elab_as_elim] Ideal.IsNilpotent.induction_on

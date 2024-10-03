@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Homology.Single
 
@@ -231,7 +231,7 @@ def augment (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0) (w : f ≫ C.d 
     cases k
     · exact w
     · rw [C.shape, comp_zero]
-      simp only [Nat.zero_eq, ComplexShape.up_Rel, zero_add]
+      simp only [ComplexShape.up_Rel, zero_add]
       exact (Nat.one_lt_succ_succ _).ne
 
 @[simp]

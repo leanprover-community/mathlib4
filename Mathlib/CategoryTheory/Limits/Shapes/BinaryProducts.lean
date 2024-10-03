@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Bhavik Mehta
+Authors: Kim Morrison, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.DiscreteCategory
@@ -940,8 +940,8 @@ end
 
 section
 
--- Porting note (#10754): added category instance as it did not propagate
-variable {C} [Category.{v} C] [HasBinaryCoproducts C]
+variable {C}
+variable [HasBinaryCoproducts C]
 
 /-- The braiding isomorphism which swaps a binary coproduct. -/
 @[simps]

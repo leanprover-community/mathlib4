@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
+Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Polynomial.Inductions
 import Mathlib.Algebra.Polynomial.Monic
@@ -41,9 +41,10 @@ theorem X_pow_dvd_iff {f : R[X]} {n : ℕ} : X ^ n ∣ f ↔ ∀ d < n, f.coeff 
   ⟨fun ⟨g, hgf⟩ d hd => by
     simp only [hgf, coeff_X_pow_mul', ite_eq_right_iff, not_le_of_lt hd, IsEmpty.forall_iff],
     fun hd => by
-    induction' n with n hn
-    · simp [pow_zero, one_dvd]
-    · obtain ⟨g, hgf⟩ := hn fun d : ℕ => fun H : d < n => hd _ (Nat.lt_succ_of_lt H)
+    induction n with
+    | zero => simp [pow_zero, one_dvd]
+    | succ n hn =>
+      obtain ⟨g, hgf⟩ := hn fun d : ℕ => fun H : d < n => hd _ (Nat.lt_succ_of_lt H)
       have := coeff_X_pow_mul g n 0
       rw [zero_add, ← hgf, hd n (Nat.lt_succ_self n)] at this
       obtain ⟨k, hgk⟩ := Polynomial.X_dvd_iff.mpr this.symm
@@ -86,7 +87,7 @@ theorem div_wf_lemma (h : degree q ≤ degree p ∧ p ≠ 0) (hq : Monic q) :
   have hp : leadingCoeff p ≠ 0 := mt leadingCoeff_eq_zero.1 h.2
   have hq0 : q ≠ 0 := hq.ne_zero_of_polynomial_ne h.2
   have hlt : natDegree q ≤ natDegree p :=
-    Nat.cast_le.1
+    (Nat.cast_le (α := WithBot ℕ)).1
       (by rw [← degree_eq_natDegree h.2, ← degree_eq_natDegree hq0]; exact h.1)
   degree_sub_lt
     (by
@@ -166,7 +167,7 @@ theorem zero_modByMonic (p : R[X]) : 0 %ₘ p = 0 := by
   unfold modByMonic divModByMonicAux
   dsimp
   by_cases hp : Monic p
-  · rw [dif_pos hp, if_neg (mt And.right (not_not_intro rfl))]
+  · rw [dif_pos hp, if_neg (mt And.right (not_not_intro rfl)), Prod.snd_zero]
   · rw [dif_neg hp]
 
 @[simp]
@@ -175,7 +176,7 @@ theorem zero_divByMonic (p : R[X]) : 0 /ₘ p = 0 := by
   unfold divByMonic divModByMonicAux
   dsimp
   by_cases hp : Monic p
-  · rw [dif_pos hp, if_neg (mt And.right (not_not_intro rfl))]
+  · rw [dif_pos hp, if_neg (mt And.right (not_not_intro rfl)), Prod.fst_zero]
   · rw [dif_neg hp]
 
 @[simp]
@@ -280,7 +281,7 @@ theorem degree_divByMonic_le (p q : R[X]) : degree (p /ₘ q) ≤ degree p :=
         exact WithBot.coe_le_coe.2 (Nat.le_add_left _ _)
       else by
         unfold divByMonic divModByMonicAux
-        simp [dif_pos hq, h, false_and_iff, if_false, degree_zero, bot_le]
+        simp [dif_pos hq, h, if_false, degree_zero, bot_le]
     else (divByMonic_eq_of_not_monic p hq).symm ▸ bot_le
 
 theorem degree_divByMonic_lt (p : R[X]) {q : R[X]} (hq : Monic q) (hp0 : p ≠ 0)
@@ -485,7 +486,8 @@ def rootMultiplicity (a : R) (p : R[X]) : ℕ :=
   if h0 : p = 0 then 0
   else
     let _ : DecidablePred fun n : ℕ => ¬(X - C a) ^ (n + 1) ∣ p := fun n =>
-      @Not.decidable _ (decidableDvdMonic p ((monic_X_sub_C a).pow (n + 1)))
+      have := decidableDvdMonic p ((monic_X_sub_C a).pow (n + 1))
+      inferInstanceAs (Decidable ¬_)
     Nat.find (multiplicity_X_sub_C_finite a h0)
 
 /- Porting note: added the following due to diamond with decidableProp and
@@ -493,7 +495,8 @@ decidableDvdMonic see also [Zulip]
 (https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/non-defeq.20aliased.20instance) -/
 theorem rootMultiplicity_eq_nat_find_of_nonzero [DecidableEq R] {p : R[X]} (p0 : p ≠ 0) {a : R} :
     letI : DecidablePred fun n : ℕ => ¬(X - C a) ^ (n + 1) ∣ p := fun n =>
-      @Not.decidable _ (decidableDvdMonic p ((monic_X_sub_C a).pow (n + 1)))
+      have := decidableDvdMonic p ((monic_X_sub_C a).pow (n + 1))
+      inferInstanceAs (Decidable ¬_)
     rootMultiplicity a p = Nat.find (multiplicity_X_sub_C_finite a p0) := by
   dsimp [rootMultiplicity]
   cases Subsingleton.elim ‹DecidableEq R› (Classical.decEq R)
@@ -503,7 +506,7 @@ theorem rootMultiplicity_eq_multiplicity [DecidableEq R] [@DecidableRel R[X] (·
     (p : R[X]) (a : R) :
     rootMultiplicity a p =
       if h0 : p = 0 then 0 else (multiplicity (X - C a) p).get (multiplicity_X_sub_C_finite a h0) :=
-  by simp [multiplicity, rootMultiplicity, Part.Dom]; congr; funext; congr
+  by simp only [rootMultiplicity, multiplicity, PartENat.find_get]; congr; funext; congr
 
 @[simp]
 theorem rootMultiplicity_zero {x : R} : rootMultiplicity x 0 = 0 :=

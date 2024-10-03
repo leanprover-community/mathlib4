@@ -145,9 +145,11 @@ theorem pi_le_four : π ≤ 4 :=
       π / 2 ≤ 2 := pi_div_two_le_two
       _ = 4 / 2 := by norm_num)
 
+@[bound]
 theorem pi_pos : 0 < π :=
   lt_of_lt_of_le (by norm_num) two_le_pi
 
+@[bound]
 theorem pi_nonneg : 0 ≤ π :=
   pi_pos.le
 
@@ -298,6 +300,10 @@ theorem cos_antiperiodic : Function.Antiperiodic cos π := by simp [cos_add]
 
 theorem cos_periodic : Function.Periodic cos (2 * π) :=
   cos_antiperiodic.periodic_two_mul
+
+@[simp]
+theorem abs_cos_int_mul_pi (k : ℤ) : |cos (k * π)| = 1 := by
+  simp [abs_cos_eq_sqrt_one_sub_sin_sq]
 
 @[simp]
 theorem cos_add_pi (x : ℝ) : cos (x + π) = -cos x :=
@@ -655,7 +661,7 @@ theorem sqrtTwoAddSeries_monotone_left {x y : ℝ} (h : x ≤ y) :
 theorem cos_pi_over_two_pow : ∀ n : ℕ, cos (π / 2 ^ (n + 1)) = sqrtTwoAddSeries 0 n / 2
   | 0 => by simp
   | n + 1 => by
-    have A : (1 : ℝ) < 2 ^ (n + 1) := one_lt_pow one_lt_two n.succ_ne_zero
+    have A : (1 : ℝ) < 2 ^ (n + 1) := one_lt_pow₀ one_lt_two n.succ_ne_zero
     have B : π / 2 ^ (n + 1) < π := div_lt_self pi_pos A
     have C : 0 < π / 2 ^ (n + 1) := by positivity
     rw [pow_succ, div_mul_eq_div_div, cos_half, cos_pi_over_two_pow n, sqrtTwoAddSeries,
@@ -677,14 +683,14 @@ theorem sin_sq_pi_over_two_pow_succ (n : ℕ) :
 @[simp]
 theorem sin_pi_over_two_pow_succ (n : ℕ) :
     sin (π / 2 ^ (n + 2)) = √(2 - sqrtTwoAddSeries 0 n) / 2 := by
-  rw [eq_div_iff_mul_eq two_ne_zero, eq_comm, sqrt_eq_iff_sq_eq, mul_pow,
+  rw [eq_div_iff_mul_eq two_ne_zero, eq_comm, sqrt_eq_iff_eq_sq, mul_pow,
     sin_sq_pi_over_two_pow_succ, sub_mul]
   · congr <;> norm_num
   · rw [sub_nonneg]
     exact (sqrtTwoAddSeries_lt_two _).le
   refine mul_nonneg (sin_nonneg_of_nonneg_of_le_pi ?_ ?_) zero_le_two
   · positivity
-  · exact div_le_self pi_pos.le <| one_le_pow_of_one_le one_le_two _
+  · exact div_le_self pi_pos.le <| one_le_pow₀ one_le_two
 
 @[simp]
 theorem cos_pi_div_four : cos (π / 4) = √2 / 2 := by

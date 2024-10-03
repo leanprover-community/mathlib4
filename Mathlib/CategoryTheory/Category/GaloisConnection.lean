@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl, Reid Barton
+Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl, Reid Barton
 -/
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Adjunction.Basic
@@ -28,8 +28,10 @@ def GaloisConnection.adjunction {l : X → Y} {u : Y → X} (gc : GaloisConnecti
     gc.monotone_l.functor ⊣ gc.monotone_u.functor :=
   CategoryTheory.Adjunction.mkOfHomEquiv
     { homEquiv := fun X Y =>
-        ⟨fun f => CategoryTheory.homOfLE (gc.le_u f.le),
-         fun f => CategoryTheory.homOfLE (gc.l_le f.le), _, _⟩ }
+        { toFun := fun f => CategoryTheory.homOfLE (gc.le_u f.le)
+          invFun := fun f => CategoryTheory.homOfLE (gc.l_le f.le)
+          left_inv := by aesop_cat
+          right_inv := by aesop_cat } }
 
 end
 

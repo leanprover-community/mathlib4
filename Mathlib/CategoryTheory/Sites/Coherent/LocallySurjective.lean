@@ -16,14 +16,14 @@ and extensive topologies.
 ## Main results
 
 * `regularTopology.isLocallySurjective_iff` A morphism of presheaves `f : F ⟶ G` is locally
-  surjective for the regular topology iff for every object `X` of `C`, and every `y : G(X)`, there
-  is an effective epimorphism `φ : X' ⟶ X` and an `x : F(X)` such that `f_{X'}(x) = G(φ)(y)`.
+  surjective for the regular topology iff for every object `X` of `C`, and every `y : G(X)`, there
+  is an effective epimorphism `φ : X' ⟶ X` and an `x : F(X)` such that `f_{X'}(x) = G(φ)(y)`.
 
 * `coherentTopology.isLocallySurjective_iff` a morphism of sheaves for the coherent topology on a
   preregular finitary extensive category is locally surjective if and only if it is
   locally surjective for the regular topology.
 
-* `extensiveTopology.isLocallySurjective_iff` a morphism of sheaves for the extensive topology on a
+* `extensiveTopology.isLocallySurjective_iff` a morphism of sheaves for the extensive topology on a
   finitary extensive category is locally surjective iff it is objectwise surjective.
 -/
 
@@ -78,9 +78,9 @@ lemma extensiveTopology.surjective_of_isLocallySurjective_sheafOfTypes [Finitary
     Cofan.mk_ι_app]
   have : f.app ⟨Y a⟩ (y a) = G.map (π a).op x := (h' a).choose_spec
   change _ = G.map (π a).op x
-  erw [← this, ← NatTrans.naturality_apply (φ := f)]
-  apply congrArg
-  change (i.hom ≫ F.map (π a).op) y = _
+  rw [← this]
+  erw [← NatTrans.naturality_apply (φ := f)]
+  change f.app _ ((i.hom ≫ F.map (π a).op) y) = _
   erw [IsLimit.map_π]
   rfl
 
