@@ -304,6 +304,16 @@ as `(f^* V) (x) = Df(x)^{-1} (V (f x))`. If `Df(x)` is not invertible, we use th
 -/
 def pullback (f : E → F) (V : F → F) (x : E) : E := (fderiv 𝕜 f x).inverse (V (f x))
 
+variable (𝕜) in
+/-- The pullback of a vector field under a function, defined
+as `(f^* V) (x) = Df(x)^{-1} (V (f x))`. If `Df(x)` is not invertible, we use the junk value `0`.
+-/
+def pullbackWithin (f : E → F) (V : F → F) (s : Set E) (x : E) : E :=
+  (fderivWithin 𝕜 f s x).inverse (V (f x))
+
+lemma pullbackWithin_eq {f : E → F} {V : F → F} {s : Set E} :
+    pullbackWithin 𝕜 f V s = fun x ↦ (fderivWithin 𝕜 f s x).inverse (V (f x)) := rfl
+
 lemma pullback_eq_of_fderiv_eq
     {f : E → F} {M : E ≃L[𝕜] F} {x : E} (hf : M = fderiv 𝕜 f x) (V : F → F) :
     pullback 𝕜 f V x = M.symm (V (f x)) := by
@@ -342,6 +352,58 @@ open Set
 variable [CompleteSpace E]
 
 /- TODO: move me -/
+
+/-- If a `C^2` map has an invertible derivative within a set at a point, then nearby derivatives
+can be written as continuous linear equivs, which depend in a `C^1` way on the point, as well as
+their inverse, and moreover one can compute the derivative of the inverse. -/
+lemma _root_.exists_continuousLinearEquiv_fderivWithin_symm_eq
+    {f : E → F} {s : Set E} {x : E} (h'f : ContDiffWithinAt 𝕜 2 f s x)
+    (hf : (fderivWithin 𝕜 f s x).IsInvertible) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
+    ∃ N : E → (E ≃L[𝕜] F), ContDiffWithinAt 𝕜 1 (fun y ↦ (N y : E →L[𝕜] F)) s x
+    ∧ ContDiffWithinAt 𝕜 1 (fun y ↦ ((N y).symm : F →L[𝕜] E)) s x
+    ∧ (∀ᶠ y in 𝓝[s] x, N y = fderivWithin 𝕜 f s y)
+    ∧ ∀ v, fderivWithin 𝕜 (fun y ↦ ((N y).symm : F →L[𝕜] E)) s x v
+      = - (N x).symm  ∘L ((fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x v)) ∘L (N x).symm := by
+  classical
+  rcases hf with ⟨M, hM⟩
+  let U := {y | ∃ (N : E ≃L[𝕜] F), N = fderivWithin 𝕜 f s y}
+  have hU : U ∈ 𝓝[s] x := by
+    have I : range ((↑) : (E ≃L[𝕜] F) → E →L[𝕜] F) ∈ 𝓝 (fderivWithin 𝕜 f s x) := by
+      rw [← hM]
+      exact M.nhds
+    have : ContinuousWithinAt (fderivWithin 𝕜 f s) s x :=
+      (h'f.fderivWithin_right (m := 1) hs le_rfl hx).continuousWithinAt
+    exact this I
+  let N : E → (E ≃L[𝕜] F) := fun x ↦ if h : x ∈ U then h.choose else M
+  have eN : (fun y ↦ (N y : E →L[𝕜] F)) =ᶠ[𝓝[s] x] fun y ↦ fderivWithin 𝕜 f s y := by
+    filter_upwards [hU] with y hy
+    simpa only [hy, ↓reduceDIte, N] using Exists.choose_spec hy
+  have e'N : N x = fderivWithin 𝕜 f s x := by apply mem_of_mem_nhdsWithin hx eN
+  have hN : ContDiffWithinAt 𝕜 1 (fun y ↦ (N y : E →L[𝕜] F)) s x := by
+    have : ContDiffWithinAt 𝕜 1 (fun y ↦ fderivWithin 𝕜 f s y) s x :=
+      h'f.fderivWithin_right (m := 1) hs le_rfl hx
+    apply this.congr_of_eventuallyEq eN e'N
+  have hN' : ContDiffWithinAt 𝕜 1 (fun y ↦ ((N y).symm : F →L[𝕜] E)) s x := by
+    have : ContDiffWithinAt 𝕜 1 (ContinuousLinearMap.inverse ∘ (fun y ↦ (N y : E →L[𝕜] F))) s x :=
+      (contDiffAt_map_inverse (N x)).comp_contDiffWithinAt x hN
+    convert this with y
+    simp only [Function.comp_apply, ContinuousLinearMap.inverse_equiv]
+  refine ⟨N, hN, hN', eN, fun v ↦ ?_⟩
+  have A' y : ContinuousLinearMap.compL 𝕜 F E F (N y : E →L[𝕜] F) ((N y).symm : F →L[𝕜] E)
+      = ContinuousLinearMap.id 𝕜 F := by ext; simp
+  have : fderivWithin 𝕜 (fun y ↦ ContinuousLinearMap.compL 𝕜 F E F (N y : E →L[𝕜] F)
+      ((N y).symm : F →L[𝕜] E)) s x v = 0 := by
+    simp [A', fderivWithin_const_apply, hs x hx]
+  have I : (N x : E →L[𝕜] F) ∘L (fderivWithin 𝕜 (fun y ↦ ((N y).symm : F →L[𝕜] E)) s x v) =
+      - (fderivWithin 𝕜 (fun y ↦ (N y : E →L[𝕜] F)) s x v) ∘L ((N x).symm : F →L[𝕜] E) := by
+    rw [ContinuousLinearMap.fderivWithin_of_bilinear _ (hN.differentiableWithinAt le_rfl)
+      (hN'.differentiableWithinAt le_rfl) (hs x hx)] at this
+    simpa [eq_neg_iff_add_eq_zero] using this
+  have B (M : F →L[𝕜] E) : M = ((N x).symm : F →L[𝕜] E) ∘L ((N x) ∘L M) := by
+    ext; simp
+  rw [B (fderivWithin 𝕜 (fun y ↦ ((N y).symm : F →L[𝕜] E)) s x v), I]
+  simp only [ContinuousLinearMap.comp_neg, neg_inj, eN.fderivWithin_eq e'N]
+
 /-- If a `C^2` map has an invertible derivative at a point, then nearby derivatives can be written
 as continuous linear equivs, which depend in a `C^1` way on the point, as well as their inverse, and
 moreover one can compute the derivative of the inverse. -/
@@ -352,44 +414,12 @@ lemma _root_.exists_continuousLinearEquiv_fderiv_symm_eq
     ∧ (∀ᶠ y in 𝓝 x, N y = fderiv 𝕜 f y)
     ∧ ∀ v, fderiv 𝕜 (fun y ↦ ((N y).symm : F →L[𝕜] E)) x v
       = - (N x).symm  ∘L ((fderiv 𝕜 (fderiv 𝕜 f) x v)) ∘L (N x).symm := by
-  classical
-  rcases hf with ⟨M, hM⟩
-  let U := {y | ∃ (N : E ≃L[𝕜] F), N = fderiv 𝕜 f y}
-  have hU : U ∈ 𝓝 x := by
-    have I : range ((↑) : (E ≃L[𝕜] F) → E →L[𝕜] F) ∈ 𝓝 (fderiv 𝕜 f x) := by
-      rw [← hM]
-      exact M.nhds
-    have : ContinuousAt (fderiv 𝕜 f) x := (h'f.fderiv_right (m := 1) le_rfl).continuousAt
-    exact this I
-  let N : E → (E ≃L[𝕜] F) := fun x ↦ if h : x ∈ U then h.choose else M
-  have eN : (fun y ↦ (N y : E →L[𝕜] F)) =ᶠ[𝓝 x] fun y ↦ fderiv 𝕜 f y := by
-    filter_upwards [hU] with y hy
-    simpa only [hy, ↓reduceDIte, N] using Exists.choose_spec hy
-  have hN : ContDiffAt 𝕜 1 (fun y ↦ (N y : E →L[𝕜] F)) x := by
-    have : ContDiffAt 𝕜 1 (fun y ↦ fderiv 𝕜 f y) x := h'f.fderiv_right (m := 1) (le_rfl)
-    apply this.congr_of_eventuallyEq eN
-  have hN' : ContDiffAt 𝕜 1 (fun y ↦ ((N y).symm : F →L[𝕜] E)) x := by
-    have : ContDiffAt 𝕜 1 (ContinuousLinearMap.inverse ∘ (fun y ↦ (N y : E →L[𝕜] F))) x :=
-      (contDiffAt_map_inverse (N x)).comp x hN
-    convert this with y
-    simp only [Function.comp_apply, ContinuousLinearMap.inverse_equiv]
-  refine ⟨N, hN, hN', eN, fun v ↦ ?_⟩
-  have A' y : ContinuousLinearMap.compL 𝕜 F E F (N y : E →L[𝕜] F) ((N y).symm : F →L[𝕜] E)
-      = ContinuousLinearMap.id 𝕜 F := by ext; simp
-  have : fderiv 𝕜 (fun y ↦ ContinuousLinearMap.compL 𝕜 F E F (N y : E →L[𝕜] F)
-      ((N y).symm : F →L[𝕜] E)) x v = 0 := by simp [A']
-  have I : (N x : E →L[𝕜] F) ∘L (fderiv 𝕜 (fun y ↦ ((N y).symm : F →L[𝕜] E)) x v) =
-      - (fderiv 𝕜 (fun y ↦ (N y : E →L[𝕜] F)) x v) ∘L ((N x).symm : F →L[𝕜] E) := by
-    rw [ContinuousLinearMap.fderiv_of_bilinear _ (hN.differentiableAt le_rfl)
-      (hN'.differentiableAt le_rfl)] at this
-    simpa [eq_neg_iff_add_eq_zero] using this
-  have B (M : F →L[𝕜] E) : M = ((N x).symm : F →L[𝕜] E) ∘L ((N x) ∘L M) := by
-    ext; simp
-  rw [B (fderiv 𝕜 (fun y ↦ ((N y).symm : F →L[𝕜] E)) x v), I]
-  simp only [ContinuousLinearMap.comp_neg, neg_inj, eN.fderiv_eq]
+  simp only [← fderivWithin_univ, ← contDiffWithinAt_univ, ← nhdsWithin_univ] at hf h'f ⊢
+  exact exists_continuousLinearEquiv_fderivWithin_symm_eq h'f hf uniqueDiffOn_univ (mem_univ _)
 
 /-- The Lie bracket commutes with taking pullbacks. This requires the function to have symmetric
-second derivative. -/
+second derivative. Version in a complete space. One could also give a version avoiding
+completeness but requiring that `f` is a local diffeo. -/
 lemma lieBracket_pullback (f : E → F) (V W : F → F) (x : E)
     (hf : ∀ v w, fderiv 𝕜 (fderiv 𝕜 f) x v w = fderiv 𝕜 (fderiv 𝕜 f) x w v)
     (h'f : ContDiffAt 𝕜 2 f x) (hV : DifferentiableAt 𝕜 V (f x)) (hW : DifferentiableAt 𝕜 W (f x)) :
@@ -417,6 +447,23 @@ lemma lieBracket_pullback (f : E → F) (V W : F → F) (x : E)
   · exact M_symm_smooth.differentiableAt le_rfl
   · exact hW.comp x Af
 
+lemma DifferentiableWithinAt.pullbackWithin {f : E → F} {V : F → F} {s : Set E} {t : Set F} {x : E}
+    (hV : DifferentiableWithinAt 𝕜 V t (f x))
+    (hf : ContDiffWithinAt 𝕜 2 f s x) (hf' : (fderivWithin 𝕜 f s x).IsInvertible)
+    (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (hst : MapsTo f s t) :
+    DifferentiableWithinAt 𝕜 (pullbackWithin 𝕜 f V s) s x := by
+  rcases exists_continuousLinearEquiv_fderivWithin_symm_eq hf hf' hs hx
+    with ⟨M, -, M_symm_smooth, hM, -⟩
+  simp only [pullbackWithin_eq]
+  have : DifferentiableWithinAt 𝕜 (fun y ↦ ((M y).symm : F →L[𝕜] E) (V (f y))) s x := by
+    apply DifferentiableWithinAt.clm_apply
+    · exact M_symm_smooth.differentiableWithinAt le_rfl
+    · exact hV.comp _ (hf.differentiableWithinAt one_le_two) hst
+  apply this.congr_of_eventuallyEq
+  · filter_upwards [hM] with y hy using by simp [← hy]
+  · have hMx : M x = fderivWithin 𝕜 f s x := by apply mem_of_mem_nhdsWithin hx hM
+    simp [← hMx]
+
 end VectorField
 
 end LieBracketVectorField
@@ -426,9 +473,6 @@ section LieBracketManifold
 open Set Function
 open scoped Manifold
 
-#where
-
-
 /- We work in the `VectorField` namespace because pullbacks, Lie brackets, and so on, are notions
 that make sense in a variety of contexts. We also prefix the notions with `m` to distinguish the
 manifold notions from the vector spaces notions. For instance, the Lie bracket of two vector
@@ -436,8 +480,6 @@ fields in a manifold is denoted with `mlieBracket I V W x`, where `I` is the rel
 corners, `V W : Π (x : M), TangentSpace I x` are the vector fields, and `x : M` is the basepoint.
 -/
 namespace VectorField
-
-#where
 
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -451,20 +493,38 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {I'' : ModelWithCorners 𝕜 E'' H''}
   {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M''] [SmoothManifoldWithCorners I'' M'']
 
-variable {f : M → M'} {V W V₁ W₁ : Π (x : M), TangentSpace I x} {s : Set M} {x : M}
+variable {f : M → M'} {s : Set M} {x : M}
+
+section
+
+variable {V W V₁ W₁ : Π (x : M'), TangentSpace I' x}
 
 variable (I I') in
 def mpullbackWithin (f : M → M') (V : Π (x : M'), TangentSpace I' x) (s : Set M) (x : M) :
     TangentSpace I x :=
   (mfderivWithin I I' f s x).inverse (V (f x))
 
-lemma mpullbackWithin_apply (f : M → M') (V : Π (x : M'), TangentSpace I' x) (s : Set M) (x : M) :
+lemma mpullbackWithin_apply :
     mpullbackWithin I I' f V s x = (mfderivWithin I I' f s x).inverse (V (f x)) := rfl
 
-lemma mpullbackWithin_add (f : M → M') (V V₁ : Π (x : M'), TangentSpace I' x) (s : Set M) (x : M) :
+lemma mpullbackWithin_add_apply :
     mpullbackWithin I I' f (V + V₁) s x =
       mpullbackWithin I I' f V s x + mpullbackWithin I I' f V₁ s x := by
   simp [mpullbackWithin_apply]
+
+lemma mpullbackWithin_add :
+    mpullbackWithin I I' f (V + V₁) s =
+      mpullbackWithin I I' f V s + mpullbackWithin I I' f V₁ s := by
+  ext x
+  simp [mpullbackWithin_apply]
+
+lemma MDifferentiableWithinAt.mpullbackWithin [CompleteSpace E] {t : Set M'}
+    (hV : MDifferentiableWithinAt I' I'.tangent
+      (fun (y : M') ↦ (V y : TangentBundle I' M')) t (f x))
+    (hf : ContMDiffWithinAt I I' 2 f s x) (hf' : (mfderivWithin I I' f s x).IsInvertible) :
+    MDifferentiableWithinAt I I.tangent
+      (fun (y : M) ↦ (mpullbackWithin I I' f V s y : TangentBundle I M)) s x :=
+  sorry
 
 lemma mpullbackWithin_comp (g : M' → M'') (f : M → M') (V : Π (x : M''), TangentSpace I'' x)
     (s : Set M) (t : Set M') (x₀ : M) (hg : MDifferentiableWithinAt I' I'' g t (f x₀))
@@ -486,17 +546,18 @@ lemma mpullbackWithin_eq_iff (f : M → M') (V W : Π (x : M'), TangentSpace I' 
   rcases hf with ⟨M, hM⟩
   simp [mpullbackWithin, ← hM]
 
+end
+
+variable {V W V₁ W₁ : Π (x : M), TangentSpace I x}
+
 variable (I I') in
 def mlieBracketWithin (V W : Π (x : M), TangentSpace I x) (s : Set M) (x₀ : M) :
     TangentSpace I x₀ :=
   mpullbackWithin I 𝓘(𝕜, E) (extChartAt I x₀)
     (lieBracketWithin 𝕜
-      (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm V
-        ((extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target))
-      (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm W
-        ((extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target))
-      ((extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target))
-  (s ∩ (extChartAt I x₀).source) x₀
+      (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm V ((extChartAt I x₀).symm ⁻¹' s ∩ range I))
+      (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm W ((extChartAt I x₀).symm ⁻¹' s ∩ range I))
+      ((extChartAt I x₀).symm ⁻¹' s ∩ range I)) s x₀
 
 variable (I I') in
 def mlieBracket (V W : Π (x : M), TangentSpace I x) (x₀ : M) : TangentSpace I x₀ :=
@@ -505,13 +566,10 @@ def mlieBracket (V W : Π (x : M), TangentSpace I x) (x₀ : M) : TangentSpace I
 lemma mlieBracketWithin_def  :
     mlieBracketWithin I V W s = fun x₀ ↦
     mpullbackWithin I 𝓘(𝕜, E) (extChartAt I x₀)
-      (lieBracketWithin 𝕜
-        (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm V
-          ((extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target))
-        (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm W
-          ((extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target))
-        ((extChartAt I x₀).symm ⁻¹' s ∩ (extChartAt I x₀).target))
-    (s ∩ (extChartAt I x₀).source) x₀ := rfl
+    (lieBracketWithin 𝕜
+      (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm V ((extChartAt I x₀).symm ⁻¹' s ∩ range I))
+      (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x₀).symm W ((extChartAt I x₀).symm ⁻¹' s ∩ range I))
+      ((extChartAt I x₀).symm ⁻¹' s ∩ range I)) s x₀ := rfl
 
 
 /-********************************************************************************
@@ -542,9 +600,13 @@ lemma mlieBracketWithin_add_left
     mlieBracketWithin I (V + V₁) W s x =
       mlieBracketWithin I V W s x + mlieBracketWithin I V₁ W s x := by
   simp only [mlieBracketWithin, Pi.add_apply, map_add, mpullbackWithin_apply]
-  rw [← ContinuousLinearMap.map_add]
+  rw [← ContinuousLinearMap.map_add, mpullbackWithin_add]
   congr 1
-  rw [mpullbackWithin_add (I := 𝓘(𝕜, E)) (V := V) (V₁ := V₁)]
+  rw [lieBracketWithin_add_left]
+  · apply MDifferentiableWithinAt.differentiableWithinAt
+
+
+
 
 #exit
 
