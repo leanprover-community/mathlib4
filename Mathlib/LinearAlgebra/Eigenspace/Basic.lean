@@ -125,6 +125,11 @@ lemma unifEigenspace_eq_iSup_unifEigenspace_nat (f : End R M) (μ : R) (k : ℕ�
   rw [unifEigenspace_aux]
   simp only [iSup_subtype, unifEigenspace_nat]
 
+lemma unifEigenspace_top (f : End R M) (μ : R) :
+    f.unifEigenspace μ ⊤ = ⨆ k : ℕ, f.unifEigenspace μ k := by
+  rw [unifEigenspace_eq_iSup_unifEigenspace_nat, iSup_subtype]
+  simp only [le_top, iSup_pos, genEigenspace, OrderHom.coe_mk]
+
 lemma unifEigenspace_one {f : End R M} {μ : R} :
     f.unifEigenspace μ 1 = LinearMap.ker (f - μ • 1) := by
   rw [← Nat.cast_one, unifEigenspace_nat, pow_one]
