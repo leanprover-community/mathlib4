@@ -6,15 +6,13 @@ Authors: Bjørn Kjos-Hanssen
 import Mathlib.Data.Vector.Basic
 import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Backtracking.BacktrackingVerification
-import Mathlib.Computability.NFA
-import Mathlib.MeasureTheory.Constructions.Prod.Basic
-import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Vector.Defs
 import Batteries.Data.List.Basic
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Vector.Basic
 import Mathlib.Data.Nat.Digits
 import Mathlib.Backtracking.HydrophobicPolarModel
+
 /-!
 # Hydrophobic-polar protein folding model: automatic use of backtracking
 
@@ -49,12 +47,14 @@ we use the type
 section Backtracking_usage
 
 open Mathlib Finset
+/-- . -/
 theorem path_cons_suffix {b : ℕ} (go : Fin b → ℤ×ℤ → ℤ×ℤ) (tail : List (Fin b)) (head: Fin b) :
     (path go tail).1 <:+ (path go (head :: tail)).1 := by
   rw [path_cons]
   exact List.suffix_cons (go head <|Vector.head <|path go tail) (path go tail).1
 
 
+/-- . -/
 theorem path_append_suffix {b : ℕ} (go : Fin b → ℤ×ℤ → ℤ×ℤ) (tail : List (Fin b))
     (head: List (Fin b)) : (path go tail).1 <:+ (path go (head ++ tail)).1 := by
   induction head with
@@ -62,17 +62,19 @@ theorem path_append_suffix {b : ℕ} (go : Fin b → ℤ×ℤ → ℤ×ℤ) (tai
   |cons head tail_1 tail_ih => calc _ <:+ (path go (tail_1 ++ tail)).1 := tail_ih
                                     _ <:+ _                            := path_cons_suffix _ _ _
 
-
+/-- . -/
 theorem nodup_path_preserved_under_suffixes {b : ℕ} (go: Fin b → ℤ × ℤ → ℤ × ℤ) (u v : List (Fin b))
     (huv : u <:+ v) (h : List.Nodup (path go v).1) : List.Nodup (path go u).1 := by
   obtain ⟨t,ht⟩ := huv
   obtain ⟨s,hs⟩ := path_append_suffix go u t
   exact List.Nodup.of_append_right <| hs ▸ ht ▸ h
 
+/-- . -/
 def NodupPath {b:ℕ} (go : Fin b → ℤ×ℤ → ℤ×ℤ) : MonoPred b := {
   P := (fun moves ↦ List.Nodup (path go moves).1)
   preserved_under_suffixes := nodup_path_preserved_under_suffixes _}
 
+/-- . -/
 def first_nonzero_entry (moves : List (Fin 4)) : Option (Fin 4) := by
   induction moves with
   | nil                 => exact none
@@ -93,25 +95,33 @@ def orderly (moves: List (Fin 4)) :=
    first_nonzero_entry moves.reverse = some 2 ∨
    first_nonzero_entry moves.reverse = none)
 
+/-- . -/
 instance (moves : List (Fin 4)) : Decidable (orderly moves) := by
   unfold orderly; exact instDecidableAnd
+
+/-- . -/
 instance (moves : List (Fin 4)) : Decidable (orderly_and_nontrivial moves) := by
   unfold orderly_and_nontrivial; exact instDecidableAnd
 
+/-- . -/
 def rotate : ℤ × ℤ → ℤ × ℤ := fun (x,y) ↦ (-y,x)
+/-- . -/
 def reflect: ℤ × ℤ → ℤ × ℤ := fun (x,y) ↦ (x,-y)
+/-- . -/
 def rotateIndex (a : Fin 4) : Fin 4 := match a with
-| 0 => 2
-| 1 => 3
-| 2 => 1
-| 3 => 0
+  | 0 => 2
+  | 1 => 3
+  | 2 => 1
+  | 3 => 0
 
+/-- . -/
 def reflectIndex (a : Fin 4) : Fin 4 := match a with
-| 0 => 0
-| 1 => 1
-| 2 => 3
-| 3 => 2
+  | 0 => 0
+  | 1 => 1
+  | 2 => 3
+  | 3 => 2
 
+/-- . -/
 theorem reflect_basic (u : ℤ × ℤ) (c: Fin 4) :
     reflect (rect c u) = rect (reflectIndex c) (reflect u) := by
   unfold reflect rect
@@ -120,6 +130,7 @@ theorem reflect_basic (u : ℤ × ℤ) (c: Fin 4) :
   fin_cases c <;> (simp only [Prod.fst_add, add_right_inj];decide;)
   fin_cases c <;> (simp only [Prod.snd_add]; rw [Int.add_comm];simp only [add_right_inj];decide)
 
+/-- . -/
 theorem rotate_basic (u : ℤ × ℤ) (c: Fin 4) :
     rotate (rect c u) = rect (rotateIndex c) (rotate u) := by
   unfold rotate rect
@@ -129,6 +140,7 @@ theorem rotate_basic (u : ℤ × ℤ) (c: Fin 4) :
   fin_cases c <;> (simp only [Prod.fst_add, add_right_inj]; decide)
   fin_cases c <;> (simp only [Prod.snd_add, add_right_inj]; decide)
 
+/-- . -/
 theorem trafo_preserves_nearby (u v : ℤ × ℤ) (huv: nearby rect u v) (trafo : ℤ×ℤ → ℤ×ℤ)
     (trafoIndex: Fin 4 → Fin 4) (trafo_basic :
     ∀ (u : ℤ × ℤ), ∀ (c: Fin 4), trafo (rect c u) = rect (trafoIndex c) (trafo u)) :
@@ -138,6 +150,7 @@ theorem trafo_preserves_nearby (u v : ℤ × ℤ) (huv: nearby rect u v) (trafo 
   obtain ⟨c,hc⟩ := huv
   exact ⟨(trafoIndex c), hc ▸ trafo_basic u.1 u.2 c⟩
 
+/-- . -/
 theorem trafo_preserves_nearby_converse {u v : ℤ × ℤ} {trafo : ℤ×ℤ → ℤ×ℤ}
     {trafoIndex: Fin 4 → Fin 4}
     (trafo_basic : ∀ (u : ℤ × ℤ), ∀ (c: Fin 4), trafo (rect c u) = rect (trafoIndex c) (trafo u))
@@ -153,6 +166,7 @@ theorem trafo_preserves_nearby_converse {u v : ℤ × ℤ} {trafo : ℤ×ℤ →
   apply hi at hc
   use d
 
+/-- . -/
 theorem rotateIndex_surjective : Function.Surjective rotateIndex := by
   intro b
   fin_cases b
@@ -161,6 +175,7 @@ theorem rotateIndex_surjective : Function.Surjective rotateIndex := by
   use 0;rfl
   use 1;rfl
 
+/-- . -/
 theorem reflectIndex_surjective : Function.Surjective reflectIndex := by
   intro b
   fin_cases b
@@ -169,52 +184,58 @@ theorem reflectIndex_surjective : Function.Surjective reflectIndex := by
   use 3;rfl
   use 2;rfl
 
+/-- . -/
 theorem rotate_injective : Function.Injective rotate := by
   unfold rotate
   intro x y hxy
   rw [Prod.mk.injEq, neg_inj] at hxy
   exact Prod.ext hxy.2 hxy.1
 
+/-- . -/
 theorem reflect_injective : Function.Injective reflect := by
   unfold reflect
   intro x y hxy
   simp only [Prod.mk.injEq, neg_inj] at hxy
   exact Prod.ext hxy.1 hxy.2
 
-
+/-- . -/
 theorem rotate_preserves_nearby_converse {u v : ℤ × ℤ} (huv: nearby rect (rotate u) (rotate v)) :
     nearby rect u v :=
   trafo_preserves_nearby_converse rotate_basic huv rotateIndex_surjective rotate_injective
 
+/-- . -/
 theorem reflect_preserves_nearby_converse {u v : ℤ × ℤ} (huv: nearby rect (reflect u) (reflect v)) :
     nearby rect u v :=
   trafo_preserves_nearby_converse reflect_basic huv reflectIndex_surjective reflect_injective
 
 
--- This is a first step towards proving that "rotate" preserves pts_tot':
+/-- This is a first step towards proving that "rotate" preserves pts_tot' -/
 theorem rotate_preserves_nearby {u v : ℤ × ℤ} (huv: nearby rect u v) :
     nearby rect (rotate u) (rotate v) :=
   trafo_preserves_nearby _ _ huv _ rotateIndex rotate_basic
 
+/-- . -/
 theorem reflect_preserves_nearby {u v : ℤ × ℤ} (huv: nearby rect u v) :
     nearby rect (reflect u) (reflect v) :=
   trafo_preserves_nearby _ _ huv _ reflectIndex reflect_basic
 
 
-/-- roeu = rotate, essentially unary -/
-def roeu := (fun a : Fin 4 ↦ fun _ : ℤ×ℤ ↦ rotateIndex a)
+/-- roeu = rotate, essentially unary. NOT ALLOWED because of unused argument? -/
+def roeu (a : Fin 4) := fun _ : ℤ×ℤ ↦ rotateIndex a
 
 /-- reeu = reflect,essentially unary -/
-def reeu := (fun a : Fin 4 ↦ fun _ : ℤ×ℤ ↦ reflectIndex a)
+def reeu (a : Fin 4) := fun _ : ℤ×ℤ ↦ reflectIndex a
 
+/-- . -/
 abbrev ρ := roeu
 
--- This can be generalized to be in terms of "trafo_eu":
+/-- This can be generalized to be in terms of "trafo_eu" -/
 lemma rot_length₀ (moves: List (Fin 4)) (k: Fin (Vector.length (path rect moves))) :
     k.1 < Nat.succ (List.length (morph roeu rect moves)) := by
   rw [morph_len]
   simp
 
+/-- . -/
 lemma ref_length₀ (moves: List (Fin 4)) (k: Fin (Vector.length (path rect moves))) :
     k.1 < Nat.succ (List.length (morph reeu rect moves)) := by
   rw [morph_len]
@@ -226,6 +247,7 @@ lemma ref_length₀_morf (moves: List (Fin 4)) (k: Fin (Vector.length (path rect
   rw [morf_len]
   simp
 
+/-- . -/
 theorem path_len_aux₁ {hd: Fin 4} {tl: List (Fin 4)} (k: Fin <|Vector.length <|path rect <|hd :: tl)
     {s : ℕ} (hs : k.1 = Nat.succ s) : s < Nat.succ (List.length (tl)) := by
   have h₁: Vector.length (path rect (hd :: tl)) = List.length (path rect (hd :: tl)).1 :=
@@ -233,18 +255,21 @@ theorem path_len_aux₁ {hd: Fin 4} {tl: List (Fin 4)} (k: Fin <|Vector.length <
   exact (path_len' rect tl.length _ rfl) ▸ (Nat.succ_inj'.mp h₁) ▸
     Nat.succ_lt_succ_iff.mp (hs ▸ k.2)
 
+/-- . -/
 theorem morph_path_succ_aux {hd: Fin 4} {tl: List (Fin 4)}
     (k: Fin (Vector.length (path rect (hd :: tl)))) {s: ℕ} (hs: k.1 = Nat.succ s) :
     s < Nat.succ (List.length (morph roeu rect tl)) := by
   rw [morph_len]
   exact path_len_aux₁ k hs
 
+/-- . -/
 theorem morph_path_succ_aux_reeu {hd: Fin 4} {tl: List (Fin 4)}
     (k: Fin (Vector.length (path rect (hd :: tl)))) {s: ℕ} (hs: k.1 = Nat.succ s) :
     s < Nat.succ (List.length (morph reeu rect tl)) := by
   rw [morph_len]
   exact path_len_aux₁ k hs
 
+/-- . -/
 theorem morf_path_succ_aux {hd: Fin 4} {tl: List (Fin 4)}
     (k: Fin (Vector.length (path rect (hd :: tl)))) {s: ℕ} (hs: k.1 = Nat.succ s) :
     s < Nat.succ (List.length (morf_list reflectIndex tl)) := by
@@ -252,8 +277,8 @@ theorem morf_path_succ_aux {hd: Fin 4} {tl: List (Fin 4)}
   exact path_len_aux₁ k hs
 
 
--- Here is a version of reflect_morph that is simply scaled down
--- to not have the extra argument, and use morf_list
+/-- Here is a version of reflect_morph that is simply scaled down
+ to not have the extra argument, and use morf_list -/
 lemma reflect_morf_list (moves: List (Fin 4)) (k : Fin (path rect moves).length) :
     reflect ((path rect                  moves ).get  k) =
     (path rect (morf_list reflectIndex moves)).get ⟨k.1, ref_length₀_morf moves k⟩ := by
@@ -276,8 +301,8 @@ lemma reflect_morf_list (moves: List (Fin 4)) (k : Fin (path rect moves).length)
       norm_cast
 
 
--- Finished February 26, 2024, although the proof is hard to understand:
--- (reflect_morph and rotate_morph can have a common generalization)
+/-- Finished February 26, 2024, although the proof is hard to understand:
+ (reflect_morph and rotate_morph can have a common generalization) -/
 lemma reflect_morph (moves: List (Fin 4)) (k : Fin (path rect moves).length):
     reflect ((path rect                  moves ).get  k) =
              (path rect (morph reeu rect moves)).get ⟨k.1, ref_length₀ moves k⟩ := by
@@ -298,6 +323,7 @@ lemma reflect_morph (moves: List (Fin 4)) (k : Fin (path rect moves).length):
       simp_all only [Nat.succ_eq_add_one, List.length_cons, Vector.get_cons_succ, Fin.val_succ]
       norm_cast
 
+/-- . -/
 lemma rotate_morph (moves: List (Fin 4)) (k : Fin (path rect moves).length):
     rotate ((path rect                  moves ).get  k) =
             (path rect (morph roeu rect moves)).get ⟨k.1, rot_length₀ moves k⟩ := by
@@ -318,7 +344,7 @@ lemma rotate_morph (moves: List (Fin 4)) (k : Fin (path rect moves).length):
       norm_cast
 
 -- Completed March 6, 2024:
-/- To avoid type problems,
+/-- To avoid type problems,
   1. Separate proofs into their own have-statements
   2. Don't let any variables get automatically cast into ↑↑↑k versions;
   instead specify their type whenever possible. See *** below.
@@ -337,7 +363,7 @@ lemma rotate_morphᵥ {l: ℕ} {moves: Vector (Fin 4) l} (k : Fin l.succ):
   rw [← h₁, rotate_morph]
   norm_cast
 
--- reflect_morphᵥ is exactly same proof as rotate_morphᵥ
+/-- reflect_morphᵥ is exactly same proof as rotate_morphᵥ -/
 lemma reflect_morphᵥ {l: ℕ} {moves: Vector (Fin 4) l} (k : Fin l.succ):
     reflect ((pathᵥ κ                moves).get  k) =
              (pathᵥ κ (morphᵥ reeu κ moves)).get k := by
@@ -426,7 +452,7 @@ theorem reflect_pts'_atᵥ_morf {l:ℕ} (k : Fin l.succ) (ph : Vector Bool l.suc
   simp only [mem_filter, mem_univ, true_and] at *
   exact reflect_preserves_pt_loc'_morf moves i k ph hi
 
-
+/-- . -/
 theorem rotate_pts_tot {l : ℕ} (ph : Vector Bool l.succ) (moves : Vector (Fin 4) l) :
     pts_tot' κ ph (π κ moves) ≤
     pts_tot' κ ph (π κ (σ ρ κ moves)) := sum_le_sum fun _ _ => rotate_pts'_atᵥ _ _ _
@@ -437,6 +463,7 @@ theorem reflect_pts_tot_morf {l : ℕ} (ph : Vector Bool l.succ)(moves : Vector 
     pts_tot' κ ph (π κ (morf reflectIndex moves)) :=
   sum_le_sum fun _ _ => reflect_pts'_atᵥ_morf _ _ _
 
+/-- . -/
 theorem reflect_pts_tot {l : ℕ} (ph : Vector Bool l.succ)(moves : Vector (Fin 4) l) :
     pts_tot' κ ph (π κ moves) ≤
     pts_tot' κ ph (π κ (σ reeu κ moves)) := sum_le_sum fun _ _ => reflect_pts'_atᵥ _ _ _
@@ -449,7 +476,7 @@ theorem rotate_until_right (k : Fin 4) :
     rotateIndex (rotateIndex (rotateIndex k)) = 0 := by
   fin_cases k <;> aesop
 
-
+/-- . -/
 theorem rotate_head {l : ℕ} (moves: Vector (Fin 4) (Nat.succ l)) :
     rotateIndex (Vector.head moves) = Vector.head (σ ρ κ moves) := by
   obtain ⟨a,⟨u,hu⟩⟩ := Vector.exists_eq_cons moves
@@ -460,7 +487,7 @@ theorem rotate_head {l : ℕ} (moves: Vector (Fin 4) (Nat.succ l)) :
 theorem rotate_headF {l : ℕ} (moves: Fin l.succ → (Fin 4)) :
     rotateIndex (moves 0) = (morfF rotateIndex moves) 0 := rfl
 
-
+/-- . -/
 theorem towards_orderlyish {l:ℕ} (ph : Vector Bool l.succ.succ) (moves : Vector (Fin 4) l.succ) :
     ∃ moves', moves'.get 0 = 0 ∧ pts_tot' κ ph (π κ moves) ≤
                                  pts_tot' κ ph (π κ moves') := by
@@ -573,6 +600,7 @@ theorem path_morph_len {l : ℕ} (moves: Vector (Fin 4) l) :
 -- #eval orderly []
 -- #eval orderly_and_nontrivial []
 
+/-- . -/
 def pts_tot'_list_rev {b:ℕ} (go : Fin b → ℤ×ℤ → ℤ×ℤ) (ph : List Bool) (moves: List (Fin b)) : ℕ :=
     dite (moves.length.succ = ph.length)
       (fun h ↦ pts_tot' -- or pts_tot
@@ -583,6 +611,7 @@ def pts_tot'_list_rev {b:ℕ} (go : Fin b → ℤ×ℤ → ℤ×ℤ) (ph : List 
           rw [← h,path_len'];rfl
         )⟩) (fun _ ↦ 0)
 
+/-- . -/
 def pts_tot'_list_rev' {b:ℕ} (go : Fin b → ℤ×ℤ → ℤ×ℤ) (ph : List Bool) (moves: List (Fin b)) : ℕ :=
     dite (moves.length.succ = ph.length)
       (fun h ↦ pts_tot' -- or pts_tot
@@ -598,7 +627,7 @@ def pts_tot'_list_rev' {b:ℕ} (go : Fin b → ℤ×ℤ → ℤ×ℤ) (ph : List
           rfl
         )⟩) (fun _ ↦ 0)
 
-
+/-- . -/
 def pts_tot'_list {b:ℕ} (go : Fin b → ℤ×ℤ → ℤ×ℤ) (ph : List Bool) (moves: List (Fin b)) : ℕ :=
     dite (moves.length.succ = ph.length)
       (fun h ↦ pts_tot' -- or pts_tot
@@ -616,6 +645,7 @@ def InjectivePath {b:ℕ} (go : Fin b → ℤ × ℤ → ℤ × ℤ) (ph : List 
     exact nodup_path_preserved_under_suffixes _ _ _ huv h
   Q := fun moves => pts_tot'_list go ph moves ≥ p ∧ orderly_and_nontrivial moves}
 
+/-- . -/
 def InjectivePath₄ (go : Fin 4 → ℤ × ℤ → ℤ × ℤ) (ph : List Bool) (p : ℕ) : MonoPred 4 := {
   P := (fun moves ↦ Function.Injective (fun i ↦ (path go moves).get i))
   preserved_under_suffixes := by
@@ -624,6 +654,7 @@ def InjectivePath₄ (go : Fin 4 → ℤ × ℤ → ℤ × ℤ) (ph : List Bool)
     exact nodup_path_preserved_under_suffixes _ _ _ huv h
   Q := (fun moves : List (Fin 4) ↦ pts_tot'_list go ph moves ≥ p ∧ orderly_and_nontrivial moves)}
 
+/-- . -/
 def InjectivePath₅ (go : Fin 4 → ℤ × ℤ → ℤ × ℤ) (ph : List Bool) (p : ℕ) : MonoPred 4 := {
   P := fun moves ↦ Function.Injective fun i ↦ (path go moves).get i
   preserved_under_suffixes := by
@@ -633,11 +664,13 @@ def InjectivePath₅ (go : Fin 4 → ℤ × ℤ → ℤ × ℤ) (ph : List Bool)
   Q := fun moves : List (Fin 4) ↦ pts_tot'_list_rev' go ph moves ≥ p
     ∧ orderly_and_nontrivial moves}
 
+/-- . -/
 instance  (go : Fin 4 → ℤ×ℤ → ℤ×ℤ) (ph : List Bool) (p : ℕ) :
     DecidablePred (InjectivePath₅ go ph p).P := by
   unfold InjectivePath₅
   exact inferInstance
 
+/-- . -/
 instance  (go : Fin 4 → ℤ×ℤ → ℤ×ℤ) (ph : List Bool) (p : ℕ) :
     DecidablePred (InjectivePath₅ go ph p).Q := by
   unfold InjectivePath₅
@@ -646,10 +679,8 @@ instance  (go : Fin 4 → ℤ×ℤ → ℤ×ℤ) (ph : List Bool) (p : ℕ) :
 
 /-- Now use this to characterize. First add "M.Q". -/
 theorem using_backtracking_verification₀ {k L p b : ℕ}
-    (go : Fin 4 → ℤ×ℤ → ℤ×ℤ)
-    (bound : k ≤ L.succ) (M:MonoPred b)
-    [DecidablePred M.P] [DecidablePred M.Q]
-    (w : Vector (Fin 4) (L.succ-k))
+    (go : Fin 4 → ℤ×ℤ → ℤ×ℤ) (bound : k ≤ L.succ) (M:MonoPred b)
+    [DecidablePred M.P] (w : Vector (Fin 4) (L.succ-k))
     (ph : Vector Bool L.succ.succ)
     [DecidablePred (InjectivePath₄ go ph.1 p).P]
     [DecidablePred (InjectivePath₄ go ph.1 p).Q] :
@@ -658,9 +689,10 @@ theorem using_backtracking_verification₀ {k L p b : ℕ}
     = num_by_backtracking (InjectivePath₄ go ph.1 p).P (InjectivePath₄ go ph.1 p).Q w :=
   backtracking_verification bound (InjectivePath₄ go ph.1 p) w
 
+/-- . -/
 theorem using_backtracking_verification₁ {k L p:ℕ}
     (bound : k ≤ L.succ) (M:MonoPred 4)
-    [DecidablePred M.P] [DecidablePred M.Q]
+    [DecidablePred M.P]
     (w : Vector (Fin 4) (L.succ-k))
     (ph : Vector Bool L.succ.succ)
     [DecidablePred (InjectivePath₄ rect ph.1 p).P]
@@ -707,19 +739,23 @@ def goodFolds (go : Fin 4 → ℤ×ℤ → ℤ×ℤ) {l:ℕ} (p:ℕ) (ph : Vecto
     (fun moves : List (Fin 4) ↦ pts_tot'_list_rev' go ph.1 moves ≥ p ∧ orderly_and_nontrivial moves)
     (Gap_nil' 4 l.succ)
 
+/-- . -/
 def equifoldable (go : Fin 4 → ℤ×ℤ → ℤ×ℤ) {l:ℕ} (ph₀ ph₁ : Vector Bool l.succ.succ) (p:ℕ) :=
     goodFolds go p ph₀ = goodFolds go p ph₁
 
+/-- . -/
 infix:50 " ∼₃ " => (fun ph₀ ph₁ ↦ equifoldable rect₃ ph₀ ph₁ 2)
+/-- . -/
 infix:50 " ∼ "  => (fun ph₀ ph₁ ↦ equifoldable rect  ph₀ ph₁ 2)
 
-
+/-- . -/
 instance (go : Fin 4 → ℤ×ℤ → ℤ×ℤ) {l:ℕ}  (p:ℕ) :
     Equivalence (fun (ph₀ ph₁ : Vector Bool l.succ.succ) ↦ equifoldable go ph₀ ph₁ p) := {
   trans := by intro _ _ _ h₀₁ h₁₂;exact Eq.trans h₀₁ h₁₂
   refl := by intros; rfl
   symm := by intro _ _ h;exact h.symm}
 
+/-- . -/
 instance (go : Fin 4 → ℤ×ℤ → ℤ×ℤ) {l : ℕ} (ph₀ ph₁ : Vector Bool l.succ.succ) (p:ℕ) :
     Decidable (equifoldable go ph₀ ph₁ p) := by
   unfold equifoldable goodFolds satisfy_and_have_suffix
@@ -743,6 +779,7 @@ instance (go : Fin 4 → ℤ×ℤ → ℤ×ℤ) {l : ℕ} (ph₀ ph₁ : Vector 
 -- #eval set_of_folds_achieving_pts_rev rect₃ 2 ⟨[l,l,l,l,l,l],rfl⟩
 -- {[0, 2, 1, 2, 0], [0, 0, 2, 1, 1]}
 
+/-- . -/
 def phtoSet {l : ℕ} (ph : Vector Bool l) := filter (fun i ↦ ph.get i) univ
 
 /-- This result from March 29, 2024 proves the obvious fact that
@@ -775,6 +812,7 @@ theorem toSet_dominates {α β:Type} [Fintype β] [OfNat α 0] [DecidableEq α] 
     tauto
   exact le_trans h₀ h₁
 
+/-- . -/
 theorem more_pts_of_subset (go: Fin 4 → ℤ×ℤ→ℤ×ℤ) {l : ℕ} {ph₀ ph₁ : Vector Bool l.succ.succ}
     (w: Gap 4 (Nat.succ l) 0) (hsub: phtoSet ph₀ ⊆ phtoSet ph₁) :
     pts_tot'_list_rev' go ph₀.1 w.1 ≤ pts_tot'_list_rev' go ph₁.1 w.1 := by
@@ -804,17 +842,20 @@ theorem more_pts_of_subset (go: Fin 4 → ℤ×ℤ→ℤ×ℤ) {l : ℕ} {ph₀ 
     mem_univ, true_and] at hsubi;
   tauto
 
-
+/-- . -/
 def meet {l:ℕ} (ph₀ ph₁ : Vector Bool l) : Vector Bool l :=
     Vector.ofFn (fun i ↦ ph₀.get i ∧ ph₁.get i)
 
+/-- . -/
 infix:50 " ⊓ " => meet
 
+/-- . -/
 lemma meet_get {l :ℕ} {ph₀ ph₁ : Vector Bool l} {i:Fin l} :
     (ph₀ ⊓ ph₁).get i = (ph₀.get i ∧ ph₁.get i) := by
   unfold meet
   simp_all
 
+/-- . -/
 theorem meet_basic₀ {l : ℕ} {ph₀ ph₁ : Vector Bool l} : phtoSet (ph₀ ⊓ ph₁) ⊆ phtoSet ph₀ := by
   intro i hi
   unfold phtoSet at *
@@ -968,7 +1009,7 @@ theorem goodPairs_meet (go: Fin 4 → ℤ×ℤ→ℤ×ℤ) {l : ℕ} (ph₀ ph�
 -- )
 
 
-
+/-- . -/
 def num_folds_achieving_pts {b:ℕ} (go : Fin b → ℤ×ℤ → ℤ×ℤ)
     {l:ℕ} (ph : Vector Bool l.succ.succ) (p:ℕ) : ℕ :=
   num_by_backtracking
@@ -976,11 +1017,12 @@ def num_folds_achieving_pts {b:ℕ} (go : Fin b → ℤ×ℤ → ℤ×ℤ)
     (fun moves ↦ pts_tot'_list go ph.1 moves ≥ p ∧ orderly_and_nontrivial moves)
     (Gap_nil' b l.succ) -- (there are 7 moves for a polypeptide of length 8)
 
-
+/-- . -/
 def can_achieve_pts {b:ℕ} (go : Fin b → ℤ×ℤ → ℤ×ℤ)
     {l:ℕ} (ph : Vector Bool l.succ.succ) (p:ℕ): Prop :=
   set_of_folds_achieving_pts go p ph ≠ ∅
 
+/-- . -/
 def x : List Bool := [true,false,true,false,true,false, true,true]
 -- #eval HP rect ⟨x,rfl⟩           -- This evaluates to 3 quickly, don't even need the backtracking.
 -- #eval HP rect ⟨x ++ [false],rfl⟩-- This evaluates to 2 quickly, don't even need the backtracking.
@@ -995,13 +1037,15 @@ def x : List Bool := [true,false,true,false,true,false, true,true]
 -- | 2 => sp
 -- | 3 => sm
 
-
+/-- . -/
 def stecher1 : Prop :=
     satisfy_and_have_suffix
       (fun w ↦ Function.Injective fun i ↦ (path rect w).get i)
       (fun w ↦ pts_tot'_list rect  x w > 2 ∧ orderly_and_nontrivial w)
       (Gap_nil' 4 7) -- (there are 7 moves for a polypeptide of length 8)
     = {⟨[0, 2, 2, 1, 1, 3, 0],rfl⟩} --{⟨[0, 3, 1, 1, 2, 2, 0],rfl⟩}
+
+/-- . -/
 instance : Decidable stecher1 := by {
   unfold stecher1
   apply decEq
@@ -1025,19 +1069,19 @@ instance : Decidable stecher1 := by {
 -- #eval HP hex ⟨List.replicate 3 true,rfl⟩ -- amazing
 
 
-example (x : Fin 1 → Bool): HP hex (Vector.ofFn x) = 0 := by
-  unfold Vector.ofFn
-  cases H : x 0 <;> aesop
+-- example (x : Fin 1 → Bool): HP hex (Vector.ofFn x) = 0 := by
+--   unfold Vector.ofFn
+--   cases H : x 0 <;> aesop
 
-example (x : Fin 2 → Bool): HP hex (Vector.ofFn x) = 0 := by
-  repeat unfold Vector.ofFn
-  cases H : x 0 <;> cases G : x 1 <;> aesop
+-- example (x : Fin 2 → Bool): HP hex (Vector.ofFn x) = 0 := by
+--   repeat unfold Vector.ofFn
+--   cases H : x 0 <;> cases G : x 1 <;> aesop
 
-example {b : Bool}: HP hex ⟨[true, b, true],rfl⟩ = 1 := by
-  cases H : b <;> aesop
+-- example {b : Bool}: HP hex ⟨[true, b, true],rfl⟩ = 1 := by
+--   cases H : b <;> aesop
 
-example {a b c : Bool}: HP hex ⟨[a, b, c],rfl⟩ = 0 ↔ a = false ∨ c = false := by
-  cases a <;> cases b <;> (cases c; aesop; decide)
+-- example {a b c : Bool}: HP hex ⟨[a, b, c],rfl⟩ = 0 ↔ a = false ∨ c = false := by
+--   cases a <;> cases b <;> (cases c; aesop; decide)
 
 -- example {x : Fin 3 → Bool}: HP hex (Vector.ofFn x) = 0 ↔ x 0 = false ∨ x 2 = false := by
 --   repeat unfold Vector.ofFn
@@ -1047,6 +1091,7 @@ example {a b c : Bool}: HP hex ⟨[a, b, c],rfl⟩ = 0 ↔ a = false ∨ c = fal
 -- #eval (myvec 4 7).length
 -- #eval stecher1
 
+/-- . -/
 def stecher2 : Prop :=
 satisfy_and_have_suffix
     (fun w ↦ Function.Injective (fun i ↦ (path rect w).get i))
@@ -1064,9 +1109,13 @@ satisfy_and_have_suffix
 --     (fun w ↦ w = [0,0])
 --     (Gap_nil' 4 2))
 
+/-- . -/
 def stecher_conjecture_counterexample : Prop := stecher1  ∧ stecher2
 
+/-- . -/
 instance : Decidable stecher2 := by unfold stecher2; apply decEq
+
+/-- . -/
 instance : Decidable stecher_conjecture_counterexample := by
   unfold stecher_conjecture_counterexample; unfold stecher1; unfold stecher2; exact instDecidableAnd
 --ONE OPTION IS TO COMMENT OUT EVERYTHING NOT NEEDED FOR THIS INSTANCE

@@ -106,12 +106,12 @@ def morphᵥ {l:ℕ} {α:Type} [OfNat α 0] {b₀ b₁ : ℕ} (f : Fin b₀ → 
   ⟨morph f go₀ v.1, by rw [morph_len];exact v.2⟩
 
 /-- . -/
-def morf {l:ℕ} {α:Type} [OfNat α 0] {b₀ b₁ : ℕ} (f : Fin b₀ → Fin b₁) (v : Vector (Fin b₀) l) :
+def morf {l:ℕ} {b₀ b₁ : ℕ} (f : Fin b₀ → Fin b₁) (v : Vector (Fin b₀) l) :
     Vector (Fin b₁) l := Vector.map f v
 
  /-- Here, "f" means: f doesn't depend on space. "F" means: use Fin not Vector
  3/10/24. Hopefully simple enough to prove a lot about it. -/
-def morfF {l:ℕ} {α:Type} [OfNat α 0] {b₀ b₁ : ℕ} (f : Fin b₀ → Fin b₁) (v : Fin l → (Fin b₀)) :
+def morfF {l : ℕ} {b₀ b₁ : ℕ} (f : Fin b₀ → Fin b₁) (v : Fin l → (Fin b₀)) :
     Fin l → (Fin b₁) := fun i ↦ f (v i)
 
 /-- . -/
@@ -119,7 +119,7 @@ def morf_list {α:Type} [OfNat α 0] {b₀ b₁ : ℕ} (f : Fin b₀ → Fin b�
     List (Fin b₁) := List.map f v
 
 /-- finished March 8, 2024 -/
-theorem morf_len {α:Type} [OfNat α 0] {b₀ b₁ : ℕ} (f : Fin b₀ → Fin b₁) (l : List (Fin b₀)) :
+theorem morf_len {b₀ b₁ : ℕ} (f : Fin b₀ → Fin b₁) (l : List (Fin b₀)) :
     (morf_list f l).length = l.length := by
   induction l; unfold morf_list; rfl; unfold morf_list; repeat (rw [List.length_cons])
   simp
@@ -210,8 +210,8 @@ def slicer {l: ℕ} (P : (Fin l) → (Fin l) → Bool) : Fin l → Finset (Fin l
 
 /-- . -/
 lemma slicer_disjointness {l: ℕ} (P : (Fin l) → (Fin l) → Bool) :
-    ∀ k₁ ∈ Finset.univ, ∀ k₂ ∈ Finset.univ, k₁ ≠ k₂ → Disjoint (slicer P k₁) (slicer P k₂) := by
-  intro k₁ _ k₂ _ hk₁₂ A hA₁ hA₂ ik hikA
+    ∀ k₁ k₂, k₁ ≠ k₂ → Disjoint (slicer P k₁) (slicer P k₂) := by
+  intro k₁ k₂ hk₁₂ A hA₁ hA₂ ik hikA
   have : ik ∈ slicer P k₁ := hA₁ hikA
   have h₁: ik.2 = k₁ ∧ P ik.1 k₁ = true := by
     unfold slicer at this;
@@ -256,7 +256,10 @@ theorem pts_tot'_eq_points_tot {α:Type} {β : Type} [Fintype β] (go : β → �
       ik.2 = k ∧ P ik.1 k) Finset.univ)
   have : t = slicer P := rfl
   have hDU: Finset.card (Finset.biUnion Finset.univ (slicer P)) = ∑ k : Fin l,
-            Finset.card ((slicer P) k) := Finset.card_biUnion (slicer_disjointness P)
+            Finset.card ((slicer P) k) := Finset.card_biUnion (by
+            have := slicer_disjointness P
+            simp_all
+            )
   rw [← this] at hDU
   let Q := Finset.sum_congr rfl (fun x : Fin l ↦ fun _ : x ∈ Finset.univ ↦ slicer_card P x)
   rw [← Q,← hDU]
@@ -358,11 +361,11 @@ theorem when_zero {α:Type} [DecidableEq α] {β : Type} [Fintype β] (go : β �
     exact Q
 
 /-- . -/
-lemma path_len {α: Type} [OfNat α 0] [DecidableEq α] {β: Type} (go: β → α → α) {l: ℕ}
+lemma path_len {α: Type} [OfNat α 0] {β: Type} (go: β → α → α) {l: ℕ}
     (moves: Vector β l) : (path go moves.1).1.length = l.succ := by rw [(path go moves.1).2]; simp
 
 /-- . -/
-lemma path_at_len {α: Type} (base :α) [DecidableEq α] {β: Type}
+lemma path_at_len {α: Type} (base :α) {β: Type}
     (go: β → α → α) {l: ℕ} (moves: Vector β l) :
     (path_at base go moves.1).1.length = l.succ := by rw [(path_at base go moves.1).2]; simp
 
@@ -428,7 +431,7 @@ theorem unique_loc_dir {α: Type} [OfNat α 0] [DecidableEq α] {β: Type} [Fint
 
 /-- left_injective f
  which we can prove for tri_rect_embedding although it's harder than left_injective_tri! -/
-theorem left_injective_of_embeds_in_strongly {α: Type} [OfNat α 0] [DecidableEq α]
+theorem left_injective_of_embeds_in_strongly {α: Type} [DecidableEq α]
     {b : ℕ}
     {go₀ go₁ : Fin b → α → α}
     (f: Fin b → α → Fin b)
@@ -610,19 +613,19 @@ theorem two_heads {α : Type} {k :ℕ} (v: Vector α k.succ) (w : List α) (hw :
     rw [this]; simp
 
 /-- . -/
-theorem path_cons {α:Type} [OfNat α 0] [DecidableEq α] {b₀ : ℕ}
+theorem path_cons {α:Type} [OfNat α 0] {b₀ : ℕ}
     (go₀ : Fin b₀ → α → α) (head : Fin b₀) (tail : List (Fin b₀)) :
     (path go₀ (head :: tail)).1 = ((go₀ head (path go₀ tail).head) :: (path go₀ tail).1) :=
   rfl
 
 /-- . -/
-theorem path_cons_vec {α:Type} [OfNat α 0] [DecidableEq α] {b₀ : ℕ}
+theorem path_cons_vec {α:Type} [OfNat α 0] {b₀ : ℕ}
     (go₀ : Fin b₀ → α → α) (head : Fin b₀) (tail : List (Fin b₀)) :
     (path go₀ (head ::        tail)) = ((go₀  head (path go₀ tail).head) ::ᵥ (path go₀ tail)) :=
   rfl
 
 /-- . -/
-theorem path_at_cons {α:Type} (base :α) [OfNat α 0] [DecidableEq α] {b₀ : ℕ} (go₀ : Fin b₀ → α → α)
+theorem path_at_cons {α:Type} (base :α) {b₀ : ℕ} (go₀ : Fin b₀ → α → α)
     (hd : Fin b₀) (tl : List (Fin b₀)) :
     (path_at base go₀ (hd ::        tl)).1
     = ((go₀  hd (path_at base go₀ tl).head) :: (path_at base go₀ tl).1) :=
@@ -630,7 +633,7 @@ theorem path_at_cons {α:Type} (base :α) [OfNat α 0] [DecidableEq α] {b₀ : 
 
 
 /-- . -/
-theorem path_at_cons_vec {α:Type} (base :α) [OfNat α 0] [DecidableEq α] {b₀ : ℕ}
+theorem path_at_cons_vec {α:Type} (base :α) {b₀ : ℕ}
     (go₀ : Fin b₀ → α → α) (hd : Fin b₀) (tl : List (Fin b₀)) :
     (path_at base go₀ (hd :: tl)) =
     ((go₀ hd (path_at base go₀ tl).head) ::ᵥ (path_at base go₀ tl)) :=
@@ -725,21 +728,21 @@ theorem orderly_injective_helper₂ (k:ℕ) (x : (Fin k.succ) → Fin 4) (h₀ :
 
 
 /-- . -/
-theorem path_len' {α: Type} [OfNat α 0] [DecidableEq α] {β: Type} (go: β → α → α) (l: ℕ)
+theorem path_len' {α: Type} [OfNat α 0] {β: Type} (go: β → α → α) (l: ℕ)
     (moves: List β) (hm: moves.length = l) : List.length (path go moves).1 = Nat.succ l :=
   hm ▸ (path go moves).2
 
 
 /-- . -/
-lemma path_nil {α:Type} [OfNat α 0] [DecidableEq α] {β:Type} [Fintype β] (go : β → α → α) :
+lemma path_nil {α:Type} [OfNat α 0] {β:Type} (go : β → α → α) :
     (path go []).1 = [0] := rfl
 
 /-- . -/
-lemma path_at_nil {α:Type} (base:α) [DecidableEq α] {β:Type} [Fintype β] (go : β → α → α) :
+lemma path_at_nil {α:Type} (base:α) {β:Type} (go : β → α → α) :
     (path_at base go []).1 = [base] := rfl
 
 /-- . -/
-lemma path_at_nil_vec {α:Type} (base:α) [DecidableEq α] {β:Type} [Fintype β] (go : β → α → α):
+lemma path_at_nil_vec {α:Type} (base:α) {β:Type} (go : β → α → α):
     (path_at base go []) = ⟨[base],by simp⟩ := rfl
 
 /-- . -/
@@ -958,7 +961,6 @@ theorem list_inj_of_Vector_inj {t : Type} {n : ℕ}
     {v : Vector t n} (h: Function.Injective fun k => Vector.get v k) :
     Function.Injective fun k => List.get v.1 k := by
   intro x y hxy;unfold Function.Injective at *
-  have : Vector.get ⟨v.1,rfl⟩ x = Vector.get ⟨v.1,rfl⟩ y := hxy
   have hx: x.1 < n := by
     have Q := x.2
     simp_rw [v.2] at Q

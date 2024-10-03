@@ -77,12 +77,12 @@ section Defining_the_protein_folding_moves
 
 /-- The original protein folding model introduced by Ken Dill in 1985. -/
 def quad₃ : Fin 6 → ℤ×ℤ×ℤ → ℤ×ℤ×ℤ
-| 0 => (· + ( 1, 0, 0))
-| 1 => (· + (-1, 0, 0))
-| 2 => (· + ( 0, 1, 0))
-| 3 => (· + ( 0,-1, 0))
-| 4 => (· + ( 0, 0, 1))
-| 5 => (· + ( 0, 0,-1))
+  | 0 => (· + ( 1, 0, 0))
+  | 1 => (· + (-1, 0, 0))
+  | 2 => (· + ( 0, 1, 0))
+  | 3 => (· + ( 0,-1, 0))
+  | 4 => (· + ( 0, 0, 1))
+  | 5 => (· + ( 0, 0,-1))
 
 /-- The convention is that `p` is plus, `m` is minus, and `s` is stationary. -/
 def pp : ℤ×ℤ → ℤ×ℤ := (· + ( 1, 1))
@@ -417,12 +417,12 @@ end Embedding_one_protein_folding_model_into_another
 section Left_and_right_injectivity
 
 /-- A function of two variables is *left injective* if it is injective in its first argument. -/
-def left_injective {α:Type} {β γ: Type} [Fintype β] (go : β → α → γ)
-    [DecidableEq α] := ∀ a, Function.Injective (fun b ↦ go b a)
+def left_injective {α:Type} {β γ: Type} (go : β → α → γ) :=
+  ∀ a, Function.Injective (fun b ↦ go b a)
 
 /-- A function of two variables is *right injective* if it is injective in its second argument. -/
-def right_injective {α:Type} {β γ: Type} [Fintype β] (go : β → α → γ)
-    [DecidableEq α] := ∀ b, Function.Injective (fun a ↦ go b a)
+def right_injective {α:Type} {β γ: Type} (go : β → α → γ) :=
+  ∀ b, Function.Injective (fun a ↦ go b a)
 
 /-- `rect₃_rect_embedding` is left injective. -/
 theorem rect₃_rect_embedding_left_injective :
@@ -455,7 +455,7 @@ theorem tri_rect_embedding_left_injective :
       · rw [if_pos h];intro hc
         let Q := congr_arg (fun x ↦ x.1) hc;simp at Q
       · rw [if_neg h];intro hc
-        let Q := congr_arg (fun x ↦ x.1) hc; simp only [Fin.val_zero] at Q ;tauto
+        let Q := congr_arg (fun x ↦ x.1) hc; simp only [Fin.val_zero] at Q;tauto
   | 1 => match b with
     | 1 => tauto
     | 0 =>
@@ -468,7 +468,7 @@ theorem tri_rect_embedding_left_injective :
         let Q := congr_arg (fun x ↦ x.1) hc;simp at Q
       · rw [if_neg h];intro hc
         let Q := congr_arg (fun x ↦ x.1) hc;
-        simp only [Fin.val_one] at Q ;
+        simp only [Fin.val_one] at Q;
         apply Nat.succ_injective at Q
         tauto
   | 2 => match b with
@@ -479,7 +479,7 @@ theorem tri_rect_embedding_left_injective :
         let Q := congr_arg (fun x ↦ x.1) hc;simp at Q
       · rw [if_neg h];intro hc
         let Q := congr_arg (fun x ↦ x.1) hc;
-        simp only [Fin.val_one] at Q ;
+        simp only [Fin.val_one] at Q;
         apply Nat.succ_injective at Q
         tauto
     | 0 =>
@@ -490,7 +490,7 @@ theorem tri_rect_embedding_left_injective :
         simp at Q
       · rw [if_neg h];intro hc
         let Q := congr_arg (fun x ↦ x.1) hc;
-        simp only [Fin.val_zero] at Q ;
+        simp only [Fin.val_zero] at Q;
         tauto
     | 2 => tauto
 
@@ -505,7 +505,7 @@ theorem sp_injective : Function.Injective sp := by
 theorem sm_injective : Function.Injective sm := by
   intro x y hxy
   unfold sm at *
-  rw [add_left_inj] at hxy ;
+  rw [add_left_inj] at hxy;
   tauto
 
 
@@ -685,7 +685,7 @@ lemma choice_ex_surjective {β:Type} [Fintype β] {l : ℕ} {P : β → Fin l.su
   intro i
   have i₂ := i.2
   simp only [mem_filter, mem_univ,
-    true_and] at i₂ ;
+    true_and] at i₂;
   obtain ⟨a,ha⟩ := i₂
   exists ⟨a,by
     simp only [mem_filter, mem_univ, true_and]
