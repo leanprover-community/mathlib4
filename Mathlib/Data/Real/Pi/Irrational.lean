@@ -250,7 +250,7 @@ private lemma I_le (n : ℕ) : I n (π / 2) ≤ 2 := by
   intros x hx
   simp only [uIoc_of_le, neg_le_self_iff, zero_le_one, mem_Ioc] at hx
   rw [norm_eq_abs, abs_mul, abs_pow]
-  refine mul_le_one (pow_le_one _ (abs_nonneg _) ?_) (abs_nonneg _) (abs_cos_le_one _)
+  refine mul_le_one (pow_le_one₀ (abs_nonneg _) ?_) (abs_nonneg _) (abs_cos_le_one _)
   rw [abs_le]
   constructor <;> nlinarith
 
@@ -279,13 +279,13 @@ private lemma not_irrational_exists_rep {x : ℝ} :
   obtain ⟨a, b, hb, h⟩ := not_irrational_exists_rep h'
   have ha : (0 : ℝ) < a := by
     have : 0 < (a : ℝ) / b := h ▸ pi_div_two_pos
-    rwa [lt_div_iff (by positivity), zero_mul] at this
+    rwa [lt_div_iff₀ (by positivity), zero_mul] at this
   have k (n : ℕ) : 0 < (a : ℝ) ^ (2 * n + 1) / n ! := by positivity
   have j : ∀ᶠ n : ℕ in atTop, (a : ℝ) ^ (2 * n + 1) / n ! * I n (π / 2) < 1 := by
     have := eventually_lt_of_tendsto_lt (show (0 : ℝ) < 1 / 2 by norm_num)
               (tendsto_pow_div_factorial_at_top_aux a)
     filter_upwards [this] with n hn
-    rw [lt_div_iff (zero_lt_two : (0 : ℝ) < 2)] at hn
+    rw [lt_div_iff₀ (zero_lt_two : (0 : ℝ) < 2)] at hn
     exact hn.trans_le' (mul_le_mul_of_nonneg_left (I_le _) (by positivity))
   obtain ⟨n, hn⟩ := j.exists
   have hn' : 0 < a ^ (2 * n + 1) / n ! * I n (π / 2) := mul_pos (k _) I_pos

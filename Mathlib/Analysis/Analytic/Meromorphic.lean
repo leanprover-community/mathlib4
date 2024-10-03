@@ -59,8 +59,8 @@ lemma smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f
   rcases hg with ⟨n, hg⟩
   refine ⟨m + n, ?_⟩
   convert hf.smul hg using 2 with z
-  rw [smul_eq_mul, ← mul_smul, mul_assoc, mul_comm (f z), ← mul_assoc, pow_add,
-    ← smul_eq_mul (a' := f z), smul_assoc, Pi.smul_apply']
+  rw [Pi.smul_apply', smul_eq_mul]
+  module
 
 lemma mul {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f * g) x :=
@@ -227,8 +227,8 @@ lemma iff_eventuallyEq_zpow_smul_analyticAt {f : 𝕜 → E} {x : 𝕜} : Meromo
     ∃ (n : ℤ) (g : 𝕜 → E), AnalyticAt 𝕜 g x ∧ ∀ᶠ z in 𝓝[≠] x, f z = (z - x) ^ n • g z := by
   refine ⟨fun ⟨n, hn⟩ ↦ ⟨-n, _, ⟨hn, eventually_nhdsWithin_iff.mpr ?_⟩⟩, ?_⟩
   · filter_upwards with z hz
-    rw [← mul_smul, ← zpow_natCast, ← zpow_add₀ (sub_ne_zero.mpr hz), neg_add_cancel,
-      zpow_zero, one_smul]
+    match_scalars
+    field_simp [sub_ne_zero.mpr hz]
   · refine fun ⟨n, g, hg_an, hg_eq⟩ ↦ MeromorphicAt.congr ?_ (EventuallyEq.symm hg_eq)
     exact (((MeromorphicAt.id x).sub (.const _ x)).zpow _).smul hg_an.meromorphicAt
 

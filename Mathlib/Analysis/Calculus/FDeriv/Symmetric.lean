@@ -97,8 +97,8 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
     rw [← smul_smul]
     apply s_conv.interior.add_smul_mem this _ ht
     rw [add_assoc] at hw
-    rw [add_assoc, ← smul_add]
-    exact s_conv.add_smul_mem_interior xs hw ⟨hpos, h_lt_1.le⟩
+    convert s_conv.add_smul_mem_interior xs hw ⟨hpos, h_lt_1.le⟩ using 1
+    module
   -- define a function `g` on `[0,1]` (identified with `[v, v + w]`) such that `g 1 - g 0` is the
   -- quantity to be estimated. We will check that its derivative is given by an explicit
   -- expression `g'`, that we can bound. Then the desired bound for `g 1 - g 0` follows from the
@@ -139,14 +139,14 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
     calc
       ‖g' t‖ = ‖(f' (x + h • v + (t * h) • w) - f' x - f'' (h • v + (t * h) • w)) (h • w)‖ := by
         rw [hg']
-        have : h * (t * h) = t * (h * h) := by ring
-        simp only [ContinuousLinearMap.coe_sub', ContinuousLinearMap.map_add, pow_two,
-          ContinuousLinearMap.add_apply, Pi.smul_apply, smul_sub, smul_add, smul_smul, ← sub_sub,
-          ContinuousLinearMap.coe_smul', Pi.sub_apply, ContinuousLinearMap.map_smul, this]
+        congrm ‖?_‖
+        simp only [ContinuousLinearMap.sub_apply, ContinuousLinearMap.add_apply,
+          ContinuousLinearMap.smul_apply, map_add, map_smul]
+        module
       _ ≤ ‖f' (x + h • v + (t * h) • w) - f' x - f'' (h • v + (t * h) • w)‖ * ‖h • w‖ :=
         (ContinuousLinearMap.le_opNorm _ _)
       _ ≤ ε * ‖h • v + (t * h) • w‖ * ‖h • w‖ := by
-        apply mul_le_mul_of_nonneg_right _ (norm_nonneg _)
+        gcongr
         have H : x + h • v + (t * h) • w ∈ Metric.ball x δ ∩ interior s := by
           refine ⟨?_, xt_mem t ⟨ht.1, ht.2.le⟩⟩
           rw [add_assoc, add_mem_ball_iff_norm]
@@ -157,7 +157,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
         apply (norm_add_le _ _).trans
         gcongr
         simp only [norm_smul, Real.norm_eq_abs, abs_mul, abs_of_nonneg, ht.1, hpos.le, mul_assoc]
-        exact mul_le_of_le_one_left (mul_nonneg hpos.le (norm_nonneg _)) ht.2.le
+        exact mul_le_of_le_one_left (by positivity) ht.2.le
       _ = ε * ((‖v‖ + ‖w‖) * ‖w‖) * h ^ 2 := by
         simp only [norm_smul, Real.norm_eq_abs, abs_mul, abs_of_nonneg, hpos.le]; ring
   -- conclude using the mean value inequality
@@ -169,8 +169,8 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
     simp only [g, Nat.one_ne_zero, add_zero, one_mul, zero_div, zero_mul, sub_zero,
       zero_smul, Ne, not_false_iff, zero_pow, reduceCtorEq]
     abel
-  · simp only [Real.norm_eq_abs, abs_mul, add_nonneg (norm_nonneg v) (norm_nonneg w), abs_of_nonneg,
-      hpos.le, mul_assoc, norm_nonneg, abs_pow]
+  · simp (discharger := positivity) only [Real.norm_eq_abs, abs_mul, abs_of_nonneg, abs_pow]
+    ring
 
 /-- One can get `f'' v w` as the limit of `h ^ (-2)` times the alternate sum of the values of `f`
 along the vertices of a quadrilateral with sides `h v` and `h w` based at `x`.
@@ -183,40 +183,27 @@ theorem Convex.isLittleO_alternate_sum_square {v w : E} (h4v : x + (4 : ℝ) •
       fun h => h ^ 2 := by
   have A : (1 : ℝ) / 2 ∈ Ioc (0 : ℝ) 1 := ⟨by norm_num, by norm_num⟩
   have B : (1 : ℝ) / 2 ∈ Icc (0 : ℝ) 1 := ⟨by norm_num, by norm_num⟩
-  have C : ∀ w : E, (2 : ℝ) • w = 2 • w := fun w => by simp only [two_smul]
   have h2v2w : x + (2 : ℝ) • v + (2 : ℝ) • w ∈ interior s := by
     convert s_conv.interior.add_smul_sub_mem h4v h4w B using 1
-    simp only [smul_sub, smul_smul, one_div, add_sub_add_left_eq_sub, mul_add, add_smul]
-    norm_num
-    simp only [show (4 : ℝ) = (2 : ℝ) + (2 : ℝ) by norm_num, _root_.add_smul]
-    abel
+    module
   have h2vww : x + (2 • v + w) + w ∈ interior s := by
     convert h2v2w using 1
-    simp only [two_smul]
-    abel
+    module
   have h2v : x + (2 : ℝ) • v ∈ interior s := by
     convert s_conv.add_smul_sub_mem_interior xs h4v A using 1
-    simp only [smul_smul, one_div, add_sub_cancel_left, add_right_inj]
-    norm_num
+    module
   have h2w : x + (2 : ℝ) • w ∈ interior s := by
     convert s_conv.add_smul_sub_mem_interior xs h4w A using 1
-    simp only [smul_smul, one_div, add_sub_cancel_left, add_right_inj]
-    norm_num
+    module
   have hvw : x + (v + w) ∈ interior s := by
     convert s_conv.add_smul_sub_mem_interior xs h2v2w A using 1
-    simp only [smul_smul, one_div, add_sub_cancel_left, add_right_inj, smul_add, smul_sub]
-    norm_num
-    abel
+    module
   have h2vw : x + (2 • v + w) ∈ interior s := by
     convert s_conv.interior.add_smul_sub_mem h2v h2v2w B using 1
-    simp only [smul_add, smul_sub, smul_smul, ← C]
-    norm_num
-    abel
+    module
   have hvww : x + (v + w) + w ∈ interior s := by
     convert s_conv.interior.add_smul_sub_mem h2w h2v2w B using 1
-    rw [one_div, add_sub_add_right_eq_sub, add_sub_cancel_left, inv_smul_smul₀ two_ne_zero,
-      two_smul]
-    abel
+    module
   have TA1 := s_conv.taylor_approx_two_segment hf xs hx h2vw h2vww
   have TA2 := s_conv.taylor_approx_two_segment hf xs hx hvw hvww
   convert TA1.sub TA2 using 1
@@ -245,11 +232,9 @@ theorem Convex.second_derivative_within_at_symmetric_of_mem_interior {v w : E}
     apply C.congr' _ _
     · filter_upwards [self_mem_nhdsWithin]
       intro h (hpos : 0 < h)
-      rw [← one_smul ℝ (f'' w v - f'' v w), smul_smul, smul_smul]
-      congr 1
-      field_simp [LT.lt.ne' hpos]
+      match_scalars <;> field_simp
     · filter_upwards [self_mem_nhdsWithin] with h (hpos : 0 < h)
-      field_simp [LT.lt.ne' hpos, SMul.smul]
+      field_simp
   simpa only [sub_eq_zero] using isLittleO_const_const_iff.1 B
 
 end
@@ -298,8 +283,8 @@ theorem Convex.second_derivative_within_at_symmetric {s : Set E} (s_conv : Conve
     s_conv.second_derivative_within_at_symmetric_of_mem_interior hf xs hx (ts w) (ts v)
   simp only [ContinuousLinearMap.map_add, ContinuousLinearMap.map_smul, smul_add, smul_smul,
     ContinuousLinearMap.add_apply, Pi.smul_apply, ContinuousLinearMap.coe_smul', C] at this
-  rw [add_assoc, add_assoc, add_right_inj, add_left_comm, add_right_inj, add_right_inj, mul_comm]
-    at this
+  have : (t v * t w) • (f'' v) w = (t v * t w) • (f'' w) v := by
+    linear_combination (norm := module) this
   apply smul_right_injective F _ this
   simp [(tpos v).ne', (tpos w).ne']
 

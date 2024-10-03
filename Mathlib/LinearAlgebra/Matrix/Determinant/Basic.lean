@@ -183,14 +183,14 @@ theorem det_mul_left_comm (M N P : Matrix m m R) : det (M * (N * P)) = det (N * 
 theorem det_mul_right_comm (M N P : Matrix m m R) : det (M * N * P) = det (M * P * N) := by
   rw [Matrix.mul_assoc, Matrix.mul_assoc, det_mul, det_mul_comm N P, ← det_mul]
 
--- TODO(mathlib4#6607): fix elaboration so that the ascription isn't needed
+-- TODO(mathlib4#6607): fix elaboration so `val` isn't needed
 theorem det_units_conj (M : (Matrix m m R)ˣ) (N : Matrix m m R) :
-    det ((M : Matrix _ _ _) * N * (↑M⁻¹ : Matrix _ _ _)) = det N := by
+    det (M.val * N * M⁻¹.val) = det N := by
   rw [det_mul_right_comm, Units.mul_inv, one_mul]
 
--- TODO(mathlib4#6607): fix elaboration so that the ascription isn't needed
+-- TODO(mathlib4#6607): fix elaboration so `val` isn't needed
 theorem det_units_conj' (M : (Matrix m m R)ˣ) (N : Matrix m m R) :
-    det ((↑M⁻¹ : Matrix _ _ _) * N * (↑M : Matrix _ _ _)) = det N :=
+    det (M⁻¹.val * N * ↑M.val) = det N :=
   det_units_conj M⁻¹ N
 
 /-- Transposing a matrix preserves the determinant. -/
