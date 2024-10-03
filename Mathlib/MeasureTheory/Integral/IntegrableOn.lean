@@ -697,22 +697,24 @@ theorem integrableOn_Iic_iff_integrableOn_Iio :
 end PartialOrder
 
 namespace MeasureTheory
-variable {X : Type*} [MeasurableSpace X] {μ : Measure X} {s : Set X}
+variable {X : Type*} [MeasurableSpace X] {𝕜 : Type*} [RCLike 𝕜] {μ : Measure X} {s : Set X}
 theorem IntegrableOn.iff_ofReal {f : X → ℝ} :
     IntegrableOn f s μ ↔ IntegrableOn (fun x ↦ (f x : ℂ)) s μ :=
     MeasureTheory.Integrable.iff_ofReal
 
 theorem IntegrableOn.ofReal {f : X → ℝ} (hf : IntegrableOn f s μ) :
-    IntegrableOn (fun x => (f x : ℂ)) s μ := IntegrableOn.iff_ofReal.1 hf
+    IntegrableOn (fun x => (f x : 𝕜)) s μ := by
+  rw [IntegrableOn, ← memℒp_one_iff_integrable] at hf ⊢
+  exact hf.ofReal
 
-theorem IntegrableOn.re_im_iff {f : X → ℂ} :
-    IntegrableOn (fun x => (f x).re) s μ ∧ IntegrableOn (fun x => (f x).im) s μ ↔
+theorem IntegrableOn.re_im_iff {f : X → 𝕜} :
+    IntegrableOn (fun x => RCLike.re (f x)) s μ ∧ IntegrableOn (fun x => RCLike.im (f x)) s μ ↔
     IntegrableOn f s μ := Integrable.re_im_iff (f := f)
 
-theorem IntegrableOn.re {f : X → ℂ} (hf : IntegrableOn f s μ) :
-    IntegrableOn (fun x => (f x).re) s μ  := (IntegrableOn.re_im_iff.2 hf).left
+theorem IntegrableOn.re {f : X → 𝕜} (hf : IntegrableOn f s μ) :
+    IntegrableOn (fun x => RCLike.re (f x)) s μ  := (IntegrableOn.re_im_iff.2 hf).left
 
-theorem IntegrableOn.im {f : X → ℂ} (hf : IntegrableOn f s μ) :
-    IntegrableOn (fun x => (f x).im) s μ := (IntegrableOn.re_im_iff.2 hf).right
+theorem IntegrableOn.im {f : X → 𝕜} (hf : IntegrableOn f s μ) :
+    IntegrableOn (fun x => RCLike.im (f x)) s μ := (IntegrableOn.re_im_iff.2 hf).right
 
 end MeasureTheory
