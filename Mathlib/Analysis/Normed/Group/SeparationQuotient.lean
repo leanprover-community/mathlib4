@@ -138,7 +138,7 @@ lemma isClosed_nullSpace : IsClosed (@nullSpace M _ : Set M) := by
       _ = ‖y‖ := by rw [sub_sub_self x y]
     exact ne_of_gt (lt_of_le_of_lt (div_nonneg (norm_nonneg x) (zero_le_two)) this)
 
-instance : Nonempty (@nullSpace M) := ⟨0⟩
+instance : Nonempty (@nullSpace M _) := ⟨0⟩
 
 /-- The definition of the norm on the quotient by an additive subgroup. -/
 noncomputable instance normOnSeparationQuotient : Norm (SeparationQuotient M) where
@@ -153,7 +153,7 @@ theorem norm_eq_infDist (x : SeparationQuotient M) :
 
 /-- An alternative definition of the norm on the quotient group: the norm of `mk x` is
 equal to the distance from `x` to `nullSpace`. -/
-theorem norm_mk (x : M) : ‖mk x‖ = infDist x (nullSpace).carrier := by
+theorem norm_mk (x : M) : ‖mk x‖ = infDist x (@nullSpace M _) := by
   rw [norm_eq_infDist, ← infDist_image (IsometryEquiv.subLeft x).isometry,
     IsometryEquiv.subLeft_apply, sub_zero, ← IsometryEquiv.preimage_symm]
   congr 1 with y
@@ -182,9 +182,9 @@ theorem quotient_norm_neg (x : SeparationQuotient M) : ‖-x‖ = ‖x‖ := by
 theorem quotient_norm_sub_rev (x y : SeparationQuotient M) : ‖x - y‖ = ‖y - x‖ := by
   rw [← neg_sub, quotient_norm_neg]
 
-lemma norm_mk_eq_sInf (m : M) : ‖mk m‖ = sInf ((‖m + ·‖) '' nullSpace.carrier) := by
+lemma norm_mk_eq_sInf (m : M) : ‖mk m‖ = sInf ((‖m + ·‖) '' @nullSpace M _) := by
   rw [norm_mk, sInf_image', ← infDist_image isometry_neg, image_neg]
-  have : -(@nullSpace M).carrier = nullSpace.carrier := by
+  have : -(@nullSpace M _: Set M) = (@nullSpace M _: Set M) := by
     ext x
     rw [Set.mem_neg]
     constructor
@@ -229,6 +229,8 @@ belongs to the null space. -/
 theorem quotient_norm_eq_zero_iff (m : M) :
     ‖mk m‖ = 0 ↔ m ∈ nullSpace := by
   rw [norm_mk]
+  have : m ∈ nullSpace ↔ m ∈ (@nullSpace M _: Set M) := by rfl
+  rw [this]
   nth_rw 2 [← IsClosed.closure_eq isClosed_nullSpace]
   rw [← mem_closure_iff_infDist_zero]
   exact ⟨0, nullSpace.zero_mem'⟩
@@ -375,7 +377,7 @@ theorem _root_.SeparationQuotient.norm_lift_apply_le (f : NormedAddGroupHom M N)
     exact ((lt_div_iff' h).1 hx).not_le (le_opNorm f x)
 
 /-- The operator norm of the projection is `1` if the null space is not dense. -/
-theorem norm_normedMk (h : (@nullSpace M).carrier ≠ univ) :
+theorem norm_normedMk (h : (@nullSpace M _ : Set M) ≠ univ) :
     ‖(@normedMk M _)‖ = 1 := by
   apply NormedAddGroupHom.opNorm_eq_of_bounds _ zero_le_one
   · simp only [normedMk.apply, one_mul]
@@ -389,12 +391,13 @@ theorem norm_normedMk (h : (@nullSpace M).carrier ≠ univ) :
     exact one_le_of_le_mul_right₀ this (hx x)
 
 /-- The operator norm of the projection is `0` if the null space is dense. -/
-theorem norm_trivial_separaationQuotient_mk (h : (@nullSpace M _).carrier = Set.univ) :
+theorem norm_trivial_separaationQuotient_mk (h : (@nullSpace M _ : Set M) = Set.univ) :
     ‖@normedMk M _‖ = 0 := by
   apply NormedAddGroupHom.opNorm_eq_of_bounds _ (le_refl 0)
   · intro x
-    have : x ∈ nullSpace.carrier := by
-      rw [h]
+    have : x ∈ nullSpace := by
+      have : x ∈ nullSpace ↔ x ∈ (@nullSpace M _ : Set M) := by rfl
+      rw [this, h]
       exact trivial
     simp only [normedMk.apply, zero_mul, norm_le_zero_iff]
     exact (mk_eq_zero_iff x).mpr this
