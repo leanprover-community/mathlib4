@@ -227,7 +227,7 @@ noncomputable def liftMonoidHom [CommGroup G] [TopologicalGroup G] [CommGroup H]
 @[to_additive (attr := simp)]
 theorem CommGroupHom_lift_apply [CommGroup G] [TopologicalGroup G] [CommGroup H]
     [TopologicalGroup H] (f : MonoidHom G H) (hf : ∀ x y, Inseparable x y → f x = f y) (x : G) :
-    CommGroupHom_lift f hf (mk x) = f x := rfl
+    liftMonoidHom f hf (mk x) = f x := rfl
 
 end Group
 

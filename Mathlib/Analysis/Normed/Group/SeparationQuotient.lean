@@ -415,7 +415,7 @@ structure IsQuotient (f : NormedAddGroupHom M N) : Prop where
 we define the induced morphism `NormedAddGroupHom (SeparationQuotient M) N`. -/
 noncomputable def lift {N : Type*} [SeminormedAddCommGroup N] (f : NormedAddGroupHom M N)
     (hf : ∀ s ∈ nullSpace, f s = 0) : NormedAddGroupHom (SeparationQuotient M) N :=
-  { AddCommGroupHom_lift f (eq_of_inseparable f hf) with
+  { liftAddMonoidHom f (eq_of_inseparable f hf) with
     bound' := by
       use ‖f‖
       intro v
