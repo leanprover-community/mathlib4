@@ -12,6 +12,7 @@ The antidiagonal of a multiset `s` consists of all pairs `(t₁, t₂)`
 such that `t₁ + t₂ = s`. These pairs are counted with multiplicities.
 -/
 
+assert_not_exists OrderedCommMonoid
 assert_not_exists Ring
 
 universe u
@@ -80,7 +81,7 @@ theorem antidiagonal_cons (a : α) (s) :
 theorem antidiagonal_eq_map_powerset [DecidableEq α] (s : Multiset α) :
     s.antidiagonal = s.powerset.map fun t ↦ (s - t, t) := by
   induction' s using Multiset.induction_on with a s hs
-  · simp only [antidiagonal_zero, powerset_zero, zero_tsub, map_singleton]
+  · simp only [antidiagonal_zero, powerset_zero, Multiset.zero_sub, map_singleton]
   · simp_rw [antidiagonal_cons, powerset_cons, map_add, hs, map_map, Function.comp, Prod.map_mk,
       id, sub_cons, erase_cons_head]
     rw [add_comm]

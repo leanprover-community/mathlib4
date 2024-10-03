@@ -25,8 +25,6 @@ An instance is defined for `Part`.
 
 universe u v
 
-open scoped Classical
-
 variable {α : Type*} {β : α → Type*}
 
 /-- `Fix α` provides a `fix` operator to define recursive computation
@@ -66,6 +64,7 @@ protected def fix (x : α) : Part (β x) :=
   (Part.assert (∃ i, (Fix.approx f i x).Dom)) fun h =>
     WellFounded.fix.{1} (Nat.Upto.wf h) (fixAux f) Nat.Upto.zero x
 
+open Classical in
 protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
     Part.fix f x = Fix.approx f (Nat.succ (Nat.find h')) x := by
   let p := fun i : ℕ => (Fix.approx f i x).Dom

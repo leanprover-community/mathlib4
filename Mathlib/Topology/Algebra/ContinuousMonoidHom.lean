@@ -5,7 +5,7 @@ Authors: Thomas Browning
 -/
 import Mathlib.Topology.Algebra.Equicontinuity
 import Mathlib.Topology.Algebra.Group.Compact
-import Mathlib.Topology.ContinuousFunction.Algebra
+import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Topology.UniformSpace.Ascoli
 
 /-!
@@ -219,7 +219,7 @@ instance : CommGroup (ContinuousMonoidHom A E) where
   one_mul f := ext fun x => one_mul (f x)
   mul_one f := ext fun x => mul_one (f x)
   inv f := (inv E).comp f
-  mul_left_inv f := ext fun x => mul_left_inv (f x)
+  inv_mul_cancel f := ext fun x => inv_mul_cancel (f x)
 
 @[to_additive]
 instance : TopologicalSpace (ContinuousMonoidHom A B) :=

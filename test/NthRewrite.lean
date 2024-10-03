@@ -103,3 +103,6 @@ example (x y : ℕ) (h₁ : x = y) (h₂ : x = x + x) : x + x = x := by
   nth_rewrite 1 [← h₁] at h₂
   nth_rewrite 3 [h₂]
   rfl
+
+example (x y : ℕ) (h : x = y) : x + x + x = x + y + y := by
+  nth_rw 2 3 [h]

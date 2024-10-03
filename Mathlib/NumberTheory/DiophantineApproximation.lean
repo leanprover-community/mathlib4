@@ -93,7 +93,7 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
   let f : ℤ → ℤ := fun m => ⌊fract (ξ * m) * (n + 1)⌋
   have hn : 0 < (n : ℝ) + 1 := mod_cast Nat.succ_pos _
   have hfu := fun m : ℤ => mul_lt_of_lt_one_left hn <| fract_lt_one (ξ * ↑m)
-  conv in |_| ≤ _ => rw [mul_comm, le_div_iff hn, ← abs_of_pos hn, ← abs_mul]
+  conv in |_| ≤ _ => rw [mul_comm, le_div_iff₀ hn, ← abs_of_pos hn, ← abs_mul]
   let D := Icc (0 : ℤ) n
   by_cases H : ∃ m ∈ D, f m = n
   · obtain ⟨m, hm, hf⟩ := H
@@ -153,7 +153,7 @@ theorem exists_rat_abs_sub_le_and_den_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     convert le_of_dvd hk₀ (Rat.den_dvd j k)
     exact Rat.intCast_div_eq_divInt _ _
   refine ⟨j / k, ?_, Nat.cast_le.mp (hden.trans hk₁)⟩
-  rw [← div_div, le_div_iff (Nat.cast_pos.mpr <| Rat.pos _ : (0 : ℝ) < _)]
+  rw [← div_div, le_div_iff₀ (Nat.cast_pos.mpr <| Rat.pos _ : (0 : ℝ) < _)]
   refine (mul_le_mul_of_nonneg_left (Int.cast_le.mpr hden : _ ≤ (k : ℝ)) (abs_nonneg _)).trans ?_
   rwa [← abs_of_pos hk₀', Rat.cast_div, Rat.cast_intCast, Rat.cast_intCast, ← abs_mul, sub_mul,
     div_mul_cancel₀ _ hk₀'.ne', mul_comm]
@@ -235,7 +235,7 @@ theorem den_le_and_le_num_le_of_sub_lt_one_div_den_sq {ξ q : ℚ}
     · exact le_rfl
     · have hξ₀ : (0 : ℚ) < ξ.den := Nat.cast_pos.mpr ξ.pos
       rw [← Rat.num_div_den ξ, div_mul_eq_mul_div, div_sub' _ _ _ hξ₀.ne', abs_div, abs_of_pos hξ₀,
-        div_lt_iff hξ₀, div_mul_comm, mul_one] at h
+        div_lt_iff₀ hξ₀, div_mul_comm, mul_one] at h
       refine Nat.cast_le.mp ((one_lt_div hq₀).mp <| lt_of_le_of_lt ?_ h).le
       norm_cast
       rw [mul_comm _ q.num]
@@ -341,14 +341,14 @@ theorem convergent_succ (ξ : ℝ) (n : ℕ) :
 @[simp]
 theorem convergent_of_zero (n : ℕ) : convergent 0 n = 0 := by
   induction' n with n ih
-  · simp only [Nat.zero_eq, convergent_zero, floor_zero, cast_zero]
+  · simp only [convergent_zero, floor_zero, cast_zero]
   · simp only [ih, convergent_succ, floor_zero, cast_zero, fract_zero, add_zero, inv_zero]
 
 /-- If `ξ` is an integer, all its convergents equal `ξ`. -/
 @[simp]
 theorem convergent_of_int {ξ : ℤ} (n : ℕ) : convergent ξ n = ξ := by
   cases n
-  · simp only [Nat.zero_eq, convergent_zero, floor_intCast]
+  · simp only [convergent_zero, floor_intCast]
   · simp only [convergent_succ, floor_intCast, fract_intCast, convergent_of_zero, add_zero,
       inv_zero]
 
@@ -363,7 +363,7 @@ open GenContFract
 theorem convs_eq_convergent (ξ : ℝ) (n : ℕ) :
     (GenContFract.of ξ).convs n = ξ.convergent n := by
   induction' n with n ih generalizing ξ
-  · simp only [Nat.zero_eq, zeroth_conv_eq_h, of_h_eq_floor, convergent_zero, Rat.cast_intCast]
+  · simp only [zeroth_conv_eq_h, of_h_eq_floor, convergent_zero, Rat.cast_intCast]
   · rw [convs_succ, ih (fract ξ)⁻¹, convergent_succ, one_div]
     norm_cast
 
@@ -392,7 +392,11 @@ private theorem aux₀ {v : ℤ} (hv : 0 < v) : (0 : ℝ) < v ∧ (0 : ℝ) < 2 
   ⟨cast_pos.mpr hv, by norm_cast; omega⟩
 
 -- In the following, we assume that `ass ξ u v` holds and `v ≥ 2`.
-variable {ξ : ℝ} {u v : ℤ} (hv : 2 ≤ v) (h : ContfracLegendre.Ass ξ u v)
+variable {ξ : ℝ} {u v : ℤ}
+
+section
+variable (hv : 2 ≤ v) (h : ContfracLegendre.Ass ξ u v)
+include hv h
 
 -- The fractional part of `ξ` is positive.
 private theorem aux₁ : 0 < fract ξ := by
@@ -418,9 +422,9 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
   obtain ⟨hcop, _, h⟩ := h
   obtain ⟨hv₀, hv₀'⟩ := aux₀ (zero_lt_two.trans_le hv)
   have hv₁ : 0 < 2 * v - 1 := by linarith only [hv]
-  rw [← one_div, lt_div_iff (mul_pos hv₀ hv₀'), ← abs_of_pos (mul_pos hv₀ hv₀'), ← abs_mul, sub_mul,
-    ← mul_assoc, ← mul_assoc, div_mul_cancel₀ _ hv₀.ne', abs_sub_comm, abs_lt, lt_sub_iff_add_lt,
-    sub_lt_iff_lt_add, mul_assoc] at h
+  rw [← one_div, lt_div_iff₀ (mul_pos hv₀ hv₀'), ← abs_of_pos (mul_pos hv₀ hv₀'), ← abs_mul,
+    sub_mul, ← mul_assoc, ← mul_assoc, div_mul_cancel₀ _ hv₀.ne', abs_sub_comm, abs_lt,
+    lt_sub_iff_add_lt, sub_lt_iff_lt_add, mul_assoc] at h
   have hu₀ : 0 ≤ u - ⌊ξ⌋ * v := by
     -- Porting note: this abused the definitional equality `-1 + 1 = 0`
     -- refine' (mul_nonneg_iff_of_pos_right hv₁).mp ((lt_iff_add_one_le (-1 : ℤ) _).mp _)
@@ -504,16 +508,16 @@ private theorem invariant : ContfracLegendre.Ass (fract ξ)⁻¹ v (u - ⌊ξ⌋
     rwa [lt_sub_iff_add_lt', (by ring : (v : ℝ) + -(1 / 2) = (2 * v - 1) / 2),
       lt_inv (div_pos hv₀' zero_lt_two) (aux₁ hv h), inv_div]
 
+end
+
 /-!
 ### The main result
 -/
 
 
 /-- The technical version of *Legendre's Theorem*. -/
-theorem exists_rat_eq_convergent' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
+theorem exists_rat_eq_convergent' {v : ℕ} (h : ContfracLegendre.Ass ξ u v) :
     ∃ n, (u / v : ℚ) = ξ.convergent n := by
-  -- Porting note: `induction` got in trouble because of the irrelevant hypothesis `h`
-  clear h; have h := h'; clear h'
   induction v using Nat.strong_induction_on generalizing ξ u with | h v ih => ?_
   rcases lt_trichotomy v 1 with (ht | rfl | ht)
   · replace h := h.2.2

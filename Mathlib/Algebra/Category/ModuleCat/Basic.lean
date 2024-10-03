@@ -353,10 +353,10 @@ def smulNatTrans : R →+* End (forget₂ (ModuleCat R) AddCommGrp) where
   toFun r :=
     { app := fun M => M.smul r
       naturality := fun _ _ _ => smul_naturality _ r }
-  map_one' := NatTrans.ext _ _ (by aesop_cat)
-  map_zero' := NatTrans.ext _ _ (by aesop_cat)
-  map_mul' _ _ := NatTrans.ext _ _ (by aesop_cat)
-  map_add' _ _ := NatTrans.ext _ _ (by aesop_cat)
+  map_one' := NatTrans.ext (by aesop_cat)
+  map_zero' := NatTrans.ext (by aesop_cat)
+  map_mul' _ _ := NatTrans.ext (by aesop_cat)
+  map_add' _ _ := NatTrans.ext (by aesop_cat)
 
 variable {R}
 
