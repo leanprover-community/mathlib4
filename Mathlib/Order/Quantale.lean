@@ -83,6 +83,7 @@ a basic theorem from quantale theory is that every quantale that is idempotent a
 ## TODO
 
 + The actual proofs that `IdemIntegralQuantale` and `Order.Frame` coincide.
++ Definition of residuation also for AddQuantale
 
 -/
 
@@ -180,25 +181,22 @@ variable [Quantale α]
 on complete lattices, but for a non-commutative logic.
 I.e. `x ⇨ₗ y = sSup { z | z * x ≤ y }`.
 -/
-@[to_additive]
 def left_residuation (x y : α) := sSup { z | z * x ≤ y }
 
 /-- Notation for left-residuation in quantales.
     I.e. `x ⇨ₗ y = sSup { z | z * x ≤ y }`.
 -/
-@[to_additive]
 scoped infixr:60 " ⇨ₗ " => left_residuation
 
 /-- Left- and right- residuation operators on a quantale are similar to the Heyting operator
     on complete lattices, but for a non-commutative logic.
     I.e. `x ⇨ᵣ y = sSup { z | x * z ≤ y }`.
 -/
-@[to_additive]
 def right_residuation (x y : α) := sSup { z | x * z ≤ y }
+
 /-- Notation for right-residuation in quantales.
     I.e. `x ⇨ᵣ y = sSup { z | x * z ≤ y }`.
 -/
-@[to_additive]
 scoped infixr:60 " ⇨ᵣ " => right_residuation
 
 /-
