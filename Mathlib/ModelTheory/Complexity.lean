@@ -43,9 +43,9 @@ prenex normal forms.
   which are disjunctions of conjunctive formulas.
 - `FirstOrder.Language.BoundedFormula.IsCNF` defines formulas in conjunctive normal form - those
   which are conjunctions of disjunctive formulas.
-- `FirstOrder.Language.BoundedFormula.toDNF_semanticallyEquivalent` shows that the disjunctive
+- `FirstOrder.Language.BoundedFormula.toDNF_iff` shows that the disjunctive
   normal form of a formula is semantically equivalent to the original formula.
-- `FirstOrder.Language.BoundedFormula.toCNF_semanticallyEquivalent` shows that the conjunctive
+- `FirstOrder.Language.BoundedFormula.toCNF_iff` shows that the conjunctive
   normal form of a formula is semantically equivalent to the original formula.
 - `FirstOrder.Language.BoundedFormula.IsDNF.components` gives the literals of a DNF as a list of
   lists.
@@ -111,7 +111,7 @@ theorem realize_simpleNot {n : ℕ} (φ : L.BoundedFormula α n) {v : α → M} 
       realize_falsum, imp_false, imp_iff_not_or, not_or, not_not]
   · rfl
 
-theorem simpleNot_semanticallyEquivalent_not {T : L.Theory} {n : ℕ} (φ : L.BoundedFormula α n) :
+theorem simpleNot_iff_not {T : L.Theory} {n : ℕ} (φ : L.BoundedFormula α n) :
     φ.simpleNot ⇔[T] φ.not := by
   simp only [Theory.Iff, Theory.ModelsBoundedFormula, realize_iff,
     realize_simpleNot, realize_not, implies_true]
@@ -144,7 +144,7 @@ protected theorem IsAtomic.simpleNot_eq_not {φ : L.BoundedFormula α n} (hφ : 
   | equal t₁ t₂ => rfl
   | rel R ts => rfl
 
-protected theorem IsAtomic.simpleNot_of_not_eq {φ : L.BoundedFormula α n} (hφ : φ.IsAtomic) :
+protected theorem IsAtomic.simpleNot_not {φ : L.BoundedFormula α n} (hφ : φ.IsAtomic) :
     φ.not.simpleNot = φ := by
   induction hφ with
   | equal t₁ t₂ => rfl
@@ -158,20 +158,17 @@ inductive IsLiteral : L.BoundedFormula α n → Prop
   | of_not_of_isAtomic {φ : L.BoundedFormula α n} (h : φ.IsAtomic) : IsLiteral φ.not
 
 theorem IsAtomic.isLiteral {φ : L.BoundedFormula α n} (hφ : φ.IsAtomic) : IsLiteral φ :=
-  IsLiteral.of_isAtomic hφ
+  .of_isAtomic hφ
 
-protected theorem IsLiteral.simpleNot {φ : L.BoundedFormula α n} (hφ : φ.IsLiteral) :
-    φ.simpleNot.IsLiteral := by
-  induction hφ with
-  | falsum =>
-    exact IsLiteral.not_falsum
-  | of_isAtomic hφ =>
+protected theorem IsLiteral.simpleNot {φ : L.BoundedFormula α n} :
+    φ.IsLiteral → φ.simpleNot.IsLiteral
+  | falsum => IsLiteral.not_falsum
+  | of_isAtomic hφ => by
     rw [hφ.simpleNot_eq_not]
     exact IsLiteral.of_not_of_isAtomic hφ
-  | not_falsum =>
-    exact IsLiteral.falsum
-  | of_not_of_isAtomic hφ =>
-    rw [hφ.simpleNot_of_not_eq]
+  | not_falsum => IsLiteral.falsum
+  | of_not_of_isAtomic hφ => by
+    rw [hφ.simpleNot_not]
     exact hφ.isLiteral
 
 /-- A quantifier-free formula is a formula defined without quantifiers. These are all equivalent
