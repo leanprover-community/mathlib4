@@ -108,7 +108,7 @@ instance (X : LocallyRingedSpace.{u}) : Inhabited (Hom X X) :=
 def comp {X Y Z : LocallyRingedSpace.{u}} (f : Hom X Y) (g : Hom Y Z) : Hom X Z :=
   ⟨f.val ≫ g.val, fun x => by
     erw [PresheafedSpace.stalkMap.comp]
-    exact @isLocalRingHom_comp _ _ _ _ _ _ _ _ (f.2 _) (g.2 _)⟩
+    exact @RingHom.isLocalRingHom_comp _ _ _ _ _ _ _ _ (f.2 _) (g.2 _)⟩
 
 /-- The category of locally ringed spaces. -/
 instance : Category LocallyRingedSpace.{u} where
