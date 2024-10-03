@@ -160,9 +160,8 @@ inductive IsLiteral : L.BoundedFormula α n → Prop
 theorem IsAtomic.isLiteral {φ : L.BoundedFormula α n} (hφ : φ.IsAtomic) : IsLiteral φ :=
   IsLiteral.of_isAtomic hφ
 
-protected theorem IsLiteral.simpleNot {φ : L.BoundedFormula α n} (hφ : φ.IsLiteral) :
-    φ.simpleNot.IsLiteral := by
-  induction hφ with
+protected theorem IsLiteral.simpleNot {φ : L.BoundedFormula α n} :
+    φ.IsLiteral → φ.simpleNot.IsLiteral
   | falsum =>
     exact IsLiteral.not_falsum
   | of_isAtomic hφ =>
