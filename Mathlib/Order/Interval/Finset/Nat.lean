@@ -120,75 +120,119 @@ theorem card_fintypeIic : Fintype.card (Set.Iic b) = b + 1 := by
 -- @[simp]
 theorem card_fintypeIio : Fintype.card (Set.Iio b) = b := by rw [Fintype.card_ofFinset, card_Iio]
 
--- TODO@Yaël: Generalize all the following lemmas to `SuccOrder`
-theorem Icc_succ_left : Icc a.succ b = Ioc a b := by
-  ext x
-  rw [mem_Icc, mem_Ioc, succ_le_iff]
+/-! ### Removing `succ` and `pred` -/
 
-theorem Ico_succ_right : Ico a b.succ = Icc a b := by
-  ext x
-  rw [mem_Ico, mem_Icc, Nat.lt_succ_iff]
+lemma Icc_succ_left : Icc (a + 1) b = Ioc a b := by
+  ext x; rw [mem_Icc, mem_Ioc, Nat.succ_le_iff]
 
-theorem Ico_succ_left : Ico a.succ b = Ioo a b := by
-  ext x
-  rw [mem_Ico, mem_Ioo, succ_le_iff]
+lemma Ico_succ_left : Ico (a + 1) b = Ioo a b := by
+  ext x; rw [mem_Ico, mem_Ioo, Nat.succ_le_iff]
 
-theorem Icc_pred_right {b : ℕ} (h : 0 < b) : Icc a (b - 1) = Ico a b := by
-  ext x
-  rw [mem_Icc, mem_Ico, lt_iff_le_pred h]
+lemma Ico_succ_right : Ico a (b + 1) = Icc a b := by
+  ext x; rw [mem_Ico, mem_Icc, Nat.lt_succ_iff]
 
-theorem Ico_succ_succ : Ico a.succ b.succ = Ioc a b := by
-  ext x
-  rw [mem_Ico, mem_Ioc, succ_le_iff, Nat.lt_succ_iff]
+lemma Ioo_succ_right : Ioo a (b + 1) = Ioc a b := by
+  ext x; rw [mem_Ioo, mem_Ioc, Nat.lt_succ_iff]
 
-@[simp]
-theorem Ico_succ_singleton : Ico a (a + 1) = {a} := by rw [Ico_succ_right, Icc_self]
+lemma Ico_succ_succ : Ico (a + 1) (b + 1) = Ioc a b := by
+  rw [Ico_succ_right, Icc_succ_left]
 
-@[simp]
-theorem Ico_pred_singleton {a : ℕ} (h : 0 < a) : Ico (a - 1) a = {a - 1} := by
+lemma Ioc_pred_left {a : ℕ} (h : 0 < a) : Ioc (a - 1) b = Icc a b := by
+  ext x; rw [mem_Ioc, mem_Icc, pred_lt_iff_le h]
+
+lemma Ioo_pred_left {a : ℕ} (h : 0 < a) : Ioo (a - 1) b = Ico a b := by
+  ext x; rw [mem_Ioo, mem_Ico, pred_lt_iff_le h]
+
+lemma Icc_pred_right {b : ℕ} (h : 0 < b) : Icc a (b - 1) = Ico a b := by
+  ext x; rw [mem_Icc, mem_Ico, lt_iff_le_pred h]
+
+lemma Ioc_pred_right {b : ℕ} (h : 0 < b) : Ioc a (b - 1) = Ioo a b := by
+  ext x; rw [mem_Ioc, mem_Ioo, lt_iff_le_pred h]
+
+lemma Ioc_pred_pred {a b : ℕ} (ha : 0 < a) (hb : 0 < b) : Ioc (a - 1) (b - 1) = Ico a b := by
+  rw [Ioc_pred_left _ ha, Icc_pred_right _ hb]
+
+@[simp] lemma Ico_succ_singleton : Ico a (a + 1) = {a} := by rw [Ico_succ_right, Icc_self]
+
+@[simp] lemma Ioc_succ_singleton : Ioc a (a + 1) = {a + 1} := by rw [← Icc_succ_left, Icc_self]
+
+@[simp] lemma Ico_pred_singleton {a : ℕ} (h : 0 < a) : Ico (a - 1) a = {a - 1} := by
   rw [← Icc_pred_right _ h, Icc_self]
 
-@[simp]
-theorem Ioc_succ_singleton : Ioc b (b + 1) = {b + 1} := by rw [← Nat.Icc_succ_left, Icc_self]
+@[simp] lemma Ioc_pred_singleton {a : ℕ} (h : 0 < a) : Ioc (a - 1) a = {a} := by
+  rw [Ioc_pred_left _ h, Icc_self]
 
 variable {a b c}
 
-theorem Ico_succ_right_eq_insert_Ico (h : a ≤ b) : Ico a (b + 1) = insert b (Ico a b) := by
-  rw [Ico_succ_right, ← Ico_insert_right h]
+/-! ### `insert` and `erase` interacting with `succ`
 
-theorem Ico_insert_succ_left (h : a < b) : insert a (Ico a.succ b) = Ico a b := by
-  rw [Ico_succ_left, ← Ioo_insert_left h]
+The following 16 lemmas preserve the interval type, unlike `Ioc_insert_left` and related. -/
 
 lemma Icc_insert_succ_left (h : a ≤ b) : insert a (Icc (a + 1) b) = Icc a b := by
-  ext x
-  simp only [mem_insert, mem_Icc]
-  omega
+  rw [← Ioc_insert_left h, Icc_succ_left]
+
+lemma Ico_insert_succ_left (h : a < b) : insert a (Ico (a + 1) b) = Ico a b := by
+  rw [← Ioo_insert_left h, Ico_succ_left]
+
+lemma Ico_insert_succ_right (h : a ≤ b) : insert b (Ico a b) = Ico a (b + 1) := by
+  rw [Ico_succ_right, ← Ico_insert_right h]
+
+lemma Ioo_insert_succ_right (h : a < b) : insert b (Ioo a b) = Ioo a (b + 1) := by
+  rw [Ioo_succ_right, ← Ioo_insert_right h]
+
+lemma Ioc_insert_succ_left (h : a + 1 ≤ b) : insert (a + 1) (Ioc (a + 1) b) = Ioc a b := by
+  rw [Ioc_insert_left h, Icc_succ_left]
+
+lemma Ioo_insert_succ_left (h : a + 1 < b) : insert (a + 1) (Ioo (a + 1) b) = Ioo a b := by
+  rw [Ioo_insert_left h, Ico_succ_left]
 
 lemma Icc_insert_succ_right (h : a ≤ b + 1) : insert (b + 1) (Icc a b) = Icc a (b + 1) := by
-  ext x
-  simp only [mem_insert, mem_Icc]
-  omega
+  rw [← Ico_succ_right, ← Ico_insert_right h]
 
-theorem image_sub_const_Ico (h : c ≤ a) :
-    ((Ico a b).image fun x => x - c) = Ico (a - c) (b - c) := by
+lemma Ioc_insert_succ_right (h : a < b + 1) : insert (b + 1) (Ioc a b) = Ioc a (b + 1) := by
+  rw [← Ioo_succ_right, ← Ioo_insert_right h]
+
+lemma Icc_erase_succ_left : erase (Icc a b) a = Icc (a + 1) b := by
+  rw [Icc_erase_left, Icc_succ_left]
+
+lemma Ico_erase_succ_left : erase (Ico a b) a = Ico (a + 1) b := by
+  rw [Ico_erase_left, Ico_succ_left]
+
+lemma Ico_erase_succ_right : erase (Ico a (b + 1)) b = Ico a b := by
+  rw [Ico_succ_right, Icc_erase_right]
+
+lemma Ioo_erase_succ_right : erase (Ioo a (b + 1)) b = Ioo a b := by
+  rw [Ioo_succ_right, Ioc_erase_right]
+
+lemma Ioc_erase_succ_left : erase (Ioc a b) (a + 1) = Ioc (a + 1) b := by
+  rw [← Icc_succ_left, Icc_erase_left]
+
+lemma Ioo_erase_succ_left : erase (Ioo a b) (a + 1) = Ioo (a + 1) b := by
+  rw [← Ico_succ_left, Ico_erase_left]
+
+lemma Icc_erase_succ_right : erase (Icc a (b + 1)) (b + 1) = Icc a b := by
+  rw [Icc_erase_right, Ico_succ_right]
+
+lemma Ioc_erase_succ_right : erase (Ioc a (b + 1)) (b + 1) = Ioc a b := by
+  rw [Ioc_erase_right, Ioo_succ_right]
+
+@[deprecated (since := "2024-09-20")] alias Ico_succ_right_eq_insert_Ico := Ico_insert_succ_right
+@[deprecated (since := "2024-09-20")] alias Ico_succ_left_eq_erase_Ico := Ico_erase_succ_left
+
+theorem image_sub_const_Ico (h : c ≤ a) : (Ico a b).image (· - c) = Ico (a - c) (b - c) := by
   ext x
   simp_rw [mem_image, mem_Ico]
   refine ⟨?_, fun h ↦ ⟨x + c, by omega⟩⟩
   rintro ⟨x, hx, rfl⟩
   omega
 
-theorem Ico_image_const_sub_eq_Ico (hac : a ≤ c) :
-    ((Ico a b).image fun x => c - x) = Ico (c + 1 - b) (c + 1 - a) := by
+theorem Ico_image_const_sub_eq_Ico (h : a ≤ c) :
+    (Ico a b).image (c - ·) = Ico (c + 1 - b) (c + 1 - a) := by
   ext x
   simp_rw [mem_image, mem_Ico]
   refine ⟨?_, fun h ↦ ⟨c - x, by omega⟩⟩
   rintro ⟨x, hx, rfl⟩
   omega
-
-theorem Ico_succ_left_eq_erase_Ico : Ico a.succ b = erase (Ico a b) a := by
-  ext x
-  rw [Ico_succ_left, mem_erase, mem_Ico, mem_Ioo, ← and_assoc, ne_comm, @and_comm (a ≠ x),
-    lt_iff_le_and_ne]
 
 theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) := by
   induction' n with n ih
@@ -196,8 +240,7 @@ theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) :=
     rintro k hk l hl (hkl : k % a = l % a)
     simp only [Finset.mem_range, Finset.mem_coe] at hk hl
     rwa [mod_eq_of_lt hk, mod_eq_of_lt hl] at hkl
-  rw [Ico_succ_left_eq_erase_Ico, succ_add, succ_eq_add_one,
-    Ico_succ_right_eq_insert_Ico (by omega)]
+  rw [← Ico_erase_succ_left, succ_add, succ_eq_add_one, ← Ico_insert_succ_right (by omega)]
   rintro k hk l hl (hkl : k % a = l % a)
   have ha : 0 < a := Nat.pos_iff_ne_zero.2 <| by rintro rfl; simp at hk
   simp only [Finset.mem_coe, Finset.mem_insert, Finset.mem_erase] at hk hl
