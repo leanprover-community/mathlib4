@@ -118,7 +118,7 @@ def nullSpace : AddSubgroup M where
 lemma inseparable_iff_norm_zero (x y : M) : Inseparable x y ↔ ‖x - y‖ = 0 := by
   rw [Metric.inseparable_iff, dist_eq_norm]
 
-lemma isClosed_nullSpace : IsClosed (@nullSpace M _).carrier := by
+lemma isClosed_nullSpace : IsClosed (@nullSpace M _ : Set M) := by
   rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
   intro x hx
   rw [Metric.mem_nhds_iff]
