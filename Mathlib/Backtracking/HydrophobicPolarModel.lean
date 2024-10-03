@@ -393,7 +393,7 @@ def pt_dir {α:Type} [OfNat α 0] {β : Type} (go : β → α → α)
   ph.get i ∧ ph.get j ∧ i.1.succ < j ∧ (pathᵥ go moves).get j = go a ((pathᵥ go moves).get i)
 
 /-- . -/
-theorem unique_loc  {α: Type} [OfNat α 0] [DecidableEq α] {β: Type}
+theorem unique_loc  {α: Type} [OfNat α 0] {β: Type}
     {go: β → α → α}
     {l:ℕ} {j: Fin l.succ}
     {moves: Vector β l} {ph : Vector Bool l.succ}
@@ -404,7 +404,7 @@ theorem unique_loc  {α: Type} [OfNat α 0] [DecidableEq α] {β: Type}
   path_inj (right_inj a (Eq.trans hai₀.2.2.2.symm hai₁.2.2.2))
 
 /-- . -/
-theorem unique_dir {α: Type} [OfNat α 0] [DecidableEq α] {β: Type}
+theorem unique_dir {α: Type} [OfNat α 0] {β: Type}
     {go: β → α → α} {l:ℕ} (j: Fin l.succ)
     (moves: Vector β l) (ph : Vector Bool l.succ)
     (left_inj : left_injective go)
@@ -780,7 +780,7 @@ lemma path_eq_path_morphᵥ {l:ℕ} {α:Type} [OfNat α 0] {b₀ b₁ : ℕ}
   path_eq_path_morph f go₀ go₁ g moves.1
 
 /-- . -/
-lemma pathᵥ_eq_path_morphᵥ1 {l:ℕ} {α:Type} [OfNat α 0] [DecidableEq α] {b₀ b₁ : ℕ}
+lemma pathᵥ_eq_path_morphᵥ1 {l:ℕ} {α:Type} [OfNat α 0] {b₀ b₁ : ℕ}
     (f : Fin b₀ → α → Fin b₁) (go₀ : Fin b₀ → α → α) (go₁ : Fin b₁ → α → α)
     (g : is_embedding go₀ go₁ f) (moves : Vector (Fin b₀) l) :
     (pathᵥ go₀ moves).1 = (pathᵥ go₁ (morphᵥ f go₀ moves)).1 :=
