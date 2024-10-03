@@ -663,11 +663,11 @@ open IsAbsoluteValue
 
 theorem abs_re_div_norm_le_one (z : K) : |re z / ‖z‖| ≤ 1 := by
   rw [abs_div, abs_norm]
-  exact div_le_one_of_le (abs_re_le_norm _) (norm_nonneg _)
+  exact div_le_one_of_le₀ (abs_re_le_norm _) (norm_nonneg _)
 
 theorem abs_im_div_norm_le_one (z : K) : |im z / ‖z‖| ≤ 1 := by
   rw [abs_div, abs_norm]
-  exact div_le_one_of_le (abs_im_le_norm _) (norm_nonneg _)
+  exact div_le_one_of_le₀ (abs_im_le_norm _) (norm_nonneg _)
 
 theorem norm_I_of_ne_zero (hI : (I : K) ≠ 0) : ‖(I : K)‖ = 1 := by
   rw [← mul_self_inj_of_nonneg (norm_nonneg I) zero_le_one, one_mul, ← norm_mul,

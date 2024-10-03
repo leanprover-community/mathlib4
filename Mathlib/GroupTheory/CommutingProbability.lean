@@ -68,7 +68,7 @@ theorem commProb_pos [h : Nonempty M] : 0 < commProb M :=
       (pow_pos (Nat.cast_pos.mpr Finite.card_pos) 2)
 
 theorem commProb_le_one : commProb M ≤ 1 := by
-  refine div_le_one_of_le ?_ (sq_nonneg (Nat.card M : ℚ))
+  refine div_le_one_of_le₀ ?_ (sq_nonneg (Nat.card M : ℚ))
   rw [← Nat.cast_pow, Nat.cast_le, sq, ← Nat.card_prod]
   apply Finite.card_subtype_le
 
@@ -118,7 +118,7 @@ theorem Subgroup.commProb_quotient_le [H.Normal] : commProb (G ⧸ H) ≤ commPr
 variable (G)
 
 theorem inv_card_commutator_le_commProb : (↑(Nat.card (commutator G)))⁻¹ ≤ commProb G :=
-  (inv_pos_le_iff_one_le_mul (Nat.cast_pos.mpr Finite.card_pos)).mpr
+  (inv_le_iff_one_le_mul₀ (Nat.cast_pos.mpr Finite.card_pos)).mpr
     (le_trans (ge_of_eq (commProb_eq_one_iff.mpr ⟨(Abelianization.commGroup G).mul_comm⟩))
       (commutator G).commProb_quotient_le)
 

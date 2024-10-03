@@ -183,7 +183,7 @@ theorem Balanced.smul_mono (hs : Balanced 𝕝 s) {a : 𝕝} {b : 𝕜} (h : ‖
       a • s = b • (b⁻¹ • a) • s := by rw [smul_assoc, smul_inv_smul₀ hb]
       _ ⊆ b • s := smul_set_mono <| hs _ <| by
         rw [norm_smul, norm_inv, ← div_eq_inv_mul]
-        exact div_le_one_of_le h (norm_nonneg _)
+        exact div_le_one_of_le₀ h (norm_nonneg _)
 
 theorem Balanced.smul_mem_mono [SMulCommClass 𝕝 𝕜 E] (hs : Balanced 𝕝 s) {a : 𝕜} {b : 𝕝}
     (ha : a • x ∈ s) (hba : ‖b‖ ≤ ‖a‖) : b • x ∈ s := by
@@ -193,7 +193,7 @@ theorem Balanced.smul_mem_mono [SMulCommClass 𝕝 𝕜 E] (hs : Balanced 𝕝 s
       (a⁻¹ • b) • a • x ∈ s := by
         refine hs.smul_mem ?_ ha
         rw [norm_smul, norm_inv, ← div_eq_inv_mul]
-        exact div_le_one_of_le hba (norm_nonneg _)
+        exact div_le_one_of_le₀ hba (norm_nonneg _)
       (a⁻¹ • b) • a • x = b • x := by rw [smul_comm, smul_assoc, smul_inv_smul₀ ha₀]
 
 theorem Balanced.subset_smul (hA : Balanced 𝕜 A) (ha : 1 ≤ ‖a‖) : A ⊆ a • A := by

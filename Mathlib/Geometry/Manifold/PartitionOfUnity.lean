@@ -752,7 +752,7 @@ theorem exists_msmooth_support_eq_eq_one_iff
   · exact f_diff.div₀ (f_diff.add g_diff) (fun x ↦ ne_of_gt (A x))
   -- show that the range is included in `[0, 1]`
   · refine range_subset_iff.2 (fun x ↦ ⟨div_nonneg (f_pos x) (A x).le, ?_⟩)
-    apply div_le_one_of_le _ (A x).le
+    apply div_le_one_of_le₀ _ (A x).le
     simpa only [le_add_iff_nonneg_right] using g_pos x
   -- show that the support is `s`
   · have B : support (fun x ↦ f x + g x) = univ := eq_univ_of_forall (fun x ↦ (A x).ne')

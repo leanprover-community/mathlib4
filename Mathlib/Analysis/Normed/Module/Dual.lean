@@ -212,7 +212,7 @@ theorem polar_ball_subset_closedBall_div {c : 𝕜} (hc : 1 < ‖c‖) {r : ℝ}
   refine ContinuousLinearMap.opNorm_le_of_shell hr hcr.le hc fun x h₁ h₂ => ?_
   calc
     ‖x' x‖ ≤ 1 := hx' _ h₂
-    _ ≤ ‖c‖ / r * ‖x‖ := (inv_pos_le_iff_one_le_mul' hcr).1 (by rwa [inv_div])
+    _ ≤ ‖c‖ / r * ‖x‖ := (inv_le_iff_one_le_mul₀' hcr).1 (by rwa [inv_div])
 
 variable (𝕜)
 
@@ -245,11 +245,11 @@ theorem polar_ball {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [Normed
     intro a ha
     rw [← mem_closedBall_zero_iff, ← (mul_div_cancel_left₀ a (Ne.symm (ne_of_lt hr)))]
     rw [← RCLike.norm_of_nonneg (K := 𝕜) (le_trans zero_le_one
-      (le_of_lt ((inv_pos_lt_iff_one_lt_mul' hr).mp ha)))]
+      (le_of_lt ((inv_lt_iff_one_lt_mul₀' hr).mp ha)))]
     apply polar_ball_subset_closedBall_div _ hr hx
     rw [RCLike.norm_of_nonneg (K := 𝕜) (le_trans zero_le_one
-      (le_of_lt ((inv_pos_lt_iff_one_lt_mul' hr).mp ha)))]
-    exact (inv_pos_lt_iff_one_lt_mul' hr).mp ha
+      (le_of_lt ((inv_lt_iff_one_lt_mul₀' hr).mp ha)))]
+    exact (inv_lt_iff_one_lt_mul₀' hr).mp ha
   · rw [← polar_closedBall hr]
     exact LinearMap.polar_antitone _ ball_subset_closedBall
 
