@@ -1,20 +1,20 @@
 /-
 Copyright (c) 2024 Jou Glasheen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jou Glasheen, Kevin Buzzard
+Authors: Jou Glasheen, Kevin Buzzard, David Loeffler, Yongle Hu
 -/
 
 import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 
 /-!
-# Total disconnectedness of nonarchimedean groups
+# Total separatedness of nonarchimedean groups
 
-In this file, we prove that a nonarchimedean group is a totally disconnected topological space.
+In this file, we prove that a nonarchimedean group is a totally separated topological space.
 
 ## Main results
 
-- `NonarchimedeanGroup.instTotallyDisconnectedSpace`: A nonarchimedean group is a
-                                                      totally disconnected topological space.
+- `NonarchimedeanGroup.instTotallySeparated`: A nonarchimedean group is a
+                                                      totally separated topological space.
 
 ## Notation
 
