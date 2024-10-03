@@ -227,7 +227,7 @@ theorem norm_mk_nonneg (m : M) : 0 ≤ ‖mk m‖ := quotient_norm_nonneg _
 /-- The norm of the image of `m : M` in the quotient by the null space is zero if and only if `m`
 belongs to the null space. -/
 theorem quotient_norm_eq_zero_iff (m : M) :
-    ‖mk m‖ = 0 ↔ m ∈ nullSpace.carrier := by
+    ‖mk m‖ = 0 ↔ m ∈ nullSpace := by
   rw [norm_mk]
   nth_rw 2 [← IsClosed.closure_eq isClosed_nullSpace]
   rw [← mem_closure_iff_infDist_zero]
