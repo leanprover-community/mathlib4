@@ -217,9 +217,9 @@ noncomputable def liftMonoidHom [CommGroup G] [TopologicalGroup G] [CommGroup H]
   map_one' := by
     rw [← (@MonoidHom.map_one G H _ _ f), ← SeparationQuotient.lift_mk hf 1, ← mk_one]
   map_mul' {x y} := by
+    induction x with | _ x => ?_
+    induction y with | _ y => ?_
     simp only
-    obtain ⟨x', hx'⟩ := surjective_mk x
-    obtain ⟨y', hy'⟩ := surjective_mk y
     rw [← hx', ← hy', SeparationQuotient.lift_mk hf x', SeparationQuotient.lift_mk hf y', ← mk_mul,
       SeparationQuotient.lift_mk hf (x' * y')]
     exact MonoidHom.map_mul f x' y'
