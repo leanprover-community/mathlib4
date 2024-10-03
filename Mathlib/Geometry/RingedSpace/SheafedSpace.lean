@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Geometry.RingedSpace.PresheafedSpace.HasColimits
 import Mathlib.Geometry.RingedSpace.Stalks
@@ -81,8 +81,8 @@ instance : Category (SheafedSpace C) :=
     infer_instance
 
 -- Porting note (#5229): adding an `ext` lemma.
-@[ext]
-theorem ext {X Y : SheafedSpace C} {α β : X ⟶ Y} (w : α.base = β.base)
+@[ext (iff := false)]
+theorem ext {X Y : SheafedSpace C} (α β : X ⟶ Y) (w : α.base = β.base)
     (h : α.c ≫ whiskerRight (eqToHom (by rw [w])) _ = β.c) : α = β :=
   PresheafedSpace.ext α β w h
 

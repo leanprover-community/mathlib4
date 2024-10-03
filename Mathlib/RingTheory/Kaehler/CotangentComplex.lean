@@ -52,8 +52,7 @@ lemma cotangentSpaceBasis_repr_tmul (r x i) :
     P.cotangentSpaceBasis.repr (r ⊗ₜ .D _ _ x) i = r * aeval P.val (pderiv i x) := by
   classical
   simp only [cotangentSpaceBasis, Basis.baseChange_repr_tmul, mvPolynomialBasis_repr_apply,
-    Algebra.smul_def, mul_comm r]
-  rfl
+    Algebra.smul_def, mul_comm r, algebraMap_apply]
 
 lemma cotangentSpaceBasis_repr_one_tmul (x i) :
     P.cotangentSpaceBasis.repr (1 ⊗ₜ .D _ _ x) i = aeval P.val (pderiv i x) := by
@@ -112,7 +111,7 @@ lemma map_tmul (f : Hom P P') (x y) :
 lemma repr_map (f : Hom P P') (i j) :
     P'.cotangentSpaceBasis.repr (CotangentSpace.map f (P.cotangentSpaceBasis i)) j =
       aeval P'.val (pderiv j (f.val i)) := by
-  simp only [cotangentSpaceBasis_apply, map_tmul, _root_.map_one, Hom.toAlgHom_X,
+  simp only [cotangentSpaceBasis_apply, map_tmul, map_one, Hom.toAlgHom_X,
     cotangentSpaceBasis_repr_one_tmul]
 
 universe w'' u'' v''
@@ -123,22 +122,22 @@ variable [Algebra R R''] [Algebra S S''] [Algebra R S'']
   [IsScalarTower R R'' S''] [IsScalarTower R S S'']
 variable [Algebra R' R''] [Algebra S' S''] [Algebra R' S'']
   [IsScalarTower R' R'' S''] [IsScalarTower R' S' S'']
-variable [IsScalarTower R R' R''] [IsScalarTower S S' S'']
+variable [IsScalarTower S S' S'']
 
 @[simp]
 lemma map_id :
     CotangentSpace.map (.id P) = LinearMap.id := by
   apply P.cotangentSpaceBasis.ext
   intro i
-  simp only [cotangentSpaceBasis_apply, map_tmul, _root_.map_one, Hom.toAlgHom_X]
-  rfl
+  simp only [cotangentSpaceBasis_apply, map_tmul, map_one, Hom.toAlgHom_X, Hom.id_val,
+    LinearMap.id_coe, id_eq]
 
 lemma map_comp (f : Hom P P') (g : Hom P' P'') :
     CotangentSpace.map (g.comp f) =
       (CotangentSpace.map g).restrictScalars S ∘ₗ CotangentSpace.map f := by
   apply P.cotangentSpaceBasis.ext
   intro i
-  simp only [cotangentSpaceBasis_apply, map_tmul, _root_.map_one, Hom.toAlgHom_X, Hom.comp_val,
+  simp only [cotangentSpaceBasis_apply, map_tmul, map_one, Hom.toAlgHom_X, Hom.comp_val,
     LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply]
   rfl
 
@@ -149,8 +148,7 @@ lemma map_comp_apply (f : Hom P P') (g : Hom P' P'') (x) :
 lemma map_cotangentComplex (f : Hom P P') (x) :
     CotangentSpace.map f (P.cotangentComplex x) = P'.cotangentComplex (.map f x) := by
   obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x
-  rw [cotangentComplex_mk, map_tmul, _root_.map_one, Cotangent.map_mk,
-    cotangentComplex_mk]
+  rw [cotangentComplex_mk, map_tmul, map_one, Cotangent.map_mk, cotangentComplex_mk]
 
 lemma map_comp_cotangentComplex (f : Hom P P') :
     CotangentSpace.map f ∘ₗ P.cotangentComplex =
@@ -181,7 +179,7 @@ lemma Hom.sub_aux (f g : Hom P P') (x y) :
         coe_eval₂Hom, ← aeval_def, ker, RingHom.mem_ker, map_sub, algebraMap_toAlgHom, aeval_val_σ,
         sub_self]
   convert this using 1
-  simp only [_root_.map_mul]
+  simp only [map_mul]
   ring
 
 /--
@@ -223,10 +221,9 @@ def Hom.sub (f g : Hom P P') : P.CotangentSpace →ₗ[S] P'.Cotangent := by
     simp only [LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply,
       Cotangent.val_mk, Cotangent.val_zero, Ideal.toCotangent_eq_zero]
     erw [LinearMap.codRestrict_apply]
-    simp only [LinearMap.sub_apply, AlgHom.toLinearMap_apply, _root_.map_one, sub_self,
-      Submodule.zero_mem]
+    simp only [LinearMap.sub_apply, AlgHom.toLinearMap_apply, map_one, sub_self, Submodule.zero_mem]
   · intro x y
-    ext;
+    ext
     simp only [LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply,
       Cotangent.val_mk, Cotangent.val_add, Cotangent.val_smul''', ← map_smul, ← map_add,
       Ideal.toCotangent_eq, AddSubmonoid.coe_add, Submodule.coe_toAddSubmonoid,
@@ -250,7 +247,7 @@ lemma CotangentSpace.map_sub_map (f g : Hom P P') :
       P'.cotangentComplex.restrictScalars S ∘ₗ (f.sub g) := by
   apply P.cotangentSpaceBasis.ext
   intro i
-  simp only [cotangentSpaceBasis_apply, LinearMap.sub_apply, map_tmul, _root_.map_one,
+  simp only [cotangentSpaceBasis_apply, LinearMap.sub_apply, map_tmul, map_one,
     Hom.toAlgHom_X, LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply,
     Hom.sub_one_tmul, cotangentComplex_mk, Hom.subToKer_apply_coe, map_sub, tmul_sub]
 

@@ -61,7 +61,7 @@ theorem leastGE_le {i : ℕ} {r : ℝ} (ω : Ω) : leastGE f r i ω ≤ i :=
 
 -- The following four lemmas shows `leastGE` behaves like a stopped process. Ideally we should
 -- define `leastGE` as a stopping time and take its stopped process. However, we can't do that
--- with our current definition since a stopping time takes only finite indicies. An upcomming
+-- with our current definition since a stopping time takes only finite indices. An upcoming
 -- refactor should hopefully make it possible to have stopping times taking infinity as a value
 theorem leastGE_mono {n m : ℕ} (hnm : n ≤ m) (r : ℝ) (ω : Ω) : leastGE f r n ω ≤ leastGE f r m ω :=
   hitting_mono hnm
@@ -347,8 +347,8 @@ theorem tendsto_sum_indicator_atTop_iff' [IsFiniteMeasure μ] {s : ℕ → Set �
       (s (k + 1)).indicator (1 : Ω → ℝ) ω) atTop atTop ↔
     Tendsto (fun n => ∑ k ∈ Finset.range n,
       (μ[(s (k + 1)).indicator (1 : Ω → ℝ)|ℱ k]) ω) atTop atTop := by
-  have := tendsto_sum_indicator_atTop_iff (eventually_of_forall fun ω n => ?_) (adapted_process hs)
-    (integrable_process μ hs) (eventually_of_forall <| process_difference_le s)
+  have := tendsto_sum_indicator_atTop_iff (Eventually.of_forall fun ω n => ?_) (adapted_process hs)
+    (integrable_process μ hs) (Eventually.of_forall <| process_difference_le s)
   swap
   · rw [process, process, ← sub_nonneg, Finset.sum_apply, Finset.sum_apply,
       Finset.sum_range_succ_sub_sum]

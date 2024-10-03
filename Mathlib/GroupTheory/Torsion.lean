@@ -64,7 +64,7 @@ open Monoid
 noncomputable def IsTorsion.group [Monoid G] (tG : IsTorsion G) : Group G :=
   { ‹Monoid G› with
     inv := fun g => g ^ (orderOf g - 1)
-    mul_left_inv := fun g => by
+    inv_mul_cancel := fun g => by
       erw [← pow_succ, tsub_add_cancel_of_le, pow_orderOf_eq_one]
       exact (tG g).orderOf_pos }
 
@@ -91,7 +91,7 @@ theorem IsTorsion.of_surjective {f : G →* H} (hf : Function.Surjective f) (tG 
 theorem IsTorsion.extension_closed {f : G →* H} (hN : N = f.ker) (tH : IsTorsion H)
     (tN : IsTorsion N) : IsTorsion G := fun g => by
   obtain ⟨ngn, ngnpos, hngn⟩ := (tH <| f g).exists_pow_eq_one
-  have hmem := f.mem_ker.mpr ((f.map_pow g ngn).trans hngn)
+  have hmem := MonoidHom.mem_ker.mpr ((f.map_pow g ngn).trans hngn)
   lift g ^ ngn to N using hN.symm ▸ hmem with gn h
   obtain ⟨nn, nnpos, hnn⟩ := (tN gn).exists_pow_eq_one
   exact isOfFinOrder_iff_pow_eq_one.mpr <| ⟨ngn * nn, mul_pos ngnpos nnpos, by
@@ -201,7 +201,10 @@ variable {G} {p}
 @[to_additive primaryComponent.exists_orderOf_eq_prime_nsmul
   "Elements of the `p`-primary component have additive order `p^n` for some `n`"]
 theorem primaryComponent.exists_orderOf_eq_prime_pow (g : CommMonoid.primaryComponent G p) :
-    ∃ n : ℕ, orderOf g = p ^ n := by simpa [primaryComponent] using g.property
+    ∃ n : ℕ, orderOf g = p ^ n := by
+      obtain ⟨_, hn⟩ := g.property
+      rw [orderOf_submonoid g] at hn
+      exact ⟨_, hn⟩
 
 /-- The `p`- and `q`-primary components are disjoint for `p ≠ q`. -/
 @[to_additive "The `p`- and `q`-primary components are disjoint for `p ≠ q`."]
@@ -372,7 +375,7 @@ variable (G) [CommGroup G]
       "Quotienting a group by its additive torsion subgroup yields an additive torsion free group."]
 theorem IsTorsionFree.quotient_torsion : IsTorsionFree <| G ⧸ torsion G := fun g hne hfin =>
   hne <| by
-    induction' g using QuotientGroup.induction_on' with g
+    induction' g using QuotientGroup.induction_on with g
     obtain ⟨m, mpos, hm⟩ := hfin.exists_pow_eq_one
     obtain ⟨n, npos, hn⟩ := ((QuotientGroup.eq_one_iff _).mp hm).exists_pow_eq_one
     exact

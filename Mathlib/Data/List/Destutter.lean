@@ -60,7 +60,7 @@ theorem destutter'_sublist (a) : l.destutter' R a <+ a :: l := by
   rw [destutter']
   split_ifs
   · exact Sublist.cons₂ a (hl b)
-  · exact (hl a).trans ((l.sublist_cons b).cons_cons a)
+  · exact (hl a).trans ((l.sublist_cons_self b).cons_cons a)
 
 theorem mem_destutter' (a) : a ∈ l.destutter' R a := by
   induction' l with b l hl

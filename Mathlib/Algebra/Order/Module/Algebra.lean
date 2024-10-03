@@ -91,7 +91,7 @@ def evalAlgebraMap : PositivityExt where eval {u β} _zβ _pβ e := do
       let _instβring ← synthInstanceQ q(OrderedSemiring $β)
       let _instαβsmul ← synthInstanceQ q(SMulPosMono $α $β)
       assertInstancesCommute
-      return .nonnegative q(algebraMap_nonneg $β $ le_of_lt $pa)
+      return .nonnegative q(algebraMap_nonneg $β <| le_of_lt $pa)
   | .nonnegative pa =>
     let _instαring ← synthInstanceQ q(OrderedCommSemiring $α)
     let _instβring ← synthInstanceQ q(OrderedSemiring $β)

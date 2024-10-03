@@ -37,7 +37,7 @@ theorem eigenvalue_mem_ball {μ : K} (hμ : Module.End.HasEigenvalue (Matrix.toL
       refine (h_i ▸ Finset.le_sup' (fun i => ‖v i‖) (Finset.mem_univ j)).trans ?_
       exact norm_le_zero_iff.mpr h_nz
     have h_le : ∀ j, ‖v j * (v i)⁻¹‖ ≤ 1 := fun j => by
-      rw [norm_mul, norm_inv, mul_inv_le_iff' (norm_pos_iff.mpr h_nz), one_mul]
+      rw [norm_mul, norm_inv, mul_inv_le_iff₀ (norm_pos_iff.mpr h_nz), one_mul]
       exact h_i ▸ Finset.le_sup' (fun i => ‖v i‖) (Finset.mem_univ j)
     simp_rw [mem_closedBall_iff_norm']
     refine ⟨i, ?_⟩
@@ -62,7 +62,7 @@ theorem det_ne_zero_of_sum_row_lt_diag (h : ∀ k, ∑ j ∈ Finset.univ.erase k
   suffices ∃ k, 0 ∈ Metric.closedBall (A k k) (∑ j ∈ Finset.univ.erase k, ‖A k j‖) by
     exact this.imp (fun a h ↦ by rwa [mem_closedBall_iff_norm', sub_zero] at h)
   refine eigenvalue_mem_ball ?_
-  rw [Module.End.HasEigenvalue,  Module.End.eigenspace_zero, ne_comm]
+  rw [Module.End.hasEigenvalue_iff, Module.End.eigenspace_zero, ne_comm]
   exact ne_of_lt (LinearMap.bot_lt_ker_of_det_eq_zero (by rwa [LinearMap.det_toLin']))
 
 /-- If `A` is a column strictly dominant diagonal matrix, then it's determinant is nonzero. -/

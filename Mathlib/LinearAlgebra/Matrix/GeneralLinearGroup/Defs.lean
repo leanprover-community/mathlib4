@@ -37,7 +37,7 @@ open LinearMap
 attribute [-instance] SpecialLinearGroup.instCoeFun
 
 /-- `GL n R` is the group of `n` by `n` `R`-matrices with unit determinant.
-Defined as a subtype of matrices-/
+Defined as a subtype of matrices -/
 abbrev GeneralLinearGroup (n : Type u) (R : Type v) [DecidableEq n] [Fintype n] [CommRing R] :
     Type _ :=
   (Matrix n n R)ˣ
@@ -69,7 +69,7 @@ def det : GL n R →* Rˣ where
   map_one' := Units.ext det_one
   map_mul' A B := Units.ext <| det_mul _ _
 
-/-- The `GL n R` and `Matrix.GeneralLinearGroup R n` groups are multiplicatively equivalent-/
+/-- The `GL n R` and `Matrix.GeneralLinearGroup R n` groups are multiplicatively equivalent -/
 def toLin : GL n R ≃* LinearMap.GeneralLinearGroup R (n → R) :=
   Units.mapEquiv toLinAlgEquiv'.toMulEquiv
 
@@ -159,8 +159,8 @@ variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
 @[coe]
 def coeToGL (A : SpecialLinearGroup n R) : GL n R :=
   ⟨↑A, ↑A⁻¹,
-    congr_arg ((↑) : _ → Matrix n n R) (mul_right_inv A),
-    congr_arg ((↑) : _ → Matrix n n R) (mul_left_inv A)⟩
+    congr_arg ((↑) : _ → Matrix n n R) (mul_inv_cancel A),
+    congr_arg ((↑) : _ → Matrix n n R) (inv_mul_cancel A)⟩
 
 instance hasCoeToGeneralLinearGroup : Coe (SpecialLinearGroup n R) (GL n R) :=
   ⟨coeToGL⟩

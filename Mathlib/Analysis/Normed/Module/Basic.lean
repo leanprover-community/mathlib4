@@ -8,7 +8,7 @@ import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Module.Rat
-import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Analysis.Normed.MulAction
 
 /-!
@@ -62,7 +62,7 @@ instance NormedField.to_boundedSMul : BoundedSMul 𝕜 𝕜 :=
   NormedSpace.boundedSMul
 
 variable (𝕜) in
-theorem norm_zsmul [NormedSpace 𝕜 E] (n : ℤ) (x : E) : ‖n • x‖ = ‖(n : 𝕜)‖ * ‖x‖ := by
+theorem norm_zsmul (n : ℤ) (x : E) : ‖n • x‖ = ‖(n : 𝕜)‖ * ‖x‖ := by
   rw [← norm_smul, ← Int.smul_one_eq_cast, smul_assoc, one_smul]
 
 theorem eventually_nhds_norm_smul_sub_lt (c : 𝕜) (x : E) {ε : ℝ} (h : 0 < ε) :
@@ -178,6 +178,7 @@ section NontriviallyNormedSpace
 
 variable (𝕜 E)
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [Nontrivial E]
+include 𝕜
 
 /-- If `E` is a nontrivial normed space over a nontrivially normed field `𝕜`, then `E` is unbounded:
 for any `c : ℝ`, there exists a vector `x : E` with norm strictly greater than `c`. -/
@@ -185,7 +186,7 @@ theorem NormedSpace.exists_lt_norm (c : ℝ) : ∃ x : E, c < ‖x‖ := by
   rcases exists_ne (0 : E) with ⟨x, hx⟩
   rcases NormedField.exists_lt_norm 𝕜 (c / ‖x‖) with ⟨r, hr⟩
   use r • x
-  rwa [norm_smul, ← _root_.div_lt_iff]
+  rwa [norm_smul, ← div_lt_iff₀]
   rwa [norm_pos_iff]
 
 protected theorem NormedSpace.unbounded_univ : ¬Bornology.IsBounded (univ : Set E) := fun h =>
@@ -212,6 +213,7 @@ section NormedSpace
 
 variable (𝕜 E)
 variable [NormedField 𝕜] [Infinite 𝕜] [NormedAddCommGroup E] [Nontrivial E] [NormedSpace 𝕜 E]
+include 𝕜
 
 /-- A normed vector space over an infinite normed field is a noncompact space.
 This cannot be an instance because in order to apply it,
@@ -453,8 +455,10 @@ Please consider using `IsScalarTower` and/or `RestrictScalars 𝕜 𝕜' E` inst
 This definition allows the `RestrictScalars.normedSpace` instance to be put directly on `E`
 rather on `RestrictScalars 𝕜 𝕜' E`. This would be a very bad instance; both because `𝕜'` cannot be
 inferred, and because it is likely to create instance diamonds.
+
+See Note [reducible non-instances].
 -/
-def NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
+abbrev NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
   RestrictScalars.normedSpace _ 𝕜' E
 
 end NormedSpace
@@ -486,8 +490,10 @@ Please consider using `IsScalarTower` and/or `RestrictScalars 𝕜 𝕜' E` inst
 This definition allows the `RestrictScalars.normedAlgebra` instance to be put directly on `E`
 rather on `RestrictScalars 𝕜 𝕜' E`. This would be a very bad instance; both because `𝕜'` cannot be
 inferred, and because it is likely to create instance diamonds.
+
+See Note [reducible non-instances].
 -/
-def NormedAlgebra.restrictScalars : NormedAlgebra 𝕜 E :=
+abbrev NormedAlgebra.restrictScalars : NormedAlgebra 𝕜 E :=
   RestrictScalars.normedAlgebra _ 𝕜' _
 
 end NormedAlgebra
