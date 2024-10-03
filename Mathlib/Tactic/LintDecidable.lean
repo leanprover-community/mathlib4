@@ -60,7 +60,7 @@ Linter that checks for theorems that assume `[Inhabited p]`
 but don't use this assumption in the type.
 -/
 @[env_linter] def inhabitedNonempty : Linter where
-  noErrorsFound := "No uses of `Inhabited` arguments should be replaced`"
+  noErrorsFound := "No uses of `Inhabited` arguments should be replaced"
   errorsFound := "USES OF `Inhabited` SHOULD BE REPLACED WITH `Nonempty` (OR REMOVED)."
   test declName := do
     if (← isAutoDecl declName) then return none
@@ -71,9 +71,20 @@ Linter that checks for theorems that assume `[Unique p]`
 but don't use this assumption in the type.
 -/
 @[env_linter] def uniqueNonemptySubsingleton : Linter where
-  noErrorsFound := "No uses of `Unique` arguments should be replaced`"
+  noErrorsFound := "No uses of `Unique` arguments should be replaced"
   errorsFound :=
     "USES OF `Unique` SHOULD BE REPLACED WITH `Nonempty` and/or `Subsingleton` (OR REMOVED)."
+  test declName := do
+    if (← isAutoDecl declName) then return none
+    return ← checkUnusedAssumptionInType (← getConstInfo declName) #[`Unique]
+
+/--
+Linter that checks for theorems that assume `[Invertible p]`
+but don't use this assumption in the type.
+-/
+@[env_linter] def invertibleIsUnit : Linter where
+  noErrorsFound := "No uses of `Invertible` arguments should be replaced"
+  errorsFound := "USES OF `Invertible` SHOULD BE REPLACED WITH `IsUnit` (OR REMOVED)."
   test declName := do
     if (← isAutoDecl declName) then return none
     return ← checkUnusedAssumptionInType (← getConstInfo declName) #[`Unique]
