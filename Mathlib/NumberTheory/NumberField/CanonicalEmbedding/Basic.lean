@@ -187,6 +187,16 @@ noncomputable def _root_.NumberField.mixedEmbedding : K →+* (mixedSpace K) :=
   RingHom.prod (Pi.ringHom fun w => embedding_of_isReal w.prop)
     (Pi.ringHom fun w => w.val.embedding)
 
+@[simp]
+theorem mixedEmbedding_apply_ofIsReal (x : K) (w : {w // IsReal w}) :
+    (mixedEmbedding K x).1 w = embedding_of_isReal w.prop x := by
+  simp_rw [mixedEmbedding, RingHom.prod_apply, Pi.ringHom_apply]
+
+@[simp]
+theorem mixedEmbedding_apply_ofIsComplex (x : K) (w : {w // IsComplex w}) :
+    (mixedEmbedding K x).2 w = w.val.embedding x := by
+  simp_rw [mixedEmbedding, RingHom.prod_apply, Pi.ringHom_apply]
+
 instance [NumberField K] : Nontrivial (mixedSpace K) := by
   obtain ⟨w⟩ := (inferInstance : Nonempty (InfinitePlace K))
   obtain hw | hw := w.isReal_or_isComplex
@@ -563,6 +573,10 @@ open Module.Free
 
 open scoped nonZeroDivisors
 
+/-- The image of the ring of integers of `K` in the mixed space. -/
+protected abbrev integerLattice : Submodule ℤ (mixedSpace K) :=
+  LinearMap.range ((mixedEmbedding K).comp (algebraMap (𝓞 K) K)).toIntAlgHom.toLinearMap
+
 /-- A `ℝ`-basis of the mixed space that is also a `ℤ`-basis of the image of `𝓞 K`. -/
 def latticeBasis :
     Basis (ChooseBasisIndex ℤ (𝓞 K)) ℝ (mixedSpace K) := by
@@ -597,6 +611,20 @@ theorem mem_span_latticeBasis (x : (mixedSpace K)) :
   simp only [Set.mem_image, SetLike.mem_coe, mem_span_integralBasis K,
     RingHom.mem_range, exists_exists_eq_and]
   rfl
+
+theorem span_latticeBasis :
+    Submodule.span ℤ (Set.range (latticeBasis K)) = mixedEmbedding.integerLattice K :=
+  Submodule.ext_iff.mpr (mem_span_latticeBasis K)
+
+instance : DiscreteTopology (mixedEmbedding.integerLattice K) := by
+  classical
+  rw [← span_latticeBasis]
+  infer_instance
+
+open Classical in
+instance : IsZLattice ℝ (mixedEmbedding.integerLattice K) := by
+  simp_rw [← span_latticeBasis]
+  exact ZSpan.isZLattice (latticeBasis K)
 
 theorem mem_rat_span_latticeBasis (x : K) :
     mixedEmbedding K x ∈ Submodule.span ℚ (Set.range (latticeBasis K)) := by

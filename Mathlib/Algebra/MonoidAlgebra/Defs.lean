@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Yury Kudryashov, Scott Morrison
+Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 -/
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Module.BigOperators
@@ -209,10 +209,10 @@ instance nonUnitalSemiring : NonUnitalSemiring (MonoidAlgebra k G) :=
     mul_assoc := fun f g h => by
       -- Porting note: `reducible` cannot be `local` so proof gets long.
       simp only [mul_def]
-      rw [sum_sum_index]; congr; ext a₁ b₁
-      rw [sum_sum_index, sum_sum_index]; congr; ext a₂ b₂
-      rw [sum_sum_index, sum_single_index]; congr; ext a₃ b₃
-      rw [sum_single_index, mul_assoc, mul_assoc]
+      rw [sum_sum_index] <;> congr; on_goal 1 => ext a₁ b₁
+      rw [sum_sum_index, sum_sum_index] <;> congr; on_goal 1 => ext a₂ b₂
+      rw [sum_sum_index, sum_single_index] <;> congr; on_goal 1 => ext a₃ b₃
+      on_goal 1 => rw [sum_single_index, mul_assoc, mul_assoc]
       all_goals simp only [single_zero, single_add, forall_true_iff, add_mul,
         mul_add, zero_mul, mul_zero, sum_zero, sum_add] }
 
@@ -396,7 +396,7 @@ theorem mul_apply_antidiagonal [Mul G] (f g : MonoidAlgebra k G) (x : G) (s : Fi
       let F : G × G → k := fun p => if p.1 * p.2 = x then f p.1 * g p.2 else 0
       calc
         (f * g) x = ∑ a₁ ∈ f.support, ∑ a₂ ∈ g.support, F (a₁, a₂) := mul_apply f g x
-        _ = ∑ p ∈ f.support ×ˢ g.support, F p := Finset.sum_product.symm
+        _ = ∑ p ∈ f.support ×ˢ g.support, F p := by rw [Finset.sum_product]
         _ = ∑ p ∈ (f.support ×ˢ g.support).filter fun p : G × G => p.1 * p.2 = x, f p.1 * g p.2 :=
           (Finset.sum_filter _ _).symm
         _ = ∑ p ∈ s.filter fun p : G × G => p.1 ∈ f.support ∧ p.2 ∈ g.support, f p.1 * g p.2 :=
@@ -974,10 +974,10 @@ instance nonUnitalSemiring : NonUnitalSemiring k[G] :=
     mul_assoc := fun f g h => by
       -- Porting note: `reducible` cannot be `local` so proof gets long.
       simp only [mul_def]
-      rw [sum_sum_index]; congr; ext a₁ b₁
-      rw [sum_sum_index, sum_sum_index]; congr; ext a₂ b₂
-      rw [sum_sum_index, sum_single_index]; congr; ext a₃ b₃
-      rw [sum_single_index, mul_assoc, add_assoc]
+      rw [sum_sum_index] <;> congr; on_goal 1 => ext a₁ b₁
+      rw [sum_sum_index, sum_sum_index] <;> congr; on_goal 1 => ext a₂ b₂
+      rw [sum_sum_index, sum_single_index] <;> congr; on_goal 1 => ext a₃ b₃
+      on_goal 1 => rw [sum_single_index, mul_assoc, add_assoc]
       all_goals simp only [single_zero, single_add, forall_true_iff, add_mul,
         mul_add, zero_mul, mul_zero, sum_zero, sum_add] }
 

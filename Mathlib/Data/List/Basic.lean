@@ -511,6 +511,15 @@ theorem get_eq_get? (l : List α) (i : Fin l.length) :
     l.get i = (l.get? i).get (by simp [getElem?_eq_getElem]) := by
   simp
 
+theorem exists_mem_iff_getElem {l : List α} {p : α → Prop} :
+    (∃ x ∈ l, p x) ↔ ∃ (i : ℕ) (_ : i < l.length), p l[i] := by
+  simp only [mem_iff_getElem]
+  exact ⟨fun ⟨_x, ⟨i, hi, hix⟩, hxp⟩ ↦ ⟨i, hi, hix ▸ hxp⟩, fun ⟨i, hi, hp⟩ ↦ ⟨_, ⟨i, hi, rfl⟩, hp⟩⟩
+
+theorem forall_mem_iff_getElem {l : List α} {p : α → Prop} :
+    (∀ x ∈ l, p x) ↔ ∀ (i : ℕ) (_ : i < l.length), p l[i] := by
+  simp [mem_iff_getElem, @forall_swap α]
+
 theorem getElem_cons {l : List α} {a : α} {n : ℕ} (h : n < (a :: l).length) :
     (a :: l)[n] = if hn : n = 0 then a else l[n - 1]'(by rw [length_cons] at h; omega) := by
   cases n <;> simp
@@ -1363,6 +1372,12 @@ theorem foldl_op_eq_op_foldr_assoc :
   | [], a₁, a₂ => rfl
   | a :: l, a₁, a₂ => by
     simp only [foldl_cons, foldr_cons, foldl_assoc, ha.assoc]; rw [foldl_op_eq_op_foldr_assoc]
+
+theorem foldr_assoc : ∀ {l : List α} {a₁ a₂}, l.foldr op (op a₁ a₂) = op (l.foldr op a₁) a₂
+  | [], a₁, a₂ => rfl
+  | a :: l, a₁, a₂ => by
+    simp only [foldr_cons, ha.assoc]
+    rw [foldr_assoc]
 
 variable [hc : Std.Commutative op]
 

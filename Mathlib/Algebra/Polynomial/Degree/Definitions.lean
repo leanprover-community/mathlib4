@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
+Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.MonoidAlgebra.Degree
 import Mathlib.Algebra.Polynomial.Coeff
@@ -236,6 +236,12 @@ theorem natDegree_natCast (n : ℕ) : natDegree (n : R[X]) = 0 := by
 
 @[deprecated (since := "2024-04-17")]
 alias natDegree_nat_cast := natDegree_natCast
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem natDegree_ofNat (n : ℕ) [Nat.AtLeastTwo n] :
+    natDegree (no_index (OfNat.ofNat n : R[X])) = 0 :=
+  natDegree_natCast _
 
 theorem degree_natCast_le (n : ℕ) : degree (n : R[X]) ≤ 0 := degree_le_of_natDegree_le (by simp)
 
