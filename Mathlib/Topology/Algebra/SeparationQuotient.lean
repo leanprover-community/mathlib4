@@ -210,7 +210,7 @@ def mkGroupHom [CommGroup G] [TopologicalGroup G]  : G →* SeparationQuotient G
 variable {H : Type*} [TopologicalSpace H]
 
 @[to_additive]
-noncomputable def CommGroupHom_lift [CommGroup G] [TopologicalGroup G] [CommGroup H]
+noncomputable def liftMonoidHom [CommGroup G] [TopologicalGroup G] [CommGroup H]
     [TopologicalGroup H] (f : MonoidHom G H) (hf : ∀ x y, Inseparable x y → f x = f y) :
     MonoidHom (SeparationQuotient G) H where
   toFun := SeparationQuotient.lift f hf
