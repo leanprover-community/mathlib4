@@ -589,8 +589,8 @@ theorem exists_associated_pow_of_mul_eq_pow [GCDMonoid α] {a b c : α} (hab : I
   use Units.mkOfMulEqOne _ _ h'
   rw [Units.val_mkOfMulEqOne, ha']
 
-theorem exists_eq_pow_of_mul_eq_pow [GCDMonoid α] [Unique αˣ] {a b c : α} (hab : IsUnit (gcd a b))
-    {k : ℕ} (h : a * b = c ^ k) : ∃ d : α, a = d ^ k :=
+theorem exists_eq_pow_of_mul_eq_pow [GCDMonoid α] [Subsingleton αˣ]
+    {a b c : α} (hab : IsUnit (gcd a b)) {k : ℕ} (h : a * b = c ^ k) : ∃ d : α, a = d ^ k :=
   let ⟨d, hd⟩ := exists_associated_pow_of_mul_eq_pow hab h
   ⟨d, (associated_iff_eq.mp hd).symm⟩
 
@@ -820,7 +820,7 @@ end GCDMonoid
 
 section UniqueUnit
 
-variable [CancelCommMonoidWithZero α] [Unique αˣ]
+variable [CancelCommMonoidWithZero α] [Subsingleton αˣ]
 
 -- see Note [lower instance priority]
 instance (priority := 100) normalizationMonoidOfUniqueUnits : NormalizationMonoid α where
