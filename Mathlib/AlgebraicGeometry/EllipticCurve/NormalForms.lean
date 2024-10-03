@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
 import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
-import Mathlib.AlgebraicGeometry.EllipticCurve.CharTwoOrThree
 import Mathlib.Algebra.CharP.Defs
 
 /-!
