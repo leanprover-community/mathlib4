@@ -229,8 +229,7 @@ belongs to the null space. -/
 theorem quotient_norm_eq_zero_iff (m : M) :
     ‖mk m‖ = 0 ↔ m ∈ nullSpace := by
   rw [norm_mk]
-  have : m ∈ nullSpace ↔ m ∈ (@nullSpace M _: Set M) := by rfl
-  rw [this]
+  rw [← SetLike.mem_coe]
   nth_rw 2 [← IsClosed.closure_eq isClosed_nullSpace]
   rw [← mem_closure_iff_infDist_zero]
   exact ⟨0, nullSpace.zero_mem'⟩
@@ -396,8 +395,7 @@ theorem norm_trivial_separaationQuotient_mk (h : (@nullSpace M _ : Set M) = Set.
   apply NormedAddGroupHom.opNorm_eq_of_bounds _ (le_refl 0)
   · intro x
     have : x ∈ nullSpace := by
-      have : x ∈ nullSpace ↔ x ∈ (@nullSpace M _ : Set M) := by rfl
-      rw [this, h]
+      rw [← SetLike.mem_coe, h]
       exact trivial
     simp only [normedMk.apply, zero_mul, norm_le_zero_iff]
     exact (mk_eq_zero_iff x).mpr this
