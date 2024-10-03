@@ -40,11 +40,11 @@ We prove the correctness of our backtracking algorithm for protein folding.
 To prove some results about rotations
 (we can always assume our fold starts by going to the right)
 we use the type
-`Fin n → α` instead of `Mathlib.Vector α n`
+`Fin n → α` instead of `Vector α n`
 
 -/
 
-open Finset
+open Finset Mathlib
 
 /-- `∑₀^(n-1) (k-1) = (n-1)(n-2)/2`. This uses the Lean convention `0-1=0`. -/
 lemma sum_pred₀ (n:ℕ) : Finset.sum (range n) (fun k ↦ k-1) = (n-1)*(n-2)/2 := by
@@ -168,9 +168,9 @@ def go_WS : ℤ×ℤ → ℤ×ℤ := fun x ↦ ite (Even (x.1+x.2)) (sp x) (sm x
 
 /-- The available moves in brick wall lattice folding. -/
 def tri : Fin 3 → ℤ×ℤ → ℤ×ℤ
-| 0 => go_D
-| 1 => go_A
-| 2 => go_WS
+  | 0 => go_D
+  | 1 => go_A
+  | 2 => go_WS
 
 end Defining_the_protein_folding_moves
 
@@ -186,21 +186,18 @@ def Fin_trans_pred {l : ℕ} {k: Fin l} (i : Fin k.1.pred): Fin l :=
 
 /-- Two points are nearby if they are one move apart. -/
 def nearby {α β : Type} [DecidableEq α] [Fintype β] (go : β → α → α)
-  (p q : α) : Bool := ∃ a : β, q = go a p
+    (p q : α) : Bool := ∃ a : β, q = go a p
 
 /-- The (H-P reduced) amino acid sequence `phobic` has a match at locations
   `i`, `j`, according to the fold `fold`. -/
 def pt_loc {α β : Type} [DecidableEq α] [Fintype β] (go : β → α → α)
- {l : ℕ} (fold : Mathlib.Vector α l) (i j : Fin l) (phobic : Mathlib.Vector Bool l) : Bool
-:=  phobic.get i && phobic.get j && i.1.succ < j.1 && nearby go (fold.get i) (fold.get j)
+    {l : ℕ} (fold : Vector α l) (i j : Fin l) (phobic : Vector Bool l) : Bool :=
+  phobic.get i && phobic.get j && i.1.succ < j.1 && nearby go (fold.get i) (fold.get j)
 
 /-- The number of matches achieved with the fold `fold` for the amino acid sequence `ph`. -/
 def pts_at' {α β : Type} [DecidableEq α] [Fintype β] (go : β → α → α)
-  {l:ℕ} (k : Fin l) (ph : Mathlib.Vector Bool l) (fold : Mathlib.Vector α l) : ℕ :=
-  card (
-    filter (fun i : Fin l ↦ (pt_loc go fold i k ph))
-    univ
-  )
+    {l:ℕ} (k : Fin l) (ph : Vector Bool l) (fold : Vector α l) : ℕ :=
+  card (filter (fun i : Fin l ↦ (pt_loc go fold i k ph)) univ)
 
 /-
 
@@ -269,7 +266,7 @@ theorem change_type_card_general'' {l:ℕ} (k : Fin l) (P : Fin l → Fin l → 
 
 /-- The number of points is the same if we count beyond the last point. -/
 theorem change_type_card_improved  {α:Type} {β : Type} [Fintype β] (go : β → α → α)
-    [DecidableEq α] {l:ℕ} (k : Fin l) (ph : Mathlib.Vector Bool l) (fold : Mathlib.Vector α l):
+    [DecidableEq α] {l:ℕ} (k : Fin l) (ph : Vector Bool l) (fold : Vector α l):
     Fintype.card
       (filter (fun i : Fin l        ↦ (pt_loc go fold                 i  k ph)) univ) =
     Fintype.card
@@ -286,21 +283,18 @@ theorem change_type_card_improved  {α:Type} {β : Type} [Fintype β] (go : β �
     exact this
   exact change_type_card_general'' k P h
 /-- Helper function for `path_at`. -/
-def path_aux {α β: Type} {l: ℕ}
-  (go: β → α → α) (hd: β)
-  (tl: Mathlib.Vector α l.succ)
-   : Mathlib.Vector α l.succ.succ := ⟨(go hd tl.head) :: tl.1, by simp⟩
+def path_aux {α β: Type} {l: ℕ} (go: β → α → α) (hd: β) (tl: Vector α l.succ) :
+    Vector α l.succ.succ := ⟨(go hd tl.head) :: tl.1, by simp⟩
 /-- Inductively defined path, starting at `base` (the origin, say),
   and proceeding through all `moves` according to the rules of `go`. -/
 def path_at {α:Type} {β : Type} (base:α) (go : β → α → α) :
-  (moves : List β) → Mathlib.Vector α moves.length.succ
+    (moves : List β) → Vector α moves.length.succ
   | [] => ⟨[base], rfl⟩
   | head :: tail => path_aux go head (path_at base go tail)
 
 /-- Using OfNat here since ℤ×ℤ and ℤ×ℤ×ℤ have a natural notion of base point or zero.-/
 def path {α:Type} [OfNat α 0] {β : Type} (go : β → α → α) :
-    (moves : List β) → Mathlib.Vector α moves.length.succ
-  := path_at 0 go
+    (moves : List β) → Vector α moves.length.succ := path_at 0 go
 
 end Setting_up_point_earned
 
@@ -335,8 +329,7 @@ theorem embeds_in_strongly_transitive {α:Type} {b₀ b₁ b₂: ℕ}
 
 /-- Embedding of move sets is reflexive. -/
 theorem embeds_in_strongly_reflexive {α:Type} {b: ℕ}
-(go : Fin b → α → α)
-: go ≼ go := by
+    (go : Fin b → α → α) : go ≼ go := by
   unfold embeds_in_strongly is_embedding at *
   exists (fun i _ ↦ i)
   intro i x
@@ -344,8 +337,8 @@ theorem embeds_in_strongly_reflexive {α:Type} {b: ℕ}
 
 /-- Embedding using a Skolem function implies ordinary embedding. -/
 theorem embeds_of_strongly_embeds {α:Type} {b₀ b₁ : ℕ} {go₀ : Fin b₀ → α → α}
-{go₁ : Fin b₁ → α → α} (h_embed: go₀ ≼ go₁):
-embeds_in go₀ go₁ := by
+    {go₁ : Fin b₁ → α → α} (h_embed: go₀ ≼ go₁):
+    embeds_in go₀ go₁ := by
   obtain ⟨f,hf⟩ := h_embed; intro i x; exists f i x; exact hf i x
 
 /-- For tri we can only assert a pointwise version of embed_models:
@@ -353,9 +346,9 @@ embeds_in go₀ go₁ := by
   generates a sequence in ℤ×ℤ that can also be generated using quad.
 -/
 def tri_rect_embedding : Fin 3 → ℤ×ℤ → Fin 4
-| 0 => fun _ ↦ 0
-| 1 => fun _ ↦ 1
-| 2 => fun x ↦ ite (Even (x.1 + x.2)) 2 3
+  | 0 => fun _ ↦ 0
+  | 1 => fun _ ↦ 1
+  | 2 => fun x ↦ ite (Even (x.1 + x.2)) 2 3
 
 /-
 3n      4n        6n    n(n-1)/2
@@ -375,23 +368,23 @@ The map φ has order two and all its orbits have cardinality two.
 
 /-- Hexagonal move set extend rectangular. -/
 def rect_hex_embedding : Fin 4 → ℤ×ℤ → Fin 6
-| a => fun _ ↦ a
+  | a => fun _ ↦ a
 
 /-- Rectangular move set extends limited rectangular. -/
 def rect₃_rect_embedding : Fin 3 → ℤ×ℤ → Fin 4
-| a => fun _ ↦ a
+  | a => fun _ ↦ a
 
 
 /-- `rect₃_rect_embedding` works as advertised. -/
 theorem rect₃_rect_embedding_is_embedding :
-  ∀ i : Fin 3, ∀ x : ℤ×ℤ, rect₃ i x = rect (rect₃_rect_embedding i x) x
+    ∀ i : Fin 3, ∀ x : ℤ×ℤ, rect₃ i x = rect (rect₃_rect_embedding i x) x
   | 0 => fun _ ↦ rfl
   | 1 => fun _ ↦ rfl
   | 2 => fun _ ↦ rfl
 
 /-- `rect_hex_embedding` works as advertised. -/
 theorem rect_hex_embedding_is_embedding :
-  ∀ i : Fin 4, ∀ x : ℤ×ℤ, rect i x = hex (rect_hex_embedding i x) x
+    ∀ i : Fin 4, ∀ x : ℤ×ℤ, rect i x = hex (rect_hex_embedding i x) x
   | 0 => fun _ ↦ rfl
   | 1 => fun _ ↦ rfl
   | 2 => fun _ ↦ rfl
@@ -399,7 +392,7 @@ theorem rect_hex_embedding_is_embedding :
 
 /-- `tri_rect_embedding` works as advertised. -/
 theorem tri_rect_embedding_is_embedding :
-  ∀ i : Fin 3, ∀ x : ℤ×ℤ, tri i x = rect (tri_rect_embedding i x) x
+    ∀ i : Fin 3, ∀ x : ℤ×ℤ, tri i x = rect (tri_rect_embedding i x) x
   | 0 => fun x ↦ rfl
   | 1 => fun x ↦ rfl
   | 2 => fun x ↦ by
@@ -425,15 +418,15 @@ section Left_and_right_injectivity
 
 /-- A function of two variables is *left injective* if it is injective in its first argument. -/
 def left_injective {α:Type} {β γ: Type} [Fintype β] (go : β → α → γ)
-[DecidableEq α] := ∀ a, Function.Injective (fun b ↦ go b a)
+    [DecidableEq α] := ∀ a, Function.Injective (fun b ↦ go b a)
 
 /-- A function of two variables is *right injective* if it is injective in its second argument. -/
 def right_injective {α:Type} {β γ: Type} [Fintype β] (go : β → α → γ)
-[DecidableEq α] := ∀ b, Function.Injective (fun a ↦ go b a)
+    [DecidableEq α] := ∀ b, Function.Injective (fun a ↦ go b a)
 
 /-- `rect₃_rect_embedding` is left injective. -/
 theorem rect₃_rect_embedding_left_injective :
-left_injective rect₃_rect_embedding := by
+    left_injective rect₃_rect_embedding := by
   unfold left_injective at *
   intro x a b hab
   simp only at *
@@ -443,7 +436,7 @@ left_injective rect₃_rect_embedding := by
 
 /-- `tri_rect_embedding` is left injective. -/
 theorem tri_rect_embedding_left_injective :
-left_injective tri_rect_embedding := by
+    left_injective tri_rect_embedding := by
   unfold left_injective at *
   intro x
   intro a b hab
