@@ -89,7 +89,6 @@ lemma isLittleOTVS_one [ContinuousSMul 𝕜 E] {f : α → E} {l : Filter α} :
 lemma IsLittleOTVS.tendsto_inv_smul [ContinuousSMul 𝕜 E] {f : α → 𝕜} {g : α → E} {l : Filter α}
     (h : IsLittleOTVS 𝕜 g f l) : Tendsto (fun x ↦ (f x)⁻¹ • g x) l (𝓝 0) := by
   rw [(basis_sets _).isLittleOTVS_iff nhds_basis_ball] at h
-  have := nhds_basis_balanced 𝕜 E
   rw [(nhds_basis_balanced 𝕜 E).tendsto_right_iff]
   rintro U ⟨hU, hUB⟩
   rcases h U hU with ⟨ε, hε₀, hε⟩
