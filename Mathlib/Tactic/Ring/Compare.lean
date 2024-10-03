@@ -125,20 +125,20 @@ def evalLE {v : Level} {α : Q(Type v)} (_ : Q(OrderedCommSemiring $α)) {a b : 
   match va, vb with
   /- `0 ≤ 0` -/
   | .zero, .zero => pure <| .ok (q(le_refl (0:$α)):)
-  /- For numerals `c₁` and `c₂`, `c₁ + x ≤ c₂ + x` if `c₁ ≤ c₂` -/
+  /- For numerals `ca` and `cb`, `ca + x ≤ cb + x` if `ca ≤ cb` -/
   | .add (b := a') (.const (e := xa) ca hypa) va', .add (.const (e := xb) cb hypb) vb' => do
     unless va'.eq vb' do return .error notComparable
     let rxa := NormNum.Result.ofRawRat ca xa hypa
     let rxb := NormNum.Result.ofRawRat cb xb hypb
     let NormNum.Result.isTrue pf ← NormNum.evalLE.core lα rxa rxb | return .error tooSmall
     pure <| .ok (q(add_le_add_right (a := $a') $pf):)
-  /- For a numeral `c ≤ 0`, `c + x ≤ x` -/
+  /- For a numeral `ca ≤ 0`, `ca + x ≤ x` -/
   | .add (.const (e := xa) ca hypa) va', _ => do
     unless va'.eq vb do return .error notComparable
     let rxa := NormNum.Result.ofRawRat ca xa hypa
     let NormNum.Result.isTrue pf ← NormNum.evalLE.core lα rxa rz | return .error tooSmall
     pure <| .ok (q(add_le_of_nonpos_left (a := $b) $pf):)
-  /- For a numeral `0 ≤ c`, `x ≤ c + x` -/
+  /- For a numeral `0 ≤ cb`, `x ≤ cb + x` -/
   | _, .add (.const (e := xb) cb hypb) vb' => do
     unless va.eq vb' do return .error notComparable
     let rxb := NormNum.Result.ofRawRat cb xb hypb
@@ -160,21 +160,21 @@ def evalLT {v : Level} {α : Q(Type v)} (_ : Q(StrictOrderedCommSemiring $α)) {
   match va, vb with
   /- `0 < 0` -/
   | .zero, .zero => return .error tooSmall
-  /- For numerals `c₁` and `c₂`, `c₁ + x < c₂ + x` if `c₁ < c₂` -/
+  /- For numerals `ca` and `cb`, `ca + x < cb + x` if `ca < cb` -/
   | .add (b := a') (.const (e := xa) ca hypa) va', .add (.const (e := xb) cb hypb) vb' => do
     unless va'.eq vb' do return .error notComparable
     let rxa := NormNum.Result.ofRawRat ca xa hypa
     let rxb := NormNum.Result.ofRawRat cb xb hypb
     let NormNum.Result.isTrue pf ← NormNum.evalLT.core lα rxa rxb | return .error tooSmall
     pure <| .ok (q(add_lt_add_right $pf $a'):)
-  /- For a numeral `c < 0`, `c + x < x` -/
+  /- For a numeral `ca < 0`, `ca + x < x` -/
   | .add (.const (e := xa) ca hypa) va', _ => do
     unless va'.eq vb do return .error notComparable
     let rxa := NormNum.Result.ofRawRat ca xa hypa
     let NormNum.Result.isTrue pf ← NormNum.evalLT.core lα rxa rz | return .error tooSmall
     have pf : Q($xa < 0) := pf
     pure <| .ok (q(add_lt_of_neg_left $b $pf):)
-  /- For a numeral `0 < c`, `x < c + x` -/
+  /- For a numeral `0 < cb`, `x < cb + x` -/
   | _, .add (.const (e := xb) cb hypb) vb' => do
     unless va.eq vb' do return .error notComparable
     let rxb := NormNum.Result.ofRawRat cb xb hypb
