@@ -212,6 +212,16 @@ protected theorem _root_.Filter.EventuallyEq.lieBracket
   filter_upwards [hV.eventuallyEq_nhds, hW.eventuallyEq_nhds] with y hVy hWy
   exact hVy.lieBracket_eq hWy
 
+lemma lieBracket_add_left :
+    lieBracketWithin 𝕜 (V + V₁) W s x =
+      lieBracketWithin 𝕜 V W s x + lieBracketWithin 𝕜 V₁ W s x := by
+  simp [lieBracketWithin]
+  rw [fderivWithin_add]
+
+
+#exit
+
+
 variable (𝕜) in
 /-- The Lie derivative of a function with respect to a vector field `L_V f(x)`. This is just
 `Df(x) (V x)`, but the notation emphasizes how this is linear in `f`.-/
@@ -253,13 +263,6 @@ lemma pullback_eq_of_not_exists {f : E → F} {x : E}
 
 open scoped Topology Filter
 
-/- TODO: move me -/
-/-- A variant for the derivative of a composition, written without `∘`. -/
-theorem fderiv.comp'
-    {f : E → F} {g : F → G} (x : E) (hg : DifferentiableAt 𝕜 g (f x))
-    (hf : DifferentiableAt 𝕜 f x) :
-    fderiv 𝕜 (fun y ↦ g (f y)) x = (fderiv 𝕜 g (f x)).comp (fderiv 𝕜 f x) :=
-  fderiv.comp x hg hf
 
 lemma fderiv_pullback (f : E → F) (V : F → F) (x : E) (h'f : (fderiv 𝕜 f x).IsInvertible) :
     fderiv 𝕜 f x (pullback 𝕜 f V x) = V (f x) := by
