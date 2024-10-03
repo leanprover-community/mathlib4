@@ -67,6 +67,18 @@ but don't use this assumption in the type.
     return ← checkUnusedAssumptionInType (← getConstInfo declName) #[`Inhabited]
 
 /--
+Linter that checks for theorems that assume `[Unique p]`
+but don't use this assumption in the type.
+-/
+@[env_linter] def uniqueNonemptySubsingleton : Linter where
+  noErrorsFound := "No uses of `Unique` arguments should be replaced`"
+  errorsFound :=
+    "USES OF `Unique` SHOULD BE REPLACED WITH `Nonempty` and/or `Subsingleton` (OR REMOVED)."
+  test declName := do
+    if (← isAutoDecl declName) then return none
+    return ← checkUnusedAssumptionInType (← getConstInfo declName) #[`Unique]
+
+/--
 Linter that checks for theorems that assume `[Fintype p]`,
 but don't use this assumption in the type.
 (Instead, `Finite p` can suffice, or the assumption can be fully removed.)
