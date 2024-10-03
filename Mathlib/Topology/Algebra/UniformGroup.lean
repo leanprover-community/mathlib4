@@ -595,6 +595,23 @@ theorem uniform_space_ball_eq_smul (V : Set G) (x : G) :
     rw [UniformSpace.ball]
     aesop
 
+open UniformSpace in
+open Uniformity in
+@[to_additive]
+theorem ball_mul_ball_subset_ball_comp {V W : Set G} {y : G} :
+    ball y (((fun p : G × G => p.2 / p.1) ⁻¹' (V * W))) ⊆
+      ball y (((fun p : G × G => p.2 / p.1) ⁻¹' W) ○ ((fun p : G × G => p.2 / p.1) ⁻¹' V)) := by
+  intro x hx
+  rw [uniform_space_ball_eq_smul] at hx
+  obtain ⟨z,⟨⟨v,⟨hv,⟨w, hw₁, hw₂⟩⟩⟩,hz₂⟩⟩ := hx
+  simp only [smul_eq_mul] at hz₂
+  simp only at hw₂
+  use x / v
+  simp only [Set.mem_preimage, div_div_cancel]
+  rw [← hz₂, ← hw₂, mul_div_assoc, mul_comm v,
+    mul_div_cancel_right, mul_div_cancel_left]
+  exact ⟨hw₁, hv⟩
+
 variable (G) [TopologicalSpace G] [TopologicalGroup G]
 
 section
