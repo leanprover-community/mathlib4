@@ -286,7 +286,7 @@ theorem difference_quotients_converge_uniformly
   refine lt_of_le_of_lt ?_ hqε
   by_cases hyz' : x = y; · simp [hyz', hqpos.le]
   have hyz : 0 < ‖y - x‖ := by rw [norm_pos_iff]; intro hy'; exact hyz' (eq_of_sub_eq_zero hy').symm
-  rw [inv_mul_le_iff hyz, mul_comm, sub_sub_sub_comm]
+  rw [inv_mul_le_iff₀ hyz, mul_comm, sub_sub_sub_comm]
   simp only [Pi.zero_apply, dist_zero_left] at e
   refine
     Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le
@@ -385,7 +385,7 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
     by_cases hx : x = n.2; · simp [hx]
     have hnx : 0 < ‖n.2 - x‖ := by
       rw [norm_pos_iff]; intro hx'; exact hx (eq_of_sub_eq_zero hx').symm
-    rw [inv_mul_le_iff hnx, mul_comm]
+    rw [inv_mul_le_iff₀ hnx, mul_comm]
     simp only [Function.comp_apply, Prod.map_apply']
     rw [norm_sub_rev]
     exact (f' n.1 x - g' x).le_opNorm (n.2 - x)

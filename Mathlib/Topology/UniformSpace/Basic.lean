@@ -892,7 +892,6 @@ lemma DenseRange.iUnion_uniformity_ball {ι : Type*} {xs : ι → α}
 ### Uniformity bases
 -/
 
-
 /-- Open elements of `𝓤 α` form a basis of `𝓤 α`. -/
 theorem uniformity_hasBasis_open : HasBasis (𝓤 α) (fun V : Set (α × α) => V ∈ 𝓤 α ∧ IsOpen V) id :=
   hasBasis_self.2 fun s hs =>
@@ -1116,6 +1115,11 @@ abbrev UniformSpace.comap (f : α → β) (u : UniformSpace β) : UniformSpace �
 theorem uniformity_comap {_ : UniformSpace β} (f : α → β) :
     𝓤[UniformSpace.comap f ‹_›] = comap (Prod.map f f) (𝓤 β) :=
   rfl
+
+lemma ball_preimage {f : α → β} {U : Set (β × β)} {x : α} :
+    UniformSpace.ball x (Prod.map f f ⁻¹' U) = f ⁻¹' UniformSpace.ball (f x) U := by
+  ext : 1
+  simp only [UniformSpace.ball, mem_preimage, Prod.map_apply]
 
 @[simp]
 theorem uniformSpace_comap_id {α : Type*} : UniformSpace.comap (id : α → α) = id := by
