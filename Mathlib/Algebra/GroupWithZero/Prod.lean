@@ -7,8 +7,6 @@ import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 
-#align_import algebra.group.prod from "leanprover-community/mathlib"@"cd391184c85986113f8c00844cfe6dda1d34be3d"
-
 /-!
 # Products of monoids with zero, groups with zero
 
@@ -60,15 +58,11 @@ section BundledMulDiv
 def mulMonoidWithZeroHom [CommMonoidWithZero M₀] : M₀ × M₀ →*₀ M₀ where
   __ := mulMonoidHom
   map_zero' := mul_zero _
-#align mul_monoid_with_zero_hom mulMonoidWithZeroHom
-#align mul_monoid_with_zero_hom_apply mulMonoidWithZeroHom_apply
 
 /-- Division as a multiplicative homomorphism with zero. -/
 @[simps]
 def divMonoidWithZeroHom [CommGroupWithZero M₀] : M₀ × M₀ →*₀ M₀ where
   __ := divMonoidHom
   map_zero' := zero_div _
-#align div_monoid_with_zero_hom divMonoidWithZeroHom
-#align div_monoid_with_zero_hom_apply divMonoidWithZeroHom_apply
 
 end BundledMulDiv

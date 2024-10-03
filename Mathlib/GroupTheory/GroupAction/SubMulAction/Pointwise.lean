@@ -5,8 +5,6 @@ Authors: Eric Wieser
 -/
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 
-#align_import group_theory.group_action.sub_mul_action.pointwise from "leanprover-community/mathlib"@"2bbc7e3884ba234309d2a43b19144105a753292e"
-
 /-!
 # Pointwise monoid structures on SubMulAction
 
@@ -35,16 +33,13 @@ instance : One (SubMulAction R M) where
 
 theorem coe_one : ↑(1 : SubMulAction R M) = Set.range fun r : R => r • (1 : M) :=
   rfl
-#align sub_mul_action.coe_one SubMulAction.coe_one
 
 @[simp]
 theorem mem_one {x : M} : x ∈ (1 : SubMulAction R M) ↔ ∃ r : R, r • (1 : M) = x :=
   Iff.rfl
-#align sub_mul_action.mem_one SubMulAction.mem_one
 
 theorem subset_coe_one : (1 : Set M) ⊆ (1 : SubMulAction R M) := fun _ hx =>
   ⟨1, (one_smul _ _).trans hx.symm⟩
-#align sub_mul_action.subset_coe_one SubMulAction.subset_coe_one
 
 end One
 
@@ -61,11 +56,9 @@ instance : Mul (SubMulAction R M) where
 @[norm_cast]
 theorem coe_mul (p q : SubMulAction R M) : ↑(p * q) = (p * q : Set M) :=
   rfl
-#align sub_mul_action.coe_mul SubMulAction.coe_mul
 
 theorem mem_mul {p q : SubMulAction R M} {x : M} : x ∈ p * q ↔ ∃ y ∈ p, ∃ z ∈ q, y * z = x :=
   Set.mem_mul
-#align sub_mul_action.mem_mul SubMulAction.mem_mul
 
 end Mul
 
@@ -118,14 +111,12 @@ theorem coe_pow (p : SubMulAction R M) : ∀ {n : ℕ} (_ : n ≠ 0), ↑(p ^ n)
   | 1, _ => by rw [pow_one, pow_one]
   | n + 2, _ => by
     rw [pow_succ _ (n + 1), pow_succ _ (n + 1), coe_mul, coe_pow _ n.succ_ne_zero]
-#align sub_mul_action.coe_pow SubMulAction.coe_pow
 
 theorem subset_coe_pow (p : SubMulAction R M) : ∀ {n : ℕ}, (p : Set M) ^ n ⊆ ↑(p ^ n)
   | 0 => by
     rw [pow_zero, pow_zero]
     exact subset_coe_one
   | n + 1 => by rw [← Nat.succ_eq_add_one, coe_pow _ n.succ_ne_zero]
-#align sub_mul_action.subset_coe_pow SubMulAction.subset_coe_pow
 
 end Monoid
 

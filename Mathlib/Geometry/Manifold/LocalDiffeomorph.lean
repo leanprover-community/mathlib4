@@ -95,7 +95,7 @@ def Diffeomorph.toPartialDiffeomorph (h : Diffeomorph I J M N n) :
 
 -- Add the very basic API we need.
 namespace PartialDiffeomorph
-variable (Φ : PartialDiffeomorph I J M N n) (hn : 1 ≤ n)
+variable (Φ : PartialDiffeomorph I J M N n)
 
 /-- A partial diffeomorphism is also a local homeomorphism. -/
 def toPartialHomeomorph : PartialHomeomorph M N where
@@ -116,10 +116,11 @@ protected def symm : PartialDiffeomorph J I N M n where
 protected theorem contMDiffOn : ContMDiffOn I J n Φ Φ.source :=
   Φ.contMDiffOn_toFun
 
-protected theorem mdifferentiableOn : MDifferentiableOn I J Φ Φ.source :=
+protected theorem mdifferentiableOn (hn : 1 ≤ n) : MDifferentiableOn I J Φ Φ.source :=
   (Φ.contMDiffOn).mdifferentiableOn hn
 
-protected theorem mdifferentiableAt {x : M} (hx : x ∈ Φ.source) : MDifferentiableAt I J Φ x :=
+protected theorem mdifferentiableAt (hn : 1 ≤ n) {x : M} (hx : x ∈ Φ.source) :
+    MDifferentiableAt I J Φ x :=
   (Φ.mdifferentiableOn hn x hx).mdifferentiableAt (Φ.open_source.mem_nhds hx)
 
 /- We could add lots of additional API (following `Diffeomorph` and `PartialHomeomorph`), such as
@@ -207,7 +208,7 @@ lemma Diffeomorph.isLocalDiffeomorph (Φ : M ≃ₘ^n⟮I, J⟯ N) : IsLocalDiff
 -- FUTURE: if useful, also add "a `PartialDiffeomorph` is a local diffeomorphism on its source"
 
 /-- A local diffeomorphism on `s` is a local homeomorphism on `s`. -/
-theorem IsLocalDiffeomorphOn.isLocalHomeomorphOn {s : Set M} (hf : IsLocalDiffeomorphOn I J n f s):
+theorem IsLocalDiffeomorphOn.isLocalHomeomorphOn {s : Set M} (hf : IsLocalDiffeomorphOn I J n f s) :
     IsLocalHomeomorphOn f s := by
   apply IsLocalHomeomorphOn.mk
   intro x hx

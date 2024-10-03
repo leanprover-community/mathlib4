@@ -3,7 +3,6 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
 -/
-import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.GroupWithZero.Units.Basic
@@ -34,7 +33,6 @@ instance one : One (WithZero α) where
   __ := ‹One α›
 
 @[simp, norm_cast] lemma coe_one : ((1 : α) : WithZero α) = 1 := rfl
-#align with_zero.coe_one WithZero.coe_one
 
 end One
 
@@ -47,7 +45,6 @@ instance mulZeroClass : MulZeroClass (WithZero α) where
   mul_zero := Option.map₂_none_right (· * ·)
 
 @[simp, norm_cast] lemma coe_mul (a b : α) : (↑(a * b) : WithZero α) = a * b := rfl
-#align with_zero.coe_mul WithZero.coe_mul
 
 lemma unzero_mul {x y : WithZero α} (hxy : x * y ≠ 0) :
     unzero hxy = unzero (left_ne_zero_of_mul hxy) * unzero (right_ne_zero_of_mul hxy) := by
@@ -151,7 +148,6 @@ instance pow : Pow (WithZero α) ℕ where
     | some x, n => ↑(x ^ n)
 
 @[simp, norm_cast] lemma coe_pow (a : α) (n : ℕ) : (↑(a ^ n) : WithZero α) = a ^ n := rfl
-#align with_zero.coe_pow WithZero.coe_pow
 
 end Pow
 
@@ -176,10 +172,8 @@ variable [Inv α]
 instance inv : Inv (WithZero α) where inv a := Option.map (·⁻¹) a
 
 @[simp, norm_cast] lemma coe_inv (a : α) : ((a⁻¹ : α) : WithZero α) = (↑a)⁻¹ := rfl
-#align with_zero.coe_inv WithZero.coe_inv
 
 @[simp] protected lemma inv_zero : (0 : WithZero α)⁻¹ = 0 := rfl
-#align with_zero.inv_zero WithZero.inv_zero
 
 end Inv
 
@@ -192,7 +186,6 @@ variable [Div α]
 instance div : Div (WithZero α) where div := Option.map₂ (· / ·)
 
 @[norm_cast] lemma coe_div (a b : α) : ↑(a / b : α) = (a / b : WithZero α) := rfl
-#align with_zero.coe_div WithZero.coe_div
 
 end Div
 
@@ -207,7 +200,6 @@ instance : Pow (WithZero α) ℤ where
     | some x, n => ↑(x ^ n)
 
 @[simp, norm_cast] lemma coe_zpow (a : α) (n : ℤ) : ↑(a ^ n) = (↑a : WithZero α) ^ n := rfl
-#align with_zero.coe_zpow WithZero.coe_zpow
 
 end ZPow
 
@@ -263,7 +255,7 @@ instance groupWithZero : GroupWithZero (WithZero α) where
   __ := divInvMonoid
   __ := nontrivial
   inv_zero := WithZero.inv_zero
-  mul_inv_cancel a ha := by lift a to α using ha; norm_cast; apply mul_right_inv
+  mul_inv_cancel a ha := by lift a to α using ha; norm_cast; apply mul_inv_cancel
 
 
 /-- Any group is isomorphic to the units of itself adjoined with `0`. -/
@@ -273,7 +265,43 @@ def unitsWithZeroEquiv : (WithZero α)ˣ ≃* α where
   left_inv _ := Units.ext <| by simp only [coe_unzero, Units.mk0_val]
   right_inv _ := rfl
   map_mul' _ _ := coe_inj.mp <| by simp only [Units.val_mul, coe_unzero, coe_mul]
-#align with_zero.units_with_zero_equiv WithZero.unitsWithZeroEquiv
+
+/-- Any group with zero is isomorphic to adjoining `0` to the units of itself. -/
+def withZeroUnitsEquiv {G : Type*} [GroupWithZero G]
+    [DecidablePred (fun a : G ↦ a = 0)] :
+    WithZero Gˣ ≃* G where
+  toFun := WithZero.recZeroCoe 0 Units.val
+  invFun a := if h : a = 0 then 0 else (Units.mk0 a h : Gˣ)
+  left_inv := (by induction · <;> simp)
+  right_inv _ := by simp only; split <;> simp_all
+  map_mul' x y := by
+    induction x <;> induction y <;>
+    simp [← WithZero.coe_mul, ← Units.val_mul]
+
+/-- A version of `Equiv.optionCongr` for `WithZero`. -/
+noncomputable def _root_.MulEquiv.withZero [Group β] (e : α ≃* β) :
+    WithZero α ≃* WithZero β where
+  toFun := map' e.toMonoidHom
+  invFun := map' e.symm.toMonoidHom
+  left_inv := (by induction · <;> simp)
+  right_inv := (by induction · <;> simp)
+  map_mul' x y := by
+    induction x <;> induction y <;>
+    simp
+
+/-- The inverse of `MulEquiv.withZero`. -/
+protected noncomputable def _root_.MulEquiv.unzero [Group β] (e : WithZero α ≃* WithZero β) :
+    α ≃* β where
+  toFun x := unzero (x := e x) (by simp [ne_eq, ← e.eq_symm_apply])
+  invFun x := unzero (x := e.symm x) (by simp [e.symm_apply_eq])
+  left_inv _ := by simp
+  right_inv _ := by simp
+  map_mul' _ _ := by
+    simp only [coe_mul, map_mul]
+    generalize_proofs A B C
+    suffices ((unzero A : β) : WithZero β) = (unzero B) * (unzero C) by
+      rwa [← WithZero.coe_mul, WithZero.coe_inj] at this
+    simp
 
 end Group
 

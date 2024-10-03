@@ -14,7 +14,7 @@ Collection of useful identities of modular forms.
 
 noncomputable section
 
-open ModularForm UpperHalfPlane Matrix
+open ModularForm UpperHalfPlane Matrix CongruenceSubgroup
 
 namespace SlashInvariantForm
 

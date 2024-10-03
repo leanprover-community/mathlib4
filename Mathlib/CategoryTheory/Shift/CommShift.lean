@@ -369,7 +369,7 @@ lemma ofIso_compatibility :
     letI := ofIso e A
     NatTrans.CommShift e.hom A := by
   letI := ofIso e A
-  refine' ⟨fun a => _⟩
+  refine ⟨fun a => ?_⟩
   dsimp [commShiftIso, ofIso]
   rw [← whiskerLeft_comp_assoc, e.hom_inv_id, whiskerLeft_id', id_comp]
 
@@ -414,7 +414,7 @@ lemma NatTrans.CommShift.verticalComposition {C₁ C₂ C₃ D₁ D₂ D₃ : Ty
     (h₁₃ : e₁₃ = CategoryTheory.whiskerRight α L₃ ≫ (Functor.associator _ _ _).hom ≫
       CategoryTheory.whiskerLeft F₁₂ e₂₃ ≫ (Functor.associator _ _ _).inv ≫
         CategoryTheory.whiskerRight e₁₂ G₂₃ ≫ (Functor.associator _ _ _).hom ≫
-          CategoryTheory.whiskerLeft L₁ β): CommShift e₁₃ A := by
+          CategoryTheory.whiskerLeft L₁ β) : CommShift e₁₃ A := by
   subst h₁₃
   infer_instance
 

@@ -79,7 +79,7 @@ def shatterer (𝒜 : Finset (Finset α)) : Finset (Finset α) := (𝒜.biUnion 
   simp_rw [mem_biUnion, mem_powerset]
   exact h.exists_superset
 
-lemma shatterer_mono (h : 𝒜 ⊆ ℬ) : 𝒜.shatterer ⊆ ℬ.shatterer :=
+@[gcongr] lemma shatterer_mono (h : 𝒜 ⊆ ℬ) : 𝒜.shatterer ⊆ ℬ.shatterer :=
   fun _ ↦ by simpa using Shatters.mono_left h
 
 lemma subset_shatterer (h : IsLowerSet (𝒜 : Set (Finset α))) : 𝒜 ⊆ 𝒜.shatterer :=
@@ -165,7 +165,7 @@ lemma Shatters.of_compression (hs : (𝓓 a 𝒜).Shatters s) : 𝒜.Shatters s 
       rintro ha
       rw [insert_eq_self.2 (mem_inter.1 ha).2] at hu
       exact hu.1 hu.2
-    rw [insert_eq_self.2 <| inter_subset_right (s₁:=s) ?_] at hv
+    rw [insert_eq_self.2 <| inter_subset_right (s₁ := s) ?_] at hv
     cases hv.1 hv.2
     rw [hsv]
     exact mem_insert_self _ _
@@ -180,6 +180,8 @@ lemma shatterer_compress_subset_shatterer (a : α) (𝒜 : Finset (Finset α)) :
 
 /-- The Vapnik-Chervonenkis dimension of a set family is the maximal size of a set it shatters. -/
 def vcDim (𝒜 : Finset (Finset α)) : ℕ := 𝒜.shatterer.sup card
+
+@[gcongr] lemma vcDim_mono (h𝒜ℬ : 𝒜 ⊆ ℬ) : 𝒜.vcDim ≤ ℬ.vcDim := by unfold vcDim; gcongr
 
 lemma Shatters.card_le_vcDim (hs : 𝒜.Shatters s) : s.card ≤ 𝒜.vcDim := le_sup <| mem_shatterer.2 hs
 

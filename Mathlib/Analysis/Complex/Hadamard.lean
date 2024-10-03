@@ -72,7 +72,7 @@ noncomputable def sSupNormIm {E : Type*} [NormedAddCommGroup E]
 
 section invInterpStrip
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] (f : ℂ → E) (z : ℂ)
+variable {E : Type*} [NormedAddCommGroup E] (f : ℂ → E) (z : ℂ)
 
 /--
 The inverse of the interpolation of `sSupNormIm` on the two boundaries.
@@ -85,7 +85,7 @@ noncomputable def invInterpStrip (ε : ℝ) : ℂ :=
   (ε + sSupNormIm f 0) ^ (z - 1) * (ε + sSupNormIm f 1) ^ (-z)
 
 /-- A function useful for the proofs steps. We will aim to show that it is bounded by 1. -/
-noncomputable def F (ε : ℝ) := fun z ↦ invInterpStrip f z ε • f z
+noncomputable def F [NormedSpace ℂ E] (ε : ℝ) := fun z ↦ invInterpStrip f z ε • f z
 
 /-- `sSup` of `norm` is nonneg applied to the image of `f` on the vertical line `re z = x` -/
 lemma sSupNormIm_nonneg (x : ℝ) : 0 ≤ sSupNormIm f x := by
@@ -137,6 +137,8 @@ lemma norm_lt_sSupNormIm_eps (f : ℂ → E) (ε : ℝ) (hε : ε > 0) (z : ℂ)
     ‖f z‖ < ε + sSupNormIm f (z.re) :=
   lt_add_of_pos_of_le hε (norm_le_sSupNormIm f z hD hB)
 
+variable [NormedSpace ℂ E]
+
 /-- When the function `f` is bounded above on a vertical strip, then so is `F`. -/
 lemma F_BddAbove (f : ℂ → E) (ε : ℝ) (hε : ε > 0)
     (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1))) :
@@ -187,14 +189,14 @@ lemma F_edge_le_one (f : ℂ → E) (ε : ℝ) (hε : ε > 0) (z : ℂ)
   rcases hz with hz0 | hz1
   -- `z.re = 0`
   · simp only [hz0, zero_sub, Real.rpow_neg_one, neg_zero, Real.rpow_zero, mul_one,
-      inv_mul_le_iff (sSupNormIm_eps_pos f hε 0)]
+      inv_mul_le_iff₀ (sSupNormIm_eps_pos f hε 0)]
     rw [← hz0]
     apply le_of_lt (norm_lt_sSupNormIm_eps f ε hε _ _ hB)
     simp only [verticalClosedStrip, mem_preimage, zero_le_one, left_mem_Icc, hz0]
   -- `z.re = 1`
   · rw [mem_singleton_iff] at hz1
     simp only [hz1, one_mul, Real.rpow_zero, sub_self, Real.rpow_neg_one,
-      inv_mul_le_iff (sSupNormIm_eps_pos f hε 1), mul_one]
+      inv_mul_le_iff₀ (sSupNormIm_eps_pos f hε 1), mul_one]
     rw [← hz1]
     apply le_of_lt (norm_lt_sSupNormIm_eps f ε hε _ _ hB)
     simp only [verticalClosedStrip, mem_preimage, zero_le_one, hz1, right_mem_Icc]
@@ -217,7 +219,7 @@ theorem norm_mul_invInterpStrip_le_one_of_mem_verticalClosedStrip (f : ℂ → E
   rw [Asymptotics.isBigO_iff]
   use 1
   rw [eventually_inf_principal]
-  apply eventually_of_forall
+  apply Eventually.of_forall
   intro x hx
   norm_num
   exact (hBF x ((preimage_mono Ioo_subset_Icc_self) hx)).trans
@@ -227,7 +229,7 @@ end invInterpStrip
 
 -----
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] (f : ℂ → E)
+variable {E : Type*} [NormedAddCommGroup E] (f : ℂ → E)
 
 /--
 The interpolation of `sSupNormIm` on the two boundaries.
@@ -252,7 +254,7 @@ lemma interpStrip_eq_of_zero (z : ℂ) (h : sSupNormIm f 0 = 0 ∨ sSupNormIm f 
   if_pos h
 
 /-- Rewrite for `InterpStrip` on the open vertical strip. -/
-lemma interpStrip_eq_of_mem_verticalStrip (z : ℂ) (hz : z ∈ verticalStrip 0 1):
+lemma interpStrip_eq_of_mem_verticalStrip (z : ℂ) (hz : z ∈ verticalStrip 0 1) :
     interpStrip f z = (sSupNormIm f 0) ^ (1 - z) * (sSupNormIm f 1) ^ z := by
   by_cases h : sSupNormIm f 0 = 0 ∨ sSupNormIm f 1 = 0
   · rw [interpStrip_eq_of_zero _ z h]
@@ -260,11 +262,13 @@ lemma interpStrip_eq_of_mem_verticalStrip (z : ℂ) (hz : z ∈ verticalStrip 0 
     · simp only [h0, ofReal_zero, zero_eq_mul, cpow_eq_zero_iff, ne_eq, true_and, ofReal_eq_zero]
       left
       rw [sub_eq_zero, eq_comm]
-      simp only [ne_eq, ext_iff, one_re, ne_of_lt hz.2, or_iff_left, false_and, not_false_eq_true]
+      simp only [ne_eq, Complex.ext_iff, one_re, ne_of_lt hz.2, or_iff_left, false_and,
+        not_false_eq_true]
     · simp only [h1, ofReal_zero, zero_eq_mul, cpow_eq_zero_iff, ofReal_eq_zero, ne_eq, true_and]
       right
       rw [eq_comm]
-      simp only [ne_eq, ext_iff, zero_re, ne_of_lt hz.1, or_iff_left, false_and, not_false_eq_true]
+      simp only [ne_eq, Complex.ext_iff, zero_re, ne_of_lt hz.1, or_iff_left, false_and,
+        not_false_eq_true]
   · push_neg at h
     replace h : (0 < sSupNormIm f 0) ∧ (0 < sSupNormIm f 1) :=
       ⟨(lt_of_le_of_ne (sSupNormIm_nonneg f 0) (ne_comm.mp h.1)),
@@ -292,13 +296,15 @@ lemma diffContOnCl_interpStrip :
       · apply differentiableAt_id'
       · left; simp only [Ne, ofReal_eq_zero]; rwa [eq_comm]
 
+variable [NormedSpace ℂ E]
+
 lemma norm_le_interpStrip_of_mem_verticalClosedStrip_eps (ε : ℝ) (hε : ε > 0) (z : ℂ)
     (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1)))
     (hd : DiffContOnCl ℂ f (verticalStrip 0 1)) (hz : z ∈ verticalClosedStrip 0 1) :
     ‖f z‖ ≤  ‖((ε + sSupNormIm f 0) ^ (1-z) * (ε + sSupNormIm f 1) ^ z : ℂ)‖ := by
   simp only [F, abs_invInterpStrip _ _ hε, norm_smul, norm_mul, norm_eq_abs,
     ← ofReal_add, abs_cpow_eq_rpow_re_of_pos (sSupNormIm_eps_pos f hε _) _, sub_re, one_re]
-  rw [← mul_inv_le_iff, ← one_mul (((ε + sSupNormIm f 1) ^ z.re)), ← mul_inv_le_iff',
+  rw [← mul_inv_le_iff₀', ← one_mul (((ε + sSupNormIm f 1) ^ z.re)), ← mul_inv_le_iff₀,
     ← Real.rpow_neg_one, ← Real.rpow_neg_one]
   · simp only [← Real.rpow_mul (le_of_lt (sSupNormIm_eps_pos f hε _)),
     mul_neg, mul_one, neg_sub, mul_assoc]
@@ -393,7 +399,7 @@ lemma norm_le_interp_of_mem_verticalClosedStrip' (f : ℂ → E) {z : ℂ} {a b 
       rw [abs_cpow_eq_rpow_re_of_pos ((Ne.le_iff_lt h1).mp (sSupNormIm_nonneg f _)) _]
       simp only [sub_re, one_re, le_refl]
   apply (norm_le_interpStrip_of_mem_verticalClosedStrip f hz hd hB).trans (this.trans _)
-  apply mul_le_mul_of_le_of_le _ _ (Real.rpow_nonneg (sSupNormIm_nonneg f _) _)
+  apply mul_le_mul_of_nonneg _ _ (Real.rpow_nonneg (sSupNormIm_nonneg f _) _)
   · apply (Real.rpow_nonneg _ _)
     specialize hb 1
     simp only [mem_preimage, one_re, mem_singleton_iff, forall_true_left] at hb
