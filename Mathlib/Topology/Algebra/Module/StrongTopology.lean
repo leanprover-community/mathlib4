@@ -117,14 +117,17 @@ theorem uniformity_toTopologicalSpace_eq [UniformSpace F] [UniformAddGroup F] (�
       UniformConvergenceCLM.instTopologicalSpace σ F 𝔖 :=
   rfl
 
-theorem uniformEmbedding_coeFn [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
-    UniformEmbedding (α := UniformConvergenceCLM σ F 𝔖) (β := E →ᵤ[𝔖] F) DFunLike.coe :=
+theorem isUniformEmbedding_coeFn [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
+    IsUniformEmbedding (α := UniformConvergenceCLM σ F 𝔖) (β := E →ᵤ[𝔖] F) DFunLike.coe :=
   ⟨⟨rfl⟩, DFunLike.coe_injective⟩
+
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_coeFn := isUniformEmbedding_coeFn
 
 theorem embedding_coeFn [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (Set E)) :
     Embedding (X := UniformConvergenceCLM σ F 𝔖) (Y := E →ᵤ[𝔖] F)
       (UniformOnFun.ofFun 𝔖 ∘ DFunLike.coe) :=
-  UniformEmbedding.embedding (uniformEmbedding_coeFn _ _ _)
+  IsUniformEmbedding.embedding (isUniformEmbedding_coeFn _ _ _)
 
 instance instAddCommGroup [TopologicalSpace F] [TopologicalAddGroup F] (𝔖 : Set (Set E)) :
     AddCommGroup (UniformConvergenceCLM σ F 𝔖) := ContinuousLinearMap.addCommGroup
@@ -133,7 +136,7 @@ instance instUniformAddGroup [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (S
     UniformAddGroup (UniformConvergenceCLM σ F 𝔖) := by
   let φ : (UniformConvergenceCLM σ F 𝔖) →+ E →ᵤ[𝔖] F :=
     ⟨⟨(DFunLike.coe : (UniformConvergenceCLM σ F 𝔖) → E →ᵤ[𝔖] F), rfl⟩, fun _ _ => rfl⟩
-  exact (uniformEmbedding_coeFn _ _ _).uniformAddGroup φ
+  exact (isUniformEmbedding_coeFn _ _ _).uniformAddGroup φ
 
 instance instTopologicalAddGroup [TopologicalSpace F] [TopologicalAddGroup F]
     (𝔖 : Set (Set E)) : TopologicalAddGroup (UniformConvergenceCLM σ F 𝔖) := by
@@ -189,7 +192,7 @@ instance instUniformContinuousConstSMul (M : Type*)
     [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
     [UniformSpace F] [UniformAddGroup F] [UniformContinuousConstSMul M F] (𝔖 : Set (Set E)) :
     UniformContinuousConstSMul M (UniformConvergenceCLM σ F 𝔖) :=
-  (uniformEmbedding_coeFn σ F 𝔖).toUniformInducing.uniformContinuousConstSMul fun _ _ ↦ by rfl
+  (isUniformEmbedding_coeFn σ F 𝔖).toUniformInducing.uniformContinuousConstSMul fun _ _ ↦ by rfl
 
 instance instContinuousConstSMul (M : Type*)
     [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
@@ -276,9 +279,13 @@ protected theorem hasBasis_nhds_zero [TopologicalSpace F] [TopologicalAddGroup F
       fun SV => { f : E →SL[σ] F | ∀ x ∈ SV.1, f x ∈ SV.2 } :=
   ContinuousLinearMap.hasBasis_nhds_zero_of_basis (𝓝 0).basis_sets
 
-theorem uniformEmbedding_toUniformOnFun [UniformSpace F] [UniformAddGroup F] :
-    UniformEmbedding fun f : E →SL[σ] F ↦ UniformOnFun.ofFun {s | Bornology.IsVonNBounded 𝕜₁ s} f :=
-  UniformConvergenceCLM.uniformEmbedding_coeFn ..
+theorem isUniformEmbedding_toUniformOnFun [UniformSpace F] [UniformAddGroup F] :
+    IsUniformEmbedding
+      fun f : E →SL[σ] F ↦ UniformOnFun.ofFun {s | Bornology.IsVonNBounded 𝕜₁ s} f :=
+  UniformConvergenceCLM.isUniformEmbedding_coeFn ..
+
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_toUniformOnFun := isUniformEmbedding_toUniformOnFun
 
 instance uniformContinuousConstSMul
     {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
@@ -362,15 +369,18 @@ variable [UniformSpace F] [UniformAddGroup F] [Module 𝕜 F]
   (𝕜' : Type*) [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
   [Module 𝕜' E] [IsScalarTower 𝕜' 𝕜 E] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F]
 
-theorem uniformEmbedding_restrictScalars :
-    UniformEmbedding (restrictScalars 𝕜' : (E →L[𝕜] F) → (E →L[𝕜'] F)) := by
-  rw [← uniformEmbedding_toUniformOnFun.of_comp_iff]
-  convert uniformEmbedding_toUniformOnFun using 4 with s
+theorem isUniformEmbedding_restrictScalars :
+    IsUniformEmbedding (restrictScalars 𝕜' : (E →L[𝕜] F) → (E →L[𝕜'] F)) := by
+  rw [← isUniformEmbedding_toUniformOnFun.of_comp_iff]
+  convert isUniformEmbedding_toUniformOnFun using 4 with s
   exact ⟨fun h ↦ h.extend_scalars _, fun h ↦ h.restrict_scalars _⟩
+
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_restrictScalars := isUniformEmbedding_restrictScalars
 
 theorem uniformContinuous_restrictScalars :
     UniformContinuous (restrictScalars 𝕜' : (E →L[𝕜] F) → (E →L[𝕜'] F)) :=
-  (uniformEmbedding_restrictScalars 𝕜').uniformContinuous
+  (isUniformEmbedding_restrictScalars 𝕜').uniformContinuous
 
 end UniformSpace
 
@@ -382,7 +392,7 @@ theorem embedding_restrictScalars :
     Embedding (restrictScalars 𝕜' : (E →L[𝕜] F) → (E →L[𝕜'] F)) :=
   letI : UniformSpace F := TopologicalAddGroup.toUniformSpace F
   haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
-  (uniformEmbedding_restrictScalars _).embedding
+  (isUniformEmbedding_restrictScalars _).embedding
 
 @[continuity, fun_prop]
 theorem continuous_restrictScalars :

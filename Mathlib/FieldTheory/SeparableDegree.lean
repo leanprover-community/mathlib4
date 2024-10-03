@@ -67,7 +67,7 @@ This file contains basics about the separable degree of a field extension.
   if `K / E / F` is a field extension tower, such that `K / E` is algebraic,
   then there is a non-canonical bijection `Field.Emb F E × Field.Emb E K ≃ Field.Emb F K`.
   In particular, the separable degrees satisfy the tower law: $[E:F]_s [K:E]_s = [K:F]_s$
-  (see also `FiniteDimensional.finrank_mul_finrank`).
+  (see also `Module.finrank_mul_finrank`).
 
 - `Polynomial.natSepDegree_le_natDegree`: the separable degree of a polynomial is smaller than
   its degree.
@@ -118,7 +118,7 @@ separable degree, degree, polynomial
 
 -/
 
-open FiniteDimensional Polynomial IntermediateField Field
+open Module Polynomial IntermediateField Field
 
 noncomputable section
 
@@ -246,7 +246,7 @@ def embProdEmbOfIsAlgebraic [Algebra E K] [IsScalarTower F E K] [Algebra.IsAlgeb
 
 /-- If `K / E / F` is a field extension tower, such that `K / E` is algebraic, then their
 separable degrees satisfy the tower law
-$[E:F]_s [K:E]_s = [K:F]_s$. See also `FiniteDimensional.finrank_mul_finrank`. -/
+$[E:F]_s [K:E]_s = [K:F]_s$. See also `Module.finrank_mul_finrank`. -/
 theorem finSepDegree_mul_finSepDegree_of_isAlgebraic
     [Algebra E K] [IsScalarTower F E K] [Algebra.IsAlgebraic E K] :
     finSepDegree F E * finSepDegree E K = finSepDegree F K := by
@@ -701,7 +701,7 @@ theorem finSepDegree_dvd_finrank : finSepDegree F E ∣ finrank F E := by
     set M := L⟮x⟯
     have := Algebra.IsAlgebraic.of_finite L M
     rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M,
-      FiniteDimensional.finrank_mul_finrank F L M] at hdvd
+      Module.finrank_mul_finrank F L M] at hdvd
   rw [finrank_of_infinite_dimensional hfd]
   exact dvd_zero _
 
@@ -735,7 +735,7 @@ theorem finSepDegree_eq_finrank_of_isSeparable [Algebra.IsSeparable F E] :
   set M := L⟮x⟯
   have := Algebra.IsAlgebraic.of_finite L M
   rwa [finSepDegree_mul_finSepDegree_of_isAlgebraic F L M,
-    FiniteDimensional.finrank_mul_finrank F L M] at heq
+    Module.finrank_mul_finrank F L M] at heq
 
 alias Algebra.IsSeparable.finSepDegree_eq := finSepDegree_eq_finrank_of_isSeparable
 
@@ -749,7 +749,7 @@ theorem finSepDegree_eq_finrank_iff [FiniteDimensional F E] :
       (finSepDegree_adjoin_simple_le_finrank F E x halg) <| le_of_not_lt fun h ↦ ?_
     have := Nat.mul_lt_mul_of_lt_of_le' h (finSepDegree_le_finrank F⟮x⟯ E) Fin.size_pos'
     rw [finSepDegree_mul_finSepDegree_of_isAlgebraic F F⟮x⟯ E,
-      FiniteDimensional.finrank_mul_finrank F F⟮x⟯ E] at this
+      Module.finrank_mul_finrank F F⟮x⟯ E] at this
     linarith only [heq, this]⟩, fun _ ↦ finSepDegree_eq_finrank_of_isSeparable F E⟩
 
 end Field
@@ -796,7 +796,7 @@ theorem IsSeparable.of_algebra_isSeparable_of_isSeparable [Algebra E K] [IsScala
   have := finSepDegree_mul_finSepDegree_of_isAlgebraic F E' E'⟮x⟯
   rw [finSepDegree_eq_finrank_of_isSeparable F E',
     finSepDegree_eq_finrank_of_isSeparable E' E'⟮x⟯,
-    FiniteDimensional.finrank_mul_finrank F E' E'⟮x⟯,
+    Module.finrank_mul_finrank F E' E'⟮x⟯,
     eq_comm, finSepDegree_eq_finrank_iff F E'⟮x⟯] at this
   change Algebra.IsSeparable F (restrictScalars F E'⟮x⟯) at this
   exact isSeparable_of_mem_isSeparable F K hx

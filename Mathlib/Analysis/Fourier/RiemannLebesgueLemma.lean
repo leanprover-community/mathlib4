@@ -45,7 +45,7 @@ equivalence to an inner-product space.
 
 noncomputable section
 
-open MeasureTheory Filter Complex Set FiniteDimensional
+open MeasureTheory Filter Complex Set Module
 
 open scoped Filter Topology Real ENNReal FourierTransform RealInnerProductSpace NNReal
 
@@ -140,7 +140,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
   have : ‖(1 / 2 : ℂ)‖ = 2⁻¹ := by norm_num
   rw [fourierIntegral_eq_half_sub_half_period_translate hw_ne
       (hf1.integrable_of_hasCompactSupport hf2),
-    norm_smul, this, inv_mul_eq_div, div_lt_iff' two_pos]
+    norm_smul, this, inv_mul_eq_div, div_lt_iff₀' two_pos]
   refine lt_of_le_of_lt (norm_integral_le_integral_norm _) ?_
   simp_rw [Circle.norm_smul]
   --* Show integral can be taken over A only.
@@ -164,8 +164,8 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
     simp_rw [norm_norm]
     simp_rw [dist_eq_norm] at hδ2
     refine fun x _ => (hδ2 ?_).le
-    rw [sub_add_cancel_left, norm_neg, hw'_nm, ← div_div, div_lt_iff (norm_pos_iff.mpr hw_ne), ←
-      div_lt_iff' hδ1, div_div]
+    rw [sub_add_cancel_left, norm_neg, hw'_nm, ← div_div, div_lt_iff₀ (norm_pos_iff.mpr hw_ne), ←
+      div_lt_iff₀' hδ1, div_div]
     exact (lt_add_of_pos_left _ one_half_pos).trans_le hw_bd
   have bdA2 := norm_setIntegral_le_of_norm_le_const (hB_vol.trans_lt ENNReal.coe_lt_top) bdA ?_
   swap
@@ -177,7 +177,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
     Real.norm_of_nonneg (setIntegral_nonneg mA fun x _ => norm_nonneg _)
   rw [this] at bdA2
   refine bdA2.trans_lt ?_
-  rw [div_mul_eq_mul_div, div_lt_iff (NNReal.coe_pos.mpr hB_pos), mul_comm (2 : ℝ), mul_assoc,
+  rw [div_mul_eq_mul_div, div_lt_iff₀ (NNReal.coe_pos.mpr hB_pos), mul_comm (2 : ℝ), mul_assoc,
     mul_lt_mul_left hε]
   rw [← ENNReal.toReal_le_toReal] at hB_vol
   · refine hB_vol.trans_lt ?_

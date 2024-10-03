@@ -109,7 +109,7 @@ Hausdorff measure, measure, metric measure
 
 open scoped NNReal ENNReal Topology
 
-open EMetric Set Function Filter Encodable FiniteDimensional TopologicalSpace
+open EMetric Set Function Filter Encodable Module TopologicalSpace
 
 noncomputable section
 
