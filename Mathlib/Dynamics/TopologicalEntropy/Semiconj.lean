@@ -107,20 +107,18 @@ lemma coverMincard_image_le (h : Semiconj φ S T) (F : Set X) (V : Set (Y × Y))
     coverMincard T (φ '' F) V n ≤ coverMincard S F ((Prod.map φ φ) ⁻¹' V) n := by
   rcases eq_top_or_lt_top (coverMincard S F ((Prod.map φ φ) ⁻¹' V) n) with h' | h'
   · exact h' ▸ le_top
-  rcases (coverMincard_finite_iff S F ((Prod.map φ φ) ⁻¹' V) n).1 h' with ⟨s, s_cover, s_card⟩
-  rw [← s_card]
-  rcases s_cover.image h with ⟨t, t_cover, t_card⟩
-  exact t_cover.coverMincard_le_card.trans (WithTop.coe_le_coe.2 t_card)
+  · rcases (coverMincard_finite_iff S F ((Prod.map φ φ) ⁻¹' V) n).1 h' with ⟨s, s_cover, s_card⟩
+    rw [← s_card]
+    rcases s_cover.image h with ⟨t, t_cover, t_card⟩
+    exact t_cover.coverMincard_le_card.trans (WithTop.coe_le_coe.2 t_card)
 
 open ENNReal EReal Filter
 
 lemma le_coverEntropyEntourage_image (h : Semiconj φ S T) (F : Set X) {V : Set (Y × Y)}
     (V_symm : SymmetricRel V) :
-    coverEntropyEntourage S F ((Prod.map φ φ) ⁻¹' (V ○ V))
-      ≤ coverEntropyEntourage T (φ '' F) V := by
-  refine (limsup_le_limsup) (Eventually.of_forall fun n ↦ ?_)
-  apply monotone_div_right_of_nonneg (Nat.cast_nonneg' n)
-  exact log_monotone (ENat.toENNReal_mono (le_coverMincard_image h F V_symm n))
+    coverEntropyEntourage S F ((Prod.map φ φ) ⁻¹' (V ○ V)) ≤ coverEntropyEntourage T (φ '' F) V :=
+  (limsup_le_limsup) (Eventually.of_forall fun n ↦ (monotone_div_right_of_nonneg
+    (Nat.cast_nonneg' n) (log_monotone (ENat.toENNReal_mono (le_coverMincard_image h F V_symm n)))))
 
 lemma le_coverEntropyInfEntourage_image (h : Semiconj φ S T) (F : Set X) {V : Set (Y × Y)}
     (V_symm : SymmetricRel V) :
