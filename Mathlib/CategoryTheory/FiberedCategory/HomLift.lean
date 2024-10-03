@@ -18,7 +18,7 @@ does not make sense when the domain and/or codomain of `φ` and `f` are not defi
 ## Main definition
 
 Given morphism `φ : a ⟶ b` in `𝒳` and `f : R ⟶ S` in `𝒮`, `p.IsHomLift f φ` is a class, defined
-using the auxillary inductive type `IsHomLiftAux` which expresses the fact that `f = p(φ)`.
+using the auxiliary inductive type `IsHomLiftAux` which expresses the fact that `f = p(φ)`.
 
 We also define a macro `subst_hom_lift p f φ` which can be used to substitute `f` with `p(φ)` in a
 goal, this tactic is just short for `obtain ⟨⟩ := Functor.IsHomLift.cond (p:=p) (f:=f) (φ:=φ)`, and
@@ -52,7 +52,7 @@ class Functor.IsHomLift {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) :
   cond : IsHomLiftAux p f φ
 
 /-- `subst_hom_lift p f φ` tries to substitute `f` with `p(φ)` by using `p.IsHomLift f φ` -/
-macro "subst_hom_lift" p:ident f:ident φ:ident : tactic =>
+macro "subst_hom_lift" p:term:max f:term:max φ:term:max : tactic =>
   `(tactic| obtain ⟨⟩ := Functor.IsHomLift.cond (p := $p) (f := $f) (φ := $φ))
 
 /-- For any arrow `φ : a ⟶ b` in `𝒳`, `φ` lifts the arrow `p.map φ` in the base `𝒮`-/

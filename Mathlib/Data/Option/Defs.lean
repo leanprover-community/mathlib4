@@ -99,3 +99,5 @@ instance liftOrGet_isId (f : α → α → α) : Std.LawfulIdentity (liftOrGet f
 def _root_.Lean.LOption.toOption {α} : Lean.LOption α → Option α
   | .some a => some a
   | _ => none
+
+end Option

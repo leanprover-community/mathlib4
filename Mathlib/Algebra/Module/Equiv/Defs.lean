@@ -227,9 +227,6 @@ variable {e e'}
 theorem ext (h : ∀ x, e x = e' x) : e = e' :=
   DFunLike.ext _ _ h
 
-theorem ext_iff : e = e' ↔ ∀ x, e x = e' x :=
-  DFunLike.ext_iff
-
 protected theorem congr_arg {x x'} : x = x' → e x = e x' :=
   DFunLike.congr_arg e
 
@@ -452,9 +449,7 @@ theorem map_ne_zero_iff {x : M} : e x ≠ 0 ↔ x ≠ 0 :=
   e.toAddEquiv.map_ne_zero_iff
 
 @[simp]
-theorem symm_symm (e : M ≃ₛₗ[σ] M₂) : e.symm.symm = e := by
-  cases e
-  rfl
+theorem symm_symm (e : M ≃ₛₗ[σ] M₂) : e.symm.symm = e := rfl
 
 theorem symm_bijective [Module R M] [Module S M₂] [RingHomInvPair σ' σ] [RingHomInvPair σ σ'] :
     Function.Bijective (symm : (M ≃ₛₗ[σ] M₂) → M₂ ≃ₛₗ[σ'] M) :=
@@ -465,7 +460,7 @@ theorem mk_coe' (f h₁ h₂ h₃ h₄) :
     (LinearEquiv.mk ⟨⟨f, h₁⟩, h₂⟩ (⇑e) h₃ h₄ : M₂ ≃ₛₗ[σ'] M) = e.symm :=
   symm_bijective.injective <| ext fun _ ↦ rfl
 
-/-- Auxilliary definition to avoid looping in `dsimp` with `LinearEquiv.symm_mk`. -/
+/-- Auxiliary definition to avoid looping in `dsimp` with `LinearEquiv.symm_mk`. -/
 protected def symm_mk.aux (f h₁ h₂ h₃ h₄) := (⟨⟨⟨e, h₁⟩, h₂⟩, f, h₃, h₄⟩ : M ≃ₛₗ[σ] M₂).symm
 
 @[simp]

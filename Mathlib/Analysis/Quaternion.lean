@@ -90,7 +90,7 @@ noncomputable instance : NormedAlgebra ℝ ℍ where
   norm_smul_le := norm_smul_le
   toAlgebra := Quaternion.algebra
 
-instance : CstarRing ℍ where
+instance : CStarRing ℍ where
   norm_mul_self_le x :=
     le_of_eq <| Eq.symm <| (norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_star x)
 
@@ -197,7 +197,7 @@ theorem continuous_im : Continuous fun q : ℍ => q.im := by
 instance : CompleteSpace ℍ :=
   haveI : UniformEmbedding linearIsometryEquivTuple.toLinearEquiv.toEquiv.symm :=
     linearIsometryEquivTuple.toContinuousLinearEquiv.symm.uniformEmbedding
-  (completeSpace_congr this).1 (by infer_instance)
+  (completeSpace_congr this).1 inferInstance
 
 section infinite_sum
 

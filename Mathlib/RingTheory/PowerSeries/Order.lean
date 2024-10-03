@@ -272,7 +272,7 @@ theorem order_eq_multiplicity_X {R : Type*} [Semiring R] [@DecidableRel R⟦X⟧
       exact Nat.lt_succ_self _
 
 /-- Given a non-zero power series `f`, `divided_by_X_pow_order f` is the power series obtained by
-  dividing out the largest power of X that divides `f`, that is its order-/
+  dividing out the largest power of X that divides `f`, that is its order -/
 def divided_by_X_pow_order {f : PowerSeries R} (hf : f ≠ 0) : R⟦X⟧ :=
   (exists_eq_mul_right_of_dvd (X_pow_order_dvd (order_finite_iff_ne_zero.2 hf))).choose
 
@@ -296,7 +296,7 @@ theorem order_one : order (1 : R⟦X⟧) = 0 := by
 theorem order_zero_of_unit {f : PowerSeries R} : IsUnit f → f.order = 0 := by
   rintro ⟨⟨u, v, hu, hv⟩, hf⟩
   apply And.left
-  rw [← add_eq_zero_iff, ← hf, ← nonpos_iff_eq_zero, ← @order_one R _ _, ← hu]
+  rw [← add_eq_zero, ← hf, ← nonpos_iff_eq_zero, ← @order_one R _ _, ← hu]
   exact order_mul_ge _ _
 
 /-- The order of the formal power series `X` is `1`. -/
@@ -349,8 +349,8 @@ theorem divided_by_X_pow_orderMul {f g : R⟦X⟧} (hf : f ≠ 0) (hg : g ≠ 0)
       _ = X ^ (df + dg) * divided_by_X_pow_order hf * divided_by_X_pow_order hg := by rw [pow_add]
       _ = X ^ dfg * divided_by_X_pow_order hf * divided_by_X_pow_order hg := by rw [H_add_d]
       _ = X ^ dfg * (divided_by_X_pow_order hf * divided_by_X_pow_order hg) := by rw [mul_assoc]
-  simp [← hdfg, this] at H
   refine (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero (pow_ne_zero dfg X_ne_zero) ?_).symm
+  simp only [this] at H
   convert H
 
 end OrderIsDomain

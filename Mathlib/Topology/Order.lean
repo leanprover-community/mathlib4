@@ -520,6 +520,12 @@ lemma generateFrom_insert_univ {α : Type*} {s : Set (Set α)} :
     generateFrom (insert univ s) = generateFrom s :=
   generateFrom_insert_of_generateOpen .univ
 
+@[simp]
+lemma generateFrom_insert_empty {α : Type*} {s : Set (Set α)} :
+    generateFrom (insert ∅ s) = generateFrom s := by
+  rw [← sUnion_empty]
+  exact generateFrom_insert_of_generateOpen (.sUnion ∅ (fun s_1 a ↦ False.elim a))
+
 /-- This construction is left adjoint to the operation sending a topology on `α`
   to its neighborhood filter at a fixed point `a : α`. -/
 def nhdsAdjoint (a : α) (f : Filter α) : TopologicalSpace α where
@@ -740,6 +746,15 @@ theorem map_nhds_induced_of_surjective [T : TopologicalSpace α] {f : β → α}
     (a : β) : map f (@nhds β (TopologicalSpace.induced f T) a) = 𝓝 (f a) := by
   rw [nhds_induced, map_comap_of_surjective hf]
 
+theorem continuous_nhdsAdjoint_dom [TopologicalSpace β] {f : α → β} {a : α} {l : Filter α} :
+    Continuous[nhdsAdjoint a l, _] f ↔ Tendsto f l (𝓝 (f a)) := by
+  simp_rw [continuous_iff_le_induced, gc_nhds _ _, nhds_induced, tendsto_iff_comap]
+
+theorem coinduced_nhdsAdjoint (f : α → β) (a : α) (l : Filter α) :
+    coinduced f (nhdsAdjoint a l) = nhdsAdjoint (f a) (map f l) :=
+  eq_of_forall_ge_iff fun _ ↦ by
+    rw [gc_nhds, ← continuous_iff_coinduced_le, continuous_nhdsAdjoint_dom, Tendsto]
+
 end Constructions
 
 section Induced
@@ -864,8 +879,16 @@ theorem isOpen_iSup_iff {s : Set α} : IsOpen[⨆ i, t i] s ↔ ∀ i, IsOpen[t 
   show s ∈ {s | IsOpen[iSup t] s} ↔ s ∈ { x : Set α | ∀ i : ι, IsOpen[t i] x } by
     simp [setOf_isOpen_iSup]
 
+theorem isOpen_sSup_iff {s : Set α} {T : Set (TopologicalSpace α)} :
+    IsOpen[sSup T] s ↔ ∀ t ∈ T, IsOpen[t] s := by
+  simp only [sSup_eq_iSup, isOpen_iSup_iff]
+
 set_option tactic.skipAssignedInstances false in
 theorem isClosed_iSup_iff {s : Set α} : IsClosed[⨆ i, t i] s ↔ ∀ i, IsClosed[t i] s := by
   simp [← @isOpen_compl_iff _ _ (⨆ i, t i), ← @isOpen_compl_iff _ _ (t _), isOpen_iSup_iff]
+
+theorem isClosed_sSup_iff {s : Set α} {T : Set (TopologicalSpace α)} :
+    IsClosed[sSup T] s ↔ ∀ t ∈ T, IsClosed[t] s := by
+  simp only [sSup_eq_iSup, isClosed_iSup_iff]
 
 end iInf

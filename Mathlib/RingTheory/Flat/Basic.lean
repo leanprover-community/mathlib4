@@ -3,17 +3,16 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Jujian Zhang
 -/
-import Mathlib.RingTheory.Noetherian
-import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.DirectSum.Finsupp
-import Mathlib.Algebra.Module.Projective
-import Mathlib.Algebra.Module.Injective
+import Mathlib.Algebra.DirectSum.Module
+import Mathlib.Algebra.Exact
 import Mathlib.Algebra.Module.CharacterModule
+import Mathlib.Algebra.Module.Injective
+import Mathlib.Algebra.Module.Projective
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.Algebra.Module.Projective
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.Algebra.Exact
+import Mathlib.RingTheory.Noetherian
 
 /-!
 # Flat modules
@@ -73,6 +72,10 @@ the canonical map `I ⊗ M →ₗ M` is injective. -/
     Function.Injective (TensorProduct.lift ((lsmul R M).comp I.subtype))
 
 namespace Flat
+
+variable {R} in
+instance instSubalgebraToSubmodule {S : Type v} [Ring S] [Algebra R S]
+    (A : Subalgebra R S) [Flat R A] : Flat R (Subalgebra.toSubmodule A) := ‹Flat R A›
 
 instance self (R : Type u) [CommRing R] : Flat R R :=
   ⟨by
@@ -169,7 +172,7 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
     apply TensorProduct.ext'
     intro a m
     simp only [ρ, ψ, φ, η, η₁, coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-      directSumRight_symm_lof_tmul, rTensor_tmul, Submodule.coeSubtype, lid_tmul, map_smul]
+      directSumRight_symm_lof_tmul, rTensor_tmul, Submodule.coe_subtype, lid_tmul, map_smul]
     rw [DirectSum.component.of, DirectSum.component.of]
     by_cases h₂ : j = i
     · subst j; simp
@@ -281,7 +284,7 @@ lemma lTensor_exact [Small.{v} R] [flat : Flat R M] ⦃N N' N'' : Type v⦄
   suffices exact1 : Function.Exact (f.lTensor M) (π.lTensor M) by
     rw [show g = ι.comp π by aesop, lTensor_comp]
     exact exact1.comp_injective
-      (inj := iff_lTensor_preserves_injective_linearMap R M |>.mp flat _ $ by
+      (inj := iff_lTensor_preserves_injective_linearMap R M |>.mp flat _ <| by
         simpa [ι] using Subtype.val_injective)
       (h0 := map_zero _)
 
@@ -301,7 +304,7 @@ lemma rTensor_exact [Small.{v} R] [flat : Flat R M] ⦃N N' N'' : Type v⦄
   suffices exact1 : Function.Exact (f.rTensor M) (π.rTensor M) by
     rw [show g = ι.comp π by aesop, rTensor_comp]
     exact exact1.comp_injective
-      (inj := iff_rTensor_preserves_injective_linearMap R M |>.mp flat _ $ by
+      (inj := iff_rTensor_preserves_injective_linearMap R M |>.mp flat _ <| by
         simpa [ι] using Subtype.val_injective)
       (h0 := map_zero _)
 

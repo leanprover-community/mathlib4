@@ -28,8 +28,6 @@ noncomputable section
 
 open RCLike Real Filter
 
-open scoped Classical Topology
-
 section DerivInner
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
@@ -82,15 +80,18 @@ theorem HasFDerivWithinAt.inner (hf : HasFDerivWithinAt f f' s x)
     (hg : HasFDerivWithinAt g g' s x) :
     HasFDerivWithinAt (fun t => ⟪f t, g t⟫) ((fderivInnerCLM 𝕜 (f x, g x)).comp <| f'.prod g') s
       x :=
-  (isBoundedBilinearMap_inner.hasFDerivAt (f x, g x)).comp_hasFDerivWithinAt x (hf.prod hg)
+  isBoundedBilinearMap_inner (𝕜 := 𝕜) (E := E)
+    |>.hasFDerivAt (f x, g x) |>.comp_hasFDerivWithinAt x (hf.prod hg)
 
 theorem HasStrictFDerivAt.inner (hf : HasStrictFDerivAt f f' x) (hg : HasStrictFDerivAt g g' x) :
     HasStrictFDerivAt (fun t => ⟪f t, g t⟫) ((fderivInnerCLM 𝕜 (f x, g x)).comp <| f'.prod g') x :=
-  (isBoundedBilinearMap_inner.hasStrictFDerivAt (f x, g x)).comp x (hf.prod hg)
+  isBoundedBilinearMap_inner (𝕜 := 𝕜) (E := E)
+    |>.hasStrictFDerivAt (f x, g x) |>.comp x (hf.prod hg)
 
 theorem HasFDerivAt.inner (hf : HasFDerivAt f f' x) (hg : HasFDerivAt g g' x) :
     HasFDerivAt (fun t => ⟪f t, g t⟫) ((fderivInnerCLM 𝕜 (f x, g x)).comp <| f'.prod g') x :=
-  (isBoundedBilinearMap_inner.hasFDerivAt (f x, g x)).comp x (hf.prod hg)
+  isBoundedBilinearMap_inner (𝕜 := 𝕜) (E := E)
+    |>.hasFDerivAt (f x, g x) |>.comp x (hf.prod hg)
 
 theorem HasDerivWithinAt.inner {f g : ℝ → E} {f' g' : E} {s : Set ℝ} {x : ℝ}
     (hf : HasDerivWithinAt f f' s x) (hg : HasDerivWithinAt g g' s x) :
@@ -125,6 +126,9 @@ theorem deriv_inner_apply {f g : ℝ → E} {x : ℝ} (hf : DifferentiableAt ℝ
     (hg : DifferentiableAt ℝ g x) :
     deriv (fun t => ⟪f t, g t⟫) x = ⟪f x, deriv g x⟫ + ⟪deriv f x, g x⟫ :=
   (hf.hasDerivAt.inner 𝕜 hg.hasDerivAt).deriv
+
+section
+include 𝕜
 
 theorem contDiff_norm_sq : ContDiff ℝ n fun x : E => ‖x‖ ^ 2 := by
   convert (reCLM : 𝕜 →L[ℝ] ℝ).contDiff.comp ((contDiff_id (E := E)).inner 𝕜 (contDiff_id (E := E)))
@@ -178,6 +182,8 @@ theorem ContDiff.dist (hf : ContDiff ℝ n f) (hg : ContDiff ℝ n g) (hne : ∀
     ContDiff ℝ n fun y => dist (f y) (g y) :=
   contDiff_iff_contDiffAt.2 fun x => hf.contDiffAt.dist 𝕜 hg.contDiffAt (hne x)
 
+end
+
 -- Porting note: use `2 •` instead of `bit0`
 theorem hasStrictFDerivAt_norm_sq (x : F) :
     HasStrictFDerivAt (fun x => ‖x‖ ^ 2) (2 • (innerSL ℝ x)) x := by
@@ -202,6 +208,9 @@ theorem HasDerivWithinAt.norm_sq {f : ℝ → F} {f' : F} {s : Set ℝ} {x : ℝ
     (hf : HasDerivWithinAt f f' s x) :
     HasDerivWithinAt (‖f ·‖ ^ 2) (2 * Inner.inner (f x) f') s x := by
   simpa using hf.hasFDerivWithinAt.norm_sq.hasDerivWithinAt
+
+section
+include 𝕜
 
 theorem DifferentiableAt.norm_sq (hf : DifferentiableAt ℝ f x) :
     DifferentiableAt ℝ (fun y => ‖f y‖ ^ 2) x :=
@@ -248,6 +257,8 @@ theorem DifferentiableOn.norm (hf : DifferentiableOn ℝ f s) (h0 : ∀ x ∈ s,
 theorem DifferentiableOn.dist (hf : DifferentiableOn ℝ f s) (hg : DifferentiableOn ℝ g s)
     (hne : ∀ x ∈ s, f x ≠ g x) : DifferentiableOn ℝ (fun y => dist (f y) (g y)) s := fun x hx =>
   (hf x hx).dist 𝕜 (hg x hx) (hne x hx)
+
+end
 
 end DerivInner
 
