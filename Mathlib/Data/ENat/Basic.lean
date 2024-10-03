@@ -288,13 +288,11 @@ lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n
 @[simp] lemma add_one_eq_coe_top_iff : n + 1 = (⊤ : ℕ∞) ↔ n = (⊤ : ℕ∞) := by
   match n with
   | ⊤ => exact Iff.rfl
-  | (⊤ : ℕ∞) => exact Iff.rfl
   | (n : ℕ) => norm_cast; simp only [coe_ne_top, iff_false, ne_eq]
 
-@[simp] lemma natCast_ne_coe_top (n : ℕ) : (n : WithTop ℕ∞) ≠ (⊤ : ℕ∞) := nomatch
+@[simp] lemma natCast_ne_coe_top (n : ℕ) : (n : WithTop ℕ∞) ≠ (⊤ : ℕ∞) := nofun
 
-lemma one_le_iff_ne_zero_withTop {n : WithTop ℕ∞} :
-    1 ≤ n ↔ n ≠ 0 :=
+lemma one_le_iff_ne_zero_withTop {n : WithTop ℕ∞} : 1 ≤ n ↔ n ≠ 0 :=
   ⟨fun h ↦ (zero_lt_one.trans_le h).ne',
     fun h ↦ add_one_natCast_le_withTop_of_lt (pos_iff_ne_zero.mpr h)⟩
 
