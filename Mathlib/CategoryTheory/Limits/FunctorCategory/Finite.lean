@@ -5,7 +5,6 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-
 /-!
 
 # Functor categories have finite limits when the target category does
