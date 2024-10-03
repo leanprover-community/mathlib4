@@ -131,7 +131,7 @@ def adj : objects ⊣ functor := mkOfHomEquiv
     homEquiv_naturality_right := fun _ _ => rfl
   }
 
-/--Unit of the adjunction Cat.objects ⊣ Codiscrete.functor -/
+/-- Unit of the adjunction Cat.objects ⊣ Codiscrete.functor -/
 def unit : 𝟭 Cat ⟶ objects ⋙ functor where
   app := by
     simp only [Functor.id_obj, Functor.comp_obj]
