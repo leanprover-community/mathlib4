@@ -5,6 +5,7 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 -/
 import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Algebra.Pi
+import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.RingEquiv
@@ -13,7 +14,6 @@ import Mathlib.Algebra.Star.BigOperators
 import Mathlib.Algebra.Star.Module
 import Mathlib.Algebra.Star.Pi
 import Mathlib.Data.Fintype.BigOperators
-import Mathlib.GroupTheory.GroupAction.BigOperators
 
 /-!
 # Matrices
@@ -470,7 +470,7 @@ theorem diagonal_map [Zero α] [Zero β] {f : α → β} (h : f 0 = 0) {d : n �
   simp only [diagonal_apply, map_apply]
   split_ifs <;> simp [h]
 
-protected theorem map_natCast [DecidableEq n] [AddMonoidWithOne α] [AddMonoidWithOne β]
+protected theorem map_natCast [AddMonoidWithOne α] [AddMonoidWithOne β]
     {f : α → β} (h : f 0 = 0) (d : ℕ) :
     (d : Matrix n n α).map f = diagonal (fun _ => f d) :=
   diagonal_map h
@@ -481,7 +481,7 @@ protected theorem map_ofNat [AddMonoidWithOne α] [AddMonoidWithOne β]
     (no_index (OfNat.ofNat d) : Matrix n n α).map f = diagonal (fun _ => f (OfNat.ofNat d)) :=
   diagonal_map h
 
-protected theorem map_intCast [DecidableEq n] [AddGroupWithOne α] [AddGroupWithOne β]
+protected theorem map_intCast [AddGroupWithOne α] [AddGroupWithOne β]
     {f : α → β} (h : f 0 = 0) (d : ℤ) :
     (d : Matrix n n α).map f = diagonal (fun _ => f d) :=
   diagonal_map h
@@ -491,6 +491,11 @@ theorem diagonal_conjTranspose [AddMonoid α] [StarAddMonoid α] (v : n → α) 
     (diagonal v)ᴴ = diagonal (star v) := by
   rw [conjTranspose, diagonal_transpose, diagonal_map (star_zero _)]
   rfl
+
+theorem diagonal_unique [Unique m] [DecidableEq m] [Zero α] (d : m → α) :
+    diagonal d = of fun _ _ => d default := by
+  ext i j
+  rw [Subsingleton.elim i default, Subsingleton.elim j default, diagonal_apply_eq _ _, of_apply]
 
 section One
 
@@ -733,7 +738,7 @@ theorem dotProduct_comp_equiv_symm (e : n ≃ m) : u ⬝ᵥ x ∘ e.symm = u ∘
 @[simp]
 theorem comp_equiv_dotProduct_comp_equiv (e : m ≃ n) : x ∘ e ⬝ᵥ y ∘ e = x ⬝ᵥ y := by
   -- Porting note: was `simp only` with all three lemmas
-  rw [← dotProduct_comp_equiv_symm]; simp only [Function.comp, Equiv.apply_symm_apply]
+  rw [← dotProduct_comp_equiv_symm]; simp only [Function.comp_def, Equiv.apply_symm_apply]
 
 end NonUnitalNonAssocSemiring
 
@@ -782,6 +787,14 @@ variable [NonAssocSemiring α]
 @[simp]
 theorem one_dotProduct_one : (1 : n → α) ⬝ᵥ 1 = Fintype.card n := by
   simp [dotProduct]
+
+theorem dotProduct_single_one [DecidableEq n] (v : n → α) (i : n) :
+    dotProduct v (Pi.single i 1) = v i := by
+  rw [dotProduct_single, mul_one]
+
+theorem single_one_dotProduct [DecidableEq n] (i : n) (v : n → α) :
+    dotProduct (Pi.single i 1) v = v i := by
+  rw [single_dotProduct, one_mul]
 
 end NonAssocSemiring
 
@@ -1263,7 +1276,7 @@ def mapMatrix (f : α ≃+ β) : Matrix m n α ≃+ Matrix m n β :=
   { f.toEquiv.mapMatrix with
     toFun := fun M => M.map f
     invFun := fun M => M.map f.symm
-    map_add' := Matrix.map_add f f.map_add }
+    map_add' := Matrix.map_add f (map_add f) }
 
 @[simp]
 theorem mapMatrix_refl : (AddEquiv.refl α).mapMatrix = AddEquiv.refl (Matrix m n α) :=
@@ -1585,6 +1598,14 @@ theorem mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] 
 theorem single_vecMul [Fintype m] [DecidableEq m] [NonUnitalNonAssocSemiring R] (M : Matrix m n R)
     (i : m) (x : R) : Pi.single i x ᵥ* M = fun j => x * M i j :=
   funext fun _ => single_dotProduct _ _ _
+
+theorem mulVec_single_one [Fintype n] [DecidableEq n] [NonAssocSemiring R]
+    (M : Matrix m n R) (j : n) :
+    M *ᵥ Pi.single j 1 = Mᵀ j := by ext; simp
+
+theorem single_one_vecMul [Fintype m] [DecidableEq m] [NonAssocSemiring R]
+    (i : m) (M : Matrix m n R) :
+    Pi.single i 1 ᵥ* M = M i := by simp
 
 -- @[simp] -- Porting note: not in simpNF
 theorem diagonal_mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] (v : n → R)
@@ -2077,7 +2098,6 @@ variants which this lemma would not apply to:
 * `Matrix.conjTranspose_intCast_smul`
 * `Matrix.conjTranspose_inv_natCast_smul`
 * `Matrix.conjTranspose_inv_intCast_smul`
-* `Matrix.conjTranspose_rat_smul`
 * `Matrix.conjTranspose_ratCast_smul`
 -/
 @[simp]
@@ -2145,7 +2165,6 @@ theorem conjTranspose_ratCast_smul [DivisionRing R] [AddCommGroup α] [StarAddMo
     (c : ℚ) (M : Matrix m n α) : ((c : R) • M)ᴴ = (c : R) • Mᴴ :=
   Matrix.ext <| by simp
 
-@[simp]
 theorem conjTranspose_rat_smul [AddCommGroup α] [StarAddMonoid α] [Module ℚ α] (c : ℚ)
     (M : Matrix m n α) : (c • M)ᴴ = c • Mᴴ :=
   Matrix.ext <| by simp
@@ -2510,10 +2529,12 @@ theorem map_dotProduct [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S)
 
 theorem map_vecMul [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S) (M : Matrix n m R)
     (v : n → R) (i : m) : f ((v ᵥ* M) i) =  ((f ∘ v) ᵥ* M.map f) i := by
-  simp only [Matrix.vecMul, Matrix.map_apply, RingHom.map_dotProduct, Function.comp]
+  simp only [Matrix.vecMul, Matrix.map_apply, RingHom.map_dotProduct, Function.comp_def]
 
 theorem map_mulVec [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S) (M : Matrix m n R)
     (v : n → R) (i : m) : f ((M *ᵥ v) i) = (M.map f *ᵥ (f ∘ v)) i := by
-  simp only [Matrix.mulVec, Matrix.map_apply, RingHom.map_dotProduct, Function.comp]
+  simp only [Matrix.mulVec, Matrix.map_apply, RingHom.map_dotProduct, Function.comp_def]
 
 end RingHom
+
+set_option linter.style.longFile 2700

@@ -20,8 +20,7 @@ Here we relate convexity of functions `ℝ → ℝ` to properties of their deriv
 -/
 
 open Metric Set Asymptotics ContinuousLinearMap Filter
-
-open scoped Classical Topology NNReal
+open scoped Topology NNReal
 
 /-!
 ## Monotonicity of `f'` implies convexity of `f`
@@ -96,7 +95,7 @@ theorem StrictMonoOn.exists_slope_lt_deriv {x y : ℝ} {f : ℝ → ℝ} (hf : C
         apply ne_of_gt
         exact hf'_mono ⟨hxw, hwy⟩ ⟨hxw.trans hz.1, hz.2⟩ hz.1
     refine ⟨b, ⟨hxw.trans hwb, hby⟩, ?_⟩
-    simp only [div_lt_iff, hxy, hxw, hwy, sub_pos] at ha hb ⊢
+    simp only [div_lt_iff₀, hxy, hxw, hwy, sub_pos] at ha hb ⊢
     have : deriv f a * (w - x) < deriv f b * (w - x) := by
       apply mul_lt_mul _ le_rfl (sub_pos.2 hxw) _
       · exact hf'_mono ⟨hxa, haw.trans hwy⟩ ⟨hxw.trans hwb, hby⟩ (haw.trans hwb)
@@ -140,7 +139,7 @@ theorem StrictMonoOn.exists_deriv_lt_slope {x y : ℝ} {f : ℝ → ℝ} (hf : C
         apply ne_of_gt
         exact hf'_mono ⟨hxw, hwy⟩ ⟨hxw.trans hz.1, hz.2⟩ hz.1
     refine ⟨a, ⟨hxa, haw.trans hwy⟩, ?_⟩
-    simp only [lt_div_iff, hxy, hxw, hwy, sub_pos] at ha hb ⊢
+    simp only [lt_div_iff₀, hxy, hxw, hwy, sub_pos] at ha hb ⊢
     have : deriv f a * (y - w) < deriv f b * (y - w) := by
       apply mul_lt_mul _ le_rfl (sub_pos.2 hwy) _
       · exact hf'_mono ⟨hxa, haw.trans hwy⟩ ⟨hxw.trans hwb, hby⟩ (haw.trans hwb)
@@ -240,7 +239,7 @@ lemma convexOn_of_hasDerivWithinAt2_nonneg {D : Set ℝ} (hD : Convex ℝ D) {f 
     convert hf''₀ _ hx using 1
     dsimp
     rw [deriv_eqOn isOpen_interior (fun y hy ↦ ?_) hx]
-    exact (hf'' _ hy).congr this $ by rw [this hy]
+    exact (hf'' _ hy).congr this <| by rw [this hy]
 
 /-- If a function `f` is continuous on a convex set `D ⊆ ℝ`, is twice differentiable on its
 interior, and `f''` is nonpositive on the interior, then `f` is concave on `D`. -/
@@ -256,7 +255,7 @@ lemma concaveOn_of_hasDerivWithinAt2_nonpos {D : Set ℝ} (hD : Convex ℝ D) {f
     convert hf''₀ _ hx using 1
     dsimp
     rw [deriv_eqOn isOpen_interior (fun y hy ↦ ?_) hx]
-    exact (hf'' _ hy).congr this $ by rw [this hy]
+    exact (hf'' _ hy).congr this <| by rw [this hy]
 
 /-- If a function `f` is continuous on a convex set `D ⊆ ℝ` and `f''` is strictly positive on the
 interior, then `f` is strictly convex on `D`.

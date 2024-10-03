@@ -36,7 +36,7 @@ theorem length_permsOfList : ∀ l : List α, length (permsOfList l) = l.length 
   | [] => rfl
   | a :: l => by
     rw [length_cons, Nat.factorial_succ]
-    simp only [permsOfList, length_append, length_permsOfList, length_bind, comp,
+    simp only [permsOfList, length_append, length_permsOfList, length_bind, comp_def,
      length_map, map_const', sum_replicate, smul_eq_mul, succ_mul]
     ring
 
@@ -46,7 +46,7 @@ theorem mem_permsOfList_of_mem {l : List α} {f : Perm α} (h : ∀ x, f x ≠ x
   | nil =>
     -- Porting note: applied `not_mem_nil` because it is no longer true definitionally.
     simp only [not_mem_nil] at h
-    exact List.mem_singleton.2 (Equiv.ext fun x => Decidable.by_contradiction <| h x)
+    exact List.mem_singleton.2 (Equiv.ext fun x => Decidable.byContradiction <| h x)
   | cons a l IH =>
   by_cases hfa : f a = a
   · refine mem_append_left _ (IH fun x hx => mem_of_ne_of_mem ?_ (h x hx))
@@ -99,18 +99,18 @@ theorem nodup_permsOfList : ∀ {l : List α}, l.Nodup → (permsOfList l).Nodup
     have hln' : (permsOfList l).Nodup := nodup_permsOfList hl'
     have hmeml : ∀ {f : Perm α}, f ∈ permsOfList l → f a = a := fun {f} hf =>
       not_not.1 (mt (mem_of_mem_permsOfList hf _) (nodup_cons.1 hl).1)
-    rw [permsOfList, List.nodup_append, List.nodup_bind, pairwise_iff_get]
+    rw [permsOfList, List.nodup_append, List.nodup_bind, pairwise_iff_getElem]
     refine ⟨?_, ⟨⟨?_,?_ ⟩, ?_⟩⟩
     · exact hln'
     · exact fun _ _ => hln'.map fun _ _ => mul_left_cancel
-    · intros i j hij x hx₁ hx₂
+    · intros i j hi hj hij x hx₁ hx₂
       let ⟨f, hf⟩ := List.mem_map.1 hx₁
       let ⟨g, hg⟩ := List.mem_map.1 hx₂
-      have hix : x a = List.get l i := by
+      have hix : x a = l[i] := by
         rw [← hf.2, mul_apply, hmeml hf.1, swap_apply_left]
-      have hiy : x a = List.get l j := by
+      have hiy : x a = l[j] := by
         rw [← hg.2, mul_apply, hmeml hg.1, swap_apply_left]
-      have hieqj : i = j := nodup_iff_injective_get.1 hl' (hix.symm.trans hiy)
+      have hieqj : i = j := hl'.getElem_inj_iff.1 (hix.symm.trans hiy)
       exact absurd hieqj (_root_.ne_of_lt hij)
     · intros f hf₁ hf₂
       let ⟨x, hx, hx'⟩ := List.mem_bind.1 hf₂

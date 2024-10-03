@@ -7,6 +7,8 @@ import Lean.Elab.Tactic.Calc
 
 import Mathlib.Data.String.Defs
 import Mathlib.Tactic.Widget.SelectPanelUtils
+import Batteries.CodeAction.Attr
+import Batteries.Lean.Position
 
 /-! # Calc widget
 
@@ -15,7 +17,7 @@ new calc steps with holes specified by selected sub-expressions in the goal.
 -/
 
 section code_action
-open Std CodeAction
+open Batteries.CodeAction
 open Lean Server RequestM
 
 /-- Code action to create a `calc` tactic from the current goal. -/
@@ -140,3 +142,5 @@ elab_rules : tactic
     Widget.savePanelWidgetInfo CalcPanel.javascriptHash (pure json) proofTerm
     isFirst := false
   evalCalc (← `(tactic|calc%$calcstx $stx))
+
+end Lean.Elab.Tactic

@@ -1,15 +1,9 @@
 /-
 Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Reid Barton, Scott Morrison
+Authors: Reid Barton, Kim Morrison
 -/
-import Mathlib.CategoryTheory.FinCategory.Basic
-import Mathlib.CategoryTheory.Limits.Cones
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Category.ULift
-import Mathlib.CategoryTheory.PEmpty
 
 /-!
 # Filtered categories
@@ -186,14 +180,15 @@ variable {C}
 variable [IsFilteredOrEmpty C]
 variable {D : Type u₁} [Category.{v₁} D]
 
-/-- If `C` is filtered or emtpy, and we have a functor `R : C ⥤ D` with a left adjoint, then `D` is
+/-- If `C` is filtered or empty, and we have a functor `R : C ⥤ D` with a left adjoint, then `D` is
 filtered or empty.
 -/
 theorem of_right_adjoint {L : D ⥤ C} {R : C ⥤ D} (h : L ⊣ R) : IsFilteredOrEmpty D :=
   { cocone_objs := fun X Y =>
-      ⟨_, h.homEquiv _ _ (leftToMax _ _), h.homEquiv _ _ (rightToMax _ _), ⟨⟩⟩
+      ⟨R.obj (max (L.obj X) (L.obj Y)),
+        h.homEquiv _ _ (leftToMax _ _), h.homEquiv _ _ (rightToMax _ _), ⟨⟩⟩
     cocone_maps := fun X Y f g =>
-      ⟨_, h.homEquiv _ _ (coeqHom _ _), by
+      ⟨R.obj (coeq (L.map f) (L.map g)), h.homEquiv _ _ (coeqHom _ _), by
         rw [← h.homEquiv_naturality_left, ← h.homEquiv_naturality_left, coeq_condition]⟩ }
 
 /-- If `C` is filtered or empty, and we have a right adjoint functor `R : C ⥤ D`, then `D` is

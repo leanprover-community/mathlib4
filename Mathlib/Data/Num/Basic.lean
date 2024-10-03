@@ -169,32 +169,26 @@ section
 
 variable {α : Type*} [One α] [Add α]
 
-section deprecated
-set_option linter.deprecated false
-
 /-- `castPosNum` casts a `PosNum` into any type which has `1` and `+`. -/
-@[deprecated (since := "2022-11-18"), coe]
+@[coe]
 def castPosNum : PosNum → α
   | 1 => 1
   | PosNum.bit0 a => castPosNum a + castPosNum a
   | PosNum.bit1 a => castPosNum a + castPosNum a + 1
 
 /-- `castNum` casts a `Num` into any type which has `0`, `1` and `+`. -/
-@[deprecated (since := "2022-11-18"), coe]
+@[coe]
 def castNum [Zero α] : Num → α
   | 0 => 0
   | Num.pos p => castPosNum p
 
 -- see Note [coercion into rings]
-@[deprecated (since := "2023-03-31")] instance (priority := 900) posNumCoe : CoeHTCT PosNum α :=
+instance (priority := 900) posNumCoe : CoeHTCT PosNum α :=
   ⟨castPosNum⟩
 
 -- see Note [coercion into rings]
-@[deprecated (since := "2023-03-31")]
 instance (priority := 900) numNatCoe [Zero α] : CoeHTCT Num α :=
   ⟨castNum⟩
-
-end deprecated
 
 instance : Repr PosNum :=
   ⟨fun n _ => repr (n : ℕ)⟩
@@ -593,19 +587,17 @@ def gcd (a b : ZNum) : Num :=
 end ZNum
 
 section
-
-set_option linter.deprecated false
 variable {α : Type*} [Zero α] [One α] [Add α] [Neg α]
 
 /-- `castZNum` casts a `ZNum` into any type which has `0`, `1`, `+` and `neg` -/
-@[deprecated (since := "2022-11-18"), coe]
+@[coe]
 def castZNum : ZNum → α
   | 0 => 0
   | ZNum.pos p => p
   | ZNum.neg p => -p
 
 -- see Note [coercion into rings]
-@[deprecated (since := "2023-03-31")] instance (priority := 900) znumCoe : CoeHTCT ZNum α :=
+instance (priority := 900) znumCoe : CoeHTCT ZNum α :=
   ⟨castZNum⟩
 
 instance : Repr ZNum :=

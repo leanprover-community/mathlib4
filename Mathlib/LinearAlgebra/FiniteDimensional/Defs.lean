@@ -148,7 +148,7 @@ instance finiteDimensional_submodule [FiniteDimensional K V] (S : Submodule K V)
   · exact
       iff_fg.1
         (IsNoetherian.iff_rank_lt_aleph0.2
-          (lt_of_le_of_lt (rank_submodule_le _) (_root_.rank_lt_aleph0 K V)))
+          ((Submodule.rank_le _).trans_lt (_root_.rank_lt_aleph0 K V)))
   · infer_instance
 
 /-- A quotient of a finite-dimensional space is also finite-dimensional. -/
@@ -221,7 +221,7 @@ theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submo
       (by
         rw [Set.card_image_of_injective _ Subtype.coe_injective, ← finrank_eq_card_basis bS, ←
             finrank_eq_card_basis b, h])
-  rw [← b.span_eq, b_eq, Basis.coe_extend, Subtype.range_coe, ← this, ← Submodule.coeSubtype,
+  rw [← b.span_eq, b_eq, Basis.coe_extend, Subtype.range_coe, ← this, ← Submodule.coe_subtype,
     span_image]
   have := bS.span_eq
   rw [bS_eq, Basis.coe_ofVectorSpace, Subtype.range_coe] at this
@@ -374,8 +374,7 @@ theorem finiteDimensional_of_le {S₁ S₂ : Submodule K V} [FiniteDimensional K
     FiniteDimensional K S₁ :=
   haveI : IsNoetherian K S₂ := iff_fg.2 inferInstance
   iff_fg.1
-    (IsNoetherian.iff_rank_lt_aleph0.2
-      (lt_of_le_of_lt (rank_le_of_submodule _ _ h) (rank_lt_aleph0 K S₂)))
+    (IsNoetherian.iff_rank_lt_aleph0.2 ((Submodule.rank_mono h).trans_lt (rank_lt_aleph0 K S₂)))
 
 /-- The inf of two submodules, the first finite-dimensional, is
 finite-dimensional. -/
@@ -473,17 +472,19 @@ theorem eq_of_le_of_finrank_eq {S₁ S₂ : Submodule K V} [FiniteDimensional K 
 section Subalgebra
 
 variable {K L : Type*} [Field K] [Ring L] [Algebra K L] {F E : Subalgebra K L}
-  [hfin : FiniteDimensional K E] (h_le : F ≤ E)
+  [hfin : FiniteDimensional K E]
 
 /-- If a subalgebra is contained in a finite-dimensional
 subalgebra with the same or smaller dimension, they are equal. -/
-theorem _root_.Subalgebra.eq_of_le_of_finrank_le (h_finrank : finrank K E ≤ finrank K F) : F = E :=
+theorem _root_.Subalgebra.eq_of_le_of_finrank_le (h_le : F ≤ E)
+    (h_finrank : finrank K E ≤ finrank K F) : F = E :=
   haveI : Module.Finite K (Subalgebra.toSubmodule E) := hfin
   Subalgebra.toSubmodule_injective <| FiniteDimensional.eq_of_le_of_finrank_le h_le h_finrank
 
 /-- If a subalgebra is contained in a finite-dimensional
 subalgebra with the same dimension, they are equal. -/
-theorem _root_.Subalgebra.eq_of_le_of_finrank_eq (h_finrank : finrank K F = finrank K E) : F = E :=
+theorem _root_.Subalgebra.eq_of_le_of_finrank_eq (h_le : F ≤ E)
+    (h_finrank : finrank K F = finrank K E) : F = E :=
   Subalgebra.eq_of_le_of_finrank_le h_le h_finrank.ge
 
 end Subalgebra
@@ -682,7 +683,9 @@ noncomputable def divisionRingOfFiniteDimensional (F K : Type*) [Field F] [Ring 
     exact (Classical.choose_spec (FiniteDimensional.exists_mul_eq_one F hx):)
   inv_zero := dif_pos rfl
   nnqsmul := _
+  nnqsmul_def := fun q a => rfl
   qsmul := _
+  qsmul_def := fun q a => rfl
 
 /-- An integral domain that is module-finite as an algebra over a field is a field. -/
 noncomputable def fieldOfFiniteDimensional (F K : Type*) [Field F] [h : CommRing K] [IsDomain K]
@@ -690,21 +693,6 @@ noncomputable def fieldOfFiniteDimensional (F K : Type*) [Field F] [h : CommRing
   { divisionRingOfFiniteDimensional F K with
     toCommRing := h }
 end
-
-namespace Submodule
-
-section DivisionRing
-
-variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
-  [Module K V₂]
-
-theorem finrank_mono [FiniteDimensional K V] : Monotone fun s : Submodule K V => finrank K s :=
-  fun _ _ => finrank_le_finrank_of_le
-
-end DivisionRing
-
-end Submodule
-
 section DivisionRing
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V]
@@ -718,6 +706,7 @@ theorem finrank_span_singleton {v : V} (hv : v ≠ 0) : finrank K (K ∙ v) = 1 
   · exact finrank_span_le_card ({v} : Set V)
   · rw [Nat.succ_le_iff, finrank_pos_iff]
     use ⟨v, mem_span_singleton_self v⟩, 0
+    apply Subtype.coe_ne_coe.mp
     simp [hv]
 
 /-- In a one-dimensional space, any vector is a multiple of any nonzero vector -/

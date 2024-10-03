@@ -5,6 +5,8 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Multiset
+import Mathlib.Data.Multiset.OrderedMonoid
+import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.Positivity.Core
 
@@ -96,30 +98,16 @@ variable {f g : ι → N} {s t : Finset ι}
 /-- In an ordered commutative monoid, if each factor `f i` of one finite product is less than or
 equal to the corresponding factor `g i` of another finite product, then
 `∏ i ∈ s, f i ≤ ∏ i ∈ s, g i`. -/
-@[to_additive sum_le_sum]
+@[to_additive (attr := gcongr) sum_le_sum]
 theorem prod_le_prod' (h : ∀ i ∈ s, f i ≤ g i) : ∏ i ∈ s, f i ≤ ∏ i ∈ s, g i :=
   Multiset.prod_map_le_prod_map f g h
+
+attribute [bound] sum_le_sum
 
 /-- In an ordered additive commutative monoid, if each summand `f i` of one finite sum is less than
 or equal to the corresponding summand `g i` of another finite sum, then
 `∑ i ∈ s, f i ≤ ∑ i ∈ s, g i`. -/
 add_decl_doc sum_le_sum
-
-/-- In an ordered commutative monoid, if each factor `f i` of one finite product is less than or
-equal to the corresponding factor `g i` of another finite product, then `s.prod f ≤ s.prod g`.
-
-This is a variant (beta-reduced) version of the standard lemma `Finset.prod_le_prod'`, convenient
-for the `gcongr` tactic. -/
-@[to_additive (attr := gcongr) GCongr.sum_le_sum]
-theorem _root_.GCongr.prod_le_prod' (h : ∀ i ∈ s, f i ≤ g i) : s.prod f ≤ s.prod g :=
-  s.prod_le_prod' h
-
-/-- In an ordered additive commutative monoid, if each summand `f i` of one finite sum is less than
-or equal to the corresponding summand `g i` of another finite sum, then `s.sum f ≤ s.sum g`.
-
-This is a variant (beta-reduced) version of the standard lemma `Finset.sum_le_sum`, convenient
-for the `gcongr` tactic. -/
-add_decl_doc GCongr.sum_le_sum
 
 @[to_additive sum_nonneg]
 theorem one_le_prod' (h : ∀ i ∈ s, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i :=
@@ -133,7 +121,7 @@ theorem one_le_prod'' (h : ∀ i : ι, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i :=
 theorem prod_le_one' (h : ∀ i ∈ s, f i ≤ 1) : ∏ i ∈ s, f i ≤ 1 :=
   (prod_le_prod' h).trans_eq (by rw [prod_const_one])
 
-@[to_additive sum_le_sum_of_subset_of_nonneg]
+@[to_additive (attr := gcongr) sum_le_sum_of_subset_of_nonneg]
 theorem prod_le_prod_of_subset_of_one_le' (h : s ⊆ t) (hf : ∀ i ∈ t, i ∉ s → 1 ≤ f i) :
     ∏ i ∈ s, f i ≤ ∏ i ∈ t, f i := by
   classical calc
@@ -160,7 +148,7 @@ theorem prod_eq_one_iff_of_one_le' :
       (fun _ ↦ ⟨fun _ _ h ↦ False.elim (Finset.not_mem_empty _ h), fun _ ↦ rfl⟩) ?_
     intro a s ha ih H
     have : ∀ i ∈ s, 1 ≤ f i := fun _ ↦ H _ ∘ mem_insert_of_mem
-    rw [prod_insert ha, mul_eq_one_iff' (H _ <| mem_insert_self _ _) (one_le_prod' this),
+    rw [prod_insert ha, mul_eq_one_iff_of_one_le (H _ <| mem_insert_self _ _) (one_le_prod' this),
       forall_mem_insert, ih this]
 
 @[to_additive sum_eq_zero_iff_of_nonpos]
@@ -232,6 +220,16 @@ theorem abs_sum_of_nonneg {G : Type*} [LinearOrderedAddCommGroup G] {f : ι → 
 theorem abs_sum_of_nonneg' {G : Type*} [LinearOrderedAddCommGroup G] {f : ι → G} {s : Finset ι}
     (hf : ∀ i, 0 ≤ f i) : |∑ i ∈ s, f i| = ∑ i ∈ s, f i := by
   rw [abs_of_nonneg (Finset.sum_nonneg' hf)]
+
+section CommMonoid
+variable [CommMonoid α] [LE α] [CovariantClass α α (· * ·) (· ≤ ·)] {s : Finset ι} {f : ι → α}
+
+@[to_additive (attr := simp)]
+lemma mulLECancellable_prod :
+    MulLECancellable (∏ i ∈ s, f i) ↔ ∀ ⦃i⦄, i ∈ s → MulLECancellable (f i) := by
+  induction' s using Finset.cons_induction with i s hi ih <;> simp [*]
+
+end CommMonoid
 
 section Pigeonhole
 
@@ -385,29 +383,18 @@ theorem prod_lt_prod' (hle : ∀ i ∈ s, f i ≤ g i) (hlt : ∃ i ∈ s, f i <
     ∏ i ∈ s, f i < ∏ i ∈ s, g i :=
   Multiset.prod_lt_prod' hle hlt
 
-@[to_additive sum_lt_sum_of_nonempty]
+/-- In an ordered commutative monoid, if each factor `f i` of one nontrivial finite product is
+strictly less than the corresponding factor `g i` of another nontrivial finite product, then
+`s.prod f < s.prod g`. -/
+@[to_additive (attr := gcongr) sum_lt_sum_of_nonempty]
 theorem prod_lt_prod_of_nonempty' (hs : s.Nonempty) (hlt : ∀ i ∈ s, f i < g i) :
     ∏ i ∈ s, f i < ∏ i ∈ s, g i :=
   Multiset.prod_lt_prod_of_nonempty' (by aesop) hlt
 
-/-- In an ordered commutative monoid, if each factor `f i` of one nontrivial finite product is
-strictly less than the corresponding factor `g i` of another nontrivial finite product, then
-`s.prod f < s.prod g`.
-
-This is a variant (beta-reduced) version of the standard lemma `Finset.prod_lt_prod_of_nonempty'`,
-convenient for the `gcongr` tactic. -/
-@[to_additive (attr := gcongr) GCongr.sum_lt_sum_of_nonempty]
-theorem _root_.GCongr.prod_lt_prod_of_nonempty' (hs : s.Nonempty) (Hlt : ∀ i ∈ s, f i < g i) :
-    s.prod f < s.prod g :=
-  s.prod_lt_prod_of_nonempty' hs Hlt
-
 /-- In an ordered additive commutative monoid, if each summand `f i` of one nontrivial finite sum is
 strictly less than the corresponding summand `g i` of another nontrivial finite sum, then
-`s.sum f < s.sum g`.
-
-This is a variant (beta-reduced) version of the standard lemma `Finset.sum_lt_sum_of_nonempty`,
-convenient for the `gcongr` tactic. -/
-add_decl_doc GCongr.sum_lt_sum_of_nonempty
+`s.sum f < s.sum g`. -/
+add_decl_doc sum_lt_sum_of_nonempty
 
 -- Porting note (#11215): TODO -- calc indentation
 @[to_additive sum_lt_sum_of_subset]
@@ -568,7 +555,7 @@ theorem finset_sum_eq_sup_iff_disjoint [DecidableEq α] {β : Type*} {i : Finset
   · simp only [Finset.not_mem_empty, IsEmpty.forall_iff, imp_true_iff, Finset.sum_empty,
       Finset.sup_empty, bot_eq_zero, eq_self_iff_true]
   · simp_rw [Finset.sum_cons hz, Finset.sup_cons, Finset.mem_cons, Multiset.sup_eq_union,
-      forall_eq_or_imp, Ne, not_true_eq_false, IsEmpty.forall_iff, true_and_iff,
+      forall_eq_or_imp, Ne, not_true_eq_false, IsEmpty.forall_iff, true_and,
       imp_and, forall_and, ← hr, @eq_comm _ z]
     have := fun x (H : x ∈ i) => ne_of_mem_of_not_mem H hz
     simp (config := { contextual := true }) only [this, not_false_iff, true_imp_iff]

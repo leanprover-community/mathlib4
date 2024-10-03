@@ -5,8 +5,8 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.Analysis.Calculus.Deriv.Slope
-import Mathlib.Analysis.NormedSpace.BoundedLinearMaps
-import Mathlib.Analysis.NormedSpace.FiniteDimension
+import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
@@ -174,7 +174,7 @@ theorem norm_sub_le_of_mem_A {c : 𝕜} (hc : 1 < ‖c‖) {r ε : ℝ} (hε : 0
     {L₁ L₂ : E →L[𝕜] F} (h₁ : x ∈ A f L₁ r ε) (h₂ : x ∈ A f L₂ r ε) : ‖L₁ - L₂‖ ≤ 4 * ‖c‖ * ε := by
   refine opNorm_le_of_shell (half_pos hr) (by positivity) hc ?_
   intro y ley ylt
-  rw [div_div, div_le_iff' (mul_pos (by norm_num : (0 : ℝ) < 2) (zero_lt_one.trans hc))] at ley
+  rw [div_div, div_le_iff₀' (mul_pos (by norm_num : (0 : ℝ) < 2) (zero_lt_one.trans hc))] at ley
   calc
     ‖(L₁ - L₂) y‖ = ‖f (x + y) - f x - L₂ (x + y - x) - (f (x + y) - f x - L₁ (x + y - x))‖ := by
       simp
@@ -303,7 +303,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
     · simp [y_pos]
     have yzero : 0 < ‖y‖ := norm_pos_iff.mpr y_pos
     have y_lt : ‖y‖ < (1 / 2) ^ (n e + 1) := by simpa using mem_ball_iff_norm.1 hy
-    have yone : ‖y‖ ≤ 1 := le_trans y_lt.le (pow_le_one _ (by norm_num) (by norm_num))
+    have yone : ‖y‖ ≤ 1 := le_trans y_lt.le (pow_le_one₀ (by norm_num) (by norm_num))
     -- define the scale `k`.
     obtain ⟨k, hk, h'k⟩ : ∃ k : ℕ, (1 / 2) ^ (k + 1) < ‖y‖ ∧ ‖y‖ ≤ (1 / 2) ^ k :=
       exists_nat_pow_near_of_lt_one yzero yone (by norm_num : (0 : ℝ) < 1 / 2)
@@ -638,7 +638,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     · simp only [sub_self, zero_smul, norm_zero, mul_zero, le_rfl]
     have yzero : 0 < y - x := sub_pos.2 xy
     have y_le : y - x ≤ (1 / 2) ^ (n e + 1) := by linarith [hy.2]
-    have yone : y - x ≤ 1 := le_trans y_le (pow_le_one _ (by norm_num) (by norm_num))
+    have yone : y - x ≤ 1 := le_trans y_le (pow_le_one₀ (by norm_num) (by norm_num))
     -- define the scale `k`.
     obtain ⟨k, hk, h'k⟩ : ∃ k : ℕ, (1 / 2) ^ (k + 1) < y - x ∧ y - x ≤ (1 / 2) ^ k :=
       exists_nat_pow_near_of_lt_one yzero yone (by norm_num : (0 : ℝ) < 1 / 2)
@@ -661,7 +661,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
           · simp only [one_div, inv_pow, left_mem_Icc, le_add_iff_nonneg_right]
             positivity
           · simp only [pow_add, tsub_le_iff_left] at h'k
-            simpa only [hy.1, mem_Icc, true_and_iff, one_div, pow_one] using h'k
+            simpa only [hy.1, mem_Icc, true_and, one_div, pow_one] using h'k
         _ = 4 * (1 / 2) ^ e * (1 / 2) ^ (m + 2) := by field_simp; ring
         _ ≤ 4 * (1 / 2) ^ e * (y - x) := by gcongr
         _ = 4 * (1 / 2) ^ e * ‖y - x‖ := by rw [Real.norm_of_nonneg yzero.le]
@@ -787,8 +787,7 @@ that the differentiability set `D` is measurable. -/
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [MeasurableSpace E]
-  [OpensMeasurableSpace α] [OpensMeasurableSpace E]
+  {α : Type*} [TopologicalSpace α]
   {f : α → E → F} (K : Set (E →L[𝕜] F))
 
 namespace FDerivMeasurableAux
@@ -872,6 +871,8 @@ lemma isOpen_B_with_param {r s t : ℝ} (hf : Continuous f.uncurry) (K : Set (E 
 end FDerivMeasurableAux
 
 open FDerivMeasurableAux
+
+variable [MeasurableSpace α] [OpensMeasurableSpace α] [MeasurableSpace E] [OpensMeasurableSpace E]
 
 theorem measurableSet_of_differentiableAt_of_isComplete_with_param
     (hf : Continuous f.uncurry) {K : Set (E →L[𝕜] F)} (hK : IsComplete K) :

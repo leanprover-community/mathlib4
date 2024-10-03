@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Yaël Dillies
 -/
 import Mathlib.Data.NNReal.Basic
-import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.GCongr.CoreAttrs
 
 /-!
 # Group seminorms
@@ -141,11 +141,9 @@ theorem map_sub_le_max : f (x - y) ≤ max (f x) (f y) := by
 
 end NonarchAddGroupSeminormClass
 
-variable [FunLike F E ℝ]
-
 -- See note [lower instance priority]
-instance (priority := 100) NonarchAddGroupSeminormClass.toAddGroupSeminormClass [AddGroup E]
-    [NonarchAddGroupSeminormClass F E] : AddGroupSeminormClass F E ℝ :=
+instance (priority := 100) NonarchAddGroupSeminormClass.toAddGroupSeminormClass
+    [FunLike F E ℝ] [AddGroup E] [NonarchAddGroupSeminormClass F E] : AddGroupSeminormClass F E ℝ :=
   { ‹NonarchAddGroupSeminormClass F E› with
     map_add_le_add := fun f x y =>
       haveI h_nonneg : ∀ a, 0 ≤ f a := by
@@ -157,8 +155,8 @@ instance (priority := 100) NonarchAddGroupSeminormClass.toAddGroupSeminormClass 
     map_neg_eq_map := NonarchAddGroupSeminormClass.map_neg_eq_map' }
 
 -- See note [lower instance priority]
-instance (priority := 100) NonarchAddGroupNormClass.toAddGroupNormClass [AddGroup E]
-    [NonarchAddGroupNormClass F E] : AddGroupNormClass F E ℝ :=
+instance (priority := 100) NonarchAddGroupNormClass.toAddGroupNormClass
+    [FunLike F E ℝ] [AddGroup E] [NonarchAddGroupNormClass F E] : AddGroupNormClass F E ℝ :=
   { ‹NonarchAddGroupNormClass F E› with
     map_add_le_add := map_add_le_add
     map_neg_eq_map := NonarchAddGroupSeminormClass.map_neg_eq_map' }

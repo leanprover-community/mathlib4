@@ -315,7 +315,7 @@ def Fix.drec {β : Fix F α → Type u}
       rhs
       rw [← ih]
     rw [MvFunctor.map_map, ← appendFun_comp, id_comp]
-    simp only [Function.comp]
+    simp only [Function.comp_def]
   cast (by rw [this]) y.2
 
 end MvQPF

@@ -48,12 +48,10 @@ needed.
 - [Marcel Berger, *Geometry*][berger1987]
 -/
 
-
 noncomputable section
 
 open Function Set Bornology
-
-open scoped Topology ENNReal NNReal Classical
+open scoped Topology ENNReal NNReal
 
 section Defs
 
@@ -110,9 +108,6 @@ protected theorem congr_arg (f : α →ᵈ β) {x y : α} (h : x = y) : f x = f 
 theorem ext {f g : α →ᵈ β} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 
-theorem ext_iff {f g : α →ᵈ β} : f = g ↔ ∀ x, f x = g x :=
-  DFunLike.ext_iff
-
 @[simp]
 theorem mk_coe (f : α →ᵈ β) (h) : Dilation.mk f h = f :=
   ext fun _ => rfl
@@ -129,6 +124,7 @@ theorem copy_eq_self (f : α →ᵈ β) {f' : α → β} (h : f' = f) : f.copy f
 
 variable [FunLike F α β]
 
+open Classical in
 /-- The ratio of a dilation `f`. If the ratio is undefined (i.e., the distance between any two
 points in `α` is either zero or infinity), then we choose one as the ratio. -/
 def ratio [DilationClass F α β] (f : F) : ℝ≥0 :=
@@ -366,7 +362,7 @@ theorem ratio_pow (f : α →ᵈ α) (n : ℕ) : ratio (f ^ n) = ratio f ^ n :=
 @[simp]
 theorem cancel_right {g₁ g₂ : β →ᵈ γ} {f : α →ᵈ β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => Dilation.ext <| hf.forall.2 (ext_iff.1 h), fun h => h ▸ rfl⟩
+  ⟨fun h => Dilation.ext <| hf.forall.2 (Dilation.ext_iff.1 h), fun h => h ▸ rfl⟩
 
 @[simp]
 theorem cancel_left {g : β →ᵈ γ} {f₁ f₂ : α →ᵈ β} (hg : Injective g) :

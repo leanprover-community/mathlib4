@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 import Mathlib.Topology.Order.IsLUB
 import Mathlib.Topology.Support
+import Mathlib.Topology.MetricSpace.Pseudo.Basic
+import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+import Mathlib.Topology.MetricSpace.Pseudo.Pi
 
 /-! ## Proper spaces
 

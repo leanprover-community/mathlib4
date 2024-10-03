@@ -10,10 +10,10 @@ import Mathlib.RingTheory.Algebraic
 ### Cardinality of algebraic numbers
 
 In this file, we prove variants of the following result: the cardinality of algebraic numbers under
-an R-algebra is at most `# R[X] * ℵ₀`.
+an R-algebra is at most `#R[X] * ℵ₀`.
 
 Although this can be used to prove that real or complex transcendental numbers exist, a more direct
-proof is given by `Liouville.is_transcendental`.
+proof is given by `Liouville.transcendental`.
 -/
 
 
