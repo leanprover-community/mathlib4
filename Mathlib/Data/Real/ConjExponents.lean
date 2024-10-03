@@ -255,7 +255,7 @@ variable {a b p q : ℝ≥0∞} (h : p.IsConjExponent q)
   refine ⟨fun h ↦ ⟨?_, ?_⟩, ?_⟩
   · simpa using (ENNReal.lt_add_right (fun hp ↦ by simp [hp] at h) <| by simp).trans_eq h
   · rw [← coe_inv, ← coe_inv] at h
-    norm_cast at h
+    · norm_cast at h
     all_goals rintro rfl; simp at h
   · rintro ⟨hp, h⟩
     rw [← coe_inv (zero_lt_one.trans hp).ne', ← coe_inv, ← coe_add, h, coe_one]
