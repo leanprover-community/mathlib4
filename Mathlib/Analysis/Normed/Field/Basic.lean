@@ -443,6 +443,12 @@ lemma nnnorm_sub_mul_le (ha : ‖a‖₊ ≤ 1) : ‖c - a * b‖₊ ≤ ‖c - 
 chord length is a metric on the unit complex numbers. -/
 lemma nnnorm_sub_mul_le' (hb : ‖b‖₊ ≤ 1) : ‖c - a * b‖₊ ≤ ‖1 - a‖₊ + ‖c - b‖₊ := norm_sub_mul_le' hb
 
+/-- A homomorphism `f` between semi_normed_rings is bounded if there exists a positive
+  constant `C` such that for all `x` in `α`, `norm (f x) ≤ C * norm x`. -/
+def RingHom.IsBounded {α : Type*} [SeminormedRing α] {β : Type*} [SeminormedRing β]
+    (f : α →+* β) : Prop :=
+  ∃ C : ℝ, 0 < C ∧ ∀ x : α, norm (f x) ≤ C * norm x
+
 end SeminormedRing
 
 section NonUnitalNormedRing
@@ -585,6 +591,12 @@ instance Prod.normedCommRing [NormedCommRing β] : NormedCommRing (α × β) :=
 instance MulOpposite.instNormedCommRing : NormedCommRing αᵐᵒᵖ where
   __ := instNormedRing
   __ := instSeminormedCommRing
+
+/-- The restriction of a power-multiplicative function to a subalgebra is power-multiplicative. -/
+theorem IsPowMul.restriction {R S : Type*} [NormedCommRing R] [CommRing S] [Algebra R S]
+    (A : Subalgebra R S) {f : S → ℝ} (hf_pm : IsPowMul f) :
+    IsPowMul fun x : A => f x.val := fun x n hn => by
+  simpa [SubsemiringClass.coe_pow] using hf_pm (↑x) hn
 
 end NormedCommRing
 
