@@ -446,16 +446,6 @@ theorem comp_X_add_C_eq_zero_iff {p : R[X]} (t : R) :
 theorem comp_X_add_C_ne_zero_iff {p : R[X]} (t : R) :
     p.comp (X + C t) ≠ 0 ↔ p ≠ 0 := Iff.not <| comp_X_add_C_eq_zero_iff t
 
-theorem dvd_comp_X_sub_C_iff (p q : R[X]) (a : R) :
-    p ∣ q.comp (X - C a) ↔ p.comp (X + C a) ∣ q := by
-  convert (map_dvd_iff <| algEquivAevalXAddC a).symm using 2
-  rw [C_eq_algebraMap, algEquivAevalXAddC_apply, ← comp_eq_aeval]
-  simp [comp_assoc]
-
-theorem dvd_comp_X_add_C_iff (p q : R[X]) (a : R) :
-    p ∣ q.comp (X + C a) ↔ p.comp (X - C a) ∣ q := by
-  simpa using dvd_comp_X_sub_C_iff p q (-a)
-
 theorem rootMultiplicity_eq_rootMultiplicity {p : R[X]} {t : R} :
     p.rootMultiplicity t = (p.comp (X + C t)).rootMultiplicity 0 := by
   classical
