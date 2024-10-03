@@ -700,7 +700,7 @@ namespace MeasureTheory
 variable {X : Type*} [MeasurableSpace X] {𝕜 : Type*} [RCLike 𝕜] {μ : Measure X} {s : Set X}
 theorem IntegrableOn.iff_ofReal {f : X → ℝ} :
     IntegrableOn f s μ ↔ IntegrableOn (fun x ↦ (f x : ℂ)) s μ :=
-    MeasureTheory.Integrable.iff_ofReal
+  MeasureTheory.Integrable.iff_ofReal
 
 theorem IntegrableOn.ofReal {f : X → ℝ} (hf : IntegrableOn f s μ) :
     IntegrableOn (fun x => (f x : 𝕜)) s μ := by
@@ -712,7 +712,7 @@ theorem IntegrableOn.re_im_iff {f : X → 𝕜} :
     IntegrableOn f s μ := Integrable.re_im_iff (f := f)
 
 theorem IntegrableOn.re {f : X → 𝕜} (hf : IntegrableOn f s μ) :
-    IntegrableOn (fun x => RCLike.re (f x)) s μ  := (IntegrableOn.re_im_iff.2 hf).left
+    IntegrableOn (fun x => RCLike.re (f x)) s μ := (IntegrableOn.re_im_iff.2 hf).left
 
 theorem IntegrableOn.im {f : X → 𝕜} (hf : IntegrableOn f s μ) :
     IntegrableOn (fun x => RCLike.im (f x)) s μ := (IntegrableOn.re_im_iff.2 hf).right

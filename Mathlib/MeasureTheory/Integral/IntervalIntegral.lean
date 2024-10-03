@@ -602,10 +602,10 @@ nonrec theorem integral_ofReal {a b : ℝ} {μ : Measure ℝ} {f : ℝ → ℝ} 
 theorem intervalIntegral_re {μ : Measure ℝ} {a b : ℝ} {f : ℝ → ℂ} (hab: a ≤ b)
     (hf: IntervalIntegrable f μ a b) :
     (∫ x in (a)..b, (f x).re ∂μ) = (∫ x in (a)..b, f x ∂μ).re := by
-    repeat rw [intervalIntegral.integral_of_le hab]
-    apply setIntegral_re
-    rw [← intervalIntegrable_iff_integrableOn_Ioc_of_le hab]
-    exact hf
+  repeat rw [intervalIntegral.integral_of_le hab]
+  apply setIntegral_re
+  rw [← intervalIntegrable_iff_integrableOn_Ioc_of_le hab]
+  exact hf
 
 section ContinuousLinearMap
 

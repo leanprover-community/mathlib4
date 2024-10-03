@@ -1146,7 +1146,7 @@ theorem Integrable.im (hf : Integrable f μ) : Integrable (fun x => RCLike.im (f
   exact hf.im
 
 lemma Integrable.iff_ofReal {f : α → ℝ} : Integrable f μ ↔ Integrable (fun x ↦ (f x : ℂ)) μ :=
-    ⟨fun hf ↦ hf.ofReal, fun hf ↦ hf.re⟩
+  ⟨fun hf ↦ hf.ofReal, fun hf ↦ hf.re⟩
 
 end RCLike
 
