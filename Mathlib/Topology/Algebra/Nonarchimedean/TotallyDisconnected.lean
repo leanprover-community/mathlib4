@@ -37,10 +37,9 @@ namespace NonarchimedeanGroup.auxiliary
 @[to_additive]
 lemma exists_openSubgroup_separating {t : G} (ht : t ≠ 1) :
     ∃ (A : Opens G) (V : OpenSubgroup G), t ∈ A ∧ 1 ∈ V ∧ Disjoint (A : Set G) V := by
-  rcases (t2_separation ht) with ⟨A, B, opena, openb, diff, one, disj⟩
-  obtain ⟨V, hV⟩ := NonarchimedeanGroup.is_nonarchimedean B (IsOpen.mem_nhds openb one)
-  exact ⟨⟨A, opena⟩, V, diff, one_mem V,
-    fun _ ↦ by apply Set.disjoint_of_subset_right hV disj⟩
+  rcases t2_separation ht with ⟨A, B, open_A, open_B, mem_A, mem_B, disj⟩
+  obtain ⟨V, hV⟩ := is_nonarchimedean B (open_B.mem_nhds mem_B)
+  exact ⟨⟨A, open_A⟩, V, mem_A, one_mem V, disj.mono_right hV⟩
 
 end NonarchimedeanGroup.auxiliary
 
