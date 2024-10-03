@@ -32,11 +32,13 @@ An idempotent semigroup is a semigroup that satisfies `x * x = x`.
 
 /-- An idempotent additive semigroup is a type with an associative idempotent `(+)`. -/
 class AddIdemSemigroup (G : Type _) extends AddSemigroup G where
+  /-- Idempotence: `x + x = x` -/
   protected add_idem : ∀ x : G, x + x = x
 
 /-- An idempotent semigroup is a type with an associative idempotent `(*)`. -/
 @[to_additive]
 class IdemSemigroup (G : Type _) extends Semigroup G where
+  /-- Idempotence: `x * x = x` -/
   protected mul_idem : ∀ x : G, x * x = x
 
 section IdemSemigroup
