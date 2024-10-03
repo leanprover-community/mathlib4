@@ -380,7 +380,19 @@ instance uniqueUnits : Unique (FreeMonoid α)ˣ where
     (List.append_eq_nil.mp this).1
 
 @[to_additive]
-theorem map_surjective {f : α → β} : Function.Surjective f → Function.Surjective (map f) := by
+theorem map_surjective {f : α → β} : Function.Surjective (map f) ↔ Function.Surjective f := by
+  constructor
+  · intro fs d
+    rcases fs (FreeMonoid.of d) with ⟨b, hb⟩
+    induction' b using FreeMonoid.inductionOn' with head _ _
+    · have H := congr_arg length hb
+      simp only [length_one, length_of, Nat.zero_ne_one, map_one] at H
+    simp only [map_mul, map_of] at hb
+    use head
+    have H := congr_arg length hb
+    simp only [length_mul, length_of, add_right_eq_self, length_eq_zero] at H
+    rw [H, mul_one] at hb
+    exact FreeMonoid.of_injective hb
   intro fs d
   induction' d using FreeMonoid.inductionOn' with head tail ih
   · use 1
