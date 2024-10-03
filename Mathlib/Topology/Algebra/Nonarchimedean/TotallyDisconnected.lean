@@ -34,11 +34,8 @@ namespace NonarchimedeanGroup.auxiliary
 
 variable {G : Type*} [TopologicalSpace G] [Group G] [NonarchimedeanGroup G] [T2Space G]
 
-variable {t : G} in
-@[to_additive]
-lemma open_subgroup_separating
-    (ht : t ≠ 1) : ∃ (A : Opens G) (V : OpenSubgroup G),
-    t ∈ A ∧ 1 ∈ V ∧ Disjoint (A : Set G) V := by
+lemma open_subgroup_separating {t : G} (ht : t ≠ 1) : 
+    ∃ (A : Opens G) (V : OpenSubgroup G), t ∈ A ∧ 1 ∈ V ∧ Disjoint (A : Set G) V := by
   rcases (t2_separation ht) with ⟨A, B, opena, openb, diff, one, disj⟩
   obtain ⟨V, hV⟩ := NonarchimedeanGroup.is_nonarchimedean B (IsOpen.mem_nhds openb one)
   exact ⟨⟨A, opena⟩, V, diff, one_mem V,
