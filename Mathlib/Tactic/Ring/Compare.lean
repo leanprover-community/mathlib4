@@ -14,7 +14,7 @@ goals of the form `A ≤ B` and `A < B` for which the ring-normal forms of `A` a
 nonnegative (resp. positive) constant.
 
 For example, `⊢ x + 3 + y < y + x + 4` is in scope because the normal forms of the LHS and RHS are,
-respectively, `3 + (x + y)` and `4 + (x + y)`, which differ by a constant.
+respectively, `3 + (x + y)` and `4 + (x + y)`, which differ by an additive constant.
 
 ## Main declarations
 
@@ -112,8 +112,8 @@ inductive ExceptType | tooSmall | notComparable
 export ExceptType (tooSmall notComparable)
 
 /-- In a commutative semiring, given `Ring.ExSum` objects `va`, `vb` which differ by a positive
-constant, construct a proof of `$a < $b`, where `a` (resp. `b`) is the expression in the semiring to
-which `va` (resp. `vb`) evaluates. -/
+(additive) constant, construct a proof of `$a < $b`, where `a` (resp. `b`) is the expression in the
+semiring to which `va` (resp. `vb`) evaluates. -/
 def evalLE {v : Level} {α : Q(Type v)} (_ : Q(OrderedCommSemiring $α)) {a b : Q($α)}
     (va : Ring.ExSum q(tc₁ $α) a) (vb : Ring.ExSum q(tc₁ $α) b) :
     MetaM (Except ExceptType Q($a ≤ $b)) := do
@@ -147,8 +147,8 @@ def evalLE {v : Level} {α : Q(Type v)} (_ : Q(OrderedCommSemiring $α)) {a b : 
   | _, _ => return .error notComparable
 
 /-- In a commutative semiring, given `Ring.ExSum` objects `va`, `vb` which differ by a positive
-constant, construct a proof of `$a < $b`, where `a` (resp. `b`) is the expression in the semiring to
-which `va` (resp. `vb`) evaluates. -/
+(additive) constant, construct a proof of `$a < $b`, where `a` (resp. `b`) is the expression in the
+semiring to which `va` (resp. `vb`) evaluates. -/
 def evalLT {v : Level} {α : Q(Type v)} (_ : Q(StrictOrderedCommSemiring $α)) {a b : Q($α)}
     (va : Ring.ExSum q(tc₄ $α) a) (vb : Ring.ExSum q(tc₄ $α) b) :
     MetaM (Except ExceptType Q($a < $b)) := do
@@ -191,7 +191,7 @@ theorem lt_congr {α : Type*} [LT α] {a b c d : α} (h1 : a = b) (h2 : b < c) (
   rwa [h1, h3]
 
 /-- Prove goals of the form `A ≤ B` in a commutative semiring, if the ring-normal forms of `A` and
-`B` differ by a nonnegative constant. -/
+`B` differ by a nonnegative (additive) constant. -/
 def proveLE (g : MVarId) : MetaM Unit := do
   let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars <|← g.getType).le?
     | throwError "ring failed: not of the form `A ≤ B`"
@@ -210,11 +210,11 @@ def proveLE (g : MVarId) : MetaM Unit := do
     let g' ← mkFreshExprMVar (← (← ringCleanupRef.get) q($a ≤ $b))
     match e with
     | notComparable =>
-      throwError "ring failed, ring expressions not equal up to a constant\n{g'.mvarId!}"
+      throwError "ring failed, ring expressions not equal up to an additive constant\n{g'.mvarId!}"
     | tooSmall => throwError "comparison failed, LHS is larger\n{g'.mvarId!}"
 
 /-- Prove goals of the form `A < B` in a commutative semiring, if the ring-normal forms of `A` and
-`B` differ by a positive constant. -/
+`B` differ by a positive (additive) constant. -/
 def proveLT (g : MVarId) : MetaM Unit := do
   let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars <|← g.getType).lt?
     | throwError "ring failed: not of the form `A < B`"
@@ -233,7 +233,7 @@ def proveLT (g : MVarId) : MetaM Unit := do
     let g' ← mkFreshExprMVar (← (← ringCleanupRef.get) q($a < $b))
     match e with
     | notComparable =>
-      throwError "ring failed, ring expressions not equal up to a constant\n{g'.mvarId!}"
+      throwError "ring failed, ring expressions not equal up to an additive constant\n{g'.mvarId!}"
     | tooSmall => throwError "comparison failed, LHS is at least as large\n{g'.mvarId!}"
 
 end Mathlib.Tactic.Ring
