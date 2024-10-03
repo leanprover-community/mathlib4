@@ -204,13 +204,13 @@ private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Fintype
       intro s s_dim
       letI : UniformAddGroup s := s.toAddSubgroup.uniformAddGroup
       let b := Basis.ofVectorSpace 𝕜 s
-      have U : UniformEmbedding b.equivFun.symm.toEquiv := by
+      have U : IsUniformEmbedding b.equivFun.symm.toEquiv := by
         have : Fintype.card (Basis.ofVectorSpaceIndex 𝕜 s) = n := by
           rw [← s_dim]
           exact (finrank_eq_card_basis b).symm
         have : Continuous b.equivFun := IH b this
         exact
-          b.equivFun.symm.uniformEmbedding b.equivFun.symm.toLinearMap.continuous_on_pi this
+          b.equivFun.symm.isUniformEmbedding b.equivFun.symm.toLinearMap.continuous_on_pi this
       have : IsComplete (s : Set E) :=
         completeSpace_coe_iff_isComplete.1 ((completeSpace_congr U).1 inferInstance)
       exact this.isClosed
@@ -490,7 +490,7 @@ variable (𝕜 E : Type*) [NontriviallyNormedField 𝕜]
 include 𝕜 in
 theorem FiniteDimensional.complete [FiniteDimensional 𝕜 E] : CompleteSpace E := by
   set e := ContinuousLinearEquiv.ofFinrankEq (@finrank_fin_fun 𝕜 _ _ (finrank 𝕜 E)).symm
-  have : UniformEmbedding e.toEquiv.symm := e.symm.uniformEmbedding
+  have : IsUniformEmbedding e.toEquiv.symm := e.symm.isUniformEmbedding
   exact (completeSpace_congr this).1 inferInstance
 
 variable {𝕜 E}

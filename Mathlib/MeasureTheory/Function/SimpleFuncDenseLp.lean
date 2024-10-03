@@ -679,16 +679,18 @@ variable [Fact (1 ≤ p)]
 protected theorem uniformContinuous : UniformContinuous ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
   uniformContinuous_comap
 
-protected theorem uniformEmbedding : UniformEmbedding ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
-  uniformEmbedding_comap Subtype.val_injective
+lemma isUniformEmbedding : IsUniformEmbedding ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
+  isUniformEmbedding_comap Subtype.val_injective
+
+@[deprecated (since := "2024-10-01")] alias uniformEmbedding := isUniformEmbedding
 
 protected theorem uniformInducing : UniformInducing ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
-  simpleFunc.uniformEmbedding.toUniformInducing
+  simpleFunc.isUniformEmbedding.toUniformInducing
 
 lemma isDenseEmbedding (hp_ne_top : p ≠ ∞) :
     IsDenseEmbedding ((↑) : Lp.simpleFunc E p μ → Lp E p μ) := by
   borelize E
-  apply simpleFunc.uniformEmbedding.isDenseEmbedding
+  apply simpleFunc.isUniformEmbedding.isDenseEmbedding
   intro f
   rw [mem_closure_iff_seq_limit]
   have hfi' : Memℒp f p μ := Lp.memℒp f
