@@ -138,7 +138,7 @@ lemma isClosed_nullSpace : IsClosed (@nullSpace M _ : Set M) := by
       _ = ‖y‖ := by rw [sub_sub_self x y]
     exact ne_of_gt (lt_of_le_of_lt (div_nonneg (norm_nonneg x) (zero_le_two)) this)
 
-instance : Nonempty (@nullSpace M).carrier := ⟨0, nullSpace.zero_mem'⟩
+instance : Nonempty (@nullSpace M) := ⟨0⟩
 
 /-- The definition of the norm on the quotient by an additive subgroup. -/
 noncomputable instance normOnSeparationQuotient : Norm (SeparationQuotient M) where
