@@ -348,7 +348,6 @@ def Realize (φ : T.Formula α) {M : Type*} [L.Structure M] [M ⊨ T] [Nonempty 
   Quotient.lift (fun (ψ : L.Formula α) => ψ.Realize v)
     (fun _ _ h => iff_eq_eq.mp (Iff.realize_iff h)) φ
 
-@[simp]
 lemma realize_coe (φ : L.Formula α) {M : Type*} [L.Structure M] [M ⊨ T] [Nonempty M] (v : α → M) :
     Formula.Realize (↑φ : T.Formula α) v ↔ φ.Realize v := by
   simp only [Realize, toAntisymmetrization, Quotient.lift_mk]
