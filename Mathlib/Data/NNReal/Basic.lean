@@ -946,7 +946,7 @@ theorem iInf_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨅ i, f i = 0 := by
 @[simp]
 theorem iInf_const_zero {α : Sort*} : ⨅ _ : α, (0 : ℝ≥0) = 0 := by
   rw [← coe_inj, coe_iInf]
-  exact Real.ciInf_const_zero
+  exact Real.iInf_const_zero
 
 theorem iInf_mul (f : ι → ℝ≥0) (a : ℝ≥0) : iInf f * a = ⨅ i, f i * a := by
   rw [← coe_inj, NNReal.coe_mul, coe_iInf, coe_iInf]
