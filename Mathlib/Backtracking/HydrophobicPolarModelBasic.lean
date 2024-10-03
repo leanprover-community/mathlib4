@@ -9,7 +9,7 @@ import Batteries.Data.List.Basic
 import Mathlib.Data.Vector.Basic
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Tactic.Linarith.Lemmas
-import Mathlib.Tactic.Ring.RingNF
+import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Linarith.Frontend
 import Mathlib.Algebra.BigOperators.Group.Finset
 
@@ -128,9 +128,10 @@ def rect₃Map (a : Fin 3) : ℤ×ℤ := match a with
 
 /-- Three directions: left, right, up. Allows for polynomial-time optimal folding. -/
 def rect₃ (a : Fin 3) (x: ℤ×ℤ) : ℤ×ℤ := x + rect₃Map a
-/- The four directions as a map. -/
+/-- The four directions as a map. -/
 def rect (a : Fin 4) (x: ℤ×ℤ) : ℤ×ℤ := x + rectMap a
 
+/-- . -/
 abbrev κ := rect
 
 
@@ -313,6 +314,7 @@ def is_embedding {α:Type} {b₀ b₁ : ℕ} (go₀ : Fin b₀ → α → α) (g
 def embeds_in_strongly {α:Type} {b₀ b₁ : ℕ} (go₀ : Fin b₀ → α → α) (go₁ : Fin b₁ → α → α) :=
   ∃ f : Fin b₀ → α → Fin b₁, is_embedding go₀ go₁ f
 
+/-- . -/
 infix:50 " ≼ " => embeds_in_strongly
 
 /-- Embedding of move sets is transitive. -/

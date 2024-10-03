@@ -115,7 +115,7 @@ def morfF {l : ℕ} {b₀ b₁ : ℕ} (f : Fin b₀ → Fin b₁) (v : Fin l →
     Fin l → (Fin b₁) := fun i ↦ f (v i)
 
 /-- . -/
-def morf_list {α:Type} [OfNat α 0] {b₀ b₁ : ℕ} (f : Fin b₀ → Fin b₁) (v : List (Fin b₀)) :
+def morf_list {b₀ b₁ : ℕ} (f : Fin b₀ → Fin b₁) (v : List (Fin b₀)) :
     List (Fin b₁) := List.map f v
 
 /-- finished March 8, 2024 -/
@@ -370,7 +370,7 @@ lemma path_at_len {α: Type} (base :α) {β: Type}
     (path_at base go moves.1).1.length = l.succ := by rw [(path_at base go moves.1).2]; simp
 
 /-- . -/
-def pathᵥ {l:ℕ}{α:Type} [OfNat α 0] [DecidableEq α] {β : Type} (go : β → α → α)
+def pathᵥ {l:ℕ}{α:Type} [OfNat α 0] {β : Type} (go : β → α → α)
     (moves : Vector β l) : Vector α l.succ := ⟨(path go moves.1).1,path_len _ _⟩
 
 /-- . -/
@@ -382,7 +382,7 @@ lemma pathᵥ_len {α: Type} [OfNat α 0] [DecidableEq α] {β: Type}
     (go: β → α → α) {l: ℕ} (moves: Vector β l) : (pathᵥ go moves).length = l.succ := by simp
 
 /-- . -/
-def pathᵥ_at {l:ℕ}{α:Type} (base : α) [DecidableEq α] {β : Type} (go : β → α → α)
+def pathᵥ_at {l:ℕ}{α:Type} (base : α) {β : Type} (go : β → α → α)
     (moves : Vector β l) : Vector α l.succ :=
   ⟨(path_at base go moves.1).1,path_at_len _ _ _⟩
 
@@ -393,7 +393,7 @@ def pt_dir {α:Type} [OfNat α 0] [DecidableEq α] {β : Type} (go : β → α �
   ph.get i ∧ ph.get j ∧ i.1.succ < j ∧ (pathᵥ go moves).get j = go a ((pathᵥ go moves).get i)
 
 /-- . -/
-theorem unique_loc  {α: Type} [OfNat α 0] [DecidableEq α] {β: Type} [Fintype β]
+theorem unique_loc  {α: Type} [OfNat α 0] [DecidableEq α] {β: Type}
     {go: β → α → α}
     {l:ℕ} {j: Fin l.succ}
     {moves: Vector β l} {ph : Vector Bool l.succ}
@@ -404,7 +404,7 @@ theorem unique_loc  {α: Type} [OfNat α 0] [DecidableEq α] {β: Type} [Fintype
   path_inj (right_inj a (Eq.trans hai₀.2.2.2.symm hai₁.2.2.2))
 
 /-- . -/
-theorem unique_dir {α: Type} [OfNat α 0] [DecidableEq α] {β: Type} [Fintype β]
+theorem unique_dir {α: Type} [OfNat α 0] [DecidableEq α] {β: Type}
     {go: β → α → α} {l:ℕ} (j: Fin l.succ)
     (moves: Vector β l) (ph : Vector Bool l.succ)
     (left_inj : left_injective go)
@@ -431,7 +431,7 @@ theorem unique_loc_dir {α: Type} [OfNat α 0] [DecidableEq α] {β: Type} [Fint
 
 /-- left_injective f
  which we can prove for tri_rect_embedding although it's harder than left_injective_tri! -/
-theorem left_injective_of_embeds_in_strongly {α: Type} [DecidableEq α]
+theorem left_injective_of_embeds_in_strongly {α: Type}
     {b : ℕ}
     {go₀ go₁ : Fin b → α → α}
     (f: Fin b → α → Fin b)
@@ -752,7 +752,7 @@ lemma ne_nil_of_succ_length {α :Type} {k:ℕ} (tail_ih: Vector α k.succ) : tai
 
 
 /-- . -/
-lemma path_eq_path_morph {α:Type} [OfNat α 0] [DecidableEq α] {b₀ b₁ : ℕ} (f : Fin b₀ → α → Fin b₁)
+lemma path_eq_path_morph {α:Type} [OfNat α 0] {b₀ b₁ : ℕ} (f : Fin b₀ → α → Fin b₁)
     (go₀ : Fin b₀ → α → α) (go₁ : Fin b₁ → α → α) (g : is_embedding go₀ go₁ f)
     (moves : List (Fin b₀)) :
   (path go₀ moves).1 = (path go₁ (morph f go₀ moves)).1 := by
@@ -795,7 +795,7 @@ lemma pathᵥ_eq_path_morphᵥ {l:ℕ} {α:Type} [OfNat α 0] [DecidableEq α] {
     <| pathᵥ_eq_path_morphᵥ1 f go₀ go₁ g moves
 
 /-- . -/
-def path_transformed {α: Type} [OfNat α 0] [DecidableEq α] {b₀ b₁: ℕ}
+def path_transformed {α: Type} [OfNat α 0] {b₀ b₁: ℕ}
     (f: Fin b₀ → α → Fin b₁) (go₀: Fin b₀ → α → α) (go₁: Fin b₁ → α → α)
     (l: List (Fin b₀)) : Vector α l.length.succ :=
   ⟨
@@ -916,7 +916,7 @@ theorem pts_tot_bound_exists {α:Type} [OfNat α 0] [DecidableEq α] {β : Type}
   ⟨l * l.pred / 2, fun moves _ =>
     pts_earned_bound_loc'_improved go ph (⟨(path go moves.1).1,path_len _ _⟩)⟩
 
-/- HP is the HP protein folding model "objective function" or "value function": -/
+/-- HP is the HP protein folding model "objective function" or "value function": -/
 def HP {α:Type} [OfNat α 0] [DecidableEq α] {β : Type} [Fintype β]
     (go : β → α → α) {l:ℕ} (ph : Vector Bool l.succ) :ℕ := Nat.find (pts_tot_bound_exists go ph)
 /- ph has to be of succ type because there will at least be an amino acid at the origin. -/

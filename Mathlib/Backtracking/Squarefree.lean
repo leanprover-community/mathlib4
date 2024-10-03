@@ -9,12 +9,10 @@ import Mathlib.Tactic.Linarith.Frontend
 import Mathlib.Tactic.Ring.Basic
 import Mathlib.Tactic.Zify
 import Mathlib.Data.Vector.Defs
-
 import Mathlib.Data.Vector.Basic
-import Mathlib.Data.Nat.Digits
 import Mathlib.Data.Vector.Defs
 
-/-
+/-!
 
 https://cstheory.stackexchange.com/questions/31787/embedding-a-language-in-itself
 

@@ -10,9 +10,8 @@ import Mathlib.Data.Vector.Defs
 import Batteries.Data.List.Basic
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Vector.Basic
-import Mathlib.Data.Nat.Digits
 import Mathlib.Backtracking.HydrophobicPolarModel
-
+import Mathlib.Tactic.FinCases
 /-!
 # Hydrophobic-polar protein folding model: automatic use of backtracking
 
@@ -220,24 +219,23 @@ theorem reflect_preserves_nearby {u v : ℤ × ℤ} (huv: nearby rect u v) :
   trafo_preserves_nearby _ _ huv _ reflectIndex reflect_basic
 
 
-/-- roeu = rotate, essentially unary. NOT ALLOWED because of unused argument? -/
-def roeu (a : Fin 4) := fun _ : ℤ×ℤ ↦ rotateIndex a
+-- roeu = rotate, essentially unary. NOT ALLOWED because of unused argument.
+-- def roeu (a : Fin 4) := fun _ : ℤ×ℤ ↦ rotateIndex a
 
-/-- reeu = reflect,essentially unary -/
-def reeu (a : Fin 4) := fun _ : ℤ×ℤ ↦ reflectIndex a
+-- reeu = reflect,essentially unary
+-- def reeu (a : Fin 4) := fun _ : ℤ×ℤ ↦ reflectIndex a
 
-/-- . -/
-abbrev ρ := roeu
+-- abbrev ρ := roeu -- fun a _ => reflectIndex a
 
 /-- This can be generalized to be in terms of "trafo_eu" -/
 lemma rot_length₀ (moves: List (Fin 4)) (k: Fin (Vector.length (path rect moves))) :
-    k.1 < Nat.succ (List.length (morph roeu rect moves)) := by
+    k.1 < Nat.succ (List.length (morph (fun a _ => rotateIndex a) rect moves)) := by
   rw [morph_len]
   simp
 
 /-- . -/
 lemma ref_length₀ (moves: List (Fin 4)) (k: Fin (Vector.length (path rect moves))) :
-    k.1 < Nat.succ (List.length (morph reeu rect moves)) := by
+    k.1 < Nat.succ (List.length (morph (fun a _ => reflectIndex a) rect moves)) := by
   rw [morph_len]
   simp
 
@@ -258,14 +256,14 @@ theorem path_len_aux₁ {hd: Fin 4} {tl: List (Fin 4)} (k: Fin <|Vector.length <
 /-- . -/
 theorem morph_path_succ_aux {hd: Fin 4} {tl: List (Fin 4)}
     (k: Fin (Vector.length (path rect (hd :: tl)))) {s: ℕ} (hs: k.1 = Nat.succ s) :
-    s < Nat.succ (List.length (morph roeu rect tl)) := by
+    s < Nat.succ (List.length (morph (fun a _ => rotateIndex a) rect tl)) := by
   rw [morph_len]
   exact path_len_aux₁ k hs
 
 /-- . -/
 theorem morph_path_succ_aux_reeu {hd: Fin 4} {tl: List (Fin 4)}
     (k: Fin (Vector.length (path rect (hd :: tl)))) {s: ℕ} (hs: k.1 = Nat.succ s) :
-    s < Nat.succ (List.length (morph reeu rect tl)) := by
+    s < Nat.succ (List.length (morph (fun a _ => reflectIndex a) rect tl)) := by
   rw [morph_len]
   exact path_len_aux₁ k hs
 
@@ -305,7 +303,8 @@ lemma reflect_morf_list (moves: List (Fin 4)) (k : Fin (path rect moves).length)
  (reflect_morph and rotate_morph can have a common generalization) -/
 lemma reflect_morph (moves: List (Fin 4)) (k : Fin (path rect moves).length):
     reflect ((path rect                  moves ).get  k) =
-             (path rect (morph reeu rect moves)).get ⟨k.1, ref_length₀ moves k⟩ := by
+             (path rect (morph (fun a _ => reflectIndex a) rect moves)).get
+             ⟨k.1, ref_length₀ moves k⟩ := by
   induction moves with
   | nil => (have : k = 0 := Fin.ext (Fin.coe_fin_one k));subst this;rfl
   | cons hd tl tail_ih =>
@@ -326,7 +325,8 @@ lemma reflect_morph (moves: List (Fin 4)) (k : Fin (path rect moves).length):
 /-- . -/
 lemma rotate_morph (moves: List (Fin 4)) (k : Fin (path rect moves).length):
     rotate ((path rect                  moves ).get  k) =
-            (path rect (morph roeu rect moves)).get ⟨k.1, rot_length₀ moves k⟩ := by
+            (path rect (morph (fun a _ => rotateIndex a) rect moves)).get
+            ⟨k.1, rot_length₀ moves k⟩ := by
   induction moves with
   | nil => (have : k = 0 := Fin.ext (Fin.coe_fin_one k));subst this;rfl
   | cons hd tl tail_ih =>
@@ -351,7 +351,7 @@ lemma rotate_morph (moves: List (Fin 4)) (k : Fin (path rect moves).length):
 -/
 lemma rotate_morphᵥ {l: ℕ} {moves: Vector (Fin 4) l} (k : Fin l.succ):
     rotate ((pathᵥ κ                moves).get  k) =
-            (pathᵥ κ (morphᵥ roeu κ moves)).get k := by
+            (pathᵥ κ (morphᵥ (fun a _ => rotateIndex a) κ moves)).get k := by
   have : k.1 < Vector.length (path κ moves.1) := by
     have R := (path κ moves.1).2
     have : (path κ moves.1).length
@@ -366,7 +366,7 @@ lemma rotate_morphᵥ {l: ℕ} {moves: Vector (Fin 4) l} (k : Fin l.succ):
 /-- reflect_morphᵥ is exactly same proof as rotate_morphᵥ -/
 lemma reflect_morphᵥ {l: ℕ} {moves: Vector (Fin 4) l} (k : Fin l.succ):
     reflect ((pathᵥ κ                moves).get  k) =
-             (pathᵥ κ (morphᵥ reeu κ moves)).get k := by
+             (pathᵥ κ (morphᵥ (fun a _ => reflectIndex a) κ moves)).get k := by
   have : k.1 < Vector.length (path κ moves.1) := by
     let R := (path κ moves.1).2
     have : (path κ moves.1).length
@@ -396,7 +396,7 @@ lemma reflect_morf {l: ℕ} {moves: Vector (Fin 4) l} (k : Fin l.succ):
 /-- Finished March 6, 2024. Improving rotate_preserves_pt_loc. -/
 theorem rotate_preserves_pt_loc' {l:ℕ} (moves : Vector (Fin 4) l) (i j : Fin l.succ)
     (ph: Vector Bool l.succ) (hpt: pt_loc κ (π κ moves)  i j ph) :
-                                   pt_loc κ (π κ (morphᵥ roeu κ moves)) i j ph := by
+    pt_loc κ (π κ (morphᵥ (fun a _ => rotateIndex a) κ moves)) i j ph := by
   unfold pt_loc at *
   simp only [Bool.and_eq_true, decide_eq_true_eq] at *
   have R := rotate_preserves_nearby hpt.2
@@ -408,7 +408,7 @@ theorem rotate_preserves_pt_loc' {l:ℕ} (moves : Vector (Fin 4) l) (i j : Fin l
 /-- just like rotate_preserves_pt_loc' -/
 theorem reflect_preserves_pt_loc' {l:ℕ} (moves : Vector (Fin 4) l) (i j : Fin l.succ)
     (ph: Vector Bool l.succ) (hpt: pt_loc κ (π κ moves)  i j ph) :
-                                   pt_loc κ (π κ (morphᵥ reeu κ moves)) i j ph := by
+    pt_loc κ (π κ (morphᵥ (fun a _ => reflectIndex a) κ moves)) i j ph := by
   unfold pt_loc at *
   simp only [Bool.and_eq_true, decide_eq_true_eq] at *
   have R := reflect_preserves_nearby hpt.2
@@ -428,7 +428,7 @@ theorem reflect_preserves_pt_loc'_morf {l:ℕ} (moves : Vector (Fin 4) l) (i j :
 /-- Completed March 6, 2024. So easy :) -/
 theorem rotate_pts'_atᵥ {l : ℕ} (k : Fin l.succ) (ph : Vector Bool l.succ)
     (moves : Vector (Fin 4) l) : pts_at' κ k ph (π κ moves) ≤
-                                 pts_at' κ k ph (π κ (σ ρ κ moves)) :=
+                                 pts_at' κ k ph (π κ (σ (fun a _ => rotateIndex a) κ moves)) :=
   card_le_card fun i hi => by
   simp only [mem_filter, mem_univ, true_and] at *
   exact rotate_preserves_pt_loc' moves i k ph hi
@@ -439,7 +439,7 @@ theorem rotate_pts'_atᵥ {l : ℕ} (k : Fin l.succ) (ph : Vector Bool l.succ)
 theorem reflect_pts'_atᵥ {l:ℕ} (k : Fin l.succ) (ph : Vector Bool l.succ)
     (moves : Vector (Fin 4) l):
     pts_at' κ k ph (π κ moves) ≤
-    pts_at' κ k ph (π κ (σ reeu κ moves)) :=
+    pts_at' κ k ph (π κ (σ (fun a _ => reflectIndex a) κ moves)) :=
   card_le_card fun i hi => by
   simp only [mem_filter, mem_univ, true_and] at *
   exact reflect_preserves_pt_loc' moves i k ph hi
@@ -455,7 +455,8 @@ theorem reflect_pts'_atᵥ_morf {l:ℕ} (k : Fin l.succ) (ph : Vector Bool l.suc
 /-- . -/
 theorem rotate_pts_tot {l : ℕ} (ph : Vector Bool l.succ) (moves : Vector (Fin 4) l) :
     pts_tot' κ ph (π κ moves) ≤
-    pts_tot' κ ph (π κ (σ ρ κ moves)) := sum_le_sum fun _ _ => rotate_pts'_atᵥ _ _ _
+    pts_tot' κ ph (π κ (σ (fun a _ => rotateIndex a) κ moves)) :=
+  sum_le_sum fun _ _ => rotate_pts'_atᵥ _ _ _
 
 /-- 3/8/24 -/
 theorem reflect_pts_tot_morf {l : ℕ} (ph : Vector Bool l.succ)(moves : Vector (Fin 4) l) :
@@ -466,7 +467,8 @@ theorem reflect_pts_tot_morf {l : ℕ} (ph : Vector Bool l.succ)(moves : Vector 
 /-- . -/
 theorem reflect_pts_tot {l : ℕ} (ph : Vector Bool l.succ)(moves : Vector (Fin 4) l) :
     pts_tot' κ ph (π κ moves) ≤
-    pts_tot' κ ph (π κ (σ reeu κ moves)) := sum_le_sum fun _ _ => reflect_pts'_atᵥ _ _ _
+    pts_tot' κ ph (π κ (σ (fun a _ => reflectIndex a) κ moves)) :=
+  sum_le_sum fun _ _ => reflect_pts'_atᵥ _ _ _
 
 /-- now we want to argue that we can always rotate to make moves start with 0, since: -/
 theorem rotate_until_right (k : Fin 4) :
@@ -478,7 +480,7 @@ theorem rotate_until_right (k : Fin 4) :
 
 /-- . -/
 theorem rotate_head {l : ℕ} (moves: Vector (Fin 4) (Nat.succ l)) :
-    rotateIndex (Vector.head moves) = Vector.head (σ ρ κ moves) := by
+    rotateIndex (Vector.head moves) = Vector.head (σ (fun a _ => rotateIndex a) κ moves) := by
   obtain ⟨a,⟨u,hu⟩⟩ := Vector.exists_eq_cons moves
   rw [hu, Vector.head_cons]
   rfl
@@ -492,9 +494,9 @@ theorem towards_orderlyish {l:ℕ} (ph : Vector Bool l.succ.succ) (moves : Vecto
     ∃ moves', moves'.get 0 = 0 ∧ pts_tot' κ ph (π κ moves) ≤
                                  pts_tot' κ ph (π κ moves') := by
   let m₀ := moves
-  let m₁ := (σ ρ κ m₀)
-  let m₂ := (σ ρ κ m₁)
-  let m₃ := (σ ρ κ m₂)
+  let m₁ := (σ (fun a _ => rotateIndex a) κ m₀)
+  let m₂ := (σ (fun a _ => rotateIndex a) κ m₁)
+  let m₃ := (σ (fun a _ => rotateIndex a) κ m₂)
   cases rotate_until_right (moves.get 0) with
   | inl => use m₀
   | inr h =>
@@ -678,9 +680,9 @@ instance  (go : Fin 4 → ℤ×ℤ → ℤ×ℤ) (ph : List Bool) (p : ℕ) :
 
 
 /-- Now use this to characterize. First add "M.Q". -/
-theorem using_backtracking_verification₀ {k L p b : ℕ}
-    (go : Fin 4 → ℤ×ℤ → ℤ×ℤ) (bound : k ≤ L.succ) (M:MonoPred b)
-    [DecidablePred M.P] (w : Vector (Fin 4) (L.succ-k))
+theorem using_backtracking_verification₀ {k L p : ℕ}
+    (go : Fin 4 → ℤ×ℤ → ℤ×ℤ) (bound : k ≤ L.succ)
+    (w : Vector (Fin 4) (L.succ-k))
     (ph : Vector Bool L.succ.succ)
     [DecidablePred (InjectivePath₄ go ph.1 p).P]
     [DecidablePred (InjectivePath₄ go ph.1 p).Q] :
@@ -691,8 +693,7 @@ theorem using_backtracking_verification₀ {k L p b : ℕ}
 
 /-- . -/
 theorem using_backtracking_verification₁ {k L p:ℕ}
-    (bound : k ≤ L.succ) (M:MonoPred 4)
-    [DecidablePred M.P]
+    (bound : k ≤ L.succ)
     (w : Vector (Fin 4) (L.succ-k))
     (ph : Vector Bool L.succ.succ)
     [DecidablePred (InjectivePath₄ rect ph.1 p).P]
@@ -749,7 +750,7 @@ infix:50 " ∼₃ " => (fun ph₀ ph₁ ↦ equifoldable rect₃ ph₀ ph₁ 2)
 infix:50 " ∼ "  => (fun ph₀ ph₁ ↦ equifoldable rect  ph₀ ph₁ 2)
 
 /-- . -/
-instance (go : Fin 4 → ℤ×ℤ → ℤ×ℤ) {l:ℕ}  (p:ℕ) :
+def equifoldable_equivalence (go : Fin 4 → ℤ×ℤ → ℤ×ℤ) {l:ℕ} (p:ℕ) :
     Equivalence (fun (ph₀ ph₁ : Vector Bool l.succ.succ) ↦ equifoldable go ph₀ ph₁ p) := {
   trans := by intro _ _ _ h₀₁ h₁₂;exact Eq.trans h₀₁ h₁₂
   refl := by intros; rfl
