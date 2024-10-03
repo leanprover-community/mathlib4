@@ -1098,6 +1098,7 @@ import Mathlib.Analysis.Convex.Cone.Extension
 import Mathlib.Analysis.Convex.Cone.InnerDual
 import Mathlib.Analysis.Convex.Cone.Pointed
 import Mathlib.Analysis.Convex.Cone.Proper
+import Mathlib.Analysis.Convex.Continuous
 import Mathlib.Analysis.Convex.Contractible
 import Mathlib.Analysis.Convex.Deriv
 import Mathlib.Analysis.Convex.EGauge
@@ -2174,6 +2175,7 @@ import Mathlib.Data.Finset.Grade
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.Finset.Interval
 import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Finset.Max
 import Mathlib.Data.Finset.MulAntidiagonal
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Finset.NatAntidiagonal
@@ -2519,6 +2521,7 @@ import Mathlib.Data.Real.GoldenRatio
 import Mathlib.Data.Real.Hyperreal
 import Mathlib.Data.Real.Irrational
 import Mathlib.Data.Real.Pi.Bounds
+import Mathlib.Data.Real.Pi.Irrational
 import Mathlib.Data.Real.Pi.Leibniz
 import Mathlib.Data.Real.Pi.Wallis
 import Mathlib.Data.Real.Pointwise
@@ -3571,6 +3574,7 @@ import Mathlib.Order.CompactlyGenerated.Intervals
 import Mathlib.Order.Compare
 import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Order.CompleteLattice
+import Mathlib.Order.CompleteLattice.Finset
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Order.CompletePartialOrder
 import Mathlib.Order.CompleteSublattice
@@ -4068,8 +4072,10 @@ import Mathlib.RingTheory.TensorProduct.MvPolynomial
 import Mathlib.RingTheory.Trace.Basic
 import Mathlib.RingTheory.Trace.Defs
 import Mathlib.RingTheory.TwoSidedIdeal.Basic
+import Mathlib.RingTheory.TwoSidedIdeal.BigOperators
 import Mathlib.RingTheory.TwoSidedIdeal.Instances
 import Mathlib.RingTheory.TwoSidedIdeal.Lattice
+import Mathlib.RingTheory.TwoSidedIdeal.Operations
 import Mathlib.RingTheory.UniqueFactorizationDomain
 import Mathlib.RingTheory.Unramified.Basic
 import Mathlib.RingTheory.Unramified.Derivations
