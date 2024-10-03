@@ -128,9 +128,6 @@ protected theorem mp {φ ψ : L.BoundedFormula α n} (h : φ ⇔[T] ψ) :
 protected theorem mpr {φ ψ : L.BoundedFormula α n} (h : φ ⇔[T] ψ) :
     ψ ⟹[T] φ := (iff_iff_imp_and_imp.1 h).2
 
-protected theorem implies {φ ψ : L.BoundedFormula α n} (h : φ ⇔[T] ψ) :
-    φ ⟹[T] ψ := (semanticallyEquivalent_iff_implies_and_implies.1 h).1
-
 @[refl]
 protected theorem refl (φ : L.BoundedFormula α n) : φ ⇔[T] φ :=
   fun M v xs => by rw [BoundedFormula.realize_iff]
@@ -200,18 +197,18 @@ protected theorem imp {φ ψ φ' ψ' : L.BoundedFormula α n} (h : φ ⇔[T] ψ)
 protected theorem sup {φ ψ φ' ψ' : L.BoundedFormula α n}
     (h : φ ⇔[T] ψ) (h' : φ' ⇔[T] ψ') :
     (φ ⊔ φ') ⇔[T] (ψ ⊔ ψ') := by
-  simp_rw [SemanticallyEquivalent, ModelsBoundedFormula, BoundedFormula.realize_iff,
+  simp_rw [Theory.Iff, ModelsBoundedFormula, BoundedFormula.realize_iff,
     BoundedFormula.realize_sup]
   exact fun M v xs => or_congr h.realize_bd_iff h'.realize_bd_iff
 
 protected theorem inf {φ ψ φ' ψ' : L.BoundedFormula α n}
     (h : φ ⇔[T] ψ) (h' : φ' ⇔[T] ψ') :
     (φ ⊓ φ') ⇔[T] (ψ ⊓ ψ') := by
-  simp_rw [SemanticallyEquivalent, ModelsBoundedFormula, BoundedFormula.realize_iff,
+  simp_rw [Theory.Iff, ModelsBoundedFormula, BoundedFormula.realize_iff,
     BoundedFormula.realize_inf]
   exact fun M v xs => and_congr h.realize_bd_iff h'.realize_bd_iff
 
-end SemanticallyEquivalent
+end Iff
 
 /-- Semantic equivalence forms an equivalence relation on formulas. -/
 def iffSetoid (T : L.Theory) : Setoid (L.BoundedFormula α n) where

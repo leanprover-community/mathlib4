@@ -113,7 +113,7 @@ theorem realize_simpleNot {n : ℕ} (φ : L.BoundedFormula α n) {v : α → M} 
 
 theorem simpleNot_semanticallyEquivalent_not {T : L.Theory} {n : ℕ} (φ : L.BoundedFormula α n) :
     (φ.simpleNot ⇔[T] φ.not) := by
-  simp only [Theory.SemanticallyEquivalent, Theory.ModelsBoundedFormula, realize_iff,
+  simp only [Theory.Iff, Theory.ModelsBoundedFormula, realize_iff,
     realize_simpleNot, realize_not, implies_true]
 
 /-- An atomic formula is either equality or a relation symbol applied to terms.
