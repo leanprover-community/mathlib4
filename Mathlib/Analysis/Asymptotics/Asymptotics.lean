@@ -1190,6 +1190,10 @@ lemma isBigO_one_nhds_ne_iff [TopologicalSpace α] {a : α} :
   · apply le_max_right
   · exact (hb hb').trans (le_max_left ..)
 
+lemma isLittleO_id_nhdsWithin {F : Type*} [NormedDivisionRing F] (s : Set F) :
+    (id : F → F) =o[nhdsWithin 0 s] (fun _ ↦ (1 : F)) :=
+  ((isLittleO_one_iff F).mpr tendsto_id).mono nhdsWithin_le_nhds
+
 end
 
 theorem isLittleO_const_iff {c : F''} (hc : c ≠ 0) :
@@ -1914,6 +1918,14 @@ theorem isBigO_atTop_iff_eventually_exists_pos {α : Type*}
     [SemilatticeSup α] [Nonempty α] {f : α → G} {g : α → G'} :
     f =O[atTop] g ↔ ∀ᶠ n₀ in atTop, ∃ c > 0, ∀ n ≥ n₀, c * ‖f n‖ ≤ ‖g n‖ := by
   simp_rw [isBigO_iff'', ← exists_prop, Subtype.exists', exists_eventually_atTop]
+
+lemma isBigO_mul_iff_isBigO_div {α F : Type*} [NormedDivisionRing F] {l : Filter α} {f g h : α → F}
+    (hf : ∀ᶠ x in l, f x ≠ 0) :
+    (fun x ↦ f x * g x) =O[l] h ↔ g =O[l] (fun x ↦ h x / f x) := by
+  rw [isBigO_iff', isBigO_iff']
+  refine ⟨fun ⟨c, hc, H⟩ ↦ ⟨c, hc, ?_⟩, fun ⟨c, hc, H⟩ ↦ ⟨c, hc, ?_⟩⟩ <;>
+  · refine H.congr <| Eventually.mp hf <| Eventually.of_forall fun x hx ↦ ?_
+    rw [norm_mul, norm_div, ← mul_div_assoc, le_div_iff₀' (norm_pos_iff.mpr hx)]
 
 end Asymptotics
 
