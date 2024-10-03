@@ -339,7 +339,7 @@ theorem isLeast_opNorm : IsLeast {c : ℝ | 0 ≤ c ∧ ∀ m, ‖f m‖ ≤ c *
 @[deprecated (since := "2024-02-02")] alias isLeast_op_norm := isLeast_opNorm
 
 theorem opNorm_nonneg : 0 ≤ ‖f‖ :=
-  Real.sInf_nonneg _ fun _ ⟨hx, _⟩ => hx
+  Real.sInf_nonneg fun _ ⟨hx, _⟩ => hx
 
 @[deprecated (since := "2024-02-02")] alias op_norm_nonneg := opNorm_nonneg
 

@@ -312,7 +312,7 @@ theorem lintegral_Lp_mul_le_Lq_mul_Lr {α} [MeasurableSpace α] {p q r : ℝ} (h
   let p2 := q / p
   let q2 := p2.conjExponent
   have hp2q2 : p2.IsConjExponent q2 :=
-    .conjExponent (by simp [p2, q2, _root_.lt_div_iff, hpq, hp0_lt])
+    .conjExponent (by simp [p2, q2, _root_.lt_div_iff₀, hpq, hp0_lt])
   calc
     (∫⁻ a : α, (f * g) a ^ p ∂μ) ^ (1 / p) = (∫⁻ a : α, f a ^ p * g a ^ p ∂μ) ^ (1 / p) := by
       simp_rw [Pi.mul_apply, ENNReal.mul_rpow_of_nonneg _ _ hp0]

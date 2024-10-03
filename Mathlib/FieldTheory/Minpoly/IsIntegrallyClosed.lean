@@ -186,4 +186,24 @@ theorem _root_.PowerBasis.ofGenMemAdjoin'_gen (B : PowerBasis R S) (hint : IsInt
 
 end AdjoinRoot
 
+section Subring
+
+variable {K L : Type*} [Field K] [Field L] [Algebra K L]
+
+variable (A : Subring K) [IsIntegrallyClosed A] [IsFractionRing A K]
+
+-- Implementation note: `inferInstance` does not work for these.
+instance : Algebra A (integralClosure A L) := Subalgebra.algebra (integralClosure A L)
+instance : SMul A (integralClosure A L) := Algebra.toSMul
+instance : IsScalarTower A ((integralClosure A L)) L :=
+  IsScalarTower.subalgebra' A L L (integralClosure A L)
+
+/-- The minimal polynomial of `x : L` over `K` agrees with its minimal polynomial over the
+integrally closed subring `A`. -/
+theorem ofSubring (x : integralClosure A L) :
+    Polynomial.map (algebraMap A K) (minpoly A x) = minpoly K (x : L) :=
+  eq_comm.mpr (isIntegrallyClosed_eq_field_fractions K L (IsIntegralClosure.isIntegral A L x))
+
+end Subring
+
 end minpoly

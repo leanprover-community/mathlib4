@@ -5,7 +5,6 @@ Authors: Lawrence Wu
 -/
 import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.Data.ZMod.Basic
-import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
 # The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`
