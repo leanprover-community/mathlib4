@@ -119,6 +119,11 @@ instance : FintypeCat.toLightProfinite.Faithful :=
 instance : FintypeCat.toLightProfinite.Full :=
   FintypeCat.toLightProfiniteFullyFaithful.full
 
+instance (X : FintypeCat.{u}) : Fintype (FintypeCat.toLightProfinite.obj X) :=
+  inferInstanceAs (Fintype X)
+
+instance (X : FintypeCat.{u}) : Fintype (LightProfinite.of X) :=  inferInstanceAs (Fintype X)
+
 end DiscreteTopology
 
 namespace LightProfinite
