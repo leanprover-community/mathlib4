@@ -30,7 +30,7 @@ lemma isLocalRingHom_of_exists_map_ne_one [MonoidHomClass F G₀ M] {f : F}
     · obtain ⟨t, ht⟩ := hf
       refine (ht ?_).elim
       have := map_mul f t 0
-      rw [←one_mul (f (t * 0)), mul_zero] at this
+      rw [← one_mul (f (t * 0)), mul_zero] at this
       exact (h.mul_right_cancel this).symm
     · exact ⟨⟨a, a⁻¹, mul_inv_cancel h, inv_mul_cancel h⟩, rfl⟩
 
