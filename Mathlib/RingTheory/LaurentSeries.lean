@@ -11,6 +11,7 @@ import Mathlib.RingTheory.HahnSeries.Summable
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.FieldTheory.RatFunc.AsPolynomial
 import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
 # Laurent Series
@@ -26,16 +27,23 @@ import Mathlib.RingTheory.Localization.FractionRing
 * Embedding of rational functions into Laurent series, provided as a coercion, utilizing
 the underlying `RatFunc.coeAlgHom`.
 * Study of the `X`-Adic valuation on the ring of Laurent series over a field
+* In `LaurentSeries.uniformContinuous_coeff` we show that sending a Laurent series to its `d`th
+coefficient is uniformly continuous, ensuring that it sends a Cauchy filter `ℱ` in `LaurentSeries K`
+to a Cauchy filter in `K`: since this latter is given the discrete topology, this provides an
+element `LaurentSeries.Cauchy.coeff ℱ d` in `K` that serves as `d`th coefficient of the Laurent
+series to which the filter `ℱ` converges.
 
 ## Main Results
 * Basic properties of Hasse derivatives
 ### About the `X`-Adic valuation:
 * The (integral) valuation of a power series is the order of the first non-zero coefficient, see
-`intValuation_le_iff_coeff_lt_eq_zero`.
+`LaurentSeries.intValuation_le_iff_coeff_lt_eq_zero`.
 * The valuation of a Laurent series is the order of the first non-zero coefficient, see
-`valuation_le_iff_coeff_lt_eq_zero`.
+`LaurentSeries.valuation_le_iff_coeff_lt_eq_zero`.
 * Every Laurent series of valuation less than `(1 : ℤₘ₀)` comes from a power series, see
-`val_le_one_iff_eq_coe`.
+`LaurentSeries.val_le_one_iff_eq_coe`.
+* The uniform space of `LaurentSeries` over a field is complete, formalized in the instance
+`instLaurentSeriesComplete`.
 
 ## Implementation details
 * Since `LaurentSeries` is just an abbreviation of `HahnSeries ℤ _`, the definition of the
@@ -464,6 +472,7 @@ end RatFunc
 
 namespace LaurentSeries
 
+
 open IsDedekindDomain.HeightOneSpectrum PowerSeries RatFunc
 
 instance : Valued (LaurentSeries K) ℤₘ₀ := Valued.mk' (PowerSeries.idealX K).valuation
@@ -609,3 +618,169 @@ theorem val_le_one_iff_eq_coe (f : LaurentSeries K) : Valued.v f ≤ (1 : ℤₘ
 end LaurentSeries
 
 end AdicValuation
+namespace LaurentSeries
+section Complete
+
+open Filter
+
+open scoped Multiplicative
+
+variable {K : Type*} [Field K]
+
+/- Sending a Laurent series to its `d`-th coefficient is uniformly continuous (independently of the
+ uniformity with which `K` is endowed). -/
+theorem uniformContinuous_coeff {uK : UniformSpace K} (d : ℤ) :
+    UniformContinuous fun f : LaurentSeries K ↦ f.coeff d := by
+  refine uniformContinuous_iff_eventually.mpr fun S hS ↦ eventually_iff_exists_mem.mpr ?_
+  let γ : ℤₘ₀ˣ := Units.mk0 (↑(Multiplicative.ofAdd (-(d + 1)))) WithZero.coe_ne_zero
+  use {P | Valued.v (P.snd - P.fst) < ↑γ}
+  refine ⟨(Valued.hasBasis_uniformity (LaurentSeries K) ℤₘ₀).mem_of_mem (by tauto), fun P hP ↦ ?_⟩
+  rw [eq_coeff_of_valuation_sub_lt K (le_of_lt hP) (lt_add_one _)]
+  exact mem_uniformity_of_eq hS rfl
+
+/-- Since extracting coefficients is uniformly continuous, every Cauchy filter in
+`laurentSeries K` gives rise to a Cauchy filter in `K` for every `d : ℤ`, and such Cauchy filter
+in `K` converges to a principal filter -/
+def Cauchy.coeff {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) : ℤ → K :=
+  let _ : UniformSpace K := ⊥
+  fun d ↦ UniformSpace.DiscreteUnif.cauchyConst rfl <| hℱ.map (uniformContinuous_coeff d)
+
+theorem Cauchy.coeff_tendsto {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) (D : ℤ) :
+    Tendsto (fun f : LaurentSeries K ↦ f.coeff D) ℱ (𝓟 {coeff hℱ D}) :=
+  let _ : UniformSpace K := ⊥
+  le_of_eq <| UniformSpace.DiscreteUnif.eq_const_of_cauchy (by rfl)
+    (hℱ.map (uniformContinuous_coeff D)) ▸ (principal_singleton _).symm
+
+/- For every Cauchy filter of Laurent series, there is a `N` such that the `n`-th coefficient
+vanishes for all `n ≤ N` and almost all series in the filter. This is an auxiliary lemma used
+to construct the limit of the Cauchy filter as a Laurent series, ensuring that the support of the
+limit is `PWO`.
+The result is true also for more general Hahn Series indexed over a partially ordered group `Γ`
+beyond the special case `Γ = ℤ`, that corresponds to Laurent Series: nevertheless the proof below
+does not generalise, as it relies on the study of the `X`-adic valuation attached to the height-one
+prime `X`, and this is peculiar to the one-variable setting. In the future we should prove this
+result in full generality and deduce the case `Γ = ℤ` from that one.-/
+lemma Cauchy.exists_lb_eventual_support {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) :
+    ∃ N, ∀ᶠ f : LaurentSeries K in ℱ, ∀ n < N, f.coeff n = (0 : K) := by
+  let entourage : Set (LaurentSeries K × LaurentSeries K) :=
+    {P : LaurentSeries K × LaurentSeries K |
+      Valued.v (P.snd - P.fst) < ((Multiplicative.ofAdd 0 : Multiplicative ℤ) : ℤₘ₀)}
+  let ζ := Units.mk0 (G₀ := ℤₘ₀) _ (WithZero.coe_ne_zero (a := (Multiplicative.ofAdd 0)))
+  obtain ⟨S, ⟨hS, ⟨T, ⟨hT, H⟩⟩⟩⟩ := mem_prod_iff.mp <| Filter.le_def.mp hℱ.2 entourage
+    <| (Valued.hasBasis_uniformity (LaurentSeries K) ℤₘ₀).mem_of_mem (i := ζ) (by tauto)
+  obtain ⟨f, hf⟩ := forall_mem_nonempty_iff_neBot.mpr hℱ.1 (S ∩ T) (inter_mem_iff.mpr ⟨hS, hT⟩)
+  obtain ⟨N, hN⟩ :  ∃ N : ℤ, ∀ g : LaurentSeries K,
+    Valued.v (g - f) ≤ ↑(Multiplicative.ofAdd (0 : ℤ)) → ∀ n < N, g.coeff n = 0 := by
+    by_cases hf : f = 0
+    · refine ⟨0, fun x hg ↦ ?_⟩
+      rw [hf, sub_zero] at hg
+      exact (valuation_le_iff_coeff_lt_eq_zero K).mp hg
+    · refine ⟨min (f.2.isWF.min (HahnSeries.support_nonempty_iff.mpr hf)) 0 - 1, fun _ hg n hn ↦ ?_⟩
+      rw [eq_coeff_of_valuation_sub_lt K hg (d := 0)]
+      · exact Function.nmem_support.mp fun h ↦
+        f.2.isWF.not_lt_min (HahnSeries.support_nonempty_iff.mpr hf) h
+        <| lt_trans hn <| Int.sub_one_lt_iff.mpr <| min_le_left _ _
+      exact lt_of_lt_of_le hn <| le_of_lt (Int.sub_one_lt_of_le <| min_le_right _ _)
+  use N
+  apply mem_of_superset (inter_mem hS hT)
+  intro g hg
+  have h_prod : (f, g) ∈ entourage := Set.prod_mono (Set.inter_subset_left (t := T))
+    (Set.inter_subset_right (s := S)) |>.trans H <| Set.mem_prod.mpr ⟨hf, hg⟩
+  exact hN g (le_of_lt h_prod)
+
+/- The support of `Cauchy.coeff` has a lower bound. -/
+theorem Cauchy.exists_lb_support {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) :
+    ∃ N, ∀ n, n < N → coeff hℱ n = 0 := by
+  let _ : UniformSpace K := ⊥
+  obtain ⟨N, hN⟩ := exists_lb_eventual_support hℱ
+  refine ⟨N, fun n hn ↦ Ultrafilter.eq_of_le_pure (hℱ.map (uniformContinuous_coeff n)).1
+      ((principal_singleton _).symm ▸ coeff_tendsto _ _) ?_⟩
+  simp only [pure_zero, nonpos_iff]
+  apply Filter.mem_of_superset hN (fun _ ha ↦ ha _ hn)
+
+/- The support of `Cauchy.coeff` is bounded below -/
+theorem Cauchy.coeff_support_bddBelow {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) :
+    BddBelow (coeff hℱ).support := by
+  refine ⟨(exists_lb_support hℱ).choose, fun d hd ↦ ?_⟩
+  by_contra hNd
+  exact hd ((exists_lb_support hℱ).choose_spec d (not_le.mp hNd))
+
+/-- To any Cauchy filter ℱ of `LaurentSeries K`, we can attach a laurent series that is the limit
+of the filter. Its `d`-th coefficient is defined as the limit of `Cauchy.coeff hℱ d`, which is
+again Cauchy but valued in the discrete space `K`. That sufficiently negative coefficients vanish
+follows from `Cauchy.coeff_support_bddBelow` -/
+def Cauchy.limit {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) : LaurentSeries K :=
+  HahnSeries.mk (coeff hℱ) <| Set.IsWF.isPWO (coeff_support_bddBelow _).wellFoundedOn_lt
+
+/- The following lemma shows that for every `d` smaller than the minimum between the integers
+produced in `Cauchy.exists_lb_eventual_support` and `Cauchy.exists_lb_support`, for almost all
+series in `ℱ` the `d`th coefficient coincides with the `d`th coefficient of `Cauchy.coeff hℱ`. -/
+theorem Cauchy.exists_lb_coeff_ne {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) :
+    ∃ N, ∀ᶠ f : LaurentSeries K in ℱ, ∀ d < N, coeff hℱ d = f.coeff d := by
+  obtain ⟨⟨N₁, hN₁⟩, ⟨N₂, hN₂⟩⟩ := exists_lb_eventual_support hℱ, exists_lb_support hℱ
+  refine ⟨min N₁ N₂, ℱ.3 hN₁ fun _ hf d hd ↦ ?_⟩
+  rw [hf d (lt_of_lt_of_le hd (min_le_left _ _)), hN₂ d (lt_of_lt_of_le hd (min_le_right _ _))]
+
+/- Given a Cauchy filter `ℱ` in the Laurent Series and a bound `D`, for almost all series in the
+filter the coefficients below `D` coincide with `Caucy.coeff hℱ`-/
+theorem Cauchy.coeff_eventually_equal {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ) {D : ℤ} :
+    ∀ᶠ f : LaurentSeries K in ℱ, ∀ d, d < D → coeff hℱ d = f.coeff d := by
+  -- `φ` sends `d` to the set of Laurent Series having `d`th coefficient equal to `ℱ.coeff`.
+  let φ : ℤ → Set (LaurentSeries K) := fun d ↦ {f | coeff hℱ d = f.coeff d}
+  have intersec₁ :
+    (⋂ n ∈ Set.Iio D, φ n) ⊆ {x : LaurentSeries K | ∀ d : ℤ, d < D → coeff hℱ d = x.coeff d} := by
+    intro _ hf
+    simpa only [Set.mem_iInter] using hf
+  -- The goal is now to show that the intersection of all `φ d` (for `d < D`) is in `ℱ`.
+  let ℓ := (exists_lb_coeff_ne hℱ).choose
+  let N := max ℓ D
+  have intersec₂ : ⋂ n ∈ Set.Iio D, φ n ⊇ (⋂ n ∈ Set.Iio ℓ, φ n) ∩ (⋂ n ∈ Set.Icc ℓ N, φ n) := by
+    simp only [Set.mem_Iio, Set.mem_Icc, Set.subset_iInter_iff]
+    intro i hi x hx
+    simp only [Set.mem_inter_iff, Set.mem_iInter, and_imp] at hx
+    by_cases H : i < ℓ
+    exacts [hx.1 _ H, hx.2 _ (le_of_not_lt H) <| le_of_lt <| lt_max_of_lt_right hi]
+  suffices (⋂ n ∈ Set.Iio ℓ, φ n) ∩ (⋂ n ∈ Set.Icc ℓ N, φ n) ∈ ℱ by
+    exact ℱ.sets_of_superset this <| intersec₂.trans intersec₁
+  /- To show that the intersection we have in sight is in `ℱ`, we use that it contains a double
+  intersection (an infinite and a finite one): by general properties of filters, we are reduced
+  to show that both terms are in `ℱ`, which is easy in light of their definition. -/
+  · simp only [Set.mem_Iio, Set.mem_Ico, inter_mem_iff]
+    constructor
+    · have := (exists_lb_coeff_ne hℱ).choose_spec
+      rw [Filter.eventually_iff] at this
+      convert this
+      ext
+      simp only [Set.mem_iInter, Set.mem_setOf_eq]; rfl
+    · rw [biInter_mem (Set.finite_Icc ℓ N)]
+      intro _ _
+      apply coeff_tendsto hℱ
+      simp only [principal_singleton, mem_pure]; rfl
+
+
+open scoped Topology
+
+/- The main result showing that the Cauchy filter tends to the `Cauchy.limit`-/
+theorem Cauchy.eventually_mem_nhds {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ)
+    {U : Set (LaurentSeries K)} (hU : U ∈ 𝓝 (Cauchy.limit hℱ)) : ∀ᶠ f in ℱ, f ∈ U := by
+  obtain ⟨γ, hU₁⟩ := Valued.mem_nhds.mp hU
+  suffices ∀ᶠ f in ℱ, f ∈ {y : LaurentSeries K | Valued.v (y - limit hℱ) < ↑γ} by
+    apply this.mono fun _ hf ↦ hU₁ hf
+  set D := -(Multiplicative.toAdd (WithZero.unzero γ.ne_zero) - 1) with hD₀
+  have hD : ((Multiplicative.ofAdd (-D) : Multiplicative ℤ) : ℤₘ₀) < γ := by
+    rw [← WithZero.coe_unzero γ.ne_zero, WithZero.coe_lt_coe, hD₀, neg_neg, ofAdd_sub,
+      ofAdd_toAdd, div_lt_comm, div_self', ← ofAdd_zero, Multiplicative.ofAdd_lt]
+    exact zero_lt_one
+  apply coeff_eventually_equal hℱ |>.mono
+  intro _ hf
+  apply lt_of_le_of_lt (valuation_le_iff_coeff_lt_eq_zero K |>.mpr _) hD
+  intro n hn
+  rw [HahnSeries.sub_coeff, sub_eq_zero, hf n hn |>.symm]; rfl
+
+/- Laurent Series with coefficients in a field are complete w.r.t. the `X`-adic valuation -/
+instance instLaurentSeriesComplete : CompleteSpace (LaurentSeries K) :=
+  ⟨fun hℱ ↦ ⟨Cauchy.limit hℱ, fun _ hS ↦ Cauchy.eventually_mem_nhds hℱ hS⟩⟩
+
+end Complete
+
+end LaurentSeries

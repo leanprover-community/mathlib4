@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Order.RelIso.Set
 import Mathlib.Data.Multiset.Sort
 import Mathlib.Data.List.NodupEquivFin
-import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Finset.Max
 import Mathlib.Data.Fintype.Card
 
 /-!
