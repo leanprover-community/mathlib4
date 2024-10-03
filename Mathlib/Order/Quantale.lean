@@ -5,19 +5,22 @@ Authors: Pieter Cuijpers
 -/
 import Mathlib.Order.CompleteLattice
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
 # Theory of quantales
 
 Quantales are the non-commutative generalization of locales/frames and as such are linked
 to point-free topology and order theory. Applications are found throughout logic,
-quantum mechanics, and computer science. Intuitively, as described by [vickers1989],
-open sets of a topology form a frame, and can be considered as modeling what is `observable`
-in a system. In behavioral systems theory, quantales come into play when making an observation
-may change the system itself. Traditionally, one would write `x ⊓ y` to describe making
-observations `x` and `y` at the same time, but when the order of observation becomes important
-due to changes in the system caused by the observation, it makes more sense to
-write `x * y` or `x + y` and consider `*` or `+` as a possibly non-commutative (additive) monoid.
+quantum mechanics, and computer science.
+
+Intuitively, as described by [vickers1989], open sets of a topology form a frame, and can be
+considered as modeling what is `observable` in a system. In behavioral systems theory, quantales
+come into play when making an observation may change the system itself. Traditionally, one would
+write `x ⊓ y` to describe making observations `x` and `y` at the same time, but when the order of
+observation becomes important due to changes in the system caused by the observation, it makes
+more sense to write `x * y` or `x + y` and consider `*` or `+` as a possibly non-commutative
+(additive) monoid.
 
 In literature, there are slight variations regarding the basic definition of quantale.
 The most general definition, is that a quantale is a semigroup distributing over a complete
@@ -34,6 +37,10 @@ in order to be maximally generic but at the same time efficient in providing all
 definitions one might at some point want to have available on quantales. Furthermore, we
 follow the wikipedia page on quantales and give the definitions for integral, commutative,
 idempotent, and involutive quantale.
+
+From the definitions it is obvious that every frame is a (commutative) quantale. Reversely,
+a basic theorem from quantale theory is that every quantale that is idempotent and integral
+(strictly two-sided), is a frame.
 
 ## Main definitions
 
@@ -75,23 +82,9 @@ idempotent, and involutive quantale.
 
 ## TODO
 
-+ The order of naming properties of quantales (i.e. `Unital`, `Idem`, `Integral`, `Add`, `Comm`)
-  is a bit awkward and arbitrary because in `ToAdditive.Frontend.lean` only `Comm` is defined
-  as an abbreviation but the others are not. Instead of `Unital` we could also write `One`
-  or `Zero` depending on whether we are in a multiplicative or additive quantale, but `Zero` is
-  defined in `ToAdditive.Frontend.lean` while `One` is not. And we could add the other
-  abbreviations as well of course, but I cannot fully see the consequences of this yet, so I
-  was intending to leave it like this for now, unless someone has a more pronounced opinion.
-
 + The actual proofs that `IdemIntegralQuantale` and `Order.Frame` coincide.
 
-+ Theory on involutive quantales should probably be developed in a separate file.
-
-+ Expand residuation definitions for `CommQuantale` to match Heyting implication
-  `x ⇨ y` : `sSup { z | x * z ≤ y }` and add the definition of complement
-  `xᶜ` : `sSup { y | x * y ≤ ⊥ }`.
 -/
-
 
 /-- An additive quantale is an additive semigroup distributing over a complete lattice. -/
 class AddQuantale (α : Type*) extends AddSemigroup α, CompleteLattice α where
@@ -145,14 +138,14 @@ class IdemQuantale (α : Type*) extends Quantale α where
   protected mul_idem (x : α) : x * x = x
 
 /-- An idempotent integral additive quantale is an idempotent additive quantale as well as
-    an integral quantale. A basic result is that such a quantale is also commutative and,
-    in fact, is a frame. I.e. the addition and infimum coinicide.
+    an integral quantale. A basic result from quantale theory is that such a quantale is
+    also commutative and, in fact, is a frame. I.e. the addition and infimum coinicide.
 -/
 class AddIdemIntegralQuantale (α : Type*) extends AddIdemQuantale α, AddIntegralQuantale α
 
-/-- An idempotent integral quantale is an idempotent quantale as well as an integral quantale.
-    A basic result is that such a quantale is also commutative and, in fact, is a frame.
-    I.e. the addition and infimum coinicide.
+/-- An idempotent integral quantale is an idempotent quantale as well as an integral
+    quantale. A basic result from quantale theory is that such a quantale is also
+    commutative and, in fact, is a frame. I.e. the multiplication and infimum coinicide.
 -/
 @[to_additive]
 class IdemIntegralQuantale (α : Type*) extends IdemQuantale α, IntegralQuantale α
@@ -221,5 +214,15 @@ def right_residuation (x y : α) := sSup { z | x * z ≤ y }
 -/
 @[to_additive]
 scoped infixr:60 " ⇨ᵣ " => right_residuation
+
+/-
+
+instance [Order.Frame α] : IdemIntegralQuantale α := sorry
+
+instance [Order.Frame α] : CommQuantale α := sorry
+
+instance [IdemIntegralQuantale α] : Order.Frame α := sorry
+
+-/
 
 end Quantale
