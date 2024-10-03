@@ -12,7 +12,7 @@ import Mathlib.AlgebraicGeometry.Stalk
 
 ## Main definitions
 
-The following are in the `AlgebraicGeometry.LocallyRingedSpace` namespace:
+The following are in the `AlgebraicGeometry.Scheme` namespace:
 
 - `AlgebraicGeometry.Scheme.residueField`: The residue field of the stalk at `x`.
 - `AlgebraicGeometry.Scheme.evaluation`: For open subsets `U` of `X` containing `x`,
@@ -145,7 +145,7 @@ lemma residueFieldCongr_trans {x y z : X} (e : x = y) (e' : y = z) :
   rfl
 
 @[reassoc (attr := simp)]
-lemma residueFieldCongr_trans' (X : Scheme) {x y z : X} (e : x = y) (e' : y = z) :
+lemma residueFieldCongr_trans_hom (X : Scheme) {x y z : X} (e : x = y) (e' : y = z) :
     (X.residueFieldCongr e).hom ≫ (X.residueFieldCongr e').hom =
       (X.residueFieldCongr (e.trans e')).hom := by
   subst e e'
