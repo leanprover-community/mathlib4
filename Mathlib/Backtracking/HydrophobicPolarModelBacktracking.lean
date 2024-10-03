@@ -279,9 +279,8 @@ lemma reflect_morf_list (moves: List (Fin 4)) (k : Fin (path rect moves).length)
 -- Finished February 26, 2024, although the proof is hard to understand:
 -- (reflect_morph and rotate_morph can have a common generalization)
 lemma reflect_morph (moves: List (Fin 4)) (k : Fin (path rect moves).length):
-  reflect ((path rect                  moves ).get  k) =
-          (path rect (morph reeu rect moves)).get ⟨k.1, ref_length₀ moves k⟩
-:= by
+    reflect ((path rect                  moves ).get  k) =
+             (path rect (morph reeu rect moves)).get ⟨k.1, ref_length₀ moves k⟩ := by
   induction moves with
   | nil => (have : k = 0 := Fin.ext (Fin.coe_fin_one k));subst this;rfl
   | cons hd tl tail_ih =>
@@ -300,8 +299,8 @@ lemma reflect_morph (moves: List (Fin 4)) (k : Fin (path rect moves).length):
       norm_cast
 
 lemma rotate_morph (moves: List (Fin 4)) (k : Fin (path rect moves).length):
-  rotate ((path rect                  moves ).get  k) =
-          (path rect (morph roeu rect moves)).get ⟨k.1, rot_length₀ moves k⟩ := by
+    rotate ((path rect                  moves ).get  k) =
+            (path rect (morph roeu rect moves)).get ⟨k.1, rot_length₀ moves k⟩ := by
   induction moves with
   | nil => (have : k = 0 := Fin.ext (Fin.coe_fin_one k));subst this;rfl
   | cons hd tl tail_ih =>
@@ -325,9 +324,8 @@ lemma rotate_morph (moves: List (Fin 4)) (k : Fin (path rect moves).length):
   instead specify their type whenever possible. See *** below.
 -/
 lemma rotate_morphᵥ {l: ℕ} {moves: Vector (Fin 4) l} (k : Fin l.succ):
-  rotate ((pathᵥ κ                moves).get  k) =
-          (pathᵥ κ (morphᵥ roeu κ moves)).get k
-:= by
+    rotate ((pathᵥ κ                moves).get  k) =
+            (pathᵥ κ (morphᵥ roeu κ moves)).get k := by
   have : k.1 < Vector.length (path κ moves.1) := by
     have R := (path κ moves.1).2
     have : (path κ moves.1).length
@@ -356,9 +354,8 @@ lemma reflect_morphᵥ {l: ℕ} {moves: Vector (Fin 4) l} (k : Fin l.succ):
 
 /-- combine reflect_morphᵥ and reflect_morf_list. completed 3/8/24. -/
 lemma reflect_morf {l: ℕ} {moves: Vector (Fin 4) l} (k : Fin l.succ):
-  reflect ((pathᵥ κ                moves).get  k) =
-          (pathᵥ κ (morf reflectIndex moves)).get k
-:= by
+    reflect ((pathᵥ κ                moves).get  k) =
+            (pathᵥ κ (morf reflectIndex moves)).get k := by
   have : k.1 < Vector.length (path κ moves.1) := by
     let R := (path κ moves.1).2
     have : (path κ moves.1).length

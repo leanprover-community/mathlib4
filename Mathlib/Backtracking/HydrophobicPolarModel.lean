@@ -53,7 +53,7 @@ section Main_theoretical_development
 
 -- Extend a map on moves to lists. Trying a new def. Sep 13, 2024.
 def morphSep {α:Type} [OfNat α 0] {b₀ b₁ : ℕ} (f : Fin b₀ → α → Fin b₁)
-(go₀ : Fin b₀ → α → α) (l : List (Fin b₀)) : List (Fin b₁) := match l with
+    (go₀ : Fin b₀ → α → α) (l : List (Fin b₀)) : List (Fin b₁) := match l with
   |.nil => []
   |.cons head tail =>
     (f head (path go₀ tail).head) :: morphSep f go₀ tail
@@ -61,17 +61,19 @@ def morphSep {α:Type} [OfNat α 0] {b₀ b₁ : ℕ} (f : Fin b₀ → α → F
 
 -- morph is length-preserving. New proof Sep 13, 2024 using rw [← itself].
 theorem morphSep_len {α:Type} [OfNat α 0] {b₀ b₁ : ℕ} (f : Fin b₀ → α → Fin b₁)
-(go₀ : Fin b₀ → α → α) (l : List (Fin b₀)) :
-(morphSep f go₀ l).length = l.length := match l with
+    (go₀ : Fin b₀ → α → α) (l : List (Fin b₀)) :
+    (morphSep f go₀ l).length = l.length := match l with
   |.nil => by unfold morphSep; rfl
   |.cons head tail => by
     unfold morphSep; repeat (rw [List.length_cons])
     simp only [Nat.succ.injEq];
     rw [← morphSep_len f go₀]
+
 def morphSepᵥ {l:ℕ}
-  {α:Type} [OfNat α 0] {b₀ b₁ : ℕ} (f : Fin b₀ → α → Fin b₁)
-  (go₀ : Fin b₀ → α → α) (v : Vector (Fin b₀) l)
-  : Vector (Fin b₁) l := ⟨morphSep f go₀ v.1, by rw [morphSep_len];exact v.2⟩
+    {α:Type} [OfNat α 0] {b₀ b₁ : ℕ} (f : Fin b₀ → α → Fin b₁)
+    (go₀ : Fin b₀ → α → α) (v : Vector (Fin b₀) l) : Vector (Fin b₁) l :=
+  ⟨morphSep f go₀ v.1, by rw [morphSep_len];exact v.2⟩
+
 lemma morphSep_nil {α:Type} [OfNat α 0] {b₀ b₁ : ℕ} (f : Fin b₀ → α → Fin b₁)
     (go₀ : Fin b₀ → α → α) :
   morphSep f go₀ [] = [] := by unfold morphSep;rfl
@@ -125,7 +127,8 @@ theorem nearby_of_embeds {α:Type} [DecidableEq α] {b₀ b₁ : ℕ}
     {go₀ : Fin b₀ → α → α} {go₁ : Fin b₁ → α → α} (h_embed : embeds_in go₀ go₁)
     {x y : α} (hn : nearby go₀ x y):
     nearby go₁ x y := by
-  unfold nearby at hn; simp only [decide_eq_true_eq] at hn ;
+  unfold nearby at hn
+  simp only [decide_eq_true_eq] at hn
   obtain ⟨a,ha⟩ := hn
   let Q := h_embed a x
   unfold nearby; simp only [decide_eq_true_eq]; rw [ha]; tauto
@@ -176,7 +179,7 @@ def points_tot {α β : Type} [DecidableEq α] [Fintype β] (go : β → α → 
  note that we form a graph on the amino acids rather than on the ambient space. -/
 def SuccGraph {l:ℕ} : SimpleGraph (Fin l.succ) := {
   Adj := fun i j ↦ i.1 = j.1.succ ∨ j.1 = i.1.succ
-  symm := fun i j h ↦ by simp only;simp only at h ;tauto
+  symm := fun i j h ↦ by simp only;simp only at h; tauto
   loopless := fun i ↦ by simp only [or_self];exact Nat.ne_of_lt (Nat.lt.base i.1)
 }
 
@@ -189,8 +192,9 @@ def ProteinGraph₀ {α:Type} {β : Type} [Fintype β] (go : β → α → α) [
     |inr => left;tauto
   loopless := by
     intro i hi;unfold pt_loc at hi; simp only [Bool.and_self, Bool.and_eq_true,
-      decide_eq_true_eq, or_self] at hi ;have : i.1.succ < i.1 := by tauto
-    simp at this;
+      decide_eq_true_eq, or_self] at hi
+    have : i.1.succ < i.1 := by tauto
+    simp at this
 }
 
 
@@ -204,18 +208,20 @@ lemma slicer_disjointness {l: ℕ} (P : (Fin l) → (Fin l) → Bool) :
   have h₁: ik.2 = k₁ ∧ P ik.1 k₁ = true := by
     unfold slicer at this;
     simp only [Finset.mem_filter,
-    Finset.mem_univ, true_and] at this ;exact this
+    Finset.mem_univ, true_and] at this
+    exact this
   have : ik ∈ slicer P k₂ := hA₂ hikA
   have h₂: ik.2 = k₂ ∧ P ik.1 k₂ = true := by
     unfold slicer at this;simp only [Finset.mem_filter, Finset.mem_univ,
-      true_and] at this ;exact this
+      true_and] at this
+    exact this
   have : k₁ = k₂ := by exact Eq.trans h₁.1.symm h₂.1
   exfalso; exact hk₁₂ this
 
-lemma slicer_card {l: ℕ} (P: Fin l → Fin l → Bool) : ∀ (x : Fin l),
+lemma slicer_card {l: ℕ} (P: Fin l → Fin l → Bool) (x : Fin l) :
     Finset.card (Finset.filter (fun ik : Fin l × Fin l => ik.2 = x ∧ P ik.1 x = true) Finset.univ) =
     Finset.card (Finset.filter (fun i_1 : Fin l => P i_1 x = true) Finset.univ) := by
-  intro x;repeat rw [← Fintype.card_coe];simp only [Finset.mem_filter,
+  repeat rw [← Fintype.card_coe];simp only [Finset.mem_filter,
     Finset.mem_univ, true_and]
   let f : {ik : Fin l × Fin l // ik.2 = x ∧ P ik.1 x} → { i_1 : Fin l // P i_1 x}
     := fun ik ↦ ⟨ik.1.1, ik.2.2⟩
@@ -252,16 +258,13 @@ theorem pts_tot'_eq_points_tot {α:Type} {β : Type} [Fintype β] (go : β → �
   · intro h
     use b
     show (a, b) ∈ (fun k ↦ Finset.filter (fun ik ↦ ik.2 = k ∧ P ik.1 k = true) Finset.univ) b
-    simp
-    show (fun ik1 k ↦ pt_loc go fold ik1 k ph) a b = true
-    simp
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and]
     tauto
   · intro h
     obtain ⟨k,hk⟩ := h
     have : (a,b) ∈ (fun k ↦ Finset.filter (fun ik ↦ ik.2 = k ∧ P ik.1 k = true) Finset.univ) k := hk
-    simp at this
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at this
     have : b = k ∧ (fun ik1 k ↦ pt_loc go fold ik1 k ph) a k = true := this
-    simp at this
     aesop
 
 theorem pts_bound_of_embeds' {α:Type} [DecidableEq α] {b₀ b₁ : ℕ}
@@ -300,7 +303,7 @@ lemma pts_at_bound'_improved {α:Type} [DecidableEq α]
 
 lemma Fin_sum_range (i : ℕ) : ∑ j : Fin (i+1), j.1 = i.succ * i / 2 := by
   have Q := Finset.sum_range_id i.succ;
-  simp only [Nat.succ_sub_succ_eq_sub, tsub_zero] at Q ;
+  simp only [Nat.succ_sub_succ_eq_sub, tsub_zero] at Q
   rw [← Q]; exact (Finset.sum_range fun i => i).symm
 
 /-- April 2, 2024 -/
@@ -382,8 +385,7 @@ theorem unique_dir {α: Type} [OfNat α 0] [DecidableEq α] {β: Type} [Fintype 
     (left_inj : left_injective go)
     (i : Fin l.succ) (a₀ a₁ : β)
     (hai₀ : pt_dir go j moves ph a₀ i)
-    (hai₁ : pt_dir go j moves ph a₁ i)
-    : a₀ = a₁ :=
+    (hai₁ : pt_dir go j moves ph a₁ i) : a₀ = a₁ :=
   left_inj ((pathᵥ go moves).get i) ((Eq.trans hai₀.2.2.2.symm hai₁.2.2.2))
 
 theorem unique_loc_dir {α: Type} [OfNat α 0] [DecidableEq α] {β: Type} [Fintype β]
@@ -459,14 +461,12 @@ theorem pts_at'_dir {α: Type} [OfNat α 0] [DecidableEq α] {b:ℕ} {go: Fin b 
     (moves: Vector (Fin b) l)
     (path_inj : (Function.Injective fun k => Vector.get (pathᵥ go moves) k))
     (right_inj: right_injective go)
-    (left_inj: left_injective go)
-    : pts_at' go j ph (pathᵥ go moves) ≤ b := by
+    (left_inj: left_injective go) : pts_at' go j ph (pathᵥ go moves) ≤ b := by
   unfold pts_at'
   have : Finset.filter (
       fun i : Fin (Nat.succ l) ↦ (∃ a, pt_dir go j moves ph a i)) Finset.univ =
         Finset.filter (
-      fun i : Fin (Nat.succ l) ↦  pt_loc go (pathᵥ go moves) i j ph) Finset.univ
-  := by
+      fun i : Fin (Nat.succ l) ↦  pt_loc go (pathᵥ go moves) i j ph) Finset.univ := by
     apply Finset.ext;intro i;repeat (rw [Finset.mem_filter])
     simp only [Finset.mem_univ, true_and]
     unfold pt_dir pt_loc nearby;
@@ -486,7 +486,7 @@ theorem pts_earned_bound_dir' {α: Type} [OfNat α 0] [DecidableEq α] {b:ℕ}
     (left_inj  : left_injective go) : pts_tot' go ph (pathᵥ go moves) ≤ l.succ * b := by
   suffices pts_tot' go ph (pathᵥ go moves) ≤
     Finset.sum (Finset.univ : Finset (Fin l.succ)) (fun _ ↦ b) by
-    simp only [Finset.sum_const, Finset.card_fin, smul_eq_mul] at this ;
+    simp only [Finset.sum_const, Finset.card_fin, smul_eq_mul] at this
     tauto
   apply Finset.sum_le_sum; intro i; intro
   exact pts_at'_dir i ph moves path_inj right_inj left_inj
@@ -505,10 +505,10 @@ theorem independence_in_symmetric_pts_earned_bound_dir'₁ :
 
 /-- "does not imply" -/
 def f_dni : Fin 2 × Fin 2 → Fin 2
-| ⟨0,0⟩ => 0
-| ⟨0,1⟩ => 0
-| ⟨1,0⟩ => 1
-| ⟨1,1⟩ => 0
+  | ⟨0,0⟩ => 0
+  | ⟨0,1⟩ => 0
+  | ⟨1,0⟩ => 1
+  | ⟨1,1⟩ => 0
 
 def g : Fin 2 → Fin 2 → Fin 2 := fun x y ↦ f_dni ⟨x,y⟩
 instance : Decidable (Symmetric fun x y => nearby g x y = true) := by
@@ -715,8 +715,7 @@ lemma path_eq_path_morph {α:Type} [OfNat α 0] [DecidableEq α] {b₀ b₁ : �
       have : (Vector.head (path go₀ tail))
           = (Vector.head (path go₁ (List.rec []
             (fun head tail tail_ih => f head (Vector.head (path go₀ tail))
-              :: tail_ih) tail)))
-      := by
+              :: tail_ih) tail))) := by
         rw [two_heads (path go₀ tail) (path go₀ tail).1 (ne_nil_of_succ_length _) rfl]
         simp_rw [tail_ih]
         rw [two_heads]
@@ -745,28 +744,26 @@ lemma pathᵥ_eq_path_morphᵥ {l:ℕ} {α:Type} [OfNat α 0] [DecidableEq α] {
 
 
 def path_transformed {α: Type} [OfNat α 0] [DecidableEq α] {b₀ b₁: ℕ}
-(f: Fin b₀ → α → Fin b₁) (go₀: Fin b₀ → α → α) (go₁: Fin b₁ → α → α)
-(l: List (Fin b₀)) : Vector α l.length.succ :=
+    (f: Fin b₀ → α → Fin b₁) (go₀: Fin b₀ → α → α) (go₁: Fin b₁ → α → α)
+    (l: List (Fin b₀)) : Vector α l.length.succ :=
   ⟨
     (path go₁ (morph f go₀ l)).1,
     by rw [path_len go₁ ⟨morph f go₀ l, morph_len f go₀ l⟩]
   ⟩
 
 def path_transformedᵥ {l:ℕ} {α: Type} [OfNat α 0] [DecidableEq α] {b₀ b₁: ℕ}
-(f: Fin b₀ → α → Fin b₁) (go₀: Fin b₀ → α → α) (go₁: Fin b₁ → α → α)
-(v: Vector (Fin b₀) l) : Vector α l.succ :=
-    pathᵥ go₁ (morphᵥ f go₀ v)
+    (f: Fin b₀ → α → Fin b₁) (go₀: Fin b₀ → α → α) (go₁: Fin b₁ → α → α)
+    (v: Vector (Fin b₀) l) : Vector α l.succ :=
+  pathᵥ go₁ (morphᵥ f go₀ v)
 
 
 /- Finished February 10, 2024:
 When transforming, the underlying path in say ℤ×ℤ is unchanged.
 -/
 theorem transform_of_embed {α:Type} [OfNat α 0] [DecidableEq α] {b₀ b₁ : ℕ}
-  (f : Fin b₀ → α → Fin b₁)
-(go₀ : Fin b₀ → α → α) (go₁ : Fin b₁ → α → α)
- (l : List (Fin b₀)) (h_embed: is_embedding go₀ go₁ f):
- path_transformed f go₀ go₁ l = path go₀ l
-:= by
+    (f : Fin b₀ → α → Fin b₁) (go₀ : Fin b₀ → α → α) (go₁ : Fin b₁ → α → α)
+    (l : List (Fin b₀)) (h_embed: is_embedding go₀ go₁ f) :
+    path_transformed f go₀ go₁ l = path go₀ l := by
   apply SetCoe.ext; unfold path_transformed; simp only;
   unfold is_embedding at h_embed;
   induction l with
@@ -785,15 +782,15 @@ theorem transform_of_embed {α:Type} [OfNat α 0] [DecidableEq α] {b₀ b₁ : 
     let a := (Vector.head (path go₀ tail))
     rw [h_embed head a]
     have : path go₁ (morph f go₀ tail)
-      = ⟨(path go₀ tail).1,(by rw [morph_len]; exact (path go₀ tail).2)⟩
-      := Vector.eq _ _ (by unfold Vector.toList; rw [← tail_ih])
+      = ⟨(path go₀ tail).1,(by rw [morph_len]; exact (path go₀ tail).2)⟩ :=
+      Vector.eq _ _ (by unfold Vector.toList; rw [← tail_ih])
     rw [this]
     have hau: ∃ a u, path go₀ tail = a ::ᵥ u := Vector.exists_eq_cons (path go₀ tail)
     have : Vector.head ⟨
-          (path go₀ tail).1, ((by rw [morph_len]; exact (path go₀ tail).2)
-          : (path go₀ tail).1.length = (morph f go₀ tail).length.succ
-          )⟩ = Vector.head (path go₀ tail)
-    := by
+      (path go₀ tail).1, by
+        show (path go₀ tail).1.length = (morph f go₀ tail).length.succ
+        rw [morph_len]; exact (path go₀ tail).2
+      ⟩ = Vector.head (path go₀ tail) := by
       obtain ⟨a,ha⟩ := hau
       obtain ⟨u,hu⟩ := ha
       rw [hu]; simp only [Vector.cons_val, Vector.head_cons]; rfl
@@ -801,56 +798,47 @@ theorem transform_of_embed {α:Type} [OfNat α 0] [DecidableEq α] {b₀ b₁ : 
     · rw [tail_ih]
 
 def pts_tot_bound {α:Type} [OfNat α 0] [DecidableEq α]
-{β : Type} [Fintype β]
-(go : β → α → α) {l:ℕ} (ph : Vector Bool l.succ) (q : ℕ) :=
-∀ moves : Vector β l,
-Function.Injective (fun k ↦ (path go moves.1).1.get k)
-→
-pts_tot' go ph (⟨(path go moves.1).1,path_len _ _⟩) ≤ q
+    {β : Type} [Fintype β]
+    (go : β → α → α) {l:ℕ} (ph : Vector Bool l.succ) (q : ℕ) :=
+    ∀ moves : Vector β l, Function.Injective (fun k ↦ (path go moves.1).1.get k) →
+    pts_tot' go ph (⟨(path go moves.1).1,path_len _ _⟩) ≤ q
 
 -- def myList {b l:ℕ} := Finset.toList (Finset.univ : Finset (Vector (Fin b) l))
 -- Finset.toList is not computable!
 
--- The following version of pts_tot_bound is correct even for the asymmetric 3-move version of rect:
+/-- This version of pts_tot_bound is correct even for the asymmetric 3-move version of rect: -/
 def pts_tot_bound_rev {α:Type} [OfNat α 0] [DecidableEq α]
-{β : Type} [Fintype β]
-(go : β → α → α) {l:ℕ} (ph : Vector Bool l.succ) (q : ℕ) :=
-∀ moves : Vector β l,
-Function.Injective (fun k ↦ (path go moves.1).1.get k)
-→
-pts_tot' go ph (⟨(path go moves.1).1.reverse,by
-  rw [List.length_reverse]
-  exact path_len _ _
-⟩) ≤ q
+    {β : Type} [Fintype β]
+    (go : β → α → α) {l:ℕ} (ph : Vector Bool l.succ) (q : ℕ) :=
+    ∀ moves : Vector β l, Function.Injective (fun k ↦ (path go moves.1).1.get k) →
+    pts_tot' go ph (⟨(path go moves.1).1.reverse,by
+      rw [List.length_reverse]
+      exact path_len _ _
+    ⟩) ≤ q
 
 
 instance {l:ℕ} {α:Type} [OfNat α 0] [DecidableEq α] {β : Type} [Fintype β]
-  {ph : Vector Bool l.succ}
-(go : β → α → α) :
-DecidablePred (pts_tot_bound go ph)
-:= by
+    {ph : Vector Bool l.succ}
+    (go : β → α → α) :
+    DecidablePred (pts_tot_bound go ph) := by
   unfold pts_tot_bound pts_tot'
   exact inferInstance
 
 instance {l:ℕ} {α:Type} [OfNat α 0] [DecidableEq α] {β : Type} [Fintype β]
-  {ph : Vector Bool l.succ}
-  (go : β → α → α) : DecidablePred fun n => pts_tot_bound go ph n :=
-  by
+    {ph : Vector Bool l.succ}
+    (go : β → α → α) : DecidablePred fun n => pts_tot_bound go ph n := by
   unfold pts_tot_bound pts_tot'
   exact inferInstance
 
 instance {l:ℕ} {α:Type} [OfNat α 0] [DecidableEq α] {β : Type} [Fintype β]
-(go : β → α → α) {ph : Vector Bool l.succ} :
-DecidablePred (pts_tot_bound_rev go ph)
-:= by
+    (go : β → α → α) {ph : Vector Bool l.succ} :
+    DecidablePred (pts_tot_bound_rev go ph) := by
   unfold pts_tot_bound_rev pts_tot'
   exact inferInstance
 
 instance {l:ℕ} {α:Type} [OfNat α 0] [DecidableEq α] {β : Type} [Fintype β]
-(go : β → α → α)
-{ph : Vector Bool l.succ}
-: DecidablePred fun n => pts_tot_bound_rev go ph n :=
-  by
+    (go : β → α → α) {ph : Vector Bool l.succ} :
+    DecidablePred fun n => pts_tot_bound_rev go ph n := by
   unfold pts_tot_bound_rev pts_tot'
   exact inferInstance
 
@@ -872,12 +860,12 @@ theorem pts_tot_bound_exists {α:Type} [OfNat α 0] [DecidableEq α] {β : Type}
 
 /- HP is the HP protein folding model "objective function" or "value function": -/
 def HP {α:Type} [OfNat α 0] [DecidableEq α] {β : Type} [Fintype β]
-(go : β → α → α) {l:ℕ} (ph : Vector Bool l.succ) :ℕ := Nat.find (pts_tot_bound_exists go ph)
+    (go : β → α → α) {l:ℕ} (ph : Vector Bool l.succ) :ℕ := Nat.find (pts_tot_bound_exists go ph)
 /- ph has to be of succ type because there will at least be an amino acid at the origin. -/
 
 /-- For nonsymmetric "nearby" relations we must use this version.-/
 def HP_rev {α:Type} [OfNat α 0] [DecidableEq α] {β : Type} [Fintype β]
-(go : β → α → α) {l:ℕ} (ph : Vector Bool l.succ) : ℕ :=
+    (go : β → α → α) {l:ℕ} (ph : Vector Bool l.succ) : ℕ :=
   Nat.find (pts_tot_bound_rev_exists go ph)
 
 
@@ -896,20 +884,21 @@ def P_hex'  {l:ℕ} := fun ph : Vector Bool l.succ ↦ HP hex  ph
 
 
 theorem Vector_inj_of_list_inj {t : Type} {n : ℕ}
-{v : Vector t n} (h: Function.Injective fun k => List.get v.1 k) :
-Function.Injective fun k => Vector.get v k := by
+    {v : Vector t n} (h: Function.Injective fun k => List.get v.1 k) :
+    Function.Injective fun k => Vector.get v k := by
   intro x y hxy;unfold Function.Injective at *;simp only at hxy
   have hx: x.1 < v.1.length := by
     let Q := x.2;have : v.1.length = n := v.2;simp_rw [← this] at Q;exact Q
   have hy: y.1 < v.1.length := by
     let Q := y.2;have : v.1.length = n := v.2;simp_rw [← this] at Q;exact Q
   have : List.get v.1 ⟨x.1,hx⟩ = List.get v.1 ⟨y,hy⟩ := by exact hxy
-  let Q := h this; simp only [Fin.mk.injEq] at Q ;exact Fin.ext Q
+  let Q := h this; simp only [Fin.mk.injEq] at Q
+  exact Fin.ext Q
 
 
 theorem list_inj_of_Vector_inj {t : Type} {n : ℕ}
-{v : Vector t n} (h: Function.Injective fun k => Vector.get v k) :
-Function.Injective fun k => List.get v.1 k := by
+    {v : Vector t n} (h: Function.Injective fun k => Vector.get v k) :
+    Function.Injective fun k => List.get v.1 k := by
   intro x y hxy;unfold Function.Injective at *
   have : Vector.get ⟨v.1,rfl⟩ x = Vector.get ⟨v.1,rfl⟩ y := hxy
   have hx: x.1 < n := by
