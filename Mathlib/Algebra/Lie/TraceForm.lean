@@ -422,6 +422,8 @@ lemma traceForm_eq_sum_finrank_nsmul :
   rw [traceForm_eq_sum_finrank_nsmul_mul, ← Finset.sum_attach]
   simp
 
+/-- A variant of `LieModule.traceForm_eq_sum_finrank_nsmul` in which the sum is taken only over the
+non-zero weights. -/
 lemma traceForm_eq_sum_finrank_nsmul' :
     traceForm K L M = ∑ χ in {χ : Weight K L M | χ.IsNonZero}, finrank K (genWeightSpace M χ) •
       (χ : L →ₗ[K] K).smulRight (χ : L →ₗ[K] K) := by
