@@ -112,7 +112,8 @@ def Finset.enum [DecidableEq α] : List α → List (Finset α)
 @[simp]
 theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
     s ∈ Finset.enum xs ↔ ∀ x ∈ s, x ∈ xs := by
-  induction' xs with xs_hd generalizing s <;> simp [*, Finset.enum]
+  induction' xs with xs_hd generalizing s <;> simp only [enum, singleton_union, List.bind_eq_bind,
+    List.mem_bind, List.mem_cons, List.not_mem_nil, or_false, *]
   · simp [Finset.eq_empty_iff_forall_not_mem]
   · constructor
     · rintro ⟨a, h, h'⟩ x hx
@@ -121,7 +122,7 @@ theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
         apply h
         subst a
         exact hx
-      · simp only [h', mem_union, mem_singleton] at hx ⊢
+      · simp only [h', Finset.mem_insert] at hx ⊢
         cases' hx with hx hx'
         · exact Or.inl hx
         · exact Or.inr (h _ hx')
@@ -131,10 +132,7 @@ theorem Finset.mem_enum [DecidableEq α] (s : Finset α) (xs : List α) :
       simp only [or_iff_not_imp_left] at h
       exists h
       by_cases h : xs_hd ∈ s
-      · have : {xs_hd} ⊆ s := by
-          simp only [HasSubset.Subset, *, forall_eq, mem_singleton]
-        simp only [union_sdiff_of_subset this, or_true, Finset.union_sdiff_of_subset,
-          eq_self_iff_true]
+      · simp only [sdiff_singleton_eq_erase, insert_erase, or_true, h]
       · left
         symm
         simp only [sdiff_eq_self]

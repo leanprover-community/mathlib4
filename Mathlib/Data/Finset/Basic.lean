@@ -1275,8 +1275,11 @@ theorem union_empty (s : Finset α) : s ∪ ∅ = s :=
 theorem empty_union (s : Finset α) : ∅ ∪ s = s :=
   ext fun x => mem_union.trans <| by simp
 
-@[simp] lemma singleton_union : {a} ∪ s = insert a s := by ext; simp
+/-- We put the priority of this lemma lower than `singleton_union` by putting it first.
+The reason is that together with `Finset.mem_insert` we don't break the natural order of the
+disjunctions. -/
 @[simp] lemma union_singleton : s ∪ {a} = insert a s := by ext; simp [or_comm]
+@[simp] lemma singleton_union : {a} ∪ s = insert a s := by ext; simp
 
 @[aesop unsafe apply (rule_sets := [finsetNonempty])]
 theorem Nonempty.inl {s t : Finset α} (h : s.Nonempty) : (s ∪ t).Nonempty :=
@@ -1919,7 +1922,7 @@ theorem union_sdiff_self (s t : Finset α) : (s ∪ t) \ t = s \ t :=
 
 -- TODO: Do we want to delete this lemma and `Finset.disjUnion_singleton`,
 -- or instead add `Finset.union_singleton`/`Finset.singleton_union`?
-theorem sdiff_singleton_eq_erase (a : α) (s : Finset α) : s \ singleton a = erase s a := by
+@[simp] theorem sdiff_singleton_eq_erase (a : α) (s : Finset α) : s \ singleton a = erase s a := by
   ext
   rw [mem_erase, mem_sdiff, mem_singleton, and_comm]
 
@@ -3052,8 +3055,7 @@ lemma piFinsetUnion_left {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset
   simp [Equiv.piFinsetUnion, eqRec_eq_cast]
   -- painful dependent type manipulations. `set` doesn't work properly, which makes it more painful
   -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/set.20tactic.20doesn't.20work.20with.20dependent.20functions
-  show cast ?h' _ = _
-  generalize ?h' = h'
+  generalize_proofs h'
   set x := (Finset.union s t h).symm ⟨i, hi'⟩
   have : x = Sum.inl ⟨i, hi⟩ := Finset.union_symm_left h hi hi'
   show cast h' ((sumPiEquivProdPi fun b ↦ α (Finset.union s t h b)).symm (f, g) x) = _
@@ -3066,8 +3068,7 @@ lemma piFinsetUnion_right {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finse
     Equiv.piFinsetUnion α h (f, g) ⟨i, hi'⟩ = g ⟨i, hi⟩ := by
   simp [Equiv.piFinsetUnion, eqRec_eq_cast]
   -- painful dependent type manipulations.
-  show cast ?h' _ = _
-  generalize ?h' = h'
+  generalize_proofs h'
   set x := (Finset.union s t h).symm ⟨i, hi'⟩
   have : x = Sum.inr ⟨i, hi⟩ := Finset.union_symm_right h hi hi'
   show cast h' ((sumPiEquivProdPi fun b ↦ α (Finset.union s t h b)).symm (f, g) x) = _
@@ -3139,4 +3140,4 @@ def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
 
 end Mathlib.Meta
 
-set_option linter.style.longFile 3100
+set_option linter.style.longFile 3300
