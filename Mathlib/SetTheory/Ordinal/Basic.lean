@@ -31,9 +31,10 @@ initial segment (or, equivalently, in any way). This total order is well founded
   `Ordinal.liftInitialSeg`.
   For a version registering that it is a principal segment embedding if `u < v`, see
   `Ordinal.liftPrincipalSeg`.
-* `Ordinal.omega0` or `ω` is the order type of `ℕ`. This definition is universe polymorphic:
-  `Ordinal.omega0.{u} : Ordinal.{u}` (contrast with `ℕ : Type`, which lives in a specific
-  universe). In some cases the universe level has to be given explicitly.
+* `Ordinal.omega0` or `ω` is the order type of `ℕ`. It is called this to match `Cardinal.aleph0`
+  and so that the omega function can be named `Ordinal.omega`. This definition is universe
+  polymorphic: `Ordinal.omega0.{u} : Ordinal.{u}` (contrast with `ℕ : Type`, which lives in
+  a specific universe). In some cases the universe level has to be given explicitly.
 
 * `o₁ + o₂` is the order on the disjoint union of `o₁` and `o₂` obtained by declaring that
   every element of `o₁` is smaller than every element of `o₂`.
