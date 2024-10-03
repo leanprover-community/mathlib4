@@ -29,7 +29,7 @@ theorem of_pi [FormallySmooth R (Π i, A i)] (i) :
   classical
   fapply FormallySmooth.of_split (Pi.evalAlgHom R A i)
   apply AlgHom.ofLinearMap
-    ((Ideal.Quotient.mkₐ R _).toLinearMap.comp (LinearMap.single i))
+    ((Ideal.Quotient.mkₐ R _).toLinearMap.comp (LinearMap.single _ _ i))
   · show Ideal.Quotient.mk _ (Pi.single i 1) = 1
     rw [← (Ideal.Quotient.mk _).map_one, ← sub_eq_zero, ← map_sub,
       Ideal.Quotient.eq_zero_iff_mem]
@@ -78,7 +78,7 @@ theorem pi_iff [Finite I] :
         Ideal.Quotient.mk (J' i) (a x) = ι i (g (Pi.single i x)) := by
       intro i
       let g' : A i →ₐ[R] (B ⧸ _) ⧸ (J' i) := by
-        apply AlgHom.ofLinearMap (((ι i).comp g).toLinearMap ∘ₗ LinearMap.single i)
+        apply AlgHom.ofLinearMap (((ι i).comp g).toLinearMap ∘ₗ LinearMap.single _ _ i)
         · suffices Ideal.Quotient.mk (Ideal.span {1 - e i}) (e i) = 1 by simp [ι, ← he', this]
           rw [← (Ideal.Quotient.mk _).map_one, eq_comm, Ideal.Quotient.mk_eq_mk_iff_sub_mem,
             Ideal.mem_span_singleton]
@@ -107,7 +107,7 @@ theorem pi_iff [Finite I] :
         rw [Pi.single_eq_same, hy']
       · have : Ideal.Quotient.mk (Ideal.span {1 - e j}) (e i) = 0 := by
           rw [Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton]
-          refine ⟨e i, by simp [he.ortho j i (Ne.symm hij), sub_mul]⟩
+          refine ⟨e i, by simp [he.ortho (Ne.symm hij), sub_mul]⟩
         rw [Pi.single_eq_of_ne (Ne.symm hij), map_zero, map_mul, this, mul_zero]
     · have : ι i (Ideal.Quotient.mk J (y * e i)) = ι i (g (Pi.single i x)) := by
         rw [← ha, ← hy']
