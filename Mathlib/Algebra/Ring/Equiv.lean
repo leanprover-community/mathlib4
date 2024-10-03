@@ -805,9 +805,6 @@ protected theorem map_pow (f : R ≃+* S) (a) : ∀ n : ℕ, f (a ^ n) = f a ^ n
 
 end GroupPower
 
-protected theorem isUnit_iff (f : R ≃+* S) {a} : IsUnit (f a) ↔ IsUnit a :=
-  MulEquiv.map_isUnit_iff f
-
 end RingEquiv
 
 namespace MulEquiv
