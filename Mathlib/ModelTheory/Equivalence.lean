@@ -196,14 +196,14 @@ protected theorem imp {φ ψ φ' ψ' : L.BoundedFormula α n} (h : φ ⇔[T] ψ)
     BoundedFormula.realize_imp]
   exact fun M v xs => imp_congr h.realize_bd_iff h'.realize_bd_iff
 
-protected theorem sup {φ ψ φ' ψ' : L.BoundedFormula α n}
+protected theorem sup_congr {φ ψ φ' ψ' : L.BoundedFormula α n}
     (h : φ ⇔[T] ψ) (h' : φ' ⇔[T] ψ') :
     (φ ⊔ φ') ⇔[T] (ψ ⊔ ψ') := by
   simp_rw [Theory.Iff, ModelsBoundedFormula, BoundedFormula.realize_iff,
     BoundedFormula.realize_sup]
   exact fun M v xs => or_congr h.realize_bd_iff h'.realize_bd_iff
 
-protected theorem inf {φ ψ φ' ψ' : L.BoundedFormula α n}
+protected theorem inf_congr {φ ψ φ' ψ' : L.BoundedFormula α n}
     (h : φ ⇔[T] ψ) (h' : φ' ⇔[T] ψ') :
     (φ ⊓ φ') ⇔[T] (ψ ⊓ ψ') := by
   simp_rw [Theory.Iff, ModelsBoundedFormula, BoundedFormula.realize_iff,
@@ -321,8 +321,9 @@ instance : BooleanAlgebra (T.Formula α) where
 def Realize (φ : T.Formula α) {M : Type*} [L.Structure M] [M ⊨ T] [Nonempty M] (v : α → M) : Prop :=
   Quot.lift (fun (ψ : L.Formula α) => ψ.Realize v) (fun _ _ h => iff_eq_eq.mp h.realize_iff) φ
 
-lemma Realize_coe (φ : L.Formula α) {M : Type*} [L.Structure M] [M ⊨ T] [Nonempty M] (v : α → M) :
-    Formula.Realize (φ : T.Formula α) v ↔ φ.Realize v := by simp only [Realize]
+@[simp]
+lemma realize_coe (φ : L.Formula α) {M : Type*} [L.Structure M] [M ⊨ T] [Nonempty M] (v : α → M) :
+    Formula.Realize (↑φ : T.Formula α) v ↔ φ.Realize v := by simp only [Realize]
 
 end Formula
 
