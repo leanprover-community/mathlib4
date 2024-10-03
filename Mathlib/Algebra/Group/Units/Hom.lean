@@ -219,19 +219,16 @@ variable {G R S T F : Type*}
 class IsLocalRingHom [Monoid R] [Monoid S] [MonoidHomClass F R S] (f : F) : Prop where
   /-- A local ring homomorphism `f : R ⟶ S` will send nonunits of `R` to nonunits of `S`. -/
   map_nonunit : ∀ a, IsUnit (f a) → IsUnit a
-#align is_local_ring_hom IsLocalRingHom
 
 variable [Monoid R] [Monoid S] [Monoid T] [MonoidHomClass F R S]
 
 @[simp]
 theorem isUnit_map_iff (f : F) [IsLocalRingHom f] (a) : IsUnit (f a) ↔ IsUnit a :=
   ⟨IsLocalRingHom.map_nonunit a, IsUnit.map f⟩
-#align is_unit_map_iff isUnit_map_iff
 
 @[simp]
 theorem IsUnit.of_map (f : F) [IsLocalRingHom f] (a) (h : IsUnit (f a)) : IsUnit a :=
   IsLocalRingHom.map_nonunit a h
-#align is_unit_of_map_unit IsUnit.of_map
 
 theorem isLocalRingHom_of_leftInverse [MonoidHomClass G S R]
     {f : F} (g : G) (hfg : Function.LeftInverse g f) : IsLocalRingHom f where
