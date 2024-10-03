@@ -44,9 +44,11 @@ we use the type
 
 -/
 
+open Finset
+
 /-- `∑₀^(n-1) (k-1) = (n-1)(n-2)/2`. This uses the Lean convention `0-1=0`. -/
-lemma sum_pred₀ (n:ℕ) : Finset.sum (Finset.range n) (fun k ↦ k-1) = (n-1)*(n-2)/2 := by
-  apply Finset.sum_range_induction
+lemma sum_pred₀ (n:ℕ) : Finset.sum (range n) (fun k ↦ k-1) = (n-1)*(n-2)/2 := by
+  apply sum_range_induction
   · rfl
   · intro n
     simp only [add_tsub_cancel_right, Nat.succ_sub_succ_eq_sub]
@@ -68,7 +70,7 @@ lemma sum_pred₀ (n:ℕ) : Finset.sum (Finset.range n) (fun k ↦ k-1) = (n-1)*
         ring
 
 /-- `∑ⁿ₀ (k-1) = n (n-1) / 2`. This uses the Lean convention `0-1=0`. -/
- theorem sum_pred (n:ℕ) : Finset.sum (Finset.range n.succ) (fun k ↦ k-1) = n*(n-1)/2 :=
+ theorem sum_pred (n:ℕ) : Finset.sum (range n.succ) (fun k ↦ k-1) = n*(n-1)/2 :=
   sum_pred₀ n.succ
 
 section Defining_the_protein_folding_moves
@@ -195,9 +197,9 @@ def pt_loc {α β : Type} [DecidableEq α] [Fintype β] (go : β → α → α)
 /-- The number of matches achieved with the fold `fold` for the amino acid sequence `ph`. -/
 def pts_at' {α β : Type} [DecidableEq α] [Fintype β] (go : β → α → α)
   {l:ℕ} (k : Fin l) (ph : Mathlib.Vector Bool l) (fold : Mathlib.Vector α l) : ℕ :=
-  Finset.card (
-    Finset.filter (fun i : Fin l ↦ (pt_loc go fold i k ph))
-    Finset.univ
+  card (
+    filter (fun i : Fin l ↦ (pt_loc go fold i k ph))
+    univ
   )
 
 /-
@@ -209,7 +211,6 @@ def pts_at' {α β : Type} [DecidableEq α] [Fintype β] (go : β → α → α)
   `pts_at` is more useful for proving a certain bound.
 -/
 
-open Finset
 
 /-- φ maps φ⁻¹' P to P. -/
 def map_predicate {β α : Type}[Fintype β] [Fintype α] (P : β → Bool)
@@ -261,8 +262,8 @@ lemma embed_pred_bij {l:ℕ} (k : Fin l) {P : Fin l → Fin l → Bool}
 /-- The number of `P`'s is the same if we count beyond the greatest element of `P`. -/
 theorem change_type_card_general'' {l:ℕ} (k : Fin l) (P : Fin l → Fin l → Bool)
     [DecidablePred fun i : Fin l => P i k] (h: ∀ {x y : Fin l}, P x y → x.1.succ < y.1) :
-    Fintype.card (Finset.filter (fun i : Fin l ↦ P i k) Finset.univ) =
-    Fintype.card (Finset.filter (fun i : Fin k.1.pred ↦ (P (Fin_trans_pred i) k)) Finset.univ) :=
+    Fintype.card (filter (fun i : Fin l ↦ P i k) univ) =
+    Fintype.card (filter (fun i : Fin k.1.pred ↦ (P (Fin_trans_pred i) k)) univ) :=
   .symm <| Fintype.card_of_bijective <| embed_pred_bij k
     <| fun hxy => Nat.lt_pred_iff_succ_lt.mpr <| h hxy
 
@@ -403,18 +404,20 @@ theorem tri_rect_embedding_is_embedding :
   | 1 => fun x ↦ rfl
   | 2 => fun x ↦ by
     by_cases h: Even (x.1+x.2)
-    show (if Even (x.1 + x.2) then sp x else sm x)  = rect (tri_rect_embedding 2 x) x
-    rw [if_pos h];
-    have : tri_rect_embedding 2 x = 2 := by
-      show (if Even (x.1 + x.2) then 2 else 3) = 2;
-      simp only [ite_eq_left_iff]; tauto
-    · rw [this]; rfl
-    have : tri_rect_embedding 2 x = 3 := by
-      show (if Even (x.1 + x.2) then 2 else 3) = 3;
-      simp only [ite_eq_right_iff]; tauto
-    rw [this];
-    show (if Even (x.1 + x.2) then sp x else sm x) = sm x
-    · simp only [ite_eq_right_iff]; tauto
+    · show (if Even (x.1 + x.2) then sp x else sm x)  = rect (tri_rect_embedding 2 x) x
+      rw [if_pos h]
+      have : tri_rect_embedding 2 x = 2 := by
+        show (if Even (x.1 + x.2) then 2 else 3) = 2;
+        simp only [ite_eq_left_iff]; tauto
+      rw [this]
+      rfl
+    · have : tri_rect_embedding 2 x = 3 := by
+        show (if Even (x.1 + x.2) then 2 else 3) = 3;
+        simp only [ite_eq_right_iff]; tauto
+      rw [this]
+      show (if Even (x.1 + x.2) then sp x else sm x) = sm x
+      simp only [ite_eq_right_iff]
+      tauto
 
 end Embedding_one_protein_folding_model_into_another
 
@@ -637,10 +640,10 @@ def choice_ex {β:Type} [Fintype β] {l : ℕ} (P : β → Fin l → Prop)
     [DecidablePred fun a => ∃ i, P a i]
     [DecidablePred fun i => ∃ a, P a i]
     [∀ a, DecidablePred fun n => ∃ (hq : n < l), P a { val := n, isLt := hq }] :
-    (Finset.filter (fun a ↦ ∃ i, P a i) (Finset.univ : Finset β)) →
-    (Finset.filter (fun i ↦ ∃ a, P a i) (Finset.univ : Finset (Fin l))) := by
+    (filter (fun a ↦ ∃ i, P a i) (univ : Finset β)) →
+    (filter (fun i ↦ ∃ a, P a i) (univ : Finset (Fin l))) := by
   intro a; let a₂ := a.2;
-  simp only [Finset.mem_filter, Finset.mem_univ, true_and] at a₂
+  simp only [mem_filter, mem_univ, true_and] at a₂
   have h₀: ∃ (i : ℕ), ∃ (hi : i < l), P a ⟨i,hi⟩ := by
     obtain ⟨i,_⟩ := a₂;exists i.1, i.2
   exact ⟨⟨Nat.find h₀,(Nat.find_spec h₀).1⟩,by simp; exists a; exact (Nat.find_spec h₀).2⟩
@@ -658,78 +661,64 @@ Function.Injective (choice_ex P) := by
   simp only [Subtype.mk.injEq, Fin.mk.injEq] at hab
 
   let a₂ := a.2; let b₂ := b.2
-  simp only [Finset.mem_filter, Finset.mem_univ, true_and] at a₂ b₂
+  simp only [mem_filter, mem_univ, true_and] at a₂ b₂
   rw [Fin.exists_iff] at a₂ b₂
   let ia := (⟨Nat.find a₂, (Nat.find_spec a₂).1⟩ : Fin l.succ)
   let ib := (⟨Nat.find b₂, (Nat.find_spec b₂).1⟩ : Fin l.succ)
 
-  let hia₂ := (Nat.find_spec a₂).2
   have hib₂: P b ib := (Nat.find_spec b₂).2
 
   have : ia = ib := Fin.mk_eq_mk.mpr hab
   rw [← this] at hib₂
-  exact Subtype.ext (h_unique_dir hia₂ hib₂)
+  exact Subtype.ext (h_unique_dir (Nat.find_spec a₂).2 hib₂)
 
 /-- Anna is a sister of a chosen brother who has Anna as his sister. -/
 lemma choice_ex_aux {β:Type} [Fintype β] {l : ℕ} {P: β → Fin l → Prop}
     [DecidablePred fun i => ∃ a, P a i] [DecidablePred fun a => ∃ i, P a i]
     [(a : β) → DecidablePred fun n => ∃ (hq : n < l), P a { val := n, isLt := hq }]
-    {i: { x // x ∈ Finset.filter (fun i => ∃ a, P a i) Finset.univ }}
+    {i: { x // x ∈ filter (fun i => ∃ a, P a i) univ }}
     {a: β} (ha : P a i) :
     P a ((choice_ex P ⟨a, (by simp; exists i)⟩) : Fin l) := by
-  have witness:  ∃ j, ∃ (h : j < l), P a ⟨j,h⟩ := by exists i; exists i.1.2
+  have witness:  ∃ j, ∃ (h : j < l), P a ⟨j,h⟩ := by exists i, i.1.2
   exact (Nat.find_spec witness).2
 
 /-- If each girl has at most one brother, the map from girl-who-has-a-brother
   to boy-who-has-a-sister is surjective. -/
 lemma choice_ex_surjective {β:Type} [Fintype β] {l : ℕ} {P : β → Fin l.succ → Prop}
-    [DecidablePred fun a => ∃ i, P a i]
-    [DecidablePred fun i => ∃ a, P a i]
-    [(a : β) → DecidablePred fun n => ∃ (hq : n < l.succ), P a { val := n, isLt := hq }]
+    [DecidablePred fun a => ∃ i, P a i] [DecidablePred fun i => ∃ a, P a i]
+    [(a : β) → DecidablePred fun n => ∃ (hq : n < l.succ), P a ⟨n, hq⟩]
     (h_unique_loc : ∀ {a i₀ i₁}, P a i₀ → P a i₁ → i₀ = i₁) :
     Function.Surjective (choice_ex P) := by
-  intro i; let i₂ := i.2; simp only [Finset.mem_filter, Finset.mem_univ,
+  intro i
+  have i₂ := i.2
+  simp only [mem_filter, mem_univ,
     true_and] at i₂ ;
   obtain ⟨a,ha⟩ := i₂
   exists ⟨a,by
-    simp only [Finset.mem_filter, Finset.mem_univ, true_and]; exists i
+    simp only [mem_filter, mem_univ, true_and]
+    exists i
   ⟩
-  let j := choice_ex P ⟨
-    a,
-    (by
-      simp only [Finset.mem_filter, Finset.mem_univ, true_and]
-      exists i : a ∈ Finset.filter (fun a => ∃ i, P a i) Finset.univ)
-  ⟩
-  show j = i
-  have : P a (choice_ex P ⟨a, (by
-    simp only [Finset.mem_filter, Finset.mem_univ, true_and];exists i
-  )⟩) := choice_ex_aux ha
-  let Q := h_unique_loc ha this
-  exact Subtype.ext Q.symm
+  exact Subtype.ext <|.symm <|h_unique_loc ha <|choice_ex_aux ha
 /-- If each boy has at most one sister, and each girl has at most one brother,
   then the map that sends a boy who has a sister to a girl who has a brother is bijective. -/
 lemma choice_ex_bijective {β:Type} [Fintype β] {l : ℕ} {P : β → Fin l.succ → Prop}
-  [DecidablePred fun a => ∃ i, P a i]
-  [DecidablePred fun i => ∃ a, P a i]
-  [ (a : β) → DecidablePred fun n => ∃ (hq : n < l.succ), P a { val := n, isLt := hq }]
-  (h_unique_loc : ∀ {a i₀ i₁}, P a i₀ → P a i₁ → i₀ = i₁)
-  (h_unique_dir : ∀ {i a₀ a₁}, P a₀ i → P a₁ i → a₀ = a₁)
-  : Function.Bijective (choice_ex P) := And.intro
-    (choice_ex_injective  h_unique_dir)
-    (choice_ex_surjective h_unique_loc)
+    [DecidablePred fun a => ∃ i, P a i]
+    [DecidablePred fun i => ∃ a, P a i]
+    [ (a : β) → DecidablePred fun n => ∃ (hq : n < l.succ), P a { val := n, isLt := hq }]
+    (h_unique_loc : ∀ {a i₀ i₁}, P a i₀ → P a i₁ → i₀ = i₁)
+    (h_unique_dir : ∀ {i a₀ a₁}, P a₀ i → P a₁ i → a₀ = a₁) : Function.Bijective (choice_ex P) :=
+  ⟨choice_ex_injective  h_unique_dir, choice_ex_surjective h_unique_loc⟩
 
-open Finset
 /-- If each boy has at most one sister, and each girl has at most one brother, then there are
   an equal number of boys who have a sister and girls who have a brother is bijective. -/
 theorem choice_ex_finset_card {β:Type} [Fintype β] {l : ℕ} {P : β → Fin l.succ → Prop}
-[DecidablePred fun a => ∃ i, P a i]
-[DecidablePred fun i => ∃ a, P a i]
-[(a : β) → DecidablePred fun n => ∃ (hq : n < l.succ), P a     ⟨n,hq⟩]
-(h_unique_loc_dir : (∀ {a i₀ i₁}, P a i₀ → P a i₁ → i₀ = i₁) ∧
-  ∀ {i a₀ a₁}, P a₀ i → P a₁ i → a₀ = a₁):
-Finset.card (filter (fun a ↦ ∃ i, P a i) univ) =
-Finset.card (filter (fun i ↦ ∃ a, P a i) univ)
-:= by
-  repeat (rw [← Fintype.card_coe])
+    [DecidablePred fun a => ∃ i, P a i] [DecidablePred fun i => ∃ a, P a i]
+    [(a : β) → DecidablePred fun n => ∃ (hq : n < l.succ), P a     ⟨n,hq⟩]
+    (h_unique_loc_dir : (∀ {a i₀ i₁}, P a i₀ → P a i₁ → i₀ = i₁) ∧
+      ∀ {i a₀ a₁}, P a₀ i → P a₁ i → a₀ = a₁):
+    card (filter (fun a ↦ ∃ i, P a i) univ) =
+    card (filter (fun i ↦ ∃ a, P a i) univ) := by
+  repeat rw [← Fintype.card_coe]
   exact Fintype.card_of_bijective (choice_ex_bijective h_unique_loc_dir.1 h_unique_loc_dir.2)
+
 end Equivalent_existential_definitions_of_point_earned
