@@ -5,6 +5,7 @@ Authors: Jihoon Hyun
 -/
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Card
+import Mathlib.Data.Greedoid.Accessible
 import Init.Data.Nat.Basic
 
 /-!
@@ -85,5 +86,52 @@ theorem exists_feasible_superset_add_element_feasible
   exists_feasible_superset_add_element_feasible' hS hs₁ hs₂ hs rfl ha₁ ha₂
 
 end ExchangeProperty
+
+section ExchangePropertyEquivalence
+
+open Accessible Nat Finset
+
+variable {Sys : Finset α → Prop}
+
+def WeakExchangeProperty (Sys : Finset α → Prop) : Prop :=
+  ⦃s₁ : Finset α⦄ → (hs₁ : Sys s₁) →
+  ⦃s₂ : Finset α⦄ → (hs₂ : Sys s₂) →
+  (hs : s₂.card + 1 = s₁.card) →
+    ∃ x ∈ s₁, ∃ h : x ∉ s₂, Sys (s₂.cons x h)
+
+theorem weakExchangeProperty_of_exchangeProperty
+    (h : ExchangeProperty Sys) :
+    WeakExchangeProperty Sys := by
+  intro _ hs₁ _ hs₂ hs; apply h hs₁ hs₂; omega
+
+theorem exchangeProperty_of_weakExchangeProperty
+    [Accessible Sys] (h : WeakExchangeProperty Sys) :
+    ExchangeProperty Sys := by
+  intro s₁ hs₁ s₂ hs₂ hs
+  induction hs₁ using induction_on_accessible (nonempty_contains_emptyset ⟨_, hs₁⟩) with
+  | empty => simp at hs
+  | insert ht _ht h₁ h₂ ih =>
+    rename_i t₁ t₂
+    by_cases h₃ : s₂.card < t₂.card
+    · rcases ih h₃ with ⟨u, hu₁, hu₂, hu₃⟩
+      use u; exact ⟨h₁ hu₁, hu₂, hu₃⟩
+    · rw [(by omega : t₂.card = s₂.card)] at h₂
+      exact h ht hs₂ h₂
+
+theorem exchangeProperty_iff_weakExchangeProperty
+    [Accessible Sys] :
+    ExchangeProperty Sys ↔ WeakExchangeProperty Sys :=
+  ⟨weakExchangeProperty_of_exchangeProperty, exchangeProperty_of_weakExchangeProperty⟩
+
+def WeakerExchangeProperty (Sys : Finset α → Prop) : Prop :=
+  ⦃s : Finset α⦄ →
+  ⦃x : α⦄ → (hx₁ : x ∉ s) → (hx₂ : Sys (s.cons x hx₁)) →
+  ⦃y : α⦄ → (hy₁ : y ∉ s) → (hy₂ : Sys (s.cons y hy₁)) → (hxy : x ≠ y) →
+  ⦃z : α⦄ → (hz : z ∉ s) → (hxz₁ : x ≠ z) →
+  (hxz₂ : Sys ((s.cons x hx₁).cons z (by rw [mem_cons, not_or]; exact ⟨Ne.symm hxz₁, hz⟩))) →
+  (hxy : ¬ Sys ((s.cons x hx₁).cons y (by rw [mem_cons, not_or]; exact ⟨Ne.symm hxy, hy₁⟩))) →
+    Sys ((s.cons y hy₁).cons z (by rw [mem_cons, not_or]; exact ⟨(fun h ↦ hxy (h ▸ hxz₂)), hz⟩))
+
+end ExchangePropertyEquivalence
 
 end Greedoid
