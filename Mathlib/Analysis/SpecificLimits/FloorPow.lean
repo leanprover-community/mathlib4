@@ -236,7 +236,7 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
       simp only [hi.1, mem_Ico, and_true]
       apply Nat.floor_le_of_le
       apply le_of_lt
-      rw [div_lt_iff (Real.log_pos hc), ← Real.log_pow]
+      rw [div_lt_iff₀ (Real.log_pos hc), ← Real.log_pow]
       exact Real.log_lt_log hj hi.2
     _ = ∑ i ∈ Ico ⌊Real.log j / Real.log c⌋₊ N, (c⁻¹ ^ 2) ^ i := by
       congr 1 with i

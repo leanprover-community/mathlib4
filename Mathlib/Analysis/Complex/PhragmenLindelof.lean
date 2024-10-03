@@ -133,7 +133,7 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
   rcases hB with ⟨c, hc, B, hO⟩
   obtain ⟨d, ⟨hcd, hd₀⟩, hd⟩ : ∃ d, (c < d ∧ 0 < d) ∧ d < π / 2 / b := by
     simpa only [max_lt_iff] using exists_between (max_lt hc hπb)
-  have hb' : d * b < π / 2 := (lt_div_iff hb).1 hd
+  have hb' : d * b < π / 2 := (lt_div_iff₀ hb).1 hd
   set aff := (fun w => d * (w - a * I) : ℂ → ℂ)
   set g := fun (ε : ℝ) (w : ℂ) => exp (ε * (exp (aff w) + exp (-aff w)))
   /- Since `g ε z → 1` as `ε → 0⁻`, it suffices to prove that `‖g ε z • f z‖ ≤ C`

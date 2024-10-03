@@ -14,9 +14,9 @@ We define principal or indecomposable ordinals, and we prove the standard proper
 * `Principal`: A principal or indecomposable ordinal under some binary operation. We include 0 and
   any other typically excluded edge cases for simplicity.
 * `unbounded_principal`: Principal ordinals are unbounded.
-* `principal_add_iff_zero_or_omega_opow`: The main characterization theorem for additive principal
+* `principal_add_iff_zero_or_omega0_opow`: The main characterization theorem for additive principal
   ordinals.
-* `principal_mul_iff_le_two_or_omega_opow_opow`: The main characterization theorem for
+* `principal_mul_iff_le_two_or_omega0_opow_opow`: The main characterization theorem for
   multiplicative principal ordinals.
 
 ## TODO
@@ -163,39 +163,51 @@ theorem principal_add_iff_add_lt_ne_self {a} :
     rcases exists_lt_add_of_not_principal_add ha with ⟨b, hb, c, hc, rfl⟩
     exact (H b hb c hc).irrefl⟩
 
-theorem add_omega {a : Ordinal} (h : a < ω) : a + ω = ω := by
-  rcases lt_omega.1 h with ⟨n, rfl⟩
+theorem add_omega0 {a : Ordinal} (h : a < ω) : a + ω = ω := by
+  rcases lt_omega0.1 h with ⟨n, rfl⟩
   clear h; induction' n with n IH
   · rw [Nat.cast_zero, zero_add]
-  · rwa [Nat.cast_succ, add_assoc, one_add_of_omega_le (le_refl _)]
+  · rwa [Nat.cast_succ, add_assoc, one_add_of_omega0_le (le_refl _)]
 
-theorem principal_add_omega : Principal (· + ·) ω :=
-  principal_add_iff_add_left_eq_self.2 fun _ => add_omega
+@[deprecated (since := "2024-09-30")]
+alias add_omega := add_omega0
 
-theorem add_omega_opow {a b : Ordinal} (h : a < ω ^ b) : a + ω ^ b = ω ^ b := by
+theorem principal_add_omega0 : Principal (· + ·) ω :=
+  principal_add_iff_add_left_eq_self.2 fun _ => add_omega0
+
+@[deprecated (since := "2024-09-30")]
+alias principal_add_omega := principal_add_omega0
+
+theorem add_omega0_opow {a b : Ordinal} (h : a < ω ^ b) : a + ω ^ b = ω ^ b := by
   refine le_antisymm ?_ (le_add_left _ a)
   induction' b using limitRecOn with b _ b l IH
   · rw [opow_zero, ← succ_zero, lt_succ_iff, Ordinal.le_zero] at h
     rw [h, zero_add]
   · rw [opow_succ] at h
-    rcases (lt_mul_of_limit omega_isLimit).1 h with ⟨x, xo, ax⟩
+    rcases (lt_mul_of_limit omega0_isLimit).1 h with ⟨x, xo, ax⟩
     apply (add_le_add_right ax.le _).trans
-    rw [opow_succ, ← mul_add, add_omega xo]
-  · rcases (lt_opow_of_limit omega_ne_zero l).1 h with ⟨x, xb, ax⟩
-    apply (((add_isNormal a).trans <| opow_isNormal one_lt_omega).limit_le l).2
+    rw [opow_succ, ← mul_add, add_omega0 xo]
+  · rcases (lt_opow_of_limit omega0_ne_zero l).1 h with ⟨x, xb, ax⟩
+    apply (((add_isNormal a).trans <| opow_isNormal one_lt_omega0).limit_le l).2
     intro y yb
     calc a + ω ^ y ≤ a + ω ^ max x y :=
-      add_le_add_left (opow_le_opow_right omega_pos (le_max_right x y)) _
+      add_le_add_left (opow_le_opow_right omega0_pos (le_max_right x y)) _
     _ ≤ ω ^ max x y :=
-      IH _ (max_lt xb yb) <| ax.trans_le <| opow_le_opow_right omega_pos <| le_max_left x y
+      IH _ (max_lt xb yb) <| ax.trans_le <| opow_le_opow_right omega0_pos <| le_max_left x y
     _ ≤ ω ^ b :=
-      opow_le_opow_right omega_pos <| (max_lt xb yb).le
+      opow_le_opow_right omega0_pos <| (max_lt xb yb).le
 
-theorem principal_add_omega_opow (o : Ordinal) : Principal (· + ·) (ω ^ o) :=
-  principal_add_iff_add_left_eq_self.2 fun _ => add_omega_opow
+@[deprecated (since := "2024-09-30")]
+alias add_omega_opow := add_omega0_opow
+
+theorem principal_add_omega0_opow (o : Ordinal) : Principal (· + ·) (ω ^ o) :=
+  principal_add_iff_add_left_eq_self.2 fun _ => add_omega0_opow
+
+@[deprecated (since := "2024-09-30")]
+alias principal_add_omega_opow := principal_add_omega0_opow
 
 /-- The main characterization theorem for additive principal ordinals. -/
-theorem principal_add_iff_zero_or_omega_opow {o : Ordinal} :
+theorem principal_add_iff_zero_or_omega0_opow {o : Ordinal} :
     Principal (· + ·) o ↔ o = 0 ∨ o ∈ Set.range (ω ^ · : Ordinal → Ordinal) := by
   rcases eq_or_ne o 0 with (rfl | ho)
   · simp only [principal_zero, Or.inl]
@@ -203,12 +215,12 @@ theorem principal_add_iff_zero_or_omega_opow {o : Ordinal} :
     simp only [ho, false_or]
     refine
       ⟨fun H => ⟨_, ((lt_or_eq_of_le (opow_log_le_self _ ho)).resolve_left fun h => ?_)⟩,
-        fun ⟨b, e⟩ => e.symm ▸ fun a => add_omega_opow⟩
+        fun ⟨b, e⟩ => e.symm ▸ fun a => add_omega0_opow⟩
     have := H _ h
-    have := lt_opow_succ_log_self one_lt_omega o
-    rw [opow_succ, lt_mul_of_limit omega_isLimit] at this
+    have := lt_opow_succ_log_self one_lt_omega0 o
+    rw [opow_succ, lt_mul_of_limit omega0_isLimit] at this
     rcases this with ⟨a, ao, h'⟩
-    rcases lt_omega.1 ao with ⟨n, rfl⟩
+    rcases lt_omega0.1 ao with ⟨n, rfl⟩
     clear ao
     revert h'
     apply not_lt_of_le
@@ -218,18 +230,21 @@ theorem principal_add_iff_zero_or_omega_opow {o : Ordinal} :
     · simp [Nat.cast_zero, mul_zero, zero_add]
     · simp only [Nat.cast_succ, mul_add_one, add_assoc, this, IH]
 
+@[deprecated (since := "2024-09-30")]
+alias principal_add_iff_zero_or_omega_opow := principal_add_iff_zero_or_omega0_opow
+
 theorem opow_principal_add_of_principal_add {a} (ha : Principal (· + ·) a) (b : Ordinal) :
     Principal (· + ·) (a ^ b) := by
-  rcases principal_add_iff_zero_or_omega_opow.1 ha with (rfl | ⟨c, rfl⟩)
+  rcases principal_add_iff_zero_or_omega0_opow.1 ha with (rfl | ⟨c, rfl⟩)
   · rcases eq_or_ne b 0 with (rfl | hb)
     · rw [opow_zero]
       exact principal_add_one
     · rwa [zero_opow hb]
   · rw [← opow_mul]
-    exact principal_add_omega_opow _
+    exact principal_add_omega0_opow _
 
 theorem add_absorp {a b c : Ordinal} (h₁ : a < ω ^ b) (h₂ : ω ^ b ≤ c) : a + c = c := by
-  rw [← Ordinal.add_sub_cancel_of_le h₂, ← add_assoc, add_omega_opow h₁]
+  rw [← Ordinal.add_sub_cancel_of_le h₂, ← add_assoc, add_omega0_opow h₁]
 
 theorem mul_principal_add_is_principal_add (a : Ordinal.{u}) {b : Ordinal.{u}} (hb₁ : b ≠ 1)
     (hb : Principal (· + ·) b) : Principal (· + ·) (a * b) := by
@@ -302,44 +317,59 @@ theorem principal_mul_iff_mul_left_eq {o : Ordinal} :
     rw [← h a ha hao]
     exact (mul_isNormal ha).strictMono hbo
 
-theorem principal_mul_omega : Principal (· * ·) ω := fun a b ha hb =>
-  match a, b, lt_omega.1 ha, lt_omega.1 hb with
+theorem principal_mul_omega0 : Principal (· * ·) ω := fun a b ha hb =>
+  match a, b, lt_omega0.1 ha, lt_omega0.1 hb with
   | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by
     dsimp only; rw [← natCast_mul]
-    apply nat_lt_omega
+    apply nat_lt_omega0
 
-theorem mul_omega {a : Ordinal} (a0 : 0 < a) (ha : a < ω) : a * ω = ω :=
-  principal_mul_iff_mul_left_eq.1 principal_mul_omega a a0 ha
+@[deprecated (since := "2024-09-30")]
+alias principal_mul_omega := principal_mul_omega0
 
-theorem mul_lt_omega_opow {a b c : Ordinal} (c0 : 0 < c) (ha : a < ω ^ c) (hb : b < ω) :
+theorem mul_omega0 {a : Ordinal} (a0 : 0 < a) (ha : a < ω) : a * ω = ω :=
+  principal_mul_iff_mul_left_eq.1 principal_mul_omega0 a a0 ha
+
+@[deprecated (since := "2024-09-30")]
+alias mul_omega := mul_omega0
+
+theorem mul_lt_omega0_opow {a b c : Ordinal} (c0 : 0 < c) (ha : a < ω ^ c) (hb : b < ω) :
     a * b < ω ^ c := by
   rcases zero_or_succ_or_limit c with (rfl | ⟨c, rfl⟩ | l)
   · exact (lt_irrefl _).elim c0
   · rw [opow_succ] at ha
-    rcases ((mul_isNormal <| opow_pos _ omega_pos).limit_lt omega_isLimit).1 ha with ⟨n, hn, an⟩
+    rcases ((mul_isNormal <| opow_pos _ omega0_pos).limit_lt omega0_isLimit).1 ha with ⟨n, hn, an⟩
     apply (mul_le_mul_right' (le_of_lt an) _).trans_lt
-    rw [opow_succ, mul_assoc, mul_lt_mul_iff_left (opow_pos _ omega_pos)]
-    exact principal_mul_omega hn hb
-  · rcases ((opow_isNormal one_lt_omega).limit_lt l).1 ha with ⟨x, hx, ax⟩
+    rw [opow_succ, mul_assoc, mul_lt_mul_iff_left (opow_pos _ omega0_pos)]
+    exact principal_mul_omega0 hn hb
+  · rcases ((opow_isNormal one_lt_omega0).limit_lt l).1 ha with ⟨x, hx, ax⟩
     refine (mul_le_mul' (le_of_lt ax) (le_of_lt hb)).trans_lt ?_
-    rw [← opow_succ, opow_lt_opow_iff_right one_lt_omega]
+    rw [← opow_succ, opow_lt_opow_iff_right one_lt_omega0]
     exact l.2 _ hx
 
-theorem mul_omega_opow_opow {a b : Ordinal} (a0 : 0 < a) (h : a < ω ^ ω ^ b) :
+@[deprecated (since := "2024-09-30")]
+alias mul_lt_omega_opow := mul_lt_omega0_opow
+
+theorem mul_omega0_opow_opow {a b : Ordinal} (a0 : 0 < a) (h : a < ω ^ ω ^ b) :
     a * ω ^ ω ^ b = ω ^ ω ^ b := by
   obtain rfl | b0 := eq_or_ne b 0
   · rw [opow_zero, opow_one] at h ⊢
-    exact mul_omega a0 h
+    exact mul_omega0 a0 h
   · apply le_antisymm
     · obtain ⟨x, xb, ax⟩ :=
-        (lt_opow_of_limit omega_ne_zero (opow_isLimit_left omega_isLimit b0)).1 h
+        (lt_opow_of_limit omega0_ne_zero (opow_isLimit_left omega0_isLimit b0)).1 h
       apply (mul_le_mul_right' (le_of_lt ax) _).trans
-      rw [← opow_add, add_omega_opow xb]
+      rw [← opow_add, add_omega0_opow xb]
     · conv_lhs => rw [← one_mul (ω ^ _)]
       exact mul_le_mul_right' (one_le_iff_pos.2 a0) _
 
-theorem principal_mul_omega_opow_opow (o : Ordinal) : Principal (· * ·) (ω ^ ω ^ o) :=
-  principal_mul_iff_mul_left_eq.2 fun _ => mul_omega_opow_opow
+@[deprecated (since := "2024-09-30")]
+alias mul_omega_opow_opow := mul_omega0_opow_opow
+
+theorem principal_mul_omega0_opow_opow (o : Ordinal) : Principal (· * ·) (ω ^ ω ^ o) :=
+  principal_mul_iff_mul_left_eq.2 fun _ => mul_omega0_opow_opow
+
+@[deprecated (since := "2024-09-30")]
+alias principal_mul_omega_opow_opow := principal_mul_omega0_opow_opow
 
 theorem principal_add_of_principal_mul_opow {o b : Ordinal} (hb : 1 < b)
     (ho : Principal (· * ·) (b ^ o)) : Principal (· + ·) o := by
@@ -349,24 +379,30 @@ theorem principal_add_of_principal_mul_opow {o b : Ordinal} (hb : 1 < b)
   rwa [← opow_add, opow_lt_opow_iff_right hb] at this
 
 /-- The main characterization theorem for multiplicative principal ordinals. -/
-theorem principal_mul_iff_le_two_or_omega_opow_opow {o : Ordinal} :
+theorem principal_mul_iff_le_two_or_omega0_opow_opow {o : Ordinal} :
     Principal (· * ·) o ↔ o ≤ 2 ∨ o ∈ Set.range (ω ^ ω ^ · : Ordinal → Ordinal) := by
   refine ⟨fun ho => ?_, ?_⟩
   · rcases le_or_lt o 2 with ho₂ | ho₂
     · exact Or.inl ho₂
-    · rcases principal_add_iff_zero_or_omega_opow.1 (principal_add_of_principal_mul ho ho₂.ne') with
-      (rfl | ⟨a, rfl⟩)
+    · rcases principal_add_iff_zero_or_omega0_opow.1 (principal_add_of_principal_mul ho ho₂.ne')
+        with (rfl | ⟨a, rfl⟩)
       · exact (Ordinal.not_lt_zero 2 ho₂).elim
-      · rcases principal_add_iff_zero_or_omega_opow.1
-          (principal_add_of_principal_mul_opow one_lt_omega ho) with (rfl | ⟨b, rfl⟩)
+      · rcases principal_add_iff_zero_or_omega0_opow.1
+          (principal_add_of_principal_mul_opow one_lt_omega0 ho) with (rfl | ⟨b, rfl⟩)
         · simp
         · exact Or.inr ⟨b, rfl⟩
   · rintro (ho₂ | ⟨a, rfl⟩)
     · exact principal_mul_of_le_two ho₂
-    · exact principal_mul_omega_opow_opow a
+    · exact principal_mul_omega0_opow_opow a
 
-theorem mul_omega_dvd {a : Ordinal} (a0 : 0 < a) (ha : a < ω) : ∀ {b}, ω ∣ b → a * b = b
-  | _, ⟨b, rfl⟩ => by rw [← mul_assoc, mul_omega a0 ha]
+@[deprecated (since := "2024-09-30")]
+alias principal_mul_iff_le_two_or_omega_opow_opow := principal_mul_iff_le_two_or_omega0_opow_opow
+
+theorem mul_omega0_dvd {a : Ordinal} (a0 : 0 < a) (ha : a < ω) : ∀ {b}, ω ∣ b → a * b = b
+  | _, ⟨b, rfl⟩ => by rw [← mul_assoc, mul_omega0 a0 ha]
+
+@[deprecated (since := "2024-09-30")]
+alias mul_omega_dvd := mul_omega0_dvd
 
 theorem mul_eq_opow_log_succ {a b : Ordinal.{u}} (ha : a ≠ 0) (hb : Principal (· * ·) b)
     (hb₂ : 2 < b) : a * b = b ^ succ (log b a) := by
@@ -387,15 +423,21 @@ theorem mul_eq_opow_log_succ {a b : Ordinal.{u}} (ha : a ≠ 0) (hb : Principal 
 /-! #### Exponential principal ordinals -/
 
 
-theorem principal_opow_omega : Principal (· ^ ·) ω := fun a b ha hb =>
-  match a, b, lt_omega.1 ha, lt_omega.1 hb with
+theorem principal_opow_omega0 : Principal (· ^ ·) ω := fun a b ha hb =>
+  match a, b, lt_omega0.1 ha, lt_omega0.1 hb with
   | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by
     simp_rw [← natCast_opow]
-    apply nat_lt_omega
+    apply nat_lt_omega0
 
-theorem opow_omega {a : Ordinal} (a1 : 1 < a) (h : a < ω) : a ^ ω = ω :=
-  ((opow_le_of_limit (one_le_iff_ne_zero.1 <| le_of_lt a1) omega_isLimit).2 fun _ hb =>
-      (principal_opow_omega h hb).le).antisymm
+@[deprecated (since := "2024-09-30")]
+alias principal_opow_omega := principal_opow_omega0
+
+theorem opow_omega0 {a : Ordinal} (a1 : 1 < a) (h : a < ω) : a ^ ω = ω :=
+  ((opow_le_of_limit (one_le_iff_ne_zero.1 <| le_of_lt a1) omega0_isLimit).2 fun _ hb =>
+      (principal_opow_omega0 h hb).le).antisymm
   (right_le_opow _ a1)
+
+@[deprecated (since := "2024-09-30")]
+alias opow_omega := opow_omega0
 
 end Ordinal
