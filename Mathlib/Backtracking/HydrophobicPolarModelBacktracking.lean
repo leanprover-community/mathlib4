@@ -593,8 +593,10 @@ theorem towards_orderly {l : ℕ} (ph : Vector Bool l.succ.succ) (moves : Vector
 
 /-- this is just path_len and morph_len and should be generalized -/
 theorem path_morph_len {l : ℕ} (moves: Vector (Fin 4) l) :
-    (path rect (morph roeu rect moves.1)).1.length = l.succ := by
-  let morph_vec := (⟨morph roeu rect moves.1, morph_len _ _ _⟩ : Vector (Fin 4) moves.1.length)
+    (path rect (morph (fun a _ => rotateIndex a) rect moves.1)).1.length = l.succ := by
+  let morph_vec :=
+    (⟨morph (fun a _ => rotateIndex a) rect moves.1, morph_len _ _ _⟩ :
+    Vector (Fin 4) moves.1.length)
   rw [path_len rect morph_vec]
   simp
 
