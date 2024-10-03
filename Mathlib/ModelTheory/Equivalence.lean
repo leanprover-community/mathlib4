@@ -194,13 +194,6 @@ protected theorem imp {φ ψ φ' ψ' : L.BoundedFormula α n} (h : φ ⇔[T] ψ)
     BoundedFormula.realize_imp]
   exact fun M v xs => imp_congr h.realize_bd_iff h'.realize_bd_iff
 
-protected theorem sup {φ ψ φ' ψ' : L.BoundedFormula α n}
-    (h : φ ⇔[T] ψ) (h' : φ' ⇔[T] ψ') :
-    (φ ⊔ φ') ⇔[T] (ψ ⊔ ψ') := by
-  simp_rw [Theory.Iff, ModelsBoundedFormula, BoundedFormula.realize_iff,
-    BoundedFormula.realize_sup]
-  exact fun M v xs => or_congr h.realize_bd_iff h'.realize_bd_iff
-
 protected theorem inf {φ ψ φ' ψ' : L.BoundedFormula α n}
     (h : φ ⇔[T] ψ) (h' : φ' ⇔[T] ψ') :
     (φ ⊓ φ') ⇔[T] (ψ ⊓ ψ') := by
@@ -230,7 +223,7 @@ theorem imp_iff_not_sup : (φ.imp ψ) ⇔[T] (φ.not ⊔ ψ) :=
 theorem sup_iff_not_inf_not : (φ ⊔ ψ) ⇔[T] (φ.not ⊓ ψ.not).not :=
   fun M v xs => by simp [imp_iff_not_or]
 
-theorem not_sup_semanticallyEquivalent_inf_not : (φ ⊔ ψ).not ⇔[T] (φ.not ⊓ ψ.not) :=
+theorem not_sup_iff_inf_not : (φ ⊔ ψ).not ⇔[T] φ.not ⊓ ψ.not :=
   fun M v xs => by simp [imp_iff_not_or]
 
 theorem inf_iff_not_sup_not : (φ ⊓ ψ) ⇔[T] (φ.not ⊔ ψ.not).not :=

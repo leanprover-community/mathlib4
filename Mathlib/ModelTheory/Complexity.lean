@@ -15,8 +15,8 @@ prenex normal forms.
 
 - `FirstOrder.Language.BoundedFormula.IsAtomic` defines atomic formulas - those which are
   constructed only from terms and relations.
-- `FirstOrder.Language.BoundedFormula.IsLiteral` defines literals - those which are `⊥`, `⊤`,
-  atomic formulas or negation of atomic formulas.
+- `FirstOrder.Language.BoundedFormula.IsLiteral`: Predicate for a formula to be a literal, namely of
+  the form `⊥`, `⊤`, atomic formulas or negation of atomic formulas.
 - `FirstOrder.Language.BoundedFormula.IsQF` defines quantifier-free formulas - those which are
   constructed only from atomic formulas and boolean operations.
 - `FirstOrder.Language.BoundedFormula.IsPrenex` defines when a formula is in prenex normal form -
@@ -47,10 +47,10 @@ prenex normal forms.
   normal form of a formula is semantically equivalent to the original formula.
 - `FirstOrder.Language.BoundedFormula.toCNF_semanticallyEquivalent` shows that the conjunctive
   normal form of a formula is semantically equivalent to the original formula.
-- `FirstOrder.Language.BoundedFormula.IsDNF.components` which gives the literals of a DNF as
-  a list of lists.
-- `FirstOrder.Language.BoundedFormula.IsCNF.components` which gives the literals of a CNF as
-  a list of lists.
+- `FirstOrder.Language.BoundedFormula.IsDNF.components` gives the literals of a DNF as a list of
+  lists.
+- `FirstOrder.Language.BoundedFormula.IsCNF.components` gives the literals of a CNF as a list of
+  lists.
 -/
 
 universe u v w u' v'
@@ -69,7 +69,7 @@ open FirstOrder Structure Fin
 
 namespace BoundedFormula
 
-/-- An auxilary operation which is semantically equivalent to
+/-- An auxiliary operation which is semantically equivalent to
   `FirstOrder.Language.BoundedFormula.not`. It takes a bounded formula `φ`, assuming any negation
   symbol inside `φ` occurs in front of an atomic formula or `⊥`, it applies negation to `φ`, pushes
   the negation inwards through `⊓`, `⊔`, `∀'`, `∃'`, and eliminates double negations. -/
@@ -112,7 +112,7 @@ theorem realize_simpleNot {n : ℕ} (φ : L.BoundedFormula α n) {v : α → M} 
   · rfl
 
 theorem simpleNot_semanticallyEquivalent_not {T : L.Theory} {n : ℕ} (φ : L.BoundedFormula α n) :
-    (φ.simpleNot ⇔[T] φ.not) := by
+    φ.simpleNot ⇔[T] φ.not := by
   simp only [Theory.Iff, Theory.ModelsBoundedFormula, realize_iff,
     realize_simpleNot, realize_not, implies_true]
 
