@@ -7,7 +7,6 @@ import Mathlib.Algebra.Homology.Single
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-import Mathlib.CategoryTheory.Adjunction.Limits
 
 /-!
 # Limits and colimits in the category of homological complexes
