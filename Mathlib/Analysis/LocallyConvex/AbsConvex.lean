@@ -204,22 +204,15 @@ open Uniformity in
 theorem ball_add_ball_subset_ball_comp {V W : Set E} {y : E} :
     ball y (((fun p : E × E => p.2 - p.1) ⁻¹' (V + W))) ⊆
       ball y (((fun p : E × E => p.2 - p.1) ⁻¹' W) ○ ((fun p : E × E => p.2 - p.1) ⁻¹' V)) := by
-    intro x hx
-    rw [uniform_space_ball_eq_vadd] at hx
-    obtain ⟨z,⟨hz₁,hz₂⟩⟩ := hx
-    simp only [vadd_eq_add] at hz₂
-    obtain ⟨z',⟨hz'₁,⟨z'',hz''₁, hz''₂⟩⟩⟩ := hz₁
-    simp only [vadd_eq_add] at hz''₂
-    use x - z'
-    simp
-    rw [← hz₂]
-    rw [← hz''₂]
-    constructor
-    · rw [add_sub_assoc]
-      rw [add_comm z']
-      simp
-      exact hz''₁
-    · exact hz'₁
+  intro x hx
+  rw [uniform_space_ball_eq_vadd] at hx
+  obtain ⟨z,⟨⟨v,⟨hv,⟨w, hw₁, hw₂⟩⟩⟩,hz₂⟩⟩ := hx
+  simp only [vadd_eq_add] at hz₂
+  simp only [vadd_eq_add] at hw₂
+  use x - v
+  rw [mem_preimage, mem_preimage, sub_sub_cancel, ← hz₂, ← hw₂, add_sub_assoc, add_comm v,
+    add_sub_cancel_right, add_sub_cancel_left]
+  exact ⟨hw₁, hv⟩
 
 variable [Module ℝ E]
 
