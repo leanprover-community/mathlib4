@@ -62,8 +62,7 @@ lemma IsDynCoverOf.image (h : Semiconj φ S T) {F : Set X} {V : Set (Y × Y)} {n
     ∃ t : Finset Y, IsDynCoverOf T (φ '' F) V n t ∧ t.card ≤ s.card := by
   classical
   -- If `s` is a dynamical cover of `F`, then its image by `φ` is a cover of `φ '' F`.
-  use s.image φ
-  apply And.intro _ Finset.card_image_le
+  refine ⟨s.image φ, And.intro ?_ Finset.card_image_le⟩
   simp only [IsDynCoverOf, image_subset_iff, preimage_iUnion₂]
   apply h'.trans
   simp only [Finset.mem_coe, Finset.set_biUnion_finset_image]
@@ -83,8 +82,7 @@ lemma IsDynCoverOf.preimage (h : Semiconj φ S T) {F : Set X} {V : Set (Y × Y)}
   rcases h'.nonempty_inter with ⟨s, s_cover, s_card, s_inter⟩
   choose! g gs_cover using fun (x : Y) (h : x ∈ s) ↦ nonempty_def.1 (s_inter x h)
   choose! f f_section using fun (y : Y) (a : y ∈ φ '' F) ↦ a
-  use s.image (f ∘ g)
-  apply And.intro _ (Finset.card_image_le.trans s_card)
+  refine ⟨s.image (f ∘ g), And.intro ?_ (Finset.card_image_le.trans s_card)⟩
   simp only [IsDynCoverOf, Finset.mem_coe, image_subset_iff, preimage_iUnion₂] at s_cover ⊢
   apply s_cover.trans
   rw [← h.preimage_dynEntourage (V ○ V) n, Finset.set_biUnion_finset_image]
