@@ -5,9 +5,11 @@ Authors: Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Algebra.NeZero
 import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Int.DivMod
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Tactic.Common
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # The finite type with `n` elements
@@ -190,6 +192,7 @@ protected theorem heq_ext_iff {k l : ℕ} (h : k = l) {i : Fin k} {j : Fin l} :
 
 end coe
 
+
 section Order
 
 /-!
@@ -331,6 +334,58 @@ theorem one_lt_last [NeZero n] : 1 < last (n + 1) := by
   exact NeZero.ne n
 
 end Order
+
+/-! ### Coercions to `ℤ` and the `fin_omega` tactic. -/
+
+open Int
+
+theorem coe_int_sub_eq_ite {n : Nat} (u v : Fin n) :
+    ((u - v : Fin n) : Int) = if v ≤ u then (u - v : Int) else (u - v : Int) + n := by
+  rw [Fin.sub_def]
+  split
+  · rw [ofNat_emod, Int.emod_eq_sub_self_emod, Int.emod_eq_of_lt] <;> omega
+  · rw [ofNat_emod, Int.emod_eq_of_lt] <;> omega
+
+theorem coe_int_sub_eq_mod {n : Nat} (u v : Fin n) :
+    ((u - v : Fin n) : Int) = ((u : Int) - (v : Int)) % n := by
+  rw [coe_int_sub_eq_ite]
+  split
+  · rw [Int.emod_eq_of_lt] <;> omega
+  · rw [Int.emod_eq_add_self_emod, Int.emod_eq_of_lt] <;> omega
+
+theorem coe_int_add_eq_ite {n : Nat} (u v : Fin n) :
+    ((u + v : Fin n) : Int) = if (u + v : ℕ) < n then (u + v : Int) else (u + v : Int) - n := by
+  rw [Fin.add_def]
+  split
+  · rw [ofNat_emod, Int.emod_eq_of_lt] <;> omega
+  · rw [ofNat_emod, Int.emod_eq_sub_self_emod, Int.emod_eq_of_lt] <;> omega
+
+theorem coe_int_add_eq_mod {n : Nat} (u v : Fin n) :
+    ((u + v : Fin n) : Int) = ((u : Int) + (v : Int)) % n := by
+  rw [coe_int_add_eq_ite]
+  split
+  · rw [Int.emod_eq_of_lt] <;> omega
+  · rw [Int.emod_eq_sub_self_emod, Int.emod_eq_of_lt] <;> omega
+
+-- Write `a + b` as `if (a + b : ℕ) < n then (a + b : ℤ) else (a + b : ℤ) - n` and
+-- similarly `a - b` as `if (b : ℕ) ≤ a then (a - b : ℤ) else (a - b : ℤ) + n`.
+attribute [fin_omega] coe_int_sub_eq_ite coe_int_add_eq_ite
+
+-- Rewrite inequalities in `Fin` to inequalities in `ℕ`
+attribute [fin_omega] Fin.lt_iff_val_lt_val Fin.le_iff_val_le_val
+
+-- Rewrite `1 : Fin (n + 2)` to `1 : ℤ`
+attribute [fin_omega] val_one
+
+/--
+Preprocessor for `omega` to handle inequalities in `Fin`.
+Note that this involves a lot of case splitting, so may be slow.
+-/
+-- Further adjustment to the simp set can probably make this more powerful.
+-- Please experiment and PR updates!
+macro "fin_omega" : tactic => `(tactic|
+  { try simp only [fin_omega, ← Int.ofNat_lt, ← Int.ofNat_le] at *
+    omega })
 
 section Add
 
@@ -1439,9 +1494,8 @@ instance uniqueFinOne : Unique (Fin 1) where
 @[simp]
 theorem coe_fin_one (a : Fin 1) : (a : ℕ) = 0 := by simp [Subsingleton.elim a 0]
 
-lemma eq_one_of_neq_zero (i : Fin 2) (hi : i ≠ 0) : i = 1 :=
-  fin_two_eq_of_eq_zero_iff
-    (by simpa only [one_eq_zero_iff, succ.injEq, iff_false, reduceCtorEq] using hi)
+lemma eq_one_of_neq_zero (i : Fin 2) (hi : i ≠ 0) : i = 1 := by
+  fin_omega
 
 @[simp]
 theorem coe_neg_one : ↑(-1 : Fin (n + 1)) = n := by
@@ -1454,15 +1508,7 @@ theorem last_sub (i : Fin (n + 1)) : last n - i = Fin.rev i :=
   Fin.ext <| by rw [coe_sub_iff_le.2 i.le_last, val_last, val_rev, Nat.succ_sub_succ_eq_sub]
 
 theorem add_one_le_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) : a + 1 ≤ b := by
-  cases' a with a ha
-  cases' b with b hb
-  cases n
-  · simp only [Nat.zero_add, Nat.lt_one_iff] at ha hb
-    simp [ha, hb]
-  simp only [le_iff_val_le_val, val_add, lt_iff_val_lt_val, val_mk, val_one] at h ⊢
-  rwa [Nat.mod_eq_of_lt, Nat.succ_le_iff]
-  rw [Nat.succ_lt_succ_iff]
-  exact h.trans_le (Nat.le_of_lt_succ hb)
+  cases n <;> fin_omega
 
 theorem exists_eq_add_of_le {n : ℕ} {a b : Fin n} (h : a ≤ b) : ∃ k ≤ b, b = a + k := by
   obtain ⟨k, hk⟩ : ∃ k : ℕ, (b : ℕ) = a + k := Nat.exists_eq_add_of_le h
@@ -1473,15 +1519,10 @@ theorem exists_eq_add_of_le {n : ℕ} {a b : Fin n} (h : a ≤ b) : ∃ k ≤ b,
 theorem exists_eq_add_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) :
     ∃ k < b, k + 1 ≤ b ∧ b = a + k + 1 := by
   cases n
-  · cases' a with a ha
-    cases' b with b hb
-    simp only [Nat.zero_add, Nat.lt_one_iff] at ha hb
-    simp [ha, hb] at h
+  · omega
   obtain ⟨k, hk⟩ : ∃ k : ℕ, (b : ℕ) = a + k + 1 := Nat.exists_eq_add_of_lt h
   have hkb : k < b := by omega
-  refine ⟨⟨k, hkb.trans b.is_lt⟩, hkb, ?_, ?_⟩
-  · rw [Fin.le_iff_val_le_val, Fin.val_add_one]
-    split_ifs <;> simp [Nat.succ_le_iff, hkb]
+  refine ⟨⟨k, hkb.trans b.is_lt⟩, hkb, by fin_omega, ?_⟩
   simp [Fin.ext_iff, Fin.val_add, ← hk, Nat.mod_eq_of_lt b.is_lt]
 
 lemma pos_of_ne_zero {n : ℕ} {a : Fin (n + 1)} (h : a ≠ 0) :
@@ -1489,11 +1530,7 @@ lemma pos_of_ne_zero {n : ℕ} {a : Fin (n + 1)} (h : a ≠ 0) :
   Nat.pos_of_ne_zero (val_ne_of_ne h)
 
 lemma sub_succ_le_sub_of_le {n : ℕ} {u v : Fin (n + 2)} (h : u < v) : v - (u + 1) < v - u := by
-  have h' : u + 1 ≤ v := add_one_le_of_lt h
-  apply lt_def.mpr
-  simp only [sub_val_of_le h', sub_val_of_le (Fin.le_of_lt h)]
-  refine Nat.sub_lt_sub_left h (lt_def.mp ?_)
-  exact lt_add_one_iff.mpr (Fin.lt_of_lt_of_le h v.le_last)
+  fin_omega
 
 end AddGroup
 

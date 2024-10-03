@@ -49,7 +49,7 @@ end HasDistribNeg
 
 section Ring
 
-variable [Ring α] {a b : α}
+variable [Ring α]
 
 -- Needs to have higher simp priority than divp_add_divp. 1000 is the default priority.
 @[field_simps 1010]
