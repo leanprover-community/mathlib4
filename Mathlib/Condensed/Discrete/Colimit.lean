@@ -198,16 +198,8 @@ def isoFinYonedaComponents (X : Profinite.{u}) [Fintype X] :
     (Cofan.IsColimit.op (fintypeCatAsCofanIsColimit X))).conePointUniqueUpToIso
       (Types.productLimitCone.{u, u+1} fun _ ↦ F.obj ⟨Profinite.of PUnit.{u+1}⟩).2
 
-/-- TODO: move -/
-def _root_.Profinite.element (S : Profinite.{u}) (s : S) : Profinite.of PUnit.{u+1} ⟶ S :=
-  ContinuousMap.const _ s
-
-lemma _root_.Profinite.element_comp {S T : Profinite.{u}} (s : S) (g : S ⟶ T) :
-    S.element s ≫ g = T.element (g s) :=
-  rfl
-
 lemma isoFinYonedaComponents_hom_apply (X : Profinite.{u}) [Fintype X] (y : F.obj ⟨X⟩) (x : X) :
-    (isoFinYonedaComponents F X).hom y x = F.map (X.element x).op y := rfl
+    (isoFinYonedaComponents F X).hom y x = F.map ((Profinite.of PUnit.{u+1}).const x).op y := rfl
 
 lemma isoFinYonedaComponents_inv_comp {X Y : Profinite.{u}} [Fintype X] [Fintype Y]
     (f : Y → F.obj ⟨Profinite.of PUnit⟩) (g : X ⟶ Y) :
@@ -216,7 +208,7 @@ lemma isoFinYonedaComponents_inv_comp {X Y : Profinite.{u}} [Fintype X] [Fintype
   simp only [CategoryTheory.inv_hom_id_apply]
   ext x
   rw [isoFinYonedaComponents_hom_apply]
-  simp only [← FunctorToTypes.map_comp_apply, ← op_comp, X.element_comp,
+  simp only [← FunctorToTypes.map_comp_apply, ← op_comp, CompHausLike.const_comp,
     ← isoFinYonedaComponents_hom_apply, CategoryTheory.inv_hom_id_apply, Function.comp_apply]
 
 /--
@@ -277,7 +269,7 @@ lemma isoLocallyConstantOfIsColimit_inv (X : Profinite.{u}ᵒᵖ ⥤ Type (u+1))
   apply injective_of_mono (isoFinYonedaComponents X (fiber.{u, u+1} f x)).hom
   ext y
   simp only [isoFinYonedaComponents_hom_apply, ← FunctorToTypes.map_comp_apply, ← op_comp]
-  rw [show Profinite.element (fiber.{u, u+1} f x) y ≫ IsTerminal.from _ (fiber f x) = 𝟙 _ from rfl]
+  rw [show (Profinite.of PUnit.{u+1}).const y ≫ IsTerminal.from _ (fiber f x) = 𝟙 _ from rfl]
   simp only [op_comp, FunctorToTypes.map_comp_apply, op_id, FunctorToTypes.map_id_apply]
   rw [← isoFinYonedaComponents_inv_comp X _ (sigmaIncl.{u, u+1} f x)]
   simpa [← isoFinYonedaComponents_hom_apply] using x.map_eq_image f y
@@ -460,17 +452,9 @@ def isoFinYonedaComponents (X : LightProfinite.{u}) [Fintype X] :
     (Cofan.IsColimit.op (fintypeCatAsCofanIsColimit X))).conePointUniqueUpToIso
       (Types.productLimitCone.{u, u} fun _ ↦ F.obj ⟨LightProfinite.of PUnit.{u+1}⟩).2
 
-/-- TODO: move -/
-def _root_.LightProfinite.element (S : LightProfinite.{u}) (s : S) :
-    LightProfinite.of PUnit.{u+1} ⟶ S :=
-  ContinuousMap.const _ s
-
-lemma _root_.LightProfinite.element_comp {S T : LightProfinite.{u}} (s : S) (g : S ⟶ T) :
-    S.element s ≫ g = T.element (g s) :=
-  rfl
-
 lemma isoFinYonedaComponents_hom_apply (X : LightProfinite.{u}) [Fintype X] (y : F.obj ⟨X⟩)
-    (x : X) : (isoFinYonedaComponents F X).hom y x = F.map (X.element x).op y := rfl
+    (x : X) : (isoFinYonedaComponents F X).hom y x =
+      F.map ((LightProfinite.of PUnit.{u+1}).const x).op y := rfl
 
 lemma isoFinYonedaComponents_inv_comp {X Y : LightProfinite.{u}} [Fintype X] [Fintype Y]
     (f : Y → F.obj ⟨LightProfinite.of PUnit⟩) (g : X ⟶ Y) :
@@ -479,7 +463,7 @@ lemma isoFinYonedaComponents_inv_comp {X Y : LightProfinite.{u}} [Fintype X] [Fi
   simp only [CategoryTheory.inv_hom_id_apply]
   ext x
   rw [isoFinYonedaComponents_hom_apply]
-  simp only [← FunctorToTypes.map_comp_apply, ← op_comp, X.element_comp,
+  simp only [← FunctorToTypes.map_comp_apply, ← op_comp, CompHausLike.const_comp,
     ← isoFinYonedaComponents_hom_apply, CategoryTheory.inv_hom_id_apply, Function.comp_apply]
 
 /--
@@ -542,8 +526,7 @@ lemma isoLocallyConstantOfIsColimit_inv (X : LightProfinite.{u}ᵒᵖ ⥤ Type u
   apply injective_of_mono (isoFinYonedaComponents X (fiber.{u, u} f x)).hom
   ext y
   simp only [isoFinYonedaComponents_hom_apply, ← FunctorToTypes.map_comp_apply, ← op_comp]
-  rw [show LightProfinite.element (fiber.{u, u} f x) y ≫ IsTerminal.from _ (fiber f x) = 𝟙 _
-    from rfl]
+  rw [show (LightProfinite.of PUnit.{u+1}).const y ≫ IsTerminal.from _ (fiber f x) = 𝟙 _ from rfl]
   simp only [op_comp, FunctorToTypes.map_comp_apply, op_id, FunctorToTypes.map_id_apply]
   rw [← isoFinYonedaComponents_inv_comp X _ (sigmaIncl.{u, u} f x)]
   simpa [← isoFinYonedaComponents_hom_apply] using x.map_eq_image f y
