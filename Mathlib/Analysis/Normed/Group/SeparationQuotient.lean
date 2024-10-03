@@ -421,7 +421,7 @@ noncomputable def lift {N : Type*} [SeminormedAddCommGroup N] (f : NormedAddGrou
       intro v
       obtain ⟨v', hv'⟩ := surjective_mk v
       rw [← hv']
-      simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, AddCommGroupHom_lift_apply,
+      simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, AddCommMonoidHom_lift_apply,
         AddMonoidHom.coe_coe]
       rw [quotient_norm_mk_eq]
       exact NormedAddGroupHom.le_opNorm f v'}

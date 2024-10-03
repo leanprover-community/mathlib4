@@ -139,6 +139,28 @@ instance instMonoid [Monoid M] [ContinuousMul M] : Monoid (SeparationQuotient M)
 instance instCommMonoid [CommMonoid M] [ContinuousMul M] : CommMonoid (SeparationQuotient M) :=
   surjective_mk.commMonoid mk mk_one mk_mul mk_pow
 
+variable {N : Type*} [TopologicalSpace N]
+
+@[to_additive]
+noncomputable def liftMonoidHom [CommMonoid M] [ContinuousMul M] [CommMonoid N] [ContinuousMul N]
+    (f : MonoidHom M N) (hf : ∀ x y, Inseparable x y → f x = f y) :
+    MonoidHom (SeparationQuotient M) N where
+  toFun := SeparationQuotient.lift f hf
+  map_one' := by
+    rw [← (@MonoidHom.map_one M N _ _ f), ← SeparationQuotient.lift_mk hf 1, ← mk_one]
+  map_mul' {x y} := by
+    simp only
+    obtain ⟨x', hx'⟩ := surjective_mk x
+    obtain ⟨y', hy'⟩ := surjective_mk y
+    rw [← hx', ← hy', SeparationQuotient.lift_mk hf x', SeparationQuotient.lift_mk hf y', ← mk_mul,
+      SeparationQuotient.lift_mk hf (x' * y')]
+    exact MonoidHom.map_mul f x' y'
+
+@[to_additive (attr := simp)]
+theorem CommMonoidHom_lift_apply [CommMonoid M] [ContinuousMul M] [CommMonoid N] [ContinuousMul N]
+    (f : MonoidHom M N) (hf : ∀ x y, Inseparable x y → f x = f y) (x : M) :
+    liftMonoidHom f hf (mk x) = f x := rfl
+
 end Monoid
 
 section Group
@@ -208,26 +230,6 @@ def mkGroupHom [CommGroup G] [TopologicalGroup G]  : G →* SeparationQuotient G
   map_one' := mk_one
 
 variable {H : Type*} [TopologicalSpace H]
-
-@[to_additive]
-noncomputable def liftMonoidHom [CommGroup G] [TopologicalGroup G] [CommGroup H]
-    [TopologicalGroup H] (f : MonoidHom G H) (hf : ∀ x y, Inseparable x y → f x = f y) :
-    MonoidHom (SeparationQuotient G) H where
-  toFun := SeparationQuotient.lift f hf
-  map_one' := by
-    rw [← (@MonoidHom.map_one G H _ _ f), ← SeparationQuotient.lift_mk hf 1, ← mk_one]
-  map_mul' {x y} := by
-    simp only
-    obtain ⟨x', hx'⟩ := surjective_mk x
-    obtain ⟨y', hy'⟩ := surjective_mk y
-    rw [← hx', ← hy', SeparationQuotient.lift_mk hf x', SeparationQuotient.lift_mk hf y', ← mk_mul,
-      SeparationQuotient.lift_mk hf (x' * y')]
-    exact MonoidHom.map_mul f x' y'
-
-@[to_additive (attr := simp)]
-theorem CommGroupHom_lift_apply [CommGroup G] [TopologicalGroup G] [CommGroup H]
-    [TopologicalGroup H] (f : MonoidHom G H) (hf : ∀ x y, Inseparable x y → f x = f y) (x : G) :
-    liftMonoidHom f hf (mk x) = f x := rfl
 
 end Group
 
@@ -392,8 +394,10 @@ end DistribSMul
 
 section Module
 
-variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R S M N : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
     [TopologicalSpace M] [ContinuousAdd M] [ContinuousConstSMul R M]
+    [Semiring S] [AddCommMonoid N] [Module S N]
+    [TopologicalSpace N]
 
 instance instModule : Module R (SeparationQuotient M) :=
   surjective_mk.module R mkAddMonoidHom mk_smul
@@ -406,6 +410,27 @@ def mkCLM : M →L[R] SeparationQuotient M where
   toFun := mk
   map_add' := mk_add
   map_smul' := mk_smul
+
+variable {R M}
+
+/-- The lift as a continuous linear map of `f` with `f x = f y` for `Inseparable x y`. -/
+noncomputable def liftCLM (σ : R →+* S) (f : M →SL[σ] N) (hf : ∀ x y, Inseparable x y → f x = f y) :
+    (SeparationQuotient M) →SL[σ] N where
+  toFun := SeparationQuotient.lift f hf
+  map_add' {x y} := by
+    obtain ⟨x', hx'⟩ := surjective_mk x
+    obtain ⟨y', hy'⟩ := surjective_mk y
+    rw [← hx', ← hy', SeparationQuotient.lift_mk hf x', SeparationQuotient.lift_mk hf y', ← mk_add,
+      lift_mk]
+    exact ContinuousLinearMap.map_add f x' y'
+  map_smul' {r x} := by
+    obtain ⟨x', hx'⟩ := surjective_mk x
+    rw [← hx', ← mk_smul]
+    simp only [lift_mk]
+    exact ContinuousLinearMap.map_smulₛₗ f r x'
+
+theorem CLM_lift_apply (σ : R →+* S) (f : M →SL[σ] N) (hf : ∀ x y, Inseparable x y → f x = f y)
+    (x : M) : liftCLM σ f hf (mk x) = f x := rfl
 
 end Module
 
