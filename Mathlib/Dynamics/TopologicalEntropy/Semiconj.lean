@@ -122,11 +122,9 @@ lemma le_coverEntropyEntourage_image (h : Semiconj φ S T) (F : Set X) {V : Set 
 
 lemma le_coverEntropyInfEntourage_image (h : Semiconj φ S T) (F : Set X) {V : Set (Y × Y)}
     (V_symm : SymmetricRel V) :
-    coverEntropyInfEntourage S F ((Prod.map φ φ) ⁻¹' (V ○ V))
-      ≤ coverEntropyInfEntourage T (φ '' F) V := by
-  refine (liminf_le_liminf) (Eventually.of_forall fun n ↦ ?_)
-  apply monotone_div_right_of_nonneg (Nat.cast_nonneg' n)
-  exact log_monotone (ENat.toENNReal_mono (le_coverMincard_image h F V_symm n))
+    coverEntropyInfEntourage S F ((Prod.map φ φ) ⁻¹' (V ○ V)) ≤ coverEntropyInfEntourage T (φ '' F) V :=
+  (liminf_le_liminf) (Eventually.of_forall fun n ↦ (monotone_div_right_of_nonneg
+    (Nat.cast_nonneg' n) (log_monotone (ENat.toENNReal_mono (le_coverMincard_image h F V_symm n)))))
 
 lemma coverEntropyEntourage_image_le (h : Semiconj φ S T) (F : Set X) (V : Set (Y × Y)) :
     coverEntropyEntourage T (φ '' F) V ≤ coverEntropyEntourage S F ((Prod.map φ φ) ⁻¹' V) := by
