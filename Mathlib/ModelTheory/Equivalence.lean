@@ -58,7 +58,8 @@ instance : IsTrans (L.BoundedFormula α n) T.Imp := ⟨fun _ _ _ => Imp.trans⟩
 
 instance : IsPreorder (L.BoundedFormula α n) T.Imp where
 
-def preorder (T : L.Theory) : Preorder (L.Formula α) where
+/-- Implication induces a preorder on formulas. -/
+def preorder (T : L.Theory) : Preorder (L.BoundedFormula α n) where
   le := T.Imp
   le_refl := Imp.refl
   le_trans _ _ _ := Imp.trans
@@ -318,7 +319,7 @@ instance : PartialOrder (T.Formula α) := by
   letI : Preorder (L.Formula α) := Imp.preorder T
   exact instPartialOrderAntisymmetrization
 
-@[simps]
+@[simps!]
 instance : BooleanAlgebra (T.Formula α) where
   sup := Quot.map₂ (· ⊔ ·) (fun _ _ _ => Iff.sup_congr (refl _))
     (fun _ _ _ _ => Iff.sup_congr _ (refl _))
