@@ -60,7 +60,7 @@ theorem pi_iff :
     let J' := Ideal.span {1 - f₁ e}
     let f₁' : f x →ₐ[R] B ⧸ J' := by
       apply AlgHom.ofLinearMap
-        (((Ideal.Quotient.mkₐ R J').comp f₁).toLinearMap.comp (LinearMap.single x))
+        (((Ideal.Quotient.mkₐ R J').comp f₁).toLinearMap.comp (LinearMap.single _ _ x))
       · simp only [AlgHom.comp_toLinearMap, LinearMap.coe_comp, LinearMap.coe_single,
           Function.comp_apply, AlgHom.toLinearMap_apply, Ideal.Quotient.mkₐ_eq_mk]
         rw [eq_comm, ← sub_eq_zero, ← (Ideal.Quotient.mk J').map_one, ← map_sub,
@@ -68,7 +68,7 @@ theorem pi_iff :
       · intros r s; simp [Pi.single_mul]
     let f₂' : f x →ₐ[R] B ⧸ J' := by
       apply AlgHom.ofLinearMap
-        (((Ideal.Quotient.mkₐ R J').comp f₂).toLinearMap.comp (LinearMap.single x))
+        (((Ideal.Quotient.mkₐ R J').comp f₂).toLinearMap.comp (LinearMap.single _ _ x))
       · simp only [AlgHom.comp_toLinearMap, LinearMap.coe_comp, LinearMap.coe_single,
           Function.comp_apply, AlgHom.toLinearMap_apply, Ideal.Quotient.mkₐ_eq_mk]
         rw [eq_comm, ← sub_eq_zero, ← (Ideal.Quotient.mk J').map_one, ← map_sub,
