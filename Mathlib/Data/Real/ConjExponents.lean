@@ -229,14 +229,14 @@ protected lemma Real.IsConjExponent.toNNReal {p q : ℝ} (hpq : p.IsConjExponent
 
 namespace ENNReal
 
-/-- Two nonnegative real exponents `p, q` are conjugate if they are `> 1` and satisfy the equality
+/-- Two extended nonnegative real exponents `p, q` are conjugate and satisfy the equality
 `1/p + 1/q = 1`. This condition shows up in many theorems in analysis, notably related to `L^p`
-norms. -/
+norms. Note that we permit one of the exponents to be `∞` and the other `1`. -/
 @[mk_iff]
 structure IsConjExponent (p q : ℝ≥0∞) : Prop where
   inv_add_inv_conj : p⁻¹ + q⁻¹ = 1
 
-/-- The conjugate exponent of `p` is `q = p/(p - 1)`, so that `1/p + 1/q = 1`. -/
+/-- The conjugate exponent of `p` is `q = 1 + (p - 1)⁻¹`, so that `1/p + 1/q = 1`. -/
 noncomputable def conjExponent (p : ℝ≥0∞) : ℝ≥0∞ := 1 + (p - 1)⁻¹
 
 lemma coe_conjExponent {p : ℝ≥0} (hp : 1 < p) : p.conjExponent = conjExponent p := by
