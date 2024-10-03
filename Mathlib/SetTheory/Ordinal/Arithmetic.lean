@@ -2303,7 +2303,8 @@ theorem omega0_pos : 0 < ω :=
   nat_lt_omega0 0
 
 @[deprecated (since := "2024-09-30")]
-alias omega_pos := omega0_pos
+theorem omega_pos : 0 < ω :=
+  nat_lt_omega 0
 
 theorem omega0_ne_zero : ω ≠ 0 :=
   omega0_pos.ne'
