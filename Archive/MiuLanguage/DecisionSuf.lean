@@ -256,7 +256,8 @@ theorem count_I_eq_length_of_count_U_zero_and_neg_mem {ys : Miustr} (hu : count 
       · simpa only [count]
       · rw [mem_cons, not_or] at hm; exact hm.2
     · -- case `x = U` gives a contradiction.
-      exfalso; simp only [count, countP_cons_of_pos (· == U) _ (rfl : U == U)] at hu
+      exfalso
+      simp only [count, countP_cons_of_pos (· == U) _ (rfl : U == U), reduceCtorEq] at hu
 
 /-- `base_case_suf` is the base case of the sufficiency result.
 -/
@@ -264,7 +265,8 @@ theorem base_case_suf (en : Miustr) (h : Decstr en) (hu : count U en = 0) : Deri
   rcases h with ⟨⟨mhead, nmtail⟩, hi⟩
   have : en ≠ nil := by
     intro k
-    simp only [k, count, countP, countP.go, if_false, zero_mod, zero_ne_one, false_or_iff] at hi
+    simp only [k, count, countP, countP.go, if_false, zero_mod, zero_ne_one, false_or,
+      reduceCtorEq] at hi
   rcases exists_cons_of_ne_nil this with ⟨y, ys, rfl⟩
   rcases mhead
   rsuffices ⟨c, rfl, hc⟩ : ∃ c, replicate c I = ys ∧ (c % 3 = 1 ∨ c % 3 = 2)
@@ -308,16 +310,17 @@ theorem ind_hyp_suf (k : ℕ) (ys : Miustr) (hu : count U ys = succ k) (hdec : D
   refine ⟨rfl, ?_, ?_, ?_⟩
   · -- Porting note: `simp_rw [count_append]` didn't work
     rw [count_append] at hu
-    simp_rw [count_cons, beq_self_eq_true, if_true, add_succ, beq_iff_eq, reduceIte, add_zero,
-      succ_inj'] at hu
+    simp_rw [count_cons, beq_self_eq_true, if_true, add_succ, beq_iff_eq, reduceCtorEq, reduceIte,
+      add_zero, succ_inj'] at hu
     rwa [count_append, count_append]
   · apply And.intro rfl
     rw [cons_append, cons_append]
     dsimp [tail] at nmtail ⊢
     rw [mem_append] at nmtail
-    simpa only [append_assoc, cons_append, nil_append, mem_append, mem_cons, false_or] using nmtail
+    simpa only [append_assoc, cons_append, nil_append, mem_append, mem_cons, reduceCtorEq,
+      false_or] using nmtail
   · rw [count_append, count_append]; rw [← cons_append, count_append] at hic
-    simp only [count_cons_self, count_nil, count_cons, if_false] at hic ⊢
+    simp only [count_cons_self, count_nil, count_cons, if_false, reduceCtorEq] at hic ⊢
     rw [add_right_comm, add_mod_right]; exact hic
 
 /-- `der_of_decstr` states that `Derivable en` follows from `Decstr en`.

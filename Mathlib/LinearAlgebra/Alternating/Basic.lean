@@ -603,8 +603,8 @@ theorem map_perm [DecidableEq ι] [Fintype ι] (v : ι → M) (σ : Equiv.Perm �
   -- Porting note: `apply` → `induction'`
   induction' σ using Equiv.Perm.swap_induction_on' with s x y hxy hI
   · simp
-  · -- Porting note: `← Function.comp.assoc` & `-Equiv.Perm.sign_swap'` are required.
-    simpa [← Function.comp.assoc, g.map_swap (v ∘ s) hxy,
+  · -- Porting note: `← Function.comp_assoc` & `-Equiv.Perm.sign_swap'` are required.
+    simpa [← Function.comp_assoc, g.map_swap (v ∘ s) hxy,
       Equiv.Perm.sign_swap hxy, -Equiv.Perm.sign_swap'] using hI
 
 theorem map_congr_perm [DecidableEq ι] [Fintype ι] (σ : Equiv.Perm ι) :
@@ -656,10 +656,10 @@ def domDomCongrEquiv (σ : ι ≃ ι') : M [⋀^ι]→ₗ[R] N ≃+ M [⋀^ι']�
   invFun := domDomCongr σ.symm
   left_inv f := by
     ext
-    simp [Function.comp]
+    simp [Function.comp_def]
   right_inv m := by
     ext
-    simp [Function.comp]
+    simp [Function.comp_def]
   map_add' := domDomCongr_add σ
 
 section DomDomLcongr
@@ -671,8 +671,8 @@ variable (S : Type*) [Semiring S] [Module S N] [SMulCommClass R S N]
 def domDomCongrₗ (σ : ι ≃ ι') : M [⋀^ι]→ₗ[R] N ≃ₗ[S] M [⋀^ι']→ₗ[R] N where
   toFun := domDomCongr σ
   invFun := domDomCongr σ.symm
-  left_inv f := by ext; simp [Function.comp]
-  right_inv m := by ext; simp [Function.comp]
+  left_inv f := by ext; simp [Function.comp_def]
+  right_inv m := by ext; simp [Function.comp_def]
   map_add' := domDomCongr_add σ
   map_smul' := domDomCongr_smul σ
 

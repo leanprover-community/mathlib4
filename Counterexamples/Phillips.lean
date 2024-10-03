@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.Topology.ContinuousFunction.Bounded
+import Mathlib.Topology.ContinuousMap.Bounded
 
 /-!
 # A counterexample on Pettis integrability
@@ -467,14 +467,14 @@ theorem sierpinski_pathological_family (Hcont : #ℝ = aleph 1) :
   refine ⟨fun x => {y | r x y}, fun x => ?_, fun y => ?_⟩
   · have : univ \ {y | r x y} = {y | r y x} ∪ {x} := by
       ext y
-      simp only [true_and_iff, mem_univ, mem_setOf_eq, mem_insert_iff, union_singleton, mem_diff]
+      simp only [true_and, mem_univ, mem_setOf_eq, mem_insert_iff, union_singleton, mem_diff]
       rcases trichotomous_of r x y with (h | rfl | h)
-      · simp only [h, not_or, false_iff_iff, not_true]
+      · simp only [h, not_or, false_iff, not_true]
         constructor
         · rintro rfl; exact irrefl_of r y h
         · exact asymm h
-      · simp only [true_or_iff, eq_self_iff_true, iff_true_iff]; exact irrefl x
-      · simp only [h, iff_true_iff, or_true_iff]; exact asymm h
+      · simp only [true_or, eq_self_iff_true, iff_true]; exact irrefl x
+      · simp only [h, iff_true, or_true]; exact asymm h
     rw [this]
     apply Countable.union _ (countable_singleton _)
     rw [Cardinal.countable_iff_lt_aleph_one, ← Hcont]

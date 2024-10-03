@@ -98,7 +98,7 @@ theorem FG.of_finite {s : L.Substructure M} [h : Finite s] : s.FG :=
 theorem FG.finite [L.IsRelational] {S : L.Substructure M} (h : S.FG) : Finite S := by
   obtain ⟨s, rfl⟩ := h
   have hs := s.finite_toSet
-  rw [← ((closure L).mem_closed_iff _).1 (mem_closed_of_isRelational L (↑s : Set M))] at hs
+  rw [← closure_eq_of_isRelational L (s : Set M)] at hs
   exact hs
 
 theorem fg_iff_finite [L.IsRelational] {S : L.Substructure M} : S.FG ↔ Finite S :=

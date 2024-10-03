@@ -3,10 +3,11 @@ Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
 -/
-import Mathlib.LinearAlgebra.Isomorphisms
+import Mathlib.Algebra.DirectSum.Module
+import Mathlib.Algebra.Module.ZMod
 import Mathlib.GroupTheory.Torsion
+import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.RingTheory.Coprime.Ideal
-import Mathlib.Data.ZMod.Module
 
 /-!
 # Torsion submodules
@@ -360,9 +361,7 @@ theorem iSup_torsionBySet_ideal_eq_torsionBySet_iInf
     (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤) :
     ⨆ i ∈ S, torsionBySet R M (p i) = torsionBySet R M ↑(⨅ i ∈ S, p i) := by
   rcases S.eq_empty_or_nonempty with h | h
-  · simp only [h]
-    -- Porting note: converts were not cooperating
-    convert iSup_emptyset (f := fun i => torsionBySet R M (p i)) <;> simp
+  · simp [h]
   apply le_antisymm
   · apply iSup_le _
     intro i

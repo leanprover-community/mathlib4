@@ -179,12 +179,13 @@ theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (
   set f' := MultilinearMap.mkContinuous f'₀ ‖f‖ hf'₀
   have hnorm : ‖f'‖ ≤ ‖f‖ := (f'.opNorm_le_iff (norm_nonneg f)).mpr hf'₀
   have heq : e (lift f'.toMultilinearMap x) = lift f.toMultilinearMap x := by
-    induction' x using PiTensorProduct.induction_on with a m _ _ hx hy
-    · simp only [lift_symm, map_smul, lift.tprod, ContinuousMultilinearMap.coe_coe,
+    induction x using PiTensorProduct.induction_on with
+    | smul_tprod =>
+      simp only [lift_symm, map_smul, lift.tprod, ContinuousMultilinearMap.coe_coe,
       MultilinearMap.coe_mkContinuous, LinearMap.compMultilinearMap_apply, LinearMap.coe_comp,
       LinearEquiv.coe_coe, Function.comp_apply, LinearEquiv.apply_symm_apply, SetLike.val_smul,
       LinearMap.codRestrict_apply, f', f'₀]
-    · simp only [map_add, AddSubmonoid.coe_add, Submodule.coe_toAddSubmonoid, hx, hy]
+    | add _ _ hx hy => simp only [map_add, Submodule.coe_add, hx, hy]
   suffices h : ‖lift f'.toMultilinearMap x‖ ≤ ‖f'‖ * injectiveSeminorm x by
     change ‖(e (lift f'.toMultilinearMap x)).1‖ ≤ _ at h
     rw [heq] at h
@@ -210,8 +211,7 @@ theorem injectiveSeminorm_le_projectiveSeminorm :
     existsi PUnit, inferInstance, inferInstance
     ext x
     simp only [Seminorm.zero_apply, Seminorm.comp_apply, coe_normSeminorm]
-    have heq : toDualContinuousMultilinearMap PUnit x = 0 := by ext _
-    rw [heq, norm_zero]
+    rw [Subsingleton.elim (toDualContinuousMultilinearMap PUnit x) 0, norm_zero]
   · intro p hp
     simp only [Set.mem_setOf_eq] at hp
     obtain ⟨G, _, _, h⟩ := hp
@@ -343,11 +343,12 @@ theorem mapL_coe : (mapL f).toLinearMap = map (fun i ↦ (f i).toLinearMap) := b
 
 @[simp]
 theorem mapL_apply (x : ⨂[𝕜] i, E i) : mapL f x = map (fun i ↦ (f i).toLinearMap) x := by
-  induction' x using PiTensorProduct.induction_on with _ _ _ _ hx hy
-  · simp only [mapL, map_smul, liftIsometry_apply_apply, lift.tprod,
+  induction x using PiTensorProduct.induction_on with
+  | smul_tprod =>
+    simp only [mapL, map_smul, liftIsometry_apply_apply, lift.tprod,
     ContinuousMultilinearMap.coe_coe, ContinuousMultilinearMap.compContinuousLinearMap_apply,
     tprodL_toFun, map_tprod, ContinuousLinearMap.coe_coe]
-  · simp only [map_add, hx, hy]
+  | add _ _ hx hy => simp only [map_add, hx, hy]
 
 /-- Given submodules `pᵢ ⊆ Eᵢ`, this is the natural map: `⨂[𝕜] i, pᵢ → ⨂[𝕜] i, Eᵢ`.
 This is the continuous version of `PiTensorProduct.mapIncl`.

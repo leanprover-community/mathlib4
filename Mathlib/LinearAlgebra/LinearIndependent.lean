@@ -411,8 +411,8 @@ theorem linearIndependent_comp_subtype {s : Set ι} :
     Set.subset_def, Finset.mem_coe]
   constructor
   · intro h l hl₁ hl₂
-    have := h (l.subtypeDomain s) ((Finsupp.sum_subtypeDomain_index hl₁).trans hl₂)
-    exact (Finsupp.subtypeDomain_eq_zero_iff hl₁).1 this
+    exact (Finsupp.subtypeDomain_eq_zero_iff hl₁).1 <|
+      h (l.subtypeDomain s) ((Finsupp.sum_subtypeDomain_index hl₁).trans hl₂)
   · intro h l hl
     refine Finsupp.embDomain_eq_zero.1 (h (l.embDomain <| Function.Embedding.subtype s) ?_ ?_)
     · suffices ∀ i hi, ¬l ⟨i, hi⟩ = 0 → i ∈ s by simpa
@@ -591,8 +591,7 @@ theorem LinearIndependent.units_smul {v : ι → M} (hv : LinearIndependent R v)
     exact (hgs i hi).symm ▸ zero_smul _ _
   · rw [← hsum, Finset.sum_congr rfl _]
     intros
-    erw [Pi.smul_apply, smul_assoc]
-    rfl
+    rw [Pi.smul_apply', smul_assoc, Units.smul_def]
 
 lemma LinearIndependent.eq_of_pair {x y : M} (h : LinearIndependent R ![x, y])
     {s t s' t' : R} (h' : s • x + t • y = s' • x + t' • y) : s = s' ∧ t = t' := by
@@ -1030,7 +1029,7 @@ theorem eq_of_linearIndependent_of_span_subtype [Nontrivial R] {s t : Set M}
     ⟨fun x => ⟨x.1, h x.2⟩, fun a b hab => Subtype.coe_injective (Subtype.mk.inj hab)⟩
   have h_surj : Surjective f := by
     apply surjective_of_linearIndependent_of_span hs f _
-    convert hst <;> simp [f, comp]
+    convert hst <;> simp [f, comp_def]
   show s = t
   apply Subset.antisymm _ h
   intro x hx
@@ -1280,7 +1279,7 @@ theorem linearIndependent_insert' {ι} {s : Set ι} {a : ι} {f : ι → V} (has
     linearIndependent_option]
   -- Porting note: `simp [(· ∘ ·), range_comp f]` → `simp [(· ∘ ·)]; erw [range_comp f ..]; simp`
   -- https://github.com/leanprover-community/mathlib4/issues/5164
-  simp only [(· ∘ ·)]
+  simp only [Function.comp_def]
   erw [range_comp f ((↑) : s → ι)]
   simp
 

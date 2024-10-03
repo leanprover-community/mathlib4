@@ -94,11 +94,12 @@ theorem image₂_subset_iff_left : image₂ f s t ⊆ u ↔ ∀ a ∈ s, (t.imag
 theorem image₂_subset_iff_right : image₂ f s t ⊆ u ↔ ∀ b ∈ t, (s.image fun a => f a b) ⊆ u := by
   simp_rw [image₂_subset_iff, image_subset_iff, @forall₂_swap α]
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem image₂_nonempty_iff : (image₂ f s t).Nonempty ↔ s.Nonempty ∧ t.Nonempty := by
   rw [← coe_nonempty, coe_image₂]
   exact image2_nonempty_iff
 
+@[aesop safe apply (rule_sets := [finsetNonempty])]
 theorem Nonempty.image₂ (hs : s.Nonempty) (ht : t.Nonempty) : (image₂ f s t).Nonempty :=
   image₂_nonempty_iff.2 ⟨hs, ht⟩
 

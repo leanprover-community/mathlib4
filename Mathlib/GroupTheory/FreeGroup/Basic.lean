@@ -312,8 +312,8 @@ theorem inv_of_red_of_ne {x1 b1 x2 b2} (H1 : (x1, b1) ≠ (x2, b2))
 open List -- for <+ notation
 
 @[to_additive]
-theorem Step.sublist (H : Red.Step L₁ L₂) : Sublist L₂ L₁ := by
-  cases H; simp; constructor; constructor; rfl
+theorem Step.sublist (H : Red.Step L₁ L₂) : L₂ <+ L₁ := by
+  cases H; simp
 
 /-- If `w₁ w₂` are words such that `w₁` reduces to `w₂`, then `w₂` is a sublist of `w₁`. -/
 @[to_additive "If `w₁ w₂` are words such that `w₁` reduces to `w₂`, then `w₂` is a sublist of
@@ -383,8 +383,8 @@ theorem eqvGen_step_iff_join_red : EqvGen Red.Step L₁ L₂ ↔ Join Red L₁ L
     (fun h =>
       have : EqvGen (Join Red) L₁ L₂ := h.mono fun _ _ => join_red_of_step
       equivalence_join_red.eqvGen_iff.1 this)
-    (join_of_equivalence (EqvGen.is_equivalence _) fun _ _ =>
-      reflTransGen_of_equivalence (EqvGen.is_equivalence _) EqvGen.rel)
+    (join_of_equivalence (Relation.EqvGen.is_equivalence _) fun _ _ =>
+      reflTransGen_of_equivalence (Relation.EqvGen.is_equivalence _) EqvGen.rel)
 
 end FreeGroup
 
@@ -462,7 +462,7 @@ theorem invRev_length : (invRev L₁).length = L₁.length := by simp [invRev]
 
 @[to_additive (attr := simp)]
 theorem invRev_invRev : invRev (invRev L₁) = L₁ := by
-  simp [invRev, List.map_reverse, (· ∘ ·)]
+  simp [invRev, List.map_reverse, Function.comp_def]
 
 @[to_additive (attr := simp)]
 theorem invRev_empty : invRev ([] : List (α × Bool)) = [] :=
@@ -538,7 +538,7 @@ def of (x : α) : FreeGroup α :=
 @[to_additive]
 theorem Red.exact : mk L₁ = mk L₂ ↔ Join Red L₁ L₂ :=
   calc
-    mk L₁ = mk L₂ ↔ EqvGen Red.Step L₁ L₂ := Iff.intro (Quot.eqvGen_exact _) Quot.eqvGen_sound
+    mk L₁ = mk L₂ ↔ EqvGen Red.Step L₁ L₂ := Iff.intro Quot.eqvGen_exact Quot.eqvGen_sound
     _ ↔ Join Red L₁ L₂ := eqvGen_step_iff_join_red
 
 /-- The canonical map from the type to the free group is an injection. -/
@@ -571,7 +571,7 @@ def lift : (α → β) ≃ (FreeGroup α →* β) where
     MonoidHom.mk' (Quot.lift (Lift.aux f) fun L₁ L₂ => Red.Step.lift) <| by
       rintro ⟨L₁⟩ ⟨L₂⟩; simp [Lift.aux]
   invFun g := g ∘ of
-  left_inv f := one_mul _
+  left_inv f := List.prod_singleton
   right_inv g :=
     MonoidHom.ext <| by
       rintro ⟨L⟩
@@ -592,7 +592,7 @@ theorem lift.mk : lift f (mk L) = List.prod (L.map fun x => cond x.2 (f x.1) (f 
 
 @[to_additive (attr := simp)]
 theorem lift.of {x} : lift f (of x) = f x :=
-  one_mul _
+  List.prod_singleton
 
 @[to_additive]
 theorem lift.unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) = f x) {x} :
@@ -669,7 +669,7 @@ theorem map.id' (x : FreeGroup α) : map (fun z => z) x = x :=
 @[to_additive]
 theorem map.comp {γ : Type w} (f : α → β) (g : β → γ) (x) :
     map g (map f x) = map (g ∘ f) x := by
-  rcases x with ⟨L⟩; simp [(· ∘ ·)]
+  rcases x with ⟨L⟩; simp [Function.comp_def]
 
 @[to_additive (attr := simp)]
 theorem map.of {x} : map f (of x) = of (f x) :=

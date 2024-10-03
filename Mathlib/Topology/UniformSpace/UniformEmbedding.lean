@@ -67,7 +67,7 @@ theorem UniformInducing.of_comp_iff {g : β → γ} (hg : UniformInducing g) {f 
     UniformInducing (g ∘ f) ↔ UniformInducing f := by
   refine ⟨fun h ↦ ?_, hg.comp⟩
   rw [uniformInducing_iff, ← hg.comap_uniformity, comap_comap, ← h.comap_uniformity,
-    Function.comp, Function.comp]
+    Function.comp_def, Function.comp_def]
 
 theorem UniformInducing.basis_uniformity {f : α → β} (hf : UniformInducing f) {ι : Sort*}
     {p : ι → Prop} {s : ι → Set (β × β)} (H : (𝓤 β).HasBasis p s) :
@@ -109,10 +109,10 @@ theorem UniformInducing.inducing {f : α → β} (h : UniformInducing f) : Induc
 theorem UniformInducing.prod {α' : Type*} {β' : Type*} [UniformSpace α'] [UniformSpace β']
     {e₁ : α → α'} {e₂ : β → β'} (h₁ : UniformInducing e₁) (h₂ : UniformInducing e₂) :
     UniformInducing fun p : α × β => (e₁ p.1, e₂ p.2) :=
-  ⟨by simp [(· ∘ ·), uniformity_prod, ← h₁.1, ← h₂.1, Filter.comap_inf, comap_comap]⟩
+  ⟨by simp [Function.comp_def, uniformity_prod, ← h₁.1, ← h₂.1, comap_inf, comap_comap]⟩
 
-theorem UniformInducing.denseInducing {f : α → β} (h : UniformInducing f) (hd : DenseRange f) :
-    DenseInducing f :=
+theorem UniformInducing.isDenseInducing {f : α → β} (h : UniformInducing f) (hd : DenseRange f) :
+    IsDenseInducing f :=
   { dense := hd
     induced := h.inducing.induced }
 
@@ -219,9 +219,12 @@ protected theorem UniformEmbedding.embedding {f : α → β} (h : UniformEmbeddi
   { toInducing := h.toUniformInducing.inducing
     inj := h.inj }
 
-theorem UniformEmbedding.denseEmbedding {f : α → β} (h : UniformEmbedding f) (hd : DenseRange f) :
-    DenseEmbedding f :=
+theorem UniformEmbedding.isDenseEmbedding {f : α → β} (h : UniformEmbedding f) (hd : DenseRange f) :
+    IsDenseEmbedding f :=
   { h.embedding with dense := hd }
+
+@[deprecated (since := "2024-09-30")]
+alias UniformEmbedding.denseEmbedding := UniformEmbedding.isDenseEmbedding
 
 theorem closedEmbedding_of_spaced_out {α} [TopologicalSpace α] [DiscreteTopology α]
     [T0Space β] {f : α → β} {s : Set (β × β)} (hs : s ∈ 𝓤 β)
@@ -232,7 +235,7 @@ theorem closedEmbedding_of_spaced_out {α} [TopologicalSpace α] [DiscreteTopolo
       isClosed_range := isClosed_range_of_spaced_out hs hf }
 
 theorem closure_image_mem_nhds_of_uniformInducing {s : Set (α × α)} {e : α → β} (b : β)
-    (he₁ : UniformInducing e) (he₂ : DenseInducing e) (hs : s ∈ 𝓤 α) :
+    (he₁ : UniformInducing e) (he₂ : IsDenseInducing e) (hs : s ∈ 𝓤 α) :
     ∃ a, closure (e '' { a' | (a, a') ∈ s }) ∈ 𝓝 b := by
   obtain ⟨U, ⟨hU, hUo, hsymm⟩, hs⟩ :
     ∃ U, (U ∈ 𝓤 β ∧ IsOpen U ∧ SymmetricRel U) ∧ Prod.map e e ⁻¹' U ⊆ s := by
@@ -246,9 +249,9 @@ theorem closure_image_mem_nhds_of_uniformInducing {s : Set (α × α)} {e : α �
   exact ⟨e x, hxV, mem_image_of_mem e hxU⟩
 
 theorem uniformEmbedding_subtypeEmb (p : α → Prop) {e : α → β} (ue : UniformEmbedding e)
-    (de : DenseEmbedding e) : UniformEmbedding (DenseEmbedding.subtypeEmb p e) :=
+    (de : IsDenseEmbedding e) : UniformEmbedding (IsDenseEmbedding.subtypeEmb p e) :=
   { comap_uniformity := by
-      simp [comap_comap, (· ∘ ·), DenseEmbedding.subtypeEmb, uniformity_subtype,
+      simp [comap_comap, Function.comp_def, IsDenseEmbedding.subtypeEmb, uniformity_subtype,
         ue.comap_uniformity.symm]
     inj := (de.subtype p).inj }
 
@@ -265,33 +268,57 @@ theorem isComplete_image_iff {m : α → β} {s : Set α} (hm : UniformInducing 
   simp_rw [IsComplete, imp.swap (a := Cauchy _), ← mem_Iic (b := 𝓟 _), fact1.forall fact2,
     hm.cauchy_map_iff, exists_mem_image, map_le_iff_le_comap, hm.inducing.nhds_eq_comap]
 
+/-- If `f : X → Y` is an `UniformInducing` map, the image `f '' s` of a set `s` is complete
+  if and only if `s` is complete. -/
+theorem UniformInducing.isComplete_iff {f : α → β} {s : Set α} (hf : UniformInducing f) :
+    IsComplete (f '' s) ↔ IsComplete s := isComplete_image_iff hf
+
+/-- If `f : X → Y` is an `UniformEmbedding`, the image `f '' s` of a set `s` is complete
+  if and only if `s` is complete. -/
+theorem UniformEmbedding.isComplete_iff {f : α → β} {s : Set α} (hf : UniformEmbedding f) :
+    IsComplete (f '' s) ↔ IsComplete s := hf.toUniformInducing.isComplete_iff
+
+/-- Sets of a subtype are complete iff their image under the coercion is complete. -/
+theorem Subtype.isComplete_iff {p : α → Prop} {s : Set { x // p x }} :
+    IsComplete s ↔ IsComplete ((↑) '' s : Set α) :=
+  uniformEmbedding_subtype_val.isComplete_iff.symm
+
 alias ⟨isComplete_of_complete_image, _⟩ := isComplete_image_iff
 
 theorem completeSpace_iff_isComplete_range {f : α → β} (hf : UniformInducing f) :
     CompleteSpace α ↔ IsComplete (range f) := by
   rw [completeSpace_iff_isComplete_univ, ← isComplete_image_iff hf, image_univ]
 
+alias ⟨_, UniformInducing.completeSpace⟩ := completeSpace_iff_isComplete_range
+
 theorem UniformInducing.isComplete_range [CompleteSpace α] {f : α → β} (hf : UniformInducing f) :
     IsComplete (range f) :=
   (completeSpace_iff_isComplete_range hf).1 ‹_›
 
+/-- If `f` is a surjective uniform inducing map,
+then its domain is a complete space iff its codomain is a complete space.
+See also `_root_.completeSpace_congr` for a version that assumes `f` to be an equivalence. -/
+theorem UniformInducing.completeSpace_congr {f : α → β} (hf : UniformInducing f)
+    (hsurj : f.Surjective) : CompleteSpace α ↔ CompleteSpace β := by
+  rw [completeSpace_iff_isComplete_range hf, hsurj.range_eq, completeSpace_iff_isComplete_univ]
+
 theorem SeparationQuotient.completeSpace_iff :
-    CompleteSpace (SeparationQuotient α) ↔ CompleteSpace α := by
-  rw [completeSpace_iff_isComplete_univ, ← range_mk,
-    ← completeSpace_iff_isComplete_range uniformInducing_mk]
+    CompleteSpace (SeparationQuotient α) ↔ CompleteSpace α :=
+  .symm <| uniformInducing_mk.completeSpace_congr surjective_mk
 
 instance SeparationQuotient.instCompleteSpace [CompleteSpace α] :
     CompleteSpace (SeparationQuotient α) :=
   completeSpace_iff.2 ‹_›
 
+/-- See also `UniformInducing.completeSpace_congr`
+for a version that works for non-injective maps. -/
 theorem completeSpace_congr {e : α ≃ β} (he : UniformEmbedding e) :
-    CompleteSpace α ↔ CompleteSpace β := by
-  rw [completeSpace_iff_isComplete_range he.toUniformInducing, e.range_eq_univ,
-    completeSpace_iff_isComplete_univ]
+    CompleteSpace α ↔ CompleteSpace β :=
+  he.completeSpace_congr e.surjective
 
-theorem completeSpace_coe_iff_isComplete {s : Set α} : CompleteSpace s ↔ IsComplete s :=
-  (completeSpace_iff_isComplete_range uniformEmbedding_subtype_val.toUniformInducing).trans <| by
-    rw [Subtype.range_coe]
+theorem completeSpace_coe_iff_isComplete {s : Set α} : CompleteSpace s ↔ IsComplete s := by
+  rw [completeSpace_iff_isComplete_range uniformEmbedding_subtype_val.toUniformInducing,
+    Subtype.range_coe]
 
 alias ⟨_, IsComplete.completeSpace_coe⟩ := completeSpace_coe_iff_isComplete
 
@@ -299,10 +326,12 @@ theorem IsClosed.completeSpace_coe [CompleteSpace α] {s : Set α} (hs : IsClose
     CompleteSpace s :=
   hs.isComplete.completeSpace_coe
 
+theorem completeSpace_ulift_iff : CompleteSpace (ULift α) ↔ CompleteSpace α :=
+  UniformInducing.completeSpace_congr ⟨rfl⟩ ULift.down_surjective
+
 /-- The lift of a complete space to another universe is still complete. -/
-instance ULift.completeSpace [h : CompleteSpace α] : CompleteSpace (ULift α) :=
-  haveI : UniformEmbedding (@Equiv.ulift α) := ⟨⟨rfl⟩, ULift.down_injective⟩
-  (completeSpace_congr this).2 h
+instance ULift.instCompleteSpace [CompleteSpace α] : CompleteSpace (ULift α) :=
+  completeSpace_ulift_iff.2 ‹_›
 
 theorem completeSpace_extension {m : β → α} (hm : UniformInducing m) (dense : DenseRange m)
     (h : ∀ f : Filter β, Cauchy f → ∃ x : α, map m f ≤ 𝓝 x) : CompleteSpace α :=
@@ -393,11 +422,11 @@ variable {α : Type*} {β : Type*} {γ : Type*} [UniformSpace α] [UniformSpace 
   {e : β → α} (h_e : UniformInducing e) (h_dense : DenseRange e) {f : β → γ}
   (h_f : UniformContinuous f)
 
-local notation "ψ" => DenseInducing.extend (UniformInducing.denseInducing h_e h_dense) f
+local notation "ψ" => IsDenseInducing.extend (UniformInducing.isDenseInducing h_e h_dense) f
 
 include h_e h_dense h_f in
 theorem uniformly_extend_exists [CompleteSpace γ] (a : α) : ∃ c, Tendsto f (comap e (𝓝 a)) (𝓝 c) :=
-  let de := h_e.denseInducing h_dense
+  let de := h_e.isDenseInducing h_dense
   have : Cauchy (𝓝 a) := cauchy_nhds
   have : Cauchy (comap e (𝓝 a)) :=
     this.comap' (le_of_eq h_e.comap_uniformity) (de.comap_nhds_neBot _)
@@ -408,21 +437,22 @@ theorem uniform_extend_subtype [CompleteSpace γ] {p : α → Prop} {e : α → 
     {s : Set α} (hf : UniformContinuous fun x : Subtype p => f x.val) (he : UniformEmbedding e)
     (hd : ∀ x : β, x ∈ closure (range e)) (hb : closure (e '' s) ∈ 𝓝 b) (hs : IsClosed s)
     (hp : ∀ x ∈ s, p x) : ∃ c, Tendsto f (comap e (𝓝 b)) (𝓝 c) := by
-  have de : DenseEmbedding e := he.denseEmbedding hd
-  have de' : DenseEmbedding (DenseEmbedding.subtypeEmb p e) := de.subtype p
-  have ue' : UniformEmbedding (DenseEmbedding.subtypeEmb p e) := uniformEmbedding_subtypeEmb _ he de
+  have de : IsDenseEmbedding e := he.isDenseEmbedding hd
+  have de' : IsDenseEmbedding (IsDenseEmbedding.subtypeEmb p e) := de.subtype p
+  have ue' : UniformEmbedding (IsDenseEmbedding.subtypeEmb p e) :=
+    uniformEmbedding_subtypeEmb _ he de
   have : b ∈ closure (e '' { x | p x }) :=
     (closure_mono <| monotone_image <| hp) (mem_of_mem_nhds hb)
   let ⟨c, hc⟩ := uniformly_extend_exists ue'.toUniformInducing de'.dense hf ⟨b, this⟩
   replace hc : Tendsto (f ∘ Subtype.val (p := p)) (((𝓝 b).comap e).comap Subtype.val) (𝓝 c) := by
-    simpa only [nhds_subtype_eq_comap, comap_comap, DenseEmbedding.subtypeEmb_coe] using hc
+    simpa only [nhds_subtype_eq_comap, comap_comap, IsDenseEmbedding.subtypeEmb_coe] using hc
   refine ⟨c, (tendsto_comap'_iff ?_).1 hc⟩
   rw [Subtype.range_coe_subtype]
   exact ⟨_, hb, by rwa [← de.toInducing.closure_eq_preimage_closure_image, hs.closure_eq]⟩
 
 include h_e h_f in
 theorem uniformly_extend_spec [CompleteSpace γ] (a : α) : Tendsto f (comap e (𝓝 a)) (𝓝 (ψ a)) := by
-  simpa only [DenseInducing.extend] using
+  simpa only [IsDenseInducing.extend] using
     tendsto_nhds_limUnder (uniformly_extend_exists h_e ‹_› h_f _)
 
 include h_f in
@@ -431,7 +461,7 @@ theorem uniformContinuous_uniformly_extend [CompleteSpace γ] : UniformContinuou
   have h_pnt : ∀ {a m}, m ∈ 𝓝 a → ∃ c ∈ f '' (e ⁻¹' m), (c, ψ a) ∈ s ∧ (ψ a, c) ∈ s :=
     fun {a m} hm =>
     have nb : NeBot (map f (comap e (𝓝 a))) :=
-      ((h_e.denseInducing h_dense).comap_nhds_neBot _).map _
+      ((h_e.isDenseInducing h_dense).comap_nhds_neBot _).map _
     have :
       f '' (e ⁻¹' m) ∩ ({ c | (c, ψ a) ∈ s } ∩ { c | (ψ a, c) ∈ s }) ∈ map f (comap e (𝓝 a)) :=
       inter_mem (image_mem_map <| preimage_mem_comap <| hm)
@@ -456,9 +486,9 @@ variable [T0Space γ]
 
 include h_f in
 theorem uniformly_extend_of_ind (b : β) : ψ (e b) = f b :=
-  DenseInducing.extend_eq_at _ h_f.continuous.continuousAt
+  IsDenseInducing.extend_eq_at _ h_f.continuous.continuousAt
 
 theorem uniformly_extend_unique {g : α → γ} (hg : ∀ b, g (e b) = f b) (hc : Continuous g) : ψ = g :=
-  DenseInducing.extend_unique _ hg hc
+  IsDenseInducing.extend_unique _ hg hc
 
 end UniformExtension

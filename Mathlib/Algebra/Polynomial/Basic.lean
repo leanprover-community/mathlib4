@@ -1,11 +1,11 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
+Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Data.Finset.Sort
+import Mathlib.Algebra.MonoidAlgebra.Defs
 
 /-!
 # Theory of univariate polynomials
@@ -413,6 +413,10 @@ theorem monomial_injective (n : ℕ) : Function.Injective (monomial n : R → R[
 theorem monomial_eq_zero_iff (t : R) (n : ℕ) : monomial n t = 0 ↔ t = 0 :=
   LinearMap.map_eq_zero_iff _ (Polynomial.monomial_injective n)
 
+theorem monomial_eq_monomial_iff {m n : ℕ} {a b : R} :
+    monomial m a = monomial n b ↔ m = n ∧ a = b ∨ a = 0 ∧ b = 0 := by
+  rw [← toFinsupp_inj, toFinsupp_monomial, toFinsupp_monomial, Finsupp.single_eq_single_iff]
+
 theorem support_add : (p + q).support ⊆ p.support ∪ q.support := by
   simpa [support] using Finsupp.support_add
 
@@ -481,6 +485,10 @@ theorem monomial_one_right_eq_X_pow (n : ℕ) : monomial n (1 : R) = X ^ n := by
 @[simp]
 theorem toFinsupp_X : X.toFinsupp = Finsupp.single 1 (1 : R) :=
   rfl
+
+theorem X_ne_C [Nontrivial R] (a : R) : X ≠ C a := by
+  intro he
+  simpa using monomial_eq_monomial_iff.1 he
 
 /-- `X` commutes with everything, even when the coefficients are noncommutative. -/
 theorem X_mul : X * p = p * X := by
@@ -570,6 +578,13 @@ theorem toFinsupp_apply (f : R[X]) (i) : f.toFinsupp i = f.coeff i := by cases f
 
 theorem coeff_monomial : coeff (monomial n a) m = if n = m then a else 0 := by
   simp [coeff, Finsupp.single_apply]
+
+@[simp]
+theorem coeff_monomial_same (n : ℕ) (c : R) : (monomial n c).coeff n = c :=
+  Finsupp.single_eq_same
+
+theorem coeff_monomial_of_ne {m n : ℕ} (c : R) (h : n ≠ m) : (monomial n c).coeff m = 0 :=
+  Finsupp.single_eq_of_ne h
 
 @[simp]
 theorem coeff_zero (n : ℕ) : coeff (0 : R[X]) n = 0 :=
