@@ -123,26 +123,30 @@ theorem eq_of_irreducible [Nontrivial B] {p : A[X]} (hp1 : Irreducible p)
   have : p.leadingCoeff ≠ 0 := leadingCoeff_ne_zero.mpr hp1.ne_zero
   apply eq_of_irreducible_of_monic
   · exact Associated.irreducible ⟨⟨C p.leadingCoeff⁻¹, C p.leadingCoeff,
-      by rwa [← C_mul, inv_mul_cancel, C_1], by rwa [← C_mul, mul_inv_cancel, C_1]⟩, rfl⟩ hp1
+      by rwa [← C_mul, inv_mul_cancel₀, C_1], by rwa [← C_mul, mul_inv_cancel₀, C_1]⟩, rfl⟩ hp1
   · rw [aeval_mul, hp2, zero_mul]
-  · rwa [Polynomial.Monic, leadingCoeff_mul, leadingCoeff_C, mul_inv_cancel]
+  · rwa [Polynomial.Monic, leadingCoeff_mul, leadingCoeff_C, mul_inv_cancel₀]
 
-theorem add_algebraMap {B : Type*} [CommRing B] [Algebra A B] {x : B} (hx : IsIntegral A x)
+theorem add_algebraMap {B : Type*} [CommRing B] [Algebra A B] (x : B)
     (a : A) : minpoly A (x + algebraMap A B a) = (minpoly A x).comp (X - C a) := by
-  refine (minpoly.unique _ _ ((minpoly.monic hx).comp_X_sub_C _) ?_ fun q qmo hq => ?_).symm
-  · simp [aeval_comp]
-  · have : (Polynomial.aeval x) (q.comp (X + C a)) = 0 := by simpa [aeval_comp] using hq
-    have H := minpoly.min A x (qmo.comp_X_add_C _) this
-    rw [degree_eq_natDegree qmo.ne_zero,
-      degree_eq_natDegree ((minpoly.monic hx).comp_X_sub_C _).ne_zero, natDegree_comp,
-      natDegree_X_sub_C, mul_one]
-    rwa [degree_eq_natDegree (minpoly.ne_zero hx),
-      degree_eq_natDegree (qmo.comp_X_add_C _).ne_zero, natDegree_comp,
-      natDegree_X_add_C, mul_one] at H
+  by_cases hx : IsIntegral A x
+  · refine (minpoly.unique _ _ ((minpoly.monic hx).comp_X_sub_C _) ?_ fun q qmo hq => ?_).symm
+    · simp [aeval_comp]
+    · have : (Polynomial.aeval x) (q.comp (X + C a)) = 0 := by simpa [aeval_comp] using hq
+      have H := minpoly.min A x (qmo.comp_X_add_C _) this
+      rw [degree_eq_natDegree qmo.ne_zero,
+        degree_eq_natDegree ((minpoly.monic hx).comp_X_sub_C _).ne_zero, natDegree_comp,
+        natDegree_X_sub_C, mul_one]
+      rwa [degree_eq_natDegree (minpoly.ne_zero hx),
+        degree_eq_natDegree (qmo.comp_X_add_C _).ne_zero, natDegree_comp,
+        natDegree_X_add_C, mul_one] at H
+  · rw [minpoly.eq_zero hx, minpoly.eq_zero, zero_comp]
+    refine fun h ↦ hx ?_
+    simpa only [add_sub_cancel_right] using IsIntegral.sub h (isIntegral_algebraMap (x := a))
 
-theorem sub_algebraMap {B : Type*} [CommRing B] [Algebra A B] {x : B} (hx : IsIntegral A x)
+theorem sub_algebraMap {B : Type*} [CommRing B] [Algebra A B] {x : B}
     (a : A) : minpoly A (x - algebraMap A B a) = (minpoly A x).comp (X + C a) := by
-  simpa [sub_eq_add_neg] using add_algebraMap hx (-a)
+  simpa [sub_eq_add_neg] using add_algebraMap x (-a)
 
 section AlgHomFintype
 

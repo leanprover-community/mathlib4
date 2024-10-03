@@ -114,7 +114,8 @@ end GradeOrder
 
 section GradeMinOrder
 
-variable (𝕆) [Preorder 𝕆] [GradeMinOrder 𝕆 α] {a : α}
+variable (𝕆)
+variable [GradeMinOrder 𝕆 α] {a : α}
 
 protected theorem IsMin.grade (h : IsMin a) : IsMin (grade 𝕆 a) :=
   GradeMinOrder.isMin_grade h
@@ -129,7 +130,8 @@ end GradeMinOrder
 
 section GradeMaxOrder
 
-variable (𝕆) [Preorder 𝕆] [GradeMaxOrder 𝕆 α] {a : α}
+variable (𝕆)
+variable [GradeMaxOrder 𝕆 α] {a : α}
 
 protected theorem IsMax.grade (h : IsMax a) : IsMax (grade 𝕆 a) :=
   GradeMaxOrder.isMax_grade h
@@ -145,13 +147,13 @@ end GradeMaxOrder
 end Preorder
 
 -- graded order
-theorem grade_mono [PartialOrder α] [Preorder 𝕆] [GradeOrder 𝕆 α] : Monotone (grade 𝕆 : α → 𝕆) :=
+theorem grade_mono [PartialOrder α] [GradeOrder 𝕆 α] : Monotone (grade 𝕆 : α → 𝕆) :=
   grade_strictMono.monotone
 
 section LinearOrder
 
 -- graded order
-variable [LinearOrder α] [Preorder 𝕆] [GradeOrder 𝕆 α] {a b : α}
+variable [LinearOrder α] [GradeOrder 𝕆 α] {a b : α}
 
 theorem grade_injective : Function.Injective (grade 𝕆 : α → 𝕆) :=
   grade_strictMono.injective
@@ -311,11 +313,11 @@ abbrev GradeMinOrder.finToNat (n : ℕ) [GradeMinOrder (Fin n) α] : GradeMinOrd
 instance GradeOrder.natToInt [GradeOrder ℕ α] : GradeOrder ℤ α :=
   (GradeOrder.liftLeft _ Int.natCast_strictMono) fun _ _ => CovBy.intCast
 
-theorem GradeOrder.wellFoundedLT (𝕆 : Type*) [Preorder α] [Preorder 𝕆] [GradeOrder 𝕆 α]
+theorem GradeOrder.wellFoundedLT (𝕆 : Type*) [Preorder 𝕆] [GradeOrder 𝕆 α]
     [WellFoundedLT 𝕆] : WellFoundedLT α :=
   (grade_strictMono (𝕆 := 𝕆)).wellFoundedLT
 
-theorem GradeOrder.wellFoundedGT (𝕆 : Type*) [Preorder α] [Preorder 𝕆] [GradeOrder 𝕆 α]
+theorem GradeOrder.wellFoundedGT (𝕆 : Type*) [Preorder 𝕆] [GradeOrder 𝕆 α]
     [WellFoundedGT 𝕆] : WellFoundedGT α :=
   (grade_strictMono (𝕆 := 𝕆)).wellFoundedGT
 

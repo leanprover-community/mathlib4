@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth, Antoine Chambert-Loir
 -/
-
-import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.GroupTheory.GroupAction.Hom
 
 /-!
@@ -100,7 +99,6 @@ theorem MonoidHom.preimage_smul_setₛₗ (σ : R →* S)
 /-- `preimage_smul_setₛₗ` in the context of a `MonoidHomClass` -/
 theorem preimage_smul_setₛₗ
     {G : Type*} [FunLike G R S] [MonoidHomClass G R S] (σ : G)
-    [MulAction R M] [MulAction S N]
     {F : Type*} [FunLike F M N] [MulActionSemiHomClass F σ M N] (h : F)
     {c : R} (hc : IsUnit c) (t : Set N) :
     h ⁻¹' (σ c • t) = c • h ⁻¹' t :=

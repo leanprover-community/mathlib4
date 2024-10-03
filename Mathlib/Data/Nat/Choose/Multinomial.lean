@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.Order.Antidiag.Pi
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Factorial.BigOperators
+import Mathlib.Data.Nat.Factorial.DoubleFactorial
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Finsupp.Multiset
@@ -72,9 +73,9 @@ lemma multinomial_insert [DecidableEq α] (ha : a ∉ s) (f : α → ℕ) :
 @[simp]
 theorem multinomial_insert_one [DecidableEq α] (h : a ∉ s) (h₁ : f a = 1) :
     multinomial (insert a s) f = (s.sum f).succ * multinomial s f := by
-  simp only [multinomial, one_mul, factorial]
+  simp only [multinomial]
   rw [Finset.sum_insert h, Finset.prod_insert h, h₁, add_comm, ← succ_eq_add_one, factorial_succ]
-  simp only [factorial_one, one_mul, Function.comp_apply, factorial, mul_one, ← one_eq_succ_zero]
+  simp only [factorial, succ_eq_add_one, zero_add, mul_one, one_mul]
   rw [Nat.mul_div_assoc _ (prod_factorial_dvd_factorial_sum _ _)]
 
 theorem multinomial_congr {f g : α → ℕ} (h : ∀ a ∈ s, f a = g a) :
@@ -248,7 +249,7 @@ lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)
   exact ne_of_mem_of_not_mem ht has
 
 /-- The **multinomial theorem**. -/
-theorem sum_pow_of_commute [Semiring R] (x : α → R) (s : Finset α)
+theorem sum_pow_of_commute (x : α → R) (s : Finset α)
     (hc : (s : Set α).Pairwise fun i j => Commute (x i) (x j)) :
     ∀ n,
       s.sum x ^ n =
@@ -296,7 +297,7 @@ lemma sum_pow_eq_sum_piAntidiag (s : Finset α) (f : α → R) (n : ℕ) :
   simp_rw [← noncommProd_eq_prod]
   rw [← sum_pow_eq_sum_piAntidiag_of_commute _ _ fun _ _ _ _ _ ↦ Commute.all ..]
 
-theorem sum_pow [CommSemiring R] (x : α → R) (n : ℕ) :
+theorem sum_pow (x : α → R) (n : ℕ) :
     s.sum x ^ n = ∑ k ∈ s.sym n, k.val.multinomial * (k.val.map x).prod := by
   conv_rhs => rw [← sum_coe_sort]
   convert sum_pow_of_commute x s (fun _ _ _ _ _ ↦ Commute.all ..) n
@@ -304,6 +305,28 @@ theorem sum_pow [CommSemiring R] (x : α → R) (n : ℕ) :
 
 end CommSemiring
 end Finset
+
+namespace Nat
+variable {ι : Type*} {s : Finset ι} {f : ι → ℕ}
+
+lemma multinomial_two_mul_le_mul_multinomial :
+    multinomial s (fun i ↦ 2 * f i) ≤ ((∑ i in s, f i) ^ ∑ i in s, f i) * multinomial s f := by
+  rw [multinomial, multinomial, ← mul_sum,
+    ← Nat.mul_div_assoc _ (prod_factorial_dvd_factorial_sum ..)]
+  refine Nat.div_le_div_of_mul_le_mul (by positivity)
+    ((prod_factorial_dvd_factorial_sum ..).trans (Nat.dvd_mul_left ..)) ?_
+  calc
+    (2 * ∑ i ∈ s, f i)! * ∏ i ∈ s, (f i)!
+      ≤ ((2 * ∑ i ∈ s, f i) ^ (∑ i ∈ s, f i) * (∑ i ∈ s, f i)!) * ∏ i ∈ s, (f i)! := by
+      gcongr; exact Nat.factorial_two_mul_le _
+    _ = ((∑ i ∈ s, f i) ^ ∑ i ∈ s, f i) * (∑ i ∈ s, f i)! * ∏ i ∈ s, 2 ^ f i * (f i)! := by
+      rw [mul_pow, ← prod_pow_eq_pow_sum, prod_mul_distrib]; ring
+    _ ≤ ((∑ i ∈ s, f i) ^ ∑ i ∈ s, f i) * (∑ i ∈ s, f i)! * ∏ i ∈ s, (2 * f i)! := by
+      gcongr
+      rw [← doubleFactorial_two_mul]
+      exact doubleFactorial_le_factorial _
+
+end Nat
 
 namespace Sym
 

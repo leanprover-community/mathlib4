@@ -156,12 +156,11 @@ theorem ext {φ ψ : R⟦X⟧} (h : ∀ n, coeff R n φ = coeff R n ψ) : φ = �
     rfl
 
 /-- Two formal power series are equal if all their coefficients are equal. -/
-theorem ext_iff {φ ψ : R⟦X⟧} : φ = ψ ↔ ∀ n, coeff R n φ = coeff R n ψ :=
-  ⟨fun h n => congr_arg (coeff R n) h, ext⟩
+add_decl_doc PowerSeries.ext_iff
 
 instance [Subsingleton R] : Subsingleton R⟦X⟧ := by
   simp only [subsingleton_iff, PowerSeries.ext_iff]
-  exact fun _ _ _ ↦ (subsingleton_iff).mp (by infer_instance) _ _
+  subsingleton
 
 /-- Constructor for formal power series. -/
 def mk {R} (f : ℕ → R) : R⟦X⟧ := fun s => f (s ())
@@ -236,8 +235,8 @@ theorem coeff_succ_C {a : R} {n : ℕ} : coeff R (n + 1) (C R a) = 0 :=
 
 theorem C_injective : Function.Injective (C R) := by
   intro a b H
-  have := (PowerSeries.ext_iff (φ := C R a) (ψ := C R b)).mp H 0
-  rwa [coeff_zero_C, coeff_zero_C] at this
+  simp_rw [PowerSeries.ext_iff] at H
+  simpa only [coeff_zero_C] using H 0
 
 protected theorem subsingleton_iff : Subsingleton R⟦X⟧ ↔ Subsingleton R := by
   refine ⟨fun h ↦ ?_, fun _ ↦ inferInstance⟩
@@ -416,7 +415,7 @@ theorem isUnit_constantCoeff (φ : R⟦X⟧) (h : IsUnit φ) : IsUnit (constantC
 theorem eq_shift_mul_X_add_const (φ : R⟦X⟧) :
     φ = (mk fun p => coeff R (p + 1) φ) * X + C R (constantCoeff R φ) := by
   ext (_ | n)
-  · simp only [Nat.zero_eq, coeff_zero_eq_constantCoeff, map_add, map_mul, constantCoeff_X,
+  · simp only [coeff_zero_eq_constantCoeff, map_add, map_mul, constantCoeff_X,
       mul_zero, coeff_zero_C, zero_add]
   · simp only [coeff_succ_mul_X, coeff_mk, LinearMap.map_add, coeff_C, n.succ_ne_zero, sub_zero,
       if_false, add_zero]
@@ -425,7 +424,7 @@ theorem eq_shift_mul_X_add_const (φ : R⟦X⟧) :
 theorem eq_X_mul_shift_add_const (φ : R⟦X⟧) :
     φ = (X * mk fun p => coeff R (p + 1) φ) + C R (constantCoeff R φ) := by
   ext (_ | n)
-  · simp only [Nat.zero_eq, coeff_zero_eq_constantCoeff, map_add, map_mul, constantCoeff_X,
+  · simp only [coeff_zero_eq_constantCoeff, map_add, map_mul, constantCoeff_X,
       zero_mul, coeff_zero_C, zero_add]
   · simp only [coeff_succ_X_mul, coeff_mk, LinearMap.map_add, coeff_C, n.succ_ne_zero, sub_zero,
       if_false, add_zero]
@@ -604,14 +603,14 @@ lemma coeff_one_pow (n : ℕ) (φ : R⟦X⟧) :
             CharP.cast_eq_zero, zero_add, mul_one, not_true_eq_false] at h''
           norm_num at h''
         · rw [ih]
-          conv => lhs; arg 2; rw [mul_comm, ← mul_assoc]
-          move_mul [← (constantCoeff R) φ ^ (n' - 1)]
-          conv => enter [1, 2, 1, 1, 2]; rw [← pow_one (a := constantCoeff R φ)]
-          rw [← pow_add (a := constantCoeff R φ)]
-          conv => enter [1, 2, 1, 1]; rw [Nat.sub_add_cancel h']
-          conv => enter [1, 2, 1]; rw [mul_comm]
-          rw [mul_assoc, ← one_add_mul, add_comm, mul_assoc]
-          conv => enter [1, 2]; rw [mul_comm]
+          · conv => lhs; arg 2; rw [mul_comm, ← mul_assoc]
+            move_mul [← (constantCoeff R) φ ^ (n' - 1)]
+            conv => enter [1, 2, 1, 1, 2]; rw [← pow_one (a := constantCoeff R φ)]
+            rw [← pow_add (a := constantCoeff R φ)]
+            conv => enter [1, 2, 1, 1]; rw [Nat.sub_add_cancel h']
+            conv => enter [1, 2, 1]; rw [mul_comm]
+            rw [mul_assoc, ← one_add_mul, add_comm, mul_assoc]
+            conv => enter [1, 2]; rw [mul_comm]
           exact h'
       · decide
 

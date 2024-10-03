@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Stephen Morgan, Scott Morrison, Floris van Doorn
+Authors: Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Pi.Basic
@@ -270,9 +270,10 @@ open Opposite
 @[simps! functor_obj_as inverse_obj]
 protected def opposite (α : Type u₁) : (Discrete α)ᵒᵖ ≌ Discrete α :=
   let F : Discrete α ⥤ (Discrete α)ᵒᵖ := Discrete.functor fun x => op (Discrete.mk x)
-  Equivalence.mk F.leftOp F
-  (NatIso.ofComponents fun ⟨X⟩ => Iso.refl _)
-  (Discrete.natIso fun ⟨X⟩ => Iso.refl _)
+  { functor := F.leftOp
+    inverse := F
+    unitIso := NatIso.ofComponents fun ⟨X⟩ => Iso.refl _
+    counitIso := Discrete.natIso fun ⟨X⟩ => Iso.refl _ }
 
 variable {C : Type u₂} [Category.{v₂} C]
 

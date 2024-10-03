@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison
+Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison
 -/
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Data.List.InsertNth
@@ -160,30 +160,34 @@ theorem leftMoves_ofLists (L R : List PGame) : (ofLists L R).LeftMoves = ULift (
 theorem rightMoves_ofLists (L R : List PGame) : (ofLists L R).RightMoves = ULift (Fin R.length) :=
   rfl
 
-/-- Converts a number into a left move for `ofLists`. -/
-def toOfListsLeftMoves {L R : List PGame} : Fin L.length ≃ (ofLists L R).LeftMoves :=
-  ((Equiv.cast (leftMoves_ofLists L R).symm).trans Equiv.ulift).symm
+/-- Converts a number into a left move for `ofLists`.
 
-/-- Converts a number into a right move for `ofLists`. -/
-def toOfListsRightMoves {L R : List PGame} : Fin R.length ≃ (ofLists L R).RightMoves :=
-  ((Equiv.cast (rightMoves_ofLists L R).symm).trans Equiv.ulift).symm
+This is just an abbreviation for `Equiv.ulift.symm` -/
+abbrev toOfListsLeftMoves {L R : List PGame} : Fin L.length ≃ (ofLists L R).LeftMoves :=
+  Equiv.ulift.symm
 
-theorem ofLists_moveLeft {L R : List PGame} (i : Fin L.length) :
-    (ofLists L R).moveLeft (toOfListsLeftMoves i) = L.get i :=
-  rfl
+/-- Converts a number into a right move for `ofLists`.
+
+This is just an abbreviation for `Equiv.ulift.symm` -/
+abbrev toOfListsRightMoves {L R : List PGame} : Fin R.length ≃ (ofLists L R).RightMoves :=
+  Equiv.ulift.symm
 
 @[simp]
 theorem ofLists_moveLeft' {L R : List PGame} (i : (ofLists L R).LeftMoves) :
-    (ofLists L R).moveLeft i = L.get (toOfListsLeftMoves.symm i) :=
+    (ofLists L R).moveLeft i = L[i.down.val] :=
   rfl
 
-theorem ofLists_moveRight {L R : List PGame} (i : Fin R.length) :
-    (ofLists L R).moveRight (toOfListsRightMoves i) = R.get i :=
+theorem ofLists_moveLeft {L R : List PGame} (i : Fin L.length) :
+    (ofLists L R).moveLeft (ULift.up i) = L[i] :=
   rfl
 
 @[simp]
 theorem ofLists_moveRight' {L R : List PGame} (i : (ofLists L R).RightMoves) :
-    (ofLists L R).moveRight i = R.get (toOfListsRightMoves.symm i) :=
+    (ofLists L R).moveRight i = R[i.down.val] :=
+  rfl
+
+theorem ofLists_moveRight {L R : List PGame} (i : Fin R.length) :
+    (ofLists L R).moveRight (ULift.up i) = R[i] :=
   rfl
 
 /-- A variant of `PGame.recOn` expressed in terms of `PGame.moveLeft` and `PGame.moveRight`.
@@ -212,9 +216,9 @@ theorem wf_isOption : WellFounded IsOption :=
   ⟨fun x =>
     moveRecOn x fun x IHl IHr =>
       Acc.intro x fun y h => by
-        induction' h with _ i _ j
-        · exact IHl i
-        · exact IHr j⟩
+        induction h with
+        | moveLeft i => exact IHl i
+        | moveRight j => exact IHr j⟩
 
 /-- `Subsequent x y` says that `x` can be obtained by playing some nonempty sequence of moves from
 `y`. It is the transitive closure of `IsOption`. -/
@@ -454,7 +458,7 @@ private theorem le_trans_aux {x y z : PGame}
 instance : Preorder PGame :=
   { PGame.le with
     le_refl := fun x => by
-      induction' x with _ _ _ _ IHl IHr
+      induction x with | mk _ _ _ _ IHl IHr => _
       exact
         le_of_forall_lf (fun i => lf_of_le_moveLeft (IHl i)) fun i => lf_of_moveRight_le (IHr i)
     le_trans := by
@@ -634,7 +638,7 @@ theorem leftResponse_spec {x : PGame} (h : 0 ≤ x) (j : x.RightMoves) :
 /-- A small family of pre-games is bounded above. -/
 lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → PGame.{u}) :
     BddAbove (Set.range f) := by
-  let x : PGame.{u} := ⟨Σ i, (f $ (equivShrink.{u} ι).symm i).LeftMoves, PEmpty,
+  let x : PGame.{u} := ⟨Σ i, (f <| (equivShrink.{u} ι).symm i).LeftMoves, PEmpty,
     fun x ↦ moveLeft _ x.2, PEmpty.elim⟩
   refine ⟨x, Set.forall_mem_range.2 fun i ↦ ?_⟩
   rw [← (equivShrink ι).symm_apply_apply i, le_iff_forall_lf]
@@ -647,7 +651,7 @@ lemma bddAbove_of_small (s : Set PGame.{u}) [Small.{u} s] : BddAbove s := by
 /-- A small family of pre-games is bounded below. -/
 lemma bddBelow_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → PGame.{u}) :
     BddBelow (Set.range f) := by
-  let x : PGame.{u} := ⟨PEmpty, Σ i, (f $ (equivShrink.{u} ι).symm i).RightMoves, PEmpty.elim,
+  let x : PGame.{u} := ⟨PEmpty, Σ i, (f <| (equivShrink.{u} ι).symm i).RightMoves, PEmpty.elim,
     fun x ↦ moveRight _ x.2⟩
   refine ⟨x, Set.forall_mem_range.2 fun i ↦ ?_⟩
   rw [← (equivShrink ι).symm_apply_apply i, le_iff_forall_lf]
@@ -672,7 +676,7 @@ instance : IsEquiv _ PGame.Equiv where
   trans := fun _ _ _ ⟨xy, yx⟩ ⟨yz, zy⟩ => ⟨xy.trans yz, zy.trans yx⟩
   symm _ _ := And.symm
 
--- Porting note: moved the setoid instance from Basic.lean to here
+-- Porting note: moved the setoid instance from Basic.lean to here
 
 instance setoid : Setoid PGame :=
   ⟨Equiv, refl, symm, Trans.trans⟩
@@ -818,12 +822,14 @@ theorem equiv_congr_right {x₁ x₂ : PGame} : (x₁ ≈ x₂) ↔ ∀ y₁, (x
   ⟨fun h _ => ⟨fun h' => Equiv.trans (Equiv.symm h) h', fun h' => Equiv.trans h h'⟩,
    fun h => (h x₂).2 <| equiv_rfl⟩
 
-theorem equiv_of_mk_equiv {x y : PGame} (L : x.LeftMoves ≃ y.LeftMoves)
+theorem Equiv.of_equiv {x y : PGame} (L : x.LeftMoves ≃ y.LeftMoves)
     (R : x.RightMoves ≃ y.RightMoves) (hl : ∀ i, x.moveLeft i ≈ y.moveLeft (L i))
     (hr : ∀ j, x.moveRight j ≈ y.moveRight (R j)) : x ≈ y := by
   constructor <;> rw [le_def]
   · exact ⟨fun i => Or.inl ⟨_, (hl i).1⟩, fun j => Or.inr ⟨_, by simpa using (hr (R.symm j)).1⟩⟩
   · exact ⟨fun i => Or.inl ⟨_, by simpa using (hl (L.symm i)).2⟩, fun j => Or.inr ⟨_, (hr j).2⟩⟩
+
+@[deprecated (since := "2024-09-26")] alias equiv_of_mk_equiv := Equiv.of_equiv
 
 /-- The fuzzy, confused, or incomparable relation on pre-games.
 
@@ -1258,8 +1264,8 @@ theorem zero_fuzzy_neg_iff {x : PGame} : 0 ‖ -x ↔ 0 ‖ x := by rw [← neg_
 /-- The sum of `x = {xL | xR}` and `y = {yL | yR}` is `{xL + y, x + yL | xR + y, x + yR}`. -/
 instance : Add PGame.{u} :=
   ⟨fun x y => by
-    induction' x with xl xr _ _ IHxl IHxr generalizing y
-    induction' y with yl yr yL yR IHyl IHyr
+    induction x generalizing y with | mk xl xr _ _ IHxl IHxr => _
+    induction y with | mk yl yr yL yR IHyl IHyr => _
     have y := mk yl yr yL yR
     refine ⟨xl ⊕ yl, xr ⊕ yr, Sum.rec ?_ ?_, Sum.rec ?_ ?_⟩
     · exact fun i => IHxl i y
@@ -1267,7 +1273,12 @@ instance : Add PGame.{u} :=
     · exact fun i => IHxr i y
     · exact IHyr⟩
 
-/-- The pre-game `((0+1)+⋯)+1`. -/
+/-- The pre-game `((0 + 1) + ⋯) + 1`.
+
+Note that this is **not** the usual recursive definition `n = {0, 1, … | }`. For instance,
+`2 = 0 + 1 + 1 = {0 + 0 + 1, 0 + 1 + 0 | }` does not contain any left option equivalent to `0`. For
+an implementation of said definition, see `Ordinal.toPGame`. For the proof that these games are
+equivalent, see `Ordinal.toPGame_natCast`. -/
 instance : NatCast PGame :=
   ⟨Nat.unaryCast⟩
 
@@ -1423,8 +1434,10 @@ instance : Sub PGame :=
   ⟨fun x y => x + -y⟩
 
 @[simp]
-theorem sub_zero (x : PGame) : x - 0 = x + 0 :=
+theorem sub_zero_eq_add_zero (x : PGame) : x - 0 = x + 0 :=
   show x + -0 = x + 0 by rw [neg_zero]
+
+@[deprecated (since := "2024-09-26")] alias sub_zero := sub_zero_eq_add_zero
 
 /-- If `w` has the same moves as `x` and `y` has the same moves as `z`,
 then `w - y` has the same moves as `x - z`. -/
@@ -1475,38 +1488,38 @@ termination_by x y z => (x, y, z)
 theorem add_assoc_equiv {x y z : PGame} : x + y + z ≈ x + (y + z) :=
   (addAssocRelabelling x y z).equiv
 
-theorem add_left_neg_le_zero : ∀ x : PGame, -x + x ≤ 0
+theorem neg_add_cancel_le_zero : ∀ x : PGame, -x + x ≤ 0
   | ⟨xl, xr, xL, xR⟩ =>
     le_zero.2 fun i => by
       cases' i with i i
       · -- If Left played in -x, Right responds with the same move in x.
         refine ⟨@toRightMovesAdd _ ⟨_, _, _, _⟩ (Sum.inr i), ?_⟩
-        convert @add_left_neg_le_zero (xR i)
+        convert @neg_add_cancel_le_zero (xR i)
         apply add_moveRight_inr
       · -- If Left in x, Right responds with the same move in -x.
         dsimp
         refine ⟨@toRightMovesAdd ⟨_, _, _, _⟩ _ (Sum.inl i), ?_⟩
-        convert @add_left_neg_le_zero (xL i)
+        convert @neg_add_cancel_le_zero (xL i)
         apply add_moveRight_inl
 
-theorem zero_le_add_left_neg (x : PGame) : 0 ≤ -x + x := by
+theorem zero_le_neg_add_cancel (x : PGame) : 0 ≤ -x + x := by
   rw [← neg_le_neg_iff, neg_zero]
-  exact neg_add_le.trans (add_left_neg_le_zero _)
+  exact neg_add_le.trans (neg_add_cancel_le_zero _)
 
-theorem add_left_neg_equiv (x : PGame) : -x + x ≈ 0 :=
-  ⟨add_left_neg_le_zero x, zero_le_add_left_neg x⟩
+theorem neg_add_cancel_equiv (x : PGame) : -x + x ≈ 0 :=
+  ⟨neg_add_cancel_le_zero x, zero_le_neg_add_cancel x⟩
 
-theorem add_right_neg_le_zero (x : PGame) : x + -x ≤ 0 :=
-  add_comm_le.trans (add_left_neg_le_zero x)
+theorem add_neg_cancel_le_zero (x : PGame) : x + -x ≤ 0 :=
+  add_comm_le.trans (neg_add_cancel_le_zero x)
 
-theorem zero_le_add_right_neg (x : PGame) : 0 ≤ x + -x :=
-  (zero_le_add_left_neg x).trans add_comm_le
+theorem zero_le_add_neg_cancel (x : PGame) : 0 ≤ x + -x :=
+  (zero_le_neg_add_cancel x).trans add_comm_le
 
-theorem add_right_neg_equiv (x : PGame) : x + -x ≈ 0 :=
-  ⟨add_right_neg_le_zero x, zero_le_add_right_neg x⟩
+theorem add_neg_cancel_equiv (x : PGame) : x + -x ≈ 0 :=
+  ⟨add_neg_cancel_le_zero x, zero_le_add_neg_cancel x⟩
 
 theorem sub_self_equiv : ∀ (x : PGame), x - x ≈ 0 :=
-  add_right_neg_equiv
+  add_neg_cancel_equiv
 
 private theorem add_le_add_right' : ∀ {x y z : PGame}, x ≤ y → x + z ≤ y + z
   | mk xl xr xL xR, mk yl yr yL yR, mk zl zr zL zR => fun h => by
@@ -1542,11 +1555,11 @@ theorem add_lf_add_right {y z : PGame} (h : y ⧏ z) (x) : y + x ⧏ z + x :=
   fun w =>
   calc
     z ≤ z + 0 := (addZeroRelabelling _).symm.le
-    _ ≤ z + (x + -x) := add_le_add_left (zero_le_add_right_neg x) _
+    _ ≤ z + (x + -x) := add_le_add_left (zero_le_add_neg_cancel x) _
     _ ≤ z + x + -x := (addAssocRelabelling _ _ _).symm.le
     _ ≤ y + x + -x := add_le_add_right w _
     _ ≤ y + (x + -x) := (addAssocRelabelling _ _ _).le
-    _ ≤ y + 0 := add_le_add_left (add_right_neg_le_zero x) _
+    _ ≤ y + 0 := add_le_add_left (add_neg_cancel_le_zero x) _
     _ ≤ y := (addZeroRelabelling _).le
 
 theorem add_lf_add_left {y z : PGame} (h : y ⧏ z) (x) : x + y ⧏ x + z := by
@@ -1585,32 +1598,32 @@ theorem sub_congr_right {x y z : PGame} : (y ≈ z) → (x - y ≈ x - z) :=
   sub_congr equiv_rfl
 
 theorem le_iff_sub_nonneg {x y : PGame} : x ≤ y ↔ 0 ≤ y - x :=
-  ⟨fun h => (zero_le_add_right_neg x).trans (add_le_add_right h _), fun h =>
+  ⟨fun h => (zero_le_add_neg_cancel x).trans (add_le_add_right h _), fun h =>
     calc
       x ≤ 0 + x := (zeroAddRelabelling x).symm.le
       _ ≤ y - x + x := add_le_add_right h _
       _ ≤ y + (-x + x) := (addAssocRelabelling _ _ _).le
-      _ ≤ y + 0 := add_le_add_left (add_left_neg_le_zero x) _
+      _ ≤ y + 0 := add_le_add_left (neg_add_cancel_le_zero x) _
       _ ≤ y := (addZeroRelabelling y).le
       ⟩
 
 theorem lf_iff_sub_zero_lf {x y : PGame} : x ⧏ y ↔ 0 ⧏ y - x :=
-  ⟨fun h => (zero_le_add_right_neg x).trans_lf (add_lf_add_right h _), fun h =>
+  ⟨fun h => (zero_le_add_neg_cancel x).trans_lf (add_lf_add_right h _), fun h =>
     calc
       x ≤ 0 + x := (zeroAddRelabelling x).symm.le
       _ ⧏ y - x + x := add_lf_add_right h _
       _ ≤ y + (-x + x) := (addAssocRelabelling _ _ _).le
-      _ ≤ y + 0 := add_le_add_left (add_left_neg_le_zero x) _
+      _ ≤ y + 0 := add_le_add_left (neg_add_cancel_le_zero x) _
       _ ≤ y := (addZeroRelabelling y).le
       ⟩
 
 theorem lt_iff_sub_pos {x y : PGame} : x < y ↔ 0 < y - x :=
-  ⟨fun h => lt_of_le_of_lt (zero_le_add_right_neg x) (add_lt_add_right h _), fun h =>
+  ⟨fun h => lt_of_le_of_lt (zero_le_add_neg_cancel x) (add_lt_add_right h _), fun h =>
     calc
       x ≤ 0 + x := (zeroAddRelabelling x).symm.le
       _ < y - x + x := add_lt_add_right h _
       _ ≤ y + (-x + x) := (addAssocRelabelling _ _ _).le
-      _ ≤ y + 0 := add_le_add_left (add_left_neg_le_zero x) _
+      _ ≤ y + 0 := add_le_add_left (neg_add_cancel_le_zero x) _
       _ ≤ y := (addZeroRelabelling y).le
       ⟩
 
@@ -1724,15 +1737,18 @@ instance uniqueStarLeftMoves : Unique star.LeftMoves :=
 instance uniqueStarRightMoves : Unique star.RightMoves :=
   PUnit.unique
 
+theorem zero_lf_star : 0 ⧏ star := by
+  rw [zero_lf]
+  use default
+  rintro ⟨⟩
+
+theorem star_lf_zero : star ⧏ 0 := by
+  rw [lf_zero]
+  use default
+  rintro ⟨⟩
+
 theorem star_fuzzy_zero : star ‖ 0 :=
-  ⟨by
-    rw [lf_zero]
-    use default
-    rintro ⟨⟩,
-   by
-    rw [zero_lf]
-    use default
-    rintro ⟨⟩⟩
+  ⟨star_lf_zero, zero_lf_star⟩
 
 @[simp]
 theorem neg_star : -star = star := by simp [star]
@@ -1751,3 +1767,5 @@ theorem zero_lf_one : (0 : PGame) ⧏ 1 :=
 end PGame
 
 end SetTheory
+
+set_option linter.style.longFile 1900

@@ -1,11 +1,12 @@
 /-
-Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.List.Cycle
+import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.PNat.Basic
 import Mathlib.Dynamics.FixedPoints.Basic

@@ -96,8 +96,6 @@ namespace Nat
 
 open Int
 
-open scoped Classical
-
 private theorem sum_four_squares_of_two_mul_sum_four_squares {m a b c d : ℤ}
     (h : a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = 2 * m) :
     ∃ w x y z : ℤ, w ^ 2 + x ^ 2 + y ^ 2 + z ^ 2 = m := by
@@ -126,6 +124,7 @@ private theorem sum_four_squares_of_two_mul_sum_four_squares {m a b c d : ℤ}
 /-- Lagrange's **four squares theorem** for a prime number. Use `Nat.sum_four_squares` instead. -/
 protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
     ∃ a b c d : ℕ, a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = p := by
+  classical
   have := Fact.mk hp
   -- Find `a`, `b`, `c`, `d`, `0 < m < p` such that `a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = m * p`
   have natAbs_iff {a b c d : ℤ} {k : ℕ} :
