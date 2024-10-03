@@ -261,7 +261,7 @@ instance : MetricSpace ℍ :=
       have h₀ : 0 < R / im z + 1 := one_pos.trans h₁
       refine ⟨log (R / im z + 1), Real.log_pos h₁, ?_⟩
       refine fun w hw => (dist_coe_le w z).trans_lt ?_
-      rwa [← lt_div_iff' z.im_pos, sub_lt_iff_lt_add, ← Real.lt_log_iff_exp_lt h₀]
+      rwa [← lt_div_iff₀' z.im_pos, sub_lt_iff_lt_add, ← Real.lt_log_iff_exp_lt h₀]
 
 theorem im_pos_of_dist_center_le {z : ℍ} {r : ℝ} {w : ℂ}
     (h : dist w (center z r) ≤ z.im * Real.sinh r) : 0 < w.im :=
