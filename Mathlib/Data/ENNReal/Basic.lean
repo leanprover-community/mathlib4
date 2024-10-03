@@ -685,52 +685,6 @@ end OrdConnected
 
 end Set
 
-namespace Mathlib.Meta.Positivity
-
-open Lean Meta Qq
-
-/-- Extension for the `positivity` tactic: `ENNReal.toReal`. -/
-@[positivity ENNReal.toReal _]
-def evalENNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
-  match u, α, e with
-  | 0, ~q(ℝ), ~q(ENNReal.toReal $a) =>
-    assertInstancesCommute
-    pure (.nonnegative q(ENNReal.toReal_nonneg))
-  | _, _, _ => throwError "not ENNReal.toReal"
-
-/-- Extension for the `positivity` tactic: `ENNReal.ofNNReal`. -/
-@[positivity ENNReal.ofNNReal _]
-def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα _pα e := do
-  match u, α, e with
-  | 0, ~q(ℝ≥0∞), ~q(ENNReal.ofNNReal $a) =>
-    let ra ← core q(inferInstance) q(inferInstance) a
-    assertInstancesCommute
-    match ra with
-    | .positive pa => pure <| .positive q(ENNReal.coe_pos.mpr $pa)
-    | _ => pure .none
-  | _, _, _ => throwError "not ENNReal.ofNNReal"
-
-private lemma ennreal_one_pos : (0 : ℝ≥0∞) < 1 := zero_lt_one
-private lemma ofNat_pos {n : ℕ} [n.AtLeastTwo] : 0 < (OfNat.ofNat n : ℝ≥0∞) := Nat.ofNat_pos
-
-/-- The `positivity` extension which identifies expressions of the form `OfNat.ofNat n : ℝ≥0∞`. -/
-@[positivity OfNat.ofNat _] def evalOfNatENNReal : PositivityExt where eval {u} α _z _p e := do
-  match u, α, e with
-  | 0, ~q(ℝ≥0∞), ~q(@OfNat.ofNat _ $n $instn) =>
-    try
-      let instn ← synthInstanceQ q(Nat.AtLeastTwo $n)
-      return Strictness.positive (q(@ofNat_pos $n $instn) : Expr)
-    catch _ => do
-      match n with
-      | ~q(1) => return .positive (q(ennreal_one_pos) : Expr)
-      | _ => throwError "not positive"
-  | _ => throwError "not `ENNReal`-valued `ofNat`"
-
-end Mathlib.Meta.Positivity
-
-example : (0 : ℝ≥0∞) < 1 := by positivity
-example : (0 : ℝ≥0∞) < 2 := by positivity
-
 @[deprecated (since := "2023-12-23")] protected alias
 ENNReal.le_inv_smul_iff_of_pos := le_inv_smul_iff_of_pos
 @[deprecated (since := "2023-12-23")] protected alias
