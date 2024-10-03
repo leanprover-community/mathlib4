@@ -101,7 +101,7 @@ instance mul : Mul (Icc (0 : α) 1) where
   mul p q := ⟨p * q, ⟨mul_nonneg p.2.1 q.2.1, mul_le_one p.2.2 q.2.1 q.2.2⟩⟩
 
 instance pow : Pow (Icc (0 : α) 1) ℕ where
-  pow p n := ⟨p.1 ^ n, ⟨pow_nonneg p.2.1 n, pow_le_one n p.2.1 p.2.2⟩⟩
+  pow p n := ⟨p.1 ^ n, ⟨pow_nonneg p.2.1 n, pow_le_one₀ p.2.1 p.2.2⟩⟩
 
 @[simp, norm_cast]
 theorem coe_mul (x y : Icc (0 : α) 1) : ↑(x * y) = (x * y : α) :=
@@ -239,7 +239,7 @@ instance mul : Mul (Ioc (0 : α) 1) where
   mul p q := ⟨p.1 * q.1, ⟨mul_pos p.2.1 q.2.1, mul_le_one p.2.2 (le_of_lt q.2.1) q.2.2⟩⟩
 
 instance pow : Pow (Ioc (0 : α) 1) ℕ where
-  pow p n := ⟨p.1 ^ n, ⟨pow_pos p.2.1 n, pow_le_one n (le_of_lt p.2.1) p.2.2⟩⟩
+  pow p n := ⟨p.1 ^ n, ⟨pow_pos p.2.1 n, pow_le_one₀ (le_of_lt p.2.1) p.2.2⟩⟩
 
 @[simp, norm_cast]
 theorem coe_mul (x y : Ioc (0 : α) 1) : ↑(x * y) = (x * y : α) :=
