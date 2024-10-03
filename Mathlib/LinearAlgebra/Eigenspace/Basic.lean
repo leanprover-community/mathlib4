@@ -246,8 +246,9 @@ lemma unifEigenspace_div (f : End K V) (a b : K) (hb : b ≠ 0) :
     _ = LinearMap.ker (b • (f - b⁻¹ • a • 1)) := by rw [LinearMap.ker_smul _ b hb]
     _ = LinearMap.ker (b • f - a • 1)         := by rw [smul_sub, smul_inv_smul₀ hb]
 
-/-- The generalized eigenrange for a linear map `f`, a scalar `μ`, and an exponent `k ∈ ℕ` is the
-    range of `(f - μ • id) ^ k`. -/
+/-- The generalized eigenrange for a linear map `f`, a scalar `μ`, and an exponent `k ∈ ℕ∞`
+is the range of `(f - μ • id) ^ k` if `k` is a natural number,
+or the infimum of these ranges if `k = ∞`. -/
 def unifEigenrange (f : End R M) (μ : R) (k : ℕ∞) : Submodule R M :=
   ⨅ l : ℕ, ⨅ (_ : l ≤ k), LinearMap.range ((f - μ • 1) ^ l)
 
@@ -289,8 +290,6 @@ lemma unifEigenspace_top [h : IsNoetherian R M] (f : End R M) (μ : R) :
   congr
   aesop
 
-/-- Every generalized eigenvector is a generalized eigenvector for exponent `finrank K V`.
-    (Lemma 8.11 of [axler2015]) -/
 lemma unifEigenspace_le_unifEigenspace_maxUnifEigenspaceIndex [IsNoetherian R M] (f : End R M)
     (μ : R) (k : ℕ∞) :
     f.unifEigenspace μ k ≤ f.unifEigenspace μ (maxUnifEigenspaceIndex f μ) := by
@@ -389,19 +388,6 @@ lemma isNilpotent_restrict_unifEigenspace_nat (f : End R M) (μ : R) (k : ℕ)
     LinearMap.pow_restrict, LinearMap.restrict_apply]
   ext
   simpa
-
--- move this
-lemma isNilpotent_restrict_of_le {f : End R M} {p q : Submodule R M}
-    {hp : MapsTo f p p} {hq : MapsTo f q q} (h : p ≤ q) (hf : IsNilpotent (f.restrict hq)) :
-    IsNilpotent (f.restrict hp) := by
-  obtain ⟨n, hn⟩ := hf
-  use n
-  ext ⟨x, hx⟩
-  replace hn := DFunLike.congr_fun hn ⟨x, h hx⟩
-  simp_rw [LinearMap.zero_apply, ZeroMemClass.coe_zero, ZeroMemClass.coe_eq_zero] at hn ⊢
-  rw [LinearMap.pow_restrict, LinearMap.restrict_apply] at hn ⊢
-  ext
-  exact (congr_arg Subtype.val hn : _)
 
 /-- The restriction of `f - μ • 1` to the generalized `μ`-eigenspace is nilpotent. -/
 lemma isNilpotent_restrict_unifEigenspace_top [IsNoetherian R M] (f : End R M) (μ : R)
@@ -831,7 +817,7 @@ lemma _root_.Submodule.inf_iInf_maxGenEigenspace_of_forall_mapsTo {ι : Type*} {
       (⨅ i, maxGenEigenspace ((f i).restrict (hfp i)) (μ i)).map p.subtype := by
   cases isEmpty_or_nonempty ι
   · simp [iInf_of_isEmpty]
-  · simp_rw [inf_iInf, maxGenEigenspace, ((f _).genEigenspace _).mono.directed_le.inf_iSup_eq,
+  · simp_rw [inf_iInf, maxGenEigenspace_def, ((f _).genEigenspace _).mono.directed_le.inf_iSup_eq,
       p.inf_genEigenspace _ (hfp _), ← Submodule.map_iSup, Submodule.map_iInf _ p.injective_subtype]
 
 /-- Given a family of endomorphisms `i ↦ f i`, a family of candidate eigenvalues `i ↦ μ i`, and a
@@ -852,7 +838,6 @@ lemma iInf_maxGenEigenspace_restrict_map_subtype_eq
   rw [Submodule.map_iInf _ p.injective_subtype, this, Submodule.inf_iInf]
   simp_rw [maxGenEigenspace_def, Submodule.map_iSup,
     ((f _).genEigenspace _).mono.directed_le.inf_iSup_eq, p.inf_genEigenspace (f _) (h _)]
-  rfl
 
 lemma mapsTo_restrict_maxGenEigenspace_restrict_of_mapsTo
     {p : Submodule R M} (f g : End R M) (hf : MapsTo f p p) (hg : MapsTo g p p) {μ₁ μ₂ : R}

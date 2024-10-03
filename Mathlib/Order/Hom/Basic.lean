@@ -1173,9 +1173,10 @@ theorem coe_toDualTopEquiv_eq [LE α] :
 
 /-- The coercion `α → WithBot α` bundled as monotone map. -/
 @[simps]
-def coeOrderHom {α : Type*} [Preorder α] : α →o WithBot α where
+def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithBot α where
   toFun := (↑)
-  monotone' := WithBot.coe_mono
+  inj' := WithBot.coe_injective
+  map_rel_iff' := WithBot.coe_le_coe
 
 end WithBot
 
@@ -1210,9 +1211,10 @@ theorem coe_toDualBotEquiv [LE α] :
 
 /-- The coercion `α → WithTop α` bundled as monotone map. -/
 @[simps]
-def coeOrderHom {α : Type*} [Preorder α] : α →o WithTop α where
+def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithTop α where
   toFun := (↑)
-  monotone' := WithTop.coe_mono
+  inj' := WithTop.coe_injective
+  map_rel_iff' := WithTop.coe_le_coe
 
 end WithTop
 
