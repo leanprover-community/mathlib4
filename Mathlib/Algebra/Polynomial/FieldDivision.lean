@@ -382,6 +382,21 @@ theorem map_mod [Field k] (f : R →+* k) : (p % q).map f = p.map f % q.map f :=
   · rw [mod_def, mod_def, leadingCoeff_map f, ← map_inv₀ f, ← map_C f, ← Polynomial.map_mul f,
       map_modByMonic f (monic_mul_leadingCoeff_inv hq0)]
 
+lemma natDegree_mod_lt [Field k] (p : k[X]) {q : k[X]} (hq : q.natDegree ≠ 0) :
+    (p % q).natDegree < q.natDegree := by
+  have hq' : q.leadingCoeff ≠ 0 := by
+    rw [leadingCoeff_ne_zero]
+    contrapose! hq
+    simp [hq]
+  rw [mod_def]
+  refine (natDegree_modByMonic_lt p ?_ ?_).trans_le ?_
+  · refine monic_mul_C_of_leadingCoeff_mul_eq_one ?_
+    rw [mul_inv_eq_one₀ hq']
+  · contrapose! hq
+    rw [← natDegree_mul_C_eq_of_mul_eq_one ((inv_mul_eq_one₀ hq').mpr rfl)]
+    simp [hq]
+  · exact natDegree_mul_C_le q q.leadingCoeff⁻¹
+
 section
 
 open EuclideanDomain
