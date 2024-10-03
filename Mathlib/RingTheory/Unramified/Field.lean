@@ -46,7 +46,7 @@ theorem of_isSeparable [Algebra.IsSeparable K L] : FormallyUnramified K L := by
   have : f₁ x - f₂ x ∈ I := by
     simpa [Ideal.Quotient.mk_eq_mk_iff_sub_mem] using AlgHom.congr_fun e x
   have := Polynomial.eval_add_of_sq_eq_zero ((minpoly K x).map (algebraMap K B)) (f₂ x)
-    (f₁ x - f₂ x) (by convert show (f₁ x - f₂ x) ^ 2 ∈ ⊥ from hI ▸ Ideal.pow_mem_pow this 2)
+    (f₁ x - f₂ x) (show (f₁ x - f₂ x) ^ 2 ∈ ⊥ from hI ▸ Ideal.pow_mem_pow this 2)
   simp only [add_sub_cancel, eval_map_algebraMap, aeval_algHom_apply, minpoly.aeval, map_zero,
     derivative_map, zero_add] at this
   rwa [eq_comm, ((isUnit_iff_ne_zero.mpr
@@ -119,6 +119,7 @@ theorem isField_of_isAlgClosed_of_localRing
   exact hx ((isUnit_iff_ne_zero.mpr
     (fun e ↦ hx' ((algebraMap K A).congr_arg e))).map (algebraMap K A))
 
+include K in
 theorem isReduced_of_field :
     IsReduced A := by
   constructor
@@ -179,7 +180,7 @@ theorem range_eq_top_of_isPurelyInseparable
       exact ⟨1, map_one _⟩
     have := DFunLike.congr_fun
       (DFunLike.congr_arg ((Basis.extend h).tensorProduct (Basis.extend h)).repr H) (a, b)
-    simp only [Basis.tensorProduct_repr_tmul_apply, ← ha, ← hb, Basis.repr_self,
+    simp only [Basis.tensorProduct_repr_tmul_apply, ← ha, ← hb, Basis.repr_self, smul_eq_mul,
       Finsupp.single_apply, e, Ne.symm e, ↓reduceIte, mul_one, mul_zero, one_ne_zero] at this
   · rw [LinearIndependent.pair_iff] at h'
     simp only [not_forall, not_and, exists_prop] at h'
@@ -205,7 +206,7 @@ theorem isSeparable : Algebra.IsSeparable K L := by
   rw [← range_eq_top_of_isPurelyInseparable (separableClosure K L) L]
   simp
 
-theorem iff_isSeparable [EssFiniteType K L] :
+theorem iff_isSeparable (L) [Field L] [Algebra K L] [EssFiniteType K L] :
     FormallyUnramified K L ↔ Algebra.IsSeparable K L :=
   ⟨fun _ ↦ isSeparable K L, fun _ ↦ of_isSeparable K L⟩
 
