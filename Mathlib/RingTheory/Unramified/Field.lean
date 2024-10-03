@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.FieldTheory.PurelyInseparable
 import Mathlib.RingTheory.Artinian
-import Mathlib.RingTheory.LocalProperties
+import Mathlib.RingTheory.LocalProperties.Basic
 import Mathlib.Algebra.Polynomial.Taylor
 import Mathlib.RingTheory.Unramified.Finite
 
