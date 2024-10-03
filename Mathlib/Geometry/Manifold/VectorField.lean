@@ -105,6 +105,63 @@ lemma lieBracket_eq_zero_of_eq_zero (hV : V x = 0) (hW : W x = 0) :
     lieBracket 𝕜 V W x = 0 := by
   simp [lieBracket, hV, hW]
 
+lemma lieBracketWithin_add_left (hV : DifferentiableWithinAt 𝕜 V s x)
+    (hV₁ : DifferentiableWithinAt 𝕜 V₁ s x) (hs :  UniqueDiffWithinAt 𝕜 s x) :
+    lieBracketWithin 𝕜 (V + V₁) W s x =
+      lieBracketWithin 𝕜 V W s x + lieBracketWithin 𝕜 V₁ W s x := by
+  simp only [lieBracketWithin, Pi.add_apply, map_add]
+  rw [fderivWithin_add' hs hV hV₁, ContinuousLinearMap.add_apply]
+  abel
+
+lemma lieBracket_add_left (hV : DifferentiableAt 𝕜 V x) (hV₁ : DifferentiableAt 𝕜 V₁ x) :
+    lieBracket 𝕜 (V + V₁) W  x =
+      lieBracket 𝕜 V W x + lieBracket 𝕜 V₁ W x := by
+  simp only [lieBracket, Pi.add_apply, map_add]
+  rw [fderiv_add' hV hV₁, ContinuousLinearMap.add_apply]
+  abel
+
+lemma lieBracketWithin_add_right (hW : DifferentiableWithinAt 𝕜 W s x)
+    (hW₁ : DifferentiableWithinAt 𝕜 W₁ s x) (hs :  UniqueDiffWithinAt 𝕜 s x) :
+    lieBracketWithin 𝕜 V (W + W₁) s x =
+      lieBracketWithin 𝕜 V W s x + lieBracketWithin 𝕜 V W₁ s x := by
+  simp only [lieBracketWithin, Pi.add_apply, map_add]
+  rw [fderivWithin_add' hs hW hW₁, ContinuousLinearMap.add_apply]
+  abel
+
+lemma lieBracket_add_right (hW : DifferentiableAt 𝕜 W x) (hW₁ : DifferentiableAt 𝕜 W₁ x) :
+    lieBracket 𝕜 V (W + W₁) x =
+      lieBracket 𝕜 V W x + lieBracket 𝕜 V W₁ x := by
+  simp only [lieBracket, Pi.add_apply, map_add]
+  rw [fderiv_add' hW hW₁, ContinuousLinearMap.add_apply]
+  abel
+
+lemma lieBracketWithin_swap : lieBracketWithin 𝕜 V W s x = - lieBracketWithin 𝕜 W V s x := by
+  simp [lieBracketWithin]
+
+lemma lieBracket_swap : lieBracket 𝕜 V W x = - lieBracket 𝕜 W V x := by
+  simp [lieBracket]
+
+lemma _root_.ContDiffWithinAt.lieBracketWithin {m n : ℕ∞}
+    (hV : ContDiffWithinAt 𝕜 n V s x) (hW : ContDiffWithinAt 𝕜 n W s x) (hmn : m + 1 ≤ n) :
+    ContDiffWithinAt 𝕜 m (lieBracketWithin 𝕜 V W s) s x := by
+  simp only [lieBracketWithin_eq]
+  apply ContDiffWithinAt.sub
+  apply ContDiffOn.clm_apply
+  apply hW.fderivWithin
+
+
+lemma _root_.ContDiffOn.lieBracketWithin {m n : ℕ∞}
+    (hV : ContDiffOn 𝕜 n V s) (hW : ContDiffOn 𝕜 n W s) (hmn : m + 1 ≤ n) :
+    ContDiffOn 𝕜 m (lieBracketWithin 𝕜 V W s) s := by
+  simp only [lieBracketWithin_eq]
+  apply ContDiffOn.sub
+  apply ContDiffOn.clm_apply
+  apply hW.fderivWithin
+
+
+#exit
+
+
 theorem lieBracketWithin_of_mem (st : t ∈ 𝓝[s] x) (ht : UniqueDiffWithinAt 𝕜 s x)
     (hV : DifferentiableWithinAt 𝕜 V t x) (hW : DifferentiableWithinAt 𝕜 W t x) :
     lieBracketWithin 𝕜 V W s x = lieBracketWithin 𝕜 V W t x := by
@@ -211,13 +268,6 @@ protected theorem _root_.Filter.EventuallyEq.lieBracket
     (hV : V₁ =ᶠ[𝓝 x] V) (hW : W₁ =ᶠ[𝓝 x] W) : lieBracket 𝕜 V₁ W₁ =ᶠ[𝓝 x] lieBracket 𝕜 V W := by
   filter_upwards [hV.eventuallyEq_nhds, hW.eventuallyEq_nhds] with y hVy hWy
   exact hVy.lieBracket_eq hWy
-
-lemma lieBracket_add_left :
-    lieBracketWithin 𝕜 (V + V₁) W s x =
-      lieBracketWithin 𝕜 V W s x + lieBracketWithin 𝕜 V₁ W s x := by
-  simp [lieBracketWithin]
-  rw [fderivWithin_add]
-
 
 #exit
 
