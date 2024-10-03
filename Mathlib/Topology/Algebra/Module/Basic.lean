@@ -2375,21 +2375,20 @@ variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] [TopologicalSpace 
 instance _root_.QuotientModule.Quotient.topologicalSpace : TopologicalSpace (M ⧸ S) :=
   inferInstanceAs (TopologicalSpace (Quotient S.quotientRel))
 
-theorem isOpenMap_mkQ [TopologicalAddGroup M] : IsOpenMap S.mkQ :=
-  QuotientAddGroup.isOpenMap_coe S.toAddSubgroup
+theorem isOpenMap_mkQ [ContinuousAdd M] : IsOpenMap S.mkQ :=
+  QuotientAddGroup.isOpenMap_coe
+
+theorem isOpenQuotientMap_mkQ [ContinuousAdd M] : IsOpenQuotientMap S.mkQ :=
+  QuotientAddGroup.isOpenQuotientMap_mk
 
 instance topologicalAddGroup_quotient [TopologicalAddGroup M] : TopologicalAddGroup (M ⧸ S) :=
   inferInstanceAs <| TopologicalAddGroup (M ⧸ S.toAddSubgroup)
 
 instance continuousSMul_quotient [TopologicalSpace R] [TopologicalAddGroup M] [ContinuousSMul R M] :
-    ContinuousSMul R (M ⧸ S) := by
-  constructor
-  have quot : QuotientMap fun au : R × M => (au.1, S.mkQ au.2) :=
-    IsOpenMap.to_quotientMap (IsOpenMap.id.prod S.isOpenMap_mkQ)
-      (continuous_id.prod_map continuous_quot_mk)
-      (Function.surjective_id.prodMap <| surjective_quot_mk _)
-  rw [quot.continuous_iff]
-  exact continuous_quot_mk.comp continuous_smul
+    ContinuousSMul R (M ⧸ S) where
+  continuous_smul := by
+    rw [← (IsOpenQuotientMap.id.prodMap S.isOpenQuotientMap_mkQ).continuous_comp_iff]
+    exact continuous_quot_mk.comp continuous_smul
 
 instance t3_quotient_of_isClosed [TopologicalAddGroup M] [IsClosed (S : Set M)] :
     T3Space (M ⧸ S) :=
