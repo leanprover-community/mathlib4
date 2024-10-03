@@ -212,25 +212,27 @@ section IsLocalRingHom
 
 variable {G R S T F : Type*}
 
-/-- A local ring homomorphism is a homomorphism `f` between monoids such that `a` in the domain
+variable [Monoid R] [Monoid S] [Monoid T] [FunLike F R S]
+
+/-- A local ring homomorphism is a map `f` between monoids such that `a` in the domain
   is a unit if `f a` is a unit for any `a`. See `LocalRing.local_hom_TFAE` for other equivalent
   definitions in the local ring case - from where this concept originates, but it is useful in
   other contexts, so we allow this generalisation in mathlib. -/
-class IsLocalRingHom [Monoid R] [Monoid S] [MonoidHomClass F R S] (f : F) : Prop where
+class IsLocalRingHom (f : F) : Prop where
   /-- A local ring homomorphism `f : R ⟶ S` will send nonunits of `R` to nonunits of `S`. -/
   map_nonunit : ∀ a, IsUnit (f a) → IsUnit a
 
-variable [Monoid R] [Monoid S] [Monoid T] [MonoidHomClass F R S]
-
 @[simp]
-theorem isUnit_map_iff (f : F) [IsLocalRingHom f] (a) : IsUnit (f a) ↔ IsUnit a :=
-  ⟨IsLocalRingHom.map_nonunit a, IsUnit.map f⟩
-
-@[simp]
-theorem IsUnit.of_map (f : F) [IsLocalRingHom f] (a) (h : IsUnit (f a)) : IsUnit a :=
+theorem IsUnit.of_map (f : F) [IsLocalRingHom f] (a : R) (h : IsUnit (f a)) : IsUnit a :=
   IsLocalRingHom.map_nonunit a h
 
-theorem isLocalRingHom_of_leftInverse [MonoidHomClass G S R]
+variable [MonoidHomClass F R S]
+
+@[simp]
+theorem isUnit_map_iff (f : F) [IsLocalRingHom f] (a : R) : IsUnit (f a) ↔ IsUnit a :=
+  ⟨IsLocalRingHom.map_nonunit a, IsUnit.map f⟩
+
+theorem isLocalRingHom_of_leftInverse [FunLike G S R] [MonoidHomClass G S R]
     {f : F} (g : G) (hfg : Function.LeftInverse g f) : IsLocalRingHom f where
   map_nonunit a ha := by rwa [isUnit_map_of_leftInverse g hfg] at ha
 
