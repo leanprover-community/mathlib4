@@ -558,24 +558,25 @@ theorem rootMultiplicity_mul' {p q : R[X]} {x : R}
 theorem Monic.comp_X_sub_C {p : R[X]} (hp : p.Monic) (r : R) : (p.comp (X - C r)).Monic := by
   simpa using hp.comp_X_add_C (-r)
 
+@[simp]
 theorem comp_neg_X_leadingCoeff_eq (p : R[X]) :
-    (p.comp (-X)).leadingCoeff = (-1) ^ p.natDegree := by
-  rw [Polynomial.leadingCoeff]
-  sorry -- rw [leadingCoeff_comp, leadingCoeff_neg_X, hp.leadingCoeff, one_pow]
+    (p.comp (-X)).leadingCoeff = (-1) ^ p.natDegree * p.leadingCoeff := by
+  nontriviality R
+  by_cases h : p = 0
+  · simp [h]
+  rw [Polynomial.leadingCoeff, natDegree_comp_eq_of_mul_ne_zero, coeff_comp_degree_mul_degree] <;>
+  simp [mul_comm, h]
 
-#check natDegree_comp_eq_of_mul_ne_zero
 theorem Monic.neg_one_pow_natDegree_mul_comp_neg_X {p : R[X]} (hp : p.Monic) :
     ((-1) ^ p.natDegree * p.comp (-X)).Monic := by
-  rw [mul_comm]
-  have :(p.comp (-X) * (-1) ^ p.natDegree) = (p.comp (-X) * C ((-1) ^ p.natDegree)) := sorry
-  rw [this]
-  apply monic_mul_C_of_leadingCoeff_mul_eq_one
-  simp only [comp_neg_X_leadingCoeff_eq, ← pow_add, even_add_self, Even.neg_pow, one_pow]
-  -- have : (p.comp q).natDegree = p.natDegree * q.natDegree := by
-  --   apply natDegree_comp_eq_of_mul_ne_zero
-  --   simp [hp.leadingCoeff, hq.leadingCoeff]
-  rw [Monic.def, Polynomial.leadingCoeff, Polynomial.natDegree_mul', Polynomial.natDegree_comp, coeff_comp_degree_mul_degree h, hp.leadingCoeff,
-    hq.leadingCoeff, one_pow, mul_one]
+  simp [Monic]
+  calc
+    ((-1) ^ p.natDegree * p.comp (-X)).leadingCoeff =
+        (p.comp (-X) * C ((-1) ^ p.natDegree)).leadingCoeff := by
+      simp [mul_comm]
+    _ = 1 := by
+      apply monic_mul_C_of_leadingCoeff_mul_eq_one
+      simp [← pow_add, hp]
 
 variable [IsDomain R] {p q : R[X]}
 
