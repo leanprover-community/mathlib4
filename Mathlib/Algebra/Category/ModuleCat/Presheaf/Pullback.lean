@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Generator
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pushforward
+import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
 import Mathlib.CategoryTheory.Elements
 
 /-!
@@ -19,52 +20,6 @@ The existence of this left adjoint functor is obtained under suitable universe a
 -/
 
 universe v v₁ v₂ u₁ u₂ u
-
-
--- to be moved
-namespace CategoryTheory
-
-open Limits
-
-namespace Functor
-
-open Opposite
-
--- universes could be generalized if `(Co)representable` was made more general
-variable {C : Type u₁} [Category.{v} C] {D : Type u₂} [Category.{v} D] (F : D ⥤ C)
-
-def leftAdjointDefinitionSet : Set C :=
-  { X : C | Corepresentable (F ⋙ coyoneda.obj (op X)) }
-
-lemma mem_leftAdjointDefinitionSet_iff (X : C) :
-    X ∈ F.leftAdjointDefinitionSet ↔ Corepresentable (F ⋙ coyoneda.obj (op X)) := by rfl
-
-namespace leftAdjointDefinitionSet
-
-variable {F}
-
-lemma isRightAdjoint (h : F.leftAdjointDefinitionSet = ⊤) : F.IsRightAdjoint := by
-  replace h : ∀ X, Corepresentable (F ⋙ coyoneda.obj (op X)) := fun X ↦ by
-    simp only [← mem_leftAdjointDefinitionSet_iff, h, Set.top_eq_univ, Set.mem_univ]
-  exact (Adjunction.adjunctionOfEquivLeft
-    (fun X Y ↦ ((coreprW (F ⋙ coyoneda.obj (op X))).app Y).toEquiv)
-    (fun X Y Y' g f ↦ (by simp [coreprW_hom_app]))).isRightAdjoint
-
-lemma mem_of_isColimit {J : Type*} [Category J] {R : J ⥤ C} {c : Cocone R}
-    (hc : IsColimit c) (h : ∀ (j : J), R.obj j ∈ F.leftAdjointDefinitionSet) :
-    c.pt ∈ F.leftAdjointDefinitionSet := by
-  sorry
-
-lemma colimit_mem {J : Type*} [Category J] (R : J ⥤ C) [HasColimit R]
-    (h : ∀ (j : J), R.obj j ∈ F.leftAdjointDefinitionSet) :
-    colimit R ∈ F.leftAdjointDefinitionSet :=
-  mem_of_isColimit (colimit.isColimit R) h
-
-end leftAdjointDefinitionSet
-
-end Functor
-
-end CategoryTheory
 
 open CategoryTheory Limits Opposite
 
@@ -88,6 +43,9 @@ between associated pullback and pushforward functors on the categories
 of presheaves of modules. -/
 noncomputable def pullbackPushforwardAdjunction : pullback.{v} φ ⊣ pushforward.{v} φ :=
   Adjunction.ofIsRightAdjoint (pushforward φ)
+
+abbrev PullbackObjIsDefined : PresheafOfModules.{v} S → Prop :=
+  (pushforward φ).LeftAdjointObjIsDefined
 
 end
 
@@ -143,32 +101,31 @@ section
 variable {C D : Type u} [SmallCategory C] [SmallCategory D]
   {F : C ⥤ D} {R : Dᵒᵖ ⥤ RingCat.{u}} {S : Cᵒᵖ ⥤ RingCat.{u}} (φ : S ⟶ F.op ⋙ R)
 
-abbrev pullbackDefinitionSet : Set (PresheafOfModules.{u} S) :=
-  (pushforward φ).leftAdjointDefinitionSet
+noncomputable def pushforwardCompCoyonedaFreeYonedaCorepresentableBy (X : C) :
+    (pushforward φ ⋙ coyoneda.obj (op ((free S).obj (yoneda.obj X)))).CorepresentableBy
+      ((free R).obj (yoneda.obj (F.obj X))) where
+  homEquiv {M} := (freeYonedaEquiv M (F.obj X)).trans
+    (freeYonedaEquiv ((pushforward φ).obj M) X).symm
+  homEquiv_comp := sorry
 
-namespace pullbackDefinitionSet
+lemma pullbackObjIsDefined_free_yoneda (X : C) :
+    PullbackObjIsDefined φ ((free S).obj (yoneda.obj X)) :=
+  (pushforwardCompCoyonedaFreeYonedaCorepresentableBy φ X).isCorepresentable
 
-lemma free_yoneda_mem (X : C) :
-    (free S).obj (yoneda.obj X) ∈ pullbackDefinitionSet φ :=
-  ⟨op ((free R).obj (yoneda.obj (F.obj X))),
-    ⟨NatIso.ofComponents
-      (fun M ↦ Equiv.toIso
-        ((freeYonedaEquiv M (F.obj X)).trans
-          (freeYonedaEquiv ((pushforward φ).obj M) X).symm)) sorry⟩⟩
-
-lemma eq_top : pullbackDefinitionSet φ = ⊤ := by
+lemma pullbackObjIsDefined_eq_top :
+    PullbackObjIsDefined.{u} φ = ⊤ := by
   ext M
-  simp only [Set.top_eq_univ, Set.mem_univ, iff_true]
-  apply Functor.leftAdjointDefinitionSet.mem_of_isColimit
+  simp only [Pi.top_apply, Prop.top_eq_true, iff_true]
+  apply Functor.leftAdjointObjIsDefined_of_isColimit
     M.isColimitFreeYonedaCoproductsCokernelCofork
-  rintro (_|_)
+  rintro (_ | _)
   all_goals
-    exact Functor.leftAdjointDefinitionSet.colimit_mem _ (fun _ ↦ free_yoneda_mem _ _)
-
-end pullbackDefinitionSet
+    apply Functor.leftAdjointObjIsDefined_colimit _
+      (fun _ ↦ pullbackObjIsDefined_free_yoneda _ _)
 
 instance : (pushforward.{u} φ).IsRightAdjoint :=
-  Functor.leftAdjointDefinitionSet.isRightAdjoint (pullbackDefinitionSet.eq_top φ)
+  Functor.isRightAdjoint_of_leftAdjointObjIsDefined_eq_top
+    (pullbackObjIsDefined_eq_top φ)
 
 end
 
