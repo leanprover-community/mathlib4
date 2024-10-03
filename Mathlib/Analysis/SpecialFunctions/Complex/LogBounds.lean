@@ -60,7 +60,7 @@ def logTaylor (n : ℕ) : ℂ → ℂ := fun z ↦ ∑ j ∈ Finset.range n, (-1
 
 lemma logTaylor_zero : logTaylor 0 = fun _ ↦ 0 := by
   funext
-  simp only [logTaylor, Finset.range_zero, Nat.odd_iff_not_even, Int.cast_pow, Int.cast_neg,
+  simp only [logTaylor, Finset.range_zero, ← Nat.not_even_iff_odd, Int.cast_pow, Int.cast_neg,
     Int.cast_one, Finset.sum_empty]
 
 lemma logTaylor_succ (n : ℕ) :
@@ -79,10 +79,10 @@ lemma hasDerivAt_logTaylor (n : ℕ) (z : ℂ) :
   | zero => simp [logTaylor_succ, logTaylor_zero, Pi.add_def, hasDerivAt_const]
   | succ n ih =>
     rw [logTaylor_succ]
-    simp only [cpow_natCast, Nat.cast_add, Nat.cast_one, Nat.odd_iff_not_even,
+    simp only [cpow_natCast, Nat.cast_add, Nat.cast_one, ← Nat.not_even_iff_odd,
       Finset.sum_range_succ, (show (-1) ^ (n + 1 + 1) = (-1) ^ n by ring)]
     refine HasDerivAt.add ih ?_
-    simp only [Nat.odd_iff_not_even, Int.cast_pow, Int.cast_neg, Int.cast_one, mul_div_assoc]
+    simp only [← Nat.not_even_iff_odd, Int.cast_pow, Int.cast_neg, Int.cast_one, mul_div_assoc]
     have : HasDerivAt (fun x : ℂ ↦ (x ^ (n + 1) / (n + 1))) (z ^ n) z := by
       simp_rw [div_eq_mul_inv]
       convert HasDerivAt.mul_const (hasDerivAt_pow (n + 1) z) (((n : ℂ) + 1)⁻¹) using 1
@@ -100,7 +100,7 @@ lemma hasDerivAt_log_sub_logTaylor (n : ℕ) {z : ℂ} (hz : 1 + z ∈ slitPlane
   have hz' : -z ≠ 1 := by
     intro H
     rw [neg_eq_iff_eq_neg] at H
-    simp only [H, add_right_neg] at hz
+    simp only [H, add_neg_cancel] at hz
     exact slitPlane_ne_zero hz rfl
   simp_rw [← mul_pow, neg_one_mul, geom_sum_eq hz', ← neg_add', div_neg, add_comm z]
   field_simp [slitPlane_ne_zero hz]
@@ -178,6 +178,31 @@ lemma norm_log_one_add_sub_self_le {z : ℂ} (hz : ‖z‖ < 1) :
   · simp [logTaylor_succ, logTaylor_zero, sub_eq_add_neg]
   · norm_num
 
+lemma norm_log_one_add_le {z : ℂ} (hz : ‖z‖ < 1) :
+    ‖log (1 + z)‖ ≤ ‖z‖ ^ 2 * (1 - ‖z‖)⁻¹ / 2 + ‖z‖ := by
+  rw [Eq.symm (sub_add_cancel (log (1 + z)) z)]
+  apply le_trans (norm_add_le _ _)
+  exact add_le_add_right (Complex.norm_log_one_add_sub_self_le hz) ‖z‖
+
+/--For `‖z‖ ≤ 1/2`, the complex logarithm is bounded by `(3/2) * ‖z‖`. -/
+lemma norm_log_one_add_half_le_self {z : ℂ} (hz : ‖z‖ ≤ 1/2) : ‖(log (1 + z))‖ ≤ (3/2) * ‖z‖ := by
+  apply le_trans (norm_log_one_add_le (lt_of_le_of_lt hz one_half_lt_one))
+  have hz3 : (1 - ‖z‖)⁻¹ ≤ 2 := by
+    rw [inv_eq_one_div, div_le_iff₀]
+    · linarith
+    · linarith
+  have hz4 : ‖z‖^2 * (1 - ‖z‖)⁻¹ / 2 ≤ ‖z‖/2 * 2 / 2 := by
+    gcongr
+    · rw [inv_nonneg]
+      linarith
+    · rw [sq, div_eq_mul_one_div]
+      apply mul_le_mul (by simp only [norm_eq_abs, mul_one, le_refl])
+        (by simpa only [norm_eq_abs, one_div] using hz) (norm_nonneg z)
+        (by simp only [norm_eq_abs, mul_one, apply_nonneg])
+  simp only [isUnit_iff_ne_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
+    IsUnit.div_mul_cancel] at hz4
+  linarith
+
 /-- The difference of `log (1-z)⁻¹` and its `(n+1)`st Taylor polynomial can be bounded in
 terms of `‖z‖`. -/
 lemma norm_log_one_sub_inv_add_logTaylor_neg_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
@@ -202,7 +227,7 @@ lemma hasSum_taylorSeries_log {z : ℂ} (hz : ‖z‖ < 1) :
   refine (hasSum_iff_tendsto_nat_of_summable_norm ?_).mpr ?_
   · refine (summable_geometric_of_norm_lt_one hz).norm.of_nonneg_of_le (fun _ ↦ norm_nonneg _) ?_
     intro n
-    simp only [norm_div, norm_mul, norm_pow, norm_neg, norm_one, one_pow, one_mul, norm_nat]
+    simp only [norm_div, norm_mul, norm_pow, norm_neg, norm_one, one_pow, one_mul, norm_natCast]
     rcases n.eq_zero_or_pos with rfl | hn
     · simp
     conv => enter [2]; rw [← div_one (‖z‖ ^ n)]

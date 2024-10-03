@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Scott Morrison, Adam Topaz
+Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
 import Mathlib.AlgebraicTopology.SimplicialObject
 import Mathlib.CategoryTheory.Limits.Shapes.Types
@@ -339,7 +339,7 @@ instance Truncated.hasColimits {n : ℕ} : HasColimits (Truncated n) := by
 @[ext]
 lemma Truncated.hom_ext {n : ℕ} {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) :
     f = g :=
-  NatTrans.ext _ _ (funext w)
+  NatTrans.ext (funext w)
 
 /-- The skeleton functor on simplicial sets. -/
 def sk (n : ℕ) : SSet ⥤ SSet.Truncated n :=

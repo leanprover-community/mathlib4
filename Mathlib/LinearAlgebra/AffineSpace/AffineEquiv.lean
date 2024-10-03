@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 import Mathlib.LinearAlgebra.GeneralLinearGroup
@@ -326,7 +326,7 @@ instance group : Group (P₁ ≃ᵃ[k] P₁) where
   mul_assoc e₁ e₂ e₃ := trans_assoc _ _ _
   one_mul := trans_refl
   mul_one := refl_trans
-  mul_left_inv := self_trans_symm
+  inv_mul_cancel := self_trans_symm
 
 theorem one_def : (1 : P₁ ≃ᵃ[k] P₁) = refl k P₁ :=
   rfl

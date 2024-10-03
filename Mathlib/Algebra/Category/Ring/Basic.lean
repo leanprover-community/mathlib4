@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2018 Scott Morrison. All rights reserved.
+Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Johannes Hölzl, Yury Kudryashov
+Authors: Kim Morrison, Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Category.Grp.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
@@ -454,6 +454,12 @@ lemma coe_comp {X Y Z : CommRingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X 
 /-- Specialization of `ConcreteCategory.id_apply` because `simp` can't see through the defeq. -/
 @[simp] lemma id_apply (R : CommRingCat) (x : R) : 𝟙 R x = x := rfl
 
+@[simp]
+theorem comp_apply {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) (x : R) :
+    (f ≫ g) x = g (f x) := rfl
+
+@[simp] theorem forget_obj (R : CommRingCat) : (forget _).obj R = R := rfl
+
 @[simp] lemma forget_map {X Y : CommRingCat} (f : X ⟶ Y) :
     (forget CommRingCat).map f = (f : X → Y) := rfl
 
@@ -485,7 +491,7 @@ def ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : of R ⟶ of
 
 @[simp]
 lemma RingEquiv_coe_eq {X Y : Type _} [CommRing X] [CommRing Y] (e : X ≃+* Y) :
-    (@DFunLike.coe (CommRingCat.of X ⟶ CommRingCat.of Y) _ (fun _ => (forget CommRingCat).obj _)
+    (@DFunLike.coe (CommRingCat.of X ⟶ CommRingCat.of Y) X (fun _ => Y)
       ConcreteCategory.instFunLike (e : X →+* Y) : X → Y) = ↑e :=
   rfl
 
@@ -539,6 +545,12 @@ theorem coe_of (R : Type u) [CommRing R] : (CommRingCat.of R : Type u) = R :=
 
 instance hasForgetToRingCat : HasForget₂ CommRingCat RingCat :=
   BundledHom.forget₂ _ _
+
+@[simp] lemma forgetToRingCat_obj (A : CommRingCat.{u}) :
+    ((forget₂ _ RingCat).obj A : Type _) = A := rfl
+
+@[simp] lemma forgetToRingCat_map_apply {A B : CommRingCat.{u}} (f : A ⟶ B) (a : A) :
+    DFunLike.coe (α := A) (β := fun _ ↦ B) ((forget₂ _ RingCat).map f) a = f a := rfl
 
 /-- The forgetful functor from commutative rings to (multiplicative) commutative monoids. -/
 instance hasForgetToCommSemiRingCat : HasForget₂ CommRingCat CommSemiRingCat :=

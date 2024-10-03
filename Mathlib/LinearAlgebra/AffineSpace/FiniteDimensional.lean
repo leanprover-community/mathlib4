@@ -3,7 +3,6 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Init.Core
 import Mathlib.LinearAlgebra.AffineSpace.Basis
 import Mathlib.LinearAlgebra.FiniteDimensional
 
@@ -157,8 +156,8 @@ theorem finrank_vectorSpan_range_le [Fintype ι] (p : ι → P) {n : ℕ} (hc : 
 /-- The `vectorSpan` of an indexed family of `n + 1` points has dimension at most `n`. -/
 lemma finrank_vectorSpan_range_add_one_le [Fintype ι] [Nonempty ι] (p : ι → P) :
     finrank k (vectorSpan k (Set.range p)) + 1 ≤ Fintype.card ι :=
-  (le_tsub_iff_right $ Nat.succ_le_iff.2 Fintype.card_pos).1 $ finrank_vectorSpan_range_le _ _
-    (tsub_add_cancel_of_le $ Nat.succ_le_iff.2 Fintype.card_pos).symm
+  (le_tsub_iff_right <| Nat.succ_le_iff.2 Fintype.card_pos).1 <| finrank_vectorSpan_range_le _ _
+    (tsub_add_cancel_of_le <| Nat.succ_le_iff.2 Fintype.card_pos).symm
 
 /-- `n + 1` points are affinely independent if and only if their
 `vectorSpan` has dimension `n`. -/
@@ -225,7 +224,7 @@ lemma AffineIndependent.card_le_card_of_subset_affineSpan {s t : Finset V}
   have direction_le := AffineSubspace.direction_le (affineSpan_mono k hst)
   rw [AffineSubspace.affineSpan_coe, direction_affineSpan, direction_affineSpan,
     ← @Subtype.range_coe _ (s : Set V), ← @Subtype.range_coe _ (t : Set V)] at direction_le
-  have finrank_le := add_le_add_right (Submodule.finrank_le_finrank_of_le direction_le) 1
+  have finrank_le := add_le_add_right (Submodule.finrank_mono direction_le) 1
   -- We use `erw` to elide the difference between `↥s` and `↥(s : Set V)}`
   erw [hs.finrank_vectorSpan_add_one] at finrank_le
   simpa using finrank_le.trans <| finrank_vectorSpan_range_add_one_le _ _
@@ -242,7 +241,7 @@ lemma AffineIndependent.card_lt_card_of_affineSpan_lt_affineSpan {s t : Finset V
   · simp [Set.subset_empty_iff] at hst
   have := hs'.to_subtype
   have := ht'.to_set.to_subtype
-  have dir_lt := AffineSubspace.direction_lt_of_nonempty (k := k) hst $ hs'.to_set.affineSpan k
+  have dir_lt := AffineSubspace.direction_lt_of_nonempty (k := k) hst <| hs'.to_set.affineSpan k
   rw [direction_affineSpan, direction_affineSpan,
     ← @Subtype.range_coe _ (s : Set V), ← @Subtype.range_coe _ (t : Set V)] at dir_lt
   have finrank_lt := add_lt_add_right (Submodule.finrank_lt_finrank_of_lt dir_lt) 1
@@ -372,7 +371,7 @@ alias ⟨Collinear.finrank_le_one, _⟩ := collinear_iff_finrank_le_one
 
 /-- A subset of a collinear set is collinear. -/
 theorem Collinear.subset {s₁ s₂ : Set P} (hs : s₁ ⊆ s₂) (h : Collinear k s₂) : Collinear k s₁ :=
-  (rank_le_of_submodule (vectorSpan k s₁) (vectorSpan k s₂) (vectorSpan_mono k hs)).trans h
+  (Submodule.rank_mono (vectorSpan_mono k hs)).trans h
 
 /-- The `vectorSpan` of collinear points is finite-dimensional. -/
 theorem Collinear.finiteDimensional_vectorSpan {s : Set P} (h : Collinear k s) :
@@ -635,7 +634,7 @@ alias ⟨Coplanar.finrank_le_two, _⟩ := coplanar_iff_finrank_le_two
 
 /-- A subset of a coplanar set is coplanar. -/
 theorem Coplanar.subset {s₁ s₂ : Set P} (hs : s₁ ⊆ s₂) (h : Coplanar k s₂) : Coplanar k s₁ :=
-  (rank_le_of_submodule (vectorSpan k s₁) (vectorSpan k s₂) (vectorSpan_mono k hs)).trans h
+  (Submodule.rank_mono (vectorSpan_mono k hs)).trans h
 
 /-- Collinear points are coplanar. -/
 theorem Collinear.coplanar {s : Set P} (h : Collinear k s) : Coplanar k s :=

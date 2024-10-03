@@ -108,7 +108,7 @@ Also see `IsLocalAtTarget.mk'` for a convenient constructor.
 class IsLocalAtTarget (P : MorphismProperty Scheme) : Prop where
   /-- `P` respects isomorphisms. -/
   respectsIso : P.RespectsIso := by infer_instance
-  /-- `P` holds for `f ∣_ U` for an open cover `U` of `Y` if and only if `P` holds for `f`.  -/
+  /-- `P` holds for `f ∣_ U` for an open cover `U` of `Y` if and only if `P` holds for `f`. -/
   iff_of_openCover' :
     ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.OpenCover.{u} Y),
       P f ↔ ∀ i, P (𝒰.pullbackHom f i)
@@ -156,7 +156,7 @@ theorem restrict (hf : P f) (U : Y.Opens) : P (f ∣_ U) :=
 lemma of_iSup_eq_top {ι} (U : ι → Y.Opens) (hU : iSup U = ⊤)
     (H : ∀ i, P (f ∣_ U i)) : P f := by
   refine (IsLocalAtTarget.iff_of_openCover' f
-    (Y.openCoverOfSuprEqTop (s := Set.range U) Subtype.val (by ext; simp [← hU]))).mpr fun i ↦ ?_
+    (Y.openCoverOfISupEqTop (s := Set.range U) Subtype.val (by ext; simp [← hU]))).mpr fun i ↦ ?_
   obtain ⟨_, i, rfl⟩ := i
   refine (P.arrow_mk_iso_iff (morphismRestrictOpensRange f _)).mp ?_
   show P (f ∣_ (U i).ι.opensRange)
@@ -186,7 +186,7 @@ Also see `IsLocalAtSource.mk'` for a convenient constructor.
 class IsLocalAtSource (P : MorphismProperty Scheme) : Prop where
   /-- `P` respects isomorphisms. -/
   respectsIso : P.RespectsIso := by infer_instance
-  /-- `P` holds for `f ∣_ U` for an open cover `U` of `Y` if and only if `P` holds for `f`.  -/
+  /-- `P` holds for `f ∣_ U` for an open cover `U` of `Y` if and only if `P` holds for `f`. -/
   iff_of_openCover' :
     ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.OpenCover.{u} X),
       P f ↔ ∀ i, P (𝒰.map i ≫ f)
@@ -237,7 +237,7 @@ lemma comp {UX : Scheme.{u}} (H : P f) (i : UX ⟶ X) [IsOpenImmersion i] :
 lemma of_iSup_eq_top {ι} (U : ι → X.Opens) (hU : iSup U = ⊤)
     (H : ∀ i, P ((U i).ι ≫ f)) : P f := by
   refine (iff_of_openCover' f
-    (X.openCoverOfSuprEqTop (s := Set.range U) Subtype.val (by ext; simp [← hU]))).mpr fun i ↦ ?_
+    (X.openCoverOfISupEqTop (s := Set.range U) Subtype.val (by ext; simp [← hU]))).mpr fun i ↦ ?_
   obtain ⟨_, i, rfl⟩ := i
   exact H i
 
@@ -326,7 +326,7 @@ theorem respectsIso_mk {P : AffineTargetMorphismProperty}
     (h₂ : ∀ {X Y Z} (e : Y ≅ Z) (f : X ⟶ Y) [h : IsAffine Y],
       P f → @P _ _ (f ≫ e.hom) (isAffine_of_isIso e.inv)) :
     P.toProperty.RespectsIso := by
-  constructor
+  apply MorphismProperty.RespectsIso.mk
   · rintro X Y Z e f ⟨a, h⟩; exact ⟨a, h₁ e f h⟩
   · rintro X Y Z e f ⟨a, h⟩; exact ⟨isAffine_of_isIso e.inv, h₂ e f h⟩
 
@@ -398,7 +398,7 @@ theorem of_targetAffineLocally_of_isPullback
 
 instance (P : AffineTargetMorphismProperty) [P.toProperty.RespectsIso] :
     (targetAffineLocally P).RespectsIso := by
-  constructor
+  apply MorphismProperty.RespectsIso.mk
   · introv H U
     rw [morphismRestrict_comp, P.cancel_left_of_respectsIso]
     exact H U
@@ -530,7 +530,7 @@ instance (priority := 900) : IsLocalAtTarget P := by
     rw [Q.arrow_mk_iso_iff (morphismRestrictRestrict f _ _)]
     exact H ⟨_, V.2.image_of_isOpenImmersion (Y.ofRestrict _)⟩
   · rintro X Y f ι U hU H
-    let 𝒰 := Y.openCoverOfSuprEqTop U hU
+    let 𝒰 := Y.openCoverOfISupEqTop U hU
     apply of_openCover 𝒰.affineRefinement.openCover
     rintro ⟨i, j⟩
     have : P (𝒰.pullbackHom f i) := by
@@ -542,7 +542,7 @@ instance (priority := 900) : IsLocalAtTarget P := by
     exact of_isPullback (.of_hasPullback _ _) this
 
 open AffineTargetMorphismProperty in
-protected theorem iff :
+protected theorem iff {P : MorphismProperty Scheme} {Q : AffineTargetMorphismProperty} :
     HasAffineProperty P Q ↔ IsLocalAtTarget P ∧ Q = of P :=
   ⟨fun _ ↦ ⟨inferInstance, ext fun _ _ _ ↦ iff_of_isAffine.symm⟩,
     fun ⟨_, e⟩ ↦ e ▸ of_isLocalAtTarget P⟩
