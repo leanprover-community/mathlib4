@@ -379,7 +379,7 @@ instance uniqueUnits : Unique (FreeMonoid α)ˣ where
     have : toList u.val ++ toList u.inv = [] := DFunLike.congr_arg toList u.val_inv
     (List.append_eq_nil.mp this).1
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem map_surjective {f : α → β} : Function.Surjective (map f) ↔ Function.Surjective f := by
   constructor
   · intro fs d
