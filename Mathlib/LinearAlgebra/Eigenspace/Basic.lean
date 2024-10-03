@@ -126,9 +126,9 @@ lemma unifEigenspace_eq_iSup_unifEigenspace_nat (f : End R M) (μ : R) (k : ℕ�
   simp only [iSup_subtype, unifEigenspace_nat]
 
 lemma unifEigenspace_top (f : End R M) (μ : R) :
-    f.unifEigenspace μ ⊤ = ⨆ k : ℕ, f.unifEigenspace μ k := by
+    f.unifEigenspace μ ⊤ = ⨆ k : ℕ, f.unifEigenspace μ k := by
   rw [unifEigenspace_eq_iSup_unifEigenspace_nat, iSup_subtype]
-  simp only [le_top, iSup_pos, genEigenspace, OrderHom.coe_mk]
+  simp only [le_top, iSup_pos, OrderHom.coe_mk]
 
 lemma unifEigenspace_one {f : End R M} {μ : R} :
     f.unifEigenspace μ 1 = LinearMap.ker (f - μ • 1) := by
@@ -279,15 +279,15 @@ lemma HasUnifEigenvalue.exp_ne_zero {f : End R M} {μ : R} {k : ℕ}
 maximal generalized eigenspace, then this value is the least such `k`. If not, this value is not
 meaningful. -/
 noncomputable def maxUnifEigenspaceIndex (f : End R M) (μ : R) :=
-  monotonicSequenceLimitIndex <| (f.unifEigenspace μ).comp <| WithTop.coeOrderHom
+  monotonicSequenceLimitIndex <| (f.unifEigenspace μ).comp <| WithTop.coeOrderHom.toOrderHom
 
 /-- For an endomorphism of a Noetherian module, the maximal eigenspace is always of the form kernel
 `(f - μ • id) ^ k` for some `k`. -/
-lemma unifEigenspace_top [h : IsNoetherian R M] (f : End R M) (μ : R) :
+lemma unifEigenspace_top_eq_maxUnifEigenspaceIndex [h : IsNoetherian R M] (f : End R M) (μ : R) :
     unifEigenspace f μ ⊤ = f.unifEigenspace μ (maxUnifEigenspaceIndex f μ) := by
   rw [isNoetherian_iff] at h
   have := WellFounded.iSup_eq_monotonicSequenceLimit h <|
-    (f.unifEigenspace μ).comp <| WithTop.coeOrderHom
+    (f.unifEigenspace μ).comp <| WithTop.coeOrderHom.toOrderHom
   convert this using 1
   simp only [unifEigenspace, OrderHom.coe_mk, le_top, iSup_pos, OrderHom.comp_coe,
     Function.comp_def]
@@ -298,7 +298,7 @@ lemma unifEigenspace_top [h : IsNoetherian R M] (f : End R M) (μ : R) :
 lemma unifEigenspace_le_unifEigenspace_maxUnifEigenspaceIndex [IsNoetherian R M] (f : End R M)
     (μ : R) (k : ℕ∞) :
     f.unifEigenspace μ k ≤ f.unifEigenspace μ (maxUnifEigenspaceIndex f μ) := by
-  rw [← unifEigenspace_top]
+  rw [← unifEigenspace_top_eq_maxUnifEigenspaceIndex]
   exact (f.unifEigenspace μ).monotone le_top
 
 /-- Generalized eigenspaces for exponents at least `finrank K V` are equal to each other. -/
@@ -358,7 +358,7 @@ lemma unifEigenspace_le_unifEigenspace_finrank [FiniteDimensional K V] (f : End 
   calc f.unifEigenspace μ k
       ≤ f.unifEigenspace μ ⊤ := (f.unifEigenspace _).monotone le_top
     _ ≤ f.unifEigenspace μ (finrank K V) := by
-      rw [unifEigenspace_top]
+      rw [unifEigenspace_top_eq_maxUnifEigenspaceIndex]
       exact (f.unifEigenspace _).monotone <| by simpa using maxUnifEigenspaceIndex_le_finrank f μ
 
 /-- Generalized eigenspaces for exponents at least `finrank K V` are equal to each other. -/
@@ -402,7 +402,7 @@ lemma isNilpotent_restrict_unifEigenspace_top [IsNoetherian R M] (f : End R M) (
     IsNilpotent ((f - μ • 1).restrict h) := by
   apply isNilpotent_restrict_of_le
   swap; apply isNilpotent_restrict_unifEigenspace_nat f μ (maxUnifEigenspaceIndex f μ)
-  rw [unifEigenspace_top]
+  rw [unifEigenspace_top_eq_maxUnifEigenspaceIndex]
 
 /-- The submodule `eigenspace f μ` for a linear map `f` and a scalar `μ` consists of all vectors `x`
     such that `f x = μ • x`. (Def 5.36 of [axler2015])-/
@@ -546,8 +546,7 @@ abbrev maxGenEigenspace (f : End R M) (μ : R) : Submodule R M :=
 
 lemma maxGenEigenspace_def (f : End R M) (μ : R) :
     f.maxGenEigenspace μ = ⨆ k, f.genEigenspace μ k := by
-  rw [maxGenEigenspace, unifEigenspace_eq_iSup_unifEigenspace_nat, iSup_subtype]
-  simp only [le_top, iSup_pos, genEigenspace, OrderHom.coe_mk]
+  simp_rw [maxGenEigenspace, unifEigenspace_top, genEigenspace, OrderHom.coe_mk]
 
 theorem genEigenspace_le_maximal (f : End R M) (μ : R) (k : ℕ) :
     f.genEigenspace μ k ≤ f.maxGenEigenspace μ :=
@@ -568,7 +567,7 @@ noncomputable abbrev maxGenEigenspaceIndex (f : End R M) (μ : R) :=
 `(f - μ • id) ^ k` for some `k`. -/
 theorem maxGenEigenspace_eq [IsNoetherian R M] (f : End R M) (μ : R) :
     maxGenEigenspace f μ = f.genEigenspace μ (maxGenEigenspaceIndex f μ) :=
-  unifEigenspace_top _ _
+  unifEigenspace_top_eq_maxUnifEigenspaceIndex _ _
 
 /-- A generalized eigenvalue for some exponent `k` is also
     a generalized eigenvalue for exponents larger than `k`. -/
