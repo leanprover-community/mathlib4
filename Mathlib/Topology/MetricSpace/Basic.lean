@@ -104,6 +104,9 @@ abbrev IsUniformEmbedding.comapMetricSpace {α β} [UniformSpace α] [m : Metric
     (h : IsUniformEmbedding f) : MetricSpace α :=
   .replaceUniformity (.induced f h.inj m) h.comap_uniformity.symm
 
+@[deprecated (since := "2024-10-03")]
+alias UniformEmbedding.comapMetricSpace := IsUniformEmbedding.comapMetricSpace
+
 /-- Pull back a metric space structure by an embedding. This is a version of
 `MetricSpace.induced` useful in case if the domain already has a `TopologicalSpace` structure. -/
 abbrev Embedding.comapMetricSpace {α β} [TopologicalSpace α] [m : MetricSpace β] (f : α → β)

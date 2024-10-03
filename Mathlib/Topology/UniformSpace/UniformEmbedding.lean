@@ -134,6 +134,8 @@ structure IsUniformEmbedding (f : α → β) extends UniformInducing f : Prop wh
   /-- A uniform embedding is injective. -/
   inj : Function.Injective f
 
+@[deprecated (since := "2024-10-03")] alias UniformEmbedding := IsUniformEmbedding
+
 theorem isUniformEmbedding_iff' {f : α → β} :
     IsUniformEmbedding f ↔
       Injective f ∧ UniformContinuous f ∧ comap (Prod.map f f) (𝓤 β) ≤ 𝓤 α := by

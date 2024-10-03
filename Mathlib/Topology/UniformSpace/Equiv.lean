@@ -220,6 +220,8 @@ noncomputable def ofIsUniformEmbedding (f : α → β) (hf : IsUniformEmbedding 
     exact uniformContinuous_subtype_val
   toEquiv := Equiv.ofInjective f hf.inj
 
+@[deprecated (since := "2024-10-03")] alias ofUniformEmbedding := ofIsUniformEmbedding
+
 /-- If two sets are equal, then they are uniformly equivalent. -/
 def setCongr {s t : Set α} (h : s = t) : s ≃ᵤ t where
   uniformContinuous_toFun := uniformContinuous_subtype_val.subtype_mk _
