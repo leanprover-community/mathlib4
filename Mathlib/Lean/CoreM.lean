@@ -1,23 +1,20 @@
 /-
-Copyright (c) 2023 Scott Morrison. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Lean
 import Mathlib.Tactic.ToExpr
 
 /-!
 # Additional functions using `CoreM` state.
 -/
 
-set_option autoImplicit true
-
 open Lean Core
 
 /--
 Run a `CoreM α` in a fresh `Environment` with specified `modules : List Name` imported.
 -/
-def CoreM.withImportModules (modules : Array Name) (run : CoreM α)
+def CoreM.withImportModules {α : Type} (modules : Array Name) (run : CoreM α)
     (searchPath : Option SearchPath := none) (options : Options := {})
     (trustLevel : UInt32 := 0) (fileName := "") :
     IO α := unsafe do

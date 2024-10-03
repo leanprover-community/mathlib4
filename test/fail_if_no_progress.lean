@@ -1,9 +1,8 @@
 import Mathlib.Tactic.FailIfNoProgress
 import Mathlib.Tactic.Basic
-import Mathlib.Tactic.RunCmd
-import Std.Tactic.GuardMsgs
 
 set_option linter.unusedVariables false
+set_option linter.style.setOption false
 set_option pp.unicode.fun true
 
 section success

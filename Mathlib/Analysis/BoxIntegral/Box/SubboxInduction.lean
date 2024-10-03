@@ -6,8 +6,6 @@ Authors: Yury Kudryashov
 import Mathlib.Analysis.BoxIntegral.Box.Basic
 import Mathlib.Analysis.SpecificLimits.Basic
 
-#align_import analysis.box_integral.box.subbox_induction from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
-
 /-!
 # Induction on subboxes
 
@@ -28,8 +26,7 @@ Then `p I` is true.
 rectangular box, induction
 -/
 
-
-open Set Finset Function Filter Metric Classical Topology Filter ENNReal
+open Set Function Filter Topology
 
 noncomputable section
 
@@ -39,6 +36,7 @@ namespace Box
 
 variable {ι : Type*} {I J : Box ι}
 
+open Classical in
 /-- For a box `I`, the hyperplanes passing through its center split `I` into `2 ^ card ι` boxes.
 `BoxIntegral.Box.splitCenterBox I s` is one of these boxes. See also
 `BoxIntegral.Partition.splitCenter` for the corresponding `BoxIntegral.Partition`. -/
@@ -48,23 +46,20 @@ def splitCenterBox (I : Box ι) (s : Set ι) : Box ι where
   lower_lt_upper i := by
     dsimp only [Set.piecewise]
     split_ifs <;> simp only [left_lt_add_div_two, add_div_two_lt_right, I.lower_lt_upper]
-#align box_integral.box.split_center_box BoxIntegral.Box.splitCenterBox
 
 theorem mem_splitCenterBox {s : Set ι} {y : ι → ℝ} :
     y ∈ I.splitCenterBox s ↔ y ∈ I ∧ ∀ i, (I.lower i + I.upper i) / 2 < y i ↔ i ∈ s := by
   simp only [splitCenterBox, mem_def, ← forall_and]
-  refine' forall_congr' fun i ↦ _
+  refine forall_congr' fun i ↦ ?_
   dsimp only [Set.piecewise]
-  split_ifs with hs <;> simp only [hs, iff_true_iff, iff_false_iff, not_lt]
+  split_ifs with hs <;> simp only [hs, iff_true, iff_false, not_lt]
   exacts [⟨fun H ↦ ⟨⟨(left_lt_add_div_two.2 (I.lower_lt_upper i)).trans H.1, H.2⟩, H.1⟩,
       fun H ↦ ⟨H.2, H.1.2⟩⟩,
     ⟨fun H ↦ ⟨⟨H.1, H.2.trans (add_div_two_lt_right.2 (I.lower_lt_upper i)).le⟩, H.2⟩,
       fun H ↦ ⟨H.1.1, H.2⟩⟩]
-#align box_integral.box.mem_split_center_box BoxIntegral.Box.mem_splitCenterBox
 
 theorem splitCenterBox_le (I : Box ι) (s : Set ι) : I.splitCenterBox s ≤ I :=
   fun _ hx ↦ (mem_splitCenterBox.1 hx).1
-#align box_integral.box.split_center_box_le BoxIntegral.Box.splitCenterBox_le
 
 theorem disjoint_splitCenterBox (I : Box ι) {s t : Set ι} (h : s ≠ t) :
     Disjoint (I.splitCenterBox s : Set (ι → ℝ)) (I.splitCenterBox t) := by
@@ -73,35 +68,29 @@ theorem disjoint_splitCenterBox (I : Box ι) {s t : Set ι} (h : s ≠ t) :
   ext i
   rw [mem_coe, mem_splitCenterBox] at hs ht
   rw [← hs.2, ← ht.2]
-#align box_integral.box.disjoint_split_center_box BoxIntegral.Box.disjoint_splitCenterBox
 
 theorem injective_splitCenterBox (I : Box ι) : Injective I.splitCenterBox := fun _ _ H ↦
   by_contra fun Hne ↦ (I.disjoint_splitCenterBox Hne).ne (nonempty_coe _).ne_empty (H ▸ rfl)
-#align box_integral.box.injective_split_center_box BoxIntegral.Box.injective_splitCenterBox
 
 @[simp]
 theorem exists_mem_splitCenterBox {I : Box ι} {x : ι → ℝ} : (∃ s, x ∈ I.splitCenterBox s) ↔ x ∈ I :=
   ⟨fun ⟨s, hs⟩ ↦ I.splitCenterBox_le s hs, fun hx ↦
     ⟨{ i | (I.lower i + I.upper i) / 2 < x i }, mem_splitCenterBox.2 ⟨hx, fun _ ↦ Iff.rfl⟩⟩⟩
-#align box_integral.box.exists_mem_split_center_box BoxIntegral.Box.exists_mem_splitCenterBox
 
 /-- `BoxIntegral.Box.splitCenterBox` bundled as a `Function.Embedding`. -/
 @[simps]
 def splitCenterBoxEmb (I : Box ι) : Set ι ↪ Box ι :=
   ⟨splitCenterBox I, injective_splitCenterBox I⟩
-#align box_integral.box.split_center_box_emb BoxIntegral.Box.splitCenterBoxEmb
 
 @[simp]
 theorem iUnion_coe_splitCenterBox (I : Box ι) : ⋃ s, (I.splitCenterBox s : Set (ι → ℝ)) = I := by
   ext x
   simp
-#align box_integral.box.Union_coe_split_center_box BoxIntegral.Box.iUnion_coe_splitCenterBox
 
 @[simp]
 theorem upper_sub_lower_splitCenterBox (I : Box ι) (s : Set ι) (i : ι) :
     (I.splitCenterBox s).upper i - (I.splitCenterBox s).lower i = (I.upper i - I.lower i) / 2 := by
   by_cases i ∈ s <;> field_simp [splitCenterBox] <;> field_simp [mul_two, two_mul]
-#align box_integral.box.upper_sub_lower_split_center_box BoxIntegral.Box.upper_sub_lower_splitCenterBox
 
 /-- Let `p` be a predicate on `Box ι`, let `I` be a box. Suppose that the following two properties
 hold true.
@@ -141,8 +130,8 @@ theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
   have hJsub : ∀ m i, (J m).upper i - (J m).lower i = (I.upper i - I.lower i) / 2 ^ m := by
     intro m i
     induction' m with m ihm
-    · simp [Nat.zero_eq]
-    simp only [pow_succ', J_succ, upper_sub_lower_splitCenterBox, ihm, div_div]
+    · simp [J]
+    simp only [pow_succ, J_succ, upper_sub_lower_splitCenterBox, ihm, div_div]
   have h0 : J 0 = I := rfl
   clear_value J
   clear hpI hs J_succ s
@@ -158,19 +147,16 @@ theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
     tendsto_atTop_ciSup (antitone_lower.comp hJmono) ⟨I.upper, fun x ⟨m, hm⟩ ↦ hm ▸ (hJl_mem m).2⟩
   have hJuz : Tendsto (fun m ↦ (J m).upper) atTop (𝓝 z) := by
     suffices Tendsto (fun m ↦ (J m).upper - (J m).lower) atTop (𝓝 0) by simpa using hJlz.add this
-    refine' tendsto_pi_nhds.2 fun i ↦ _
+    refine tendsto_pi_nhds.2 fun i ↦ ?_
     simpa [hJsub] using
       tendsto_const_nhds.div_atTop (tendsto_pow_atTop_atTop_of_one_lt _root_.one_lt_two)
-  replace hJlz : Tendsto (fun m ↦ (J m).lower) atTop (𝓝[Icc I.lower I.upper] z)
-  · exact
-      tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hJlz (eventually_of_forall hJl_mem)
-  replace hJuz : Tendsto (fun m ↦ (J m).upper) atTop (𝓝[Icc I.lower I.upper] z)
-  · exact
-      tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hJuz (eventually_of_forall hJu_mem)
+  replace hJlz : Tendsto (fun m ↦ (J m).lower) atTop (𝓝[Icc I.lower I.upper] z) :=
+    tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hJlz (Eventually.of_forall hJl_mem)
+  replace hJuz : Tendsto (fun m ↦ (J m).upper) atTop (𝓝[Icc I.lower I.upper] z) :=
+    tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hJuz (Eventually.of_forall hJu_mem)
   rcases H_nhds z (h0 ▸ hzJ 0) with ⟨U, hUz, hU⟩
   rcases (tendsto_lift'.1 (hJlz.Icc hJuz) U hUz).exists with ⟨m, hUm⟩
   exact hJp m (hU (J m) (hJle m) m (hzJ m) hUm (hJsub m))
-#align box_integral.box.subbox_induction_on' BoxIntegral.Box.subbox_induction_on'
 
 end Box
 

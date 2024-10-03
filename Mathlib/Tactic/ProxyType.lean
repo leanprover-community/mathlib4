@@ -5,7 +5,7 @@ Authors: Kyle Miller
 -/
 import Lean
 import Mathlib.Tactic.Core
-import Mathlib.Logic.Equiv.Basic
+import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Generating "proxy types"
@@ -190,7 +190,7 @@ def ensureProxyEquiv (config : ProxyEquivConfig) (indVal : InductiveVal) : TermE
           levelParams := indVal.levelParams
           safety := DefinitionSafety.safe
           hints := ReducibilityHints.abbrev
-          type := (← inferType ctype')
+          type := ← inferType ctype'
           value := ctype' }
       -- Set to be reducible so that typeclass inference can see it's a Fintype
       setReducibleAttribute config.proxyName
@@ -229,7 +229,7 @@ def ensureProxyEquiv (config : ProxyEquivConfig) (indVal : InductiveVal) : TermE
           levelParams := indVal.levelParams
           safety := DefinitionSafety.safe
           hints := ReducibilityHints.abbrev
-          type := (← inferType equiv')
+          type := ← inferType equiv'
           value := equiv' }
       setProtected config.proxyEquivName
       addDocString config.proxyEquivName s!"An equivalence between the \"proxy type\" \
