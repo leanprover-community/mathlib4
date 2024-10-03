@@ -142,8 +142,7 @@ def preservesLimitsLeftOp (F : C ⥤ Dᵒᵖ) [PreservesColimits F] : PreservesL
   preservesLimitsOfShape {_} _ := preservesLimitsOfShapeLeftOp _ _
 
 /-- If `F : Cᵒᵖ ⥤ D` preserves colimits, then `F.rightOp : C ⥤ Dᵒᵖ` preserves limits. -/
-def preservesLimitsRightOp (F : Cᵒᵖ ⥤ D) [PreservesColimits F] :
-    PreservesLimits F.rightOp where
+def preservesLimitsRightOp (F : Cᵒᵖ ⥤ D) [PreservesColimits F] : PreservesLimits F.rightOp where
   preservesLimitsOfShape {_} _ := preservesLimitsOfShapeRightOp _ _
 
 /-- If `F : Cᵒᵖ ⥤ Dᵒᵖ` preserves colimits, then `F.unop : C ⥤ D` preserves limits. -/
@@ -155,13 +154,11 @@ def perservesColimitsOp (F : C ⥤ D) [PreservesLimits F] : PreservesColimits F.
   preservesColimitsOfShape {_} _ := preservesColimitsOfShapeOp _ _
 
 /-- If `F : C ⥤ Dᵒᵖ` preserves limits, then `F.leftOp : Cᵒᵖ ⥤ D` preserves colimits. -/
-def preservesColimitsLeftOp (F : C ⥤ Dᵒᵖ) [PreservesLimits F] :
-    PreservesColimits F.leftOp where
+def preservesColimitsLeftOp (F : C ⥤ Dᵒᵖ) [PreservesLimits F] : PreservesColimits F.leftOp where
   preservesColimitsOfShape {_} _ := preservesColimitsOfShapeLeftOp _ _
 
 /-- If `F : Cᵒᵖ ⥤ D` preserves limits, then `F.rightOp : C ⥤ Dᵒᵖ` preserves colimits. -/
-def preservesColimitsRightOp (F : Cᵒᵖ ⥤ D) [PreservesLimits F] :
-    PreservesColimits F.rightOp where
+def preservesColimitsRightOp (F : Cᵒᵖ ⥤ D) [PreservesLimits F] : PreservesColimits F.rightOp where
   preservesColimitsOfShape {_} _ := preservesColimitsOfShapeRightOp _ _
 
 /-- If `F : Cᵒᵖ ⥤ Dᵒᵖ` preserves limits, then `F.unop : C ⥤ D` preserves colimits. -/
