@@ -357,7 +357,7 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ (n : ℕ), f n ≤ 1) {n₀ : ℕ} 
       apply List.sum_le_sum
       rintro ⟨i,a⟩ _
       simp only [Function.comp_apply, Function.uncurry_apply_pair]
-      exact mul_le_of_le_of_le_one' (mod_cast le_refl n₀) (pow_le_one i (apply_nonneg f ↑n₀) h)
+      exact mul_le_of_le_of_le_one' (mod_cast le_refl n₀) (pow_le_one₀ (apply_nonneg f ↑n₀) h)
         (pow_nonneg (apply_nonneg f ↑n₀) i) (Nat.cast_nonneg n₀)
     _ ≤ n₀ * (Real.logb n₀ m + 1) := by
       rw [List.mapIdx_eq_enum_map, List.eq_replicate_of_mem (a:=(n₀ : ℝ))
