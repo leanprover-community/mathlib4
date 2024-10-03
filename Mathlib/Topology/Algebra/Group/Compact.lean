@@ -15,13 +15,6 @@ imports developing either positive compacts or the compact open topology.
 
 -/
 
-
-open scoped Classical
-open Set Filter TopologicalSpace Function
-
-open scoped Classical
-open Topology Filter Pointwise
-
 universe u v w x
 
 variable {α : Type u} {β : Type v} {G : Type w} {H : Type x}

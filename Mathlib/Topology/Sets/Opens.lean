@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Homeomorph
-import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Order.CompactlyGenerated.Basic
 import Mathlib.Order.Copy
 
@@ -75,6 +75,9 @@ instance : SetLike (Opens α) α where
 instance : CanLift (Set α) (Opens α) (↑) IsOpen :=
   ⟨fun s h => ⟨⟨s, h⟩, rfl⟩⟩
 
+instance instSecondCountableOpens [SecondCountableTopology α] (U : Opens α) :
+    SecondCountableTopology U := inferInstanceAs (SecondCountableTopology U.1)
+
 theorem «forall» {p : Opens α → Prop} : (∀ U, p U) ↔ ∀ (U : Set α) (hU : IsOpen U), p ⟨U, hU⟩ :=
   ⟨fun h _ _ => h _, fun h _ => h _ _⟩
 
@@ -104,6 +107,9 @@ theorem ext {U V : Opens α} (h : (U : Set α) = V) : U = V :=
 theorem coe_inj {U V : Opens α} : (U : Set α) = V ↔ U = V :=
   SetLike.ext'_iff.symm
 
+/-- A version of `Set.inclusion` not requiring definitional abuse -/
+abbrev inclusion {U V : Opens α} (h : U ≤ V) : U → V := Set.inclusion h
+
 protected theorem isOpen (U : Opens α) : IsOpen (U : Set α) :=
   U.is_open'
 
@@ -115,14 +121,18 @@ def Simps.coe (U : Opens α) : Set α := U
 initialize_simps_projections Opens (carrier → coe)
 
 /-- The interior of a set, as an element of `Opens`. -/
-nonrec def interior (s : Set α) : Opens α :=
+@[simps]
+protected def interior (s : Set α) : Opens α :=
   ⟨interior s, isOpen_interior⟩
 
-theorem gc : GaloisConnection ((↑) : Opens α → Set α) interior := fun U _ =>
+@[simp]
+theorem mem_interior {s : Set α} {x : α} : x ∈ Opens.interior s ↔ x ∈ _root_.interior s := .rfl
+
+theorem gc : GaloisConnection ((↑) : Opens α → Set α) Opens.interior := fun U _ =>
   ⟨fun h => interior_maximal h U.isOpen, fun h => le_trans h interior_subset⟩
 
 /-- The galois coinsertion between sets and opens. -/
-def gi : GaloisCoinsertion (↑) (@interior α _) where
+def gi : GaloisCoinsertion (↑) (@Opens.interior α _) where
   choice s hs := ⟨s, interior_eq_iff_isOpen.mp <| le_antisymm interior_subset hs⟩
   gc := gc
   u_l_le _ := interior_subset
@@ -346,6 +356,9 @@ theorem comap_mono (f : C(α, β)) {s t : Opens β} (h : s ≤ t) : comap f s �
 @[simp]
 theorem coe_comap (f : C(α, β)) (U : Opens β) : ↑(comap f U) = f ⁻¹' U :=
   rfl
+
+@[simp]
+theorem mem_comap {f : C(α, β)} {U : Opens β} {x : α} : x ∈ comap f U ↔ f x ∈ U := .rfl
 
 protected theorem comap_comp (g : C(β, γ)) (f : C(α, β)) :
     comap (g.comp f) = (comap f).comp (comap g) :=

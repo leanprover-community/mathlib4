@@ -16,7 +16,7 @@ universe v u
 
 variable (R : Type u) [CommRing R]
 
-/-- The category of quadratic modules; modules with an associated quadratic form-/
+/-- The category of quadratic modules; modules with an associated quadratic form -/
 structure QuadraticModuleCat extends ModuleCat.{v} R where
   /-- The quadratic form associated with the module. -/
   form : QuadraticForm R carrier
@@ -25,8 +25,7 @@ variable {R}
 
 namespace QuadraticModuleCat
 
-open QuadraticForm
-open QuadraticMap
+open QuadraticForm QuadraticMap
 
 instance : CoeSort (QuadraticModuleCat.{v} R) (Type v) :=
   ⟨(·.carrier)⟩
@@ -56,15 +55,15 @@ instance category : Category (QuadraticModuleCat.{v} R) where
   Hom M N := Hom M N
   id M := ⟨Isometry.id M.form⟩
   comp f g := ⟨Isometry.comp g.toIsometry f.toIsometry⟩
-  id_comp g := Hom.ext _ _ <| Isometry.id_comp g.toIsometry
-  comp_id f := Hom.ext _ _ <| Isometry.comp_id f.toIsometry
-  assoc f g h := Hom.ext _ _ <| Isometry.comp_assoc h.toIsometry g.toIsometry f.toIsometry
+  id_comp g := Hom.ext <| Isometry.id_comp g.toIsometry
+  comp_id f := Hom.ext <| Isometry.comp_id f.toIsometry
+  assoc f g h := Hom.ext <| Isometry.comp_assoc h.toIsometry g.toIsometry f.toIsometry
 
 -- TODO: if `Quiver.Hom` and the instance above were `reducible`, this wouldn't be needed.
 @[ext]
 lemma hom_ext {M N : QuadraticModuleCat.{v} R} (f g : M ⟶ N) (h : f.toIsometry = g.toIsometry) :
     f = g :=
-  Hom.ext _ _ h
+  Hom.ext h
 
 /-- Typecheck a `QuadraticForm.Isometry` as a morphism in `Module R`. -/
 abbrev ofHom {X : Type v} [AddCommGroup X] [Module R X]
@@ -112,8 +111,8 @@ variable {Q₁ : QuadraticForm R X} {Q₂ : QuadraticForm R Y} {Q₃ : Quadratic
 def ofIso (e : Q₁.IsometryEquiv Q₂) : QuadraticModuleCat.of Q₁ ≅ QuadraticModuleCat.of Q₂ where
   hom := ⟨e.toIsometry⟩
   inv := ⟨e.symm.toIsometry⟩
-  hom_inv_id := Hom.ext _ _ <| DFunLike.ext _ _ e.left_inv
-  inv_hom_id := Hom.ext _ _ <| DFunLike.ext _ _ e.right_inv
+  hom_inv_id := Hom.ext <| DFunLike.ext _ _ e.left_inv
+  inv_hom_id := Hom.ext <| DFunLike.ext _ _ e.right_inv
 
 @[simp] theorem ofIso_refl : ofIso (IsometryEquiv.refl Q₁) = .refl _ :=
   rfl

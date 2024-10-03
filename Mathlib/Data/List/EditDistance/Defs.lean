@@ -1,9 +1,10 @@
 /-
-Copyright (c) 2023 Kim Liesinger. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Liesinger
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Group.Defs
+import Batteries.Data.List.Basic
 
 /-!
 # Levenshtein distances
@@ -279,7 +280,7 @@ theorem levenshtein_nil_cons (y) (ys) :
     levenshtein C [] (y :: ys) = C.insert y + levenshtein C [] ys := by
   dsimp (config := { unfoldPartialApp := true }) [levenshtein, suffixLevenshtein, impl]
   congr
-  rw [List.getLast_eq_get]
+  rw [List.getLast_eq_getElem]
   congr
   rw [show (List.length _) = 1 from _]
   induction ys <;> simp

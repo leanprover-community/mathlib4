@@ -37,14 +37,11 @@ is also proved later in the file.
 uniform integrable, uniformly tight, Vitali convergence theorem
 -/
 
-
 namespace MeasureTheory
 
-open Classical Set Filter Topology MeasureTheory NNReal ENNReal
+open Set Filter Topology MeasureTheory NNReal ENNReal
 
 variable {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup β]
-
-
 
 section UnifTight
 
@@ -52,7 +49,6 @@ section UnifTight
 from `Mathlib.MeasureTheory.Functions.UniformIntegrable`.-/
 
 variable {f g : ι → α → β} {p : ℝ≥0∞}
-
 
 /-- A sequence of functions `f` is uniformly tight in `L^p` if for all `ε > 0`, there
 exists some measurable set `s` with finite measure such that the Lp-norm of
@@ -80,7 +76,8 @@ namespace UnifTight
 
 theorem eventually_cofinite_indicator (hf : UnifTight f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∀ᶠ s in μ.cofinite.smallSets, ∀ i, eLpNorm (s.indicator (f i)) p μ ≤ ε := by
-  by_cases hε_top : ε = ∞; subst hε_top; simp
+  by_cases hε_top : ε = ∞
+  · subst hε_top; simp
   rcases hf (pos_iff_ne_zero.2 (toNNReal_ne_zero.mpr ⟨hε,hε_top⟩)) with ⟨s, hμs, hfs⟩
   refine (eventually_smallSets' ?_).2 ⟨sᶜ, ?_, fun i ↦ (coe_toNNReal hε_top) ▸ hfs i⟩
   · intro s t hst ht i

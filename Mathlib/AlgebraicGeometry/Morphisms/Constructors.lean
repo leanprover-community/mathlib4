@@ -251,7 +251,7 @@ variable {P : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop
 /-- If `P` respects isos, then `stalkwise P` respects isos. -/
 lemma stalkwise_respectsIso (hP : RingHom.RespectsIso P) :
     (stalkwise P).RespectsIso where
-  precomp {X Y Z} e f hf := by
+  precomp {X Y Z} e (he : IsIso e) f hf := by
     simp only [stalkwise, Scheme.comp_coeBase, TopCat.coe_comp, Function.comp_apply]
     intro x
     rw [Scheme.stalkMap_comp]

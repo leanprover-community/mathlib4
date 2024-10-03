@@ -60,7 +60,7 @@ theorem map_inv₀ : f a⁻¹ = (f a)⁻¹ := by
   by_cases h : a = 0
   · simp [h, map_zero f]
   · apply eq_inv_of_mul_eq_one_left
-    rw [← map_mul, inv_mul_cancel h, map_one]
+    rw [← map_mul, inv_mul_cancel₀ h, map_one]
 
 @[simp]
 theorem map_div₀ : f (a / b) = f a / f b :=
@@ -94,7 +94,6 @@ def invMonoidWithZeroHom {G₀ : Type*} [CommGroupWithZero G₀] : G₀ →*₀ 
 namespace Units
 
 variable [GroupWithZero G₀]
-variable {a b : G₀}
 
 @[simp]
 theorem smul_mk0 {α : Type*} [SMul G₀ α] {g : G₀} (hg : g ≠ 0) (a : α) : mk0 g hg • a = g • a :=

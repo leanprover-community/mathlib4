@@ -31,7 +31,6 @@ In this file we define the cycle type of a permutation.
   there exists an element of order `p` in `G`. This is known as Cauchy's theorem.
 -/
 
-
 namespace Equiv.Perm
 
 open Mathlib (Vector)
@@ -65,7 +64,7 @@ theorem cycleType_eq {σ : Perm α} (l : List (Perm α)) (h0 : l.prod = σ)
     σ.cycleType = l.map (Finset.card ∘ support) := by
   have hl : l.Nodup := nodup_of_pairwise_disjoint_cycles h1 h2
   rw [cycleType_eq' l.toFinset]
-  · simp [List.dedup_eq_self.mpr hl, (· ∘ ·)]
+  · simp [List.dedup_eq_self.mpr hl, Function.comp_def]
   · simpa using h1
   · simpa [hl] using h2
   · simp [hl, h0]
@@ -134,6 +133,11 @@ theorem sum_cycleType (σ : Perm α) : σ.cycleType.sum = σ.support.card := by
   | base_one => simp
   | base_cycles σ hσ => rw [hσ.cycleType, sum_coe, List.sum_singleton]
   | induction_disjoint σ τ hd _ hσ hτ => rw [hd.cycleType, sum_add, hσ, hτ, hd.card_support_mul]
+
+theorem card_fixedPoints (σ : Equiv.Perm α) :
+    Fintype.card (Function.fixedPoints σ) = Fintype.card α - σ.cycleType.sum := by
+  rw [Equiv.Perm.sum_cycleType, ← Finset.card_compl, Fintype.card_ofFinset]
+  congr; aesop
 
 theorem sign_of_cycleType' (σ : Perm α) :
     sign σ = (σ.cycleType.map fun n => -(-1 : ℤˣ) ^ n).prod := by
@@ -377,7 +381,7 @@ by appending the inverse of the product of `v`. -/
 @[simps]
 def vectorEquiv : Vector G n ≃ vectorsProdEqOne G (n + 1) where
   toFun v := ⟨v.toList.prod⁻¹ ::ᵥ v, by
-    rw [mem_iff, Vector.toList_cons, List.prod_cons, inv_mul_self]⟩
+    rw [mem_iff, Vector.toList_cons, List.prod_cons, inv_mul_cancel]⟩
   invFun v := v.1.tail
   left_inv v := v.tail_cons v.toList.prod⁻¹
   right_inv v := Subtype.ext <|
@@ -418,7 +422,7 @@ theorem rotate_length : rotate v n = v :=
 
 end VectorsProdEqOne
 
--- TODO: Make make the `Finite` version of this theorem the default
+-- TODO: Make the `Finite` version of this theorem the default
 /-- For every prime `p` dividing the order of a finite group `G` there exists an element of order
 `p` in `G`. This is known as Cauchy's theorem. -/
 theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (p : ℕ)
@@ -453,7 +457,7 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (
   · rw [Subtype.ext_iff_val, Subtype.ext_iff_val, hg, hg', v.1.2]
     simp only [v₀, Vector.replicate]
 
--- TODO: Make make the `Finite` version of this theorem the default
+-- TODO: Make the `Finite` version of this theorem the default
 /-- For every prime `p` dividing the order of a finite additive group `G` there exists an element of
 order `p` in `G`. This is the additive version of Cauchy's theorem. -/
 theorem _root_.exists_prime_addOrderOf_dvd_card {G : Type*} [AddGroup G] [Fintype G] (p : ℕ)
@@ -462,7 +466,7 @@ theorem _root_.exists_prime_addOrderOf_dvd_card {G : Type*} [AddGroup G] [Fintyp
 
 attribute [to_additive existing] exists_prime_orderOf_dvd_card
 
--- TODO: Make make the `Finite` version of this theorem the default
+-- TODO: Make the `Finite` version of this theorem the default
 /-- For every prime `p` dividing the order of a finite group `G` there exists an element of order
 `p` in `G`. This is known as Cauchy's theorem. -/
 @[to_additive]

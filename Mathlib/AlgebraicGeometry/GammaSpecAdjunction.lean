@@ -30,7 +30,7 @@ case the unit and the counit would switch to each other.
 
 -/
 
--- Explicit universe annotations were used in this file to improve perfomance #12737
+-- Explicit universe annotations were used in this file to improve performance #12737
 
 
 noncomputable section
@@ -314,22 +314,21 @@ theorem right_triangle (R : CommRingCat) :
 
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `LocallyRingedSpace`. -/
 -- Porting note: `simps` cause a time out, so `Unit` and `counit` will be added manually
-def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} :=
-  Adjunction.mkOfUnitCounit
-    { unit := identityToΓSpec
-      counit := (NatIso.op SpecΓIdentity).inv
-      left_triangle := by
-        ext X; erw [Category.id_comp]
-        exact congr_arg Quiver.Hom.op (left_triangle X)
-      right_triangle := by
-        ext R : 2
-        -- Porting note: a little bit hand holding
-        change identityToΓSpec.app _ ≫ 𝟙 _ ≫ Spec.toLocallyRingedSpace.map _ =
-          𝟙 _
-        simp_rw [Category.id_comp, show (NatIso.op SpecΓIdentity).inv.app R =
-          (SpecΓIdentity.inv.app R.unop).op from rfl]
-        exact right_triangle R.unop
-        }
+def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} where
+  unit := identityToΓSpec
+  counit := (NatIso.op SpecΓIdentity).inv
+  left_triangle_components X := by
+    simp only [Functor.id_obj, Functor.rightOp_obj, Γ_obj, Functor.comp_obj,
+      Spec.toLocallyRingedSpace_obj, Spec.locallyRingedSpaceObj_toSheafedSpace,
+      Spec.sheafedSpaceObj_carrier, Spec.sheafedSpaceObj_presheaf, Functor.rightOp_map, Γ_map,
+      Quiver.Hom.unop_op, NatIso.op_inv, NatTrans.op_app, SpecΓIdentity_inv_app]
+    exact congr_arg Quiver.Hom.op (left_triangle X)
+  right_triangle_components R := by
+    simp only [Spec.toLocallyRingedSpace_obj, Functor.id_obj, Functor.comp_obj, Functor.rightOp_obj,
+      Γ_obj, Spec.locallyRingedSpaceObj_toSheafedSpace, Spec.sheafedSpaceObj_carrier,
+      Spec.sheafedSpaceObj_presheaf, NatIso.op_inv, NatTrans.op_app, op_unop, SpecΓIdentity_inv_app,
+      Spec.toLocallyRingedSpace_map, Quiver.Hom.unop_op]
+    exact right_triangle R.unop
 
 lemma locallyRingedSpaceAdjunction_unit :
     locallyRingedSpaceAdjunction.unit = identityToΓSpec := rfl

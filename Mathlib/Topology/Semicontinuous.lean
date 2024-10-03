@@ -169,10 +169,10 @@ theorem LowerSemicontinuous.lowerSemicontinuousOn (h : LowerSemicontinuous f) (s
 
 
 theorem lowerSemicontinuousWithinAt_const : LowerSemicontinuousWithinAt (fun _x => z) s x :=
-  fun _y hy => Filter.eventually_of_forall fun _x => hy
+  fun _y hy => Filter.Eventually.of_forall fun _x => hy
 
 theorem lowerSemicontinuousAt_const : LowerSemicontinuousAt (fun _x => z) x := fun _y hy =>
-  Filter.eventually_of_forall fun _x => hy
+  Filter.Eventually.of_forall fun _x => hy
 
 theorem lowerSemicontinuousOn_const : LowerSemicontinuousOn (fun _x => z) s := fun _x _hx =>
   lowerSemicontinuousWithinAt_const
@@ -193,7 +193,7 @@ theorem IsOpen.lowerSemicontinuous_indicator (hs : IsOpen s) (hy : 0 ≤ y) :
   by_cases h : x ∈ s <;> simp [h] at hz
   · filter_upwards [hs.mem_nhds h]
     simp (config := { contextual := true }) [hz]
-  · refine Filter.eventually_of_forall fun x' => ?_
+  · refine Filter.Eventually.of_forall fun x' => ?_
     by_cases h' : x' ∈ s <;> simp [h', hz.trans_le hy, hz]
 
 theorem IsOpen.lowerSemicontinuousOn_indicator (hs : IsOpen s) (hy : 0 ≤ y) :
@@ -212,7 +212,7 @@ theorem IsClosed.lowerSemicontinuous_indicator (hs : IsClosed s) (hy : y ≤ 0) 
     LowerSemicontinuous (indicator s fun _x => y) := by
   intro x z hz
   by_cases h : x ∈ s <;> simp [h] at hz
-  · refine Filter.eventually_of_forall fun x' => ?_
+  · refine Filter.Eventually.of_forall fun x' => ?_
     by_cases h' : x' ∈ s <;> simp [h', hz, hz.trans_le hy]
   · filter_upwards [hs.isOpen_compl.mem_nhds h]
     simp (config := { contextual := true }) [hz]
@@ -358,7 +358,7 @@ theorem ContinuousAt.comp_lowerSemicontinuousWithinAt {g : γ → δ} {f : α �
       _ ≤ g (f a) := gmon (min_le_right _ _)
 
   · simp only [not_exists, not_lt] at h
-    exact Filter.eventually_of_forall fun a => hy.trans_le (gmon (h (f a)))
+    exact Filter.Eventually.of_forall fun a => hy.trans_le (gmon (h (f a)))
 
 theorem ContinuousAt.comp_lowerSemicontinuousAt {g : γ → δ} {f : α → γ} (hg : ContinuousAt g (f x))
     (hf : LowerSemicontinuousAt f x) (gmon : Monotone g) : LowerSemicontinuousAt (g ∘ f) x := by
@@ -473,7 +473,7 @@ theorem LowerSemicontinuousWithinAt.add' {f g : α → γ} (hf : LowerSemicontin
         y < f x + min (g z) (g x) := h this
         _ ≤ f z + g z := add_le_add (hx₁ (f z)) (min_le_left _ _)
     · simp only [not_exists, not_lt] at hx₁ hx₂
-      apply Filter.eventually_of_forall
+      apply Filter.Eventually.of_forall
       intro z
       have : (f x, g x) ∈ u ×ˢ v := ⟨xu, xv⟩
       calc
@@ -625,7 +625,7 @@ theorem lowerSemicontinuousOn_biSup {p : ι → Prop} {f : ∀ i, p i → α →
 
 theorem lowerSemicontinuous_ciSup {f : ι → α → δ'} (bdd : ∀ x, BddAbove (range fun i => f i x))
     (h : ∀ i, LowerSemicontinuous (f i)) : LowerSemicontinuous fun x' => ⨆ i, f i x' := fun x =>
-  lowerSemicontinuousAt_ciSup (eventually_of_forall bdd) fun i => h i x
+  lowerSemicontinuousAt_ciSup (Eventually.of_forall bdd) fun i => h i x
 
 theorem lowerSemicontinuous_iSup {f : ι → α → δ} (h : ∀ i, LowerSemicontinuous (f i)) :
     LowerSemicontinuous fun x' => ⨆ i, f i x' :=
@@ -711,10 +711,10 @@ theorem UpperSemicontinuous.upperSemicontinuousOn (h : UpperSemicontinuous f) (s
 
 
 theorem upperSemicontinuousWithinAt_const : UpperSemicontinuousWithinAt (fun _x => z) s x :=
-  fun _y hy => Filter.eventually_of_forall fun _x => hy
+  fun _y hy => Filter.Eventually.of_forall fun _x => hy
 
 theorem upperSemicontinuousAt_const : UpperSemicontinuousAt (fun _x => z) x := fun _y hy =>
-  Filter.eventually_of_forall fun _x => hy
+  Filter.Eventually.of_forall fun _x => hy
 
 theorem upperSemicontinuousOn_const : UpperSemicontinuousOn (fun _x => z) s := fun _x _hx =>
   upperSemicontinuousWithinAt_const
@@ -1054,7 +1054,7 @@ theorem upperSemicontinuousOn_biInf {p : ι → Prop} {f : ∀ i, p i → α →
 
 theorem upperSemicontinuous_ciInf {f : ι → α → δ'} (bdd : ∀ x, BddBelow (range fun i => f i x))
     (h : ∀ i, UpperSemicontinuous (f i)) : UpperSemicontinuous fun x' => ⨅ i, f i x' := fun x =>
-  upperSemicontinuousAt_ciInf (eventually_of_forall bdd) fun i => h i x
+  upperSemicontinuousAt_ciInf (Eventually.of_forall bdd) fun i => h i x
 
 theorem upperSemicontinuous_iInf {f : ι → α → δ} (h : ∀ i, UpperSemicontinuous (f i)) :
     UpperSemicontinuous fun x' => ⨅ i, f i x' := fun x => upperSemicontinuousAt_iInf fun i => h i x
@@ -1094,7 +1094,7 @@ theorem continuousWithinAt_iff_lower_upperSemicontinuousWithinAt {f : α → γ}
       apply hu
       exact ⟨Hl (f a), lfa⟩
     · simp only [not_exists, not_lt] at Hu
-      apply Filter.eventually_of_forall
+      apply Filter.Eventually.of_forall
       intro a
       have : f a = f x := le_antisymm (Hu _) (Hl _)
       rw [this]
