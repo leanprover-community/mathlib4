@@ -695,7 +695,7 @@ lemma Irreducible.dvd_or_isRelPrime [Monoid M] {p n : M} (hp : Irreducible p) :
 
 section UniqueUnits
 
-variable [Monoid M] [Unique Mˣ]
+variable [Monoid M] [Subsingleton Mˣ]
 
 theorem associated_iff_eq {x y : M} : x ~ᵤ y ↔ x = y := by
   constructor
@@ -708,7 +708,7 @@ theorem associated_eq_eq : (Associated : M → M → Prop) = Eq := by
   ext
   rw [associated_iff_eq]
 
-theorem prime_dvd_prime_iff_eq {M : Type*} [CancelCommMonoidWithZero M] [Unique Mˣ] {p q : M}
+theorem prime_dvd_prime_iff_eq {M : Type*} [CancelCommMonoidWithZero M] [Subsingleton Mˣ] {p q : M}
     (pp : Prime p) (qp : Prime q) : p ∣ q ↔ p = q := by
   rw [pp.dvd_prime_iff_associated qp, ← associated_eq_eq]
 
@@ -716,7 +716,7 @@ end UniqueUnits
 
 section UniqueUnits₀
 
-variable {R : Type*} [CancelCommMonoidWithZero R] [Unique Rˣ] {p₁ p₂ : R} {k₁ k₂ : ℕ}
+variable {R : Type*} [CancelCommMonoidWithZero R] [Subsingleton Rˣ] {p₁ p₂ : R} {k₁ k₂ : ℕ}
 
 theorem eq_of_prime_pow_eq (hp₁ : Prime p₁) (hp₂ : Prime p₂) (hk₁ : 0 < k₁)
     (h : p₁ ^ k₁ = p₂ ^ k₂) : p₁ = p₂ := by
@@ -798,7 +798,7 @@ instance [Monoid M] [Subsingleton M] :
   default := 1
   uniq := forall_associated.2 fun _ ↦ mk_eq_one.2 <| isUnit_of_subsingleton _
 
-theorem mk_injective [Monoid M] [Unique (Units M)] : Function.Injective (@Associates.mk M _) :=
+theorem mk_injective [Monoid M] [Subsingleton Mˣ] : Function.Injective (@Associates.mk M _) :=
   fun _ _ h => associated_iff_eq.mp (Associates.mk_eq_mk_iff_associated.mp h)
 
 section CommMonoid
