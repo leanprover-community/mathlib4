@@ -46,22 +46,22 @@ runtime is devoted to type class inference. -/
 section Typeclass
 
 /-- `OrderedCommSemiring` implies `CommSemiring`. -/
-abbrev tc₁ (α : Type*) [OrderedCommSemiring α] : CommSemiring α := inferInstance
+abbrev cs_of_ocs (α : Type*) [OrderedCommSemiring α] : CommSemiring α := inferInstance
 
 /-- `OrderedCommSemiring` implies `AddMonoidWithOne`. -/
-abbrev tc₂ (α : Type*) [OrderedCommSemiring α] : AddMonoidWithOne α := inferInstance
+abbrev amwo_of_ocs (α : Type*) [OrderedCommSemiring α] : AddMonoidWithOne α := inferInstance
 
 /-- `OrderedCommSemiring` implies `LE`. -/
-abbrev tc₃ (α : Type*) [OrderedCommSemiring α] : LE α := inferInstance
+abbrev le_of_ocs (α : Type*) [OrderedCommSemiring α] : LE α := inferInstance
 
 /-- `StrictOrderedCommSemiring` implies `CommSemiring`. -/
-abbrev tc₄ (α : Type*) [StrictOrderedCommSemiring α] : CommSemiring α := inferInstance
+abbrev cs_of_socs (α : Type*) [StrictOrderedCommSemiring α] : CommSemiring α := inferInstance
 
 /-- `StrictOrderedCommSemiring` implies `AddMonoidWithOne`. -/
-abbrev tc₅ (α : Type*) [StrictOrderedCommSemiring α] : AddMonoidWithOne α := inferInstance
+abbrev amwo_of_socs (α : Type*) [StrictOrderedCommSemiring α] : AddMonoidWithOne α := inferInstance
 
 /-- `StrictOrderedCommSemiring` implies `LT`. -/
-abbrev tc₆ (α : Type*) [StrictOrderedCommSemiring α] : LT α := inferInstance
+abbrev lt_of_socs (α : Type*) [StrictOrderedCommSemiring α] : LT α := inferInstance
 
 end Typeclass
 
@@ -115,13 +115,13 @@ export ExceptType (tooSmall notComparable)
 (additive) constant, construct a proof of `$a < $b`, where `a` (resp. `b`) is the expression in the
 semiring to which `va` (resp. `vb`) evaluates. -/
 def evalLE {v : Level} {α : Q(Type v)} (_ : Q(OrderedCommSemiring $α)) {a b : Q($α)}
-    (va : Ring.ExSum q(tc₁ $α) a) (vb : Ring.ExSum q(tc₁ $α) b) :
+    (va : Ring.ExSum q(cs_of_ocs $α) a) (vb : Ring.ExSum q(cs_of_ocs $α) b) :
     MetaM (Except ExceptType Q($a ≤ $b)) := do
-  let lα : Q(LE $α) := q(tc₃ $α)
+  let lα : Q(LE $α) := q(le_of_ocs $α)
   assumeInstancesCommute
-  let ⟨_, pz⟩ ← NormNum.mkOfNat α q(tc₂ $α) (mkRawNatLit 0)
+  let ⟨_, pz⟩ ← NormNum.mkOfNat α q(amwo_of_ocs $α) (mkRawNatLit 0)
   let rz : NormNum.Result q((0:$α)) :=
-    NormNum.Result.isNat q(tc₂ $α) (mkRawNatLit 0) (q(NormNum.isNat_ofNat $α $pz):)
+    NormNum.Result.isNat q(amwo_of_ocs $α) (mkRawNatLit 0) (q(NormNum.isNat_ofNat $α $pz):)
   match va, vb with
   /- `0 ≤ 0` -/
   | .zero, .zero => pure <| .ok (q(le_refl (0:$α)):)
@@ -150,13 +150,13 @@ def evalLE {v : Level} {α : Q(Type v)} (_ : Q(OrderedCommSemiring $α)) {a b : 
 (additive) constant, construct a proof of `$a < $b`, where `a` (resp. `b`) is the expression in the
 semiring to which `va` (resp. `vb`) evaluates. -/
 def evalLT {v : Level} {α : Q(Type v)} (_ : Q(StrictOrderedCommSemiring $α)) {a b : Q($α)}
-    (va : Ring.ExSum q(tc₄ $α) a) (vb : Ring.ExSum q(tc₄ $α) b) :
+    (va : Ring.ExSum q(cs_of_socs $α) a) (vb : Ring.ExSum q(cs_of_socs $α) b) :
     MetaM (Except ExceptType Q($a < $b)) := do
-  let lα : Q(LT $α) := q(tc₆ $α)
+  let lα : Q(LT $α) := q(lt_of_socs $α)
   assumeInstancesCommute
-  let ⟨_, pz⟩ ← NormNum.mkOfNat α q(tc₅ $α) (mkRawNatLit 0)
+  let ⟨_, pz⟩ ← NormNum.mkOfNat α q(amwo_of_socs $α) (mkRawNatLit 0)
   let rz : NormNum.Result q((0:$α)) :=
-    NormNum.Result.isNat q(tc₅ $α) (mkRawNatLit 0) (q(NormNum.isNat_ofNat $α $pz):)
+    NormNum.Result.isNat q(amwo_of_socs $α) (mkRawNatLit 0) (q(NormNum.isNat_ofNat $α $pz):)
   match va, vb with
   /- `0 < 0` -/
   | .zero, .zero => return .error tooSmall
@@ -201,9 +201,9 @@ def proveLE (g : MVarId) : MetaM Unit := do
   let sα ← synthInstanceQ q(OrderedCommSemiring $α)
   assumeInstancesCommute
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
-  let c ← mkCache q(tc₁ $α)
+  let c ← mkCache q(cs_of_ocs $α)
   let (⟨a, va, pa⟩, ⟨b, vb, pb⟩)
-    ← AtomM.run .instances do pure (← eval q(tc₁ $α) c e₁, ← eval q(tc₁ $α) c e₂)
+    ← AtomM.run .instances do pure (← eval q(cs_of_ocs $α) c e₁, ← eval q(cs_of_ocs $α) c e₂)
   match ← evalLE sα va vb with
   | .ok p => g.assign q(le_congr $pa $p $pb)
   | .error e =>
@@ -224,9 +224,9 @@ def proveLT (g : MVarId) : MetaM Unit := do
   let sα ← synthInstanceQ q(StrictOrderedCommSemiring $α)
   assumeInstancesCommute
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
-  let c ← mkCache q(tc₄ $α)
+  let c ← mkCache q(cs_of_socs $α)
   let (⟨a, va, pa⟩, ⟨b, vb, pb⟩)
-    ← AtomM.run .instances do pure (← eval q(tc₄ $α) c e₁, ← eval q(tc₄ $α) c e₂)
+    ← AtomM.run .instances do pure (← eval q(cs_of_socs $α) c e₁, ← eval q(cs_of_socs $α) c e₂)
   match ← evalLT sα va vb with
   | .ok p => g.assign q(lt_congr $pa $p $pb)
   | .error e =>
