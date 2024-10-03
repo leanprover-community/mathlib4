@@ -27,7 +27,6 @@ namespace Nat
 instance instAddCancelCommMonoid : AddCancelCommMonoid ℕ where
   add := Nat.add
   add_assoc := Nat.add_assoc
-  zero := Nat.zero
   zero_add := Nat.zero_add
   add_zero := Nat.add_zero
   add_comm := Nat.add_comm
@@ -39,7 +38,6 @@ instance instAddCancelCommMonoid : AddCancelCommMonoid ℕ where
 instance instCommMonoid : CommMonoid ℕ where
   mul := Nat.mul
   mul_assoc := Nat.mul_assoc
-  one := Nat.succ Nat.zero
   one_mul := Nat.one_mul
   mul_one := Nat.mul_one
   mul_comm := Nat.mul_comm

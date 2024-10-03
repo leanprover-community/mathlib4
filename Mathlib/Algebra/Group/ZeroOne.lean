@@ -9,16 +9,13 @@ import Mathlib.Tactic.ToAdditive
 ## Classes for `Zero` and `One`
 -/
 
-class Zero.{u} (α : Type u) where
+universe u
+
+class Zero (α : Type u) where
   zero : α
 
 instance (priority := 300) Zero.toOfNat0 {α} [Zero α] : OfNat α (nat_lit 0) where
   ofNat := ‹Zero α›.1
-
-instance (priority := 200) Zero.ofOfNat0 {α} [OfNat α (nat_lit 0)] : Zero α where
-  zero := 0
-
-universe u
 
 @[to_additive]
 class One (α : Type u) where
@@ -27,8 +24,25 @@ class One (α : Type u) where
 @[to_additive existing Zero.toOfNat0]
 instance (priority := 300) One.toOfNat1 {α} [One α] : OfNat α (nat_lit 1) where
   ofNat := ‹One α›.1
-@[to_additive existing Zero.ofOfNat0, to_additive_change_numeral 2]
-instance (priority := 200) One.ofOfNat1 {α} [OfNat α (nat_lit 1)] : One α where
-  one := 1
 
 attribute [to_additive_change_numeral 2] OfNat OfNat.ofNat
+
+namespace Nat
+
+instance instZero : Zero Nat where
+  zero := Nat.zero
+
+instance instOne : One Nat where
+  one := Nat.succ Nat.zero
+
+end Nat
+
+namespace Int
+
+instance instZero : Zero Int where
+  zero := 0
+
+instance instOne : One Int where
+  one := 1
+
+end Int

@@ -30,6 +30,12 @@ run_cmd
     namespace $typeName
       instance neZero : NeZero size := ⟨by decide⟩
 
+      instance : Zero $typeName where
+        zero := 0
+
+      instance : One $typeName where
+        one := 1
+
       instance : Neg $typeName where
         neg a := mk (-a.val)
 

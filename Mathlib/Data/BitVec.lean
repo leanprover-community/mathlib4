@@ -20,6 +20,12 @@ namespace BitVec
 
 variable {w v : Nat}
 
+instance instZero : Zero (BitVec w) where
+  zero := 0
+
+instance instOne : One (BitVec w) where
+  one := 1
+
 /-!
 ## Injectivity
 -/
