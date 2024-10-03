@@ -160,7 +160,7 @@ theorem Splits.comp_X_add_C {i : L →+* F} (a : L) {f : L[X]}
     (h : f.Splits i) : (f.comp (X + C a)).Splits i := by
   simpa only [map_neg, sub_neg_eq_add] using h.comp_X_sub_C (-a)
 
-theorem Splits.neg {f : L[X]} (h : f.Splits i) : (-f).Splits i :=
+theorem Splits.comp_neg {f : L[X]} (h : f.Splits i) : (f.comp (-X)).Splits i :=
   by sorry
 
 theorem exists_root_of_splits' {f : K[X]} (hs : Splits i f) (hf0 : degree (f.map i) ≠ 0) :
