@@ -1163,8 +1163,8 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Analysis.InnerProductSpace.Positive
 import Mathlib.Analysis.InnerProductSpace.ProdL2
 import Mathlib.Analysis.InnerProductSpace.Projection
-import Mathlib.Analysis.InnerProductSpace.Quotient
 import Mathlib.Analysis.InnerProductSpace.Rayleigh
+import Mathlib.Analysis.InnerProductSpace.SeparationQuotient
 import Mathlib.Analysis.InnerProductSpace.Spectrum
 import Mathlib.Analysis.InnerProductSpace.StarOrder
 import Mathlib.Analysis.InnerProductSpace.Symmetric
