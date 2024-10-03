@@ -22,8 +22,7 @@ differentiability, norm
 
 open ContinuousLinearMap Filter NNReal Real Set
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F]
-variable [NormedSpace ℝ E] [NormedSpace ℝ F]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable {n : ℕ∞} {f : E →L[ℝ] ℝ} {x : E} {t : ℝ}
 
 variable (E) in
