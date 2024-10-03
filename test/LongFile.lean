@@ -77,4 +77,51 @@ set_option linter.style.longFileDefValue 10 in
 set_option linter.style.longFile 101 in
 #exit
 
+-- The following test is a little artificial: it follows a path in the code that should only
+-- be accessible after modifying appropriately the linter options.
+-- Specifically, in the line `if lastLine ≤ defValue && defValue < linterBound then`, the failure
+-- of *only* the second condition would produce the error message below
+set_option linter.style.longFileDefValue 400
+set_option linter.style.longFile 500
+set_option linter.style.longFileDefValue 1000
+/--
+warning: using 'exit' to interrupt Lean
+---
+warning: This file is 95 lines long. The current limit is 500, but it is expected to be 1000:
+`set_option linter.style.longFile 1000`.
+You can completely disable this linter by setting the length limit to `0`.
+-/
+#guard_msgs in
+#exit
+/-
+warning: using 'exit' to interrupt Lean
+---
+warning: The default value of the `longFile` linter is 1000.
+This file is 95 lines long which does not exceed the allowed bound.
+Please, remove the `set_option linter.style.longFile 500`.
+-/
+
+set_option linter.style.longFileDefValue 2000
+/--
+warning: The default value of the `longFile` linter is 2000.
+The current value of 1999 does not exceed the allowed bound.
+Please, remove the `set_option linter.style.longFile 1999`.
+-/
+#guard_msgs in
+-- Do not allow setting a `longFile` linter option if the file does not exceed the `defValue`
+set_option linter.style.longFile 1999
+
 end longFile
+
+set_option linter.style.longFileDefValue 400
+
+/--
+warning: using 'exit' to interrupt Lean
+---
+warning: The default value of the `longFile` linter is 400.
+This file is 127 lines long which does not exceed the allowed bound.
+Please, remove the `set_option linter.style.longFile 5000`.
+-/
+#guard_msgs in
+set_option linter.style.longFile 5000 in
+#exit
