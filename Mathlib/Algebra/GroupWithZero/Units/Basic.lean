@@ -215,9 +215,11 @@ theorem IsUnit.mk0 (x : G₀) (hx : x ≠ 0) : IsUnit x :=
 
 @[simp]
 theorem isUnit_iff_ne_zero : IsUnit a ↔ a ≠ 0 :=
-  (Units.exists_iff_ne_zero (p := (· = a))).trans (by simp)
+  (isUnit_iff _).trans <| (Units.exists_iff_ne_zero (p := (· = a))).trans (by simp)
 
 alias ⟨_, Ne.isUnit⟩ := isUnit_iff_ne_zero
+
+instance (priority := 100) [NeZero a] : IsUnit a := .mk0 _ <| NeZero.ne _
 
 -- Porting note: can't add this attribute?
 -- https://github.com/leanprover-community/mathlib4/issues/740
