@@ -177,14 +177,12 @@ theorem fderiv_norm_smul_neg (ht : t < 0) :
 theorem norm_fderiv_norm [Nontrivial E] (h : DifferentiableAt ℝ (‖·‖) x) :
     ‖fderiv ℝ (‖·‖) x‖ = 1 := by
   have : x ≠ 0 := fun hx ↦ not_differentiableAt_norm_zero E (hx ▸ h)
-  apply le_antisymm
-  · rw [show (1 : ℝ) = ↑(1 : ℝ≥0) by rfl]
-    exact norm_fderiv_le_of_lipschitz ℝ lipschitzWith_one_norm
-  · apply le_of_mul_le_mul_right _ (norm_pos_iff.2 this)
-    calc
-      1 * ‖x‖ = fderiv ℝ (‖·‖) x x := by rw [one_mul, h.fderiv_norm_self]
-      _ ≤ ‖fderiv ℝ (‖·‖) x x‖ := le_norm_self _
-      _ ≤ ‖fderiv ℝ (‖·‖) x‖ * ‖x‖ := le_opNorm _ _
+  refine le_antisymm (NNReal.coe_one ▸ norm_fderiv_le_of_lipschitz ℝ lipschitzWith_one_norm) ?_
+  apply le_of_mul_le_mul_right _ (norm_pos_iff.2 this)
+  calc
+    1 * ‖x‖ = fderiv ℝ (‖·‖) x x := by rw [one_mul, h.fderiv_norm_self]
+    _ ≤ ‖fderiv ℝ (‖·‖) x x‖ := le_norm_self _
+    _ ≤ ‖fderiv ℝ (‖·‖) x‖ * ‖x‖ := le_opNorm _ _
 
 /-- On a real finite-dimensional normed vector space,
   the norm is almost everywhere differentiable. -/
