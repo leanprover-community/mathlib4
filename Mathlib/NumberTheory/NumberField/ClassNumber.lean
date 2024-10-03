@@ -75,7 +75,7 @@ theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
       ((finrank ℚ K) ^ (finrank ℚ K) / (finrank ℚ K).factorial)) ^ 2) :
     IsPrincipalIdealRing (𝓞 K) := by
   have : 0 < finrank ℚ K := finrank_pos -- Lean needs to know that for positivity to succeed
-  rw [← Real.sqrt_lt (by positivity) (by positivity), mul_assoc, ← inv_mul_lt_iff' (by positivity),
+  rw [← Real.sqrt_lt (by positivity) (by positivity), mul_assoc, ← inv_mul_lt_iff₀' (by positivity),
     mul_inv, ← inv_pow, inv_div, inv_div, mul_assoc, Int.cast_abs] at h
   rw [← classNumber_eq_one_iff, classNumber, Fintype.card_eq_one_iff]
   refine ⟨1, fun C ↦ ?_⟩

@@ -131,7 +131,7 @@ private theorem T_lt_one : T < 1 := by
   have h := (div_lt_one (deriv_sq_norm_pos hnorm)).2 hnorm
   rw [T_def]; exact h
 
-private theorem T_pow {n : ℕ} (hn : n ≠ 0) : T ^ n < 1 := pow_lt_one T_nonneg (T_lt_one hnorm) hn
+private theorem T_pow {n : ℕ} (hn : n ≠ 0) : T ^ n < 1 := pow_lt_one₀ T_nonneg (T_lt_one hnorm) hn
 
 private theorem T_pow' (n : ℕ) : T ^ 2 ^ n < 1 := T_pow hnorm (pow_ne_zero _ two_ne_zero)
 
@@ -401,7 +401,7 @@ private theorem soln_dist_to_a : ‖soln - a‖ = ‖F.eval a‖ / ‖F.derivati
   tendsto_nhds_unique (newton_seq_dist_tendsto' hnorm) (newton_seq_dist_tendsto hnorm hnsol)
 
 private theorem soln_dist_to_a_lt_deriv : ‖soln - a‖ < ‖F.derivative.eval a‖ := by
-  rw [soln_dist_to_a, div_lt_iff (deriv_norm_pos _), ← sq] <;> assumption
+  rw [soln_dist_to_a, div_lt_iff₀ (deriv_norm_pos _), ← sq] <;> assumption
 
 private theorem soln_unique (z : ℤ_[p]) (hev : F.eval z = 0)
     (hnlt : ‖z - a‖ < ‖F.derivative.eval a‖) : z = soln :=

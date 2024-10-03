@@ -38,9 +38,7 @@ theorem getLast_tail (l : List α) (hl : l.tail ≠ []) :
   · simp [show 1 + (l.length - 1 - 1) = l.length - 1 by omega]
   omega
 
-lemma getElem_tail {i} (L : List α) (hi : i < L.tail.length) :
-    L.tail[i] = L[i + 1]'(by simp at *; omega) := by
-  induction L <;> simp at hi |-
+@[deprecated (since := "2024-08-19")] alias nthLe_tail := getElem_tail
 
 theorem injOn_insertNth_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
     Set.InjOn (fun k => insertNth k x l) { n | n ≤ l.length } := by
@@ -54,7 +52,7 @@ theorem injOn_insertNth_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
     · rfl
     · simp [hx.left] at h
     · simp [Ne.symm hx.left] at h
-    · simp only [true_and_iff, eq_self_iff_true, insertNth_succ_cons] at h
+    · simp only [true_and, eq_self_iff_true, insertNth_succ_cons] at h
       rw [Nat.succ_inj']
       refine IH hx.right ?_ ?_ (by injection h)
       · simpa [Nat.succ_le_succ_iff] using hn
