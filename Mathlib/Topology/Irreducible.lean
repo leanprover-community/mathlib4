@@ -214,7 +214,7 @@ instance (priority := 100) {X} [Infinite X] : IrreducibleSpace (CofiniteTopology
 
 theorem irreducibleComponents_eq_singleton [IrreducibleSpace X] :
     irreducibleComponents X = {univ} :=
-  Set.ext fun x ↦ IsGreatest.maximal_iff (s := IsIrreducible (X := X))
+  Set.ext fun _ ↦ IsGreatest.maximal_iff (s := IsIrreducible (X := X))
     ⟨IrreducibleSpace.isIrreducible_univ X, fun _ _ ↦ Set.subset_univ _⟩
 
 /-- A set `s` is irreducible if and only if
