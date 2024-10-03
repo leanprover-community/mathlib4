@@ -210,14 +210,14 @@ variable (T)
 protected def Morleyization : L.Morleyization.Theory :=
   LHom.sumInl.onTheory T ∪ L.MorleyizationTheory
 
-instance models_Morleyization [M ⊨ T] : M ⊨ T.Morleyization := by
-  refine ⟨fun _ h => ?_⟩
-  simp only [Theory.Morleyization, Set.mem_union, LHom.mem_onTheory, Set.mem_iUnion,
-    Set.mem_range] at h
-  obtain (⟨ψ, h, rfl⟩ | ⟨_, ψ, rfl⟩) := h
-  · simp only [LHom.realize_onSentence]
-    exact Theory.realize_sentence_of_mem _ h
-  · exact ψ.realize_MorleyAxiom
+-- instance models_Morleyization [M ⊨ T] : M ⊨ T.Morleyization := by
+--   refine ⟨fun _ h => ?_⟩
+--   simp only [Theory.Morleyization, Set.mem_union, LHom.mem_onTheory, Set.mem_iUnion,
+--     Set.mem_range] at h
+--   obtain (⟨ψ, h, rfl⟩ | ⟨_, ψ, rfl⟩) := h
+--   · simp only [LHom.realize_onSentence]
+--     exact Theory.realize_sentence_of_mem _ h
+--   · exact ψ.realize_MorleyAxiom
 
 -- theorem Morleyization_hasQE : T.Morleyization.HasQE := by
 --   intro n φ
