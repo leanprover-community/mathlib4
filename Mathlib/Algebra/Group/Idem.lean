@@ -6,7 +6,7 @@ Authors: Pieter Cuijpers
 import Mathlib.Algebra.Group.Defs
 
 /-!
-# Idempotent Semigroups and Monoids
+# Theory of Idempotent Semigroups and Monoids
 
 An idempotent semigroup is a semigroup that satisfies `x * x = x`.
 
@@ -44,6 +44,7 @@ section IdemSemigroup
 variable (G : Type _)
 variable [IdemSemigroup G]
 
+/-- Making mul_idem available globally -/
 @[to_additive]
 theorem mul_idem (x : G) : x * x = x := IdemSemigroup.mul_idem _
 

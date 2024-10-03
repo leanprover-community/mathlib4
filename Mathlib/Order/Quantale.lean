@@ -6,7 +6,6 @@ Authors: Pieter Cuijpers
 import Mathlib.Order.CompleteLattice
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Group.Idem
-import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
 # Theory of quantales
