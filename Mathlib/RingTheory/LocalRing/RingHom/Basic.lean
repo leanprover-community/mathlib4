@@ -24,16 +24,6 @@ variable [Semiring R] [Semiring S] [Semiring T]
 instance isLocalRingHom_id (R : Type*) [Semiring R] : IsLocalRingHom (RingHom.id R) where
   map_nonunit _ := id
 
-@[simp]
-theorem isUnit_map_iff (f : R →+* S) [IsLocalRingHom f] (a) : IsUnit (f a) ↔ IsUnit a :=
-  ⟨IsLocalRingHom.map_nonunit a, f.isUnit_map⟩
-
--- Porting note: as this can be proved by other `simp` lemmas, this is marked as high priority.
-@[simp (high)]
-theorem map_mem_nonunits_iff (f : R →+* S) [IsLocalRingHom f] (a) :
-    f a ∈ nonunits S ↔ a ∈ nonunits R :=
-  ⟨fun h ha => h <| (isUnit_map_iff f a).mpr ha, fun h ha => h <| (isUnit_map_iff f a).mp ha⟩
-
 instance isLocalRingHom_comp (g : S →+* T) (f : R →+* S) [IsLocalRingHom g] [IsLocalRingHom f] :
     IsLocalRingHom (g.comp f) where
   map_nonunit a := IsLocalRingHom.map_nonunit a ∘ IsLocalRingHom.map_nonunit (f a)
