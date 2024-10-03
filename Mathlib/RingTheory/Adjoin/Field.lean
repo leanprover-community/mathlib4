@@ -100,7 +100,10 @@ theorem IsIntegral.mem_range_algebraMap_of_minpoly_splits [Algebra K L] [IsScala
 theorem minpoly_neg_splits [Algebra K L] {x : L} (r : K)
     (g : (minpoly K x).Splits (algebraMap K L)) :
     (minpoly K (- x)).Splits (algebraMap K L) := by
-  sorry
+  simp [minpoly.neg]
+  apply splits_mul
+  · simp [splits_C]
+  · simp [splits_comp_of_splits]
 
 theorem minpoly_add_algebraMap_splits [Algebra K L] {x : L} (r : K)
     (g : (minpoly K x).Splits (algebraMap K L)) :
