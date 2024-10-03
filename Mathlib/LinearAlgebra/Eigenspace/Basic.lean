@@ -67,10 +67,10 @@ private lemma mem_unifEigenspace_aux {f : End R M} {μ : R} {k : ℕ∞} {x : M}
   have : Nonempty {l : ℕ // l ≤ k} := ⟨⟨0, zero_le _⟩⟩
   rw [unifEigenspace_aux, iSup_subtype', Submodule.mem_iSup_of_directed]
   · simp only [LinearMap.mem_ker, Subtype.exists, exists_prop]
-  exact Monotone.directed_le fun m n h => by simpa using (f - μ • 1).iterateKer.monotone h
+  exact Monotone.directed_le fun m n h ↦ by simpa using (f - μ • 1).iterateKer.monotone h
 
 private lemma unifEigenspace_aux_mono (f : End R M) (μ : R) :
-    Monotone (f.unifEigenspace_aux μ) := fun _ _ hkl => biSup_mono fun _ hi => hi.trans hkl
+    Monotone (f.unifEigenspace_aux μ) := fun _ _ hkl ↦ biSup_mono fun _ hi ↦ hi.trans hkl
 
 /-- The submodule `unifEigenspace f μ k` for a linear map `f`, a scalar `μ`,
 and a number `k : ℕ∞` is the kernel of `(f - μ • id) ^ k` if `k` is a natural number,
@@ -183,7 +183,7 @@ instance UnifEigenvalues.instCoeOut {f : Module.End R M} (k : ℕ∞) :
 
 instance UnivEigenvalues.instDecidableEq [DecidableEq R] (f : Module.End R M) (k : ℕ∞) :
     DecidableEq (UnifEigenvalues f k) :=
-  inferInstanceAs (DecidableEq (Subtype (fun x : R => f.HasUnifEigenvalue x k)))
+  inferInstanceAs (DecidableEq (Subtype (fun x : R ↦ f.HasUnifEigenvalue x k)))
 
 lemma HasUnifEigenvector.hasUnifEigenvalue {f : End R M} {μ : R} {k : ℕ∞} {x : M}
     (h : f.HasUnifEigenvector μ k x) : f.HasUnifEigenvalue μ k := by
@@ -221,7 +221,7 @@ lemma HasUnifEigenvalue.isNilpotent_of_isNilpotent [NoZeroSMulDivisors R M] {f :
 
 lemma HasUnifEigenvalue.mem_spectrum {f : End R M} {μ : R} (hμ : HasUnifEigenvalue f μ 1) :
     μ ∈ spectrum R f := by
-  refine spectrum.mem_iff.mpr fun h_unit => ?_
+  refine spectrum.mem_iff.mpr fun h_unit ↦ ?_
   set f' := LinearMap.GeneralLinearGroup.toLinearEquiv h_unit.unit
   rcases hμ.exists_hasUnifEigenvector with ⟨v, hv⟩
   refine hv.2 ((LinearMap.ker_eq_bot'.mp f'.ker) v (?_ : μ • v - f v = 0))
@@ -718,10 +718,11 @@ lemma injOn_genEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
 theorem independent_maxGenEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
     CompleteLattice.Independent f.maxGenEigenspace := by
   classical
-  simp_rw [maxGenEigenspace_def]
   suffices ∀ μ (s : Finset R), μ ∉ s → Disjoint (⨆ k, f.genEigenspace μ k)
       (s.sup fun μ ↦ ⨆ k, f.genEigenspace μ k) by
-    simp_rw [CompleteLattice.independent_iff_supIndep_of_injOn f.injOn_genEigenspace,
+    show CompleteLattice.Independent (f.maxGenEigenspace ·)
+    simp_rw [maxGenEigenspace_def,
+      CompleteLattice.independent_iff_supIndep_of_injOn f.injOn_genEigenspace,
       Finset.supIndep_iff_disjoint_erase]
     exact fun s μ _ ↦ this _ _ (s.not_mem_erase μ)
   intro μ₁ s
@@ -772,7 +773,7 @@ theorem eigenvectors_linearIndependent' {ι : Type*} [NoZeroSMulDivisors R M]
     (f : End R M) (μ : ι → R) (hμ : Function.Injective μ) (v : ι → M)
     (h_eigenvec : ∀ i, f.HasEigenvector (μ i) (v i)) : LinearIndependent R v :=
   f.eigenspaces_independent.comp hμ |>.linearIndependent _
-    (fun i => h_eigenvec i |>.left) (fun i => h_eigenvec i |>.right)
+    (fun i ↦ h_eigenvec i |>.left) (fun i ↦ h_eigenvec i |>.right)
 
 /-- Eigenvectors corresponding to distinct eigenvalues of a linear operator are linearly
     independent. (Lemma 5.10 of [axler2015])
@@ -783,7 +784,7 @@ theorem eigenvectors_linearIndependent' {ι : Type*} [NoZeroSMulDivisors R M]
 theorem eigenvectors_linearIndependent [NoZeroSMulDivisors R M]
     (f : End R M) (μs : Set R) (xs : μs → M)
     (h_eigenvec : ∀ μ : μs, f.HasEigenvector μ (xs μ)) : LinearIndependent R xs :=
-  f.eigenvectors_linearIndependent' (fun μ : μs => μ) Subtype.coe_injective _ h_eigenvec
+  f.eigenvectors_linearIndependent' (fun μ : μs ↦ μ) Subtype.coe_injective _ h_eigenvec
 
 /-- If `f` maps a subspace `p` into itself, then the generalized eigenspace of the restriction
     of `f` to `p` is the part of the generalized eigenspace of `f` that lies in `p`. -/
