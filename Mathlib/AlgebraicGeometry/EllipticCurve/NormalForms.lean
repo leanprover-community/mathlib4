@@ -214,41 +214,34 @@ theorem c₄_of_isShortNF : W.c₄ = -48 * W.a₄ := by
 theorem c₆_of_isShortNF : W.c₆ = -864 * W.a₆ := by
   simp
 
-@[simp]
 theorem Δ_of_isShortNF : W.Δ = -16 * (4 * W.a₄ ^ 3 + 27 * W.a₆ ^ 2) := by
   rw [Δ_of_isCharNeTwoNF, a₂_of_isShortNF]
   ring1
 
 variable [CharP R 3]
 
-@[simp]
 theorem b₄_of_isShortNF_of_char_three : W.b₄ = -W.a₄ := by
   rw [b₄_of_isShortNF]
   linear_combination W.a₄ * CharP.cast_eq_zero R 3
 
-@[simp]
 theorem b₆_of_isShortNF_of_char_three : W.b₆ = W.a₆ := by
   rw [b₆_of_isShortNF]
   linear_combination W.a₆ * CharP.cast_eq_zero R 3
 
-@[simp]
 theorem c₄_of_isShortNF_of_char_three : W.c₄ = 0 := by
   rw [c₄_of_isShortNF]
   linear_combination -16 * W.a₄ * CharP.cast_eq_zero R 3
 
-@[simp]
 theorem c₆_of_isShortNF_of_char_three : W.c₆ = 0 := by
   rw [c₆_of_isShortNF]
   linear_combination -288 * W.a₆ * CharP.cast_eq_zero R 3
 
-@[simp]
 theorem Δ_of_isShortNF_of_char_three : W.Δ = -W.a₄ ^ 3 := by
   rw [Δ_of_isShortNF]
   linear_combination (-21 * W.a₄ ^ 3 - 144 * W.a₆ ^ 2) * CharP.cast_eq_zero R 3
 
 variable [E.IsShortNF]
 
-@[simp]
 theorem _root_.EllipticCurve.j_of_isShortNF :
     E.j = 6912 * E.a₄ ^ 3 / (4 * E.a₄ ^ 3 + 27 * E.a₆ ^ 2) := by
   have h := E.Δ'.ne_zero
@@ -328,32 +321,26 @@ theorem Δ_of_isCharThreeJNeZeroNF : W.Δ = -64 * W.a₂ ^ 3 * W.a₆ - 432 * W.
 
 variable [CharP R 3]
 
-@[simp]
 theorem b₂_of_isCharThreeJNeZeroNF_of_char_three : W.b₂ = W.a₂ := by
   rw [b₂_of_isCharThreeJNeZeroNF]
   linear_combination W.a₂ * CharP.cast_eq_zero R 3
 
-@[simp]
 theorem b₆_of_isCharThreeJNeZeroNF_of_char_three : W.b₆ = W.a₆ := by
   rw [b₆_of_isCharThreeJNeZeroNF]
   linear_combination W.a₆ * CharP.cast_eq_zero R 3
 
-@[simp]
 theorem b₈_of_isCharThreeJNeZeroNF_of_char_three : W.b₈ = W.a₂ * W.a₆ := by
   rw [b₈_of_isCharThreeJNeZeroNF]
   linear_combination W.a₂ * W.a₆ * CharP.cast_eq_zero R 3
 
-@[simp]
 theorem c₄_of_isCharThreeJNeZeroNF_of_char_three : W.c₄ = W.a₂ ^ 2 := by
   rw [c₄_of_isCharThreeJNeZeroNF]
   linear_combination 5 * W.a₂ ^ 2 * CharP.cast_eq_zero R 3
 
-@[simp]
 theorem c₆_of_isCharThreeJNeZeroNF_of_char_three : W.c₆ = -W.a₂ ^ 3 := by
   rw [c₆_of_isCharThreeJNeZeroNF]
   linear_combination (-21 * W.a₂ ^ 3 - 288 * W.a₆) * CharP.cast_eq_zero R 3
 
-@[simp]
 theorem Δ_of_isCharThreeJNeZeroNF_of_char_three : W.Δ = -W.a₂ ^ 3 * W.a₆ := by
   rw [Δ_of_isCharThreeJNeZeroNF]
   linear_combination (-21 * W.a₂ ^ 3 * W.a₆ - 144 * W.a₆ ^ 2) * CharP.cast_eq_zero R 3
@@ -517,27 +504,22 @@ theorem c₆_of_isCharTwoJNeZeroNF : W.c₆ = -W.b₂ ^ 3 - 864 * W.a₆ := by
 
 variable [CharP R 2]
 
-@[simp]
 theorem b₂_of_isCharTwoJNeZeroNF_of_char_two : W.b₂ = 1 := by
   rw [b₂_of_isCharTwoJNeZeroNF]
   linear_combination 2 * W.a₂ * CharP.cast_eq_zero R 2
 
-@[simp]
 theorem b₆_of_isCharTwoJNeZeroNF_of_char_two : W.b₆ = 0 := by
   rw [b₆_of_isCharTwoJNeZeroNF]
   linear_combination 2 * W.a₆ * CharP.cast_eq_zero R 2
 
-@[simp]
 theorem b₈_of_isCharTwoJNeZeroNF_of_char_two : W.b₈ = W.a₆ := by
   rw [b₈_of_isCharTwoJNeZeroNF]
   linear_combination 2 * W.a₂ * W.a₆ * CharP.cast_eq_zero R 2
 
-@[simp]
 theorem c₄_of_isCharTwoJNeZeroNF_of_char_two : W.c₄ = 1 := by
   rw [c₄_of_isCharTwoJNeZeroNF, b₂_of_isCharTwoJNeZeroNF_of_char_two]
   ring1
 
-@[simp]
 theorem c₆_of_isCharTwoJNeZeroNF_of_char_two : W.c₆ = 1 := by
   rw [c₆_of_isCharTwoJNeZeroNF, b₂_of_isCharTwoJNeZeroNF_of_char_two]
   linear_combination (-1 - 432 * W.a₆) * CharP.cast_eq_zero R 2
@@ -614,34 +596,28 @@ theorem Δ_of_isCharTwoJZeroNF : W.Δ = -(64 * W.a₄ ^ 3 + 27 * W.b₆ ^ 2) := 
 
 variable [CharP R 2]
 
-@[simp]
 theorem b₄_of_isCharTwoJZeroNF_of_char_two : W.b₄ = 0 := by
   rw [b₄_of_isCharTwoJZeroNF]
   linear_combination W.a₄ * CharP.cast_eq_zero R 2
 
-@[simp]
 theorem b₈_of_isCharTwoJZeroNF_of_char_two : W.b₈ = W.a₄ ^ 2 := by
   rw [b₈_of_isCharTwoJZeroNF]
   linear_combination -W.a₄ ^ 2 * CharP.cast_eq_zero R 2
 
-@[simp]
 theorem c₄_of_isCharTwoJZeroNF_of_char_two : W.c₄ = 0 := by
   rw [c₄_of_isCharTwoJZeroNF]
   linear_combination -24 * W.a₄ * CharP.cast_eq_zero R 2
 
-@[simp]
 theorem c₆_of_isCharTwoJZeroNF_of_char_two : W.c₆ = 0 := by
   rw [c₆_of_isCharTwoJZeroNF]
   linear_combination -108 * W.b₆ * CharP.cast_eq_zero R 2
 
-@[simp]
 theorem Δ_of_isCharTwoJZeroNF_of_char_two : W.Δ = W.a₃ ^ 4 := by
   rw [Δ_of_isCharTwoJZeroNF, b₆_of_char_two]
   linear_combination (-32 * W.a₄ ^ 3 - 14 * W.a₃ ^ 4) * CharP.cast_eq_zero R 2
 
 variable [E.IsCharTwoJZeroNF]
 
-@[simp]
 theorem _root_.EllipticCurve.j_of_isCharTwoJZeroNF :
     E.j = 110592 * E.a₄ ^ 3 / (64 * E.a₄ ^ 3 + 27 * E.b₆ ^ 2) := by
   have h := E.Δ'.ne_zero
