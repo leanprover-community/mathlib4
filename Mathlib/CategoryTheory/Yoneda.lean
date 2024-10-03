@@ -231,6 +231,10 @@ theorem coreprW_app_hom (X : C) (f : F.coreprX ⟶ X) :
   simp only [coyoneda_obj_obj, unop_op, Iso.app_hom, coreprx, ← FunctorToTypes.naturality,
     coyoneda_obj_map, Category.id_comp]
 
+theorem coreprW_hom_app (X : C) (f : F.coreprX ⟶ X) :
+    F.coreprW.hom.app X f = F.map f F.coreprx :=
+  F.coreprW_app_hom X f
+
 end Corepresentable
 
 end Functor
