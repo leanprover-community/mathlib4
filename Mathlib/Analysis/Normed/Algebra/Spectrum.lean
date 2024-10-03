@@ -203,11 +203,9 @@ theorem spectralRadius_le_liminf_pow_nnnorm_pow_one_div (a : A) :
   refine ENNReal.le_of_forall_lt_one_mul_le fun ε hε => ?_
   by_cases h : ε = 0
   · simp only [h, zero_mul, zero_le']
-  have hε' : ε⁻¹ ≠ ∞ := fun h' =>
-    h (by simpa only [inv_inv, inv_top] using congr_arg (fun x : ℝ≥0∞ => x⁻¹) h')
   simp only [ENNReal.mul_le_iff_le_inv h (hε.trans_le le_top).ne, mul_comm ε⁻¹,
     liminf_eq_iSup_iInf_of_nat', ENNReal.iSup_mul]
-  conv_rhs => arg 1; intro i; rw [ENNReal.iInf_mul hε']
+  conv_rhs => arg 1; intro i; rw [ENNReal.iInf_mul (by simp [h])]
   rw [← ENNReal.inv_lt_inv, inv_one] at hε
   obtain ⟨N, hN⟩ := eventually_atTop.mp
     (ENNReal.eventually_pow_one_div_le (ENNReal.coe_ne_top : ↑‖(1 : A)‖₊ ≠ ∞) hε)
@@ -272,7 +270,7 @@ variable (𝕜)
 /-- In a Banach algebra `A` over a nontrivially normed field `𝕜`, for any `a : A` the
 power series with coefficients `a ^ n` represents the function `(1 - z • a)⁻¹` in a disk of
 radius `‖a‖₊⁻¹`. -/
-theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [CompleteSpace A] (a : A) :
+theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [HasSummableGeomSeries A] (a : A) :
     HasFPowerSeriesOnBall (fun z : 𝕜 => Ring.inverse (1 - z • a))
       (fun n => ContinuousMultilinearMap.mkPiRing 𝕜 (Fin n) (a ^ n)) 0 ‖a‖₊⁻¹ :=
   { r_le := by
@@ -297,7 +295,7 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [CompleteSpace A] (a : A) :
             simpa only [← coe_inv h, mem_ball_zero_iff, Metric.emetric_ball_nnreal] using hy
           rwa [← coe_nnnorm, ← Real.lt_toNNReal_iff_coe_lt, Real.toNNReal_one, nnnorm_smul,
             ← NNReal.lt_inv_iff_mul_lt h]
-      simpa [← smul_pow, (NormedRing.summable_geometric_of_norm_lt_one _ norm_lt).hasSum_iff] using
+      simpa [← smul_pow, (summable_geometric_of_norm_lt_one norm_lt).hasSum_iff] using
         (NormedRing.inverse_one_sub _ norm_lt).symm }
 
 variable {𝕜}

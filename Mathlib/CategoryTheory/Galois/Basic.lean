@@ -191,6 +191,10 @@ lemma mulAction_def {X : C} (σ : Aut F) (x : F.obj X) :
     σ • x = σ.hom.app X x :=
   rfl
 
+lemma mulAction_naturality {X Y : C} (σ : Aut F) (f : X ⟶ Y) (x : F.obj X) :
+    σ • F.map f x = F.map f (σ • x) :=
+  FunctorToFintypeCat.naturality F F σ.hom f x
+
 /-- An object that is neither initial or connected has a non-trivial subobject. -/
 lemma has_non_trivial_subobject_of_not_isConnected_of_not_initial (X : C) (hc : ¬ IsConnected X)
     (hi : IsInitial X → False) :
@@ -327,6 +331,14 @@ lemma surjective_of_nonempty_fiber_of_isConnected {X A : C} [Nonempty (F.obj X)]
     Function.Surjective (F.map f) := by
   have : Epi f := epi_of_nonempty_of_isConnected F f
   exact surjective_on_fiber_of_epi F f
+
+/-- If `X : ι → C` is a finite family of objects with non-empty fiber, then
+also `∏ᶜ X` has non-empty fiber. -/
+instance nonempty_fiber_pi_of_nonempty_of_finite {ι : Type*} [Fintype ι] (X : ι → C)
+    [∀ i, Nonempty (F.obj (X i))] : Nonempty (F.obj (∏ᶜ X)) :=
+  let f (i : ι) : FintypeCat.{w} := F.obj (X i)
+  let i : F.obj (∏ᶜ X) ≅ ∏ᶜ f := PreservesProduct.iso F _
+  Nonempty.elim inferInstance (fun x : (∏ᶜ f : FintypeCat.{w}) ↦ ⟨i.inv x⟩)
 
 section CardFiber
 

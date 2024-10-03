@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Michael Jendrusch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Jendrusch, Scott Morrison, Bhavik Mehta
+Authors: Michael Jendrusch, Kim Morrison, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
@@ -364,6 +364,22 @@ theorem map_whiskerLeft (X : C) {Y Z : C} (f : Y ⟶ Z) :
 @[reassoc]
 theorem map_whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) :
     F.map (f ▷ Z) = inv (F.μ X Z) ≫ F.map f ▷ F.obj Z ≫ F.μ Y Z := by simp
+
+@[reassoc]
+theorem map_associator (X Y Z : C) :
+    F.map (α_ X Y Z).hom =
+      inv (F.μ (X ⊗ Y) Z) ≫ inv (F.μ X Y) ▷ F.obj Z ≫
+        (α_ (F.obj X) (F.obj Y) (F.obj Z)).hom ≫ F.obj X ◁ F.μ Y Z ≫ F.μ X (Y ⊗ Z) := by
+  rw [← inv_whiskerRight, ← IsIso.inv_comp_assoc, IsIso.eq_inv_comp]
+  simp
+
+@[reassoc]
+theorem map_associator_inv (X Y Z : C) :
+    F.map (α_ X Y Z).inv =
+      inv (F.μ X (Y ⊗ Z)) ≫ F.obj X ◁ inv (F.μ Y Z) ≫
+        (α_ (F.obj X) (F.obj Y) (F.obj Z)).inv ≫ F.μ X Y ▷ F.obj Z ≫ F.μ (X ⊗ Y) Z := by
+  rw [← inv_whiskerLeft, ← IsIso.inv_comp_assoc, IsIso.eq_inv_comp]
+  simp
 
 @[reassoc]
 theorem map_leftUnitor (X : C) :
