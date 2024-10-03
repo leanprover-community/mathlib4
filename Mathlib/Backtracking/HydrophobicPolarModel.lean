@@ -374,11 +374,11 @@ def pathᵥ {l:ℕ}{α:Type} [OfNat α 0] {β : Type} (go : β → α → α)
     (moves : Vector β l) : Vector α l.succ := ⟨(path go moves.1).1,path_len _ _⟩
 
 /-- . -/
-abbrev π  {l:ℕ}{α:Type} [OfNat α 0] [DecidableEq α] {β : Type}  (go : β → α → α)
+abbrev π  {l:ℕ}{α:Type} [OfNat α 0] {β : Type}  (go : β → α → α)
     (moves : Vector β l) := pathᵥ go moves
 
 /-- . -/
-lemma pathᵥ_len {α: Type} [OfNat α 0] [DecidableEq α] {β: Type}
+lemma pathᵥ_len {α: Type} [OfNat α 0] {β: Type}
     (go: β → α → α) {l: ℕ} (moves: Vector β l) : (pathᵥ go moves).length = l.succ := by simp
 
 /-- . -/
@@ -387,7 +387,7 @@ def pathᵥ_at {l:ℕ}{α:Type} (base : α) {β : Type} (go : β → α → α)
   ⟨(path_at base go moves.1).1,path_at_len _ _ _⟩
 
 /-- . -/
-def pt_dir {α:Type} [OfNat α 0] [DecidableEq α] {β : Type} (go : β → α → α)
+def pt_dir {α:Type} [OfNat α 0] {β : Type} (go : β → α → α)
     {l:ℕ} (j : Fin l.succ) (moves: Vector β l) (ph : Vector Bool l.succ) :
     β → Fin l.succ → Prop  := fun a i ↦
   ph.get i ∧ ph.get j ∧ i.1.succ < j ∧ (pathᵥ go moves).get j = go a ((pathᵥ go moves).get i)
@@ -414,7 +414,7 @@ theorem unique_dir {α: Type} [OfNat α 0] [DecidableEq α] {β: Type}
   left_inj ((pathᵥ go moves).get i) ((Eq.trans hai₀.2.2.2.symm hai₁.2.2.2))
 
 /-- . -/
-theorem unique_loc_dir {α: Type} [OfNat α 0] [DecidableEq α] {β: Type} [Fintype β]
+theorem unique_loc_dir {α: Type} [OfNat α 0] [DecidableEq α] {β: Type}
     {go: β → α → α} {l:ℕ} {j: Fin l.succ}
     {moves: Vector β l} {ph : Vector Bool l.succ}
     (path_inj: Function.Injective (fun k : Fin l.succ ↦ (pathᵥ go moves).get k))
@@ -773,7 +773,7 @@ lemma path_eq_path_morph {α:Type} [OfNat α 0] {b₀ b₁ : ℕ} (f : Fin b₀ 
       exact congrArg _ this
 
 /-- . -/
-lemma path_eq_path_morphᵥ {l:ℕ} {α:Type} [OfNat α 0] [DecidableEq α] {b₀ b₁ : ℕ}
+lemma path_eq_path_morphᵥ {l:ℕ} {α:Type} [OfNat α 0] {b₀ b₁ : ℕ}
     (f : Fin b₀ → α → Fin b₁) (go₀ : Fin b₀ → α → α) (go₁ : Fin b₁ → α → α)
     (g : is_embedding go₀ go₁ f) (moves : Vector (Fin b₀) l) :
     (path go₀ moves.1).1 = (path go₁ (morphᵥ f go₀ moves).1).1 :=
@@ -804,7 +804,7 @@ def path_transformed {α: Type} [OfNat α 0] {b₀ b₁: ℕ}
   ⟩
 
 /-- . -/
-def path_transformedᵥ {l:ℕ} {α: Type} [OfNat α 0] [DecidableEq α] {b₀ b₁: ℕ}
+def path_transformedᵥ {l:ℕ} {α: Type} [OfNat α 0] {b₀ b₁: ℕ}
     (f: Fin b₀ → α → Fin b₁) (go₀: Fin b₀ → α → α) (go₁: Fin b₁ → α → α)
     (v: Vector (Fin b₀) l) : Vector α l.succ :=
   pathᵥ go₁ (morphᵥ f go₀ v)
@@ -813,7 +813,7 @@ def path_transformedᵥ {l:ℕ} {α: Type} [OfNat α 0] [DecidableEq α] {b₀ b
 /- Finished February 10, 2024:
 When transforming, the underlying path in say ℤ×ℤ is unchanged.
 -/
-theorem transform_of_embed {α:Type} [OfNat α 0] [DecidableEq α] {b₀ b₁ : ℕ}
+theorem transform_of_embed {α:Type} [OfNat α 0] {b₀ b₁ : ℕ}
     (f : Fin b₀ → α → Fin b₁) (go₀ : Fin b₀ → α → α) (go₁ : Fin b₁ → α → α)
     (l : List (Fin b₀)) (h_embed: is_embedding go₀ go₁ f) :
     path_transformed f go₀ go₁ l = path go₀ l := by

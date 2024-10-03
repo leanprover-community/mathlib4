@@ -752,7 +752,7 @@ infix:50 " ∼₃ " => (fun ph₀ ph₁ ↦ equifoldable rect₃ ph₀ ph₁ 2)
 infix:50 " ∼ "  => (fun ph₀ ph₁ ↦ equifoldable rect  ph₀ ph₁ 2)
 
 /-- . -/
-def equifoldable_equivalence (go : Fin 4 → ℤ×ℤ → ℤ×ℤ) {l:ℕ} (p:ℕ) :
+theorem equifoldable_equivalence (go : Fin 4 → ℤ×ℤ → ℤ×ℤ) {l:ℕ} (p:ℕ) :
     Equivalence (fun (ph₀ ph₁ : Vector Bool l.succ.succ) ↦ equifoldable go ph₀ ph₁ p) := {
   trans := by intro _ _ _ h₀₁ h₁₂;exact Eq.trans h₀₁ h₁₂
   refl := by intros; rfl
