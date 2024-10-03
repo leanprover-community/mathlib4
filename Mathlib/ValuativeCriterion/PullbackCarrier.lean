@@ -4,12 +4,46 @@ import Mathlib.AlgebraicGeometry.Pullbacks
 import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace LocalRing
+open TensorProduct
 
 noncomputable section
 set_option linter.longLine false
 namespace AlgebraicGeometry.Scheme.Pullback
 
 universe u
+
+section TOBEMOVED
+
+instance {R M N : Type*} [Field R] [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+    [Nontrivial M] [Nontrivial N] : Nontrivial (M ⊗[R] N) := by
+  rw [← rank_pos_iff_nontrivial (R := R), rank_tensorProduct]
+  simp [rank_pos]
+
+lemma tensorProduct_nontrivial_of_isField {R M N : Type*} [CommRing R]
+    (h : IsField R)
+    [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+    [Nontrivial M] [Nontrivial N] : Nontrivial (M ⊗[R] N) := by
+  letI : Field R := h.toField
+  infer_instance
+
+-- move me to `Mathlib\Algebra\Category\Ring\Constructions.lean`
+lemma CommRingCat.nontrivial_pushout_of_isField {A B C : CommRingCat.{u}}
+    (hA : IsField A) (f : A ⟶ B) (g : A ⟶ C)
+    [Nontrivial B] [Nontrivial C] : Nontrivial ↑(pushout f g) := by
+  letI : Algebra A B := f.toAlgebra
+  letI : Algebra A C := g.toAlgebra
+  let e : pushout f g ≅ .of (B ⊗[A] C) :=
+    colimit.isoColimitCocone ⟨CommRingCat.pushoutCocone A B C,
+      CommRingCat.pushoutCoconeIsColimit A B C⟩
+  have : Nontrivial (B ⊗[A] C) := tensorProduct_nontrivial_of_isField hA
+  let e' : (pushout f g : CommRingCat) ≃ B ⊗[A] C :=
+    e.commRingCatIsoToRingEquiv.toEquiv
+  apply e'.nontrivial
+
+instance {A : CommRingCat} [Nontrivial A] : Nonempty (Spec A) :=
+  inferInstanceAs <| Nonempty (PrimeSpectrum A)
+
+end TOBEMOVED
 
 variable {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S)
 
@@ -329,14 +363,6 @@ lemma carrierEquiv_symm_fst (T : Triplet f g) (p : Spec T.tensor) :
 lemma carrierEquiv_symm_snd (T : Triplet f g) (p : Spec T.tensor) :
     (pullback.snd f g).val.base (carrierEquiv.symm ⟨T, p⟩) = T.y := by
   simp [carrierEquiv]
-
--- move me to `Mathlib\Algebra\Category\Ring\Constructions.lean`
-lemma CommRingCat.nontrivial_pushout_of_isField {A B C : CommRingCat.{u}}
-    (hA : IsField A) (f : A ⟶ B) (g : A ⟶ C)
-    [Nontrivial B] [Nontrivial C] : Nontrivial ↑(pushout f g) := sorry -- by linear algebra
-
-instance {A : CommRingCat} [Nontrivial A] : Nonempty (Spec A) :=
-  inferInstanceAs <| Nonempty (PrimeSpectrum A)
 
 instance (T : Triplet f g) : Nontrivial T.tensor := by
   apply CommRingCat.nontrivial_pushout_of_isField
