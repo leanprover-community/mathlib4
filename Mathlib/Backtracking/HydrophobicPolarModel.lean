@@ -81,7 +81,7 @@ lemma morphSep_nil {α:Type} [OfNat α 0] {b₀ b₁ : ℕ} (f : Fin b₀ → α
 
 -- Extend a map on moves to lists:
 def morph {α:Type} [OfNat α 0] {b₀ b₁ : ℕ} (f : Fin b₀ → α → Fin b₁)
-(go₀ : Fin b₀ → α → α) (l : List (Fin b₀)) : List (Fin b₁) := by
+    (go₀ : Fin b₀ → α → α) (l : List (Fin b₀)) : List (Fin b₁) := by
   induction l with
   |nil => exact []
   |cons head tail tail_ih =>
@@ -89,8 +89,8 @@ def morph {α:Type} [OfNat α 0] {b₀ b₁ : ℕ} (f : Fin b₀ → α → Fin 
 
 -- morph is length-preserving:
 theorem morph_len {α:Type} [OfNat α 0] {b₀ b₁ : ℕ} (f : Fin b₀ → α → Fin b₁)
-(go₀ : Fin b₀ → α → α) (l : List (Fin b₀)) :
-(morph f go₀ l).length = l.length := by
+    (go₀ : Fin b₀ → α → α) (l : List (Fin b₀)) :
+    (morph f go₀ l).length = l.length := by
   induction l with
   |nil => unfold morph; rfl
   |cons head tail tail_ih =>
@@ -223,8 +223,8 @@ lemma slicer_card {l: ℕ} (P: Fin l → Fin l → Bool) (x : Fin l) :
     Finset.card (Finset.filter (fun i_1 : Fin l => P i_1 x = true) Finset.univ) := by
   repeat rw [← Fintype.card_coe];simp only [Finset.mem_filter,
     Finset.mem_univ, true_and]
-  let f : {ik : Fin l × Fin l // ik.2 = x ∧ P ik.1 x} → { i_1 : Fin l // P i_1 x}
-    := fun ik ↦ ⟨ik.1.1, ik.2.2⟩
+  let f : {ik : Fin l × Fin l // ik.2 = x ∧ P ik.1 x} → { i_1 : Fin l // P i_1 x} :=
+    fun ik ↦ ⟨ik.1.1, ik.2.2⟩
   have : Function.Bijective f := by
     constructor;intro u v huv;
     have : u.1 = v.1 := by
@@ -713,9 +713,8 @@ lemma path_eq_path_morph {α:Type} [OfNat α 0] [DecidableEq α] {b₀ b₁ : �
       unfold morph; simp only [List.length_cons];
       rw [path_cons]; simp only [List.cons.injEq, and_true]
       have : (Vector.head (path go₀ tail))
-          = (Vector.head (path go₁ (List.rec []
-            (fun head tail tail_ih => f head (Vector.head (path go₀ tail))
-              :: tail_ih) tail))) := by
+        = (Vector.head (path go₁ (List.rec []
+        (fun head tail tail_ih => f head (Vector.head (path go₀ tail)) :: tail_ih) tail))) := by
         rw [two_heads (path go₀ tail) (path go₀ tail).1 (ne_nil_of_succ_length _) rfl]
         simp_rw [tail_ih]
         rw [two_heads]
@@ -773,8 +772,8 @@ theorem transform_of_embed {α:Type} [OfNat α 0] [DecidableEq α] {b₀ b₁ : 
     simp only [List.length_nil]
     rfl
   |cons head tail tail_ih =>
-    have morph_cons : (morph f go₀ (head :: tail)) = (f head ((path go₀ tail).head))
-      :: (morph f go₀ (tail)) := rfl
+    have morph_cons :
+      (morph f go₀ (head :: tail)) = (f head ((path go₀ tail).head)) :: (morph f go₀ (tail)) := rfl
     rw [morph_cons];
     repeat (rw [path_cons])
     simp only [List.cons.injEq]

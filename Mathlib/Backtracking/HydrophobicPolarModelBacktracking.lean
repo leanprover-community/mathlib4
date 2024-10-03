@@ -411,9 +411,9 @@ theorem rotate_pts'_atᵥ {l : ℕ} (k : Fin l.succ) (ph : Vector Bool l.succ)
 
 /-- just like rotate_pts'_atᵥ -/
 theorem reflect_pts'_atᵥ {l:ℕ} (k : Fin l.succ) (ph : Vector Bool l.succ)
-  (moves : Vector (Fin 4) l):
-  pts_at' κ k ph (π κ moves) ≤
-  pts_at' κ k ph (π κ (σ reeu κ moves)) :=
+    (moves : Vector (Fin 4) l):
+    pts_at' κ k ph (π κ moves) ≤
+    pts_at' κ k ph (π κ (σ reeu κ moves)) :=
   card_le_card fun i hi => by
   simp only [mem_filter, mem_univ, true_and] at *
   exact reflect_preserves_pt_loc' moves i k ph hi
@@ -443,10 +443,10 @@ theorem reflect_pts_tot {l : ℕ} (ph : Vector Bool l.succ)(moves : Vector (Fin 
 
 /-- now we want to argue that we can always rotate to make moves start with 0, since: -/
 theorem rotate_until_right (k : Fin 4) :
-  k = 0 ∨
-  rotateIndex k = 0 ∨
-  rotateIndex (rotateIndex k) = 0 ∨
-  rotateIndex (rotateIndex (rotateIndex k)) = 0 := by
+    k = 0 ∨
+    rotateIndex k = 0 ∨
+    rotateIndex (rotateIndex k) = 0 ∨
+    rotateIndex (rotateIndex (rotateIndex k)) = 0 := by
   fin_cases k <;> aesop
 
 
@@ -519,13 +519,12 @@ theorem towards_orderly {l : ℕ} (ph : Vector Bool l.succ.succ) (moves : Vector
   · exists moves₀;tauto
   · have : ∃ (j : Fin (l + 1)),
       (∀ i < j, Vector.get moves₀ i = 0 ∨ Vector.get moves₀ i = 1)
-        ∧ Vector.get moves₀ j = 3
-      := by
+        ∧ Vector.get moves₀ j = 3 := by
         contrapose h₃;
         simp only [ne_eq, not_forall, not_not, exists_prop, not_exists, not_and]
         intro x hx;contrapose h₃;
         simp only [not_exists, not_and, not_forall, not_not, exists_prop];
-        simp only [not_not] at h₃ ;exists x
+        simp only [not_not] at h₃;exists x
     obtain ⟨j,hj⟩ := this
     have : Vector.get (morf reflectIndex moves₀) j = 2 := by
       let Q := hj.2;unfold morf reflectIndex;simp only [Vector.get_map];rw [Q]
@@ -533,19 +532,19 @@ theorem towards_orderly {l : ℕ} (ph : Vector Bool l.succ.succ) (moves : Vector
     constructor
     · let Q := hmoves₀.1;unfold reflectIndex morf; simp only [Vector.get_zero,
       Vector.head_map];
-      simp only [Vector.get_zero] at Q ;rw [Q]
+      simp only [Vector.get_zero] at Q;rw [Q]
 
     · constructor
       · intro j₁ hj₁;by_cases h : j₁ < j;let Q := hj.1 j₁ h
         -- now it's easy using morf
         · cases Q with
           |inl h_1 =>
-            intro hc;unfold morf at hc; simp only [Vector.get_map] at hc ;
+            intro hc;unfold morf at hc; simp only [Vector.get_map] at hc;
             rw [h_1] at hc
             revert hc
             decide
           |inr h_1 =>
-            intro hc;unfold morf at hc; simp only [Vector.get_map] at hc ;
+            intro hc;unfold morf at hc; simp only [Vector.get_map] at hc;
             rw [h_1] at hc;revert hc;decide
         · by_cases he : j₁ = j
           · subst he;rw [this];symm;decide
@@ -800,9 +799,9 @@ theorem more_pts_of_subset (go: Fin 4 → ℤ×ℤ→ℤ×ℤ) {l : ℕ} {ph₀ 
     simp only [Nat.sub_zero, mem_filter, mem_univ, true_and]; tauto
   unfold phtoSet at hsub
   have hsubj := hsub hj'; simp only [Nat.sub_zero, mem_filter,
-    mem_univ, true_and] at hsubj ;
+    mem_univ, true_and] at hsubj;
   have hsubi := hsub hi'; simp only [Nat.sub_zero, mem_filter,
-    mem_univ, true_and] at hsubi ;
+    mem_univ, true_and] at hsubi;
   tauto
 
 
@@ -811,8 +810,8 @@ def meet {l:ℕ} (ph₀ ph₁ : Vector Bool l) : Vector Bool l :=
 
 infix:50 " ⊓ " => meet
 
-lemma meet_get {l :ℕ} {ph₀ ph₁ : Vector Bool l} {i:Fin l}
-: (ph₀ ⊓ ph₁).get i = (ph₀.get i ∧ ph₁.get i) := by
+lemma meet_get {l :ℕ} {ph₀ ph₁ : Vector Bool l} {i:Fin l} :
+    (ph₀ ⊓ ph₁).get i = (ph₀.get i ∧ ph₁.get i) := by
   unfold meet
   simp_all
 
@@ -837,12 +836,12 @@ theorem goodFolds_monotone (go: Fin 4 → ℤ×ℤ→ℤ×ℤ) {l :ℕ} (ph₀ p
   let M₁ := InjectivePath₅ go ph₁.1 p
   let u := (Gap_nil' 4 (Nat.succ l))
   have verify₀: satisfy_and_have_suffix M₀.P M₀.Q u =
-      filter (fun v  ↦ M₀.P v.1 ∧ M₀.Q v.1 ∧ u.1 <:+ v.1) univ
-    := verify_those_with_suffix (le_refl _) u
+      filter (fun v  ↦ M₀.P v.1 ∧ M₀.Q v.1 ∧ u.1 <:+ v.1) univ :=
+    verify_those_with_suffix (le_refl _) u
   have verify₁:
     satisfy_and_have_suffix M₁.P M₁.Q u = filter
-      (fun v  ↦ M₁.P v.1 ∧ M₁.Q v.1 ∧ u.1 <:+ v.1) univ
-    := verify_those_with_suffix (le_refl _) u
+      (fun v  ↦ M₁.P v.1 ∧ M₁.Q v.1 ∧ u.1 <:+ v.1) univ :=
+    verify_those_with_suffix (le_refl _) u
   simp only [Nat.succ_eq_add_one]
   unfold InjectivePath₅ at verify₀ verify₁
   unfold goodFolds
@@ -914,12 +913,10 @@ theorem goodPairs_meet (go: Fin 4 → ℤ×ℤ→ℤ×ℤ) {l : ℕ} (ph₀ ph�
     simp only [mem_filter, mem_univ, true_and] at *
     unfold pt_loc at *
     simp only [Bool.and_eq_true, decide_eq_true_eq] at *
-    have hi: ij.1 ∈ filter (fun i => Vector.get (meet ph₀ ph₁) i = true)
-      univ
-      := by simp only [mem_filter, mem_univ, true_and]; exact hij.1.1.1
-    have hj: ij.2 ∈ filter (fun i => Vector.get (meet ph₀ ph₁) i = true)
-      univ
-      := by simp only [mem_filter, mem_univ, true_and]; exact hij.1.1.2
+    have hi: ij.1 ∈ filter (fun i => Vector.get (meet ph₀ ph₁) i = true) univ := by
+      simp only [mem_filter, mem_univ, true_and]; exact hij.1.1.1
+    have hj: ij.2 ∈ filter (fun i => Vector.get (meet ph₀ ph₁) i = true) univ := by
+      simp only [mem_filter, mem_univ, true_and]; exact hij.1.1.2
     have Si₀ := meet_basic₀ hi
     have Si₁ := meet_basic₁ hi
     have Sj₀ := meet_basic₀ hj
@@ -973,7 +970,7 @@ theorem goodPairs_meet (go: Fin 4 → ℤ×ℤ→ℤ×ℤ) {l : ℕ} (ph₀ ph�
 
 
 def num_folds_achieving_pts {b:ℕ} (go : Fin b → ℤ×ℤ → ℤ×ℤ)
-  {l:ℕ} (ph : Vector Bool l.succ.succ) (p:ℕ) : ℕ :=
+    {l:ℕ} (ph : Vector Bool l.succ.succ) (p:ℕ) : ℕ :=
   num_by_backtracking
     (fun moves ↦ Function.Injective (fun i ↦ (path go moves).get i))
     (fun moves ↦ pts_tot'_list go ph.1 moves ≥ p ∧ orderly_and_nontrivial moves)
@@ -981,7 +978,7 @@ def num_folds_achieving_pts {b:ℕ} (go : Fin b → ℤ×ℤ → ℤ×ℤ)
 
 
 def can_achieve_pts {b:ℕ} (go : Fin b → ℤ×ℤ → ℤ×ℤ)
-  {l:ℕ} (ph : Vector Bool l.succ.succ) (p:ℕ): Prop :=
+    {l:ℕ} (ph : Vector Bool l.succ.succ) (p:ℕ): Prop :=
   set_of_folds_achieving_pts go p ph ≠ ∅
 
 def x : List Bool := [true,false,true,false,true,false, true,true]
@@ -1000,11 +997,11 @@ def x : List Bool := [true,false,true,false,true,false, true,true]
 
 
 def stecher1 : Prop :=
-  satisfy_and_have_suffix
-    (fun w ↦ Function.Injective fun i ↦ (path rect w).get i)
-    (fun w ↦ pts_tot'_list rect  x w > 2 ∧ orderly_and_nontrivial w)
-    (Gap_nil' 4 7) -- (there are 7 moves for a polypeptide of length 8)
-  = {⟨[0, 2, 2, 1, 1, 3, 0],rfl⟩} --{⟨[0, 3, 1, 1, 2, 2, 0],rfl⟩}
+    satisfy_and_have_suffix
+      (fun w ↦ Function.Injective fun i ↦ (path rect w).get i)
+      (fun w ↦ pts_tot'_list rect  x w > 2 ∧ orderly_and_nontrivial w)
+      (Gap_nil' 4 7) -- (there are 7 moves for a polypeptide of length 8)
+    = {⟨[0, 2, 2, 1, 1, 3, 0],rfl⟩} --{⟨[0, 3, 1, 1, 2, 2, 0],rfl⟩}
 instance : Decidable stecher1 := by {
   unfold stecher1
   apply decEq
