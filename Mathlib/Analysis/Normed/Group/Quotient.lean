@@ -282,9 +282,9 @@ theorem _root_.QuotientAddGroup.norm_lift_apply_le {S : AddSubgroup M} (f : Norm
     rcases mk_surjective x with ⟨x, rfl⟩
     simpa [h] using le_opNorm f x
   | inr h =>
-    rw [← not_lt, ← _root_.lt_div_iff' h, norm_lt_iff]
+    rw [← not_lt, ← lt_div_iff₀' h, norm_lt_iff]
     rintro ⟨x, rfl, hx⟩
-    exact ((lt_div_iff' h).1 hx).not_le (le_opNorm f x)
+    exact ((lt_div_iff₀' h).1 hx).not_le (le_opNorm f x)
 
 /-- The operator norm of the projection is `1` if the subspace is not dense. -/
 theorem norm_normedMk (S : AddSubgroup M) (h : (S.topologicalClosure : Set M) ≠ univ) :

@@ -173,7 +173,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
     rw [← Algebra.coe_norm_int, ← Int.cast_one, ← Int.cast_abs, Rat.cast_intCast, Int.cast_le]
     exact Int.one_le_abs (Algebra.norm_ne_zero_iff.mpr h_nz)
   replace h_bd := le_trans h_nm h_bd
-  rw [← inv_mul_le_iff (by positivity), inv_div, mul_one, Real.le_sqrt (by positivity)
+  rw [← inv_mul_le_iff₀ (by positivity), inv_div, mul_one, Real.le_sqrt (by positivity)
     (by positivity), ← Int.cast_abs, div_pow, mul_pow, ← pow_mul, ← pow_mul] at h_bd
   refine le_trans ?_ h_bd
   -- The sequence `a n` is a lower bound for `|discr K|`. We prove below by induction an uniform
@@ -277,7 +277,7 @@ theorem rank_le_rankOfDiscrBdd :
     refine fun h ↦ discr_ne_zero K ?_
     rwa [h, Nat.cast_zero, abs_nonpos_iff] at hK
   have h₂ : 1 < 3 * π / 4 := by
-    rw [_root_.lt_div_iff (by positivity), ← _root_.div_lt_iff' (by positivity), one_mul]
+    rw [_root_.lt_div_iff₀ (by positivity), ← _root_.div_lt_iff₀' (by positivity), one_mul]
     linarith [Real.pi_gt_three]
   obtain h | h := lt_or_le 1 (finrank ℚ K)
   · apply le_max_of_le_right

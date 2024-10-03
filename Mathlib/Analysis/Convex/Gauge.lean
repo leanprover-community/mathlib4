@@ -139,7 +139,7 @@ theorem gauge_le_eq (hs₁ : Convex ℝ s) (hs₀ : (0 : E) ∈ s) (hs₂ : Abso
     suffices (r⁻¹ * δ) • δ⁻¹ • x ∈ s by rwa [smul_smul, mul_inv_cancel_right₀ δ_pos.ne'] at this
     rw [mem_smul_set_iff_inv_smul_mem₀ δ_pos.ne'] at hδ
     refine hs₁.smul_mem_of_zero_mem hs₀ hδ ⟨by positivity, ?_⟩
-    rw [inv_mul_le_iff hr', mul_one]
+    rw [inv_mul_le_iff₀ hr', mul_one]
     exact hδr.le
   · have hε' := (lt_add_iff_pos_right a).2 (half_pos hε)
     exact
@@ -369,7 +369,7 @@ theorem gauge_lt_of_mem_smul (x : E) (ε : ℝ) (hε : 0 < ε) (hs₂ : IsOpen s
     gauge s x < ε := by
   have : ε⁻¹ • x ∈ s := by rwa [← mem_smul_set_iff_inv_smul_mem₀ hε.ne']
   have h_gauge_lt := gauge_lt_one_of_mem_of_isOpen hs₂ this
-  rwa [gauge_smul_of_nonneg (inv_nonneg.2 hε.le), smul_eq_mul, inv_mul_lt_iff hε, mul_one]
+  rwa [gauge_smul_of_nonneg (inv_nonneg.2 hε.le), smul_eq_mul, inv_mul_lt_iff₀ hε, mul_one]
     at h_gauge_lt
 
 theorem mem_closure_of_gauge_le_one (hc : Convex ℝ s) (hs₀ : 0 ∈ s) (ha : Absorbent ℝ s)
@@ -500,7 +500,7 @@ protected theorem Seminorm.gauge_ball (p : Seminorm ℝ E) : gauge (p.ball 0 1) 
     have hpx₂ : 0 < 2 * p x := mul_pos zero_lt_two hpx
     refine hp.subset ⟨hpx₂, (2 * p x)⁻¹ • x, ?_, smul_inv_smul₀ hpx₂.ne' _⟩
     rw [p.mem_ball_zero, map_smul_eq_mul, Real.norm_eq_abs, abs_of_pos (inv_pos.2 hpx₂),
-      inv_mul_lt_iff hpx₂, mul_one]
+      inv_mul_lt_iff₀ hpx₂, mul_one]
     exact lt_mul_of_one_lt_left hpx one_lt_two
   refine IsGLB.csInf_eq ⟨fun r => ?_, fun r hr => le_of_forall_pos_le_add fun ε hε => ?_⟩ hp
   · rintro ⟨hr, y, hy, rfl⟩
@@ -512,7 +512,7 @@ protected theorem Seminorm.gauge_ball (p : Seminorm ℝ E) : gauge (p.ball 0 1) 
       add_pos_of_nonneg_of_pos (apply_nonneg _ _) hε
     refine hr ⟨hpε, (p x + ε)⁻¹ • x, ?_, smul_inv_smul₀ hpε.ne' _⟩
     rw [p.mem_ball_zero, map_smul_eq_mul, Real.norm_eq_abs, abs_of_pos (inv_pos.2 hpε),
-      inv_mul_lt_iff hpε, mul_one]
+      inv_mul_lt_iff₀ hpε, mul_one]
     exact lt_add_of_pos_right _ hε
 
 theorem Seminorm.gaugeSeminorm_ball (p : Seminorm ℝ E) :
