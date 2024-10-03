@@ -53,6 +53,7 @@ noncomputable def tensorDistrib' :
       (QuadraticMap.associated : QuadraticMap R M₂ N₂ →ₗ[R] BilinMap R M₂ N₂)
   toQ ∘ₗ tmulB ∘ₗ toB
 
+/-- The name `tensorDistrib_tmul` is taken by the `QuadraticForm` version of this result -/
 @[simp]
 theorem tensorDistrib_tmul' (Q₁ : QuadraticMap A M₁ N₁) (Q₂ : QuadraticMap R M₂ N₂) (m₁ : M₁)
     (m₂ : M₂) : tensorDistrib' R A (Q₁ ⊗ₜ Q₂) (m₁ ⊗ₜ m₂) = Q₁ m₁ ⊗ₜ Q₂ m₂   :=

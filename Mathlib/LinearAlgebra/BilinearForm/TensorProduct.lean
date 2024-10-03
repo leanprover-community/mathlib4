@@ -57,6 +57,7 @@ def tensorDistrib' :
     (TensorProduct.lift.equiv A M₁ M₁ N₁)
     (TensorProduct.lift.equiv R _ _ _)).toLinearMap
 
+/-- The name `tensorDistrib_tmul` is taken by the `BilinForm` version of this result -/
 @[simp]
 theorem tensorDistrib_tmul' (B₁ : BilinMap A M₁ N₁) (B₂ : BilinMap R M₂ N₂) (m₁ : M₁) (m₂ : M₂)
     (m₁' : M₁) (m₂' : M₂) :
