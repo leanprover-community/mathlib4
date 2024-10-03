@@ -82,6 +82,9 @@ variable {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y)
 /-- If `X ⟶ Y` is a morphism of locally ringed spaces and `x` a point of `X`, we obtain
 a morphism of residue fields in the other direction. -/
 def residueFieldMap (x : X) : Y.residueField (f.val.base x) ⟶ X.residueField x :=
+  -- note to reviewers: why does it fails after I remove this `have`?
+  -- It also fails if I write `@LocalRing.ResidueField.map _ _ _ _ _ _ (f.stalkMap x) inferInstance`
+  have _ : IsLocalRingHom (f.stalkMap x) := inferInstance
   LocalRing.ResidueField.map (f.stalkMap x)
 
 lemma residue_comp_residueFieldMap_eq_stalkMap_comp_residue (x : X) :
@@ -101,6 +104,7 @@ lemma residueFieldMap_comp {Z : LocallyRingedSpace.{u}} (g : Y ⟶ Z) (x : X) :
   simp only [comp_val, SheafedSpace.comp_base, Function.comp_apply, residueFieldMap]
   simp_rw [stalkMap_comp]
   haveI : IsLocalRingHom (g.stalkMap (f.val.base x)) := inferInstance
+  haveI : IsLocalRingHom (f.stalkMap x) := inferInstance
   apply LocalRing.ResidueField.map_comp
 
 @[reassoc]

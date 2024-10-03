@@ -243,7 +243,9 @@ instance MonoidHom.isLocalRingHom_comp (g : S →* T) (f : R →* S) [IsLocalRin
     [IsLocalRingHom f] : IsLocalRingHom (g.comp f) where
   map_nonunit a := IsLocalRingHom.map_nonunit a ∘ IsLocalRingHom.map_nonunit (f := g) (f a)
 
-instance isLocalRingHom_toMonoidHom (f : F) [ IsLocalRingHom f] : IsLocalRingHom (f : R →* S) :=
+-- see note [lower instance priority]
+instance (priority := 100) isLocalRingHom_toMonoidHom (f : F) [ IsLocalRingHom f] :
+    IsLocalRingHom (f : R →* S) :=
   ⟨IsLocalRingHom.map_nonunit (f := f)⟩
 
 theorem MonoidHom.isLocalRingHom_of_comp (f : R →* S) (g : S →* T) [IsLocalRingHom (g.comp f)] :
