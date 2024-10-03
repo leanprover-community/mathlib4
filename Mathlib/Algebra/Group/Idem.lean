@@ -1,5 +1,34 @@
+/-
+Copyright (c) 2024 Pieter Cuijpers. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Pieter Cuijpers
+-/
 import Mathlib.Algebra.Group.Defs
 
+/-!
+# Idempotent Semigroups and Monoids
+
+An idempotent semigroup is a semigroup that satisfies `x * x = x`.
+
+## Main definitions
+
+* class `AddIdemSemigroup`: an additive semigroup satisfying `x + x = x`.
+
+* class `IdemSemigroup`: a semigroup satisfying `x * x = x`.
+
+* class `AddMonoid`: an additive monoid satisfying `x + x = x`.
+
+* class `IdemMonoid`: a monoid satisfying `x * x = x`.
+
+## Naming conventions
+
+## Notation
+
+## References
+
+## TODO
+
+-/
 
 /-- An idempotent additive semigroup is a type with an associative idempotent `(+)`. -/
 class AddIdemSemigroup (G : Type _) extends AddSemigroup G where
