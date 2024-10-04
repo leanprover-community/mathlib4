@@ -34,7 +34,7 @@ Note that this theory only applies in measurable groups, i.e., when multiplicati
 are measurable. This is not the case in general in locally compact groups, or even in compact
 groups, when the topology is not second-countable. For arguments along the same line, but using
 continuous functions instead of measurable sets and working in the general locally compact
-setting, see the file `MeasureTheory.Measure.Haar.Unique.lean`.
+setting, see the file `Mathlib/MeasureTheory/Measure/Haar/Unique.lean`.
 -/
 
 

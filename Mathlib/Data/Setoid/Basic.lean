@@ -19,7 +19,7 @@ The complete lattice instance for equivalence relations could have been defined 
 the Galois insertion of equivalence relations on α into binary relations on α, and then using
 `CompleteLattice.copy` to define a complete lattice instance with more appropriate
 definitional equalities (a similar example is `Filter.CompleteLattice` in
-`Order/Filter/Basic.lean`). This does not save space, however, and is less clear.
+`Mathlib/Order/Filter/Basic.lean`). This does not save space, however, and is less clear.
 
 Partitions are not defined as a separate structure here; users are encouraged to
 reason about them using the existing `Setoid` and its infrastructure.
