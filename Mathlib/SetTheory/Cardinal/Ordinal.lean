@@ -61,7 +61,7 @@ theorem ord_isLimit {c} (co : ℵ₀ ≤ c) : (ord c).IsLimit := by
     rw [← ord_le, ← le_succ_of_isLimit, ord_le]
     · exact co.trans h
     · rw [ord_aleph0]
-      exact omega_isLimit
+      exact omega0_isLimit
 
 theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.toType :=
   toType_noMax_of_succ_lt (ord_isLimit h).2
@@ -217,10 +217,13 @@ theorem aleph'_limit {o : Ordinal} (ho : o.IsLimit) : aleph' o = ⨆ a : Iio o, 
   exact fun a ha => le_ciSup (bddAbove_of_small _) (⟨a, ha⟩ : Iio o)
 
 @[simp]
-theorem aleph'_omega : aleph' ω = ℵ₀ :=
+theorem aleph'_omega0 : aleph' ω = ℵ₀ :=
   eq_of_forall_ge_iff fun c => by
-    simp only [aleph'_le_of_limit omega_isLimit, lt_omega, exists_imp, aleph0_le]
+    simp only [aleph'_le_of_limit omega0_isLimit, lt_omega0, exists_imp, aleph0_le]
     exact forall_swap.trans (forall_congr' fun n => by simp only [forall_eq, aleph'_nat])
+
+@[deprecated (since := "2024-09-30")]
+alias aleph'_omega := aleph'_omega0
 
 set_option linter.deprecated false in
 /-- `aleph'` and `aleph_idx` form an equivalence between `Ordinal` and `Cardinal` -/
@@ -256,7 +259,7 @@ theorem aleph_succ (o : Ordinal) : aleph (succ o) = succ (aleph o) := by
   rw [aleph_eq_aleph', add_succ, aleph'_succ, aleph_eq_aleph']
 
 @[simp]
-theorem aleph_zero : aleph 0 = ℵ₀ := by rw [aleph_eq_aleph', add_zero, aleph'_omega]
+theorem aleph_zero : aleph 0 = ℵ₀ := by rw [aleph_eq_aleph', add_zero, aleph'_omega0]
 
 theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : aleph o = ⨆ a : Iio o, aleph a := by
   apply le_antisymm _ (ciSup_le' _)
@@ -264,13 +267,13 @@ theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : aleph o = ⨆ a : Iio o, al
     refine ciSup_mono' (bddAbove_of_small _) ?_
     rintro ⟨i, hi⟩
     cases' lt_or_le i ω with h h
-    · rcases lt_omega.1 h with ⟨n, rfl⟩
+    · rcases lt_omega0.1 h with ⟨n, rfl⟩
       use ⟨0, ho.pos⟩
       simpa using (nat_lt_aleph0 n).le
     · exact ⟨⟨_, (sub_lt_of_le h).2 hi⟩, aleph'_le.2 (le_add_sub _ _)⟩
   · exact fun i => aleph_le.2 (le_of_lt i.2)
 
-theorem aleph0_le_aleph' {o : Ordinal} : ℵ₀ ≤ aleph' o ↔ ω ≤ o := by rw [← aleph'_omega, aleph'_le]
+theorem aleph0_le_aleph' {o : Ordinal} : ℵ₀ ≤ aleph' o ↔ ω ≤ o := by rw [← aleph'_omega0, aleph'_le]
 
 theorem aleph0_le_aleph (o : Ordinal) : ℵ₀ ≤ aleph o := by
   rw [aleph_eq_aleph', aleph0_le_aleph']
@@ -1442,7 +1445,7 @@ scoped notation "ω_" o => ord <| aleph o
 -/
 scoped notation "ω₁" => ord <| aleph 1
 
-lemma omega_lt_omega1 : ω < ω₁ := ord_aleph0.symm.trans_lt (ord_lt_ord.mpr (aleph0_lt_aleph_one))
+lemma omega0_lt_omega1 : ω < ω₁ := ord_aleph0.symm.trans_lt (ord_lt_ord.mpr (aleph0_lt_aleph_one))
 
 section OrdinalIndices
 /-!

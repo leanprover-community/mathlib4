@@ -162,8 +162,8 @@ theorem tsum_schlomilch_le {C : ℕ} (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → 
       le_trans ?_
         (add_le_add_left
           (mul_le_mul_of_nonneg_left (ENNReal.sum_le_tsum <| Finset.Ico (u 0 + 1) (u n + 1)) ?_) _)
-  simpa using Finset.sum_schlomilch_le hf h_pos h_nonneg hu h_succ_diff n
-  exact zero_le _
+  · simpa using Finset.sum_schlomilch_le hf h_pos h_nonneg hu h_succ_diff n
+  · exact zero_le _
 
 theorem tsum_condensed_le (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) :
     (∑' k : ℕ, 2 ^ k * f (2 ^ k)) ≤ f 1 + 2 * ∑' k, f k := by
