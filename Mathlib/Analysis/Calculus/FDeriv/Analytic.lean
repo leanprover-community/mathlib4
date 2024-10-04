@@ -79,7 +79,7 @@ variable {f : E → F} {x : E} {s : Set E}
 /-- A function which is analytic within a set is strictly differentiable there. Since we
 don't have a predicate `HasStrictFDerivWithinAt`, we spell out what it would mean. -/
 theorem HasFPowerSeriesWithinAt.hasStrictFDerivWithinAt (h : HasFPowerSeriesWithinAt f p s x) :
-    (fun y ↦ f y.1 - f y.2 - ((continuousMultilinearCurryFin1 𝕜 E F) (p 1)) (y.1 - y.2))
+    (fun y ↦ f y.1 - f y.2 - (continuousMultilinearCurryFin1 𝕜 E F (p 1)) (y.1 - y.2))
       =o[𝓝[insert x s ×ˢ insert x s] (x, x)] fun y ↦ y.1 - y.2 := by
   refine h.isBigO_image_sub_norm_mul_norm_sub.trans_isLittleO (IsLittleO.of_norm_right ?_)
   refine isLittleO_iff_exists_eq_mul.2 ⟨fun y => ‖y - (x, x)‖, ?_, EventuallyEq.rfl⟩
@@ -156,7 +156,7 @@ theorem HasFPowerSeriesOnBall.differentiableOn [CompleteSpace F]
   (h.analyticAt_of_mem hy).differentiableWithinAt
 
 theorem AnalyticOn.differentiableOn (h : AnalyticOn 𝕜 f s) : DifferentiableOn 𝕜 f s :=
-  fun y hy ↦  (h y hy).differentiableWithinAt.mono (by simp)
+  fun y hy ↦ (h y hy).differentiableWithinAt.mono (by simp)
 
 theorem AnalyticOnNhd.differentiableOn (h : AnalyticOnNhd 𝕜 f s) : DifferentiableOn 𝕜 f s :=
   fun y hy ↦ (h y hy).differentiableWithinAt
@@ -357,7 +357,7 @@ protected lemma AnalyticOn.hasFTaylorSeriesUpToOn {n : WithTop ℕ∞}
 
 lemma AnalyticOn.exists_hasFTaylorSeriesUpToOn
     (h : AnalyticOn 𝕜 f s) (hu : UniqueDiffOn 𝕜 s) :
-    ∃ (p : E → FormalMultilinearSeries 𝕜 E F),
+    ∃ p : E → FormalMultilinearSeries 𝕜 E F,
       HasFTaylorSeriesUpToOn ⊤ f p s ∧ ∀ i, AnalyticOn 𝕜 (fun x ↦ p x i) s :=
   ⟨ftaylorSeriesWithin 𝕜 f s, h.hasFTaylorSeriesUpToOn hu, h.iteratedFDerivWithin hu⟩
 
