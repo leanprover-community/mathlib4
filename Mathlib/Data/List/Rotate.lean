@@ -104,11 +104,15 @@ theorem rotate_cons_succ (l : List α) (a : α) (n : ℕ) :
     (a :: l : List α).rotate (n + 1) = (l ++ [a]).rotate n := by
   rw [rotate_eq_rotate', rotate_eq_rotate', rotate'_cons_succ]
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefix below.
+-/
 @[simp]
 theorem mem_rotate : ∀ {l : List α} {a : α} {n : ℕ}, a ∈ l.rotate n ↔ a ∈ l
   | [], _, n => by simp
   | a :: l, _, 0 => by simp
-  | a :: l, _, n + 1 => by simp [rotate_cons_succ, mem_rotate, or_comm]
+  | a :: l, _, n + 1 => by simp [rotate_cons_succ, mem_rotate, _root_.or_comm]
 
 @[simp]
 theorem length_rotate (l : List α) (n : ℕ) : (l.rotate n).length = l.length := by
@@ -116,7 +120,7 @@ theorem length_rotate (l : List α) (n : ℕ) : (l.rotate n).length = l.length :
 
 @[simp]
 theorem rotate_replicate (a : α) (n : ℕ) (k : ℕ) : (replicate n a).rotate k = replicate n a :=
-  eq_replicate.2 ⟨by rw [length_rotate, length_replicate], fun b hb =>
+  eq_replicate_iff.2 ⟨by rw [length_rotate, length_replicate], fun b hb =>
     eq_of_mem_replicate <| mem_rotate.1 hb⟩
 
 theorem rotate_eq_drop_append_take {l : List α} {n : ℕ} :
@@ -473,7 +477,7 @@ theorem IsRotated.dropLast_tail {α}
   | [] => by simp
   | [_] => by simp
   | a :: b :: L => by
-    simp at hL' |-
+    simp only [head_cons, ne_eq, reduceCtorEq, not_false_eq_true, getLast_cons] at hL'
     simp [hL', IsRotated.cons_getLast_dropLast]
 
 /-- List of all cyclic permutations of `l`.

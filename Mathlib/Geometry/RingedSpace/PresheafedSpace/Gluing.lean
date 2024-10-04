@@ -149,7 +149,7 @@ theorem pullback_base (i j k : D.J) (S : Set (D.V (i, j)).carrier) :
 /-- The red and the blue arrows in ![this diagram](https://i.imgur.com/0GiBUh6.png) commute. -/
 @[simp, reassoc]
 theorem f_invApp_f_app (i j k : D.J) (U : Opens (D.V (i, j)).carrier) :
-    (D.f_open i j).invApp U ≫ (D.f i k).c.app _ =
+    (D.f_open i j).invApp _ U ≫ (D.f i k).c.app _ =
       (π₁ i, j, k).c.app (op U) ≫
         (π₂⁻¹ i, j, k) (unop _) ≫
           (D.V _).presheaf.map
@@ -161,7 +161,7 @@ theorem f_invApp_f_app (i j k : D.J) (U : Opens (D.V (i, j)).carrier) :
                 apply pullback_base)) := by
   have := PresheafedSpace.congr_app (@pullback.condition _ _ _ _ _ (D.f i j) (D.f i k) _)
   dsimp only [comp_c_app] at this
-  rw [← cancel_epi (inv ((D.f_open i j).invApp U)), IsIso.inv_hom_id_assoc,
+  rw [← cancel_epi (inv ((D.f_open i j).invApp _ U)), IsIso.inv_hom_id_assoc,
     IsOpenImmersion.inv_invApp]
   simp_rw [Category.assoc]
   erw [(π₁ i, j, k).c.naturality_assoc, reassoc_of% this, ← Functor.map_comp_assoc,
@@ -271,7 +271,7 @@ def opensImagePreimageMap (i j : D.J) (U : Opens (D.U i).carrier) :
       (Opens.map (𝖣.ι j).base).obj ((D.ι_openEmbedding i).isOpenMap.functor.obj U)) :=
   (D.f i j).c.app (op U) ≫
     (D.t j i).c.app _ ≫
-      (D.f_open j i).invApp (unop _) ≫
+      (D.f_open j i).invApp _ (unop _) ≫
         (𝖣.U j).presheaf.map (eqToHom (D.ι_image_preimage_eq i j U)).op
 
 theorem opensImagePreimageMap_app' (i j k : D.J) (U : Opens (D.U i).carrier) :
@@ -436,19 +436,9 @@ abbrev ιInvAppπEqMap {i : D.J} (U : Opens (D.U i).carrier) :=
 theorem π_ιInvApp_π (i j : D.J) (U : Opens (D.U i).carrier) :
     D.diagramOverOpenπ U i ≫ D.ιInvAppπEqMap U ≫ D.ιInvApp U ≫ D.diagramOverOpenπ U j =
       D.diagramOverOpenπ U j := by
-  -- Porting note: originally, the proof of monotonicity was left a blank and proved in the end
-  -- but Lean 4 doesn't like this any more, so the proof is restructured
-  rw [← @cancel_mono (f := (componentwiseDiagram 𝖣.diagram.multispan _).map
-    (Quiver.Hom.op (WalkingMultispan.Hom.snd (i, j))) ≫ 𝟙 _) _ _ (by
-    rw [Category.comp_id]
-    apply (config := { allowSynthFailures := true }) mono_comp
-    change Mono ((_ ≫ D.f j i).c.app _)
-    rw [comp_c_app]
-    apply (config := { allowSynthFailures := true }) mono_comp
-    · erw [D.ι_image_preimage_eq i j U]
-      infer_instance
-    · have : IsIso (D.t i j).c := by apply c_isIso_of_iso
-      infer_instance)]
+  rw [← @cancel_mono
+          (f := (componentwiseDiagram 𝖣.diagram.multispan _).map
+            (Quiver.Hom.op (WalkingMultispan.Hom.snd (i, j))) ≫ 𝟙 _) ..]
   simp_rw [Category.assoc]
   rw [limit.w_assoc]
   erw [limit.lift_π_assoc]
@@ -466,6 +456,15 @@ theorem π_ιInvApp_π (i j : D.J) (U : Opens (D.U i).carrier) :
   convert
     limit.w (componentwiseDiagram 𝖣.diagram.multispan _)
       (Quiver.Hom.op (WalkingMultispan.Hom.fst (i, j)))
+  · rw [Category.comp_id]
+    apply (config := { allowSynthFailures := true }) mono_comp
+    change Mono ((_ ≫ D.f j i).c.app _)
+    rw [comp_c_app]
+    apply (config := { allowSynthFailures := true }) mono_comp
+    · erw [D.ι_image_preimage_eq i j U]
+      infer_instance
+    · have : IsIso (D.t i j).c := by apply c_isIso_of_iso
+      infer_instance
 
 /-- `ιInvApp` is the inverse of `D.ι i` on `U`. -/
 theorem π_ιInvApp_eq_id (i : D.J) (U : Opens (D.U i).carrier) :

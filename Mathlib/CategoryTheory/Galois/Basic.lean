@@ -3,16 +3,14 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 import Mathlib.CategoryTheory.Limits.FintypeCat
 import Mathlib.CategoryTheory.Limits.MonoCoprod
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
-import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 import Mathlib.CategoryTheory.SingleObj
 import Mathlib.Data.Finite.Card
+import Mathlib.Logic.Equiv.TransferInstance
 
 /-!
 # Definition and basic properties of Galois categories
@@ -41,7 +39,7 @@ as this is not needed for the proof of the fundamental theorem on Galois categor
 
 -/
 
-universe u₁ u₂ v₁ v₂ w
+universe u₁ u₂ v₁ v₂ w t
 
 namespace CategoryTheory
 
@@ -117,6 +115,11 @@ instance : HasBinaryProducts C := hasBinaryProducts_of_hasTerminal_and_pullbacks
 
 instance : HasEqualizers C := hasEqualizers_of_hasPullbacks_and_binary_products
 
+-- A `PreGaloisCategory` has quotients by finite groups in arbitrary universes. -/
+instance {G : Type*} [Group G] [Finite G] : HasColimitsOfShape (SingleObj G) C := by
+  obtain ⟨G', hg, hf, ⟨e⟩⟩ := Finite.exists_type_univ_nonempty_mulEquiv G
+  exact Limits.hasColimitsOfShape_of_equivalence e.toSingleObjEquiv.symm
+
 end
 
 namespace FiberFunctor
@@ -135,6 +138,12 @@ noncomputable instance : ReflectsColimitsOfShape (Discrete PEmpty.{1}) F :=
 
 noncomputable instance : PreservesFiniteLimits F :=
   preservesFiniteLimitsOfPreservesTerminalAndPullbacks F
+
+/-- Fiber functors preserve quotients by finite groups in arbitrary universes. -/
+noncomputable instance {G : Type*} [Group G] [Finite G] :
+    PreservesColimitsOfShape (SingleObj G) F := by
+  choose G' hg hf he using Finite.exists_type_univ_nonempty_mulEquiv G
+  exact Limits.preservesColimitsOfShapeOfEquiv he.some.toSingleObjEquiv.symm F
 
 /-- Fiber functors reflect monomorphisms. -/
 instance : ReflectsMonomorphisms F := ReflectsMonomorphisms.mk <| by
@@ -157,6 +166,16 @@ instance : F.Faithful where
     haveI : IsIso (equalizer.ι f g) := isIso_of_reflects_iso _ F
     exact eq_of_epi_equalizer
 
+section
+
+/-- If `F` is a fiber functor and `E` is an equivalence between categories of finite types,
+then `F ⋙ E` is again a fiber functor. -/
+noncomputable def compRight (E : FintypeCat.{w} ⥤ FintypeCat.{t}) [E.IsEquivalence] :
+    FiberFunctor (F ⋙ E) where
+  preservesQuotientsByFiniteGroups G := compPreservesColimitsOfShape F E
+
+end
+
 end FiberFunctor
 
 variable {C : Type u₁} [Category.{u₂, u₁} C]
@@ -171,6 +190,10 @@ instance (X : C) : MulAction (Aut F) (F.obj X) where
 lemma mulAction_def {X : C} (σ : Aut F) (x : F.obj X) :
     σ • x = σ.hom.app X x :=
   rfl
+
+lemma mulAction_naturality {X Y : C} (σ : Aut F) (f : X ⟶ Y) (x : F.obj X) :
+    σ • F.map f x = F.map f (σ • x) :=
+  FunctorToFintypeCat.naturality F F σ.hom f x
 
 /-- An object that is neither initial or connected has a non-trivial subobject. -/
 lemma has_non_trivial_subobject_of_not_isConnected_of_not_initial (X : C) (hc : ¬ IsConnected X)
@@ -308,6 +331,14 @@ lemma surjective_of_nonempty_fiber_of_isConnected {X A : C} [Nonempty (F.obj X)]
     Function.Surjective (F.map f) := by
   have : Epi f := epi_of_nonempty_of_isConnected F f
   exact surjective_on_fiber_of_epi F f
+
+/-- If `X : ι → C` is a finite family of objects with non-empty fiber, then
+also `∏ᶜ X` has non-empty fiber. -/
+instance nonempty_fiber_pi_of_nonempty_of_finite {ι : Type*} [Fintype ι] (X : ι → C)
+    [∀ i, Nonempty (F.obj (X i))] : Nonempty (F.obj (∏ᶜ X)) :=
+  let f (i : ι) : FintypeCat.{w} := F.obj (X i)
+  let i : F.obj (∏ᶜ X) ≅ ∏ᶜ f := PreservesProduct.iso F _
+  Nonempty.elim inferInstance (fun x : (∏ᶜ f : FintypeCat.{w}) ↦ ⟨i.inv x⟩)
 
 section CardFiber
 

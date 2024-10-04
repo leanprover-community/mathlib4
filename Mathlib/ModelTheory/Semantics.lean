@@ -154,13 +154,13 @@ theorem realize_constantsToVars [L[[α]].Structure M] [(lhomWithConstants L α).
   · simp
   · cases n
     · cases f
-      · simp only [realize, ih, constantsOn, mk₂_Functions]
+      · simp only [realize, ih, constantsOn, constantsOnFunc]
         -- Porting note: below lemma does not work with simp for some reason
         rw [withConstants_funMap_sum_inl]
       · simp only [realize, constantsToVars, Sum.elim_inl, funMap_eq_coe_constants]
         rfl
     · cases' f with _ f
-      · simp only [realize, ih, constantsOn, mk₂_Functions]
+      · simp only [realize, ih, constantsOn, constantsOnFunc]
         -- Porting note: below lemma does not work with simp for some reason
         rw [withConstants_funMap_sum_inl]
       · exact isEmptyElim f
@@ -174,7 +174,7 @@ theorem realize_varsToConstants [L[[α]].Structure M] [(lhomWithConstants L α).
     -- Porting note: both cases were `simp [Language.con]`
     · simp [Language.con, realize, funMap_eq_coe_constants]
     · simp [realize, constantMap]
-  · simp only [realize, constantsOn, mk₂_Functions, ih]
+  · simp only [realize, constantsOn, constantsOnFunc, ih]
     -- Porting note: below lemma does not work with simp for some reason
     rw [withConstants_funMap_sum_inl]
 
@@ -353,7 +353,7 @@ theorem realize_relabel {m n : ℕ} {φ : L.BoundedFormula α n} {g : α → β 
     {xs : Fin (m + n) → M} :
     (φ.relabel g).Realize v xs ↔
       φ.Realize (Sum.elim v (xs ∘ Fin.castAdd n) ∘ g) (xs ∘ Fin.natAdd m) := by
-  rw [relabel, realize_mapTermRel_add_castLe] <;> intros <;> simp
+  apply realize_mapTermRel_add_castLe <;> simp
 
 theorem realize_liftAt {n n' m : ℕ} {φ : L.BoundedFormula α n} {v : α → M} {xs : Fin (n + n') → M}
     (hmn : m + n' ≤ n + 1) :
@@ -946,7 +946,7 @@ theorem Sentence.realize_cardGe (n) : M ⊨ Sentence.cardGe L n ↔ ↑n ≤ #M 
     BoundedFormula.realize_exs]
   simp_rw [BoundedFormula.realize_foldr_inf]
   simp only [Function.comp_apply, List.mem_map, Prod.exists, Ne, List.mem_product,
-    List.mem_finRange, forall_exists_index, and_imp, List.mem_filter, true_and_iff]
+    List.mem_finRange, forall_exists_index, and_imp, List.mem_filter, true_and]
   refine ⟨?_, fun xs => ⟨xs.some, ?_⟩⟩
   · rintro ⟨xs, h⟩
     refine ⟨⟨xs, fun i j ij => ?_⟩⟩
