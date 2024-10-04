@@ -100,7 +100,7 @@ theorem integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
     · rintro ⟨x, ⟨hx1, hx2⟩, rfl⟩
       exact ⟨⟨x, ⟨⟨x, hx1⟩, rfl⟩, rfl⟩, (heq x).mpr hx2⟩
 
-open Module Fintype FiniteDimensional
+open Module Fintype Module
 
 /-- A `ℂ`-basis of `ℂ^n` that is also a `ℤ`-basis of the `integerLattice`. -/
 noncomputable def latticeBasis [NumberField K] :
@@ -176,7 +176,7 @@ end NumberField.canonicalEmbedding
 
 namespace NumberField.mixedEmbedding
 
-open NumberField.InfinitePlace FiniteDimensional Finset
+open NumberField.InfinitePlace Module Finset
 
 /-- The mixed space `ℝ^r₁ × ℂ^r₂` with `(r₁, r₂)` the signature of `K`. -/
 abbrev mixedSpace :=
@@ -491,7 +491,7 @@ def indexEquiv : (index K) ≃ (K →+* ℂ) := by
       · exact ⟨Sum.inr ⟨InfinitePlace.mkComplex ⟨φ, hφ⟩, 1⟩,
           by simp [(embedding_mk_eq φ).resolve_left hw]⟩
   · rw [Embeddings.card, ← mixedEmbedding.finrank K,
-      ← FiniteDimensional.finrank_eq_card_basis (stdBasis K)]
+      ← Module.finrank_eq_card_basis (stdBasis K)]
 
 variable {K}
 

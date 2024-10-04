@@ -140,6 +140,11 @@ theorem lift_unique' [FormallyUnramified R A] {C : Type*} [CommRing C]
 
 end
 
+instance {R : Type*} [CommRing R] : FormallyUnramified R R := by
+  rw [iff_comp_injective]
+  intros B _ _ _ _ f₁ f₂ _
+  exact Subsingleton.elim _ _
+
 section OfEquiv
 
 variable {R : Type*} [CommRing R]
@@ -188,6 +193,29 @@ theorem of_comp [FormallyUnramified R B] : FormallyUnramified A B := by
   exact AlgHom.congr_fun e' x
 
 end Comp
+
+section of_surjective
+
+variable {R : Type*} [CommRing R]
+variable {A B : Type*} [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
+
+/-- This holds in general for epimorphisms. -/
+theorem of_surjective [FormallyUnramified R A] (f : A →ₐ[R] B) (H : Function.Surjective f) :
+    FormallyUnramified R B := by
+  rw [iff_comp_injective]
+  intro Q _ _ I hI f₁ f₂ e
+  ext x
+  obtain ⟨x, rfl⟩ := H x
+  rw [← AlgHom.comp_apply, ← AlgHom.comp_apply]
+  congr 1
+  apply FormallyUnramified.comp_injective I hI
+  ext x; exact DFunLike.congr_fun e (f x)
+
+instance quotient {A} [CommRing A] [Algebra R A] [FormallyUnramified R A] (I : Ideal A) :
+    FormallyUnramified R (A ⧸ I) :=
+  FormallyUnramified.of_surjective (IsScalarTower.toAlgHom R A (A ⧸ I)) Ideal.Quotient.mk_surjective
+
+end of_surjective
 
 section BaseChange
 

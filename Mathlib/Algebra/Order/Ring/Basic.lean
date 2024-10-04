@@ -363,36 +363,3 @@ lemma pow_four_le_pow_two_of_pow_two_le (h : a ^ 2 ≤ b) : a ^ 4 ≤ b ^ 2 :=
   (pow_mul a 2 2).symm ▸ pow_le_pow_left (sq_nonneg a) h 2
 
 end LinearOrderedSemiring
-
-/-!
-### Deprecated lemmas
-
-Those lemmas have been deprecated on 2023-12-23.
--/
-
-@[deprecated (since := "2023-12-23")] alias pow_mono := pow_right_mono
-@[deprecated (since := "2023-12-23")] alias pow_le_pow := pow_le_pow_right
-@[deprecated (since := "2023-12-23")] alias pow_le_pow_of_le_left := pow_le_pow_left
-@[deprecated (since := "2023-12-23")] alias pow_lt_pow_of_lt_left := pow_lt_pow_left
-@[deprecated (since := "2023-12-23")] alias strictMonoOn_pow := pow_left_strictMonoOn
-@[deprecated (since := "2023-12-23")] alias pow_strictMono_right := pow_right_strictMono
-@[deprecated (since := "2023-12-23")] alias pow_lt_pow := pow_lt_pow_right
-@[deprecated (since := "2023-12-23")] alias pow_lt_pow_iff := pow_lt_pow_iff_right
-@[deprecated (since := "2023-12-23")] alias pow_le_pow_iff := pow_le_pow_iff_right
-@[deprecated (since := "2023-12-23")] alias self_lt_pow := lt_self_pow
-@[deprecated (since := "2023-12-23")] alias strictAnti_pow := pow_right_strictAnti
-
-@[deprecated (since := "2023-12-23")]
-alias pow_lt_pow_iff_of_lt_one := pow_lt_pow_iff_right_of_lt_one
-
-@[deprecated (since := "2023-12-23")] alias pow_lt_pow_of_lt_one := pow_lt_pow_right_of_lt_one
-@[deprecated (since := "2023-12-23")] alias lt_of_pow_lt_pow := lt_of_pow_lt_pow_left
-@[deprecated (since := "2023-12-23")] alias le_of_pow_le_pow := le_of_pow_le_pow_left
-@[deprecated (since := "2023-12-23")] alias self_le_pow := le_self_pow
-@[deprecated (since := "2023-12-23")] alias Nat.pow_lt_pow_of_lt_right := pow_lt_pow_right
-
-@[deprecated (since := "2023-12-23")]
-protected alias Nat.pow_right_strictMono := pow_right_strictMono
-
-@[deprecated (since := "2023-12-23")] alias Nat.pow_le_iff_le_right := pow_le_pow_iff_right
-@[deprecated (since := "2023-12-23")] alias Nat.pow_lt_iff_lt_right := pow_lt_pow_iff_right
