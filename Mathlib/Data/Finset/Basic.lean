@@ -2912,6 +2912,11 @@ theorem toList_toFinset [DecidableEq α] (s : Finset α) : s.toList.toFinset = s
   ext
   simp
 
+theorem _root_.List.toFinset_toList [DecidableEq α] {s : List α} (hs : s.Nodup) :
+    s.toFinset.toList.Perm s := by
+  apply List.perm_of_nodup_nodup_toFinset_eq (nodup_toList _) hs
+  rw [toList_toFinset]
+
 @[simp]
 theorem toList_eq_singleton_iff {a : α} {s : Finset α} : s.toList = [a] ↔ s = {a} := by
   rw [toList, Multiset.toList_eq_singleton_iff, val_eq_singleton_iff]
