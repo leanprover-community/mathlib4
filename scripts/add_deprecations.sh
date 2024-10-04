@@ -14,7 +14,6 @@ fi
 # check that the given commit is valid
 git cat-file -e "${commit}" || { printf $'invalid commit hash \'%s\'\n' "${commit}";  exit 1; }
 
-
 ## we narrow the diff to lines beginning with `theorem`, `lemma` and a few other commands
 begs="(theorem|lemma|inductive|structure|def|class|instance|alias|abbrev)"
 
@@ -23,7 +22,7 @@ begs="(theorem|lemma|inductive|structure|def|class|instance|alias|abbrev)"
 ##  for each modified declaration in `<file>`.
 ##  The separators `@@@` delimit different declarations.
 ##  The separators `||||` are later replaced by line breaks.
-## To use a specific date, replace $( date +%Y-%m-%d ) with 2024-04-17 for instance
+## To use a specific date, replace $(date +%Y-%m-%d) with 2024-04-17 for instance
 
 mkDeclAndDepr () {
   git diff --unified=0 "${commit}" "${1}" |
