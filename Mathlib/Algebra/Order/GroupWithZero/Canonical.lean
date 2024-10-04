@@ -8,11 +8,13 @@ import Mathlib.Algebra.GroupWithZero.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.WithZero
 import Mathlib.Algebra.Order.AddGroupWithTop
 import Mathlib.Algebra.Order.Group.Units
+import Mathlib.Algebra.Group.Int
 import Mathlib.Algebra.Order.GroupWithZero.Synonym
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled
 import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Monoid.TypeTags
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 
 /-!
 # Linearly ordered commutative groups and monoids with a zero element adjoined
@@ -256,6 +258,28 @@ lemma pow_lt_pow_succ (ha : 1 < a) : a ^ n < a ^ n.succ := by
 
 lemma pow_lt_pow_right₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n := by
   induction' hmn with n _ ih; exacts [pow_lt_pow_succ ha, lt_trans ih (pow_lt_pow_succ ha)]
+
+lemma one_lt_zpow₀ {n : ℤ} (ha : 1 < a) (hn : 0 < n) : 1 < a ^ n := by
+  obtain ⟨n, rfl⟩ := Int.eq_ofNat_of_zero_le hn.le
+  rw [zpow_natCast]
+  refine one_lt_pow' ha ?_
+  rintro rfl
+  simp at hn
+
+lemma zpow_lt_zpow_right₀ {m n : ℤ} (ha : 1 < a) (hmn : m < n) :
+    a ^ m < a ^ n := by
+  have hz : a ≠ 0 := ne_zero_of_lt ha
+  have honelt : 1 < a ^ (n - m) := by
+    apply one_lt_zpow₀
+    assumption
+    simpa
+  calc a ^ m = a ^ m * 1 := by simp
+           _ < a ^ m * a ^ (n - m) := by
+                apply mul_lt_mul_of_lt_of_le₀
+                rfl
+                exact zpow_ne_zero m hz
+                exact honelt
+           _ = a ^ n := by rw [← zpow_add₀ (ne_zero_of_lt ha), add_sub_cancel]
 
 @[deprecated (since := "2023-12-23")] alias pow_lt_pow₀ := pow_lt_pow_right₀
 
