@@ -543,8 +543,14 @@ def stalkIso (x : PrimeSpectrum.Top R) :
 instance (x : PrimeSpectrum R) : IsIso (stalkToFiberRingHom R x) :=
   (stalkIso R x).isIso_hom
 
+instance (x : PrimeSpectrum R) : IsLocalRingHom (stalkToFiberRingHom R x) :=
+  isLocalRingHom_of_isIso _
+
 instance (x : PrimeSpectrum R) : IsIso (localizationToStalk R x) :=
   (stalkIso R x).isIso_inv
+
+instance (x : PrimeSpectrum R) : IsLocalRingHom (localizationToStalk R x) :=
+  isLocalRingHom_of_isIso _
 
 @[simp, reassoc]
 theorem stalkToFiberRingHom_localizationToStalk (x : PrimeSpectrum.Top R) :
