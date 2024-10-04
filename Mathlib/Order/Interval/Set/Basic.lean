@@ -1567,7 +1567,7 @@ theorem Ioc_union_Ioc_symm : Ioc a b ∪ Ioc b a = Ioc (min a b) (max a b) := by
 theorem Ioc_union_Ioc_union_Ioc_cycle :
     Ioc a b ∪ Ioc b c ∪ Ioc c a = Ioc (min a (min b c)) (max a (max b c)) := by
   rw [Ioc_union_Ioc, Ioc_union_Ioc]
-  ac_rfl
+  · ac_rfl
   all_goals
   solve_by_elim (config := { maxDepth := 5 }) [min_le_of_left_le, min_le_of_right_le,
        le_max_of_le_left, le_max_of_le_right, le_refl]
