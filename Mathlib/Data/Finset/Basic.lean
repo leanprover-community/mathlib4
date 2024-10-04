@@ -1916,7 +1916,7 @@ theorem union_sdiff_self (s t : Finset α) : (s ∪ t) \ t = s \ t :=
 
 -- TODO: Do we want to delete this lemma and `Finset.disjUnion_singleton`,
 -- or instead add `Finset.union_singleton`/`Finset.singleton_union`?
-theorem sdiff_singleton_eq_erase (a : α) (s : Finset α) : s \ singleton a = erase s a := by
+theorem sdiff_singleton_eq_erase (a : α) (s : Finset α) : s \ {a} = erase s a := by
   ext
   rw [mem_erase, mem_sdiff, mem_singleton, and_comm]
 
@@ -1972,9 +1972,9 @@ theorem erase_union_of_mem (ha : a ∈ t) (s : Finset α) : s.erase a ∪ t = s 
 theorem union_erase_of_mem (ha : a ∈ s) (t : Finset α) : s ∪ t.erase a = s ∪ t := by
   rw [← insert_erase (mem_union_left t ha), erase_union_distrib, ← insert_union, insert_erase ha]
 
-@[simp]
-theorem sdiff_singleton_eq_self (ha : a ∉ s) : s \ {a} = s :=
-  sdiff_eq_self_iff_disjoint.2 <| by simp [ha]
+@[simp, deprecated erase_eq_of_not_mem (since := "2024-10-01")]
+theorem sdiff_singleton_eq_self (ha : a ∉ s) : s \ {a} = s := by
+  rw [← erase_eq, erase_eq_of_not_mem ha]
 
 theorem Nontrivial.sdiff_singleton_nonempty {c : α} {s : Finset α} (hS : s.Nontrivial) :
     (s \ {c}).Nonempty := by
@@ -2037,6 +2037,8 @@ theorem disjoint_sdiff_inter (s t : Finset α) : Disjoint (s \ t) (s ∩ t) :=
 
 theorem sdiff_eq_self_iff_disjoint : s \ t = s ↔ Disjoint s t :=
   sdiff_eq_self_iff_disjoint'
+
+@[deprecated (since := "2024-10-01")] alias sdiff_eq_self := sdiff_eq_self_iff_disjoint
 
 theorem sdiff_eq_self_of_disjoint (h : Disjoint s t) : s \ t = s :=
   sdiff_eq_self_iff_disjoint.2 h
@@ -2315,7 +2317,7 @@ theorem filter_singleton (a : α) : filter p {a} = if p a then {a} else ∅ := b
     split_ifs with h <;> by_cases h' : x = a <;> simp [h, h']
 
 theorem filter_cons_of_pos (a : α) (s : Finset α) (ha : a ∉ s) (hp : p a) :
-    filter p (cons a s ha) = cons a (filter p s) (mem_filter.not.mpr <| mt And.left ha) :=
+    filter p (cons a s ha) = cons a (filter p s) ((mem_of_mem_filter _).mt ha) :=
   eq_of_veq <| Multiset.filter_cons_of_pos s.val hp
 
 theorem filter_cons_of_neg (a : α) (s : Finset α) (ha : a ∉ s) (hp : ¬p a) :
@@ -2344,6 +2346,8 @@ theorem disjoint_filter_filter_neg (s t : Finset α) (p : α → Prop)
     Disjoint (s.filter p) (t.filter fun a => ¬p a) :=
   disjoint_filter_filter' s t disjoint_compl_right
 
+@[deprecated (since := "2024-10-01")] alias filter_inter_filter_neg_eq := disjoint_filter_filter_neg
+
 theorem filter_disj_union (s : Finset α) (t : Finset α) (h : Disjoint s t) :
     filter p (disjUnion s t h) = (filter p s).disjUnion (filter p t) (disjoint_filter_filter h) :=
   eq_of_veq <| Multiset.filter_add _ _ _
@@ -2357,15 +2361,10 @@ lemma _root_.Set.pairwiseDisjoint_filter [DecidableEq β] (f : α → β) (s : S
 
 theorem filter_cons {a : α} (s : Finset α) (ha : a ∉ s) :
     filter p (cons a s ha) =
-      (if p a then {a} else ∅ : Finset α).disjUnion (filter p s)
-        (by
-          split_ifs
-          · rw [disjoint_singleton_left]
-            exact mem_filter.not.mpr <| mt And.left ha
-          · exact disjoint_empty_left _) := by
+      if p a then cons a (filter p s) ((mem_of_mem_filter _).mt ha) else filter p s := by
   split_ifs with h
-  · rw [filter_cons_of_pos _ _ _ ha h, singleton_disjUnion]
-  · rw [filter_cons_of_neg _ _ _ ha h, empty_disjUnion]
+  · rw [filter_cons_of_pos _ _ _ ha h]
+  · rw [filter_cons_of_neg _ _ _ ha h]
 
 section
 variable [DecidableEq α]
@@ -2417,9 +2416,6 @@ lemma filter_and_not (s : Finset α) (p q : α → Prop) [DecidablePred p] [Deci
 
 theorem sdiff_eq_filter (s₁ s₂ : Finset α) : s₁ \ s₂ = filter (· ∉ s₂) s₁ :=
   ext fun _ => by simp [mem_sdiff, mem_filter]
-
-theorem sdiff_eq_self (s₁ s₂ : Finset α) : s₁ \ s₂ = s₁ ↔ s₁ ∩ s₂ ⊆ ∅ := by
-  simp [Subset.antisymm_iff, disjoint_iff_inter_eq_empty]
 
 theorem subset_union_elim {s : Finset α} {t₁ t₂ : Set α} (h : ↑s ⊆ t₁ ∪ t₂) :
     ∃ s₁ s₂ : Finset α, s₁ ∪ s₂ = s ∧ ↑s₁ ⊆ t₁ ∧ ↑s₂ ⊆ t₂ \ t₁ := by
@@ -2488,10 +2484,6 @@ theorem filter_ne [DecidableEq β] (s : Finset β) (b : β) :
 
 theorem filter_ne' [DecidableEq β] (s : Finset β) (b : β) : (s.filter fun a => a ≠ b) = s.erase b :=
   _root_.trans (filter_congr fun _ _ => by simp_rw [@ne_comm _ b]) (filter_ne s b)
-
-theorem filter_inter_filter_neg_eq (s t : Finset α) :
-    (s.filter p ∩ t.filter fun a => ¬p a) = ∅ := by
-  simpa using (disjoint_filter_filter_neg s t p).eq_bot
 
 theorem filter_union_filter_of_codisjoint (s : Finset α) (h : Codisjoint p q) :
     s.filter p ∪ s.filter q = s :=
