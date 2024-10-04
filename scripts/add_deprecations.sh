@@ -14,6 +14,10 @@ fi
 # check that the given commit is valid
 git cat-file -e "${commit}" || { printf $'invalid commit hash \'%s\'\n' "${commit}";  exit 1; }
 
+
+## we narrow the diff to lines beginning with `theorem`, `lemma` and a few other commands
+begs="(theorem|lemma|inductive|structure|def|class|instance|alias|abbrev)"
+
 ##  `mkDeclAndDepr <file>` outputs a single line of the form
 ##  `@[deprecated (since := "yyyy-mm-dd")]||||alias yyy := xxx@@@`
 ##  for each modified declaration in `<file>`.
@@ -23,15 +27,17 @@ git cat-file -e "${commit}" || { printf $'invalid commit hash \'%s\'\n' "${commi
 
 mkDeclAndDepr () {
   git diff --unified=0 "${commit}" "${1}" |
-    awk -v date="$(date +%Y-%m-%d)" 'function depr(ol,ne) {
+    awk -v regex="[^+-]*${begs}" -v date="$(date +%Y-%m-%d)" '
+    function depr(ol,ne) {
       return sprintf("@[deprecated (since := \"%s\")]||||alias %s := %s", date, ol, ne)
     }
-    /^-[^+-]*(theorem|lemma)/ {
+    BEGIN{ plusRegex="^+" regex; minusRegex="^-" regex; }
+    ($0 ~ minusRegex) {
       for(i=1; i<=NF; i++) {
         if (($i ~ /theorem$/) || ($i ~ /lemma$/)) { old=$(i+1) }
       }
     }
-    /^+[^+-]*(theorem|lemma)/ {
+    ($0 ~ plusRegex) {
       for(i=1; i<=NF; i++) {
         if (($i ~ /theorem$/) || ($i ~ /lemma$/)) {
           sub(/^+/, "", $i)
@@ -75,3 +81,11 @@ for fil in $( git diff --name-only ${commit} ); do
   printf $'Processing %s\n' "${fil}"
   addDeprecations "${fil}" > "${new}" ; mv "${new}" "${fil}"
 done
+
+ : <<'TEST_DECLARATIONS'
+
+theorem ThmRemoved I'm no longer here
+def DefRemoved I'm no longer here
+lemma LemRemoved I'm no longer here
+
+TEST_DECLARATIONS
