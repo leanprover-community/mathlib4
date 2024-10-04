@@ -32,7 +32,7 @@ lemma natCard_mul_le : Nat.card (s * t) ≤ Nat.card s * Nat.card t := by
   refine Cardinal.toNat_le_toNat Cardinal.mk_mul_le ?_
   aesop (add simp [Cardinal.mul_lt_aleph0_iff, finite_mul])
 
-@[to_additive (attr := deprecated (since := "2024-09-30"))] alias card_mul_le := Cardinal.mk_mul_le
+@[to_additive (attr := deprecated (since := "2024-09-30"))] alias card_mul_le := natCard_mul_le
 
 end Mul
 
