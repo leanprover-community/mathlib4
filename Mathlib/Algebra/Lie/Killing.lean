@@ -111,7 +111,7 @@ lemma isKilling_of_equiv [IsKilling R L] (e : L ≃ₗ⁅R⁆ L') : IsKilling R 
   refine ⟨fun hx' ↦ ?_, fun hx y _ ↦ hx ▸ LinearMap.map_zero₂ (killingForm R L') y⟩
   suffices e.symm x' ∈ LinearMap.ker (killingForm R L) by
     rw [IsKilling.ker_killingForm_eq_bot] at this
-    simpa using (e : L ≃ₗ[R] L').congr_arg this
+    simpa [map_zero] using (e : L ≃ₗ[R] L').congr_arg this
   ext y
   replace hx' : ∀ y', killingForm R L' x' y' = 0 := by simpa using hx'
   specialize hx' (e y)

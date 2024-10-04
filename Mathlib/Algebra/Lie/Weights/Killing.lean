@@ -534,7 +534,9 @@ lemma _root_.IsSl2Triple.h_eq_coroot {α : Weight K H L} (hα : α.IsNonZero)
 lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
     finrank K (rootSpace H α) = 1 := by
   suffices ¬ 1 < finrank K (rootSpace H α) by
-    have h₀ : finrank K (rootSpace H α) ≠ 0 := by simpa using α.genWeightSpace_ne_bot
+    have h₀ : finrank K (rootSpace H α) ≠ 0 := by
+      convert_to finrank K (rootSpace H α).toSubmodule ≠ 0
+      simpa using α.genWeightSpace_ne_bot
     omega
   intro contra
   obtain ⟨h, e, f, ht, heα, hfα⟩ := exists_isSl2Triple_of_weight_isNonZero hα
@@ -545,7 +547,7 @@ lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
     have : killingForm K L y f = 0 := by simpa [F, traceForm_comm] using hy
     simpa [this] using lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg hyα hfα
   have P : ht.symm.HasPrimitiveVectorWith y (-2 : K) :=
-    { ne_zero := by simpa using hy₀
+    { ne_zero := by simpa [LieSubmodule.mk_eq_zero] using hy₀
       lie_h := by simp only [neg_smul, neg_lie, neg_inj, ht.h_eq_coroot hα heα hfα,
         ← H.coe_bracket_of_module, lie_eq_smul_of_mem_rootSpace hyα (coroot α),
         root_apply_coroot hα]

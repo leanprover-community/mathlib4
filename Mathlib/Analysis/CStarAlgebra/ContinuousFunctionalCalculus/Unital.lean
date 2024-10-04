@@ -7,7 +7,7 @@ import Mathlib.Algebra.Algebra.Quasispectrum
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.Topology.ContinuousFunction.Algebra
+import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
@@ -224,6 +224,10 @@ noncomputable def cfcHom : C(spectrum R a, R) →⋆ₐ[R] A :=
 lemma cfcHom_closedEmbedding :
     ClosedEmbedding <| (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R] A) :=
   (ContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.1
+
+@[fun_prop]
+lemma cfcHom_continuous : Continuous (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R] A) :=
+  cfcHom_closedEmbedding ha |>.continuous
 
 lemma cfcHom_id :
     cfcHom ha ((ContinuousMap.id R).restrict <| spectrum R a) = a :=

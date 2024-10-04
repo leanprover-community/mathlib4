@@ -206,7 +206,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
   · dsimp only
     intro p₁ hp₁ p₂ hp₂ h
     apply Nat.Partition.ext
-    simp only [true_and_iff, mem_univ, mem_filter] at hp₁ hp₂
+    simp only [true_and, mem_univ, mem_filter] at hp₁ hp₂
     ext i
     simp only [φ, ne_eq, Multiset.mem_toFinset, not_not, smul_eq_mul, Finsupp.mk.injEq] at h
     by_cases hi : i = 0
@@ -218,7 +218,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
     · rw [← mul_left_inj' hi]
       rw [Function.funext_iff] at h
       exact h.2 i
-  · simp only [φ, mem_filter, mem_finsuppAntidiag, mem_univ, exists_prop, true_and_iff, and_assoc]
+  · simp only [φ, mem_filter, mem_finsuppAntidiag, mem_univ, exists_prop, true_and, and_assoc]
     rintro f ⟨hf, hf₃, hf₄⟩
     have hf' : f ∈ finsuppAntidiag s n := mem_finsuppAntidiag.mpr ⟨hf, hf₃⟩
     simp only [mem_finsuppAntidiag] at hf'
@@ -266,7 +266,7 @@ theorem partialOddGF_prop [Field α] (n m : ℕ) :
   convert partialGF_prop α n
     ((range m).map mkOdd) _ (fun _ => Set.univ) (fun _ _ => trivial) using 2
   · congr
-    simp only [true_and_iff, forall_const, Set.mem_univ]
+    simp only [true_and, forall_const, Set.mem_univ]
   · rw [Finset.prod_map]
     simp_rw [num_series']
     congr! 2 with x

@@ -126,6 +126,16 @@ theorem ext' {c d : RingCon R} (H : ⇑c = ⇑d) : c = d := DFunLike.coe_injecti
 theorem ext {c d : RingCon R} (H : ∀ x y, c x y ↔ d x y) : c = d :=
   ext' <| by ext; apply H
 
+/--
+Pulling back a `RingCon` across a ring homomorphism.
+-/
+def comap {R R' F : Type*} [Add R] [Add R']
+    [FunLike F R R'] [AddHomClass F R R'] [Mul R] [Mul R'] [MulHomClass F R R']
+    (J : RingCon R') (f : F) :
+    RingCon R where
+  __ := J.toCon.comap f (map_mul f)
+  __ := J.toAddCon.comap f (map_add f)
+
 end Basic
 
 section Quotient

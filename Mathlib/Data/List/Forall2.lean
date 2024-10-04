@@ -87,8 +87,7 @@ theorem forall₂_cons_right_iff {b l u} :
 theorem forall₂_and_left {p : α → Prop} :
     ∀ l u, Forall₂ (fun a b => p a ∧ R a b) l u ↔ (∀ a ∈ l, p a) ∧ Forall₂ R l u
   | [], u => by
-    simp only [forall₂_nil_left_iff, forall_prop_of_false (not_mem_nil _), imp_true_iff,
-      true_and_iff]
+    simp only [forall₂_nil_left_iff, forall_prop_of_false (not_mem_nil _), imp_true_iff, true_and]
   | a :: l, u => by
     simp only [forall₂_and_left l, forall₂_cons_left_iff, forall_mem_cons, and_assoc,
       @and_comm _ (p a), @and_left_comm _ (p a), exists_and_left]
@@ -244,7 +243,7 @@ theorem rel_filter {p : α → Bool} {q : β → Bool}
     dsimp [LiftFun] at hpq
     by_cases h : p a
     · have : q b := by rwa [← hpq h₁]
-      simp only [filter_cons_of_pos h, filter_cons_of_pos this, forall₂_cons, h₁, true_and_iff,
+      simp only [filter_cons_of_pos h, filter_cons_of_pos this, forall₂_cons, h₁, true_and,
         rel_filter hpq h₂]
     · have : ¬q b := by rwa [← hpq h₁]
       simp only [filter_cons_of_neg h, filter_cons_of_neg this, rel_filter hpq h₂]

@@ -98,13 +98,15 @@ instance instLinearWeightsOfIsLieAbelian [IsLieAbelian L] [NoZeroSMulDivisors R 
       rw [commute_iff_lie_eq, ← LieHom.map_lie, trivial_lie_zero, LieHom.map_zero]
     intro χ hχ x y
     simp_rw [Ne, ← LieSubmodule.coe_toSubmodule_eq_iff, genWeightSpace, genWeightSpaceOf,
-      LieSubmodule.iInf_coe_toSubmodule, LieSubmodule.bot_coeSubmodule] at hχ
+      LieSubmodule.iInf_coe_toSubmodule, LieSubmodule.bot_coeSubmodule,
+      Module.End.maxGenEigenspace_def] at hχ
     exact Module.End.map_add_of_iInf_genEigenspace_ne_bot_of_commute
       (toEnd R L M).toLinearMap χ hχ h x y
   { map_add := aux
     map_smul := fun χ hχ t x ↦ by
       simp_rw [Ne, ← LieSubmodule.coe_toSubmodule_eq_iff, genWeightSpace, genWeightSpaceOf,
-        LieSubmodule.iInf_coe_toSubmodule, LieSubmodule.bot_coeSubmodule] at hχ
+        LieSubmodule.iInf_coe_toSubmodule, LieSubmodule.bot_coeSubmodule,
+        Module.End.maxGenEigenspace_def] at hχ
       exact Module.End.map_smul_of_iInf_genEigenspace_ne_bot
         (toEnd R L M).toLinearMap χ hχ t x
     map_lie := fun χ hχ t x ↦ by
@@ -237,9 +239,9 @@ lemma exists_forall_lie_eq_smul [LinearWeights R L M] [IsNoetherian R M] (χ : W
     (LieSubmodule.nontrivial_iff_ne_bot R L M).mpr χ.genWeightSpace_ne_bot
   obtain ⟨⟨⟨m, _⟩, hm₁⟩, hm₂⟩ :=
     @exists_ne _ (nontrivial_max_triv_of_isNilpotent R L (shiftedGenWeightSpace R L M χ)) 0
-  simp_rw [LieSubmodule.mem_coeSubmodule, mem_maxTrivSubmodule, Subtype.ext_iff,
+  simp_rw [mem_maxTrivSubmodule, Subtype.ext_iff,
     ZeroMemClass.coe_zero] at hm₁
-  refine ⟨m, by simpa using hm₂, ?_⟩
+  refine ⟨m, by simpa [LieSubmodule.mk_eq_zero] using hm₂, ?_⟩
   intro x
   have := hm₁ x
   rwa [coe_lie_shiftedGenWeightSpace_apply, sub_eq_zero] at this

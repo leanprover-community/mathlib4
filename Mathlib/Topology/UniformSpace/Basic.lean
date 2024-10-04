@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Order.Filter.SmallSets
-import Mathlib.Tactic.Monotonicity
+import Mathlib.Tactic.Monotonicity.Basic
 import Mathlib.Topology.Compactness.Compact
 import Mathlib.Topology.NhdsSet
 import Mathlib.Algebra.Group.Defs
@@ -135,6 +135,31 @@ theorem mem_idRel {a b : α} : (a, b) ∈ @idRel α ↔ a = b :=
 @[simp]
 theorem idRel_subset {s : Set (α × α)} : idRel ⊆ s ↔ ∀ a, (a, a) ∈ s := by
   simp [subset_def]
+
+theorem eq_singleton_left_of_prod_subset_idRel {X : Type _} {S T : Set X} (hS : S.Nonempty)
+    (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, S = {x} := by
+  rcases hS, hT with ⟨⟨s, hs⟩, ⟨t, ht⟩⟩
+  refine ⟨s, eq_singleton_iff_nonempty_unique_mem.mpr ⟨⟨s, hs⟩, fun x hx ↦ ?_⟩⟩
+  rw [prod_subset_iff] at h_diag
+  replace hs := h_diag s hs t ht
+  replace hx := h_diag x hx t ht
+  simp only [idRel, mem_setOf_eq] at hx hs
+  rwa [← hs] at hx
+
+theorem eq_singleton_right_prod_subset_idRel {X : Type _} {S T : Set X} (hS : S.Nonempty)
+    (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, T = {x} := by
+  rw [Set.prod_subset_iff] at h_diag
+  replace h_diag := fun x hx y hy => (h_diag y hy x hx).symm
+  exact eq_singleton_left_of_prod_subset_idRel hT hS (prod_subset_iff.mpr h_diag)
+
+theorem eq_singleton_prod_subset_idRel {X : Type _} {S T : Set X} (hS : S.Nonempty)
+    (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, S = {x} ∧ T = {x} := by
+  obtain ⟨⟨x, hx⟩, ⟨y, hy⟩⟩ := eq_singleton_left_of_prod_subset_idRel hS hT h_diag,
+    eq_singleton_right_prod_subset_idRel hS hT h_diag
+  refine ⟨x, ⟨hx, ?_⟩⟩
+  rw [hy, Set.singleton_eq_singleton_iff]
+  exact (Set.prod_subset_iff.mp h_diag x (by simp only [hx, Set.mem_singleton]) y
+    (by simp only [hy, Set.mem_singleton])).symm
 
 /-- The composition of relations -/
 def compRel (r₁ r₂ : Set (α × α)) :=
@@ -366,33 +391,6 @@ abbrev UniformSpace.replaceTopology {α : Type*} [i : TopologicalSpace α] (u : 
 theorem UniformSpace.replaceTopology_eq {α : Type*} [i : TopologicalSpace α] (u : UniformSpace α)
     (h : i = u.toTopologicalSpace) : u.replaceTopology h = u :=
   UniformSpace.ext rfl
-
--- Porting note: rfc: use `UniformSpace.Core.mkOfBasis`? This will change defeq here and there
-/-- Define a `UniformSpace` using a "distance" function. The function can be, e.g., the
-distance in a (usual or extended) metric space or an absolute value on a ring. -/
-def UniformSpace.ofFun {α : Type u} {β : Type v} [OrderedAddCommMonoid β]
-    (d : α → α → β) (refl : ∀ x, d x x = 0) (symm : ∀ x y, d x y = d y x)
-    (triangle : ∀ x y z, d x z ≤ d x y + d y z)
-    (half : ∀ ε > (0 : β), ∃ δ > (0 : β), ∀ x < δ, ∀ y < δ, x + y < ε) :
-    UniformSpace α :=
-  .ofCore
-    { uniformity := ⨅ r > 0, 𝓟 { x | d x.1 x.2 < r }
-      refl := le_iInf₂ fun r hr => principal_mono.2 <| idRel_subset.2 fun x => by simpa [refl]
-      symm := tendsto_iInf_iInf fun r => tendsto_iInf_iInf fun _ => tendsto_principal_principal.2
-        fun x hx => by rwa [mem_setOf, symm]
-      comp := le_iInf₂ fun r hr => let ⟨δ, h0, hδr⟩ := half r hr; le_principal_iff.2 <|
-        mem_of_superset
-          (mem_lift' <| mem_iInf_of_mem δ <| mem_iInf_of_mem h0 <| mem_principal_self _)
-          fun (x, z) ⟨y, h₁, h₂⟩ => (triangle _ _ _).trans_lt (hδr _ h₁ _ h₂) }
-
-theorem UniformSpace.hasBasis_ofFun {α : Type u} {β : Type v} [LinearOrderedAddCommMonoid β]
-    (h₀ : ∃ x : β, 0 < x) (d : α → α → β) (refl : ∀ x, d x x = 0) (symm : ∀ x y, d x y = d y x)
-    (triangle : ∀ x y z, d x z ≤ d x y + d y z)
-    (half : ∀ ε > (0 : β), ∃ δ > (0 : β), ∀ x < δ, ∀ y < δ, x + y < ε) :
-    𝓤[.ofFun d refl symm triangle half].HasBasis ((0 : β) < ·) (fun ε => { x | d x.1 x.2 < ε }) :=
-  hasBasis_biInf_principal'
-    (fun ε₁ h₁ ε₂ h₂ => ⟨min ε₁ ε₂, lt_min h₁ h₂, fun _x hx => lt_of_lt_of_le hx (min_le_left _ _),
-      fun _x hx => lt_of_lt_of_le hx (min_le_right _ _)⟩) h₀
 
 section UniformSpace
 

@@ -260,9 +260,26 @@ example (a b : ℤ) (x y : ℝ) (hab : a = b) (hxy : x = y) : 2 * x = 2 * y := b
   fail_if_success linear_combination 2 * hab
   linear_combination 2 * hxy
 
-/-- error: To run 'linear_combination' without hypotheses, call it without input -/
+/--
+warning: this constant has no effect on the linear combination; it can be dropped from the term
+-/
+#guard_msgs in
+example (x y : ℤ) (h1 : 3 * x + 2 * y = 10) : 3 * x + 2 * y = 10 := by
+  linear_combination h1 + 3
+
+/--
+warning: this constant has no effect on the linear combination; it can be dropped from the term
+-/
 #guard_msgs in
 example (x : ℤ) : x ^ 2 = x ^ 2 := by linear_combination x ^ 2
+
+/-- error: 'linear_combination' supports only linear operations -/
+#guard_msgs in
+example {x y : ℤ} (h : x = y) : x ^ 2 = y ^ 2 := by linear_combination h * h
+
+/-- error: 'linear_combination' supports only linear operations -/
+#guard_msgs in
+example {x y : ℤ} (h : x = y) : 3 / x = 3 / y := by linear_combination 3 / h
 
 /-! ### Cases with exponent -/
 

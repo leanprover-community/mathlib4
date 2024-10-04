@@ -111,7 +111,7 @@ theorem mem_mk {s : Set M} {x : M} (h_mul) : x ∈ mk s h_mul ↔ x ∈ s :=
   Iff.rfl
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_set_mk {s : Set M} (h_mul) : (mk s h_mul : Set M) = s :=
+theorem coe_set_mk (s : Set M) (h_mul) : (mk s h_mul : Set M) = s :=
   rfl
 
 @[to_additive (attr := simp)]

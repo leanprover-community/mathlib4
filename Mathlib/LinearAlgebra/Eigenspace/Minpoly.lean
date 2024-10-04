@@ -68,7 +68,7 @@ variable {f} {μ : K}
 
 theorem hasEigenvalue_of_isRoot (h : (minpoly K f).IsRoot μ) : f.HasEigenvalue μ := by
   cases' dvd_iff_isRoot.2 h with p hp
-  rw [HasEigenvalue, eigenspace]
+  rw [hasEigenvalue_iff, eigenspace_def]
   intro con
   cases' (LinearMap.isUnit_iff_ker_eq_bot _).2 con with u hu
   have p_ne_0 : p ≠ 0 := by

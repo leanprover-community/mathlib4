@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Pierre-Alexandre Bazin, Scott Morrison
+Authors: Pierre-Alexandre Bazin, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Simple
 import Mathlib.Algebra.Category.ModuleCat.Subobject

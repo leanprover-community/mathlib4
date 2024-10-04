@@ -386,6 +386,7 @@ protected theorem sum_repr (b : OrthonormalBasis ι 𝕜 E) (x : E) : ∑ i, b.r
   simp_rw [← b.coe_toBasis_repr_apply, ← b.coe_toBasis]
   exact b.toBasis.sum_repr x
 
+open scoped InnerProductSpace in
 protected theorem sum_repr' (b : OrthonormalBasis ι 𝕜 E) (x : E) : ∑ i, ⟪b i, x⟫_𝕜 • b i = x := by
   nth_rw 2 [← (b.sum_repr x)]
   simp_rw [b.repr_apply_apply x]
@@ -678,6 +679,28 @@ section ToMatrix
 variable [DecidableEq ι]
 
 section
+open scoped Matrix
+
+/-- A version of `OrthonormalBasis.toMatrix_orthonormalBasis_mem_unitary` that works for bases with
+different index types. -/
+@[simp]
+theorem OrthonormalBasis.toMatrix_orthonormalBasis_conjTranspose_mul_self [Fintype ι']
+    (a : OrthonormalBasis ι' 𝕜 E) (b : OrthonormalBasis ι 𝕜 E) :
+    (a.toBasis.toMatrix b)ᴴ * a.toBasis.toMatrix b = 1 := by
+  ext i j
+  convert a.repr.inner_map_map (b i) (b j)
+  rw [orthonormal_iff_ite.mp b.orthonormal i j]
+  rfl
+
+/-- A version of `OrthonormalBasis.toMatrix_orthonormalBasis_mem_unitary` that works for bases with
+different index types. -/
+@[simp]
+theorem OrthonormalBasis.toMatrix_orthonormalBasis_self_mul_conjTranspose [Fintype ι']
+    (a : OrthonormalBasis ι 𝕜 E) (b : OrthonormalBasis ι' 𝕜 E) :
+    a.toBasis.toMatrix b * (a.toBasis.toMatrix b)ᴴ = 1 := by
+  classical
+  rw [Matrix.mul_eq_one_comm_of_equiv (a.toBasis.indexEquiv b.toBasis),
+    a.toMatrix_orthonormalBasis_conjTranspose_mul_self b]
 
 variable (a b : OrthonormalBasis ι 𝕜 E)
 
@@ -685,10 +708,7 @@ variable (a b : OrthonormalBasis ι 𝕜 E)
 theorem OrthonormalBasis.toMatrix_orthonormalBasis_mem_unitary :
     a.toBasis.toMatrix b ∈ Matrix.unitaryGroup ι 𝕜 := by
   rw [Matrix.mem_unitaryGroup_iff']
-  ext i j
-  convert a.repr.inner_map_map (b i) (b j)
-  rw [orthonormal_iff_ite.mp b.orthonormal i j]
-  rfl
+  exact a.toMatrix_orthonormalBasis_conjTranspose_mul_self b
 
 /-- The determinant of the change-of-basis matrix between two orthonormal bases `a`, `b` has
 unit length. -/
@@ -915,7 +935,7 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
     simp only [sq, Mx_decomp]
     rw [norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero (L (p1 x)) (L3 (p2 x)) Mx_orth]
     simp only [p1, p2, LinearIsometry.norm_map, _root_.add_left_inj, mul_eq_mul_left_iff,
-      norm_eq_zero, true_or_iff, eq_self_iff_true, ContinuousLinearMap.coe_coe, Submodule.coe_norm,
+      norm_eq_zero, eq_self_iff_true, ContinuousLinearMap.coe_coe, Submodule.coe_norm,
       Submodule.coe_eq_zero]
   exact
     { toLinearMap := M
@@ -927,7 +947,7 @@ theorem LinearIsometry.extend_apply (L : S →ₗᵢ[𝕜] V) (s : S) : L.extend
   simp only [add_right_eq_self, LinearIsometry.coe_toLinearMap,
     LinearIsometryEquiv.coe_toLinearIsometry, LinearIsometry.coe_comp, Function.comp_apply,
     orthogonalProjection_mem_subspace_eq_self, LinearMap.coe_comp, ContinuousLinearMap.coe_coe,
-    Submodule.coeSubtype, LinearMap.add_apply, Submodule.coe_eq_zero,
+    Submodule.coe_subtype, LinearMap.add_apply, Submodule.coe_eq_zero,
     LinearIsometryEquiv.map_eq_zero_iff, Submodule.coe_subtypeₗᵢ,
     orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero, Submodule.orthogonal_orthogonal,
     Submodule.coe_mem]

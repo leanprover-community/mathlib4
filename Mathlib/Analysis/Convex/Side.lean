@@ -776,7 +776,7 @@ theorem isPreconnected_setOf_sSameSide (s : AffineSubspace ℝ P) (x : P) :
     simp only [h, not_sSameSide_bot]
     exact isPreconnected_empty
   · by_cases hx : x ∈ s
-    · simp only [hx, SSameSide, not_true, false_and_iff, and_false_iff]
+    · simp only [hx, SSameSide, not_true, false_and, and_false]
       exact isPreconnected_empty
     · exact (isConnected_setOf_sSameSide hx h).isPreconnected
 
@@ -817,7 +817,7 @@ theorem isPreconnected_setOf_sOppSide (s : AffineSubspace ℝ P) (x : P) :
     simp only [h, not_sOppSide_bot]
     exact isPreconnected_empty
   · by_cases hx : x ∈ s
-    · simp only [hx, SOppSide, not_true, false_and_iff, and_false_iff]
+    · simp only [hx, SOppSide, not_true, false_and, and_false]
       exact isPreconnected_empty
     · exact (isConnected_setOf_sOppSide hx h).isPreconnected
 

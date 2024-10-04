@@ -309,7 +309,7 @@ theorem dvd_iff_prime_pow_dvd_dvd (n d : ℕ) :
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
   rcases eq_or_ne d 0 with (rfl | hd)
-  · simp only [zero_dvd_iff, hn, false_iff_iff, not_forall]
+  · simp only [zero_dvd_iff, hn, false_iff, not_forall]
     exact ⟨2, n, prime_two, dvd_zero _, mt (le_of_dvd hn.bot_lt) (lt_two_pow n).not_le⟩
   refine ⟨fun h p k _ hpkd => dvd_trans hpkd h, ?_⟩
   rw [← factorization_prime_le_iff_dvd hd hn]

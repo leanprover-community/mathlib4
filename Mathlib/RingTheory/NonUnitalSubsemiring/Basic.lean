@@ -379,6 +379,15 @@ theorem coe_sInf (S : Set (NonUnitalSubsemiring R)) :
 theorem mem_sInf {S : Set (NonUnitalSubsemiring R)} {x : R} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
   Set.mem_iInter₂
 
+@[simp, norm_cast]
+theorem coe_iInf {ι : Sort*} {S : ι → NonUnitalSubsemiring R} :
+    (↑(⨅ i, S i) : Set R) = ⋂ i, S i := by
+  simp only [iInf, coe_sInf, Set.biInter_range]
+
+theorem mem_iInf {ι : Sort*} {S : ι → NonUnitalSubsemiring R} {x : R} :
+    (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+  simp only [iInf, mem_sInf, Set.forall_mem_range]
+
 @[simp]
 theorem sInf_toSubsemigroup (s : Set (NonUnitalSubsemiring R)) :
     (sInf s).toSubsemigroup = ⨅ t ∈ s, NonUnitalSubsemiring.toSubsemigroup t :=
@@ -669,6 +678,16 @@ theorem map_sup (s t : NonUnitalSubsemiring R) (f : F) :
 theorem map_iSup {ι : Sort*} (f : F) (s : ι → NonUnitalSubsemiring R) :
     (map f (iSup s) : NonUnitalSubsemiring S) = ⨆ i, map f (s i) :=
   @GaloisConnection.l_iSup _ _ _ _ _ _ _ (gc_map_comap f) s
+
+theorem map_inf (s t : NonUnitalSubsemiring R) (f : F) (hf : Function.Injective f) :
+    (map f (s ⊓ t) : NonUnitalSubsemiring S) = map f s ⊓ map f t :=
+  SetLike.coe_injective (Set.image_inter hf)
+
+theorem map_iInf {ι : Sort*} [Nonempty ι] (f : F) (hf : Function.Injective f)
+    (s : ι → NonUnitalSubsemiring R) :
+    (map f (iInf s) : NonUnitalSubsemiring S) = ⨅ i, map f (s i) := by
+  apply SetLike.coe_injective
+  simpa using (Set.injOn_of_injective hf).image_iInter_eq (s := SetLike.coe ∘ s)
 
 theorem comap_inf (s t : NonUnitalSubsemiring S) (f : F) :
     (comap f (s ⊓ t) : NonUnitalSubsemiring R) = comap f s ⊓ comap f t :=

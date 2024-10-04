@@ -206,7 +206,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     split_ifs with h
     · rw [← not_forall] at h
       simp [h, pow_eq_zero_iff']
-    · simpa only [not_exists, Classical.not_not, eq_self_iff_true, true_iff_iff] using h
+    · simpa only [not_exists, Classical.not_not, eq_self_iff_true, true_iff] using h
   have hd_symm : ∀ x y, d x y = d y x := by
     intro x y
     simp only [d, @SymmetricRel.mk_mem_comm _ _ (hU_symm _) x y]

@@ -33,11 +33,14 @@ theorem uniformContinuous_coe_real : UniformContinuous ((↑) : ℚ → ℝ) :=
 theorem uniformEmbedding_coe_real : UniformEmbedding ((↑) : ℚ → ℝ) :=
   uniformEmbedding_comap Rat.cast_injective
 
-theorem denseEmbedding_coe_real : DenseEmbedding ((↑) : ℚ → ℝ) :=
-  uniformEmbedding_coe_real.denseEmbedding Rat.denseRange_cast
+theorem isDenseEmbedding_coe_real : IsDenseEmbedding ((↑) : ℚ → ℝ) :=
+  uniformEmbedding_coe_real.isDenseEmbedding Rat.denseRange_cast
+
+@[deprecated (since := "2024-09-30")]
+alias denseEmbedding_coe_real := isDenseEmbedding_coe_real
 
 theorem embedding_coe_real : Embedding ((↑) : ℚ → ℝ) :=
-  denseEmbedding_coe_real.to_embedding
+  isDenseEmbedding_coe_real.to_embedding
 
 theorem continuous_coe_real : Continuous ((↑) : ℚ → ℝ) :=
   uniformContinuous_coe_real.continuous

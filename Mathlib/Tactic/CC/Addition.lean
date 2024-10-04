@@ -1848,7 +1848,7 @@ def propagateEqDown (e : Expr) : CCM Unit := do
 /-- Propagate equality from `¬∃ x, p x` to `∀ x, ¬p x`. -/
 def propagateExistsDown (e : Expr) : CCM Unit := do
   if ← isEqFalse e then
-    let hNotE ← mkAppM ``not_of_eq_false #[← getEqFalseProof e]
+    let hNotE ← mkAppM ``of_eq_false #[← getEqFalseProof e]
     let (all, hAll) ← e.forallNot_of_notExists hNotE
     internalizeCore all none
     pushEq all (.const ``True []) (← mkEqTrue hAll)

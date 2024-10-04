@@ -256,6 +256,8 @@ theorem dist_val_le_dist (x y : CompleteCopy s) : dist x.1 y.1 ≤ dist x y :=
   le_add_of_nonneg_right (abs_nonneg _)
 
 instance : TopologicalSpace (CompleteCopy s) := inferInstanceAs (TopologicalSpace s)
+instance [SecondCountableTopology α] : SecondCountableTopology (CompleteCopy s) :=
+  inferInstanceAs (SecondCountableTopology s)
 instance : T0Space (CompleteCopy s) := inferInstanceAs (T0Space s)
 
 /-- A metric space structure on a subset `s` of a metric space, designed to make it complete
@@ -329,10 +331,6 @@ theorem _root_.IsOpen.polishSpace {α : Type*} [TopologicalSpace α] [PolishSpac
     (hs : IsOpen s) : PolishSpace s := by
   letI := upgradePolishSpace α
   lift s to Opens α using hs
-  #adaptation_note /-- After lean4#5020, many instances for Lie algebras and manifolds are no
-  longer found. -/
-  have : SecondCountableTopology s.CompleteCopy :=
-    TopologicalSpace.Subtype.secondCountableTopology _
   exact inferInstanceAs (PolishSpace s.CompleteCopy)
 
 end CompleteCopy

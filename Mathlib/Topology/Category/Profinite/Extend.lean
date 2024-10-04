@@ -10,9 +10,9 @@ import Mathlib.CategoryTheory.Filtered.Final
 
 # Extending cones in `Profinite`
 
-Let `(Sᵢ)_{i : I}` be a family of finite sets indexed by a cofiltered category `I` and let `S` be
-its limit in `Profinite`. Let `G` be a functor from `Profinite` to a category `C` and suppose that
-`G` preserves the limit described above. Suppose further that the projection maps `S ⟶ Sᵢ` are
+Let `(Sᵢ)_{i : I}` be a family of finite sets indexed by a cofiltered category `I` and let `S` be
+its limit in `Profinite`. Let `G` be a functor from `Profinite` to a category `C` and suppose that
+`G` preserves the limit described above. Suppose further that the projection maps `S ⟶ Sᵢ` are
 epimorphic for all `i`. Then `G.obj S` is isomorphic to a limit indexed by
 `StructuredArrow S toProfinite` (see `Profinite.Extend.isLimitCone`).
 
@@ -20,7 +20,7 @@ We also provide the dual result for a functor of the form `G : Profiniteᵒᵖ �
 
 We apply this to define `Profinite.diagram'`, `Profinite.asLimitCone'`, and `Profinite.asLimit'`,
 analogues to their unprimed versions in `Mathlib.Topology.Category.Profinite.AsLimit`, in which the
-indexing category is `StructuredArrow S toProfinite` instead of `DiscreteQuotient S`.
+indexing category is `StructuredArrow S toProfinite` instead of `DiscreteQuotient S`.
 -/
 
 universe u w
@@ -52,7 +52,7 @@ lemma exists_hom (hc : IsLimit c) {X : FintypeCat} (f : c.pt ⟶ toProfinite.obj
 namespace Extend
 
 /--
-Given a cone in `Profinite`, consisting of finite sets and indexed by a cofiltered category,
+Given a cone in `Profinite`, consisting of finite sets and indexed by a cofiltered category,
 we obtain a functor from the indexing category to `StructuredArrow c.pt toProfinite`.
 -/
 @[simps]
@@ -64,7 +64,7 @@ def functor : I ⥤ StructuredArrow c.pt toProfinite where
 example : functor c ⋙ StructuredArrow.proj c.pt toProfinite ≅ F := Iso.refl _
 
 /--
-Given a cone in `Profinite`, consisting of finite sets and indexed by a cofiltered category,
+Given a cone in `Profinite`, consisting of finite sets and indexed by a cofiltered category,
 we obtain a functor from the opposite of the indexing category to
 `CostructuredArrow toProfinite.op ⟨c.pt⟩`.
 -/
@@ -136,7 +136,7 @@ def cone (S : Profinite) :
 example : G.mapCone c = (cone G c.pt).whisker (functor c) := rfl
 
 /--
-If `c` and `G.mapCone c` are limit cones and the projection maps in `c` are epimorphic,
+If `c` and `G.mapCone c` are limit cones and the projection maps in `c` are epimorphic,
 then `cone G c.pt` is a limit cone.
 -/
 noncomputable
@@ -190,7 +190,7 @@ section ProfiniteAsLimit
 variable (S : Profinite.{u})
 
 /--
-A functor `StructuredArrow S toProfinite ⥤ FintypeCat` whose limit in `Profinite` is isomorphic
+A functor `StructuredArrow S toProfinite ⥤ FintypeCat` whose limit in `Profinite` is isomorphic
 to `S`.
 -/
 abbrev fintypeDiagram' : StructuredArrow S toProfinite ⥤ FintypeCat :=

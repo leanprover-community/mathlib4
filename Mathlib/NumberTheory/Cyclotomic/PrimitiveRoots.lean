@@ -340,8 +340,8 @@ theorem sub_one_norm_eq_eval_cyclotomic [IsCyclotomicExtension {n} K L] (h : 2 <
     rfl
     ext
     rw [← neg_sub, map_neg, map_sub, map_one, neg_eq_neg_one_mul]
-  rw [prod_mul_distrib, prod_const, card_univ, AlgHom.card, IsCyclotomicExtension.finrank L hirr,
-    (totient_even h).neg_one_pow, one_mul]
+  rw [prod_mul_distrib, prod_const, Finset.card_univ, AlgHom.card,
+    IsCyclotomicExtension.finrank L hirr, (totient_even h).neg_one_pow, one_mul]
   have Hprod : (Finset.univ.prod fun σ : L →ₐ[K] E => 1 - σ ζ) = eval 1 (cyclotomic' n E) := by
     rw [cyclotomic', eval_prod, ← @Finset.prod_attach E E, ← univ_eq_attach]
     refine Fintype.prod_equiv (hζ.embeddingsEquivPrimitiveRoots E hirr) _ _ fun σ => ?_
@@ -379,7 +379,7 @@ theorem minpoly_sub_one_eq_cyclotomic_comp [Algebra K A] [IsDomain A] {ζ : A}
     minpoly K (ζ - 1) = (cyclotomic n K).comp (X + 1) := by
   haveI := IsCyclotomicExtension.neZero' n K A
   rw [show ζ - 1 = ζ + algebraMap K A (-1) by simp [sub_eq_add_neg],
-    minpoly.add_algebraMap ((integral {n} K A).isIntegral ζ),
+    minpoly.add_algebraMap ζ,
     hζ.minpoly_eq_cyclotomic_of_irreducible h]
   simp
 

@@ -200,58 +200,6 @@ theorem opNorm_comp_linearIsometryEquiv (f : F →SL[σ₂₃] G) (g : F' ≃ₛ
 @[deprecated (since := "2024-02-02")]
 alias op_norm_comp_linearIsometryEquiv := opNorm_comp_linearIsometryEquiv
 
-/-- The norm of the tensor product of a scalar linear map and of an element of a normed space
-is the product of the norms. -/
-@[simp]
-theorem norm_smulRight_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRight c f‖ = ‖c‖ * ‖f‖ := by
-  refine le_antisymm ?_ ?_
-  · refine opNorm_le_bound _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) fun x => ?_
-    calc
-      ‖c x • f‖ = ‖c x‖ * ‖f‖ := norm_smul _ _
-      _ ≤ ‖c‖ * ‖x‖ * ‖f‖ := mul_le_mul_of_nonneg_right (le_opNorm _ _) (norm_nonneg _)
-      _ = ‖c‖ * ‖f‖ * ‖x‖ := by ring
-  · by_cases h : f = 0
-    · simp [h]
-    · have : 0 < ‖f‖ := norm_pos_iff.2 h
-      rw [← le_div_iff₀ this]
-      refine opNorm_le_bound _ (div_nonneg (norm_nonneg _) (norm_nonneg f)) fun x => ?_
-      rw [div_mul_eq_mul_div, le_div_iff₀ this]
-      calc
-        ‖c x‖ * ‖f‖ = ‖c x • f‖ := (norm_smul _ _).symm
-        _ = ‖smulRight c f x‖ := rfl
-        _ ≤ ‖smulRight c f‖ * ‖x‖ := le_opNorm _ _
-
-/-- The non-negative norm of the tensor product of a scalar linear map and of an element of a normed
-space is the product of the non-negative norms. -/
-@[simp]
-theorem nnnorm_smulRight_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRight c f‖₊ = ‖c‖₊ * ‖f‖₊ :=
-  NNReal.eq <| c.norm_smulRight_apply f
-
-variable (𝕜 E Fₗ)
-
-
-/-- `ContinuousLinearMap.smulRight` as a continuous trilinear map:
-`smulRightL (c : E →L[𝕜] 𝕜) (f : F) (x : E) = c x • f`. -/
-def smulRightL : (E →L[𝕜] 𝕜) →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] Fₗ :=
-  LinearMap.mkContinuous₂
-    { toFun := smulRightₗ
-      map_add' := fun c₁ c₂ => by
-        ext x
-        simp only [add_smul, coe_smulRightₗ, add_apply, smulRight_apply, LinearMap.add_apply]
-      map_smul' := fun m c => by
-        ext x
-        dsimp
-        rw [smul_smul] }
-    1 fun c x => by
-      simp only [coe_smulRightₗ, one_mul, norm_smulRight_apply, LinearMap.coe_mk, AddHom.coe_mk,
-        le_refl]
-
-variable {𝕜 E Fₗ}
-
-@[simp]
-theorem norm_smulRightL_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRightL 𝕜 E Fₗ c f‖ = ‖c‖ * ‖f‖ :=
-  norm_smulRight_apply c f
-
 @[simp]
 theorem norm_smulRightL (c : E →L[𝕜] 𝕜) [Nontrivial Fₗ] : ‖smulRightL 𝕜 E Fₗ c‖ = ‖c‖ :=
   ContinuousLinearMap.homothety_norm _ c.norm_smulRight_apply
@@ -365,33 +313,30 @@ protected theorem NormedSpace.equicontinuous_TFAE : List.TFAE
       BddAbove (Set.range (‖f ·‖)),
       (⨆ i, (‖f i‖₊ : ENNReal)) < ⊤ ] := by
   -- `1 ↔ 2 ↔ 3` follows from `uniformEquicontinuous_of_equicontinuousAt_zero`
-  tfae_have 1 → 3
-  · exact uniformEquicontinuous_of_equicontinuousAt_zero f
-  tfae_have 3 → 2
-  · exact UniformEquicontinuous.equicontinuous
-  tfae_have 2 → 1
-  · exact fun H ↦ H 0
+  tfae_have 1 → 3 := uniformEquicontinuous_of_equicontinuousAt_zero f
+  tfae_have 3 → 2 := UniformEquicontinuous.equicontinuous
+  tfae_have 2 → 1 := fun H ↦ H 0
   -- `4 ↔ 5 ↔ 6 ↔ 7 ↔ 8 ↔ 9` is morally trivial, we just have to use a lot of rewriting
   -- and `congr` lemmas
-  tfae_have 4 ↔ 5
-  · rw [exists_ge_and_iff_exists]
+  tfae_have 4 ↔ 5 := by
+    rw [exists_ge_and_iff_exists]
     exact fun C₁ C₂ hC ↦ forall₂_imp fun i x ↦ le_trans' <| by gcongr
-  tfae_have 5 ↔ 7
-  · refine exists_congr (fun C ↦ and_congr_right fun hC ↦ forall_congr' fun i ↦ ?_)
+  tfae_have 5 ↔ 7 := by
+    refine exists_congr (fun C ↦ and_congr_right fun hC ↦ forall_congr' fun i ↦ ?_)
     rw [ContinuousLinearMap.opNorm_le_iff hC]
-  tfae_have 7 ↔ 8
-  · simp_rw [bddAbove_iff_exists_ge (0 : ℝ), Set.forall_mem_range]
-  tfae_have 6 ↔ 8
-  · simp_rw [bddAbove_def, Set.forall_mem_range]
-  tfae_have 8 ↔ 9
-  · rw [ENNReal.iSup_coe_lt_top, ← NNReal.bddAbove_coe, ← Set.range_comp]
+  tfae_have 7 ↔ 8 := by
+    simp_rw [bddAbove_iff_exists_ge (0 : ℝ), Set.forall_mem_range]
+  tfae_have 6 ↔ 8 := by
+    simp_rw [bddAbove_def, Set.forall_mem_range]
+  tfae_have 8 ↔ 9 := by
+    rw [ENNReal.iSup_coe_lt_top, ← NNReal.bddAbove_coe, ← Set.range_comp]
     rfl
   -- `3 ↔ 4` is the interesting part of the result. It is essentially a combination of
   -- `WithSeminorms.uniformEquicontinuous_iff_exists_continuous_seminorm` which turns
   -- equicontinuity into existence of some continuous seminorm and
   -- `Seminorm.bound_of_continuous_normedSpace` which characterize such seminorms.
-  tfae_have 3 ↔ 4
-  · refine ((norm_withSeminorms 𝕜₂ F).uniformEquicontinuous_iff_exists_continuous_seminorm _).trans
+  tfae_have 3 ↔ 4 := by
+    refine ((norm_withSeminorms 𝕜₂ F).uniformEquicontinuous_iff_exists_continuous_seminorm _).trans
       ?_
     rw [forall_const]
     constructor

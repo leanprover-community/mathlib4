@@ -136,7 +136,7 @@ theorem det_mul (M N : Matrix n n R) : det (M * N) = det M * det N :=
           ∑ σ : Perm n, ε σ * ∏ i, M (σ i) (p i) * N (p i) i :=
       (Eq.symm <|
         sum_subset (filter_subset _ _) fun f _ hbij =>
-          det_mul_aux <| by simpa only [true_and_iff, mem_filter, mem_univ] using hbij)
+          det_mul_aux <| by simpa only [true_and, mem_filter, mem_univ] using hbij)
     _ = ∑ τ : Perm n, ∑ σ : Perm n, ε σ * ∏ i, M (σ i) (τ i) * N (τ i) i :=
       sum_bij (fun p h ↦ Equiv.ofBijective p (mem_filter.1 h).2) (fun _ _ ↦ mem_univ _)
         (fun _ _ _ _ h ↦ by injection h)
@@ -183,14 +183,14 @@ theorem det_mul_left_comm (M N P : Matrix m m R) : det (M * (N * P)) = det (N * 
 theorem det_mul_right_comm (M N P : Matrix m m R) : det (M * N * P) = det (M * P * N) := by
   rw [Matrix.mul_assoc, Matrix.mul_assoc, det_mul, det_mul_comm N P, ← det_mul]
 
--- TODO(mathlib4#6607): fix elaboration so that the ascription isn't needed
+-- TODO(mathlib4#6607): fix elaboration so `val` isn't needed
 theorem det_units_conj (M : (Matrix m m R)ˣ) (N : Matrix m m R) :
-    det ((M : Matrix _ _ _) * N * (↑M⁻¹ : Matrix _ _ _)) = det N := by
+    det (M.val * N * M⁻¹.val) = det N := by
   rw [det_mul_right_comm, Units.mul_inv, one_mul]
 
--- TODO(mathlib4#6607): fix elaboration so that the ascription isn't needed
+-- TODO(mathlib4#6607): fix elaboration so `val` isn't needed
 theorem det_units_conj' (M : (Matrix m m R)ˣ) (N : Matrix m m R) :
-    det ((↑M⁻¹ : Matrix _ _ _) * N * (↑M : Matrix _ _ _)) = det N :=
+    det (M⁻¹.val * N * ↑M.val) = det N :=
   det_units_conj M⁻¹ N
 
 /-- Transposing a matrix preserves the determinant. -/

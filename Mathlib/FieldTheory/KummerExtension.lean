@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.RootsOfUnity.Basic
 import Mathlib.RingTheory.AdjoinRoot
-import Mathlib.FieldTheory.Galois
+import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 import Mathlib.RingTheory.Norm.Basic
 /-!
@@ -638,14 +638,11 @@ lemma isCyclic_tfae (K L) [Field K] [Field L] [Algebra K L] [FiniteDimensional K
         IsSplittingField K L (X ^ (finrank K L) - C a),
       ∃ (α : L), α ^ (finrank K L) ∈ Set.range (algebraMap K L) ∧ K⟮α⟯ = ⊤] := by
   tfae_have 1 → 3
-  · intro ⟨inst₁, inst₂⟩
-    exact exists_root_adjoin_eq_top_of_isCyclic K L hK
+  | ⟨inst₁, inst₂⟩ => exists_root_adjoin_eq_top_of_isCyclic K L hK
   tfae_have 3 → 2
-  · intro ⟨α, ⟨a, ha⟩, hα⟩
-    exact ⟨a, irreducible_X_pow_sub_C_of_root_adjoin_eq_top ha.symm hα,
+  | ⟨α, ⟨a, ha⟩, hα⟩ => ⟨a, irreducible_X_pow_sub_C_of_root_adjoin_eq_top ha.symm hα,
       isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top hK ha.symm hα⟩
   tfae_have 2 → 1
-  · intro ⟨a, H, inst⟩
-    exact ⟨isGalois_of_isSplittingField_X_pow_sub_C hK H L,
+  | ⟨a, H, inst⟩ => ⟨isGalois_of_isSplittingField_X_pow_sub_C hK H L,
       isCyclic_of_isSplittingField_X_pow_sub_C hK H L⟩
   tfae_finish
