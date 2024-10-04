@@ -279,9 +279,9 @@ theorem uniformInducing_postcomp
     (g : F →SL[τ] G) (hg : UniformInducing g) (𝔖 : Set (Set E)) :
     UniformInducing (α := UniformConvergenceCLM σ F 𝔖) (β := UniformConvergenceCLM ρ G 𝔖)
       g.comp := by
-  rw [← (uniformEmbedding_coeFn _ _ _).toUniformInducing.of_comp_iff]
+  rw [← (isUniformEmbedding_coeFn _ _ _).toUniformInducing.of_comp_iff]
   exact (UniformOnFun.postcomp_uniformInducing hg).comp
-    (uniformEmbedding_coeFn _ _ _).toUniformInducing
+    (isUniformEmbedding_coeFn _ _ _).toUniformInducing
 
 theorem completeSpace [UniformSpace F] [UniformAddGroup F] [ContinuousSMul 𝕜₂ F] [CompleteSpace F]
     {𝔖 : Set (Set E)} (h𝔖 : RestrictGenTopology 𝔖) (h𝔖U : ⋃₀ 𝔖 = univ) :
@@ -290,7 +290,7 @@ theorem completeSpace [UniformSpace F] [UniformAddGroup F] [ContinuousSMul 𝕜�
   · rw [(uniformInducing_postcomp σ
       (SeparationQuotient.mkCLM 𝕜₂ F) SeparationQuotient.uniformInducing_mk _).completeSpace_congr]
     exacts [this _ inferInstance, SeparationQuotient.postcomp_mkCLM_surjective F σ E]
-  rw [completeSpace_iff_isComplete_range (uniformEmbedding_coeFn _ _ _).toUniformInducing]
+  rw [completeSpace_iff_isComplete_range (isUniformEmbedding_coeFn _ _ _).toUniformInducing]
   apply IsClosed.isComplete
   have H₁ : IsClosed {f : E →ᵤ[𝔖] F | Continuous ((UniformOnFun.toFun 𝔖) f)} :=
     UniformOnFun.isClosed_setOf_continuous h𝔖

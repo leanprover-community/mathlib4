@@ -80,9 +80,9 @@ instance instUniformContinuousConstSMul {M : Type*}
 theorem uniformInducing_postcomp {G : Type*} [AddCommGroup G] [UniformSpace G] [UniformAddGroup G]
     [Module 𝕜 G] (g : F →L[𝕜] G) (hg : UniformInducing g) :
     UniformInducing (g.compContinuousAlternatingMap : (E [⋀^ι]→L[𝕜] F) → (E [⋀^ι]→L[𝕜] G)) := by
-  rw [← uniformEmbedding_toContinuousMultilinearMap.1.of_comp_iff]
+  rw [← isUniformEmbedding_toContinuousMultilinearMap.1.of_comp_iff]
   exact (ContinuousMultilinearMap.uniformInducing_postcomp g hg).comp
-    uniformEmbedding_toContinuousMultilinearMap.1
+    isUniformEmbedding_toContinuousMultilinearMap.1
 
 section CompleteSpace
 
