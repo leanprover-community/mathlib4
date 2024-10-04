@@ -793,4 +793,68 @@ theorem sum_ramification_inertia (K L : Type*) [Field K] [Field L] [IsDedekindDo
 
 end FactorsMap
 
+section tower
+
+variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+
+theorem ramificationIdx_tower [IsDedekindDomain S] [DecidableEq (Ideal S)]
+    [IsDedekindDomain T] [DecidableEq (Ideal T)]{f : R →+* S} {g : S →+* T}
+    {p : Ideal R} {P : Ideal S} {Q : Ideal T} [hpm : P.IsPrime] [hqm : Q.IsPrime]
+    (hg0 : map g P ≠ ⊥) (hfg : map (g.comp f) p ≠ ⊥) (hg : map g P ≤ Q) :
+    ramificationIdx (g.comp f) p Q = ramificationIdx f p P * ramificationIdx g P Q := by
+  have hf0 : map f p ≠ ⊥ :=
+    ne_bot_of_map_ne_bot (Eq.mp (congrArg (fun I ↦ I ≠ ⊥) (map_map f g).symm) hfg)
+  have hp0 : P ≠ ⊥ := ne_bot_of_map_ne_bot hg0
+  have hq0 : Q ≠ ⊥ := ne_bot_of_le_ne_bot hg0 hg
+  letI : P.IsMaximal := Ring.DimensionLEOne.maximalOfPrime hp0 hpm
+  rw [IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count hf0 hpm hp0,
+    IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count hg0 hqm hq0,
+    IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count hfg hqm hq0, ← map_map]
+  rcases eq_prime_pow_mul_coprime hf0 P with ⟨I, hcp, heq⟩
+  have hcp : ⊤ = map g P ⊔ map g I := by rw [← map_sup, hcp, map_top g]
+  have hntq : ¬ ⊤ ≤ Q := fun ht ↦ IsPrime.ne_top hqm (Iff.mpr (eq_top_iff_one Q) (ht trivial))
+  nth_rw 1 [heq, map_mul, Ideal.map_pow, normalizedFactors_mul (pow_ne_zero _ hg0) <| by
+    by_contra h
+    simp only [h, Submodule.zero_eq_bot, bot_le, sup_of_le_left] at hcp
+    exact hntq (hcp.trans_le hg), Multiset.count_add, normalizedFactors_pow, Multiset.count_nsmul]
+  exact add_right_eq_self.mpr <| Decidable.byContradiction fun h ↦ hntq <| hcp.trans_le <|
+    sup_le hg <| le_of_dvd <| dvd_of_mem_normalizedFactors <| Multiset.count_ne_zero.mp h
+
+attribute [local instance] Quotient.field in
+theorem inertiaDeg_tower {f : R →+* S} {g : S →+* T} {p : Ideal R} {P : Ideal S} {I : Ideal T}
+    [p.IsMaximal] [P.IsMaximal] (hp : p = comap f P) (hP : P = comap g I) :
+    inertiaDeg (g.comp f) p I = inertiaDeg f p P * inertiaDeg g P I := by
+  have h : comap (g.comp f) I = p := by rw [hp, hP, comap_comap]
+  simp only [inertiaDeg, dif_pos hp.symm, dif_pos hP.symm, dif_pos h]
+  letI : Algebra (R ⧸ p) (S ⧸ P) := Ideal.Quotient.algebraQuotientOfLEComap (le_of_eq hp)
+  letI : Algebra (S ⧸ P) (T ⧸ I) := Ideal.Quotient.algebraQuotientOfLEComap (le_of_eq hP)
+  letI : Algebra (R ⧸ p) (T ⧸ I) := Ideal.Quotient.algebraQuotientOfLEComap (le_of_eq h.symm)
+  letI : IsScalarTower (R ⧸ p) (S ⧸ P) (T ⧸ I) := IsScalarTower.of_algebraMap_eq (by rintro ⟨⟩; rfl)
+  exact (finrank_mul_finrank (R ⧸ p) (S ⧸ P) (T ⧸ I)).symm
+
+variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
+
+/-- Let `T / S / R` be a tower of algebras, `p, P, Q` be ideals in `R, S, T` respectively,
+  and `P` and `Q` are prime. If `P = Q ∩ S`, then `e (Q | p) = e (P | p) * e (Q | P)`. -/
+theorem ramificationIdx_algebra_tower [IsDedekindDomain S] [DecidableEq (Ideal S)]
+    [IsDedekindDomain T] [DecidableEq (Ideal T)] {p : Ideal R} {P : Ideal S} {Q : Ideal T}
+    [hpm : P.IsPrime] [hqm : Q.IsPrime] (hg0 : map (algebraMap S T) P ≠ ⊥)
+    (hfg : map (algebraMap R T) p ≠ ⊥) (hg : map (algebraMap S T) P ≤ Q) :
+    ramificationIdx (algebraMap R T) p Q =
+    ramificationIdx (algebraMap R S) p P * ramificationIdx (algebraMap S T) P Q := by
+  rw [IsScalarTower.algebraMap_eq R S T] at hfg ⊢
+  exact ramificationIdx_tower hg0 hfg hg
+
+/-- Let `T / S / R` be a tower of algebras, `p, P, I` be ideals in `R, S, T`, respectively,
+  and `p` and `P` are maximal. If `p = P ∩ S` and `P = Q ∩ S`,
+  then `f (Q | p) = f (P | p) * f (Q | P)`. -/
+theorem inertiaDeg_algebra_tower {p : Ideal R} {P : Ideal S} {I : Ideal T} [p.IsMaximal]
+    [P.IsMaximal] (hp : p = comap (algebraMap R S) P) (hP : P = comap (algebraMap S T) I) :
+    inertiaDeg (algebraMap R T) p I =
+    inertiaDeg (algebraMap R S) p P * inertiaDeg (algebraMap S T) P I := by
+  rw [IsScalarTower.algebraMap_eq R S T]
+  exact inertiaDeg_tower hp hP
+
+end tower
+
 end Ideal
