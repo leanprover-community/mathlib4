@@ -43,7 +43,6 @@ theorem div_lt_iff' (hc : 0 < c) : b / c < a ↔ b < c * a := div_lt_iff₀' hc
 @[deprecated inv_mul_le_iff₀ (since := "2024-10-02")]
 theorem inv_mul_le_iff (h : 0 < b) : b⁻¹ * a ≤ c ↔ a ≤ b * c := inv_mul_le_iff₀ h
 
-set_option linter.docPrime false in
 @[deprecated inv_mul_le_iff₀' (since := "2024-10-02")]
 theorem inv_mul_le_iff' (h : 0 < b) : b⁻¹ * a ≤ c ↔ a ≤ c * b := inv_mul_le_iff₀' h
 
@@ -65,45 +64,40 @@ theorem mul_inv_lt_iff (h : 0 < b) : a * b⁻¹ < c ↔ a < b * c := mul_inv_lt_
 @[deprecated mul_inv_lt_iff₀ (since := "2024-10-02")]
 theorem mul_inv_lt_iff' (h : 0 < b) : a * b⁻¹ < c ↔ a < c * b := mul_inv_lt_iff₀ h
 
-theorem inv_pos_le_iff_one_le_mul (ha : 0 < a) : a⁻¹ ≤ b ↔ 1 ≤ b * a := by
-  rw [inv_eq_one_div]
-  exact div_le_iff₀ ha
+@[deprecated inv_le_iff_one_le_mul₀ (since := "2024-10-03")]
+theorem inv_pos_le_iff_one_le_mul (ha : 0 < a) : a⁻¹ ≤ b ↔ 1 ≤ b * a := inv_le_iff_one_le_mul₀ ha
 
-theorem inv_pos_le_iff_one_le_mul' (ha : 0 < a) : a⁻¹ ≤ b ↔ 1 ≤ a * b := by
-  rw [inv_eq_one_div]
-  exact div_le_iff₀' ha
+@[deprecated inv_le_iff_one_le_mul₀' (since := "2024-10-03")]
+theorem inv_pos_le_iff_one_le_mul' (ha : 0 < a) : a⁻¹ ≤ b ↔ 1 ≤ a * b := inv_le_iff_one_le_mul₀' ha
 
-theorem inv_pos_lt_iff_one_lt_mul (ha : 0 < a) : a⁻¹ < b ↔ 1 < b * a := by
-  rw [inv_eq_one_div]
-  exact div_lt_iff₀ ha
+@[deprecated inv_lt_iff_one_lt_mul₀ (since := "2024-10-03")]
+theorem inv_pos_lt_iff_one_lt_mul (ha : 0 < a) : a⁻¹ < b ↔ 1 < b * a := inv_lt_iff_one_lt_mul₀ ha
 
-theorem inv_pos_lt_iff_one_lt_mul' (ha : 0 < a) : a⁻¹ < b ↔ 1 < a * b := by
-  rw [inv_eq_one_div]
-  exact div_lt_iff₀' ha
+@[deprecated inv_lt_iff_one_lt_mul₀' (since := "2024-10-03")]
+theorem inv_pos_lt_iff_one_lt_mul' (ha : 0 < a) : a⁻¹ < b ↔ 1 < a * b := inv_lt_iff_one_lt_mul₀' ha
 
 /-- One direction of `div_le_iff` where `b` is allowed to be `0` (but `c` must be nonnegative) -/
-theorem div_le_of_nonneg_of_le_mul (hb : 0 ≤ b) (hc : 0 ≤ c) (h : a ≤ c * b) : a / b ≤ c := by
-  rcases eq_or_lt_of_le hb with (rfl | hb')
-  · simp only [div_zero, hc]
-  · rwa [div_le_iff₀ hb']
+@[deprecated div_le_of_le_mul₀ (since := "2024-10-03")]
+theorem div_le_of_nonneg_of_le_mul (hb : 0 ≤ b) (hc : 0 ≤ c) (h : a ≤ c * b) : a / b ≤ c :=
+  div_le_of_le_mul₀ hb hc h
 
 /-- One direction of `div_le_iff` where `c` is allowed to be `0` (but `b` must be nonnegative) -/
-lemma mul_le_of_nonneg_of_le_div (hb : 0 ≤ b) (hc : 0 ≤ c) (h : a ≤ b / c) : a * c ≤ b := by
-  obtain rfl | hc := hc.eq_or_lt
-  · simpa using hb
-  · rwa [le_div_iff₀ hc] at h
+@[deprecated mul_le_of_le_div₀ (since := "2024-10-03")]
+lemma mul_le_of_nonneg_of_le_div (hb : 0 ≤ b) (hc : 0 ≤ c) (h : a ≤ b / c) : a * c ≤ b :=
+  mul_le_of_le_div₀ hb hc h
 
-@[bound]
-theorem div_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : a / b ≤ 1 :=
-  div_le_of_nonneg_of_le_mul hb zero_le_one <| by rwa [one_mul]
+attribute [bound] div_le_one_of_le₀
+attribute [bound] mul_inv_le_one_of_le₀
+attribute [bound] inv_mul_le_one_of_le₀
 
-@[bound]
-lemma mul_inv_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : a * b⁻¹ ≤ 1 := by
-  simpa only [← div_eq_mul_inv] using div_le_one_of_le h hb
+@[deprecated div_le_one_of_le₀ (since := "2024-10-03")]
+theorem div_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : a / b ≤ 1 := div_le_one_of_le₀ h hb
 
-@[bound]
-lemma inv_mul_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : b⁻¹ * a ≤ 1 := by
-  simpa only [← div_eq_inv_mul] using div_le_one_of_le h hb
+@[deprecated mul_inv_le_one_of_le₀ (since := "2024-10-03")]
+lemma mul_inv_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : a * b⁻¹ ≤ 1 := mul_inv_le_one_of_le₀ h hb
+
+@[deprecated inv_mul_le_one_of_le₀ (since := "2024-10-03")]
+lemma inv_mul_le_one_of_le (h : a ≤ b) (hb : 0 ≤ b) : b⁻¹ * a ≤ 1 := inv_mul_le_one_of_le₀ h hb
 
 /-!
 ### Bi-implications of inequalities using inversions
@@ -530,7 +524,7 @@ theorem lt_div_iff_of_neg' (hc : c < 0) : a < b / c ↔ b < c * a := by
   rw [mul_comm, lt_div_iff_of_neg hc]
 
 theorem div_le_one_of_ge (h : b ≤ a) (hb : b ≤ 0) : a / b ≤ 1 := by
-  simpa only [neg_div_neg_eq] using div_le_one_of_le (neg_le_neg h) (neg_nonneg_of_nonpos hb)
+  simpa only [neg_div_neg_eq] using div_le_one_of_le₀ (neg_le_neg h) (neg_nonneg_of_nonpos hb)
 
 /-! ### Bi-implications of inequalities using inversions -/
 
