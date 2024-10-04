@@ -526,6 +526,8 @@ lemma MDifferentiableWithinAt.mpullbackWithin [CompleteSpace E] {t : Set M'}
       (fun (y : M) ↦ (mpullbackWithin I I' f V s y : TangentBundle I M)) s x :=
   sorry
 
+#exit
+
 lemma mpullbackWithin_comp (g : M' → M'') (f : M → M') (V : Π (x : M''), TangentSpace I'' x)
     (s : Set M) (t : Set M') (x₀ : M) (hg : MDifferentiableWithinAt I' I'' g t (f x₀))
     (hf : MDifferentiableWithinAt I I' f s x₀) (h : Set.MapsTo f s t)
