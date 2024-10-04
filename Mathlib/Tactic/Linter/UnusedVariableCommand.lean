@@ -98,7 +98,7 @@ def mkThmWithHyps (cmd : Syntax) (nm : Ident) : CommandElabM Syntax := do
               `($(mkIdent `toFalse) $(⟨ts[1]⟩))
             else
               `($(mkIdent `False))
-  `(command| theorem $nm $toInsert* : $(⟨typ⟩) := sorry)
+  `(command| theorem $nm $toInsert* : $(⟨typ⟩) := by included_variables plumb; sorry)
 
 open Lean.Parser.Term in
 /--
