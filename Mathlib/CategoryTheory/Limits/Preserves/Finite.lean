@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-import Mathlib.Data.Countable.Small
 
 /-!
 # Preservation of finite (co)limits.
