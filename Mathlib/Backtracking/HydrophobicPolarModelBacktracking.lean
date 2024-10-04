@@ -787,7 +787,7 @@ def phtoSet {l : ℕ} (ph : Vector Bool l) := filter (fun i ↦ ph.get i) univ
 
 /-- This result from March 29, 2024 proves the obvious fact that
   more H amino acids leads to more points. -/
-theorem toSet_dominates {α β:Type} [Fintype β] [OfNat α 0] [DecidableEq α] (go: β → α→α) {l : ℕ}
+theorem toSet_dominates {α β:Type} [Fintype β] [Zero α] [DecidableEq α] (go: β → α→α) {l : ℕ}
     (ph₀ ph₁ : Vector Bool l.succ) (hsub: phtoSet ph₀ ⊆ phtoSet ph₁) :
     HP go ph₀ ≤ HP go ph₁ := by
   apply Nat.find_mono

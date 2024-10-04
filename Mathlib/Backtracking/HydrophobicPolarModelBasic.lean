@@ -294,7 +294,7 @@ def path_at {α:Type} {β : Type} (base:α) (go : β → α → α) :
   | head :: tail => path_aux go head (path_at base go tail)
 
 /-- Using OfNat here since ℤ×ℤ and ℤ×ℤ×ℤ have a natural notion of base point or zero.-/
-def path {α:Type} [OfNat α 0] {β : Type} (go : β → α → α) :
+def path {α:Type} [Zero α] {β : Type} (go : β → α → α) :
     (moves : List β) → Vector α moves.length.succ := path_at 0 go
 
 end Setting_up_point_earned
