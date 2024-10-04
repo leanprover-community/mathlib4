@@ -413,7 +413,7 @@ theorem norm_pow_sub_one_of_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot 
       rwa [H] at this
     have H := IntermediateField.adjoin_simple_toSubalgebra_of_integral
       ((integral {p ^ (k + 1)} K L).isIntegral (η + 1))
-    refine IsCyclotomicExtension.equiv (h := ?_) (.refl : K⟮η + 1⟯.toSubalgebra ≃ₐ[K] K⟮η + 1⟯)
+    refine IsCyclotomicExtension.equiv _ _ _ (h := ?_) (.refl : K⟮η + 1⟯.toSubalgebra ≃ₐ[K] _)
     rw [H]
     have hη' : IsPrimitiveRoot (η + 1) ↑(p ^ (k + 1 - s)) := by simpa using hη
 -- Porting note: `using 1` was not needed.
