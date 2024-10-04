@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.RootsOfUnity.Basic
 import Mathlib.RingTheory.AdjoinRoot
-import Mathlib.FieldTheory.Galois
+import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 import Mathlib.RingTheory.Norm.Basic
 /-!
@@ -272,6 +272,11 @@ theorem Polynomial.separable_X_pow_sub_C_of_irreducible : (X ^ n - C a).Separabl
     AdjoinRoot.algebraMap_eq,
     X_pow_sub_C_eq_prod (hζ.map_of_injective (algebraMap K _).injective) hn
     (root_X_pow_sub_C_pow n a), separable_prod_X_sub_C_iff']
+  #adaptation_note
+  /--
+  After https://github.com/leanprover/lean4/pull/5376 we need to provide this helper instance.
+  -/
+  have : MonoidHomClass (K →+* K[n√a]) K K[n√a] := inferInstance
   exact (hζ.map_of_injective (algebraMap K K[n√a]).injective).injOn_pow_mul
     (root_X_pow_sub_C_ne_zero (lt_of_le_of_ne (show 1 ≤ n from hn) (Ne.symm hn')) _)
 
@@ -530,7 +535,7 @@ lemma isGalois_of_isSplittingField_X_pow_sub_C : IsGalois K L :=
   IsGalois.of_separable_splitting_field (separable_X_pow_sub_C_of_irreducible hζ a H)
 
 include hζ H in
-lemma finrank_of_isSplittingField_X_pow_sub_C : FiniteDimensional.finrank K L = n := by
+lemma finrank_of_isSplittingField_X_pow_sub_C : Module.finrank K L = n := by
   have := Polynomial.IsSplittingField.finiteDimensional L (X ^ n - C a)
   have := isGalois_of_isSplittingField_X_pow_sub_C hζ H L
   have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
@@ -545,9 +550,9 @@ end IsSplittingField
 section IsCyclic
 
 variable {L} [Field L] [Algebra K L] [FiniteDimensional K L]
-variable (hK : (primitiveRoots (FiniteDimensional.finrank K L) K).Nonempty)
+variable (hK : (primitiveRoots (Module.finrank K L) K).Nonempty)
 
-open FiniteDimensional
+open Module
 variable (K L)
 
 include hK in
@@ -623,7 +628,7 @@ lemma isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top
 
 end IsCyclic
 
-open FiniteDimensional in
+open Module in
 /--
 Suppose `L/K` is a finite extension of dimension `n`, and `K` contains all `n`-th roots of unity.
 Then `L/K` is cyclic iff
@@ -631,21 +636,18 @@ Then `L/K` is cyclic iff
 `L = K[α]` for some `αⁿ ∈ K`.
 -/
 lemma isCyclic_tfae (K L) [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
-    (hK : (primitiveRoots (FiniteDimensional.finrank K L) K).Nonempty) :
+    (hK : (primitiveRoots (Module.finrank K L) K).Nonempty) :
     List.TFAE [
       IsGalois K L ∧ IsCyclic (L ≃ₐ[K] L),
       ∃ a : K, Irreducible (X ^ (finrank K L) - C a) ∧
         IsSplittingField K L (X ^ (finrank K L) - C a),
       ∃ (α : L), α ^ (finrank K L) ∈ Set.range (algebraMap K L) ∧ K⟮α⟯ = ⊤] := by
   tfae_have 1 → 3
-  · intro ⟨inst₁, inst₂⟩
-    exact exists_root_adjoin_eq_top_of_isCyclic K L hK
+  | ⟨inst₁, inst₂⟩ => exists_root_adjoin_eq_top_of_isCyclic K L hK
   tfae_have 3 → 2
-  · intro ⟨α, ⟨a, ha⟩, hα⟩
-    exact ⟨a, irreducible_X_pow_sub_C_of_root_adjoin_eq_top ha.symm hα,
+  | ⟨α, ⟨a, ha⟩, hα⟩ => ⟨a, irreducible_X_pow_sub_C_of_root_adjoin_eq_top ha.symm hα,
       isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top hK ha.symm hα⟩
   tfae_have 2 → 1
-  · intro ⟨a, H, inst⟩
-    exact ⟨isGalois_of_isSplittingField_X_pow_sub_C hK H L,
+  | ⟨a, H, inst⟩ => ⟨isGalois_of_isSplittingField_X_pow_sub_C hK H L,
       isCyclic_of_isSplittingField_X_pow_sub_C hK H L⟩
   tfae_finish

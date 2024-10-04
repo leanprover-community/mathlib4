@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Joël Riou
+Authors: Kim Morrison, Joël Riou
 -/
 import Mathlib.Algebra.Homology.HomologicalComplex
 
@@ -205,7 +205,7 @@ def XXIsoOfEq {x₁ y₁ : I₁} (h₁ : x₁ = y₁) {x₂ y₂ : I₂} (h₂ :
 
 @[simp]
 lemma XXIsoOfEq_rfl (i₁ : I₁) (i₂ : I₂) :
-    K.XXIsoOfEq (rfl : i₁ = i₁) (rfl : i₂ = i₂) = Iso.refl _ := rfl
+    K.XXIsoOfEq _ _ _ (rfl : i₁ = i₁) (rfl : i₂ = i₂) = Iso.refl _ := rfl
 
 
 end HomologicalComplex₂

@@ -3,9 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
+import Mathlib.Data.Finset.Piecewise
+import Mathlib.Order.Filter.Curry
 import Mathlib.Topology.Maps.Basic
 import Mathlib.Topology.NhdsSet
-import Mathlib.Order.Filter.Curry
 
 /-!
 # Constructions of new topological spaces from old ones
@@ -727,7 +728,7 @@ theorem isOpen_prod_iff' {s : Set X} {t : Set Y} :
         rw [← snd_image_prod st.1 t]
         exact isOpenMap_snd _ H
     · intro H
-      simp only [st.1.ne_empty, st.2.ne_empty, not_false_iff, or_false_iff] at H
+      simp only [st.1.ne_empty, st.2.ne_empty, not_false_iff, or_false] at H
       exact H.1.prod H.2
 
 theorem quotientMap_fst [Nonempty Y] : QuotientMap (Prod.fst : X × Y → X) :=
@@ -815,6 +816,10 @@ theorem embedding_graph {f : X → Y} (hf : Continuous f) : Embedding fun x => (
 
 theorem embedding_prod_mk (x : X) : Embedding (Prod.mk x : Y → X × Y) :=
   embedding_of_embedding_compose (Continuous.Prod.mk x) continuous_snd embedding_id
+
+theorem IsOpenQuotientMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenQuotientMap f)
+    (hg : IsOpenQuotientMap g) : IsOpenQuotientMap (Prod.map f g) :=
+  ⟨.prodMap hf.1 hg.1, .prod_map hf.2 hg.2, .prod hf.3 hg.3⟩
 
 end Prod
 
@@ -1225,9 +1230,43 @@ lemma Pi.induced_precomp [TopologicalSpace Y] {ι' : Type*} (φ : ι' → ι) :
     ⨅ i', induced (eval (φ i')) ‹TopologicalSpace Y› :=
   induced_precomp' φ
 
+@[continuity, fun_prop]
 lemma Pi.continuous_restrict (S : Set ι) :
     Continuous (S.restrict : (∀ i : ι, π i) → (∀ i : S, π i)) :=
   Pi.continuous_precomp' ((↑) : S → ι)
+
+@[continuity, fun_prop]
+lemma Pi.continuous_restrict₂ {s t : Set ι} (hst : s ⊆ t) : Continuous (restrict₂ (π := π) hst) :=
+  continuous_pi fun _ ↦ continuous_apply _
+
+@[continuity, fun_prop]
+theorem Finset.continuous_restrict (s : Finset ι) : Continuous (s.restrict (π := π)) :=
+  continuous_pi fun _ ↦ continuous_apply _
+
+@[continuity, fun_prop]
+theorem Finset.continuous_restrict₂ {s t : Finset ι} (hst : s ⊆ t) :
+    Continuous (Finset.restrict₂ (π := π) hst) :=
+  continuous_pi fun _ ↦ continuous_apply _
+
+variable {Z : Type*} [TopologicalSpace Z]
+
+@[continuity, fun_prop]
+theorem Pi.continuous_restrict_apply (s : Set X) {f : X → Z} (hf : Continuous f) :
+    Continuous (s.restrict f) := hf.comp continuous_subtype_val
+
+@[continuity, fun_prop]
+theorem Pi.continuous_restrict₂_apply {s t : Set X} (hst : s ⊆ t)
+    {f : t → Z} (hf : Continuous f) :
+    Continuous (restrict₂ (π := fun _ ↦ Z) hst f) := hf.comp (continuous_inclusion hst)
+
+@[continuity, fun_prop]
+theorem Finset.continuous_restrict_apply (s : Finset X) {f : X → Z} (hf : Continuous f) :
+    Continuous (s.restrict f) := hf.comp continuous_subtype_val
+
+@[continuity, fun_prop]
+theorem Finset.continuous_restrict₂_apply {s t : Finset X} (hst : s ⊆ t)
+    {f : t → Z} (hf : Continuous f) :
+    Continuous (restrict₂ (π := fun _ ↦ Z) hst f) := hf.comp (continuous_inclusion hst)
 
 lemma Pi.induced_restrict (S : Set ι) :
     induced (S.restrict) Pi.topologicalSpace =

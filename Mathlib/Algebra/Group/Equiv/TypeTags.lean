@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.TypeTags
 
 /-!
@@ -11,7 +12,7 @@ import Mathlib.Algebra.Group.TypeTags
 -/
 
 
-variable {G H : Type*}
+variable {ι G H : Type*}
 
 /-- Reinterpret `G ≃+ H` as `Multiplicative G ≃* Multiplicative H`. -/
 @[simps]
@@ -113,6 +114,38 @@ and multiplicative endomorphisms of `Multiplicative A`. -/
   { AddMonoidHom.toMultiplicative with
     map_mul' := fun _ _ => rfl }
 
+/-- `Multiplicative (∀ i : ι, K i)` is equivalent to `∀ i : ι, Multiplicative (K i)`. -/
+@[simps]
+def MulEquiv.piMultiplicative (K : ι → Type*) [∀ i, Add (K i)] :
+    Multiplicative (∀ i : ι, K i) ≃* (∀ i : ι, Multiplicative (K i)) where
+  toFun x := fun i ↦ Multiplicative.ofAdd <| Multiplicative.toAdd x i
+  invFun x := Multiplicative.ofAdd fun i ↦ Multiplicative.toAdd (x i)
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_mul' _ _ := rfl
+
+variable (ι) (G) in
+/-- `Multiplicative (ι → G)` is equivalent to `ι → Multiplicative G`. -/
+abbrev MulEquiv.funMultiplicative [Add G] :
+    Multiplicative (ι → G) ≃* (ι → Multiplicative G) :=
+  MulEquiv.piMultiplicative fun _ ↦ G
+
+/-- `Additive (∀ i : ι, K i)` is equivalent to `∀ i : ι, Additive (K i)`. -/
+@[simps]
+def AddEquiv.piAdditive (K : ι → Type*) [∀ i, Mul (K i)] :
+    Additive (∀ i : ι, K i) ≃+ (∀ i : ι, Additive (K i)) where
+  toFun x := fun i ↦ Additive.ofMul <| Additive.toMul x i
+  invFun x := Additive.ofMul fun i ↦ Additive.toMul (x i)
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_add' _ _ := rfl
+
+variable (ι) (G) in
+/-- `Additive (ι → G)` is equivalent to `ι → Additive G`. -/
+abbrev AddEquiv.funAdditive [Mul G] :
+    Additive (ι → G) ≃+ (ι → Additive G) :=
+  AddEquiv.piAdditive fun _ ↦ G
+
 section
 
 variable (G) (H)
@@ -126,5 +159,27 @@ def AddEquiv.additiveMultiplicative [AddZeroClass G] : Additive (Multiplicative 
 @[simps!]
 def MulEquiv.multiplicativeAdditive [MulOneClass H] : Multiplicative (Additive H) ≃* H :=
   AddEquiv.toMultiplicative'' (AddEquiv.refl (Additive H))
+
+/-- `Multiplicative (G × H)` is equivalent to `Multiplicative G × Multiplicative H`. -/
+@[simps]
+def MulEquiv.prodMultiplicative [Add G] [Add H] :
+    Multiplicative (G × H) ≃* Multiplicative G × Multiplicative H where
+  toFun x := (Multiplicative.ofAdd (Multiplicative.toAdd x).1,
+    Multiplicative.ofAdd (Multiplicative.toAdd x).2)
+  invFun := fun (x, y) ↦ Multiplicative.ofAdd (Multiplicative.toAdd x, Multiplicative.toAdd y)
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_mul' _ _ := rfl
+
+/-- `Additive (G × H)` is equivalent to `Additive G × Additive H`. -/
+@[simps]
+def AddEquiv.prodAdditive [Mul G] [Mul H] :
+    Additive (G × H) ≃+ Additive G × Additive H where
+  toFun x := (Additive.ofMul (Additive.toMul x).1,
+    Additive.ofMul (Additive.toMul x).2)
+  invFun := fun (x, y) ↦ Additive.ofMul (Additive.toMul x, Additive.toMul y)
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_add' _ _ := rfl
 
 end

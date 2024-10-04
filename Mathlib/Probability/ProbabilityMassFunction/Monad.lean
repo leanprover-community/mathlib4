@@ -67,9 +67,11 @@ theorem toOuterMeasure_pure_apply : (pure a).toOuterMeasure s = if a ∈ s then 
   refine (toOuterMeasure_apply (pure a) s).trans ?_
   split_ifs with ha
   · refine (tsum_congr fun b => ?_).trans (tsum_ite_eq a 1)
-    exact ite_eq_left_iff.2 fun hb => symm (ite_eq_right_iff.2 fun h => (hb <| h.symm ▸ ha).elim)
+    exact ite_eq_left_iff.2 fun hb =>
+      symm (ite_eq_right_iff.2 fun h => (hb <| h.symm ▸ ha).elim)
   · refine (tsum_congr fun b => ?_).trans tsum_zero
-    exact ite_eq_right_iff.2 fun hb => ite_eq_right_iff.2 fun h => (ha <| h ▸ hb).elim
+    exact ite_eq_right_iff.2 fun hb =>
+      ite_eq_right_iff.2 fun h => (ha <| h ▸ hb).elim
 
 variable [MeasurableSpace α]
 

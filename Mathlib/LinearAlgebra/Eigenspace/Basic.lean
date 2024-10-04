@@ -53,7 +53,7 @@ namespace Module
 
 namespace End
 
-open FiniteDimensional Set
+open Module Set
 
 variable {K R : Type v} {V M : Type w} [CommRing R] [AddCommGroup M] [Module R M] [Field K]
   [AddCommGroup V] [Module K V]
@@ -63,6 +63,9 @@ variable {K R : Type v} {V M : Type w} [CommRing R] [AddCommGroup M] [Module R M
 def eigenspace (f : End R M) (μ : R) : Submodule R M :=
   LinearMap.ker (f - algebraMap R (End R M) μ)
 
+lemma eigenspace_def (f : End R M) (μ : R) :
+    f.eigenspace μ = LinearMap.ker (f - algebraMap R (End R M) μ) := rfl
+
 @[simp]
 theorem eigenspace_zero (f : End R M) : f.eigenspace 0 = LinearMap.ker f := by simp [eigenspace]
 
@@ -70,10 +73,15 @@ theorem eigenspace_zero (f : End R M) : f.eigenspace 0 = LinearMap.ker f := by s
 def HasEigenvector (f : End R M) (μ : R) (x : M) : Prop :=
   x ∈ eigenspace f μ ∧ x ≠ 0
 
+lemma hasEigenvector_iff {f : End R M} {μ : R} {x : M} :
+    f.HasEigenvector μ x ↔ x ∈ eigenspace f μ ∧ x ≠ 0 := Iff.rfl
+
 /-- A scalar `μ` is an eigenvalue for a linear map `f` if there are nonzero vectors `x`
     such that `f x = μ • x`. (Def 5.5 of [axler2015]) -/
 def HasEigenvalue (f : End R M) (a : R) : Prop :=
   eigenspace f a ≠ ⊥
+
+lemma hasEigenvalue_iff (f : End R M) (μ : R) : f.HasEigenvalue μ ↔ eigenspace f μ ≠ ⊥ := Iff.rfl
 
 /-- The eigenvalues of the endomorphism `f`, as a subtype of `R`. -/
 def Eigenvalues (f : End R M) : Type _ :=
@@ -161,6 +169,9 @@ def genEigenspace (f : End R M) (μ : R) : ℕ →o Submodule R M where
       LinearMap.ker_le_ker_comp ((f - algebraMap R (End R M) μ) ^ k)
         ((f - algebraMap R (End R M) μ) ^ (m - k))
 
+lemma genEigenspace_def (f : End R M) (μ : R) (k : ℕ) :
+    f.genEigenspace μ k = LinearMap.ker ((f - algebraMap R (End R M) μ) ^ k) := rfl
+
 @[simp]
 theorem mem_genEigenspace (f : End R M) (μ : R) (k : ℕ) (m : M) :
     m ∈ f.genEigenspace μ k ↔ ((f - μ • (1 : End R M)) ^ k) m = 0 := Iff.rfl
@@ -175,15 +186,24 @@ theorem genEigenspace_zero (f : End R M) (k : ℕ) :
 def HasGenEigenvector (f : End R M) (μ : R) (k : ℕ) (x : M) : Prop :=
   x ≠ 0 ∧ x ∈ genEigenspace f μ k
 
+lemma hasGenEigenvector_iff {f : End R M} {μ : R} {k : ℕ} {x : M} :
+    f.HasGenEigenvector μ k x ↔ x ≠ 0 ∧ x ∈ f.genEigenspace μ k := Iff.rfl
+
 /-- A scalar `μ` is a generalized eigenvalue for a linear map `f` and an exponent `k ∈ ℕ` if there
     are generalized eigenvectors for `f`, `k`, and `μ`. -/
 def HasGenEigenvalue (f : End R M) (μ : R) (k : ℕ) : Prop :=
   genEigenspace f μ k ≠ ⊥
 
+lemma hasGenEigenvalue_iff (f : End R M) (μ : R) (k : ℕ) :
+    f.HasGenEigenvalue μ k ↔ genEigenspace f μ k ≠ ⊥ := Iff.rfl
+
 /-- The generalized eigenrange for a linear map `f`, a scalar `μ`, and an exponent `k ∈ ℕ` is the
     range of `(f - μ • id) ^ k`. -/
 def genEigenrange (f : End R M) (μ : R) (k : ℕ) : Submodule R M :=
   LinearMap.range ((f - algebraMap R (End R M) μ) ^ k)
+
+lemma genEigenrange_def (f : End R M) (μ : R) (k : ℕ) :
+    f.genEigenrange μ k = LinearMap.range ((f - algebraMap R (End R M) μ) ^ k) := rfl
 
 /-- The exponent of a generalized eigenvalue is never 0. -/
 theorem exp_ne_zero_of_hasGenEigenvalue {f : End R M} {μ : R} {k : ℕ}
@@ -194,6 +214,9 @@ theorem exp_ne_zero_of_hasGenEigenvalue {f : End R M} {μ : R} {k : ℕ}
 /-- The union of the kernels of `(f - μ • id) ^ k` over all `k`. -/
 def maxGenEigenspace (f : End R M) (μ : R) : Submodule R M :=
   ⨆ k, f.genEigenspace μ k
+
+lemma maxGenEigenspace_def (f : End R M) (μ : R) :
+    f.maxGenEigenspace μ = ⨆ k, f.genEigenspace μ k := rfl
 
 theorem genEigenspace_le_maximal (f : End R M) (μ : R) (k : ℕ) :
     f.genEigenspace μ k ≤ f.maxGenEigenspace μ :=
@@ -425,6 +448,51 @@ lemma _root_.Submodule.inf_genEigenspace (f : End R M) (p : Submodule R M) {k : 
     p ⊓ f.genEigenspace μ k =
       (genEigenspace (LinearMap.restrict f hfp) μ k).map p.subtype := by
   rw [f.genEigenspace_restrict _ _ _ hfp, Submodule.map_comap_eq, Submodule.range_subtype]
+
+/-- Given a family of endomorphisms `i ↦ f i`, a family of candidate eigenvalues `i ↦ μ i`, and a
+submodule `p` which is invariant wrt every `f i`, the intersection of `p` with the simultaneous
+maximal generalised eigenspace (taken over all `i`), is the same as the simultaneous maximal
+generalised eigenspace of the `f i` restricted to `p`. -/
+lemma _root_.Submodule.inf_iInf_maxGenEigenspace_of_forall_mapsTo {ι : Type*} {μ : ι → R}
+    (f : ι → End R M) (p : Submodule R M) (hfp : ∀ i, MapsTo (f i) p p) :
+    p ⊓ ⨅ i, (f i).maxGenEigenspace (μ i) =
+      (⨅ i, maxGenEigenspace ((f i).restrict (hfp i)) (μ i)).map p.subtype := by
+  cases isEmpty_or_nonempty ι
+  · simp [iInf_of_isEmpty]
+  · simp_rw [inf_iInf, maxGenEigenspace, ((f _).genEigenspace _).mono.directed_le.inf_iSup_eq,
+      p.inf_genEigenspace _ (hfp _), ← Submodule.map_iSup, Submodule.map_iInf _ p.injective_subtype]
+
+/-- Given a family of endomorphisms `i ↦ f i`, a family of candidate eigenvalues `i ↦ μ i`, and a
+distinguished index `i` whose maximal generalised `μ i`-eigenspace is invariant wrt every `f j`,
+taking simultaneous maximal generalised eigenspaces is unaffected by first restricting to the
+distinguished generalised `μ i`-eigenspace. -/
+lemma iInf_maxGenEigenspace_restrict_map_subtype_eq
+    {ι : Type*} {μ : ι → R} (i : ι) (f : ι → End R M)
+    (h : ∀ j, MapsTo (f j) ((f i).maxGenEigenspace (μ i)) ((f i).maxGenEigenspace (μ i))) :
+    letI p := (f i).maxGenEigenspace (μ i)
+    letI q (j : ι) := maxGenEigenspace ((f j).restrict (h j)) (μ j)
+    (⨅ j, q j).map p.subtype = ⨅ j, (f j).maxGenEigenspace (μ j) := by
+  have : Nonempty ι := ⟨i⟩
+  set p := (f i).maxGenEigenspace (μ i)
+  have : ⨅ j, (f j).maxGenEigenspace (μ j) = p ⊓ ⨅ j, (f j).maxGenEigenspace (μ j) := by
+    refine le_antisymm ?_ inf_le_right
+    simpa only [le_inf_iff, le_refl, and_true] using iInf_le _ _
+  rw [Submodule.map_iInf _ p.injective_subtype, this, Submodule.inf_iInf]
+  simp_rw [maxGenEigenspace_def, Submodule.map_iSup,
+    ((f _).genEigenspace _).mono.directed_le.inf_iSup_eq, p.inf_genEigenspace (f _) (h _)]
+  rfl
+
+lemma mapsTo_restrict_maxGenEigenspace_restrict_of_mapsTo
+    {p : Submodule R M} (f g : End R M) (hf : MapsTo f p p) (hg : MapsTo g p p) {μ₁ μ₂ : R}
+    (h : MapsTo f (g.maxGenEigenspace μ₁) (g.maxGenEigenspace μ₂)) :
+    MapsTo (f.restrict hf)
+      (maxGenEigenspace (g.restrict hg) μ₁)
+      (maxGenEigenspace (g.restrict hg) μ₂) := by
+  intro x hx
+  simp_rw [SetLike.mem_coe, mem_maxGenEigenspace, ← LinearMap.restrict_smul_one _,
+    LinearMap.restrict_sub _, LinearMap.pow_restrict _, LinearMap.restrict_apply,
+    Submodule.mk_eq_zero, ← mem_maxGenEigenspace] at hx ⊢
+  exact h hx
 
 /-- If `p` is an invariant submodule of an endomorphism `f`, then the `μ`-eigenspace of the
 restriction of `f` to `p` is a submodule of the `μ`-eigenspace of `f`. -/

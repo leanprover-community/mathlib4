@@ -32,7 +32,7 @@ noncomputable section
 
 universe u
 
-open CategoryTheory LinearMap CategoryTheory.MonoidalCategory Representation FiniteDimensional
+open CategoryTheory LinearMap CategoryTheory.MonoidalCategory Representation Module
 
 variable {k : Type u} [Field k]
 
@@ -51,20 +51,13 @@ theorem char_mul_comm (V : FDRep k G) (g : G) (h : G) :
     V.character (h * g) = V.character (g * h) := by simp only [trace_mul_comm, character, map_mul]
 
 @[simp]
-theorem char_one (V : FDRep k G) : V.character 1 = FiniteDimensional.finrank k V := by
+theorem char_one (V : FDRep k G) : V.character 1 = Module.finrank k V := by
   simp only [character, map_one, trace_one]
 
 /-- The character is multiplicative under the tensor product. -/
+@[simp]
 theorem char_tensor (V W : FDRep k G) : (V ⊗ W).character = V.character * W.character := by
   ext g; convert trace_tensorProduct' (V.ρ g) (W.ρ g)
-
--- Porting note: adding variant of `char_tensor` to make the simp-set confluent
-@[simp]
-theorem char_tensor' (V W : FDRep k G) :
-    character (Action.FunctorCategoryEquivalence.inverse.obj
-    (Action.FunctorCategoryEquivalence.functor.obj V ⊗
-     Action.FunctorCategoryEquivalence.functor.obj W)) = V.character * W.character := by
-  simp [← char_tensor]
 
 /-- The character of isomorphic representations is the same. -/
 theorem char_iso {V W : FDRep k G} (i : V ≅ W) : V.character = W.character := by

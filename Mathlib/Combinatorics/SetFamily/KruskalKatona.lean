@@ -52,6 +52,10 @@ namespace Finset
 namespace Colex
 variable {α : Type*} [LinearOrder α] {𝒜 𝒜₁ 𝒜₂ : Finset (Finset α)} {s t : Finset α} {r : ℕ}
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefix below.
+-/
 /-- This is important for iterating Kruskal-Katona: the shadow of an initial segment is also an
 initial segment. -/
 lemma shadow_initSeg [Fintype α] (hs : s.Nonempty) :
@@ -67,7 +71,7 @@ lemma shadow_initSeg [Fintype α] (hs : s.Nonempty) :
     · simpa [ha] using erase_le_erase_min' hts hst.ge (mem_insert_self _ _)
   -- Now show that if t ≤ s - min s, there is j such that t ∪ j ≤ s
   -- We choose j as the smallest thing not in t
-  simp_rw [le_iff_eq_or_lt, lt_iff_exists_filter_lt, mem_sdiff, filter_inj, and_assoc]
+  simp_rw [le_iff_eq_or_lt, lt_iff_exists_filter_lt, mem_sdiff, filter_inj, _root_.and_assoc]
   simp only [toColex_inj, ofColex_toColex, ne_eq, and_imp]
   rintro cards' (rfl | ⟨k, hks, hkt, z⟩)
   -- If t = s - min s, then use j = min s so t ∪ j = s
@@ -86,7 +90,7 @@ lemma shadow_initSeg [Fintype α] (hs : s.Nonempty) :
   -- if j < k, k is our colex witness for t ∪ {j} < s
   · refine Or.inr ⟨k, mem_of_mem_erase ‹_›, fun hk ↦ hkt <| mem_of_mem_insert_of_ne hk hjk.ne',
       fun x hx ↦ ?_⟩
-    simpa only [mem_insert, z hx, (hjk.trans hx).ne', mem_erase, Ne, false_or_iff,
+    simpa only [mem_insert, z hx, (hjk.trans hx).ne', mem_erase, Ne, false_or,
       and_iff_right_iff_imp] using fun _ ↦ ((min'_le _ _ <| mem_of_mem_erase hks).trans_lt hx).ne'
   -- if j = k, all of range k is in t so by sizes t ∪ {j} = s
   refine Or.inl (eq_of_subset_of_card_le (fun a ha ↦ ?_) hcard.ge).symm
@@ -125,13 +129,17 @@ variable {α : Type*} [LinearOrder α] {s U V : Finset α} {n : ℕ}
 
 namespace UV
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefix below.
+-/
 /-- Applying the compression makes the set smaller in colex. This is intuitive since a portion of
 the set is being "shifted down" as `max U < max V`. -/
 lemma toColex_compress_lt_toColex {hU : U.Nonempty} {hV : V.Nonempty} (h : max' U hU < max' V hV)
     (hA : compress U V s ≠ s) : toColex (compress U V s) < toColex s := by
   rw [compress, ite_ne_right_iff] at hA
   rw [compress, if_pos hA.1, lt_iff_exists_filter_lt]
-  simp_rw [mem_sdiff (s := s), filter_inj, and_assoc]
+  simp_rw [mem_sdiff (s := s), filter_inj, _root_.and_assoc]
   refine ⟨_, hA.1.2 <| max'_mem _ hV, not_mem_sdiff_of_mem_right <| max'_mem _ _, fun a ha ↦ ?_⟩
   have : a ∉ V := fun H ↦ ha.not_le (le_max' _ _ H)
   have : a ∉ U := fun H ↦ ha.not_lt ((le_max' _ _ H).trans_lt h)
@@ -142,7 +150,7 @@ private def UsefulCompression (U V : Finset α) : Prop :=
   Disjoint U V ∧ U.card = V.card ∧ ∃ (HU : U.Nonempty) (HV : V.Nonempty), max' U HU < max' V HV
 
 private instance UsefulCompression.instDecidableRel : @DecidableRel (Finset α) UsefulCompression :=
-  fun _U _V ↦ And.decidable
+  fun _ _ ↦ inferInstanceAs (Decidable (_ ∧ _))
 
 /-- Applying a good compression will decrease measure, keep cardinality, keep sizes and decrease
 shadow. In particular, 'good' means it's useful, and every smaller compression won't make a

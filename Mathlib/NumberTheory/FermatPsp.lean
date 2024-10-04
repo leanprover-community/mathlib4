@@ -61,7 +61,7 @@ instance decidableProbablePrime (n b : ℕ) : Decidable (ProbablePrime n b) :=
   Nat.decidable_dvd _ _
 
 instance decidablePsp (n b : ℕ) : Decidable (FermatPsp n b) :=
-  And.decidable
+  inferInstanceAs (Decidable (_ ∧ _))
 
 /-- If `n` passes the Fermat primality test to base `b`, then `n` is coprime with `b`, assuming that
 `n` and `b` are both positive.
@@ -94,7 +94,7 @@ theorem coprime_of_probablePrime {n b : ℕ} (h : ProbablePrime n b) (h₁ : 1 �
 
 theorem probablePrime_iff_modEq (n : ℕ) {b : ℕ} (h : 1 ≤ b) :
     ProbablePrime n b ↔ b ^ (n - 1) ≡ 1 [MOD n] := by
-  have : 1 ≤ b ^ (n - 1) := one_le_pow_of_one_le h (n - 1)
+  have : 1 ≤ b ^ (n - 1) := one_le_pow₀ h
   -- For exact mod_cast
   rw [Nat.ModEq.comm]
   constructor

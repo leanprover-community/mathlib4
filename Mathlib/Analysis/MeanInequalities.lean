@@ -3,6 +3,7 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 -/
+import Mathlib.Algebra.BigOperators.Expect
 import Mathlib.Analysis.Convex.Jensen
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
@@ -105,6 +106,7 @@ less than or equal to the sum of the maximum values of the summands.
 universe u v
 
 open Finset NNReal ENNReal
+open scoped BigOperators
 
 noncomputable section
 
@@ -520,7 +522,7 @@ theorem isGreatest_Lp (f : ι → ℝ≥0) {p q : ℝ} (hpq : p.IsConjExponent q
         simp [h, hpq.ne_zero]
       simp only [Set.mem_setOf_eq, div_rpow, ← sum_div, ← rpow_mul,
         div_mul_cancel₀ _ hpq.symm.ne_zero, rpow_one, div_le_iff₀ hf, one_mul, hpq.mul_eq_add, ←
-        rpow_sub' A, add_sub_cancel_right, le_refl, true_and_iff, ← mul_div_assoc, B]
+        rpow_sub' A, add_sub_cancel_right, le_refl, true_and, ← mul_div_assoc, B]
       rw [div_eq_iff, ← rpow_add hf.ne', one_div, one_div, hpq.inv_add_inv_conj, rpow_one]
       simpa [hpq.symm.ne_zero] using hf.ne'
   · rintro _ ⟨g, hg, rfl⟩
@@ -659,6 +661,18 @@ lemma inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) 
   beta_reduce at *
   norm_cast at *
   exact NNReal.inner_le_weight_mul_Lp _ hp _ _
+
+/-- **Weighted Hölder inequality** in terms of `Finset.expect`. -/
+lemma compact_inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) {w f : ι → ℝ}
+    (hw : ∀ i, 0 ≤ w i) (hf : ∀ i, 0 ≤ f i) :
+    𝔼 i ∈ s, w i * f i ≤ (𝔼 i ∈ s, w i) ^ (1 - p⁻¹) * (𝔼 i ∈ s, w i * f i ^ p) ^ p⁻¹ := by
+  simp_rw [expect_eq_sum_div_card]
+  rw [div_rpow, div_rpow, div_mul_div_comm, ← rpow_add', sub_add_cancel, rpow_one]
+  · gcongr
+    exact inner_le_weight_mul_Lp_of_nonneg s hp _ _ hw hf
+  any_goals simp
+  · exact sum_nonneg fun i _ ↦ by have := hw i; have := hf i; positivity
+  · exact sum_nonneg fun i _ ↦ by have := hw i; positivity
 
 /-- **Hölder inequality**: the scalar product of two functions is bounded by the product of their
 `L^p` and `L^q` norms when `p` and `q` are conjugate exponents. A version for `ℝ`-valued functions.

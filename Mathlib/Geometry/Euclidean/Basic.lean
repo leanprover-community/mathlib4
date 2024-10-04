@@ -124,7 +124,7 @@ theorem dist_smul_vadd_eq_dist {v : V} (p₁ p₂ : P) (hv : v ≠ 0) (r : ℝ) 
     mul_div_assoc]
   norm_num
 
-open AffineSubspace FiniteDimensional
+open AffineSubspace Module
 
 /-- Distances `r₁` `r₂` of `p` from two different points `c₁` `c₂` determine at
 most two points `p₁` `p₂` in a two-dimensional subspace containing those points
@@ -150,7 +150,7 @@ theorem eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two {s : AffineSubspace �
       · rw [real_inner_comm]
         exact ho
   have hbs : Submodule.span ℝ (Set.range b) = s.direction := by
-    refine eq_of_le_of_finrank_eq ?_ ?_
+    refine Submodule.eq_of_le_of_finrank_eq ?_ ?_
     · rw [Submodule.span_le, Set.range_subset_iff]
       intro i
       fin_cases i
@@ -171,13 +171,13 @@ theorem eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two {s : AffineSubspace �
     exact ⟨t₁, t₂, hv⟩
   rcases hv (p -ᵥ p₁) (vsub_mem_direction hps hp₁s) with ⟨t₁, t₂, hpt⟩
   simp only [hpt, inner_add_right, inner_smul_right, ho, mul_zero, add_zero,
-    mul_eq_zero, inner_self_eq_zero, vsub_eq_zero_iff_eq, hc.symm, or_false_iff] at hop
+    mul_eq_zero, inner_self_eq_zero, vsub_eq_zero_iff_eq, hc.symm, or_false] at hop
   rw [hop, zero_smul, zero_add, ← eq_vadd_iff_vsub_eq] at hpt
   subst hpt
   have hp' : (p₂ -ᵥ p₁ : V) ≠ 0 := by simp [hp.symm]
   have hp₂ : dist ((1 : ℝ) • (p₂ -ᵥ p₁) +ᵥ p₁) c₁ = r₁ := by simp [hp₂c₁]
   rw [← hp₁c₁, dist_smul_vadd_eq_dist _ _ hp'] at hpc₁ hp₂
-  simp only [one_ne_zero, false_or_iff] at hp₂
+  simp only [one_ne_zero, false_or] at hp₂
   rw [hp₂.symm] at hpc₁
   cases' hpc₁ with hpc₁ hpc₁ <;> simp [hpc₁]
 

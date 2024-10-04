@@ -1566,16 +1566,11 @@ theorem Ioc_union_Ioc_symm : Ioc a b ∪ Ioc b a = Ioc (min a b) (max a b) := by
 @[simp]
 theorem Ioc_union_Ioc_union_Ioc_cycle :
     Ioc a b ∪ Ioc b c ∪ Ioc c a = Ioc (min a (min b c)) (max a (max b c)) := by
-  rw [Ioc_union_Ioc, Ioc_union_Ioc] <;>
-  -- Porting note: mathlib3 proof finished from here as follows:
-  -- (It can probably be restored after https://github.com/leanprover-community/mathlib4/pull/856)
-  -- ac_rfl
-  -- all_goals
-  --   solve_by_elim (config := { max_depth := 5 }) [min_le_of_left_le, min_le_of_right_le,
-  --     le_max_of_le_left, le_max_of_le_right, le_refl]
-  simp [min_le_of_left_le, min_le_of_right_le, le_max_of_le_left, le_max_of_le_right, le_refl,
-    min_assoc, max_comm]
-
+  rw [Ioc_union_Ioc, Ioc_union_Ioc]
+  · ac_rfl
+  all_goals
+  solve_by_elim (config := { maxDepth := 5 }) [min_le_of_left_le, min_le_of_right_le,
+       le_max_of_le_left, le_max_of_le_right, le_refl]
 end LinearOrder
 
 /-!
@@ -1650,5 +1645,22 @@ instance : NoMaxOrder (Set.Iio x) :=
     exact ⟨⟨b, hb₂⟩, hb₁⟩⟩
 
 end Dense
+
+/-!
+### Intervals in `Prop`
+-/
+
+namespace Set
+
+@[simp] lemma Iic_False : Iic False = {False} := by aesop
+@[simp] lemma Iic_True : Iic True = univ := by aesop
+@[simp] lemma Ici_False : Ici False = univ := by aesop
+@[simp] lemma Ici_True : Ici True = {True} := by aesop
+@[simp] lemma Iio_False : Iio False = ∅ := by aesop
+@[simp] lemma Iio_True : Iio True = {False} := by aesop (add simp [Ioi, lt_iff_le_not_le])
+@[simp] lemma Ioi_False : Ioi False = {True} := by aesop (add simp [Ioi, lt_iff_le_not_le])
+@[simp] lemma Ioi_True : Ioi True = ∅ := by aesop
+
+end Set
 
 set_option linter.style.longFile 1800
