@@ -1190,10 +1190,6 @@ lemma isBigO_one_nhds_ne_iff [TopologicalSpace α] {a : α} :
   · apply le_max_right
   · exact (hb hb').trans (le_max_left ..)
 
-lemma isLittleO_id_nhdsWithin {F : Type*} [NormedDivisionRing F] (s : Set F) :
-    (id : F → F) =o[nhdsWithin 0 s] (fun _ ↦ (1 : F)) :=
-  ((isLittleO_one_iff F).mpr tendsto_id).mono nhdsWithin_le_nhds
-
 end
 
 theorem isLittleO_const_iff {c : F''} (hc : c ≠ 0) :
@@ -1254,6 +1250,9 @@ theorem IsBigO.trans_tendsto (hfg : f'' =O[l] g'') (hg : Tendsto g'' l (𝓝 0))
 theorem IsLittleO.trans_tendsto (hfg : f'' =o[l] g'') (hg : Tendsto g'' l (𝓝 0)) :
     Tendsto f'' l (𝓝 0) :=
   hfg.isBigO.trans_tendsto hg
+
+lemma isLittleO_id_one [One F''] [NeZero (1 : F'')] : (fun x : E'' => x) =o[𝓝 0] (1 : E'' → F'') :=
+  isLittleO_id_const one_ne_zero
 
 /-! ### Multiplication by a constant -/
 
