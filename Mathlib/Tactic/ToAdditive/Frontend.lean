@@ -995,12 +995,6 @@ def fixAbbreviation : List String → List String
   | "Cancel" :: "Comm" :: "Add" :: s  => "AddCancelComm" :: fixAbbreviation s
   | "comm" :: "Add" :: s              => "addComm" :: fixAbbreviation s
   | "Comm" :: "Add" :: s              => "AddComm" :: fixAbbreviation s
-  | "idem" :: "Add" :: s              => "addIdem" :: fixAbbreviation s
-  | "Idem" :: "Add" :: s              => "AddIdem" :: fixAbbreviation s
-  | "integral" :: "Add" :: s          => "addIntegral" :: fixAbbreviation s
-  | "Integral" :: "Add" :: s          => "AddIntegral" :: fixAbbreviation s
-  | "idem" :: "Integral" :: "Add" :: s => "addIdemIntegral" :: fixAbbreviation s
-  | "Idem" :: "Integral" :: "Add" :: s => "AddIdemIntegral" :: fixAbbreviation s
   | "Zero" :: "LE" :: s               => "Nonneg" :: fixAbbreviation s
   | "zero" :: "_" :: "le" :: s        => "nonneg" :: fixAbbreviation s
   | "Zero" :: "LT" :: s               => "Pos" :: fixAbbreviation s
