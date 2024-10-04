@@ -36,11 +36,7 @@ Our definitions below take a quantale to be a semigroup distributing over a comp
 in order to be maximally generic but at the same time efficient in providing all theorems and
 definitions one might at some point want to have available on quantales. Furthermore, we
 follow the wikipedia page on quantales and give the definitions for integral, commutative,
-idempotent, and involutive quantale.
-
-From the definitions it is obvious that every frame is a (commutative) quantale. Reversely,
-a basic theorem from quantale theory is that every quantale that is idempotent and integral
-(strictly two-sided), is a frame.
+and idempotent quantale.
 
 ## Main definitions
 
@@ -82,8 +78,11 @@ a basic theorem from quantale theory is that every quantale that is idempotent a
 
 ## TODO
 
-+ The actual proofs that `IdemIntegralQuantale` and `Order.Frame` coincide.
-+ Definition of residuation also for AddQuantale
++ A proof that `IdemIntegralQuantale` and `Order.Frame` coincide (probably in a different file);
+
++ Definition of residuation also for AddQuantale;
+
++ Definition of involutive quantale;
 
 -/
 
@@ -181,32 +180,26 @@ variable [Quantale α]
 on complete lattices, but for a non-commutative logic.
 I.e. `x ⇨ₗ y = sSup { z | z * x ≤ y }`.
 -/
+@[to_additive]
 def left_residuation (x y : α) := sSup { z | z * x ≤ y }
 
 /-- Notation for left-residuation in quantales.
     I.e. `x ⇨ₗ y = sSup { z | z * x ≤ y }`.
 -/
+@[to_additive]
 scoped infixr:60 " ⇨ₗ " => left_residuation
 
 /-- Left- and right- residuation operators on a quantale are similar to the Heyting operator
     on complete lattices, but for a non-commutative logic.
     I.e. `x ⇨ᵣ y = sSup { z | x * z ≤ y }`.
 -/
+@[to_additive]
 def right_residuation (x y : α) := sSup { z | x * z ≤ y }
 
 /-- Notation for right-residuation in quantales.
     I.e. `x ⇨ᵣ y = sSup { z | x * z ≤ y }`.
 -/
+@[to_additive]
 scoped infixr:60 " ⇨ᵣ " => right_residuation
-
-/-
-
-instance [Order.Frame α] : IdemIntegralQuantale α := sorry
-
-instance [Order.Frame α] : CommQuantale α := sorry
-
-instance [IdemIntegralQuantale α] : Order.Frame α := sorry
-
--/
 
 end Quantale
