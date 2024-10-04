@@ -43,6 +43,21 @@ jobs:
           fi
         fi
 
+    - name: Commit and create PR for multiple conflicts
+      if: env.multiple_conflicts == 'true'
+      run: |
+        DATE=$(date +'%Y-%m-%d-%H-%M')
+        NEW_BRANCH="bump-merge-master-$DATE"
+        git checkout -b $NEW_BRANCH
+        git add -A
+        git commit -m "Committing conflicting files as is"
+        git push origin $NEW_BRANCH
+        BUMP_BRANCH=${{ steps.find-bump-branch.outputs.bump_branch }}
+        PR_URL=$(gh pr create --title "nightly-testing: resolve conflicts with master" --base $BUMP_BRANCH)
+        PR_NUMBER=$(echo $PR_URL | grep -oP '\d+$')
+        echo "new_branch=$NEW_BRANCH" >> $GITHUB_ENV
+        echo "pr_number=$PR_NUMBER" >> $GITHUB_ENV
+
     - name: Push changes if merge was successful
       if: success() && env.multiple_conflicts != 'true'
       run: |
@@ -63,14 +78,13 @@ jobs:
         type: 'stream'
         topic: "merge master into 'bump/${{ steps.find-bump-branch.outputs.bump_branch }}'"
         content: |
-          ❌ A bot failed to merge 'master' into 'bump/${{ steps.find-bump-branch.outputs.bump_branch }}' because of merge conflicts. Please resolve the merge conflicts by running the following command:
+          ❌ A bot failed to merge 'master' into 'bump/${{ steps.find-bump-branch.outputs.bump_branch }}' because of merge conflicts.
+          The bot created the following PR instead:
 
-          ```bash
-          ./scripts/bump-merge-master.sh --bumpversion=${{ steps.find-bump-branch.outputs.bump_branch }} --auto=yes
-          ```
+          > nightly-testing: resolve conflicts with master #${{ env.pr_number }}
+          > branch: `${{ env.new_branch }}`
 
-          If 'gh' or 'zulip-send' are not installed, please use the following command instead:
+          Please help with one of the following:
+          - resolve the merge conflicts and push them to the branch
+          - review the PR (at the end of the month it will end up in `master` without further review)
 
-          ```bash
-          ./scripts/bump-merge-master.sh --bumpversion=${{ steps.find-bump-branch.outputs.bump_branch }} --auto=no
-          ```
