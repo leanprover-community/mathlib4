@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2024 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jiedong Jiang
+Authors: Junyan Xu, Jiedong Jiang
 -/
 import Mathlib.FieldTheory.NormalClosure
 import Mathlib.FieldTheory.IsAlgClosed.Basic
+import Mathlib.FieldTheory.IntermediateField.Algebraic
 
 /-!
 # Relative Algebraic Closure
@@ -25,15 +26,14 @@ variable (F E : Type*) [Field F] [Field E] [Algebra F E]
 variable {K : Type*} [Field K] [Algebra F K]
 
 /--
-The relative algebraic closure of `F` in `E`, or called maximal algebraic subextension
-of `E / F`, is defined to be the integral closure of `F` in `E`.
-The previous results prove that the integral closure is indeed an intermediate field.
-This is the same as the intermediate field of `E / F` consisting of all integral/algebraic elements.
+The relative algebraic closure of a field `F` in an extension `E`, or called maximal
+algebraic subextension
+of `E / F`, is defined to be the subalgebra `integralClosure F E`
+upgraded to an intermediate field (when `F` and `E` are both fields). This is exactly the
+intermediate field of `E / F` consisting of all integral/algebraic elements.
 -/
-def algebraicClosure : IntermediateField F E where
-  toSubalgebra := _root_.integralClosure F E
-  inv_mem' x hx := Subalgebra.inv_mem_of_algebraic (x := ⟨x, hx⟩)
-    (isAlgebraic_iff_isIntegral.mpr hx)
+def algebraicClosure : IntermediateField F E :=
+  Algebra.IsAlgebraic.toIntermediateField (integralClosure F E)
 
 variable {F E}
 /-- An element is contained in the algebraic closure of `F` in `E` if and only if
