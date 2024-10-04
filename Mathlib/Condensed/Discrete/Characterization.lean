@@ -70,12 +70,6 @@ noncomputable abbrev LocallyConstant.adjunction :
     CondensedSet.LocallyConstant.functor ⊣ Condensed.underlying (Type (u+1)) :=
   CompHausLike.LocallyConstant.adjunction _ _
 
-noncomputable instance : PreservesFiniteCoproducts profiniteToCompHaus :=
-  inferInstanceAs (PreservesFiniteCoproducts (CompHausLike.toCompHausLike _))
-
-noncomputable instance : PreservesFiniteProducts profiniteToCompHaus.op :=
-  inferInstanceAs (PreservesFiniteProducts (CompHausLike.toCompHausLike _).op)
-
 open Condensed
 
 open CondensedSet.LocallyConstant List in
