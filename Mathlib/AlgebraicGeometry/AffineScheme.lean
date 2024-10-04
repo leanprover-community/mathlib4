@@ -52,24 +52,26 @@ deriving Category
 
 /-- A Scheme is affine if the canonical map `X ⟶ Spec Γ(X)` is an isomorphism. -/
 class IsAffine (X : Scheme) : Prop where
-  affine : IsIso (ΓSpec.adjunction.unit.app X)
+  affine : IsIso X.toSpecΓ
 
 attribute [instance] IsAffine.affine
+
+instance (X : Scheme.{u}) [IsAffine X] : IsIso (ΓSpec.adjunction.unit.app X) := @IsAffine.affine X _
 
 /-- The canonical isomorphism `X ≅ Spec Γ(X)` for an affine scheme. -/
 @[simps! (config := .lemmasOnly) hom]
 def Scheme.isoSpec (X : Scheme) [IsAffine X] : X ≅ Spec Γ(X, ⊤) :=
-  asIso (ΓSpec.adjunction.unit.app X)
+  asIso X.toSpecΓ
 
 @[reassoc]
 theorem Scheme.isoSpec_hom_naturality {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
     X.isoSpec.hom ≫ Spec.map (f.app ⊤) = f ≫ Y.isoSpec.hom := by
-  simp only [isoSpec, asIso_hom, ΓSpec.adjunction_unit_naturality]
+  simp only [isoSpec, asIso_hom, Scheme.toSpecΓ_naturality]
 
 @[reassoc]
 theorem Scheme.isoSpec_inv_naturality {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
     Spec.map (f.app ⊤) ≫ Y.isoSpec.inv = X.isoSpec.inv ≫ f := by
-  rw [Iso.eq_inv_comp, isoSpec, asIso_hom, ← ΓSpec.adjunction_unit_naturality_assoc, isoSpec,
+  rw [Iso.eq_inv_comp, isoSpec, asIso_hom, ← Scheme.toSpecΓ_naturality_assoc, isoSpec,
     asIso_inv, IsIso.hom_inv_id, Category.comp_id]
 
 /-- Construct an affine scheme from a scheme and the information that it is affine.
@@ -228,7 +230,7 @@ theorem iSup_affineOpens_eq_top (X : Scheme) : ⨆ i : X.affineOpens, (i : X.Ope
 theorem Scheme.map_PrimeSpectrum_basicOpen_of_affine
     (X : Scheme) [IsAffine X] (f : Scheme.Γ.obj (op X)) :
     X.isoSpec.hom ⁻¹ᵁ PrimeSpectrum.basicOpen f = X.basicOpen f :=
-  ΓSpec.adjunction_unit_map_basicOpen _ _
+  Scheme.toSpecΓ_preimage_basicOpen _ _
 
 theorem isBasis_basicOpen (X : Scheme) [IsAffine X] :
     Opens.IsBasis (Set.range (X.basicOpen : Γ(X, ⊤) → X.Opens)) := by
@@ -240,10 +242,10 @@ theorem isBasis_basicOpen (X : Scheme) [IsAffine X] :
   constructor
   · rintro ⟨_, ⟨x, rfl⟩, rfl⟩
     refine ⟨_, ⟨_, ⟨x, rfl⟩, rfl⟩, ?_⟩
-    exact congr_arg Opens.carrier (ΓSpec.adjunction_unit_map_basicOpen _ _)
+    exact congr_arg Opens.carrier (Scheme.toSpecΓ_preimage_basicOpen _ _)
   · rintro ⟨_, ⟨_, ⟨x, rfl⟩, rfl⟩, rfl⟩
     refine ⟨_, ⟨x, rfl⟩, ?_⟩
-    exact congr_arg Opens.carrier (ΓSpec.adjunction_unit_map_basicOpen _ _).symm
+    exact congr_arg Opens.carrier (Scheme.toSpecΓ_preimage_basicOpen _ _).symm
 
 namespace IsAffineOpen
 
@@ -356,10 +358,9 @@ theorem SpecΓIdentity_hom_app_fromSpec :
     (Scheme.ΓSpecIso Γ(X, U)).hom ≫ hU.fromSpec.app U =
       (Spec Γ(X, U)).presheaf.map (eqToHom hU.fromSpec_preimage_self).op := by
   simp only [fromSpec, Scheme.isoSpec, asIso_inv, Scheme.comp_coeBase, Opens.map_comp_obj,
-    ΓSpecIso_obj_hom, Scheme.Opens.topIso_inv, Opens.map_top, Functor.id_obj, Functor.comp_obj,
-    Functor.rightOp_obj, Scheme.Γ_obj, unop_op, Scheme.Spec_obj, Scheme.Opens.topIso_hom,
-    Scheme.comp_app, Scheme.Opens.ι_app_self, Category.assoc, ← Functor.map_comp_assoc, ← op_comp,
-    eqToHom_trans, Scheme.Opens.eq_presheaf_map_eqToHom, Scheme.Hom.naturality_assoc,
+    ΓSpecIso_obj_hom, Scheme.Opens.topIso_inv, Opens.map_top, Scheme.Opens.topIso_hom,
+    Scheme.comp_app, Scheme.Opens.ι_app_self, unop_op, Category.assoc, ← Functor.map_comp_assoc, ←
+    op_comp, eqToHom_trans, Scheme.Opens.eq_presheaf_map_eqToHom, Scheme.Hom.naturality_assoc,
     Scheme.inv_app_top, IsIso.hom_inv_id_assoc]
   simp only [eqToHom_op, eqToHom_map, Spec.map_eqToHom, eqToHom_unop,
     Scheme.Spec_map_presheaf_map_eqToHom, eqToHom_trans]
@@ -683,7 +684,7 @@ section ZeroLocus
 /-- On a locally ringed space `X`, the preimage of the zero locus of the prime spectrum
 of `Γ(X, ⊤)` under `toΓSpecFun` agrees with the associated zero locus on `X`. -/
 lemma Scheme.toΓSpec_preimage_zeroLocus_eq {X : Scheme.{u}} (s : Set Γ(X, ⊤)) :
-    (ΓSpec.adjunction.unit.app X).val.base ⁻¹' PrimeSpectrum.zeroLocus s = X.zeroLocus s :=
+    X.toSpecΓ.val.base ⁻¹' PrimeSpectrum.zeroLocus s = X.zeroLocus s :=
   LocallyRingedSpace.toΓSpec_preimage_zeroLocus_eq s
 
 open ConcreteCategory

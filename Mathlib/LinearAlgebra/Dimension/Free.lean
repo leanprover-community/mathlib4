@@ -14,7 +14,7 @@ import Mathlib.SetTheory.Cardinal.Finsupp
 ## Main result
 - `LinearEquiv.nonempty_equiv_iff_lift_rank_eq`:
   Two free modules are isomorphic iff they have the same dimension.
-- `FiniteDimensional.finBasis`:
+- `Module.finBasis`:
   An arbitrary basis of a finite free module indexed by `Fin n` given `finrank R M = n`.
 
 -/
@@ -24,7 +24,7 @@ noncomputable section
 
 universe u v v' w
 
-open Cardinal Basis Submodule Function Set DirectSum FiniteDimensional
+open Cardinal Basis Submodule Function Set DirectSum Module
 
 section Tower
 
@@ -57,7 +57,7 @@ theorem rank_mul_rank (A : Type v) [AddCommGroup A]
 
 /-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$. -/
-theorem FiniteDimensional.finrank_mul_finrank : finrank F K * finrank K A = finrank F A := by
+theorem Module.finrank_mul_finrank : finrank F K * finrank K A = finrank F A := by
   simp_rw [finrank]
   rw [← toNat_lift.{w} (Module.rank F K), ← toNat_lift.{v} (Module.rank K A), ← toNat_mul,
     lift_rank_mul_lift_rank, toNat_lift]
@@ -79,7 +79,7 @@ theorem rank_eq_card_chooseBasisIndex : Module.rank R M = #(ChooseBasisIndex R M
   (chooseBasis R M).mk_eq_rank''.symm
 
 /-- The finrank of a free module `M` over `R` is the cardinality of `ChooseBasisIndex R M`. -/
-theorem _root_.FiniteDimensional.finrank_eq_card_chooseBasisIndex [Module.Finite R M] :
+theorem _root_.Module.finrank_eq_card_chooseBasisIndex [Module.Finite R M] :
     finrank R M = Fintype.card (ChooseBasisIndex R M) := by
   simp [finrank, rank_eq_card_chooseBasisIndex]
 
@@ -161,35 +161,30 @@ noncomputable def LinearEquiv.ofFinrankEq [Module.Finite R M] [Module.Finite R M
 
 variable {M M'}
 
+namespace Module
+
 /-- See `rank_lt_aleph0` for the inverse direction without `Module.Free R M`. -/
-lemma Module.rank_lt_alpeh0_iff :
-    Module.rank R M < ℵ₀ ↔ Module.Finite R M := by
+lemma rank_lt_aleph0_iff : Module.rank R M < ℵ₀ ↔ Module.Finite R M := by
   rw [Free.rank_eq_card_chooseBasisIndex, mk_lt_aleph0_iff]
   exact ⟨fun h ↦ Finite.of_basis (Free.chooseBasis R M),
     fun I ↦ Finite.of_fintype (Free.ChooseBasisIndex R M)⟩
 
-theorem FiniteDimensional.finrank_of_not_finite
-    (h : ¬Module.Finite R M) :
-    finrank R M = 0 := by
-  rw [finrank, toNat_eq_zero, ← not_lt, Module.rank_lt_alpeh0_iff]
+theorem finrank_of_not_finite (h : ¬Module.Finite R M) : finrank R M = 0 := by
+  rw [finrank, toNat_eq_zero, ← not_lt, Module.rank_lt_aleph0_iff]
   exact .inr h
 
-theorem Module.finite_of_finrank_pos (h : 0 < finrank R M) :
-    Module.Finite R M := by
+theorem finite_of_finrank_pos (h : 0 < finrank R M) : Module.Finite R M := by
   contrapose h
   simp [finrank_of_not_finite h]
 
-theorem Module.finite_of_finrank_eq_succ {n : ℕ}
-    (hn : finrank R M = n.succ) : Module.Finite R M :=
-  Module.finite_of_finrank_pos <| by rw [hn]; exact n.succ_pos
+theorem finite_of_finrank_eq_succ {n : ℕ} (hn : finrank R M = n.succ) : Module.Finite R M :=
+  finite_of_finrank_pos <| by rw [hn]; exact n.succ_pos
 
-theorem Module.finite_iff_of_rank_eq_nsmul {W} [AddCommGroup W]
-    [Module R W] [Module.Free R W] {n : ℕ} (hn : n ≠ 0)
-    (hVW : Module.rank R M = n • Module.rank R W) :
+theorem finite_iff_of_rank_eq_nsmul {W} [AddCommGroup W] [Module R W] [Module.Free R W] {n : ℕ}
+    (hn : n ≠ 0) (hVW : Module.rank R M = n • Module.rank R W) :
     Module.Finite R M ↔ Module.Finite R W := by
-  simp only [← rank_lt_alpeh0_iff, hVW, nsmul_lt_aleph0_iff_of_ne_zero hn]
+  simp only [← rank_lt_aleph0_iff, hVW, nsmul_lt_aleph0_iff_of_ne_zero hn]
 
-namespace FiniteDimensional
 variable (R M)
 
 /-- A finite rank free module has a basis indexed by `Fin (finrank R M)`. -/
@@ -220,4 +215,4 @@ theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]
     (basisUnique ι h).repr.map_eq_zero_iff.mp (Finsupp.ext fun j => Subsingleton.elim i j ▸ hv),
     fun hv => by rw [hv, LinearEquiv.map_zero, Finsupp.zero_apply]⟩
 
-end FiniteDimensional
+end Module

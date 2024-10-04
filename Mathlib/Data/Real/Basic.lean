@@ -600,3 +600,10 @@ def IsNonarchimedean {A : Type*} [Add A] (f : A → ℝ) : Prop :=
 `f (r ^ n) = (f r) ^ n`. -/
 def IsPowMul {R : Type*} [Pow R ℕ] (f : R → ℝ) :=
   ∀ (a : R) {n : ℕ}, 1 ≤ n → f (a ^ n) = f a ^ n
+
+/-- A ring homomorphism `f : α →+* β` is bounded with respect to the functions `nα : α → ℝ` and
+  `nβ : β → ℝ` if there exists a positive constant `C` such that for all `x` in `α`,
+  `nβ (f x) ≤ C * nα x`. -/
+def RingHom.IsBoundedWrt {α : Type*} [Ring α] {β : Type*} [Ring β] (nα : α → ℝ) (nβ : β → ℝ)
+    (f : α →+* β) : Prop :=
+  ∃ C : ℝ, 0 < C ∧ ∀ x : α, nβ (f x) ≤ C * nα x

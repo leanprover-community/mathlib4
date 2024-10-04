@@ -95,15 +95,19 @@ protected theorem bijective_iff_injective_and_card [Finite β] (f : α → β) :
   rw [← and_congr_right_iff, ← Bijective,
     card_eq_fintype_card, card_eq_fintype_card, Fintype.bijective_iff_injective_and_card]
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefixes below.
+-/
 protected theorem bijective_iff_surjective_and_card [Finite α] (f : α → β) :
     Bijective f ↔ Surjective f ∧ Nat.card α = Nat.card β := by
   classical
-  rw [and_comm, Bijective, and_congr_left_iff]
+  rw [_root_.and_comm, Bijective, and_congr_left_iff]
   intro h
   have := Fintype.ofFinite α
   have := Fintype.ofSurjective f h
   revert h
-  rw [← and_congr_left_iff, ← Bijective, ← and_comm,
+  rw [← and_congr_left_iff, ← Bijective, ← _root_.and_comm,
     card_eq_fintype_card, card_eq_fintype_card, Fintype.bijective_iff_surjective_and_card]
 
 theorem _root_.Function.Injective.bijective_of_nat_card_le [Finite β] {f : α → β}

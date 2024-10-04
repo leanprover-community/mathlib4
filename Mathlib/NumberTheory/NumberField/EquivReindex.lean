@@ -21,7 +21,7 @@ namespace NumberField
 
 noncomputable section
 
-open Module.Free FiniteDimensional canonicalEmbedding Matrix Finset
+open Module.Free Module canonicalEmbedding Matrix Finset
 
 /-- An equivalence between the set of embeddings of `K` into `ℂ` and the
   index set of the chosen basis of the ring of integers of `K`. -/
