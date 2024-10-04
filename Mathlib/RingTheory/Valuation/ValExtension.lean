@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang, Bichang Lei
 -/
 import Mathlib.RingTheory.Valuation.Integers
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
-import Mathlib.RingTheory.LocalRing.RingHom.Defs
+import Mathlib.Algebra.Group.Units.Hom
 
 /-!
 # Extension of Valuation
@@ -144,10 +143,10 @@ theorem algebraMap_injective [IsValExtension vK vA] [Nontrivial A] :
   ext
   apply RingHom.injective (algebraMap K A) h
 
-instance instIsLocalRingHomValuationInteger {S ΓS: Type*} [CommRing S]
+instance instIsLocalHomValuationInteger {S ΓS: Type*} [CommRing S]
     [LinearOrderedCommGroupWithZero ΓS]
-    [Algebra R S] [IsLocalRingHom (algebraMap R S)] {vS : Valuation S ΓS}
-    [IsValExtension vR vS] : IsLocalRingHom (algebraMap vR.integer vS.integer) where
+    [Algebra R S] [IsLocalHom (algebraMap R S)] {vS : Valuation S ΓS}
+    [IsValExtension vR vS] : IsLocalHom (algebraMap vR.integer vS.integer) where
   map_nonunit r hr := by
     apply (Valuation.integer.integers (v := vR)).isUnit_of_one
     · exact (isUnit_map_iff (algebraMap R S) _).mp (hr.map (algebraMap _ S))

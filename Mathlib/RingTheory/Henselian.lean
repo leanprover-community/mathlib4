@@ -60,8 +60,8 @@ universe u v
 
 open Polynomial LocalRing Polynomial Function List
 
-theorem isLocalRingHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
-    (h : I ≤ Ideal.jacobson ⊥) : IsLocalRingHom (Ideal.Quotient.mk I) := by
+theorem isLocalHom_of_le_jacobson_bot {R : Type*} [CommRing R] (I : Ideal R)
+    (h : I ≤ Ideal.jacobson ⊥) : IsLocalHom (Ideal.Quotient.mk I) := by
   constructor
   intro a h
   have : IsUnit (Ideal.Quotient.mk (Ideal.jacobson ⊥) a) := by
@@ -193,8 +193,8 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         exact (ih.eval f).trans h₁
       have hf'c : ∀ n, IsUnit (f'.eval (c n)) := by
         intro n
-        haveI := isLocalRingHom_of_le_jacobson_bot I (IsAdicComplete.le_jacobson_bot I)
-        apply isUnit_of_map_unit (Ideal.Quotient.mk I)
+        haveI := isLocalHom_of_le_jacobson_bot I (IsAdicComplete.le_jacobson_bot I)
+        apply IsUnit.of_map (Ideal.Quotient.mk I)
         convert h₂ using 1
         exact SModEq.def.mp ((hc_mod n).eval _)
       have hfcI : ∀ n, f.eval (c n) ∈ I ^ (n + 1) := by

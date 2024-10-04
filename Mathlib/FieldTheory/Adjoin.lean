@@ -1114,6 +1114,15 @@ theorem _root_.minpoly.degree_le (x : L) [FiniteDimensional K L] :
     (minpoly K x).degree ≤ finrank K L :=
   degree_le_of_natDegree_le (minpoly.natDegree_le x)
 
+/-- If `x : L` is an integral element in a field extension `L` over `K`, then the degree of the
+  minimal polynomial of `x` over `K` divides `[L : K]`.-/
+theorem _root_.minpoly.degree_dvd {x : L} (hx : IsIntegral K x) :
+    (minpoly K x).natDegree ∣ FiniteDimensional.finrank K L := by
+  rw [dvd_iff_exists_eq_mul_left, ← IntermediateField.adjoin.finrank hx]
+  use FiniteDimensional.finrank K⟮x⟯ L
+  rw [eq_comm, mul_comm]
+  exact FiniteDimensional.finrank_mul_finrank _ _ _
+
 -- TODO: generalize to `Sort`
 /-- A compositum of algebraic extensions is algebraic -/
 theorem isAlgebraic_iSup {ι : Type*} {t : ι → IntermediateField K L}

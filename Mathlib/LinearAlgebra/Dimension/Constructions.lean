@@ -372,7 +372,7 @@ variable [StrongRankCondition R]
 /-- The dimension of a submodule is bounded by the dimension of the ambient space. -/
 theorem Submodule.finrank_le [Module.Finite R M] (s : Submodule R M) :
     finrank R s ≤ finrank R M :=
-  toNat_le_toNat (rank_submodule_le s) (rank_lt_aleph0 _ _)
+  toNat_le_toNat (Submodule.rank_le s) (rank_lt_aleph0 _ _)
 
 /-- The dimension of a quotient is bounded by the dimension of the ambient space. -/
 theorem Submodule.finrank_quotient_le [Module.Finite R M] (s : Submodule R M) :
@@ -386,12 +386,12 @@ theorem Submodule.finrank_map_le
     finrank R (p.map f) ≤ finrank R p :=
   finrank_le_finrank_of_rank_le_rank (lift_rank_map_le _ _) (rank_lt_aleph0 _ _)
 
-theorem Submodule.finrank_le_finrank_of_le {s t : Submodule R M} [Module.Finite R t] (hst : s ≤ t) :
+theorem Submodule.finrank_mono {s t : Submodule R M} [Module.Finite R t] (hst : s ≤ t) :
     finrank R s ≤ finrank R t :=
-  calc
-    finrank R s = finrank R (s.comap t.subtype) :=
-      (Submodule.comapSubtypeEquivOfLe hst).finrank_eq.symm
-    _ ≤ finrank R t := Submodule.finrank_le _
+  Cardinal.toNat_le_toNat (Submodule.rank_mono hst) (rank_lt_aleph0 R ↥t)
+
+@[deprecated (since := "2024-09-30")]
+alias Submodule.finrank_le_finrank_of_le := Submodule.finrank_mono
 
 end
 

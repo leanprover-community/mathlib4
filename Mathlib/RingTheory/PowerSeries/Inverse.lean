@@ -267,10 +267,10 @@ end Field
 
 section LocalRing
 
-variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalRingHom f]
+variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalHom f]
 
-instance map.isLocalRingHom : IsLocalRingHom (map f) :=
-  MvPowerSeries.map.isLocalRingHom f
+instance map.isLocalHom : IsLocalHom (map f) :=
+  MvPowerSeries.map.isLocalHom f
 
 variable [LocalRing R] [LocalRing S]
 
