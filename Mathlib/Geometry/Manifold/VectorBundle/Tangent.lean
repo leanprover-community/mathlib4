@@ -412,7 +412,7 @@ section inTangentCoordinates
 variable (I') {M H}
 variable {N : Type*}
 
-/-- The map `in_coordinates` for the tangent bundle is trivial on the model spaces -/
+/-- The map `inCoordinates` for the tangent bundle is trivial on the model spaces -/
 theorem inCoordinates_tangent_bundle_core_model_space (x₀ x : H) (y₀ y : H') (ϕ : E →L[𝕜] E') :
     inCoordinates E (TangentSpace I) E' (TangentSpace I') x₀ x y₀ y ϕ = ϕ := by
   erw [VectorBundleCore.inCoordinates_eq] <;> try trivial

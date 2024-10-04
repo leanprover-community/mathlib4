@@ -772,24 +772,18 @@ theorem contMDiffAt_iff_contMDiffAt_nhds
   refine (eventually_mem_nhds_iff.mpr hu).mono fun x' hx' => ?_
   exact (h x' <| mem_of_mem_nhds hx').contMDiffAt hx'
 
-#check eventually_mem_nhds
-#check eventually_mem_nhdsWithin
-
-
 /-- Note: This does not hold for `n = ∞`. `f` being `C^∞` at `x` means that for every `n`, `f` is
 `C^n` on some neighborhood of `x`, but this neighborhood can depend on `n`. -/
-theorem contMDiffWithinAt_iff_contMDiffWithinAt_nhds
+theorem contMDiffWithinAt_iff_contMDiffWithinAt_nhdsWithin
     [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M'] {n : ℕ} :
     ContMDiffWithinAt I I' n f s x ↔
       ∀ᶠ x' in 𝓝[insert x s] x, ContMDiffWithinAt I I' n f s x' := by
-  refine ⟨?_, fun h ↦ ?_⟩
+  refine ⟨?_, fun h ↦ mem_of_mem_nhdsWithin (mem_insert x s) h⟩
   rw [contMDiffWithinAt_iff_contMDiffOn_nhds]
   rintro ⟨u, hu, h⟩
-  have Z := eventually_mem_nhds
-  refine (eventually_mem_nhdsWithin.mpr hu).mono fun x' hx' => ?_
-  exact (h x' <| mem_of_mem_nhds hx').contMDiffAt hx'
-
-#exit
+  filter_upwards [hu, eventually_mem_nhdsWithin_iff.mpr hu] with x' h'x' hx'
+  apply (h x' h'x').mono_of_mem
+  exact nhdsWithin_mono _ (subset_insert x s) hx'
 
 /-! ### Congruence lemmas -/
 
