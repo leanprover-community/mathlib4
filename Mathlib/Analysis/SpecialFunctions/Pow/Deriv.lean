@@ -358,7 +358,7 @@ theorem contDiff_rpow_const_of_le {p : ℝ} {n : ℕ} (h : ↑n ≤ p) :
   · exact contDiff_zero.2 (continuous_id.rpow_const fun x => Or.inr <| by simpa using h)
   · have h1 : 1 ≤ p := le_trans (by simp) h
     rw [Nat.cast_succ, ← le_sub_iff_add_le] at h
-    rw [contDiff_succ_iff_deriv, deriv_rpow_const' h1]
+    rw [show ((n + 1 : ℕ) : ℕ∞) = n + 1 from rfl, contDiff_succ_iff_deriv, deriv_rpow_const' h1]
     exact ⟨differentiable_rpow_const h1, contDiff_const.mul (ihn h)⟩
 
 theorem contDiffAt_rpow_const_of_le {x p : ℝ} {n : ℕ} (h : ↑n ≤ p) :
