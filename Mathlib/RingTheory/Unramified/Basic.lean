@@ -104,10 +104,8 @@ theorem lift_unique' [FormallyUnramified R A] {C : Type u} [CommRing C]
     (g₁ g₂ : A →ₐ[R] B) (h : f.comp g₁ = f.comp g₂) : g₁ = g₂ :=
   FormallyUnramified.ext' _ hf g₁ g₂ (AlgHom.congr_fun h)
 
-instance : FormallyUnramified R R := by
-  constructor
-  intros B _ _ _ _ f₁ f₂ _
-  exact Subsingleton.elim _ _
+instance : FormallyUnramified R R where
+  comp_injective _ _ _ _ _ := Function.injective_of_subsingleton _
 
 end
 
@@ -151,19 +149,18 @@ variable {A B : Type u} [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 /-- This holds in general for epimorphisms. -/
 theorem of_surjective [FormallyUnramified R A] (f : A →ₐ[R] B) (H : Function.Surjective f) :
-    FormallyUnramified R B := by
-  constructor
-  intro Q _ _ I hI f₁ f₂ e
-  ext x
-  obtain ⟨x, rfl⟩ := H x
-  rw [← AlgHom.comp_apply, ← AlgHom.comp_apply]
-  congr 1
-  apply FormallyUnramified.comp_injective I hI
-  ext x; exact DFunLike.congr_fun e (f x)
+    FormallyUnramified R B where
+  comp_injective Q _ _ I hI f₁ f₂ e := by
+    ext x
+    obtain ⟨x, rfl⟩ := H x
+    rw [← AlgHom.comp_apply, ← AlgHom.comp_apply]
+    congr 1
+    apply FormallyUnramified.comp_injective I hI
+    ext x; exact DFunLike.congr_fun e (f x)
 
 instance quotient {A} [CommRing A] [Algebra R A] [FormallyUnramified R A] (I : Ideal A) :
     FormallyUnramified R (A ⧸ I) :=
-    FormallyUnramified.of_surjective (IsScalarTower.toAlgHom _ _ _) Ideal.Quotient.mk_surjective
+  of_surjective (IsScalarTower.toAlgHom _ _ _) Ideal.Quotient.mk_surjective
 
 theorem of_equiv [FormallyUnramified R A] (e : A ≃ₐ[R] B) :
     FormallyUnramified R B :=
@@ -179,15 +176,13 @@ variable {R : Type u} [CommSemiring R]
 variable {A : Type u} [Semiring A] [Algebra R A]
 variable (B : Type u) [CommSemiring B] [Algebra R B]
 
-instance base_change [FormallyUnramified R A] :
-    FormallyUnramified B (B ⊗[R] A) := by
-  constructor
-  intro C _ _ I hI f₁ f₂ e
-  letI := ((algebraMap B C).comp (algebraMap R B)).toAlgebra
-  haveI : IsScalarTower R B C := IsScalarTower.of_algebraMap_eq' rfl
-  ext : 1
-  · subsingleton
-  · exact FormallyUnramified.ext I ⟨2, hI⟩ fun x => AlgHom.congr_fun e (1 ⊗ₜ x)
+instance base_change [FormallyUnramified R A] : FormallyUnramified B (B ⊗[R] A) where
+  comp_injective C _ _ I hI f₁ f₂ e := by
+    letI := ((algebraMap B C).comp (algebraMap R B)).toAlgebra
+    haveI : IsScalarTower R B C := IsScalarTower.of_algebraMap_eq' rfl
+    ext : 1
+    · subsingleton
+    · exact FormallyUnramified.ext I ⟨2, hI⟩ fun x => AlgHom.congr_fun e (1 ⊗ₜ x)
 
 end BaseChange
 
@@ -200,17 +195,13 @@ variable [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
 variable [IsLocalization (M.map (algebraMap R S)) Sₘ]
 include M
 
--- Porting note: no longer supported
--- attribute [local elab_as_elim] Ideal.IsNilpotent.induction_on
-
 /-- This holds in general for epimorphisms. -/
-theorem of_isLocalization [IsLocalization M Rₘ] : FormallyUnramified R Rₘ := by
-  constructor
-  intro Q _ _ I _ f₁ f₂ _
-  apply AlgHom.coe_ringHom_injective
-  refine IsLocalization.ringHom_ext M ?_
-  ext
-  simp
+theorem of_isLocalization [IsLocalization M Rₘ] : FormallyUnramified R Rₘ where
+  comp_injective Q _ _ I _ f₁ f₂ _ := by
+    apply AlgHom.coe_ringHom_injective
+    refine IsLocalization.ringHom_ext M ?_
+    ext
+    simp
 
 /-- This actually does not need the localization instance, and is stated here again for
 consistency. See `Algebra.FormallyUnramified.of_comp` instead.
