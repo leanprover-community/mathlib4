@@ -807,6 +807,11 @@ theorem ssubset_iff_exists_cons_subset : s ⊂ t ↔ ∃ (a : _) (h : a ∉ s), 
   obtain ⟨a, hs, ht⟩ := not_subset.1 h.2
   exact ⟨a, ht, cons_subset.2 ⟨hs, h.subset⟩⟩
 
+theorem cons_swap (h : a ≠ b) (ha : a ∉ s) (hb : b ∉ s) :
+    (s.cons a ha).cons b (by simp only [mem_cons, h.symm, hb, or_self, not_false_eq_true])
+    = (s.cons b hb).cons a (by simp only [mem_cons, h, ha, or_self, not_false_eq_true]) := by
+  apply Subset.antisymm <;> intro _ _ <;> simp [mem_cons] at * <;> tauto
+
 end Cons
 
 /-! ### disjoint -/
