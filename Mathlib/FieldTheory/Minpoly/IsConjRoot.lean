@@ -29,8 +29,8 @@ and `y` in `L`, `IsConjRoot K x y` is equivalent to the existence of an algebra 
 
 open Polynomial minpoly IntermediateField
 
-variable {R : Type*} {A : Type*} [CommRing R] [Ring A] [Algebra R A]
-variable {K : Type*} {L : Type*} [Field K] [Field L] [Algebra K L]
+variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
+variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 
 variable (R) in
 def IsConjRoot (x x' : A) : Prop := (minpoly R x) = (minpoly R x')
@@ -62,10 +62,36 @@ theorem iff_exist_algEquiv [Normal K L] {x x' : L} :
     IsConjRoot K x x' ↔ ∃ σ : L ≃ₐ[K] L, x' = σ x :=
   ⟨exist_algEquiv, fun ⟨_, h⟩ => h ▸ of_algEquiv _ _⟩
 
+theorem iff_mem_aroots [CommRing A] [IsDomain A] [Algebra R A] {x x' : A} :
+    IsConjRoot R x x' ↔ x' ∈ (minpoly R x).aroots A := sorry
+
+theorem iff_mem_minpoly_rootSet [CommRing A] [IsDomain A] [Algebra R A] {x x' : A} :
+    IsConjRoot R x x' ↔ x' ∈ (minpoly R x).rootSet A := sorry
+
+theorem eq_of_degree_minpoly_eq_one {x x' : A} (h : IsConjRoot R x x')
+    (g : degree (minpoly R x) = 1) : x = x' := by
+  sorry
+
+theorem eq_of_natDegree_minpoly_eq_one {x x' : A} (h : IsConjRoot R x x')
+    (g : natDegree (minpoly R x) = 1) : x = x' := sorry
+
+#check Polynomial.aroots
+open Polynomial
+theorem card_rootSet_eq_natDegree {K L} [Field K] [Field L] [Algebra K L] {p : K[X]}
+    (hsep : p.Separable) (hp : p.Splits (algebraMap K L)) :
+    Nat.card (p.rootSet L) = p.natDegree := sorry
+
+-- seperable implies root number = degree
+-- when degree >= 1, and split the aroot multiset and root set are not empty -- convert to Prod
+-- Polynomial.nodup_aroots_iff_of_splits
 -- Add `Polynomial.Splits` not `Normal`
+#check Polynomial.card_rootSet_eq_natDegree
 theorem not_mem_iff_exist_ne {x : L} (h : IsSeparable K x)
     (sp : (minpoly K x).Splits (algebraMap K L)) :
-    x ∉ (⊥ : Subalgebra K L) ↔ ∃ x' : L, x ≠ x' ∧ IsConjRoot K x x' := sorry
+    x ∉ (⊥ : Subalgebra K L) ↔ ∃ x' : L, x ≠ x' ∧ IsConjRoot K x x' := by
+  constructor
+  · intro hbot
+
 -- `should decide what is the definition when both x, x' are trancendental over R`
 
 variable (R) in
@@ -84,12 +110,6 @@ theorem add_algebraMap {x x' : A} (r : R) (h : IsConjRoot R x x') :
 -- `should decide what is the definition when both x, x' are trancendental over R`
 
 /-
-theorem eq_of_degree_minpoly_eq_one {x x' : A} (h : IsConjRoot R x x')
-    (g : degree (minpoly R x) = 1) : x = x' := by
-  sorry
-
-theorem eq_of_natDegree_minpoly_eq_one {x x' : A} (h : IsConjRoot R x x')
-    (g : natDegree (minpoly R x) = 1) : x = x' := sorry
 
 theorem eq_of_isConjRoot_algebraMap {r : R} {x : A} (h : IsConjRoot R x (algebraMap R A r)) :
     x = algebraMap R A r := sorry
