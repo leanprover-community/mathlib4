@@ -131,7 +131,7 @@ theorem mk_eq_of_doset_eq {H K : Subgroup G} {a b : G} (h : doset a H K = doset 
   rw [eq]
   exact mem_doset.mp (h.symm ▸ mem_doset_self H K b)
 
-theorem disjoint_out' {H K : Subgroup G} {a b : Quotient H.1 K} :
+theorem disjoint_out' {H K : Subgroup G} {a b : Quotient H K} :
     a ≠ b → Disjoint (doset a.out' H K) (doset b.out' (H : Set G) K) := by
   contrapose!
   intro h
@@ -172,19 +172,17 @@ theorem doset_union_leftCoset (H K : Subgroup G) (a : G) :
     simp only [hxy, ← mul_assoc, hy, one_mul, inv_mul_cancel, Subgroup.coe_mk, inv_mul_cancel_right]
 
 theorem left_bot_eq_left_quot (H : Subgroup G) :
-    Quotient (⊥ : Subgroup G).1 (H : Set G) = (G ⧸ H) := by
+    Quotient (⊥ : Subgroup G) (H : Set G) = (G ⧸ H) := by
   unfold Quotient
   congr
   ext
   simp_rw [← bot_rel_eq_leftRel H]
-  rfl
 
 theorem right_bot_eq_right_quot (H : Subgroup G) :
-    Quotient (H.1 : Set G) (⊥ : Subgroup G) = _root_.Quotient (QuotientGroup.rightRel H) := by
+    Quotient (H : Set G) (⊥ : Subgroup G) = _root_.Quotient (QuotientGroup.rightRel H) := by
   unfold Quotient
   congr
   ext
   simp_rw [← rel_bot_eq_right_group_rel H]
-  rfl
 
 end Doset

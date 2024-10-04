@@ -179,15 +179,17 @@ variable {P}
 
 lemma toMorphismProperty_respectsIso_iff :
     RespectsIso P ↔ (toMorphismProperty P).RespectsIso := by
-  refine ⟨fun h ↦ ⟨?_, ?_⟩, fun h ↦ ⟨?_, ?_⟩⟩
+  refine ⟨fun h ↦ MorphismProperty.RespectsIso.mk _ ?_ ?_, fun h ↦ ⟨?_, ?_⟩⟩
   · intro X Y Z e f hf
     exact h.right f e.commRingCatIsoToRingEquiv hf
   · intro X Y Z e f hf
     exact h.left f e.commRingCatIsoToRingEquiv hf
+  · intro X Y Z _ _ _ f e hf
+    exact MorphismProperty.RespectsIso.postcomp (toMorphismProperty P)
+      e.toCommRingCatIso.hom (CommRingCat.ofHom f) hf
   · intro X Y Z _ _ _ f e
-    exact h.postcomp e.toCommRingCatIso (CommRingCat.ofHom f)
-  · intro X Y Z _ _ _ f e
-    exact h.precomp e.toCommRingCatIso (CommRingCat.ofHom f)
+    exact MorphismProperty.RespectsIso.precomp (toMorphismProperty P)
+      e.toCommRingCatIso.hom (CommRingCat.ofHom f)
 
 end ToMorphismProperty
 

@@ -270,7 +270,6 @@ def preservesFiniteColimitsOfEvaluation (F : C ⥤ D ⥤ E)
 noncomputable instance (F : C ⥤ D) [PreservesFiniteColimits F] : PreservesFiniteCoproducts F where
   preserves _ _ := inferInstance
 
-
 /--
 A functor is said to reflect finite colimits, if it reflects all colimits of shape `J`,
 where `J : Type` is a finite category.
