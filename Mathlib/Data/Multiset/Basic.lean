@@ -528,6 +528,12 @@ theorem le_cons_of_not_mem (m : a ∉ s) : s ≤ a ::ₘ t ↔ s ≤ t := by
     perm_middle.subperm_left.2
       ((subperm_cons _).2 <| ((sublist_or_mem_of_sublist s).resolve_right m₁).subperm)
 
+theorem cons_le_of_not_mem (hs : a ∉ s) (ht : a ∈ t) :
+    a ::ₘ s ≤ t ↔ s ≤ t := by
+  apply Iff.intro (le_trans (le_cons_self s a))
+  intro h; rcases exists_cons_of_mem ht with ⟨_, rfl⟩
+  exact cons_le_cons _ ((le_cons_of_not_mem hs).mp h)
+
 @[simp]
 theorem singleton_ne_zero (a : α) : ({a} : Multiset α) ≠ 0 :=
   ne_of_gt (lt_cons_self _ _)
@@ -2674,6 +2680,9 @@ theorem add_eq_union_iff_disjoint [DecidableEq α] {s t : Multiset α} :
   simp_rw [← inter_eq_zero_iff_disjoint, ext, count_add, count_union, count_inter, count_zero,
     Nat.min_eq_zero_iff, Nat.add_eq_max_iff]
 
+theorem add_eq_sup_iff_disjoint [DecidableEq α] {s t : Multiset α} :
+    s + t = s ⊔ t ↔ Disjoint s t := by rw [← add_eq_union_iff_disjoint, sup_eq_union]
+
 lemma add_eq_union_left_of_le [DecidableEq α] {s t u : Multiset α} (h : t ≤ s) :
     u + s = u ∪ t ↔ u.Disjoint s ∧ s = t := by
   rw [← add_eq_union_iff_disjoint]
@@ -2697,27 +2706,11 @@ theorem disjoint_map_map {f : α → γ} {g : β → γ} {s : Multiset α} {t : 
     Disjoint (s.map f) (t.map g) ↔ ∀ a ∈ s, ∀ b ∈ t, f a ≠ g b := by
   simp [Disjoint, @eq_comm _ (f _) (g _)]
 
-lemma cons_le_of_not_mem [DecidableEq α] {a : α} {s : Multiset α} (h : a ∉ s)
-    {t : Multiset α} (ha : a ∈ t) (hs : s ≤ t) :
-    a ::ₘ s ≤ t := by
-  rw [← cons_erase ha, cons_le_cons_iff]
-  exact (cons_erase ha ▸ (@le_cons_of_not_mem _ _ (t.erase a) _ h)).mp hs
-
-theorem add_le_of_disjoint
-    [DecidableEq α] {s t : Multiset α} (h : s.Disjoint t) {u : Multiset α}
-    (hs : s ≤ u) (ht : t ≤ u) :
-    s + t ≤ u := by
-  induction s using Multiset.induction_on generalizing t with
-  | empty => simp only [zero_add, ht]
-  | cons a s ih =>
-    rw [cons_add, le_iff_count]; intro x
-    rcases disjoint_cons_left.mp h with ⟨h₁, h₂⟩
-    by_cases h' : x = a
-    · rw [h', count_cons_self, count_add, count_eq_zero_of_not_mem h₁, add_zero]
-      have := count_cons a a s ▸ (le_iff_count.mp hs a); simp only [↓reduceIte] at this
-      exact this
-    · rw [count_cons_of_ne h']
-      exact count_add _ s t ▸ (le_iff_count.mp (ih h₂ (le_trans (le_cons_self s a) hs) ht) x)
+lemma cons_le_iff_le_of_not_mem [DecidableEq α] {a : α} {s : Multiset α} (hs : a ∉ s)
+    {t : Multiset α} (ht : a ∈ t) :
+    a ::ₘ s ≤ t ↔ s ≤ t := by
+  rw [← cons_erase ht, cons_le_cons_iff]
+  exact ⟨fun h ↦ (le_cons_of_not_mem hs).mpr h, fun h ↦ (le_cons_of_not_mem hs).mp h⟩
 
 /-- `Pairwise r m` states that there exists a list of the elements s.t. `r` holds pairwise on this
 list. -/
