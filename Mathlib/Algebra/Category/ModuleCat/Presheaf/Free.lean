@@ -58,7 +58,7 @@ section
 
 variable {R}
 
-variable {F : Cᵒᵖ ⥤ Type u} {G : PresheafOfModules.{u} R}
+variable {F : Cᵒᵖ ⥤ Type u} {G G' : PresheafOfModules.{u} R}
 
 /-- The morphism of presheaves of modules `freeObj F ⟶ G` corresponding to
 a morphism `F ⟶ G.presheaf ⋙ forget _` of presheaves of types. -/

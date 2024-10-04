@@ -6,7 +6,6 @@ Authors: Joël Riou
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Generator
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pushforward
 import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
-import Mathlib.CategoryTheory.Elements
 
 /-!
 # Pullback of presheaves of modules
@@ -49,53 +48,6 @@ abbrev PullbackObjIsDefined : PresheafOfModules.{v} S → Prop :=
 
 end
 
-abbrev Elements {C : Type u₁} [Category.{v₁} C] {R : Cᵒᵖ ⥤ RingCat.{u}}
-  (M : PresheafOfModules.{v} R) := ((toPresheaf R).obj M ⋙ forget Ab).Elements
-
-namespace Elements
-
-variable {C : Type u} [Category.{v} C] {R : Cᵒᵖ ⥤ RingCat.{v}} {M : PresheafOfModules.{v} R}
-
-noncomputable abbrev freeYoneda (m : M.Elements) :
-    PresheafOfModules.{v} R := (free R).obj (yoneda.obj m.1.unop)
-
-noncomputable abbrev fromFreeYoneda (m : M.Elements) :
-    m.freeYoneda ⟶ M :=
-  (freeYonedaEquiv _ _).symm m.2
-
-end Elements
-
--- to be moved to Presheaf.Generator
-section
-
-variable {C : Type u} [SmallCategory.{u} C] {R : Cᵒᵖ ⥤ RingCat.{u}} (M : PresheafOfModules.{u} R)
-
-noncomputable abbrev freeYonedaCoproduct : PresheafOfModules.{u} R :=
-    ∐ (Elements.freeYoneda (M := M))
-
-noncomputable def fromFreeYonedaCoproduct : M.freeYonedaCoproduct ⟶ M :=
-  Sigma.desc Elements.fromFreeYoneda
-
-instance : Epi M.fromFreeYonedaCoproduct := sorry
-
-noncomputable def toFreeYonedaCoproduct :
-    (kernel M.fromFreeYonedaCoproduct).freeYonedaCoproduct ⟶ M.freeYonedaCoproduct :=
-  (kernel M.fromFreeYonedaCoproduct).fromFreeYonedaCoproduct ≫ kernel.ι _
-
-@[reassoc (attr := simp)]
-lemma toFreeYonedaCoproduct_fromFreeYonedaCoproduct :
-    M.toFreeYonedaCoproduct ≫ M.fromFreeYonedaCoproduct = 0 := by
-  simp [toFreeYonedaCoproduct]
-
-noncomputable abbrev freeYonedaCoproductsCokernelCofork :
-    CokernelCofork M.toFreeYonedaCoproduct :=
-  CokernelCofork.ofπ _ M.toFreeYonedaCoproduct_fromFreeYonedaCoproduct
-
-def isColimitFreeYonedaCoproductsCokernelCofork :
-    IsColimit M.freeYonedaCoproductsCokernelCofork := sorry
-
-end
-
 section
 
 variable {C D : Type u} [SmallCategory C] [SmallCategory D]
@@ -104,9 +56,14 @@ variable {C D : Type u} [SmallCategory C] [SmallCategory D]
 noncomputable def pushforwardCompCoyonedaFreeYonedaCorepresentableBy (X : C) :
     (pushforward φ ⋙ coyoneda.obj (op ((free S).obj (yoneda.obj X)))).CorepresentableBy
       ((free R).obj (yoneda.obj (F.obj X))) where
-  homEquiv {M} := (freeYonedaEquiv M (F.obj X)).trans
-    (freeYonedaEquiv ((pushforward φ).obj M) X).symm
-  homEquiv_comp := sorry
+  homEquiv {M} := (freeYonedaEquiv).trans
+    (freeYonedaEquiv (M := (pushforward φ).obj M)).symm
+  homEquiv_comp {M N} g f := freeYonedaEquiv.injective (by
+    dsimp
+    erw [Equiv.apply_symm_apply, freeYonedaEquiv_comp]
+    conv_rhs => erw [freeYonedaEquiv_comp]
+    erw [Equiv.apply_symm_apply]
+    rfl)
 
 lemma pullbackObjIsDefined_free_yoneda (X : C) :
     PullbackObjIsDefined φ ((free S).obj (yoneda.obj X)) :=
