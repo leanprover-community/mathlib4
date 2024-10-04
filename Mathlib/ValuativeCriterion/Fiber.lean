@@ -21,6 +21,10 @@ def Scheme.Hom.fiberToResidueField (f : X.Hom Y) (y : Y) :
     f.fiber y ⟶ Spec (Y.residueField y) :=
   pullback.snd _ _
 
+lemma Scheme.Hom.fiber_isPullback (f : X.Hom Y) (y : Y) :
+    IsPullback (f.fiberι y) (f.fiberToResidueField y) f (Y.fromSpecResidueField y) :=
+  IsPullback.of_hasPullback _ _
+
 lemma Scheme.Hom.range_fiberι (f : X.Hom Y) (y : Y) :
     Set.range (f.fiberι y).1.base = f.1.base ⁻¹' {y} := by
   dsimp [fiber, fiberι]

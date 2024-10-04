@@ -132,7 +132,7 @@ lemma SpecTensorTo_comm :
           ≫ Spec.map (S.residueFieldCongr T.hx).inv
             ≫ S.fromSpecResidueField T.s := by
     simp only [residueFieldCongr_inv, residueFieldCongr_fromSpecResidueField]
-    exact Eq.symm (hom.residueFieldMap_fromSpecResidueField f T.x)
+    exact Eq.symm (Hom.residueFieldMap_fromSpecResidueField f T.x)
 
   have h₂ : Y.fromSpecResidueField T.y
       ≫ g
@@ -140,7 +140,7 @@ lemma SpecTensorTo_comm :
           ≫ Spec.map (S.residueFieldCongr T.hy).inv
             ≫ S.fromSpecResidueField T.s := by
     simp only [residueFieldCongr_inv, residueFieldCongr_fromSpecResidueField]
-    exact Eq.symm (hom.residueFieldMap_fromSpecResidueField g T.y)
+    exact Eq.symm (Hom.residueFieldMap_fromSpecResidueField g T.y)
 
   rw [h₁, h₂]
   simp only [← reassoc_of% Spec.map_comp]
@@ -194,7 +194,7 @@ lemma ofPointTensor_comm (t : ↑(pullback f g)) :
             ≫ Hom.residueFieldMap (pullback.snd f g) t
 
   simp only [← residueFieldMap_comp]
-  apply Scheme.hom.residueFieldMap_congr pullback.condition
+  apply Scheme.Hom.residueFieldMap_congr pullback.condition
 
 /-- The ring map from tensor to residue field in the pullback. -/
 def ofPointTensor (t : ↑(pullback f g)) :
@@ -208,7 +208,7 @@ lemma ofPointtensor_SpectensorTo (t : ↑(pullback f g)) :
     Spec.map (ofPointTensor t) ≫ (Triplet.ofPoint t).SpecTensorTo =
       (pullback f g).fromSpecResidueField t := by
   apply pullback.hom_ext
-  · rw [← Scheme.hom.residueFieldMap_fromSpecResidueField]
+  · rw [← Scheme.Hom.residueFieldMap_fromSpecResidueField]
     have h : (Triplet.ofPoint t).SpecTensorTo ≫ pullback.fst f g
         = Spec.map (pushout.inl _ _) ≫ X.fromSpecResidueField (Triplet.ofPoint t).x :=
       pullback.lift_fst _ _ (Triplet.ofPoint t).SpecTensorTo_comm
@@ -217,7 +217,7 @@ lemma ofPointtensor_SpectensorTo (t : ↑(pullback f g)) :
     rw [← pushout.inl_desc _ _ (ofPointTensor_comm t)]
     simp only [Spec.map_comp]
     rfl
-  · rw [← Scheme.hom.residueFieldMap_fromSpecResidueField]
+  · rw [← Scheme.Hom.residueFieldMap_fromSpecResidueField]
     have h : (Triplet.ofPoint t).SpecTensorTo ≫ pullback.snd f g
         = Spec.map (pushout.inr _ _) ≫ Y.fromSpecResidueField (Triplet.ofPoint t).y :=
       pullback.lift_snd _ _ (Triplet.ofPoint t).SpecTensorTo_comm
