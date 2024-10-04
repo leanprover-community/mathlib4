@@ -334,6 +334,17 @@ to internalize the workings of `convert` for the line `convert H with γ`
 exact e and refine e require e to be defeq to the goal
 
 
+/-- If `F` is an invariant subspace of a symmetric operator `S`, then `F` is the supremum of the
+eigenspaces of the restriction of `S` to `F`. -/
+theorem iSup_eigenspace_restrict {F : Submodule 𝕜 E}
+    (S : E →ₗ[𝕜] E) (hS : IsSymmetric S) (hInv : Set.MapsTo S F F) :
+    ⨆ μ, map F.subtype (eigenspace (S.restrict hInv) μ) = F := by
+  conv_lhs => rw [← Submodule.map_iSup]
+  conv_rhs => rw [← map_subtype_top F]
+  congr!
+  have H : IsSymmetric (S.restrict hInv) := fun x y ↦ hS (F.subtype x) y
+  apply orthogonal_eq_bot_iff.mp (H.orthogonalComplement_iSup_eigenspaces_eq_bot)
+
 -/
 
 lemma iSup_iInf_maxGenEigenspace_eq_top_of_commute {ι K V : Type*}
@@ -353,13 +364,15 @@ lemma iSup_iInf_maxGenEigenspace_eq_top_of_commute {ι K V : Type*}
     classical
     specialize H {x // x ≠ i} (Fintype.card_subtype_lt (x := i) (by simp))
      (Subtype.restrict (· ≠ i) f) (fun _ _ _ ↦ hf <| by simpa [Subtype.coe_ne_coe]) (hC ·)
-    rw [← H]
+
     have P1 := iInf_split_single (fun μ ↦ (fun j ↦ Module.End.maxGenEigenspace (f j) μ) i)
     simp only [ne_eq] at P1
+
     --rw [P1 i m]
     --Don't know what those old theorems did, but I can't access `iInf_split_single` without
     --this rewrite...
-
+    -- rw [Module.End.iSup_genEigenspace_restrict_eq_top] is going in the wrong
+    -- direction. It seems we need the new theorem...
 
 
 
