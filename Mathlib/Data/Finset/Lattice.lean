@@ -19,8 +19,8 @@ This file is concerned with folding binary lattice operations over finsets.
 
 For the special case of maximum and minimum of a finset, see Max.lean.
 
-See also SetLattice.lean, which is instead concerned with how big lattice or set operations behave
-when indexed by a finset.
+See also `Mathlib/Order/CompleteLattice/Finset.lean`, which is instead concerned with how big
+lattice or set operations behave when indexed by a finset.
 -/
 
 assert_not_exists OrderedCommMonoid

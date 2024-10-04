@@ -86,15 +86,13 @@ protected theorem IsSymmetric.id : (LinearMap.id : E →ₗ[𝕜] E).IsSymmetric
 theorem IsSymmetric.add {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric) :
     (T + S).IsSymmetric := by
   intro x y
-  rw [LinearMap.add_apply, inner_add_left, hT x y, hS x y, ← inner_add_right]
-  rfl
+  rw [add_apply, inner_add_left, hT x y, hS x y, ← inner_add_right, add_apply]
 
 @[aesop safe apply]
 theorem IsSymmetric.sub {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric) :
     (T - S).IsSymmetric := by
   intro x y
-  rw [LinearMap.sub_apply, inner_sub_left, hT x y, hS x y, ← inner_sub_right]
-  rfl
+  rw [sub_apply, inner_sub_left, hT x y, hS x y, ← inner_sub_right, sub_apply]
 
 @[aesop safe apply]
 theorem IsSymmetric.smul {c : 𝕜} (hc : conj c = c) {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
