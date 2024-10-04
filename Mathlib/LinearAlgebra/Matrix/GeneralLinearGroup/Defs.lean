@@ -176,13 +176,11 @@ lemma map_det (g : GL n R) : Matrix.GeneralLinearGroup.det (map f g) =
 
 @[simp]
 lemma map_mul_map_inv (g : GL n R) : map f g * map f g⁻¹ = 1 := by
-  apply Units.ext
-  simp only [_root_.map_inv, mul_inv_cancel, Units.val_one]
+  simp only [@map_inv, @mul_inv_cancel]
 
 @[simp]
 lemma map_inv_mul_map (g : GL n R) : map f g⁻¹ * map f g = 1 := by
-  apply Units.ext
-  simp only [_root_.map_inv, inv_mul_cancel, Units.val_one]
+  simp only [@map_inv, @inv_mul_cancel]
 
 @[simp]
 lemma coe_map_mul_map_inv (g : GL n R) : g.val.map f * g.val⁻¹.map f = 1 := by
