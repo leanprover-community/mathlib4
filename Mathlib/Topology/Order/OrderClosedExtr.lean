@@ -8,7 +8,7 @@ import Mathlib.Topology.Order.OrderClosed
 import Mathlib.Topology.Order.LocalExtr
 
 /-!
-# Local maxima from monotonicity and antitonicityOrder-closed topologies
+# Local maxima from monotonicity and antitonicity
 
 In this file we prove a lemma that is useful for the First Derivative Test in calculus,
 and its dual.
