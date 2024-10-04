@@ -27,7 +27,7 @@ variable {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V]
 variable [Fintype K] [Finite V]
 
 local notation "q" => Fintype.card K
-local notation "n" => FiniteDimensional.finrank K V
+local notation "n" => Module.finrank K V
 
 attribute [local instance] Fintype.ofFinite in
 open Fintype in
@@ -86,8 +86,8 @@ theorem card_GL_field :
   rcases Nat.eq_zero_or_pos n with rfl | hn
   · simp [Nat.card_eq_fintype_card]
   · rw [Nat.card_congr (equiv_GL_linearindependent n hn), card_linearIndependent,
-    FiniteDimensional.finrank_fintype_fun_eq_card, Fintype.card_fin]
-    simp only [FiniteDimensional.finrank_fintype_fun_eq_card, Fintype.card_fin, le_refl]
+    Module.finrank_fintype_fun_eq_card, Fintype.card_fin]
+    simp only [Module.finrank_fintype_fun_eq_card, Fintype.card_fin, le_refl]
 
 end field
 
