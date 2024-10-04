@@ -56,34 +56,20 @@ end Fin
 namespace Finset
 variable {n : ℕ} {α : Fin (n + 1) → Type*} {p : Fin (n + 1)} (S : ∀ i, Finset (α i))
 
-lemma map_consEquiv_filter_piFinset' (P : (∀ i, α (succ i)) → Prop) [DecidablePred P] :
-    ((piFinset S).filter fun r ↦ P fun x ↦ r <| succ x).map (consEquiv α).symm.toEmbedding =
-      S 0 ×ˢ (piFinset fun x ↦ S <| succ x).filter P := by
-  ext; simp [Fin.forall_iff_succ, and_assoc]
-
-lemma map_snocEquiv_filter_piFinset' (P : (∀ i, α (castSucc i)) → Prop) [DecidablePred P] :
-    ((piFinset S).filter fun r ↦ P fun x ↦ r <| castSucc x).map (snocEquiv α).symm.toEmbedding =
-      S (last _) ×ˢ (piFinset fun x ↦ S <| castSucc x).filter P := by
-  ext; simp [Fin.forall_iff_castSucc, and_assoc]
-
-lemma map_insertNthEquiv_filter_piFinset' (P : (∀ i, α (p.succAbove i)) → Prop) [DecidablePred P] :
-    ((piFinset S).filter fun r ↦ P fun x ↦ r <| p.succAbove x).map
-      (p.insertNthEquiv α).symm.toEmbedding =
-      S p ×ˢ (piFinset fun x ↦ S <| Fin.succAbove p x).filter P := by
-  ext; simp [Fin.forall_iff_succAbove p, and_assoc]
-
 lemma map_consEquiv_filter_piFinset (P : (∀ i, α (succ i)) → Prop) [DecidablePred P] :
     ((piFinset S).filter fun r ↦ P <| tail r).map (consEquiv α).symm.toEmbedding =
-      S 0 ×ˢ (piFinset fun x ↦ S <| succ x).filter P := map_consEquiv_filter_piFinset' ..
+      S 0 ×ˢ (piFinset fun x ↦ S <| succ x).filter P := by
+  unfold tail; ext; simp [Fin.forall_iff_succ, and_assoc]
 
 lemma map_snocEquiv_filter_piFinset (P : (∀ i, α (castSucc i)) → Prop) [DecidablePred P] :
     ((piFinset S).filter fun r ↦ P <| init r).map (snocEquiv α).symm.toEmbedding =
-      S (last _) ×ˢ (piFinset <| init S).filter P :=
-  map_snocEquiv_filter_piFinset' ..
+      S (last _) ×ˢ (piFinset <| init S).filter P := by
+  unfold init; ext; simp [Fin.forall_iff_castSucc, and_assoc]
 
 lemma map_insertNthEquiv_filter_piFinset (P : (∀ i, α (p.succAbove i)) → Prop) [DecidablePred P] :
     ((piFinset S).filter fun r ↦ P <| p.removeNth r).map (p.insertNthEquiv α).symm.toEmbedding =
-      S p ×ˢ (piFinset <| p.removeNth S).filter P := map_insertNthEquiv_filter_piFinset' ..
+      S p ×ˢ (piFinset <| p.removeNth S).filter P := by
+  unfold removeNth; ext; simp [Fin.forall_iff_succAbove p, and_assoc]
 
 lemma card_consEquiv_filter_piFinset (P : (∀ i, α (succ i)) → Prop) [DecidablePred P] :
     ((piFinset S).filter fun r ↦ P <| tail r).card =
