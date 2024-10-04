@@ -93,8 +93,8 @@ instance isLocalHomStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X)
     IsLocalHom (f.stalkMap x) :=
   f.2 x
 
-instance isLocalRingHomValStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
-    IsLocalRingHom (f.val.stalkMap x) :=
+instance isLocalHomValStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
+    IsLocalHom (f.val.stalkMap x) :=
   f.2 x
 
 /-- The identity morphism on a locally ringed space. -/
