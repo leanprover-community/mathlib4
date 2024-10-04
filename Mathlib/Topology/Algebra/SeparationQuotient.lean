@@ -414,7 +414,7 @@ def mkCLM : M →L[R] SeparationQuotient M where
 variable {R M}
 
 /-- The lift as a continuous linear map of `f` with `f x = f y` for `Inseparable x y`. -/
-noncomputable def liftCLM (σ : R →+* S) (f : M →SL[σ] N) (hf : ∀ x y, Inseparable x y → f x = f y) :
+noncomputable def liftCLM {σ : R →+* S} (f : M →SL[σ] N) (hf : ∀ x y, Inseparable x y → f x = f y) :
     (SeparationQuotient M) →SL[σ] N where
   toFun := SeparationQuotient.lift f hf
   map_add' {x y} := by
@@ -429,8 +429,9 @@ noncomputable def liftCLM (σ : R →+* S) (f : M →SL[σ] N) (hf : ∀ x y, In
     simp only [lift_mk]
     exact ContinuousLinearMap.map_smulₛₗ f r x'
 
-theorem CLM_lift_apply (σ : R →+* S) (f : M →SL[σ] N) (hf : ∀ x y, Inseparable x y → f x = f y)
-    (x : M) : liftCLM σ f hf (mk x) = f x := rfl
+@[simp]
+theorem CLM_lift_apply {σ : R →+* S} (f : M →SL[σ] N) (hf : ∀ x y, Inseparable x y → f x = f y)
+    (x : M) : liftCLM f hf (mk x) = f x := rfl
 
 end Module
 

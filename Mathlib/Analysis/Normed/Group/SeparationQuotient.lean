@@ -197,6 +197,7 @@ lemma norm_mk_eq_sInf (m : M) : ‖mk m‖ = sInf ((‖m + ·‖) '' @nullSpace 
   simp only [dist_eq_norm', sub_neg_eq_add, add_comm]
 
 /-- The norm of the projection is equal to the norm of the original element. -/
+@[simp]
 theorem quotient_norm_mk_eq (m : M) : ‖mk m‖ = ‖m‖ := by
   apply le_antisymm
   · exact csInf_le (bddBelow_image_norm _) <| Set.mem_image_of_mem _ rfl
@@ -333,7 +334,8 @@ open NormedAddGroupHom
 /-- The morphism from a seminormed group to the quotient by the null space. -/
 noncomputable def normedMk : NormedAddGroupHom M (SeparationQuotient M) :=
   { mkAddGroupHom with
-    bound' := ⟨1, fun m => by simpa [one_mul] using (le_of_eq <| quotient_norm_mk_eq m)⟩ }
+    bound' := ⟨1, fun m => by simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
+      mkAddGroupHom_apply, quotient_norm_mk_eq, one_mul, le_refl]⟩}
 
 /-- `mkAddGroupHom` agrees with `QuotientAddGroup.mk`. -/
 @[simp]
@@ -362,6 +364,27 @@ lemma eq_of_inseparable (f : NormedAddGroupHom M N) (hf : ∀ x ∈ nullSpace, f
   apply eq_of_sub_eq_zero
   rw [← map_sub f x y]
   exact hf (x - y) h
+
+/-- The lift of a group hom to the separation quotient as a group hom. -/
+noncomputable def liftNormedAddGroupHom (f : NormedAddGroupHom M N)
+    (hf : ∀ x ∈ nullSpace, f x = 0) : NormedAddGroupHom (SeparationQuotient M) N where
+  toFun := SeparationQuotient.lift f <| eq_of_inseparable f hf
+  map_add' {x y} := by
+    obtain ⟨x', hx'⟩ := surjective_mk x
+    obtain ⟨y', hy'⟩ := surjective_mk y
+    rw [← hx', ← hy', SeparationQuotient.lift_mk (eq_of_inseparable f hf) x',
+      SeparationQuotient.lift_mk (eq_of_inseparable f hf) y', ← mk_add, lift_mk]
+    exact map_add f x' y'
+  bound' := by
+    use ‖f‖
+    intro v
+    obtain ⟨v', hv'⟩ := surjective_mk v
+    rw [← hv', SeparationQuotient.lift_mk (eq_of_inseparable f hf) v']
+    simp only [quotient_norm_mk_eq]
+    exact le_opNorm f v'
+
+theorem CLM_lift_apply (f : NormedAddGroupHom M N) (hf : ∀ x ∈ nullSpace, f x = 0) (x : M) :
+    liftNormedAddGroupHom f hf (mk x) = f x := rfl
 
 theorem _root_.SeparationQuotient.norm_lift_apply_le (f : NormedAddGroupHom M N)
     (hf : ∀ x ∈ nullSpace, f x = 0) (x : SeparationQuotient M) :
@@ -496,9 +519,10 @@ In addition, instances are constructed for `NormedSpace`, `SeminormedCommRing`,
 have quotients of rings by two-sided ideals, hence the commutativity hypotheses are required.
 -/
 
-section Submodule
+section Module
 
-variable {R : Type*} [Ring R] [Module R M]
+variable {R S : Type*} [Semiring R] [Module R M] [Semiring S] [Module S N]
+  [ContinuousConstSMul R M]
 
 -- do we need these?
 -- instance Submodule.SeparationQuotient.normedAddCommGroup :
@@ -537,7 +561,40 @@ instance Submodule.SeparationQuotient.normedSpace (𝕜 : Type*) [NormedField �
     NormedSpace 𝕜 (SeparationQuotient M) where
   norm_smul_le := norm_smul_le
 
-end Submodule
+instance instModule : Module R (SeparationQuotient M) :=
+  surjective_mk.module R mkAddMonoidHom mk_smul
+
+variable (R M)
+
+/-- `SeparationQuotient.mk` as a continuous linear map. -/
+@[simps]
+def mkCLM : M →L[R] SeparationQuotient M where
+  toFun := mk
+  map_add' := mk_add
+  map_smul' := mk_smul
+
+variable {R M}
+
+/-- The lift as a continuous linear map of `f` with `f x = f y` for `Inseparable x y`. -/
+noncomputable def liftCLM {σ : R →+* S} (f : M →SL[σ] N) (hf : ∀ x y, Inseparable x y → f x = f y) :
+    (SeparationQuotient M) →SL[σ] N where
+  toFun := SeparationQuotient.lift f hf
+  map_add' {x y} := by
+    obtain ⟨x', hx'⟩ := surjective_mk x
+    obtain ⟨y', hy'⟩ := surjective_mk y
+    rw [← hx', ← hy', SeparationQuotient.lift_mk hf x', SeparationQuotient.lift_mk hf y', ← mk_add,
+      lift_mk]
+    exact ContinuousLinearMap.map_add f x' y'
+  map_smul' {r x} := by
+    obtain ⟨x', hx'⟩ := surjective_mk x
+    rw [← hx', ← mk_smul]
+    simp only [lift_mk]
+    exact ContinuousLinearMap.map_smulₛₗ f r x'
+
+theorem CLM_lift_apply {σ : R →+* S} (f : M →SL[σ] N) (hf : ∀ x y, Inseparable x y → f x = f y)
+    (x : M) : SeparationQuotient.liftCLM f hf (mk x) = f x := rfl
+
+end Module
 
 section Ideal
 

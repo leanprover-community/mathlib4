@@ -30,7 +30,7 @@ open SeparationQuotient
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 /-- The null space with respect to the norm. -/
-instance nullSubmodule : Submodule 𝕜 E :=
+def nullSubmodule : Submodule 𝕜 E :=
   { nullSpace with
     smul_mem' := by
       intro c x hx
@@ -84,28 +84,45 @@ lemma nullSubmodule_le_ker_toDualMap' : nullSubmodule 𝕜 E ≤ ker (toDualMap 
   simp only [toDualMap_apply, ContinuousLinearMap.zero_apply]
   exact inner_eq_zero_of_left_mem_nullSubmodule 𝕜 E x y hx
 
+/-- An auxiliary map to define the inner product on the quotient. Only the first entry is
+quotiented. -/
+def preInnerQ : SeparationQuotient E →ₗ⋆[𝕜] (NormedSpace.Dual 𝕜 E) :=
+  (SeparationQuotient.liftCLM (toDualMap 𝕜 E).toContinuousLinearMap
+  (by
+  intro x y h
+  rw [inseparable_iff_norm_zero] at h
+  simp only [LinearIsometry.coe_toContinuousLinearMap]
+  ext z
+  simp only [toDualMap_apply]
+  rw [← sub_eq_zero, Eq.symm (_root_.inner_sub_left x y z)]
+  exact inner_eq_zero_of_left_mem_nullSubmodule 𝕜 E (x - y) z h
+  ))
 
--- TOD lift as linearmap
--- /-- An auxiliary map to define the inner product on the quotient. Only the first entry is
--- quotiented. -/
--- def preInnerQ : SeparationQuotient E →ₗ⋆[𝕜] (NormedSpace.Dual 𝕜 E) :=
---   lift (toDualMap 𝕜 E).toLinearMap
---   (by
---   intro x y
---   sorry)
+lemma nullSubmodule_le_ker_preInnerQ (x : SeparationQuotient E) : nullSubmodule 𝕜 E ≤
+    ker (preInnerQ 𝕜 E x) := by
+  intro y hy
+  simp only [LinearMap.mem_ker]
+  obtain ⟨z, hz⟩ := surjective_mk x
+  rw [preInnerQ, ← hz]
+  simp only [ContinuousLinearMap.coe_coe, SeparationQuotient.CLM_lift_apply,
+    LinearIsometry.coe_toContinuousLinearMap, toDualMap_apply]
+  exact inner_nullSubmodule_right_eq_zero 𝕜 E z y hy
 
--- lemma nullSubmodule_le_ker_preInnerQ (x : E ⧸ (nullSubmodule 𝕜 E)) : nullSubmodule 𝕜 E ≤
---     ker (preInnerQ 𝕜 E x) := by
---   intro y hy
---   simp only [LinearMap.mem_ker]
---   obtain ⟨z, hz⟩ := Submodule.mkQ_surjective (nullSubmodule 𝕜 E) x
---   rw [preInnerQ, ← hz, mkQ_apply, Submodule.liftQ_apply]
---   simp only [LinearIsometry.coe_toLinearMap, toDualMap_apply]
---   exact inner_nullSubmodule_right_eq_zero 𝕜 E z y hy
+lemma eq_of_inseparable (x : SeparationQuotient E) :
+    ∀ (y z : E), Inseparable y z → ((preInnerQ 𝕜 E) x) y = ((preInnerQ 𝕜 E) x) z := by
+  intro y z h
+  rw [inseparable_iff_norm_zero] at h
+  obtain ⟨x', hx'⟩ := surjective_mk x
+  rw [preInnerQ, ← hx']
+  simp only [ContinuousLinearMap.coe_coe, SeparationQuotient.CLM_lift_apply,
+    LinearIsometry.coe_toContinuousLinearMap, toDualMap_apply]
+  rw [← sub_eq_zero, Eq.symm (_root_.inner_sub_right x' y z)]
+  exact inner_nullSubmodule_right_eq_zero 𝕜 E x' (y - z) h
 
--- /-- The inner product on the quotient, composed as the composition of two lifts to the quotients. -/
--- def innerQ : E ⧸ (nullSubmodule 𝕜 E) → E ⧸ (nullSubmodule 𝕜 E) → 𝕜 :=
---   fun x => liftQ (nullSubmodule 𝕜 E) (preInnerQ 𝕜 E x).toLinearMap (nullSubmodule_le_ker_preInnerQ 𝕜 E x)
+
+/-- The inner product on the quotient, composed as the composition of two lifts to the quotients. -/
+def innerQ : SeparationQuotient E → SeparationQuotient E → 𝕜 :=
+  fun x => SeparationQuotient.liftCLM (preInnerQ 𝕜 E x) (eq_of_inseparable 𝕜 E x)
 
 -- instance : IsClosed ((nullSubmodule 𝕜 E) : Set E) := by
 --   rw [← isOpen_compl_iff, isOpen_iff_nhds]
