@@ -25,7 +25,7 @@ instance isLocalRingHom_id (R : Type*) [Semiring R] : IsLocalRingHom (RingHom.id
   map_nonunit _ := id
 
 -- see note [lower instance priority]
-instance (priority := 100)  isLocalRingHom_toRingHom{F : Type*} [FunLike F R S]
+instance (priority := 100)  isLocalRingHom_toRingHom {F : Type*} [FunLike F R S]
    [RingHomClass F R S] (f : F) [IsLocalRingHom f] : IsLocalRingHom (f : R →+* S) :=
   ⟨IsLocalRingHom.map_nonunit (f := f)⟩
 

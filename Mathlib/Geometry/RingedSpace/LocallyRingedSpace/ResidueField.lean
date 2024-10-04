@@ -77,14 +77,18 @@ lemma Γevaluation_ne_zero_iff_mem_basicOpen (x : X) (f : X.presheaf.obj (op ⊤
     X.Γevaluation x f ≠ 0 ↔ x ∈ X.toRingedSpace.basicOpen f :=
   evaluation_ne_zero_iff_mem_basicOpen X ⟨x, show x ∈ ⊤ by trivial⟩ f
 
-variable {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y)
+variable {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X)
+
+-- notes to reviewers: We need this instance for `residueFieldMap`, the type of `F` must be fixed
+-- like this. The instance `IsLocalRingHom (f.stalkMap x)` already exists, but does not work for
+-- `residueFieldMap`.
+instance : IsLocalRingHom (F := Y.presheaf.stalk (f.val.base x) →+* X.presheaf.stalk x)
+    (f.stalkMap x) :=
+  f.2 x
 
 /-- If `X ⟶ Y` is a morphism of locally ringed spaces and `x` a point of `X`, we obtain
 a morphism of residue fields in the other direction. -/
 def residueFieldMap (x : X) : Y.residueField (f.val.base x) ⟶ X.residueField x :=
-  -- note to reviewers: why does it fails after I remove this `have`?
-  -- It also fails if I write `@LocalRing.ResidueField.map _ _ _ _ _ _ (f.stalkMap x) inferInstance`
-  have _ : IsLocalRingHom (f.stalkMap x) := inferInstance
   LocalRing.ResidueField.map (f.stalkMap x)
 
 lemma residue_comp_residueFieldMap_eq_stalkMap_comp_residue (x : X) :
