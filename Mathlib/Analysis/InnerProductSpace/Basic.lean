@@ -990,7 +990,7 @@ theorem exists_maximal_orthonormal {s : Set E} (hs : Orthonormal 𝕜 (Subtype.v
     · exact orthonormal_sUnion_of_directed cc.directedOn fun x xc => hc xc
     · exact fun _ => Set.subset_sUnion_of_mem
 
-open FiniteDimensional
+open Module
 
 /-- A family of orthonormal vectors with the correct cardinality forms a basis. -/
 def basisOfOrthonormalOfCardEqFinrank [Fintype ι] [Nonempty ι] {v : ι → E} (hv : Orthonormal 𝕜 v)

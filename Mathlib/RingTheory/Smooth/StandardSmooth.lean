@@ -89,8 +89,7 @@ variable (n m : ℕ)
 
 namespace Algebra
 
-variable (R : Type u) [CommRing R]
-variable (S : Type v) [CommRing S] [Algebra R S]
+variable (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S]
 
 /--
 A `PreSubmersivePresentation` of an `R`-algebra `S` is a `Presentation`
@@ -544,14 +543,14 @@ instance IsStandardSmooth.baseChange [IsStandardSmooth.{t, w} R S] :
     IsStandardSmooth.{t, w} T (T ⊗[R] S) where
   out := by
     obtain ⟨⟨P⟩⟩ := ‹IsStandardSmooth R S›
-    exact ⟨P.baseChange T⟩
+    exact ⟨P.baseChange R S T⟩
 
 instance IsStandardSmoothOfRelativeDimension.baseChange
     [IsStandardSmoothOfRelativeDimension.{t, w} n R S] :
     IsStandardSmoothOfRelativeDimension.{t, w} n T (T ⊗[R] S) where
   out := by
     obtain ⟨P, hP⟩ := ‹IsStandardSmoothOfRelativeDimension n R S›
-    exact ⟨P.baseChange T, hP⟩
+    exact ⟨P.baseChange R S T, hP⟩
 
 end BaseChange
 

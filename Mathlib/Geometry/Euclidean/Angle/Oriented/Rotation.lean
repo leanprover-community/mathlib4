@@ -20,7 +20,7 @@ This file defines rotations by oriented angles in real inner product spaces.
 
 noncomputable section
 
-open FiniteDimensional Complex
+open Module Complex
 
 open scoped Real RealInnerProductSpace ComplexConjugate
 
@@ -101,8 +101,7 @@ theorem rotation_eq_matrix_toLin (θ : Real.Angle) {x : V} (hx : x ≠ 0) :
 /-- The determinant of `rotation` (as a linear map) is equal to `1`. -/
 @[simp]
 theorem det_rotation (θ : Real.Angle) : LinearMap.det (o.rotation θ).toLinearMap = 1 := by
-  haveI : Nontrivial V :=
-    FiniteDimensional.nontrivial_of_finrank_eq_succ (@Fact.out (finrank ℝ V = 2) _)
+  haveI : Nontrivial V := nontrivial_of_finrank_eq_succ (@Fact.out (finrank ℝ V = 2) _)
   obtain ⟨x, hx⟩ : ∃ x, x ≠ (0 : V) := exists_ne (0 : V)
   rw [o.rotation_eq_matrix_toLin θ hx]
   simpa [sq] using θ.cos_sq_add_sin_sq
@@ -333,8 +332,7 @@ theorem oangle_eq_iff_eq_pos_smul_rotation_or_eq_zero {x y : V} (θ : Real.Angle
 theorem exists_linearIsometryEquiv_eq_of_det_pos {f : V ≃ₗᵢ[ℝ] V}
     (hd : 0 < LinearMap.det (f.toLinearEquiv : V →ₗ[ℝ] V)) :
     ∃ θ : Real.Angle, f = o.rotation θ := by
-  haveI : Nontrivial V :=
-    FiniteDimensional.nontrivial_of_finrank_eq_succ (@Fact.out (finrank ℝ V = 2) _)
+  haveI : Nontrivial V := nontrivial_of_finrank_eq_succ (@Fact.out (finrank ℝ V = 2) _)
   obtain ⟨x, hx⟩ : ∃ x, x ≠ (0 : V) := exists_ne (0 : V)
   use o.oangle x (f x)
   apply LinearIsometryEquiv.toLinearEquiv_injective

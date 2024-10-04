@@ -717,7 +717,7 @@ automatic in the case of a finite cancellative monoid. -/
 `addOrderOf_nsmul` but with one assumption less which is automatic in the case of a
 finite cancellative additive monoid."]
 theorem orderOf_pow (x : G) : orderOf (x ^ n) = orderOf x / gcd (orderOf x) n :=
-  (isOfFinOrder_of_finite _).orderOf_pow _
+  (isOfFinOrder_of_finite _).orderOf_pow ..
 
 @[to_additive]
 theorem mem_powers_iff_mem_range_orderOf [DecidableEq G] :

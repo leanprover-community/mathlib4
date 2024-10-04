@@ -58,7 +58,7 @@ included in the `Cyclotomic` locale.
 -/
 
 
-open Polynomial Algebra FiniteDimensional Set
+open Polynomial Algebra Module Set
 
 universe u v w z
 

@@ -1345,8 +1345,7 @@ theorem pmap_eq_map (p : α → Prop) (f : α → β) (s : Multiset α) :
 
 theorem pmap_congr {p q : α → Prop} {f : ∀ a, p a → β} {g : ∀ a, q a → β} (s : Multiset α) :
     ∀ {H₁ H₂}, (∀ a ∈ s, ∀ (h₁ h₂), f a h₁ = g a h₂) → pmap f s H₁ = pmap g s H₂ :=
-  @(Quot.inductionOn s (fun l _H₁ _H₂ h => congr_arg _ <| List.pmap_congr l h))
-
+  @(Quot.inductionOn s (fun l _H₁ _H₂ h => congr_arg _ <| List.pmap_congr_left l h))
 
 theorem map_pmap {p : α → Prop} (g : β → γ) (f : ∀ a, p a → β) (s) :
     ∀ H, map g (pmap f s H) = pmap (fun a h => g (f a h)) s H :=
@@ -1391,7 +1390,7 @@ theorem attach_cons (a : α) (m : Multiset α) :
   Quotient.inductionOn m fun l =>
     congr_arg _ <|
       congr_arg (List.cons _) <| by
-        rw [List.map_pmap]; exact List.pmap_congr _ fun _ _ _ _ => Subtype.eq rfl
+        rw [List.map_pmap]; exact List.pmap_congr_left _ fun _ _ _ _ => Subtype.eq rfl
 
 section DecidablePiExists
 
@@ -1828,17 +1827,25 @@ theorem filter_filter (q) [DecidablePred q] (s : Multiset α) :
     filter p (filter q s) = filter (fun a => p a ∧ q a) s :=
   Quot.inductionOn s fun l => by simp
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefix below.
+-/
 lemma filter_comm (q) [DecidablePred q] (s : Multiset α) :
-    filter p (filter q s) = filter q (filter p s) := by simp [and_comm]
+    filter p (filter q s) = filter q (filter p s) := by simp [_root_.and_comm]
 
 theorem filter_add_filter (q) [DecidablePred q] (s : Multiset α) :
     filter p s + filter q s = filter (fun a => p a ∨ q a) s + filter (fun a => p a ∧ q a) s :=
   Multiset.induction_on s rfl fun a s IH => by by_cases p a <;> by_cases q a <;> simp [*]
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefix below.
+-/
 theorem filter_add_not (s : Multiset α) : filter p s + filter (fun a => ¬p a) s = s := by
   rw [filter_add_filter, filter_eq_self.2, filter_eq_nil.2]
   · simp only [add_zero]
-  · simp [Decidable.em, -Bool.not_eq_true, -not_and, not_and_or, or_comm]
+  · simp [Decidable.em, -Bool.not_eq_true, -not_and, not_and_or, _root_.or_comm]
   · simp only [Bool.not_eq_true, decide_eq_true_eq, Bool.eq_false_or_eq_true,
       decide_True, implies_true, Decidable.em]
 
@@ -2017,11 +2024,11 @@ theorem countP_eq_countP_filter_add (s) (p q : α → Prop) [DecidablePred p] [D
 
 @[simp]
 theorem countP_True {s : Multiset α} : countP (fun _ => True) s = card s :=
-  Quot.inductionOn s fun _l => List.countP_true
+  Quot.inductionOn s fun _l => congrFun List.countP_true _
 
 @[simp]
 theorem countP_False {s : Multiset α} : countP (fun _ => False) s = 0 :=
-  Quot.inductionOn s fun _l => List.countP_false
+  Quot.inductionOn s fun _l => congrFun List.countP_false _
 
 theorem countP_map (f : α → β) (s : Multiset α) (p : β → Prop) [DecidablePred p] :
     countP p (map f s) = card (s.filter fun a => p (f a)) := by
@@ -2050,7 +2057,7 @@ lemma filter_attach (s : Multiset α) (p : α → Prop) [DecidablePred p] :
 variable {p}
 
 theorem countP_pos {s} : 0 < countP p s ↔ ∃ a ∈ s, p a :=
-  Quot.inductionOn s fun _l => by simpa using List.countP_pos (p ·)
+  Quot.inductionOn s fun _l => by simp
 
 theorem countP_eq_zero {s} : countP p s = 0 ↔ ∀ a ∈ s, ¬p a :=
   Quot.inductionOn s fun _l => by simp [List.countP_eq_zero]
@@ -2678,9 +2685,13 @@ lemma add_eq_union_left_of_le [DecidableEq α] {s t u : Multiset α} (h : t ≤ 
   · rintro ⟨h0, rfl⟩
     exact h0
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefix below.
+-/
 lemma add_eq_union_right_of_le [DecidableEq α] {x y z : Multiset α} (h : z ≤ y) :
     x + y = x ∪ z ↔ y = z ∧ x.Disjoint y := by
-  simpa only [and_comm] using add_eq_union_left_of_le h
+  simpa only [_root_.and_comm] using add_eq_union_left_of_le h
 
 theorem disjoint_map_map {f : α → γ} {g : β → γ} {s : Multiset α} {t : Multiset β} :
     Disjoint (s.map f) (t.map g) ↔ ∀ a ∈ s, ∀ b ∈ t, f a ≠ g b := by

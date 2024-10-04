@@ -455,9 +455,9 @@ variable {V : Type*} [Fintype K] [DivisionRing K] [AddCommGroup V] [Module K V]
 -- should this go in a namespace?
 -- finite_dimensional would be natural,
 -- but we don't assume it...
-theorem card_eq_pow_finrank [Fintype V] : Fintype.card V = q ^ FiniteDimensional.finrank K V := by
+theorem card_eq_pow_finrank [Fintype V] : Fintype.card V = q ^ Module.finrank K V := by
   let b := IsNoetherian.finsetBasis K V
-  rw [Module.card_fintype b, ← FiniteDimensional.finrank_eq_card_basis b]
+  rw [Module.card_fintype b, ← Module.finrank_eq_card_basis b]
 
 end
 

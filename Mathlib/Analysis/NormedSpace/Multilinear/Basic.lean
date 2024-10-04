@@ -747,7 +747,7 @@ theorem norm_mkPiAlgebraFin_succ_le : ‖ContinuousMultilinearMap.mkPiAlgebraFin
   simp only [ContinuousMultilinearMap.mkPiAlgebraFin_apply, one_mul, List.ofFn_eq_map,
     Fin.prod_univ_def, Multiset.map_coe, Multiset.prod_coe]
   refine (List.norm_prod_le' ?_).trans_eq ?_
-  · rw [Ne, List.map_eq_nil, List.finRange_eq_nil]
+  · rw [Ne, List.map_eq_nil_iff, List.finRange_eq_nil]
     exact Nat.succ_ne_zero _
   rw [List.map_map, Function.comp_def]
 

@@ -47,7 +47,7 @@ universe u v w x
 
 noncomputable section
 
-open Set FiniteDimensional TopologicalSpace Filter
+open Filter Module Set TopologicalSpace
 
 section Field
 
@@ -197,20 +197,20 @@ private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Fintype
   induction' hn : Fintype.card ι with n IH generalizing ι E
   · rw [Fintype.card_eq_zero_iff] at hn
     exact continuous_of_const fun x y => funext hn.elim
-  · haveI : FiniteDimensional 𝕜 E := of_fintype_basis ξ
+  · haveI : FiniteDimensional 𝕜 E := .of_fintype_basis ξ
     -- first step: thanks to the induction hypothesis, any n-dimensional subspace is equivalent
     -- to a standard space of dimension n, hence it is complete and therefore closed.
     have H₁ : ∀ s : Submodule 𝕜 E, finrank 𝕜 s = n → IsClosed (s : Set E) := by
       intro s s_dim
       letI : UniformAddGroup s := s.toAddSubgroup.uniformAddGroup
       let b := Basis.ofVectorSpace 𝕜 s
-      have U : UniformEmbedding b.equivFun.symm.toEquiv := by
+      have U : IsUniformEmbedding b.equivFun.symm.toEquiv := by
         have : Fintype.card (Basis.ofVectorSpaceIndex 𝕜 s) = n := by
           rw [← s_dim]
           exact (finrank_eq_card_basis b).symm
         have : Continuous b.equivFun := IH b this
         exact
-          b.equivFun.symm.uniformEmbedding b.equivFun.symm.toLinearMap.continuous_on_pi this
+          b.equivFun.symm.isUniformEmbedding b.equivFun.symm.toLinearMap.continuous_on_pi this
       have : IsComplete (s : Set E) :=
         completeSpace_coe_iff_isComplete.1 ((completeSpace_congr U).1 inferInstance)
       exact this.isClosed
@@ -264,7 +264,7 @@ continuous (see `LinearMap.continuous_of_finiteDimensional`), which in turn impl
 norms are equivalent in finite dimensions. -/
 theorem continuous_equivFun_basis [T2Space E] {ι : Type*} [Finite ι] (ξ : Basis ι 𝕜 E) :
     Continuous ξ.equivFun :=
-  haveI : FiniteDimensional 𝕜 E := of_fintype_basis ξ
+  haveI : FiniteDimensional 𝕜 E := .of_fintype_basis ξ
   ξ.equivFun.toLinearMap.continuous_of_finiteDimensional
 
 namespace LinearMap
@@ -490,7 +490,7 @@ variable (𝕜 E : Type*) [NontriviallyNormedField 𝕜]
 include 𝕜 in
 theorem FiniteDimensional.complete [FiniteDimensional 𝕜 E] : CompleteSpace E := by
   set e := ContinuousLinearEquiv.ofFinrankEq (@finrank_fin_fun 𝕜 _ _ (finrank 𝕜 E)).symm
-  have : UniformEmbedding e.toEquiv.symm := e.symm.uniformEmbedding
+  have : IsUniformEmbedding e.toEquiv.symm := e.symm.isUniformEmbedding
   exact (completeSpace_congr this).1 inferInstance
 
 variable {𝕜 E}

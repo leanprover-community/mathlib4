@@ -125,7 +125,7 @@ theorem prod_replicate (n : ℕ) (a : M) : (replicate n a).prod = a ^ n := by
 
 @[to_additive sum_eq_card_nsmul]
 theorem prod_eq_pow_card (l : List M) (m : M) (h : ∀ x ∈ l, x = m) : l.prod = m ^ l.length := by
-  rw [← prod_replicate, ← List.eq_replicate.mpr ⟨rfl, h⟩]
+  rw [← prod_replicate, ← List.eq_replicate_iff.mpr ⟨rfl, h⟩]
 
 @[to_additive]
 theorem prod_hom_rel (l : List ι) {r : M → N → Prop} {f : ι → M} {g : ι → N} (h₁ : r 1 1)
@@ -639,20 +639,15 @@ lemma ranges_join (l : List ℕ) : l.ranges.join = range l.sum := by simp [range
 lemma mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :
     (∃ s ∈ l.ranges, n ∈ s) ↔ n < l.sum := by simp [mem_mem_ranges_iff_lt_natSum]
 
-lemma countP_join (p : α → Bool) : ∀ L : List (List α), countP p L.join = (L.map (countP p)).sum
-  | [] => rfl
-  | a :: l => by rw [join, countP_append, map_cons, sum_cons, countP_join _ l]
-
-lemma count_join [BEq α] (L : List (List α)) (a : α) : L.join.count a = (L.map (count a)).sum :=
-  countP_join _ _
-
 @[simp]
 theorem length_bind (l : List α) (f : α → List β) :
     length (List.bind l f) = sum (map (length ∘ f) l) := by
   rw [List.bind, length_join, map_map, Nat.sum_eq_listSum]
 
 lemma countP_bind (p : β → Bool) (l : List α) (f : α → List β) :
-    countP p (l.bind f) = sum (map (countP p ∘ f) l) := by rw [List.bind, countP_join, map_map]
+    countP p (l.bind f) = sum (map (countP p ∘ f) l) := by
+  rw [List.bind, countP_join, map_map]
+  simp
 
 lemma count_bind [BEq β] (l : List α) (f : α → List β) (x : β) :
     count x (l.bind f) = sum (map (count x ∘ f) l) := countP_bind _ _ _
