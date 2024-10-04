@@ -3,6 +3,7 @@ import Mathlib.ValuativeCriterion.Stalk
 import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.ResidueField
 import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
+import Mathlib.RingTheory.SurjectiveOnStalks
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace LocalRing
 
@@ -13,6 +14,42 @@ namespace AlgebraicGeometry
 universe u
 
 variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
+
+section TOBEMOVED
+
+lemma IsPreimmersion.mk_spec_map {R S : CommRingCat.{u}} {f : R ⟶ S}
+    (h₁ : Embedding (PrimeSpectrum.comap f)) (h₂ : f.SurjectiveOnStalks) :
+    IsPreimmersion (Spec.map f) where
+  base_embedding := h₁
+  surj_on_stalks (x : PrimeSpectrum S) := by
+    let e := Scheme.arrowStalkMapSpecIso f x
+    haveI : (RingHom.toMorphismProperty <| fun f ↦ Function.Surjective f).RespectsIso := by
+      rw [← RingHom.toMorphismProperty_respectsIso_iff]
+      exact surjective_respectsIso
+    apply ((RingHom.toMorphismProperty <| fun f ↦ Function.Surjective f).arrow_mk_iso_iff e).mpr
+    exact h₂ x.asIdeal x.isPrime
+
+lemma isPreimmersion_of_isLocalization {R S : Type u} [CommRing R] (M : Submonoid R) [CommRing S]
+    [Algebra R S] [IsLocalization M S] :
+    IsPreimmersion (Spec.map (CommRingCat.ofHom <| algebraMap R S)) :=
+  IsPreimmersion.mk_spec_map
+    (PrimeSpectrum.localization_comap_embedding (R := R) S M)
+    (RingHom.surjectiveOnStalks_of_isLocalization (M := M) S)
+
+instance IsAffineOpen.fromSpecStalk_isPreimmersion {U : Opens X} (hU : IsAffineOpen U) (x : X)
+    (hx : x ∈ U) : IsPreimmersion (hU.fromSpecStalk hx) := by
+  dsimp [fromSpecStalk]
+  haveI : IsPreimmersion (Spec.map (X.presheaf.germ ⟨x, hx⟩)) :=
+    letI : Algebra Γ(X, U) (X.presheaf.stalk x) := (X.presheaf.germ ⟨x, hx⟩).toAlgebra
+    haveI := hU.isLocalization_stalk ⟨x, hx⟩
+    isPreimmersion_of_isLocalization (R := Γ(X, U)) (S := X.presheaf.stalk x)
+      (hU.primeIdealOf ⟨x, hx⟩).asIdeal.primeCompl
+  apply IsPreimmersion.comp
+
+instance (x) : AlgebraicGeometry.IsPreimmersion (X.fromSpecStalk x) :=
+  IsAffineOpen.fromSpecStalk_isPreimmersion _ _ _
+
+end TOBEMOVED
 
 def Scheme.residueField (x : X) : CommRingCat := X.toLocallyRingedSpace.residueField x
 
@@ -139,9 +176,6 @@ lemma _root_.Function.Bijective.residueFieldMap {R S : Type*} [CommRing R] [Comm
     [LocalRing R] [LocalRing S] (f : R →+* S) [IsLocalRingHom f] (hf : Function.Bijective f) :
     Function.Bijective (LocalRing.ResidueField.map f) :=
   (ResidueField.mapEquiv (RingEquiv.ofBijective f hf)).bijective
-
-instance (x) : AlgebraicGeometry.IsPreimmersion (X.fromSpecStalk x) :=
-  sorry
 
 instance (x) : AlgebraicGeometry.IsPreimmersion (X.fromSpecResidueField x) := by
   dsimp only [Scheme.fromSpecResidueField]
