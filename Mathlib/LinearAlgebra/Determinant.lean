@@ -231,15 +231,15 @@ theorem det_id : LinearMap.det (LinearMap.id : M →ₗ[A] M) = 1 :=
 @[simp]
 theorem det_smul {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddCommGroup M] [Module 𝕜 M] (c : 𝕜)
     (f : M →ₗ[𝕜] M) :
-    LinearMap.det (c • f) = c ^ FiniteDimensional.finrank 𝕜 M * LinearMap.det f := by
+    LinearMap.det (c • f) = c ^ Module.finrank 𝕜 M * LinearMap.det f := by
   by_cases H : ∃ s : Finset M, Nonempty (Basis s 𝕜 M)
   · have : FiniteDimensional 𝕜 M := by
       rcases H with ⟨s, ⟨hs⟩⟩
       exact FiniteDimensional.of_fintype_basis hs
-    simp only [← det_toMatrix (FiniteDimensional.finBasis 𝕜 M), LinearEquiv.map_smul,
+    simp only [← det_toMatrix (Module.finBasis 𝕜 M), LinearEquiv.map_smul,
       Fintype.card_fin, Matrix.det_smul]
   · classical
-      have : FiniteDimensional.finrank 𝕜 M = 0 := finrank_eq_zero_of_not_exists_basis H
+      have : Module.finrank 𝕜 M = 0 := finrank_eq_zero_of_not_exists_basis H
       simp [coe_det, H, this]
 
 theorem det_zero' {ι : Type*} [Finite ι] [Nonempty ι] (b : Basis ι A M) :
@@ -253,7 +253,7 @@ and `0` otherwise. We give a formula that also works in infinite dimension, wher
 the determinant to be `1`. -/
 @[simp]
 theorem det_zero {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddCommGroup M] [Module 𝕜 M] :
-    LinearMap.det (0 : M →ₗ[𝕜] M) = (0 : 𝕜) ^ FiniteDimensional.finrank 𝕜 M := by
+    LinearMap.det (0 : M →ₗ[𝕜] M) = (0 : 𝕜) ^ Module.finrank 𝕜 M := by
   simp only [← zero_smul 𝕜 (1 : M →ₗ[𝕜] M), det_smul, mul_one, MonoidHom.map_one]
 
 theorem det_eq_one_of_subsingleton [Subsingleton M] (f : M →ₗ[R] M) :
@@ -263,14 +263,14 @@ theorem det_eq_one_of_subsingleton [Subsingleton M] (f : M →ₗ[R] M) :
   exact Matrix.det_isEmpty
 
 theorem det_eq_one_of_finrank_eq_zero {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddCommGroup M]
-    [Module 𝕜 M] (h : FiniteDimensional.finrank 𝕜 M = 0) (f : M →ₗ[𝕜] M) :
+    [Module 𝕜 M] (h : Module.finrank 𝕜 M = 0) (f : M →ₗ[𝕜] M) :
     LinearMap.det (f : M →ₗ[𝕜] M) = 1 := by
   classical
     refine @LinearMap.det_cases M _ 𝕜 _ _ _ (fun t => t = 1) f ?_ rfl
     intro s b
     have : IsEmpty s := by
       rw [← Fintype.card_eq_zero_iff]
-      exact (FiniteDimensional.finrank_eq_card_basis b).symm.trans h
+      exact (Module.finrank_eq_card_basis b).symm.trans h
     exact Matrix.det_isEmpty
 
 /-- Conjugating a linear map by a linear equiv does not change its determinant. -/
@@ -423,8 +423,8 @@ theorem LinearEquiv.coe_ofIsUnitDet {f : M →ₗ[R] M'} {v : Basis ι R M} {v' 
 determinant is nonzero. -/
 abbrev LinearMap.equivOfDetNeZero {𝕜 : Type*} [Field 𝕜] {M : Type*} [AddCommGroup M] [Module 𝕜 M]
     [FiniteDimensional 𝕜 M] (f : M →ₗ[𝕜] M) (hf : LinearMap.det f ≠ 0) : M ≃ₗ[𝕜] M :=
-  have : IsUnit (LinearMap.toMatrix (FiniteDimensional.finBasis 𝕜 M)
-      (FiniteDimensional.finBasis 𝕜 M) f).det := by
+  have : IsUnit (LinearMap.toMatrix (Module.finBasis 𝕜 M)
+      (Module.finBasis 𝕜 M) f).det := by
     rw [LinearMap.det_toMatrix]
     exact isUnit_iff_ne_zero.2 hf
   LinearEquiv.ofIsUnitDet this

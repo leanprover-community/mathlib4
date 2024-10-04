@@ -70,19 +70,22 @@ lemma uniformInducing_toUniformOnFun :
     UniformInducing (toUniformOnFun :
       ContinuousMultilinearMap 𝕜 E F → ((Π i, E i) →ᵤ[{s | IsVonNBounded 𝕜 s}] F)) := ⟨rfl⟩
 
-lemma uniformEmbedding_toUniformOnFun :
-    UniformEmbedding (toUniformOnFun : ContinuousMultilinearMap 𝕜 E F → _) :=
+lemma isUniformEmbedding_toUniformOnFun :
+    IsUniformEmbedding (toUniformOnFun : ContinuousMultilinearMap 𝕜 E F → _) :=
   ⟨uniformInducing_toUniformOnFun, DFunLike.coe_injective⟩
+
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_toUniformOnFun := isUniformEmbedding_toUniformOnFun
 
 lemma embedding_toUniformOnFun :
     Embedding (toUniformOnFun : ContinuousMultilinearMap 𝕜 E F →
       ((Π i, E i) →ᵤ[{s | IsVonNBounded 𝕜 s}] F)) :=
-  uniformEmbedding_toUniformOnFun.embedding
+  isUniformEmbedding_toUniformOnFun.embedding
 
 theorem uniformContinuous_coe_fun [∀ i, ContinuousSMul 𝕜 (E i)] :
     UniformContinuous (DFunLike.coe : ContinuousMultilinearMap 𝕜 E F → (Π i, E i) → F) :=
   (UniformOnFun.uniformContinuous_toFun isVonNBounded_covers).comp
-    uniformEmbedding_toUniformOnFun.uniformContinuous
+    isUniformEmbedding_toUniformOnFun.uniformContinuous
 
 theorem uniformContinuous_eval_const [∀ i, ContinuousSMul 𝕜 (E i)] (x : Π i, E i) :
     UniformContinuous fun f : ContinuousMultilinearMap 𝕜 E F ↦ f x :=
@@ -91,13 +94,13 @@ theorem uniformContinuous_eval_const [∀ i, ContinuousSMul 𝕜 (E i)] (x : Π 
 instance instUniformAddGroup : UniformAddGroup (ContinuousMultilinearMap 𝕜 E F) :=
   let φ : ContinuousMultilinearMap 𝕜 E F →+ (Π i, E i) →ᵤ[{s | IsVonNBounded 𝕜 s}] F :=
     { toFun := toUniformOnFun, map_add' := fun _ _ ↦ rfl, map_zero' := rfl }
-  uniformEmbedding_toUniformOnFun.uniformAddGroup φ
+  isUniformEmbedding_toUniformOnFun.uniformAddGroup φ
 
 instance instUniformContinuousConstSMul {M : Type*}
     [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜 M F] [ContinuousConstSMul M F] :
     UniformContinuousConstSMul M (ContinuousMultilinearMap 𝕜 E F) :=
   haveI := uniformContinuousConstSMul_of_continuousConstSMul M F
-  uniformEmbedding_toUniformOnFun.uniformContinuousConstSMul fun _ _ ↦ rfl
+  isUniformEmbedding_toUniformOnFun.uniformContinuousConstSMul fun _ _ ↦ rfl
 
 theorem uniformInducing_postcomp
     {G : Type*} [AddCommGroup G] [UniformSpace G] [UniformAddGroup G] [Module 𝕜 G]
@@ -146,19 +149,22 @@ variable (𝕜' : Type*) [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' �
   [∀ i, Module 𝕜' (E i)] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F]
   [∀ i, ContinuousSMul 𝕜 (E i)]
 
-theorem uniformEmbedding_restrictScalars :
-    UniformEmbedding
+theorem isUniformEmbedding_restrictScalars :
+    IsUniformEmbedding
       (restrictScalars 𝕜' : ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜' E F) := by
   letI : NontriviallyNormedField 𝕜 :=
     ⟨let ⟨x, hx⟩ := @NontriviallyNormedField.non_trivial 𝕜' _; ⟨algebraMap 𝕜' 𝕜 x, by simpa⟩⟩
-  rw [← uniformEmbedding_toUniformOnFun.of_comp_iff]
-  convert uniformEmbedding_toUniformOnFun using 4 with s
+  rw [← isUniformEmbedding_toUniformOnFun.of_comp_iff]
+  convert isUniformEmbedding_toUniformOnFun using 4 with s
   exact ⟨fun h ↦ h.extend_scalars _, fun h ↦ h.restrict_scalars _⟩
+
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_restrictScalars := isUniformEmbedding_restrictScalars
 
 theorem uniformContinuous_restrictScalars :
     UniformContinuous
       (restrictScalars 𝕜' : ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜' E F) :=
-  (uniformEmbedding_restrictScalars 𝕜').uniformContinuous
+  (isUniformEmbedding_restrictScalars 𝕜').uniformContinuous
 
 end RestrictScalars
 
@@ -227,7 +233,7 @@ theorem embedding_restrictScalars :
       (restrictScalars 𝕜' : ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜' E F) :=
   letI : UniformSpace F := TopologicalAddGroup.toUniformSpace F
   haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
-  (uniformEmbedding_restrictScalars _).embedding
+  (isUniformEmbedding_restrictScalars _).embedding
 
 @[continuity, fun_prop]
 theorem continuous_restrictScalars :

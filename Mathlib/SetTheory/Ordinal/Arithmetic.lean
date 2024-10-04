@@ -539,9 +539,9 @@ theorem sub_isLimit {a b} (l : IsLimit a) (h : b < a) : IsLimit (a - b) :=
     rw [lt_sub, add_succ]; exact l.2 _ (lt_sub.1 h)⟩
 
 -- @[simp] -- Porting note (#10618): simp can prove this
-theorem one_add_omega : 1 + ω = ω := by
+theorem one_add_omega0 : 1 + ω = ω := by
   refine le_antisymm ?_ (le_add_left _ _)
-  rw [omega, ← lift_one.{0}, ← lift_add, lift_le, ← type_unit, ← type_sum_lex]
+  rw [omega0, ← lift_one.{0}, ← lift_add, lift_le, ← type_unit, ← type_sum_lex]
   refine ⟨RelEmbedding.collapse (RelEmbedding.ofMonotone ?_ ?_)⟩
   · apply Sum.rec
     · exact fun _ => 0
@@ -550,9 +550,15 @@ theorem one_add_omega : 1 + ω = ω := by
     cases a <;> cases b <;> intro H <;> cases' H with _ _ H _ _ H <;>
       [exact H.elim; exact Nat.succ_pos _; exact Nat.succ_lt_succ H]
 
+@[deprecated (since := "2024-09-30")]
+alias one_add_omega := one_add_omega0
+
 @[simp]
-theorem one_add_of_omega_le {o} (h : ω ≤ o) : 1 + o = o := by
-  rw [← Ordinal.add_sub_cancel_of_le h, ← add_assoc, one_add_omega]
+theorem one_add_of_omega0_le {o} (h : ω ≤ o) : 1 + o = o := by
+  rw [← Ordinal.add_sub_cancel_of_le h, ← add_assoc, one_add_omega0]
+
+@[deprecated (since := "2024-09-30")]
+alias one_add_of_omega_le := one_add_of_omega0_le
 
 /-! ### Multiplication of ordinals -/
 
@@ -2252,7 +2258,7 @@ theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
 
 end Ordinal
 
-/-! ### Properties of `omega` -/
+/-! ### Properties of ω -/
 
 
 namespace Cardinal
@@ -2269,7 +2275,7 @@ theorem ord_aleph0 : ord.{u} ℵ₀ = ω :=
 
 @[simp]
 theorem add_one_of_aleph0_le {c} (h : ℵ₀ ≤ c) : c + 1 = c := by
-  rw [add_comm, ← card_ord c, ← card_one, ← card_add, one_add_of_omega_le]
+  rw [add_comm, ← card_ord c, ← card_one, ← card_add, one_add_of_omega0_le]
   rwa [← ord_aleph0, ord_le_ord]
 
 end Cardinal
@@ -2281,34 +2287,56 @@ theorem lt_add_of_limit {a b c : Ordinal.{u}} (h : IsLimit c) :
   -- Porting note: `bex_def` is required.
   rw [← IsNormal.bsup_eq.{u, u} (add_isNormal b) h, lt_bsup, bex_def]
 
-theorem lt_omega {o : Ordinal} : o < ω ↔ ∃ n : ℕ, o = n := by
+theorem lt_omega0 {o : Ordinal} : o < ω ↔ ∃ n : ℕ, o = n := by
   simp_rw [← Cardinal.ord_aleph0, Cardinal.lt_ord, lt_aleph0, card_eq_nat]
 
-theorem nat_lt_omega (n : ℕ) : ↑n < ω :=
-  lt_omega.2 ⟨_, rfl⟩
+@[deprecated (since := "2024-09-30")]
+alias lt_omega := lt_omega0
 
+theorem nat_lt_omega0 (n : ℕ) : ↑n < ω :=
+  lt_omega0.2 ⟨_, rfl⟩
+
+@[deprecated (since := "2024-09-30")]
+alias nat_lt_omega := nat_lt_omega0
+
+theorem omega0_pos : 0 < ω :=
+  nat_lt_omega0 0
+
+@[deprecated (since := "2024-09-30")]
 theorem omega_pos : 0 < ω :=
-  nat_lt_omega 0
+  nat_lt_omega0 0
 
-theorem omega_ne_zero : ω ≠ 0 :=
-  omega_pos.ne'
+theorem omega0_ne_zero : ω ≠ 0 :=
+  omega0_pos.ne'
 
-theorem one_lt_omega : 1 < ω := by simpa only [Nat.cast_one] using nat_lt_omega 1
+@[deprecated (since := "2024-09-30")]
+alias omega_ne_zero := omega0_ne_zero
 
-theorem omega_isLimit : IsLimit ω :=
-  ⟨omega_ne_zero, fun o h => by
-    let ⟨n, e⟩ := lt_omega.1 h
-    rw [e]; exact nat_lt_omega (n + 1)⟩
+theorem one_lt_omega0 : 1 < ω := by simpa only [Nat.cast_one] using nat_lt_omega0 1
 
-theorem omega_le {o : Ordinal} : ω ≤ o ↔ ∀ n : ℕ, ↑n ≤ o :=
-  ⟨fun h n => (nat_lt_omega _).le.trans h, fun H =>
+@[deprecated (since := "2024-09-30")]
+alias one_lt_omega := one_lt_omega0
+
+theorem omega0_isLimit : IsLimit ω :=
+  ⟨omega0_ne_zero, fun o h => by
+    let ⟨n, e⟩ := lt_omega0.1 h
+    rw [e]; exact nat_lt_omega0 (n + 1)⟩
+
+@[deprecated (since := "2024-09-30")]
+alias omega_isLimit := omega0_isLimit
+
+theorem omega0_le {o : Ordinal} : ω ≤ o ↔ ∀ n : ℕ, ↑n ≤ o :=
+  ⟨fun h n => (nat_lt_omega0 _).le.trans h, fun H =>
     le_of_forall_lt fun a h => by
-      let ⟨n, e⟩ := lt_omega.1 h
+      let ⟨n, e⟩ := lt_omega0.1 h
       rw [e, ← succ_le_iff]; exact H (n + 1)⟩
+
+@[deprecated (since := "2024-09-30")]
+alias omega_le := omega0_le
 
 @[simp]
 theorem iSup_natCast : iSup Nat.cast = ω :=
-  (Ordinal.iSup_le fun n => (nat_lt_omega n).le).antisymm <| omega_le.2 <| Ordinal.le_iSup _
+  (Ordinal.iSup_le fun n => (nat_lt_omega0 n).le).antisymm <| omega0_le.2 <| Ordinal.le_iSup _
 
 set_option linter.deprecated false in
 @[deprecated iSup_natCast (since := "2024-04-17")]
@@ -2322,23 +2350,29 @@ theorem nat_lt_limit {o} (h : IsLimit o) : ∀ n : ℕ, ↑n < o
   | 0 => lt_of_le_of_ne (Ordinal.zero_le o) h.1.symm
   | n + 1 => h.2 _ (nat_lt_limit h n)
 
-theorem omega_le_of_isLimit {o} (h : IsLimit o) : ω ≤ o :=
-  omega_le.2 fun n => le_of_lt <| nat_lt_limit h n
+theorem omega0_le_of_isLimit {o} (h : IsLimit o) : ω ≤ o :=
+  omega0_le.2 fun n => le_of_lt <| nat_lt_limit h n
 
-theorem isLimit_iff_omega_dvd {a : Ordinal} : IsLimit a ↔ a ≠ 0 ∧ ω ∣ a := by
+@[deprecated (since := "2024-09-30")]
+alias omega_le_of_isLimit := omega0_le_of_isLimit
+
+theorem isLimit_iff_omega0_dvd {a : Ordinal} : IsLimit a ↔ a ≠ 0 ∧ ω ∣ a := by
   refine ⟨fun l => ⟨l.1, ⟨a / ω, le_antisymm ?_ (mul_div_le _ _)⟩⟩, fun h => ?_⟩
   · refine (limit_le l).2 fun x hx => le_of_lt ?_
-    rw [← div_lt omega_ne_zero, ← succ_le_iff, le_div omega_ne_zero, mul_succ,
-      add_le_of_limit omega_isLimit]
+    rw [← div_lt omega0_ne_zero, ← succ_le_iff, le_div omega0_ne_zero, mul_succ,
+      add_le_of_limit omega0_isLimit]
     intro b hb
-    rcases lt_omega.1 hb with ⟨n, rfl⟩
+    rcases lt_omega0.1 hb with ⟨n, rfl⟩
     exact
       (add_le_add_right (mul_div_le _ _) _).trans
         (lt_sub.1 <| nat_lt_limit (sub_isLimit l hx) _).le
   · rcases h with ⟨a0, b, rfl⟩
-    refine mul_isLimit_left omega_isLimit (Ordinal.pos_iff_ne_zero.2 <| mt ?_ a0)
+    refine mul_isLimit_left omega0_isLimit (Ordinal.pos_iff_ne_zero.2 <| mt ?_ a0)
     intro e
     simp only [e, mul_zero]
+
+@[deprecated (since := "2024-09-30")]
+alias isLimit_iff_omega_dvd := isLimit_iff_omega0_dvd
 
 theorem add_mul_limit_aux {a b c : Ordinal} (ba : b + a = a) (l : IsLimit c)
     (IH : ∀ c' < c, (a + b) * succ c' = a * succ c' + b) : (a + b) * c = a * c :=
@@ -2378,24 +2412,27 @@ theorem add_le_of_forall_add_lt {a b c : Ordinal} (hb : 0 < b) (h : ∀ d < b, a
   by_contra! hb
   exact (h _ hb).ne H
 
-theorem IsNormal.apply_omega {f : Ordinal.{u} → Ordinal.{v}} (hf : IsNormal f) :
+theorem IsNormal.apply_omega0 {f : Ordinal.{u} → Ordinal.{v}} (hf : IsNormal f) :
     ⨆ n : ℕ, f n = f ω := by rw [← iSup_natCast, hf.map_iSup]
+
+@[deprecated (since := "2024-09-30")]
+alias IsNormal.apply_omega := IsNormal.apply_omega0
 
 @[simp]
 theorem iSup_add_nat (o : Ordinal) : ⨆ n : ℕ, o + n = o + ω :=
-  (add_isNormal o).apply_omega
+  (add_isNormal o).apply_omega0
 
 set_option linter.deprecated false in
 @[deprecated iSup_add_nat (since := "2024-08-27")]
 theorem sup_add_nat (o : Ordinal) : (sup fun n : ℕ => o + n) = o + ω :=
-  (add_isNormal o).apply_omega
+  (add_isNormal o).apply_omega0
 
 @[simp]
 theorem iSup_mul_nat (o : Ordinal) : ⨆ n : ℕ, o * n = o * ω := by
   rcases eq_zero_or_pos o with (rfl | ho)
   · rw [zero_mul]
     exact iSup_eq_zero_iff.2 fun n => zero_mul (n : Ordinal)
-  · exact (mul_isNormal ho).apply_omega
+  · exact (mul_isNormal ho).apply_omega0
 
 set_option linter.deprecated false in
 @[deprecated iSup_add_nat (since := "2024-08-27")]
@@ -2403,7 +2440,7 @@ theorem sup_mul_nat (o : Ordinal) : (sup fun n : ℕ => o * n) = o * ω := by
   rcases eq_zero_or_pos o with (rfl | ho)
   · rw [zero_mul]
     exact sup_eq_zero_iff.2 fun n => zero_mul (n : Ordinal)
-  · exact (mul_isNormal ho).apply_omega
+  · exact (mul_isNormal ho).apply_omega0
 
 end Ordinal
 

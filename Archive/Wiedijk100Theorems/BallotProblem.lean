@@ -235,7 +235,7 @@ theorem first_vote_neg (p q : ℕ) (h : 0 < p + q) :
   have := condCount_compl
     {l : List ℤ | l.headI = 1}ᶜ (countedSequence_finite p q) (countedSequence_nonempty p q)
   rw [compl_compl, first_vote_pos _ _ h] at this
-  rw [← ENNReal.sub_eq_of_add_eq _ this, ENNReal.eq_div_iff, ENNReal.mul_sub, mul_one,
+  rw [ENNReal.eq_sub_of_add_eq _ this, ENNReal.eq_div_iff, ENNReal.mul_sub, mul_one,
     ENNReal.mul_div_cancel', ENNReal.add_sub_cancel_left]
   all_goals simp_all [ENNReal.div_eq_top]
 

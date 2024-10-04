@@ -120,8 +120,8 @@ theorem tfae_equational_criterion : List.TFAE [
     ∀ {ι : Type u} [Fintype ι] {f : ι →₀ R} {x : (ι →₀ R) →ₗ[R] M}, x f = 0 →
       ∃ (κ : Type u) (_ : Fintype κ) (a : (ι →₀ R) →ₗ[R] (κ →₀ R)) (y : (κ →₀ R) →ₗ[R] M),
         x = y ∘ₗ a ∧ a f = 0,
-    ∀ {N : Type u} [AddCommGroup N] [Module R N] [Free R N] [Finite R N] {f : N} {x : N →ₗ[R] M},
-      x f = 0 →
+    ∀ {N : Type u} [AddCommGroup N] [Module R N] [Free R N] [Module.Finite R N] {f : N}
+      {x : N →ₗ[R] M}, x f = 0 →
         ∃ (κ : Type u) (_ : Fintype κ) (a : N →ₗ[R] (κ →₀ R)) (y : (κ →₀ R) →ₗ[R] M),
           x = y ∘ₗ a ∧ a f = 0] := by
   classical
@@ -243,8 +243,8 @@ Let $M$ be a flat module over a commutative ring $R$. Let $N$ be a finite free m
 let $f \in N$, and let $x \colon N \to M$ be a homomorphism such that $x(f) = 0$. Then there exist a
 finite index type $\kappa$ and module homomorphisms $a \colon N \to R^{\kappa}$ and
 $y \colon R^{\kappa} \to M$ such that $x = y \circ a$ and $a(f) = 0$. -/
-theorem exists_factorization_of_apply_eq_zero_of_free [Flat R M] {N : Type u}
-    [AddCommGroup N] [Module R N] [Free R N] [Finite R N] {f : N} {x : N →ₗ[R] M} (h : x f = 0) :
+theorem exists_factorization_of_apply_eq_zero_of_free [Flat R M] {N : Type u} [AddCommGroup N]
+    [Module R N] [Free R N] [Module.Finite R N] {f : N} {x : N →ₗ[R] M} (h : x f = 0) :
     ∃ (κ : Type u) (_ : Fintype κ) (a : N →ₗ[R] (κ →₀ R)) (y : (κ →₀ R) →ₗ[R] M),
       x = y ∘ₗ a ∧ a f = 0 := by
   exact ((tfae_equational_criterion R M).out 0 5 rfl rfl).mp ‹Flat R M› h
@@ -254,8 +254,8 @@ free, and let $f \colon K \to N$ and $x \colon N \to M$ be homomorphisms such th
 $x \circ f = 0$. Then there exist a finite index type $\kappa$ and module homomorphisms
 $a \colon N \to R^{\kappa}$ and $y \colon R^{\kappa} \to M$ such that $x = y \circ a$ and
 $a \circ f = 0$. -/
-theorem exists_factorization_of_comp_eq_zero_of_free [Flat R M] {K N : Type u}
-    [AddCommGroup K] [Module R K] [Finite R K] [AddCommGroup N] [Module R N] [Free R N] [Finite R N]
+theorem exists_factorization_of_comp_eq_zero_of_free [Flat R M] {K N : Type u} [AddCommGroup K]
+    [Module R K] [Module.Finite R K] [AddCommGroup N] [Module R N] [Free R N] [Module.Finite R N]
     {f : K →ₗ[R] N} {x : N →ₗ[R] M} (h : x ∘ₗ f = 0) :
     ∃ (κ : Type u) (_ : Fintype κ) (a : N →ₗ[R] (κ →₀ R)) (y : (κ →₀ R) →ₗ[R] M),
       x = y ∘ₗ a ∧ a ∘ₗ f = 0 := by
@@ -283,7 +283,7 @@ theorem exists_factorization_of_isFinitelyPresented [Flat R M] {P : Type u} [Add
       ∃ (κ : Type u) (_ : Fintype κ) (h₂ : P →ₗ[R] (κ →₀ R)) (h₃ : (κ →₀ R) →ₗ[R] M),
         h₁ = h₃ ∘ₗ h₂ := by
   obtain ⟨L, _, _, K, ϕ, _, _, hK⟩ := FinitePresentation.equiv_quotient R P
-  haveI : Finite R ↥K := Module.Finite.iff_fg.mpr hK
+  haveI : Module.Finite R ↥K := Module.Finite.iff_fg.mpr hK
   have : (h₁ ∘ₗ ϕ.symm ∘ₗ K.mkQ) ∘ₗ K.subtype = 0 := by
     simp_rw [comp_assoc, (LinearMap.exact_subtype_mkQ K).linearMap_comp_eq_zero, comp_zero]
   obtain ⟨κ, hκ, a, y, hay, ha⟩ := exists_factorization_of_comp_eq_zero_of_free this
