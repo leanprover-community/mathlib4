@@ -79,7 +79,7 @@ lemma Γevaluation_ne_zero_iff_mem_basicOpen (x : X) (f : X.presheaf.obj (op ⊤
 
 variable {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X)
 
--- TODO: This instance is found before #6045. 
+-- TODO: This instance is found before #6045.
 -- We need this strange instance for `residueFieldMap`, the type of `F` must be fixed
 -- like this. The instance `IsLocalRingHom (f.stalkMap x)` already exists, but does not work for
 -- `residueFieldMap`.
