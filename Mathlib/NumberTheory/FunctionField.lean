@@ -69,9 +69,9 @@ theorem functionField_iff (Fqt : Type*) [Field Fqt] [Algebra Fq[X] Fqt]
     refine IsLocalization.ext (nonZeroDivisors Fq[X]) _ _ ?_ ?_ ?_ ?_ ?_ <;> intros <;>
       simp only [map_one, map_mul, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
   constructor <;> intro h
-  · let b := FiniteDimensional.finBasis (RatFunc Fq) F
+  · let b := Module.finBasis (RatFunc Fq) F
     exact FiniteDimensional.of_fintype_basis (b.mapCoeffs e this)
-  · let b := FiniteDimensional.finBasis Fqt F
+  · let b := Module.finBasis Fqt F
     refine FiniteDimensional.of_fintype_basis (b.mapCoeffs e.symm ?_)
     intro c x; convert (this (e.symm c) x).symm; simp only [e.apply_symm_apply]
 

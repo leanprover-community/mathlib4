@@ -53,7 +53,7 @@ namespace Module
 
 namespace End
 
-open FiniteDimensional Set
+open Module Set
 
 variable {K R : Type v} {V M : Type w} [CommRing R] [AddCommGroup M] [Module R M] [Field K]
   [AddCommGroup V] [Module K V]

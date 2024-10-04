@@ -51,25 +51,6 @@ theorem Perm.subset_congr_left {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l�
 theorem Perm.subset_congr_right {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l₃ ⊆ l₁ ↔ l₃ ⊆ l₂ :=
   ⟨fun h' => h'.trans h.subset, fun h' => h'.trans h.symm.subset⟩
 
-/-- Variant of `Perm.foldr_eq` with explicit commutativity argument. -/
-theorem Perm.foldr_eq' {f : α → β → β} {l₁ l₂ : List α} (p : l₁ ~ l₂)
-    (comm : ∀ x ∈ l₁, ∀ y ∈ l₁, ∀ z, f y (f x z) = f x (f y z))
-    (init : β) : foldr f init l₁ = foldr f init l₂ := by
-  induction p using recOnSwap' generalizing init with
-  | nil => simp
-  | cons x _p IH =>
-    simp only [foldr]
-    congr 1
-    apply IH; intros; apply comm <;> exact .tail _ ‹_›
-  | swap' x y _p IH =>
-    simp only [foldr]
-    rw [comm x (.tail _ <| .head _) y (.head _)]
-    congr 2
-    apply IH; intros; apply comm <;> exact .tail _ (.tail _ ‹_›)
-  | trans p₁ _p₂ IH₁ IH₂ =>
-    refine (IH₁ comm init).trans (IH₂ ?_ _)
-    intros; apply comm <;> apply p₁.symm.subset <;> assumption
-
 section Rel
 
 open Relator
@@ -265,13 +246,17 @@ theorem Perm.bagInter {l₁ l₂ t₁ t₂ : List α} (hl : l₁ ~ l₂) (ht : t
     l₁.bagInter t₁ ~ l₂.bagInter t₂ :=
   ht.bagInter_left l₂ ▸ hl.bagInter_right _
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefix below.
+-/
 theorem perm_replicate_append_replicate {l : List α} {a b : α} {m n : ℕ} (h : a ≠ b) :
     l ~ replicate m a ++ replicate n b ↔ count a l = m ∧ count b l = n ∧ l ⊆ [a, b] := by
   rw [perm_iff_count, ← Decidable.and_forall_ne a, ← Decidable.and_forall_ne b]
   suffices l ⊆ [a, b] ↔ ∀ c, c ≠ b → c ≠ a → c ∉ l by
     simp (config := { contextual := true }) [count_replicate, h, this, count_eq_zero, Ne.symm]
   trans ∀ c, c ∈ l → c = b ∨ c = a
-  · simp [subset_def, or_comm]
+  · simp [subset_def, _root_.or_comm]
   · exact forall_congr' fun _ => by rw [← and_imp, ← not_or, not_imp_not]
 
 theorem Perm.dedup {l₁ l₂ : List α} (p : l₁ ~ l₂) : dedup l₁ ~ dedup l₂ :=

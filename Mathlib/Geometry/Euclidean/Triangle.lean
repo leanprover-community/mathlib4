@@ -295,7 +295,7 @@ theorem angle_add_angle_add_angle_eq_pi {p1 p2 p3 : P} (h2 : p2 ≠ p1) (h3 : p3
 /-- The **sum of the angles of a triangle** (possibly degenerate, where the triangle is a line),
 oriented angles at point. -/
 theorem oangle_add_oangle_add_oangle_eq_pi [Module.Oriented ℝ V (Fin 2)]
-    [Fact (FiniteDimensional.finrank ℝ V = 2)] {p1 p2 p3 : P} (h21 : p2 ≠ p1) (h32 : p3 ≠ p2)
+    [Fact (Module.finrank ℝ V = 2)] {p1 p2 p3 : P} (h21 : p2 ≠ p1) (h32 : p3 ≠ p2)
     (h13 : p1 ≠ p3) : ∡ p1 p2 p3 + ∡ p2 p3 p1 + ∡ p3 p1 p2 = π := by
   simpa only [neg_vsub_eq_vsub_rev] using
     positiveOrientation.oangle_add_cyc3_neg_left (vsub_ne_zero.mpr h21) (vsub_ne_zero.mpr h32)
