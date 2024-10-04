@@ -165,6 +165,15 @@ theorem norm_toContinuousLinearMap_comp [RingHomIsometric σ₁₂] (f : F →�
   opNorm_ext (f.toContinuousLinearMap.comp g) g fun x => by
     simp only [norm_map, coe_toContinuousLinearMap, coe_comp', Function.comp_apply]
 
+/-- Composing on the left with a linear isometry gives a linear isometry between spaces of
+continuous linear maps. -/
+def postcomp [RingHomIsometric σ₁₂] [RingHomIsometric σ₁₃] (a : F →ₛₗᵢ[σ₂₃] G) :
+    (E →SL[σ₁₂] F) →ₛₗᵢ[σ₂₃] (E →SL[σ₁₃] G) where
+  toFun f := a.toContinuousLinearMap.comp f
+  map_add' f g := by simp
+  map_smul' c f := by simp
+  norm_map' f := by simp [a.norm_toContinuousLinearMap_comp]
+
 end LinearIsometry
 
 end
