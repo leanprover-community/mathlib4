@@ -493,9 +493,29 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {I'' : ModelWithCorners 𝕜 E'' H''}
   {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M''] [SmoothManifoldWithCorners I'' M'']
 
-variable {f : M → M'} {s : Set M} {x : M}
+variable {f : M → M'} {s : Set M} {x x₀ : M}
 
 section
+
+lemma foobr {n : ℕ∞}
+    (f : M → (E' →L[𝕜] E'')) (hf : ContMDiffWithinAt I 𝓘(𝕜, E' →L[𝕜] E'') n f s x₀)
+    (h'f : (f x₀).IsInvertible) :
+    ContMDiffWithinAt I 𝓘(𝕜, E'' →L[𝕜] E') n (fun x ↦ (f x).inverse) s x := by
+
+
+#exit
+
+
+
+lemma foo {n : ℕ∞}
+    (f : M → (E' →L[𝕜] E'')) (hf : ContMDiffWithinAt I 𝓘(𝕜, E' →L[𝕜] E'') n f s x)
+    (V : M → E'') (hV : ContMDiffWithinAt I 𝓘(𝕜, E'') n V s x) :
+    ContMDiffWithinAt I 𝓘(𝕜, E') n (fun x ↦ (f x).inverse (V x)) s x := by
+  sorry
+
+
+
+#exit
 
 variable {V W V₁ W₁ : Π (x : M'), TangentSpace I' x}
 
@@ -518,13 +538,20 @@ lemma mpullbackWithin_add :
   ext x
   simp [mpullbackWithin_apply]
 
-lemma MDifferentiableWithinAt.mpullbackWithin [CompleteSpace E] {t : Set M'}
+lemma ContMDiffWithinAt.mpullbackWithin [CompleteSpace E] {t : Set M'}
     (hV : ContMDiffWithinAt I' I'.tangent 1
       (fun (y : M') ↦ (V y : TangentBundle I' M')) t (f x))
-    (hf : ContMDiffWithinAt I I' 2 f s x) (hf' : (mfderivWithin I I' f s x).IsInvertible) :
+    (hf : ContMDiffWithinAt I I' 2 f s x) (hf' : (mfderivWithin I I' f s x).IsInvertible)
+    (hst : MapsTo f s t ):
     ContMDiffWithinAt I I.tangent 1
       (fun (y : M) ↦ (mpullbackWithin I I' f V s y : TangentBundle I M)) s x := by
-  rw [Bundle.contMDiffWithinAt_section] at hf ⊢
+  simp only [ModelWithCorners.tangent, Bundle.contMDiffWithinAt_section,
+    VectorField.mpullbackWithin] at hV ⊢
+  have Z := hV.comp _ (hf.of_le one_le_two) hst
+
+
+
+
 
 #exit
 
