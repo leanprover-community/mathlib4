@@ -29,7 +29,7 @@ for `n : ℕ`, and let `f` be a function from `E` to `F`.
 We develop the basic properties of these notions, notably:
 * If a function is continuously polynomial, then it is analytic, see
   `HasFiniteFPowerSeriesOnBall.hasFPowerSeriesOnBall`, `HasFiniteFPowerSeriesAt.hasFPowerSeriesAt`,
-  `CPolynomialAt.analyticAt` and `CPolynomialOn.analyticOn`.
+  `CPolynomialAt.analyticAt` and `CPolynomialOn.analyticOnNhd`.
 * The sum of a finite formal power series with positive radius is well defined on the whole space,
   see `FormalMultilinearSeries.hasFiniteFPowerSeriesOnBall_of_finite`.
 * If a function admits a finite power series in a ball, then it is continuously polynomial at
@@ -116,8 +116,15 @@ theorem CPolynomialAt.analyticAt (hf : CPolynomialAt 𝕜 f x) : AnalyticAt 𝕜
   let ⟨p, _, hp⟩ := hf
   ⟨p, hp.toHasFPowerSeriesAt⟩
 
-theorem CPolynomialOn.analyticOn {s : Set E} (hf : CPolynomialOn 𝕜 f s) : AnalyticOn 𝕜 f s :=
+theorem CPolynomialAt.analyticWithinAt {s : Set E} (hf : CPolynomialAt 𝕜 f x) :
+    AnalyticWithinAt 𝕜 f s x :=
+  hf.analyticAt.analyticWithinAt
+
+theorem CPolynomialOn.analyticOnNhd {s : Set E} (hf : CPolynomialOn 𝕜 f s) : AnalyticOnNhd 𝕜 f s :=
   fun x hx ↦ (hf x hx).analyticAt
+
+theorem CPolynomialOn.analyticOn {s : Set E} (hf : CPolynomialOn 𝕜 f s) : AnalyticOn 𝕜 f s :=
+  hf.analyticOnNhd.analyticOn
 
 theorem HasFiniteFPowerSeriesOnBall.congr (hf : HasFiniteFPowerSeriesOnBall f p x n r)
     (hg : EqOn f g (EMetric.ball x r)) : HasFiniteFPowerSeriesOnBall g p x n r :=
@@ -335,7 +342,7 @@ protected theorem CPolynomialAt.continuousAt (hf : CPolynomialAt 𝕜 f x) : Con
 
 protected theorem CPolynomialOn.continuousOn {s : Set E} (hf : CPolynomialOn 𝕜 f s) :
     ContinuousOn f s :=
-  hf.analyticOn.continuousOn
+  hf.analyticOnNhd.continuousOn
 
 /-- Continuously polynomial everywhere implies continuous -/
 theorem CPolynomialOn.continuous {f : E → F} (fa : CPolynomialOn 𝕜 f univ) : Continuous f := by
@@ -571,10 +578,12 @@ lemma cpolynomialAt  : CPolynomialAt 𝕜 f x :=
 
 lemma cpolyomialOn : CPolynomialOn 𝕜 f s := fun _ _ ↦ f.cpolynomialAt
 
-lemma analyticOn : AnalyticOn 𝕜 f s := f.cpolyomialOn.analyticOn
+lemma analyticOnNhd : AnalyticOnNhd 𝕜 f s := f.cpolyomialOn.analyticOnNhd
 
-lemma analyticWithinOn : AnalyticWithinOn 𝕜 f s :=
-  f.analyticOn.analyticWithinOn
+lemma analyticOn : AnalyticOn 𝕜 f s := f.analyticOnNhd.analyticOn
+
+@[deprecated (since := "2024-09-26")]
+alias analyticWithinOn := analyticOn
 
 lemma analyticAt : AnalyticAt 𝕜 f x := f.cpolynomialAt.analyticAt
 
@@ -624,12 +633,16 @@ lemma cpolyomialOn_uncurry_of_multilinear :
     CPolynomialOn 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s :=
   fun _ _ ↦ f.cpolynomialAt_uncurry_of_multilinear
 
-lemma analyticOn_uncurry_of_multilinear : AnalyticOn 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s :=
-  f.cpolyomialOn_uncurry_of_multilinear.analyticOn
+lemma analyticOnNhd_uncurry_of_multilinear :
+    AnalyticOnNhd 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s :=
+  f.cpolyomialOn_uncurry_of_multilinear.analyticOnNhd
 
-lemma analyticWithinOn_uncurry_of_multilinear :
-    AnalyticWithinOn 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s :=
-  f.analyticOn_uncurry_of_multilinear.analyticWithinOn
+lemma analyticOn_uncurry_of_multilinear :
+    AnalyticOn 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s :=
+  f.analyticOnNhd_uncurry_of_multilinear.analyticOn
+
+@[deprecated (since := "2024-09-26")]
+alias analyticWithinOn_uncurry_of_multilinear := analyticOn_uncurry_of_multilinear
 
 lemma analyticAt_uncurry_of_multilinear : AnalyticAt 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) x :=
   f.cpolynomialAt_uncurry_of_multilinear.analyticAt
@@ -640,11 +653,11 @@ lemma analyticWithinAt_uncurry_of_multilinear :
 
 lemma continuousOn_uncurry_of_multilinear :
     ContinuousOn (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s :=
-  f.analyticOn_uncurry_of_multilinear.continuousOn
+  f.analyticOnNhd_uncurry_of_multilinear.continuousOn
 
 lemma continuous_uncurry_of_multilinear :
     Continuous (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) :=
-  f.analyticOn_uncurry_of_multilinear.continuous
+  f.analyticOnNhd_uncurry_of_multilinear.continuous
 
 lemma continuousAt_uncurry_of_multilinear :
     ContinuousAt (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) x :=
