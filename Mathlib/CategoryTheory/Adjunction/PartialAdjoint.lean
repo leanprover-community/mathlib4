@@ -18,8 +18,8 @@ defined on the full subcategory of `C` consisting of those objects `X : C`
 such that `F ⋙ coyoneda.obj (op X) : D ⥤ Type _` is corepresentable.
 We have a natural bijection
 `(F.partialLeftAdjoint.obj X ⟶ Y) ≃ (X.obj ⟶ F.obj Y)`
-that is similar to what we would expect for image of the object `X` by
-the left adjoint of `F`, if such an adjoint existed.
+that is similar to what we would expect for the image of the object `X`
+by the left adjoint of `F`, if such an adjoint existed.
 
 Indeed, if the predicate `F.LeftAdjointObjIsDefined` which defines `F.PartialLeftAdjointSource`
 holds for all objects `X : C`, then `F` has a left adjoint.
