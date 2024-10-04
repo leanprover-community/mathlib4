@@ -64,7 +64,7 @@ theorem exists_feasible_superset_add_element_feasible
   induction' hn : s₁.card - s₂.card generalizing s₂
   case zero =>
     exact False.elim ((eq_of_subset_of_card_le hs (Nat.le_of_sub_eq_zero hn) ▸ ha₂) ha₁)
-  case succ n ih =>
+  case succ _ ih =>
     rcases exists_superset_of_card_le hS hs₁ hs₂ (by omega) (le_succ _)
       with ⟨s, hs₃, hs₄, hs₅, hs₆⟩
     by_cases h : a ∈ s
