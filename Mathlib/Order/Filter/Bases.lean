@@ -668,7 +668,7 @@ theorem HasBasis.eq_iInf (h : l.HasBasis (fun _ => True) s) : l = ⨅ i, 𝓟 (s
 theorem hasBasis_iInf_principal {s : ι → Set α} (h : Directed (· ≥ ·) s) [Nonempty ι] :
     (⨅ i, 𝓟 (s i)).HasBasis (fun _ => True) s :=
   ⟨fun t => by
-    simpa only [true_and] using mem_iInf_of_directed (h.mono_comp monotone_principal.dual) t⟩
+    simpa only [true_and] using mem_iInf_of_directed (h.mono_comp _ monotone_principal.dual) t⟩
 
 /-- If `s : ι → Set α` is an indexed family of sets, then finite intersections of `s i` form a basis
 of `⨅ i, 𝓟 (s i)`. -/
@@ -683,7 +683,7 @@ theorem hasBasis_biInf_principal {s : β → Set α} {S : Set β} (h : DirectedO
   ⟨fun t => by
     refine mem_biInf_of_directed ?_ ne
     rw [directedOn_iff_directed, ← directed_comp] at h ⊢
-    refine h.mono_comp ?_
+    refine h.mono_comp _ ?_
     exact fun _ _ => principal_mono.2⟩
 
 theorem hasBasis_biInf_principal' {ι : Type*} {p : ι → Prop} {s : ι → Set α}

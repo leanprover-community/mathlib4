@@ -307,7 +307,7 @@ theorem mem_span_integralBasis {x : K} :
   rw [integralBasis, Basis.localizationLocalization_span, LinearMap.mem_range,
       IsScalarTower.coe_toAlgHom', RingHom.mem_range]
 
-theorem RingOfIntegers.rank : FiniteDimensional.finrank ℤ (𝓞 K) = FiniteDimensional.finrank ℚ K :=
+theorem RingOfIntegers.rank : Module.finrank ℤ (𝓞 K) = Module.finrank ℚ K :=
   IsIntegralClosure.rank ℤ ℚ K (𝓞 K)
 
 end NumberField

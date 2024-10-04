@@ -43,8 +43,8 @@ theorem Fintype.isPrimePow_card_of_field {α} [Fintype α] [Field α] : IsPrimeP
   let b := IsNoetherian.finsetBasis (ZMod p) α
   rw [Module.card_fintype b, ZMod.card, isPrimePow_pow_iff]
   · exact hp.1.isPrimePow
-  rw [← FiniteDimensional.finrank_eq_card_basis b]
-  exact FiniteDimensional.finrank_pos.ne'
+  rw [← Module.finrank_eq_card_basis b]
+  exact Module.finrank_pos.ne'
 
 /-- A `Fintype` can be given a field structure iff its cardinality is a prime power. -/
 theorem Fintype.nonempty_field_iff {α} [Fintype α] : Nonempty (Field α) ↔ IsPrimePow ‖α‖ := by

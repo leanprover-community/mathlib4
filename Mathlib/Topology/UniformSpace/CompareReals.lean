@@ -72,7 +72,7 @@ def rationalCauSeqPkg : @AbstractCompletion ℚ <| (@AbsoluteValue.abs ℚ _).un
     (separation := by infer_instance)
     (uniformInducing := by
       rw [Rat.uniformSpace_eq]
-      exact Rat.uniformEmbedding_coe_real.toUniformInducing)
+      exact Rat.isUniformEmbedding_coe_real.toUniformInducing)
     (dense := Rat.isDenseEmbedding_coe_real.dense)
 
 namespace CompareReals
