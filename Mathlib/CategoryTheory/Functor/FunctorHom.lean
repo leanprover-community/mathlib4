@@ -41,6 +41,7 @@ structure HomObj (A : C ⥤ Type w) where
 
 /-- When `F`, `G`, and `A` are all functors `C ⥤ Type w`, then `HomObj F G A` is in
 bijection with `F ⊗ A ⟶ G`. -/
+@[simps]
 def homObjEquiv (F G A : C ⥤ Type w) : (HomObj F G A) ≃ (F ⊗ A ⟶ G) where
   toFun a := ⟨fun X ⟨x, y⟩ ↦ a.app X y x, fun X Y f ↦ by
     ext ⟨x, y⟩
@@ -87,6 +88,7 @@ def map {A' : C ⥤ Type w} (f : A' ⟶ A) (x : HomObj F G A) : HomObj F G A' wh
 end HomObj
 
 /-- The contravariant functor taking `A : C ⥤ Type w` to `HomObj F G A`, i.e. Hom(F ⊗ -, G). -/
+@[simps]
 def homObjFunctor : (C ⥤ Type w)ᵒᵖ ⥤ Type max w v' u where
   obj A := HomObj F G A.unop
   map {A A'} f x :=
@@ -109,6 +111,7 @@ lemma functorHom_ext {X : C} {x y : (F.functorHom G).obj X}
   HomObj.ext (by ext; apply h)
 
 /-- The equivalence `(A ⟶ F.functorHom G) ≃ HomObj F G A`. -/
+@[simps]
 def functorHomEquiv (A : C ⥤ Type max u v v') : (A ⟶ F.functorHom G) ≃ HomObj F G A where
   toFun φ :=
     { app := fun X a ↦ (φ.app X a).app X (𝟙 _)

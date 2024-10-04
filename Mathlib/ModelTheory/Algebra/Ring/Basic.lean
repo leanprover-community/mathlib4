@@ -140,7 +140,7 @@ theorem card_ring : card Language.ring = 5 := by
   have : Fintype.card Language.ring.Symbols = 5 := rfl
   simp [Language.card, this]
 
-open Language ring Structure
+open Language Structure
 
 /-- A Type `R` is a `CompatibleRing` if it is a structure for the language of rings and this
 structure is the same as the structure already given on `R` by the classes `Add`, `Mul` etc.

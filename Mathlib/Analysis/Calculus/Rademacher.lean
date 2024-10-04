@@ -42,7 +42,7 @@ See `LipschitzWith.hasFderivAt_of_hasLineDerivAt_of_closure`.
 * [Pertti Mattila, Geometry of sets and measures in Euclidean spaces, Theorem 7.3][Federer1996]
 -/
 
-open Filter MeasureTheory Measure FiniteDimensional Metric Set Asymptotics
+open Filter MeasureTheory Measure Module Metric Set Asymptotics
 
 open scoped NNReal ENNReal Topology
 

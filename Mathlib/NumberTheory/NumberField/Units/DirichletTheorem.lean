@@ -84,10 +84,11 @@ variable {K}
 
 @[simp]
 theorem logEmbedding_component (x : (𝓞 K)ˣ) (w : {w : InfinitePlace K // w ≠ w₀}) :
-    (logEmbedding K x) w = mult w.val * Real.log (w.val x) := rfl
+    (logEmbedding K (Additive.ofMul x)) w = mult w.val * Real.log (w.val x) := rfl
 
 theorem sum_logEmbedding_component (x : (𝓞 K)ˣ) :
-    ∑ w, logEmbedding K x w = - mult (w₀ : InfinitePlace K) * Real.log (w₀ (x : K)) := by
+    ∑ w, logEmbedding K (Additive.ofMul x) w =
+      - mult (w₀ : InfinitePlace K) * Real.log (w₀ (x : K)) := by
   have h := congr_arg Real.log (prod_eq_abs_norm (x : K))
   rw [Units.norm, Rat.cast_one, Real.log_one, Real.log_prod] at h
   · simp_rw [Real.log_pow] at h
@@ -112,7 +113,7 @@ theorem mult_log_place_eq_zero {x : (𝓞 K)ˣ} {w : InfinitePlace K} :
 variable [NumberField K]
 
 theorem logEmbedding_eq_zero_iff {x : (𝓞 K)ˣ} :
-    logEmbedding K x = 0 ↔ x ∈ torsion K := by
+    logEmbedding K (Additive.ofMul x) = 0 ↔ x ∈ torsion K := by
   rw [mem_torsion]
   refine ⟨fun h w => ?_, fun h => ?_⟩
   · by_cases hw : w = w₀
@@ -126,13 +127,14 @@ theorem logEmbedding_eq_zero_iff {x : (𝓞 K)ˣ} :
     rw [logEmbedding_component, h w.val, Real.log_one, mul_zero, Pi.zero_apply]
 
 theorem logEmbedding_component_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r) (h : ‖logEmbedding K x‖ ≤ r)
-    (w : {w : InfinitePlace K // w ≠ w₀}) : |logEmbedding K x w| ≤ r := by
+    (w : {w : InfinitePlace K // w ≠ w₀}) : |logEmbedding K (Additive.ofMul x) w| ≤ r := by
   lift r to NNReal using hr
   simp_rw [Pi.norm_def, NNReal.coe_le_coe, Finset.sup_le_iff, ← NNReal.coe_le_coe] at h
   exact h w (mem_univ _)
 
-theorem log_le_of_logEmbedding_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r) (h : ‖logEmbedding K x‖ ≤ r)
-    (w : InfinitePlace K) : |Real.log (w x)| ≤ (Fintype.card (InfinitePlace K)) * r := by
+theorem log_le_of_logEmbedding_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r)
+    (h : ‖logEmbedding K (Additive.ofMul x)‖ ≤ r) (w : InfinitePlace K) :
+    |Real.log (w x)| ≤ (Fintype.card (InfinitePlace K)) * r := by
   have tool : ∀ x : ℝ, 0 ≤ x → x ≤ mult w * x := fun x hx => by
     nth_rw 1 [← one_mul x]
     refine mul_le_mul ?_ le_rfl hx ?_
@@ -215,7 +217,7 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
     fun w => ⟨(w x) / 2, div_nonneg (AbsoluteValue.nonneg _ _) (by norm_num)⟩
   suffices ∀ w, w ≠ w₁ → f w ≠ 0 by
     obtain ⟨g, h_geqf, h_gprod⟩ := adjust_f K B this
-    obtain ⟨y, h_ynz, h_yle⟩ := exists_ne_zero_mem_ringOfIntegers_lt (f := g)
+    obtain ⟨y, h_ynz, h_yle⟩ := exists_ne_zero_mem_ringOfIntegers_lt K (f := g)
       (by rw [convexBodyLT_volume]; convert hB; exact congr_arg ((↑) : NNReal → ENNReal) h_gprod)
     refine ⟨y, h_ynz, fun w hw => (h_geqf w hw ▸ h_yle w).trans ?_, ?_⟩
     · rw [← Rat.cast_le (K := ℝ), Rat.cast_natCast]
@@ -302,7 +304,7 @@ theorem exists_unit (w₁ : InfinitePlace K) :
         _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m)) * w (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹ :=
           _root_.map_mul _ _ _
         _ < 1 := by
-          rw [map_inv₀, mul_inv_lt_iff (pos_iff.mpr (seq_ne_zero K w₁ hB n)), mul_one]
+          rw [map_inv₀, mul_inv_lt_iff₀ (pos_iff.mpr (seq_ne_zero K w₁ hB n)), one_mul]
           exact seq_decreasing K w₁ hB hnm w hw
   refine Set.Finite.exists_lt_map_eq_of_forall_mem
     (t := { I : Ideal (𝓞 K) | 1 ≤ Ideal.absNorm I ∧ Ideal.absNorm I ≤ B })
@@ -320,7 +322,8 @@ theorem unitLattice_span_eq_top :
   -- The standard basis
   let B := Pi.basisFun ℝ {w : InfinitePlace K // w ≠ w₀}
   -- The image by log_embedding of the family of units constructed above
-  let v := fun w : { w : InfinitePlace K // w ≠ w₀ } => logEmbedding K (exists_unit K w).choose
+  let v := fun w : { w : InfinitePlace K // w ≠ w₀ } =>
+    logEmbedding K (Additive.ofMul (exists_unit K w).choose)
   -- To prove the result, it is enough to prove that the family `v` is linearly independent
   suffices B.det v ≠ 0 by
     rw [← isUnit_iff_ne_zero, ← is_basis_iff_det] at this
@@ -351,7 +354,7 @@ section statements
 variable [NumberField K]
 
 open scoped Classical
-open dirichletUnitTheorem FiniteDimensional
+open dirichletUnitTheorem Module
 
 /-- The unit rank of the number field `K`, it is equal to `card (InfinitePlace K) - 1`. -/
 def rank : ℕ := Fintype.card (InfinitePlace K) - 1
@@ -388,12 +391,12 @@ def logEmbeddingQuot :
       (QuotientGroup.quotientMulEquivOfEq (by
         ext
         rw [MonoidHom.mem_ker, AddMonoidHom.toMultiplicative'_apply_apply, ofAdd_eq_one,
-          ← logEmbedding_eq_zero_iff]
-        rfl)).toMonoidHom
+          ← logEmbedding_eq_zero_iff])).toMonoidHom
 
 @[simp]
 theorem logEmbeddingQuot_apply (x : (𝓞 K)ˣ) :
-    logEmbeddingQuot K ⟦x⟧ = logEmbedding K x := rfl
+    logEmbeddingQuot K (Additive.ofMul (QuotientGroup.mk x)) =
+      logEmbedding K (Additive.ofMul x) := rfl
 
 theorem logEmbeddingQuot_injective :
     Function.Injective (logEmbeddingQuot K) := by
@@ -429,7 +432,8 @@ def logEmbeddingEquiv :
 
 @[simp]
 theorem logEmbeddingEquiv_apply (x : (𝓞 K)ˣ) :
-    logEmbeddingEquiv K ⟦x⟧ = logEmbedding K x := rfl
+    logEmbeddingEquiv K (Additive.ofMul (QuotientGroup.mk x)) =
+      logEmbedding K (Additive.ofMul x) := rfl
 
 instance : Module.Free ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
   Module.Free.of_equiv (logEmbeddingEquiv K).symm
@@ -458,13 +462,17 @@ instance : Monoid.FG (𝓞 K)ˣ := by
   infer_instance
 
 theorem rank_modTorsion :
-    FiniteDimensional.finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
+    Module.finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
   rw [← LinearEquiv.finrank_eq (logEmbeddingEquiv K).symm, unitLattice_rank]
 
 /-- A basis of the quotient `(𝓞 K)ˣ ⧸ (torsion K)` seen as an additive ℤ-module. -/
 def basisModTorsion : Basis (Fin (rank K)) ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
   Basis.reindex (Module.Free.chooseBasis ℤ _) (Fintype.equivOfCardEq <| by
-    rw [← FiniteDimensional.finrank_eq_card_chooseBasisIndex, rank_modTorsion, Fintype.card_fin])
+    rw [← Module.finrank_eq_card_chooseBasisIndex, rank_modTorsion, Fintype.card_fin])
+
+/-- The basis of the `unitLattice` obtained by mapping `basisModTorsion` via `logEmbedding`. -/
+def basisUnitLattice : Basis (Fin (rank K)) ℤ (unitLattice K) :=
+  (basisModTorsion K).map (logEmbeddingEquiv K)
 
 /-- A fundamental system of units of `K`. The units of `fundSystem` are arbitrary lifts of the
 units in `basisModTorsion`. -/
@@ -473,10 +481,12 @@ def fundSystem : Fin (rank K) → (𝓞 K)ˣ :=
   fun i => Quotient.out' (Additive.toMul (basisModTorsion K i):)
 
 theorem fundSystem_mk (i : Fin (rank K)) :
-    Additive.ofMul ⟦fundSystem K i⟧ = (basisModTorsion K i) := by
-  rw [fundSystem, Equiv.apply_eq_iff_eq_symm_apply, @Quotient.mk_eq_iff_out,
-    Quotient.out', Quotient.out_equiv_out]
-  rfl
+    Additive.ofMul (QuotientGroup.mk (fundSystem K i)) = (basisModTorsion K i) := by
+  simp_rw [fundSystem, Equiv.apply_eq_iff_eq_symm_apply, Additive.ofMul_symm_eq, Quotient.out_eq']
+
+theorem logEmbedding_fundSystem (i : Fin (rank K)) :
+    logEmbedding K (Additive.ofMul (fundSystem K i)) = basisUnitLattice K i := by
+  rw [basisUnitLattice, Basis.map_apply, ← fundSystem_mk, logEmbeddingEquiv_apply]
 
 /-- The exponents that appear in the unique decomposition of a unit as the product of
 a root of unity and powers of the units of the fundamental system `fundSystem` (see
@@ -513,6 +523,5 @@ theorem exist_unique_eq_mul_prod (x : (𝓞 K)ˣ) : ∃! ζe : torsion K × (Fin
     rw [_root_.mul_inv_cancel_right]
 
 end statements
-
 
 end NumberField.Units

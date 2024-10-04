@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hughes,
+Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Basic
@@ -14,7 +14,7 @@ import Mathlib.Algebra.Group.Hom.Defs
 
 -- `NeZero` cannot be additivised, hence its theory should be developed outside of the
 -- `Algebra.Group` folder.
-assert_not_exists NeZero
+assert_not_imported Mathlib.Algebra.NeZero
 
 variable {α β M N P : Type*}
 

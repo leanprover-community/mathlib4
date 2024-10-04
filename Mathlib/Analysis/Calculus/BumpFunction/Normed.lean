@@ -16,7 +16,7 @@ In this file we define `ContDiffBump.normed f μ` to be the bump function `f` no
 
 noncomputable section
 
-open Function Filter Set Metric MeasureTheory FiniteDimensional Measure
+open Function Filter Set Metric MeasureTheory Module Measure
 open scoped Topology
 
 namespace ContDiffBump

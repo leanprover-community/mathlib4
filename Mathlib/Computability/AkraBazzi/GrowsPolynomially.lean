@@ -201,7 +201,7 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
         have le_2n : max n₀ 2 ≤ (2 : ℝ)^n * max n₀ 2 := by
           nth_rewrite 1 [← one_mul (max n₀ 2)]
           gcongr
-          exact one_le_pow_of_one_le (by norm_num : (1 : ℝ) ≤ 2) _
+          exact one_le_pow₀ (by norm_num : (1 : ℝ) ≤ 2)
         have n₀_le_z : n₀ ≤ z := by
           calc n₀ ≤ max n₀ 2 := by simp
                 _ ≤ (2 : ℝ)^n * max n₀ 2 := le_2n

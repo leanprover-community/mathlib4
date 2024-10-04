@@ -37,6 +37,8 @@ section Miscellany
 --   And.decidable Or.decidable Decidable.false Xor.decidable Iff.decidable Decidable.true
 --   Implies.decidable Not.decidable Ne.decidable Bool.decidableEq Decidable.toBool
 
+-- attribute [refl] HEq.refl -- FIXME This is still rejected after #857
+attribute [trans] Iff.trans HEq.trans heq_of_eq_of_heq
 attribute [simp] cast_heq
 
 /-- An identity function with its main argument implicit. This will be printed as `hidden` even
@@ -433,8 +435,7 @@ end Equality
 section Quantifiers
 section Dependent
 
-variable {α : Sort*} {β : α → Sort*} {γ : ∀ a, β a → Sort*} {δ : ∀ a b, γ a b → Sort*}
-  {ε : ∀ a b c, δ a b c → Sort*}
+variable {α : Sort*} {β : α → Sort*} {γ : ∀ a, β a → Sort*}
 
 theorem pi_congr {β' : α → Sort _} (h : ∀ a, β a = β' a) : (∀ a, β a) = ∀ a, β' a :=
   (funext h : β = β') ▸ rfl
@@ -460,7 +461,7 @@ theorem Exists₃.imp {p q : ∀ a b, γ a b → Prop} (h : ∀ a b c, p a b c �
 
 end Dependent
 
-variable {α β : Sort*} {p q : α → Prop}
+variable {α β : Sort*} {p : α → Prop}
 
 theorem forall_swap {p : α → β → Prop} : (∀ x y, p x y) ↔ ∀ y x, p x y :=
   ⟨fun f x y ↦ f y x, fun f x y ↦ f y x⟩
@@ -743,7 +744,7 @@ noncomputable def Exists.classicalRecOn {α : Sort*} {p : α → Prop} (h : ∃ 
 /-! ### Declarations about bounded quantifiers -/
 section BoundedQuantifiers
 
-variable {α : Sort*} {r p q : α → Prop} {P Q : ∀ x, p x → Prop} {b : Prop}
+variable {α : Sort*} {r p q : α → Prop} {P Q : ∀ x, p x → Prop}
 
 theorem bex_def : (∃ (x : _) (_ : p x), q x) ↔ ∃ x, p x ∧ q x :=
   ⟨fun ⟨x, px, qx⟩ ↦ ⟨x, px, qx⟩, fun ⟨x, px, qx⟩ ↦ ⟨x, px, qx⟩⟩
@@ -974,7 +975,7 @@ theorem not_beq_of_ne {α : Type*} [BEq α] [LawfulBEq α] {a b : α} (ne : a �
   fun h => ne (eq_of_beq h)
 
 theorem beq_eq_decide {α : Type*} [BEq α] [LawfulBEq α] {a b : α} : (a == b) = decide (a = b) := by
-  rw [← beq_iff_eq a b]
+  rw [← beq_iff_eq (a := a) (b := b)]
   cases a == b <;> simp
 
 @[simp] lemma beq_eq_beq {α β : Type*} [BEq α] [LawfulBEq α] [BEq β] [LawfulBEq β] {a₁ a₂ : α}
