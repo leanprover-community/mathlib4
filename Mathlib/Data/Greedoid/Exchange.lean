@@ -57,33 +57,25 @@ theorem exists_superset_of_card_le
       intro _ h; simp [h₁ h]
 
 -- TODO: Find a better name.
-/-- A helper lemma for `feasible_superset_add_element_feasible`. -/
-theorem exists_feasible_superset_add_element_feasible'
+theorem exists_feasible_superset_add_element_feasible
     (hS : ExchangeProperty Sys) (hs₁ : Sys s₁) (hs₂ : Sys s₂) (hs : s₂ ⊆ s₁)
-    {n : ℕ} (hn : n = s₁.card - s₂.card)
     {a : α} (ha₁ : a ∈ s₁) (ha₂ : a ∉ s₂) :
     ∃ s, Sys s ∧ s₂ ⊆ s ∧ s ⊆ s₁ ∧ ∃ h : a ∉ s, Sys (cons a s h) := by
-  induction n generalizing s₂ with
-  | zero =>
-    exact False.elim ((eq_of_subset_of_card_le hs (Nat.le_of_sub_eq_zero hn.symm) ▸ ha₂) ha₁)
-  | succ n ih =>
+  induction' hn : s₁.card - s₂.card generalizing s₂
+  case zero =>
+    exact False.elim ((eq_of_subset_of_card_le hs (Nat.le_of_sub_eq_zero hn) ▸ ha₂) ha₁)
+  case succ n ih =>
     rcases exists_superset_of_card_le hS hs₁ hs₂ (by omega) (le_succ _)
       with ⟨s, hs₃, hs₄, hs₅, hs₆⟩
     by_cases h : a ∈ s
     · use s₂; simp [hs₂, hs, ha₂]
       exact (eq_of_subset_of_card_le
-        ((@cons_subset _ _ _ _ ha₂).mpr ⟨h, hs₄⟩) (hs₆ ▸ card_cons ha₂ ▸ le_rfl)) ▸ hs₃
-    · rcases ih hs₃ (fun e h ↦ (hs₅ _ h).elim id (fun f ↦ hs f)) (by omega) h
-        with ⟨t, ht₁, ht₂, ht₃, ht₄, ht₅⟩
-      use t; simp [ht₁, ht₂, ht₃, ht₄, ht₅, subset_trans hs₄]
-
--- TODO: Find a better name.
-theorem exists_feasible_superset_add_element_feasible
-    (hS : ExchangeProperty Sys) (hs₁ : Sys s₁) (hs₂ : Sys s₂) (hs : s₂ ⊆ s₁)
-    {a : α} (ha₁ : a ∈ s₁) (ha₂ : a ∉ s₂) :
-    ∃ s, Sys s ∧ s₂ ⊆ s ∧ s ⊆ s₁ ∧ ∃ h : a ∉ s, Sys (cons a s h) :=
-  exists_feasible_superset_add_element_feasible' hS hs₁ hs₂ hs rfl ha₁ ha₂
+        ((@cons_subset _ _ _ _ ha₂).mpr ⟨h, hs₄⟩)  (hs₆ ▸ card_cons ha₂ ▸ le_rfl)) ▸ hs₃
+    · rcases ih hs₃ (fun e h ↦ (hs₅ _ h).elim id (fun f ↦ hs f)) h (by omega)
+        with ⟨t, ht⟩
+      use t; simp [ht, subset_trans hs₄]
 
 end ExchangeProperty
 
 end Greedoid
+
