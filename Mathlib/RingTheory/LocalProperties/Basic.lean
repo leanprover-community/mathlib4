@@ -281,12 +281,10 @@ at any submonoid `M` of `R`. -/
 lemma RingHom.StableUnderBaseChange.isLocalization_map (M : Submonoid R) [IsLocalization M Rᵣ]
     (f : R →+* S) [IsLocalization (M.map f) Sᵣ] (hf : P f) :
     P (IsLocalization.map Sᵣ f M.le_comap_map : Rᵣ →+* Sᵣ) := by
-  letI : Algebra Rᵣ Sᵣ := (IsLocalization.map Sᵣ f M.le_comap_map).toAlgebra
-  letI : Algebra R S := f.toAlgebra
-  letI : Algebra R Sᵣ := ((algebraMap Rᵣ Sᵣ).comp (algebraMap R Rᵣ)).toAlgebra
+  algebraize [f, IsLocalization.map (S := Rᵣ) Sᵣ f M.le_comap_map,
+    (IsLocalization.map (S := Rᵣ) Sᵣ f M.le_comap_map).comp (algebraMap R Rᵣ)]
   haveI : IsScalarTower R S Sᵣ := IsScalarTower.of_algebraMap_eq'
     (IsLocalization.map_comp M.le_comap_map)
-  haveI : IsScalarTower R Rᵣ Sᵣ := IsScalarTower.of_algebraMap_eq' rfl
   haveI : IsLocalization (Algebra.algebraMapSubmonoid S M) Sᵣ :=
     inferInstanceAs <| IsLocalization (M.map f) Sᵣ
   apply hP.of_isLocalization M hf
