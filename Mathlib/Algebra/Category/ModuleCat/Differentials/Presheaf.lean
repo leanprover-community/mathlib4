@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Presheaf
+import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pullback
 import Mathlib.Algebra.Category.ModuleCat.Differentials.Basic
 
 /-!
@@ -37,7 +37,7 @@ to show that the two vanishing conditions `d_app` are equivalent).
 
 universe v u v₁ v₂ v₃ u₁ u₂ u₃
 
-open CategoryTheory
+open CategoryTheory Limits
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {E : Type u₃} [Category.{v₃} E]
@@ -65,6 +65,61 @@ namespace Derivation
 -- Note: `d_app` cannot be a simp lemma because `dsimp` would
 -- simplify the composition of functors `R ⋙ forget₂ _ _`
 attribute [simp] d_mul d_map
+
+section AddCommGroup
+
+instance : Zero (M.Derivation φ) where
+  zero := { d := 0 }
+
+@[simp] lemma zero_d_apply {X : Dᵒᵖ} (x : R.obj X) :
+    (0 : M.Derivation φ).d x = 0 := rfl
+
+variable {M φ}
+
+instance : Neg (M.Derivation φ) where
+  neg d :=
+    { d := -d.d
+      d_mul := fun a b ↦ by dsimp; simp only [d_mul, smul_neg]; abel
+      d_app := by intros; dsimp; rw [neg_eq_zero]; apply d_app }
+
+@[simp] lemma neg_d_apply (d : M.Derivation φ) {X : Dᵒᵖ} (x : R.obj X) :
+    (-d).d x = -d.d x := rfl
+
+instance : Add (M.Derivation φ) where
+  add d₁ d₂ :=
+    { d := d₁.d + d₂.d
+      d_mul := by intros; dsimp; simp only [d_mul, smul_add]; abel
+      d_map := by simp
+      d_app := fun _ ↦ by
+        dsimp
+        erw [d_app, d_app, add_zero] }
+
+@[simp] lemma add_d_apply (d d' : M.Derivation φ) {X : Dᵒᵖ} (x : R.obj X) :
+    (d + d').d x = d.d x + d'.d x := rfl
+
+instance : Sub (M.Derivation φ) where
+  sub d₁ d₂ :=
+    { d := d₁.d - d₂.d
+      d_mul := by intros; dsimp; simp only [d_mul, smul_sub]; abel
+      d_map := by simp
+      d_app := fun _ ↦ by
+        dsimp
+        erw [d_app, d_app, sub_zero] }
+
+@[simp] lemma sub_d_apply (d d' : M.Derivation φ) {X : Dᵒᵖ} (x : R.obj X) :
+    (d - d').d x = d.d x - d'.d x := rfl
+
+instance : AddCommGroup (M.Derivation φ) where
+  add_assoc _ _ _ := by ext; dsimp; rw [add_assoc]
+  zero_add _ := by ext; dsimp; rw [zero_add]
+  add_zero _ := by ext; dsimp; rw [add_zero]
+  neg_add_cancel _ := by ext; dsimp; rw [neg_add_cancel]
+  add_comm _ _ := by ext; dsimp; rw [add_comm]
+  sub_eq_add_neg _ _ := by ext; dsimp; rw [sub_eq_add_neg]
+  nsmul := nsmulRec
+  zsmul := zsmulRec
+
+end AddCommGroup
 
 variable {M N φ}
 
@@ -228,18 +283,58 @@ end DifferentialsConstruction
 
 namespace Derivation
 
-namespace Universal
-
-variable {dφ : M.Derivation φ} (hdφ : dφ.Universal)
-  (ψ : R ⟶ G.op ⋙ T) (φψ : S ⟶ (F ⋙ G).op ⋙ T)
+variable {φ M} {dφ : M.Derivation φ} (hdφ : dφ.Universal)
+  {ψ : R ⟶ G.op ⋙ T} {φψ : S ⟶ (F ⋙ G).op ⋙ T} (fac : φψ = φ ≫ whiskerLeft F.op ψ)
   {P : PresheafOfModules.{v} (T ⋙ forget₂ _ _)}
   (dφψ : P.Derivation φψ)
 
-lemma pullbackMap : φψ = by
-  sorry := sorry
+local notation "pushforwardψ" =>
+  pushforward (F := G) (R := T ⋙ forget₂ _ _) (φ := whiskerRight ψ (forget₂ _ RingCat))
+
+local notation "pullbackψ" =>
+  pullback (F := G) (R := T ⋙ forget₂ _ _) (φ := whiskerRight ψ (forget₂ _ RingCat))
+
+local notation "adjunctionψ" =>
+  (pullbackPushforwardAdjunction
+    (F := G) (R := T ⋙ forget₂ _ _) (φ := whiskerRight ψ (forget₂ _ RingCat)))
+
+protected noncomputable def pushforward : ((pushforwardψ).obj P).Derivation φ where
+  d := AddMonoidHom.mk' (fun a ↦ dφψ.d (ψ.app _ a)) (by simp)
+  d_mul {X} a b := by
+    dsimp
+    rw [map_mul, dφψ.d_mul]
+    rfl
+  d_map {X Y} f a :=
+    (congr_arg dφψ.d (congr_fun ((forget _).congr_map (ψ.naturality f)) a)).trans
+      (dφψ.d_map _ _)
+  d_app a := by subst fac; exact dφψ.d_app a
+
+lemma pushforward_d_apply (Y : Dᵒᵖ) (a : R.obj Y) :
+    (Derivation.pushforward fac dφψ).d a = dφψ.d (ψ.app _ a) := rfl
+
+namespace Universal
+
+noncomputable def pushforwardMap : M ⟶ (pushforwardψ).obj P :=
+  hdφ.desc (Derivation.pushforward fac dφψ)
+
+variable [(pushforward (F := G) (R := T ⋙ forget₂ _ _)
+  (whiskerRight ψ (forget₂ _ RingCat))).IsRightAdjoint]
+
+noncomputable def pullbackMap : (pullbackψ).obj M ⟶ P :=
+  ((adjunctionψ).homEquiv M P).symm (hdφ.pushforwardMap fac dφψ)
+
+variable (c : CokernelCofork (hdφ.pullbackMap fac dφψ))
+
+def quotientDerivation : c.pt.Derivation ψ where
+  d := AddMonoidHom.comp ((forget₂ _ Ab).map (c.π.app _)) dφψ.d
+  d_mul := by simp
+  d_map _ _ := by dsimp; rw [d_map, naturality_apply]; dsimp
+  d_app := sorry
+
+variable {c} (hc : IsColimit c)
 
 end Universal
 
-namespace Derivation
+end Derivation
 
 end PresheafOfModules
