@@ -28,13 +28,13 @@ jobs:
       id: fetch-date
       run: |
         TODAY=$(grep -oP 'nightly-\K\d{4}-\d{2}-\d{2}' lean-toolchain)
-        echo "TODAY=$TODAY" >> $GITHUB_ENV
+        echo "TODAY=$TODAY" >> "$GITHUB_ENV"
 
     - name: Set YESTERDAY
       id: set-yesterday
       run: |
         YESTERDAY=$(date -d "$TODAY -1 day" +%Y-%m-%d)
-        echo "YESTERDAY=$YESTERDAY" >> $GITHUB_ENV
+        echo "YESTERDAY=$YESTERDAY" >> "$GITHUB_ENV"
 
     - name: Clone lean4-nightly repository and get PRs
       id: get-prs
@@ -42,21 +42,20 @@ jobs:
         NIGHTLY_URL="https://github.com/leanprover/lean4-nightly.git"
         
         # Create a temporary directory for cloning
-        TEMP_DIR=$(mktemp -d)
-        cd $TEMP_DIR
+        cd $(mktemp -d)
         
         # Clone the repository with a depth of 30 (adjust as needed)
-        git clone --depth 30 $NIGHTLY_URL
+        git clone --depth 30 "$NIGHTLY_URL"
         
         # Navigate to the cloned repository
         cd lean4-nightly
-        YESTERDAY=${{ steps.set-yesterday.outputs.yesterday }}
-        TODAY=${{ steps.fetch-date.outputs.today }}
-        PRS=$(git log --oneline nightly-$YESTERDAY..nightly-$TODAY | sed 's/.*(#\([0-9]\+\))$/\1/')
+        YESTERDAY="${{ steps.set-yesterday.outputs.yesterday }}"
+        TODAY="${{ steps.fetch-date.outputs.today }}"
+        PRS=$(git log --oneline "nightly-$YESTERDAY..nightly-$TODAY" | sed 's/.*(#\([0-9]\+\))$/\1/')
         
         # Output the PRs
-        echo $PRS
-        echo "prs=$PRS" >> $GITHUB_OUTPUT
+        echo "$PRS"
+        echo "prs=$PRS" >> "$GITHUB_OUTPUT"
 
     - name: Use merged PRs information
       id: find-branches
@@ -72,7 +71,7 @@ jobs:
         # Loop through each matching branch
         for BRANCH in $MATCHING_BRANCHES; do
             # Get the diff filenames
-            DIFF_FILES=$(git diff --name-only origin/nightly-testing...$BRANCH)
+            DIFF_FILES=$(git diff --name-only "origin/nightly-testing...$BRANCH")
             
             # Check if the diff contains files other than the specified ones
             if echo "$DIFF_FILES" | grep -v -e 'lake-manifest.json' -e 'lakefile.lean' -e 'lean-toolchain'; then
@@ -82,8 +81,8 @@ jobs:
         done
 
         # Output the relevant branches
-        echo $RELEVANT_BRANCHES
-        echo "branches=$RELEVANT_BRANCHES" >> $GITHUB_OUTPUT
+        echo "$RELEVANT_BRANCHES"
+        echo "branches=$RELEVANT_BRANCHES" >> "$GITHUB_OUTPUT"
 
     - name: Send message on Zulip
       uses: zulip/github-actions-zulip/send-message@v1
