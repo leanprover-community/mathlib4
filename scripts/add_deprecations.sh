@@ -26,11 +26,11 @@ begs="(theorem|lemma|inductive|structure|def|class|instance|alias|abbrev)"
 
 mkDeclAndDepr () {
   git diff --unified=0 "${commit}" "${1}" |
-    awk -v regex="[^+-]*${begs}" -v date="$(date +%Y-%m-%d)" '
+    awk -v regex="${begs}" -v date="$(date +%Y-%m-%d)" '
     function depr(ol,ne) {
       return sprintf("@[deprecated (since := \"%s\")]||||alias %s := %s", date, ol, ne)
     }
-    BEGIN{ plusRegex="^+" regex; minusRegex="^-" regex; }
+    BEGIN{ plusRegex="^+[^+-]*" regex; minusRegex="^-[^+-]*" regex; }
     ($0 ~ minusRegex) {
       for(i=1; i<=NF; i++) {
         if (($i ~ /theorem$/) || ($i ~ /lemma$/)) { old=$(i+1) }
