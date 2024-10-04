@@ -811,7 +811,7 @@ theorem exists_disjoint_closedBall_covering_ae_aux (μ : Measure α) [SFinite μ
   rcases exists_isFiniteMeasure_absolutelyContinuous μ with ⟨ν, hν, hμν, -⟩
   rcases exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux ν f s hf with
     ⟨t, t_count, ts, tr, tν, tdisj⟩
-  exact ⟨t, t_count, ts, tr, (hμν _).1 tν, tdisj⟩
+  exact ⟨t, t_count, ts, tr, hμν tν, tdisj⟩
 
 /-- The measurable Besicovitch covering theorem. Assume that, for any `x` in a set `s`,
 one is given a set of admissible closed balls centered at `x`, with arbitrarily small radii.

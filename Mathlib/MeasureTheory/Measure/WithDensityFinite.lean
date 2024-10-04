@@ -44,25 +44,39 @@ namespace MeasureTheory
 
 variable {α : Type*} {mα : MeasurableSpace α} {μ : Measure α}
 
+/-- Auxiliary definition for `Measure.toFinite -/
+noncomputable def Measure.toFiniteAux (μ : Measure α) [SFinite μ] : Measure α :=
+  letI := Classical.dec
+  if IsFiniteMeasure μ then μ else (exists_isFiniteMeasure_absolutelyContinuous μ).choose
+
 /-- A finite measure obtained from an s-finite measure `μ`, such that
 `μ = μ.toFinite.withDensity μ.densityToFinite` (see `withDensity_densitytoFinite`).
 If `μ` is non-zero, this is a probability measure. -/
 noncomputable def Measure.toFinite (μ : Measure α) [SFinite μ] : Measure α :=
-  letI := Classical.dec
-  (if IsFiniteMeasure μ then μ else (exists_isFiniteMeasure_null_iff μ).choose)[|univ]
+  μ.toFiniteAux[|univ]
 
-@[simp]
-lemma toFinite_apply_eq_zero_iff [SFinite μ] {s : Set α} : μ.toFinite s = 0 ↔ μ s = 0 := by
-  rw [Measure.toFinite]
+@[local simp]
+lemma ae_toFiniteAux [SFinite μ] : ae μ.toFiniteAux = ae μ := by
+  rw [Measure.toFiniteAux]
   split_ifs
-  · simp [ProbabilityTheory.cond, measure_ne_top]
-  · obtain ⟨h₁, h₂⟩ := (exists_isFiniteMeasure_null_iff μ).choose_spec
-    simp [ProbabilityTheory.cond, measure_ne_top, *]
+  · simp
+  · obtain ⟨_, h₁, h₂⟩ := (exists_isFiniteMeasure_absolutelyContinuous μ).choose_spec
+    exact h₂.ae_le.antisymm h₁.ae_le
+
+@[local instance]
+theorem isFiniteMeasure_toFiniteAux [SFinite μ] : IsFiniteMeasure μ.toFiniteAux := by
+  rw [Measure.toFiniteAux]
+  split_ifs
+  · assumption
+  · exact (exists_isFiniteMeasure_absolutelyContinuous μ).choose_spec.1
 
 @[simp]
 lemma ae_toFinite [SFinite μ] : ae μ.toFinite = ae μ := by
-  ext s
-  apply toFinite_apply_eq_zero_iff
+  simp [Measure.toFinite, ProbabilityTheory.cond]
+
+@[simp]
+lemma toFinite_apply_eq_zero_iff [SFinite μ] {s : Set α} : μ.toFinite s = 0 ↔ μ s = 0 := by
+  simp only [← compl_mem_ae_iff, ae_toFinite]
 
 @[simp]
 lemma toFinite_eq_zero_iff [SFinite μ] : μ.toFinite = 0 ↔ μ = 0 := by
@@ -75,67 +89,51 @@ instance [SFinite μ] : IsFiniteMeasure μ.toFinite := by
   rw [Measure.toFinite]
   infer_instance
 
-instance [SFinite μ] [h_zero : NeZero μ] : IsProbabilityMeasure μ.toFinite := by
+instance [SFinite μ] [NeZero μ] : IsProbabilityMeasure μ.toFinite := by
   apply ProbabilityTheory.cond_isProbabilityMeasure
-  simp [toFiniteAux_eq_zero_iff, h_zero.out]
+  simp [ne_eq, ← compl_mem_ae_iff, ae_toFiniteAux]
 
-lemma sFiniteSeq_absolutelyContinuous_toFiniteAux (μ : Measure α) [SFinite μ] (n : ℕ) :
-    sFiniteSeq μ n ≪ μ.toFiniteAux := by
-  refine Measure.absolutelyContinuous_sum_right n (Measure.absolutelyContinuous_smul ?_)
-  simp only [ne_eq, ENNReal.inv_eq_zero]
-  exact ENNReal.mul_ne_top (by simp) (measure_ne_top _ _)
-
-lemma toFiniteAux_absolutelyContinuous_toFinite (μ : Measure α) [SFinite μ] :
-    μ.toFiniteAux ≪ μ.toFinite := ProbabilityTheory.absolutelyContinuous_cond_univ
+lemma absolutelyContinuous_toFinite (μ : Measure α) [SFinite μ] : μ ≪ μ.toFinite :=
+  Measure.ae_le_iff_absolutelyContinuous.mp ae_toFinite.ge
 
 lemma sFiniteSeq_absolutelyContinuous_toFinite (μ : Measure α) [SFinite μ] (n : ℕ) :
     sFiniteSeq μ n ≪ μ.toFinite :=
-  (sFiniteSeq_absolutelyContinuous_toFiniteAux μ n).trans
-    (toFiniteAux_absolutelyContinuous_toFinite μ)
+  (sFiniteSeq_le μ n).absolutelyContinuous.trans (absolutelyContinuous_toFinite μ)
 
-lemma absolutelyContinuous_toFinite (μ : Measure α) [SFinite μ] : μ ≪ μ.toFinite := by
-  conv_lhs => rw [← sum_sFiniteSeq μ]
-  exact Measure.absolutelyContinuous_sum_left (sFiniteSeq_absolutelyContinuous_toFinite μ)
-
-lemma toFinite_absolutelyContinuous (μ : Measure α) [SFinite μ] : μ.toFinite ≪ μ := by
-  conv_rhs => rw [← sum_sFiniteSeq μ]
-  refine Measure.AbsolutelyContinuous.mk (fun s hs hs0 ↦ ?_)
-  simp only [Measure.sum_apply _ hs, ENNReal.tsum_eq_zero] at hs0
-  simp [toFinite_apply, toFiniteAux_apply, hs0]
+lemma toFinite_absolutelyContinuous (μ : Measure α) [SFinite μ] : μ.toFinite ≪ μ :=
+  Measure.ae_le_iff_absolutelyContinuous.mp ae_toFinite.le
 
 /-- A measurable function such that `μ.toFinite.withDensity μ.densityToFinite = μ`.
 See `withDensity_densitytoFinite`. -/
-noncomputable
-def Measure.densityToFinite (μ : Measure α) [SFinite μ] (a : α) : ℝ≥0∞ :=
-  ∑' n, (sFiniteSeq μ n).rnDeriv μ.toFinite a
+@[deprecated rnDeriv (since := "2024-10-04")]
+noncomputable def Measure.densityToFinite (μ : Measure α) [SFinite μ] (a : α) : ℝ≥0∞ :=
+  μ.rnDeriv μ.toFinite a
 
+set_option linter.deprecated false in
+@[deprecated (since := "2024-10-04")]
 lemma densityToFinite_def (μ : Measure α) [SFinite μ] :
-    μ.densityToFinite = fun a ↦ ∑' n, (sFiniteSeq μ n).rnDeriv μ.toFinite a := rfl
+    μ.densityToFinite = μ.rnDeriv μ.toFinite :=
+  rfl
 
+set_option linter.deprecated false in
+@[deprecated Measure.measurable_rnDeriv (since := "2024-10-04")]
 lemma measurable_densityToFinite (μ : Measure α) [SFinite μ] : Measurable μ.densityToFinite :=
-  Measurable.ennreal_tsum fun _ ↦ Measure.measurable_rnDeriv _ _
+  Measure.measurable_rnDeriv _ _
 
+set_option linter.deprecated false in
+@[deprecated Measure.withDensity_rnDeriv_eq (since := "2024-10-04")]
 theorem withDensity_densitytoFinite (μ : Measure α) [SFinite μ] :
-    μ.toFinite.withDensity μ.densityToFinite = μ := by
-  have : (μ.toFinite.withDensity fun a ↦ ∑' n, (sFiniteSeq μ n).rnDeriv μ.toFinite a)
-      = μ.toFinite.withDensity (∑' n, (sFiniteSeq μ n).rnDeriv μ.toFinite) := by
-    congr with a
-    rw [ENNReal.tsum_apply]
-  rw [densityToFinite_def, this, withDensity_tsum (fun i ↦ Measure.measurable_rnDeriv _ _)]
-  conv_rhs => rw [← sum_sFiniteSeq μ]
-  congr with n
-  rw [Measure.withDensity_rnDeriv_eq]
-  exact sFiniteSeq_absolutelyContinuous_toFinite μ n
+    μ.toFinite.withDensity μ.densityToFinite = μ :=
+  Measure.withDensity_rnDeriv_eq _ _ (absolutelyContinuous_toFinite _)
 
+set_option linter.deprecated false in
+@[deprecated Measure.rnDeriv_lt_top (since := "2024-10-04")]
 lemma densityToFinite_ae_lt_top (μ : Measure α) [SigmaFinite μ] :
-    ∀ᵐ x ∂μ, μ.densityToFinite x < ∞ := by
-  refine ae_of_forall_measure_lt_top_ae_restrict _ (fun s _ hμs ↦ ?_)
-  suffices ∀ᵐ x ∂μ.toFinite.restrict s, μ.densityToFinite x < ∞ from
-    (absolutelyContinuous_toFinite μ).restrict _ this
-  refine ae_lt_top (measurable_densityToFinite μ) ?_
-  rw [← withDensity_apply', withDensity_densitytoFinite]
-  exact hμs.ne
+    ∀ᵐ x ∂μ, μ.densityToFinite x < ∞ :=
+  (absolutelyContinuous_toFinite μ).ae_le <| Measure.rnDeriv_lt_top _ _
 
+set_option linter.deprecated false in
+@[deprecated Measure.rnDeriv_ne_top (since := "2024-10-04")]
 lemma densityToFinite_ae_ne_top (μ : Measure α) [SigmaFinite μ] :
     ∀ᵐ x ∂μ, μ.densityToFinite x ≠ ∞ :=
   (densityToFinite_ae_lt_top μ).mono (fun _ hx ↦ hx.ne)

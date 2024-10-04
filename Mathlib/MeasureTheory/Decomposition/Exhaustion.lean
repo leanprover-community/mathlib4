@@ -258,7 +258,7 @@ lemma measure_eq_top_of_subset_compl_sigmaFiniteSetWRT [SFinite ν]
     refine ⟨μ.sigmaFiniteSetWRT' ν', measurableSet_sigmaFiniteSetWRT',
       sigmaFinite_restrict_sigmaFiniteSetWRT' _ _,
       fun t ht_subset hνt ↦ measure_eq_top_of_subset_compl_sigmaFiniteSetWRT' ht_subset ?_⟩
-    exact fun hν't ↦ hνt ((hνν' _).1 hν't)
+    exact fun hν't ↦ hνt (hνν' hν't)
   rw [Measure.sigmaFiniteSetWRT, dif_pos h] at hs_subset
   exact h.choose_spec.2.2 s hs_subset hνs
 
