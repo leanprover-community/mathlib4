@@ -178,7 +178,6 @@ lemma map_det (g : GL n R) : Matrix.GeneralLinearGroup.det (map f g) =
 lemma map_mul_map_inv (g : GL n R) : map f g * map f g⁻¹ = 1 := by
   simp only [@map_inv, @mul_inv_cancel]
 
-@[simp]
 lemma map_inv_mul_map (g : GL n R) : map f g⁻¹ * map f g = 1 := by
   simp only [@map_inv, @inv_mul_cancel]
 
