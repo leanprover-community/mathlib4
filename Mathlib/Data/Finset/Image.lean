@@ -757,9 +757,3 @@ theorem finsetCongr_toEmbedding (e : α ≃ β) :
   rfl
 
 end Equiv
-
-namespace Finset
-
-@[deprecated (since := "2023-12-27")] alias image_filter := filter_image
-
-end Finset

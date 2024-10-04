@@ -207,6 +207,7 @@ namespace RingHom
 variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
 
 /-- A ring morphism `A →+* B` is of `FiniteType` if `B` is finitely generated as `A`-algebra. -/
+@[algebraize]
 def FiniteType (f : A →+* B) : Prop :=
   @Algebra.FiniteType A B _ _ f.toAlgebra
 
@@ -228,8 +229,7 @@ variable {A}
 
 theorem comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FiniteType) (hg : Surjective g) :
     (g.comp f).FiniteType := by
-  let _ : Algebra A B := f.toAlgebra
-  let _ : Algebra A C := (g.comp f).toAlgebra
+  algebraize_only [f, g.comp f]
   exact Algebra.FiniteType.of_surjective hf
     { g with
       toFun := g
@@ -242,15 +242,8 @@ theorem of_surjective (f : A →+* B) (hf : Surjective f) : f.FiniteType := by
 
 theorem comp {g : B →+* C} {f : A →+* B} (hg : g.FiniteType) (hf : f.FiniteType) :
     (g.comp f).FiniteType := by
-  let _ : Algebra A B := f.toAlgebra
-  let _ : Algebra A C := (g.comp f).toAlgebra
-  let _ : Algebra B C := g.toAlgebra
-  exact @Algebra.FiniteType.trans A B C _ _ _ f.toAlgebra (g.comp f).toAlgebra g.toAlgebra
-    ⟨by
-      intro a b c
-      simp [Algebra.smul_def, RingHom.map_mul, mul_assoc]
-      rfl⟩
-    hf hg
+  algebraize_only [f, g, g.comp f]
+  exact Algebra.FiniteType.trans hf hg
 
 theorem of_finite {f : A →+* B} (hf : f.Finite) : f.FiniteType :=
   @Module.Finite.finiteType _ _ _ _ f.toAlgebra hf
@@ -259,11 +252,7 @@ alias _root_.RingHom.Finite.to_finiteType := of_finite
 
 theorem of_comp_finiteType {f : A →+* B} {g : B →+* C} (h : (g.comp f).FiniteType) :
     g.FiniteType := by
-  let _ := f.toAlgebra
-  let _ := g.toAlgebra
-  let _ := (g.comp f).toAlgebra
-  let _ : IsScalarTower A B C := RestrictScalars.isScalarTower A B C
-  let _ : Algebra.FiniteType A C := h
+  algebraize [f, g, g.comp f]
   exact Algebra.FiniteType.of_restrictScalars_finiteType A B C
 
 end FiniteType
