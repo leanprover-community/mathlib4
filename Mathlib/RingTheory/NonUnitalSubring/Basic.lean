@@ -77,8 +77,8 @@ section NonUnitalSubringClass
 
 /-- `NonUnitalSubringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both a multiplicative submonoid and an additive subgroup. -/
-class abbrev NonUnitalSubringClass (S : Type*) (R : Type u) [NonUnitalNonAssocRing R]
-    [SetLike S R] : Prop := NonUnitalSubsemiringClass S R, NegMemClass S R
+class NonUnitalSubringClass (S : Type*) (R : Type u) [NonUnitalNonAssocRing R]
+    [SetLike S R] extends NonUnitalSubsemiringClass S R, NegMemClass S R : Prop where
 
 -- See note [lower instance priority]
 instance (priority := 100) NonUnitalSubringClass.addSubgroupClass (S : Type*) (R : Type u)
