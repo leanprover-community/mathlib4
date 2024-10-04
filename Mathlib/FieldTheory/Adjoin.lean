@@ -28,7 +28,7 @@ For example, `Algebra.adjoin K {x}` might not include `x⁻¹`.
  - `F⟮α⟯`: adjoin a single element `α` to `F` (in scope `IntermediateField`).
 -/
 
-open FiniteDimensional Polynomial
+open Module Polynomial
 
 namespace IntermediateField
 
@@ -872,7 +872,7 @@ theorem adjoin_natCast (n : ℕ) : F⟮(n : E)⟯ = ⊥ :=
 
 section AdjoinRank
 
-open FiniteDimensional Module
+open Module Module
 
 variable {K L : IntermediateField F E}
 
@@ -1043,7 +1043,7 @@ theorem isAlgebraic_adjoin_simple {x : L} (hx : IsIntegral K x) : Algebra.IsAlge
   have := adjoin.finiteDimensional hx; Algebra.IsAlgebraic.of_finite K K⟮x⟯
 
 theorem adjoin.finrank {x : L} (hx : IsIntegral K x) :
-    FiniteDimensional.finrank K K⟮x⟯ = (minpoly K x).natDegree := by
+    Module.finrank K K⟮x⟯ = (minpoly K x).natDegree := by
   rw [PowerBasis.finrank (adjoin.powerBasis hx : _)]
   rfl
 
@@ -1117,11 +1117,10 @@ theorem _root_.minpoly.degree_le (x : L) [FiniteDimensional K L] :
 /-- If `x : L` is an integral element in a field extension `L` over `K`, then the degree of the
   minimal polynomial of `x` over `K` divides `[L : K]`.-/
 theorem _root_.minpoly.degree_dvd {x : L} (hx : IsIntegral K x) :
-    (minpoly K x).natDegree ∣ FiniteDimensional.finrank K L := by
+    (minpoly K x).natDegree ∣ finrank K L := by
   rw [dvd_iff_exists_eq_mul_left, ← IntermediateField.adjoin.finrank hx]
-  use FiniteDimensional.finrank K⟮x⟯ L
-  rw [eq_comm, mul_comm]
-  exact FiniteDimensional.finrank_mul_finrank _ _ _
+  use finrank K⟮x⟯ L
+  rw [mul_comm, finrank_mul_finrank]
 
 -- TODO: generalize to `Sort`
 /-- A compositum of algebraic extensions is algebraic -/
@@ -1178,7 +1177,7 @@ theorem card_algHom_adjoin_integral (h : IsIntegral F α) (h_sep : IsSeparable F
   exact h_sep
 
 -- Apparently `K⟮root f⟯ →+* K⟮root f⟯` is expensive to unify during instance synthesis.
-open FiniteDimensional AdjoinRoot in
+open Module AdjoinRoot in
 /-- Let `f, g` be monic polynomials over `K`. If `f` is irreducible, and `g(x) - α` is irreducible
 in `K⟮α⟯` with `α` a root of `f`, then `f(g(x))` is irreducible. -/
 theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g.Monic)
@@ -1226,7 +1225,7 @@ theorem _root_.Polynomial.irreducible_comp {f g : K[X]} (hfm : f.Monic) (hgm : g
       rw [← finrank_top', ← this, adjoin.finrank]
       exact IsIntegral.of_finite _ _
     · simp [← key₂]
-  have := FiniteDimensional.finrank_mul_finrank K K⟮aeval (root p) g⟯ Kx
+  have := Module.finrank_mul_finrank K K⟮aeval (root p) g⟯ Kx
   rwa [key₁', key₂', (AdjoinRoot.powerBasis hp₁.ne_zero).finrank, powerBasis_dim, eq_comm] at this
 
 end AdjoinIntegralElement

@@ -127,7 +127,7 @@ separable degree, degree, separable closure, purely inseparable
 
 -/
 
-open FiniteDimensional Polynomial IntermediateField Field Finsupp
+open Module Polynomial IntermediateField Field Finsupp
 
 noncomputable section
 
@@ -166,7 +166,7 @@ variable {F K}
 
 theorem isPurelyInseparable_iff : IsPurelyInseparable F E ↔ ∀ x : E,
     IsIntegral F x ∧ (IsSeparable F x → x ∈ (algebraMap F E).range) :=
-  ⟨fun h x ↦ ⟨h.isIntegral' x, h.inseparable' x⟩, fun h ↦ ⟨⟨fun x ↦ (h x).1⟩, fun x ↦ (h x).2⟩⟩
+  ⟨fun h x ↦ ⟨h.isIntegral' _ x, h.inseparable' x⟩, fun h ↦ ⟨⟨fun x ↦ (h x).1⟩, fun x ↦ (h x).2⟩⟩
 
 /-- Transfer `IsPurelyInseparable` across an `AlgEquiv`. -/
 theorem AlgEquiv.isPurelyInseparable (e : K ≃ₐ[F] E) [IsPurelyInseparable F K] :
@@ -756,7 +756,7 @@ private theorem LinearIndependent.map_pow_expChar_pow_of_fd_isSeparable
   have h' := h.coe_range
   let ι' := h'.extend (Set.range v).subset_univ
   let b : Basis ι' F E := Basis.extend h'
-  letI : Fintype ι' := fintypeBasisIndex b
+  letI : Fintype ι' := FiniteDimensional.fintypeBasisIndex b
   have H := linearIndependent_of_top_le_span_of_card_eq_finrank
     (span_map_pow_expChar_pow_eq_top_of_isSeparable q n b.span_eq).ge
     (finrank_eq_card_basis b).symm
