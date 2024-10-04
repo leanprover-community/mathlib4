@@ -144,11 +144,11 @@ variable [Fintype ι]
 
 @[simp]
 theorem finrank_euclideanSpace :
-    FiniteDimensional.finrank 𝕜 (EuclideanSpace 𝕜 ι) = Fintype.card ι := by
+    Module.finrank 𝕜 (EuclideanSpace 𝕜 ι) = Fintype.card ι := by
   simp [EuclideanSpace, PiLp, WithLp]
 
 theorem finrank_euclideanSpace_fin {n : ℕ} :
-    FiniteDimensional.finrank 𝕜 (EuclideanSpace 𝕜 (Fin n)) = n := by simp
+    Module.finrank 𝕜 (EuclideanSpace 𝕜 (Fin n)) = n := by simp
 
 theorem EuclideanSpace.inner_eq_star_dotProduct (x y : EuclideanSpace 𝕜 ι) :
     ⟪x, y⟫ = Matrix.dotProduct (star <| WithLp.equiv _ _ x) (WithLp.equiv _ _ y) :=
@@ -669,7 +669,7 @@ theorem Complex.isometryOfOrthonormal_apply (v : OrthonormalBasis (Fin 2) ℝ F)
 
 end Complex
 
-open FiniteDimensional
+open Module
 
 /-! ### Matrix representation of an orthonormal basis with respect to another -/
 
@@ -792,7 +792,7 @@ theorem Orthonormal.exists_orthonormalBasis_extension_of_card_eq {ι : Type*} [F
   obtain ⟨Y, b₀, hX, hb₀⟩ := hX.exists_orthonormalBasis_extension
   have hιY : Fintype.card ι = Y.card := by
     refine card_ι.symm.trans ?_
-    exact FiniteDimensional.finrank_eq_card_finset_basis b₀.toBasis
+    exact Module.finrank_eq_card_finset_basis b₀.toBasis
   have hvsY : s.MapsTo v Y := (s.mapsTo_image v).mono_right (by rwa [← range_restrict])
   have hsv' : Set.InjOn v s := by
     rw [Set.injOn_iff_injective]
@@ -840,7 +840,7 @@ irreducible_def DirectSum.IsInternal.sigmaOrthonormalBasisIndexEquiv
     (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) :
     (Σi, Fin (finrank 𝕜 (V i))) ≃ Fin n :=
   let b := hV.collectedOrthonormalBasis hV' fun i => stdOrthonormalBasis 𝕜 (V i)
-  Fintype.equivFinOfCardEq <| (FiniteDimensional.finrank_eq_card_basis b.toBasis).symm.trans hn
+  Fintype.equivFinOfCardEq <| (Module.finrank_eq_card_basis b.toBasis).symm.trans hn
 
 /-- An `n`-dimensional `InnerProductSpace` equipped with a decomposition as an internal direct
 sum has an orthonormal basis indexed by `Fin n` and subordinate to that direct sum. -/
@@ -885,7 +885,7 @@ section LinearIsometry
 variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [FiniteDimensional 𝕜 V]
 variable {S : Submodule 𝕜 V} {L : S →ₗᵢ[𝕜] V}
 
-open FiniteDimensional
+open Module
 
 /-- Let `S` be a subspace of a finite-dimensional complex inner product space `V`.  A linear
 isometry mapping `S` into `V` can be extended to a full isometry of `V`.

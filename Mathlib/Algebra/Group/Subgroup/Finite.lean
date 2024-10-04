@@ -165,9 +165,11 @@ theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgro
     x ∈ H := by
   induction I using Finset.induction_on generalizing x with
   | empty =>
-    convert one_mem H
-    ext i
-    exact h1 i (Finset.not_mem_empty i)
+    have : x = 1 := by
+      ext i
+      exact h1 i (Finset.not_mem_empty i)
+    rw [this]
+    exact one_mem H
   | insert hnmem ih =>
     rename_i i I
     have : x = Function.update x i 1 * Pi.mulSingle i (x i) := by
