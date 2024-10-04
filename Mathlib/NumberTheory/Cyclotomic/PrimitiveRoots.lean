@@ -113,7 +113,7 @@ variable {C}
 /-- The `PowerBasis` given by a primitive root `η`. -/
 @[simps!]
 protected noncomputable def powerBasis : PowerBasis K L :=
-  letI pb := Algebra.adjoin.powerBasis <| (integral {n} K L).isIntegral ζ;
+  letI pb := Algebra.adjoin.powerBasis <| (integral {n} K L).isIntegral ζ
   pb.map <| (Subalgebra.equivOfEq _ _ (IsCyclotomicExtension.adjoin_primitive_root_eq_top hζ)).trans
     Subalgebra.topEquiv
 
@@ -392,7 +392,6 @@ theorem norm_pow_sub_one_of_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot 
     [hpri : Fact (p : ℕ).Prime] [IsCyclotomicExtension {p ^ (k + 1)} K L]
     (hirr : Irreducible (cyclotomic (↑(p ^ (k + 1)) : ℕ) K)) (hs : s ≤ k)
     (htwo : p ^ (k - s + 1) ≠ 2) : norm K (ζ ^ (p : ℕ) ^ s - 1) = (p : K) ^ (p : ℕ) ^ s := by
--- Porting note: `by omega` was `by linarith` that now fails.
   have hirr₁ : Irreducible (cyclotomic ((p : ℕ) ^ (k - s + 1)) K) :=
     cyclotomic_irreducible_pow_of_irreducible_pow hpri.1 (by omega) hirr
   rw [← PNat.pow_coe] at hirr₁
@@ -403,14 +402,13 @@ theorem norm_pow_sub_one_of_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot 
     refine IsPrimitiveRoot.pow (p ^ (k + 1)).pos hζ ?_
     rw [PNat.pow_coe, ← pow_add, add_comm s, Nat.sub_add_cancel (le_trans hs (Nat.le_succ k))]
   have : IsCyclotomicExtension {p ^ (k - s + 1)} K K⟮η⟯ := by
-    suffices IsCyclotomicExtension {p ^ (k - s + 1)} K K⟮η + 1⟯ by
-      have H : K⟮η + 1⟯ = K⟮η⟯ := by
-        refine le_antisymm ?_ ?_
-        all_goals rw [IntermediateField.adjoin_simple_le_iff]
-        · exact add_mem (IntermediateField.mem_adjoin_simple_self K η) (one_mem _)
-        · nth_rw 2 [← add_sub_cancel_right η 1]
-          exact sub_mem (IntermediateField.mem_adjoin_simple_self K (η + 1)) (one_mem _)
-      rwa [H] at this
+    have HKη : K⟮η⟯ = K⟮η + 1⟯ := by
+      refine le_antisymm ?_ ?_
+      all_goals rw [IntermediateField.adjoin_simple_le_iff]
+      · nth_rw 2 [← add_sub_cancel_right η 1]
+        exact sub_mem (IntermediateField.mem_adjoin_simple_self K (η + 1)) (one_mem _)
+      · exact add_mem (IntermediateField.mem_adjoin_simple_self K η) (one_mem _)
+    rw [HKη]
     have H := IntermediateField.adjoin_simple_toSubalgebra_of_integral
       ((integral {p ^ (k + 1)} K L).isIntegral (η + 1))
     refine IsCyclotomicExtension.equiv _ _ _ (h := ?_) (.refl : K⟮η + 1⟯.toSubalgebra ≃ₐ[K] _)
@@ -423,7 +421,7 @@ theorem norm_pow_sub_one_of_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot 
     apply coe_submonoidClass_iff.1
     convert hη using 1
     rw [Nat.sub_add_comm hs, pow_coe]
--- Porting note: the following `haveI` were not needed because the locale `cyclotomic` set them
+-- Porting note: the following `have` were not needed because the locale `cyclotomic` set them
 -- as instances.
   have := IsCyclotomicExtension.finiteDimensional {p ^ (k + 1)} K L
   have := IsCyclotomicExtension.isGalois (p ^ (k + 1)) K L
