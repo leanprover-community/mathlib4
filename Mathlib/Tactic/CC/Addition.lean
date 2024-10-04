@@ -842,7 +842,7 @@ def dbgTraceACState : CCM Unit := do
 def mkACProof (e₁ e₂ : Expr) : MetaM Expr := do
   let eq ← mkEq e₁ e₂
   let .mvar m ← mkFreshExprSyntheticOpaqueMVar eq | failure
-  AC.rewriteUnnormalized m
+  AC.rewriteUnnormalizedRefl m
   let pr ← instantiateMVars (.mvar m)
   mkExpectedTypeHint pr eq
 
@@ -1470,7 +1470,8 @@ partial def propagateEqUp (e : Expr) : CCM Unit := do
     if ← isInterpretedValue ra <&&> isInterpretedValue rb <&&>
         pure (ra.int?.isNone || ra.int? != rb.int?) then
       raNeRb := some
-        (Expr.app (.proj ``Iff 0 (← mkAppM ``bne_iff_ne #[ra, rb])) (← mkEqRefl (.const ``true [])))
+        (Expr.app (.proj ``Iff 0 (← mkAppOptM ``bne_iff_ne #[none, none, none, ra, rb]))
+          (← mkEqRefl (.const ``true [])))
     else
       if let some c₁ ← isConstructorApp? ra then
       if let some c₂ ← isConstructorApp? rb then
@@ -1808,7 +1809,8 @@ def propagateValueInconsistency (e₁ e₂ : Expr) : CCM Unit := do
   let some eqProof ← getEqProof e₁ e₂ | failure
   let trueEqFalse ← mkEq (.const ``True []) (.const ``False [])
   let neProof :=
-    Expr.app (.proj ``Iff 0 (← mkAppM ``bne_iff_ne #[e₁, e₂])) (← mkEqRefl (.const ``true []))
+    Expr.app (.proj ``Iff 0 (← mkAppOptM ``bne_iff_ne #[none, none, none, e₁, e₂]))
+      (← mkEqRefl (.const ``true []))
   let H ← mkAbsurd trueEqFalse eqProof neProof
   pushEq (.const ``True []) (.const ``False []) H
 

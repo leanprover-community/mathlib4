@@ -717,7 +717,7 @@ automatic in the case of a finite cancellative monoid. -/
 `addOrderOf_nsmul` but with one assumption less which is automatic in the case of a
 finite cancellative additive monoid."]
 theorem orderOf_pow (x : G) : orderOf (x ^ n) = orderOf x / gcd (orderOf x) n :=
-  (isOfFinOrder_of_finite _).orderOf_pow _
+  (isOfFinOrder_of_finite _).orderOf_pow ..
 
 @[to_additive]
 theorem mem_powers_iff_mem_range_orderOf [DecidableEq G] :
@@ -1031,8 +1031,8 @@ theorem orderOf_abs_ne_one (h : |x| ≠ 1) : orderOf x = 0 := by
   intro n hn hx
   replace hx : |x| ^ n = 1 := by simpa only [abs_one, abs_pow] using congr_arg abs hx
   cases' h.lt_or_lt with h h
-  · exact ((pow_lt_one (abs_nonneg x) h hn.ne').ne hx).elim
-  · exact ((one_lt_pow h hn.ne').ne' hx).elim
+  · exact ((pow_lt_one₀ (abs_nonneg x) h hn.ne').ne hx).elim
+  · exact ((one_lt_pow₀ h hn.ne').ne' hx).elim
 
 theorem LinearOrderedRing.orderOf_le_two : orderOf x ≤ 2 := by
   cases' ne_or_eq |x| 1 with h h

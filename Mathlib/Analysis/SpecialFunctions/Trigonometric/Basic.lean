@@ -517,7 +517,7 @@ theorem cos_eq_one_iff (x : ℝ) : cos x = 1 ↔ ∃ n : ℤ, (n : ℝ) * (2 * �
       (Int.emod_two_eq_zero_or_one n).elim
         (fun hn0 => by
           rwa [← mul_assoc, ← @Int.cast_two ℝ, ← Int.cast_mul,
-            Int.ediv_mul_cancel ((Int.dvd_iff_emod_eq_zero _ _).2 hn0)])
+            Int.ediv_mul_cancel (Int.dvd_iff_emod_eq_zero.2 hn0)])
         fun hn1 => by
         rw [← Int.emod_add_ediv n 2, hn1, Int.cast_add, Int.cast_one, add_mul, one_mul, add_comm,
               mul_comm (2 : ℤ), Int.cast_mul, mul_assoc, Int.cast_two] at hn
@@ -661,7 +661,7 @@ theorem sqrtTwoAddSeries_monotone_left {x y : ℝ} (h : x ≤ y) :
 theorem cos_pi_over_two_pow : ∀ n : ℕ, cos (π / 2 ^ (n + 1)) = sqrtTwoAddSeries 0 n / 2
   | 0 => by simp
   | n + 1 => by
-    have A : (1 : ℝ) < 2 ^ (n + 1) := one_lt_pow one_lt_two n.succ_ne_zero
+    have A : (1 : ℝ) < 2 ^ (n + 1) := one_lt_pow₀ one_lt_two n.succ_ne_zero
     have B : π / 2 ^ (n + 1) < π := div_lt_self pi_pos A
     have C : 0 < π / 2 ^ (n + 1) := by positivity
     rw [pow_succ, div_mul_eq_div_div, cos_half, cos_pi_over_two_pow n, sqrtTwoAddSeries,
@@ -690,7 +690,7 @@ theorem sin_pi_over_two_pow_succ (n : ℕ) :
     exact (sqrtTwoAddSeries_lt_two _).le
   refine mul_nonneg (sin_nonneg_of_nonneg_of_le_pi ?_ ?_) zero_le_two
   · positivity
-  · exact div_le_self pi_pos.le <| one_le_pow_of_one_le one_le_two _
+  · exact div_le_self pi_pos.le <| one_le_pow₀ one_le_two
 
 @[simp]
 theorem cos_pi_div_four : cos (π / 4) = √2 / 2 := by

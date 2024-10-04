@@ -591,7 +591,7 @@ theorem closure_closure_coe_preimage {s : Set M} : closure (((↑) : closure s �
     Subtype.recOn x fun x hx _ => by
       refine closure_induction'
         (p := fun y hy ↦ (⟨y, hy⟩ : closure s) ∈ closure (((↑) : closure s → M) ⁻¹' s))
-          (fun g hg => subset_closure hg) ?_ (fun g₁ g₂ hg₁ hg₂ => ?_) hx
+          _ (fun g hg => subset_closure hg) ?_ (fun g₁ g₂ hg₁ hg₂ => ?_) hx
       · exact Submonoid.one_mem _
       · exact Submonoid.mul_mem _
 

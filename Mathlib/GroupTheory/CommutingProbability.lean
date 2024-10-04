@@ -131,6 +131,7 @@ lemma commProb_odd {n : ℕ} (hn : Odd n) :
   qify [show 2 ∣ n + 3 by rw [Nat.dvd_iff_mod_eq_zero, Nat.add_mod, Nat.odd_iff.mp hn]]
   rw [div_div, ← mul_assoc]
   congr
+  norm_num
 
 private lemma div_two_lt {n : ℕ} (h0 : n ≠ 0) : n / 2 < n :=
   Nat.div_lt_self (Nat.pos_of_ne_zero h0) (lt_add_one 1)

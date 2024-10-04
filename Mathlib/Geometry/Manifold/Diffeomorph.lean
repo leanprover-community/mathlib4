@@ -447,7 +447,7 @@ variable (I) (e : E ≃ₘ[𝕜] E')
 def transDiffeomorph (I : ModelWithCorners 𝕜 E H) (e : E ≃ₘ[𝕜] E') : ModelWithCorners 𝕜 E' H where
   toPartialEquiv := I.toPartialEquiv.trans e.toEquiv.toPartialEquiv
   source_eq := by simp
-  unique_diff' := by simp [range_comp e, I.unique_diff]
+  uniqueDiffOn' := by simp [range_comp e, I.uniqueDiffOn]
   continuous_toFun := e.continuous.comp I.continuous
   continuous_invFun := I.continuous_symm.comp e.symm.continuous
 

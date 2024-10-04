@@ -3,7 +3,7 @@ Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Control.Basic
+import Mathlib.Tactic.Attr.Register
 import Mathlib.Data.Set.Defs
 import Mathlib.Tactic.TypeStar
 import Batteries.Tactic.Lint
@@ -181,7 +181,7 @@ protected theorem id_map : ∀ x : Comp F G α, Comp.map id x = x
 
 protected theorem comp_map (g' : α → β) (h : β → γ) :
     ∀ x : Comp F G α, Comp.map (h ∘ g') x = Comp.map h (Comp.map g' x)
-  | Comp.mk x => by simp [Comp.map, Comp.mk, Functor.map_comp_map, functor_norm]
+  | Comp.mk x => by simp [Comp.map, Comp.mk, Functor.map_comp_map, functor_norm, Function.comp_def]
   -- Porting note: `Comp.mk` wasn't needed in mathlib3
 
 instance lawfulFunctor : LawfulFunctor (Comp F G) where

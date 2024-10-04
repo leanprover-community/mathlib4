@@ -53,7 +53,7 @@ theorem radius_eq_liminf :
       refine
         H.mp ((eventually_gt_atTop 0).mono fun n hn₀ hn => (this _ hn₀).2 (NNReal.coe_le_coe.1 ?_))
       push_cast
-      exact (le_abs_self _).trans (hn.trans (pow_le_one _ ha.1.le ha.2.le))
+      exact (le_abs_self _).trans (hn.trans (pow_le_one₀ ha.1.le ha.2.le))
   · refine p.le_radius_of_isBigO (IsBigO.of_bound 1 ?_)
     refine (eventually_lt_of_lt_liminf hr).mp ((eventually_gt_atTop 0).mono fun n hn₀ hn => ?_)
     simpa using NNReal.coe_le_coe.2 ((this _ hn₀).1 hn.le)

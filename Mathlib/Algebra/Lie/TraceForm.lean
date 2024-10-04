@@ -38,7 +38,7 @@ variable (R K L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 local notation "φ" => LieModule.toEnd R L M
 
 open LinearMap (trace)
-open Set FiniteDimensional
+open Set Module
 
 namespace LieModule
 
@@ -392,7 +392,7 @@ lemma killingForm_eq :
 
 end LieIdeal
 
-open LieModule FiniteDimensional
+open LieModule Module
 open Submodule (span subset_span)
 
 namespace LieModule

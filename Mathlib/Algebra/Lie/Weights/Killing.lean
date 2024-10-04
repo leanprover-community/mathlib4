@@ -85,7 +85,7 @@ end IsKilling
 
 section Field
 
-open FiniteDimensional LieModule Set
+open Module LieModule Set
 open Submodule (span subset_span)
 
 variable [FiniteDimensional K L] (H : LieSubalgebra K L) [H.IsCartanSubalgebra]

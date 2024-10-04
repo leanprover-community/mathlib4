@@ -126,20 +126,20 @@ variable (S)
 /-- A subfield inherits a division ring structure -/
 instance (priority := 75) toDivisionRing (s : S) : DivisionRing s :=
   Subtype.coe_injective.divisionRing ((↑) : s → K)
-    (by rfl) (by rfl) (by intros; rfl) (by intros; rfl) (by intros; rfl)
-    (by intros; rfl) (by intros; rfl) (by intros; rfl) (by intros; rfl)
-    (by intros; rfl) (coe_nnqsmul _) (coe_qsmul _) (by intros; rfl) (by intros; rfl)
-    (by intros; rfl) (by intros; rfl) (by intros; rfl) (by intros; rfl)
+    rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (coe_nnqsmul _) (coe_qsmul _) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 -- Prefer subclasses of `Field` over subclasses of `SubfieldClass`.
 /-- A subfield of a field inherits a field structure -/
 instance (priority := 75) toField {K} [Field K] [SetLike S K] [SubfieldClass S K] (s : S) :
     Field s :=
   Subtype.coe_injective.field ((↑) : s → K)
-    (by rfl) (by rfl) (by intros; rfl) (by intros; rfl) (by intros; rfl)
-    (by intros; rfl) (by intros; rfl) (by intros; rfl) (by intros; rfl) (by intros; rfl)
-    (coe_nnqsmul _) (coe_qsmul _) (by intros; rfl) (by intros; rfl) (by intros; rfl)
-    (by intros; rfl) (by intros; rfl) (by intros; rfl)
+    rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (coe_nnqsmul _) (coe_qsmul _) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+    (fun _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 end SubfieldClass
 
@@ -313,15 +313,15 @@ instance : Pow s ℤ :=
 instance toDivisionRing (s : Subfield K) : DivisionRing s :=
   Subtype.coe_injective.divisionRing ((↑) : s → K) rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (by intros; rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
-    (by intros; rfl) fun _ ↦ rfl
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
+    (fun _ ↦ rfl) fun _ ↦ rfl
 
 /-- A subfield inherits a field structure -/
 instance toField {K} [Field K] (s : Subfield K) : Field s :=
   Subtype.coe_injective.field ((↑) : s → K) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (by intros; rfl) (fun _ => rfl)
-    (fun _ => rfl) (by intros; rfl) fun _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ ↦ rfl) (fun _ => rfl)
+    (fun _ => rfl) (fun _ ↦ rfl) fun _ => rfl
 
 @[simp, norm_cast]
 theorem coe_add (x y : s) : (↑(x + y) : K) = ↑x + ↑y :=

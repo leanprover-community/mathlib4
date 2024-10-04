@@ -116,7 +116,7 @@ lemma rel_eq {r : α → β → Prop} (hr : BiUnique r) : (r ⇒ r ⇒ (·↔·)
 
 open Function
 
-variable {α : Type*} {r₁₁ : α → α → Prop} {r₁₂ : α → β → Prop} {r₂₁ : β → α → Prop}
+variable {r₁₁ : α → α → Prop} {r₁₂ : α → β → Prop} {r₂₁ : β → α → Prop}
   {r₂₃ : β → γ → Prop} {r₁₃ : α → γ → Prop}
 
 namespace LeftTotal
