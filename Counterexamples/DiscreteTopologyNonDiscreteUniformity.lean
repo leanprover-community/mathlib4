@@ -88,7 +88,7 @@ lemma fundamentalEntourage_ext (t : ℕ) (T : Set (ℕ × ℕ)) : fundamentalEnt
   simpa only [fundamentalEntourage] using eq_comm
 
 lemma mem_range_fundamentalEntourage (S : Set (ℕ × ℕ)) :
-  S ∈ (range fundamentalEntourage) ↔ ∃ n, fundamentalEntourage n = S := by
+    S ∈ (range fundamentalEntourage) ↔ ∃ n, fundamentalEntourage n = S := by
   simp only [Set.mem_range, Eq.symm]
 
 lemma mem_fundamentalEntourage (n : ℕ) (P : ℕ × ℕ) : P ∈ fundamentalEntourage n ↔
