@@ -170,9 +170,10 @@ lemma lift_injective [IsDirected ι (· ≤ ·)]
   · apply Function.injective_of_subsingleton
   simp_rw [injective_iff_map_eq_zero] at injective ⊢
   intros z hz
-  induction' z using DirectLimit.induction_on with _ g
-  rw [lift_of] at hz
-  rw [injective _ g hz, _root_.map_zero]
+  induction z using DirectLimit.induction_on with
+  | ih _ g =>
+    rw [lift_of] at hz
+    rw [injective _ g hz, _root_.map_zero]
 
 section functorial
 
@@ -315,12 +316,8 @@ theorem of.zero_exact_aux [∀ i (k : G i), Decidable (k ≠ 0)] [Nonempty ι] [
         ⟨k, fun l hl =>
           (Finset.mem_union.1 (DFinsupp.support_add hl)).elim (fun hl => le_trans (hi _ hl) hik)
             fun hl => le_trans (hj _ hl) hjk, by
-          -- Porting note: this had been
-          -- simp [LinearMap.map_add, hxi, hyj, toModule_totalize_of_le hik hi,
-          --   toModule_totalize_of_le hjk hj]
-          simp only [map_add]
-          rw [toModule_totalize_of_le hik hi, toModule_totalize_of_le hjk hj]
-          simp [hxi, hyj]⟩)
+          simp [LinearMap.map_add, hxi, hyj, toModule_totalize_of_le hik hi,
+             toModule_totalize_of_le hjk hj]⟩)
       fun a x ⟨i, hi, hxi⟩ =>
       ⟨i, fun k hk => hi k (DirectSum.support_smul _ _ hk), by simp [LinearMap.map_smul, hxi]⟩
 
@@ -429,9 +426,8 @@ lemma lift_injective [IsDirected ι (· ≤ ·)]
   · apply Function.injective_of_subsingleton
   simp_rw [injective_iff_map_eq_zero] at injective ⊢
   intros z hz
-  induction' z using DirectLimit.induction_on with _ g
-  rw [lift_of] at hz
-  rw [injective _ g hz, _root_.map_zero]
+  induction z using DirectLimit.induction_on with
+  | ih _ g => rw [lift_of] at hz; rw [injective _ g hz, _root_.map_zero]
 
 section functorial
 
@@ -721,9 +717,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
           dsimp only
           rw [(f' i i _).map_mul]
           · exact sub_self _
-        all_goals tauto
-        -- Porting note: was
-        --exacts [sub_self _, Or.inl rfl, Or.inr (Or.inr rfl), Or.inr (Or.inl rfl)]
+        exacts [Or.inl rfl, Or.inr (Or.inr rfl), Or.inr (Or.inl rfl)]
   · refine Nonempty.elim (by infer_instance) fun ind : ι => ?_
     refine ⟨ind, ∅, fun _ => False.elim, isSupported_zero, fun [_] => ?_⟩
     -- Porting note: `RingHom.map_zero` was `(restriction _).map_zero`
@@ -834,9 +828,8 @@ lemma lift_injective [Nonempty ι] [IsDirected ι (· ≤ ·)]
     Function.Injective (lift G f P g Hg) := by
   simp_rw [injective_iff_map_eq_zero] at injective ⊢
   intros z hz
-  induction' z using DirectLimit.induction_on with _ g
-  rw [lift_of] at hz
-  rw [injective _ g hz, _root_.map_zero]
+  induction z using DirectLimit.induction_on with
+  | ih _ g => rw [lift_of] at hz; rw [injective _ g hz, _root_.map_zero]
 
 section functorial
 

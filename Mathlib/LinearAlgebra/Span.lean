@@ -74,7 +74,7 @@ theorem subset_span : s ⊆ span R s := fun _ h => mem_span.2 fun _ hp => hp h
 theorem span_le {p} : span R s ≤ p ↔ s ⊆ p :=
   ⟨Subset.trans subset_span, fun ss _ h => mem_span.1 h _ ss⟩
 
-theorem span_mono (h : s ⊆ t) : span R s ≤ span R t :=
+@[gcongr] theorem span_mono (h : s ⊆ t) : span R s ≤ span R t :=
   span_le.2 <| Subset.trans h subset_span
 
 theorem span_monotone : Monotone (span R : Set M → Submodule R M) := fun _ _ => span_mono
@@ -362,8 +362,9 @@ theorem coe_iSup_of_chain (a : ℕ →o Submodule R M) : (↑(⨆ k, a k) : Set 
 /-- We can regard `coe_iSup_of_chain` as the statement that `(↑) : (Submodule R M) → Set M` is
 Scott continuous for the ω-complete partial order induced by the complete lattice structures. -/
 theorem coe_scott_continuous :
-    OmegaCompletePartialOrder.Continuous' ((↑) : Submodule R M → Set M) :=
-  ⟨SetLike.coe_mono, coe_iSup_of_chain⟩
+    OmegaCompletePartialOrder.ωScottContinuous ((↑) : Submodule R M → Set M) :=
+  OmegaCompletePartialOrder.ωScottContinuous.of_monotone_map_ωSup
+    ⟨SetLike.coe_mono, coe_iSup_of_chain⟩
 
 @[simp]
 theorem mem_iSup_of_chain (a : ℕ →o Submodule R M) (m : M) : (m ∈ ⨆ k, a k) ↔ ∃ k, m ∈ a k :=

@@ -27,7 +27,7 @@ namespace NumberField
 
 noncomputable section
 
-open Module.Free FiniteDimensional canonicalEmbedding Matrix Finset
+open Module.Free Module canonicalEmbedding Matrix Finset
 
 attribute [local instance] Matrix.seminormedAddCommGroup
 
@@ -62,7 +62,7 @@ noncomputable section
 
 variable (K)
 
-open Module.Free FiniteDimensional canonicalEmbedding Matrix Finset
+open Module.Free Module canonicalEmbedding Matrix Finset
 
 attribute [local instance] Matrix.seminormedAddCommGroup
 
@@ -149,7 +149,7 @@ private theorem asiegel_ne_0 : asiegel K a ≠ 0 := by
 
 variable {p q : ℕ} (h0p : 0 < p) (hpq : p < q) (x : β × (K →+* ℂ) → ℤ) (hxl : x ≠ 0)
 
-/-- `ξ` is the the product of `x (l, r)` and the `r`-th basis element of the newBasis of `K`. -/
+/-- `ξ` is the product of `x (l, r)` and the `r`-th basis element of the newBasis of `K`. -/
 private def ξ : β → 𝓞 K := fun l => ∑ r : K →+* ℂ, x (l, r) * (newBasis K r)
 
 include hxl in

@@ -416,22 +416,28 @@ end
 ### Vector-valued functions `f : E → G`
 
 Theorems in this section work both for real and complex differentiable functions. We use assumptions
-`[RCLike 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 G]` to achieve this result. For the domain `E` we
-also assume `[NormedSpace ℝ E]` to have a notion of a `Convex` set. -/
+`[NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 G]` to
+achieve this result. For the domain `E` we also assume `[NormedSpace ℝ E]` to have a notion
+of a `Convex` set. -/
 
 section
 
-variable {𝕜 G : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-
 namespace Convex
 
-variable {f g : E → G} {C : ℝ} {s : Set E} {x y : E} {f' g' : E → E →L[𝕜] G} {φ : E →L[𝕜] G}
+variable {𝕜 G : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
+  [NormedSpace 𝕜 E] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+  {f g : E → G} {C : ℝ} {s : Set E} {x y : E} {f' g' : E → E →L[𝕜] G} {φ : E →L[𝕜] G}
+
+instance (priority := 100) : PathConnectedSpace 𝕜 := by
+  letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
+  infer_instance
 
 /-- The mean value theorem on a convex set: if the derivative of a function is bounded by `C`, then
 the function is `C`-Lipschitz. Version with `HasFDerivWithinAt`. -/
 theorem norm_image_sub_le_of_norm_hasFDerivWithin_le
     (hf : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (bound : ∀ x ∈ s, ‖f' x‖ ≤ C) (hs : Convex ℝ s)
     (xs : x ∈ s) (ys : y ∈ s) : ‖f y - f x‖ ≤ C * ‖y - x‖ := by
+  letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   letI : NormedSpace ℝ G := RestrictScalars.normedSpace ℝ 𝕜 G
   /- By composition with `AffineMap.lineMap x y`, we reduce to a statement for functions defined
     on `[0,1]`, for which it is proved in `norm_image_sub_le_of_norm_deriv_le_segment`.
@@ -524,6 +530,7 @@ theorem _root_.lipschitzWith_of_nnnorm_fderiv_le
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {f : E → G}
     {C : ℝ≥0} (hf : Differentiable 𝕜 f)
     (bound : ∀ x, ‖fderiv 𝕜 f x‖₊ ≤ C) : LipschitzWith C f := by
+  letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   let A : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ 𝕜 E
   rw [← lipschitzOnWith_univ]
   exact lipschitzOnWith_of_nnnorm_fderiv_le (fun x _ ↦ hf x) (fun x _ ↦ bound x) convex_univ
@@ -573,6 +580,7 @@ theorem _root_.is_const_of_fderiv_eq_zero
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {f : E → G}
     (hf : Differentiable 𝕜 f) (hf' : ∀ x, fderiv 𝕜 f x = 0)
     (x y : E) : f x = f y := by
+  letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   let A : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ 𝕜 E
   exact convex_univ.is_const_of_fderivWithin_eq_zero hf.differentiableOn
     (fun x _ => by rw [fderivWithin_univ]; exact hf' x) trivial trivial
@@ -591,6 +599,7 @@ theorem _root_.eq_of_fderiv_eq
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {f g : E → G}
     (hf : Differentiable 𝕜 f) (hg : Differentiable 𝕜 g)
     (hf' : ∀ x, fderiv 𝕜 f x = fderiv 𝕜 g x) (x : E) (hfgx : f x = g x) : f = g := by
+  letI : RCLike 𝕜 := IsRCLikeNormedField.rclike 𝕜
   let A : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ 𝕜 E
   suffices Set.univ.EqOn f g from funext fun x => this <| mem_univ x
   exact convex_univ.eqOn_of_fderivWithin_eq hf.differentiableOn hg.differentiableOn
@@ -600,7 +609,8 @@ end Convex
 
 namespace Convex
 
-variable {f f' : 𝕜 → G} {s : Set 𝕜} {x y : 𝕜}
+variable {𝕜 G : Type*} [RCLike 𝕜] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+  {f f' : 𝕜 → G} {s : Set 𝕜} {x y : 𝕜}
 
 /-- The mean value theorem on a convex set in dimension 1: if the derivative of a function is
 bounded by `C`, then the function is `C`-Lipschitz. Version with `HasDerivWithinAt`. -/
@@ -891,7 +901,7 @@ theorem Convex.mul_sub_lt_image_sub_of_lt_deriv {D : Set ℝ} (hD : Convex ℝ D
   obtain ⟨a, a_mem, ha⟩ : ∃ a ∈ Ioo x y, deriv f a = (f y - f x) / (y - x) :=
     exists_deriv_eq_slope f hxy (hf.mono hxyD) (hf'.mono hxyD')
   have : C < (f y - f x) / (y - x) := ha ▸ hf'_gt _ (hxyD' a_mem)
-  exact (lt_div_iff (sub_pos.2 hxy)).1 this
+  exact (lt_div_iff₀ (sub_pos.2 hxy)).1 this
 
 /-- Let `f : ℝ → ℝ` be a differentiable function. If `C < f'`, then `f` grows faster than
 `C * x`, i.e., `C * (y - x) < f y - f x` whenever `x < y`. -/
@@ -917,7 +927,7 @@ theorem Convex.mul_sub_le_image_sub_of_le_deriv {D : Set ℝ} (hD : Convex ℝ D
   obtain ⟨a, a_mem, ha⟩ : ∃ a ∈ Ioo x y, deriv f a = (f y - f x) / (y - x) :=
     exists_deriv_eq_slope f hxy' (hf.mono hxyD) (hf'.mono hxyD')
   have : C ≤ (f y - f x) / (y - x) := ha ▸ hf'_ge _ (hxyD' a_mem)
-  exact (le_div_iff (sub_pos.2 hxy')).1 this
+  exact (le_div_iff₀ (sub_pos.2 hxy')).1 this
 
 /-- Let `f : ℝ → ℝ` be a differentiable function. If `C ≤ f'`, then `f` grows at least as fast
 as `C * x`, i.e., `C * (y - x) ≤ f y - f x` whenever `x ≤ y`. -/

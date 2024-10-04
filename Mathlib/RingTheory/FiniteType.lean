@@ -45,7 +45,7 @@ section Algebra
 
 -- see Note [lower instance priority]
 instance (priority := 100) finiteType {R : Type*} (A : Type*) [CommSemiring R] [Semiring A]
-    [Algebra R A] [hRA : Finite R A] : Algebra.FiniteType R A :=
+    [Algebra R A] [hRA : Module.Finite R A] : Algebra.FiniteType R A :=
   ⟨Subalgebra.fg_of_submodule_fg hRA.1⟩
 
 end Algebra
@@ -122,7 +122,8 @@ theorem iff_quotient_freeAlgebra :
     intro x
     have hrw : (↑s : Set A) = fun x : A => x ∈ s.val := rfl
     rw [← Set.mem_range, ← AlgHom.coe_range]
-    erw [← adjoin_eq_range_freeAlgebra_lift, ← hrw, hs]
+    erw [← adjoin_eq_range_freeAlgebra_lift]
+    simp_rw [← hrw, hs]
     exact Set.mem_univ x
   · rintro ⟨s, ⟨f, hsur⟩⟩
     exact FiniteType.of_surjective (FiniteType.freeAlgebra R s) f hsur
@@ -137,7 +138,8 @@ theorem iff_quotient_mvPolynomial :
     use s, MvPolynomial.aeval (↑)
     intro x
     have hrw : (↑s : Set S) = fun x : S => x ∈ s.val := rfl
-    rw [← Set.mem_range, ← AlgHom.coe_range, ← adjoin_eq_range, ← hrw, hs]
+    rw [← Set.mem_range, ← AlgHom.coe_range, ← adjoin_eq_range]
+    simp_rw [← hrw, hs]
     exact Set.mem_univ x
   · rintro ⟨s, ⟨f, hsur⟩⟩
     exact FiniteType.of_surjective (FiniteType.mvPolynomial R { x // x ∈ s }) f hsur
@@ -744,7 +746,7 @@ This is similar to `IsNoetherian.injective_of_surjective_endomorphism` but only 
 commutative case, but does not use a Noetherian hypothesis. -/
 @[deprecated OrzechProperty.injective_of_surjective_endomorphism (since := "2024-05-30")]
 theorem Module.Finite.injective_of_surjective_endomorphism {R : Type*} [CommRing R] {M : Type*}
-    [AddCommGroup M] [Module R M] [Finite R M] (f : M →ₗ[R] M)
+    [AddCommGroup M] [Module R M] [Module.Finite R M] (f : M →ₗ[R] M)
     (f_surj : Function.Surjective f) : Function.Injective f :=
   OrzechProperty.injective_of_surjective_endomorphism f f_surj
 

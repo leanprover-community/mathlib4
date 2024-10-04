@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Topology.EMetricSpace.Defs
-import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.UniformEmbedding
 
@@ -67,20 +66,27 @@ theorem uniformInducing_iff [PseudoEMetricSpace β] {f : α → β} :
       simp only [subset_def, Prod.forall]; rfl
 
 /-- ε-δ characterization of uniform embeddings on pseudoemetric spaces -/
-nonrec theorem uniformEmbedding_iff [PseudoEMetricSpace β] {f : α → β} :
-    UniformEmbedding f ↔ Function.Injective f ∧ UniformContinuous f ∧
+nonrec theorem isUniformEmbedding_iff [PseudoEMetricSpace β] {f : α → β} :
+    IsUniformEmbedding f ↔ Function.Injective f ∧ UniformContinuous f ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, edist (f a) (f b) < ε → edist a b < δ :=
-  (uniformEmbedding_iff _).trans <| and_comm.trans <| Iff.rfl.and uniformInducing_iff
+  (isUniformEmbedding_iff _).trans <| and_comm.trans <| Iff.rfl.and uniformInducing_iff
+
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_iff := isUniformEmbedding_iff
 
 /-- If a map between pseudoemetric spaces is a uniform embedding then the edistance between `f x`
 and `f y` is controlled in terms of the distance between `x` and `y`.
 
 In fact, this lemma holds for a `UniformInducing` map.
 TODO: generalize? -/
-theorem controlled_of_uniformEmbedding [PseudoEMetricSpace β] {f : α → β} (h : UniformEmbedding f) :
+theorem controlled_of_isUniformEmbedding [PseudoEMetricSpace β] {f : α → β}
+    (h : IsUniformEmbedding f) :
     (∀ ε > 0, ∃ δ > 0, ∀ {a b : α}, edist a b < δ → edist (f a) (f b) < ε) ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, edist (f a) (f b) < ε → edist a b < δ :=
-  ⟨uniformContinuous_iff.1 h.uniformContinuous, (uniformEmbedding_iff.1 h).2.2⟩
+  ⟨uniformContinuous_iff.1 h.uniformContinuous, (isUniformEmbedding_iff.1 h).2.2⟩
+
+@[deprecated (since := "2024-10-01")]
+alias controlled_of_uniformEmbedding := controlled_of_isUniformEmbedding
 
 /-- ε-δ characterization of Cauchy sequences on pseudoemetric spaces -/
 protected theorem cauchy_iff {f : Filter α} :
@@ -138,61 +144,14 @@ end EMetric
 
 open EMetric
 
-section Pi
-
-open Finset
-
-variable {π : β → Type*} [Fintype β]
-
--- Porting note: reordered instances
-instance [∀ b, EDist (π b)] : EDist (∀ b, π b) where
-  edist f g := Finset.sup univ fun b => edist (f b) (g b)
-
-theorem edist_pi_def [∀ b, EDist (π b)] (f g : ∀ b, π b) :
-    edist f g = Finset.sup univ fun b => edist (f b) (g b) :=
-  rfl
-
-theorem edist_le_pi_edist [∀ b, EDist (π b)] (f g : ∀ b, π b) (b : β) :
-    edist (f b) (g b) ≤ edist f g :=
-  le_sup (f := fun b => edist (f b) (g b)) (Finset.mem_univ b)
-
-theorem edist_pi_le_iff [∀ b, EDist (π b)] {f g : ∀ b, π b} {d : ℝ≥0∞} :
-    edist f g ≤ d ↔ ∀ b, edist (f b) (g b) ≤ d :=
-  Finset.sup_le_iff.trans <| by simp only [Finset.mem_univ, forall_const]
-
-theorem edist_pi_const_le (a b : α) : (edist (fun _ : β => a) fun _ => b) ≤ edist a b :=
-  edist_pi_le_iff.2 fun _ => le_rfl
-
-@[simp]
-theorem edist_pi_const [Nonempty β] (a b : α) : (edist (fun _ : β => a) fun _ => b) = edist a b :=
-  Finset.sup_const univ_nonempty (edist a b)
-
-/-- The product of a finite number of pseudoemetric spaces, with the max distance, is still
-a pseudoemetric space.
-This construction would also work for infinite products, but it would not give rise
-to the product topology. Hence, we only formalize it in the good situation of finitely many
-spaces. -/
-instance pseudoEMetricSpacePi [∀ b, PseudoEMetricSpace (π b)] : PseudoEMetricSpace (∀ b, π b) where
-  edist_self f := bot_unique <| Finset.sup_le <| by simp
-  edist_comm f g := by simp [edist_pi_def, edist_comm]
-  edist_triangle f g h := edist_pi_le_iff.2 fun b => le_trans (edist_triangle _ (g b) _)
-    (add_le_add (edist_le_pi_edist _ _ _) (edist_le_pi_edist _ _ _))
-  toUniformSpace := Pi.uniformSpace _
-  uniformity_edist := by
-    simp only [Pi.uniformity, PseudoEMetricSpace.uniformity_edist, comap_iInf, gt_iff_lt,
-      preimage_setOf_eq, comap_principal, edist_pi_def]
-    rw [iInf_comm]; congr; funext ε
-    rw [iInf_comm]; congr; funext εpos
-    simp [setOf_forall, εpos]
-
-end Pi
-
 namespace EMetric
 
 variable {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞} {s t : Set α}
 
 theorem inseparable_iff : Inseparable x y ↔ edist x y = 0 := by
   simp [inseparable_iff_mem_closure, mem_closure_iff, edist_comm, forall_lt_iff_le']
+
+alias ⟨_root_.Inseparable.edist_eq_zero, _⟩ := EMetric.inseparable_iff
 
 -- see Note [nolint_ge]
 /-- In a pseudoemetric space, Cauchy sequences are characterized by the fact that, eventually,
@@ -230,7 +189,7 @@ section Compact
 
 -- Porting note (#11215): TODO: generalize to metrizable spaces
 /-- A compact set in a pseudo emetric space is separable, i.e., it is a subset of the closure of a
-countable set.  -/
+countable set. -/
 theorem subset_countable_closure_of_compact {s : Set α} (hs : IsCompact s) :
     ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
   refine subset_countable_closure_of_almost_dense_set s fun ε hε => ?_
@@ -279,11 +238,14 @@ instance (priority := 100) EMetricSpace.instT0Space : T0Space γ where
 
 /-- A map between emetric spaces is a uniform embedding if and only if the edistance between `f x`
 and `f y` is controlled in terms of the distance between `x` and `y` and conversely. -/
-theorem EMetric.uniformEmbedding_iff' [EMetricSpace β] {f : γ → β} :
-    UniformEmbedding f ↔
+theorem EMetric.isUniformEmbedding_iff' [EMetricSpace β] {f : γ → β} :
+    IsUniformEmbedding f ↔
       (∀ ε > 0, ∃ δ > 0, ∀ {a b : γ}, edist a b < δ → edist (f a) (f b) < ε) ∧
         ∀ δ > 0, ∃ ε > 0, ∀ {a b : γ}, edist (f a) (f b) < ε → edist a b < δ := by
-  rw [uniformEmbedding_iff_uniformInducing, uniformInducing_iff, uniformContinuous_iff]
+  rw [isUniformEmbedding_iff_uniformInducing, uniformInducing_iff, uniformContinuous_iff]
+
+@[deprecated (since := "2024-10-01")]
+alias EMetric.uniformEmbedding_iff' := EMetric.isUniformEmbedding_iff'
 
 /-- If a `PseudoEMetricSpace` is a T₀ space, then it is an `EMetricSpace`. -/
 -- Porting note: made `reducible`;
@@ -298,22 +260,6 @@ metric spaces. We make sure that the uniform structure thus constructed is the o
 corresponding to the product of uniform spaces, to avoid diamond problems. -/
 instance Prod.emetricSpaceMax [EMetricSpace β] : EMetricSpace (γ × β) :=
   .ofT0PseudoEMetricSpace _
-
-section Pi
-
-open Finset
-
-variable {π : β → Type*} [Fintype β]
-
-/-- The product of a finite number of emetric spaces, with the max distance, is still
-an emetric space.
-This construction would also work for infinite products, but it would not give rise
-to the product topology. Hence, we only formalize it in the good situation of finitely many
-spaces. -/
-instance emetricSpacePi [∀ b, EMetricSpace (π b)] : EMetricSpace (∀ b, π b) :=
-  .ofT0PseudoEMetricSpace _
-
-end Pi
 
 namespace EMetric
 

@@ -6,7 +6,7 @@ Authors: Kyle Miller
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Combinatorics.SimpleGraph.Dart
 import Mathlib.Combinatorics.SimpleGraph.Finite
-import Mathlib.Data.ZMod.Parity
+import Mathlib.Data.ZMod.Basic
 
 /-!
 # Degree-sum formula and handshaking lemma
@@ -51,7 +51,7 @@ variable [Fintype V] [DecidableRel G.Adj]
 theorem dart_fst_fiber [DecidableEq V] (v : V) :
     (univ.filter fun d : G.Dart => d.fst = v) = univ.image (G.dartOfNeighborSet v) := by
   ext d
-  simp only [mem_image, true_and_iff, mem_filter, SetCoe.exists, mem_univ, exists_prop_of_true]
+  simp only [mem_image, true_and, mem_filter, SetCoe.exists, mem_univ, exists_prop_of_true]
   constructor
   · rintro rfl
     exact ⟨_, d.adj, by ext <;> rfl⟩
@@ -121,7 +121,7 @@ theorem even_card_odd_degree_vertices [Fintype V] [DecidableRel G.Adj] :
       convert h
       exact ZMod.ne_zero_iff_odd.symm
     · intro v
-      simp only [true_and_iff, mem_filter, mem_univ, Ne]
+      simp only [true_and, mem_filter, mem_univ, Ne]
       rw [ZMod.eq_zero_iff_even, ZMod.eq_one_iff_odd, ← Nat.not_even_iff_odd, imp_self]
       trivial
 
@@ -131,7 +131,7 @@ theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRe
   have hk : 0 < k := by
     have hh : (filter (fun v : V => Odd (G.degree v)) univ).Nonempty := by
       use v
-      simp only [true_and_iff, mem_filter, mem_univ]
+      simp only [true_and, mem_filter, mem_univ]
       exact h
     rwa [← card_pos, hg, ← two_mul, mul_pos_iff_of_pos_left] at hh
     exact zero_lt_two
@@ -144,7 +144,7 @@ theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] [DecidableRe
     rw [add_assoc, one_add_one_eq_two, ← Nat.mul_succ, ← two_mul]
     congr
     omega
-  · simpa only [true_and_iff, mem_filter, mem_univ]
+  · simpa only [true_and, mem_filter, mem_univ]
 
 theorem exists_ne_odd_degree_of_exists_odd_degree [Fintype V] [DecidableRel G.Adj] (v : V)
     (h : Odd (G.degree v)) : ∃ w : V, w ≠ v ∧ Odd (G.degree w) := by
@@ -154,7 +154,7 @@ theorem exists_ne_odd_degree_of_exists_odd_degree [Fintype V] [DecidableRel G.Ad
     rw [hg]
     apply Nat.succ_pos
   rcases card_pos.mp hg' with ⟨w, hw⟩
-  simp only [true_and_iff, mem_filter, mem_univ, Ne] at hw
+  simp only [true_and, mem_filter, mem_univ, Ne] at hw
   exact ⟨w, hw⟩
 
 end SimpleGraph

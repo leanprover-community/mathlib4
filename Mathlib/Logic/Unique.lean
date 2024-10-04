@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Logic.IsEmpty
-import Mathlib.Init.Logic
 import Mathlib.Tactic.Inhabit
 
 /-!
@@ -248,7 +247,6 @@ instance {α} [IsEmpty α] : Unique (Option α) :=
 end Option
 
 section Subtype
-variable {α : Sort u}
 
 instance Unique.subtypeEq (y : α) : Unique { x // x = y } where
   default := ⟨y, rfl⟩

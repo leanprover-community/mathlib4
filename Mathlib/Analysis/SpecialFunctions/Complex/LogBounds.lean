@@ -188,7 +188,7 @@ lemma norm_log_one_add_le {z : ℂ} (hz : ‖z‖ < 1) :
 lemma norm_log_one_add_half_le_self {z : ℂ} (hz : ‖z‖ ≤ 1/2) : ‖(log (1 + z))‖ ≤ (3/2) * ‖z‖ := by
   apply le_trans (norm_log_one_add_le (lt_of_le_of_lt hz one_half_lt_one))
   have hz3 : (1 - ‖z‖)⁻¹ ≤ 2 := by
-    rw [inv_eq_one_div, div_le_iff]
+    rw [inv_eq_one_div, div_le_iff₀]
     · linarith
     · linarith
   have hz4 : ‖z‖^2 * (1 - ‖z‖)⁻¹ / 2 ≤ ‖z‖/2 * 2 / 2 := by
@@ -227,7 +227,7 @@ lemma hasSum_taylorSeries_log {z : ℂ} (hz : ‖z‖ < 1) :
   refine (hasSum_iff_tendsto_nat_of_summable_norm ?_).mpr ?_
   · refine (summable_geometric_of_norm_lt_one hz).norm.of_nonneg_of_le (fun _ ↦ norm_nonneg _) ?_
     intro n
-    simp only [norm_div, norm_mul, norm_pow, norm_neg, norm_one, one_pow, one_mul, norm_nat]
+    simp only [norm_div, norm_mul, norm_pow, norm_neg, norm_one, one_pow, one_mul, norm_natCast]
     rcases n.eq_zero_or_pos with rfl | hn
     · simp
     conv => enter [2]; rw [← div_one (‖z‖ ^ n)]

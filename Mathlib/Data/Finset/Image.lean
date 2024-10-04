@@ -129,7 +129,7 @@ theorem map_map (f : α ↪ β) (g : β ↪ γ) (s : Finset α) : (s.map f).map 
 
 theorem map_comm {β'} {f : β ↪ γ} {g : α ↪ β} {f' : α ↪ β'} {g' : β' ↪ γ}
     (h_comm : ∀ a, f (g a) = g' (f' a)) : (s.map g).map f = (s.map f').map g' := by
-  simp_rw [map_map, Embedding.trans, Function.comp, h_comm]
+  simp_rw [map_map, Embedding.trans, Function.comp_def, h_comm]
 
 theorem _root_.Function.Semiconj.finset_map {f : α ↪ β} {ga : α ↪ α} {gb : β ↪ β}
     (h : Function.Semiconj f ga gb) : Function.Semiconj (map f) (map ga) (map gb) := fun _ =>
@@ -186,7 +186,7 @@ theorem filter_map {p : β → Prop} [DecidablePred p] :
 lemma map_filter' (p : α → Prop) [DecidablePred p] (f : α ↪ β) (s : Finset α)
     [DecidablePred (∃ a, p a ∧ f a = ·)] :
     (s.filter p).map f = (s.map f).filter fun b => ∃ a, p a ∧ f a = b := by
-  simp [(· ∘ ·), filter_map, f.injective.eq_iff]
+  simp [Function.comp_def, filter_map, f.injective.eq_iff]
 
 lemma filter_attach' [DecidableEq α] (s : Finset α) (p : s → Prop) [DecidablePred p] :
     s.attach.filter p =
@@ -201,7 +201,7 @@ lemma filter_attach (p : α → Prop) [DecidablePred p] (s : Finset α) :
 
 theorem map_filter {f : α ≃ β} {p : α → Prop} [DecidablePred p] :
     (s.filter p).map f.toEmbedding = (s.map f.toEmbedding).filter (p ∘ f.symm) := by
-  simp only [filter_map, Function.comp, Equiv.toEmbedding_apply, Equiv.symm_apply_apply]
+  simp only [filter_map, Function.comp_def, Equiv.toEmbedding_apply, Equiv.symm_apply_apply]
 
 @[simp]
 theorem disjoint_map {s t : Finset α} (f : α ↪ β) :
@@ -242,10 +242,11 @@ theorem map_cons (f : α ↪ β) (a : α) (s : Finset α) (ha : a ∉ s) :
 @[simp]
 theorem map_eq_empty : s.map f = ∅ ↔ s = ∅ := (map_injective f).eq_iff' (map_empty f)
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem map_nonempty : (s.map f).Nonempty ↔ s.Nonempty :=
   mod_cast Set.image_nonempty (f := f) (s := s)
 
+@[aesop safe apply (rule_sets := [finsetNonempty])]
 protected alias ⟨_, Nonempty.map⟩ := map_nonempty
 
 @[simp]
@@ -344,25 +345,16 @@ theorem _root_.Function.Injective.mem_finset_image (hf : Injective f) :
   obtain ⟨y, hy, heq⟩ := mem_image.1 h
   exact hf heq ▸ hy
 
-theorem filter_mem_image_eq_image (f : α → β) (s : Finset α) (t : Finset β) (h : ∀ x ∈ s, f x ∈ t) :
-    (t.filter fun y => y ∈ s.image f) = s.image f := by
-  ext
-  simp only [mem_filter, mem_image, decide_eq_true_eq, and_iff_right_iff_imp, forall_exists_index,
-    and_imp]
-  rintro x xel rfl
-  exact h _ xel
-
-theorem fiber_nonempty_iff_mem_image (f : α → β) (s : Finset α) (y : β) :
-    (s.filter fun x => f x = y).Nonempty ↔ y ∈ s.image f := by simp [Finset.Nonempty]
 
 @[simp, norm_cast]
 theorem coe_image : ↑(s.image f) = f '' ↑s :=
   Set.ext <| by simp only [mem_coe, mem_image, Set.mem_image, implies_true]
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 lemma image_nonempty : (s.image f).Nonempty ↔ s.Nonempty :=
   mod_cast Set.image_nonempty (f := f) (s := (s : Set α))
 
+@[aesop safe apply (rule_sets := [finsetNonempty])]
 protected theorem Nonempty.image (h : s.Nonempty) (f : α → β) : (s.image f).Nonempty :=
   image_nonempty.2 h
 
@@ -392,7 +384,7 @@ theorem image_image [DecidableEq γ] {g : β → γ} : (s.image f).image g = s.i
 
 theorem image_comm {β'} [DecidableEq β'] [DecidableEq γ] {f : β → γ} {g : α → β} {f' : α → β'}
     {g' : β' → γ} (h_comm : ∀ a, f (g a) = g' (f' a)) :
-    (s.image g).image f = (s.image f').image g' := by simp_rw [image_image, comp, h_comm]
+    (s.image g).image f = (s.image f').image g' := by simp_rw [image_image, comp_def, h_comm]
 
 theorem _root_.Function.Semiconj.finset_image [DecidableEq α] {f : α → β} {ga : α → α} {gb : β → β}
     (h : Function.Semiconj f ga gb) : Function.Semiconj (image f) (image ga) (image gb) := fun _ =>
@@ -438,6 +430,14 @@ theorem filter_image {p : β → Prop} [DecidablePred p] :
     exact
       ⟨by rintro ⟨⟨x, h1, rfl⟩, h2⟩; exact ⟨x, ⟨h1, h2⟩, rfl⟩,
        by rintro ⟨x, ⟨h1, h2⟩, rfl⟩; exact ⟨⟨x, h1, rfl⟩, h2⟩⟩
+
+@[deprecated filter_mem_eq_inter (since := "2024-09-15")]
+theorem filter_mem_image_eq_image (f : α → β) (s : Finset α) (t : Finset β) (h : ∀ x ∈ s, f x ∈ t) :
+    (t.filter fun y => y ∈ s.image f) = s.image f := by
+  rwa [filter_mem_eq_inter, inter_eq_right, image_subset_iff]
+
+theorem fiber_nonempty_iff_mem_image {y : β} : (s.filter (f · = y)).Nonempty ↔ y ∈ s.image f := by
+  simp [Finset.Nonempty]
 
 theorem image_union [DecidableEq α] {f : α → β} (s₁ s₂ : Finset α) :
     (s₁ ∪ s₂).image f = s₁.image f ∪ s₂.image f :=

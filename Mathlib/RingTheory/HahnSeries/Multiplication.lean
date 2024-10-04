@@ -6,6 +6,7 @@ Authors: Aaron Anderson, Scott Carnahan
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Data.Finset.MulAntidiagonal
 import Mathlib.Data.Finset.SMulAntidiagonal
+import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.HahnSeries.Addition
 
 /-!
@@ -228,10 +229,10 @@ theorem add_smul [AddCommMonoid R] [SMulWithZero R V] {x y : HahnSeries Γ R}
   ext a
   have hwf := x.isPWO_support.union y.isPWO_support
   rw [smul_coeff_left hwf, HahnSeries.add_coeff', of_symm_add]
-  simp_all only [Pi.add_apply, HahnSeries.add_coeff']
-  rw [smul_coeff_left hwf Set.subset_union_right,
-    smul_coeff_left hwf Set.subset_union_left]
-  · simp only [HahnSeries.add_coeff, h, sum_add_distrib]
+  · simp_all only [Pi.add_apply, HahnSeries.add_coeff']
+    rw [smul_coeff_left hwf Set.subset_union_right,
+      smul_coeff_left hwf Set.subset_union_left]
+    simp only [HahnSeries.add_coeff, h, sum_add_distrib]
   · intro b
     simp_all only [Set.isPWO_union, HahnSeries.isPWO_support, and_self, HahnSeries.mem_support,
       HahnSeries.add_coeff, ne_eq, Set.mem_union, Set.mem_setOf_eq, mem_support]
@@ -252,7 +253,7 @@ theorem single_smul_coeff_add [MulZeroClass R] [SMulWithZero R V] {r : R} {x : H
     rw [sum_congr _ fun _ _ => rfl, sum_empty]
     ext ⟨a1, a2⟩
     simp only [not_mem_empty, not_and, Set.mem_singleton_iff, Classical.not_not,
-      mem_vaddAntidiagonal, Set.mem_setOf_eq, iff_false_iff]
+      mem_vaddAntidiagonal, Set.mem_setOf_eq, iff_false]
     rintro rfl h2 h1
     rw [IsCancelVAdd.left_cancel a1 a2 a h1] at h2
     exact h2 hx
@@ -386,7 +387,7 @@ theorem mul_single_coeff_add [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeri
     rw [sum_congr _ fun _ _ => rfl, sum_empty]
     ext ⟨a1, a2⟩
     simp only [not_mem_empty, not_and, Set.mem_singleton_iff, Classical.not_not,
-      mem_addAntidiagonal, Set.mem_setOf_eq, iff_false_iff]
+      mem_addAntidiagonal, Set.mem_setOf_eq, iff_false]
     rintro h2 rfl h1
     rw [← add_right_cancel h1] at hx
     exact h2 hx
@@ -753,7 +754,7 @@ instance [Nontrivial Γ] [Nontrivial R] : Nontrivial (Subalgebra R (HahnSeries �
       rw [Ne, SetLike.ext_iff, not_forall]
       obtain ⟨a, ha⟩ := exists_ne (0 : Γ)
       refine ⟨single a 1, ?_⟩
-      simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true_iff, Algebra.mem_top]
+      simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true, Algebra.mem_top]
       intro x
       rw [HahnSeries.ext_iff, Function.funext_iff, not_forall]
       refine ⟨a, ?_⟩

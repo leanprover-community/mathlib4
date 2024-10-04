@@ -93,7 +93,7 @@ theorem span_eq_top_of_tmul_eq_basis [Module.Finite R M] {ι}
   rw [← map_tensorProduct_mk_eq_top, Submodule.map_span, ← Submodule.restrictScalars_span R k
     Ideal.Quotient.mk_surjective, Submodule.restrictScalars_eq_top_iff,
     ← b.span_eq, ← Set.range_comp]
-  simp only [Function.comp, mk_apply, hb, Basis.span_eq]
+  simp only [Function.comp_def, mk_apply, hb, Basis.span_eq]
 
 end LocalRing
 
@@ -151,10 +151,10 @@ theorem free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
   letI : IsNoetherian k (k ⊗[R] (I →₀ R)) :=
     isNoetherian_of_isNoetherianRing_of_finite k (k ⊗[R] (I →₀ R))
   choose f hf using TensorProduct.mk_surjective R M k Ideal.Quotient.mk_surjective
-  -- By choosing an abitrary lift of `b` to `I → M`, we get a surjection `i : Rᴵ → M`.
-  let i := Finsupp.total I M R (f ∘ b)
+  -- By choosing an arbitrary lift of `b` to `I → M`, we get a surjection `i : Rᴵ → M`.
+  let i := Finsupp.linearCombination R (f ∘ b)
   have hi : Surjective i := by
-    rw [← LinearMap.range_eq_top, Finsupp.range_total]
+    rw [← LinearMap.range_eq_top, Finsupp.range_linearCombination]
     exact LocalRing.span_eq_top_of_tmul_eq_basis (R := R) (f := f ∘ b) b (fun _ ↦ hf _)
   have : Module.Finite R (LinearMap.ker i) := by
     constructor
@@ -171,12 +171,12 @@ theorem free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
     refine ⟨?_, this⟩
     rw [← LinearMap.ker_eq_bot (M := k ⊗[R] (I →₀ R)) (f := i.baseChange k),
       ← Submodule.finrank_eq_zero (R := k) (M := k ⊗[R] (I →₀ R)),
-      ← Nat.add_right_inj (n := FiniteDimensional.finrank k (LinearMap.range <| i.baseChange k)),
+      ← Nat.add_right_inj (n := Module.finrank k (LinearMap.range <| i.baseChange k)),
       LinearMap.finrank_range_add_finrank_ker (V := k ⊗[R] (I →₀ R)),
       LinearMap.range_eq_top.mpr this, finrank_top]
-    simp only [FiniteDimensional.finrank_tensorProduct, FiniteDimensional.finrank_self,
-      FiniteDimensional.finrank_finsupp_self, one_mul, add_zero]
-    rw [FiniteDimensional.finrank_eq_card_chooseBasisIndex]
+    simp only [Module.finrank_tensorProduct, Module.finrank_self,
+      Module.finrank_finsupp_self, one_mul, add_zero]
+    rw [Module.finrank_eq_card_chooseBasisIndex]
   -- On the other hand, `m ⊗ M → M` injective => `Tor₁(k, M) = 0` => `k ⊗ ker(i) → kᴵ` injective.
   have := @lTensor_injective_of_exact_of_exact_of_rTensor_injective
     (N₁ := LinearMap.ker i) (N₂ := I →₀ R) (N₃ := M)

@@ -3,17 +3,16 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Jujian Zhang
 -/
-import Mathlib.RingTheory.Noetherian
-import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.DirectSum.Finsupp
-import Mathlib.Algebra.Module.Projective
-import Mathlib.Algebra.Module.Injective
+import Mathlib.Algebra.DirectSum.Module
+import Mathlib.Algebra.Exact
 import Mathlib.Algebra.Module.CharacterModule
+import Mathlib.Algebra.Module.Injective
+import Mathlib.Algebra.Module.Projective
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.Algebra.Module.Projective
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.Algebra.Exact
+import Mathlib.RingTheory.Noetherian
 
 /-!
 # Flat modules
@@ -173,7 +172,7 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
     apply TensorProduct.ext'
     intro a m
     simp only [ρ, ψ, φ, η, η₁, coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-      directSumRight_symm_lof_tmul, rTensor_tmul, Submodule.coeSubtype, lid_tmul, map_smul]
+      directSumRight_symm_lof_tmul, rTensor_tmul, Submodule.coe_subtype, lid_tmul, map_smul]
     rw [DirectSum.component.of, DirectSum.component.of]
     by_cases h₂ : j = i
     · subst j; simp

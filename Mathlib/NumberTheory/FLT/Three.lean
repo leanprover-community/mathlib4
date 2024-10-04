@@ -116,7 +116,7 @@ private lemma fermatLastTheoremThree_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : �
 
 open Finset Int in
 /--
-  To prove Fermat's Last Theorem for `n = 3`, it is enough to show that that for all `a`, `b`, `c`
+  To prove Fermat's Last Theorem for `n = 3`, it is enough to show that for all `a`, `b`, `c`
   in `ℤ` such that `c ≠ 0`, `¬ 3 ∣ a`, `¬ 3 ∣ b`, `a` and `b` are coprime and `3 ∣ c`, we have
   `a ^ 3 + b ^ 3 ≠ c ^ 3`.
 -/
@@ -241,7 +241,7 @@ lemma Solution.exists_minimal : ∃ (S₁ : Solution hζ), S₁.isMinimal := by
 end DecidableRel
 
 /-- Given `S' : Solution'`, then `S'.a` and `S'.b` are both congruent to `1` modulo `λ ^ 4` or are
-both congruent to `-1`.  -/
+both congruent to `-1`. -/
 lemma a_cube_b_cube_congr_one_or_neg_one :
     λ ^ 4 ∣ S'.a ^ 3 - 1 ∧ λ ^ 4 ∣ S'.b ^ 3 + 1 ∨ λ ^ 4 ∣ S'.a ^ 3 + 1 ∧ λ ^ 4 ∣ S'.b ^ 3 - 1 := by
   obtain ⟨z, hz⟩ := S'.hcdvd

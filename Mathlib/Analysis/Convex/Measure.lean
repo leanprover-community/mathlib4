@@ -18,7 +18,7 @@ convex set in `E`. Then the frontier of `s` has measure zero (see `Convex.addHaa
 
 open MeasureTheory MeasureTheory.Measure Set Metric Filter Bornology
 
-open FiniteDimensional (finrank)
+open Module (finrank)
 
 open scoped Topology NNReal ENNReal
 
@@ -59,12 +59,12 @@ theorem addHaar_frontier (hs : Convex ℝ s) : μ (frontier s) = 0 := by
     `μ (closure s) ≤ μ (interior s)`. -/
   replace hb : μ (interior s) ≠ ∞ := (hb.subset interior_subset).measure_lt_top.ne
   suffices μ (closure s) ≤ μ (interior s) by
-    rwa [frontier, measure_diff interior_subset_closure isOpen_interior.measurableSet hb,
+    rwa [frontier, measure_diff interior_subset_closure isOpen_interior.nullMeasurableSet hb,
       tsub_eq_zero_iff_le]
   /- Due to `Convex.closure_subset_image_homothety_interior_of_one_lt`, for any `r > 1` we have
     `closure s ⊆ homothety x r '' interior s`, hence `μ (closure s) ≤ r ^ d * μ (interior s)`,
     where `d = finrank ℝ E`. -/
-  set d : ℕ := FiniteDimensional.finrank ℝ E
+  set d : ℕ := Module.finrank ℝ E
   have : ∀ r : ℝ≥0, 1 < r → μ (closure s) ≤ ↑(r ^ d) * μ (interior s) := fun r hr ↦ by
     refine (measure_mono <|
       hs.closure_subset_image_homothety_interior_of_one_lt hx r hr).trans_eq ?_

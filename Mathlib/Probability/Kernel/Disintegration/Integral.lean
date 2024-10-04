@@ -146,12 +146,12 @@ end ProbabilityTheory
 
 namespace MeasureTheory.Measure
 
-variable {α β Ω : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
+variable {β Ω : Type*} {mβ : MeasurableSpace β}
   [MeasurableSpace Ω] [StandardBorelSpace Ω] [Nonempty Ω]
 
 section Lintegral
 
-variable [CountableOrCountablyGenerated α β] {ρ : Measure (β × Ω)} [IsFiniteMeasure ρ]
+variable {ρ : Measure (β × Ω)} [IsFiniteMeasure ρ]
   {f : β × Ω → ℝ≥0∞}
 
 lemma lintegral_condKernel_mem {s : Set (β × Ω)} (hs : MeasurableSet s) :
@@ -187,7 +187,7 @@ lemma setLIntegral_condKernel (hf : Measurable f) {s : Set β}
     ∫⁻ b in s, ∫⁻ ω in t, f (b, ω) ∂(ρ.condKernel b) ∂ρ.fst
       = ∫⁻ x in s ×ˢ t, f x ∂ρ := by
   conv_rhs => rw [← ρ.disintegrate ρ.condKernel]
-  rw [setLIntegral_compProd  hf hs ht]
+  rw [setLIntegral_compProd hf hs ht]
 
 @[deprecated (since := "2024-06-29")]
 alias set_lintegral_condKernel := setLIntegral_condKernel

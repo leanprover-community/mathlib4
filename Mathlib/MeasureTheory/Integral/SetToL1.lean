@@ -116,14 +116,14 @@ theorem of_smul_measure (c : ℝ≥0∞) (hc_ne_top : c ≠ ∞) (hT : FinMeasAd
     FinMeasAdditive μ T := by
   refine of_eq_top_imp_eq_top (fun s _ hμs => ?_) hT
   rw [Measure.smul_apply, smul_eq_mul, ENNReal.mul_eq_top] at hμs
-  simp only [hc_ne_top, or_false_iff, Ne, false_and_iff] at hμs
+  simp only [hc_ne_top, or_false, Ne, false_and] at hμs
   exact hμs.2
 
 theorem smul_measure (c : ℝ≥0∞) (hc_ne_zero : c ≠ 0) (hT : FinMeasAdditive μ T) :
     FinMeasAdditive (c • μ) T := by
   refine of_eq_top_imp_eq_top (fun s _ hμs => ?_) hT
   rw [Measure.smul_apply, smul_eq_mul, ENNReal.mul_eq_top]
-  simp only [hc_ne_zero, true_and_iff, Ne, not_false_iff]
+  simp only [hc_ne_zero, true_and, Ne, not_false_iff]
   exact Or.inl hμs
 
 theorem smul_measure_iff (c : ℝ≥0∞) (hc_ne_zero : c ≠ 0) (hc_ne_top : c ≠ ∞) :
@@ -158,9 +158,8 @@ theorem map_iUnion_fin_meas_set_eq_sum (T : Set α → β) (T_empty : T ∅ = 0)
     h_add (S a) (⋃ i ∈ s, S i) (hS_meas a) (measurableSet_biUnion _ fun i _ => hS_meas i)
       (hps a (Finset.mem_insert_self a s))]
   · congr; convert Finset.iSup_insert a s S
-  · exact
-      ((measure_biUnion_finset_le _ _).trans_lt <|
-          ENNReal.sum_lt_top fun i hi => hps i <| Finset.mem_insert_of_mem hi).ne
+  · exact (measure_biUnion_lt_top s.finite_toSet fun i hi ↦
+      (hps i <| Finset.mem_insert_of_mem hi).lt_top).ne
   · simp_rw [Set.inter_iUnion]
     refine iUnion_eq_empty.mpr fun i => iUnion_eq_empty.mpr fun hi => ?_
     rw [← Set.disjoint_iff_inter_eq_empty]
@@ -232,8 +231,8 @@ theorem of_smul_measure (c : ℝ≥0∞) (hc_ne_top : c ≠ ∞) (hT : Dominated
     DominatedFinMeasAdditive μ T (c.toReal * C) := by
   have h : ∀ s, MeasurableSet s → c • μ s = ∞ → μ s = ∞ := by
     intro s _ hcμs
-    simp only [hc_ne_top, Algebra.id.smul_eq_mul, ENNReal.mul_eq_top, or_false_iff, Ne,
-      false_and_iff] at hcμs
+    simp only [hc_ne_top, Algebra.id.smul_eq_mul, ENNReal.mul_eq_top, or_false, Ne,
+      false_and] at hcμs
     exact hcμs.2
   refine ⟨hT.1.of_eq_top_imp_eq_top (μ := c • μ) h, fun s hs hμs => ?_⟩
   have hcμs : c • μ s ≠ ∞ := mt (h s hs) hμs.ne
@@ -1427,8 +1426,8 @@ theorem continuous_L1_toL1 {μ' : Measure α} (c' : ℝ≥0∞) (hc' : c' ≠ �
   have h_eLpNorm_ne_top' : eLpNorm (⇑g - ⇑f) 1 μ' ≠ ∞ := by
     refine ((eLpNorm_mono_measure _ hμ'_le).trans_lt ?_).ne
     rw [eLpNorm_smul_measure_of_ne_zero hc'0, smul_eq_mul]
-    refine ENNReal.mul_lt_top ?_ h_eLpNorm_ne_top
-    simp [hc', hc'0]
+    refine ENNReal.mul_lt_top ?_ h_eLpNorm_ne_top.lt_top
+    simp [hc'.lt_top, hc'0]
   calc
     (eLpNorm (⇑g - ⇑f) 1 μ').toReal ≤ (c' * eLpNorm (⇑g - ⇑f) 1 μ).toReal := by
       rw [toReal_le_toReal h_eLpNorm_ne_top' (ENNReal.mul_ne_top hc' h_eLpNorm_ne_top)]
@@ -1455,7 +1454,7 @@ theorem setToFun_congr_measure_of_integrable {μ' : Measure α} (c' : ℝ≥0∞
     have hμ's : μ' s ≠ ∞ := by
       refine ((hμ'_le s).trans_lt ?_).ne
       rw [Measure.smul_apply, smul_eq_mul]
-      exact ENNReal.mul_lt_top hc' hμs.ne
+      exact ENNReal.mul_lt_top hc'.lt_top hμs
     rw [setToFun_indicator_const hT hs hμs.ne, setToFun_indicator_const hT' hs hμ's]
   · intro f₂ g₂ _ hf₂ hg₂ h_eq_f h_eq_g
     rw [setToFun_add hT hf₂ hg₂, setToFun_add hT' (h_int f₂ hf₂) (h_int g₂ hg₂), h_eq_f, h_eq_g]
@@ -1503,7 +1502,7 @@ theorem setToFun_top_smul_measure (hT : DominatedFinMeasAdditive (∞ • μ) T 
     setToFun (∞ • μ) T hT f = 0 := by
   refine setToFun_measure_zero' hT fun s _ hμs => ?_
   rw [lt_top_iff_ne_top] at hμs
-  simp only [true_and_iff, Measure.smul_apply, ENNReal.mul_eq_top, eq_self_iff_true,
+  simp only [true_and, Measure.smul_apply, ENNReal.mul_eq_top, eq_self_iff_true,
     top_ne_zero, Ne, not_false_iff, not_or, Classical.not_not, smul_eq_mul] at hμs
   simp only [hμs.right, Measure.smul_apply, mul_zero, smul_eq_mul]
 
@@ -1646,3 +1645,5 @@ theorem continuous_setToFun_of_dominated (hT : DominatedFinMeasAdditive μ T C) 
 end Function
 
 end MeasureTheory
+
+set_option linter.style.longFile 1800

@@ -6,6 +6,7 @@ Authors: Antoine Chambert-Loir
 
 import Mathlib.Algebra.Exact
 import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.Ideal.Quotient
 
 /-! # Right-exactness properties of tensor product
 
@@ -546,7 +547,7 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
           simp only [map_zero, smul_eq_mul, mul_zero]
         | tmul x y =>
           use (a • x) ⊗ₜ[R] (b * y)
-          simp only [LinearMap.lTensor_tmul, Submodule.coeSubtype, smul_eq_mul, tmul_mul_tmul]
+          simp only [LinearMap.lTensor_tmul, Submodule.coe_subtype, smul_eq_mul, tmul_mul_tmul]
           with_unfolding_all rfl
         | add x y hx hy =>
           obtain ⟨x', hx'⟩ := hx
@@ -565,7 +566,7 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
         rw [map_zero]
         apply zero_mem
     | tmul a b =>
-        simp only [LinearMap.rTensor_tmul, Submodule.coeSubtype]
+        simp only [LinearMap.rTensor_tmul, Submodule.coe_subtype]
         suffices (a : A) ⊗ₜ[R] b = ((1 : A) ⊗ₜ[R] b) * ((a : A) ⊗ₜ[R] (1 : B)) by
           simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
             Submodule.mem_toAddSubmonoid, Submodule.restrictScalars_mem]
@@ -614,7 +615,7 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
           simp only [map_zero, smul_eq_mul, mul_zero]
         | tmul x y =>
           use (a * x) ⊗ₜ[R] (b •y)
-          simp only [LinearMap.lTensor_tmul, Submodule.coeSubtype, smul_eq_mul, tmul_mul_tmul]
+          simp only [LinearMap.lTensor_tmul, Submodule.coe_subtype, smul_eq_mul, tmul_mul_tmul]
           rfl
         | add x y hx hy =>
           obtain ⟨x', hx'⟩ := hx
@@ -633,7 +634,7 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
         rw [map_zero]
         apply zero_mem
     | tmul a b =>
-        simp only [LinearMap.lTensor_tmul, Submodule.coeSubtype]
+        simp only [LinearMap.lTensor_tmul, Submodule.coe_subtype]
         suffices a ⊗ₜ[R] (b : B) = (a ⊗ₜ[R] (1 : B)) * ((1 : A) ⊗ₜ[R] (b : B)) by
           rw [this]
           simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,

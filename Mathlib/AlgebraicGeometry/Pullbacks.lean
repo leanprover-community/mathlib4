@@ -453,8 +453,8 @@ instance isAffine_of_isAffine_isAffine_isAffine {X Y Z : Scheme}
     IsAffine (pullback f g) :=
   isAffine_of_isIso
     (pullback.map f g (Spec.map (Γ.map f.op)) (Spec.map (Γ.map g.op))
-        (ΓSpec.adjunction.unit.app X) (ΓSpec.adjunction.unit.app Y) (ΓSpec.adjunction.unit.app Z)
-        (ΓSpec.adjunction.unit.naturality f) (ΓSpec.adjunction.unit.naturality g) ≫
+        X.toSpecΓ Y.toSpecΓ Z.toSpecΓ
+        (Scheme.toSpecΓ_naturality f) (Scheme.toSpecΓ_naturality g) ≫
       (PreservesPullback.iso Scheme.Spec _ _).inv)
 
 /-- Given an open cover `{ Xᵢ }` of `X`, then `X ×[Z] Y` is covered by `Xᵢ ×[Z] Y`. -/

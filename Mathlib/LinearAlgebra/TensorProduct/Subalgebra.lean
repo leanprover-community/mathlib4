@@ -3,9 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
+import Mathlib.LinearAlgebra.Dimension.Constructions
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.TensorProduct.Submodule
 import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 
@@ -35,7 +36,7 @@ mainly used in the definition of linearly disjointness.
 
 open scoped TensorProduct
 
-open FiniteDimensional
+open Module
 
 noncomputable section
 
@@ -193,7 +194,7 @@ theorem rank_sup_le_of_free [Module.Free R A] [Module.Free R B] :
   exact rank_range_le (A.mulMap B).toLinearMap
 
 /-- If `A` and `B` are subalgebras of a commutative `R`-algebra `S`, both of them are
-free `R`-algebras, then the `FiniteDimensional.finrank` of `A ⊔ B` is less than or equal to
+free `R`-algebras, then the `Module.finrank` of `A ⊔ B` is less than or equal to
 the product of that of `A` and `B`. -/
 theorem finrank_sup_le_of_free [Module.Free R A] [Module.Free R B] :
     finrank R ↥(A ⊔ B) ≤ finrank R A * finrank R B := by
@@ -205,7 +206,7 @@ theorem finrank_sup_le_of_free [Module.Free R A] [Module.Free R B] :
   wlog hA : ¬ Module.Finite R A generalizing A B
   · have := this B A (fun h' ↦ h h'.symm) (not_and.1 h (of_not_not hA))
     rwa [sup_comm, mul_comm] at this
-  rw [← Module.rank_lt_alpeh0_iff, not_lt] at hA
+  rw [← Module.rank_lt_aleph0_iff, not_lt] at hA
   have := LinearMap.rank_le_of_injective _ <| Submodule.inclusion_injective <|
     show toSubmodule A ≤ toSubmodule (A ⊔ B) by simp
   rw [show finrank R A = 0 from Cardinal.toNat_apply_of_aleph0_le hA,

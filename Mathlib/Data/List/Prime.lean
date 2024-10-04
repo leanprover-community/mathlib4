@@ -54,10 +54,10 @@ theorem perm_of_prod_eq_prod :
     ∀ {l₁ l₂ : List M}, l₁.prod = l₂.prod → (∀ p ∈ l₁, Prime p) → (∀ p ∈ l₂, Prime p) → Perm l₁ l₂
   | [], [], _, _, _ => Perm.nil
   | [], a :: l, h₁, _, h₃ =>
-    have ha : a ∣ 1 := @prod_nil M _ ▸ h₁.symm ▸ (@prod_cons _ _ l a).symm ▸ dvd_mul_right _ _
+    have ha : a ∣ 1 := prod_nil (M := M) ▸ h₁.symm ▸ (prod_cons (l := l)).symm ▸ dvd_mul_right _ _
     absurd ha (Prime.not_dvd_one (h₃ a (mem_cons_self _ _)))
   | a :: l, [], h₁, h₂, _ =>
-    have ha : a ∣ 1 := @prod_nil M _ ▸ h₁ ▸ (@prod_cons _ _ l a).symm ▸ dvd_mul_right _ _
+    have ha : a ∣ 1 := prod_nil (M := M) ▸ h₁ ▸ (prod_cons (l := l)).symm ▸ dvd_mul_right _ _
     absurd ha (Prime.not_dvd_one (h₂ a (mem_cons_self _ _)))
   | a :: l₁, b :: l₂, h, hl₁, hl₂ => by
     classical
