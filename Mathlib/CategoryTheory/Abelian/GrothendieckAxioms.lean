@@ -21,6 +21,10 @@ basic facts about them.
 - `AB5` -- an abelian category satisfies `AB5` provided that filtered colimits are exact.
 - The duals of the above definitions, called `AB4Star` and `AB5Star`.
 
+## Theorems
+
+- The implication from `AB5` to `AB4` is established in `AB4.ofAB5`.
+
 ## Remarks
 
 For `AB4` and `AB5`, we only require left exactness as right exactness is automatic.
@@ -110,6 +114,7 @@ instance preservesFiniteLimitsLiftToFinset : PreservesFiniteLimits (liftToFinset
       compPreservesFiniteLimits _ _
     preservesFiniteLimitsOfNatIso (liftToFinsetEvaluationIso  I).symm
 
+/-- A category with finite biproducts and finite limits is AB4 if it is AB5. -/
 def AB4.ofAB5 [HasCoproducts C] [HasFilteredColimits C] [AB5 C] : AB4 C where
   preservesFiniteLimits J :=
     letI : PreservesFiniteLimits (liftToFinset C J ⋙ colim) :=
