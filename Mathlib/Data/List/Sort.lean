@@ -153,6 +153,16 @@ theorem Sorted.rel_of_mem_take_of_mem_drop {l : List α} (h : List.Sorted r l) {
   rw [length_take] at hix
   exact h.rel_get_of_lt (Nat.lt_add_right _ (Nat.lt_min.mp hix).left)
 
+protected theorem Sorted.filter {l : List α} (f : α → Bool) (h : Sorted r l) :
+    Sorted r (filter f l) :=
+  h.sublist (filter_sublist l)
+
+theorem Sorted.append_largest {a : α} {l : List α} :
+    Sorted r (l ++ [a]) ↔ (∀ b ∈ l, r b a) ∧ Sorted r l := by
+  unfold Sorted
+  rw [List.pairwise_append]
+  aesop
+
 end Sorted
 
 section Monotone
