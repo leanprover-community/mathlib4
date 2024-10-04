@@ -667,7 +667,7 @@ if and only if for any `x ∈ S`, `x ^ (q ^ n)` is contained in `F` for some `n 
 theorem isPurelyInseparable_adjoin_iff_pow_mem (q : ℕ) [hF : ExpChar F q] {S : Set E} :
     IsPurelyInseparable F (adjoin F S) ↔ ∀ x ∈ S, ∃ n : ℕ, x ^ q ^ n ∈ (algebraMap F E).range := by
   simp_rw [← le_perfectClosure_iff, adjoin_le_iff, ← mem_perfectClosure_iff_pow_mem q,
-    Set.le_iff_subset, Set.subset_def, SetLike.mem_coe]
+    Set.subset_def, SetLike.mem_coe]
 
 /-- A compositum of two purely inseparable extensions is purely inseparable. -/
 instance isPurelyInseparable_sup (L1 L2 : IntermediateField F E)
