@@ -23,7 +23,7 @@ git cat-file -e "${commit}" || { printf $'invalid commit hash \'%s\'\n' "${commi
 
 mkDeclAndDepr () {
   git diff --unified=0 "${commit}" "${1}" |
-    awk -v date="$( date +%Y-%m-%d )" 'function depr(ol,ne) {
+    awk -v date="$(date +%Y-%m-%d)" 'function depr(ol,ne) {
       return sprintf("@[deprecated (since := \"%s\")]||||alias %s := %s", date, ol, ne)
     }
     /^-[^+-]*(theorem|lemma)/ {
