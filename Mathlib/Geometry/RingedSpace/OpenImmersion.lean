@@ -985,6 +985,7 @@ def pullbackConeOfLeftIsLimit : IsLimit (pullbackConeOfLeft f g) :=
       change _ = _ ≫ s.snd.1.stalkMap x at this
       rw [PresheafedSpace.stalkMap.comp, ← IsIso.eq_inv_comp] at this
       rw [this]
+      -- TODO: This instance is found by `infer_instance` before #6045.
       apply CommRingCat.isLocalRingHom_comp
     · intro m _ h₂
       rw [← cancel_mono (pullbackConeOfLeft f g).snd]
