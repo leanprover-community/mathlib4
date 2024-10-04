@@ -92,7 +92,7 @@ lemma mem_range_fundamentalEntourage (S : Set (ℕ × ℕ)) :
   simp only [Set.mem_range, Eq.symm]
 
 lemma mem_fundamentalEntourage (n : ℕ) (P : ℕ × ℕ) : P ∈ fundamentalEntourage n ↔
-  (n ≤ P.1 ∧ n ≤ P.2) ∨ (P.1 = P.2) := by
+    (n ≤ P.1 ∧ n ≤ P.2) ∨ (P.1 = P.2) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · simp only [fundamentalEntourage, iUnion_singleton_eq_range, mem_union, mem_range,
       Subtype.exists, mem_Icc, zero_le, true_and, exists_prop', nonempty_prop, mem_Ici] at h
