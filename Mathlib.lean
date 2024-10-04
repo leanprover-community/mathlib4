@@ -4601,7 +4601,7 @@ import Mathlib.Topology.Connected.Clopen
 import Mathlib.Topology.Connected.LocallyConnected
 import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.Connected.Separation
-import Mathlib.Topology.Connected.TotallySeparated
+import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Topology.ContinuousMap.Basic
@@ -4740,7 +4740,7 @@ import Mathlib.Topology.MetricSpace.ThickenedIndicator
 import Mathlib.Topology.MetricSpace.Thickening
 import Mathlib.Topology.MetricSpace.Ultra.Basic
 import Mathlib.Topology.MetricSpace.Ultra.ContinuousMaps
-import Mathlib.Topology.MetricSpace.Ultra.TotallyDisconnected
+import Mathlib.Topology.MetricSpace.Ultra.TotallySeparated
 import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.Metrizable.ContinuousMap
 import Mathlib.Topology.Metrizable.Uniformity
