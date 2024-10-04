@@ -156,6 +156,10 @@ theorem mul_left (a₁ a₂ : ℤ) (b : ℕ) : J(a₁ * a₂ | b) = J(a₁ | b) 
     (f := fun x ↦ @legendreSym x {out := prime_of_mem_primeFactorsList x.2} a₁)
     (g := fun x ↦ @legendreSym x {out := prime_of_mem_primeFactorsList x.2} a₂)
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefixes below.
+-/
 /-- The symbol `J(a | b)` vanishes iff `a` and `b` are not coprime (assuming `b ≠ 0`). -/
 theorem eq_zero_iff_not_coprime {a : ℤ} {b : ℕ} [NeZero b] : J(a | b) = 0 ↔ a.gcd b ≠ 1 :=
   List.prod_eq_zero_iff.trans
@@ -165,7 +169,7 @@ theorem eq_zero_iff_not_coprime {a : ℤ} {b : ℕ} [NeZero b] : J(a | b) = 0 �
       -- been deprecated so we replace them with `and_assoc` and `and_comm`
       simp_rw [legendreSym.eq_zero_iff _ _, intCast_zmod_eq_zero_iff_dvd,
         mem_primeFactorsList (NeZero.ne b), ← Int.natCast_dvd, Int.natCast_dvd_natCast, exists_prop,
-        and_assoc, and_comm])
+        _root_.and_assoc, _root_.and_comm])
 
 /-- The symbol `J(a | b)` is nonzero when `a` and `b` are coprime. -/
 protected theorem ne_zero {a : ℤ} {b : ℕ} (h : a.gcd b = 1) : J(a | b) ≠ 0 := by
@@ -214,7 +218,7 @@ theorem sq_one' {a : ℤ} {b : ℕ} (h : a.gcd b = 1) : J(a ^ 2 | b) = 1 := by r
 /-- The symbol `J(a | b)` depends only on `a` mod `b`. -/
 theorem mod_left (a : ℤ) (b : ℕ) : J(a | b) = J(a % b | b) :=
   congr_arg List.prod <|
-    List.pmap_congr _
+    List.pmap_congr_left _
       (by
         -- Porting note: Lean does not synthesize the instance [Fact (Nat.Prime p)] automatically
         -- (it is needed for `legendreSym.mod` on line 227). Thus, we name the hypothesis
@@ -309,7 +313,7 @@ theorem value_at (a : ℤ) {R : Type*} [CommSemiring R] (χ : R →* ℤ)
   conv_rhs => rw [← prod_primeFactorsList hb.pos.ne', cast_list_prod, map_list_prod χ]
   rw [jacobiSym, List.map_map, ← List.pmap_eq_map Nat.Prime _ _
     fun _ => prime_of_mem_primeFactorsList]
-  congr 1; apply List.pmap_congr
+  congr 1; apply List.pmap_congr_left
   exact fun p h pp _ => hp p pp (hb.ne_two_of_dvd_nat <| dvd_of_mem_primeFactorsList h)
 
 /-- If `b` is odd, then `J(-1 | b)` is given by `χ₄ b`. -/

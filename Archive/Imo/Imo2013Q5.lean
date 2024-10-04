@@ -38,9 +38,9 @@ theorem le_of_all_pow_lt_succ {x y : ℝ} (hx : 1 < x) (hy : 1 < y)
     have hterm : ∀ i : ℕ, i ∈ Finset.range n → 1 ≤ x ^ i * y ^ (n - 1 - i) := by
       intro i _
       calc
-        1 ≤ x ^ i := one_le_pow_of_one_le hx.le i
+        1 ≤ x ^ i := one_le_pow₀ hx.le
         _ = x ^ i * 1 := by ring
-        _ ≤ x ^ i * y ^ (n - 1 - i) := by gcongr; apply one_le_pow_of_one_le hy.le
+        _ ≤ x ^ i * y ^ (n - 1 - i) := by gcongr; apply one_le_pow₀ hy.le
     calc
       (x - y) * (n : ℝ) = (n : ℝ) * (x - y) := by ring
       _ = (∑ _i ∈ Finset.range n, (1 : ℝ)) * (x - y) := by
@@ -134,7 +134,7 @@ theorem fixed_point_of_pos_nat_pow {f : ℚ → ℝ} {n : ℕ} (hn : 0 < n)
     (H1 : ∀ x y, 0 < x → 0 < y → f (x * y) ≤ f x * f y) (H4 : ∀ n : ℕ, 0 < n → (n : ℝ) ≤ f n)
     (H5 : ∀ x : ℚ, 1 < x → (x : ℝ) ≤ f x) {a : ℚ} (ha1 : 1 < a) (hae : f a = a) :
     f (a ^ n) = a ^ n := by
-  have hh0 : (a : ℝ) ^ n ≤ f (a ^ n) := mod_cast H5 (a ^ n) (one_lt_pow ha1 hn.ne')
+  have hh0 : (a : ℝ) ^ n ≤ f (a ^ n) := mod_cast H5 (a ^ n) (one_lt_pow₀ ha1 hn.ne')
   have hh1 :=
     calc
       f (a ^ n) ≤ f a ^ n := pow_f_le_f_pow hn ha1 H1 H4
@@ -206,7 +206,7 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
       intro n hn
       calc
         (x : ℝ) ^ n - 1 < f (x ^ n) :=
-            mod_cast fx_gt_xm1 (one_le_pow_of_one_le hx.le n) H1 H2 H4
+            mod_cast fx_gt_xm1 (one_le_pow₀ hx.le) H1 H2 H4
         _ ≤ f x ^ n := pow_f_le_f_pow hn hx H1 H4
     have hx' : 1 < (x : ℝ) := mod_cast hx
     have hxp : 0 < x := by positivity

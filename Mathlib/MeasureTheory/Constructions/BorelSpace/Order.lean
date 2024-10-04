@@ -568,7 +568,8 @@ theorem Measurable.isLUB_of_mem {ι} [Countable ι] {f : ι → δ → α} {g g'
         · simp [hb, hg' hb]
       rw [this]
       exact Measurable.piecewise hs measurable_const g'_meas
-  · let f' : ι → δ → α := fun i ↦ s.piecewise (f i) g'
+  · have : Nonempty ι := ⟨i⟩
+    let f' : ι → δ → α := fun i ↦ s.piecewise (f i) g'
     suffices ∀ b, IsLUB { a | ∃ i, f' i b = a } (g b) from
       Measurable.isLUB (fun i ↦ Measurable.piecewise hs (hf i) g'_meas) this
     intro b
@@ -576,14 +577,7 @@ theorem Measurable.isLUB_of_mem {ι} [Countable ι] {f : ι → δ → α} {g g'
     · have A : ∀ i, f' i b = f i b := fun i ↦ by simp [f', hb]
       simpa [A] using hg b hb
     · have A : ∀ i, f' i b = g' b := fun i ↦ by simp [f', hb]
-      have : {a | ∃ (_i : ι), g' b = a} = {g' b} := by
-        apply Subset.antisymm
-        · rintro - ⟨_j, rfl⟩
-          simp only [mem_singleton_iff]
-        · rintro - rfl
-          exact ⟨i, rfl⟩
-      simp only [exists_prop'] at this
-      simp [A, this, hg' hb, isLUB_singleton]
+      simp [A, hg' hb, isLUB_singleton]
 
 theorem AEMeasurable.isLUB {ι} {μ : Measure δ} [Countable ι] {f : ι → δ → α} {g : δ → α}
     (hf : ∀ i, AEMeasurable (f i) μ) (hg : ∀ᵐ b ∂μ, IsLUB { a | ∃ i, f i b = a } (g b)) :

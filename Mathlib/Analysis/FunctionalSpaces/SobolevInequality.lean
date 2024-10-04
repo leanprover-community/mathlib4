@@ -349,7 +349,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux [Fintype ι]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
   [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ]
 
-open FiniteDimensional
+open Module
 
 /-- The constant factor occurring in the conclusion of `lintegral_pow_le_pow_lintegral_fderiv`.
 It only depends on `E`, `μ` and `p`.
