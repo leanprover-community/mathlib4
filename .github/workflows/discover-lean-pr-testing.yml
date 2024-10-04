@@ -3,10 +3,9 @@ name: Discover `lean-pr-testing` branches
 on:
   push:
     branches:
-      - main
-  pull_request:
-    branches:
-      - main
+      - nightly-testing
+    paths:
+      - lean-toolchain
 
 jobs:
   discover-lean-pr-testing:
