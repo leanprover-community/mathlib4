@@ -4601,7 +4601,7 @@ import Mathlib.Topology.Connected.Clopen
 import Mathlib.Topology.Connected.LocallyConnected
 import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.Connected.Separation
-import Mathlib.Topology.Connected.TotallyDisconnected
+import Mathlib.Topology.Connected.TotallySeparated
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Topology.ContinuousMap.Basic
