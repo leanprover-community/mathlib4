@@ -38,7 +38,7 @@ generalized eigenspaces span the whole space.
 eigenspace, eigenvector, eigenvalue, eigen
 -/
 
-open Set Function Module FiniteDimensional
+open Set Function Module Module
 
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
    {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]

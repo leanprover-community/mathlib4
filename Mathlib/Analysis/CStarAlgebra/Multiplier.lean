@@ -534,11 +534,15 @@ instance instNormedSpace : NormedSpace 𝕜 𝓜(𝕜, A) :=
 instance instNormedAlgebra : NormedAlgebra 𝕜 𝓜(𝕜, A) :=
   { DoubleCentralizer.instAlgebra, DoubleCentralizer.instNormedSpace with }
 
-theorem uniformEmbedding_toProdMulOpposite : UniformEmbedding (@toProdMulOpposite 𝕜 A _ _ _ _ _) :=
-  uniformEmbedding_comap toProdMulOpposite_injective
+theorem isUniformEmbedding_toProdMulOpposite :
+    IsUniformEmbedding (toProdMulOpposite (𝕜 := 𝕜) (A := A)) :=
+  isUniformEmbedding_comap toProdMulOpposite_injective
+
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_toProdMulOpposite := isUniformEmbedding_toProdMulOpposite
 
 instance [CompleteSpace A] : CompleteSpace 𝓜(𝕜, A) := by
-  rw [completeSpace_iff_isComplete_range uniformEmbedding_toProdMulOpposite.toUniformInducing]
+  rw [completeSpace_iff_isComplete_range isUniformEmbedding_toProdMulOpposite.toUniformInducing]
   apply IsClosed.isComplete
   simp only [range_toProdMulOpposite, Set.setOf_forall]
   refine isClosed_iInter fun x => isClosed_iInter fun y => isClosed_eq ?_ ?_

@@ -392,7 +392,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_continuou
 ### Peak functions of the form `x ↦ c ^ dim * φ (c x)`
 -/
 
-open FiniteDimensional Bornology
+open Module Bornology
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F]
   [MeasurableSpace F] [BorelSpace F] {μ : Measure F} [IsAddHaarMeasure μ]

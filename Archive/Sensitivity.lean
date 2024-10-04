@@ -41,7 +41,7 @@ noncomputable section
 
 local notation "√" => Real.sqrt
 
-open Function Bool LinearMap Fintype FiniteDimensional Module.DualBases
+open Function Bool LinearMap Fintype Module Module.DualBases
 
 /-!
 ### The hypercube

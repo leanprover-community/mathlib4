@@ -246,7 +246,7 @@ theorem inducing_coeFn : Inducing (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) �
     UniformFun.tendsto_iff_tendstoUniformly]
   simp [comp_def]
 
--- TODO: upgrade to a `UniformEmbedding`
+-- TODO: upgrade to a `IsUniformEmbedding`
 theorem embedding_coeFn : Embedding (UniformFun.ofFun ∘ (⇑) : (α →ᵇ β) → α →ᵤ β) :=
   ⟨inducing_coeFn, fun _ _ h => ext fun x => congr_fun h x⟩
 
@@ -524,7 +524,7 @@ theorem arzela_ascoli₂ (s : Set β) (hs : IsCompact s) (A : Set (α →ᵇ β)
       fun f hf => ?_
   · haveI : CompactSpace s := isCompact_iff_compactSpace.1 hs
     refine arzela_ascoli₁ _ (continuous_iff_isClosed.1 (continuous_comp M) _ closed) ?_
-    rw [uniformEmbedding_subtype_val.toUniformInducing.equicontinuous_iff]
+    rw [isUniformEmbedding_subtype_val.toUniformInducing.equicontinuous_iff]
     exact H.comp (A.restrictPreimage F)
   · let g := codRestrict s f fun x => in_s f x hf
     rw [show f = F g by ext; rfl] at hf ⊢
