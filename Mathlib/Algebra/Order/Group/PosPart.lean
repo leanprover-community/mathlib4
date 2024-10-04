@@ -45,6 +45,38 @@ open Function
 
 variable {α β : Type*}
 
+/-- A notation class for the *positve part* function: `a⁺`. -/
+class PosPart (α : Type*) where
+  /-- The *positive part* of an element `a`. -/
+  posPart : α → α
+
+/-- A notation class for the *positve part* function (multiplicative version): `a⁺ᵐ`. -/
+@[to_additive]
+class OneLePart (α : Type*) where
+  /-- The *positive part* of an element `a`. -/
+  oneLePart : α → α
+
+/-- A notation class for the *negative part* function: `a⁻`. -/
+class NegPart (α : Type*) where
+  /-- The *negative part* of an element `a`. -/
+  negPart : α → α
+
+/-- A notation class for the *negative part* function (multiplicative version): `a⁻ᵐ`. -/
+@[to_additive]
+class LeOnePart (α : Type*) where
+  /-- The *negative part* of an element `a`. -/
+  leOnePart : α → α
+
+export OneLePart (oneLePart)
+export LeOnePart (leOnePart)
+export PosPart (posPart)
+export NegPart (negPart)
+
+@[inherit_doc] postfix:max "⁺ᵐ " => OneLePart.oneLePart
+@[inherit_doc] postfix:max "⁻ᵐ" => LeOnePart.leOnePart
+@[inherit_doc] postfix:max "⁺" => PosPart.posPart
+@[inherit_doc] postfix:max "⁻" => NegPart.negPart
+
 section Lattice
 variable [Lattice α]
 
@@ -54,20 +86,21 @@ variable [Group α] {a b : α}
 /-- The *positive part* of an element `a` in a lattice ordered group is `a ⊔ 1`, denoted `a⁺ᵐ`. -/
 @[to_additive
 "The *positive part* of an element `a` in a lattice ordered group is `a ⊔ 0`, denoted `a⁺`."]
-def oneLePart (a : α) : α := a ⊔ 1
+instance instOneLePart : OneLePart α where
+  oneLePart a := a ⊔ 1
 
 /-- The *negative part* of an element `a` in a lattice ordered group is `a⁻¹ ⊔ 1`, denoted `a⁻ᵐ `.
 -/
 @[to_additive
 "The *negative part* of an element `a` in a lattice ordered group is `(-a) ⊔ 0`, denoted `a⁻`."]
-def leOnePart (a : α) : α := a⁻¹ ⊔ 1
+instance instLeOnePart : LeOnePart α where
+  leOnePart a := a⁻¹ ⊔ 1
 
-@[inherit_doc] postfix:max "⁺ᵐ " => oneLePart
-@[inherit_doc] postfix:max "⁻ᵐ" => leOnePart
-@[inherit_doc] postfix:max "⁺" => posPart
-@[inherit_doc] postfix:max "⁻" => negPart
+@[to_additive] lemma leOnePart_def (a : α) : a⁻ᵐ = a⁻¹ ⊔ 1 := rfl
 
-@[to_additive] lemma oneLePart_mono : Monotone (oneLePart : α → α) :=
+@[to_additive] lemma oneLePart_def (a : α) : a⁺ᵐ = a ⊔ 1 := rfl
+
+@[to_additive] lemma oneLePart_mono : Monotone (·⁺ᵐ : α → α) :=
   fun _a _b hab ↦ sup_le_sup_right hab _
 
 @[to_additive (attr := simp)] lemma oneLePart_one : (1 : α)⁺ᵐ = 1 := sup_idem _
@@ -124,8 +157,8 @@ lemma leOnePart_eq_one : a⁻ᵐ = 1 ↔ 1 ≤ a := by simp [leOnePart_eq_one']
 
 -- Bourbaki A.VI.12 Prop 9 a)
 @[to_additive (attr := simp)] lemma oneLePart_div_leOnePart (a : α) : a⁺ᵐ / a⁻ᵐ = a := by
-  rw [div_eq_mul_inv, mul_inv_eq_iff_eq_mul, leOnePart, mul_sup, mul_one, mul_inv_cancel, sup_comm,
-    oneLePart]
+  rw [div_eq_mul_inv, mul_inv_eq_iff_eq_mul, leOnePart_def, mul_sup, mul_one, mul_inv_cancel,
+    sup_comm, oneLePart_def]
 
 @[to_additive (attr := simp)] lemma leOnePart_div_oneLePart (a : α) : a⁻ᵐ / a⁺ᵐ = a⁻¹ := by
   rw [← inv_div, oneLePart_div_leOnePart]
@@ -148,16 +181,16 @@ variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
 
 @[to_additive]
 lemma leOnePart_eq_inv_inf_one (a : α) : a⁻ᵐ = (a ⊓ 1)⁻¹ := by
-  rw [leOnePart, ← inv_inj, inv_sup, inv_inv, inv_inv, inv_one]
+  rw [leOnePart_def, ← inv_inj, inv_sup, inv_inv, inv_inv, inv_one]
 
 -- Bourbaki A.VI.12 Prop 9 d)
 @[to_additive] lemma oneLePart_mul_leOnePart (a : α) : a⁺ᵐ * a⁻ᵐ = |a|ₘ := by
-  rw [oneLePart, sup_mul, one_mul, leOnePart, mul_sup, mul_one, mul_inv_cancel, sup_assoc,
+  rw [oneLePart_def, sup_mul, one_mul, leOnePart_def, mul_sup, mul_one, mul_inv_cancel, sup_assoc,
     ← sup_assoc a, sup_eq_right.2 le_sup_right]
   exact sup_eq_left.2 <| one_le_mabs a
 
 @[to_additive] lemma leOnePart_mul_oneLePart (a : α) : a⁻ᵐ * a⁺ᵐ = |a|ₘ := by
-  rw [oneLePart, mul_sup, mul_one, leOnePart, sup_mul, one_mul, inv_mul_cancel, sup_assoc,
+  rw [oneLePart_def, mul_sup, mul_one, leOnePart_def, sup_mul, one_mul, inv_mul_cancel, sup_assoc,
     ← @sup_assoc _ _ a, sup_eq_right.2 le_sup_right]
   exact sup_eq_left.2 <| one_le_mabs a
 
@@ -213,14 +246,14 @@ section LinearOrder
 variable [LinearOrder α] [Group α] {a b : α}
 
 @[to_additive] lemma oneLePart_eq_ite : a⁺ᵐ = if 1 ≤ a then a else 1 := by
-  rw [oneLePart, ← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]
+  rw [oneLePart_def, ← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]
 
 @[to_additive (attr := simp) posPart_pos_iff] lemma one_lt_oneLePart_iff : 1 < a⁺ᵐ ↔ 1 < a :=
   lt_iff_lt_of_le_iff_le <| (one_le_oneLePart _).le_iff_eq.trans oneLePart_eq_one
 
 @[to_additive posPart_eq_of_posPart_pos]
 lemma oneLePart_of_one_lt_oneLePart (ha : 1 < a⁺ᵐ) : a⁺ᵐ = a := by
-  rw [oneLePart, right_lt_sup, not_le] at ha; exact oneLePart_eq_self.2 ha.le
+  rw [oneLePart_def, right_lt_sup, not_le] at ha; exact oneLePart_eq_self.2 ha.le
 
 @[to_additive (attr := simp)] lemma oneLePart_lt : a⁺ᵐ < b ↔ a < b ∧ 1 < b := sup_lt_iff
 
@@ -228,7 +261,7 @@ section covariantmul
 variable [CovariantClass α α (· * ·) (· ≤ ·)]
 
 @[to_additive] lemma leOnePart_eq_ite : a⁻ᵐ = if a ≤ 1 then a⁻¹ else 1 := by
-  simp_rw [← one_le_inv']; rw [leOnePart, ← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]
+  simp_rw [← one_le_inv']; rw [leOnePart_def, ← maxDefault, ← sup_eq_maxDefault]; simp_rw [sup_comm]
 
 @[to_additive (attr := simp) negPart_pos_iff] lemma one_lt_ltOnePart_iff : 1 < a⁻ᵐ ↔ a < 1 :=
   lt_iff_lt_of_le_iff_le <| (one_le_leOnePart _).le_iff_eq.trans leOnePart_eq_one
