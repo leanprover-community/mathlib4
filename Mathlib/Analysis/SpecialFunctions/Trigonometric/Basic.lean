@@ -796,7 +796,7 @@ theorem sin_pi_div_three : sin (π / 3) = √3 / 2 := by
   congr
   ring
 
-theorem four_mul_sq_cos_pi_div_five_sub_two_mul_sub_one_eq_zero :
+theorem quadratic_root_cos_pi_div_five :
     letI c := cos (π / 5)
     4 * c ^ 2 - 2 * c - 1 = 0 := by
   set θ := π / 5 with hθ
@@ -826,7 +826,7 @@ theorem cos_pi_div_five : cos (π / 5) = (1 + √5) / 4 := by
   set c := cos (π / 5)
   have : 4 * (c * c) + (-2) * c + (-1) = 0 := by
     rw [← sq, neg_mul, ← sub_eq_add_neg, ← sub_eq_add_neg]
-    exact four_mul_sq_cos_pi_div_five_sub_two_mul_sub_one_eq_zero
+    exact quadratic_root_cos_pi_div_five
   have hd : discrim 4 (-2) (-1) = (2 * √5) * (2 * √5) := by norm_num [discrim, mul_mul_mul_comm]
   rcases (quadratic_eq_zero_iff (by norm_num) hd c).mp this with h | h
   · field_simp [h]; linarith
