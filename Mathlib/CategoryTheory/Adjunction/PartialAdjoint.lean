@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Order.CompleteLattice
 
 /-!
-# Domain of definition of the partial adjoint
+# Domain of definition of the partial left adjoint
 
 Given a functor `F : D ⥤ C`, we define a functor
 `F.partialLeftAdjoint : F.PartialLeftAdjointSource ⥤ D` which is
@@ -21,8 +21,9 @@ We have a natural bijection
 that is similar to what we would expect for the image of the object `X`
 by the left adjoint of `F`, if such an adjoint existed.
 
-Indeed, if the predicate `F.LeftAdjointObjIsDefined` which defines `F.PartialLeftAdjointSource`
-holds for all objects `X : C`, then `F` has a left adjoint.
+Indeed, if the predicate `F.LeftAdjointObjIsDefined` which defines
+the `F.PartialLeftAdjointSource` holds for all
+objects `X : C`, then `F` has a left adjoint.
 
 When colimits indexed by a category `J` exist in `D`, we show that
 the predicate `F.LeftAdjointObjIsDefined` is stable under colimits indexed by `J`.
