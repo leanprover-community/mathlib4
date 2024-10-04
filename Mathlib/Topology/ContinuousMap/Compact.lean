@@ -47,8 +47,8 @@ def equivBoundedOfCompact : C(α, β) ≃ (α →ᵇ β) :=
     ext
     rfl⟩
 
-theorem uniformInducing_equivBoundedOfCompact : UniformInducing (equivBoundedOfCompact α β) :=
-  UniformInducing.mk'
+theorem isUniformInducing_equivBoundedOfCompact : IsUniformInducing (equivBoundedOfCompact α β) :=
+  IsUniformInducing.mk'
     (by
       simp only [hasBasis_compactConvergenceUniformity.mem_iff, uniformity_basis_dist_le.mem_iff]
       exact fun s =>
@@ -60,7 +60,8 @@ theorem uniformInducing_equivBoundedOfCompact : UniformInducing (equivBoundedOfC
             fun ⟨f, g⟩ h => hs _ _ (ht ((dist_le hε.le).mpr fun x => h x (mem_univ x)))⟩⟩)
 
 theorem isUniformEmbedding_equivBoundedOfCompact : IsUniformEmbedding (equivBoundedOfCompact α β) :=
-  { uniformInducing_equivBoundedOfCompact α β with inj := (equivBoundedOfCompact α β).injective }
+  { isUniformInducing_equivBoundedOfCompact α β with
+    inj := (equivBoundedOfCompact α β).injective }
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_equivBoundedOfCompact := isUniformEmbedding_equivBoundedOfCompact
