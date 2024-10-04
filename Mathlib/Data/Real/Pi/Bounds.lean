@@ -23,7 +23,7 @@ namespace Real
 
 theorem pi_gt_sqrtTwoAddSeries (n : ℕ) : 2 ^ (n + 1) * √(2 - sqrtTwoAddSeries 0 n) < π := by
   have : √(2 - sqrtTwoAddSeries 0 n) / 2 * 2 ^ (n + 2) < π := by
-    rw [← lt_div_iff, ← sin_pi_over_two_pow_succ]
+    rw [← lt_div_iff₀, ← sin_pi_over_two_pow_succ]
     focus
       apply sin_lt
       apply div_pos pi_pos
@@ -34,7 +34,7 @@ theorem pi_gt_sqrtTwoAddSeries (n : ℕ) : 2 ^ (n + 1) * √(2 - sqrtTwoAddSerie
 theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
     π < 2 ^ (n + 1) * √(2 - sqrtTwoAddSeries 0 n) + 1 / 4 ^ n := by
   have : π < (√(2 - sqrtTwoAddSeries 0 n) / 2 + 1 / (2 ^ n) ^ 3 / 4) * (2 : ℝ) ^ (n + 2) := by
-    rw [← div_lt_iff (by norm_num), ← sin_pi_over_two_pow_succ]
+    rw [← div_lt_iff₀ (by norm_num), ← sin_pi_over_two_pow_succ]
     refine lt_of_lt_of_le (lt_add_of_sub_right_lt (sin_gt_sub_cube ?_ ?_)) ?_
     · apply div_pos pi_pos; apply pow_pos; norm_num
     · rw [div_le_iff₀']

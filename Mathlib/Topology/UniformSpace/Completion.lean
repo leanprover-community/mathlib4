@@ -154,9 +154,12 @@ theorem uniformInducing_pureCauchy : UniformInducing (pureCauchy : α → Cauchy
       _ = 𝓤 α := by simp [this]
       ⟩
 
-theorem uniformEmbedding_pureCauchy : UniformEmbedding (pureCauchy : α → CauchyFilter α) :=
+theorem isUniformEmbedding_pureCauchy : IsUniformEmbedding (pureCauchy : α → CauchyFilter α) :=
   { uniformInducing_pureCauchy with
     inj := fun _a₁ _a₂ h => pure_injective <| Subtype.ext_iff_val.1 h }
+
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_pureCauchy := isUniformEmbedding_pureCauchy
 
 theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyFilter α) := fun f => by
   have h_ex : ∀ s ∈ 𝓤 (CauchyFilter α), ∃ y : α, (f, pureCauchy y) ∈ s := fun s hs =>
@@ -183,12 +186,15 @@ theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyFilter α)
 theorem isDenseInducing_pureCauchy : IsDenseInducing (pureCauchy : α → CauchyFilter α) :=
   uniformInducing_pureCauchy.isDenseInducing denseRange_pureCauchy
 
-theorem denseEmbedding_pureCauchy : DenseEmbedding (pureCauchy : α → CauchyFilter α) :=
-  uniformEmbedding_pureCauchy.denseEmbedding denseRange_pureCauchy
+theorem isDenseEmbedding_pureCauchy : IsDenseEmbedding (pureCauchy : α → CauchyFilter α) :=
+  isUniformEmbedding_pureCauchy.isDenseEmbedding denseRange_pureCauchy
+
+@[deprecated (since := "2024-09-30")]
+alias denseEmbedding_pureCauchy := isDenseEmbedding_pureCauchy
 
 theorem nonempty_cauchyFilter_iff : Nonempty (CauchyFilter α) ↔ Nonempty α := by
   constructor <;> rintro ⟨c⟩
-  · have := eq_univ_iff_forall.1 denseEmbedding_pureCauchy.toIsDenseInducing.closure_range c
+  · have := eq_univ_iff_forall.1 isDenseEmbedding_pureCauchy.toIsDenseInducing.closure_range c
     obtain ⟨_, ⟨_, a, _⟩⟩ := mem_closure_iff.1 this _ isOpen_univ trivial
     exact ⟨a⟩
   · exact ⟨pureCauchy c⟩
@@ -356,12 +362,15 @@ theorem uniformContinuous_coe : UniformContinuous ((↑) : α → Completion α)
 theorem continuous_coe : Continuous ((↑) : α → Completion α) :=
   cPkg.continuous_coe
 
-theorem uniformEmbedding_coe [T0Space α] : UniformEmbedding ((↑) : α → Completion α) :=
+theorem isUniformEmbedding_coe [T0Space α] : IsUniformEmbedding ((↑) : α → Completion α) :=
   { comap_uniformity := comap_coe_eq_uniformity α
     inj := separated_pureCauchy_injective }
 
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_coe := isUniformEmbedding_coe
+
 theorem coe_injective [T0Space α] : Function.Injective ((↑) : α → Completion α) :=
-  UniformEmbedding.inj (uniformEmbedding_coe _)
+  IsUniformEmbedding.inj (isUniformEmbedding_coe _)
 
 variable {α}
 
@@ -377,8 +386,11 @@ open TopologicalSpace
 instance separableSpace_completion [SeparableSpace α] : SeparableSpace (Completion α) :=
   Completion.isDenseInducing_coe.separableSpace
 
-theorem denseEmbedding_coe [T0Space α] : DenseEmbedding ((↑) : α → Completion α) :=
+theorem isDenseEmbedding_coe [T0Space α] : IsDenseEmbedding ((↑) : α → Completion α) :=
   { isDenseInducing_coe with inj := separated_pureCauchy_injective }
+
+@[deprecated (since := "2024-09-30")]
+alias denseEmbedding_coe := isDenseEmbedding_coe
 
 theorem denseRange_coe₂ :
     DenseRange fun x : α × β => ((x.1 : Completion α), (x.2 : Completion β)) :=

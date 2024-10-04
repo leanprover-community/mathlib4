@@ -198,11 +198,16 @@ theorem map_comp_coe (h : α → β) :
     Functor.map h ∘ Multiset.toFinset = Multiset.toFinset ∘ Functor.map h :=
   funext fun _ => image_toFinset
 
+@[simp]
+theorem map_comp_coe_apply (h : α → β) (s : Multiset α) :
+    s.toFinset.image h = (h <$> s).toFinset :=
+  congrFun (map_comp_coe h) s
+
 theorem map_traverse (g : α → G β) (h : β → γ) (s : Finset α) :
     Functor.map h <$> traverse g s = traverse (Functor.map h ∘ g) s := by
   unfold traverse
-  simp only [map_comp_coe, functor_norm]
-  rw [LawfulFunctor.comp_map, Multiset.map_traverse]
+  simp only [Functor.map_map, fmap_def, map_comp_coe_apply, Multiset.fmap_def, ←
+    Multiset.map_traverse]
 
 end Traversable
 

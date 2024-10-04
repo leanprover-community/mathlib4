@@ -208,15 +208,18 @@ def uniformEquivProd : (Unitization 𝕜 A) ≃ᵤ (𝕜 × A) :=
 instance instBornology : Bornology (Unitization 𝕜 A) :=
   Bornology.induced <| addEquiv 𝕜 A
 
-theorem uniformEmbedding_addEquiv {𝕜} [NontriviallyNormedField 𝕜] :
-    UniformEmbedding (addEquiv 𝕜 A) where
+theorem isUniformEmbedding_addEquiv {𝕜} [NontriviallyNormedField 𝕜] :
+    IsUniformEmbedding (addEquiv 𝕜 A) where
   comap_uniformity := rfl
   inj := (addEquiv 𝕜 A).injective
+
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_addEquiv := isUniformEmbedding_addEquiv
 
 /-- `Unitization 𝕜 A` is complete whenever `𝕜` and `A` are also. -/
 instance instCompleteSpace [CompleteSpace 𝕜] [CompleteSpace A] :
     CompleteSpace (Unitization 𝕜 A) :=
-  (completeSpace_congr uniformEmbedding_addEquiv).mpr CompleteSpace.prod
+  uniformEquivProd.completeSpace_iff.2 .prod
 
 /-- Pull back the metric structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
 algebra homomorphism `Unitization.splitMul 𝕜 A`, but replace the bornology and the uniformity so

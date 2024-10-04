@@ -217,7 +217,7 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
     fun w => ⟨(w x) / 2, div_nonneg (AbsoluteValue.nonneg _ _) (by norm_num)⟩
   suffices ∀ w, w ≠ w₁ → f w ≠ 0 by
     obtain ⟨g, h_geqf, h_gprod⟩ := adjust_f K B this
-    obtain ⟨y, h_ynz, h_yle⟩ := exists_ne_zero_mem_ringOfIntegers_lt (f := g)
+    obtain ⟨y, h_ynz, h_yle⟩ := exists_ne_zero_mem_ringOfIntegers_lt K (f := g)
       (by rw [convexBodyLT_volume]; convert hB; exact congr_arg ((↑) : NNReal → ENNReal) h_gprod)
     refine ⟨y, h_ynz, fun w hw => (h_geqf w hw ▸ h_yle w).trans ?_, ?_⟩
     · rw [← Rat.cast_le (K := ℝ), Rat.cast_natCast]
@@ -304,7 +304,7 @@ theorem exists_unit (w₁ : InfinitePlace K) :
         _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m)) * w (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹ :=
           _root_.map_mul _ _ _
         _ < 1 := by
-          rw [map_inv₀, mul_inv_lt_iff (pos_iff.mpr (seq_ne_zero K w₁ hB n)), mul_one]
+          rw [map_inv₀, mul_inv_lt_iff₀ (pos_iff.mpr (seq_ne_zero K w₁ hB n)), one_mul]
           exact seq_decreasing K w₁ hB hnm w hw
   refine Set.Finite.exists_lt_map_eq_of_forall_mem
     (t := { I : Ideal (𝓞 K) | 1 ≤ Ideal.absNorm I ∧ Ideal.absNorm I ≤ B })
@@ -354,7 +354,7 @@ section statements
 variable [NumberField K]
 
 open scoped Classical
-open dirichletUnitTheorem FiniteDimensional
+open dirichletUnitTheorem Module
 
 /-- The unit rank of the number field `K`, it is equal to `card (InfinitePlace K) - 1`. -/
 def rank : ℕ := Fintype.card (InfinitePlace K) - 1
@@ -462,13 +462,13 @@ instance : Monoid.FG (𝓞 K)ˣ := by
   infer_instance
 
 theorem rank_modTorsion :
-    FiniteDimensional.finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
+    Module.finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
   rw [← LinearEquiv.finrank_eq (logEmbeddingEquiv K).symm, unitLattice_rank]
 
 /-- A basis of the quotient `(𝓞 K)ˣ ⧸ (torsion K)` seen as an additive ℤ-module. -/
 def basisModTorsion : Basis (Fin (rank K)) ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) :=
   Basis.reindex (Module.Free.chooseBasis ℤ _) (Fintype.equivOfCardEq <| by
-    rw [← FiniteDimensional.finrank_eq_card_chooseBasisIndex, rank_modTorsion, Fintype.card_fin])
+    rw [← Module.finrank_eq_card_chooseBasisIndex, rank_modTorsion, Fintype.card_fin])
 
 /-- The basis of the `unitLattice` obtained by mapping `basisModTorsion` via `logEmbedding`. -/
 def basisUnitLattice : Basis (Fin (rank K)) ℤ (unitLattice K) :=

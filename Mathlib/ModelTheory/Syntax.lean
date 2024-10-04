@@ -576,8 +576,8 @@ theorem relabel_sum_inl (φ : L.BoundedFormula α n) :
   | falsum => rfl
   | equal => simp [Fin.natAdd_zero, castLE_of_eq, mapTermRel]
   | rel => simp [Fin.natAdd_zero, castLE_of_eq, mapTermRel]; rfl
-  | imp _ _ ih1 ih2 => simp [mapTermRel, ih1, ih2]
-  | all _ ih3 => simp [mapTermRel, ih3, castLE]
+  | imp _ _ ih1 ih2 => simp_all [mapTermRel]
+  | all _ ih3 => simp_all [mapTermRel]
 
 /-- Substitutes the variables in a given formula with terms. -/
 def subst {n : ℕ} (φ : L.BoundedFormula α n) (f : α → L.Term β) : L.BoundedFormula β n :=

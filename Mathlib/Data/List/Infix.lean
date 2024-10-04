@@ -69,8 +69,7 @@ theorem tail_subset (l : List α) : tail l ⊆ l :=
 theorem mem_of_mem_dropLast (h : a ∈ l.dropLast) : a ∈ l :=
   dropLast_subset l h
 
-theorem mem_of_mem_tail (h : a ∈ l.tail) : a ∈ l :=
-  tail_subset l h
+attribute [gcongr] Sublist.drop
 
 theorem concat_get_prefix {x y : List α} (h : x <+: y) (hl : x.length < y.length) :
     x ++ [y.get ⟨x.length, hl⟩] <+: y := by
@@ -150,7 +149,17 @@ theorem inits_cons (a : α) (l : List α) : inits (a :: l) = [] :: l.inits.map f
 
 theorem tails_cons (a : α) (l : List α) : tails (a :: l) = (a :: l) :: l.tails := by simp
 
-@[simp]
+#adaptation_note
+/--
+This can be removed after nightly-2024-09-07.
+-/
+attribute [-simp] map_tail
+
+#adaptation_note
+/--
+`nolint simpNF` should be removed after nightly-2024-09-07.
+-/
+@[simp, nolint simpNF]
 theorem inits_append : ∀ s t : List α, inits (s ++ t) = s.inits ++ t.inits.tail.map fun l => s ++ l
   | [], [] => by simp
   | [], a :: t => by simp

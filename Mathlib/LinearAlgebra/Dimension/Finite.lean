@@ -26,7 +26,7 @@ variable [Module R M] [Module R M'] [Module R M₁]
 
 attribute [local instance] nontrivial_of_invariantBasisNumber
 
-open Cardinal Basis Submodule Function Set FiniteDimensional
+open Basis Cardinal Function Module Set Submodule
 
 theorem rank_le {n : ℕ}
     (H : ∀ s : Finset M, (LinearIndependent R fun i : s => (i : M)) → s.card ≤ n) :
@@ -363,7 +363,7 @@ variable [Nontrivial R]
 
 /-- A (finite dimensional) space that is a subsingleton has zero `finrank`. -/
 @[nontriviality]
-theorem FiniteDimensional.finrank_zero_of_subsingleton [Subsingleton M] :
+theorem Module.finrank_zero_of_subsingleton [Subsingleton M] :
     finrank R M = 0 := by
   rw [finrank, rank_subsingleton', _root_.map_zero]
 
@@ -374,12 +374,12 @@ section
 variable [NoZeroSMulDivisors R M]
 
 /-- A finite dimensional space is nontrivial if it has positive `finrank`. -/
-theorem FiniteDimensional.nontrivial_of_finrank_pos (h : 0 < finrank R M) : Nontrivial M :=
+theorem Module.nontrivial_of_finrank_pos (h : 0 < finrank R M) : Nontrivial M :=
   rank_pos_iff_nontrivial.mp (lt_rank_of_lt_finrank h)
 
 /-- A finite dimensional space is nontrivial if it has `finrank` equal to the successor of a
 natural number. -/
-theorem FiniteDimensional.nontrivial_of_finrank_eq_succ {n : ℕ}
+theorem Module.nontrivial_of_finrank_eq_succ {n : ℕ}
     (hn : finrank R M = n.succ) : Nontrivial M :=
   nontrivial_of_finrank_pos (R := R) (by rw [hn]; exact n.succ_pos)
 
@@ -398,31 +398,31 @@ section StrongRankCondition
 variable [StrongRankCondition R] [Module.Finite R M]
 
 /-- A finite rank torsion-free module has positive `finrank` iff it has a nonzero element. -/
-theorem FiniteDimensional.finrank_pos_iff_exists_ne_zero [NoZeroSMulDivisors R M] :
+theorem Module.finrank_pos_iff_exists_ne_zero [NoZeroSMulDivisors R M] :
     0 < finrank R M ↔ ∃ x : M, x ≠ 0 := by
   rw [← @rank_pos_iff_exists_ne_zero R M, ← finrank_eq_rank]
   norm_cast
 
 /-- An `R`-finite torsion-free module has positive `finrank` iff it is nontrivial. -/
-theorem FiniteDimensional.finrank_pos_iff [NoZeroSMulDivisors R M] :
+theorem Module.finrank_pos_iff [NoZeroSMulDivisors R M] :
     0 < finrank R M ↔ Nontrivial M := by
   rw [← rank_pos_iff_nontrivial (R := R), ← finrank_eq_rank]
   norm_cast
 
 /-- A nontrivial finite dimensional space has positive `finrank`. -/
-theorem FiniteDimensional.finrank_pos [NoZeroSMulDivisors R M] [h : Nontrivial M] :
+theorem Module.finrank_pos [NoZeroSMulDivisors R M] [h : Nontrivial M] :
     0 < finrank R M :=
   finrank_pos_iff.mpr h
 
-/-- See `FiniteDimensional.finrank_zero_iff`
+/-- See `Module.finrank_zero_iff`
   for the stronger version with `NoZeroSMulDivisors R M`. -/
-theorem FiniteDimensional.finrank_eq_zero_iff :
+theorem Module.finrank_eq_zero_iff :
     finrank R M = 0 ↔ ∀ x : M, ∃ a : R, a ≠ 0 ∧ a • x = 0 := by
   rw [← rank_eq_zero_iff (R := R), ← finrank_eq_rank]
   norm_cast
 
 /-- The `StrongRankCondition` is automatic. See `commRing_strongRankCondition`. -/
-theorem FiniteDimensional.finrank_eq_zero_iff_isTorsion {R} [CommRing R] [StrongRankCondition R]
+theorem Module.finrank_eq_zero_iff_isTorsion {R} [CommRing R] [StrongRankCondition R]
     [IsDomain R] [Module R M] [Module.Finite R M] :
     finrank R M = 0 ↔ Module.IsTorsion R M := by
   rw [← rank_eq_zero_iff_isTorsion (R := R), ← finrank_eq_rank]
@@ -430,14 +430,14 @@ theorem FiniteDimensional.finrank_eq_zero_iff_isTorsion {R} [CommRing R] [Strong
 
 /-- A finite dimensional space has zero `finrank` iff it is a subsingleton.
 This is the `finrank` version of `rank_zero_iff`. -/
-theorem FiniteDimensional.finrank_zero_iff [NoZeroSMulDivisors R M] :
+theorem Module.finrank_zero_iff [NoZeroSMulDivisors R M] :
     finrank R M = 0 ↔ Subsingleton M := by
   rw [← rank_zero_iff (R := R), ← finrank_eq_rank]
   norm_cast
 
 end StrongRankCondition
 
-theorem FiniteDimensional.finrank_eq_zero_of_rank_eq_zero (h : Module.rank R M = 0) :
+theorem Module.finrank_eq_zero_of_rank_eq_zero (h : Module.rank R M = 0) :
     finrank R M = 0 := by
   delta finrank
   rw [h, zero_toNat]

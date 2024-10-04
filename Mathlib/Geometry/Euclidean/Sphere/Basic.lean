@@ -33,7 +33,7 @@ namespace EuclideanGeometry
 
 variable {V : Type*} (P : Type*)
 
-open FiniteDimensional
+open Module
 
 /-- A `Sphere P` bundles a `center` and `radius`. This definition does not require the radius to
 be positive; that should be given as a hypothesis to lemmas that require it. -/

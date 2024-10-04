@@ -55,7 +55,7 @@ theorem mersenne_le_mersenne {p q : ℕ} : mersenne p ≤ mersenne q ↔ p ≤ q
 @[simp] lemma mersenne_odd : ∀ {p : ℕ}, Odd (mersenne p) ↔ p ≠ 0
   | 0 => by simp
   | p + 1 => by
-    simpa using Nat.Even.sub_odd (one_le_pow_of_one_le one_le_two _)
+    simpa using Nat.Even.sub_odd (one_le_pow₀ one_le_two)
       (even_two.pow_of_ne_zero p.succ_ne_zero) odd_one
 
 @[simp] theorem mersenne_pos {p : ℕ} : 0 < mersenne p ↔ 0 < p := mersenne_lt_mersenne (p := 0)
@@ -87,7 +87,7 @@ theorem one_lt_mersenne {p : ℕ} : 1 < mersenne p ↔ 1 < p :=
 @[simp]
 theorem succ_mersenne (k : ℕ) : mersenne k + 1 = 2 ^ k := by
   rw [mersenne, tsub_add_cancel_of_le]
-  exact one_le_pow_of_one_le (by norm_num) k
+  exact one_le_pow₀ (by norm_num)
 
 namespace LucasLehmer
 

@@ -13,7 +13,7 @@ import Mathlib.Tactic.IntervalCases
 # Basic lemmas on prime factorizations
 -/
 
-open Nat Finset List Finsupp
+open Finset List Finsupp
 
 namespace Nat
 variable {a b m n p : ℕ}
@@ -455,6 +455,10 @@ theorem setOf_pow_dvd_eq_Icc_factorization {n p : ℕ} (pp : p.Prime) (hn : n �
   ext
   simp [Nat.lt_succ_iff, one_le_iff_ne_zero, pp.pow_dvd_iff_le_factorization hn]
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefix below.
+-/
 /-- The set of positive powers of prime `p` that divide `n` is exactly the set of
 positive natural numbers up to `n.factorization p`. -/
 theorem Icc_factorization_eq_pow_dvd (n : ℕ) {p : ℕ} (pp : Prime p) :
@@ -462,7 +466,7 @@ theorem Icc_factorization_eq_pow_dvd (n : ℕ) {p : ℕ} (pp : Prime p) :
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
   ext x
-  simp only [mem_Icc, Finset.mem_filter, mem_Ico, and_assoc, and_congr_right_iff,
+  simp only [mem_Icc, Finset.mem_filter, mem_Ico, _root_.and_assoc, and_congr_right_iff,
     pp.pow_dvd_iff_le_factorization hn, iff_and_self]
   exact fun _ H => lt_of_le_of_lt H (factorization_lt p hn)
 
