@@ -301,7 +301,7 @@ theorem of.zero_exact_aux [∀ i (k : G i), Decidable (k ≠ 0)] [Nonempty ι] [
           (Finset.mem_union.1 (DFinsupp.support_add hl)).elim (fun hl => le_trans (hi _ hl) hik)
             fun hl => le_trans (hj _ hl) hjk, by
           simp [LinearMap.map_add, hxi, hyj, toModule_totalize_of_le hik hi,
-             toModule_totalize_of_le hjk hj]⟩)
+            toModule_totalize_of_le hjk hj]⟩)
       fun a x _ ⟨i, hi, hxi⟩ =>
       ⟨i, fun k hk => hi k (DirectSum.support_smul _ _ hk), by simp [LinearMap.map_smul, hxi]⟩
 
