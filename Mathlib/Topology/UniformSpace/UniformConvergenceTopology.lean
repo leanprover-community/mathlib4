@@ -1120,8 +1120,7 @@ end UniformFun
 
 section UniformComposition
 
-variable {α β γ ι : Type*} [UniformSpace β] [UniformSpace γ]
-  {p : Filter ι}
+variable {α β γ ι : Type*} [UniformSpace β] [UniformSpace γ] {p : Filter ι}
 
 /-- Composing on the left by a uniformly continuous function preserves uniform convergence -/
 theorem UniformContinuousOn.comp_tendstoUniformly (s : Set β) (F : ι → α → β) (f : α → β)

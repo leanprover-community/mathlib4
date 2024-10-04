@@ -200,7 +200,7 @@ lemma tendstoUniformly_congr {F F' : ι → α → β} {f : α → β} (hF : F =
     TendstoUniformly F f p ↔ TendstoUniformly F' f p := by
   simp_rw [← tendstoUniformlyOn_univ] at *
   have HF := EventuallyEq.exists_mem hF
-  refine ⟨fun h => h.congr (by aesop), fun h => h.congr (by simp_rw [eqOn_comm]; aesop)⟩
+  exact ⟨fun h => h.congr (by aesop), fun h => h.congr (by simp_rw [eqOn_comm]; aesop)⟩
 
 theorem TendstoUniformlyOn.congr_right {g : α → β} (hf : TendstoUniformlyOn F f p s)
     (hfg : EqOn f g s) : TendstoUniformlyOn F g p s := fun u hu => by
