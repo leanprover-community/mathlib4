@@ -99,6 +99,12 @@ class PreservesFiniteProducts (F : C ⥤ D) where
 
 attribute [instance] PreservesFiniteProducts.preserves
 
+noncomputable instance (priority := 100) (F : C ⥤ D) (J : Type u) [Finite J]
+    [PreservesFiniteProducts F] : PreservesLimitsOfShape (Discrete J) F := by
+  apply Nonempty.some
+  obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin J
+  exact ⟨preservesLimitsOfShapeOfEquiv (Discrete.equivalence e.symm) F⟩
+
 instance compPreservesFiniteProducts (F : C ⥤ D) (G : D ⥤ E)
     [PreservesFiniteProducts F] [PreservesFiniteProducts G] :
     PreservesFiniteProducts (F ⋙ G) where
@@ -106,13 +112,6 @@ instance compPreservesFiniteProducts (F : C ⥤ D) (G : D ⥤ E)
 
 noncomputable instance (F : C ⥤ D) [PreservesFiniteLimits F] : PreservesFiniteProducts F where
   preserves _ _ := inferInstance
-
-noncomputable instance (priority := 100) (J : Type u) [Fintype J] (F : C ⥤ D)
-    [PreservesFiniteProducts F] : PreservesLimitsOfShape (Discrete J) F :=
-  let J' := (Countable.toSmall.{0} J).equiv_small.choose
-  let e : J ≃ J' := (Countable.toSmall J).equiv_small.choose_spec.some
-  letI : Fintype J' := Fintype.ofEquiv J (Countable.toSmall J).equiv_small.choose_spec.some
-  preservesLimitsOfShapeOfEquiv (Discrete.equivalence e.symm) F
 
 /--
 A functor is said to reflect finite limits, if it reflects all limits of shape `J`,
@@ -251,27 +250,21 @@ class PreservesFiniteCoproducts (F : C ⥤ D) where
   /-- preservation of colimits indexed by `Discrete J` when `[Fintype J]` -/
   preserves : ∀ (J : Type) [Fintype J], PreservesColimitsOfShape (Discrete J) F
 
-noncomputable instance (F : C ⥤ D) (J : Type*) [Finite J] [PreservesFiniteCoproducts F] :
-    PreservesColimitsOfShape (Discrete J) F := by
+attribute [instance] PreservesFiniteCoproducts.preserves
+
+noncomputable instance (priority := 100) (F : C ⥤ D) (J : Type u) [Finite J]
+    [PreservesFiniteCoproducts F] : PreservesColimitsOfShape (Discrete J) F := by
   apply Nonempty.some
   obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin J
-  have : PreservesColimitsOfShape (Discrete (Fin n)) F := PreservesFiniteCoproducts.preserves _
   exact ⟨preservesColimitsOfShapeOfEquiv (Discrete.equivalence e.symm) F⟩
 
-noncomputable instance compPreservesFiniteCoproducts (F : C ⥤ D) (G : D ⥤ E)
+instance compPreservesFiniteCoproducts (F : C ⥤ D) (G : D ⥤ E)
     [PreservesFiniteCoproducts F] [PreservesFiniteCoproducts G] :
     PreservesFiniteCoproducts (F ⋙ G) where
   preserves _ _ := inferInstance
 
 noncomputable instance (F : C ⥤ D) [PreservesFiniteColimits F] : PreservesFiniteCoproducts F where
   preserves _ _ := inferInstance
-
-noncomputable instance (priority := 100) (J : Type u) [Fintype J] (F : C ⥤ D)
-    [PreservesFiniteCoproducts F] : PreservesColimitsOfShape (Discrete J) F :=
-  let J' := (Countable.toSmall.{0} J).equiv_small.choose
-  let e : J ≃ J' := (Countable.toSmall J).equiv_small.choose_spec.some
-  letI : Fintype J' := Fintype.ofEquiv J (Countable.toSmall J).equiv_small.choose_spec.some
-  preservesColimitsOfShapeOfEquiv (Discrete.equivalence e.symm) F
 
 /--
 A functor is said to reflect finite colimits, if it reflects all colimits of shape `J`,
