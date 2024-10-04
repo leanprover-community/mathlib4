@@ -43,8 +43,22 @@ jobs:
           fi
         fi
 
-    - name: Commit and create PR for multiple conflicts
+    - name: Push changes if merge was successful
+      if: ${{ success() && env.multiple_conflicts != 'true' }}
+      run: |
+        git push origin "${{ steps.find-bump-branch.outputs.bump_branch }}"
+
+    - name: Check for existing PR
+      id: check-pr
       if: ${{ env.multiple_conflicts == 'true' }}
+      run: |
+        PR_EXISTS=$(gh pr list --base "${{ steps.find-bump-branch.outputs.bump_branch }}" --state open --json headRefName --jq '.[] | select(.headRefName | startswith("bump-merge-master")) | .headRefName')
+        if [ -n "$PR_EXISTS" ]; then
+          echo "pr_exists=true" >> "$GITHUB_ENV"
+        fi
+
+    - name: Commit and create PR for multiple conflicts
+      if: ${{ env.multiple_conflicts == 'true' && env.pr_exists != 'true' }}
       run: |
         DATE=$(date +'%Y-%m-%d-%H-%M')
         NEW_BRANCH="bump-merge-master-$DATE"
@@ -58,13 +72,8 @@ jobs:
         echo "new_branch=$NEW_BRANCH" >> "$GITHUB_ENV"
         echo "pr_number=$PR_NUMBER" >> "$GITHUB_ENV"
 
-    - name: Push changes if merge was successful
-      if: ${{ success() && env.multiple_conflicts != 'true' }}
-      run: |
-        git push origin "${{ steps.find-bump-branch.outputs.bump_branch }}"
-
     - name: Send message on Zulip about merge conflicts
-      if: ${{ failure() || env.multiple_conflicts == 'true' }}
+      if: ${{ env.multiple_conflicts == 'true' && env.pr_exists != 'true' }}
       uses: zulip/github-actions-zulip/send-message@v1
       with:
         api-key: ${{ secrets.ZULIP_API_KEY }}
