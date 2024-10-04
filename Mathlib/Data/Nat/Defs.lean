@@ -137,8 +137,6 @@ lemma one_lt_iff_ne_zero_and_ne_one : ∀ {n : ℕ}, 1 < n ↔ n ≠ 0 ∧ n ≠
 
 lemma le_one_iff_eq_zero_or_eq_one : ∀ {n : ℕ}, n ≤ 1 ↔ n = 0 ∨ n = 1 := by simp [le_succ_iff]
 
-@[simp] lemma lt_one_iff : n < 1 ↔ n = 0 := Nat.lt_succ_iff.trans <| by rw [le_zero_eq]
-
 lemma one_le_of_lt (h : a < b) : 1 ≤ b := Nat.lt_of_le_of_lt (Nat.zero_le _) h
 
 protected lemma min_left_comm (a b c : ℕ) : min a (min b c) = min b (min a c) := by
@@ -167,8 +165,13 @@ lemma pred_eq_of_eq_succ (H : m = n.succ) : m.pred = n := by simp [H]
 @[simp] lemma pred_eq_succ_iff : n - 1 = m + 1 ↔ n = m + 2 := by
   cases n <;> constructor <;> rintro ⟨⟩ <;> rfl
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove both the `_root_` prefixes below.
+-/
 lemma forall_lt_succ : (∀ m < n + 1, p m) ↔ (∀ m < n, p m) ∧ p n := by
-  simp only [Nat.lt_succ_iff, Nat.le_iff_lt_or_eq, or_comm, forall_eq_or_imp, and_comm]
+  simp only [Nat.lt_succ_iff, Nat.le_iff_lt_or_eq, _root_.or_comm, forall_eq_or_imp,
+    _root_.and_comm]
 
 lemma exists_lt_succ : (∃ m < n + 1, p m) ↔ (∃ m < n, p m) ∨ p n := by
   rw [← not_iff_not]
@@ -310,11 +313,11 @@ lemma two_mul_ne_two_mul_add_one : 2 * n ≠ 2 * m + 1 :=
 
 -- TODO: Replace `Nat.mul_right_cancel_iff` with `Nat.mul_left_inj`
 protected lemma mul_left_inj (ha : a ≠ 0) : b * a = c * a ↔ b = c :=
-  Nat.mul_right_cancel_iff (Nat.pos_iff_ne_zero.2 ha) _ _
+  Nat.mul_right_cancel_iff (Nat.pos_iff_ne_zero.2 ha)
 
 -- TODO: Replace `Nat.mul_left_cancel_iff` with `Nat.mul_right_inj`
 protected lemma mul_right_inj (ha : a ≠ 0) : a * b = a * c ↔ b = c :=
-  Nat.mul_left_cancel_iff (Nat.pos_iff_ne_zero.2 ha) _ _
+  Nat.mul_left_cancel_iff (Nat.pos_iff_ne_zero.2 ha)
 
 protected lemma mul_ne_mul_left (ha : a ≠ 0) : b * a ≠ c * a ↔ b ≠ c :=
   not_congr (Nat.mul_left_inj ha)
@@ -834,7 +837,7 @@ This is an alias of `Nat.leRec`, specialized to `Prop`. -/
 @[elab_as_elim]
 lemma le_induction {m : ℕ} {P : ∀ n, m ≤ n → Prop} (base : P m m.le_refl)
     (succ : ∀ n hmn, P n hmn → P (n + 1) (le_succ_of_le hmn)) : ∀ n hmn, P n hmn :=
-  @Nat.leRec (motive := P) base succ
+  @Nat.leRec (motive := P) _ base succ
 
 /-- Induction principle deriving the next case from the two previous ones. -/
 def twoStepInduction {P : ℕ → Sort*} (zero : P 0) (one : P 1)
@@ -1016,9 +1019,6 @@ lemma div_ne_zero_iff_of_dvd (hba : b ∣ a) : a / b ≠ 0 ↔ a ≠ 0 ∧ b ≠
   obtain rfl | hb := eq_or_ne b 0 <;> simp [Nat.div_ne_zero_iff, Nat.le_iff_ne_zero_of_dvd, *]
 
 @[simp] lemma mul_mod_mod (a b c : ℕ) : (a * (b % c)) % c = a * b % c := by
-  rw [mul_mod, mod_mod, ← mul_mod]
-
-@[simp] lemma mod_mul_mod (a b c : ℕ) : (a % c * b) % c = a * b % c := by
   rw [mul_mod, mod_mod, ← mul_mod]
 
 lemma pow_mod (a b n : ℕ) : a ^ b % n = (a % n) ^ b % n := by

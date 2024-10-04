@@ -198,7 +198,15 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen (X : Sch
     {U : X.Opens} (hU : IsAffineOpen U) (x f : Γ(X, U))
     (H : x |_ X.basicOpen f = 0) : ∃ n : ℕ, f ^ n * x = 0 := by
   rw [← map_zero (X.presheaf.map (homOfLE <| X.basicOpen_le f : X.basicOpen f ⟶ U).op)] at H
-  obtain ⟨n, e⟩ := (hU.isLocalization_basicOpen f).exists_of_eq H
+  #adaptation_note
+  /--
+  Prior to nightly-2024-09-29, we could use dot notation here:
+  `(hU.isLocalization_basicOpen f).exists_of_eq H`
+  This is no longer possible;
+  likely changing the signature of `IsLocalization.Away.exists_of_eq` is in order.
+  -/
+  obtain ⟨n, e⟩ :=
+    @IsLocalization.Away.exists_of_eq _ _ _ _ _ _ (hU.isLocalization_basicOpen f) _ _ H
   exact ⟨n, by simpa [mul_comm x] using e⟩
 
 /-- If `x : Γ(X, U)` is zero on `D(f)` for some `f : Γ(X, U)`, and `U` is quasi-compact, then
