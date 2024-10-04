@@ -160,8 +160,23 @@ theorem Splits.comp_X_add_C {i : L →+* F} (a : L) {f : L[X]}
     (h : f.Splits i) : (f.comp (X + C a)).Splits i := by
   simpa only [map_neg, sub_neg_eq_add] using h.comp_X_sub_C (-a)
 
-theorem Splits.comp_neg {f : L[X]} (h : f.Splits i) : (f.comp (-X)).Splits i :=
-  by sorry
+theorem Splits.comp_neg_X {i : L →+* F} {f : L[X]} (h : f.Splits i) : (f.comp (-X)).Splits i := by
+  nontriviality L
+  cases h with
+  | inl h0 =>
+    left
+    simp [map_eq_zero] at h0 ⊢
+    exact h0.symm ▸ zero_comp
+  | inr h =>
+    right
+    intro g irr dvd
+    rw [map_comp, Polynomial.map_neg, map_X, ] at dvd
+    -- rw [map_comp, Polynomial.map_sub, map_X, map_C, dvd_comp_X_sub_C_iff] at dvd
+    have := h (irr.map (algEquivAevalXAddC _)) dvd
+    rw [degree_eq_natDegree irr.ne_zero]
+    rwa [algEquivAevalXAddC_apply, ← comp_eq_aeval,
+      degree_eq_natDegree (fun h => WithBot.bot_ne_one (h ▸ this)),
+      natDegree_comp, natDegree_X_add_C, mul_one] at this
 
 theorem exists_root_of_splits' {f : K[X]} (hs : Splits i f) (hf0 : degree (f.map i) ≠ 0) :
     ∃ x, eval₂ i x f = 0 :=
