@@ -22,7 +22,7 @@ jobs:
         echo "bump_branch=$BUMP_BRANCH" >> $GITHUB_OUTPUT
 
     - name: Checkout the bump branch
-      run: git checkout ${{ steps.find-bump-branch.outputs.bump_branch }}
+      run: git checkout "${{ steps.find-bump-branch.outputs.bump_branch }}"
 
     - name: Merge master into bump branch
       id: merge-master
@@ -52,16 +52,16 @@ jobs:
         git add -A
         git commit -m "Committing conflicting files as is"
         git push origin $NEW_BRANCH
-        BUMP_BRANCH=${{ steps.find-bump-branch.outputs.bump_branch }}
-        PR_URL=$(gh pr create --title "nightly-testing: resolve conflicts with master" --base $BUMP_BRANCH)
+        BUMP_BRANCH="${{ steps.find-bump-branch.outputs.bump_branch }}"
+        PR_URL=$(gh pr create --title "nightly-testing: resolve conflicts with master" --base "$BUMP_BRANCH")
         PR_NUMBER=$(echo $PR_URL | grep -oP '\d+$')
-        echo "new_branch=$NEW_BRANCH" >> $GITHUB_ENV
+        echo "new_branch=$NEW_BRANCH" >> $GITHUB_ENV
         echo "pr_number=$PR_NUMBER" >> $GITHUB_ENV
 
     - name: Push changes if merge was successful
       if: success() && env.multiple_conflicts != 'true'
       run: |
-        git push origin ${{ steps.find-bump-branch.outputs.bump_branch }}
+        git push origin "${{ steps.find-bump-branch.outputs.bump_branch }}"
 
   notify-failure:
     runs-on: ubuntu-latest
@@ -79,12 +79,11 @@ jobs:
         topic: "merge master into 'bump/${{ steps.find-bump-branch.outputs.bump_branch }}'"
         content: |
           ❌ A bot failed to merge 'master' into 'bump/${{ steps.find-bump-branch.outputs.bump_branch }}' because of merge conflicts.
-          The bot created the following PR instead:
+          The bot created the following PR instead:
 
-          > nightly-testing: resolve conflicts with master #${{ env.pr_number }}
+          > nightly-testing: resolve conflicts with master #${{ env.pr_number }}
           > branch: `${{ env.new_branch }}`
 
           Please help with one of the following:
           - resolve the merge conflicts and push them to the branch
-          - review the PR (at the end of the month it will end up in `master` without further review)
-
+          - review the PR (at the end of the month it will end up in `master` without further review)
