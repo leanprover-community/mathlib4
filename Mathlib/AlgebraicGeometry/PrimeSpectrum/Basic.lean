@@ -3,9 +3,8 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.RingTheory.PrimeSpectrum
-import Mathlib.Topology.Irreducible
-import Mathlib.Topology.Sets.Closeds
+import Mathlib.RingTheory.KrullDimension.Basic
+import Mathlib.Topology.KrullDimension
 import Mathlib.Topology.Sober
 import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Ideal.Over
@@ -655,3 +654,12 @@ theorem PrimeSpectrum.comap_residue (T : Type u) [CommRing T] [LocalRing T]
   exact Ideal.mk_ker
 
 end LocalRing
+
+section KrullDimension
+
+theorem PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim [CommRing R] :
+    topologicalKrullDim (PrimeSpectrum R) = ringKrullDim R :=
+  Order.krullDim_orderDual.symm.trans <| Order.krullDim_eq_of_orderIso
+  (PrimeSpectrum.pointsEquivIrreducibleCloseds R).symm
+
+end KrullDimension

@@ -288,7 +288,7 @@ jobs:
       # Output is posted to the zulip topic
       # https://leanprover.zulipchat.com/#narrow/stream/345428-mathlib-reviewers/topic/lean4checker
 
-      - name: Post comments for lean-pr-testing branch
+      - name: Post comments for lean-pr-testing-NNNN and batteries-pr-testing-NNNN branches
         if: always()
         env:
           TOKEN: ${{ secrets.LEAN_PR_TESTING }}
@@ -301,7 +301,8 @@ jobs:
           LINT_OUTCOME: ${{ steps.lint.outcome }}
           TEST_OUTCOME: ${{ steps.test.outcome }}
         run: |
-          scripts/lean-pr-testing-comments.sh
+          scripts/lean-pr-testing-comments.sh lean
+          scripts/lean-pr-testing-comments.sh batteries
 
   final:
     name: Post-CI job

@@ -323,8 +323,7 @@ theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
       rw [dif_neg ane0]
       by_cases h : b = 0
       · simp [h, lt_top_iff_ne_top]
-      · rw [dif_neg h]
-        erw [WithTop.coe_lt_coe]
+      · rw [dif_neg h, Nat.cast_lt]
         have cne0 : c ≠ 0 := by
           refine mt (fun con => ?_) h
           rw [b_eq, con, mul_zero]
@@ -390,8 +389,8 @@ theorem MulEquiv.uniqueFactorizationMonoid (e : α ≃* β) (hα : UniqueFactori
         he ▸ e.prime_iff.1 (hp c hc),
         Units.map e.toMonoidHom u,
       by
-        erw [Multiset.prod_hom, ← map_mul e, h]
-        simp⟩
+        rw [Multiset.prod_hom, toMonoidHom_eq_coe, Units.coe_map, MonoidHom.coe_coe, ← map_mul e, h,
+          apply_symm_apply]⟩
 
 theorem MulEquiv.uniqueFactorizationMonoid_iff (e : α ≃* β) :
     UniqueFactorizationMonoid α ↔ UniqueFactorizationMonoid β :=
