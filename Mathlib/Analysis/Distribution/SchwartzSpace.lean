@@ -850,7 +850,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
     refine add_le_add ?_ (hg_upper' x)
     nth_rw 1 [← one_mul (1 : ℝ)]
     gcongr
-    apply one_le_pow_of_one_le
+    apply one_le_pow₀
     simp only [le_add_iff_nonneg_right, norm_nonneg]
   have hbound :
     ∀ i, i ≤ n → ‖iteratedFDeriv ℝ i f (g x)‖ ≤ 2 ^ k' * seminorm_f / (1 + ‖g x‖) ^ k' := by
@@ -867,7 +867,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
     have hN₁' := (lt_of_lt_of_le zero_lt_one hN₁).ne'
     gcongr
     · exact le_trans (by simp [hC]) (le_self_pow (by simp [hC]) hN₁')
-    · refine le_self_pow (one_le_pow_of_one_le ?_ l) hN₁'
+    · refine le_self_pow (one_le_pow₀ ?_ l) hN₁'
       simp only [le_add_iff_nonneg_right, norm_nonneg]
   have := norm_iteratedFDeriv_comp_le f.smooth' hg.1 (by exact_mod_cast le_top) x hbound hgrowth'
   have hxk : ‖x‖ ^ k ≤ (1 + ‖x‖) ^ k :=

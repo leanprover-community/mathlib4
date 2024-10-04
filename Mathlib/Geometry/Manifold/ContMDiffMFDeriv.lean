@@ -94,7 +94,7 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
     simp_rw [Function.comp_def, uncurry, extChartAt_prod, PartialEquiv.prod_coe_symm,
       ModelWithCorners.range_prod] at hf ⊢
     have : m + 1 ≤ (n : WithTop ℕ∞) := by exact_mod_cast hmn
-    refine ContDiffWithinAt.fderivWithin ?_ hg.2 I.unique_diff this (mem_range_self _) ?_
+    refine ContDiffWithinAt.fderivWithin ?_ hg.2 I.uniqueDiffOn this (mem_range_self _) ?_
     · simp_rw [extChartAt_to_inv]; exact hf.2
     · rw [← image_subset_iff]
       rintro _ ⟨x, -, rfl⟩
