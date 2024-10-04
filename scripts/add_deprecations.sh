@@ -33,12 +33,12 @@ mkDeclAndDepr () {
     BEGIN{ plusRegex="^+[^+-]*" regex; minusRegex="^-[^+-]*" regex; }
     ($0 ~ minusRegex) {
       for(i=1; i<=NF; i++) {
-        if (($i ~ /theorem$/) || ($i ~ /lemma$/)) { old=$(i+1) }
+        if ($i ~ regex"$") { old=$(i+1) }
       }
     }
     ($0 ~ plusRegex) {
       for(i=1; i<=NF; i++) {
-        if (($i ~ /theorem$/) || ($i ~ /lemma$/)) {
+        if ($i ~ regex"$") {
           sub(/^+/, "", $i)
           printf("%s %s ,%s@@@", $i, $(i+1), depr(old, $(i+1)))
         }
@@ -84,7 +84,9 @@ done
  : <<'TEST_DECLARATIONS'
 
 theorem ThmRemoved I'm no longer here
+
 def DefRemoved I'm no longer here
+
 lemma LemRemoved I'm no longer here
 
 TEST_DECLARATIONS
