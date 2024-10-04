@@ -2706,12 +2706,6 @@ theorem disjoint_map_map {f : α → γ} {g : β → γ} {s : Multiset α} {t : 
     Disjoint (s.map f) (t.map g) ↔ ∀ a ∈ s, ∀ b ∈ t, f a ≠ g b := by
   simp [Disjoint, @eq_comm _ (f _) (g _)]
 
-lemma cons_le_iff_le_of_not_mem [DecidableEq α] {a : α} {s : Multiset α} (hs : a ∉ s)
-    {t : Multiset α} (ht : a ∈ t) :
-    a ::ₘ s ≤ t ↔ s ≤ t := by
-  rw [← cons_erase ht, cons_le_cons_iff]
-  exact ⟨fun h ↦ (le_cons_of_not_mem hs).mpr h, fun h ↦ (le_cons_of_not_mem hs).mp h⟩
-
 /-- `Pairwise r m` states that there exists a list of the elements s.t. `r` holds pairwise on this
 list. -/
 def Pairwise (r : α → α → Prop) (m : Multiset α) : Prop :=
