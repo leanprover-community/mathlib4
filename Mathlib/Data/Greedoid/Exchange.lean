@@ -121,11 +121,21 @@ theorem exchangeProperty_iff_weakExchangeProperty
 def WeakerExchangeProperty (Sys : Finset α → Prop) : Prop :=
   ⦃s : Finset α⦄ →
   ⦃x : α⦄ → (hx₁ : x ∉ s) → (hx₂ : Sys (s.cons x hx₁)) →
-  ⦃y : α⦄ → (hy₁ : y ∉ s) → (hy₂ : Sys (s.cons y hy₁)) → (hxy : x ≠ y) →
+  ⦃y : α⦄ → (hy₁ : y ∉ s) → (hy₂ : Sys (s.cons y hy₁)) → (hxy₁ : x ≠ y) →
   ⦃z : α⦄ → (hz : z ∉ s) → (hxz₁ : x ≠ z) →
   (hxz₂ : Sys ((s.cons x hx₁).cons z (by rw [mem_cons, not_or]; exact ⟨Ne.symm hxz₁, hz⟩))) →
-  (hxy : ¬ Sys ((s.cons x hx₁).cons y (by rw [mem_cons, not_or]; exact ⟨Ne.symm hxy, hy₁⟩))) →
-    Sys ((s.cons y hy₁).cons z (by rw [mem_cons, not_or]; exact ⟨(fun h ↦ hxy (h ▸ hxz₂)), hz⟩))
+  (hxy₂ : ¬ Sys ((s.cons x hx₁).cons y (by rw [mem_cons, not_or]; exact ⟨Ne.symm hxy₁, hy₁⟩))) →
+    Sys ((s.cons y hy₁).cons z (by rw [mem_cons, not_or]; exact ⟨(fun h ↦ hxy₂ (h ▸ hxz₂)), hz⟩))
+
+theorem weakerExchangeProperty_of_weakExchangeProperty
+    (h : WeakExchangeProperty Sys) :
+    WeakerExchangeProperty Sys := by
+  intro s x hx₁ hx₂ y hy₁ hy₂ hxy₁ z hz hxz₁ hxz₂ hxy₂
+  rcases h hxz₂ hy₂ (by simp only [card_cons]) with ⟨u, hu₁, hu₂, hu₃⟩
+  simp only [mem_cons, not_or] at hu₁ hu₂; simp only [hu₂, or_false] at hu₁
+  rcases hu₂ with ⟨hu₂, hu₄⟩
+  apply hu₁.elim (fun h ↦ h ▸ hu₃); rintro rfl
+  exact False.elim (hxy₂ (sorry))
 
 end ExchangePropertyEquivalence
 
