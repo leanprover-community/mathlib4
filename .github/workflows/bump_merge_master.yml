@@ -10,7 +10,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Fetch all branches
       run: git fetch --all
@@ -19,7 +19,7 @@ jobs:
       id: find-bump-branch
       run: |
         BUMP_BRANCH=$(git branch -r | grep 'bump/v4' | sed 's|origin/||' | sort -V | tail -n 1)
-        echo "::set-output name=bump_branch::$BUMP_BRANCH"
+        echo "bump_branch=$BUMP_BRANCH" >> $GITHUB_OUTPUT
 
     - name: Checkout the bump branch
       run: git checkout ${{ steps.find-bump-branch.outputs.bump_branch }}
@@ -39,19 +39,19 @@ jobs:
             git add lean-toolchain
             git commit -m "Resolved conflict in lean-toolchain"
           else
-            echo "Multiple conflicts detected" > multiple_conflicts.txt
+            echo "multiple_conflicts=true" >> $GITHUB_ENV
           fi
         fi
 
     - name: Push changes if merge was successful
-      if: success() && steps.check-conflicts.outputs.multiple_conflicts == ''
+      if: success() && env.multiple_conflicts != 'true'
       run: |
         git push origin ${{ steps.find-bump-branch.outputs.bump_branch }}
 
   notify-failure:
     runs-on: ubuntu-latest
     needs: bump-merge
-    if: failure() || steps.check-conflicts.outputs.multiple_conflicts
+    if: failure() || env.multiple_conflicts == 'true'
     steps:
     - name: Send message on Zulip about merge conflicts
       uses: zulip/github-actions-zulip/send-message@v1
