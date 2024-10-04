@@ -109,7 +109,7 @@ lemma residueFieldMap_comp {Z : LocallyRingedSpace.{u}} (g : Y ⟶ Z) (x : X) :
   simp only [comp_val, SheafedSpace.comp_base, Function.comp_apply, residueFieldMap]
   simp_rw [stalkMap_comp]
   haveI : IsLocalRingHom (g.stalkMap (f.val.base x)) := inferInstance
-  -- TODO: This instance is found before #6045. 
+  -- TODO: This instance is found before #6045.
   haveI : IsLocalRingHom (f.stalkMap x) := inferInstance
   apply LocalRing.ResidueField.map_comp
 
