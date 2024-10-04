@@ -26,7 +26,7 @@ of the basis).
 -/
 
 
-open Set TopologicalSpace MeasureTheory MeasureTheory.Measure FiniteDimensional
+open Set TopologicalSpace MeasureTheory MeasureTheory.Measure Module
 
 open scoped Pointwise
 

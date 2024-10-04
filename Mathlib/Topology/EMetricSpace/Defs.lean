@@ -25,7 +25,7 @@ to `EMetricSpace` at the end.
 -/
 
 assert_not_exists Nat.instLocallyFiniteOrder
-assert_not_exists UniformEmbedding
+assert_not_exists IsUniformEmbedding
 assert_not_exists TendstoUniformlyOnFilter
 
 open Set Filter
