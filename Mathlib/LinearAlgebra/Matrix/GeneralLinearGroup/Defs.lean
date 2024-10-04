@@ -138,6 +138,10 @@ theorem map_id : map (RingHom.id R) = MonoidHom.id (GL n R) :=
   rfl
 
 @[simp]
+lemma map_apply (f : R →+* S) (i j : n) (g : GL n R) : map f g i j = f (g i j) := by
+  rfl
+
+@[simp]
 theorem map_comp (f : T →+* R) (g : R →+* S) :
     map (g.comp f) = (map g).comp (map (n := n) f) :=
   rfl
@@ -146,6 +150,49 @@ theorem map_comp (f : T →+* R) (g : R →+* S) :
 theorem map_comp_apply (f : T →+* R) (g : R →+* S) (x : GL n T) :
     (map g).comp (map f) x = map g (map f x) :=
   rfl
+
+variable (f : R →+* S)
+
+@[simp]
+lemma map_one : map f (1 : GL n R) = 1 := by
+  ext
+  simp only [_root_.map_one, Units.val_one]
+
+lemma map_mul (g h : GL n R) : map f (g * h) = map f g * map f h := by
+  ext
+  simp only [_root_.map_mul, Units.val_mul]
+
+lemma map_inv (g : GL n R) : map f g⁻¹ = (map f g)⁻¹ := by
+  ext
+  simp only [_root_.map_inv, coe_units_inv]
+
+lemma map_det (g : GL n R) : Matrix.GeneralLinearGroup.det (map f g) =
+    Units.map f (Matrix.GeneralLinearGroup.det g) := by
+  ext
+  simp only [map, RingHom.mapMatrix_apply, Units.inv_eq_val_inv, Matrix.coe_units_inv,
+    Matrix.GeneralLinearGroup.val_det_apply, Units.coe_map, MonoidHom.coe_coe]
+  symm
+  apply RingHom.map_det
+
+@[simp]
+lemma map_mul_map_inv (g : GL n R) : map f g * map f g⁻¹ = 1 := by
+  apply Units.ext
+  simp only [_root_.map_inv, mul_inv_cancel, Units.val_one]
+
+@[simp]
+lemma map_inv_mul_map (g : GL n R) : map f g⁻¹ * map f g = 1 := by
+  apply Units.ext
+  simp only [_root_.map_inv, inv_mul_cancel, Units.val_one]
+
+@[simp]
+lemma coe_map_mul_map_inv (g : GL n R) : g.val.map f * g.val⁻¹.map f = 1 := by
+  rw [← Matrix.map_mul]
+  simp
+
+@[simp]
+lemma coe_map_inv_mul_map (g : GL n R) : g.val⁻¹.map f * g.val.map f = 1 := by
+  rw [← Matrix.map_mul]
+  simp
 
 end GeneralLinearGroup
 
