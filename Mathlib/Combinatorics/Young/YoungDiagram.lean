@@ -5,6 +5,9 @@ Authors: Jake Levinson
 -/
 import Mathlib.Order.UpperLower.Basic
 import Mathlib.Data.Finset.Preimage
+import Mathlib.Data.Finsupp.Basic
+import Mathlib.Data.Finsupp.Multiset
+import Mathlib.Combinatorics.Enumerative.Partition
 
 /-!
 # Young diagrams
@@ -465,5 +468,54 @@ def equivListRowLens : YoungDiagram ≃ { w : List ℕ // w.Sorted (· ≥ ·) �
   right_inv := fun ⟨_, hw⟩ => Subtype.mk_eq_mk.mpr (rowLens_ofRowLens_eq_self hw.2)
 
 end EquivListRowLens
+
+section Partition
+
+/-! ### Partitions
+
+This section defines `YoungDiagram.ofPartition`, which constructs Young diagrams corresponding to
+partitions of natural numbers.
+
+-/
+
+def isDisjointUnion (μ : YoungDiagram) (c : ℕ × ℕ) : c ∈ μ.cells ↔ ∃ i < μ.colLen 0, c ∈ μ.row i :=
+    by
+  simp only [mem_cells]
+  sorry
+
+def toFinsupp (μ : YoungDiagram) : ℕ →₀ ℕ where
+  support := Finset.range (μ.colLen 0)
+  toFun i := μ.rowLen i
+  mem_support_toFun i := by simp [Finset.mem_range, ← mem_iff_lt_colLen, rowLen]
+
+def toPartition (μ : YoungDiagram) : Nat.Partition μ.card where
+  parts := (Finset.range (μ.colLen 0)).val.map μ.rowLen
+  parts_pos := by
+    intro i hi
+    simp only [Multiset.mem_map, Finset.mem_val] at hi
+    obtain ⟨j, hj, rfl⟩ := hi
+    rw [Finset.mem_range, ← mem_iff_lt_colLen] at hj
+    exact mem_iff_lt_rowLen.mp hj
+  parts_sum := by
+    simp
+    rw [YoungDiagram.card, Finset.card]
+
+    sorry
+
+-- def toPartition (μ : YoungDiagram) : Nat.Partition μ.card where
+--   parts := (μ.cells.val.map Prod.fst).dedup.map μ.rowLen
+--   parts_pos := by
+--     intro i hi
+--     simp only [Multiset.mem_dedup, Multiset.mem_map, Finset.mem_val, mem_cells, Prod.exists,
+--       exists_and_right, exists_eq_right] at hi
+--     obtain ⟨x, ⟨y, h⟩, rfl⟩ := hi
+--     simp only [rowLen, Nat.lt_find_iff, nonpos_iff_eq_zero, Decidable.not_not, forall_eq]
+--     apply μ.isLowerSet _ h
+--     exact Prod.mk_le_mk.mpr ⟨Nat.le_refl x, Nat.zero_le _⟩
+--   parts_sum := by
+
+--     sorry
+
+end Partition
 
 end YoungDiagram
