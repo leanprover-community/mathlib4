@@ -269,7 +269,7 @@ section IsDomain
 
 variable (R : Type u) [CommRing R] [IsDomain R]
 
-theorem isLocalRingHom_expand {p : ℕ} (hp : 0 < p) : IsLocalRingHom (expand R p) := by
+theorem isLocalHom_expand {p : ℕ} (hp : 0 < p) : IsLocalHom (expand R p) := by
   refine ⟨fun f hf1 => ?_⟩
   have hf2 := eq_C_of_degree_eq_zero (degree_eq_zero_of_isUnit hf1)
   rw [coeff_expand hp, if_pos (dvd_zero _), p.zero_div] at hf2
@@ -279,7 +279,7 @@ variable {R}
 
 theorem of_irreducible_expand {p : ℕ} (hp : p ≠ 0) {f : R[X]} (hf : Irreducible (expand R p f)) :
     Irreducible f :=
-  let _ := isLocalRingHom_expand R hp.bot_lt
+  let _ := isLocalHom_expand R hp.bot_lt
   hf.of_map _
 
 theorem of_irreducible_expand_pow {p : ℕ} (hp : p ≠ 0) {f : R[X]} {n : ℕ} :

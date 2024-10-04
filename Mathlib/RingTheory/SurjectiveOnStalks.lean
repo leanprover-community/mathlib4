@@ -175,7 +175,7 @@ lemma SurjectiveOnStalks.baseChange
       one_mul, mul_one, id_apply, ← e]
     rw [Algebra.algebraMap_eq_smul_one, ← smul_tmul', smul_mul_assoc]
 
-lemma surjectiveOnStalks_iff_of_isLocalRingHom [LocalRing S] [IsLocalRingHom f] :
+lemma surjectiveOnStalks_iff_of_isLocalHom [LocalRing S] [IsLocalHom f] :
     f.SurjectiveOnStalks ↔ Function.Surjective f := by
   refine ⟨fun H x ↦ ?_, fun h ↦ surjectiveOnStalks_of_surjective h⟩
   obtain ⟨y, r, c, hc, hr, e⟩ :=

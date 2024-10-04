@@ -144,10 +144,10 @@ theorem algebraMap_injective [IsValExtension vK vA] [Nontrivial A] :
   ext
   apply RingHom.injective (algebraMap K A) h
 
-instance instIsLocalRingHomValuationInteger {S ΓS: Type*} [CommRing S]
+instance instIsLocalHomValuationInteger {S ΓS: Type*} [CommRing S]
     [LinearOrderedCommGroupWithZero ΓS]
-    [Algebra R S] [IsLocalRingHom (algebraMap R S)] {vS : Valuation S ΓS}
-    [IsValExtension vR vS] : IsLocalRingHom (algebraMap vR.integer vS.integer) where
+    [Algebra R S] [IsLocalHom (algebraMap R S)] {vS : Valuation S ΓS}
+    [IsValExtension vR vS] : IsLocalHom (algebraMap vR.integer vS.integer) where
   map_nonunit r hr := by
     apply (Valuation.integer.integers (v := vR)).isUnit_of_one
     · exact (isUnit_map_iff (algebraMap R S) _).mp (hr.map (algebraMap _ S))

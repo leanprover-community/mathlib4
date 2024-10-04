@@ -218,9 +218,9 @@ theorem localRingHom_mk' (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.
         (⟨f y, le_comap_primeCompl_iff.mpr (ge_of_eq hIJ) y.2⟩ : J.primeCompl) :=
   map_mk' _ _ _
 
-instance isLocalRingHom_localRingHom (J : Ideal P) [hJ : J.IsPrime] (f : R →+* P)
-    (hIJ : I = J.comap f) : IsLocalRingHom (localRingHom I J f hIJ) :=
-  IsLocalRingHom.mk fun x hx => by
+instance isLocalHom_localRingHom (J : Ideal P) [hJ : J.IsPrime] (f : R →+* P)
+    (hIJ : I = J.comap f) : IsLocalHom (localRingHom I J f hIJ) :=
+  IsLocalHom.mk fun x hx => by
     rcases IsLocalization.mk'_surjective I.primeCompl x with ⟨r, s, rfl⟩
     rw [localRingHom_mk'] at hx
     rw [AtPrime.isUnit_mk'_iff] at hx ⊢

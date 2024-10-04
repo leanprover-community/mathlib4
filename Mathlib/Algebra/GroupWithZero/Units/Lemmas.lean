@@ -23,8 +23,8 @@ section Monoid
 
 variable [Monoid M] [GroupWithZero G₀]
 
-lemma isLocalRingHom_of_exists_map_ne_one [FunLike F G₀ M] [MonoidHomClass F G₀ M] {f : F}
-    (hf : ∃ x : G₀, f x ≠ 1) : IsLocalRingHom f where
+lemma isLocalHom_of_exists_map_ne_one [FunLike F G₀ M] [MonoidHomClass F G₀ M] {f : F}
+    (hf : ∃ x : G₀, f x ≠ 1) : IsLocalHom f where
   map_nonunit a h := by
     rcases eq_or_ne a 0 with (rfl | h)
     · obtain ⟨t, ht⟩ := hf
@@ -35,8 +35,8 @@ lemma isLocalRingHom_of_exists_map_ne_one [FunLike F G₀ M] [MonoidHomClass F G
     · exact ⟨⟨a, a⁻¹, mul_inv_cancel₀ h, inv_mul_cancel₀ h⟩, rfl⟩
 
 instance [GroupWithZero G₀] [FunLike F G₀ M₀] [MonoidWithZeroHomClass F G₀ M₀] [Nontrivial M₀]
-    (f : F) : IsLocalRingHom f :=
-  isLocalRingHom_of_exists_map_ne_one ⟨0, by simp⟩
+    (f : F) : IsLocalHom f :=
+  isLocalHom_of_exists_map_ne_one ⟨0, by simp⟩
 
 end Monoid
 
