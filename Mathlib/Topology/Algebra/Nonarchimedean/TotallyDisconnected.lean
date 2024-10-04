@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Jou Glasheen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jou Glasheen, Kevin Buzzard, David Loeffler, Yongle Hu
+Authors: Jou Glasheen, Kevin Buzzard, David Loeffler, Yongle Hu, Johan Commelin
 -/
 
 import Mathlib.Topology.Algebra.Nonarchimedean.Basic
@@ -10,6 +10,8 @@ import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 # Total separatedness of nonarchimedean groups
 
 In this file, we prove that a nonarchimedean group is a totally separated topological space.
+The fact that a nonarchimedean group is a totally disconnected topological space
+is implied by the fact that a nonarchimedean group is totally separated.
 
 ## Main results
 
@@ -30,7 +32,7 @@ open Pointwise TopologicalSpace
 
 variable {G : Type*} [TopologicalSpace G] [Group G] [NonarchimedeanGroup G] [T2Space G]
 
-namespace NonarchimedeanGroup.auxiliary
+namespace NonarchimedeanGroup
 
 @[to_additive]
 lemma exists_openSubgroup_separating {t : G} (ht : t ≠ 1) :
@@ -38,11 +40,6 @@ lemma exists_openSubgroup_separating {t : G} (ht : t ≠ 1) :
   rcases t2_separation ht with ⟨A, B, open_A, open_B, mem_A, mem_B, disj⟩
   obtain ⟨V, hV⟩ := is_nonarchimedean B (open_B.mem_nhds mem_B)
   exact ⟨⟨A, open_A⟩, V, mem_A, one_mem V, disj.mono_right hV⟩
-
-end NonarchimedeanGroup.auxiliary
-
-namespace NonarchimedeanGroup
-open NonarchimedeanGroup.auxiliary
 
 @[to_additive]
 instance instTotallySeparated : TotallySeparatedSpace G where
