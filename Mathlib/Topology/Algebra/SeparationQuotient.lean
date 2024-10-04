@@ -3,8 +3,9 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
 # Algebraic operations on `SeparationQuotient`
@@ -62,6 +63,12 @@ instance instIsScalarTower [SMul M N] [ContinuousConstSMul N X] [IsScalarTower M
   smul_assoc a b := surjective_mk.forall.2 fun x ↦ congr_arg mk <| smul_assoc a b x
 
 end SMul
+
+instance instContinuousSMul {M X : Type*} [SMul M X] [TopologicalSpace M] [TopologicalSpace X]
+    [ContinuousSMul M X] : ContinuousSMul M (SeparationQuotient X) where
+  continuous_smul := by
+    rw [(IsOpenQuotientMap.id.prodMap isOpenQuotientMap_mk).quotientMap.continuous_iff]
+    exact continuous_mk.comp continuous_smul
 
 instance instSMulZeroClass {M X : Type*} [Zero X] [SMulZeroClass M X] [TopologicalSpace X]
     [ContinuousConstSMul M X] : SMulZeroClass M (SeparationQuotient X) :=
@@ -189,6 +196,17 @@ instance instCommGroup [CommGroup G] [TopologicalGroup G] : CommGroup (Separatio
   surjective_mk.commGroup mk mk_one mk_mul mk_inv mk_div mk_pow mk_zpow
 
 end Group
+
+section UniformGroup
+
+@[to_additive]
+instance instUniformGroup {G : Type*} [Group G] [UniformSpace G] [UniformGroup G] :
+    UniformGroup (SeparationQuotient G) where
+  uniformContinuous_div := by
+    rw [uniformContinuous_dom₂]
+    exact uniformContinuous_mk.comp uniformContinuous_div
+
+end UniformGroup
 
 section MonoidWithZero
 
@@ -391,6 +409,14 @@ theorem mk_outCLM (x : SeparationQuotient E) : mk (outCLM K E x) = x :=
 @[simp]
 theorem mk_comp_outCLM : mk ∘ outCLM K E = id := funext (mk_outCLM K)
 
+variable {K} in
+theorem postcomp_mkCLM_surjective {L : Type*} [Semiring L] (σ : L →+* K)
+    (F : Type*) [AddCommMonoid F] [Module L F] [TopologicalSpace F] :
+    Function.Surjective ((mkCLM K E).comp : (F →SL[σ] E) → (F →SL[σ] SeparationQuotient E)) := by
+  intro f
+  use (outCLM K E).comp f
+  rw [← ContinuousLinearMap.comp_assoc, mkCLM_comp_outCLM, ContinuousLinearMap.id_comp]
+
 /-- The `SeparationQuotient.outCLM K E` map is a topological embedding. -/
 theorem outCLM_embedding : Embedding (outCLM K E) :=
   Function.LeftInverse.embedding (mk_outCLM K) continuous_mk (map_continuous _)
@@ -409,9 +435,12 @@ theorem outCLM_uniformInducing : UniformInducing (outCLM K E) := by
   rw [← uniformInducing_mk.uniformInducing_comp_iff, mk_comp_outCLM]
   exact uniformInducing_id
 
-theorem outCLM_uniformEmbedding : UniformEmbedding (outCLM K E) where
+theorem outCLM_isUniformEmbedding : IsUniformEmbedding (outCLM K E) where
   inj := outCLM_injective K E
   toUniformInducing := outCLM_uniformInducing K E
+
+@[deprecated (since := "2024-10-01")]
+alias outCLM_uniformEmbedding := outCLM_isUniformEmbedding
 
 theorem outCLM_uniformContinuous : UniformContinuous (outCLM K E) :=
   (outCLM_uniformInducing K E).uniformContinuous

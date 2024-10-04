@@ -7,6 +7,7 @@ import Mathlib.Data.Fintype.Basic
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Tactic.Zify
 import Mathlib.Data.Nat.Totient
+import Mathlib.RingTheory.IntegralDomain
 
 /-!
 # The Lucas test for primes.
@@ -18,9 +19,6 @@ and `a^d ≠ 1 (mod n)` for any divisor `d | n - 1`. This test is the basis of t
 certificate.
 
 ## TODO
-
-- Bonus: Show the reverse implication i.e. if a number is prime then it has a Lucas witness.
-  Use `Units.IsCyclic` from `RingTheory/IntegralDomain` to show the group is cyclic.
 - Write a tactic that uses this theorem to generate Pratt primality certificates
 - Integrate Pratt primality certificates into the norm_num primality verifier
 
@@ -59,3 +57,27 @@ theorem lucas_primality (p : ℕ) (a : ZMod p) (ha : a ^ (p - 1) = 1)
     p - 1 = orderOf a := order_of_a.symm
     _ = orderOf a' := (orderOf_injective (Units.coeHom (ZMod p)) Units.ext a')
     _ ≤ Fintype.card (ZMod p)ˣ := orderOf_le_card_univ
+
+/-- If `p` is prime, then there exists an `a` such that `a^(p-1) = 1 mod p`
+and `a^((p-1)/q) ≠ 1 mod p` for all prime factors `q` of `p-1`.
+The multiplicative group mod `p` is cyclic, so `a` can be any generator of the group
+(which must have order `p-1`).
+-/
+theorem reverse_lucas_primality (p : ℕ) (hP : p.Prime) :
+    ∃ a : ZMod p, a ^ (p - 1) = 1 ∧ ∀ q : ℕ, q.Prime → q ∣ p - 1 → a ^ ((p - 1) / q) ≠ 1 := by
+  have : Fact p.Prime := ⟨hP⟩
+  obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := (ZMod p)ˣ)
+  have h1 : orderOf g = p - 1 := by
+    rwa [orderOf_eq_card_of_forall_mem_zpowers hg, ← Nat.prime_iff_card_units]
+  have h2 := tsub_pos_iff_lt.2 hP.one_lt
+  rw [← orderOf_injective (Units.coeHom _) Units.ext _, orderOf_eq_iff h2] at h1
+  refine ⟨g, h1.1, fun q hq hqd ↦ ?_⟩
+  replace hq := hq.one_lt
+  exact h1.2 _ (Nat.div_lt_self h2 hq) (Nat.div_pos (Nat.le_of_dvd h2 hqd) (zero_lt_one.trans hq))
+
+/-- A number `p` is prime if and only if there exists an `a` such that
+`a^(p-1) = 1 mod p` and `a^((p-1)/q) ≠ 1 mod p` for all prime factors `q` of `p-1`.
+-/
+theorem lucas_primality_iff (p : ℕ) : p.Prime ↔
+    ∃ a : ZMod p, a ^ (p - 1) = 1 ∧ ∀ q : ℕ, q.Prime → q ∣ p - 1 → a ^ ((p - 1) / q) ≠ 1 :=
+  ⟨reverse_lucas_primality p, fun ⟨a, ⟨ha, hb⟩⟩ ↦ lucas_primality p a ha hb⟩

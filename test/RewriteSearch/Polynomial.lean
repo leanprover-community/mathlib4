@@ -174,7 +174,7 @@ example {R : Type u} [Ring R] [Nontrivial R] (x : R) :
 #guard_msgs(drop info) in
 example {S : Type v} [Ring S] (c : S) :
     Polynomial.nextCoeff (Polynomial.X - Polynomial.C c) = -c := by
-  rw_search [-Polynomial.nextCoeff_X_sub_C]
+  rw_search
   -- Mathlib proof:
   -- rw [sub_eq_add_neg, ← map_neg C c, nextCoeff_X_add_C]
   done

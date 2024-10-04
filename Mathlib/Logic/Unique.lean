@@ -247,7 +247,6 @@ instance {α} [IsEmpty α] : Unique (Option α) :=
 end Option
 
 section Subtype
-variable {α : Sort u}
 
 instance Unique.subtypeEq (y : α) : Unique { x // x = y } where
   default := ⟨y, rfl⟩

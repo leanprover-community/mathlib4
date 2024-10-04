@@ -280,8 +280,8 @@ instance isMultiplicative : IsMultiplicative F.relativelyRepresentable where
 lemma stableUnderBaseChange : StableUnderBaseChange F.relativelyRepresentable := by
   intro X Y Y' X' f g f' g' P₁ hg a h
   refine ⟨hg.pullback (h ≫ f), hg.snd (h ≫ f), ?_, ?_⟩
-  apply P₁.lift (hg.fst (h ≫ f)) (F.map (hg.snd (h ≫ f)) ≫ h) (by simpa using hg.w (h ≫ f))
-  apply IsPullback.of_right' (hg.isPullback (h ≫ f)) P₁
+  · apply P₁.lift (hg.fst (h ≫ f)) (F.map (hg.snd (h ≫ f)) ≫ h) (by simpa using hg.w (h ≫ f))
+  · apply IsPullback.of_right' (hg.isPullback (h ≫ f)) P₁
 
 instance respectsIso : RespectsIso F.relativelyRepresentable :=
   (stableUnderBaseChange F).respectsIso

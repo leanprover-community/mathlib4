@@ -257,6 +257,15 @@ theorem parts_top_subsingleton (a : α) [Decidable (a = ⊥)] :
     ((⊤ : Finpartition a).parts : Set α).Subsingleton :=
   Set.subsingleton_of_subset_singleton fun _ hb ↦ mem_singleton.1 <| parts_top_subset _ hb
 
+-- TODO: this instance takes double-exponential time to generate all partitions, find a faster way
+instance [DecidableEq α] {s : Finset α} : Fintype (Finpartition s) where
+  elems := s.powerset.powerset.image
+    fun ps ↦ if h : ps.sup id = s ∧ ⊥ ∉ ps ∧ ps.SupIndep id then ⟨ps, h.2.2, h.1, h.2.1⟩ else ⊤
+  complete P := by
+    refine mem_image.mpr ⟨P.parts, ?_, ?_⟩
+    · rw [mem_powerset]; intro p hp; rw [mem_powerset]; exact P.le hp
+    · simp only [P.supIndep, P.sup_parts, P.not_bot_mem]; rfl
+
 end Order
 
 end Lattice

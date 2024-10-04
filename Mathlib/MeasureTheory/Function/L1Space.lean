@@ -442,6 +442,9 @@ theorem Integrable.of_finite [Finite α] [MeasurableSpace α] [MeasurableSinglet
     (μ : Measure α) [IsFiniteMeasure μ] (f : α → β) : Integrable (fun a ↦ f a) μ :=
   ⟨(StronglyMeasurable.of_finite f).aestronglyMeasurable, .of_finite⟩
 
+lemma Integrable.of_isEmpty [IsEmpty α] (f : α → β) (μ : Measure α) :
+    Integrable f μ := Integrable.of_finite μ f
+
 @[deprecated (since := "2024-02-05")] alias integrable_of_fintype := Integrable.of_finite
 
 theorem Memℒp.integrable_norm_rpow {f : α → β} {p : ℝ≥0∞} (hf : Memℒp f p μ) (hp_ne_zero : p ≠ 0)
