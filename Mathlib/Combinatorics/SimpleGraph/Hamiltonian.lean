@@ -67,7 +67,7 @@ end
 
 /-- A hamiltonian cycle is a cycle that visits every vertex once. -/
 structure IsHamiltonianCycle (p : G.Walk a a) extends p.IsCycle : Prop :=
-  isHamiltonian_tail : (p.tail toIsCycle.not_nil).IsHamiltonian
+  isHamiltonian_tail : p.tail.IsHamiltonian
 
 variable {p : G.Walk a a}
 
@@ -84,22 +84,23 @@ lemma IsHamiltonianCycle.map {H : SimpleGraph β} (f : G →g H) (hf : Bijective
     intro x
     rcases p with (_ | ⟨y, p⟩)
     · cases hp.ne_nil rfl
-    simp only [support_cons, List.count_cons, beq_iff_eq, List.head_cons, hf.injective.eq_iff,
-      add_tsub_cancel_right]
+    simp only [map_cons, getVert_cons_succ, tail_cons_eq, support_copy,support_map]
+    rw [List.count_map_of_injective _ _ hf.injective, ← support_copy, ← tail_cons_eq]
     exact hp.isHamiltonian_tail _
 
 lemma isHamiltonianCycle_isCycle_and_isHamiltonian_tail  :
-    p.IsHamiltonianCycle ↔ ∃ h : p.IsCycle, (p.tail h.not_nil).IsHamiltonian :=
+    p.IsHamiltonianCycle ↔ p.IsCycle ∧ p.tail.IsHamiltonian :=
   ⟨fun ⟨h, h'⟩ ↦ ⟨h, h'⟩, fun ⟨h, h'⟩ ↦ ⟨h, h'⟩⟩
 
 lemma isHamiltonianCycle_iff_isCycle_and_support_count_tail_eq_one :
     p.IsHamiltonianCycle ↔ p.IsCycle ∧ ∀ a, (support p).tail.count a = 1 := by
-  simp only [isHamiltonianCycle_isCycle_and_isHamiltonian_tail, IsHamiltonian, support_tail,
-    exists_prop]
+  simp (config := { contextual := true }) [isHamiltonianCycle_isCycle_and_isHamiltonian_tail,
+    IsHamiltonian, support_tail, IsCycle.not_nil, exists_prop]
 
 /-- A hamiltonian cycle visits every vertex. -/
 lemma IsHamiltonianCycle.mem_support (hp : p.IsHamiltonianCycle) (b : α) :
-    b ∈ p.support := List.mem_of_mem_tail <| support_tail p _ ▸ hp.isHamiltonian_tail.mem_support _
+    b ∈ p.support :=
+  List.mem_of_mem_tail <| support_tail p hp.1.not_nil ▸ hp.isHamiltonian_tail.mem_support _
 
 /-- The length of a hamiltonian cycle is the number of vertices. -/
 lemma IsHamiltonianCycle.length_eq [Fintype α] (hp : p.IsHamiltonianCycle) :
@@ -110,11 +111,11 @@ lemma IsHamiltonianCycle.length_eq [Fintype α] (hp : p.IsHamiltonianCycle) :
 
 lemma IsHamiltonianCycle.count_support_self (hp : p.IsHamiltonianCycle) :
     p.support.count a = 2 := by
-  rw [support_eq_cons, List.count_cons_self, ← support_tail, hp.isHamiltonian_tail]
+  rw [support_eq_cons, List.count_cons_self, ← support_tail _ hp.1.not_nil, hp.isHamiltonian_tail]
 
 lemma IsHamiltonianCycle.support_count_of_ne (hp : p.IsHamiltonianCycle) (h : a ≠ b) :
     p.support.count b = 1 := by
-  rw [← cons_support_tail p, List.count_cons_of_ne h.symm, hp.isHamiltonian_tail]
+  rw [← cons_support_tail p hp.1.not_nil, List.count_cons_of_ne h.symm, hp.isHamiltonian_tail]
 
 end Walk
 

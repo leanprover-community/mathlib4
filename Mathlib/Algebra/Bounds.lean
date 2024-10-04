@@ -3,11 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Pointwise.Set
 import Mathlib.Algebra.Order.Group.OrderIso
-import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 
 /-!
 # Upper/lower bounds in ordered monoids and groups

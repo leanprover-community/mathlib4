@@ -740,6 +740,26 @@ lemma real_iff [Algebra ℂ A] {a : A} :
     simp
   · exact .of_subset_range_algebraMap Complex.ofReal_re fun x hx ↦ ⟨x.re, (h x hx).symm⟩
 
+lemma nnreal_le_iff [Algebra ℝ A] {a : A}
+    (ha : SpectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
+    (∀ x ∈ spectrum ℝ≥0 a, r ≤ x) ↔ ∀ x ∈ spectrum ℝ a, r ≤ x := by
+  simp [← ha.algebraMap_image]
+
+lemma nnreal_lt_iff [Algebra ℝ A] {a : A}
+    (ha : SpectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
+    (∀ x ∈ spectrum ℝ≥0 a, r < x) ↔ ∀ x ∈ spectrum ℝ a, r < x := by
+  simp [← ha.algebraMap_image]
+
+lemma le_nnreal_iff [Algebra ℝ A] {a : A}
+    (ha : SpectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
+    (∀ x ∈ spectrum ℝ≥0 a, x ≤ r) ↔ ∀ x ∈ spectrum ℝ a, x ≤ r := by
+  simp [← ha.algebraMap_image]
+
+lemma lt_nnreal_iff [Algebra ℝ A] {a : A}
+    (ha : SpectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
+    (∀ x ∈ spectrum ℝ≥0 a, x < r) ↔ ∀ x ∈ spectrum ℝ a, x < r := by
+  simp [← ha.algebraMap_image]
+
 lemma nnreal_iff_spectralRadius_le [Algebra ℝ A] {a : A} {t : ℝ≥0} (ht : spectralRadius ℝ a ≤ t) :
     SpectrumRestricts a ContinuousMap.realToNNReal ↔
       spectralRadius ℝ (algebraMap ℝ A t - a) ≤ t := by
@@ -816,6 +836,16 @@ lemma real_iff [Module ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] {a
     QuasispectrumRestricts a Complex.reCLM ↔ ∀ x ∈ σₙ ℂ a, x = x.re := by
   rw [quasispectrumRestricts_iff_spectrumRestricts_inr,
     Unitization.quasispectrum_eq_spectrum_inr' _ ℂ, SpectrumRestricts.real_iff]
+
+lemma le_nnreal_iff [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {a : A}
+    (ha : QuasispectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
+    (∀ x ∈ quasispectrum ℝ≥0 a, x ≤ r) ↔ ∀ x ∈ quasispectrum ℝ a, x ≤ r := by
+  simp [← ha.algebraMap_image]
+
+lemma lt_nnreal_iff [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {a : A}
+    (ha : QuasispectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
+    (∀ x ∈ quasispectrum ℝ≥0 a, x < r) ↔ ∀ x ∈ quasispectrum ℝ a, x < r := by
+  simp [← ha.algebraMap_image]
 
 end QuasispectrumRestricts
 

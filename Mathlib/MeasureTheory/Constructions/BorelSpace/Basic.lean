@@ -55,14 +55,6 @@ theorem borel_anti : Antitone (@borel α) := fun _ _ h =>
 theorem borel_eq_top_of_discrete [TopologicalSpace α] [DiscreteTopology α] : borel α = ⊤ :=
   top_le_iff.1 fun s _ => GenerateMeasurable.basic s (isOpen_discrete s)
 
-theorem borel_eq_top_of_countable [TopologicalSpace α] [T1Space α] [Countable α] : borel α = ⊤ := by
-  refine top_le_iff.1 fun s _ => biUnion_of_singleton s ▸ ?_
-  apply MeasurableSet.biUnion s.to_countable
-  intro x _
-  apply MeasurableSet.of_compl
-  apply GenerateMeasurable.basic
-  exact isClosed_singleton.isOpen_compl
-
 theorem borel_eq_generateFrom_of_subbasis {s : Set (Set α)} [t : TopologicalSpace α]
     [SecondCountableTopology α] (hs : t = .generateFrom s) : borel α = .generateFrom s :=
   le_antisymm
@@ -341,6 +333,12 @@ instance (priority := 100) OpensMeasurableSpace.separatesPoints [T0Space α] :
   apply Inseparable.eq
   rw [inseparable_iff_forall_open]
   exact fun s hs => hxy _ hs.measurableSet
+
+theorem borel_eq_top_of_countable {α : Type*} [TopologicalSpace α] [T0Space α] [Countable α] :
+    borel α = ⊤ := by
+  refine top_unique fun s _ ↦ ?_
+  borelize α
+  exact .of_discrete
 
 -- see Note [lower instance priority]
 instance (priority := 100) OpensMeasurableSpace.toMeasurableSingletonClass [T1Space α] :

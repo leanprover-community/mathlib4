@@ -3,8 +3,6 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
 import Mathlib.CategoryTheory.Monad.Adjunction
 import Mathlib.CategoryTheory.Monad.Coequalizer
 
@@ -13,23 +11,26 @@ import Mathlib.CategoryTheory.Monad.Coequalizer
 
 This file gives two constructions for building left adjoints: the adjoint triangle theorem and the
 adjoint lifting theorem.
+
 The adjoint triangle theorem concerns a functor `U : B ⥤ C` with a left adjoint `F` such
 that `ε_X : FUX ⟶ X` is a regular epi. Then for any category `A` with coequalizers of reflexive
 pairs, a functor `R : A ⥤ B` has a left adjoint if (and only if) the composite `R ⋙ U` does.
 Note that the condition on `U` regarding `ε_X` is automatically satisfied in the case when `U` is
-a monadic functor, giving the corollary: `monadicAdjointTriangleLift`, i.e. if `U` is monadic,
-`A` has reflexive coequalizers then `R : A ⥤ B` has a left adjoint provided `R ⋙ U` does.
+a monadic functor, giving the corollary: `isRightAdjoint_triangle_lift_monadic`, i.e. if `U` is
+monadic, `A` has reflexive coequalizers then `R : A ⥤ B` has a left adjoint provided `R ⋙ U` does.
 
 The adjoint lifting theorem says that given a commutative square of functors (up to isomorphism):
 
+```
       Q
     A → B
   U ↓   ↓ V
     C → D
       R
+```
 
-where `U` and `V` are monadic and `A` has reflexive coequalizers, then if `R` has a left adjoint
-then `Q` has a left adjoint.
+where `V` is monadic, `U` has a left adjoint, and `A` has reflexive coequalizers, then if `R` has a
+left adjoint then `Q` has a left adjoint.
 
 ## Implementation
 
@@ -38,10 +39,14 @@ than just a functor known to be a right adjoint. In docstrings, we write `(η, �
 and counit of the adjunction `adj₁ : F ⊣ U` and `(ι, δ)` for the unit and counit of the adjunction
 `adj₂ : F' ⊣ R ⋙ U`.
 
+This file has been adapted to `Mathlib.CategoryTheory.Adjunction.Lifting.Right`.
+Please try to keep them in sync.
+
 ## TODO
 
-Dualise to lift right adjoints through comonads (by reversing 1-cells) and dualise to lift right
-adjoints through monads (by reversing 2-cells), and the combination.
+- Dualise to lift right adjoints through monads (by reversing 2-cells).
+- Investigate whether it is possible to give a more explicit description of the lifted adjoint,
+  especially in the case when the isomorphism `comm` is `Iso.refl _`
 
 ## References
 * https://ncatlab.org/nlab/show/adjoint+triangle+theorem
@@ -61,7 +66,7 @@ variable {A : Type u₁} {B : Type u₂} {C : Type u₃}
 variable [Category.{v₁} A] [Category.{v₂} B] [Category.{v₃} C]
 
 -- Hide implementation details in this namespace
-namespace LiftAdjoint
+namespace LiftLeftAdjoint
 
 variable {U : B ⥤ C} {F : C ⥤ B} (R : A ⥤ B) (F' : C ⥤ A)
 variable (adj₁ : F ⊣ U) (adj₂ : F' ⊣ R ⋙ U)
@@ -96,7 +101,7 @@ def otherMap (X) : F'.obj (U.obj (F.obj (U.obj X))) ⟶ F'.obj (U.obj X) :=
   F'.map (U.map (F.map (adj₂.unit.app _) ≫ adj₁.counit.app _)) ≫ adj₂.counit.app _
 
 /-- `(F'Uε_X, otherMap X)` is a reflexive pair: in particular if `A` has reflexive coequalizers then
-it has a coequalizer.
+this pair has a coequalizer.
 -/
 instance (X : B) :
     IsReflexivePair (F'.map (U.map (adj₁.counit.app X))) (otherMap _ _ adj₁ adj₂ X) :=
@@ -159,7 +164,7 @@ noncomputable def constructLeftAdjoint [∀ X : B, RegularEpi (adj₁.counit.app
   -- This used to be `simp`, but we need `aesop_cat` after leanprover/lean4#2644
   aesop_cat
 
-end LiftAdjoint
+end LiftLeftAdjoint
 
 /-- The adjoint triangle theorem: Suppose `U : B ⥤ C` has a left adjoint `F` such that each counit
 `ε_X : FUX ⟶ X` is a regular epimorphism. Then if a category `A` has coequalizers of reflexive
@@ -168,18 +173,18 @@ pairs, then a functor `R : A ⥤ B` has a left adjoint if the composite `R ⋙ U
 Note the converse is true (with weaker assumptions), by `Adjunction.comp`.
 See https://ncatlab.org/nlab/show/adjoint+triangle+theorem
 -/
-lemma adjointTriangleLift {U : B ⥤ C} {F : C ⥤ B} (R : A ⥤ B) (adj₁ : F ⊣ U)
+lemma isRightAdjoint_triangle_lift {U : B ⥤ C} {F : C ⥤ B} (R : A ⥤ B) (adj₁ : F ⊣ U)
     [∀ X : B, RegularEpi (adj₁.counit.app X)] [HasReflexiveCoequalizers A]
     [(R ⋙ U).IsRightAdjoint ] : R.IsRightAdjoint where
   exists_leftAdjoint :=
-    ⟨LiftAdjoint.constructLeftAdjoint R _ adj₁ (Adjunction.ofIsRightAdjoint _),
+    ⟨LiftLeftAdjoint.constructLeftAdjoint R _ adj₁ (Adjunction.ofIsRightAdjoint _),
       ⟨Adjunction.adjunctionOfEquivLeft _ _⟩⟩
 
 /-- If `R ⋙ U` has a left adjoint, the domain of `R` has reflexive coequalizers and `U` is a monadic
 functor, then `R` has a left adjoint.
-This is a special case of `adjointTriangleLift` which is often more useful in practice.
+This is a special case of `isRightAdjoint_triangle_lift` which is often more useful in practice.
 -/
-lemma monadicAdjointTriangleLift (U : B ⥤ C) [MonadicRightAdjoint U] {R : A ⥤ B}
+lemma isRightAdjoint_triangle_lift_monadic (U : B ⥤ C) [MonadicRightAdjoint U] {R : A ⥤ B}
     [HasReflexiveCoequalizers A] [(R ⋙ U).IsRightAdjoint] : R.IsRightAdjoint := by
   let R' : A ⥤ _ := R ⋙ Monad.comparison (monadicAdjunction U)
   rsuffices : R'.IsRightAdjoint
@@ -195,18 +200,20 @@ lemma monadicAdjointTriangleLift (U : B ⥤ C) [MonadicRightAdjoint U] {R : A �
     intro X
     simp only [Monad.adj_counit]
     exact ⟨_, _, _, _, Monad.beckAlgebraCoequalizer X⟩
-  exact adjointTriangleLift R' (Monad.adj _)
+  exact isRightAdjoint_triangle_lift R' (Monad.adj _)
 
 variable {D : Type u₄}
 variable [Category.{v₄} D]
 
 /-- Suppose we have a commutative square of functors
 
+```
       Q
     A → B
   U ↓   ↓ V
     C → D
       R
+```
 
 where `U` has a left adjoint, `A` has reflexive coequalizers and `V` has a left adjoint such that
 each component of the counit is a regular epi.
@@ -214,30 +221,32 @@ Then `Q` has a left adjoint if `R` has a left adjoint.
 
 See https://ncatlab.org/nlab/show/adjoint+lifting+theorem
 -/
-lemma adjointSquareLift (Q : A ⥤ B) (V : B ⥤ D) (U : A ⥤ C) (R : C ⥤ D)
+lemma isRightAdjoint_square_lift (Q : A ⥤ B) (V : B ⥤ D) (U : A ⥤ C) (R : C ⥤ D)
     (comm : U ⋙ R ≅ Q ⋙ V) [U.IsRightAdjoint] [V.IsRightAdjoint] [R.IsRightAdjoint]
     [∀ X, RegularEpi ((Adjunction.ofIsRightAdjoint V).counit.app X)] [HasReflexiveCoequalizers A] :
     Q.IsRightAdjoint :=
   have := ((Adjunction.ofIsRightAdjoint (U ⋙ R)).ofNatIsoRight comm).isRightAdjoint
-  adjointTriangleLift Q (Adjunction.ofIsRightAdjoint V)
+  isRightAdjoint_triangle_lift Q (Adjunction.ofIsRightAdjoint V)
 
 /-- Suppose we have a commutative square of functors
 
+```
       Q
     A → B
   U ↓   ↓ V
     C → D
       R
+```
 
 where `U` has a left adjoint, `A` has reflexive coequalizers and `V` is monadic.
 Then `Q` has a left adjoint if `R` has a left adjoint.
 
 See https://ncatlab.org/nlab/show/adjoint+lifting+theorem
 -/
-lemma monadicAdjointSquareLift (Q : A ⥤ B) (V : B ⥤ D) (U : A ⥤ C) (R : C ⥤ D)
+lemma isRightAdjoint_square_lift_monadic (Q : A ⥤ B) (V : B ⥤ D) (U : A ⥤ C) (R : C ⥤ D)
     (comm : U ⋙ R ≅ Q ⋙ V) [U.IsRightAdjoint] [MonadicRightAdjoint V] [R.IsRightAdjoint]
     [HasReflexiveCoequalizers A] : Q.IsRightAdjoint :=
   have := ((Adjunction.ofIsRightAdjoint (U ⋙ R)).ofNatIsoRight comm).isRightAdjoint
-  monadicAdjointTriangleLift V
+  isRightAdjoint_triangle_lift_monadic V
 
 end CategoryTheory

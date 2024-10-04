@@ -448,7 +448,7 @@ theorem coe_sInf (S : Set (RingCon R)) : ⇑(sInf S) = sInf ((⇑) '' S) := by
 
 @[simp, norm_cast]
 theorem coe_iInf {ι : Sort*} (f : ι → RingCon R) : ⇑(iInf f) = ⨅ i, ⇑(f i) := by
-  rw [iInf, coe_sInf, ← Set.range_comp, sInf_range, Function.comp]
+  rw [iInf, coe_sInf, ← Set.range_comp, sInf_range, Function.comp_def]
 
 instance : PartialOrder (RingCon R) where
   le_refl _c _ _ := id

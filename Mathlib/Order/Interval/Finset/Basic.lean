@@ -334,6 +334,12 @@ lemma nonempty_Ici : (Ici a).Nonempty := ⟨a, mem_Ici.2 le_rfl⟩
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 lemma nonempty_Ioi : (Ioi a).Nonempty ↔ ¬ IsMax a := by simp [Finset.Nonempty]
 
+theorem Ici_subset_Ici : Ici a ⊆ Ici b ↔ b ≤ a := by
+  simpa [← coe_subset] using Set.Ici_subset_Ici
+
+theorem Ioi_subset_Ioi (h : a ≤ b) : Ioi b ⊆ Ioi a := by
+  simpa [← coe_subset] using Set.Ioi_subset_Ioi h
+
 variable [LocallyFiniteOrder α]
 
 theorem Icc_subset_Ici_self : Icc a b ⊆ Ici a := by
@@ -362,6 +368,12 @@ variable [LocallyFiniteOrderBot α]
 
 @[simp] lemma nonempty_Iic : (Iic a).Nonempty := ⟨a, mem_Iic.2 le_rfl⟩
 @[simp] lemma nonempty_Iio : (Iio a).Nonempty ↔ ¬ IsMin a := by simp [Finset.Nonempty]
+
+theorem Iic_subset_Iic : Iic a ⊆ Iic b ↔ a ≤ b := by
+  simpa [← coe_subset] using Set.Iic_subset_Iic
+
+theorem Iio_subset_Iio (h : a ≤ b) : Iio a ⊆ Iio b := by
+  simpa [← coe_subset] using Set.Iio_subset_Iio h
 
 variable [LocallyFiniteOrder α]
 

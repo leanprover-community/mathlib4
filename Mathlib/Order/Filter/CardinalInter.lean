@@ -300,16 +300,19 @@ theorem mem_cardinaleGenerate_iff {s : Set α} {hreg : c.IsRegular} :
     s ∈ cardinalGenerate g (IsRegular.nat_lt hreg 2) ↔
     ∃ S : Set (Set α), S ⊆ g ∧ (#S < c) ∧ ⋂₀ S ⊆ s := by
   constructor <;> intro h
-  · induction' h with s hs s t _ st ih S Sct _ ih
-    · refine ⟨{s}, singleton_subset_iff.mpr hs, ?_⟩
+  · induction h with
+    | @basic s hs =>
+      refine ⟨{s}, singleton_subset_iff.mpr hs, ?_⟩
       simpa [subset_refl] using IsRegular.nat_lt hreg 1
-    · exact ⟨∅, ⟨empty_subset g, mk_eq_zero (∅ : Set <| Set α) ▸ IsRegular.nat_lt hreg 0, by simp⟩⟩
-    · exact Exists.imp (by tauto) ih
-    choose T Tg Tct hT using ih
-    refine ⟨⋃ (s) (H : s ∈ S), T s H, by simpa,
-      (Cardinal.card_biUnion_lt_iff_forall_of_isRegular hreg Sct).2 Tct, ?_⟩
-    apply subset_sInter
-    apply fun s H => subset_trans (sInter_subset_sInter (subset_iUnion₂ s H)) (hT s H)
+    | univ =>
+      exact ⟨∅, ⟨empty_subset g, mk_eq_zero (∅ : Set <| Set α) ▸ IsRegular.nat_lt hreg 0, by simp⟩⟩
+    | superset _ _ ih => exact Exists.imp (by tauto) ih
+    | @sInter S Sct _ ih =>
+      choose T Tg Tct hT using ih
+      refine ⟨⋃ (s) (H : s ∈ S), T s H, by simpa,
+        (Cardinal.card_biUnion_lt_iff_forall_of_isRegular hreg Sct).2 Tct, ?_⟩
+      apply subset_sInter
+      apply fun s H => subset_trans (sInter_subset_sInter (subset_iUnion₂ s H)) (hT s H)
   rcases h with ⟨S, Sg, Sct, hS⟩
   have : CardinalInterFilter (cardinalGenerate g (IsRegular.nat_lt hreg 2)) c :=
     cardinalInter_ofCardinalGenerate _ _

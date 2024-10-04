@@ -704,7 +704,7 @@ variable [LinearOrder ι]
 /-- Given a map `u : ι → Ω → E`, the stopped process with respect to `τ` is `u i ω` if
 `i ≤ τ ω`, and `u (τ ω) ω` otherwise.
 
-Intuitively, the stopped process stops evolving once the stopping time has occured. -/
+Intuitively, the stopped process stops evolving once the stopping time has occurred. -/
 def stoppedProcess (u : ι → Ω → β) (τ : Ω → ι) : ι → Ω → β := fun i ω => u (min i (τ ω)) ω
 
 theorem stoppedProcess_eq_stoppedValue {u : ι → Ω → β} {τ : Ω → ι} :

@@ -57,7 +57,7 @@ instance : Coe (Sphere P) (Set P) :=
   ⟨fun s => Metric.sphere s.center s.radius⟩
 
 instance : Membership P (Sphere P) :=
-  ⟨fun p s => p ∈ (s : Set P)⟩
+  ⟨fun s p => p ∈ (s : Set P)⟩
 
 theorem Sphere.mk_center (c : P) (r : ℝ) : (⟨c, r⟩ : Sphere P).center = c :=
   rfl

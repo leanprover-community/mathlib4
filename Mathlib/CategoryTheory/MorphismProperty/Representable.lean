@@ -27,14 +27,13 @@ In this file, we define a notion of relative representability which works with r
 functor, and not just `yoneda`. The fact that a morphism `f : F ⟶ G` between presheaves is
 representable in the classical case will then be given by `F.relativelyRepresentable f`.
 
-
-
 ## Main definitions
+
 Throughout this file, `F : C ⥤ D` is a functor between categories `C` and `D`.
 
-* We define `relativelyRepresentable` as a `MorphismProperty`. A morphism `f : X ⟶ Y` in `D` is
-  said to be relatively representable with respect to `F`, if for any `g : F.obj a ⟶ Y`, there
-  exists a pullback square of the following form
+* `Functor.relativelyRepresentable`: A morphism `f : X ⟶ Y` in `D` is said to be relatively
+  representable with respect to `F`, if for any `g : F.obj a ⟶ Y`, there exists a pullback square
+  of the following form
 ```
   F.obj b --F.map snd--> F.obj a
       |                     |
@@ -43,6 +42,10 @@ Throughout this file, `F : C ⥤ D` is a functor between categories `C` and `D`.
       v                     v
       X ------- f --------> Y
 ```
+
+* `MorphismProperty.relative`: Given a morphism property `P` in `C`, a morphism `f : X ⟶ Y` in `D`
+  satisfies `P.relative F` if it is relatively representable and for any `g : F.obj a ⟶ Y`, the
+  property `P` holds for any represented pullback of `f` by `g`.
 
 ## API
 
@@ -259,7 +262,8 @@ end
 
 /-- When `C` has pullbacks, then `F.map f` is representable with respect to `F` for any
 `f : a ⟶ b` in `C`. -/
-lemma map [Full F] [PreservesLimitsOfShape WalkingCospan F] [HasPullbacks C] {a b : C} (f : a ⟶ b) :
+lemma map [Full F] [HasPullbacks C] {a b : C} (f : a ⟶ b)
+    [∀ c (g : c ⟶ b), PreservesLimit (cospan f g) F] :
     F.relativelyRepresentable (F.map f) := fun c g ↦ by
   obtain ⟨g, rfl⟩ := F.map_surjective g
   refine ⟨Limits.pullback f g, Limits.pullback.snd f g, F.map (Limits.pullback.fst f g), ?_⟩
@@ -307,11 +311,11 @@ def relative : MorphismProperty D :=
 /-- Given a morphism property `P` in a category `C`, a morphism `f : F ⟶ G` of presheaves in the
 category `Cᵒᵖ ⥤ Type v` satisfies the morphism property `P.presheaf` iff:
 * The morphism is representable.
-* For any morphism `g : F.obj X ⟶ G`, the property `P` holds for any represented pullback of
+* For any morphism `g : F.obj a ⟶ G`, the property `P` holds for any represented pullback of
   `f` by `g`.
 
-This is implemented as a special case of the more general notion of `P.relative`, with respect to
-a functor `F : C ⥤ D`, to the case when `F = yoneda`. -/
+This is implemented as a special case of the more general notion of `P.relative`, to the case when
+the functor `F` is `yoneda`. -/
 abbrev presheaf := P.relative yoneda
 
 variable {P} {F}
@@ -352,8 +356,8 @@ lemma relative_of_snd [F.Faithful] [F.Full] [P.RespectsIso] {f : X ⟶ Y}
 /-- If `P : MorphismProperty C` is stable under base change, `F` is fully faithful and preserves
 pullbacks, and `C` has all pullbacks, then for any `f : a ⟶ b` in `C`, `F.map f` satisfies
 `P.relative` if `f` satisfies `P`. -/
-lemma relative_map [F.Faithful] [F.Full] [PreservesLimitsOfShape WalkingCospan F]
-    [HasPullbacks C] (hP : StableUnderBaseChange P) {a b : C} {f : a ⟶ b}
+lemma relative_map [F.Faithful] [F.Full] [HasPullbacks C] (hP : StableUnderBaseChange P)
+    {a b : C} {f : a ⟶ b} [∀ c (g : c ⟶ b), PreservesLimit (cospan f g) F]
     (hf : P f) : P.relative F (F.map f) := by
   have := StableUnderBaseChange.respectsIso hP
   apply relative.of_exists (Functor.relativelyRepresentable.map F f)

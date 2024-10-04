@@ -1,68 +1,86 @@
 /-
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
+Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Artie Khovanov
 -/
 import Mathlib.Algebra.Order.Group.Cone
-import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Algebra.Order.Ring.Basic
+import Mathlib.Algebra.Ring.Subsemiring.Order
 
 /-!
-# Constructing an ordered ring from a ring with a specified positive cone.
+# Construct ordered rings from rings with a specified positive cone.
 
+In this file we provide the structure `RingCone`
+that encodes axioms of `OrderedRing` and `LinearOrderedRing`
+in terms of the subset of non-negative elements.
+
+We also provide constructors that convert between
+cones in rings and the corresponding ordered rings.
 -/
 
+/-- `RingConeClass S R` says that `S` is a type of cones in `R`. -/
+class RingConeClass (S R : Type*) [Ring R] [SetLike S R]
+    extends AddGroupConeClass S R, SubsemiringClass S R : Prop
 
-/-! ### Positive cones -/
+/-- A (positive) cone in a ring is a subsemiring that
+does not contain both `a` and `-a` for any nonzero `a`.
+This is equivalent to being the set of non-negative elements of
+some order making the ring into a partially ordered ring. -/
+structure RingCone (R : Type*) [Ring R] extends Subsemiring R, AddGroupCone R
 
+/-- Interpret a cone in a ring as a cone in the underlying additive group. -/
+add_decl_doc RingCone.toAddGroupCone
 
-variable {α : Type*} [Ring α] [Nontrivial α]
+instance RingCone.instSetLike (R : Type*) [Ring R] : SetLike (RingCone R) R where
+  coe C := C.carrier
+  coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
-namespace Ring
+instance RingCone.instRingConeClass (R : Type*) [Ring R] :
+    RingConeClass (RingCone R) R where
+  add_mem {C} := C.add_mem'
+  zero_mem {C} := C.zero_mem'
+  mul_mem {C} := C.mul_mem'
+  one_mem {C} := C.one_mem'
+  eq_zero_of_mem_of_neg_mem {C} := C.eq_zero_of_mem_of_neg_mem'
 
-/-- A positive cone in a ring consists of a positive cone in underlying `AddCommGroup`,
-which contains `1` and such that the positive elements are closed under multiplication. -/
-structure PositiveCone (α : Type*) [Ring α] extends AddCommGroup.PositiveCone α where
-  /-- In a positive cone, `1` is `nonneg` -/
-  one_nonneg : nonneg 1
-  /-- In a positive cone, if `a` and `b` are `pos` then so is `a * b` -/
-  mul_pos : ∀ a b, pos a → pos b → pos (a * b)
+namespace RingCone
 
-/-- Forget that a positive cone in a ring respects the multiplicative structure. -/
-add_decl_doc PositiveCone.toPositiveCone
+variable {T : Type*} [OrderedRing T] {a : T}
 
-/-- A total positive cone in a nontrivial ring induces a linear order. -/
-structure TotalPositiveCone (α : Type*) [Ring α] extends PositiveCone α,
-  AddCommGroup.TotalPositiveCone α
+variable (T) in
+/-- Construct a cone from the set of non-negative elements of a partially ordered ring. -/
+def nonneg : RingCone T where
+  __ := Subsemiring.nonneg T
+  eq_zero_of_mem_of_neg_mem' {a} := by simpa using ge_antisymm
 
-/-- Forget that a `TotalPositiveCone` in a ring is total. -/
-add_decl_doc TotalPositiveCone.toPositiveCone_1
+@[simp] lemma nonneg_toSubsemiring : (nonneg T).toSubsemiring = .nonneg T := rfl
+@[simp] lemma nonneg_toAddGroupCone : (nonneg T).toAddGroupCone = .nonneg T := rfl
+@[simp] lemma mem_nonneg : a ∈ nonneg T ↔ 0 ≤ a := Iff.rfl
+@[simp, norm_cast] lemma coe_nonneg : nonneg T = {x : T | 0 ≤ x} := rfl
 
-/-- Forget that a `TotalPositiveCone` in a ring respects the multiplicative structure. -/
-add_decl_doc TotalPositiveCone.toTotalPositiveCone
+instance nonneg.isMaxCone {T : Type*} [LinearOrderedRing T] : IsMaxCone (nonneg T) where
+  mem_or_neg_mem := mem_or_neg_mem (C := AddGroupCone.nonneg T)
 
-theorem PositiveCone.one_pos (C : PositiveCone α) : C.pos 1 :=
-  (C.pos_iff _).2 ⟨C.one_nonneg, fun h => one_ne_zero <| C.nonneg_antisymm C.one_nonneg h⟩
+end RingCone
 
-end Ring
+variable {S R : Type*} [Ring R] [SetLike S R] (C : S)
 
-open Ring
+/-- Construct a partially ordered ring by designating a cone in a ring.
+Warning: using this def as a constructor in an instance can lead to diamonds
+due to non-customisable field: `lt`. -/
+@[reducible] def OrderedRing.mkOfCone [RingConeClass S R] : OrderedRing R where
+  __ := ‹Ring R›
+  __ := OrderedAddCommGroup.mkOfCone C
+  zero_le_one := show _ ∈ C by simpa using one_mem C
+  mul_nonneg x y xnn ynn := show _ ∈ C by simpa using mul_mem xnn ynn
 
-/-- Construct a `StrictOrderedRing` by designating a positive cone in an existing `Ring`. -/
-def StrictOrderedRing.mkOfPositiveCone (C : PositiveCone α) : StrictOrderedRing α :=
-  { ‹Ring α›, OrderedAddCommGroup.mkOfPositiveCone C.toPositiveCone with
-    exists_pair_ne := ⟨0, 1, fun h => by simpa [← h, C.pos_iff] using C.one_pos⟩,
-    zero_le_one := by
-      change C.nonneg (1 - 0)
-      convert C.one_nonneg
-      simp,
-    mul_pos := fun x y xp yp => by
-      change C.pos (x * y - 0)
-      -- Porting note: used to be convert, but it relied on unfolding definitions
-      rw [sub_zero]
-      exact C.mul_pos x y (by rwa [← sub_zero x]) (by rwa [← sub_zero y]) }
-
-/-- Construct a `LinearOrderedRing` by
-designating a positive cone in an existing `Ring`. -/
-def LinearOrderedRing.mkOfPositiveCone (C : TotalPositiveCone α) : LinearOrderedRing α :=
-  { LinearOrderedAddCommGroup.mkOfPositiveCone C.toTotalPositiveCone,
-    StrictOrderedRing.mkOfPositiveCone C.toPositiveCone_1 with }
+/-- Construct a linearly ordered domain by designating a maximal cone in a domain.
+Warning: using this def as a constructor in an instance can lead to diamonds
+due to non-customisable fields: `lt`, `decidableLT`, `decidableEq`, `compare`. -/
+@[reducible] def LinearOrderedRing.mkOfCone
+    [IsDomain R] [RingConeClass S R] [IsMaxCone C]
+    (dec : DecidablePred (· ∈ C)) : LinearOrderedRing R where
+  __ := OrderedRing.mkOfCone C
+  __ := OrderedRing.toStrictOrderedRing R
+  le_total a b := by simpa using mem_or_neg_mem (b - a)
+  decidableLE a b := dec _

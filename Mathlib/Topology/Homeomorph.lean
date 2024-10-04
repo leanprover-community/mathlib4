@@ -913,9 +913,9 @@ lemma isHomeomorph_iff_exists_homeomorph : IsHomeomorph f ↔ ∃ h : X ≃ₜ Y
 lemma isHomeomorph_iff_exists_inverse : IsHomeomorph f ↔ Continuous f ∧ ∃ g : Y → X,
     LeftInverse g f ∧ RightInverse g f ∧ Continuous g := by
   refine ⟨fun hf ↦ ⟨hf.continuous, ?_⟩, fun ⟨hf, g, hg⟩ ↦ ?_⟩
-  let h := hf.homeomorph f
-  exact ⟨h.symm, h.left_inv, h.right_inv, h.continuous_invFun⟩
-  exact (Homeomorph.mk ⟨f, g, hg.1, hg.2.1⟩ hf hg.2.2).isHomeomorph
+  · let h := hf.homeomorph f
+    exact ⟨h.symm, h.left_inv, h.right_inv, h.continuous_invFun⟩
+  · exact (Homeomorph.mk ⟨f, g, hg.1, hg.2.1⟩ hf hg.2.2).isHomeomorph
 
 /-- A map is a homeomorphism iff it is a surjective embedding. -/
 lemma isHomeomorph_iff_embedding_surjective : IsHomeomorph f ↔ Embedding f ∧ Surjective f where

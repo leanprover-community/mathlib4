@@ -299,7 +299,7 @@ point in a domain. -/
 theorem ContinuousLinearEquiv.comp_contDiffWithinAt_iff (e : F ≃L[𝕜] G) :
     ContDiffWithinAt 𝕜 n (e ∘ f) s x ↔ ContDiffWithinAt 𝕜 n f s x :=
   ⟨fun H => by
-    simpa only [(· ∘ ·), e.symm.coe_coe, e.symm_apply_apply] using
+    simpa only [Function.comp_def, e.symm.coe_coe, e.symm_apply_apply] using
       H.continuousLinearMap_comp (e.symm : G →L[𝕜] F),
     fun H => H.continuousLinearMap_comp (e : F →L[𝕜] G)⟩
 
@@ -432,7 +432,7 @@ theorem ContinuousLinearEquiv.contDiffWithinAt_comp_iff (e : G ≃L[𝕜] E) :
     ContDiffWithinAt 𝕜 n (f ∘ e) (e ⁻¹' s) (e.symm x) ↔ ContDiffWithinAt 𝕜 n f s x := by
   constructor
   · intro H
-    simpa [← preimage_comp, (· ∘ ·)] using H.comp_continuousLinearMap (e.symm : E →L[𝕜] G)
+    simpa [← preimage_comp, Function.comp_def] using H.comp_continuousLinearMap (e.symm : E →L[𝕜] G)
   · intro H
     rw [← e.apply_symm_apply x, ← e.coe_coe] at H
     exact H.comp_continuousLinearMap _
@@ -448,8 +448,8 @@ theorem ContinuousLinearEquiv.contDiffAt_comp_iff (e : G ≃L[𝕜] E) :
 domains. -/
 theorem ContinuousLinearEquiv.contDiffOn_comp_iff (e : G ≃L[𝕜] E) :
     ContDiffOn 𝕜 n (f ∘ e) (e ⁻¹' s) ↔ ContDiffOn 𝕜 n f s :=
-  ⟨fun H => by simpa [(· ∘ ·)] using H.comp_continuousLinearMap (e.symm : E →L[𝕜] G), fun H =>
-    H.comp_continuousLinearMap (e : G →L[𝕜] E)⟩
+  ⟨fun H => by simpa [Function.comp_def] using H.comp_continuousLinearMap (e.symm : E →L[𝕜] G),
+    fun H => H.comp_continuousLinearMap (e : G →L[𝕜] E)⟩
 
 /-- Composition by continuous linear equivs on the right respects higher differentiability. -/
 theorem ContinuousLinearEquiv.contDiff_comp_iff (e : G ≃L[𝕜] E) :

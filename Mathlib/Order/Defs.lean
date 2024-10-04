@@ -390,6 +390,22 @@ def ltByCases (x y : α) {P : Sort*} (h₁ : x < y → P) (h₂ : x = y → P) (
   if h : x < y then h₁ h
   else if h' : y < x then h₃ h' else h₂ (le_antisymm (le_of_not_gt h') (le_of_not_gt h))
 
+namespace Nat
+
+/-! Deprecated properties of inequality on `Nat` -/
+
+@[deprecated (since := "2024-08-23")]
+protected def ltGeByCases {a b : Nat} {C : Sort u} (h₁ : a < b → C) (h₂ : b ≤ a → C) : C :=
+  Decidable.byCases h₁ fun h => h₂ (Or.elim (Nat.lt_or_ge a b) (fun a => absurd a h) fun a => a)
+
+set_option linter.deprecated false in
+@[deprecated ltByCases (since := "2024-08-23")]
+protected def ltByCases {a b : Nat} {C : Sort u} (h₁ : a < b → C) (h₂ : a = b → C)
+    (h₃ : b < a → C) : C :=
+  Nat.ltGeByCases h₁ fun h₁ => Nat.ltGeByCases h₃ fun h => h₂ (Nat.le_antisymm h h₁)
+
+end Nat
+
 theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α} {c d : β}
     (H : d < c → b < a) (h : a ≤ b) : c ≤ d :=
   le_of_not_lt fun h' => not_le_of_gt (H h') h
@@ -492,18 +508,18 @@ variable {o : Ordering}
 
 lemma compare_lt_iff_lt : compare a b = .lt ↔ a < b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
-  split_ifs <;> simp only [*, lt_irrefl]
+  split_ifs <;> simp only [*, lt_irrefl, reduceCtorEq]
 
 lemma compare_gt_iff_gt : compare a b = .gt ↔ a > b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
-  split_ifs <;> simp only [*, lt_irrefl, not_lt_of_gt]
+  split_ifs <;> simp only [*, lt_irrefl, not_lt_of_gt, reduceCtorEq]
   case _ h₁ h₂ =>
     have h : b < a := lt_trichotomy a b |>.resolve_left h₁ |>.resolve_left h₂
     exact true_iff_iff.2 h
 
 lemma compare_eq_iff_eq : compare a b = .eq ↔ a = b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
-  split_ifs <;> try simp only
+  split_ifs <;> try simp only [reduceCtorEq]
   case _ h   => exact false_iff_iff.2 <| ne_iff_lt_or_gt.2 <| .inl h
   case _ _ h => exact true_iff_iff.2 h
   case _ _ h => exact false_iff_iff.2 h

@@ -255,7 +255,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
       rcases exists_mem_of_nonempty X with ⟨xX, _⟩
       have : ∃ y ∈ range Ψ, dist (Φ xX) y < diam (univ : Set X) + 1 + diam (univ : Set Y) := by
         rw [Ψrange]
-        have : Φ xX ∈ ↑p := Φrange.subst (mem_range_self _)
+        have : Φ xX ∈ (p : Set _) := Φrange ▸ (mem_range_self _)
         exact
           exists_dist_lt_of_hausdorffDist_lt this bound
             (hausdorffEdist_ne_top_of_nonempty_of_bounded p.nonempty q.nonempty
@@ -315,7 +315,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
     refine le_trans this (le_of_forall_le_of_dense fun r hr => ?_)
     have I1 : ∀ x : X, (⨅ y, Fb (inl x, inr y)) ≤ r := by
       intro x
-      have : f (inl x) ∈ ↑p := Φrange.subst (mem_range_self _)
+      have : f (inl x) ∈ (p : Set _) := Φrange ▸ (mem_range_self _)
       rcases exists_dist_lt_of_hausdorffDist_lt this hr
           (hausdorffEdist_ne_top_of_nonempty_of_bounded p.nonempty q.nonempty p.isCompact.isBounded
             q.isCompact.isBounded) with
@@ -331,7 +331,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
 
     have I2 : ∀ y : Y, (⨅ x, Fb (inl x, inr y)) ≤ r := by
       intro y
-      have : f (inr y) ∈ ↑q := Ψrange.subst (mem_range_self _)
+      have : f (inr y) ∈ (q : Set _) := Ψrange ▸ (mem_range_self _)
       rcases exists_dist_lt_of_hausdorffDist_lt' this hr
           (hausdorffEdist_ne_top_of_nonempty_of_bounded p.nonempty q.nonempty p.isCompact.isBounded
             q.isCompact.isBounded) with

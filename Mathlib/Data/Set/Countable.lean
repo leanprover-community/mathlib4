@@ -101,8 +101,8 @@ lemma range_enumerateCountable_of_mem {s : Set α} (h : s.Countable) {default : 
 lemma enumerateCountable_mem {s : Set α} (h : s.Countable) {default : α} (h_mem : default ∈ s)
     (n : ℕ) :
     enumerateCountable h default n ∈ s := by
-  conv_rhs => rw [← range_enumerateCountable_of_mem h h_mem]
-  exact mem_range_self n
+  convert mem_range_self n
+  exact (range_enumerateCountable_of_mem h h_mem).symm
 
 end Enumerate
 
@@ -291,9 +291,9 @@ theorem countable_setOf_nonempty_of_disjoint {f : β → Set α}
   have A : Injective F := by
     rintro ⟨t, ht⟩ ⟨t', ht'⟩ htt'
     have A : (f t ∩ f t').Nonempty := by
-      refine ⟨F ⟨t, ht⟩, hF _, ?_⟩
+      refine ⟨F ⟨t, ht⟩, hF ⟨t, _⟩, ?_⟩
       rw [htt']
-      exact hF _
+      exact hF ⟨t', _⟩
     simp only [Subtype.mk.injEq]
     by_contra H
     exact not_disjoint_iff_nonempty_inter.2 A (hf H)

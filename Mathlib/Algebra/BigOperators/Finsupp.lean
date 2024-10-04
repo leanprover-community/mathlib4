@@ -348,7 +348,7 @@ def liftAddHom [AddZeroClass M] [AddCommMonoid N] : (α → M →+ N) ≃+ ((α 
   right_inv F := by
   -- Porting note: This was `ext` and used the wrong lemma
     apply Finsupp.addHom_ext'
-    simp [singleAddHom, AddMonoidHom.comp, Function.comp]
+    simp [singleAddHom, AddMonoidHom.comp, Function.comp_def]
   map_add' F G := by
     ext x
     exact sum_add

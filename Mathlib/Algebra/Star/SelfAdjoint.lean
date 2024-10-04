@@ -156,6 +156,10 @@ theorem conjugate {x : R} (hx : IsSelfAdjoint x) (z : R) : IsSelfAdjoint (z * x 
 theorem conjugate' {x : R} (hx : IsSelfAdjoint x) (z : R) : IsSelfAdjoint (star z * x * z) := by
   simp only [isSelfAdjoint_iff, star_mul, star_star, mul_assoc, hx.star_eq]
 
+@[aesop 90% apply]
+theorem conjugate_self {x : R} (hx : IsSelfAdjoint x) {z : R} (hz : IsSelfAdjoint z) :
+    IsSelfAdjoint (z * x * z) := by nth_rewrite 2 [← hz]; exact conjugate hx z
+
 @[aesop 10% apply]
 theorem isStarNormal {x : R} (hx : IsSelfAdjoint x) : IsStarNormal x :=
   ⟨by simp only [Commute, SemiconjBy, hx.star_eq]⟩

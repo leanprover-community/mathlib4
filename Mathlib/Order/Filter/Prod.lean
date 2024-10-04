@@ -229,10 +229,11 @@ theorem prod_mono_right (f : Filter α) {g₁ g₂ : Filter β} (hf : g₁ ≤ g
 theorem prod_comap_comap_eq.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {β₁ : Type w} {β₂ : Type x}
     {f₁ : Filter α₁} {f₂ : Filter α₂} {m₁ : β₁ → α₁} {m₂ : β₂ → α₂} :
     comap m₁ f₁ ×ˢ comap m₂ f₂ = comap (fun p : β₁ × β₂ => (m₁ p.1, m₂ p.2)) (f₁ ×ˢ f₂) := by
-  simp only [SProd.sprod, Filter.prod, comap_comap, comap_inf, (· ∘ ·)]
+  simp only [SProd.sprod, Filter.prod, comap_comap, comap_inf, Function.comp_def]
 
 theorem prod_comm' : f ×ˢ g = comap Prod.swap (g ×ˢ f) := by
-  simp only [SProd.sprod, Filter.prod, comap_comap, (· ∘ ·), inf_comm, Prod.swap, comap_inf]
+  simp only [SProd.sprod, Filter.prod, comap_comap, Function.comp_def, inf_comm, Prod.swap,
+    comap_inf]
 
 theorem prod_comm : f ×ˢ g = map (fun p : β × α => (p.2, p.1)) (g ×ˢ f) := by
   rw [prod_comm', ← map_swap_eq_comap_swap]
@@ -279,13 +280,13 @@ theorem eventually_swap_iff {p : α × β → Prop} :
 
 theorem prod_assoc (f : Filter α) (g : Filter β) (h : Filter γ) :
     map (Equiv.prodAssoc α β γ) ((f ×ˢ g) ×ˢ h) = f ×ˢ (g ×ˢ h) := by
-  simp_rw [← comap_equiv_symm, SProd.sprod, Filter.prod, comap_inf, comap_comap, inf_assoc, (· ∘ ·),
-    Equiv.prodAssoc_symm_apply]
+  simp_rw [← comap_equiv_symm, SProd.sprod, Filter.prod, comap_inf, comap_comap, inf_assoc,
+    Function.comp_def, Equiv.prodAssoc_symm_apply]
 
 theorem prod_assoc_symm (f : Filter α) (g : Filter β) (h : Filter γ) :
     map (Equiv.prodAssoc α β γ).symm (f ×ˢ (g ×ˢ h)) = (f ×ˢ g) ×ˢ h := by
   simp_rw [map_equiv_symm, SProd.sprod, Filter.prod, comap_inf, comap_comap, inf_assoc,
-    Function.comp, Equiv.prodAssoc_apply]
+    Function.comp_def, Equiv.prodAssoc_apply]
 
 theorem tendsto_prodAssoc {h : Filter γ} :
     Tendsto (Equiv.prodAssoc α β γ) ((f ×ˢ g) ×ˢ h) (f ×ˢ (g ×ˢ h)) :=
@@ -414,7 +415,7 @@ theorem tendsto_prod_iff' {g' : Filter γ} {s : α → β × γ} :
     Tendsto s f (g ×ˢ g') ↔ Tendsto (fun n => (s n).1) f g ∧ Tendsto (fun n => (s n).2) f g' := by
   dsimp only [SProd.sprod]
   unfold Filter.prod
-  simp only [tendsto_inf, tendsto_comap_iff, (· ∘ ·)]
+  simp only [tendsto_inf, tendsto_comap_iff, Function.comp_def]
 
 theorem le_prod {f : Filter (α × β)} {g : Filter α} {g' : Filter β} :
     (f ≤ g ×ˢ g') ↔ Tendsto Prod.fst f g ∧ Tendsto Prod.snd f g' :=

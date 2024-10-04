@@ -1356,11 +1356,11 @@ lemma StrictAnti.not_bddBelow_range [NoMaxOrder α] [PredOrder β] [IsPredArchim
 
 end bdd_range
 
-section IsWellOrder
+section IsWellFounded
 
-variable [LinearOrder α]
+variable [PartialOrder α]
 
-instance (priority := 100) IsWellOrder.toIsPredArchimedean [h : IsWellOrder α (· < ·)]
+instance (priority := 100) WellFoundedLT.toIsPredArchimedean [h : WellFoundedLT α]
     [PredOrder α] : IsPredArchimedean α :=
   ⟨fun {a b} => by
     refine WellFounded.fix (C := fun b => a ≤ b → ∃ n, Nat.iterate pred n b = a)
@@ -1369,19 +1369,19 @@ instance (priority := 100) IsWellOrder.toIsPredArchimedean [h : IsWellOrder α (
     replace hab := eq_or_lt_of_le hab
     rcases hab with (rfl | hab)
     · exact ⟨0, rfl⟩
-    rcases le_or_lt b (pred b) with hb | hb
-    · cases (min_of_le_pred hb).not_lt hab
+    rcases eq_or_lt_of_le (pred_le b) with hb | hb
+    · cases (min_of_le_pred hb.ge).not_lt hab
     dsimp at ih
     obtain ⟨k, hk⟩ := ih (pred b) hb (le_pred_of_lt hab)
     refine ⟨k + 1, ?_⟩
     rw [iterate_add_apply, iterate_one, hk]⟩
 
-instance (priority := 100) IsWellOrder.toIsSuccArchimedean [h : IsWellOrder α (· > ·)]
+instance (priority := 100) WellFoundedGT.toIsSuccArchimedean [h : WellFoundedGT α]
     [SuccOrder α] : IsSuccArchimedean α :=
   let h : IsPredArchimedean αᵒᵈ := by infer_instance
   ⟨h.1⟩
 
-end IsWellOrder
+end IsWellFounded
 
 section OrderBot
 

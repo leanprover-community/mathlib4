@@ -301,7 +301,7 @@ variable (L)
 
 @[simp]
 lemma mem_closed_of_isRelational [L.IsRelational] (s : Set M) : s ∈ (closure L).closed :=
-  (mem_closed_iff s).2 (IsRelational.empty_functions _).elim
+  (mem_closed_iff s).2 isEmptyElim
 
 theorem _root_.Set.Countable.substructure_closure
     [Countable (Σl, L.Functions l)] (h : s.Countable) : Countable.{w + 1} (closure L s) := by
@@ -876,7 +876,7 @@ theorem subtype_substructureEquivMap (f : M ↪[L] N) (s : L.Substructure M) :
   ext; rfl
 
 /-- The equivalence between the domain and the range of an embedding `f`. -/
-noncomputable def equivRange (f : M ↪[L] N) : M ≃[L] f.toHom.range where
+@[simps toEquiv_apply] noncomputable def equivRange (f : M ↪[L] N) : M ≃[L] f.toHom.range where
   toFun := codRestrict f.toHom.range f f.toHom.mem_range_self
   invFun n := Classical.choose n.2
   left_inv m :=

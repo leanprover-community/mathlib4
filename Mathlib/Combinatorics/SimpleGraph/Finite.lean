@@ -242,7 +242,7 @@ theorem mem_incidenceFinset [DecidableEq V] (e : Sym2 V) :
   Set.mem_toFinset
 
 theorem incidenceFinset_eq_filter [DecidableEq V] [Fintype G.edgeSet] :
-    G.incidenceFinset v = G.edgeFinset.filter (Membership.mem v) := by
+    G.incidenceFinset v = G.edgeFinset.filter (v ∈ ·) := by
   ext e
   induction e
   simp [mk'_mem_incidenceSet_iff]
@@ -278,7 +278,7 @@ section Finite
 variable [Fintype V]
 
 instance neighborSetFintype [DecidableRel G.Adj] (v : V) : Fintype (G.neighborSet v) :=
-  @Subtype.fintype _ _
+  @Subtype.fintype _ (· ∈ G.neighborSet v)
     (by
       simp_rw [mem_neighborSet]
       infer_instance)

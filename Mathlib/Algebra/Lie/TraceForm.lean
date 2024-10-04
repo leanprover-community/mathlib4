@@ -324,6 +324,12 @@ lemma traceForm_eq_zero_of_isTrivial [LieModule.IsTrivial I N] :
     simp [this, N.trace_eq_trace_restrict_of_le_idealizer I h x hy]
   ext n
   suffices ⁅y, (n : M)⁆ = 0 by simp [this]
+  #adaptation_note
+  /--
+  After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
+  See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
+  -/
+  letI : Bracket I N := LieRingModule.toBracket
   exact Submodule.coe_eq_zero.mpr (LieModule.IsTrivial.trivial (⟨y, hy⟩ : I) n)
 
 end LieSubmodule

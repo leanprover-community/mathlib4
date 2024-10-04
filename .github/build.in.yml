@@ -1,3 +1,4 @@
+# This is the master file for autogenerating `.github/workflows/{bors, build_fork, build }.yml`.
 
 jobs:
   # Cancels previous runs of jobs in this file
@@ -148,10 +149,10 @@ jobs:
       - name: get cache
         id: get
         run: |
-          lake exe cache clean
+          rm -rf .lake/build/lib/Mathlib/
           # Fail quickly if the cache is completely cold, by checking for Mathlib.Init
           lake exe cache get Mathlib.Init
-          ! test -e .lake/build/lib/Mathlib/Init.olean || lake exe cache get
+          lake build --no-build Mathlib.Init && lake exe cache get || echo "No cache for 'Mathlib.Init' available"
 
       - name: build mathlib
         id: build
@@ -318,7 +319,7 @@ jobs:
 
       - if: contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI')
         name: If `auto-merge-after-CI` is present, add a `bors merge` comment.
-        uses: GrantBirki/comment@v2.0.1
+        uses: GrantBirki/comment@v2
         with:
           token: ${{ secrets.AUTO_MERGE_TOKEN }}
           issue-number: ${{ steps.PR.outputs.number }}

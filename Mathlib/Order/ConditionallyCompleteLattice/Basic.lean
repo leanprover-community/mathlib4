@@ -155,7 +155,7 @@ every nonempty subset which is bounded below has an infimum.
 Typical examples are real numbers or natural numbers.
 
 To differentiate the statements from the corresponding statements in (unconditional)
-complete lattices, we prefix sInf and subₛ by a c everywhere. The same statements should
+complete lattices, we prefix `sInf` and `sSup` by a `c` everywhere. The same statements should
 hold in both worlds, sometimes with additional assumptions of nonemptiness or
 boundedness. -/
 class ConditionallyCompleteLattice (α : Type*) extends Lattice α, SupSet α, InfSet α where
@@ -175,7 +175,7 @@ every nonempty subset which is bounded below has an infimum.
 Typical examples are real numbers or natural numbers.
 
 To differentiate the statements from the corresponding statements in (unconditional)
-complete linear orders, we prefix sInf and sSup by a c everywhere. The same statements should
+complete linear orders, we prefix `sInf` and `sSup` by a `c` everywhere. The same statements should
 hold in both worlds, sometimes with additional assumptions of nonemptiness or
 boundedness. -/
 class ConditionallyCompleteLinearOrder (α : Type*) extends ConditionallyCompleteLattice α where
@@ -215,7 +215,7 @@ every nonempty subset which is bounded above has a supremum, and every nonempty 
 bounded below) has an infimum.  A typical example is the natural numbers.
 
 To differentiate the statements from the corresponding statements in (unconditional)
-complete linear orders, we prefix `sInf` and `sSup` by a c everywhere. The same statements should
+complete linear orders, we prefix `sInf` and `sSup` by a `c` everywhere. The same statements should
 hold in both worlds, sometimes with additional assumptions of nonemptiness or
 boundedness. -/
 class ConditionallyCompleteLinearOrderBot (α : Type*) extends ConditionallyCompleteLinearOrder α,

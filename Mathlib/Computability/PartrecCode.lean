@@ -488,7 +488,7 @@ theorem eval_prec_succ (cf cg : Code) (a k : ℕ) :
   simp
 
 instance : Membership (ℕ →. ℕ) Code :=
-  ⟨fun f c => eval c = f⟩
+  ⟨fun c f => eval c = f⟩
 
 @[simp]
 theorem eval_const : ∀ n m, eval (Code.const n) m = Part.some n

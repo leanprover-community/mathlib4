@@ -97,7 +97,7 @@ structure Filter (α : Type*) where
 
 /-- If `F` is a filter on `α`, and `U` a subset of `α` then we can write `U ∈ F` as on paper. -/
 instance {α : Type*} : Membership (Set α) (Filter α) :=
-  ⟨fun U F => U ∈ F.sets⟩
+  ⟨fun F U => U ∈ F.sets⟩
 
 namespace Filter
 
@@ -138,6 +138,9 @@ theorem mem_of_superset {x y : Set α} (hx : x ∈ f) (hxy : x ⊆ y) : y ∈ f 
 
 instance : Trans (· ⊇ ·) ((· ∈ ·) : Set α → Filter α → Prop) (· ∈ ·) where
   trans h₁ h₂ := mem_of_superset h₂ h₁
+
+instance : Trans Membership.mem (· ⊆ ·) (Membership.mem : Filter α → Set α → Prop) where
+  trans h₁ h₂ := mem_of_superset h₁ h₂
 
 theorem inter_mem {s t : Set α} (hs : s ∈ f) (ht : t ∈ f) : s ∩ t ∈ f :=
   f.inter_sets hs ht
@@ -533,20 +536,21 @@ theorem mem_iInf_of_mem {f : ι → Filter α} (i : ι) {s} (hs : s ∈ f i) : s
   iInf_le f i hs
 
 theorem mem_iInf_of_iInter {ι} {s : ι → Filter α} {U : Set α} {I : Set ι} (I_fin : I.Finite)
-    {V : I → Set α} (hV : ∀ i, V i ∈ s i) (hU : ⋂ i, V i ⊆ U) : U ∈ ⨅ i, s i := by
+    {V : I → Set α} (hV : ∀ (i : I), V i ∈ s i) (hU : ⋂ i, V i ⊆ U) : U ∈ ⨅ i, s i := by
   haveI := I_fin.fintype
   refine mem_of_superset (iInter_mem.2 fun i => ?_) hU
   exact mem_iInf_of_mem (i : ι) (hV _)
 
 theorem mem_iInf {ι} {s : ι → Filter α} {U : Set α} :
-    (U ∈ ⨅ i, s i) ↔ ∃ I : Set ι, I.Finite ∧ ∃ V : I → Set α, (∀ i, V i ∈ s i) ∧ U = ⋂ i, V i := by
+    (U ∈ ⨅ i, s i) ↔
+      ∃ I : Set ι, I.Finite ∧ ∃ V : I → Set α, (∀ (i : I), V i ∈ s i) ∧ U = ⋂ i, V i := by
   constructor
   · rw [iInf_eq_generate, mem_generate_iff]
     rintro ⟨t, tsub, tfin, tinter⟩
     rcases eq_finite_iUnion_of_finite_subset_iUnion tfin tsub with ⟨I, Ifin, σ, σfin, σsub, rfl⟩
     rw [sInter_iUnion] at tinter
     set V := fun i => U ∪ ⋂₀ σ i with hV
-    have V_in : ∀ i, V i ∈ s i := by
+    have V_in : ∀ (i : I), V i ∈ s i := by
       rintro i
       have : ⋂₀ σ i ∈ s i := by
         rw [sInter_mem (σfin _)]
@@ -568,7 +572,7 @@ theorem mem_iInf' {ι} {s : ι → Filter α} {U : Set α} :
   refine ⟨I, If, fun i => if hi : i ∈ I then V ⟨i, hi⟩ else univ, fun i => ?_, fun i hi => ?_, ?_⟩
   · dsimp only
     split_ifs
-    exacts [hV _, univ_mem]
+    exacts [hV ⟨i,_⟩, univ_mem]
   · exact dif_neg hi
   · simp only [iInter_dite, biInter_eq_iInter, dif_pos (Subtype.coe_prop _), Subtype.coe_eta,
       iInter_univ, inter_univ, eq_self_iff_true, true_and_iff]
@@ -707,7 +711,7 @@ theorem eq_sInf_of_mem_iff_exists_mem {S : Set (Filter α)} {l : Filter α}
 
 theorem eq_iInf_of_mem_iff_exists_mem {f : ι → Filter α} {l : Filter α}
     (h : ∀ {s}, s ∈ l ↔ ∃ i, s ∈ f i) : l = iInf f :=
-  eq_sInf_of_mem_iff_exists_mem <| h.trans exists_range_iff.symm
+  eq_sInf_of_mem_iff_exists_mem <| h.trans (exists_range_iff (p := (_ ∈ ·))).symm
 
 theorem eq_biInf_of_mem_iff_exists_mem {f : ι → Filter α} {p : ι → Prop} {l : Filter α}
     (h : ∀ {s}, s ∈ l ↔ ∃ i, p i ∧ s ∈ f i) : l = ⨅ (i) (_ : p i), f i := by

@@ -246,34 +246,11 @@ theorem lt_of_testBit {n m : ℕ} (i : ℕ) (hn : testBit n i = false) (hm : tes
         _ ≤ 2 * m := mul_le_mul_left 2 this
     · exact Nat.succ_lt_succ this'
 
-@[simp]
-theorem testBit_two_pow_self (n : ℕ) : testBit (2 ^ n) n = true := by
-  rw [testBit, shiftRight_eq_div_pow, Nat.div_self (Nat.pow_pos Nat.zero_lt_two)]
-  simp
-
-theorem testBit_two_pow_of_ne {n m : ℕ} (hm : n ≠ m) : testBit (2 ^ n) m = false := by
-  rw [testBit, shiftRight_eq_div_pow]
-  cases' hm.lt_or_lt with hm hm
-  · rw [Nat.div_eq_of_lt]
-    · simp
-    · exact Nat.pow_lt_pow_right Nat.one_lt_two hm
-  · rw [Nat.pow_div hm.le Nat.two_pos, ← Nat.sub_add_cancel (succ_le_of_lt <| Nat.sub_pos_of_lt hm)]
-    -- Porting note: XXX why does this make it work?
-    rw [(rfl : succ 0 = 1)]
-    simp [pow_succ, and_one_is_mod, mul_mod_left]
-
-theorem testBit_two_pow (n m : ℕ) : testBit (2 ^ n) m = (n = m) := by
-  by_cases h : n = m
-  · cases h
-    simp
-  · rw [testBit_two_pow_of_ne h]
-    simp [h]
-
 theorem bitwise_swap {f : Bool → Bool → Bool} :
     bitwise (Function.swap f) = Function.swap (bitwise f) := by
   funext m n
   simp only [Function.swap]
-  induction' m using Nat.strongInductionOn with m ih generalizing n
+  induction' m using Nat.strongRecOn with m ih generalizing n
   cases' m with m
   <;> cases' n with n
   <;> try rw [bitwise_zero_left, bitwise_zero_right]

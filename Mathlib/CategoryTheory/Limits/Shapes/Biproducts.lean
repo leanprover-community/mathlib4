@@ -386,7 +386,7 @@ theorem hasBiproductsOfShape_of_equiv {K : Type w'} [HasBiproductsOfShape K C] (
     let ⟨⟨h⟩⟩ := HasBiproductsOfShape.has_biproduct (F ∘ e.symm)
     let ⟨c, hc⟩ := h
     HasBiproduct.mk <| by
-      simpa only [(· ∘ ·), e.symm_apply_apply] using
+      simpa only [Function.comp_def, e.symm_apply_apply] using
         LimitBicone.mk (c.whisker e) ((c.whiskerIsBilimitIff _).2 hc)⟩
 
 instance (priority := 100) hasBiproductsOfShape_finite [HasFiniteBiproducts C] [Finite J] :

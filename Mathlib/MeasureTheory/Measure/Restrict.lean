@@ -76,10 +76,20 @@ theorem restrict_mono' {_m0 : MeasurableSpace α} ⦃s s' : Set α⦄ ⦃μ ν :
     _ = ν.restrict s' t := (restrict_apply ht).symm
 
 /-- Restriction of a measure to a subset is monotone both in set and in measure. -/
-@[mono]
+@[mono, gcongr]
 theorem restrict_mono {_m0 : MeasurableSpace α} ⦃s s' : Set α⦄ (hs : s ⊆ s') ⦃μ ν : Measure α⦄
     (hμν : μ ≤ ν) : μ.restrict s ≤ ν.restrict s' :=
   restrict_mono' (ae_of_all _ hs) hμν
+
+@[gcongr]
+theorem restrict_mono_measure {_ : MeasurableSpace α} {μ ν : Measure α} (h : μ ≤ ν) (s : Set α) :
+    μ.restrict s ≤ ν.restrict s :=
+  restrict_mono subset_rfl h
+
+@[gcongr]
+theorem restrict_mono_set {_ : MeasurableSpace α} (μ : Measure α) {s t : Set α} (h : s ⊆ t) :
+    μ.restrict s ≤ μ.restrict t :=
+  restrict_mono h le_rfl
 
 theorem restrict_mono_ae (h : s ≤ᵐ[μ] t) : μ.restrict s ≤ μ.restrict t :=
   restrict_mono' h (le_refl μ)

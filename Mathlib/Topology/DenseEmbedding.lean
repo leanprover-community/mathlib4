@@ -253,7 +253,7 @@ protected theorem subtype (de : DenseEmbedding e) (p : α → Prop) :
     induced :=
       (induced_iff_nhds_eq _).2 fun ⟨x, hx⟩ => by
         simp [subtypeEmb, nhds_subtype_eq_comap, de.toInducing.nhds_eq_comap, comap_comap,
-          (· ∘ ·)] }
+          Function.comp_def] }
 
 theorem dense_image (de : DenseEmbedding e) {s : Set α} : Dense (e '' s) ↔ Dense s :=
   de.toDenseInducing.dense_image
