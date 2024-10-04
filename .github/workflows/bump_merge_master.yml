@@ -34,7 +34,7 @@ jobs:
       run: |
         if [ -f merge_conflicts.txt ]; then
           git diff --name-only --diff-filter=U > conflict_files.txt
-          if [ $(wc -l < conflict_files.txt) -eq 1 ] && grep -q 'lean-toolchain' conflict_files.txt; then
+          if [ "$(wc -l < conflict_files.txt)" -eq 1 ] && grep -q 'lean-toolchain' conflict_files.txt; then
             git checkout --ours lean-toolchain
             git add lean-toolchain
             git commit -m "Resolved conflict in lean-toolchain"
@@ -48,13 +48,13 @@ jobs:
       run: |
         DATE=$(date +'%Y-%m-%d-%H-%M')
         NEW_BRANCH="bump-merge-master-$DATE"
-        git checkout -b $NEW_BRANCH
+        git checkout -b "$NEW_BRANCH"
         git add -A
         git commit -m "Committing conflicting files as is"
-        git push origin $NEW_BRANCH
+        git push origin "$NEW_BRANCH"
         BUMP_BRANCH="${{ steps.find-bump-branch.outputs.bump_branch }}"
         PR_URL=$(gh pr create --title "nightly-testing: resolve conflicts with master" --base "$BUMP_BRANCH")
-        PR_NUMBER=$(echo $PR_URL | grep -oP '\d+$')
+        PR_NUMBER=$(echo "$PR_URL" | grep -oP '\d+$')
         echo "new_branch=$NEW_BRANCH" >> $GITHUB_ENV
         echo "pr_number=$PR_NUMBER" >> $GITHUB_ENV
 
