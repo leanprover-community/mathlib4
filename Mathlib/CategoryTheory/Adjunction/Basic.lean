@@ -51,7 +51,8 @@ Conversely `Equivalence.toAdjunction` recovers the underlying adjunction from an
         E --→ F             E ←-- F
           L₂                  R₂
   ```
-  where `L₁ ⊣ R₁` and `L₂ ⊣ R₂`.
+  where `L₁ ⊣ R₁` and `L₂ ⊣ R₂`. Specializing to a pair of adjoints `L₁ L₂ : C ⥤ D`,
+  `R₁ R₂ : D ⥤ C`, it provides equivalences `(L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂)` and `(L₂ ≅ L₁) ≃ (R₁ ≅ R₂)`.
 * The file `Opposites` contains constructions to relate adjunctions of functors to adjunctions of
   their opposites.
 * The file `Reflective` defines reflective functors, i.e. fully faithful right adjoints. Note that
