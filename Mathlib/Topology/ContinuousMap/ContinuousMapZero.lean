@@ -268,20 +268,26 @@ variable [Zero R] [UniformSpace R]
 
 protected instance instUniformSpace : UniformSpace C(X, R)₀ := .comap toContinuousMap inferInstance
 
-lemma uniformEmbedding_toContinuousMap :
-    UniformEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
+lemma isUniformEmbedding_toContinuousMap :
+    IsUniformEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
   comap_uniformity := rfl
   inj _ _ h := ext fun x ↦ congr($(h) x)
 
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_toContinuousMap := isUniformEmbedding_toContinuousMap
+
 instance [T1Space R] [CompleteSpace C(X, R)] : CompleteSpace C(X, R)₀ :=
-  completeSpace_iff_isComplete_range uniformEmbedding_toContinuousMap.toUniformInducing
+  completeSpace_iff_isComplete_range isUniformEmbedding_toContinuousMap.toUniformInducing
     |>.mpr closedEmbedding_toContinuousMap.isClosed_range.isComplete
 
-lemma uniformEmbedding_comp {Y : Type*} [UniformSpace Y] [Zero Y] (g : C(Y, R)₀)
-    (hg : UniformEmbedding g) : UniformEmbedding (g.comp · : C(X, Y)₀ → C(X, R)₀) :=
-  uniformEmbedding_toContinuousMap.of_comp_iff.mp <|
-    ContinuousMap.uniformEmbedding_comp g.toContinuousMap hg |>.comp
-      uniformEmbedding_toContinuousMap
+lemma isUniformEmbedding_comp {Y : Type*} [UniformSpace Y] [Zero Y] (g : C(Y, R)₀)
+    (hg : IsUniformEmbedding g) : IsUniformEmbedding (g.comp · : C(X, Y)₀ → C(X, R)₀) :=
+  isUniformEmbedding_toContinuousMap.of_comp_iff.mp <|
+    ContinuousMap.isUniformEmbedding_comp g.toContinuousMap hg |>.comp
+      isUniformEmbedding_toContinuousMap
+
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_comp := isUniformEmbedding_comp
 
 /-- The uniform equivalence `C(X, R)₀ ≃ᵤ C(Y, R)₀` induced by a homeomorphism of the domains
 sending `0 : X` to `0 : Y`. -/
@@ -291,12 +297,12 @@ def _root_.UniformEquiv.arrowCongrLeft₀ {Y : Type*} [TopologicalSpace Y] [Zero
   invFun g := g.comp ⟨f.toContinuousMap, hf⟩
   left_inv g := ext fun _ ↦ congrArg g <| f.left_inv _
   right_inv g := ext fun _ ↦ congrArg g <| f.right_inv _
-  uniformContinuous_toFun := uniformEmbedding_toContinuousMap.uniformContinuous_iff.mpr <|
+  uniformContinuous_toFun := isUniformEmbedding_toContinuousMap.uniformContinuous_iff.mpr <|
     ContinuousMap.uniformContinuous_comp_left f.symm.toContinuousMap |>.comp
-    uniformEmbedding_toContinuousMap.uniformContinuous
-  uniformContinuous_invFun := uniformEmbedding_toContinuousMap.uniformContinuous_iff.mpr <|
+    isUniformEmbedding_toContinuousMap.uniformContinuous
+  uniformContinuous_invFun := isUniformEmbedding_toContinuousMap.uniformContinuous_iff.mpr <|
     ContinuousMap.uniformContinuous_comp_left f.toContinuousMap |>.comp
-    uniformEmbedding_toContinuousMap.uniformContinuous
+    isUniformEmbedding_toContinuousMap.uniformContinuous
 
 end UniformSpace
 
@@ -340,7 +346,7 @@ section Norm
 variable {α : Type*} {𝕜 : Type*} {R : Type*} [TopologicalSpace α] [CompactSpace α] [Zero α]
 
 noncomputable instance [MetricSpace R] [Zero R]: MetricSpace C(α, R)₀ :=
-  ContinuousMapZero.uniformEmbedding_toContinuousMap.comapMetricSpace _
+  ContinuousMapZero.isUniformEmbedding_toContinuousMap.comapMetricSpace _
 
 noncomputable instance [NormedAddCommGroup R] : Norm C(α, R)₀ where
   norm f := ‖(f : C(α, R))‖

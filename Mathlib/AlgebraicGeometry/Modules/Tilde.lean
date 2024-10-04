@@ -187,10 +187,11 @@ lemma smul_section_apply (r : R) (U : Opens (PrimeSpectrum.Top R))
 lemma smul_stalk_no_nonzero_divisor {x : PrimeSpectrum R}
     (r : x.asIdeal.primeCompl) (st : (tildeInModuleCat M).stalk x) (hst : r.1 • st = 0) :
     st = 0 := by
-  refine Limits.Concrete.colimit_no_zero_smul_divisor (hx := hst)
-    ⟨op ⟨PrimeSpectrum.basicOpen r.1, r.2⟩, fun U i s hs ↦ Subtype.eq <| funext fun pt ↦ ?_⟩
-  exact LocalizedModule.eq_zero_of_smul_eq_zero (hx := congr_fun (Subtype.ext_iff.1 hs) pt) <|
-    i.unop pt |>.2
+  refine Limits.Concrete.colimit_no_zero_smul_divisor
+    _ _ _ ⟨op ⟨PrimeSpectrum.basicOpen r.1, r.2⟩, fun U i s hs ↦ Subtype.eq <| funext fun pt ↦ ?_⟩
+    _ hst
+  apply LocalizedModule.eq_zero_of_smul_eq_zero _ (i.unop pt).2 _
+    (congr_fun (Subtype.ext_iff.1 hs) pt)
 
 /--
 If `U` is an open subset of `Spec R`, this is the morphism of `R`-modules from `M` to

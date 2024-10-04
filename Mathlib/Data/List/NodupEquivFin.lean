@@ -126,7 +126,7 @@ theorem sublist_of_orderEmbedding_get?_eq {l l' : List α} (f : ℕ ↪o ℕ)
     exact ix.succ_pos
   rw [← List.take_append_drop (f 0 + 1) l', ← List.singleton_append]
   apply List.Sublist.append _ (IH _ this)
-  rw [List.singleton_sublist, ← h, l'.getElem_take _ (Nat.lt_succ_self _)]
+  rw [List.singleton_sublist, ← h, l'.getElem_take' _ (Nat.lt_succ_self _)]
   apply List.get_mem
 
 /-- A `l : List α` is `Sublist l l'` for `l' : List α` iff

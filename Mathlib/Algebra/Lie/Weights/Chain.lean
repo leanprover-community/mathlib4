@@ -41,7 +41,7 @@ We provide basic definitions and results to support `α`-chain techniques in thi
 
 -/
 
-open FiniteDimensional Function Set
+open Module Function Set
 
 variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
   (M : Type*) [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]

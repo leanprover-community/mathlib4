@@ -223,7 +223,7 @@ theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C �
                 (Partrec.nat_iff.1 <| eval_part.comp (const cg) Computable.id) ((hC _).1 fC),
         fun h => by {
           obtain rfl | rfl := h <;> simpa [ComputablePred, Set.mem_empty_iff_false] using
-            ⟨⟨inferInstance⟩, Computable.const _⟩ }⟩
+            Computable.const _}⟩
 
 /-- The Halting problem is recursively enumerable -/
 theorem halting_problem_re (n) : RePred fun c => (eval c n).Dom :=
@@ -280,8 +280,6 @@ end Nat
 namespace Nat.Partrec'
 
 open Mathlib.Vector Partrec Computable
-
-open Nat (Partrec')
 
 open Nat.Partrec'
 

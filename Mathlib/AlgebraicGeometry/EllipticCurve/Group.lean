@@ -545,7 +545,7 @@ lemma toClass_eq_zero (P : W.Point) : toClass P = 0 ↔ P = 0 := by
       rw [← finrank_quotient_span_eq_natDegree_norm (CoordinateRing.basis W) h0,
         ← (quotientEquivAlgOfEq F hp).toLinearEquiv.finrank_eq,
         (CoordinateRing.quotientXYIdealEquiv W h).toLinearEquiv.finrank_eq,
-        FiniteDimensional.finrank_self]
+        Module.finrank_self]
   · exact congr_arg toClass
 
 lemma toClass_injective : Function.Injective <| @toClass _ _ W := by

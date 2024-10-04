@@ -552,6 +552,7 @@ import Mathlib.Algebra.Order.Archimedean.Submonoid
 import Mathlib.Algebra.Order.BigOperators.Expect
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.List
+import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 import Mathlib.Algebra.Order.BigOperators.Group.Multiset
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.List
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
@@ -593,6 +594,7 @@ import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Algebra.Order.Group.Lattice
 import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Group.Opposite
 import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Algebra.Order.Group.PiLex
 import Mathlib.Algebra.Order.Group.Pointwise.Bounds
@@ -667,6 +669,7 @@ import Mathlib.Algebra.Order.Ring.Finset
 import Mathlib.Algebra.Order.Ring.InjSurj
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Ring.Opposite
 import Mathlib.Algebra.Order.Ring.Pow
 import Mathlib.Algebra.Order.Ring.Prod
 import Mathlib.Algebra.Order.Ring.Rat
@@ -874,6 +877,7 @@ import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Topology
 import Mathlib.AlgebraicGeometry.Properties
 import Mathlib.AlgebraicGeometry.Pullbacks
+import Mathlib.AlgebraicGeometry.ResidueField
 import Mathlib.AlgebraicGeometry.Restrict
 import Mathlib.AlgebraicGeometry.Scheme
 import Mathlib.AlgebraicGeometry.Sites.BigZariski
@@ -2063,6 +2067,7 @@ import Mathlib.Condensed.Basic
 import Mathlib.Condensed.CartesianClosed
 import Mathlib.Condensed.Discrete.Basic
 import Mathlib.Condensed.Discrete.LocallyConstant
+import Mathlib.Condensed.Discrete.Module
 import Mathlib.Condensed.Epi
 import Mathlib.Condensed.Equivalence
 import Mathlib.Condensed.Explicit
@@ -3964,6 +3969,7 @@ import Mathlib.RingTheory.Localization.AsSubring
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Localization.Away.AdjoinRoot
 import Mathlib.RingTheory.Localization.Away.Basic
+import Mathlib.RingTheory.Localization.Away.Lemmas
 import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.Localization.Cardinality
@@ -4062,6 +4068,7 @@ import Mathlib.RingTheory.RingHom.Finite
 import Mathlib.RingTheory.RingHom.FinitePresentation
 import Mathlib.RingTheory.RingHom.FiniteType
 import Mathlib.RingTheory.RingHom.Integral
+import Mathlib.RingTheory.RingHom.Locally
 import Mathlib.RingTheory.RingHom.Surjective
 import Mathlib.RingTheory.RingHomProperties
 import Mathlib.RingTheory.RingInvo
@@ -4089,7 +4096,9 @@ import Mathlib.RingTheory.TwoSidedIdeal.Operations
 import Mathlib.RingTheory.UniqueFactorizationDomain
 import Mathlib.RingTheory.Unramified.Basic
 import Mathlib.RingTheory.Unramified.Derivations
+import Mathlib.RingTheory.Unramified.Field
 import Mathlib.RingTheory.Unramified.Finite
+import Mathlib.RingTheory.Unramified.Pi
 import Mathlib.RingTheory.Valuation.AlgebraInstances
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
@@ -4167,6 +4176,7 @@ import Mathlib.Std.Data.HashMap
 import Mathlib.Tactic
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.Algebraize
 import Mathlib.Tactic.ApplyAt
 import Mathlib.Tactic.ApplyCongr
 import Mathlib.Tactic.ApplyFun
@@ -4728,6 +4738,7 @@ import Mathlib.Topology.MetricSpace.ShrinkingLemma
 import Mathlib.Topology.MetricSpace.ThickenedIndicator
 import Mathlib.Topology.MetricSpace.Thickening
 import Mathlib.Topology.MetricSpace.Ultra.Basic
+import Mathlib.Topology.MetricSpace.Ultra.ContinuousMaps
 import Mathlib.Topology.MetricSpace.Ultra.TotallyDisconnected
 import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.Metrizable.ContinuousMap
