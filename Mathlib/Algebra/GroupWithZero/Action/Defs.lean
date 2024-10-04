@@ -220,7 +220,7 @@ end DistribSMul
 
 /-- Typeclass for multiplicative actions on additive structures. This generalizes group modules. -/
 @[ext]
-class DistribMulAction (M A : Type*) [Monoid M] [AddMonoid A] extends MulAction M A where
+class DistribMulAction (M A : Type*) [outParam (Monoid M)] [AddMonoid A] extends MulAction M A where
   /-- Multiplying `0` by a scalar gives `0` -/
   smul_zero : ∀ a : M, a • (0 : A) = 0
   /-- Scalar multiplication distributes across addition -/
@@ -231,7 +231,8 @@ section
 variable [Monoid M] [AddMonoid A] [DistribMulAction M A]
 
 -- See note [lower instance priority]
-instance (priority := 100) DistribMulAction.toDistribSMul : DistribSMul M A :=
+instance (priority := 100) DistribMulAction.toDistribSMul
+  {M A} {_ : Monoid M} {_ : AddMonoid A} [DistribMulAction M A] : DistribSMul M A :=
   { ‹DistribMulAction M A› with }
 
 -- Porting note: this probably is no longer relevant.
