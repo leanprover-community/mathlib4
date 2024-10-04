@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Order.RelIso.Set
 import Mathlib.Data.Multiset.Sort
 import Mathlib.Data.List.NodupEquivFin
-import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Finset.Max
 import Mathlib.Data.Fintype.Card
 
 /-!
@@ -188,8 +188,8 @@ theorem orderEmbOfFin_singleton (a : α) (i : Fin 1) :
 the increasing bijection `orderEmbOfFin s h`. -/
 theorem orderEmbOfFin_unique {s : Finset α} {k : ℕ} (h : s.card = k) {f : Fin k → α}
     (hfs : ∀ x, f x ∈ s) (hmono : StrictMono f) : f = s.orderEmbOfFin h := by
-  apply Fin.strictMono_unique hmono (s.orderEmbOfFin h).strictMono
-  rw [range_orderEmbOfFin, ← Set.image_univ, ← coe_univ, ← coe_image, coe_inj]
+  rw [← hmono.range_inj (s.orderEmbOfFin h).strictMono, range_orderEmbOfFin, ← Set.image_univ,
+    ← coe_univ, ← coe_image, coe_inj]
   refine eq_of_subset_of_card_le (fun x hx => ?_) ?_
   · rcases mem_image.1 hx with ⟨x, _, rfl⟩
     exact hfs x
@@ -241,3 +241,21 @@ theorem sort_univ (n : ℕ) : Finset.univ.sort (fun x y : Fin n => x ≤ y) = Li
     (List.pairwise_le_finRange n)
 
 end Fin
+
+/-- Given a `Fintype` `α` of cardinality `k`, the map `orderIsoFinOfCardEq s h` is the increasing
+bijection between `Fin k` and `α` as an `OrderIso`. Here, `h` is a proof that the cardinality of `α`
+is `k`. We use this instead of an iso `Fin (Fintype.card α) ≃o α` to avoid casting issues in further
+uses of this function. -/
+def Fintype.orderIsoFinOfCardEq
+    (α : Type*) [LinearOrder α] [Fintype α] {k : ℕ} (h : Fintype.card α = k) :
+    Fin k ≃o α :=
+  (Finset.univ.orderIsoOfFin h).trans
+    ((OrderIso.setCongr _ _ Finset.coe_univ).trans OrderIso.Set.univ)
+
+/-- Any finite linear order order-embeds into any infinite linear order. -/
+lemma nonempty_orderEmbedding_of_finite_infinite
+    (α : Type*) [LinearOrder α] [hα : Finite α]
+    (β : Type*) [LinearOrder β] [hβ : Infinite β] : Nonempty (α ↪o β) := by
+  haveI := Fintype.ofFinite α
+  obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq β (Fintype.card α)
+  exact ⟨((Fintype.orderIsoFinOfCardEq α rfl).symm.toOrderEmbedding).trans (s.orderEmbOfFin hs)⟩

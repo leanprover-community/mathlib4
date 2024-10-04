@@ -93,6 +93,8 @@ instance instUniformContinuousConstSMul {M : Type*}
   haveI := uniformContinuousConstSMul_of_continuousConstSMul M F
   uniformEmbedding_toUniformOnFun.uniformContinuousConstSMul fun _ _ ↦ rfl
 
+section CompleteSpace
+
 variable [∀ i, ContinuousSMul 𝕜 (E i)] [ContinuousConstSMul 𝕜 F] [CompleteSpace F] [T2Space F]
 
 open UniformOnFun in
@@ -115,6 +117,30 @@ theorem completeSpace (h : RestrictGenTopology {s : Set (Π i, E i) | IsVonNBoun
 instance instCompleteSpace [∀ i, TopologicalAddGroup (E i)] [SequentialSpace (Π i, E i)] :
     CompleteSpace (ContinuousMultilinearMap 𝕜 E F) :=
   completeSpace <| .of_seq fun _u x hux ↦ (hux.isVonNBounded_range 𝕜).insert x
+
+end CompleteSpace
+
+section RestrictScalars
+
+variable (𝕜' : Type*) [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
+  [∀ i, Module 𝕜' (E i)] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F]
+  [∀ i, ContinuousSMul 𝕜 (E i)]
+
+theorem uniformEmbedding_restrictScalars :
+    UniformEmbedding
+      (restrictScalars 𝕜' : ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜' E F) := by
+  letI : NontriviallyNormedField 𝕜 :=
+    ⟨let ⟨x, hx⟩ := @NontriviallyNormedField.non_trivial 𝕜' _; ⟨algebraMap 𝕜' 𝕜 x, by simpa⟩⟩
+  rw [← uniformEmbedding_toUniformOnFun.of_comp_iff]
+  convert uniformEmbedding_toUniformOnFun using 4 with s
+  exact ⟨fun h ↦ h.extend_scalars _, fun h ↦ h.restrict_scalars _⟩
+
+theorem uniformContinuous_restrictScalars :
+    UniformContinuous
+      (restrictScalars 𝕜' : ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜' E F) :=
+  (uniformEmbedding_restrictScalars 𝕜').uniformContinuous
+
+end RestrictScalars
 
 end UniformAddGroup
 
@@ -170,6 +196,35 @@ theorem continuous_coe_fun :
 
 instance instT2Space [T2Space F] : T2Space (ContinuousMultilinearMap 𝕜 E F) :=
   .of_injective_continuous DFunLike.coe_injective continuous_coe_fun
+
+section RestrictScalars
+
+variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' 𝕜]
+  [∀ i, Module 𝕜' (E i)] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F]
+
+theorem embedding_restrictScalars :
+    Embedding
+      (restrictScalars 𝕜' : ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜' E F) :=
+  letI : UniformSpace F := TopologicalAddGroup.toUniformSpace F
+  haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
+  (uniformEmbedding_restrictScalars _).embedding
+
+@[continuity, fun_prop]
+theorem continuous_restrictScalars :
+    Continuous
+      (restrictScalars 𝕜' : ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜' E F) :=
+   embedding_restrictScalars.continuous
+
+variable (𝕜') in
+/-- `ContinuousMultilinearMap.restrictScalars` as a `ContinuousLinearMap`. -/
+@[simps (config := .asFn) apply]
+def restrictScalarsLinear [ContinuousConstSMul 𝕜' F] :
+    ContinuousMultilinearMap 𝕜 E F →L[𝕜'] ContinuousMultilinearMap 𝕜' E F where
+  toFun := restrictScalars 𝕜'
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+end RestrictScalars
 
 variable (𝕜 E F)
 

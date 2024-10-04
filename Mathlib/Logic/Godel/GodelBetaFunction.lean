@@ -13,7 +13,7 @@ import Mathlib.Data.Nat.Pairing
 # Gödel's Beta Function Lemma
 
 This file proves Gödel's Beta Function Lemma, used to prove the First Incompleteness Theorem. It
-permits  quantification over finite sequences of natural numbers in formal theories of arithmetic.
+permits quantification over finite sequences of natural numbers in formal theories of arithmetic.
 This Beta Function has no connection with the unrelated Beta Function defined in analysis. Note
 that `Nat.beta` and `Nat.unbeta` provide similar functionality to `Encodable.encodeList` and
 `Encodable.decodeList`. We define these separately, because it is easier to prove that `Nat.beta`
@@ -76,8 +76,7 @@ private lemma pairwise_coprime_coprimes (a : Fin m → ℕ) : Pairwise (Coprime 
   have hja : j < supOfSeq a := lt_of_lt_of_le j.prop (le_step (le_max_left _ _))
   exact coprime_mul_succ
     (Nat.succ_le_succ <| le_of_lt ltij)
-    (Nat.dvd_factorial
-      (by simp [Nat.succ_sub_succ, ltij])
+    (Nat.dvd_factorial (by omega)
       (by simpa only [Nat.succ_sub_succ] using le_of_lt (lt_of_le_of_lt (sub_le j i) hja)))
 
 /-- Gödel's Beta Function. This is similar to `(Encodable.decodeList).get i`, but it is easier to

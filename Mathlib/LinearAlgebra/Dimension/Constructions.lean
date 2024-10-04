@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Scott Morrison, Chris Hughes, Anne Baanen
+Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison, Chris Hughes, Anne Baanen
 -/
 import Mathlib.LinearAlgebra.Dimension.Free
 import Mathlib.Algebra.Module.Torsion
@@ -70,7 +70,7 @@ theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
   refine ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦ ?_
   choose f hf using Quotient.mk_surjective M'
   simpa [add_comm] using (LinearIndependent.sum_elim_of_quotient ht (fun (i : s) ↦ f i)
-    (by simpa [Function.comp, hf] using hs)).cardinal_le_rank
+    (by simpa [Function.comp_def, hf] using hs)).cardinal_le_rank
 
 theorem rank_quotient_le (p : Submodule R M) : Module.rank R (M ⧸ p) ≤ Module.rank R M :=
   (mkQ p).rank_le_of_surjective (surjective_quot_mk _)
@@ -372,7 +372,7 @@ variable [StrongRankCondition R]
 /-- The dimension of a submodule is bounded by the dimension of the ambient space. -/
 theorem Submodule.finrank_le [Module.Finite R M] (s : Submodule R M) :
     finrank R s ≤ finrank R M :=
-  toNat_le_toNat (rank_submodule_le s) (rank_lt_aleph0 _ _)
+  toNat_le_toNat (Submodule.rank_le s) (rank_lt_aleph0 _ _)
 
 /-- The dimension of a quotient is bounded by the dimension of the ambient space. -/
 theorem Submodule.finrank_quotient_le [Module.Finite R M] (s : Submodule R M) :
@@ -386,12 +386,12 @@ theorem Submodule.finrank_map_le
     finrank R (p.map f) ≤ finrank R p :=
   finrank_le_finrank_of_rank_le_rank (lift_rank_map_le _ _) (rank_lt_aleph0 _ _)
 
-theorem Submodule.finrank_le_finrank_of_le {s t : Submodule R M} [Module.Finite R t] (hst : s ≤ t) :
+theorem Submodule.finrank_mono {s t : Submodule R M} [Module.Finite R t] (hst : s ≤ t) :
     finrank R s ≤ finrank R t :=
-  calc
-    finrank R s = finrank R (s.comap t.subtype) :=
-      (Submodule.comapSubtypeEquivOfLe hst).finrank_eq.symm
-    _ ≤ finrank R t := Submodule.finrank_le _
+  Cardinal.toNat_le_toNat (Submodule.rank_mono hst) (rank_lt_aleph0 R ↥t)
+
+@[deprecated (since := "2024-09-30")]
+alias Submodule.finrank_le_finrank_of_le := Submodule.finrank_mono
 
 end
 
@@ -402,7 +402,7 @@ section Span
 variable [StrongRankCondition R]
 
 theorem rank_span_le (s : Set M) : Module.rank R (span R s) ≤ #s := by
-  rw [Finsupp.span_eq_range_total, ← lift_strictMono.le_iff_le]
+  rw [Finsupp.span_eq_range_linearCombination, ← lift_strictMono.le_iff_le]
   refine (lift_rank_range_le _).trans ?_
   rw [rank_finsupp_self]
   simp only [lift_lift, le_refl]

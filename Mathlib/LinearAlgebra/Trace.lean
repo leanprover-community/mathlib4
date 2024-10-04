@@ -85,11 +85,11 @@ theorem trace_eq_matrix_trace (f : M →ₗ[R] M) :
 
 theorem trace_mul_comm (f g : M →ₗ[R] M) : trace R M (f * g) = trace R M (g * f) := by
   classical
-  exact if H : ∃ s : Finset M, Nonempty (Basis s R M) then by
-    let ⟨s, ⟨b⟩⟩ := H
+  by_cases H : ∃ s : Finset M, Nonempty (Basis s R M)
+  · let ⟨s, ⟨b⟩⟩ := H
     simp_rw [trace_eq_matrix_trace R b, LinearMap.toMatrix_mul]
     apply Matrix.trace_mul_comm
-  else by rw [trace, dif_neg H, LinearMap.zero_apply, LinearMap.zero_apply]
+  · rw [trace, dif_neg H, LinearMap.zero_apply, LinearMap.zero_apply]
 
 lemma trace_mul_cycle (f g h : M →ₗ[R] M) :
     trace R M (f * g * h) = trace R M (h * f * g) := by

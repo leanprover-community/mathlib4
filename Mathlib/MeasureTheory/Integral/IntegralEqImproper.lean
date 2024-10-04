@@ -1241,7 +1241,7 @@ theorem integral_mul_deriv_eq_deriv_mul [CompleteSpace A]
     (huv' : Integrable (u * v')) (hu'v : Integrable (u' * v))
     (h_bot : Tendsto (u * v) atBot (𝓝 a')) (h_top : Tendsto (u * v) atTop (𝓝 b')) :
     ∫ (x : ℝ), u x * v' x = b' - a' - ∫ (x : ℝ), u' x * v x :=
-  integral_bilinear_hasDerivAt_right_eq_sub  (L := ContinuousLinearMap.mul ℝ A)
+  integral_bilinear_hasDerivAt_right_eq_sub (L := ContinuousLinearMap.mul ℝ A)
     hu hv huv' hu'v h_bot h_top
 
 /-- **Integration by parts on (-∞, ∞).**

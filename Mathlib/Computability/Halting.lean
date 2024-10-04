@@ -173,6 +173,15 @@ protected theorem not {p : α → Prop} (hp : ComputablePred p) : ComputablePred
         simp only [Bool.not_eq_true]
         cases f n <;> rfl⟩
 
+/-- The computable functions are closed under if-then-else definitions
+with computable predicates. -/
+theorem ite {f₁ f₂ : ℕ → ℕ} (hf₁ : Computable f₁) (hf₂ : Computable f₂)
+    {c : ℕ → Prop} [DecidablePred c] (hc : ComputablePred c) :
+    Computable fun k ↦ if c k then f₁ k else f₂ k := by
+  simp_rw [← Bool.cond_decide]
+  obtain ⟨inst, hc⟩ := hc
+  convert hc.cond hf₁ hf₂
+
 theorem to_re {p : α → Prop} (hp : ComputablePred p) : RePred p := by
   obtain ⟨f, hf, rfl⟩ := computable_iff.1 hp
   unfold RePred
@@ -214,7 +223,7 @@ theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C �
                 (Partrec.nat_iff.1 <| eval_part.comp (const cg) Computable.id) ((hC _).1 fC),
         fun h => by {
           obtain rfl | rfl := h <;> simpa [ComputablePred, Set.mem_empty_iff_false] using
-            ⟨by infer_instance, Computable.const _⟩ }⟩
+            ⟨⟨inferInstance⟩, Computable.const _⟩ }⟩
 
 /-- The Halting problem is recursively enumerable -/
 theorem halting_problem_re (n) : RePred fun c => (eval c n).Dom :=

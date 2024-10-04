@@ -6,7 +6,6 @@ Authors: Simon Hudon, Patrick Massot
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Pi
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-!
 # Pi instances for ordered groups and monoids

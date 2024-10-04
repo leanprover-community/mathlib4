@@ -43,9 +43,10 @@ theorem zero_pow_le_one : ∀ n : ℕ, (0 : R) ^ n ≤ 1
 
 theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y ^ n ≤ (x + y) ^ n := by
   rcases Nat.exists_eq_add_one_of_ne_zero hn with ⟨k, rfl⟩
-  induction' k with k ih
-  · simp only [zero_add, pow_one, le_refl]
-  · let n := k.succ
+  induction k with
+  | zero => simp only [zero_add, pow_one, le_refl]
+  | succ k ih =>
+    let n := k.succ
     have h1 := add_nonneg (mul_nonneg hx (pow_nonneg hy n)) (mul_nonneg hy (pow_nonneg hx n))
     have h2 := add_nonneg hx hy
     calc
@@ -60,23 +61,31 @@ theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y 
         exact mul_le_mul_of_nonneg_left (ih (Nat.succ_ne_zero k)) h2
 
 @[bound]
-theorem pow_le_one : ∀ n : ℕ, 0 ≤ a → a ≤ 1 → a ^ n ≤ 1
+theorem pow_le_one₀ : ∀ {n : ℕ}, 0 ≤ a → a ≤ 1 → a ^ n ≤ 1
   | 0, _, _ => (pow_zero a).le
-  | n + 1, h₀, h₁ => (pow_succ a n).le.trans (mul_le_one (pow_le_one n h₀ h₁) h₀ h₁)
+  | n + 1, h₀, h₁ => (pow_succ a n).le.trans (mul_le_one (pow_le_one₀ h₀ h₁) h₀ h₁)
 
-theorem pow_lt_one (h₀ : 0 ≤ a) (h₁ : a < 1) : ∀ {n : ℕ}, n ≠ 0 → a ^ n < 1
+theorem pow_lt_one₀ (h₀ : 0 ≤ a) (h₁ : a < 1) : ∀ {n : ℕ}, n ≠ 0 → a ^ n < 1
   | 0, h => (h rfl).elim
   | n + 1, _ => by
     rw [pow_succ']
-    exact mul_lt_one_of_nonneg_of_lt_one_left h₀ h₁ (pow_le_one _ h₀ h₁.le)
+    exact mul_lt_one_of_nonneg_of_lt_one_left h₀ h₁ (pow_le_one₀ h₀ h₁.le)
 
 @[bound]
-theorem one_le_pow_of_one_le (H : 1 ≤ a) : ∀ n : ℕ, 1 ≤ a ^ n
+theorem one_le_pow₀ (H : 1 ≤ a) : ∀ {n : ℕ}, 1 ≤ a ^ n
   | 0 => by rw [pow_zero]
   | n + 1 => by
-    rw [pow_succ']
-    simpa only [mul_one] using
-      mul_le_mul H (one_le_pow_of_one_le H n) zero_le_one (le_trans zero_le_one H)
+    simpa only [pow_succ', mul_one]
+      using mul_le_mul H (one_le_pow₀ H) zero_le_one (zero_le_one.trans H)
+
+lemma one_lt_pow₀ (ha : 1 < a) : ∀ {n : ℕ}, n ≠ 0 → 1 < a ^ n
+  | 0, h => (h rfl).elim
+  | n + 1, _ => by rw [pow_succ']; exact one_lt_mul_of_lt_of_le ha (one_le_pow₀ ha.le)
+
+@[deprecated (since := "2024-09-28")] alias pow_le_one := pow_le_one₀
+@[deprecated (since := "2024-09-28")] alias pow_lt_one := pow_lt_one₀
+@[deprecated (since := "2024-09-28")] alias one_le_pow_of_one_le := one_le_pow₀
+@[deprecated (since := "2024-09-28")] alias one_lt_pow := one_lt_pow₀
 
 theorem pow_right_mono (h : 1 ≤ a) : Monotone (a ^ ·) :=
   monotone_nat_of_le_succ fun n => by
@@ -100,12 +109,6 @@ theorem pow_le_pow_left {a b : R} (ha : 0 ≤ a) (hab : a ≤ b) : ∀ n, a ^ n 
   | n + 1 => by simpa only [pow_succ']
       using mul_le_mul hab (pow_le_pow_left ha hab _) (pow_nonneg ha _) (ha.trans hab)
 
-theorem one_lt_pow (ha : 1 < a) : ∀ {n : ℕ} (_ : n ≠ 0), 1 < a ^ n
-  | 0, h => (h rfl).elim
-  | n + 1, _ => by
-    rw [pow_succ']
-    exact one_lt_mul_of_lt_of_le ha (one_le_pow_of_one_le ha.le _)
-
 lemma pow_add_pow_le' (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ n + b ^ n ≤ 2 * (a + b) ^ n := by
   rw [two_mul]
   exact add_le_add (pow_le_pow_left ha (le_add_of_nonneg_right hb) _)
@@ -120,6 +123,14 @@ lemma Bound.pow_le_pow_right_of_le_one_or_one_le (h : 1 ≤ a ∧ n ≤ m ∨ 0 
   · exact pow_le_pow_of_le_one a0 a1 mn
 
 end OrderedSemiring
+
+-- See note [reducible non instances]
+/-- Turn an ordered domain into a strict ordered ring. -/
+abbrev OrderedRing.toStrictOrderedRing (α : Type*)
+    [OrderedRing α] [NoZeroDivisors α] [Nontrivial α] : StrictOrderedRing α where
+  __ := ‹OrderedRing α›
+  __ := ‹NoZeroDivisors α›
+  mul_pos a b ap bp := (mul_nonneg ap.le bp.le).lt_of_ne' (mul_ne_zero ap.ne' bp.ne')
 
 section StrictOrderedSemiring
 

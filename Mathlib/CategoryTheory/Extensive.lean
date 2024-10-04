@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
-import Mathlib.CategoryTheory.Limits.FunctorCategory
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 import Mathlib.CategoryTheory.Limits.VanKampen
 
@@ -79,7 +79,7 @@ and binary coproducts are universal. -/
 class FinitaryPreExtensive (C : Type u) [Category.{v} C] : Prop where
   [hasFiniteCoproducts : HasFiniteCoproducts C]
   [hasPullbacksOfInclusions : HasPullbacksOfInclusions C]
-  /-- In a finitary extensive category, all coproducts are van Kampen-/
+  /-- In a finitary extensive category, all coproducts are van Kampen -/
   universal' : ∀ {X Y : C} (c : BinaryCofan X Y), IsColimit c → IsUniversalColimit c
 
 attribute [instance] FinitaryPreExtensive.hasFiniteCoproducts
@@ -90,7 +90,7 @@ and binary coproducts are van Kampen. -/
 class FinitaryExtensive (C : Type u) [Category.{v} C] : Prop where
   [hasFiniteCoproducts : HasFiniteCoproducts C]
   [hasPullbacksOfInclusions : HasPullbacksOfInclusions C]
-  /-- In a finitary extensive category, all coproducts are van Kampen-/
+  /-- In a finitary extensive category, all coproducts are van Kampen -/
   van_kampen' : ∀ {X Y : C} (c : BinaryCofan X Y), IsColimit c → IsVanKampenColimit c
 
 attribute [instance] FinitaryExtensive.hasFiniteCoproducts

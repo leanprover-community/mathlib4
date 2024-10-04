@@ -149,8 +149,9 @@ theorem cotangentEquivIdeal_apply (x : I.Cotangent) :
 
 theorem cotangentEquivIdeal_symm_apply (x : R) (hx : x ∈ I) :
     -- Note: #8386 had to specify `(R₂ := R)` because `I.toCotangent` suggested `R ⧸ I^2` instead
-    I.cotangentEquivIdeal.symm ⟨(I ^ 2).mkQ x, Submodule.mem_map_of_mem (R₂ := R) hx⟩ =
-      I.toCotangent ⟨x, hx⟩ := by
+    I.cotangentEquivIdeal.symm ⟨(I ^ 2).mkQ x,
+      Submodule.mem_map_of_mem (F := R →ₗ[R] R ⧸ I ^ 2) (f := (I ^ 2).mkQ) hx⟩ =
+      I.toCotangent (R := R) ⟨x, hx⟩ := by
   apply I.cotangentEquivIdeal.injective
   rw [I.cotangentEquivIdeal.apply_symm_apply]
   ext

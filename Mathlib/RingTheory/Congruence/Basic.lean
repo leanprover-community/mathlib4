@@ -126,6 +126,16 @@ theorem ext' {c d : RingCon R} (H : ⇑c = ⇑d) : c = d := DFunLike.coe_injecti
 theorem ext {c d : RingCon R} (H : ∀ x y, c x y ↔ d x y) : c = d :=
   ext' <| by ext; apply H
 
+/--
+Pulling back a `RingCon` across a ring homomorphism.
+-/
+def comap {R R' F : Type*} [Add R] [Add R']
+    [FunLike F R R'] [AddHomClass F R R'] [Mul R] [Mul R'] [MulHomClass F R R']
+    (J : RingCon R') (f : F) :
+    RingCon R where
+  __ := J.toCon.comap f (map_mul f)
+  __ := J.toAddCon.comap f (map_add f)
+
 end Basic
 
 section Quotient
@@ -448,7 +458,7 @@ theorem coe_sInf (S : Set (RingCon R)) : ⇑(sInf S) = sInf ((⇑) '' S) := by
 
 @[simp, norm_cast]
 theorem coe_iInf {ι : Sort*} (f : ι → RingCon R) : ⇑(iInf f) = ⨅ i, ⇑(f i) := by
-  rw [iInf, coe_sInf, ← Set.range_comp, sInf_range, Function.comp]
+  rw [iInf, coe_sInf, ← Set.range_comp, sInf_range, Function.comp_def]
 
 instance : PartialOrder (RingCon R) where
   le_refl _c _ _ := id

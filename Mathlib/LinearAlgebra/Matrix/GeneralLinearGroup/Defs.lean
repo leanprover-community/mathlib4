@@ -37,7 +37,7 @@ open LinearMap
 attribute [-instance] SpecialLinearGroup.instCoeFun
 
 /-- `GL n R` is the group of `n` by `n` `R`-matrices with unit determinant.
-Defined as a subtype of matrices-/
+Defined as a subtype of matrices -/
 abbrev GeneralLinearGroup (n : Type u) (R : Type v) [DecidableEq n] [Fintype n] [CommRing R] :
     Type _ :=
   (Matrix n n R)ˣ
@@ -69,7 +69,7 @@ def det : GL n R →* Rˣ where
   map_one' := Units.ext det_one
   map_mul' A B := Units.ext <| det_mul _ _
 
-/-- The `GL n R` and `Matrix.GeneralLinearGroup R n` groups are multiplicatively equivalent-/
+/-- The `GL n R` and `Matrix.GeneralLinearGroup R n` groups are multiplicatively equivalent -/
 def toLin : GL n R ≃* LinearMap.GeneralLinearGroup R (n → R) :=
   Units.mapEquiv toLinAlgEquiv'.toMulEquiv
 

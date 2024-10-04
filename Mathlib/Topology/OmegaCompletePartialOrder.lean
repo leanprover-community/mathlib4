@@ -39,21 +39,19 @@ variable (α : Type u) [OmegaCompletePartialOrder α]
 /-- The characteristic function of open sets is monotone and preserves
 the limits of chains. -/
 def IsOpen (s : Set α) : Prop :=
-  Continuous' fun x ↦ x ∈ s
+  ωScottContinuous fun x ↦ x ∈ s
 
-theorem isOpen_univ : IsOpen α univ :=
-  ⟨fun _ _ _ _ ↦ mem_univ _, @CompleteLattice.top_continuous α Prop _ _⟩
+theorem isOpen_univ : IsOpen α univ := @CompleteLattice.ωScottContinuous.top α Prop _ _
 
 theorem IsOpen.inter (s t : Set α) : IsOpen α s → IsOpen α t → IsOpen α (s ∩ t) :=
-  CompleteLattice.inf_continuous'
+  CompleteLattice.ωScottContinuous.inf
 
 theorem isOpen_sUnion (s : Set (Set α)) (hs : ∀ t ∈ s, IsOpen α t) : IsOpen α (⋃₀ s) := by
   simp only [IsOpen] at hs ⊢
-  convert CompleteLattice.sSup_continuous' (setOf ⁻¹' s) hs
-  simp only [sSup_apply, setOf_bijective.surjective.exists, exists_prop, mem_preimage,
-    SetCoe.exists, iSup_Prop_eq, mem_setOf_eq, mem_sUnion]
+  convert CompleteLattice.ωScottContinuous.sSup hs
+  aesop
 
-theorem IsOpen.isUpperSet {s : Set α} (hs : IsOpen α s) : IsUpperSet s := hs.fst
+theorem IsOpen.isUpperSet {s : Set α} (hs : IsOpen α s) : IsUpperSet s := hs.monotone
 
 end Scott
 
@@ -80,6 +78,8 @@ def notBelow :=
 
 theorem notBelow_isOpen : IsOpen (notBelow y) := by
   have h : Monotone (notBelow y) := fun x z hle ↦ mt hle.trans
+  dsimp only [IsOpen, TopologicalSpace.IsOpen, Scott.IsOpen]
+  rw [ωScottContinuous_iff_monotone_map_ωSup]
   refine ⟨h, fun c ↦ eq_of_forall_ge_iff fun z ↦ ?_⟩
   simp only [ωSup_le_iff, notBelow, mem_setOf_eq, le_Prop_eq, OrderHom.coe_mk, Chain.map_coe,
     Function.comp_apply, exists_imp, not_forall]
@@ -96,13 +96,15 @@ theorem isωSup_ωSup {α} [OmegaCompletePartialOrder α] (c : Chain α) : IsωS
   · apply ωSup_le
 
 theorem scottContinuous_of_continuous {α β} [OmegaCompletePartialOrder α]
-    [OmegaCompletePartialOrder β] (f : Scott α → Scott β) (hf : Continuous f) :
-    OmegaCompletePartialOrder.Continuous' f := by
+    [OmegaCompletePartialOrder β] (f : Scott α → Scott β) (hf : _root_.Continuous f) :
+    OmegaCompletePartialOrder.ωScottContinuous f := by
+  rw [ωScottContinuous_iff_monotone_map_ωSup]
   have h : Monotone f := fun x y h ↦ by
     have hf : IsUpperSet {x | ¬f x ≤ f y} := ((notBelow_isOpen (f y)).preimage hf).isUpperSet
     simpa only [mem_setOf_eq, le_refl, not_true, imp_false, not_not] using hf h
   refine ⟨h, fun c ↦ eq_of_forall_ge_iff fun z ↦ ?_⟩
-  rcases (notBelow_isOpen z).preimage hf with ⟨hf, hf'⟩
+  rcases (notBelow_isOpen z).preimage hf with hf''
+  let hf' := hf''.monotone_map_ωSup.2
   specialize hf' c
   simp only [OrderHom.coe_mk, mem_preimage, notBelow, mem_setOf_eq] at hf'
   rw [← not_iff_not]
@@ -112,11 +114,9 @@ theorem scottContinuous_of_continuous {α β} [OmegaCompletePartialOrder α]
 
 theorem continuous_of_scottContinuous {α β} [OmegaCompletePartialOrder α]
     [OmegaCompletePartialOrder β] (f : Scott α → Scott β)
-    (hf : OmegaCompletePartialOrder.Continuous' f) : Continuous f := by
+    (hf : ωScottContinuous f) : Continuous f := by
   rw [continuous_def]
   intro s hs
-  change Continuous' (s ∘ f)
-  cases' hs with hs hs'
-  cases' hf with hf hf'
-  apply Continuous.of_bundled
-  apply continuous_comp _ _ hf' hs'
+  dsimp only [IsOpen, TopologicalSpace.IsOpen, Scott.IsOpen]
+  simp_rw [mem_preimage, mem_def, ← Function.comp_def]
+  apply ωScottContinuous.comp hs hf

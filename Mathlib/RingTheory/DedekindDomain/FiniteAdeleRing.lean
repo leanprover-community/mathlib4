@@ -54,6 +54,9 @@ instance : CommRing (FiniteIntegralAdeles R K) :=
 instance : TopologicalSpace (FiniteIntegralAdeles R K) :=
   inferInstanceAs (TopologicalSpace (∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K))
 
+instance (v : HeightOneSpectrum R) : TopologicalRing (v.adicCompletionIntegers K) :=
+  Subring.instTopologicalRing ..
+
 instance : TopologicalRing (FiniteIntegralAdeles R K) :=
   inferInstanceAs (TopologicalRing (∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K))
 
@@ -212,7 +215,7 @@ theorem zero : (0 : K_hat R K).IsFiniteAdele := by
   rw [IsFiniteAdele, Filter.eventually_cofinite]
   have h_empty :
     {v : HeightOneSpectrum R | ¬(0 : v.adicCompletion K) ∈ v.adicCompletionIntegers K} = ∅ := by
-    ext v; rw [mem_empty_iff_false, iff_false_iff]; intro hv
+    ext v; rw [mem_empty_iff_false, iff_false]; intro hv
     rw [mem_setOf] at hv; apply hv; rw [mem_adicCompletionIntegers]
     have h_zero : (Valued.v (0 : v.adicCompletion K) : WithZero (Multiplicative ℤ)) = 0 :=
       Valued.v.map_zero'
@@ -256,13 +259,13 @@ theorem one : (1 : K_hat R K).IsFiniteAdele := by
   rw [IsFiniteAdele, Filter.eventually_cofinite]
   have h_empty :
     {v : HeightOneSpectrum R | ¬(1 : v.adicCompletion K) ∈ v.adicCompletionIntegers K} = ∅ := by
-    ext v; rw [mem_empty_iff_false, iff_false_iff]; intro hv
+    ext v; rw [mem_empty_iff_false, iff_false]; intro hv
     rw [mem_setOf] at hv; apply hv; rw [mem_adicCompletionIntegers]
     exact le_of_eq Valued.v.map_one'
   -- Porting note: was `exact`, but `OfNat` got in the way.
   convert finite_empty
 
-open scoped DiscreteValuation
+open scoped Multiplicative
 
 theorem algebraMap' (k : K) : (_root_.algebraMap K (K_hat R K) k).IsFiniteAdele := by
   rw [IsFiniteAdele, Filter.eventually_cofinite]
@@ -344,7 +347,7 @@ lemma ext {a₁ a₂ : FiniteAdeleRing R K} (h : (a₁ : K_hat R K) = a₂) : a�
 instance : Algebra (R_hat R K) (FiniteAdeleRing R K) where
   smul rhat fadele := ⟨fun v ↦ rhat v * fadele.1 v, Finite.subset fadele.2 <| fun v hv ↦ by
     simp only [mem_adicCompletionIntegers, mem_compl_iff, mem_setOf_eq, map_mul] at hv ⊢
-    exact mt (mul_le_one₀ (rhat v).2) hv
+    exact mt (mul_le_one' (rhat v).2) hv
     ⟩
   toFun r := ⟨r, by simp_all⟩
   map_one' := by ext; rfl
@@ -368,7 +371,7 @@ lemma exists_finiteIntegralAdele_iff (a : FiniteAdeleRing R K) : (∃ c : R_hat 
 section Topology
 
 open nonZeroDivisors
-open scoped DiscreteValuation
+open scoped Multiplicative
 
 variable {R K} in
 lemma mul_nonZeroDivisor_mem_finiteIntegralAdeles (a : FiniteAdeleRing R K) :

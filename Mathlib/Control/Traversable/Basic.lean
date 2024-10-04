@@ -221,7 +221,7 @@ satisfy a naturality condition with respect to applicative
 transformations. -/
 class LawfulTraversable (t : Type u → Type u) [Traversable t] extends LawfulFunctor t :
     Prop where
-  /-- `traverse` plays well with `pure` of the identity monad-/
+  /-- `traverse` plays well with `pure` of the identity monad -/
   id_traverse : ∀ {α} (x : t α), traverse (pure : α → Id α) x = x
   /-- `traverse` plays well with composition of applicative functors. -/
   comp_traverse :

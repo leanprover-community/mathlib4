@@ -287,7 +287,7 @@ variable [LinearOrder α] [TopologicalSpace α] [IsLower α]
 
 lemma isTopologicalBasis_insert_univ_subbasis :
     IsTopologicalBasis (insert univ {s : Set α | ∃ a, (Ici a)ᶜ = s}) :=
-  isTopologicalBasis_of_subbasis_of_inter (by rw [topology_eq α]; rfl) (by
+  isTopologicalBasis_of_subbasis_of_inter (by rw [topology_eq α, lower]) (by
     rintro _ ⟨b, rfl⟩ _ ⟨c, rfl⟩
     use b ⊓ c
     rw [compl_Ici, compl_Ici, compl_Ici, Iio_inter_Iio])
@@ -300,7 +300,7 @@ variable [CompleteLinearOrder α] [t : TopologicalSpace α] [IsLower α]
 
 lemma isTopologicalSpace_basis (U : Set α) : IsOpen U ↔ U = univ ∨ ∃ a, (Ici a)ᶜ = U := by
   by_cases hU : U = univ
-  simp only [hU, isOpen_univ, compl_Ici, true_or]
+  · simp only [hU, isOpen_univ, compl_Ici, true_or]
   refine ⟨?_, isTopologicalBasis_insert_univ_subbasis.isOpen⟩
   intro hO
   apply Or.inr
@@ -509,3 +509,17 @@ lemma isLower_orderDual [Preorder α] [TopologicalSpace α] : IsLower αᵒᵈ �
   isUpper_orderDual.symm
 
 end Topology
+
+/-- The Sierpiński topology on `Prop` is the upper topology -/
+instance : IsUpper Prop where
+  topology_eq_upperTopology := by
+    rw [Topology.upper, sierpinskiSpace, ← generateFrom_insert_empty]
+    congr
+    exact le_antisymm
+      (fun h hs => by
+        simp only [compl_Iic, mem_setOf_eq]
+        rw [← Ioi_True, ← Ioi_False] at hs
+        rcases hs with (rfl | rfl)
+        · use True
+        · use False)
+      (by rintro _ ⟨a, rfl⟩; by_cases a <;> aesop (add simp [Ioi, lt_iff_le_not_le]))

@@ -84,6 +84,11 @@ theorem ne_top_of_lt (h : a < b) : a ≠ ⊤ :=
 
 alias LT.lt.ne_top := ne_top_of_lt
 
+theorem lt_top_of_lt (h : a < b) : a < ⊤ :=
+  lt_of_lt_of_le h le_top
+
+alias LT.lt.lt_top := lt_top_of_lt
+
 end Preorder
 
 variable [PartialOrder α] [OrderTop α] [Preorder β] {f : α → β} {a b : α}
@@ -143,6 +148,9 @@ theorem StrictMono.apply_eq_top_iff (hf : StrictMono f) : f a = f ⊤ ↔ a = �
 
 theorem StrictAnti.apply_eq_top_iff (hf : StrictAnti f) : f a = f ⊤ ↔ a = ⊤ :=
   ⟨fun h => not_lt_top_iff.1 fun ha => (hf ha).ne' h, congr_arg _⟩
+
+lemma top_not_mem_iff {s : Set α} : ⊤ ∉ s ↔ ∀ x ∈ s, x < ⊤ :=
+  ⟨fun h x hx ↦ Ne.lt_top (fun hx' : x = ⊤ ↦ h (hx' ▸ hx)), fun h h₀ ↦ (h ⊤ h₀).false⟩
 
 variable [Nontrivial α]
 
@@ -250,6 +258,11 @@ theorem ne_bot_of_gt (h : a < b) : b ≠ ⊥ :=
 
 alias LT.lt.ne_bot := ne_bot_of_gt
 
+theorem bot_lt_of_lt (h : a < b) : ⊥ < b :=
+  lt_of_le_of_lt bot_le h
+
+alias LT.lt.bot_lt := bot_lt_of_lt
+
 end Preorder
 
 variable [PartialOrder α] [OrderBot α] [Preorder β] {f : α → β} {a b : α}
@@ -312,6 +325,9 @@ theorem StrictMono.apply_eq_bot_iff (hf : StrictMono f) : f a = f ⊥ ↔ a = �
 
 theorem StrictAnti.apply_eq_bot_iff (hf : StrictAnti f) : f a = f ⊥ ↔ a = ⊥ :=
   hf.dual.apply_eq_top_iff
+
+lemma bot_not_mem_iff {s : Set α} : ⊥ ∉ s ↔ ∀ x ∈ s, ⊥ < x :=
+  top_not_mem_iff (α := αᵒᵈ)
 
 variable [Nontrivial α]
 

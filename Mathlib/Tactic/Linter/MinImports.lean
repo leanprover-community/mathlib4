@@ -62,7 +62,7 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx => do
     if stx == (← `(command| set_option $(mkIdent `linter.minImports) true)) then return
     let importsSoFar ← minImportsRef.get
     -- when the linter reaches the end of the file or `#exit`, it gives a report
-    if #[``Parser.Command.eoi, ``Lean.Parser.Command.exit].contains stx.getKind  then
+    if #[``Parser.Command.eoi, ``Lean.Parser.Command.exit].contains stx.getKind then
       let explicitImportsInFile : NameSet :=
         .fromArray (((← getEnv).imports.map (·.module)).erase `Init) Name.quickCmp
       let newImps := importsSoFar.diff explicitImportsInFile

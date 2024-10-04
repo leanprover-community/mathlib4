@@ -21,7 +21,7 @@ namespace Finset
 
 section Preimage
 
-/-- Preimage of `s : Finset β` under a map `f` injective on `f ⁻¹' s` as a `Finset`.  -/
+/-- Preimage of `s : Finset β` under a map `f` injective on `f ⁻¹' s` as a `Finset`. -/
 noncomputable def preimage (s : Finset β) (f : α → β) (hf : Set.InjOn f (f ⁻¹' ↑s)) : Finset α :=
   (s.finite_toSet.preimage hf).toFinset
 
@@ -79,6 +79,10 @@ theorem image_subset_iff_subset_preimage [DecidableEq β] {f : α → β} {s : F
 theorem map_subset_iff_subset_preimage {f : α ↪ β} {s : Finset α} {t : Finset β} :
     s.map f ⊆ t ↔ s ⊆ t.preimage f f.injective.injOn := by
   classical rw [map_eq_image, image_subset_iff_subset_preimage]
+
+lemma card_preimage (s : Finset β) (f : α → β) (hf) [DecidablePred (· ∈ Set.range f)] :
+    (s.preimage f hf).card = {x ∈ s | x ∈ Set.range f}.card :=
+  card_nbij f (by simp) (by simpa) (fun b hb ↦ by aesop)
 
 theorem image_preimage [DecidableEq β] (f : α → β) (s : Finset β) [∀ x, Decidable (x ∈ Set.range f)]
     (hf : Set.InjOn f (f ⁻¹' ↑s)) : image f (preimage s f hf) = s.filter fun x => x ∈ Set.range f :=

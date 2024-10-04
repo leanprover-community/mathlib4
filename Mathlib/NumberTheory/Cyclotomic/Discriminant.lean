@@ -189,7 +189,7 @@ theorem discr_prime_pow_eq_unit_mul_pow [IsCyclotomicExtension {p ^ k} K L]
   by_cases heven : Even ((p ^ k : ℕ).totient / 2)
   · exact ⟨1, (p : ℕ) ^ (k - 1) * ((p - 1) * k - 1), by rw [heven.neg_one_pow]; norm_num⟩
   · exact ⟨-1, (p : ℕ) ^ (k - 1) * ((p - 1) * k - 1), by
-      rw [(odd_iff_not_even.2 heven).neg_one_pow]; norm_num⟩
+      rw [(not_even_iff_odd.1 heven).neg_one_pow]; norm_num⟩
 
 /-- If `p` is an odd prime and `IsCyclotomicExtension {p} K L`, then
 `discr K (hζ.powerBasis K).basis = (-1) ^ ((p - 1) / 2) * p ^ (p - 2)` if

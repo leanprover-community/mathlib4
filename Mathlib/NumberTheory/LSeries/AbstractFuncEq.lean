@@ -145,7 +145,7 @@ lemma hf_zero (P : WeakFEPair E) (r : ℝ) :
   specialize hC' hx
   simp_rw [Function.comp_apply, ← one_div, P.h_feq' _ hx] at hC'
   rw [← ((mul_inv_cancel₀ h_nv).symm ▸ one_smul ℂ P.g₀ :), mul_smul _ _ P.g₀, ← smul_sub, norm_smul,
-    ← le_div_iff' (lt_of_le_of_ne (norm_nonneg _) (norm_ne_zero_iff.mpr h_nv).symm)] at hC'
+    ← le_div_iff₀' (lt_of_le_of_ne (norm_nonneg _) (norm_ne_zero_iff.mpr h_nv).symm)] at hC'
   convert hC' using 1
   · congr 3
     rw [rpow_neg hx.le]
@@ -397,7 +397,7 @@ theorem differentiableAt_Λ {s : ℂ} (hs : s ≠ 0 ∨ P.f₀ = 0) (hs' : s ≠
     DifferentiableAt ℂ P.Λ s := by
   refine ((P.differentiable_Λ₀ s).sub ?_).sub ?_
   · rcases hs with hs | hs
-    · simpa only [one_div] using (differentiableAt_inv' hs).smul_const P.f₀
+    · simpa only [one_div] using (differentiableAt_inv hs).smul_const P.f₀
     · simpa only [hs, smul_zero] using differentiableAt_const (0 : E)
   · rcases hs' with hs' | hs'
     · apply DifferentiableAt.smul_const

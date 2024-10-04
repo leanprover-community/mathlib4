@@ -197,7 +197,7 @@ theorem continuous_im : Continuous fun q : ℍ => q.im := by
 instance : CompleteSpace ℍ :=
   haveI : UniformEmbedding linearIsometryEquivTuple.toLinearEquiv.toEquiv.symm :=
     linearIsometryEquivTuple.toContinuousLinearEquiv.symm.uniformEmbedding
-  (completeSpace_congr this).1 (by infer_instance)
+  (completeSpace_congr this).1 inferInstance
 
 section infinite_sum
 

@@ -150,7 +150,7 @@ theorem matPolyEquiv_symm_map_eval (M : (Matrix n n R)[X]) (r : R) :
     DFunLike.congr_fun this M
   ext : 1
   · ext M : 1
-    simp [Function.comp]
+    simp [Function.comp_def]
   · simp [smul_eq_diagonal_mul]
 
 theorem matPolyEquiv_eval_eq_map (M : Matrix n n R[X]) (r : R) :
@@ -214,7 +214,7 @@ lemma derivative_det_one_add_X_smul (M : Matrix n n R) :
   let e := Matrix.reindexLinearEquiv R R (Fintype.equivFin n) (Fintype.equivFin n)
   rw [← Matrix.det_reindexLinearEquiv_self R[X] (Fintype.equivFin n)]
   convert derivative_det_one_add_X_smul_aux (e M)
-  · ext; simp [e]
+  · ext; simp [map_add, e]
   · delta trace
     rw [← (Fintype.equivFin n).symm.sum_comp]
     simp_rw [e, reindexLinearEquiv_apply, reindex_apply, diag_apply, submatrix_apply]
@@ -326,7 +326,8 @@ lemma reverse_charpoly (M : Matrix n n R) :
       ← mul_one (Fintype.card n : ℤ), ← T_pow, map_pow, invert_T, mul_comm]
   rw [← det_smul, smul_sub, scalar_apply, ← diagonal_smul, Pi.smul_def, smul_eq_mul, ht,
     diagonal_one, invert.map_det]
-  simp [t, map_smul', smul_eq_diagonal_mul]
+  simp [map_sub, _root_.map_one, _root_.map_mul, t, map_smul', smul_eq_diagonal_mul]
+
 
 @[simp] lemma eval_charpolyRev :
     eval 0 M.charpolyRev = 1 := by

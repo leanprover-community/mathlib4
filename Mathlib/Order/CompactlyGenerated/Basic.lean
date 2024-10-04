@@ -129,7 +129,7 @@ theorem isCompactElement_iff_le_of_directed_sSup_le (k : α) :
         apply sSup_le_sSup
         intro x hx
         use {x}
-        simpa only [and_true_iff, id, Finset.coe_singleton, eq_self_iff_true,
+        simpa only [and_true, id, Finset.coe_singleton, eq_self_iff_true,
           Finset.sup_singleton, Set.singleton_subset_iff]
       have Sne : S.Nonempty := by
         suffices ⊥ ∈ S from Set.nonempty_of_mem this
@@ -250,14 +250,10 @@ open List in
 theorem wellFounded_characterisations : List.TFAE
     [WellFounded ((· > ·) : α → α → Prop),
       IsSupFiniteCompact α, IsSupClosedCompact α, ∀ k : α, IsCompactElement k] := by
-  tfae_have 1 → 2
-  · exact WellFounded.isSupFiniteCompact α
-  tfae_have 2 → 3
-  · exact IsSupFiniteCompact.isSupClosedCompact α
-  tfae_have 3 → 1
-  · exact IsSupClosedCompact.wellFounded α
-  tfae_have 2 ↔ 4
-  · exact isSupFiniteCompact_iff_all_elements_compact α
+  tfae_have 1 → 2 := WellFounded.isSupFiniteCompact α
+  tfae_have 2 → 3 := IsSupFiniteCompact.isSupClosedCompact α
+  tfae_have 3 → 1 := IsSupClosedCompact.wellFounded α
+  tfae_have 2 ↔ 4 := isSupFiniteCompact_iff_all_elements_compact α
   tfae_finish
 
 theorem wellFounded_iff_isSupFiniteCompact :

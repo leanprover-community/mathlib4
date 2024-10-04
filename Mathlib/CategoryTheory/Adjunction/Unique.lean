@@ -11,8 +11,8 @@ import Mathlib.CategoryTheory.Adjunction.Basic
 This file shows that adjoints are unique up to natural isomorphism.
 
 ## Main results
-* `Adjunction.natTransEquiv` and `Adjunction.natIsoEquiv` If `F ⊣ G` and `F' ⊣ G'` are adjunctions,
-  then there are equivalences `(G ⟶ G') ≃ (F' ⟶ F)` and `(G ≅ G') ≃ (F' ≅ F)`.
+* `Adjunction.natTransEquiv` and `Adjunction.natIsoEquiv` If `F ⊣ G` and `F' ⊣ G'` are adjunctions,
+  then there are equivalences `(G ⟶ G') ≃ (F' ⟶ F)` and `(G ≅ G') ≃ (F' ≅ F)`.
 Everything else is deduced from this:
 
 * `Adjunction.leftAdjointUniq` : If `F` and `F'` are both left adjoint to `G`, then they are
@@ -20,6 +20,13 @@ Everything else is deduced from this:
 
 * `Adjunction.rightAdjointUniq` : If `G` and `G'` are both right adjoint to `F`, then they are
   naturally isomorphic.
+
+## TODO
+
+There some overlap with the file `Adjunction.Mates`. In particular, `natTransEquiv` is just a
+special case of `mateEquiv`. However, before removing `natTransEquiv`, in favour of `mateEquiv`,
+the latter needs some more API lemmas such as `natTransEquiv_apply_app`, `natTransEquiv_id`, etc.
+in order to make automation work better in the rest of this file.
 -/
 
 open CategoryTheory
@@ -29,7 +36,7 @@ variable {C D : Type*} [Category C] [Category D]
 namespace CategoryTheory.Adjunction
 
 /--
-If `F ⊣ G` and `F' ⊣ G'` are adjunctions, then giving a natural transformation `G ⟶ G'` is the
+If `F ⊣ G` and `F' ⊣ G'` are adjunctions, then giving a natural transformation `G ⟶ G'` is the
 same as giving a natural transformation `F' ⟶ F`.
 -/
 @[simps]
@@ -92,7 +99,7 @@ lemma natTransEquiv_comp_symm {F F' F'' : C ⥤ D} {G G' G'' : D ⥤ C}
   simp
 
 /--
-If `F ⊣ G` and `F' ⊣ G'` are adjunctions, then giving a natural isomorphism `G ≅ G'` is the
+If `F ⊣ G` and `F' ⊣ G'` are adjunctions, then giving a natural isomorphism `G ≅ G'` is the
 same as giving a natural transformation `F' ≅ F`.
 -/
 @[simps]

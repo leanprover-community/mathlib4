@@ -73,10 +73,10 @@ theorem toSplittingField_evalXSelf {s : Finset (MonicIrreducible k)} {f} (hf : f
 
 theorem spanEval_ne_top : spanEval k ≠ ⊤ := by
   rw [Ideal.ne_top_iff_one, spanEval, Ideal.span, ← Set.image_univ,
-    Finsupp.mem_span_image_iff_total]
+    Finsupp.mem_span_image_iff_linearCombination]
   rintro ⟨v, _, hv⟩
   replace hv := congr_arg (toSplittingField k v.support) hv
-  rw [map_one, Finsupp.total_apply, Finsupp.sum, map_sum, Finset.sum_eq_zero] at hv
+  rw [map_one, Finsupp.linearCombination_apply, Finsupp.sum, map_sum, Finset.sum_eq_zero] at hv
   · exact zero_ne_one hv
   intro j hj
   rw [smul_eq_mul, map_mul, toSplittingField_evalXSelf (s := v.support) hj,
@@ -250,8 +250,7 @@ theorem Step.isIntegral (n) : ∀ z : Step k n, IsIntegral k z := by
     apply @RingHom.IsIntegral.trans (Step k 0) (Step k a) (Step k (a + 1)) _ _ _
         (toStepOfLE k 0 a (a.zero_le : 0 ≤ a)) (toStepSucc k a) _
     · intro z
-      have := AdjoinMonic.isIntegral (Step k a) (z : Step k (a + 1))
-      convert this
+      convert AdjoinMonic.isIntegral (Step k a) (z : Step k (a + 1))
     · convert h -- Porting note: This times out at 500000
 
 instance toStepOfLE.directedSystem : DirectedSystem (Step k) fun i j h => toStepOfLE k i j h :=
