@@ -142,7 +142,7 @@ lemma max_le_prod_norm (x : C⋆ᵐᵒᵈ (E × F)) : max ‖x.1‖ ‖x.2‖ �
     Real.sqrt_le_sqrt_iff]
   constructor
   all_goals
-    apply norm_le_norm_of_nonneg_of_le
+    apply CStarAlgebra.norm_le_norm_of_nonneg_of_le
     all_goals
       aesop (add safe apply CStarModule.inner_self_nonneg)
 
@@ -260,7 +260,7 @@ lemma norm_apply_le_norm (x : C⋆ᵐᵒᵈ (Π i, E i)) (i : ι) : ‖x i‖ �
   let _ : NormedAddCommGroup (C⋆ᵐᵒᵈ (Π i, E i)) := normedAddCommGroup
   refine abs_le_of_sq_le_sq' ?_ (by positivity) |>.2
   rw [pi_norm_sq, norm_sq_eq]
-  refine norm_le_norm_of_nonneg_of_le inner_self_nonneg ?_
+  refine CStarAlgebra.norm_le_norm_of_nonneg_of_le inner_self_nonneg ?_
   exact Finset.single_le_sum (fun j _ ↦ inner_self_nonneg (x := x j)) (Finset.mem_univ i)
 
 open Finset in

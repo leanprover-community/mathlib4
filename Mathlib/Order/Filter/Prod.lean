@@ -416,7 +416,7 @@ theorem frequently_prod_and {p : α → Prop} {q : β → Prop} :
 
 theorem tendsto_prod_iff {f : α × β → γ} {x : Filter α} {y : Filter β} {z : Filter γ} :
     Tendsto f (x ×ˢ y) z ↔ ∀ W ∈ z, ∃ U ∈ x, ∃ V ∈ y, ∀ x y, x ∈ U → y ∈ V → f (x, y) ∈ W := by
-  simp only [tendsto_def, mem_prod_iff, prod_sub_preimage_iff, exists_prop, iff_self_iff]
+  simp only [tendsto_def, mem_prod_iff, prod_sub_preimage_iff, exists_prop]
 
 theorem tendsto_prod_iff' {g' : Filter γ} {s : α → β × γ} :
     Tendsto s f (g ×ˢ g') ↔ Tendsto (fun n => (s n).1) f g ∧ Tendsto (fun n => (s n).2) f g' := by

@@ -3,7 +3,6 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init.Algebra.Classes
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Order.RelClasses
@@ -59,7 +58,7 @@ satisfy `r a b → s (f a) (f b)`.
 The relations `r` and `s` are `outParam`s since figuring them out from a goal is a higher-order
 matching problem that Lean usually can't do unaided.
 -/
-class RelHomClass (F : Type*) {α β : Type*} (r : outParam <| α → α → Prop)
+class RelHomClass (F : Type*) {α β : outParam Type*} (r : outParam <| α → α → Prop)
   (s : outParam <| β → β → Prop) [FunLike F α β] : Prop where
   /-- A `RelHomClass` sends related elements to related elements -/
   map_rel : ∀ (f : F) {a b}, r a b → s (f a) (f b)

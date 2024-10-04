@@ -22,7 +22,7 @@ universe u v w
 
 /-- If a free module is finite, then the arbitrary basis is finite. -/
 noncomputable instance Module.Free.ChooseBasisIndex.fintype (R : Type u) (M : Type v)
-    [Ring R] [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M] :
+    [Semiring R] [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M] :
     Fintype (Module.Free.ChooseBasisIndex R M) := by
   refine @Fintype.ofFinite _ ?_
   cases subsingleton_or_nontrivial R
@@ -39,7 +39,7 @@ theorem Module.Finite.of_basis {R M ι : Type*} [Semiring R] [AddCommMonoid M] [
     refine ⟨⟨Finset.univ.image b, ?_⟩⟩
     simp only [Set.image_univ, Finset.coe_univ, Finset.coe_image, Basis.span_eq]
 
-instance Module.Finite.matrix {R : Type u} [CommRing R]
+instance Module.Finite.matrix {R : Type u} [Semiring R]
     {ι₁ ι₂ : Type*} [_root_.Finite ι₁] [_root_.Finite ι₂] :
     Module.Finite R (Matrix ι₁ ι₂ R) := by
   cases nonempty_fintype ι₁

@@ -666,7 +666,7 @@ theorem mul_rpow_eq_ite (x y : ℝ≥0∞) (z : ℝ) :
   induction y
   · rw [ne_eq, coe_eq_zero] at hx0
     cases' hz with hz hz <;> simp [*]
-  simp only [*, false_and_iff, and_false_iff, false_or_iff, if_false]
+  simp only [*, if_false]
   norm_cast at *
   rw [← coe_rpow_of_ne_zero (mul_ne_zero hx0 hy0), NNReal.mul_rpow]
   norm_cast

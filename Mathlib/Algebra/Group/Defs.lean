@@ -49,7 +49,6 @@ See the module `Algebra.AddTorsor` for a motivating example for the name `VAdd` 
 assert_not_exists MonoidWithZero
 assert_not_exists DenselyOrdered
 assert_not_exists Function.Injective.eq_iff
-assert_not_exists IsCommutative
 
 universe u v w
 
@@ -553,7 +552,7 @@ instance AddMonoid.toNatSMul {M : Type*} [AddMonoid M] : SMul ℕ M :=
 attribute [to_additive existing toNatSMul] Monoid.toNatPow
 
 section Monoid
-variable {M : Type*} [Monoid M] {a b c : M} {m n : ℕ}
+variable {M : Type*} [Monoid M] {a b c : M}
 
 @[to_additive (attr := simp) nsmul_eq_smul]
 theorem npow_eq_pow (n : ℕ) (x : M) : Monoid.npow n x = x ^ n :=
@@ -808,7 +807,7 @@ class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G where
   /-- `a ^ 0 = 1` -/
   protected zpow_zero' : ∀ a : G, zpow 0 a = 1 := by intros; rfl
   /-- `a ^ (n + 1) = a ^ n * a` -/
-  protected zpow_succ' (n : ℕ) (a : G) : zpow (Int.ofNat n.succ) a = zpow (Int.ofNat n) a  * a := by
+  protected zpow_succ' (n : ℕ) (a : G) : zpow (Int.ofNat n.succ) a = zpow (Int.ofNat n) a * a := by
     intros; rfl
   /-- `a ^ -(n + 1) = (a ^ (n + 1))⁻¹` -/
   protected zpow_neg' (n : ℕ) (a : G) : zpow (Int.negSucc n) a = (zpow n.succ a)⁻¹ := by intros; rfl
@@ -880,7 +879,7 @@ theorem exists_zpow_surjective (G : Type*) [Pow G ℤ] [IsCyclic G] :
 
 section DivInvMonoid
 
-variable [DivInvMonoid G] {a b : G}
+variable [DivInvMonoid G]
 
 @[to_additive (attr := simp) zsmul_eq_smul] theorem zpow_eq_pow (n : ℤ) (x : G) :
     DivInvMonoid.zpow n x = x ^ n :=

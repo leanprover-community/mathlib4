@@ -186,7 +186,7 @@ end
 
 namespace Eq
 
-variable [Preorder α] {x y z : α}
+variable [Preorder α] {x y : α}
 
 /-- If `x = y` then `y ≤ x`. Note: this lemma uses `y ≤ x` instead of `x ≥ y`, because `le` is used
 almost exclusively in mathlib. -/
@@ -463,11 +463,12 @@ theorem commutative_of_le {f : β → β → α} (comm : ∀ a b, f a b ≤ f b 
 
 /-- To prove associativity of a commutative binary operation `○`, we only to check
 `(a ○ b) ○ c ≤ a ○ (b ○ c)` for all `a`, `b`, `c`. -/
-theorem associative_of_commutative_of_le {f : α → α → α} (comm : Commutative f)
-    (assoc : ∀ a b c, f (f a b) c ≤ f a (f b c)) : Associative f := fun a b c ↦
-  le_antisymm (assoc _ _ _) <| by
-    rw [comm, comm b, comm _ c, comm a]
-    exact assoc _ _ _
+theorem associative_of_commutative_of_le {f : α → α → α} (comm : Std.Commutative f)
+    (assoc : ∀ a b c, f (f a b) c ≤ f a (f b c)) : Std.Associative f where
+  assoc a b c :=
+    le_antisymm (assoc _ _ _) <| by
+      rw [comm.comm, comm.comm b, comm.comm _ c, comm.comm a]
+      exact assoc _ _ _
 
 end PartialOrder
 
@@ -709,6 +710,10 @@ instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ wh
   max_def := fun a b ↦ show (min .. : α) = _ by rw [min_comm, min_def]; rfl
   decidableLE := (inferInstance : DecidableRel (fun a b : α ↦ b ≤ a))
   decidableLT := (inferInstance : DecidableRel (fun a b : α ↦ b < a))
+
+/-- The opposite linear order to a given linear order -/
+def _root_.LinearOrder.swap (α : Type*) (_ : LinearOrder α) : LinearOrder α :=
+  inferInstanceAs <| LinearOrder (OrderDual α)
 
 instance : ∀ [Inhabited α], Inhabited αᵒᵈ := fun [x : Inhabited α] => x
 

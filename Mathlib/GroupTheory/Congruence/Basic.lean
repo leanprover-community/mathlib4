@@ -110,7 +110,6 @@ variable [Mul M] [Mul N] [Mul P] (c : Con M)
 instance : Inhabited (Con M) :=
   ⟨conGen EmptyRelation⟩
 
--- Porting note: upgraded to FunLike
 /-- A coercion from a congruence relation to its underlying binary relation. -/
 @[to_additive "A coercion from an additive congruence relation to its underlying binary relation."]
 instance : FunLike (Con M) M (M → Prop) where

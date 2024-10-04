@@ -177,8 +177,7 @@ def applyFinsupp (tf : TotalFunction α β) : α →₀ β where
     · intro h
       use (A.dlookup a).getD (0 : β)
       rw [← List.dlookup_dedupKeys] at h ⊢
-      simp only [h, ← List.mem_dlookup_iff A.nodupKeys_dedupKeys, and_true_iff, not_false_iff,
-        Option.mem_def]
+      simp only [h, ← List.mem_dlookup_iff A.nodupKeys_dedupKeys, not_false_iff, Option.mem_def]
       cases haA : List.dlookup a A.dedupKeys
       · simp [haA] at h
       · simp
@@ -324,12 +323,12 @@ theorem applyId_mem_iff [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs
       dsimp [List.dlookup] at h₃; split_ifs at h₃ with h
       · rw [Option.some_inj] at h₃
         subst x'; subst val
-        simp only [List.mem_cons, true_or_iff, eq_self_iff_true]
+        simp only [List.mem_cons, true_or, eq_self_iff_true]
       · cases' h₀ with _ _ h₀ h₅
         cases' h₂ with _ _ h₂ h₄
         have h₆ := Nat.succ.inj h₁
         specialize xs_ih h₅ h₃ h₄ h₆
-        simp only [Ne.symm h, xs_ih, List.mem_cons, false_or_iff]
+        simp only [Ne.symm h, xs_ih, List.mem_cons]
         suffices val ∈ ys by tauto
         erw [← Option.mem_def, List.mem_dlookup_iff] at h₃
         · simp only [Prod.toSigma, List.mem_map, heq_iff_eq, Prod.exists] at h₃
@@ -364,7 +363,7 @@ theorem applyId_injective [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup 
     · symm; rw [h]
       rw [← List.applyId_zip_eq] <;> assumption
     · rw [← h₁.length_eq]
-      rw [List.getElem?_eq_some] at hx
+      rw [List.getElem?_eq_some_iff] at hx
       cases' hx with hx hx'
       exact hx
   · rw [← applyId_mem_iff h₀ h₁] at hx hy
@@ -454,7 +453,7 @@ protected theorem injective [DecidableEq α] (f : InjectiveFunction α) : Inject
     induction xs with
     | nil => simp only [List.zip_nil_right, List.map_nil]
     | cons xs_hd xs_tl xs_ih =>
-      simp only [true_and_iff, Prod.toSigma, eq_self_iff_true, Sigma.eta, List.zip_cons_cons,
+      simp only [Prod.toSigma, eq_self_iff_true, Sigma.eta, List.zip_cons_cons,
         List.map, List.cons_inj_right]
       exact xs_ih
   revert hperm hnodup

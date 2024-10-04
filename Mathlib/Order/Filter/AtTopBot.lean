@@ -258,7 +258,7 @@ variable [Nonempty α]
 lemma atTop_neBot : NeBot (atTop : Filter α) := atTop_basis.neBot_iff.2 fun _ => nonempty_Ici
 
 @[simp] lemma mem_atTop_sets {s : Set α} : s ∈ (atTop : Filter α) ↔ ∃ a : α, ∀ b ≥ a, b ∈ s :=
-  atTop_basis.mem_iff.trans <| exists_congr fun _ => true_and_iff _
+  atTop_basis.mem_iff.trans <| exists_congr fun _ => iff_of_eq (true_and _)
 
 @[simp] lemma eventually_atTop : (∀ᶠ x in atTop, p x) ↔ ∃ a, ∀ b ≥ a, p b := mem_atTop_sets
 
