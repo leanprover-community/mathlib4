@@ -84,6 +84,8 @@ open Accessible Nat Finset
 
 variable {Sys : Finset α → Prop}
 
+/-- A weak version of `ExchangeProperty`.
+    This is equivalent to `ExchangeProperty` under `Accessible` assumption. -/
 def WeakExchangeProperty (Sys : Finset α → Prop) : Prop :=
   ⦃s₁ : Finset α⦄ → (hs₁ : Sys s₁) →
   ⦃s₂ : Finset α⦄ → (hs₂ : Sys s₂) →
@@ -114,6 +116,8 @@ theorem exchangeProperty_iff_weakExchangeProperty
     ExchangeProperty Sys ↔ WeakExchangeProperty Sys :=
   ⟨weakExchangeProperty_of_exchangeProperty, exchangeProperty_of_weakExchangeProperty⟩
 
+/-- A weaker version of `ExchangeProperty`.
+    This is equivalent to `ExchangeProperty` under `Accessible` assumption. -/
 def WeakerExchangeProperty (Sys : Finset α → Prop) : Prop :=
   ⦃s : Finset α⦄ →
   ⦃x : α⦄ → (hx₁ : x ∉ s) → (hx₂ : Sys (s.cons x hx₁)) →
