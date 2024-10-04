@@ -887,7 +887,7 @@ theorem stronglyMeasurable_of_measurableSpace_le_on {α E} {m m₂ : MeasurableS
             exact MeasurableSet.empty
           ext1 y
           simp only [mem_inter_iff, mem_preimage, mem_singleton_iff, mem_compl_iff,
-            mem_empty_iff_false, iff_false_iff, not_and, not_not_mem]
+            mem_empty_iff_false, iff_false, not_and, not_not_mem]
           refine Function.mtr fun hys => ?_
           rw [hg_seq_zero y hys n]
           exact Ne.symm hx

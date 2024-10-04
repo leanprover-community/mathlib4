@@ -630,7 +630,7 @@ instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :
         rintro ⟨⟨x, x_mem, x_not_mem⟩, ⟨y, y_mem, y_not_mem⟩⟩
         exact
           ⟨x * y, Ideal.mul_mem_mul x_mem y_mem,
-            mt this.isPrime.mem_or_mem (not_or_of_not x_not_mem y_not_mem)⟩⟩, Prime.irreducible⟩ }
+            mt this.isPrime.mem_or_mem (not_or_intro x_not_mem y_not_mem)⟩⟩, Prime.irreducible⟩ }
 
 instance Ideal.normalizationMonoid : NormalizationMonoid (Ideal A) :=
   normalizationMonoidOfUniqueUnits
@@ -720,7 +720,7 @@ theorem Ideal.eq_prime_pow_of_succ_lt_of_le {P I : Ideal A} [P_prime : P.IsPrime
 theorem Ideal.pow_succ_lt_pow {P : Ideal A} [P_prime : P.IsPrime] (hP : P ≠ ⊥) (i : ℕ) :
     P ^ (i + 1) < P ^ i :=
   lt_of_le_of_ne (Ideal.pow_le_pow_right (Nat.le_succ _))
-    (mt (pow_eq_pow_iff hP (mt Ideal.isUnit_iff.mp P_prime.ne_top)).mp i.succ_ne_self)
+    (mt (pow_inj_of_not_isUnit (mt Ideal.isUnit_iff.mp P_prime.ne_top) hP).mp i.succ_ne_self)
 
 theorem Associates.le_singleton_iff (x : A) (n : ℕ) (I : Ideal A) :
     Associates.mk I ^ n ≤ Associates.mk (Ideal.span {x}) ↔ x ∈ I ^ n := by

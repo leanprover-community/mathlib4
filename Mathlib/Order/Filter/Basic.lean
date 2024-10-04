@@ -523,7 +523,7 @@ theorem mem_sSup {x : Set α} {s : Set (Filter α)} : x ∈ sSup s ↔ ∀ f ∈
 
 @[simp]
 theorem mem_iSup {x : Set α} {f : ι → Filter α} : x ∈ iSup f ↔ ∀ i, x ∈ f i := by
-  simp only [← Filter.mem_sets, iSup_sets_eq, iff_self_iff, mem_iInter]
+  simp only [← Filter.mem_sets, iSup_sets_eq, mem_iInter]
 
 @[simp]
 theorem iSup_neBot {f : ι → Filter α} : (⨆ i, f i).NeBot ↔ ∃ i, (f i).NeBot := by
@@ -575,7 +575,7 @@ theorem mem_iInf' {ι} {s : ι → Filter α} {U : Set α} :
     exacts [hV ⟨i,_⟩, univ_mem]
   · exact dif_neg hi
   · simp only [iInter_dite, biInter_eq_iInter, dif_pos (Subtype.coe_prop _), Subtype.coe_eta,
-      iInter_univ, inter_univ, eq_self_iff_true, true_and_iff]
+      iInter_univ, inter_univ, eq_self_iff_true, true_and]
 
 theorem exists_iInter_of_mem_iInf {ι : Type*} {α : Type*} {f : ι → Filter α} {s}
     (hs : s ∈ ⨅ i, f i) : ∃ t : ι → Set α, (∀ i, t i ∈ f i) ∧ s = ⋂ i, t i :=
@@ -595,7 +595,7 @@ theorem Iic_principal (s : Set α) : Iic (𝓟 s) = { l | s ∈ l } :=
   Set.ext fun _ => le_principal_iff
 
 theorem principal_mono {s t : Set α} : 𝓟 s ≤ 𝓟 t ↔ s ⊆ t := by
-  simp only [le_principal_iff, iff_self_iff, mem_principal]
+  simp only [le_principal_iff, mem_principal]
 
 @[gcongr] alias ⟨_, _root_.GCongr.filter_principal_mono⟩ := principal_mono
 
@@ -1623,7 +1623,7 @@ theorem set_eventuallyLE_iff_mem_inf_principal {s t : Set α} {l : Filter α} :
 theorem set_eventuallyLE_iff_inf_principal_le {s t : Set α} {l : Filter α} :
     s ≤ᶠ[l] t ↔ l ⊓ 𝓟 s ≤ l ⊓ 𝓟 t :=
   set_eventuallyLE_iff_mem_inf_principal.trans <| by
-    simp only [le_inf_iff, inf_le_left, true_and_iff, le_principal_iff]
+    simp only [le_inf_iff, inf_le_left, true_and, le_principal_iff]
 
 theorem set_eventuallyEq_iff_inf_principal {s t : Set α} {l : Filter α} :
     s =ᶠ[l] t ↔ l ⊓ 𝓟 s = l ⊓ 𝓟 t := by
@@ -2456,7 +2456,7 @@ theorem mem_seq_def {f : Filter (α → β)} {g : Filter α} {s : Set β} :
 
 theorem mem_seq_iff {f : Filter (α → β)} {g : Filter α} {s : Set β} :
     s ∈ f.seq g ↔ ∃ u ∈ f, ∃ t ∈ g, Set.seq u t ⊆ s := by
-  simp only [mem_seq_def, seq_subset, exists_prop, iff_self_iff]
+  simp only [mem_seq_def, seq_subset, exists_prop]
 
 theorem mem_map_seq_iff {f : Filter α} {g : Filter β} {m : α → β → γ} {s : Set γ} :
     s ∈ (f.map m).seq g ↔ ∃ t u, t ∈ g ∧ u ∈ f ∧ ∀ x ∈ u, ∀ y ∈ t, m x y ∈ s :=
@@ -2746,7 +2746,7 @@ theorem map_eq_of_inverse {f : Filter α} {g : Filter β} {φ : α → β} (ψ :
 
 theorem tendsto_inf {f : α → β} {x : Filter α} {y₁ y₂ : Filter β} :
     Tendsto f x (y₁ ⊓ y₂) ↔ Tendsto f x y₁ ∧ Tendsto f x y₂ := by
-  simp only [Tendsto, le_inf_iff, iff_self_iff]
+  simp only [Tendsto, le_inf_iff]
 
 theorem tendsto_inf_left {f : α → β} {x₁ x₂ : Filter α} {y : Filter β} (h : Tendsto f x₁ y) :
     Tendsto f (x₁ ⊓ x₂) y :=
@@ -2763,7 +2763,7 @@ theorem Tendsto.inf {f : α → β} {x₁ x₂ : Filter α} {y₁ y₂ : Filter 
 @[simp]
 theorem tendsto_iInf {f : α → β} {x : Filter α} {y : ι → Filter β} :
     Tendsto f x (⨅ i, y i) ↔ ∀ i, Tendsto f x (y i) := by
-  simp only [Tendsto, iff_self_iff, le_iInf_iff]
+  simp only [Tendsto, le_iInf_iff]
 
 theorem tendsto_iInf' {f : α → β} {x : ι → Filter α} {y : Filter β} (i : ι)
     (hi : Tendsto f (x i) y) : Tendsto f (⨅ i, x i) y :=
