@@ -180,13 +180,9 @@ theorem hasseDeriv_ncoef (k : ℕ) (A : VertexOperator R V) (n : ℤ) :
   simp only [ncoef, hasseDeriv_coeff]
   rw [show -n - 1 + k = -(n - k) - 1 by omega]
 
-theorem hasseDeriv_zero' (A : VertexOperator R V) : hasseDeriv 0 A = A := by
-  ext
-  simp
-
 @[simp]
 theorem hasseDeriv_zero : hasseDeriv.linearMap R 0 = LinearMap.id (M := VertexOperator R V) := by
-  exact LinearMap.ext <| hasseDeriv_zero'
+  exact LinearMap.ext <| (by intros; ext; simp)
 
 theorem hasseDeriv_one_coeff (A : VertexOperator R V) (n : ℤ) :
     HVertexOperator.coeff (hasseDeriv 1 A) n = (n + 1) • HVertexOperator.coeff A (n + 1) := by
@@ -228,32 +224,32 @@ theorem hasseDeriv_comp_coeff (k l : ℕ) (A : VertexOperator R V) :
     Module.End.natCast_apply]
   rw [smul_comm]
 
-theorem hasseDeriv_comp' (k l : ℕ) (A : VertexOperator R V) :
+theorem hasseDeriv_comp (k l : ℕ) (A : VertexOperator R V) :
     (hasseDeriv k) (hasseDeriv l A) = (k + l).choose k • (hasseDeriv (k + l) A) := by
   ext1
   rw [nsmul_coeff]
   exact hasseDeriv_comp_coeff k l A
 
-theorem hasseDeriv_comp (k l : ℕ) : (hasseDeriv.linearMap R k).comp
+theorem hasseDeriv_comp_linear (k l : ℕ) : (hasseDeriv.linearMap R k).comp
     (hasseDeriv.linearMap R l) = (k + l).choose k • hasseDeriv.linearMap R (k + l) (V := V) := by
   ext1
   simp only [LinearMap.coe_comp, Function.comp_apply, hasseDeriv.linearMap_apply, nsmul_eq_mul,
     LinearMap.mul_apply, Module.End.natCast_apply]
-  rw [hasseDeriv_comp']
+  rw [hasseDeriv_comp]
 
-theorem factorial_smul_hasseDeriv' (k : ℕ) (A : VertexOperator R V) :
+theorem factorial_smul_hasseDeriv (k : ℕ) (A : VertexOperator R V) :
     k.factorial • hasseDeriv k A = (derivative R)^[k] A := by
   induction k generalizing A with
-  | zero => simp [hasseDeriv_zero']
+  | zero => ext; simp
   | succ k ih =>
     rw [Function.iterate_succ, Function.comp_apply,  ← ih, derivative_apply,
-      @hasseDeriv_comp' R, Nat.choose_symm_add, Nat.choose_one_right, Nat.factorial, mul_nsmul]
+      hasseDeriv_comp (R := R), Nat.choose_symm_add, Nat.choose_one_right, Nat.factorial, mul_nsmul]
 
-theorem factorial_smul_hasseDeriv (k : ℕ) :
+theorem factorial_smul_hasseDeriv_linear (k : ℕ) :
     k.factorial • hasseDeriv.linearMap R k (V := V) = (derivative R (V := V))^[k] := by
   ext A : 1
   simp_all only [Pi.smul_apply, hasseDeriv_apply]
-  exact factorial_smul_hasseDeriv' k A
+  exact factorial_smul_hasseDeriv k A
 
 end HasseDerivative
 

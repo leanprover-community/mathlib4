@@ -649,6 +649,14 @@ def mvPowerSeriesSubst {σ : Type*} [Fintype σ] (y : σ →₀ HahnSeries Γ R)
     rw [finsum_eq_single _ 0 (fun s hs => by simp [hs, MvPowerSeries.coeff_C]), single_coeff]
     by_cases hg : g = 0 <;> simp [hg]
 
+end PowerSeriesSubst
+
+section Inversion
+
+section Monoid
+
+variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
+
 /-!
 theorem isUnit_of_leadingCoeff_one_order_zero {x : HahnSeries Γ R}
     (hx : x.leadingCoeff = 1) (hxo : x.order = 0) :  IsUnit x := by
@@ -669,14 +677,6 @@ theorem isUnit_of_isUnit_leadingCoeff_order_add_unit {x : HahnSeries Γ R}
     --by_cases hz : 0 = (1 : R)
     sorry
 -/
-
-end PowerSeriesSubst
-
-section Inversion
-
-section Monoid
-
-variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
 
 theorem one_minus_single_mul_addUnit {x y : HahnSeries Γ R} (r : R) (hr : r * x.leadingCoeff = 1)
     (hxy : x = y + x.leadingTerm) (hxo : IsAddUnit x.order) :
