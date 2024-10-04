@@ -429,6 +429,13 @@ theorem rec_heq_iff_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : C a}
 theorem heq_rec_iff_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : β} {y : C a} {e : a = b} :
     HEq x (e ▸ y) ↔ HEq x y := by subst e; rfl
 
+universe u
+variable {α β : Sort u} {e : β = α} {a : α} {b : β}
+
+lemma heq_of_eq_cast (e : β = α) : a = cast e b → HEq a b := by rintro rfl; simp
+
+lemma eq_cast_iff_heq : a = cast e b ↔ HEq a b := ⟨heq_of_eq_cast _, fun h ↦ by cases h; rfl⟩
+
 end Equality
 
 /-! ### Declarations about quantifiers -/
@@ -975,7 +982,7 @@ theorem not_beq_of_ne {α : Type*} [BEq α] [LawfulBEq α] {a b : α} (ne : a �
   fun h => ne (eq_of_beq h)
 
 theorem beq_eq_decide {α : Type*} [BEq α] [LawfulBEq α] {a b : α} : (a == b) = decide (a = b) := by
-  rw [← beq_iff_eq a b]
+  rw [← beq_iff_eq (a := a) (b := b)]
   cases a == b <;> simp
 
 @[simp] lemma beq_eq_beq {α β : Type*} [BEq α] [LawfulBEq α] [BEq β] [LawfulBEq β] {a₁ a₂ : α}

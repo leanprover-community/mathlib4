@@ -17,7 +17,7 @@ generalize to uniform spaces, e.g.
 
 * uniform continuity (in this file)
 * completeness (in `Cauchy.lean`)
-* extension of uniform continuous functions to complete spaces (in `UniformEmbedding.lean`)
+* extension of uniform continuous functions to complete spaces (in `IsUniformEmbedding.lean`)
 * totally bounded sets (in `Cauchy.lean`)
 * totally bounded complete sets are compact (in `Cauchy.lean`)
 
@@ -135,6 +135,31 @@ theorem mem_idRel {a b : α} : (a, b) ∈ @idRel α ↔ a = b :=
 @[simp]
 theorem idRel_subset {s : Set (α × α)} : idRel ⊆ s ↔ ∀ a, (a, a) ∈ s := by
   simp [subset_def]
+
+theorem eq_singleton_left_of_prod_subset_idRel {X : Type _} {S T : Set X} (hS : S.Nonempty)
+    (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, S = {x} := by
+  rcases hS, hT with ⟨⟨s, hs⟩, ⟨t, ht⟩⟩
+  refine ⟨s, eq_singleton_iff_nonempty_unique_mem.mpr ⟨⟨s, hs⟩, fun x hx ↦ ?_⟩⟩
+  rw [prod_subset_iff] at h_diag
+  replace hs := h_diag s hs t ht
+  replace hx := h_diag x hx t ht
+  simp only [idRel, mem_setOf_eq] at hx hs
+  rwa [← hs] at hx
+
+theorem eq_singleton_right_prod_subset_idRel {X : Type _} {S T : Set X} (hS : S.Nonempty)
+    (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, T = {x} := by
+  rw [Set.prod_subset_iff] at h_diag
+  replace h_diag := fun x hx y hy => (h_diag y hy x hx).symm
+  exact eq_singleton_left_of_prod_subset_idRel hT hS (prod_subset_iff.mpr h_diag)
+
+theorem eq_singleton_prod_subset_idRel {X : Type _} {S T : Set X} (hS : S.Nonempty)
+    (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, S = {x} ∧ T = {x} := by
+  obtain ⟨⟨x, hx⟩, ⟨y, hy⟩⟩ := eq_singleton_left_of_prod_subset_idRel hS hT h_diag,
+    eq_singleton_right_prod_subset_idRel hS hT h_diag
+  refine ⟨x, ⟨hx, ?_⟩⟩
+  rw [hy, Set.singleton_eq_singleton_iff]
+  exact (Set.prod_subset_iff.mp h_diag x (by simp only [hx, Set.mem_singleton]) y
+    (by simp only [hy, Set.mem_singleton])).symm
 
 /-- The composition of relations -/
 def compRel (r₁ r₂ : Set (α × α)) :=
@@ -867,7 +892,6 @@ lemma DenseRange.iUnion_uniformity_ball {ι : Type*} {xs : ι → α}
 ### Uniformity bases
 -/
 
-
 /-- Open elements of `𝓤 α` form a basis of `𝓤 α`. -/
 theorem uniformity_hasBasis_open : HasBasis (𝓤 α) (fun V : Set (α × α) => V ∈ 𝓤 α ∧ IsOpen V) id :=
   hasBasis_self.2 fun s hs =>
@@ -1091,6 +1115,11 @@ abbrev UniformSpace.comap (f : α → β) (u : UniformSpace β) : UniformSpace �
 theorem uniformity_comap {_ : UniformSpace β} (f : α → β) :
     𝓤[UniformSpace.comap f ‹_›] = comap (Prod.map f f) (𝓤 β) :=
   rfl
+
+lemma ball_preimage {f : α → β} {U : Set (β × β)} {x : α} :
+    UniformSpace.ball x (Prod.map f f ⁻¹' U) = f ⁻¹' UniformSpace.ball (f x) U := by
+  ext : 1
+  simp only [UniformSpace.ball, mem_preimage, Prod.map_apply]
 
 @[simp]
 theorem uniformSpace_comap_id {α : Type*} : UniformSpace.comap (id : α → α) = id := by

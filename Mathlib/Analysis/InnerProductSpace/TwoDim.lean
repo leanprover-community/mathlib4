@@ -71,7 +71,7 @@ noncomputable section
 
 open scoped RealInnerProductSpace ComplexConjugate
 
-open FiniteDimensional
+open Module
 
 lemma FiniteDimensional.of_fact_finrank_eq_two {K V : Type*} [DivisionRing K]
     [AddCommGroup V] [Module K V] [Fact (finrank K V = 2)] : FiniteDimensional K V :=
@@ -204,7 +204,7 @@ def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
         exact o.areaForm_le x (o.rightAngleRotationAux₁ x)
       · let K : Submodule ℝ E := ℝ ∙ x
         have : Nontrivial Kᗮ := by
-          apply @FiniteDimensional.nontrivial_of_finrank_pos ℝ
+          apply nontrivial_of_finrank_pos (R := ℝ)
           have : finrank ℝ K ≤ Finset.card {x} := by
             rw [← Set.toFinset_singleton]
             exact finrank_span_le_card ({x} : Set E)

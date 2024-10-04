@@ -377,10 +377,14 @@ a uniform embedding for the uniform structures of uniform convergence.
 
 More precisely, if `f : γ → β` is a uniform embedding,
 then `(f ∘ ·) : (α →ᵤ γ) → (α →ᵤ β)` is a uniform embedding. -/
-protected theorem postcomp_uniformEmbedding [UniformSpace γ] {f : γ → β} (hf : UniformEmbedding f) :
-    UniformEmbedding (ofFun ∘ (f ∘ ·) ∘ toFun : (α →ᵤ γ) → α →ᵤ β) where
+protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
+    (hf : IsUniformEmbedding f) :
+ IsUniformEmbedding (ofFun ∘ (f ∘ ·) ∘ toFun : (α →ᵤ γ) → α →ᵤ β) where
   toUniformInducing := UniformFun.postcomp_uniformInducing hf.toUniformInducing
   inj _ _ H := funext fun _ ↦ hf.inj (congrFun H _)
+
+@[deprecated (since := "2024-10-01")]
+alias postcomp_uniformEmbedding := UniformFun.postcomp_isUniformEmbedding
 
 -- Porting note: had to add a type annotation at `((f ∘ ·) : ((α → γ) → (α → β)))`
 /-- If `u` is a uniform structures on `β` and `f : γ → β`, then
@@ -877,10 +881,13 @@ uniform structures of `𝔖`-convergence.
 
 More precisely, if `f : γ → β` is a uniform embedding, then
 `(fun g ↦ f ∘ g) : (α →ᵤ[𝔖] γ) → (α →ᵤ[𝔖] β)` is a uniform embedding. -/
-protected theorem postcomp_uniformEmbedding [UniformSpace γ] {f : γ → β} (hf : UniformEmbedding f) :
-    UniformEmbedding (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖) where
+protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
+    (hf : IsUniformEmbedding f) : IsUniformEmbedding (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖) where
   toUniformInducing := UniformOnFun.postcomp_uniformInducing hf.toUniformInducing
   inj _ _ H := funext fun _ ↦ hf.inj (congrFun H _)
+
+@[deprecated (since := "2024-10-01")]
+alias postcomp_uniformEmbedding := UniformOnFun.postcomp_isUniformEmbedding
 
 /-- Turn a uniform isomorphism `γ ≃ᵤ β` into a uniform isomorphism `(α →ᵤ[𝔖] γ) ≃ᵤ (α →ᵤ[𝔖] β)`
 by post-composing. -/
