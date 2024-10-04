@@ -453,14 +453,9 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
   induction' n using Nat.strong_induction_on with n IH generalizing A
   -- If one of the sets is empty, then all the sums are zero
   by_cases Ai_empty : ∃ i, A i = ∅
-  · rcases Ai_empty with ⟨i, hi⟩
-    have : ∑ j ∈ A i, g i j = 0 := by rw [hi, Finset.sum_empty]
-    rw [f.map_coord_zero i this]
-    have : piFinset A = ∅ := by
-      refine Finset.eq_empty_of_forall_not_mem fun r hr => ?_
-      have : r i ∈ A i := mem_piFinset.mp hr i
-      simp [hi] at this
-    rw [this, Finset.sum_empty]
+  · obtain ⟨i, hi⟩ : ∃ i, ∑ j ∈ A i, g i j = 0 := Ai_empty.imp fun i hi ↦ by simp [hi]
+    have hpi : piFinset A = ∅ := by simpa
+    rw [f.map_coord_zero i hi, hpi, Finset.sum_empty]
   push_neg at Ai_empty
   -- Otherwise, if all sets are at most singletons, then they are exactly singletons and the result
   -- is again straightforward

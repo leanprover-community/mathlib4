@@ -149,6 +149,9 @@ theorem mem_span_insert {s : Set α} {x y} :
 theorem mem_span_singleton' {x y : α} : x ∈ span ({y} : Set α) ↔ ∃ a, a * y = x :=
   Submodule.mem_span_singleton
 
+theorem mem_span_singleton_self (x : α) : x ∈ span ({x} : Set α) :=
+  Submodule.mem_span_singleton_self x
+
 theorem span_singleton_le_iff_mem {x : α} : span {x} ≤ I ↔ x ∈ I :=
   Submodule.span_singleton_le_iff_mem _ _
 
@@ -184,8 +187,8 @@ theorem span_eq_top_iff_finite (s : Set α) :
   simp_rw [eq_top_iff_one]
   exact ⟨Submodule.mem_span_finite_of_mem_span, fun ⟨s', h₁, h₂⟩ => span_mono h₁ h₂⟩
 
-theorem mem_span_singleton_sup {S : Type*} [CommSemiring S] {x y : S} {I : Ideal S} :
-    x ∈ Ideal.span {y} ⊔ I ↔ ∃ a : S, ∃ b ∈ I, a * y + b = x := by
+theorem mem_span_singleton_sup {x y : α} {I : Ideal α} :
+    x ∈ Ideal.span {y} ⊔ I ↔ ∃ a : α, ∃ b ∈ I, a * y + b = x := by
   rw [Submodule.mem_sup]
   constructor
   · rintro ⟨ya, hya, b, hb, rfl⟩
@@ -430,9 +433,6 @@ theorem mul_unit_mem_iff_mem {x y : α} (hy : IsUnit y) : x * y ∈ I ↔ x ∈ 
 
 theorem mem_span_singleton {x y : α} : x ∈ span ({y} : Set α) ↔ y ∣ x :=
   mem_span_singleton'.trans <| exists_congr fun _ => by rw [eq_comm, mul_comm]
-
-theorem mem_span_singleton_self (x : α) : x ∈ span ({x} : Set α) :=
-  mem_span_singleton.mpr dvd_rfl
 
 theorem span_singleton_le_span_singleton {x y : α} :
     span ({x} : Set α) ≤ span ({y} : Set α) ↔ y ∣ x :=

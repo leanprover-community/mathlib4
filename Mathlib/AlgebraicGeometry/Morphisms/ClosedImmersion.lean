@@ -84,7 +84,7 @@ instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsClosedImmersion f]
 
 /-- Composition with an isomorphism preserves closed immersions. -/
 instance respectsIso : MorphismProperty.RespectsIso @IsClosedImmersion := by
-  constructor <;> intro X Y Z e f hf <;> infer_instance
+  apply MorphismProperty.RespectsIso.mk <;> intro X Y Z e f hf <;> infer_instance
 
 /-- Given two commutative rings `R S : CommRingCat` and a surjective morphism
 `f : R ⟶ S`, the induced scheme morphism `specObj S ⟶ specObj R` is a

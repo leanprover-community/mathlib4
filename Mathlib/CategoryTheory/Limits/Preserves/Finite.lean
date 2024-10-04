@@ -85,6 +85,11 @@ def compPreservesFiniteLimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteLimits
     [PreservesFiniteLimits G] : PreservesFiniteLimits (F ⋙ G) :=
   ⟨fun _ _ _ => inferInstance⟩
 
+/-- Transfer preservation of finite limits along a natural isomorphism in the functor. -/
+def preservesFiniteLimitsOfNatIso {F G : C ⥤ D} (h : F ≅ G) [PreservesFiniteLimits F] :
+    PreservesFiniteLimits G where
+  preservesFiniteLimits _ _ _ := preservesLimitsOfShapeOfNatIso h
+
 /- Porting note: adding this class because quantified classes don't behave well
 [#2764](https://github.com/leanprover-community/mathlib4/pull/2764) -/
 /-- A functor `F` preserves finite products if it preserves all from `Discrete J`
@@ -232,6 +237,11 @@ def preservesFiniteColimitsOfPreservesFiniteColimitsOfSize (F : C ⥤ D)
 def compPreservesFiniteColimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteColimits F]
     [PreservesFiniteColimits G] : PreservesFiniteColimits (F ⋙ G) :=
   ⟨fun _ _ _ => inferInstance⟩
+
+/-- Transfer preservation of finite colimits along a natural isomorphism in the functor. -/
+def preservesFiniteColimitsOfNatIso {F G : C ⥤ D} (h : F ≅ G) [PreservesFiniteColimits F] :
+    PreservesFiniteColimits G where
+  preservesFiniteColimits _ _ _ := preservesColimitsOfShapeOfNatIso h
 
 /- Porting note: adding this class because quantified classes don't behave well
 [#2764](https://github.com/leanprover-community/mathlib4/pull/2764) -/

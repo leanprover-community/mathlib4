@@ -392,7 +392,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_continuou
 ### Peak functions of the form `x ↦ c ^ dim * φ (c x)`
 -/
 
-open FiniteDimensional Bornology
+open Module Bornology
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F]
   [MeasurableSpace F] [BorelSpace F] {μ : Measure F} [IsAddHaarMeasure μ]
@@ -438,7 +438,7 @@ theorem tendsto_integral_comp_smul_smul_of_integrable
         simp [norm_smul, abs_of_pos cpos, mul_pow]; ring
       _ < δ ^ finrank ℝ F * ε := by
         apply hM
-        rw [div_lt_iff δpos] at hc
+        rw [div_lt_iff₀ δpos] at hc
         simp only [mem_compl_iff, mem_closedBall, dist_zero_right, norm_smul, Real.norm_eq_abs,
           abs_of_nonneg cpos.le, not_le, gt_iff_lt]
         exact hc.trans_le (by gcongr)
