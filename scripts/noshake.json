@@ -360,7 +360,8 @@
   ["Batteries.Data.Nat.Lemmas", "Mathlib.Data.List.Basic"],
   "Mathlib.Data.List.Lemmas": ["Mathlib.Data.List.InsertNth"],
   "Mathlib.Data.List.Defs": ["Batteries.Data.RBMap.Basic"],
-  "Mathlib.Data.List.Basic": ["Mathlib.Data.Option.Basic"],
+  "Mathlib.Data.List.Basic":
+  ["Mathlib.Control.Basic", "Mathlib.Data.Option.Basic"],
   "Mathlib.Data.LazyList.Basic": ["Mathlib.Lean.Thunk"],
   "Mathlib.Data.Int.Order.Basic": ["Mathlib.Data.Int.Notation"],
   "Mathlib.Data.Int.Defs": ["Batteries.Data.Int.Order"],

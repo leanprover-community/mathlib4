@@ -94,7 +94,7 @@ theorem apply_abs_le_mul_of_one_le {β : Type*} [MulOneClass β] [Preorder β]
 theorem abs_add (a b : α) : |a + b| ≤ |a| + |b| :=
   abs_le.2
     ⟨(neg_add |a| |b|).symm ▸
-        add_le_add ((@neg_le α ..).2 <| neg_le_abs _) ((@neg_le α ..).2 <| neg_le_abs _),
+        add_le_add (neg_le.2 <| neg_le_abs _) (neg_le.2 <| neg_le_abs _),
       add_le_add (le_abs_self _) (le_abs_self _)⟩
 
 theorem abs_add' (a b : α) : |a| ≤ |b| + |b + a| := by simpa using abs_add (-b) (b + a)
@@ -122,7 +122,7 @@ theorem sub_lt_of_abs_sub_lt_right (h : |a - b| < c) : a - c < b :=
   sub_lt_of_abs_sub_lt_left (abs_sub_comm a b ▸ h)
 
 theorem abs_sub_abs_le_abs_sub (a b : α) : |a| - |b| ≤ |a - b| :=
-  (@sub_le_iff_le_add α ..).2 <|
+  sub_le_iff_le_add.2 <|
     calc
       |a| = |a - b + b| := by rw [sub_add_cancel]
       _ ≤ |a - b| + |b| := abs_add _ _

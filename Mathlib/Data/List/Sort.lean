@@ -123,8 +123,8 @@ theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp : l₁ 
     congr
     have : ∀ x ∈ u₂, x = a := fun x m =>
       antisymm ((pairwise_append.1 hs₂).2.2 _ m a (mem_cons_self _ _)) (h₁ _ (by simp [m]))
-    rw [(@eq_replicate _ a (length u₂ + 1) (a :: u₂)).2,
-        (@eq_replicate _ a (length u₂ + 1) (u₂ ++ [a])).2] <;>
+    rw [(@eq_replicate_iff _ a (length u₂ + 1) (a :: u₂)).2,
+        (@eq_replicate_iff _ a (length u₂ + 1) (u₂ ++ [a])).2] <;>
         constructor <;>
       simp [iff_true_intro this, or_comm]
 
@@ -149,7 +149,7 @@ theorem Sorted.rel_of_mem_take_of_mem_drop {l : List α} (h : List.Sorted r l) {
     (hx : x ∈ List.take k l) (hy : y ∈ List.drop k l) : r x y := by
   obtain ⟨iy, hiy, rfl⟩ := getElem_of_mem hy
   obtain ⟨ix, hix, rfl⟩ := getElem_of_mem hx
-  rw [getElem_take', getElem_drop]
+  rw [getElem_take, getElem_drop]
   rw [length_take] at hix
   exact h.rel_get_of_lt (Nat.lt_add_right _ (Nat.lt_min.mp hix).left)
 
@@ -534,12 +534,12 @@ def mergeSort' : List α → List α
     let ls := (split (a :: b :: l))
     have := length_split_fst_le l
     have := length_split_snd_le l
-    exact merge (r · ·) (mergeSort' ls.1) (mergeSort' ls.2)
+    exact merge (mergeSort' ls.1) (mergeSort' ls.2) (r · ·)
   termination_by l => length l
 
 @[nolint unusedHavesSuffices] -- Porting note: false positive
 theorem mergeSort'_cons_cons {a b} {l l₁ l₂ : List α} (h : split (a :: b :: l) = (l₁, l₂)) :
-    mergeSort' r (a :: b :: l) = merge (r · ·) (mergeSort' r l₁) (mergeSort' r l₂) := by
+    mergeSort' r (a :: b :: l) = merge (mergeSort' r l₁) (mergeSort' r l₂) (r · ·) := by
   simp only [mergeSort', h]
 
 section Correctness
@@ -568,13 +568,13 @@ section TotalAndTransitive
 
 variable {r} [IsTotal α r] [IsTrans α r]
 
-theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sorted r (merge (r · ·) l l')
+theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sorted r (merge l l' (r · ·) )
   | [], [], _, _ => by simp
   | [], b :: l', _, h₂ => by simpa using h₂
   | a :: l, [], h₁, _ => by simpa using h₁
   | a :: l, b :: l', h₁, h₂ => by
     by_cases h : a ≼ b
-    · suffices ∀ b' ∈ List.merge (r · ·) l (b :: l'), r a b' by
+    · suffices ∀ b' ∈ List.merge l (b :: l') (r · ·) , r a b' by
         simpa [h, h₁.of_cons.merge h₂]
       intro b' bm
       rcases show b' = b ∨ b' ∈ l ∨ b' ∈ l' by
@@ -584,7 +584,7 @@ theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sort
         assumption
       · exact rel_of_sorted_cons h₁ _ bl
       · exact _root_.trans h (rel_of_sorted_cons h₂ _ bl')
-    · suffices ∀ b' ∈ List.merge (r · ·) (a :: l) l', r b b' by
+    · suffices ∀ b' ∈ List.merge (a :: l) l' (r · ·) , r b b' by
         simpa [h, h₁.merge h₂.of_cons]
       intro b' bm
       have ba : b ≼ a := (total_of r _ _).resolve_left h
@@ -625,24 +625,6 @@ theorem mergeSort'_nil : [].mergeSort' r = [] := by rw [List.mergeSort']
 @[simp]
 theorem mergeSort'_singleton (a : α) : [a].mergeSort' r = [a] := by rw [List.mergeSort']
 
-theorem map_merge (f : α → β) (r : α → α → Bool) (s : β → β → Bool) (l l' : List α)
-    (hl : ∀ a ∈ l, ∀ b ∈ l', r a b = s (f a) (f b)) :
-    (l.merge r l').map f = (l.map f).merge s (l'.map f) := by
-  match l, l' with
-  | [], x' => simp
-  | x, [] => simp
-  | x :: xs, x' :: xs' =>
-    simp_rw [List.forall_mem_cons, forall_and] at hl
-    simp_rw [List.map, List.cons_merge_cons]
-    rw [← hl.1.1]
-    split
-    · rw [List.map, map_merge _ r s, List.map]
-      simp_rw [List.forall_mem_cons, forall_and]
-      exact ⟨hl.2.1, hl.2.2⟩
-    · rw [List.map, map_merge _ r s, List.map]
-      simp_rw [List.forall_mem_cons]
-      exact ⟨hl.1.2, hl.2.2⟩
-
 theorem map_mergeSort' (f : α → β) (l : List α) (hl : ∀ a ∈ l, ∀ b ∈ l, a ≼ b ↔ f a ≼ f b) :
     (l.mergeSort' r).map f = (l.map f).mergeSort' s :=
   match l with
@@ -659,7 +641,7 @@ theorem map_mergeSort' (f : α → β) (l : List α) (hl : ∀ a ∈ l, ∀ b �
     have := length_split_snd_le l
     simp_rw [List.map]
     rw [List.mergeSort'_cons_cons _ e, List.mergeSort'_cons_cons _ fe,
-      map_merge _ (r · ·) (s · ·), map_mergeSort' _ l₁ hl.1.1, map_mergeSort' _ l₂ hl.2.2]
+      map_merge, map_mergeSort' _ l₁ hl.1.1, map_mergeSort' _ l₂ hl.2.2]
     simp_rw [mem_mergeSort', decide_eq_decide]
     exact hl.1.2
   termination_by length l

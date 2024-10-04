@@ -544,14 +544,14 @@ instance IsStandardSmooth.baseChange [IsStandardSmooth.{t, w} R S] :
     IsStandardSmooth.{t, w} T (T ⊗[R] S) where
   out := by
     obtain ⟨⟨P⟩⟩ := ‹IsStandardSmooth R S›
-    exact ⟨P.baseChange T⟩
+    exact ⟨P.baseChange R S T⟩
 
 instance IsStandardSmoothOfRelativeDimension.baseChange
     [IsStandardSmoothOfRelativeDimension.{t, w} n R S] :
     IsStandardSmoothOfRelativeDimension.{t, w} n T (T ⊗[R] S) where
   out := by
     obtain ⟨P, hP⟩ := ‹IsStandardSmoothOfRelativeDimension n R S›
-    exact ⟨P.baseChange T, hP⟩
+    exact ⟨P.baseChange R S T, hP⟩
 
 end BaseChange
 

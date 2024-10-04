@@ -178,19 +178,21 @@ theorem free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
       Module.finrank_finsupp_self, one_mul, add_zero]
     rw [Module.finrank_eq_card_chooseBasisIndex]
   -- On the other hand, `m ⊗ M → M` injective => `Tor₁(k, M) = 0` => `k ⊗ ker(i) → kᴵ` injective.
-  have := @lTensor_injective_of_exact_of_exact_of_rTensor_injective
-    (N₁ := LinearMap.ker i) (N₂ := I →₀ R) (N₃ := M)
-    (f₁ := (𝔪).subtype) (f₂ := Submodule.mkQ 𝔪) inferInstance inferInstance inferInstance
-    inferInstance inferInstance inferInstance
   intro x
-  apply @this (LinearMap.ker i).subtype i (LinearMap.exact_subtype_mkQ 𝔪)
-    (Submodule.mkQ_surjective _) (LinearMap.exact_subtype_ker_map i) hi H
-    (Module.Flat.lTensor_preserves_injective_linearMap _ Subtype.val_injective)
-  apply hi'.injective
-  rw [LinearMap.baseChange_eq_ltensor]
-  erw [← LinearMap.comp_apply (i.lTensor k), ← LinearMap.lTensor_comp]
-  rw [(LinearMap.exact_subtype_ker_map i).linearMap_comp_eq_zero]
-  simp only [LinearMap.lTensor_zero, LinearMap.zero_apply, map_zero]
+  refine lTensor_injective_of_exact_of_exact_of_rTensor_injective
+    (N₁ := LinearMap.ker i) (N₂ := I →₀ R) (N₃ := M)
+    (f₁ := (𝔪).subtype) (f₂ := Submodule.mkQ 𝔪)
+    (g₁ := (LinearMap.ker i).subtype) (g₂ := i) (LinearMap.exact_subtype_mkQ 𝔪)
+    (Submodule.mkQ_surjective _) (LinearMap.exact_subtype_ker_map i) hi H ?_ ?_
+  · apply Module.Flat.lTensor_preserves_injective_linearMap
+      (N := LinearMap.ker i) (N' := I →₀ R)
+      (L := (LinearMap.ker i).subtype)
+    exact Subtype.val_injective
+  · apply hi'.injective
+    rw [LinearMap.baseChange_eq_ltensor]
+    erw [← LinearMap.comp_apply (i.lTensor k), ← LinearMap.lTensor_comp]
+    rw [(LinearMap.exact_subtype_ker_map i).linearMap_comp_eq_zero]
+    simp only [LinearMap.lTensor_zero, LinearMap.zero_apply, map_zero]
 
 -- TODO: Generalise this to finite free modules.
 theorem free_of_flat_of_localRing [Module.FinitePresentation R P] [Module.Flat R P] :

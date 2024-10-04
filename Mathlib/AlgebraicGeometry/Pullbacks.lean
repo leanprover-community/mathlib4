@@ -507,7 +507,7 @@ def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
     pasteVertIsPullback rfl (pullbackIsPullback g (𝒰.map i))
       (pullbackIsPullback (pullback.snd g (𝒰.map i)) (pullback.snd f (𝒰.map i)))
   refine
-    @openCoverOfIsIso
+    @openCoverOfIsIso _ _
       (f := (pullbackSymmetry _ _).hom ≫ (limit.isoLimitCone ⟨_, this⟩).inv ≫
         pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) ?_ ?_) inferInstance
   · simp [← pullback.condition]
@@ -583,7 +583,8 @@ the morphism `Spec (S ⊗[R] T) ⟶ Spec T` obtained by applying `Spec.map` to t
 -/
 @[reassoc (attr := simp)]
 lemma pullbackSpecIso_inv_snd :
-    (pullbackSpecIso R S T).inv ≫ pullback.snd _ _ = Spec.map (ofHom (toRingHom includeRight)) :=
+    (pullbackSpecIso R S T).inv ≫ pullback.snd _ _ =
+      Spec.map (ofHom (R := T) (S := S ⊗[R] T) (toRingHom includeRight)) :=
   limit.isoLimitCone_inv_π _ _
 /--
 The composition of the isomorphism `pullbackSepcIso R S T` (from the pullback of
