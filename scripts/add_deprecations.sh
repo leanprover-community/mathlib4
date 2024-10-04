@@ -15,7 +15,7 @@ fi
 git cat-file -e "${commit}" || { printf $'invalid commit hash \'%s\'\n' "${commit}";  exit 1; }
 
 ## we narrow the diff to lines beginning with `theorem`, `lemma` and a few other commands
-begs="(theorem|lemma|inductive|structure|def|class|instance|alias|abbrev)"
+begs="(theorem|lemma|inductive|structure|def|class|alias|abbrev)"
 
 ##  `mkDeclAndDepr <file>` outputs a single line of the form
 ##  `@[deprecated (since := "yyyy-mm-dd")]||||alias yyy := xxx@@@`
@@ -77,8 +77,11 @@ addDeprecations () {
 new="i_am_a_file_name_with_no_clashes"
 while [ -f "${new}" ]; do new=${new}0; done
 for fil in $( git diff --name-only ${commit} ); do
-  printf $'Processing %s\n' "${fil}"
-  addDeprecations "${fil}" > "${new}" ; mv "${new}" "${fil}"
+  if [ "${fil/*./}" == "lean" ]
+  then
+    printf $'Processing %s\n' "${fil}"
+    addDeprecations "${fil}" > "${new}" ; mv "${new}" "${fil}"
+  fi
 done
 
  : <<'TEST_DECLARATIONS'
@@ -88,5 +91,7 @@ theorem ThmRemoved I'm no longer here
 def DefRemoved I'm no longer here
 
 lemma LemRemoved I'm no longer here
+
+TODO: parse `instance` only if they are named?
 
 TEST_DECLARATIONS
