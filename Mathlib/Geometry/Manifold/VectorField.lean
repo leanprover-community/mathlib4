@@ -519,12 +519,12 @@ lemma mpullbackWithin_add :
   simp [mpullbackWithin_apply]
 
 lemma MDifferentiableWithinAt.mpullbackWithin [CompleteSpace E] {t : Set M'}
-    (hV : MDifferentiableWithinAt I' I'.tangent
+    (hV : ContMDiffWithinAt I' I'.tangent 1
       (fun (y : M') ↦ (V y : TangentBundle I' M')) t (f x))
     (hf : ContMDiffWithinAt I I' 2 f s x) (hf' : (mfderivWithin I I' f s x).IsInvertible) :
-    MDifferentiableWithinAt I I.tangent
-      (fun (y : M) ↦ (mpullbackWithin I I' f V s y : TangentBundle I M)) s x :=
-  sorry
+    ContMDiffWithinAt I I.tangent 1
+      (fun (y : M) ↦ (mpullbackWithin I I' f V s y : TangentBundle I M)) s x := by
+  rw [Bundle.contMDiffWithinAt_section] at hf ⊢
 
 #exit
 
