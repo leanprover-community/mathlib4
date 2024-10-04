@@ -8,33 +8,46 @@ import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Module.Pi
-import Mathlib.Order.Interval.Finset.Defs
 
+/-! -/
+-- fake module docstring just so that I can disable the long line linter without getting linted for
+-- a missing module docstring!
+
+set_option linter.style.longLine false in
 /-!
 # Incidence algebras
 
 Given a locally finite order `α` the incidence algebra over `α` is the type of functions from
 non-empty intervals of `α` to some algebraic codomain.
+
 This algebra has a natural multiplication operation whereby the product of two such functions
 is defined on an interval by summing over all divisions into two subintervals the product of the
 values of the original pair of functions.
+
 This structure allows us to interpret many natural invariants of the intervals (such as their
 cardinality) as elements of the incidence algebra. For instance the cardinality function, viewed as
 an element of the incidence algebra, is simply the square of the function that takes constant value
 one on all intervals. This constant function is called the zeta function, after
 its connection with the Riemann zeta function.
+
 The incidence algebra is a good setting for proving many inclusion-exclusion type principles, these
 go under the name Möbius inversion, and are essentially due to the fact that the zeta function has
 a multiplicative inverse in the incidence algebra, an inductively definable function called the
 Möbius function that generalizes the Möbius function in number theory.
 
-## References
+## Main definitions
 
-- Aigner - Combinatorial Theory, Chapter IV
-- Jacobson - Basic Algebra I, 8.6
-- Rota - On the foundations of Combinatorial Theory
-- Spiegel, O'Donnell - Incidence Algebras
-- Kung, Rota, Yan - Combinatorics: The Rota Way, Chapter 3
+* `1 : IncidenceAlgebra 𝕜 α` is the delta function, defined analogously to the identity matrix.
+* `f * g` is the incidence algebra product, defined analogously to the matrix product.
+* `IncidenceAlgebra.zeta` is the zeta function, defined analogously to the upper triangular matrix
+  of ones.
+* `IncidenceAlgebra.mu` is the inverse of the zeta function.
+
+## Implementation notes
+
+One has to define `mu` as either the left or right inverse of `zeta`. We define it as the left
+inverse, and prove it is also a right inverse by defining `mu'` as the right inverse and using that
+left and right inverses agree if they exist.
 
 ## TODOs
 
@@ -48,14 +61,26 @@ Here are some additions to this file that could be made in the future:
 - Finsum version of Möbius inversion that holds even when an order doesn't have top/bot?
 - Connect this theory to (infinite) matrices, giving maps of the incidence algebra to matrix rings
 - Connect to the more advanced theory of arithmetic functions, and Dirichlet convolution.
+
+## References
+
+* [Aigner, *Combinatorial Theory, Chapter IV*][aigner1997]
+* [Jacobson, *Basic Algebra I, 8.6*][jacobson1989]
+* [Doubilet, Rota, Stanley, *On the foundations of Combinatorial Theory VI*][doubilet_rota_stanley_vi]
+* [Spiegel, O'Donnell, *Incidence Algebras*][spiegel_odonnel1997]
+* [Kung, Rota, Yan, *Combinatorics: The Rota Way, Chapter 3*][kung_rota_yan2009]
 -/
 
 open Finset OrderDual
 
-variable {𝕄 F 𝕜 𝕝 𝕞 α β : Type*}
+variable {F 𝕜 𝕝 𝕞 α β : Type*}
 
 /-- The `𝕜`-incidence algebra over `α`. -/
 structure IncidenceAlgebra (𝕜 α : Type*) [Zero 𝕜] [LE α] where
+  /-- The underlying function of an element of the incidence algebra.
+
+  Do not use this function directly. Instead use the coercion coming from the `FunLike`
+  instance. -/
   toFun : α → α → 𝕜
   eq_zero_of_not_le' ⦃a b : α⦄ : ¬a ≤ b → toFun a b = 0
 
@@ -81,14 +106,7 @@ initialize_simps_projections IncidenceAlgebra (toFun → apply)
 @[simp] lemma toFun_eq_coe (f : IncidenceAlgebra 𝕜 α) : f.toFun = f := rfl
 @[simp, norm_cast] lemma coe_mk (f : α → α → 𝕜) (h) : (mk f h : α → α → 𝕜) = f := rfl
 
-protected lemma congr_fun {f g : IncidenceAlgebra 𝕜 α} (h : f = g) (a b : α) : f a b = g a b :=
-  congr_arg (fun f : IncidenceAlgebra 𝕜 α ↦ f a b) h
-
-protected lemma congr_arg (f : IncidenceAlgebra 𝕜 α) {a₁ a₂ b₁ b₂ : α} (ha : a₁ = a₂)
-    (hb : b₁ = b₂) : f a₁ b₁ = f a₂ b₂ :=
-  congr_arg₂ f ha hb
-
-@[simp] lemma coe_inj {f g : IncidenceAlgebra 𝕜 α} : (f : α → α → 𝕜) = g ↔ f = g :=
+lemma coe_inj {f g : IncidenceAlgebra 𝕜 α} : (f : α → α → 𝕜) = g ↔ f = g :=
   DFunLike.coe_injective.eq_iff
 
 @[ext]
@@ -131,9 +149,9 @@ instance instSmulZeroClassRight : SMulZeroClass M (IncidenceAlgebra 𝕜 α) whe
     ⟨c • ⇑f, fun a b hab ↦ by simp_rw [Pi.smul_apply, apply_eq_zero_of_not_le hab, smul_zero]⟩
   smul_zero c := by ext; exact smul_zero _
 
-@[simp, norm_cast] lemma coe_smul' (c : M) (f : IncidenceAlgebra 𝕜 α) : c • f = c • ⇑f := rfl
+@[simp, norm_cast] lemma coe_constSMul (c : M) (f : IncidenceAlgebra 𝕜 α) : ⇑(c • f) = c • ⇑f := rfl
 
-lemma smul_apply' (c : M) (f : IncidenceAlgebra 𝕜 α) (a b : α) : (c • f) a b = c • f a b := rfl
+lemma constSMul_apply (c : M) (f : IncidenceAlgebra 𝕜 α) (a b : α) : (c • f) a b = c • f a b := rfl
 
 end Smul
 
@@ -169,6 +187,8 @@ instance instAddCommGroup [AddCommGroup 𝕜] [LE α] : AddCommGroup (IncidenceA
 section One
 variable [Preorder α] [DecidableEq α] [Zero 𝕜] [One 𝕜]
 
+/-- The unit incidence algebra is the delta function, whose entries are `0` except on the diagonal
+where they are `1`. -/
 instance instOne : One (IncidenceAlgebra 𝕜 α) :=
   ⟨⟨fun a b ↦ if a = b then 1 else 0, fun _a _b h ↦ ite_eq_right_iff.2 fun H ↦ (h H.le).elim⟩⟩
 
@@ -263,36 +283,36 @@ instance [Preorder α] [LocallyFiniteOrder α] [DecidableEq α] [Semiring 𝕜] 
 
 instance smulWithZeroRight [Zero 𝕜] [Zero 𝕝] [SMulWithZero 𝕜 𝕝] [LE α] :
     SMulWithZero 𝕜 (IncidenceAlgebra 𝕝 α) :=
-  DFunLike.coe_injective.smulWithZero ⟨((⇑) : IncidenceAlgebra 𝕝 α → α → α → 𝕝), coe_zero⟩ coe_smul'
+  DFunLike.coe_injective.smulWithZero ⟨((⇑) : IncidenceAlgebra 𝕝 α → α → α → 𝕝), coe_zero⟩
+    coe_constSMul
 
 instance moduleRight [Preorder α] [Semiring 𝕜] [AddCommMonoid 𝕝] [Module 𝕜 𝕝] :
     Module 𝕜 (IncidenceAlgebra 𝕝 α) :=
   DFunLike.coe_injective.module _ ⟨⟨((⇑) : IncidenceAlgebra 𝕝 α → α → α → 𝕝), coe_zero⟩, coe_add⟩
-    coe_smul'
+    coe_constSMul
 
 instance algebraRight [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq α] [CommSemiring 𝕜]
     [CommSemiring 𝕝] [Algebra 𝕜 𝕝] : Algebra 𝕜 (IncidenceAlgebra 𝕝 α) where
   toFun c := algebraMap 𝕜 𝕝 c • (1 : IncidenceAlgebra 𝕝 α)
   map_one' := by
-    ext
-    simp only [mul_boole, one_apply, Algebra.id.smul_eq_mul, smul_apply', map_one]
+    ext; simp only [mul_boole, one_apply, Algebra.id.smul_eq_mul, constSMul_apply, map_one]
   map_mul' c d := by
       ext a b
       obtain rfl | h := eq_or_ne a b
       · simp only [one_apply, Algebra.id.smul_eq_mul, mul_apply, Algebra.mul_smul_comm,
-          boole_smul, smul_apply', ← ite_and, map_mul, Algebra.smul_mul_assoc,
+          boole_smul, constSMul_apply, ← ite_and, map_mul, Algebra.smul_mul_assoc,
           if_pos rfl, eq_comm, and_self_iff, Icc_self]
         simp
       · simp only [true_and, ite_self, le_rfl, one_apply, mul_one, Algebra.id.smul_eq_mul,
-          mul_apply, Algebra.mul_smul_comm, MulZeroClass.zero_mul, smul_apply',
+          mul_apply, Algebra.mul_smul_comm, MulZeroClass.zero_mul, constSMul_apply,
           ← ite_and, ite_mul, mul_ite, map_mul, mem_Icc, sum_ite_eq,
           MulZeroClass.mul_zero, smul_zero, Algebra.smul_mul_assoc, if_pos rfl, if_neg h]
         refine (sum_eq_zero fun x _ ↦ ?_).symm
         exact if_neg fun hx ↦ h <| hx.2.trans hx.1
   map_zero' := by dsimp; rw [map_zero, zero_smul]
   map_add' c d := by dsimp; rw [map_add, add_smul]
-  commutes' c f := by classical ext a b hab; simp [if_pos hab, smul_apply', mul_comm]
-  smul_def' c f := by classical ext a b hab; simp [if_pos hab, smul_apply', Algebra.smul_def]
+  commutes' c f := by classical ext a b hab; simp [if_pos hab, constSMul_apply, mul_comm]
+  smul_def' c f := by classical ext a b hab; simp [if_pos hab, constSMul_apply, Algebra.smul_def]
 
 /-! ### The Lambda function -/
 
@@ -301,13 +321,9 @@ variable (𝕜) [Zero 𝕜] [One 𝕜] [Preorder α] [@DecidableRel α (· ⩿ �
 
 /-- The lambda function of the incidence algebra is the function that assigns `1` to every nonempty
 interval of cardinality one or two. -/
+@[simps]
 def lambda : IncidenceAlgebra 𝕜 α :=
   ⟨fun a b ↦ if a ⩿ b then 1 else 0, fun _a _b h ↦ if_neg fun hh ↦ h hh.le⟩
-
-variable {𝕜}
-
--- TODO: Can't this be autogenerated?
-@[simp] lemma lambda_apply (a b : α) : lambda 𝕜 a b = if a ⩿ b then 1 else 0 := rfl
 
 end Lambda
 
@@ -346,7 +362,7 @@ section Mu
 variable (𝕜) [AddCommGroup 𝕜] [One 𝕜] [Preorder α] [LocallyFiniteOrder α] [DecidableEq α]
 
 /-- The Möbius function of the incidence algebra as a bare function defined recursively. -/
-def muFun (a : α) : α → 𝕜
+private def muFun (a : α) : α → 𝕜
   | b =>
     if a = b then 1
     else
@@ -357,7 +373,7 @@ def muFun (a : α) : α → 𝕜
           muFun a x
 termination_by b => (Icc a b).card
 
-lemma muFun_apply (a b : α) :
+private lemma muFun_apply (a b : α) :
     muFun 𝕜 a b = if a = b then 1 else -∑ x in (Ico a b).attach, muFun 𝕜 a x := by rw [muFun]
 
 /-- The Möbius function which inverts `zeta` as an element of the incidence algebra. -/
@@ -599,8 +615,8 @@ lemma prod_mul_prod' [LocallyFiniteOrder α] [LocallyFiniteOrder β] [@Decidable
   ext x y; simp [Icc_prod_def, sum_mul_sum, h, sum_product]
 
 @[simp]
-lemma one_prod_one [DecidableEq α] [DecidableEq β] :
-    (1 : IncidenceAlgebra 𝕜 α).prod (1 : IncidenceAlgebra 𝕜 β) = 1 := by
+lemma one_prod_one [DecidableEq α] [DecidableEq β] : 
+    (.prod 1 1 : IncidenceAlgebra 𝕜 (α × β)) = 1 := by
   ext x y; simp [Prod.ext_iff, ← ite_and, and_comm]
 
 @[simp]
@@ -636,13 +652,4 @@ lemma mu_prod_mu : (mu 𝕜).prod (mu 𝕜) = (mu 𝕜 : IncidenceAlgebra 𝕜 (
 
 end PartialOrder
 end Prod
-
-section Euler
-variable (α) [AddCommGroup 𝕜] [One 𝕜] [Preorder α] [BoundedOrder α] [LocallyFiniteOrder α]
-  [DecidableEq α]
-
-/-- The Euler characteristic of a finite bounded order. -/
-def eulerChar : 𝕜 := mu 𝕜 (⊥ : α) ⊤
-
-end Euler
 end IncidenceAlgebra
