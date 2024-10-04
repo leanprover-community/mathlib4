@@ -8,9 +8,9 @@ import Lean.Elab.Command
 import Mathlib.Init
 
 /-!
-#  The "pedantic" linter
+#  The "ppRoundtrip" linter
 
-The "pedantic" linter emits a warning when the syntax of a command differs substantially
+The "ppRoundtrip" linter emits a warning when the syntax of a command differs substantially
 from the pretty-printed version of itself.
 -/
 open Lean Elab Command
@@ -18,7 +18,7 @@ open Lean Elab Command
 namespace Mathlib.Linter
 
 /--
-The "pedantic" linter emits a warning when the syntax of a command differs substantially
+The "ppRoundtrip" linter emits a warning when the syntax of a command differs substantially
 from the pretty-printed version of itself.
 
 The linter makes an effort to start the highlighting at the first difference.
@@ -26,9 +26,9 @@ However, it may not always be successful.
 It also prints both the source code and the "expected code" in a 5-character radius from
 the first difference.
 -/
-register_option linter.pedantic : Bool := {
+register_option linter.ppRoundtrip : Bool := {
   defValue := false
-  descr := "enable the pedantic linter"
+  descr := "enable the ppRoundtrip linter"
 }
 
 /-- `polishPP s` takes as input a `String` `s`, assuming that it is the output of
@@ -111,11 +111,11 @@ def capSyntax (stx : Syntax) (p : Nat) : Syntax :=
     | .ident si r v pr => .ident (capSourceInfo si p) { r with stopPos := ⟨min r.stopPos.1 p⟩ } v pr
     | s => s
 
-namespace Pedantic
+namespace PPRoundtrip
 
-@[inherit_doc Mathlib.Linter.linter.pedantic]
-def pedantic : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.pedantic (← getOptions) do
+@[inherit_doc Mathlib.Linter.linter.ppRoundtrip]
+def ppRoundtrip : Linter where run := withSetOptionIn fun stx ↦ do
+    unless Linter.getLinterValue linter.ppRoundtrip (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
@@ -123,9 +123,9 @@ def pedantic : Linter where run := withSetOptionIn fun stx ↦ do
     let origSubstring := stx.getSubstring?.getD default
     let (real, lths) := polishSource origSubstring.toString
     let fmt ← (liftCoreM do PrettyPrinter.ppCategory `command stx <|> (do
-      Linter.logLint linter.pedantic stx
-        m!"The pedantic linter had some parsing issues: \
-           feel free to silence it with `set_option linter.pedantic false in` \
+      Linter.logLint linter.ppRoundtrip stx
+        m!"The ppRoundtrip linter had some parsing issues: \
+           feel free to silence it with `set_option linter.ppRoundtrip false in` \
            and report this error!"
       return real))
     let st := polishPP fmt.pretty
@@ -136,9 +136,9 @@ def pedantic : Linter where run := withSetOptionIn fun stx ↦ do
       let extraLth := (f.takeWhile (· != st.get diff)).length
       let srcCtxt := zoomString real diff.1 5
       let ppCtxt  := zoomString st diff.1 5
-      Linter.logLint linter.pedantic (.ofRange ⟨⟨pos⟩, ⟨pos + extraLth + 1⟩⟩)
+      Linter.logLint linter.ppRoundtrip (.ofRange ⟨⟨pos⟩, ⟨pos + extraLth + 1⟩⟩)
         m!"source context\n'{srcCtxt}'\n'{ppCtxt}'\npretty-printed context"
 
-initialize addLinter pedantic
+initialize addLinter ppRoundtrip
 
-end Mathlib.Linter.Pedantic
+end Mathlib.Linter.PPRoundtrip
