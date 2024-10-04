@@ -74,10 +74,14 @@ We use the following type variables in this file:
 
 universe u v v' wE wE₁ wE' wG wG'
 
-/-- Applying a multilinear map to a vector is continuous in both coordinates. -/
-theorem ContinuousMultilinearMap.continuous_eval {𝕜 ι : Type*} {E : ι → Type*} {F : Type*}
+section continuous_eval
+
+variable {𝕜 ι : Type*} {E : ι → Type*} {F : Type*}
     [NormedField 𝕜] [Finite ι] [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
-    [TopologicalSpace F] [AddCommGroup F] [TopologicalAddGroup F] [Module 𝕜 F] :
+    [TopologicalSpace F] [AddCommGroup F] [TopologicalAddGroup F] [Module 𝕜 F]
+
+/-- Applying a multilinear map to a vector is continuous in both coordinates. -/
+theorem ContinuousMultilinearMap.continuous_eval :
     Continuous fun p : ContinuousMultilinearMap 𝕜 E F × ∀ i, E i => p.1 p.2 := by
   cases nonempty_fintype ι
   let _ := TopologicalAddGroup.toUniformSpace F
@@ -86,6 +90,31 @@ theorem ContinuousMultilinearMap.continuous_eval {𝕜 ι : Type*} {E : ι → T
     (embedding_toUniformOnFun.continuous.prod_map continuous_id) fun (f, x) ↦ f.cont.continuousAt
   exact ⟨ball m 1, NormedSpace.isVonNBounded_of_isBounded _ isBounded_ball,
     ball_mem_nhds _ one_pos⟩
+
+namespace ContinuousLinearMap
+
+variable {G : Type*} [AddCommGroup G] [TopologicalSpace G] [Module 𝕜 G] [ContinuousConstSMul 𝕜 F]
+  (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E F)
+
+lemma continuous_uncurry_of_multilinear :
+    Continuous (fun (p : G × (Π i, E i)) ↦ f p.1 p.2) :=
+  ContinuousMultilinearMap.continuous_eval.comp <| .prod_map (map_continuous f) continuous_id
+
+lemma continuousOn_uncurry_of_multilinear {s} :
+    ContinuousOn (fun (p : G × (Π i, E i)) ↦ f p.1 p.2) s :=
+  f.continuous_uncurry_of_multilinear.continuousOn
+
+lemma continuousAt_uncurry_of_multilinear {x} :
+    ContinuousAt (fun (p : G × (Π i, E i)) ↦ f p.1 p.2) x :=
+  f.continuous_uncurry_of_multilinear.continuousAt
+
+lemma continuousWithinAt_uncurry_of_multilinear {s x} :
+    ContinuousWithinAt (fun (p : G × (Π i, E i)) ↦ f p.1 p.2) s x :=
+  f.continuous_uncurry_of_multilinear.continuousWithinAt
+
+end ContinuousLinearMap
+
+end continuous_eval
 
 section Seminorm
 
