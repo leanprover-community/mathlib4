@@ -2680,9 +2680,6 @@ theorem add_eq_union_iff_disjoint [DecidableEq α] {s t : Multiset α} :
   simp_rw [← inter_eq_zero_iff_disjoint, ext, count_add, count_union, count_inter, count_zero,
     Nat.min_eq_zero_iff, Nat.add_eq_max_iff]
 
-theorem add_eq_sup_iff_disjoint [DecidableEq α] {s t : Multiset α} :
-    s + t = s ⊔ t ↔ Disjoint s t := by rw [← add_eq_union_iff_disjoint, sup_eq_union]
-
 lemma add_eq_union_left_of_le [DecidableEq α] {s t u : Multiset α} (h : t ≤ s) :
     u + s = u ∪ t ↔ u.Disjoint s ∧ s = t := by
   rw [← add_eq_union_iff_disjoint]
