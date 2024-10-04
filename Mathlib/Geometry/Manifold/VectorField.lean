@@ -59,6 +59,16 @@ lemma IsInvertible.inverse_comp_apply {g : F →L[𝕜] G} {f : E →L[𝕜] F} 
     (hg : g.IsInvertible) (hf : f.IsInvertible) : (g ∘L f).inverse v = f.inverse (g.inverse v) := by
   simp only [hg.inverse_comp hf, coe_comp', Function.comp_apply]
 
+
+/-- At an invertible map `e : E →L[𝕜] F` between Banach spaces, the operation of
+inversion is `C^n`, for all `n`. -/
+theorem IsInvertible.contDiffAt_map_inverse {E F : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [CompleteSpace E] [NormedAddCommGroup F] [NormedSpace 𝕜 F] (e : E →L[𝕜] F)
+    (he : e.IsInvertible) {n : ℕ∞} :
+    ContDiffAt 𝕜 n inverse e := by
+  rcases he with ⟨M, rfl⟩
+  exact _root_.contDiffAt_map_inverse M
+
 end ContinuousLinearMap
 
 
@@ -497,22 +507,24 @@ variable {f : M → M'} {s : Set M} {x x₀ : M}
 
 section
 
-lemma foobr {n : ℕ∞}
-    (f : M → (E' →L[𝕜] E'')) (hf : ContMDiffWithinAt I 𝓘(𝕜, E' →L[𝕜] E'') n f s x₀)
+#check contDiffAt_map_inverse
+
+
+omit [SmoothManifoldWithCorners I M] in
+lemma foobr {n : ℕ∞} [CompleteSpace E']
+    {f : M → (E' →L[𝕜] E'')} (hf : ContMDiffWithinAt I 𝓘(𝕜, E' →L[𝕜] E'') n f s x₀)
     (h'f : (f x₀).IsInvertible) :
-    ContMDiffWithinAt I 𝓘(𝕜, E'' →L[𝕜] E') n (fun x ↦ (f x).inverse) s x := by
+    ContMDiffWithinAt I 𝓘(𝕜, E'' →L[𝕜] E') n (fun x ↦ (f x).inverse) s x₀ :=
+  (h'f.contDiffAt_map_inverse (n := n)).contMDiffAt.comp_contMDiffWithinAt _ hf
 
+omit [SmoothManifoldWithCorners I M] in
+lemma foo {n : ℕ∞} [CompleteSpace E']
+    {f : M → (E' →L[𝕜] E'')} (hf : ContMDiffWithinAt I 𝓘(𝕜, E' →L[𝕜] E'') n f s x₀)
+    (V : M → E'') (hV : ContMDiffWithinAt I 𝓘(𝕜, E'') n V s x₀) (h'f : (f x₀).IsInvertible) :
+    ContMDiffWithinAt I 𝓘(𝕜, E') n (fun x ↦ (f x).inverse (V x)) s x₀ :=
+  ContMDiffWithinAt.clm_apply (foobr hf h'f) hV
 
-#exit
-
-
-
-lemma foo {n : ℕ∞}
-    (f : M → (E' →L[𝕜] E'')) (hf : ContMDiffWithinAt I 𝓘(𝕜, E' →L[𝕜] E'') n f s x)
-    (V : M → E'') (hV : ContMDiffWithinAt I 𝓘(𝕜, E'') n V s x) :
-    ContMDiffWithinAt I 𝓘(𝕜, E') n (fun x ↦ (f x).inverse (V x)) s x := by
-  sorry
-
+#check ContMDiffAt.mfderiv
 
 
 #exit

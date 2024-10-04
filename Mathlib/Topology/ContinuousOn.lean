@@ -60,6 +60,11 @@ theorem eventually_nhdsWithin_nhdsWithin {a : α} {s : Set α} {p : α → Prop}
   simp only [eventually_nhdsWithin_iff] at h ⊢
   exact h.mono fun x hx hxs => (hx hxs).self_of_nhds hxs
 
+@[simp]
+theorem eventually_mem_nhdsWithin_iff {x : α} {s t : Set α} :
+    (∀ᶠ x' in 𝓝[s] x, t ∈ 𝓝[s] x') ↔ t ∈ 𝓝[s] x :=
+  eventually_nhdsWithin_nhdsWithin
+
 theorem nhdsWithin_eq (a : α) (s : Set α) :
     𝓝[s] a = ⨅ t ∈ { t : Set α | a ∈ t ∧ IsOpen t }, 𝓟 (t ∩ s) :=
   ((nhds_basis_opens a).inf_principal s).eq_biInf

@@ -62,6 +62,119 @@ section mfderiv
 variable [Is : SmoothManifoldWithCorners I M] [I's : SmoothManifoldWithCorners I' M']
 
 
+
+protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} (f : N → M → M') (g : N → M)
+    (s : Set (N × M)) (t : Set N)
+    (hf : ContMDiffWithinAt (J.prod I) I' n (Function.uncurry f) s (x₀, g x₀))
+    (hg : ContMDiffWithinAt J I m g t x₀) (h'g : MapsTo (fun x ↦ (x, g x)) t s)
+    (hmn : m + 1 ≤ n) :
+    ContMDiffWithinAt J 𝓘(𝕜, E →L[𝕜] E') m
+      (inTangentCoordinates I I' g (fun x => f x (g x)) (fun x => mfderiv I I' (f x) (g x)) x₀)
+      t x₀ := by
+  have h4f : ContinuousWithinAt (fun x => f x (g x)) t x₀ := by
+    change ContinuousWithinAt ((Function.uncurry f) ∘ (fun x ↦ (x, g x))) t x₀
+    refine ContinuousWithinAt.comp hf.continuousWithinAt ?_ h'g
+    exact (continuousWithinAt_id.prod hg.continuousWithinAt)
+  have h4f := h4f.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds I' (f x₀ (g x₀)))
+  have h3f := contMDiffAt_iff_contMDiffAt_nhds.mp (hf.of_le <| (self_le_add_left 1 m).trans hmn)
+  have h2f : ∀ᶠ x₂ in 𝓝 x₀, ContMDiffAt I I' 1 (f x₂) (g x₂) := by
+    refine ((continuousAt_id.prod hg.continuousAt).tendsto.eventually h3f).mono fun x hx => ?_
+    exact hx.comp (g x) (contMDiffAt_const.prod_mk contMDiffAt_id)
+  have h2g := hg.continuousAt.preimage_mem_nhds (extChartAt_source_mem_nhds I (g x₀))
+  have :
+    ContDiffWithinAt 𝕜 m
+      (fun x =>
+        fderivWithin 𝕜
+          (extChartAt I' (f x₀ (g x₀)) ∘ f ((extChartAt J x₀).symm x) ∘ (extChartAt I (g x₀)).symm)
+          (range I) (extChartAt I (g x₀) (g ((extChartAt J x₀).symm x))))
+      (range J) (extChartAt J x₀ x₀) := by
+    rw [contMDiffAt_iff] at hf hg
+    simp_rw [Function.comp_def, uncurry, extChartAt_prod, PartialEquiv.prod_coe_symm,
+      ModelWithCorners.range_prod] at hf ⊢
+    refine ContDiffWithinAt.fderivWithin ?_ hg.2 I.uniqueDiffOn hmn (mem_range_self _) ?_
+    · simp_rw [extChartAt_to_inv]; exact hf.2
+    · rw [← image_subset_iff]
+      rintro _ ⟨x, -, rfl⟩
+      exact mem_range_self _
+  have :
+    ContMDiffAt J 𝓘(𝕜, E →L[𝕜] E') m
+      (fun x =>
+        fderivWithin 𝕜 (extChartAt I' (f x₀ (g x₀)) ∘ f x ∘ (extChartAt I (g x₀)).symm) (range I)
+          (extChartAt I (g x₀) (g x)))
+      x₀ := by
+    simp_rw [contMDiffAt_iff_source_of_mem_source (mem_chart_source G x₀),
+      contMDiffWithinAt_iff_contDiffWithinAt, Function.comp_def]
+    exact this
+  have :
+    ContMDiffAt J 𝓘(𝕜, E →L[𝕜] E') m
+      (fun x =>
+        fderivWithin 𝕜
+          (extChartAt I' (f x₀ (g x₀)) ∘
+            (extChartAt I' (f x (g x))).symm ∘
+              writtenInExtChartAt I I' (g x) (f x) ∘
+                extChartAt I (g x) ∘ (extChartAt I (g x₀)).symm)
+          (range I) (extChartAt I (g x₀) (g x))) x₀ := by
+    refine this.congr_of_eventuallyEq ?_
+    filter_upwards [h2g, h2f]
+    intro x₂ hx₂ h2x₂
+    have :
+        ∀ x ∈ (extChartAt I (g x₀)).symm ⁻¹' (extChartAt I (g x₂)).source ∩
+          (extChartAt I (g x₀)).symm ⁻¹' (f x₂ ⁻¹' (extChartAt I' (f x₂ (g x₂))).source),
+          (extChartAt I' (f x₀ (g x₀)) ∘ (extChartAt I' (f x₂ (g x₂))).symm ∘
+            writtenInExtChartAt I I' (g x₂) (f x₂) ∘ extChartAt I (g x₂) ∘
+            (extChartAt I (g x₀)).symm) x =
+          extChartAt I' (f x₀ (g x₀)) (f x₂ ((extChartAt I (g x₀)).symm x)) := by
+      rintro x ⟨hx, h2x⟩
+      simp_rw [writtenInExtChartAt, Function.comp_apply]
+      rw [(extChartAt I (g x₂)).left_inv hx, (extChartAt I' (f x₂ (g x₂))).left_inv h2x]
+    refine Filter.EventuallyEq.fderivWithin_eq_nhds ?_
+    refine eventually_of_mem (inter_mem ?_ ?_) this
+    · exact extChartAt_preimage_mem_nhds' _ hx₂ (extChartAt_source_mem_nhds I (g x₂))
+    · refine extChartAt_preimage_mem_nhds' _ hx₂ ?_
+      exact h2x₂.continuousAt.preimage_mem_nhds (extChartAt_source_mem_nhds _ _)
+  /- The conclusion is equal to the following, when unfolding coord_change of
+      `tangentBundleCore` -/
+  -- Porting note: added
+  letI _inst : ∀ x, NormedAddCommGroup (TangentSpace I (g x)) :=
+    fun _ => inferInstanceAs (NormedAddCommGroup E)
+  letI _inst : ∀ x, NormedSpace 𝕜 (TangentSpace I (g x)) :=
+    fun _ => inferInstanceAs (NormedSpace 𝕜 E)
+  have :
+    ContMDiffAt J 𝓘(𝕜, E →L[𝕜] E') m
+      (fun x =>
+        (fderivWithin 𝕜 (extChartAt I' (f x₀ (g x₀)) ∘ (extChartAt I' (f x (g x))).symm) (range I')
+              (extChartAt I' (f x (g x)) (f x (g x)))).comp
+          ((mfderiv I I' (f x) (g x)).comp
+            (fderivWithin 𝕜 (extChartAt I (g x) ∘ (extChartAt I (g x₀)).symm) (range I)
+              (extChartAt I (g x₀) (g x))))) x₀ := by
+    refine this.congr_of_eventuallyEq ?_
+    filter_upwards [h2g, h2f, h4f]
+    intro x₂ hx₂ h2x₂ h3x₂
+    symm
+    rw [(h2x₂.mdifferentiableAt le_rfl).mfderiv]
+    have hI := (contDiffWithinAt_ext_coord_change I (g x₂) (g x₀) <|
+      PartialEquiv.mem_symm_trans_source _ hx₂ <|
+        mem_extChartAt_source I (g x₂)).differentiableWithinAt le_top
+    have hI' :=
+      (contDiffWithinAt_ext_coord_change I' (f x₀ (g x₀)) (f x₂ (g x₂)) <|
+            PartialEquiv.mem_symm_trans_source _ (mem_extChartAt_source I' (f x₂ (g x₂)))
+              h3x₂).differentiableWithinAt le_top
+    have h3f := (h2x₂.mdifferentiableAt le_rfl).differentiableWithinAt_writtenInExtChartAt
+    refine fderivWithin.comp₃ _ hI' h3f hI ?_ ?_ ?_ ?_ (I.uniqueDiffOn _ <| mem_range_self _)
+    · exact fun x _ => mem_range_self _
+    · exact fun x _ => mem_range_self _
+    · simp_rw [writtenInExtChartAt, Function.comp_apply,
+        (extChartAt I (g x₂)).left_inv (mem_extChartAt_source I (g x₂))]
+    · simp_rw [Function.comp_apply, (extChartAt I (g x₀)).left_inv hx₂]
+  refine this.congr_of_eventuallyEq ?_
+  filter_upwards [h2g, h4f] with x hx h2x
+  rw [inTangentCoordinates_eq]
+  · rfl
+  · rwa [extChartAt_source] at hx
+  · rwa [extChartAt_source] at h2x
+
+#exit
+
 /-- The function that sends `x` to the `y`-derivative of `f(x,y)` at `g(x)` is `C^m` at `x₀`,
 where the derivative is taken as a continuous linear map.
 We have to assume that `f` is `C^n` at `(x₀, g(x₀))` for `n ≥ m + 1` and `g` is `C^m` at `x₀`.

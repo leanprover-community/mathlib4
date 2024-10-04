@@ -788,7 +788,7 @@ theorem Filter.Eventually.eventually_nhds {p : X → Prop} (h : ∀ᶠ y in 𝓝
   eventually_nhds_iff.2 ⟨t, fun _x hx => eventually_nhds_iff.2 ⟨t, htp, hto, hx⟩, hto, ha⟩
 
 @[simp]
-theorem eventually_eventually_nhds {p : X → Prop} :
+theorem eventually_nhds_nhds {p : X → Prop} :
     (∀ᶠ y in 𝓝 x, ∀ᶠ x in 𝓝 y, p x) ↔ ∀ᶠ x in 𝓝 x, p x :=
   ⟨fun h => h.self_of_nhds, fun h => h.eventually_nhds⟩
 
@@ -796,20 +796,20 @@ theorem eventually_eventually_nhds {p : X → Prop} :
 theorem frequently_frequently_nhds {p : X → Prop} :
     (∃ᶠ x' in 𝓝 x, ∃ᶠ x'' in 𝓝 x', p x'') ↔ ∃ᶠ x in 𝓝 x, p x := by
   rw [← not_iff_not]
-  simp only [not_frequently, eventually_eventually_nhds]
+  simp only [not_frequently, eventually_nhds_nhds]
 
 @[simp]
-theorem eventually_mem_nhds : (∀ᶠ x' in 𝓝 x, s ∈ 𝓝 x') ↔ s ∈ 𝓝 x :=
-  eventually_eventually_nhds
+theorem eventually_mem_nhds_iff : (∀ᶠ x' in 𝓝 x, s ∈ 𝓝 x') ↔ s ∈ 𝓝 x :=
+  eventually_nhds_nhds
 
 @[simp]
 theorem nhds_bind_nhds : (𝓝 x).bind 𝓝 = 𝓝 x :=
-  Filter.ext fun _ => eventually_eventually_nhds
+  Filter.ext fun _ => eventually_nhds_nhds
 
 @[simp]
 theorem eventually_eventuallyEq_nhds {f g : X → α} :
     (∀ᶠ y in 𝓝 x, f =ᶠ[𝓝 y] g) ↔ f =ᶠ[𝓝 x] g :=
-  eventually_eventually_nhds
+  eventually_nhds_nhds
 
 theorem Filter.EventuallyEq.eq_of_nhds {f g : X → α} (h : f =ᶠ[𝓝 x] g) : f x = g x :=
   h.self_of_nhds
@@ -817,7 +817,7 @@ theorem Filter.EventuallyEq.eq_of_nhds {f g : X → α} (h : f =ᶠ[𝓝 x] g) :
 @[simp]
 theorem eventually_eventuallyLE_nhds [LE α] {f g : X → α} :
     (∀ᶠ y in 𝓝 x, f ≤ᶠ[𝓝 y] g) ↔ f ≤ᶠ[𝓝 x] g :=
-  eventually_eventually_nhds
+  eventually_nhds_nhds
 
 /-- If two functions are equal in a neighbourhood of `x`, then for `y` sufficiently close
 to `x` these functions are equal in a neighbourhood of `y`. -/

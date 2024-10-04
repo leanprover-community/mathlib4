@@ -508,7 +508,7 @@ theorem DifferentiableOn.differentiableAt (h : DifferentiableOn 𝕜 f s) (hs : 
 
 theorem DifferentiableOn.eventually_differentiableAt (h : DifferentiableOn 𝕜 f s) (hs : s ∈ 𝓝 x) :
     ∀ᶠ y in 𝓝 x, DifferentiableAt 𝕜 f y :=
-  (eventually_eventually_nhds.2 hs).mono fun _ => h.differentiableAt
+  (eventually_nhds_nhds.2 hs).mono fun _ => h.differentiableAt
 
 protected theorem HasFDerivAt.fderiv (h : HasFDerivAt f f' x) : fderiv 𝕜 f x = f' := by
   ext

@@ -212,7 +212,7 @@ theorem norm_eventually_eq_of_isLocalMax {f : E → F} {c : E}
 
 theorem isOpen_setOf_mem_nhds_and_isMaxOn_norm {f : E → F} {s : Set E}
     (hd : DifferentiableOn ℂ f s) : IsOpen {z | s ∈ 𝓝 z ∧ IsMaxOn (norm ∘ f) s z} := by
-  refine isOpen_iff_mem_nhds.2 fun z hz => (eventually_eventually_nhds.2 hz.1).and ?_
+  refine isOpen_iff_mem_nhds.2 fun z hz => (eventually_nhds_nhds.2 hz.1).and ?_
   replace hd : ∀ᶠ w in 𝓝 z, DifferentiableAt ℂ f w := hd.eventually_differentiableAt hz.1
   exact (norm_eventually_eq_of_isLocalMax hd <| hz.2.isLocalMax hz.1).mono fun x hx y hy =>
     le_trans (hz.2 hy).out hx.ge
