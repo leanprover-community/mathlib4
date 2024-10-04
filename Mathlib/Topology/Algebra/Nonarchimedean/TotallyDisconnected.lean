@@ -13,8 +13,8 @@ In this file, we prove that a nonarchimedean group is a totally separated topolo
 
 ## Main results
 
-- `NonarchimedeanGroup.instTotallySeparated`: A nonarchimedean group is a
-                                                      totally separated topological space.
+- `NonarchimedeanGroup.instTotallySeparated`:
+  A nonarchimedean group is a totally separated topological space.
 
 ## Notation
 
@@ -23,9 +23,7 @@ In this file, we prove that a nonarchimedean group is a totally separated topolo
 
 ## References
 
-See Proposition 2.3.9 and Problem 63 in :
-Gouvêa, F. Q. (2020) p-adic Numbers An Introduction. 3rd edition.
-  Cham, Springer International Publishing.
+See Proposition 2.3.9 and Problem 63 in [F. Q. Gouvêa, *p-adic numbers*][gouvea1997].
 -/
 
 open Pointwise TopologicalSpace
