@@ -761,7 +761,7 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter (LaurentSeries K)} (hℱ : C
 open scoped Topology
 
 /- The main result showing that the Cauchy filter tends to the `Cauchy.limit`-/
-theorem Cauchy.eventually_mem_nhds {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ)
+theorem Cauchy.eventually_mem_nhds_iff {ℱ : Filter (LaurentSeries K)} (hℱ : Cauchy ℱ)
     {U : Set (LaurentSeries K)} (hU : U ∈ 𝓝 (Cauchy.limit hℱ)) : ∀ᶠ f in ℱ, f ∈ U := by
   obtain ⟨γ, hU₁⟩ := Valued.mem_nhds.mp hU
   suffices ∀ᶠ f in ℱ, f ∈ {y : LaurentSeries K | Valued.v (y - limit hℱ) < ↑γ} by
@@ -779,7 +779,7 @@ theorem Cauchy.eventually_mem_nhds {ℱ : Filter (LaurentSeries K)} (hℱ : Cauc
 
 /- Laurent Series with coefficients in a field are complete w.r.t. the `X`-adic valuation -/
 instance instLaurentSeriesComplete : CompleteSpace (LaurentSeries K) :=
-  ⟨fun hℱ ↦ ⟨Cauchy.limit hℱ, fun _ hS ↦ Cauchy.eventually_mem_nhds hℱ hS⟩⟩
+  ⟨fun hℱ ↦ ⟨Cauchy.limit hℱ, fun _ hS ↦ Cauchy.eventually_mem_nhds_iff hℱ hS⟩⟩
 
 end Complete
 
