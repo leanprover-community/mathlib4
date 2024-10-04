@@ -44,7 +44,7 @@ namespace MeasureTheory
 
 variable {α : Type*} {mα : MeasurableSpace α} {μ : Measure α}
 
-/-- Auxiliary definition for `Measure.toFinite -/
+/-- Auxiliary definition for `MeasureTheory.Measure.toFinite`. -/
 noncomputable def Measure.toFiniteAux (μ : Measure α) [SFinite μ] : Measure α :=
   letI := Classical.dec
   if IsFiniteMeasure μ then μ else (exists_isFiniteMeasure_absolutelyContinuous μ).choose
