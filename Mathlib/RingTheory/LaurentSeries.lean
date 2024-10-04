@@ -9,8 +9,6 @@ import Mathlib.RingTheory.Binomial
 import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.Units
 import Mathlib.RingTheory.PowerSeries.Inverse
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
 # Laurent Series
@@ -87,11 +85,11 @@ theorem hasseDeriv_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ) :
     (hasseDeriv R k f).coeff n = Ring.choose (n + k) k • f.coeff (n + k) :=
   rfl
 
-theorem hasseDeriv_zero' (f : LaurentSeries V) : hasseDeriv R 0 f = f := by
+theorem hasseDeriv_zero (f : LaurentSeries V) : hasseDeriv R 0 f = f := by
   ext n
   simp
 
-theorem hasseDeriv_single' (k : ℕ) (n : ℤ) (x : V) :
+theorem hasseDeriv_single_add (k : ℕ) (n : ℤ) (x : V) :
     hasseDeriv R k (single (n + k) x) = single n ((Ring.choose (n + k) k) • x) := by
   ext m
   simp only [hasseDeriv_coeff]
@@ -103,7 +101,7 @@ theorem hasseDeriv_single' (k : ℕ) (n : ℤ) (x : V) :
 
 theorem hasseDeriv_single (k : ℕ) (n : ℤ) (x : V) :
     hasseDeriv R k (single n x) = single (n - k) ((Ring.choose n k) • x) := by
-  rw [← Int.sub_add_cancel n k, hasseDeriv_single', Int.sub_add_cancel n k]
+  rw [← Int.sub_add_cancel n k, hasseDeriv_single_add, Int.sub_add_cancel n k]
 
 theorem hasseDeriv_comp_coeff (k l : ℕ) (f : LaurentSeries V) (n : ℤ) :
     HahnSeries.coeff (hasseDeriv R k (hasseDeriv R l f)) n =
@@ -113,7 +111,7 @@ theorem hasseDeriv_comp_coeff (k l : ℕ) (f : LaurentSeries V) (n : ℤ) :
   rw [smul_smul, mul_comm, ← Ring.choose_add_smul_choose (n + k), add_assoc, Nat.choose_symm_add,
     smul_assoc]
 
-theorem hasseDeriv_comp' (k l : ℕ) (f : LaurentSeries V) :
+theorem hasseDeriv_comp (k l : ℕ) (f : LaurentSeries V) :
     hasseDeriv R k (hasseDeriv R l f) = (k + l).choose k • hasseDeriv R (k + l) f := by
   ext n
   rw [hasseDeriv_comp_coeff (R := R)]
@@ -131,9 +129,9 @@ theorem factorial_smul_hasseDeriv_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ
     HahnSeries.coeff ((derivative R)^[k] f) n := by
   induction k generalizing f with
   | zero =>
-    rw [Nat.factorial_zero, hasseDeriv_zero', one_smul, Function.iterate_zero, id_eq]
+    rw [Nat.factorial_zero, hasseDeriv_zero, one_smul, Function.iterate_zero, id_eq]
   | succ k ih =>
-    rw [Function.iterate_succ, Function.comp_apply, ← ih, derivative_apply, @hasseDeriv_comp' R,
+    rw [Function.iterate_succ, Function.comp_apply, ← ih, derivative_apply, hasseDeriv_comp,
       Nat.choose_symm_add, Nat.choose_one_right, Nat.factorial, mul_nsmul]
 
 theorem factorial_smul_hasseDeriv (k : ℕ) (f : LaurentSeries V) :
