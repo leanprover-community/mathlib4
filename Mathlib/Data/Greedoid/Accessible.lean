@@ -60,39 +60,24 @@ theorem nonempty_contains_emptyset_iff :
     (∃ s, Sys s) ↔ Sys ∅ :=
   ⟨fun h => nonempty_contains_emptyset h, fun h => ⟨∅, h⟩⟩
 
-section Induction
-
-variable (hS : Sys ∅)
-
 -- TODO: Find better name.
-/-- A helper lemma for `induction_on_accessible`.-/
-theorem induction_on_accessible'
+-- TODO: Find a better way to inform `hS`.
+--       `hS` can be obtained by `hs`.
+theorem induction_on_accessible
+    (hS : Sys ∅)
     {p : ⦃s : Finset α⦄ → Sys s → Prop}
     (empty : p hS)
     (insert :
       ∀ ⦃s₁ : Finset α⦄, (hs₁ : Sys s₁) →
       ∀ ⦃s₂ : Finset α⦄, (hs₂ : Sys s₂) →
       s₂ ⊆ s₁ → s₂.card + 1 = s₁.card → p hs₂ → p hs₁)
-    {s : Finset α} (hs : Sys s) {n : ℕ} (hn : n = s.card) :
+    {s : Finset α} (hs : Sys s):
     p hs := by
-  induction n generalizing s with
-  | zero => exact card_eq_zero.mp hn.symm ▸ empty
-  | succ n ih =>
-    rcases Accessible.accessible hs (one_le_card.mp (by omega)) with ⟨t, ht₁, ht₂, ht₃⟩
+  induction' hn : s.card generalizing s
+  case zero => exact card_eq_zero.mp hn ▸ empty
+  case succ n ih =>
+    rcases accessible hs (one_le_card.mp (by omega)) with ⟨t, ht₁, ht₂, ht₃⟩
     exact insert hs ht₃ ht₁ ht₂ (ih ht₃ (by omega))
-
--- TODO: Find better name.
-theorem induction_on_accessible
-    {p : ⦃s : Finset α⦄ → Sys s → Prop}
-    (empty : p hS)
-    (insert :
-      ∀ ⦃s₁ : Finset α⦄, (hs₁ : Sys s₁) →
-      ∀ ⦃s₂ : Finset α⦄, (hs₂ : Sys s₂) →
-      s₂ ⊆ s₁ → s₂.card + 1 = s₁.card → p hs₂ → p hs₁) :
-    ∀ {s : Finset α} (hs : Sys s), p hs
-  | _, h => induction_on_accessible' hS empty insert h rfl
-
-end Induction
 
 -- TODO: Find better name.
 theorem construction_on_accessible
