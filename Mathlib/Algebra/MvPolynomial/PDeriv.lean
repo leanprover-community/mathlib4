@@ -65,12 +65,12 @@ theorem pderiv_def [DecidableEq σ] (i : σ) : pderiv i = mkDerivation R (Pi.sin
 theorem pderiv_monomial {i : σ} :
     pderiv i (monomial s a) = monomial (s - single i 1) (a * s i) := by
   classical
-    simp only [pderiv_def, mkDerivation_monomial, Finsupp.smul_sum, smul_eq_mul, ← smul_mul_assoc,
-      ← (monomial _).map_smul]
-    refine (Finset.sum_eq_single i (fun j _ hne => ?_) fun hi => ?_).trans ?_
-    · simp [Pi.single_eq_of_ne hne]
-    · rw [Finsupp.not_mem_support_iff] at hi; simp [hi]
-    · simp
+  simp only [pderiv_def, mkDerivation_monomial, Finsupp.smul_sum, smul_eq_mul, ← smul_mul_assoc,
+    ← (monomial _).map_smul]
+  refine (Finset.sum_eq_single i (fun j _ hne => ?_) fun hi => ?_).trans ?_
+  · simp [Pi.single_eq_of_ne hne]
+  · rw [Finsupp.not_mem_support_iff] at hi; simp [hi]
+  · simp
 
 theorem pderiv_C {i : σ} : pderiv i (C a) = 0 :=
   derivation_C _ _
@@ -115,9 +115,10 @@ theorem pderiv_map {S} [CommSemiring S] {φ : R →+* S} {f : MvPolynomial σ R}
   · simp [eq]
   · simp [eq, h]
 
-lemma pderiv_rename {τ : Type*} [DecidableEq τ] [DecidableEq σ] {f : σ → τ}
-    (hf : Function.Injective f) (x : σ) (p : MvPolynomial σ R) :
+lemma pderiv_rename {τ : Type*} {f : σ → τ} (hf : Function.Injective f)
+    (x : σ) (p : MvPolynomial σ R) :
     pderiv (f x) (rename f p) = rename f (pderiv x p) := by
+  classical
   induction' p using MvPolynomial.induction_on with a p q hp hq p a h
   · simp
   · simp [hp, hq]
