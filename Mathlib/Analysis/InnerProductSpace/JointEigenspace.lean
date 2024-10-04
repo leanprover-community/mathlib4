@@ -8,6 +8,7 @@ import Mathlib.Analysis.InnerProductSpace.Spectrum
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Order.CompleteLattice
 import Mathlib.LinearAlgebra.Eigenspace.Basic
+import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
 
 /-! # Joint eigenspaces of a commuting pair of symmetric operators
 
@@ -327,6 +328,12 @@ instantiated.
 So this is very different than the theorem before. There is no longer
 an `IsSymmetric` assumption...
 
+Worked to try to adapt Jireh's proof more or less directly. Was a useful exercise. Now, let's try
+to internalize the workings of `convert` for the line `convert H with γ`
+
+exact e and refine e require e to be defeq to the goal
+
+
 -/
 
 lemma iSup_iInf_maxGenEigenspace_eq_top_of_commute {ι K V : Type*}
@@ -336,7 +343,6 @@ lemma iSup_iInf_maxGenEigenspace_eq_top_of_commute {ι K V : Type*}
     ⨆ χ : ι → K, ⨅ i, (f i).maxGenEigenspace (χ i) = ⊤ := by
   have _ := Fintype.ofFinite ι
   revert f
-  --change ∀ f, _
   refine Fintype.induction_subsingleton_or_nontrivial ι (fun m _ hhm f hf x ↦ ?_)
     (fun m hm hmm H f hf hC ↦ ?_)
   · obtain (hm | hm) := isEmpty_or_nonempty m
@@ -347,14 +353,36 @@ lemma iSup_iInf_maxGenEigenspace_eq_top_of_commute {ι K V : Type*}
     classical
     specialize H {x // x ≠ i} (Fintype.card_subtype_lt (x := i) (by simp))
      (Subtype.restrict (· ≠ i) f) (fun _ _ _ ↦ hf <| by simpa [Subtype.coe_ne_coe]) (hC ·)
+    rw [← H]
+    have P1 := iInf_split_single (fun μ ↦ (fun j ↦ Module.End.maxGenEigenspace (f j) μ) i)
+    simp only [ne_eq] at P1
+    --rw [P1 i m]
+    --Don't know what those old theorems did, but I can't access `iInf_split_single` without
+    --this rewrite...
 
 
 
-    --rw [← (Equiv.funSplitAt i K).symm.iSup_comp, iSup_prod, iSup_comm]
-    --convert H with γ
+
+
+
+
+
+
+
+
+
+/-
+What are we currently trying to do?
+What was
+`rw [← iSup_eigenspace_restrict (T i) (hT i) (iInf_eigenspace_invariant_of_commute hC i γ)]`?
+
+-/
+
+
+
     --rw [← iSup_eigenspace_restrict (T i) (hT i) (iInf_eigenspace_invariant_of_commute hC i γ)]
     --congr! with μ
-    --rw [← Module.End.genEigenspace_one, ← Submodule.inf_genEigenspace _ _ _ (k := 1), inf_comm,
+    --rw [← genEigenspace_one, ← Submodule.inf_genEigenspace _ _ _ (k := 1), inf_comm,
     --  iInf_split_single _ i, iInf_subtype]
     --congr! with x hx
     --· simp
