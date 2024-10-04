@@ -456,6 +456,11 @@ theorem dvd_comp_X_add_C_iff (p q : R[X]) (a : R) :
     p ∣ q.comp (X + C a) ↔ p.comp (X - C a) ∣ q := by
   simpa using dvd_comp_X_sub_C_iff p q (-a)
 
+theorem dvd_comp_neg_X_iff (p q : R[X]) : p ∣ q.comp (-X) ↔ p.comp (-X) ∣ q := by
+  convert (map_dvd_iff <| algEquivAevalNegX).symm using 2
+  rw [algEquivAevalNegX_apply, ← comp_eq_aeval, comp_assoc]
+  simp only [neg_comp, X_comp, neg_neg, comp_X]
+
 theorem rootMultiplicity_eq_rootMultiplicity {p : R[X]} {t : R} :
     p.rootMultiplicity t = (p.comp (X + C t)).rootMultiplicity 0 := by
   classical

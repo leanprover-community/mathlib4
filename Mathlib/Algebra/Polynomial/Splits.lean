@@ -170,13 +170,12 @@ theorem Splits.comp_neg_X {i : L →+* F} {f : L[X]} (h : f.Splits i) : (f.comp 
   | inr h =>
     right
     intro g irr dvd
-    rw [map_comp, Polynomial.map_neg, map_X, ] at dvd
-    -- rw [map_comp, Polynomial.map_sub, map_X, map_C, dvd_comp_X_sub_C_iff] at dvd
-    have := h (irr.map (algEquivAevalXAddC _)) dvd
+    rw [map_comp, Polynomial.map_neg, map_X, dvd_comp_neg_X_iff] at dvd
+    have := h (irr.map (algEquivAevalNegX)) dvd
     rw [degree_eq_natDegree irr.ne_zero]
-    rwa [algEquivAevalXAddC_apply, ← comp_eq_aeval,
+    rwa [algEquivAevalNegX_apply, ← comp_eq_aeval,
       degree_eq_natDegree (fun h => WithBot.bot_ne_one (h ▸ this)),
-      natDegree_comp, natDegree_X_add_C, mul_one] at this
+      natDegree_comp, natDegree_neg, natDegree_X, mul_one] at this
 
 theorem exists_root_of_splits' {f : K[X]} (hs : Splits i f) (hf0 : degree (f.map i) ≠ 0) :
     ∃ x, eval₂ i x f = 0 :=

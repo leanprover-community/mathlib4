@@ -300,6 +300,15 @@ def algEquivOfCompEqX (p q : R[X]) (hpq : p.comp q = X) (hqp : q.comp p = X) : R
 def algEquivAevalXAddC {R} [CommRing R] (t : R) : R[X] ≃ₐ[R] R[X] :=
   algEquivOfCompEqX (X + C t) (X - C t) (by simp) (by simp)
 
+/-- The involutive automorphism of the polynomial algebra given by `p(X) ↦ p(-X)`. -/
+@[simps!]
+def algEquivAevalNegX {R} [CommRing R] : R[X] ≃ₐ[R] R[X] :=
+  algEquivOfCompEqX (- X) (- X) (by simp) (by simp)
+
+theorem comp_neg_X_comp_neg_X {R} [CommRing R] (p : R[X]) : (p.comp (- X)).comp (-X) = p := by
+  rw [comp_assoc]
+  simp only [neg_comp, X_comp, neg_neg, comp_X]
+
 theorem aeval_algHom (f : A →ₐ[R] B) (x : A) : aeval (f x) = f.comp (aeval x) :=
   algHom_ext <| by simp only [aeval_X, AlgHom.comp_apply]
 
