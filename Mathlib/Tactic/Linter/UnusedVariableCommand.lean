@@ -77,6 +77,29 @@ elab "included_variables" plumb:(ppSpace &"plumb")? : tactic => do
     if ! msgs.isEmpty then
       logInfo m!"{msgs.foldl (m!"{·}\n" ++ m!"* {·}") "Included variables:"}"
 
+abbrev binders : NameSet := NameSet.empty
+  |>.insert ``Lean.Parser.Term.explicitBinder
+  |>.insert ``Lean.Parser.Term.strictImplicitBinder
+  |>.insert ``Lean.Parser.Term.implicitBinder
+  |>.insert ``Lean.Parser.Term.instBinder
+
+partial
+def findBinders : Syntax → Array Syntax
+ | (.node _ _ args) =>
+    if binders.contains (args[0]?.getD default).getKind then
+      args
+    else
+      (args.map findBinders).flatten
+  | _ => #[]
+
+def mkThmWithHyps (cmd : Syntax) (nm : Ident) : CommandElabM Syntax := do
+  let toInsert : TSyntaxArray _ := (findBinders cmd).map (⟨·⟩)
+  let typ ← if let some ts := cmd.find? (·.isOfKind ``Parser.Term.typeSpec) then
+              `($(mkIdent `toFalse) $(⟨ts[1]⟩))
+            else
+              `($(mkIdent `False))
+  `(command| theorem $nm $toInsert* : $(⟨typ⟩) := sorry)
+
 open Lean.Parser.Term in
 /--
 Like `Lean.Elab.Command.getBracketedBinderIds`, but returns the identifier `Syntax`,
