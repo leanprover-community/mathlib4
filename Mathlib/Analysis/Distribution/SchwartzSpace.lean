@@ -575,7 +575,7 @@ lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
 
 variable [NormedAddCommGroup D] [MeasurableSpace D]
 
-open MeasureTheory FiniteDimensional
+open MeasureTheory Module
 
 /-- A measure `μ` has temperate growth if there is an `n : ℕ` such that `(1 + ‖x‖) ^ (- n)` is
 `μ`-integrable. -/
@@ -616,7 +616,7 @@ lemma pow_mul_le_of_le_of_pow_mul_le {C₁ C₂ : ℝ} {k l : ℕ} {x f : ℝ} (
   rw [this]
   rcases le_total x 1 with h'x|h'x
   · gcongr
-    · apply (pow_le_one k hx h'x).trans
+    · apply (pow_le_one₀ hx h'x).trans
       apply Real.one_le_rpow_of_pos_of_le_one_of_nonpos
       · linarith
       · linarith
@@ -1033,7 +1033,7 @@ section Integration
 /-! ### Integration -/
 
 
-open Real Complex Filter MeasureTheory MeasureTheory.Measure FiniteDimensional
+open Real Complex Filter MeasureTheory MeasureTheory.Measure Module
 
 variable [RCLike 𝕜]
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
@@ -1179,7 +1179,7 @@ instance instZeroAtInftyContinuousMapClass : ZeroAtInftyContinuousMapClass 𝓢(
     intro ε hε
     use (SchwartzMap.seminorm ℝ 1 0) f / ε
     intro x hx
-    rw [div_lt_iff hε] at hx
+    rw [div_lt_iff₀ hε] at hx
     have hxpos : 0 < ‖x‖ := by
       rw [norm_pos_iff']
       intro hxzero
@@ -1188,7 +1188,7 @@ instance instZeroAtInftyContinuousMapClass : ZeroAtInftyContinuousMapClass 𝓢(
     have := norm_pow_mul_le_seminorm ℝ f 1 x
     rw [pow_one, ← le_div_iff₀' hxpos] at this
     apply lt_of_le_of_lt this
-    rwa [div_lt_iff' hxpos]
+    rwa [div_lt_iff₀' hxpos]
 
 /-- Schwartz functions as continuous functions vanishing at infinity. -/
 def toZeroAtInfty (f : 𝓢(E, F)) : C₀(E, F) where

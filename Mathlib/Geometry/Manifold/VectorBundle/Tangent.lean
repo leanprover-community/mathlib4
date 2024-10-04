@@ -85,7 +85,7 @@ def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
   coordChange_self i x hx v := by
     simp only
     rw [Filter.EventuallyEq.fderivWithin_eq, fderivWithin_id', ContinuousLinearMap.id_apply]
-    · exact I.unique_diff_at_image
+    · exact I.uniqueDiffWithinAt_image
     · filter_upwards [i.1.extend_target_mem_nhdsWithin I hx] with y hy
       exact (i.1.extend I).right_inv hy
     · simp_rw [Function.comp_apply, i.1.extend_left_inv I hx]
@@ -106,7 +106,7 @@ def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
     · exact (contDiffWithinAt_extend_coord_change' I (subset_maximalAtlas I j.2)
         (subset_maximalAtlas I i.2) hxj hxi).differentiableWithinAt (by exact_mod_cast le_top)
     · intro x _; exact mem_range_self _
-    · exact I.unique_diff_at_image
+    · exact I.uniqueDiffWithinAt_image
     · rw [Function.comp_apply, i.1.extend_left_inv I hxi]
 
 -- Porting note: moved to a separate `simp high` lemma b/c `simp` can simplify the LHS

@@ -263,7 +263,7 @@ def ListBlank.nth {Γ} [Inhabited Γ] (l : ListBlank Γ) (n : ℕ) : Γ := by
   rw [List.getI_eq_default _ h]
   rcases le_or_lt _ n with h₂ | h₂
   · rw [List.getI_eq_default _ h₂]
-  rw [List.getI_eq_get _ h₂, List.get_eq_getElem, List.getElem_append_right' h,
+  rw [List.getI_eq_get _ h₂, List.get_eq_getElem, List.getElem_append_right h,
     List.getElem_replicate]
 
 @[simp]

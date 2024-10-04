@@ -57,7 +57,7 @@ smooth bump function, partition of unity
 
 universe uι uE uH uM uF
 
-open Function Filter FiniteDimensional Set
+open Function Filter Module Set
 open scoped Topology Manifold
 /- Next line is necessary while the manifold smoothness class is not extended to `ω`.
 Later, replace with `open scoped ContDiff`. -/

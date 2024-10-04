@@ -310,7 +310,7 @@ variable [S : MeasurableSpace G] [BorelSpace G]
 
 /-- For the outer measure coming from a content, all Borel sets are measurable. -/
 theorem borel_le_caratheodory : S ≤ μ.outerMeasure.caratheodory := by
-  rw [@BorelSpace.measurable_eq G _ _]
+  rw [BorelSpace.measurable_eq (α := G)]
   refine MeasurableSpace.generateFrom_le ?_
   intro U hU
   rw [μ.outerMeasure_caratheodory]

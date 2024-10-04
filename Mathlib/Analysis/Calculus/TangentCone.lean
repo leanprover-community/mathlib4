@@ -196,7 +196,7 @@ theorem mem_tangentCone_of_openSegment_subset {s : Set G} {x y : G} (h : openSeg
   rw [openSegment_eq_image]
   refine ⟨(1 / 2) ^ n, ⟨?_, ?_⟩, ?_⟩
   · exact pow_pos one_half_pos _
-  · exact pow_lt_one one_half_pos.le one_half_lt_one hn
+  · exact pow_lt_one₀ one_half_pos.le one_half_lt_one hn
   · simp only [sub_smul, one_smul, smul_sub]; abel
 
 /-- If a subset of a real vector space contains a segment, then the direction of this

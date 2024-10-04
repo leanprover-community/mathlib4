@@ -124,7 +124,7 @@ theorem dist_smul_vadd_eq_dist {v : V} (p₁ p₂ : P) (hv : v ≠ 0) (r : ℝ) 
     mul_div_assoc]
   norm_num
 
-open AffineSubspace FiniteDimensional
+open AffineSubspace Module
 
 /-- Distances `r₁` `r₂` of `p` from two different points `c₁` `c₂` determine at
 most two points `p₁` `p₂` in a two-dimensional subspace containing those points
@@ -150,7 +150,7 @@ theorem eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two {s : AffineSubspace �
       · rw [real_inner_comm]
         exact ho
   have hbs : Submodule.span ℝ (Set.range b) = s.direction := by
-    refine eq_of_le_of_finrank_eq ?_ ?_
+    refine Submodule.eq_of_le_of_finrank_eq ?_ ?_
     · rw [Submodule.span_le, Set.range_subset_iff]
       intro i
       fin_cases i

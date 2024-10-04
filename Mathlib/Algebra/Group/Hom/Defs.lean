@@ -143,8 +143,9 @@ homomorphisms.
 
 You should also extend this typeclass when you extend `AddMonoidHom`.
 -/
-class AddMonoidHomClass (F M N : Type*) [AddZeroClass M] [AddZeroClass N] [FunLike F M N]
-  extends AddHomClass F M N, ZeroHomClass F M N : Prop
+class AddMonoidHomClass (F : Type*) (M N : outParam Type*)
+    [AddZeroClass M] [AddZeroClass N] [FunLike F M N]
+    extends AddHomClass F M N, ZeroHomClass F M N : Prop
 
 -- Instances and lemmas are defined below through `@[to_additive]`.
 end add_zero
@@ -452,7 +453,7 @@ theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) :
   | n + 1 => by rw [pow_succ, pow_succ, map_mul, map_pow f a n]
 
 @[to_additive (attr := simp)]
-lemma map_comp_pow [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (g : ι → G) (n : ℕ) :
+lemma map_comp_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (g : ι → G) (n : ℕ) :
     f ∘ (g ^ n) = f ∘ g ^ n := by ext; simp
 
 @[to_additive]

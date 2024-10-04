@@ -114,7 +114,7 @@ instance instLinearWeightsOfIsLieAbelian [IsLieAbelian L] [NoZeroSMulDivisors R 
 
 section FiniteDimensional
 
-open FiniteDimensional
+open Module
 
 variable [IsDomain R] [IsPrincipalIdealRing R] [Module.Free R M] [Module.Finite R M]
   [LieAlgebra.IsNilpotent R L]
