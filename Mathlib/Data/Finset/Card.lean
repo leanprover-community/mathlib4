@@ -831,6 +831,4 @@ theorem lt_wf {α} : WellFounded (@LT.lt (Finset α) _) :=
     card_lt_card hxy
   Subrelation.wf H <| InvImage.wf _ <| (Nat.lt_wfRel).2
 
-@[deprecated (since := "2023-12-27")] alias card_le_of_subset := card_le_card
-
 end Finset
