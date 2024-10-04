@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+import Mathlib.Data.Countable.Small
 
 /-!
 # Preservation of finite (co)limits.
@@ -27,7 +28,7 @@ open CategoryTheory
 namespace CategoryTheory.Limits
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
-universe w w₂ v₁ v₂ v₃ u₁ u₂ u₃
+universe u w w₂ v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
@@ -105,6 +106,13 @@ instance compPreservesFiniteProducts (F : C ⥤ D) (G : D ⥤ E)
 
 noncomputable instance (F : C ⥤ D) [PreservesFiniteLimits F] : PreservesFiniteProducts F where
   preserves _ _ := inferInstance
+
+noncomputable instance (priority := 100) (J : Type u) [Fintype J] (F : C ⥤ D)
+    [PreservesFiniteProducts F] : PreservesLimitsOfShape (Discrete J) F :=
+  let J' := (Countable.toSmall.{0} J).equiv_small.choose
+  let e : J ≃ J' := (Countable.toSmall J).equiv_small.choose_spec.some
+  letI : Fintype J' := Fintype.ofEquiv J (Countable.toSmall J).equiv_small.choose_spec.some
+  preservesLimitsOfShapeOfEquiv (Discrete.equivalence e.symm) F
 
 /--
 A functor is said to reflect finite limits, if it reflects all limits of shape `J`,
@@ -257,6 +265,13 @@ noncomputable instance compPreservesFiniteCoproducts (F : C ⥤ D) (G : D ⥤ E)
 
 noncomputable instance (F : C ⥤ D) [PreservesFiniteColimits F] : PreservesFiniteCoproducts F where
   preserves _ _ := inferInstance
+
+noncomputable instance (priority := 100) (J : Type u) [Fintype J] (F : C ⥤ D)
+    [PreservesFiniteCoproducts F] : PreservesColimitsOfShape (Discrete J) F :=
+  let J' := (Countable.toSmall.{0} J).equiv_small.choose
+  let e : J ≃ J' := (Countable.toSmall J).equiv_small.choose_spec.some
+  letI : Fintype J' := Fintype.ofEquiv J (Countable.toSmall J).equiv_small.choose_spec.some
+  preservesColimitsOfShapeOfEquiv (Discrete.equivalence e.symm) F
 
 /--
 A functor is said to reflect finite colimits, if it reflects all colimits of shape `J`,

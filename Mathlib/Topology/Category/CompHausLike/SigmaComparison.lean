@@ -38,9 +38,12 @@ values on the components.
 def sigmaComparison : X.obj ⟨(of P ((a : α) × σ a))⟩ ⟶ ((a : α) → X.obj ⟨of P (σ a)⟩) :=
   fun x a ↦ X.map ⟨Sigma.mk a, continuous_sigmaMk⟩ x
 
-noncomputable instance : PreservesLimitsOfShape (Discrete α) X :=
+/--
+`X` preserves finite products even though they are indexed by a finite type in a higher universe.
+-/
+noncomputable local instance : PreservesLimitsOfShape (Discrete α) X :=
   letI : Fintype α := Fintype.ofFinite _
-  preservesFiniteProductsOfPreservesBinaryAndTerminal X α
+  inferInstance
 
 theorem sigmaComparison_eq_comp_isos : sigmaComparison X σ =
     (X.mapIso (opCoproductIsoProduct'
