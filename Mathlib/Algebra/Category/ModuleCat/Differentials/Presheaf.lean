@@ -35,17 +35,19 @@ to show that the two vanishing conditions `d_app` are equivalent).
 
 -/
 
-universe v u v₁ v₂ u₁ u₂
+universe v u v₁ v₂ v₃ u₁ u₂ u₃
 
 open CategoryTheory
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+  {E : Type u₃} [Category.{v₃} E]
 
 namespace PresheafOfModules
 
-variable {S : Cᵒᵖ ⥤ CommRingCat.{u}} {F : C ⥤ D} {S' R : Dᵒᵖ ⥤ CommRingCat.{u}}
-   (M N : PresheafOfModules.{v} (R ⋙ forget₂ _ _))
-   (φ : S ⟶ F.op ⋙ R) (φ' : S' ⟶ R)
+variable {S : Cᵒᵖ ⥤ CommRingCat.{u}} {F : C ⥤ D} {G : D ⥤ E}
+  {S' R : Dᵒᵖ ⥤ CommRingCat.{u}} {T : Eᵒᵖ ⥤ CommRingCat.{u}}
+  (M N : PresheafOfModules.{v} (R ⋙ forget₂ _ _))
+  (φ : S ⟶ F.op ⋙ R) (φ' : S' ⟶ R)
 
 /-- Given a morphism of presheaves of commutative rings `φ : S ⟶ F.op ⋙ R`,
 this is the type of relative `φ`-derivation of a presheaf of `R`-modules `M`. -/
@@ -223,5 +225,21 @@ noncomputable def isUniversal' : (derivation' φ').Universal :=
 instance : HasDifferentials (F := 𝟭 D) φ' := ⟨_, _,  ⟨isUniversal' φ'⟩⟩
 
 end DifferentialsConstruction
+
+namespace Derivation
+
+namespace Universal
+
+variable {dφ : M.Derivation φ} (hdφ : dφ.Universal)
+  (ψ : R ⟶ G.op ⋙ T) (φψ : S ⟶ (F ⋙ G).op ⋙ T)
+  {P : PresheafOfModules.{v} (T ⋙ forget₂ _ _)}
+  (dφψ : P.Derivation φψ)
+
+lemma pullbackMap : φψ = by
+  sorry := sorry
+
+end Universal
+
+namespace Derivation
 
 end PresheafOfModules
