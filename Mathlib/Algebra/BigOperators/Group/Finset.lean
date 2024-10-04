@@ -2258,9 +2258,6 @@ theorem toAdd_prod (s : Finset ι) (f : ι → Multiplicative α) :
 
 end AddCommMonoid
 
-@[deprecated (since := "2023-12-23")] alias Equiv.prod_comp' := Fintype.prod_equiv
-@[deprecated (since := "2023-12-23")] alias Equiv.sum_comp' := Fintype.sum_equiv
-
 theorem Finset.sum_sym2_filter_not_isDiag {ι α} [LinearOrder ι] [AddCommMonoid α]
     (s : Finset ι) (p : Sym2 ι → α) :
     ∑ i in s.sym2.filter (¬ ·.IsDiag), p i =

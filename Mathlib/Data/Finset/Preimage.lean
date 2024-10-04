@@ -118,5 +118,13 @@ theorem sigma_image_fst_preimage_mk {β : α → Type*} [DecidableEq α] (s : Fi
       s :=
   s.sigma_preimage_mk_of_subset (Subset.refl _)
 
+@[simp] lemma preimage_inl (s : Finset (α ⊕ β)) :
+    s.preimage Sum.inl Sum.inl_injective.injOn = s.toLeft := by
+  ext x; simp
+
+@[simp] lemma preimage_inr (s : Finset (α ⊕ β)) :
+    s.preimage Sum.inr Sum.inr_injective.injOn = s.toRight := by
+  ext x; simp
+
 end Preimage
 end Finset

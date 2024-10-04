@@ -711,8 +711,3 @@ def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα _pα e := do
   | _, _, _ => throwError "not ENNReal.ofNNReal"
 
 end Mathlib.Meta.Positivity
-
-@[deprecated (since := "2023-12-23")] protected alias
-ENNReal.le_inv_smul_iff_of_pos := le_inv_smul_iff_of_pos
-@[deprecated (since := "2023-12-23")] protected alias
-ENNReal.inv_smul_le_iff_of_pos := inv_smul_le_iff_of_pos
