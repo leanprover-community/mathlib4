@@ -930,21 +930,18 @@ lemma fst_map_id_prod (κ : Kernel α β) {γ : Type*} {mγ : MeasurableSpace γ
 lemma fst_compProd_apply (κ : Kernel α β) (η : Kernel (α × β) γ)
     [IsSFiniteKernel κ] [IsSFiniteKernel η]
     (x : α) {s : Set β} (hs : MeasurableSet s) :
-    (κ ⊗ₖ η).fst x s = ∫⁻ b, s.indicator (fun b ↦ (η (x, b)) Set.univ) b ∂(κ x) := by
+    (κ ⊗ₖ η).fst x s = ∫⁻ b, s.indicator (fun b ↦ η (x, b) Set.univ) b ∂(κ x) := by
   rw [Kernel.fst_apply' _ _ hs, Kernel.compProd_apply]
   swap; · exact measurable_fst hs
-  simp only [Set.mem_setOf_eq]
-  classical
-  have : ∀ b : β, η (x, b) {_c | b ∈ s} = s.indicator (fun b ↦ η (x, b) Set.univ) b := by
+  have : ∀ b, η (x, b) {_c | b ∈ s} = s.indicator (fun b ↦ η (x, b) Set.univ) b := by
     intro b
     by_cases hb : b ∈ s <;> simp [hb]
-  simp_rw [this]
+  simp_rw [Set.mem_setOf_eq, this]
 
 @[simp]
 lemma fst_compProd (κ : Kernel α β) (η : Kernel (α × β) γ) [IsSFiniteKernel κ] [IsMarkovKernel η] :
     fst (κ ⊗ₖ η) = κ := by
-  ext x s hs
-  simp only [fst_compProd_apply _ _ _ hs, measure_univ, lintegral_indicator_const hs, one_mul]
+  ext x s hs; simp [fst_compProd_apply, hs]
 
 lemma fst_prodMkLeft (δ : Type*) [MeasurableSpace δ] (κ : Kernel α (β × γ)) :
     fst (prodMkLeft δ κ) = prodMkLeft δ (fst κ) := rfl

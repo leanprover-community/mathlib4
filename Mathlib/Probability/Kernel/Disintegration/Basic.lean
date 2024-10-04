@@ -141,7 +141,7 @@ lemma IsCondKernel.isProbabilityMeasure_ae [IsFiniteKernel κ.fst] [κ.IsCondKer
       ∧ (∀ᵐ b ∂(κ.fst a), 1 ≤ κCond (a, b) Set.univ) by
     filter_upwards [this.1, this.2] with b h1 h2 using le_antisymm h1 h2
   have h_eq s (hs : MeasurableSet s) :
-      ∫⁻ b, s.indicator (fun b ↦ (κCond (a, b)) Set.univ) b ∂κ.fst a = κ.fst a s := by
+      ∫⁻ b, s.indicator (fun b ↦ κCond (a, b) Set.univ) b ∂κ.fst a = κ.fst a s := by
     conv_rhs => rw [← h]
     rw [fst_compProd_apply _ _ _ hs]
   have h_meas : Measurable fun b ↦ κCond (a, b) Set.univ :=
@@ -149,7 +149,7 @@ lemma IsCondKernel.isProbabilityMeasure_ae [IsFiniteKernel κ.fst] [κ.IsCondKer
   constructor
   · rw [ae_le_const_iff_forall_gt_measure_zero]
     intro r hr
-    let s := {b | r ≤ κCond (a,b) Set.univ}
+    let s := {b | r ≤ κCond (a, b) Set.univ}
     have hs : MeasurableSet s := h_meas measurableSet_Ici
     have h_2_le : s.indicator (fun _ ↦ r) ≤ s.indicator (fun b ↦ (κCond (a, b)) Set.univ) := by
       intro b
