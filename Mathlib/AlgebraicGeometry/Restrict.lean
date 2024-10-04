@@ -574,9 +574,9 @@ lemma le_preimage_resLE_iff {U : Y.Opens} {V : X.Opens} (e : V ≤ f ⁻¹ᵁ U)
   simp [resLE_preimage, ← image_le_image_iff V.ι, image_preimage_eq_opensRange_inter, V.ι_image_le]
 
 lemma resLE_appLE {U : Y.Opens} {V : X.Opens} (e : V ≤ f ⁻¹ᵁ U)
-    (O : U.toScheme.Opens) (W : V.toScheme.Opens) (e' : V.ι ''ᵁ W ≤ f ⁻¹ᵁ U.ι ''ᵁ O) :
-    (f.resLE U V e).appLE O W ((le_preimage_resLE_iff f e O W).mpr e') =
-      f.appLE (U.ι ''ᵁ O) (V.ι ''ᵁ W) e' := by
+    (O : U.toScheme.Opens) (W : V.toScheme.Opens) (e' : W ≤ resLE f U V e ⁻¹ᵁ O) :
+    (f.resLE U V e).appLE O W e' =
+      f.appLE (U.ι ''ᵁ O) (V.ι ''ᵁ W) ((le_preimage_resLE_iff f e O W).mp e') := by
   simp only [Scheme.Hom.appLE, Scheme.Hom.resLE, Scheme.restrictFunctor_map_left, Opens.map_coe,
     id_eq, Scheme.comp_app, morphismRestrict_app', Category.assoc, IsOpenImmersion.lift_app,
     Scheme.Opens.ι_appIso, Scheme.Opens.ι_app, Scheme.Opens.toScheme_presheaf_map, Category.assoc]
@@ -594,7 +594,6 @@ noncomputable def arrowResLEAppIso (f : X ⟶ Y) (U : Y.Opens) (V : X.Opens) (e 
   simp only [Opens.map_top, Arrow.mk_left, Arrow.mk_right, Functor.id_obj, Scheme.Opens.topIso_hom,
     eqToHom_op, Arrow.mk_hom, Scheme.Hom.map_appLE]
   rw [← Scheme.Hom.appLE_eq_app, Scheme.Hom.resLE_appLE, Scheme.Hom.appLE_map]
-  simpa
 
 end MorphismRestrict
 
