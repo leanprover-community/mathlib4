@@ -394,6 +394,7 @@ variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
 
 /-- A ring morphism `A →+* B` is of `RingHom.FinitePresentation` if `B` is finitely presented as
 `A`-algebra. -/
+@[algebraize]
 def FinitePresentation (f : A →+* B) : Prop :=
   @Algebra.FinitePresentation A B _ _ f.toAlgebra
 
@@ -414,11 +415,9 @@ theorem id : FinitePresentation (RingHom.id A) :=
 variable {A}
 
 theorem comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FinitePresentation) (hg : Surjective g)
-    (hker : g.ker.FG) : (g.comp f).FinitePresentation :=
-  letI := f.toAlgebra
-  letI := (g.comp f).toAlgebra
-  letI : Algebra.FinitePresentation A B := hf
-  Algebra.FinitePresentation.of_surjective
+    (hker : g.ker.FG) : (g.comp f).FinitePresentation := by
+  algebraize [f, g.comp f]
+  exact Algebra.FinitePresentation.of_surjective
     (f :=
       { g with
         toFun := g
@@ -434,28 +433,16 @@ theorem of_finiteType [IsNoetherianRing A] {f : A →+* B} : f.FiniteType ↔ f.
   @Algebra.FinitePresentation.of_finiteType A B _ _ f.toAlgebra _
 
 theorem comp {g : B →+* C} {f : A →+* B} (hg : g.FinitePresentation) (hf : f.FinitePresentation) :
-    (g.comp f).FinitePresentation :=
+    (g.comp f).FinitePresentation := by
   -- Porting note: specify `Algebra` instances to get `SMul`
-  letI ins1 := RingHom.toAlgebra f
-  letI ins2 := RingHom.toAlgebra g
-  letI ins3 := RingHom.toAlgebra (g.comp f)
-  letI ins4 : IsScalarTower A B C :=
-    { smul_assoc := fun a b c => by simp [Algebra.smul_def, mul_assoc]; rfl }
-  letI : Algebra.FinitePresentation A B := hf
-  letI : Algebra.FinitePresentation B C := hg
-  Algebra.FinitePresentation.trans A B C
+  algebraize [f, g, g.comp f]
+  exact Algebra.FinitePresentation.trans A B C
 
 theorem of_comp_finiteType (f : A →+* B) {g : B →+* C} (hg : (g.comp f).FinitePresentation)
-    (hf : f.FiniteType) : g.FinitePresentation :=
+    (hf : f.FiniteType) : g.FinitePresentation := by
   -- Porting note: need to specify some instances
-  letI ins1 := RingHom.toAlgebra f
-  letI ins2 := RingHom.toAlgebra g
-  letI ins3 := RingHom.toAlgebra (g.comp f)
-  letI ins4 : IsScalarTower A B C :=
-    { smul_assoc := fun a b c => by simp [Algebra.smul_def, mul_assoc]; rfl }
-  letI : Algebra.FinitePresentation A C := hg
-  letI : Algebra.FiniteType A B := hf
-  Algebra.FinitePresentation.of_restrict_scalars_finitePresentation A B C
+  algebraize [f, g, g.comp f]
+  exact Algebra.FinitePresentation.of_restrict_scalars_finitePresentation A B C
 
 end FinitePresentation
 

@@ -343,6 +343,27 @@ instance : (pointwiseLeftKanExtension L F).IsLeftKanExtension
 instance : HasLeftKanExtension L F :=
   HasLeftKanExtension.mk _ (pointwiseLeftKanExtensionUnit L F)
 
+/-- An auxiliary cocone used in the lemma `pointwiseLeftKanExtension_desc_app` -/
+@[simps]
+def costructuredArrowMapCocone (G : D ⥤ H) (α : F ⟶ L ⋙ G) (Y : D) :
+    Cocone (CostructuredArrow.proj L Y ⋙ F) where
+  pt := G.obj Y
+  ι := {
+    app := fun f ↦ α.app f.left ≫ G.map f.hom
+    naturality := by simp [← G.map_comp] }
+
+@[simp]
+lemma pointwiseLeftKanExtension_desc_app (G : D ⥤ H) (α :  F ⟶ L ⋙ G) (Y : D) :
+    ((pointwiseLeftKanExtension L F).descOfIsLeftKanExtension (pointwiseLeftKanExtensionUnit L F)
+      G α |>.app Y) = colimit.desc _ (costructuredArrowMapCocone L F G α Y) := by
+  let β : L.pointwiseLeftKanExtension F ⟶ G :=
+    { app := fun Y ↦ colimit.desc _ (costructuredArrowMapCocone L F G α Y) }
+  have h : (pointwiseLeftKanExtension L F).descOfIsLeftKanExtension
+      (pointwiseLeftKanExtensionUnit L F) G α = β := by
+    apply hom_ext_of_isLeftKanExtension (α := pointwiseLeftKanExtensionUnit L F)
+    aesop
+  exact NatTrans.congr_app h Y
+
 variable {F L}
 
 /-- If `F` admits a pointwise left Kan extension along `L`, then any left Kan extension of `F`
@@ -420,6 +441,28 @@ instance : (pointwiseRightKanExtension L F).IsRightKanExtension
 
 instance : HasRightKanExtension L F :=
   HasRightKanExtension.mk _ (pointwiseRightKanExtensionCounit L F)
+
+/-- An auxiliary cocone used in the lemma `pointwiseRightKanExtension_lift_app` -/
+@[simps]
+def structuredArrowMapCone (G : D ⥤ H) (α : L ⋙ G ⟶ F) (Y : D) :
+    Cone (StructuredArrow.proj Y L ⋙ F) where
+  pt := G.obj Y
+  π := {
+    app := fun f ↦ G.map f.hom ≫ α.app f.right
+    naturality := by simp [← α.naturality, ← G.map_comp_assoc] }
+
+@[simp]
+lemma pointwiseRightKanExtension_lift_app (G : D ⥤ H) (α : L ⋙ G ⟶ F) (Y : D) :
+    ((pointwiseRightKanExtension L F).liftOfIsRightKanExtension
+      (pointwiseRightKanExtensionCounit L F) G α |>.app Y) =
+        limit.lift _ (structuredArrowMapCone L F G α Y) := by
+  let β : G ⟶ L.pointwiseRightKanExtension F :=
+    { app := fun Y ↦ limit.lift _ (structuredArrowMapCone L F G α Y) }
+  have h : (pointwiseRightKanExtension L F).liftOfIsRightKanExtension
+      (pointwiseRightKanExtensionCounit L F) G α = β := by
+    apply hom_ext_of_isRightKanExtension (α := pointwiseRightKanExtensionCounit L F)
+    aesop
+  exact NatTrans.congr_app h Y
 
 variable {F L}
 
