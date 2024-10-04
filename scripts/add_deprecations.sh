@@ -49,7 +49,7 @@ mkDeclAndDepr () {
 ##  `addDeprecations <file>` adds the deprecation statements to `<file>`,
 ##  using the first new line after the start of each declaration as position
 addDeprecations () {
-  awk -v data="$( mkDeclAndDepr "${1}" )" 'BEGIN{
+  awk -v regex="${begs}" -v data="$( mkDeclAndDepr "${1}" )" 'BEGIN{
     found=0
     split(data, pairs, "@@@")  ## we setup the data:
     for(i in pairs) {
@@ -61,7 +61,7 @@ addDeprecations () {
     }
     currDep=""
     ## scanning the file, if we find an entries of `lines`, the we assign `currDep`
-  } /theorem|lemma/ { for(l in lines) { if ($0 ~ lines[l]) { found=1; currDep=deprs[l] } } } {
+  } ($0 ~ regex) { for(l in lines) { if ($0 ~ lines[l]) { found=1; currDep=deprs[l] } } } {
     ## when we find the next empty line, we print the deprecation statement in `currDep`
     if ((found == 1) && (NF == 0)) {
       found=0
