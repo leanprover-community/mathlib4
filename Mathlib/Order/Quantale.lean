@@ -5,7 +5,6 @@ Authors: Pieter Cuijpers
 -/
 import Mathlib.Order.CompleteLattice
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.Group.Idem
 
 /-!
 # Theory of quantales
@@ -14,52 +13,38 @@ Quantales are the non-commutative generalization of locales/frames and as such a
 to point-free topology and order theory. Applications are found throughout logic,
 quantum mechanics, and computer science.
 
-Intuitively, as described by [vickers1989], open sets of a topology form a frame, and can be
-considered as modeling what is `observable` in a system. In behavioral systems theory, quantales
-come into play when making an observation may change the system itself. Traditionally, one would
-write `x ⊓ y` to describe making observations `x` and `y` at the same time, but when the order of
-observation becomes important due to changes in the system caused by the observation, it makes
-more sense to write `x * y` or `x + y` and consider `*` or `+` as a possibly non-commutative
-(additive) monoid.
+The most general definition of quantale occurring in literature, is that a quantale is a semigroup
+distributing over a complete sup-semilattice. In our definition below, we use the fact that
+every complete sup-semlattice is in fact a complete lattice, and make construct defined for
+those immediately available. Another view could be to define a quantale as a complete idempotent
+semiring, i.e. a complete semiring in which + and sup coincide. However, we will often encounter
+additive quantales, i.e. quantales in which the semigroup operator is thought of as addition, in
+which case the link with semirings will lead to confusion notationally.
 
-In literature, there are slight variations regarding the basic definition of quantale.
-The most general definition, is that a quantale is a semigroup distributing over a complete
-sup-semilattice. In some works (like in the Wikipedia definition), it is taken to be a semigroup
-distributing over a complete lattice. This is an equivalent definition in the sense that every
-complete sup-semilattice is a complete lattice, but in further elaborations it allows the user
-to also consider the meet `⊓` and infinite meet `⨅` as available operations - while these are
-usually not preserved by quantale morphisms. Finally, in many works only unital quantales are
-considered, i.e. quantales for which the semigroup operation has a unit element. In those works
-a quantale is defined as a monoid distributing over a complete (sup-semi)lattice.
+In this file, we follow the basic definitions set out on the wikipedia page on quantales,
+which also distinguish unital, commutative, idempotent, integral and involutive quantales.
+A unital quantale is simply a quantale over a monoid, a commutative quantale is a quantale
+over a commutative semigroup, and an idempotent quantale is a quantale over an idempotent
+semigroup. As we define quantales relative to their semigroup, these do not need to be defined
+explicitly here. An integral (or strictly two-sided) quantale is a unital quantale in which
+the top element of the lattice and the unit of the semigroup coincide. We give a mix-in class
+definition for this.
 
-Our definitions below take a quantale to be a semigroup distributing over a complete lattice,
-in order to be maximally generic but at the same time efficient in providing all theorems and
-definitions one might at some point want to have available on quantales. Furthermore, we
-follow the wikipedia page on quantales and give the definitions for integral, commutative,
-and idempotent quantale.
+The involutive quantale (which is necessary to discuss regularity properties) we do not cover
+in this file. Also the proof that every frame is a commutative quantale, and that a quantale is
+a frame if and only if it is integral and idempotent are developed separately in order to reduce
+overhead if a user does not need them.
 
 ## Main definitions
 
 * class `Quantale`: a semigroup distributing over a complete lattice, i.e satisfying
   `x * (sSup s) = ⨆ y ∈ s, x * y` and `(sSup s) * y = ⨆ x ∈ s, x * y`;
 
-* class `OneQuantale`: is a unital quantale, i.e. a monoid distributing over a complete lattice;
+* mix-in class `IsIntegral`: a unital quantale (i.e. a quantale in which the semigroup is
+  a monoid) is called integral, or strictly two-sided, when `⊤ = 1`;
 
-* class `IntegralQuantale`: a unital quantale where `⊤ = 1`, also called a strictly
-  two-sided quantale;
-
-* class `CommQuantale`: a quantale with a commutative semigroup, iu.e. `x * y = y * x`;
-
-* class `IdemQuantale`: a quantale with an idempotent semigroup, i.e. `x * x = x`;
-
-* class `IdemIntegralQuantale`: a idempotent integral quantale. A quantale is a frame if
-  and only if it is idempotent and integral. In that case, it is also commutative
-  and ⊓ and * coincide;
-
-* next to these classes, we define the additive versions `AddQuantale`, `UnitalAddQuantale`,
-  `AddCommQuantale`, `IdemAddQuantale`, `IntegralAddQuantale`, `IdemIntegralAddQuantale`,
-  in which the semigroup operation is written as `+` i.s.o. `*`. In the definitions below
-  these additive versions are defined first in order to support the `to_additive` attribute;
+* next to these classes, we define the additive versions `AddQuantale`, `IsAddIntegral` in
+  which the semigroup is denoted `+` i.s.o. `*`;
 
 ## Naming conventions
 
@@ -71,23 +56,16 @@ and idempotent quantale.
 
 ## References
 
-[Topology via Logic][vickers1989]
 <https://en.wikipedia.org/wiki/Quantale>
 <https://encyclopediaofmath.org/wiki/Quantale>
-<https://ncatlab.org/nlab/show/quantale> (Categorical definition - not followed here)
+<https://ncatlab.org/nlab/show/quantale>
 
 ## TODO
-
-+ A proof that `IdemIntegralQuantale` and `Order.Frame` coincide (probably in a different file);
-
-+ Definition of residuation also for AddQuantale;
-
-+ Definition of involutive quantale;
 
 -/
 
 /-- An additive quantale is an additive semigroup distributing over a complete lattice. -/
-class AddQuantale (α : Type*) extends AddSemigroup α, CompleteLattice α where
+class AddQuantale (α : Type*) [AddSemigroup α] extends CompleteLattice α where
   /-- Addition is distributive over join in a quantale -/
   protected add_sSup_eq_iSup_add (x : α) (s : Set α) : x + sSup s = ⨆ y ∈ s, x + y
   /-- Addition is distributive over join in a quantale -/
@@ -95,61 +73,29 @@ class AddQuantale (α : Type*) extends AddSemigroup α, CompleteLattice α where
 
 /-- A quantale is a semigroup distributing over a complete lattice. -/
 @[to_additive]
-class Quantale (α : Type*) extends Semigroup α, CompleteLattice α where
+class Quantale (α : Type*) [Semigroup α] extends CompleteLattice α where
   /-- Multiplication is distributive over join in a quantale -/
   protected mul_sSup_eq_iSup_mul (x : α) (s : Set α) : x * sSup s = ⨆ y ∈ s, x * y
   /-- Multiplication is distributive over join in a quantale -/
   protected sSup_mul_eq_iSup_mul (s : Set α) (y : α) : sSup s * y = ⨆ x ∈ s, x * y
 
-/-- A unital additive quantale is a quantale with a unit element, i.e. a monoid -/
-class ZeroAddQuantale (α : Type*) extends AddQuantale α, AddMonoid α
-
-/-- A unital quantale is a quantale with a unit element, i.e. a monoid -/
-@[to_additive]
-class OneQuantale (α : Type*) extends Quantale α, Monoid α
-
-/-- An integral (or strictly two-sided) additive quantale is an additive quantale with `⊤ = 0` -/
-class AddIntegralQuantale (α : Type*) extends ZeroAddQuantale α where
+/-- An integral (or strictly two-sided) additive quantale is a quantale over an additive monoid
+    where top and unit coincide. -/
+class IsAddIntegral (α : Type*) [AddMonoid α] [AddQuantale α] : Prop where
   /-- Top and unit coincide in an integral (or strictly two-sided) quantale -/
   protected top_eq_zero : (⊤ : α) = 0
 
-/-- An integral (or strictly two-sided) quantale is a quantale with `⊤ = 1` -/
+/-- An integral (or strictly two-sided) quantale is a quantale over a monoid where
+    top and unit coincide. -/
 @[to_additive]
-class IntegralQuantale (α : Type*) extends OneQuantale α where
+class IsIntegral (α : Type*) [Monoid α] [Quantale α] : Prop where
   /-- Top and unit coincide in an integral (or strictly two-sided) quantale -/
   protected top_eq_one : (⊤ : α) = 1
-
-/-- A additive commutative quantale is an additive quantale such that `x + y = y + x` -/
-class AddCommQuantale (α : Type*) extends AddQuantale α, CommSemigroup α
-
-/-- A commutative quantale is a quantale such that `x * y = y * x` -/
-@[to_additive]
-class CommQuantale (α : Type*) extends Quantale α, CommSemigroup α
-
-/-- An idempotent additive quantale is a quantale such that `x + x = x` -/
-class AddIdemQuantale (α : Type*) extends AddQuantale α, AddIdemSemigroup α
-
-/-- An idempotent quantale is a quantale such that `x * x = x` -/
-@[to_additive]
-class IdemQuantale (α : Type*) extends Quantale α, IdemSemigroup α
-
-/-- An idempotent integral additive quantale is an idempotent additive quantale as well as
-    an integral quantale. A basic result from quantale theory is that such a quantale is
-    also commutative and, in fact, is a frame. I.e. the addition and infimum coinicide.
--/
-class AddIdemIntegralQuantale (α : Type*) extends AddIdemQuantale α, AddIntegralQuantale α
-
-/-- An idempotent integral quantale is an idempotent quantale as well as an integral
-    quantale. A basic result from quantale theory is that such a quantale is also
-    commutative and, in fact, is a frame. I.e. the multiplication and infimum coinicide.
--/
-@[to_additive]
-class IdemIntegralQuantale (α : Type*) extends IdemQuantale α, IntegralQuantale α
 
 section Quantale
 
 variable (α : Type _)
-variable [Quantale α]
+variable [Semigroup α] [Quantale α]
 
 @[to_additive]
 theorem mul_sSup_eq_iSup_mul : ∀ x : α, ∀ s : Set α, x * sSup s = ⨆ y ∈ s, x * y :=
@@ -161,70 +107,53 @@ theorem sSup_mul_eq_iSup_mul : ∀ s : Set α, ∀ y : α, sSup s * y = ⨆ x �
 
 end Quantale
 
-section IntegralQuantale
+section IsIntegral
 
 variable (α : Type _)
-variable [IntegralQuantale α]
+variable [Monoid α] [Quantale α] [IsIntegral α]
 
 @[to_additive]
-theorem top_eq_one : (⊤ : α) = 1 := IntegralQuantale.top_eq_one
+theorem top_eq_one : (⊤ : α) = 1 := IsIntegral.top_eq_one
 
-end IntegralQuantale
-
-namespace AddQuantale
-
-variable {α : Type _}
-variable [AddQuantale α]
-
-/-- Left- and right- residuation operators on an additive quantale are similar to the Heyting
-operator on complete lattices, but for a non-commutative logic.
-I.e. `x ⇨ₗ y = sSup { z | z + x ≤ y }`.
--/
-def left_residuation (x y : α) := sSup { z | z + x ≤ y }
-
-/-- Left- and right- residuation operators on an additive quantale are similar to the Heyting
-operator on complete lattices, but for a non-commutative logic.
-I.e. `x ⇨ᵣ y = sSup { z | x + z ≤ y }`.
--/
-def right_residuation (x y : α) := sSup { z | x + z ≤ y }
-
-/-- Notation for left-residuation in quantales.
-    I.e. `x ⇨ₗ y = sSup { z | z + x ≤ y }`.
--/
-scoped infixr:60 " ⇨ₗ " => left_residuation
-
-/-- Notation for right-residuation in quantales.
-    I.e. `x ⇨ᵣ y = sSup { z | x + z ≤ y }`.
--/
-scoped infixr:60 " ⇨ᵣ " => right_residuation
-
-end AddQuantale
+end IsIntegral
 
 namespace Quantale
 
 variable {α : Type _}
-variable [Quantale α]
+variable [Semigroup α] [Quantale α]
 
-/-- Left- and right- residuation operators on a quantale are similar to the Heyting operator
-on complete lattices, but for a non-commutative logic.
+/-- Left- and right- residuation operators on an additive quantale are similar to the Heyting
+operator on complete lattices, but for a non-commutative logic.
 I.e. `x ⇨ₗ y = sSup { z | z * x ≤ y }`.
 -/
+@[to_additive "Left- and right- residuation operators on an additive quantale are similar to
+the Heyting operator on complete lattices, but for a non-commutative logic.
+I.e. `x ⇨ₗ y = sSup { z | z + x ≤ y }`.
+"]
 def left_residuation (x y : α) := sSup { z | z * x ≤ y }
 
-/-- Left- and right- residuation operators on a quantale are similar to the Heyting operator
-    on complete lattices, but for a non-commutative logic.
-    I.e. `x ⇨ᵣ y = sSup { z | x * z ≤ y }`.
+/-- Left- and right- residuation operators on an additive quantale are similar to the Heyting
+operator on complete lattices, but for a non-commutative logic.
+I.e. `x ⇨ᵣ y = sSup { z | x * z ≤ y }`.
 -/
+@[to_additive "Left- and right- residuation operators on an additive quantale are similar to
+the Heyting operator on complete lattices, but for a non-commutative logic.
+I.e. `x ⇨ᵣ y = sSup { z | x + z ≤ y }`.
+"]
 def right_residuation (x y : α) := sSup { z | x * z ≤ y }
 
 /-- Notation for left-residuation in quantales.
     I.e. `x ⇨ₗ y = sSup { z | z * x ≤ y }`.
 -/
+@[to_additive "Notation for left-residuation in quantales.
+    I.e. `x ⇨ₗ y = sSup { z | z + x ≤ y }`. "]
 scoped infixr:60 " ⇨ₗ " => left_residuation
 
 /-- Notation for right-residuation in quantales.
     I.e. `x ⇨ᵣ y = sSup { z | x * z ≤ y }`.
 -/
+@[to_additive "Notation for right-residuation in quantales.
+    I.e. `x ⇨ᵣ y = sSup { z | x * z ≤ y }`."]
 scoped infixr:60 " ⇨ᵣ " => right_residuation
 
 end Quantale

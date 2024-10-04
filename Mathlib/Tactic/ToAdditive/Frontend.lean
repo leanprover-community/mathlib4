@@ -1032,6 +1032,10 @@ def fixAbbreviation : List String → List String
   | "Is" :: "Left" :: "Regular" :: s  => "IsAddLeftRegular" :: fixAbbreviation s
   | "is" :: "Right" :: "Regular" :: s => "isAddRightRegular" :: fixAbbreviation s
   | "Is" :: "Right" :: "Regular" :: s => "IsAddRightRegular" :: fixAbbreviation s
+  | "is" :: "Integral" :: s            => "isAddIntegral" :: fixAbbreviation s
+  | "Is" :: "Integral" :: s            => "IsAddIntegral" :: fixAbbreviation s
+  | "is" :: "Idem" :: s            => "isAddIdem" :: fixAbbreviation s
+  | "Is" :: "Idem" :: s            => "IsAddIdem" :: fixAbbreviation s
   | "Has" :: "Fundamental" :: "Domain" :: s => "HasAddFundamentalDomain" :: fixAbbreviation s
   | "has" :: "Fundamental" :: "Domain" :: s => "hasAddFundamentalDomain" :: fixAbbreviation s
   | "Quotient" :: "Measure" :: s => "AddQuotientMeasure" :: fixAbbreviation s
