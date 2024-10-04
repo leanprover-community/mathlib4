@@ -7,7 +7,7 @@ Authors: Johan Commelin, Kenny Lau
 import Mathlib.Algebra.Group.Units
 import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Formal (multivariate) power series - Inverses
