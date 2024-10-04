@@ -157,6 +157,10 @@ instance : FintypeCat.toProfinite.Faithful := FintypeCat.toProfiniteFullyFaithfu
 
 instance : FintypeCat.toProfinite.Full := FintypeCat.toProfiniteFullyFaithful.full
 
+instance (X : FintypeCat) : Fintype (FintypeCat.toProfinite.obj X) := inferInstanceAs (Fintype X)
+
+instance (X : FintypeCat) : Fintype (Profinite.of X) := inferInstanceAs (Fintype X)
+
 end DiscreteTopology
 
 end Profinite

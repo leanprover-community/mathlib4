@@ -84,7 +84,7 @@ Hausdorff measure, Hausdorff dimension, dimension
 
 open scoped MeasureTheory ENNReal NNReal Topology
 
-open MeasureTheory MeasureTheory.Measure Set TopologicalSpace FiniteDimensional Filter
+open MeasureTheory MeasureTheory.Measure Set TopologicalSpace Module Filter
 
 variable {ι X Y : Type*} [EMetricSpace X] [EMetricSpace Y]
 
@@ -441,7 +441,7 @@ theorem dimH_univ_pi_fin (n : ℕ) : dimH (univ : Set (Fin n → ℝ)) = n := by
 
 theorem dimH_of_mem_nhds {x : E} {s : Set E} (h : s ∈ 𝓝 x) : dimH s = finrank ℝ E := by
   have e : E ≃L[ℝ] Fin (finrank ℝ E) → ℝ :=
-    ContinuousLinearEquiv.ofFinrankEq (FiniteDimensional.finrank_fin_fun ℝ).symm
+    ContinuousLinearEquiv.ofFinrankEq (Module.finrank_fin_fun ℝ).symm
   rw [← e.dimH_image]
   refine le_antisymm ?_ ?_
   · exact (dimH_mono (subset_univ _)).trans_eq (dimH_univ_pi_fin _)
@@ -459,7 +459,7 @@ theorem dimH_univ_eq_finrank : dimH (univ : Set E) = finrank ℝ E :=
   dimH_of_mem_nhds (@univ_mem _ (𝓝 0))
 
 theorem dimH_univ : dimH (univ : Set ℝ) = 1 := by
-  rw [dimH_univ_eq_finrank ℝ, FiniteDimensional.finrank_self, Nat.cast_one]
+  rw [dimH_univ_eq_finrank ℝ, Module.finrank_self, Nat.cast_one]
 
 variable {E}
 

@@ -67,7 +67,7 @@ variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
 noncomputable section
 
-open Metric FiniteDimensional Function
+open Metric Module Function
 
 open scoped Manifold
 

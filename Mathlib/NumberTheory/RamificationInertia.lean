@@ -47,7 +47,7 @@ variable {R : Type u} [CommRing R]
 variable {S : Type v} [CommRing S] (f : R →+* S)
 variable (p : Ideal R) (P : Ideal S)
 
-open FiniteDimensional
+open Module
 
 open UniqueFactorizationMonoid
 
@@ -699,7 +699,7 @@ instance Factors.finiteDimensional_quotient [IsNoetherian R S] [p.IsMaximal]
 
 theorem Factors.inertiaDeg_ne_zero [IsNoetherian R S] [p.IsMaximal]
     (P : (factors (map (algebraMap R S) p)).toFinset) : inertiaDeg (algebraMap R S) p P ≠ 0 := by
-  rw [inertiaDeg_algebraMap]; exact (FiniteDimensional.finrank_pos_iff.mpr inferInstance).ne'
+  rw [inertiaDeg_algebraMap]; exact (Module.finrank_pos_iff.mpr inferInstance).ne'
 
 instance Factors.finiteDimensional_quotient_pow [IsNoetherian R S] [p.IsMaximal]
     (P : (factors (map (algebraMap R S) p)).toFinset) :

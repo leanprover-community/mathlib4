@@ -27,7 +27,7 @@ for a general nontrivial normed space.
 open Set Function Metric MeasurableSpace intervalIntegral
 open scoped Pointwise ENNReal NNReal
 
-local notation "dim" => FiniteDimensional.finrank ℝ
+local notation "dim" => Module.finrank ℝ
 
 noncomputable section
 namespace MeasureTheory
@@ -39,7 +39,7 @@ namespace Measure
 
 /-- If `μ` is an additive Haar measure on a normed space `E`,
 then `μ.toSphere` is the measure on the unit sphere in `E`
-such that `μ.toSphere s = FiniteDimensional.finrank ℝ E • μ (Set.Ioo (0 : ℝ) 1 • s)`. -/
+such that `μ.toSphere s = Module.finrank ℝ E • μ (Set.Ioo (0 : ℝ) 1 • s)`. -/
 def toSphere (μ : Measure E) : Measure (sphere (0 : E) 1) :=
   dim E • ((μ.comap (Subtype.val ∘ (homeomorphUnitSphereProd E).symm)).restrict
     (univ ×ˢ Iio ⟨1, mem_Ioi.2 one_pos⟩)).fst
@@ -106,7 +106,7 @@ instance (n : ℕ) : SigmaFinite (volumeIoiPow n) :=
 
 /-- The homeomorphism `homeomorphUnitSphereProd E` sends an additive Haar measure `μ`
 to the product of `μ.toSphere` and `MeasureTheory.Measure.volumeIoiPow (dim E - 1)`,
-where `dim E = FiniteDimensional.finrank ℝ E` is the dimension of `E`. -/
+where `dim E = Module.finrank ℝ E` is the dimension of `E`. -/
 theorem measurePreserving_homeomorphUnitSphereProd :
     MeasurePreserving (homeomorphUnitSphereProd E) (μ.comap (↑))
       (μ.toSphere.prod (volumeIoiPow (dim E - 1))) := by
@@ -119,7 +119,7 @@ theorem measurePreserving_homeomorphUnitSphereProd :
     fun s hs ↦ forall_mem_range.2 fun r ↦ ?_
   have : Ioo (0 : ℝ) r = r.1 • Ioo (0 : ℝ) 1 := by
     rw [LinearOrderedField.smul_Ioo r.2.out, smul_zero, smul_eq_mul, mul_one]
-  have hpos : 0 < dim E := FiniteDimensional.finrank_pos
+  have hpos : 0 < dim E := Module.finrank_pos
   rw [(Homeomorph.measurableEmbedding _).map_apply, toSphere_apply' _ hs, volumeIoiPow_apply_Iio,
     comap_subtype_coe_apply (measurableSet_singleton _).compl, toSphere_apply_aux, this,
     smul_assoc, μ.addHaar_smul_of_nonneg r.2.out.le, Nat.sub_add_cancel hpos, Nat.cast_pred hpos,

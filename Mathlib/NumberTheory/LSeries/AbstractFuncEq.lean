@@ -427,10 +427,8 @@ theorem functional_equation₀ (s : ℂ) : P.Λ₀ (P.k - s) = P.ε • P.symm.�
 /-- Functional equation formulated for `Λ`. -/
 theorem functional_equation (s : ℂ) :
     P.Λ (P.k - s) = P.ε • P.symm.Λ s := by
-  have := P.functional_equation₀ s
-  rw [P.Λ₀_eq, P.symm_Λ₀_eq, sub_sub_cancel] at this
-  rwa [smul_add, smul_add, ← mul_smul, mul_one_div, ← mul_smul, ← mul_div_assoc,
-    mul_inv_cancel₀ P.hε, add_assoc, add_comm (_ • _), add_assoc, add_left_inj] at this
+  linear_combination (norm := module) P.functional_equation₀ s - P.Λ₀_eq (P.k - s)
+    + congr(P.ε • $(P.symm_Λ₀_eq s)) + congr(($(mul_inv_cancel₀ P.hε) / ((P.k:ℂ) - s)) • P.f₀)
 
 /-- The residue of `Λ` at `s = k` is equal to `ε • g₀`. -/
 theorem Λ_residue_k :
@@ -444,8 +442,7 @@ theorem Λ_residue_k :
     exact continuousAt_const.div continuousAt_id (ofReal_ne_zero.mpr P.hk.ne')
   · refine (tendsto_const_nhds.mono_left nhdsWithin_le_nhds).congr' ?_
     refine eventually_nhdsWithin_of_forall (fun s (hs : s ≠ P.k) ↦ ?_)
-    simp_rw [← mul_smul]
-    congr 1
+    match_scalars
     field_simp [sub_ne_zero.mpr hs.symm]
     ring
 
@@ -457,7 +454,7 @@ theorem Λ_residue_zero :
   · exact (continuous_id.smul P.differentiable_Λ₀.continuous).tendsto _
   · refine (tendsto_const_nhds.mono_left nhdsWithin_le_nhds).congr' ?_
     refine eventually_nhdsWithin_of_forall (fun s (hs : s ≠ 0) ↦ ?_)
-    simp_rw [← mul_smul]
+    match_scalars
     field_simp [sub_ne_zero.mpr hs.symm]
   · rw [show 𝓝 0 = 𝓝 ((0 : ℂ) • (P.ε / (P.k - 0 : ℂ)) • P.g₀) by rw [zero_smul]]
     exact (continuousAt_id.smul ((continuousAt_const.div ((continuous_sub_left _).continuousAt)
