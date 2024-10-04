@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Data.Real.IsNonarchimedean
 import Mathlib.Topology.MetricSpace.Ultra.Basic
 
 /-!
