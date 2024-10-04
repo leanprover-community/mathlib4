@@ -43,6 +43,9 @@ of presheaves of modules. -/
 noncomputable def pullbackPushforwardAdjunction : pullback.{v} φ ⊣ pushforward.{v} φ :=
   Adjunction.ofIsRightAdjoint (pushforward φ)
 
+/-- Given a morphism of presheaves of rings `φ : S ⟶ F.op ⋙ R`, this is property
+that the (partial) left adjoint functor of `pushforward φ` is defined
+on a certain object `M : PresheafOfModules S`. -/
 abbrev PullbackObjIsDefined : PresheafOfModules.{v} S → Prop :=
   (pushforward φ).LeftAdjointObjIsDefined
 
@@ -53,6 +56,10 @@ section
 variable {C D : Type u} [SmallCategory C] [SmallCategory D]
   {F : C ⥤ D} {R : Dᵒᵖ ⥤ RingCat.{u}} {S : Cᵒᵖ ⥤ RingCat.{u}} (φ : S ⟶ F.op ⋙ R)
 
+/-- Given a morphism of presheaves of rings `φ : S ⟶ F.op ⋙ R`, where `F : C ⥤ D`,
+`S : Cᵒᵖ ⥤ RingCat`, `R : Dᵒᵖ ⥤ RingCat` and `X : C`, the (partial) left adjoint
+functor of `pushforward φ` is defined on the object `(free S).obj (yoneda.obj X)`:
+this object shall be mapped to `(free R).obj (yoneda.obj (F.obj X))`. -/
 noncomputable def pushforwardCompCoyonedaFreeYonedaCorepresentableBy (X : C) :
     (pushforward φ ⋙ coyoneda.obj (op ((free S).obj (yoneda.obj X)))).CorepresentableBy
       ((free R).obj (yoneda.obj (F.obj X))) where

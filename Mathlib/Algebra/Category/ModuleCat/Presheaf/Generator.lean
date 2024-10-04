@@ -87,9 +87,11 @@ end FreeYoneda
 instance wellPowered : WellPowered (PresheafOfModules.{u} R₀) :=
   wellPowered_of_isDetecting (FreeYoneda.isDetecting R₀)
 
+/-- The type of elements of a presheaf of modules. -/
 abbrev Elements {C : Type u₁} [Category.{v₁} C] {R : Cᵒᵖ ⥤ RingCat.{u}}
   (M : PresheafOfModules.{v} R) := ((toPresheaf R).obj M ⋙ forget Ab).Elements
 
+/-- Given a presheaf of modules `M`, this is a constructor for the type `M.Elements`. -/
 abbrev elementsMk {C : Type u₁} [Category.{v₁} C] {R : Cᵒᵖ ⥤ RingCat.{u}}
     (M : PresheafOfModules.{v} R) (X : Cᵒᵖ) (x : M.obj X) : M.Elements :=
   Functor.elementsMk _ X x
@@ -98,9 +100,14 @@ namespace Elements
 
 variable {C : Type u} [Category.{v} C] {R : Cᵒᵖ ⥤ RingCat.{v}} {M : PresheafOfModules.{v} R}
 
+/-- Given an element `m : M.Elements` of a presheaf of modules `M`, this is
+free presheaf of modules on the Yoneda presheaf of types corresponding to the
+underlying object of `m`. -/
 noncomputable abbrev freeYoneda (m : M.Elements) :
     PresheafOfModules.{v} R := (free R).obj (yoneda.obj m.1.unop)
 
+/-- Given an element `m : M.Elements` of a presheaf of modules `M`, this is
+the canonical morphism `m.freeYoneda ⟶ M`. -/
 noncomputable abbrev fromFreeYoneda (m : M.Elements) :
     m.freeYoneda ⟶ M :=
   freeYonedaEquiv.symm m.2
@@ -115,17 +122,25 @@ section
 
 variable {C : Type u} [SmallCategory.{u} C] {R : Cᵒᵖ ⥤ RingCat.{u}} (M : PresheafOfModules.{u} R)
 
+/-- Given a presheaf of modules `M`, this is the coproduct of
+all free Yoneda presheaves `m.freeYoneda` for all `m : M.Elements`. -/
 noncomputable abbrev freeYonedaCoproduct : PresheafOfModules.{u} R :=
     ∐ (Elements.freeYoneda (M := M))
 
-noncomputable abbrev ιFreeYonedaCoproduct (e : M.Elements) :
-    e.freeYoneda ⟶ M.freeYonedaCoproduct := Sigma.ι _ e
+/-- Given a element `m : M.Elements` of a presheaf of modules `M`, this is the
+canonical inclusion `e.freeYoneda ⟶ M.freeYonedaCoproduct`. -/
+noncomputable abbrev ιFreeYonedaCoproduct (m : M.Elements) :
+    m.freeYoneda ⟶ M.freeYonedaCoproduct := Sigma.ι _ m
 
+/-- Given a presheaf of modules `M`, this is the
+canonical morphism `M.freeYonedaCoproduct ⟶ M`. -/
 noncomputable def fromFreeYonedaCoproduct : M.freeYonedaCoproduct ⟶ M :=
   Sigma.desc Elements.fromFreeYoneda
 
-noncomputable def freeYonedaCoproductMk (e : M.Elements) : M.freeYonedaCoproduct.obj e.1 :=
-  (M.ιFreeYonedaCoproduct e).app _ (ModuleCat.freeMk (𝟙 _))
+/-- Given an element `m` of a presheaf of modules `M`, this is the associated
+canonical section of the presheaf `M.freeYonedaCoproduct` over the object `m.1`. -/
+noncomputable def freeYonedaCoproductMk (m : M.Elements) : M.freeYonedaCoproduct.obj m.1 :=
+  (M.ιFreeYonedaCoproduct m).app _ (ModuleCat.freeMk (𝟙 _))
 
 @[reassoc (attr := simp)]
 lemma ι_fromFreeYonedaCoproduct (e : M.Elements) :
@@ -148,6 +163,9 @@ instance : Epi M.fromFreeYonedaCoproduct :=
   epi_of_surjective (fun X m ↦ ⟨M.freeYonedaCoproductMk (M.elementsMk X m),
     M.fromFreeYonedaCoproduct_app_mk (M.elementsMk X m)⟩)
 
+/-- Given a presheaf of modules `M`, this is a morphism between coproducts
+of free presheaves of modules on Yoneda presheaves which gives a presentation
+of the module `M`, see `isColimitFreeYonedaCoproductsCokernelCofork`. -/
 noncomputable def toFreeYonedaCoproduct :
     (kernel M.fromFreeYonedaCoproduct).freeYonedaCoproduct ⟶ M.freeYonedaCoproduct :=
   (kernel M.fromFreeYonedaCoproduct).fromFreeYonedaCoproduct ≫ kernel.ι _
@@ -157,10 +175,16 @@ lemma toFreeYonedaCoproduct_fromFreeYonedaCoproduct :
     M.toFreeYonedaCoproduct ≫ M.fromFreeYonedaCoproduct = 0 := by
   simp [toFreeYonedaCoproduct]
 
+/-- (Colimit) cofork which gives a presentation of a presheaf of modules `M` using
+coproducts of free presheaves of modules on Yoneda presheaves. -/
 noncomputable abbrev freeYonedaCoproductsCokernelCofork :
     CokernelCofork M.toFreeYonedaCoproduct :=
   CokernelCofork.ofπ _ M.toFreeYonedaCoproduct_fromFreeYonedaCoproduct
 
+/-- If `M` is a presheaf of modules, the cokernel cofork
+`M.freeYonedaCoproductsCokernelCofork` is colimit, which means that
+`M` can be expressed as a cokernel of the morphism `M.toFreeYonedaCoproduct`
+between coproducts of free presheaves of modules on Yoneda presheaves. -/
 noncomputable def isColimitFreeYonedaCoproductsCokernelCofork :
     IsColimit M.freeYonedaCoproductsCokernelCofork := by
   let S := ShortComplex.mk _ _ M.toFreeYonedaCoproduct_fromFreeYonedaCoproduct
