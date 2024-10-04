@@ -221,13 +221,8 @@ theorem totallySeparatedSpace_iff_exists_isClopen {α : Type*} [TopologicalSpace
 
 theorem exists_isClopen_of_totally_separated {α : Type*} [TopologicalSpace α]
     [TotallySeparatedSpace α] {x y : α} (hxy : x ≠ y) :
-    ∃ U : Set α, IsClopen U ∧ x ∈ U ∧ y ∈ Uᶜ := by
-  obtain ⟨U, V, hU, hV, Ux, Vy, f, disj⟩ :=
-    TotallySeparatedSpace.isTotallySeparated_univ (Set.mem_univ x) (Set.mem_univ y) hxy
-  have hU := isClopen_inter_of_disjoint_cover_clopen isClopen_univ f hU hV disj
-  rw [univ_inter _] at hU
-  rw [← Set.subset_compl_iff_disjoint_right, subset_compl_comm] at disj
-  exact ⟨U, hU, Ux, disj Vy⟩
+    ∃ U : Set α, IsClopen U ∧ x ∈ U ∧ y ∈ Uᶜ :=
+  totallySeparatedSpace_iff_exists_isClopen.mp ‹_› _ _ hxy
 
 end TotallySeparated
 
