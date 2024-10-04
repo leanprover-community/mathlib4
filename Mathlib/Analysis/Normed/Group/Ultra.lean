@@ -131,7 +131,7 @@ section nonarch
 
 variable (S)
 /--
-In an group with an ultrametric norm, open balls around 1 of positive radius are open subgroups.
+In a group with an ultrametric norm, open balls around 1 of positive radius are open subgroups.
 -/
 @[to_additive "In an additive group with an ultrametric norm, open balls around 0 of
 positive radius are open subgroups."]
