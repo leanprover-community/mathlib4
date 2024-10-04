@@ -47,7 +47,7 @@ variable [Algebra R S] [Algebra R T]
 variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 variable {ι κ : Type w} [Fintype ι]
 
-open FiniteDimensional
+open Module
 
 open LinearMap (BilinForm)
 open LinearMap
@@ -435,7 +435,7 @@ variable (K L)
 theorem traceForm_nondegenerate [FiniteDimensional K L] [Algebra.IsSeparable K L] :
     (traceForm K L).Nondegenerate :=
   BilinForm.nondegenerate_of_det_ne_zero (traceForm K L) _
-    (det_traceForm_ne_zero (FiniteDimensional.finBasis K L))
+    (det_traceForm_ne_zero (Module.finBasis K L))
 
 theorem Algebra.trace_ne_zero [FiniteDimensional K L] [Algebra.IsSeparable K L] :
     Algebra.trace K L ≠ 0 := by

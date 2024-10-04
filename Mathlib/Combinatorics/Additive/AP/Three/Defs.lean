@@ -43,7 +43,7 @@ the size of the biggest 3AP-free subset of `{0, ..., n - 1}`.
 3AP-free, Salem-Spencer, Roth, arithmetic progression, average, three-free
 -/
 
-open Finset Function Nat
+open Finset Function
 open scoped Pointwise
 
 variable {F α β 𝕜 E : Type*}
@@ -273,7 +273,7 @@ variable {s t} {n : ℕ}
 @[to_additive]
 theorem ThreeGPFree.le_mulRothNumber (hs : ThreeGPFree (s : Set α)) (h : s ⊆ t) :
     s.card ≤ mulRothNumber t :=
-  le_findGreatest (card_le_card h) ⟨s, h, rfl, hs⟩
+  Nat.le_findGreatest (card_le_card h) ⟨s, h, rfl, hs⟩
 
 @[to_additive]
 theorem ThreeGPFree.mulRothNumber_eq (hs : ThreeGPFree (s : Set α)) :

@@ -111,7 +111,8 @@ abbrev OrderHomClass (F : Type*) (α β : outParam Type*) [LE α] [LE β] [FunLi
 /-- `OrderIsoClass F α β` states that `F` is a type of order isomorphisms.
 
 You should extend this class when you extend `OrderIso`. -/
-class OrderIsoClass (F α β : Type*) [LE α] [LE β] [EquivLike F α β] : Prop where
+class OrderIsoClass (F : Type*) (α β : outParam Type*) [LE α] [LE β] [EquivLike F α β] :
+    Prop where
   /-- An order isomorphism respects `≤`. -/
   map_le_map_iff (f : F) {a b : α} : f a ≤ f b ↔ a ≤ b
 

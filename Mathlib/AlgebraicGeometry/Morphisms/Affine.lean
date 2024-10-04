@@ -122,8 +122,7 @@ lemma isAffine_of_isAffineOpen_basicOpen (s : Set Γ(X, ⊤))
     simp only [← basicOpen_eq_of_affine]
     exact (isAffineOpen_top (Scheme.Spec.obj (op _))).basicOpen _
   · rw [PrimeSpectrum.iSup_basicOpen_eq_top_iff, Subtype.range_coe_subtype, Set.setOf_mem_eq, hs]
-  · show IsAffineOpen (ΓSpec.adjunction.unit.app X ⁻¹ᵁ PrimeSpectrum.basicOpen i.1)
-    rw [ΓSpec.adjunction_unit_map_basicOpen]
+  · rw [Scheme.toSpecΓ_preimage_basicOpen]
     exact hs₂ _ i.2
   · simp only [Functor.comp_obj, Functor.rightOp_obj, Scheme.Γ_obj, Scheme.Spec_obj, id_eq,
       eq_mpr_eq_cast, Functor.id_obj, Opens.map_top, morphismRestrict_app]
