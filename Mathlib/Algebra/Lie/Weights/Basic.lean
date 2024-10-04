@@ -247,6 +247,8 @@ abbrev IsNonZero (χ : Weight R L M) := ¬ IsZero (χ : Weight R L M)
 lemma isNonZero_iff_ne_zero [Nontrivial (genWeightSpace M (0 : L → R))] {χ : Weight R L M} :
     χ.IsNonZero ↔ χ ≠ 0 := isZero_iff_eq_zero.not
 
+noncomputable instance : DecidablePred (IsNonZero (R := R) (L := L) (M := M)) := Classical.decPred _
+
 variable (R L M) in
 /-- The set of weights is equivalent to a subtype. -/
 def equivSetOf : Weight R L M ≃ {χ : L → R | genWeightSpace M χ ≠ ⊥} where
