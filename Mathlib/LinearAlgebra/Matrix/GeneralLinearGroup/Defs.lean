@@ -187,12 +187,12 @@ lemma map_inv_mul_map (g : GL n R) : map f g⁻¹ * map f g = 1 := by
 @[simp]
 lemma coe_map_mul_map_inv (g : GL n R) : g.val.map f * g.val⁻¹.map f = 1 := by
   rw [← Matrix.map_mul]
-  simp
+  simp only [isUnits_det_units, mul_nonsing_inv, map_zero, _root_.map_one, Matrix.map_one]
 
 @[simp]
 lemma coe_map_inv_mul_map (g : GL n R) : g.val⁻¹.map f * g.val.map f = 1 := by
   rw [← Matrix.map_mul]
-  simp
+  simp only [isUnits_det_units, nonsing_inv_mul, map_zero, _root_.map_one, Matrix.map_one]
 
 end GeneralLinearGroup
 
