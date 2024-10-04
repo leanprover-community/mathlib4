@@ -70,7 +70,7 @@ example (x : ℝ) (h : 1 + sin x ≠ 0) : DifferentiableAt ℝ (fun x ↦ exp x 
   simp [h]
 ```
 Of course, these examples only work once `exp`, `cos` and `sin` have been shown to be
-differentiable, in `Analysis.SpecialFunctions.Trigonometric`.
+differentiable, in `Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv`.
 
 The simplifier is not set up to compute the Fréchet derivative of maps (as these are in general
 complicated multidimensional linear maps), but it will compute one-dimensional derivatives,
