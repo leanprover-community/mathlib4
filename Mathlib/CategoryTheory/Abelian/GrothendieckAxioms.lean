@@ -7,7 +7,6 @@ Authors: Isaac Hernando, Coleton Kotch, Adam Topaz
 import Mathlib.CategoryTheory.Limits.Constructions.Filtered
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
-import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
 
