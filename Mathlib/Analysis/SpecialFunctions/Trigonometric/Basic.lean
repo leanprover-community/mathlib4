@@ -820,6 +820,11 @@ theorem quadratic_root_cos_pi_div_five :
                  _ = s * (2 * c * c) + s * (2 * c ^ 2 - 1) := by linarith
                  _ = s * (4 * c ^ 2 - 1) := by linarith
 
+open Polynomial in
+theorem Polynomial.isRoot_cos_pi_div_five :
+    (4 • X ^ 2 - 2 • X - C 1 : ℝ[X]).IsRoot (cos (π / 5)) := by
+  simpa using quadratic_root_cos_pi_div_five
+
 /-- The cosine of `π / 5` is `(1 + √5) / 4`. -/
 @[simp]
 theorem cos_pi_div_five : cos (π / 5) = (1 + √5) / 4 := by
