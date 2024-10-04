@@ -32,11 +32,6 @@ open scoped NNReal
 
 open Multiplicative WithZero
 
-/-- The type `WithZero (Multiplicative ℤ)`. -/
-abbrev WithZeroMulInt := WithZero (Multiplicative ℤ)
-
-local notation "ℤₘ₀" => WithZeroMulInt
-
 namespace WithZeroMulInt
 
 /-- Given a nonzero `e : ℝ≥0`, this is the map `ℤₘ₀ → ℝ≥0` sending `0 ↦ 0` and
