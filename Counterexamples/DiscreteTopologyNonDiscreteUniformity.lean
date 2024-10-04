@@ -84,7 +84,7 @@ def fundamentalEntourage (n : ℕ) : Set (ℕ × ℕ) :=
 
 @[simp]
 lemma fundamentalEntourage_ext (t : ℕ) (T : Set (ℕ × ℕ)) : fundamentalEntourage t = T ↔
-  T = (⋃ i : Icc 0 t, {((i : ℕ), (i : ℕ))}) ∪ Set.Ici (t , t) := by
+    T = (⋃ i : Icc 0 t, {((i : ℕ), (i : ℕ))}) ∪ Set.Ici (t , t) := by
   simpa only [fundamentalEntourage] using eq_comm
 
 lemma mem_range_fundamentalEntourage (S : Set (ℕ × ℕ)) :
