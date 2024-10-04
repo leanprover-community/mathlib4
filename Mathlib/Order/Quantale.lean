@@ -171,6 +171,35 @@ theorem top_eq_one : (⊤ : α) = 1 := IntegralQuantale.top_eq_one
 
 end IntegralQuantale
 
+namespace AddQuantale
+
+variable {α : Type _}
+variable [AddQuantale α]
+
+/-- Left- and right- residuation operators on an additive quantale are similar to the Heyting
+operator on complete lattices, but for a non-commutative logic.
+I.e. `x ⇨ₗ y = sSup { z | z + x ≤ y }`.
+-/
+def left_residuation (x y : α) := sSup { z | z + x ≤ y }
+
+/-- Left- and right- residuation operators on an additive quantale are similar to the Heyting
+operator on complete lattices, but for a non-commutative logic.
+I.e. `x ⇨ᵣ y = sSup { z | x + z ≤ y }`.
+-/
+def right_residuation (x y : α) := sSup { z | x + z ≤ y }
+
+/-- Notation for left-residuation in quantales.
+    I.e. `x ⇨ₗ y = sSup { z | z + x ≤ y }`.
+-/
+scoped infixr:60 " ⇨ₗ " => left_residuation
+
+/-- Notation for right-residuation in quantales.
+    I.e. `x ⇨ᵣ y = sSup { z | x + z ≤ y }`.
+-/
+scoped infixr:60 " ⇨ᵣ " => right_residuation
+
+end AddQuantale
+
 namespace Quantale
 
 variable {α : Type _}
@@ -180,26 +209,22 @@ variable [Quantale α]
 on complete lattices, but for a non-commutative logic.
 I.e. `x ⇨ₗ y = sSup { z | z * x ≤ y }`.
 -/
-@[to_additive]
 def left_residuation (x y : α) := sSup { z | z * x ≤ y }
-
-/-- Notation for left-residuation in quantales.
-    I.e. `x ⇨ₗ y = sSup { z | z * x ≤ y }`.
--/
-@[to_additive]
-scoped infixr:60 " ⇨ₗ " => left_residuation
 
 /-- Left- and right- residuation operators on a quantale are similar to the Heyting operator
     on complete lattices, but for a non-commutative logic.
     I.e. `x ⇨ᵣ y = sSup { z | x * z ≤ y }`.
 -/
-@[to_additive]
 def right_residuation (x y : α) := sSup { z | x * z ≤ y }
+
+/-- Notation for left-residuation in quantales.
+    I.e. `x ⇨ₗ y = sSup { z | z * x ≤ y }`.
+-/
+scoped infixr:60 " ⇨ₗ " => left_residuation
 
 /-- Notation for right-residuation in quantales.
     I.e. `x ⇨ᵣ y = sSup { z | x * z ≤ y }`.
 -/
-@[to_additive]
 scoped infixr:60 " ⇨ᵣ " => right_residuation
 
 end Quantale
