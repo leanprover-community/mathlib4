@@ -1700,7 +1700,7 @@ theorem isBigOWith_iff_exists_eq_mul (hc : 0 ≤ c) :
   · intro h
     use fun x => u x / v x
     refine ⟨Eventually.mono h.bound fun y hy => ?_, h.eventually_mul_div_cancel.symm⟩
-    simpa using div_le_of_nonneg_of_le_mul (norm_nonneg _) hc hy
+    simpa using div_le_of_le_mul₀ (norm_nonneg _) hc hy
   · rintro ⟨φ, hφ, h⟩
     exact isBigOWith_of_eq_mul φ hφ h
 
@@ -1741,7 +1741,7 @@ theorem div_isBoundedUnder_of_isBigO {α : Type*} {l : Filter α} {f g : α → 
   obtain ⟨c, h₀, hc⟩ := h.exists_nonneg
   refine ⟨c, eventually_map.2 (hc.bound.mono fun x hx => ?_)⟩
   rw [norm_div]
-  exact div_le_of_nonneg_of_le_mul (norm_nonneg _) h₀ hx
+  exact div_le_of_le_mul₀ (norm_nonneg _) h₀ hx
 
 theorem isBigO_iff_div_isBoundedUnder {α : Type*} {l : Filter α} {f g : α → 𝕜}
     (hgf : ∀ᶠ x in l, g x = 0 → f x = 0) :
