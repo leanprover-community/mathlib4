@@ -145,17 +145,17 @@ variable [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R
 variable (R M)
 
 -- see Note [lower instance priority]
-instance (priority := 100) IsNoetherian.finite [IsNoetherian R M] : Finite R M :=
+instance (priority := 100) IsNoetherian.finite [IsNoetherian R M] : Module.Finite R M :=
   ⟨IsNoetherian.noetherian ⊤⟩
 
 instance {R₁ S : Type*} [CommSemiring R₁] [Semiring S] [Algebra R₁ S]
-    [IsNoetherian R₁ S] (I : Ideal S) : Finite R₁ I :=
+    [IsNoetherian R₁ S] (I : Ideal S) : Module.Finite R₁ I :=
   IsNoetherian.finite R₁ ((I : Submodule S S).restrictScalars R₁)
 
 variable {R M}
 
 theorem Finite.of_injective [IsNoetherian R N] (f : M →ₗ[R] N) (hf : Function.Injective f) :
-    Finite R M :=
+    Module.Finite R M :=
   ⟨fg_of_injective f hf⟩
 
 end Module

@@ -185,7 +185,7 @@ end LinearLocallyFiniteOrder
 section toZ
 
 -- Requiring either of `IsSuccArchimedean` or `IsPredArchimedean` is equivalent.
-variable [SuccOrder ι] [IsSuccArchimedean ι] [PredOrder ι] {i0 i : ι}
+variable [SuccOrder ι] [IsSuccArchimedean ι] [P : PredOrder ι] {i0 i : ι}
 
 -- For "to_Z"
 
@@ -194,12 +194,13 @@ variable [SuccOrder ι] [IsSuccArchimedean ι] [PredOrder ι] {i0 i : ι}
 the range of `toZ`. -/
 def toZ (i0 i : ι) : ℤ :=
   dite (i0 ≤ i) (fun hi ↦ Nat.find (exists_succ_iterate_of_le hi)) fun hi ↦
-    -Nat.find (exists_pred_iterate_of_le (not_le.mp hi).le)
+    -Nat.find (exists_pred_iterate_of_le (α := ι) (not_le.mp hi).le)
 
 theorem toZ_of_ge (hi : i0 ≤ i) : toZ i0 i = Nat.find (exists_succ_iterate_of_le hi) :=
   dif_pos hi
 
-theorem toZ_of_lt (hi : i < i0) : toZ i0 i = -Nat.find (exists_pred_iterate_of_le hi.le) :=
+theorem toZ_of_lt (hi : i < i0) :
+    toZ i0 i = -Nat.find (@exists_pred_iterate_of_le _ _ P _ _ _ hi.le) :=
   dif_neg (not_le.mpr hi)
 
 @[simp]
@@ -310,7 +311,7 @@ theorem toZ_mono {i j : ι} (h_le : i ≤ j) : toZ i0 i ≤ toZ i0 j := by
     · exact le_of_not_le h
   · exact absurd h_le (not_le.mpr (hj.trans_le hi))
   · exact (toZ_neg hi).le.trans (toZ_nonneg hj)
-  · let m := Nat.find (exists_pred_iterate_of_le h_le)
+  · let m := Nat.find (@exists_pred_iterate_of_le _ _ P _ _ _ h_le)
     have hm : pred^[m] j = i := Nat.find_spec (exists_pred_iterate_of_le h_le)
     have hj_eq : i = pred^[(-toZ i0 j).toNat + m] i0 := by
       rw [← hm, add_comm]
