@@ -3,8 +3,8 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 
 /-!
 # Preservation of finite (co)limits.
@@ -102,12 +102,6 @@ instance compPreservesFiniteProducts (F : C ⥤ D) (G : D ⥤ E)
     [PreservesFiniteProducts F] [PreservesFiniteProducts G] :
     PreservesFiniteProducts (F ⋙ G) where
   preserves _ _ := inferInstance
-
-/-- `F : C ⥤ D ⥤ E` preserves finite limits if it does for each `d : D`. -/
-def preservesFiniteLimitsOfEvaluation (F : C ⥤ D ⥤ E)
-    (h : ∀ d : D, PreservesFiniteLimits (F ⋙ (evaluation D E).obj d)) :
-    PreservesFiniteLimits F :=
-  ⟨fun J _ _ => preservesLimitsOfShapeOfEvaluation F J fun k => (h k).preservesFiniteLimits _⟩
 
 noncomputable instance (F : C ⥤ D) [PreservesFiniteLimits F] : PreservesFiniteProducts F where
   preserves _ _ := inferInstance
@@ -260,12 +254,6 @@ noncomputable instance compPreservesFiniteCoproducts (F : C ⥤ D) (G : D ⥤ E)
     [PreservesFiniteCoproducts F] [PreservesFiniteCoproducts G] :
     PreservesFiniteCoproducts (F ⋙ G) where
   preserves _ _ := inferInstance
-
-/-- `F : C ⥤ D ⥤ E` preserves finite limits if it does for each `d : D`. -/
-def preservesFiniteColimitsOfEvaluation (F : C ⥤ D ⥤ E)
-    (h : ∀ d : D, PreservesFiniteColimits (F ⋙ (evaluation D E).obj d)) :
-    PreservesFiniteColimits F :=
-  ⟨fun J _ _ => preservesColimitsOfShapeOfEvaluation F J fun k => (h k).preservesFiniteColimits _⟩
 
 noncomputable instance (F : C ⥤ D) [PreservesFiniteColimits F] : PreservesFiniteCoproducts F where
   preserves _ _ := inferInstance

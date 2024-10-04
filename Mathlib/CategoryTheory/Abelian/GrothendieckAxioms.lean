@@ -6,6 +6,8 @@ Authors: Isaac Hernando, Coleton Kotch, Adam Topaz
 
 import Mathlib.CategoryTheory.Limits.Constructions.Filtered
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
 
@@ -95,31 +97,21 @@ noncomputable section
 open CoproductsFromFiniteFiltered
 
 variable {α : Type w}
-
-/-- `liftToFinset`, when composed with the evaluation functor, results in the whiskering composed
-with `colim`. -/
-def liftToFinsetEvaluationIso [HasFiniteCoproducts C] (I : Finset (Discrete α)) :
-    liftToFinset C α ⋙ (evaluation _ _).obj I ≅
-    (whiskeringLeft _ _ _).obj (Discrete.functor (·.val)) ⋙ colim (J := Discrete I) :=
-  NatIso.ofComponents (fun _ => HasColimit.isoOfNatIso (Discrete.natIso fun _ => Iso.refl _))
-    (fun _ => by dsimp; ext; simp)
-
 variable [HasZeroMorphisms C] [HasFiniteBiproducts C] [HasFiniteLimits C]
 
-instance : PreservesFiniteLimits (liftToFinset C α) :=
+instance preservesFiniteLimitsLiftToFinset : PreservesFiniteLimits (liftToFinset C α) :=
   preservesFiniteLimitsOfEvaluation _ fun I =>
-    let colimIso : colim (J := Discrete I) (C := C) ≅ lim := sorry
     letI : PreservesFiniteLimits (colim (J := Discrete I) (C := C)) :=
-      preservesFiniteLimitsOfNatIso colimIso.symm
+      preservesFiniteLimitsOfNatIso HasBiproductsOfShape.colimIsoLim.symm
     letI : PreservesFiniteLimits ((whiskeringLeft (Discrete I) (Discrete α) C).obj
         (Discrete.functor fun x ↦ ↑x)) :=
       ⟨fun J _ _ => whiskeringLeftPreservesLimitsOfShape J _⟩
     letI : PreservesFiniteLimits ((whiskeringLeft (Discrete I) (Discrete α) C).obj
         (Discrete.functor (·.val)) ⋙ colim) :=
       compPreservesFiniteLimits _ _
-    preservesFiniteLimitsOfNatIso (liftToFinsetEvaluationIso C I).symm
+    preservesFiniteLimitsOfNatIso (liftToFinsetEvaluationIso  I).symm
 
-def AB4.ofAB5 [HasFilteredColimits C] [HasCoproducts C] [AB5 C] : AB4 C where
+def AB4.ofAB5 [HasCoproducts C] [HasFilteredColimits C] [AB5 C] : AB4 C where
   preservesFiniteLimits J :=
     letI : PreservesFiniteLimits (liftToFinset C J ⋙ colim) :=
       compPreservesFiniteLimits _ _

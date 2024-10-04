@@ -104,6 +104,8 @@ theorem has_limits_of_finite_and_cofiltered [HasFiniteLimits C]
 
 namespace CoproductsFromFiniteFiltered
 
+section
+
 variable [HasFiniteCoproducts C] [HasFilteredColimitsOfSize.{w, w} C]
 
 attribute [local instance] hasCoproducts_of_finite_and_filtered
@@ -129,6 +131,16 @@ def liftToFinsetColimIso : liftToFinset C α ⋙ colim ≅ colim :=
       simp only [liftToFinset, ι_colimMap_assoc, liftToFinsetObj_obj, Discrete.functor_obj_eq_as,
         Discrete.natTrans_app, liftToFinsetColimIso_aux, liftToFinsetColimIso_aux_assoc,
         ι_colimMap])
+
+end
+
+/-- `liftToFinset`, when composed with the evaluation functor, results in the whiskering composed
+with `colim`. -/
+def liftToFinsetEvaluationIso [HasFiniteCoproducts C] (I : Finset (Discrete α)) :
+    liftToFinset C α ⋙ (evaluation _ _).obj I ≅
+    (whiskeringLeft _ _ _).obj (Discrete.functor (·.val)) ⋙ colim (J := Discrete I) :=
+  NatIso.ofComponents (fun _ => HasColimit.isoOfNatIso (Discrete.natIso fun _ => Iso.refl _))
+    fun _ => by dsimp; ext; simp
 
 end CoproductsFromFiniteFiltered
 
