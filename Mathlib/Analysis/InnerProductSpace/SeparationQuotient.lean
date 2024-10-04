@@ -124,100 +124,75 @@ lemma eq_of_inseparable (x : SeparationQuotient E) :
 def innerQ : SeparationQuotient E → SeparationQuotient E → 𝕜 :=
   fun x => SeparationQuotient.liftCLM (preInnerQ 𝕜 E x) (eq_of_inseparable 𝕜 E x)
 
--- instance : IsClosed ((nullSubmodule 𝕜 E) : Set E) := by
---   rw [← isOpen_compl_iff, isOpen_iff_nhds]
---   intro x hx
---   refine Filter.le_principal_iff.mpr ?_
---   rw [mem_nhds_iff]
---   use Metric.ball x (‖x‖/2)
---   have normxnezero : 0 < ‖x‖ := (lt_of_le_of_ne (norm_nonneg x) (Ne.symm hx))
---   refine ⟨?_, Metric.isOpen_ball, Metric.mem_ball_self <| half_pos normxnezero⟩
---   intro y hy
---   have normy : ‖x‖ / 2 ≤ ‖y‖ := by
---     rw [mem_ball_iff_norm, ← norm_neg] at hy
---     simp only [neg_sub] at hy
---     rw [← sub_half]
---     have hy' : ‖x‖ - ‖y‖ < ‖x‖ / 2 := lt_of_le_of_lt (norm_sub_norm_le _ _) hy
---     linarith
---   exact Ne.symm (ne_of_lt (lt_of_lt_of_le (half_pos normxnezero) normy))
+instance : IsClosed ((nullSubmodule 𝕜 E) : Set E) := by
+  rw [← isOpen_compl_iff, isOpen_iff_nhds]
+  intro x hx
+  refine Filter.le_principal_iff.mpr ?_
+  rw [mem_nhds_iff]
+  use Metric.ball x (‖x‖/2)
+  have normxnezero : 0 < ‖x‖ := (lt_of_le_of_ne (norm_nonneg x) (Ne.symm hx))
+  refine ⟨?_, Metric.isOpen_ball, Metric.mem_ball_self <| half_pos normxnezero⟩
+  intro y hy
+  have normy : ‖x‖ / 2 ≤ ‖y‖ := by
+    rw [mem_ball_iff_norm, ← norm_neg] at hy
+    simp only [neg_sub] at hy
+    rw [← sub_half]
+    have hy' : ‖x‖ - ‖y‖ < ‖x‖ / 2 := lt_of_le_of_lt (norm_sub_norm_le _ _) hy
+    linarith
+  exact Ne.symm (ne_of_lt (lt_of_lt_of_le (half_pos normxnezero) normy))
 
--- end NullSubmodule
+end NullSubmodule
 
--- section InnerProductSpace
+section InnerProductSpace
 
--- variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+open SeparationQuotient
 
--- instance : InnerProductSpace 𝕜 (E ⧸ (nullSubmodule 𝕜 E)) where
---   inner := innerQ 𝕜 E
---   conj_symm x y:= by
---     rw [inner]
---     simp only
---     rw [innerQ, innerQ]
---     obtain ⟨z, hz⟩ := Submodule.mkQ_surjective (nullSubmodule 𝕜 E) x
---     obtain ⟨w, hw⟩ := Submodule.mkQ_surjective (nullSubmodule 𝕜 E) y
---     rw [← hz, ← hw]
---     simp only [mkQ_apply, liftQ_apply, ContinuousLinearMap.coe_coe]
---     rw [preInnerQ, Submodule.liftQ_apply, Submodule.liftQ_apply]
---     simp only [LinearIsometry.coe_toLinearMap, toDualMap_apply]
---     exact conj_symm z w
---   norm_sq_eq_inner x := by
---     rw [AddSubgroup.quotient_norm_eq]
---     obtain ⟨z, hz⟩ := Submodule.mkQ_surjective (nullSubmodule 𝕜 E) x
---     rw [← hz]
---     simp only [mkQ_apply]
---     rw [innerQ]
---     simp only [liftQ_apply, ContinuousLinearMap.coe_coe]
---     rw [preInnerQ]
---     simp only [liftQ_apply, LinearIsometry.coe_toLinearMap, toDualMap_apply]
---     rw [inner_self_eq_norm_sq_to_K, sq (ofReal ‖z‖)]
---     simp only [mul_re, ofReal_re, ofReal_im, mul_zero, sub_zero]
---     rw [← sq]
---     have : norm '' {m : E | (QuotientAddGroup.mk m) = (mk z : E ⧸ (nullSubmodule 𝕜 E))}
---         = norm '' {z} := by
---       ext x
---       constructor
---       · intro hx
---         obtain ⟨m, hm⟩ := hx
---         simp only [Set.image_singleton, Set.mem_singleton_iff]
---         simp only [Set.mem_setOf_eq] at hm
---         have hm' : (QuotientAddGroup.mk m) = (mk m : E ⧸ (nullSubmodule 𝕜 E)) := rfl
---         rw [hm', Submodule.Quotient.eq] at hm
---         have : ‖m‖ = ‖z‖ := by
---           rw [← inn_nullSubmodule_right_eq_zero 𝕜 E m (m-z) hm.1]
---           simp only [sub_sub_cancel]
---         rw [← this]
---         exact Eq.symm hm.2
---       · intro hx
---         rw [Set.image_singleton, Set.mem_singleton_iff] at hx
---         simp only [Set.mem_image, Set.mem_setOf_eq]
---         use z
---         refine ⟨rfl, (Eq.symm hx)⟩
---     simp_rw [this]
---     simp only [Set.image_singleton, csInf_singleton]
---   add_left x y z:= by
---     rw [inner]
---     simp only
---     rw [innerQ, innerQ, innerQ]
---     obtain ⟨a, ha⟩ := Submodule.mkQ_surjective (nullSubmodule 𝕜 E) x
---     obtain ⟨b, hb⟩ := Submodule.mkQ_surjective (nullSubmodule 𝕜 E) y
---     obtain ⟨c, hc⟩ := Submodule.mkQ_surjective (nullSubmodule 𝕜 E) z
---     rw [← ha, ← hb, ← hc]
---     simp only [mkQ_apply, liftQ_apply, ContinuousLinearMap.coe_coe]
---     rw [preInnerQ, Submodule.liftQ_apply, Submodule.liftQ_apply, map_add, Submodule.liftQ_apply]
---     simp only [LinearIsometry.coe_toLinearMap, liftQ_apply, ContinuousLinearMap.add_apply,
---       toDualMap_apply]
---   smul_left x y r := by
---     rw [inner]
---     simp only
---     rw [innerQ, innerQ]
---     obtain ⟨a, ha⟩ := Submodule.mkQ_surjective (nullSubmodule 𝕜 E) x
---     obtain ⟨b, hb⟩ := Submodule.mkQ_surjective (nullSubmodule 𝕜 E) y
---     rw [← ha, ← hb]
---     simp only [mkQ_apply, liftQ_apply, ContinuousLinearMap.coe_coe]
---     rw [preInnerQ, Submodule.liftQ_apply]
---     simp only [LinearMap.map_smulₛₗ, liftQ_apply, LinearIsometry.coe_toLinearMap,
---       ContinuousLinearMap.coe_smul', Pi.smul_apply, toDualMap_apply, smul_eq_mul]
+variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
--- end InnerProductSpace
+instance : InnerProductSpace 𝕜 (SeparationQuotient E) where
+  inner := innerQ 𝕜 E
+  conj_symm x y:= by
+    rw [inner]
+    simp only
+    rw [innerQ, innerQ]
+    obtain ⟨z, hz⟩ := surjective_mk x
+    obtain ⟨w, hw⟩ := surjective_mk y
+    rw [← hz, ← hw]
+    simp only [SeparationQuotient.CLM_lift_apply]
+    rw [preInnerQ]
+    simp only [ContinuousLinearMap.coe_coe, CLM_lift_apply,
+      LinearIsometry.coe_toContinuousLinearMap, toDualMap_apply, _root_.inner_conj_symm]
+  norm_sq_eq_inner x := by
+    obtain ⟨z, hz⟩ := surjective_mk x
+    rw [← hz]
+    simp only [quotient_norm_mk_eq]
+    rw [innerQ]
+    simp only [CLM_lift_apply]
+    rw [preInnerQ]
+    simp only [ContinuousLinearMap.coe_coe, CLM_lift_apply,
+      LinearIsometry.coe_toContinuousLinearMap, toDualMap_apply]
+    rw [inner_self_eq_norm_sq_to_K, sq (ofReal ‖z‖)]
+    simp only [mul_re, ofReal_re, ofReal_im, mul_zero, sub_zero]
+    rw [← sq]
+  add_left x y z:= by
+    rw [inner]
+    simp only
+    rw [innerQ, innerQ, innerQ]
+    obtain ⟨a, ha⟩ := surjective_mk x
+    obtain ⟨b, hb⟩ := surjective_mk y
+    obtain ⟨c, hc⟩ := surjective_mk z
+    rw [← ha, ← hb, ← hc]
+    simp only [map_add, CLM_lift_apply, ContinuousLinearMap.add_apply]
+  smul_left x y r := by
+    rw [inner]
+    simp only
+    rw [innerQ, innerQ]
+    obtain ⟨a, ha⟩ := surjective_mk x
+    obtain ⟨b, hb⟩ := surjective_mk y
+    rw [← ha, ← hb]
+    simp only [LinearMap.map_smulₛₗ, CLM_lift_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply,
+      smul_eq_mul]
 
--- end
+end InnerProductSpace
+
+end

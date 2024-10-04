@@ -591,7 +591,7 @@ noncomputable def liftCLM {σ : R →+* S} (f : M →SL[σ] N) (hf : ∀ x y, In
     simp only [lift_mk]
     exact ContinuousLinearMap.map_smulₛₗ f r x'
 
-theorem CLM_lift_apply {σ : R →+* S} (f : M →SL[σ] N) (hf : ∀ x y, Inseparable x y → f x = f y)
+theorem liftCLM_apply {σ : R →+* S} (f : M →SL[σ] N) (hf : ∀ x y, Inseparable x y → f x = f y)
     (x : M) : SeparationQuotient.liftCLM f hf (mk x) = f x := rfl
 
 end Module
