@@ -663,7 +663,7 @@ def extendEquiv (n : ℕ) :
         · intro j
           induction i using Fin.induction with
           | zero =>
-            simp only [cases_zero, cast_zero, coe_fin_one]
+            simp only [cases_zero, cast_zero, val_eq_zero]
             exact (apply_eq_of_range_eq_singleton h _).symm
           | succ i => simp
     · dsimp only
