@@ -614,13 +614,10 @@ variable (R : Type u) {A : Type v} {B : Type w}
 variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 /-- The minimal subalgebra that includes `s`. -/
+@[simps toSubsemiring]
 def adjoin (s : Set A) : Subalgebra R A :=
   { Subsemiring.closure (Set.range (algebraMap R A) ∪ s) with
     algebraMap_mem' := fun r => Subsemiring.subset_closure <| Or.inl ⟨r, rfl⟩ }
-
-@[simp]
-theorem adjoin_toSubsemiring (s : Set A) :
-    (adjoin R s).toSubsemiring = Subsemiring.closure (Set.range (algebraMap R A) ∪ s) := rfl
 
 variable {R}
 
