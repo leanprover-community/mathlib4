@@ -601,7 +601,7 @@ theorem congr₂_refl :
     LinearEquiv.congrQuadraticMap (.refl R N) = .refl R (QuadraticMap R M N) := rfl
 
 theorem congr₂_symm (e : N ≃ₗ[R] P) : LinearEquiv.congrQuadraticMap e.symm =
-  (LinearEquiv.congrQuadraticMap e (M := M)).symm := rfl
+    (LinearEquiv.congrQuadraticMap e (M := M)).symm := rfl
 
 end Comp
 section NonUnitalNonAssocSemiring
