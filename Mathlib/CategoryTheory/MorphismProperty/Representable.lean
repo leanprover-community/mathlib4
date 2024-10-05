@@ -519,6 +519,7 @@ lemma lift₃_p₃ : hf₁.lift₃ f₂ f₃ x₁ x₂ x₃ h₁₂ h₁₃ ≫ 
 
 end
 
+/-- Temporary comment since this has a `'` in the name -/
 @[reassoc (attr := simp)]
 lemma pullback₃.fst_fst' : pullback.fst _ _ ≫ hf₁.fst' f₂ = pullback₃.p₁ hf₁ f₂ f₃ := rfl
 
@@ -528,6 +529,7 @@ lemma pullback₃.fst_snd : pullback.fst _ _ ≫ hf₁.snd f₂ = pullback₃.p�
 @[reassoc (attr := simp)]
 lemma pullback₃.snd_snd : pullback.snd _ _ ≫ hf₁.snd f₃ = pullback₃.p₃ hf₁ f₂ f₃ := rfl
 
+/-- Temporary comment since this has a `'` in the name -/
 @[reassoc (attr := simp)]
 lemma pullback₃.snd_fst' :
     pullback.snd (hf₁.fst' f₂) (hf₁.fst' f₃) ≫ hf₁.fst' f₃ = pullback₃.p₁ hf₁ f₂ f₃ :=

@@ -60,6 +60,7 @@ variable (i j k : ι)
 lemma isOpenImmersion_snd (i j : ι) : IsOpenImmersion ((hf i).rep.snd (f j)) :=
   (hf i).property_snd (f j)
 
+/-- Temporary comment since this has a `'` in the name -/
 lemma isOpenImmersion_fst' (i j : ι) : IsOpenImmersion ((hf i).rep.fst' (f j)) :=
   (hf j).property _ _ _ ((hf i).1.isPullback' (f j)).flip
 
@@ -118,6 +119,7 @@ lemma fac (i : ι) :
   simp only [comp_id]
   apply GlueData.sheafValGluedMk_val
 
+/-- Temporary comment since this has a `'` in the name -/
 lemma fac' {i : ι} {V : Scheme.{u}} (a : V ⟶ X i) :
     (yonedaGluedToSheaf hf).val.app _ (a ≫ toGlued hf i) =
       yonedaEquiv (yoneda.map a ≫ f i) := by
