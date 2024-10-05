@@ -31,8 +31,8 @@ variable {C : Type u} [Category.{v} C]
 
 namespace IndizationClosedUnderFilteredColimitsAux
 
-variable {I : Type v} [SmallCategory I] [IsFiltered I] (F : I ⥤ Cᵒᵖ ⥤ Type v)
-  (hF : ∀ i, IsIndObject (F.obj i))
+variable {I : Type v} [SmallCategory I] (F : I ⥤ Cᵒᵖ ⥤ Type v)
+
 
 section Interchange
 
@@ -84,7 +84,8 @@ theorem exists_nonempty_limit_obj_of_isColimit [IsFiltered K] {c : Cocone H} (hc
 
 end Interchange
 
-theorem isFiltered : IsFiltered (CostructuredArrow yoneda (colimit F)) := by
+theorem isFiltere [IsFiltered I] (hF : ∀ i, IsIndObject (F.obj i)) :
+    IsFiltered (CostructuredArrow yoneda (colimit F)) := by
   -- It suffices to show that for any functor `G : J ⥤ CostructuredArrow yoneda (colimit F)` with
   -- `J` finite there is some `X` such that the set
   -- `lim Hom_{CostructuredArrow yoneda (colimit F)}(G·, X)` is nonempty.
@@ -103,7 +104,7 @@ theorem isFiltered : IsFiltered (CostructuredArrow yoneda (colimit F)) := by
   --   `colim_i lim_j Hom_{Over (colimit F)}(yGj, colimit.ι F i)`, and so we find `i` such that
   -- the limit is non-empty.
   obtain ⟨i, hi⟩ := exists_nonempty_limit_obj_of_isColimit F G _
-    (Over.colimit.isColimitToOver F) _ (Iso.refl _) h₁
+    (colimit.isColimitToOver F) _ (Iso.refl _) h₁
 
   -- `F.obj i` is a small filtered colimit of representables, say of the functor `H : K ⥤ C`, so
   -- `𝟙 (F.obj i)` is the colimit of the arrows of the form `yHk ⟶ Fi` in `Over Fi`.
