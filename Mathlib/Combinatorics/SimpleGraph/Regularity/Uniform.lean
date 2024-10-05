@@ -276,7 +276,7 @@ lemma IsEquipartition.card_interedges_sparsePairs_le' (hP : P.IsEquipartition)
   · gcongr with UV hUV
     obtain ⟨U, V⟩ := UV
     simp [mk_mem_sparsePairs, ← card_interedges_div_card] at hUV
-    refine ((div_lt_iff ?_).1 hUV.2.2.2).le
+    refine ((div_lt_iff₀ ?_).1 hUV.2.2.2).le
     exact mul_pos (Nat.cast_pos.2 (P.nonempty_of_mem_parts hUV.1).card_pos)
       (Nat.cast_pos.2 (P.nonempty_of_mem_parts hUV.2.1).card_pos)
   norm_cast

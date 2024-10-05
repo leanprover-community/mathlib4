@@ -128,7 +128,7 @@ theorem not_step_nil : ¬Step [] L := by
   generalize h' : [] = L'
   intro h
   cases' h with L₁ L₂
-  simp [List.nil_eq_append] at h'
+  simp [List.nil_eq_append_iff] at h'
 
 @[to_additive]
 theorem Step.cons_left_iff {a : α} {b : Bool} :
@@ -287,7 +287,8 @@ theorem red_iff_irreducible {x1 b1 x2 b2} (h : (x1, b1) ≠ (x2, b2)) :
   generalize eq : [(x1, not b1), (x2, b2)] = L'
   intro L h'
   cases h'
-  simp [List.cons_eq_append, List.nil_eq_append] at eq
+  simp only [List.cons_eq_append_iff, List.cons.injEq, Prod.mk.injEq, and_false,
+    List.nil_eq_append_iff, exists_const, or_self, or_false, List.cons_ne_nil] at eq
   rcases eq with ⟨rfl, ⟨rfl, rfl⟩, ⟨rfl, rfl⟩, rfl⟩
   simp at h
 
@@ -571,7 +572,7 @@ def lift : (α → β) ≃ (FreeGroup α →* β) where
     MonoidHom.mk' (Quot.lift (Lift.aux f) fun L₁ L₂ => Red.Step.lift) <| by
       rintro ⟨L₁⟩ ⟨L₂⟩; simp [Lift.aux]
   invFun g := g ∘ of
-  left_inv f := one_mul _
+  left_inv f := List.prod_singleton
   right_inv g :=
     MonoidHom.ext <| by
       rintro ⟨L⟩
@@ -592,7 +593,7 @@ theorem lift.mk : lift f (mk L) = List.prod (L.map fun x => cond x.2 (f x.1) (f 
 
 @[to_additive (attr := simp)]
 theorem lift.of {x} : lift f (of x) = f x :=
-  one_mul _
+  List.prod_singleton
 
 @[to_additive]
 theorem lift.unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) = f x) {x} :

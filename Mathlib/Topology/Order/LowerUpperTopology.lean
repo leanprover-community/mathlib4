@@ -263,10 +263,6 @@ lemma continuous_iff_Ici [TopologicalSpace β] {f : β → α} :
   obtain rfl := IsLower.topology_eq α
   simp [continuous_generateFrom_iff]
 
-/-- A function `f : β → α` with lower topology in the codomain is continuous provided that the
-preimage of every interval `Set.Ici a` is a closed set. -/
-@[deprecated (since := "2023-12-24")] alias ⟨_, continuous_of_Ici⟩ := continuous_iff_Ici
-
 end Preorder
 
 section PartialOrder
@@ -398,13 +394,6 @@ if and only if the preimage of every interval `Set.Iic a` is a closed set. -/
 lemma continuous_iff_Iic [TopologicalSpace β] {f : β → α} :
     Continuous f ↔ ∀ a, IsClosed (f ⁻¹' (Iic a)) :=
   IsLower.continuous_iff_Ici (α := αᵒᵈ)
-
-/-- A function `f : β → α` with upper topology in the codomain is continuous
-provided that the preimage of every interval `Set.Iic a` is a closed set. -/
-@[deprecated (since := "2023-12-24")]
-lemma continuous_of_Iic [TopologicalSpace β] {f : β → α} (h : ∀ a, IsClosed (f ⁻¹' (Iic a))) :
-    Continuous f :=
-  continuous_iff_Iic.2 h
 
 end Preorder
 

@@ -1289,7 +1289,7 @@ theorem Contravariant.MulLECancellable [Mul α] [LE α] [MulLeftReflectLE α]
     MulLECancellable a :=
   fun _ _ => le_of_mul_le_mul_left'
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem mulLECancellable_one [Monoid α] [LE α] : MulLECancellable (1 : α) := fun a b => by
   simpa only [one_mul] using id
 
@@ -1350,4 +1350,20 @@ protected theorem mul_le_iff_le_one_left [MulOneClass α] [i : @Std.Commutative 
     [MulLeftMono α] {a b : α} (ha : MulLECancellable a) :
     b * a ≤ a ↔ b ≤ 1 := by rw [i.comm, ha.mul_le_iff_le_one_right]
 
+@[to_additive] lemma mul [Semigroup α] {a b : α} (ha : MulLECancellable a)
+    (hb : MulLECancellable b) : MulLECancellable (a * b) :=
+  fun c d hcd ↦ hb <| ha <| by rwa [← mul_assoc, ← mul_assoc]
+
+@[to_additive] lemma of_mul_right [Semigroup α] [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α}
+    (h : MulLECancellable (a * b)) : MulLECancellable b :=
+  fun c d hcd ↦ h <| by rw [mul_assoc, mul_assoc]; exact mul_le_mul_left' hcd _
+
+@[to_additive] lemma of_mul_left [CommSemigroup α] [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α}
+    (h : MulLECancellable (a * b)) : MulLECancellable a := (mul_comm a b ▸ h).of_mul_right
+
 end MulLECancellable
+
+@[to_additive (attr := simp)]
+lemma mulLECancellable_mul [LE α] [CommSemigroup α] [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α} :
+    MulLECancellable (a * b) ↔ MulLECancellable a ∧ MulLECancellable b :=
+  ⟨fun h ↦ ⟨h.of_mul_left, h.of_mul_right⟩, fun h ↦ h.1.mul h.2⟩

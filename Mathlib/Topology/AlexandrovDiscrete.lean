@@ -114,8 +114,6 @@ lemma closure_sUnion (S : Set (Set α)) : closure (⋃₀ S) = ⋃ s ∈ S, clos
 
 end AlexandrovDiscrete
 
-variable {s t : Set α} {a x y : α}
-
 lemma Inducing.alexandrovDiscrete [AlexandrovDiscrete α] {f : β → α} (h : Inducing f) :
     AlexandrovDiscrete β where
   isOpen_sInter S hS := by

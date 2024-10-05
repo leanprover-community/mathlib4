@@ -40,7 +40,7 @@ instance [CanonicallyOrderedCommMonoid α] [CanonicallyOrderedCommMonoid β] :
     CanonicallyOrderedCommMonoid (α × β) :=
   { (inferInstance : OrderedCommMonoid _), (inferInstance : OrderBot _),
     (inferInstance : ExistsMulOfLE _) with
-      le_self_mul := fun _ _ ↦ ⟨le_self_mul, le_self_mul⟩ }
+      le_self_mul := fun _ _ ↦ le_def.mpr ⟨le_self_mul, le_self_mul⟩ }
 
 namespace Lex
 
