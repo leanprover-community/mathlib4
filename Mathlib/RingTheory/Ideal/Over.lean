@@ -429,77 +429,71 @@ lemma map_eq_top_iff {R S} [CommRing R] [CommRing S]
 
 end IsDomain
 
-end Ideal
-
-section ideal_lies_over
+section ideal_liesOver
 
 variable (A : Type*) [CommSemiring A] {B : Type*} [Semiring B] [Algebra A B]
   (P : Ideal B) (p : Ideal A)
 
 /-- The ideal obtained by pulling back the ideal `P` from `B` to `A`. -/
-abbrev Ideal.under : Ideal A := Ideal.comap (algebraMap A B) P
+abbrev under : Ideal A := Ideal.comap (algebraMap A B) P
 
-theorem Ideal.under_def : Ideal.under A P = Ideal.comap (algebraMap A B) P := rfl
+theorem under_def : under A P = Ideal.comap (algebraMap A B) P := rfl
 
-instance Ideal.IsPrime.under [hP : P.IsPrime] : (Ideal.under A P).IsPrime :=
+instance IsPrime.under [hP : P.IsPrime] : (under A P).IsPrime :=
   hP.comap (algebraMap A B)
 
 /-- If `P` is a maximal ideal of `B`, then the intersection of `P` and `A` is also
-a maximal ideal. -/
-instance Ideal.IsMaximal.under (A : Type*) [CommRing A] {B : Type*} [CommRing B] (P : Ideal B)
+  a maximal ideal. -/
+instance IsMaximal.under (A : Type*) [CommRing A] {B : Type*} [CommRing B] (P : Ideal B)
     [P.IsMaximal] [Algebra A B] [Algebra.IsIntegral A B] : (Ideal.under A P).IsMaximal :=
   isMaximal_comap_of_isIntegral_of_isMaximal P
 
 variable {A}
 
 /-- `P` lies over `p` if `p` is the preimage of `P` of the `algebraMap`. -/
-class ideal_lies_over : Prop where
+class LiesOver : Prop where
   over : p = Ideal.comap (algebraMap A B) P
 
-@[inherit_doc] infix : 50 "lies_over" => ideal_lies_over
-
-instance Ideal.over_under : P lies_over (Ideal.under A P) where over := rfl
+instance over_under : P.LiesOver (Ideal.under A P) where over := rfl
 
 variable {A : Type*} [CommSemiring A] (p : Ideal A) {B : Type*} [CommSemiring B] (P : Ideal B)
   {C : Type*} [Semiring C] (𝔓 : Ideal C) [Algebra A B] [Algebra B C] [Algebra A C]
   [IsScalarTower A B C]
 
-theorem ideal_lies_over.trans [hp : 𝔓 lies_over P] [hP : P lies_over p] : 𝔓 lies_over p where
+theorem LiesOver.trans [hp : 𝔓.LiesOver P] [hP : P.LiesOver p] : 𝔓.LiesOver p where
   over := by rw [hP.over, hp.over, Ideal.comap_comap, ← IsScalarTower.algebraMap_eq]
 
-namespace Ideal
-
-theorem lies_over_tower_bot [hp : 𝔓 lies_over p] [hP : 𝔓 lies_over P] : P lies_over p where
+theorem LiesOver.tower_bot [hp : 𝔓.LiesOver p] [hP : 𝔓.LiesOver P] : P.LiesOver p where
   over := by rw [hp.over, hP.over, comap_comap, ← IsScalarTower.algebraMap_eq]
 
 variable (B)
 
-instance under_lies_over_of_lies_over [𝔓 lies_over p] : (Ideal.under B 𝔓) lies_over p :=
-  lies_over_tower_bot p (Ideal.under B 𝔓) 𝔓
+instance under_liesOver_of_liesOver [𝔓.LiesOver p] : (Ideal.under B 𝔓).LiesOver p :=
+  LiesOver.tower_bot p (Ideal.under B 𝔓) 𝔓
 
-theorem eq_under_under_of_lies_over [𝔓 lies_over p] : p = Ideal.under A (Ideal.under B 𝔓) :=
-  (under_lies_over_of_lies_over p B 𝔓).over
+theorem eq_under_under_of_liesOver [𝔓.LiesOver p] : p = Ideal.under A (Ideal.under B 𝔓) :=
+  (under_liesOver_of_liesOver p B 𝔓).over
 
 variable {A : Type*} [CommRing A] (p : Ideal A) {B : Type*} [CommRing B] (P : Ideal B)
-  [Algebra A B] [Algebra.IsIntegral A B] [ho : P lies_over p]
+  [Algebra A B] [Algebra.IsIntegral A B] [ho : P.LiesOver p]
 
-theorem isMaximal_of_lies_over_isMaximal [hpm : p.IsMaximal] [P.IsPrime] : P.IsMaximal := by
+theorem IsMaximal.of_liesOver_isMaximal [hpm : p.IsMaximal] [P.IsPrime] : P.IsMaximal := by
   rw [ho.over] at hpm
   exact isMaximal_of_isIntegral_of_isMaximal_comap P hpm
 
-theorem isMaximal_of_isMaximal_lies_over [P.IsMaximal] : p.IsMaximal := by
+theorem IsMaximal.of_isMaximal_liesOver [P.IsMaximal] : p.IsMaximal := by
   rw [ho.over]
   exact isMaximal_comap_of_isIntegral_of_isMaximal P
 
 /-- If `P` lies over `p`, then canonically `B ⧸ P` is a `A ⧸ p`-algebra. -/
-instance algebra_quotient_of_lies_over : Algebra (A ⧸ p) (B ⧸ P) :=
+instance algebraQuotientOfLiesOver : Algebra (A ⧸ p) (B ⧸ P) :=
   Ideal.Quotient.algebraQuotientOfLEComap (le_of_eq ho.over)
 
 instance : IsScalarTower A (A ⧸ p) (B ⧸ P) :=
   IsScalarTower.of_algebraMap_eq' rfl
 
 /-- `B ⧸ P` is a finite `A ⧸ p`-module if `B` is a finite `A`-module. -/
-instance module_finite_of_lies_over [Module.Finite A B] : Module.Finite (A ⧸ p) (B ⧸ P) :=
+instance module_finite_of_liesOver [Module.Finite A B] : Module.Finite (A ⧸ p) (B ⧸ P) :=
   Module.Finite.of_restrictScalars_finite A (A ⧸ p) (B ⧸ P)
 
 example [Module.Finite A B] : Module.Finite (A ⧸ comap (algebraMap A B) P) (B ⧸ P) := inferInstance
@@ -513,16 +507,16 @@ noncomputable def over_isMaximal : Ideal B :=
   Classical.choose <| exists_ideal_over_maximal_of_isIntegral p <|
     (NoZeroSMulDivisors.algebraMap_ker_eq_bot A B).trans_le bot_le
 
-instance isMaximal.of_over_isMaximal : (p.over_isMaximal B).IsMaximal :=
+instance IsMaximal.of_over_isMaximal : (p.over_isMaximal B).IsMaximal :=
   (Classical.choose_spec <| exists_ideal_over_maximal_of_isIntegral p <|
     (NoZeroSMulDivisors.algebraMap_ker_eq_bot A B).trans_le bot_le).1
 
-instance lies_over_of_over_isMaximal : p.over_isMaximal B lies_over p where
+instance LiesOver.of_over_isMaximal : (p.over_isMaximal B).LiesOver p where
   over := (Classical.choose_spec <| exists_ideal_over_maximal_of_isIntegral p <|
     (NoZeroSMulDivisors.algebraMap_ker_eq_bot A B).trans_le bot_le).2.symm
 
 attribute [irreducible] over_isMaximal
 
-end Ideal
+end ideal_liesOver
 
-end ideal_lies_over
+end Ideal
