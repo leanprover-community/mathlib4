@@ -1,6 +1,8 @@
+import Mathlib.Analysis.Calculus.Deriv.Abs
 import Mathlib.Analysis.Calculus.Rademacher
-import Mathlib.LinearAlgebra.Dimension.Finrank
+import Mathlib.Analysis.Normed.Module.WeakDual
 import Mathlib.Data.Real.Sign
+import Mathlib.LinearAlgebra.Dimension.Finrank
 
 open Real NNReal Set Filter Topology FiniteDimensional MeasureTheory Module Submodule LinearMap
 
@@ -208,28 +210,6 @@ theorem differentiableAt_norm_of_smul {x : E} {t : ℝ} (h : DifferentiableAt �
       exact (hasFDerivAt_of_subsingleton _ _).differentiableAt
   · exact differentiableAt_norm_smul ht |>.2 h
 
-theorem deriv_abs (x : ℝ) : deriv (|·|) x = SignType.sign x := by
-  rcases lt_trichotomy x 0 with hx | rfl | hx
-  · rw [EventuallyEq.deriv_eq (f := fun x ↦ -x)]
-    · simp [hx]
-    · rw [EventuallyEq, eventually_iff_exists_mem]
-      exact ⟨Iic 0, Iic_mem_nhds hx, by simp [hx]⟩
-  · rw [deriv_zero_of_not_differentiableAt not_differentiableAt_abs_zero]
-    simp
-  · rw [EventuallyEq.deriv_eq (f := id)]
-    · simp [hx]
-    · rw [EventuallyEq, eventually_iff_exists_mem]
-      exact ⟨Ici 0, Ici_mem_nhds hx, by simp [hx]⟩
-
-theorem hasDerivAt_abs {x : ℝ} (hx : x ≠ 0) : HasDerivAt abs (SignType.sign x : ℝ) x := by
-  convert (differentiableAt_of_deriv_ne_zero ?_).hasDerivAt
-  · rw [deriv_abs]
-  · obtain hx | hx := hx.lt_or_lt
-    all_goals rw [deriv_abs]; simp [hx]
-
-theorem differentiableAt_abs {x : ℝ} (hx : x ≠ 0) : DifferentiableAt ℝ abs x :=
-  (hasDerivAt_abs hx).differentiableAt
-
 theorem fderiv_norm_self {x : E} (h : DifferentiableAt ℝ (‖·‖) x) :
     fderiv ℝ (‖·‖) x x = ‖x‖ := by
   rw [← h.lineDeriv_eq_fderiv, lineDeriv]
@@ -330,3 +310,51 @@ theorem exists_eq_norm (x : E) (nx : x ≠ 0) : ∃ f : E →L[ℝ] ℝ, ‖f‖
     rw [hf]
     change (CoeffSpan nx ⟨x, hx⟩) * ‖x‖ = ‖x‖
     rw [coeffSpan_self, one_mul]
+
+section LowerSemicontinuous
+
+open WeakDual ContinuousLinearMap in
+theorem lowerSemicontinuous_norm :
+    LowerSemicontinuous (fun f : WeakDual ℝ E ↦ ‖toNormedDual f‖) := by
+  intro f r hrf
+  obtain hr | hr := lt_or_le r 0
+  · exact Eventually.of_forall fun _ ↦ lt_of_lt_of_le hr (norm_nonneg _)
+  · obtain ⟨x, nx, hx⟩ := exists_lt_apply_of_lt_opNorm f hrf
+    wlog hfx : 0 ≤ f x
+    · apply this f r hrf hr (-x)
+      · rwa [norm_neg]
+      · rwa [map_neg, norm_neg]
+      · rw [map_neg]
+        linarith
+    · let U : Set (WeakDual ℝ E) := (fun (f : WeakDual ℝ E) ↦ f x) ⁻¹' Ioi r
+      have : U ∈ 𝓝 f := by
+        apply (isOpen_Ioi.preimage (eval_continuous x)).mem_nhds
+        rw [norm_of_nonneg hfx] at hx
+        simpa
+      apply eventually_of_mem this
+      intro g hg
+      rw [← not_le, (opNorm_le_iff hr).not]
+      push_neg
+      use x
+      apply lt_of_le_of_lt (b := r)
+      · nth_rw 2 [← mul_one r]
+        exact mul_le_mul_of_nonneg_left nx.le hr
+      · exact lt_of_lt_of_le hg (le_abs_self _)
+
+end LowerSemicontinuous
+
+theorem le_opNorm_of {f : E →L[ℝ] F} {x : E} {C : ℝ} (hx : x ≠ 0) (h : C * ‖x‖ ≤ ‖f x‖) :
+    C ≤ ‖f‖ := by
+  rw [← _root_.mul_le_mul_right (norm_pos_iff.2 hx)]
+  exact h.trans (ContinuousLinearMap.le_opNorm _ _)
+
+theorem le_opNorm_of' {f : E →L[ℝ] F} {x : E} {C : ℝ} (hx : ‖x‖ = 1) (h : C ≤ ‖f x‖) :
+    C ≤ ‖f‖ := by
+  apply le_opNorm_of (norm_ne_zero_iff.1 (hx ▸ (by norm_num : (1 : ℝ) ≠ 0)))
+  rwa [hx, mul_one]
+
+theorem le_opNorm_of'' {f : E →L[ℝ] F} {x : E} {C : ℝ} (hx : x ≠ 0) (nx : ‖x‖ ≤ 1) (h : C ≤ ‖f x‖) :
+    C ≤ ‖f‖ := by
+  obtain hC | hC := le_total C 0
+  · exact hC.trans (norm_nonneg _)
+  · exact le_opNorm_of hx (le_trans (mul_le_of_le_one_right hC nx) h)

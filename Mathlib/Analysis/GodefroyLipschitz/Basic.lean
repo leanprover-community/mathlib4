@@ -1,45 +1,39 @@
 import Mathlib.Analysis.GodefroyLipschitz.Annexe
-import Mathlib.Analysis.Normed.Module.WeakDual
 
 open Real NNReal Set Filter Topology FiniteDimensional MeasureTheory Metric Module Submodule
+open WeakDual
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 theorem unique1 [FiniteDimensional ℝ E] {x : E} (nx : ‖x‖ = 1) (hx : DifferentiableAt ℝ (‖·‖) x)
-    (φ : E → ℝ) (hφ : LipschitzWith 1 φ) (φ_eq : ∀ t : ℝ, φ (t • x) = t) :
+    {φ : E → ℝ} (hφ : LipschitzWith 1 φ) (φ_eq : ∀ t : ℝ, φ (t • x) = t) :
     φ = fderiv ℝ (‖·‖) x := by
   ext y
   have this t (ht : t ≠ 0) : 1 = |t * (φ y) - t * (φ (((φ y) + 1 / t) • x))| := by
-    rw [φ_eq, mul_add, ← sub_sub, sub_self, mul_one_div_cancel ht]
-    simp
+    simp [φ_eq, mul_comm, mul_add, ht]
   have this (t : ℝ) : 1 ≤ ‖x - t • (y - (φ y) • x)‖ := by
     rcases eq_or_ne t 0 with rfl | ht
     · rw [zero_smul, sub_zero, nx]
     · calc
-        1 = |t| * |φ y - φ (((φ y) + 1 / t) • x)| := by
-          nth_rw 1 [this t ht, ← abs_mul, mul_sub]
-        _ ≤ |t| * ‖y - (φ y + 1 / t) • x‖ := by
-          rw [_root_.mul_le_mul_left (abs_pos.2 ht), ← norm_eq_abs]
-          convert hφ.norm_sub_le _ _
-          simp
+        1 ≤ |t| * ‖y - (φ y + 1 / t) • x‖ := by
+          nth_rw 1 [this t ht, ← mul_sub, abs_mul, ← norm_eq_abs (_ - _)]
+          rw [_root_.mul_le_mul_left (abs_pos.2 ht)]
+          simpa using hφ.norm_sub_le _ _
         _ = ‖x - t • (y - (φ y) • x)‖ := by
-          rw [← norm_eq_abs, ← norm_smul, ← norm_neg, smul_sub, smul_smul, mul_add,
-            mul_one_div_cancel ht, add_smul, one_smul, mul_smul, smul_sub]
-          congr 1
-          abel
-  have : IsLocalMin (fun t : ℝ ↦ ‖x - t • (y - (φ y) • x)‖) 0 := by
+          rw [← norm_eq_abs, ← norm_smul, ← norm_neg, smul_sub, smul_smul]
+          congr
+          field_simp
+          module
+  have min : IsLocalMin (fun t : ℝ ↦ ‖x - t • (y - (φ y) • x)‖) 0 := by
     simp [IsLocalMin, IsMinFilter, nx, this]
-  have aux := this.deriv_eq_zero
   have : deriv (fun t : ℝ ↦ ‖x - t • (y - (φ y) • x)‖) 0 = - fderiv ℝ (‖·‖) x (y - (φ y) • x) := by
     conv_lhs => enter [1]; change ((‖·‖) ∘ (fun t : ℝ ↦ x - t • (y - (φ y) • x)))
     rw [fderiv.comp_deriv]
-    · rw [deriv_const_sub, deriv_smul_const]
-      simp
-      exact differentiableAt_id
+    · rw [deriv_const_sub, deriv_smul_const] <;> simp
     · simpa
     · simp
-  rw [aux, map_sub, _root_.map_smul, fderiv_norm_self hx, nx] at this
+  rw [min.deriv_eq_zero, map_sub, _root_.map_smul, fderiv_norm_self hx, nx] at this
   simp only [smul_eq_mul, mul_one, neg_sub] at this
   exact sub_eq_zero.1 this.symm
 
@@ -74,10 +68,24 @@ theorem Isometry.map_norm_sub {φ : E → F} (hφ : Isometry φ) (x y : E) :
     ‖φ x - φ y‖ = ‖x - y‖ := by
   rw [← dist_eq_norm, hφ.dist_eq, dist_eq_norm]
 
+open ContinuousLinearMap in
 theorem exists_inverse (φ : ℝ → F) (hφ : Isometry φ) (φz : φ 0 = 0) :
     ∃ (f : F →L[ℝ] ℝ), ‖f‖ = 1 ∧ ∀ t : ℝ, f (φ t) = t := by
-  have (k : ℕ) (hk : 1 ≤ k) :
-      ∃ f : F →L[ℝ] ℝ, ‖f‖ = 1 ∧ ∀ t : ℝ, t ∈ Icc (-k : ℝ) k → f (φ t) = t := by
+  have (k : ℕ) :
+      ∃ f : WeakDual ℝ F, ‖toNormedDual f‖ = 1 ∧ ∀ s : ℝ, s ∈ Icc (-k : ℝ) k → f (φ s) = s := by
+    obtain rfl | hk := Nat.eq_zero_or_pos k
+    · have : φ 1 ≠ 0 := by
+        rw [← norm_ne_zero_iff]
+        rw [hφ.norm_map_of_map_zero φz, norm_one]
+        norm_num
+      obtain ⟨f, nf, -⟩ := exists_eq_norm (φ 1) this
+      refine ⟨toNormedDual.symm f, ?_, ?_⟩
+      · simp [nf]
+      · intro s hs
+        have : s = 0 := by
+          rw [mem_Icc, Nat.cast_zero] at hs
+          linarith
+        simp [this, φz]
     obtain ⟨f, nf, hf⟩ : ∃ f : F →L[ℝ] ℝ, ‖f‖ = 1 ∧ f ((φ k) - (φ (-k))) = 2 * k := by
       have nk : ‖(φ k) - (φ (-k))‖ = 2 * k := by
         rw [hφ.map_norm_sub, norm_eq_abs, sub_neg_eq_add, two_mul, abs_eq_self.2 (by positivity)]
@@ -86,7 +94,7 @@ theorem exists_inverse (φ : ℝ → F) (hφ : Isometry φ) (φz : φ 0 = 0) :
         positivity
       obtain ⟨f, nf, hfk⟩ := exists_eq_norm _ hnk
       exact ⟨f, nf, by rw [hfk, nk]⟩
-    refine ⟨f, nf, fun t tmem ↦ ?_⟩
+    refine ⟨f, nf, fun s smem ↦ ?_⟩
     have ⟨h1, h2⟩ : f (φ k) = k ∧ f (φ (-k)) = -k := by
       apply aux
       · rw [← norm_eq_abs]
@@ -94,35 +102,35 @@ theorem exists_inverse (φ : ℝ → F) (hφ : Isometry φ) (φz : φ 0 = 0) :
         rw [nf, one_mul, hφ.norm_map_of_map_zero φz, norm_eq_abs, abs_eq_self.2 (by positivity)]
       · rw [← norm_eq_abs]
         convert f.le_opNorm (φ (-k))
-        rw [nf, one_mul, hφ.norm_map_of_map_zero φz, norm_eq_abs, abs_eq_neg_self.2 (by simp),
-          neg_neg]
+        rw [nf, one_mul, hφ.norm_map_of_map_zero φz, norm_eq_abs,
+          abs_eq_neg_self.2 (by simp [hk.le]), neg_neg]
       · rw [← map_sub, hf]
-    rcases le_total t 0 with ht | ht
-    · have : f ((φ t) - (φ (-k))) = t - (-k) := by
+    obtain hs | hs := le_total s 0
+    · have : f ((φ s) - (φ (-k))) = s - (-k) := by
         apply le_antisymm
         · apply le_trans <| le_abs_self _
           rw [← norm_eq_abs]
           apply le_trans <| f.le_opNorm _
           rw [nf, one_mul, hφ.map_norm_sub, norm_eq_abs, abs_eq_self.2]
-          linarith [mem_Icc.1 tmem |>.1]
-        · have : |f (φ t)| ≤ -t := by
+          linarith [mem_Icc.1 smem |>.1]
+        · have : |f (φ s)| ≤ -s := by
             rw [← norm_eq_abs]
-            convert f.le_opNorm (φ t) using 1
-            rw [nf, hφ.norm_map_of_map_zero φz, one_mul, norm_eq_abs, abs_eq_neg_self.2 ht]
+            convert f.le_opNorm (φ s) using 1
+            rw [nf, hφ.norm_map_of_map_zero φz, one_mul, norm_eq_abs, abs_eq_neg_self.2 hs]
           rw [map_sub, h2]
           linarith [abs_le.1 this |>.1]
       simpa [map_sub, h2] using this
-    · have : f ((φ k) - (φ t)) = k - t := by
+    · have : f ((φ k) - (φ s)) = k - s := by
         apply le_antisymm
         · apply le_trans <| le_abs_self _
           rw [← norm_eq_abs]
           apply le_trans <| f.le_opNorm _
           rw [nf, one_mul, hφ.map_norm_sub, norm_eq_abs, abs_eq_self.2]
-          linarith [mem_Icc.1 tmem |>.2]
-        · have : |f (φ t)| ≤ t := by
+          linarith [mem_Icc.1 smem |>.2]
+        · have : |f (φ s)| ≤ s := by
             rw [← norm_eq_abs]
-            convert f.le_opNorm (φ t) using 1
-            rw [nf, hφ.norm_map_of_map_zero φz, one_mul, norm_eq_abs, abs_eq_self.2 ht]
+            convert f.le_opNorm (φ s) using 1
+            rw [nf, hφ.norm_map_of_map_zero φz, one_mul, norm_eq_abs, abs_eq_self.2 hs]
           rw [map_sub, h1]
           linarith [abs_le.1 this |>.2]
       simpa [map_sub, h1] using this
@@ -130,23 +138,57 @@ theorem exists_inverse (φ : ℝ → F) (hφ : Isometry φ) (φz : φ 0 = 0) :
   have : IsCompact (WeakDual.toNormedDual (𝕜 := ℝ) (E := F) ⁻¹' closedBall 0 1) :=
     WeakDual.isCompact_closedBall _ _ _
   obtain ⟨g, hg⟩ : ∃ g : WeakDual ℝ F, MapClusterPt g atTop f := by
-    have aux : atTop.map f ≤ 𝓟 (WeakDual.toNormedDual ⁻¹' closedBall 0 1) := sorry
+    have aux : atTop.map f ≤ 𝓟 (WeakDual.toNormedDual ⁻¹' closedBall 0 1) := by
+      rw [le_principal_iff, Filter.mem_map]
+      convert univ_mem
+      ext x
+      simp only [mem_preimage, mem_closedBall, dist_zero_right, nf, mem_univ, iff_true]
+      rfl
     obtain ⟨g, -, hg⟩ := this.exists_clusterPt aux
     exact ⟨g, hg⟩
-  refine ⟨WeakDual.toNormedDual g, ?_, ?_⟩
-  have : ∀ t, WeakDual.toNormedDual g (φ t) = t := sorry
-
-  -- refine ⟨WeakDual.toNormedDual g, ng, fun t ↦ (eq_of_mem_singleton ?_).symm⟩
-  -- rw [← closedBall_zero, closedBall_eq_bInter_ball]
-  -- refine mem_biInter fun ε (hε : 0 < ε) ↦ ?_
-  -- · have := mapClusterPt_iff.1 hg
-  --     ((fun (y : WeakDual ℝ F) ↦ y (φ t))⁻¹' (ball ((WeakDual.toNormedDual g) (φ t)) ε))
-  --     ((isOpen_ball.preimage (WeakDual.eval_continuous _)).mem_nhds (mem_ball_self hε))
-  --   rw [frequently_atTop] at this
-  --   obtain ⟨b, b_ge, hb⟩ := this (Nat.ceil |t|)
-  --   have hfb : f b (φ t) = t := sorry
-  --   nth_rw 2 [← hfb]
-  --   exact hb
+  have : ∀ t, g (φ t) = t := by
+    intro t
+    have := hg.tendsto_comp ((eval_continuous (φ t)).tendsto g)
+    obtain ⟨ψ, hψ, h⟩ := TopologicalSpace.FirstCountableTopology.tendsto_subseq this
+    have : Tendsto (fun n ↦ f (ψ n) (φ t)) atTop (𝓝 t) := by
+      apply tendsto_atTop_of_eventually_const (i₀ := Nat.ceil |t|)
+      intro i hi
+      apply hf
+      replace hi : Nat.ceil |t| ≤ ψ i := hi.trans hψ.le_apply
+      rw [mem_Icc]
+      rwa [Nat.ceil_le, abs_le] at hi
+    exact tendsto_nhds_unique h this
+  refine ⟨WeakDual.toNormedDual g, ?_, this⟩
+  apply le_antisymm
+  · apply opNorm_le_of_unit_norm (by norm_num)
+    intro x nx
+    apply le_of_forall_lt
+    change ∀ c < |g x|, c < 1
+    wlog hgx : 0 ≤ g x generalizing x
+    · rw [← abs_neg, ← map_neg]
+      apply this (-x)
+      · rwa [norm_neg]
+      · rw [map_neg]
+        linarith
+    rw [abs_of_nonneg hgx]
+    intro c hc
+    rw [mapClusterPt_iff] at hg
+    let s := (fun (f : WeakDual ℝ F) ↦ f x) ⁻¹' (Ioi c)
+    have hs : IsOpen s := isOpen_Ioi.preimage (eval_continuous x)
+    specialize hg s (hs.mem_nhds hc)
+    rw [frequently_atTop] at hg
+    obtain ⟨b, -, hfb⟩ := hg 0
+    obtain hc | hc := lt_or_le c 0
+    · linarith
+    · simp_rw [s, mem_preimage, mem_Ioi] at hfb
+      have : f b x ≤ 1 := by
+        rw [← abs_of_nonneg (a := f b x) (by linarith), ← norm_eq_abs, ← nf b,
+          ← mul_one ‖toNormedDual _‖, ← nx]
+        exact le_opNorm _ _
+      linarith
+  · apply le_opNorm_of' (x := φ 1)
+    · rw [hφ.norm_map_of_map_zero φz, norm_one]
+    · rw [toNormedDual_apply, this, norm_one]
 
 theorem norm_normalize {x : E} (hx : x ≠ 0) : ‖(1 / ‖x‖) • x‖ = 1 := by
   rw [norm_smul, norm_div, norm_one, norm_norm, one_div_mul_cancel (norm_ne_zero_iff.2 hx)]
@@ -171,7 +213,7 @@ theorem exists_inverse' [FiniteDimensional ℝ E] [Nontrivial E]
   have dense_diff : Dense {x : E | DifferentiableAt ℝ (‖·‖) x} := by
     let _ : MeasurableSpace E := borel E
     have _ : BorelSpace E := ⟨rfl⟩
-    let w := FiniteDimensional.finBasis ℝ E
+    let w := Module.finBasis ℝ E
     exact dense_of_ae (lipschitzWith_one_norm.ae_differentiableAt (μ := w.addHaar))
   let s := {f : E →ₗ[ℝ] ℝ | ∃ x' : E, DifferentiableAt ℝ (‖·‖) x' ∧ f = fderiv ℝ (‖·‖) x'}
   have aux3 (z : E) (hz : z ≠ 0) : ∃ f ∈ s, f z ≠ 0 := by
@@ -205,7 +247,7 @@ theorem exists_inverse' [FiniteDimensional ℝ E] [Nontrivial E]
     convert (f x).lipschitz.comp hφ.lipschitz
     rw [← norm_toNNReal, nf x nx, mul_one, toNNReal_one]
   have fφ_eq {x : E} (nx : ‖x‖ = 1) (hx : DifferentiableAt ℝ (‖·‖) x) :=
-    unique1 nx hx ((f x) ∘ φ) (lipfφ nx) (hf x nx)
+    unique1 nx hx (lipfφ nx) (hf x nx)
   have Tφ x : T (φ x) = x := by
     have aux2 i x : f (y i) (φ x) = b i x := by
       convert congrFun (fφ_eq (ny i) (dy i)) x using 1
@@ -254,8 +296,8 @@ theorem isup_fin :
   simp only [mem_univ, mem_iUnion, SetLike.mem_coe, exists_prop, true_iff]
   exact ⟨span ℝ {x}, Finite.span_singleton ℝ x, subset_span <| mem_singleton _⟩
 
-theorem Dense.denseInducing_val {X : Type*} [TopologicalSpace X] {s : Set X} (hs : Dense s) :
-    DenseInducing (@Subtype.val X s) := ⟨inducing_subtype_val, hs.denseRange_val⟩
+theorem Dense.isDenseInducing_val {X : Type*} [TopologicalSpace X] {s : Set X} (hs : Dense s) :
+    IsDenseInducing (@Subtype.val X s) := ⟨inducing_subtype_val, hs.denseRange_val⟩
 
 theorem uniformInducing_val {X : Type*} [UniformSpace X] (s : Set X) :
     UniformInducing (@Subtype.val X s) := ⟨uniformity_setCoe⟩
@@ -412,9 +454,9 @@ theorem exists_inverse'' [CompleteSpace E] [Nontrivial E]
     rw [dist_eq_norm, sub_eq_add_neg, ← neg_one_smul ℝ, ← gsmul, ← gadd, dist_eq_norm,
       neg_one_smul ℝ, ← sub_eq_add_neg]
     exact ng _
-  let h := (ui.denseInducing dQ).extend g
+  let h := (ui.isDenseInducing dQ).extend g
   have ch : Continuous h :=
-    (ui.denseInducing dQ).continuous_extend (uniformly_extend_exists ui dQ cg)
+    (ui.isDenseInducing dQ).continuous_extend (uniformly_extend_exists ui dQ cg)
   have merde : ∀ x : F, ∃ u : ℕ → span ℝ Q, Tendsto (Subtype.val ∘ u) atTop (𝓝 x) := by
     intro x
     rcases dense_seq dQ x with ⟨u, hu1, hu2⟩
@@ -431,24 +473,24 @@ theorem exists_inverse'' [CompleteSpace E] [Nontrivial E]
     have ptn1 : Tendsto (fun n ↦ g (ux n) + g (uy n)) atTop (𝓝 (h x + h y)) := by
       apply Tendsto.add
       · apply ((ch.tendsto x).comp hux).congr
-        exact fun n ↦ (ui.denseInducing dQ).extend_eq cg.continuous (ux n)
+        exact fun n ↦ (ui.isDenseInducing dQ).extend_eq cg.continuous (ux n)
       · apply ((ch.tendsto y).comp huy).congr
-        exact fun n ↦ (ui.denseInducing dQ).extend_eq cg.continuous (uy n)
+        exact fun n ↦ (ui.isDenseInducing dQ).extend_eq cg.continuous (uy n)
     have ptn2 : Tendsto (fun n ↦ g (ux n) + g (uy n)) atTop (𝓝 (h (x + y))) := by
       simp_rw [← gadd]
       apply ((ch.tendsto _).comp (hux.add huy)).congr
-      exact fun n ↦ (ui.denseInducing dQ).extend_eq cg.continuous (ux n + uy n)
+      exact fun n ↦ (ui.isDenseInducing dQ).extend_eq cg.continuous (ux n + uy n)
     exact tendsto_nhds_unique ptn2 ptn1
   have hsmul (c : ℝ) x : h (c • x) = c • (h x) := by
     rcases merde x with ⟨ux, hux⟩
     have ptn1 : Tendsto (fun n ↦ c • (g (ux n))) atTop (𝓝 (h (c • x))) := by
       simp_rw [← gsmul]
       apply ((ch.tendsto _).comp (hux.const_smul c)).congr
-      exact fun n ↦ (ui.denseInducing dQ).extend_eq cg.continuous (c • (ux n))
+      exact fun n ↦ (ui.isDenseInducing dQ).extend_eq cg.continuous (c • (ux n))
     have ptn2 : Tendsto (fun n ↦ c • (g (ux n))) atTop (𝓝 (c • (h x))) := by
       apply Tendsto.const_smul
       apply ((ch.tendsto x).comp hux).congr
-      exact fun n ↦ (ui.denseInducing dQ).extend_eq cg.continuous (ux n)
+      exact fun n ↦ (ui.isDenseInducing dQ).extend_eq cg.continuous (ux n)
     exact tendsto_nhds_unique ptn1 ptn2
   have hnorm x : ‖h x‖ ≤ 1 * ‖x‖ := by
     rcases merde x with ⟨ux, hux⟩
@@ -457,7 +499,7 @@ theorem exists_inverse'' [CompleteSpace E] [Nontrivial E]
       intro n
       simp only [Function.comp_apply]
       congr
-      exact (ui.denseInducing dQ).extend_eq cg.continuous (ux n)
+      exact (ui.isDenseInducing dQ).extend_eq cg.continuous (ux n)
     apply le_of_tendsto_of_tendsto' ptn1 (((continuous_norm.tendsto _).comp hux).const_mul 1)
     exact fun _ ↦ ng _
   let h' : F →ₗ[ℝ] E :=
@@ -477,7 +519,7 @@ theorem exists_inverse'' [CompleteSpace E] [Nontrivial E]
       exact Teg p hp ⟨φ x, ptn'⟩ ptn
     have merde : H (φ x) = g ⟨φ x, ptn'⟩ := by
       change h (⟨φ x, ptn'⟩ : span ℝ Q) = g ⟨φ x, ptn'⟩
-      exact (ui.denseInducing dQ).extend_eq cg.continuous _
+      exact (ui.isDenseInducing dQ).extend_eq cg.continuous _
     rw [merde, ← ob]
     exact Subtype.val_inj.2 <| hT p hp ⟨x, hx⟩
   constructor
@@ -490,3 +532,10 @@ theorem exists_inverse'' [CompleteSpace E] [Nontrivial E]
       exact H.le_opNorm _
   · ext x
     exact this x
+
+-- theorem test {α β : Type*} [TopologicalSpace α] [ConditionallyCompleteLinearOrder β]
+--     {f : α → β} {ℱ : Filter α} (hf : LowerSemicontinuous f) {b : β} {a : α}
+--     (hℱ : @MapClusterPt _ (Preorder.topology β) _ b (𝓝 a) f) :
+--     b ≤ limsup f (𝓝 a) := by
+--   let _ := Preorder.topology β
+--   refine (le_limsup_iff).2 ?_
