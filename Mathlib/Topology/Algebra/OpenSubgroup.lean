@@ -419,7 +419,7 @@ instance : SubgroupClass (OpenNormalSubgroup G) G where
 
 @[to_additive]
 instance : Coe (OpenNormalSubgroup G) (Subgroup G) where
-  coe := fun H ↦ H.toOpenSubgroup.toSubgroup
+  coe H := H.toOpenSubgroup.toSubgroup
 
 @[to_additive]
 instance instPartialOrderOpenNormalSubgroup : PartialOrder (OpenNormalSubgroup G) := inferInstance
