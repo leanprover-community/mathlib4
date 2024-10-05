@@ -117,7 +117,8 @@ lemma le_iff (L₁ L₂ : FiniteGaloisIntermediateField k K) :
 
 variable (k) in
 /-- The minimal (finite) Galois intermediate field containing a finite set `s : Set K` in a
-Galois extension `K/k` obtained from the normal closure of adjoining  set `s : Set K` to `k`. -/
+Galois extension `K/k` defined as the the normal closure of the field obtained by adjoining
+the set `s : Set K` to `k`. -/
 noncomputable def adjoin [IsGalois k K] (s : Set K) [Finite s] :
     FiniteGaloisIntermediateField k K := {
   normalClosure k (IntermediateField.adjoin k (s : Set K)) K with
@@ -201,8 +202,8 @@ lemma map_comp {L₁ L₂ L₃ : (FiniteGaloisIntermediateField k K)ᵒᵖ} (f :
 end finGaloisGroupMap
 
 variable (k K) in
-/-- The functor mapping `FiniteGaloisIntermediateField` ordered by reverse inclusion to its
-  corresponding Galois Group as `FiniteGrp`. -/
+/-- The functor from `FiniteGaloisIntermediateField` (ordered by reverse inclusion) to `FiniteGrp`,
+mapping each intermediate field `K/L/k` to the Galois group of K/L`.-/
 noncomputable def finGaloisGroupFunctor : (FiniteGaloisIntermediateField k K)ᵒᵖ ⥤ FiniteGrp where
   obj L := L.unop.finGaloisGroup
   map := finGaloisGroupMap
