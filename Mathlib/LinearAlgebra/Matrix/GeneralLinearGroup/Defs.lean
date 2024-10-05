@@ -138,7 +138,7 @@ theorem map_id : map (RingHom.id R) = MonoidHom.id (GL n R) :=
   rfl
 
 @[simp]
-lemma map_apply (f : R →+* S) (i j : n) (g : GL n R) : map f g i j = f (g i j) := by
+protected lemma map_apply (f : R →+* S) (i j : n) (g : GL n R) : map f g i j = f (g i j) := by
   rfl
 
 @[simp]
@@ -154,29 +154,29 @@ theorem map_comp_apply (f : T →+* R) (g : R →+* S) (x : GL n T) :
 variable (f : R →+* S)
 
 @[simp]
-lemma map_one : map f (1 : GL n R) = 1 := by
+protected lemma map_one : map f (1 : GL n R) = 1 := by
   ext
   simp only [_root_.map_one, Units.val_one]
 
-lemma map_mul (g h : GL n R) : map f (g * h) = map f g * map f h := by
+protected lemma map_mul (g h : GL n R) : map f (g * h) = map f g * map f h := by
   ext
   simp only [_root_.map_mul, Units.val_mul]
 
-lemma map_inv (g : GL n R) : map f g⁻¹ = (map f g)⁻¹ := by
+protected lemma map_inv (g : GL n R) : map f g⁻¹ = (map f g)⁻¹ := by
   ext
   simp only [_root_.map_inv, coe_units_inv]
 
-lemma map_det (g : GL n R) : Matrix.GeneralLinearGroup.det (map f g) =
+protected lemma map_det (g : GL n R) : Matrix.GeneralLinearGroup.det (map f g) =
     Units.map f (Matrix.GeneralLinearGroup.det g) := by
   ext
   simp only [map, RingHom.mapMatrix_apply, Units.inv_eq_val_inv, Matrix.coe_units_inv,
     Matrix.GeneralLinearGroup.val_det_apply, Units.coe_map, MonoidHom.coe_coe]
   exact Eq.symm (RingHom.map_det f g.1)
 
-lemma map_mul_map_inv (g : GL n R) : map f g * map f g⁻¹ = 1 := by
+protected lemma map_mul_map_inv (g : GL n R) : map f g * map f g⁻¹ = 1 := by
   simp only [map_inv, mul_inv_cancel]
 
-lemma map_inv_mul_map (g : GL n R) : map f g⁻¹ * map f g = 1 := by
+protected lemma map_inv_mul_map (g : GL n R) : map f g⁻¹ * map f g = 1 := by
   simp only [map_inv, inv_mul_cancel]
 
 @[simp]
