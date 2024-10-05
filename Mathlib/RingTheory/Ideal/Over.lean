@@ -507,7 +507,8 @@ example [Module.Finite A B] : Module.Finite (A ⧸ comap (algebraMap A B) P) (B 
 variable [p.IsMaximal] (B : Type*) [CommRing B] [Nontrivial B] [Algebra A B]
   [NoZeroSMulDivisors A B] [Algebra.IsIntegral A B]
 
-/-- For any maximal idela `p` in `A`, there exists a maximal ideal in `B` lying over `p`. -/
+/-- If `B` is integral over `A`, for any maximal ideal `p` in `A`,
+there exists a maximal ideal in `B` lying over `p`. -/
 noncomputable def over_isMaximal : Ideal B :=
   Classical.choose <| exists_ideal_over_maximal_of_isIntegral p <|
     (NoZeroSMulDivisors.algebraMap_ker_eq_bot A B).trans_le bot_le
