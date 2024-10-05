@@ -496,7 +496,7 @@ instance algebra_quotient_of_lies_over : Algebra (A ⧸ p) (B ⧸ P) :=
   Ideal.Quotient.algebraQuotientOfLEComap (le_of_eq ho.over)
 
 instance : IsScalarTower A (A ⧸ p) (B ⧸ P) :=
-  IsScalarTower.of_algebraMap_eq (fun _ ↦ rfl)
+  IsScalarTower.of_algebraMap_eq' rfl
 
 /-- `B ⧸ P` is a finite `A ⧸ p`-module if `B` is a finite `A`-module. -/
 instance module_finite_of_lies_over [Module.Finite A B] : Module.Finite (A ⧸ p) (B ⧸ P) :=
