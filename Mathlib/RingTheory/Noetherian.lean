@@ -145,17 +145,17 @@ variable [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R
 variable (R M)
 
 -- see Note [lower instance priority]
-instance (priority := 100) IsNoetherian.finite [IsNoetherian R M] : Finite R M :=
+instance (priority := 100) IsNoetherian.finite [IsNoetherian R M] : Module.Finite R M :=
   ⟨IsNoetherian.noetherian ⊤⟩
 
 instance {R₁ S : Type*} [CommSemiring R₁] [Semiring S] [Algebra R₁ S]
-    [IsNoetherian R₁ S] (I : Ideal S) : Finite R₁ I :=
+    [IsNoetherian R₁ S] (I : Ideal S) : Module.Finite R₁ I :=
   IsNoetherian.finite R₁ ((I : Submodule S S).restrictScalars R₁)
 
 variable {R M}
 
 theorem Finite.of_injective [IsNoetherian R N] (f : M →ₗ[R] N) (hf : Function.Injective f) :
-    Finite R M :=
+    Module.Finite R M :=
   ⟨fg_of_injective f hf⟩
 
 end Module
@@ -380,9 +380,6 @@ theorem LinearIndependent.finite_of_isNoetherian [Nontrivial R] {ι} {v : ι →
 theorem LinearIndependent.set_finite_of_isNoetherian [Nontrivial R] {s : Set M}
     (hi : LinearIndependent R ((↑) : s → M)) : s.Finite :=
   @Set.toFinite _ _ hi.finite_of_isNoetherian
-
-@[deprecated (since := "2023-12-30")]
-alias finite_of_linearIndependent := LinearIndependent.set_finite_of_isNoetherian
 
 /-- If the first and final modules in an exact sequence are Noetherian,
   then the middle module is also Noetherian. -/

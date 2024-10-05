@@ -86,7 +86,7 @@ instance (priority := 100) ProperSMul.toContinuousSMul [ProperSMul G X] : Contin
 /-- A group `G` acts properly on a topological space `X` if and only if for all ultrafilters
 `𝒰` on `X × G`, if `𝒰` converges to `(x₁, x₂)` along the map `(g, x) ↦ (g • x, x)`,
 then there exists `g : G` such that `g • x₂ = x₁` and `𝒰.fst` converges to `g`. -/
-@[to_additive "A group acts `G` properly on a topological space `X` if and only if
+@[to_additive "A group `G` acts properly on a topological space `X` if and only if
 for all ultrafilters `𝒰` on `X`, if `𝒰` converges to `(x₁, x₂)`
 along the map `(g, x) ↦ (g • x, x)`, then there exists `g : G` such that `g • x₂ = x₁`
 and `𝒰.fst` converges to `g`."]
@@ -129,11 +129,9 @@ theorem t2Space_quotient_mulAction_of_properSMul [ProperSMul G X] :
   rw [t2_iff_isClosed_diagonal]
   set R := MulAction.orbitRel G X
   let π : X → Quotient R := Quotient.mk'
-  have : QuotientMap (Prod.map π π) :=
-    (isOpenMap_quotient_mk'_mul.prod isOpenMap_quotient_mk'_mul).to_quotientMap
-      (continuous_quotient_mk'.prod_map continuous_quotient_mk')
-      ((surjective_quotient_mk' _).prodMap (surjective_quotient_mk' _))
-  rw [← this.isClosed_preimage]
+  have : IsOpenQuotientMap (Prod.map π π) :=
+    MulAction.isOpenQuotientMap_quotientMk.prodMap MulAction.isOpenQuotientMap_quotientMk
+  rw [← this.quotientMap.isClosed_preimage]
   convert ProperSMul.isProperMap_smul_pair.isClosedMap.isClosed_range
   · ext ⟨x₁, x₂⟩
     simp only [mem_preimage, map_apply, mem_diagonal_iff, mem_range, Prod.mk.injEq, Prod.exists,

@@ -31,16 +31,6 @@ theorem isRadical_iff_span_singleton [CommSemiring R] :
   simp_rw [IsRadical, ← Ideal.mem_span_singleton]
   exact forall_swap.trans (forall_congr' fun r => exists_imp.symm)
 
-namespace Commute
-
-section Semiring
-
-variable [Semiring R] (h_comm : Commute x y)
-
-end Semiring
-
-end Commute
-
 section CommSemiring
 
 variable [CommSemiring R] {x y : R}

@@ -45,8 +45,10 @@ namespace InnerProductSpace
 
 open RCLike ContinuousLinearMap
 
-variable (𝕜 : Type*)
-variable (E : Type*) [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable (𝕜 E : Type*)
+
+section Seminormed
+variable [RCLike 𝕜] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
 
@@ -67,10 +69,19 @@ variable {E}
 theorem toDualMap_apply {x y : E} : toDualMap 𝕜 E x y = ⟪x, y⟫ :=
   rfl
 
+end Seminormed
+
+section Normed
+variable [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+
+local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
+
+local postfix:90 "†" => starRingEnd _
+
 theorem innerSL_norm [Nontrivial E] : ‖(innerSL 𝕜 : E →L⋆[𝕜] E →L[𝕜] 𝕜)‖ = 1 :=
   show ‖(toDualMap 𝕜 E).toContinuousLinearMap‖ = 1 from LinearIsometry.norm_toContinuousLinearMap _
 
-variable {𝕜}
+variable {E 𝕜}
 
 theorem ext_inner_left_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
     (h : ∀ i : ι, ⟪b i, x⟫ = ⟪b i, y⟫) : x = y := by
@@ -169,5 +180,7 @@ theorem unique_continuousLinearMapOfBilin {v f : E} (is_lax_milgram : ∀ w, ⟪
   intro w
   rw [continuousLinearMapOfBilin_apply]
   exact is_lax_milgram w
+
+end Normed
 
 end InnerProductSpace
