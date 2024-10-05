@@ -1242,12 +1242,10 @@ theorem eventually_pow_lt_factorial_sub (c d : ℕ) : ∀ᶠ n in atTop, c ^ n <
 
 theorem eventually_mul_pow_lt_factorial_sub (a c d : ℕ) :
     ∀ᶠ n in atTop, a * c ^ n < (n - d)! := by
-  obtain ⟨n0, h⟩ := (Nat.eventually_pow_lt_factorial_sub (a * c) d).exists_forall_of_atTop
-  rw [eventually_atTop]
-  refine ⟨max n0 1, fun n hn => lt_of_le_of_lt ?_ (h n (le_of_max_le_left hn))⟩
-  rw [mul_pow]
-  refine Nat.mul_le_mul_right _ (Nat.le_self_pow ?_ _)
-  omega
+  filter_upwards [Nat.eventually_pow_lt_factorial_sub (a * c) d, Filter.eventually_gt_atTop 0]
+    with n hn hn0
+  rw [mul_pow] at hn
+  exact (Nat.mul_le_mul_right _ (Nat.le_self_pow hn0.ne' _)).trans_lt hn
 
 @[deprecated eventually_pow_lt_factorial_sub (since := "2024-09-25")]
 theorem exists_pow_lt_factorial (c : ℕ) : ∃ n0 > 1, ∀ n ≥ n0, c ^ n < (n - 1)! :=

@@ -32,7 +32,7 @@ open scoped Nat
 
 variable {K : Type*} [LinearOrderedField K] [FloorSemiring K] [TopologicalSpace K] [OrderTopology K]
 
-theorem tendsto_mul_pow_div_factorial_sub (a c : K) (d : ℕ) :
+theorem tendsto_mul_pow_div_factorial_sub_atTop (a c : K) (d : ℕ) :
     Tendsto (fun n ↦ a * c ^ n / (n - d)!) atTop (𝓝 0) := by
   rw [tendsto_order]
   constructor
@@ -41,13 +41,13 @@ theorem tendsto_mul_pow_div_factorial_sub (a c : K) (d : ℕ) :
     filter_upwards [eventually_mul_pow_lt_factorial_sub (a * ε⁻¹) c d] with n h
     rw [mul_right_comm, ← div_eq_mul_inv] at h
   · rw [div_lt_iff_of_neg hε] at h
-    rwa [lt_div_iff' (Nat.cast_pos.mpr (Nat.factorial_pos _))]
-  · rw [div_lt_iff hε] at h
-    rwa [div_lt_iff' (Nat.cast_pos.mpr (Nat.factorial_pos _))]
+    rwa [lt_div_iff₀' (Nat.cast_pos.mpr (Nat.factorial_pos _))]
+  · rw [div_lt_iff₀ hε] at h
+    rwa [div_lt_iff₀' (Nat.cast_pos.mpr (Nat.factorial_pos _))]
 
-theorem tendsto_pow_div_factorial (c : K) :
+theorem tendsto_pow_div_factorial_atTop (c : K) :
     Tendsto (fun n ↦ c ^ n / n !) atTop (𝓝 0) := by
-  convert tendsto_mul_pow_div_factorial_sub 1 c 0
+  convert tendsto_mul_pow_div_factorial_sub_atTop 1 c 0
   rw [one_mul]
 
 end FloorSemiring
