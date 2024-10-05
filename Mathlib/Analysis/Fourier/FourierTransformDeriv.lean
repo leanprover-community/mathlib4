@@ -440,7 +440,7 @@ lemma integrable_fourierPowSMulRight {n : ℕ} (hf : Integrable (fun v ↦ ‖v�
   filter_upwards with v
   exact (norm_fourierPowSMulRight_le L f v n).trans (le_of_eq (by ring))
 
-lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
+lemma hasFTaylorSeriesUpTo_fourierIntegral {N : WithTop ℕ∞}
     (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun v ↦ ‖v‖^n * ‖f v‖) μ)
     (h'f : AEStronglyMeasurable f μ) :
     HasFTaylorSeriesUpTo N (fourierIntegral 𝐞 μ L.toLinearMap₂ f)
@@ -455,7 +455,7 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
     have I₁ : Integrable (fun v ↦ fourierPowSMulRight L f v n) μ :=
       integrable_fourierPowSMulRight L (hf n hn.le) h'f
     have I₂ : Integrable (fun v ↦ ‖v‖ * ‖fourierPowSMulRight L f v n‖) μ := by
-      apply ((hf (n+1) (Order.add_one_le_of_lt hn)).const_mul ((2 * π * ‖L‖) ^ n)).mono'
+      apply ((hf (n+1) (ENat.add_one_nat_le_withTop_of_lt hn)).const_mul ((2 * π * ‖L‖) ^ n)).mono'
         (continuous_norm.aestronglyMeasurable.mul (h'f.fourierPowSMulRight L n).norm)
       filter_upwards with v
       simp only [Pi.mul_apply, norm_mul, norm_norm]
@@ -465,7 +465,7 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
           gcongr; apply norm_fourierPowSMulRight_le
       _ = (2 * π * ‖L‖) ^ n * (‖v‖ ^ (n + 1) * ‖f v‖) := by rw [pow_succ]; ring
     have I₃ : Integrable (fun v ↦ fourierPowSMulRight L f v (n + 1)) μ :=
-      integrable_fourierPowSMulRight L (hf (n + 1) (Order.add_one_le_of_lt hn)) h'f
+      integrable_fourierPowSMulRight L (hf (n + 1) (ENat.add_one_nat_le_withTop_of_lt hn)) h'f
     have I₄ : Integrable
         (fun v ↦ fourierSMulRight L (fun v ↦ fourierPowSMulRight L f v n) v) μ := by
       apply (I₂.const_mul ((2 * π * ‖L‖))).mono' (h'f.fourierPowSMulRight L n).fourierSMulRight
@@ -488,12 +488,22 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
     apply fourierIntegral_continuous Real.continuous_fourierChar (by apply L.continuous₂)
     exact integrable_fourierPowSMulRight L (hf n hn) h'f
 
+/-- Variant of `hasFTaylorSeriesUpTo_fourierIntegral` in which the smoothness index is restricted
+to `ℕ∞` (and so are the inequalities in the assumption `hf`). Avoids normcasting in some
+applications. -/
+lemma hasFTaylorSeriesUpTo_fourierIntegral' {N : ℕ∞}
+    (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun v ↦ ‖v‖^n * ‖f v‖) μ)
+    (h'f : AEStronglyMeasurable f μ) :
+    HasFTaylorSeriesUpTo N (fourierIntegral 𝐞 μ L.toLinearMap₂ f)
+      (fun w n ↦ fourierIntegral 𝐞 μ L.toLinearMap₂ (fun v ↦ fourierPowSMulRight L f v n) w) :=
+  hasFTaylorSeriesUpTo_fourierIntegral _ (fun n hn ↦ hf n (by exact_mod_cast hn)) h'f
+
 /-- If `‖v‖^n * ‖f v‖` is integrable for all `n ≤ N`, then the Fourier transform of `f` is `C^N`. -/
 theorem contDiff_fourierIntegral {N : ℕ∞}
     (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun v ↦ ‖v‖^n * ‖f v‖) μ) :
     ContDiff ℝ N (fourierIntegral 𝐞 μ L.toLinearMap₂ f) := by
   by_cases h'f : Integrable f μ
-  · exact (hasFTaylorSeriesUpTo_fourierIntegral L hf h'f.1).contDiff
+  · exact (hasFTaylorSeriesUpTo_fourierIntegral' L hf h'f.1).contDiff
   · have : fourierIntegral 𝐞 μ L.toLinearMap₂ f = 0 := by
       ext w; simp [fourierIntegral, integral, h'f]
     simpa [this] using contDiff_const
@@ -507,7 +517,8 @@ lemma iteratedFDeriv_fourierIntegral {N : ℕ∞}
     iteratedFDeriv ℝ n (fourierIntegral 𝐞 μ L.toLinearMap₂ f) =
       fourierIntegral 𝐞 μ L.toLinearMap₂ (fun v ↦ fourierPowSMulRight L f v n) := by
   ext w : 1
-  exact ((hasFTaylorSeriesUpTo_fourierIntegral L hf h'f).eq_iteratedFDeriv hn w).symm
+  exact ((hasFTaylorSeriesUpTo_fourierIntegral' L hf h'f).eq_iteratedFDeriv
+    (by exact_mod_cast hn) w).symm
 
 end SecondCountableTopology
 
