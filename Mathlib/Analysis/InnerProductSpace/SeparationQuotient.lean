@@ -9,8 +9,8 @@ import Mathlib.Analysis.Normed.Group.SeparationQuotient
 /-!
 # Canonial inner product space from Preinner product space
 
-This file defines the inner product space from a preinner product space (the inner product
-can be degenerate) by quotienting the null space.
+This file defines the inner product space on the separation quotient of a preinner product space
+(the inner product can be degenerate), that is, by quotienting the null submodule.
 
 ## Main results
 
@@ -25,13 +25,13 @@ variable (𝕜 E : Type*) [k: RCLike 𝕜]
 
 section NullSubmodule
 
-open SeparationQuotient
+open SeparationQuotientAddGroup
 
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 /-- The null space with respect to the norm. -/
 def nullSubmodule : Submodule 𝕜 E :=
-  { nullSpace with
+  { nullSubgroup with
     smul_mem' := by
       intro c x hx
       simp only [Set.mem_setOf_eq] at hx
@@ -57,7 +57,7 @@ lemma inner_eq_zero_of_left_mem_nullSubmodule (x y : E) (h : x ∈ nullSubmodule
   _ = (0 * 0) * re ⟪y, y⟫_𝕜 := by rw [(mem_nullSubmodule_iff 𝕜 E).mp h]
   _ = 0 := by ring
 
-lemma inner_nullSubmodule_right_eq_zero (x y : E) (h : y ∈ nullSpace) : ⟪x, y⟫_𝕜 = 0 := by
+lemma inner_nullSubmodule_right_eq_zero (x y : E) (h : y ∈ nullSubmodule 𝕜 E) : ⟪x, y⟫_𝕜 = 0 := by
   rw [inner_eq_zero_symm]
   exact inner_eq_zero_of_left_mem_nullSubmodule 𝕜 E y x h
 
@@ -102,7 +102,7 @@ lemma nullSubmodule_le_ker_preInnerQ (x : SeparationQuotient E) : nullSubmodule 
     ker (preInnerQ 𝕜 E x) := by
   intro y hy
   simp only [LinearMap.mem_ker]
-  obtain ⟨z, hz⟩ := surjective_mk x
+  obtain ⟨z, hz⟩ := SeparationQuotient.surjective_mk x
   rw [preInnerQ, ← hz]
   simp only [ContinuousLinearMap.coe_coe, SeparationQuotient.CLM_lift_apply,
     LinearIsometry.coe_toContinuousLinearMap, toDualMap_apply]
@@ -112,13 +112,14 @@ lemma eq_of_inseparable (x : SeparationQuotient E) :
     ∀ (y z : E), Inseparable y z → ((preInnerQ 𝕜 E) x) y = ((preInnerQ 𝕜 E) x) z := by
   intro y z h
   rw [inseparable_iff_norm_zero] at h
-  obtain ⟨x', hx'⟩ := surjective_mk x
+  obtain ⟨x', hx'⟩ := SeparationQuotient.surjective_mk x
   rw [preInnerQ, ← hx']
   simp only [ContinuousLinearMap.coe_coe, SeparationQuotient.CLM_lift_apply,
     LinearIsometry.coe_toContinuousLinearMap, toDualMap_apply]
   rw [← sub_eq_zero, Eq.symm (_root_.inner_sub_right x' y z)]
   exact inner_nullSubmodule_right_eq_zero 𝕜 E x' (y - z) h
 
+--TODO I should use `liftCLM` of normed space
 
 /-- The inner product on the quotient, composed as the composition of two lifts to the quotients. -/
 def innerQ : SeparationQuotient E → SeparationQuotient E → 𝕜 :=
@@ -165,7 +166,7 @@ instance : InnerProductSpace 𝕜 (SeparationQuotient E) where
   norm_sq_eq_inner x := by
     obtain ⟨z, hz⟩ := surjective_mk x
     rw [← hz]
-    simp only [quotient_norm_mk_eq]
+    simp only [SeparationQuotientAddGroup.quotient_norm_mk_eq]
     rw [innerQ]
     simp only [CLM_lift_apply]
     rw [preInnerQ]
