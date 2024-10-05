@@ -14,12 +14,6 @@ A set `s` in an commutative monoid `E` is called absolutely convex or disked if 
 balanced. The importance of absolutely convex sets comes from the fact that every locally convex
 topological vector space has a basis consisting of absolutely convex sets.
 
-Mathlib's definition of `Convex` requires the scalars to be an `OrderedSemiring` whereas the
-definition of `Balanced` requires the scalars to be a `SeminormedRing`. Mathlib doesn't currently
-have a concept of a semi-normed ordered ring, so we define a set as `AbsConvex` if it is balanced
-over a `SeminormedRing` `𝕜` and convex over `ℝ`, assuming `IsScalarTower ℝ 𝕜 E` and
-`SMulCommClass ℝ 𝕜 E` where required.
-
 ## Main definitions
 
 * `absConvexHull`: the absolutely convex hull of a set `s` is the smallest absolutely convex set
@@ -35,6 +29,14 @@ of zero.
   of `s`.
 * `with_gaugeSeminormFamily`: the topology of a locally convex space is induced by the family
 `gaugeSeminormFamily`.
+
+## Implementation notes
+
+Mathlib's definition of `Convex` requires the scalars to be an `OrderedSemiring` whereas the
+definition of `Balanced` requires the scalars to be a `SeminormedRing`. Mathlib doesn't currently
+have a concept of a semi-normed ordered ring, so we define a set as `AbsConvex` if it is balanced
+over a `SeminormedRing` `𝕜` and convex over `ℝ`, assuming `IsScalarTower ℝ 𝕜 E` and
+`SMulCommClass ℝ 𝕜 E` where required.
 
 ## Tags
 
