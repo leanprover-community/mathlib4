@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
+import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Tactic.GCongr.CoreAttrs
 import Mathlib.Tactic.Nontriviality
 
@@ -1208,12 +1209,20 @@ lemma inv_mul_le_iff₀ (hc : 0 < c) : c⁻¹ * b ≤ a ↔ b ≤ c * a where
 lemma one_le_inv_mul₀ (ha : 0 < a) : 1 ≤ a⁻¹ * b ↔ a ≤ b := by rw [le_inv_mul_iff₀ ha, mul_one]
 lemma inv_mul_le_one₀ (ha : 0 < a) : a⁻¹ * b ≤ 1 ↔ b ≤ a := by rw [inv_mul_le_iff₀ ha, mul_one]
 
-lemma one_le_inv₀ (ha : 0 < a) : 1 ≤ a⁻¹ ↔ a ≤ 1 := by simpa using one_le_inv_mul₀ ha (b := 1)
-lemma inv_le_one₀ (ha : 0 < a) : a⁻¹ ≤ 1 ↔ 1 ≤ a := by simpa using inv_mul_le_one₀ ha (b := 1)
-
 /-- See `inv_le_iff_one_le_mul₀` for a version with multiplication on the other side. -/
 lemma inv_le_iff_one_le_mul₀' (ha : 0 < a) : a⁻¹ ≤ b ↔ 1 ≤ a * b := by
   rw [← inv_mul_le_iff₀ ha, mul_one]
+
+lemma one_le_inv₀ (ha : 0 < a) : 1 ≤ a⁻¹ ↔ a ≤ 1 := by simpa using one_le_inv_mul₀ ha (b := 1)
+lemma inv_le_one₀ (ha : 0 < a) : a⁻¹ ≤ 1 ↔ 1 ≤ a := by simpa using inv_mul_le_one₀ ha (b := 1)
+
+@[bound]
+lemma inv_le_one_of_one_le₀ (ha : 1 ≤ a) : a⁻¹ ≤ 1 := (inv_le_one₀ <| zero_lt_one.trans_le ha).2 ha
+
+lemma one_le_inv_iff₀ : 1 ≤ a⁻¹ ↔ 0 < a ∧ a ≤ 1 where
+  mp h := ⟨inv_pos.1 (zero_lt_one.trans_le h),
+    inv_inv a ▸ (inv_le_one₀ <| zero_lt_one.trans_le h).2 h⟩
+  mpr h := (one_le_inv₀ h.1).2 h.2
 
 /-- One direction of `le_inv_mul_iff₀` where `c` is allowed to be `0` (but `b` must be nonnegative).
 -/
@@ -1229,6 +1238,7 @@ lemma inv_mul_le_of_le_mul₀ (hb : 0 ≤ b) (hc : 0 ≤ c) (h : a ≤ b * c) : 
   · simp [hc]
   · rwa [inv_mul_le_iff₀ hb]
 
+@[bound]
 lemma inv_mul_le_one_of_le₀ (h : a ≤ b) (hb : 0 ≤ b) : b⁻¹ * a ≤ 1 :=
   inv_mul_le_of_le_mul₀ hb zero_le_one <| by rwa [mul_one]
 
@@ -1255,12 +1265,12 @@ lemma le_div_iff₀ (hc : 0 < c) : a ≤ b / c ↔ a * c ≤ b := by
 lemma div_le_iff₀ (hc : 0 < c) : b / c ≤ a ↔ b ≤ a * c := by
   rw [div_eq_mul_inv, mul_inv_le_iff₀ hc]
 
-lemma one_le_div₀ (hb : 0 < b) : 1 ≤ a / b ↔ b ≤ a := by rw [le_div_iff₀ hb, one_mul]
-lemma div_le_one₀ (hb : 0 < b) : a / b ≤ 1 ↔ a ≤ b := by rw [div_le_iff₀ hb, one_mul]
-
 /-- See `inv_le_iff_one_le_mul₀'` for a version with multiplication on the other side. -/
 lemma inv_le_iff_one_le_mul₀ (ha : 0 < a) : a⁻¹ ≤ b ↔ 1 ≤ b * a := by
   rw [← mul_inv_le_iff₀ ha, one_mul]
+
+lemma one_le_div₀ (hb : 0 < b) : 1 ≤ a / b ↔ b ≤ a := by rw [le_div_iff₀ hb, one_mul]
+lemma div_le_one₀ (hb : 0 < b) : a / b ≤ 1 ↔ a ≤ b := by rw [div_le_iff₀ hb, one_mul]
 
 /-- One direction of `le_mul_inv_iff₀` where `c` is allowed to be `0` (but `b` must be nonnegative).
 -/
@@ -1284,14 +1294,39 @@ lemma mul_le_of_le_div₀ (hb : 0 ≤ b) (hc : 0 ≤ c) (h : a ≤ b / c) : a * 
 lemma div_le_of_le_mul₀ (hb : 0 ≤ b) (hc : 0 ≤ c) (h : a ≤ c * b) : a / b ≤ c :=
   div_eq_mul_inv a _ ▸ mul_inv_le_of_le_mul₀ hb hc h
 
+@[bound]
 lemma mul_inv_le_one_of_le₀ (h : a ≤ b) (hb : 0 ≤ b) : a * b⁻¹ ≤ 1 :=
   mul_inv_le_of_le_mul₀ hb zero_le_one <| by rwa [one_mul]
 
+@[bound]
 lemma div_le_one_of_le₀ (h : a ≤ b) (hb : 0 ≤ b) : a / b ≤ 1 :=
   div_le_of_le_mul₀ hb zero_le_one <| by rwa [one_mul]
 
 @[deprecated (since := "2024-08-21")] alias le_div_iff := le_div_iff₀
 @[deprecated (since := "2024-08-21")] alias div_le_iff := div_le_iff₀
+
+variable [PosMulMono G₀]
+
+/-- See `inv_anti₀` for the implication from right-to-left with one fewer assumption. -/
+lemma inv_le_inv₀ (ha : 0 < a) (hb : 0 < b) : a⁻¹ ≤ b⁻¹ ↔ b ≤ a := by
+  rw [inv_le_iff_one_le_mul₀' ha, le_mul_inv_iff₀ hb, one_mul]
+
+@[gcongr, bound]
+lemma inv_anti₀ (hb : 0 < b) (hba : b ≤ a) : a⁻¹ ≤ b⁻¹ := (inv_le_inv₀ (hb.trans_le hba) hb).2 hba
+
+/-- See also `inv_le_of_inv_le₀` for a one-sided implication with one fewer assumption. -/
+lemma inv_le_comm₀ (ha : 0 < a) (hb : 0 < b) : a⁻¹ ≤ b ↔ b⁻¹ ≤ a := by
+  rw [← inv_le_inv₀ hb (inv_pos.2 ha), inv_inv]
+
+lemma inv_le_of_inv_le₀ (ha : 0 < a) (h : a⁻¹ ≤ b) : b⁻¹ ≤ a :=
+  (inv_le_comm₀ ha <| (inv_pos.2 ha).trans_le h).1 h
+
+/-- See also `le_inv_of_le_inv₀` for a one-sided implication with one fewer assumption. -/
+lemma le_inv_comm₀ (ha : 0 < a) (hb : 0 < b) : a ≤ b⁻¹ ↔ b ≤ a⁻¹ := by
+  rw [← inv_le_inv₀ (inv_pos.2 hb) ha, inv_inv]
+
+lemma le_inv_of_le_inv₀ (ha : 0 < a) (h : a ≤ b⁻¹) : b ≤ a⁻¹ :=
+  (le_inv_comm₀ ha <| inv_pos.1 <| ha.trans_le h).1 h
 
 end MulPosMono
 
@@ -1308,15 +1343,22 @@ lemma inv_mul_lt_iff₀ (hc : 0 < c) : c⁻¹ * b < a ↔ b < c * a where
   mp h := by simpa [hc.ne'] using mul_lt_mul_of_pos_left h hc
   mpr h := by simpa [hc.ne'] using mul_lt_mul_of_pos_left h (inv_pos.2 hc)
 
+/-- See `inv_lt_iff_one_lt_mul₀` for a version with multiplication on the other side. -/
+lemma inv_lt_iff_one_lt_mul₀' (ha : 0 < a) : a⁻¹ < b ↔ 1 < a * b := by
+  rw [← inv_mul_lt_iff₀ ha, mul_one]
+
 lemma one_lt_inv_mul₀ (ha : 0 < a) : 1 < a⁻¹ * b ↔ a < b := by rw [lt_inv_mul_iff₀ ha, mul_one]
 lemma inv_mul_lt_one₀ (ha : 0 < a) : a⁻¹ * b < 1 ↔ b < a := by rw [inv_mul_lt_iff₀ ha, mul_one]
 
 lemma one_lt_inv₀ (ha : 0 < a) : 1 < a⁻¹ ↔ a < 1 := by simpa using one_lt_inv_mul₀ ha (b := 1)
 lemma inv_lt_one₀ (ha : 0 < a) : a⁻¹ < 1 ↔ 1 < a := by simpa using inv_mul_lt_one₀ ha (b := 1)
 
-/-- See `inv_lt_iff_one_lt_mul₀` for a version with multiplication on the other side. -/
-lemma inv_lt_iff_one_lt_mul₀' (ha : 0 < a) : a⁻¹ < b ↔ 1 < a * b := by
-  rw [← inv_mul_lt_iff₀ ha, mul_one]
+@[bound]
+lemma inv_lt_one_of_one_lt₀ (ha : 1 < a) : a⁻¹ < 1 := (inv_lt_one₀ <| zero_lt_one.trans ha).2 ha
+
+lemma one_lt_inv_iff₀ : 1 < a⁻¹ ↔ 0 < a ∧ a < 1 where
+  mp h := ⟨inv_pos.1 (zero_lt_one.trans h), inv_inv a ▸ (inv_lt_one₀ <| zero_lt_one.trans h).2 h⟩
+  mpr h := (one_lt_inv₀ h.1).2 h.2
 
 end PosMulStrictMono
 
@@ -1345,6 +1387,30 @@ lemma div_lt_iff₀ (hc : 0 < c) : b / c < a ↔ b < a * c := by
 lemma inv_lt_iff_one_lt_mul₀ (ha : 0 < a) : a⁻¹ < b ↔ 1 < b * a := by
   rw [← mul_inv_lt_iff₀ ha, one_mul]
 
+variable [PosMulStrictMono G₀]
+
+/-- See `inv_strictAnti₀` for the implication from right-to-left with one fewer assumption. -/
+lemma inv_lt_inv₀ (ha : 0 < a) (hb : 0 < b) : a⁻¹ < b⁻¹ ↔ b < a := by
+  rw [inv_lt_iff_one_lt_mul₀' ha, lt_mul_inv_iff₀ hb, one_mul]
+
+@[gcongr, bound]
+lemma inv_strictAnti₀ (hb : 0 < b) (hba : b < a) : a⁻¹ < b⁻¹ :=
+  (inv_lt_inv₀ (hb.trans hba) hb).2 hba
+
+/-- See also `inv_lt_of_inv_lt₀` for a one-sided implication with one fewer assumption. -/
+lemma inv_lt_comm₀ (ha : 0 < a) (hb : 0 < b) : a⁻¹ < b ↔ b⁻¹ < a := by
+  rw [← inv_lt_inv₀ hb (inv_pos.2 ha), inv_inv]
+
+lemma inv_lt_of_inv_lt₀ (ha : 0 < a) (h : a⁻¹ < b) : b⁻¹ < a :=
+  (inv_lt_comm₀ ha <| (inv_pos.2 ha).trans h).1 h
+
+/-- See also `lt_inv_of_lt_inv₀` for a one-sided implication with one fewer assumption. -/
+lemma lt_inv_comm₀ (ha : 0 < a) (hb : 0 < b) : a < b⁻¹ ↔ b < a⁻¹ := by
+  rw [← inv_lt_inv₀ (inv_pos.2 hb) ha, inv_inv]
+
+lemma lt_inv_of_lt_inv₀ (ha : 0 < a) (h : a < b⁻¹) : b < a⁻¹ :=
+  (lt_inv_comm₀ ha <| inv_pos.1 <| ha.trans h).1 h
+
 end MulPosStrictMono
 end PartialOrder
 
@@ -1361,6 +1427,12 @@ lemma one_div_nonpos : 1 / a ≤ 0 ↔ a ≤ 0 := one_div a ▸ inv_nonpos
 
 lemma div_nonpos_of_nonneg_of_nonpos [PosMulMono G₀] (ha : 0 ≤ a) (hb : b ≤ 0) : a / b ≤ 0 := by
   rw [div_eq_mul_inv]; exact mul_nonpos_of_nonneg_of_nonpos ha (inv_nonpos.2 hb)
+
+lemma inv_lt_one_iff₀ [PosMulStrictMono G₀] : a⁻¹ < 1 ↔ a ≤ 0 ∨ 1 < a := by
+  simp_rw [← not_le, one_le_inv_iff₀, not_and_or, not_lt]
+
+lemma inv_le_one_iff₀ [PosMulStrictMono G₀] : a⁻¹ ≤ 1 ↔ a ≤ 0 ∨ 1 ≤ a := by
+  simp only [← not_lt, one_lt_inv_iff₀, not_and_or]
 
 end GroupWithZero.LinearOrder
 
@@ -1476,3 +1548,5 @@ lemma div_lt_comm₀ (hb : 0 < b) (hc : 0 < c) : a / b < c ↔ a / c < b := by
 
 end PosMulStrictMono
 end CommGroupWithZero
+
+set_option linter.style.longFile 1700
