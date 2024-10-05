@@ -84,7 +84,7 @@ theorem exists_nonempty_limit_obj_of_isColimit [IsFiltered K] {c : Cocone H} (hc
 
 end Interchange
 
-theorem isFiltere [IsFiltered I] (hF : ∀ i, IsIndObject (F.obj i)) :
+theorem isFiltered [IsFiltered I] (hF : ∀ i, IsIndObject (F.obj i)) :
     IsFiltered (CostructuredArrow yoneda (colimit F)) := by
   -- It suffices to show that for any functor `G : J ⥤ CostructuredArrow yoneda (colimit F)` with
   -- `J` finite there is some `X` such that the set
@@ -123,13 +123,14 @@ theorem isFiltere [IsFiltered I] (hF : ∀ i, IsIndObject (F.obj i)) :
         (pre P.F yoneda (colimit F)).obj <| (map (colimit.ι F i)).obj <| mk _))) :=
     exists_nonempty_limit_obj_of_isColimit F G _ hc _ (Iso.refl _) hi
 
+  have htO : (toOver yoneda (colimit F)).FullyFaithful := .ofFullyFaithful _
   -- Since the inclusion `y : CostructuredArrow yoneda (colimit F) ⥤ Over (colimit F)` is fully
   -- faithful, `lim_j Hom_{Over (colimit F)}(yGj, yHk) ≅`
   --   `lim_j Hom_{CostructuredArrow yoneda (colimit F)}(Gj, Hk)` and so `Hk` is the object we're
   -- looking for.
-  let q := Yoneda.natIsoOfFullyFaithful.{v, max u v} (toOver yoneda (colimit F))
+  let q := htO.homNatIsoMaxRight
   obtain ⟨t'⟩ := Nonempty.map (limMap (isoWhiskerLeft G.op (q _)).hom) hk
-  exact ⟨_, ⟨((preservesLimitIso uliftFunctor.{max u v, v} _).inv t').down⟩⟩
+  exact ⟨_, ⟨((preservesLimitIso uliftFunctor.{u, v} _).inv t').down⟩⟩
 
 end IndizationClosedUnderFilteredColimitsAux
 
