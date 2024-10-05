@@ -371,7 +371,6 @@ section
 variable {φ M} {dφ : M.Derivation φ} (hdφ : dφ.Universal)
   {ψ : R ⟶ G.op ⋙ T} {φψ : S ⟶ (F ⋙ G).op ⋙ T} (fac : φψ = φ ≫ whiskerLeft F.op ψ)
   {P : PresheafOfModules.{v} (T ⋙ forget₂ _ _)}
-  (dφψ : P.Derivation φψ)
 
 namespace Derivation
 
@@ -392,6 +391,8 @@ local notation "pullbackψ" =>
 local notation "adjunctionψ" =>
   (pullbackPushforwardAdjunction
     (F := G) (R := T ⋙ forget₂ _ _) (φ := whiskerRight ψ (forget₂ _ RingCat)))
+
+variable (dφψ : P.Derivation φψ)
 
 protected noncomputable def pushforward : ((pushforwardψ).obj P).Derivation φ where
   d := AddMonoidHom.mk' (fun a ↦ dφψ.d (ψ.app _ a)) (by simp)
@@ -436,6 +437,9 @@ noncomputable def homEquivToFun (f : c.pt ⟶ M') : M'.Derivation ψ where
 noncomputable def homEquivInvFun (d : M'.Derivation ψ) : c.pt ⟶ M' :=
   (CokernelCofork.IsColimit.desc' hc (hdφψ.desc (Derivation.induced fac d))
     sorry).1
+
+lemma π_homEquivInvFun_apply (d : M'.Derivation ψ) :
+    c.π ≫ homEquivInvFun hc hdφψ d = sorry := sorry
 
 end corepresentableByOfIsColimitCokernelCofork
 
