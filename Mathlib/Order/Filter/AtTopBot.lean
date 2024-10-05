@@ -257,6 +257,15 @@ variable [Nonempty α]
 @[instance]
 lemma atTop_neBot : NeBot (atTop : Filter α) := atTop_basis.neBot_iff.2 fun _ => nonempty_Ici
 
+theorem atTop_neBot_iff {α : Type*} [Preorder α] :
+    (atTop : Filter α).NeBot ↔ Nonempty α ∧ IsDirected α (· ≤ ·) := by
+  refine ⟨fun h ↦ ⟨nonempty_of_neBot atTop, ⟨fun x y ↦ ?_⟩⟩, fun ⟨h₁, h₂⟩ ↦ atTop_neBot⟩
+  exact ((eventually_ge_atTop x).and (eventually_ge_atTop y)).exists
+
+theorem atBot_neBot_iff {α : Type*} [Preorder α] :
+    (atBot : Filter α).NeBot ↔ Nonempty α ∧ IsDirected α (· ≥ ·) :=
+  atTop_neBot_iff (α := αᵒᵈ)
+
 @[simp] lemma mem_atTop_sets {s : Set α} : s ∈ (atTop : Filter α) ↔ ∃ a : α, ∀ b ≥ a, b ∈ s :=
   atTop_basis.mem_iff.trans <| exists_congr fun _ => iff_of_eq (true_and _)
 
