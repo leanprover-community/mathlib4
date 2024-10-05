@@ -141,8 +141,8 @@ instance instCommMonoid [CommMonoid M] [ContinuousMul M] : CommMonoid (Separatio
 
 variable {N : Type*} [TopologicalSpace N]
 
-@[to_additive]
-noncomputable def liftMonoidHom [CommMonoid M] [ContinuousMul M] [CommMonoid N] [ContinuousMul N]
+@[to_additive "The lift of a `MonoidHom M N` to `MonoidHom (SeparationQuotient M) N`."]
+noncomputable def liftMonoidHom [CommMonoid M] [ContinuousMul M] [CommMonoid N]
     (f : MonoidHom M N) (hf : ∀ x y, Inseparable x y → f x = f y) :
     MonoidHom (SeparationQuotient M) N where
   toFun := SeparationQuotient.lift f hf
@@ -218,7 +218,7 @@ instance instCommGroup [CommGroup G] [TopologicalGroup G] : CommGroup (Separatio
   surjective_mk.commGroup mk mk_one mk_mul mk_inv mk_div mk_pow mk_zpow
 
 /-- Neighborhoods in the quotient are precisely the map of neighborhoods in the prequotient. -/
-theorem nhds_eq [AddCommGroup G] [TopologicalAddGroup G] (x : G) :
+theorem nhds_eq [AddCommGroup G] (x : G) :
     nhds (mk x) = Filter.map mk (nhds x) := by
   apply le_antisymm ((SeparationQuotient.isOpenMap_mk).nhds_le x) continuous_quot_mk.continuousAt
 
