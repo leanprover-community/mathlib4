@@ -89,7 +89,7 @@ instance (L₁ L₂ : IntermediateField k K) [Algebra.IsSeparable k L₂] :
   .of_algHom _ _ (IntermediateField.inclusion inf_le_right)
 
 instance (L₁ L₂ : IntermediateField k K) [IsGalois k L₁] [IsGalois k L₂] :
-    IsGalois k ↑(L₁ ⊓ L₂) := {}
+    IsGalois k ↑(L₁ ⊓ L₂) where
 
 instance : Sup (FiniteGaloisIntermediateField k K) where
   sup L₁ L₂ := .mk <| L₁ ⊔ L₂
@@ -110,8 +110,8 @@ lemma le_iff (L₁ L₂ : FiniteGaloisIntermediateField k K) :
   Iff.rfl
 
 variable (k) in
-/-- The finite Galois intermediate field obtained from the normal closure of adjoining a
-`s : Set K` to `k`. -/
+/-- The minimal (finite) Galois intermediate field containing a finite set `s : Set K` in a
+Galois extension `K/k` obtained from the normal closure of adjoining  set `s : Set K` to `k`. -/
 noncomputable def adjoin [IsGalois k K] (s : Set K) [Finite s] :
     FiniteGaloisIntermediateField k K := {
   normalClosure k (IntermediateField.adjoin k (s : Set K)) K with
@@ -161,7 +161,7 @@ def finGaloisGroup (L : FiniteGaloisIntermediateField k K) : FiniteGrp :=
   FiniteGrp.of <| L ≃ₐ[k] L
 
 /-- For `FiniteGaloisIntermediateField` s `L₁` and `L₂` with `L₂ ≤ L₁`
-  giving the restriction of `Gal(L₁/k)` to `Gal(L₂/k)`-/
+  the restriction homomorphism from `Gal(L₁/k)` to `Gal(L₂/k)` -/
 noncomputable def finGaloisGroupMap {L₁ L₂ : (FiniteGaloisIntermediateField k K)ᵒᵖ}
     (le : L₁ ⟶ L₂) : L₁.unop.finGaloisGroup ⟶ L₂.unop.finGaloisGroup :=
   haveI : Normal k L₂.unop := IsGalois.to_normal
@@ -195,7 +195,7 @@ lemma map_comp {L₁ L₂ L₃ : (FiniteGaloisIntermediateField k K)ᵒᵖ} (f :
 end finGaloisGroupMap
 
 variable (k K) in
-/-- Mapping `FiniteGaloisIntermediateField` ordered by inverse inclusion to its
+/-- The functor mapping `FiniteGaloisIntermediateField` ordered by reverse inclusion to its
   corresponding Galois Group as `FiniteGrp`. -/
 noncomputable def finGaloisGroupFunctor : (FiniteGaloisIntermediateField k K)ᵒᵖ ⥤ FiniteGrp where
   obj L := L.unop.finGaloisGroup
