@@ -468,16 +468,7 @@ theorem map_obj_hom : ((map f).obj U).hom = f ≫ U.hom :=
 theorem map_map_right : ((map f).map g).right = g.right :=
   rfl
 
-/-- Mapping by the identity morphism is just the identity functor. -/
-def mapId : map (𝟙 Y) ≅ 𝟭 _ :=
-  NatIso.ofComponents fun X => isoMk (Iso.refl _)
-#align category_theory.under.map_id CategoryTheory.Under.mapId
-
-/-- Mapping by the composite morphism `f ≫ g` is the same as mapping by `f` then by `g`. -/
-def mapComp {Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) ≅ map g ⋙ map f :=
-  NatIso.ofComponents fun X => isoMk (Iso.refl _)
-#align category_theory.under.map_comp CategoryTheory.Under.mapComp
-
+/-- Mapping and then forgetting is just forgetting. -/
 @[simps!]
 def mapCompForget (f : X ⟶ Y) : map f ⋙ forget X ≅ forget Y :=
   Iso.refl _
