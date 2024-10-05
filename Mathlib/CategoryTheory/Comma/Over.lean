@@ -25,7 +25,7 @@ Comma, Slice, Coslice, Over, Under
 
 namespace CategoryTheory
 
-universe v₁ v₂ v₃ u₁ u₂ u₃
+universe v₁ v₂ u₁ u₂
 
 -- morphism levels before object levels. See note [CategoryTheory universes].
 variable {T : Type u₁} [Category.{v₁} T]
@@ -343,16 +343,6 @@ instance isEquivalence_toOver (F : D ⥤ T) (X : T) [F.IsEquivalence] :
     (toOver F X).IsEquivalence :=
   CostructuredArrow.isEquivalence_pre _ _ _
 
-def toOverCompMap (F : D ⥤ T) (X Y : T) (f : X ⟶ Y) :
-    toOver F X ⋙ Over.map f ≅ map f ⋙ toOver F Y :=
-  Iso.refl _
-
-variable {E : Type u₃} [Category.{v₃} E]
-
-def toOverComp (F : D ⥤ E) (G : E ⥤ T) (X : T) :
-    toOver (F ⋙ G) X ≅ CostructuredArrow.pre _ _ _ ⋙ toOver _ _ :=
-  Iso.refl _
-
 end CostructuredArrow
 
 /-- The under category has as objects arrows with domain `X` and as morphisms commutative
@@ -467,12 +457,6 @@ theorem map_obj_hom : ((map f).obj U).hom = f ≫ U.hom :=
 @[simp]
 theorem map_map_right : ((map f).map g).right = g.right :=
   rfl
-
-/-- Mapping and then forgetting is just forgetting. -/
-@[simps!]
-def mapCompForget (f : X ⟶ Y) : map f ⋙ forget X ≅ forget Y :=
-  Iso.refl _
-
 end
 
 section coherences
