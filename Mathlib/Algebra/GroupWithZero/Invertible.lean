@@ -63,11 +63,10 @@ theorem mul_inv_cancel_of_invertible (a : α) [Invertible a] : a * a⁻¹ = 1 :=
 def invertibleInv {a : α} [Invertible a] : Invertible a⁻¹ :=
   ⟨a, by simp, by simp⟩
 
-@[simp]
+-- TODO: generalize the next few lemmas to `[DivisionMonoid G] [IsUnit _]`
 theorem div_mul_cancel_of_invertible (a b : α) [Invertible b] : a / b * b = a :=
   div_mul_cancel₀ a (Invertible.ne_zero b)
 
-@[simp]
 theorem mul_div_cancel_of_invertible (a b : α) [Invertible b] : a * b / b = a :=
   mul_div_cancel_right₀ a (Invertible.ne_zero b)
 
