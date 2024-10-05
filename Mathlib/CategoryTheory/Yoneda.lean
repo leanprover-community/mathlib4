@@ -286,6 +286,7 @@ theorem yonedaEquiv_symm_app_apply {X : C} {F : Cᵒᵖ ⥤ Type v₁} (x : F.ob
     (f : Y.unop ⟶ X) : (yonedaEquiv.symm x).app Y f = F.map f.op x :=
   rfl
 
+/-- See also `yonedaEquiv_naturality'` for a more general version. -/
 lemma yonedaEquiv_naturality {X Y : C} {F : Cᵒᵖ ⥤ Type v₁} (f : yoneda.obj X ⟶ F)
     (g : Y ⟶ X) : F.map g.op (yonedaEquiv f) = yonedaEquiv (yoneda.map g ≫ f) := by
   change (f.app (op X) ≫ F.map g.op) (𝟙 X) = f.app (op Y) (𝟙 Y ≫ g)
@@ -293,6 +294,9 @@ lemma yonedaEquiv_naturality {X Y : C} {F : Cᵒᵖ ⥤ Type v₁} (f : yoneda.o
   dsimp
   simp
 
+/-- Variant of `yonedaEquiv_naturality` with general `g`. This is technically strictly more general
+    than `yonedaEquiv_naturality`, but `yonedaEquiv_naturality` is sometimes preferable because it
+    can avoid the "motive is not type correct" error. -/
 lemma yonedaEquiv_naturality' {X Y : Cᵒᵖ} {F : Cᵒᵖ ⥤ Type v₁} (f : yoneda.obj (unop X) ⟶ F)
     (g : X ⟶ Y) : F.map g (yonedaEquiv f) = yonedaEquiv (yoneda.map g.unop ≫ f) :=
   yonedaEquiv_naturality _ _
@@ -305,10 +309,14 @@ lemma yonedaEquiv_yoneda_map {X Y : C} (f : X ⟶ Y) : yonedaEquiv (yoneda.map f
   rw [yonedaEquiv_apply]
   simp
 
+/-- See also `map_yonedaEquiv'` for a more general version. -/
 lemma map_yonedaEquiv {X Y : C} {F : Cᵒᵖ ⥤ Type v₁} (f : yoneda.obj X ⟶ F)
     (g : Y ⟶ X) : F.map g.op (yonedaEquiv f) = f.app (op Y) g := by
   rw [yonedaEquiv_naturality, yonedaEquiv_comp, yonedaEquiv_yoneda_map]
 
+/-- Variant of `map_yonedaEquiv` with general `g`. This is technically strictly more general
+    than `map_yonedaEquiv`, but `map_yonedaEquiv` is sometimes preferable because it
+    can avoid the "motive is not type correct" error. -/
 lemma map_yonedaEquiv' {X Y : Cᵒᵖ} {F : Cᵒᵖ ⥤ Type v₁} (f : yoneda.obj (unop X) ⟶ F)
     (g : X ⟶ Y) : F.map g (yonedaEquiv f) = f.app Y g.unop := by
   rw [yonedaEquiv_naturality', yonedaEquiv_comp, yonedaEquiv_yoneda_map]
@@ -407,7 +415,6 @@ def curriedYonedaLemma {C : Type u₁} [SmallCategory C] :
     simp [← FunctorToTypes.naturality])
 
 /-- The curried version of the Yoneda lemma. -/
-@[simps! (config := { isSimp := false, fullyApplied := false }) hom_app_app inv_app_app]
 def largeCurriedYonedaLemma {C : Type u₁} [Category.{v₁} C] :
     yoneda.op ⋙ coyoneda ≅
       evaluation Cᵒᵖ (Type v₁) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u₁} :=
