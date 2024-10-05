@@ -310,6 +310,6 @@ lemma isTriangulated_of_essSurj_mapComposableArrows_two
   exact ⟨Octahedron.ofIso (e₁ := (e.app 0).symm) (e₂ := (e.app 1).symm) (e₃ := (e.app 2).symm)
     (comm₁₂ := ComposableArrows.naturality' e.inv 0 1)
     (comm₂₃ := ComposableArrows.naturality' e.inv 1 2)
-    (H := (someOctahedron rfl h₁₂' h₂₃' h₁₃').map F) _ _ _ _ _⟩
+    (H := (someOctahedron rfl h₁₂' h₂₃' h₁₃').map F) ..⟩
 
 end CategoryTheory
