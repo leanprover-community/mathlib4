@@ -628,6 +628,10 @@ lemma coyonedaEquiv_coyoneda_map {X Y : C} (f : X ⟶ Y) :
   rw [coyonedaEquiv_apply]
   simp
 
+lemma map_coyonedaEquiv {X Y : C} {F : C ⥤ Type v₁} (f : coyoneda.obj (op X) ⟶ F)
+    (g : X ⟶ Y) : F.map g (coyonedaEquiv f) = f.app Y g := by
+  rw [coyonedaEquiv_naturality, coyonedaEquiv_comp, coyonedaEquiv_coyoneda_map]
+
 lemma coyonedaEquiv_symm_map {X Y : C} (f : X ⟶ Y) {F : C ⥤ Type v₁} (t : F.obj X) :
     coyonedaEquiv.symm (F.map f t) = coyoneda.map f.op ≫ coyonedaEquiv.symm t := by
   obtain ⟨u, rfl⟩ := coyonedaEquiv.surjective t
