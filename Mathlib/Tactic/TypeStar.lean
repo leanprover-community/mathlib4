@@ -1,12 +1,10 @@
 /-
-Copyright (c) 2023 Matthew Ballard. All rights reserved.
+Copyright (c) 2023 Matthew Robert Ballard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Matthew Ballard
+Authors: Kyle Miller
 -/
-import Lean
-import Std
-import Mathlib.Tactic.PPWithUniv
-import Mathlib.Tactic.ExtendDoc
+import Mathlib.Init
+import Lean.Elab.Term
 
 /-!
 # Support for `Sort*` and `Type*`.

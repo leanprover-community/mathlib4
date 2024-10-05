@@ -3,9 +3,8 @@ Copyright (c) 2023 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.NumberTheory.Divisors
-import Mathlib.Data.Nat.Order.Lemmas
-import Mathlib.Data.Finset.Pointwise
 
 /-!
 #  `Nat.divisors` as a multiplicative homomorpism
@@ -15,14 +14,18 @@ exhibiting `Nat.divisors` as a multiplicative homomorphism from `ℕ` to `Finset
 -/
 
 open Nat Finset
-open scoped Pointwise BigOperators
+open scoped Pointwise
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefix below.
+-/
 /-- The divisors of a product of natural numbers are the pointwise product of the divisors of the
 factors. -/
 lemma Nat.divisors_mul (m n : ℕ) : divisors (m * n) = divisors m * divisors n := by
   ext k
   simp_rw [mem_mul, mem_divisors, dvd_mul, mul_ne_zero_iff, ← exists_and_left, ← exists_and_right]
-  simp only [and_assoc, and_comm, and_left_comm]
+  simp only [_root_.and_assoc, _root_.and_comm, and_left_comm]
 
 /-- `Nat.divisors` as a `MonoidHom`. -/
 @[simps]
@@ -41,5 +44,5 @@ lemma Multiset.nat_divisors_prod (s : Multiset ℕ) : divisors s.prod = (s.map d
   map_multiset_prod Nat.divisorsHom s
 
 lemma Finset.nat_divisors_prod {ι : Type*} (s : Finset ι) (f : ι → ℕ) :
-    divisors (∏ i in s, f i) = ∏ i in s, divisors (f i) :=
+    divisors (∏ i ∈ s, f i) = ∏ i ∈ s, divisors (f i) :=
   map_prod Nat.divisorsHom f s

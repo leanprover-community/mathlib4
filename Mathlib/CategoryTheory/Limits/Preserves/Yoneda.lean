@@ -3,34 +3,35 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+import Mathlib.CategoryTheory.Limits.FunctorToTypes
 
 /-!
 # Yoneda preserves certain colimits
 
-We prove the isomorphism `Hom(YX, colim_i Fi) ≅ colim_i Hom(YX, Fi)`, where `Y` is the Yoneda
-embedding. We state this in a way that is functorial in `X`.
+Given a bifunctor `F : J ⥤ Cᵒᵖ ⥤ Type v`, we prove the isomorphism
+`Hom(YX, colim_j F(j, -)) ≅ colim_j Hom(YX, F(j, -))`, where `Y` is the Yoneda embedding.
+
+We state this in two ways. One is functorial in `X` and stated as a natural isomorphism of functors
+`yoneda.op ⋙ yoneda.obj (colimit F) ≅ yoneda.op ⋙ colimit (F ⋙ yoneda)`, and from this we
+deduce the more traditional preservation statement
+`PreservesColimit F (coyoneda.obj (op (yoneda.obj X)))`.
 
 The proof combines the Yoneda lemma with the fact that colimits in functor categories are computed
 pointwise.
 
 ## See also
 
-There is also a relative version of this statement where `F` lands in `Over A` for some presheaf
+There is also a relative version of this statement where `F : J ⥤ Over A` for some presheaf
 `A`, see `CategoryTheory.Comma.Presheaf`.
 
-## Future work
-
-Another way to express this preservation property would be
-`PreservesColimit F (coyoneda.obj (Opposite.op (yoneda.obj X)))` for all `X : C`.
 -/
 
-universe v u
+universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open CategoryTheory.Limits
+open CategoryTheory.Limits Opposite
 
 variable {C : Type u} [Category.{v} C]
 
@@ -41,15 +42,37 @@ noncomputable def yonedaYonedaColimit :
     yoneda.op ⋙ yoneda.obj (colimit F) ≅ yoneda.op ⋙ colimit (F ⋙ yoneda) := calc
   yoneda.op ⋙ yoneda.obj (colimit F)
     ≅ colimit F ⋙ uliftFunctor.{u} := yonedaOpCompYonedaObj (colimit F)
-  _ ≅ F.flip ⋙ colim ⋙ uliftFunctor.{u} := isoWhiskerRight (colimitIsoFlipCompColim _) _
+  _ ≅ F.flip ⋙ colim ⋙ uliftFunctor.{u} :=
+        isoWhiskerRight (colimitIsoFlipCompColim F) uliftFunctor.{u}
   _ ≅ F.flip ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u} ⋙ colim :=
-        isoWhiskerLeft _ (preservesColimitNatIso _)
-  _ ≅ (evaluation _ _ ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u}) ⋙
-          (whiskeringLeft _ _ _).obj F ⋙ colim :=
-        Iso.refl _
-  _ ≅ (yoneda.op ⋙ coyoneda) ⋙ (whiskeringLeft _ _ _).obj F ⋙ colim :=
-        isoWhiskerRight curriedYonedaLemma.symm _
-  _ ≅ yoneda.op ⋙ (F ⋙ yoneda).flip ⋙ colim := Iso.refl _
-  _ ≅ yoneda.op ⋙ colimit (F ⋙ yoneda) := isoWhiskerLeft _ (colimitIsoFlipCompColim _).symm
+        isoWhiskerLeft F.flip (preservesColimitNatIso uliftFunctor.{u})
+  _ ≅ (yoneda.op ⋙ coyoneda ⋙ (whiskeringLeft _ _ _).obj F) ⋙ colim := isoWhiskerRight
+        (isoWhiskerRight largeCurriedYonedaLemma.symm ((whiskeringLeft _ _ _).obj F)) colim
+  _ ≅ yoneda.op ⋙ colimit (F ⋙ yoneda) :=
+        isoWhiskerLeft yoneda.op (colimitIsoFlipCompColim (F ⋙ yoneda)).symm
+
+theorem yonedaYonedaColimit_app_inv {X : C} : ((yonedaYonedaColimit F).app (op X)).inv =
+    (colimitObjIsoColimitCompEvaluation _ _).hom
+      ≫ (colimit.post F (coyoneda.obj (op (yoneda.obj X)))) := by
+  dsimp [yonedaYonedaColimit]
+  simp only [Category.id_comp, Iso.cancel_iso_hom_left]
+  apply colimit.hom_ext
+  intro j
+  rw [colimit.ι_post, ι_colimMap_assoc]
+  simp only [← CategoryTheory.Functor.assoc, comp_evaluation]
+  rw [ι_preservesColimitsIso_inv_assoc, ← Functor.map_comp_assoc]
+  simp only [← comp_evaluation]
+  rw [colimitObjIsoColimitCompEvaluation_ι_inv, whiskerLeft_app]
+  ext η Y f
+  simp [largeCurriedYonedaLemma, yonedaOpCompYonedaObj, FunctorToTypes.colimit.map_ι_apply,
+    map_yonedaEquiv]
+
+noncomputable instance {X : C} : PreservesColimit F (coyoneda.obj (op (yoneda.obj X))) := by
+  suffices IsIso (colimit.post F (coyoneda.obj (op (yoneda.obj X)))) from
+    preservesColimitOfIsIsoPost _ _
+  suffices colimit.post F (coyoneda.obj (op (yoneda.obj X))) =
+      (colimitObjIsoColimitCompEvaluation _ _).inv ≫ ((yonedaYonedaColimit F).app (op X)).inv from
+    this ▸ inferInstance
+  rw [yonedaYonedaColimit_app_inv, Iso.inv_hom_id_assoc]
 
 end CategoryTheory
