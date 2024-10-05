@@ -25,7 +25,6 @@ assert_not_exists comap_norm_atTop
 assert_not_exists DilationEquiv
 assert_not_exists Finset.sup_mul_le_mul_sup_of_nonneg
 assert_not_exists IsOfFinOrder
-assert_not_exists Isometry.norm_map_of_map_one
 assert_not_exists NNReal.isOpen_Ico_zero
 assert_not_exists Rat.norm_cast_real
 assert_not_exists RestrictScalars
