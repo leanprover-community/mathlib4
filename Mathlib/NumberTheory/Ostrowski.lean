@@ -283,20 +283,18 @@ lemma mulRingNorm_apply_le_sum_digits (n : ℕ) {m : ℕ} (hm : 1 < m) :
   f n = f ((Nat.ofDigits m L : ℕ) : ℚ) := by rw [Nat.ofDigits_digits m n]
     _ = f (L'.sum) := by rw [Nat.ofDigits_eq_sum_mapIdx]; norm_cast
     _ ≤ (L'.map f).sum := mulRingNorm_sum_le_sum_mulRingNorm L' f
-    _ ≤ (L.mapIdx fun i _ ↦ m * (f m) ^ i).sum := by
-      simp only [hL', List.mapIdx_eq_enum_map, List.map_map]
-      apply List.sum_le_sum
-      rintro ⟨i, a⟩ hia
-      dsimp [Function.uncurry]
-      replace hia := List.mem_enumFrom hia
-      push_cast
-      rw [map_mul, map_pow]
-      apply mul_le_mul_of_nonneg_right (le_of_lt (hcoef _))
-        (pow_nonneg (apply_nonneg f ↑m) i)
-      simp only [zero_le, zero_add, tsub_zero, true_and] at hia
-      refine List.mem_iff_get.mpr ?_
-      use ⟨i, hia.1⟩
-      exact (Eq.symm hia.2)
+    _ ≤ (L.mapIdx fun i _ ↦ m * (f m) ^ i).sum := ?_
+  simp only [hL', List.mapIdx_eq_enum_map, List.map_map]
+  apply List.sum_le_sum
+  rintro ⟨i, a⟩ hia
+  dsimp [Function.uncurry]
+  replace hia := List.mem_enumFrom hia
+  push_cast
+  rw [map_mul, map_pow]
+  apply mul_le_mul_of_nonneg_right (le_of_lt (hcoef _))
+    (pow_nonneg (apply_nonneg f ↑m) i)
+  simp only [zero_le, zero_add, tsub_zero, true_and] at hia
+  exact List.mem_iff_get.mpr ⟨⟨i, hia.1⟩, hia.2.symm)
 
 open Real Nat
 open Filter
