@@ -575,6 +575,8 @@ def CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow (A : Cᵒᵖ 
     CostructuredArrow.toOver yoneda A ⋙ (overEquivPresheafCostructuredArrow A).functor ≅ yoneda :=
   toOverYonedaCompRestrictedYoneda A
 
+#check Functor.FullyFaithful
+
 /-- This isomorphism says that hom-sets in the category `Over A` for a presheaf `A` where the domain
     is of the form `(CostructuredArrow.toOver yoneda A).obj X` can instead be interpreted as
     hom-sets in the category `(CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v` where the domain is of the
@@ -585,7 +587,7 @@ def CostructuredArrow.toOverCompYoneda (A : Cᵒᵖ ⥤ Type v) (T : Over A) :
     (CostructuredArrow.toOver yoneda A).op ⋙ yoneda.obj T ≅
       yoneda.op ⋙ yoneda.obj ((overEquivPresheafCostructuredArrow A).functor.obj T) :=
   NatIso.ofComponents (fun X =>
-    (equivOfFullyFaithful (overEquivPresheafCostructuredArrow A).functor).toIso ≪≫
+    (overEquivPresheafCostructuredArrow A).fullyFaithfulFunctor.homEquiv.toIso ≪≫
       (Iso.homCongr
         ((CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow A).app X.unop)
         (Iso.refl _)).toIso)
@@ -601,7 +603,7 @@ def CostructuredArrow.toOverCompCoyoneda (A : Cᵒᵖ ⥤ Type v) :
     yoneda.op ⋙ coyoneda ⋙
       (whiskeringLeft _ _ _).obj (overEquivPresheafCostructuredArrow A).functor :=
   NatIso.ofComponents (fun X => NatIso.ofComponents (fun Y =>
-    (equivOfFullyFaithful (overEquivPresheafCostructuredArrow A).functor).toIso ≪≫
+    (overEquivPresheafCostructuredArrow A).fullyFaithfulFunctor.homEquiv.toIso ≪≫
       (Iso.homCongr
         ((CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow A).app X.unop)
         (Iso.refl _)).toIso)) (by aesop_cat)
