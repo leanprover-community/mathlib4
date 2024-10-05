@@ -579,6 +579,22 @@ def _root_.LinearMap.compQuadraticMap' [CommSemiring S] [Algebra S R] [Module S 
     (f : N →ₗ[S] P) (Q : QuadraticMap R M N) : QuadraticMap S M P :=
   _root_.LinearMap.compQuadraticMap f Q.restrictScalars
 
+/-- When `N` and `P` are equivalent, quadratic maps on `M` into `N` are equivalent to quadratic
+maps on `M` into `P`. -/
+@[simps]
+def congr₂ (e : N ≃ₗ[R] P) : QuadraticMap R M N ≃ₗ[R] QuadraticMap R M P where
+  toFun Q := e.compQuadraticMap Q
+  invFun Q := e.symm.compQuadraticMap Q
+  left_inv _ := ext fun x => by
+    simp only [LinearMap.compQuadraticMap_apply, LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply]
+  right_inv _ := ext fun x => by
+    simp only [LinearMap.compQuadraticMap_apply, LinearEquiv.coe_coe, LinearEquiv.apply_symm_apply]
+  map_add' _ _ := ext fun x => by
+    simp only [LinearMap.compQuadraticMap_apply, add_apply, map_add, LinearEquiv.coe_coe]
+  map_smul' _ _ := ext fun x => by
+    simp only [LinearMap.compQuadraticMap_apply, smul_apply, LinearMapClass.map_smul,
+      LinearEquiv.coe_coe, RingHom.id_apply]
+
 end Comp
 section NonUnitalNonAssocSemiring
 
