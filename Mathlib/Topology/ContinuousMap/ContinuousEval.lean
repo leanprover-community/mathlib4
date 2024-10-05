@@ -19,6 +19,12 @@ section ContinuousEvalConst
 variable {F X Y Z : Type*} [FunLike F X Y] [TopologicalSpace F] [TopologicalSpace Y]
   [ContinuousEvalConst F X Y] [TopologicalSpace Z] {f : Z → F} {s : Set Z} {z : Z}
 
+-- TODO: docstring
+theorem ContinuousEvalConst.of_continuous_forget {F' : Type*} [FunLike F' X Y] [TopologicalSpace F']
+    {f : F' → F} (hc : Continuous f) (hf : ∀ g, ⇑(f g) = g := by intro; rfl) :
+    ContinuousEvalConst F' X Y where
+  continuous_eval_const x := by simpa only [← hf] using (continuous_eval_const x).comp hc
+
 @[continuity, fun_prop]
 theorem Continuous.eval_const (hf : Continuous f) (x : X) : Continuous (f · x) :=
   (continuous_eval_const x).comp hf
@@ -69,9 +75,15 @@ variable {F X Y Z : Type*} [FunLike F X Y]
   [TopologicalSpace F] [TopologicalSpace X] [TopologicalSpace Y] [ContinuousEval F X Y]
   [TopologicalSpace Z] {f : Z → F} {g : Z → X} {s : Set Z} {z : Z}
 
+@[continuity, fun_prop]
 protected theorem Continuous.eval (hf : Continuous f) (hg : Continuous g) :
     Continuous fun z ↦ f z (g z) :=
   continuous_eval.comp (hf.prod_mk hg)
+
+theorem ContinuousEval.of_continuous_forget {F' : Type*} [FunLike F' X Y] [TopologicalSpace F']
+    {f : F' → F} (hc : Continuous f) (hf : ∀ g, ⇑(f g) = g := by intro; rfl) :
+    ContinuousEval F' X Y where
+  continuous_eval := by simpa only [← hf] using hc.fst'.eval continuous_snd
 
 instance (priority := 100) ContinuousEval.toContinuousMapClass : ContinuousMapClass F X Y where
   map_continuous _ := continuous_const.eval continuous_id
