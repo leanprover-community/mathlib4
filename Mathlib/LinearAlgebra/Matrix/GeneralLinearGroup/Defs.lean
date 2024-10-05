@@ -178,7 +178,7 @@ lemma map_mul_map_inv (g : GL n R) : map f g * map f g⁻¹ = 1 := by
   simp only [map_inv, mul_inv_cancel]
 
 lemma map_inv_mul_map (g : GL n R) : map f g⁻¹ * map f g = 1 := by
-  simp only [@map_inv, @inv_mul_cancel]
+  simp only [map_inv, inv_mul_cancel]
 
 @[simp]
 lemma coe_map_mul_map_inv (g : GL n R) : g.val.map f * g.val⁻¹.map f = 1 := by
