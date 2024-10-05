@@ -447,6 +447,31 @@ def IntermediateFieldEquivClosedSubgroup [IsGalois k K] :
     show L₁.fixingSubgroup ≥ L₂.fixingSubgroup ↔ L₁ ≤ L₂
     rw [← fixedField_fixingSubgroup L₂, IntermediateField.le_iff_le, fixedField_fixingSubgroup L₂]
 
+/-- The Galois correspondence as a `GaloisInsertion` -/
+def GaloisInsertionIntermediateFieldSubgroup [IsGalois k K] :
+    GaloisInsertion (OrderDual.toDual ∘ fun (E : IntermediateField k K) ↦
+      (⟨E.fixingSubgroup, fixingSubgroup_isClosed E⟩ : ClosedSubgroup (K ≃ₐ[k] K)))
+      ((fun (H : ClosedSubgroup (K ≃ₐ[k] K)) ↦ IntermediateField.fixedField H) ∘
+        OrderDual.toDual) where
+  choice E _ := ⟨E.fixingSubgroup, fixingSubgroup_isClosed E⟩
+  gc E H := (IntermediateField.le_iff_le H.1 E).symm
+  le_l_u H := by
+    simp only [Function.comp_apply, fixingSubgroup_fixedField]
+    rfl
+  choice_eq _ _ := rfl
+
+/-- The Galois correspondence as a `GaloisCoinsertion` -/
+def GaloisCoinsertionIntermediateFieldSubgroup [IsGalois k K] :
+    GaloisCoinsertion (OrderDual.toDual ∘
+      fun (E : IntermediateField k K) ↦
+      (⟨E.fixingSubgroup, fixingSubgroup_isClosed E⟩ : ClosedSubgroup (K ≃ₐ[k] K)))
+      ((fun (H : ClosedSubgroup (K ≃ₐ[k] K)) ↦ IntermediateField.fixedField H) ∘
+        OrderDual.toDual) where
+  choice H _ := IntermediateField.fixedField H.1
+  gc E H := (IntermediateField.le_iff_le H.1 E).symm
+  u_l_le K := le_of_eq (fixedField_fixingSubgroup K)
+  choice_eq _ _ := rfl
+
 private lemma IntermediateField.finiteDimensional_of_le {M N : IntermediateField k K}
     (le : M ≤ N) [FiniteDimensional k N] : FiniteDimensional k M := by
   let i : M →ₐ[k] N := {
@@ -455,8 +480,7 @@ private lemma IntermediateField.finiteDimensional_of_le {M N : IntermediateField
     map_mul' := fun _ _ => rfl
     map_zero' := rfl
     map_add' := fun _ _ => rfl
-    commutes' := fun _ => rfl
-  }
+    commutes' := fun _ => rfl }
   apply FiniteDimensional.of_injective (AlgHom.toLinearMap i)
   intro _ _ h
   apply_fun Subtype.val at h
