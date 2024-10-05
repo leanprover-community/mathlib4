@@ -272,7 +272,7 @@ section Archimedean
 /-- Given an two integers `n, m` with `m > 1` the mulRingNorm of `n` is bounded by
 `m + m * f m + m * (f m) ^ 2 + ... + m * (f m) ^ d` where `d` is the number of digits of the
 expansion of `n` in base `m`. -/
-lemma MulRingNorm_le_sum_digits (n : ℕ) {m : ℕ} (hm : 1 < m):
+lemma mulRingNorm_apply_le_sum_digits (n : ℕ) {m : ℕ} (hm : 1 < m) :
     f n ≤ ((Nat.digits m n).mapIdx fun i _ ↦ m * (f m) ^ i).sum := by
   set L := Nat.digits m n
   set L' : List ℚ := List.map Nat.cast (L.mapIdx fun i a ↦ (a * m ^ i)) with hL'
