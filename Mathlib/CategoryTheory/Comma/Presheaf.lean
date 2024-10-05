@@ -3,7 +3,7 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Conj
+import Mathlib.CategoryTheory.HomCongr
 import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.Limits.Preserves.Yoneda
 import Mathlib.CategoryTheory.Limits.Over
@@ -605,6 +605,7 @@ def CostructuredArrow.toOverCompCoyoneda (A : Cᵒᵖ ⥤ Type v) :
         ((CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow A).app X.unop)
         (Iso.refl _)).toIso)) (by aesop_cat)
 
+<<<<<<< HEAD
 open CategoryTheory.Limits
 
 variable {J : Type v} [SmallCategory J] {A : Cᵒᵖ ⥤ Type v} (F : J ⥤ Over A)
@@ -639,4 +640,6 @@ noncomputable def CostructuredArrow.toOverCompYonedaColimit :
   _ ≅ (CostructuredArrow.toOver yoneda A).op ⋙ colimit (F ⋙ yoneda) :=
       isoWhiskerLeft _ (colimitIsoFlipCompColim _).symm
 
+=======
+>>>>>>> to-over-comp-yoneda
 end CategoryTheory
