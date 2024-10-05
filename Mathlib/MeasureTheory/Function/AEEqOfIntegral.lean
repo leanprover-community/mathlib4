@@ -155,7 +155,7 @@ theorem ae_const_le_iff_forall_lt_measure_zero {β} [LinearOrder β] [Topologica
 lemma ae_le_const_iff_forall_gt_measure_zero {β} [LinearOrder β] [TopologicalSpace β]
     [OrderTopology β] [FirstCountableTopology β] {μ : Measure α} (f : α → β) (c : β) :
     (∀ᵐ x ∂μ, f x ≤ c) ↔ ∀ b, c < b → μ {x | b ≤ f x} = 0 :=
-  @ae_const_le_iff_forall_lt_measure_zero _ _ _ βᵒᵈ _ _ _ _ _ _
+  ae_const_le_iff_forall_lt_measure_zero (β := βᵒᵈ) _ _
 
 section ENNReal
 
