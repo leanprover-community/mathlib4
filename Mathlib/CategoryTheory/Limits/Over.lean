@@ -53,10 +53,6 @@ example [HasColimits C] : PreservesColimits (forget X) :=
 example : ReflectsColimits (forget X) :=
   inferInstance
 
-instance createsColimitOfSizeMapCompForget {Y : C} (f : X ⟶ Y) :
-    CreatesColimitsOfSize.{w, w'} (map f ⋙ forget Y) :=
-  show CreatesColimitsOfSize.{w, w'} (forget X) from inferInstance
-
 theorem epi_left_of_epi [HasPushouts C] {f g : Over X} (h : f ⟶ g) [Epi h] : Epi h.left :=
   CostructuredArrow.epi_left_of_epi _
 
