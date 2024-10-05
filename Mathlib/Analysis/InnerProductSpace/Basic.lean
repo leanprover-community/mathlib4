@@ -548,8 +548,30 @@ theorem inner_re_symm (x y : E) : re ⟪x, y⟫ = re ⟪y, x⟫ := by rw [← in
 
 theorem inner_im_symm (x y : E) : im ⟪x, y⟫ = -im ⟪y, x⟫ := by rw [← inner_conj_symm, conj_im]
 
+section Algebra
+variable {𝕝 : Type*} [CommSemiring 𝕝] [StarRing 𝕝] [Algebra 𝕝 𝕜] [Module 𝕝 E]
+  [IsScalarTower 𝕝 𝕜 E] [StarModule 𝕝 𝕜]
+
+/-- See `inner_smul_left` for the common special when `𝕜 = 𝕝`. -/
+lemma inner_smul_left_eq_star_smul (x y : E) (r : 𝕝) : ⟪r • x, y⟫ = r† • ⟪x, y⟫ := by
+  rw [← algebraMap_smul 𝕜 r, InnerProductSpace.smul_left, starRingEnd_apply, starRingEnd_apply,
+    ← algebraMap_star_comm, ← smul_eq_mul, algebraMap_smul]
+
+/-- Special case of `inner_smul_left_eq_star_smul` when the acting ring has a trivial star
+(eg `ℕ`, `ℤ`, `ℚ≥0`, `ℚ`, `ℝ`). -/
+lemma inner_smul_left_eq_smul [TrivialStar 𝕝] (x y : E) (r : 𝕝) : ⟪r • x, y⟫ = r • ⟪x, y⟫ := by
+  rw [inner_smul_left_eq_star_smul, starRingEnd_apply, star_trivial]
+
+/-- See `inner_smul_right` for the common special when `𝕜 = 𝕝`. -/
+lemma inner_smul_right_eq_smul (x y : E) (r : 𝕝) : ⟪x, r • y⟫ = r • ⟪x, y⟫ := by
+  rw [← inner_conj_symm, inner_smul_left_eq_star_smul, starRingEnd_apply, starRingEnd_apply,
+    star_smul, star_star, ← starRingEnd_apply, inner_conj_symm]
+
+end Algebra
+
+/-- See `inner_smul_left_eq_star_smul` for the case of a general algebra action. -/
 theorem inner_smul_left (x y : E) (r : 𝕜) : ⟪r • x, y⟫ = r† * ⟪x, y⟫ :=
-  InnerProductSpace.smul_left _ _ _
+  inner_smul_left_eq_star_smul ..
 
 theorem real_inner_smul_left (x y : F) (r : ℝ) : ⟪r • x, y⟫_ℝ = r * ⟪x, y⟫_ℝ :=
   inner_smul_left _ _ _
@@ -557,8 +579,9 @@ theorem real_inner_smul_left (x y : F) (r : ℝ) : ⟪r • x, y⟫_ℝ = r * �
 theorem inner_smul_real_left (x y : E) (r : ℝ) : ⟪(r : 𝕜) • x, y⟫ = r • ⟪x, y⟫ := by
   rw [inner_smul_left, conj_ofReal, Algebra.smul_def]
 
-theorem inner_smul_right (x y : E) (r : 𝕜) : ⟪x, r • y⟫ = r * ⟪x, y⟫ := by
-  rw [← inner_conj_symm, inner_smul_left, RingHom.map_mul, conj_conj, inner_conj_symm]
+/-- See `inner_smul_right_eq_smul` for the case of a general algebra action. -/
+theorem inner_smul_right (x y : E) (r : 𝕜) : ⟪x, r • y⟫ = r * ⟪x, y⟫ :=
+  inner_smul_right_eq_smul ..
 
 theorem real_inner_smul_right (x y : F) (r : ℝ) : ⟪x, r • y⟫_ℝ = r * ⟪x, y⟫_ℝ :=
   inner_smul_right _ _ _
