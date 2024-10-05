@@ -9,13 +9,15 @@ import Mathlib.Data.SProd
 /-!
 # Sets in product and pi types
 
-This file defines the product of sets in `α × β` and in `Π i, α i` along with the diagonal of a
-type.
+This file proves basic properties of product of sets in `α × β` and in `Π i, α i`, and of the
+diagonal of a type.
 
 ## Main declarations
 
+This file contains basic results on the following notions, which are defined in `Set.Operations`.
+
 * `Set.prod`: Binary product of sets. For `s : Set α`, `t : Set β`, we have
-  `s.prod t : Set (α × β)`.
+  `s.prod t : Set (α × β)`. Denoted by `s ×ˢ t`.
 * `Set.diagonal`: Diagonal of a type. `Set.diagonal α = {(x, x) | x : α}`.
 * `Set.offDiag`: Off-diagonal. `s ×ˢ s` without the diagonal.
 * `Set.pi`: Arbitrary product of sets.
@@ -299,6 +301,9 @@ theorem fst_image_prod (s : Set β) {t : Set α} (ht : t.Nonempty) : Prod.fst ''
     let ⟨x, hx⟩ := ht
     ⟨(y, x), ⟨hy, hx⟩, rfl⟩
 
+lemma mapsTo_fst_prod {s : Set α} {t : Set β} : MapsTo Prod.fst (s ×ˢ t) s :=
+  fun _ hx ↦ (mem_prod.1 hx).1
+
 theorem prod_subset_preimage_snd (s : Set α) (t : Set β) : s ×ˢ t ⊆ Prod.snd ⁻¹' t :=
   inter_subset_right
 
@@ -309,6 +314,9 @@ theorem snd_image_prod {s : Set α} (hs : s.Nonempty) (t : Set β) : Prod.snd ''
   (snd_image_prod_subset _ _).antisymm fun y y_in =>
     let ⟨x, x_in⟩ := hs
     ⟨(x, y), ⟨x_in, y_in⟩, rfl⟩
+
+lemma mapsTo_snd_prod {s : Set α} {t : Set β} : MapsTo Prod.snd (s ×ˢ t) t :=
+  fun _ hx ↦ (mem_prod.1 hx).2
 
 theorem prod_diff_prod : s ×ˢ t \ s₁ ×ˢ t₁ = s ×ˢ (t \ t₁) ∪ (s \ s₁) ×ˢ t := by
   ext x
