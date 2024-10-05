@@ -286,7 +286,12 @@ theorem coeffSpan_self {x : E} (nx : x ≠ 0) :
   apply smul_left_injective ℝ nx
   simp [this]
 
-theorem exists_eq_norm (x : E) (nx : x ≠ 0) : ∃ f : E →L[ℝ] ℝ, ‖f‖ = 1 ∧ f x = ‖x‖ := by
+theorem exists_eq_norm [Nontrivial E] (x : E) : ∃ f : E →L[ℝ] ℝ, ‖f‖ = 1 ∧ f x = ‖x‖ := by
+  wlog nx : x ≠ 0
+  · cases not_ne_iff.1 nx
+    obtain ⟨x, nx⟩ := exists_ne (0 : E)
+    obtain ⟨f, nf, -⟩ := this x nx
+    exact ⟨f, nf, by simp⟩
   let g' : span ℝ {x} →ₗ[ℝ] ℝ :=
     { toFun := fun y ↦ (CoeffSpan nx y) * ‖x‖
       map_add' := fun y z ↦ by simp [add_mul]
