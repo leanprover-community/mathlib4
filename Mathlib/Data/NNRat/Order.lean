@@ -17,3 +17,4 @@ deriving instance CanonicallyLinearOrderedAddCommMonoid for NNRat
 
 -- TODO: `deriving instance OrderedSub for NNRat` doesn't work yet, so we add the instance manually
 instance NNRat.instOrderedSub : OrderedSub ℚ≥0 := Nonneg.orderedSub
+instance NNRat.instCanonicallyOrderedAdd : CanonicallyOrderedAdd ℚ≥0 := Nonneg.canonicallyOrderedAdd
