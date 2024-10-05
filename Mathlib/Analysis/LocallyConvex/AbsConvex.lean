@@ -10,9 +10,15 @@ import Mathlib.Analysis.Convex.Gauge
 /-!
 # Absolutely convex sets
 
-A set is called absolutely convex or disked if it is convex and balanced.
-The importance of absolutely convex sets comes from the fact that every locally convex
+A set `s` in an commutative monoid `E` is called absolutely convex or disked if it is convex and
+balanced. The importance of absolutely convex sets comes from the fact that every locally convex
 topological vector space has a basis consisting of absolutely convex sets.
+
+Mathlib's definition of `Convex` requires the scalars to be an `OrderedSemiring` whereas the
+definition of `Balanced` requires the scalars to be a `SeminormedRing`. Mathlib doesn't currently
+have a concept of a semi-normed ordered ring, so we define a set as `AbsConvex` if it is balanced
+over a `SeminormedRing` `𝕜` and convex over `ℝ`, assuming `IsScalarTower ℝ 𝕜 E` and
+`SMulCommClass ℝ 𝕜 E` where required.
 
 ## Main definitions
 
