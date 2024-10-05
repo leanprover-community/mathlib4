@@ -150,7 +150,7 @@ structure Universal where
   fac {M' : PresheafOfModules (R ⋙ forget₂ CommRingCat RingCat)}
     (d' : M'.Derivation φ) : d.postcomp (desc d') = d' := by aesop_cat
   postcomp_injective {M' : PresheafOfModules (R ⋙ forget₂ CommRingCat RingCat)}
-    (φ φ' : M ⟶ M') (h : d.postcomp φ = d.postcomp φ') : φ = φ' := by aesop_cat
+    {φ φ' : M ⟶ M'} (h : d.postcomp φ = d.postcomp φ') : φ = φ' := by aesop_cat
 
 attribute [simp] Universal.fac
 
@@ -167,6 +167,29 @@ instance : Subsingleton d.Universal where
     apply h₁.postcomp_injective
     simp
 
+namespace Universal
+
+variable {d} (hd : d.Universal)
+
+@[simp]
+lemma desc_postcomp {M' : PresheafOfModules.{v} (R ⋙ forget₂ CommRingCat RingCat)}
+    (f : M ⟶ M') : hd.desc (d.postcomp f) = f :=
+  hd.postcomp_injective (by simp)
+
+@[simps]
+def homEquiv {M' : PresheafOfModules.{v} (R ⋙ forget₂ CommRingCat RingCat)} :
+    (M ⟶ M') ≃ M'.Derivation φ where
+  toFun f := d.postcomp f
+  invFun d' := hd.desc d'
+  left_inv f := by simp
+  right_inv d' := by simp
+
+lemma homEquiv_comp {M' M'' : PresheafOfModules.{v} (R ⋙ forget₂ CommRingCat RingCat)}
+    (f : M ⟶ M') (g : M' ⟶ M'') :
+    hd.homEquiv (f ≫ g) = (hd.homEquiv f).postcomp g := rfl
+
+end Universal
+
 end Derivation
 
 /-- The property that there exists a universal derivation for
@@ -174,6 +197,68 @@ a morphism of presheaves of commutative rings `S ⟶ F.op ⋙ R`. -/
 class HasDifferentials : Prop where
   exists_universal_derivation : ∃ (M : PresheafOfModules.{u} (R ⋙ forget₂ _ _))
       (d : M.Derivation φ), Nonempty d.Universal
+
+section
+
+variable [HasDifferentials φ]
+
+noncomputable def relativeDifferentials : PresheafOfModules.{u} (R ⋙ forget₂ _ _) :=
+  (HasDifferentials.exists_universal_derivation (φ := φ)).choose
+
+noncomputable def universalDerivation : (relativeDifferentials φ).Derivation φ :=
+  (HasDifferentials.exists_universal_derivation (φ := φ)).choose_spec.choose
+
+noncomputable def universalUniversalDerivation : (universalDerivation φ).Universal :=
+  (HasDifferentials.exists_universal_derivation (φ := φ)).choose_spec.choose_spec.some
+
+end
+
+/--  Given a morphism of presheaf of commutative rings `φ : S ⟶ F.op ⋙ R`,
+this is functor which sends a presheaf of modules `M` to the abelian group `M.Derivation φ`. -/
+@[simps obj]
+def derivationFunctor :
+    PresheafOfModules.{v} (R ⋙ forget₂ CommRingCat RingCat) ⥤ Ab where
+  obj M := AddCommGrp.of (M.Derivation φ)
+  map f := AddMonoidHom.mk' (fun d ↦ d.postcomp f) (by aesop_cat)
+
+@[simp]
+lemma derivationFunctor_map_apply
+    {M N : PresheafOfModules.{v} (R ⋙ forget₂ CommRingCat RingCat)} (f : M ⟶ N)
+    (d : M.Derivation φ) :
+    DFunLike.coe (α := M.Derivation φ) (β := fun _ ↦ N.Derivation φ)
+      ((derivationFunctor φ).map f) d = d.postcomp f := rfl
+
+namespace Derivation
+
+variable {M φ}
+
+namespace Universal
+
+@[simps]
+def corepresentableBy {d : M.Derivation φ} (hd : d.Universal) :
+    (derivationFunctor.{v} φ ⋙ forget _).CorepresentableBy M where
+  homEquiv := hd.homEquiv
+  homEquiv_comp _ _ := hd.homEquiv_comp _ _
+
+end Universal
+
+variable (h : (derivationFunctor.{v} φ ⋙ forget _).CorepresentableBy M)
+
+def ofCorepresentableBy : M.Derivation φ := h.homEquiv (𝟙 _)
+
+lemma ofCorepresentableBy_postcomp {M' : PresheafOfModules.{v} (R ⋙ forget₂ _ _)} (f : M ⟶ M') :
+    (ofCorepresentableBy h).postcomp f = h.homEquiv f := by
+  simpa using (h.homEquiv_comp f (𝟙 _)).symm
+
+def universalOfCorepresentableBy : (ofCorepresentableBy h).Universal where
+  desc d := h.homEquiv.symm d
+  fac {M'} d := by
+    rw [ofCorepresentableBy_postcomp]
+    apply Equiv.apply_symm_apply
+  postcomp_injective H :=
+    h.homEquiv.injective (by simpa only [ofCorepresentableBy_postcomp] using H)
+
+end Derivation
 
 /-- Given a morphism of presheaves of commutative rings `φ : S ⟶ R`,
 this is the type of relative `φ`-derivation of a presheaf of `R`-modules `M`. -/
@@ -221,7 +306,7 @@ def Universal.mk {d : M.Derivation' φ'}
     (fac : ∀ {M' : PresheafOfModules (R ⋙ forget₂ _ _)}
       (d' : M'.Derivation' φ'), d.postcomp (desc d') = d')
     (postcomp_injective : ∀ {M' : PresheafOfModules (R ⋙ forget₂ _ _)}
-      (α β : M ⟶ M'), d.postcomp α = d.postcomp β → α = β) : d.Universal where
+      {α β : M ⟶ M'}, d.postcomp α = d.postcomp β → α = β) : d.Universal where
   desc := desc
   fac := fac
   postcomp_injective := postcomp_injective
@@ -281,12 +366,14 @@ instance : HasDifferentials (F := 𝟭 D) φ' := ⟨_, _,  ⟨isUniversal' φ'�
 
 end DifferentialsConstruction
 
-namespace Derivation
+section
 
 variable {φ M} {dφ : M.Derivation φ} (hdφ : dφ.Universal)
   {ψ : R ⟶ G.op ⋙ T} {φψ : S ⟶ (F ⋙ G).op ⋙ T} (fac : φψ = φ ≫ whiskerLeft F.op ψ)
   {P : PresheafOfModules.{v} (T ⋙ forget₂ _ _)}
   (dφψ : P.Derivation φψ)
+
+namespace Derivation
 
 local notation "pushforwardψ" =>
   pushforward (F := G) (R := T ⋙ forget₂ _ _) (φ := whiskerRight ψ (forget₂ _ RingCat))
@@ -323,18 +410,37 @@ variable [(pushforward (F := G) (R := T ⋙ forget₂ _ _)
 noncomputable def pullbackMap : (pullbackψ).obj M ⟶ P :=
   ((adjunctionψ).homEquiv M P).symm (hdφ.pushforwardMap fac dφψ)
 
-variable (c : CokernelCofork (hdφ.pullbackMap fac dφψ))
+variable {hdφ fac dφψ}
+  {c : CokernelCofork (hdφ.pullbackMap fac dφψ)} (hc : IsColimit c) (hdφψ : dφψ.Universal)
 
-def quotientDerivation : c.pt.Derivation ψ where
-  d := AddMonoidHom.comp ((forget₂ _ Ab).map (c.π.app _)) dφψ.d
-  d_mul := by simp
-  d_map _ _ := by dsimp; rw [d_map, naturality_apply]; dsimp
-  d_app := sorry
+def corepresentableByOfIsColimitCokernelCofork :
+    (derivationFunctor ψ ⋙ forget _).CorepresentableBy c.pt := by
+  have := hdφψ
+  have := hc
+  sorry
 
-variable {c} (hc : IsColimit c)
+def ofIsColimitCokernelCofork :
+    (ofCorepresentableBy (corepresentableByOfIsColimitCokernelCofork hc hdφψ)).Universal :=
+  universalOfCorepresentableBy (corepresentableByOfIsColimitCokernelCofork hc hdφψ)
 
 end Universal
 
 end Derivation
+
+lemma hasDifferentials_of_tower
+    [HasDifferentials φ] [HasDifferentials φψ]
+    [(pushforward.{u} (F := G) (R := T ⋙ forget₂ _ _)
+      (whiskerRight ψ (forget₂ _ RingCat))).IsRightAdjoint]
+    (fac : φψ = φ ≫ whiskerLeft F.op ψ) :
+    HasDifferentials ψ :=
+  ⟨cokernel (Derivation.Universal.pullbackMap
+    (universalUniversalDerivation φ) fac _), _,
+      ⟨Derivation.Universal.ofIsColimitCokernelCofork (colimit.isColimit _)
+        (universalUniversalDerivation φψ)⟩⟩
+
+-- TODO: deduce the existence of differentials by recuding to absolute differentials
+-- TODO: deduce the exact sequence of a tower
+
+end
 
 end PresheafOfModules
