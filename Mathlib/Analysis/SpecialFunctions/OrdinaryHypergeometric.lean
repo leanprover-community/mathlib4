@@ -78,6 +78,7 @@ theorem ordinaryHypergeometricSeries_apply_eq (x : 𝔸) (n : ℕ) :
     ((ascPochhammer 𝕂 n).eval c)⁻¹ ) • x ^ n := by
   simp [ordinaryHypergeometricSeries]
 
+/-- This naming follows the convention of `NormedSpace.expSeries_apply_eq'`. -/
 theorem ordinaryHypergeometricSeries_apply_eq' (x : 𝔸) :
     (fun n => ordinaryHypergeometricSeries 𝔸 a b c n fun _ => x) =
     fun n => ((n !⁻¹ : 𝕂) * (ascPochhammer 𝕂 n).eval a * (ascPochhammer 𝕂 n).eval b *
