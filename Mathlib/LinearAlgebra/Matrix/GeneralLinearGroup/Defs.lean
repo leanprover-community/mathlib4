@@ -174,7 +174,6 @@ lemma map_det (g : GL n R) : Matrix.GeneralLinearGroup.det (map f g) =
   symm
   apply RingHom.map_det
 
-@[simp]
 lemma map_mul_map_inv (g : GL n R) : map f g * map f g⁻¹ = 1 := by
   simp only [@map_inv, @mul_inv_cancel]
 
