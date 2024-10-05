@@ -309,7 +309,7 @@ lemma closure_eq_of_isRelational [L.IsRelational] (s : Set M) : closure L s = s 
 @[simp]
 lemma mem_closure_iff_of_isRelational [L.IsRelational] (s : Set M) (m : M) :
     m ∈ closure L s ↔ m ∈ s := by
-  rw [← SetLike.mem_coe, ((closure L).mem_closed_iff s).1 (mem_closed_of_isRelational L s)]
+  rw [← SetLike.mem_coe, closure_eq_of_isRelational]
 
 theorem _root_.Set.Countable.substructure_closure
     [Countable (Σl, L.Functions l)] (h : s.Countable) : Countable.{w + 1} (closure L s) := by
@@ -739,7 +739,7 @@ theorem closure_withConstants_eq :
   refine closure_eq_of_le ((A.subset_union_right).trans subset_closure) ?_
   rw [← (L.lhomWithConstants A).substructureReduct.le_iff_le]
   simp only [subset_closure, reduct_withConstants, closure_le, LHom.coe_substructureReduct,
-    Set.union_subset_iff, and_true_iff]
+    Set.union_subset_iff, and_true]
   exact subset_closure_withConstants
 
 end Substructure
@@ -926,7 +926,7 @@ namespace Equiv
 
 theorem toHom_range (f : M ≃[L] N) : f.toHom.range = ⊤ := by
   ext n
-  simp only [Hom.mem_range, coe_toHom, Substructure.mem_top, iff_true_iff]
+  simp only [Hom.mem_range, coe_toHom, Substructure.mem_top, iff_true]
   exact ⟨f.symm n, apply_symm_apply _ _⟩
 
 end Equiv

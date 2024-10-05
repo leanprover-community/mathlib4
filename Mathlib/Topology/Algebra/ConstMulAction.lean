@@ -451,6 +451,11 @@ theorem isOpenMap_quotient_mk'_mul [ContinuousConstSMul Γ T] :
   rw [isOpen_coinduced, MulAction.quotient_preimage_image_eq_union_mul U]
   exact isOpen_iUnion fun γ => isOpenMap_smul γ U hU
 
+@[to_additive]
+theorem MulAction.isOpenQuotientMap_quotientMk [ContinuousConstSMul Γ T] :
+    IsOpenQuotientMap (Quotient.mk (MulAction.orbitRel Γ T)) :=
+  ⟨surjective_quot_mk _, continuous_quot_mk, isOpenMap_quotient_mk'_mul⟩
+
 /-- The quotient by a discontinuous group action of a locally compact t2 space is t2. -/
 @[to_additive "The quotient by a discontinuous group action of a locally compact t2
 space is t2."]
