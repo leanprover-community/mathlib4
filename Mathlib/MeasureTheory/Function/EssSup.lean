@@ -6,7 +6,6 @@ Authors: Rémy Degenne
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 import Mathlib.MeasureTheory.Measure.Count
 import Mathlib.Order.Filter.ENNReal
-import Mathlib.Probability.ConditionalProbability
 
 /-!
 # Essential supremum and infimum
@@ -28,8 +27,10 @@ sense). We do not define that quantity here, which is simply the supremum of a m
 * `essInf f μ := (ae μ).liminf f`
 -/
 
-open Filter MeasureTheory ProbabilityTheory Set TopologicalSpace
-open scoped ENNReal NNReal
+
+open MeasureTheory Filter Set TopologicalSpace
+
+open ENNReal MeasureTheory NNReal
 
 variable {α β : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
 
