@@ -3,11 +3,10 @@ Copyright (c) 2024 Edward Watine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edward Watine
 -/
-
 import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.SpecificLimits.RCLike
 
-/-
+/-!
 # Ordinary hypergeometric function in a Banach algebra
 
 In this file, we define `ordinaryHypergeometric`, the _ordinary_ or _Gaussian_ hypergeometric
@@ -81,14 +80,14 @@ notation "₂F₁" => ordinaryHypergeometric
 theorem ordinaryHypergeometricSeries_apply_eq (x : 𝔸) (n : ℕ) :
     (ordinaryHypergeometricSeries 𝔸 a b c n fun _ => x) =
     ((n !⁻¹ : 𝕂) * (ascPochhammer 𝕂 n).eval a * (ascPochhammer 𝕂 n).eval b *
-    ((ascPochhammer 𝕂 n).eval c)⁻¹ ) • x ^ n :=
-  by simp [ordinaryHypergeometricSeries]
+    ((ascPochhammer 𝕂 n).eval c)⁻¹ ) • x ^ n := by
+  simp [ordinaryHypergeometricSeries]
 
 theorem ordinaryHypergeometricSeries_apply_eq' (x : 𝔸) :
     (fun n => ordinaryHypergeometricSeries 𝔸 a b c n fun _ => x) =
     fun n => ((n !⁻¹ : 𝕂) * (ascPochhammer 𝕂 n).eval a * (ascPochhammer 𝕂 n).eval b *
-    ((ascPochhammer 𝕂 n).eval c)⁻¹ ) • x ^ n :=
-  by simp [ordinaryHypergeometricSeries]
+    ((ascPochhammer 𝕂 n).eval c)⁻¹ ) • x ^ n := by
+  simp [ordinaryHypergeometricSeries]
 
 theorem ordinaryHypergeometric_sum_eq (x : 𝔸) : (ordinaryHypergeometricSeries 𝔸 a b c).sum x =
     ∑' n : ℕ, ((n !⁻¹ : 𝕂) * (ascPochhammer 𝕂 n).eval a * (ascPochhammer 𝕂 n).eval b *
@@ -108,20 +107,20 @@ theorem ordinaryHypergeometricSeries_apply_zero (n : ℕ) :
 
 @[simp]
 theorem ordinaryHypergeometric_zero : ₂F₁ a b c (0 : 𝔸) = 1 := by
-  simp [ordinaryHypergeometric_eq_tsum, ←ordinaryHypergeometricSeries_apply_eq,
+  simp [ordinaryHypergeometric_eq_tsum, ← ordinaryHypergeometricSeries_apply_eq,
     ordinaryHypergeometricSeries_apply_zero]
 
 @[simp]
 theorem ordinaryHypergeometric_op [T2Space 𝔸] (x : 𝔸) :
     ₂F₁ a b c (MulOpposite.op x) = MulOpposite.op (₂F₁ a b c x) := by
-  simp [ordinaryHypergeometric, ordinaryHypergeometric_sum_eq, ←MulOpposite.op_pow,
-     ←MulOpposite.op_smul, tsum_op]
+  simp [ordinaryHypergeometric, ordinaryHypergeometric_sum_eq, ← MulOpposite.op_pow,
+    ← MulOpposite.op_smul, tsum_op]
 
 @[simp]
 theorem ordinaryHypergeometric_unop [T2Space 𝔸] (x : 𝔸ᵐᵒᵖ) :
     ₂F₁ a b c (MulOpposite.unop x) = MulOpposite.unop (₂F₁ a b c x) := by
-  simp [ordinaryHypergeometric, ordinaryHypergeometric_sum_eq, ←MulOpposite.unop_pow,
-     ←MulOpposite.unop_smul, tsum_unop]
+  simp [ordinaryHypergeometric, ordinaryHypergeometric_sum_eq, ← MulOpposite.unop_pow,
+     ← MulOpposite.unop_smul, tsum_unop]
 
 theorem ordinaryHypergeometricSeries_symm :
     ordinaryHypergeometricSeries 𝔸 a b c = ordinaryHypergeometricSeries 𝔸 b a c := by
@@ -130,7 +129,7 @@ theorem ordinaryHypergeometricSeries_symm :
   group
 
 /-- If any parameter to the series is a sufficiently small nonpositive integer, then the series
-term is zero.-/
+term is zero. -/
 lemma ordinaryHypergeometricSeries_eq_zero_of_nonpos_int (n : ℕ)
     (habc : ∃ kn : ℤ, kn ≤ 0 ∧ (a = kn ∨ b = kn ∨ c = kn) ∧ n ≥ 1 - kn) :
     ordinaryHypergeometricSeries 𝔸 a b c n = 0 := by
@@ -173,7 +172,7 @@ theorem ordinaryHypergeometric_radius_top_of_nonpos_int₃ (hc : ∃ (z : ℤ), 
   rewrite [Nat.cast_add, Int.toNat_of_nonneg]
   all_goals linarith
 
-/-- An iff variation on `ordinaryHypergeometricSeries_eq_zero_of_nonpos_int` for `[RCLike 𝕂]`.-/
+/-- An iff variation on `ordinaryHypergeometricSeries_eq_zero_of_nonpos_int` for `[RCLike 𝕂]`. -/
 lemma ordinaryHypergeometricSeries_eq_zero_iff (n : ℕ) :
     (∃ kn : ℤ, kn ≤ 0 ∧ (a = kn ∨ b = kn ∨ c = kn) ∧ n ≥ 1 - kn) ↔
     ordinaryHypergeometricSeries 𝔸 a b c n = 0 := by
@@ -242,7 +241,7 @@ private theorem linear_div_tendsto_one_atTop :
       exact RCLike.tendsto_inverse_atTop_nhds_zero_nat 𝕂
 
 /-- The ratio of successive terms of `ordinaryHypergeometricSeries` tends to one. This theorem
-is used in the proof `ordinaryHypergeometric_ratio_tendsto_nhds_atTop`.-/
+is used in the proof `ordinaryHypergeometric_ratio_tendsto_nhds_atTop`. -/
 theorem ordinaryHypergeometricSeries_ratio_tendsto_one_atTop :
     Tendsto (fun (k:ℕ) ↦ (a + k) * (b + k) * (c + k)⁻¹ * ((1 : 𝕂) + k)⁻¹) atTop (nhds 1) := by
   conv =>
@@ -252,12 +251,12 @@ theorem ordinaryHypergeometricSeries_ratio_tendsto_one_atTop :
   all_goals apply linear_div_tendsto_one_atTop
 
 /-- The ratio of successive terms of the sum `ordinaryHypergeometric a b c r` is `r`. This theroem
-is used for the ratio test in `ordinaryHypergeometricSeries_radius_eq_one`.-/
+is used for the ratio test in `ordinaryHypergeometricSeries_radius_eq_one`. -/
 theorem ordinaryHypergeometric_ratio_tendsto_nhds_atTop {r : ℝ} (hr : 0 < r)
     (habc : ∀ kn : ℤ, kn ≤ 0 → a ≠ ↑kn ∧ b ≠ ↑kn ∧ c ≠ ↑kn) : Tendsto
     (fun n ↦ ‖‖ordinaryHypergeometricSeries 𝔸 a b c (n + 1)‖ * r ^ (n + 1)‖ /
     ‖‖ordinaryHypergeometricSeries 𝔸 a b c n‖ * r ^ n‖) atTop (nhds r) := by
-  simp_rw [←norm_div, mul_div_mul_comm, pow_succ, mul_div_right_comm]
+  simp_rw [← norm_div, mul_div_mul_comm, pow_succ, mul_div_right_comm]
   apply Real.norm_of_nonneg (le_of_lt hr) ▸ Filter.Tendsto.norm
   conv =>
     enter [1, n]

@@ -22,7 +22,7 @@ that are focused on `Nat` can be found in `Data.Nat.Factorial` as `Nat.ascFactor
 
 As with many other families of polynomials, even though the coefficients are always in `ℕ` or `ℤ` ,
 we define the polynomial with coefficients in any `[Semiring S]` or `[Ring R]`.
-With constraints `[NeZero (1 : 𝕂)]` and `[NoZeroDivisors 𝕂]` we can show that the
+With constraints `[NeZero (1 : 𝕂)]` and `[NoZeroDivisors 𝕂]` we show that the
 evaluation of `ascPochhammer S n` is zero iff `n` is a sufficiently large non-positive integer.
 
 ## TODO
@@ -399,7 +399,7 @@ end Ring
 section FieldLike
 
 /-- The iff variation of `ascPochhammer_eq_zero_of_nonpos_int` for a ring with
-`[NeZero (1 : R)]` and  `[NoZeroDivisors R]`.-/
+`[NeZero (1 : R)]` and  `[NoZeroDivisors R]`. -/
 theorem ascPochhammer_eq_zero_iff {R : Type*} [Ring R] [NeZero (1 : R)] [NoZeroDivisors R]
     (n : ℕ) (k : R) : (ascPochhammer R n).eval k = 0 ↔ ∃ kn : ℤ, kn ≤ 0 ∧ k = kn ∧ n ≥ 1 - kn := by
   refine ⟨fun zero ↦ ?_, fun hkn ↦ ascPochhammer_eq_zero_of_nonpos_int hkn⟩
