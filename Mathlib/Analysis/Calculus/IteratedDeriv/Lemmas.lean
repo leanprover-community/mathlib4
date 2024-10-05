@@ -21,11 +21,8 @@ variable
   {R : Type*} [Semiring R] [Module R F] [SMulCommClass 𝕜 R F] [ContinuousConstSMul R F]
   {n : ℕ} {x : 𝕜} {s : Set 𝕜} (hx : x ∈ s) (h : UniqueDiffOn 𝕜 s) {f g : 𝕜 → F}
 
-theorem iteratedDerivWithin_add (hf : ContDiffOn 𝕜 n f s) (hg : ContDiffOn 𝕜 n g s) :
-    iteratedDerivWithin n (f + g) s x =
-      iteratedDerivWithin n f s x + iteratedDerivWithin n g s x := by
-  simp_rw [iteratedDerivWithin, iteratedFDerivWithin_add_apply hf hg h hx,
-    ContinuousMultilinearMap.add_apply]
+section
+include h
 
 theorem iteratedDerivWithin_congr (hfg : Set.EqOn f g s) :
     Set.EqOn (iteratedDerivWithin n f s) (iteratedDerivWithin n g s) s := by
@@ -36,6 +33,14 @@ theorem iteratedDerivWithin_congr (hfg : Set.EqOn f g s) :
     have : UniqueDiffWithinAt 𝕜 s y := h.uniqueDiffWithinAt hy
     rw [iteratedDerivWithin_succ this, iteratedDerivWithin_succ this]
     exact derivWithin_congr (IH hfg) (IH hfg hy)
+
+include hx
+
+theorem iteratedDerivWithin_add (hf : ContDiffOn 𝕜 n f s) (hg : ContDiffOn 𝕜 n g s) :
+    iteratedDerivWithin n (f + g) s x =
+      iteratedDerivWithin n f s x + iteratedDerivWithin n g s x := by
+  simp_rw [iteratedDerivWithin, iteratedFDerivWithin_add_apply hf hg h hx,
+    ContinuousMultilinearMap.add_apply]
 
 theorem iteratedDerivWithin_const_add (hn : 0 < n) (c : F) :
     iteratedDerivWithin n (fun z => c + f z) s x = iteratedDerivWithin n f s x := by
@@ -82,6 +87,8 @@ theorem iteratedDerivWithin_sub (hf : ContDiffOn 𝕜 n f s) (hg : ContDiffOn �
   rw [sub_eq_add_neg, sub_eq_add_neg, Pi.neg_def, iteratedDerivWithin_add hx h hf hg.neg,
     iteratedDerivWithin_neg' hx h]
 
+end
+
 theorem iteratedDeriv_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiff 𝕜 n f) (c : 𝕜) :
     iteratedDeriv n (fun x => f (c * x)) = fun x => c ^ n • iteratedDeriv n f (c * x) := by
   induction n with
@@ -110,7 +117,7 @@ lemma iteratedDeriv_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
 lemma iteratedDeriv_comp_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
     iteratedDeriv n (fun x ↦ f (-x)) a = (-1 : 𝕜) ^ n • iteratedDeriv n f (-a) := by
   induction' n with n ih generalizing a
-  · simp only [Nat.zero_eq, iteratedDeriv_zero, pow_zero, one_smul]
+  · simp only [iteratedDeriv_zero, pow_zero, one_smul]
   · have ih' : iteratedDeriv n (fun x ↦ f (-x)) = fun x ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f (-x) :=
       funext ih
     rw [iteratedDeriv_succ, iteratedDeriv_succ, ih', pow_succ', neg_mul, one_mul,

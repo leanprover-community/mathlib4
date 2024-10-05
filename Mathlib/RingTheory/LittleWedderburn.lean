@@ -6,6 +6,7 @@ Authors: Johan Commelin, Eric Rodriguez
 import Mathlib.GroupTheory.ClassEquation
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 # Wedderburn's Little Theorem
@@ -47,7 +48,7 @@ private def InductionHyp : Prop :=
 
 namespace InductionHyp
 
-open FiniteDimensional Polynomial
+open Module Polynomial
 
 variable {D}
 
@@ -57,7 +58,6 @@ private def field (hD : InductionHyp D) {R : Subring D} (hR : R < ⊤)
   { show DivisionRing R from Fintype.divisionRingOfIsDomain R with
     mul_comm := fun x y ↦ Subtype.ext <| hD hR x.2 y.2 }
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- We prove that if every subring of `D` is central, then so is `D`. -/
 private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center D = ⊤ := by
   classical
@@ -96,7 +96,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
       refine not_le_of_lt hZ.lt_top (fun y _ ↦ Subring.mem_center_iff.mpr fun z ↦ ?_)
       obtain ⟨r, rfl⟩ := hx y
       obtain ⟨s, rfl⟩ := hx z
-      rw [smul_mul_smul, smul_mul_smul, mul_comm]
+      rw [smul_mul_smul_comm, smul_mul_smul_comm, mul_comm]
   rw [Nat.cast_sum]
   apply Finset.dvd_sum
   rintro ⟨x⟩ hx
@@ -149,7 +149,7 @@ private theorem center_eq_top [Finite D] : Subring.center D = ⊤ := by
   rw [IH (Fintype.card R) _ R inferInstance rfl]
   · trivial
   rw [← hn, ← Subring.card_top D]
-  exact Set.card_lt_card hR
+  convert Set.card_lt_card hR
 
 end LittleWedderburn
 

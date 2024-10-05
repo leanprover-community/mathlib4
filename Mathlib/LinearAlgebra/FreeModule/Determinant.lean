@@ -6,8 +6,6 @@ Authors: Anne Baanen, Alex J. Best
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
-#align_import linear_algebra.free_module.determinant from "leanprover-community/mathlib"@"31c458dc7baf3de906b95d9c5c968b6a4d75fee1"
-
 /-!
 # Determinants in free (finite) modules
 
@@ -27,4 +25,3 @@ theorem LinearMap.det_zero'' {R M : Type*} [CommRing R] [AddCommGroup M] [Module
   letI : Nonempty (Module.Free.ChooseBasisIndex R M) := (Module.Free.chooseBasis R M).index_nonempty
   nontriviality R
   exact LinearMap.det_zero' (Module.Free.chooseBasis R M)
-#align linear_map.det_zero'' LinearMap.det_zero''

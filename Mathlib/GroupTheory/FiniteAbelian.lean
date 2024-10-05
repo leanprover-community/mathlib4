@@ -6,8 +6,6 @@ Authors: Pierre-Alexandre Bazin
 import Mathlib.Algebra.Module.PID
 import Mathlib.Data.ZMod.Quotient
 
-#align_import group_theory.finite_abelian from "leanprover-community/mathlib"@"879155bff5af618b9062cbb2915347dafd749ad6"
-
 /-!
 # Structure of finite(ly generated) abelian groups
 
@@ -77,7 +75,7 @@ private def directSumNeZeroMulEquiv (ι : Type) [DecidableEq ι] (p : ι → ℕ
     · rw [map_zero, map_zero]
     · rw [DirectSum.toAddMonoid_of]
       split_ifs with h
-      · simp [(ZMod.subsingleton_iff.2 $ by rw [h, pow_zero]).elim x 0]
+      · simp [(ZMod.subsingleton_iff.2 <| by rw [h, pow_zero]).elim x 0]
       · simp_rw [directSumNeZeroMulHom, DirectSum.toAddMonoid_of]
     · rw [map_add, map_add, hx, hy]
   map_add' := map_add (directSumNeZeroMulHom p n)
@@ -98,7 +96,6 @@ theorem finite_of_fg_torsion [AddCommGroup M] [Module ℤ M] [Module.Finite ℤ 
   haveI : _root_.Finite (⨁ i, ℤ ⧸ (Submodule.span ℤ {p i ^ e i} : Submodule ℤ ℤ)) :=
     Finite.of_equiv _ DFinsupp.equivFunOnFintype.symm
   exact Finite.of_equiv _ l.symm.toEquiv
-#align module.finite_of_fg_torsion Module.finite_of_fg_torsion
 
 end Module
 
@@ -124,7 +121,6 @@ theorem equiv_free_prod_directSum_zmod [hG : AddGroup.FG G] :
         DFinsupp.mapRange.addEquiv fun i =>
           ((Int.quotientSpanEquivZMod _).trans <|
               ZMod.ringEquivCongr <| (p i).natAbs_pow _).toAddEquiv)
-#align add_comm_group.equiv_free_prod_direct_sum_zmod AddCommGroup.equiv_free_prod_directSum_zmod
 
 /-- **Structure theorem of finite abelian groups** : Any finite abelian group is a direct sum of
 some `ZMod (p i ^ e i)` for some prime powers `p i ^ e i`. -/
@@ -135,13 +131,12 @@ theorem equiv_directSum_zmod_of_finite [Finite G] :
   obtain ⟨n, ι, fι, p, hp, e, ⟨f⟩⟩ := equiv_free_prod_directSum_zmod G
   cases' n with n
   · have : Unique (Fin Nat.zero →₀ ℤ) :=
-      { uniq := by simp only [Nat.zero_eq, eq_iff_true_of_subsingleton]; trivial }
+      { uniq := by simp only [eq_iff_true_of_subsingleton]; trivial }
     exact ⟨ι, fι, p, hp, e, ⟨f.trans AddEquiv.uniqueProd⟩⟩
   · haveI := @Fintype.prodLeft _ _ _ (Fintype.ofEquiv G f.toEquiv) _
     exact
       (Fintype.ofSurjective (fun f : Fin n.succ →₀ ℤ => f 0) fun a =>
             ⟨Finsupp.single 0 a, Finsupp.single_eq_same⟩).false.elim
-#align add_comm_group.equiv_direct_sum_zmod_of_fintype AddCommGroup.equiv_directSum_zmod_of_finite
 
 /-- **Structure theorem of finite abelian groups** : Any finite abelian group is a direct sum of
 some `ZMod (q i)` for some prime powers `q i > 1`. -/
@@ -153,12 +148,11 @@ lemma equiv_directSum_zmod_of_finite' (G : Type*) [AddCommGroup G] [Finite G] :
   refine ⟨{i : ι // n i ≠ 0}, inferInstance, fun i ↦ p i ^ n i, ?_,
     ⟨e.trans (directSumNeZeroMulEquiv ι _ _).symm⟩⟩
   rintro ⟨i, hi⟩
-  exact one_lt_pow (hp _).one_lt hi
+  exact one_lt_pow₀ (hp _).one_lt hi
 
 theorem finite_of_fg_torsion [hG' : AddGroup.FG G] (hG : AddMonoid.IsTorsion G) : Finite G :=
   @Module.finite_of_fg_torsion _ _ _ (Module.Finite.iff_addGroup_fg.mpr hG') <|
     AddMonoid.isTorsion_iff_isTorsion_int.mp hG
-#align add_comm_group.finite_of_fg_torsion AddCommGroup.finite_of_fg_torsion
 
 end AddCommGroup
 
@@ -166,6 +160,5 @@ namespace CommGroup
 
 theorem finite_of_fg_torsion [CommGroup G] [Group.FG G] (hG : Monoid.IsTorsion G) : Finite G :=
   @Finite.of_equiv _ _ (AddCommGroup.finite_of_fg_torsion (Additive G) hG) Multiplicative.ofAdd
-#align comm_group.finite_of_fg_torsion CommGroup.finite_of_fg_torsion
 
 end CommGroup

@@ -8,8 +8,6 @@ import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Order.Basic
 import Mathlib.Tactic.NoncommRing
 
-#align_import analysis.normed_space.M_structure from "leanprover-community/mathlib"@"d11893b411025250c8e61ff2f12ccbd7ee35ab15"
-
 /-!
 # M-structure
 
@@ -64,8 +62,6 @@ M-summand, M-projection, L-summand, L-projection, M-ideal, M-structure
 variable (X : Type*) [NormedAddCommGroup X]
 variable {M : Type*} [Ring M] [Module M X]
 
--- Porting note: Mathlib3 uses names with uppercase 'L' for L-projections
-set_option linter.uppercaseLean3 false
 
 /-- A projection on a normed space `X` is said to be an L-projection if, for all `x` in `X`,
 $\|x\| = \|P x\| + \|(1 - P) x\|$.
@@ -75,7 +71,6 @@ Note that we write `P • x` instead of `P x` for reasons described in the modul
 structure IsLprojection (P : M) : Prop where
   proj : IsIdempotentElem P
   Lnorm : ∀ x : X, ‖x‖ = ‖P • x‖ + ‖(1 - P) • x‖
-#align is_Lprojection IsLprojection
 
 /-- A projection on a normed space `X` is said to be an M-projection if, for all `x` in `X`,
 $\|x\| = max(\|P x\|,\|(1 - P) x\|)$.
@@ -85,7 +80,6 @@ Note that we write `P • x` instead of `P x` for reasons described in the modul
 structure IsMprojection (P : M) : Prop where
   proj : IsIdempotentElem P
   Mnorm : ∀ x : X, ‖x‖ = max ‖P • x‖ ‖(1 - P) • x‖
-#align is_Mprojection IsMprojection
 
 variable {X}
 
@@ -96,11 +90,9 @@ theorem Lcomplement {P : M} (h : IsLprojection X P) : IsLprojection X (1 - P) :=
   ⟨h.proj.one_sub, fun x => by
     rw [add_comm, sub_sub_cancel]
     exact h.Lnorm x⟩
-#align is_Lprojection.Lcomplement IsLprojection.Lcomplement
 
 theorem Lcomplement_iff (P : M) : IsLprojection X P ↔ IsLprojection X (1 - P) :=
   ⟨Lcomplement, fun h => sub_sub_cancel 1 P ▸ h.Lcomplement⟩
-#align is_Lprojection.Lcomplement_iff IsLprojection.Lcomplement_iff
 
 theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLprojection X Q) :
     Commute P Q := by
@@ -142,7 +134,6 @@ theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : 
     rwa [eq_sub_iff_add_eq, add_right_eq_self, sub_eq_zero] at e1
   show P * Q = Q * P
   rw [QP_eq_QPQ, PR_eq_RPR Q h₂]
-#align is_Lprojection.commute IsLprojection.commute
 
 theorem mul [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLprojection X Q) :
     IsLprojection X (P * Q) := by
@@ -160,13 +151,11 @@ theorem mul [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLp
         ((add_le_add_iff_left ‖P • Q • x‖).mpr (norm_add_le (Q • x - P • Q • x) (x - Q • x)))
       _ = ‖(P * Q) • x‖ + ‖(1 - P * Q) • x‖ := by
         rw [sub_add_sub_cancel', sub_smul, one_smul, mul_smul]
-#align is_Lprojection.mul IsLprojection.mul
 
 theorem join [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLprojection X Q) :
     IsLprojection X (P + Q - P * Q) := by
   convert (Lcomplement_iff _).mp (h₁.Lcomplement.mul h₂.Lcomplement) using 1
   noncomm_ring
-#align is_Lprojection.join IsLprojection.join
 
 -- Porting note: Advice is to explicitly name instances
 -- https://github.com/leanprover-community/mathlib4/wiki/Porting-wiki#some-common-fixes
@@ -176,7 +165,6 @@ instance Subtype.hasCompl : HasCompl { f : M // IsLprojection X f } :=
 @[simp]
 theorem coe_compl (P : { P : M // IsLprojection X P }) : ↑Pᶜ = (1 : M) - ↑P :=
   rfl
-#align is_Lprojection.coe_compl IsLprojection.coe_compl
 
 instance Subtype.inf [FaithfulSMul M X] : Inf { P : M // IsLprojection X P } :=
   ⟨fun P Q => ⟨P * Q, P.prop.mul Q.prop⟩⟩
@@ -185,7 +173,6 @@ instance Subtype.inf [FaithfulSMul M X] : Inf { P : M // IsLprojection X P } :=
 theorem coe_inf [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
     ↑(P ⊓ Q) = (↑P : M) * ↑Q :=
   rfl
-#align is_Lprojection.coe_inf IsLprojection.coe_inf
 
 instance Subtype.sup [FaithfulSMul M X] : Sup { P : M // IsLprojection X P } :=
   ⟨fun P Q => ⟨P + Q - P * Q, P.prop.join Q.prop⟩⟩
@@ -194,7 +181,6 @@ instance Subtype.sup [FaithfulSMul M X] : Sup { P : M // IsLprojection X P } :=
 theorem coe_sup [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
     ↑(P ⊔ Q) = (↑P : M) + ↑Q - ↑P * ↑Q :=
   rfl
-#align is_Lprojection.coe_sup IsLprojection.coe_sup
 
 instance Subtype.sdiff [FaithfulSMul M X] : SDiff { P : M // IsLprojection X P } :=
   ⟨fun P Q => ⟨P * (1 - Q), P.prop.mul Q.prop.Lcomplement⟩⟩
@@ -203,7 +189,6 @@ instance Subtype.sdiff [FaithfulSMul M X] : SDiff { P : M // IsLprojection X P }
 theorem coe_sdiff [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
     ↑(P \ Q) = (↑P : M) * (1 - ↑Q) :=
   rfl
-#align is_Lprojection.coe_sdiff IsLprojection.coe_sdiff
 
 instance Subtype.partialOrder [FaithfulSMul M X] :
     PartialOrder { P : M // IsLprojection X P } where
@@ -217,7 +202,6 @@ instance Subtype.partialOrder [FaithfulSMul M X] :
 theorem le_def [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
     P ≤ Q ↔ (P : M) = ↑(P ⊓ Q) :=
   Iff.rfl
-#align is_Lprojection.le_def IsLprojection.le_def
 
 instance Subtype.zero : Zero { P : M // IsLprojection X P } :=
   ⟨⟨0, ⟨by rw [IsIdempotentElem, zero_mul], fun x => by
@@ -226,7 +210,6 @@ instance Subtype.zero : Zero { P : M // IsLprojection X P } :=
 @[simp]
 theorem coe_zero : ↑(0 : { P : M // IsLprojection X P }) = (0 : M) :=
   rfl
-#align is_Lprojection.coe_zero IsLprojection.coe_zero
 
 instance Subtype.one : One { P : M // IsLprojection X P } :=
   ⟨⟨1, sub_zero (1 : M) ▸ (0 : { P : M // IsLprojection X P }).prop.Lcomplement⟩⟩
@@ -234,7 +217,6 @@ instance Subtype.one : One { P : M // IsLprojection X P } :=
 @[simp]
 theorem coe_one : ↑(1 : { P : M // IsLprojection X P }) = (1 : M) :=
   rfl
-#align is_Lprojection.coe_one IsLprojection.coe_one
 
 instance Subtype.boundedOrder [FaithfulSMul M X] :
     BoundedOrder { P : M // IsLprojection X P } where
@@ -248,22 +230,18 @@ theorem coe_bot [FaithfulSMul M X] :
     -- Porting note: Manual correction of name required here
     ↑(BoundedOrder.toOrderBot.toBot.bot : { P : M // IsLprojection X P }) = (0 : M) :=
   rfl
-#align is_Lprojection.coe_bot IsLprojection.coe_bot
 
 @[simp]
 theorem coe_top [FaithfulSMul M X] :
     -- Porting note: Manual correction of name required here
     ↑(BoundedOrder.toOrderTop.toTop.top : { P : M // IsLprojection X P }) = (1 : M) :=
   rfl
-#align is_Lprojection.coe_top IsLprojection.coe_top
 
 theorem compl_mul {P : { P : M // IsLprojection X P }} {Q : M} : ↑Pᶜ * Q = Q - ↑P * Q := by
   rw [coe_compl, sub_mul, one_mul]
-#align is_Lprojection.compl_mul IsLprojection.compl_mul
 
 theorem mul_compl_self {P : { P : M // IsLprojection X P }} : (↑P : M) * ↑Pᶜ = 0 := by
   rw [coe_compl, mul_sub, mul_one, P.prop.proj.eq, sub_self]
-#align is_Lprojection.mul_compl_self IsLprojection.mul_compl_self
 
 theorem distrib_lattice_lemma [FaithfulSMul M X] {P Q R : { P : M // IsLprojection X P }} :
     ((↑P : M) + ↑Pᶜ * R) * (↑P + ↑Q * ↑R * ↑Pᶜ) = ↑P + ↑Q * ↑R * ↑Pᶜ := by
@@ -274,7 +252,6 @@ theorem distrib_lattice_lemma [FaithfulSMul M X] {P Q R : { P : M // IsLprojecti
     zero_mul, mul_zero, zero_add, add_zero, ← mul_assoc, P.prop.proj.eq,
     R.prop.proj.eq, ← coe_inf Q, mul_assoc, ((Q ⊓ R).prop.commute Pᶜ.prop).eq, ← mul_assoc,
     Pᶜ.prop.proj.eq]
-#align is_Lprojection.distrib_lattice_lemma IsLprojection.distrib_lattice_lemma
 
 -- Porting note: In mathlib3 we were able to directly show that `{ P : M // IsLprojection X P }` was
 --  an instance of a `DistribLattice`. Trying to do that in mathlib4 fails with "error:
@@ -306,7 +283,7 @@ instance Subtype.distribLattice [FaithfulSMul M X] :
   le_sup_inf P Q R := by
     have e₁ : ↑((P ⊔ Q) ⊓ (P ⊔ R)) = ↑P + ↑Q * (R : M) * ↑Pᶜ := by
       rw [coe_inf, coe_sup, coe_sup, ← add_sub, ← add_sub, ← compl_mul, ← compl_mul, add_mul,
-        mul_add, (Pᶜ.prop.commute Q.prop).eq, mul_add, ← mul_assoc, mul_assoc (Q: M),
+        mul_add, (Pᶜ.prop.commute Q.prop).eq, mul_add, ← mul_assoc, mul_assoc (Q : M),
         (Pᶜ.prop.commute P.prop).eq, mul_compl_self, zero_mul, mul_zero,
         zero_add, add_zero, ← mul_assoc, mul_assoc (Q : M), P.prop.proj.eq, Pᶜ.prop.proj.eq,
         mul_assoc, (Pᶜ.prop.commute R.prop).eq, ← mul_assoc]

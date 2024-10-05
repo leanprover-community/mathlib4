@@ -5,6 +5,7 @@ Authors: Kyle Miller
 -/
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.Basic
+import Batteries.Tactic.Lint.Misc
 
 /-!
 # The `extract_lets at` tactic

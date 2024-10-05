@@ -83,6 +83,13 @@ lemma ShortExact.moduleCat_surjective_g (hS : S.ShortExact) :
     Function.Surjective S.g :=
   hS.surjective_g
 
+variable (S)
+
+lemma ShortExact.moduleCat_exact_iff_function_exact :
+    S.Exact ↔ Function.Exact S.f S.g := by
+  rw [moduleCat_exact_iff_range_eq_ker, LinearMap.exact_iff]
+  tauto
+
 /-- Constructor for short complexes in `ModuleCat.{v} R` taking as inputs
 morphisms `f` and `g` and the assumption `LinearMap.range f ≤ LinearMap.ker g`. -/
 @[simps]
@@ -96,8 +103,6 @@ lemma Exact.moduleCat_of_range_eq_ker {X₁ X₂ X₃ : ModuleCat.{v} R}
     (f : X₁ ⟶ X₂) (g : X₂ ⟶ X₃) (hfg : LinearMap.range f = LinearMap.ker g) :
     (moduleCatMkOfKerLERange f g (by rw [hfg])).Exact := by
   simpa only [moduleCat_exact_iff_range_eq_ker] using hfg
-
-variable (S)
 
 /-- The canonical linear map `S.X₁ →ₗ[R] LinearMap.ker S.g` induced by `S.f`. -/
 @[simps]

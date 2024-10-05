@@ -1,8 +1,9 @@
 /-
-Copyright (c) 2023 Kim Liesinger. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Liesinger
+Authors: Kim Morrison
 -/
+import Mathlib.Init
 import Batteries.Data.String.Basic
 import Lean.Meta.Tactic.TryThis
 import Batteries.Linter.UnreachableTactic
@@ -132,4 +133,8 @@ elab_rules : tactic
   | some result, false =>
     evalTactic result
 
-initialize Std.Linter.UnreachableTactic.addIgnoreTacticKind `Mathlib.Tactic.Says.says
+initialize Batteries.Linter.UnreachableTactic.addIgnoreTacticKind `Mathlib.Tactic.Says.says
+
+end Says
+
+end Mathlib.Tactic

@@ -9,8 +9,6 @@ import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.Set.Basic
 
-#align_import data.nat.order.basic from "leanprover-community/mathlib"@"3ed3f98a1e836241990d3d308f1577e434977130"
-
 /-!
 # The natural numbers form an ordered semiring
 
@@ -38,6 +36,12 @@ instance instLinearOrderedCommMonoidWithZero : LinearOrderedCommMonoidWithZero �
   __ : CommMonoidWithZero ℕ := inferInstance
   mul_le_mul_left _ _ h c := Nat.mul_le_mul_left c h
 
+instance instCanonicallyOrderedCommSemiring : CanonicallyOrderedCommSemiring ℕ where
+  __ := instLinearOrderedCommSemiring
+  exists_add_of_le h := (Nat.le.dest h).imp fun _ => Eq.symm
+  le_self_add := Nat.le_add_right
+  eq_zero_or_eq_zero_of_mul_eq_zero := Nat.mul_eq_zero.mp
+
 /-!
 ### Extra instances to short-circuit type class resolution
 
@@ -54,7 +58,6 @@ instance instOrderedCommSemiring : OrderedCommSemiring ℕ :=
 /-! ### Miscellaneous lemmas -/
 
 lemma isCompl_even_odd : IsCompl { n : ℕ | Even n } { n | Odd n } := by
-  simp only [← Set.compl_setOf, isCompl_compl, odd_iff_not_even]
-#align nat.is_compl_even_odd Nat.isCompl_even_odd
+  simp only [← Set.compl_setOf, isCompl_compl, ← not_even_iff_odd]
 
 end Nat

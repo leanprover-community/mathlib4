@@ -13,11 +13,11 @@ import Mathlib.Algebra.Order.Ring.Cast
 # `norm_num` extensions for inequalities.
 -/
 
-set_option autoImplicit true
-
 open Lean Meta Qq
 
 namespace Mathlib.Meta.NormNum
+
+variable {u : Level}
 
 /-- Helper function to synthesize a typed `OrderedSemiring α` expression. -/
 def inferOrderedSemiring (α : Q(Type u)) : MetaM Q(OrderedSemiring $α) :=
@@ -32,6 +32,8 @@ def inferOrderedRing (α : Q(Type u)) : MetaM Q(OrderedRing $α) :=
 def inferLinearOrderedField (α : Q(Type u)) : MetaM Q(LinearOrderedField $α) :=
   return ← synthInstanceQ (q(LinearOrderedField $α) : Q(Type u)) <|>
     throwError "not a linear ordered field"
+
+variable {α : Type*}
 
 theorem isNat_le_true [OrderedSemiring α] : {a b : α} → {a' b' : ℕ} →
     IsNat a a' → IsNat b b' → Nat.ble a' b' = true → a ≤ b
@@ -60,7 +62,7 @@ theorem isRat_lt_true [LinearOrderedRing α] [Nontrivial α] : {a b : α} → {n
     have hb : 0 < ⅟(db : α) := pos_invOf_of_invertible_cast db
     have h := (mul_lt_mul_of_pos_left · hb) <| mul_lt_mul_of_pos_right h ha
     rw [← mul_assoc, Int.commute_cast] at h
-    simp? at h says simp only [Int.cast_mul, Int.cast_natCast, mul_mul_invOf_self_cancel'] at h
+    simp? at h says simp only [Int.cast_mul, Int.cast_natCast, mul_invOf_cancel_right'] at h
     rwa [Int.commute_cast] at h
 
 theorem isRat_le_false [LinearOrderedRing α] [Nontrivial α] {a b : α} {na nb : ℤ} {da db : ℕ}

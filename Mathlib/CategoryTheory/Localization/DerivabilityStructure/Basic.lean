@@ -39,7 +39,6 @@ not depend of the choice of the localization functors.
 ## TODO
 
 * Construct derived functors using derivability structures
-* Define a constructor for derivability structures
 * Define the notion of left derivability structures
 * Construct the injective derivability structure in order to derive functor from
 the bounded below homotopy category in an abelian category with enough injectives

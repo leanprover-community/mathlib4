@@ -1,11 +1,11 @@
 /-
-Copyright (c) 2023 Scott Morrison. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import ImportGraph
 import Mathlib.Data.String.Defs
-import Batteries.Lean.Util.Path
+import Mathlib.Util.FormatTable
 import Cli
 import LongestPole.SpeedCenterJson
 
@@ -22,7 +22,7 @@ open Lean Meta
 /-- Runs a terminal command and retrieves its output -/
 def runCmd (cmd : String) (args : Array String) (throwFailure := true) : IO String := do
   let out ← IO.Process.output { cmd := cmd, args := args }
-  if out.exitCode != 0 && throwFailure then throw $ IO.userError out.stderr
+  if out.exitCode != 0 && throwFailure then throw <| IO.userError out.stderr
   else return out.stdout
 
 def runCurl (args : Array String) (throwFailure := true) : IO String := do
@@ -138,13 +138,12 @@ def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
       let c := cumulative.find! n'
       let t := total.find! n'
       let r := (t / c).toStringDecimals 2
-      table := table.push (n', i/10^6 |>.toUInt64, c/10^6 |>.toUInt64, r)
+      table := table.push #[n.get!.toString, toString (i/10^6 |>.toUInt64), toString (c/10^6 |>.toUInt64), r]
       n := slowest.find? n'
-    let widest := table.map (·.1.toString.length) |>.toList.maximum?.getD 0
-    IO.println s!"{"file".rightpad widest} | instructions | (cumulative) | parallelism"
-    IO.println s!"{"".rightpad widest '-'} | ------------ | ------------ | -----------"
-    for (name, inst, cumu, speedup) in table do
-      IO.println s!"{name.toString.rightpad widest} | {(toString inst).leftpad 12} | {(toString cumu).leftpad 12} | x{speedup}"
+    IO.println (formatTable
+                  #["file", "instructions", "cumulative", "parallelism"]
+                  table
+                  #[Alignment.left, Alignment.right, Alignment.right, Alignment.center])
   return 0
 
 /-- Setting up command line options and help text for `lake exe pole`. -/

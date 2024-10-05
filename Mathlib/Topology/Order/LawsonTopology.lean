@@ -127,7 +127,8 @@ lemma toLawson_inj {a b : α} : toLawson a = toLawson b ↔ a = b := Iff.rfl
 @[simp, nolint simpNF]
 lemma ofLawson_inj {a b : WithLawson α} : ofLawson a = ofLawson b ↔ a = b := Iff.rfl
 
-/-- A recursor for `WithLawson`. Use as `induction' x using WithLawson.rec`. -/
+/-- A recursor for `WithLawson`. Use as `induction' x`. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
 protected def rec {β : WithLawson α → Sort*}
     (h : ∀ a, β (toLawson a)) : ∀ a, β a := fun a => h (ofLawson a)
 
@@ -143,7 +144,7 @@ instance instIsLawson : IsLawson (WithLawson α) := ⟨rfl⟩
 /-- If `α` is equipped with the Lawson topology, then it is homeomorphic to `WithLawson α`.
 -/
 def homeomorph [TopologicalSpace α] [IsLawson α] : WithLawson α ≃ₜ α :=
-  ofLawson.toHomeomorphOfInducing ⟨by erw [@IsLawson.topology_eq_lawson α _ _, induced_id]; rfl⟩
+  ofLawson.toHomeomorphOfInducing ⟨by erw [IsLawson.topology_eq_lawson (α := α), induced_id]; rfl⟩
 
 theorem isOpen_preimage_ofLawson {S : Set α} :
     IsOpen (ofLawson ⁻¹' S) ↔ (lawson α).IsOpen S := Iff.rfl
@@ -202,10 +203,11 @@ lemma lawsonClosed_iff_scottClosed_of_isLowerSet (s : Set α) (h : IsLowerSet s)
   rw [← @isOpen_compl_iff, ← isOpen_compl_iff,
     (lawsonOpen_iff_scottOpen_of_isUpperSet' L S _ (isUpperSet_compl.mpr h))]
 
+include S in
 /-- A lower set is Lawson closed if and only if it is closed under sups of directed sets -/
 lemma lawsonClosed_iff_dirSupClosed_of_isLowerSet (s : Set α) (h : IsLowerSet s) :
     IsClosed[L] s ↔ DirSupClosed s := by
-  rw [(lawsonClosed_iff_scottClosed_of_isLowerSet L S _ h),
+  rw [lawsonClosed_iff_scottClosed_of_isLowerSet L S _ h,
     @IsScott.isClosed_iff_isLowerSet_and_dirSupClosed]
   aesop
 
@@ -223,7 +225,7 @@ lemma singleton_isClosed (a : α) : IsClosed ({a} : Set α) := by
     ← WithLawson.isClosed_preimage_ofLawson]
   apply IsClosed.inter
     (lawsonClosed_of_lowerClosed _ (IsLower.isClosed_upperClosure (finite_singleton a)))
-  rw [ lowerClosure_singleton, LowerSet.coe_Iic, ← WithLawson.isClosed_preimage_ofLawson]
+  rw [lowerClosure_singleton, LowerSet.coe_Iic, ← WithLawson.isClosed_preimage_ofLawson]
   apply lawsonClosed_of_scottClosed
   exact IsScott.isClosed_Iic
 
@@ -237,3 +239,5 @@ instance (priority := 90) t0Space : T0Space α :=
 end PartialOrder
 
 end IsLawson
+
+end Topology

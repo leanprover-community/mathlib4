@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2023 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Complex.Basic
@@ -34,3 +34,5 @@ lemma starConvex_ofReal_slitPlane {x : ℝ} (hx : 0 < x) : StarConvex ℝ ↑x s
 
 /-- The slit plane is star-shaped at `1`. -/
 lemma starConvex_one_slitPlane : StarConvex ℝ 1 slitPlane := starConvex_slitPlane one_pos
+
+end Complex

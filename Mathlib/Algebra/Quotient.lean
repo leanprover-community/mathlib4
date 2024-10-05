@@ -3,10 +3,7 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Mathport.Rename
 import Mathlib.Tactic.Common
-
-#align_import algebra.quotient from "leanprover-community/mathlib"@"d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d"
 
 /-!
 # Algebraic quotients
@@ -47,7 +44,6 @@ such as groups, modules and rings.
 class HasQuotient (A : outParam <| Type u) (B : Type v) where
   /-- auxiliary quotient function, the one used will have `A` explicit -/
   quotient' : B → Type max u v
-#align has_quotient HasQuotient
 
 -- Will be provided by e.g. `Ideal.Quotient.inhabited`
 /-- `HasQuotient.Quotient A b` (with notation `A ⧸ b`) is the quotient
@@ -60,7 +56,6 @@ This differs from `HasQuotient.quotient'` in that the `A` argument is
 abbrev HasQuotient.Quotient (A : outParam <| Type u) {B : Type v}
     [HasQuotient A B] (b : B) : Type max u v :=
   HasQuotient.quotient' b
-#align has_quotient.quotient HasQuotient.Quotient
 
 /-- Quotient notation based on the `HasQuotient` typeclass -/
 notation:35 G " ⧸ " H:34 => HasQuotient.Quotient G H

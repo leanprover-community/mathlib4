@@ -51,7 +51,6 @@ instance instCardinalInterFilter_cocardinal : CardinalInterFilter (cocardinal (�
     apply lt_of_le_of_lt (mk_sUnion_le _)
     apply mul_lt_of_lt hreg.aleph0_le (lt_of_le_of_lt mk_image_le hS)
     apply iSup_lt_of_isRegular hreg <| lt_of_le_of_lt mk_image_le hS
-    intro i
     aesop
 
 @[simp]
@@ -96,8 +95,7 @@ theorem _root_.Finset.eventually_cocardinal_nmem (s : Finset α) :
   eventually_cocardinal_nmem_of_card_lt <| lt_of_lt_of_le (finset_card_lt_aleph0 s) (hreg.aleph0_le)
 
 theorem eventually_cocardinal_ne (x : α) : ∀ᶠ a in cocardinal α hreg, a ≠ x := by
-  simp [Set.finite_singleton x]
-  exact hreg.nat_lt 1
+  simpa [Set.finite_singleton x] using hreg.nat_lt 1
 
 /-- The filter defined by all sets that have countable complements. -/
 abbrev cocountable : Filter α := cocardinal α Cardinal.isRegular_aleph_one
