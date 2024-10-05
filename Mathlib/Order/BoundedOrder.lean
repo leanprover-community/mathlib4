@@ -353,7 +353,7 @@ theorem OrderBot.ext_bot {α} {hA : PartialOrder α} (A : OrderBot α) {hB : Par
 
 section SemilatticeSupTop
 
-variable [SemilatticeSup α] [OrderTop α] {a : α}
+variable [SemilatticeSup α] [OrderTop α]
 
 -- Porting note: Not simp because simp can prove it
 theorem top_sup_eq (a : α) : ⊤ ⊔ a = ⊤ :=
@@ -400,7 +400,7 @@ end SemilatticeInfTop
 
 section SemilatticeInfBot
 
-variable [SemilatticeInf α] [OrderBot α] {a : α}
+variable [SemilatticeInf α] [OrderBot α]
 
 -- Porting note: Not simp because simp can prove it
 lemma bot_inf_eq (a : α) : ⊥ ⊓ a = ⊥ := inf_of_le_left bot_le
