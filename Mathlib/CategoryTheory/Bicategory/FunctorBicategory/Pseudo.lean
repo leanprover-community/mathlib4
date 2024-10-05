@@ -85,10 +85,12 @@ example (B : Type u₁) [inst : CategoryTheory.Bicategory B] (C : Type u₂)
         η.app a ◁ (θ.naturality f).inv ≫
           (α_ (η.app a) (Y.map f) (θ.app b)).inv ≫
             (η.naturality f).inv ▷ θ.app b ≫ (α_ (X.map f) (η.app b) (θ.app b)).hom := by
-  simp
+  simp only [instCategoryStructPseudofunctor_comp, StrongTrans.vcomp_app,
+    StrongTrans.vcomp_naturality, Iso.trans_inv, Iso.symm_inv, whiskerLeftIso_inv, assoc,
+    whiskerRightIso_inv]
 
 /-- A bicategory structure on the pseudofunctors between two bicategories. -/
-@[simps!]
+@[simps!? comp_naturality_inv]
 instance bicategory : Bicategory (Pseudofunctor B C) where
   whiskerLeft {F G H} η _ _ Γ := StrongTrans.whiskerLeft η Γ
   whiskerRight {F G H} _ _ Γ η := StrongTrans.whiskerRight Γ η
@@ -98,3 +100,5 @@ instance bicategory : Bicategory (Pseudofunctor B C) where
   whisker_exchange {a b c f g h i} η θ := by ext; exact whisker_exchange _ _
 
 end CategoryTheory.Pseudofunctor
+
+#lint
