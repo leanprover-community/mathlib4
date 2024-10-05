@@ -595,6 +595,11 @@ def congr₂ (e : N ≃ₗ[R] P) : QuadraticMap R M N ≃ₗ[R] QuadraticMap R M
     simp only [LinearMap.compQuadraticMap_apply, smul_apply, LinearMapClass.map_smul,
       LinearEquiv.coe_coe, RingHom.id_apply]
 
+@[simp]
+theorem congr₂_refl : congr₂ (.refl R N) = .refl R (QuadraticMap R M N) := rfl
+
+theorem congr₂_symm (e : N ≃ₗ[R] P) : congr₂ e.symm = (congr₂ e (M := M)).symm := rfl
+
 end Comp
 section NonUnitalNonAssocSemiring
 
