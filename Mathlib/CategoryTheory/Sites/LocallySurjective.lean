@@ -60,7 +60,7 @@ theorem imageSieve_whisker_forget {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C} (s
 theorem imageSieve_app {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C} (s : F.obj (op U)) :
     imageSieve f (f.app _ s) = ⊤ := by
   ext V i
-  simp only [Sieve.top_apply, iff_true_iff, imageSieve_apply]
+  simp only [Sieve.top_apply, iff_true, imageSieve_apply]
   have := elementwise_of% (f.naturality i.op)
   exact ⟨F.map i.op s, this s⟩
 
@@ -94,7 +94,7 @@ instance {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) [IsLocallySurjective J f] :
 theorem isLocallySurjective_iff_imagePresheaf_sheafify_eq_top {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) :
     IsLocallySurjective J f ↔ (imagePresheaf (whiskerRight f (forget A))).sheafify J = ⊤ := by
   simp only [Subpresheaf.ext_iff, Function.funext_iff, Set.ext_iff, top_subpresheaf_obj,
-    Set.top_eq_univ, Set.mem_univ, iff_true_iff]
+    Set.top_eq_univ, Set.mem_univ, iff_true]
   exact ⟨fun H _ => H.imageSieve_mem, fun H => ⟨H _⟩⟩
 
 theorem isLocallySurjective_iff_imagePresheaf_sheafify_eq_top' {F G : Cᵒᵖ ⥤ Type w} (f : F ⟶ G) :

@@ -109,6 +109,18 @@ lemma ab_exact_iff :
     obtain ⟨x₁, rfl⟩ := h x₂ hx₂
     exact ⟨x₁, rfl⟩
 
+lemma ab_exact_iff_function_exact :
+    S.Exact ↔ Function.Exact S.f S.g := by
+  rw [S.ab_exact_iff]
+  apply forall_congr'
+  intro x₂
+  constructor
+  · intro h
+    refine ⟨h, ?_⟩
+    rintro ⟨x₁, rfl⟩
+    simp only [ab_zero_apply]
+  · tauto
+
 lemma ab_exact_iff_ker_le_range : S.Exact ↔ S.g.ker ≤ S.f.range := S.ab_exact_iff
 
 lemma ab_exact_iff_range_eq_ker : S.Exact ↔ S.f.range = S.g.ker := by

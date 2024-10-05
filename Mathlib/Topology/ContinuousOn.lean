@@ -609,7 +609,7 @@ theorem continuous_of_cover_nhds {ι : Sort*} {f : α → β} {s : ι → Set α
     rw [ContinuousAt, ← nhdsWithin_eq_nhds.2 hi]
     exact hf _ _ (mem_of_mem_nhds hi)
 
-theorem continuousOn_empty (f : α → β) : ContinuousOn f ∅ := fun _ => False.elim
+@[simp] theorem continuousOn_empty (f : α → β) : ContinuousOn f ∅ := fun _ => False.elim
 
 @[simp]
 theorem continuousOn_singleton (f : α → β) (a : α) : ContinuousOn f {a} :=
@@ -685,8 +685,7 @@ theorem continuousWithinAt_singleton {f : α → β} {x : α} : ContinuousWithin
 @[simp]
 theorem continuousWithinAt_insert_self {f : α → β} {x : α} {s : Set α} :
     ContinuousWithinAt f (insert x s) x ↔ ContinuousWithinAt f s x := by
-  simp only [← singleton_union, continuousWithinAt_union, continuousWithinAt_singleton,
-    true_and_iff]
+  simp only [← singleton_union, continuousWithinAt_union, continuousWithinAt_singleton, true_and]
 
 alias ⟨_, ContinuousWithinAt.insert_self⟩ := continuousWithinAt_insert_self
 

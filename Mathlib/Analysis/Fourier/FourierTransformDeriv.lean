@@ -327,8 +327,7 @@ lemma norm_fourierPowSMulRight_le (f : V → E) (v : V) (n : ℕ) :
       simp [_root_.abs_of_nonneg pi_nonneg, norm_smul]
   _ ≤ (2 * π) ^ n * ((∏ x : Fin n, ‖L‖ * ‖v‖ * ‖m x‖) * ‖f v‖) := by
       gcongr with i _hi
-      · exact fun i _hi ↦ abs_nonneg _
-      · exact L.le_opNorm₂ v (m i)
+      exact L.le_opNorm₂ v (m i)
   _ = (2 * π * ‖L‖) ^ n * ‖v‖ ^ n * ‖f v‖ * ∏ i : Fin n, ‖m i‖ := by
       simp [Finset.prod_mul_distrib, mul_pow]; ring
 
@@ -448,7 +447,7 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : ℕ∞}
       (fun w n ↦ fourierIntegral 𝐞 μ L.toLinearMap₂ (fun v ↦ fourierPowSMulRight L f v n) w) := by
   constructor
   · intro w
-    rw [uncurry0_apply, Matrix.zero_empty, fourierIntegral_continuousMultilinearMap_apply'
+    rw [curry0_apply, Matrix.zero_empty, fourierIntegral_continuousMultilinearMap_apply'
       (integrable_fourierPowSMulRight L (hf 0 bot_le) h'f)]
     simp only [fourierPowSMulRight_apply, pow_zero, Finset.univ_eq_empty, Finset.prod_empty,
       one_smul]
@@ -628,7 +627,7 @@ lemma pow_mul_norm_iteratedFDeriv_fourierIntegral_le [FiniteDimensional ℝ V]
   _ ≤ (2 * π) ^ n
       * (|L v w| ^ n * ‖iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f) w‖) := by
     apply le_mul_of_one_le_left (by positivity)
-    apply one_le_pow_of_one_le
+    apply one_le_pow₀
     linarith [one_le_pi_div_two]
   _ = ‖fourierPowSMulRight (-L.flip)
         (iteratedFDeriv ℝ k (fourierIntegral 𝐞 μ L.toLinearMap₂ f)) w n (fun _ ↦ v)‖ := by

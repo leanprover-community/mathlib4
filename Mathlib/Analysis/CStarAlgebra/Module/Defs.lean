@@ -209,7 +209,7 @@ lemma inner_mul_inner_swap_le [CompleteSpace A] {x y : E} : ⟪y, x⟫ * ⟪x, y
             _ ≤ ‖x‖ ^ 2 • (star a * a) - ‖x‖ ^ 2 • (⟪y, x⟫ * a)
                   - ‖x‖ ^ 2 • (star a * ⟪x, y⟫) + ‖x‖ ^ 2 • (‖x‖ ^ 2 • ⟪y, y⟫) := by
                       gcongr
-                      calc _ ≤ ‖⟪x, x⟫_A‖ • (star a * a) := CStarRing.conjugate_le_norm_smul
+                      calc _ ≤ ‖⟪x, x⟫_A‖ • (star a * a) := CStarAlgebra.conjugate_le_norm_smul
                         _ = (Real.sqrt ‖⟪x, x⟫_A‖) ^ 2 • (star a * a) := by
                                   congr
                                   have : 0 ≤ ‖⟪x, x⟫_A‖ := by positivity
@@ -226,7 +226,7 @@ lemma norm_inner_le [CompleteSpace A] {x y : E} : ‖⟪x, y⟫‖ ≤ ‖x‖ *
   have := calc ‖⟪x, y⟫‖ ^ 2 = ‖⟪y, x⟫ * ⟪x, y⟫‖ := by
                 rw [← star_inner x, CStarRing.norm_star_mul_self, pow_two]
     _ ≤ ‖‖x‖^ 2 • ⟪y, y⟫‖ := by
-                refine CStarRing.norm_le_norm_of_nonneg_of_le ?_ inner_mul_inner_swap_le
+                refine CStarAlgebra.norm_le_norm_of_nonneg_of_le ?_ inner_mul_inner_swap_le
                 rw [← star_inner x]
                 exact star_mul_self_nonneg ⟪x, y⟫_A
     _ = ‖x‖ ^ 2 * ‖⟪y, y⟫‖ := by simp [norm_smul]
@@ -269,7 +269,7 @@ lemma norm_eq_csSup [CompleteSpace A] (v : E) :
   let instNACG : NormedAddCommGroup E := NormedAddCommGroup.ofCore normedSpaceCore
   let instNS : NormedSpace ℂ E := .ofCore normedSpaceCore
   refine Eq.symm <| IsGreatest.csSup_eq ⟨⟨‖v‖⁻¹ • v, ?_, ?_⟩, ?_⟩
-  · simpa only [norm_smul, norm_inv, norm_norm] using inv_mul_le_one_of_le le_rfl (by positivity)
+  · simpa only [norm_smul, norm_inv, norm_norm] using inv_mul_le_one_of_le₀ le_rfl (by positivity)
   · simp [norm_smul, ← norm_sq_eq, pow_two, ← mul_assoc]
   · rintro - ⟨w, hw, rfl⟩
     calc _ ≤ ‖w‖ * ‖v‖ := norm_inner_le E

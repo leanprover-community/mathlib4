@@ -3,11 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.Algebra.ZMod
 import Mathlib.Data.Nat.Multiplicity
-import Mathlib.Data.ZMod.Algebra
+import Mathlib.FieldTheory.Perfect
 import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.RingTheory.WittVector.IsPoly
-import Mathlib.FieldTheory.Perfect
 
 /-!
 ## The Frobenius operator

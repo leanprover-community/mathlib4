@@ -2,6 +2,7 @@ import Mathlib.Tactic.Propose
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Algebra.Associated.Basic
 import Mathlib.Data.Set.Subsingleton
+import Batteries.Data.List.Lemmas
 
 -- For debugging, you may find these options useful:
 -- set_option trace.Tactic.propose true

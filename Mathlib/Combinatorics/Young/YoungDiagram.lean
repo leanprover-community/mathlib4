@@ -436,7 +436,7 @@ theorem rowLens_length_ofRowLens {w : List ℕ} {hw : w.Sorted (· ≥ ·)} (hpo
     (ofRowLens w hw).rowLens.length = w.length := by
   simp only [length_rowLens, colLen, Nat.find_eq_iff, mem_cells, mem_ofRowLens,
     lt_self_iff_false, IsEmpty.exists_iff, Classical.not_not]
-  exact ⟨not_false, fun n hn => ⟨hn, hpos _ (List.getElem_mem _ _ hn)⟩⟩
+  exact ⟨not_false, fun n hn => ⟨hn, hpos _ (List.getElem_mem hn)⟩⟩
 
 /-- The length of the `i`th row in `ofRowLens w hw` is the `i`th entry of `w` -/
 theorem rowLen_ofRowLens {w : List ℕ} {hw : w.Sorted (· ≥ ·)} (i : Fin w.length) :

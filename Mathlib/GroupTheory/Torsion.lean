@@ -91,7 +91,7 @@ theorem IsTorsion.of_surjective {f : G →* H} (hf : Function.Surjective f) (tG 
 theorem IsTorsion.extension_closed {f : G →* H} (hN : N = f.ker) (tH : IsTorsion H)
     (tN : IsTorsion N) : IsTorsion G := fun g => by
   obtain ⟨ngn, ngnpos, hngn⟩ := (tH <| f g).exists_pow_eq_one
-  have hmem := f.mem_ker.mpr ((f.map_pow g ngn).trans hngn)
+  have hmem := MonoidHom.mem_ker.mpr ((f.map_pow g ngn).trans hngn)
   lift g ^ ngn to N using hN.symm ▸ hmem with gn h
   obtain ⟨nn, nnpos, hnn⟩ := (tN gn).exists_pow_eq_one
   exact isOfFinOrder_iff_pow_eq_one.mpr <| ⟨ngn * nn, mul_pos ngnpos nnpos, by

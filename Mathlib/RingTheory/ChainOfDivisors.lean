@@ -160,7 +160,7 @@ theorem element_of_chain_eq_pow_second_of_chain {q r : Associates M} {n : ℕ} (
       rw [Finset.card_image_iff]
       refine Set.injOn_of_injective (fun m m' h => Fin.ext ?_)
       refine
-        pow_injective_of_not_unit (element_of_chain_not_isUnit_of_index_ne_zero (by simp) h₁) ?_ h
+        pow_injective_of_not_isUnit (element_of_chain_not_isUnit_of_index_ne_zero (by simp) h₁) ?_ h
       exact Irreducible.ne_zero (second_of_chain_is_irreducible hn h₁ (@h₂) hq)
     suffices H' : ∀ r ∈ Finset.univ.image fun m : Fin (i + 1) => c 1 ^ (m : ℕ), r ≤ q by
       simp only [← Nat.succ_le_iff, Nat.succ_eq_add_one, ← this]
@@ -332,7 +332,7 @@ theorem multiplicity_prime_eq_multiplicity_image_by_factor_orderIso {m p : Assoc
 
 end
 
-variable [Unique Mˣ] [Unique Nˣ]
+variable [Subsingleton Mˣ] [Subsingleton Nˣ]
 
 /-- The order isomorphism between the factors of `mk m` and the factors of `mk n` induced by a
   bijection between the factors of `m` and the factors of `n` that preserves `∣`. -/

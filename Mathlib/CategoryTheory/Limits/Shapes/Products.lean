@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2018 Scott Morrison. All rights reserved.
+Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Bhavik Mehta
+Authors: Kim Morrison, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.DiscreteCategory
@@ -480,6 +480,50 @@ from a family of isomorphisms between the factors.
 -/
 abbrev Sigma.mapIso {f g : β → C} [HasCoproductsOfShape β C] (p : ∀ b, f b ≅ g b) : ∐ f ≅ ∐ g :=
   colim.mapIso (Discrete.natIso fun X => p X.as)
+
+section
+
+/- In this section, we provide some API for coproducts when we are given a functor
+`Discrete α ⥤ C` instead of a map `α → C`. -/
+
+variable (X : Discrete α ⥤ C) [HasCoproduct (fun j => X.obj (Discrete.mk j))]
+
+/-- A colimit cocone for `X : Discrete α ⥤ C` that is given
+by `∐ (fun j => X.obj (Discrete.mk j))`. -/
+@[simps]
+def Sigma.cocone : Cocone X where
+  pt := ∐ (fun j => X.obj (Discrete.mk j))
+  ι := Discrete.natTrans (fun _ => Sigma.ι (fun j ↦ X.obj ⟨j⟩) _)
+
+/-- The cocone `Sigma.cocone X` is a colimit cocone. -/
+def coproductIsCoproduct' :
+    IsColimit (Sigma.cocone X) where
+  desc s := Sigma.desc (fun j => s.ι.app ⟨j⟩)
+  fac s := by simp
+  uniq s m hm := by
+    dsimp
+    ext
+    simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
+    apply hm
+
+variable [HasColimit X]
+
+/-- The isomorphism `∐ (fun j => X.obj (Discrete.mk j)) ≅ colimit X`. -/
+def Sigma.isoColimit :
+    ∐ (fun j => X.obj (Discrete.mk j)) ≅ colimit X :=
+  IsColimit.coconePointUniqueUpToIso (coproductIsCoproduct' X) (colimit.isColimit X)
+
+@[reassoc (attr := simp)]
+lemma Sigma.ι_isoColimit_hom (j : α) :
+    Sigma.ι _ j ≫ (Sigma.isoColimit X).hom = colimit.ι _ (Discrete.mk j) :=
+  IsColimit.comp_coconePointUniqueUpToIso_hom (coproductIsCoproduct' X) _ _
+
+@[reassoc (attr := simp)]
+lemma Sigma.ι_isoColimit_inv (j : α) :
+    colimit.ι _ ⟨j⟩ ≫ (Sigma.isoColimit X).inv = Sigma.ι (fun j ↦ X.obj ⟨j⟩) _ :=
+  IsColimit.comp_coconePointUniqueUpToIso_inv _ _ _
+
+end
 
 /-- Two products which differ by an equivalence in the indexing type,
 and up to isomorphism in the factors, are isomorphic.

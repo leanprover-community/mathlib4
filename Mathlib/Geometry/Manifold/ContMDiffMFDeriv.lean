@@ -96,7 +96,7 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
     rw [contMDiffAt_iff] at hf hg
     simp_rw [Function.comp_def, uncurry, extChartAt_prod, PartialEquiv.prod_coe_symm,
       ModelWithCorners.range_prod] at hf ⊢
-    refine ContDiffWithinAt.fderivWithin ?_ hg.2 I.unique_diff hmn (mem_range_self _) ?_
+    refine ContDiffWithinAt.fderivWithin ?_ hg.2 I.uniqueDiffOn hmn (mem_range_self _) ?_
     · simp_rw [extChartAt_to_inv]; exact hf.2
     · rw [← image_subset_iff]
       rintro _ ⟨x, -, rfl⟩
@@ -165,7 +165,7 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
             PartialEquiv.mem_symm_trans_source _ (mem_extChartAt_source I' (f x₂ (g x₂)))
               h3x₂).differentiableWithinAt le_top
     have h3f := (h2x₂.mdifferentiableAt le_rfl).differentiableWithinAt_writtenInExtChartAt
-    refine fderivWithin.comp₃ _ hI' h3f hI ?_ ?_ ?_ ?_ (I.unique_diff _ <| mem_range_self _)
+    refine fderivWithin.comp₃ _ hI' h3f hI ?_ ?_ ?_ ?_ (I.uniqueDiffOn _ <| mem_range_self _)
     · exact fun x _ => mem_range_self _
     · exact fun x _ => mem_range_self _
     · simp_rw [writtenInExtChartAt, Function.comp_apply,
@@ -577,7 +577,7 @@ theorem tangentMap_tangentBundle_pure [Is : SmoothManifoldWithCorners I M] (p : 
     · simp
     · exact differentiableAt_id'
     · exact differentiableAt_const _
-    · exact ModelWithCorners.unique_diff_at_image I
+    · exact ModelWithCorners.uniqueDiffWithinAt_image I
     · exact differentiableAt_id'.prod (differentiableAt_const _)
   simp (config := { unfoldPartialApp := true }) only [Bundle.zeroSection, tangentMap, mfderiv, A,
     if_pos, chartAt, FiberBundle.chartedSpace_chartAt, TangentBundle.trivializationAt_apply,

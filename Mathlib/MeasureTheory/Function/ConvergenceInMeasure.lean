@@ -203,7 +203,7 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae (hfg : TendstoInMeasure μ f atTo
     refine ⟨max N (k - 1), fun n hn_ge => lt_of_le_of_lt ?_ hk_lt_ε⟩
     specialize hNx n ((le_max_left _ _).trans hn_ge)
     have h_inv_n_le_k : (2 : ℝ)⁻¹ ^ n ≤ 2 * (2 : ℝ)⁻¹ ^ k := by
-      rw [mul_comm, ← inv_mul_le_iff' (zero_lt_two' ℝ)]
+      rw [mul_comm, ← inv_mul_le_iff₀' (zero_lt_two' ℝ)]
       conv_lhs =>
         congr
         rw [← pow_one (2 : ℝ)⁻¹]
@@ -306,7 +306,7 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_top {E} [NormedAddCommGroup E] {f : 
   specialize hfg (ENNReal.ofReal δ / 2)
       (ENNReal.div_pos_iff.2 ⟨(ENNReal.ofReal_pos.2 hδ).ne.symm, ENNReal.two_ne_top⟩)
   refine hfg.mono fun n hn => ?_
-  simp only [true_and_iff, gt_iff_lt, zero_tsub, zero_le, zero_add, Set.mem_Icc,
+  simp only [gt_iff_lt, zero_tsub, zero_le, zero_add, Set.mem_Icc,
     Pi.sub_apply] at *
   have : essSup (fun x : α => (‖f n x - g x‖₊ : ℝ≥0∞)) μ < ENNReal.ofReal δ :=
     lt_of_le_of_lt hn
