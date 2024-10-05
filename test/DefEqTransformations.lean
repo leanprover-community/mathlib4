@@ -1,5 +1,4 @@
 import Mathlib.Tactic.DefEqTransformations
-import Mathlib.Init.Logic
 
 set_option autoImplicit true
 

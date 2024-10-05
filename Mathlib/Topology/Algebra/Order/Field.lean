@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson, Devon Tuma, Eric Rodriguez, Oliver Nash
 -/
 import Mathlib.Data.Set.Pointwise.Interval
+import Mathlib.Order.Filter.AtTopBot.Field
 import Mathlib.Topology.Algebra.Field
 import Mathlib.Topology.Algebra.Order.Group
 

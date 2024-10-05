@@ -53,8 +53,9 @@ theorem IsLUB.nhdsWithin_neBot {a : α} {s : Set α} (ha : IsLUB s a) (hs : s.No
     NeBot (𝓝[s] a) :=
   mem_closure_iff_nhdsWithin_neBot.1 (ha.mem_closure hs)
 
-theorem IsGLB.nhdsWithin_neBot : ∀ {a : α} {s : Set α}, IsGLB s a → s.Nonempty → NeBot (𝓝[s] a) :=
-  IsLUB.nhdsWithin_neBot (α := αᵒᵈ)
+theorem IsGLB.nhdsWithin_neBot {a : α} {s : Set α} (ha : IsGLB s a) (hs : s.Nonempty) :
+    NeBot (𝓝[s] a) :=
+  IsLUB.nhdsWithin_neBot (α := αᵒᵈ) ha hs
 
 theorem isLUB_of_mem_nhds {s : Set α} {a : α} {f : Filter α} (hsa : a ∈ upperBounds s) (hsf : s ∈ f)
     [NeBot (f ⊓ 𝓝 a)] : IsLUB s a :=
@@ -70,9 +71,10 @@ theorem isLUB_of_mem_closure {s : Set α} {a : α} (hsa : a ∈ upperBounds s) (
   rw [mem_closure_iff_clusterPt, ClusterPt, inf_comm] at hsf
   exact isLUB_of_mem_nhds hsa (mem_principal_self s)
 
-theorem isGLB_of_mem_nhds :
-    ∀ {s : Set α} {a : α} {f : Filter α}, a ∈ lowerBounds s → s ∈ f → NeBot (f ⊓ 𝓝 a) → IsGLB s a :=
-  isLUB_of_mem_nhds (α := αᵒᵈ)
+theorem isGLB_of_mem_nhds {s : Set α} {a : α} {f : Filter α} (hsa : a ∈ lowerBounds s) (hsf : s ∈ f)
+    [NeBot (f ⊓ 𝓝 a)] :
+    IsGLB s a :=
+  isLUB_of_mem_nhds (α := αᵒᵈ) hsa hsf
 
 theorem isGLB_of_mem_closure {s : Set α} {a : α} (hsa : a ∈ lowerBounds s) (hsf : a ∈ closure s) :
     IsGLB s a :=
@@ -114,20 +116,20 @@ theorem IsLUB.mem_lowerBounds_of_tendsto [Preorder γ] [TopologicalSpace γ] [Or
     (hb : Tendsto f (𝓝[s] a) (𝓝 b)) : b ∈ lowerBounds (f '' s) :=
   IsLUB.mem_upperBounds_of_tendsto (γ := γᵒᵈ) hf ha hb
 
-theorem IsLUB.isGLB_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ] :
-    ∀ {f : α → γ} {s : Set α} {a : α} {b : γ},
-      AntitoneOn f s → IsLUB s a → s.Nonempty → Tendsto f (𝓝[s] a) (𝓝 b) → IsGLB (f '' s) b :=
-  IsLUB.isLUB_of_tendsto (γ := γᵒᵈ)
+theorem IsLUB.isGLB_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ] {f : α → γ}
+    {s : Set α} {a : α} {b : γ} (hf : AntitoneOn f s) (ha : IsLUB s a) (hs : s.Nonempty)
+    (hb : Tendsto f (𝓝[s] a) (𝓝 b)) : IsGLB (f '' s) b :=
+  IsLUB.isLUB_of_tendsto (γ := γᵒᵈ) hf ha hs hb
 
 theorem IsGLB.mem_upperBounds_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ]
     {f : α → γ} {s : Set α} {a : α} {b : γ} (hf : AntitoneOn f s) (ha : IsGLB s a)
     (hb : Tendsto f (𝓝[s] a) (𝓝 b)) : b ∈ upperBounds (f '' s) :=
   IsGLB.mem_lowerBounds_of_tendsto (γ := γᵒᵈ) hf ha hb
 
-theorem IsGLB.isLUB_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ] :
-    ∀ {f : α → γ} {s : Set α} {a : α} {b : γ},
-      AntitoneOn f s → IsGLB s a → s.Nonempty → Tendsto f (𝓝[s] a) (𝓝 b) → IsLUB (f '' s) b :=
-  IsGLB.isGLB_of_tendsto (γ := γᵒᵈ)
+theorem IsGLB.isLUB_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ] {f : α → γ}
+    {s : Set α} {a : α} {b : γ} (hf : AntitoneOn f s) (ha : IsGLB s a) (hs : s.Nonempty)
+    (hb : Tendsto f (𝓝[s] a) (𝓝 b)) : IsLUB (f '' s) b :=
+  IsGLB.isGLB_of_tendsto (γ := γᵒᵈ) hf ha hs hb
 
 theorem IsLUB.mem_of_isClosed {a : α} {s : Set α} (ha : IsLUB s a) (hs : s.Nonempty)
     (sc : IsClosed s) : a ∈ s :=

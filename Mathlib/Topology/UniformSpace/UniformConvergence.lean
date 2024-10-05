@@ -62,7 +62,7 @@ Uniform limit, uniform convergence, tends uniformly to
 
 noncomputable section
 
-open Topology Uniformity Filter Set
+open Topology Uniformity Filter Set Uniform
 
 universe u v w x
 variable {α : Type u} {β : Type v} {γ : Type w} {ι : Type x} [UniformSpace β]
@@ -383,10 +383,12 @@ theorem TendstoUniformlyOn.uniformCauchySeqOn (hF : TendstoUniformlyOn F f p s) 
     hF.tendstoUniformlyOnFilter.uniformCauchySeqOnFilter
 
 /-- A uniformly Cauchy sequence converges uniformly to its limit -/
-theorem UniformCauchySeqOnFilter.tendstoUniformlyOnFilter_of_tendsto [NeBot p]
+theorem UniformCauchySeqOnFilter.tendstoUniformlyOnFilter_of_tendsto
     (hF : UniformCauchySeqOnFilter F p p')
     (hF' : ∀ᶠ x : α in p', Tendsto (fun n => F n x) p (𝓝 (f x))) :
     TendstoUniformlyOnFilter F f p p' := by
+  rcases p.eq_or_neBot with rfl | _
+  · simp only [TendstoUniformlyOnFilter, bot_prod, eventually_bot, implies_true]
   -- Proof idea: |f_n(x) - f(x)| ≤ |f_n(x) - f_m(x)| + |f_m(x) - f(x)|. We choose `n`
   -- so that |f_n(x) - f_m(x)| is uniformly small across `s` whenever `m ≥ n`. Then for
   -- a fixed `x`, we choose `m` sufficiently large such that |f_m(x) - f(x)| is small.
@@ -412,7 +414,7 @@ theorem UniformCauchySeqOnFilter.tendstoUniformlyOnFilter_of_tendsto [NeBot p]
   exact ⟨F m x, ⟨hm.2, htsymm hm.1⟩⟩
 
 /-- A uniformly Cauchy sequence converges uniformly to its limit -/
-theorem UniformCauchySeqOn.tendstoUniformlyOn_of_tendsto [NeBot p] (hF : UniformCauchySeqOn F p s)
+theorem UniformCauchySeqOn.tendstoUniformlyOn_of_tendsto (hF : UniformCauchySeqOn F p s)
     (hF' : ∀ x : α, x ∈ s → Tendsto (fun n => F n x) p (𝓝 (f x))) : TendstoUniformlyOn F f p s :=
   tendstoUniformlyOn_iff_tendstoUniformlyOnFilter.mpr
     (hF.uniformCauchySeqOnFilter.tendstoUniformlyOnFilter_of_tendsto hF')
@@ -481,7 +483,7 @@ theorem UniformCauchySeqOn.prod' {β' : Type*} [UniformSpace β'] {F' : ι → �
 a Cauchy sequence. -/
 theorem UniformCauchySeqOn.cauchy_map [hp : NeBot p] (hf : UniformCauchySeqOn F p s) (hx : x ∈ s) :
     Cauchy (map (fun i => F i x) p) := by
-  simp only [cauchy_map_iff, hp, true_and_iff]
+  simp only [cauchy_map_iff, hp, true_and]
   intro u hu
   rw [mem_map]
   filter_upwards [hf u hu] with p hp using hp x hx
@@ -522,6 +524,31 @@ theorem tendstoUniformly_iff_seq_tendstoUniformly {l : Filter ι} [l.IsCountably
   exact tendstoUniformlyOn_iff_seq_tendstoUniformlyOn
 
 end SeqTendsto
+
+section
+
+variable [NeBot p] {L : ι → β} {ℓ : β}
+
+theorem TendstoUniformlyOnFilter.tendsto_of_eventually_tendsto
+    (h1 : TendstoUniformlyOnFilter F f p p') (h2 : ∀ᶠ i in p, Tendsto (F i) p' (𝓝 (L i)))
+    (h3 : Tendsto L p (𝓝 ℓ)) : Tendsto f p' (𝓝 ℓ) := by
+  rw [tendsto_nhds_left]
+  intro s hs
+  rw [mem_map, Set.preimage, ← eventually_iff]
+  obtain ⟨t, ht, hts⟩ := comp3_mem_uniformity hs
+  have p1 : ∀ᶠ i in p, (L i, ℓ) ∈ t := tendsto_nhds_left.mp h3 ht
+  have p2 : ∀ᶠ i in p, ∀ᶠ x in p', (F i x, L i) ∈ t := by
+    filter_upwards [h2] with i h2 using tendsto_nhds_left.mp h2 ht
+  have p3 : ∀ᶠ i in p, ∀ᶠ x in p', (f x, F i x) ∈ t := (h1 t ht).curry
+  obtain ⟨i, p4, p5, p6⟩ := (p1.and (p2.and p3)).exists
+  filter_upwards [p5, p6] with x p5 p6 using hts ⟨F i x, p6, L i, p5, p4⟩
+
+theorem TendstoUniformly.tendsto_of_eventually_tendsto
+    (h1 : TendstoUniformly F f p) (h2 : ∀ᶠ i in p, Tendsto (F i) p' (𝓝 (L i)))
+    (h3 : Tendsto L p (𝓝 ℓ)) : Tendsto f p' (𝓝 ℓ) :=
+  (h1.tendstoUniformlyOnFilter.mono_right le_top).tendsto_of_eventually_tendsto h2 h3
+
+end
 
 variable [TopologicalSpace α]
 
@@ -653,14 +680,14 @@ theorem tendstoLocallyUniformlyOn_TFAE [LocallyCompactSpace α] (G : ι → α �
       ∀ K, K ⊆ s → IsCompact K → TendstoUniformlyOn G g p K,
       ∀ x ∈ s, ∃ v ∈ 𝓝[s] x, TendstoUniformlyOn G g p v] := by
   tfae_have 1 → 2
-  · rintro h K hK1 hK2
-    exact (tendstoLocallyUniformlyOn_iff_tendstoUniformlyOn_of_compact hK2).mp (h.mono hK1)
+  | h, K, hK1, hK2 =>
+    (tendstoLocallyUniformlyOn_iff_tendstoUniformlyOn_of_compact hK2).mp (h.mono hK1)
   tfae_have 2 → 3
-  · rintro h x hx
+  | h, x, hx => by
     obtain ⟨K, ⟨hK1, hK2⟩, hK3⟩ := (compact_basis_nhds x).mem_iff.mp (hs.mem_nhds hx)
     exact ⟨K, nhdsWithin_le_nhds hK1, h K hK3 hK2⟩
   tfae_have 3 → 1
-  · rintro h u hu x hx
+  | h, u, hu, x, hx => by
     obtain ⟨v, hv1, hv2⟩ := h x hx
     exact ⟨v, hv1, hv2 u hu⟩
   tfae_finish

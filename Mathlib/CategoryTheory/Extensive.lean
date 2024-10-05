@@ -527,7 +527,7 @@ instance FinitaryPreExtensive.hasPullbacks_of_inclusions [FinitaryPreExtensive C
     {α : Type*} (f : X ⟶ Z) {Y : (a : α) → C} (i : (a : α) → Y a ⟶ Z) [Finite α]
     [hi : IsIso (Sigma.desc i)] (a : α) : HasPullback f (i a) := by
   apply FinitaryPreExtensive.hasPullbacks_of_is_coproduct (c := Cofan.mk Z i)
-  exact @IsColimit.ofPointIso (t := Cofan.mk Z i) (P := _) hi
+  exact @IsColimit.ofPointIso (t := Cofan.mk Z i) (P := _) (i := hi)
 
 lemma FinitaryPreExtensive.sigma_desc_iso [FinitaryPreExtensive C] {α : Type} [Finite α] {X : C}
     {Z : α → C} (π : (a : α) → Z a ⟶ X) {Y : C} (f : Y ⟶ X) (hπ : IsIso (Sigma.desc π)) :
@@ -536,7 +536,7 @@ lemma FinitaryPreExtensive.sigma_desc_iso [FinitaryPreExtensive C] {α : Type} [
     change IsIso (this.coconePointUniqueUpToIso (getColimitCocone _).2).inv
     infer_instance
   let this : IsColimit (Cofan.mk X π) := by
-    refine @IsColimit.ofPointIso (t := Cofan.mk X π) (P := coproductIsCoproduct Z) ?_
+    refine @IsColimit.ofPointIso (t := Cofan.mk X π) (P := coproductIsCoproduct Z) (i := ?_)
     convert hπ
     simp [coproductIsCoproduct]
   refine (FinitaryPreExtensive.isUniversal_finiteCoproducts this

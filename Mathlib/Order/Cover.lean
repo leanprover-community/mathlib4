@@ -80,7 +80,7 @@ theorem wcovBy_congr_right (hab : AntisymmRel (· ≤ ·) a b) : c ⩿ a ↔ c �
 
 /-- If `a ≤ b`, then `b` does not cover `a` iff there's an element in between. -/
 theorem not_wcovBy_iff (h : a ≤ b) : ¬a ⩿ b ↔ ∃ c, a < c ∧ c < b := by
-  simp_rw [WCovBy, h, true_and_iff, not_forall, exists_prop, not_not]
+  simp_rw [WCovBy, h, true_and, not_forall, exists_prop, not_not]
 
 instance WCovBy.isRefl : IsRefl α (· ⩿ ·) :=
   ⟨WCovBy.refl⟩
@@ -208,7 +208,7 @@ theorem CovBy.lt (h : a ⋖ b) : a < b :=
 
 /-- If `a < b`, then `b` does not cover `a` iff there's an element in between. -/
 theorem not_covBy_iff (h : a < b) : ¬a ⋖ b ↔ ∃ c, a < c ∧ c < b := by
-  simp_rw [CovBy, h, true_and_iff, not_forall, exists_prop, not_not]
+  simp_rw [CovBy, h, true_and, not_forall, exists_prop, not_not]
 
 alias ⟨exists_lt_lt_of_not_covBy, _⟩ := not_covBy_iff
 

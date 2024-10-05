@@ -26,7 +26,7 @@ jobs:
         run: |
           ./scripts/get_tlabel.sh "${PR}" >> "$GITHUB_OUTPUT"
         env:
-          PR:  /repos/leanprover-community/mathlib4/issues/${{ github.event.issue.number }}
+          PR:  /repos/leanprover-community/mathlib4/issues/${{ github.event.pull_request.number }}
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
       - name: Send message on Zulip

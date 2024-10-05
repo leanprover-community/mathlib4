@@ -1,9 +1,6 @@
 -- Manual exceptions for the text-based linters.
--- This file is to `style-exceptions.txt` what `nolints.json` is to `@nolint` attributes:
--- The latter is supposed to become and stay mostly empty over time (though files longer than
--- 1500 lines can be transient exceptions for some longer time period),
--- the former could be necessary in the long term.
--- In this case, it's a side-effect of making the linter stricter than its Python ancestor.
+-- The entries in this file could be necessary in the long term.
+-- In some cases, entries are a side effect of making the linter stricter than its Python ancestor.
 
 -- The `Mathlib/Init.lean` files does not have a copyright header
 Mathlib/Init.lean : line 2 : ERR_COP : Malformed or missing copyright header: Copyright line is malformed

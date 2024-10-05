@@ -88,8 +88,7 @@ noncomputable
 def rnDerivAux (κ η : Kernel α γ) (a : α) (x : γ) : ℝ :=
   if hα : Countable α then ((κ a).rnDeriv (η a) x).toReal
   else haveI := hαγ.countableOrCountablyGenerated.resolve_left hα
-    density (map κ (fun a ↦ (a, ()))
-      (@measurable_prod_mk_right γ Unit _ inferInstance _)) η a x univ
+    density (map κ (fun a ↦ (a, ()))) η a x univ
 
 lemma rnDerivAux_nonneg (hκη : κ ≤ η) {a : α} {x : γ} : 0 ≤ rnDerivAux κ η a x := by
   rw [rnDerivAux]
@@ -144,7 +143,7 @@ lemma setLIntegral_rnDerivAux (κ η : Kernel α γ) [IsFiniteKernel κ] [IsFini
     rw [ENNReal.ofReal_toReal hx_lt.ne]
   · have := hαγ.countableOrCountablyGenerated.resolve_left hα
     rw [setLIntegral_density ((fst_map_id_prod _ measurable_const).trans_le h_le) _
-      MeasurableSet.univ hs, map_apply' _ _ _ (hs.prod MeasurableSet.univ)]
+      MeasurableSet.univ hs, map_apply' _ (by fun_prop) _ (hs.prod MeasurableSet.univ)]
     congr with x
     simp
 
