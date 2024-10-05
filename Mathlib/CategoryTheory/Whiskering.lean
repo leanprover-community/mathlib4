@@ -157,18 +157,6 @@ instance full_whiskeringRight_obj {F : D ⥤ E} [F.Faithful] [F.Full] :
     ((whiskeringRight C D E).obj F).Full :=
   ((Functor.FullyFaithful.ofFullyFaithful F).whiskeringRight C).full
 
-def flipCompWhiskeringRightObj {F : Type u₄} [Category.{v₄} F] (G : C ⥤ D ⥤ E) (H : E ⥤ F) :
-    G.flip ⋙ (whiskeringRight _ _ _).obj H ≅ (G ⋙ (whiskeringRight _ _ _).obj H).flip :=
-  NatIso.ofComponents (fun X => Iso.refl _)
-
-def whiskeringRightComp {F : Type u₄} [Category.{v₄} F] (H : D ⥤ E) (I : E ⥤ F) :
-    (whiskeringRight C D F).obj (H ⋙ I) ≅ (whiskeringRight C D E).obj H ⋙ (whiskeringRight C E F).obj I :=
-  Iso.refl _
-
-def whiskeringLeftComp {F : Type u₄} [Category.{v₄} F] (H : C ⥤ D) (I : D ⥤ E) :
-    (whiskeringLeft C E F).obj (H ⋙ I) ≅ (whiskeringLeft D E F).obj I ⋙ (whiskeringLeft C D F).obj H :=
-  Iso.refl _
-
 @[simp]
 theorem whiskerLeft_id (F : C ⥤ D) {G : D ⥤ E} :
     whiskerLeft F (NatTrans.id G) = NatTrans.id (F.comp G) :=
