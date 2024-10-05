@@ -173,11 +173,9 @@ theorem lt_tan {x : ℝ} (h1 : 0 < x) (h2 : x < π / 2) : x < tan x := by
   let U := Ico 0 (π / 2)
   have intU : interior U = Ioo 0 (π / 2) := interior_Ico
   have half_pi_pos : 0 < π / 2 := div_pos pi_pos two_pos
-  have cos_pos : ∀ {y : ℝ}, y ∈ U → 0 < cos y := by
-    intro y hy
+  have cos_pos {y : ℝ} (hy : y ∈ U) : 0 < cos y := by
     exact cos_pos_of_mem_Ioo (Ico_subset_Ioo_left (neg_lt_zero.mpr half_pi_pos) hy)
-  have sin_pos : ∀ {y : ℝ}, y ∈ interior U → 0 < sin y := by
-    intro y hy
+  have sin_pos {y : ℝ} (hy : y ∈ interior U) : 0 < sin y := by
     rw [intU] at hy
     exact sin_pos_of_mem_Ioo (Ioo_subset_Ioo_right (div_le_self pi_pos.le one_le_two) hy)
   have tan_cts_U : ContinuousOn tan U := by
@@ -186,8 +184,7 @@ theorem lt_tan {x : ℝ} (h1 : 0 < x) (h2 : x < π / 2) : x < tan x := by
     simp only [mem_setOf_eq]
     exact (cos_pos hz).ne'
   have tan_minus_id_cts : ContinuousOn (fun y : ℝ => tan y - y) U := tan_cts_U.sub continuousOn_id
-  have deriv_pos : ∀ y : ℝ, y ∈ interior U → 0 < deriv (fun y' : ℝ => tan y' - y') y := by
-    intro y hy
+  have deriv_pos (y : ℝ) (hy : y ∈ interior U) : 0 < deriv (fun y' : ℝ => tan y' - y') y := by
     have := cos_pos (interior_subset hy)
     simp only [deriv_tan_sub_id y this.ne', one_div, gt_iff_lt, sub_pos]
     norm_cast

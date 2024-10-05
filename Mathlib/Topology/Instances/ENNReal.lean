@@ -435,34 +435,28 @@ theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0∞} (h : ∀ a < 1, a * x ≤ 
   rw [one_mul] at this
   exact le_of_tendsto this (eventually_nhdsWithin_iff.2 <| Eventually.of_forall h)
 
+@[deprecated mul_iInf' (since := "2024-09-12")]
 theorem iInf_mul_left' {ι} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} (h : a = ∞ → ⨅ i, f i = 0 → ∃ i, f i = 0)
-    (h0 : a = 0 → Nonempty ι) : ⨅ i, a * f i = a * ⨅ i, f i := by
-  by_cases H : a = ∞ ∧ ⨅ i, f i = 0
-  · rcases h H.1 H.2 with ⟨i, hi⟩
-    rw [H.2, mul_zero, ← bot_eq_zero, iInf_eq_bot]
-    exact fun b hb => ⟨i, by rwa [hi, mul_zero, ← bot_eq_zero]⟩
-  · rw [not_and_or] at H
-    cases isEmpty_or_nonempty ι
-    · rw [iInf_of_empty, iInf_of_empty, mul_top]
-      exact mt h0 (not_nonempty_iff.2 ‹_›)
-    · exact (ENNReal.mul_left_mono.map_ciInf_of_continuousAt
-        (ENNReal.continuousAt_const_mul H)).symm
+    (h0 : a = 0 → Nonempty ι) : ⨅ i, a * f i = a * ⨅ i, f i := .symm <| mul_iInf' h h0
 
+@[deprecated mul_iInf (since := "2024-09-12")]
 theorem iInf_mul_left {ι} [Nonempty ι] {f : ι → ℝ≥0∞} {a : ℝ≥0∞}
     (h : a = ∞ → ⨅ i, f i = 0 → ∃ i, f i = 0) : ⨅ i, a * f i = a * ⨅ i, f i :=
-  iInf_mul_left' h fun _ => ‹Nonempty ι›
+  .symm <| mul_iInf h
 
+@[deprecated iInf_mul' (since := "2024-09-12")]
 theorem iInf_mul_right' {ι} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} (h : a = ∞ → ⨅ i, f i = 0 → ∃ i, f i = 0)
-    (h0 : a = 0 → Nonempty ι) : ⨅ i, f i * a = (⨅ i, f i) * a := by
-  simpa only [mul_comm a] using iInf_mul_left' h h0
+    (h0 : a = 0 → Nonempty ι) : ⨅ i, f i * a = (⨅ i, f i) * a := .symm <| iInf_mul' h h0
 
+@[deprecated iInf_mul (since := "2024-09-12")]
 theorem iInf_mul_right {ι} [Nonempty ι] {f : ι → ℝ≥0∞} {a : ℝ≥0∞}
-    (h : a = ∞ → ⨅ i, f i = 0 → ∃ i, f i = 0) : ⨅ i, f i * a = (⨅ i, f i) * a :=
-  iInf_mul_right' h fun _ => ‹Nonempty ι›
+    (h : a = ∞ → ⨅ i, f i = 0 → ∃ i, f i = 0) : ⨅ i, f i * a = (⨅ i, f i) * a := .symm <| iInf_mul h
 
+@[deprecated inv_iInf (since := "2024-09-12")]
 theorem inv_map_iInf {ι : Sort*} {x : ι → ℝ≥0∞} : (iInf x)⁻¹ = ⨆ i, (x i)⁻¹ :=
   OrderIso.invENNReal.map_iInf x
 
+@[deprecated inv_iSup (since := "2024-09-12")]
 theorem inv_map_iSup {ι : Sort*} {x : ι → ℝ≥0∞} : (iSup x)⁻¹ = ⨅ i, (x i)⁻¹ :=
   OrderIso.invENNReal.map_iSup x
 
@@ -504,114 +498,9 @@ protected theorem Tendsto.div_const {f : Filter α} {m : α → ℝ≥0∞} {a b
 protected theorem tendsto_inv_nat_nhds_zero : Tendsto (fun n : ℕ => (n : ℝ≥0∞)⁻¹) atTop (𝓝 0) :=
   ENNReal.inv_top ▸ ENNReal.tendsto_inv_iff.2 tendsto_nat_nhds_top
 
-theorem iSup_add {ι : Sort*} {s : ι → ℝ≥0∞} [Nonempty ι] : iSup s + a = ⨆ b, s b + a :=
-  Monotone.map_ciSup_of_continuousAt (continuousAt_id.add continuousAt_const) <|
-    monotone_id.add monotone_const
-
-theorem biSup_add' {ι : Sort*} {p : ι → Prop} (h : ∃ i, p i) {f : ι → ℝ≥0∞} :
-    (⨆ (i) (_ : p i), f i) + a = ⨆ (i) (_ : p i), f i + a := by
-  haveI : Nonempty { i // p i } := nonempty_subtype.2 h
-  simp only [iSup_subtype', iSup_add]
-
-theorem add_biSup' {ι : Sort*} {p : ι → Prop} (h : ∃ i, p i) {f : ι → ℝ≥0∞} :
-    (a + ⨆ (i) (_ : p i), f i) = ⨆ (i) (_ : p i), a + f i := by
-  simp only [add_comm a, biSup_add' h]
-
-theorem biSup_add {ι} {s : Set ι} (hs : s.Nonempty) {f : ι → ℝ≥0∞} :
-    (⨆ i ∈ s, f i) + a = ⨆ i ∈ s, f i + a :=
-  biSup_add' hs
-
-theorem add_biSup {ι} {s : Set ι} (hs : s.Nonempty) {f : ι → ℝ≥0∞} :
-    (a + ⨆ i ∈ s, f i) = ⨆ i ∈ s, a + f i :=
-  add_biSup' hs
-
-theorem sSup_add {s : Set ℝ≥0∞} (hs : s.Nonempty) : sSup s + a = ⨆ b ∈ s, b + a := by
-  rw [sSup_eq_iSup, biSup_add hs]
-
-theorem add_iSup {ι : Sort*} {s : ι → ℝ≥0∞} [Nonempty ι] : a + iSup s = ⨆ b, a + s b := by
-  rw [add_comm, iSup_add]; simp [add_comm]
-
-theorem iSup_add_iSup_le {ι ι' : Sort*} [Nonempty ι] [Nonempty ι'] {f : ι → ℝ≥0∞} {g : ι' → ℝ≥0∞}
-    {a : ℝ≥0∞} (h : ∀ i j, f i + g j ≤ a) : iSup f + iSup g ≤ a := by
-  simp_rw [iSup_add, add_iSup]; exact iSup₂_le h
-
-theorem biSup_add_biSup_le' {ι ι'} {p : ι → Prop} {q : ι' → Prop} (hp : ∃ i, p i) (hq : ∃ j, q j)
-    {f : ι → ℝ≥0∞} {g : ι' → ℝ≥0∞} {a : ℝ≥0∞} (h : ∀ i, p i → ∀ j, q j → f i + g j ≤ a) :
-    ((⨆ (i) (_ : p i), f i) + ⨆ (j) (_ : q j), g j) ≤ a := by
-  simp_rw [biSup_add' hp, add_biSup' hq]
-  exact iSup₂_le fun i hi => iSup₂_le (h i hi)
-
-theorem biSup_add_biSup_le {ι ι'} {s : Set ι} {t : Set ι'} (hs : s.Nonempty) (ht : t.Nonempty)
-    {f : ι → ℝ≥0∞} {g : ι' → ℝ≥0∞} {a : ℝ≥0∞} (h : ∀ i ∈ s, ∀ j ∈ t, f i + g j ≤ a) :
-    ((⨆ i ∈ s, f i) + ⨆ j ∈ t, g j) ≤ a :=
-  biSup_add_biSup_le' hs ht h
-
-theorem iSup_add_iSup {ι : Sort*} {f g : ι → ℝ≥0∞} (h : ∀ i j, ∃ k, f i + g j ≤ f k + g k) :
-    iSup f + iSup g = ⨆ a, f a + g a := by
-  cases isEmpty_or_nonempty ι
-  · simp only [iSup_of_empty, bot_eq_zero, zero_add]
-  · refine le_antisymm ?_ (iSup_le fun a => add_le_add (le_iSup _ _) (le_iSup _ _))
-    refine iSup_add_iSup_le fun i j => ?_
-    rcases h i j with ⟨k, hk⟩
-    exact le_iSup_of_le k hk
-
-theorem iSup_add_iSup_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)]
-    {f g : ι → ℝ≥0∞} (hf : Monotone f) (hg : Monotone g) : iSup f + iSup g = ⨆ a, f a + g a :=
-  iSup_add_iSup fun i j ↦ (exists_ge_ge i j).imp fun _k ⟨hi, hj⟩ ↦ by gcongr <;> apply_rules
-
-theorem finsetSum_iSup {α ι : Type*} {s : Finset α} {f : α → ι → ℝ≥0∞}
-    (hf : ∀ i j, ∃ k, ∀ a, f a i ≤ f a k ∧ f a j ≤ f a k) :
-    ∑ a ∈ s, ⨆ i, f a i = ⨆ i, ∑ a ∈ s, f a i := by
-  induction s using Finset.cons_induction with
-  | empty => simp
-  | cons a s ha ihs =>
-    simp_rw [Finset.sum_cons, ihs]
-    refine iSup_add_iSup fun i j ↦ (hf i j).imp fun k hk ↦ ?_
-    gcongr
-    exacts [(hk a).1, (hk _).2]
-
-theorem finsetSum_iSup_of_monotone {α} {ι} [Preorder ι] [IsDirected ι (· ≤ ·)]
-    {s : Finset α} {f : α → ι → ℝ≥0∞} (hf : ∀ a, Monotone (f a)) :
-    (∑ a ∈ s, iSup (f a)) = ⨆ n, ∑ a ∈ s, f a n :=
-  finsetSum_iSup fun i j ↦ (exists_ge_ge i j).imp fun _k ⟨hi, hj⟩ a ↦ ⟨hf a hi, hf a hj⟩
-
-@[deprecated (since := "2024-07-14")]
-alias finset_sum_iSup_nat := finsetSum_iSup_of_monotone
-
-theorem mul_iSup {ι : Sort*} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} : a * iSup f = ⨆ i, a * f i := by
-  by_cases hf : ∀ i, f i = 0
-  · obtain rfl : f = fun _ => 0 := funext hf
-    simp only [iSup_zero_eq_zero, mul_zero]
-  · refine (monotone_id.const_mul' _).map_iSup_of_continuousAt ?_ (mul_zero a)
-    refine ENNReal.Tendsto.const_mul tendsto_id (Or.inl ?_)
-    exact mt iSup_eq_zero.1 hf
-
-theorem mul_sSup {s : Set ℝ≥0∞} {a : ℝ≥0∞} : a * sSup s = ⨆ i ∈ s, a * i := by
-  simp only [sSup_eq_iSup, mul_iSup]
-
-theorem iSup_mul {ι : Sort*} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} : iSup f * a = ⨆ i, f i * a := by
-  rw [mul_comm, mul_iSup]; congr; funext; rw [mul_comm]
-
-theorem smul_iSup {ι : Sort*} {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (f : ι → ℝ≥0∞)
-    (c : R) : (c • ⨆ i, f i) = ⨆ i, c • f i := by
-  -- Porting note: replaced `iSup _` with `iSup f`
-  simp only [← smul_one_mul c (f _), ← smul_one_mul c (iSup f), ENNReal.mul_iSup]
-
-theorem smul_sSup {R} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (s : Set ℝ≥0∞) (c : R) :
-    c • sSup s = ⨆ i ∈ s, c • i := by
-  -- Porting note: replaced `_` with `s`
-  simp_rw [← smul_one_mul c (sSup s), ENNReal.mul_sSup, smul_one_mul]
-
-theorem iSup_div {ι : Sort*} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} : iSup f / a = ⨆ i, f i / a :=
-  iSup_mul
-
 protected theorem tendsto_coe_sub {b : ℝ≥0∞} :
     Tendsto (fun b : ℝ≥0∞ => ↑r - b) (𝓝 b) (𝓝 (↑r - b)) :=
   continuous_nnreal_sub.tendsto _
-
-theorem sub_iSup {ι : Sort*} [Nonempty ι] {b : ι → ℝ≥0∞} (hr : a < ∞) :
-    (a - ⨆ i, b i) = ⨅ i, a - b i :=
-  antitone_const_tsub.map_ciSup_of_continuousAt (continuous_sub_left hr.ne).continuousAt
 
 theorem exists_countable_dense_no_zero_top :
     ∃ s : Set ℝ≥0∞, s.Countable ∧ Dense s ∧ 0 ∉ s ∧ ∞ ∉ s := by
@@ -620,19 +509,7 @@ theorem exists_countable_dense_no_zero_top :
     exists_countable_dense_no_bot_top ℝ≥0∞
   exact ⟨s, s_count, s_dense, fun h => hs.1 0 (by simp) h, fun h => hs.2 ∞ (by simp) h⟩
 
-theorem exists_lt_add_of_lt_add {x y z : ℝ≥0∞} (h : x < y + z) (hy : y ≠ 0) (hz : z ≠ 0) :
-    ∃ y' z', y' < y ∧ z' < z ∧ x < y' + z' := by
-  have : NeZero y := ⟨hy⟩
-  have : NeZero z := ⟨hz⟩
-  have A : Tendsto (fun p : ℝ≥0∞ × ℝ≥0∞ => p.1 + p.2) (𝓝[<] y ×ˢ 𝓝[<] z) (𝓝 (y + z)) := by
-    apply Tendsto.mono_left _ (Filter.prod_mono nhdsWithin_le_nhds nhdsWithin_le_nhds)
-    rw [← nhds_prod_eq]
-    exact tendsto_add
-  rcases ((A.eventually (lt_mem_nhds h)).and
-      (Filter.prod_mem_prod self_mem_nhdsWithin self_mem_nhdsWithin)).exists with
-    ⟨⟨y', z'⟩, hx, hy', hz'⟩
-  exact ⟨y', z', hy', hz', hx⟩
-
+@[deprecated ofReal_iInf (since := "2024-09-12")]
 theorem ofReal_cinfi (f : α → ℝ) [Nonempty α] :
     ENNReal.ofReal (⨅ i, f i) = ⨅ i, ENNReal.ofReal (f i) := by
   by_cases hf : BddBelow (range f)
@@ -1526,5 +1403,3 @@ lemma limsup_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (
 end LimsupLiminf
 
 end ENNReal -- namespace
-
-set_option linter.style.longFile 1700
