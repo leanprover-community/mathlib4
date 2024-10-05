@@ -63,7 +63,7 @@ theorem map_sub [Sub β] [Bot β] {f : α → β} (h : ∀ x y, f (x - y) = f x 
 
 end
 
-variable [AddMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α] [Sub α] [OrderedSub α]
+variable [Add α] [LE α] [CanonicallyOrderedAdd α] [OrderBot α] [Sub α] [OrderedSub α]
 
 instance : OrderedSub (WithTop α) := by
   constructor

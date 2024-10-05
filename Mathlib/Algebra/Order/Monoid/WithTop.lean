@@ -20,7 +20,7 @@ namespace WithTop
 instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (WithTop α) where
   add_le_add_left _ _ := add_le_add_left
 
-instance CanonicallyOrderedAdd [Add α] [Preorder α] [CanonicallyOrderedAdd α] :
+instance canonicallyOrderedAdd [Add α] [Preorder α] [CanonicallyOrderedAdd α] :
     CanonicallyOrderedAdd (WithTop α) :=
   { WithTop.existsAddOfLE with
     le_self_add := fun a b =>

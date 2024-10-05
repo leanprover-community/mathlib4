@@ -122,10 +122,6 @@ instance noZeroDivisors [OrderedSemiring α] [NoZeroDivisors α] :
       rintro ⟨a, ha⟩ ⟨b, hb⟩
       simp only [mk_mul_mk, mk_eq_zero, mul_eq_zero, imp_self]}
 
-instance canonicallyLinearOrderedAddCommMonoid [LinearOrderedRing α] :
-    CanonicallyLinearOrderedAddCommMonoid { x : α // 0 ≤ x } :=
-  { Subtype.instLinearOrder _, Nonneg.canonicallyOrderedAddCommMonoid with }
-
 instance orderedSub [LinearOrderedRing α] : OrderedSub { x : α // 0 ≤ x } :=
   ⟨by
     rintro ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩

@@ -617,12 +617,6 @@ theorem le_iff_exists_add {s t : Multiset α} : s ≤ t ↔ ∃ u, t = s + u :=
       ⟨l, Quot.sound p⟩,
     fun ⟨_u, e⟩ => e.symm ▸ le_add_right _ _⟩
 
-instance : CanonicallyOrderedAdd (Multiset α) where
-  le_self_add := le_add_right
-  exists_add_of_le h := leInductionOn h fun s =>
-    let ⟨l, p⟩ := s.exists_perm_append
-    ⟨l, Quot.sound p⟩
-
 @[simp]
 theorem cons_add (a : α) (s t : Multiset α) : a ::ₘ s + t = a ::ₘ (s + t) := by
   rw [← singleton_add, ← singleton_add, add_assoc]

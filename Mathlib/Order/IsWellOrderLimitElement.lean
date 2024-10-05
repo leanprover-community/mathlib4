@@ -3,8 +3,8 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Order.WellFounded
+import Mathlib.Order.Nat
 
 /-!
 # Limit elements in well-ordered types
