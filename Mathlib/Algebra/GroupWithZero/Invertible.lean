@@ -55,7 +55,6 @@ theorem invOf_eq_inv (a : α) [Invertible a] : ⅟ a = a⁻¹ :=
 theorem inv_mul_cancel_of_invertible (a : α) [IsUnit a] : a⁻¹ * a = 1 :=
   inv_mul_cancel₀ (IsUnit.ne_zero ‹_›)
 
-@[simp]
 theorem mul_inv_cancel_of_invertible (a : α) [Invertible a] : a * a⁻¹ = 1 :=
   mul_inv_cancel₀ (Invertible.ne_zero a)
 
