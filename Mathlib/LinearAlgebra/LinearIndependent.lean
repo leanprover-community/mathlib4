@@ -11,7 +11,8 @@ import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Lean.Expr.ExtraRecognizers
 import Mathlib.Data.Set.Subsingleton
-import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Module
+import Mathlib.Tactic.NoncommRing
 
 /-!
 
@@ -596,9 +597,8 @@ theorem LinearIndependent.units_smul {v : ι → M} (hv : LinearIndependent R v)
 lemma LinearIndependent.eq_of_pair {x y : M} (h : LinearIndependent R ![x, y])
     {s t s' t' : R} (h' : s • x + t • y = s' • x + t' • y) : s = s' ∧ t = t' := by
   have : (s - s') • x + (t - t') • y = 0 := by
-    rw [← sub_eq_zero_of_eq h', ← sub_eq_zero]
-    simp only [sub_smul]
-    abel
+    rw [← sub_eq_zero_of_eq h']
+    match_scalars <;> noncomm_ring
   simpa [sub_eq_zero] using h.eq_zero_of_pair this
 
 lemma LinearIndependent.eq_zero_of_pair' {x y : M} (h : LinearIndependent R ![x, y])
@@ -616,8 +616,7 @@ lemma LinearIndependent.linear_combination_pair_of_det_ne_zero {R M : Type*} [Co
   apply LinearIndependent.pair_iff.2 (fun s t hst ↦ ?_)
   have H : (s * a + t * c) • x + (s * b + t * d) • y = 0 := by
     convert hst using 1
-    simp only [_root_.add_smul, smul_add, smul_smul]
-    abel
+    module
   have I1 : s * a + t * c = 0 := (h.eq_zero_of_pair H).1
   have I2 : s * b + t * d = 0 := (h.eq_zero_of_pair H).2
   have J1 : (a * d - b * c) * s = 0 := by linear_combination d * I1 - c * I2
@@ -1111,11 +1110,10 @@ theorem linearIndependent_monoidHom (G : Type*) [Monoid G] (L : Type*) [CommRing
                   rw [Finset.sum_insert has, Finset.sum_insert has]
                 _ =
                     (∑ i ∈ insert a s, g i * i (x * y)) -
-                      ∑ i ∈ insert a s, a x * (g i * i y) :=
-                  congr
-                    (congr_arg Sub.sub
-                      (Finset.sum_congr rfl fun i _ => by rw [i.map_mul, mul_assoc]))
-                    (Finset.sum_congr rfl fun _ _ => by rw [mul_assoc, mul_left_comm])
+                      ∑ i ∈ insert a s, a x * (g i * i y) := by
+                  congrm ∑ i ∈ insert a s, ?_ - ∑ i ∈ insert a s, ?_
+                  · rw [map_mul, mul_assoc]
+                  · rw [mul_assoc, mul_left_comm]
                 _ =
                     (∑ i ∈ insert a s, (g i • (i : G → L))) (x * y) -
                       a x * (∑ i ∈ insert a s, (g i • (i : G → L))) y := by
@@ -1231,7 +1229,7 @@ theorem mem_span_insert_exchange :
   have a0 : a ≠ 0 := by
     rintro rfl
     simp_all
-  simp [a0, smul_add, smul_smul]
+  match_scalars <;> simp [a0]
 
 theorem linearIndependent_iff_not_mem_span :
     LinearIndependent K v ↔ ∀ i, v i ∉ span K (v '' (univ \ {i})) := by
@@ -1305,8 +1303,8 @@ theorem LinearIndependent.pair_iff' {x y : V} (hx : x ≠ 0) :
     by_cases ht : t = 0
     · exact ⟨by simpa [ht, hx] using hst, ht⟩
     apply_fun (t⁻¹ • ·) at hst
-    simp only [smul_add, smul_smul, inv_mul_cancel₀ ht, one_smul, smul_zero] at hst
-    cases H (-(t⁻¹ * s)) (by rwa [neg_smul, neg_eq_iff_eq_neg, eq_neg_iff_add_eq_zero])
+    simp only [smul_add, smul_smul, inv_mul_cancel₀ ht] at hst
+    cases H (-(t⁻¹ * s)) <| by linear_combination (norm := match_scalars <;> noncomm_ring) -hst
 
 theorem linearIndependent_fin_cons {n} {v : Fin n → V} :
     LinearIndependent K (Fin.cons x v : Fin (n + 1) → V) ↔
