@@ -3,7 +3,7 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Joël Riou, Ravi Vakil
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Presheaf
+import Mathlib.CategoryTheory.MorphismProperty.Representable
 import Mathlib.AlgebraicGeometry.Sites.BigZariski
 import Mathlib.AlgebraicGeometry.OpenImmersion
 import Mathlib.AlgebraicGeometry.GluingOneHypercover
@@ -69,7 +69,7 @@ lemma fst'_self_eq_snd (i : ι) : (hf i).rep.fst' (f i) = (hf i).rep.snd (f i) :
 lemma isIso_fst'_self (i : ι) : IsIso ((hf i).rep.fst' (f i)) :=
   openImmersion.isIso_fst'_self openImmersion_le_monomorphisms (hf i)
 
-open Presheaf.representable in
+open Functor.relativelyRepresentable in
 /-- We get a family of gluing data by taking `U i = X i` and `V i j = (hf i).rep.pullback (f j)`. -/
 @[simps]
 noncomputable def glueData : GlueData where
@@ -106,7 +106,7 @@ noncomputable def yonedaGluedToSheaf :
       rw [yonedaEquiv_naturality, Equiv.symm_apply_apply,
         FunctorToTypes.map_comp_apply, yonedaEquiv_naturality, yonedaEquiv_naturality,
         Equiv.symm_apply_apply, ← Functor.map_comp_assoc,
-        Presheaf.representable.symmetry_fst, ((hf i).rep.isPullback' (f j)).w])))
+        Functor.relativelyRepresentable.symmetry_fst, ((hf i).rep.isPullback' (f j)).w])))
 
 @[simp]
 lemma fac (i : ι) :
