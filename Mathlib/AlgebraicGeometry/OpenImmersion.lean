@@ -431,7 +431,7 @@ instance pullback_fst_of_right : IsOpenImmersion (pullback.fst g f) := by
   rw [← pullbackSymmetry_hom_comp_snd]
   -- Porting note: was just `infer_instance`, it is a bit weird that no explicit class instance is
   -- provided but still class inference fail to find this
-  exact LocallyRingedSpace.IsOpenImmersion.comp (H := inferInstance) _
+  exact LocallyRingedSpace.IsOpenImmersion.comp (H := inferInstance) _ _
 
 instance pullback_to_base [IsOpenImmersion g] :
     IsOpenImmersion (limit.π (cospan f g) WalkingCospan.one) := by
@@ -439,14 +439,14 @@ instance pullback_to_base [IsOpenImmersion g] :
   change IsOpenImmersion (_ ≫ f)
   -- Porting note: was just `infer_instance`, it is a bit weird that no explicit class instance is
   -- provided but still class inference fail to find this
-  exact LocallyRingedSpace.IsOpenImmersion.comp (H := inferInstance) _
+  exact LocallyRingedSpace.IsOpenImmersion.comp (H := inferInstance) _ _
 
 instance forgetToTopPreservesOfLeft : PreservesLimit (cospan f g) Scheme.forgetToTop := by
   delta Scheme.forgetToTop
-  apply @Limits.compPreservesLimit (K := cospan f g) (F := forget)
+  refine @Limits.compPreservesLimit _ _ _ _ _ _ (K := cospan f g) _ _ (F := forget)
     (G := LocallyRingedSpace.forgetToTop) ?_ ?_
   · infer_instance
-  apply @preservesLimitOfIsoDiagram (F := _) _ _ _ _ _ _ (diagramIsoCospan.{u} _).symm ?_
+  refine @preservesLimitOfIsoDiagram _ _ _ _ _ _ _ _ _ (diagramIsoCospan.{u} _).symm ?_
   dsimp [LocallyRingedSpace.forgetToTop]
   infer_instance
 

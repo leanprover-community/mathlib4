@@ -990,7 +990,7 @@ theorem exists_maximal_orthonormal {s : Set E} (hs : Orthonormal 𝕜 (Subtype.v
     · exact orthonormal_sUnion_of_directed cc.directedOn fun x xc => hc xc
     · exact fun _ => Set.subset_sUnion_of_mem
 
-open FiniteDimensional
+open Module
 
 /-- A family of orthonormal vectors with the correct cardinality forms a basis. -/
 def basisOfOrthonormalOfCardEqFinrank [Fintype ι] [Nonempty ι] {v : ι → E} (hv : Orthonormal 𝕜 v)
@@ -1472,7 +1472,7 @@ theorem norm_sub_eq_norm_add {v w : E} (h : ⟪v, w⟫ = 0) : ‖w - v‖ = ‖w
 norms, has absolute value at most 1. -/
 theorem abs_real_inner_div_norm_mul_norm_le_one (x y : F) : |⟪x, y⟫_ℝ / (‖x‖ * ‖y‖)| ≤ 1 := by
   rw [abs_div, abs_mul, abs_norm, abs_norm]
-  exact div_le_one_of_le (abs_real_inner_le_norm x y) (by positivity)
+  exact div_le_one_of_le₀ (abs_real_inner_le_norm x y) (by positivity)
 
 /-- The inner product of a vector with a multiple of itself. -/
 theorem real_inner_smul_self_left (x : F) (r : ℝ) : ⟪r • x, x⟫_ℝ = r * (‖x‖ * ‖x‖) := by
