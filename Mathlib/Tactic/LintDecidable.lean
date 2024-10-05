@@ -51,7 +51,7 @@ but don't use this assumption in the type.
   errorsFound := "USES OF `Decidable` SHOULD BE REPLACED WITH `classical` IN THE PROOF."
   test declName := do
     if (← isAutoDecl declName) then return none
-    else if Name.isPrefixOf declName `Decidable then return none
+    else if Name.isPrefixOf `Decidable declName then return none
     let names := #[`Decidable, `DecidableEq, `DecidablePred]
     return ← checkUnusedAssumptionInType (← getConstInfo declName) names
 
@@ -87,7 +87,7 @@ but don't use this assumption in the type.
   errorsFound := "USES OF `Invertible` SHOULD BE REPLACED WITH `IsUnit` (OR REMOVED)."
   test declName := do
     if (← isAutoDecl declName) then return none
-    return ← checkUnusedAssumptionInType (← getConstInfo declName) #[`Unique]
+    return ← checkUnusedAssumptionInType (← getConstInfo declName) #[`Invertible]
 
 /--
 Linter that checks for theorems that assume `[Fintype p]`,
@@ -111,6 +111,7 @@ but don't use this assumption in the type.
   errorsFound := "USES OF `Encodable` SHOULD BE REPLACED WITH `Denumerable` (OR REMOVED)."
   test declName := do
     if (← isAutoDecl declName) then return none
+    else if Name.isPrefixOf `Encodable declName then return none
     return ← checkUnusedAssumptionInType (← getConstInfo declName) #[`Encodable]
 
 end Batteries.Tactic.Lint

@@ -5,7 +5,6 @@ Authors: Sophie Morel
 -/
 import Mathlib.Analysis.Analytic.ChangeOrigin
 import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Tactic.LintDecidable
 
 /-! We specialize the theory fo analytic functions to the case of functions that admit a
 development given by a *finite* formal multilinear series. We call them "continuously polynomial",
