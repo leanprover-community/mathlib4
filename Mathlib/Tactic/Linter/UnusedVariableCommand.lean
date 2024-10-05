@@ -92,13 +92,49 @@ def findBinders : Syntax → Array Syntax
       (args.map findBinders).flatten
   | _ => #[]
 
+variable
+  (nm : Ident)
+  (binders : TSyntaxArray [`ident, `Lean.Parser.Term.hole, `Lean.Parser.Term.bracketedBinder])
+  (typ : TSyntax `term)
+def mkThmCore : CommandElabM Syntax :=
+  `(command| theorem $nm $binders* : $(⟨typ⟩) := by included_variables plumb; sorry)
+
 def mkThmWithHyps (cmd : Syntax) (nm : Ident) : CommandElabM Syntax := do
-  let toInsert : TSyntaxArray _ := (findBinders cmd).map (⟨·⟩)
   let typ ← if let some ts := cmd.find? (·.isOfKind ``Parser.Term.typeSpec) then
               `($(mkIdent `toFalse) $(⟨ts[1]⟩))
             else
               `($(mkIdent `False))
-  `(command| theorem $nm $toInsert* : $(⟨typ⟩) := by included_variables plumb; sorry)
+  mkThmCore nm ((findBinders cmd).map (⟨·⟩)) typ
+
+/-
+  if let some stx := stx.raw.find? (·.isOfKind ``Lean.Parser.Command.declaration) then
+    match stx with
+      | `(structure $id $as* where $(_optStructCtor)? $_fds:structFields) =>
+        -- the `fds` should be extracted and the target of the `structure.mk` should be used
+        let new ←
+          `(command| theorem $(mkIdent (id.raw[0].getId ++ `hi)) $as* : toFalse sorry := sorry)
+        logInfo m!"{new}"
+      --| `(structure $id $as* extends $es where $(opt)? $fds:structFields) => logInfo "found!"
+      | `(structure $id $as* extends $es,* where $(_optStructCtor)? $_fds:structFields) =>
+        dbg_trace "es.getElems: {es.getElems}\n"
+        let bes ← es.getElems.mapM (`(Parser.Term.instBinder| [·]))
+        let bes ← bes.mapM fun d => `(bracketedBinder| $(⟨d⟩))
+        let cs := (as : Array _) ++ bes.map (·.raw)
+        --let cs ← cs.mapM (`(⟨·⟩))
+        let cs : TSyntaxArray [`ident, `Lean.Parser.Term.hole, `Lean.Parser.Term.bracketedBinder] :=
+          cs.map (⟨·⟩)
+        --let mut first : Array (TSyntax _):= as.getD 0 default
+        --for b in bes do
+          --first ← `(Term.App| $first $(⟨b.raw⟩))
+        logInfo m!"bes: {bes}\n"
+        --let bes1 : Syntax.TSepArray [bracketedBinder] "," := ⟨bes.map (·)⟩
+        --logInfo m!"{bes1.getElems}"
+        let new ←
+          `(command| theorem $(mkIdent (id.raw[0].getId ++ `hi)) $cs* : toFalse sorry := sorry)
+        logInfo m!"{new}"
+      | _ => logInfo "here"
+
+-/
 
 open Lean.Parser.Term in
 /--
