@@ -33,14 +33,6 @@ namespace CategoryTheory
 
 open CategoryTheory.Limits Opposite
 
-attribute [-instance] functorCategoryHasLimit
-attribute [-instance] functorCategoryHasColimit
-attribute [-instance] hasLimitCompEvalution
-attribute [-instance] hasColimitCompEvaluation
-attribute [-instance] evaluationPreservesLimit
-attribute [-instance] evaluationPreservesColimit
-
-
 variable {C : Type u} [Category.{v} C]
 
 variable {J : Type v} [SmallCategory J] (F : J ⥤ Cᵒᵖ ⥤ Type v)
