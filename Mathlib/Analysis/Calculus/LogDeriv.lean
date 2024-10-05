@@ -102,4 +102,3 @@ theorem logDeriv_comp {f : 𝕜' → 𝕜'} {g : 𝕜 → 𝕜'} {x : 𝕜} (hf 
     (hg : DifferentiableAt 𝕜 g x) : logDeriv (f ∘ g) x = logDeriv f (g x) * deriv g x := by
   simp only [logDeriv, Pi.div_apply, deriv.comp _ hf hg, comp_apply]
   ring
-
