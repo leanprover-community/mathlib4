@@ -247,6 +247,8 @@ abbrev IsNonZero (χ : Weight R L M) := ¬ IsZero (χ : Weight R L M)
 lemma isNonZero_iff_ne_zero [Nontrivial (genWeightSpace M (0 : L → R))] {χ : Weight R L M} :
     χ.IsNonZero ↔ χ ≠ 0 := isZero_iff_eq_zero.not
 
+noncomputable instance : DecidablePred (IsNonZero (R := R) (L := L) (M := M)) := Classical.decPred _
+
 variable (R L M) in
 /-- The set of weights is equivalent to a subtype. -/
 def equivSetOf : Weight R L M ≃ {χ : L → R | genWeightSpace M χ ≠ ⊥} where
@@ -745,7 +747,7 @@ lemma iSup_genWeightSpaceOf_eq_top [IsTriangularizable R L M] (x : L) :
   simp_rw [Module.End.maxGenEigenspace_def]
   exact IsTriangularizable.iSup_eq_top x
 
-open LinearMap FiniteDimensional in
+open LinearMap Module in
 @[simp]
 lemma trace_toEnd_genWeightSpace [IsDomain R] [IsPrincipalIdealRing R]
     [Module.Free R M] [Module.Finite R M] (χ : L → R) (x : L) :
@@ -759,7 +761,7 @@ lemma trace_toEnd_genWeightSpace [IsDomain R] [IsPrincipalIdealRing R]
 
 section field
 
-open FiniteDimensional
+open Module
 
 variable (K)
 variable [Field K] [LieAlgebra K L] [Module K M] [LieModule K L M] [LieAlgebra.IsNilpotent K L]

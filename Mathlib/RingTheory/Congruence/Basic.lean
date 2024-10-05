@@ -67,16 +67,15 @@ section Basic
 
 variable [Add R] [Mul R] (c : RingCon R)
 
--- Porting note: upgrade to `FunLike`
 /-- A coercion from a congruence relation to its underlying binary relation. -/
-instance : FunLike (RingCon R) R (R → Prop) :=
-  { coe := fun c => c.r,
-    coe_injective' := fun x y h => by
-      rcases x with ⟨⟨x, _⟩, _⟩
-      rcases y with ⟨⟨y, _⟩, _⟩
-      congr!
-      rw [Setoid.ext_iff,(show x.Rel = y.Rel from h)]
-      simp}
+instance : FunLike (RingCon R) R (R → Prop) where
+  coe := fun c => c.r
+  coe_injective' x y h := by
+    rcases x with ⟨⟨x, _⟩, _⟩
+    rcases y with ⟨⟨y, _⟩, _⟩
+    congr!
+    rw [Setoid.ext_iff, (show x.Rel = y.Rel from h)]
+    simp
 
 theorem rel_eq_coe : c.r = c :=
   rfl
@@ -418,7 +417,6 @@ end Quotient
 
 The API in this section is copied from `Mathlib/GroupTheory/Congruence.lean`
 -/
-
 
 section Lattice
 
