@@ -582,7 +582,8 @@ def _root_.LinearMap.compQuadraticMap' [CommSemiring S] [Algebra S R] [Module S 
 /-- When `N` and `P` are equivalent, quadratic maps on `M` into `N` are equivalent to quadratic
 maps on `M` into `P`. -/
 @[simps]
-def congr₂ (e : N ≃ₗ[R] P) : QuadraticMap R M N ≃ₗ[R] QuadraticMap R M P where
+def _root_.LinearEquiv.congrQuadraticMap (e : N ≃ₗ[R] P) :
+    QuadraticMap R M N ≃ₗ[R] QuadraticMap R M P where
   toFun Q := e.compQuadraticMap Q
   invFun Q := e.symm.compQuadraticMap Q
   left_inv _ := ext fun x => by
@@ -596,9 +597,11 @@ def congr₂ (e : N ≃ₗ[R] P) : QuadraticMap R M N ≃ₗ[R] QuadraticMap R M
       LinearEquiv.coe_coe, RingHom.id_apply]
 
 @[simp]
-theorem congr₂_refl : congr₂ (.refl R N) = .refl R (QuadraticMap R M N) := rfl
+theorem congr₂_refl :
+    LinearEquiv.congrQuadraticMap (.refl R N) = .refl R (QuadraticMap R M N) := rfl
 
-theorem congr₂_symm (e : N ≃ₗ[R] P) : congr₂ e.symm = (congr₂ e (M := M)).symm := rfl
+theorem congr₂_symm (e : N ≃ₗ[R] P) : LinearEquiv.congrQuadraticMap e.symm =
+  (LinearEquiv.congrQuadraticMap e (M := M)).symm := rfl
 
 end Comp
 section NonUnitalNonAssocSemiring
