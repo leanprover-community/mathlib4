@@ -14,7 +14,6 @@ import Mathlib.Data.Nat.Choose.Bounds
 import Mathlib.Order.Filter.AtTopBot.ModEq
 import Mathlib.RingTheory.Polynomial.Pochhammer
 import Mathlib.Tactic.NoncommRing
-import Mathlib.Topology.Algebra.Order.Floor
 
 /-!
 # A collection of specific limit computations
@@ -909,7 +908,8 @@ theorem Real.summable_pow_div_factorial (x : ℝ) : Summable (fun n ↦ x ^ n / 
         norm_div, Real.norm_natCast, Nat.cast_succ]
     _ ≤ ‖x‖ / (⌊‖x‖⌋₊ + 1) * ‖x ^ n / (n !)‖ := by gcongr
 
-@[deprecated FloorSemiring.tendsto_pow_div_factorial_atTop (since := "2024-10-05")]
+@[deprecated "`Real.tendsto_pow_div_factorial_atTop` has been deprecated, use
+`FloorSemiring.tendsto_pow_div_factorial_atTop` instead" (since := "2024-10-05")]
 theorem Real.tendsto_pow_div_factorial_atTop (x : ℝ) :
     Tendsto (fun n ↦ x ^ n / n ! : ℕ → ℝ) atTop (𝓝 0) :=
   (Real.summable_pow_div_factorial x).tendsto_atTop_zero
