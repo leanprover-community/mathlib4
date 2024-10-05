@@ -264,7 +264,7 @@ theorem subfield_ne_real_of_isComplex {v : InfinitePlace K} (hv : IsComplex v) :
 /-- If `v` is a complex infinite place, then the embedding `v.completion →+* ℂ` is surjective. -/
 theorem surjective_extensionEmbedding_of_isComplex {v : InfinitePlace K} (hv : IsComplex v) :
     Function.Surjective (extensionEmbedding v) := by
-  rw [← RingHom.fieldRange_eq_top]
+  rw [← RingHom.fieldRange_eq_top_iff]
   exact (Complex.subfield_eq_of_closed <| isClosed_image_extensionEmbedding v).resolve_left <|
       subfield_ne_real_of_isComplex hv
 
@@ -288,7 +288,7 @@ def isometryEquiv_complex_of_isComplex {v : InfinitePlace K} (hv : IsComplex v) 
 /-- If `v` is a real infinite place, then the embedding `v.completion →+* ℝ` is surjective. -/
 theorem surjective_extensionEmbedding_of_isReal {v : InfinitePlace K} (hv : IsReal v) :
     Function.Surjective (extensionEmbedding_of_isReal hv) := by
-  rw [← RingHom.fieldRange_eq_top, ← Real.subfield_eq_of_closed ]
+  rw [← RingHom.fieldRange_eq_top_iff, ← Real.subfield_eq_of_closed ]
   exact isClosed_image_extensionEmbedding_of_isReal hv
 
 /-- If `v` is a real infinite place, then the embedding `v.completion →+* ℝ` is bijective. -/

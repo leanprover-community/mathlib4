@@ -20,7 +20,7 @@ Some useful results that relate the topology of the normed field to the discrete
 
 A method for constructing a normed field instance from a given real absolute value on a field is
 given in:
-* AbsoluteValue.toNormedField
+* `AbsoluteValue.toNormedField`
 -/
 
 -- Guard against import creep.
