@@ -42,7 +42,7 @@ lemma exists_openSubgroup_separating {t : G} (ht : t ≠ 1) :
   exact ⟨⟨A, open_A⟩, V, mem_A, one_mem V, disj.mono_right hV⟩
 
 @[to_additive]
-instance instTotallySeparated : TotallySeparatedSpace G where
+instance (priority := 100) instTotallySeparated : TotallySeparatedSpace G where
   isTotallySeparated_univ x _ y _ hxy := by
     rcases exists_openSubgroup_separating (hxy ∘ inv_mul_eq_one.mp) with ⟨A, V, hA, -, hAV⟩
     refine ⟨_, _, V.isOpen.smul x, (V.isClosed.smul x).isOpen_compl, mem_own_leftCoset ..,
