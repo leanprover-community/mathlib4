@@ -21,6 +21,10 @@ import Mathlib.Topology.MetricSpace.DilationEquiv
 
 In this file we define (semi)normed rings and fields. We also prove some theorems about these
 definitions.
+
+A method for constructing a normed field instance from a given real absolute value on a field is
+given in:
+* AbsoluteValue.toNormedField
 -/
 
 -- Guard against import creep.
@@ -1239,8 +1243,8 @@ end SubringClass
 
 namespace AbsoluteValue
 
-/-- A real absolute value on a field determines a `NormedField` class. -/
-def normedField {K : Type*} [Field K] (v : AbsoluteValue K ℝ) : NormedField K where
+/-- A real absolute value on a field determines a `NormedField` structure. -/
+def toNormedField {K : Type*} [Field K] (v : AbsoluteValue K ℝ) : NormedField K where
   norm := v
   dist_eq _ _ := rfl
   dist_self := by simp only [sub_self, MulHom.toFun_eq_coe, coe_toMulHom, map_zero, implies_true]

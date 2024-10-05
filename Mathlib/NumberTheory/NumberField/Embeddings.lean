@@ -417,6 +417,20 @@ lemma isComplex_mk_iff {φ : K →+* ℂ} :
 theorem not_isReal_of_mk_isComplex {φ : K →+* ℂ} (h : IsComplex (mk φ)) :
     ¬ ComplexEmbedding.IsReal φ := by rwa [← isComplex_mk_iff]
 
+/-- The absolute value of an infinite place factors through its associated complex embedding. -/
+theorem abs_eq_comp :
+    v.1 = (IsAbsoluteValue.toAbsoluteValue (norm : ℂ → ℝ)).comp v.embedding.injective := by
+  rw [← v.2.choose_spec]
+  rfl
+
+/-- The absolute value of a real infinite place factors through its associated real embedding. -/
+theorem abs_of_isReal_eq_comp {v : InfinitePlace K} (hv : IsReal v) :
+    v.1 = (IsAbsoluteValue.toAbsoluteValue (norm : ℝ → ℝ)).comp
+      (v.embedding_of_isReal hv).injective := by
+  ext x
+  rw [(show v.1 x = v x by rfl), ← v.norm_embedding_of_isReal hv]
+  rfl
+
 /-- The multiplicity of an infinite place, that is the number of distinct complex embeddings that
 define it, see `card_filter_mk_eq`. -/
 noncomputable def mult (w : InfinitePlace K) : ℕ := if (IsReal w) then 1 else 2

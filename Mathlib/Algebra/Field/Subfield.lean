@@ -496,7 +496,7 @@ theorem map_fieldRange : f.fieldRange.map g = (g.comp f).fieldRange := by
 theorem mem_fieldRange_self (x : K) : f x ∈ f.fieldRange :=
   exists_apply_eq_apply _ _
 
-theorem fieldRange_eq_top {f : K →+* L} :
+theorem fieldRange_eq_top_iff {f : K →+* L} :
     f.fieldRange = ⊤ ↔ Function.Surjective f :=
   SetLike.ext'_iff.trans Set.range_iff_surjective
 

@@ -19,16 +19,19 @@ This is ultimately achieved by applying the `UniformSpace.Completion` functor, h
 infinite place defines its own `UniformSpace` instance, so the inference system cannot
 automatically infer these. A common approach to handle the ambiguity that arises from having
 multiple sources of instances is through the use of type synonyms. In this case, we define a
-type synonym `WithAbs` for a semiring which depends on an absolute value. This provides a
-systematic way of assigning and inferring instances of the semiring that depend on an absolute
-value. In our application, relevant instances and the completion of a number field `K` are first
-defined at the level of `AbsoluteValue` by using the type synonym `WithAbs` of `K`, and then
-derived downstream for `InfinitePlace` (which is a subtype of `AbsoluteValue`).
+type synonym `WithAbs` for a semiring. In particular this type synonym depends on an
+absolute value which provides a systematic way of assigning and inferring instances of the semiring
+that also depend on an absolute value. In our application, relevant instances and the completion
+of a number field `K` are first defined at the level of `AbsoluteValue` by using the type synonym
+`WithAbs` of `K`, and then derived downstream for `InfinitePlace` (which is a subtype of
+`AbsoluteValue`).
 
 ## Main definitions
- - `WithAbs` : type synonym equipping a semiring with an absolute value.
- - `AbsoluteValue.completion` : the uniform space completion of a field `K` equipped with real
-  absolute value.
+ - `WithAbs` : type synonym for a semiring which depends on an absolute value. This is
+  a function that takes an absolute value on a semiring and returns the semiring. We use this
+  to assign and infer instances on a semiring that depend on absolute values.
+ - `AbsoluteValue.completion` : the uniform space completion of a field `K` according to the
+  uniform structure defined by the specified absolute value.
  - `NumberField.InfinitePlace.completion` : the completion of a number field `K` at an infinite
   place, obtained by completing `K` with respect to the absolute value associated to the infinite
   place.
@@ -56,11 +59,13 @@ derived downstream for `InfinitePlace` (which is a subtype of `AbsoluteValue`).
   when `v` is real.
 
 ## Tags
-number field, embeddings, infinite places, completion
+number field, embeddings, infinite places, completion, absolute value
 -/
 noncomputable section
 
-/-- Type synonym equipping a semiring with an absolute value. -/
+/-- Type synonym for a semiring which depends on an absolute value. This is a function that takes
+an absolute value on a semiring and returns the semiring. We use this to assign and infer instances
+on a semiring that depend on absolute values. -/
 @[nolint unusedArguments]
 def WithAbs {R S : Type*} [Semiring R] [OrderedSemiring S] :
     AbsoluteValue R S → Type _ := fun _ => R
@@ -71,6 +76,8 @@ variable {K : Type*} [Field K] (v : AbsoluteValue K ℝ)
 
 instance normedField : NormedField (WithAbs v) :=
   v.normedField
+
+instance : Inhabited (WithAbs v) := ⟨0⟩
 
 variable {L : Type*} [NormedField L] {f : WithAbs v →+* L} {v}
 
@@ -83,8 +90,6 @@ theorem dist_of_comp
   rw [(normedField v).dist_eq, (inferInstanceAs <| NormedField L).dist_eq,
     ← f.map_sub, h]
   rfl
-
-instance : Inhabited (WithAbs v) := ⟨0⟩
 
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
 the pseudo metric space associated to the absolute value is the same as the pseudo metric space
@@ -134,25 +139,13 @@ namespace Completion
 instance : NormedRing v.completion :=
   UniformSpace.Completion.instNormedRing _
 
-instance [CompletableTopField (WithAbs v)] : NormedField v.completion :=
-  UniformSpace.Completion.instNormedFieldOfCompletableTopField (WithAbs v)
-
-instance : CompleteSpace v.completion :=
-  UniformSpace.Completion.completeSpace (WithAbs v)
-
-instance : Inhabited v.completion :=
-  UniformSpace.Completion.inhabited _
-
 instance : Coe K v.completion :=
   inferInstanceAs (Coe (WithAbs v) (UniformSpace.Completion (WithAbs v)))
-
-instance : Algebra (WithAbs v) v.completion :=
-  UniformSpace.Completion.algebra (WithAbs v) _
 
 variable {L : Type*} [NormedField L] [CompleteSpace L] {f : WithAbs v →+* L} {v}
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field
-`A`, then we can extend that embedding to an embedding on the completion `v.completion →+* A`. -/
+`L`, then we can extend that embedding to an embedding on the completion `v.completion →+* L`. -/
 def extensionEmbedding_of_comp
     (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : L → ℝ)).comp f.injective) :
     v.completion →+* L :=
@@ -167,7 +160,7 @@ theorem extensionEmbedding_of_comp_coe
   rfl
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
-then the extended embedding `v.completion →+* A` preserves distances. -/
+then the extended embedding `v.completion →+* L` preserves distances. -/
 theorem extensionEmbedding_dist_eq_of_comp
     (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : L → ℝ)).comp f.injective)
     (x y : v.completion) :
@@ -180,21 +173,21 @@ theorem extensionEmbedding_dist_eq_of_comp
     exact UniformSpace.Completion.dist_eq x y ▸ Isometry.dist_eq (WithAbs.isometry_of_comp h) _ _
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
-then the extended embedding `v.completion →+* A` is an isometry. -/
+then the extended embedding `v.completion →+* L` is an isometry. -/
 theorem isometry_extensionEmbedding_of_comp
     (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : L → ℝ)).comp f.injective) :
     Isometry (extensionEmbedding_of_comp h) :=
   Isometry.of_dist_eq <| extensionEmbedding_dist_eq_of_comp h
 
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
-then the extended embedding `v.completion →+* A` is a closed embedding. -/
+then the extended embedding `v.completion →+* L` is a closed embedding. -/
 theorem closedEmbedding_extensionEmbedding_of_comp
     (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : L → ℝ)).comp f.injective) :
     ClosedEmbedding (extensionEmbedding_of_comp h) :=
   (isometry_extensionEmbedding_of_comp h).closedEmbedding
 
-/-- If the absolute value of a normed field factors through an embedding into another normed and
-locally compact field, then the completion of the first normed field is also locally compact. -/
+/-- If the absolute value of a normed field factors through an embedding into another normed field
+that is locally compact, then the completion of the first normed field is also locally compact. -/
 theorem locallyCompactSpace [LocallyCompactSpace L]
     (h : v = (IsAbsoluteValue.toAbsoluteValue (norm : L → ℝ)).comp f.injective)  :
     LocallyCompactSpace (v.completion) :=
@@ -208,20 +201,6 @@ open AbsoluteValue.Completion
 
 variable {K : Type*} [Field K] (v : InfinitePlace K)
 
-/-- The absolute value of an infinite place factors through its associated complex embedding. -/
-theorem abs_eq_comp :
-    v.1 = (IsAbsoluteValue.toAbsoluteValue (norm : ℂ → ℝ)).comp v.embedding.injective := by
-  rw [← v.2.choose_spec]
-  rfl
-
-/-- The absolute value of a real infinite place factors through its associated real embedding. -/
-theorem abs_of_isReal_eq_comp {v : InfinitePlace K} (hv : IsReal v) :
-    v.1 = (IsAbsoluteValue.toAbsoluteValue (norm : ℝ → ℝ)).comp
-      (v.embedding_of_isReal hv).injective := by
-  ext x
-  rw [(show v.1 x = v x by rfl), ← v.norm_embedding_of_isReal hv]
-  rfl
-
 /-- The completion of a number field at an infinite place. -/
 abbrev completion := v.1.completion
 
@@ -230,15 +209,6 @@ namespace Completion
 instance : NormedField v.completion :=
   letI := (WithAbs.uniformInducing_of_comp v.abs_eq_comp).completableTopField
   UniformSpace.Completion.instNormedFieldOfCompletableTopField (WithAbs v.1)
-
-instance : CompleteSpace v.completion :=
-  inferInstanceAs (CompleteSpace v.1.completion)
-
-instance : Inhabited v.completion :=
-  inferInstanceAs (Inhabited v.1.completion)
-
-instance : Coe K v.completion :=
-  inferInstanceAs (Coe (WithAbs v.1) v.1.completion)
 
 instance : Algebra K v.completion :=
   inferInstanceAs (Algebra (WithAbs v.1) v.1.completion)
