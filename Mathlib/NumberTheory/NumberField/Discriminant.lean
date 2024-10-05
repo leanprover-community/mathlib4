@@ -32,7 +32,7 @@ number field, discriminant
 
 namespace NumberField
 
-open FiniteDimensional NumberField NumberField.InfinitePlace Matrix
+open Module NumberField NumberField.InfinitePlace Matrix
 
 open scoped Classical Real nonZeroDivisors
 

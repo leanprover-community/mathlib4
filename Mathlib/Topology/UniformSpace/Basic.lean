@@ -17,7 +17,7 @@ generalize to uniform spaces, e.g.
 
 * uniform continuity (in this file)
 * completeness (in `Cauchy.lean`)
-* extension of uniform continuous functions to complete spaces (in `UniformEmbedding.lean`)
+* extension of uniform continuous functions to complete spaces (in `IsUniformEmbedding.lean`)
 * totally bounded sets (in `Cauchy.lean`)
 * totally bounded complete sets are compact (in `Cauchy.lean`)
 
