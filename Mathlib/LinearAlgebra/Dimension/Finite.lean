@@ -191,15 +191,6 @@ theorem setFinite [Module.Finite R M] {b : Set M}
 
 end LinearIndependent
 
-@[deprecated (since := "2023-12-27")]
-alias cardinal_mk_le_finrank_of_linearIndependent := LinearIndependent.cardinal_mk_le_finrank
-@[deprecated (since := "2023-12-27")]
-alias fintype_card_le_finrank_of_linearIndependent := LinearIndependent.fintype_card_le_finrank
-@[deprecated (since := "2023-12-27")]
-alias finset_card_le_finrank_of_linearIndependent := LinearIndependent.finset_card_le_finrank
-@[deprecated (since := "2023-12-27")]
-alias Module.Finite.lt_aleph0_of_linearIndependent := LinearIndependent.lt_aleph0_of_finite
-
 lemma exists_set_linearIndependent_of_lt_rank {n : Cardinal} (hn : n < Module.rank R M) :
     ∃ s : Set M, #s = n ∧ LinearIndependent R ((↑) : s → M) := by
   obtain ⟨⟨s, hs⟩, hs'⟩ := exists_lt_of_lt_ciSup' (hn.trans_eq (Module.rank_def R M))

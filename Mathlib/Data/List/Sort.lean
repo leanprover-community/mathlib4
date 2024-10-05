@@ -198,6 +198,10 @@ def orderedInsert (a : α) : List α → List α
   | [] => [a]
   | b :: l => if a ≼ b then a :: b :: l else b :: orderedInsert a l
 
+theorem orderedInsert_of_le {a b : α} (l : List α) (h : a ≼ b) :
+    orderedInsert r a (b :: l) = a :: b :: l :=
+  dif_pos h
+
 /-- `insertionSort l` returns `l` sorted using the insertion sort algorithm. -/
 @[simp]
 def insertionSort : List α → List α
@@ -280,6 +284,17 @@ theorem mem_insertionSort {l : List α} {x : α} : x ∈ l.insertionSort r ↔ x
 @[simp]
 theorem length_insertionSort (l : List α) : (insertionSort r l).length = l.length :=
   (perm_insertionSort r _).length_eq
+
+theorem insertionSort_cons {a : α} {l : List α} (h : ∀ b ∈ l, r a b) :
+    insertionSort r (a :: l) = a :: insertionSort r l := by
+  rw [insertionSort]
+  cases hi : insertionSort r l with
+  | nil => rfl
+  | cons b m =>
+    rw [orderedInsert_of_le]
+    apply h b <| (mem_insertionSort r).1 _
+    rw [hi]
+    exact mem_cons_self b m
 
 theorem map_insertionSort (f : α → β) (l : List α) (hl : ∀ a ∈ l, ∀ b ∈ l, a ≼ b ↔ f a ≼ f b) :
     (l.insertionSort r).map f = (l.map f).insertionSort s := by
