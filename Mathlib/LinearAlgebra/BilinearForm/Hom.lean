@@ -39,6 +39,7 @@ Bilinear form,
 -/
 
 open LinearMap (BilinForm)
+open LinearMap (BilinMap)
 
 universe u v w
 
@@ -304,6 +305,15 @@ theorem comp_congr (e : M' ≃ₗ[R] M'') (B : BilinForm R M) (l r : M' →ₗ[R
     congr e (B.comp l r) =
       B.comp (l.comp (e.symm : M'' →ₗ[R] M')) (r.comp (e.symm : M'' →ₗ[R] M')) :=
   rfl
+
+variable {N₁ N₂ : Type*}
+variable [AddCommMonoid N₁] [AddCommMonoid N₂] [Module R N₁] [Module R N₂]
+
+/-- When `N₁` and `N₂` are equivalent, bilinear maps on `M` into `N₁` are equivalent to bilinear
+maps into `N₂`. -/
+@[simps!]
+def _root_.LinearMap.BilinMap.congr₂ (e : N₁ ≃ₗ[R] N₂) : BilinMap R M N₁ ≃ₗ[R] BilinMap R M N₂ :=
+  LinearEquiv.congrRight (LinearEquiv.congrRight e)
 
 end congr
 
