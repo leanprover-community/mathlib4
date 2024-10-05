@@ -45,10 +45,10 @@ namespace InnerProductSpace
 
 open RCLike ContinuousLinearMap
 
-section Seminormed
+variable (𝕜 E : Type*)
 
-variable (𝕜 : Type*)
-variable (E : Type*) [RCLike 𝕜] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+section Seminormed
+variable [RCLike 𝕜] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
 
@@ -72,9 +72,7 @@ theorem toDualMap_apply {x y : E} : toDualMap 𝕜 E x y = ⟪x, y⟫ :=
 end Seminormed
 
 section Normed
-
-variable (𝕜 : Type*)
-variable (E : Type*) [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
 

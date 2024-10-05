@@ -87,7 +87,7 @@ Change of variables in integrals
 [Fremlin, *Measure Theory* (volume 2)][fremlin_vol2]
 -/
 
-open MeasureTheory MeasureTheory.Measure Metric Filter Set FiniteDimensional Asymptotics
+open MeasureTheory MeasureTheory.Measure Metric Filter Set Module Asymptotics
   TopologicalSpace
 
 open scoped NNReal ENNReal Topology Pointwise
@@ -1185,7 +1185,7 @@ theorem det_one_smulRight {𝕜 : Type*} [NormedField 𝕜] (v : 𝕜) :
       Algebra.id.smul_eq_mul, one_mul, ContinuousLinearMap.coe_smul', Pi.smul_apply, mul_one]
   rw [this, ContinuousLinearMap.det, ContinuousLinearMap.coe_smul,
     ContinuousLinearMap.one_def, ContinuousLinearMap.coe_id, LinearMap.det_smul,
-    FiniteDimensional.finrank_self, LinearMap.det_id, pow_one, mul_one]
+    Module.finrank_self, LinearMap.det_id, pow_one, mul_one]
 
 /-- Integrability in the change of variable formula for differentiable functions (one-variable
 version): if a function `f` is injective and differentiable on a measurable set `s ⊆ ℝ`, then a
