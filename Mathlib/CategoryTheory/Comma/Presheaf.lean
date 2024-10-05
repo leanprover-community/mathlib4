@@ -580,7 +580,6 @@ def CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow (A : Cᵒᵖ 
     hom-sets in the category `(CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v` where the domain is of the
     form `yoneda.obj X` after adjusting the codomain accordingly. This is desirable because in the
     latter case the Yoneda lemma can be applied. -/
-@[simps! hom_app_app_coe inv_app_left_app]
 def CostructuredArrow.toOverCompYoneda (A : Cᵒᵖ ⥤ Type v) (T : Over A) :
     (CostructuredArrow.toOver yoneda A).op ⋙ yoneda.obj T ≅
       yoneda.op ⋙ yoneda.obj ((overEquivPresheafCostructuredArrow A).functor.obj T) :=
