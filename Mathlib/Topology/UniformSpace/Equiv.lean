@@ -196,9 +196,12 @@ theorem image_preimage (h : α ≃ᵤ β) (s : Set β) : h '' (h ⁻¹' s) = s :
 theorem preimage_image (h : α ≃ᵤ β) (s : Set α) : h ⁻¹' (h '' s) = s :=
   h.toEquiv.preimage_image s
 
-protected theorem isUniformInducing (h : α ≃ᵤ β) : IsUniformInducing h :=
-  isUniformInducing_of_compose h.uniformContinuous h.symm.uniformContinuous <| by
-    simp only [symm_comp_self, isUniformInducing_id]
+theorem isUniformInducing (h : α ≃ᵤ β) : IsUniformInducing h :=
+  IsUniformInducing.of_comp h.uniformContinuous h.symm.uniformContinuous <| by
+    simp only [symm_comp_self, IsUniformInducing.id]
+
+@[deprecated (since := "2024-10-05")]
+alias uniformInducing := isUniformInducing
 
 theorem comap_eq (h : α ≃ᵤ β) : UniformSpace.comap h ‹_› = ‹_› :=
   h.isUniformInducing.comap_uniformSpace

@@ -154,6 +154,9 @@ theorem isUniformInducing_pureCauchy : IsUniformInducing (pureCauchy : α → Ca
       _ = 𝓤 α := by simp [this]
       ⟩
 
+@[deprecated (since := "2024-10-05")]
+alias uniformInducing_pureCauchy := isUniformInducing_pureCauchy
+
 theorem isUniformEmbedding_pureCauchy : IsUniformEmbedding (pureCauchy : α → CauchyFilter α) :=
   { isUniformInducing_pureCauchy with
     inj := fun _a₁ _a₂ h => pure_injective <| Subtype.ext_iff_val.1 h }
@@ -324,6 +327,9 @@ protected theorem coe_eq : ((↑) : α → Completion α) = SeparationQuotient.m
 
 theorem isUniformInducing_coe : IsUniformInducing ((↑) : α → Completion α) :=
   SeparationQuotient.isUniformInducing_mk.comp isUniformInducing_pureCauchy
+
+@[deprecated (since := "2024-10-05")]
+alias uniformInducing_coe := isUniformInducing_coe
 
 theorem comap_coe_eq_uniformity :
     ((𝓤 _).comap fun p : α × α => ((p.1 : Completion α), (p.2 : Completion α))) = 𝓤 α :=

@@ -433,7 +433,10 @@ variable (K E : Type*) [DivisionRing K] [AddCommGroup E] [Module K E]
 
 theorem outCLM_isUniformInducing : IsUniformInducing (outCLM K E) := by
   rw [← isUniformInducing_mk.isUniformInducing_comp_iff, mk_comp_outCLM]
-  exact isUniformInducing_id
+  exact .id
+
+@[deprecated (since := "2024-10-05")]
+alias outCLM_uniformInducing := outCLM_isUniformInducing
 
 theorem outCLM_isUniformEmbedding : IsUniformEmbedding (outCLM K E) where
   inj := outCLM_injective K E

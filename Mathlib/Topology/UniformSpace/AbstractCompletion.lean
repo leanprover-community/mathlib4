@@ -83,7 +83,7 @@ local notation "ι" => pkg.coe
 
 /-- If `α` is complete, then it is an abstract completion of itself. -/
 def ofComplete [T0Space α] [CompleteSpace α] : AbstractCompletion α :=
-  mk α id inferInstance inferInstance inferInstance isUniformInducing_id denseRange_id
+  mk α id inferInstance inferInstance inferInstance .id denseRange_id
 
 theorem closure_range : closure (range ι) = univ :=
   pkg.dense.closure_range

@@ -367,10 +367,13 @@ a uniform inducing function for the uniform structures of uniform convergence.
 
 More precisely, if `f : γ → β` is uniform inducing,
 then `(f ∘ ·) : (α →ᵤ γ) → (α →ᵤ β)` is uniform inducing. -/
-protected lemma postcomp_isUniformInducing [UniformSpace γ] {f : γ → β}
+lemma postcomp_isUniformInducing [UniformSpace γ] {f : γ → β}
     (hf : IsUniformInducing f) : IsUniformInducing (ofFun ∘ (f ∘ ·) ∘ toFun : (α →ᵤ γ) → α →ᵤ β) :=
   ⟨((UniformFun.hasBasis_uniformity _ _).comap _).eq_of_same_basis <|
     UniformFun.hasBasis_uniformity_of_basis _ _ (hf.basis_uniformity (𝓤 β).basis_sets)⟩
+
+@[deprecated (since := "2024-10-05")]
+alias postcomp_uniformInducing := postcomp_isUniformInducing
 
 /-- Post-composition by a uniform embedding is
 a uniform embedding for the uniform structures of uniform convergence.
@@ -865,7 +868,7 @@ uniform structures of `𝔖`-convergence.
 
 More precisely, if `f : γ → β` is a uniform inducing, then
 `(fun g ↦ f ∘ g) : (α →ᵤ[𝔖] γ) → (α →ᵤ[𝔖] β)` is a uniform inducing. -/
-protected lemma postcomp_isUniformInducing [UniformSpace γ] {f : γ → β}
+lemma postcomp_isUniformInducing [UniformSpace γ] {f : γ → β}
     (hf : IsUniformInducing f) : IsUniformInducing (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖) := by
   -- This is a direct consequence of `UniformOnFun.comap_eq`
   constructor
@@ -875,6 +878,9 @@ protected lemma postcomp_isUniformInducing [UniformSpace γ] {f : γ → β}
   congr
   rw [← UniformSpace.ext hf, UniformOnFun.comap_eq]
   rfl
+
+@[deprecated (since := "2024-10-05")]
+alias postcomp_uniformInducing := postcomp_isUniformInducing
 
 /-- Post-composition by a uniform embedding is a uniform embedding for the
 uniform structures of `𝔖`-convergence.
