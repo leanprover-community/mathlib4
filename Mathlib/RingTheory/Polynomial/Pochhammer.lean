@@ -3,9 +3,7 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Polynomial.Degree.Definitions
-import Mathlib.Algebra.Polynomial.Eval
-import Mathlib.Algebra.Polynomial.Monic
+import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.Tactic.Abel
 
@@ -24,6 +22,8 @@ that are focused on `Nat` can be found in `Data.Nat.Factorial` as `Nat.ascFactor
 
 As with many other families of polynomials, even though the coefficients are always in `ℕ` or `ℤ` ,
 we define the polynomial with coefficients in any `[Semiring S]` or `[Ring R]`.
+With constraints `[NeZero (1 : 𝕂)]` and `[NoZeroDivisors 𝕂]` we can show that the
+evaluation of `ascPochhammer S n` is zero iff `n` is a sufficiently large non-positive integer.
 
 ## TODO
 
@@ -372,4 +372,49 @@ theorem descPochhammer_int_eq_ascFactorial (a b : ℕ) :
   rw [← Nat.cast_add, descPochhammer_eval_eq_descFactorial ℤ (a + b) b,
     Nat.add_descFactorial_eq_ascFactorial]
 
+/- If the Pochhammer function is evaluated at a sufficiently large non-postive integer, then it is
+zero. -/
+theorem ascPochhammer_eq_zero_of_nonpos_int {R : Type u} [Ring R] {n : ℕ} {k : R}
+    (hnk : ∃ kn : ℤ, kn ≤ 0 ∧ k = kn ∧ n ≥ 1 - kn) : (ascPochhammer R n).eval k = 0 := by
+  induction n with
+  | zero =>
+    absurd hnk
+    push_neg
+    exact fun _ _ _ ↦ by linarith [Nat.cast_zero (R:=ℤ)]
+  | succ n ih =>
+    rewrite [ascPochhammer_succ_eval]
+    have {a b : R} : a = 0 ∨ b = 0 → a * b = 0 := -- This theorem should be moved to `mul_eq_zero`
+      fun o => o.elim (fun h => mul_eq_zero_of_left h b) (mul_eq_zero_of_right a)
+    refine this <| or_iff_not_imp_left.2 fun np =>  ?_
+    have hp := ih.mt np
+    push_neg at hp
+    have ⟨kn, hkn, kkn, hn⟩ := hnk
+    have hnx' := hp kn hkn kkn
+    rewrite [Nat.cast_add_one n] at hn
+    have : kn = -n := by linarith
+    simp [kkn, this]
+
 end Ring
+
+section FieldLike
+
+/-- The iff variation of `ascPochhammer_eq_zero_of_nonpos_int` for a ring with
+`[NeZero (1 : R)]` and  `[NoZeroDivisors R]`.-/
+theorem ascPochhammer_eq_zero_iff {R : Type*} [Ring R] [NeZero (1 : R)] [NoZeroDivisors R]
+    (n : ℕ) (k : R) : (ascPochhammer R n).eval k = 0 ↔ ∃ kn : ℤ, kn ≤ 0 ∧ k = kn ∧ n ≥ 1 - kn := by
+  refine ⟨fun zero ↦ ?_, fun hkn ↦ ascPochhammer_eq_zero_of_nonpos_int hkn⟩
+  induction n with
+  | zero =>
+    simp only [ascPochhammer_zero, Polynomial.eval_one, one_ne_zero] at zero
+  | succ n ih =>
+    rewrite [ascPochhammer_succ_eval, mul_eq_zero] at zero
+    cases zero with
+    | inl h =>
+      have ⟨kn, hkn, kkn⟩ := ih h
+      exact ⟨kn, hkn, kkn.1, le_trans kkn.2 <| Nat.cast_le.2 <| Nat.le_succ n⟩
+    | inr h =>
+      refine ⟨-n, by linarith, ?_, (by simp; linarith)⟩
+      rewrite [Int.cast_neg, Int.cast_natCast, eq_neg_iff_add_eq_zero]
+      simp_all
+
+end FieldLike
