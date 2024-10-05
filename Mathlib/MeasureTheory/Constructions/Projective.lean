@@ -46,7 +46,8 @@ namespace IsProjectiveMeasureFamily
 
 variable {I J : Finset ι}
 
-lemma of_isEmpty [h : IsEmpty (Π i, α i)] (hP : IsProjectiveMeasureFamily P) (I : Finset ι) :
+lemma eq_zero_of_isEmpty [h : IsEmpty (Π i, α i)]
+    (hP : IsProjectiveMeasureFamily P) (I : Finset ι) :
     P I = 0 := by
   classical
   obtain ⟨i, hi⟩ := isEmpty_pi.mp h
