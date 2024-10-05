@@ -57,21 +57,6 @@ instance createsColimitOfSizeMapCompForget {Y : C} (f : X ⟶ Y) :
     CreatesColimitsOfSize.{w, w'} (map f ⋙ forget Y) :=
   show CreatesColimitsOfSize.{w, w'} (forget X) from inferInstance
 
-instance preservesColimitsOfSizeMap [HasColimitsOfSize.{w, w'} C] {Y : C} (f : X ⟶ Y) :
-    PreservesColimitsOfSize.{w, w'} (map f) :=
-  preservesColimitsOfReflectsOfPreserves (map f) (forget Y)
-
-section
-
-def isColimitToOver {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) : IsColimit c.toOver :=
-  isColimitOfReflects (forget c.pt) <| IsColimit.equivIsoColimit (Cocone.mapConeToOver c).symm hc
-
-def colimit.isColimitToOver (F : J ⥤ C) [HasColimit F] : IsColimit (colimit.toOver F) :=
-  isColimitOfReflects (forget _) <|
-    IsColimit.equivIsoColimit (Cocone.mapConeToOver (colimit.cocone F)).symm (colimit.isColimit F)
-
-end
-
 theorem epi_left_of_epi [HasPushouts C] {f g : Over X} (h : f ⟶ g) [Epi h] : Epi h.left :=
   CostructuredArrow.epi_left_of_epi _
 
