@@ -375,6 +375,14 @@ variable {φ M} {dφ : M.Derivation φ} (hdφ : dφ.Universal)
 
 namespace Derivation
 
+@[simps]
+def induced {M' : PresheafOfModules.{v} (T ⋙ forget₂ _ _)}
+    (d : M'.Derivation ψ) : M'.Derivation φψ where
+  d := d.d
+  d_mul := by simp
+  d_map := by simp
+  d_app _ := by subst fac; apply d.d_app
+
 local notation "pushforwardψ" =>
   pushforward (F := G) (R := T ⋙ forget₂ _ _) (φ := whiskerRight ψ (forget₂ _ RingCat))
 
@@ -413,13 +421,35 @@ noncomputable def pullbackMap : (pullbackψ).obj M ⟶ P :=
 variable {hdφ fac dφψ}
   {c : CokernelCofork (hdφ.pullbackMap fac dφψ)} (hc : IsColimit c) (hdφψ : dφψ.Universal)
 
-def corepresentableByOfIsColimitCokernelCofork :
-    (derivationFunctor ψ ⋙ forget _).CorepresentableBy c.pt := by
-  have := hdφψ
-  have := hc
-  sorry
+namespace corepresentableByOfIsColimitCokernelCofork
 
-def ofIsColimitCokernelCofork :
+variable {M' : PresheafOfModules.{v} (T ⋙ forget₂ _ _)}
+
+noncomputable def homEquivToFun (f : c.pt ⟶ M') : M'.Derivation ψ where
+  d := (dφψ.postcomp (c.π ≫ f)).d
+  d_map := by simp
+  d_mul := by simp
+  d_app := by
+    have := fac
+    sorry
+
+noncomputable def homEquivInvFun (d : M'.Derivation ψ) : c.pt ⟶ M' :=
+  (CokernelCofork.IsColimit.desc' hc (hdφψ.desc (Derivation.induced fac d))
+    sorry).1
+
+end corepresentableByOfIsColimitCokernelCofork
+
+open corepresentableByOfIsColimitCokernelCofork in
+noncomputable def corepresentableByOfIsColimitCokernelCofork :
+    (derivationFunctor ψ ⋙ forget _).CorepresentableBy c.pt where
+  homEquiv {M'} :=
+    { toFun := homEquivToFun
+      invFun := homEquivInvFun hc hdφψ
+      left_inv := sorry
+      right_inv := sorry }
+  homEquiv_comp _ _ := rfl
+
+noncomputable def ofIsColimitCokernelCofork :
     (ofCorepresentableBy (corepresentableByOfIsColimitCokernelCofork hc hdφψ)).Universal :=
   universalOfCorepresentableBy (corepresentableByOfIsColimitCokernelCofork hc hdφψ)
 
