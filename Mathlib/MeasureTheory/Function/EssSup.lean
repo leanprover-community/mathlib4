@@ -93,12 +93,6 @@ variable [MeasurableSingletonClass α]
 @[simp] lemma essInf_count_eq_ciInf (hf : BddBelow (Set.range f)) :
     essInf f .count = ⨅ a, f a := essInf_eq_ciInf (by simp) hf
 
-@[simp] lemma essSup_cond_count_eq_ciSup [Finite α] (hf : BddAbove (Set.range f)) :
-    essSup f .count[|.univ] = ⨆ a, f a := essSup_eq_ciSup (by simp [cond_apply, Set.finite_univ]) hf
-
-@[simp] lemma essInf_cond_count_eq_ciInf [Finite α] (hf : BddBelow (Set.range f)) :
-    essInf f .count[|.univ] = ⨅ a, f a := essInf_eq_ciInf (by simp [cond_apply, Set.finite_univ]) hf
-
 end ConditionallyCompleteLattice
 
 section ConditionallyCompleteLinearOrder
