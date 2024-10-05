@@ -134,6 +134,33 @@ instance VectorBundle.prod [VectorBundle 𝕜 F₁ E₁] [VectorBundle 𝕜 F₂
       rw [e₁.coordChangeL_apply e₁', e₂.coordChangeL_apply e₂', (e₁.prod e₂).coordChangeL_apply']
       exacts [rfl, hb, ⟨hb.1.2, hb.2.2⟩, ⟨hb.1.1, hb.2.1⟩]
 
+-- move these
+def Bundle.TotalSpace.prod_fst : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → TotalSpace F₁ E₁ :=
+  fun ⟨x, v⟩ ↦ ⟨x, v.1⟩
+def Bundle.TotalSpace.prod_snd : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → TotalSpace F₂ E₂ :=
+  fun ⟨x, v⟩ ↦ ⟨x, v.2⟩
+
+variable {M : Type*} [TopologicalSpace M]
+
+/-- Given a vector bundles `E₁`, `E₂` over a space `B`, if `φ` is a map into the total space of
+`E₁ ×ᵇ E₂`, then its continuity can be checked by checking the continuity of (1) the map
+`TotalSpace.prod_fst ∘ φ` into the total space of `E₁`, and (ii) the map `TotalSpace.prod_snd ∘ φ`
+into the total space of `E₂`. -/
+theorem Bundle.Prod.continuous_of_continuous_fst_comp_of_continuous_snd_comp
+    {φ : M → TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)}
+    (h1 : Continuous (TotalSpace.prod_fst F₁ E₁ F₂ E₂ ∘ φ))
+    (h2 : Continuous (TotalSpace.prod_snd F₁ E₁ F₂ E₂ ∘ φ)) :
+    Continuous φ := by
+  have h_proj := continuous_proj F₁ E₁
+  rw [continuous_iff_continuousAt] at h1 h2 h_proj ⊢
+  intro x
+  specialize h1 x
+  specialize h2 x
+  have h1_base : ContinuousAt (TotalSpace.proj ∘ TotalSpace.prod_fst F₁ E₁ F₂ E₂ ∘ φ) x :=
+      ContinuousAt.comp (h_proj (TotalSpace.prod_fst F₁ E₁ F₂ E₂ (φ x))) h1
+  rw [continuousAt_totalSpace] at h1 h2 ⊢
+  exact ⟨h1_base, h1.2.prod h2.2⟩
+
 variable {𝕜 F₁ E₁ F₂ E₂}
 
 @[simp] -- Porting note: changed arguments to make `simpNF` happy: merged `hx₁` and `hx₂` into `hx`

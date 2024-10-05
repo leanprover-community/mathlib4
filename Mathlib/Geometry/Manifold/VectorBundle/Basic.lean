@@ -621,12 +621,6 @@ instance Bundle.Prod.smoothVectorBundle : SmoothVectorBundle (F₁ × F₂) (E�
       simp only [Trivialization.baseSet_prod, mfld_simps]
       mfld_set_tac
 
--- move these
-def Bundle.TotalSpace.prod_fst : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → TotalSpace F₁ E₁ :=
-  fun ⟨x, v⟩ ↦ ⟨x, v.1⟩
-def Bundle.TotalSpace.prod_snd : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → TotalSpace F₂ E₂ :=
-  fun ⟨x, v⟩ ↦ ⟨x, v.2⟩
-
 /-- For smooth vector bundles `E₁` and `E₂` over a manifold `B`, the natural projection from the
 total space of `E₁ ×ᵇ E₂` to the total space of `E₁` is smooth. -/
 theorem Bundle.Prod.smooth_fst :
@@ -652,7 +646,29 @@ theorem Bundle.Prod.smooth_of_smooth_fst_comp_of_smooth_snd_comp
     (h1 : Smooth IM (IB.prod 𝓘(𝕜, F₁)) (TotalSpace.prod_fst F₁ E₁ F₂ E₂ ∘ φ))
     (h2 : Smooth IM (IB.prod 𝓘(𝕜, F₂)) (TotalSpace.prod_snd F₁ E₁ F₂ E₂ ∘ φ)) :
     Smooth IM (IB.prod 𝓘(𝕜, F₁ × F₂)) φ := by
-  sorry
+  intro x
+  have h1_cont : Continuous (TotalSpace.prod_fst F₁ E₁ F₂ E₂ ∘ φ) := h1.continuous
+  have h2_cont : Continuous (TotalSpace.prod_snd F₁ E₁ F₂ E₂ ∘ φ) := h2.continuous
+  specialize h1 x
+  specialize h2 x
+  have h1_base : ContMDiffAt IM IB ⊤ (TotalSpace.proj ∘ TotalSpace.prod_fst F₁ E₁ F₂ E₂ ∘ φ) x :=
+    SmoothAt.comp x (smooth_proj E₁ (TotalSpace.prod_fst F₁ E₁ F₂ E₂ (φ x))) h1
+  rw [contMDiffAt_iff_target] at h1 h2 h1_base ⊢
+  constructor
+  · have :=
+      Bundle.Prod.continuous_of_continuous_fst_comp_of_continuous_snd_comp _ _ _ _ h1_cont h2_cont
+    rw [continuous_iff_continuousAt] at this
+    exact this x
+  apply ContMDiffAt.prod_mk_space h1_base.2
+  apply ContMDiffAt.prod_mk_space
+  · have (x : EB × F₁) : ContMDiffAt 𝓘(𝕜, EB × F₁) 𝓘(𝕜, F₁) ⊤ Prod.snd x := by
+      rw [contMDiffAt_iff_contDiffAt]
+      exact contDiffAt_snd
+    exact (this _).comp _ h1.2
+  · have (x : EB × F₂) : ContMDiffAt 𝓘(𝕜, EB × F₂) 𝓘(𝕜, F₂) ⊤ Prod.snd x := by
+      rw [contMDiffAt_iff_contDiffAt]
+      exact contDiffAt_snd
+    exact (this _).comp _ h2.2
 
 end Prod
 
