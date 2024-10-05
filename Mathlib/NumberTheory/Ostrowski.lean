@@ -294,7 +294,7 @@ lemma mulRingNorm_apply_le_sum_digits (n : ℕ) {m : ℕ} (hm : 1 < m) :
   apply mul_le_mul_of_nonneg_right (le_of_lt (hcoef _))
     (pow_nonneg (apply_nonneg f ↑m) i)
   simp only [zero_le, zero_add, tsub_zero, true_and] at hia
-  exact List.mem_iff_get.mpr ⟨⟨i, hia.1⟩, hia.2.symm)
+  exact List.mem_iff_get.mpr ⟨⟨i, hia.1⟩, hia.2.symm⟩
 
 open Real Nat
 open Filter
@@ -309,7 +309,7 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ (n : ℕ), f n ≤ 1) {n₀ : ℕ} 
     /- L is the string of digits of `n` in the base `n₀`-/
     set L := Nat.digits n₀ m
     calc
-    f m ≤ (L.mapIdx fun i _ ↦ n₀ * (f n₀) ^ i).sum := MulRingNorm_le_sum_digits m hn₀
+    f m ≤ (L.mapIdx fun i _ ↦ n₀ * (f n₀) ^ i).sum := mulRingNorm_apply_le_sum_digits m hn₀
     _ ≤ (L.mapIdx fun _ _ ↦ (n₀ : ℝ)).sum := by
       simp only [List.mapIdx_eq_enum_map, List.map_map]
       apply List.sum_le_sum
