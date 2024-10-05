@@ -404,6 +404,4 @@ end
 
 end
 
-end
-
 end CategoryTheory.Limits

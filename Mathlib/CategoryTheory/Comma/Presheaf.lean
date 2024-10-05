@@ -575,8 +575,6 @@ def CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow (A : Cᵒᵖ 
     CostructuredArrow.toOver yoneda A ⋙ (overEquivPresheafCostructuredArrow A).functor ≅ yoneda :=
   toOverYonedaCompRestrictedYoneda A
 
-#check Functor.FullyFaithful
-
 /-- This isomorphism says that hom-sets in the category `Over A` for a presheaf `A` where the domain
     is of the form `(CostructuredArrow.toOver yoneda A).obj X` can instead be interpreted as
     hom-sets in the category `(CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v` where the domain is of the
