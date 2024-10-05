@@ -81,20 +81,23 @@ def IsDynCoverOf (T : X → X) (F : Set X) (U : Set (X × X)) (n : ℕ) (s : Set
 
 lemma IsDynCoverOf.of_le {T : X → X} {F : Set X} {U : Set (X × X)} {m n : ℕ} (m_n : m ≤ n)
     {s : Set X} (h : IsDynCoverOf T F U n s) :
-    IsDynCoverOf T F U m s := by
-  exact Subset.trans (c := ⋃ x ∈ s, ball x (dynEntourage T U m)) h
-    (iUnion₂_mono fun x _ ↦ ball_mono (dynEntourage_antitone T U m_n) x)
+    IsDynCoverOf T F U m s :=
+  h.trans (iUnion₂_mono fun x _ ↦ ball_mono (dynEntourage_antitone T U m_n) x)
 
 lemma IsDynCoverOf.of_entourage_subset {T : X → X} {F : Set X} {U V : Set (X × X)} (U_V : U ⊆ V)
     {n : ℕ} {s : Set X} (h : IsDynCoverOf T F U n s) :
-    IsDynCoverOf T F V n s := by
-  exact Subset.trans (c := ⋃ x ∈ s, ball x (dynEntourage T V n)) h
-    (iUnion₂_mono fun x _ ↦ ball_mono (dynEntourage_monotone T n U_V) x)
+    IsDynCoverOf T F V n s :=
+  h.trans (iUnion₂_mono fun x _ ↦ ball_mono (dynEntourage_monotone T n U_V) x)
+
+lemma IsDynCoverOf.of_cover_subset {T : X → X} {F : Set X} {U : Set (X × X)} {n : ℕ} {s t : Set X}
+    (s_t : s ⊆ t) (h : IsDynCoverOf T F U n s) :
+    IsDynCoverOf T F U n t :=
+  h.trans (Set.biUnion_subset_biUnion_left s_t)
 
 @[simp]
 lemma isDynCoverOf_empty {T : X → X} {U : Set (X × X)} {n : ℕ} {s : Set X} :
-    IsDynCoverOf T ∅ U n s := by
-  simp only [IsDynCoverOf, empty_subset]
+    IsDynCoverOf T ∅ U n s :=
+  empty_subset _
 
 lemma IsDynCoverOf.nonempty {T : X → X} {F : Set X} (h : F.Nonempty) {U : Set (X × X)} {n : ℕ}
     {s : Set X} (h' : IsDynCoverOf T F U n s) :
@@ -104,17 +107,15 @@ lemma IsDynCoverOf.nonempty {T : X → X} {F : Set X} (h : F.Nonempty) {U : Set 
 
 lemma isDynCoverOf_zero (T : X → X) (F : Set X) (U : Set (X × X)) {s : Set X} (h : s.Nonempty) :
     IsDynCoverOf T F U 0 s := by
-  simp only [IsDynCoverOf, ball, dynEntourage, not_lt_zero', Prod.map_iterate, iInter_of_empty,
-    iInter_univ, preimage_univ]
+  simp only [IsDynCoverOf, ball, dynEntourage_zero, preimage_univ]
   rcases h with ⟨x, x_s⟩
-  exact subset_iUnion₂_of_subset x x_s (subset_univ F)
+  exact subset_iUnion₂_of_subset x x_s F.subset_univ
 
 lemma isDynCoverOf_univ (T : X → X) (F : Set X) (n : ℕ) {s : Set X} (h : s.Nonempty) :
     IsDynCoverOf T F univ n s := by
-  simp only [IsDynCoverOf, ball, dynEntourage, Prod.map_iterate, preimage_univ, iInter_univ,
-    iUnion_coe_set]
+  simp only [IsDynCoverOf, ball, dynEntourage_univ, preimage_univ]
   rcases h with ⟨x, x_s⟩
-  exact subset_iUnion₂_of_subset x x_s (subset_univ F)
+  exact subset_iUnion₂_of_subset x x_s F.subset_univ
 
 lemma IsDynCoverOf.nonempty_inter {T : X → X} {F : Set X} {U : Set (X × X)} {n : ℕ} {s : Finset X}
     (h : IsDynCoverOf T F U n s) :

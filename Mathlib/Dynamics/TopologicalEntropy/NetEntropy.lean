@@ -71,6 +71,11 @@ lemma IsDynNetIn.of_entourage_subset {T : X → X} {F : Set X} {U V : Set (X × 
     IsDynNetIn T F U n s :=
   ⟨h.1, PairwiseDisjoint.mono h.2 (fun x ↦ ball_mono (dynEntourage_monotone T n U_V) x)⟩
 
+lemma IsDynNetIn.of_subset_net {T : X → X} {F : Set X} {U : Set (X × X)} {n : ℕ} {s t : Set X}
+    (s_t : s ⊆ t) (h : IsDynNetIn T F U n t) :
+    IsDynNetIn T F U n s :=
+  ⟨s_t.trans h.1 , Set.PairwiseDisjoint.subset h.2 s_t⟩
+
 lemma isDynNetIn_empty {T : X → X} {F : Set X} {U : Set (X × X)} {n : ℕ} :
     IsDynNetIn T F U n ∅ :=
   ⟨empty_subset F, pairwise_empty _⟩
