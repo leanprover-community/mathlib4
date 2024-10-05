@@ -266,6 +266,17 @@ noncomputable def Forget : C ⥤ hP.Core' where
       exact isLE_shift Y (-b.1) b 0 (by linarith)
     rw [HalfForgetMapComp]
 
+-- TODO:
+-- (1) `Forget` is a triangulated functor.
+-- (2) If `X` is `≤ 0`, then `Hom(Forget(X),Y) = Hom(X,Y)` for every `Y ≥ 0`. (In particular,
+-- the restriction of `Forget` to `C(≤ 0)` is left adjoint to the inclusion.)
+-- (3) If `X` is `≥ 0`, then `Hom(Y,Forget(X)) = Hom(Y,X)` for every `Y ≤ 0`. (In particular,
+-- the restriction of `Forget` to `C(≥ 0)` is right adjoint to the inclusion.)
+-- (just redo the whole construction dually, and prove isomorphism of functors?)
+-- (4) `Hom(X,Y) = Hom(Forget(X),Forget(X))` is `X ≤ 0` and `Y ≥ 0`. (Should follow fron (2) and (3).)
+-- (5) `Forget(α)` is an isomorphism (`α : X ⟶ X⟪1⟫`). In fact `Forget` sends all
+-- `power_of_alpha` to isomorphisms.
+
 end FilteredTriangulated
 
 end Triangulated

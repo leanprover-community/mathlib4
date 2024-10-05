@@ -47,6 +47,12 @@ noncomputable def isoZero : shiftFunctor C (0 : A) ⋙ F ≅ F ⋙ shiftFunctor 
   isoWhiskerRight (shiftFunctorZero C A) F ≪≫ F.leftUnitor ≪≫
      F.rightUnitor.symm ≪≫ isoWhiskerLeft F (shiftFunctorZero D A).symm
 
+/-- Variant for the shift where `a`, where `a = 0`.-/
+@[simps!]
+noncomputable def isoZero' (a : A) (ha : a = 0) : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a :=
+  isoWhiskerRight (shiftFunctorZero' C a ha) F ≪≫ F.leftUnitor ≪≫
+     F.rightUnitor.symm ≪≫ isoWhiskerLeft F (shiftFunctorZero' D a ha).symm
+
 variable {F A}
 
 /-- If a functor `F : C ⥤ D` is equipped with "commutation isomorphisms" with the
@@ -92,6 +98,7 @@ end CommShift
 /-- A functor `F` commutes with the shift by a monoid `A` if it is equipped with
 commutation isomorphisms with the shifts by all `a : A`, and these isomorphisms
 satisfy coherence properties with respect to `0 : A` and the addition in `A`. -/
+@[ext]
 class CommShift where
   iso (a : A) : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a
   zero : iso 0 = CommShift.isoZero F A := by aesop_cat
@@ -131,6 +138,10 @@ variable (A)
 lemma commShiftIso_zero :
     F.commShiftIso (0 : A) = CommShift.isoZero F A :=
   CommShift.zero
+
+lemma commShiftIso_zero' (a : A) (ha : a = 0) :
+    F.commShiftIso a = CommShift.isoZero' F A a ha := by
+  sorry
 
 variable {A}
 

@@ -1096,9 +1096,10 @@ lemma existence_omega (X : C) [IsLE X 0] : ∃ (Y : hP.Core') (s : X ⟶ Y.1),
     ∀ (Z : C), IsGE Z 0 → Function.Bijective (fun (f : Y.1 ⟶ Z) ↦ s ≫ f) := by
   obtain ⟨Y, s, h⟩ := existence_omega_aux (Finset.card (support X)) X rfl
   use Y, s
-  simp only [preadditiveYoneda_obj, Functor.comp_obj, preadditiveYonedaObj_obj,
-    ModuleCat.forget₂_obj, Functor.comp_map, preadditiveYonedaObj_map, Quiver.Hom.unop_op,
-    ModuleCat.forget₂_map] at h
+  intro Z hZ
+  have := h Z hZ
+  rw [← isIso_iff_bijective]
+  exact (forget AddCommGrp).map_isIso ((preadditiveYoneda.obj Z).map s.op)
 
 end FilteredTriangulated
 
