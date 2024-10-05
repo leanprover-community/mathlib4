@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Winston Yin
 -/
 import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Topology.Algebra.Order.Floor
 import Mathlib.Topology.MetricSpace.Contracting
 
 /-!
