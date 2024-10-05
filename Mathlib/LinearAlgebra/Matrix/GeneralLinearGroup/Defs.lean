@@ -171,8 +171,7 @@ lemma map_det (g : GL n R) : Matrix.GeneralLinearGroup.det (map f g) =
   ext
   simp only [map, RingHom.mapMatrix_apply, Units.inv_eq_val_inv, Matrix.coe_units_inv,
     Matrix.GeneralLinearGroup.val_det_apply, Units.coe_map, MonoidHom.coe_coe]
-  symm
-  apply RingHom.map_det
+  exact Eq.symm (RingHom.map_det f g.1)
 
 lemma map_mul_map_inv (g : GL n R) : map f g * map f g⁻¹ = 1 := by
   simp only [map_inv, mul_inv_cancel]
