@@ -81,7 +81,7 @@ theorem ramificationIdx_spec {n : ℕ} (hle : map f p ≤ P ^ n) (hgt : ¬map f 
   have : Q n := by
     intro k hk
     refine le_of_not_lt fun hnk => ?_
-    exact hgt (hk.trans (Ideal.pow_right_mono₀ hnk))
+    exact hgt (hk.trans (Ideal.pow_right_mono hnk))
   rw [ramificationIdx_eq_find ⟨n, this⟩]
   refine le_antisymm (Nat.find_min' _ this) (le_of_not_gt fun h : Nat.find _ < n => ?_)
   obtain this' := Nat.find_spec ⟨n, this⟩
