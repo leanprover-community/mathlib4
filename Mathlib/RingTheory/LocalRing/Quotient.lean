@@ -15,7 +15,7 @@ We gather results about the quotients of local rings.
 
 -/
 
-open Submodule FiniteDimensional
+open Submodule FiniteDimensional Module
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [LocalRing R] [Module.Finite R S]
 
