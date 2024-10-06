@@ -279,8 +279,17 @@ theorem mdifferentiableOn_extChartAt :
 
 theorem mdifferentiableWithinAt_extChartAt_symm (h : z ∈ (extChartAt I x).target) :
     MDifferentiableWithinAt 𝓘(𝕜, E) I (extChartAt I x).symm (range I)  z := by
-  have Z := I.hasMFDerivWithinAt_symm (x := z)
+  have Z := I.mdifferentiableWithinAt_symm (extChartAt_target_subset_range I x h)
+  apply MDifferentiableAt.comp_mdifferentiableWithinAt (I' := I) _ _ Z
+  apply mdifferentiableAt_atlas_symm _ (ChartedSpace.chart_mem_atlas x)
+  simp only [extChartAt, PartialHomeomorph.extend, PartialEquiv.trans_target,
+    ModelWithCorners.target_eq, ModelWithCorners.toPartialEquiv_coe_symm, mem_inter_iff, mem_range,
+    mem_preimage] at h
+  exact h.2
 
-
+theorem mdifferentiableOn_extChartAt_symm :
+    MDifferentiableOn 𝓘(𝕜, E) I (extChartAt I x).symm (extChartAt I x).target := by
+  intro y hy
+  exact (mdifferentiableWithinAt_extChartAt_symm _ hy).mono (extChartAt_target_subset_range I x)
 
 end extChartAt

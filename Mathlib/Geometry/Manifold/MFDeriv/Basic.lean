@@ -626,6 +626,12 @@ theorem MDifferentiableAt.comp (hg : MDifferentiableAt I' I'' g (f x))
     (hf : MDifferentiableAt I I' f x) : MDifferentiableAt I I'' (g ∘ f) x :=
   (hg.hasMFDerivAt.comp x hf.hasMFDerivAt).mdifferentiableAt
 
+theorem MDifferentiableAt.comp_mdifferentiableWithinAt
+    (hg : MDifferentiableAt I' I'' g (f x)) (hf : MDifferentiableWithinAt I I' f s x) :
+    MDifferentiableWithinAt I I'' (g ∘ f) s x := by
+  rw [← mdifferentiableWithinAt_univ] at hg
+  exact hg.comp _ hf (by simp)
+
 theorem mfderivWithin_comp (hg : MDifferentiableWithinAt I' I'' g u (f x))
     (hf : MDifferentiableWithinAt I I' f s x) (h : s ⊆ f ⁻¹' u) (hxs : UniqueMDiffWithinAt I s x) :
     mfderivWithin I I'' (g ∘ f) s x =
@@ -646,6 +652,11 @@ theorem mfderiv_comp_of_eq {x : M} {y : M'} (hg : MDifferentiableAt I' I'' g y)
 theorem MDifferentiableOn.comp (hg : MDifferentiableOn I' I'' g u) (hf : MDifferentiableOn I I' f s)
     (st : s ⊆ f ⁻¹' u) : MDifferentiableOn I I'' (g ∘ f) s := fun x hx =>
   MDifferentiableWithinAt.comp x (hg (f x) (st hx)) (hf x hx) st
+
+theorem MDifferentiable.comp_mdifferentiableOn (hg : MDifferentiable I' I'' g)
+    (hf : MDifferentiableOn I I' f s) : MDifferentiableOn I I'' (g ∘ f) s := by
+  rw [← mdifferentiableOn_univ] at hg
+  exact hg.comp hf (by simp)
 
 theorem MDifferentiable.comp (hg : MDifferentiable I' I'' g) (hf : MDifferentiable I I' f) :
     MDifferentiable I I'' (g ∘ f) := fun x => MDifferentiableAt.comp x (hg (f x)) (hf x)
