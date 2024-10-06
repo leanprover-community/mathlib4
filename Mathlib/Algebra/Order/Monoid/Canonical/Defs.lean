@@ -129,6 +129,11 @@ variable [LE α] [CanonicallyOrderedMul α] {a b : α}
 theorem one_le (a : α) : 1 ≤ a :=
   le_self_mul.trans_eq (one_mul _)
 
+@[to_additive]
+instance (priority := 10) CanonicallyOrderedMul.toOrderBot : OrderBot α where
+  bot := 1
+  bot_le := one_le
+
 end LE
 
 section Preorder
@@ -286,7 +291,7 @@ theorem min_one (a : α) : min a 1 = 1 :=
 /-- In a linearly ordered monoid, we are happy for `bot_eq_one` to be a `@[simp]` lemma. -/
 @[to_additive (attr := simp)
   "In a linearly ordered monoid, we are happy for `bot_eq_zero` to be a `@[simp]` lemma"]
-theorem bot_eq_one' [OrderBot α] : (⊥ : α) = 1 :=
+theorem bot_eq_one' : (⊥ : α) = 1 :=
   bot_eq_one
 
 end CanonicallyLinearOrderedCommMonoid

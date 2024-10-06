@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Order.WellFounded
-import Mathlib.Order.Nat
+
 
 /-!
 # Limit elements in well-ordered types

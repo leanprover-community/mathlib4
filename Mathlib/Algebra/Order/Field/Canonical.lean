@@ -19,9 +19,7 @@ abbrev CanonicallyOrderedAdd.toLinearOrderedCommGroupWithZero :
     LinearOrderedCommGroupWithZero α :=
   { ‹LinearOrderedSemifield α› with
     mul_le_mul_left := fun a b h c ↦ mul_le_mul_of_nonneg_left h <| zero_le _ }
-#align canonically_linear_ordered_semifield.to_linear_ordered_comm_group_with_zero CanonicallyOrderedAdd.toLinearOrderedCommGroupWithZero
 
 variable [Sub α] [OrderedSub α]
 
 theorem tsub_div (a b c : α) : (a - b) / c = a / c - b / c := by simp_rw [div_eq_mul_inv, tsub_mul]
-#align tsub_div tsub_div

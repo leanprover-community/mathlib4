@@ -627,6 +627,9 @@ instance canonicallyOrderedAdd : CanonicallyOrderedAdd Cardinal.{u} where
 instance orderedCommSemiring : OrderedCommSemiring Cardinal.{u} :=
   CanonicallyOrderedAdd.toOrderedCommSemiring
 
+instance : LinearOrderedAddCommMonoid Cardinal.{u} :=
+  { Cardinal.orderedCommSemiring, Cardinal.linearOrder with }
+
 instance orderBot : OrderBot Cardinal.{u} := inferInstance
 
 instance noZeroDivisors : NoZeroDivisors Cardinal.{u} where
