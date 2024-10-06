@@ -30,7 +30,7 @@ element of `G`, where `G` is a group that acts on `F`.
 
 noncomputable section
 
-open MulAction Finset FiniteDimensional
+open MulAction Finset Module
 
 universe u v w
 

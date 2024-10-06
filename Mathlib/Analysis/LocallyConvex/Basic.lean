@@ -95,8 +95,8 @@ theorem balanced_iUnion₂ {f : ∀ i, κ i → Set E} (h : ∀ i j, Balanced �
     Balanced 𝕜 (⋃ (i) (j), f i j) :=
   balanced_iUnion fun _ => balanced_iUnion <| h _
 
-theorem balanced_sInter {S : Set (Set E)} (h : ∀ s ∈ S, Balanced 𝕜 s) : Balanced 𝕜 (⋂₀ S) :=
-  fun _ _ => (smul_set_sInter_subset _ _).trans (fun _ _ => by aesop)
+theorem Balanced.sInter {S : Set (Set E)} (h : ∀ s ∈ S, Balanced 𝕜 s) : Balanced 𝕜 (⋂₀ S) :=
+  fun _ _ => (smul_set_sInter_subset ..).trans (fun _ _ => by aesop)
 
 theorem balanced_iInter {f : ι → Set E} (h : ∀ i, Balanced 𝕜 (f i)) : Balanced 𝕜 (⋂ i, f i) :=
   fun _a ha => (smul_set_iInter_subset _ _).trans <| iInter_mono fun _ => h _ _ ha
@@ -186,7 +186,7 @@ theorem Balanced.smul_mono (hs : Balanced 𝕝 s) {a : 𝕝} {b : 𝕜} (h : ‖
       a • s = b • (b⁻¹ • a) • s := by rw [smul_assoc, smul_inv_smul₀ hb]
       _ ⊆ b • s := smul_set_mono <| hs _ <| by
         rw [norm_smul, norm_inv, ← div_eq_inv_mul]
-        exact div_le_one_of_le h (norm_nonneg _)
+        exact div_le_one_of_le₀ h (norm_nonneg _)
 
 theorem Balanced.smul_mem_mono [SMulCommClass 𝕝 𝕜 E] (hs : Balanced 𝕝 s) {a : 𝕜} {b : 𝕝}
     (ha : a • x ∈ s) (hba : ‖b‖ ≤ ‖a‖) : b • x ∈ s := by
@@ -196,7 +196,7 @@ theorem Balanced.smul_mem_mono [SMulCommClass 𝕝 𝕜 E] (hs : Balanced 𝕝 s
       (a⁻¹ • b) • a • x ∈ s := by
         refine hs.smul_mem ?_ ha
         rw [norm_smul, norm_inv, ← div_eq_inv_mul]
-        exact div_le_one_of_le hba (norm_nonneg _)
+        exact div_le_one_of_le₀ hba (norm_nonneg _)
       (a⁻¹ • b) • a • x = b • x := by rw [smul_comm, smul_assoc, smul_inv_smul₀ ha₀]
 
 theorem Balanced.subset_smul (hA : Balanced 𝕜 A) (ha : 1 ≤ ‖a‖) : A ⊆ a • A := by

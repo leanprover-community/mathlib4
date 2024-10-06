@@ -651,20 +651,4 @@ lemma analyticWithinAt_uncurry_of_multilinear :
     AnalyticWithinAt 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s x :=
   f.analyticAt_uncurry_of_multilinear.analyticWithinAt
 
-lemma continuousOn_uncurry_of_multilinear :
-    ContinuousOn (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s :=
-  f.analyticOnNhd_uncurry_of_multilinear.continuousOn
-
-lemma continuous_uncurry_of_multilinear :
-    Continuous (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) :=
-  f.analyticOnNhd_uncurry_of_multilinear.continuous
-
-lemma continuousAt_uncurry_of_multilinear :
-    ContinuousAt (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) x :=
-  f.analyticAt_uncurry_of_multilinear.continuousAt
-
-lemma continuousWithinAt_uncurry_of_multilinear :
-    ContinuousWithinAt (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) s x :=
-  f.analyticWithinAt_uncurry_of_multilinear.continuousWithinAt
-
 end ContinuousLinearMap

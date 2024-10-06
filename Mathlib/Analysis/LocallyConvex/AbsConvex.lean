@@ -10,8 +10,8 @@ import Mathlib.Analysis.Convex.Gauge
 /-!
 # Absolutely convex sets
 
-A set is called absolutely convex or disked if it is convex and balanced.
-The importance of absolutely convex sets comes from the fact that every locally convex
+A set `s` in an commutative monoid `E` is called absolutely convex or disked if it is convex and
+balanced. The importance of absolutely convex sets comes from the fact that every locally convex
 topological vector space has a basis consisting of absolutely convex sets.
 
 ## Main definitions
@@ -25,10 +25,18 @@ of zero.
 
 * `absConvexHull_eq_convexHull_balancedHull`: when the locally convex space is a module, the
   absolutely convex hull of a set `s` equals the convex hull of the balanced hull of `s`.
-* `absConvexHull_eq_convexHull_union_neg`: the convex hull of `s ∪ -s` is the absolute convex hull
+* `convexHull_union_neg_eq_absConvexHull`: the convex hull of `s ∪ -s` is the absolute convex hull
   of `s`.
 * `with_gaugeSeminormFamily`: the topology of a locally convex space is induced by the family
 `gaugeSeminormFamily`.
+
+## Implementation notes
+
+Mathlib's definition of `Convex` requires the scalars to be an `OrderedSemiring` whereas the
+definition of `Balanced` requires the scalars to be a `SeminormedRing`. Mathlib doesn't currently
+have a concept of a semi-normed ordered ring, so we define a set as `AbsConvex` if it is balanced
+over a `SeminormedRing` `𝕜` and convex over `ℝ`, assuming `IsScalarTower ℝ 𝕜 E` and
+`SMulCommClass ℝ 𝕜 E` where required.
 
 ## Tags
 
@@ -52,22 +60,26 @@ variable {𝕜}
 
 theorem AbsConvex.empty : AbsConvex 𝕜 (∅ : Set E) := ⟨balanced_empty, convex_empty⟩
 
-theorem AbsConvex.univ : AbsConvex 𝕜 (Set.univ : Set E) := ⟨balanced_univ, convex_univ⟩
+theorem AbsConvex.univ : AbsConvex 𝕜 (univ : Set E) := ⟨balanced_univ, convex_univ⟩
 
-theorem AbsConvex.inter {s : Set E} {t : Set E} (hs : AbsConvex 𝕜 s) (ht : AbsConvex 𝕜 t) :
-    AbsConvex 𝕜 (s ∩ t) := ⟨Balanced.inter hs.1 ht.1, Convex.inter hs.2 ht.2⟩
+theorem AbsConvex.inter {s t : Set E} (hs : AbsConvex 𝕜 s) (ht : AbsConvex 𝕜 t) :
+    AbsConvex 𝕜 (s ∩ t) := ⟨hs.1.inter ht.1, hs.2.inter ht.2⟩
 
-theorem absConvex_sInter {S : Set (Set E)} (h : ∀ s ∈ S, AbsConvex 𝕜 s) : AbsConvex 𝕜 (⋂₀ S) :=
-  ⟨balanced_sInter (fun s hs => (h s hs).1), convex_sInter (fun s hs => (h s hs).2)⟩
+theorem AbsConvex.sInter {S : Set (Set E)} (h : ∀ s ∈ S, AbsConvex 𝕜 s) : AbsConvex 𝕜 (⋂₀ S) :=
+  ⟨.sInter fun s hs => (h s hs).1, convex_sInter fun s hs => (h s hs).2⟩
+
+theorem AbsConvex.iInter {ι : Sort*} {s : ι → Set E} (h : ∀ i, AbsConvex 𝕜 (s i)) :
+    AbsConvex 𝕜 (⋂ i, s i) :=
+  sInter_range s ▸ AbsConvex.sInter <| forall_mem_range.2 h
 
 variable (𝕜)
 
 /-- The absolute convex hull of a set `s` is the minimal absolute convex set that includes `s`. -/
 @[simps! isClosed]
 def absConvexHull : ClosureOperator (Set E) :=
-  .ofCompletePred (AbsConvex 𝕜) fun _ ↦ absConvex_sInter
+  .ofCompletePred (AbsConvex 𝕜) fun _ ↦ AbsConvex.sInter
 
-variable (s : Set E)
+variable {𝕜} {s : Set E}
 
 theorem subset_absConvexHull : s ⊆ absConvexHull 𝕜 s :=
   (absConvexHull 𝕜).le_closure s
@@ -76,16 +88,17 @@ theorem absConvex_absConvexHull : AbsConvex 𝕜 (absConvexHull 𝕜 s) :=
   (absConvexHull 𝕜).isClosed_closure s
 
 theorem balanced_absConvexHull : Balanced 𝕜 (absConvexHull 𝕜 s) :=
-  (absConvex_absConvexHull 𝕜 s).1
+  absConvex_absConvexHull.1
 
 theorem convex_absConvexHull : Convex ℝ (absConvexHull 𝕜 s) :=
-  (absConvex_absConvexHull 𝕜 s).2
+  absConvex_absConvexHull.2
 
+variable (𝕜 s) in
 theorem absConvexHull_eq_iInter :
     absConvexHull 𝕜 s = ⋂ (t : Set E) (_ : s ⊆ t) (_ : AbsConvex 𝕜 t), t := by
   simp [absConvexHull, iInter_subtype, iInter_and]
 
-variable {𝕜 s} {t : Set E} {x y : E}
+variable {t : Set E} {x y : E}
 
 theorem mem_absConvexHull_iff : x ∈ absConvexHull 𝕜 s ↔ ∀ t, s ⊆ t → AbsConvex 𝕜 t → x ∈ t := by
   simp_rw [absConvexHull_eq_iInter, mem_iInter]
@@ -114,20 +127,20 @@ theorem absConvexHull_empty : absConvexHull 𝕜 (∅ : Set E) = ∅ :=
   AbsConvex.empty.absConvexHull_eq
 
 @[simp]
-theorem absConvexHull_empty_iff : absConvexHull 𝕜 s = ∅ ↔ s = ∅ := by
+theorem absConvexHull_eq_empty : absConvexHull 𝕜 s = ∅ ↔ s = ∅ := by
   constructor
   · intro h
     rw [← Set.subset_empty_iff, ← h]
-    exact subset_absConvexHull 𝕜 _
+    exact subset_absConvexHull
   · rintro rfl
     exact absConvexHull_empty
 
 @[simp]
-theorem absConvexHull_nonempty_iff : (absConvexHull 𝕜 s).Nonempty ↔ s.Nonempty := by
+theorem absConvexHull_nonempty : (absConvexHull 𝕜 s).Nonempty ↔ s.Nonempty := by
   rw [nonempty_iff_ne_empty, nonempty_iff_ne_empty, Ne, Ne]
-  exact not_congr absConvexHull_empty_iff
+  exact not_congr absConvexHull_eq_empty
 
-protected alias ⟨_, Set.Nonempty.absConvexHull⟩ := absConvexHull_nonempty_iff
+protected alias ⟨_, Set.Nonempty.absConvexHull⟩ := absConvexHull_nonempty
 
 end AbsolutelyConvex
 
@@ -138,7 +151,7 @@ variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
 variable [TopologicalSpace E] [ContinuousSMul 𝕜 E]
 
-theorem nhds_basis_abs_convex [LocallyConvexSpace ℝ E] :
+theorem nhds_hasBasis_absConvex :
     (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ AbsConvex 𝕜 s) id := by
   refine
     (LocallyConvexSpace.convex_basis_zero ℝ E).to_hasBasis (fun s hs => ?_) fun s hs =>
@@ -150,9 +163,9 @@ theorem nhds_basis_abs_convex [LocallyConvexSpace ℝ E] :
 
 variable [ContinuousSMul ℝ E] [TopologicalAddGroup E]
 
-theorem nhds_basis_abs_convex_open [LocallyConvexSpace ℝ E] :
+theorem nhds_hasBasis_absConvex_open :
     (𝓝 (0 : E)).HasBasis (fun s => (0 : E) ∈ s ∧ IsOpen s ∧ AbsConvex 𝕜 s) id := by
-  refine (nhds_basis_abs_convex 𝕜 E).to_hasBasis ?_ ?_
+  refine (nhds_hasBasis_absConvex 𝕜 E).to_hasBasis ?_ ?_
   · rintro s ⟨hs_nhds, hs_balanced, hs_convex⟩
     refine ⟨interior s, ?_, interior_subset⟩
     exact
@@ -180,18 +193,23 @@ variable [AddCommGroup E] [Module ℝ E] [Module 𝕜 E]
 
 theorem absConvexHull_add_subset {s t : Set E} :
     absConvexHull 𝕜 (s + t) ⊆ absConvexHull 𝕜 s + absConvexHull 𝕜 t :=
-  absConvexHull_min (add_subset_add (subset_absConvexHull 𝕜 s) (subset_absConvexHull 𝕜 t))
-    ⟨Balanced.add (balanced_absConvexHull 𝕜 s) (balanced_absConvexHull 𝕜 t),
-      Convex.add (convex_absConvexHull 𝕜 s) (convex_absConvexHull 𝕜 t)⟩
+  absConvexHull_min (add_subset_add subset_absConvexHull subset_absConvexHull)
+    ⟨Balanced.add balanced_absConvexHull balanced_absConvexHull,
+      Convex.add convex_absConvexHull convex_absConvexHull⟩
 
 theorem absConvexHull_eq_convexHull_balancedHull [SMulCommClass ℝ 𝕜 E] {s : Set E} :
     absConvexHull 𝕜 s = convexHull ℝ (balancedHull 𝕜 s) := le_antisymm
   (absConvexHull_min
     ((subset_convexHull ℝ s).trans (convexHull_mono (subset_balancedHull 𝕜)))
       ⟨Balanced.convexHull (balancedHull.balanced s), convex_convexHull ..⟩)
-  (convexHull_min
-    ((balanced_absConvexHull 𝕜 s).balancedHull_subset_of_subset (subset_absConvexHull 𝕜 s))
-      (convex_absConvexHull 𝕜 s))
+  (convexHull_min (balanced_absConvexHull.balancedHull_subset_of_subset subset_absConvexHull)
+      convex_absConvexHull)
+
+/-- In general, equality doesn't hold here - e.g. consider `s := {(-1, 1), (1, 1)}` in `ℝ²`. -/
+theorem balancedHull_convexHull_subseteq_absConvexHull {s : Set E} :
+    balancedHull 𝕜 (convexHull ℝ s) ⊆ absConvexHull 𝕜 s :=
+  balanced_absConvexHull.balancedHull_subset_of_subset
+    (convexHull_min subset_absConvexHull convex_absConvexHull)
 
 end
 
@@ -380,7 +398,7 @@ variable [SMulCommClass ℝ 𝕜 E] [LocallyConvexSpace ℝ E]
 /-- The topology of a locally convex space is induced by the gauge seminorm family. -/
 theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) := by
   refine SeminormFamily.withSeminorms_of_hasBasis _ ?_
-  refine (nhds_basis_abs_convex_open 𝕜 E).to_hasBasis (fun s hs => ?_) fun s hs => ?_
+  refine (nhds_hasBasis_absConvex_open 𝕜 E).to_hasBasis (fun s hs => ?_) fun s hs => ?_
   · refine ⟨s, ⟨?_, rfl.subset⟩⟩
     convert (gaugeSeminormFamily _ _).basisSets_singleton_mem ⟨s, hs⟩ one_pos
     rw [gaugeSeminormFamily_ball, Subtype.coe_mk]
@@ -393,7 +411,7 @@ theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) :=
     ⟨mem_iInter₂.mpr fun _ _ => by simp [Seminorm.mem_ball_zero, hr],
       isOpen_biInter_finset fun S _ => ?_,
       balanced_iInter₂ fun _ _ => Seminorm.balanced_ball_zero _ _,
-      convex_iInter₂ fun _ _ => Seminorm.convex_ball _ _ _⟩
+      convex_iInter₂ fun _ _ => Seminorm.convex_ball ..⟩
   -- The only nontrivial part is to show that the ball is open
   have hr' : r = ‖(r : 𝕜)‖ * 1 := by simp [abs_of_pos hr]
   have hr'' : (r : 𝕜) ≠ 0 := by simp [hr.ne']

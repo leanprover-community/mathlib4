@@ -191,16 +191,14 @@ instance (priority := 100) instPartialOrder : PartialOrder A :=
 theorem le_def {S T : A} : S ≤ T ↔ ∀ ⦃x : B⦄, x ∈ S → x ∈ T :=
   Iff.rfl
 
-@[simp, norm_cast]
-theorem coe_subset_coe {S T : A} : (S : Set B) ⊆ T ↔ S ≤ T :=
-  Iff.rfl
+@[simp, norm_cast] lemma coe_subset_coe {S T : A} : (S : Set B) ⊆ T ↔ S ≤ T := .rfl
+@[simp, norm_cast] lemma coe_ssubset_coe {S T : A} : (S : Set B) ⊂ T ↔ S < T := .rfl
+
+@[gcongr] protected alias ⟨_, GCongr.coe_subset_coe⟩ := coe_subset_coe
+@[gcongr] protected alias ⟨_, GCongr.coe_ssubset_coe⟩ := coe_ssubset_coe
 
 @[mono]
 theorem coe_mono : Monotone (SetLike.coe : A → Set B) := fun _ _ => coe_subset_coe.mpr
-
-@[simp, norm_cast]
-theorem coe_ssubset_coe {S T : A} : (S : Set B) ⊂ T ↔ S < T :=
-  Iff.rfl
 
 @[mono]
 theorem coe_strictMono : StrictMono (SetLike.coe : A → Set B) := fun _ _ => coe_ssubset_coe.mpr
