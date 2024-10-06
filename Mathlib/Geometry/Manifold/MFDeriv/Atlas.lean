@@ -69,6 +69,10 @@ theorem hasMFDerivWithinAt_symm {x} (hx : x ∈ range I) :
 theorem mdifferentiableOn_symm : MDifferentiableOn 𝓘(𝕜, E) I I.symm (range I) := fun _x hx =>
   (I.hasMFDerivWithinAt_symm hx).mdifferentiableWithinAt
 
+theorem mdifferentiableWithinAt_symm {z : E} (hz : z ∈ range I) :
+    MDifferentiableWithinAt 𝓘(𝕜, E) I I.symm (range I) z :=
+  I.mdifferentiableOn_symm z hz
+
 end ModelWithCorners
 
 end ModelWithCorners
@@ -255,6 +259,7 @@ section extChartAt
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M : Type*}
   [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M] {s : Set M} {x y : M}
+  {z : E}
 
 theorem hasMFDerivAt_extChartAt (h : y ∈ (chartAt H x).source) :
     HasMFDerivAt I 𝓘(𝕜, E) (extChartAt I x) y (mfderiv I I (chartAt H x) y : _) :=
@@ -271,5 +276,11 @@ theorem mdifferentiableAt_extChartAt (h : y ∈ (chartAt H x).source) :
 theorem mdifferentiableOn_extChartAt :
     MDifferentiableOn I 𝓘(𝕜, E) (extChartAt I x) (chartAt H x).source := fun _y hy =>
   (hasMFDerivWithinAt_extChartAt I hy).mdifferentiableWithinAt
+
+theorem mdifferentiableWithinAt_extChartAt_symm (h : z ∈ (extChartAt I x).target) :
+    MDifferentiableWithinAt 𝓘(𝕜, E) I (extChartAt I x).symm (range I)  z := by
+  have Z := I.hasMFDerivWithinAt_symm (x := z)
+
+
 
 end extChartAt

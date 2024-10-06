@@ -192,6 +192,50 @@ protected theorem ContDiffWithinAt.fderivWithin {f : E → F → G} {g : E → F
   exact eventually_of_mem self_mem_nhdsWithin fun x hx => ht _ (hst hx)
   -/
 
+#check inTangentCoordinates
+
+lemma glouk   (f : N → M) (g : N → M')
+    (ϕ : Π x : N, TangentSpace I (f x) →L[𝕜] TangentSpace I' (g x)) (x₀ : N) (x : N)
+    (hx : f x ∈ (chartAt H (f x₀)).source) (hy : g x ∈ (chartAt H' (g x₀)).source) :
+    inTangentCoordinates I I' f g ϕ x₀ x =
+    (mfderiv I' 𝓘(𝕜, E') (extChartAt I' (g x₀)) (g x)) ∘L (ϕ x) ∘L
+      (mfderivWithin 𝓘(𝕜, E) I (extChartAt I (f x₀)).symm (range I)
+        (extChartAt I (f x₀) (f x))) := by
+  rw [inTangentCoordinates_eq]
+  simp only [tangentBundleCore_coordChange, coe_achart,
+    PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe,
+    PartialEquiv.coe_trans_symm, PartialHomeomorph.coe_coe_symm,
+    ModelWithCorners.toPartialEquiv_coe_symm, comp_apply]
+  congr
+  · have : MDifferentiableAt I' 𝓘(𝕜, E') (extChartAt I' (g x₀)) (g x) :=
+      mdifferentiableAt_extChartAt I' hy
+    simp at this
+    simp [mfderiv, this]
+  · simp only [PartialHomeomorph.extend, PartialEquiv.coe_trans,
+      ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe,
+      PartialEquiv.coe_trans_symm, PartialHomeomorph.coe_coe_symm,
+      ModelWithCorners.toPartialEquiv_coe_symm, comp_apply, mfderivWithin, extChartAt,
+      writtenInExtChartAt, ModelWithCorners.left_inv, PartialHomeomorph.refl_partialEquiv,
+      PartialEquiv.refl_source, PartialHomeomorph.singletonChartedSpace_chartAt_eq,
+      modelWithCornersSelf_partialEquiv, PartialEquiv.trans_refl, PartialEquiv.refl_symm,
+      PartialEquiv.refl_coe, CompTriple.comp_eq, preimage_id_eq, id_eq, modelWithCornersSelf_coe,
+      range_id, inter_univ, extChartAt.eq_1, PartialHomeomorph.extend.eq_1]
+    rw [if_pos]
+    congr
+    simp [comp_def, PartialHomeomorph.left_inv (chartAt H (f x₀)) hx]
+
+
+
+
+
+#exit
+
+(hx : f x ∈ (chartAt H (f x₀)).source) (hy : g x ∈ (chartAt H' (g x₀)).source) :
+    inTangentCoordinates I I' f g ϕ x₀ x =
+      (tangentBundleCore I' M').coordChange (achart H' (g x)) (achart H' (g x₀)) (g x) ∘L
+        ϕ x ∘L (tangentBundleCore I M).coordChange (achart H (f x₀)) (achart H (f x)) (f x) :=
+  (tangentBundleCore I M).inCoordinates_eq (tangentBundleCore I' M') (ϕ x) hx hy
+
 protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} (f : N → M → M') (g : N → M)
     (t : Set N) (u : Set M)
     (hf : ContMDiffWithinAt (J.prod I) I' n (Function.uncurry f) (t ×ˢ u) (x₀, g x₀))
