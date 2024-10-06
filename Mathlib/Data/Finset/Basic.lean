@@ -810,7 +810,7 @@ theorem ssubset_iff_exists_cons_subset : s ⊂ t ↔ ∃ (a : _) (h : a ∉ s), 
 theorem cons_swap (ha : a ∉ s) (hb : b ∉ s.cons a ha) :
     (s.cons a ha).cons b hb = (s.cons b fun h ↦ hb (mem_cons.mpr (.inr h))).cons a fun h ↦
       hb (mem_cons.mpr (.inl ((mem_cons.mp h).elim symm (fun h ↦ False.elim (ha h))))) :=
-  coe_injective <| by simpa using Set.insert_comm b a s
+  eq_of_veq <| Multiset.cons_swap b a s.val
 
 end Cons
 
