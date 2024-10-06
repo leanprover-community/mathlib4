@@ -197,6 +197,8 @@ lemma IsProperMap.prodMap {g : Z → W} (hf : IsProperMap f) (hg : IsProperMap g
     rw [nhds_prod_eq, le_prod]
     exact ⟨hx, hz⟩
 
+@[deprecated (since := "2024-10-06")] alias IsProperMap.prod_map := IsProperMap.prodMap
+
 /-- Any product of proper maps is proper. -/
 lemma IsProperMap.pi_map {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]
     [∀ i, TopologicalSpace (Y i)] {f : (i : ι) → X i → Y i} (h : ∀ i, IsProperMap (f i)) :
@@ -416,7 +418,7 @@ easier to use because it allows `Z` to live in any universe. -/
 theorem IsProperMap.universally_closed (Z) [TopologicalSpace Z] (h : IsProperMap f) :
     IsClosedMap (Prod.map f id : X × Z → Y × Z) :=
   -- `f × id` is proper as a product of proper maps, hence closed.
-  (h.prod_map isProperMap_id).isClosedMap
+  (h.prodMap isProperMap_id).isClosedMap
 
 /-- A map `f : X → Y` is proper if and only if it is continuous and the map
 `(Prod.map f id : X × Filter X → Y × Filter X)` is closed. This is stronger than
