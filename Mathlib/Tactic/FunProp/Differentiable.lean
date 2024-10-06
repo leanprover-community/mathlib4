@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Tomáš Skřivan All rights reserved.
+Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
@@ -15,7 +15,6 @@ import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 
 
 import Mathlib.Tactic.FunProp
-import Mathlib.Tactic.FunProp.Continuous
 
 /-!
 ## `funProp` minimal setup for Differentiable(At/On)
@@ -105,7 +104,6 @@ attribute [fun_prop]
   Differentiable.mul
   Differentiable.smul
   Differentiable.div
-  Differentiable.inv'
   Differentiable.inv
 
   DifferentiableAt.add
@@ -114,7 +112,6 @@ attribute [fun_prop]
   DifferentiableAt.mul
   DifferentiableAt.smul
   DifferentiableAt.div
-  DifferentiableAt.inv'
   DifferentiableAt.inv
 
   DifferentiableOn.add
@@ -123,7 +120,6 @@ attribute [fun_prop]
   DifferentiableOn.mul
   DifferentiableOn.smul
   DifferentiableOn.div
-  DifferentiableOn.inv'
   DifferentiableOn.inv
 
 

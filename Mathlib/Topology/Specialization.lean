@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Order.Category.Preord
 import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Topology.Separation
 import Mathlib.Topology.Order.UpperLowerSetTopology
 
@@ -26,7 +26,7 @@ variable {α β γ : Type*}
 /-- `toEquiv` is the "identity" function to the `Specialization` of a type. -/
 @[match_pattern] def toEquiv : α ≃ Specialization α := Equiv.refl _
 
-/-- `ofEquiv` is the identity function from the `Specialization` of a type.  -/
+/-- `ofEquiv` is the identity function from the `Specialization` of a type. -/
 @[match_pattern] def ofEquiv : Specialization α ≃ α := Equiv.refl _
 
 @[simp] lemma toEquiv_symm : (@toEquiv α).symm = ofEquiv := rfl
@@ -38,9 +38,11 @@ variable {α β γ : Type*}
 @[simp, nolint simpNF] lemma ofEquiv_inj {a b : Specialization α} : ofEquiv a = ofEquiv b ↔ a = b :=
 Iff.rfl
 
-/-- A recursor for `Specialization`. Use as `induction x using Specialization.rec`. -/
-protected def rec {β : Specialization α → Sort*} (h : ∀ a, β (toEquiv a)) (a : α) : β a :=
-h (ofEquiv a)
+/-- A recursor for `Specialization`. Use as `induction x`. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
+protected def rec {β : Specialization α → Sort*} (h : ∀ a, β (toEquiv a)) (a : Specialization α) :
+    β a :=
+  h (ofEquiv a)
 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
@@ -80,7 +82,7 @@ def orderIsoSpecializationWithUpperSetTopology (α : Type*) [Preorder α] :
 order. -/
 def homeoWithUpperSetTopologyorderIso (α : Type*) [TopologicalSpace α] [AlexandrovDiscrete α] :
     α ≃ₜ WithUpperSet (Specialization α) :=
-(toEquiv.trans toUpperSet).toHomeomorph λ s ↦ by simp [Set.preimage_comp]
+  (toEquiv.trans toUpperSet).toHomeomorph fun s ↦ by simp [Set.preimage_comp]
 
 /-- Sends a topological space to its specialisation order. -/
 @[simps]

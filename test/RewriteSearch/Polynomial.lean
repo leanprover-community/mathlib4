@@ -1,17 +1,17 @@
-import Mathlib.Init.Core
-import Mathlib.Data.Polynomial.Eval
-import Mathlib.Data.Polynomial.Inductions
+import Mathlib.Algebra.Polynomial.Eval
+import Mathlib.Algebra.Polynomial.Inductions
 import Mathlib.Tactic.RewriteSearch
 
 set_option autoImplicit true
 
 open Polynomial
 
-/-- info: Try this: rw [@natDegree_sub, @sub_eq_neg_add, @natDegree_add_C, @natDegree_neg] -/
-#guard_msgs in
-example {R : Type*} [Ring R] {p : Polynomial R} {a : R} :
-    natDegree (p - C a) = natDegree p := by
-  rw_search [-Polynomial.natDegree_sub_C]
+-- Fails, but used to work prior to `rw?` moving to `lean4`.
+-- -- info: Try this: rw [@natDegree_sub, @sub_eq_neg_add, @natDegree_add_C, @natDegree_neg]
+-- #guard_msgs(drop info) in
+-- example {R : Type*} [Ring R] {p : Polynomial R} {a : R} :
+--     natDegree (p - C a) = natDegree p := by
+--   rw_search [-Polynomial.natDegree_sub_C, -sub_eq_neg_add]
 
 
 -- This one works, but is very slow:
@@ -27,17 +27,19 @@ example {R : Type*} [Ring R] {p : Polynomial R} {a : R} :
 --   rw_search
 
 
--- All rewrite-only lemmas from `Mathlib.Data.Polynomial.Degree.Definitions`,
+-- All rewrite-only lemmas from `Mathlib.Algebra.Polynomial.Degree.Definitions`,
 -- whose statements are equalities.
 -- TODO: `rw_search` should handle `iff` as well.
 
 universe u v
 
 open
-  BigOperators
   Finset
   Finsupp
   Polynomial
+
+-- mutes various `'done' tactic does nothing [linter.unusedTactic]`
+set_option linter.unusedTactic false
 
 -- Polynomial.degree_of_subsingleton.{u}
 #guard_msgs(drop info) in
@@ -69,18 +71,19 @@ example {R : Type u} {a : R} [Semiring R] (n : ℕ) (ha : a ≠ 0) :
 -- Fails:
 -- -- Polynomial.Monic.eq_X_add_C.{u}
 -- example {R : Type u} [Semiring R] {p : Polynomial R} (hm : Polynomial.Monic p)
---     (hnd : Polynomial.natDegree p = 1) : p = Polynomial.X + Polynomial.C (Polynomial.coeff p 0) := by
+--     (hnd : Polynomial.natDegree p = 1) :
+--     p = Polynomial.X + Polynomial.C (Polynomial.coeff p 0) := by
 --   rw_search [-Polynomial.Monic.eq_X_add_C]
 --   -- Mathlib proof:
 --   -- rw [← one_mul X, ← C_1, ← hm.coeff_natDegree, hnd, ← eq_X_add_C_of_natDegree_le_one hnd.le]
 --   done
 
 -- Fails:
--- -- Polynomial.natDegree_int_cast.{u}
+-- -- Polynomial.natDegree_intCast.{u}
 -- example {R : Type u} [Ring R] (n : ℤ) : Polynomial.natDegree (n : R[X]) = 0 := by
---   rw_search [-Polynomial.natDegree_int_cast]
+--   rw_search [-Polynomial.natDegree_intCast]
 --   -- Mathlib proof:
---   -- rw [← C_eq_int_cast, natDegree_C]
+--   -- rw [← C_eq_intCast, natDegree_C]
 --   done
 
 -- Fails:
@@ -95,7 +98,8 @@ example {R : Type u} {a : R} [Semiring R] (n : ℕ) (ha : a ≠ 0) :
 -- Polynomial.degree_add_eq_right_of_degree_lt.{u}
 #guard_msgs(drop info) in
 example {R : Type u} [Semiring R] {p q : Polynomial R}
-    (h : Polynomial.degree p < Polynomial.degree q) : Polynomial.degree (p + q) = Polynomial.degree q := by
+    (h : Polynomial.degree p < Polynomial.degree q) :
+    Polynomial.degree (p + q) = Polynomial.degree q := by
   rw_search [-Polynomial.degree_add_eq_right_of_degree_lt]
   -- Mathlib proof:
   -- rw [add_comm, degree_add_eq_left_of_degree_lt h]
@@ -170,7 +174,7 @@ example {R : Type u} [Ring R] [Nontrivial R] (x : R) :
 #guard_msgs(drop info) in
 example {S : Type v} [Ring S] (c : S) :
     Polynomial.nextCoeff (Polynomial.X - Polynomial.C c) = -c := by
-  rw_search [-Polynomial.nextCoeff_X_sub_C]
+  rw_search
   -- Mathlib proof:
   -- rw [sub_eq_add_neg, ← map_neg C c, nextCoeff_X_add_C]
   done

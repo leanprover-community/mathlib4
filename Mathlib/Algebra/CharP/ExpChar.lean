@@ -5,9 +5,7 @@ Authors: Jakob Scholbach
 -/
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Algebra.CharP.Algebra
-import Mathlib.Data.Nat.Prime
-
-#align_import algebra.char_p.exp_char from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
+import Mathlib.Data.Nat.Prime.Defs
 
 /-!
 # Exponential characteristic
@@ -43,8 +41,6 @@ variable [Semiring R]
 class inductive ExpChar (R : Type u) [Semiring R] : ℕ → Prop
   | zero [CharZero R] : ExpChar R 1
   | prime {q : ℕ} (hprime : q.Prime) [hchar : CharP R q] : ExpChar R q
-#align exp_char ExpChar
-#align exp_char.prime ExpChar.prime
 
 instance expChar_prime (p) [CharP R p] [Fact p.Prime] : ExpChar R p := ExpChar.prime Fact.out
 instance expChar_zero [CharZero R] : ExpChar R 1 := ExpChar.zero
@@ -59,12 +55,12 @@ instance (S : Type*) [Semiring S] (p) [ExpChar R p] [ExpChar S p] : ExpChar (R �
 variable {R} in
 /-- The exponential characteristic is unique. -/
 theorem ExpChar.eq {p q : ℕ} (hp : ExpChar R p) (hq : ExpChar R q) : p = q := by
-  cases' hp with hp _ hp' hp
-  · cases' hq with hq _ hq' hq
-    exacts [rfl, False.elim (Nat.not_prime_zero (CharP.eq R hq (CharP.ofCharZero R) ▸ hq'))]
-  · cases' hq with hq _ hq' hq
-    exacts [False.elim (Nat.not_prime_zero (CharP.eq R hp (CharP.ofCharZero R) ▸ hp')),
-      CharP.eq R hp hq]
+  rcases hp with ⟨hp⟩ | ⟨hp'⟩
+  · rcases hq with hq | hq'
+    exacts [rfl, False.elim (Nat.not_prime_zero (CharP.eq R ‹_› (CharP.ofCharZero R) ▸ hq'))]
+  · rcases hq with hq | hq'
+    exacts [False.elim (Nat.not_prime_zero (CharP.eq R ‹_› (CharP.ofCharZero R) ▸ hp')),
+      CharP.eq R ‹_› ‹_›]
 
 theorem ExpChar.congr {p : ℕ} (q : ℕ) [hq : ExpChar R q] (h : q = p) : ExpChar R p := h ▸ hq
 
@@ -72,7 +68,7 @@ theorem ExpChar.congr {p : ℕ} (q : ℕ) [hq : ExpChar R q] (h : q = p) : ExpCh
 noncomputable def ringExpChar (R : Type*) [NonAssocSemiring R] : ℕ := max (ringChar R) 1
 
 theorem ringExpChar.eq (q : ℕ) [h : ExpChar R q] : ringExpChar R = q := by
-  cases' h with _ _ h _
+  rcases h with _ | h
   · haveI := CharP.ofCharZero R
     rw [ringExpChar, ringChar.eq R 0]; rfl
   rw [ringExpChar, ringChar.eq R q]
@@ -84,18 +80,32 @@ theorem ringExpChar.eq_one (R : Type*) [NonAssocSemiring R] [CharZero R] : ringE
 
 /-- The exponential characteristic is one if the characteristic is zero. -/
 theorem expChar_one_of_char_zero (q : ℕ) [hp : CharP R 0] [hq : ExpChar R q] : q = 1 := by
-  cases' hq with q hq_one hq_prime hq_hchar
+  rcases hq with q | hq_prime
   · rfl
-  · exact False.elim <| hq_prime.ne_zero <| hq_hchar.eq R hp
-#align exp_char_one_of_char_zero expChar_one_of_char_zero
+  · exact False.elim <| hq_prime.ne_zero <| ‹CharP R q›.eq R hp
 
 /-- The characteristic equals the exponential characteristic iff the former is prime. -/
 theorem char_eq_expChar_iff (p q : ℕ) [hp : CharP R p] [hq : ExpChar R q] : p = q ↔ p.Prime := by
-  cases' hq with q hq_one hq_prime hq_hchar
+  rcases hq with q | hq_prime
   · rw [(CharP.eq R hp inferInstance : p = 0)]
     decide
-  · exact ⟨fun hpq => hpq.symm ▸ hq_prime, fun _ => CharP.eq R hp hq_hchar⟩
-#align char_eq_exp_char_iff char_eq_expChar_iff
+  · exact ⟨fun hpq => hpq.symm ▸ hq_prime, fun _ => CharP.eq R hp ‹CharP R q›⟩
+
+/-- The exponential characteristic is a prime number or one.
+See also `CharP.char_is_prime_or_zero`. -/
+theorem expChar_is_prime_or_one (q : ℕ) [hq : ExpChar R q] : Nat.Prime q ∨ q = 1 := by
+  cases hq with
+  | zero => exact .inr rfl
+  | prime hp => exact .inl hp
+
+/-- The exponential characteristic is positive. -/
+theorem expChar_pos (q : ℕ) [ExpChar R q] : 0 < q := by
+  rcases expChar_is_prime_or_one R q with h | rfl
+  exacts [Nat.Prime.pos h, Nat.one_pos]
+
+/-- Any power of the exponential characteristic is positive. -/
+theorem expChar_pow_pos (q : ℕ) [ExpChar R q] (n : ℕ) : 0 < q ^ n :=
+  Nat.pos_pow_of_pos n (expChar_pos R q)
 
 section Nontrivial
 
@@ -106,7 +116,6 @@ theorem char_zero_of_expChar_one (p : ℕ) [hp : CharP R p] [hq : ExpChar R 1] :
   cases hq
   · exact CharP.eq R hp inferInstance
   · exact False.elim (CharP.char_ne_one R 1 rfl)
-#align char_zero_of_exp_char_one char_zero_of_expChar_one
 
 -- This could be an instance, but there are no `ExpChar R 1` instances in mathlib.
 /-- The characteristic is zero if the exponential characteristic is one. -/
@@ -114,7 +123,6 @@ theorem charZero_of_expChar_one' [hq : ExpChar R 1] : CharZero R := by
   cases hq
   · assumption
   · exact False.elim (CharP.char_ne_one R 1 rfl)
-#align char_zero_of_exp_char_one' charZero_of_expChar_one'
 
 /-- The exponential characteristic is one iff the characteristic is zero. -/
 theorem expChar_one_iff_char_zero (p q : ℕ) [CharP R p] [ExpChar R q] : q = 1 ↔ p = 0 := by
@@ -123,7 +131,6 @@ theorem expChar_one_iff_char_zero (p q : ℕ) [CharP R p] [ExpChar R q] : q = 1 
     exact char_zero_of_expChar_one R p
   · rintro rfl
     exact expChar_one_of_char_zero R q
-#align exp_char_one_iff_char_zero expChar_one_iff_char_zero
 
 section NoZeroDivisors
 
@@ -131,27 +138,9 @@ variable [NoZeroDivisors R]
 
 /-- A helper lemma: the characteristic is prime if it is non-zero. -/
 theorem char_prime_of_ne_zero {p : ℕ} [hp : CharP R p] (p_ne_zero : p ≠ 0) : Nat.Prime p := by
-  cases' CharP.char_is_prime_or_zero R p with h h
+  rcases CharP.char_is_prime_or_zero R p with h | h
   · exact h
   · contradiction
-#align char_prime_of_ne_zero char_prime_of_ne_zero
-
-/-- The exponential characteristic is a prime number or one.
-See also `CharP.char_is_prime_or_zero`. -/
-theorem expChar_is_prime_or_one (q : ℕ) [hq : ExpChar R q] : Nat.Prime q ∨ q = 1 := by
-  cases hq with
-  | zero => exact .inr rfl
-  | prime hp => exact .inl hp
-#align exp_char_is_prime_or_one expChar_is_prime_or_one
-
-/-- The exponential characteristic is positive. -/
-theorem expChar_pos (q : ℕ) [ExpChar R q] : 0 < q := by
-  rcases expChar_is_prime_or_one R q with h | rfl
-  exacts [Nat.Prime.pos h, Nat.one_pos]
-
-/-- Any power of the exponential characteristic is positive. -/
-theorem expChar_pow_pos (q : ℕ) [ExpChar R q] (n : ℕ) : 0 < q ^ n :=
-  Nat.pos_pow_of_pos n (expChar_pos R q)
 
 end NoZeroDivisors
 
@@ -184,9 +173,23 @@ as `R`. -/
 theorem expChar_of_injective_ringHom {R A : Type*}
     [Semiring R] [Semiring A] {f : R →+* A} (h : Function.Injective f)
     (q : ℕ) [hR : ExpChar R q] : ExpChar A q := by
-  cases' hR with _ _ hprime _
+  rcases hR with _ | hprime
   · haveI := charZero_of_injective_ringHom h; exact .zero
   haveI := charP_of_injective_ringHom h q; exact .prime hprime
+
+/-- If `R →+* A` is injective, and `A` is of exponential characteristic `p`, then `R` is also of
+exponential characteristic `p`. Similar to `RingHom.charZero`. -/
+theorem RingHom.expChar {R A : Type*} [Semiring R] [Semiring A] (f : R →+* A)
+    (H : Function.Injective f) (p : ℕ) [ExpChar A p] : ExpChar R p := by
+  cases ‹ExpChar A p› with
+  | zero => haveI := f.charZero; exact .zero
+  | prime hp => haveI := f.charP H p; exact .prime hp
+
+/-- If `R →+* A` is injective, then `R` is of exponential characteristic `p` if and only if `A` is
+also of exponential characteristic `p`. Similar to `RingHom.charZero_iff`. -/
+theorem RingHom.expChar_iff {R A : Type*} [Semiring R] [Semiring A] (f : R →+* A)
+    (H : Function.Injective f) (p : ℕ) : ExpChar R p ↔ ExpChar A p :=
+  ⟨fun _ ↦ expChar_of_injective_ringHom H p, fun _ ↦ f.expChar H p⟩
 
 /-- If the algebra map `R →+* A` is injective then `A` has the same exponential characteristic
 as `R`. -/
@@ -196,61 +199,61 @@ theorem expChar_of_injective_algebraMap {R A : Type*}
 
 theorem add_pow_expChar_of_commute [Semiring R] {q : ℕ} [hR : ExpChar R q]
     (x y : R) (h : Commute x y) : (x + y) ^ q = x ^ q + y ^ q := by
-  cases' hR with _ _ hprime _
+  rcases hR with _ | hprime
   · simp only [pow_one]
   haveI := Fact.mk hprime; exact add_pow_char_of_commute R x y h
 
 theorem add_pow_expChar_pow_of_commute [Semiring R] {q : ℕ} [hR : ExpChar R q]
     {n : ℕ} (x y : R) (h : Commute x y) : (x + y) ^ q ^ n = x ^ q ^ n + y ^ q ^ n := by
-  cases' hR with _ _ hprime _
+  rcases hR with _ | hprime
   · simp only [one_pow, pow_one]
   haveI := Fact.mk hprime; exact add_pow_char_pow_of_commute R x y h
 
 theorem sub_pow_expChar_of_commute [Ring R] {q : ℕ} [hR : ExpChar R q]
     (x y : R) (h : Commute x y) : (x - y) ^ q = x ^ q - y ^ q := by
-  cases' hR with _ _ hprime _
+  rcases hR with _ | hprime
   · simp only [pow_one]
   haveI := Fact.mk hprime; exact sub_pow_char_of_commute R x y h
 
 theorem sub_pow_expChar_pow_of_commute [Ring R] {q : ℕ} [hR : ExpChar R q]
     {n : ℕ} (x y : R) (h : Commute x y) : (x - y) ^ q ^ n = x ^ q ^ n - y ^ q ^ n := by
-  cases' hR with _ _ hprime _
+  rcases hR with _ | hprime
   · simp only [one_pow, pow_one]
   haveI := Fact.mk hprime; exact sub_pow_char_pow_of_commute R x y h
 
 theorem add_pow_expChar [CommSemiring R] {q : ℕ} [hR : ExpChar R q]
     (x y : R) : (x + y) ^ q = x ^ q + y ^ q := by
-  cases' hR with _ _ hprime _
+  rcases hR with _ | hprime
   · simp only [pow_one]
   haveI := Fact.mk hprime; exact add_pow_char R x y
 
 theorem add_pow_expChar_pow [CommSemiring R] {q : ℕ} [hR : ExpChar R q]
     {n : ℕ} (x y : R) : (x + y) ^ q ^ n = x ^ q ^ n + y ^ q ^ n := by
-  cases' hR with _ _ hprime _
+  rcases hR with _ | hprime
   · simp only [one_pow, pow_one]
   haveI := Fact.mk hprime; exact add_pow_char_pow R x y
 
 theorem sub_pow_expChar [CommRing R] {q : ℕ} [hR : ExpChar R q]
     (x y : R) : (x - y) ^ q = x ^ q - y ^ q := by
-  cases' hR with _ _ hprime _
+  rcases hR with _ | hprime
   · simp only [pow_one]
   haveI := Fact.mk hprime; exact sub_pow_char R x y
 
 theorem sub_pow_expChar_pow [CommRing R] {q : ℕ} [hR : ExpChar R q]
     {n : ℕ} (x y : R) : (x - y) ^ q ^ n = x ^ q ^ n - y ^ q ^ n := by
-  cases' hR with _ _ hprime _
+  rcases hR with _ | hprime
   · simp only [one_pow, pow_one]
   haveI := Fact.mk hprime; exact sub_pow_char_pow R x y
 
 theorem ExpChar.neg_one_pow_expChar [Ring R] (q : ℕ) [hR : ExpChar R q] :
     (-1 : R) ^ q = -1 := by
-  cases' hR with _ _ hprime _
+  rcases hR with _ | hprime
   · simp only [pow_one]
   haveI := Fact.mk hprime; exact CharP.neg_one_pow_char R q
 
 theorem ExpChar.neg_one_pow_expChar_pow [Ring R] (q n : ℕ) [hR : ExpChar R q] :
     (-1 : R) ^ q ^ n = -1 := by
-  cases' hR with _ _ hprime _
+  rcases hR with _ | hprime
   · simp only [one_pow, pow_one]
   haveI := Fact.mk hprime; exact CharP.neg_one_pow_char_pow R q n
 
@@ -266,7 +269,6 @@ def frobenius : R →+* R where
   __ := powMonoidHom p
   map_zero' := zero_pow (expChar_pos R p).ne'
   map_add' := add_pow_expChar R
-#align frobenius frobenius
 
 /-- The iterated frobenius map sending x to x^p^n -/
 def iterateFrobenius : R →+* R where
@@ -277,72 +279,74 @@ def iterateFrobenius : R →+* R where
 variable {R}
 
 theorem frobenius_def : frobenius R p x = x ^ p := rfl
-#align frobenius_def frobenius_def
 
 theorem iterateFrobenius_def : iterateFrobenius R p n x = x ^ p ^ n := rfl
 
 theorem iterate_frobenius : (frobenius R p)^[n] x = x ^ p ^ n := congr_fun (pow_iterate p n) x
-#align iterate_frobenius iterate_frobenius
 
 variable (R)
 
 theorem coe_iterateFrobenius : iterateFrobenius R p n = (frobenius R p)^[n] :=
   (pow_iterate p n).symm
 
-@[simp]
-theorem iterateFrobenius_one : iterateFrobenius R p 1 = frobenius R p := by
-  simp_rw [iterateFrobenius, frobenius, pow_one]
+theorem iterateFrobenius_one_apply : iterateFrobenius R p 1 x = x ^ p := by
+  rw [iterateFrobenius_def, pow_one]
 
 @[simp]
-theorem iterateFrobenius_zero : iterateFrobenius R p 0 = RingHom.id R := by
-  simp_rw [iterateFrobenius, powMonoidHom, pow_zero, pow_one]
-  rfl
+theorem iterateFrobenius_one : iterateFrobenius R p 1 = frobenius R p :=
+  RingHom.ext (iterateFrobenius_one_apply R p)
+
+theorem iterateFrobenius_zero_apply : iterateFrobenius R p 0 x = x := by
+  rw [iterateFrobenius_def, pow_zero, pow_one]
+
+@[simp]
+theorem iterateFrobenius_zero : iterateFrobenius R p 0 = RingHom.id R :=
+  RingHom.ext (iterateFrobenius_zero_apply R p)
+
+theorem iterateFrobenius_add_apply :
+    iterateFrobenius R p (m + n) x = iterateFrobenius R p m (iterateFrobenius R p n x) := by
+  simp_rw [iterateFrobenius_def, add_comm m n, pow_add, pow_mul]
 
 theorem iterateFrobenius_add :
-    iterateFrobenius R p (m + n) = (iterateFrobenius R p m).comp (iterateFrobenius R p n) := by
-  ext x
-  simp_rw [RingHom.comp_apply, iterateFrobenius_def, add_comm m n, pow_add, pow_mul]
+    iterateFrobenius R p (m + n) = (iterateFrobenius R p m).comp (iterateFrobenius R p n) :=
+  RingHom.ext (iterateFrobenius_add_apply R p m n)
 
-theorem coe_iterateFrobenius_mul : iterateFrobenius R p (m * n) = (iterateFrobenius R p m)^[n] := by
+theorem iterateFrobenius_mul_apply :
+    iterateFrobenius R p (m * n) x = (iterateFrobenius R p m)^[n] x := by
   simp_rw [coe_iterateFrobenius, Function.iterate_mul]
+
+theorem coe_iterateFrobenius_mul : iterateFrobenius R p (m * n) = (iterateFrobenius R p m)^[n] :=
+  funext (iterateFrobenius_mul_apply R p m n)
 
 variable {R}
 
 theorem frobenius_mul : frobenius R p (x * y) = frobenius R p x * frobenius R p y :=
-  (frobenius R p).map_mul x y
-#align frobenius_mul frobenius_mul
+  map_mul (frobenius R p) x y
 
 theorem frobenius_one : frobenius R p 1 = 1 :=
   one_pow _
-#align frobenius_one frobenius_one
 
 theorem MonoidHom.map_frobenius : f (frobenius R p x) = frobenius S p (f x) :=
-  f.map_pow x p
-#align monoid_hom.map_frobenius MonoidHom.map_frobenius
+  map_pow f x p
 
 theorem RingHom.map_frobenius : g (frobenius R p x) = frobenius S p (g x) :=
-  g.map_pow x p
-#align ring_hom.map_frobenius RingHom.map_frobenius
+  map_pow g x p
 
 theorem MonoidHom.map_iterate_frobenius (n : ℕ) :
     f ((frobenius R p)^[n] x) = (frobenius S p)^[n] (f x) :=
   Function.Semiconj.iterate_right (f.map_frobenius p) n x
-#align monoid_hom.map_iterate_frobenius MonoidHom.map_iterate_frobenius
 
 theorem RingHom.map_iterate_frobenius (n : ℕ) :
     g ((frobenius R p)^[n] x) = (frobenius S p)^[n] (g x) :=
   g.toMonoidHom.map_iterate_frobenius p x n
-#align ring_hom.map_iterate_frobenius RingHom.map_iterate_frobenius
 
 theorem MonoidHom.iterate_map_frobenius (f : R →* R) (p : ℕ) [ExpChar R p] (n : ℕ) :
     f^[n] (frobenius R p x) = frobenius R p (f^[n] x) :=
-  f.iterate_map_pow _ _ _
-#align monoid_hom.iterate_map_frobenius MonoidHom.iterate_map_frobenius
+  iterate_map_pow f _ _ _
 
 theorem RingHom.iterate_map_frobenius (f : R →+* R) (p : ℕ) [ExpChar R p] (n : ℕ) :
     f^[n] (frobenius R p x) = frobenius R p (f^[n] x) :=
-  f.iterate_map_pow _ _ _
-#align ring_hom.iterate_map_frobenius RingHom.iterate_map_frobenius
+  iterate_map_pow f _ _ _
 
 variable (R S)
 
@@ -365,45 +369,40 @@ theorem LinearMap.iterateFrobenius_def [Algebra R S] (n : ℕ) (x : S) :
 
 theorem frobenius_zero : frobenius R p 0 = 0 :=
   (frobenius R p).map_zero
-#align frobenius_zero frobenius_zero
 
 theorem frobenius_add : frobenius R p (x + y) = frobenius R p x + frobenius R p y :=
   (frobenius R p).map_add x y
-#align frobenius_add frobenius_add
 
-theorem frobenius_nat_cast (n : ℕ) : frobenius R p n = n :=
+theorem frobenius_natCast (n : ℕ) : frobenius R p n = n :=
   map_natCast (frobenius R p) n
-#align frobenius_nat_cast frobenius_nat_cast
 
-open BigOperators
+@[deprecated (since := "2024-04-17")]
+alias frobenius_nat_cast := frobenius_natCast
 
 variable {R}
 
 theorem list_sum_pow_char (l : List R) : l.sum ^ p = (l.map (· ^ p : R → R)).sum :=
-  (frobenius R p).map_list_sum _
-#align list_sum_pow_char list_sum_pow_char
+  map_list_sum (frobenius R p) _
 
 theorem multiset_sum_pow_char (s : Multiset R) : s.sum ^ p = (s.map (· ^ p : R → R)).sum :=
-  (frobenius R p).map_multiset_sum _
-#align multiset_sum_pow_char multiset_sum_pow_char
+  map_multiset_sum (frobenius R p) _
 
 theorem sum_pow_char {ι : Type*} (s : Finset ι) (f : ι → R) :
-    (∑ i in s, f i) ^ p = ∑ i in s, f i ^ p :=
-  (frobenius R p).map_sum _ _
-#align sum_pow_char sum_pow_char
+    (∑ i ∈ s, f i) ^ p = ∑ i ∈ s, f i ^ p :=
+  map_sum (frobenius R p) _ _
 
 variable (n : ℕ)
 
 theorem list_sum_pow_char_pow (l : List R) : l.sum ^ p ^ n = (l.map (· ^ p ^ n : R → R)).sum :=
-  (iterateFrobenius R p n).map_list_sum _
+  map_list_sum (iterateFrobenius R p n) _
 
 theorem multiset_sum_pow_char_pow (s : Multiset R) :
     s.sum ^ p ^ n = (s.map (· ^ p ^ n : R → R)).sum :=
-  (iterateFrobenius R p n).map_multiset_sum _
+  map_multiset_sum (iterateFrobenius R p n) _
 
 theorem sum_pow_char_pow {ι : Type*} (s : Finset ι) (f : ι → R) :
-    (∑ i in s, f i) ^ p ^ n = ∑ i in s, f i ^ p ^ n :=
-  (iterateFrobenius R p n).map_sum _ _
+    (∑ i ∈ s, f i) ^ p ^ n = ∑ i ∈ s, f i ^ p ^ n :=
+  map_sum (iterateFrobenius R p n) _ _
 
 end CommSemiring
 
@@ -412,12 +411,10 @@ section CommRing
 variable [CommRing R] (p : ℕ) [ExpChar R p] (x y : R)
 
 theorem frobenius_neg : frobenius R p (-x) = -frobenius R p x :=
-  (frobenius R p).map_neg x
-#align frobenius_neg frobenius_neg
+  map_neg ..
 
 theorem frobenius_sub : frobenius R p (x - y) = frobenius R p x - frobenius R p y :=
-  (frobenius R p).map_sub x y
-#align frobenius_sub frobenius_sub
+  map_sub ..
 
 end CommRing
 
