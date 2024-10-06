@@ -632,8 +632,7 @@ This is the linear version of `AddEquiv.submonoidMap` and `AddEquiv.subgroupMap`
 
 This is `LinearEquiv.ofSubmodule'` but with `map` on the right instead of `comap` on the left. -/
 def submoduleMap (p : Submodule R M) : p ≃ₛₗ[σ₁₂] p.map e where
-  __ := ((e : M →ₛₗ[σ₁₂] M₂).domRestrict p).codRestrict (p.map e) fun x ↦
-    ⟨x, by simp only [Subtype.coe_prop, LinearMap.domRestrict_apply, coe_coe, and_self]⟩
+  __ := ((e : M →ₛₗ[σ₁₂] M₂).domRestrict p).codRestrict (p.map e) fun x ↦ ⟨x, by simp⟩
   invFun y := ⟨e.symm y, (Set.mem_image_equiv (f := e.toEquiv)).mp y.2⟩
   left_inv x := Subtype.ext (e.symm_apply_apply x)
   right_inv y := Subtype.ext (e.apply_symm_apply y)
