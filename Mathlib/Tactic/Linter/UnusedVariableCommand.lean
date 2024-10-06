@@ -16,6 +16,29 @@ is globally unused.
 
 open Lean Parser Elab Command
 
+namespace Lean.Syntax
+/-!
+# `Syntax` filters
+-/
+
+partial
+def filterMapM {m : Type → Type} [Monad m] (stx : Syntax) (f : Syntax → m (Option Syntax)) :
+    m (Array Syntax) := do
+  let nargs := (← stx.getArgs.mapM (·.filterMapM f)).flatten
+  match ← f stx with
+    | some new => return nargs.push new
+    | none => return nargs
+
+def filterMap (stx : Syntax) (f : Syntax → Option Syntax) : Array Syntax :=
+  stx.filterMapM (m := Id) f
+
+def filter (stx : Syntax) (f : Syntax → Bool) : Array Syntax :=
+  stx.filterMap (fun s => if f s then some s else none)
+
+end Lean.Syntax
+
+
+
 namespace Mathlib.Linter
 
 /--
