@@ -77,9 +77,6 @@ noncomputable instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
 noncomputable instance : LinearOrderedSemifield ℝ≥0 :=
   Nonneg.linearOrderedSemifield
 
-noncomputable instance : LinearOrderedCommGroupWithZero ℝ≥0 :=
-  Nonneg.linearOrderedCommGroupWithZero
-
 /-- Coercion `ℝ≥0 → ℝ`. -/
 @[coe] def toReal : ℝ≥0 → ℝ := Subtype.val
 
@@ -402,8 +399,6 @@ noncomputable example : LinearOrderedCommMonoid ℝ≥0 := by infer_instance
 noncomputable example : LinearOrderedCommMonoidWithZero ℝ≥0 := by infer_instance
 
 noncomputable example : LinearOrderedCommGroupWithZero ℝ≥0 := by infer_instance
-
-example : OrderedCommSemiring ℝ≥0 := by infer_instance
 
 example : DenselyOrdered ℝ≥0 := by infer_instance
 
