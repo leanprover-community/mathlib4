@@ -580,28 +580,26 @@ def _root_.LinearMap.compQuadraticMap' [CommSemiring S] [Algebra S R] [Module S 
   _root_.LinearMap.compQuadraticMap f Q.restrictScalars
 
 /-- When `N` and `P` are equivalent, quadratic maps on `M` into `N` are equivalent to quadratic
-maps on `M` into `P`. -/
+maps on `M` into `P`.
+
+See `LinearMap.BilinMap.congr₂` for the bilinear map version. -/
 @[simps]
 def _root_.LinearEquiv.congrQuadraticMap (e : N ≃ₗ[R] P) :
     QuadraticMap R M N ≃ₗ[R] QuadraticMap R M P where
   toFun Q := e.compQuadraticMap Q
   invFun Q := e.symm.compQuadraticMap Q
-  left_inv _ := ext fun x => by
-    simp only [LinearMap.compQuadraticMap_apply, LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply]
-  right_inv _ := ext fun x => by
-    simp only [LinearMap.compQuadraticMap_apply, LinearEquiv.coe_coe, LinearEquiv.apply_symm_apply]
-  map_add' _ _ := ext fun x => by
-    simp only [LinearMap.compQuadraticMap_apply, add_apply, map_add, LinearEquiv.coe_coe]
-  map_smul' _ _ := ext fun x => by
-    simp only [LinearMap.compQuadraticMap_apply, smul_apply, LinearMapClass.map_smul,
-      LinearEquiv.coe_coe, RingHom.id_apply]
+  left_inv _ := ext fun _ => e.symm_apply_apply _
+  right_inv _ := ext fun _ => e.apply_symm_apply _
+  map_add' _ _ := ext fun _ => map_add e _ _
+  map_smul' _ _ := ext fun _ => _root_.map_smul e _ _
 
 @[simp]
-theorem congr₂_refl :
+theorem _root_.LinearEquiv.congrQuadraticMap_refl :
     LinearEquiv.congrQuadraticMap (.refl R N) = .refl R (QuadraticMap R M N) := rfl
 
-theorem congr₂_symm (e : N ≃ₗ[R] P) : LinearEquiv.congrQuadraticMap e.symm =
-    (LinearEquiv.congrQuadraticMap e (M := M)).symm := rfl
+@[simp]
+theorem _root_.LinearEquiv.congrQuadraticMap_symm (e : N ≃ₗ[R] P) :
+    (LinearEquiv.congrQuadraticMap e (M := M)).symm = e.symm.congrQuadraticMap := rfl
 
 end Comp
 section NonUnitalNonAssocSemiring
