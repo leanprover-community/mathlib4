@@ -133,9 +133,8 @@ theorem weakerExchangeProperty_of_weakExchangeProperty
   intro s x hx₁ hx₂ y hy₁ hy₂ hxy₁ z hz hxz₁ hxz₂ hxy₂
   rcases h hxz₂ hy₂ (by simp only [card_cons]) with ⟨u, hu₁, hu₂, hu₃⟩
   simp only [mem_cons, not_or] at hu₁ hu₂; simp only [hu₂, or_false] at hu₁
-  rcases hu₂ with ⟨hu₂, hu₄⟩
   apply hu₁.elim (fun h ↦ h ▸ hu₃); rintro rfl
-  exact False.elim (hxy₂ (sorry))
+  exact False.elim (hxy₂ (Finset.cons_swap _ _ ▸ hu₃))
 
 end ExchangePropertyEquivalence
 
