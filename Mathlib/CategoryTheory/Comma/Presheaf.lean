@@ -605,7 +605,6 @@ def CostructuredArrow.toOverCompCoyoneda (A : Cᵒᵖ ⥤ Type v) :
         ((CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow A).app X.unop)
         (Iso.refl _)).toIso)) (by aesop_cat)
 
-<<<<<<< HEAD
 open CategoryTheory.Limits
 
 variable {J : Type v} [SmallCategory J] {A : Cᵒᵖ ⥤ Type v} (F : J ⥤ Over A)
@@ -640,6 +639,4 @@ noncomputable def CostructuredArrow.toOverCompYonedaColimit :
   _ ≅ (CostructuredArrow.toOver yoneda A).op ⋙ colimit (F ⋙ yoneda) :=
       isoWhiskerLeft _ (colimitIsoFlipCompColim _).symm
 
-=======
->>>>>>> to-over-comp-yoneda
 end CategoryTheory
