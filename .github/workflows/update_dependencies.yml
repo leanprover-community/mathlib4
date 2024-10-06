@@ -3,6 +3,7 @@ name: Update Mathlib Dependencies
 on:
   schedule:
     - cron: '0 * * * *'  # This will run every hour
+  workflow_dispatch:
 
 jobs:
   update-dependencies:

@@ -48,7 +48,7 @@ variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 variable [Algebra R S] [Algebra R T]
 variable {ι κ : Type w} [Fintype ι]
 
-open FiniteDimensional
+open Module
 
 open LinearMap (BilinForm)
 open LinearMap

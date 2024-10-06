@@ -147,7 +147,7 @@ lemma setLIntegral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCondK
       · exact mod_cast ha.le
       · refine le_of_forall_lt_rat_imp_le fun q hq ↦ h q ?_
         exact mod_cast hq
-    · exact fun _ ↦ measurableSet_Iic.nullMeasurableSet
+    · exact fun _ ↦ nullMeasurableSet_Iic
     · refine Monotone.directed_ge fun r r' hrr' ↦ Iic_subset_Iic.mpr ?_
       exact mod_cast hrr'
     · obtain ⟨q, hq⟩ := exists_rat_gt x
@@ -550,7 +550,7 @@ lemma setLIntegral_toKernel_univ [IsFiniteKernel κ] (hf : IsCondKernelCDF f κ 
     refine Monotone.directed_le fun i j hij ↦ ?_
     refine prod_subset_prod_iff.mpr (Or.inl ⟨subset_rfl, Iic_subset_Iic.mpr ?_⟩)
     exact mod_cast hij
-  simp_rw [measure_iUnion_eq_iSup h_dir, measure_iUnion_eq_iSup h_dir_prod]
+  simp_rw [h_dir.measure_iUnion, h_dir_prod.measure_iUnion]
   rw [lintegral_iSup_directed]
   · simp_rw [setLIntegral_toKernel_Iic hf _ _ hs]
   · refine fun q ↦ Measurable.aemeasurable ?_
