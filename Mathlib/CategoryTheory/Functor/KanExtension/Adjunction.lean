@@ -237,7 +237,7 @@ variable {C : Type u₁} {D : Type u₁} [Category.{v₁} C] [Category.{v₃} D]
 variable {H : Type (max u₁ u₂)} [Category.{max u₁ v₂} H]
 
 /-- Composing the right Kan extension of `L : C ⥤ D` with `lim` on shapes `D` is isomorphic
-to `colim` on shapes `C`. -/
+to `lim` on shapes `C`. -/
 @[simps!]
 def ranCompLimIso (L : C ⥤ D) [∀ (G : C ⥤ H), L.HasRightKanExtension G]
     [HasLimitsOfShape C H] [HasLimitsOfShape D H] : L.ran ⋙ lim ≅ lim (C := H) :=
