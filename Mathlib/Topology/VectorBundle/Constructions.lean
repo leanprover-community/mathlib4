@@ -140,6 +140,30 @@ def Bundle.TotalSpace.prod_fst : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) →
 def Bundle.TotalSpace.prod_snd : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → TotalSpace F₂ E₂ :=
   fun ⟨x, v⟩ ↦ ⟨x, v.2⟩
 
+/-- For vector bundles `E₁` and `E₂` over a manifold `B`, the natural projection from the
+total space of `E₁ ×ᵇ E₂` to the total space of `E₁` is continuous. -/
+theorem Bundle.Prod.continuous_fst : Continuous (TotalSpace.prod_fst F₁ E₁ F₂ E₂) := by
+  have h_proj := continuous_proj (F₁ × F₂) (E₁ ×ᵇ E₂)
+  rw [continuous_iff_continuousAt]
+  intro x
+  rw [continuousAt_totalSpace]
+  refine ⟨h_proj.continuousAt, ?_⟩
+  refine continuousAt_fst.comp <| continuousAt_snd.comp <|
+    (trivializationAt _ _ x.proj).continuousAt ?_
+  simp
+
+/-- For vector bundles `E₁` and `E₂` over a manifold `B`, the natural projection from the
+total space of `E₁ ×ᵇ E₂` to the total space of `E₁` is continuous. -/
+theorem Bundle.Prod.continuous_snd : Continuous (TotalSpace.prod_snd F₁ E₁ F₂ E₂) := by
+  have h_proj := continuous_proj (F₁ × F₂) (E₁ ×ᵇ E₂)
+  rw [continuous_iff_continuousAt]
+  intro x
+  rw [continuousAt_totalSpace]
+  refine ⟨h_proj.continuousAt, ?_⟩
+  refine (continuousAt_snd.comp <| continuousAt_snd.comp <|
+    (trivializationAt (F₁ × F₂) (E₁ ×ᵇ E₂) x.proj).continuousAt (x := x) ?_:)
+  simp
+
 variable {M : Type*} [TopologicalSpace M]
 
 /-- Given a vector bundles `E₁`, `E₂` over a space `B`, if `φ` is a map into the total space of
