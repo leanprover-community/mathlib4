@@ -80,7 +80,7 @@ lemma eq_zero_of_isNilpotent_isSemisimple (hn : IsNilpotent f) (hs : f.IsSemisim
   have ⟨n, h0⟩ := hn
   rw [← aeval_X (R := R) f]; rw [← aeval_X_pow (R := R) f] at h0
   rw [← RingHom.mem_ker, ← AEval.annihilator_eq_ker_aeval (M := M)] at h0 ⊢
-  exact hs.annihilator_isRadical ⟨n, h0⟩
+  exact hs.annihilator_isRadical _ _ ⟨n, h0⟩
 
 @[simp]
 lemma isSemisimple_sub_algebraMap_iff {μ : R} :
