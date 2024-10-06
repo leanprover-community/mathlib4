@@ -234,7 +234,7 @@ lemma compProd_zero_left (κ : Kernel (α × β) γ) :
   · rw [Kernel.compProd_of_not_isSFiniteKernel_right _ _ h]
 
 @[simp]
-lemma compProd_zero_right (κ : Kernel α β) (γ : Type*) [MeasurableSpace γ] :
+lemma compProd_zero_right (κ : Kernel α β) (γ : Type*) {mγ : MeasurableSpace γ} :
     κ ⊗ₖ (0 : Kernel (α × β) γ) = 0 := by
   by_cases h : IsSFiniteKernel κ
   · ext a s hs
@@ -566,7 +566,7 @@ section MapComap
 /-! ### map, comap -/
 
 
-variable {γ δ : Type*} [MeasurableSpace γ] {mδ : MeasurableSpace δ} {f : β → γ} {g : γ → α}
+variable {γ δ : Type*} {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ} {f : β → γ} {g : γ → α}
 
 /-- The pushforward of a kernel along a measurable function. This is an implementation detail,
 use `map κ f` instead. -/
@@ -580,7 +580,7 @@ open Classical in
 If the function is not measurable, we use zero instead. This choice of junk
 value ensures that typeclass inference can infer that the `map` of a kernel
 satisfying `IsZeroOrMarkovKernel` again satisfies this property. -/
-noncomputable def map (κ : Kernel α β) (f : β → γ) : Kernel α γ :=
+noncomputable def map [MeasurableSpace γ] (κ : Kernel α β) (f : β → γ) : Kernel α γ :=
   if hf : Measurable f then mapOfMeasurable κ f hf else 0
 
 theorem map_of_not_measurable (κ : Kernel α β) {f : β → γ} (hf : ¬(Measurable f)) :
@@ -802,7 +802,7 @@ lemma map_prodMkLeft (γ : Type*) [MeasurableSpace γ] (κ : Kernel α β) (f : 
     rfl
   · simp [map_of_not_measurable _ hf]
 
-lemma map_prodMkRight (κ : Kernel α β) (γ : Type*) [MeasurableSpace γ] (f : β → δ) :
+lemma map_prodMkRight (κ : Kernel α β) (γ : Type*) {mγ : MeasurableSpace γ} (f : β → δ) :
     map (prodMkRight γ κ) f = prodMkRight γ (map κ f) := by
   by_cases hf : Measurable f
   · simp only [map, hf, ↓reduceDIte]
@@ -832,10 +832,10 @@ instance IsFiniteKernel.swapLeft (κ : Kernel (α × β) γ) [IsFiniteKernel κ]
 instance IsSFiniteKernel.swapLeft (κ : Kernel (α × β) γ) [IsSFiniteKernel κ] :
     IsSFiniteKernel (swapLeft κ) := by rw [Kernel.swapLeft]; infer_instance
 
-@[simp] lemma swapLeft_prodMkLeft (κ : Kernel α β) (γ : Type*) [MeasurableSpace γ] :
+@[simp] lemma swapLeft_prodMkLeft (κ : Kernel α β) (γ : Type*) {_ : MeasurableSpace γ} :
     swapLeft (prodMkLeft γ κ) = prodMkRight γ κ := rfl
 
-@[simp] lemma swapLeft_prodMkRight (κ : Kernel α β) (γ : Type*) [MeasurableSpace γ] :
+@[simp] lemma swapLeft_prodMkRight (κ : Kernel α β) (γ : Type*) {_ : MeasurableSpace γ} :
     swapLeft (prodMkRight γ κ) = prodMkLeft γ κ := rfl
 
 /-- Define a `Kernel α (γ × β)` from a `Kernel α (β × γ)` by taking the map of `Prod.swap`.

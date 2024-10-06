@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
 import Mathlib.Data.ENNReal.Inv
-import Mathlib.Topology.UniformSpace.Basic
+import Mathlib.Topology.UniformSpace.OfFun
 
 /-!
 # Extended metric spaces
@@ -25,7 +25,7 @@ to `EMetricSpace` at the end.
 -/
 
 assert_not_exists Nat.instLocallyFiniteOrder
-assert_not_exists UniformEmbedding
+assert_not_exists IsUniformEmbedding
 assert_not_exists TendstoUniformlyOnFilter
 
 open Set Filter

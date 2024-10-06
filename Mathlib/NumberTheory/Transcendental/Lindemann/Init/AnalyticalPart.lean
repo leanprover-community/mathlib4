@@ -187,7 +187,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
   use c
   intro q q_gt prime_q
   have q0 : 0 < q := Nat.Prime.pos prime_q
-  obtain ⟨gp', -, h'⟩ := aeval_sumIDeriv' ℤ (X ^ (q - 1) * p ^ q) q0
+  obtain ⟨gp', -, h'⟩ := aeval_sumIDeriv_of_pos ℤ (X ^ (q - 1) * p ^ q) q0
   simp? [- nsmul_eq_mul] at h' says
     simp only [Algebra.id.map_eq_id, Polynomial.map_mul, Polynomial.map_pow, map_X,
       map_id, eq_intCast, coe_aeval_eq_eval] at h'

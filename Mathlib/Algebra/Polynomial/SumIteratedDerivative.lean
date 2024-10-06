@@ -11,6 +11,10 @@ import Mathlib.Algebra.Polynomial.RingDivision
 
 /-!
 # Sum of iterated derivatives
+
+## Main definitions
+
+* `Polynomial.sumIDeriv`: Sum of iterated derivatives of a polynomial, as a linear map
 -/
 
 open Finset
@@ -23,52 +27,6 @@ variable {R S : Type*}
 section Semiring
 
 variable [Semiring R] [Semiring S]
-
-/--
-Iterated derivatives as a finite support function.
--/
-@[simps! apply_toFun]
-noncomputable def derivativeFinsupp : R[X] →ₗ[R] ℕ →₀ R[X] where
-  toFun p := .onFinset (range (p.natDegree + 1)) (derivative^[·] p) fun i ↦ by
-    contrapose; simp_all [iterate_derivative_eq_zero, Nat.succ_le]
-  map_add' _ _ := by ext; simp
-  map_smul' _ _ := by ext; simp
-
-@[simp]
-theorem support_derivativeFinsupp_subset_range {p : R[X]} {n : ℕ} (h : p.natDegree < n) :
-    (derivativeFinsupp p).support ⊆ range n := by
-  dsimp [derivativeFinsupp]
-  exact Finsupp.support_onFinset_subset.trans (Finset.range_subset.mpr h)
-
-@[simp]
-theorem derivativeFinsupp_C (r : R) : derivativeFinsupp (C r : R[X]) = .single 0 (C r) := by
-  ext i : 1
-  match i with
-  | 0 => simp
-  | i + 1 => simp
-
-@[simp]
-theorem derivativeFinsupp_one : derivativeFinsupp (1 : R[X]) = .single 0 1 := by
-  simpa using derivativeFinsupp_C (1 : R)
-
-@[simp]
-theorem derivativeFinsupp_X : derivativeFinsupp (X : R[X]) = .single 0 X + .single 1 1 := by
-  ext i : 1
-  match i with
-  | 0 => simp
-  | 1 => simp
-  | (n + 2) => simp
-
-theorem derivativeFinsupp_map (p : R[X]) (f : R →+* S) :
-    derivativeFinsupp (p.map f) = (derivativeFinsupp p).mapRange (·.map f) (by simp) := by
-  ext i : 1
-  simp
-
-theorem derivativeFinsupp_derivative (p : R[X]) :
-    derivativeFinsupp (derivative p) =
-      (derivativeFinsupp p).comapDomain Nat.succ Nat.succ_injective.injOn := by
-  ext i : 1
-  simp
 
 /--
 Sum of iterated derivatives of a polynomial, as a linear map
@@ -101,7 +59,7 @@ theorem sumIDeriv_C (a : R) : sumIDeriv (C a) = C a := by
   rw [sumIDeriv_apply, natDegree_C, zero_add, sum_range_one, Function.iterate_zero_apply]
 
 @[simp]
-theorem sumIDeriv_map {S : Type*} [CommSemiring S] (p : R[X]) (f : R →+* S) :
+theorem sumIDeriv_map (p : R[X]) (f : R →+* S) :
     sumIDeriv (p.map f) = (sumIDeriv p).map f := by
   let n := max (p.map f).natDegree p.natDegree
   rw [sumIDeriv_apply_of_le (le_max_left _ _ : _ ≤ n)]
@@ -130,9 +88,9 @@ theorem exists_iterate_derivative_eq_factorial_smul (p : R[X]) (k : ℕ) :
 
 end Semiring
 
-section CommRing
+section CommSemiring
 
-variable [CommRing R] {A : Type*} [CommRing A] [Algebra R A]
+variable [CommSemiring R] {A : Type*} [CommRing A] [Algebra R A]
 
 theorem aeval_iterate_derivative_of_lt (p : R[X]) (q : ℕ) (r : A) {p' : A[X]}
     (hp : p.map (algebraMap R A) = (X - C r) ^ q * p') {k : ℕ} (hk : k < q) :
@@ -177,11 +135,11 @@ theorem aeval_iterate_derivative_of_ge (p : R[X]) (q : ℕ) {k : ℕ} (hk : q �
     Nat.add_descFactorial_eq_ascFactorial, Nat.factorial_mul_ascFactorial]
 
 theorem aeval_sumIDeriv (p : R[X]) (q : ℕ) :
-    ∃ (gp : R[X]) (gp_le : gp.natDegree ≤ p.natDegree - q),
+    ∃ gp : R[X], gp.natDegree ≤ p.natDegree - q ∧
       ∀ (r : A) {p' : A[X]}, p.map (algebraMap R A) = (X - C r) ^ q * p' →
         aeval r (sumIDeriv p) = q ! • aeval r gp := by
   have h (k) :
-      ∃ (gp : R[X]) (gp_le : gp.natDegree ≤ p.natDegree - q),
+      ∃ gp : R[X], gp.natDegree ≤ p.natDegree - q ∧
         ∀ (r : A) {p' : A[X]}, p.map (algebraMap R A) = (X - C r) ^ q * p' →
           aeval r (derivative^[k] p) = q ! • aeval r gp := by
     cases lt_or_ge k q with
@@ -203,8 +161,8 @@ theorem aeval_sumIDeriv (p : R[X]) (q : ℕ) :
   intro r p' hp
   rw [sumIDeriv_apply, map_sum]; simp_rw [hc _ r hp, map_sum, smul_sum]
 
-theorem aeval_sumIDeriv' [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q : ℕ} (hq : 0 < q) :
-    ∃ (gp : R[X]) (gp_le : gp.natDegree ≤ p.natDegree - q),
+theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q : ℕ} (hq : 0 < q) :
+    ∃ gp : R[X], gp.natDegree ≤ p.natDegree - q ∧
       ∀ (inj_amap : Function.Injective (algebraMap R A)) (r : A) {p' : A[X]},
         p.map (algebraMap R A) = (X - C r) ^ (q - 1) * p' →
         aeval r (sumIDeriv p) = (q - 1)! • p'.eval r + q ! • aeval r gp := by
@@ -258,6 +216,6 @@ theorem aeval_sumIDeriv' [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q : ℕ} 
     rw [mem_inter, mem_Ico, mem_Ico] at hx
     exact hx.1.2.not_le hx.2.1
 
-end CommRing
+end CommSemiring
 
 end Polynomial
