@@ -556,7 +556,7 @@ noncomputable def corepresentableByOfIsColimitCokernelCofork :
     { toFun := homEquivToFun
       invFun := homEquivInvFun hc hdφψ
       left_inv := fun _ ↦ by simp
-      right_inv := fun _ ↦ by aesop }
+      right_inv := fun _ ↦ by simp }
   homEquiv_comp _ _ := rfl
 
 noncomputable def ofIsColimitCokernelCofork :
