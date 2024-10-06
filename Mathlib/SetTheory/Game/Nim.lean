@@ -343,7 +343,7 @@ theorem grundyValue_nim_add_nim (n m : ℕ) : grundyValue (nim.{u} n + nim.{u} m
     all_goals
       intro j
       have hj := toLeftMovesNim_symm_lt j
-      obtain ⟨k, hk⟩ := lt_omega.1 (hj.trans (nat_lt_omega _))
+      obtain ⟨k, hk⟩ := lt_omega0.1 (hj.trans (nat_lt_omega0 _))
       rw [hk, Nat.cast_lt] at hj
       have := hj.ne
       have := hj -- The termination checker doesn't work without this.
@@ -354,7 +354,7 @@ theorem grundyValue_nim_add_nim (n m : ℕ) : grundyValue (nim.{u} n + nim.{u} m
   -- For any `k < n ^^^ m`, either `nim (k ^^^ m) + nim m` or `nim n + nim (k ^^^ n)` is a left
   -- option with Grundy value `k`.
   · intro k hk
-    obtain ⟨k, rfl⟩ := Ordinal.lt_omega.1 (hk.trans (Ordinal.nat_lt_omega _))
+    obtain ⟨k, rfl⟩ := Ordinal.lt_omega0.1 (hk.trans (Ordinal.nat_lt_omega0 _))
     rw [Set.mem_Iio, Nat.cast_lt] at hk
     obtain hk | hk := Nat.lt_xor_cases hk <;> rw [← natCast_lt] at hk
     · use toLeftMovesAdd (Sum.inl (toLeftMovesNim ⟨_, hk⟩))

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Winston Yin
 -/
 import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Topology.Algebra.Order.Floor
 import Mathlib.Topology.MetricSpace.Contracting
 
 /-!
@@ -301,7 +302,7 @@ section
 
 theorem exists_contracting_iterate :
     ∃ (N : ℕ) (K : _), ContractingWith K (FunSpace.next : v.FunSpace → v.FunSpace)^[N] := by
-  rcases ((Real.tendsto_pow_div_factorial_atTop (v.L * v.tDist)).eventually
+  rcases ((FloorSemiring.tendsto_pow_div_factorial_atTop (v.L * v.tDist)).eventually
     (gt_mem_nhds zero_lt_one)).exists with ⟨N, hN⟩
   have : (0 : ℝ) ≤ (v.L * v.tDist) ^ N / N ! :=
     div_nonneg (pow_nonneg (mul_nonneg v.L.2 v.tDist_nonneg) _) (Nat.cast_nonneg _)
