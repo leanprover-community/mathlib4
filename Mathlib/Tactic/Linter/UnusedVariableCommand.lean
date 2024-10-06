@@ -37,8 +37,6 @@ def filter (stx : Syntax) (f : Syntax → Bool) : Array Syntax :=
 
 end Lean.Syntax
 
-
-
 namespace Mathlib.Linter
 
 /--
@@ -122,12 +120,14 @@ variable
 def mkThmCore : CommandElabM Syntax :=
   `(command| theorem $nm $binders* : $(⟨typ⟩) := by included_variables plumb; sorry)
 
+def getPropValue {m} [Monad m] [MonadRef m] [MonadQuotation m] (stx : Syntax) : m Syntax := do
+  if let some ts := stx.find? (·.isOfKind ``Parser.Term.typeSpec) then
+    `($(mkIdent `toFalse) $(⟨ts[1]⟩))
+  else
+    `($(mkIdent `False))
+
 def mkThmWithHyps (cmd : Syntax) (nm : Ident) : CommandElabM Syntax := do
-  let typ ← if let some ts := cmd.find? (·.isOfKind ``Parser.Term.typeSpec) then
-              `($(mkIdent `toFalse) $(⟨ts[1]⟩))
-            else
-              `($(mkIdent `False))
-  mkThmCore nm ((findBinders cmd).map (⟨·⟩)) typ
+  mkThmCore nm ((findBinders cmd).map (⟨·⟩)) (← getPropValue stx)
 
 /-
   if let some stx := stx.raw.find? (·.isOfKind ``Lean.Parser.Command.declaration) then
