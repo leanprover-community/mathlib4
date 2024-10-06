@@ -281,7 +281,7 @@ noncomputable instance levyProkhorovDist_metricSpace_probabilityMeasure [BorelSp
     apply ext_of_generate_finite _ ?_ isPiSystem_isClosed ?_ (by simp)
     · rw [BorelSpace.measurable_eq (α := Ω), borel_eq_generateFrom_isClosed]
     · intro A A_closed
-      apply measure_eq_measure_of_isClosed_of_levyProkhorovEDist_eq_zero
+      apply measure_eq_measure_of_levyProkhorovEDist_eq_zero_of_isClosed
       · simpa only [levyProkhorovEDist_ne_top μ.toMeasure ν.toMeasure, mem_setOf_eq,
                     or_false, ne_eq, zero_ne_top, not_false_eq_true, zero_toReal]
           using (toReal_eq_zero_iff _).mp h
