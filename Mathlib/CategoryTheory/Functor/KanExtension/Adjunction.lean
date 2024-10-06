@@ -20,9 +20,11 @@ right Kan extension along `L`.
 
 -/
 
+universe v₁ v₂ v₃ u₁ u₂ u₃
+
 namespace CategoryTheory
 
-open Category
+open Category Limits
 
 namespace Functor
 
@@ -99,6 +101,28 @@ lemma lanUnit_app_app_lanAdjunction_counit_app_app (G : D ⥤ H) (X : C) :
 lemma isIso_lanAdjunction_counit_app_iff (G : D ⥤ H) :
     IsIso ((L.lanAdjunction H).counit.app G) ↔ G.IsLeftKanExtension (𝟙 (L ⋙ G)) :=
   (isLeftKanExtension_iff_isIso _ (L.lanUnit.app (L ⋙ G)) _ (by simp)).symm
+
+noncomputable section Colim
+
+variable {C : Type u₁} {D : Type u₁} [Category.{v₁} C] [Category.{v₃} D]
+variable {H : Type (max u₁ u₂)} [Category.{max u₁ v₂} H]
+
+/-- Composing the left Kan extension of `L : C ⥤ D` with `colim` on shapes `D` is isomorphic
+to `colim` on shapes `C`. -/
+@[simps!]
+def lanCompColimIso (L : C ⥤ D) [∀ (G : C ⥤ H), L.HasLeftKanExtension G]
+    [HasColimitsOfShape C H] [HasColimitsOfShape D H] : L.lan ⋙ colim ≅ colim (C := H) :=
+  NatIso.removeOp <| fullyFaithfulCancelRight coyoneda <|
+    colimConstAdj.compCoyonedaIso ≪≫
+    isoWhiskerLeft coyoneda (Functor.mapIso _ (constCompWhiskeringLeftIso _ _).symm ≪≫
+      whiskeringLeftObjCompIso _ _) ≪≫
+    (Functor.associator _ _ _).symm ≪≫
+    isoWhiskerRight (L.lanAdjunction _).compCoyonedaIso.symm _ ≪≫
+    Functor.associator _ _ _ ≪≫
+    isoWhiskerLeft L.lan.op colimConstAdj.compCoyonedaIso.symm ≪≫
+    (Functor.associator L.lan.op colim.op coyoneda).symm
+
+end Colim
 
 end
 
@@ -206,6 +230,28 @@ lemma ranCounit_app_app_ranAdjunction_unit_app_app (G : D ⥤ H) (X : C) :
 lemma isIso_ranAdjunction_unit_app_iff (G : D ⥤ H) :
     IsIso ((L.ranAdjunction H).unit.app G) ↔ G.IsRightKanExtension (𝟙 (L ⋙ G)) :=
   (isRightKanExtension_iff_isIso _ (L.ranCounit.app (L ⋙ G)) _ (by simp)).symm
+
+noncomputable section Colim
+
+variable {C : Type u₁} {D : Type u₁} [Category.{v₁} C] [Category.{v₃} D]
+variable {H : Type (max u₁ u₂)} [Category.{max u₁ v₂} H]
+
+/-- Composing the right Kan extension of `L : C ⥤ D` with `lim` on shapes `D` is isomorphic
+to `colim` on shapes `C`. -/
+@[simps!]
+def ranCompLimIso (L : C ⥤ D) [∀ (G : C ⥤ H), L.HasRightKanExtension G]
+    [HasLimitsOfShape C H] [HasLimitsOfShape D H] : L.ran ⋙ lim ≅ lim (C := H) :=
+  fullyFaithfulCancelRight yoneda <|
+    Functor.associator _ _ _ ≪≫
+    isoWhiskerLeft _ constLimAdj.compYonedaIso ≪≫
+    (Functor.associator _ _ _).symm ≪≫
+    isoWhiskerRight (L.ranAdjunction _).compYonedaIso _ ≪≫
+    Functor.associator _ _ _ ≪≫
+    isoWhiskerLeft _ ((whiskeringLeftObjCompIso _ _).symm ≪≫
+      Functor.mapIso _ (NatIso.op (constCompWhiskeringLeftIso _ _).symm)) ≪≫
+    constLimAdj.compYonedaIso.symm
+
+end Colim
 
 end
 
