@@ -3,7 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Algebra.Group.Subgroup.Actions
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Topology.Algebra.Monoid
