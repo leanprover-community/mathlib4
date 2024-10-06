@@ -884,6 +884,15 @@ theorem withSeminorms_iInf {κ : ι → Type*} [Nonempty ((i : ι) × κ i)] [�
   rw [iInf_sigma]
   exact iInf_congr hp
 
+theorem withSeminorms_pi {κ : ι → Type*} [Nonempty ((i : ι) × κ i)] [∀ i, Nonempty (κ i)]
+    {p : (i : ι) → SeminormFamily 𝕜 E (κ i)} {t : ι → TopologicalSpace E}
+    [∀ i, @TopologicalAddGroup E (t i) _] (hp : ∀ i, WithSeminorms (topology := t i) (p i)) :
+    WithSeminorms (topology := ⨅ i, t i) (SeminormFamily.sigma p) := by
+  have : @TopologicalAddGroup E (⨅ i, t i) _ := topologicalAddGroup_iInf (fun i ↦ inferInstance)
+  simp_rw [@SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf _ _ _ _ _ _ _ (_)] at hp ⊢
+  rw [iInf_sigma]
+  exact iInf_congr hp
+
 end TopologicalConstructions
 
 section TopologicalProperties

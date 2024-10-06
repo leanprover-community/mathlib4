@@ -6,6 +6,7 @@ Authors: Frédéric Dupuis
 
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.Normed.Module.Dual
+import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 
 /-!
 # The weak operator topology
@@ -57,14 +58,15 @@ def ContinuousLinearMapWOT (𝕜 : Type*) (E : Type*) (F : Type*) [Semiring 𝕜
   E →L[𝕜] F
 
 @[inherit_doc]
-notation:25 E " →WOT[" 𝕜 "]" F => ContinuousLinearMapWOT 𝕜 E F
+notation:25 E " →WOT[" 𝕜 "] " F => ContinuousLinearMapWOT 𝕜 E F
 
 namespace ContinuousLinearMapWOT
 
-variable {𝕜 : Type*} {E : Type*} {F : Type*} [RCLike 𝕜] [AddCommGroup E] [TopologicalSpace E]
-  [Module 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 : Type*} {E : Type*} {F : Type*} [NormedField 𝕜]
+  [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
+  [AddCommGroup F] [TopologicalSpace F] [Module 𝕜 F]
 
-local postfix:max "⋆" => NormedSpace.Dual 𝕜
+local notation X "⋆" => X →L[𝕜] 𝕜
 
 /-!
 ### Basic properties common with `E →L[𝕜] F`
@@ -75,18 +77,21 @@ the module structure, `FunLike`, etc.
 section Basic
 
 unseal ContinuousLinearMapWOT in
-instance instAddCommGroup : AddCommGroup (E →WOT[𝕜] F) :=
+instance instAddCommGroup [TopologicalAddGroup F] : AddCommGroup (E →WOT[𝕜] F) :=
   inferInstanceAs <| AddCommGroup (E →L[𝕜] F)
 
 unseal ContinuousLinearMapWOT in
-instance instModule : Module 𝕜 (E →WOT[𝕜] F) := inferInstanceAs <| Module 𝕜 (E →L[𝕜] F)
+instance instModule [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F] : Module 𝕜 (E →WOT[𝕜] F) :=
+  inferInstanceAs <| Module 𝕜 (E →L[𝕜] F)
 
-variable (𝕜) (E) (F)
+variable (𝕜) (E) (F) [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
 
 unseal ContinuousLinearMapWOT in
 /-- The linear equivalence that sends a continuous linear map to the type copy endowed with the
 weak operator topology. -/
-def _root_.ContinuousLinearMap.toWOT : (E →L[𝕜] F) ≃ₗ[𝕜] (E →WOT[𝕜] F) := LinearEquiv.refl 𝕜 _
+def _root_.ContinuousLinearMap.toWOT :
+    (E →L[𝕜] F) ≃ₗ[𝕜] (E →WOT[𝕜] F) :=
+  LinearEquiv.refl 𝕜 _
 
 variable {𝕜} {E} {F}
 
@@ -112,11 +117,10 @@ lemma ext_iff {A B : E →WOT[𝕜] F} : A = B ↔ ∀ x, A x = B x := Continuou
 -- version with an inner product (`ContinuousLinearMapWOT.ext_inner`) takes precedence
 -- in the case of Hilbert spaces.
 @[ext 900]
-lemma ext_dual {A B : E →WOT[𝕜] F} (h : ∀ x (y : F⋆), y (A x) = y (B x)) : A = B := by
-  rw [ext_iff]
-  intro x
-  specialize h x
-  rwa [← NormedSpace.eq_iff_forall_dual_eq 𝕜] at h
+lemma ext_dual [H : SeparatingDual 𝕜 F] {A B : E →WOT[𝕜] F}
+    (h : ∀ x (y : F⋆), y (A x) = y (B x)) : A = B := by
+  simp_rw [ext_iff, ← (separatingDual_iff_injective.mp H).eq_iff, LinearMap.ext_iff]
+  exact h
 
 @[simp] lemma zero_apply (x : E) : (0 : E →WOT[𝕜] F) x = 0 := by simp only [DFunLike.coe]; rfl
 
@@ -146,6 +150,8 @@ of this topology. In particular, we show that it is a topological vector space.
 -/
 section Topology
 
+variable [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
+
 variable (𝕜) (E) (F) in
 /-- The function that induces the topology on `E →WOT[𝕜] F`, namely the function that takes
 an `A` and maps it to `fun ⟨x, y⟩ => y (A x)` in `E × F⋆ → 𝕜`, bundled as a linear map to make
@@ -154,6 +160,11 @@ def inducingFn : (E →WOT[𝕜] F) →ₗ[𝕜] (E × F⋆ → 𝕜) where
   toFun := fun A ⟨x, y⟩ => y (A x)
   map_add' := fun x y => by ext; simp
   map_smul' := fun x y => by ext; simp
+
+@[simp]
+lemma inducingFn_apply {f : E →WOT[𝕜] F} {x : E} {y : F⋆} :
+    inducingFn 𝕜 E F f (x, y) = y (f x) :=
+  rfl
 
 /-- The weak operator topology is the coarsest topology such that `fun A => y (A x)` is
 continuous for all `x, y`. -/
@@ -172,7 +183,9 @@ lemma continuous_of_dual_apply_continuous {α : Type*} [TopologicalSpace α] {g 
     (h : ∀ x (y : F⋆), Continuous fun a => y (g a x)) : Continuous g :=
   continuous_induced_rng.2 (continuous_pi_iff.mpr fun p => h p.1 p.2)
 
-lemma embedding_inducingFn : Embedding (inducingFn 𝕜 E F) := by
+lemma inducing_inducingFn : Inducing (inducingFn 𝕜 E F) := ⟨rfl⟩
+
+lemma embedding_inducingFn [SeparatingDual 𝕜 F] : Embedding (inducingFn 𝕜 E F) := by
   refine Function.Injective.embedding_induced fun A B hAB => ?_
   rw [ContinuousLinearMapWOT.ext_dual_iff]
   simpa [Function.funext_iff] using hAB
@@ -183,17 +196,13 @@ open Filter in
 lemma tendsto_iff_forall_dual_apply_tendsto {α : Type*} {l : Filter α} {f : α → E →WOT[𝕜] F}
     {A : E →WOT[𝕜] F} :
     Tendsto f l (𝓝 A) ↔ ∀ x (y : F⋆), Tendsto (fun a => y (f a x)) l (𝓝 (y (A x))) := by
-  have hmain : (∀ x (y : F⋆), Tendsto (fun a => y (f a x)) l (𝓝 (y (A x))))
-      ↔ ∀ (p : E × F⋆), Tendsto (fun a => p.2 (f a p.1)) l (𝓝 (p.2 (A p.1))) :=
-    ⟨fun h p => h p.1 p.2, fun h x y => h ⟨x, y⟩⟩
-  rw [hmain, ← tendsto_pi_nhds, Embedding.tendsto_nhds_iff embedding_inducingFn]
-  rfl
+  simp [inducing_inducingFn.tendsto_nhds_iff, tendsto_pi_nhds]
 
 lemma le_nhds_iff_forall_dual_apply_le_nhds {l : Filter (E →WOT[𝕜] F)} {A : E →WOT[𝕜] F} :
     l ≤ 𝓝 A ↔ ∀ x (y : F⋆), l.map (fun T => y (T x)) ≤ 𝓝 (y (A x)) :=
   tendsto_iff_forall_dual_apply_tendsto (f := id)
 
-instance instT3Space : T3Space (E →WOT[𝕜] F) := embedding_inducingFn.t3Space
+instance instT3Space [SeparatingDual 𝕜 F] : T3Space (E →WOT[𝕜] F) := embedding_inducingFn.t3Space
 
 instance instContinuousAdd : ContinuousAdd (E →WOT[𝕜] F) := .induced (inducingFn 𝕜 E F)
 instance instContinuousNeg : ContinuousNeg (E →WOT[𝕜] F) := .induced (inducingFn 𝕜 E F)
@@ -210,6 +219,8 @@ end Topology
 /-! ### The WOT is induced by a family of seminorms -/
 section Seminorms
 
+variable [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
+
 /-- The family of seminorms that induce the weak operator topology, namely `‖y (A x)‖` for
 all `x` and `y`. -/
 def seminorm (x : E) (y : F⋆) : Seminorm 𝕜 (E →WOT[𝕜] F) where
@@ -224,6 +235,10 @@ variable (𝕜) (E) (F) in
 all `x` and `y`. -/
 def seminormFamily : SeminormFamily 𝕜 (E →WOT[𝕜] F) (E × F⋆) :=
   fun ⟨x, y⟩ => seminorm x y
+
+lemma withSeminorms : WithSeminorms (seminormFamily 𝕜 E F) := by
+  refine inducing_inducingFn.withSeminorms ?_
+  sorry
 
 lemma hasBasis_seminorms : (𝓝 (0 : E →WOT[𝕜] F)).HasBasis (seminormFamily 𝕜 E F).basisSets id := by
   let p := seminormFamily 𝕜 E F
