@@ -136,6 +136,12 @@ theorem weakerExchangeProperty_of_weakExchangeProperty
   apply hu₁.elim (fun h ↦ h ▸ hu₃); rintro rfl
   exact False.elim (hxy₂ (Finset.cons_swap _ _ ▸ hu₃))
 
+theorem weakExchangeProperty_of_weakerExchangeProperty
+    [Accessible Sys] (h : WeakerExchangeProperty Sys) :
+    WeakExchangeProperty Sys := by
+  intro s₁ hs₁ s₂ hs₂ hs
+  sorry
+
 end ExchangePropertyEquivalence
 
 end Greedoid

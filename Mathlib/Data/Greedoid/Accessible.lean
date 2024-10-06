@@ -40,20 +40,15 @@ namespace Accessible
 
 variable {Sys : Finset α → Prop} [Accessible Sys]
 
-/-- A helper lemma for `nonempty_contains_emptyset`.-/
-theorem nonempty_contains_emptyset'
-    {s : Finset α} (hs : Sys s) {n : ℕ} (hn : n = s.card) :
-    Sys ∅ := by
-  induction n generalizing s with
-  | zero => exact card_eq_zero.mp hn.symm ▸ hs
-  | succ _ ih =>
-    rcases Accessible.accessible hs (by rw[← card_ne_zero]; omega) with ⟨t, _, _, ht⟩
-    exact ih ht (by omega)
-
 theorem nonempty_contains_emptyset
     (h : ∃ s, Sys s) :
-    Sys ∅ :=
-  have ⟨_, h⟩ := h; nonempty_contains_emptyset' h rfl
+    Sys ∅ := by
+  rcases h with ⟨s, hs⟩
+  induction' h : s.card generalizing s
+  case zero => exact card_eq_zero.mp h ▸ hs
+  case succ _ ih =>
+    rcases accessible hs (by rw [← card_ne_zero]; omega) with ⟨_, _, _, ht⟩
+    exact ih _ ht (by omega)
 
 @[simp]
 theorem nonempty_contains_emptyset_iff :
