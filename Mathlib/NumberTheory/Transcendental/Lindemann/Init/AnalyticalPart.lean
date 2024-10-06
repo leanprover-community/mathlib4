@@ -87,7 +87,7 @@ theorem integral_f_eq (p : ℂ[X]) (s : ℂ) :
 def P (p : ℂ[X]) (s : ℂ) :=
   exp s * p.sumIDeriv.eval 0 - p.sumIDeriv.eval s
 
-theorem P_le' (p : ℕ → ℂ[X]) (s : ℂ)
+theorem P_le_aux (p : ℕ → ℂ[X]) (s : ℂ)
     (h :
       ∃ c, ∀ (q : ℕ), ∀ x ∈ Set.Ioc (0 : ℝ) 1,
         Complex.abs ((p q).eval (x • s)) ≤ c ^ q) :
@@ -119,7 +119,7 @@ theorem P_le (p : ℕ → ℂ[X]) (s : ℂ)
       ∃ c, ∀ (q : ℕ), ∀ x ∈ Set.Ioc (0 : ℝ) 1,
         Complex.abs ((p q).eval (x • s)) ≤ c ^ q) :
     ∃ c ≥ 0, ∀ q ≥ 1, Complex.abs (P (p q) s) ≤ c ^ q := by
-  obtain ⟨c', hc', h'⟩ := P_le' p s h; clear h
+  obtain ⟨c', hc', h'⟩ := P_le_aux p s h; clear h
   let c₁ := max (Real.exp s.re) 1
   let c₂ := max (Real.exp (Complex.abs s)) 1
   have h₂ : 0 ≤ Real.exp (Complex.abs s) := (Real.exp_pos _).le
@@ -168,7 +168,7 @@ theorem exp_polynomial_approx (p : ℤ[X]) (p0 : p.eval 0 ≠ 0) :
     refine mul_le_mul_of_nonneg_right ?_ (pow_nonneg (Complex.abs.nonneg _) _)
     rw [max_def]; split_ifs with hx1
     · rw [_root_.abs_one, one_pow, ← mul_pow]
-      exact pow_le_one _ (mul_nonneg hx.1.le (Complex.abs.nonneg _)) hx1
+      exact pow_le_one₀ (mul_nonneg hx.1.le (Complex.abs.nonneg _)) hx1
     · push_neg at hx1
       rw [_root_.abs_mul, Complex.abs_abs, ← mul_pow, abs_of_pos hx.1]
       exact pow_le_pow_right hx1.le (Nat.sub_le _ _)

@@ -12,31 +12,7 @@ TODO
 
 open scoped BigOperators Polynomial
 
-namespace List
-
-variable {R S : Type*}
-variable [Monoid R] [Monoid S] [MulAction S R] [IsScalarTower S R R] [SMulCommClass S R R]
-
-@[simp] lemma prod_map_smul (l : List R) (s : S) :
-    (l.map (s • ·)).prod = s ^ l.length • l.prod := by
-  induction' l with hd tl ih
-  · simp
-  · simp [ih, pow_add, smul_mul_smul_comm, pow_mul_comm', pow_succ]
-
-end List
-
 namespace Multiset
-
-section
-
-variable {R S : Type*}
-variable [CommMonoid R] [Monoid S] [MulAction S R] [IsScalarTower S R R] [SMulCommClass S R R]
-
-@[simp] lemma prod_map_smul (m : Multiset R) (s : S) :
-    (m.map (s • ·)).prod = s ^ card m • m.prod :=
-  Quot.induction_on m <| by simp
-
-end
 
 variable {R S : Type*}
 variable [CommSemiring R] [Monoid S] [DistribMulAction S R] [IsScalarTower S R R]
@@ -48,7 +24,7 @@ lemma pow_smul_esymm (s : S) (n : ℕ) (m : Multiset R) :
   trans ((powersetCard n m).map (fun x : Multiset R ↦ s ^ card x • x.prod)).sum
   · refine congr_arg _ (map_congr rfl (fun x hx ↦ ?_))
     rw [Function.comp_apply, (mem_powersetCard.1 hx).2]
-  · simp_rw [← prod_map_smul, esymm, powersetCard_map, map_map, (· ∘ ·)]
+  · simp_rw [smul_prod, esymm, powersetCard_map, map_map, (· ∘ ·)]
 
 end Multiset
 
@@ -83,7 +59,7 @@ theorem aevalMultiset_map (f : σ → S) (p : symmetricSubalgebra σ R) :
   simp_rw [esymmAlgEquiv_apply, esymmAlgHom_apply, ← aeval_esymm_eq_multiset_esymm σ R,
     ← comp_aeval, AlgHom.coe_comp, Function.comp_apply]
 
-theorem aevalMultiset_map' (f : τ → S) (p : symmetricSubalgebra σ R)
+theorem aevalMultiset_map_of_card_eq (f : τ → S) (p : symmetricSubalgebra σ R)
     (h : Fintype.card σ = Fintype.card τ) :
     aevalMultiset σ R (Finset.univ.val.map f) p =
       aeval (f ∘ Fintype.equivOfCardEq h) (p : MvPolynomial σ R) := by
@@ -177,7 +153,7 @@ lemma aevalMultiset_sumPolynomial
     set_option linter.deprecated false in
     rw [List.get_map, List.get_finRange]
   conv_lhs => rw [eq_univ_map]
-  rw [aevalMultiset_map']
+  rw [aevalMultiset_map_of_card_eq]
   swap
   rw [Fintype.card_fin, Multiset.length_toList, hm]
   rw [coe_sumPolynomial, map_sum]
