@@ -19,9 +19,9 @@ In a field extension `K/k`
   that are finite and Galois over `k`
 
 * `adjoin` : The finite Galois intermediate field obtained from the normal closure of adjoining a
-  `s : Set K` to `k`.
+  finite `s : Set K` to `k`.
 
-* `finGaloisGroup L` : The (finite) Galois group `Gal(K / k)` associated to a
+* `finGaloisGroup L` : The (finite) Galois group `Gal(L/k)` associated to a
   `L : FiniteGaloisIntermediateField k K` `L`.
 
 * `finGaloisGroupMap` : For `FiniteGaloisIntermediateField` s `L₁` and `L₂` with `L₂ ≤ L₁`
@@ -197,7 +197,7 @@ end finGaloisGroupMap
 
 variable (k K) in
 /-- The functor from `FiniteGaloisIntermediateField` (ordered by reverse inclusion) to `FiniteGrp`,
-mapping each intermediate field `K/L/k` to the Galois group of K/L`.-/
+mapping each intermediate field `K/L/k` to `Gal (L/k)`.-/
 noncomputable def finGaloisGroupFunctor : (FiniteGaloisIntermediateField k K)ᵒᵖ ⥤ FiniteGrp where
   obj L := L.unop.finGaloisGroup
   map := finGaloisGroupMap
