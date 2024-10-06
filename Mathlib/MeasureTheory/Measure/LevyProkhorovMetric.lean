@@ -276,7 +276,7 @@ noncomputable instance levyProkhorovDist_metricSpace_probabilityMeasure [BorelSp
     MetricSpace (LevyProkhorov (ProbabilityMeasure Ω)) where
   eq_of_dist_eq_zero := by
     intro μ ν h
-    apply LevyProkhorov.equiv.injective
+    apply (LevyProkhorov.equiv _).injective
     apply ProbabilityMeasure.toMeasure_injective
     apply ext_of_generate_finite _ ?_ isPiSystem_isClosed ?_ (by simp)
     · rw [BorelSpace.measurable_eq (α := Ω), borel_eq_generateFrom_isClosed]
@@ -431,8 +431,8 @@ lemma LevyProkhorov.continuous_equiv_probabilityMeasure :
     Continuous (LevyProkhorov.equiv (α := ProbabilityMeasure Ω)) := by
   refine SeqContinuous.continuous ?_
   intro μs ν hμs
-  set P := LevyProkhorov.equiv ν -- more palatable notation
-  set Ps := fun n ↦ LevyProkhorov.equiv (μs n) -- more palatable notation
+  set P := LevyProkhorov.equiv _ ν -- more palatable notation
+  set Ps := fun n ↦ LevyProkhorov.equiv _ (μs n) -- more palatable notation
   rw [ProbabilityMeasure.tendsto_iff_forall_integral_tendsto]
   refine fun f ↦ tendsto_integral_of_forall_limsup_integral_le_integral ?_ f
   intro f f_nn
@@ -655,7 +655,7 @@ lemma LevyProkhorov.continuous_equiv_symm_probabilityMeasure :
 coincides with the topology of convergence in distribution. -/
 theorem levyProkhorov_eq_convergenceInDistribution :
     (inferInstance : TopologicalSpace (ProbabilityMeasure Ω))
-      = TopologicalSpace.coinduced LevyProkhorov.equiv inferInstance :=
+      = TopologicalSpace.coinduced (LevyProkhorov.equiv _) inferInstance :=
   le_antisymm (LevyProkhorov.continuous_equiv_symm_probabilityMeasure (Ω := Ω)).coinduced_le
               levyProkhorov_le_convergenceInDistribution
 
@@ -663,8 +663,8 @@ theorem levyProkhorov_eq_convergenceInDistribution :
 convergence in distribution to `ProbabilityMeasure Ω` with the Lévy-Prokhorov (pseudo)metric. -/
 def homeomorph_probabilityMeasure_levyProkhorov :
     ProbabilityMeasure Ω ≃ₜ LevyProkhorov (ProbabilityMeasure Ω) where
-  toFun := LevyProkhorov.equiv
-  invFun := LevyProkhorov.equiv.symm
+  toFun := LevyProkhorov.equiv _
+  invFun := (LevyProkhorov.equiv _).symm
   left_inv := congrFun rfl
   right_inv := congrFun rfl
   continuous_toFun := LevyProkhorov.continuous_equiv_symm_probabilityMeasure
