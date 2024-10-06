@@ -237,7 +237,7 @@ lemma measure_le_measure_closure_of_levyProkhorovEDist_eq_zero {μ ν : Measure 
 
 /-- Two measures at vanishing Lévy-Prokhorov distance from each other assign the same values to all
 closed sets. -/
-lemma measure_eq_measure_of_isClosed_of_levyProkhorovEDist_eq_zero {μ ν : Measure Ω}
+lemma measure_eq_measure_of_levyProkhorovEDist_eq_zero_of_isClosed {μ ν : Measure Ω}
     (hLP : levyProkhorovEDist μ ν = 0) {s : Set Ω} (s_closed : IsClosed s)
     (hμs : ∃ δ > 0, μ (thickening δ s) ≠ ∞) (hνs : ∃ δ > 0, ν (thickening δ s) ≠ ∞) :
     μ s = ν s := by
