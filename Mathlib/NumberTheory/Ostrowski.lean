@@ -402,7 +402,8 @@ private lemma param_upperbound (k : ℕ) (hk : k ≠ 0) :
       f n ≤ (m * f m / (f m - 1)) * (f m) ^ (logb m n) := by
     let d := Nat.log m n
     calc
-    f n ≤ ((Nat.digits m n).mapIdx fun i _ ↦ m * (f m) ^ i).sum := mulRingNorm_apply_le_sum_digits n hm
+    f n ≤ ((Nat.digits m n).mapIdx fun i _ ↦ m * f m ^ i).sum :=
+      mulRingNorm_apply_le_sum_digits n hm
     _ = m * ((Nat.digits m n).mapIdx fun i _ ↦ (f m) ^ i).sum := list_mul_sum (m.digits n) (f m) m
     _ = m * ((f m ^ (d + 1) - 1) / (f m - 1)) := by
       rw [list_geom _ (ne_of_gt (one_lt_of_not_bounded notbdd hm)),
