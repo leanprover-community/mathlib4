@@ -47,7 +47,7 @@ namespace SheafedSpace
 instance coeCarrier : CoeOut (SheafedSpace C) TopCat where coe X := X.carrier
 
 instance coeSort : CoeSort (SheafedSpace C) Type* where
-  coe := fun X => X.1
+  coe X := X.1
 
 /-- Extract the `sheaf C (X : Top)` from a `SheafedSpace C`. -/
 def sheaf (X : SheafedSpace C) : Sheaf C (X : TopCat) :=
