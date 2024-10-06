@@ -64,7 +64,7 @@ end AuxInstances
 
 namespace Quot
 
-@[reducible] --, elab_as_elim]
+@[reducible]
 protected def liftFinsupp {α : Type*} {r : α → α → Prop} {β : Type*} [Zero β] (f : α →₀ β)
     (h : ∀ a b, r a b → f a = f b) : Quot r →₀ β := by
   refine ⟨image (mk r) f.support, Quot.lift f h, fun a => ⟨?_, ?_⟩⟩
@@ -80,7 +80,7 @@ end Quot
 
 namespace Quotient
 
-@[reducible] --, elab_as_elim]
+@[reducible]
 protected def liftFinsupp {α : Type*} {β : Type*} [s : Setoid α] [Zero β] (f : α →₀ β) :
     (∀ a b, a ≈ b → f a = f b) → Quotient s →₀ β :=
   Quot.liftFinsupp f
@@ -279,7 +279,7 @@ theorem toConjEquiv_symm_apply_apply (f : GalConjClasses ℚ (K s) →₀ F) (i 
 
 @[simp]
 theorem toConjEquiv_apply_apply (f : mapDomainFixed s F) (i : GalConjClasses ℚ (K s)) :
-    toConjEquiv s F f i = f i.out := by rw [← i.out_eq, toConjEquiv_apply_apply_mk, i.out_eq]
+    toConjEquiv s F f i = f i.out := by rw [← i.mk_out, toConjEquiv_apply_apply_mk, i.mk_out]
 
 @[simp 1001] -- LHS simplifies
 theorem toConjEquiv_apply_zero_eq (f : mapDomainFixed s F) : toConjEquiv s F f 0 = f 0 := by
@@ -438,7 +438,7 @@ theorem ToConjEquivSymmSingle.aux (x : GalConjClasses ℚ (K s)) (a : F) :
   simp_rw [Finsupp.indicator_apply, Set.mem_toFinset]; dsimp; congr 1
   simp_rw [mem_orbit, eq_iff_iff]
   apply Eq.congr_left
-  rwa [GalConjClasses.eq]
+  rwa [GalConjClasses.mk_eq_mk]
 
 theorem toConjEquiv_symm_single (x : GalConjClasses ℚ (K s)) (a : F) :
     (toConjEquiv s F).symm (Finsupp.single x a) =
@@ -447,7 +447,7 @@ theorem toConjEquiv_symm_single (x : GalConjClasses ℚ (K s)) (a : F) :
   ext i; rw [toConjEquiv_apply_apply]
   change Finsupp.single x a i = Finsupp.indicator x.orbit.toFinset (fun _ _ => a) i.out
   rw [Finsupp.single_apply, Finsupp.indicator_apply]; dsimp; congr 1
-  rw [Set.mem_toFinset, mem_orbit, out_eq, @eq_comm _ i]
+  rw [Set.mem_toFinset, mem_orbit, mk_out, @eq_comm _ i]
 
 theorem single_prod_apply_zero_ne_zero_iff (x : GalConjClasses ℚ (K s)) {a : F} (ha : a ≠ 0)
     (y : GalConjClasses ℚ (K s)) {b : F} (hb : b ≠ 0) :

@@ -3,7 +3,6 @@ Copyright (c) 2022 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
-
 import Mathlib.FieldTheory.Normal
 
 /-!
@@ -29,8 +28,7 @@ variable {E}
 def IsGalConj (x y : E) : Prop :=
   (IsGalConj.setoid F E).r x y
 
-scoped[IsGalConj] notation:50 -- need to fix the precedence
-  x " ≈g[" F "] " y => IsGalConj F x y
+scoped[IsGalConj] notation:50 x:51 " ≈g[" F "] " y:51 => IsGalConj F x y
 
 open scoped IsGalConj
 
@@ -72,7 +70,7 @@ instance : Zero (GalConjClasses F E) :=
 theorem zero_def : (0 : GalConjClasses F E) = mk F 0 :=
   rfl
 
-@[elab_as_elim]
+@[elab_as_elim, cases_eliminator, induction_eliminator]
 lemma ind {motive : GalConjClasses F E → Prop} (h : ∀ x : E, motive (mk F x))
     (c : GalConjClasses F E) : motive c :=
   Quotient.ind h c
@@ -84,18 +82,14 @@ noncomputable def out (c : GalConjClasses F E) : E :=
   Quotient.out c
 
 @[simp]
-theorem eq {x y : E} : mk F x = mk F y ↔ x ≈g[F] y :=
-  letI := IsGalConj.setoid F E
-  Quotient.eq'
+theorem mk_eq_mk {x y : E} : mk F x = mk F y ↔ x ≈g[F] y := Quotient.eq''
 
 @[simp]
-nonrec theorem out_eq (q : GalConjClasses F E) : mk F q.out = q :=
-  letI := IsGalConj.setoid F E
-  q.out_eq
+theorem mk_out (q : GalConjClasses F E) : mk F q.out = q :=
+  q.out_eq'
 
-theorem mk_out (x : E) :
-    letI := IsGalConj.setoid F E
-    (mk F x).out ≈ x :=
+theorem out_isGalConj (x : E) :
+    (mk F x).out ≈g[F] x :=
   letI := IsGalConj.setoid F E
   Quotient.mk_out x
 
@@ -108,22 +102,22 @@ theorem eq_mk_iff_out {c : GalConjClasses F E} {x : E} : c = mk F x ↔ c.out �
   Quotient.eq_mk_iff_out
 
 @[simp]
-theorem out_equiv_out {c₁ c₂ : GalConjClasses F E} : (c₁.out ≈g[F] c₂.out) ↔ c₁ = c₂ :=
+theorem out_isGalConj_out {c₁ c₂ : GalConjClasses F E} : c₁.out ≈g[F] c₂.out ↔ c₁ = c₂ :=
   @Quotient.out_equiv_out _ _ c₁ c₂
 
-theorem equiv_zero_iff (x : E) : (x ≈g[F] 0) ↔ x = 0 := by
+theorem isGalConj_zero_iff (x : E) : x ≈g[F] 0 ↔ x = 0 := by
   refine ⟨fun h => ?_, fun h => by rw [h]⟩
   cases' h with a ha
   simp_rw [← ha, AlgEquiv.smul_def, map_zero]
 
 theorem out_eq_zero_iff (c : GalConjClasses F E) : c.out = 0 ↔ c = 0 := by
-  rw [zero_def, eq_mk_iff_out, equiv_zero_iff]
+  rw [zero_def, eq_mk_iff_out, isGalConj_zero_iff]
 
 theorem zero_out : (0 : GalConjClasses F E).out = 0 :=
   (out_eq_zero_iff 0).mpr rfl
 
 theorem mk_eq_zero_iff (x : E) : mk F x = 0 ↔ x = 0 := by
-  rw [mk_eq_iff_out, zero_out, equiv_zero_iff]
+  rw [mk_eq_iff_out, zero_out, isGalConj_zero_iff]
 
 theorem mk_zero : mk F (0 : E) = 0 :=
   (mk_eq_zero_iff 0).mpr rfl
@@ -143,7 +137,7 @@ theorem orbit_zero : (0 : GalConjClasses F E).orbit = {0} := by
 instance : Neg (GalConjClasses F E) :=
   ⟨Quotient.lift (fun x : E => mk F (-x))
       (by
-        rintro _ y ⟨f, rfl⟩; rw [eq]
+        rintro _ y ⟨f, rfl⟩; rw [mk_eq_mk]
         use f; simp only [smul_neg])⟩
 
 theorem mk_neg (x : E) : mk F (-x) = -mk F x :=
@@ -151,17 +145,17 @@ theorem mk_neg (x : E) : mk F (-x) = -mk F x :=
 
 instance : InvolutiveNeg (GalConjClasses F E) :=
   { (inferInstance : Neg (GalConjClasses F E)) with
-    neg_neg := fun x => by rw [← out_eq x, ← mk_neg, ← mk_neg, neg_neg] }
+    neg_neg := fun x => by rw [← mk_out x, ← mk_neg, ← mk_neg, neg_neg] }
 
 theorem exist_mem_orbit_add_eq_zero (x y : GalConjClasses F E) :
     (∃ a b : E, (a ∈ x.orbit ∧ b ∈ y.orbit) ∧ a + b = 0) ↔ x = -y := by
   simp_rw [mem_orbit]
   constructor
   · rintro ⟨a, b, ⟨rfl, rfl⟩, h⟩
-    rw [← mk_neg, eq, add_eq_zero_iff_eq_neg.mp h]
+    rw [← mk_neg, mk_eq_mk, add_eq_zero_iff_eq_neg.mp h]
   · rintro rfl
     refine ⟨-y.out, y.out, ?_⟩
-    simp_rw [mk_neg, out_eq, neg_add_cancel, and_self]
+    simp_rw [mk_neg, mk_out, neg_add_cancel, and_self]
 
 noncomputable nonrec def minpoly : GalConjClasses F E → F[X] :=
   Quotient.lift (minpoly F) fun _ b ⟨f, h⟩ => h ▸ minpoly.algEquiv_eq f b
@@ -170,32 +164,32 @@ theorem minpoly_mk (x : E) : minpoly (mk F x) = _root_.minpoly F x :=
   rfl
 
 theorem minpoly_out (c : GalConjClasses F E) : _root_.minpoly F c.out = minpoly c := by
-  rw [← c.out_eq, minpoly_mk, c.out_eq]
+  rw [← c.mk_out, minpoly_mk, c.mk_out]
 
 theorem splits_minpoly [n : Normal F E] (c : GalConjClasses F E) :
-    Splits (algebraMap F E) (minpoly c) := by rw [← c.out_eq, minpoly_mk]; exact n.splits c.out
+    Splits (algebraMap F E) (minpoly c) := by rw [← c.mk_out, minpoly_mk]; exact n.splits c.out
 
 variable [Algebra.IsSeparable F E]
 -- most lemmas work with Algebra.IsIntegral / Algebra.IsAlgebraic
 -- but there isn't a lemma saying these are implied by `IsSeparable`
 
 theorem monic_minpoly (c : GalConjClasses F E) : (minpoly c).Monic := by
-  rw [← c.out_eq, minpoly_mk]; exact minpoly.monic (Algebra.IsSeparable.isIntegral F _)
+  rw [← c.mk_out, minpoly_mk]; exact minpoly.monic (Algebra.IsSeparable.isIntegral F _)
 
 theorem minpoly_ne_zero (c : GalConjClasses F E) : minpoly c ≠ 0 := by
-  rw [← c.out_eq, minpoly_mk]
+  rw [← c.mk_out, minpoly_mk]
   exact minpoly.ne_zero (Algebra.IsSeparable.isIntegral F _)
 
 theorem irreducible_minpoly (c : GalConjClasses F E) : Irreducible (minpoly c) := by
-  rw [← c.out_eq, minpoly_mk]; exact minpoly.irreducible (Algebra.IsSeparable.isIntegral F _)
+  rw [← c.mk_out, minpoly_mk]; exact minpoly.irreducible (Algebra.IsSeparable.isIntegral F _)
 
 theorem separable_minpoly (c : GalConjClasses F E) : Separable (minpoly c) := by
-  rw [← c.out_eq, minpoly_mk]; exact Algebra.IsSeparable.isSeparable F c.out
+  rw [← c.mk_out, minpoly_mk]; exact Algebra.IsSeparable.isSeparable F c.out
 
 theorem minpoly_inj [Normal F E] {c d : GalConjClasses F E} (h : minpoly c = minpoly d) :
     c = d := by
-  induction' c using GalConjClasses.ind with x
-  induction' d using GalConjClasses.ind with y
+  induction' c with x
+  induction' d with y
   let fc := IntermediateField.adjoinRootEquivAdjoin F (Algebra.IsSeparable.isIntegral F x)
   let fd := IntermediateField.adjoinRootEquivAdjoin F (Algebra.IsSeparable.isIntegral F y)
   let congr_f {px py : F[X]} (h : px = py) : AdjoinRoot px ≃ₐ[F] AdjoinRoot py :=
@@ -203,7 +197,7 @@ theorem minpoly_inj [Normal F E] {c d : GalConjClasses F E} (h : minpoly c = min
   change _root_.minpoly F x = _root_.minpoly F y at h
   let f' := fc.symm.trans ((congr_f h).trans fd)
   let f := f'.liftNormal E
-  rw [eq]
+  rw [mk_eq_mk]
   refine ⟨f.symm, ?_⟩
   dsimp only [AlgEquiv.smul_def]
   rw [AlgEquiv.symm_apply_eq]
