@@ -104,7 +104,6 @@ attribute [fun_prop]
   Differentiable.mul
   Differentiable.smul
   Differentiable.div
-  Differentiable.inv'
   Differentiable.inv
 
   DifferentiableAt.add
@@ -113,7 +112,6 @@ attribute [fun_prop]
   DifferentiableAt.mul
   DifferentiableAt.smul
   DifferentiableAt.div
-  DifferentiableAt.inv'
   DifferentiableAt.inv
 
   DifferentiableOn.add
@@ -122,7 +120,6 @@ attribute [fun_prop]
   DifferentiableOn.mul
   DifferentiableOn.smul
   DifferentiableOn.div
-  DifferentiableOn.inv'
   DifferentiableOn.inv
 
 

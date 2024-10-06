@@ -817,6 +817,10 @@ theorem embedding_graph {f : X → Y} (hf : Continuous f) : Embedding fun x => (
 theorem embedding_prod_mk (x : X) : Embedding (Prod.mk x : Y → X × Y) :=
   embedding_of_embedding_compose (Continuous.Prod.mk x) continuous_snd embedding_id
 
+theorem IsOpenQuotientMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenQuotientMap f)
+    (hg : IsOpenQuotientMap g) : IsOpenQuotientMap (Prod.map f g) :=
+  ⟨.prodMap hf.1 hg.1, .prod_map hf.2 hg.2, .prod hf.3 hg.3⟩
+
 end Prod
 
 section Bool
