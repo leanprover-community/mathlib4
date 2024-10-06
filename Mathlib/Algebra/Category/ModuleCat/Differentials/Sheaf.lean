@@ -43,7 +43,7 @@ def postcomp (d : M.Derivation φ) {N} (f : M ⟶ N) : N.Derivation φ :=
 
 @[simps val_app]
 def abSheafHom (d : M.Derivation φ) [K.HasSheafCompose (forget₂ CommRingCat.{u} Ab.{u})] :
-  (sheafCompose K (forget₂ CommRingCat Ab)).obj R ⟶ (toSheaf _).obj M where
+    (sheafCompose K (forget₂ CommRingCat Ab)).obj R ⟶ (toSheaf _).obj M where
   val :=
     { app := fun _ ↦ d.d
       naturality := fun _ _ f ↦ by ext; apply d.d_map }
