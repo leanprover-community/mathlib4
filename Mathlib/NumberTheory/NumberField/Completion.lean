@@ -20,7 +20,7 @@ infinite place defines its own `UniformSpace` instance, so the inference system 
 automatically infer these. A common approach to handle the ambiguity that arises from having
 multiple sources of instances is through the use of type synonyms. In this case, we define a
 type synonym `WithAbs` for a semiring. In particular this type synonym depends on an
-absolute value which provides a systematic way of assigning and inferring instances of the semiring
+absolute value. This provides a systematic way of assigning and inferring instances of the semiring
 that also depend on an absolute value. In our application, relevant instances and the completion
 of a number field `K` are first defined at the level of `AbsoluteValue` by using the type synonym
 `WithAbs` of `K`, and then derived downstream for `InfinitePlace` (which is a subtype of
