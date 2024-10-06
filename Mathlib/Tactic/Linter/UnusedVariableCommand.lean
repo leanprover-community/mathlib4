@@ -126,6 +126,8 @@ def getPropValue {m} [Monad m] [MonadRef m] [MonadQuotation m] (stx : Syntax) : 
   let flse ← `($(mkIdent `False))
   if (stx.find? (·.isOfKind ``Lean.Parser.Command.structure)).isSome then
     return flse
+  if (stx.find? (·.isOfKind ``Lean.Parser.Command.definition)).isSome then
+    return ((stx.find? (·.isOfKind ``Lean.Parser.Command.declValSimple)).getD default)[1]
   if let some ts := stx.find? (·.isOfKind ``Parser.Term.typeSpec) then
     `($(mkIdent `toFalse) $(⟨ts[1]⟩))
   else
@@ -216,15 +218,16 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
     -- skip examples, since they have access to all the variables
     if decl[1].isOfKind ``Lean.Parser.Command.example then
       return
-    let renStx ← stx.replaceM fun s => match s.getKind with
+    let _renStx ← stx.replaceM fun s => match s.getKind with
         | ``declId        => return some (← `(declId| $(mkIdentFrom s[0] (s[0].getId ++ `_hello))))
         | ``declValSimple | ``declValEqns | ``whereStructInst =>
           return some (← `(declValSimple| := by included_variables plumb; sorry))
         | _               => return none
     let toFalse := mkIdent `toFalse
-    let renStx ← renStx.replaceM fun s => match s with
-        | `(def $d $vs* : $t := $pf) => return some (← `(theorem $d $vs* : $toFalse $t := $pf))
-        | _               => return none
+    --let renStx ← renStx.replaceM fun s => match s with
+    --    | `(def $d $vs* : $t := $pf) => return some (← `(theorem $d $vs* : $toFalse $t := $pf))
+    --    | _               => return none
+    let renStx ← mkNewThm decl
     let s ← get
     elabCommand (← `(def $toFalse (S : Sort _) := False))
     elabCommand renStx
