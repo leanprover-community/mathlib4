@@ -477,7 +477,7 @@ lemma pushforward_postcomp {P' : PresheafOfModules.{v} (T ⋙ forget₂ _ _)} (�
 
 @[simp]
 lemma pushforward_induced {M' : PresheafOfModules.{v} (T ⋙ forget₂ _ _)} (d : M'.Derivation ψ) :
-      Derivation.pushforward fac (induced fac d) = 0 := by
+    Derivation.pushforward fac (induced fac d) = 0 := by
   ext X a
   apply d.d_app
 
