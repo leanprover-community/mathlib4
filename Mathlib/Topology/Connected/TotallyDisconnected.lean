@@ -212,10 +212,10 @@ instance (priority := 100) TotallySeparatedSpace.of_discrete (α : Type*) [Topol
 
 theorem totallySeparatedSpace_iff_exists_isClopen {α : Type*} [TopologicalSpace α] :
     TotallySeparatedSpace α ↔ ∀ x y : α, x ≠ y → ∃ U : Set α, IsClopen U ∧ x ∈ U ∧ y ∈ Uᶜ := by
-  simp_rw [totallySeparatedSpace_iff, IsTotallySeparated, Set.Pairwise, Set.mem_univ, true_implies]
-  refine forall₃_congr fun x y _ ↦ ?_
-  refine ⟨fun ⟨U, V, hU, hV, Ux, Vy, f, disj⟩ ↦ ?_, fun ⟨U, hU, Ux, Ucy⟩ ↦ ?_⟩
-  · refine ⟨U, isClopen_of_disjoint_cover_clopen f hU hV disj,
+  simp only [totallySeparatedSpace_iff, IsTotallySeparated, Set.Pairwise, mem_univ, true_implies]
+  refine forall₃_congr fun x y _ ↦
+    ⟨fun ⟨U, V, hU, hV, Ux, Vy, f, disj⟩ ↦ ?_, fun ⟨U, hU, Ux, Ucy⟩ ↦ ?_⟩
+  · exact ⟨U, isClopen_of_disjoint_cover_open f hU hV disj,
       Ux, fun Uy ↦ Set.disjoint_iff.mp disj ⟨Uy, Vy⟩⟩
   · exact ⟨U, Uᶜ, hU.2, hU.compl.2, Ux, Ucy, (Set.union_compl_self U).ge, disjoint_compl_right⟩
 
