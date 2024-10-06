@@ -106,7 +106,7 @@ theorem one_le : (1 : Submodule R A) ≤ P ↔ (1 : A) ∈ P := by
   simp only [one_eq_span, span_le, Set.singleton_subset_iff, SetLike.mem_coe]
 
 protected theorem map_one {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') :
-    map f.toLinearMap (1 : Submodule R A) = 1 := by
+    map f (1 : Submodule R A) = 1 := by
   ext
   simp
 
@@ -214,11 +214,11 @@ theorem mul_subset_mul : (↑M : Set A) * (↑N : Set A) ⊆ (↑(M * N) : Set A
   image2_subset_map₂ (Algebra.lmul R A).toLinearMap M N
 
 protected theorem map_mul {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') :
-    map f.toLinearMap (M * N) = map f.toLinearMap M * map f.toLinearMap N :=
+    map f (M * N) = map f M * map f N :=
   calc
-    map f.toLinearMap (M * N) = ⨆ i : M, (N.map (LinearMap.mul R A i)).map f.toLinearMap :=
+    map f (M * N) = ⨆ i : M, (N.map (LinearMap.mul R A i)).map f :=
       map_iSup _ _
-    _ = map f.toLinearMap M * map f.toLinearMap N := by
+    _ = map f M * map f N := by
       apply congr_arg sSup
       ext S
       constructor <;> rintro ⟨y, hy⟩
@@ -229,7 +229,6 @@ protected theorem map_mul {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
       · obtain ⟨y', hy', fy_eq⟩ := mem_map.mp y.2
         use ⟨y', hy'⟩  -- Porting note: added `⟨⟩`
         refine Eq.trans ?_ hy
-        rw [f.toLinearMap_apply] at fy_eq
         ext
         simp [fy_eq]
 
@@ -484,7 +483,7 @@ def equivOpposite : Submodule R Aᵐᵒᵖ ≃+* (Submodule R A)ᵐᵒᵖ where
   map_mul' p q := congr_arg op <| comap_op_mul _ _
 
 protected theorem map_pow {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') (n : ℕ) :
-    map f.toLinearMap (M ^ n) = map f.toLinearMap M ^ n :=
+    map f (M ^ n) = map f M ^ n :=
   map_pow (mapHom f) M n
 
 theorem comap_unop_pow (n : ℕ) :
@@ -624,7 +623,7 @@ instance : Div (Submodule R A) :=
         exact Submodule.smul_mem _ _ (hx _ hy) }⟩
 
 theorem mem_div_iff_forall_mul_mem {x : A} {I J : Submodule R A} : x ∈ I / J ↔ ∀ y ∈ J, x * y ∈ I :=
-  Iff.refl _
+  Iff.rfl
 
 theorem mem_div_iff_smul_subset {x : A} {I J : Submodule R A} : x ∈ I / J ↔ x • (J : Set A) ⊆ I :=
   ⟨fun h y ⟨y', hy', xy'_eq_y⟩ => by
@@ -633,7 +632,7 @@ theorem mem_div_iff_smul_subset {x : A} {I J : Submodule R A} : x ∈ I / J ↔ 
     assumption, fun h y hy => h (Set.smul_mem_smul_set hy)⟩
 
 theorem le_div_iff {I J K : Submodule R A} : I ≤ J / K ↔ ∀ x ∈ I, ∀ z ∈ K, x * z ∈ J :=
-  Iff.refl _
+  Iff.rfl
 
 theorem le_div_iff_mul_le {I J K : Submodule R A} : I ≤ J / K ↔ I * K ≤ J := by
   rw [le_div_iff, mul_le]

@@ -121,8 +121,8 @@ lemma map_equiv_traceDual [IsDomain A] [IsFractionRing B L] [IsDomain B]
     [NoZeroSMulDivisors A B] (I : Submodule B (FractionRing B)) :
     (traceDual A (FractionRing A) I).map (FractionRing.algEquiv B L) =
       traceDual A K (I.map (FractionRing.algEquiv B L)) := by
-  show Submodule.map (FractionRing.algEquiv B L).toLinearEquiv.toLinearMap _ =
-    traceDual A K (I.map (FractionRing.algEquiv B L).toLinearEquiv.toLinearMap)
+  show Submodule.map (FractionRing.algEquiv B L).toLinearEquiv _ =
+    traceDual A K (I.map (FractionRing.algEquiv B L).toLinearEquiv)
   rw [Submodule.map_equiv_eq_comap_symm, Submodule.map_equiv_eq_comap_symm]
   ext x
   simp only [AlgEquiv.toLinearEquiv_symm, AlgEquiv.toLinearEquiv_toLinearMap,
@@ -130,7 +130,7 @@ lemma map_equiv_traceDual [IsDomain A] [IsFractionRing B L] [IsDomain B]
     Submodule.mem_mk, AddSubmonoid.mem_mk, AddSubsemigroup.mem_mk, Set.mem_setOf_eq]
   apply (FractionRing.algEquiv B L).forall_congr
   simp only [restrictScalars_mem, traceForm_apply, AlgEquiv.toEquiv_eq_coe,
-    EquivLike.coe_coe, mem_comap, AlgEquiv.toLinearMap_apply, AlgEquiv.symm_apply_apply]
+    EquivLike.coe_coe, mem_comap, AlgEquiv.toLinearEquiv_apply, AlgEquiv.symm_apply_apply]
   refine fun {y} ↦ (forall_congr' fun hy ↦ ?_)
   rw [Algebra.trace_eq_of_equiv_equiv (FractionRing.algEquiv A K).toRingEquiv
     (FractionRing.algEquiv B L).toRingEquiv]
@@ -423,8 +423,8 @@ lemma coeSubmodule_differentIdeal [NoZeroSMulDivisors A B] :
     Algebra.linearMap B L := by ext; simp
   rw [coeSubmodule, ← this]
   have H : RingHom.comp (algebraMap (FractionRing A) (FractionRing B))
-      ↑(FractionRing.algEquiv A K).symm.toRingEquiv =
-        RingHom.comp ↑(FractionRing.algEquiv B L).symm.toRingEquiv (algebraMap K L) := by
+      (FractionRing.algEquiv A K).symm =
+        RingHom.comp (FractionRing.algEquiv B L).symm (algebraMap K L) := by
     apply IsLocalization.ringHom_ext A⁰
     ext
     simp only [AlgEquiv.toRingEquiv_eq_coe, RingHom.coe_comp, RingHom.coe_coe,
@@ -435,9 +435,8 @@ lemma coeSubmodule_differentIdeal [NoZeroSMulDivisors A B] :
     Algebra.IsSeparable.of_equiv_equiv _ _ H
   have : FiniteDimensional (FractionRing A) (FractionRing B) := Module.Finite.of_equiv_equiv _ _ H
   have : Algebra.IsIntegral A B := IsIntegralClosure.isIntegral_algebra _ L
-  simp only [AlgEquiv.toLinearEquiv_toLinearMap, Submodule.map_comp]
-  rw [← coeSubmodule, coeSubmodule_differentIdeal_fractionRing _ _,
-    Submodule.map_div, ← AlgEquiv.toAlgHom_toLinearMap, Submodule.map_one]
+  rw [Submodule.map_comp, ← coeSubmodule, coeSubmodule_differentIdeal_fractionRing _ _]
+  erw [Submodule.map_div, Submodule.map_one]
   congr 1
   refine (map_equiv_traceDual A K _).trans ?_
   congr 1
