@@ -241,7 +241,7 @@ instance (priority := 100) charZero_rclike : CharZero K :=
 lemma ofReal_expect {α : Type*} (s : Finset α) (f : α → ℝ) : 𝔼 i ∈ s, f i = 𝔼 i ∈ s, (f i : K) :=
   map_expect (algebraMap ..) ..
 
-@[simp, norm_cast]
+@[norm_cast]
 lemma ofReal_balance {ι : Type*} [Fintype ι] (f : ι → ℝ) (i : ι) :
     (↑(balance f i) : K) = balance ((↑) ∘ f) i := map_balance (algebraMap ..) ..
 
