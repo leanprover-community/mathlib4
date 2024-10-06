@@ -66,7 +66,7 @@ theorem over_right (U : Over X) : U.right = ⟨⟨⟩⟩ := by simp only
 theorem id_left (U : Over X) : CommaMorphism.left (𝟙 U) = 𝟙 U.left :=
   rfl
 
-@[simp]
+@[simp, reassoc]
 theorem comp_left (a b c : Over X) (f : a ⟶ b) (g : b ⟶ c) : (f ≫ g).left = f.left ≫ g.left :=
   rfl
 
