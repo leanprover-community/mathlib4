@@ -75,7 +75,7 @@ namespace WithAbs
 variable {K : Type*} [Field K] (v : AbsoluteValue K ℝ)
 
 instance normedField : NormedField (WithAbs v) :=
-  v.normedField
+  v.toNormedField
 
 instance : Inhabited (WithAbs v) := ⟨0⟩
 
@@ -135,9 +135,6 @@ variable {K : Type*} [Field K] (v : AbsoluteValue K ℝ)
 abbrev completion := UniformSpace.Completion (WithAbs v)
 
 namespace Completion
-
-instance : NormedRing v.completion :=
-  UniformSpace.Completion.instNormedRing _
 
 instance : Coe K v.completion :=
   inferInstanceAs (Coe (WithAbs v) (UniformSpace.Completion (WithAbs v)))
