@@ -66,8 +66,8 @@ noncomputable def absNorm : FractionalIdeal R⁰ K →*₀ ℚ where
   map_mul' I J := by
     dsimp only
     rw [absNorm_div_norm_eq_absNorm_div_norm (I.den * J.den) (I.num * J.num) (by
-        have : Algebra.linearMap R K = (IsScalarTower.toAlgHom R R K).toLinearMap := rfl
-        rw [coe_mul, this, Submodule.map_mul, ← this, ← den_mul_self_eq_num, ← den_mul_self_eq_num]
+        change _ = Submodule.map (IsScalarTower.toAlgHom R R K) _
+        erw [coe_mul, Submodule.map_mul, ← den_mul_self_eq_num, ← den_mul_self_eq_num]
         exact Submodule.mul_smul_mul_eq_smul_mul_smul _ _ _ _),
       Submonoid.coe_mul, _root_.map_mul, _root_.map_mul, Nat.cast_mul, div_mul_div_comm,
       Int.cast_abs, Int.cast_abs, Int.cast_abs, ← abs_mul, Int.cast_mul]
