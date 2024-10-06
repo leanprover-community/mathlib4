@@ -235,7 +235,7 @@ theorem ι_range_comap_reverse : (ι Q).range.comap reverse = LinearMap.range (�
 /-- Like `Submodule.map_mul`, but with the multiplication reversed. -/
 theorem submodule_map_mul_reverse (p q : Submodule R (CliffordAlgebra Q)) :
     (p * q).map reverse = q.map reverse * p.map reverse := by
-  simp_rw [reverse, Submodule.map_comp, Submodule.map_mul]; erw [Submodule.map_unop_mul]; rfl
+  simp_rw [reverse, Submodule.map_comp]; erw [Submodule.map_mul, Submodule.map_unop_mul]; rfl
 
 theorem submodule_comap_mul_reverse (p q : Submodule R (CliffordAlgebra Q)) :
     (p * q).comap reverse = q.comap reverse * p.comap reverse := by
@@ -244,7 +244,7 @@ theorem submodule_comap_mul_reverse (p q : Submodule R (CliffordAlgebra Q)) :
 /-- Like `Submodule.map_pow` -/
 theorem submodule_map_pow_reverse (p : Submodule R (CliffordAlgebra Q)) (n : ℕ) :
     (p ^ n).map reverse = p.map reverse ^ n := by
-  simp_rw [reverse, Submodule.map_comp, Submodule.map_pow, Submodule.map_unop_pow]
+  simp_rw [reverse, Submodule.map_comp]; erw [Submodule.map_pow, Submodule.map_unop_pow]; rfl
 
 theorem submodule_comap_pow_reverse (p : Submodule R (CliffordAlgebra Q)) (n : ℕ) :
     (p ^ n).comap reverse = p.comap reverse ^ n := by
