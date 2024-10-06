@@ -105,13 +105,15 @@ abbrev binders : NameSet := NameSet.empty
   |>.insert ``Lean.Parser.Term.instBinder
 
 partial
-def findBinders : Syntax → Array Syntax
- | (.node _ _ args) =>
-    if binders.contains (args[0]?.getD default).getKind then
-      args
-    else
-      (args.map findBinders).flatten
-  | _ => #[]
+def findBinders (stx : Syntax) : Array Syntax :=
+  stx.filter (binders.contains ·.getKind)
+
+def getExtendBinders {m} [Monad m] [MonadRef m] [MonadQuotation m] (stx : Syntax) : m (Array Syntax) := do
+  if let some exts := stx.find? (·.isOfKind ``Lean.Parser.Command.extends) then
+    let exts := exts[1].getArgs.filter (·.getAtomVal != ",")
+    let exts ← exts.mapM (`(Lean.Parser.Term.instBinder| [$(⟨·⟩)]))
+    return exts
+  else return #[]
 
 variable
   (nm : Ident)
@@ -121,13 +123,20 @@ def mkThmCore : CommandElabM Syntax :=
   `(command| theorem $nm $binders* : $(⟨typ⟩) := by included_variables plumb; sorry)
 
 def getPropValue {m} [Monad m] [MonadRef m] [MonadQuotation m] (stx : Syntax) : m Syntax := do
+  let flse ← `($(mkIdent `False))
+  if (stx.find? (·.isOfKind ``Lean.Parser.Command.structure)).isSome then
+    return flse
   if let some ts := stx.find? (·.isOfKind ``Parser.Term.typeSpec) then
     `($(mkIdent `toFalse) $(⟨ts[1]⟩))
   else
-    `($(mkIdent `False))
+    return flse
 
 def mkThmWithHyps (cmd : Syntax) (nm : Ident) : CommandElabM Syntax := do
   mkThmCore nm ((findBinders cmd).map (⟨·⟩)) (← getPropValue cmd)
+
+def mkNewThm (cmd : Syntax) : CommandElabM Syntax := do
+  let exts ← getExtendBinders cmd
+  mkThmCore (mkIdent `helr) ((findBinders cmd ++ exts).map (⟨·⟩)) (← getPropValue cmd)
 
 /-
   if let some stx := stx.raw.find? (·.isOfKind ``Lean.Parser.Command.declaration) then
