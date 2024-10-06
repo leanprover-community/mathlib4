@@ -31,6 +31,13 @@ namespace Derivation
 
 variable {M φ}
 
+@[ext]
+lemma ext {d d' : M.Derivation φ}
+    (h : ∀ (X : Dᵒᵖ) (x : R.val.obj X), d.d x = d'.d x) : d = d' := by
+  dsimp only [Derivation]
+  ext
+  apply h
+
 def postcomp (d : M.Derivation φ) {N} (f : M ⟶ N) : N.Derivation φ :=
   PresheafOfModules.Derivation.postcomp d f.val
 
@@ -40,6 +47,13 @@ def abSheafHom (d : M.Derivation φ) [K.HasSheafCompose (forget₂ CommRingCat.{
   val :=
     { app := fun _ ↦ d.d
       naturality := fun _ _ f ↦ by ext; apply d.d_map }
+
+lemma abSheafHom_injective
+    {d d' : M.Derivation φ} [K.HasSheafCompose (forget₂ CommRingCat.{u} Ab.{u})]
+    (h : d.abSheafHom = d'.abSheafHom) : d = d' := by
+  ext X x
+  change d.abSheafHom.val.app X x = d'.abSheafHom.val.app X x
+  rw [h]
 
 end Derivation
 
@@ -113,18 +127,37 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   [Functor.IsContinuous.{u} F J K]
   {φ : S ⟶ (F.sheafPushforwardContinuous CommRingCat.{u} J K).obj R}
   {M₀ : PresheafOfModules.{u} (R.val ⋙ forget₂ _ _)}
-  {M : SheafOfModules.{u} ((sheafCompose K (forget₂ CommRingCat RingCat)).obj R)}
   (d₀ : M₀.Derivation (F := F) φ.val)
-  (hd₀ : d₀.Universal) (α : M₀ ⟶ M.val)
+  [K.WEqualsLocallyBijective AddCommGrp.{u}]
+  [HasWeakSheafify K AddCommGrp.{u}]
 
-def sheafify : M.Derivation φ := d₀.postcomp α
+variable (R) in
+noncomputable abbrev sheafificationComm :=
+    (PresheafOfModules.sheafification
+      (R₀ := R.val ⋙ forget₂ _ _)
+      (R := ((sheafCompose K (forget₂ CommRingCat RingCat)).obj R)) (α := 𝟙 _))
+
+variable (R) in
+noncomputable abbrev sheafificationAdjunctionComm :=
+    (PresheafOfModules.sheafificationAdjunction
+      (R₀ := R.val ⋙ forget₂ _ _)
+      (R := ((sheafCompose K (forget₂ CommRingCat RingCat)).obj R)) (α := 𝟙 _))
+
+noncomputable def sheafify : ((sheafificationComm R).obj M₀).Derivation φ :=
+  d₀.postcomp ((sheafificationAdjunctionComm R).unit.app M₀)
 
 variable {d₀}
 
-def Universal.sheafify [IsLocallyInjective K α] [IsLocallySurjective K α] :
-    (d₀.sheafify α).Universal := by
-  have := hd₀
-  sorry
+noncomputable def Universal.sheafify (hd₀ : d₀.Universal) : d₀.sheafify.Universal where
+  desc d :=
+    ((sheafificationAdjunctionComm R).homEquiv _ _ ).symm (hd₀.desc d)
+  fac {M'} d := by
+    dsimp [Derivation.sheafify, SheafOfModules.Derivation.postcomp]
+    rw [← postcomp_comp]
+    erw [Adjunction.unit_naturality_assoc, Adjunction.right_triangle_components]
+    rw [Category.comp_id, hd₀.fac d]
+  postcomp_injective {M' f f'} h :=
+    ((sheafificationAdjunctionComm R).homEquiv _ _).injective (hd₀.postcomp_injective h)
 
 end Derivation
 
@@ -144,16 +177,7 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   [HasWeakSheafify K AddCommGrp.{u}]
 
 instance [PresheafOfModules.HasDifferentials (F := F) φ.val] :
-    SheafOfModules.HasDifferentials φ := by
-  let M₀ := PresheafOfModules.relativeDifferentials (F := F) φ.val
-  let α : R.val ⋙ forget₂ _ _ ⟶ ((sheafCompose K (forget₂ CommRingCat RingCat)).obj R).val := 𝟙 _
-  let adj := PresheafOfModules.sheafificationAdjunction α
-  let β : M₀ ⟶ ((PresheafOfModules.sheafification α).obj M₀).val := adj.unit.app M₀
-  have hd₀ := PresheafOfModules.universalUniversalDerivation (F := F) φ.val
-  have : PresheafOfModules.IsLocallyInjective K β := by
-    apply GrothendieckTopology.instIsLocallyInjectiveToSheafify -- to be cleaned up
-  have : PresheafOfModules.IsLocallySurjective K β := by
-    apply GrothendieckTopology.instIsLocallySurjectiveToSheafify -- to be cleaned up
-  exact (PresheafOfModules.Derivation.Universal.sheafify hd₀ β).hasDifferentials
+    SheafOfModules.HasDifferentials φ :=
+  (PresheafOfModules.universalUniversalDerivation _).sheafify.hasDifferentials
 
 end SheafOfModules
