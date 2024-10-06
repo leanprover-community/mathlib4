@@ -53,7 +53,7 @@ def map (f : F) (p : Submodule R M) : Submodule R₂ M₂ :=
       obtain ⟨a, rfl⟩ := σ₁₂.surjective c
       exact ⟨_, p.smul_mem a hy, map_smulₛₗ f _ _⟩ }
 
-theorem map_semiLinearMap (f : F) : map (f : M →ₛₗ[σ₁₂] M₂) = map f := rfl
+theorem map_semilinearMap (f : F) : map (f : M →ₛₗ[σ₁₂] M₂) = map f := rfl
 
 @[simp]
 theorem map_coe (f : F) (p : Submodule R M) : (map f p : Set M₂) = f '' p :=
@@ -171,7 +171,7 @@ def comap [SemilinearMapClass F σ₁₂ M M₂] (f : F) (p : Submodule R₂ M�
     -- Note: #8386 added `map_smulₛₗ _`
     smul_mem' := fun a x h => by simp [p.smul_mem (σ₁₂ a) h, map_smulₛₗ _] }
 
-theorem comap_semiLinearMap (f : F) : comap (f : M →ₛₗ[σ₁₂] M₂) = comap f := rfl
+theorem comap_semilinearMap (f : F) : comap (f : M →ₛₗ[σ₁₂] M₂) = comap f := rfl
 
 @[simp]
 theorem comap_coe (f : F) (p : Submodule R₂ M₂) : (comap f p : Set M) = f ⁻¹' p :=

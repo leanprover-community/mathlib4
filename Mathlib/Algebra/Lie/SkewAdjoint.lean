@@ -61,16 +61,15 @@ variable {N : Type w} [AddCommGroup N] [Module R N] (e : N ≃ₗ[R] M)
 /-- An equivalence of modules with bilinear forms gives equivalence of Lie algebras of skew-adjoint
 endomorphisms. -/
 def skewAdjointLieSubalgebraEquiv :
-    skewAdjointLieSubalgebra (B.compl₁₂ (↑e : N →ₗ[R] M) ↑e) ≃ₗ⁅R⁆ skewAdjointLieSubalgebra B := by
+    skewAdjointLieSubalgebra (B.compl₁₂ (e : N →ₗ[R] M) e) ≃ₗ⁅R⁆ skewAdjointLieSubalgebra B := by
   apply LieEquiv.ofSubalgebras _ _ e.lieConj
   ext f
-  simp only [LieSubalgebra.mem_coe, Submodule.mem_map_equiv, LieSubalgebra.mem_map_submodule,
-    LinearEquiv.coe_coe]
+  rw [LieSubalgebra.mem_map_submodule, Submodule.mem_map_equiv]
   exact (LinearMap.isPairSelfAdjoint_equiv (B := -B) (F := B) e f).symm
 
 @[simp]
 theorem skewAdjointLieSubalgebraEquiv_apply
-    (f : skewAdjointLieSubalgebra (B.compl₁₂ (Qₗ := N) (Qₗ' := N) ↑e ↑e)) :
+    (f : skewAdjointLieSubalgebra (B.compl₁₂ (Qₗ := N) (Qₗ' := N) e e)) :
     ↑(skewAdjointLieSubalgebraEquiv B e f) = e.lieConj f := by
   simp [skewAdjointLieSubalgebraEquiv]
 
