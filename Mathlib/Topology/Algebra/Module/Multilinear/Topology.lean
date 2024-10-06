@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Topology.Algebra.Module.Multilinear.Bounded
 import Mathlib.Topology.Algebra.Module.UniformConvergence
-import Mathlib.Topology.ContinuousMap.ContinuousEval
+import Mathlib.Topology.ContinuousEvalConst
 
 /-!
 # Topology on continuous multilinear maps

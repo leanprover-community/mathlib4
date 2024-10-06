@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
 import Mathlib.Topology.Algebra.Module.UniformConvergence
-import Mathlib.Topology.ContinuousMap.ContinuousEval
+import Mathlib.Topology.ContinuousEvalConst
 
 /-!
 # Strong topologies on the space of continuous linear maps
