@@ -297,6 +297,17 @@ lemma shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd'_hom_app (m₁ m₂ m�
   rw [shiftFunctorAdd'_assoc_hom_app m₁ m₂ m₃ (m₁ + m₂) m (m₁ + m) rfl hm (by rw [add_assoc, hm])]
   simp only [Functor.comp_obj, Iso.inv_hom_id_app_assoc]
 
+end Shift
+
+section Shift
+
+variable {C : Type u} {A : Type*} [CategoryTheory.Category.{v, u} C] [AddMonoid A]
+  [CategoryTheory.HasShift C A]
+
+attribute [local instance] endofunctorMonoidalCategory
+
+open Category
+
 lemma shiftFunctorAdd_symm_eqToIso (i j i' j' : A) (hi : i = i') (hj : j = j') :
     (shiftFunctorAdd C i j).symm = eqToIso (by rw [hi, hj]) ≪≫
     (shiftFunctorAdd C i' j').symm ≪≫ eqToIso (by rw [hi, hj]) := by
@@ -360,6 +371,22 @@ lemma shiftFunctorAdd'_eqToIso (i j k i' j' k' : A) (h : i + j = k) (h' : i' + j
   ext X
   simp only [Functor.comp_obj, Iso.trans_hom, eqToIso.hom, eqToHom_trans_assoc, NatTrans.comp_app,
     eqToHom_app, Iso.trans_assoc]
+
+variable (C)
+
+lemma shiftFunctorAdd'_add_zero' (a b : A) (hb : b = 0) (h : a + b = a) :
+    shiftFunctorAdd' C a b a h = (Functor.rightUnitor _).symm ≪≫
+    isoWhiskerLeft (shiftFunctor C a) (shiftFunctorZero' C b hb).symm := by
+  rw [shiftFunctorAdd'_eqToIso a b a a 0 a (by simp [hb]) (by simp) rfl hb,
+    shiftFunctorAdd'_add_zero]
+  aesop
+
+lemma shiftFunctorAdd'_zero_add' (a b : A) (ha : a = 0) (h : a + b = b) :
+    shiftFunctorAdd' C a b b h = (Functor.leftUnitor _).symm ≪≫
+    isoWhiskerRight (shiftFunctorZero' C a ha).symm (shiftFunctor C b) := by
+  rw [shiftFunctorAdd'_eqToIso a b b 0 b b (by simp [ha]) (by simp) ha rfl,
+    shiftFunctorAdd'_zero_add]
+  aesop
 
 end Shift
 

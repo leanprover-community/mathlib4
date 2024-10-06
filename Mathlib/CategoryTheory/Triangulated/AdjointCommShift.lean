@@ -1,6 +1,7 @@
 import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Adjunction.Unique
 import Mathlib.CategoryTheory.Adjunction.Basic
+import Mathlib.CategoryTheory.Triangulated.Lemmas
 
 section MiseAJour
 
@@ -138,6 +139,23 @@ lemma right_to_left_iso_apply (adj : F ⊣ G) (commG : CommShift G A) (a : A) (X
   have := ((Adjunction.comp (shiftEquiv C a).symm.toAdjunction adj).homEquiv X Y)
   sorry
 
+lemma lemme1 (X : C) (Y : D) (u : F.obj X ⟶ Y⟦(0 : A)⟧) :
+    ((shiftEquiv D (0 : A)).symm.toAdjunction.homEquiv (F.obj X) Y).invFun u =
+    ((shiftFunctorZero' D (-0 : A) neg_zero).app (F.obj X)).hom ≫ u ≫
+    ((shiftFunctorZero D A).app Y).hom := by
+  simp
+  conv_rhs => erw [← assoc, ← (shiftFunctorZero' D (-0 : A) neg_zero).hom.naturality u]
+  rw [assoc]
+  congr 1
+  have heq : (shiftEquiv D (0 : A)).symm.counit.app Y =
+      (CategoryTheory.shiftFunctorCompIsoId D (0 : A) (-0) (by simp)).hom.app Y := by
+    change (shiftEquiv D (0 : A)).symm.counitIso.hom.app Y = _
+    rw [Equivalence.symm_counitIso]
+    simp
+  rw [heq]
+  simp [shiftFunctorCompIsoId]
+  rw [shiftFunctorAdd'_add_zero' D (0 : A) (-0) (by simp) (by simp)]
+  simp
 
 noncomputable def left_to_right (adj : F ⊣ G) (commF : CommShift F A) :
     CommShift G A where
@@ -146,6 +164,7 @@ noncomputable def left_to_right (adj : F ⊣ G) (commF : CommShift F A) :
     ext Y
     apply Functor.map_injective (yoneda (C := C))
     ext X u
+    simp at u
     rw [left_to_right_iso_apply''']
     simp only [Equivalence.symm_inverse, shiftEquiv'_functor, comp_obj, yoneda_obj_obj,
       Equivalence.symm_functor, shiftEquiv'_inverse, comp_homEquiv, Iso.trans_hom, Equiv.toIso_hom,
