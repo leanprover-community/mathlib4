@@ -1,7 +1,19 @@
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov
+-/
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.QuotientGroup.Basic
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Maps.OpenQuotient
+
+/-!
+# Topology on the quotient group
+
+In this file we define topology on `G ⧸ N`, where `N` is a subgroup of `G`,
+and prove basic properties of this topology.
+-/
 
 open scoped Pointwise Topology
 
