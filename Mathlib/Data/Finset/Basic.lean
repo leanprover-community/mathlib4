@@ -807,6 +807,11 @@ theorem ssubset_iff_exists_cons_subset : s ⊂ t ↔ ∃ (a : _) (h : a ∉ s), 
   obtain ⟨a, hs, ht⟩ := not_subset.1 h.2
   exact ⟨a, ht, cons_subset.2 ⟨hs, h.subset⟩⟩
 
+theorem cons_swap (hb : b ∉ s) (ha : a ∉ s.cons b hb) :
+    (s.cons b hb).cons a ha = (s.cons a fun h ↦ ha (mem_cons.mpr (.inr h))).cons b fun h ↦
+      ha (mem_cons.mpr (.inl ((mem_cons.mp h).elim symm (fun h ↦ False.elim (hb h))))) :=
+  eq_of_veq <| Multiset.cons_swap a b s.val
+
 end Cons
 
 /-! ### disjoint -/
@@ -3093,4 +3098,4 @@ def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
 
 end Mathlib.Meta
 
-set_option linter.style.longFile 3100
+set_option linter.style.longFile 3200
