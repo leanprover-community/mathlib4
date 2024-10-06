@@ -168,6 +168,72 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} (f : N → M → M'
     exact fun y hy ↦ by simp [h'x, hy]
   have h2g : g ⁻¹' (extChartAt I (g x₀)).source ∈ 𝓝[t] x₀ :=
     hg.continuousWithinAt.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds I (g x₀))
+  have : ContDiffWithinAt 𝕜 m (fun x ↦ fderivWithin 𝕜
+        (extChartAt I' (f x₀ (g x₀)) ∘ f ((extChartAt J x₀).symm x) ∘ (extChartAt I (g x₀)).symm)
+        (range I ∩ (extChartAt I (g x₀)).symm ⁻¹' u) (extChartAt I (g x₀) (g ((extChartAt J x₀).symm x))))
+      (range J) (extChartAt J x₀ x₀) := by
+    rw [contMDiffWithinAt_iff] at hf hg
+    simp_rw [Function.comp_def, uncurry, extChartAt_prod, PartialEquiv.prod_coe_symm,
+      ModelWithCorners.range_prod] at hf ⊢
+    sorry
+    /-refine ContDiffWithinAt.fderivWithin ?_ ?_ I.uniqueDiffOn hmn (mem_range_self _) ?_
+    · simp_rw [extChartAt_to_inv]; exact hf.2
+    · rw [← image_subset_iff]
+      rintro _ ⟨x, -, rfl⟩
+      exact mem_range_self _-/
+  -- (range ↑I ∩ ↑(extChartAt I (g x₀)).symm ⁻¹' u)
+  have :
+    ContMDiffWithinAt J 𝓘(𝕜, E →L[𝕜] E') m
+      (fun x =>
+        fderivWithin 𝕜 (extChartAt I' (f x₀ (g x₀)) ∘ f x ∘ (extChartAt I (g x₀)).symm)
+        (range I ∩ (extChartAt I (g x₀)).symm ⁻¹' u)
+          (extChartAt I (g x₀) (g x))) t x₀ := by
+    simp_rw [contMDiffWithinAt_iff_source_of_mem_source (mem_chart_source G x₀),
+      contMDiffWithinAt_iff_contDiffWithinAt, Function.comp_def]
+    exact this
+  apply this.congr_of_eventuallyEq
+  filter_upwards [h2f, h4f, h2g] with x hx h'x h2
+  have A : mfderivWithin 𝓘(𝕜, E) I ((extChartAt I (g x₀)).symm)
+        (range I) ((extChartAt I (g x₀)) (g x))
+      = mfderivWithin 𝓘(𝕜, E) I ((extChartAt I (g x₀)).symm)
+        (range ↑I ∩ ↑(extChartAt I (g x₀)).symm ⁻¹' u) ((extChartAt I (g x₀)) (g x)) := by
+    symm
+    apply MDifferentiableWithinAt.mfderivWithin_mono
+    · apply mdifferentiableWithinAt_extChartAt_symm
+      exact PartialEquiv.map_source (extChartAt I (g x₀)) h2
+    · exact
+  rw [inTangentCoordinates_eq_mfderiv_comp, A,
+    ← mfderivWithin_comp_of_eq, ← mfderiv_comp_mfderivWithin_of_eq]
+  · exact mfderivWithin_eq_fderivWithin
+  · exact mdifferentiableAt_extChartAt _ (by simpa using h'x)
+  · apply MDifferentiableAt.comp_mdifferentiableWithinAt (I' := I)
+    · convert hx.mdifferentiableAt le_rfl
+      exact PartialEquiv.left_inv (extChartAt I (g x₀)) h2
+    · apply mdifferentiableWithinAt_extChartAt_symm
+      exact PartialEquiv.map_source (extChartAt I (g x₀)) h2
+  · apply UniqueDiffWithinAt.uniqueMDiffWithinAt
+    apply I.uniqueDiffOn _ (mem_range_self _)
+  · simp only [Function.comp_def, PartialEquiv.left_inv (extChartAt I (g x₀)) h2]
+  · exact hx.mdifferentiableAt le_rfl
+  · apply mdifferentiableWithinAt_extChartAt_symm
+    exact PartialEquiv.map_source (extChartAt I (g x₀)) h2
+  · apply UniqueDiffWithinAt.uniqueMDiffWithinAt
+    exact I.uniqueDiffOn _ (mem_range_self _)
+  · exact PartialEquiv.left_inv (extChartAt I (g x₀)) h2
+  · simpa using h2
+  · simpa using h'x
+
+
+
+
+
+
+
+
+
+
+#exit
+
   letI _inst : ∀ x, NormedAddCommGroup (TangentSpace I (g x)) :=
     fun _ => inferInstanceAs (NormedAddCommGroup E)
   letI _inst : ∀ x, NormedSpace 𝕜 (TangentSpace I (g x)) :=

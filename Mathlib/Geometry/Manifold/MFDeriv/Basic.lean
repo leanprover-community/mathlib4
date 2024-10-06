@@ -535,6 +535,11 @@ theorem MDifferentiableWithinAt.mfderivWithin_congr_mono (h : MDifferentiableWit
     mfderivWithin I I' f₁ t x = (mfderivWithin I I' f s x : _) :=
   (HasMFDerivWithinAt.congr_mono h.hasMFDerivWithinAt hs hx h₁).mfderivWithin hxt
 
+theorem MDifferentiableWithinAt.mfderivWithin_mono (h : MDifferentiableWithinAt I I' f s x)
+    (hxt : UniqueMDiffWithinAt I t x) (h₁ : t ⊆ s) :
+    mfderivWithin I I' f t x = mfderivWithin I I' f s x :=
+  h.mfderivWithin_congr_mono (fun _ _ ↦ rfl) rfl hxt h₁
+
 theorem Filter.EventuallyEq.mfderivWithin_eq (hs : UniqueMDiffWithinAt I s x) (hL : f₁ =ᶠ[𝓝[s] x] f)
     (hx : f₁ x = f x) : mfderivWithin I I' f₁ s x = (mfderivWithin I I' f s x : _) := by
   by_cases h : MDifferentiableWithinAt I I' f s x
