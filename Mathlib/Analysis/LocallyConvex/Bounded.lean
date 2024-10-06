@@ -181,27 +181,57 @@ lemma isVonNBounded_iff_absorbing_le {𝕜 E : Type*} [NormedDivisionRing 𝕜]
     IsVonNBounded 𝕜 S ↔ Filter.absorbing 𝕜 S ≤ 𝓝 0 :=
   .rfl
 
+lemma isVonNBounded_iInf_iff {𝕜 : Type*} {ι : Sort*} {t : ι → TopologicalSpace E}
+    [NormedDivisionRing 𝕜] [AddCommGroup E] [Module 𝕜 E] {S : Set E} :
+    @IsVonNBounded 𝕜 _ _ _ _ (⨅ i, t i) S ↔ ∀ i, @IsVonNBounded 𝕜 _ _ _ _ (t i) S := by
+  simp_rw [isVonNBounded_iff_tendsto_smallSets_nhds, nhds_iInf, smallSets_iInf, tendsto_iInf]
+
+lemma isVonNBounded_induced_iff {𝕜₁ 𝕜₂ hom : Type*}
+    [NormedDivisionRing 𝕜₁] [NormedDivisionRing 𝕜₂]
+    {σ : 𝕜₁ →+* 𝕜₂} [RingHomSurjective σ] [RingHomIsometric σ]
+    [AddCommGroup E] [AddCommGroup F] [Module 𝕜₁ E] [Module 𝕜₂ F] [tf : TopologicalSpace F]
+    [FunLike hom E F] [MulActionSemiHomClass hom σ E F] [ZeroHomClass hom E F] (h : hom)
+    {S : Set E} :
+    @IsVonNBounded 𝕜₁ _ _ _ _ (tf.induced h) S ↔ IsVonNBounded 𝕜₂ (h '' S) := by
+  have σ_iso : Isometry σ := AddMonoidHomClass.isometry_of_norm σ fun x => RingHomIsometric.is_iso
+  have : map σ (𝓝 0) = 𝓝 0 := by
+    rw [σ_iso.embedding.map_nhds_eq, σ.surjective.range_eq, nhdsWithin_univ, map_zero]
+  simp_rw [isVonNBounded_iff_tendsto_smallSets_nhds, ← this, nhds_induced, map_zero,
+    smallSets_comap_eq_comap_image, tendsto_comap_iff, tendsto_map'_iff, comp_def,
+    image_smul_setₛₗ _ _ σ h]
+
+/-- The forward direction of `isVonNBounded_induced_iff`, with weaker typeclass assumptions
+on `𝕜₁` and `𝕜₂`. -/
+lemma IsVonNBounded.image_of_induced {𝕜₁ 𝕜₂ hom : Type*} [SeminormedRing 𝕜₁] [SeminormedRing 𝕜₂]
+    {σ : 𝕜₁ →+* 𝕜₂} [RingHomSurjective σ] [RingHomIsometric σ]
+    [AddCommGroup E] [AddCommGroup F] [Module 𝕜₁ E] [Module 𝕜₂ F] [tf : TopologicalSpace F]
+    [FunLike hom E F] [MulActionSemiHomClass hom σ E F] [ZeroHomClass hom E F] (h : hom)
+    {S : Set E} (H : @IsVonNBounded 𝕜₁ _ _ _ _ (tf.induced h) S) :
+     IsVonNBounded 𝕜₂ (h '' S) := by
+  have σ_iso : Isometry σ := AddMonoidHomClass.isometry_of_norm σ fun x => RingHomIsometric.is_iso
+  have : map σ (cobounded 𝕜₁) = cobounded 𝕜₂ := by
+    rw [← Dilation.comap_cobounded σ_iso.toDilation, funext (σ_iso.toDilation_toFun _),
+      map_comap_of_surjective RingHomSurjective.is_surjective]
+  simp_rw [IsVonNBounded, nhds_induced, map_zero, Absorbs, ← this, eventually_map,
+    image_subset_iff] at H ⊢
+  intro U hU
+  filter_upwards [H (preimage_mem_comap hU)] with k hk
+  exact hk.trans <| smul_preimage_set_leₛₗ _ _ _ _ _ _
+
 lemma isVonNBounded_pi_iff {𝕜 ι : Type*} {E : ι → Type*} [NormedDivisionRing 𝕜]
     [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)]
     {S : Set (∀ i, E i)} : IsVonNBounded 𝕜 S ↔ ∀ i, IsVonNBounded 𝕜 (eval i '' S) := by
-  simp_rw [isVonNBounded_iff_tendsto_smallSets_nhds, nhds_pi, Filter.pi, smallSets_iInf,
-    smallSets_comap_eq_comap_image, tendsto_iInf, tendsto_comap_iff, Function.comp_def,
-    ← image_smul, image_image, eval, Pi.smul_apply, Pi.zero_apply]
+  simp [isVonNBounded_iInf_iff, isVonNBounded_induced_iff (σ := .id 𝕜) (ContinuousLinearMap.proj _)]
 
 section Image
 
-variable {𝕜₁ 𝕜₂ : Type*} [NormedDivisionRing 𝕜₁] [NormedDivisionRing 𝕜₂] [AddCommGroup E]
+variable {𝕜₁ 𝕜₂ : Type*} [SeminormedRing 𝕜₁] [SeminormedRing 𝕜₂] [AddCommGroup E]
   [Module 𝕜₁ E] [AddCommGroup F] [Module 𝕜₂ F] [TopologicalSpace E] [TopologicalSpace F]
 
 /-- A continuous linear image of a bounded set is bounded. -/
 theorem IsVonNBounded.image {σ : 𝕜₁ →+* 𝕜₂} [RingHomSurjective σ] [RingHomIsometric σ] {s : Set E}
-    (hs : IsVonNBounded 𝕜₁ s) (f : E →SL[σ] F) : IsVonNBounded 𝕜₂ (f '' s) := by
-  have σ_iso : Isometry σ := AddMonoidHomClass.isometry_of_norm σ fun x => RingHomIsometric.is_iso
-  have : map σ (𝓝 0) = 𝓝 0 := by
-    rw [σ_iso.embedding.map_nhds_eq, σ.surjective.range_eq, nhdsWithin_univ, map_zero]
-  have hf₀ : Tendsto f (𝓝 0) (𝓝 0) := f.continuous.tendsto' 0 0 (map_zero f)
-  simp only [isVonNBounded_iff_tendsto_smallSets_nhds, ← this, tendsto_map'_iff] at hs ⊢
-  simpa only [comp_def, image_smul_setₛₗ _ _ σ f] using hf₀.image_smallSets.comp hs
+    (hs : IsVonNBounded 𝕜₁ s) (f : E →SL[σ] F) : IsVonNBounded 𝕜₂ (f '' s) :=
+  .image_of_induced f <| hs.of_topologicalSpace_le f.continuous.le_induced
 
 end Image
 

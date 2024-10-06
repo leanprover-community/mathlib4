@@ -38,9 +38,44 @@ uniform convergence, strong dual
 
 -/
 
-open Filter
+open Filter Bornology Set
 
 open scoped Topology Pointwise UniformConvergence Uniformity
+
+section Bounded
+
+lemma UniformFun.isVonNBounded_iff {𝕜 α E : Type*} [SeminormedRing 𝕜]
+    [AddCommGroup E] [Module 𝕜 E] [UniformSpace E] [UniformAddGroup E] (S : Set (α →ᵤ E)) :
+    Bornology.IsVonNBounded 𝕜 S ↔ Bornology.IsVonNBounded 𝕜 (image2 (fun f x ↦ f x) S univ) := by
+  simp_rw [UniformFun.hasBasis_nhds_zero.isVonNBounded_iff, IsVonNBounded,
+    UniformFun, ← absorbs_pi_univ_iff, pi_def, biInter_univ, preimage,
+    iInter_setOf]
+
+alias ⟨UniformFun.isVonNBounded_image2, _⟩ := UniformFun.isVonNBounded_iff
+
+lemma UniformOnFun.isVonNBounded_iff {𝕜 α E : Type*} {𝔖 : Set (Set α)}
+    [NormedDivisionRing 𝕜] [AddCommGroup E] [Module 𝕜 E] [UniformSpace E] [UniformAddGroup E]
+    (S : Set (α →ᵤ[𝔖] E)) :
+    Bornology.IsVonNBounded 𝕜 S ↔
+      ∀ s ∈ 𝔖, Bornology.IsVonNBounded 𝕜 (image2 (fun f x ↦ f x) S s) := by
+  set φ : Π s : Set α, (α →ᵤ[𝔖] E) →ₗ[𝕜] (s →ᵤ E) :=
+    fun s ↦ {toFun := restrict s, map_add' := fun _ _ ↦ rfl, map_smul' := fun _ _ ↦ rfl}
+  simp [UniformOnFun.topologicalSpace_eq, isVonNBounded_iInf_iff,
+    isVonNBounded_induced_iff (φ _), UniformFun.isVonNBounded_iff, φ, image2_image_left,
+    ← image2_image_right]
+
+lemma UniformOnFun.isVonNBounded_image2 {𝕜 α E : Type*} {𝔖 : Set (Set α)}
+    [SeminormedRing 𝕜] [AddCommGroup E] [Module 𝕜 E] [UniformSpace E] [UniformAddGroup E]
+    (S : Set (α →ᵤ[𝔖] E)) (hS : Bornology.IsVonNBounded 𝕜 S) (s : Set α) (hs : s ∈ 𝔖) :
+    Bornology.IsVonNBounded 𝕜 (image2 (fun f x ↦ f x) S s) := by
+  set φ : (α →ᵤ[𝔖] E) →L[𝕜] (s →ᵤ E) :=
+    {toFun := restrict s, map_add' := fun _ _ ↦ rfl, map_smul' := fun _ _ ↦ rfl,
+      cont := UniformOnFun.uniformContinuous_restrict _ _ _ hs |>.continuous}
+  have := hS.image φ
+  rw [UniformFun.isVonNBounded_iff, image2_image_left] at this
+  rwa [← Subtype.range_val (s := s), ← image_univ, image2_image_right]
+
+end Bounded
 
 section Module
 

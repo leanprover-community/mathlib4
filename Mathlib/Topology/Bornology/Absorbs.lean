@@ -3,7 +3,7 @@ Copyright (c) 2020 Jean Lo, Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Algebra.Module.PointwisePi
 import Mathlib.Topology.Bornology.Basic
 
 /-!
@@ -121,6 +121,15 @@ protected alias ⟨_, biUnion_finset⟩ := absorbs_biUnion_finset
 @[deprecated (since := "2024-01-16")]
 alias _root_.absorbs_iUnion_finset := absorbs_biUnion_finset
 
+protected lemma image2_of_pi {ι : Type*} {s : Set ι} {t : Set α} {u : Set (ι → α)}
+    (h : Absorbs M (s.pi fun _ ↦ t) u) : Absorbs M t (image2 (fun f x ↦ f x) u s) := by
+  filter_upwards [h] using
+    fun a ha ↦ image2_subset_iff.mpr fun f hf i hi ↦ (smul_pi_subset _ _ _ (ha hf)) i hi
+
+lemma _root_.absorbs_pi_univ_iff {ι : Type*} {t : Set α} {u : Set (ι → α)} :
+    Absorbs M (univ.pi fun _ ↦ t) u ↔ Absorbs M t (image2 (fun f x ↦ f x) u univ) := by
+  simp_rw [Absorbs, smul_univ_pi, image2_subset_iff, subset_def, Set.mem_pi, Pi.smul_apply]
+
 end SMul
 
 section AddZero
@@ -197,6 +206,12 @@ lemma absorbs_zero_iff [NeBot (cobounded G₀)]
     Absorbs G₀ s 0 ↔ 0 ∈ s := by
   simp only [absorbs_iff_eventually_cobounded_mapsTo, ← singleton_zero,
     mapsTo_singleton, smul_zero, eventually_const]
+
+lemma _root_.absorbs_pi_iff {ι : Type*} {s : Set ι} {t : Set α} {u : Set (ι → α)} :
+    Absorbs G₀ (s.pi (fun _ ↦ t)) u ↔ Absorbs G₀ t (image2 (fun f x ↦ f x) u s) := by
+  refine ⟨Absorbs.image2_of_pi, fun H ↦ ?_⟩
+  filter_upwards [eventually_ne_cobounded 0, H] with a a_ne
+  simp_rw [smul_pi₀ _ _ a_ne, image2_subset_iff, subset_def, Set.mem_pi, Pi.smul_apply, imp_self]
 
 end GroupWithZero
 
