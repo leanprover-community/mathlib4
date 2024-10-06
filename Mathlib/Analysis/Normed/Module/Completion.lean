@@ -74,7 +74,7 @@ instance [SeminormedRing A] : NormedRing (Completion A) where
   norm_mul x y := by
     induction x, y using induction_on₂ with
     | hp =>
-      exact isClosed_le continuous_mul.norm (continuous_norm.mul continuous_norm)
+      apply isClosed_le <;> fun_prop
     | ih x y =>
       simp only [← coe_mul, norm_coe]
       exact norm_mul_le x y
