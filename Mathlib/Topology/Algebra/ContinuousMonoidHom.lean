@@ -138,9 +138,12 @@ def prod (f : ContinuousMonoidHom A B) (g : ContinuousMonoidHom A C) :
 
 /-- Product of two continuous homomorphisms on different spaces. -/
 @[to_additive (attr := simps!) "Product of two continuous homomorphisms on different spaces."]
-def prod_map (f : ContinuousMonoidHom A C) (g : ContinuousMonoidHom B D) :
+def prodMap (f : ContinuousMonoidHom A C) (g : ContinuousMonoidHom B D) :
     ContinuousMonoidHom (A × B) (C × D) :=
-  mk' (f.toMonoidHom.prodMap g.toMonoidHom) (f.continuous_toFun.prod_map g.continuous_toFun)
+  mk' (f.toMonoidHom.prodMap g.toMonoidHom) (f.continuous_toFun.prodMap g.continuous_toFun)
+
+@[to_additive (attr := deprecated (since := "2024-10-05"))]
+alias prod_map := prodMap
 
 variable (A B C D E)
 
@@ -208,7 +211,7 @@ variable {A B C D E}
 @[to_additive (attr := simps!) "Coproduct of two continuous homomorphisms to the same space."]
 def coprod (f : ContinuousMonoidHom A E) (g : ContinuousMonoidHom B E) :
     ContinuousMonoidHom (A × B) E :=
-  (mul E).comp (f.prod_map g)
+  (mul E).comp (f.prodMap g)
 
 @[to_additive]
 instance : CommGroup (ContinuousMonoidHom A E) where
@@ -265,7 +268,7 @@ instance [T2Space B] : T2Space (ContinuousMonoidHom A B) :=
 instance : TopologicalGroup (ContinuousMonoidHom A E) :=
   let hi := inducing_toContinuousMap A E
   let hc := hi.continuous
-  { continuous_mul := hi.continuous_iff.mpr (continuous_mul.comp (Continuous.prod_map hc hc))
+  { continuous_mul := hi.continuous_iff.mpr (continuous_mul.comp (Continuous.prodMap hc hc))
     continuous_inv := hi.continuous_iff.mpr (continuous_inv.comp hc) }
 
 @[to_additive]
@@ -280,7 +283,7 @@ theorem continuous_comp [LocallyCompactSpace B] :
     Continuous fun f : ContinuousMonoidHom A B × ContinuousMonoidHom B C => f.2.comp f.1 :=
   (inducing_toContinuousMap A C).continuous_iff.2 <|
     ContinuousMap.continuous_comp'.comp
-      ((inducing_toContinuousMap A B).prod_map (inducing_toContinuousMap B C)).continuous
+      ((inducing_toContinuousMap A B).prodMap (inducing_toContinuousMap B C)).continuous
 
 @[to_additive]
 theorem continuous_comp_left (f : ContinuousMonoidHom A B) :

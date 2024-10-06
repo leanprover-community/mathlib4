@@ -536,7 +536,7 @@ end OrderedCommGroup
 
 @[to_additive]
 instance [TopologicalSpace H] [Group H] [TopologicalGroup H] : TopologicalGroup (G × H) where
-  continuous_inv := continuous_inv.prod_map continuous_inv
+  continuous_inv := continuous_inv.prodMap continuous_inv
 
 @[to_additive]
 instance Pi.topologicalGroup {C : β → Type*} [∀ b, TopologicalSpace (C b)] [∀ b, Group (C b)]

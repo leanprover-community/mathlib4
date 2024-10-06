@@ -498,8 +498,6 @@ def sumCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X ⊕ Y ≃ₜ X' ⊕ Y
 
 /-- Product of two homeomorphisms. -/
 def prodCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X × Y ≃ₜ X' × Y' where
-  continuous_toFun := h₁.continuous.prod_map h₂.continuous
-  continuous_invFun := h₁.symm.continuous.prod_map h₂.symm.continuous
   toEquiv := h₁.toEquiv.prodCongr h₂.toEquiv
 
 @[simp]
@@ -696,9 +694,9 @@ section Distrib
 def sumProdDistrib : (X ⊕ Y) × Z ≃ₜ (X × Z) ⊕ (Y × Z) :=
   Homeomorph.symm <|
     homeomorphOfContinuousOpen (Equiv.sumProdDistrib X Y Z).symm
-        ((continuous_inl.prod_map continuous_id).sum_elim
-          (continuous_inr.prod_map continuous_id)) <|
-      (isOpenMap_inl.prod IsOpenMap.id).sum_elim (isOpenMap_inr.prod IsOpenMap.id)
+        ((continuous_inl.prodMap continuous_id).sum_elim
+          (continuous_inr.prodMap continuous_id)) <|
+      (isOpenMap_inl.prodMap IsOpenMap.id).sum_elim (isOpenMap_inr.prodMap IsOpenMap.id)
 
 /-- `X × (Y ⊕ Z)` is homeomorphic to `X × Y ⊕ X × Z`. -/
 def prodSumDistrib : X × (Y ⊕ Z) ≃ₜ (X × Y) ⊕ (X × Z) :=

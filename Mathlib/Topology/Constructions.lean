@@ -827,6 +827,8 @@ protected theorem OpenEmbedding.prodMap {f : X → Y} {g : Z → W} (hf : OpenEm
     (hg : OpenEmbedding g) : OpenEmbedding (Prod.map f g) :=
   openEmbedding_of_embedding_open (hf.1.prodMap hg.1) (hf.isOpenMap.prodMap hg.isOpenMap)
 
+@[deprecated (since := "2024-10-05")] alias OpenEmbedding.prod := OpenEmbedding.prodMap
+
 theorem embedding_graph {f : X → Y} (hf : Continuous f) : Embedding fun x => (x, f x) :=
   embedding_of_embedding_compose (continuous_id.prod_mk hf) continuous_fst embedding_id
 
