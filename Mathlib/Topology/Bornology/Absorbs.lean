@@ -126,6 +126,7 @@ protected lemma image2_of_pi {ι : Type*} {s : Set ι} {t : Set α} {u : Set (ι
   filter_upwards [h] using
     fun a ha ↦ image2_subset_iff.mpr fun f hf i hi ↦ (smul_pi_subset _ _ _ (ha hf)) i hi
 
+/-- See also `absorbs_pi_iff`, which has stronger typeclass assumptions. -/
 lemma _root_.absorbs_pi_univ_iff {ι : Type*} {t : Set α} {u : Set (ι → α)} :
     Absorbs M (univ.pi fun _ ↦ t) u ↔ Absorbs M t (image2 (fun f x ↦ f x) u univ) := by
   simp_rw [Absorbs, smul_univ_pi, image2_subset_iff, subset_def, Set.mem_pi, Pi.smul_apply]
