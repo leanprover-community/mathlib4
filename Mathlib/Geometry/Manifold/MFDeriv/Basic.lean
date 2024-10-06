@@ -639,6 +639,13 @@ theorem mfderivWithin_comp (hg : MDifferentiableWithinAt I' I'' g u (f x))
   apply HasMFDerivWithinAt.mfderivWithin _ hxs
   exact HasMFDerivWithinAt.comp x hg.hasMFDerivWithinAt hf.hasMFDerivWithinAt h
 
+theorem mfderiv_comp_mfderivWithin (hg : MDifferentiableAt I' I'' g (f x))
+    (hf : MDifferentiableWithinAt I I' f s x) (hxs : UniqueMDiffWithinAt I s x) :
+    mfderivWithin I I'' (g ∘ f) s x =
+      (mfderiv I' I'' g (f x)).comp (mfderivWithin I I' f s x) := by
+  rw [← mfderivWithin_univ]
+  exact mfderivWithin_comp _ hg.mdifferentiableWithinAt hf (by simp) hxs
+
 theorem mfderiv_comp (hg : MDifferentiableAt I' I'' g (f x)) (hf : MDifferentiableAt I I' f x) :
     mfderiv I I'' (g ∘ f) x = (mfderiv I' I'' g (f x)).comp (mfderiv I I' f x) := by
   apply HasMFDerivAt.mfderiv

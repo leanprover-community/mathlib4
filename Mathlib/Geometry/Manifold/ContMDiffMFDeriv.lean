@@ -112,6 +112,16 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
     simp_rw [contMDiffAt_iff_source_of_mem_source (mem_chart_source G x₀),
       contMDiffWithinAt_iff_contDiffWithinAt, Function.comp_def]
     exact this
+  apply this.congr_of_eventuallyEq
+  filter_upwards [] with x
+  rw [inTangentCoordinates_eq_mfderiv_comp _ _ sorry sorry]
+  rw [← mfderivWithin_comp_mfderivWithin]
+
+
+
+
+#exit
+
   have :
     ContMDiffAt J 𝓘(𝕜, E →L[𝕜] E') m
       (fun x =>
