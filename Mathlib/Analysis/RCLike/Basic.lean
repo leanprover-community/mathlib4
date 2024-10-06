@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 import Mathlib.Algebra.Algebra.Field
+import Mathlib.Algebra.BigOperators.Balance
 import Mathlib.Algebra.Order.BigOperators.Expect
 import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Analysis.CStarAlgebra.Basic
@@ -40,6 +41,7 @@ their counterparts in `Mathlib/Analysis/Complex/Basic.lean` (which causes linter
 A few lemmas requiring heavier imports are in `Mathlib/Data/RCLike/Lemmas.lean`.
 -/
 
+open Fintype
 open scoped BigOperators ComplexConjugate
 
 section
@@ -238,6 +240,13 @@ instance (priority := 100) charZero_rclike : CharZero K :=
 @[rclike_simps, norm_cast]
 lemma ofReal_expect {α : Type*} (s : Finset α) (f : α → ℝ) : 𝔼 i ∈ s, f i = 𝔼 i ∈ s, (f i : K) :=
   map_expect (algebraMap ..) ..
+
+@[simp, norm_cast]
+lemma ofReal_balance {ι : Type*} [Fintype ι] (f : ι → ℝ) (i : ι) :
+    (↑(balance f i) : K) = balance ((↑) ∘ f) i := map_balance (algebraMap ..) ..
+
+@[simp] lemma ofReal_comp_balance {ι : Type*} [Fintype ι] (f : ι → ℝ) :
+    ofReal ∘ balance f = balance (ofReal ∘ f : ι → K) := funext <| ofReal_balance _
 
 /-! ### The imaginary unit, `I` -/
 
