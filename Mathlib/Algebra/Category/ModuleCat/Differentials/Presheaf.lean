@@ -39,6 +39,42 @@ universe v u v₁ v₂ v₃ u₁ u₂ u₃
 
 open CategoryTheory Limits
 
+
+-- for Algebra.Category.Ring.Constructions and Algebra.Ring.ULift
+section
+
+-- ringEquiv should be renamed
+def ULift.ringEquiv' (R : Type u) [Ring R] : ULift.{v} R ≃+* R where
+  toFun := down
+  invFun := up
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
+
+def RingHom.fromUliftInt (R : Type u) [Ring R] : ULift.{u} ℤ →+* R :=
+  (Int.castRingHom R).comp (ULift.ringEquiv' ℤ).toRingHom
+
+lemma RingHom.precomp_injective_of_surjective {R S T : Type*} [NonAssocSemiring R]
+    [NonAssocSemiring S] [NonAssocSemiring T] (f : R →+* S)
+    (hf : Function.Surjective f) {g₁ g₂ : S →+* T} (h : g₁.comp f = g₂.comp f) :
+    g₁ = g₂ := by
+  ext s
+  obtain ⟨r, rfl⟩ := hf s
+  simp only [← comp_apply, h]
+
+def RingCat.isInitial : IsInitial (RingCat.of (ULift.{u} ℤ)) :=
+  IsInitial.ofUnique (h := fun R ↦ ⟨⟨RingHom.fromUliftInt R⟩, fun _ ↦
+    RingHom.precomp_injective_of_surjective (ULift.ringEquiv'.{u} ℤ).symm.toRingHom
+      (ULift.ringEquiv'.{u} ℤ).symm.surjective (RingHom.ext_int _ _)⟩)
+
+def CommRingCat.isInitial : IsInitial (CommRingCat.of (ULift.{u} ℤ)) :=
+  IsInitial.ofUnique (h := fun R ↦ ⟨⟨RingHom.fromUliftInt R⟩, fun _ ↦
+    RingHom.precomp_injective_of_surjective (ULift.ringEquiv'.{u} ℤ).symm.toRingHom
+      (ULift.ringEquiv'.{u} ℤ).symm.surjective (RingHom.ext_int _ _)⟩)
+
+end
+
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {E : Type u₃} [Category.{v₃} E]
 
@@ -131,6 +167,22 @@ variable (d : M.Derivation φ)
 @[simp] lemma d_one (X : Dᵒᵖ) : d.d (X := X) 1 = 0 := by
   simpa using d.d_mul (X := X) 1 1
 
+lemma d_zsmul (n : ℤ) {X : Dᵒᵖ} (x : R.obj X) : d.d (n • x) = n • d.d x := by
+  rw [map_zsmul]
+
+@[simp]
+lemma d_int_eq_zero (X : Dᵒᵖ) (n : ℤ) : d.d (X := X) n = 0 := by
+  trans d.d (n • 1)
+  · simp
+  · rw [d_zsmul, d_one, zsmul_zero]
+
+@[simp]
+lemma d_ulift_int_eq_zero (X : Dᵒᵖ) (f : CommRingCat.of (ULift.{u} ℤ) ⟶ R.obj X)
+    (n : ULift.{u} ℤ) :
+    d.d (X := X) (f n) = 0 := by
+  obtain rfl := CommRingCat.isInitial.hom_ext f (RingHom.fromUliftInt _)
+  apply d_int_eq_zero
+
 /-- The postcomposition of a derivation by a morphism of presheaves of modules. -/
 @[simps! d_apply]
 def postcomp (f : M ⟶ N) : N.Derivation φ where
@@ -139,6 +191,13 @@ def postcomp (f : M ⟶ N) : N.Derivation φ where
   d_app {X} a := by
     dsimp
     erw [d_app, map_zero]
+
+variable (N) in
+@[simp]
+lemma postcomp_zero : d.postcomp (0 : _ ⟶ N) = 0 := rfl
+
+lemma postcomp_comp {P : PresheafOfModules.{v} (R ⋙ forget₂ _ _ )} (f : M ⟶ N) (g : N ⟶ P) :
+    d.postcomp (f ≫ g) = (d.postcomp f).postcomp g := rfl
 
 /-- The universal property that a derivation `d : M.Derivation φ` must
 satisfy so that the presheaf of modules `M` can be considered as the presheaf of
@@ -197,6 +256,10 @@ a morphism of presheaves of commutative rings `S ⟶ F.op ⋙ R`. -/
 class HasDifferentials : Prop where
   exists_universal_derivation : ∃ (M : PresheafOfModules.{u} (R ⋙ forget₂ _ _))
       (d : M.Derivation φ), Nonempty d.Universal
+
+lemma Derivation.Universal.hasDifferentials {M : PresheafOfModules.{u} (R ⋙ forget₂ _ _)}
+    {d : M.Derivation φ} (hd : d.Universal) : HasDifferentials φ :=
+  ⟨_ ,_, ⟨hd⟩⟩
 
 section
 
@@ -362,7 +425,7 @@ noncomputable def isUniversal' : (derivation' φ').Universal :=
       ext1 X
       exact CommRingCat.KaehlerDifferential.ext (Derivation.congr_d h))
 
-instance : HasDifferentials (F := 𝟭 D) φ' := ⟨_, _,  ⟨isUniversal' φ'⟩⟩
+instance : HasDifferentials (F := 𝟭 D) φ' := (isUniversal' φ').hasDifferentials
 
 end DifferentialsConstruction
 
@@ -408,6 +471,16 @@ protected noncomputable def pushforward : ((pushforwardψ).obj P).Derivation φ 
 lemma pushforward_d_apply (Y : Dᵒᵖ) (a : R.obj Y) :
     (Derivation.pushforward fac dφψ).d a = dφψ.d (ψ.app _ a) := rfl
 
+lemma pushforward_postcomp {P' : PresheafOfModules.{v} (T ⋙ forget₂ _ _)} (α : P ⟶ P') :
+    Derivation.pushforward fac (dφψ.postcomp α) =
+      (Derivation.pushforward fac dφψ).postcomp ((pushforwardψ).map α) := rfl
+
+@[simp]
+lemma pushforward_induced {M' : PresheafOfModules.{v} (T ⋙ forget₂ _ _)} (d : M'.Derivation ψ) :
+      Derivation.pushforward fac (induced fac d) = 0 := by
+  ext X a
+  apply d.d_app
+
 namespace Universal
 
 noncomputable def pushforwardMap : M ⟶ (pushforwardψ).obj P :=
@@ -419,6 +492,23 @@ variable [(pushforward (F := G) (R := T ⋙ forget₂ _ _)
 noncomputable def pullbackMap : (pullbackψ).obj M ⟶ P :=
   ((adjunctionψ).homEquiv M P).symm (hdφ.pushforwardMap fac dφψ)
 
+lemma homEquiv_pullbackMap_comp
+    {P' : PresheafOfModules.{v} (T ⋙ forget₂ _ _)} (α : P ⟶ P') :
+    (((adjunctionψ).homEquiv _ _) (hdφ.pullbackMap fac dφψ ≫ α)) =
+      hdφ.homEquiv.symm (Derivation.pushforward fac (dφψ.postcomp α)) := by
+  apply hdφ.homEquiv.injective
+  dsimp only [pullbackMap, pushforwardMap, pushforward_postcomp]
+  simp [postcomp_comp]
+
+@[simp]
+lemma pullbackMap_comp_eq_zero_iff
+    {P' : PresheafOfModules.{v} (T ⋙ forget₂ _ _)} (α : P ⟶ P') :
+    hdφ.pullbackMap fac dφψ ≫ α = 0 ↔
+      Derivation.pushforward fac (dφψ.postcomp α) = 0 := by
+  rw [← EmbeddingLike.apply_eq_iff_eq ((adjunctionψ).homEquiv M P'),
+    ← EmbeddingLike.apply_eq_iff_eq hdφ.homEquiv, homEquiv_pullbackMap_comp]
+  simp
+
 variable {hdφ fac dφψ}
   {c : CokernelCofork (hdφ.pullbackMap fac dφψ)} (hc : IsColimit c) (hdφψ : dφψ.Universal)
 
@@ -426,20 +516,36 @@ namespace corepresentableByOfIsColimitCokernelCofork
 
 variable {M' : PresheafOfModules.{v} (T ⋙ forget₂ _ _)}
 
+@[simps]
 noncomputable def homEquivToFun (f : c.pt ⟶ M') : M'.Derivation ψ where
   d := (dφψ.postcomp (c.π ≫ f)).d
   d_map := by simp
   d_mul := by simp
-  d_app := by
-    have := fac
-    sorry
+  d_app := congr_d ((pullbackMap_comp_eq_zero_iff hdφ fac dφψ (c.π ≫ f)).1 (by simp))
 
 noncomputable def homEquivInvFun (d : M'.Derivation ψ) : c.pt ⟶ M' :=
-  (CokernelCofork.IsColimit.desc' hc (hdφψ.desc (Derivation.induced fac d))
-    sorry).1
+  (CokernelCofork.IsColimit.desc' hc (hdφψ.desc (Derivation.induced fac d)) (by simp)).1
 
-lemma π_homEquivInvFun_apply (d : M'.Derivation ψ) :
-    c.π ≫ homEquivInvFun hc hdφψ d = sorry := sorry
+@[simp]
+lemma π_homEquivInvFun (d : M'.Derivation ψ) :
+    c.π ≫ homEquivInvFun hc hdφψ d = hdφψ.desc (Derivation.induced fac d) :=
+  (CokernelCofork.IsColimit.desc' _ _ _).2
+
+@[simp]
+lemma homEquiv_left_inv (f : c.pt ⟶ M') :
+    homEquivInvFun hc hdφψ (homEquivToFun f) = f := by
+  apply Cofork.IsColimit.hom_ext hc
+  rw [π_homEquivInvFun]
+  apply hdφψ.postcomp_injective
+  rw [PresheafOfModules.Derivation.Universal.fac]
+  ext
+  dsimp
+
+@[simp]
+lemma homEquiv_right_inv (d : M'.Derivation ψ) :
+    homEquivToFun (homEquivInvFun hc hdφψ d) = d := by
+  ext : 2
+  simp
 
 end corepresentableByOfIsColimitCokernelCofork
 
@@ -449,8 +555,8 @@ noncomputable def corepresentableByOfIsColimitCokernelCofork :
   homEquiv {M'} :=
     { toFun := homEquivToFun
       invFun := homEquivInvFun hc hdφψ
-      left_inv := sorry
-      right_inv := sorry }
+      left_inv := fun _ ↦ by simp
+      right_inv := fun _ ↦ by aesop }
   homEquiv_comp _ _ := rfl
 
 noncomputable def ofIsColimitCokernelCofork :
@@ -472,9 +578,64 @@ lemma hasDifferentials_of_tower
       ⟨Derivation.Universal.ofIsColimitCokernelCofork (colimit.isColimit _)
         (universalUniversalDerivation φψ)⟩⟩
 
--- TODO: deduce the existence of differentials by recuding to absolute differentials
--- TODO: deduce the exact sequence of a tower
-
 end
+
+attribute [pp_with_univ] HasDifferentials
+
+def absoluteDerivationEquiv
+    (φ : (Functor.const Cᵒᵖ).obj (CommRingCat.of (ULift.{u} ℤ)) ⟶ F.op ⋙ R)
+    {M : PresheafOfModules.{u} (R ⋙ forget₂ _ _)} :
+    M.Derivation φ ≃ M.Derivation (F := 𝟭 D)
+      (S := (Functor.const Dᵒᵖ).obj (CommRingCat.of (ULift.{u} ℤ))) (R := R)
+      { app := fun X ↦ CommRingCat.isInitial.{u}.to _ } where
+  toFun d :=
+    { d := d.d
+      d_mul := by simp
+      d_map := by simp
+      d_app := by simp }
+  invFun d :=
+    { d := d.d
+      d_mul := by simp
+      d_map := by simp
+      d_app := by simp }
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+def absoluteDerivationUniversalEquiv
+    (φ : (Functor.const Cᵒᵖ).obj (CommRingCat.of (ULift.{u} ℤ)) ⟶ F.op ⋙ R)
+    (M : PresheafOfModules.{u} (R ⋙ forget₂ _ _))
+    (d : M.Derivation (F := 𝟭 D)
+      (S := (Functor.const Dᵒᵖ).obj (CommRingCat.of (ULift.{u} ℤ))) (R := R)
+      { app := fun X ↦ CommRingCat.isInitial.{u}.to _ }) :
+    d.Universal ≃ ((absoluteDerivationEquiv φ).symm d).Universal where
+  toFun hd :=
+    { desc := fun d' ↦ hd.desc (absoluteDerivationEquiv φ d')
+      fac := fun d' ↦ (absoluteDerivationEquiv φ).injective
+        (hd.fac (absoluteDerivationEquiv φ d'))
+      postcomp_injective :=
+        fun h ↦ hd.postcomp_injective ((absoluteDerivationEquiv φ).symm.injective h) }
+  invFun hd :=
+    { desc := fun d' ↦ hd.desc ((absoluteDerivationEquiv φ).symm d')
+      fac := fun d' ↦ (absoluteDerivationEquiv φ).symm.injective
+        (hd.fac ((absoluteDerivationEquiv φ).symm d'))
+      postcomp_injective :=
+        fun h ↦ hd.postcomp_injective ((absoluteDerivationEquiv φ).injective h) }
+  left_inv := fun _ ↦ Subsingleton.elim _ _
+  right_inv := fun _ ↦ Subsingleton.elim _ _
+
+instance hasAbsoluteDifferentials
+    (φ : (Functor.const Cᵒᵖ).obj (CommRingCat.of (ULift.{u} ℤ)) ⟶ F.op ⋙ R) :
+    HasDifferentials φ :=
+  ((absoluteDerivationUniversalEquiv φ _ _) (universalUniversalDerivation _)).hasDifferentials
+
+instance hasDifferentials
+    [(pushforward.{u} (F := F) (R := R ⋙ forget₂ _ _)
+      (whiskerRight φ (forget₂ _ RingCat))).IsRightAdjoint] : HasDifferentials φ := by
+  let φ₀ : (Functor.const _).obj (CommRingCat.of (ULift.{u} ℤ)) ⟶ S :=
+    { app := fun X ↦ CommRingCat.isInitial.{u}.to _ }
+  exact hasDifferentials_of_tower (F := 𝟭 C) (φ := φ₀) (ψ := φ) (fac := rfl)
+
+-- TODO: deduce the exact (cokernel) sequence of a tower from
+-- Derivation.Universal.ofIsColimitCokernelCofork
 
 end PresheafOfModules
