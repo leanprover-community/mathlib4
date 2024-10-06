@@ -14,7 +14,7 @@ rings.
 -/
 
 @[simp]
-lemma CanonicallyOrderedCommSemiring.multiset_prod_pos {R : Type*}
+lemma CanonicallyOrderedAdd.multiset_prod_pos {R : Type*}
     [CommSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R] [NoZeroDivisors R] [Nontrivial R]
     {m : Multiset R} : 0 < m.prod ↔ ∀ x ∈ m, 0 < x := by
   rcases m with ⟨l⟩

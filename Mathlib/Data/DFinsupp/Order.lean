@@ -200,11 +200,9 @@ protected theorem bot_eq_zero : (⊥ : Π₀ i, α i) = 0 :=
 theorem add_eq_zero_iff (f g : Π₀ i, α i) : f + g = 0 ↔ f = 0 ∧ g = 0 := by
   simp [DFunLike.ext_iff, forall_and]
 
-variable [DecidableEq ι]
-
 section
 
-variable [∀ (i) (x : α i), Decidable (x ≠ 0)] {f g : Π₀ i, α i} {s : Finset ι}
+variable [DecidableEq ι] [∀ (i) (x : α i), Decidable (x ≠ 0)] {f g : Π₀ i, α i} {s : Finset ι}
 
 theorem le_iff' (hf : f.support ⊆ s) : f ≤ g ↔ ∀ i ∈ s, f i ≤ g i :=
   ⟨fun h s _ ↦ h s, fun h s ↦
@@ -228,7 +226,8 @@ variable {α}
 end
 
 @[simp]
-theorem single_le_iff {f : Π₀ i, α i} {i : ι} {a : α i} : single i a ≤ f ↔ a ≤ f i := by
+theorem single_le_iff [DecidableEq ι] {f : Π₀ i, α i} {i : ι} {a : α i} :
+    single i a ≤ f ↔ a ≤ f i := by
   classical exact (le_iff' support_single_subset).trans <| by simp
 
 -- Porting note: Split into 2 lines to satisfy the unusedVariables linter.
