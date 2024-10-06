@@ -1166,12 +1166,12 @@ def dualCopairing (W : Submodule R M) : W.dualAnnihilator →ₗ[R] M ⧸ W →�
         exact (mem_dualAnnihilator φ).mp hφ w hw)
 
 -- Porting note: helper instance
-instance (W : Submodule R M) : FunLike (W.dualAnnihilator) M R :=
-  { coe := fun φ => φ.val,
-    coe_injective' := fun φ ψ h => by
-      ext
-      simp only [Function.funext_iff] at h
-      exact h _ }
+instance (W : Submodule R M) : FunLike (W.dualAnnihilator) M R where
+  coe φ := φ.val
+  coe_injective' φ ψ h := by
+    ext
+    simp only [Function.funext_iff] at h
+    exact h _
 
 @[simp]
 theorem dualCopairing_apply {W : Submodule R M} (φ : W.dualAnnihilator) (x : M) :

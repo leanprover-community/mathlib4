@@ -259,7 +259,7 @@ open NumberField
 
 instance {K : Type*} [Field K] : FunLike (InfinitePlace K) K ℝ where
   coe w x := w.1 x
-  coe_injective' := fun _ _ h => Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)
+  coe_injective' _ _ h := Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)
 
 instance : MonoidWithZeroHomClass (InfinitePlace K) K ℝ where
   map_mul w _ _ := w.1.map_mul _ _
