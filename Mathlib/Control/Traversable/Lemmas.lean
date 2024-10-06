@@ -56,7 +56,7 @@ def PureTransformation :
 theorem pureTransformation_apply {α} (x : id α) : PureTransformation F x = pure x :=
   rfl
 
-variable {F G} (x : t β)
+variable {F G}
 
 -- Porting note: need to specify `m/F/G := Id` because `id` no longer has a `Monad` instance
 theorem map_eq_traverse_id : map (f := t) f = traverse (m := Id) (pure ∘ f) :=
