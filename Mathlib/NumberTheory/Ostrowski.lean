@@ -319,7 +319,6 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
   -- For h_ineq2 we need to exclude the case n = 0.
   rcases eq_or_ne n 0 with rfl | h₀
   · simp only [CharP.cast_eq_zero, map_zero, zero_le_one]
-  -- h_ineq2 needs to be in this form because it is applied in le_of_limit_le above
   have h_ineq2 (k : ℕ) (hk : 0 < k) :
       f n ≤ (n₀ * (logb n₀ n + 1)) ^ (k : ℝ)⁻¹ * k ^ (k : ℝ)⁻¹ := by
     have h_exp : (f n ^ (k : ℝ)) ^ (k : ℝ)⁻¹ = f n := by
@@ -335,7 +334,7 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
       mul_add (k : ℝ), mul_one]
     gcongr
     exact one_le_cast.mpr hk
--- For prod_limit below we also need to exclude n = 1.
+-- For 0 < logb n₀ n below we also need to exclude n = 1.
   rcases eq_or_ne n 1 with rfl | h₁; simp only [Nat.cast_one, map_one, le_refl]
   refine le_of_tendsto_of_tendsto tendsto_const_nhds ?_ (eventually_atTop.2 ⟨1, h_ineq2⟩)
   nth_rw 2 [← mul_one 1]
