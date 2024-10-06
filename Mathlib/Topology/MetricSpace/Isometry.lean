@@ -87,7 +87,7 @@ theorem prod_map {δ} [PseudoEMetricSpace δ] {f : α → β} {g : γ → δ} (h
 protected theorem piMap {ι} [Fintype ι] {α β : ι → Type*} [∀ i, PseudoEMetricSpace (α i)]
     [∀ i, PseudoEMetricSpace (β i)] (f : ∀ i, α i → β i) (hf : ∀ i, Isometry (f i)) :
     Isometry (Pi.map f) := fun x y => by
-  simp only [edist_pi_def, (hf _).edist_eq]
+  simp only [edist_pi_def, (hf _).edist_eq, Pi.map_apply]
 
 @[deprecated (since := "2024-10-06")] alias _root_.isometry_dcomp := Isometry.piMap
 
