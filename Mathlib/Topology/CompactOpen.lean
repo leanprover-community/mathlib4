@@ -206,7 +206,7 @@ instance [R0Space Y] : R0Space C(X, Y) where
     rw [← specializes_coe] at h ⊢
     exact h.symm
 
-instance [T1Space Y] : T1Space C(X, Y) := 
+instance [T1Space Y] : T1Space C(X, Y) :=
   t1Space_of_injective_of_continuous DFunLike.coe_injective continuous_coeFun
 
 instance [R1Space Y] : R1Space C(X, Y) :=
