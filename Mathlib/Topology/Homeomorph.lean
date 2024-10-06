@@ -710,7 +710,7 @@ def sigmaProdDistrib : (Σ i, X i) × Y ≃ₜ Σ i, X i × Y :=
   Homeomorph.symm <|
     homeomorphOfContinuousOpen (Equiv.sigmaProdDistrib X Y).symm
       (continuous_sigma fun _ => continuous_sigmaMk.fst'.prod_mk continuous_snd)
-      (isOpenMap_sigma.2 fun _ => isOpenMap_sigmaMk.prod IsOpenMap.id)
+      (isOpenMap_sigma.2 fun _ => isOpenMap_sigmaMk.prodMap IsOpenMap.id)
 
 end Distrib
 

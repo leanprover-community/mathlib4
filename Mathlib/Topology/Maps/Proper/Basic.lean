@@ -174,12 +174,12 @@ lemma isProperMap_of_comp_of_t2 [T2Space Y] (hf : Continuous f) (hg : Continuous
   exact ⟨x, hx⟩
 
 /-- A binary product of proper maps is proper. -/
-lemma IsProperMap.prod_map {g : Z → W} (hf : IsProperMap f) (hg : IsProperMap g) :
+lemma IsProperMap.prodMap {g : Z → W} (hf : IsProperMap f) (hg : IsProperMap g) :
     IsProperMap (Prod.map f g) := by
   simp_rw [isProperMap_iff_ultrafilter] at hf hg ⊢
   constructor
   -- Continuity is clear.
-  · exact hf.1.prod_map hg.1
+  · exact hf.1.prodMap hg.1
   -- Let `𝒰 : Ultrafilter (X × Z)`, and assume that `f × g` tends to some `(y, w) : Y × W`
   -- along `𝒰`.
   · intro 𝒰 ⟨y, w⟩ hyw

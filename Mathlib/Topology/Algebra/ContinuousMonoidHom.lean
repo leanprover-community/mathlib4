@@ -131,13 +131,14 @@ def comp (g : ContinuousMonoidHom B C) (f : ContinuousMonoidHom A B) : Continuou
   mk' (g.toMonoidHom.comp f.toMonoidHom) (g.continuous_toFun.comp f.continuous_toFun)
 
 /-- Product of two continuous homomorphisms on the same space. -/
-@[to_additive (attr := simps!) "Product of two continuous homomorphisms on the same space."]
+@[to_additive (attr := simps!) prod "Product of two continuous homomorphisms on the same space."]
 def prod (f : ContinuousMonoidHom A B) (g : ContinuousMonoidHom A C) :
     ContinuousMonoidHom A (B × C) :=
   mk' (f.toMonoidHom.prod g.toMonoidHom) (f.continuous_toFun.prod_mk g.continuous_toFun)
 
 /-- Product of two continuous homomorphisms on different spaces. -/
-@[to_additive (attr := simps!) "Product of two continuous homomorphisms on different spaces."]
+@[to_additive (attr := simps!) prodMap
+  "Product of two continuous homomorphisms on different spaces."]
 def prodMap (f : ContinuousMonoidHom A C) (g : ContinuousMonoidHom B D) :
     ContinuousMonoidHom (A × B) (C × D) :=
   mk' (f.toMonoidHom.prodMap g.toMonoidHom) (f.continuous_toFun.prodMap g.continuous_toFun)
