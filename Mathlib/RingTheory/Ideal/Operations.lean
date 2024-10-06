@@ -980,9 +980,30 @@ theorem IsPrime.multiset_prod_mem_iff_exists_mem {I : Ideal R} (hI : I.IsPrime) 
     s.prod ∈ I ↔ ∃ p ∈ s, p ∈ I := by
   simpa [span_singleton_le_iff_mem] using (hI.multiset_prod_map_le (span {·}))
 
+theorem IsPrime.pow_le_iff {I P : Ideal R} [hP : P.IsPrime] {n : ℕ} (hn : n ≠ 0) :
+    I ^ n ≤ P ↔ I ≤ P := by
+  have h : (Multiset.replicate n I).prod ≤ P ↔ _ := hP.multiset_prod_le
+  simp_rw [Multiset.prod_replicate, Multiset.mem_replicate, ne_eq, hn , not_false_eq_true,
+    true_and, exists_eq_left] at h
+  exact h
+
+theorem IsPrime.le_of_pow_le {I P : Ideal R} [hP : P.IsPrime] {n : ℕ} (h : I ^ n ≤ P) :
+    I ≤ P := by
+  by_cases hn : n = 0
+  · rw [hn, pow_zero, one_eq_top] at h
+    exact fun ⦃_⦄ _ ↦ h trivial
+  · exact (pow_le_iff hn).mp h
+
 theorem IsPrime.prod_le {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp : IsPrime P) :
     s.prod f ≤ P ↔ ∃ i ∈ s, f i ≤ P :=
   hp.multiset_prod_map_le f
+
+/-- The product of a finite number of elements in the commutative semiring `R` lies in the
+  prime ideal `p` if and only if at least one of those elements is in `p`. -/
+theorem IsPrime.prod_mem_iff {s : Finset ι} {x : ι → R} {p : Ideal R} [hp : p.IsPrime] :
+    ∏ i in s, x i ∈ p ↔ ∃ i ∈ s, x i ∈ p := by
+  simp_rw [← span_singleton_le_iff_mem, ← prod_span_singleton]
+  exact hp.prod_le
 
 theorem IsPrime.prod_mem_iff_exists_mem {I : Ideal R} (hI : I.IsPrime) (s : Finset R) :
     s.prod (fun x ↦ x) ∈ I ↔ ∃ p ∈ s, p ∈ I := by
