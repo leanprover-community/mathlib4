@@ -77,6 +77,65 @@ elab "included_variables" plumb:(ppSpace &"plumb")? : tactic => do
     if ! msgs.isEmpty then
       logInfo m!"{msgs.foldl (m!"{·}\n" ++ m!"* {·}") "Included variables:"}"
 
+abbrev binders : NameSet := NameSet.empty
+  |>.insert ``Lean.Parser.Term.explicitBinder
+  |>.insert ``Lean.Parser.Term.strictImplicitBinder
+  |>.insert ``Lean.Parser.Term.implicitBinder
+  |>.insert ``Lean.Parser.Term.instBinder
+
+partial
+def findBinders : Syntax → Array Syntax
+ | (.node _ _ args) =>
+    if binders.contains (args[0]?.getD default).getKind then
+      args
+    else
+      (args.map findBinders).flatten
+  | _ => #[]
+
+variable
+  (nm : Ident)
+  (binders : TSyntaxArray [`ident, `Lean.Parser.Term.hole, `Lean.Parser.Term.bracketedBinder])
+  (typ : TSyntax `term)
+def mkThmCore : CommandElabM Syntax :=
+  `(command| theorem $nm $binders* : $(⟨typ⟩) := by included_variables plumb; sorry)
+
+def mkThmWithHyps (cmd : Syntax) (nm : Ident) : CommandElabM Syntax := do
+  let typ ← if let some ts := cmd.find? (·.isOfKind ``Parser.Term.typeSpec) then
+              `($(mkIdent `toFalse) $(⟨ts[1]⟩))
+            else
+              `($(mkIdent `False))
+  mkThmCore nm ((findBinders cmd).map (⟨·⟩)) typ
+
+/-
+  if let some stx := stx.raw.find? (·.isOfKind ``Lean.Parser.Command.declaration) then
+    match stx with
+      | `(structure $id $as* where $(_optStructCtor)? $_fds:structFields) =>
+        -- the `fds` should be extracted and the target of the `structure.mk` should be used
+        let new ←
+          `(command| theorem $(mkIdent (id.raw[0].getId ++ `hi)) $as* : toFalse sorry := sorry)
+        logInfo m!"{new}"
+      --| `(structure $id $as* extends $es where $(opt)? $fds:structFields) => logInfo "found!"
+      | `(structure $id $as* extends $es,* where $(_optStructCtor)? $_fds:structFields) =>
+        dbg_trace "es.getElems: {es.getElems}\n"
+        let bes ← es.getElems.mapM (`(Parser.Term.instBinder| [·]))
+        let bes ← bes.mapM fun d => `(bracketedBinder| $(⟨d⟩))
+        let cs := (as : Array _) ++ bes.map (·.raw)
+        --let cs ← cs.mapM (`(⟨·⟩))
+        let cs : TSyntaxArray [`ident, `Lean.Parser.Term.hole, `Lean.Parser.Term.bracketedBinder] :=
+          cs.map (⟨·⟩)
+        --let mut first : Array (TSyntax _):= as.getD 0 default
+        --for b in bes do
+          --first ← `(Term.App| $first $(⟨b.raw⟩))
+        logInfo m!"bes: {bes}\n"
+        --let bes1 : Syntax.TSepArray [bracketedBinder] "," := ⟨bes.map (·)⟩
+        --logInfo m!"{bes1.getElems}"
+        let new ←
+          `(command| theorem $(mkIdent (id.raw[0].getId ++ `hi)) $cs* : toFalse sorry := sorry)
+        logInfo m!"{new}"
+      | _ => logInfo "here"
+
+-/
+
 open Lean.Parser.Term in
 /--
 Like `Lean.Elab.Command.getBracketedBinderIds`, but returns the identifier `Syntax`,

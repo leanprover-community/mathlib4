@@ -128,13 +128,13 @@ theorem isBigO_iff'' {g : α → E'''} :
     obtain ⟨c, ⟨hc_pos, hc⟩⟩ := h
     refine ⟨c⁻¹, ⟨by positivity, ?_⟩⟩
     filter_upwards [hc] with x hx
-    rwa [inv_mul_le_iff (by positivity)]
+    rwa [inv_mul_le_iff₀ (by positivity)]
   case mpr =>
     rw [isBigO_iff']
     obtain ⟨c, ⟨hc_pos, hc⟩⟩ := h
     refine ⟨c⁻¹, ⟨by positivity, ?_⟩⟩
     filter_upwards [hc] with x hx
-    rwa [← inv_inv c, inv_mul_le_iff (by positivity)] at hx
+    rwa [← inv_inv c, inv_mul_le_iff₀ (by positivity)] at hx
 
 theorem IsBigO.of_bound (c : ℝ) (h : ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖) : f =O[l] g :=
   isBigO_iff.2 ⟨c, h⟩

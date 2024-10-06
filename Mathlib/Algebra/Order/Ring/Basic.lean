@@ -61,23 +61,31 @@ theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y 
         exact mul_le_mul_of_nonneg_left (ih (Nat.succ_ne_zero k)) h2
 
 @[bound]
-theorem pow_le_one : ∀ n : ℕ, 0 ≤ a → a ≤ 1 → a ^ n ≤ 1
+theorem pow_le_one₀ : ∀ {n : ℕ}, 0 ≤ a → a ≤ 1 → a ^ n ≤ 1
   | 0, _, _ => (pow_zero a).le
-  | n + 1, h₀, h₁ => (pow_succ a n).le.trans (mul_le_one (pow_le_one n h₀ h₁) h₀ h₁)
+  | n + 1, h₀, h₁ => (pow_succ a n).le.trans (mul_le_one (pow_le_one₀ h₀ h₁) h₀ h₁)
 
-theorem pow_lt_one (h₀ : 0 ≤ a) (h₁ : a < 1) : ∀ {n : ℕ}, n ≠ 0 → a ^ n < 1
+theorem pow_lt_one₀ (h₀ : 0 ≤ a) (h₁ : a < 1) : ∀ {n : ℕ}, n ≠ 0 → a ^ n < 1
   | 0, h => (h rfl).elim
   | n + 1, _ => by
     rw [pow_succ']
-    exact mul_lt_one_of_nonneg_of_lt_one_left h₀ h₁ (pow_le_one _ h₀ h₁.le)
+    exact mul_lt_one_of_nonneg_of_lt_one_left h₀ h₁ (pow_le_one₀ h₀ h₁.le)
 
 @[bound]
-theorem one_le_pow_of_one_le (H : 1 ≤ a) : ∀ n : ℕ, 1 ≤ a ^ n
+theorem one_le_pow₀ (H : 1 ≤ a) : ∀ {n : ℕ}, 1 ≤ a ^ n
   | 0 => by rw [pow_zero]
   | n + 1 => by
-    rw [pow_succ']
-    simpa only [mul_one] using
-      mul_le_mul H (one_le_pow_of_one_le H n) zero_le_one (le_trans zero_le_one H)
+    simpa only [pow_succ', mul_one]
+      using mul_le_mul H (one_le_pow₀ H) zero_le_one (zero_le_one.trans H)
+
+lemma one_lt_pow₀ (ha : 1 < a) : ∀ {n : ℕ}, n ≠ 0 → 1 < a ^ n
+  | 0, h => (h rfl).elim
+  | n + 1, _ => by rw [pow_succ']; exact one_lt_mul_of_lt_of_le ha (one_le_pow₀ ha.le)
+
+@[deprecated (since := "2024-09-28")] alias pow_le_one := pow_le_one₀
+@[deprecated (since := "2024-09-28")] alias pow_lt_one := pow_lt_one₀
+@[deprecated (since := "2024-09-28")] alias one_le_pow_of_one_le := one_le_pow₀
+@[deprecated (since := "2024-09-28")] alias one_lt_pow := one_lt_pow₀
 
 theorem pow_right_mono (h : 1 ≤ a) : Monotone (a ^ ·) :=
   monotone_nat_of_le_succ fun n => by
@@ -100,12 +108,6 @@ theorem pow_le_pow_left {a b : R} (ha : 0 ≤ a) (hab : a ≤ b) : ∀ n, a ^ n 
   | 0 => by simp
   | n + 1 => by simpa only [pow_succ']
       using mul_le_mul hab (pow_le_pow_left ha hab _) (pow_nonneg ha _) (ha.trans hab)
-
-theorem one_lt_pow (ha : 1 < a) : ∀ {n : ℕ} (_ : n ≠ 0), 1 < a ^ n
-  | 0, h => (h rfl).elim
-  | n + 1, _ => by
-    rw [pow_succ']
-    exact one_lt_mul_of_lt_of_le ha (one_le_pow_of_one_le ha.le _)
 
 lemma pow_add_pow_le' (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ n + b ^ n ≤ 2 * (a + b) ^ n := by
   rw [two_mul]
