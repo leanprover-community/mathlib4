@@ -202,7 +202,7 @@ instance [CommMonoid α] : IdemCommSemiring (SetSemiring α) :=
 instance [CommMonoid α] : CommMonoid (SetSemiring α) :=
   { (inferInstance : Monoid (SetSemiring α)), Set.commSemigroup with }
 
-instance [CommMonoid α] : CanonicallyOrderedAdd (SetSemiring α) where
+instance : CanonicallyOrderedAdd (SetSemiring α) where
   exists_add_of_le {_ b} ab := ⟨b, (union_eq_right.2 ab).symm⟩
   le_self_add _ _ := subset_union_left
 
