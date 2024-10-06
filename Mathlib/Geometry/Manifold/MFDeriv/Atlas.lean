@@ -293,3 +293,28 @@ theorem mdifferentiableOn_extChartAt_symm :
   exact (mdifferentiableWithinAt_extChartAt_symm _ hy).mono (extChartAt_target_subset_range I x)
 
 end extChartAt
+
+/-- To write a linear map between tangent spaces in coordinates amounts to precomposing and
+postcomposing it with derivatives of extended charts.
+Concrete version of `inTangentCoordinates_eq`. -/
+lemma inTangentCoordinates_eq_mfderiv_comp
+    [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M']
+    {N : Type*} {f : N → M} {g : N → M'}
+    {ϕ : Π x : N, TangentSpace I (f x) →L[𝕜] TangentSpace I' (g x)} {x₀ : N} {x : N}
+    (hx : f x ∈ (chartAt H (f x₀)).source) (hy : g x ∈ (chartAt H' (g x₀)).source) :
+    inTangentCoordinates I I' f g ϕ x₀ x =
+    (mfderiv I' 𝓘(𝕜, E') (extChartAt I' (g x₀)) (g x)) ∘L (ϕ x) ∘L
+      (mfderivWithin 𝓘(𝕜, E) I (extChartAt I (f x₀)).symm (range I)
+        (extChartAt I (f x₀) (f x))) := by
+  rw [inTangentCoordinates_eq _ _ _ _ _ hx hy, tangentBundleCore_coordChange]
+  congr
+  · have : MDifferentiableAt I' 𝓘(𝕜, E') (extChartAt I' (g x₀)) (g x) :=
+      mdifferentiableAt_extChartAt I' hy
+    simp at this
+    simp [mfderiv, this]
+  · simp only [mfderivWithin, writtenInExtChartAt, modelWithCornersSelf_coe, range_id, inter_univ]
+    rw [if_pos]
+    · simp [Function.comp_def, PartialHomeomorph.left_inv (chartAt H (f x₀)) hx]
+    · apply mdifferentiableWithinAt_extChartAt_symm
+      apply (extChartAt I (f x₀)).map_source
+      simpa using hx

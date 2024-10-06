@@ -438,6 +438,10 @@ theorem inTangentCoordinates_model_space (f : N → H) (g : N → H') (ϕ : N �
   simp (config := { unfoldPartialApp := true }) only [inTangentCoordinates,
     inCoordinates_tangent_bundle_core_model_space]
 
+/-- To write a linear map between tangent spaces in coordinates amounts to precomposing and
+postcomposing it with suitable coordinate changes. For a concrete version expressing the
+change of coordinates as derivatives of extended charts,
+see `inTangentCoordinates_eq_mfderiv_comp`. -/
 theorem inTangentCoordinates_eq (f : N → M) (g : N → M') (ϕ : N → E →L[𝕜] E') {x₀ x : N}
     (hx : f x ∈ (chartAt H (f x₀)).source) (hy : g x ∈ (chartAt H' (g x₀)).source) :
     inTangentCoordinates I I' f g ϕ x₀ x =
