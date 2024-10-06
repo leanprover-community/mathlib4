@@ -95,6 +95,22 @@ lemma Derivation.Universal.hasDifferentials {d : M.Derivation φ} (hd : d.Univer
 
 section
 
+variable [HasDifferentials φ]
+
+noncomputable def relativeDifferentials :
+    SheafOfModules.{u} ((sheafCompose K (forget₂ CommRingCat RingCat)).obj R) :=
+  (HasDifferentials.exists_universal_derivation (φ := φ)).choose
+
+noncomputable def universalDerivation : (relativeDifferentials φ).Derivation φ :=
+  (HasDifferentials.exists_universal_derivation (φ := φ)).choose_spec.choose
+
+noncomputable def universalUniversalDerivation : (universalDerivation φ).Universal :=
+  (HasDifferentials.exists_universal_derivation (φ := φ)).choose_spec.choose_spec.some
+
+end
+
+section
+
 variable {M φ} (h : (derivationFunctor φ ⋙ CategoryTheory.forget _).CorepresentableBy M)
 
 def ofCorepresentableBy : M.Derivation φ := h.homEquiv (𝟙 _)
