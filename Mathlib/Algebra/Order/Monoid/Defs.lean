@@ -32,8 +32,7 @@ section OrderedCommMonoid
 variable [OrderedCommMonoid α]
 
 @[to_additive]
-instance (priority := 200) OrderedCommMonoid.toCovariantClassLeft :
-    CovariantClass α α (· * ·) (· ≤ ·) where
+instance OrderedCommMonoid.toCovariantClassLeft : CovariantClass α α (· * ·) (· ≤ ·) where
   elim := fun a _ _ bc ↦ OrderedCommMonoid.mul_le_mul_left _ _ bc a
 
 @[to_additive]
@@ -64,7 +63,7 @@ instance (priority := 200) OrderedCancelCommMonoid.toContravariantClassLeLeft :
   ⟨OrderedCancelCommMonoid.le_of_mul_le_mul_left⟩
 
 @[to_additive]
-instance (priority := 200) OrderedCancelCommMonoid.toContravariantClassLeft :
+instance OrderedCancelCommMonoid.toContravariantClassLeft :
     ContravariantClass α α (· * ·) (· < ·) where
   elim := contravariant_lt_of_contravariant_le α α _ ContravariantClass.elim
 
