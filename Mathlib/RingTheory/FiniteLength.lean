@@ -1,0 +1,55 @@
+/-
+Copyright (c) 2024 Junyan Xu. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Junyan Xu
+-/
+import Mathlib.Order.Atoms.Finite
+import Mathlib.RingTheory.Artinian
+
+/-!
+# Modules of finite length
+
+We define modules of finite length (`IsFiniteLength`) to be finite iterated extensions of
+simple modules, and show that a module is of finite length iff it is both Noetherian and Artinian.
+We do not make `IsFiniteLength` a class, instead we use `[IsNoetherian R M] [IsArtinian R M]`.
+
+## Tag
+
+Finite length
+-/
+
+universe u
+
+variable (R : Type*) [Ring R]
+
+/-- A module of finite length is either a subsingleton or a simple extension of a module known
+to be of finite length. -/
+inductive IsFiniteLength : ∀ (M : Type u) [AddCommGroup M] [Module R M], Prop
+  | of_subsingleton {M} [AddCommGroup M] [Module R M] [Subsingleton M] : IsFiniteLength M
+  | of_simple_quotient {M} [AddCommGroup M] [Module R M] {N : Submodule R M}
+      [IsSimpleModule R (M ⧸ N)] : IsFiniteLength N → IsFiniteLength M
+
+variable {R} {M : Type*} [AddCommGroup M] [Module R M]
+
+theorem LinearEquiv.isFiniteLength (h : IsFiniteLength R M) :
+    ∀ {N : Type u} [AddCommGroup N] [Module R N], (M ≃ₗ[R] N) → IsFiniteLength R N :=
+  h.rec
+    (motive := fun M _ _ _ ↦ ∀ {N} [AddCommGroup N] [Module R N], (M ≃ₗ[R] N) → IsFiniteLength R N)
+    (fun _M _ _ _ {_N} _ _ e ↦ have := e.symm.toEquiv.subsingleton; .of_subsingleton)
+    fun _M _ _ S _ _ ih {_N} _ _ e ↦
+      have := IsSimpleModule.congr (Submodule.Quotient.equiv S _ e rfl).symm
+      .of_simple_quotient (ih <| e.submoduleMap S)
+
+theorem isFiniteLength_iff_isNoetherian_isArtinian :
+    IsFiniteLength R M ↔ IsNoetherian R M ∧ IsArtinian R M :=
+  ⟨fun h ↦ h.rec (fun {M} _ _ _ ↦ ⟨inferInstance, inferInstance⟩) fun M _ _ {N} _ _ ⟨noe, art⟩ ↦
+    ⟨(isNoetherian_iff_submodule_quotient N).mpr ⟨‹_›, isNoetherian_iff'.mpr inferInstance⟩,
+      (isArtinian_iff_submodule_quotient N).mpr ⟨‹_›, inferInstance⟩⟩,
+    fun ⟨_, _⟩ ↦ by
+      obtain ⟨f, f0, n, hn⟩ := exists_covBy_seq_of_wellFoundedLT_wellFoundedGT (α := Submodule R M)
+      have : ∀ i ≤ n, IsFiniteLength R (f i) := fun i hi ↦ by
+        induction' i with i ih
+        · rw [f0.eq_bot]; exact .of_subsingleton
+        ·
+      -- covBy_iff_quot_is_simple
+      ⟩
