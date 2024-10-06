@@ -48,6 +48,11 @@ theorem uniqueMDiffWithinAt_univ : UniqueMDiffWithinAt I univ x := by
 
 variable {I}
 
+theorem uniqueMDiffWithinAt_iff_inter_range {s : Set M} {x : M} :
+    UniqueMDiffWithinAt I s x ↔
+      UniqueDiffWithinAt 𝕜 ((extChartAt I x).symm ⁻¹' s ∩ range I)
+        ((extChartAt I x) x) := Iff.rfl
+
 theorem uniqueMDiffWithinAt_iff {s : Set M} {x : M} :
     UniqueMDiffWithinAt I s x ↔
       UniqueDiffWithinAt 𝕜 ((extChartAt I x).symm ⁻¹' s ∩ (extChartAt I x).target)

@@ -186,7 +186,7 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} (f : N → M → M'
     ContMDiffWithinAt J 𝓘(𝕜, E →L[𝕜] E') m
       (fun x =>
         fderivWithin 𝕜 (extChartAt I' (f x₀ (g x₀)) ∘ f x ∘ (extChartAt I (g x₀)).symm)
-        (range I ∩ (extChartAt I (g x₀)).symm ⁻¹' u)
+        ((extChartAt I (g x₀)).symm ⁻¹' u ∩ range I)
           (extChartAt I (g x₀) (g x))) t x₀ := by
     simp_rw [contMDiffWithinAt_iff_source_of_mem_source (mem_chart_source G x₀),
       contMDiffWithinAt_iff_contDiffWithinAt, Function.comp_def]
@@ -201,7 +201,9 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} (f : N → M → M'
     apply MDifferentiableWithinAt.mfderivWithin_mono
     · apply mdifferentiableWithinAt_extChartAt_symm
       exact PartialEquiv.map_source (extChartAt I (g x₀)) h2
-    · exact
+    · apply UniqueDiffWithinAt.uniqueMDiffWithinAt
+      apply uniqueMDiffWithinAt_iff_inter_range.1
+
   rw [inTangentCoordinates_eq_mfderiv_comp, A,
     ← mfderivWithin_comp_of_eq, ← mfderiv_comp_mfderivWithin_of_eq]
   · exact mfderivWithin_eq_fderivWithin
