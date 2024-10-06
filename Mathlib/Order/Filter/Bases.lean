@@ -117,7 +117,7 @@ def Filter.asBasis (f : Filter α) : FilterBasis α :=
   ⟨f.sets, ⟨univ, univ_mem⟩, fun {x y} hx hy => ⟨x ∩ y, inter_mem hx hy, subset_rfl⟩⟩
 
 -- Porting note: was `protected` in Lean 3 but `protected` didn't work; removed
-/-- `is_basis p s` means the image of `s` bounded by `p` is a filter basis. -/
+/-- `IsBasis p s` means the image of `s` bounded by `p` is a filter basis. -/
 structure Filter.IsBasis (p : ι → Prop) (s : ι → Set α) : Prop where
   /-- There exists at least one `i` that satisfies `p`. -/
   nonempty : ∃ i, p i
