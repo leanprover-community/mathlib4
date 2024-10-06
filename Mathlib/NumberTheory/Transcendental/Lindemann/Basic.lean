@@ -7,6 +7,7 @@ import Mathlib.Analysis.Complex.IsIntegral
 import Mathlib.NumberTheory.Transcendental.Lindemann.Init.AlgebraicPart
 import Mathlib.NumberTheory.Transcendental.Lindemann.Init.AnalyticalPart
 import Mathlib.NumberTheory.Transcendental.Lindemann.Init.SumAEvalARoots
+import Mathlib.Topology.Algebra.Order.Floor
 
 /-!
 # The Lindemann-Weierstrass theorem
@@ -69,7 +70,7 @@ theorem linearIndependent_exp' (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
   have (x : ℝ) : Filter.Tendsto (fun n ↦ x ^ n / (n - 1)!) .atTop (nhds 0) := by
     suffices Filter.Tendsto ((fun n ↦ x ^ (n + 1) / n !) ∘ (· - 1)) .atTop (nhds 0) from
       this.congr' <| Filter.eventually_atTop.mpr ⟨1, fun _ h ↦ by simp [h]⟩
-    have := x.tendsto_pow_div_factorial_atTop.const_mul x
+    have := (FloorSemiring.tendsto_pow_div_factorial_atTop x).const_mul x
     simp_rw [← mul_div_assoc, ← pow_succ', mul_zero] at this
     exact this.comp (Filter.tendsto_atTop_atTop.mpr fun b ↦ ⟨b + 1, fun _ ↦ by omega⟩)
 
@@ -189,7 +190,7 @@ theorem linearIndependent_exp' (u : ι → ℂ) (hu : ∀ i, IsIntegral ℚ (u i
         Nat.not_dvd_of_pos_of_lt (Int.natAbs_pos.mpr k0)
           (((le_max_left _ _).trans (le_max_right _ _)).trans_lt hqN)
           (Nat.Prime.dvd_of_dvd_pow prime_q h),
-        fun h => hn ((Int.dvd_iff_emod_eq_zero _ _).mp (Int.natCast_dvd.mpr h))⟩,
+        fun h => hn (Int.dvd_iff_emod_eq_zero.mp (Int.natCast_dvd.mpr h))⟩,
       Nat.not_dvd_of_pos_of_lt (Int.natAbs_pos.mpr w0)
         (((le_max_right _ _).trans (le_max_right _ _)).trans_lt hqN)⟩
 
