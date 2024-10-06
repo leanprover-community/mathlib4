@@ -316,25 +316,24 @@ variable [Module R N₁] [Module R N₂] [Module R N₃]
 
 /-- When `N₁` and `N₂` are equivalent, bilinear maps on `M` into `N₁` are equivalent to bilinear
 maps into `N₂`. -/
-def LinearMap.BilinMap.congr₂ (e : N₁ ≃ₗ[R] N₂) : BilinMap R M N₁ ≃ₗ[R] BilinMap R M N₂ :=
+def congr₂ (e : N₁ ≃ₗ[R] N₂) : BilinMap R M N₁ ≃ₗ[R] BilinMap R M N₂ :=
   LinearEquiv.congrRight (LinearEquiv.congrRight e)
 
 @[simp]
-theorem LinearMap.BilinMap.congr₂_apply (e : N₁ ≃ₗ[R] N₂) (B : BilinMap R M N₁) :
-    LinearMap.BilinMap.congr₂ e B = compr₂ B e := rfl
+theorem congr₂_apply (e : N₁ ≃ₗ[R] N₂) (B : BilinMap R M N₁) :
+    congr₂ e B = compr₂ B e := rfl
 
 @[simp]
 theorem congr₂_refl :
-    LinearMap.BilinMap.congr₂ (.refl R N₁) = .refl R (BilinMap R M N₁) := rfl
+    congr₂ (.refl R N₁) = .refl R (BilinMap R M N₁) := rfl
 
 @[simp]
 theorem congr₂_symm (e : N₁ ≃ₗ[R] N₂) :
-    (LinearMap.BilinMap.congr₂ e (M := M)).symm = LinearMap.BilinMap.congr₂ e.symm :=
+    (congr₂ e (M := M)).symm = congr₂ e.symm :=
   rfl
 
 theorem congr₂_trans (e₁₂ : N₁ ≃ₗ[R] N₂) (e₂₃ : N₂ ≃ₗ[R] N₃) :
-    LinearMap.BilinMap.congr₂ (M := M) (e₁₂ ≪≫ₗ e₂₃) =
-    LinearMap.BilinMap.congr₂ e₁₂ ≪≫ₗ LinearMap.BilinMap.congr₂ e₂₃ :=
+    congr₂ (M := M) (e₁₂ ≪≫ₗ e₂₃) = congr₂ e₁₂ ≪≫ₗ congr₂ e₂₃ :=
   rfl
 
 end congr₂
