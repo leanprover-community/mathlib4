@@ -169,7 +169,7 @@ end MulDivCancelClass
 section MulDivCancelClass
 variable [CommMonoidWithZero M₀] [Div M₀] [MulDivCancelClass M₀]
 
-@[simp] lemma mul_div_cancel_left₀ {a : M₀} (b : M₀) (ha : a ≠ 0) : a * b / a = b := by
+@[simp] lemma mul_div_cancel_left₀ (b : M₀) {a : M₀} (ha : a ≠ 0) : a * b / a = b := by
   rw [mul_comm, mul_div_cancel_right₀ _ ha]
 
 end MulDivCancelClass

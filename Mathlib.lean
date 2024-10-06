@@ -838,6 +838,7 @@ import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Basic
 import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Degree
 import Mathlib.AlgebraicGeometry.EllipticCurve.Group
 import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian
+import Mathlib.AlgebraicGeometry.EllipticCurve.NormalForms
 import Mathlib.AlgebraicGeometry.EllipticCurve.Projective
 import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
 import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
@@ -2066,6 +2067,7 @@ import Mathlib.Condensed.Basic
 import Mathlib.Condensed.CartesianClosed
 import Mathlib.Condensed.Discrete.Basic
 import Mathlib.Condensed.Discrete.LocallyConstant
+import Mathlib.Condensed.Discrete.Module
 import Mathlib.Condensed.Epi
 import Mathlib.Condensed.Equivalence
 import Mathlib.Condensed.Explicit
@@ -2287,6 +2289,7 @@ import Mathlib.Data.Int.Range
 import Mathlib.Data.Int.Sqrt
 import Mathlib.Data.Int.Star
 import Mathlib.Data.Int.SuccPred
+import Mathlib.Data.Int.WithZero
 import Mathlib.Data.LazyList.Basic
 import Mathlib.Data.List.AList
 import Mathlib.Data.List.Basic
@@ -2564,6 +2567,7 @@ import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Set.List
 import Mathlib.Data.Set.MemPartition
+import Mathlib.Data.Set.Monotone
 import Mathlib.Data.Set.MulAntidiagonal
 import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Notation
@@ -3609,6 +3613,7 @@ import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Order.Filter.AtTopBot.Archimedean
 import Mathlib.Order.Filter.AtTopBot.BigOperators
 import Mathlib.Order.Filter.AtTopBot.Field
+import Mathlib.Order.Filter.AtTopBot.Floor
 import Mathlib.Order.Filter.AtTopBot.Group
 import Mathlib.Order.Filter.AtTopBot.ModEq
 import Mathlib.Order.Filter.AtTopBot.Monoid
@@ -4737,6 +4742,7 @@ import Mathlib.Topology.MetricSpace.ShrinkingLemma
 import Mathlib.Topology.MetricSpace.ThickenedIndicator
 import Mathlib.Topology.MetricSpace.Thickening
 import Mathlib.Topology.MetricSpace.Ultra.Basic
+import Mathlib.Topology.MetricSpace.Ultra.ContinuousMaps
 import Mathlib.Topology.MetricSpace.Ultra.TotallyDisconnected
 import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.Metrizable.ContinuousMap
