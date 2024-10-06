@@ -115,7 +115,7 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
   apply this.congr_of_eventuallyEq
   filter_upwards [] with x
   rw [inTangentCoordinates_eq_mfderiv_comp _ _ sorry sorry]
-  rw [← mfderivWithin_comp_mfderivWithin]
+  rw [← mfderiv_comp_mfderivWithin_of_eq]
 
 
 
