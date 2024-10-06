@@ -143,8 +143,11 @@ def prodMap (f : ContinuousMonoidHom A C) (g : ContinuousMonoidHom B D) :
     ContinuousMonoidHom (A × B) (C × D) :=
   mk' (f.toMonoidHom.prodMap g.toMonoidHom) (f.continuous_toFun.prodMap g.continuous_toFun)
 
-@[to_additive (attr := deprecated (since := "2024-10-05"))]
-alias prod_map := prodMap
+@[to_additive] alias prod_map := prodMap
+attribute [deprecated prodMap (since := "2024-10-05")] prod_map
+
+attribute [deprecated _root_.ContinuousAddMonoidHom.prodMap (since := "2024-10-05")]
+  ContinuousAddMonoidHom.sum_map
 
 variable (A B C D E)
 
