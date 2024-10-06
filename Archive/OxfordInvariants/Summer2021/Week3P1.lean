@@ -136,6 +136,6 @@ theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ 
         rw [← mul_div_assoc, ← mul_div_right_comm, mul_div_assoc,
           mul_div_cancel_right₀ _ (a_pos _ <| Nat.le_succ _).ne', mul_comm]
   -- Check the divisibility condition
-  · rw [mul_tsub, ← mul_assoc, Nat.mul_div_cancel' ha, add_mul, Nat.mul_div_cancel' han,
+  · rw [Nat.mul_sub, ← mul_assoc, Nat.mul_div_cancel' ha, add_mul, Nat.mul_div_cancel' han,
       add_tsub_tsub_cancel ha₀, add_tsub_cancel_right]
     exact dvd_mul_right _ _

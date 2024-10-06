@@ -42,11 +42,13 @@ instance (priority := 100) toMulLeftMono [NonUnitalNonAssocSemiring α]
 
 variable [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
 
--- see Note [lower instance priority]
-instance (priority := 100) toOrderedCommMonoid : OrderedCommMonoid α where
+-- See note [reducible non-instances]
+/-- Construct an `OrderedCommMonoid` from a canonically ordered `CommSemiring`. -/
+abbrev toOrderedCommMonoid : OrderedCommMonoid α where
   mul_le_mul_left _ _ := mul_le_mul_left'
 
-@[nolint docBlame]
+-- See note [reducible non-instances]
+/-- Construct an `OrderedCommSemiring` from a canonically ordered `CommSemiring`. -/
 abbrev toOrderedCommSemiring : OrderedCommSemiring α where
   mul_comm := mul_comm
   zero_le_one := zero_le _
