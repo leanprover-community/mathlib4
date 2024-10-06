@@ -133,28 +133,10 @@ lemma IsMatching.coeSubgraph {G' : Subgraph G} {M : Subgraph G'.coe} (hM : M.IsM
   · obtain ⟨_, hw', hvw⟩ := (coeSubgraph_adj _ _ _).mp hy
     rw [← hw.2 ⟨y, hw'⟩ hvw]
 
-lemma IsMatching.iff_map_equiv {G' : SimpleGraph W} {M : Subgraph G} (f : SimpleGraph.Iso G G') :
-    M.IsMatching ↔ (M.map f.toHom).IsMatching := by
+lemma Iso.isMatching_map {G' : SimpleGraph W} {M : Subgraph G} (f : SimpleGraph.Iso G G') :
+    (M.map f.toHom).IsMatching ↔ M.IsMatching := by
   constructor
-  · intro hM
-    intro v hv
-    simp only [map_verts, RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding, Set.mem_image] at hv
-    obtain ⟨v', ⟨hv', rfl⟩⟩ := hv
-    obtain ⟨w, hw⟩ := hM hv'
-    use f.toEmbedding w
-    dsimp at *
-    constructor
-    · have := hw.1
-      apply Relation.map_apply.mpr
-      use v', w
-    · intro y hy
-      rw [Relation.map_apply] at hy
-      obtain ⟨a, b, ⟨hab, ha, rfl⟩⟩ := hy
-      rw [RelIso.eq_iff_eq] at ha
-      subst ha
-      rw [hw.2 _ hab]
-  · intro hM
-    intro v hv
+  · intro hM v hv
     have hfv : f v ∈ (Subgraph.map (Iso.map f G).toHom M).verts := by
       simpa [map_verts, RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding, Iso.map_apply,
         Set.mem_image_equiv, Equiv.symm_apply_apply] using hv
@@ -174,7 +156,22 @@ lemma IsMatching.iff_map_equiv {G' : SimpleGraph W} {M : Subgraph G} (f : Simple
         use v, y
       rw [← this]
       simp only [RelIso.symm_apply_apply]
-
+  · intro hM v hv
+    simp only [map_verts, RelEmbedding.coe_toRelHom, RelIso.coe_toRelEmbedding, Set.mem_image] at hv
+    obtain ⟨v', ⟨hv', rfl⟩⟩ := hv
+    obtain ⟨w, hw⟩ := hM hv'
+    use f w
+    dsimp at *
+    constructor
+    · have := hw.1
+      apply Relation.map_apply.mpr
+      use v', w
+    · intro y hy
+      rw [Relation.map_apply] at hy
+      obtain ⟨a, b, ⟨hab, ha, rfl⟩⟩ := hy
+      rw [RelIso.eq_iff_eq] at ha
+      subst ha
+      rw [hw.2 _ hab]
 /--
 The subgraph `M` of `G` is a perfect matching on `G` if it's a matching and every vertex `G` is
 matched.
