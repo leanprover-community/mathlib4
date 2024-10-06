@@ -31,7 +31,7 @@ of a number field `K` are first defined at the level of `AbsoluteValue` by using
   a function that takes an absolute value on a semiring and returns the semiring. We use this
   to assign and infer instances on a semiring that depend on absolute values.
  - `AbsoluteValue.completion` : the uniform space completion of a field `K` according to the
-  uniform structure defined by the specified absolute value.
+  uniform structure defined by the specified real absolute value.
  - `NumberField.InfinitePlace.completion` : the completion of a number field `K` at an infinite
   place, obtained by completing `K` with respect to the absolute value associated to the infinite
   place.
