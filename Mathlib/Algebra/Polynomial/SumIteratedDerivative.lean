@@ -135,11 +135,11 @@ theorem aeval_iterate_derivative_of_ge (p : R[X]) (q : ℕ) {k : ℕ} (hk : q �
     Nat.add_descFactorial_eq_ascFactorial, Nat.factorial_mul_ascFactorial]
 
 theorem aeval_sumIDeriv (p : R[X]) (q : ℕ) :
-    ∃ (gp : R[X]) (gp_le : gp.natDegree ≤ p.natDegree - q),
+    ∃ gp : R[X], gp.natDegree ≤ p.natDegree - q ∧
       ∀ (r : A) {p' : A[X]}, p.map (algebraMap R A) = (X - C r) ^ q * p' →
         aeval r (sumIDeriv p) = q ! • aeval r gp := by
   have h (k) :
-      ∃ (gp : R[X]) (gp_le : gp.natDegree ≤ p.natDegree - q),
+      ∃ gp : R[X], gp.natDegree ≤ p.natDegree - q ∧
         ∀ (r : A) {p' : A[X]}, p.map (algebraMap R A) = (X - C r) ^ q * p' →
           aeval r (derivative^[k] p) = q ! • aeval r gp := by
     cases lt_or_ge k q with
@@ -161,8 +161,8 @@ theorem aeval_sumIDeriv (p : R[X]) (q : ℕ) :
   intro r p' hp
   rw [sumIDeriv_apply, map_sum]; simp_rw [hc _ r hp, map_sum, smul_sum]
 
-theorem aeval_sumIDeriv' [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q : ℕ} (hq : 0 < q) :
-    ∃ (gp : R[X]) (gp_le : gp.natDegree ≤ p.natDegree - q),
+theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q : ℕ} (hq : 0 < q) :
+    ∃ gp : R[X], gp.natDegree ≤ p.natDegree - q ∧
       ∀ (inj_amap : Function.Injective (algebraMap R A)) (r : A) {p' : A[X]},
         p.map (algebraMap R A) = (X - C r) ^ (q - 1) * p' →
         aeval r (sumIDeriv p) = (q - 1)! • p'.eval r + q ! • aeval r gp := by
