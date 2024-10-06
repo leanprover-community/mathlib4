@@ -344,19 +344,12 @@ lemma root_covector_coroot (x : N) (i : ι) :
 
 lemma pairing_reflection_perm (P : RootPairing ι R M N) (i j k : ι) :
     P.pairing j (P.reflection_perm i k) = P.pairing (P.reflection_perm i j) k := by
-  simp only [pairing, coroot_reflection_perm, root_reflection_perm]
+  simp only [pairing, coroot_reflection_perm, root', root_reflection_perm]
   simp only [coreflection_apply_coroot, map_sub, root_coroot_eq_pairing, map_smul, smul_eq_mul,
     reflection_apply_root]
-  simp only [← toLin_toPerfectPairing, map_smul, LinearMap.smul_apply, map_sub, map_smul,
-    LinearMap.sub_apply, smul_eq_mul]
-  simp only [PerfectPairing.toLin_apply, root_coroot_eq_pairing, sub_right_inj, mul_comm]
-
-@[simp]
-lemma pairing_reflection_perm_self (P : RootPairing ι R M N) (i j : ι) :
-    P.pairing (P.reflection_perm i i) j = - P.pairing i j := by
-  rw [pairing, ← reflection_perm_root, root_coroot_eq_pairing, pairing_same, two_smul,
-    sub_add_cancel_left, ← toLin_toPerfectPairing, LinearMap.map_neg₂, toLin_toPerfectPairing,
-    root_coroot_eq_pairing]
+  simp only [← toLin_toPerfectPairing, map_sub, PerfectPairing.toLin_apply, map_smul,
+    LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul]
+  simp only [PerfectPairing.toLin_apply, root_coroot_eq_pairing, mul_comm]
 
 lemma reflection_dualMap_eq_coreflection :
     (P.reflection i).dualMap ∘ₗ P.toLin.flip = P.toLin.flip ∘ₗ P.coreflection i := by
@@ -377,15 +370,6 @@ lemma coroot'_reflection_perm {i j : ι} :
 lemma coroot'_reflection {i j : ι} (y : M) :
     P.coroot' j (P.reflection i y) = P.coroot' (P.reflection_perm i j) y :=
   (LinearMap.congr_fun P.coroot'_reflection_perm y).symm
-
-lemma pairing_reflection_perm (i j k : ι) :
-    P.pairing j (P.reflection_perm i k) = P.pairing (P.reflection_perm i j) k := by
-  simp only [pairing, root', coroot_reflection_perm, root_reflection_perm]
-  simp only [coreflection_apply_coroot, map_sub, map_smul, smul_eq_mul,
-    reflection_apply_root]
-  simp only [← toLin_toPerfectPairing, map_smul, LinearMap.smul_apply, map_sub, map_smul,
-    LinearMap.sub_apply, smul_eq_mul]
-  simp only [PerfectPairing.toLin_apply, root'_coroot_eq_pairing, sub_right_inj, mul_comm]
 
 @[simp]
 lemma pairing_reflection_perm_self_left (P : RootPairing ι R M N) (i j : ι) :
@@ -415,8 +399,9 @@ lemma reflection_eq_imp_scalar (j : ι) (h: P.reflection i = P.reflection j) :
     2 • P.root i = (P.toPerfectPairing (P.root i) (P.coroot j)) • P.root j := by
   have hij: P.root i = -P.root i + P.toPerfectPairing (P.root i) (P.coroot j) • P.root j := by
     nth_rw 1 [← reflection_same P i (P.root i), reflection_apply_self, h, reflection_apply]
-    rw [root_coroot_eq_pairing, ← toLin_toPerfectPairing, LinearMap.map_neg₂, neg_smul,
-      sub_neg_eq_add, toLin_toPerfectPairing, root_coroot_eq_pairing]
+    rw [coroot', root_coroot_eq_pairing, PerfectPairing.flip_apply_apply, ← toLin_toPerfectPairing,
+      LinearMap.map_neg, LinearMap.neg_apply, neg_smul, sub_neg_eq_add, toLin_toPerfectPairing,
+      root'_coroot_eq_pairing]
   rw [two_nsmul, eq_neg_add_iff_add_eq.mp hij]
 
 lemma coreflection_eq_imp_scalar (j : ι) (h: P.coreflection i = P.coreflection j) :
@@ -631,35 +616,6 @@ lemma isOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.r
   simp only [LinearEquiv.coe_coe, reflection_apply, PerfectPairing.flip_apply_apply, map_sub,
     map_smul, root_coroot_eq_pairing, h, zero_smul, sub_zero]
   abel
-
-lemma reflection_smul_root_plus_pairing_smul_root (a b : R) :
-    P.reflection j (a • P.root i + b • (P.pairing i j) • P.root j) =
-      a • P.root i - (a + b) • (P.pairing i j) • P.root j := by
-  rw [map_add, LinearMapClass.map_smul, reflection_apply_root, smul_sub, LinearMapClass.map_smul,
-    LinearMapClass.map_smul, reflection_apply_self, smul_neg, sub_add, sub_right_inj, add_smul,
-    smul_neg, sub_neg_eq_add]
-
-lemma reflection_reflection_smul_root_plus_pairing_smul_root (a b : R) :
-    P.reflection i (P.reflection j (a • P.root i + b • (P.pairing i j) • P.root j)) =
-      ((a + b) * P.coxeterWeight i j - a) • P.root i - (a + b) • (P.pairing i j) • P.root j := by
-  rw [reflection_smul_root_plus_pairing_smul_root, map_sub, map_smul, map_smul, map_smul,
-    reflection_apply_self, reflection_apply_root, smul_sub, smul_sub, sub_smul,
-    smul_smul (P.pairing i j), ← coxeterWeight, smul_neg, mul_smul]
-  abel
-
-end pairs
-
-section Embedding
-
-variable {κ : Type*} (P : RootPairing ι R M N) (Q : RootPairing κ R M N)
-
-/-- A map of index sets induces an embedding of root pairings if it respects reflection
-permutations. -/
-def IsEmbedding {κ : Type*} (P : RootPairing ι R M N) (Q : RootPairing κ R M N) (f : ι → κ) :
-    Prop :=
-  ∀ i j, f (P.reflection_perm i j) = Q.reflection_perm (f i) (f j)
-
-end Embedding
 
 lemma reflection_smul_root_plus_pairing_smul_root (a b : R) :
     P.reflection j (a • P.root i + b • (P.pairing i j) • P.root j) =

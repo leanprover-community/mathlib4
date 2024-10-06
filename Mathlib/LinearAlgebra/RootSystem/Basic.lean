@@ -79,10 +79,10 @@ lemma reflection_apply_lin_comb (x : M) (a b : R) :
     P.reflection i (x + a • P.root i + b • P.root j) =
       x + (- a - P.toPerfectPairing x (P.coroot i) - b * P.pairing j i) • P.root i +
       b • P.root j := by
-  simp only [reflection_apply, ← toLin_toPerfectPairing, LinearMap.map_add₂, LinearMap.add_apply,
-    LinearMap.smul_apply, LinearMap.map_smul₂, smul_eq_mul, add_smul]
-  simp only [toLin_toPerfectPairing, root_coroot_eq_pairing, pairing_same, mul_two, two_smul,
-    add_smul, sub_smul, mul_smul, neg_smul]
+  simp only [reflection_apply, PerfectPairing.flip_apply_apply, ← toLin_toPerfectPairing,
+    PerfectPairing.toLin_apply, LinearMap.map_add, LinearMap.map_smul]
+  simp only [PerfectPairing.toLin_apply, root_coroot_eq_pairing, pairing_same, smul_eq_mul,
+    sub_smul, neg_smul, mul_smul, add_smul, two_smul, smul_add]
   abel
 
 lemma reflection_reflection (x : M) : P.reflection i (P.reflection j x) =
@@ -91,7 +91,7 @@ lemma reflection_reflection (x : M) : P.reflection i (P.reflection j x) =
   rw [reflection_apply P j, reflection_apply P i]
   simp only [← toLin_toPerfectPairing, map_sub, map_smul,
     LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul, sub_right_inj]
-  simp only [PerfectPairing.toLin_apply, root_coroot_eq_pairing]
+  simp
 
 lemma two_root_eq_pairing_root (h : P.reflection i = P.reflection j) :
     (2 : R) • P.root i = (P.pairing i j) • P.root j := by
@@ -132,7 +132,7 @@ lemma root_reflection_perm_trans_iterate (k : ι) (n : ℕ) :
   induction n with
   | zero => simp
   | succ n ih =>
-    rw [iterate_succ', iterate_succ', Equiv.coe_trans, comp.assoc, comp_apply, root_reflection_perm,
+    rw [iterate_succ', iterate_succ', Equiv.coe_trans, comp_assoc, comp_apply, root_reflection_perm,
     comp_apply, root_reflection_perm, ← Equiv.coe_trans, ih, comp_apply, LinearEquiv.trans_apply]
 
 /-- We should be able to eliminate the NoZeroSMulDivisors ℤ M hypothesis. -/
@@ -148,11 +148,12 @@ lemma infinite_of_linearly_independent_coxeterWeight_four [CharZero R] [NoZeroSM
       (P.mapsTo_reflection_root i)).comp (bijOn_reflection_of_mapsTo (P.coroot_root_two j)
       (P.mapsTo_reflection_root j))).image_eq n]
     exact mem_image_of_mem _ (mem_range_self j)
-  · rw [coroot_root_eq_pairing, coroot_root_eq_pairing, ← hc, mul_comm, coxeterWeight]
+  · rw [PerfectPairing.flip_apply_apply, root_coroot_eq_pairing, root_coroot'_eq_pairing, ← hc,
+      mul_comm, coxeterWeight]
   · rw [LinearIndependent.pair_iff] at hl
     specialize hl (P.pairing j i) (-2)
     simp only [neg_smul, neg_eq_zero, OfNat.ofNat_ne_zero, and_false, imp_false] at hl
-    rw [ne_eq, coroot_root_eq_pairing, ← sub_eq_zero, sub_eq_add_neg]
+    rw [ne_eq, root_coroot'_eq_pairing, ← sub_eq_zero, sub_eq_add_neg]
     exact hl
 
 /-!

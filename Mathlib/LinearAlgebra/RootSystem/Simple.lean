@@ -117,11 +117,11 @@ lemma cartanMatrix_same {P : RootPairing ι R M N} (S : Separation P) {i : ι} (
     cartanMatrix S (⟨i, hi⟩, ⟨i, hi⟩) = 2 := by
   simp
 
+/-!
 /-- View a root as an element of the span of roots. -/
 def root' : ι → (Submodule.span R (Set.range P.root)) :=
   fun i => ⟨P.root i, Submodule.subset_span <| @Set.mem_range_self _ _ P.root i⟩
 
-/-!
 /-- A base is a parametrized subset of roots forming an `R`-basis of the span of roots, such
 that the coordinates of any root are all nonpositive or all nonnegative. (maybe just restrict this
 definition to root systems?)-/
