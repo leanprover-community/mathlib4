@@ -655,15 +655,13 @@ instance instFiniteDimensionalOfIsReflexive
     (K : Type uK) (V : Type uV) [Field K] [AddCommGroup V] [Module K V] [IsReflexive K V] :
     FiniteDimensional K V := by
   rw [FiniteDimensional, ← rank_lt_aleph0_iff]
-  by_contra contra
-  suffices lift.{uK, uV} (Module.rank K V) < Module.rank K (Dual K (Dual K V)) by
+  by_contra! contra
+  suffices lift (Module.rank K V) < Module.rank K (Dual K (Dual K V)) by
     have heq := lift_rank_eq_of_equiv_equiv (R := K) (R' := K) (M := V) (M' := Dual K (Dual K V))
       (ZeroHom.id K) (evalEquiv K V) bijective_id (fun r v ↦ (evalEquiv K V).map_smul _ _)
     rw [← lift_umax.{uV, uK}, heq, lift_id'] at this
     exact lt_irrefl _ this
-  replace contra : ℵ₀ ≤ Module.rank K V := by rwa [not_lt] at contra
-  have h₁ : lift.{uK, uV} (Module.rank K V) < Module.rank K (Dual K V) :=
-    lift_rank_lt_rank_dual contra
+  have h₁ : lift (Module.rank K V) < Module.rank K (Dual K V) := lift_rank_lt_rank_dual contra
   have h₂ : Module.rank K (Dual K V) < Module.rank K (Dual K (Dual K V)) := by
     convert lift_rank_lt_rank_dual <| le_trans (by simpa) h₁.le
     rw [lift_id']
