@@ -116,7 +116,7 @@ def findBinders : Syntax → Array Syntax
 variable
   (nm : Ident)
   (binders : TSyntaxArray [`ident, `Lean.Parser.Term.hole, `Lean.Parser.Term.bracketedBinder])
-  (typ : TSyntax `term)
+  (typ : Syntax)
 def mkThmCore : CommandElabM Syntax :=
   `(command| theorem $nm $binders* : $(⟨typ⟩) := by included_variables plumb; sorry)
 
@@ -127,7 +127,7 @@ def getPropValue {m} [Monad m] [MonadRef m] [MonadQuotation m] (stx : Syntax) : 
     `($(mkIdent `False))
 
 def mkThmWithHyps (cmd : Syntax) (nm : Ident) : CommandElabM Syntax := do
-  mkThmCore nm ((findBinders cmd).map (⟨·⟩)) (← getPropValue stx)
+  mkThmCore nm ((findBinders cmd).map (⟨·⟩)) (← getPropValue cmd)
 
 /-
   if let some stx := stx.raw.find? (·.isOfKind ``Lean.Parser.Command.declaration) then
