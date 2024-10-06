@@ -131,7 +131,6 @@ noncomputable def fromCommLeftInv : S.leftInv →* S where
 
 variable (hS : S ≤ IsUnit.submonoid M)
 
-set_option pp.proofs.withType true in
 -- TODO: add an `Equiv` version without assuming commutativity
 /-- The submonoid of pointwise inverse of `S` is `MulEquiv` to `S`. -/
 @[to_additive (attr := simps apply) "The additive submonoid of pointwise additive inverse of `S` is
