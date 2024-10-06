@@ -201,8 +201,6 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCom
 theorem _root_.LinearIndependent.lt_aleph0_of_finiteDimensional {ι : Type w} [FiniteDimensional K V]
     {v : ι → V} (h : LinearIndependent K v) : #ι < ℵ₀ :=
   h.lt_aleph0_of_finite
-@[deprecated (since := "2023-12-27")]
-alias lt_aleph0_of_linearIndependent := LinearIndependent.lt_aleph0_of_finiteDimensional
 
 /-- If a submodule has maximal dimension in a finite dimensional space, then it is equal to the
 whole space. -/
@@ -671,7 +669,7 @@ noncomputable def divisionRingOfFiniteDimensional (F K : Type*) [Field F] [Ring 
   inv x :=
     letI := Classical.decEq K
     if H : x = 0 then 0 else Classical.choose <| FiniteDimensional.exists_mul_eq_one F H
-  mul_inv_cancel x hx := show x * dite _ (h := _) _ = _ by
+  mul_inv_cancel x hx := show x * dite _ (h := _) _ _ = _ by
     rw [dif_neg hx]
     exact (Classical.choose_spec (FiniteDimensional.exists_mul_eq_one F hx):)
   inv_zero := dif_pos rfl

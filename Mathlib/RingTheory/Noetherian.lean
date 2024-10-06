@@ -381,9 +381,6 @@ theorem LinearIndependent.set_finite_of_isNoetherian [Nontrivial R] {s : Set M}
     (hi : LinearIndependent R ((↑) : s → M)) : s.Finite :=
   @Set.toFinite _ _ hi.finite_of_isNoetherian
 
-@[deprecated (since := "2023-12-30")]
-alias finite_of_linearIndependent := LinearIndependent.set_finite_of_isNoetherian
-
 /-- If the first and final modules in an exact sequence are Noetherian,
   then the middle module is also Noetherian. -/
 theorem isNoetherian_of_range_eq_ker [IsNoetherian R P]
