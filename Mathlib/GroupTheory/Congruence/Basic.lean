@@ -114,7 +114,7 @@ instance : Inhabited (Con M) :=
 @[to_additive "A coercion from an additive congruence relation to its underlying binary relation."]
 instance : FunLike (Con M) M (M → Prop) where
   coe c := c.r
-  coe_injective' := fun x y h => by
+  coe_injective' x y h := by
     rcases x with ⟨⟨x, _⟩, _⟩
     rcases y with ⟨⟨y, _⟩, _⟩
     have : x = y := h
