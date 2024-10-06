@@ -310,6 +310,36 @@ def _root_.LinearMap.BilinMap.congr₂ (e : N₁ ≃ₗ[R] N₂) : BilinMap R M 
 
 end congr
 
+section congr₂
+
+variable {N₁ N₂ N₃ : Type*}
+variable [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
+variable [Module R N₁] [Module R N₂] [Module R N₃]
+
+/-- When `N₁` and `N₂` are equivalent, bilinear maps on `M` into `N₁` are equivalent to bilinear
+maps into `N₂`. -/
+def congr₂ (e : N₁ ≃ₗ[R] N₂) : BilinMap R M N₁ ≃ₗ[R] BilinMap R M N₂ :=
+  LinearEquiv.congrRight (LinearEquiv.congrRight e)
+
+@[simp]
+theorem congr₂_apply (e : N₁ ≃ₗ[R] N₂) (B : BilinMap R M N₁) :
+    congr₂ e B = compr₂ B e := rfl
+
+@[simp]
+theorem congr₂_refl :
+    congr₂ (.refl R N₁) = .refl R (BilinMap R M N₁) := rfl
+
+@[simp]
+theorem congr₂_symm (e : N₁ ≃ₗ[R] N₂) :
+    (congr₂ e (M := M)).symm = congr₂ e.symm :=
+  rfl
+
+theorem congr₂_trans (e₁₂ : N₁ ≃ₗ[R] N₂) (e₂₃ : N₂ ≃ₗ[R] N₃) :
+    congr₂ (M := M) (e₁₂ ≪≫ₗ e₂₃) = congr₂ e₁₂ ≪≫ₗ congr₂ e₂₃ :=
+  rfl
+
+end congr₂
+
 section LinMulLin
 
 /-- `linMulLin f g` is the bilinear form mapping `x` and `y` to `f x * g y` -/
