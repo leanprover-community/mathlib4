@@ -95,27 +95,23 @@ def elabMeasure (μ : TSyntax `term) (expectedType? : Option Expr) : TermElabM E
     let _ ← mkFreshExprMVarQ q(MeasurableSpace $ty)
     elabTerm μ q(Measure $ty)
 
+/-- Try to elaborate `μ` as a term of type `T` where `OuterMeasureClass T ?Ω`. If that fails, try to
+elaborate `μ` as `Measure ?Ω`. -/
+elab "elab_as_measure% " t:term : term => do elabMeasure t ‹_›
+
 /-- `f =ᵐ[μ] g` means `f` and `g` are eventually equal along the a.e. filter,
 i.e. `f=g` away from a null set.
 
 This is notation for `Filter.EventuallyEq (MeasureTheory.ae μ) f g`. -/
-syntax:50 (name := aeEq) term:50 " =ᵐ[" term:50 "] " term:50 : term
+macro:50 (name := aeEq) f:term:50 " =ᵐ[" μ:term:50 "] " g:term:50 : term =>
+  `(Filter.EventuallyEq (MeasureTheory.ae (elab_as_measure% $μ)) $f $g)
 
 /-- `f ≤ᵐ[μ] g` means `f` is eventually less than `g` along the a.e. filter,
 i.e. `f ≤ g` away from a null set.
 
 This is notation for `Filter.EventuallyLE (MeasureTheory.ae μ) f g`. -/
-syntax:50 (name := aeLE) term:50 " ≤ᵐ[" term:50 "] " term:50 : term
-
-/-- Elaborate almost everywhere equal notation.
-
-We elabore `f =ᵐ[μ] g` as `Filter.EventuallyEq (MeasureTheory.ae μ) f g`. -/
-@[term_elab aeEq]
-def elabAEEq : TermElab
-  | `($f =ᵐ[$μ] $g), expectedType? => do
-    let μ' ← elabMeasure μ expectedType?
-    elabTerm (← `(Filter.EventuallyEq (MeasureTheory.ae $(← μ'.toSyntax)) $f $g)) expectedType?
-  | _, _ => throwUnsupportedSyntax
+macro:50 (name := aeLE) f:term:50 " ≤ᵐ[" μ:term:50 "] " g:term:50 : term =>
+  `(Filter.EventuallyLE (MeasureTheory.ae (elab_as_measure% $μ)) $f $g)
 
 /-- Elaborate almost everywhere equal notation.
 
