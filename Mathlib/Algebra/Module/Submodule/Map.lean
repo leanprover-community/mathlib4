@@ -53,6 +53,8 @@ def map (f : F) (p : Submodule R M) : Submodule R₂ M₂ :=
       obtain ⟨a, rfl⟩ := σ₁₂.surjective c
       exact ⟨_, p.smul_mem a hy, map_smulₛₗ f _ _⟩ }
 
+theorem map_semiLinearMap (f : F) : map (f : M →ₛₗ[σ₁₂] M₂) = map f := rfl
+
 @[simp]
 theorem map_coe (f : F) (p : Submodule R M) : (map f p : Set M₂) = f '' p :=
   rfl
@@ -168,6 +170,8 @@ def comap [SemilinearMapClass F σ₁₂ M M₂] (f : F) (p : Submodule R₂ M�
     carrier := f ⁻¹' p
     -- Note: #8386 added `map_smulₛₗ _`
     smul_mem' := fun a x h => by simp [p.smul_mem (σ₁₂ a) h, map_smulₛₗ _] }
+
+theorem comap_semiLinearMap (f : F) : comap (f : M →ₛₗ[σ₁₂] M₂) = comap f := rfl
 
 @[simp]
 theorem comap_coe (f : F) (p : Submodule R₂ M₂) : (comap f p : Set M) = f ⁻¹' p :=
@@ -489,7 +493,7 @@ variable (p : Submodule R M) (q : Submodule R₂ M₂)
 -- Porting note: Was `@[simp]`.
 @[simp high]
 theorem mem_map_equiv {e : M ≃ₛₗ[τ₁₂] M₂} {x : M₂} :
-    x ∈ p.map (e : M →ₛₗ[τ₁₂] M₂) ↔ e.symm x ∈ p := by
+    x ∈ p.map e ↔ e.symm x ∈ p := by
   rw [Submodule.mem_map]; constructor
   · rintro ⟨y, hy, hx⟩
     simp [← hx, hy]
@@ -497,11 +501,11 @@ theorem mem_map_equiv {e : M ≃ₛₗ[τ₁₂] M₂} {x : M₂} :
     exact ⟨e.symm x, hx, by simp⟩
 
 theorem map_equiv_eq_comap_symm (e : M ≃ₛₗ[τ₁₂] M₂) (K : Submodule R M) :
-    K.map (e : M →ₛₗ[τ₁₂] M₂) = K.comap (e.symm : M₂ →ₛₗ[τ₂₁] M) :=
-  Submodule.ext fun _ => by rw [mem_map_equiv, mem_comap, LinearEquiv.coe_coe]
+    K.map e = K.comap e.symm :=
+  Submodule.ext fun _ => by rw [mem_map_equiv, mem_comap]
 
 theorem comap_equiv_eq_map_symm (e : M ≃ₛₗ[τ₁₂] M₂) (K : Submodule R₂ M₂) :
-    K.comap (e : M →ₛₗ[τ₁₂] M₂) = K.map (e.symm : M₂ →ₛₗ[τ₂₁] M) :=
+    K.comap e = K.map e.symm :=
   (map_equiv_eq_comap_symm e.symm K).symm
 
 variable {p}
@@ -618,7 +622,7 @@ variable {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPai
 variable (e : M ≃ₛₗ[σ₁₂] M₂)
 
 theorem map_eq_comap {p : Submodule R M} :
-    (p.map (e : M →ₛₗ[σ₁₂] M₂) : Submodule R₂ M₂) = p.comap (e.symm : M₂ →ₛₗ[σ₂₁] M) :=
+    (p.map e : Submodule R₂ M₂) = p.comap (e.symm : M₂ →ₛₗ[σ₂₁] M) :=
   SetLike.coe_injective <| by simp [e.image_eq_preimage]
 
 /-- A linear equivalence of two modules restricts to a linear equivalence from any submodule
@@ -627,25 +631,12 @@ theorem map_eq_comap {p : Submodule R M} :
 This is the linear version of `AddEquiv.submonoidMap` and `AddEquiv.subgroupMap`.
 
 This is `LinearEquiv.ofSubmodule'` but with `map` on the right instead of `comap` on the left. -/
-def submoduleMap (p : Submodule R M) : p ≃ₛₗ[σ₁₂] ↥(p.map (e : M →ₛₗ[σ₁₂] M₂) : Submodule R₂ M₂) :=
-  { ((e : M →ₛₗ[σ₁₂] M₂).domRestrict p).codRestrict (p.map (e : M →ₛₗ[σ₁₂] M₂)) fun x =>
-      ⟨x, by
-        simp only [LinearMap.domRestrict_apply, eq_self_iff_true, and_true, SetLike.coe_mem,
-          SetLike.mem_coe]⟩ with
-    invFun := fun y =>
-      ⟨(e.symm : M₂ →ₛₗ[σ₂₁] M) y, by
-        rcases y with ⟨y', hy⟩
-        rw [Submodule.mem_map] at hy
-        rcases hy with ⟨x, hx, hxy⟩
-        subst hxy
-        simp only [symm_apply_apply, Submodule.coe_mk, coe_coe, hx]⟩
-    left_inv := fun x => by
-      simp only [LinearMap.domRestrict_apply, LinearMap.codRestrict_apply, LinearMap.toFun_eq_coe,
-        LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply, SetLike.eta]
-    right_inv := fun y => by
-      apply SetCoe.ext
-      simp only [LinearMap.domRestrict_apply, LinearMap.codRestrict_apply, LinearMap.toFun_eq_coe,
-        LinearEquiv.coe_coe, LinearEquiv.apply_symm_apply] }
+def submoduleMap (p : Submodule R M) : p ≃ₛₗ[σ₁₂] p.map e where
+  __ := ((e : M →ₛₗ[σ₁₂] M₂).domRestrict p).codRestrict (p.map e) fun x ↦
+    ⟨x, by simp only [Subtype.coe_prop, LinearMap.domRestrict_apply, coe_coe, and_self]⟩
+  invFun y := ⟨e.symm y, (Set.mem_image_equiv (f := e.toEquiv)).mp y.2⟩
+  left_inv x := Subtype.ext (e.symm_apply_apply x)
+  right_inv y := Subtype.ext (e.apply_symm_apply y)
 
 @[simp]
 theorem submoduleMap_apply (p : Submodule R M) (x : p) : ↑(e.submoduleMap p x) = e x :=
@@ -653,7 +644,7 @@ theorem submoduleMap_apply (p : Submodule R M) (x : p) : ↑(e.submoduleMap p x)
 
 @[simp]
 theorem submoduleMap_symm_apply (p : Submodule R M)
-    (x : (p.map (e : M →ₛₗ[σ₁₂] M₂) : Submodule R₂ M₂)) : ↑((e.submoduleMap p).symm x) = e.symm x :=
+    (x : p.map e) : ↑((e.submoduleMap p).symm x) = e.symm x :=
   rfl
 
 end

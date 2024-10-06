@@ -111,26 +111,22 @@ protected theorem map_one {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
   simp
 
 @[simp]
-theorem map_op_one :
-    map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (1 : Submodule R A) = 1 := by
+theorem map_op_one : map (opLinearEquiv R) (1 : Submodule R A) = 1 := by
   ext x
   induction x
   simp
 
 @[simp]
-theorem comap_op_one :
-    comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (1 : Submodule R Aᵐᵒᵖ) = 1 := by
+theorem comap_op_one : comap (opLinearEquiv R) (1 : Submodule R Aᵐᵒᵖ) = 1 := by
   ext
   simp
 
 @[simp]
-theorem map_unop_one :
-    map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) (1 : Submodule R Aᵐᵒᵖ) = 1 := by
+theorem map_unop_one : map (opLinearEquiv R).symm (1 : Submodule R Aᵐᵒᵖ) = 1 := by
   rw [← comap_equiv_eq_map_symm, comap_op_one]
 
 @[simp]
-theorem comap_unop_one :
-    comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) (1 : Submodule R A) = 1 := by
+theorem comap_unop_one : comap (opLinearEquiv R).symm (1 : Submodule R A) = 1 := by
   rw [← map_equiv_eq_comap_symm, map_op_one]
 
 /-- Multiplication of sub-R-modules of an R-algebra A. The submodule `M * N` is the
@@ -238,9 +234,7 @@ protected theorem map_mul {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
         simp [fy_eq]
 
 theorem map_op_mul :
-    map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (M * N) =
-      map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) N *
-        map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) M := by
+    map (opLinearEquiv R) (M * N) = map (opLinearEquiv R) N * map (opLinearEquiv R) M := by
   apply le_antisymm
   · simp_rw [map_le_iff_le_comap]
     refine mul_le.2 fun m hm n hn => ?_
@@ -252,25 +246,19 @@ theorem map_op_mul :
     exact mul_mem_mul hn hm
 
 theorem comap_unop_mul :
-    comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) (M * N) =
-      comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) N *
-        comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) M := by
+    comap (opLinearEquiv R).symm (M * N) =
+      comap (opLinearEquiv R).symm N * comap (opLinearEquiv R).symm M := by
   simp_rw [← map_equiv_eq_comap_symm, map_op_mul]
 
 theorem map_unop_mul (M N : Submodule R Aᵐᵒᵖ) :
-    map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) (M * N) =
-      map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) N *
-        map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) M :=
-  have : Function.Injective (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) :=
-    LinearEquiv.injective _
-  map_injective_of_injective this <| by
-    rw [← map_comp, map_op_mul, ← map_comp, ← map_comp, LinearEquiv.comp_coe,
+    map (opLinearEquiv R).symm (M * N) =
+      map (opLinearEquiv R).symm N * map (opLinearEquiv R).symm M :=
+  map_injective_of_injective (opLinearEquiv R).injective <| by
+    erw [← map_comp, map_op_mul, ← map_comp, ← map_comp, LinearEquiv.comp_coe,
       LinearEquiv.symm_trans_self, LinearEquiv.refl_toLinearMap, map_id, map_id, map_id]
 
 theorem comap_op_mul (M N : Submodule R Aᵐᵒᵖ) :
-    comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (M * N) =
-      comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) N *
-        comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) M := by
+    comap (opLinearEquiv R) (M * N) = comap (opLinearEquiv R) N * comap (opLinearEquiv R) M := by
   simp_rw [comap_equiv_eq_map_symm, map_unop_mul]
 
 lemma restrictScalars_mul {A B C} [CommSemiring A] [CommSemiring B] [Semiring C]
@@ -488,9 +476,9 @@ def mapHom {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') :
 submodules. -/
 @[simps apply symm_apply]
 def equivOpposite : Submodule R Aᵐᵒᵖ ≃+* (Submodule R A)ᵐᵒᵖ where
-  toFun p := op <| p.comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ)
-  invFun p := p.unop.comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A)
-  left_inv p := SetLike.coe_injective <| rfl
+  toFun p := op <| p.comap (opLinearEquiv R)
+  invFun p := p.unop.comap (opLinearEquiv R).symm
+  left_inv p := SetLike.coe_injective rfl
   right_inv p := unop_injective <| SetLike.coe_injective rfl
   map_add' p q := by simp [comap_equiv_eq_map_symm, ← op_add]
   map_mul' p q := congr_arg op <| comap_op_mul _ _
@@ -500,23 +488,19 @@ protected theorem map_pow {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
   map_pow (mapHom f) M n
 
 theorem comap_unop_pow (n : ℕ) :
-    comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) (M ^ n) =
-      comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) M ^ n :=
+    comap (opLinearEquiv R).symm (M ^ n) = comap (opLinearEquiv R).symm M ^ n :=
   (equivOpposite : Submodule R Aᵐᵒᵖ ≃+* _).symm.map_pow (op M) n
 
 theorem comap_op_pow (n : ℕ) (M : Submodule R Aᵐᵒᵖ) :
-    comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (M ^ n) =
-      comap (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) M ^ n :=
+    comap (opLinearEquiv R) (M ^ n) = comap (opLinearEquiv R) M ^ n :=
   op_injective <| (equivOpposite : Submodule R Aᵐᵒᵖ ≃+* _).map_pow M n
 
 theorem map_op_pow (n : ℕ) :
-    map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (M ^ n) =
-      map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) M ^ n := by
+    map (opLinearEquiv R) (M ^ n) = map (opLinearEquiv R) M ^ n := by
   rw [map_equiv_eq_comap_symm, map_equiv_eq_comap_symm, comap_unop_pow]
 
 theorem map_unop_pow (n : ℕ) (M : Submodule R Aᵐᵒᵖ) :
-    map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) (M ^ n) =
-      map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ).symm : Aᵐᵒᵖ →ₗ[R] A) M ^ n := by
+    map (opLinearEquiv R).symm (M ^ n) = map (opLinearEquiv R).symm M ^ n := by
   rw [← comap_equiv_eq_map_symm, ← comap_equiv_eq_map_symm, comap_op_pow]
 
 /-- `span` is a semiring homomorphism (recall multiplication is pointwise multiplication of subsets
@@ -542,8 +526,7 @@ This is available as an instance in the `Pointwise` locale.
 
 This is a stronger version of `Submodule.pointwiseDistribMulAction`. -/
 protected def pointwiseMulSemiringAction : MulSemiringAction α (Submodule R A) :=
-  {
-    Submodule.pointwiseDistribMulAction with
+  { Submodule.pointwiseDistribMulAction with
     smul_mul := fun r x y => Submodule.map_mul x y <| MulSemiringAction.toAlgHom R A r
     smul_one := fun r => Submodule.map_one <| MulSemiringAction.toAlgHom R A r }
 
