@@ -128,7 +128,7 @@ theorem Nondegenerate.exists_injective_of_card_le [Nondegenerate P L] [Fintype P
     by_cases hs₁ : s.card = 1
     -- If `s = {l}`, then pick a point `p ∉ l`
     · obtain ⟨l, rfl⟩ := Finset.card_eq_one.mp hs₁
-      obtain ⟨p, hl⟩ := exists_point l
+      obtain ⟨p, hl⟩ := exists_point (P := P) l
       rw [Finset.card_singleton, Finset.singleton_biUnion, Nat.one_le_iff_ne_zero]
       exact Finset.card_ne_zero_of_mem (Set.mem_toFinset.mpr hl)
     suffices (s.biUnion t)ᶜ.card ≤ sᶜ.card by

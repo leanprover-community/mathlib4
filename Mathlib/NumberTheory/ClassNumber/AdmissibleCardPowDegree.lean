@@ -131,7 +131,7 @@ theorem exists_approx_polynomial {b : Fq[X]} (hb : b ≠ 0) {ε : ℝ} (hε : 0 
       cardPowDegree_nonzero _ h', cardPowDegree_nonzero _ hb, Algebra.smul_def, eq_intCast,
       Int.cast_pow, Int.cast_natCast, Int.cast_pow, Int.cast_natCast,
       log_mul (pow_ne_zero _ q_pos'.ne') hε.ne', ← rpow_natCast, ← rpow_natCast, log_rpow q_pos',
-      log_rpow q_pos', ← lt_div_iff (log_pos one_lt_q'), add_div,
+      log_rpow q_pos', ← lt_div_iff₀ (log_pos one_lt_q'), add_div,
       mul_div_cancel_right₀ _ (log_pos one_lt_q').ne']
   -- And that result follows from manipulating the result from `exists_approx_polynomial_aux`
   -- to turn the `-⌈-stuff⌉₊` into `+ stuff`.

@@ -16,6 +16,27 @@ is globally unused.
 
 open Lean Parser Elab Command
 
+namespace Lean.Syntax
+/-!
+# `Syntax` filters
+-/
+
+partial
+def filterMapM {m : Type → Type} [Monad m] (stx : Syntax) (f : Syntax → m (Option Syntax)) :
+    m (Array Syntax) := do
+  let nargs := (← stx.getArgs.mapM (·.filterMapM f)).flatten
+  match ← f stx with
+    | some new => return nargs.push new
+    | none => return nargs
+
+def filterMap (stx : Syntax) (f : Syntax → Option Syntax) : Array Syntax :=
+  stx.filterMapM (m := Id) f
+
+def filter (stx : Syntax) (f : Syntax → Bool) : Array Syntax :=
+  stx.filterMap (fun s => if f s then some s else none)
+
+end Lean.Syntax
+
 namespace Mathlib.Linter
 
 /--
@@ -76,6 +97,78 @@ elab "included_variables" plumb:(ppSpace &"plumb")? : tactic => do
       return m!"'{userName}' of type '{← Meta.inferType expr}'"
     if ! msgs.isEmpty then
       logInfo m!"{msgs.foldl (m!"{·}\n" ++ m!"* {·}") "Included variables:"}"
+
+abbrev binders : NameSet := NameSet.empty
+  |>.insert ``Lean.Parser.Term.explicitBinder
+  |>.insert ``Lean.Parser.Term.strictImplicitBinder
+  |>.insert ``Lean.Parser.Term.implicitBinder
+  |>.insert ``Lean.Parser.Term.instBinder
+
+partial
+def findBinders (stx : Syntax) : Array Syntax :=
+  stx.filter (binders.contains ·.getKind)
+
+def getExtendBinders {m} [Monad m] [MonadRef m] [MonadQuotation m] (stx : Syntax) : m (Array Syntax) := do
+  if let some exts := stx.find? (·.isOfKind ``Lean.Parser.Command.extends) then
+    let exts := exts[1].getArgs.filter (·.getAtomVal != ",")
+    let exts ← exts.mapM (`(Lean.Parser.Term.instBinder| [$(⟨·⟩)]))
+    return exts
+  else return #[]
+
+variable
+  (nm : Ident)
+  (binders : TSyntaxArray [`ident, `Lean.Parser.Term.hole, `Lean.Parser.Term.bracketedBinder])
+  (typ : Syntax)
+def mkThmCore : CommandElabM Syntax :=
+  `(command| theorem $nm $binders* : $(⟨typ⟩) := by included_variables plumb; sorry)
+
+def getPropValue {m} [Monad m] [MonadRef m] [MonadQuotation m] (stx : Syntax) : m Syntax := do
+  let flse ← `($(mkIdent `False))
+  if (stx.find? (·.isOfKind ``Lean.Parser.Command.structure)).isSome then
+    return flse
+  if (stx.find? (·.isOfKind ``Lean.Parser.Command.definition)).isSome then
+    return ((stx.find? (·.isOfKind ``Lean.Parser.Command.declValSimple)).getD default)[1]
+  if let some ts := stx.find? (·.isOfKind ``Parser.Term.typeSpec) then
+    `($(mkIdent `toFalse) $(⟨ts[1]⟩))
+  else
+    return flse
+
+def mkThmWithHyps (cmd : Syntax) (nm : Ident) : CommandElabM Syntax := do
+  mkThmCore nm ((findBinders cmd).map (⟨·⟩)) (← getPropValue cmd)
+
+def mkNewThm (cmd : Syntax) : CommandElabM Syntax := do
+  let exts ← getExtendBinders cmd
+  mkThmCore (mkIdent `helr) ((findBinders cmd ++ exts).map (⟨·⟩)) (← getPropValue cmd)
+
+/-
+  if let some stx := stx.raw.find? (·.isOfKind ``Lean.Parser.Command.declaration) then
+    match stx with
+      | `(structure $id $as* where $(_optStructCtor)? $_fds:structFields) =>
+        -- the `fds` should be extracted and the target of the `structure.mk` should be used
+        let new ←
+          `(command| theorem $(mkIdent (id.raw[0].getId ++ `hi)) $as* : toFalse sorry := sorry)
+        logInfo m!"{new}"
+      --| `(structure $id $as* extends $es where $(opt)? $fds:structFields) => logInfo "found!"
+      | `(structure $id $as* extends $es,* where $(_optStructCtor)? $_fds:structFields) =>
+        dbg_trace "es.getElems: {es.getElems}\n"
+        let bes ← es.getElems.mapM (`(Parser.Term.instBinder| [·]))
+        let bes ← bes.mapM fun d => `(bracketedBinder| $(⟨d⟩))
+        let cs := (as : Array _) ++ bes.map (·.raw)
+        --let cs ← cs.mapM (`(⟨·⟩))
+        let cs : TSyntaxArray [`ident, `Lean.Parser.Term.hole, `Lean.Parser.Term.bracketedBinder] :=
+          cs.map (⟨·⟩)
+        --let mut first : Array (TSyntax _):= as.getD 0 default
+        --for b in bes do
+          --first ← `(Term.App| $first $(⟨b.raw⟩))
+        logInfo m!"bes: {bes}\n"
+        --let bes1 : Syntax.TSepArray [bracketedBinder] "," := ⟨bes.map (·)⟩
+        --logInfo m!"{bes1.getElems}"
+        let new ←
+          `(command| theorem $(mkIdent (id.raw[0].getId ++ `hi)) $cs* : toFalse sorry := sorry)
+        logInfo m!"{new}"
+      | _ => logInfo "here"
+
+-/
 
 open Lean.Parser.Term in
 /--
@@ -140,15 +233,16 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
     -- skip examples, since they have access to all the variables
     if decl[1].isOfKind ``Lean.Parser.Command.example then
       return
-    let renStx ← stx.replaceM fun s => match s.getKind with
+    let _renStx ← stx.replaceM fun s => match s.getKind with
         | ``declId        => return some (← `(declId| $(mkIdentFrom s[0] (s[0].getId ++ `_hello))))
         | ``declValSimple | ``declValEqns | ``whereStructInst =>
           return some (← `(declValSimple| := by included_variables plumb; sorry))
         | _               => return none
     let toFalse := mkIdent `toFalse
-    let renStx ← renStx.replaceM fun s => match s with
-        | `(def $d $vs* : $t := $pf) => return some (← `(theorem $d $vs* : $toFalse $t := $pf))
-        | _               => return none
+    --let renStx ← renStx.replaceM fun s => match s with
+    --    | `(def $d $vs* : $t := $pf) => return some (← `(theorem $d $vs* : $toFalse $t := $pf))
+    --    | _               => return none
+    let renStx ← mkNewThm decl
     let s ← get
     elabCommand (← `(def $toFalse (S : Sort _) := False))
     elabCommand renStx
