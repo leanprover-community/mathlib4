@@ -983,7 +983,7 @@ theorem IsPrime.multiset_prod_mem_iff_exists_mem {I : Ideal R} (hI : I.IsPrime) 
 theorem IsPrime.pow_le_iff {I P : Ideal R} [hP : P.IsPrime] {n : ℕ} (hn : n ≠ 0) :
     I ^ n ≤ P ↔ I ≤ P := by
   have h : (Multiset.replicate n I).prod ≤ P ↔ _ := hP.multiset_prod_le
-  simp_rw [Multiset.prod_replicate, Multiset.mem_replicate, ne_eq, hn , not_false_eq_true,
+  simp_rw [Multiset.prod_replicate, Multiset.mem_replicate, ne_eq, hn, not_false_eq_true,
     true_and, exists_eq_left] at h
   exact h
 
