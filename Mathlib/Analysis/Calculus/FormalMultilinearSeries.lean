@@ -56,9 +56,13 @@ instance : Inhabited (FormalMultilinearSeries 𝕜 E F) :=
 
 section Module
 
-instance (𝕜') [Semiring 𝕜'] [Module 𝕜' F] [ContinuousConstSMul 𝕜' F] [SMulCommClass 𝕜 𝕜' F] :
-    Module 𝕜' (FormalMultilinearSeries 𝕜 E F) :=
+variable {𝕜' : Type*} [Semiring 𝕜'] [Module 𝕜' F] [ContinuousConstSMul 𝕜' F] [SMulCommClass 𝕜 𝕜' F]
+
+instance : Module 𝕜' (FormalMultilinearSeries 𝕜 E F) :=
   inferInstanceAs <| Module 𝕜' <| ∀ n : ℕ, E[×n]→L[𝕜] F
+
+@[simp] lemma FormalMultilinearSeries.smul_apply
+    (c : 𝕜') (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (c • p) n = c • (p n) := rfl
 
 end Module
 
@@ -73,7 +77,13 @@ the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`.
 theorem zero_apply (n : ℕ) : (0 : FormalMultilinearSeries 𝕜 E F) n = 0 := rfl
 
 @[simp]
-theorem neg_apply (f : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (-f) n = - f n := rfl
+theorem neg_apply (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (-p) n = - p n := rfl
+
+@[simp] lemma add_apply (p q : FormalMultilinearSeries 𝕜 E F) (n : ℕ) :
+    (p + q) n = p n + q n := rfl
+
+@[simp] lemma sub_apply (p q : FormalMultilinearSeries 𝕜 E F) (n : ℕ) :
+    (p - q) n = p n - q n := rfl
 
 @[ext]
 protected theorem ext {p q : FormalMultilinearSeries 𝕜 E F} (h : ∀ n, p n = q n) : p = q :=

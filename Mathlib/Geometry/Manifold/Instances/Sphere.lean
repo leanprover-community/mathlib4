@@ -69,7 +69,7 @@ noncomputable section
 
 open Metric Module Function
 
-open scoped Manifold
+open scoped Manifold ContDiff
 
 section StereographicProjection
 
@@ -93,7 +93,7 @@ theorem stereoToFun_apply (x : E) :
   rfl
 
 theorem contDiffOn_stereoToFun :
-    ContDiffOn ℝ ⊤ (stereoToFun v) {x : E | innerSL _ v x ≠ (1 : ℝ)} := by
+    ContDiffOn ℝ ∞ (stereoToFun v) {x : E | innerSL _ v x ≠ (1 : ℝ)} := by
   refine ContDiffOn.smul ?_ (orthogonalProjection (ℝ ∙ v)ᗮ).contDiff.contDiffOn
   refine contDiff_const.contDiffOn.div ?_ ?_
   · exact (contDiff_const.sub (innerSL ℝ v).contDiff).contDiffOn
@@ -157,13 +157,13 @@ theorem hasFDerivAt_stereoInvFunAux_comp_coe (v : E) :
     hasFDerivAt_stereoInvFunAux v
   refine this.comp (0 : (ℝ ∙ v)ᗮ) (by apply ContinuousLinearMap.hasFDerivAt)
 
-theorem contDiff_stereoInvFunAux : ContDiff ℝ ⊤ (stereoInvFunAux v) := by
-  have h₀ : ContDiff ℝ ⊤ fun w : E => ‖w‖ ^ 2 := contDiff_norm_sq ℝ
-  have h₁ : ContDiff ℝ ⊤ fun w : E => (‖w‖ ^ 2 + 4)⁻¹ := by
+theorem contDiff_stereoInvFunAux : ContDiff ℝ ∞ (stereoInvFunAux v) := by
+  have h₀ : ContDiff ℝ ∞ fun w : E => ‖w‖ ^ 2 := contDiff_norm_sq ℝ
+  have h₁ : ContDiff ℝ ∞ fun w : E => (‖w‖ ^ 2 + 4)⁻¹ := by
     refine (h₀.add contDiff_const).inv ?_
     intro x
-    positivity
-  have h₂ : ContDiff ℝ ⊤ fun w => (4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v := by
+    nlinarith
+  have h₂ : ContDiff ℝ ∞ fun w => (4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v := by
     refine (contDiff_const.smul contDiff_id).add ?_
     exact (h₀.sub contDiff_const).smul contDiff_const
   exact h₁.smul h₂
@@ -389,7 +389,7 @@ instance EuclideanSpace.instSmoothManifoldWithCornersSphere {n : ℕ} [Fact (fin
       -- Porting note: need to help with implicit variables again
       have H₂ := (contDiff_stereoInvFunAux (v := v.val)|>.comp
         (ℝ ∙ (v : E))ᗮ.subtypeL.contDiff).comp U.symm.contDiff
-      convert H₁.comp' (H₂.contDiffOn : ContDiffOn ℝ ⊤ _ Set.univ) using 1
+      convert H₁.comp' (H₂.contDiffOn : ContDiffOn ℝ ∞ _ Set.univ) using 1
       -- -- squeezed from `ext, simp [sphere_ext_iff, stereographic'_symm_apply, real_inner_comm]`
       simp only [PartialHomeomorph.trans_toPartialEquiv, PartialHomeomorph.symm_toPartialEquiv,
         PartialEquiv.trans_source, PartialEquiv.symm_source, stereographic'_target,
@@ -407,7 +407,7 @@ instance (n : ℕ) :
 
 /-- The inclusion map (i.e., `coe`) from the sphere in `E` to `E` is smooth. -/
 theorem contMDiff_coe_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
-    ContMDiff (𝓡 n) 𝓘(ℝ, E) ∞ ((↑) : sphere (0 : E) 1 → E) := by
+    ContMDiff (𝓡 n) 𝓘(ℝ, E) ⊤ ((↑) : sphere (0 : E) 1 → E) := by
   -- Porting note: trouble with filling these implicit variables in the instance
   have := EuclideanSpace.instSmoothManifoldWithCornersSphere (E := E) (n := n)
   rw [contMDiff_iff]
@@ -438,7 +438,7 @@ theorem ContMDiff.codRestrict_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] {m
     (-- Again, partially removing type ascription... Weird that this helps!
         OrthonormalBasis.fromOrthogonalSpanSingleton
         n (ne_zero_of_mem_unit_sphere (-v))).repr
-  have h : ContDiffOn ℝ ⊤ _ Set.univ := U.contDiff.contDiffOn
+  have h : ContDiffOn ℝ ∞ _ Set.univ := U.contDiff.contDiffOn
   have H₁ := (h.comp' contDiffOn_stereoToFun).contMDiffOn
   have H₂ : ContMDiffOn _ _ _ _ Set.univ := hf.contMDiffOn
   convert (H₁.of_le le_top).comp' H₂ using 1
@@ -453,7 +453,7 @@ theorem ContMDiff.codRestrict_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] {m
 
 /-- The antipodal map is smooth. -/
 theorem contMDiff_neg_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
-    ContMDiff (𝓡 n) (𝓡 n) ∞ fun x : sphere (0 : E) 1 => -x := by
+    ContMDiff (𝓡 n) (𝓡 n) ⊤ fun x : sphere (0 : E) 1 => -x := by
   -- this doesn't elaborate well in term mode
   apply ContMDiff.codRestrict_sphere
   apply contDiff_neg.contMDiff.comp _
@@ -557,7 +557,7 @@ instance : LieGroup (𝓡 1) Circle where
   smooth_mul := by
     apply ContMDiff.codRestrict_sphere
     let c : Circle → ℂ := (↑)
-    have h₂ : ContMDiff (𝓘(ℝ, ℂ).prod 𝓘(ℝ, ℂ)) 𝓘(ℝ, ℂ) ∞ fun z : ℂ × ℂ => z.fst * z.snd := by
+    have h₂ : ContMDiff (𝓘(ℝ, ℂ).prod 𝓘(ℝ, ℂ)) 𝓘(ℝ, ℂ) ⊤ fun z : ℂ × ℂ => z.fst * z.snd := by
       rw [contMDiff_iff]
       exact ⟨continuous_mul, fun x y => contDiff_mul.contDiffOn⟩
     -- Porting note: needed to fill in first 3 arguments or could not figure out typeclasses
@@ -571,7 +571,7 @@ instance : LieGroup (𝓡 1) Circle where
     exact Complex.conjCLE.contDiff.contMDiff.comp contMDiff_coe_sphere
 
 /-- The map `fun t ↦ exp (t * I)` from `ℝ` to the unit circle in `ℂ` is smooth. -/
-theorem contMDiff_circleExp : ContMDiff 𝓘(ℝ, ℝ) (𝓡 1) ∞ Circle.exp :=
+theorem contMDiff_circleExp : ContMDiff 𝓘(ℝ, ℝ) (𝓡 1) ⊤ Circle.exp :=
   (contDiff_exp.comp (contDiff_id.smul contDiff_const)).contMDiff.codRestrict_sphere _
 
 @[deprecated (since := "2024-07-25")] alias contMDiff_expMapCircle := contMDiff_circleExp

@@ -65,6 +65,10 @@ https://github.com/leanprover-community/mathlib4/pull/5726.
 noncomputable section
 open TopologicalSpace Opposite
 
+/- Next line is necessary while the manifold smoothness class is not extended to `ω`.
+Later, replace with `open scoped ContDiff`. -/
+local notation "∞" => (⊤ : ℕ∞)
+
 universe u
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]

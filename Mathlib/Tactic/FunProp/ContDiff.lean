@@ -63,7 +63,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace K F]
 variable {f f₀ f₁ g : E → F} {x} {s t} {n}
 
-theorem ContDiffOn.div' [CompleteSpace K] {f g : E → K} {n} (hf : ContDiffOn K n f s)
+theorem ContDiffOn.div' {f g : E → K} {n} (hf : ContDiffOn K n f s)
     (hg : ContDiffOn K n g s) (h₀ : ∀ x ∈ s, g x ≠ 0) : ContDiffOn K n (fun x => f x / g x) s :=
   ContDiffOn.div hf hg h₀
 

@@ -13,7 +13,7 @@ and that local structomorphisms are smooth with smooth inverses.
 -/
 
 open Set ChartedSpace SmoothManifoldWithCorners
-open scoped Manifold
+open scoped Manifold ContDiff
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare a smooth manifold `M` over the pair `(E, H)`.
@@ -50,7 +50,7 @@ theorem contMDiffOn_model_symm : ContMDiffOn 𝓘(𝕜, E) I n I.symm (range I) 
 /-- An atlas member is `C^n` for any `n`. -/
 theorem contMDiffOn_of_mem_maximalAtlas (h : e ∈ maximalAtlas I M) : ContMDiffOn I I n e e.source :=
   ContMDiffOn.of_le
-    ((contDiffWithinAt_localInvariantProp I I ∞).liftPropOn_of_mem_maximalAtlas
+    ((contDiffWithinAt_localInvariantProp I I ⊤).liftPropOn_of_mem_maximalAtlas
       (contDiffWithinAtProp_id I) h)
     le_top
 
@@ -58,7 +58,7 @@ theorem contMDiffOn_of_mem_maximalAtlas (h : e ∈ maximalAtlas I M) : ContMDiff
 theorem contMDiffOn_symm_of_mem_maximalAtlas (h : e ∈ maximalAtlas I M) :
     ContMDiffOn I I n e.symm e.target :=
   ContMDiffOn.of_le
-    ((contDiffWithinAt_localInvariantProp I I ∞).liftPropOn_symm_of_mem_maximalAtlas
+    ((contDiffWithinAt_localInvariantProp I I ⊤).liftPropOn_symm_of_mem_maximalAtlas
       (contDiffWithinAtProp_id I) h)
     le_top
 
@@ -104,7 +104,7 @@ theorem contMDiffOn_extChartAt_symm (x : M) :
 
 /-- An element of `contDiffGroupoid ⊤ I` is `C^n` for any `n`. -/
 theorem contMDiffOn_of_mem_contDiffGroupoid {e' : PartialHomeomorph H H}
-    (h : e' ∈ contDiffGroupoid ⊤ I) : ContMDiffOn I I n e' e'.source :=
+    (h : e' ∈ contDiffGroupoid ∞ I) : ContMDiffOn I I n e' e'.source :=
   (contDiffWithinAt_localInvariantProp I I n).liftPropOn_of_mem_groupoid
     (contDiffWithinAtProp_id I) h
 
@@ -117,7 +117,7 @@ section IsLocalStructomorph
 variable [ChartedSpace H M'] [IsM' : SmoothManifoldWithCorners I M']
 
 theorem isLocalStructomorphOn_contDiffGroupoid_iff_aux {f : PartialHomeomorph M M'}
-    (hf : LiftPropOn (contDiffGroupoid ⊤ I).IsLocalStructomorphWithinAt f f.source) :
+    (hf : LiftPropOn (contDiffGroupoid ∞ I).IsLocalStructomorphWithinAt f f.source) :
     SmoothOn I I f f.source := by
   -- It suffices to show smoothness near each `x`
   apply contMDiffOn_of_locally_contMDiffOn
@@ -163,7 +163,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff_aux {f : PartialHomeomorph M 
 is a local structomorphism for `I`, if and only if it is manifold-smooth on the domain of definition
 in both directions. -/
 theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') :
-    LiftPropOn (contDiffGroupoid ⊤ I).IsLocalStructomorphWithinAt f f.source ↔
+    LiftPropOn (contDiffGroupoid ∞ I).IsLocalStructomorphWithinAt f f.source ↔
       SmoothOn I I f f.source ∧ SmoothOn I I f.symm f.target := by
   constructor
   · intro h
@@ -179,7 +179,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') 
     refine ⟨(f.symm.continuousAt hX).continuousWithinAt, fun h2x => ?_⟩
     obtain ⟨e, he, h2e, hef, hex⟩ :
       ∃ e : PartialHomeomorph H H,
-        e ∈ contDiffGroupoid ⊤ I ∧
+        e ∈ contDiffGroupoid ∞ I ∧
           e.source ⊆ (c.symm ≫ₕ f ≫ₕ c').source ∧
             EqOn (c' ∘ f ∘ c.symm) e e.source ∧ c x ∈ e.source := by
       have h1 : c' = chartAt H (f x) := by simp only [f.right_inv hX]

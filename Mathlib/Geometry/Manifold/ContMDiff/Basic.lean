@@ -184,7 +184,7 @@ section id
 
 theorem contMDiff_id : ContMDiff I I n (id : M → M) :=
   ContMDiff.of_le
-    ((contDiffWithinAt_localInvariantProp I I ∞).liftProp_id (contDiffWithinAtProp_id I)) le_top
+    ((contDiffWithinAt_localInvariantProp I I ⊤).liftProp_id (contDiffWithinAtProp_id I)) le_top
 
 theorem smooth_id : Smooth I I (id : M → M) :=
   contMDiff_id

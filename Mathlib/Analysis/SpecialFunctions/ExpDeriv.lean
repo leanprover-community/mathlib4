@@ -88,7 +88,7 @@ theorem iter_deriv_exp : ∀ n : ℕ, deriv^[n] exp = exp
   | 0 => rfl
   | n + 1 => by rw [iterate_succ_apply, deriv_exp, iter_deriv_exp n]
 
-theorem contDiff_exp {n : ℕ∞} : ContDiff 𝕜 n exp :=
+theorem contDiff_exp {n : WithTop ℕ∞} : ContDiff 𝕜 n exp :=
   analyticOnNhd_cexp.restrictScalars.contDiff
 
 theorem hasStrictDerivAt_exp (x : ℂ) : HasStrictDerivAt exp (exp x) x :=
@@ -228,7 +228,7 @@ theorem hasStrictDerivAt_exp (x : ℝ) : HasStrictDerivAt exp (exp x) x :=
 theorem hasDerivAt_exp (x : ℝ) : HasDerivAt exp (exp x) x :=
   (Complex.hasDerivAt_exp x).real_of_complex
 
-theorem contDiff_exp {n : ℕ∞} : ContDiff ℝ n exp :=
+theorem contDiff_exp {n : WithTop ℕ∞} : ContDiff ℝ n exp :=
   Complex.contDiff_exp.real_of_complex
 
 theorem differentiable_exp : Differentiable ℝ exp := fun x => (hasDerivAt_exp x).differentiableAt
