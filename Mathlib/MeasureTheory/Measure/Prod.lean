@@ -648,7 +648,11 @@ theorem measurePreserving_swap : MeasurePreserving Prod.swap (μ.prod ν) (ν.pr
 theorem prod_apply_symm {s : Set (α × β)} (hs : MeasurableSet s) :
     μ.prod ν s = ∫⁻ y, μ ((fun x => (x, y)) ⁻¹' s) ∂ν := by
   rw [← prod_swap, map_apply measurable_swap hs, prod_apply (measurable_swap hs)]
-  rfl
+  apply congr_arg
+  ext
+  apply congr_arg
+  ext
+  simp
 
 theorem ae_ae_comm {p : α → β → Prop} (h : MeasurableSet {x : α × β | p x.1 x.2}) :
     (∀ᵐ x ∂μ, ∀ᵐ y ∂ν, p x y) ↔ ∀ᵐ y ∂ν, ∀ᵐ x ∂μ, p x y := calc
