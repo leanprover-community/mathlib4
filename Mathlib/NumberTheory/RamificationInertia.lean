@@ -797,11 +797,11 @@ section tower
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 
-theorem ramificationIdx_tower [IsDedekindDomain S] [DecidableEq (Ideal S)]
-    [IsDedekindDomain T] [DecidableEq (Ideal T)]{f : R →+* S} {g : S →+* T}
+theorem ramificationIdx_tower [IsDedekindDomain S] [IsDedekindDomain T] {f : R →+* S} {g : S →+* T}
     {p : Ideal R} {P : Ideal S} {Q : Ideal T} [hpm : P.IsPrime] [hqm : Q.IsPrime]
     (hg0 : map g P ≠ ⊥) (hfg : map (g.comp f) p ≠ ⊥) (hg : map g P ≤ Q) :
     ramificationIdx (g.comp f) p Q = ramificationIdx f p P * ramificationIdx g P Q := by
+  classical
   have hf0 : map f p ≠ ⊥ :=
     ne_bot_of_map_ne_bot (Eq.mp (congrArg (fun I ↦ I ≠ ⊥) (map_map f g).symm) hfg)
   have hp0 : P ≠ ⊥ := ne_bot_of_map_ne_bot hg0
@@ -836,12 +836,13 @@ variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
 
 /-- Let `T / S / R` be a tower of algebras, `p, P, Q` be ideals in `R, S, T` respectively,
   and `P` and `Q` are prime. If `P = Q ∩ S`, then `e (Q | p) = e (P | p) * e (Q | P)`. -/
-theorem ramificationIdx_algebra_tower [IsDedekindDomain S] [DecidableEq (Ideal S)]
-    [IsDedekindDomain T] [DecidableEq (Ideal T)] {p : Ideal R} {P : Ideal S} {Q : Ideal T}
-    [hpm : P.IsPrime] [hqm : Q.IsPrime] (hg0 : map (algebraMap S T) P ≠ ⊥)
+theorem ramificationIdx_algebra_tower [IsDedekindDomain S] [IsDedekindDomain T]
+    {p : Ideal R} {P : Ideal S} {Q : Ideal T} [hpm : P.IsPrime] [hqm : Q.IsPrime]
+    (hg0 : map (algebraMap S T) P ≠ ⊥)
     (hfg : map (algebraMap R T) p ≠ ⊥) (hg : map (algebraMap S T) P ≤ Q) :
     ramificationIdx (algebraMap R T) p Q =
     ramificationIdx (algebraMap R S) p P * ramificationIdx (algebraMap S T) P Q := by
+  classical
   rw [IsScalarTower.algebraMap_eq R S T] at hfg ⊢
   exact ramificationIdx_tower hg0 hfg hg
 

@@ -282,8 +282,13 @@ def mkQ : M →ₗ[R] M ⧸ p where
 theorem mkQ_apply (x : M) : p.mkQ x = (Quotient.mk x : M ⧸ p) :=
   rfl
 
-theorem mkQ_surjective (A : Submodule R M) : Function.Surjective A.mkQ := by
+theorem mkQ_surjective : Function.Surjective p.mkQ := by
   rintro ⟨x⟩; exact ⟨x, rfl⟩
+
+theorem strictMono_comap_prod_map :
+    StrictMono fun m : Submodule R M ↦ (m.comap p.subtype, m.map p.mkQ) :=
+  fun m₁ m₂ ↦ QuotientAddGroup.strictMono_comap_prod_map
+    p.toAddSubgroup (a := m₁.toAddSubgroup) (b := m₂.toAddSubgroup)
 
 end
 
