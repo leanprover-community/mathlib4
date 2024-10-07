@@ -248,9 +248,11 @@ theorem OrderIso.dualAntisymmetrization_symm_apply (a : α) :
 
 end Preorder
 
-namespace Antisymmetrization
+section Prod
 
 variable (α β) [Preorder α] [Preorder β]
+
+namespace Antisymmetrization
 
 /-- The antisymmetrization of a product preorder is order isomorphic
 to the product of antisymmetrizations. -/
@@ -269,17 +271,13 @@ def prodEquiv : Antisymmetrization (α × β) (· ≤ ·) ≃o
 
 end Antisymmetrization
 
-namespace Prod
-
-variable (α β : Type*) [Preorder α] [Preorder β]
-
 attribute [local instance] Prod.wellFoundedLT' Prod.wellFoundedGT'
 
-instance wellFoundedLT [WellFoundedLT α] [WellFoundedLT β] : WellFoundedLT (α × β) :=
+instance Prod.wellFoundedLT [WellFoundedLT α] [WellFoundedLT β] : WellFoundedLT (α × β) :=
   wellFoundedLT_antisymmetrization_iff.mp <|
     (Antisymmetrization.prodEquiv α β).strictMono.wellFoundedLT
 
-instance wellFoundedGT [WellFoundedGT α] [WellFoundedGT β] : WellFoundedGT (α × β) :=
+instance Prod.wellFoundedGT [WellFoundedGT α] [WellFoundedGT β] : WellFoundedGT (α × β) :=
   wellFoundedGT_antisymmetrization_iff.mp <|
     (Antisymmetrization.prodEquiv α β).strictMono.wellFoundedGT
 
