@@ -142,7 +142,7 @@ theorem invOneSubPow_eq_inv_one_sub_pow :
   | zero => exact Eq.symm <| pow_zero _
   | succ d _ =>
       rw [inv_pow]
-      refine (DivisionMonoid.inv_eq_of_mul _ (invOneSubPow S (d + 1)) <| by
+      exact (DivisionMonoid.inv_eq_of_mul _ (invOneSubPow S (d + 1)) <| by
         rw [← Units.val_eq_one, Units.val_mul, Units.val_pow_eq_pow_val]
         exact (invOneSubPow S (d + 1)).inv_val).symm
 
