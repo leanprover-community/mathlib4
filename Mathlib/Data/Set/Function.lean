@@ -1310,10 +1310,13 @@ theorem le_piecewise {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α} [
     g ≤ s.piecewise f₁ f₂ :=
   @piecewise_le α (fun i => (δ i)ᵒᵈ) _ s _ _ _ _ h₁ h₂
 
-theorem piecewise_le_piecewise {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α}
+@[gcongr]
+theorem piecewise_mono {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α}
     [∀ j, Decidable (j ∈ s)] {f₁ f₂ g₁ g₂ : ∀ i, δ i} (h₁ : ∀ i ∈ s, f₁ i ≤ g₁ i)
     (h₂ : ∀ i ∉ s, f₂ i ≤ g₂ i) : s.piecewise f₁ f₂ ≤ s.piecewise g₁ g₂ := by
   apply piecewise_le <;> intros <;> simp [*]
+
+@[deprecated (since := "2024-10-06")] alias piecewise_le_piecewise := piecewise_mono
 
 @[simp]
 theorem piecewise_insert_of_ne {i j : α} (h : i ≠ j) [∀ i, Decidable (i ∈ insert j s)] :

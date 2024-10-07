@@ -58,7 +58,7 @@ theorem coe_bipartiteBelow : s.bipartiteBelow r b = ({a ∈ s | r a b} : Set α)
 @[simp, norm_cast]
 theorem coe_bipartiteAbove : t.bipartiteAbove r a = ({b ∈ t | r a b} : Set β) := coe_filter _ _
 
-variable {s t a}
+variable {s t a b}
 
 @[simp]
 theorem mem_bipartiteBelow {a : α} : a ∈ s.bipartiteBelow r b ↔ a ∈ s ∧ r a b := mem_filter
@@ -100,7 +100,7 @@ end OrderedSemiring
 
 section StrictOrderedSemiring
 variable [StrictOrderedSemiring R] (r : α → β → Prop) {s : Finset α} {t : Finset β}
-  {m n : R}
+  (a b) {m n : R}
 
 /-- **Double counting** argument.
 

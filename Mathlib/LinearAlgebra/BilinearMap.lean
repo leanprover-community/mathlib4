@@ -40,8 +40,7 @@ variable {M₂ : Type*} {N₂ : Type*} {P₂ : Type*}
 variable {Pₗ : Type*}
 variable {M' : Type*} {P' : Type*}
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
-variable [AddCommMonoid M₂] [AddCommMonoid N₂] [AddCommMonoid P₂]
-variable [AddCommMonoid Pₗ]
+variable [AddCommMonoid M₂] [AddCommMonoid N₂] [AddCommMonoid P₂] [AddCommMonoid Pₗ]
 variable [AddCommGroup M'] [AddCommGroup P']
 variable [Module R M] [Module S N] [Module R₂ P] [Module S₂ P]
 variable [Module R M₂] [Module S N₂] [Module R P₂] [Module S₂ P₂]
@@ -376,13 +375,11 @@ end CommSemiring
 
 section CommRing
 
-variable {R M : Type*}
-variable [CommRing R]
+variable {R M : Type*} [CommRing R]
 
 section AddCommGroup
 
-variable [AddCommGroup M]
-variable [Module R M]
+variable [AddCommGroup M] [Module R M]
 
 theorem lsmul_injective [NoZeroSMulDivisors R M] {x : R} (hx : x ≠ 0) :
     Function.Injective (lsmul R M x) :=
