@@ -115,11 +115,11 @@ def arrowIsoSpecΓOfIsAffine {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶
 
 theorem Scheme.isoSpec_Spec (R : CommRingCat.{u}) :
     (Spec R).isoSpec = Scheme.Spec.mapIso (Scheme.ΓSpecIso R).op :=
-  Iso.ext (ΓSpec.SpecMap_ΓSpecIso_hom R).symm
+  Iso.ext (SpecMap_ΓSpecIso_hom R).symm
 
 theorem Scheme.isoSpec_Spec_hom (R : CommRingCat.{u}) :
     (Spec R).isoSpec.hom = Spec.map (Scheme.ΓSpecIso R).hom :=
-  (ΓSpec.SpecMap_ΓSpecIso_hom R).symm
+  (SpecMap_ΓSpecIso_hom R).symm
 
 theorem Scheme.isoSpec_Spec_inv (R : CommRingCat.{u}) :
     (Spec R).isoSpec.inv = Spec.map (Scheme.ΓSpecIso R).inv :=
@@ -275,10 +275,9 @@ def isoSpec :
 open LocalRing in
 lemma isoSpec_hom_apply (x : U) :
     hU.isoSpec.hom.1.base x = (Spec.map (X.presheaf.germ x)).val.base (closedPoint _) := by
-  dsimp [Scheme.isoSpec_hom]
-  erw [ΓSpec.adjunction_unit_apply]
+  dsimp [Scheme.isoSpec_hom, Scheme.toSpecΓ_base]
   rw [← Scheme.comp_val_base_apply, ← Spec.map_comp,
-    (Iso.eq_comp_inv _).mpr (Scheme.Opens.germ_stalkIso_hom (V := ⊤) ⟨x, trivial⟩),
+    (Iso.eq_comp_inv _).mpr (Scheme.Opens.germ_stalkIso_hom _ (V := ⊤) ⟨x, trivial⟩),
     reassoc_of% X.presheaf.germ_res, Spec.map_comp, Scheme.comp_val_base_apply]
   congr 1
   exact LocalRing.comap_closedPoint _
@@ -288,7 +287,7 @@ lemma isoSpec_inv_app_top :
   simp only [Scheme.Opens.toScheme_presheaf_obj, isoSpec_inv, Scheme.isoSpec, asIso_inv,
     Scheme.comp_coeBase, Opens.map_comp_obj, Opens.map_top, Scheme.comp_app, Scheme.inv_app_top,
     Scheme.Opens.topIso_hom, Scheme.ΓSpecIso_inv_naturality, IsIso.inv_comp_eq]
-  rw [ΓSpec.adjunction_unit_app_app_top]
+  rw [Scheme.toSpecΓ_app_top]
   erw [Iso.hom_inv_id_assoc]
 
 lemma isoSpec_hom_app_top :
