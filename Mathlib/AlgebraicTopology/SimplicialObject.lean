@@ -266,7 +266,7 @@ protected abbrev Truncated.cosk (n : ℕ) [∀ (F : (SimplexCategory.Truncated n
   ran (SimplexCategory.Truncated.inclusion.op)
 
 /-- The n-skeleton as an endofunctor on `SimplicialObject C`. -/
-abbrev sk (n : ℕ) [ ∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
+abbrev sk (n : ℕ) [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
     SimplexCategory.Truncated.inclusion.op.HasLeftKanExtension F] :
     SimplicialObject C ⥤ SimplicialObject C := truncation n ⋙ Truncated.sk n
 
