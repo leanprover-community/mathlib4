@@ -180,6 +180,10 @@ private theorem sum_Ico_eq_card_lt {p q : ℕ} :
           (by simp (config := { contextual := true }) only [mem_filter, mem_sigma, and_self_iff,
             forall_true_iff, mem_product]) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefix below.
+-/
 /-- Each of the sums in this lemma is the cardinality of the set of integer points in each of the
   two triangles formed by the diagonal of the rectangle `(0, p/2) × (0, q/2)`. Adding them
   gives the number of points in the rectangle. -/
@@ -193,7 +197,7 @@ theorem sum_mul_div_add_sum_mul_div_eq_mul (p q : ℕ) [hp : Fact p.Prime] (hq0 
     card_equiv (Equiv.prodComm _ _)
       (fun ⟨_, _⟩ => by
         simp (config := { contextual := true }) only [mem_filter, and_self_iff, Prod.swap_prod_mk,
-          forall_true_iff, mem_product, Equiv.prodComm_apply, and_assoc, and_left_comm])
+          forall_true_iff, mem_product, Equiv.prodComm_apply, _root_.and_assoc, and_left_comm])
   have hdisj :
     Disjoint ((Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ).filter fun x : ℕ × ℕ => x.2 * p ≤ x.1 * q)
       ((Ico 1 (p / 2).succ ×ˢ Ico 1 (q / 2).succ).filter fun x : ℕ × ℕ => x.1 * q ≤ x.2 * p) := by

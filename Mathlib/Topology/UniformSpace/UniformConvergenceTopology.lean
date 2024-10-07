@@ -6,7 +6,7 @@ Authors: Anatole Dedecker
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.Equiv
-import Mathlib.Topology.RestrictGenTopology
+import Mathlib.Topology.RestrictGen
 
 /-!
 # Topology and uniform structure of uniform convergence
@@ -377,10 +377,14 @@ a uniform embedding for the uniform structures of uniform convergence.
 
 More precisely, if `f : γ → β` is a uniform embedding,
 then `(f ∘ ·) : (α →ᵤ γ) → (α →ᵤ β)` is a uniform embedding. -/
-protected theorem postcomp_uniformEmbedding [UniformSpace γ] {f : γ → β} (hf : UniformEmbedding f) :
-    UniformEmbedding (ofFun ∘ (f ∘ ·) ∘ toFun : (α →ᵤ γ) → α →ᵤ β) where
+protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
+    (hf : IsUniformEmbedding f) :
+ IsUniformEmbedding (ofFun ∘ (f ∘ ·) ∘ toFun : (α →ᵤ γ) → α →ᵤ β) where
   toUniformInducing := UniformFun.postcomp_uniformInducing hf.toUniformInducing
   inj _ _ H := funext fun _ ↦ hf.inj (congrFun H _)
+
+@[deprecated (since := "2024-10-01")]
+alias postcomp_uniformEmbedding := UniformFun.postcomp_isUniformEmbedding
 
 -- Porting note: had to add a type annotation at `((f ∘ ·) : ((α → γ) → (α → β)))`
 /-- If `u` is a uniform structures on `β` and `f : γ → β`, then
@@ -877,10 +881,13 @@ uniform structures of `𝔖`-convergence.
 
 More precisely, if `f : γ → β` is a uniform embedding, then
 `(fun g ↦ f ∘ g) : (α →ᵤ[𝔖] γ) → (α →ᵤ[𝔖] β)` is a uniform embedding. -/
-protected theorem postcomp_uniformEmbedding [UniformSpace γ] {f : γ → β} (hf : UniformEmbedding f) :
-    UniformEmbedding (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖) where
+protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
+    (hf : IsUniformEmbedding f) : IsUniformEmbedding (ofFun 𝔖 ∘ (f ∘ ·) ∘ toFun 𝔖) where
   toUniformInducing := UniformOnFun.postcomp_uniformInducing hf.toUniformInducing
   inj _ _ H := funext fun _ ↦ hf.inj (congrFun H _)
+
+@[deprecated (since := "2024-10-01")]
+alias postcomp_uniformEmbedding := UniformOnFun.postcomp_isUniformEmbedding
 
 /-- Turn a uniform isomorphism `γ ≃ᵤ β` into a uniform isomorphism `(α →ᵤ[𝔖] γ) ≃ᵤ (α →ᵤ[𝔖] β)`
 by post-composing. -/
@@ -1117,3 +1124,41 @@ instance {α β : Type*} [UniformSpace β] [CompleteSpace β] : CompleteSpace (�
   (UniformOnFun.uniformEquivUniformFun β {univ} (mem_singleton _)).completeSpace_iff.1 inferInstance
 
 end UniformFun
+
+section UniformComposition
+
+variable {α β γ ι : Type*} [UniformSpace β] [UniformSpace γ] {p : Filter ι}
+
+/-- Composing on the left by a uniformly continuous function preserves uniform convergence -/
+theorem UniformContinuousOn.comp_tendstoUniformly (s : Set β) (F : ι → α → β) (f : α → β)
+    (hF : ∀ i x, F i x ∈ s) (hf : ∀ x, f x ∈ s)
+    {g : β → γ} (hg : UniformContinuousOn g s) (h : TendstoUniformly F f p) :
+    TendstoUniformly (fun i x => g (F i x)) (fun x => g (f x)) p := by
+  rw [uniformContinuousOn_iff_restrict] at hg
+  lift F to ι → α → s using hF with F' hF'
+  lift f to α → s using hf with f' hf'
+  rw [tendstoUniformly_iff_tendsto] at h
+  have : Tendsto (fun q : ι × α ↦ (f' q.2, (F' q.1 q.2))) (p ×ˢ ⊤) (𝓤 s) :=
+    h.of_tendsto_comp isUniformEmbedding_subtype_val.comap_uniformity.le
+  apply UniformContinuous.comp_tendstoUniformly hg ?_
+  rwa [← tendstoUniformly_iff_tendsto] at this
+
+theorem UniformContinuousOn.comp_tendstoUniformly_eventually (s : Set β) (F : ι → α → β) (f : α → β)
+    (hF : ∀ᶠ i in p, ∀ x, F i x ∈ s) (hf : ∀ x, f x ∈ s)
+    {g : β → γ} (hg : UniformContinuousOn g s) (h : TendstoUniformly F f p) :
+    TendstoUniformly (fun i => fun x => g (F i x)) (fun x => g (f x)) p := by
+  classical
+  rw [eventually_iff_exists_mem] at hF
+  obtain ⟨s', hs', hs⟩ := hF
+  let F' : ι → α → β := fun (i : ι) x => if i ∈ s' then F i x else f x
+  have hF : F =ᶠ[p] F' :=  by
+    rw [eventuallyEq_iff_exists_mem]
+    refine ⟨s', hs', fun y hy => by aesop⟩
+  have h' : TendstoUniformly F' f p := by
+    rwa [tendstoUniformly_congr hF] at h
+  apply (tendstoUniformly_congr _).mpr
+    (UniformContinuousOn.comp_tendstoUniformly s F' f (by aesop) hf hg h')
+  rw [eventuallyEq_iff_exists_mem]
+  refine ⟨s', hs', fun i hi => by aesop⟩
+
+end UniformComposition

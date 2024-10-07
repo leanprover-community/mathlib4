@@ -357,7 +357,7 @@ theorem normSq_S_smul_lt_one (h : 1 < normSq z) : normSq ↑(S • z) < 1 := by
 theorem im_lt_im_S_smul (h : normSq z < 1) : z.im < (S • z).im := by
   have : z.im < z.im / normSq (z : ℂ) := by
     have imz : 0 < z.im := im_pos z
-    apply (lt_div_iff z.normSq_pos).mpr
+    apply (lt_div_iff₀ z.normSq_pos).mpr
     nlinarith
   convert this
   simp only [ModularGroup.im_smul_eq_div_normSq]
@@ -380,7 +380,7 @@ scoped[Modular] notation "𝒟ᵒ" => ModularGroup.fdo
 open scoped Modular
 
 theorem abs_two_mul_re_lt_one_of_mem_fdo (h : z ∈ 𝒟ᵒ) : |2 * z.re| < 1 := by
-  rw [abs_mul, abs_two, ← lt_div_iff' (zero_lt_two' ℝ)]
+  rw [abs_mul, abs_two, ← lt_div_iff₀' (zero_lt_two' ℝ)]
   exact h.2
 
 theorem three_lt_four_mul_im_sq_of_mem_fdo (h : z ∈ 𝒟ᵒ) : 3 < 4 * z.im ^ 2 := by
@@ -465,7 +465,7 @@ theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |(↑ₘg
         (by linarith) (by linarith))
       hc
   have h₂ : (c * z.im) ^ 4 / normSq (denom (↑g) z) ^ 2 ≤ 1 :=
-    div_le_one_of_le
+    div_le_one_of_le₀
       (pow_four_le_pow_two_of_pow_two_le (UpperHalfPlane.c_mul_im_sq_le_normSq_denom z g))
       (sq_nonneg _)
   let nsq := normSq (denom g z)
