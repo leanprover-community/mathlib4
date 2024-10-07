@@ -2485,18 +2485,18 @@ theorem sup_mul_nat (o : Ordinal) : (sup fun n : ℕ => o * n) = o * ω := by
 /-- Converts an ordinal less than `ω` into a natural number, sending all infinite ordinals to zero.
 -/
 def toNat (o : Ordinal) : ℕ :=
-  if h : o < ω then Classical.choose (lt_omega.1 h) else 0
+  if h : o < ω then Classical.choose (lt_omega0.1 h) else 0
 
 @[simp]
 theorem toNat_natCast (n : ℕ) : toNat n = n := by
-  have h := nat_lt_omega n
-  rw [toNat, dif_pos h, ← @Nat.cast_inj Ordinal, ← Classical.choose_spec (lt_omega.1 h)]
+  have h := nat_lt_omega0 n
+  rw [toNat, dif_pos h, ← @Nat.cast_inj Ordinal, ← Classical.choose_spec (lt_omega0.1 h)]
 
 theorem natCast_toNat {o : Ordinal} (h : o < ω) : toNat o = o := by
-  obtain ⟨n, rfl⟩ := lt_omega.1 h
+  obtain ⟨n, rfl⟩ := lt_omega0.1 h
   rw [toNat_natCast]
 
-theorem toNat_of_omega_le {o : Ordinal} (h : ω ≤ o) : toNat o = 0 :=
+theorem toNat_of_omega0_le {o : Ordinal} (h : ω ≤ o) : toNat o = 0 :=
   dif_neg h.not_lt
 
 @[simp]
@@ -2508,13 +2508,13 @@ theorem toNat_one : toNat 1 = 1 := by
   conv_lhs => rw [← Nat.cast_one, toNat_natCast]
 
 @[simp]
-theorem toNat_omega : toNat ω = 0 :=
-  toNat_of_omega_le le_rfl
+theorem toNat_omega0 : toNat ω = 0 :=
+  toNat_of_omega0_le le_rfl
 
 theorem toNat_le_self (o : Ordinal) : toNat o ≤ o := by
   obtain h | h := lt_or_le o ω
   · rw [natCast_toNat h]
-  · rw [toNat_of_omega_le h]
+  · rw [toNat_of_omega0_le h]
     exact Ordinal.zero_le o
 
 theorem toNat_mul (a b : Ordinal) : toNat (a * b) = toNat a * toNat b := by
@@ -2522,19 +2522,19 @@ theorem toNat_mul (a b : Ordinal) : toNat (a * b) = toNat a * toNat b := by
   obtain rfl | hb := Ordinal.eq_zero_or_pos b; simp
   obtain ha' | ha' := lt_or_le a ω
   · obtain hb' | hb' := lt_or_le b ω
-    · obtain ⟨m, rfl⟩ := lt_omega.1 ha'
-      obtain ⟨n, rfl⟩ := lt_omega.1 hb'
+    · obtain ⟨m, rfl⟩ := lt_omega0.1 ha'
+      obtain ⟨n, rfl⟩ := lt_omega0.1 hb'
       rw [← natCast_mul]
       iterate 3 rw [toNat_natCast]
-    · rw [toNat_of_omega_le, toNat_of_omega_le hb', mul_zero]
+    · rw [toNat_of_omega0_le, toNat_of_omega0_le hb', mul_zero]
       exact hb'.trans <| le_mul_right b ha
-  · rw [toNat_of_omega_le, toNat_of_omega_le ha', zero_mul]
+  · rw [toNat_of_omega0_le, toNat_of_omega0_le ha', zero_mul]
     exact ha'.trans <| le_mul_left a hb
 
 /-- The natural numbers are order isomorphic to the ordinals below `ω`. -/
 @[simps]
 def omegaIso : ℕ ≃o Iio ω where
-  toFun n := ⟨n, nat_lt_omega n⟩
+  toFun n := ⟨n, nat_lt_omega0 n⟩
   invFun n := toNat n.1
   left_inv := toNat_natCast
   right_inv n := by ext; exact natCast_toNat n.2
