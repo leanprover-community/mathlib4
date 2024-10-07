@@ -308,17 +308,6 @@ def compEvaluation (F : A ⥤ B ⥤ C) (b) : F ⋙ (evaluation _ _).obj b ≅ F.
 theorem comp_evaluation (F : A ⥤ B ⥤ C) (b) : F ⋙ (evaluation _ _).obj b = F.flip.obj b :=
   rfl
 
-theorem flip_comp_evaluation (F : A ⥤ B ⥤ C) (a) : F.flip ⋙ (evaluation _ _).obj a = F.obj a :=
-  rfl
-
-/-- `F` composed with evaluation is the same as evaluating `F.flip`. -/
-@[simps!]
-def compEvaluation (F : A ⥤ B ⥤ C) (b) : F ⋙ (evaluation _ _).obj b ≅ F.flip.obj b :=
-  NatIso.ofComponents fun a => eqToIso rfl
-
-theorem comp_evaluation (F : A ⥤ B ⥤ C) (b) : F ⋙ (evaluation _ _).obj b = F.flip.obj b :=
-  rfl
-
 variable (A B C)
 
 /-- The forward direction for `functorProdFunctorEquiv` -/
