@@ -3,7 +3,7 @@ Copyright (c) 2022 Julian Berman. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Berman
 -/
-import Mathlib.Algebra.Group.IsTorsionFree.Defs
+import Mathlib.Algebra.Group.IsTorsionFree.Instances
 import Mathlib.GroupTheory.PGroup
 
 /-!
@@ -296,25 +296,26 @@ end CommGroup
 
 end CommGroup
 
-namespace Monoid
+section Monoid
 
 variable [Monoid G]
 
 /-- A nontrivial monoid is not torsion-free if any nontrivial element has finite order. -/
 @[to_additive (attr := simp) "An additive monoid is not torsion free if any
   nontrivial element has finite order."]
-theorem not_isTorsionFree_iff : ¬IsTorsionFree G ↔ ∃ g : G, g ≠ 1 ∧ IsOfFinOrder g := by
-  simp_rw [isTorsionFree_iff, isOfFinOrder_iff_pow_eq_one]
-  simp
+theorem not_isMulTorsionFree_iff : ¬IsMulTorsionFree G ↔ ∃ g : G, g ≠ 1 ∧ IsOfFinOrder g := by
+  simp_rw [isMulTorsionFree_iff, isOfFinOrder_iff_pow_eq_one, pos_iff_ne_zero, not_forall,
+    exists_prop, ← exists_and_left, ne_eq]
+  exact exists_congr fun g ↦ exists_congr fun n ↦ iff_of_eq <| by ac_rfl
 
 @[to_additive (attr := deprecated (since := "2024-09-25"))]
-lemma isTorsionFree_of_subsingleton [Subsingleton G] : IsTorsionFree G :=
+lemma isMulTorsionFree_of_subsingleton [Subsingleton G] : IsMulTorsionFree G :=
   .of_subsingleton G
 
 @[to_additive]
-lemma isTorsionFree_iff_torsion_eq_bot {G} [CommGroup G] :
-    IsTorsionFree G ↔ CommGroup.torsion G = ⊥ := by
-  rw [← not_iff_not, not_isTorsionFree_iff, eq_bot_iff, SetLike.le_def]
+lemma isMulTorsionFree_iff_torsion_eq_bot {G} [CommGroup G] :
+    IsMulTorsionFree G ↔ CommGroup.torsion G = ⊥ := by
+  rw [← not_iff_not, not_isMulTorsionFree_iff, eq_bot_iff, SetLike.le_def]
   simp [CommGroup.mem_torsion, and_comm]
 
 end Monoid
@@ -327,35 +328,23 @@ variable [Group G]
 
 /-- A nontrivial torsion group is not torsion-free. -/
 @[to_additive "A nontrivial additive torsion group is not torsion-free."]
-theorem Monoid.IsTorsion.not_torsion_free [hN : Nontrivial G] :
-    IsTorsion G → ¬IsTorsionFree G := fun tG ↦
-  not_isTorsionFree_iff.mpr <| by
-    obtain ⟨x, hx⟩ := (nontrivial_iff_exists_ne (1 : G)).mp hN
-    exact ⟨x, hx, tG x⟩
+theorem Monoid.IsTorsion.not_isMulTorsionFree [Nontrivial G] (hG : IsTorsion G) :
+    ¬IsMulTorsionFree G :=
+  not_isMulTorsionFree_iff.mpr <| let ⟨x, hx⟩ := exists_ne (1 : G); ⟨x, hx, hG x⟩
 
 /-- A nontrivial torsion-free group is not torsion. -/
 @[to_additive "A nontrivial torsion-free additive group is not torsion."]
-theorem Monoid.IsTorsionFree.not_torsion [Nontrivial G] : IsTorsionFree G → ¬IsTorsion G :=
-  fun tfG ttG ↦ ttG.not_torsion_free tfG
+theorem IsMulTorsionFree.not_isTorsion [Nontrivial G] [IsMulTorsionFree G] : ¬IsTorsion G :=
+  fun ttG ↦ ttG.not_isMulTorsionFree ‹_›
 
 /-- Subgroups of torsion-free groups are torsion-free. -/
 @[to_additive "Subgroups of additive torsion-free groups are additively torsion-free."]
-theorem IsTorsionFree.subgroup (tG : IsTorsionFree G) (H : Subgroup G) : IsTorsionFree H :=
-  fun h hne ↦ Submonoid.isOfFinOrder_coe.not.1 <| tG h <| by norm_cast
-
-/-- Direct products of torsion free groups are torsion free. -/
-@[to_additive AddMonoid.IsTorsionFree.prod
-      "Direct products of additive torsion free groups are torsion free."]
-theorem IsTorsionFree.prod {η : Type*} {Gs : η → Type*} [∀ i, Group (Gs i)]
-    (tfGs : ∀ i, IsTorsionFree (Gs i)) : IsTorsionFree <| ∀ i, Gs i := fun w hne h =>
-  hne <|
-    funext fun i => Classical.not_not.mp <| mt (tfGs i (w i)) <| Classical.not_not.mpr <| h.apply i
+theorem IsMulTorsionFree.subgroup [IsMulTorsionFree G] (H : Subgroup G) : IsMulTorsionFree H :=
+  Subtype.val_injective.isMulTorsionFree H.subtype
 
 end Group
 
 section CommGroup
-
-open Monoid (IsTorsionFree)
 
 open CommGroup (torsion)
 
