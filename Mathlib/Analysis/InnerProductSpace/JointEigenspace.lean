@@ -165,17 +165,29 @@ end RCLike
 
 open Module End
 
-/--Need to write, or find, a genEigenspace version of the result below. -/
 /-- If `F` is an invariant subspace of a symmetric operator `S`, then `F` is the supremum of the
 generalized eigenspaces of the restriction of `S` to `F`. -/
-theorem iSup_genEigenspace_restrict {F : Submodule 𝕜 E}
-    (S : E →ₗ[𝕜] E) (hS : IsSymmetric S) (hInv : Set.MapsTo S F F) :
+theorem iSup_maxGenEigenspace_restrict {ι K V : Type*}
+    [Finite ι] [Field K] [DecidableEq K] [AddCommGroup V] [Module K V] [FiniteDimensional K V]
+    {F : Submodule K V} (S : V →ₗ[K] V) (hInv : Set.MapsTo S F F) :
     ⨆ μ, map F.subtype (eigenspace (S.restrict hInv) μ) = F := by
   conv_lhs => rw [← Submodule.map_iSup]
   conv_rhs => rw [← map_subtype_top F]
   congr!
   have H : IsSymmetric (S.restrict hInv) := fun x y ↦ hS (F.subtype x) y
   apply orthogonal_eq_bot_iff.mp (H.orthogonalComplement_iSup_eigenspaces_eq_bot)
+
+/-
+We're in a bizarre situation. The above result, `iSup_eigenspace_restrict` takes a subspace
+F, a symmetric operator S leaving F invariant and says that the supremum over all scalars μ, the
+pushforward (this is the `map`) I think the F.subtype is the image of (S.restrict hInv) μ
+lifted up into F. I remember writing this and it was tricky to figure out.
+
+What is the point of doing the maxGenEigenspace one of these? We should be able to just
+replace the `eigenspace` by `maxGenEigenspace` above once the things parse...
+
+Now replacing the generalized eigenspaces, we won't need the symmetric condition...
+-/
 
 lemma iSup_iInf_maxGenEigenspace_eq_top_of_commute {ι K V : Type*}
     [Finite ι] [Field K] [DecidableEq K] [AddCommGroup V] [Module K V] [FiniteDimensional K V]
