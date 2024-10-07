@@ -196,6 +196,12 @@ theorem TendstoUniformlyOn.congr {F' : ι → α → β} (hf : TendstoUniformlyO
   simp only [Set.EqOn] at hff'
   simp only [mem_prod_principal, hff', mem_setOf_eq]
 
+lemma tendstoUniformly_congr {F F' : ι → α → β} {f : α → β} (hF : F =ᶠ[p] F') :
+    TendstoUniformly F f p ↔ TendstoUniformly F' f p := by
+  simp_rw [← tendstoUniformlyOn_univ] at *
+  have HF := EventuallyEq.exists_mem hF
+  exact ⟨fun h => h.congr (by aesop), fun h => h.congr (by simp_rw [eqOn_comm]; aesop)⟩
+
 theorem TendstoUniformlyOn.congr_right {g : α → β} (hf : TendstoUniformlyOn F f p s)
     (hfg : EqOn f g s) : TendstoUniformlyOn F g p s := fun u hu => by
   filter_upwards [hf u hu] with i hi a ha using hfg ha ▸ hi a ha

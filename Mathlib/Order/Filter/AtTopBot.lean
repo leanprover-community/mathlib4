@@ -1224,3 +1224,45 @@ theorem Antitone.piecewise_eventually_eq_iInter {β : α → Type*} [Preorder ι
   convert ← (compl_anti.comp hs).piecewise_eventually_eq_iUnion g f a using 3
   · convert congr_fun (Set.piecewise_compl (s _) g f) a
   · simp only [(· ∘ ·), ← compl_iInter, Set.piecewise_compl]
+
+namespace Nat
+
+theorem eventually_pow_lt_factorial_sub (c d : ℕ) : ∀ᶠ n in atTop, c ^ n < (n - d)! := by
+  rw [eventually_atTop]
+  refine ⟨2 * (c ^ 2 + d + 1), ?_⟩
+  intro n hn
+  obtain ⟨d', rfl⟩ := Nat.exists_eq_add_of_le hn
+  obtain (rfl | c0) := c.eq_zero_or_pos
+  · simp [Nat.two_mul, ← Nat.add_assoc, Nat.add_right_comm _ 1, Nat.factorial_pos]
+  refine (Nat.le_mul_of_pos_right _ (Nat.pow_pos (n := d') c0)).trans_lt ?_
+  convert_to (c ^ 2) ^ (c ^ 2 + d' + d + 1) < (c ^ 2 + (c ^ 2 + d' + d + 1) + 1)!
+  · rw [← pow_mul, ← pow_add]
+    congr 1
+    omega
+  · congr 1
+    omega
+  refine (lt_of_lt_of_le ?_ Nat.factorial_mul_pow_le_factorial).trans_le <|
+    (factorial_le (Nat.le_succ _))
+  rw [← one_mul (_ ^ _ : ℕ)]
+  apply Nat.mul_lt_mul_of_le_of_lt
+  · exact Nat.one_le_of_lt (Nat.factorial_pos _)
+  · exact Nat.pow_lt_pow_left (Nat.lt_succ_self _) (Nat.succ_ne_zero _)
+  · exact (Nat.factorial_pos _)
+
+theorem eventually_mul_pow_lt_factorial_sub (a c d : ℕ) :
+    ∀ᶠ n in atTop, a * c ^ n < (n - d)! := by
+  filter_upwards [Nat.eventually_pow_lt_factorial_sub (a * c) d, Filter.eventually_gt_atTop 0]
+    with n hn hn0
+  rw [mul_pow] at hn
+  exact (Nat.mul_le_mul_right _ (Nat.le_self_pow hn0.ne' _)).trans_lt hn
+
+@[deprecated eventually_pow_lt_factorial_sub (since := "2024-09-25")]
+theorem exists_pow_lt_factorial (c : ℕ) : ∃ n0 > 1, ∀ n ≥ n0, c ^ n < (n - 1)! :=
+  let ⟨n0, h⟩ := (eventually_pow_lt_factorial_sub c 1).exists_forall_of_atTop
+  ⟨max n0 2, by omega, fun n hn ↦ h n (by omega)⟩
+
+@[deprecated eventually_mul_pow_lt_factorial_sub (since := "2024-09-25")]
+theorem exists_mul_pow_lt_factorial (a : ℕ) (c : ℕ) : ∃ n0, ∀ n ≥ n0, a * c ^ n < (n - 1)! :=
+  (eventually_mul_pow_lt_factorial_sub a c 1).exists_forall_of_atTop
+
+end Nat
