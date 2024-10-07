@@ -126,8 +126,8 @@ def getPropValue {m} [Monad m] [MonadRef m] [MonadQuotation m] (stx : Syntax) : 
   let flse ← `($(mkIdent `False))
   if (stx.find? (·.isOfKind ``Lean.Parser.Command.structure)).isSome then
     return flse
-  if (stx.find? (·.isOfKind ``Lean.Parser.Command.definition)).isSome then
-    return ((stx.find? (·.isOfKind ``Lean.Parser.Command.declValSimple)).getD default)[1]
+  --if (stx.find? (·.isOfKind ``Lean.Parser.Command.definition)).isSome then
+  --  return ((stx.find? (·.isOfKind ``Lean.Parser.Term.typeSpec)).getD default)[1]
   if let some ts := stx.find? (·.isOfKind ``Parser.Term.typeSpec) then
     `($(mkIdent `toFalse) $(⟨ts[1]⟩))
   else
@@ -136,9 +136,10 @@ def getPropValue {m} [Monad m] [MonadRef m] [MonadQuotation m] (stx : Syntax) : 
 def mkThmWithHyps (cmd : Syntax) (nm : Ident) : CommandElabM Syntax := do
   mkThmCore nm ((findBinders cmd).map (⟨·⟩)) (← getPropValue cmd)
 
-def mkNewThm (cmd : Syntax) : CommandElabM Syntax := do
+def mkNewThm (cmd : Syntax) (typeSorry : Bool := False) : CommandElabM Syntax := do
   let exts ← getExtendBinders cmd
-  mkThmCore (mkIdent `helr) ((findBinders cmd ++ exts).map (⟨·⟩)) (← getPropValue cmd)
+  let typ ← if typeSorry then do return (← `($(mkIdent `toFalse) sorry)).raw else getPropValue cmd
+  mkThmCore (mkIdent `helr) ((findBinders cmd ++ exts).map (⟨·⟩)) typ
 
 /-
   if let some stx := stx.raw.find? (·.isOfKind ``Lean.Parser.Command.declaration) then
@@ -245,8 +246,12 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
     let renStx ← mkNewThm decl
     let s ← get
     elabCommand (← `(def $toFalse (S : Sort _) := False))
-    elabCommand renStx
+    try
+      elabCommand renStx
+    catch _ =>
+      elabCommand (← mkNewThm decl true)
     set s
+    --logInfo renStx
 
 initialize addLinter unusedVariableCommandLinter
 
