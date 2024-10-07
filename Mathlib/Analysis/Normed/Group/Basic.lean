@@ -1129,7 +1129,7 @@ theorem nnnorm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ a ∈ s, f a‖�
 @[to_additive]
 theorem nnnorm_prod_le_of_le (s : Finset ι) {f : ι → E} {n : ι → ℝ≥0} (h : ∀ b ∈ s, ‖f b‖₊ ≤ n b) :
     ‖∏ b ∈ s, f b‖₊ ≤ ∑ b ∈ s, n b :=
-  (norm_prod_le_of_le s h).trans_eq NNReal.coe_sum.symm
+  (norm_prod_le_of_le s h).trans_eq (NNReal.coe_sum ..).symm
 
 namespace Real
 

@@ -86,6 +86,7 @@ theorem opow_pos {a : Ordinal} (b : Ordinal) (a0 : 0 < a) : 0 < a ^ b := by
 theorem opow_ne_zero {a : Ordinal} (b : Ordinal) (a0 : a ≠ 0) : a ^ b ≠ 0 :=
   Ordinal.pos_iff_ne_zero.1 <| opow_pos b <| Ordinal.pos_iff_ne_zero.2 a0
 
+@[simp]
 theorem opow_eq_zero {a b : Ordinal} : a ^ b = 0 ↔ a = 0 ∧ b ≠ 0 := by
   obtain rfl | ha := eq_or_ne a 0
   · obtain rfl | hb := eq_or_ne b 0
@@ -293,7 +294,11 @@ theorem opow_log_le_self (b : Ordinal) {x : Ordinal} (hx : x ≠ 0) : b ^ log b 
     rwa [← succ_log_def hb hx] at this
   · rwa [one_opow, one_le_iff_ne_zero]
 
-/-- `opow b` and `log b` (almost) form a Galois connection. -/
+/-- `opow b` and `log b` (almost) form a Galois connection.
+
+See `opow_le_iff_le_log'` for a variant assuming `c ≠ 0` rather than `x ≠ 0`. See also
+`le_log_of_opow_le` and `opow_le_of_le_log`, which are both separate implications under weaker
+assumptions. -/
 theorem opow_le_iff_le_log {b x c : Ordinal} (hb : 1 < b) (hx : x ≠ 0) :
     b ^ c ≤ x ↔ c ≤ log b x := by
   constructor <;>
@@ -304,7 +309,11 @@ theorem opow_le_iff_le_log {b x c : Ordinal} (hb : 1 < b) (hx : x ≠ 0) :
       ((opow_le_opow_iff_right hb).2 <| succ_le_of_lt hn).trans h
   · exact ((opow_le_opow_iff_right hb).2 h).trans <| opow_log_le_self b hx
 
-/-- This lemma assumes `c ≠ 0` rather than `x ≠ 0`. -/
+/-- `opow b` and `log b` (almost) form a Galois connection.
+
+See `opow_le_iff_le_log` for a variant assuming `x ≠ 0` rather than `c ≠ 0`. See also
+`le_log_of_opow_le` and `opow_le_of_le_log`, which are both separate implications under weaker
+assumptions. -/
 theorem opow_le_iff_le_log' {b x c : Ordinal} (hb : 1 < b) (hc : c ≠ 0) :
     b ^ c ≤ x ↔ c ≤ log b x := by
   obtain rfl | hx := eq_or_ne x 0
@@ -324,10 +333,19 @@ theorem opow_le_of_le_log {b x c : Ordinal} (hc : c ≠ 0) (h : c ≤ log b x) :
     exact (h.not_lt (Ordinal.pos_iff_ne_zero.2 hc)).elim
   · rwa [opow_le_iff_le_log' hb hc]
 
+/-- `opow b` and `log b` (almost) form a Galois connection.
+
+See `lt_opow_iff_log_lt'` for a variant assuming `c ≠ 0` rather than `x ≠ 0`. See also
+`lt_opow_of_log_lt` and `lt_log_of_lt_opow`, which are both separate implications under weaker
+assumptions. -/
 theorem lt_opow_iff_log_lt {b x c : Ordinal} (hb : 1 < b) (hx : x ≠ 0) : x < b ^ c ↔ log b x < c :=
   lt_iff_lt_of_le_iff_le (opow_le_iff_le_log hb hx)
 
-/-- This lemma assumes `c ≠ 0` rather than `x ≠ 0`. -/
+/-- `opow b` and `log b` (almost) form a Galois connection.
+
+See `lt_opow_iff_log_lt` for a variant assuming `x ≠ 0` rather than `c ≠ 0`. See also
+`lt_opow_of_log_lt` and `lt_log_of_lt_opow`, which are both separate implications under weaker
+assumptions. -/
 theorem lt_opow_iff_log_lt' {b x c : Ordinal} (hb : 1 < b) (hc : c ≠ 0) : x < b ^ c ↔ log b x < c :=
   lt_iff_lt_of_le_iff_le (opow_le_iff_le_log' hb hc)
 
@@ -460,7 +478,7 @@ theorem natCast_opow (m : ℕ) : ∀ n : ℕ, ↑(m ^ n : ℕ) = (m : Ordinal) ^
 theorem iSup_pow {o : Ordinal} (ho : 0 < o) : ⨆ n : ℕ, o ^ n = o ^ ω := by
   simp_rw [← opow_natCast]
   rcases (one_le_iff_pos.2 ho).lt_or_eq with ho₁ | rfl
-  · exact (opow_isNormal ho₁).apply_omega
+  · exact (opow_isNormal ho₁).apply_omega0
   · rw [one_opow]
     refine le_antisymm (Ordinal.iSup_le fun n => by rw [one_opow]) ?_
     convert Ordinal.le_iSup _ 0
@@ -471,7 +489,7 @@ set_option linter.deprecated false in
 theorem sup_opow_nat {o : Ordinal} (ho : 0 < o) : (sup fun n : ℕ => o ^ n) = o ^ ω := by
   simp_rw [← opow_natCast]
   rcases (one_le_iff_pos.2 ho).lt_or_eq with ho₁ | rfl
-  · exact (opow_isNormal ho₁).apply_omega
+  · exact (opow_isNormal ho₁).apply_omega0
   · rw [one_opow]
     refine le_antisymm (sup_le fun n => by rw [one_opow]) ?_
     convert le_sup (fun n : ℕ => 1 ^ (n : Ordinal)) 0

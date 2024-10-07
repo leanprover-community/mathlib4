@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz, Scott Morrison
+Authors: Adam Topaz, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Comma.Basic
 import Mathlib.CategoryTheory.PUnit

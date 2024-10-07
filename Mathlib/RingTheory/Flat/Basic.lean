@@ -172,7 +172,7 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
     apply TensorProduct.ext'
     intro a m
     simp only [ρ, ψ, φ, η, η₁, coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-      directSumRight_symm_lof_tmul, rTensor_tmul, Submodule.coeSubtype, lid_tmul, map_smul]
+      directSumRight_symm_lof_tmul, rTensor_tmul, Submodule.coe_subtype, lid_tmul, map_smul]
     rw [DirectSum.component.of, DirectSum.component.of]
     by_cases h₂ : j = i
     · subst j; simp

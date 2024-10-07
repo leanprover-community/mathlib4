@@ -291,7 +291,7 @@ end GroupWithZero
 
 section GroupWithZero
 
-variable [GroupWithZero G₀] {a b c : G₀}
+variable [GroupWithZero G₀] {a : G₀}
 
 @[simp]
 theorem zero_div (a : G₀) : 0 / a = 0 := by rw [div_eq_mul_inv, zero_mul]
@@ -421,7 +421,7 @@ end GroupWithZero
 
 section CommGroupWithZero
 
-variable [CommGroupWithZero G₀] {a b c d : G₀}
+variable [CommGroupWithZero G₀]
 
 theorem div_mul_eq_mul_div₀ (a b c : G₀) : a / c * b = a * b / c := by
   simp_rw [div_eq_mul_inv, mul_assoc, mul_comm c⁻¹]

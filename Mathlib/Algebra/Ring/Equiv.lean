@@ -409,7 +409,7 @@ end Opposite
 
 section NonUnitalSemiring
 
-variable [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] (f : R ≃+* S) (x y : R)
+variable [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] (f : R ≃+* S) (x : R)
 
 /-- A ring isomorphism sends zero to zero. -/
 protected theorem map_zero : f 0 = 0 :=
@@ -533,7 +533,7 @@ end NonUnitalSemiring
 
 section Semiring
 
-variable [NonAssocSemiring R] [NonAssocSemiring S] (f : R ≃+* S) (x y : R)
+variable [NonAssocSemiring R] [NonAssocSemiring S] (f : R ≃+* S) (x : R)
 
 /-- A ring isomorphism sends one to one. -/
 protected theorem map_one : f 1 = 1 :=
@@ -604,7 +604,7 @@ end NonUnitalRing
 
 section Ring
 
-variable [NonAssocRing R] [NonAssocRing S] (f : R ≃+* S) (x y : R)
+variable [NonAssocRing R] [NonAssocRing S] (f : R ≃+* S)
 
 -- Porting note (#10618): `simp` can now prove that, so we remove the `@[simp]` tag
 theorem map_neg_one : f (-1) = -1 :=
@@ -841,6 +841,33 @@ theorem self_trans_symm (e : R ≃+* S) : e.trans e.symm = RingEquiv.refl R :=
 @[simp]
 theorem symm_trans_self (e : R ≃+* S) : e.symm.trans e = RingEquiv.refl S :=
   ext e.right_inv
+
+end RingEquiv
+
+namespace RingEquiv
+
+variable [NonAssocSemiring R] [NonAssocSemiring S]
+
+/-- If a ring homomorphism has an inverse, it is a ring isomorphism. -/
+@[simps]
+def ofRingHom (f : R →+* S) (g : S →+* R) (h₁ : f.comp g = RingHom.id S)
+    (h₂ : g.comp f = RingHom.id R) : R ≃+* S :=
+  { f with
+    toFun := f
+    invFun := g
+    left_inv := RingHom.ext_iff.1 h₂
+    right_inv := RingHom.ext_iff.1 h₁ }
+
+theorem coe_ringHom_ofRingHom (f : R →+* S) (g : S →+* R) (h₁ h₂) : ofRingHom f g h₁ h₂ = f :=
+  rfl
+
+@[simp]
+theorem ofRingHom_coe_ringHom (f : R ≃+* S) (g : S →+* R) (h₁ h₂) : ofRingHom (↑f) g h₁ h₂ = f :=
+  ext fun _ ↦ rfl
+
+theorem ofRingHom_symm (f : R →+* S) (g : S →+* R) (h₁ h₂) :
+    (ofRingHom f g h₁ h₂).symm = ofRingHom g f h₂ h₁ :=
+  rfl
 
 end RingEquiv
 
