@@ -271,7 +271,7 @@ theorem birthday_sub_le (x y : Game) : (x - y).birthday ≤ x.birthday ♯ y.bir
   https://mathoverflow.net/a/476829/147705. -/
 
 /-- Games with bounded birthday are a small set. -/
-theorem small_of_bounded_birthday (o : Ordinal) : Small.{u} {x : Game.{u} // birthday x < o} := by
+theorem small_setOf_birthday_lt (o : Ordinal) : Small.{u} {x : Game.{u} // birthday x < o} := by
   induction o using Ordinal.induction with | h o IH =>
   let S := ⋃ a : Set.Iio o, {x : Game.{u} | birthday x < a}
   have H : Small.{u} S := @small_iUnion _ _ _ _ (fun i => IH _ i.2)
