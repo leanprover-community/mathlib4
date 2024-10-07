@@ -69,7 +69,7 @@ def functor (F : C → A) : C ⥤ Codiscrete A where
   obj := Codiscrete.mk ∘ F
   map _ := ⟨⟩
 
-/-- Any functor `C ⥤  Codiscrete A` has an underlying function.-/
+/-- The underlying function `C → A` of a functor `C ⥤ Codiscrete A`. -/
 def invFunctor (F : C ⥤ Codiscrete A) : C → A := Codiscrete.as ∘ F.obj
 
 /-- Given two functors to a codiscrete category, there is a trivial natural transformation.-/
