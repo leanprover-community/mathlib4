@@ -138,7 +138,7 @@ theorem HenselianLocalRing.TFAE (R : Type u) [CommRing R] [LocalRing R] :
   | hR, K, _K, φ, hφ, f, hf, a₀, h₁, h₂ => by
     obtain ⟨a₀, rfl⟩ := hφ a₀
     have H := HenselianLocalRing.is_henselian f hf a₀
-    simp only [← ker_eq_maximalIdeal φ hφ, eval₂_at_apply, RingHom.mem_ker φ] at H h₁ h₂
+    simp only [← ker_eq_maximalIdeal φ hφ, eval₂_at_apply, RingHom.mem_ker] at H h₁ h₂
     obtain ⟨a, ha₁, ha₂⟩ := H h₁ (by
       contrapose! h₂
       rwa [← mem_nonunits_iff, ← LocalRing.mem_maximalIdeal, ← LocalRing.ker_eq_maximalIdeal φ hφ,

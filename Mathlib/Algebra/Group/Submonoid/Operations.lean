@@ -591,7 +591,7 @@ theorem closure_closure_coe_preimage {s : Set M} : closure (((↑) : closure s �
     Subtype.recOn x fun x hx _ => by
       refine closure_induction'
         (p := fun y hy ↦ (⟨y, hy⟩ : closure s) ∈ closure (((↑) : closure s → M) ⁻¹' s))
-          (fun g hg => subset_closure hg) ?_ (fun g₁ g₂ hg₁ hg₂ => ?_) hx
+          _ (fun g hg => subset_closure hg) ?_ (fun g₁ g₂ hg₁ hg₂ => ?_) hx
       · exact Submonoid.one_mem _
       · exact Submonoid.mul_mem _
 
@@ -865,8 +865,8 @@ that `f x = 1` -/
 def mker (f : F) : Submonoid M :=
   (⊥ : Submonoid N).comap f
 
-@[to_additive]
-theorem mem_mker (f : F) {x : M} : x ∈ mker f ↔ f x = 1 :=
+@[to_additive (attr := simp)]
+theorem mem_mker {f : F} {x : M} : x ∈ mker f ↔ f x = 1 :=
   Iff.rfl
 
 @[to_additive]
@@ -875,7 +875,7 @@ theorem coe_mker (f : F) : (mker f : Set M) = (f : M → N) ⁻¹' {1} :=
 
 @[to_additive]
 instance decidableMemMker [DecidableEq N] (f : F) : DecidablePred (· ∈ mker f) := fun x =>
-  decidable_of_iff (f x = 1) (mem_mker f)
+  decidable_of_iff (f x = 1) mem_mker
 
 @[to_additive]
 theorem comap_mker (g : N →* P) (f : M →* N) : g.mker.comap f = mker (comp g f) :=

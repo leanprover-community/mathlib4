@@ -27,7 +27,7 @@ namespace NumberField
 
 noncomputable section
 
-open Module.Free FiniteDimensional canonicalEmbedding Matrix Finset
+open Module.Free Module canonicalEmbedding Matrix Finset
 
 attribute [local instance] Matrix.seminormedAddCommGroup
 
@@ -62,7 +62,7 @@ noncomputable section
 
 variable (K)
 
-open Module.Free FiniteDimensional canonicalEmbedding Matrix Finset
+open Module.Free Module canonicalEmbedding Matrix Finset
 
 attribute [local instance] Matrix.seminormedAddCommGroup
 

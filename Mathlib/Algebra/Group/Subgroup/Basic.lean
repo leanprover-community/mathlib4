@@ -69,7 +69,7 @@ Definitions in the file:
 * `MonoidHom.ker f` : the kernel of a group homomorphism `f` is the subgroup of elements `x : G`
   such that `f x = 1`
 
-* `MonoidHom.eq_locus f g` : given group homomorphisms `f`, `g`, the elements of `G` such that
+* `MonoidHom.eqLocus f g` : given group homomorphisms `f`, `g`, the elements of `G` such that
   `f x = g x` form a subgroup of `G`
 
 ## Implementation notes
@@ -94,27 +94,27 @@ variable {A : Type*} [AddGroup A]
 section SubgroupClass
 
 /-- `InvMemClass S G` states `S` is a type of subsets `s ⊆ G` closed under inverses. -/
-class InvMemClass (S G : Type*) [Inv G] [SetLike S G] : Prop where
+class InvMemClass (S : Type*) (G : outParam Type*) [Inv G] [SetLike S G] : Prop where
   /-- `s` is closed under inverses -/
   inv_mem : ∀ {s : S} {x}, x ∈ s → x⁻¹ ∈ s
 
 export InvMemClass (inv_mem)
 
 /-- `NegMemClass S G` states `S` is a type of subsets `s ⊆ G` closed under negation. -/
-class NegMemClass (S G : Type*) [Neg G] [SetLike S G] : Prop where
+class NegMemClass (S : Type*) (G : outParam Type*) [Neg G] [SetLike S G] : Prop where
   /-- `s` is closed under negation -/
   neg_mem : ∀ {s : S} {x}, x ∈ s → -x ∈ s
 
 export NegMemClass (neg_mem)
 
 /-- `SubgroupClass S G` states `S` is a type of subsets `s ⊆ G` that are subgroups of `G`. -/
-class SubgroupClass (S G : Type*) [DivInvMonoid G] [SetLike S G] extends SubmonoidClass S G,
-  InvMemClass S G : Prop
+class SubgroupClass (S : Type*) (G : outParam Type*) [DivInvMonoid G] [SetLike S G]
+    extends SubmonoidClass S G, InvMemClass S G : Prop
 
 /-- `AddSubgroupClass S G` states `S` is a type of subsets `s ⊆ G` that are
 additive subgroups of `G`. -/
-class AddSubgroupClass (S G : Type*) [SubNegMonoid G] [SetLike S G] extends AddSubmonoidClass S G,
-  NegMemClass S G : Prop
+class AddSubgroupClass (S : Type*) (G : outParam Type*) [SubNegMonoid G] [SetLike S G]
+    extends AddSubmonoidClass S G, NegMemClass S G : Prop
 
 attribute [to_additive] InvMemClass SubgroupClass
 
@@ -2134,8 +2134,8 @@ def ker (f : G →* M) : Subgroup G :=
         f x⁻¹ = f x * f x⁻¹ := by rw [hx, one_mul]
         _ = 1 := by rw [← map_mul, mul_inv_cancel, map_one] }
 
-@[to_additive]
-theorem mem_ker (f : G →* M) {x : G} : x ∈ f.ker ↔ f x = 1 :=
+@[to_additive (attr := simp)]
+theorem mem_ker {f : G →* M} {x : G} : x ∈ f.ker ↔ f x = 1 :=
   Iff.rfl
 
 @[to_additive]
@@ -2155,7 +2155,7 @@ theorem ker_toHomUnits {M} [Monoid M] (f : G →* M) : f.toHomUnits.ker = f.ker 
 theorem eq_iff (f : G →* M) {x y : G} : f x = f y ↔ y⁻¹ * x ∈ f.ker := by
   constructor <;> intro h
   · rw [mem_ker, map_mul, h, ← map_mul, inv_mul_cancel, map_one]
-  · rw [← one_mul x, ← mul_inv_cancel y, mul_assoc, map_mul, f.mem_ker.1 h, mul_one]
+  · rw [← one_mul x, ← mul_inv_cancel y, mul_assoc, map_mul, mem_ker.1 h, mul_one]
 
 @[to_additive]
 instance decidableMemKer [DecidableEq M] (f : G →* M) : DecidablePred (· ∈ f.ker) := fun x =>
@@ -2226,7 +2226,7 @@ theorem range_le_ker_iff (f : G →* G') (g : G' →* G'') : f.range ≤ g.ker �
 @[to_additive]
 instance (priority := 100) normal_ker (f : G →* M) : f.ker.Normal :=
   ⟨fun x hx y => by
-    rw [mem_ker, map_mul, map_mul, f.mem_ker.1 hx, mul_one, map_mul_eq_one f (mul_inv_cancel y)]⟩
+    rw [mem_ker, map_mul, map_mul, mem_ker.1 hx, mul_one, map_mul_eq_one f (mul_inv_cancel y)]⟩
 
 @[to_additive (attr := simp)]
 lemma ker_fst : ker (fst G G') = .prod ⊥ ⊤ := SetLike.ext fun _ => (iff_of_eq (and_true _)).symm
@@ -2599,7 +2599,7 @@ See `MonoidHom.eq_liftOfRightInverse` for the uniqueness lemma.
 def liftOfRightInverse (hf : Function.RightInverse f_inv f) :
     { g : G₁ →* G₃ // f.ker ≤ g.ker } ≃ (G₂ →* G₃) where
   toFun g := f.liftOfRightInverseAux f_inv hf g.1 g.2
-  invFun φ := ⟨φ.comp f, fun x hx => (mem_ker _).mpr <| by simp [(mem_ker _).mp hx]⟩
+  invFun φ := ⟨φ.comp f, fun x hx ↦ mem_ker.mpr <| by simp [mem_ker.mp hx]⟩
   left_inv g := by
     ext
     simp only [comp_apply, liftOfRightInverseAux_comp_apply, Subtype.coe_mk]

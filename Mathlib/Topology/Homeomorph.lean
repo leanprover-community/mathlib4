@@ -54,11 +54,11 @@ theorem toEquiv_injective : Function.Injective (toEquiv : X ≃ₜ Y → X ≃ Y
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
 instance : EquivLike (X ≃ₜ Y) X Y where
-  coe := fun h => h.toEquiv
-  inv := fun h => h.toEquiv.symm
-  left_inv := fun h => h.left_inv
-  right_inv := fun h => h.right_inv
-  coe_injective' := fun _ _ H _ => toEquiv_injective <| DFunLike.ext' H
+  coe h := h.toEquiv
+  inv h := h.toEquiv.symm
+  left_inv h := h.left_inv
+  right_inv h := h.right_inv
+  coe_injective' _ _ H _ := toEquiv_injective <| DFunLike.ext' H
 
 instance : CoeFun (X ≃ₜ Y) fun _ ↦ X → Y := ⟨DFunLike.coe⟩
 
@@ -308,8 +308,11 @@ protected theorem t2Space [T2Space X] (h : X ≃ₜ Y) : T2Space Y :=
 protected theorem t3Space [T3Space X] (h : X ≃ₜ Y) : T3Space Y :=
   h.symm.embedding.t3Space
 
-protected theorem denseEmbedding (h : X ≃ₜ Y) : DenseEmbedding h :=
+theorem isDenseEmbedding (h : X ≃ₜ Y) : IsDenseEmbedding h :=
   { h.embedding with dense := h.surjective.denseRange }
+
+@[deprecated (since := "2024-09-30")]
+alias denseEmbedding := isDenseEmbedding
 
 @[simp]
 theorem isOpen_preimage (h : X ≃ₜ Y) {s : Set Y} : IsOpen (h ⁻¹' s) ↔ IsOpen s :=
@@ -451,14 +454,14 @@ theorem comp_continuousWithinAt_iff (h : X ≃ₜ Y) (f : Z → X) (s : Set Z) (
 theorem comp_isOpenMap_iff (h : X ≃ₜ Y) {f : Z → X} : IsOpenMap (h ∘ f) ↔ IsOpenMap f := by
   refine ⟨?_, fun hf => h.isOpenMap.comp hf⟩
   intro hf
-  rw [← Function.id_comp f, ← h.symm_comp_self, Function.comp.assoc]
+  rw [← Function.id_comp f, ← h.symm_comp_self, Function.comp_assoc]
   exact h.symm.isOpenMap.comp hf
 
 @[simp]
 theorem comp_isOpenMap_iff' (h : X ≃ₜ Y) {f : Y → Z} : IsOpenMap (f ∘ h) ↔ IsOpenMap f := by
   refine ⟨?_, fun hf => hf.comp h.isOpenMap⟩
   intro hf
-  rw [← Function.comp_id f, ← h.self_comp_symm, ← Function.comp.assoc]
+  rw [← Function.comp_id f, ← h.self_comp_symm, ← Function.comp_assoc]
   exact hf.comp h.symm.isOpenMap
 
 /-- A homeomorphism `h : X ≃ₜ Y` lifts to a homeomorphism between subtypes corresponding to
@@ -901,7 +904,10 @@ protected lemma quotientMap : QuotientMap f := (hf.homeomorph f).quotientMap
 protected lemma embedding : Embedding f := (hf.homeomorph f).embedding
 protected lemma openEmbedding : OpenEmbedding f := (hf.homeomorph f).openEmbedding
 protected lemma closedEmbedding : ClosedEmbedding f := (hf.homeomorph f).closedEmbedding
-protected lemma denseEmbedding : DenseEmbedding f := (hf.homeomorph f).denseEmbedding
+lemma isDenseEmbedding : IsDenseEmbedding f := (hf.homeomorph f).isDenseEmbedding
+
+@[deprecated (since := "2024-09-30")]
+alias denseEmbedding := isDenseEmbedding
 
 end IsHomeomorph
 

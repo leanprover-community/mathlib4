@@ -57,7 +57,7 @@ instance (priority := 100) (α : Sort u) (lt : α → α → Prop) [IsStrictWeak
 
 section
 
-variable {α : Sort u} {r : α → α → Prop}
+variable {r : α → α → Prop}
 
 local infixl:50 " ≺ " => r
 
@@ -83,7 +83,7 @@ namespace StrictWeakOrder
 
 section
 
-variable {α : Sort u} {r : α → α → Prop}
+variable {r : α → α → Prop}
 
 local infixl:50 " ≺ " => r
 

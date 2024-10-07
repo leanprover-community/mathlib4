@@ -1357,6 +1357,11 @@ theorem comp_aeval {B : Type*} [CommSemiring B] [Algebra R B] (φ : S₁ →ₐ[
   ext i
   simp
 
+lemma comp_aeval_apply {B : Type*} [CommSemiring B] [Algebra R B] (φ : S₁ →ₐ[R] B)
+    (p : MvPolynomial σ R) :
+    φ (aeval f p) = aeval (fun i ↦ φ (f i)) p := by
+  rw [← comp_aeval, AlgHom.coe_comp, comp_apply]
+
 @[simp]
 theorem map_aeval {B : Type*} [CommSemiring B] (g : σ → S₁) (φ : S₁ →+* B) (p : MvPolynomial σ R) :
     φ (aeval g p) = eval₂Hom (φ.comp (algebraMap R S₁)) (fun i => φ (g i)) p := by
@@ -1536,6 +1541,17 @@ theorem eval_mem {p : MvPolynomial σ S} {s : subS} (hs : ∀ i ∈ p.support, p
   eval₂_mem hs hv
 
 end EvalMem
+
+variable {S T : Type*} [CommSemiring S] [Algebra R S] [CommSemiring T] [Algebra R T] [Algebra S T]
+  [IsScalarTower R S T]
+
+lemma aeval_sum_elim {σ τ : Type*} (p : MvPolynomial (σ ⊕ τ) R) (f : τ → S) (g : σ → T) :
+    (aeval (Sum.elim g (algebraMap S T ∘ f))) p =
+      (aeval g) ((aeval (Sum.elim X (C ∘ f))) p) := by
+  induction' p using MvPolynomial.induction_on with r p q hp hq p i h
+  · simp [← IsScalarTower.algebraMap_apply]
+  · simp [hp, hq]
+  · cases i <;> simp [h]
 
 end CommSemiring
 
