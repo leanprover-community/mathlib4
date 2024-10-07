@@ -233,6 +233,9 @@ lemma even_or_odd (n : ℕ) : Even n ∨ Odd n := (even_xor_odd n).or
 lemma even_or_odd' (n : ℕ) : ∃ k, n = 2 * k ∨ n = 2 * k + 1 := by
   simpa only [← two_mul, exists_or, Odd, Even] using even_or_odd n
 
+lemma odd_add_one {n : ℕ} : Odd (n + 1) ↔ ¬ Odd n := by
+  rw [← not_even_iff_odd, Nat.even_add_one, not_even_iff_odd]
+
 #adaptation_note
 /--
 After nightly-2024-09-06 we can remove the `_root_` prefix below.
@@ -365,3 +368,32 @@ lemma neg_one_pow_eq_one_iff_even {R : Type*} [Monoid R] [HasDistribNeg R] {n : 
     (h : (-1 : R) ≠ 1) : (-1 : R) ^ n = 1 ↔ Even n where
   mp h' := of_not_not fun hn ↦ h <| (not_even_iff_odd.1 hn).neg_one_pow.symm.trans h'
   mpr := Even.neg_one_pow
+
+section CharTwo
+
+-- We state the following theorems in terms of the slightly more general `2 = 0` hypothesis.
+
+variable {R : Type*} [AddMonoidWithOne R]
+
+private theorem natCast_eq_zero_or_one_of_two_eq_zero' (n : ℕ) (h : (2 : R) = 0) :
+    (Even n → (n : R) = 0) ∧ (Odd n → (n : R) = 1) := by
+  induction n using Nat.twoStepInduction with
+  | zero => simp
+  | one => simp
+  | more n _ _ => simpa [add_assoc, Nat.even_add_one, Nat.odd_add_one, h]
+
+theorem natCast_eq_zero_of_even_of_two_eq_zero {n : ℕ} (hn : Even n) (h : (2 : R) = 0) :
+    (n : R) = 0 :=
+  (natCast_eq_zero_or_one_of_two_eq_zero' n h).1 hn
+
+theorem natCast_eq_one_of_odd_of_two_eq_zero {n : ℕ} (hn : Odd n) (h : (2 : R) = 0) :
+    (n : R) = 1 :=
+  (natCast_eq_zero_or_one_of_two_eq_zero' n h).2 hn
+
+theorem natCast_eq_zero_or_one_of_two_eq_zero (n : ℕ) (h : (2 : R) = 0) :
+    (n : R) = 0 ∨ (n : R) = 1 := by
+  obtain hn | hn := Nat.even_or_odd n
+  · exact Or.inl <| natCast_eq_zero_of_even_of_two_eq_zero hn h
+  · exact Or.inr <| natCast_eq_one_of_odd_of_two_eq_zero hn h
+
+end CharTwo
