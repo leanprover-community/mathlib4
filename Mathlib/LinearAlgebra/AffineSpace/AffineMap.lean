@@ -568,6 +568,10 @@ theorem lineMap_vsub_lineMap (p₁ p₂ p₃ p₄ : P1) (c : k) :
 @[simp] lemma lineMap_lineMap_right (p₀ p₁ : P1) (c d : k) :
     lineMap p₀ (lineMap p₀ p₁ c) d = lineMap p₀ p₁ (d * c) := by simp [lineMap_apply, mul_smul]
 
+@[simp] lemma lineMap_lineMap_left (p₀ p₁ : P1) (c d : k) :
+    lineMap (lineMap p₀ p₁ c) p₁ d = lineMap p₀ p₁ (1 - (1 - d) * (1 - c)) := by
+  simp_rw [lineMap_apply_one_sub, ← lineMap_apply_one_sub p₁, lineMap_lineMap_right]
+
 /-- Decomposition of an affine map in the special case when the point space and vector space
 are the same. -/
 theorem decomp (f : V1 →ᵃ[k] V2) : (f : V1 → V2) = ⇑f.linear + fun _ => f 0 := by
