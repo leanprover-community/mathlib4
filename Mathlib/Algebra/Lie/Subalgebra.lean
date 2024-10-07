@@ -350,7 +350,7 @@ theorem mem_map (x : L₂) : x ∈ K.map f ↔ ∃ y : L, y ∈ K ∧ f y = x :=
 
 -- TODO Rename and state for homs instead of equivs.
 theorem mem_map_submodule (e : L ≃ₗ⁅R⁆ L₂) (x : L₂) :
-    x ∈ K.map (e : L →ₗ⁅R⁆ L₂) ↔ x ∈ (K : Submodule R L).map (e : L ≃ₗ[R] L₂) :=
+    x ∈ K.map (e : L →ₗ⁅R⁆ L₂) ↔ x ∈ (K : Submodule R L).map (e : L →ₗ[R] L₂) :=
   Iff.rfl
 
 /-- The preimage of a Lie subalgebra under a Lie algebra morphism is a Lie subalgebra of the
