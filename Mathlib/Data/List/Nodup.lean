@@ -18,7 +18,7 @@ universe u v
 
 open Function
 
-variable {α : Type u} {β : Type v} {l l₁ l₂ : List α} {r : α → α → Prop} {a b : α}
+variable {α : Type u} {β : Type v} {l l₁ l₂ : List α} {r : α → α → Prop} {a : α}
 
 namespace List
 
