@@ -163,7 +163,7 @@ theorem isSimpleModule_self_iff_isUnit :
     exact ⟨⟨x, y, left_inv_eq_right_inv hzy hyx ▸ hzy, hyx⟩, rfl⟩
 
 theorem isSimpleModule_iff_finrank_eq_one {R} [DivisionRing R] [Module R M] :
-    IsSimpleModule R M ↔ FiniteDimensional.finrank R M = 1 :=
+    IsSimpleModule R M ↔ Module.finrank R M = 1 :=
   ⟨fun h ↦ have := h.nontrivial; have ⟨v, hv⟩ := exists_ne (0 : M)
     (finrank_eq_one_iff_of_nonzero' v hv).mpr (IsSimpleModule.toSpanSingleton_surjective R hv),
   is_simple_module_of_finrank_eq_one⟩

@@ -141,11 +141,12 @@ protected theorem pos_iff_ne_zero {a : Nimber} : 0 < a ↔ a ≠ 0 :=
 theorem lt_one_iff_zero {a : Nimber} : a < 1 ↔ a = 0 :=
   Ordinal.lt_one_iff_zero
 
-instance (a : Nimber.{u}) : Small.{u} (Set.Iio a) :=
-  Ordinal.small_Iio a
-
-instance (a : Nimber.{u}) : Small.{u} (Set.Iic a) :=
-  Ordinal.small_Iic a
+instance small_Iio (a : Nimber.{u}) : Small.{u} (Set.Iio a) := Ordinal.small_Iio a
+instance small_Iic (a : Nimber.{u}) : Small.{u} (Set.Iic a) := Ordinal.small_Iic a
+instance small_Ico (a b : Nimber.{u}) : Small.{u} (Set.Ico a b) := Ordinal.small_Ico a b
+instance small_Icc (a b : Nimber.{u}) : Small.{u} (Set.Icc a b) := Ordinal.small_Icc a b
+instance small_Ioo (a b : Nimber.{u}) : Small.{u} (Set.Ioo a b) := Ordinal.small_Ioo a b
+instance small_Ioc (a b : Nimber.{u}) : Small.{u} (Set.Ioc a b) := Ordinal.small_Ioc a b
 
 theorem not_bddAbove_compl_of_small (s : Set Nimber.{u}) [Small.{u} s] : ¬ BddAbove sᶜ :=
   Ordinal.not_bddAbove_compl_of_small s

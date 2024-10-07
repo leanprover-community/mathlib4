@@ -88,7 +88,7 @@ def ofComplete [T0Space α] [CompleteSpace α] : AbstractCompletion α :=
 theorem closure_range : closure (range ι) = univ :=
   pkg.dense.closure_range
 
-theorem denseInducing : DenseInducing ι :=
+theorem isDenseInducing : IsDenseInducing ι :=
   ⟨pkg.uniformInducing.inducing, pkg.dense⟩
 
 theorem uniformContinuous_coe : UniformContinuous ι :=
@@ -114,16 +114,16 @@ section Extend
 
 /-- Extension of maps to completions -/
 protected def extend (f : α → β) : hatα → β :=
-  if UniformContinuous f then pkg.denseInducing.extend f else fun x => f (pkg.dense.some x)
+  if UniformContinuous f then pkg.isDenseInducing.extend f else fun x => f (pkg.dense.some x)
 
 variable {f : α → β}
 
-theorem extend_def (hf : UniformContinuous f) : pkg.extend f = pkg.denseInducing.extend f :=
+theorem extend_def (hf : UniformContinuous f) : pkg.extend f = pkg.isDenseInducing.extend f :=
   if_pos hf
 
 theorem extend_coe [T2Space β] (hf : UniformContinuous f) (a : α) : (pkg.extend f) (ι a) = f a := by
   rw [pkg.extend_def hf]
-  exact pkg.denseInducing.extend_eq hf.continuous a
+  exact pkg.isDenseInducing.extend_eq hf.continuous a
 
 variable [CompleteSpace β]
 
@@ -276,17 +276,17 @@ theorem compare_comp_eq_compare (γ : Type*) [TopologicalSpace γ]
     letI := pkg.uniformStruct.toTopologicalSpace
     letI := pkg'.uniformStruct.toTopologicalSpace
     (∀ a : pkg.space,
-      Filter.Tendsto f (Filter.comap pkg.coe (𝓝 a)) (𝓝 ((pkg.denseInducing.extend f) a))) →
-      pkg.denseInducing.extend f ∘ pkg'.compare pkg = pkg'.denseInducing.extend f := by
+      Filter.Tendsto f (Filter.comap pkg.coe (𝓝 a)) (𝓝 ((pkg.isDenseInducing.extend f) a))) →
+      pkg.isDenseInducing.extend f ∘ pkg'.compare pkg = pkg'.isDenseInducing.extend f := by
   let _ := pkg'.uniformStruct
   let _ := pkg.uniformStruct
   intro h
-  have (x : α) : (pkg.denseInducing.extend f ∘ pkg'.compare pkg) (pkg'.coe x) = f x := by
-    simp only [Function.comp_apply, compare_coe, DenseInducing.extend_eq _ cont_f, implies_true]
-  apply (DenseInducing.extend_unique (AbstractCompletion.denseInducing _) this
+  have (x : α) : (pkg.isDenseInducing.extend f ∘ pkg'.compare pkg) (pkg'.coe x) = f x := by
+    simp only [Function.comp_apply, compare_coe, IsDenseInducing.extend_eq _ cont_f, implies_true]
+  apply (IsDenseInducing.extend_unique (AbstractCompletion.isDenseInducing _) this
     (Continuous.comp _ (uniformContinuous_compare pkg' pkg).continuous )).symm
-  apply DenseInducing.continuous_extend
-  exact fun a ↦ ⟨(pkg.denseInducing.extend f) a, h a⟩
+  apply IsDenseInducing.continuous_extend
+  exact fun a ↦ ⟨(pkg.isDenseInducing.extend f) a, h a⟩
 
 end Compare
 
