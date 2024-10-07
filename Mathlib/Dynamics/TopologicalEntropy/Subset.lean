@@ -216,14 +216,6 @@ lemma coverEntropy_union [UniformSpace X] (T : X → X) (F G : Set X) :
   simp only [coverEntropy, iSup_subtype', ← _root_.sup_eq_max, ← iSup_sup_eq, ← iSup_subtype']
   exact biSup_congr fun U _ ↦ coverEntropyEntourage_union T F G U
 
-noncomputable def coverEntropy.supHom [UniformSpace X] (T : X → X) :
-    SupHom (Set X) EReal where
-  toFun := coverEntropy T
-  map_sup' := by
-    intro F G
-    rw [_root_.sup_eq_max]
-    exact coverEntropy_union T F G
-
 end Union
 
 /-! ### Topological entropy of finite unions -/
@@ -232,9 +224,38 @@ section Union
 
 open Function Set
 
+noncomputable def coverEntropyEntourage_supBotHom [UniformSpace X] (T : X → X) (U : Set (X × X)) :
+    SupBotHom (Set X) EReal where
+  toFun := fun F ↦ coverEntropyEntourage T F U
+  map_sup' := by
+    intro F G
+    rw [_root_.sup_eq_max]
+    exact coverEntropyEntourage_union T F G U
+  map_bot' := by
+    simp only [bot_eq_empty, coverEntropyEntourage_empty]
+
+lemma cheeky_test [UniformSpace X] (T : X → X) (U : Set (X × X)) :
+    (coverEntropyEntourage_supBotHom T U).toFun = fun F ↦ coverEntropyEntourage T F U := rfl
+
+lemma cheeky_test_apply [UniformSpace X] (T : X → X) (F : Set X) (U : Set (X × X)) :
+    (coverEntropyEntourage_supBotHom T U).toFun F = coverEntropyEntourage T F U := rfl
+
+noncomputable def coverEntropy_supBotHom [UniformSpace X] (T : X → X) :
+    SupBotHom (Set X) EReal where
+  toFun := coverEntropy T
+  map_sup' := by
+    intro F G
+    rw [_root_.sup_eq_max]
+    exact coverEntropy_union T F G
+  map_bot' := by
+    simp only [bot_eq_empty, coverEntropy_empty]
+
+lemma other_test [UniformSpace X] (T : X → X) :
+    (coverEntropy_supBotHom T).toFun = coverEntropy T := rfl
+
 variable {ι : Type*} [UniformSpace X]
 
-lemma coverEntropyInf_iUnion_le  (T : X → X) (F : ι → Set X) :
+lemma coverEntropyInf_iUnion_le (T : X → X) (F : ι → Set X) :
     ⨆ i, coverEntropyInf T (F i) ≤ coverEntropyInf T (⋃ i, F i) :=
   iSup_le fun i ↦ coverEntropyInf_monotone T (subset_iUnion F i)
 
@@ -266,10 +287,20 @@ lemma coverEntropy_finite_iUnion [Fintype ι] (T : X → X) (F : ι → Set X) :
     congr
     exact h (fun i : α ↦ F (some i))
 
-lemma coverEntropy_finite_biUnion (s : Finset ι) (T : X → X) (F : ι → Set X) :
+lemma coverEntropyEntourage_finite_biUnion (T : X → X) (U : Set (X × X)) (F : ι → Set X)
+    (s : Finset ι) :
+    coverEntropyEntourage T (⋃ i ∈ s, F i) U = ⨆ i ∈ s, coverEntropyEntourage T (F i) U := by
+  rw [← Finset.sup_set_eq_biUnion s, ← cheeky_test_apply T (s.sup F) U, SupBotHom.toFun_eq_coe,
+    map_finset_sup (coverEntropyEntourage_supBotHom T U) s F, ← SupBotHom.toFun_eq_coe,
+    cheeky_test T U, Finset.sup_eq_iSup]
+  simp only [Function.comp_apply]
+
+lemma coverEntropy_finite_biUnion (T : X → X) (F : ι → Set X) (s : Finset ι) :
     coverEntropy T (⋃ i ∈ s, F i) = ⨆ i ∈ s, coverEntropy T (F i) := by
-  have := @coverEntropy_finite_iUnion X {i // i ∈ s} _ (FinsetCoe.fintype s) T (fun i ↦ F i)
-  rw [iSup_subtype', ← this, iUnion_subtype]
+  rw [← Finset.sup_set_eq_biUnion s _, ← other_test T, SupBotHom.toFun_eq_coe,
+    map_finset_sup (coverEntropy_supBotHom T) s F, ← SupBotHom.toFun_eq_coe, other_test T,
+    Finset.sup_eq_iSup]
+  simp only [Function.comp_apply]
 
 end Union
 
