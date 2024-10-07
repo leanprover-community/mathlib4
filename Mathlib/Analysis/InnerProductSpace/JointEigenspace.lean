@@ -165,59 +165,6 @@ end RCLike
 
 open Module End
 
-/-- If `F` is an invariant subspace of a symmetric operator `S`, then `F` is the supremum of the
-generalized eigenspaces of the restriction of `S` to `F`. -/
-theorem iSup_maxGenEigenspace_restrict {ι K V : Type*}
-    [Finite ι] [Field K] [DecidableEq K] [AddCommGroup V] [Module K V] [FiniteDimensional K V]
-    {F : Submodule K V} (S : V →ₗ[K] V) (hInv : Set.MapsTo S F F) :
-    ⨆ μ, map F.subtype (eigenspace (S.restrict hInv) μ) = F := by
-  conv_lhs => rw [← Submodule.map_iSup]
-  conv_rhs => rw [← map_subtype_top F]
-  congr!
-  have H : IsSymmetric (S.restrict hInv) := fun x y ↦ hS (F.subtype x) y
-  apply orthogonal_eq_bot_iff.mp (H.orthogonalComplement_iSup_eigenspaces_eq_bot)
-
-/-
-We're in a bizarre situation. The above result, `iSup_eigenspace_restrict` takes a subspace
-F, a symmetric operator S leaving F invariant and says that the supremum over all scalars μ, the
-pushforward (this is the `map`) I think the F.subtype is the image of (S.restrict hInv) μ
-lifted up into F. I remember writing this and it was tricky to figure out.
-
-What is the point of doing the maxGenEigenspace one of these? We should be able to just
-replace the `eigenspace` by `maxGenEigenspace` above once the things parse...
-
-Now replacing the generalized eigenspaces, we won't need the symmetric condition...
--/
-
-lemma iSup_iInf_maxGenEigenspace_eq_top_of_commute {ι K V : Type*}
-    [Finite ι] [Field K] [DecidableEq K] [AddCommGroup V] [Module K V] [FiniteDimensional K V]
-    (f : ι → End K V) (h : Pairwise fun i j ↦ Commute (f i) (f j))
-    (h' : ∀ i, ⨆ μ, (f i).maxGenEigenspace μ = ⊤) :
-    ⨆ χ : ι → K, ⨅ i, (f i).maxGenEigenspace (χ i) = ⊤ := by
-  have _ := Fintype.ofFinite ι
-  revert f
-  refine Fintype.induction_subsingleton_or_nontrivial ι (fun m _ hhm f hf x ↦ ?_)
-    (fun m hm hmm H f hf hC ↦ ?_)
-  · obtain (hm | hm) := isEmpty_or_nonempty m
-    · simp
-    · have := uniqueOfSubsingleton (Classical.choice hm)
-      simpa [ciInf_unique, ← (Equiv.funUnique m K).symm.iSup_comp] using x default
-  · have i := Classical.arbitrary m
-    classical
-    specialize H {x // x ≠ i} (Fintype.card_subtype_lt (x := i) (by simp))
-     (Subtype.restrict (· ≠ i) f) (fun _ _ _ ↦ hf <| by simpa [Subtype.coe_ne_coe]) (hC ·)
-    rw [← (Equiv.funSplitAt i K).symm.iSup_comp, iSup_prod, iSup_comm]
-    convert H with γ
-    rw [← iSup_eigenspace_restrict (f i) (hf i) (F := ⨅ j, eigenspace _ _)] --use genEigenspace ver.
-    swap
-    · exact mapsTo_iInf_genEigenspace_of_forall_comm (fun j : {j // j ≠ i} ↦ hC j i) γ 1
-    congr! with μ
-    rw [← Module.End.genEigenspace_one, ← Submodule.inf_genEigenspace _ _ _ (k := 1), inf_comm,
-      iInf_split_single _ i, iInf_subtype]
-    congr! with x hx
-    · simp
-    · simp [dif_neg hx]
-
 end IsSymmetric
 
 end LinearMap
