@@ -442,6 +442,15 @@ lemma re_ofNat (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℂ).re = 
 @[simp, norm_cast] lemma ratCast_re (q : ℚ) : (q : ℂ).re = q := rfl
 @[simp, norm_cast] lemma ratCast_im (q : ℚ) : (q : ℂ).im = 0 := rfl
 
+lemma re_nsmul (n : ℕ) (z : ℂ) : (n • z).re = n • z.re := smul_re ..
+lemma im_nsmul (n : ℕ) (z : ℂ) : (n • z).im = n • z.im := smul_im ..
+lemma re_zsmul (n : ℤ) (z : ℂ) : (n • z).re = n • z.re := smul_re ..
+lemma im_zsmul (n : ℤ) (z : ℂ) : (n • z).im = n • z.im := smul_im ..
+@[simp] lemma re_nnqsmul (q : ℚ≥0) (z : ℂ) : (q • z).re = q • z.re := smul_re ..
+@[simp] lemma im_nnqsmul (q : ℚ≥0) (z : ℂ) : (q • z).im = q • z.im := smul_im ..
+@[simp] lemma re_qsmul (q : ℚ) (z : ℂ) : (q • z).re = q • z.re := smul_re ..
+@[simp] lemma im_qsmul (q : ℚ) (z : ℂ) : (q • z).im = q • z.im := smul_im ..
+
 @[deprecated (since := "2024-04-17")]
 alias rat_cast_im := ratCast_im
 
@@ -627,6 +636,28 @@ def ofReal : ℝ →+* ℂ where
 @[simp]
 theorem ofReal_eq_coe (r : ℝ) : ofReal r = r :=
   rfl
+
+variable {α : Type*}
+
+@[simp] lemma ofReal_comp_add (f g : α → ℝ) : ofReal' ∘ (f + g) = ofReal' ∘ f + ofReal' ∘ g :=
+  map_comp_add ofReal ..
+
+@[simp] lemma ofReal_comp_sub (f g : α → ℝ) : ofReal' ∘ (f - g) = ofReal' ∘ f - ofReal' ∘ g :=
+  map_comp_sub ofReal ..
+
+@[simp] lemma ofReal_comp_neg (f : α → ℝ) : ofReal' ∘ (-f) = -(ofReal' ∘ f) := map_comp_neg ofReal _
+
+lemma ofReal_comp_nsmul (n : ℕ) (f : α → ℝ) : ofReal' ∘ (n • f) = n • (ofReal' ∘ f) :=
+  map_comp_nsmul ofReal ..
+
+lemma ofReal_comp_zsmul (n : ℤ) (f : α → ℝ) : ofReal' ∘ (n • f) = n • (ofReal' ∘ f) :=
+  map_comp_zsmul ofReal ..
+
+@[simp] lemma ofReal_comp_mul (f g : α → ℝ) : ofReal' ∘ (f * g) = ofReal' ∘ f * ofReal' ∘ g :=
+  map_comp_mul ofReal ..
+
+@[simp] lemma ofReal_comp_pow (f : α → ℝ) (n : ℕ) : ofReal' ∘ (f ^ n) = (ofReal' ∘ f) ^ n :=
+  map_comp_pow ofReal ..
 
 @[simp]
 theorem I_sq : I ^ 2 = -1 := by rw [sq, I_mul_I]

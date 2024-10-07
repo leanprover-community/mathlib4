@@ -61,7 +61,7 @@ theorem ord_isLimit {c} (co : ℵ₀ ≤ c) : (ord c).IsLimit := by
     rw [← ord_le, ← le_succ_of_isLimit, ord_le]
     · exact co.trans h
     · rw [ord_aleph0]
-      exact omega_isLimit
+      exact omega0_isLimit
 
 theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.toType :=
   toType_noMax_of_succ_lt (ord_isLimit h).2
@@ -217,10 +217,13 @@ theorem aleph'_limit {o : Ordinal} (ho : o.IsLimit) : aleph' o = ⨆ a : Iio o, 
   exact fun a ha => le_ciSup (bddAbove_of_small _) (⟨a, ha⟩ : Iio o)
 
 @[simp]
-theorem aleph'_omega : aleph' ω = ℵ₀ :=
+theorem aleph'_omega0 : aleph' ω = ℵ₀ :=
   eq_of_forall_ge_iff fun c => by
-    simp only [aleph'_le_of_limit omega_isLimit, lt_omega, exists_imp, aleph0_le]
+    simp only [aleph'_le_of_limit omega0_isLimit, lt_omega0, exists_imp, aleph0_le]
     exact forall_swap.trans (forall_congr' fun n => by simp only [forall_eq, aleph'_nat])
+
+@[deprecated (since := "2024-09-30")]
+alias aleph'_omega := aleph'_omega0
 
 set_option linter.deprecated false in
 /-- `aleph'` and `aleph_idx` form an equivalence between `Ordinal` and `Cardinal` -/
@@ -256,7 +259,7 @@ theorem aleph_succ (o : Ordinal) : aleph (succ o) = succ (aleph o) := by
   rw [aleph_eq_aleph', add_succ, aleph'_succ, aleph_eq_aleph']
 
 @[simp]
-theorem aleph_zero : aleph 0 = ℵ₀ := by rw [aleph_eq_aleph', add_zero, aleph'_omega]
+theorem aleph_zero : aleph 0 = ℵ₀ := by rw [aleph_eq_aleph', add_zero, aleph'_omega0]
 
 theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : aleph o = ⨆ a : Iio o, aleph a := by
   apply le_antisymm _ (ciSup_le' _)
@@ -264,13 +267,13 @@ theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : aleph o = ⨆ a : Iio o, al
     refine ciSup_mono' (bddAbove_of_small _) ?_
     rintro ⟨i, hi⟩
     cases' lt_or_le i ω with h h
-    · rcases lt_omega.1 h with ⟨n, rfl⟩
+    · rcases lt_omega0.1 h with ⟨n, rfl⟩
       use ⟨0, ho.pos⟩
       simpa using (nat_lt_aleph0 n).le
     · exact ⟨⟨_, (sub_lt_of_le h).2 hi⟩, aleph'_le.2 (le_add_sub _ _)⟩
   · exact fun i => aleph_le.2 (le_of_lt i.2)
 
-theorem aleph0_le_aleph' {o : Ordinal} : ℵ₀ ≤ aleph' o ↔ ω ≤ o := by rw [← aleph'_omega, aleph'_le]
+theorem aleph0_le_aleph' {o : Ordinal} : ℵ₀ ≤ aleph' o ↔ ω ≤ o := by rw [← aleph'_omega0, aleph'_le]
 
 theorem aleph0_le_aleph (o : Ordinal) : ℵ₀ ≤ aleph o := by
   rw [aleph_eq_aleph', aleph0_le_aleph']
@@ -322,7 +325,17 @@ theorem aleph0_lt_aleph_one : ℵ₀ < aleph 1 := by
 theorem countable_iff_lt_aleph_one {α : Type*} (s : Set α) : s.Countable ↔ #s < aleph 1 := by
   rw [← succ_aleph0, lt_succ_iff, le_aleph0_iff_set_countable]
 
+section deprecated
+
+set_option linter.deprecated false
+
+-- TODO: these lemmas should be stated in terms of the `ω` function and of an `IsInitial` predicate,
+-- neither of which currently exist.
+--
+-- They should also use `¬ BddAbove` instead of `Unbounded (· < ·)`.
+
 /-- Ordinals that are cardinals are unbounded. -/
+@[deprecated (since := "2024-09-24")]
 theorem ord_card_unbounded : Unbounded (· < ·) { b : Ordinal | b.card.ord = b } :=
   unbounded_lt_iff.2 fun a =>
     ⟨_,
@@ -330,10 +343,12 @@ theorem ord_card_unbounded : Unbounded (· < ·) { b : Ordinal | b.card.ord = b 
         dsimp
         rw [card_ord], (lt_ord_succ_card a).le⟩⟩
 
+@[deprecated (since := "2024-09-24")]
 theorem eq_aleph'_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) : ∃ a, (aleph' a).ord = o :=
   ⟨aleph'.symm o.card, by simpa using ho⟩
 
 /-- `ord ∘ aleph'` enumerates the ordinals that are cardinals. -/
+@[deprecated (since := "2024-09-24")]
 theorem ord_aleph'_eq_enum_card : ord ∘ aleph' = enumOrd { b : Ordinal | b.card.ord = b } := by
   rw [← eq_enumOrd _ ord_card_unbounded, range_eq_iff]
   exact
@@ -343,9 +358,11 @@ theorem ord_aleph'_eq_enum_card : ord ∘ aleph' = enumOrd { b : Ordinal | b.car
         rw [card_ord], fun b hb => eq_aleph'_of_eq_card_ord hb⟩⟩
 
 /-- Infinite ordinals that are cardinals are unbounded. -/
+@[deprecated (since := "2024-09-24")]
 theorem ord_card_unbounded' : Unbounded (· < ·) { b : Ordinal | b.card.ord = b ∧ ω ≤ b } :=
   (unbounded_lt_inter_le ω).2 ord_card_unbounded
 
+@[deprecated (since := "2024-09-24")]
 theorem eq_aleph_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) (ho' : ω ≤ o) :
     ∃ a, (aleph a).ord = o := by
   cases' eq_aleph'_of_eq_card_ord ho with a ha
@@ -354,6 +371,7 @@ theorem eq_aleph_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) (ho' : ω �
   rwa [← aleph0_le_aleph', ← ord_le_ord, ha, ord_aleph0]
 
 /-- `ord ∘ aleph` enumerates the infinite ordinals that are cardinals. -/
+@[deprecated (since := "2024-09-24")]
 theorem ord_aleph_eq_enum_card :
     ord ∘ aleph = enumOrd { b : Ordinal | b.card.ord = b ∧ ω ≤ b } := by
   rw [← eq_enumOrd _ ord_card_unbounded']
@@ -363,6 +381,8 @@ theorem ord_aleph_eq_enum_card :
   · rw [Function.comp_apply, card_ord]
   · rw [← ord_aleph0, Function.comp_apply, ord_le_ord]
     exact aleph0_le_aleph _
+
+end deprecated
 
 end aleph
 
@@ -783,8 +803,8 @@ protected theorem ciSup_add (hf : BddAbove (range f)) (c : Cardinal.{v}) :
   refine le_antisymm ?_ (ciSup_le' this)
   have bdd : BddAbove (range (f · + c)) := ⟨_, forall_mem_range.mpr this⟩
   obtain hs | hs := lt_or_le (⨆ i, f i) ℵ₀
-  · obtain ⟨i, hi⟩ := exists_eq_of_iSup_eq_of_not_isLimit
-      f hf _ (fun h ↦ hs.not_le h.aleph0_le) rfl
+  · obtain ⟨i, hi⟩ := exists_eq_of_iSup_eq_of_not_isSuccLimit
+      f hf (not_isSuccLimit_of_lt_aleph0 hs) rfl
     exact hi ▸ le_ciSup bdd i
   rw [add_eq_max hs, max_le_iff]
   exact ⟨ciSup_mono bdd fun i ↦ self_le_add_right _ c,
@@ -812,8 +832,8 @@ protected theorem ciSup_mul (c : Cardinal.{v}) : (⨆ i, f i) * c = ⨆ i, f i *
   refine le_antisymm ?_ (ciSup_le' this)
   have bdd : BddAbove (range (f · * c)) := ⟨_, forall_mem_range.mpr this⟩
   obtain hs | hs := lt_or_le (⨆ i, f i) ℵ₀
-  · obtain ⟨i, hi⟩ := exists_eq_of_iSup_eq_of_not_isLimit
-      f hf _ (fun h ↦ hs.not_le h.aleph0_le) rfl
+  · obtain ⟨i, hi⟩ := exists_eq_of_iSup_eq_of_not_isSuccLimit
+      f hf (not_isSuccLimit_of_lt_aleph0 hs) rfl
     exact hi ▸ le_ciSup bdd i
   rw [mul_eq_max_of_aleph0_le_left hs h0, max_le_iff]
   obtain ⟨i, hi⟩ := exists_lt_of_lt_ciSup' (one_lt_aleph0.trans_le hs)
@@ -852,7 +872,7 @@ theorem add_nat_inj {α β : Cardinal} (n : ℕ) : α + n = β + n ↔ α = β :
 theorem add_one_inj {α β : Cardinal} : α + 1 = β + 1 ↔ α = β :=
   add_right_inj_of_lt_aleph0 one_lt_aleph0
 
-theorem add_le_add_iff_of_lt_aleph0 {α β γ : Cardinal} (γ₀ : γ < Cardinal.aleph0) :
+theorem add_le_add_iff_of_lt_aleph0 {α β γ : Cardinal} (γ₀ : γ < ℵ₀) :
     α + γ ≤ β + γ ↔ α ≤ β := by
   refine ⟨fun h => ?_, fun h => add_le_add_right h γ⟩
   contrapose h
@@ -1442,7 +1462,7 @@ scoped notation "ω_" o => ord <| aleph o
 -/
 scoped notation "ω₁" => ord <| aleph 1
 
-lemma omega_lt_omega1 : ω < ω₁ := ord_aleph0.symm.trans_lt (ord_lt_ord.mpr (aleph0_lt_aleph_one))
+lemma omega0_lt_omega1 : ω < ω₁ := ord_aleph0.symm.trans_lt (ord_lt_ord.mpr (aleph0_lt_aleph_one))
 
 section OrdinalIndices
 /-!
