@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Minchao Wu
+Authors: Kim Morrison, Minchao Wu
 -/
 import Mathlib.Order.BoundedOrder
 
@@ -41,18 +41,18 @@ instance decidableEq (α β : Type*) [DecidableEq α] [DecidableEq β] : Decidab
 instance inhabited (α β : Type*) [Inhabited α] [Inhabited β] : Inhabited (α ×ₗ β) :=
   instInhabitedProd
 
-/-- Dictionary / lexicographic ordering on pairs.  -/
+/-- Dictionary / lexicographic ordering on pairs. -/
 instance instLE (α β : Type*) [LT α] [LE β] : LE (α ×ₗ β) where le := Prod.Lex (· < ·) (· ≤ ·)
 
 instance instLT (α β : Type*) [LT α] [LT β] : LT (α ×ₗ β) where lt := Prod.Lex (· < ·) (· < ·)
 
 theorem le_iff [LT α] [LE β] (a b : α × β) :
     toLex a ≤ toLex b ↔ a.1 < b.1 ∨ a.1 = b.1 ∧ a.2 ≤ b.2 :=
-  Prod.lex_def (· < ·) (· ≤ ·)
+  Prod.lex_def
 
 theorem lt_iff [LT α] [LT β] (a b : α × β) :
     toLex a < toLex b ↔ a.1 < b.1 ∨ a.1 = b.1 ∧ a.2 < b.2 :=
-  Prod.lex_def (· < ·) (· < ·)
+  Prod.lex_def
 
 example (x : α) (y : β) : toLex (x, y) = toLex (x, y) := rfl
 

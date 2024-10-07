@@ -108,7 +108,7 @@ Also see `IsLocalAtTarget.mk'` for a convenient constructor.
 class IsLocalAtTarget (P : MorphismProperty Scheme) : Prop where
   /-- `P` respects isomorphisms. -/
   respectsIso : P.RespectsIso := by infer_instance
-  /-- `P` holds for `f ∣_ U` for an open cover `U` of `Y` if and only if `P` holds for `f`.  -/
+  /-- `P` holds for `f ∣_ U` for an open cover `U` of `Y` if and only if `P` holds for `f`. -/
   iff_of_openCover' :
     ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.OpenCover.{u} Y),
       P f ↔ ∀ i, P (𝒰.pullbackHom f i)
@@ -186,7 +186,7 @@ Also see `IsLocalAtSource.mk'` for a convenient constructor.
 class IsLocalAtSource (P : MorphismProperty Scheme) : Prop where
   /-- `P` respects isomorphisms. -/
   respectsIso : P.RespectsIso := by infer_instance
-  /-- `P` holds for `f ∣_ U` for an open cover `U` of `Y` if and only if `P` holds for `f`.  -/
+  /-- `P` holds for `f ∣_ U` for an open cover `U` of `Y` if and only if `P` holds for `f`. -/
   iff_of_openCover' :
     ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) (𝒰 : Scheme.OpenCover.{u} X),
       P f ↔ ∀ i, P (𝒰.map i ≫ f)
@@ -326,7 +326,7 @@ theorem respectsIso_mk {P : AffineTargetMorphismProperty}
     (h₂ : ∀ {X Y Z} (e : Y ≅ Z) (f : X ⟶ Y) [h : IsAffine Y],
       P f → @P _ _ (f ≫ e.hom) (isAffine_of_isIso e.inv)) :
     P.toProperty.RespectsIso := by
-  constructor
+  apply MorphismProperty.RespectsIso.mk
   · rintro X Y Z e f ⟨a, h⟩; exact ⟨a, h₁ e f h⟩
   · rintro X Y Z e f ⟨a, h⟩; exact ⟨isAffine_of_isIso e.inv, h₂ e f h⟩
 
@@ -398,7 +398,7 @@ theorem of_targetAffineLocally_of_isPullback
 
 instance (P : AffineTargetMorphismProperty) [P.toProperty.RespectsIso] :
     (targetAffineLocally P).RespectsIso := by
-  constructor
+  apply MorphismProperty.RespectsIso.mk
   · introv H U
     rw [morphismRestrict_comp, P.cancel_left_of_respectsIso]
     exact H U

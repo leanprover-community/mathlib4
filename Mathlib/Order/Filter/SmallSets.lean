@@ -109,7 +109,7 @@ theorem smallSets_principal (s : Set α) : (𝓟 s).smallSets = 𝓟 (𝒫 s) :=
 theorem smallSets_comap_eq_comap_image (l : Filter β) (f : α → β) :
     (comap f l).smallSets = comap (image f) l.smallSets := by
   refine (gc_map_comap _).u_comm_of_l_comm (gc_map_comap _) bind_smallSets_gc bind_smallSets_gc ?_
-  simp [Function.comp, map_bind, bind_map]
+  simp [Function.comp_def, map_bind, bind_map]
 
 theorem smallSets_comap (l : Filter β) (f : α → β) :
     (comap f l).smallSets = l.lift' (powerset ∘ preimage f) :=

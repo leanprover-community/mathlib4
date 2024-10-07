@@ -90,7 +90,7 @@ theorem lower_ne_upper (i) : I.lower i ≠ I.upper i :=
   (I.lower_lt_upper i).ne
 
 instance : Membership (ι → ℝ) (Box ι) :=
-  ⟨fun x I ↦ ∀ i, x i ∈ Ioc (I.lower i) (I.upper i)⟩
+  ⟨fun I x ↦ ∀ i, x i ∈ Ioc (I.lower i) (I.upper i)⟩
 
 -- Porting note: added
 /-- The set of points in this box: this is the product of half-open intervals `(lower i, upper i]`,
@@ -140,15 +140,12 @@ theorem le_def : I ≤ J ↔ ∀ x ∈ I, x ∈ J := Iff.rfl
 
 theorem le_TFAE : List.TFAE [I ≤ J, (I : Set (ι → ℝ)) ⊆ J,
     Icc I.lower I.upper ⊆ Icc J.lower J.upper, J.lower ≤ I.lower ∧ I.upper ≤ J.upper] := by
-  tfae_have 1 ↔ 2
-  · exact Iff.rfl
+  tfae_have 1 ↔ 2 := Iff.rfl
   tfae_have 2 → 3
-  · intro h
-    simpa [coe_eq_pi, closure_pi_set, lower_ne_upper] using closure_mono h
-  tfae_have 3 ↔ 4
-  · exact Icc_subset_Icc_iff I.lower_le_upper
+  | h => by simpa [coe_eq_pi, closure_pi_set, lower_ne_upper] using closure_mono h
+  tfae_have 3 ↔ 4 := Icc_subset_Icc_iff I.lower_le_upper
   tfae_have 4 → 2
-  · exact fun h x hx i ↦ Ioc_subset_Ioc (h.1 i) (h.2 i) (hx i)
+  | h, x, hx, i => Ioc_subset_Ioc (h.1 i) (h.2 i) (hx i)
   tfae_finish
 
 variable {I J}
@@ -275,7 +272,7 @@ theorem withBotCoe_inj {I J : WithBot (Box ι)} : (I : Set (ι → ℝ)) = J ↔
 
 /-- Make a `WithBot (Box ι)` from a pair of corners `l u : ι → ℝ`. If `l i < u i` for all `i`,
 then the result is `⟨l, u, _⟩ : Box ι`, otherwise it is `⊥`. In any case, the result interpreted
-as a set in `ι → ℝ` is the set `{x : ι → ℝ | ∀ i, x i ∈ Ioc (l i) (u i)}`.  -/
+as a set in `ι → ℝ` is the set `{x : ι → ℝ | ∀ i, x i ∈ Ioc (l i) (u i)}`. -/
 def mk' (l u : ι → ℝ) : WithBot (Box ι) :=
   if h : ∀ i, l i < u i then ↑(⟨l, u, h⟩ : Box ι) else ⊥
 
@@ -451,7 +448,7 @@ theorem distortion_eq_of_sub_eq_div {I J : Box ι} {r : ℝ}
     rw [← h] at this
     exact this.not_lt (sub_pos.2 <| I.lower_lt_upper i)
   have hn0 := (map_ne_zero Real.nnabs).2 this.ne'
-  simp_rw [NNReal.finset_sup_div, div_div_div_cancel_right _ hn0]
+  simp_rw [NNReal.finset_sup_div, div_div_div_cancel_right₀ hn0]
 
 theorem nndist_le_distortion_mul (I : Box ι) (i : ι) :
     nndist I.lower I.upper ≤ I.distortion * nndist (I.lower i) (I.upper i) :=

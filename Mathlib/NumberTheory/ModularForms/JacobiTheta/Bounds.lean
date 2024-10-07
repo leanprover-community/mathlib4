@@ -7,7 +7,7 @@ Authors: David Loeffler
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
 
 /-!
-# Asymptotic bounds for Jacobi theta functions
+# Asymptotic bounds for Jacobi theta functions
 
 The goal of this file is to establish some technical lemmas about the asymptotics of the sums
 

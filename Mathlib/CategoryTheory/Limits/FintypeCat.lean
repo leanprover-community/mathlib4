@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.CategoryTheory.FintypeCat
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathlib.CategoryTheory.Limits.Types
-import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.Data.Finite.Basic
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+import Mathlib.CategoryTheory.Limits.Shapes.Types
 
 /-!
 # (Co)limits in the category of finite types
@@ -60,6 +58,34 @@ noncomputable instance inclusionPreservesFiniteLimits :
 noncomputable instance : PreservesFiniteLimits (forget FintypeCat) :=
   FintypeCat.inclusionPreservesFiniteLimits
 
+/-- The categorical product of a finite family in `FintypeCat` is equivalent to the product
+as types. -/
+noncomputable def productEquiv {ι : Type*} [Finite ι] (X : ι → FintypeCat.{u}) :
+    (∏ᶜ X : FintypeCat) ≃ ∀ i, X i :=
+  letI : Fintype ι := Fintype.ofFinite _
+  haveI : Small.{u} ι :=
+    ⟨ULift (Fin (Fintype.card ι)), ⟨(Fintype.equivFin ι).trans Equiv.ulift.symm⟩⟩
+  let is₁ : FintypeCat.incl.obj (∏ᶜ fun i ↦ X i) ≅ (∏ᶜ fun i ↦ X i : Type u) :=
+    PreservesProduct.iso FintypeCat.incl (fun i ↦ X i)
+  let is₂ : (∏ᶜ fun i ↦ X i : Type u) ≅ Shrink.{u} (∀ i, X i) :=
+    Types.Small.productIso (fun i ↦ X i)
+  let e : (∀ i, X i) ≃ Shrink.{u} (∀ i, X i) := equivShrink _
+  (equivEquivIso.symm is₁).trans ((equivEquivIso.symm is₂).trans e.symm)
+
+@[simp]
+lemma productEquiv_apply {ι : Type*} [Finite ι] (X : ι → FintypeCat.{u})
+    (x : (∏ᶜ X : FintypeCat)) (i : ι) : productEquiv X x i = Pi.π X i x := by
+  simpa [productEquiv] using (elementwise_of% piComparison_comp_π FintypeCat.incl X i) x
+
+@[simp]
+lemma productEquiv_symm_comp_π_apply {ι : Type*} [Finite ι] (X : ι → FintypeCat.{u})
+    (x : ∀ i, X i) (i : ι) : Pi.π X i ((productEquiv X).symm x) = x i := by
+  rw [← productEquiv_apply, Equiv.apply_symm_apply]
+
+instance nonempty_pi_of_nonempty {ι : Type*} [Finite ι] (X : ι → FintypeCat.{u})
+    [∀ i, Nonempty (X i)] : Nonempty (∏ᶜ X : FintypeCat.{u}) :=
+  (Equiv.nonempty_congr <| productEquiv X).mpr inferInstance
+
 /-- Any functor from a finite category to Types that only involves finite objects,
 has a finite colimit. -/
 noncomputable instance finiteColimitOfFiniteDiagram {J : Type} [SmallCategory J] [FinCategory J]
@@ -92,5 +118,11 @@ noncomputable instance inclusionPreservesFiniteColimits :
 /- Help typeclass inference to infer preservation of finite colimits for the forgtful functor. -/
 noncomputable instance : PreservesFiniteColimits (forget FintypeCat) :=
   FintypeCat.inclusionPreservesFiniteColimits
+
+lemma jointly_surjective {J : Type*} [Category J] [FinCategory J]
+    (F : J ⥤ FintypeCat.{u}) (t : Cocone F) (h : IsColimit t) (x : t.pt) :
+    ∃ j y, t.ι.app j y = x :=
+  let hs := isColimitOfPreserves FintypeCat.incl.{u} h
+  Types.jointly_surjective (F ⋙ FintypeCat.incl) hs x
 
 end CategoryTheory.Limits.FintypeCat

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 import Mathlib.Algebra.Category.AlgebraCat.Basic
@@ -45,24 +45,19 @@ instance Ring_of_Mon_ (A : Mon_ (ModuleCat.{u} R)) : Ring A.X :=
     one := A.one (1 : R)
     mul := fun x y => A.mul (x ⊗ₜ y)
     one_mul := fun x => by
-      have := LinearMap.congr_fun A.one_mul ((1 : R) ⊗ₜ x)
-      convert this
+      convert LinearMap.congr_fun A.one_mul ((1 : R) ⊗ₜ x)
       rw [MonoidalCategory.leftUnitor_hom_apply, one_smul]
     mul_one := fun x => by
-      have := LinearMap.congr_fun A.mul_one (x ⊗ₜ (1 : R))
-      convert this
+      convert LinearMap.congr_fun A.mul_one (x ⊗ₜ (1 : R))
       erw [MonoidalCategory.leftUnitor_hom_apply, one_smul]
     mul_assoc := fun x y z => by
-      have := LinearMap.congr_fun A.mul_assoc (x ⊗ₜ y ⊗ₜ z)
-      convert this
+      convert LinearMap.congr_fun A.mul_assoc (x ⊗ₜ y ⊗ₜ z)
     left_distrib := fun x y z => by
-      have := A.mul.map_add (x ⊗ₜ y) (x ⊗ₜ z)
-      convert this
+      convert A.mul.map_add (x ⊗ₜ y) (x ⊗ₜ z)
       rw [← TensorProduct.tmul_add]
       rfl
     right_distrib := fun x y z => by
-      have := A.mul.map_add (x ⊗ₜ z) (y ⊗ₜ z)
-      convert this
+      convert A.mul.map_add (x ⊗ₜ z) (y ⊗ₜ z)
       rw [← TensorProduct.add_tmul]
       rfl
     zero_mul := fun x => show A.mul _ = 0 by

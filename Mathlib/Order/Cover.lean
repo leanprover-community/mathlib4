@@ -80,7 +80,7 @@ theorem wcovBy_congr_right (hab : AntisymmRel (· ≤ ·) a b) : c ⩿ a ↔ c �
 
 /-- If `a ≤ b`, then `b` does not cover `a` iff there's an element in between. -/
 theorem not_wcovBy_iff (h : a ≤ b) : ¬a ⩿ b ↔ ∃ c, a < c ∧ c < b := by
-  simp_rw [WCovBy, h, true_and_iff, not_forall, exists_prop, not_not]
+  simp_rw [WCovBy, h, true_and, not_forall, exists_prop, not_not]
 
 instance WCovBy.isRefl : IsRefl α (· ⩿ ·) :=
   ⟨WCovBy.refl⟩
@@ -126,6 +126,19 @@ theorem ofDual_wcovBy_ofDual_iff {a b : αᵒᵈ} : ofDual a ⩿ ofDual b ↔ b 
 alias ⟨_, WCovBy.toDual⟩ := toDual_wcovBy_toDual_iff
 
 alias ⟨_, WCovBy.ofDual⟩ := ofDual_wcovBy_ofDual_iff
+
+theorem OrderEmbedding.wcovBy_of_apply {α β : Type*} [Preorder α] [Preorder β]
+    (f : α ↪o β) {x y : α} (h : f x ⩿ f y) : x ⩿ y := by
+  use f.le_iff_le.1 h.1
+  intro a
+  rw [← f.lt_iff_lt, ← f.lt_iff_lt]
+  apply h.2
+
+theorem OrderIso.map_wcovBy {α β : Type*} [Preorder α] [Preorder β]
+    (f : α ≃o β) {x y : α} : f x ⩿ f y ↔ x ⩿ y := by
+  use f.toOrderEmbedding.wcovBy_of_apply
+  conv_lhs => rw [← f.symm_apply_apply x, ← f.symm_apply_apply y]
+  exact f.symm.toOrderEmbedding.wcovBy_of_apply
 
 end Preorder
 
@@ -195,7 +208,7 @@ theorem CovBy.lt (h : a ⋖ b) : a < b :=
 
 /-- If `a < b`, then `b` does not cover `a` iff there's an element in between. -/
 theorem not_covBy_iff (h : a < b) : ¬a ⋖ b ↔ ∃ c, a < c ∧ c < b := by
-  simp_rw [CovBy, h, true_and_iff, not_forall, exists_prop, not_not]
+  simp_rw [CovBy, h, true_and, not_forall, exists_prop, not_not]
 
 alias ⟨exists_lt_lt_of_not_covBy, _⟩ := not_covBy_iff
 
@@ -312,6 +325,19 @@ theorem apply_covBy_apply_iff {E : Type*} [EquivLike E α β] [OrderIsoClass E �
 
 theorem covBy_of_eq_or_eq (hab : a < b) (h : ∀ c, a ≤ c → c ≤ b → c = a ∨ c = b) : a ⋖ b :=
   ⟨hab, fun c ha hb => (h c ha.le hb.le).elim ha.ne' hb.ne⟩
+
+theorem OrderEmbedding.covBy_of_apply {α β : Type*} [Preorder α] [Preorder β]
+    (f : α ↪o β) {x y : α} (h : f x ⋖ f y) : x ⋖ y := by
+  use f.lt_iff_lt.1 h.1
+  intro a
+  rw [← f.lt_iff_lt, ← f.lt_iff_lt]
+  apply h.2
+
+theorem OrderIso.map_covBy {α β : Type*} [Preorder α] [Preorder β]
+    (f : α ≃o β) {x y : α} : f x ⋖ f y ↔ x ⋖ y := by
+  use f.toOrderEmbedding.covBy_of_apply
+  conv_lhs => rw [← f.symm_apply_apply x, ← f.symm_apply_apply y]
+  exact f.symm.toOrderEmbedding.covBy_of_apply
 
 end Preorder
 

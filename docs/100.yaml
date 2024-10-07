@@ -18,6 +18,12 @@
   title  : Prime Number Theorem
 6:
   title  : Gödel’s Incompleteness Theorem
+  author : Shogo Saito
+  links  :
+    results :
+    - First: https://github.com/FormalizedFormalLogic/Incompleteness/blob/master/Incompleteness/Arith/First.lean
+    - Second: https://github.com/FormalizedFormalLogic/Incompleteness/blob/master/Incompleteness/Arith/Second.lean
+    website: https://formalizedformallogic.github.io/Book/
 7:
   title  : Law of Quadratic Reciprocity
   decls  :
@@ -177,7 +183,7 @@
 49:
   title  : The Cayley-Hamilton Theorem
   decl   : Matrix.aeval_self_charpoly
-  author : Scott Morrison
+  author : Kim Morrison
 50:
   title  : The Number of Platonic Solids
 51:
@@ -339,7 +345,7 @@
   title  : Morley’s Theorem
 85:
   title  : Divisibility by 3 Rule
-  author : Scott Morrison
+  author : Kim Morrison
   decls  :
     - Nat.three_dvd_iff
 86:

@@ -50,7 +50,7 @@ local elab "eta_helper " t:term : term => do
     let lhs := (mkAppN lhs xs).headBeta
     mkForallFVars xs <|← mkEq lhs rhs
 
-/-- `val_proj x` elabs to the *primitive projection* `@x.val`.  -/
+/-- `val_proj x` elabs to the *primitive projection* `@x.val`. -/
 local elab "val_proj " e:term : term => do
   let e ← elabTerm (← `(($e : Subtype _))) none
   return mkProj ``Subtype 0 e

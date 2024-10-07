@@ -100,7 +100,7 @@ def inducedTopology : GrothendieckTopology C where
 
 @[simp]
 lemma mem_inducedTopology_sieves_iff {X : C} (S : Sieve X) :
-    S ∈ (G.inducedTopology K).sieves X ↔ (S.functorPushforward G) ∈ K.sieves (G.obj X) :=
+    S ∈ (G.inducedTopology K) X ↔ (S.functorPushforward G) ∈ K (G.obj X) :=
   Iff.rfl
 
 /-- `G` is cover-lifting wrt the induced topology. -/

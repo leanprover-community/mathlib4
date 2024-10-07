@@ -7,12 +7,13 @@ import Mathlib.FieldTheory.IntermediateField.Basic
 import Mathlib.RingTheory.Algebraic
 import Mathlib.FieldTheory.Tower
 import Mathlib.FieldTheory.Minpoly.Basic
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 # Results on finite dimensionality and algebraicity of intermediate fields.
 -/
 
-open FiniteDimensional
+open Module
 
 variable {K : Type*} {L : Type*} [Field K] [Field L] [Algebra K L]
   {S : IntermediateField K L}
@@ -23,11 +24,8 @@ section FiniteDimensional
 
 variable (F E : IntermediateField K L)
 
-instance finiteDimensional_left [FiniteDimensional K L] : FiniteDimensional K F :=
-  left K F L
-
-instance finiteDimensional_right [FiniteDimensional K L] : FiniteDimensional F L :=
-  right K F L
+instance finiteDimensional_left [FiniteDimensional K L] : FiniteDimensional K F := .left K F L
+instance finiteDimensional_right [FiniteDimensional K L] : FiniteDimensional F L := .right K F L
 
 @[simp]
 theorem rank_eq_rank_subalgebra : Module.rank K F.toSubalgebra = Module.rank K F :=
@@ -96,7 +94,7 @@ theorem minpoly_eq (x : S) : minpoly K x = minpoly K (x : L) :=
 
 end IntermediateField
 
-/-- If `L/K` is algebraic, the `K`-subalgebras of `L` are all fields.  -/
+/-- If `L/K` is algebraic, the `K`-subalgebras of `L` are all fields. -/
 def subalgebraEquivIntermediateField [Algebra.IsAlgebraic K L] :
     Subalgebra K L ≃o IntermediateField K L where
   toFun S := S.toIntermediateField fun x hx => S.inv_mem_of_algebraic

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johannes Hölzl, Yury Kudryashov, Patrick Massot
 -/
 import Mathlib.Algebra.GeomSum
-import Mathlib.Order.Filter.Archimedean
+import Mathlib.Order.Filter.AtTopBot.Archimedean
 import Mathlib.Order.Iterate
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.InfiniteSum.Real
@@ -119,7 +119,7 @@ theorem tendsto_natCast_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [Topolo
 
 theorem tendsto_add_one_pow_atTop_atTop_of_pos [LinearOrderedSemiring α] [Archimedean α] {r : α}
     (h : 0 < r) : Tendsto (fun n : ℕ ↦ (r + 1) ^ n) atTop atTop :=
-  tendsto_atTop_atTop_of_monotone' (fun _ _ ↦ pow_le_pow_right <| le_add_of_nonneg_left h.le) <|
+  tendsto_atTop_atTop_of_monotone' (pow_right_mono₀ <| le_add_of_nonneg_left h.le) <|
     not_bddAbove_iff.2 fun _ ↦ Set.exists_range_iff.2 <| add_one_pow_unbounded_of_pos _ h
 
 theorem tendsto_pow_atTop_atTop_of_one_lt [LinearOrderedRing α] [Archimedean α] {r : α}
@@ -252,13 +252,13 @@ protected theorem ENNReal.tendsto_pow_atTop_nhds_top_iff {r : ℝ≥0∞} :
     specialize h_tends (Ioi_mem_nhds one_lt_top)
     simp only [Filter.mem_map, mem_atTop_sets, ge_iff_le, Set.mem_preimage, Set.mem_Ioi] at h_tends
     obtain ⟨n, hn⟩ := h_tends
-    exact lt_irrefl _ <| lt_of_lt_of_le (hn n le_rfl) <| pow_le_one n (zero_le _) r_le_one
+    exact lt_irrefl _ <| lt_of_lt_of_le (hn n le_rfl) <| pow_le_one₀ (zero_le _) r_le_one
   · intro r_gt_one
     have obs := @Tendsto.inv ℝ≥0∞ ℕ _ _ _ (fun n ↦ (r⁻¹)^n) atTop 0
     simp only [ENNReal.tendsto_pow_atTop_nhds_zero_iff, inv_zero] at obs
     simpa [← ENNReal.inv_pow] using obs <| ENNReal.inv_lt_one.mpr r_gt_one
 
-/-! ### Geometric series-/
+/-! ### Geometric series -/
 
 
 section Geometric
@@ -360,7 +360,7 @@ theorem ENNReal.tsum_geometric (r : ℝ≥0∞) : ∑' n : ℕ, r ^ n = (1 - r)�
       (ENNReal.exists_nat_gt (lt_top_iff_ne_top.1 ha)).imp fun n hn ↦ lt_of_lt_of_le hn ?_
     calc
       (n : ℝ≥0∞) = ∑ i ∈ range n, 1 := by rw [sum_const, nsmul_one, card_range]
-      _ ≤ ∑ i ∈ range n, r ^ i := by gcongr; apply one_le_pow_of_one_le' hr
+      _ ≤ ∑ i ∈ range n, r ^ i := by gcongr; apply one_le_pow₀ hr
 
 theorem ENNReal.tsum_geometric_add_one (r : ℝ≥0∞) : ∑' n : ℕ, r ^ (n + 1) = r * (1 - r)⁻¹ := by
   simp only [_root_.pow_succ', ENNReal.tsum_mul_left, ENNReal.tsum_geometric]
@@ -513,7 +513,7 @@ theorem summable_one_div_pow_of_le {m : ℝ} {f : ℕ → ℕ} (hm : 1 < m) (fi 
       (summable_geometric_of_lt_one (one_div_nonneg.mpr (zero_le_one.trans hm.le))
         ((one_div_lt (zero_lt_one.trans hm) zero_lt_one).mpr (one_div_one.le.trans_lt hm)))
   rw [div_pow, one_pow]
-  refine (one_div_le_one_div ?_ ?_).mpr (pow_le_pow_right hm.le (fi a)) <;>
+  refine (one_div_le_one_div ?_ ?_).mpr (pow_right_mono₀ hm.le (fi a)) <;>
     exact pow_pos (zero_lt_one.trans hm) _
 
 /-! ### Positive sequences with small sums on countable types -/
@@ -654,12 +654,12 @@ theorem tendsto_nat_floor_mul_div_atTop {a : R} (ha : 0 ≤ a) :
   rw [sub_zero] at A
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le' A tendsto_const_nhds
   · refine eventually_atTop.2 ⟨1, fun x hx ↦ ?_⟩
-    simp only [le_div_iff (zero_lt_one.trans_le hx), _root_.sub_mul,
+    simp only [le_div_iff₀ (zero_lt_one.trans_le hx), _root_.sub_mul,
       inv_mul_cancel₀ (zero_lt_one.trans_le hx).ne']
     have := Nat.lt_floor_add_one (a * x)
     linarith
   · refine eventually_atTop.2 ⟨1, fun x hx ↦ ?_⟩
-    rw [div_le_iff (zero_lt_one.trans_le hx)]
+    rw [div_le_iff₀ (zero_lt_one.trans_le hx)]
     simp [Nat.floor_le (mul_nonneg ha (zero_le_one.trans hx))]
 
 theorem tendsto_nat_floor_div_atTop : Tendsto (fun x ↦ (⌊x⌋₊ : R) / x) atTop (𝓝 1) := by
@@ -672,10 +672,10 @@ theorem tendsto_nat_ceil_mul_div_atTop {a : R} (ha : 0 ≤ a) :
   rw [add_zero] at A
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds A
   · refine eventually_atTop.2 ⟨1, fun x hx ↦ ?_⟩
-    rw [le_div_iff (zero_lt_one.trans_le hx)]
+    rw [le_div_iff₀ (zero_lt_one.trans_le hx)]
     exact Nat.le_ceil _
   · refine eventually_atTop.2 ⟨1, fun x hx ↦ ?_⟩
-    simp [div_le_iff (zero_lt_one.trans_le hx), inv_mul_cancel₀ (zero_lt_one.trans_le hx).ne',
+    simp [div_le_iff₀ (zero_lt_one.trans_le hx), inv_mul_cancel₀ (zero_lt_one.trans_le hx).ne',
       (Nat.ceil_lt_add_one (mul_nonneg ha (zero_le_one.trans hx))).le, add_mul]
 
 theorem tendsto_nat_ceil_div_atTop : Tendsto (fun x ↦ (⌈x⌉₊ : R) / x) atTop (𝓝 1) := by

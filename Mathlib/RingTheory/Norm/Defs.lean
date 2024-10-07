@@ -41,7 +41,7 @@ variable {K L F : Type*} [Field K] [Field L] [Field F]
 variable [Algebra K L] [Algebra K F]
 variable {ι : Type w}
 
-open FiniteDimensional
+open Module
 
 open LinearMap
 

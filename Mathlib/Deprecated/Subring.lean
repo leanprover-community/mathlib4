@@ -97,14 +97,15 @@ theorem exists_list_of_mem_closure {a : R} (h : a ∈ closure s) :
     ∃ L : List (List R), (∀ l ∈ L, ∀ x ∈ l, x ∈ s ∨ x = (-1 : R)) ∧ (L.map List.prod).sum = a :=
   AddGroup.InClosure.recOn h
     fun {x} hx ↦ match x, Monoid.exists_list_of_mem_closure hx with
-    | _, ⟨L, h1, rfl⟩ => ⟨[L], List.forall_mem_singleton.2 fun r hr ↦ Or.inl (h1 r hr), zero_add _⟩
+    | _, ⟨L, h1, rfl⟩ =>
+      ⟨[L], List.forall_mem_singleton.2 fun r hr ↦ Or.inl (h1 r hr), List.sum_singleton⟩
     ⟨[], List.forall_mem_nil _, rfl⟩
     fun {b} _ ih ↦ match b, ih with
     | _, ⟨L1, h1, rfl⟩ =>
       ⟨L1.map (List.cons (-1)),
         fun L2 h2 ↦ match L2, List.mem_map.1 h2 with
         | _, ⟨L3, h3, rfl⟩ => List.forall_mem_cons.2 ⟨Or.inr rfl, h1 L3 h3⟩, by
-        simp only [List.map_map, (· ∘ ·), List.prod_cons, neg_one_mul]
+        simp only [List.map_map, Function.comp_def, List.prod_cons, neg_one_mul]
         refine List.recOn L1 neg_zero.symm fun hd tl ih ↦ ?_
         rw [List.map_cons, List.sum_cons, ih, List.map_cons, List.sum_cons, neg_add]⟩
     fun {r1 r2} _ _ ih1 ih2 ↦ match r1, r2, ih1, ih2 with
