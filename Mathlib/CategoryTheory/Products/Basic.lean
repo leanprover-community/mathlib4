@@ -296,7 +296,7 @@ end Equivalence
 /-- `F.flip` composed with evaluation is the same as evaluating `F`. -/
 @[simps!]
 def flipCompEvaluation (F : A ⥤ B ⥤ C) (a) : F.flip ⋙ (evaluation _ _).obj a ≅ F.obj a :=
-  NatIso.ofComponents fun b => eqToIso rfl
+  NatIso.ofComponents fun b => Iso.refl _
 
 theorem flip_comp_evaluation (F : A ⥤ B ⥤ C) (a) : F.flip ⋙ (evaluation _ _).obj a = F.obj a :=
   rfl
@@ -304,7 +304,7 @@ theorem flip_comp_evaluation (F : A ⥤ B ⥤ C) (a) : F.flip ⋙ (evaluation _ 
 /-- `F` composed with evaluation is the same as evaluating `F.flip`. -/
 @[simps!]
 def compEvaluation (F : A ⥤ B ⥤ C) (b) : F ⋙ (evaluation _ _).obj b ≅ F.flip.obj b :=
-  NatIso.ofComponents fun a => eqToIso rfl
+  NatIso.ofComponents fun a => Iso.refl _
 
 theorem comp_evaluation (F : A ⥤ B ⥤ C) (b) : F ⋙ (evaluation _ _).obj b = F.flip.obj b :=
   rfl
