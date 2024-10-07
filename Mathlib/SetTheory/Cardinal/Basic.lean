@@ -268,6 +268,12 @@ theorem lift_uzero (a : Cardinal.{u}) : lift.{0} a = a :=
 theorem lift_lift.{u_1} (a : Cardinal.{u_1}) : lift.{w} (lift.{v} a) = lift.{max v w} a :=
   inductionOn a fun _ => (Equiv.ulift.trans <| Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
 
+-- Porting note: simpNF is not happy with universe levels.
+@[simp, nolint simpNF]
+theorem lift_umax_eq {a : Cardinal.{u}} {b : Cardinal.{v}} :
+    lift.{max v w} a = lift.{max u w} b ↔ lift.{v} a = lift.{u} b := by
+  rw [← lift_lift.{v, w, u}, ← lift_lift.{u, w, v}, lift_inj]
+
 @[simp]
 lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s) := by
   rw [← mk_uLift, Cardinal.eq]
@@ -395,6 +401,8 @@ lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s)
   have : Function.Bijective f :=
     ULift.up_bijective.comp (restrictPreimage_bijective _ (ULift.down_bijective))
   exact Equiv.ofBijective f this
+
+/-! ### Basic cardinals -/
 
 instance : Zero Cardinal.{u} :=
   -- `PEmpty` might be more canonical, but this is convenient for defeq with natCast
@@ -1186,12 +1194,6 @@ theorem lift_succ (a) : lift.{v, u} (succ a) = succ (lift.{v, u} a) :=
       rw [lt_succ_iff, ← lift_le, e] at h
       exact h.not_lt (lt_succ _))
     (succ_le_of_lt <| lift_lt.2 <| lt_succ a)
-
--- Porting note: simpNF is not happy with universe levels.
-@[simp, nolint simpNF]
-theorem lift_umax_eq {a : Cardinal.{u}} {b : Cardinal.{v}} :
-    lift.{max v w} a = lift.{max u w} b ↔ lift.{v} a = lift.{u} b := by
-  rw [← lift_lift.{v, w, u}, ← lift_lift.{u, w, v}, lift_inj]
 
 /-- The lift of a supremum is the supremum of the lifts. -/
 theorem lift_sSup {s : Set Cardinal} (hs : BddAbove s) :
