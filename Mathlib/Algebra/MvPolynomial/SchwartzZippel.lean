@@ -24,6 +24,8 @@ of the field. This lemma is useful as a probabilistic polynomial identity test.
 
 * Generalize to polynomials over arbitrary variable types
 * Write a tactic to apply this lemma to a given polynomial
+* Can the RHS be strengthened to `p.support.sup fun s ↦  ∑ i, s i / #S i`? Namely, can the sup
+  inside the `p.degreeOf` be pulled outside?
 
 ## References
 
