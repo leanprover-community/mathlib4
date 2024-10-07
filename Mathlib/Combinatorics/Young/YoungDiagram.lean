@@ -478,29 +478,82 @@ partitions of natural numbers.
 
 -/
 
-def isDisjointUnion (μ : YoungDiagram) (c : ℕ × ℕ) : c ∈ μ.cells ↔ ∃ i < μ.colLen 0, c ∈ μ.row i :=
-    by
-  simp only [mem_cells]
-  sorry
+def length (μ : YoungDiagram) : ℕ := μ.colLen 0
 
-def toFinsupp (μ : YoungDiagram) : ℕ →₀ ℕ where
-  support := Finset.range (μ.colLen 0)
-  toFun i := μ.rowLen i
-  mem_support_toFun i := by simp [Finset.mem_range, ← mem_iff_lt_colLen, rowLen]
+lemma rows_disjoint (μ : YoungDiagram) : Set.PairwiseDisjoint (Finset.range μ.length) μ.row := by
+  intro i _ j _ hij s hsi hsj x hx
+  rw [← (mem_row_iff.mp (hsi hx)).right, ← (mem_row_iff.mp (hsj hx)).right] at hij
+  contradiction
+
+theorem is_disjoint_union_rows (μ : YoungDiagram) : μ.cells
+    = Finset.disjiUnion (Finset.range μ.length) μ.row (rows_disjoint μ) := by
+  ext ⟨i, j⟩
+  simp only [mem_cells, Finset.disjiUnion_eq_biUnion, Finset.mem_biUnion, Finset.mem_range]
+  constructor
+  · intro h
+    use i
+    constructor
+    · exact mem_iff_lt_colLen.mp (up_left_mem μ (le_refl i) (zero_le j) h)
+    · exact mem_row_iff.mpr ⟨h, rfl⟩
+  · intro ⟨a, ha⟩
+    exact (mem_row_iff.mp ha.2).1
 
 def toPartition (μ : YoungDiagram) : Nat.Partition μ.card where
-  parts := (Finset.range (μ.colLen 0)).val.map μ.rowLen
+  parts := (Finset.range μ.length).val.map μ.rowLen
   parts_pos := by
     intro i hi
     simp only [Multiset.mem_map, Finset.mem_val] at hi
     obtain ⟨j, hj, rfl⟩ := hi
-    rw [Finset.mem_range, ← mem_iff_lt_colLen] at hj
+    rw [Finset.mem_range, YoungDiagram.length, ← mem_iff_lt_colLen] at hj
     exact mem_iff_lt_rowLen.mp hj
   parts_sum := by
-    simp
-    rw [YoungDiagram.card, Finset.card]
+    simp_rw [YoungDiagram.card, rowLen_eq_card, is_disjoint_union_rows]
+    exact Eq.symm (Finset.card_disjiUnion (Finset.range μ.length) μ.row (rows_disjoint μ))
 
-    sorry
+def cells_ofPartition {n : ℕ} (p : Nat.Partition n) : Set (ℕ × ℕ) :=
+  { (i, j) : ℕ × ℕ | j < Multiset.card (Multiset.filter (fun s ↦ (s > i)) p.parts) }
+
+instance {n : ℕ} {p : Nat.Partition n} : Finite (cells_ofPartition p) := by
+  apply Finite.of_injective (fun x ↦ (⟨⟨x.1.1, ?_⟩,⟨x.1.2, ?_⟩⟩ :
+      (Finset.range n) × (Finset.range n)))
+  · intro ⟨⟨i₁,j₁⟩, h₁⟩ ⟨⟨i₂,j₂⟩, h₂⟩
+    simp
+  all_goals rw [Finset.mem_range]; have := x.2; simp_rw [cells_ofPartition, Set.mem_setOf] at this
+  · have : 0 < Multiset.card (Multiset.filter (fun s ↦ s > x.1.1) p.parts) := by
+      apply lt_of_le_of_lt _ this
+      simp
+    rw [Multiset.card_pos] at this
+    apply Multiset.exists_mem_of_ne_zero at this
+    obtain ⟨s, hs⟩ := this
+    simp only [Multiset.mem_filter, Multiset.mem_map] at hs
+    obtain ⟨hsp, hsi⟩ := hs
+    apply lt_of_lt_of_le hsi
+    simp_rw [← p.parts_sum]
+    exact Multiset.le_sum_of_mem hsp
+  · apply lt_of_lt_of_le this
+    simp only [Set.mem_setOf_eq, gt_iff_lt]
+    have : Multiset.card (Multiset.filter (fun s ↦ x.1.1 < s) p.parts) ≤ Multiset.card p.parts := by
+      apply Multiset.card_le_card
+      apply Multiset.filter_le
+    apply le_trans this
+    simp_rw [← p.parts_sum, ← Multiset.toFinset_sum_count_eq, Finset.sum_multiset_count p.parts]
+    gcongr with m hm
+    nth_rw 1 [← mul_one (Multiset.count _ p.parts)]
+    rw [smul_eq_mul]
+    apply Nat.mul_le_mul_left
+    rw [Multiset.mem_toFinset] at hm
+    apply p.parts_pos at hm
+    exact hm
+
+def ofPartition {n : ℕ} (p : Nat.Partition n) : YoungDiagram where
+  cells := sorry
+  isLowerSet := sorry
+
+def equivPartition : YoungDiagram ≃ Σ n : ℕ, (Nat.Partition n) where
+  toFun := fun μ ↦ ⟨μ.card, μ.toPartition⟩
+  invFun := fun ⟨n, p⟩ ↦ ofPartition p
+  left_inv := sorry
+  right_inv := sorry
 
 -- def toPartition (μ : YoungDiagram) : Nat.Partition μ.card where
 --   parts := (μ.cells.val.map Prod.fst).dedup.map μ.rowLen
