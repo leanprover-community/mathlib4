@@ -307,6 +307,22 @@ we provide this statement separately so you don't have to solve the specializati
 theorem lift_mk_eq' {α : Type u} {β : Type v} : lift.{v} #α = lift.{u} #β ↔ Nonempty (α ≃ β) :=
   lift_mk_eq.{u, v, 0}
 
+-- Porting note: simpNF is not happy with universe levels.
+@[simp, nolint simpNF]
+theorem lift_mk_shrink (α : Type u) [Small.{v} α] :
+    Cardinal.lift.{max u w} #(Shrink.{v} α) = Cardinal.lift.{max v w} #α :=
+  lift_mk_eq.2 ⟨(equivShrink α).symm⟩
+
+@[simp]
+theorem lift_mk_shrink' (α : Type u) [Small.{v} α] :
+    Cardinal.lift.{u} #(Shrink.{v} α) = Cardinal.lift.{v} #α :=
+  lift_mk_shrink.{u, v, 0} α
+
+@[simp]
+theorem lift_mk_shrink'' (α : Type max u v) [Small.{v} α] :
+    Cardinal.lift.{u} #(Shrink.{v} α) = #α := by
+  rw [← lift_umax', lift_mk_shrink.{max u v, v, 0} α, ← lift_umax, lift_id]
+
 /-- `Cardinal.lift` as an `InitialSeg`. -/
 @[simps!]
 def liftInitialSeg : Cardinal.{u} ≤i Cardinal.{max u v} := by
