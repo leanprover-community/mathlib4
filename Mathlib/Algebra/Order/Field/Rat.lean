@@ -28,10 +28,7 @@ instance instLinearOrderedField : LinearOrderedField ℚ where
 
 end Rat
 
--- The `LinearOrderedSemifield` and `LinearOrderedCommGroupWithZero` instances are shortcut
--- instances for performance
-deriving instance CanonicallyLinearOrderedSemifield, LinearOrderedSemifield,
-  LinearOrderedCommGroupWithZero for NNRat
+deriving instance LinearOrderedSemifield, LinearOrderedCommGroupWithZero for NNRat
 
 /-! ### Miscellaneous lemmas -/
 

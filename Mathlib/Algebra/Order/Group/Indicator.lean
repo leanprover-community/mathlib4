@@ -176,9 +176,9 @@ lemma mulIndicator_iInter_apply (h1 : (⊥ : M) = 1) (s : ι → Set α) (f : α
 
 end CompleteLattice
 
-section CanonicallyOrderedCommMonoid
+section CanonicallyOrderedMul
 
-variable [CanonicallyOrderedCommMonoid M]
+variable [Monoid M] [PartialOrder M] [CanonicallyOrderedMul M]
 
 @[to_additive]
 lemma mulIndicator_le_self (s : Set α) (f : α → M) : mulIndicator s f ≤ f :=
@@ -194,7 +194,7 @@ lemma mulIndicator_le {s : Set α} {f g : α → M} (hfg : ∀ a ∈ s, f a ≤ 
     mulIndicator s f ≤ g :=
   mulIndicator_le' hfg fun _ _ ↦ one_le _
 
-end CanonicallyOrderedCommMonoid
+end CanonicallyOrderedMul
 
 section LinearOrderedCommGroup
 variable [LinearOrderedCommGroup M]

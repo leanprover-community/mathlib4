@@ -49,8 +49,6 @@ For short,
   respects `<`.
 * `LinearOrderedCommRing`: Nontrivial commutative ring with a linear order such that `+` respects
   `≤` and `*` respects `<`.
-* `CanonicallyOrderedCommSemiring`: Commutative semiring with a partial order such that `+`
-  respects `≤`, `*` respects `<`, and `a ≤ b ↔ ∃ c, b = a + c`.
 
 ## Hierarchy
 
