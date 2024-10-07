@@ -79,7 +79,7 @@ def aleph' : Ordinal.{u} ≃o Cardinal.{u} := by
   refine (OrderIso.ofRelIsoLT <| RelIso.ofSurjective f ?_).symm
   apply f.eq_or_principal.resolve_right
   rintro ⟨o, e⟩
-  have : ∀ c, f c < o := fun c => (e _).2 ⟨_, rfl⟩
+  have : ∀ c, f c < o := fun c => (e _).1 ⟨_, rfl⟩
   refine Ordinal.inductionOn o ?_ this
   intro α r _ h
   let s := ⨆ a, invFun f (Ordinal.typein r a)
