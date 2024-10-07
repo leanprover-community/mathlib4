@@ -85,7 +85,7 @@ theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
     -- on which there exists s ∈ Γ_ ℱ V mapping to t |_ V.
     rcases hT.imageSieve_mem t x hxU with ⟨V, ι, ⟨s, h_eq⟩, hxV⟩
     -- Then the germ of s maps to g.
-    use ℱ.germ _ x (hxV) s
+    use ℱ.germ _ x hxV s
     -- Porting note: `convert` went too deep and swapped LHS and RHS of the remaining goal relative
     -- to lean 3.
     convert stalkFunctor_map_germ_apply V x hxV T s using 1
@@ -98,7 +98,7 @@ theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
         we have T(s) |_ W = t |_ W. -/
     constructor
     intro U t x hxU
-    set t_x := 𝒢.germ _ x (hxU) t with ht_x
+    set t_x := 𝒢.germ _ x hxU t with ht_x
     obtain ⟨s_x, hs_x : ((stalkFunctor C x).map T) s_x = t_x⟩ := hT x t_x
     obtain ⟨V, hxV, s, rfl⟩ := ℱ.germ_exist x s_x
     -- rfl : ℱ.germ x s = s_x

@@ -56,7 +56,7 @@ noncomputable instance [IsIntegral X] : Field X.functionField := by
     · erw [basicOpen_eq_bot_iff]
       exact ha
     · exact (RingedSpace.basicOpen _ _).isOpen
-  have := (X.presheaf.germ _ _ (hs)).isUnit_map (RingedSpace.isUnit_res_basicOpen _ s)
+  have := (X.presheaf.germ _ _ hs).isUnit_map (RingedSpace.isUnit_res_basicOpen _ s)
   rwa [TopCat.Presheaf.germ_res_apply] at this
 
 theorem germ_injective_of_isIntegral [IsIntegral X] {U : X.Opens} (x : X) (hx : x ∈ U) :

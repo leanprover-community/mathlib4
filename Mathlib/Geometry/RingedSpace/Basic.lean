@@ -63,10 +63,10 @@ theorem isUnit_res_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U)) (x :
   replace heq : (X.presheaf.germ _ x hxW) ((X.presheaf.map (U.infLELeft V).op) f *
       (X.presheaf.map (U.infLERight V).op) g) = (X.presheaf.germ _ x hxW) 1 := by
     dsimp [germ]
-    erw [map_mul, map_one, show X.presheaf.germ _ x (hxW) ((X.presheaf.map (U.infLELeft V).op) f) =
+    erw [map_mul, map_one, show X.presheaf.germ _ x hxW ((X.presheaf.map (U.infLELeft V).op) f) =
       X.presheaf.germ U x hx f from X.presheaf.germ_res_apply (Opens.infLELeft U V) x hxW f,
-      show X.presheaf.germ _ x (hxW) (X.presheaf.map (U.infLERight V).op g) =
-      X.presheaf.germ _ x (hxV) g from X.presheaf.germ_res_apply (Opens.infLERight U V) x hxW g]
+      show X.presheaf.germ _ x hxW (X.presheaf.map (U.infLERight V).op g) =
+      X.presheaf.germ _ x hxV g from X.presheaf.germ_res_apply (Opens.infLERight U V) x hxW g]
     exact heq
   obtain ⟨W', hxW', i₁, i₂, heq'⟩ := X.presheaf.germ_eq x hxW hxW _ _ heq
   use W', i₁ ≫ Opens.infLELeft U V, hxW'
@@ -95,8 +95,8 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
     -- Porting note: now need explicitly typing the rewrites
     rw [← X.presheaf.germ_res_apply (iVU x) z hzVx f]
     -- Porting note: change was not necessary in Lean3
-    change X.presheaf.germ _ z (hzVx) _ * (X.presheaf.germ _ z (hzVx) _) =
-      X.presheaf.germ _ z (hzVx) _ * X.presheaf.germ _ z (hzVy) (g y)
+    change X.presheaf.germ _ z hzVx _ * (X.presheaf.germ _ z hzVx _) =
+      X.presheaf.germ _ z hzVx _ * X.presheaf.germ _ z hzVy (g y)
     rw [← RingHom.map_mul,
       congr_arg (X.presheaf.germ (V x) z hzVx) (hg x),
       X.presheaf.germ_res_apply _ _ _ f,
@@ -124,7 +124,7 @@ def basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) : Opens X where
     refine ⟨?_, V.2, hxV⟩
     intro y hy
     use i.le hy
-    convert RingHom.isUnit_map (X.presheaf.germ _ y (hy)) hf
+    convert RingHom.isUnit_map (X.presheaf.germ _ y hy) hf
     exact (X.presheaf.germ_res_apply i y hy f).symm
 
 theorem mem_basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) (x : X) (hx : x ∈ U) :

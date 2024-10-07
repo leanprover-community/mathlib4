@@ -66,7 +66,7 @@ instance isReduced_stalk_of_isReduced [IsReduced X] (x : X) :
   constructor
   rintro g ⟨n, e⟩
   obtain ⟨U, hxU, s, rfl⟩ := X.presheaf.germ_exist x g
-  rw [← map_pow, ← map_zero (X.presheaf.germ _ x (hxU))] at e
+  rw [← map_pow, ← map_zero (X.presheaf.germ _ x hxU)] at e
   obtain ⟨V, hxV, iU, iV, e'⟩ := X.presheaf.germ_eq x hxU hxU _ 0 e
   rw [map_pow, map_zero] at e'
   replace e' := (IsNilpotent.mk _ _ e').eq_zero (R := Γ(X, V))

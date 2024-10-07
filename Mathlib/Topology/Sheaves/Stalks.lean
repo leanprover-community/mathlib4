@@ -419,7 +419,7 @@ attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFu
 theorem germ_ext (F : X.Presheaf C) {U V : Opens X} {x : X} {hxU : x ∈ U} {hxV : x ∈ V}
     (W : Opens X) (hxW : x ∈ W) (iWU : W ⟶ U) (iWV : W ⟶ V) {sU : F.obj (op U)} {sV : F.obj (op V)}
     (ih : F.map iWU.op sU = F.map iWV.op sV) :
-      F.germ _ x (hxU) sU = F.germ _ x (hxV) sV := by
+      F.germ _ x hxU sU = F.germ _ x hxV sV := by
   rw [← F.germ_res iWU x hxW, ← F.germ_res iWV x hxW, comp_apply, comp_apply, ih]
 
 variable [PreservesFilteredColimits (forget C)]
@@ -429,7 +429,7 @@ For presheaves valued in a concrete category whose forgetful functor preserves f
 every element of the stalk is the germ of a section.
 -/
 theorem germ_exist (F : X.Presheaf C) (x : X) (t : (stalk.{v, u} F x : Type v)) :
-    ∃ (U : Opens X) (m : x ∈ U) (s : F.obj (op U)), F.germ _ x (m) s = t := by
+    ∃ (U : Opens X) (m : x ∈ U) (s : F.obj (op U)), F.germ _ x m s = t := by
   obtain ⟨U, s, e⟩ :=
     Types.jointly_surjective.{v, v} _ (isColimitOfPreserves (forget C) (colimit.isColimit _)) t
   revert s e
@@ -455,7 +455,7 @@ theorem stalkFunctor_map_injective_of_app_injective {F G : Presheaf C X} (f : F 
   obtain ⟨W, hxW, iWU₁, iWU₂, heq⟩ := G.germ_eq x hxU₁ hxU₂ _ _ hst
   rw [← comp_apply, ← comp_apply, ← f.naturality, ← f.naturality, comp_apply, comp_apply] at heq
   replace heq := h W heq
-  convert congr_arg (F.germ _ x (hxW)) heq using 1
+  convert congr_arg (F.germ _ x hxW) heq using 1
   exacts [(F.germ_res_apply iWU₁ x hxW s).symm, (F.germ_res_apply iWU₂ x hxW t).symm]
 
 variable [HasLimits C] [PreservesLimits (forget C)] [(forget C).ReflectsIsomorphisms]
