@@ -157,36 +157,36 @@ theorem exist_mem_orbit_add_eq_zero (x y : GalConjClasses F E) :
     refine ⟨-y.out, y.out, ?_⟩
     simp_rw [mk_neg, mk_out, neg_add_cancel, and_self]
 
-noncomputable nonrec def minpoly : GalConjClasses F E → F[X] :=
+protected noncomputable def minpoly : GalConjClasses F E → F[X] :=
   Quotient.lift (minpoly F) fun _ b ⟨f, h⟩ => h ▸ minpoly.algEquiv_eq f b
 
-theorem minpoly_mk (x : E) : minpoly (mk F x) = _root_.minpoly F x :=
+theorem minpoly_mk (x : E) : (mk F x).minpoly = minpoly F x :=
   rfl
 
-theorem minpoly_out (c : GalConjClasses F E) : _root_.minpoly F c.out = minpoly c := by
+theorem minpoly_out (c : GalConjClasses F E) : minpoly F c.out = c.minpoly := by
   rw [← c.mk_out, minpoly_mk, c.mk_out]
 
 theorem splits_minpoly [n : Normal F E] (c : GalConjClasses F E) :
-    Splits (algebraMap F E) (minpoly c) := by rw [← c.mk_out, minpoly_mk]; exact n.splits c.out
+    Splits (algebraMap F E) c.minpoly := by rw [← c.mk_out, minpoly_mk]; exact n.splits c.out
 
 variable [Algebra.IsSeparable F E]
 -- most lemmas work with Algebra.IsIntegral / Algebra.IsAlgebraic
 -- but there isn't a lemma saying these are implied by `IsSeparable`
 
-theorem monic_minpoly (c : GalConjClasses F E) : (minpoly c).Monic := by
+theorem monic_minpoly (c : GalConjClasses F E) : c.minpoly.Monic := by
   rw [← c.mk_out, minpoly_mk]; exact minpoly.monic (Algebra.IsSeparable.isIntegral F _)
 
-theorem minpoly_ne_zero (c : GalConjClasses F E) : minpoly c ≠ 0 := by
+theorem minpoly_ne_zero (c : GalConjClasses F E) : c.minpoly ≠ 0 := by
   rw [← c.mk_out, minpoly_mk]
   exact minpoly.ne_zero (Algebra.IsSeparable.isIntegral F _)
 
-theorem irreducible_minpoly (c : GalConjClasses F E) : Irreducible (minpoly c) := by
+theorem irreducible_minpoly (c : GalConjClasses F E) : Irreducible c.minpoly := by
   rw [← c.mk_out, minpoly_mk]; exact minpoly.irreducible (Algebra.IsSeparable.isIntegral F _)
 
-theorem separable_minpoly (c : GalConjClasses F E) : Separable (minpoly c) := by
+theorem separable_minpoly (c : GalConjClasses F E) : Separable c.minpoly := by
   rw [← c.mk_out, minpoly_mk]; exact Algebra.IsSeparable.isSeparable F c.out
 
-theorem minpoly_inj [Normal F E] {c d : GalConjClasses F E} (h : minpoly c = minpoly d) :
+theorem minpoly_inj [Normal F E] {c d : GalConjClasses F E} (h : c.minpoly = d.minpoly) :
     c = d := by
   induction' c with x
   induction' d with y
@@ -194,7 +194,7 @@ theorem minpoly_inj [Normal F E] {c d : GalConjClasses F E} (h : minpoly c = min
   let fd := IntermediateField.adjoinRootEquivAdjoin F (Algebra.IsSeparable.isIntegral F y)
   let congr_f {px py : F[X]} (h : px = py) : AdjoinRoot px ≃ₐ[F] AdjoinRoot py :=
     h ▸ AlgEquiv.refl
-  change _root_.minpoly F x = _root_.minpoly F y at h
+  change minpoly F x = minpoly F y at h
   let f' := fc.symm.trans ((congr_f h).trans fd)
   let f := f'.liftNormal E
   rw [mk_eq_mk]
@@ -213,14 +213,15 @@ theorem minpoly_inj [Normal F E] {c d : GalConjClasses F E} (h : minpoly c = min
   exact this h
 
 
-theorem minpoly_injective [Normal F E] : Function.Injective (@minpoly F _ E _ _) := fun _ _ =>
+theorem minpoly_injective [Normal F E] :
+    Function.Injective (@GalConjClasses.minpoly F _ E _ _) := fun _ _ =>
   minpoly_inj
 
-theorem nodup_aroots_minpoly (c : GalConjClasses F E) : ((minpoly c).aroots E).Nodup :=
+theorem nodup_aroots_minpoly (c : GalConjClasses F E) : (c.minpoly.aroots E).Nodup :=
   nodup_roots c.separable_minpoly.map
 
 theorem aeval_minpoly_iff [Normal F E] (x : E) (c : GalConjClasses F E) :
-    aeval x (minpoly c) = 0 ↔ mk F x = c := by
+    aeval x c.minpoly = 0 ↔ mk F x = c := by
   symm; constructor
   · rintro rfl; exact minpoly.aeval _ _
   intro h
@@ -229,25 +230,25 @@ theorem aeval_minpoly_iff [Normal F E] (x : E) (c : GalConjClasses F E) :
   rw [c.monic_minpoly.leadingCoeff, inv_one, map_one, mul_one]
 
 theorem rootSet_minpoly_eq_orbit [Normal F E] (c : GalConjClasses F E) :
-    (minpoly c).rootSet E = c.orbit := by
+    c.minpoly.rootSet E = c.orbit := by
   ext x; rw [mem_orbit]
   simp_rw [mem_rootSet, aeval_minpoly_iff x c]
   simp [c.minpoly_ne_zero]
 
 theorem aroots_minpoly_eq_orbit_val [DecidableEq E] [Fintype (E ≃ₐ[F] E)] [Normal F E]
-    (c : GalConjClasses F E) : (minpoly c).aroots E = c.orbit.toFinset.1 := by
+    (c : GalConjClasses F E) : c.minpoly.aroots E = c.orbit.toFinset.1 := by
   simp_rw [← rootSet_minpoly_eq_orbit, rootSet_def, Finset.toFinset_coe, Multiset.toFinset_val]
   symm; rw [Multiset.dedup_eq_self]
   exact nodup_roots ((separable_map _).mpr c.separable_minpoly)
 
 theorem orbit_eq_mk_aroots_minpoly [DecidableEq E] [Fintype (E ≃ₐ[F] E)] [Normal F E]
     (c : GalConjClasses F E) :
-    c.orbit.toFinset = ⟨(minpoly c).aroots E, c.nodup_aroots_minpoly⟩ := by
+    c.orbit.toFinset = ⟨c.minpoly.aroots E, c.nodup_aroots_minpoly⟩ := by
   simp only [aroots_minpoly_eq_orbit_val]
 
 theorem minpoly.map_eq_prod [DecidableEq E] [Fintype (E ≃ₐ[F] E)] [Normal F E]
     (c : GalConjClasses F E) :
-    (minpoly c).map (algebraMap F E) = ∏ x in c.orbit.toFinset, (X - C x) := by
+    c.minpoly.map (algebraMap F E) = ∏ x in c.orbit.toFinset, (X - C x) := by
   simp_rw [← rootSet_minpoly_eq_orbit, Finset.prod_eq_multiset_prod, rootSet_def,
     Finset.toFinset_coe, Multiset.toFinset_val]
   rw [Multiset.dedup_eq_self.mpr (nodup_roots _),
