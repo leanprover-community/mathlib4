@@ -102,7 +102,7 @@ theorem probability (n : ℕ) (x : I) : (∑ k : Fin (n + 1), bernstein n k x) =
   have := bernsteinPolynomial.sum ℝ n
   apply_fun fun p => Polynomial.aeval (x : ℝ) p at this
   simp? [map_sum, Finset.sum_range] at this says
-    simp only [Finset.sum_range, map_sum, Polynomial.coe_aeval_eq_eval, Polynomial.eval_one] at this
+    simp only [Finset.sum_range, map_sum, Polynomial.coe_aeval_eq_eval, map_one] at this
   exact this
 
 theorem variance {n : ℕ} (h : 0 < (n : ℝ)) (x : I) :
