@@ -78,10 +78,8 @@ theorem tendsto_IicSnd_atTop {s : Set α} (hs : MeasurableSet s) :
     Tendsto (fun r : ℚ ↦ ρ.IicSnd r s) atTop (𝓝 (ρ.fst s)) := by
   simp_rw [ρ.IicSnd_apply _ hs, fst_apply hs, ← prod_univ]
   rw [← Real.iUnion_Iic_rat, prod_iUnion]
-  refine tendsto_measure_iUnion fun r q hr_le_q x ↦ ?_
-  simp only [mem_prod, mem_Iic, and_imp]
-  refine fun hxs hxr ↦ ⟨hxs, hxr.trans ?_⟩
-  exact mod_cast hr_le_q
+  apply tendsto_measure_iUnion_atTop
+  exact monotone_const.set_prod Rat.cast_mono.Iic
 
 theorem tendsto_IicSnd_atBot [IsFiniteMeasure ρ] {s : Set α} (hs : MeasurableSet s) :
     Tendsto (fun r : ℚ ↦ ρ.IicSnd r s) atBot (𝓝 0) := by
