@@ -21,7 +21,9 @@ import Mathlib.Tactic.Linarith
 
 ## TODO
 
-Show that the extreme points of doubly stochastic matrices are the permutation matrices.
+* Show that the extreme points of doubly stochastic matrices are the permutation matrices.
+* Show that for `x y : n → R`, `x` is majorized by `y` if and only if there is a doubly stochastic
+  matrix `M` such that `M *ᵥ y = x`.
 
 ## Tags
 
@@ -86,7 +88,7 @@ private lemma doublyStochastic_sum_perm_aux (M : Matrix n n R)
   case inl => exact ⟨1, by simp, Subsingleton.elim _ _⟩
   set d : ℕ := (Finset.univ.filter fun i : n × n => M i.1 i.2 ≠ 0).card with ← hd
   clear_value d
-  induction d using Nat.strongInductionOn generalizing M s
+  induction d using Nat.strongRecOn generalizing M s
   case ind d ih =>
   rcases eq_or_lt_of_le hs with rfl | hs'
   case inl =>
@@ -135,9 +137,9 @@ private lemma doublyStochastic_sum_perm_aux (M : Matrix n n R)
 
 /--
 If M is a doubly stochastic matrix, then it is an convex combination of permutation matrices. Note
-`doublyStochastic_eq_convexHull_perm` shows `doublyStochastic n` is exactly the convex hull of the
-permutation matrices, and this lemma is most useful for accessing the coefficients of each
-permutation matrices directly.
+`doublyStochastic_eq_convexHull_permMatrix` shows `doublyStochastic n` is exactly the convex hull of
+the permutation matrices, and this lemma is instead most useful for accessing the coefficients of
+each permutation matrices directly.
 -/
 lemma exists_eq_sum_perm_of_mem_doublyStochastic (hM : M ∈ doublyStochastic R n) :
     ∃ w : Equiv.Perm n → R, (∀ σ, 0 ≤ w σ) ∧ ∑ σ, w σ = 1 ∧ ∑ σ, w σ • σ.permMatrix R = M := by
@@ -148,14 +150,14 @@ lemma exists_eq_sum_perm_of_mem_doublyStochastic (hM : M ∈ doublyStochastic R 
   inhabit n
   have : ∑ j, ∑ σ : Equiv.Perm n, w σ • σ.permMatrix R default j = 1 := by
     simp only [← smul_apply (m := n), ← Finset.sum_apply, hw3]
-    rw [row_sum_doublyStochastic hM]
+    rw [sum_row_of_mem_doublyStochastic hM]
   simpa [sum_comm (γ := n), Equiv.toPEquiv_apply] using this
 
 /--
 **Birkhoff's theorem**
 The set of doubly stochastic matrices is the convex hull of the permutation matrices.  Note
-`doublyStochastic_sum_perm` gives a convex weighting of each permutation matrix directly.
-To show `doublyStochastic n` is convex, use `convex_doublyStochastic`.
+`exists_eq_sum_perm_of_mem_doublyStochastic` gives a convex weighting of each permutation matrix
+directly.  To show `doublyStochastic n` is convex, use `convex_doublyStochastic`.
 -/
 theorem doublyStochastic_eq_convexHull_permMatrix :
     doublyStochastic R n = convexHull R {σ.permMatrix R | σ : Equiv.Perm n} := by

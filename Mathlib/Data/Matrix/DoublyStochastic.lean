@@ -21,6 +21,11 @@ import Mathlib.LinearAlgebra.Matrix.Permutation
 * `convex_doublyStochastic`: The set of doubly stochastic matrices is convex.
 * `permMatrix_mem_doublyStochastic`: Any permutation matrix is doubly stochastic.
 
+## TODO
+
+Define the submonoids of row-stochastic and column-stochastic matrices.
+Show that the submonoid of doubly stochastic matrices is the meet of them, or redefine it as such.
+
 ## Tags
 
 Doubly stochastic, Birkhoff's theorem, Birkhoff-von Neumann theorem
@@ -56,29 +61,29 @@ lemma mem_doublyStochastic_iff_sum :
   simp [funext_iff, doublyStochastic, mulVec, vecMul, dotProduct]
 
 /-- Every entry of a doubly stochastic matrix is nonnegative. -/
-lemma nonneg_doublyStochastic (hM : M ∈ doublyStochastic R n) (i j : n) : 0 ≤ M i j :=
+lemma nonneg_of_mem_doublyStochastic (hM : M ∈ doublyStochastic R n) (i j : n) : 0 ≤ M i j :=
   hM.1 _ _
 
 /-- Each row sum of a doubly stochastic matrix is 1. -/
-lemma row_sum_doublyStochastic (hM : M ∈ doublyStochastic R n) (i : n) : ∑ j, M i j = 1 :=
+lemma sum_row_of_mem_doublyStochastic (hM : M ∈ doublyStochastic R n) (i : n) : ∑ j, M i j = 1 :=
   (mem_doublyStochastic_iff_sum.1 hM).2.1 _
 
 /-- Each column sum of a doubly stochastic matrix is 1. -/
-lemma col_sum_doublyStochastic (hM : M ∈ doublyStochastic R n) (j : n) : ∑ i, M i j = 1 :=
+lemma sum_col_of_mem_doublyStochastic (hM : M ∈ doublyStochastic R n) (j : n) : ∑ i, M i j = 1 :=
   (mem_doublyStochastic_iff_sum.1 hM).2.2 _
 
 /-- A doubly stochastic matrix multiplied with the all-ones column vector is 1. -/
-lemma doublyStochastic_mulVec_one (hM : M ∈ doublyStochastic R n) : M *ᵥ 1 = 1 :=
+lemma mulVec_one_of_mem_doublyStochastic (hM : M ∈ doublyStochastic R n) : M *ᵥ 1 = 1 :=
   (mem_doublyStochastic.1 hM).2.1
 
 /-- The all-ones row vector multiplied with a doubly stochastic matrix is 1. -/
-lemma one_vecMul_doublyStochastic (hM : M ∈ doublyStochastic R n) : 1 ᵥ* M = 1 :=
+lemma one_vecMul_of_mem_doublyStochastic (hM : M ∈ doublyStochastic R n) : 1 ᵥ* M = 1 :=
   (mem_doublyStochastic.1 hM).2.2
 
 /-- Every entry of a doubly stochastic matrix is less than or equal to 1. -/
-lemma doublyStochastic_le_one (hM : M ∈ doublyStochastic R n) {i j : n} :
+lemma le_one_of_mem_doublyStochastic (hM : M ∈ doublyStochastic R n) {i j : n} :
     M i j ≤ 1 := by
-  rw [← row_sum_doublyStochastic hM i]
+  rw [← sum_row_of_mem_doublyStochastic hM i]
   exact single_le_sum (fun k _ => hM.1 _ k) (mem_univ j)
 
 /-- The set of doubly stochastic matrices is convex. -/
