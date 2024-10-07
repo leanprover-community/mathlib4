@@ -27,6 +27,8 @@ These notations belong to the `InitialSeg` locale.
 
 * `r ≼i s`: the type of initial segment embeddings of `r` into `s`.
 * `r ≺i s`: the type of principal segment embeddings of `r` into `s`.
+* `α ≤i β` is an abbreviation for `(· < ·) ≼i (· < ·)`.
+* `α <i β` is an abbreviation for `(· < ·) ≺i (· < ·)`.
 -/
 
 
@@ -50,11 +52,14 @@ structure InitialSeg {α β : Type*} (r : α → α → Prop) (s : β → β →
   /-- The order embedding is an initial segment -/
   mem_range_of_rel' : ∀ a b, s b (toRelEmbedding a) → b ∈ Set.range toRelEmbedding
 
--- Porting note: Deleted `scoped[InitialSeg]`
-/-- If `r` is a relation on `α` and `s` in a relation on `β`, then `f : r ≼i s` is an order
-embedding whose range is an initial segment. That is, whenever `b < f a` in `β` then `b` is in the
-range of `f`. -/
+@[inherit_doc]
 infixl:25 " ≼i " => InitialSeg
+
+/-- An `InitialSeg` between the `<` relations of two types. -/
+abbrev InitialSegLT (α β : Type*) [LT α] [LT β] := @InitialSeg α β (· < ·) (· < ·)
+
+@[inherit_doc]
+infixl:25 " ≤i " => InitialSegLT
 
 namespace InitialSeg
 
@@ -73,18 +78,17 @@ instance : EmbeddingLike (r ≼i s) α β where
 
 /-- An initial segment embedding between the less-than relations of two partial orders is an order
 embedding. -/
-def toOrderEmbedding [PartialOrder α] [PartialOrder β]
-    (f : @InitialSeg α β (· < ·) (· < ·)) : α ↪o β :=
+def toOrderEmbedding [PartialOrder α] [PartialOrder β] (f : α ≤i β) : α ↪o β :=
   f.orderEmbeddingOfLTEmbedding
 
 @[simp]
-theorem toOrderEmbedding_apply [PartialOrder α] [PartialOrder β]
-    (f : @InitialSeg α β (· < ·) (· < ·)) (x : α) : f.toOrderEmbedding x = f x :=
+theorem toOrderEmbedding_apply [PartialOrder α] [PartialOrder β] (f : α ≤i β) (x : α) :
+    f.toOrderEmbedding x = f x :=
   rfl
 
 @[simp]
-theorem coe_toOrderEmbedding [PartialOrder α] [PartialOrder β]
-    (f : @InitialSeg α β (· < ·) (· < ·)) : (f.toOrderEmbedding : α → β) = f :=
+theorem coe_toOrderEmbedding [PartialOrder α] [PartialOrder β] (f : α ≤i β) :
+    (f.toOrderEmbedding : α → β) = f :=
   rfl
 
 @[ext] lemma ext {f g : r ≼i s} (h : ∀ x, f x = g x) : f = g :=
@@ -218,25 +222,25 @@ section PartialOrder
 
 variable [PartialOrder β] {a a' : α} {b : β}
 
-theorem mem_range_of_le [Preorder α] (f : (· < ·) ≼i (· < ·)) (h : b ≤ f a) : b ∈ Set.range f := by
+theorem mem_range_of_le [Preorder α] (f : α ≤i β) (h : b ≤ f a) : b ∈ Set.range f := by
   obtain rfl | hb := h.eq_or_lt
-  exacts [⟨a, rfl⟩, f.init hb]
+  exacts [⟨a, rfl⟩, f.mem_range_of_rel hb]
 
 @[simp]
-theorem le_iff_le [PartialOrder α] (f : @InitialSeg α β (· < ·) (· < ·)) : f a ≤ f a' ↔ a ≤ a' :=
+theorem le_iff_le [PartialOrder α] (f : α ≤i β) : f a ≤ f a' ↔ a ≤ a' :=
   f.toOrderEmbedding.le_iff_le
 
 @[simp]
-theorem lt_iff_lt [PartialOrder α] (f : @InitialSeg α β (· < ·) (· < ·)) : f a < f a' ↔ a < a' :=
+theorem lt_iff_lt [PartialOrder α] (f : α ≤i β) : f a < f a' ↔ a < a' :=
   f.toOrderEmbedding.lt_iff_lt
 
-theorem monotone [PartialOrder α] (f : @InitialSeg α β (· < ·) (· < ·)) : Monotone f :=
+theorem monotone [PartialOrder α] (f : α ≤i β) : Monotone f :=
   f.toOrderEmbedding.monotone
 
-theorem strictMono [PartialOrder α] (f : @InitialSeg α β (· < ·) (· < ·)) : StrictMono f :=
+theorem strictMono [PartialOrder α] (f : α ≤i β) : StrictMono f :=
   f.toOrderEmbedding.strictMono
 
-theorem le_apply_iff [LinearOrder α] (f : (· < ·) ≼i (· < ·)) : b ≤ f a ↔ ∃ c ≤ a, f c = b := by
+theorem le_apply_iff [LinearOrder α] (f : α ≤i β) : b ≤ f a ↔ ∃ c ≤ a, f c = b := by
   constructor
   · intro h
     obtain ⟨c, hc⟩ := f.mem_range_of_le h
@@ -245,7 +249,7 @@ theorem le_apply_iff [LinearOrder α] (f : (· < ·) ≼i (· < ·)) : b ≤ f a
   · rintro ⟨c, hc, rfl⟩
     exact f.monotone hc
 
-theorem lt_apply_iff [LinearOrder α] (f : (· < ·) ≼i (· < ·)) : b < f a ↔ ∃ a' < a, f a' = b := by
+theorem lt_apply_iff [LinearOrder α] (f : α ≤i β) : b < f a ↔ ∃ a' < a, f a' = b := by
   constructor
   · intro h
     obtain ⟨c, hc⟩ := f.mem_range_of_rel h
@@ -277,11 +281,14 @@ structure PrincipalSeg {α β : Type*} (r : α → α → Prop) (s : β → β �
   /-- The image of the order embedding is the set of elements `b` such that `s b top` -/
   down' : ∀ b, s b top ↔ ∃ a, toRelEmbedding a = b
 
--- Porting note: deleted `scoped[InitialSeg]`
-/-- If `r` is a relation on `α` and `s` in a relation on `β`, then `f : r ≺i s` is an order
-embedding whose range is an open interval `(-∞, top)` for some element `top` of `β`. Such order
-embeddings are called principal segments -/
+@[inherit_doc]
 infixl:25 " ≺i " => PrincipalSeg
+
+/-- A `PrincipalSeg` between the `<` relations of two types. -/
+abbrev PrincipalSegLT (α β : Type*) [LT α] [LT β] := @PrincipalSeg α β (· < ·) (· < ·)
+
+@[inherit_doc]
+infixl:25 " <i " => PrincipalSegLT
 
 namespace PrincipalSeg
 
