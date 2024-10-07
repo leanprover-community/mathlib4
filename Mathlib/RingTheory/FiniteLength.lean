@@ -22,23 +22,21 @@ universe u
 
 variable (R : Type*) [Ring R]
 
-/-- A module of finite length is either a subsingleton or a simple extension of a module known
+/-- A module of finite length is either trivial or a simple extension of a module known
 to be of finite length. -/
 inductive IsFiniteLength : ∀ (M : Type u) [AddCommGroup M] [Module R M], Prop
   | of_subsingleton {M} [AddCommGroup M] [Module R M] [Subsingleton M] : IsFiniteLength M
   | of_simple_quotient {M} [AddCommGroup M] [Module R M] {N : Submodule R M}
       [IsSimpleModule R (M ⧸ N)] : IsFiniteLength N → IsFiniteLength M
 
-variable {R} {M : Type*} [AddCommGroup M] [Module R M]
+variable {R} {M N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
-theorem LinearEquiv.isFiniteLength (h : IsFiniteLength R M) :
-    ∀ {N : Type u} [AddCommGroup N] [Module R N], (M ≃ₗ[R] N) → IsFiniteLength R N :=
-  h.rec
-    (motive := fun M _ _ _ ↦ ∀ {N} [AddCommGroup N] [Module R N], (M ≃ₗ[R] N) → IsFiniteLength R N)
-    (fun _M _ _ _ {_N} _ _ e ↦ have := e.symm.toEquiv.subsingleton; .of_subsingleton)
-    fun _M _ _ S _ _ ih {_N} _ _ e ↦
-      have := IsSimpleModule.congr (Submodule.Quotient.equiv S _ e rfl).symm
-      .of_simple_quotient (ih <| e.submoduleMap S)
+theorem LinearEquiv.isFiniteLength (e : M ≃ₗ[R] N)
+    (h : IsFiniteLength R M) : IsFiniteLength R N := by
+  induction' h with M _ _ _ M _ _ S _ _ ih generalizing N
+  · have := e.symm.toEquiv.subsingleton; exact .of_subsingleton
+  · have := IsSimpleModule.congr (Submodule.Quotient.equiv S _ e rfl).symm
+    exact .of_simple_quotient (ih <| e.submoduleMap S)
 
 theorem isFiniteLength_iff_isNoetherian_isArtinian :
     IsFiniteLength R M ↔ IsNoetherian R M ∧ IsArtinian R M :=
@@ -57,3 +55,7 @@ theorem isFiniteLength_iff_isNoetherian_isArtinian :
       have := ((f i).comap (f i.succ).subtype).equivMapOfInjective _ (Submodule.injective_subtype _)
       rw [Submodule.map_comap_subtype, inf_of_le_right cov.le] at this
       exact .of_simple_quotient (this.symm.isFiniteLength <| ih <| le_of_lt hi)⟩
+
+theorem isFiniteLength_iff_exists_compositionSeries :
+    IsFiniteLength R M ↔ ∃ s : CompositionSeries (Submodule R M), s.head = ⊥ ∧ s.last = ⊤ := by
+  _
