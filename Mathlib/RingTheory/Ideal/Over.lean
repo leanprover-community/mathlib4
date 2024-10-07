@@ -439,9 +439,9 @@ variable (A : Type*) [CommSemiring A] {B : Type*} [Semiring B] [Algebra A B]
 /-- The ideal obtained by pulling back the ideal `P` from `B` to `A`. -/
 abbrev under : Ideal A := Ideal.comap (algebraMap A B) P
 
-theorem under_def : under A P = Ideal.comap (algebraMap A B) P := rfl
+theorem under_def : P.under A = Ideal.comap (algebraMap A B) P := rfl
 
-instance IsPrime.under [hP : P.IsPrime] : (under A P).IsPrime :=
+instance IsPrime.under [hP : P.IsPrime] : (P.under A).IsPrime :=
   hP.comap (algebraMap A B)
 
 variable {A}
@@ -485,8 +485,8 @@ variable {A : Type*} [CommRing A] {B : Type*} [CommRing B] [Algebra A B] [Algebr
   (P : Ideal B) (p : Ideal A) [P.LiesOver p]
 
 variable (A) in
-/-- If `B` is an integral `A`-algebra, `P` is a maximal ideal of `B`, then the pull back of `P`
-  from `B` to `A` is also a maximal ideal. -/
+/-- If `B` is an integral `A`-algebra, `P` is a maximal ideal of `B`, then the pull back of
+  `P` is also a maximal ideal of `A`. -/
 instance IsMaximal.under [P.IsMaximal] : (P.under A).IsMaximal :=
   isMaximal_comap_of_isIntegral_of_isMaximal P
 
