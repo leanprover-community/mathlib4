@@ -58,36 +58,20 @@ open FiniteDimensional Set
 variable {K R : Type v} {V M : Type w} [CommRing R] [AddCommGroup M] [Module R M] [Field K]
   [AddCommGroup V] [Module K V]
 
-/-- Auxiliary copy of `unifEigenspace`. -/
-private def unifEigenspace_aux (f : End R M) (μ : R) (k : ℕ∞) : Submodule R M :=
-  ⨆ l : ℕ, ⨆ _ : l ≤ k, LinearMap.ker ((f - μ • 1) ^ l)
-
-private lemma mem_unifEigenspace_aux {f : End R M} {μ : R} {k : ℕ∞} {x : M} :
-    x ∈ f.unifEigenspace_aux μ k ↔ ∃ l : ℕ, l ≤ k ∧ x ∈ LinearMap.ker ((f - μ • 1) ^ l) := by
-  have : Nonempty {l : ℕ // l ≤ k} := ⟨⟨0, zero_le _⟩⟩
-  rw [unifEigenspace_aux, iSup_subtype', Submodule.mem_iSup_of_directed]
-  · simp only [LinearMap.mem_ker, Subtype.exists, exists_prop]
-  exact Monotone.directed_le fun m n h ↦ by simpa using (f - μ • 1).iterateKer.monotone h
-
-private lemma unifEigenspace_aux_mono (f : End R M) (μ : R) :
-    Monotone (f.unifEigenspace_aux μ) := fun _ _ hkl ↦ biSup_mono fun _ hi ↦ hi.trans hkl
-
 /-- The submodule `unifEigenspace f μ k` for a linear map `f`, a scalar `μ`,
 and a number `k : ℕ∞` is the kernel of `(f - μ • id) ^ k` if `k` is a natural number,
 or the union of all these kernels if `k = ∞`. -/
 def unifEigenspace (f : End R M) (μ : R) : ℕ∞ →o Submodule R M where
   toFun k := ⨆ l : ℕ, ⨆ _ : l ≤ k, LinearMap.ker ((f - μ • 1) ^ l)
-  monotone' := unifEigenspace_aux_mono _ _
+  monotone' _ _ hkl := biSup_mono fun _ hi ↦ hi.trans hkl
 
 lemma mem_unifEigenspace {f : End R M} {μ : R} {k : ℕ∞} {x : M} :
-    x ∈ f.unifEigenspace μ k ↔ ∃ l : ℕ, l ≤ k ∧ x ∈ LinearMap.ker ((f - μ • 1) ^ l) :=
-  mem_unifEigenspace_aux
-
-lemma unifEigenspace_mono (f : End R M) (μ : R) : Monotone (f.unifEigenspace μ) := by
-  intro k l hkl x
-  rw [mem_unifEigenspace, mem_unifEigenspace]
-  rintro ⟨n, hn, hx⟩
-  use n, hn.trans hkl, hx
+    x ∈ f.unifEigenspace μ k ↔ ∃ l : ℕ, l ≤ k ∧ x ∈ LinearMap.ker ((f - μ • 1) ^ l) := by
+  have : Nonempty {l : ℕ // l ≤ k} := ⟨⟨0, zero_le _⟩⟩
+  have : Directed (ι := { i : ℕ // i ≤ k }) (· ≤ ·) fun i ↦ LinearMap.ker ((f - μ • 1) ^ (i : ℕ)) :=
+    Monotone.directed_le fun m n h ↦ by simpa using (f - μ • 1).iterateKer.monotone h
+  simp_rw [unifEigenspace, OrderHom.coe_mk, LinearMap.mem_ker, iSup_subtype',
+    Submodule.mem_iSup_of_directed _ this, LinearMap.mem_ker, Subtype.exists, exists_prop]
 
 lemma unifEigenspace_directed {f : End R M} {μ : R} {k : ℕ∞} :
     Directed (· ≤ ·) (fun l : {l : ℕ // l ≤ k} ↦ f.unifEigenspace μ l) := by
@@ -114,9 +98,7 @@ lemma unifEigenspace_nat {f : End R M} {μ : R} {k : ℕ} :
 
 lemma unifEigenspace_eq_iSup_unifEigenspace_nat (f : End R M) (μ : R) (k : ℕ∞) :
     f.unifEigenspace μ k = ⨆ l : {l : ℕ // l ≤ k}, f.unifEigenspace μ l := by
-  show f.unifEigenspace_aux μ k = ⨆ l : {l : ℕ // l ≤ k}, f.unifEigenspace μ l
-  rw [unifEigenspace_aux]
-  simp only [iSup_subtype, unifEigenspace_nat]
+  simp_rw [unifEigenspace_nat, unifEigenspace, OrderHom.coe_mk, iSup_subtype]
 
 lemma unifEigenspace_top (f : End R M) (μ : R) :
     f.unifEigenspace μ ⊤ = ⨆ k : ℕ, f.unifEigenspace μ k := by
