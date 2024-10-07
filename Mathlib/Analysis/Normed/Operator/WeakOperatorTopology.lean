@@ -5,7 +5,6 @@ Authors: Frédéric Dupuis
 -/
 
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 
 /-!
