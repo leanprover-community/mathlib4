@@ -120,8 +120,8 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
     ext i j
     refine P₁.root.injective ?_
     conv_rhs => rw [hr]
-    rw [root_reflection_perm, root_reflection_perm]
-    simp only [hr, he, hc', reflection_apply]
+    simp only [root_reflection_perm, reflection_apply, coroot']
+    simp only [hr, he, hc']
   suffices P₁.coroot = P₂.coroot by
     cases' P₁ with p₁; cases' P₂ with p₂; cases p₁; cases p₂; congr; exact hp this
   have := NoZeroSMulDivisors.int_of_charZero R M

@@ -39,7 +39,7 @@ namespace Finset
 
 section Bipartite
 
-variable (r : α → β → Prop) (s : Finset α) (t : Finset β) (a a' : α) (b b' : β)
+variable (r : α → β → Prop) (s : Finset α) (t : Finset β) (a : α) (b : β)
   [DecidablePred (r a)] [∀ a, Decidable (r a b)] {m n : ℕ}
 
 /-- Elements of `s` which are "below" `b` according to relation `r`. -/
@@ -58,7 +58,7 @@ theorem coe_bipartiteBelow : s.bipartiteBelow r b = ({a ∈ s | r a b} : Set α)
 @[simp, norm_cast]
 theorem coe_bipartiteAbove : t.bipartiteAbove r a = ({b ∈ t | r a b} : Set β) := coe_filter _ _
 
-variable {s t a a' b b'}
+variable {s t a b}
 
 @[simp]
 theorem mem_bipartiteBelow {a : α} : a ∈ s.bipartiteBelow r b ↔ a ∈ s ∧ r a b := mem_filter
@@ -72,7 +72,7 @@ theorem sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow [∀ a b, Decidable (
   exact sum_comm
 
 section OrderedSemiring
-variable [OrderedSemiring R] [DecidablePred (r a)] [∀ a, Decidable (r a b)] {m n : R}
+variable [OrderedSemiring R] {m n : R}
 
 /-- **Double counting** argument.
 
@@ -100,7 +100,7 @@ end OrderedSemiring
 
 section StrictOrderedSemiring
 variable [StrictOrderedSemiring R] (r : α → β → Prop) {s : Finset α} {t : Finset β}
-  (a a' : α) (b b' : β) [DecidablePred (r a)] [∀ a, Decidable (r a b)] {m n : R}
+  (a b) {m n : R}
 
 /-- **Double counting** argument.
 

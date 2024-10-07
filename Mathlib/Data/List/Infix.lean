@@ -63,16 +63,11 @@ lemma dropSlice_subset (n m : ℕ) (l : List α) : l.dropSlice n m ⊆ l :=
 lemma mem_of_mem_dropSlice {n m : ℕ} {l : List α} {a : α} (h : a ∈ l.dropSlice n m) : a ∈ l :=
   dropSlice_subset n m l h
 
-attribute [gcongr] drop_sublist_drop_left
-
 theorem tail_subset (l : List α) : tail l ⊆ l :=
   (tail_sublist l).subset
 
 theorem mem_of_mem_dropLast (h : a ∈ l.dropLast) : a ∈ l :=
   dropLast_subset l h
-
-theorem mem_of_mem_tail (h : a ∈ l.tail) : a ∈ l :=
-  tail_subset l h
 
 attribute [gcongr] Sublist.drop
 
@@ -82,6 +77,14 @@ theorem concat_get_prefix {x y : List α} (h : x <+: y) (hl : x.length < y.lengt
   nth_rw 1 [List.prefix_iff_eq_take.mp h]
   convert List.take_append_drop (x.length + 1) y using 2
   rw [← List.take_concat_get, List.concat_eq_append]; rfl
+
+instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <:+: l₂)
+  | [], l₂ => isTrue ⟨[], l₂, rfl⟩
+  | a :: l₁, [] => isFalse fun ⟨s, t, te⟩ => by simp at te
+  | l₁, b :: l₂ =>
+    letI := l₁.decidableInfix l₂
+    @decidable_of_decidable_of_iff (l₁ <+: b :: l₂ ∨ l₁ <:+: l₂) _ _
+      infix_cons_iff.symm
 
 @[deprecated cons_prefix_cons (since := "2024-08-14")]
 theorem cons_prefix_iff : a :: l₁ <+: b :: l₂ ↔ a = b ∧ l₁ <+: l₂ := by
@@ -154,7 +157,17 @@ theorem inits_cons (a : α) (l : List α) : inits (a :: l) = [] :: l.inits.map f
 
 theorem tails_cons (a : α) (l : List α) : tails (a :: l) = (a :: l) :: l.tails := by simp
 
-@[simp]
+#adaptation_note
+/--
+This can be removed after nightly-2024-09-07.
+-/
+attribute [-simp] map_tail
+
+#adaptation_note
+/--
+`nolint simpNF` should be removed after nightly-2024-09-07.
+-/
+@[simp, nolint simpNF]
 theorem inits_append : ∀ s t : List α, inits (s ++ t) = s.inits ++ t.inits.tail.map fun l => s ++ l
   | [], [] => by simp
   | [], a :: t => by simp

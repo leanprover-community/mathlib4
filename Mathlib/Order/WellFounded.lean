@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.Set.Function
+import Mathlib.Order.Bounds.Basic
 
 /-!
 # Well-founded relations
@@ -187,6 +188,16 @@ theorem WellFounded.self_le_of_strictMono (h : WellFounded ((· < ·) : β → �
   by_contra! h₁
   have h₂ := h.min_mem _ h₁
   exact h.not_lt_min _ h₁ (hf h₂) h₂
+
+theorem StrictMono.not_bddAbove_range_of_wellFoundedLT {f : β → β} [WellFoundedLT β] [NoMaxOrder β]
+    (hf : StrictMono f) : ¬ BddAbove (Set.range f) := by
+  rintro ⟨a, ha⟩
+  obtain ⟨b, hb⟩ := exists_gt a
+  exact ((hf.le_apply.trans_lt (hf hb)).trans_le <| ha (Set.mem_range_self _)).false
+
+theorem StrictMono.not_bddBelow_range_of_wellFoundedGT {f : β → β} [WellFoundedGT β] [NoMinOrder β]
+    (hf : StrictMono f) : ¬ BddBelow (Set.range f) :=
+  hf.dual.not_bddAbove_range_of_wellFoundedLT
 
 end LinearOrder
 

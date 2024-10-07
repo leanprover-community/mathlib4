@@ -47,6 +47,10 @@ theorem Chain.iff_mem {a : α} {l : List α} :
 theorem chain_singleton {a b : α} : Chain R a [b] ↔ R a b := by
   simp only [chain_cons, Chain.nil, and_true]
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefix below.
+-/
 theorem chain_split {a b : α} {l₁ l₂ : List α} :
     Chain R a (l₁ ++ b :: l₂) ↔ Chain R a (l₁ ++ [b]) ∧ Chain R b l₂ := by
   induction' l₁ with x l₁ IH generalizing a <;>
@@ -138,6 +142,19 @@ theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
     intro i w
     exact h (i+1) (by simp only [length_cons]; omega)
 
+theorem chain_replicate_of_rel (n : ℕ) {a : α} (h : r a a) : Chain r a (replicate n a) :=
+  match n with
+  | 0 => Chain.nil
+  | n + 1 => Chain.cons h (chain_replicate_of_rel n h)
+
+theorem chain_eq_iff_eq_replicate {a : α} {l : List α} :
+    Chain (· = ·) a l ↔ l = replicate l.length a :=
+  match l with
+  | [] => by simp
+  | b :: l => by
+    rw [chain_cons]
+    simp (config := {contextual := true}) [eq_comm, replicate_succ, chain_eq_iff_eq_replicate]
+
 theorem Chain'.imp {S : α → α → Prop} (H : ∀ a b, R a b → S a b) {l : List α} (p : Chain' R l) :
     Chain' S l := by cases l <;> [trivial; exact Chain.imp H p]
 
@@ -226,14 +243,18 @@ theorem Chain'.cons' {x} : ∀ {l : List α}, Chain' R l → (∀ y ∈ l.head?,
 theorem chain'_cons' {x l} : Chain' R (x :: l) ↔ (∀ y ∈ head? l, R x y) ∧ Chain' R l :=
   ⟨fun h => ⟨h.rel_head?, h.tail⟩, fun ⟨h₁, h₂⟩ => h₂.cons' h₁⟩
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefixes below.
+-/
 theorem chain'_append :
     ∀ {l₁ l₂ : List α},
       Chain' R (l₁ ++ l₂) ↔ Chain' R l₁ ∧ Chain' R l₂ ∧ ∀ x ∈ l₁.getLast?, ∀ y ∈ l₂.head?, R x y
   | [], l => by simp
-  | [a], l => by simp [chain'_cons', and_comm]
+  | [a], l => by simp [chain'_cons', _root_.and_comm]
   | a :: b :: l₁, l₂ => by
     rw [cons_append, cons_append, chain'_cons, chain'_cons, ← cons_append, chain'_append,
-      and_assoc]
+      _root_.and_assoc]
     simp
 
 theorem Chain'.append (h₁ : Chain' R l₁) (h₂ : Chain' R l₂)
@@ -272,12 +293,16 @@ theorem Chain'.imp_head {x y} (h : ∀ {z}, R x z → R y z) {l} (hl : Chain' R 
     Chain' R (y :: l) :=
   hl.tail.cons' fun _ hz => h <| hl.rel_head? hz
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefix below.
+-/
 theorem chain'_reverse : ∀ {l}, Chain' R (reverse l) ↔ Chain' (flip R) l
   | [] => Iff.rfl
   | [a] => by simp only [chain'_singleton, reverse_singleton]
   | a :: b :: l => by
     rw [chain'_cons, reverse_cons, reverse_cons, append_assoc, cons_append, nil_append,
-      chain'_split, ← reverse_cons, @chain'_reverse (b :: l), and_comm, chain'_pair, flip]
+      chain'_split, ← reverse_cons, @chain'_reverse (b :: l), _root_.and_comm, chain'_pair, flip]
 
 theorem chain'_iff_get {R} : ∀ {l : List α}, Chain' R l ↔
     ∀ (i : ℕ) (h : i < length l - 1),
@@ -295,6 +320,10 @@ theorem Chain'.append_overlap {l₁ l₂ l₃ : List α} (h₁ : Chain' R (l₁ 
   h₁.append h₂.right_of_append <| by
     simpa only [getLast?_append_of_ne_nil _ hn] using (chain'_append.1 h₂).2.2
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefix below.
+-/
 lemma chain'_join : ∀ {L : List (List α)}, [] ∉ L →
     (Chain' R L.join ↔ (∀ l ∈ L, Chain' R l) ∧
     L.Chain' (fun l₁ l₂ => ∀ᵉ (x ∈ l₁.getLast?) (y ∈ l₂.head?), R x y))
@@ -304,7 +333,7 @@ lemma chain'_join : ∀ {L : List (List α)}, [] ∉ L →
     rw [mem_cons, not_or, ← Ne] at hL
     rw [join, chain'_append, chain'_join hL.2, forall_mem_cons, chain'_cons]
     rw [mem_cons, not_or, ← Ne] at hL
-    simp only [forall_mem_cons, and_assoc, join, head?_append_of_ne_nil _ hL.2.1.symm]
+    simp only [forall_mem_cons, _root_.and_assoc, join, head?_append_of_ne_nil _ hL.2.1.symm]
     exact Iff.rfl.and (Iff.rfl.and <| Iff.rfl.and and_comm)
 
 /-- If `a` and `b` are related by the reflexive transitive closure of `r`, then there is an
@@ -418,6 +447,17 @@ lemma Chain'.iterate_eq_of_apply_eq {α : Type*} {f : α → α} {l : List α}
     rw [List.chain'_iff_get] at hl
     apply hl
     omega
+
+theorem chain'_replicate_of_rel (n : ℕ) {a : α} (h : r a a) : Chain' r (replicate n a) :=
+  match n with
+  | 0 => chain'_nil
+  | n + 1 => chain_replicate_of_rel n h
+
+theorem chain'_eq_iff_eq_replicate {l : List α} :
+    Chain' (· = ·) l ↔ ∀ a ∈ l.head?, l = replicate l.length a :=
+  match l with
+  | [] => by simp
+  | a :: l => by simp [Chain', chain_eq_iff_eq_replicate, replicate_succ]
 
 end List
 

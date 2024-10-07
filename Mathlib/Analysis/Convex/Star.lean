@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.Module.Synonym
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Analysis.Convex.Segment
 import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.Module
 
 /-!
 # Star-convex sets
@@ -210,14 +211,14 @@ theorem StarConvex.add_left (hs : StarConvex 𝕜 x s) (z : E) :
   intro y hy a b ha hb hab
   obtain ⟨y', hy', rfl⟩ := hy
   refine ⟨a • x + b • y', hs hy' ha hb hab, ?_⟩
-  rw [smul_add, smul_add, add_add_add_comm, ← add_smul, hab, one_smul]
+  match_scalars <;> simp [hab]
 
 theorem StarConvex.add_right (hs : StarConvex 𝕜 x s) (z : E) :
     StarConvex 𝕜 (x + z) ((fun x => x + z) '' s) := by
   intro y hy a b ha hb hab
   obtain ⟨y', hy', rfl⟩ := hy
   refine ⟨a • x + b • y', hs hy' ha hb hab, ?_⟩
-  rw [smul_add, smul_add, add_add_add_comm, ← add_smul, hab, one_smul]
+  match_scalars <;> simp [hab]
 
 /-- The translation of a star-convex set is also star-convex. -/
 theorem StarConvex.preimage_add_right (hs : StarConvex 𝕜 (z + x) s) :
