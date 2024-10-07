@@ -450,10 +450,12 @@ theorem mem_basicOpen (x : X) (hx : x ∈ U) :
     x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ U x hx f) :=
   RingedSpace.mem_basicOpen _ _ _ _
 
+/-- A variant of `mem_basicOpen` for bundled `x : U`. -/
 @[simp]
 theorem mem_basicOpen' (x : U) : ↑x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ U x x.2 f) :=
   RingedSpace.mem_basicOpen _ _ _ _
 
+/-- A variant of `mem_basicOpen` without the `x ∈ U` assupmtion. -/
 theorem mem_basicOpen'' {U : X.Opens} (f : Γ(X, U)) (x : X) :
     x ∈ X.basicOpen f ↔ ∃ (m : x ∈ U), IsUnit (X.presheaf.germ U x m f) :=
   Iff.rfl

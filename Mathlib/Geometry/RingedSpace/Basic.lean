@@ -91,7 +91,7 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
     apply section_ext X.sheaf (V x ⊓ V y)
     rintro z ⟨hzVx, hzVy⟩
     erw [germ_res_apply, germ_res_apply]
-    apply (IsUnit.mul_right_inj (h z ((iVU x).le hzVx))).mp
+    apply (h z ((iVU x).le hzVx)).mul_right_inj.mp
     -- Porting note: now need explicitly typing the rewrites
     rw [← X.presheaf.germ_res_apply (iVU x) z hzVx f]
     -- Porting note: change was not necessary in Lean3
@@ -131,6 +131,7 @@ theorem mem_basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) (x : X) (hx : x 
     x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ U x hx f) :=
   ⟨Exists.choose_spec, (⟨hx, ·⟩)⟩
 
+/-- A variant of `mem_basicOpen` with bundled `x : U`. -/
 @[simp]
 theorem mem_basicOpen' {U : Opens X} (f : X.presheaf.obj (op U)) (x : U) :
     ↑x ∈ X.basicOpen f ↔ IsUnit (X.presheaf.germ U x.1 x.2 f) :=
