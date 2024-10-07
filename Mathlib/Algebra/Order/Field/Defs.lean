@@ -82,6 +82,18 @@ lemma mul_div_mul_left_le (h : 0 ≤ a / b) : c * a / (c * b) ≤ a / b := by
   · simpa
   · rw [mul_div_mul_left _ _ hc]
 
+/-- Equality holds when `c ≠ 0`. See `mul_div_mul_left`. -/
+lemma le_mul_div_mul_left (h : a / b ≤ 0) : a / b ≤ c * a / (c * b) := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simpa
+  · rw [mul_div_mul_left _ _ hc]
+
+/-- Equality holds when `c ≠ 0`. See `mul_div_mul_right`. -/
+lemma le_mul_div_mul_right (h : a / b ≤ 0) : a / b ≤ a * c / (b * c) := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simpa
+  · rw [mul_div_mul_right _ _ hc]
+
 /-- Equality holds when `c ≠ 0`. See `mul_div_mul_right`. -/
 lemma mul_div_mul_right_le (h : 0 ≤ a / b) : a * c / (b * c) ≤ a / b := by
   obtain rfl | hc := eq_or_ne c 0
