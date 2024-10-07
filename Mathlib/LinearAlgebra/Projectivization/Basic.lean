@@ -78,7 +78,7 @@ theorem rep_nonzero (v : ℙ K V) : v.rep ≠ 0 :=
 @[simp]
 theorem mk_rep (v : ℙ K V) : mk K v.rep v.rep_nonzero = v := Quotient.out_eq' _
 
-open FiniteDimensional
+open Module
 
 /-- Consider an element of the projectivization as a submodule of `V`. -/
 protected def submodule (v : ℙ K V) : Submodule K V :=

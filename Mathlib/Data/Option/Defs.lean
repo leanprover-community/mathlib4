@@ -75,10 +75,6 @@ abbrev iget [Inhabited α] : Option α → α
 theorem iget_some [Inhabited α] {a : α} : (some a).iget = a :=
   rfl
 
-@[simp]
-theorem mem_toList {a : α} {o : Option α} : a ∈ toList o ↔ a ∈ o := by
-  cases o <;> simp [toList, eq_comm]
-
 instance liftOrGet_isCommutative (f : α → α → α) [Std.Commutative f] :
     Std.Commutative (liftOrGet f) :=
   ⟨fun a b ↦ by cases a <;> cases b <;> simp [liftOrGet, Std.Commutative.comm]⟩
