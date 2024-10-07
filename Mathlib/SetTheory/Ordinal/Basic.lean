@@ -489,15 +489,11 @@ theorem relIso_enum {α β : Type u} {r : α → α → Prop} {s : β → β →
 /-- The order isomorphism between ordinals less than `o` and `o.toType`. -/
 @[simps! (config := .lemmasOnly)]
 noncomputable def enumIsoToType (o : Ordinal) : Set.Iio o ≃o o.toType where
-  toFun x := enum (α := o.toType) (· < ·) ⟨x.1, by
-    rw [type_lt]
-    exact x.2⟩
+  toFun x := enum (α := o.toType) (· < ·) ⟨x.1, type_lt _ ▸ x.2⟩
   invFun x := ⟨typein (α := o.toType) (· < ·) x, typein_lt_self x⟩
-  left_inv := fun ⟨o', h⟩ => Subtype.ext_val (typein_enum _ _)
-  right_inv h := enum_typein _ _
-  map_rel_iff' := by
-    rintro ⟨a, _⟩ ⟨b, _⟩
-    apply enum_le_enum'
+  left_inv _ := Subtype.ext_val (typein_enum _ _)
+  right_inv _ := enum_typein _ _
+  map_rel_iff' := enum_le_enum' _
 
 @[deprecated (since := "2024-08-26")]
 alias enumIsoOut := enumIsoToType
