@@ -81,13 +81,13 @@ end Quot
 namespace Quotient
 
 @[reducible]
-protected def liftFinsupp {α : Type*} {β : Type*} [s : Setoid α] [Zero β] (f : α →₀ β) :
+protected def liftFinsupp {α : Type*} {β : Type*} {s : Setoid α} [Zero β] (f : α →₀ β) :
     (∀ a b, a ≈ b → f a = f b) → Quotient s →₀ β :=
   Quot.liftFinsupp f
 
 set_option linter.docPrime false in -- Quotient.mk'
 @[simp]
-theorem liftFinsupp_mk' {α : Type*} {β : Type*} [Setoid α] [Zero β] (f : α →₀ β)
+theorem liftFinsupp_mk' {α : Type*} {β : Type*} {_ : Setoid α} [Zero β] (f : α →₀ β)
     (h : ∀ a b : α, a ≈ b → f a = f b) (x : α) : Quotient.liftFinsupp f h (Quotient.mk' x) = f x :=
   rfl
 
@@ -248,12 +248,16 @@ section toConjEquiv
 variable (F : Type*) [Field F] [Algebra ℚ F]
 
 open GalConjClasses
+open scoped IsGalConj
 
 def toConjEquiv : mapDomainFixed s F ≃ (GalConjClasses ℚ (K s) →₀ F) := by
   refine (mapDomainFixedEquivSubtype s F).trans ?_
   let f'
       (f : { f : AddMonoidAlgebra F (K s) // MulAction.orbitRel (Gal s) (K s) ≤ Setoid.ker ↑f }) :=
-    @Quotient.liftFinsupp _ _ (IsGalConj.setoid _ _) _ (f : AddMonoidAlgebra F (K s)) f.2
+    Quotient.liftFinsupp (s := IsGalConj.setoid _ _) (f : AddMonoidAlgebra F (K s)) (by
+      change ∀ _ _, _ ≈g[ℚ] _ → _
+      simp_rw [isGalConj_iff]
+      exact f.2)
   refine
     { toFun := f'
       invFun := fun f => ⟨?_, ?_⟩
@@ -263,7 +267,7 @@ def toConjEquiv : mapDomainFixed s F ≃ (GalConjClasses ℚ (K s) →₀ F) := 
       fun i => ?_⟩
     simp_rw [mem_biUnion, Set.mem_toFinset, mem_orbit, Finsupp.mem_support_iff, exists_eq_right']
   · change ∀ i j, i ∈ MulAction.orbit (Gal s) j → f (Quotient.mk'' i) = f (Quotient.mk'' j)
-    exact fun i j h => congr_arg f (Quotient.sound' h)
+    exact fun i j h => congr_arg f (Quotient.sound' (isGalConj_iff.mpr h))
   · exact fun _ => Subtype.eq <| Finsupp.ext fun x => rfl
   · refine fun f => Finsupp.ext fun x => Quotient.inductionOn' x fun i => rfl
 
@@ -438,7 +442,7 @@ theorem ToConjEquivSymmSingle.aux (x : GalConjClasses ℚ (K s)) (a : F) :
   simp_rw [Finsupp.indicator_apply, Set.mem_toFinset]; dsimp; congr 1
   simp_rw [mem_orbit, eq_iff_iff]
   apply Eq.congr_left
-  rwa [GalConjClasses.mk_eq_mk]
+  rwa [GalConjClasses.mk_eq_mk, isGalConj_iff]
 
 theorem toConjEquiv_symm_single (x : GalConjClasses ℚ (K s)) (a : F) :
     (toConjEquiv s F).symm (Finsupp.single x a) =
