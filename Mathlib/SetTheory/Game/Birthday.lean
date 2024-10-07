@@ -290,7 +290,7 @@ theorem small_setOf_birthday_lt (o : Ordinal) : Small.{u} {x : Game.{u} // birth
       let g := fun z : S ↦ (∃ i, ⟦y.moveLeft i⟧ = z.1, ∃ j, ⟦y.moveRight j⟧ = z.1)
       use g
       rw [← hy]
-      apply PGame.game_eq <| PGame.equiv_of_exists _ _ _ _ <;>
+      apply PGame.game_eq <| PGame.Equiv.of_exists _ _ _ _ <;>
       intro i
       · obtain ⟨j, hj⟩ := ((equivShrink {y // (g y).1}).symm i).2
         refine ⟨j, PGame.equiv_iff_game_eq.2 ?_⟩
