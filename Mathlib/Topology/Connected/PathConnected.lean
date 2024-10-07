@@ -200,7 +200,7 @@ instance topologicalSpace : TopologicalSpace (Path x y) :=
 
 theorem continuous_eval : Continuous fun p : Path x y × I => p.1 p.2 :=
   ContinuousMap.continuous_eval.comp <|
-    (continuous_induced_dom (α := Path x y)).prod_map continuous_id
+    (continuous_induced_dom (α := Path x y)).prodMap continuous_id
 
 @[continuity]
 theorem _root_.Continuous.path_eval {Y} [TopologicalSpace Y] {f : Y → Path x y} {g : Y → I}
@@ -423,7 +423,7 @@ theorem cast_coe (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : (γ.cast 
 theorem symm_continuous_family {ι : Type*} [TopologicalSpace ι]
     {a b : ι → X} (γ : ∀ t : ι, Path (a t) (b t)) (h : Continuous ↿γ) :
     Continuous ↿fun t => (γ t).symm :=
-  h.comp (continuous_id.prod_map continuous_symm)
+  h.comp (continuous_id.prodMap continuous_symm)
 
 @[continuity]
 theorem continuous_symm : Continuous (symm : Path x y → Path y x) :=
@@ -433,7 +433,7 @@ theorem continuous_symm : Continuous (symm : Path x y → Path y x) :=
 theorem continuous_uncurry_extend_of_continuous_family {ι : Type*} [TopologicalSpace ι]
     {a b : ι → X} (γ : ∀ t : ι, Path (a t) (b t)) (h : Continuous ↿γ) :
     Continuous ↿fun t => (γ t).extend := by
-  apply h.comp (continuous_id.prod_map continuous_projIcc)
+  apply h.comp (continuous_id.prodMap continuous_projIcc)
   exact zero_le_one
 
 @[continuity]
@@ -447,12 +447,12 @@ theorem trans_continuous_family {ι : Type*} [TopologicalSpace ι]
   refine Continuous.if_le ?_ ?_ (continuous_subtype_val.comp continuous_snd) continuous_const ?_
   · change
       Continuous ((fun p : ι × ℝ => (γ₁ p.1).extend p.2) ∘ Prod.map id (fun x => 2 * x : I → ℝ))
-    exact h₁'.comp (continuous_id.prod_map <| continuous_const.mul continuous_subtype_val)
+    exact h₁'.comp (continuous_id.prodMap <| continuous_const.mul continuous_subtype_val)
   · change
       Continuous ((fun p : ι × ℝ => (γ₂ p.1).extend p.2) ∘ Prod.map id (fun x => 2 * x - 1 : I → ℝ))
     exact
       h₂'.comp
-        (continuous_id.prod_map <|
+        (continuous_id.prodMap <|
           (continuous_const.mul continuous_subtype_val).sub continuous_const)
   · rintro st hst
     simp [hst, mul_inv_cancel₀ (two_ne_zero' ℝ)]
