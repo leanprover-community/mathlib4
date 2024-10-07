@@ -8,6 +8,7 @@ import Mathlib.Analysis.InnerProductSpace.Spectrum
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Order.CompleteLattice
 import Mathlib.LinearAlgebra.Eigenspace.Basic
+import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
 
 /-! # Joint eigenspaces of commuting symmetric operators
 
@@ -164,6 +165,18 @@ end RCLike
 
 open Module End
 
+/--Need to write, or find, a genEigenspace version of the result below. -/
+/-- If `F` is an invariant subspace of a symmetric operator `S`, then `F` is the supremum of the
+generalized eigenspaces of the restriction of `S` to `F`. -/
+theorem iSup_genEigenspace_restrict {F : Submodule 𝕜 E}
+    (S : E →ₗ[𝕜] E) (hS : IsSymmetric S) (hInv : Set.MapsTo S F F) :
+    ⨆ μ, map F.subtype (eigenspace (S.restrict hInv) μ) = F := by
+  conv_lhs => rw [← Submodule.map_iSup]
+  conv_rhs => rw [← map_subtype_top F]
+  congr!
+  have H : IsSymmetric (S.restrict hInv) := fun x y ↦ hS (F.subtype x) y
+  apply orthogonal_eq_bot_iff.mp (H.orthogonalComplement_iSup_eigenspaces_eq_bot)
+
 lemma iSup_iInf_maxGenEigenspace_eq_top_of_commute {ι K V : Type*}
     [Finite ι] [Field K] [DecidableEq K] [AddCommGroup V] [Module K V] [FiniteDimensional K V]
     (f : ι → End K V) (h : Pairwise fun i j ↦ Commute (f i) (f j))
@@ -183,7 +196,7 @@ lemma iSup_iInf_maxGenEigenspace_eq_top_of_commute {ι K V : Type*}
      (Subtype.restrict (· ≠ i) f) (fun _ _ _ ↦ hf <| by simpa [Subtype.coe_ne_coe]) (hC ·)
     rw [← (Equiv.funSplitAt i K).symm.iSup_comp, iSup_prod, iSup_comm]
     convert H with γ
-    rw [← iSup_eigenspace_restrict (f i) (hf i) (F := ⨅ j, eigenspace _ _)]
+    rw [← iSup_eigenspace_restrict (f i) (hf i) (F := ⨅ j, eigenspace _ _)] --use genEigenspace ver.
     swap
     · exact mapsTo_iInf_genEigenspace_of_forall_comm (fun j : {j // j ≠ i} ↦ hC j i) γ 1
     congr! with μ
