@@ -345,7 +345,10 @@ section Norm
 
 variable {α : Type*} {𝕜 : Type*} {R : Type*} [TopologicalSpace α] [CompactSpace α] [Zero α]
 
-noncomputable instance [MetricSpace R] [Zero R]: MetricSpace C(α, R)₀ :=
+noncomputable instance [PseudoMetricSpace R] [Zero R] : PseudoMetricSpace C(α, R)₀ :=
+  ContinuousMapZero.isUniformEmbedding_toContinuousMap.comapPseudoMetricSpace _
+
+noncomputable instance [MetricSpace R] [Zero R] : MetricSpace C(α, R)₀ :=
   ContinuousMapZero.isUniformEmbedding_toContinuousMap.comapMetricSpace _
 
 noncomputable instance [NormedAddCommGroup R] : Norm C(α, R)₀ where
