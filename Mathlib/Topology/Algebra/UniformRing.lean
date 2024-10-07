@@ -47,7 +47,7 @@ instance one : One (Completion α) :=
   ⟨(1 : α)⟩
 
 instance mul : Mul (Completion α) :=
-  ⟨curry <| (isDenseInducing_coe.prod isDenseInducing_coe).extend ((↑) ∘ uncurry (· * ·))⟩
+  ⟨curry <| (isDenseInducing_coe.prodMap isDenseInducing_coe).extend ((↑) ∘ uncurry (· * ·))⟩
 
 @[norm_cast]
 theorem coe_one : ((1 : α) : Completion α) = 1 :=
@@ -59,7 +59,7 @@ variable {α : Type*} [Ring α] [UniformSpace α] [TopologicalRing α]
 
 @[norm_cast]
 theorem coe_mul (a b : α) : ((a * b : α) : Completion α) = a * b :=
-  ((isDenseInducing_coe.prod isDenseInducing_coe).extend_eq
+  ((isDenseInducing_coe.prodMap isDenseInducing_coe).extend_eq
       ((continuous_coe α).comp (@continuous_mul α _ _ _)) (a, b)).symm
 
 variable [UniformAddGroup α]
