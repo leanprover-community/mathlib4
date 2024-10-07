@@ -82,6 +82,11 @@ theorem toOrderEmbedding_apply [PartialOrder α] [PartialOrder β]
     (f : @InitialSeg α β (· < ·) (· < ·)) (x : α) : f.toOrderEmbedding x = f x :=
   rfl
 
+@[simp]
+theorem coe_toOrderEmbedding [PartialOrder α] [PartialOrder β]
+    (f : @InitialSeg α β (· < ·) (· < ·)) : (f.toOrderEmbedding : α → β) = f :=
+  rfl
+
 @[ext] lemma ext {f g : r ≼i s} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 
