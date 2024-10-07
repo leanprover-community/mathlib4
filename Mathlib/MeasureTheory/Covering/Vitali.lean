@@ -155,7 +155,8 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
 /-- Vitali covering theorem, closed balls version: given a family `t` of closed balls, one can
 extract a disjoint subfamily `u ⊆ t` so that all balls in `t` are covered by the τ-times
 dilations of balls in `u`, for some `τ > 3`. -/
-theorem exists_disjoint_subfamily_covering_enlargment_closedBall [MetricSpace α] (t : Set ι)
+theorem exists_disjoint_subfamily_covering_enlargment_closedBall
+    [PseudoMetricSpace α] (t : Set ι)
     (x : ι → α) (r : ι → ℝ) (R : ℝ) (hr : ∀ a ∈ t, r a ≤ R) (τ : ℝ) (hτ : 3 < τ) :
     ∃ u ⊆ t,
       (u.PairwiseDisjoint fun a => closedBall (x a) (r a)) ∧
@@ -200,7 +201,8 @@ Then one can extract from `t` a disjoint subfamily that covers almost all `s`.
 
 For more flexibility, we give a statement with a parameterized family of sets.
 -/
-theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
+theorem exists_disjoint_covering_ae
+    [PseudoMetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
     [SecondCountableTopology α] (μ : Measure α) [IsLocallyFiniteMeasure μ] (s : Set α) (t : Set ι)
     (C : ℝ≥0) (r : ι → ℝ) (c : ι → α) (B : ι → Set α) (hB : ∀ a ∈ t, B a ⊆ closedBall (c a) (r a))
     (μB : ∀ a ∈ t, μ (closedBall (c a) (3 * r a)) ≤ C * μ (B a))
@@ -390,7 +392,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
 doubling. Then the set of closed sets `a` with nonempty interior contained in `closedBall x r` and
 covering a fixed proportion `1/C` of the ball `closedBall x (3 * r)` forms a Vitali family.
 This is essentially a restatement of the measurable Vitali theorem. -/
-protected def vitaliFamily [MetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
+protected def vitaliFamily [PseudoMetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
     [SecondCountableTopology α] (μ : Measure α) [IsLocallyFiniteMeasure μ] (C : ℝ≥0)
     (h : ∀ x, ∃ᶠ r in 𝓝[>] 0, μ (closedBall x (3 * r)) ≤ C * μ (closedBall x r)) :
     VitaliFamily μ where
