@@ -130,7 +130,7 @@ lemma schwartz_zippel : ∀ {n} {p : MvPolynomial (Fin n) R} (hp : p ≠ 0) (S :
           calc
             #{x₀ ∈ S 0 | eval (cons x₀ xₜ) p = 0} ≤ #pₓ.roots.toFinset := by
               gcongr
-              simp (config := { contextual := true}) [subset_iff, eval_eq_eval_mv_eval', pₓ, hpₓ₀]
+              simp (config := { contextual := true }) [subset_iff, eval_eq_eval_mv_eval', pₓ, hpₓ₀]
             _ ≤ Multiset.card pₓ.roots := pₓ.roots.toFinset_card_le
             _ ≤ pₓ.natDegree := pₓ.card_roots'
             _ = k := hpₓdeg
