@@ -370,6 +370,10 @@ theorem liftPropWithinAt_congr_of_eventuallyEq (h : LiftPropWithinAt P g s x) (h
     (fun y ↦ chartAt H' (g' x) (g' y) = chartAt H' (g x) (g y)) (mem_chart_source H x)]
   exact h₁.mono fun y hy ↦ by rw [hx, hy]
 
+theorem liftPropWithinAt_congr_of_eventuallyEq_of_mem (h : LiftPropWithinAt P g s x)
+    (h₁ : g' =ᶠ[𝓝[s] x] g) (h₂ : x ∈ s) : LiftPropWithinAt P g' s x :=
+  liftPropWithinAt_congr_of_eventuallyEq hG h h₁ (mem_of_mem_nhdsWithin h₂ h₁ : _)
+
 theorem liftPropWithinAt_congr_iff_of_eventuallyEq (h₁ : g' =ᶠ[𝓝[s] x] g) (hx : g' x = g x) :
     LiftPropWithinAt P g' s x ↔ LiftPropWithinAt P g s x :=
   ⟨fun h ↦ hG.liftPropWithinAt_congr_of_eventuallyEq h h₁.symm hx.symm,

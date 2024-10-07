@@ -94,6 +94,12 @@ theorem UniqueMDiffOn.uniqueDiffOn_target_inter (hs : UniqueMDiffOn I s) (x : M)
     (fun y hy ↦ hasMFDerivWithinAt_extChartAt I hy.2)
     fun y hy ↦ ((mdifferentiable_chart _ _).mfderiv_surjective hy.2).denseRange
 
+theorem UniqueMDiffOn.uniqueDiffWithinAt_range_inter (hs : UniqueMDiffOn I s) (x : M) (y : E)
+    (hy : y ∈ (extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) :
+    UniqueDiffWithinAt 𝕜 (range I ∩ (extChartAt I x).symm ⁻¹' s) y := by
+  apply (hs.uniqueDiffOn_target_inter x y hy).mono
+  apply inter_subset_inter_left _ (extChartAt_target_subset_range I x)
+
 /-- When considering functions between manifolds, this statement shows up often. It entails
 the unique differential of the pullback in extended charts of the set where the function can
 be read in the charts. -/

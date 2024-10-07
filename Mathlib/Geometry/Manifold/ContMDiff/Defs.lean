@@ -800,6 +800,11 @@ theorem ContMDiffWithinAt.congr_of_eventuallyEq (h : ContMDiffWithinAt I I' n f 
     (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) : ContMDiffWithinAt I I' n f₁ s x :=
   (contDiffWithinAt_localInvariantProp I I' n).liftPropWithinAt_congr_of_eventuallyEq h h₁ hx
 
+theorem ContMDiffWithinAt.congr_of_eventuallyEq_of_mem (h : ContMDiffWithinAt I I' n f s x)
+    (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s) : ContMDiffWithinAt I I' n f₁ s x :=
+  (contDiffWithinAt_localInvariantProp I I' n).liftPropWithinAt_congr_of_eventuallyEq_of_mem h h₁ hx
+
+
 theorem Filter.EventuallyEq.contMDiffWithinAt_iff (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
     ContMDiffWithinAt I I' n f₁ s x ↔ ContMDiffWithinAt I I' n f s x :=
   (contDiffWithinAt_localInvariantProp I I' n).liftPropWithinAt_congr_iff_of_eventuallyEq h₁ hx
