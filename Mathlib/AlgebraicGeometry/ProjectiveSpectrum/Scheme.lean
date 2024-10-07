@@ -693,6 +693,7 @@ lemma toStalk_stalkMap_toSpec (f) (x) :
   simp_rw [CommRingCat.coe_of, ← Spec.locallyRingedSpaceObj_presheaf']
   rw [LocallyRingedSpace.stalkMap_germ (toSpec 𝒜 f),
     toOpen_toSpec_val_c_app_assoc, Presheaf.germ_res]
+  rfl
 
 /--
 If `x` is a point in the basic open set `D(f)` where `f` is a homogeneous element of positive
