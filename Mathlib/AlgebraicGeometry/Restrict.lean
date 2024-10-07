@@ -87,6 +87,10 @@ lemma range_ι : Set.range U.ι.val.base = U :=
 lemma ι_image_top : U.ι ''ᵁ ⊤ = U :=
   U.openEmbedding_obj_top
 
+lemma ι_image_le (W : U.toScheme.Opens) : U.ι ''ᵁ W ≤ U := by
+  simp_rw [← U.ι_image_top]
+  exact U.ι.image_le_image_of_le le_top
+
 @[simp]
 lemma ι_preimage_self : U.ι ⁻¹ᵁ U = ⊤ :=
   Opens.inclusion'_map_eq_top _
@@ -216,8 +220,10 @@ def Scheme.restrictFunctor : X.Opens ⥤ Over X where
 @[simp] lemma Scheme.restrictFunctor_obj_hom (U : X.Opens) :
   (X.restrictFunctor.obj U).hom = U.ι := rfl
 
-@[simp] lemma Scheme.restrictFunctor_map_left {U V : X.Opens} (i : U ⟶ V) :
-  (X.restrictFunctor.map i).left = IsOpenImmersion.lift (V.ι) U.ι (by simpa using i.le) := rfl
+/-- This is not a `simp` lemma, as `(X.restricFunctor.map i).left` is used as the `simp`
+normal-form for the induced morphism `U.toScheme ⟶ V.toScheme`. -/
+lemma Scheme.restrictFunctor_map_left {U V : X.Opens} (i : U ⟶ V) :
+    (X.restrictFunctor.map i).left = IsOpenImmersion.lift (V.ι) U.ι (by simpa using i.le) := rfl
 
 -- Porting note: the `by ...` used to be automatically done by unification magic
 @[reassoc]
@@ -258,7 +264,7 @@ def Scheme.restrictFunctorΓ : X.restrictFunctor.op ⋙ (Over.forget X).op ⋙ S
     (fun U => X.presheaf.mapIso ((eqToIso (unop U).openEmbedding_obj_top).symm.op : _))
     (by
       intro U V i
-      dsimp [-Scheme.restrictFunctor_map_left]
+      dsimp
       rw [X.restrictFunctor_map_app, ← Functor.map_comp, ← Functor.map_comp]
       congr 1)
 
@@ -514,6 +520,80 @@ instance {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) [IsOpenImmersion f] :
     IsOpenImmersion (f ∣_ U) := by
   delta morphismRestrict
   exact PresheafedSpace.IsOpenImmersion.comp _ _
+
+variable {X Y : Scheme.{u}}
+
+namespace Scheme.Hom
+
+/-- The restriction of a morphism `f : X ⟶ Y` to open sets on the source and target. -/
+def resLE (f : Hom X Y) (U : Y.Opens) (V : X.Opens) (e : V ≤ f ⁻¹ᵁ U) : V.toScheme ⟶ U.toScheme :=
+  (X.restrictFunctor.map (homOfLE e)).left ≫ f ∣_ U
+
+variable (f : X ⟶ Y) {U U' : Y.Opens} {V V' : X.Opens} (e : V ≤ f ⁻¹ᵁ U)
+
+lemma resLE_eq_morphismRestrict : f.resLE U (f ⁻¹ᵁ U) le_rfl = f ∣_ U := by
+  simp [Scheme.Hom.resLE]
+
+lemma resLE_id (i : V ⟶ V') : resLE (𝟙 X) V' V i.le = (X.restrictFunctor.map i).left := by
+  simp only [resLE, id_val_base, morphismRestrict_id, Category.comp_id]
+  rfl
+
+@[reassoc (attr := simp)]
+lemma resLE_comp_ι : f.resLE U V e ≫ U.ι = V.ι ≫ f := by
+  simp [resLE, restrictFunctor_map_ofRestrict_assoc]
+
+@[reassoc]
+lemma resLE_comp_resLE {Z : Scheme.{u}} (g : Y ⟶ Z) {W : Z.Opens} (e') :
+    f.resLE U V e ≫ g.resLE W U e' = (f ≫ g).resLE W V
+      (e.trans ((Opens.map f.val.base).map (homOfLE e')).le) := by
+  simp [← cancel_mono W.ι]
+
+@[reassoc (attr := simp)]
+lemma map_resLE (i : V' ⟶ V) :
+    (X.restrictFunctor.map i).left ≫ f.resLE U V e = f.resLE U V' (i.le.trans e) := by
+  simp_rw [← resLE_id, resLE_comp_resLE, Category.id_comp]
+
+@[reassoc (attr := simp)]
+lemma resLE_map (i : U ⟶ U') :
+    f.resLE U V e ≫ (Y.restrictFunctor.map i).left =
+      f.resLE U' V (e.trans ((Opens.map f.1.base).map i).le) := by
+  simp_rw [← resLE_id, resLE_comp_resLE, Category.comp_id]
+
+lemma resLE_congr (e₁ : U = U') (e₂ : V = V') (P : MorphismProperty Scheme.{u}) :
+    P (f.resLE U V e) ↔ P (f.resLE U' V' (e₁ ▸ e₂ ▸ e)) := by
+  subst e₁; subst e₂; rfl
+
+lemma resLE_preimage (f : X ⟶ Y) {U : Y.Opens} {V : X.Opens} (e : V ≤ f ⁻¹ᵁ U)
+    (O : U.toScheme.Opens) :
+    f.resLE U V e ⁻¹ᵁ O = V.ι ⁻¹ᵁ (f ⁻¹ᵁ U.ι ''ᵁ O) := by
+  rw [← preimage_comp, ← resLE_comp_ι f e, preimage_comp, preimage_image_eq]
+
+lemma le_preimage_resLE_iff {U : Y.Opens} {V : X.Opens} (e : V ≤ f ⁻¹ᵁ U)
+    (O : U.toScheme.Opens) (W : V.toScheme.Opens) :
+    W ≤ (f.resLE U V e) ⁻¹ᵁ O ↔ V.ι ''ᵁ W ≤ f ⁻¹ᵁ U.ι ''ᵁ O := by
+  simp [resLE_preimage, ← image_le_image_iff V.ι, image_preimage_eq_opensRange_inter, V.ι_image_le]
+
+lemma resLE_appLE {U : Y.Opens} {V : X.Opens} (e : V ≤ f ⁻¹ᵁ U)
+    (O : U.toScheme.Opens) (W : V.toScheme.Opens) (e' : W ≤ resLE f U V e ⁻¹ᵁ O) :
+    (f.resLE U V e).appLE O W e' =
+      f.appLE (U.ι ''ᵁ O) (V.ι ''ᵁ W) ((le_preimage_resLE_iff f e O W).mp e') := by
+  simp only [Scheme.Hom.appLE, Scheme.Hom.resLE, Scheme.restrictFunctor_map_left, Opens.map_coe,
+    id_eq, Scheme.comp_app, morphismRestrict_app', Category.assoc, IsOpenImmersion.lift_app,
+    Scheme.Opens.ι_appIso, Scheme.Opens.ι_app, Scheme.Opens.toScheme_presheaf_map, Category.assoc]
+  rw [← X.presheaf.map_comp, ← X.presheaf.map_comp]
+  erw [Category.id_comp]
+  rw [← X.presheaf.map_comp]
+  rfl
+
+end Scheme.Hom
+
+/-- `f.resLE U V` induces `f.appLE U V` on global sections. -/
+noncomputable def arrowResLEAppIso (f : X ⟶ Y) (U : Y.Opens) (V : X.Opens) (e : V ≤ f ⁻¹ᵁ U) :
+    Arrow.mk ((f.resLE U V e).app ⊤) ≅ Arrow.mk (f.appLE U V e) :=
+  Arrow.isoMk U.topIso V.topIso <| by
+  simp only [Opens.map_top, Arrow.mk_left, Arrow.mk_right, Functor.id_obj, Scheme.Opens.topIso_hom,
+    eqToHom_op, Arrow.mk_hom, Scheme.Hom.map_appLE]
+  rw [← Scheme.Hom.appLE_eq_app, Scheme.Hom.resLE_appLE, Scheme.Hom.appLE_map]
 
 end MorphismRestrict
 

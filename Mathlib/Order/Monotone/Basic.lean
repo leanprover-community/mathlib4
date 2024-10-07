@@ -1025,7 +1025,7 @@ theorem Subtype.strictMono_coe [Preorder α] (t : Set α) :
 
 section Preorder
 
-variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] {f : α → γ} {g : β → δ} {a b : α}
+variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] {f : α → γ} {g : β → δ}
 
 theorem monotone_fst : Monotone (@Prod.fst α β) := fun _ _ ↦ And.left
 
