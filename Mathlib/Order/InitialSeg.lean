@@ -158,16 +158,19 @@ theorem antisymm_symm [IsWellOrder α r] [IsWellOrder β s] (f : r ≼i s) (g : 
   RelIso.coe_fn_injective rfl
 
 theorem eq_or_principal [IsWellOrder β s] (f : r ≼i s) :
-    Surjective f ∨ ∃ b, ∀ x, x ∈ Set.range f ↔ s x b :=
-  or_iff_not_imp_right.2 fun h b =>
-    Acc.recOn (IsWellFounded.wf.apply b : Acc s b) fun x _ IH =>
-      not_forall_not.1 fun hn =>
-        h
-          ⟨x, fun y =>
-            ⟨fun ⟨a, e⟩ => by
-              rw [← e]
-              exact (trichotomous _ _).resolve_right
-                (not_or_intro (hn a) fun hl => not_exists.2 hn (f.mem_range_of_rel hl)), IH _⟩⟩
+    Surjective f ∨ ∃ b, ∀ x, x ∈ Set.range f ↔ s x b := by
+  apply or_iff_not_imp_right.2
+  intro h b
+  push_neg at h
+  apply IsWellFounded.induction s b
+  intro x IH
+  obtain ⟨y, ⟨hy, hs⟩ | ⟨hy, hs⟩⟩ := h x
+  · obtain (rfl | h) := (trichotomous y x).resolve_left hs
+    · exact hy
+    · obtain ⟨z, rfl⟩ := hy
+      exact f.mem_range_of_rel h
+  · obtain ⟨z, rfl⟩ := IH y hs
+    cases hy (Set.mem_range_self z)
 
 /-- Restrict the codomain of an initial segment -/
 def codRestrict (p : Set β) (f : r ≼i s) (H : ∀ a, f a ∈ p) : r ≼i Subrel s p :=
