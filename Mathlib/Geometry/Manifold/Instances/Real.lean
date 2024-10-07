@@ -360,11 +360,25 @@ instance Icc_orientable_manifold (x y : ℝ) [Fact (x < y)] :
     · constructor
       · constructor
         · rintro z ⟨hz₁, s, ⟨hs₁, hs₂⟩, hz₂⟩
-          -- since the dimension is 1, i think i should be able to change the goal into proving that
-          -- the derivative is positive everywhere.
+          -- Notation, for easy of reading
+          set F := (𝓡∂ 1) ∘ ((IccLeftChart x y).symm ≫ₕ IccRightChart x y) ∘ (𝓡∂ 1).symm
+          let S := (𝓡∂ 1).symm ⁻¹' ((IccLeftChart x y).symm ≫ₕ IccRightChart x y).source
+            ∩ range (𝓡∂ 1)
+          -- Recall, this was proven above.
+          have : ContDiffOn ℝ ⊤ F S := sorry
+          show 0 < LinearMap.det (fderiv ℝ F z).toLinearMap
+          -- Choose a basis of EuclideanSpace ℝ (Fin 1), using eg. `stdOrthonormalBasis`
+          -- and OrthonormalBasis.toBasis
+          let basis : Basis (Fin 1) ℝ (EuclideanSpace ℝ (Fin 1)) := sorry
+          let Fder := fderiv ℝ F z
+          let Flin := LinearMap.toMatrix basis basis Fder.toLinearMap
+          rw [← LinearMap.det_toMatrix basis Fder,
+            Matrix.det_eq_elem_of_card_eq_one (by rw [Fintype.card_ofSubsingleton]) 0]
+          -- Next: compute the derivative of the resulting function ℝ → ℝ and prove it is positive.
           sorry
+
         · sorry
-      · sorry
+      · sorry -- inverse result
     · sorry -- similar, with left and right swapped
     · exact mem_groupoid_of_pregroupoid.mpr
       <| symm_trans_mem_orientationPreservingGroupoid (𝓡∂ 1) (IccRightChart x y)
