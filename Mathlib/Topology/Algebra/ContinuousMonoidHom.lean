@@ -143,11 +143,12 @@ def prodMap (f : ContinuousMonoidHom A C) (g : ContinuousMonoidHom B D) :
     ContinuousMonoidHom (A × B) (C × D) :=
   mk' (f.toMonoidHom.prodMap g.toMonoidHom) (f.continuous_toFun.prodMap g.continuous_toFun)
 
-@[to_additive] alias prod_map := prodMap
-attribute [deprecated prodMap (since := "2024-10-05")] prod_map
+@[deprecated (since := "2024-10-05")] alias prod_map := prodMap
+@[deprecated (since := "2024-10-05")]
+alias _root_.ContinuousAddMonoidHom.sum_map := ContinuousAddMonoidHom.prodMap
 
-attribute [deprecated _root_.ContinuousAddMonoidHom.prodMap (since := "2024-10-05")]
-  ContinuousAddMonoidHom.sum_map
+set_option linter.existingAttributeWarning false in
+attribute [to_additive existing] prod_map
 
 variable (A B C D E)
 
