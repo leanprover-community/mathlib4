@@ -444,21 +444,15 @@ theorem under_def : under A P = Ideal.comap (algebraMap A B) P := rfl
 instance IsPrime.under [hP : P.IsPrime] : (under A P).IsPrime :=
   hP.comap (algebraMap A B)
 
-/-- If `P` is a maximal ideal of `B`, then the intersection of `P` and `A` is also
-  a maximal ideal. -/
-instance IsMaximal.under (A : Type*) [CommRing A] {B : Type*} [CommRing B] (P : Ideal B)
-    [P.IsMaximal] [Algebra A B] [Algebra.IsIntegral A B] : (Ideal.under A P).IsMaximal :=
-  isMaximal_comap_of_isIntegral_of_isMaximal P
-
 variable {A}
 
 /-- `P` lies over `p` if `p` is the preimage of `P` of the `algebraMap`. -/
 class LiesOver : Prop where
-  over : p = Ideal.under A P
+  over : p = P.under A
 
-instance over_under : P.LiesOver (Ideal.under A P) where over := rfl
+instance over_under : P.LiesOver (P.under A) where over := rfl
 
-theorem over_def [P.LiesOver p] : p = Ideal.under A P := LiesOver.over
+theorem over_def [P.LiesOver p] : p = P.under A := LiesOver.over
 
 end Semiring
 
@@ -469,7 +463,7 @@ variable {A : Type*} [CommSemiring A] {B : Type*} [CommSemiring B] {C : Type*} [
   (𝔓 : Ideal C) (P : Ideal B) (p : Ideal A)
 
 @[simp]
-theorem under_under : Ideal.under A (Ideal.under B 𝔓) = Ideal.under A 𝔓 := by
+theorem under_under : (𝔓.under B).under A  = 𝔓.under A := by
   simp_rw [comap_comap, ← IsScalarTower.algebraMap_eq]
 
 theorem LiesOver.trans [𝔓.LiesOver P] [P.LiesOver p] : 𝔓.LiesOver p where
@@ -480,8 +474,8 @@ theorem LiesOver.tower_bot [hp : 𝔓.LiesOver p] [hP : 𝔓.LiesOver P] : P.Lie
 
 variable (B)
 
-instance under_liesOver_of_liesOver [𝔓.LiesOver p] : (Ideal.under B 𝔓).LiesOver p :=
-  LiesOver.tower_bot 𝔓 (Ideal.under B 𝔓) p
+instance under_liesOver_of_liesOver [𝔓.LiesOver p] : (𝔓.under B).LiesOver p :=
+  LiesOver.tower_bot 𝔓 (𝔓.under B) p
 
 end CommSemiring
 
@@ -489,6 +483,12 @@ section CommRing
 
 variable {A : Type*} [CommRing A] {B : Type*} [CommRing B] [Algebra A B] [Algebra.IsIntegral A B]
   (P : Ideal B) (p : Ideal A) [P.LiesOver p]
+
+variable (A) in
+/-- If `B` is an integral `A`-algebra, `P` is a maximal ideal of `B`, then the pull back of `P`
+  from `B` to `A` is also a maximal ideal. -/
+instance IsMaximal.under [P.IsMaximal] : (P.under A).IsMaximal :=
+  isMaximal_comap_of_isIntegral_of_isMaximal P
 
 theorem IsMaximal.of_liesOver_isMaximal [hpm : p.IsMaximal] [P.IsPrime] : P.IsMaximal := by
   rw [P.over_def p] at hpm
