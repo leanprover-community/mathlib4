@@ -61,7 +61,7 @@ lemma mem_doublyStochastic_iff_sum :
   simp [funext_iff, doublyStochastic, mulVec, vecMul, dotProduct]
 
 /-- Every entry of a doubly stochastic matrix is nonnegative. -/
-lemma nonneg_of_mem_doublyStochastic (hM : M ∈ doublyStochastic R n) (i j : n) : 0 ≤ M i j :=
+lemma nonneg_of_mem_doublyStochastic (hM : M ∈ doublyStochastic R n) {i j : n} : 0 ≤ M i j :=
   hM.1 _ _
 
 /-- Each row sum of a doubly stochastic matrix is 1. -/
