@@ -151,7 +151,7 @@ jobs:
           rm -rf .lake/build/lib/Mathlib/
           # Fail quickly if the cache is completely cold, by checking for Mathlib.Init
           lake exe cache get Mathlib/Init.lean ## file name
-          if lake build --no-build Mathlib/Init.lean
+          if lake build --no-build Mathlib.Init  ## with the file path get "error: unknown package `Mathlib`"
           then
             echo "built 'Mathlib.Init'"
             lake exe cache get
