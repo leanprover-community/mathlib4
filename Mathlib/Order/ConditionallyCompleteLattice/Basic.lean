@@ -224,6 +224,9 @@ class ConditionallyCompleteLinearOrderBot (α : Type*) extends ConditionallyComp
   csSup_empty : sSup ∅ = ⊥
 
 -- see Note [lower instance priority]
+attribute [instance 100] ConditionallyCompleteLinearOrderBot.toOrderBot
+
+-- see Note [lower instance priority]
 /-- A complete lattice is a conditionally complete lattice, as there are no restrictions
 on the properties of sInf and sSup in a complete lattice. -/
 instance (priority := 100) CompleteLattice.toConditionallyCompleteLattice [CompleteLattice α] :
