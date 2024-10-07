@@ -142,6 +142,19 @@ theorem chain_iff_get {R} : ∀ {a : α} {l : List α}, Chain R a l ↔
     intro i w
     exact h (i+1) (by simp only [length_cons]; omega)
 
+theorem chain_replicate_of_rel (n : ℕ) {a : α} (h : r a a) : Chain r a (replicate n a) :=
+  match n with
+  | 0 => Chain.nil
+  | n + 1 => Chain.cons h (chain_replicate_of_rel n h)
+
+theorem chain_eq_iff_eq_replicate {a : α} {l : List α} :
+    Chain (· = ·) a l ↔ l = replicate l.length a :=
+  match l with
+  | [] => by simp
+  | b :: l => by
+    rw [chain_cons]
+    simp (config := {contextual := true}) [eq_comm, replicate_succ, chain_eq_iff_eq_replicate]
+
 theorem Chain'.imp {S : α → α → Prop} (H : ∀ a b, R a b → S a b) {l : List α} (p : Chain' R l) :
     Chain' S l := by cases l <;> [trivial; exact Chain.imp H p]
 
@@ -434,6 +447,17 @@ lemma Chain'.iterate_eq_of_apply_eq {α : Type*} {f : α → α} {l : List α}
     rw [List.chain'_iff_get] at hl
     apply hl
     omega
+
+theorem chain'_replicate_of_rel (n : ℕ) {a : α} (h : r a a) : Chain' r (replicate n a) :=
+  match n with
+  | 0 => chain'_nil
+  | n + 1 => chain_replicate_of_rel n h
+
+theorem chain'_eq_iff_eq_replicate {l : List α} :
+    Chain' (· = ·) l ↔ ∀ a ∈ l.head?, l = replicate l.length a :=
+  match l with
+  | [] => by simp
+  | a :: l => by simp [Chain', chain_eq_iff_eq_replicate, replicate_succ]
 
 end List
 

@@ -1048,6 +1048,60 @@ theorem induction_linear {p : (α →₀ M) → Prop} (f : α →₀ M) (h0 : p 
     (hadd : ∀ f g : α →₀ M, p f → p g → p (f + g)) (hsingle : ∀ a b, p (single a b)) : p f :=
   induction₂ f h0 fun _a _b _f _ _ w => hadd _ _ w (hsingle _ _)
 
+section LinearOrder
+
+variable [LinearOrder α] {p : (α →₀ M) → Prop}
+
+/-- A finitely supported function can be built by adding up `single a b` for increasing `a`.
+
+The theorem `induction_on_max₂` swaps the argument order in the sum. -/
+theorem induction_on_max (f : α →₀ M) (h0 : p 0)
+    (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 → p f → p (single a b + f)) :
+    p f := by
+  suffices ∀ (s) (f : α →₀ M), f.support = s → p f from this _ _ rfl
+  refine fun s => s.induction_on_max (fun f h => ?_) (fun a s hm hf f hs => ?_)
+  · rwa [support_eq_empty.1 h]
+  · have hs' : (erase a f).support = s := by
+      rw [support_erase, hs, erase_insert (fun ha => (hm a ha).false)]
+    rw [← single_add_erase a f]
+    refine ha _ _ _ (fun c hc => hm _ <| hs'.symm ▸ hc) ?_ (hf _ hs')
+    rw [← mem_support_iff, hs]
+    exact mem_insert_self a s
+
+/-- A finitely supported function can be built by adding up `single a b` for decreasing `a`.
+
+The theorem `induction_on_min₂` swaps the argument order in the sum. -/
+theorem induction_on_min (f : α →₀ M) (h0 : p 0)
+    (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, a < c) → b ≠ 0 → p f → p (single a b + f)) :
+    p f :=
+  induction_on_max (α := αᵒᵈ) f h0 ha
+
+/-- A finitely supported function can be built by adding up `single a b` for increasing `a`.
+
+The theorem `induction_on_max` swaps the argument order in the sum. -/
+theorem induction_on_max₂ (f : α →₀ M) (h0 : p 0)
+    (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 → p f → p (f + single a b)) :
+    p f := by
+  suffices ∀ (s) (f : α →₀ M), f.support = s → p f from this _ _ rfl
+  refine fun s => s.induction_on_max (fun f h => ?_) (fun a s hm hf f hs => ?_)
+  · rwa [support_eq_empty.1 h]
+  · have hs' : (erase a f).support = s := by
+      rw [support_erase, hs, erase_insert (fun ha => (hm a ha).false)]
+    rw [← erase_add_single a f]
+    refine ha _ _ _ (fun c hc => hm _ <| hs'.symm ▸ hc) ?_ (hf _ hs')
+    rw [← mem_support_iff, hs]
+    exact mem_insert_self a s
+
+/-- A finitely supported function can be built by adding up `single a b` for decreasing `a`.
+
+The theorem `induction_on_min` swaps the argument order in the sum. -/
+theorem induction_on_min₂ (f : α →₀ M) (h0 : p 0)
+    (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, a < c) → b ≠ 0 → p f → p (f + single a b)) :
+    p f :=
+  induction_on_max₂ (α := αᵒᵈ) f h0 ha
+
+end LinearOrder
+
 @[simp]
 theorem add_closure_setOf_eq_single :
     AddSubmonoid.closure { f : α →₀ M | ∃ a b, f = single a b } = ⊤ :=

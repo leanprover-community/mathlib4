@@ -54,11 +54,11 @@ theorem toEquiv_injective : Function.Injective (toEquiv : X ≃ₜ Y → X ≃ Y
   | ⟨_, _, _⟩, ⟨_, _, _⟩, rfl => rfl
 
 instance : EquivLike (X ≃ₜ Y) X Y where
-  coe := fun h => h.toEquiv
-  inv := fun h => h.toEquiv.symm
-  left_inv := fun h => h.left_inv
-  right_inv := fun h => h.right_inv
-  coe_injective' := fun _ _ H _ => toEquiv_injective <| DFunLike.ext' H
+  coe h := h.toEquiv
+  inv h := h.toEquiv.symm
+  left_inv h := h.left_inv
+  right_inv h := h.right_inv
+  coe_injective' _ _ H _ := toEquiv_injective <| DFunLike.ext' H
 
 instance : CoeFun (X ≃ₜ Y) fun _ ↦ X → Y := ⟨DFunLike.coe⟩
 
