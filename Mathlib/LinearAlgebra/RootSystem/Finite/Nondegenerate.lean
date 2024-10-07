@@ -3,6 +3,8 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
+import Mathlib.LinearAlgebra.Dimension.LinearMap
+import Mathlib.LinearAlgebra.Dimension.Localization
 import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 
 
@@ -33,8 +35,7 @@ Weyl group.
 
 ## Main results:
 
- * `polInner_rootPositive`: `PolInner` is strictly positive on roots.
- * `polInner_posDef` : `PolInner` is strictly positive on non-zero linear combinations of roots.
+ * `RootForm_posDef` : `RootForm` is strictly positive on non-zero linear combinations of roots.
   That is, it is positive-definite when restricted to the linear span of roots.  This gives
   us a convenient way to eliminate certain Dynkin diagrams from the classification, since it
   suffices to produce a nonzero linear combination of simple roots with non-positive norm.
@@ -57,47 +58,99 @@ open AddSubgroup (zmultiples)
 
 namespace RootPairing
 
-
 variable {ι R M N : Type*}
-
-
-section LinearOrderedCommRing
 
 variable [Fintype ι] [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N]
 [Module R N] (P : RootPairing ι R M N)
 
-/-! From SGA3 lemma 1.2.1 (10), we have a linear map `Polarization: M → N`.
+lemma rank_polarization_eq_rank_span_coroot :
+    LinearMap.rank P.Polarization = Module.rank R (span R (range P.coroot)) := by
+  refine eq_of_le_of_le (Submodule.rank_mono P.range_polarization_le_span_coroot) ?_
+  letI : IsReflexive R N := PerfectPairing.reflexive_right P.toPerfectPairing
+  refine rank_le_of_smul_regular (span R (range P.coroot)) (LinearMap.range P.Polarization)
+    (injective_smul_pos_of_reflexive P.prod_rootForm_root_self_pos) ?_
+  intro x hx
+  obtain ⟨c, hc⟩ := (mem_span_range_iff_exists_fun R).mp hx
+  rw [← hc, Finset.smul_sum]
+  simp_rw [smul_smul, mul_comm, ← smul_smul]
+  exact Submodule.sum_smul_mem (LinearMap.range P.Polarization) c
+    (fun c _ ↦ prod_rootForm_smul_coroot_in_range P c)
 
-Polarization maps the span of roots to the span of coroots. - done.
+lemma rank_coPolarization_eq_rank_span_root :
+    LinearMap.rank P.CoPolarization = Module.rank R (span R (range P.root)) :=
+  P.flip.rank_polarization_eq_rank_span_coroot
 
-This restricted map has torsion cokernel.
+lemma rank_polarization_domRestrict_eq_rank_span_coroot :
+    LinearMap.rank (P.Polarization.domRestrict (span R (range P.root))) =
+      Module.rank R (span R (range P.coroot)) := by
+  refine eq_of_le_of_le (Submodule.rank_mono P.range_polarization_domRestrict_le_span_coroot) ?_
+  letI : IsReflexive R N := PerfectPairing.reflexive_right P.toPerfectPairing
+  refine rank_le_of_smul_regular (span R (range P.coroot))
+    (LinearMap.range (P.Polarization.domRestrict (span R (range P.root))))
+    (injective_smul_pos_of_reflexive P.prod_rootForm_root_self_pos) ?_
+  intro x hx
+  obtain ⟨c, hc⟩ := (mem_span_range_iff_exists_fun R).mp hx
+  rw [← hc, Finset.smul_sum]
+  simp_rw [smul_smul, mul_comm, ← smul_smul]
+  exact Submodule.sum_smul_mem
+    (LinearMap.range (P.Polarization.domRestrict (span R (range P.root)))) c
+    (fun c _ ↦ prod_rootForm_smul_coroot_in_range_domRestrict P c)
 
-I would like to say that the span of roots has `Module.rank` at least the span of coroots, since
-this map is almost surjective.
+lemma rank_Polarization_domRestrict :
+    LinearMap.rank (P.Polarization.domRestrict (span R (range P.root))) =
+      LinearMap.rank P.Polarization :=
+  P.rank_polarization_domRestrict_eq_rank_span_coroot.trans
+    P.rank_polarization_eq_rank_span_coroot.symm
 
-From Mathlib.LinearAlgebra.Dimension.Localization:
-theorem rank_quotient_add_rank_of_isDomain [IsDomain R] (M' : Submodule R M) :
-    Module.rank R (M ⧸ M') + Module.rank R M' = Module.rank R M := by sorry
+/-!
+lemma polarization_kernel_rank_zero : Module.rank R (LinearMap.ker (LinearMap.domRestrict
+    P.Polarization (span R (range P.root)))) = 0 := by
+  have rn := rank_quotient_add_rank_of_isDomain (LinearMap.ker (LinearMap.domRestrict
+    P.Polarization (span R (range P.root))))
+  rw [← rank_coPolarization_eq_rank_span_root] at rn
+  let e := (P.Polarization.domRestrict (span R (range ⇑P.root))).quotKerEquivRange
+  have h := LinearEquiv.lift_rank_eq e
+  rw [h] at rn -- universe problems
+  sorry
 
-Use M = span of coroots, M' = image of Polarization.
-Then, it suffices to show the quotient, i.e., the cokernel has rank zero.
+have:
+range Polarization ⊆ span R range P.coroot
+Polarization rank = rank span R range P.coroot
+range CoPolarization ⊆ span R range P.root
+coPolarization rank = rank span R range P.root
 
-This should follow from the fact that there are no linearly independent sets of size one,
-since they are all killed by a certain positive element, i.e., a nonzero divisor.
+need :
 
-Thus, we have image of polarization has same rank as span of coroots.
+       same for CoPolarization
+Then, using rank range ≤ rank domain (`LinearMap.rank_le_domain`), we get:
+rank (span R (range P.coroot)) ≤ rank (span R (range P.root)) and
+rank (span R (range P.root)) ≤ rank (span R (range P.coroot)) hence equality.
 
-Note LinearMap.rank is just Module.rank of LinearMap.range.
+To show kernel of P.Polarization.domRestrict (span R (range P.root)) has rank zero,
+use LinearMap.quotKerEquivRange to identify image with quotient.
+When they have the same rank, then the kernel has rank zero.
+To show the kernel vanishes, take `x` in kernel, use rank_eq_zero_iff to get suitable nonzero `r`.
+Then, x = 0 by injective_smul_pos_of_reflexive.
 
-Also need: rank of source is at least rank of image: rank_le_domain
-(LinearAlgebra.Dimension.LinearMap)
+use finite_rank_of_reflexive
 
 -/
+--lemma polarization_restriction_injective : restriction of P.Polarization to range P.root is inj.
+
+-- injectivity from lemma: reflexive modules over a domain have no torsion
+--torsion_free_of_reflexive or injective_smul_pos_of_reflexive
+
+lemma rank_eq_zero_iff : Module.rank R M = 0 ↔ ∀ x : M, ∃ a : R, a ≠ 0 ∧ a • x = 0 :=
+  _root_.rank_eq_zero_iff
+
+theorem rank_quotient_add_rank_of_isDomain [IsDomain R] (M' : Submodule R M) :
+    Module.rank R (M ⧸ M') + Module.rank R M' = Module.rank R M :=
+  HasRankNullity.rank_quotient_add_rank M'
+
+--lemma coxeter_weight_leq_4 (i j : ι) : coxeterWeight i j ≤ 4 := by sorry
 
 
--- SGA3 first extends polarization to the span of roots over the field of fractions ℚ, and shows the
--- polarization is surjective there (because the image contains positive multiples of all coroots).
--- Then, using `flip`, they get equal dimension, hence injection over `ℤ`.
+
 -- Then, P.toPerfectPairing is nondegenerate on the span of roots, since (c,r) = 0 for all c implies
 -- p(r) = 0.
 -- Finally, PolInner is also nondegenerate on the span of roots, since
@@ -118,12 +171,6 @@ theorem polarization_injective : InjOn P.Polarization (span R (range P.root)) :=
   rw [← hcx, ← hcy, map_sum, map_sum, map_sum, map_sum] at hp
   sorry
 -/
-
--- this is a copy just for imports
-lemma prod_rootForm_root_self_pos_copy :
-    0 < ∏ i, P.RootForm (P.root i) (P.root i) :=
-  Finset.prod_pos fun i _ => rootForm_root_self_pos P i
-
 
 -- Use four_smul_flip_polarization_polarization to get injectivity of Polarization.
 
@@ -160,7 +207,6 @@ strictly positive norm.
 Then, we can say, a Dynkin diagram is not finite type if there is a nonzero combination of simple
 roots that has nonpositive norm.
 -/
-end LinearOrderedCommRing
 
 end RootPairing
 

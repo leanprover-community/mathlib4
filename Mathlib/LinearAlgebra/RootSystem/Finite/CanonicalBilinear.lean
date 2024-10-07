@@ -5,8 +5,6 @@ Authors: Scott Carnahan
 -/
 import Mathlib.Algebra.Ring.SumsOfSquares
 import Mathlib.LinearAlgebra.RootSystem.RootPositive
-import Mathlib.LinearAlgebra.Dimension.LinearMap
-import Mathlib.LinearAlgebra.Dimension.Localization
 
 /-!
 # The polarization of a finite root pairing
@@ -300,92 +298,6 @@ lemma prod_rootForm_smul_coroot_in_range_domRestrict (i : ι) :
   have : (c • 2 • P.root i) ∈ (span R (range P.root)) := by aesop
   use ⟨(c • 2 • P.root i), this⟩
   simp
-
-lemma rank_polarization_eq_rank_span_coroot :
-    LinearMap.rank P.Polarization = Module.rank R (span R (range P.coroot)) := by
-  refine eq_of_le_of_le (Submodule.rank_mono P.range_polarization_le_span_coroot) ?_
-  letI : IsReflexive R N := PerfectPairing.reflexive_right P.toPerfectPairing
-  refine rank_le_of_smul_regular (span R (range P.coroot)) (LinearMap.range P.Polarization)
-    (injective_smul_pos_of_reflexive P.prod_rootForm_root_self_pos) ?_
-  intro x hx
-  obtain ⟨c, hc⟩ := (mem_span_range_iff_exists_fun R).mp hx
-  rw [← hc, Finset.smul_sum]
-  simp_rw [smul_smul, mul_comm, ← smul_smul]
-  exact Submodule.sum_smul_mem (LinearMap.range P.Polarization) c
-    (fun c _ ↦ prod_rootForm_smul_coroot_in_range P c)
-
-lemma rank_coPolarization_eq_rank_span_root :
-    LinearMap.rank P.CoPolarization = Module.rank R (span R (range P.root)) :=
-  P.flip.rank_polarization_eq_rank_span_coroot
-
-lemma rank_polarization_domRestrict_eq_rank_span_coroot :
-    LinearMap.rank (P.Polarization.domRestrict (span R (range P.root))) =
-      Module.rank R (span R (range P.coroot)) := by
-  refine eq_of_le_of_le (Submodule.rank_mono P.range_polarization_domRestrict_le_span_coroot) ?_
-  letI : IsReflexive R N := PerfectPairing.reflexive_right P.toPerfectPairing
-  refine rank_le_of_smul_regular (span R (range P.coroot))
-    (LinearMap.range (P.Polarization.domRestrict (span R (range P.root))))
-    (injective_smul_pos_of_reflexive P.prod_rootForm_root_self_pos) ?_
-  intro x hx
-  obtain ⟨c, hc⟩ := (mem_span_range_iff_exists_fun R).mp hx
-  rw [← hc, Finset.smul_sum]
-  simp_rw [smul_smul, mul_comm, ← smul_smul]
-  exact Submodule.sum_smul_mem
-    (LinearMap.range (P.Polarization.domRestrict (span R (range P.root)))) c
-    (fun c _ ↦ prod_rootForm_smul_coroot_in_range_domRestrict P c)
-
-lemma rank_Polarization_domRestrict :
-    LinearMap.rank (P.Polarization.domRestrict (span R (range P.root))) =
-      LinearMap.rank P.Polarization :=
-  P.rank_polarization_domRestrict_eq_rank_span_coroot.trans
-    P.rank_polarization_eq_rank_span_coroot.symm
-
-/-!
-lemma polarization_kernel_rank_zero : Module.rank R (LinearMap.ker (LinearMap.domRestrict
-    P.Polarization (span R (range P.root)))) = 0 := by
-  have rn := rank_quotient_add_rank_of_isDomain (LinearMap.ker (LinearMap.domRestrict
-    P.Polarization (span R (range P.root))))
-  rw [← rank_coPolarization_eq_rank_span_root] at rn
-  let e := (P.Polarization.domRestrict (span R (range ⇑P.root))).quotKerEquivRange
-  have h := LinearEquiv.lift_rank_eq e
-  rw [h] at rn -- universe problems
-  sorry
-
-have:
-range Polarization ⊆ span R range P.coroot
-Polarization rank = rank span R range P.coroot
-range CoPolarization ⊆ span R range P.root
-coPolarization rank = rank span R range P.root
-
-need :
-
-       same for CoPolarization
-Then, using rank range ≤ rank domain (`LinearMap.rank_le_domain`), we get:
-rank (span R (range P.coroot)) ≤ rank (span R (range P.root)) and
-rank (span R (range P.root)) ≤ rank (span R (range P.coroot)) hence equality.
-
-To show kernel of P.Polarization.domRestrict (span R (range P.root)) has rank zero,
-use LinearMap.quotKerEquivRange to identify image with quotient.
-When they have the same rank, then the kernel has rank zero.
-To show the kernel vanishes, take `x` in kernel, use rank_eq_zero_iff to get suitable nonzero `r`.
-Then, x = 0 by injective_smul_pos_of_reflexive.
-
-use finite_rank_of_reflexive
-
--/
---lemma polarization_restriction_injective : restriction of P.Polarization to range P.root is inj.
-
--- injectivity from lemma: reflexive modules over a domain have no torsion
---torsion_free_of_reflexive or injective_smul_pos_of_reflexive
-
-lemma rank_eq_zero_iff : Module.rank R M = 0 ↔ ∀ x : M, ∃ a : R, a ≠ 0 ∧ a • x = 0 :=
-  _root_.rank_eq_zero_iff
-
-theorem rank_quotient_add_rank_of_isDomain [IsDomain R] (M' : Submodule R M) :
-    Module.rank R (M ⧸ M') + Module.rank R M' = Module.rank R M :=
-  HasRankNullity.rank_quotient_add_rank M'
-
---lemma coxeter_weight_leq_4 (i j : ι) : coxeterWeight i j ≤ 4 := by sorry
 
 end LinearOrderedCommRing
 
