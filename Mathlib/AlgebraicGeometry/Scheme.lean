@@ -648,18 +648,18 @@ lemma stalkSpecializes_stalkMap_apply (x x' : X) (h : x ⤳ x') (y) :
 lemma stalkMap_congr (f g : X ⟶ Y) (hfg : f = g) (x x' : X)
     (hxx' : x = x') : f.stalkMap x ≫ (X.presheaf.stalkCongr (.of_eq hxx')).hom =
       (Y.presheaf.stalkCongr (.of_eq <| hfg ▸ hxx' ▸ rfl)).hom ≫ g.stalkMap x' :=
-  LocallyRingedSpace.stalkMap_congr f g hfg x x' hxx'
+  LocallyRingedSpace.stalkMap_congr f.1 g.1 congr($hfg.1) x x' hxx'
 
 @[reassoc]
 lemma stalkMap_congr_hom (f g : X ⟶ Y) (hfg : f = g) (x : X) :
     f.stalkMap x = (Y.presheaf.stalkCongr (.of_eq <| hfg ▸ rfl)).hom ≫ g.stalkMap x :=
-  LocallyRingedSpace.stalkMap_congr_hom f g hfg x
+  LocallyRingedSpace.stalkMap_congr_hom f.1 g.1 congr($hfg.1) x
 
 @[reassoc]
 lemma stalkMap_congr_point (x x' : X) (hxx' : x = x') :
     f.stalkMap x ≫ (X.presheaf.stalkCongr (.of_eq hxx')).hom =
       (Y.presheaf.stalkCongr (.of_eq <| hxx' ▸ rfl)).hom ≫ f.stalkMap x' :=
-  LocallyRingedSpace.stalkMap_congr_point f x x' hxx'
+  LocallyRingedSpace.stalkMap_congr_point f.1 x x' hxx'
 
 @[reassoc (attr := simp)]
 lemma stalkMap_hom_inv (e : X ≅ Y) (y : Y) :
