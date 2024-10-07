@@ -229,7 +229,8 @@ def mkOfSucc {n} (i : Fin n) : ([1] : SimplexCategory) ⟶ [n] :=
   }
 
 /-- The morphism `[2] ⟶ [n]` that picks out a specified composite of morphisms in `Fin (n+1)`.-/
-def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) : ([2] : SimplexCategory) ⟶ [n] :=
+def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) : ([2] : SimplexCategory) ⟶ [n]
+    :=
   SimplexCategory.mkHom {
     toFun := fun | 0 => i | 1 => j | 2 => k
     monotone' := fun

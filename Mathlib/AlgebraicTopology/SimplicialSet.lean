@@ -350,8 +350,7 @@ lemma Truncated.hom_ext {n : ℕ} {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n
   NatTrans.ext (funext w)
 
 /-- The truncation functor on simplicial sets. -/
-def truncation (n : ℕ) : SSet ⥤ SSet.Truncated n :=
-  (whiskeringLeft _ _ _).obj SimplexCategory.Truncated.inclusion.op
+abbrev truncation (n : ℕ) : SSet ⥤ SSet.Truncated n := SimplicialObject.truncation n
 
 instance {n} : Inhabited (SSet.Truncated n) :=
   ⟨(truncation n).obj <| Δ[0]⟩
