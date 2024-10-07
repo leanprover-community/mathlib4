@@ -337,10 +337,26 @@ def liftInitialSeg : Cardinal.{u} ≤i Cardinal.{max u v} := by
     rintro ⟨a, ⟨b, rfl⟩⟩
     exact ⟨b, rfl⟩
 
+theorem mem_range_of_le_lift {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
+    b ≤ lift.{v, u} a → b ∈ Set.range lift.{v, u} :=
+  liftInitialSeg.mem_range_of_le
+
+@[deprecated mem_range_of_le_lift (since := "2024-10-07")]
+theorem lift_down {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
+    b ≤ lift.{v, u} a → ∃ a', lift.{v, u} a' = b :=
+  mem_range_of_le_lift
+
 /-- `Cardinal.lift` as an `OrderEmbedding`. -/
-@[deprecated Cardinal.liftInitialSeg (since := "2024-09-19")]
+@[deprecated Cardinal.liftInitialSeg (since := "2024-10-07")]
 def liftOrderEmbedding : Cardinal.{v} ↪o Cardinal.{max v u} :=
   liftInitialSeg.toOrderEmbedding
+
+theorem lift_injective : Injective lift.{u, v} :=
+  liftInitialSeg.injective
+
+@[simp]
+theorem lift_inj {a b : Cardinal.{u}} : lift.{v, u} a = lift.{v, u} b ↔ a = b :=
+  lift_injective.eq_iff
 
 @[simp]
 theorem lift_le {a b : Cardinal.{v}} : lift.{u, v} a ≤ lift.{u, v} b ↔ a ≤ b :=
@@ -349,13 +365,6 @@ theorem lift_le {a b : Cardinal.{v}} : lift.{u, v} a ≤ lift.{u, v} b ↔ a ≤
 @[simp]
 theorem lift_lt {a b : Cardinal.{u}} : lift.{v, u} a < lift.{v, u} b ↔ a < b :=
   liftInitialSeg.lt_iff_lt
-
-theorem lift_injective : Injective lift.{u, v} :=
-  liftInitialSeg.injective
-
-@[simp]
-theorem lift_inj {a b : Cardinal.{u}} : lift.{v, u} a = lift.{v, u} b ↔ a = b :=
-  lift_injective.eq_iff
 
 theorem lift_strictMono : StrictMono lift := fun _ _ => lift_lt.2
 
@@ -369,10 +378,6 @@ theorem lift_min {a b : Cardinal} : lift.{u, v} (min a b) = min (lift.{u, v} a) 
 @[simp]
 theorem lift_max {a b : Cardinal} : lift.{u, v} (max a b) = max (lift.{u, v} a) (lift.{u, v} b) :=
   lift_monotone.map_max
-
-theorem lift_down {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
-    b ≤ lift.{v, u} a → ∃ a', lift.{v, u} a' = b :=
-  liftInitialSeg.init_le
 
 theorem le_lift_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
     b ≤ lift.{v, u} a ↔ ∃ a' ≤ a, lift.{v, u} a' = b :=
