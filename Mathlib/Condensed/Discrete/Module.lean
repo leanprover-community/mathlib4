@@ -76,13 +76,13 @@ abbrev functor : ModuleCat R ⥤ CondensedMod.{u} R :=
   CompHausLike.LocallyConstantModule.functor.{u+1, u} R
     (fun _ _ _ ↦ ((CompHaus.effectiveEpi_tfae _).out 0 2).mp)
 
-/-- Auxilary definition for `functorIsoDiscrete`. -/
+/-- Auxiliary definition for `functorIsoDiscrete`. -/
 noncomputable def functorIsoDiscreteAux₁ (M : ModuleCat.{u+1} R) :
     M ≅ (ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u+1}) M)) where
   hom := constₗ R
   inv := evalₗ R PUnit.unit
 
-/-- Auxilary definition for `functorIsoDiscrete`. -/
+/-- Auxiliary definition for `functorIsoDiscrete`. -/
 noncomputable def functorIsoDiscreteAux₂ (M : ModuleCat R) :
     (discrete _).obj M ≅ (discrete _).obj
       (ModuleCat.of R (LocallyConstant (CompHaus.of PUnit.{u+1}) M)) :=
@@ -103,7 +103,7 @@ instance (M : ModuleCat R) : IsIso ((forget R).map
   rw [essImage_eq_of_natIso CondensedSet.LocallyConstant.iso.symm]
   exact obj_mem_essImage CondensedSet.LocallyConstant.functor M
 
-/-- Auxilary definition for `functorIsoDiscrete`. -/
+/-- Auxiliary definition for `functorIsoDiscrete`. -/
 noncomputable def functorIsoDiscreteComponents (M : ModuleCat R) :
     (discrete _).obj M ≅ (functor R).obj M :=
   have : (Condensed.forget R).ReflectsIsomorphisms :=
@@ -183,13 +183,13 @@ abbrev functor : ModuleCat R ⥤ LightCondMod.{u} R :=
   CompHausLike.LocallyConstantModule.functor.{u, u} R
     (fun _ _ _ ↦ (LightProfinite.effectiveEpi_iff_surjective _).mp)
 
-/-- Auxilary definition for `functorIsoDiscrete`. -/
+/-- Auxiliary definition for `functorIsoDiscrete`. -/
 noncomputable def functorIsoDiscreteAux₁ (M : ModuleCat.{u} R) :
     M ≅ (ModuleCat.of R (LocallyConstant (LightProfinite.of PUnit.{u+1}) M)) where
   hom := constₗ R
   inv := evalₗ R PUnit.unit
 
-/-- Auxilary definition for `functorIsoDiscrete`. -/
+/-- Auxiliary definition for `functorIsoDiscrete`. -/
 noncomputable def functorIsoDiscreteAux₂ (M : ModuleCat.{u} R) :
     (discrete _).obj M ≅ (discrete _).obj
       (ModuleCat.of R (LocallyConstant (LightProfinite.of PUnit.{u+1}) M)) :=
@@ -216,7 +216,7 @@ instance (M : ModuleCat R) :
   rw [essImage_eq_of_natIso LightCondSet.LocallyConstant.iso.symm]
   exact obj_mem_essImage LightCondSet.LocallyConstant.functor M
 
-/-- Auxilary definition for `functorIsoDiscrete`. -/
+/-- Auxiliary definition for `functorIsoDiscrete`. -/
 noncomputable def functorIsoDiscreteComponents (M : ModuleCat R) :
     (discrete _).obj M ≅ (functor R).obj M :=
   have : (LightCondensed.forget R).ReflectsIsomorphisms :=
