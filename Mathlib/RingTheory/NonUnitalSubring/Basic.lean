@@ -994,9 +994,7 @@ end NonUnitalSubring
 
 namespace RingEquiv
 
-variable {R : Type u} {S : Type v}
-  [NonUnitalRing R] [NonUnitalRing S]
-  {s t : NonUnitalSubring R}
+variable {R : Type u} {S : Type v} [NonUnitalRing R] [NonUnitalRing S] {s t : NonUnitalSubring R}
 
 /-- Makes the identity isomorphism from a proof two `NonUnitalSubring`s of a multiplicative
     monoid are equal. -/
