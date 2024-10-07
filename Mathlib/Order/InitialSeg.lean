@@ -213,7 +213,7 @@ section PartialOrder
 
 variable [PartialOrder β] {a a' : α} {b : β}
 
-theorem init_le [Preorder α] (f : (· < ·) ≼i (· < ·)) (h : b ≤ f a) : ∃ a', f a' = b := by
+theorem mem_range_of_le [Preorder α] (f : (· < ·) ≼i (· < ·)) (h : b ≤ f a) : b ∈ Set.range f := by
   obtain rfl | hb := h.eq_or_lt
   exacts [⟨a, rfl⟩, f.init hb]
 
@@ -234,7 +234,7 @@ theorem strictMono [PartialOrder α] (f : @InitialSeg α β (· < ·) (· < ·))
 theorem le_apply_iff [LinearOrder α] (f : (· < ·) ≼i (· < ·)) : b ≤ f a ↔ ∃ c ≤ a, f c = b := by
   constructor
   · intro h
-    obtain ⟨c, hc⟩ := f.init_le h
+    obtain ⟨c, hc⟩ := f.mem_range_of_le h
     refine ⟨c, ?_, hc⟩
     rwa [← hc, f.le_iff_le] at h
   · rintro ⟨c, hc, rfl⟩
@@ -243,7 +243,7 @@ theorem le_apply_iff [LinearOrder α] (f : (· < ·) ≼i (· < ·)) : b ≤ f a
 theorem lt_apply_iff [LinearOrder α] (f : (· < ·) ≼i (· < ·)) : b < f a ↔ ∃ a' < a, f a' = b := by
   constructor
   · intro h
-    obtain ⟨c, hc⟩ := f.init h
+    obtain ⟨c, hc⟩ := f.mem_range_of_rel h
     refine ⟨c, ?_, hc⟩
     rwa [← hc, f.lt_iff_lt] at h
   · rintro ⟨c, hc, rfl⟩
