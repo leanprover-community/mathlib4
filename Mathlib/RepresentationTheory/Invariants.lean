@@ -248,6 +248,7 @@ open CategoryTheory
 
 variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G)
 
+variable (k G) in
 @[simps]
 noncomputable def invariantsFunctor : Rep k G ⥤ ModuleCat.{u} k where
   obj A := ModuleCat.of k A.ρ.invariants
@@ -263,7 +264,7 @@ abbrev inf := Rep.of (A.ρ.inf S)
 @[simps]
 noncomputable def infMap {A B : Rep k G} (φ : A ⟶ B) :
     inf A S ⟶ inf B S where
-  hom := invariantsFunctor.map ((Action.res _ S.subtype).map φ)
+  hom := (invariantsFunctor k S).map ((Action.res _ S.subtype).map φ)
   comm := fun g => QuotientGroup.induction_on g (fun g => LinearMap.ext
     fun x => Subtype.ext (Rep.hom_comm_apply φ g x.1))
 

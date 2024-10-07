@@ -880,7 +880,7 @@ lemma toCycles_comp_isoTwoCycles_hom :
   simp [isoTwoCycles]
   rfl
 
-lemma cyclesSuccIso_2_trans_eq :
+lemma cyclesSuccIso_1_trans_eq :
     cyclesSuccIso A 1 ≪≫ (LinearEquiv.kerLEquivOfCompEqComp _ _ <| by
       simpa using dOne_comp_eq A).symm.toModuleIso = isoTwoCycles A := by
   ext : 1

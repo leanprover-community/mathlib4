@@ -438,23 +438,16 @@ theorem δ_succ_apply_aux {X : ShortComplex (Rep k G)} (H : ShortExact X) (n : �
   · simp only [ChainComplex.of_x, chainsMap_eq_mapRange, map_zero]
     exact this ▸ congr($(inhomogeneousChains.d_comp_d X.X₂) y)
 
-/-
 theorem δ₁_apply_aux {X : ShortComplex (Rep k G)} (H : ShortExact X) (y : G × G →₀ X.X₂)
     (x : G →₀ X.X₁) (hx : Finsupp.mapRange.linearMap X.f.hom x = dOne X.X₂ y) :
     dZero X.X₁ x = 0 := by
   have h1 := δ_succ_apply_aux H 0 ((twoChainsLEquiv X.X₂).symm y) ((oneChainsLEquiv X.X₁).symm x)
-  have hy := congr($((CommSq.horiz_inv ⟨(shortComplexH1Iso X.X₂).hom.comm₁₂⟩).w) y)
-  have h := congr($((Iso.eq_inv_comp _).2 (shortComplexH1Iso X.X₁).hom.comm₂₃) x)
-  simp only [ModuleCat.coe_comp, Function.comp_apply] at h1 hy
-  refine h.trans <| (zeroChainsLEquiv X.X₁).map_eq_zero_iff.2 <| h1 (hy.trans ?_).symm
-  simp_all only [ChainComplex.of_x,
-    HomologicalComplex.shortComplexFunctor'_obj_X₂, HomologicalComplex.shortComplexFunctor'_obj_X₁,
-    HomologicalComplex.shortComplexFunctor'_obj_f, inhomogeneousChains.d_def, shortComplexH1,
-    moduleCatMk_X₁, LinearEquiv.toModuleIso_inv, moduleCatMk_X₂, moduleCatMk_f,
-    ModuleCat.ofHom_apply, moduleCatMk_X₃, moduleCatMk_g,
-    HomologicalComplex.shortComplexFunctor'_obj_X₃, HomologicalComplex.shortComplexFunctor'_obj_g,
-    shortComplexH1Iso_hom, ModuleCat.coe_comp, Function.comp_apply]
--/
+  have h2 := congr($((CommSq.horiz_inv ⟨(shortComplexH1Iso X.X₂).hom.comm₁₂⟩).w) y)
+  have h3 := congr($((Iso.eq_inv_comp _).2 (shortComplexH1Iso X.X₁).hom.comm₂₃) x)
+  have h4 := congr($((CommSq.vert_inv (h := (oneChainsLEquiv X.X₂).toModuleIso)
+    ⟨(chainsMap_f_1_comp_oneChainsLEquiv X.X₁ X.X₂ (MonoidHom.id G) X.f.hom)⟩).w) x)
+  exact h3.trans <| (zeroChainsLEquiv X.X₁).map_eq_zero_iff.2 <| h1 (h2.trans <|
+    by simpa [shortComplexH1, MonoidHom.coe_id, hx.symm] using h4).symm
 
 theorem δ_succ_apply (X : ShortComplex (Rep k G)) (H : ShortExact X) (n : ℕ)
     (z : (Fin (n + 2) → G) →₀ X.X₃) (hz : inhomogeneousChains.d X.X₃ (n + 1) z = 0)
@@ -503,5 +496,41 @@ theorem δ₀_apply (X : ShortComplex (Rep k G)) (H : ShortExact X)
     simp only [ChainComplex.of_x, ModuleCat.coe_of, LinearMap.coe_comp, LinearEquiv.coe_coe,
       Function.comp_apply, inhomogeneousChains.d_def] at h2
     simpa [ModuleCat.coe_of, ← h2, ← hx] using h1.symm
+
+theorem δ₁_apply (X : ShortComplex (Rep k G)) (H : ShortExact X)
+    (z : G × G →₀ X.X₃) (hz : z ∈ twoCycles X.X₃) (y : G × G →₀ X.X₂)
+    (hy : Finsupp.mapRange.linearMap X.g.hom y = z)
+    (x : G →₀ X.X₁) (hx : Finsupp.mapRange.linearMap X.f.hom x = dOne X.X₂ y) :
+    (mapShortExact X H).δ 2 1 rfl (groupHomologyπ X.X₃ 2 <|
+      (isoTwoCycles X.X₃).inv ⟨z, hz⟩) = groupHomologyπ X.X₁ 1
+      ((isoOneCycles X.X₁).inv ⟨x, δ₁_apply_aux H y _ hx⟩) := by
+  have h1z : (inhomogeneousChains.d X.X₃ 1) ((twoChainsLEquiv X.X₃).symm z) = 0 := by
+    have := congr($((LinearEquiv.symm_comp_eq_comp_symm_iff _ _).2 (dOne_comp_eq X.X₃)) z)
+    simp_all [ModuleCat.coe_of, -Finsupp.coe_lsum, twoCycles]
+  have h2x : (inhomogeneousChains.d X.X₁ 0) ((oneChainsLEquiv X.X₁).symm x) = 0 := by
+    have := congr($((LinearEquiv.symm_comp_eq_comp_symm_iff _ _).2 (dZero_comp_eq X.X₁)) x)
+    simp_all [δ₁_apply_aux H y x hx, -Finsupp.coe_lsum, ModuleCat.coe_of]
+  have := δ_succ_apply X H 0 ((twoChainsLEquiv X.X₃).symm z) h1z
+    ((twoChainsLEquiv X.X₂).symm y) ?_ ((oneChainsLEquiv X.X₁).symm x) ?_
+  convert this
+  · rw [← cyclesSuccIso_1_trans_eq]
+    simp only [Nat.reduceAdd, Iso.trans_inv, LinearEquiv.toModuleIso_inv, ModuleCat.coe_comp,
+      Function.comp_apply, CochainComplex.of_x]
+    rfl
+  · rw [← cyclesSuccIso_0_trans_eq]
+    simp only [Nat.reduceAdd, Iso.trans_inv, LinearEquiv.toModuleIso_inv, ModuleCat.coe_comp,
+      Function.comp_apply, CochainComplex.of_x]
+    rfl
+  · have h := congr($((CommSq.vert_inv (h := (twoChainsLEquiv X.X₃).toModuleIso)
+      ⟨(chainsMap_f_2_comp_twoChainsLEquiv X.X₂ X.X₃ (MonoidHom.id G) X.g.hom)⟩).w) y)
+    cases hy
+    simp_all [ModuleCat.coe_of, ModuleCat.ofHom, ModuleCat.comp_def, ModuleCat.hom_def,
+      chainsMap_eq_mapRange, -Finsupp.coe_lsum, MonoidHom.coe_id,
+      -Finsupp.mapRange.linearMap_apply, coe_def]
+  · have := congr($((LinearEquiv.symm_comp_eq_comp_symm_iff _ _).2 (dOne_comp_eq X.X₂)) y)
+    have h4 := congr($((CommSq.vert_inv (h := (oneChainsLEquiv X.X₂).toModuleIso)
+      ⟨(chainsMap_f_1_comp_oneChainsLEquiv X.X₁ X.X₂ (MonoidHom.id G) X.f.hom)⟩).w) x)
+    simp_all [ModuleCat.coe_of, -Finsupp.coe_lsum, ← hx, ModuleCat.ofHom, ModuleCat.comp_def,
+      ModuleCat.hom_def, chainsMap_eq_mapRange, MonoidHom.coe_id, coe_def]
 
 end groupHomology
