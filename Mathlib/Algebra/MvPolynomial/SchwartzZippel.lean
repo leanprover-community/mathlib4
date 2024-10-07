@@ -120,11 +120,10 @@ lemma schwartz_zippel : ∀ {n} {p : MvPolynomial (Fin n) R} (hp : p ≠ 0) (S :
             _ ≤ ∑ _xₜ ∈ tail S ^^ n, p.degreeOf 0 := by gcongr; exact filter_subset ..
             _ = p.degreeOf 0 * ∏ i, #S (.succ i) := by simp [mul_comm, tail]
           gcongr with xₜ hxₜ
-          simp at hxₜ
           set pₓ := p'.map (eval xₜ) with hpₓ
           have hpₓdeg : pₓ.natDegree = k := by
-            rw [hpₓ, hk, Polynomial.natDegree_map_of_leadingCoeff_ne_zero (eval xₜ) hxₜ.2]
-          have hpₓ₀ : pₓ ≠ 0 := fun h ↦ hxₜ.2 <| by
+            rw [hpₓ, hk, Polynomial.natDegree_map_of_leadingCoeff_ne_zero _ (mem_filter.1 hxₜ).2]
+          have hpₓ₀ : pₓ ≠ 0 := fun h ↦ (mem_filter.1 hxₜ).2 <| by
             rw [hpₖ, Polynomial.leadingCoeff, ← hk, ← hpₓdeg, h, Polynomial.natDegree_zero,
               ← Polynomial.coeff_map, ← hpₓ, h, Polynomial.coeff_zero]
           calc
