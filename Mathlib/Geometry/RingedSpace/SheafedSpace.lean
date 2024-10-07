@@ -226,7 +226,8 @@ lemma hom_stalk_ext {X Y : SheafedSpace C} (f g : X ⟶ Y) (h : f.base = g.base)
   obtain rfl : f = g := h
   congr
   ext U s
-  refine section_ext X.sheaf _ _ _ fun x ↦ show X.presheaf.germ x _ = X.presheaf.germ x _ from ?_
+  refine section_ext X.sheaf _ _ _ fun x hx ↦
+    show X.presheaf.germ _ x _ _ = X.presheaf.germ _ x _ _ from ?_
   erw [← PresheafedSpace.stalkMap_germ_apply ⟨f, fc⟩, ← PresheafedSpace.stalkMap_germ_apply ⟨f, gc⟩]
   simp [h']
 
