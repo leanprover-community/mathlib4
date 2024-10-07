@@ -886,7 +886,6 @@ theorem withSeminorms_iInf {κ : ι → Type*} [Nonempty ((i : ι) × κ i)] [�
   rw [iInf_sigma]
   exact iInf_congr hp
 
-
 theorem withSeminorms_pi {κ : ι → Type*} {E : ι → Type*}
     [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)]
     [Nonempty ((i : ι) × κ i)] [∀ i, Nonempty (κ i)] {p : (i : ι) → SeminormFamily 𝕜 (E i) (κ i)}
