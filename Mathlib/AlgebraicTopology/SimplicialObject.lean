@@ -254,7 +254,7 @@ end Truncation
 noncomputable section
 
 /-- The n-skeleton as a functor `SimplicialObject.Truncated C n ⥤ SimplicialObject C`. -/
-protected abbrev Truncated.sk (n : ℕ) [ ∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
+protected abbrev Truncated.sk (n : ℕ) [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
     SimplexCategory.Truncated.inclusion.op.HasLeftKanExtension F] :
     SimplicialObject.Truncated C n ⥤ SimplicialObject C :=
   lan (SimplexCategory.Truncated.inclusion.op)
