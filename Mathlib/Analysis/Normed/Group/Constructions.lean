@@ -6,8 +6,6 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 import Mathlib.Algebra.Group.ULift
 import Mathlib.Algebra.PUnitInstances.Algebra
 import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Topology.Algebra.SeparationQuotient
-import Mathlib.Analysis.Normed.Group.Uniform
 
 /-!
 # Product of normed groups and other constructions
@@ -92,32 +90,6 @@ instance normedCommGroup [NormedCommGroup E] : NormedCommGroup (ULift E) :=
   down_injective
 
 end ULift
-
-
-/-! ### SeparationQuotient -/
-
-namespace SeparationQuotient
-variable [SeminormedCommGroup E]
-
-@[to_additive instNorm]
-instance instMulNorm : Norm (SeparationQuotient E) where
-  norm := SeparationQuotient.lift Norm.norm <| by
-    suffices ∀ (x y : E), Inseparable y x → ‖x‖ ≤ ‖y‖ by
-      intro x y h
-      exact le_antisymm (this _ _ h.symm) (this _ _ h)
-    intro x y h
-    rw [Metric.inseparable_iff, dist_eq_norm_div'] at h
-    exact le_of_sub_nonpos <| (norm_sub_norm_le' x y).trans_eq h
-
-@[simp]
-theorem norm_mk (p : E) : ‖mk p‖ = ‖p‖ := rfl
-
-@[to_additive]
-instance : NormedCommGroup (SeparationQuotient E) where
-  __ : CommGroup (SeparationQuotient E) := instCommGroup
-  dist_eq := Quotient.ind₂ dist_eq_norm_div
-
-end SeparationQuotient
 
 /-! ### `Additive`, `Multiplicative` -/
 
