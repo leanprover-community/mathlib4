@@ -466,7 +466,7 @@ def morphismRestrictRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V :
   refine Arrow.isoMk' _ _ (Scheme.restrictRestrict _ _ _ ≪≫ Scheme.restrictIsoOfEq _ ?_)
     (Scheme.restrictRestrict _ _ _) ?_
   · ext x
-    simp only [IsOpenMap.functor_obj_coe, Opens.coe_inclusion,
+    simp only [IsOpenMap.functor_obj_coe, Opens.coe_inclusion',
       Opens.map_coe, Set.mem_image, Set.mem_preimage, SetLike.mem_coe, morphismRestrict_base]
     constructor
     · rintro ⟨⟨a, h₁⟩, h₂, rfl⟩
