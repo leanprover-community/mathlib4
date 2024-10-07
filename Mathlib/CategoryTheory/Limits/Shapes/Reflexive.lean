@@ -231,11 +231,10 @@ instance category : SmallCategory WalkingReflexivePair where
   id_comp := by intro _ _ f; cases f <;> rfl
   assoc := by intro _ _ _ _ f g h; cases f <;> cases g <;> cases h <;> rfl
 
-
 open Hom
 
 @[simp]
-lemma Hom_id (X : WalkingReflexivePair) :
+lemma Hom.id_eq (X : WalkingReflexivePair) :
     Hom.id X = 𝟙 X := by rfl
 
 @[reassoc (attr := simp)]
@@ -243,7 +242,6 @@ lemma reflexion_comp_left : reflexion ≫ left = 𝟙 zero := rfl
 
 @[reassoc (attr := simp)]
 lemma reflexion_comp_right : reflexion ≫ right = 𝟙 zero := rfl
-
 
 @[simp]
 lemma leftCompReflexion_eq : leftCompReflexion = (left ≫ reflexion : one ⟶ one) := rfl
