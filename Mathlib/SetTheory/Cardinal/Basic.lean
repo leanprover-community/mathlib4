@@ -268,12 +268,6 @@ theorem lift_uzero (a : Cardinal.{u}) : lift.{0} a = a :=
 theorem lift_lift.{u_1} (a : Cardinal.{u_1}) : lift.{w} (lift.{v} a) = lift.{max v w} a :=
   inductionOn a fun _ => (Equiv.ulift.trans <| Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
 
--- Porting note: simpNF is not happy with universe levels.
-@[simp, nolint simpNF]
-theorem lift_umax_eq {a : Cardinal.{u}} {b : Cardinal.{v}} :
-    lift.{max v w} a = lift.{max u w} b ↔ lift.{v} a = lift.{u} b := by
-  rw [← lift_lift.{v, w, u}, ← lift_lift.{u, w, v}, lift_inj]
-
 @[simp]
 lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s) := by
   rw [← mk_uLift, Cardinal.eq]
@@ -393,14 +387,11 @@ theorem lt_lift_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
     b < lift.{v, u} a ↔ ∃ a' < a, lift.{v, u} a' = b :=
   liftInitialSeg.lt_apply_iff
 
-@[simp]
-lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s) := by
-  rw [← mk_uLift, Cardinal.eq]
-  constructor
-  let f : ULift.down ⁻¹' s → ULift s := fun x ↦ ULift.up (restrictPreimage s ULift.down x)
-  have : Function.Bijective f :=
-    ULift.up_bijective.comp (restrictPreimage_bijective _ (ULift.down_bijective))
-  exact Equiv.ofBijective f this
+-- Porting note: simpNF is not happy with universe levels.
+@[simp, nolint simpNF]
+theorem lift_umax_eq {a : Cardinal.{u}} {b : Cardinal.{v}} :
+    lift.{max v w} a = lift.{max u w} b ↔ lift.{v} a = lift.{u} b := by
+  rw [← lift_lift.{v, w, u}, ← lift_lift.{u, w, v}, lift_inj]
 
 /-! ### Basic cardinals -/
 
@@ -799,7 +790,7 @@ theorem add_one_le_succ (c : Cardinal.{u}) : c + 1 ≤ succ c := by
 theorem lift_succ (a) : lift.{v, u} (succ a) = succ (lift.{v, u} a) :=
   le_antisymm
     (le_of_not_gt fun h => by
-      rcases lt_lift_iff.1 h with ⟨b, e, h⟩
+      rcases lt_lift_iff.1 h with ⟨b, h, e⟩
       rw [lt_succ_iff, ← lift_le, e] at h
       exact h.not_lt (lt_succ _))
     (succ_le_of_lt <| lift_lt.2 <| lt_succ a)
@@ -1021,7 +1012,7 @@ theorem lift_sSup {s : Set Cardinal} (hs : BddAbove s) :
   apply ((le_csSup_iff' (bddAbove_image.{_,u} _ hs)).2 fun c hc => _).antisymm (csSup_le' _)
   · intro c hc
     by_contra h
-    obtain ⟨d, rfl⟩ := Cardinal.lift_down (not_le.1 h).le
+    obtain ⟨d, rfl⟩ := Cardinal.mem_range_of_le_lift (not_le.1 h).le
     simp_rw [lift_le] at h hc
     rw [csSup_le_iff' hs] at h
     exact h fun a ha => lift_le.1 <| hc (mem_image_of_mem _ ha)
@@ -1179,72 +1170,6 @@ theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f 
         exact ⟨Embedding.ofSurjective _ h⟩
     let ⟨⟨i, a⟩, h⟩ := sG C
     exact hc i a (congr_fun h _)
-
-@[simp]
-theorem lift_iInf {ι} (f : ι → Cardinal) : lift.{u, v} (iInf f) = ⨅ i, lift.{u, v} (f i) := by
-  unfold iInf
-  convert lift_sInf (range f)
-  simp_rw [← comp_apply (f := lift), range_comp]
-
-@[simp]
-theorem lift_succ (a) : lift.{v, u} (succ a) = succ (lift.{v, u} a) :=
-  le_antisymm
-    (le_of_not_gt fun h => by
-      rcases lt_lift_iff.1 h with ⟨b, h, e⟩
-      rw [lt_succ_iff, ← lift_le, e] at h
-      exact h.not_lt (lt_succ _))
-    (succ_le_of_lt <| lift_lt.2 <| lt_succ a)
-
-/-- The lift of a supremum is the supremum of the lifts. -/
-theorem lift_sSup {s : Set Cardinal} (hs : BddAbove s) :
-    lift.{u} (sSup s) = sSup (lift.{u} '' s) := by
-  apply ((le_csSup_iff' (bddAbove_image.{_,u} _ hs)).2 fun c hc => _).antisymm (csSup_le' _)
-  · intro c hc
-    by_contra h
-    obtain ⟨d, rfl⟩ := Cardinal.lift_down (not_le.1 h).le
-    simp_rw [lift_le] at h hc
-    rw [csSup_le_iff' hs] at h
-    exact h fun a ha => lift_le.1 <| hc (mem_image_of_mem _ ha)
-  · rintro i ⟨j, hj, rfl⟩
-    exact lift_le.2 (le_csSup hs hj)
-
-/-- The lift of a supremum is the supremum of the lifts. -/
-theorem lift_iSup {ι : Type v} {f : ι → Cardinal.{w}} (hf : BddAbove (range f)) :
-    lift.{u} (iSup f) = ⨆ i, lift.{u} (f i) := by
-  rw [iSup, iSup, lift_sSup hf, ← range_comp]
-  simp [Function.comp_def]
-
-/-- To prove that the lift of a supremum is bounded by some cardinal `t`,
-it suffices to show that the lift of each cardinal is bounded by `t`. -/
-theorem lift_iSup_le {ι : Type v} {f : ι → Cardinal.{w}} {t : Cardinal} (hf : BddAbove (range f))
-    (w : ∀ i, lift.{u} (f i) ≤ t) : lift.{u} (iSup f) ≤ t := by
-  rw [lift_iSup hf]
-  exact ciSup_le' w
-
-@[simp]
-theorem lift_iSup_le_iff {ι : Type v} {f : ι → Cardinal.{w}} (hf : BddAbove (range f))
-    {t : Cardinal} : lift.{u} (iSup f) ≤ t ↔ ∀ i, lift.{u} (f i) ≤ t := by
-  rw [lift_iSup hf]
-  exact ciSup_le_iff' (bddAbove_range_comp.{_,_,u} hf _)
-
-universe v' w'
-
-/-- To prove an inequality between the lifts to a common universe of two different supremums,
-it suffices to show that the lift of each cardinal from the smaller supremum
-if bounded by the lift of some cardinal from the larger supremum.
--/
-theorem lift_iSup_le_lift_iSup {ι : Type v} {ι' : Type v'} {f : ι → Cardinal.{w}}
-    {f' : ι' → Cardinal.{w'}} (hf : BddAbove (range f)) (hf' : BddAbove (range f')) {g : ι → ι'}
-    (h : ∀ i, lift.{w'} (f i) ≤ lift.{w} (f' (g i))) : lift.{w'} (iSup f) ≤ lift.{w} (iSup f') := by
-  rw [lift_iSup hf, lift_iSup hf']
-  exact ciSup_mono' (bddAbove_range_comp.{_,_,w} hf' _) fun i => ⟨_, h i⟩
-
-/-- A variant of `lift_iSup_le_lift_iSup` with universes specialized via `w = v` and `w' = v'`.
-This is sometimes necessary to avoid universe unification issues. -/
-theorem lift_iSup_le_lift_iSup' {ι : Type v} {ι' : Type v'} {f : ι → Cardinal.{v}}
-    {f' : ι' → Cardinal.{v'}} (hf : BddAbove (range f)) (hf' : BddAbove (range f')) (g : ι → ι')
-    (h : ∀ i, lift.{v'} (f i) ≤ lift.{v} (f' (g i))) : lift.{v'} (iSup f) ≤ lift.{v} (iSup f') :=
-  lift_iSup_le_lift_iSup hf hf' h
 
 /-! ### The first infinite cardinal `aleph0` -/
 
