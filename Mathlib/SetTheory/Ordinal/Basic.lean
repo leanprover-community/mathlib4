@@ -683,8 +683,8 @@ theorem lt_lift_iff {a : Ordinal.{u}} {b : Ordinal.{max u v}} :
     ⟨a', e, lift_lt.1 <| e.symm ▸ h⟩,
     fun ⟨_, e, h⟩ => e ▸ lift_lt.2 h⟩
 
-/-- Initial segment version of the lift operation on ordinals, embedding `ordinal.{u}` in
-  `ordinal.{v}` as an initial segment when `u ≤ v`. -/
+/-- Initial segment version of the lift operation on ordinals, embedding `Ordinal.{u}` in
+`Ordinal.{v}` as an initial segment when `u ≤ v`. -/
 def liftInitialSeg : Ordinal.{u} ≤i Ordinal.{max u v} :=
   ⟨⟨⟨lift.{v}, fun _ _ => lift_inj.1⟩, lift_lt⟩, fun _ _ h => lift_down (le_of_lt h)⟩
 
@@ -1061,8 +1061,8 @@ theorem lift_univ : lift.{w} univ.{u, v} = univ.{u, max v w} :=
 theorem univ_umax : univ.{u, max (u + 1) v} = univ.{u, v} :=
   congr_fun lift_umax _
 
-/-- Principal segment version of the lift operation on ordinals, embedding `ordinal.{u}` in
-  `ordinal.{v}` as a principal segment when `u < v`. -/
+/-- Principal segment version of the lift operation on ordinals, embedding `Ordinal.{u}` in
+`Ordinal.{v}` as a principal segment when `u < v`. -/
 def liftPrincipalSeg : Ordinal.{u} <i Ordinal.{max (u + 1) v} :=
   ⟨↑liftInitialSeg.{u, max (u + 1) v}, univ.{u, v}, by
     refine fun b => inductionOn b ?_; intro β s _
