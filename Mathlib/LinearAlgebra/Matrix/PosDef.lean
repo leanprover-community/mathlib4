@@ -106,7 +106,7 @@ protected theorem natCast [StarOrderedRing R] [DecidableEq n] (d : ℕ) :
   ⟨isHermitian_natCast _, fun x => by
     simp only [natCast_mulVec, dotProduct_smul]
     rw [Nat.cast_smul_eq_nsmul]
-    refine nsmul_nonneg (dotProduct_star_self_nonneg _) _⟩
+    exact nsmul_nonneg (dotProduct_star_self_nonneg _) _⟩
 
 -- See note [no_index around OfNat.ofNat]
 protected theorem ofNat [StarOrderedRing R] [DecidableEq n] (d : ℕ) [d.AtLeastTwo] :
@@ -118,7 +118,7 @@ protected theorem intCast [StarOrderedRing R] [DecidableEq n] (d : ℤ) (hd : 0 
   ⟨isHermitian_intCast _, fun x => by
     simp only [intCast_mulVec, dotProduct_smul]
     rw [Int.cast_smul_eq_zsmul]
-    refine zsmul_nonneg (dotProduct_star_self_nonneg _) hd⟩
+    exact zsmul_nonneg (dotProduct_star_self_nonneg _) hd⟩
 
 @[simp]
 protected theorem _root_.Matrix.posSemidef_intCast_iff
@@ -378,7 +378,7 @@ protected theorem natCast [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
   ⟨isHermitian_natCast _, fun x hx => by
     simp only [natCast_mulVec, dotProduct_smul]
     rw [Nat.cast_smul_eq_nsmul]
-    refine nsmul_pos (dotProduct_star_self_pos_iff.mpr hx) hd⟩
+    exact nsmul_pos (dotProduct_star_self_pos_iff.mpr hx) hd⟩
 
 @[simp]
 theorem _root_.Matrix.posDef_natCast_iff [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
@@ -398,7 +398,7 @@ protected theorem intCast [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
   ⟨isHermitian_intCast _, fun x hx => by
     simp only [intCast_mulVec, dotProduct_smul]
     rw [Int.cast_smul_eq_zsmul]
-    refine zsmul_pos (dotProduct_star_self_pos_iff.mpr hx) hd⟩
+    exact zsmul_pos (dotProduct_star_self_pos_iff.mpr hx) hd⟩
 
 @[simp]
 theorem _root_.Matrix.posDef_intCast_iff [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
