@@ -5,6 +5,8 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.Algebra.Category.Grp.Abelian
+import Mathlib.Algebra.Category.Grp.Kernels
+import Mathlib.Algebra.Exact
 
 /-!
 # Homology and exactness of short complexes of abelian groups
@@ -107,6 +109,18 @@ lemma ab_exact_iff :
     obtain ⟨x₁, rfl⟩ := h x₂ hx₂
     exact ⟨x₁, rfl⟩
 
+lemma ab_exact_iff_function_exact :
+    S.Exact ↔ Function.Exact S.f S.g := by
+  rw [S.ab_exact_iff]
+  apply forall_congr'
+  intro x₂
+  constructor
+  · intro h
+    refine ⟨h, ?_⟩
+    rintro ⟨x₁, rfl⟩
+    simp only [ab_zero_apply]
+  · tauto
+
 lemma ab_exact_iff_ker_le_range : S.Exact ↔ S.g.ker ≤ S.f.range := S.ab_exact_iff
 
 lemma ab_exact_iff_range_eq_ker : S.Exact ↔ S.f.range = S.g.ker := by
@@ -120,6 +134,8 @@ lemma ab_exact_iff_range_eq_ker : S.Exact ↔ S.f.range = S.g.ker := by
   · intro h
     rw [h]
 
+variable {S}
+
 lemma ShortExact.ab_injective_f (hS : S.ShortExact) :
     Function.Injective S.f :=
   (AddCommGrp.mono_iff_injective _).1 hS.mono_f
@@ -127,6 +143,13 @@ lemma ShortExact.ab_injective_f (hS : S.ShortExact) :
 lemma ShortExact.ab_surjective_g (hS : S.ShortExact) :
     Function.Surjective S.g :=
   (AddCommGrp.epi_iff_surjective _).1 hS.epi_g
+
+variable (S)
+
+lemma ShortExact.ab_exact_iff_function_exact :
+    S.Exact ↔ Function.Exact S.f S.g := by
+  rw [ab_exact_iff_range_eq_ker, AddMonoidHom.exact_iff]
+  tauto
 
 end ShortComplex
 

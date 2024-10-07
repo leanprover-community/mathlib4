@@ -6,8 +6,6 @@ Authors: Thomas Browning
 import Mathlib.Topology.PartialHomeomorph
 import Mathlib.Topology.SeparatedMap
 
-#align_import topology.is_locally_homeomorph from "leanprover-community/mathlib"@"e97cf15cd1aec9bd5c193b2ffac5a6dc9118912b"
-
 /-!
 # Local homeomorphisms
 
@@ -40,7 +38,6 @@ variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalS
 the source of some `e : PartialHomeomorph X Y` with `f = e`. -/
 def IsLocalHomeomorphOn :=
   ∀ x ∈ s, ∃ e : PartialHomeomorph X Y, x ∈ e.source ∧ f = e
-#align is_locally_homeomorph_on IsLocalHomeomorphOn
 
 theorem isLocalHomeomorphOn_iff_openEmbedding_restrict {f : X → Y} :
     IsLocalHomeomorphOn f s ↔ ∀ x ∈ s, ∃ U ∈ 𝓝 x, OpenEmbedding (U.restrict f) := by
@@ -75,7 +72,6 @@ theorem mk (h : ∀ x ∈ s, ∃ e : PartialHomeomorph X Y, x ∈ e.source ∧ S
         right_inv' := fun _y hy ↦ by rw [he (e.map_target' hy)]; exact e.right_inv' hy
         continuousOn_toFun := (continuousOn_congr he).mpr e.continuousOn_toFun },
       hx, rfl⟩
-#align is_locally_homeomorph_on.mk IsLocalHomeomorphOn.mk
 
 /-- A `PartialHomeomorph` is a local homeomorphism on its source. -/
 lemma PartialHomeomorph.isLocalHomeomorphOn (e : PartialHomeomorph X Y) :
@@ -111,16 +107,13 @@ theorem of_comp_right (hgf : IsLocalHomeomorphOn (g ∘ f) s) (hf : IsLocalHomeo
 theorem map_nhds_eq (hf : IsLocalHomeomorphOn f s) {x : X} (hx : x ∈ s) : (𝓝 x).map f = 𝓝 (f x) :=
   let ⟨e, hx, he⟩ := hf x hx
   he.symm ▸ e.map_nhds_eq hx
-#align is_locally_homeomorph_on.map_nhds_eq IsLocalHomeomorphOn.map_nhds_eq
 
 protected theorem continuousAt (hf : IsLocalHomeomorphOn f s) {x : X} (hx : x ∈ s) :
     ContinuousAt f x :=
   (hf.map_nhds_eq hx).le
-#align is_locally_homeomorph_on.continuous_at IsLocalHomeomorphOn.continuousAt
 
 protected theorem continuousOn (hf : IsLocalHomeomorphOn f s) : ContinuousOn f s :=
   ContinuousAt.continuousOn fun _x ↦ hf.continuousAt
-#align is_locally_homeomorph_on.continuous_on IsLocalHomeomorphOn.continuousOn
 
 protected theorem comp (hg : IsLocalHomeomorphOn g t) (hf : IsLocalHomeomorphOn f s)
     (h : Set.MapsTo f s t) : IsLocalHomeomorphOn (g ∘ f) s := by
@@ -128,7 +121,6 @@ protected theorem comp (hg : IsLocalHomeomorphOn g t) (hf : IsLocalHomeomorphOn 
   obtain ⟨eg, hxg, rfl⟩ := hg (f x) (h hx)
   obtain ⟨ef, hxf, rfl⟩ := hf x hx
   exact ⟨ef.trans eg, ⟨hxf, hxg⟩, rfl⟩
-#align is_locally_homeomorph_on.comp IsLocalHomeomorphOn.comp
 
 end IsLocalHomeomorphOn
 
@@ -136,7 +128,6 @@ end IsLocalHomeomorphOn
   the source of some `e : PartialHomeomorph X Y` with `f = e`. -/
 def IsLocalHomeomorph :=
   ∀ x : X, ∃ e : PartialHomeomorph X Y, x ∈ e.source ∧ f = e
-#align is_locally_homeomorph IsLocalHomeomorph
 
 theorem Homeomorph.isLocalHomeomorph (f : X ≃ₜ Y) : IsLocalHomeomorph f :=
   fun _ ↦ ⟨f.toPartialHomeomorph, trivial, rfl⟩
@@ -146,11 +137,9 @@ variable {f s}
 theorem isLocalHomeomorph_iff_isLocalHomeomorphOn_univ :
     IsLocalHomeomorph f ↔ IsLocalHomeomorphOn f Set.univ :=
   ⟨fun h x _ ↦ h x, fun h x ↦ h x trivial⟩
-#align is_locally_homeomorph_iff_is_locally_homeomorph_on_univ isLocalHomeomorph_iff_isLocalHomeomorphOn_univ
 
 protected theorem IsLocalHomeomorph.isLocalHomeomorphOn (hf : IsLocalHomeomorph f) :
     IsLocalHomeomorphOn f s := fun x _ ↦ hf x
-#align is_locally_homeomorph.is_locally_homeomorph_on IsLocalHomeomorph.isLocalHomeomorphOn
 
 theorem isLocalHomeomorph_iff_openEmbedding_restrict {f : X → Y} :
     IsLocalHomeomorph f ↔ ∀ x : X, ∃ U ∈ 𝓝 x, OpenEmbedding (U.restrict f) := by
@@ -172,7 +161,6 @@ theorem mk (h : ∀ x : X, ∃ e : PartialHomeomorph X Y, x ∈ e.source ∧ Set
     IsLocalHomeomorph f :=
   isLocalHomeomorph_iff_isLocalHomeomorphOn_univ.mpr
     (IsLocalHomeomorphOn.mk f Set.univ fun x _hx ↦ h x)
-#align is_locally_homeomorph.mk IsLocalHomeomorph.mk
 
 /-- A homeomorphism is a local homeomorphism. -/
 lemma Homeomorph.isLocalHomeomorph (h : X ≃ₜ Y) : IsLocalHomeomorph h :=
@@ -190,24 +178,20 @@ theorem of_comp (hgf : IsLocalHomeomorph (g ∘ f)) (hg : IsLocalHomeomorph g)
 
 theorem map_nhds_eq (hf : IsLocalHomeomorph f) (x : X) : (𝓝 x).map f = 𝓝 (f x) :=
   hf.isLocalHomeomorphOn.map_nhds_eq (Set.mem_univ x)
-#align is_locally_homeomorph.map_nhds_eq IsLocalHomeomorph.map_nhds_eq
 
 /-- A local homeomorphism is continuous. -/
 protected theorem continuous (hf : IsLocalHomeomorph f) : Continuous f :=
   continuous_iff_continuousOn_univ.mpr hf.isLocalHomeomorphOn.continuousOn
-#align is_locally_homeomorph.continuous IsLocalHomeomorph.continuous
 
 /-- A local homeomorphism is an open map. -/
 protected theorem isOpenMap (hf : IsLocalHomeomorph f) : IsOpenMap f :=
   IsOpenMap.of_nhds_le fun x ↦ ge_of_eq (hf.map_nhds_eq x)
-#align is_locally_homeomorph.is_open_map IsLocalHomeomorph.isOpenMap
 
 /-- The composition of local homeomorphisms is a local homeomorphism. -/
 protected theorem comp (hg : IsLocalHomeomorph g) (hf : IsLocalHomeomorph f) :
     IsLocalHomeomorph (g ∘ f) :=
   isLocalHomeomorph_iff_isLocalHomeomorphOn_univ.mpr
     (hg.isLocalHomeomorphOn.comp hf.isLocalHomeomorphOn (Set.univ.mapsTo_univ f))
-#align is_locally_homeomorph.comp IsLocalHomeomorph.comp
 
 /-- An injective local homeomorphism is an open embedding. -/
 theorem openEmbedding_of_injective (hf : IsLocalHomeomorph f) (hi : f.Injective) :

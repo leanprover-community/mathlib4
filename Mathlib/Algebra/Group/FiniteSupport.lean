@@ -17,7 +17,5 @@ variable {α β γ : Type*} [One γ]
 lemma mulSupport_along_fiber_finite_of_finite (f : α × β → γ) (a : α) (h : (mulSupport f).Finite) :
     (mulSupport fun b ↦ f (a, b)).Finite :=
   (h.image Prod.snd).subset (mulSupport_along_fiber_subset f a)
-#align function.mul_support_along_fiber_finite_of_finite Function.mulSupport_along_fiber_finite_of_finite
-#align function.support_along_fiber_finite_of_finite Function.support_along_fiber_finite_of_finite
 
 end Function

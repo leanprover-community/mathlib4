@@ -6,8 +6,6 @@ Authors: Joël Riou
 import Mathlib.AlgebraicTopology.SimplicialObject
 import Mathlib.CategoryTheory.Idempotents.FunctorCategories
 
-#align_import category_theory.idempotents.simplicial_object from "leanprover-community/mathlib"@"163d1a6d98caf9f0431704169027e49c5c6c6cc0"
-
 /-!
 
 # Idempotent completeness of categories of simplicial objects

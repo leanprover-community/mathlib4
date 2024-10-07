@@ -6,8 +6,6 @@ Authors: Johan Commelin
 import Mathlib.Algebra.Polynomial.Coeff
 import Mathlib.Data.Nat.Choose.Basic
 
-#align_import data.nat.choose.vandermonde from "leanprover-community/mathlib"@"d6814c584384ddf2825ff038e868451a7c956f31"
-
 /-!
 
 # Vandermonde's identity
@@ -32,4 +30,3 @@ theorem Nat.add_choose_eq (m n k : ℕ) :
     _ = ∑ ij ∈ antidiagonal k, m.choose ij.1 * n.choose ij.2 := by
       rw [coeff_mul, Finset.sum_congr rfl]
       simp only [coeff_X_add_one_pow, Nat.cast_id, eq_self_iff_true, imp_true_iff]
-#align nat.add_choose_eq Nat.add_choose_eq

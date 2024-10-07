@@ -5,8 +5,6 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
-#align_import order.monotone.extension from "leanprover-community/mathlib"@"422e70f7ce183d2900c586a8cda8381e788a0c62"
-
 /-!
 # Extension of a monotone function from a set to the whole space
 
@@ -46,11 +44,9 @@ theorem MonotoneOn.exists_monotone_extension (h : MonotoneOn f s) (hl : BddBelow
     · rw [not_disjoint_iff_nonempty_inter] at hx hy
       refine csSup_le_csSup (hu' _) (hx.image _) (image_subset _ ?_)
       exact inter_subset_inter_left _ (Iic_subset_Iic.2 hxy)
-#align monotone_on.exists_monotone_extension MonotoneOn.exists_monotone_extension
 
 /-- If a function is antitone and is bounded on a set `s`, then it admits an antitone extension to
 the whole space. -/
 theorem AntitoneOn.exists_antitone_extension (h : AntitoneOn f s) (hl : BddBelow (f '' s))
     (hu : BddAbove (f '' s)) : ∃ g : α → β, Antitone g ∧ EqOn f g s :=
   h.dual_right.exists_monotone_extension hu hl
-#align antitone_on.exists_antitone_extension AntitoneOn.exists_antitone_extension

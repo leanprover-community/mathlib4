@@ -14,7 +14,7 @@ import Mathlib.CategoryTheory.Functor.ReflectsIso
 
 In this file we define the type `BasedCategory 𝒮`, and give it the structure of a strict
 bicategory. Given a category `𝒮`, we define the type `BasedCategory 𝒮` as the type of categories
-`𝒳` equiped with a functor `𝒳.p : 𝒳 ⥤ 𝒮`.
+`𝒳` equipped with a functor `𝒳.p : 𝒳 ⥤ 𝒮`.
 
 We also define a type of functors between based categories `𝒳` and `𝒴`, which we call
 `BasedFunctor 𝒳 𝒴` and denote as `𝒳 ⥤ᵇ 𝒴`. These are defined as functors between the underlying
@@ -203,7 +203,7 @@ instance : (forgetful 𝒳 𝒴).ReflectsIsomorphisms where
       isHomLift' := fun a ↦ by simp [lift_id_inv_isIso] }
     aesop
 
-instance {F G : 𝒳 ⥤ᵇ 𝒴} (α : F ⟶ G) [IsIso α] : IsIso (X:=F.toFunctor) α.toNatTrans := by
+instance {F G : 𝒳 ⥤ᵇ 𝒴} (α : F ⟶ G) [IsIso α] : IsIso (X := F.toFunctor) α.toNatTrans := by
   rw [← forgetful_map]; infer_instance
 
 end BasedNatTrans
@@ -222,7 +222,7 @@ def id (F : 𝒳 ⥤ᵇ 𝒴) : F ≅ F where
 
 variable {F G : 𝒳 ⥤ᵇ 𝒴}
 
-/-- The inverse of a based natural transformation whose underlying natural tranformation is an
+/-- The inverse of a based natural transformation whose underlying natural transformation is an
 isomorphism. -/
 def mkNatIso (α : F.toFunctor ≅ G.toFunctor)
     (isHomLift' : ∀ a : 𝒳.obj, IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (α.hom.app a)) : F ≅ G where

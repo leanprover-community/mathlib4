@@ -3,7 +3,7 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.KanExtension
+import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 import Mathlib.Condensed.Functors
 import Mathlib.Condensed.Limits
 
@@ -43,11 +43,28 @@ abbrev profiniteFree : Profinite.{u} ⥤ CondensedMod.{u} R :=
 
 /-- The functor sending a profinite space `S` to the condensed abelian group `R[S]^\solid`. -/
 def profiniteSolid : Profinite.{u} ⥤ CondensedMod.{u} R :=
-  Ran.loc FintypeCat.toProfinite (finFree R)
+  Functor.rightKanExtension FintypeCat.toProfinite (finFree R)
+
+/-- The natural transformation `FintypeCat.toProfinite ⋙ profiniteSolid R ⟶ finFree R`
+which is part of the assertion that `profiniteSolid R` is the (pointwise) right
+Kan extension of `finFree R` along `FintypeCat.toProfinite`. -/
+def profiniteSolidCounit : FintypeCat.toProfinite ⋙ profiniteSolid R ⟶ finFree R :=
+  Functor.rightKanExtensionCounit FintypeCat.toProfinite (finFree R)
+
+instance : (profiniteSolid R).IsRightKanExtension (profiniteSolidCounit R) := by
+  dsimp only [profiniteSolidCounit, profiniteSolid]
+  infer_instance
+
+/-- The functor `Profinite.{u} ⥤ CondensedMod.{u} R` is a pointwise
+right Kan extension of `finFree R : FintypeCat.{u} ⥤ CondensedMod.{u} R`
+along `FintypeCat.toProfinite`. -/
+def profiniteSolidIsPointwiseRightKanExtension :
+    (Functor.RightExtension.mk _ (profiniteSolidCounit R)).IsPointwiseRightKanExtension :=
+  Functor.isPointwiseRightKanExtensionOfIsRightKanExtension _ _
 
 /-- The natural transformation `R[S] ⟶ R[S]^\solid`. -/
 def profiniteSolidification : profiniteFree R ⟶ profiniteSolid.{u} R :=
-  (Ran.equiv FintypeCat.toProfinite (finFree R) (profiniteFree R)).symm (NatTrans.id _)
+  (profiniteSolid R).liftOfIsRightKanExtension (profiniteSolidCounit R) _ (𝟙 _)
 
 end Condensed
 

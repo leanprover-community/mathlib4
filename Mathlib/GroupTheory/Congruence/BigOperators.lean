@@ -14,8 +14,6 @@ import Mathlib.Algebra.BigOperators.Group.List
 
 -/
 
-open BigOperators
-
 namespace Con
 
 /-- Multiplicative congruence relations preserve product indexed by a list. -/

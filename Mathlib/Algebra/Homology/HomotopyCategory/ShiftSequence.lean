@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Shift.InducedShiftSequence
+import Mathlib.CategoryTheory.Shift.Localization
 import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.Algebra.Homology.QuasiIso
@@ -84,13 +85,13 @@ noncomputable def shiftIso (n a a' : ℤ) (ha' : n + a = a') :
       (ShortComplex.homologyFunctor C) ≪≫
     (homologyFunctorIso C (ComplexShape.up ℤ) a').symm
 
-lemma shiftIso_hom_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C ℤ):
+lemma shiftIso_hom_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C ℤ) :
     (shiftIso C n a a' ha').hom.app K =
       ShortComplex.homologyMap ((shiftShortComplexFunctorIso C n a a' ha').hom.app K) := by
   dsimp [shiftIso]
   erw [id_comp, id_comp, comp_id]
 
-lemma shiftIso_inv_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C ℤ):
+lemma shiftIso_inv_app (n a a' : ℤ) (ha' : n + a = a') (K : CochainComplex C ℤ) :
     (shiftIso C n a a' ha').inv.app K =
       ShortComplex.homologyMap ((shiftShortComplexFunctorIso C n a a' ha').inv.app K) := by
   dsimp [shiftIso]
@@ -115,14 +116,29 @@ noncomputable instance :
       ← ShortComplex.homologyMap_comp, shiftFunctorAdd'_eq_shiftFunctorAdd,
       shiftShortComplexFunctorIso_add'_hom_app n m _ rfl a a' a'' ha' ha'' K]
 
+lemma quasiIsoAt_shift_iff {K L : CochainComplex C ℤ} (φ : K ⟶ L) (n i j : ℤ) (h : n + i = j) :
+    QuasiIsoAt (φ⟦n⟧') i ↔ QuasiIsoAt φ j := by
+  simp only [quasiIsoAt_iff_isIso_homologyMap]
+  exact (NatIso.isIso_map_iff
+    ((homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso n i j h) φ)
+
+lemma quasiIso_shift_iff {K L : CochainComplex C ℤ} (φ : K ⟶ L) (n : ℤ) :
+    QuasiIso (φ⟦n⟧') ↔ QuasiIso φ := by
+  simp only [quasiIso_iff, fun i ↦ quasiIsoAt_shift_iff φ n i _ rfl]
+  constructor
+  · intro h j
+    obtain ⟨i, rfl⟩ : ∃ i, j = n + i := ⟨j - n, by omega⟩
+    exact h i
+  · intro h i
+    exact h (n + i)
+
 instance {K L : CochainComplex C ℤ} (φ : K ⟶ L) (n : ℤ) [QuasiIso φ] :
-    QuasiIso (φ⟦n⟧') where
-  quasiIsoAt a := by
-    rw [quasiIsoAt_iff_isIso_homologyMap]
-    apply (NatIso.isIso_map_iff
-      ((homologyFunctor C (ComplexShape.up ℤ) 0).shiftIso n a (n + a) rfl) φ).2 ?_
-    change IsIso (homologyMap φ _)
-    infer_instance
+    QuasiIso (φ⟦n⟧') := by
+  rw [quasiIso_shift_iff]
+  infer_instance
+
+instance : (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)).IsCompatibleWithShift ℤ where
+  condition n := by ext; apply quasiIso_shift_iff
 
 variable (C) in
 lemma homologyFunctor_shift (n : ℤ) :
