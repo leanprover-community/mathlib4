@@ -23,7 +23,11 @@ of the field. This lemma is useful as a probabilistic polynomial identity test.
 ## TODO
 
 * Generalize to polynomials over arbitrary variable types
+* Prove the stronger statement that one can replace the degrees of `p` in the RHS by the degrees of
+  the maximal monomial of `p` in some lexicographic order.
 * Write a tactic to apply this lemma to a given polynomial
+* Can the RHS be strengthened to `p.support.sup fun s ↦ ∑ i, s i / #S i`? Namely, can the sup
+  inside the `p.degreeOf` be pulled outside?
 
 ## References
 
@@ -99,7 +103,7 @@ lemma schwartz_zippel : ∀ {n} {p : MvPolynomial (Fin n) R} (hp : p ≠ 0) (S :
               ≤ ↑(p.degreeOf 0 * ∏ i, #S (.succ i)) / ∏ i, (#S i : ℚ≥0) := ?_
             _ = p.degreeOf 0 * (∏ i, #S (.succ i)) / (#S 0 * ∏ i, #S (.succ i)) := by
               norm_cast; rw [prod_univ_succ]
-            _ ≤ (p.degreeOf 0 / #S 0 : ℚ≥0) := mul_div_mul_right_le (by positivity) (by positivity)
+            _ ≤ (p.degreeOf 0 / #S 0 : ℚ≥0) := mul_div_mul_right_le (by positivity)
           gcongr
           calc
             #{x ∈ S ^^ (n + 1) | eval x p = 0 ∧ eval (tail x) pₖ ≠ 0}
