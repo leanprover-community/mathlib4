@@ -536,7 +536,7 @@ end OrderedCommGroup
 
 @[to_additive]
 instance [TopologicalSpace H] [Group H] [TopologicalGroup H] : TopologicalGroup (G × H) where
-  continuous_inv := continuous_inv.prod_map continuous_inv
+  continuous_inv := continuous_inv.prodMap continuous_inv
 
 @[to_additive]
 instance Pi.topologicalGroup {C : β → Type*} [∀ b, TopologicalSpace (C b)] [∀ b, Group (C b)]
@@ -1426,7 +1426,7 @@ theorem Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite (S : Sub
     (hS : Tendsto S.subtype cofinite (cocompact G)) : ProperlyDiscontinuousSMul S.op G :=
   { finite_disjoint_inter_image := by
       intro K L hK hL
-      have : Continuous fun p : G × G => (p.1⁻¹, p.2) := continuous_inv.prod_map continuous_id
+      have : Continuous fun p : G × G => (p.1⁻¹, p.2) := continuous_inv.prodMap continuous_id
       have H : Set.Finite _ :=
         hS ((hK.prod hL).image (continuous_mul.comp this)).compl_mem_cocompact
       simp only [preimage_compl, compl_compl, coeSubtype, comp_apply] at H
