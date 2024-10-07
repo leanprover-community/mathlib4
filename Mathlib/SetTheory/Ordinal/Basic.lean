@@ -248,6 +248,11 @@ theorem inductionOn {C : Ordinal → Prop} (o : Ordinal)
     (H : ∀ (α r) [IsWellOrder α r], C (type r)) : C o :=
   Quot.inductionOn o fun ⟨α, r, wo⟩ => @H α r wo
 
+@[elab_as_elim]
+theorem inductionOn₂ {C : Ordinal → Ordinal → Prop} (o₁ o₂ : Ordinal)
+    (H : ∀ (α r) [IsWellOrder α r] (β s) [IsWellOrder β s], C (type r) (type s)) : C o₁ o₂ :=
+  Quotient.inductionOn₂ o₁ o₂ fun ⟨α, r, wo₁⟩ ⟨β, s, wo₂⟩ => @H α r wo₁ β s wo₂
+
 /-! ### The order on ordinals -/
 
 /--
@@ -369,6 +374,11 @@ def principalSegToType {α β : Ordinal} (h : α < β) :
 @[deprecated principalSegToType (since := "2024-08-26")]
 noncomputable alias principalSegOut := principalSegToType
 
+@[simp]
+theorem type_subrel (r : α → α → Prop) [IsWellOrder α r] (a : α) :
+    type (Subrel r { b | r b a }) = typein r a :=
+  rfl
+
 theorem typein_lt_type (r : α → α → Prop) [IsWellOrder α r] (a : α) : typein r a < type r :=
   ⟨PrincipalSeg.ofElement _ _⟩
 
@@ -379,10 +389,7 @@ theorem typein_lt_self {o : Ordinal} (i : o.toType) : typein (α := o.toType) (�
 @[simp]
 theorem typein_top {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r] [IsWellOrder β s]
     (f : r ≺i s) : typein s f.top = type r :=
-  Eq.symm <|
-    Quot.sound
-      ⟨RelIso.ofSurjective (RelEmbedding.codRestrict _ f f.lt_top) fun ⟨a, h⟩ => by
-          rcases f.down.1 h with ⟨b, rfl⟩; exact ⟨b, rfl⟩⟩
+  f.subrelIso.ordinal_type_eq
 
 @[simp]
 theorem typein_apply {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r] [IsWellOrder β s]
@@ -633,11 +640,28 @@ theorem lift_le {a b : Ordinal} : lift.{u,v} a ≤ lift.{u,v} b ↔ a ≤ b :=
 
 @[simp]
 theorem lift_inj {a b : Ordinal} : lift.{u,v} a = lift.{u,v} b ↔ a = b := by
-  simp only [le_antisymm_iff, lift_le]
+  simp_rw [le_antisymm_iff, lift_le]
 
 @[simp]
 theorem lift_lt {a b : Ordinal} : lift.{u,v} a < lift.{u,v} b ↔ a < b := by
-  simp only [lt_iff_le_not_le, lift_le]
+  simp_rw [lt_iff_le_not_le, lift_le]
+
+@[simp]
+theorem lift_typein_top {r : α → α → Prop} {s : β → β → Prop}
+    [IsWellOrder α r] [IsWellOrder β s] (f : r ≺i s) :
+    lift.{u} (typein s f.top) = lift (type r) :=
+  f.subrelIso.ordinal_lift_type_eq
+
+/-- Initial segment version of the lift operation on ordinals, embedding `ordinal.{u}` in
+  `ordinal.{v}` as an initial segment when `u ≤ v`. -/
+def liftInitialSeg : @InitialSeg Ordinal.{u} Ordinal.{max u v} (· < ·) (· < ·) := by
+  refine ⟨RelEmbedding.ofMonotone lift.{v} (by simp),
+    fun a b ↦ Ordinal.inductionOn₂ a b fun α r _ β s _ h ↦ ?_⟩
+  rw [RelEmbedding.ofMonotone_coe, ← lift_id'.{max u v} (type s),
+    ← lift_umax.{u, v}, lift_type_lt] at h
+  obtain ⟨f⟩ := h
+  use typein r f.top
+  rw [RelEmbedding.ofMonotone_coe, ← lift_umax, lift_typein_top, lift_id']
 
 @[simp]
 theorem lift_zero : lift 0 = 0 :=
@@ -648,7 +672,7 @@ theorem lift_one : lift 1 = 1 :=
   type_eq_one_of_unique _
 
 @[simp]
-theorem lift_card (a) : Cardinal.lift.{u,v} (card a)= card (lift.{u,v} a) :=
+theorem lift_card (a) : Cardinal.lift.{u,v} (card a) = card (lift.{u,v} a) :=
   inductionOn a fun _ _ _ => rfl
 
 theorem lift_down' {a : Cardinal.{u}} {b : Ordinal.{max u v}}
@@ -685,11 +709,8 @@ theorem lt_lift_iff {a : Ordinal.{u}} {b : Ordinal.{max u v}} :
     ⟨a', e, lift_lt.1 <| e.symm ▸ h⟩,
     fun ⟨_, e, h⟩ => e ▸ lift_lt.2 h⟩
 
-/-- Initial segment version of the lift operation on ordinals, embedding `ordinal.{u}` in
-  `ordinal.{v}` as an initial segment when `u ≤ v`. -/
-def liftInitialSeg : @InitialSeg Ordinal.{u} Ordinal.{max u v} (· < ·) (· < ·) :=
-  ⟨⟨⟨lift.{v}, fun _ _ => lift_inj.1⟩, lift_lt⟩, fun _ _ h => lift_down (le_of_lt h)⟩
 
+#exit
 @[deprecated liftInitialSeg (since := "2024-09-21")]
 alias lift.initialSeg := liftInitialSeg
 
