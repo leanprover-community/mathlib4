@@ -14,6 +14,8 @@ isomorphic to `Ordinal`.
 
 We define this correspondence as `enumOrd`, and use it to then define an order isomorphism
 `enumOrdOrderIso`.
+
+This can be thought of as an ordinal analog of `Nat.nth`.
 -/
 
 universe u
