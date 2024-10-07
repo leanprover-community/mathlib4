@@ -145,16 +145,16 @@ if all but finitely many of `f i` are surjective,
 then the indexed product of `f i`s maps the indexed product of the filters `l i`
 to the indexed products of their pushforwards under individual `f i`s.
 
-See also `map_dcomp_pi_finite` for the case of a finite index type.
+See also `map_piMap_pi_finite` for the case of a finite index type.
 -/
-theorem map_dcomp_pi {α β : ι → Type*} {f : ∀ i, α i → β i}
+theorem map_piMap_pi {α β : ι → Type*} {f : ∀ i, α i → β i}
     (hf : ∀ᶠ i in cofinite, Surjective (f i)) (l : ∀ i, Filter (α i)) :
-    map (f _ ∘' ·) (pi l) = pi fun i ↦ map (f i) (l i) := by
-  refine le_antisymm (tendsto_dcomp_pi fun _ ↦ tendsto_map) ?_
+    map (Pi.map f) (pi l) = pi fun i ↦ map (f i) (l i) := by
+  refine le_antisymm (tendsto_piMap_pi fun _ ↦ tendsto_map) ?_
   refine ((hasBasis_pi fun i ↦ (l i).basis_sets).map _).ge_iff.2 ?_
   rintro ⟨I, s⟩ ⟨hI : I.Finite, hs : ∀ i ∈ I, s i ∈ l i⟩
   classical
-  rw [← univ_pi_piecewise_univ, dcomp_image_univ_pi]
+  rw [← univ_pi_piecewise_univ, piMap_image_univ_pi]
   refine univ_pi_mem_pi (fun i ↦ ?_) ?_
   · if hi : i ∈ I then
       simpa [hi] using image_mem_map (hs i hi)
@@ -167,12 +167,12 @@ theorem map_dcomp_pi {α β : ι → Type*} {f : ∀ i, α i → β i}
 the indexed product of `f i`s maps the indexed product of the filters `l i`
 to the indexed products of their pushforwards under individual `f i`s.
 
-See also `map_dcomp_pi` for a more general case.
+See also `map_piMap_pi` for a more general case.
 -/
-theorem map_dcomp_pi_finite {α β : ι → Type*} [Finite ι]
+theorem map_piMap_pi_finite {α β : ι → Type*} [Finite ι]
     (f : ∀ i, α i → β i) (l : ∀ i, Filter (α i)) :
-    map (f _ ∘' ·) (pi l) = pi fun i ↦ map (f i) (l i) :=
-  map_dcomp_pi (by simp) l
+    map (Pi.map f) (pi l) = pi fun i ↦ map (f i) (l i) :=
+  map_piMap_pi (by simp) l
 
 end Filter
 
