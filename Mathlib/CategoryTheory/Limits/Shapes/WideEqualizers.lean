@@ -138,7 +138,7 @@ def diagramIsoParallelFamily (F : WalkingParallelFamily J ⥤ C) :
     rintro _ _ (_|_) <;> aesop_cat
 
 /-- `WalkingParallelPair` as a category is equivalent to a special case of
-`WalkingParallelFamily`.  -/
+`WalkingParallelFamily`. -/
 @[simps!]
 def walkingParallelFamilyEquivWalkingParallelPair :
     WalkingParallelFamily.{w} (ULift Bool) ≌ WalkingParallelPair where

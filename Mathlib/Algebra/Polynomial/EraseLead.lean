@@ -150,25 +150,33 @@ theorem eraseLead_C_mul_X_pow (r : R) (n : ℕ) : eraseLead (C r * X ^ n) = 0 :=
 @[simp] lemma eraseLead_C_mul_X (r : R) : eraseLead (C r * X) = 0 := by
   simpa using eraseLead_C_mul_X_pow _ 1
 
-theorem eraseLead_add_of_natDegree_lt_left {p q : R[X]} (pq : q.natDegree < p.natDegree) :
+theorem eraseLead_add_of_degree_lt_left {p q : R[X]} (pq : q.degree < p.degree) :
     (p + q).eraseLead = p.eraseLead + q := by
   ext n
   by_cases nd : n = p.natDegree
-  · rw [nd, eraseLead_coeff, if_pos (natDegree_add_eq_left_of_natDegree_lt pq).symm]
-    simpa using (coeff_eq_zero_of_natDegree_lt pq).symm
+  · rw [nd, eraseLead_coeff, if_pos (natDegree_add_eq_left_of_degree_lt pq).symm]
+    simpa using (coeff_eq_zero_of_degree_lt (lt_of_lt_of_le pq degree_le_natDegree)).symm
   · rw [eraseLead_coeff, coeff_add, coeff_add, eraseLead_coeff, if_neg, if_neg nd]
     rintro rfl
-    exact nd (natDegree_add_eq_left_of_natDegree_lt pq)
+    exact nd (natDegree_add_eq_left_of_degree_lt pq)
 
-theorem eraseLead_add_of_natDegree_lt_right {p q : R[X]} (pq : p.natDegree < q.natDegree) :
+theorem eraseLead_add_of_natDegree_lt_left {p q : R[X]} (pq : q.natDegree < p.natDegree) :
+    (p + q).eraseLead = p.eraseLead + q :=
+  eraseLead_add_of_degree_lt_left (degree_lt_degree pq)
+
+theorem eraseLead_add_of_degree_lt_right {p q : R[X]} (pq : p.degree < q.degree) :
     (p + q).eraseLead = p + q.eraseLead := by
   ext n
   by_cases nd : n = q.natDegree
-  · rw [nd, eraseLead_coeff, if_pos (natDegree_add_eq_right_of_natDegree_lt pq).symm]
-    simpa using (coeff_eq_zero_of_natDegree_lt pq).symm
+  · rw [nd, eraseLead_coeff, if_pos (natDegree_add_eq_right_of_degree_lt pq).symm]
+    simpa using (coeff_eq_zero_of_degree_lt (lt_of_lt_of_le pq degree_le_natDegree)).symm
   · rw [eraseLead_coeff, coeff_add, coeff_add, eraseLead_coeff, if_neg, if_neg nd]
     rintro rfl
-    exact nd (natDegree_add_eq_right_of_natDegree_lt pq)
+    exact nd (natDegree_add_eq_right_of_degree_lt pq)
+
+theorem eraseLead_add_of_natDegree_lt_right {p q : R[X]} (pq : p.natDegree < q.natDegree) :
+    (p + q).eraseLead = p + q.eraseLead :=
+  eraseLead_add_of_degree_lt_right (degree_lt_degree pq)
 
 theorem eraseLead_degree_le : (eraseLead f).degree ≤ f.degree :=
   f.degree_erase_le _

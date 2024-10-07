@@ -262,8 +262,8 @@ private theorem exists_right_complement'_of_coprime_aux' [Finite G] (hG : Nat.ca
     {N : Subgroup G} [N.Normal] (hN : Nat.Coprime (Nat.card N) N.index) :
     ∃ H : Subgroup G, IsComplement' N H := by
   revert G
-  apply Nat.strongInductionOn n
-  rintro n ih G _ _ rfl N _ hN
+  induction n using Nat.strongRecOn with | ind n ih => ?_
+  rintro G _ _ rfl N _ hN
   refine not_forall_not.mp fun h3 => ?_
   haveI := SchurZassenhausInduction.step7 hN (fun G' _ _ hG' => by apply ih _ hG'; rfl) h3
   exact not_exists_of_forall_not h3 (exists_right_complement'_of_coprime_aux hN)

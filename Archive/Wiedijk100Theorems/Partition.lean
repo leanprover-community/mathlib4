@@ -127,7 +127,7 @@ theorem num_series' [Field α] (i : ℕ) :
     | zero => simp [mul_sub, zero_pow, constantCoeff_indicator]
     | succ n =>
       simp only [coeff_one, if_false, mul_sub, mul_one, coeff_indicator,
-        LinearMap.map_sub]
+        LinearMap.map_sub, reduceCtorEq]
       simp_rw [coeff_mul, coeff_X_pow, coeff_indicator, @boole_mul _ _ _ _]
       erw [sum_ite, sum_ite]
       simp_rw [@filter_filter _ _ _ _ _, sum_const_zero, add_zero, sum_const, nsmul_eq_mul, mul_one,
@@ -206,7 +206,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
   · dsimp only
     intro p₁ hp₁ p₂ hp₂ h
     apply Nat.Partition.ext
-    simp only [true_and_iff, mem_univ, mem_filter] at hp₁ hp₂
+    simp only [true_and, mem_univ, mem_filter] at hp₁ hp₂
     ext i
     simp only [φ, ne_eq, Multiset.mem_toFinset, not_not, smul_eq_mul, Finsupp.mk.injEq] at h
     by_cases hi : i = 0
@@ -218,7 +218,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
     · rw [← mul_left_inj' hi]
       rw [Function.funext_iff] at h
       exact h.2 i
-  · simp only [φ, mem_filter, mem_finsuppAntidiag, mem_univ, exists_prop, true_and_iff, and_assoc]
+  · simp only [φ, mem_filter, mem_finsuppAntidiag, mem_univ, exists_prop, true_and, and_assoc]
     rintro f ⟨hf, hf₃, hf₄⟩
     have hf' : f ∈ finsuppAntidiag s n := mem_finsuppAntidiag.mpr ⟨hf, hf₃⟩
     simp only [mem_finsuppAntidiag] at hf'
@@ -266,7 +266,7 @@ theorem partialOddGF_prop [Field α] (n m : ℕ) :
   convert partialGF_prop α n
     ((range m).map mkOdd) _ (fun _ => Set.univ) (fun _ _ => trivial) using 2
   · congr
-    simp only [true_and_iff, forall_const, Set.mem_univ]
+    simp only [true_and, forall_const, Set.mem_univ]
   · rw [Finset.prod_map]
     simp_rw [num_series']
     congr! 2 with x
@@ -314,10 +314,9 @@ theorem partialDistinctGF_prop [CommSemiring α] (n m : ℕ) :
   convert partialGF_prop α n
     ((range m).map ⟨Nat.succ, Nat.succ_injective⟩) _ (fun _ => {0, 1}) (fun _ _ => Or.inl rfl)
     using 2
-  · congr
-    congr! with p
+  · congr! with p
     rw [Multiset.nodup_iff_count_le_one]
-    congr! with i
+    congr! 1 with i
     rcases Multiset.count i p.parts with (_ | _ | ms) <;> simp
   · simp_rw [Finset.prod_map, two_series]
     congr with i

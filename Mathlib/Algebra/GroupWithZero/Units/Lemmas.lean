@@ -94,7 +94,6 @@ def invMonoidWithZeroHom {G₀ : Type*} [CommGroupWithZero G₀] : G₀ →*₀ 
 namespace Units
 
 variable [GroupWithZero G₀]
-variable {a b : G₀}
 
 @[simp]
 theorem smul_mk0 {α : Type*} [SMul G₀ α] {g : G₀} (hg : g ≠ 0) (a : α) : mk0 g hg • a = g • a :=

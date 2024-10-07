@@ -46,8 +46,6 @@ instance : CoeSort PartialFun Type* :=
 def of : Type* → PartialFun :=
   id
 
--- Porting note: removed this lemma which is useless because of the expansion of coercions
-
 instance : Inhabited PartialFun :=
   ⟨Type*⟩
 
@@ -82,6 +80,7 @@ def typeToPartialFun : Type u ⥤ PartialFun where
 instance : typeToPartialFun.Faithful where
   map_injective {_ _} := PFun.lift_injective
 
+-- b ∈ PFun.toSubtype (fun x ↦ x ≠ X.point) Subtype.val a ↔ b ∈ Part.some a
 /-- The functor which deletes the point of a pointed type. In return, this makes the maps partial.
 This is the computable part of the equivalence `PartialFunEquivPointed`. -/
 @[simps obj map]
@@ -89,7 +88,8 @@ def pointedToPartialFun : Pointed.{u} ⥤ PartialFun where
   obj X := { x : X // x ≠ X.point }
   map f := PFun.toSubtype _ f.toFun ∘ Subtype.val
   map_id X :=
-    PFun.ext fun a b => PFun.mem_toSubtype_iff.trans (Subtype.coe_inj.trans Part.mem_some_iff.symm)
+    PFun.ext fun a b =>
+      PFun.mem_toSubtype_iff (b := b).trans (Subtype.coe_inj.trans Part.mem_some_iff.symm)
   map_comp f g := by
     -- Porting note: the proof was changed because the original mathlib3 proof no longer works
     apply PFun.ext _

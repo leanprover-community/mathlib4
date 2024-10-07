@@ -712,7 +712,7 @@ theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Ioi
     rw [← top_le_iff, ← volume_Ici (a := b)]
     exact measure_mono hb
   rwa [B, ← Embedding.tendsto_nhds_iff] at A
-  exact (Completion.uniformEmbedding_coe E).embedding
+  exact (Completion.isUniformEmbedding_coe E).embedding
 
 variable [CompleteSpace E]
 
@@ -909,7 +909,7 @@ theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Iic
     rw [← volume_Iic (a := b)]
     exact measure_mono hb
   rwa [B, ← Embedding.tendsto_nhds_iff] at A
-  exact (Completion.uniformEmbedding_coe E).embedding
+  exact (Completion.isUniformEmbedding_coe E).embedding
 
 variable [CompleteSpace E]
 
@@ -1241,7 +1241,7 @@ theorem integral_mul_deriv_eq_deriv_mul [CompleteSpace A]
     (huv' : Integrable (u * v')) (hu'v : Integrable (u' * v))
     (h_bot : Tendsto (u * v) atBot (𝓝 a')) (h_top : Tendsto (u * v) atTop (𝓝 b')) :
     ∫ (x : ℝ), u x * v' x = b' - a' - ∫ (x : ℝ), u' x * v x :=
-  integral_bilinear_hasDerivAt_right_eq_sub  (L := ContinuousLinearMap.mul ℝ A)
+  integral_bilinear_hasDerivAt_right_eq_sub (L := ContinuousLinearMap.mul ℝ A)
     hu hv huv' hu'v h_bot h_top
 
 /-- **Integration by parts on (-∞, ∞).**

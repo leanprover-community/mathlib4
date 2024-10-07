@@ -15,48 +15,108 @@ This file provides the tactics `tfae_have` and `tfae_finish` for proving goals o
 `TFAE [P₁, P₂, ...]`.
 -/
 
-open List Lean Meta Expr Elab.Term Elab.Tactic Mathlib.Tactic Qq
-
 namespace Mathlib.Tactic.TFAE
 
-/-- An arrow of the form `←`, `→`, or `↔`. -/
-syntax impArrow := " → " <|> " ↔ " <|> " ← "
+/-! # Parsing and syntax
+
+We implement `tfae_have` in terms of a syntactic `have`. To support as much of the same syntax as
+possible, we recreate the parsers for `have`, except with the changes necessary for `tfae_have`.
+-/
+
+open Lean.Parser Term
+
+namespace Parser
+
+/- An arrow of the form `←`, `→`, or `↔`. -/
+private def impTo : Parser := leading_parser unicodeSymbol " → " " -> "
+private def impFrom : Parser := leading_parser unicodeSymbol " ← " " <- "
+private def impIff : Parser := leading_parser unicodeSymbol " ↔ " " <-> "
+private def impArrow : Parser := leading_parser impTo <|> impFrom <|> impIff
+
+/-- A `tfae_have` type specification, e.g. `1 ↔ 3` The numbers refer to the proposition at the
+corresponding position in the `TFAE` goal (starting at 1). -/
+private def tfaeType := leading_parser num >> impArrow >> num
+
+/-!
+The following parsers are similar to those for `have` in `Lean.Parser.Term`, but
+instead of `optType`, we use `tfaeType := num >> impArrow >> num` (as a `tfae_have` invocation must
+always include this specification). Also, we disallow including extra binders, as that makes no
+sense in this context; we also include `" : "` after the binder to avoid breaking `tfae_have 1 → 2`
+syntax (which, unlike `have`, omits `" : "`).
+-/
+
+/- See `haveIdLhs`.
+
+We omit `many (ppSpace >> letIdBinder)`, as it makes no sense to add extra arguments to a
+`tfae_have` decl.  -/
+private def tfaeHaveIdLhs := leading_parser
+  ((ppSpace >> binderIdent >> " : ") <|> hygieneInfo)  >> tfaeType
+/- See `haveIdDecl`. E.g. `h : 1 → 3 := term`. -/
+private def tfaeHaveIdDecl   := leading_parser (withAnonymousAntiquot := false)
+  atomic (tfaeHaveIdLhs >> " := ") >> termParser
+/- See `haveEqnsDecl`. E.g. `h : 1 → 3 | p => f p`. -/
+private def tfaeHaveEqnsDecl := leading_parser (withAnonymousAntiquot := false)
+  tfaeHaveIdLhs >> matchAlts
+/- See `letPatDecl`. E.g. `⟨mp, mpr⟩ : 1 ↔ 3 := term`. -/
+private def tfaeHavePatDecl  := leading_parser (withAnonymousAntiquot := false)
+  atomic (termParser >> pushNone >> " : " >> tfaeType >> " := ") >> termParser
+/- See `haveDecl`. Any of `tfaeHaveIdDecl`, `tfaeHavePatDecl`, or `tfaeHaveEqnsDecl`. -/
+private def tfaeHaveDecl     := leading_parser (withAnonymousAntiquot := false)
+  tfaeHaveIdDecl <|> (ppSpace >> tfaeHavePatDecl) <|> tfaeHaveEqnsDecl
+
+end Parser
+
+open Parser
 
 /--
 `tfae_have` introduces hypotheses for proving goals of the form `TFAE [P₁, P₂, ...]`. Specifically,
-`tfae_have i arrow j` introduces a hypothesis of type `Pᵢ arrow Pⱼ` to the local context,
-where `arrow` can be `→`, `←`, or `↔`. Note that `i` and `j` are natural number indices (beginning
-at 1) used to specify the propositions `P₁, P₂, ...` that appear in the `TFAE` goal list. A proof
-is required afterward, typically via a tactic block.
+`tfae_have i <arrow> j := ...` introduces a hypothesis of type `Pᵢ <arrow> Pⱼ` to the local
+context, where `<arrow>` can be `→`, `←`, or `↔`. Note that `i` and `j` are natural number indices
+(beginning at 1) used to specify the propositions `P₁, P₂, ...` that appear in the goal.
 
 ```lean
 example (h : P → R) : TFAE [P, Q, R] := by
-  tfae_have 1 → 3
-  · exact h
+  tfae_have 1 → 3 := h
   ...
 ```
 The resulting context now includes `tfae_1_to_3 : P → R`.
 
-The introduced hypothesis can be given a custom name, in analogy to `have` syntax:
-```lean
-tfae_have h : 2 ↔ 3
-```
-
 Once sufficient hypotheses have been introduced by `tfae_have`, `tfae_finish` can be used to close
-the goal.
+the goal. For example,
 
 ```lean
 example : TFAE [P, Q, R] := by
-  tfae_have 1 → 2
-  · /- proof of P → Q -/
-  tfae_have 2 → 1
-  · /- proof of Q → P -/
-  tfae_have 2 ↔ 3
-  · /- proof of Q ↔ R -/
+  tfae_have 1 → 2 := sorry /- proof of P → Q -/
+  tfae_have 2 → 1 := sorry /- proof of Q → P -/
+  tfae_have 2 ↔ 3 := sorry /- proof of Q ↔ R -/
   tfae_finish
 ```
+
+All relevant features of `have` are supported by `tfae_have`, including naming, destructuring, goal
+creation, and matching. These are demonstrated below.
+
+```lean
+example : TFAE [P, Q] := by
+  -- `tfae_1_to_2 : P → Q`:
+  tfae_have 1 → 2 := sorry
+  -- `hpq : P → Q`:
+  tfae_have hpq : 1 → 2 := sorry
+  -- inaccessible `h✝ : P → Q`:
+  tfae_have _ : 1 → 2 := sorry
+  -- `tfae_1_to_2 : P → Q`, and `?a` is a new goal:
+  tfae_have 1 → 2 := f ?a
+  -- create a goal of type `P → Q`:
+  tfae_have 1 → 2
+  · exact (sorry : P → Q)
+  -- match on `p : P` and prove `Q`:
+  tfae_have 1 → 2
+  | p => f p
+  -- introduces `pq : P → Q`, `qp : Q → P`:
+  tfae_have ⟨pq, qp⟩ : 1 ↔ 2 := sorry
+  ...
+```
 -/
-syntax (name := tfaeHave) "tfae_have " (ident " : ")? num impArrow num : tactic
+syntax (name := tfaeHave) "tfae_have " tfaeHaveDecl : tactic
 
 /--
 `tfae_finish` is used to close goals of the form `TFAE [P₁, P₂, ...]` once a sufficient collection
@@ -67,18 +127,18 @@ of hypotheses of the form `Pᵢ → Pⱼ` or `Pᵢ ↔ Pⱼ` have been introduce
 Example:
 ```lean
 example : TFAE [P, Q, R] := by
-  tfae_have 1 → 2
-  · /- proof of P → Q -/
-  tfae_have 2 → 1
-  · /- proof of Q → P -/
-  tfae_have 2 ↔ 3
-  · /- proof of Q ↔ R -/
+  tfae_have 1 → 2 := sorry /- proof of P → Q -/
+  tfae_have 2 → 1 := sorry /- proof of Q → P -/
+  tfae_have 2 ↔ 3 := sorry /- proof of Q ↔ R -/
   tfae_finish
 ```
 -/
 syntax (name := tfaeFinish) "tfae_finish" : tactic
 
+
 /-! # Setup -/
+
+open List Lean Meta Expr Elab Tactic Mathlib.Tactic Qq
 
 /-- Extract a list of `Prop` expressions from an expression of the form `TFAE [P₁, P₂, ...]` as
 long as `[P₁, P₂, ...]` is an explicit list. -/
@@ -101,7 +161,7 @@ where
 variable (hyps : Array (ℕ × ℕ × Expr)) (atoms : Array Q(Prop))
 
 /-- Uses depth-first search to find a path from `P` to `P'`. -/
-partial def dfs (i j : ℕ) (P P' : Q(Prop)) (hP : Q($P)) : StateT (HashSet ℕ) MetaM Q($P') := do
+partial def dfs (i j : ℕ) (P P' : Q(Prop)) (hP : Q($P)) : StateT (Std.HashSet ℕ) MetaM Q($P') := do
   if i == j then
     return hP
   modify (·.insert i)
@@ -159,62 +219,72 @@ def proveTFAE (is : List ℕ) (l : Q(List Prop)) : MetaM Q(TFAE $l) := do
 /-! # `tfae_have` components -/
 
 /-- Construct a name for a hypothesis introduced by `tfae_have`. -/
-def mkTFAEHypName (i j : TSyntax `num) (arr : TSyntax ``impArrow) : MetaM Name := do
-  let arr ← match arr with
-  | `(impArrow| ← ) => pure "from"
-  | `(impArrow| → ) => pure "to"
-  | `(impArrow| ↔ ) => pure "iff"
-  | _ => throwErrorAt arr "expected '←', '→', or '↔'"
-  return .mkSimple <| String.intercalate "_" ["tfae", s!"{i.getNat}", arr, s!"{j.getNat}"]
-
-open Elab in
-/-- The core of `tfae_have`, which behaves like `haveLetCore` in `Mathlib.Tactic.Have`. -/
-def tfaeHaveCore (goal : MVarId) (name : Option (TSyntax `ident)) (i j : TSyntax `num)
-    (arrow : TSyntax ``impArrow) (t : Expr) : TermElabM (MVarId × MVarId) :=
-  goal.withContext do
-    let n := (Syntax.getId <$> name).getD <|← mkTFAEHypName i j arrow
-    let (goal1, t, p) ← do
-      let p ← mkFreshExprMVar t MetavarKind.syntheticOpaque n
-      pure (p.mvarId!, t, p)
-    let (fv, goal2) ← (← MVarId.assert goal n t p).intro1P
-    if let some stx := name then
-      goal2.withContext do
-        Term.addTermInfo' (isBinder := true) stx (mkFVar fv)
-    pure (goal1, goal2)
+def mkTFAEId : TSyntax ``tfaeType → MacroM Name
+  | `(tfaeType|$i:num $arr:impArrow $j:num) => do
+    let arr ← match arr with
+    | `(impArrow| ← ) => pure "from"
+    | `(impArrow| → ) => pure "to"
+    | `(impArrow| ↔ ) => pure "iff"
+    | _ => Macro.throwUnsupported
+    return .mkSimple <| String.intercalate "_" ["tfae", s!"{i.getNat}", arr, s!"{j.getNat}"]
+  | _ => Macro.throwUnsupported
 
 /-- Turn syntax for a given index into a natural number, as long as it lies between `1` and
 `maxIndex`. -/
-def elabIndex (i : TSyntax `num) (maxIndex : ℕ) : TacticM ℕ := do
+def elabIndex (i : TSyntax `num) (maxIndex : ℕ) : MetaM ℕ := do
   let i' := i.getNat
-  unless Nat.ble 1 i' && Nat.ble i' maxIndex do
-    throwError "{i} must be between 1 and {maxIndex}"
+  unless 1 ≤ i' && i' ≤ maxIndex do
+    throwErrorAt i "{i} must be between 1 and {maxIndex}"
   return i'
-
-/-- Construct an expression for the type `Pj → Pi`, `Pi → Pj`, or `Pi ↔ Pj` given expressions
-`Pi Pj : Q(Prop)` and `impArrow` syntax `arr`, depending on whether `arr` is `←`, `→`, or `↔`
-respectively. -/
-def mkImplType (Pi : Q(Prop)) (arr : TSyntax ``impArrow) (Pj : Q(Prop)) : MetaM Q(Prop) := do
-  match arr with
-  | `(impArrow| ← ) => pure q($Pj → $Pi)
-  | `(impArrow| → ) => pure q($Pi → $Pj)
-  | `(impArrow| ↔ ) => pure q($Pi ↔ $Pj)
-  | _ => throwErrorAt arr "expected '←', '→', or '↔'"
 
 /-! # Tactic implementation -/
 
-elab_rules : tactic
-| `(tactic| tfae_have $[$h:ident : ]? $i:num $arr:impArrow $j:num) => do
-  let goal ← getMainGoal
-  goal.withContext do
-    let (_, tfaeList) ← getTFAEList (← goal.getType)
-    let l₀ := tfaeList.length
-    let i' ← elabIndex i l₀
-    let j' ← elabIndex j l₀
+/-- Accesses the propositions at indices `i` and `j` of `tfaeList`, and constructs the expression
+`Pi <arr> Pj`, which will be the type of our `tfae_have` hypothesis -/
+def elabTFAEType (tfaeList : List Q(Prop)) : TSyntax ``tfaeType → TermElabM Expr
+  | stx@`(tfaeType|$i:num $arr:impArrow $j:num) => do
+    let l := tfaeList.length
+    let i' ← elabIndex i l
+    let j' ← elabIndex j l
     let Pi := tfaeList.get! (i'-1)
     let Pj := tfaeList.get! (j'-1)
-    let type ← mkImplType Pi arr Pj
-    let (goal1, goal2) ← tfaeHaveCore goal h i j arr type
-    replaceMainGoal [goal1, goal2]
+    Term.addTermInfo' i Pi q(Prop)
+    Term.addTermInfo' j Pj q(Prop)
+    match arr with
+    | `(impArrow| ← ) => Term.addTermInfo stx q($Pj → $Pi) q(Prop)
+    | `(impArrow| → ) => Term.addTermInfo stx q($Pi → $Pj) q(Prop)
+    | `(impArrow| ↔ ) => Term.addTermInfo stx q($Pi ↔ $Pj) q(Prop)
+    | _ => throwUnsupportedSyntax
+  | _ => throwUnsupportedSyntax
+
+/- Convert `tfae_have i <arr> j ...` to `tfae_have tfae_i_arr_j : i <arr> j ...`. See
+`expandHave`, which is responsible for inserting `this` in `have : A := ...`. -/
+macro_rules
+| `(tfaeHave|tfae_have $hy:hygieneInfo $t:tfaeType := $val) => do
+  let id := HygieneInfo.mkIdent hy (← mkTFAEId t) (canonical := true)
+  `(tfaeHave|tfae_have $id : $t := $val)
+| `(tfaeHave|tfae_have $hy:hygieneInfo $t:tfaeType $alts:matchAlts) => do
+  let id := HygieneInfo.mkIdent hy (← mkTFAEId t) (canonical := true)
+  `(tfaeHave|tfae_have $id : $t $alts)
+
+open Term
+
+elab_rules : tactic
+| `(tfaeHave|tfae_have $d:tfaeHaveDecl) => withMainContext do
+  let goal ← getMainGoal
+  let (_, tfaeList) ← getTFAEList (← goal.getType)
+  withRef d do
+    match d with
+    | `(tfaeHaveDecl| $b : $t:tfaeType := $pf:term) =>
+      let type ← elabTFAEType tfaeList t
+      evalTactic <|← `(tactic|have $b : $(← exprToSyntax type) := $pf)
+    | `(tfaeHaveDecl| $b : $t:tfaeType $alts:matchAlts) =>
+      let type ← elabTFAEType tfaeList t
+      evalTactic <|← `(tactic|have $b : $(← exprToSyntax type) $alts:matchAlts)
+    | `(tfaeHaveDecl| $pat:term : $t:tfaeType := $pf:term) =>
+      let type ← elabTFAEType tfaeList t
+      evalTactic <|← `(tactic|have $pat:term : $(← exprToSyntax type) := $pf)
+    | _ => throwUnsupportedSyntax
 
 elab_rules : tactic
 | `(tactic| tfae_finish) => do
@@ -225,7 +295,7 @@ elab_rules : tactic
       let is ← tfaeList.mapM AtomM.addAtom
       let mut hyps := #[]
       for hyp in ← getLocalHyps do
-        let ty ← inferType hyp
+        let ty ← whnfR <|← instantiateMVars <|← inferType hyp
         if let (``Iff, #[p1, p2]) := ty.getAppFnArgs then
           let q1 ← AtomM.addAtom p1
           let q2 ← AtomM.addAtom p2
@@ -236,6 +306,39 @@ elab_rules : tactic
           let q2 ← AtomM.addAtom ty.bindingBody!
           hyps := hyps.push (q1, q2, hyp)
       proveTFAE hyps (← get).atoms is tfaeListQ
+
+/-!
+
+# "Old-style" `tfae_have`
+
+We preserve the "old-style" `tfae_have` (which behaves like Mathlib `have`) for compatibility
+purposes.
+
+-/
+
+@[inherit_doc tfaeHave]
+syntax (name := tfaeHave') "tfae_have " tfaeHaveIdLhs : tactic
+
+macro_rules
+| `(tfaeHave'|tfae_have $hy:hygieneInfo $t:tfaeType) => do
+  let id := HygieneInfo.mkIdent hy (← mkTFAEId t) (canonical := true)
+  `(tfaeHave'|tfae_have $id : $t)
+
+elab_rules : tactic
+| `(tfaeHave'|tfae_have $d:tfaeHaveIdLhs) => withMainContext do
+  let goal ← getMainGoal
+  let (_, tfaeList) ← getTFAEList (← goal.getType)
+  -- Note that due to the macro above, the following match is exhaustive.
+  match d with
+  | `(tfaeHaveIdLhs| $b:ident : $t:tfaeType) =>
+    let n := b.getId
+    let type ← elabTFAEType tfaeList t
+    let p ← mkFreshExprMVar type MetavarKind.syntheticOpaque n
+    let (fv, mainGoal) ← (← MVarId.assert goal n type p).intro1P
+    mainGoal.withContext do
+      Term.addTermInfo' (isBinder := true) b (mkFVar fv)
+    replaceMainGoal [p.mvarId!, mainGoal]
+  | _ => throwUnsupportedSyntax
 
 end TFAE
 

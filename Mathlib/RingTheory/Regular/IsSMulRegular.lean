@@ -96,7 +96,7 @@ lemma isSMulRegular_on_submodule_iff_mem_imp_smul_eq_zero_imp_eq_zero :
     IsSMulRegular N r ↔ ∀ x ∈ N, r • x = 0 → x = 0 :=
   Iff.trans (isSMulRegular_iff_smul_eq_zero_imp_eq_zero N r) <|
     Iff.trans Subtype.forall <| by
-      simp only [SetLike.mk_smul_mk, AddSubmonoid.mk_eq_zero]
+      simp only [SetLike.mk_smul_mk, Submodule.mk_eq_zero]
 
 lemma isSMulRegular_on_quot_iff_smul_mem_implies_mem :
     IsSMulRegular (M ⧸ N) r ↔ ∀ x : M, r • x ∈ N → x ∈ N :=

@@ -68,7 +68,7 @@ class Bialgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends
   /-- The comultiplication on a bialgebra preserves multiplication. This is written in
   a rather obscure way: it says that two bilinear maps `A →ₗ[R] A →ₗ[R] (A ⊗[R] A)`
   are equal. The corresponding equal linear maps `A ⊗[R] A →ₗ[R] A ⊗[R] A`
-  are firstly multiplcation followed by `comul`, and secondly `comul ⊗ comul` followed
+  are firstly multiplication followed by `comul`, and secondly `comul ⊗ comul` followed
   by multiplication on `A ⊗[R] A`.
 
   See `Bialgebra.mk'` for a constructor for bialgebras which uses the more familiar

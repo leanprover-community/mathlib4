@@ -39,18 +39,15 @@ protected theorem tfae (f : X → Y) :
       ∀ x, IsOpen { x' | f x' = f x },
       ∀ y, IsOpen (f ⁻¹' {y}),
       ∀ x, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧ ∀ x' ∈ U, f x' = f x] := by
-  tfae_have 1 → 4
-  · exact fun h y => h {y}
-  tfae_have 4 → 3
-  · exact fun h x => h (f x)
-  tfae_have 3 → 2
-  · exact fun h x => IsOpen.mem_nhds (h x) rfl
+  tfae_have 1 → 4 := fun h y => h {y}
+  tfae_have 4 → 3 := fun h x => h (f x)
+  tfae_have 3 → 2 := fun h x => IsOpen.mem_nhds (h x) rfl
   tfae_have 2 → 5
-  · intro h x
+  | h, x => by
     rcases mem_nhds_iff.1 (h x) with ⟨U, eq, hU, hx⟩
     exact ⟨U, hU, hx, eq⟩
   tfae_have 5 → 1
-  · intro h s
+  | h, s => by
     refine isOpen_iff_forall_mem_open.2 fun x hx ↦ ?_
     rcases h x with ⟨U, hU, hxU, eq⟩
     exact ⟨U, fun x' hx' => mem_preimage.2 <| (eq x' hx').symm ▸ hx, hU, hxU⟩
@@ -465,7 +462,7 @@ end Indicator
 section Equiv
 
 /--
-The equivalence between `LocallyConstant X Z` and `LocallyConstant Y Z` given a
+The equivalence between `LocallyConstant X Z` and `LocallyConstant Y Z` given a
 homeomorphism `X ≃ₜ Y`
 -/
 @[simps]
@@ -480,7 +477,7 @@ def congrLeft [TopologicalSpace Y] (e : X ≃ₜ Y) : LocallyConstant X Z ≃ Lo
     simp [comap_comap]
 
 /--
-The equivalence between `LocallyConstant X Y` and `LocallyConstant X Z` given an
+The equivalence between `LocallyConstant X Y` and `LocallyConstant X Z` given an
 equivalence `Y ≃ Z`
 -/
 @[simps]
@@ -556,7 +553,7 @@ lemma piecewise_apply_right {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : I
   · exact hfg x ⟨h, hx⟩
   · rfl
 
-/-- A variant of `LocallyConstant.piecewise` where the two closed sets cover a subset.
+/-- A variant of `LocallyConstant.piecewise` where the two closed sets cover a subset.
 
 TODO: Generalise this construction to `ContinuousMap`. -/
 def piecewise' {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : IsClosed C₁)

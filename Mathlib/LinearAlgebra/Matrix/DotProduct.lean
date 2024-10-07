@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 import Mathlib.Algebra.Ring.Regular
-import Mathlib.Algebra.Star.Order
+import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Data.Matrix.Basic
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.Algebra.Order.BigOperators.Group.Finset

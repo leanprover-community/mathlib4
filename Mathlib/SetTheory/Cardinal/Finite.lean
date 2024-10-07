@@ -95,15 +95,19 @@ protected theorem bijective_iff_injective_and_card [Finite β] (f : α → β) :
   rw [← and_congr_right_iff, ← Bijective,
     card_eq_fintype_card, card_eq_fintype_card, Fintype.bijective_iff_injective_and_card]
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefixes below.
+-/
 protected theorem bijective_iff_surjective_and_card [Finite α] (f : α → β) :
     Bijective f ↔ Surjective f ∧ Nat.card α = Nat.card β := by
   classical
-  rw [and_comm, Bijective, and_congr_left_iff]
+  rw [_root_.and_comm, Bijective, and_congr_left_iff]
   intro h
   have := Fintype.ofFinite α
   have := Fintype.ofSurjective f h
   revert h
-  rw [← and_congr_left_iff, ← Bijective, ← and_comm,
+  rw [← and_congr_left_iff, ← Bijective, ← _root_.and_comm,
     card_eq_fintype_card, card_eq_fintype_card, Fintype.bijective_iff_surjective_and_card]
 
 theorem _root_.Function.Injective.bijective_of_nat_card_le [Finite β] {f : α → β}
@@ -151,6 +155,14 @@ lemma card_preimage_of_injOn {f : α → β} {s : Set β} (hf : (f ⁻¹' s).Inj
 
 lemma card_preimage_of_injective {f : α → β} {s : Set β} (hf : Injective f) (hsf : s ⊆ range f) :
     Nat.card (f ⁻¹' s) = Nat.card s := card_preimage_of_injOn hf.injOn hsf
+
+@[simp] lemma card_univ : Nat.card (univ : Set α) = Nat.card α :=
+  card_congr (Equiv.Set.univ α)
+
+lemma card_range_of_injective {f : α → β} (hf : Injective f) :
+    Nat.card (range f) = Nat.card α := by
+  rw [← Nat.card_preimage_of_injective hf le_rfl]
+  simp
 
 end Set
 
