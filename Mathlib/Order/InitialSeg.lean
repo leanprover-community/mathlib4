@@ -56,10 +56,7 @@ structure InitialSeg {α β : Type*} (r : α → α → Prop) (s : β → β →
 infixl:25 " ≼i " => InitialSeg
 
 /-- An `InitialSeg` between the `<` relations of two types. -/
-abbrev InitialSegLT (α β : Type*) [LT α] [LT β] := @InitialSeg α β (· < ·) (· < ·)
-
-@[inherit_doc]
-infixl:25 " ≤i " => InitialSegLT
+notation:25 α:24 " ≤i " β:25 => @InitialSeg α β (· < ·) (· < ·)
 
 namespace InitialSeg
 
@@ -76,7 +73,7 @@ instance : FunLike (r ≼i s) α β where
 instance : EmbeddingLike (r ≼i s) α β where
   injective' f := f.inj'
 
-/-- An initial segment embedding between the less-than relations of two partial orders is an order
+/-- An initial segment embedding between the `<` relations of two partial orders is an order
 embedding. -/
 def toOrderEmbedding [PartialOrder α] [PartialOrder β] (f : α ≤i β) : α ↪o β :=
   f.orderEmbeddingOfLTEmbedding
@@ -90,6 +87,9 @@ theorem toOrderEmbedding_apply [PartialOrder α] [PartialOrder β] (f : α ≤i 
 theorem coe_toOrderEmbedding [PartialOrder α] [PartialOrder β] (f : α ≤i β) :
     (f.toOrderEmbedding : α → β) = f :=
   rfl
+
+instance [PartialOrder α] [PartialOrder β] : OrderHomClass (α ≤i β) α β where
+  map_rel f := f.toOrderEmbedding.map_rel_iff.2
 
 @[ext] lemma ext {f g : r ≼i s} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
@@ -285,10 +285,7 @@ structure PrincipalSeg {α β : Type*} (r : α → α → Prop) (s : β → β �
 infixl:25 " ≺i " => PrincipalSeg
 
 /-- A `PrincipalSeg` between the `<` relations of two types. -/
-abbrev PrincipalSegLT (α β : Type*) [LT α] [LT β] := @PrincipalSeg α β (· < ·) (· < ·)
-
-@[inherit_doc]
-infixl:25 " <i " => PrincipalSegLT
+notation:25 α:24 " <i " β:25 => @PrincipalSeg α β (· < ·) (· < ·)
 
 namespace PrincipalSeg
 
