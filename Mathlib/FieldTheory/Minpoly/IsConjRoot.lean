@@ -11,7 +11,7 @@ import Mathlib.FieldTheory.Normal
 # Conjugate roots
 
 This file specialize to the property of conjugate roots. Being conjuagte root over some ring `K`
-means that the two elements have the same minial polynomial over `K`.
+means that the two elements have the same minimal polynomial over `K`.
 
 ## Main definitions
 
@@ -68,6 +68,13 @@ theorem iff_mem_aroots [CommRing A] [IsDomain A] [Algebra R A] {x x' : A} :
 theorem iff_mem_minpoly_rootSet [CommRing A] [IsDomain A] [Algebra R A] {x x' : A} :
     IsConjRoot R x x' ↔ x' ∈ (minpoly R x).rootSet A := sorry
 
+theorem isIntegral {x x' : L} (hx : IsIntegral K x) (h : IsConjRoot K x x') :
+    IsIntegral K x' := by sorry
+
+theorem iff_eq_zero {x : A} : IsConjRoot R 0 x ↔ x = 0 := sorry
+
+theorem ne_zero {x x' : A} (hx : x ≠ 0) (h : IsConjRoot R x x') : x' ≠ 0 := sorry
+
 theorem eq_of_degree_minpoly_eq_one {x x' : A} (h : IsConjRoot R x x')
     (g : degree (minpoly R x) = 1) : x = x' := by
   sorry
@@ -121,12 +128,6 @@ theorem sub_algebraMap {x x' : A} (r : R) (h : IsConjRoot R x x') :
 
 theorem smul {x x' : A} (r : R) (h : IsConjRoot R x x') :  IsConjRoot R (r • x) (r • x') := sorry
 
-variable {K} in
-theorem isIntegral {x x' : L} (hx : IsIntegral K x) (h : IsConjRoot K x x') :
-    IsIntegral K x' := by sorry
 
-theorem iff_eq_zero {x : A} : IsConjRoot R 0 x ↔ x = 0 := sorry
-
-theorem ne_zero {x x' : A} (hx : x ≠ 0) (h : IsConjRoot R x x') : x' ≠ 0 := sorry
 -/
 end IsConjRoot
