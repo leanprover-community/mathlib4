@@ -88,7 +88,7 @@ noncomputable def submonoidPresheafOfStalk (S : ∀ x : X, Submonoid (F.stalk x)
     intro x
     change (F.map i.unop.op ≫ F.germ V.unop x.1 x.2) s ∈ _
     rw [F.germ_res]
-    exact hs ⟨_,_⟩
+    exact hs ⟨_, i.unop.le x.2⟩
 
 noncomputable instance : Inhabited F.SubmonoidPresheaf :=
   ⟨F.submonoidPresheafOfStalk fun _ => ⊥⟩

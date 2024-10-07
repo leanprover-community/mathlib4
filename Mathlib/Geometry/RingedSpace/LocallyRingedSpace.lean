@@ -422,25 +422,25 @@ def restrictStalkIso : (X.restrict h).presheaf.stalk x ≅ X.presheaf.stalk (f x
 
 @[reassoc (attr := simp)]
 lemma restrictStalkIso_hom_eq_germ :
-    (X.restrict h).presheaf.germ _ x (hx) ≫ (X.restrictStalkIso h x).hom =
+    (X.restrict h).presheaf.germ _ x hx ≫ (X.restrictStalkIso h x).hom =
       X.presheaf.germ (h.isOpenMap.functor.obj V) (f x) ⟨x, hx, rfl⟩ :=
   PresheafedSpace.restrictStalkIso_hom_eq_germ X.toPresheafedSpace h V x hx
 
 lemma restrictStalkIso_hom_eq_germ_apply (y) :
-    (X.restrictStalkIso h x).hom ((X.restrict h).presheaf.germ _ x (hx) y) =
+    (X.restrictStalkIso h x).hom ((X.restrict h).presheaf.germ _ x hx y) =
       X.presheaf.germ (h.isOpenMap.functor.obj V) (f x) ⟨x, hx, rfl⟩ y :=
   PresheafedSpace.restrictStalkIso_hom_eq_germ_apply X.toPresheafedSpace h V x hx y
 
 @[reassoc (attr := simp)]
 lemma restrictStalkIso_inv_eq_germ :
     X.presheaf.germ (h.isOpenMap.functor.obj V) (f x) ⟨x, hx, rfl⟩ ≫
-      (X.restrictStalkIso h x).inv = (X.restrict h).presheaf.germ _ x (hx) :=
+      (X.restrictStalkIso h x).inv = (X.restrict h).presheaf.germ _ x hx :=
   PresheafedSpace.restrictStalkIso_inv_eq_germ X.toPresheafedSpace h V x hx
 
 lemma restrictStalkIso_inv_eq_germ_apply (y) :
     (X.restrictStalkIso h x).inv
       (X.presheaf.germ (h.isOpenMap.functor.obj V) (f x) ⟨x, hx, rfl⟩ y) =
-        (X.restrict h).presheaf.germ _ x (hx) y :=
+        (X.restrict h).presheaf.germ _ x hx y :=
   PresheafedSpace.restrictStalkIso_inv_eq_germ_apply X.toPresheafedSpace h V x hx y
 
 lemma restrictStalkIso_inv_eq_ofRestrict :
