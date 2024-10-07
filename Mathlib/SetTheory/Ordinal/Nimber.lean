@@ -435,9 +435,8 @@ protected theorem mul_comm (a b : Nimber) : a * b = b * a := by
   apply le_antisymm <;>
     apply mul_le_of_forall_ne <;>
     intro x hx y hy
-  on_goal 1 => rw [add_comm (x * _), Nimber.mul_comm a, Nimber.mul_comm x b, Nimber.mul_comm x y]
-  on_goal 2 => rw [add_comm (x * _), ← Nimber.mul_comm y b, ← Nimber.mul_comm a x,
-    ← Nimber.mul_comm y x]
+  on_goal 1 => rw [add_comm (x * _), Nimber.mul_comm a, Nimber.mul_comm x, Nimber.mul_comm x]
+  on_goal 2 => rw [add_comm (x * _), ← Nimber.mul_comm y, ← Nimber.mul_comm a, ← Nimber.mul_comm y]
   all_goals exact mul_ne_of_lt y hy x hx
 termination_by (a, b)
 
