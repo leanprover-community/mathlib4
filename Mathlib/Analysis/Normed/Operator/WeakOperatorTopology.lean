@@ -262,7 +262,7 @@ map is continuous. -/
 lemma ContinuousLinearMap.continuous_toWOT :
     Continuous (ContinuousLinearMap.toWOT 𝕜 E F) :=
   ContinuousLinearMapWOT.continuous_of_dual_apply_continuous fun x y ↦
-    y.cont.comp <| ContinuousLinearMap.continuous_apply x
+    y.cont.comp <| continuous_eval_const x
 
 /-- The inclusion map from `E →[𝕜] F` to `E →WOT[𝕜] F`, bundled as a continuous linear map. -/
 def ContinuousLinearMap.toWOTCLM : (E →L[𝕜] F) →L[𝕜] (E →WOT[𝕜] F) :=
