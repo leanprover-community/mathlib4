@@ -260,7 +260,7 @@ protected abbrev Truncated.sk (n : ℕ) [∀ (F : (SimplexCategory.Truncated n)�
   lan (SimplexCategory.Truncated.inclusion.op)
 
 /-- The n-coskeleton as a functor `SimplicialObject.Truncated C n ⥤ SimplicialObject C`. -/
-protected abbrev Truncated.cosk (n : ℕ) [ ∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
+protected abbrev Truncated.cosk (n : ℕ) [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
     SimplexCategory.Truncated.inclusion.op.HasRightKanExtension F] :
     SimplicialObject.Truncated C n ⥤ SimplicialObject C :=
   ran (SimplexCategory.Truncated.inclusion.op)
