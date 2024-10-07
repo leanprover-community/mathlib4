@@ -348,6 +348,22 @@ def reflexivePair (f g : A ⟶ B) (s : B ⟶ A)
       simp only [Category.id_comp, Category.comp_id, Category.assoc, sl, sr,
         reassoc_of% sl, reassoc_of% sr] <;> rfl
 
+section
+
+variable {A B : C}
+variable (f g : A ⟶ B) (s : B ⟶ A) {sl : s ≫ f = 𝟙 B} {sr : s ≫ g = 𝟙 B}
+
+@[simp] lemma reflexivePair_obj_zero : (reflexivePair f g s sl sr).obj zero = B := rfl
+
+@[simp] lemma reflexivePair_obj_one : (reflexivePair f g s sl sr).obj one = A := rfl
+
+@[simp] lemma reflexivePair_map_right : (reflexivePair f g s sl sr).map .left = f := rfl
+
+@[simp] lemma reflexivePair_map_left : (reflexivePair f g s sl sr).map .right = g := rfl
+
+@[simp] lemma reflexivePair_map_reflexion : (reflexivePair f g s sl sr).map .reflexion = s := rfl
+
+end
 
 /-- (Noncomputably) bundle the data of a reflexive pair as a functor out of the walking reflexive
 pair -/
@@ -373,82 +389,53 @@ namespace reflexivePair
 open WalkingReflexivePair WalkingReflexivePair.Hom
 
 section
-
-variable {A B : C}
-variable (f g : A ⟶ B) (s : B ⟶ A) (sl : s ≫ f = 𝟙 B) (sr : s ≫ g = 𝟙 B)
-
-@[simp] lemma obj_zero : (reflexivePair f g s sl sr).obj zero = B := rfl
-
-@[simp] lemma obj_one : (reflexivePair f g s sl sr).obj one = A := rfl
-
-@[simp] lemma map_right : (reflexivePair f g s sl sr).map left = f := rfl
-
-@[simp] lemma map_left : (reflexivePair f g s sl sr).map right = g := rfl
-
-@[simp] lemma map_reflexion : (reflexivePair f g s sl sr).map reflexion = s := rfl
-
 section NatTrans
 
-variable {F : WalkingReflexivePair ⥤ C}
-
 /-- A constructor for natural transforms to a diagram of the form `reflexivePair f g s`. -/
-@[simps]
-def mkNatTrans (u : F.obj one ⟶ A) (v : F.obj zero ⟶ B)
-    (h₁ : (F.map left) ≫ v = u ≫ f := by aesop_cat)
-    (h₂ : (F.map right) ≫ v = u ≫ g := by aesop_cat)
-    (h₃ : (F.map reflexion) ≫ u = v ≫ s := by aesop_cat) :
-    F ⟶ (reflexivePair f g s sl sr) where
+def mkNatTrans {F G : WalkingReflexivePair ⥤ C}
+    (e₀ : F.obj zero ⟶ G.obj zero) (e₁ : F.obj one ⟶ G.obj one)
+    (h₁ : F.map left ≫ e₀ = e₁ ≫ G.map left := by aesop_cat)
+    (h₂ : F.map right ≫ e₀ = e₁ ≫ G.map right := by aesop_cat)
+    (h₃ : F.map reflexion ≫ e₁ = e₀ ≫ G.map reflexion := by aesop_cat) :
+    F ⟶ G where
   app := fun x ↦ match x with
-    | zero => v
-    | one => u
-  naturality := by intro _ _ f
-                   cases f with
-                     | id => simp
-                     | left => simp [h₁]
-                     | right => simp [h₂]
-                     | reflexion => simp [h₃]
-                     | leftCompReflexion => dsimp
-                                            simp only [Functor.map_comp, obj_one, obj_zero,
-                                              map_right, map_reflexion, Category.assoc, h₃,
-                                              reassoc_of% h₁]
-                     | rightCompReflexion => dsimp
-                                             simp only [Functor.map_comp, obj_one, obj_zero,
-                                               map_left, map_reflexion, Category.assoc, h₃,
-                                               reassoc_of% h₂]
+    | zero => e₀
+    | one => e₁
+  naturality _ _ f := by
+    cases f
+    all_goals
+      dsimp
+      simp only [Functor.map_id, Category.id_comp, Category.comp_id,
+        Functor.map_comp, h₁, h₂, h₃, reassoc_of% h₁, reassoc_of% h₂,
+        reflexivePair_map_reflexion, reflexivePair_map_left, reflexivePair_map_right,
+        Category.assoc]
 
-/-- A version of `mkNatTrans` for natural transforms from a `reflexivePair` rather than to a
-`reflexivePair`. -/
-@[simps]
-def mkNatTrans' (u : A ⟶ F.obj one) (v : B ⟶ F.obj zero)
-    (h₁ : u ≫ (F.map left) = f ≫ v := by aesop_cat)
-    (h₂ : u ≫ (F.map right) = g ≫ v := by aesop_cat)
-    (h₃ : s ≫ u = v ≫ (F.map reflexion)  := by aesop_cat) :
-    (reflexivePair f g s sl sr) ⟶ F where
-  app := fun x ↦ match x with
-    | zero => v
-    | one => u
-  naturality := by intro _ _ f
-                   cases f with
-                     | id => simp
-                     | left => simp [h₁]
-                     | right => simp [h₂]
-                     | reflexion => simp [h₃]
-                     | leftCompReflexion => dsimp
-                                            simp only [Functor.map_comp, obj_one, obj_zero,
-                                              map_right, map_reflexion, Category.assoc, h₃,
-                                              reassoc_of% h₁]
-                     | rightCompReflexion => dsimp
-                                             simp only [Functor.map_comp, obj_one, obj_zero,
-                                               map_left, map_reflexion, Category.assoc, h₃,
-                                               reassoc_of% h₂]
+@[simp]
+lemma mkNatTrans_app_zero {F G : WalkingReflexivePair ⥤ C}
+    (e₀ : F.obj zero ⟶ G.obj zero) (e₁ : F.obj one ⟶ G.obj one)
+    (h₁ : F.map left ≫ e₀ = e₁ ≫ G.map left)
+    (h₂ : F.map right ≫ e₀ = e₁ ≫ G.map right)
+    (h₃ : F.map reflexion ≫ e₁ = e₀ ≫ G.map reflexion) :
+    (mkNatTrans e₀ e₁ h₁ h₂ h₃).app zero = e₀ := rfl
+
+@[simp]
+lemma mkNatTrans_app_one {F G : WalkingReflexivePair ⥤ C}
+    (e₀ : F.obj zero ⟶ G.obj zero) (e₁ : F.obj one ⟶ G.obj one)
+    (h₁ : F.map left ≫ e₀ = e₁ ≫ G.map left)
+    (h₂ : F.map right ≫ e₀ = e₁ ≫ G.map right)
+    (h₃ : F.map reflexion ≫ e₁ = e₀ ≫ G.map reflexion) :
+    (mkNatTrans e₀ e₁ h₁ h₂ h₃).app one = e₁ := rfl
+
+
+variable {F G: WalkingReflexivePair ⥤ C}
 
 /-- Constructor for natural isomorphisms with a `reflexivePair`. -/
 @[simps!]
-def mkNatIso (u : F.obj one ≅ A) (v : F.obj zero ≅ B)
-    (h₁ : (F.map left) ≫ v.hom = u.hom ≫ f := by aesop_cat)
-    (h₂ : (F.map right) ≫ v.hom = u.hom ≫ g := by aesop_cat)
-    (h₃ : (F.map reflexion) ≫ u.hom = v.hom ≫ s := by aesop_cat) :
-    F ≅ (reflexivePair f g s sl sr) :=
+def mkNatIso (u : F.obj one ≅ G.obj one) (v : F.obj zero ≅ G.obj zero)
+    (h₁ : F.map left ≫ v.hom = u.hom ≫ G.map left := by aesop_cat)
+    (h₂ : F.map right ≫ v.hom = u.hom ≫ G.map right := by aesop_cat)
+    (h₃ : F.map reflexion ≫ u.hom = v.hom ≫ G.map reflexion := by aesop_cat) :
+    F ≅ G :=
   NatIso.ofComponents (fun x ↦ match x with
     | zero => v
     | one => u)
@@ -459,20 +446,22 @@ def mkNatIso (u : F.obj one ≅ A) (v : F.obj zero ≅ B)
         | right => simp [h₂]
         | reflexion => simp [h₃]
         | leftCompReflexion => dsimp
-                               simp only [Functor.map_comp, obj_one, obj_zero,
-                                map_right, map_reflexion, Category.assoc, h₃,
-                                reassoc_of% h₁]
+                               simp only [Functor.map_comp, reflexivePair_obj_one,
+                                reflexivePair_obj_zero, reflexivePair_map_right,
+                                reflexivePair_map_reflexion, Category.assoc, h₃, reassoc_of% h₁]
         | rightCompReflexion => dsimp
-                                simp only [Functor.map_comp, obj_one, obj_zero,
-                                 map_left, map_reflexion, Category.assoc, h₃,
-                                 reassoc_of% h₂])
+                                simp only [Functor.map_comp, reflexivePair_obj_one,
+                                 reflexivePair_obj_zero, reflexivePair_map_left,
+                                 reflexivePair_map_reflexion, Category.assoc, h₃, reassoc_of% h₂])
+
+variable (F)
 
 /-- Every functor out of `WalkingReflexivePair` is isomorphic to the `reflexivePair` given by
 its components -/
 @[simps!]
 def diagramIsoReflexivePair :
     F ≅ reflexivePair (F.map left) (F.map right) (F.map reflexion) :=
-  mkNatIso _ _ _ _ _ F (Iso.refl _) (Iso.refl _)
+  mkNatIso (Iso.refl _) (Iso.refl _)
 
 end NatTrans
 
@@ -484,39 +473,20 @@ def compRightIso {D : Type u₂} [Category.{v₂} D] {A B : C}
     (reflexivePair f g s sl sr) ⋙ F ≅ reflexivePair (F.map f) (F.map g) (F.map s)
       (by simp only [← Functor.map_comp, sl, Functor.map_id])
       (by simp only [← Functor.map_comp, sr, Functor.map_id]) :=
-  mkNatIso _ _ _ _ _ _ (Iso.refl _) (Iso.refl _)
+  mkNatIso (Iso.refl _) (Iso.refl _)
 
-lemma whiskerRightMkNatTrans {D : Type u₂} [Category.{v₂} D] {A B : C}
-    (f g : A ⟶ B) (s : B ⟶ A) (sl : s ≫ f = 𝟙 B) (sr : s ≫ g = 𝟙 B)
-    (F : WalkingReflexivePair ⥤ C)
-    (u : F.obj one ⟶ A) (v : F.obj zero ⟶ B)
-    {h₁ : (F.map left) ≫ v = u ≫ f}
-    {h₂ : (F.map right) ≫ v = u ≫ g}
-    {h₃ : (F.map reflexion) ≫ u = v ≫ s}
-    (G : C ⥤ D) :
-      (whiskerRight (mkNatTrans f g s sl sr F u v) G) ≫ (compRightIso _ _ _ _ _ _).hom =
-        mkNatTrans (G.map f) (G.map g) (G.map s) _ _ (F ⋙ G)
-          (G.map u) (G.map v)
-          (by simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, h₁])
-          (by simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, h₂])
-          (by simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, h₃]) := by
-  ext x; cases x <;> simp
-
-/-- Counterpart of `whiskerRightMkNatTrans` for `MkNatTrans'` --/
-lemma whiskerRightMkNatTrans' {D : Type u₂} [Category.{v₂} D] {A B : C}
-    (f g : A ⟶ B) (s : B ⟶ A) {sl : s ≫ f = 𝟙 B} {sr : s ≫ g = 𝟙 B}
-    (F : WalkingReflexivePair ⥤ C)
-    (u : A ⟶ F.obj one) (v : B ⟶ F.obj zero)
-    {h₁ : u ≫ (F.map left) = f ≫ v}
-    {h₂ : u ≫ (F.map right) = g ≫ v}
-    {h₃ : s ≫ u = v ≫ (F.map reflexion)}
-    (G : C ⥤ D) :
-      (compRightIso _ _ _ _ _ _).inv ≫ (whiskerRight (mkNatTrans' f g s sl sr F u v) G) =
-        mkNatTrans' (G.map f) (G.map g) (G.map s) _ _ (F ⋙ G)
-          (G.map u) (G.map v)
-          (by simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, h₁])
-          (by simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, h₂])
-          (by simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, h₃]) := by
+lemma whiskerRightMkNatTrans {D : Type u₂} [Category.{v₂} D]
+    {F G: WalkingReflexivePair ⥤ C}
+    (u : F.obj zero ⟶ G.obj zero) (v : F.obj one ⟶ G.obj one)
+    {h₁ : (F.map left) ≫ u = v ≫ G.map left}
+    {h₂ : (F.map right) ≫ u = v ≫ G.map right}
+    {h₃ : (F.map reflexion) ≫ v = u ≫ G.map reflexion}
+    (H : C ⥤ D) :
+      (whiskerRight (mkNatTrans u v : F ⟶ G) H) = mkNatTrans
+            (H.map u) (H.map v)
+            (by simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, h₁])
+            (by simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, h₂])
+            (by simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, h₃]) := by
   ext x; cases x <;> simp
 
 end
