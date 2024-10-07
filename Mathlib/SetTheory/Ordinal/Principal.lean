@@ -186,10 +186,10 @@ theorem principal_add_iff_add_self_lt {a} : Principal (· + ·) a ↔ ∀ b < a,
   principal_mono_iff (fun x _ _ h => add_le_add_left h x) (fun x _ _ h => add_le_add_right h x)
 
 theorem principal_add_omega0 : Principal (· + ·) ω := fun a b ha hb =>
-  match a, b, lt_omega.1 ha, lt_omega.1 hb with
+  match a, b, lt_omega0.1 ha, lt_omega0.1 hb with
   | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by
     dsimp only; rw [← Nat.cast_add]
-    apply nat_lt_omega
+    apply nat_lt_omega0
 
 @[deprecated (since := "2024-09-30")]
 alias principal_add_omega := principal_add_omega0
@@ -208,11 +208,11 @@ theorem principal_add_omega0_opow (x : Ordinal) : Principal (· + ·) (ω ^ x) :
   · rw [opow_zero, principal_one_iff, add_zero]
   · rw [principal_add_iff_add_self_lt]
     intro a ha
-    obtain ⟨c, hc, m, hm⟩ := lt_omega_opow ha ha'
+    obtain ⟨c, hc, m, hm⟩ := lt_omega0_opow ha ha'
     apply (add_lt_add_of_le_of_lt hm.le hm).trans_le
     rw [← mul_add, ← Nat.cast_add]
-    apply (omega_opow_mul_nat_lt _ _).le.trans
-    rwa [opow_le_opow_iff_right one_lt_omega, succ_le_iff]
+    apply (omega0_opow_mul_nat_lt _ _).le.trans
+    rwa [opow_le_opow_iff_right one_lt_omega0, succ_le_iff]
 
 @[deprecated (since := "2024-09-30")]
 alias principal_add_omega_opow := principal_add_omega0_opow
@@ -236,7 +236,7 @@ theorem principal_add_iff_zero_or_omega0_opow {o : Ordinal} :
   · rw [or_iff_not_imp_left]
     intro H ho
     refine ⟨log ω o, (opow_log_le_self ω ho).eq_of_not_lt ?_⟩
-    obtain ⟨n, hn⟩ := lt_omega_opow_succ (lt_opow_succ_log_self one_lt_omega o)
+    obtain ⟨n, hn⟩ := lt_omega0_opow_succ (lt_opow_succ_log_self one_lt_omega0 o)
     intro h
     apply hn.not_lt
     clear hn
