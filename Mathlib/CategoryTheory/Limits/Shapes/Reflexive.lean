@@ -478,9 +478,9 @@ def compRightIso {D : Type u₂} [Category.{v₂} D] {A B : C}
 lemma whiskerRightMkNatTrans {D : Type u₂} [Category.{v₂} D]
     {F G: WalkingReflexivePair ⥤ C}
     (u : F.obj zero ⟶ G.obj zero) (v : F.obj one ⟶ G.obj one)
-    {h₁ : (F.map left) ≫ u = v ≫ G.map left}
-    {h₂ : (F.map right) ≫ u = v ≫ G.map right}
-    {h₃ : (F.map reflexion) ≫ v = u ≫ G.map reflexion}
+    {h₁ : F.map left ≫ u = v ≫ G.map left}
+    {h₂ : F.map right ≫ u = v ≫ G.map right}
+    {h₃ : F.map reflexion ≫ v = u ≫ G.map reflexion}
     (H : C ⥤ D) :
       (whiskerRight (mkNatTrans u v : F ⟶ G) H) = mkNatTrans
             (H.map u) (H.map v)
@@ -593,7 +593,7 @@ variable {C : Type u} [Category.{v} C]
 /-- A category has coequalizers of reflexive pairs if and only if it has all colimits indexed by the
 walking reflexive pair. -/
 theorem hasReflexiveCoequalizers_iff :
-    (HasColimitsOfShape WalkingReflexivePair C) ↔ (HasReflexiveCoequalizers C) := by
+    HasColimitsOfShape WalkingReflexivePair C ↔ HasReflexiveCoequalizers C := by
   constructor
   · intro _
     constructor
