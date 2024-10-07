@@ -64,7 +64,7 @@ instance (A : Type*) : Category (Codiscrete A) where
 section
 variable {C : Type u} [Category.{v} C] {A : Type w}
 
-/-- Any function `C → A` lifts to a functor `C ⥤  Codiscrete A`.-/
+/-- Any function `C → A` lifts to a functor `C ⥤ Codiscrete A`.-/
 def functor (F : C → A) : C ⥤ Codiscrete A where
   obj := Codiscrete.mk ∘ F
   map _ := ⟨⟩
