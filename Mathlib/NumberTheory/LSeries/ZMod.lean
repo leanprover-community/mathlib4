@@ -177,13 +177,13 @@ lemma LFunction_stdAddChar_eq_expZeta (j : ZMod N) (s : ℂ) (hjs : j ≠ 0 ∨ 
   let g := expZeta (toAddCircle j)
   have hU {u} : u ∈ U ↔ u ≠ 1 ∨ j ≠ 0 := by simp only [mem_ite_univ_right, U]; tauto
   -- hypotheses for uniqueness of analytic continuation
-  have hf : AnalyticOn ℂ f U := by
-    refine DifferentiableOn.analyticOn (fun u hu ↦ ?_) hUo
+  have hf : AnalyticOnNhd ℂ f U := by
+    refine DifferentiableOn.analyticOnNhd (fun u hu ↦ ?_) hUo
     refine (differentiableAt_LFunction _ _ ((hU.mp hu).imp_right fun h ↦ ?_)).differentiableWithinAt
     simp only [mul_comm j, AddChar.sum_mulShift _ (isPrimitive_stdAddChar _), h,
       ↓reduceIte, CharP.cast_eq_zero, or_true]
-  have hg : AnalyticOn ℂ g U := by
-    refine DifferentiableOn.analyticOn (fun u hu ↦ ?_) hUo
+  have hg : AnalyticOnNhd ℂ g U := by
+    refine DifferentiableOn.analyticOnNhd (fun u hu ↦ ?_) hUo
     refine (differentiableAt_expZeta _ _ ((hU.mp hu).imp_right fun h ↦ ?_)).differentiableWithinAt
     rwa [ne_eq, toAddCircle_eq_zero]
   have hUc : IsPreconnected U := by
@@ -451,7 +451,7 @@ Functional equation for completed L-functions (even case), valid at all points o
 theorem completedLFunction_one_sub_even (hΦ : Φ.Even) (s : ℂ)
     (hs₀ : s ≠ 0 ∨ ∑ j, Φ j = 0) (hs₁ : s ≠ 1 ∨ Φ 0 = 0) :
     completedLFunction Φ (1 - s) = N ^ (s - 1) * completedLFunction (𝓕 Φ) s := by
-  -- We prove this using `AnalyticOn.eqOn_of_preconnected_of_eventuallyEq`, so we need to
+  -- We prove this using `AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq`, so we need to
   -- gather up the ingredients for this big theorem.
   -- First set up some notations:
   let F (t) := completedLFunction Φ (1 - t)
@@ -477,12 +477,14 @@ theorem completedLFunction_one_sub_even (hΦ : Φ.Even) (s : ℂ)
       simp [U, Uc, h, h', and_comm]
     · simp only [rank_real_complex, Nat.one_lt_ofNat]
   -- Analyticity on U:
-  have hF : AnalyticOn ℂ F U := by
-    refine DifferentiableOn.analyticOn (fun t ht ↦ DifferentiableAt.differentiableWithinAt ?_) hUo
+  have hF : AnalyticOnNhd ℂ F U := by
+    refine DifferentiableOn.analyticOnNhd
+      (fun t ht ↦ DifferentiableAt.differentiableWithinAt ?_) hUo
     refine (differentiableAt_completedLFunction Φ _ ?_ ?_).comp t (differentiableAt_id.const_sub 1)
     exacts [ht.2.imp_left (sub_ne_zero.mpr ∘ Ne.symm), ht.1.imp_left sub_eq_self.not.mpr]
-  have hG : AnalyticOn ℂ G U := by
-    refine DifferentiableOn.analyticOn (fun t ht ↦ DifferentiableAt.differentiableWithinAt ?_) hUo
+  have hG : AnalyticOnNhd ℂ G U := by
+    refine DifferentiableOn.analyticOnNhd
+      (fun t ht ↦ DifferentiableAt.differentiableWithinAt ?_) hUo
     apply ((differentiableAt_id.sub_const 1).const_cpow (.inl (NeZero.ne _))).mul
     apply differentiableAt_completedLFunction _ _ (ht.1.imp_right fun h ↦ dft_apply_zero Φ ▸ h)
     exact ht.2.imp_right (fun h ↦ by simp only [← dft_apply_zero, dft_dft, neg_zero, h, smul_zero])
@@ -512,7 +514,7 @@ theorem completedLFunction_one_sub_odd (hΦ : Φ.Odd) (s : ℂ) :
   have hFG : F =ᶠ[𝓝 2] G := by filter_upwards [this] with t ht
     using completedLFunction_one_sub_of_one_lt_odd hΦ ht
   -- now apply the big hammer to finish
-  rw [← analyticOn_univ_iff_differentiable] at hF hG
+  rw [← analyticOnNhd_univ_iff_differentiable] at hF hG
   exact congr_fun (hF.eq_of_eventuallyEq hG hFG) s
 
 end signed

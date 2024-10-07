@@ -817,6 +817,10 @@ theorem embedding_graph {f : X → Y} (hf : Continuous f) : Embedding fun x => (
 theorem embedding_prod_mk (x : X) : Embedding (Prod.mk x : Y → X × Y) :=
   embedding_of_embedding_compose (Continuous.Prod.mk x) continuous_snd embedding_id
 
+theorem IsOpenQuotientMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenQuotientMap f)
+    (hg : IsOpenQuotientMap g) : IsOpenQuotientMap (Prod.map f g) :=
+  ⟨.prodMap hf.1 hg.1, .prod_map hf.2 hg.2, .prod hf.3 hg.3⟩
+
 end Prod
 
 section Bool
@@ -963,7 +967,7 @@ end Sum
 
 section Subtype
 
-variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] {p : X → Prop}
+variable [TopologicalSpace X] [TopologicalSpace Y] {p : X → Prop}
 
 theorem inducing_subtype_val {t : Set Y} : Inducing ((↑) : t → Y) := ⟨rfl⟩
 
@@ -1118,7 +1122,7 @@ end Subtype
 
 section Quotient
 
-variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+variable [TopologicalSpace X] [TopologicalSpace Y]
 variable {r : X → X → Prop} {s : Setoid X}
 
 theorem quotientMap_quot_mk : QuotientMap (@Quot.mk X r) :=
@@ -1244,7 +1248,7 @@ theorem Finset.continuous_restrict₂ {s t : Finset ι} (hst : s ⊆ t) :
     Continuous (Finset.restrict₂ (π := π) hst) :=
   continuous_pi fun _ ↦ continuous_apply _
 
-variable {Z : Type*} [TopologicalSpace Z]
+variable [TopologicalSpace Z]
 
 @[continuity, fun_prop]
 theorem Pi.continuous_restrict_apply (s : Set X) {f : X → Z} (hf : Continuous f) :
@@ -1638,8 +1642,8 @@ theorem IsClosed.trans (ht : IsClosed t) (hs : IsClosed s) : IsClosed (t : Set X
 end Monad
 
 section NhdsSet
-variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : Filter X}
-  {s : Set X} {t : Set Y} {x : X}
+variable [TopologicalSpace X] [TopologicalSpace Y]
+  {s : Set X} {t : Set Y}
 
 /-- The product of a neighborhood of `s` and a neighborhood of `t` is a neighborhood of `s ×ˢ t`,
 formulated in terms of a filter inequality. -/

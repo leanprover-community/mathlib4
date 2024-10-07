@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Analysis.Convex.Between
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.Topology.MetricSpace.Hoelder
+import Mathlib.Topology.MetricSpace.Holder
 import Mathlib.Topology.MetricSpace.MetricSeparated
 
 /-!
@@ -109,7 +109,7 @@ Hausdorff measure, measure, metric measure
 
 open scoped NNReal ENNReal Topology
 
-open EMetric Set Function Filter Encodable FiniteDimensional TopologicalSpace
+open EMetric Set Function Filter Encodable Module TopologicalSpace
 
 noncomputable section
 
@@ -183,7 +183,7 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
   suffices μ (⋃ n, S n) ≤ ⨆ n, μ (S n) by calc
     μ (s ∩ t) + μ (s \ t) = μ (s ∩ t) + μ (⋃ n, S n) := by rw [iUnion_S]
     _ ≤ μ (s ∩ t) + ⨆ n, μ (S n) := by gcongr
-    _ = ⨆ n, μ (s ∩ t) + μ (S n) := ENNReal.add_iSup
+    _ = ⨆ n, μ (s ∩ t) + μ (S n) := ENNReal.add_iSup ..
     _ ≤ μ s := iSup_le hSs
   /- It suffices to show that `∑' k, μ (S (k + 1) \ S k) ≠ ∞`. Indeed, if we have this,
     then for all `N` we have `μ (⋃ n, S n) ≤ μ (S N) + ∑' k, m (S (N + k + 1) \ S (N + k))`
@@ -667,13 +667,13 @@ open MeasureTheory MeasureTheory.Measure
 
 variable [MeasurableSpace X] [BorelSpace X] [MeasurableSpace Y] [BorelSpace Y]
 
-namespace HoelderOnWith
+namespace HolderOnWith
 
 variable {C r : ℝ≥0} {f : X → Y} {s t : Set X}
 
 /-- If `f : X → Y` is Hölder continuous on `s` with a positive exponent `r`, then
 `μH[d] (f '' s) ≤ C ^ d * μH[r * d] s`. -/
-theorem hausdorffMeasure_image_le (h : HoelderOnWith C r f s) (hr : 0 < r) {d : ℝ} (hd : 0 ≤ d) :
+theorem hausdorffMeasure_image_le (h : HolderOnWith C r f s) (hr : 0 < r) {d : ℝ} (hd : 0 ≤ d) :
     μH[d] (f '' s) ≤ (C : ℝ≥0∞) ^ d * μH[r * d] s := by
   -- We start with the trivial case `C = 0`
   rcases (zero_le C).eq_or_lt with (rfl | hC0)
@@ -711,7 +711,7 @@ theorem hausdorffMeasure_image_le (h : HoelderOnWith C r f s) (hr : 0 < r) {d : 
       rw [ENNReal.rpow_mul, ← ENNReal.mul_rpow_of_nonneg _ _ hd]
       exact ENNReal.rpow_le_rpow (h.ediam_image_inter_le _) hd
 
-end HoelderOnWith
+end HolderOnWith
 
 namespace LipschitzOnWith
 
@@ -720,8 +720,7 @@ variable {K : ℝ≥0} {f : X → Y} {s t : Set X}
 /-- If `f : X → Y` is `K`-Lipschitz on `s`, then `μH[d] (f '' s) ≤ K ^ d * μH[d] s`. -/
 theorem hausdorffMeasure_image_le (h : LipschitzOnWith K f s) {d : ℝ} (hd : 0 ≤ d) :
     μH[d] (f '' s) ≤ (K : ℝ≥0∞) ^ d * μH[d] s := by
-  simpa only [NNReal.coe_one, one_mul]
-    using h.HoelderOnWith.hausdorffMeasure_image_le zero_lt_one hd
+  simpa only [NNReal.coe_one, one_mul] using h.holderOnWith.hausdorffMeasure_image_le zero_lt_one hd
 
 end LipschitzOnWith
 

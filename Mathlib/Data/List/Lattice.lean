@@ -2,7 +2,7 @@
 Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro,
-Scott Morrison
+Kim Morrison
 -/
 import Mathlib.Data.List.Basic
 
@@ -29,7 +29,7 @@ open Nat
 
 namespace List
 
-variable {α : Type*} {l l₁ l₂ : List α} {p : α → Prop} {a : α}
+variable {α : Type*} {l₁ l₂ : List α} {p : α → Prop} {a : α}
 
 /-! ### `Disjoint` -/
 
@@ -203,7 +203,7 @@ theorem count_bagInter {a : α} :
       by_cases ba : b = a
       · simp only [beq_iff_eq]
         rw [if_pos ba, Nat.sub_add_cancel]
-        rwa [succ_le_iff, count_pos_iff_mem, ← ba]
+        rwa [succ_le_iff, count_pos_iff, ← ba]
       · simp only [beq_iff_eq]
         rw [if_neg ba, Nat.sub_zero, Nat.add_zero, Nat.add_zero]
     · rw [cons_bagInter_of_neg _ hb, count_bagInter]
