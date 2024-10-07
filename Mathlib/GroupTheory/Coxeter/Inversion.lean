@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Lee
 -/
 import Mathlib.GroupTheory.Coxeter.Length
-import Mathlib.Data.ZMod.Parity
 import Mathlib.Data.List.GetD
 
 /-!
