@@ -680,16 +680,14 @@ theorem toCharTwoJNeZeroNF_spec (ha₁ : W.a₁ ≠ 0) :
   · field_simp [toCharTwoJNeZeroNF]
     linear_combination (W.a₁ ^ 4 * W.a₃ ^ 2 + W.a₁ ^ 5 * W.a₃ * W.a₂) * CharP.cast_eq_zero F 2
 
-variable [DecidableEq F]
-
 /-- For a `WeierstrassCurve` defined over a field of characteristic = 2,
 there is an explicit change of variables of it to `WeierstrassCurve.IsCharTwoNF`, that is,
 $Y^2 + XY = X^3 + a_2X^2 + a_6$ (`WeierstrassCurve.IsCharTwoJNeZeroNF`) or
 $Y^2 + a_3Y = X^3 + a_4X + a_6$ (`WeierstrassCurve.IsCharTwoJEqZeroNF`). -/
-def toCharTwoNF : VariableChange F :=
+def toCharTwoNF [DecidableEq F] : VariableChange F :=
   if ha₁ : W.a₁ = 0 then W.toCharTwoJEqZeroNF else W.toCharTwoJNeZeroNF ha₁
 
-instance toCharTwoNF_spec : (W.variableChange W.toCharTwoNF).IsCharTwoNF := by
+instance toCharTwoNF_spec [DecidableEq F] : (W.variableChange W.toCharTwoNF).IsCharTwoNF := by
   by_cases ha₁ : W.a₁ = 0
   · rw [toCharTwoNF, dif_pos ha₁]
     haveI := W.toCharTwoJEqZeroNF_spec ha₁
@@ -699,8 +697,9 @@ instance toCharTwoNF_spec : (W.variableChange W.toCharTwoNF).IsCharTwoNF := by
     infer_instance
 
 theorem exists_variableChange_isCharTwoNF :
-    ∃ C : VariableChange F, (W.variableChange C).IsCharTwoNF :=
-  ⟨_, W.toCharTwoNF_spec⟩
+    ∃ C : VariableChange F, (W.variableChange C).IsCharTwoNF := by
+  classical
+  exact ⟨_, W.toCharTwoNF_spec⟩
 
 end VariableChange
 
