@@ -287,7 +287,8 @@ lemma exists_jacobiSum_eq_neg_one_add {n : ℕ} (hn : 2 < n) {χ ψ : MulChar F 
     rw [hχ₀, jacobiSum_one_nontrivial hψ₀, zero_mul, add_zero]
   · refine ⟨0, Subalgebra.zero_mem _, ?_⟩
     rw [jacobiSum_comm, hψ₀, jacobiSum_one_nontrivial hχ₀, zero_mul, add_zero]
-  · rw [jacobiSum_eq_aux, MulChar.sum_eq_zero_of_ne_one hχ₀, MulChar.sum_eq_zero_of_ne_one hψ₀, hq]
+  · classical
+    rw [jacobiSum_eq_aux, MulChar.sum_eq_zero_of_ne_one hχ₀, MulChar.sum_eq_zero_of_ne_one hψ₀, hq]
     have H := MulChar.exists_apply_sub_one_mul_apply_sub_one (by omega) hχ hψ hμ
     have Hcs x := (H x).choose_spec
     refine ⟨-q * z₁ + ∑ x ∈ (univ \ {0, 1} : Finset F), (H x).choose, ?_, ?_⟩

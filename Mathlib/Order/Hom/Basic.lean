@@ -1172,6 +1172,13 @@ theorem coe_toDualTopEquiv_eq [LE α] :
     (WithBot.toDualTopEquiv : WithBot αᵒᵈ → (WithTop α)ᵒᵈ) = toDual ∘ WithBot.ofDual :=
   funext fun _ => rfl
 
+/-- The coercion `α → WithBot α` bundled as monotone map. -/
+@[simps]
+def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithBot α where
+  toFun := (↑)
+  inj' := WithBot.coe_injective
+  map_rel_iff' := WithBot.coe_le_coe
+
 end WithBot
 
 namespace WithTop
@@ -1202,6 +1209,13 @@ theorem toDualBotEquiv_symm_top [LE α] : WithTop.toDualBotEquiv.symm (⊤ : (Wi
 theorem coe_toDualBotEquiv [LE α] :
     (WithTop.toDualBotEquiv : WithTop αᵒᵈ → (WithBot α)ᵒᵈ) = toDual ∘ WithTop.ofDual :=
   funext fun _ => rfl
+
+/-- The coercion `α → WithTop α` bundled as monotone map. -/
+@[simps]
+def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithTop α where
+  toFun := (↑)
+  inj' := WithTop.coe_injective
+  map_rel_iff' := WithTop.coe_le_coe
 
 end WithTop
 

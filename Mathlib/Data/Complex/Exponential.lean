@@ -1336,7 +1336,7 @@ theorem cos_pos_of_le_one {x : ℝ} (hx : |x| ≤ 1) : 0 < cos x :=
                   gcongr
                   · exact pow_le_one₀ (abs_nonneg _) hx
                   · rw [sq, ← abs_mul_self, abs_mul]
-                    exact mul_le_one hx (abs_nonneg _) hx
+                    exact mul_le_one₀ hx (abs_nonneg _) hx
             _ < 1 := by norm_num)
     _ ≤ cos x := sub_le_comm.1 (abs_sub_le_iff.1 (cos_bound hx)).2
 
