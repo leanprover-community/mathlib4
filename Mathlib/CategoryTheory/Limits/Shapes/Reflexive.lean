@@ -188,6 +188,7 @@ inductive WalkingReflexivePair : Type where
 open WalkingReflexivePair
 
 namespace WalkingReflexivePair
+
 /-- The type of morphisms for the diagram indexing reflexive (co)equalizers -/
 inductive Hom : (WalkingReflexivePair → WalkingReflexivePair → Type)
   | left : Hom one zero
