@@ -419,4 +419,13 @@ lemma range_map {X Y S X' Y' S' : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) (f' : 
       (pullback.fst f' g').val.base ⁻¹' Set.range i₁.val.base ∩
         (pullback.snd f' g').val.base ⁻¹' Set.range i₂.val.base := sorry
 
-end AlgebraicGeometry.Scheme.Pullback
+end Pullback
+
+lemma exists_preimage_pullback {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) (x : X) (y : Y)
+    (h : f.val.base x = g.val.base y) :
+    ∃ z : ↑(pullback f g),
+    (pullback.fst f g).1.base z = x ∧ (pullback.snd f g).1.base z = y :=
+  let T : Scheme.Pullback.Triplet f g := .mk' x y h
+  T.exists_preimage
+
+end AlgebraicGeometry.Scheme

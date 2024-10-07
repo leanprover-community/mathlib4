@@ -2,8 +2,61 @@
 import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 import Mathlib.ValuativeCriterion.Fiber
+import Mathlib.ValuativeCriterion.PullbackCarrier
 
 open CategoryTheory CategoryTheory.Limits TopologicalSpace
+
+section TOBEMOVED
+
+lemma _root_.SpecializingMap.comp {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    [TopologicalSpace Z] {f : X → Y} {g : Y → Z} (hf : SpecializingMap f)
+    (hg : SpecializingMap g) :
+    SpecializingMap (g ∘ f) := by
+  rw [specializingMap_iff_closure_singleton_subset] at hf hg ⊢
+  intro x z hz
+  obtain ⟨y, hy, rfl⟩ := hg (f x) hz
+  obtain ⟨x', hx', rfl⟩ := hf x hy
+  use x', hx'
+  simp
+
+namespace AlgebraicGeometry
+
+instance specializingMap_respectsIso : (topologically @SpecializingMap).RespectsIso := by
+  apply topologically_respectsIso
+  · introv
+    exact f.isClosedMap.specializingMap
+  · introv hf hg
+    exact hf.comp hg
+
+instance specializingMap_isLocalAtTarget : IsLocalAtTarget (topologically @SpecializingMap) := by
+  apply topologically_isLocalAtTarget
+  · introv hf
+    rw [specializingMap_iff_closure_singleton_subset] at hf ⊢
+    intro ⟨x, hx⟩ ⟨y, hy⟩ hcl
+    simp only [closure_subtype, Set.restrictPreimage_mk, Set.image_singleton] at hcl
+    obtain ⟨a, ha, hay⟩ := hf x hcl
+    rw [← specializes_iff_mem_closure] at hcl
+    exact ⟨⟨a, by simp [hay, hy]⟩, by simpa [closure_subtype], by simpa⟩
+  · introv hU _ hsp
+    simp_rw [specializingMap_iff_closure_singleton_subset] at hsp ⊢
+    intro x y hy
+    have : ∃ i, y ∈ U i := Opens.mem_iSup.mp (hU ▸ trivial)
+    obtain ⟨i, hi⟩ := this
+    rw [← specializes_iff_mem_closure] at hy
+    have hfx : f x ∈ U i := (U i).2.stableUnderGeneralization hy hi
+    have hy : (⟨y, hi⟩ : U i) ∈ closure {⟨f x, hfx⟩} := by
+      simp only [closure_subtype, Set.image_singleton]
+      rwa [← specializes_iff_mem_closure]
+    obtain ⟨a, ha, hay⟩ := hsp i ⟨x, hfx⟩ hy
+    rw [closure_subtype] at ha
+    simp only [Opens.carrier_eq_coe, Set.image_singleton] at ha
+    apply_fun Subtype.val at hay
+    simp only [Opens.carrier_eq_coe, Set.restrictPreimage_coe] at hay
+    use a.val, ha, hay
+
+end AlgebraicGeometry
+
+end TOBEMOVED
 
 /--
 move to `PrimeSpectrum/Basic`
@@ -158,7 +211,7 @@ use `isCompact_iff_exists` to reduce to range and use
 
 https://stacks.math.columbia.edu/tag/01K9
 -/
-private lemma isClosedMap_iff_isSpecializingMap_aux {R} (f : X ⟶ Spec R) [QuasiCompact f] :
+private lemma isClosedMap_iff_isSpecializingMap_aux [IsAffine Y] (f : X ⟶ Y) [QuasiCompact f] :
     IsClosedMap f.1.base ↔ SpecializingMap f.1.base := by
   refine ⟨fun h ↦ h.specializingMap, fun h ↦ ?_⟩
   have : CompactSpace X := (quasiCompact_over_affine_iff f).mp inferInstance
@@ -187,10 +240,22 @@ https://stacks.math.columbia.edu/tag/01K9
 -/
 lemma isClosedMap_iff_specializingMap [QuasiCompact f] :
     IsClosedMap f.1.base ↔ SpecializingMap f.1.base := by
-  show topologically @IsClosedMap f ↔ topologically @SpecializingMap f
-  sorry
+  constructor
+  · intro hf
+    exact hf.specializingMap
+  intro hf
+  wlog h : IsAffine Y generalizing X Y
+  · show topologically @IsClosedMap f
+    rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := topologically @IsClosedMap) _
+      (iSup_affineOpens_eq_top _)]
+    intro U
+    haveI hqc : QuasiCompact (f ∣_ U) := IsLocalAtTarget.restrict ‹QuasiCompact f› U
+    apply this (f ∣_ U)
+    exact IsLocalAtTarget.restrict (P := topologically @SpecializingMap) hf U
+    exact U.2
+  rwa [isClosedMap_iff_isSpecializingMap_aux]
 
-/--
+/-
 use `isClosedMap_iff_specializingMap`
 -/
 lemma universallyClosed_iff_specializingMap [QuasiCompact f] :
@@ -206,6 +271,57 @@ lemma universallyClosed_iff_specializingMap [QuasiCompact f] :
     have hcl : SpecializingMap f'.val.base := h g i₂ f' hp
     rwa [← isClosedMap_iff_specializingMap] at hcl
 
+lemma _root_.AlgebraicGeometry.Scheme.ΓSpecIso_inv_naturality_apply
+    {R S : CommRingCat} (f : R ⟶ S) (r : R) :
+    (Scheme.ΓSpecIso S).inv (f r) = ((Spec.map f).app ⊤) ((Scheme.ΓSpecIso R).inv r) := by
+  show (f ≫ (Scheme.ΓSpecIso S).inv) r = _
+  simp
+
+@[simp]
+lemma _root_.CommRingCat.of_apply {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S)
+    (r : R) :
+    CommRingCat.ofHom f r = f r :=
+  rfl
+
+instance {K} [Field K] : Unique (Spec (.of K)) :=
+  inferInstanceAs <| Unique (PrimeSpectrum K)
+
+@[simp]
+lemma default_asIdeal {K} [Field K] : (default : Spec (.of K)).asIdeal = ⊥ := rfl
+
+lemma Spec_mem_basicOpen {R : CommRingCat} (f : Γ(Spec R, ⊤)) (x : Spec R) :
+    x ∈ (Spec R).basicOpen f ↔ (Scheme.ΓSpecIso R).hom f ∉ x.asIdeal := by
+  simp
+  rfl
+
+lemma Spec_map_val_base {R S : CommRingCat} (f : R ⟶ S) (x : Spec S) :
+    (Spec.map f).val.base x = PrimeSpectrum.comap f x :=
+  rfl
+
+lemma aeval_ite_mem_vars {σ R : Type*} [CommRing R] [DecidableEq σ] (q : MvPolynomial σ R) :
+    MvPolynomial.aeval (fun i ↦ if i ∈ q.vars then .X i else 0) q = q := by
+  rw [MvPolynomial.as_sum q, MvPolynomial.aeval_sum]
+  refine Finset.sum_congr rfl (fun u hu ↦ ?_)
+  rw [MvPolynomial.aeval_monomial, MvPolynomial.monomial_eq]
+  congr 1
+  refine Finsupp.prod_congr (fun i hi ↦ ?_)
+  have : i ∈ q.vars := by
+    rw [MvPolynomial.mem_vars]
+    use u
+  simp [this]
+
+@[simp]
+lemma CommRingCat.hom_inv_apply {R S : CommRingCat} (e : R ≅ S) (r : R) :
+    e.inv (e.hom r) = r := by
+  show (e.hom ≫ e.inv) r = r
+  simp
+
+@[simp]
+lemma CommRingCat.inv_hom_apply {R S : CommRingCat} (e : R ≅ S) (s : S) :
+    e.hom (e.inv s) = s := by
+  show (e.inv ≫ e.hom) s = s
+  simp
+
 /--
 For a (formalizable) proof, see https://imgur.com/a/nTDzDFj.
 
@@ -213,7 +329,104 @@ inspired by
 https://mathoverflow.net/questions/23337/is-a-universally-closed-morphism-of-schemes-quasi-compact/23528#23528
 -/
 lemma compactSpace_of_universallyClosed
-    {K} [Field K] (f : X ⟶ Spec (.of K)) [UniversallyClosed f] : CompactSpace X := sorry
+    {K} [Field K] (f : X ⟶ Spec (.of K)) [UniversallyClosed f] : CompactSpace X := by
+  classical
+  let 𝒰 : X.OpenCover := X.affineCover
+  let U (i : 𝒰.J) : X.Opens := 𝒰.map i ''ᵁ ⊤
+  let T : Scheme := Spec (.of <| MvPolynomial 𝒰.J K)
+  let q : T ⟶ Spec (.of K) := Spec.map MvPolynomial.C
+  let R : CommRingCat := .of <| MvPolynomial 𝒰.J K
+  let Ti (i : 𝒰.J) : T.Opens := T.basicOpen ((Scheme.ΓSpecIso R).inv <| MvPolynomial.X (R := K) i)
+  let fT : pullback f q ⟶ T := pullback.snd f q
+  let p : pullback f q ⟶ X := pullback.fst f q
+  let V (i : 𝒰.J) : (pullback f q).Opens := fT ⁻¹ᵁ (Ti i) ⊓ p ⁻¹ᵁ (U i)
+  let Z : Set (pullback f q).carrier := (iSup V).carrierᶜ
+  have hZ : IsClosed Z := by
+    rw [isClosed_compl_iff]
+    simp only [Opens.carrier_eq_coe, Opens.coe_iSup, Opens.coe_inf, Opens.map_coe]
+    apply isOpen_iUnion
+    intro i
+    apply IsOpen.inter
+    exact (Ti i).2.preimage (Scheme.Hom.continuous fT)
+    exact (U i).2.preimage (Scheme.Hom.continuous p)
+  have hfT : IsClosedMap fT.val.base :=
+    UniversallyClosed.out p q fT (IsPullback.of_hasPullback f q).flip
+  have hfZ : IsClosed (fT.val.base '' Z) := hfT _ hZ
+  let Zc : Opens T := ⟨(fT.val.base '' Z)ᶜ, hfZ.isOpen_compl⟩
+  let ψ : MvPolynomial 𝒰.J K →ₐ[K] K := MvPolynomial.aeval (fun _ ↦ 1)
+  let h : Spec (.of K) ⟶ T := Spec.map ψ.toRingHom
+  let t : T := h.val.base default
+  have ht (i : 𝒰.J) : t ∈ Ti i := by
+    simp only [Ti, t]
+    rw [Spec_mem_basicOpen]
+    simp only [R]
+    erw [CommRingCat.inv_hom_apply]
+    rw [Spec_map_val_base]
+    simp [ψ]
+  have : t ∉ fT.val.base '' Z := by
+    intro ⟨z, hz, hzt⟩
+    apply hz
+    simp only [Opens.carrier_eq_coe, Opens.coe_iSup, Opens.coe_inf, Opens.map_coe, Set.mem_iUnion,
+      Set.mem_inter_iff, Set.mem_preimage, SetLike.mem_coe]
+    refine ⟨𝒰.f (p.val.base z), ?_, ?_⟩
+    · rw [hzt]
+      apply ht
+    · simpa [U] using 𝒰.covers (p.val.base z)
+  have htZc : t ∈ Zc := this
+  obtain ⟨U', ⟨g, rfl⟩, htU', hU'le⟩ :=
+    Opens.isBasis_iff_nbhd.mp (AlgebraicGeometry.isBasis_basicOpen T) htZc
+  let σ : Finset 𝒰.J := MvPolynomial.vars ((Scheme.ΓSpecIso R).hom g)
+  let φ : MvPolynomial 𝒰.J K →+* MvPolynomial 𝒰.J K :=
+    (MvPolynomial.aeval (fun i : 𝒰.J ↦ if i ∈ σ then MvPolynomial.X i else 0)).toRingHom
+  let t' : T := (Spec.map φ).val.base t
+  have ht'g : t' ∈ T.basicOpen g := by
+    simp only [t']
+    rw [Spec_mem_basicOpen, Spec_map_val_base]
+    have : φ ((Scheme.ΓSpecIso R).hom g) = (Scheme.ΓSpecIso R).hom g :=
+      aeval_ite_mem_vars ((Scheme.ΓSpecIso R).hom g)
+    simp only [CommRingCat.coe_of, PrimeSpectrum.comap_asIdeal, Ideal.mem_comap, this]
+    erw [← Spec_mem_basicOpen g t]
+    exact htU'
+  have ht'Zc : t' ∉ fT.val.base '' Z := hU'le ht'g
+  have hσ : ⋃ i ∈ σ, (U i).1 = Set.univ := by
+    by_contra h
+    apply ht'Zc
+    rw [Set.iUnion_eq_univ_iff] at h
+    simp only [Opens.carrier_eq_coe, Set.mem_iUnion, SetLike.mem_coe, exists_prop, not_forall,
+      not_exists, not_and] at h
+    obtain ⟨x, hx⟩ := h
+    have tri : f.val.base x = q.val.base t' := Subsingleton.elim _ _
+    obtain ⟨z, hzl, hzr⟩ := Scheme.exists_preimage_pullback f q x t' tri
+    refine ⟨z, ?_, hzr⟩
+    simp only [Opens.carrier_eq_coe, Opens.coe_iSup, Opens.coe_inf, Opens.map_coe, Set.compl_iUnion,
+      Set.mem_iInter, Set.mem_compl_iff, Set.mem_inter_iff, Set.mem_preimage, SetLike.mem_coe, Z,
+      not_and_or]
+    intro i
+    rw [hzl, hzr]
+    by_cases h : i ∈ σ
+    · exact Or.inr (hx i h)
+    · apply Or.inl
+      simp only [t']
+      convert_to t ∉ (Spec.map φ) ⁻¹ᵁ (Ti i)
+      simp only [Ti]
+      have hφi : (CommRingCat.ofHom φ) (MvPolynomial.X i) = 0 := by
+        simpa [φ]
+      have : ((Spec.map <| CommRingCat.ofHom φ).app ⊤)
+          ((Scheme.ΓSpecIso R).inv (MvPolynomial.X i)) = 0 := by
+        erw [← Scheme.ΓSpecIso_inv_naturality_apply]
+        erw [hφi]
+        simp
+      simp only [Scheme.preimage_basicOpen]
+      erw [this]
+      simp only [Opens.map_top, Scheme.basicOpen_zero]
+      intro a
+      exact a
+  constructor
+  rw [← hσ]
+  apply Finset.isCompact_biUnion
+  rintro i -
+  simp only [Scheme.Hom.image_top_eq_opensRange, Opens.carrier_eq_coe, Scheme.Hom.opensRange_coe, U]
+  exact isCompact_range (Scheme.Hom.continuous _)
 
 /--
 Use `compactSpace_of_universallyClosed` and `universallyClosed_stableUnderBaseChange` and
