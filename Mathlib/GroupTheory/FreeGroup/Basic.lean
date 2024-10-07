@@ -571,7 +571,7 @@ def lift : (α → β) ≃ (FreeGroup α →* β) where
     MonoidHom.mk' (Quot.lift (Lift.aux f) fun L₁ L₂ => Red.Step.lift) <| by
       rintro ⟨L₁⟩ ⟨L₂⟩; simp [Lift.aux]
   invFun g := g ∘ of
-  left_inv f := one_mul _
+  left_inv f := List.prod_singleton
   right_inv g :=
     MonoidHom.ext <| by
       rintro ⟨L⟩
@@ -592,7 +592,7 @@ theorem lift.mk : lift f (mk L) = List.prod (L.map fun x => cond x.2 (f x.1) (f 
 
 @[to_additive (attr := simp)]
 theorem lift.of {x} : lift f (of x) = f x :=
-  one_mul _
+  List.prod_singleton
 
 @[to_additive]
 theorem lift.unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) = f x) {x} :

@@ -683,6 +683,11 @@ lemma exists_of_one_lt_card_pi {ι : Type*} {α : ι → Type*} [∀ i, Decidabl
   obtain rfl | hne := eq_or_ne (a2 i) ai
   exacts [⟨a1, h1, hne⟩, ⟨a2, h2, hne⟩]
 
+theorem card_eq_succ_iff_cons :
+    s.card = n + 1 ↔ ∃ a t, ∃ (h : a ∉ t), cons a t h = s ∧ t.card = n :=
+  ⟨cons_induction_on s (by simp) fun a s _ _ _ => ⟨a, s, by simp_all⟩,
+   fun ⟨a, t, _, hs, _⟩ => by simpa [← hs]⟩
+
 section DecidableEq
 variable [DecidableEq α]
 

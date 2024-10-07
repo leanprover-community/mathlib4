@@ -5,6 +5,7 @@ Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Constructions.Pi
 import Mathlib.Probability.Kernel.Basic
+import Mathlib.Tactic.Peel
 
 /-!
 # Independence with respect to a kernel and a measure

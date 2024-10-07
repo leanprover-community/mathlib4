@@ -25,7 +25,7 @@ universe u v w
 namespace LinearMap
 
 open scoped Matrix
-open FiniteDimensional TensorProduct
+open Module TensorProduct
 
 section
 

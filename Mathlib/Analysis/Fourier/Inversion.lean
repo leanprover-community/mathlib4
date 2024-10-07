@@ -37,7 +37,7 @@ To check the concentration property of the middle factor and the fact that it ha
 rely on the explicit computation of the Fourier transform of Gaussians.
 -/
 
-open Filter MeasureTheory Complex FiniteDimensional Metric Real Bornology
+open Filter MeasureTheory Complex Module Metric Real Bornology
 
 open scoped Topology FourierTransform RealInnerProductSpace Complex
 

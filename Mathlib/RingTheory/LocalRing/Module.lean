@@ -171,12 +171,12 @@ theorem free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
     refine ⟨?_, this⟩
     rw [← LinearMap.ker_eq_bot (M := k ⊗[R] (I →₀ R)) (f := i.baseChange k),
       ← Submodule.finrank_eq_zero (R := k) (M := k ⊗[R] (I →₀ R)),
-      ← Nat.add_right_inj (n := FiniteDimensional.finrank k (LinearMap.range <| i.baseChange k)),
+      ← Nat.add_right_inj (n := Module.finrank k (LinearMap.range <| i.baseChange k)),
       LinearMap.finrank_range_add_finrank_ker (V := k ⊗[R] (I →₀ R)),
       LinearMap.range_eq_top.mpr this, finrank_top]
-    simp only [FiniteDimensional.finrank_tensorProduct, FiniteDimensional.finrank_self,
-      FiniteDimensional.finrank_finsupp_self, one_mul, add_zero]
-    rw [FiniteDimensional.finrank_eq_card_chooseBasisIndex]
+    simp only [Module.finrank_tensorProduct, Module.finrank_self,
+      Module.finrank_finsupp_self, one_mul, add_zero]
+    rw [Module.finrank_eq_card_chooseBasisIndex]
   -- On the other hand, `m ⊗ M → M` injective => `Tor₁(k, M) = 0` => `k ⊗ ker(i) → kᴵ` injective.
   have := @lTensor_injective_of_exact_of_exact_of_rTensor_injective
     (N₁ := LinearMap.ker i) (N₂ := I →₀ R) (N₃ := M)

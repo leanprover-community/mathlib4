@@ -240,7 +240,7 @@ private theorem m_add_one_div_m_le_one_add [Nonempty α]
     div_eq_mul_one_div _ (49 : ℝ), mul_div_left_comm (2 : ℝ), ← mul_sub_left_distrib, div_pow,
     div_le_iff₀ (show (0 : ℝ) < ↑100 ^ 2 by norm_num), mul_assoc, sq]
   refine mul_le_mul_of_nonneg_left ?_ (by sz_positivity)
-  exact (pow_le_one 5 (by sz_positivity) hε₁).trans (by norm_num)
+  exact (pow_le_one₀ (by sz_positivity) hε₁).trans (by norm_num)
 
 private theorem density_sub_eps_le_sum_density_div_card [Nonempty α]
     (hPα : P.parts.card * 16 ^ P.parts.card ≤ card α) (hPε : ↑100 ≤ ↑4 ^ P.parts.card * ε ^ 5)

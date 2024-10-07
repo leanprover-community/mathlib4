@@ -339,7 +339,7 @@ theorem isLeast_opNorm : IsLeast {c : ℝ | 0 ≤ c ∧ ∀ m, ‖f m‖ ≤ c *
 @[deprecated (since := "2024-02-02")] alias isLeast_op_norm := isLeast_opNorm
 
 theorem opNorm_nonneg : 0 ≤ ‖f‖ :=
-  Real.sInf_nonneg _ fun _ ⟨hx, _⟩ => hx
+  Real.sInf_nonneg fun _ ⟨hx, _⟩ => hx
 
 @[deprecated (since := "2024-02-02")] alias op_norm_nonneg := opNorm_nonneg
 
@@ -762,6 +762,12 @@ theorem norm_mkPiAlgebraFin_zero : ‖ContinuousMultilinearMap.mkPiAlgebraFin �
     simp
   · convert ratio_le_opNorm (ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 0 A) fun _ => (1 : A)
     simp
+
+theorem norm_mkPiAlgebraFin_le :
+    ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n A‖ ≤ max 1 ‖(1 : A)‖ := by
+  cases n
+  · exact norm_mkPiAlgebraFin_zero.le.trans (le_max_right _ _)
+  · exact (norm_mkPiAlgebraFin_le_of_pos (Nat.zero_lt_succ _)).trans (le_max_left _ _)
 
 @[simp]
 theorem norm_mkPiAlgebraFin [NormOneClass A] :

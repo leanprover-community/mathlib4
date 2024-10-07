@@ -28,7 +28,7 @@ namespace PreGaloisCategory
 
 open Functor
 
-variable {C : Type u₁} [Category.{u₂} C] (F : C ⥤ FintypeCat.{u₂})
+variable {C : Type u₁} [Category.{u₂} C] (F : C ⥤ FintypeCat.{w})
 
 /-- For a functor `F : C ⥤ FintypeCat`, the canonical embedding of `Aut F` into
 the product over `Aut (F.obj X)` for all objects `X`. -/

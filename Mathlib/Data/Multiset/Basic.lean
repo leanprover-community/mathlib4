@@ -601,6 +601,10 @@ theorem le_add_right (s t : Multiset α) : s ≤ s + t := by simpa using add_le_
 
 theorem le_add_left (s t : Multiset α) : s ≤ t + s := by simpa using add_le_add_right (zero_le t) s
 
+lemma subset_add_left {s t : Multiset α} : s ⊆ s + t := subset_of_le <| le_add_right s t
+
+lemma subset_add_right {s t : Multiset α} : s ⊆ t + s := subset_of_le <| le_add_left s t
+
 theorem le_iff_exists_add {s t : Multiset α} : s ≤ t ↔ ∃ u, t = s + u :=
   ⟨fun h =>
     leInductionOn h fun s =>
@@ -2345,6 +2349,24 @@ theorem map_count_True_eq_filter_card (s : Multiset α) (p : α → Prop) [Decid
     (s.map p).count True = card (s.filter p) := by
   simp only [count_eq_card_filter_eq, filter_map, card_map, Function.id_comp,
     eq_true_eq_id, Function.comp_apply]
+
+@[simp] theorem sub_singleton [DecidableEq α] (a : α) (s : Multiset α) : s - {a} = s.erase a := by
+  ext
+  simp only [count_sub, count_singleton]
+  split <;> simp_all
+
+theorem mem_sub [DecidableEq α] {a : α} {s t : Multiset α} :
+    a ∈ s - t ↔ t.count a < s.count a := by
+  rw [← count_pos, count_sub, Nat.sub_pos_iff_lt]
+
+theorem inter_add_sub_of_add_eq_add [DecidableEq α] {M N P Q : Multiset α} (h : M + N = P + Q) :
+    (N ∩ Q) + (P - M) = N := by
+  ext x
+  rw [Multiset.count_add, Multiset.count_inter, Multiset.count_sub]
+  have h0 : M.count x + N.count x = P.count x + Q.count x := by
+    rw [Multiset.ext] at h
+    simp_all only [Multiset.mem_add, Multiset.count_add]
+  omega
 
 /-! ### Lift a relation to `Multiset`s -/
 
