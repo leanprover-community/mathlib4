@@ -431,6 +431,8 @@ end IsDomain
 
 section ideal_liesOver
 
+section Semiring
+
 variable (A : Type*) [CommSemiring A] {B : Type*} [Semiring B] [Algebra A B]
   (P : Ideal B) (p : Ideal A)
 
@@ -456,38 +458,49 @@ class LiesOver : Prop where
 
 instance over_under : P.LiesOver (Ideal.under A P) where over := rfl
 
-variable {A : Type*} [CommSemiring A] (p : Ideal A) {B : Type*} [CommSemiring B] (P : Ideal B)
-  {C : Type*} [Semiring C] (𝔓 : Ideal C) [Algebra A B] [Algebra B C] [Algebra A C]
-  [IsScalarTower A B C]
+theorem over_def [P.LiesOver p] : p = Ideal.under A P := LiesOver.over
 
-theorem LiesOver.trans [hp : 𝔓.LiesOver P] [hP : P.LiesOver p] : 𝔓.LiesOver p where
-  over := by rw [hP.over, hp.over, Ideal.comap_comap, ← IsScalarTower.algebraMap_eq]
+end Semiring
+
+section CommSemiring
+
+variable {A : Type*} [CommSemiring A]  {B : Type*} [CommSemiring B] {C : Type*} [Semiring C]
+  [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
+  (𝔓 : Ideal C) (P : Ideal B) (p : Ideal A)
+
+@[simp]
+theorem under_under : Ideal.under A (Ideal.under B 𝔓) = Ideal.under A 𝔓 := by
+  simp_rw [comap_comap, ← IsScalarTower.algebraMap_eq]
+
+theorem LiesOver.trans [𝔓.LiesOver P] [P.LiesOver p] : 𝔓.LiesOver p where
+  over := by rw [P.over_def p, 𝔓.over_def P, under_under]
 
 theorem LiesOver.tower_bot [hp : 𝔓.LiesOver p] [hP : 𝔓.LiesOver P] : P.LiesOver p where
-  over := by rw [hp.over, hP.over, comap_comap, ← IsScalarTower.algebraMap_eq]
+  over := by rw [𝔓.over_def p, 𝔓.over_def P, under_under]
 
 variable (B)
 
 instance under_liesOver_of_liesOver [𝔓.LiesOver p] : (Ideal.under B 𝔓).LiesOver p :=
-  LiesOver.tower_bot p (Ideal.under B 𝔓) 𝔓
+  LiesOver.tower_bot 𝔓 (Ideal.under B 𝔓) p
 
-theorem eq_under_under_of_liesOver [𝔓.LiesOver p] : p = Ideal.under A (Ideal.under B 𝔓) :=
-  (under_liesOver_of_liesOver p B 𝔓).over
+end CommSemiring
 
-variable {A : Type*} [CommRing A] (p : Ideal A) {B : Type*} [CommRing B] (P : Ideal B)
-  [Algebra A B] [Algebra.IsIntegral A B] [ho : P.LiesOver p]
+section CommRing
+
+variable {A : Type*} [CommRing A] {B : Type*} [CommRing B] [Algebra A B] [Algebra.IsIntegral A B]
+  (P : Ideal B) (p : Ideal A) [P.LiesOver p]
 
 theorem IsMaximal.of_liesOver_isMaximal [hpm : p.IsMaximal] [P.IsPrime] : P.IsMaximal := by
-  rw [ho.over] at hpm
+  rw [P.over_def p] at hpm
   exact isMaximal_of_isIntegral_of_isMaximal_comap P hpm
 
 theorem IsMaximal.of_isMaximal_liesOver [P.IsMaximal] : p.IsMaximal := by
-  rw [ho.over]
+  rw [P.over_def p]
   exact isMaximal_comap_of_isIntegral_of_isMaximal P
 
 /-- If `P` lies over `p`, then canonically `B ⧸ P` is a `A ⧸ p`-algebra. -/
 instance algebraQuotientOfLiesOver : Algebra (A ⧸ p) (B ⧸ P) :=
-  Ideal.Quotient.algebraQuotientOfLEComap (le_of_eq ho.over)
+  Ideal.Quotient.algebraQuotientOfLEComap (le_of_eq (P.over_def p))
 
 instance : IsScalarTower A (A ⧸ p) (B ⧸ P) :=
   IsScalarTower.of_algebraMap_eq' rfl
@@ -516,6 +529,8 @@ instance LiesOver.of_over_isMaximal : (p.over_isMaximal B).LiesOver p where
     (NoZeroSMulDivisors.algebraMap_ker_eq_bot A B).trans_le bot_le).2.symm
 
 attribute [irreducible] over_isMaximal
+
+end CommRing
 
 end ideal_liesOver
 
