@@ -23,7 +23,7 @@ large non-positive integers, rendering the series finite:
 - `ordinaryHypergeometricSeries` is the `FormalMultilinearSeries` given above for some `(a b c : 𝕂)`
 - `ordinaryHypergeometric` is the sum of the series for some `(x : 𝔸)`
 - `ordinaryHypergeometricSeries_eq_zero_of_nonpos_int` shows that the `n`-th term of the series is
-zero if any of the parameters are non-positive integers
+zero if any of the parameters are large non-positive integers
 
 ## `[RCLike 𝕂]`
 
@@ -124,7 +124,7 @@ theorem ordinaryHypergeometricSeries_symm :
   simp [ordinaryHypergeometricSeries]
   group
 
-/-- If any parameter to the series is a sufficiently small nonpositive integer, then the series
+/-- If any parameter to the series is a sufficiently large nonpositive integer, then the series
 term is zero. -/
 lemma ordinaryHypergeometricSeries_eq_zero_of_nonpos_int (n : ℕ)
     (habc : ∃ kn : ℤ, kn ≤ 0 ∧ (a = kn ∨ b = kn ∨ c = kn) ∧ n ≥ 1 - kn) :
@@ -265,7 +265,7 @@ theorem ordinaryHypergeometric_ratio_tendsto_nhds_atTop {r : ℝ} (hr : 0 < r)
     (ordinaryHypergeometricSeries_ratio_tendsto_one_atTop a b c)
 
 /-- The radius of convergence of `ordinaryHypergeometricSeries` is unity if none of the parameters
-are non-negative integers. This proof uses a similar technique to
+are non-positive integers. This proof uses a similar technique to
 `formalMultilinearSeries_geometric_radius`. -/
 theorem ordinaryHypergeometricSeries_radius_eq_one
     (habc : ∀ kn : ℤ, kn ≤ 0 → a ≠ ↑kn ∧ b ≠ ↑kn ∧ c ≠ ↑kn) :
