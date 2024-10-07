@@ -108,12 +108,6 @@ lemma isTorsionBySet_cotangent :
     Module.IsTorsionBySet R I.Cotangent I :=
   fun m x ↦ m.smul_eq_zero_of_mem x.2
 
-lemma Cotangent.smul_eq_zero_of_mem {R} [CommRing R] {I : Ideal R}
-    {x} (hx : x ∈ I) (m : I.Cotangent) : x • m = 0 := by
-  obtain ⟨m, rfl⟩ := Ideal.toCotangent_surjective _ m
-  rw [← map_smul, Ideal.toCotangent_eq_zero, pow_two]
-  exact Ideal.mul_mem_mul hx m.2
-
 /-- `I ⧸ I ^ 2` as an ideal of `R ⧸ I ^ 2`. -/
 def cotangentIdeal (I : Ideal R) : Ideal (R ⧸ I ^ 2) :=
   Submodule.map (Quotient.mk (I ^ 2)|>.toSemilinearMap) I
@@ -179,14 +173,6 @@ theorem _root_.AlgHom.ker_kerSquareLift (f : A →ₐ[R] B) :
   apply le_antisymm
   · intro x hx; obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x; exact ⟨x, hx, rfl⟩
   · rintro _ ⟨x, hx, rfl⟩; exact hx
-
-instance Algebra.kerSquareLift : Algebra (R ⧸ (RingHom.ker (algebraMap R A) ^ 2)) A :=
-  (Algebra.ofId R A).kerSquareLift.toAlgebra
-
-instance [Algebra A B] [IsScalarTower R A B] :
-    IsScalarTower R (A ⧸ (RingHom.ker (algebraMap A B) ^ 2)) B :=
-  IsScalarTower.of_algebraMap_eq'
-    (IsScalarTower.toAlgHom R A B).kerSquareLift.comp_algebraMap.symm
 
 instance Algebra.kerSquareLift : Algebra (R ⧸ (RingHom.ker (algebraMap R A) ^ 2)) A :=
   (Algebra.ofId R A).kerSquareLift.toAlgebra
