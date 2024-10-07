@@ -113,6 +113,7 @@ variable {C}
 /-- The `PowerBasis` given by a primitive root `η`. -/
 @[simps!]
 protected noncomputable def powerBasis : PowerBasis K L :=
+  -- this is purely an optimization
   letI pb := Algebra.adjoin.powerBasis <| (integral {n} K L).isIntegral ζ
   pb.map <| (Subalgebra.equivOfEq _ _ (IsCyclotomicExtension.adjoin_primitive_root_eq_top hζ)).trans
     Subalgebra.topEquiv
