@@ -31,7 +31,7 @@ lemma ofReal_expect (f : α → ℝ) : (𝔼 i ∈ s, f i : ℝ) = 𝔼 i ∈ s,
 
 @[simp, norm_cast]
 lemma ofReal_balance [Fintype α] (f : α → ℝ) (a : α) :
-    (↑(balance f a) : ℂ) = balance ((↑) ∘ f) a := by simp [balance]
+    ((balance f a : ℝ) : ℂ) = balance ((↑) ∘ f) a := by simp [balance]
 
 @[simp] lemma ofReal_comp_balance {ι : Type*} [Fintype ι] (f : ι → ℝ) :
     ofReal ∘ balance f = balance (ofReal ∘ f : ι → ℂ) := funext <| ofReal_balance _
