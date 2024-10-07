@@ -550,22 +550,6 @@ theorem covBy_iff : x ⋖ y ↔ x.1 ⋖ y.1 ∧ x.2 = y.2 ∨ x.2 ⋖ y.2 ∧ x.
 
 end Prod
 
-namespace Prod
-
-variable (α β : Type*) [Preorder α] [Preorder β]
-
-attribute [local instance] Prod.wellFoundedLT' Prod.wellFoundedGT'
-
-instance wellFoundedLT [WellFoundedLT α] [WellFoundedLT β] : WellFoundedLT (α × β) :=
-  wellFoundedLT_antisymmetrization_iff.mp <|
-    (Antisymmetrization.prodEquiv α β).strictMono.wellFoundedLT
-
-instance wellFoundedGT [WellFoundedGT α] [WellFoundedGT β] : WellFoundedGT (α × β) :=
-  wellFoundedGT_antisymmetrization_iff.mp <|
-    (Antisymmetrization.prodEquiv α β).strictMono.wellFoundedGT
-
-end Prod
-
 namespace WithTop
 
 variable [Preorder α] {a b : α}

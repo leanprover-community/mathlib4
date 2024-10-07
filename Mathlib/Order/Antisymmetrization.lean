@@ -248,21 +248,39 @@ theorem OrderIso.dualAntisymmetrization_symm_apply (a : α) :
 
 end Preorder
 
-section Prod
+namespace Antisymmetrization
 
 variable (α β) [Preorder α] [Preorder β]
 
-/-- The antisymmetrization of a product preorder is isomorphic
+/-- The antisymmetrization of a product preorder is order isomorphic
 to the product of antisymmetrizations. -/
-def Antisymmetrization.prodEquiv :
-    Antisymmetrization (α × β) (· ≤ ·) ≃o
-      Antisymmetrization α (· ≤ ·) × Antisymmetrization β (· ≤ ·) where
-  toFun := Quotient.lift (fun ab ↦ (⟦ab.1⟧, ⟦ab.2⟧)) fun ab₁ ab₂ h ↦ Prod.mk.inj_iff.mpr
-    ⟨Quotient.sound ⟨h.1.1, h.2.1⟩, Quotient.sound ⟨h.1.2, h.2.2⟩⟩
-  invFun := Function.uncurry <| Quotient.lift₂ (fun a b ↦ ⟦(a, b)⟧) fun a₁ b₁ a₂ b₂ h₁ h₂ ↦
-    Quotient.sound ⟨⟨h₁.1, h₂.1⟩, h₁.2, h₂.2⟩
+def prodEquiv : Antisymmetrization (α × β) (· ≤ ·) ≃o
+    Antisymmetrization α (· ≤ ·) × Antisymmetrization β (· ≤ ·) where
+  toFun := Quotient.lift (fun ab ↦ (⟦ab.1⟧, ⟦ab.2⟧)) fun ab₁ ab₂ h ↦
+    Prod.mk.inj_iff.mpr ⟨Quotient.sound ⟨h.1.1, h.2.1⟩, Quotient.sound ⟨h.1.2, h.2.2⟩⟩
+  invFun := Function.uncurry <| Quotient.lift₂ (fun a b ↦ ⟦(a, b)⟧)
+    fun a₁ b₁ a₂ b₂ h₁ h₂ ↦ Quotient.sound ⟨⟨h₁.1, h₂.1⟩, h₁.2, h₂.2⟩
   left_inv := by rintro ⟨_⟩; rfl
   right_inv := by rintro ⟨⟨_⟩, ⟨_⟩⟩; rfl
   map_rel_iff' := by rintro ⟨_⟩ ⟨_⟩; rfl
+
+@[simp] lemma prodEquiv_apply_mk {ab} : prodEquiv α β ⟦ab⟧ = (⟦ab.1⟧, ⟦ab.2⟧) := rfl
+@[simp] lemma prodEquiv_symm_apply_mk {a b} : (prodEquiv α β).symm (⟦a⟧, ⟦b⟧) = ⟦(a, b)⟧ := rfl
+
+end Antisymmetrization
+
+namespace Prod
+
+variable (α β : Type*) [Preorder α] [Preorder β]
+
+attribute [local instance] Prod.wellFoundedLT' Prod.wellFoundedGT'
+
+instance wellFoundedLT [WellFoundedLT α] [WellFoundedLT β] : WellFoundedLT (α × β) :=
+  wellFoundedLT_antisymmetrization_iff.mp <|
+    (Antisymmetrization.prodEquiv α β).strictMono.wellFoundedLT
+
+instance wellFoundedGT [WellFoundedGT α] [WellFoundedGT β] : WellFoundedGT (α × β) :=
+  wellFoundedGT_antisymmetrization_iff.mp <|
+    (Antisymmetrization.prodEquiv α β).strictMono.wellFoundedGT
 
 end Prod
