@@ -83,6 +83,16 @@ attribute [local instance] SMulCommClass.of_commMonoid
 
 variable {P P'}
 
+universe w'' u'' v''
+
+variable {R'' : Type u''} {S'' : Type v''} [CommRing R''] [CommRing S''] [Algebra R'' S'']
+variable {P'' : Generators.{w''} R'' S''}
+variable [Algebra R R''] [Algebra S S''] [Algebra R S'']
+  [IsScalarTower R R'' S''] [IsScalarTower R S S'']
+variable [Algebra R' R''] [Algebra S' S''] [Algebra R' S'']
+  [IsScalarTower R' R'' S''] [IsScalarTower R' S' S'']
+variable [IsScalarTower S S' S'']
+
 namespace CotangentSpace
 
 /--
@@ -113,16 +123,6 @@ lemma repr_map (f : Hom P P') (i j) :
       aeval P'.val (pderiv j (f.val i)) := by
   simp only [cotangentSpaceBasis_apply, map_tmul, map_one, Hom.toAlgHom_X,
     cotangentSpaceBasis_repr_one_tmul]
-
-universe w'' u'' v''
-
-variable {R'' : Type u''} {S'' : Type v''} [CommRing R''] [CommRing S''] [Algebra R'' S'']
-variable {P'' : Generators.{w''} R'' S''}
-variable [Algebra R R''] [Algebra S S''] [Algebra R S'']
-  [IsScalarTower R R'' S''] [IsScalarTower R S S'']
-variable [Algebra R' R''] [Algebra S' S''] [Algebra R' S'']
-  [IsScalarTower R' R'' S''] [IsScalarTower R' S' S'']
-variable [IsScalarTower S S' S'']
 
 @[simp]
 lemma map_id :
@@ -346,7 +346,7 @@ lemma H1Cotangent.map_eq (f g : Hom P P') : map f = map g := by
 
 @[simp] lemma H1Cotangent.map_id : map (.id P) = LinearMap.id := by ext; simp
 
-lemma H1Cotangent.map_comp (f : Hom P P') (g : Hom P' P'') :
+lemma H1Cotangent.map_comp [IsScalarTower R R' R''] (f : Hom P P') (g : Hom P' P'') :
     map (g.comp f) = (map g).restrictScalars S ∘ₗ map f := by ext; simp [Cotangent.map_comp]
 
 /--
