@@ -16,8 +16,7 @@ We define `Codiscrete A` as an alias for the type `A` ,
 and use this type alias to provide a `Category` instance
 whose Hom type are Unit types.
 
-`Codiscrete.lift` promotes a function `f : C → A` (for any category `C`) to a functor
-`Discrete.functorToCat f : C ⥤  Codiscrete A`.
+`Codiscrete.functor` promotes a function `f : C → A` (for any category `C`) to a functor `f : C ⥤  Codiscrete A`.
 
 Similarly, `Codiscrete.natTrans` and `Codiscrete.natIso` promote `I`-indexed families of morphisms,
 or `I`-indexed families of isomorphisms to natural transformations or natural isomorphism.
