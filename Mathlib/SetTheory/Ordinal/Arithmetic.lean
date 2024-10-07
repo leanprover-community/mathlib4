@@ -200,7 +200,7 @@ theorem pred_le {a b} : pred a ≤ b ↔ a ≤ succ b :=
 @[simp]
 theorem lift_is_succ {o : Ordinal.{v}} : (∃ a, lift.{u} o = succ a) ↔ ∃ a, o = succ a :=
   ⟨fun ⟨a, h⟩ =>
-    let ⟨b, e⟩ := lift_down <| show a ≤ lift.{u} o from le_of_lt <| h.symm ▸ lt_succ a
+    let ⟨b, e⟩ := mem_range_lift_of_le <| show a ≤ lift.{u} o from le_of_lt <| h.symm ▸ lt_succ a
     ⟨b, (lift_inj.{u,v}).1 <| by rw [h, ← e, lift_succ]⟩,
     fun ⟨a, h⟩ => ⟨lift.{u} a, by simp only [h, lift_succ]⟩⟩
 
@@ -261,7 +261,7 @@ theorem lift_isLimit (o : Ordinal.{v}) : IsLimit (lift.{u,v} o) ↔ IsLimit o :=
   and_congr (not_congr <| by simpa only [lift_zero] using @lift_inj o 0)
     ⟨fun H a h => (lift_lt.{u,v}).1 <|
       by simpa only [lift_succ] using H _ (lift_lt.2 h), fun H a h => by
-        obtain ⟨a', rfl⟩ := lift_down h.le
+        obtain ⟨a', rfl⟩ := mem_range_lift_of_le h.le
         rw [← lift_succ, lift_lt]
         exact H a' (lift_lt.1 h)⟩
 
