@@ -147,8 +147,8 @@ lemma left_triangle_components {C : Cat.{0, u}} :
 
 /-- Right triangle equality of the adjunction Cat.objects ⊣ Codiscrete.functorToCat -/
 lemma right_triangle_components {X : Type u} :
-    adj.unit.app (functorToCat.obj X) ≫ functorToCat.map (adj.counit.app X)
-    = 𝟙 (functorToCat.obj X) := rfl
+    adj.unit.app (functorToCat.obj X) ≫ functorToCat.map (adj.counit.app X) =
+      𝟙 (functorToCat.obj X) := rfl
 
 end Codiscrete
 
