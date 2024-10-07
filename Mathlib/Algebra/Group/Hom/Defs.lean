@@ -207,7 +207,7 @@ with `low` priority in order to ensure that they are not tried first.
 variable [FunLike F M N]
 
 /-- See note [low priority simp lemmas] -/
-@[to_additive (attr := simp low)]
+@[to_additive (attr := simp)]
 theorem map_one {M N F : Type*} {_ : One M} {_ : One N} [FunLike F M N] [OneHomClass F M N]
     (f : F) : f 1 = 1 :=
   OneHomClass.map_one f
@@ -300,7 +300,7 @@ instance MulHom.mulHomClass : MulHomClass (M →ₙ* N) M N where
 variable [FunLike F M N]
 
 /-- See note [low priority simp lemmas] -/
-@[to_additive (attr := simp low)]
+@[to_additive (attr := simp)]
 theorem map_mul {M N F : Type*} {_ : Mul M} {_ : Mul N} [FunLike F M N] [MulHomClass F M N]
     [MulHomClass F M N] (f : F) (x y : M) : f (x * y) = f x * f y :=
   MulHomClass.map_mul f x y
