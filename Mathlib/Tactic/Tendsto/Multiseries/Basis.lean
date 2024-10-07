@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Tendsto.Multiseries.BasicNew
+import Mathlib.Tactic.Tendsto.Multiseries.Basic
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Complex.Exponential
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics

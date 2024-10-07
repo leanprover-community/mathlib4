@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Tendsto.Multiseries.BasicNew
+import Mathlib.Tactic.Tendsto.Multiseries.Basic
 import Mathlib.Tactic.Tendsto.Multiseries.Basis
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Basic
 

@@ -1,5 +1,3 @@
-import Mathlib.Tactic.Tendsto.Multiseries.BasicNew
-import Mathlib.Tactic.Tendsto.Multiseries.Basis
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Merge
 
 set_option linter.unusedVariables false

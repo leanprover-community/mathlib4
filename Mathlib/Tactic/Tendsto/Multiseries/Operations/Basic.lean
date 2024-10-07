@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Tendsto.Multiseries.BasicNew
+import Mathlib.Tactic.Tendsto.Multiseries.Basic
 import Mathlib.Tactic.Tendsto.Multiseries.Basis
 
 set_option linter.unusedVariables false
@@ -67,6 +67,18 @@ theorem one_isApproximation_one {basis : Basis} (h_wo : MS.wellOrderedBasis basi
   const_isApproximation_const h_wo
 
 @[simp]
+theorem mulConst_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c : ℝ} :
+    mulConst (basis := basis_hd :: basis_tl) CoList.nil c = CoList.nil := by
+  simp [mulConst]
+
+@[simp]
+theorem mulConst_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c deg : ℝ}
+    {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)} :
+    mulConst (basis := basis_hd :: basis_tl) (CoList.cons (deg, coef) tl) c =
+    CoList.cons (deg, coef.mulConst c) (tl.mulConst c) := by
+  simp [mulConst]
+
+@[simp]
 theorem mulConst_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X : PreMS (basis_hd :: basis_tl)}
     {c : ℝ} :
     (mulConst X c).leadingExp = X.leadingExp := by
@@ -74,6 +86,14 @@ theorem mulConst_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X : Pre
   · simp [mulConst]
   · intro (deg, coef) tl
     simp [mulConst, leadingExp]
+
+@[simp]
+theorem const_mulConst {basis : Basis} {x y : ℝ}: (const x basis).mulConst y = const (x * y) basis := by
+  cases basis with
+  | nil => simp [mulConst, const]
+  | cons =>
+    simp [mulConst, const]
+    apply const_mulConst
 
 theorem mulConst_wellOrdered {basis : Basis} {ms : PreMS basis} {c : ℝ}
     (h_wo : ms.wellOrdered) : (ms.mulConst c).wellOrdered := by
@@ -180,6 +200,12 @@ theorem mulConst_isApproximation {basis : Basis} {ms : PreMS basis} {c : ℝ} {F
       use ms
       use F
 
+
+@[simp]
+theorem neg_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X : PreMS (basis_hd :: basis_tl)} :
+    X.neg.leadingExp = X.leadingExp := by
+  simp [neg]
+
 theorem neg_wellOrdered {basis : Basis} {ms : PreMS basis}
     (h_wo : ms.wellOrdered) : ms.neg.wellOrdered :=
   mulConst_wellOrdered h_wo
@@ -190,6 +216,18 @@ theorem neg_isApproximation {basis : Basis} {ms : PreMS basis} {F : ℝ → ℝ}
   eta_expand
   simp only [Pi.one_apply, Pi.neg_apply, Pi.mul_apply]
   apply mulConst_isApproximation h_approx
+
+@[simp]
+theorem neg_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
+    neg (basis := basis_hd :: basis_tl) CoList.nil = CoList.nil := by
+  simp [neg]
+
+@[simp]
+theorem neg_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {deg : ℝ}
+    {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)} :
+    neg (basis := basis_hd :: basis_tl) (CoList.cons (deg, coef) tl) =
+    CoList.cons (deg, coef.neg) tl.neg := by
+  simp [neg]
 
 end PreMS
 

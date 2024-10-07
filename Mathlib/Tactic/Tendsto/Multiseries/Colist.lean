@@ -597,6 +597,9 @@ theorem all_cons {α : Type u} {p : α → Prop} {hd : α} {tl : CoList α} :
     ((cons hd tl).all p) ↔ p hd ∧ tl.all p := by
   sorry
 
+theorem all_get {α : Type  u} {p : α → Prop} {li : CoList α} (h : li.all p) {n : ℕ} : (li.get n).elim True p := by
+  sorry --induction n
+
 /-- Coinduction principle for proving `a = b`. -/
 def Eq.coind {α : Type u} {a b : CoList α}
     (motive : CoList α → CoList α → Prop)

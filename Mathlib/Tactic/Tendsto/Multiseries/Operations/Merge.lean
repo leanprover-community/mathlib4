@@ -1,5 +1,3 @@
-import Mathlib.Tactic.Tendsto.Multiseries.BasicNew
-import Mathlib.Tactic.Tendsto.Multiseries.Basis
 import Mathlib.Tactic.Tendsto.Multiseries.Operations.Add
 
 set_option linter.unusedVariables false
@@ -75,6 +73,7 @@ noncomputable def merge1 {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 
 --theorems
 
+@[simp]
 theorem merge1_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
     merge1 (basis_hd := basis_hd) (basis_tl := basis_tl) .nil = .nil := by
   simp [merge1]
