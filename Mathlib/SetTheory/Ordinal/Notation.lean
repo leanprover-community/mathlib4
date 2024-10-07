@@ -872,9 +872,9 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
       dvd_add (dvd_mul_of_dvd_left (by simpa using opow_dvd_opow ω (one_le_iff_ne_zero.2 e0)) _) d
     rw [mul_add (ω0 ^ (k : Ordinal)), add_assoc, ← mul_assoc, ← opow_succ,
       add_mul_limit _ (isLimit_iff_omega0_dvd.2 ⟨ne_of_gt α0, αd⟩), mul_assoc,
-      @mul_omega0_dvd n (natCast_pos.2 n.pos) (nat_lt_omega _) _ αd]
+      @mul_omega0_dvd n (natCast_pos.2 n.pos) (nat_lt_omega0 _) _ αd]
     apply @add_of_omega0_opow_le _ (repr a0 * succ ↑k)
-    · refine principal_add_omega_opow _ ?_ Rl
+    · refine principal_add_omega0_opow _ ?_ Rl
       rw [opow_mul, opow_succ, Ordinal.mul_lt_mul_iff_left ω00]
       exact No.snd'.repr_lt
     · have := mul_le_mul_left' (one_le_iff_pos.2 <| natCast_pos.2 n.pos) (ω0 ^ succ (k : Ordinal))
