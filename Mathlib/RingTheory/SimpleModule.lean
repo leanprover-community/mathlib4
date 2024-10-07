@@ -213,6 +213,10 @@ instance quotient : IsSemisimpleModule R (M ⧸ m) :=
   have ⟨P, compl⟩ := exists_isCompl m
   .congr (m.quotientEquivOfIsCompl P compl)
 
+instance (priority := low) [Module.Finite R M] : IsNoetherian R M where
+  noetherian m := have ⟨P, compl⟩ := exists_isCompl m
+    Module.Finite.iff_fg.mp (Module.Finite.equiv <| P.quotientEquivOfIsCompl m compl.symm)
+
 -- does not work as an instance, not sure why
 protected theorem range (f : M →ₗ[R] N) : IsSemisimpleModule R (range f) :=
   .congr (quotKerEquivRange _).symm
