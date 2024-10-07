@@ -3,6 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
+import Mathlib.Algebra.QuadraticDiscriminant
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Tactic.Positivity.Core
 import Mathlib.Algebra.Ring.NegOnePow
@@ -794,6 +795,49 @@ theorem sin_pi_div_three : sin (π / 3) = √3 / 2 := by
   rw [← cos_pi_div_two_sub, ← cos_pi_div_six]
   congr
   ring
+
+theorem quadratic_root_cos_pi_div_five :
+    letI c := cos (π / 5)
+    4 * c ^ 2 - 2 * c - 1 = 0 := by
+  set θ := π / 5 with hθ
+  set c := cos θ
+  set s := sin θ
+  suffices 2 * c = 4 * c ^ 2 - 1 by simp [this]
+  have hs : s ≠ 0 := by
+    rw [ne_eq, sin_eq_zero_iff, hθ]
+    push_neg
+    intro n hn
+    replace hn : n * 5 = 1 := by field_simp [mul_comm _ π, mul_assoc] at hn; norm_cast at hn
+    rcases Int.mul_eq_one_iff_eq_one_or_neg_one.mp hn with ⟨_, h⟩ | ⟨_, h⟩ <;> norm_num at h
+  suffices s * (2 * c) = s * (4 * c ^ 2 - 1) from mul_left_cancel₀ hs this
+  calc s * (2 * c) = 2 * s * c := by rw [← mul_assoc, mul_comm 2]
+                 _ = sin (2 * θ) := by rw [sin_two_mul]
+                 _ = sin (π - 2 * θ) := by rw [sin_pi_sub]
+                 _ = sin (2 * θ + θ) := by congr; field_simp [hθ]; linarith
+                 _ = sin (2 * θ) * c + cos (2 * θ) * s := sin_add (2 * θ) θ
+                 _ = 2 * s * c * c + cos (2 * θ) * s := by rw [sin_two_mul]
+                 _ = 2 * s * c * c + (2 * c ^ 2 - 1) * s := by rw [cos_two_mul]
+                 _ = s * (2 * c * c) + s * (2 * c ^ 2 - 1) := by linarith
+                 _ = s * (4 * c ^ 2 - 1) := by linarith
+
+open Polynomial in
+theorem Polynomial.isRoot_cos_pi_div_five :
+    (4 • X ^ 2 - 2 • X - C 1 : ℝ[X]).IsRoot (cos (π / 5)) := by
+  simpa using quadratic_root_cos_pi_div_five
+
+/-- The cosine of `π / 5` is `(1 + √5) / 4`. -/
+@[simp]
+theorem cos_pi_div_five : cos (π / 5) = (1 + √5) / 4 := by
+  set c := cos (π / 5)
+  have : 4 * (c * c) + (-2) * c + (-1) = 0 := by
+    rw [← sq, neg_mul, ← sub_eq_add_neg, ← sub_eq_add_neg]
+    exact quadratic_root_cos_pi_div_five
+  have hd : discrim 4 (-2) (-1) = (2 * √5) * (2 * √5) := by norm_num [discrim, mul_mul_mul_comm]
+  rcases (quadratic_eq_zero_iff (by norm_num) hd c).mp this with h | h
+  · field_simp [h]; linarith
+  · absurd (show 0 ≤ c from cos_nonneg_of_mem_Icc <| by constructor <;> linarith [pi_pos.le])
+    rw [not_le, h]
+    exact div_neg_of_neg_of_pos (by norm_num [lt_sqrt]) (by positivity)
 
 end CosDivSq
 

@@ -193,7 +193,7 @@ namespace Functor
 
 section Representable
 
-variable (F : Cᵒᵖ ⥤ Type v) [F.Representable] {J : Type*} [Category J]
+variable (F : Cᵒᵖ ⥤ Type v) [F.IsRepresentable] {J : Type*} [Category J]
 
 noncomputable instance representablePreservesLimit (G : J ⥤ Cᵒᵖ) :
     PreservesLimit G F :=
@@ -210,7 +210,7 @@ end Representable
 
 section Corepresentable
 
-variable (F : C ⥤ Type v) [F.Corepresentable] {J : Type*} [Category J]
+variable (F : C ⥤ Type v) [F.IsCorepresentable] {J : Type*} [Category J]
 
 noncomputable instance corepresentablePreservesLimit (G : J ⥤ C) :
     PreservesLimit G F :=

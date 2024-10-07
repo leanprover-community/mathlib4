@@ -91,6 +91,8 @@ The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to 
     splitting of `V₁`.
 -/
 
+open Module Submodule
+
 noncomputable section
 
 namespace Module
@@ -384,7 +386,7 @@ theorem toDualEquiv_apply (m : M) : b.toDualEquiv m = b.toDual m :=
 theorem linearEquiv_dual_iff_finiteDimensional [Field K] [AddCommGroup V] [Module K V] :
     Nonempty (V ≃ₗ[K] Dual K V) ↔ FiniteDimensional K V := by
   refine ⟨fun ⟨e⟩ ↦ ?_, fun h ↦ ⟨(Module.Free.chooseBasis K V).toDualEquiv⟩⟩
-  rw [FiniteDimensional, ← Module.rank_lt_alpeh0_iff]
+  rw [FiniteDimensional, ← Module.rank_lt_aleph0_iff]
   by_contra!
   apply (lift_rank_lt_rank_dual this).ne
   have := e.lift_rank_eq
@@ -449,12 +451,12 @@ theorem eval_range {ι : Type*} [Finite ι] (b : Basis ι R M) :
 
 section
 
-variable [Finite R M] [Free R M]
+variable [Module.Finite R M] [Free R M]
 
 instance dual_free : Free R (Dual R M) :=
   Free.of_basis (Free.chooseBasis R M).dualBasis
 
-instance dual_finite : Finite R (Dual R M) :=
+instance dual_finite : Module.Finite R (Dual R M) :=
   Finite.of_basis (Free.chooseBasis R M).dualBasis
 
 end
@@ -482,7 +484,7 @@ universe uK uV
 variable {K : Type uK} {V : Type uV}
 variable [CommRing K] [AddCommGroup V] [Module K V] [Module.Free K V]
 
-open Module Module.Dual Submodule LinearMap Cardinal Basis FiniteDimensional
+open Module Module.Dual Submodule LinearMap Cardinal Basis Module
 
 section
 
@@ -540,7 +542,7 @@ theorem nontrivial_dual_iff :
 instance instNontrivialDual [Nontrivial V] : Nontrivial (Dual K V) :=
   (nontrivial_dual_iff K).mpr inferInstance
 
-theorem finite_dual_iff : Finite K (Dual K V) ↔ Finite K V := by
+theorem finite_dual_iff : Module.Finite K (Dual K V) ↔ Module.Finite K V := by
   constructor <;> intro h
   · obtain ⟨⟨ι, b⟩⟩ := Module.Free.exists_basis (R := K) (M := V)
     nontriviality K
@@ -578,7 +580,8 @@ class IsReflexive : Prop where
 lemma bijective_dual_eval [IsReflexive R M] : Bijective (Dual.eval R M) :=
   IsReflexive.bijective_dual_eval'
 
-instance IsReflexive.of_finite_of_free [Finite R M] [Free R M] : IsReflexive R M where
+/-- See also `Module.instFiniteDimensionalOfIsReflexive` for the converse over a field. -/
+instance IsReflexive.of_finite_of_free [Module.Finite R M] [Free R M] : IsReflexive R M where
   bijective_dual_eval' := ⟨LinearMap.ker_eq_bot.mp (Free.chooseBasis R M).eval_ker,
                            LinearMap.range_eq_top.mp (Free.chooseBasis R M).eval_range⟩
 
@@ -647,6 +650,22 @@ instance _root_.MulOpposite.instModuleIsReflexive : IsReflexive R (MulOpposite M
 
 instance _root_.ULift.instModuleIsReflexive.{w} : IsReflexive R (ULift.{w} M) :=
   equiv ULift.moduleEquiv.symm
+
+instance instFiniteDimensionalOfIsReflexive (K V : Type*)
+    [Field K] [AddCommGroup V] [Module K V] [IsReflexive K V] :
+    FiniteDimensional K V := by
+  rw [FiniteDimensional, ← rank_lt_aleph0_iff]
+  by_contra! contra
+  suffices lift (Module.rank K V) < Module.rank K (Dual K (Dual K V)) by
+    have heq := lift_rank_eq_of_equiv_equiv (R := K) (R' := K) (M := V) (M' := Dual K (Dual K V))
+      (ZeroHom.id K) (evalEquiv K V) bijective_id (fun r v ↦ (evalEquiv K V).map_smul _ _)
+    rw [← lift_umax, heq, lift_id'] at this
+    exact lt_irrefl _ this
+  have h₁ : lift (Module.rank K V) < Module.rank K (Dual K V) := lift_rank_lt_rank_dual contra
+  have h₂ : Module.rank K (Dual K V) < Module.rank K (Dual K (Dual K V)) := by
+    convert lift_rank_lt_rank_dual <| le_trans (by simpa) h₁.le
+    rw [lift_id']
+  exact lt_trans h₁ h₂
 
 end IsReflexive
 
@@ -1057,7 +1076,7 @@ theorem dualEquivDual_apply (φ : Module.Dual K W) :
 
 section
 
-open FiniteDimensional
+open FiniteDimensional Module
 
 instance instModuleDualFiniteDimensional [FiniteDimensional K V] :
     FiniteDimensional K (Module.Dual K V) := by
@@ -1096,7 +1115,7 @@ noncomputable def quotEquivAnnihilator (W : Subspace K V) : (V ⧸ W) ≃ₗ[K] 
   -- refine' LinearEquiv.quot_equiv_of_equiv _ (Basis.ofVectorSpace K V).toDualEquiv
   -- exact (Basis.ofVectorSpace K W).toDualEquiv.trans W.dual_equiv_dual
 
-open FiniteDimensional
+open Module
 
 @[simp]
 theorem finrank_dualCoannihilator_eq {Φ : Subspace K (Module.Dual K V)} :
@@ -1164,12 +1183,12 @@ def dualCopairing (W : Submodule R M) : W.dualAnnihilator →ₗ[R] M ⧸ W →�
         exact (mem_dualAnnihilator φ).mp hφ w hw)
 
 -- Porting note: helper instance
-instance (W : Submodule R M) : FunLike (W.dualAnnihilator) M R :=
-  { coe := fun φ => φ.val,
-    coe_injective' := fun φ ψ h => by
-      ext
-      simp only [Function.funext_iff] at h
-      exact h _ }
+instance (W : Submodule R M) : FunLike (W.dualAnnihilator) M R where
+  coe φ := φ.val
+  coe_injective' φ ψ h := by
+    ext
+    simp only [Function.funext_iff] at h
+    exact h _
 
 @[simp]
 theorem dualCopairing_apply {W : Submodule R M} (φ : W.dualAnnihilator) (x : M) :
@@ -1231,7 +1250,7 @@ theorem dualQuotEquivDualAnnihilator_symm_apply_mk (W : Submodule R M) (φ : W.d
   rfl
 
 theorem finite_dualAnnihilator_iff {W : Submodule R M} [Free R (M ⧸ W)] :
-    Finite R W.dualAnnihilator ↔ Finite R (M ⧸ W) :=
+    Module.Finite R W.dualAnnihilator ↔ Module.Finite R (M ⧸ W) :=
   (Finite.equiv_iff W.dualQuotEquivDualAnnihilator.symm).trans (finite_dual_iff R)
 
 open LinearMap in
@@ -1324,7 +1343,6 @@ lemma range_eq_top_of_ne_zero :
   rw [eq_top_iff]
   exact fun x _ ↦ ⟨x • (f v)⁻¹ • v, by simp [inv_mul_cancel₀ hv]⟩
 
-open FiniteDimensional
 variable [FiniteDimensional K V₁]
 
 lemma finrank_ker_add_one_of_ne_zero :
@@ -1479,7 +1497,7 @@ end Subspace
 
 section FiniteDimensional
 
-open FiniteDimensional LinearMap
+open Module LinearMap
 
 namespace LinearMap
 
@@ -1610,7 +1628,7 @@ theorem dualAnnihilator_dualAnnihilator_eq_map (W : Subspace K V) [FiniteDimensi
   haveI := e1.finiteDimensional
   let e2 := (Free.chooseBasis K _).toDualEquiv ≪≫ₗ W.dualAnnihilator.dualQuotEquivDualAnnihilator
   haveI := LinearEquiv.finiteDimensional (V₂ := W.dualAnnihilator.dualAnnihilator) e2
-  rw [FiniteDimensional.eq_of_le_of_finrank_eq (map_le_dualAnnihilator_dualAnnihilator W)]
+  rw [eq_of_le_of_finrank_eq (map_le_dualAnnihilator_dualAnnihilator W)]
   rw [← (equivMapOfInjective _ (eval_apply_injective K (V := V)) W).finrank_eq, e1.finrank_eq]
   exact e2.finrank_eq
 

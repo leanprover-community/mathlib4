@@ -218,7 +218,7 @@ lemma QuasispectrumRestricts.isSelfAdjoint (a : A) (ha : QuasispectrumRestricts 
 instance IsSelfAdjoint.instNonUnitalContinuousFunctionalCalculus :
     NonUnitalContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop) :=
   QuasispectrumRestricts.cfc (q := IsStarNormal) (p := IsSelfAdjoint) Complex.reCLM
-    Complex.isometry_ofReal.uniformEmbedding (.zero _)
+    Complex.isometry_ofReal.isUniformEmbedding (.zero _)
     (fun _ ↦ isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts)
 
 end SelfAdjointNonUnital
@@ -264,7 +264,7 @@ lemma SpectrumRestricts.isSelfAdjoint (a : A) (ha : SpectrumRestricts a Complex.
 instance IsSelfAdjoint.instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop) :=
   SpectrumRestricts.cfc (q := IsStarNormal) (p := IsSelfAdjoint) Complex.reCLM
-    Complex.isometry_ofReal.uniformEmbedding (.zero _)
+    Complex.isometry_ofReal.isUniformEmbedding (.zero _)
     (fun _ ↦ isSelfAdjoint_iff_isStarNormal_and_spectrumRestricts)
 
 lemma IsSelfAdjoint.spectrum_nonempty {A : Type*} [Ring A] [StarRing A]
@@ -313,7 +313,7 @@ open NNReal in
 instance Nonneg.instNonUnitalContinuousFunctionalCalculus :
     NonUnitalContinuousFunctionalCalculus ℝ≥0 (fun x : A ↦ 0 ≤ x) :=
   QuasispectrumRestricts.cfc (q := IsSelfAdjoint) ContinuousMap.realToNNReal
-    uniformEmbedding_subtype_val le_rfl
+    isUniformEmbedding_subtype_val le_rfl
     (fun _ ↦ nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts)
 
 open NNReal in
@@ -359,7 +359,7 @@ open NNReal in
 instance Nonneg.instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus ℝ≥0 (fun x : A ↦ 0 ≤ x) :=
   SpectrumRestricts.cfc (q := IsSelfAdjoint) ContinuousMap.realToNNReal
-    uniformEmbedding_subtype_val le_rfl (fun _ ↦ nonneg_iff_isSelfAdjoint_and_spectrumRestricts)
+    isUniformEmbedding_subtype_val le_rfl (fun _ ↦ nonneg_iff_isSelfAdjoint_and_spectrumRestricts)
 
 end Nonneg
 
@@ -612,7 +612,7 @@ lemma cfc_real_eq_complex {a : A} (f : ℝ → ℝ) (ha : IsSelfAdjoint a := by 
     cfc f a = cfc (fun x ↦ f x.re : ℂ → ℂ) a := by
   replace ha : IsSelfAdjoint a := ha -- hack to avoid issues caused by autoParam
   exact ha.spectrumRestricts.cfc_eq_restrict (f := Complex.reCLM)
-    Complex.isometry_ofReal.uniformEmbedding ha ha.isStarNormal f
+    Complex.isometry_ofReal.isUniformEmbedding ha ha.isStarNormal f
 
 end RealEqComplex
 
@@ -633,7 +633,7 @@ lemma cfcₙ_real_eq_complex {a : A} (f : ℝ → ℝ) (ha : IsSelfAdjoint a := 
     cfcₙ f a = cfcₙ (fun x ↦ f x.re : ℂ → ℂ) a := by
   replace ha : IsSelfAdjoint a := ha -- hack to avoid issues caused by autoParam
   exact ha.quasispectrumRestricts.2.cfcₙ_eq_restrict (f := Complex.reCLM)
-    Complex.isometry_ofReal.uniformEmbedding ha ha.isStarNormal f
+    Complex.isometry_ofReal.isUniformEmbedding ha ha.isStarNormal f
 
 end RealEqComplexNonUnital
 

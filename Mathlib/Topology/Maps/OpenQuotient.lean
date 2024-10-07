@@ -22,7 +22,7 @@ Contrary to general quotient maps,
 the category of open quotient maps is closed under `Prod.map`.
 -/
 
-open Function Filter
+open Function Set Filter
 open scoped Topology
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] {f : X → Y}
@@ -56,5 +56,9 @@ theorem continuous_comp_iff (h : IsOpenQuotientMap f) {g : Y → Z} :
 theorem continuousAt_comp_iff (h : IsOpenQuotientMap f) {g : Y → Z} {x : X} :
     ContinuousAt (g ∘ f) x ↔ ContinuousAt g (f x) := by
   simp only [ContinuousAt, ← h.map_nhds_eq, tendsto_map'_iff, comp_def]
+
+theorem dense_preimage_iff (h : IsOpenQuotientMap f) {s : Set Y} : Dense (f ⁻¹' s) ↔ Dense s :=
+  ⟨fun hs ↦ h.surjective.denseRange.dense_of_mapsTo h.continuous hs (mapsTo_preimage _ _),
+    fun hs ↦ hs.preimage h.isOpenMap⟩
 
 end IsOpenQuotientMap

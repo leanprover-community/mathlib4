@@ -384,7 +384,7 @@ end ZSpan
 
 section ZLattice
 
-open Submodule FiniteDimensional ZSpan
+open Submodule Module ZSpan
 
 -- TODO: generalize this class to other rings than `ℤ`
 /-- `L : Submodule ℤ E` where `E` is a vector space over a normed field `K` is a `ℤ`-lattice if
@@ -562,7 +562,7 @@ variable {ι : Type*} [hs : IsZLattice K L] (b : Basis ι ℤ L)
 /-- Any `ℤ`-basis of `L` is also a `K`-basis of `E`. -/
 def Basis.ofZLatticeBasis :
     Basis ι K E := by
-  have : Finite ℤ L := ZLattice.module_finite K L
+  have : Module.Finite ℤ L := ZLattice.module_finite K L
   have : Free ℤ L := ZLattice.module_free K L
   let e :=  Basis.indexEquiv (Free.chooseBasis ℤ L) b
   have : Fintype ι := Fintype.ofEquiv _ e

@@ -518,8 +518,8 @@ theorem toReal_sSup (s : Set ℝ≥0∞) (hf : ∀ r ∈ s, r ≠ ∞) :
   obtain rfl | ha := eq_or_ne a ∞
   · simp
   rw [le_iInf_iff, le_ofReal_iff_toReal_le ha, le_ciInf_iff ⟨0, by simpa [mem_lowerBounds]⟩]
-  exact forall_congr' fun i ↦ (le_ofReal_iff_toReal_le ha (h _)).symm
-  exact Real.iInf_nonneg h
+  · exact forall_congr' fun i ↦ (le_ofReal_iff_toReal_le ha (h _)).symm
+  · exact Real.iInf_nonneg h
 
 theorem iInf_add : iInf f + a = ⨅ i, f i + a :=
   le_antisymm (le_iInf fun _ => add_le_add (iInf_le _ _) <| le_rfl)
