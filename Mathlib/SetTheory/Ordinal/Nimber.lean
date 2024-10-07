@@ -3,7 +3,7 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.CharP.Two
 import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.Tactic.Abel
 
@@ -339,14 +339,9 @@ instance : AddCommGroupWithOne Nimber where
   neg_add_cancel := add_self
   add_comm := Nimber.add_comm
 
--- TODO: prove `0 ≠ 1` and `1 + 1 = 0` are sufficient to build a `CharP _ 2` instance.
-instance : CharP Nimber 2 where
-  cast_eq_zero_iff' x := by
-    obtain ⟨r, rfl⟩ | ⟨r, rfl⟩ := Nat.even_or_odd x
-    · rw [Nat.cast_add, ← two_mul]
-      simp
-    · rw [Nat.cast_add, two_mul, Nat.cast_add, ← two_mul]
-      simp
+instance : CharP Nimber 2 := by
+  apply CharTwo.mk one_ne_zero
+  rw [← one_add_one_eq_two, add_self]
 
 @[simp]
 theorem add_cancel_right (a b : Nimber) : a + b + b = a := by
