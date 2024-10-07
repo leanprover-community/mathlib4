@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin, Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
+import Mathlib.Algebra.Order.Notation
 
 /-!
 # Positive & negative parts
@@ -12,21 +13,14 @@ Mathematical structures possessing an absolute value often also possess a unique
 elements into "positive" and "negative" parts which are in some sense "disjoint" (e.g. the Jordan
 decomposition of a measure).
 
-This file defines `posPart` and `negPart`, the positive and negative parts of an element in a
-lattice ordered group.
+This file provides instances of `PosPart` and `NegPart`, the positive and negative parts of an
+element in a lattice ordered group.
 
 ## Main statements
 
 * `posPart_sub_negPart`: Every element `a` can be decomposed into `a⁺ - a⁻`, the difference of its
   positive and negative parts.
 * `posPart_inf_negPart_eq_zero`: The positive and negative parts are coprime.
-
-## Notations
-
-* `a⁺ᵐ = a ⊔ 1`: *Positive component* of an element `a` of a multiplicative lattice ordered group
-* `a⁻ᵐ = a⁻¹ ⊔ 1`: *Negative component* of an element `a` of a multiplicative lattice ordered group
-* `a⁺ = a ⊔ 0`: *Positive component* of an element `a` of a lattice ordered group
-* `a⁻ = (-a) ⊔ 0`: *Negative component* of an element `a` of a lattice ordered group
 
 ## References
 
@@ -44,38 +38,6 @@ positive part, negative part
 open Function
 
 variable {α β : Type*}
-
-/-- A notation class for the *positve part* function: `a⁺`. -/
-class PosPart (α : Type*) where
-  /-- The *positive part* of an element `a`. -/
-  posPart : α → α
-
-/-- A notation class for the *positve part* function (multiplicative version): `a⁺ᵐ`. -/
-@[to_additive]
-class OneLePart (α : Type*) where
-  /-- The *positive part* of an element `a`. -/
-  oneLePart : α → α
-
-/-- A notation class for the *negative part* function: `a⁻`. -/
-class NegPart (α : Type*) where
-  /-- The *negative part* of an element `a`. -/
-  negPart : α → α
-
-/-- A notation class for the *negative part* function (multiplicative version): `a⁻ᵐ`. -/
-@[to_additive]
-class LeOnePart (α : Type*) where
-  /-- The *negative part* of an element `a`. -/
-  leOnePart : α → α
-
-export OneLePart (oneLePart)
-export LeOnePart (leOnePart)
-export PosPart (posPart)
-export NegPart (negPart)
-
-@[inherit_doc] postfix:max "⁺ᵐ " => OneLePart.oneLePart
-@[inherit_doc] postfix:max "⁻ᵐ" => LeOnePart.leOnePart
-@[inherit_doc] postfix:max "⁺" => PosPart.posPart
-@[inherit_doc] postfix:max "⁻" => NegPart.negPart
 
 section Lattice
 variable [Lattice α]
