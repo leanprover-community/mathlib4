@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
 import Mathlib.AlgebraicTopology.SimplexCategory
+import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
@@ -276,6 +277,58 @@ abbrev cosk (n : ℕ) [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
     SimplicialObject C ⥤ SimplicialObject C := truncation n ⋙ Truncated.cosk n
 
 end
+
+section adjunctions
+variable (n : ℕ)
+variable [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
+    SimplexCategory.Truncated.inclusion.op.HasPointwiseRightKanExtension F]
+variable [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
+    SimplexCategory.Truncated.inclusion.op.HasPointwiseLeftKanExtension F]
+
+/-- The adjunction between the n-skeleton and n-truncation.-/
+noncomputable def skAdj : Truncated.sk (C := C) n ⊣ truncation n :=
+  lanAdjunction _ _
+
+/-- The adjunction between n-truncation and the n-coskeleton.-/
+noncomputable def coskAdj : truncation (C := C) n ⊣ Truncated.cosk n :=
+  ranAdjunction _ _
+
+namespace Truncated
+
+instance cosk_reflective : IsIso ((coskAdj (C := C) n).counit) :=
+  reflective' SimplexCategory.Truncated.inclusion.op
+
+instance sk_reflective : IsIso ((skAdj (C := C) n).unit) :=
+  coreflective' SimplexCategory.Truncated.inclusion.op
+
+/-- Since `Truncated.inclusion` is fully faithful, so is right Kan extension along it.-/
+noncomputable def cosk.fullyFaithful :
+    (Truncated.cosk (C := C) n).FullyFaithful := by
+  apply Adjunction.fullyFaithfulROfIsIsoCounit (coskAdj n)
+
+instance cosk.full : (Truncated.cosk (C := C) n).Full := FullyFaithful.full (cosk.fullyFaithful _)
+
+instance cosk.faithful : (Truncated.cosk (C := C) n).Faithful :=
+  FullyFaithful.faithful (cosk.fullyFaithful _)
+
+noncomputable instance coskAdj.reflective : Reflective (Truncated.cosk (C := C) n) :=
+  Reflective.mk (truncation _) (coskAdj _)
+
+/-- Since `Truncated.inclusion` is fully faithful, so is left Kan extension along it.-/
+noncomputable def sk.fullyFaithful : (Truncated.sk (C := C) n).FullyFaithful :=
+  Adjunction.fullyFaithfulLOfIsIsoUnit (skAdj n)
+
+instance sk.full : (Truncated.sk (C := C) n).Full := FullyFaithful.full (sk.fullyFaithful _)
+
+instance sk.faithful : (Truncated.sk (C := C) n).Faithful :=
+  FullyFaithful.faithful (sk.fullyFaithful _)
+
+noncomputable instance skAdj.coreflective : Coreflective (Truncated.sk (C := C) n) :=
+  Coreflective.mk (truncation _) (skAdj _)
+
+end Truncated
+
+end adjunctions
 
 variable (C)
 
