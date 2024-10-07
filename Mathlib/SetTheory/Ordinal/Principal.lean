@@ -191,8 +191,14 @@ theorem principal_add_omega0 : Principal (· + ·) ω := fun a b ha hb =>
     dsimp only; rw [← Nat.cast_add]
     apply nat_lt_omega
 
+@[deprecated (since := "2024-09-30")]
+alias principal_add_omega := principal_add_omega0
+
 theorem add_omega0 {a : Ordinal} : a < ω → a + ω = ω :=
   principal_add_omega0.add_absorp
+
+@[deprecated (since := "2024-09-30")]
+alias add_omega := add_omega0
 
 theorem add_of_le_omega0 {a b : Ordinal} : a < ω → ω ≤ b → a + b = b :=
   principal_add_omega0.add_absorp_of_le
@@ -208,8 +214,14 @@ theorem principal_add_omega0_opow (x : Ordinal) : Principal (· + ·) (ω ^ x) :
     apply (omega_opow_mul_nat_lt _ _).le.trans
     rwa [opow_le_opow_iff_right one_lt_omega, succ_le_iff]
 
+@[deprecated (since := "2024-09-30")]
+alias principal_add_omega_opow := principal_add_omega0_opow
+
 theorem add_omega0_opow {a b : Ordinal} : a < ω ^ b → a + ω ^ b = ω ^ b :=
   (principal_add_omega0_opow b).add_absorp
+
+@[deprecated (since := "2024-09-30")]
+alias add_omega_opow := add_omega0_opow
 
 theorem add_of_omega0_opow_le {a b c : Ordinal} : a < ω ^ b → ω ^ b ≤ c → a + c = c :=
   (principal_add_omega0_opow b).add_absorp_of_le
