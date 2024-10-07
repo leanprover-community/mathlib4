@@ -38,35 +38,35 @@ section Preorder
 
 variable [Preorder α] {a a₁ a₂ b b₁ b₂ c x : α}
 
-/-- Left-open right-open interval -/
+/-- Left-open right-open interval $(a, b)$-/
 def Ioo (a b : α) :=
   { x | a < x ∧ x < b }
 
-/-- Left-closed right-open interval -/
+/-- Left-closed right-open interval $[a, b)$-/
 def Ico (a b : α) :=
   { x | a ≤ x ∧ x < b }
 
-/-- Left-infinite right-open interval -/
+/-- Left-infinite right-open interval $(-\infty, a)$-/
 def Iio (a : α) :=
   { x | x < a }
 
-/-- Left-closed right-closed interval -/
+/-- Left-closed right-closed interval $[a, b]$-/
 def Icc (a b : α) :=
   { x | a ≤ x ∧ x ≤ b }
 
-/-- Left-infinite right-closed interval -/
+/-- Left-infinite right-closed interval $(-\infty, a]$-/
 def Iic (b : α) :=
   { x | x ≤ b }
 
-/-- Left-open right-closed interval -/
+/-- Left-open right-closed interval $(a, b]$-/
 def Ioc (a b : α) :=
   { x | a < x ∧ x ≤ b }
 
-/-- Left-closed right-infinite interval -/
+/-- Left-closed right-infinite interval $[a, \infty)$-/
 def Ici (a : α) :=
   { x | a ≤ x }
 
-/-- Left-open right-infinite interval -/
+/-- Left-open right-infinite interval $(a, \infty)$-/
 def Ioi (a : α) :=
   { x | a < x }
 
