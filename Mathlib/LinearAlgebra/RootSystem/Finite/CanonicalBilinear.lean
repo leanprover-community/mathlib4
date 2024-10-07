@@ -92,13 +92,6 @@ lemma injective_smul_pos_of_reflexive [LinearOrderedCommRing R] [AddCommGroup M]
   have hrxy : r • (x - y) = 0 := by rw [smul_sub, hxy, sub_eq_zero]
   exact sub_eq_zero.mp <| torsion_free_of_reflexive hrxy <| Ne.symm (ne_of_lt hr)
 
-/-!
-open scoped Cardinal in
-lemma finite_rank_of_reflexive [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M]
-    [IsReflexive R M] : Module.rank R M < ℵ₀ := by
-  -- use IsLocalizedModule.lift_rank_eq and finiteness for vector spaces.
--/
-
 namespace RootPairing
 
 section CommRing
@@ -295,8 +288,7 @@ lemma prod_rootForm_smul_coroot_in_range_domRestrict (i : ι) :
   obtain ⟨c, hc⟩ := hdvd
   rw [hc, mul_comm, mul_smul, rootForm_self_smul_coroot]
   refine LinearMap.mem_range.mpr ?_
-  have : (c • 2 • P.root i) ∈ (span R (range P.root)) := by aesop
-  use ⟨(c • 2 • P.root i), this⟩
+  use ⟨(c • 2 • P.root i), by aesop⟩
   simp
 
 end LinearOrderedCommRing

@@ -58,7 +58,31 @@ open AddSubgroup (zmultiples)
 
 namespace RootPairing
 
-variable {ι R M N : Type*}
+variable {ι R M N S : Type*}
+
+section localization
+
+open nonZeroDivisors
+
+variable [CommRing R] [CommRing S] [AddCommGroup M] [AddCommGroup N]
+variable [Module R M] [Module R N] [Algebra R S] [Module S N] [IsScalarTower R S N]
+variable (p : Submonoid R) [IsLocalization p S] (f : M →ₗ[R] N) [IsLocalizedModule p f]
+variable (hp : p ≤ R⁰)
+
+/-!
+lemma reflexive_if_localization [IsReflexive R M ] : IsReflexive S N := by
+  sorry
+
+open scoped Cardinal in
+lemma finite_rank_of_reflexive [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M]
+    [IsReflexive R M] : Module.rank R M < ℵ₀ := by
+  by_contra contra
+  rw [IsLocalizedModule.lift_rank_eq (FractionRing R) R⁰ (LocalizedModule.mkLinearMap R⁰ M) le_rfl]
+
+  sorry
+  -- use IsLocalizedModule.lift_rank_eq and finiteness for vector spaces.
+-/
+end localization
 
 variable [Fintype ι] [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N]
 [Module R N] (P : RootPairing ι R M N)
