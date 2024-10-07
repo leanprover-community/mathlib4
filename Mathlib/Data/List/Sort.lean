@@ -74,7 +74,7 @@ nonrec theorem Sorted.cons {r : α → α → Prop} [IsTrans α r] {l : List α}
     (hab : r a b) (h : Sorted r (b :: l)) : Sorted r (a :: b :: l) :=
   h.cons <| forall_mem_cons.2 ⟨hab, fun _ hx => _root_.trans hab <| rel_of_sorted_cons h _ hx⟩
 
-theorem Sorted.cons_iff {r : α → α → Prop} [IsTrans α r] {l : List α} {a b : α} :
+theorem sorted_cons {r : α → α → Prop} [IsTrans α r] {l : List α} {a b : α} :
     Sorted r (b :: a :: l) ↔ r b a ∧ Sorted r (a :: l) := by
   constructor
   · intro h
