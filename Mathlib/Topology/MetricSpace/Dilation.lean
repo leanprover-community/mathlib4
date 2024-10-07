@@ -66,7 +66,7 @@ infixl:25 " →ᵈ " => Dilation
 
 /-- `DilationClass F α β r` states that `F` is a type of `r`-dilations.
 You should extend this typeclass when you extend `Dilation`. -/
-class DilationClass (F α β : Type*) [PseudoEMetricSpace α] [PseudoEMetricSpace β]
+class DilationClass (F : Type*) (α β : outParam Type*) [PseudoEMetricSpace α] [PseudoEMetricSpace β]
     [FunLike F α β] : Prop where
   edist_eq' : ∀ f : F, ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, edist (f x) (f y) = r * edist x y
 

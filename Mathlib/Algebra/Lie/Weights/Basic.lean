@@ -247,6 +247,8 @@ abbrev IsNonZero (χ : Weight R L M) := ¬ IsZero (χ : Weight R L M)
 lemma isNonZero_iff_ne_zero [Nontrivial (genWeightSpace M (0 : L → R))] {χ : Weight R L M} :
     χ.IsNonZero ↔ χ ≠ 0 := isZero_iff_eq_zero.not
 
+noncomputable instance : DecidablePred (IsNonZero (R := R) (L := L) (M := M)) := Classical.decPred _
+
 variable (R L M) in
 /-- The set of weights is equivalent to a subtype. -/
 def equivSetOf : Weight R L M ≃ {χ : L → R | genWeightSpace M χ ≠ ⊥} where
@@ -780,8 +782,10 @@ lemma iSup_genWeightSpace_eq_top [IsTriangularizable K L M] :
     ⨆ χ : L → K, genWeightSpace M χ = ⊤ := by
   simp only [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.iSup_coe_toSubmodule,
     LieSubmodule.iInf_coe_toSubmodule, LieSubmodule.top_coeSubmodule, genWeightSpace]
-  exact Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo (toEnd K L M)
-    (fun x y φ z ↦ (genWeightSpaceOf M φ y).lie_mem) (IsTriangularizable.iSup_eq_top)
+  refine Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo (toEnd K L M)
+    (fun x y φ z ↦ (genWeightSpaceOf M φ y).lie_mem) ?_
+  simp_rw [Module.End.maxGenEigenspace_def]
+  apply IsTriangularizable.iSup_eq_top
 
 lemma iSup_genWeightSpace_eq_top' [IsTriangularizable K L M] :
     ⨆ χ : Weight K L M, genWeightSpace M χ = ⊤ := by

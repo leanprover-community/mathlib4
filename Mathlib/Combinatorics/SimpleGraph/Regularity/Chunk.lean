@@ -132,7 +132,7 @@ private theorem one_sub_eps_mul_card_nonuniformWitness_le_card_star (hV : V ∈ 
           ((2 : ℝ) * 2) ^ P.parts.card * m / U.card := by
         rw [mul_pow, ← mul_div_assoc, mul_assoc]
       _ = ↑4 ^ P.parts.card * m / U.card := by norm_num
-      _ ≤ 1 := div_le_one_of_le (pow_mul_m_le_card_part hP hU) (cast_nonneg _)
+      _ ≤ 1 := div_le_one_of_le₀ (pow_mul_m_le_card_part hP hU) (cast_nonneg _)
       _ ≤ ↑2 ^ P.parts.card * ε ^ 2 / 10 := by
         refine (one_le_sq_iff <| by positivity).1 ?_
         rw [div_pow, mul_pow, pow_right_comm, ← pow_mul ε,
@@ -269,7 +269,7 @@ private theorem density_sub_eps_le_sum_density_div_card [Nonempty α]
   rw [mul_mul_mul_comm, mul_comm (x.card : ℝ), mul_comm (y.card : ℝ), le_div_iff₀, mul_assoc]
   · refine mul_le_of_le_one_right (cast_nonneg _) ?_
     rw [div_mul_eq_mul_div, ← mul_assoc, mul_assoc]
-    refine div_le_one_of_le ?_ (by positivity)
+    refine div_le_one_of_le₀ ?_ (by positivity)
     refine (mul_le_mul_of_nonneg_right (one_sub_le_m_div_m_add_one_sq hPα hPε) ?_).trans ?_
     · exact mod_cast _root_.zero_le _
     rw [sq, mul_mul_mul_comm, mul_comm ((m : ℝ) / _), mul_comm ((m : ℝ) / _)]
@@ -381,7 +381,7 @@ private theorem eps_le_card_star_div [Nonempty α] (hPα : P.parts.card * 16 ^ P
     ↑4 / ↑5 * ε ≤ (star hP G ε hU V).card / ↑4 ^ P.parts.card := by
   have hm : (0 : ℝ) ≤ 1 - (↑m)⁻¹ := sub_nonneg_of_le (inv_le_one <| one_le_m_coe hPα)
   have hε : 0 ≤ 1 - ε / 10 :=
-    sub_nonneg_of_le (div_le_one_of_le (hε₁.trans <| by norm_num) <| by norm_num)
+    sub_nonneg_of_le (div_le_one_of_le₀ (hε₁.trans <| by norm_num) <| by norm_num)
   have hε₀ : 0 < ε := by sz_positivity
   calc
     4 / 5 * ε = (1 - 1 / 10) * (1 - 9⁻¹) * ε := by norm_num

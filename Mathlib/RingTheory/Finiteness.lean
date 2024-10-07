@@ -11,6 +11,7 @@ import Mathlib.GroupTheory.Finiteness
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.LinearAlgebra.Basis.Cardinality
+import Mathlib.Tactic.Algebraize
 
 /-!
 # Finiteness conditions in commutative algebra
@@ -380,9 +381,7 @@ theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ CompleteLattice.IsCompactE
         suffices u.sup id ≤ s from le_antisymm husup this
         rw [sSup', Finset.sup_id_eq_sSup]
         exact sSup_le_sSup huspan
-      -- Porting note: had to split this out of the `obtain`
-      have := Finset.subset_image_iff.mp huspan
-      obtain ⟨t, ⟨-, rfl⟩⟩ := this
+      obtain ⟨t, -, rfl⟩ := Finset.subset_set_image_iff.mp huspan
       rw [Finset.sup_image, Function.id_comp, Finset.sup_eq_iSup, supr_rw, ←
         span_eq_iSup_of_singleton_spans, eq_comm] at ssup
       exact ⟨t, ssup⟩
@@ -761,6 +760,7 @@ namespace RingHom
 variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
 
 /-- A ring morphism `A →+* B` is `Finite` if `B` is finitely generated as `A`-module. -/
+@[algebraize Module.Finite]
 def Finite (f : A →+* B) : Prop :=
   letI : Algebra A B := f.toAlgebra
   Module.Finite A B
@@ -779,20 +779,11 @@ theorem of_surjective (f : A →+* B) (hf : Surjective f) : f.Finite :=
   Module.Finite.of_surjective (Algebra.linearMap A B) hf
 
 theorem comp {g : B →+* C} {f : A →+* B} (hg : g.Finite) (hf : f.Finite) : (g.comp f).Finite := by
-  letI := f.toAlgebra
-  letI := g.toAlgebra
-  letI := (g.comp f).toAlgebra
-  letI : IsScalarTower A B C := RestrictScalars.isScalarTower A B C
-  letI : Module.Finite A B := hf
-  letI : Module.Finite B C := hg
+  algebraize [f, g, g.comp f]
   exact Module.Finite.trans B C
 
 theorem of_comp_finite {f : A →+* B} {g : B →+* C} (h : (g.comp f).Finite) : g.Finite := by
-  letI := f.toAlgebra
-  letI := g.toAlgebra
-  letI := (g.comp f).toAlgebra
-  letI : IsScalarTower A B C := RestrictScalars.isScalarTower A B C
-  letI : Module.Finite A C := h
+  algebraize [f, g, g.comp f]
   exact Module.Finite.of_restrictScalars_finite A B C
 
 end Finite
