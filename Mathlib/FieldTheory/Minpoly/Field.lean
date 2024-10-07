@@ -167,7 +167,7 @@ theorem neg {B : Type*} [CommRing B] [Algebra A B] (x : B) :
       simpa using H
   · rw [minpoly.eq_zero hx, minpoly.eq_zero, zero_comp]
     · simp only [natDegree_zero, pow_zero, mul_zero]
-    · exact fun h => hx (neg_neg x ▸ IsIntegral.neg h)
+    · exact IsIntegral.neg_iff.not.mpr hx
 
 section AlgHomFintype
 
