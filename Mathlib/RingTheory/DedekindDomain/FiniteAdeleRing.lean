@@ -337,7 +337,7 @@ instance : IsScalarTower R K (FiniteAdeleRing R K) :=
   IsScalarTower.of_algebraMap_eq' rfl
 
 instance : Coe (FiniteAdeleRing R K) (K_hat R K) where
-  coe := fun x ↦ x.1
+  coe x := x.1
 
 @[ext]
 lemma ext {a₁ a₂ : FiniteAdeleRing R K} (h : (a₁ : K_hat R K) = a₂) : a₁ = a₂ :=

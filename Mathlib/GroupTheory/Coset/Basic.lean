@@ -402,6 +402,21 @@ theorem out_eq' (a : α ⧸ s) : mk a.out' = a :=
 
 variable (s)
 
+/-- Given a subgroup `s`, the function that sends a subgroup `t` to the pair consisting of
+its intersection with `s` and its image in the quotient `α ⧸ s` is strictly monotone, even though
+it is not injective in general. -/
+@[to_additive QuotientAddGroup.strictMono_comap_prod_image "Given an additive subgroup `s`,
+the function that sends an additive subgroup `t` to the pair consisting of
+its intersection with `s` and its image in the quotient `α ⧸ s`
+is strictly monotone, even though it is not injective in general."]
+theorem strictMono_comap_prod_image :
+    StrictMono fun t : Subgroup α ↦ (t.comap s.subtype, mk (s := s) '' t) := by
+  refine fun t₁ t₂ h ↦ ⟨⟨Subgroup.comap_mono h.1, Set.image_mono h.1⟩,
+    mt (fun ⟨le1, le2⟩ a ha ↦ ?_) h.2⟩
+  obtain ⟨a', h', eq⟩ := le2 ⟨_, ha, rfl⟩
+  convert ← t₁.mul_mem h' (@le1 ⟨_, QuotientGroup.eq.1 eq⟩ <| t₂.mul_mem (t₂.inv_mem <| h.1 h') ha)
+  apply mul_inv_cancel_left
+
 /- It can be useful to write `obtain ⟨h, H⟩ := mk_out'_eq_mul ...`, and then `rw [H]` or
   `simp_rw [H]` or `simp only [H]`. In order for `simp_rw` and `simp only` to work, this lemma is
   stated in terms of an arbitrary `h : s`, rather than the specific `h = g⁻¹ * (mk g).out'`. -/
