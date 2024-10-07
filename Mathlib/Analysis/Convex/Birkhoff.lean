@@ -5,6 +5,7 @@ Authors: Bhavik Mehta
 -/
 
 import Mathlib.Analysis.Convex.Combination
+import Mathlib.Analysis.Convex.Extreme
 import Mathlib.Combinatorics.Hall.Basic
 import Mathlib.Data.Matrix.DoublyStochastic
 import Mathlib.Tactic.Linarith
@@ -21,7 +22,6 @@ import Mathlib.Tactic.Linarith
 
 ## TODO
 
-* Show that the extreme points of doubly stochastic matrices are the permutation matrices.
 * Show that for `x y : n → R`, `x` is majorized by `y` if and only if there is a doubly stochastic
   matrix `M` such that `M *ᵥ y = x`.
 
@@ -168,5 +168,39 @@ theorem doublyStochastic_eq_convexHull_permMatrix :
   case g2 =>
     obtain ⟨w, hw1, hw2, hw3⟩ := exists_eq_sum_perm_of_mem_doublyStochastic hM
     exact mem_convexHull_of_exists_fintype w (·.permMatrix R) hw1 hw2 (by simp) hw3
+
+/--
+The set of extreme points of the doubly stochastic matrices is the set of permutation matrices.
+-/
+theorem extremePoints_doublyStochastic :
+    Set.extremePoints R (doublyStochastic R n) = {σ.permMatrix R | σ : Equiv.Perm n} := by
+  refine subset_antisymm ?_ ?_
+  · rw [doublyStochastic_eq_convexHull_permMatrix]
+    exact extremePoints_convexHull_subset
+  rintro _ ⟨σ, rfl⟩
+  rw [mem_extremePoints]
+  refine ⟨permMatrix_mem_doublyStochastic, ?_⟩
+  intro x₁ hx₁ x₂ hx₂ hσ
+  suffices ∀ i j : n, x₁ i j = x₂ i j by
+    obtain rfl : x₁ = x₂ := by simpa [← Matrix.ext_iff]
+    simp_all
+  intro i j
+  have h₁ : Equiv.Perm.permMatrix R σ i j ∈ openSegment R (x₁ i j) (x₂ i j) := by
+    let eval : Matrix n n R →ₗ[R] R :=
+      { toFun := fun M => M i j,
+        map_add' := fun M N => rfl,
+        map_smul' := fun x M => rfl }
+    have : _ = openSegment R (x₁ i j) (x₂ i j) := image_openSegment _ eval.toAffineMap x₁ x₂
+    rw [← this, Set.mem_image]
+    exact ⟨_, hσ, rfl⟩
+  by_contra! h
+  have h₂ : openSegment R (x₁ i j) (x₂ i j) ⊆ Set.Ioo 0 1 := by
+    rw [openSegment_eq_Ioo' h]
+    apply Set.Ioo_subset_Ioo
+    · simp [nonneg_of_mem_doublyStochastic hx₁, nonneg_of_mem_doublyStochastic hx₂]
+    · simp [le_one_of_mem_doublyStochastic hx₁, le_one_of_mem_doublyStochastic hx₂]
+  specialize h₂ h₁
+  simp only [PEquiv.toMatrix_apply, Equiv.toPEquiv] at h₂
+  aesop
 
 end LinearOrderedField
