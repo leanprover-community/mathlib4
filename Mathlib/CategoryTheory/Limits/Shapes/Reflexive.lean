@@ -285,55 +285,34 @@ def inclusionWalkingReflexivePair : WalkingParallelPair ⥤ WalkingReflexivePair
 
 variable {C : Type u} [Category.{v} C]
 
-open WalkingReflexivePair WalkingReflexivePair.Hom
+instance (X : WalkingReflexivePair) :
+    Nonempty (StructuredArrow X inclusionWalkingReflexivePair) := by
+  cases X with
+  | zero => exact ⟨StructuredArrow.mk (Y := one) (𝟙 _)⟩
+  | one => exact ⟨StructuredArrow.mk (Y := zero) (𝟙 _)⟩
+
+open WalkingReflexivePair.Hom in
+instance (X : WalkingReflexivePair) :
+    IsConnected (StructuredArrow X inclusionWalkingReflexivePair) := by
+  cases X with
+  | zero =>
+      refine IsConnected.of_induct  (j₀ := StructuredArrow.mk (Y := one) (𝟙 _)) ?_
+      rintro p h₁ h₂ ⟨⟨⟨⟩⟩, (_ | _), ⟨_⟩⟩
+      · exact (h₂ (StructuredArrow.homMk .left)).2 h₁
+      · exact h₁
+  | one =>
+      refine IsConnected.of_induct  (j₀ := StructuredArrow.mk (Y := zero) (𝟙 _))
+        (fun p h₁ h₂ ↦ ?_)
+      have hₗ : StructuredArrow.mk left ∈ p := (h₂ (StructuredArrow.homMk .left)).1 h₁
+      have hᵣ : StructuredArrow.mk right ∈ p := (h₂ (StructuredArrow.homMk .right)).1 h₁
+      rintro ⟨⟨⟨⟩⟩, (_ | _), ⟨_⟩⟩
+      · exact (h₂ (StructuredArrow.homMk .left)).2 hₗ
+      · exact (h₂ (StructuredArrow.homMk .right)).2 hᵣ
+      all_goals assumption
+
 /-- The inclusion functor is a final functor -/
-instance inclusionWalkingReflexivePair_final : Functor.Final inclusionWalkingReflexivePair := by
-  constructor
-  set e₀ : (StructuredArrow .one inclusionWalkingReflexivePair) :=
-    StructuredArrow.mk (Y := zero) (𝟙 _)
-  set e₁ : (StructuredArrow .zero inclusionWalkingReflexivePair) :=
-    StructuredArrow.mk (Y := one) (𝟙 _)
-  intro x
-  have h : Inhabited (StructuredArrow x inclusionWalkingReflexivePair) := by
-    · constructor
-      cases x with
-      | one => exact e₀
-      | zero => exact e₁
-  cases x with
-    | zero => apply IsConnected.of_induct (j₀ := e₁)
-              rintro p h₁ h₂ ⟨_, y, f⟩
-              cases y <;> cases f
-              · set r : StructuredArrow .zero inclusionWalkingReflexivePair :=
-                  StructuredArrow.mk (Y := zero) reflexion
-                change r ∈ p
-                suffices f : r ⟶  e₁ by exact (h₂ f).mpr h₁
-                exact StructuredArrow.homMk .left
-              · exact h₁
-    | one => apply IsConnected.of_induct (j₀ := e₀)
-             rintro p h₁ h₂ ⟨_, y, f⟩
-             set rₗ : StructuredArrow WalkingReflexivePair.one inclusionWalkingReflexivePair :=
-                StructuredArrow.mk (Y := one) left
-             set rᵣ : StructuredArrow WalkingReflexivePair.one inclusionWalkingReflexivePair :=
-                StructuredArrow.mk (Y := one) right
-             have hrₗ : rₗ ∈ p := by
-              · suffices f : e₀ ⟶  rₗ by exact (h₂ f).mp h₁
-                exact StructuredArrow.homMk .left
-             have hrᵣ : rᵣ ∈ p := by
-              · suffices f : e₀ ⟶  rᵣ by exact (h₂ f).mp h₁
-                exact StructuredArrow.homMk .right
-             cases y <;> cases f
-             rotate_right 3
-             · exact h₁
-             · exact hrₗ
-             · exact hrᵣ
-             · set v : StructuredArrow .one inclusionWalkingReflexivePair :=
-                StructuredArrow.mk (Y := zero) leftCompReflexion
-               suffices f : v ⟶  rₗ by exact (h₂ f).mpr hrₗ
-               exact StructuredArrow.homMk .left
-             · set v : StructuredArrow .one inclusionWalkingReflexivePair :=
-                StructuredArrow.mk (Y := .zero) rightCompReflexion
-               suffices f : v ⟶  rᵣ by exact (h₂ f).mpr hrᵣ
-               exact StructuredArrow.homMk .right
+instance inclusionWalkingReflexivePair_final : Functor.Final inclusionWalkingReflexivePair where
+  out := inferInstance
 
 end WalkingParallelPair
 
@@ -410,7 +389,7 @@ variable (f g : A ⟶ B) (s : B ⟶ A) (sl : s ≫ f = 𝟙 B) (sr : s ≫ g = �
 
 section NatTrans
 
-variable (F : WalkingReflexivePair ⥤ C)
+variable {F : WalkingReflexivePair ⥤ C}
 
 /-- A constructor for natural transforms to a diagram of the form `reflexivePair f g s`. -/
 @[simps]
