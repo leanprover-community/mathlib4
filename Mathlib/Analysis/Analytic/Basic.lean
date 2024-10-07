@@ -925,7 +925,7 @@ theorem HasFPowerSeriesWithinOnBall.uniform_geometric_approx' {r' : ℝ≥0}
     exact mod_cast yr'
   rw [norm_sub_rev, ← mul_div_right_comm]
   have ya : a * (‖y‖ / ↑r') ≤ a :=
-    mul_le_of_le_one_right ha.1.le (div_le_one_of_le yr'.le r'.coe_nonneg)
+    mul_le_of_le_one_right ha.1.le (div_le_one_of_le₀ yr'.le r'.coe_nonneg)
   suffices ‖p.partialSum n y - f (x + y)‖ ≤ C * (a * (‖y‖ / r')) ^ n / (1 - a * (‖y‖ / r')) by
     refine this.trans ?_
     have : 0 < a := ha.1
@@ -966,7 +966,7 @@ theorem HasFPowerSeriesWithinOnBall.uniform_geometric_approx {r' : ℝ≥0}
   have yr' : ‖y‖ < r' := by rwa [ball_zero_eq] at hy
   have := ha.1.le -- needed to discharge a side goal on the next line
   gcongr
-  exact mul_le_of_le_one_right ha.1.le (div_le_one_of_le yr'.le r'.coe_nonneg)
+  exact mul_le_of_le_one_right ha.1.le (div_le_one_of_le₀ yr'.le r'.coe_nonneg)
 
 /-- If a function admits a power series expansion, then it is exponentially close to the partial
 sums of this power series on strict subdisks of the disk of convergence. -/

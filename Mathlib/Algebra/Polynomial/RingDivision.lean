@@ -574,7 +574,7 @@ theorem comp_neg_X_leadingCoeff_eq (p : R[X]) :
 
 theorem Monic.neg_one_pow_natDegree_mul_comp_neg_X {p : R[X]} (hp : p.Monic) :
     ((-1) ^ p.natDegree * p.comp (-X)).Monic := by
-  simp [Monic]
+  simp only [Monic]
   calc
     ((-1) ^ p.natDegree * p.comp (-X)).leadingCoeff =
         (p.comp (-X) * C ((-1) ^ p.natDegree)).leadingCoeff := by

@@ -154,9 +154,12 @@ theorem uniformInducing_pureCauchy : UniformInducing (pureCauchy : α → Cauchy
       _ = 𝓤 α := by simp [this]
       ⟩
 
-theorem uniformEmbedding_pureCauchy : UniformEmbedding (pureCauchy : α → CauchyFilter α) :=
+theorem isUniformEmbedding_pureCauchy : IsUniformEmbedding (pureCauchy : α → CauchyFilter α) :=
   { uniformInducing_pureCauchy with
     inj := fun _a₁ _a₂ h => pure_injective <| Subtype.ext_iff_val.1 h }
+
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_pureCauchy := isUniformEmbedding_pureCauchy
 
 theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyFilter α) := fun f => by
   have h_ex : ∀ s ∈ 𝓤 (CauchyFilter α), ∃ y : α, (f, pureCauchy y) ∈ s := fun s hs =>
@@ -184,7 +187,7 @@ theorem isDenseInducing_pureCauchy : IsDenseInducing (pureCauchy : α → Cauchy
   uniformInducing_pureCauchy.isDenseInducing denseRange_pureCauchy
 
 theorem isDenseEmbedding_pureCauchy : IsDenseEmbedding (pureCauchy : α → CauchyFilter α) :=
-  uniformEmbedding_pureCauchy.isDenseEmbedding denseRange_pureCauchy
+  isUniformEmbedding_pureCauchy.isDenseEmbedding denseRange_pureCauchy
 
 @[deprecated (since := "2024-09-30")]
 alias denseEmbedding_pureCauchy := isDenseEmbedding_pureCauchy
@@ -359,12 +362,15 @@ theorem uniformContinuous_coe : UniformContinuous ((↑) : α → Completion α)
 theorem continuous_coe : Continuous ((↑) : α → Completion α) :=
   cPkg.continuous_coe
 
-theorem uniformEmbedding_coe [T0Space α] : UniformEmbedding ((↑) : α → Completion α) :=
+theorem isUniformEmbedding_coe [T0Space α] : IsUniformEmbedding ((↑) : α → Completion α) :=
   { comap_uniformity := comap_coe_eq_uniformity α
     inj := separated_pureCauchy_injective }
 
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_coe := isUniformEmbedding_coe
+
 theorem coe_injective [T0Space α] : Function.Injective ((↑) : α → Completion α) :=
-  UniformEmbedding.inj (uniformEmbedding_coe _)
+  IsUniformEmbedding.inj (isUniformEmbedding_coe _)
 
 variable {α}
 
@@ -388,12 +394,12 @@ alias denseEmbedding_coe := isDenseEmbedding_coe
 
 theorem denseRange_coe₂ :
     DenseRange fun x : α × β => ((x.1 : Completion α), (x.2 : Completion β)) :=
-  denseRange_coe.prod_map denseRange_coe
+  denseRange_coe.prodMap denseRange_coe
 
 theorem denseRange_coe₃ :
     DenseRange fun x : α × β × γ =>
       ((x.1 : Completion α), ((x.2.1 : Completion β), (x.2.2 : Completion γ))) :=
-  denseRange_coe.prod_map denseRange_coe₂
+  denseRange_coe.prodMap denseRange_coe₂
 
 @[elab_as_elim]
 theorem induction_on {p : Completion α → Prop} (a : Completion α) (hp : IsClosed { a | p a })
