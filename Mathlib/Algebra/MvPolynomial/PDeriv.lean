@@ -122,8 +122,7 @@ lemma pderiv_rename {τ : Type*} {f : σ → τ}
   induction' p using MvPolynomial.induction_on with a p q hp hq p a h
   · simp
   · simp [hp, hq]
-  · classical
-    simp only [map_mul, MvPolynomial.rename_X, Derivation.leibniz, MvPolynomial.pderiv_X,
+  · simp only [map_mul, MvPolynomial.rename_X, Derivation.leibniz, MvPolynomial.pderiv_X,
       Pi.single_apply, hf.eq_iff, smul_eq_mul, mul_ite, mul_one, mul_zero, h, map_add, add_left_inj]
     split_ifs <;> simp
 
