@@ -309,7 +309,7 @@ theorem lift_mk_eq' {α : Type u} {β : Type v} : lift.{v} #α = lift.{u} #β �
 
 /-- `Cardinal.lift` as an `InitialSeg`. -/
 @[simps!]
-def lift.initialSeg : @InitialSeg Cardinal.{u} Cardinal.{max u v} (· < ·) (· < ·) := by
+def liftInitialSeg : @InitialSeg Cardinal.{u} Cardinal.{max u v} (· < ·) (· < ·) := by
   refine ⟨(OrderEmbedding.ofMapLEIff lift ?_).ltEmbedding, ?_⟩ <;> intro a b
   · refine inductionOn₂ a b fun _ _ ↦ ?_
     rw [← lift_umax, lift_mk_le.{v, u, u}, le_def]
@@ -322,20 +322,20 @@ def lift.initialSeg : @InitialSeg Cardinal.{u} Cardinal.{max u v} (· < ·) (· 
     exact ⟨b, rfl⟩
 
 /-- `Cardinal.lift` as an `OrderEmbedding`. -/
-@[deprecated Cardinal.lift.initialSeg (since := "2024-09-19")]
+@[deprecated Cardinal.liftInitialSeg (since := "2024-09-19")]
 def liftOrderEmbedding : Cardinal.{v} ↪o Cardinal.{max v u} :=
-  lift.initialSeg.toOrderEmbedding
+  liftInitialSeg.toOrderEmbedding
 
 @[simp]
 theorem lift_le {a b : Cardinal.{v}} : lift.{u, v} a ≤ lift.{u, v} b ↔ a ≤ b :=
-  lift.initialSeg.le_iff_le
+  liftInitialSeg.le_iff_le
 
 @[simp]
 theorem lift_lt {a b : Cardinal.{u}} : lift.{v, u} a < lift.{v, u} b ↔ a < b :=
-  lift.initialSeg.lt_iff_lt
+  liftInitialSeg.lt_iff_lt
 
 theorem lift_injective : Injective lift.{u, v} :=
-  lift.initialSeg.injective
+  liftInitialSeg.injective
 
 @[simp]
 theorem lift_inj {a b : Cardinal.{u}} : lift.{v, u} a = lift.{v, u} b ↔ a = b :=
@@ -356,15 +356,15 @@ theorem lift_max {a b : Cardinal} : lift.{u, v} (max a b) = max (lift.{u, v} a) 
 
 theorem lift_down {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
     b ≤ lift.{v, u} a → ∃ a', lift.{v, u} a' = b :=
-  lift.initialSeg.init_le
+  liftInitialSeg.init_le
 
 theorem le_lift_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
     b ≤ lift.{v, u} a ↔ ∃ a' ≤ a, lift.{v, u} a' = b :=
-  lift.initialSeg.le_apply_iff
+  liftInitialSeg.le_apply_iff
 
 theorem lt_lift_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
     b < lift.{v, u} a ↔ ∃ a' < a, lift.{v, u} a' = b :=
-  lift.initialSeg.lt_apply_iff
+  liftInitialSeg.lt_apply_iff
 
 @[simp]
 lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s) := by
