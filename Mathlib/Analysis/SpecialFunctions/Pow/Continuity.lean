@@ -394,7 +394,7 @@ theorem eventually_pow_one_div_le (x : ℝ≥0) {y : ℝ≥0} (hy : 1 < y) :
   refine eventually_atTop.2 ⟨m + 1, fun n hn => ?_⟩
   simp only [one_div]
   simpa only [NNReal.rpow_inv_le_iff (Nat.cast_pos.2 <| m.succ_pos.trans_le hn),
-    NNReal.rpow_natCast] using hm.le.trans (pow_le_pow_right hy.le (m.le_succ.trans hn))
+    NNReal.rpow_natCast] using hm.le.trans (pow_right_mono₀ hy.le (m.le_succ.trans hn))
 
 end NNReal
 
