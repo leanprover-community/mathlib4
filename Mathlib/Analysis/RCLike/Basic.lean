@@ -243,7 +243,7 @@ lemma ofReal_expect {α : Type*} (s : Finset α) (f : α → ℝ) : 𝔼 i ∈ s
 
 @[norm_cast]
 lemma ofReal_balance {ι : Type*} [Fintype ι] (f : ι → ℝ) (i : ι) :
-    (↑(balance f i) : K) = balance ((↑) ∘ f) i := map_balance (algebraMap ..) ..
+    ((balance f i : ℝ) : K) = balance ((↑) ∘ f) i := map_balance (algebraMap ..) ..
 
 @[simp] lemma ofReal_comp_balance {ι : Type*} [Fintype ι] (f : ι → ℝ) :
     ofReal ∘ balance f = balance (ofReal ∘ f : ι → K) := funext <| ofReal_balance _
