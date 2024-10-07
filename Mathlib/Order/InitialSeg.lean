@@ -3,10 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
 -/
+import Mathlib.Data.Sum.Order
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.RelIso.Set
 import Mathlib.Order.WellFounded
-import Mathlib.Data.Sum.Order
 /-!
 # Initial and principal segments
 
@@ -70,6 +70,17 @@ instance : FunLike (r ≼i s) α β where
 
 instance : EmbeddingLike (r ≼i s) α β where
   injective' f := f.inj'
+
+/-- An initial segment embedding between the less-than relations of two partial orders is an order
+embedding. -/
+def toOrderEmbedding [PartialOrder α] [PartialOrder β]
+    (f : @InitialSeg α β (· < ·) (· < ·)) : α ↪o β :=
+  f.orderEmbeddingOfLTEmbedding
+
+@[simp]
+theorem toOrderEmbedding_apply [PartialOrder α] [PartialOrder β]
+    (f : @InitialSeg α β (· < ·) (· < ·)) (x : α) : f.toOrderEmbedding x = f x :=
+  rfl
 
 @[ext] lemma ext {f g : r ≼i s} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
@@ -197,6 +208,48 @@ protected theorem acc (f : r ≼i s) (a : α) : Acc r a ↔ Acc s (f a) :=
     refine fun h => Acc.recOn h fun a _ ha => Acc.intro _ fun b hb => ?_
     obtain ⟨a', rfl⟩ := f.mem_range_of_rel hb
     exact ha _ (f.map_rel_iff.mp hb), f.toRelEmbedding.acc a⟩
+
+section PartialOrder
+
+variable [PartialOrder β] {a a' : α} {b : β}
+
+theorem init_le [Preorder α] (f : (· < ·) ≼i (· < ·)) (h : b ≤ f a) : ∃ a', f a' = b := by
+  obtain rfl | hb := h.eq_or_lt
+  exacts [⟨a, rfl⟩, f.init hb]
+
+@[simp]
+theorem le_iff_le [PartialOrder α] (f : @InitialSeg α β (· < ·) (· < ·)) : f a ≤ f a' ↔ a ≤ a' :=
+  f.toOrderEmbedding.le_iff_le
+
+@[simp]
+theorem lt_iff_lt [PartialOrder α] (f : @InitialSeg α β (· < ·) (· < ·)) : f a < f a' ↔ a < a' :=
+  f.toOrderEmbedding.lt_iff_lt
+
+theorem monotone [PartialOrder α] (f : @InitialSeg α β (· < ·) (· < ·)) : Monotone f :=
+  f.toOrderEmbedding.monotone
+
+theorem strictMono [PartialOrder α] (f : @InitialSeg α β (· < ·) (· < ·)) : StrictMono f :=
+  f.toOrderEmbedding.strictMono
+
+theorem le_apply_iff [LinearOrder α] (f : (· < ·) ≼i (· < ·)) : b ≤ f a ↔ ∃ c ≤ a, f c = b := by
+  constructor
+  · intro h
+    obtain ⟨c, hc⟩ := f.init_le h
+    refine ⟨c, ?_, hc⟩
+    rwa [← hc, f.le_iff_le] at h
+  · rintro ⟨c, hc, rfl⟩
+    exact f.monotone hc
+
+theorem lt_apply_iff [LinearOrder α] (f : (· < ·) ≼i (· < ·)) : b < f a ↔ ∃ a' < a, f a' = b := by
+  constructor
+  · intro h
+    obtain ⟨c, hc⟩ := f.init h
+    refine ⟨c, ?_, hc⟩
+    rwa [← hc, f.lt_iff_lt] at h
+  · rintro ⟨c, hc, rfl⟩
+    exact f.strictMono hc
+
+end PartialOrder
 
 end InitialSeg
 
