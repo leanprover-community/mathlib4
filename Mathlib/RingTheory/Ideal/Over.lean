@@ -452,7 +452,7 @@ variable {A}
 
 /-- `P` lies over `p` if `p` is the preimage of `P` of the `algebraMap`. -/
 class LiesOver : Prop where
-  over : p = Ideal.comap (algebraMap A B) P
+  over : p = Ideal.under A P
 
 instance over_under : P.LiesOver (Ideal.under A P) where over := rfl
 
