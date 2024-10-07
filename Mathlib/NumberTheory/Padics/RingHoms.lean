@@ -256,7 +256,7 @@ theorem toZMod_spec : x - (ZMod.cast (toZMod x) : ℤ_[p]) ∈ maximalIdeal ℤ_
   dsimp [toZMod, toZModHom]
   rcases Nat.exists_eq_add_of_lt hp_prime.1.pos with ⟨p', rfl⟩
   change ↑((_ : ZMod (0 + p' + 1)).val) = (_ : ℤ_[0 + p' + 1])
-  simp only [ZMod.val_natCast, add_zero, add_def, Nat.cast_inj, zero_add]
+  rw [Nat.cast_inj]
   apply mod_eq_of_lt
   simpa only [zero_add] using zmodRepr_lt_p x
 
