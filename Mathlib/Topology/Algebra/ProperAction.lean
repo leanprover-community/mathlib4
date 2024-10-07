@@ -173,7 +173,7 @@ theorem properSMul_of_closedEmbedding {H : Type*} [Group H] [MulAction H X] [Top
     (f_compat : ∀ (h : H) (x : X), f h • x = h • x) : ProperSMul H X where
   isProperMap_smul_pair := by
     have := isProperMap_of_closedEmbedding f_clemb
-    have h : IsProperMap (Prod.map f (fun x : X ↦ x)) := IsProperMap.prod_map this isProperMap_id
+    have h : IsProperMap (Prod.map f (fun x : X ↦ x)) := this.prodMap isProperMap_id
     have : (fun hx : H × X ↦ (hx.1 • hx.2, hx.2)) = (fun hx ↦ (f hx.1 • hx.2, hx.2)) := by
       simp [f_compat]
     rw [this]
@@ -245,7 +245,7 @@ theorem properlyDiscontinuousSMul_iff_properSMul [T2Space X] [DiscreteTopology G
     apply IsCompact.finite_of_discrete
     -- Now set `h : (g, x) ↦ (g⁻¹ • x, x)`, because `f` is proper by hypothesis, so is `h`.
     have : IsProperMap (fun gx : G × X ↦ (gx.1⁻¹ • gx.2, gx.2)) :=
-      (IsProperMap.prod_map (Homeomorph.isProperMap (Homeomorph.inv G)) isProperMap_id).comp <|
+      (IsProperMap.prodMap (Homeomorph.isProperMap (Homeomorph.inv G)) isProperMap_id).comp <|
         ProperSMul.isProperMap_smul_pair
     --But we also have that `{g | Set.Nonempty ((g • ·) '' K ∩ L)} = h ⁻¹ (K × L)`, which
     -- concludes the proof.
