@@ -114,8 +114,7 @@ noncomputable def invOneSubPow : ℕ → S⟦X⟧ˣ
       rw [← mk_one_pow_eq_mk_choose_add, ← mul_pow, mul_comm, mk_one_mul_one_sub_eq_one, one_pow]
     }
 
-theorem invOneSubPow_val_eq_one_of_eq_zero (h : d = 0) :
-    (invOneSubPow S d).val = 1 := by
+theorem invOneSubPow_zero_val_eq_one : (invOneSubPow S 0).val = 1 := by
   delta invOneSubPow
   simp only [h, Units.val_one]
 
