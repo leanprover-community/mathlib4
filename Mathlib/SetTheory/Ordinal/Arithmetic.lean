@@ -2538,7 +2538,7 @@ def omegaIso : ℕ ≃o Iio ω where
   invFun n := toNat n.1
   left_inv := toNat_natCast
   right_inv n := by ext; exact natCast_toNat n.2
-  map_rel_iff' := @fun m n ↦ by simp
+  map_rel_iff' := by simp
 
 end Ordinal
 
