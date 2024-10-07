@@ -56,14 +56,13 @@ we get a `R`-derivation `P → I` via `x ↦ x - g (f x)`.
 def derivationOfSectionOfKerSqZero : Derivation R P (RingHom.ker (algebraMap P S)) where
   toFun x := ⟨x - g (algebraMap _ _ x), by
     simpa [RingHom.mem_ker, sub_eq_zero] using AlgHom.congr_fun hg.symm (algebraMap _ _ x)⟩
-  map_add' x y := by simp only [map_add, AddSubmonoid.mk_add_mk, Subtype.mk.injEq]; ring
+  map_add' x y := by ext; simp only [map_add, AddMemClass.mk_add_mk]; ring
   map_smul' x y := by
     ext
     simp only [Algebra.smul_def, _root_.map_mul, ← IsScalarTower.algebraMap_apply,
       AlgHom.commutes, RingHom.id_apply, Submodule.coe_smul_of_tower]
     ring
-  map_one_eq_zero' := by simp only [LinearMap.coe_mk, AddHom.coe_mk, _root_.map_one, sub_self,
-    AddSubmonoid.mk_eq_zero]
+  map_one_eq_zero' := by ext; simp
   leibniz' a b := by
     have : (a - g (algebraMap _ _ a)) * (b - g (algebraMap _ _ b)) = 0 := by
       rw [← Ideal.mem_bot, ← hf', pow_two]
@@ -73,10 +72,11 @@ def derivationOfSectionOfKerSqZero : Derivation R P (RingHom.ker (algebraMap P S
     ext
     rw [← sub_eq_zero]
     conv_rhs => rw [← neg_zero, ← this]
-    simp only [LinearMap.coe_mk, AddHom.coe_mk, _root_.map_mul, SetLike.mk_smul_mk, smul_eq_mul,
-      mul_sub, AddSubmonoid.mk_add_mk, sub_mul, neg_sub]
+    simp only [LinearMap.coe_mk, AddHom.coe_mk, map_mul, SetLike.mk_smul_mk, smul_eq_mul,
+      AddMemClass.mk_add_mk]
     ring
 
+include hf' hg
 lemma isScalarTower_of_section_of_ker_sqZero :
     letI := g.toRingHom.toAlgebra; IsScalarTower P S (RingHom.ker (algebraMap P S)) := by
   letI := g.toRingHom.toAlgebra
@@ -112,7 +112,7 @@ lemma retractionOfSectionOfKerSqZero_tmul_D (s : S) (t : P) :
 
 lemma retractionOfSectionOfKerSqZero_comp_kerToTensor :
     (retractionOfSectionOfKerSqZero hf' g hg).comp (kerToTensor R P S) = LinearMap.id := by
-  ext x; simp [(RingHom.mem_ker _).mp x.2]
+  ext x; simp [RingHom.mem_ker.mp x.2]
 
 end ofSection
 
@@ -124,6 +124,10 @@ variable (hl : l.comp (kerToTensor R P S) = LinearMap.id)
 -- suppose we have a (set-theoretic) section
 variable (σ : S → P) (hσ : ∀ x, algebraMap P S (σ x) = x)
 
+-- This is just an auxiliary lemma
+-- so we ignore the fact that some typeclass assumptions weren't used.
+set_option linter.unusedSectionVars false in
+include hl in
 lemma sectionOfRetractionKerToTensorAux_prop (x y) (h : algebraMap P S x = algebraMap P S y) :
     x - l (1 ⊗ₜ .D _ _ x) = y - l (1 ⊗ₜ .D _ _ y) := by
   rw [sub_eq_iff_eq_add, sub_add_comm, ← sub_eq_iff_eq_add, ← Submodule.coe_sub,
@@ -144,12 +148,12 @@ def sectionOfRetractionKerToTensorAux : S →ₐ[R] P where
     have (x y) : (l x).1 * (l y).1 = 0 := by
       rw [← Ideal.mem_bot, ← hf', pow_two]; exact Ideal.mul_mem_mul (l x).2 (l y).2
     simp only [sectionOfRetractionKerToTensorAux_prop l hl (σ (a * b)) (σ a * σ b) (by simp [hσ]),
-      Derivation.leibniz, tmul_add, tmul_smul, map_add, map_smul, AddSubmonoid.coe_add, this,
-      Submodule.coe_toAddSubmonoid, SetLike.val_smul, smul_eq_mul, mul_sub, sub_mul, sub_zero]
+      Derivation.leibniz, tmul_add, tmul_smul, map_add, map_smul, Submodule.coe_add,
+      SetLike.val_smul, smul_eq_mul, mul_sub, sub_mul, this, sub_zero]
     ring
   map_add' a b := by
     simp only [sectionOfRetractionKerToTensorAux_prop l hl (σ (a + b)) (σ a + σ b) (by simp [hσ]),
-      map_add, tmul_add, AddSubmonoid.coe_add, Submodule.coe_toAddSubmonoid, add_sub_add_comm]
+      map_add, tmul_add, Submodule.coe_add, add_sub_add_comm]
   map_zero' := by simp [sectionOfRetractionKerToTensorAux_prop l hl (σ 0) 0 (by simp [hσ])]
   commutes' r := by
     simp [sectionOfRetractionKerToTensorAux_prop l hl
@@ -173,7 +177,7 @@ lemma toAlgHom_comp_sectionOfRetractionKerToTensor :
       (sectionOfRetractionKerToTensor hf hf' l hl) = AlgHom.id _ _ := by
   ext x
   obtain ⟨x, rfl⟩ := hf x
-  simp [(RingHom.mem_ker _).mp]
+  simp [RingHom.mem_ker.mp]
 
 end ofRetraction
 
@@ -225,7 +229,7 @@ def derivationQuotKerSq :
     refine Submodule.smul_induction_on hx ?_ ?_
     · intro x hx y hy
       simp only [smul_eq_mul, Derivation.leibniz, tmul_add, ← smul_tmul, Algebra.smul_def,
-        mul_one, (RingHom.mem_ker _).mp hx, (RingHom.mem_ker _).mp hy, zero_tmul, zero_add]
+        mul_one, RingHom.mem_ker.mp hx, RingHom.mem_ker.mp hy, zero_tmul, zero_add]
     · intro x y hx hy; simp only [map_add, hx, hy, tmul_add, zero_add]
   · show (1 : S) ⊗ₜ[P] KaehlerDifferential.D R P 1 = 0; simp
   · intro a b
@@ -322,16 +326,7 @@ def retractionEquivSectionKerCotangentToTensor :
       LinearMap.coe_mk, AddHom.coe_coe, LinearMap.toAddMonoidHom_coe, LinearEquiv.coe_coe,
       LinearEquiv.symm_apply_apply, LinearEquiv.apply_symm_apply]
 
-variable [Algebra.FormallySmooth R P]
-
-theorem Algebra.FormallySmooth.iff_split_injection :
-    Algebra.FormallySmooth R S ↔ ∃ l, l ∘ₗ (kerCotangentToTensor R P S) = LinearMap.id := by
-  have := (retractionEquivSectionKerCotangentToTensor (R := R) hf).nonempty_congr
-  simp only [nonempty_subtype] at this
-  rw [this, ← Algebra.FormallySmooth.iff_split_surjection _ hf]
-
-attribute [local instance 99999] KaehlerDifferential.module'
-
+include hf in
 theorem range_kerCotangentToTensor :
     LinearMap.range (kerCotangentToTensor R P S) =
       (LinearMap.ker (KaehlerDifferential.mapBaseChange R P S)).restrictScalars P := by
@@ -340,7 +335,7 @@ theorem range_kerCotangentToTensor :
   constructor
   · rintro ⟨x, rfl⟩
     obtain ⟨x, rfl⟩ := Ideal.toCotangent_surjective _ x
-    simp [kerCotangentToTensor_toCotangent, (RingHom.mem_ker _).mp x.2]
+    simp [kerCotangentToTensor_toCotangent, RingHom.mem_ker.mp x.2]
   · intro hx
     obtain ⟨x, rfl⟩ := LinearMap.rTensor_surjective (Ω[P⁄R]) (g := Algebra.linearMap P S) hf x
     obtain ⟨x, rfl⟩ := (TensorProduct.lid _ _).symm.surjective x
@@ -355,22 +350,33 @@ theorem range_kerCotangentToTensor :
     intro c _
     simp only [Finset.filter_congr_decidable, TensorProduct.lid_symm_apply, LinearMap.rTensor_tmul,
       AlgHom.toLinearMap_apply, _root_.map_one, LinearMap.mem_range]
-    simp only [map_sum, Finsupp.total_single]
+    simp only [map_sum, Finsupp.linearCombination_single]
     have : (x.support.filter (algebraMap P S · = c)).sum x ∈ RingHom.ker (algebraMap P S) := by
       simpa [Finsupp.mapDomain, Finsupp.sum, Finsupp.finset_sum_apply, RingHom.mem_ker,
         Finsupp.single_apply, ← Finset.sum_filter] using DFunLike.congr_fun hx c
     obtain ⟨a, ha⟩ := hf c
     use (x.support.filter (algebraMap P S · = c)).attach.sum
         fun i ↦ x i • Ideal.toCotangent _ ⟨i - a, ?_⟩; swap
-    · have : x i ≠ 0 ∧ algebraMap P S i = c := by simpa using i.prop
+    · have : x i ≠ 0 ∧ algebraMap P S i = c := by simpa [-Finset.coe_mem] using i.2
       simp [RingHom.mem_ker, ha, this.2]
     · simp only [map_sum, LinearMapClass.map_smul, kerCotangentToTensor_toCotangent, map_sub]
       simp_rw [← TensorProduct.tmul_smul]
       simp only [smul_sub, TensorProduct.tmul_sub, Finset.sum_sub_distrib, ← TensorProduct.tmul_sum,
         ← Finset.sum_smul, Finset.sum_attach, sub_eq_self,
         Finset.sum_attach (f := fun i ↦ x i • KaehlerDifferential.D R P i)]
-      rw [← TensorProduct.smul_tmul, ← Algebra.algebraMap_eq_smul_one, (RingHom.mem_ker _).mp this,
+      rw [← TensorProduct.smul_tmul, ← Algebra.algebraMap_eq_smul_one, RingHom.mem_ker.mp this,
         TensorProduct.zero_tmul]
+
+variable [Algebra.FormallySmooth R P]
+
+include hf in
+theorem Algebra.FormallySmooth.iff_split_injection :
+    Algebra.FormallySmooth R S ↔ ∃ l, l ∘ₗ (kerCotangentToTensor R P S) = LinearMap.id := by
+  have := (retractionEquivSectionKerCotangentToTensor (R := R) hf).nonempty_congr
+  simp only [nonempty_subtype] at this
+  rw [this, ← Algebra.FormallySmooth.iff_split_surjection _ hf]
+
+attribute [local instance 99999] KaehlerDifferential.module'
 
 @[simps!]
 def LinearMap.restrictScalarsEquiv {R S M N} [CommSemiring R] [Semiring S] [AddCommMonoid M]
@@ -384,6 +390,7 @@ def LinearMap.restrictScalarsEquiv {R S M N} [CommSemiring R] [Semiring S] [AddC
   left_inv f := rfl
   right_inv f := rfl
 
+include hf in
 theorem Algebra.FormallySmooth.iff_injective_and_split :
     Algebra.FormallySmooth R S ↔ Function.Injective (kerCotangentToTensor R P S) ∧
       ∃ l, (KaehlerDifferential.mapBaseChange R P S) ∘ₗ l = LinearMap.id := by
@@ -396,6 +403,7 @@ theorem Algebra.FormallySmooth.iff_injective_and_split :
   simp only [LinearMap.ext_iff, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
     Function.comp_apply, LinearMap.restrictScalarsEquiv_apply_apply, LinearMap.id_coe, id_eq]
 
+/-- An auxiliary lemma strictly weaker than the unprimed version. Use that instead. -/
 theorem Algebra.FormallySmooth.iff_injective_and_projective' :
     letI : Algebra (MvPolynomial S R) S := (MvPolynomial.aeval _root_.id).toAlgebra
     Algebra.FormallySmooth R S ↔
@@ -411,6 +419,7 @@ theorem Algebra.FormallySmooth.iff_injective_and_projective' :
 instance : Module.Projective P (Ω[P⁄R]) :=
   (Algebra.FormallySmooth.iff_injective_and_projective'.mp ‹_›).2
 
+include hf in
 /-- Given a formally smooth algebra `P` over `R`, such that the algebra homomorphism `P → S` is
 surjective with kernel `I` (typically a presentation `R[X] → S`),
 then `S` is formally smooth iff `Ω[S/R]` is projective and `I/I² → B ⊗[A] Ω[A⁄R]` is injective.
