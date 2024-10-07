@@ -1371,7 +1371,7 @@ lemma two_le_iff_one_lt {c : Cardinal} : 2 ≤ c ↔ 1 < c := by
 theorem succ_zero : succ (0 : Cardinal) = 1 := by norm_cast
 
 theorem one_lt_two : (1 : Cardinal) < 2 := by
-  -- This strategy works generally to prove inequalities between numeric cardinals.
+  -- This works generally to prove inequalities between numeric cardinals.
   norm_cast
 
 theorem exists_finset_le_card (α : Type*) (n : ℕ) (h : n ≤ #α) :
