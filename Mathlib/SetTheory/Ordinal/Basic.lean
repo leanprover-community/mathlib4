@@ -377,11 +377,8 @@ theorem typein_lt_self {o : Ordinal} (i : o.toType) : typein (α := o.toType) (�
 
 @[simp]
 theorem typein_top {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r] [IsWellOrder β s]
-    (f : r ≺i s) : typein s f.top = type r := by
-  refine (RelIso.ofSurjective (RelEmbedding.codRestrict _ f f.lt_top) ?_).ordinal_type_eq.symm
-  rintro ⟨a, h⟩
-  obtain ⟨b, rfl⟩ := f.down.1 h
-  exact ⟨b, rfl⟩
+    (f : r ≺i s) : typein s f.top = type r :=
+  f.subrelIso.ordinal_type_eq
 
 /-- Principal segment version of the `typein` function, embedding a well order into ordinals as a
 principal segment. -/
