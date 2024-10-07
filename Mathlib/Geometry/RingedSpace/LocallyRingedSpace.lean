@@ -11,7 +11,7 @@ import Mathlib.Geometry.RingedSpace.Stalks
 
 We define (bundled) locally ringed spaces (as `SheafedSpace CommRing` along with the fact that the
 stalks are local rings), and morphisms between these (morphisms in `SheafedSpace` with
-`IsLocalRingHom` on the stalk maps).
+`IsLocalHom` on the stalk maps).
 -/
 
 -- Explicit universe annotations were used in this file to improve performance #12737
@@ -74,7 +74,7 @@ structure Hom (X Y : LocallyRingedSpace.{u}) : Type _ where
   /-- the underlying morphism between ringed spaces -/
   val : X.toSheafedSpace ⟶ Y.toSheafedSpace
   /-- the underlying morphism induces a local ring homomorphism on stalks -/
-  prop : ∀ x, IsLocalRingHom (val.stalkMap x)
+  prop : ∀ x, IsLocalHom (val.stalkMap x)
 
 instance : Quiver LocallyRingedSpace :=
   ⟨Hom⟩
@@ -89,17 +89,18 @@ noncomputable def Hom.stalkMap {X Y : LocallyRingedSpace.{u}} (f : Hom X Y) (x :
     Y.presheaf.stalk (f.1.1 x) ⟶ X.presheaf.stalk x :=
   f.val.stalkMap x
 
-instance {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) : IsLocalRingHom (f.stalkMap x) :=
+instance isLocalHomStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
+    IsLocalHom (f.stalkMap x) :=
   f.2 x
 
-instance {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
-    IsLocalRingHom (f.val.stalkMap x) :=
+instance isLocalHomValStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
+    IsLocalHom (f.val.stalkMap x) :=
   f.2 x
 
 /-- The identity morphism on a locally ringed space. -/
 @[simps]
 def id (X : LocallyRingedSpace.{u}) : Hom X X :=
-  ⟨𝟙 _, fun x => by erw [PresheafedSpace.stalkMap.id]; apply isLocalRingHom_id⟩
+  ⟨𝟙 _, fun x => by erw [PresheafedSpace.stalkMap.id]; apply isLocalHom_id⟩
 
 instance (X : LocallyRingedSpace.{u}) : Inhabited (Hom X X) :=
   ⟨id X⟩
@@ -108,7 +109,7 @@ instance (X : LocallyRingedSpace.{u}) : Inhabited (Hom X X) :=
 def comp {X Y Z : LocallyRingedSpace.{u}} (f : Hom X Y) (g : Hom Y Z) : Hom X Z :=
   ⟨f.val ≫ g.val, fun x => by
     erw [PresheafedSpace.stalkMap.comp]
-    exact @isLocalRingHom_comp _ _ _ _ _ _ _ _ (f.2 _) (g.2 _)⟩
+    exact @RingHom.isLocalHom_comp _ _ _ _ _ _ _ _ (f.2 _) (g.2 _)⟩
 
 /-- The category of locally ringed spaces. -/
 instance : Category LocallyRingedSpace.{u} where
@@ -164,7 +165,7 @@ def homOfSheafedSpaceHomOfIsIso {X Y : LocallyRingedSpace.{u}}
     -- Here we need to see that the stalk maps are really local ring homomorphisms.
     -- This can be solved by type class inference, because stalk maps of isomorphisms
     -- are isomorphisms and isomorphisms are local ring homomorphisms.
-    show IsLocalRingHom ((SheafedSpace.forgetToPresheafedSpace.map f).stalkMap x) by
+    show IsLocalHom ((SheafedSpace.forgetToPresheafedSpace.map f).stalkMap x) by
       infer_instance
 
 /-- Given two locally ringed spaces `X` and `Y`, an isomorphism between `X` and `Y` as _sheafed_
@@ -271,7 +272,7 @@ theorem preimage_basicOpen {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) {U : Ope
   · rintro ⟨y, hy : IsUnit _, rfl⟩
     erw [RingedSpace.mem_basicOpen _ _ ⟨f.1.base y.1, y.2⟩]
     erw [← PresheafedSpace.stalkMap_germ_apply] at hy
-    exact (isUnit_map_iff (f.val.stalkMap _) _).mp hy
+    exact (isUnit_map_iff (f.stalkMap _) _).mp hy
 
 -- This actually holds for all ringed spaces with nontrivial stalks.
 theorem basicOpen_zero (X : LocallyRingedSpace.{u}) (U : Opens X.carrier) :

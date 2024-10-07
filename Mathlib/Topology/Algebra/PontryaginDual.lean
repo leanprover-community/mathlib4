@@ -60,9 +60,9 @@ instance [LocallyCompactSpace G] : LocallyCompactSpace (PontryaginDual G) := by
   · intro n x h1 h2
     rw [hVn] at h1 h2 ⊢
     rwa [Circle.coe_mul, Complex.arg_mul x.coe_ne_zero x.coe_ne_zero,
-      ← two_mul, abs_mul, abs_two, ← lt_div_iff' two_pos, div_div, ← pow_succ] at h2
+      ← two_mul, abs_mul, abs_two, ← lt_div_iff₀' two_pos, div_div, ← pow_succ] at h2
     apply Set.Ioo_subset_Ioc_self
-    rw [← two_mul, Set.mem_Ioo, ← abs_lt, abs_mul, abs_two, ← lt_div_iff' two_pos]
+    rw [← two_mul, Set.mem_Ioo, ← abs_lt, abs_mul, abs_two, ← lt_div_iff₀' two_pos]
     exact h1.trans_le
       (div_le_div_of_nonneg_left Real.pi_nonneg two_pos (le_self_pow one_le_two n.succ_ne_zero))
   · rw [← Circle.exp_zero, ← isLocalHomeomorph_circleExp.map_nhds_eq 0]

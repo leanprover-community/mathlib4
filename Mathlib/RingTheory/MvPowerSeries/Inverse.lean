@@ -7,7 +7,7 @@ Authors: Johan Commelin, Kenny Lau
 import Mathlib.Algebra.Group.Units
 import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Formal (multivariate) power series - Inverses
@@ -31,7 +31,7 @@ Instances are defined:
 
 * Formal power series over a local ring form a local ring.
 * The morphism `MvPowerSeries.map σ f : MvPowerSeries σ A →* MvPowerSeries σ B`
-  induced by a local morphism `f : A →+* B` (`IsLocalRingHom f`)
+  induced by a local morphism `f : A →+* B` (`IsLocalHom f`)
   of commutative rings is a *local* morphism.
 
 -/
@@ -167,13 +167,13 @@ end CommRing
 
 section LocalRing
 
-variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalRingHom f]
+variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalHom f]
 
 -- Thanks to the linter for informing us that this instance does
 -- not actually need R and S to be local rings!
 /-- The map between multivariate formal power series over the same indexing set
  induced by a local ring hom `A → B` is local -/
-instance map.isLocalRingHom : IsLocalRingHom (map σ f) :=
+instance map.isLocalHom : IsLocalHom (map σ f) :=
   ⟨by
     rintro φ ⟨ψ, h⟩
     replace h := congr_arg (constantCoeff σ S) h
