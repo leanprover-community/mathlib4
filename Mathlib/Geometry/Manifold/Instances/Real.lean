@@ -11,7 +11,7 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 
 We introduce the necessary bits to be able to define manifolds modelled over `ℝ^n`, boundaryless
 or with boundary or with corners. As a concrete example, we construct explicitly the manifold with
-boundary structure on the real interval `[x, y]`.
+boundary structure on the real interval `[x, y]` and prove that it is orientable.
 
 More specifically, we introduce
 * `ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space
@@ -365,13 +365,11 @@ instance Icc_orientable_manifold (x y : ℝ) [Fact (x < y)] :
           sorry
         · sorry
       · sorry
-    · sorry
+    · sorry -- similar, with left and right swapped
     · exact mem_groupoid_of_pregroupoid.mpr
       <| symm_trans_mem_orientationPreservingGroupoid (𝓡∂ 1) (IccRightChart x y)
 
-/-! Register the manifold structure on `Icc 0 1`, and also its zero and one. -/
-
-
+/-! Register the smooth orientable manifold structure on `Icc 0 1` -/
 section
 
 instance : ChartedSpace (EuclideanHalfSpace 1) (Icc (0 : ℝ) 1) := by infer_instance
