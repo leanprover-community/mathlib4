@@ -59,8 +59,8 @@ noncomputable section
 
 variable {ι R M N : Type*}
 
-lemma rank_le_of_injective_smul [CommRing R] [AddCommGroup M] [Module R M]
-    (L L' : Submodule R M) {r : R} (hr : Injective fun (x : M) => r • x) (h : ∀ x ∈ L, r • x ∈ L') :
+lemma rank_le_of_smul_regular [CommRing R] [AddCommGroup M] [Module R M]
+    (L L' : Submodule R M) {r : R} (hr : IsSMulRegular M r) (h : ∀ x ∈ L, r • x ∈ L') :
     Module.rank R L ≤ Module.rank R L' := by
   let f : L →ₗ[R] L' :=
     {
@@ -70,13 +70,11 @@ lemma rank_le_of_injective_smul [CommRing R] [AddCommGroup M] [Module R M]
     }
   have hf : Injective f := by
     intro x y hxy
-    have hx : f x = ⟨r • x, h x x.2⟩ := rfl
-    have hy : f y = ⟨r • y, h y y.2⟩ := rfl
-    rw [hx, hy] at hxy
+    rw [show f x = ⟨r • x, h x x.2⟩ by rfl, show f y = ⟨r • y, h y y.2⟩ by rfl] at hxy
     simp only [Subtype.mk.injEq] at hxy
     exact SetLike.coe_eq_coe.mp (hr (hr (congrArg (HSMul.hSMul r) hxy)))
-  exact LinearMap.rank_le_of_injective (R := R) (M := L) f hf
---#find_home! rank_le_of_injective_smul --[Mathlib.LinearAlgebra.Dimension.Basic]
+  exact LinearMap.rank_le_of_injective f hf
+--#find_home! rank_le_of_smul_regular --[Mathlib.LinearAlgebra.Dimension.Basic]
 
 lemma torsion_free_of_reflexive [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M]
     [IsReflexive R M] {r : R} {m : M} (h : r • m = 0) (hr : r ≠ 0) : m = 0 := by
@@ -87,6 +85,7 @@ lemma torsion_free_of_reflexive [CommRing R] [IsDomain R] [AddCommGroup M] [Modu
   suffices r • n m = 0 by
     exact eq_zero_of_ne_zero_of_mul_left_eq_zero hr this
   rw [← LinearMap.map_smul_of_tower, h, LinearMap.map_zero]
+--#find_home! torsion_free_of_reflexive -- [Mathlib.LinearAlgebra.Dual]
 
 lemma injective_smul_pos_of_reflexive [LinearOrderedCommRing R] [AddCommGroup M] [Module R M]
     [IsReflexive R M] {r : R} (hr : 0 < r) : Injective fun (x : M) => r • x := by
@@ -94,6 +93,13 @@ lemma injective_smul_pos_of_reflexive [LinearOrderedCommRing R] [AddCommGroup M]
   simp only at hxy
   have hrxy : r • (x - y) = 0 := by rw [smul_sub, hxy, sub_eq_zero]
   exact sub_eq_zero.mp <| torsion_free_of_reflexive hrxy <| Ne.symm (ne_of_lt hr)
+
+/-!
+open scoped Cardinal in
+lemma finite_rank_of_reflexive [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M]
+    [IsReflexive R M] : Module.rank R M < ℵ₀ := by
+  -- use IsLocalizedModule.lift_rank_eq and finiteness for vector spaces.
+-/
 
 namespace RootPairing
 
@@ -130,6 +136,10 @@ def RootForm : LinearMap.BilinForm R M :=
 /-- An invariant inner product on the coweight space. -/
 def CorootForm : LinearMap.BilinForm R N :=
   ∑ i, (P.root' i).smulRight (P.root' i)
+
+@[simp]
+lemma flip_RootForm_eq_CorootForm : P.flip.RootForm = P.CorootForm :=
+  rfl
 
 lemma rootForm_apply_apply (x y : M) : P.RootForm x y =
     ∑ (i : ι), P.coroot' i x * P.coroot' i y := by
@@ -188,6 +198,16 @@ theorem range_polarization_le_span_coroot :
   use fun i => (P.toPerfectPairing x) (P.coroot i)
   simp
 
+theorem range_polarization_domRestrict_le_span_coroot :
+    LinearMap.range (P.Polarization.domRestrict (span R (range P.root))) ≤
+      (span R (range P.coroot)) := by
+  intro y hy
+  obtain ⟨x, hx⟩ := hy
+  rw [← hx, LinearMap.domRestrict_apply, Polarization_apply]
+  refine (mem_span_range_iff_exists_fun R).mpr ?_
+  use fun i => (P.toPerfectPairing x) (P.coroot i)
+  simp
+
 /-!
 theorem polarization_reflection (i : ι) (x : M) :
     P.Polarization (P.reflection i x) = P.coreflection i (P.Polarization x) := by
@@ -209,15 +229,21 @@ theorem polarization_reflection (i : ι) (x : M) :
   | one => simp
   | mul => sorry
   | inv => sorry
-
-
-lemma four_smul_flip_polarization_polarization (P : RootPairing ι R M N) (i : ι) :
-    4 • P.flip.Polarization (P.Polarization (P.root i)) =
-    (P.RootForm (P.root i) (P.root i)) •
-      (P.flip.RootForm (P.coroot i) (P.coroot i)) • P.root i := by
-  rw [show 4 = 2 • 2 by rfl, smul_assoc, ← map_nsmul, ← rootForm_self_coroot, map_smul,
-    flip_rootForm_self_root, smul_comm]
 -/
+
+lemma four_smul_copolarization_polarization (P : RootPairing ι R M N) (i : ι) :
+    4 • P.CoPolarization (P.Polarization (P.root i)) =
+    (P.RootForm (P.root i) (P.root i)) •
+      (P.CorootForm (P.coroot i) (P.coroot i)) • P.root i := by
+  rw [show 4 = 2 • 2 by rfl, smul_assoc, ← map_nsmul, ← rootForm_self_smul_coroot, map_smul,
+    rootForm_root_self, corootForm_self_smul_root, smul_comm, CoPolarization_eq]
+
+lemma four_smul_polarization_copolarization (P : RootPairing ι R M N) (i : ι) :
+    4 • P.Polarization (P.CoPolarization (P.coroot i)) =
+    (P.CorootForm (P.coroot i) (P.coroot i)) •
+      (P.RootForm (P.root i) (P.root i)) • P.coroot i := by
+  rw [show 4 = 2 • 2 by rfl, smul_assoc, ← map_nsmul, ← corootForm_self_smul_root, map_smul,
+    rootForm_self_smul_coroot, smul_comm]
 
 end CommRing
 
@@ -230,17 +256,13 @@ theorem rootForm_self_non_neg (x : M) : 0 ≤ P.RootForm x x :=
   IsSumSq.nonneg (P.rootForm_self_sum_of_squares x)
 
 theorem rootForm_self_zero_iff (x : M) :
-    P.RootForm x x = 0 ↔ ∀ i, P.toPerfectPairing x (P.coroot i) = 0 := by
+    P.RootForm x x = 0 ↔ ∀ i, P.coroot' i x = 0 := by
   simp only [rootForm_apply_apply, PerfectPairing.toLin_apply, LinearMap.coe_comp, comp_apply,
     Polarization_apply, map_sum, map_smul, smul_eq_mul]
-  convert sum_mul_self_eq_zero_iff Finset.univ fun i => (P.toPerfectPairing x) (P.coroot i)
-  constructor
-  · intro x _
-    exact x
-  · rename_i i
-    intro x
-    refine x ?_
-    exact Finset.mem_univ i
+  convert sum_mul_self_eq_zero_iff Finset.univ fun i => P.coroot' i x
+  refine { mp := fun x _ => x, mpr := ?_ }
+  rename_i i
+  exact fun x => x (Finset.mem_univ i)
 
 lemma rootForm_root_self_pos (j : ι) :
     0 < P.RootForm (P.root j) (P.root j) := by
@@ -248,7 +270,7 @@ lemma rootForm_root_self_pos (j : ι) :
     rootForm_apply_apply, toLin_toPerfectPairing]
   refine Finset.sum_pos' (fun i _ => (sq (P.pairing j i)) ▸ sq_nonneg (P.pairing j i)) ?_
   use j
-  exact ⟨Finset.mem_univ j, (by simp)⟩
+  exact ⟨Finset.mem_univ j, by simp⟩
 
 lemma rootForm_rootPositive : IsRootPositive P P.RootForm where
   zero_lt_apply_root i := P.rootForm_root_self_pos i
@@ -261,19 +283,29 @@ lemma prod_rootForm_root_self_pos :
 
 lemma prod_rootForm_smul_coroot_in_range (i : ι) :
     (∏ a : ι, P.RootForm (P.root a) (P.root a)) • P.coroot i ∈ LinearMap.range P.Polarization := by
-  have hdvd : P.RootForm (P.root i) (P.root i) ∣ ∏ a : ι, P.RootForm (P.root a) (P.root a) := by
-    refine Finset.dvd_prod_of_mem (fun a ↦ P.RootForm (P.root a) (P.root a)) (Finset.mem_univ i)
+  have hdvd : P.RootForm (P.root i) (P.root i) ∣ ∏ a : ι, P.RootForm (P.root a) (P.root a) :=
+    Finset.dvd_prod_of_mem (fun a ↦ P.RootForm (P.root a) (P.root a)) (Finset.mem_univ i)
+  obtain ⟨c, hc⟩ := hdvd
+  rw [hc, mul_comm, mul_smul, rootForm_self_smul_coroot]
+  exact LinearMap.mem_range.mpr (Exists.intro (c • 2 • P.root i) (by simp))
+
+lemma prod_rootForm_smul_coroot_in_range_domRestrict (i : ι) :
+    (∏ a : ι, P.RootForm (P.root a) (P.root a)) • P.coroot i ∈
+      LinearMap.range (P.Polarization.domRestrict (span R (range P.root))) := by
+  have hdvd : P.RootForm (P.root i) (P.root i) ∣ ∏ a : ι, P.RootForm (P.root a) (P.root a) :=
+    Finset.dvd_prod_of_mem (fun a ↦ P.RootForm (P.root a) (P.root a)) (Finset.mem_univ i)
   obtain ⟨c, hc⟩ := hdvd
   rw [hc, mul_comm, mul_smul, rootForm_self_smul_coroot]
   refine LinearMap.mem_range.mpr ?_
-  use c • 2 • P.root i
+  have : (c • 2 • P.root i) ∈ (span R (range P.root)) := by aesop
+  use ⟨(c • 2 • P.root i), this⟩
   simp
 
 lemma rank_polarization_eq_rank_span_coroot :
     LinearMap.rank P.Polarization = Module.rank R (span R (range P.coroot)) := by
   refine eq_of_le_of_le (Submodule.rank_mono P.range_polarization_le_span_coroot) ?_
   letI : IsReflexive R N := PerfectPairing.reflexive_right P.toPerfectPairing
-  refine rank_le_of_injective_smul (span R (range P.coroot)) (LinearMap.range P.Polarization)
+  refine rank_le_of_smul_regular (span R (range P.coroot)) (LinearMap.range P.Polarization)
     (injective_smul_pos_of_reflexive P.prod_rootForm_root_self_pos) ?_
   intro x hx
   obtain ⟨c, hc⟩ := (mem_span_range_iff_exists_fun R).mp hx
@@ -285,32 +317,75 @@ lemma rank_polarization_eq_rank_span_coroot :
 lemma rank_coPolarization_eq_rank_span_root :
     LinearMap.rank P.CoPolarization = Module.rank R (span R (range P.root)) :=
   P.flip.rank_polarization_eq_rank_span_coroot
+
+lemma rank_polarization_domRestrict_eq_rank_span_coroot :
+    LinearMap.rank (P.Polarization.domRestrict (span R (range P.root))) =
+      Module.rank R (span R (range P.coroot)) := by
+  refine eq_of_le_of_le (Submodule.rank_mono P.range_polarization_domRestrict_le_span_coroot) ?_
+  letI : IsReflexive R N := PerfectPairing.reflexive_right P.toPerfectPairing
+  refine rank_le_of_smul_regular (span R (range P.coroot))
+    (LinearMap.range (P.Polarization.domRestrict (span R (range P.root))))
+    (injective_smul_pos_of_reflexive P.prod_rootForm_root_self_pos) ?_
+  intro x hx
+  obtain ⟨c, hc⟩ := (mem_span_range_iff_exists_fun R).mp hx
+  rw [← hc, Finset.smul_sum]
+  simp_rw [smul_smul, mul_comm, ← smul_smul]
+  exact Submodule.sum_smul_mem
+    (LinearMap.range (P.Polarization.domRestrict (span R (range P.root)))) c
+    (fun c _ ↦ prod_rootForm_smul_coroot_in_range_domRestrict P c)
+
+lemma rank_Polarization_domRestrict :
+    LinearMap.rank (P.Polarization.domRestrict (span R (range P.root))) =
+      LinearMap.rank P.Polarization :=
+  P.rank_polarization_domRestrict_eq_rank_span_coroot.trans
+    P.rank_polarization_eq_rank_span_coroot.symm
+
 /-!
 lemma polarization_kernel_rank_zero : Module.rank R (LinearMap.ker (LinearMap.domRestrict
     P.Polarization (span R (range P.root)))) = 0 := by
   have rn := rank_quotient_add_rank_of_isDomain (LinearMap.ker (LinearMap.domRestrict
     P.Polarization (span R (range P.root))))
   rw [← rank_coPolarization_eq_rank_span_root] at rn
-  rw [LinearEquiv.rank_eq (M := ((span R (range ⇑P.root)) ⧸
-      LinearMap.ker (P.Polarization.domRestrict (span R (range ⇑P.root)))))
-      (P.Polarization.domRestrict (span R (range ⇑P.root))).quotKerEquivRange] at rn
+  let e := (P.Polarization.domRestrict (span R (range ⇑P.root))).quotKerEquivRange
+  have h := LinearEquiv.lift_rank_eq e
+  rw [h] at rn -- universe problems
   sorry
 
+have:
+range Polarization ⊆ span R range P.coroot
+Polarization rank = rank span R range P.coroot
+range CoPolarization ⊆ span R range P.root
+coPolarization rank = rank span R range P.root
+
+need :
+
+       same for CoPolarization
+Then, using rank range ≤ rank domain (`LinearMap.rank_le_domain`), we get:
+rank (span R (range P.coroot)) ≤ rank (span R (range P.root)) and
+rank (span R (range P.root)) ≤ rank (span R (range P.coroot)) hence equality.
+
+To show kernel of P.Polarization.domRestrict (span R (range P.root)) has rank zero,
+use LinearMap.quotKerEquivRange to identify image with quotient.
+When they have the same rank, then the kernel has rank zero.
+To show the kernel vanishes, take `x` in kernel, use rank_eq_zero_iff to get suitable nonzero `r`.
+Then, x = 0 by injective_smul_pos_of_reflexive.
+
+use finite_rank_of_reflexive
+
+-/
 --lemma polarization_restriction_injective : restriction of P.Polarization to range P.root is inj.
 
 -- injectivity from lemma: reflexive modules over a domain have no torsion
 --torsion_free_of_reflexive or injective_smul_pos_of_reflexive
 
-lemma rank_eq_zero_iff :
-    Module.rank R M = 0 ↔ ∀ x : M, ∃ a : R, a ≠ 0 ∧ a • x = 0 := by
+lemma rank_eq_zero_iff : Module.rank R M = 0 ↔ ∀ x : M, ∃ a : R, a ≠ 0 ∧ a • x = 0 :=
+  _root_.rank_eq_zero_iff
 
 theorem rank_quotient_add_rank_of_isDomain [IsDomain R] (M' : Submodule R M) :
-    Module.rank R (M ⧸ M') + Module.rank R M' = Module.rank R M := by
+    Module.rank R (M ⧸ M') + Module.rank R M' = Module.rank R M :=
+  HasRankNullity.rank_quotient_add_rank M'
 
-lemma coxeter_weight_leq_4 (i j : ι) : coxeterWeight i j ≤ 4 := by
-  sorry
-
--/
+--lemma coxeter_weight_leq_4 (i j : ι) : coxeterWeight i j ≤ 4 := by sorry
 
 end LinearOrderedCommRing
 
