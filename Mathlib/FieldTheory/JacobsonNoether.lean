@@ -191,7 +191,7 @@ theorem Jacobson_Noether (H : k ≠ (⊤ : Subring D)) :
 
 open Subring Algebra in
 theorem Jacobson_Noether' {L D : Type*} [Field L] [DivisionRing D]
-  [Algebra L D] [Algebra.IsAlgebraic L D]
+    [Algebra L D] [Algebra.IsAlgebraic L D]
     (hcenter : Subalgebra.center L D = ⊥) (hneq : (⊥ : Subalgebra L D) ≠ ⊤) :
     ∃ x : D, x ∉ (⊥ : Subalgebra L D) ∧ IsSeparable L x := by
   have ntrivial : center D ≠ ⊤ :=
