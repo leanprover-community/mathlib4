@@ -212,7 +212,7 @@ def delayReflRight (θ : I) (γ : Path x y) : Path x y where
 
 theorem continuous_delayReflRight : Continuous fun p : I × Path x y => delayReflRight p.1 p.2 :=
   continuous_uncurry_iff.mp <|
-    (continuous_snd.comp continuous_fst).path_eval <|
+    (continuous_snd.comp continuous_fst).eval <|
       continuous_qRight.comp <| continuous_snd.prod_mk <| continuous_fst.comp continuous_fst
 
 theorem delayReflRight_zero (γ : Path x y) : delayReflRight 0 γ = γ.trans (Path.refl y) := by
