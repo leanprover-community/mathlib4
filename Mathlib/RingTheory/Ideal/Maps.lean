@@ -846,7 +846,7 @@ end Algebra
 
 namespace NoZeroSMulDivisors
 
-theorem of_algebraMap_ker_eq_bot (R A : Type*) [CommRing R] [Semiring A] [Algebra R A]
+theorem of_ker_algebraMap_eq_bot (R A : Type*) [CommRing R] [Semiring A] [Algebra R A]
     [NoZeroDivisors A] (h : RingHom.ker (algebraMap R A) = ⊥) : NoZeroSMulDivisors R A :=
   of_algebraMap_injective ((RingHom.injective_iff_ker_eq_bot _).mpr h)
 
