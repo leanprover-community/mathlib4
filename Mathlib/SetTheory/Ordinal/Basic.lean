@@ -1002,6 +1002,7 @@ theorem enum_inj {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : {o // 
   rw [EmbeddingLike.apply_eq_iff_eq, Subtype.mk.injEq]
 
 /-- The order isomorphism between ordinals less than `o` and `o.toType`. -/
+@[simps! (config := .lemmasOnly)]
 noncomputable def enumIsoToType (o : Ordinal) : Set.Iio o ≃o o.toType where
   toFun x :=
     enum (α := o.toType) (· < ·) ⟨x.1, by
