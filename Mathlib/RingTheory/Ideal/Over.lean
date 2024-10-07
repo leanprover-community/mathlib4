@@ -511,25 +511,6 @@ instance module_finite_of_liesOver [Module.Finite A B] : Module.Finite (A ⧸ p)
 
 example [Module.Finite A B] : Module.Finite (A ⧸ comap (algebraMap A B) P) (B ⧸ P) := inferInstance
 
-variable [p.IsMaximal] (B : Type*) [CommRing B] [Nontrivial B] [Algebra A B]
-  [NoZeroSMulDivisors A B] [Algebra.IsIntegral A B]
-
-/-- If `B` is integral over `A`, for any maximal ideal `p` in `A`,
-there exists a maximal ideal in `B` lying over `p`. -/
-noncomputable def over_isMaximal : Ideal B :=
-  Classical.choose <| exists_ideal_over_maximal_of_isIntegral p <|
-    (NoZeroSMulDivisors.algebraMap_ker_eq_bot A B).trans_le bot_le
-
-instance IsMaximal.of_over_isMaximal : (p.over_isMaximal B).IsMaximal :=
-  (Classical.choose_spec <| exists_ideal_over_maximal_of_isIntegral p <|
-    (NoZeroSMulDivisors.algebraMap_ker_eq_bot A B).trans_le bot_le).1
-
-instance LiesOver.of_over_isMaximal : (p.over_isMaximal B).LiesOver p where
-  over := (Classical.choose_spec <| exists_ideal_over_maximal_of_isIntegral p <|
-    (NoZeroSMulDivisors.algebraMap_ker_eq_bot A B).trans_le bot_le).2.symm
-
-attribute [irreducible] over_isMaximal
-
 end CommRing
 
 end ideal_liesOver
