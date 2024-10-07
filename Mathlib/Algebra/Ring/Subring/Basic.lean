@@ -74,7 +74,7 @@ namespace Subring
 theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : Subring R → Subsemiring R) :=
   fun _ _ => id
 
-@[mono]
+@[gcongr, mono]
 theorem toSubsemiring_mono : Monotone (toSubsemiring : Subring R → Subsemiring R) :=
   toSubsemiring_strictMono.monotone
 
@@ -82,16 +82,32 @@ theorem toSubsemiring_mono : Monotone (toSubsemiring : Subring R → Subsemiring
 theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Subring R → AddSubgroup R) :=
   fun _ _ => id
 
-@[mono]
+@[gcongr, mono]
 theorem toAddSubgroup_mono : Monotone (toAddSubgroup : Subring R → AddSubgroup R) :=
   toAddSubgroup_strictMono.monotone
+
+@[gcongr]
+lemma toAddSubgroup_lt_toAddSubgroup {s t : Subring R} (hst : s < t) :
+    s.toAddSubgroup < t.toAddSubgroup := hst
+
+@[gcongr]
+lemma toAddSubgroup_le_toAddSubgroup {s t : Subring R} (hst : s ≤ t) :
+    s.toAddSubgroup ≤ t.toAddSubgroup := hst
 
 @[mono]
 theorem toSubmonoid_strictMono : StrictMono (fun s : Subring R => s.toSubmonoid) := fun _ _ => id
 
-@[mono]
+@[gcongr, mono]
 theorem toSubmonoid_mono : Monotone (fun s : Subring R => s.toSubmonoid) :=
   toSubmonoid_strictMono.monotone
+
+@[gcongr]
+lemma toSubmonoid_lt_toSubmonoid {s t : Subring R} (hst : s < t) : s.toSubmonoid < t.toSubmonoid :=
+  hst
+
+@[gcongr]
+lemma toSubmonoid_le_toSubmonoid {s t : Subring R} (hst : s ≤ t) : s.toSubmonoid ≤ t.toSubmonoid :=
+  hst
 
 end Subring
 
@@ -655,7 +671,7 @@ theorem coe_prod (s : Subring R) (t : Subring S) :
 theorem mem_prod {s : Subring R} {t : Subring S} {p : R × S} : p ∈ s.prod t ↔ p.1 ∈ s ∧ p.2 ∈ t :=
   Iff.rfl
 
-@[mono]
+@[gcongr, mono]
 theorem prod_mono ⦃s₁ s₂ : Subring R⦄ (hs : s₁ ≤ s₂) ⦃t₁ t₂ : Subring S⦄ (ht : t₁ ≤ t₂) :
     s₁.prod t₁ ≤ s₂.prod t₂ :=
   Set.prod_mono hs ht

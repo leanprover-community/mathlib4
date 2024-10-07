@@ -150,7 +150,7 @@ theorem span_le_subspace_iff {S : Set (ℙ K V)} {W : Subspace K V} : span S ≤
 
 /-- If a set of points is a subset of another set of points, then its span will be contained in the
 span of that set. -/
-@[mono]
+@[gcongr, mono]
 theorem monotone_span : Monotone (span : Set (ℙ K V) → Subspace K V) :=
   gi.gc.monotone_l
 
