@@ -379,6 +379,12 @@ theorem lift_min {a b : Cardinal} : lift.{u, v} (min a b) = min (lift.{u, v} a) 
 theorem lift_max {a b : Cardinal} : lift.{u, v} (max a b) = max (lift.{u, v} a) (lift.{u, v} b) :=
   lift_monotone.map_max
 
+-- Porting note: simpNF is not happy with universe levels.
+@[simp, nolint simpNF]
+theorem lift_umax_eq {a : Cardinal.{u}} {b : Cardinal.{v}} :
+    lift.{max v w} a = lift.{max u w} b ↔ lift.{v} a = lift.{u} b := by
+  rw [← lift_lift.{v, w, u}, ← lift_lift.{u, w, v}, lift_inj]
+
 theorem le_lift_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
     b ≤ lift.{v, u} a ↔ ∃ a' ≤ a, lift.{v, u} a' = b :=
   liftInitialSeg.le_apply_iff
@@ -386,12 +392,6 @@ theorem le_lift_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
 theorem lt_lift_iff {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
     b < lift.{v, u} a ↔ ∃ a' < a, lift.{v, u} a' = b :=
   liftInitialSeg.lt_apply_iff
-
--- Porting note: simpNF is not happy with universe levels.
-@[simp, nolint simpNF]
-theorem lift_umax_eq {a : Cardinal.{u}} {b : Cardinal.{v}} :
-    lift.{max v w} a = lift.{max u w} b ↔ lift.{v} a = lift.{u} b := by
-  rw [← lift_lift.{v, w, u}, ← lift_lift.{u, w, v}, lift_inj]
 
 /-! ### Basic cardinals -/
 
