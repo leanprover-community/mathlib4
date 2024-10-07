@@ -390,6 +390,20 @@ lemma shiftFunctorAdd'_zero_add' (a b : A) (ha : a = 0) (h : a + b = b) :
 
 end Shift
 
+namespace Functor
+namespace CommShift
+
+universe u' v'
+
+variable {C : Type u} {D : Type u'} [Category.{v,u} C] [Category.{v',u'} D] (F : C ⥤ D) (A : Type*)
+  [AddMonoid A] [HasShift C A] [HasShift D A]
+
+theorem zero' (a : A) (ha : a = 0) : ∀ [self : F.CommShift A],
+    CommShift.iso a = CommShift.isoZero' F a ha := sorry
+
+end CommShift
+end Functor
+
 section
 
 variable {C : Type u} [Category.{v,u} C]
