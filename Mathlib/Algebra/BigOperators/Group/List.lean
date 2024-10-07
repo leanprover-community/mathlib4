@@ -110,7 +110,9 @@ theorem prod_concat : (l.concat a).prod = l.prod * a := by
 
 @[to_additive (attr := simp)]
 theorem prod_join {l : List (List M)} : l.join.prod = (l.map List.prod).prod := by
-  induction l <;> [rfl; simp only [*, List.join, map, prod_append, prod_cons]]
+  induction l with
+  | nil => simp
+  | cons head tail ih => simp only [*, List.join, map, prod_append, prod_cons]
 
 @[to_additive]
 theorem prod_eq_foldr : ∀ {l : List M}, l.prod = foldr (· * ·) 1 l
@@ -120,7 +122,7 @@ theorem prod_eq_foldr : ∀ {l : List M}, l.prod = foldr (· * ·) 1 l
 @[to_additive (attr := simp)]
 theorem prod_replicate (n : ℕ) (a : M) : (replicate n a).prod = a ^ n := by
   induction n with
-  | zero => rw [pow_zero]; rfl
+  | zero => rw [pow_zero, replicate_zero, prod_nil]
   | succ n ih => rw [replicate_succ, prod_cons, ih, pow_succ']
 
 @[to_additive sum_eq_card_nsmul]

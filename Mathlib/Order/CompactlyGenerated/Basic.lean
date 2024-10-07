@@ -608,10 +608,11 @@ theorem exists_setIndependent_isCompl_sSup_atoms (h : sSup { a : α | IsAtom a }
   rw [← disjoint_iff] at con
   have a_dis_Sup_s : Disjoint a (sSup s) := con.mono_right le_sup_right
   -- Porting note: The two following `fun x hx => _` are no-op
-  rw [@s_max (s ∪ {a}) ⟨fun x hx => _, _, fun x hx => _⟩ Set.subset_union_left]
+  rw [s_max ⟨fun x hx => ?_, ?_, fun x hx => ?_⟩ Set.subset_union_left]
   · exact Set.mem_union_right _ (Set.mem_singleton _)
-  · intro x hx
-    rw [Set.mem_union, Set.mem_singleton_iff] at hx
+  · rw [sSup_union, sSup_singleton]
+    exact b_inf_Sup_s.disjoint_sup_right_of_disjoint_sup_left con.symm
+  · rw [Set.mem_union, Set.mem_singleton_iff] at hx
     obtain rfl | xa := eq_or_ne x a
     · simp only [Set.mem_singleton, Set.insert_diff_of_mem, Set.union_singleton]
       exact con.mono_right ((sSup_le_sSup Set.diff_subset).trans le_sup_right)
@@ -625,10 +626,7 @@ theorem exists_setIndependent_isCompl_sSup_atoms (h : sSup { a : α | IsAtom a }
         (s_ind (hx.resolve_right xa)).disjoint_sup_right_of_disjoint_sup_left
           (a_dis_Sup_s.mono_right _).symm
       rw [← sSup_insert, Set.insert_diff_singleton, Set.insert_eq_of_mem (hx.resolve_right xa)]
-  · rw [sSup_union, sSup_singleton]
-    exact b_inf_Sup_s.disjoint_sup_right_of_disjoint_sup_left con.symm
-  · intro x hx
-    rw [Set.mem_union, Set.mem_singleton_iff] at hx
+  · rw [Set.mem_union, Set.mem_singleton_iff] at hx
     obtain hx | rfl := hx
     · exact s_atoms x hx
     · exact ha
