@@ -120,8 +120,7 @@ theorem invOneSubPow_zero_val_eq_one : (invOneSubPow S 0).val = 1 := by
 
 theorem invOneSubPow_val_eq_mk_sub_one_add_choose_of_pos (h : 0 < d) :
     (invOneSubPow S d).val = (mk fun n => Nat.choose (d - 1 + n) (d - 1) : S⟦X⟧) := by
-  rw [show d = d - 1 + 1 by exact (Nat.sub_eq_iff_eq_add h).mp rfl]
-  rfl
+  rw [← Nat.sub_one_add_one_eq_of_pos h, invOneSubPow, add_tsub_cancel_right]
 
 theorem invOneSubPow_val_succ_eq_mk_add_choose :
     (invOneSubPow S (d + 1)).val = (mk fun n => Nat.choose (d + n) d : S⟦X⟧) := rfl
