@@ -93,7 +93,7 @@ def germ (F : X.Presheaf C) (U : Opens X) (x : X) (hx : x ∈ U) : F.obj (op U) 
   colimit.ι ((OpenNhds.inclusion x).op ⋙ F) (op ⟨U, hx⟩)
 
 /-- The germ of a global section of a presheaf at a point. -/
-abbrev Γgerm (F : X.Presheaf C) (x : X) : F.obj (op ⊤) ⟶ stalk F x :=
+def Γgerm (F : X.Presheaf C) (x : X) : F.obj (op ⊤) ⟶ stalk F x :=
   F.germ ⊤ x True.intro
 
 @[reassoc]

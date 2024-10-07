@@ -235,7 +235,7 @@ theorem isIntegral_of_irreducibleSpace_of_isReduced [IsReduced X] [H : Irreducib
     refine ⟨fun {a b} e => ?_⟩
     simp_rw [← basicOpen_eq_bot_iff, ← Opens.not_nonempty_iff_eq_bot]
     by_contra! h
-    obtain ⟨x, ⟨hxU, hx₁⟩, ⟨_, hx₂⟩⟩ :=
+    obtain ⟨x, ⟨hxU, hx₁⟩, _, hx₂⟩ :=
       nonempty_preirreducible_inter (X.basicOpen a).2 (X.basicOpen b).2 h.1 h.2
     replace e := congr_arg (X.presheaf.germ U x hxU) e
     rw [RingHom.map_mul, RingHom.map_zero] at e
