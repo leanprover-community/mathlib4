@@ -30,7 +30,6 @@ namespace Int
 variable {a b c d m n : ℤ}
 
 section Order
-variable {a b c : ℤ}
 
 protected lemma le_rfl : a ≤ a := a.le_refl
 protected lemma lt_or_lt_of_ne : a ≠ b → a < b ∨ b < a := Int.lt_or_gt_of_ne
