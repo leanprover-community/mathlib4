@@ -1330,6 +1330,7 @@ def trAux (s : Γ) : Stmt₁ → σ → Λ'₁₀ × Stmt₀
 local notation "Cfg₁₀" => TM0.Cfg Γ Λ'₁₀
 
 /-- The translated TM0 machine (given the TM1 machine input). -/
+@[nolint inhabitedNonempty]
 def tr : TM0.Machine Γ Λ'₁₀
   | (none, _), _ => none
   | (some q, v), s => some (trAux M s q v)
