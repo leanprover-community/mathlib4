@@ -29,6 +29,9 @@ These notations belong to the `InitialSeg` locale.
 * `r ≺i s`: the type of principal segment embeddings of `r` into `s`.
 * `α ≤i β` is an abbreviation for `(· < ·) ≼i (· < ·)`.
 * `α <i β` is an abbreviation for `(· < ·) ≺i (· < ·)`.
+
+Due to `InitialSeg.ltOrEq`, we can think of principal segment embeddings as a "strict" version of
+initial segment embeddings.
 -/
 
 
