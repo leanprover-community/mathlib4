@@ -17,7 +17,7 @@ for all `a : A`), then the quotient category `Quotient r` is equipped with
 a shift.
 
 The condition `r.IsCompatibleWithShift A` on the relation `r` is a class so that
-the shift can be automatically infered on the quotient category.
+the shift can be automatically inferred on the quotient category.
 
 -/
 

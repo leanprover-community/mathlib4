@@ -217,7 +217,7 @@ theorem torusIntegral_succAbove
   have hem : MeasurePreserving e :=
     (volume_preserving_piFinSuccAbove (fun _ : Fin (n + 1) => ℝ) i).symm _
   have heπ : (e ⁻¹' Icc 0 fun _ => 2 * π) = Icc 0 (2 * π) ×ˢ Icc (0 : ℝⁿ) fun _ => 2 * π :=
-    ((OrderIso.piFinSuccAboveIso (fun _ => ℝ) i).symm.preimage_Icc _ _).trans (Icc_prod_eq _ _)
+    ((Fin.insertNthOrderIso (fun _ => ℝ) i).preimage_Icc _ _).trans (Icc_prod_eq _ _)
   rw [torusIntegral, ← hem.map_eq, setIntegral_map_equiv, heπ, Measure.volume_eq_prod,
     setIntegral_prod, circleIntegral_def_Icc]
   · refine setIntegral_congr measurableSet_Icc fun θ _ => ?_
@@ -225,7 +225,7 @@ theorem torusIntegral_succAbove
       deriv_circleMap, i.prod_univ_succAbove _, smul_smul, torusMap, circleMap_zero]
     refine setIntegral_congr measurableSet_Icc fun Θ _ => ?_
     simp only [MeasurableEquiv.piFinSuccAbove_symm_apply, i.insertNth_apply_same,
-      i.insertNth_apply_succAbove, (· ∘ ·)]
+      i.insertNth_apply_succAbove, (· ∘ ·), Fin.insertNthEquiv, Equiv.coe_fn_mk]
     congr 2
     simp only [funext_iff, i.forall_iff_succAbove, circleMap, Fin.insertNth_apply_same,
       eq_self_iff_true, Fin.insertNth_apply_succAbove, imp_true_iff, and_self_iff]

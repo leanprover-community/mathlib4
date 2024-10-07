@@ -364,7 +364,7 @@ theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
     rw [← he] at h'
     exact h' rfl
   · have : m = m' ∧ w.toList = w'.toList := by
-      simpa [cons, rcons, dif_neg hm, dif_neg hm', true_and_iff, eq_self_iff_true, Subtype.mk_eq_mk,
+      simpa [cons, rcons, dif_neg hm, dif_neg hm', eq_self_iff_true, Subtype.mk_eq_mk,
         heq_iff_eq, ← Subtype.ext_iff_val] using he
     rcases this with ⟨rfl, h⟩
     congr
@@ -772,9 +772,10 @@ theorem mulHead_head {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.he
 theorem mulHead_prod {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.head ≠ 1) :
     (mulHead w x hnotone).prod = of x * w.prod := by
   unfold mulHead
-  induction' w with _ _ _ _ _ _ _ _ _ _ w_ih_w₁ w_ih_w₂
-  · simp [mulHead, replaceHead]
-  · specialize w_ih_w₁ _ hnotone
+  induction w with
+  | singleton => simp [mulHead, replaceHead]
+  | append _ _ _ w_ih_w₁ w_ih_w₂ =>
+    specialize w_ih_w₁ _ hnotone
     clear w_ih_w₂
     simp? [replaceHead, ← mul_assoc] at * says
       simp only [replaceHead, head, append_prod, ← mul_assoc] at *

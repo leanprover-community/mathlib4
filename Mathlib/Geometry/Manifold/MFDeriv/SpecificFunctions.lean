@@ -158,7 +158,7 @@ variable {c : M'}
 theorem hasMFDerivAt_const (c : M') (x : M) :
     HasMFDerivAt I I' (fun _ : M => c) x (0 : TangentSpace I x →L[𝕜] TangentSpace I' c) := by
   refine ⟨continuous_const.continuousAt, ?_⟩
-  simp only [writtenInExtChartAt, (· ∘ ·), hasFDerivWithinAt_const]
+  simp only [writtenInExtChartAt, Function.comp_def, hasFDerivWithinAt_const]
 
 theorem hasMFDerivWithinAt_const (c : M') (s : Set M) (x : M) :
     HasMFDerivWithinAt I I' (fun _ : M => c) s x (0 : TangentSpace I x →L[𝕜] TangentSpace I' c) :=
@@ -324,7 +324,7 @@ theorem MDifferentiableAt.mfderiv_prod {f : M → M'} {g : M → M''} {x : M}
   classical
   simp_rw [mfderiv, if_pos (hf.prod_mk hg), if_pos hf, if_pos hg]
   exact hf.differentiableWithinAt_writtenInExtChartAt.fderivWithin_prod
-    hg.differentiableWithinAt_writtenInExtChartAt (I.unique_diff _ (mem_range_self _))
+    hg.differentiableWithinAt_writtenInExtChartAt (I.uniqueDiffOn _ (mem_range_self _))
 
 variable (I I' I'')
 

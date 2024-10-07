@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Winston Yin
 -/
 import Mathlib.Analysis.SpecialFunctions.Integrals
+import Mathlib.Topology.Algebra.Order.Floor
 import Mathlib.Topology.MetricSpace.Contracting
 
 /-!
@@ -284,7 +285,7 @@ variable [CompleteSpace E]
 theorem hasDerivWithinAt_next (t : Icc v.tMin v.tMax) :
     HasDerivWithinAt (f.next ∘ v.proj) (v t (f t)) (Icc v.tMin v.tMax) t := by
   haveI : Fact ((t : ℝ) ∈ Icc v.tMin v.tMax) := ⟨t.2⟩
-  simp only [(· ∘ ·), next_apply]
+  simp only [Function.comp_def, next_apply]
   refine HasDerivWithinAt.const_add _ ?_
   have : HasDerivWithinAt (∫ τ in v.t₀..·, f.vComp τ) (f.vComp t) (Icc v.tMin v.tMax) t :=
     integral_hasDerivWithinAt_right (f.intervalIntegrable_vComp _ _)
@@ -301,7 +302,7 @@ section
 
 theorem exists_contracting_iterate :
     ∃ (N : ℕ) (K : _), ContractingWith K (FunSpace.next : v.FunSpace → v.FunSpace)^[N] := by
-  rcases ((Real.tendsto_pow_div_factorial_atTop (v.L * v.tDist)).eventually
+  rcases ((FloorSemiring.tendsto_pow_div_factorial_atTop (v.L * v.tDist)).eventually
     (gt_mem_nhds zero_lt_one)).exists with ⟨N, hN⟩
   have : (0 : ℝ) ≤ (v.L * v.tDist) ^ N / N ! :=
     div_nonneg (pow_nonneg (mul_nonneg v.L.2 v.tDist_nonneg) _) (Nat.cast_nonneg _)

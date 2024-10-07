@@ -206,9 +206,9 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_stolzSet
     calc
       _ ≤ ‖1 - z‖ * ∑ i ∈ range B₁, ‖l - s (i + 1)‖ := by
         gcongr; nth_rw 3 [← mul_one ‖_‖]
-        gcongr; exact pow_le_one _ (norm_nonneg _) zn.le
+        gcongr; exact pow_le_one₀ (norm_nonneg _) zn.le
       _ ≤ ‖1 - z‖ * (F + 1) := by gcongr; linarith only
-      _ < _ := by rwa [norm_sub_rev, lt_div_iff (by positivity)] at zd
+      _ < _ := by rwa [norm_sub_rev, lt_div_iff₀ (by positivity)] at zd
   have S₂ : ‖1 - z‖ * ∑ i ∈ Ico B₁ (max B₁ B₂), ‖l - s (i + 1)‖ * ‖z‖ ^ i < ε / 4 :=
     calc
       _ ≤ ‖1 - z‖ * ∑ i ∈ Ico B₁ (max B₁ B₂), ε / 4 / M * ‖z‖ ^ i := by
@@ -268,6 +268,5 @@ theorem tendsto_tsum_powerSeries_nhdsWithin_lt
   convert h
   simp_rw [Function.comp_apply, dist_eq_norm]
   norm_cast
-  rw [norm_real]
 
 end Real

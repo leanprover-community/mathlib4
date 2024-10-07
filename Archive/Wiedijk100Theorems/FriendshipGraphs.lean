@@ -81,8 +81,10 @@ include hG in
 theorem adjMatrix_sq_of_ne {v w : V} (hvw : v ≠ w) :
     (G.adjMatrix R ^ 2 : Matrix V V R) v w = 1 := by
   rw [sq, ← Nat.cast_one, ← hG hvw]
-  simp [commonNeighbors, neighborFinset_eq_filter, Finset.filter_filter, and_comm,
-    ← neighborFinset_def]
+  simp only [mul_adjMatrix_apply, neighborFinset_eq_filter, adjMatrix_apply,
+    sum_boole, filter_filter, and_comm, commonNeighbors,
+    Fintype.card_ofFinset (s := filter (fun x ↦ x ∈ G.neighborSet v ∩ G.neighborSet w) univ),
+    Set.mem_inter_iff, mem_neighborSet]
 
 include hG in
 /-- This calculation amounts to counting the number of length 3 walks between nonadjacent vertices.
@@ -177,7 +179,7 @@ theorem card_of_regular (hd : G.IsRegularOfDegree d) : d + (Fintype.card V - 1) 
   trans ((G.adjMatrix ℕ ^ 2) *ᵥ (fun _ => 1)) v
   · rw [adjMatrix_sq_of_regular hG hd, mulVec, dotProduct, ← insert_erase (mem_univ v)]
     simp only [sum_insert, mul_one, if_true, Nat.cast_id, eq_self_iff_true, mem_erase, not_true,
-      Ne, not_false_iff, add_right_inj, false_and_iff, of_apply]
+      Ne, not_false_iff, add_right_inj, false_and, of_apply]
     rw [Finset.sum_const_nat, card_erase_of_mem (mem_univ v), mul_one]; · rfl
     intro x hx; simp [(ne_of_mem_erase hx).symm]
   · rw [sq, ← mulVec_mulVec]

@@ -13,7 +13,7 @@ import Mathlib.Tactic.IntervalCases
 # Basic lemmas on prime factorizations
 -/
 
-open Nat Finset List Finsupp
+open Finset List Finsupp
 
 namespace Nat
 variable {a b m n p : ℕ}
@@ -309,7 +309,7 @@ theorem dvd_iff_prime_pow_dvd_dvd (n d : ℕ) :
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
   rcases eq_or_ne d 0 with (rfl | hd)
-  · simp only [zero_dvd_iff, hn, false_iff_iff, not_forall]
+  · simp only [zero_dvd_iff, hn, false_iff, not_forall]
     exact ⟨2, n, prime_two, dvd_zero _, mt (le_of_dvd hn.bot_lt) (lt_two_pow n).not_le⟩
   refine ⟨fun h p k _ hpkd => dvd_trans hpkd h, ?_⟩
   rw [← factorization_prime_le_iff_dvd hd hn]
@@ -388,7 +388,7 @@ lemma factorizationLCMRight_pos :
   rw [factorizationLCMRight, Finsupp.prod_ne_zero_iff]
   intro p _ H
   by_cases h : b.factorization p ≤ a.factorization p
-  · simp only [h, reduceIte, pow_eq_zero_iff', ne_eq] at H
+  · simp only [h, reduceIte, pow_eq_zero_iff', ne_eq, reduceCtorEq] at H
   · simp only [h, ↓reduceIte, pow_eq_zero_iff', ne_eq] at H
     simpa [H.1] using H.2
 
@@ -455,6 +455,10 @@ theorem setOf_pow_dvd_eq_Icc_factorization {n p : ℕ} (pp : p.Prime) (hn : n �
   ext
   simp [Nat.lt_succ_iff, one_le_iff_ne_zero, pp.pow_dvd_iff_le_factorization hn]
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefix below.
+-/
 /-- The set of positive powers of prime `p` that divide `n` is exactly the set of
 positive natural numbers up to `n.factorization p`. -/
 theorem Icc_factorization_eq_pow_dvd (n : ℕ) {p : ℕ} (pp : Prime p) :
@@ -462,7 +466,7 @@ theorem Icc_factorization_eq_pow_dvd (n : ℕ) {p : ℕ} (pp : Prime p) :
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
   ext x
-  simp only [mem_Icc, Finset.mem_filter, mem_Ico, and_assoc, and_congr_right_iff,
+  simp only [mem_Icc, Finset.mem_filter, mem_Ico, _root_.and_assoc, and_congr_right_iff,
     pp.pow_dvd_iff_le_factorization hn, iff_and_self]
   exact fun _ H => lt_of_le_of_lt H (factorization_lt p hn)
 
@@ -530,7 +534,7 @@ theorem prod_pow_prime_padicValNat (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < 
 
 -- TODO: Port lemmas from `Data/Nat/Multiplicity` to here, re-written in terms of `factorization`
 /-- Exactly `n / p` naturals in `[1, n]` are multiples of `p`.
-See `Nat.card_multiples'` for an alternative spelling of the statement.  -/
+See `Nat.card_multiples'` for an alternative spelling of the statement. -/
 theorem card_multiples (n p : ℕ) : card ((Finset.range n).filter fun e => p ∣ e + 1) = n / p := by
   induction' n with n hn
   · simp

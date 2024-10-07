@@ -145,17 +145,17 @@ variable [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R
 variable (R M)
 
 -- see Note [lower instance priority]
-instance (priority := 100) IsNoetherian.finite [IsNoetherian R M] : Finite R M :=
+instance (priority := 100) IsNoetherian.finite [IsNoetherian R M] : Module.Finite R M :=
   ⟨IsNoetherian.noetherian ⊤⟩
 
 instance {R₁ S : Type*} [CommSemiring R₁] [Semiring S] [Algebra R₁ S]
-    [IsNoetherian R₁ S] (I : Ideal S) : Finite R₁ I :=
+    [IsNoetherian R₁ S] (I : Ideal S) : Module.Finite R₁ I :=
   IsNoetherian.finite R₁ ((I : Submodule S S).restrictScalars R₁)
 
 variable {R M}
 
 theorem Finite.of_injective [IsNoetherian R N] (f : M →ₗ[R] N) (hf : Function.Injective f) :
-    Finite R M :=
+    Module.Finite R M :=
   ⟨fg_of_injective f hf⟩
 
 end Module
@@ -381,9 +381,6 @@ theorem LinearIndependent.set_finite_of_isNoetherian [Nontrivial R] {s : Set M}
     (hi : LinearIndependent R ((↑) : s → M)) : s.Finite :=
   @Set.toFinite _ _ hi.finite_of_isNoetherian
 
-@[deprecated (since := "2023-12-30")]
-alias finite_of_linearIndependent := LinearIndependent.set_finite_of_isNoetherian
-
 /-- If the first and final modules in an exact sequence are Noetherian,
   then the middle module is also Noetherian. -/
 theorem isNoetherian_of_range_eq_ker [IsNoetherian R P]
@@ -550,12 +547,12 @@ theorem isNoetherian_of_fg_of_noetherian {R M} [Ring R] [AddCommGroup M] [Module
   · rw [LinearMap.range_eq_top]
     rintro ⟨n, hn⟩
     change n ∈ N at hn
-    rw [← hs, ← Set.image_id (s : Set M), Finsupp.mem_span_image_iff_total] at hn
+    rw [← hs, ← Set.image_id (s : Set M), Finsupp.mem_span_image_iff_linearCombination] at hn
     rcases hn with ⟨l, hl1, hl2⟩
     refine ⟨fun x => l x, Subtype.ext ?_⟩
     change (∑ i ∈ s.attach, l i • (i : M)) = n
     rw [s.sum_attach fun i ↦ l i • i, ← hl2,
-      Finsupp.total_apply, Finsupp.sum, eq_comm]
+      Finsupp.linearCombination_apply, Finsupp.sum, eq_comm]
     refine Finset.sum_subset hl1 fun x _ hx => ?_
     rw [Finsupp.not_mem_support_iff.1 hx, zero_smul]
 

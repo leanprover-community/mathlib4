@@ -3,12 +3,12 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Algebra.Star.Order
+import Mathlib.Algebra.Algebra.Field
+import Mathlib.Algebra.Order.BigOperators.Expect
+import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Analysis.CStarAlgebra.Basic
 import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
-import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Data.Real.Sqrt
-import Mathlib.Algebra.Algebra.Field
 
 /-!
 # `RCLike`: a typeclass for ℝ or ℂ
@@ -40,7 +40,7 @@ their counterparts in `Mathlib/Analysis/Complex/Basic.lean` (which causes linter
 A few lemmas requiring heavier imports are in `Mathlib/Data/RCLike/Lemmas.lean`.
 -/
 
-open scoped ComplexConjugate
+open scoped BigOperators ComplexConjugate
 
 section
 
@@ -231,9 +231,13 @@ theorem norm_ofReal (r : ℝ) : ‖(r : K)‖ = |r| :=
 /-! ### Characteristic zero -/
 
 -- see Note [lower instance priority]
-/-- ℝ and ℂ are both of characteristic zero.  -/
+/-- ℝ and ℂ are both of characteristic zero. -/
 instance (priority := 100) charZero_rclike : CharZero K :=
   (RingHom.charZero_iff (algebraMap ℝ K).injective).1 inferInstance
+
+@[rclike_simps, norm_cast]
+lemma ofReal_expect {α : Type*} (s : Finset α) (f : α → ℝ) : 𝔼 i ∈ s, f i = 𝔼 i ∈ s, (f i : K) :=
+  map_expect (algebraMap ..) ..
 
 /-! ### The imaginary unit, `I` -/
 
@@ -318,16 +322,14 @@ open List in
 /-- There are several equivalent ways to say that a number `z` is in fact a real number. -/
 theorem is_real_TFAE (z : K) : TFAE [conj z = z, ∃ r : ℝ, (r : K) = z, ↑(re z) = z, im z = 0] := by
   tfae_have 1 → 4
-  · intro h
+  | h => by
     rw [← @ofReal_inj K, im_eq_conj_sub, h, sub_self, mul_zero, zero_div,
       ofReal_zero]
   tfae_have 4 → 3
-  · intro h
+  | h => by
     conv_rhs => rw [← re_add_im z, h, ofReal_zero, zero_mul, add_zero]
-  tfae_have 3 → 2
-  · exact fun h => ⟨_, h⟩
-  tfae_have 2 → 1
-  · exact fun ⟨r, hr⟩ => hr ▸ conj_ofReal _
+  tfae_have 3 → 2 := fun h => ⟨_, h⟩
+  tfae_have 2 → 1 := fun ⟨r, hr⟩ => hr ▸ conj_ofReal _
   tfae_finish
 
 theorem conj_eq_iff_real {z : K} : conj z = z ↔ ∃ r : ℝ, z = (r : K) :=
@@ -503,17 +505,22 @@ theorem normSq_inv (z : K) : normSq z⁻¹ = (normSq z)⁻¹ :=
 theorem normSq_div (z w : K) : normSq (z / w) = normSq z / normSq w :=
   map_div₀ normSq z w
 
-@[rclike_simps] -- porting note (#10618): was `simp`
-theorem norm_conj {z : K} : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_normSq_eq_norm, normSq_conj]
+@[simp 1100, rclike_simps]
+theorem norm_conj (z : K) : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_normSq_eq_norm, normSq_conj]
+
+@[simp, rclike_simps] lemma nnnorm_conj (z : K) : ‖conj z‖₊ = ‖z‖₊ := by simp [nnnorm]
 
 instance (priority := 100) : CStarRing K where
-  norm_mul_self_le x := le_of_eq <| ((norm_mul _ _).trans <| congr_arg (· * ‖x‖) norm_conj).symm
+  norm_mul_self_le x := le_of_eq <| ((norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_conj _)).symm
 
 /-! ### Cast lemmas -/
 
 @[rclike_simps, norm_cast]
 theorem ofReal_natCast (n : ℕ) : ((n : ℝ) : K) = n :=
   map_natCast (algebraMap ℝ K) n
+
+@[rclike_simps, norm_cast]
+lemma ofReal_nnratCast (q : ℚ≥0) : ((q : ℝ) : K) = q := map_nnratCast (algebraMap ℝ K) _
 
 @[simp, rclike_simps] -- Porting note: removed `norm_cast`
 theorem natCast_re (n : ℕ) : re (n : K) = n := by rw [← ofReal_natCast, ofReal_re]
@@ -575,20 +582,55 @@ theorem norm_natCast (n : ℕ) : ‖(n : K)‖ = n := by
   rw [← ofReal_natCast]
   exact norm_of_nonneg (Nat.cast_nonneg n)
 
+@[simp, rclike_simps, norm_cast] lemma nnnorm_natCast (n : ℕ) : ‖(n : K)‖₊ = n := by simp [nnnorm]
+
 @[simp, rclike_simps]
 theorem norm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(no_index (OfNat.ofNat n) : K)‖ = OfNat.ofNat n :=
   norm_natCast n
 
+@[simp, rclike_simps]
+lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] : ‖(no_index (OfNat.ofNat n) : K)‖₊ = OfNat.ofNat n :=
+  nnnorm_natCast n
+
+lemma norm_two : ‖(2 : K)‖ = 2 := norm_ofNat 2
+lemma nnnorm_two : ‖(2 : K)‖₊ = 2 := nnnorm_ofNat 2
+
+@[simp, rclike_simps, norm_cast]
+lemma norm_nnratCast (q : ℚ≥0) : ‖(q : K)‖ = q := by
+  rw [← ofReal_nnratCast]; exact norm_of_nonneg q.cast_nonneg
+
+@[simp, rclike_simps, norm_cast]
+lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : K)‖₊ = q := by simp [nnnorm]
+
 variable (K) in
 lemma norm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) : ‖n • x‖ = n • ‖x‖ := by
-  rw [← Nat.cast_smul_eq_nsmul K, norm_smul, RCLike.norm_natCast, nsmul_eq_mul]
+  simpa [Nat.cast_smul_eq_nsmul] using norm_smul (n : K) x
+
+variable (K) in
+lemma nnnorm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) :
+    ‖n • x‖₊ = n • ‖x‖₊ := by simpa [Nat.cast_smul_eq_nsmul] using nnnorm_smul (n : K) x
+
+section NormedField
+variable [NormedField E] [CharZero E] [NormedSpace K E]
+include K
+
+variable (K) in
+lemma norm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖ = q • ‖x‖ := by
+  simpa [NNRat.cast_smul_eq_nnqsmul] using norm_smul (q : K) x
+
+variable (K) in
+lemma nnnorm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖₊ = q • ‖x‖₊ := by
+  simpa [NNRat.cast_smul_eq_nnqsmul] using nnnorm_smul (q : K) x
+
+@[bound]
+lemma norm_expect_le {ι : Type*} {s : Finset ι} {f : ι → E} : ‖𝔼 i ∈ s, f i‖ ≤ 𝔼 i ∈ s, ‖f i‖ :=
+  Finset.le_expect_of_subadditive norm_zero norm_add_le fun _ _ ↦ by rw [norm_nnqsmul K]
+
+end NormedField
 
 theorem mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq_def', sq]
 
 attribute [rclike_simps] norm_zero norm_one norm_eq_zero abs_norm norm_inv norm_div
-
--- Porting note: removed @[simp, rclike_simps], b/c generalized to `norm_ofNat`
-theorem norm_two : ‖(2 : K)‖ = 2 := norm_ofNat 2
 
 theorem abs_re_le_norm (z : K) : |re z| ≤ ‖z‖ := by
   rw [mul_self_le_mul_self_iff (abs_nonneg _) (norm_nonneg _), abs_mul_abs_self, mul_self_norm]
@@ -621,11 +663,11 @@ open IsAbsoluteValue
 
 theorem abs_re_div_norm_le_one (z : K) : |re z / ‖z‖| ≤ 1 := by
   rw [abs_div, abs_norm]
-  exact div_le_one_of_le (abs_re_le_norm _) (norm_nonneg _)
+  exact div_le_one_of_le₀ (abs_re_le_norm _) (norm_nonneg _)
 
 theorem abs_im_div_norm_le_one (z : K) : |im z / ‖z‖| ≤ 1 := by
   rw [abs_div, abs_norm]
-  exact div_le_one_of_le (abs_im_le_norm _) (norm_nonneg _)
+  exact div_le_one_of_le₀ (abs_im_le_norm _) (norm_nonneg _)
 
 theorem norm_I_of_ne_zero (hI : (I : K) ≠ 0) : ‖(I : K)‖ = 1 := by
   rw [← mul_self_inj_of_nonneg (norm_nonneg I) zero_le_one, one_mul, ← norm_mul,
@@ -803,7 +845,7 @@ theorem toOrderedSMul : OrderedSMul ℝ K :=
 
 scoped[ComplexOrder] attribute [instance] RCLike.toOrderedSMul
 
-/-- A star algebra over `K` has a scalar multiplication that respects the order.  -/
+/-- A star algebra over `K` has a scalar multiplication that respects the order. -/
 lemma _root_.StarModule.instOrderedSMul {A : Type*} [NonUnitalRing A] [StarRing A] [PartialOrder A]
     [StarOrderedRing A] [Module K A] [StarModule K A] [IsScalarTower K A A] [SMulCommClass K A A] :
     OrderedSMul K A where
@@ -922,7 +964,7 @@ theorem conjAe_coe : (conjAe : K → K) = conj :=
 
 /-- Conjugate as a linear isometry -/
 noncomputable def conjLIE : K ≃ₗᵢ[ℝ] K :=
-  ⟨conjAe.toLinearEquiv, fun _ => norm_conj⟩
+  ⟨conjAe.toLinearEquiv, norm_conj⟩
 
 @[simp, rclike_simps]
 theorem conjLIE_apply : (conjLIE : K → K) = conj :=
@@ -1029,3 +1071,64 @@ lemma map_neg_eq_conj [AddCommGroup G] (ψ : AddChar G K) (x : G) : ψ (-x) = co
   rw [map_neg_eq_inv, inv_apply_eq_conj]
 
 end AddChar
+
+section
+
+/-- A mixin over a normed field, saying that the norm field structure is the same as `ℝ` or `ℂ`.
+To endow such a field with a compatible `RCLike` structure in a proof, use
+`letI := IsRCLikeNormedField.rclike 𝕜`.-/
+class IsRCLikeNormedField (𝕜 : Type*) [hk : NormedField 𝕜] : Prop :=
+  out : ∃ h : RCLike 𝕜, hk = h.toNormedField
+
+instance (priority := 100) (𝕜 : Type*) [h : RCLike 𝕜] : IsRCLikeNormedField 𝕜 := ⟨⟨h, rfl⟩⟩
+
+/-- A copy of an `RCLike` field in which the `NormedField` field is adjusted to be become defeq
+to a propeq one. -/
+noncomputable def RCLike.copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜) (hk : NormedField 𝕜)
+    (h'' : hk = h.toNormedField) : RCLike 𝕜 where
+  __ := hk
+  toPartialOrder := h.toPartialOrder
+  toDecidableEq := h.toDecidableEq
+  complete := by subst h''; exact h.complete
+  lt_norm_lt := by subst h''; exact h.lt_norm_lt
+  -- star fields
+  star := (@StarMul.toInvolutiveStar _ (_) (@StarRing.toStarMul _ (_) h.toStarRing)).star
+  star_involutive := by subst h''; exact h.star_involutive
+  star_mul := by subst h''; exact h.star_mul
+  star_add := by subst h''; exact h.star_add
+  -- algebra fields
+  smul := (@Algebra.toSMul _ _ _ (_) (@NormedAlgebra.toAlgebra _ _ _ (_) h.toNormedAlgebra)).smul
+  toFun := @Algebra.toRingHom _ _ _ (_) (@NormedAlgebra.toAlgebra _ _ _ (_) h.toNormedAlgebra)
+  map_one' := by subst h''; exact h.map_one'
+  map_mul' := by subst h''; exact h.map_mul'
+  map_zero' := by subst h''; exact h.map_zero'
+  map_add' := by subst h''; exact h.map_add'
+  commutes' := by subst h''; exact h.commutes'
+  smul_def' := by subst h''; exact h.smul_def'
+  norm_smul_le := by subst h''; exact h.norm_smul_le
+  -- RCLike fields
+  re := by subst h''; exact h.re
+  im := by subst h''; exact h.im
+  I := h.I
+  I_re_ax := by subst h''; exact h.I_re_ax
+  I_mul_I_ax := by subst h''; exact h.I_mul_I_ax
+  re_add_im_ax := by subst h''; exact h.re_add_im_ax
+  ofReal_re_ax := by subst h''; exact h.ofReal_re_ax
+  ofReal_im_ax := by subst h''; exact h.ofReal_im_ax
+  mul_re_ax := by subst h''; exact h.mul_re_ax
+  mul_im_ax := by subst h''; exact h.mul_im_ax
+  conj_re_ax := by subst h''; exact h.conj_re_ax
+  conj_im_ax := by subst h''; exact h.conj_im_ax
+  conj_I_ax := by subst h''; exact h.conj_I_ax
+  norm_sq_eq_def_ax := by subst h''; exact h.norm_sq_eq_def_ax
+  mul_im_I_ax := by subst h''; exact h.mul_im_I_ax
+  le_iff_re_im := by subst h''; exact h.le_iff_re_im
+
+/-- Given a normed field `𝕜` satisfying `IsRCLikeNormedField 𝕜`, build an associated `RCLike 𝕜`
+structure on `𝕜` which is definitionally compatible with the given normed field structure. -/
+noncomputable def IsRCLikeNormedField.rclike (𝕜 : Type*)
+    [hk : NormedField 𝕜] [h : IsRCLikeNormedField 𝕜] : RCLike 𝕜 := by
+  choose p hp using h.out
+  exact p.copy_of_normedField hk hp
+
+end

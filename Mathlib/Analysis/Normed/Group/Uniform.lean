@@ -326,7 +326,7 @@ theorem mul_lipschitzWith (hf : AntilipschitzWith Kf f) (hg : LipschitzWith Kg g
   letI : PseudoMetricSpace α := PseudoEMetricSpace.toPseudoMetricSpace hf.edist_ne_top
   refine AntilipschitzWith.of_le_mul_dist fun x y => ?_
   rw [NNReal.coe_inv, ← _root_.div_eq_inv_mul]
-  rw [le_div_iff (NNReal.coe_pos.2 <| tsub_pos_iff_lt.2 hK)]
+  rw [le_div_iff₀ (NNReal.coe_pos.2 <| tsub_pos_iff_lt.2 hK)]
   rw [mul_comm, NNReal.coe_sub hK.le, _root_.sub_mul]
   -- Porting note: `ENNReal.sub_mul` should be `protected`?
   calc
@@ -378,5 +378,18 @@ theorem cauchySeq_prod_of_eventually_eq {u v : ℕ → E} {N : ℕ} (huv : ∀ n
   rw [eventually_constant_prod _ (add_le_add_right hn 1)]
   intro m hm
   simp [huv m (le_of_lt hm)]
+
+@[to_additive CauchySeq.norm_bddAbove]
+lemma CauchySeq.mul_norm_bddAbove {G : Type*} [SeminormedGroup G] {u : ℕ → G}
+    (hu : CauchySeq u) : BddAbove (Set.range (fun n ↦ ‖u n‖)) := by
+  obtain ⟨C, -, hC⟩ := cauchySeq_bdd hu
+  simp_rw [SeminormedGroup.dist_eq] at hC
+  have : ∀ n, ‖u n‖ ≤ C + ‖u 0‖ := by
+    intro n
+    rw [add_comm]
+    refine (norm_le_norm_add_norm_div' (u n) (u 0)).trans ?_
+    simp [(hC _ _).le]
+  rw [bddAbove_def]
+  exact ⟨C + ‖u 0‖, by simpa using this⟩
 
 end SeminormedCommGroup

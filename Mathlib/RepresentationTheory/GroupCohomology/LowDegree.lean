@@ -82,7 +82,7 @@ def twoCochainsLequiv : (inhomogeneousCochains A).X 2 ≃ₗ[k] G × G → A :=
 /-- The 3rd object in the complex of inhomogeneous cochains of `A : Rep k G` is isomorphic
 to `Fun(G³, A)` as a `k`-module. -/
 def threeCochainsLequiv : (inhomogeneousCochains A).X 3 ≃ₗ[k] G × G × G → A :=
-  LinearEquiv.funCongrLeft k A <| ((Equiv.piFinSucc 2 G).trans
+  LinearEquiv.funCongrLeft k A <| ((Fin.consEquiv _).symm.trans
     ((Equiv.refl G).prodCongr (piFinTwoEquiv fun _ => G))).symm
 
 end Cochains
@@ -146,7 +146,7 @@ theorem dZero_comp_eq : dZero A ∘ₗ (zeroCochainsLequiv A) =
     oneCochainsLequiv A ∘ₗ (inhomogeneousCochains A).d 0 1 := by
   ext x y
   show A.ρ y (x default) - x default = _ + ({0} : Finset _).sum _
-  simp_rw [Fin.coe_fin_one, zero_add, pow_one, neg_smul, one_smul,
+  simp_rw [Fin.val_eq_zero, zero_add, pow_one, neg_smul, one_smul,
     Finset.sum_singleton, sub_eq_add_neg]
   rcongr i <;> exact Fin.elim0 i
 
