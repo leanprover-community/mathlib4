@@ -10,7 +10,7 @@ import Mathlib.Data.PNat.Equiv
 import Mathlib.Logic.Equiv.Nat
 import Mathlib.Order.Directed
 import Mathlib.Order.RelIso.Basic
-import Mathlib.Tactic.LintDecidable
+import Mathlib.Tactic.Linter.UnusedAssumptionInType
 
 /-!
 # Encodable types

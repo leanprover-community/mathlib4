@@ -11,7 +11,7 @@ import Batteries.Tactic.Lint.Basic
 import Mathlib.Data.Nat.Notation
 import Mathlib.Data.Int.Notation
 import Mathlib.Order.Defs
-import Mathlib.Tactic.LintDecidable
+import Mathlib.Tactic.Linter.UnusedAssumptionInType
 
 /-!
 # Basic logic properties

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Order.GaloisConnection
-import Mathlib.Tactic.LintDecidable
+import Mathlib.Tactic.Linter.UnusedAssumptionInType
 
 /-!
 # Heyting regular elements

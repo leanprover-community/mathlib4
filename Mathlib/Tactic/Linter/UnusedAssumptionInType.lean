@@ -7,7 +7,13 @@ import Batteries.Tactic.Lint
 import Mathlib.Lean.Expr.Basic
 
 /-!
-# Linter for `Decidable`/`Encodable`/`Inhabited`
+# Linters for unused assumptions in a type
+
+This file defines a collection of similar linters, which check for declarations assuming a
+hypothesis of the form `[Type p]` which contains an assumption about `p` that is not used:
+this includes `Decidable p`, `Encodable p`, `Inhabited p` and others.
+Usually, the code can be restructured to avoid these assumptions, making the statements in question
+more general.
 -/
 
 namespace Batteries.Tactic.Lint

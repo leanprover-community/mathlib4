@@ -12,7 +12,7 @@ import Mathlib.Logic.Function.Iterate
 import Mathlib.Order.Basic
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Data.List.GetD
-import Mathlib.Tactic.LintDecidable
+import Mathlib.Tactic.Linter.UnusedAssumptionInType
 
 /-!
 # Turing machines

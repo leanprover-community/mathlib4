@@ -10,7 +10,7 @@ import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Fintype.Perm
 import Mathlib.Data.Set.Card
 import Mathlib.SetTheory.Cardinal.Finite
-import Mathlib.Tactic.LintDecidable
+import Mathlib.Tactic.Linter.UnusedAssumptionInType
 
 /-!  Subgroup of `Equiv.Perm α` preserving a function
 
