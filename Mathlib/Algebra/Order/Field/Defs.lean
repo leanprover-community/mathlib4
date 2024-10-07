@@ -77,13 +77,13 @@ lemma le_inv_mul_right (ha : a ≤ 0) : a ≤ a * b⁻¹ * b := by
   obtain rfl | hb := eq_or_ne b 0 <;> simp [*]
 
 /-- Equality holds when `c ≠ 0`. See `mul_div_mul_left`. -/
-lemma mul_div_mul_left_le (ha : 0 ≤ a) (hb : 0 ≤ b) : c * a / (c * b) ≤ a / b := by
+lemma mul_div_mul_left_le (h : 0 ≤ a / b) : c * a / (c * b) ≤ a / b := by
   obtain rfl | hc := eq_or_ne c 0
-  · simpa using div_nonneg ha hb
+  · simpa
   · rw [mul_div_mul_left _ _ hc]
 
 /-- Equality holds when `c ≠ 0`. See `mul_div_mul_right`. -/
-lemma mul_div_mul_right_le (ha : 0 ≤ a) (hb : 0 ≤ b) : a * c / (b * c) ≤ a / b := by
+lemma mul_div_mul_right_le (h : 0 ≤ a / b) : a * c / (b * c) ≤ a / b := by
   obtain rfl | hc := eq_or_ne c 0
-  · simpa using div_nonneg ha hb
+  · simpa
   · rw [mul_div_mul_right _ _ hc]
