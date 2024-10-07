@@ -105,7 +105,7 @@ instance : FunLike (MulActionHom φ X Y) X Y where
   coe_injective' f g h := by cases f; cases g; congr
 
 @[simp]
-theorem map_smul {F M X Y : Type*} [SMul M X] [SMul M Y]
+theorem map_smul {F M X Y : Type*} {_ : SMul M X} {_ : SMul M Y}
     [FunLike F X Y] [MulActionHomClass F M X Y]
     (f : F) (c : M) (x : X) : f (c • x) = c • f x :=
   map_smulₛₗ f c x

@@ -208,7 +208,8 @@ variable [FunLike F M N]
 
 /-- See note [low priority simp lemmas] -/
 @[to_additive (attr := simp low)]
-theorem map_one [OneHomClass F M N] (f : F) : f 1 = 1 :=
+theorem map_one {M N F : Type*} {_ : One M} {_ : One N} [FunLike F M N] [OneHomClass F M N]
+    (f : F) : f 1 = 1 :=
   OneHomClass.map_one f
 
 @[to_additive] lemma map_comp_one [OneHomClass F M N] (f : F) : f ∘ (1 : ι → M) = 1 := by simp
@@ -300,7 +301,8 @@ variable [FunLike F M N]
 
 /-- See note [low priority simp lemmas] -/
 @[to_additive (attr := simp low)]
-theorem map_mul [MulHomClass F M N] (f : F) (x y : M) : f (x * y) = f x * f y :=
+theorem map_mul {M N F : Type*} {_ : Mul M} {_ : Mul N} [FunLike F M N] [MulHomClass F M N]
+    [MulHomClass F M N] (f : F) (x y : M) : f (x * y) = f x * f y :=
   MulHomClass.map_mul f x y
 
 @[to_additive (attr := simp)]
