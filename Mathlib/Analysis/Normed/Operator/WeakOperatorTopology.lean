@@ -236,60 +236,38 @@ all `x` and `y`. -/
 def seminormFamily : SeminormFamily 𝕜 (E →WOT[𝕜] F) (E × F⋆) :=
   fun ⟨x, y⟩ => seminorm x y
 
-lemma withSeminorms : WithSeminorms (seminormFamily 𝕜 E F) := by
-  refine inducing_inducingFn.withSeminorms ?_
-  sorry
-
-lemma hasBasis_seminorms : (𝓝 (0 : E →WOT[𝕜] F)).HasBasis (seminormFamily 𝕜 E F).basisSets id := by
-  let p := seminormFamily 𝕜 E F
-  rw [nhds_induced, nhds_pi]
-  simp only [map_zero, Pi.zero_apply]
-  have h := Filter.hasBasis_pi (fun _ : (E × F⋆) ↦ Metric.nhds_basis_ball (x := 0)) |>.comap
-    (inducingFn 𝕜 E F)
-  refine h.to_hasBasis' ?_ ?_
-  · rintro ⟨s, U₂⟩ ⟨hs, hU₂⟩
-    lift s to Finset (E × F⋆) using hs
-    by_cases hU₃ : s.Nonempty
-    · refine ⟨(s.sup p).ball 0 <| s.inf' hU₃ U₂, p.basisSets_mem _ <| (Finset.lt_inf'_iff _).2 hU₂,
-        fun x hx y hy => ?_⟩
-      simp only [Set.mem_preimage, Set.mem_pi, mem_ball_zero_iff]
-      rw [id, Seminorm.mem_ball_zero] at hx
-      have hp : p y ≤ s.sup p := Finset.le_sup hy
-      refine lt_of_le_of_lt (hp x) (lt_of_lt_of_le hx ?_)
-      exact Finset.inf'_le _ hy
-    · rw [Finset.not_nonempty_iff_eq_empty.mp hU₃]
-      exact ⟨(p 0).ball 0 1, p.basisSets_singleton_mem 0 one_pos, by simp⟩
-  · suffices ∀ U ∈ p.basisSets, U ∈ 𝓝 (0 : E →WOT[𝕜] F) by simpa [nhds_induced, nhds_pi]
-    exact p.basisSets_mem_nhds fun ⟨x, y⟩ ↦ continuous_dual_apply x y |>.norm
-
 lemma withSeminorms : WithSeminorms (seminormFamily 𝕜 E F) :=
-  SeminormFamily.withSeminorms_of_hasBasis _ hasBasis_seminorms
+  let e : E × F⋆ ≃ (Σ _ : E × F⋆, Fin 1) := .symm <| .sigmaUnique _ _
+  have : Nonempty (Σ _ : E × F⋆, Fin 1) := e.symm.nonempty
+  inducing_inducingFn.withSeminorms <| withSeminorms_pi (fun _ ↦ norm_withSeminorms 𝕜 𝕜)
+    |>.congr_equiv e
 
-instance instLocallyConvexSpace [Module ℝ (E →WOT[𝕜] F)] [IsScalarTower ℝ 𝕜 (E →WOT[𝕜] F)] :
+lemma hasBasis_seminorms : (𝓝 (0 : E →WOT[𝕜] F)).HasBasis (seminormFamily 𝕜 E F).basisSets id :=
+  withSeminorms.hasBasis
+
+instance instLocallyConvexSpace [NormedSpace ℝ 𝕜] [Module ℝ (E →WOT[𝕜] F)]
+    [IsScalarTower ℝ 𝕜 (E →WOT[𝕜] F)] :
     LocallyConvexSpace ℝ (E →WOT[𝕜] F) :=
   withSeminorms.toLocallyConvexSpace
 
 end Seminorms
 
-end ContinuousLinearMapWOT
+section toWOT_continuous
 
-section NormedSpace
+variable [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F] [ContinuousSMul 𝕜 E]
 
-variable {𝕜 : Type*} {E : Type*} {F : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
-/-- The weak operator topology is coarser than the norm topology, i.e. the inclusion map is
-continuous. -/
+/-- The weak operator topology is coarser than the bounded convergence topology, i.e. the inclusion
+map is continuous. -/
 @[continuity, fun_prop]
 lemma ContinuousLinearMap.continuous_toWOT :
-    Continuous (ContinuousLinearMap.toWOT 𝕜 E F) := by
-  refine ContinuousLinearMapWOT.continuous_of_dual_apply_continuous fun x y => ?_
-  simp_rw [ContinuousLinearMap.toWOT_apply]
-  change Continuous fun a => y <| (ContinuousLinearMap.id 𝕜 (E →L[𝕜] F)).flip x a
-  fun_prop
+    Continuous (ContinuousLinearMap.toWOT 𝕜 E F) :=
+  ContinuousLinearMapWOT.continuous_of_dual_apply_continuous fun x y ↦
+    y.cont.comp <| ContinuousLinearMap.continuous_apply x
 
 /-- The inclusion map from `E →[𝕜] F` to `E →WOT[𝕜] F`, bundled as a continuous linear map. -/
 def ContinuousLinearMap.toWOTCLM : (E →L[𝕜] F) →L[𝕜] (E →WOT[𝕜] F) :=
   ⟨LinearEquiv.toLinearMap (ContinuousLinearMap.toWOT 𝕜 E F), ContinuousLinearMap.continuous_toWOT⟩
 
-end NormedSpace
+end toWOT_continuous
+
+end ContinuousLinearMapWOT

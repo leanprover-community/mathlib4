@@ -177,6 +177,19 @@ theorem continuousSMul [RingHomSurjective σ] [RingHomIsometric σ]
   exact UniformOnFun.continuousSMul_induced_of_image_bounded 𝕜₂ E F (UniformConvergenceCLM σ F 𝔖) φ
     ⟨rfl⟩ fun u s hs => (h𝔖₃ s hs).image u
 
+theorem uniformContinuous_apply [UniformSpace F] [UniformAddGroup F] {𝔖 : Set (Set E)} {S : Set E}
+    {x : E} (hS : S ∈ 𝔖) (hx : x ∈ S) :
+    UniformContinuous fun f : UniformConvergenceCLM σ F 𝔖 ↦ f x :=
+  UniformOnFun.uniformContinuous_eval_of_mem _ _ hx hS |>.comp
+    (isUniformEmbedding_coeFn _ _ _).uniformContinuous
+
+theorem continuous_apply [TopologicalSpace F] [TopologicalAddGroup F] {𝔖 : Set (Set E)} {S : Set E}
+    {x : E} (hS : S ∈ 𝔖) (hx : x ∈ S) :
+    Continuous fun f : UniformConvergenceCLM σ F 𝔖 ↦ f x := by
+  letI : UniformSpace F := TopologicalAddGroup.toUniformSpace F
+  haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
+  exact uniformContinuous_apply _ _ hS hx |>.continuous
+
 theorem hasBasis_nhds_zero_of_basis [TopologicalSpace F] [TopologicalAddGroup F]
     {ι : Type*} (𝔖 : Set (Set E)) (h𝔖₁ : 𝔖.Nonempty) (h𝔖₂ : DirectedOn (· ⊆ ·) 𝔖) {p : ι → Prop}
     {b : ι → Set F} (h : (𝓝 0 : Filter F).HasBasis p b) :
@@ -359,6 +372,14 @@ instance continuousConstSMul {M : Type*} [Monoid M] [DistribMulAction M F] [SMul
     [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousConstSMul M F] :
     ContinuousConstSMul M (E →SL[σ] F) :=
   UniformConvergenceCLM.instContinuousConstSMul σ F _ _
+
+theorem uniformContinuous_apply [UniformSpace F] [UniformAddGroup F] [ContinuousSMul 𝕜₁ E]
+    (x : E) : UniformContinuous fun f : E →SL[σ] F ↦ f x :=
+  UniformConvergenceCLM.uniformContinuous_apply _ _ (isVonNBounded_singleton x) (mem_singleton x)
+
+theorem continuous_apply [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousSMul 𝕜₁ E]
+    (x : E) : Continuous fun f : E →SL[σ] F ↦ f x :=
+  UniformConvergenceCLM.continuous_apply _ _ (isVonNBounded_singleton x) (mem_singleton x)
 
 protected theorem nhds_zero_eq_of_basis [TopologicalSpace F] [TopologicalAddGroup F]
     {ι : Type*} {p : ι → Prop} {b : ι → Set F} (h : (𝓝 0 : Filter F).HasBasis p b) :
