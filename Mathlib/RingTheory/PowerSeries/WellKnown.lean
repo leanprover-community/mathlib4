@@ -135,8 +135,9 @@ whose inverse is the power series `1 + X + X^2 + ...`. This theorem states that 
 `PowerSeries.invOneSubPow S d` is equal to `(1 - X)⁻¹ ^ d`.
 -/
 theorem invOneSubPow_eq_inv_one_sub_pow :
-    invOneSubPow S d = (Units.mkOfMulEqOne (1 - X) (mk 1 : S⟦X⟧)
-    <| Eq.trans (mul_comm _ _) (mk_one_mul_one_sub_eq_one S))⁻¹ ^ d := by
+    invOneSubPow S d =
+      (Units.mkOfMulEqOne (1 - X) (mk 1 : S⟦X⟧) <|
+        Eq.trans (mul_comm _ _) (mk_one_mul_one_sub_eq_one S))⁻¹ ^ d := by
   induction d with
   | zero => exact Eq.symm <| pow_zero _
   | succ d _ =>
