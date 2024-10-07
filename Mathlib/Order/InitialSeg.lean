@@ -21,6 +21,10 @@ This file defines initial and principal segments.
   segment, i.e., an interval of the form `(-∞, top)` for some element `top`. It is denoted by
   `r ≺i s`.
 
+The lemmas `Ordinal.type_le_iff` and `Ordinal.type_lt_iff` tell us that `≼i` corresponds to the `≤`
+relation on ordinals, while `≺i` corresponds to the `<` relation. This prompts us to think of
+`PrincipalSeg` as a "strict" version of `InitialSeg`.
+
 ## Notations
 
 These notations belong to the `InitialSeg` locale.
@@ -29,9 +33,6 @@ These notations belong to the `InitialSeg` locale.
 * `r ≺i s`: the type of principal segment embeddings of `r` into `s`.
 * `α ≤i β` is an abbreviation for `(· < ·) ≼i (· < ·)`.
 * `α <i β` is an abbreviation for `(· < ·) ≺i (· < ·)`.
-
-Due to `InitialSeg.ltOrEq`, we can think of principal segment embeddings as a "strict" version of
-initial segment embeddings.
 -/
 
 
