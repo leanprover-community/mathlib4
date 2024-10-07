@@ -63,7 +63,7 @@ theorem neg_eq' : Neg.neg = (id : R → R) :=
 
 theorem sub_eq_add (x y : R) : x - y = x + y := by rw [sub_eq_add_neg, neg_eq]
 
-/-- `-` and `+` are the same function. -/
+/-- `-` and `+` are the same function in characteristic 2. -/
 @[scoped simp]
 theorem sub_eq_add' : HSub.hSub = (HAdd.hAdd : R → R → R) :=
   funext₂ sub_eq_add
