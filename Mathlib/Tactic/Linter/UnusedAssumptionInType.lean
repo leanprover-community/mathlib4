@@ -87,11 +87,11 @@ but don't use this assumption in the type.
 /--
 Linter that checks for theorems that assume `[Encodable p]`,
 but don't use this assumption in the type.
-(Instead, `Denumerable p` can suffice, or the assumption can be fully removed.)
+(Instead, `Countable p` can suffice, or the assumption can be fully removed.)
 -/
-@[env_linter] def encodableDenumerable : Linter where
+@[env_linter] def encodableCountable : Linter where
   noErrorsFound := "No uses of `Encodable` arguments should be replaced"
-  errorsFound := "USES OF `Encodable` SHOULD BE REPLACED WITH `Denumerable` (OR REMOVED)."
+  errorsFound := "USES OF `Encodable` SHOULD BE REPLACED WITH `Countable` (OR REMOVED)."
   test declName := do
     if (← isAutoDecl declName) then return none
     else if Name.isPrefixOf `Encodable declName then return none
