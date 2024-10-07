@@ -85,7 +85,7 @@ theorem finite_integral_rpow_sub_one_pow_aux {r : ℝ} (n : ℕ) (hnr : (n : ℝ
   refine IntegrableOn.setLIntegral_lt_top ?_
   rw [← intervalIntegrable_iff_integrableOn_Ioc_of_le zero_le_one]
   apply intervalIntegral.intervalIntegrable_rpow'
-  rwa [neg_lt_neg_iff, inv_mul_lt_iff' hr, one_mul]
+  rwa [neg_lt_neg_iff, inv_mul_lt_iff₀' hr, one_mul]
 
 variable [MeasurableSpace E] [BorelSpace E] {μ : Measure E} [μ.IsAddHaarMeasure]
 

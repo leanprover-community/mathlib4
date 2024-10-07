@@ -28,7 +28,7 @@ theorem isCauSeq_abs_exp (z : ℂ) :
   let ⟨n, hn⟩ := exists_nat_gt (abs z)
   have hn0 : (0 : ℝ) < n := lt_of_le_of_lt (abs.nonneg _) hn
   IsCauSeq.series_ratio_test n (abs z / n) (div_nonneg (abs.nonneg _) (le_of_lt hn0))
-    (by rwa [div_lt_iff hn0, one_mul]) fun m hm => by
+    (by rwa [div_lt_iff₀ hn0, one_mul]) fun m hm => by
       rw [abs_abs, abs_abs, Nat.factorial_succ, pow_succ', mul_comm m.succ, Nat.cast_mul, ← div_div,
         mul_div_assoc, mul_div_right_comm, map_mul, map_div₀, abs_natCast]
       gcongr
@@ -1398,7 +1398,7 @@ theorem exp_bound_div_one_sub_of_interval' {x : ℝ} (h1 : 0 < x) (h2 : x < 1) :
       repeat erw [Finset.sum_range_succ]
       norm_num [Nat.factorial]
       nlinarith
-    _ < 1 / (1 - x) := by rw [lt_div_iff] <;> nlinarith
+    _ < 1 / (1 - x) := by rw [lt_div_iff₀] <;> nlinarith
 
 theorem exp_bound_div_one_sub_of_interval {x : ℝ} (h1 : 0 ≤ x) (h2 : x < 1) :
     Real.exp x ≤ 1 / (1 - x) := by

@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.Group.Commute.Units
-import Mathlib.Algebra.Group.Units.Hom
+import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Order.BoundedOrder
 import Mathlib.Algebra.Ring.Units
 
@@ -248,6 +248,12 @@ theorem Irreducible.dvd_comm [Monoid M] {p q : M} (hp : Irreducible p) (hq : Irr
     p ∣ q ↔ q ∣ p :=
   ⟨hp.dvd_symm hq, hq.dvd_symm hp⟩
 
+theorem Irreducible.of_map {F : Type*} [Monoid M] [Monoid N] [FunLike F M N] [MonoidHomClass F M N]
+    (f : F) [IsLocalHom f] {x} (hfx : Irreducible (f x)) : Irreducible x :=
+  ⟨fun hu ↦ hfx.not_unit <| hu.map f,
+   by rintro p q rfl
+      exact (hfx.isUnit_or_isUnit <| map_mul f p q).imp (.of_map f _) (.of_map f _)⟩
+
 section
 
 variable [Monoid M]
@@ -296,14 +302,13 @@ open MulEquiv
 
 theorem Irreducible.map {x : M} (h : Irreducible x) : Irreducible (f x) :=
   let f := MulEquivClass.toMulEquiv f
-  ⟨fun g ↦ h.1 (symm_apply_apply f x ▸ g.map f.symm), fun a b g ↦
+  ⟨fun g ↦ h.1 g.of_map, fun a b g ↦
     .elim (h.2 _ _ (symm_apply_apply f x ▸ map_mul f.symm a b ▸ congrArg f.symm g))
-    (fun h ↦ .inl (apply_symm_apply f a ▸ h.map f)) (fun h ↦ .inr (apply_symm_apply f b ▸ h.map f))⟩
+    (fun h ↦ .inl h.of_map) (fun h ↦ .inr h.of_map)⟩
 
 theorem MulEquiv.irreducible_iff (f : F) {a : M} :
     Irreducible (f a) ↔ Irreducible a :=
-  let f := MulEquivClass.toMulEquiv f
-  ⟨by simpa only [symm_apply_apply] using Irreducible.map f.symm (x := f a), Irreducible.map f⟩
+  ⟨Irreducible.of_map f, Irreducible.map f⟩
 
 end
 

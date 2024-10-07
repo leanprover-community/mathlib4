@@ -36,16 +36,16 @@ instance Localization.epi' {R : CommRingCat} (M : Submonoid R) :
   rcases R with ⟨α, str⟩
   exact IsLocalization.epi M _
 
-instance CommRingCat.isLocalRingHom_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T)
-    [IsLocalRingHom g] [IsLocalRingHom f] : IsLocalRingHom (f ≫ g) :=
-  _root_.isLocalRingHom_comp _ _
+instance CommRingCat.isLocalHom_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T)
+    [IsLocalHom g] [IsLocalHom f] : IsLocalHom (f ≫ g) :=
+  RingHom.isLocalHom_comp _ _
 
-theorem isLocalRingHom_of_iso {R S : CommRingCat} (f : R ≅ S) : IsLocalRingHom f.hom :=
+theorem isLocalHom_of_iso {R S : CommRingCat} (f : R ≅ S) : IsLocalHom f.hom :=
   { map_nonunit := fun a ha => by
       convert f.inv.isUnit_map ha
       exact (RingHom.congr_fun f.hom_inv_id _).symm }
 
 -- see Note [lower instance priority]
-instance (priority := 100) isLocalRingHom_of_isIso {R S : CommRingCat} (f : R ⟶ S) [IsIso f] :
-    IsLocalRingHom f :=
-  isLocalRingHom_of_iso (asIso f)
+instance (priority := 100) isLocalHom_of_isIso {R S : CommRingCat} (f : R ⟶ S) [IsIso f] :
+    IsLocalHom f :=
+  isLocalHom_of_iso (asIso f)
