@@ -52,7 +52,7 @@ instance [Inhabited J] : Inhabited (ConnectedComponents J) :=
 /-- Every function from connected components of a category gives a functor to discrete category -/
 def ConnectedComponents.functorToDiscrete   (X : Type*)
     (f : ConnectedComponents J → X) : J ⥤ Discrete X where
-  obj Y :=  Discrete.mk (f (Quotient.mk (Zigzag.setoid _) Y))
+  obj Y := Discrete.mk (f (Quotient.mk (Zigzag.setoid _) Y))
   map g := Discrete.eqToHom (congrArg f (Quotient.sound (Zigzag.of_hom g)))
 
 /-- Every functor to a discrete category gives a function from connected components -/
@@ -66,11 +66,11 @@ def ConnectedComponents.typeToCatHomEquiv (J) [Category J] (X : Type*) :
     (ConnectedComponents J → X) ≃ (J ⥤ Discrete X)   where
   toFun := ConnectedComponents.functorToDiscrete _
   invFun := ConnectedComponents.liftFunctor _
-  left_inv := fun f ↦ funext fun x ↦ by
+  left_inv f := funext fun x ↦ by
     obtain ⟨x, h⟩ := Quotient.exists_rep x
     rw [← h]
     rfl
-  right_inv  := fun fctr ↦
+  right_inv fctr :=
     Functor.hext (fun _ ↦ rfl) (fun c d f ↦
       have : Subsingleton (fctr.obj c ⟶ fctr.obj d) := Discrete.instSubsingletonDiscreteHom _ _
       (Subsingleton.elim (fctr.map f) _).symm.heq)
