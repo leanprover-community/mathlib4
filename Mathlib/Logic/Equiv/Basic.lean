@@ -9,6 +9,7 @@ import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Sigma.Basic
 import Mathlib.Data.Subtype
 import Mathlib.Data.Sum.Basic
+import Mathlib.Init.Algebra.Classes
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Function.Conjugate
 import Mathlib.Tactic.Coe
@@ -380,8 +381,8 @@ def sumSumSumComm (α β γ δ) : (α ⊕ β) ⊕ γ ⊕ δ ≃ (α ⊕ γ) ⊕ 
       ∘ (Sum.map (Sum.map (@id α) (sumComm β γ).symm) (@id δ))
       ∘ (Sum.map (sumAssoc α γ β) (@id δ))
       ∘ (sumAssoc (α ⊕ γ) β δ).symm
-  left_inv x := by simp [Function.comp]
-  right_inv x := by simp [Function.comp]
+  left_inv x := by rcases x with ((a | b) | (c | d)) <;> simp
+  right_inv x := by rcases x with ((a | c) | (b | d)) <;> simp
 
 @[simp]
 theorem sumSumSumComm_symm (α β γ δ) : (sumSumSumComm α β γ δ).symm = sumSumSumComm α γ β δ :=
@@ -1579,8 +1580,6 @@ namespace Equiv
 
 section
 
-variable (P : α → Sort w) (e : α ≃ β)
-
 /-- Transport dependent functions through an equivalence of the base space.
 -/
 @[simps apply, simps (config := .lemmasOnly) symm_apply]
@@ -1733,9 +1732,13 @@ instance [Std.Associative f] : Std.Associative (e.arrowCongr (e.arrowCongr e) f)
 instance [Std.IdempotentOp f] : Std.IdempotentOp (e.arrowCongr (e.arrowCongr e) f) :=
   (e.semiconj₂_conj f).isIdempotent_right e.surjective
 
+set_option linter.deprecated false in
+@[deprecated (since := "2024-09-11")]
 instance [IsLeftCancel α₁ f] : IsLeftCancel β₁ (e.arrowCongr (e.arrowCongr e) f) :=
   ⟨e.surjective.forall₃.2 fun x y z => by simpa using @IsLeftCancel.left_cancel _ f _ x y z⟩
 
+set_option linter.deprecated false in
+@[deprecated (since := "2024-09-11")]
 instance [IsRightCancel α₁ f] : IsRightCancel β₁ (e.arrowCongr (e.arrowCongr e) f) :=
   ⟨e.surjective.forall₃.2 fun x y z => by simpa using @IsRightCancel.right_cancel _ f _ x y z⟩
 

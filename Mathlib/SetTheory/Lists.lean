@@ -129,7 +129,7 @@ instance : HasSubset (Lists' α true) :=
 /-- ZFA prelist membership. A ZFA list is in a ZFA prelist if some element of this ZFA prelist is
 equivalent as a ZFA list to this ZFA list. -/
 instance {b} : Membership (Lists α) (Lists' α b) :=
-  ⟨fun a l => ∃ a' ∈ l.toList, a ~ a'⟩
+  ⟨fun l a => ∃ a' ∈ l.toList, a ~ a'⟩
 
 theorem mem_def {b a} {l : Lists' α b} : a ∈ l ↔ ∃ a' ∈ l.toList, a ~ a' :=
   Iff.rfl
@@ -148,9 +148,11 @@ theorem cons_subset {a} {l₁ l₂ : Lists' α true} : Lists'.cons a l₁ ⊆ l�
 
 theorem ofList_subset {l₁ l₂ : List (Lists α)} (h : l₁ ⊆ l₂) :
     Lists'.ofList l₁ ⊆ Lists'.ofList l₂ := by
-  induction' l₁ with _ _ l₁_ih; · exact Subset.nil
-  refine Subset.cons (Lists.Equiv.refl _) ?_ (l₁_ih (List.subset_of_cons_subset h))
-  simp only [List.cons_subset] at h; simp [h]
+  induction l₁ with
+  | nil => exact Subset.nil
+  | cons _ _ l₁_ih =>
+    refine Subset.cons (Lists.Equiv.refl _) ?_ (l₁_ih (List.subset_of_cons_subset h))
+    simp only [List.cons_subset] at h; simp [h]
 
 @[refl]
 theorem Subset.refl {l : Lists' α true} : l ⊆ l := by
@@ -246,8 +248,8 @@ def mem (a : Lists α) : Lists α → Prop
   | ⟨false, _⟩ => False
   | ⟨_, l⟩ => a ∈ l
 
-instance : Membership (Lists α) (Lists α) :=
-  ⟨mem⟩
+instance : Membership (Lists α) (Lists α) where
+  mem ls l := mem l ls
 
 theorem isList_of_mem {a : Lists α} : ∀ {l : Lists α}, a ∈ l → IsList l
   | ⟨_, Lists'.nil⟩, _ => rfl

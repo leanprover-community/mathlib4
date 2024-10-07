@@ -122,6 +122,7 @@ theorem of_subsingleton [Subsingleton α] : NullMeasurableSet s μ :=
 protected theorem congr (hs : NullMeasurableSet s μ) (h : s =ᵐ[μ] t) : NullMeasurableSet t μ :=
   EventuallyMeasurableSet.congr hs h.symm
 
+@[measurability]
 protected theorem iUnion {ι : Sort*} [Countable ι] {s : ι → Set α}
     (h : ∀ i, NullMeasurableSet (s i) μ) : NullMeasurableSet (⋃ i, s i) μ :=
   MeasurableSet.iUnion h
@@ -135,6 +136,7 @@ protected theorem sUnion {s : Set (Set α)} (hs : s.Countable) (h : ∀ t ∈ s,
   rw [sUnion_eq_biUnion]
   exact MeasurableSet.biUnion hs h
 
+@[measurability]
 protected theorem iInter {ι : Sort*} [Countable ι] {f : ι → Set α}
     (h : ∀ i, NullMeasurableSet (f i) μ) : NullMeasurableSet (⋂ i, f i) μ :=
   MeasurableSet.iInter h

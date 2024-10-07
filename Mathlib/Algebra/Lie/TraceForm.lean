@@ -38,7 +38,7 @@ variable (R K L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 local notation "φ" => LieModule.toEnd R L M
 
 open LinearMap (trace)
-open Set FiniteDimensional
+open Set Module
 
 namespace LieModule
 
@@ -302,7 +302,10 @@ variable [IsDomain R] [IsPrincipalIdealRing R]
 lemma trace_eq_trace_restrict_of_le_idealizer
     (hy' : ∀ m ∈ N, (φ x ∘ₗ φ y) m ∈ N := fun m _ ↦ N.lie_mem (N.mem_idealizer.mp (h hy) m)) :
     trace R M (φ x ∘ₗ φ y) = trace R N ((φ x ∘ₗ φ y).restrict hy') := by
-  suffices ∀ m, ⁅x, ⁅y, m⁆⁆ ∈ N by simp [(φ x ∘ₗ φ y).trace_restrict_eq_of_forall_mem _ this]
+  suffices ∀ m, ⁅x, ⁅y, m⁆⁆ ∈ N by
+    have : (trace R { x // x ∈ N }) ((φ x ∘ₗ φ y).restrict _) = (trace R M) (φ x ∘ₗ φ y) :=
+      (φ x ∘ₗ φ y).trace_restrict_eq_of_forall_mem _ this
+    simp [this]
   exact fun m ↦ N.lie_mem (h hy m)
 
 include h in
@@ -322,7 +325,7 @@ lemma traceForm_eq_zero_of_isTrivial [LieModule.IsTrivial I N] :
   let hy' : ∀ m ∈ N, (φ x ∘ₗ φ y) m ∈ N := fun m _ ↦ N.lie_mem (N.mem_idealizer.mp (h hy) m)
   suffices (φ x ∘ₗ φ y).restrict hy' = 0 by
     simp [this, N.trace_eq_trace_restrict_of_le_idealizer I h x hy]
-  ext n
+  ext (n : N)
   suffices ⁅y, (n : M)⁆ = 0 by simp [this]
   exact Submodule.coe_eq_zero.mpr (LieModule.IsTrivial.trivial (⟨y, hy⟩ : I) n)
 
@@ -389,7 +392,7 @@ lemma killingForm_eq :
 
 end LieIdeal
 
-open LieModule FiniteDimensional
+open LieModule Module
 open Submodule (span subset_span)
 
 namespace LieModule
@@ -410,12 +413,29 @@ lemma traceForm_eq_sum_finrank_nsmul_mul (x y : L) :
     ← traceForm_genWeightSpace_eq K L M _ x y]
   rfl
 
+/-- See also `LieModule.traceForm_eq_sum_finrank_nsmul'` for an expression omitting the zero
+weights. -/
 lemma traceForm_eq_sum_finrank_nsmul :
     traceForm K L M = ∑ χ : Weight K L M, finrank K (genWeightSpace M χ) •
       (χ : L →ₗ[K] K).smulRight (χ : L →ₗ[K] K) := by
   ext
   rw [traceForm_eq_sum_finrank_nsmul_mul, ← Finset.sum_attach]
   simp
+
+/-- A variant of `LieModule.traceForm_eq_sum_finrank_nsmul` in which the sum is taken only over the
+non-zero weights. -/
+lemma traceForm_eq_sum_finrank_nsmul' :
+    traceForm K L M = ∑ χ in {χ : Weight K L M | χ.IsNonZero}, finrank K (genWeightSpace M χ) •
+      (χ : L →ₗ[K] K).smulRight (χ : L →ₗ[K] K) := by
+  classical
+  suffices ∑ χ in {χ : Weight K L M | χ.IsZero}, finrank K (genWeightSpace M χ) •
+      (χ : L →ₗ[K] K).smulRight (χ : L →ₗ[K] K) = 0 by
+    rw [traceForm_eq_sum_finrank_nsmul,
+      ← Finset.sum_filter_add_sum_filter_not (p := fun χ : Weight K L M ↦ χ.IsNonZero)]
+    simp [this]
+  refine Finset.sum_eq_zero fun χ hχ ↦ ?_
+  replace hχ : (χ : L →ₗ[K] K) = 0 := by simpa [← Weight.coe_toLinear_eq_zero_iff] using hχ
+  simp [hχ]
 
 -- The reverse inclusion should also hold: TODO prove this!
 lemma range_traceForm_le_span_weight :

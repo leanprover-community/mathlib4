@@ -6,7 +6,6 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
-import Mathlib.Data.List.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.AdaptationNote
 
@@ -244,10 +243,10 @@ instance : LawfulTraversable FreeMagma.{u} :=
         rw [traverse_mul, ih1, ih2, mul_map_seq]
     comp_traverse := fun f g x ↦
       FreeMagma.recOnPure x
-        (fun x ↦ by simp only [(· ∘ ·), traverse_pure, traverse_pure', functor_norm])
+        (fun x ↦ by simp only [Function.comp_def, traverse_pure, traverse_pure', functor_norm])
         (fun x y ih1 ih2 ↦ by
           rw [traverse_mul, ih1, ih2, traverse_mul]
-          simp [Functor.Comp.map_mk, Functor.map_map, (· ∘ ·), Comp.seq_mk, seq_map_assoc,
+          simp [Functor.Comp.map_mk, Functor.map_map, Function.comp_def, Comp.seq_mk, seq_map_assoc,
             map_seq, traverse_mul])
     naturality := fun η α β f x ↦
       FreeMagma.recOnPure x
@@ -592,7 +591,7 @@ theorem traverse_mul (x y : FreeSemigroup α) :
     (fun hd tl ih x ↦ show
         (· * ·) <$> pure <$> F x <*> traverse F (mk hd tl * mk y L2) =
           (· * ·) <$> ((· * ·) <$> pure <$> F x <*> traverse F (mk hd tl)) <*> traverse F (mk y L2)
-        by rw [ih]; simp only [(· ∘ ·), (mul_assoc _ _ _).symm, functor_norm])
+        by rw [ih]; simp only [Function.comp_def, (mul_assoc _ _ _).symm, functor_norm])
     x
 
 @[to_additive (attr := simp)]
@@ -618,9 +617,10 @@ instance : LawfulTraversable FreeSemigroup.{u} :=
       FreeSemigroup.recOnMul x (fun x ↦ rfl) fun x y ih1 ih2 ↦ by
         rw [traverse_mul, ih1, ih2, mul_map_seq]
     comp_traverse := fun f g x ↦
-      recOnPure x (fun x ↦ by simp only [traverse_pure, functor_norm, (· ∘ ·)])
-        fun x y ih1 ih2 ↦ by (rw [traverse_mul, ih1, ih2,
-          traverse_mul, Functor.Comp.map_mk]; simp only [Function.comp, functor_norm, traverse_mul])
+      recOnPure x (fun x ↦ by simp only [traverse_pure, functor_norm, Function.comp_def])
+        fun x y ih1 ih2 ↦ by
+          rw [traverse_mul, ih1, ih2, traverse_mul, Functor.Comp.map_mk]
+          simp only [Function.comp_def, functor_norm, traverse_mul]
     naturality := fun η α β f x ↦
       recOnPure x (fun x ↦ by simp only [traverse_pure, functor_norm, Function.comp])
           (fun x y ih1 ih2 ↦ by simp only [traverse_mul, functor_norm, ih1, ih2])

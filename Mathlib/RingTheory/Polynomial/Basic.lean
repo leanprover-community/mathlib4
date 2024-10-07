@@ -266,6 +266,7 @@ def coeffs (p : R[X]) : Finset R :=
 
 @[deprecated (since := "2024-05-17")] noncomputable alias frange := coeffs
 
+@[simp]
 theorem coeffs_zero : coeffs (0 : R[X]) = ∅ :=
   rfl
 
@@ -289,6 +290,10 @@ theorem coeff_mem_coeffs (p : R[X]) (n : ℕ) (h : p.coeff n ≠ 0) : p.coeff n 
   exact ⟨n, h, rfl⟩
 
 @[deprecated (since := "2024-05-17")] alias coeff_mem_frange := coeff_mem_coeffs
+
+theorem coeffs_monomial (n : ℕ) {c : R} (hc : c ≠ 0) : (monomial n c).coeffs = {c} := by
+  rw [coeffs, support_monomial n hc]
+  simp
 
 theorem geom_sum_X_comp_X_add_one_eq_sum (n : ℕ) :
     (∑ i ∈ range n, (X : R[X]) ^ i).comp (X + 1) =
@@ -600,8 +605,7 @@ theorem _root_.Polynomial.ker_mapRingHom (f : R →+* S) :
   ext
   simp only [LinearMap.mem_ker, RingHom.toSemilinearMap_apply, coe_mapRingHom]
   rw [mem_map_C_iff, Polynomial.ext_iff]
-  simp_rw [RingHom.mem_ker f]
-  simp
+  simp [RingHom.mem_ker]
 
 variable (I : Ideal R[X])
 
@@ -752,8 +756,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
           · rw [← not_le]
             intro hnj
             exact (add_lt_add_of_lt_of_le hmi hnj).ne hij.2.symm
-          · simp only [eq_self_iff_true, not_true, false_or_iff, add_right_inj,
-              not_and_self_iff] at hij
+          · simp only [eq_self_iff_true, not_true, false_or, add_right_inj, not_and_self_iff] at hij
         · rw [mul_comm]
           apply P.mul_mem_left
           exact Classical.not_not.1 (Nat.find_min hf hi)
@@ -868,14 +871,14 @@ namespace Polynomial
 
 instance (priority := 100) wfDvdMonoid {R : Type*} [CommRing R] [IsDomain R] [WfDvdMonoid R] :
     WfDvdMonoid R[X] where
-  wellFounded_dvdNotUnit := by
+  wf := by
     classical
       refine
         RelHomClass.wellFounded
           (⟨fun p : R[X] =>
               ((if p = 0 then ⊤ else ↑p.degree : WithTop (WithBot ℕ)), p.leadingCoeff), ?_⟩ :
             DvdNotUnit →r Prod.Lex (· < ·) DvdNotUnit)
-          (wellFounded_lt.prod_lex ‹WfDvdMonoid R›.wellFounded_dvdNotUnit)
+          (wellFounded_lt.prod_lex ‹WfDvdMonoid R›.wf)
       rintro a b ⟨ane0, ⟨c, ⟨not_unit_c, rfl⟩⟩⟩
       dsimp
       rw [Polynomial.degree_mul, if_neg ane0]
@@ -1210,6 +1213,11 @@ theorem ker_map (f : R →+* S) :
   ext
   rw [MvPolynomial.mem_map_C_iff, RingHom.mem_ker, MvPolynomial.ext_iff]
   simp_rw [coeff_map, coeff_zero, RingHom.mem_ker]
+
+lemma ker_mapAlgHom {S₁ S₂ σ : Type*} [CommRing S₁] [CommRing S₂] [Algebra R S₁]
+    [Algebra R S₂] (f : S₁ →ₐ[R] S₂) :
+    RingHom.ker (MvPolynomial.mapAlgHom (σ := σ) f) = Ideal.map MvPolynomial.C (RingHom.ker f) :=
+  MvPolynomial.ker_map (f.toRingHom : S₁ →+* S₂)
 
 end MvPolynomial
 

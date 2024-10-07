@@ -58,12 +58,6 @@ Porting note: after the port is done, we may want to remove this definition.
 protected abbrev Bundle.ContinuousLinearMap [∀ x, TopologicalSpace (E₁ x)]
     [∀ x, TopologicalSpace (E₂ x)] : B → Type _ := fun x => E₁ x →SL[σ] E₂ x
 
--- Porting note: possibly remove after the port
-instance Bundle.ContinuousLinearMap.module [∀ x, TopologicalSpace (E₁ x)]
-    [∀ x, TopologicalSpace (E₂ x)] [∀ x, TopologicalAddGroup (E₂ x)]
-    [∀ x, ContinuousConstSMul 𝕜₂ (E₂ x)] : ∀ x, Module 𝕜₂ (Bundle.ContinuousLinearMap σ E₁ E₂ x) :=
-  fun _ => inferInstance
-
 variable {E₁ E₂}
 variable [TopologicalSpace B] (e₁ e₁' : Trivialization F₁ (π F₁ E₁))
   (e₂ e₂' : Trivialization F₂ (π F₂ E₂))

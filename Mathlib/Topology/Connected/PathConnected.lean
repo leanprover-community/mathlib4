@@ -75,8 +75,8 @@ structure Path (x y : X) extends C(I, X) where
   target' : toFun 1 = y
 
 instance Path.funLike : FunLike (Path x y) I X where
-  coe := fun γ ↦ ⇑γ.toContinuousMap
-  coe_injective' := fun γ₁ γ₂ h => by
+  coe γ := ⇑γ.toContinuousMap
+  coe_injective' γ₁ γ₂ h := by
     simp only [DFunLike.coe_fn_eq] at h
     cases γ₁; cases γ₂; congr
 
@@ -247,7 +247,6 @@ theorem extend_zero : γ.extend 0 = x := by simp
 
 theorem extend_one : γ.extend 1 = y := by simp
 
-@[simp]
 theorem extend_extends' {a b : X} (γ : Path a b) (t : (Icc 0 1 : Set ℝ)) : γ.extend t = γ t :=
   IccExtend_val _ γ t
 

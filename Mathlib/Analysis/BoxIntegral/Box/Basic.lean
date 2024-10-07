@@ -90,7 +90,7 @@ theorem lower_ne_upper (i) : I.lower i ≠ I.upper i :=
   (I.lower_lt_upper i).ne
 
 instance : Membership (ι → ℝ) (Box ι) :=
-  ⟨fun x I ↦ ∀ i, x i ∈ Ioc (I.lower i) (I.upper i)⟩
+  ⟨fun I x ↦ ∀ i, x i ∈ Ioc (I.lower i) (I.upper i)⟩
 
 -- Porting note: added
 /-- The set of points in this box: this is the product of half-open intervals `(lower i, upper i]`,
@@ -140,15 +140,12 @@ theorem le_def : I ≤ J ↔ ∀ x ∈ I, x ∈ J := Iff.rfl
 
 theorem le_TFAE : List.TFAE [I ≤ J, (I : Set (ι → ℝ)) ⊆ J,
     Icc I.lower I.upper ⊆ Icc J.lower J.upper, J.lower ≤ I.lower ∧ I.upper ≤ J.upper] := by
-  tfae_have 1 ↔ 2
-  · exact Iff.rfl
+  tfae_have 1 ↔ 2 := Iff.rfl
   tfae_have 2 → 3
-  · intro h
-    simpa [coe_eq_pi, closure_pi_set, lower_ne_upper] using closure_mono h
-  tfae_have 3 ↔ 4
-  · exact Icc_subset_Icc_iff I.lower_le_upper
+  | h => by simpa [coe_eq_pi, closure_pi_set, lower_ne_upper] using closure_mono h
+  tfae_have 3 ↔ 4 := Icc_subset_Icc_iff I.lower_le_upper
   tfae_have 4 → 2
-  · exact fun h x hx i ↦ Ioc_subset_Ioc (h.1 i) (h.2 i) (hx i)
+  | h, x, hx, i => Ioc_subset_Ioc (h.1 i) (h.2 i) (hx i)
   tfae_finish
 
 variable {I J}

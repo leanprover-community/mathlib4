@@ -145,7 +145,7 @@ variable {M : Type*} [CanonicallyOrderedAddCommMonoid M] (w : σ → M)
 
 theorem le_weight_of_ne_zero' {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) :
     w s ≤ weight w f :=
-  le_weight_of_ne_zero w (fun _ ↦ zero_le _) hs
+  le_weight_of_ne_zero (fun _ ↦ zero_le _) hs
 
 /-- If `M` is a `CanonicallyOrderedAddCommMonoid`, then `weight f` is zero iff `f=0. -/
 theorem weight_eq_zero_iff_eq_zero
@@ -157,7 +157,7 @@ theorem weight_eq_zero_iff_eq_zero
     ext s
     simp only [Finsupp.coe_zero, Pi.zero_apply]
     by_contra hs
-    apply NonTorsionWeight.ne_zero w _
+    apply NonTorsionWeight.ne_zero w s
     rw [← nonpos_iff_eq_zero, ← h]
     exact le_weight_of_ne_zero' w hs
   · intro h

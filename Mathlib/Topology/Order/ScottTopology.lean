@@ -3,6 +3,7 @@ Copyright (c) 2023 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
+import Mathlib.Order.ScottContinuity
 import Mathlib.Topology.Order.UpperLowerSetTopology
 
 /-!
@@ -333,7 +334,18 @@ lemma scott_eq_upper_of_completeLinearOrder : scott α = upper α := by
   letI := scott α
   rw [@isOpen_iff_Iic_compl_or_univ _ _ (scott α) ({ topology_eq_scott := rfl }) U]
 
+/- The upper topology on a complete linear order is the Scott topology -/
+instance [TopologicalSpace α] [IsUpper α] : IsScott α where
+  topology_eq_scott := by
+    rw [scott_eq_upper_of_completeLinearOrder]
+    exact IsUpper.topology_eq α
+
 end CompleteLinearOrder
+
+lemma isOpen_iff_scottContinuous_mem [Preorder α] {s : Set α} [TopologicalSpace α] [IsScott α] :
+    IsOpen s ↔ ScottContinuous fun x ↦ x ∈ s := by
+  rw [scottContinuous_iff_continuous]
+  exact isOpen_iff_continuous_mem
 
 end IsScott
 

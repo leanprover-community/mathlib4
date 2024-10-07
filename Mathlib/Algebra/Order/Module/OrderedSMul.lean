@@ -9,7 +9,7 @@ import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.Algebra.Order.Pi
-import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.GCongr.CoreAttrs
 
 /-!
 # Ordered scalar product

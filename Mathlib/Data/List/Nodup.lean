@@ -16,7 +16,7 @@ predicate.
 
 universe u v
 
-open Nat Function
+open Function
 
 variable {α : Type u} {β : Type v} {l l₁ l₂ : List α} {r : α → α → Prop} {a b : α}
 
@@ -102,13 +102,17 @@ theorem nodup_iff_get?_ne_get? {l : List α} :
     l.Nodup ↔ ∀ i j : ℕ, i < j → j < l.length → l.get? i ≠ l.get? j := by
   simp [nodup_iff_getElem?_ne_getElem?]
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefix below.
+-/
 theorem Nodup.ne_singleton_iff {l : List α} (h : Nodup l) (x : α) :
     l ≠ [x] ↔ l = [] ∨ ∃ y ∈ l, y ≠ x := by
   induction' l with hd tl hl
   · simp
   · specialize hl h.of_cons
     by_cases hx : tl = [x]
-    · simpa [hx, and_comm, and_or_left] using h
+    · simpa [hx, _root_.and_comm, and_or_left] using h
     · rw [← Ne, hl] at hx
       rcases hx with (rfl | ⟨y, hy, hx⟩)
       · simp
@@ -140,14 +144,14 @@ theorem nodup_iff_count_le_one [DecidableEq α] {l : List α} : Nodup l ↔ ∀ 
 
 theorem nodup_iff_count_eq_one [DecidableEq α] : Nodup l ↔ ∀ a ∈ l, count a l = 1 :=
   nodup_iff_count_le_one.trans <| forall_congr' fun _ =>
-    ⟨fun H h => H.antisymm (count_pos_iff_mem.mpr h),
+    ⟨fun H h => H.antisymm (count_pos_iff.mpr h),
      fun H => if h : _ then (H h).le else (count_eq_zero.mpr h).trans_le (Nat.zero_le 1)⟩
 
 
 @[simp]
 theorem count_eq_one_of_mem [DecidableEq α] {a : α} {l : List α} (d : Nodup l) (h : a ∈ l) :
     count a l = 1 :=
-  _root_.le_antisymm (nodup_iff_count_le_one.1 d a) (Nat.succ_le_of_lt (count_pos_iff_mem.2 h))
+  _root_.le_antisymm (nodup_iff_count_le_one.1 d a) (Nat.succ_le_of_lt (count_pos_iff.2 h))
 
 theorem count_eq_of_nodup [DecidableEq α] {a : α} {l : List α} (d : Nodup l) :
     count a l = if a ∈ l then 1 else 0 := by
@@ -174,9 +178,13 @@ theorem Nodup.append (d₁ : Nodup l₁) (d₂ : Nodup l₂) (dj : Disjoint l₁
 theorem nodup_append_comm {l₁ l₂ : List α} : Nodup (l₁ ++ l₂) ↔ Nodup (l₂ ++ l₁) := by
   simp only [nodup_append, and_left_comm, disjoint_comm]
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefix below.
+-/
 theorem nodup_middle {a : α} {l₁ l₂ : List α} :
     Nodup (l₁ ++ a :: l₂) ↔ Nodup (a :: (l₁ ++ l₂)) := by
-  simp only [nodup_append, not_or, and_left_comm, and_assoc, nodup_cons, mem_append,
+  simp only [nodup_append, not_or, and_left_comm, _root_.and_assoc, nodup_cons, mem_append,
     disjoint_cons_right]
 
 theorem Nodup.of_map (f : α → β) {l : List α} : Nodup (map f l) → Nodup l :=
@@ -244,8 +252,8 @@ theorem Nodup.erase_getElem [DecidableEq α] {l : List α} (hl : l.Nodup)
       · simp [IH hl.2]
       · rw [beq_iff_eq]
         simp only [getElem_cons_succ]
-        simp only [length_cons, succ_eq_add_one, Nat.add_lt_add_iff_right] at h
-        exact mt (· ▸ l.getElem_mem i h) hl.1
+        simp only [length_cons, Nat.succ_eq_add_one, Nat.add_lt_add_iff_right] at h
+        exact mt (· ▸ getElem_mem h) hl.1
 
 theorem Nodup.erase_get [DecidableEq α] {l : List α} (hl : l.Nodup) (i : Fin l.length) :
     l.erase (l.get i) = l.eraseIdx ↑i := by
@@ -259,11 +267,15 @@ theorem nodup_join {L : List (List α)} :
     Nodup (join L) ↔ (∀ l ∈ L, Nodup l) ∧ Pairwise Disjoint L := by
   simp only [Nodup, pairwise_join, disjoint_left.symm, forall_mem_ne]
 
+#adaptation_note
+/--
+After nightly-2024-09-06 we can remove the `_root_` prefix below.
+-/
 theorem nodup_bind {l₁ : List α} {f : α → List β} :
     Nodup (l₁.bind f) ↔
       (∀ x ∈ l₁, Nodup (f x)) ∧ Pairwise (fun a b : α => Disjoint (f a) (f b)) l₁ := by
-  simp only [List.bind, nodup_join, pairwise_map, and_comm, and_left_comm, mem_map, exists_imp,
-      and_imp]
+  simp only [List.bind, nodup_join, pairwise_map, _root_.and_comm, and_left_comm, mem_map,
+    exists_imp, and_imp]
   rw [show (∀ (l : List β) (x : α), f x = l → x ∈ l₁ → Nodup l) ↔ ∀ x : α, x ∈ l₁ → Nodup (f x)
       from forall_swap.trans <| forall_congr' fun _ => forall_eq']
 
@@ -304,13 +316,12 @@ theorem Nodup.union [DecidableEq α] (l₁ : List α) (h : Nodup l₂) : (l₁ �
 theorem Nodup.inter [DecidableEq α] (l₂ : List α) : Nodup l₁ → Nodup (l₁ ∩ l₂) :=
   Nodup.filter _
 
-theorem Nodup.diff_eq_filter [DecidableEq α] :
+theorem Nodup.diff_eq_filter [BEq α] [LawfulBEq α] :
     ∀ {l₁ l₂ : List α} (_ : l₁.Nodup), l₁.diff l₂ = l₁.filter (· ∉ l₂)
   | l₁, [], _ => by simp
   | l₁, a :: l₂, hl₁ => by
     rw [diff_cons, (hl₁.erase _).diff_eq_filter, hl₁.erase_eq_filter, filter_filter]
-    simp only [decide_not, Bool.not_eq_true', decide_eq_false_iff_not, bne_iff_ne, ne_eq, and_comm,
-      Bool.decide_and, mem_cons, not_or]
+    simp only [decide_not, bne, Bool.and_comm, mem_cons, not_or, decide_mem_cons, Bool.not_or]
 
 theorem Nodup.mem_diff_iff [DecidableEq α] (hl₁ : l₁.Nodup) : a ∈ l₁.diff l₂ ↔ a ∈ l₁ ∧ a ∉ l₂ := by
   rw [hl₁.diff_eq_filter, mem_filter, decide_eq_true_iff]
@@ -366,7 +377,7 @@ theorem Nodup.take_eq_filter_mem [DecidableEq α] :
   | [], n, _ => by simp
   | b::l, 0, _ => by simp
   | b::l, n+1, hl => by
-    rw [take_cons, Nodup.take_eq_filter_mem (Nodup.of_cons hl), List.filter_cons_of_pos (by simp)]
+    rw [take_succ_cons, Nodup.take_eq_filter_mem (Nodup.of_cons hl), filter_cons_of_pos (by simp)]
     congr 1
     refine List.filter_congr ?_
     intro x hx
