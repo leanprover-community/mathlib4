@@ -123,7 +123,7 @@ theorem antidiagonalTuple_one (n : ℕ) : antidiagonalTuple 1 n = [![n]] := by
     Nat.sub_self, List.bind_append, List.bind_singleton, List.bind_map]
   conv_rhs => rw [← List.nil_append [![n]]]
   congr 1
-  simp_rw [List.bind_eq_nil, List.mem_range, List.map_eq_nil]
+  simp_rw [List.bind_eq_nil_iff, List.mem_range, List.map_eq_nil_iff]
   intro x hx
   obtain ⟨m, rfl⟩ := Nat.exists_eq_add_of_lt hx
   rw [add_assoc, add_tsub_cancel_left, antidiagonalTuple_zero_succ]

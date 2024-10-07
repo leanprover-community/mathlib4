@@ -552,7 +552,7 @@ instance AddMonoid.toNatSMul {M : Type*} [AddMonoid M] : SMul ℕ M :=
 attribute [to_additive existing toNatSMul] Monoid.toNatPow
 
 section Monoid
-variable {M : Type*} [Monoid M] {a b c : M} {m n : ℕ}
+variable {M : Type*} [Monoid M] {a b c : M}
 
 @[to_additive (attr := simp) nsmul_eq_smul]
 theorem npow_eq_pow (n : ℕ) (x : M) : Monoid.npow n x = x ^ n :=
@@ -879,7 +879,7 @@ theorem exists_zpow_surjective (G : Type*) [Pow G ℤ] [IsCyclic G] :
 
 section DivInvMonoid
 
-variable [DivInvMonoid G] {a b : G}
+variable [DivInvMonoid G]
 
 @[to_additive (attr := simp) zsmul_eq_smul] theorem zpow_eq_pow (n : ℤ) (x : G) :
     DivInvMonoid.zpow n x = x ^ n :=

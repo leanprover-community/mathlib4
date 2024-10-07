@@ -238,7 +238,7 @@ theorem quot_natCast : ∀ n : ℕ, ⟦(n : PGame)⟧ = (n : Game)
 theorem quot_eq_of_mk'_quot_eq {x y : PGame} (L : x.LeftMoves ≃ y.LeftMoves)
     (R : x.RightMoves ≃ y.RightMoves) (hl : ∀ i, (⟦x.moveLeft i⟧ : Game) = ⟦y.moveLeft (L i)⟧)
     (hr : ∀ j, (⟦x.moveRight j⟧ : Game) = ⟦y.moveRight (R j)⟧) : (⟦x⟧ : Game) = ⟦y⟧ :=
-  game_eq (equiv_of_mk_equiv L R (fun _ => equiv_iff_game_eq.2 (hl _))
+  game_eq (.of_equiv L R (fun _ => equiv_iff_game_eq.2 (hl _))
     (fun _ => equiv_iff_game_eq.2 (hr _)))
 
 /-! Multiplicative operations can be defined at the level of pre-games,
@@ -605,7 +605,7 @@ def mulOneRelabelling : ∀ x : PGame.{u}, x * 1 ≡r x
     (try rintro (⟨i, ⟨⟩⟩ | ⟨i, ⟨⟩⟩)) <;>
     { dsimp
       apply (Relabelling.subCongr (Relabelling.refl _) (mulZeroRelabelling _)).trans
-      rw [sub_zero]
+      rw [sub_zero_eq_add_zero]
       exact (addZeroRelabelling _).trans <|
         (((mulOneRelabelling _).addCongr (mulZeroRelabelling _)).trans <| addZeroRelabelling _) }
 

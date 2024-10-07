@@ -21,7 +21,7 @@ namespace Module
 
 namespace End
 
-open Polynomial FiniteDimensional
+open Polynomial Module
 
 open scoped Polynomial
 

@@ -44,7 +44,7 @@ variable
 theorem uniqueMDiffWithinAt_univ : UniqueMDiffWithinAt I univ x := by
   unfold UniqueMDiffWithinAt
   simp only [preimage_univ, univ_inter]
-  exact I.unique_diff _ (mem_range_self _)
+  exact I.uniqueDiffOn _ (mem_range_self _)
 
 variable {I}
 
