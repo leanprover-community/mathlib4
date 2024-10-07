@@ -464,7 +464,7 @@ end Semiring
 
 section CommSemiring
 
-variable {A : Type*} [CommSemiring A]  {B : Type*} [CommSemiring B] {C : Type*} [Semiring C]
+variable {A : Type*} [CommSemiring A] {B : Type*} [CommSemiring B] {C : Type*} [Semiring C]
   [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
   (𝔓 : Ideal C) (P : Ideal B) (p : Ideal A)
 
