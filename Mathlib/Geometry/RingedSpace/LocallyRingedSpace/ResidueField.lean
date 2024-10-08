@@ -81,7 +81,7 @@ variable {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X)
 
 -- TODO: This instance is found before #6045.
 -- We need this strange instance for `residueFieldMap`, the type of `F` must be fixed
--- like this. The instance `IsLocalRingHom (f.stalkMap x)` already exists, but does not work for
+-- like this. The instance `IsLocalHom (f.stalkMap x)` already exists, but does not work for
 -- `residueFieldMap`.
 instance : IsLocalHom (F := Y.presheaf.stalk (f.val.base x) →+* X.presheaf.stalk x)
     (f.stalkMap x) :=
