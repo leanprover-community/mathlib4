@@ -95,8 +95,10 @@ theorem noetherianSpace_iff_isCompact : NoetherianSpace α ↔ ∀ s : Set α, I
 instance [NoetherianSpace α] : WellFoundedLT (Closeds α) :=
   Iff.mp ((noetherianSpace_TFAE α).out 0 1) ‹_›
 
-@[deprecated (since := "2024-10-07")] alias NoetherianSpace.wellFounded_closeds :=
-  TopologicalSpace.instWellFoundedLTClosedsOfNoetherianSpace
+@[deprecated (since := "2024-10-07")]
+theorem NoetherianSpace.wellFounded_closeds [NoetherianSpace α] :
+    WellFounded fun s t : Closeds α => s < t :=
+  wellFounded_lt
 
 instance {α} : NoetherianSpace (CofiniteTopology α) := by
   simp only [noetherianSpace_iff_isCompact, isCompact_iff_ultrafilter_le_nhds,
