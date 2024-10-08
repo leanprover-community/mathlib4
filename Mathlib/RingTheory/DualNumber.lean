@@ -61,7 +61,7 @@ lemma isUnit_or_isNilpotent [DivisionSemiring R] [AddCommGroup M]
     [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
     (a : TrivSqZeroExt R M) :
     IsUnit a ∨ IsNilpotent a := by
-  simp [isUnit_iff_isUnit_fst, isNilpotent_iff_isNilpotent_fst, Or.comm, em]
+  simp [isUnit_iff_isUnit_fst, isNilpotent_iff_isNilpotent_fst, em']
 
 end TrivSqZeroExt
 
@@ -91,9 +91,9 @@ variable {K : Type*}
 
 instance [DivisionRing K] : LocalRing K[ε] where
   isUnit_or_isUnit_of_add_one {a b} h := by
-    rw [add_comm, eq_comm, ← sub_eq_iff_eq_add] at h
+    rw [add_comm, ← eq_sub_iff_add_eq] at h
     rcases eq_or_ne (fst a) 0 with ha|ha <;>
-    simp [isUnit_iff_isUnit_fst, ← h, ha]
+    simp [isUnit_iff_isUnit_fst, h, ha]
 
 lemma ideal_trichotomy [DivisionRing K] (I : Ideal K[ε]) :
     I = ⊥ ∨ I = .span {ε} ∨ I = ⊤ := by
