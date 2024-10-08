@@ -599,12 +599,12 @@ theorem infinitePos_iff_infinitesimal_inv_pos {x : ℝ*} :
   ⟨fun hip =>
     ⟨infinitesimal_def.mpr fun r hr =>
         ⟨lt_trans (coe_lt_coe.2 (neg_neg_of_pos hr)) (inv_pos.2 (hip 0)),
-          (inv_lt (coe_lt_coe.2 hr) (hip 0)).mp (by convert hip r⁻¹)⟩,
+          inv_lt_of_inv_lt₀ (coe_lt_coe.2 hr) (by convert hip r⁻¹)⟩,
       inv_pos.2 <| hip 0⟩,
     fun ⟨hi, hp⟩ r =>
     @_root_.by_cases (r = 0) (↑r < x) (fun h => Eq.substr h (inv_pos.mp hp)) fun h =>
       lt_of_le_of_lt (coe_le_coe.2 (le_abs_self r))
-        ((inv_lt_inv (inv_pos.mp hp) (coe_lt_coe.2 (abs_pos.2 h))).mp
+        ((inv_lt_inv₀ (inv_pos.mp hp) (coe_lt_coe.2 (abs_pos.2 h))).mp
           ((infinitesimal_def.mp hi) |r|⁻¹ (inv_pos.2 (abs_pos.2 h))).2)⟩
 
 theorem infiniteNeg_iff_infinitesimal_inv_neg {x : ℝ*} :

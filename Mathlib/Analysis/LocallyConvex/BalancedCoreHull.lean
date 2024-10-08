@@ -158,7 +158,7 @@ theorem balancedCoreAux_balanced (h0 : (0 : E) ∈ balancedCoreAux 𝕜 s) :
   intro r hr
   have h'' : 1 ≤ ‖a⁻¹ • r‖ := by
     rw [norm_smul, norm_inv]
-    exact one_le_mul_of_one_le_of_one_le (one_le_inv (norm_pos_iff.mpr h) ha) hr
+    exact one_le_mul_of_one_le_of_one_le ((one_le_inv₀ (norm_pos_iff.mpr h)).2 ha) hr
   have h' := hy (a⁻¹ • r) h''
   rwa [smul_assoc, mem_inv_smul_set_iff₀ h] at h'
 
@@ -167,7 +167,7 @@ theorem balancedCoreAux_maximal (h : t ⊆ s) (ht : Balanced 𝕜 t) : t ⊆ bal
   rw [mem_smul_set_iff_inv_smul_mem₀ (norm_pos_iff.mp <| zero_lt_one.trans_le hr)]
   refine h (ht.smul_mem ?_ hx)
   rw [norm_inv]
-  exact inv_le_one hr
+  exact inv_le_one_of_one_le₀ hr
 
 theorem balancedCore_subset_balancedCoreAux : balancedCore 𝕜 s ⊆ balancedCoreAux 𝕜 s :=
   balancedCoreAux_maximal (balancedCore_subset s) (balancedCore_balanced s)
@@ -185,7 +185,7 @@ theorem subset_balancedCore (ht : (0 : E) ∈ t) (hst : ∀ a : 𝕜, ‖a‖ �
   rw [subset_set_smul_iff₀ (norm_pos_iff.mp <| zero_lt_one.trans_le ha)]
   apply hst
   rw [norm_inv]
-  exact inv_le_one ha
+  exact inv_le_one_of_one_le₀ ha
 
 end NormedField
 
