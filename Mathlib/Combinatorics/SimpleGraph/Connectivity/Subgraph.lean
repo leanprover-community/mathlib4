@@ -190,9 +190,9 @@ theorem toSubgraph_adj_getVert {u v} (w : G.Walk u v) {i : ℕ} (hi : i < w.leng
   | cons hxy i' ih =>
     cases i
     · simp only [Walk.toSubgraph, Walk.getVert_zero, zero_add, getVert_cons_succ, Subgraph.sup_adj,
-      subgraphOfAdj_adj, true_or]
+        subgraphOfAdj_adj, true_or]
     · simp only [Walk.toSubgraph, getVert_cons_succ, Subgraph.sup_adj, subgraphOfAdj_adj, Sym2.eq,
-      Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
+        Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
       right
       exact ih (Nat.succ_lt_succ_iff.mp hi)
 
