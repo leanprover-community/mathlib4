@@ -1370,6 +1370,9 @@ lemma two_le_iff_one_lt {c : Cardinal} : 2 ≤ c ↔ 1 < c := by
 @[simp]
 theorem succ_zero : succ (0 : Cardinal) = 1 := by norm_cast
 
+-- This works generally to prove inequalities between numeric cardinals.
+theorem one_lt_two : (1 : Cardinal) < 2 := by norm_cast
+
 theorem exists_finset_le_card (α : Type*) (n : ℕ) (h : n ≤ #α) :
     ∃ s : Finset α, n ≤ s.card := by
   obtain hα|hα := finite_or_infinite α
