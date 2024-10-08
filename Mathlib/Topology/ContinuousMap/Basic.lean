@@ -39,8 +39,8 @@ section
 /-- `ContinuousMapClass F α β` states that `F` is a type of continuous maps.
 
 You should extend this class when you extend `ContinuousMap`. -/
-class ContinuousMapClass (F α β : Type*) [TopologicalSpace α] [TopologicalSpace β]
-    [FunLike F α β] : Prop where
+class ContinuousMapClass (F : Type*) (α β : outParam Type*)
+    [TopologicalSpace α] [TopologicalSpace β] [FunLike F α β] : Prop where
   /-- Continuity -/
   map_continuous (f : F) : Continuous f
 
@@ -271,8 +271,6 @@ def prodMk (f : C(α, β₁)) (g : C(α, β₂)) : C(α, β₁ × β₂) where
 @[simps]
 def prodMap (f : C(α₁, α₂)) (g : C(β₁, β₂)) : C(α₁ × β₁, α₂ × β₂) where
   toFun := Prod.map f g
-  continuous_toFun := f.continuous.prod_map g.continuous
-  -- Porting note: proof was `continuity`
 
 @[simp]
 theorem prod_eval (f : C(α, β₁)) (g : C(α, β₂)) (a : α) : (prodMk f g) a = (f a, g a) :=

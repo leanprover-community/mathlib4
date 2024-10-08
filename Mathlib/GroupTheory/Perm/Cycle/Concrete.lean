@@ -316,7 +316,7 @@ theorem toList_formPerm_nontrivial (l : List α) (hl : 2 ≤ l.length) (hn : Nod
   · refine ext_getElem (by simp) fun k hk hk' => ?_
     simp only [get_eq_getElem, formPerm_pow_apply_getElem _ hn, zero_add, getElem_map,
       getElem_range, Nat.mod_eq_of_lt hk']
-  · simpa [hs] using get_mem _ _ _
+  · simp [hs]
 
 theorem toList_formPerm_isRotated_self (l : List α) (hl : 2 ≤ l.length) (hn : Nodup l) (x : α)
     (hx : x ∈ l) : toList (formPerm l) x ~r l := by

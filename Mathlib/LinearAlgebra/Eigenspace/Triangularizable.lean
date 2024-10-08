@@ -38,7 +38,7 @@ generalized eigenspaces span the whole space.
 eigenspace, eigenvector, eigenvalue, eigen
 -/
 
-open Set Function Module FiniteDimensional
+open Set Function Module Module
 
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
    {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
@@ -250,7 +250,8 @@ lemma Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo
       apply ih _ (hy φ)
       · intro j k μ
         exact mapsTo_restrict_maxGenEigenspace_restrict_of_mapsTo (f j) (f k) _ _ (h j k μ)
-      · exact fun j ↦ Module.End.iSup_genEigenspace_restrict_eq_top _ (h' j)
+      · simp_rw [maxGenEigenspace_def] at h' ⊢
+        exact fun j ↦ Module.End.iSup_genEigenspace_restrict_eq_top _ (h' j)
       · rfl
     replace ih (φ : K) :
         ⨆ (χ : ι → K) (_ : χ i = φ), ⨅ j, maxGenEigenspace ((f j).restrict (hi j φ)) (χ j) = ⊤ := by
@@ -260,6 +261,7 @@ lemma Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo
       rw [eq_bot_iff, ← ((f i).maxGenEigenspace φ).ker_subtype, LinearMap.ker,
         ← Submodule.map_le_iff_le_comap, ← Submodule.inf_iInf_maxGenEigenspace_of_forall_mapsTo,
         ← disjoint_iff_inf_le]
+      simp_rw [maxGenEigenspace_def]
       exact ((f i).disjoint_iSup_genEigenspace hχ.symm).mono_right (iInf_le _ i)
     replace ih (φ : K) :
         ⨆ (χ : ι → K) (_ : χ i = φ), ⨅ j, maxGenEigenspace (f j) (χ j) =
