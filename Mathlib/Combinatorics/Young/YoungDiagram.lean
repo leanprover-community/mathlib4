@@ -511,28 +511,23 @@ def toPartition (μ : YoungDiagram) : Nat.Partition μ.card where
     exact Eq.symm (Finset.card_disjiUnion (Finset.range μ.length) μ.row (rows_disjoint μ))
 
 def cells_ofPartition {n : ℕ} (p : Nat.Partition n) : Set (ℕ × ℕ) :=
-  { (i, j) : ℕ × ℕ | j < Multiset.card (Multiset.filter (fun s ↦ (s > i)) p.parts) }
+  { (i, j) : ℕ × ℕ | i < Multiset.card (Multiset.filter (fun s ↦ (s > j)) p.parts) }
 
-instance {n : ℕ} {p : Nat.Partition n} : Finite (cells_ofPartition p) := by
+lemma i_need_a_better_name (μ : YoungDiagram) (j : ℕ) :
+  Multiset.card (Multiset.filter (fun s ↦ j < s) (Multiset.map μ.rowLen (Multiset.range μ.length)))
+    = Finset.card (Finset.filter (fun s ↦ j < μ.rowLen s) (Finset.range μ.length)) := by
+
+  sorry
+
+instance Finite_cells_ofPartition {n : ℕ} (p : Nat.Partition n) : Finite (cells_ofPartition p) := by
   apply Finite.of_injective (fun x ↦ (⟨⟨x.1.1, ?_⟩,⟨x.1.2, ?_⟩⟩ :
       (Finset.range n) × (Finset.range n)))
   · intro ⟨⟨i₁,j₁⟩, h₁⟩ ⟨⟨i₂,j₂⟩, h₂⟩
     simp
   all_goals rw [Finset.mem_range]; have := x.2; simp_rw [cells_ofPartition, Set.mem_setOf] at this
-  · have : 0 < Multiset.card (Multiset.filter (fun s ↦ s > x.1.1) p.parts) := by
-      apply lt_of_le_of_lt _ this
-      simp
-    rw [Multiset.card_pos] at this
-    apply Multiset.exists_mem_of_ne_zero at this
-    obtain ⟨s, hs⟩ := this
-    simp only [Multiset.mem_filter, Multiset.mem_map] at hs
-    obtain ⟨hsp, hsi⟩ := hs
-    apply lt_of_lt_of_le hsi
-    simp_rw [← p.parts_sum]
-    exact Multiset.le_sum_of_mem hsp
   · apply lt_of_lt_of_le this
     simp only [Set.mem_setOf_eq, gt_iff_lt]
-    have : Multiset.card (Multiset.filter (fun s ↦ x.1.1 < s) p.parts) ≤ Multiset.card p.parts := by
+    have : Multiset.card (Multiset.filter (fun s ↦ x.1.2 < s) p.parts) ≤ Multiset.card p.parts := by
       apply Multiset.card_le_card
       apply Multiset.filter_le
     apply le_trans this
@@ -544,16 +539,160 @@ instance {n : ℕ} {p : Nat.Partition n} : Finite (cells_ofPartition p) := by
     rw [Multiset.mem_toFinset] at hm
     apply p.parts_pos at hm
     exact hm
+  · have : 0 < Multiset.card (Multiset.filter (fun s ↦ s > x.1.2) p.parts) := by
+      apply lt_of_le_of_lt _ this
+      simp
+    rw [Multiset.card_pos] at this
+    apply Multiset.exists_mem_of_ne_zero at this
+    obtain ⟨s, hs⟩ := this
+    simp only [Multiset.mem_filter, Multiset.mem_map] at hs
+    obtain ⟨hsp, hsi⟩ := hs
+    apply lt_of_lt_of_le hsi
+    simp_rw [← p.parts_sum]
+    exact Multiset.le_sum_of_mem hsp
 
-def ofPartition {n : ℕ} (p : Nat.Partition n) : YoungDiagram where
-  cells := sorry
-  isLowerSet := sorry
 
-def equivPartition : YoungDiagram ≃ Σ n : ℕ, (Nat.Partition n) where
+noncomputable def ofPartition {n : ℕ} (p : Nat.Partition n) : YoungDiagram where
+  cells := Set.Finite.toFinset (Finite_cells_ofPartition p)
+  isLowerSet := by
+    intro ⟨i₁,j₁⟩ ⟨i₂,j₂⟩ hij h
+    simp only [Prod.mk_le_mk, cells_ofPartition, gt_iff_lt, Set.Finite.coe_toFinset,
+      Set.mem_setOf_eq] at *
+    apply lt_of_le_of_lt hij.1 (lt_of_lt_of_le h _)
+    apply Multiset.card_le_card
+    rw [Multiset.le_filter]
+    constructor
+    · exact Multiset.filter_le (fun s ↦ s > j₁) p.parts
+    · intro a ha
+      simp only [Multiset.mem_filter] at ha
+      exact lt_of_le_of_lt hij.2 ha.2
+
+lemma lt_rowLen_iff_lt_colLen {μ : YoungDiagram} {i j : ℕ} : j < μ.rowLen i ↔ i < μ.colLen j := by
+  rw [← mem_iff_lt_colLen, ← mem_iff_lt_rowLen]
+
+noncomputable def equivPartition : YoungDiagram ≃ Σ n : ℕ, (Nat.Partition n) where
   toFun := fun μ ↦ ⟨μ.card, μ.toPartition⟩
   invFun := fun ⟨n, p⟩ ↦ ofPartition p
-  left_inv := sorry
-  right_inv := sorry
+  left_inv := by
+    simp only
+    intro μ
+    ext ⟨i, j⟩
+    simp only [mem_cells]
+    constructor
+    · intro h
+      rw [ofPartition, toPartition] at h
+      simp_rw [← YoungDiagram.mem_cells] at h
+      simp at h
+      rw [cells_ofPartition] at h
+      simp at h
+      rw [YoungDiagram.mem_iff_lt_rowLen] --, rowLen_eq_card]
+      have (h : j < μ.rowLen 0) : j < μ.rowLen ((μ.colLen j) - 1) := by
+          rw [lt_rowLen_iff_lt_colLen, colLen_eq_card]
+          simp only [tsub_lt_self_iff, zero_lt_one, and_true]
+          refine Nat.pos_iff_ne_zero.mpr ?_
+          rw [Finset.card_ne_zero]
+          rw [← mem_iff_lt_rowLen] at h
+          use ⟨0, j⟩
+          exact mk_mem_col_iff.mpr h
+      by_cases h₀ : j < μ.rowLen 0
+      · have hj0 := lt_rowLen_iff_lt_colLen.mp h₀
+        apply this at h₀
+        apply lt_of_lt_of_le h₀
+        apply rowLen_anti
+        apply (Nat.le_sub_one_iff_lt hj0).mpr
+        apply lt_of_eq_of_lt' ?_ h
+        rw [colLen_eq_card]
+        rw [i_need_a_better_name]
+        symm
+        rw [Finset.card_nbij (fun ⟨i, j⟩ ↦ i)]
+        · intro ⟨i', j'⟩ hij
+          simp only [Finset.mem_filter, Finset.mem_range]
+          have hjj' : j' = j := by
+            rw [col_eq_prod] at hij
+            simp only [Finset.mem_product, Finset.mem_singleton, Finset.mem_range] at hij
+            exact hij.2
+          rw [hjj'] at hij
+          constructor
+          · rw [YoungDiagram.length]
+            rw [mem_col_iff, mem_iff_lt_colLen] at hij
+            exact lt_of_lt_of_le hij.1 (μ.colLen_anti 0 j (Nat.zero_le j))
+          · rw [← mem_iff_lt_rowLen, ← mk_mem_col_iff]
+            exact hij
+        · intro ⟨i', j'⟩ hij' ⟨i'' , j''⟩ hij'' h'
+          simp only [Finset.mem_filter, Finset.mem_range] at h'
+          simp only [h', Prod.mk.injEq, true_and]
+          rw [col_eq_prod] at hij' hij''
+          simp only [Finset.mem_coe, Finset.mem_product, Finset.mem_singleton] at hij' hij''
+          rw [hij'.2, hij''.2]
+        · simp only [Finset.coe_filter, Finset.mem_range]
+          intro n hn
+          rw [Set.mem_setOf_eq] at hn
+          simp only [Set.mem_image, Finset.mem_coe, Prod.exists, exists_and_right, exists_eq_right]
+          use j
+          simp only [mem_col_iff, and_true]
+          exact mem_iff_lt_rowLen.mpr hn.2
+      · rw [not_lt] at h₀
+        have : Multiset.card (Multiset.filter (fun s ↦ j < s)
+            (Multiset.map μ.rowLen (Multiset.range μ.length))) = 0 := by
+          rw [Multiset.card_eq_zero, Multiset.filter_eq_nil]
+          intro x hx
+          simp only [Multiset.mem_map, Multiset.mem_range] at hx
+          obtain ⟨i, hi⟩ := hx
+          rw [← hi.2, not_lt]
+          exact le_trans (μ.rowLen_anti 0 i (Nat.zero_le i)) h₀
+        rw [this] at h
+        contradiction
+    · intro h
+      rw [ofPartition, toPartition]
+      simp_rw [← YoungDiagram.mem_cells, cells_ofPartition]
+      simp_rw [YoungDiagram.mem_iff_lt_rowLen] at h
+      simp only [gt_iff_lt, Finset.range_val, Set.Finite.mem_toFinset, Set.mem_setOf_eq]
+      rw [i_need_a_better_name]
+      rw [lt_rowLen_iff_lt_colLen] at h
+      apply lt_of_eq_of_lt' ?_ h
+      rw [colLen_eq_card]
+      rw [Finset.card_nbij (fun ⟨i, j⟩ ↦ i)]
+      · intro ⟨i', j'⟩ hij
+        simp only [Finset.mem_filter, Finset.mem_range]
+        have hjj' : j' = j := by
+          rw [col_eq_prod] at hij
+          simp only [Finset.mem_product, Finset.mem_singleton, Finset.mem_range] at hij
+          exact hij.2
+        rw [hjj'] at hij
+        constructor
+        · rw [YoungDiagram.length]
+          rw [mem_col_iff, mem_iff_lt_colLen] at hij
+          exact lt_of_lt_of_le hij.1 (μ.colLen_anti 0 j (Nat.zero_le j))
+        · rw [← mem_iff_lt_rowLen, ← mk_mem_col_iff]
+          exact hij
+      · intro ⟨i', j'⟩ hij' ⟨i'' , j''⟩ hij'' h'
+        simp only [Finset.mem_filter, Finset.mem_range] at h'
+        simp only [h', Prod.mk.injEq, true_and]
+        rw [col_eq_prod] at hij' hij''
+        simp only [Finset.mem_coe, Finset.mem_product, Finset.mem_singleton] at hij' hij''
+        rw [hij'.2, hij''.2]
+      · simp only [Finset.coe_filter, Finset.mem_range]
+        intro n hn
+        rw [Set.mem_setOf_eq] at hn
+        simp only [Set.mem_image, Finset.mem_coe, Prod.exists, exists_and_right, exists_eq_right]
+        use j
+        simp only [mem_col_iff, and_true]
+        exact mem_iff_lt_rowLen.mpr hn.2
+
+  right_inv := by
+    intro ⟨n, p⟩
+    simp only [Sigma.mk.inj_iff]
+    constructor
+    · rw [ofPartition, YoungDiagram.card]
+      dsimp
+      simp_rw [← p.parts_sum]
+      have := (Finset.card_disjiUnion (Finset.range (YoungDiagram.ofPartition p).length)
+        (YoungDiagram.ofPartition p).row (rows_disjoint (YoungDiagram.ofPartition p)))
+      
+
+      sorry
+    · rw [ofPartition, toPartition]
+      sorry
 
 -- def toPartition (μ : YoungDiagram) : Nat.Partition μ.card where
 --   parts := (μ.cells.val.map Prod.fst).dedup.map μ.rowLen
