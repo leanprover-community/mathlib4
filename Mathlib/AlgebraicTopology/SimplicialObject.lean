@@ -295,7 +295,7 @@ noncomputable def coskAdj : truncation (C := C) n ⊣ Truncated.cosk n :=
 
 namespace Truncated
 
-instance cosk_reflective : IsIso ((coskAdj (C := C) n).counit) :=
+instance cosk_reflective : IsIso (coskAdj (C := C) n).counit :=
   reflective' SimplexCategory.Truncated.inclusion.op
 
 instance sk_reflective : IsIso ((skAdj (C := C) n).unit) :=
