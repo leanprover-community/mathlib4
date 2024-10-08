@@ -382,7 +382,7 @@ theorem typein_top {α β} {r : α → α → Prop} {s : β → β → Prop} [Is
   Eq.symm <|
     Quot.sound
       ⟨RelIso.ofSurjective (RelEmbedding.codRestrict _ f f.lt_top) fun ⟨a, h⟩ => by
-          rcases f.down.1 h with ⟨b, rfl⟩; exact ⟨b, rfl⟩⟩
+          rcases f.mem_range_of_rel_top h with ⟨b, rfl⟩; exact ⟨b, rfl⟩⟩
 
 @[simp]
 theorem typein_apply {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r] [IsWellOrder β s]
@@ -426,7 +426,7 @@ principal segment. -/
 def typein.principalSeg {α : Type u} (r : α → α → Prop) [IsWellOrder α r] :
     @PrincipalSeg α Ordinal.{u} r (· < ·) :=
   ⟨⟨⟨typein r, typein_injective r⟩, typein_lt_typein r⟩, type r,
-    fun _ ↦ ⟨typein_surj r, fun ⟨a, h⟩ ↦ h ▸ typein_lt_type r a⟩⟩
+    fun _ ↦ ⟨fun ⟨a, h⟩ ↦ h ▸ typein_lt_type r a, typein_surj r⟩⟩
 
 @[simp]
 theorem typein.principalSeg_coe (r : α → α → Prop) [IsWellOrder α r] :
@@ -857,8 +857,8 @@ private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b :=
       (inductionOn a fun α r _ =>
         ⟨⟨⟨⟨fun x => Sum.inl x, fun _ _ => Sum.inl.inj⟩, Sum.lex_inl_inl⟩,
             Sum.inr PUnit.unit, fun b =>
-            Sum.recOn b (fun x => ⟨fun _ => ⟨x, rfl⟩, fun _ => Sum.Lex.sep _ _⟩) fun x =>
-              Sum.lex_inr_inr.trans ⟨False.elim, fun ⟨x, H⟩ => Sum.inl_ne_inr H⟩⟩⟩),
+            Sum.recOn b (fun x => ⟨fun _ => Sum.Lex.sep _ _, fun _ => ⟨x, rfl⟩⟩) fun x =>
+              (Sum.lex_inr_inr.trans ⟨False.elim, fun ⟨x, H⟩ => Sum.inl_ne_inr H⟩).symm⟩⟩),
     inductionOn a fun α r hr =>
       inductionOn b fun β s hs ⟨⟨f, t, hf⟩⟩ => by
         haveI := hs
@@ -866,7 +866,7 @@ private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b :=
         · rcases a with (a | _) <;> rcases b with (b | _)
           · simpa only [Sum.lex_inl_inl] using f.map_rel_iff.2
           · intro
-            rw [hf]
+            rw [← hf]
             exact ⟨_, rfl⟩
           · exact False.elim ∘ Sum.lex_inr_inl
           · exact False.elim ∘ Sum.lex_inr_inr.1
@@ -876,7 +876,7 @@ private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b :=
             cases' this with w h
             exact ⟨Sum.inl w, h⟩
           · intro h
-            cases' (hf b).1 h with w h
+            cases' (hf b).2 h with w h
             exact ⟨Sum.inl w, h⟩⟩
 
 instance noMaxOrder : NoMaxOrder Ordinal :=
@@ -1069,6 +1069,11 @@ def liftPrincipalSeg : @PrincipalSeg Ordinal.{u} Ordinal.{max (u + 1) v} (· < �
   ⟨↑liftInitialSeg.{u, max (u + 1) v}, univ.{u, v}, by
     refine fun b => inductionOn b ?_; intro β s _
     rw [univ, ← lift_umax]; constructor <;> intro h
+    · cases' h with a e
+      rw [← e]
+      refine inductionOn a ?_
+      intro α r _
+      exact lift_type_lt.{u, u + 1, max (u + 1) v}.2 ⟨typein.principalSeg r⟩
     · rw [← lift_id (type s)] at h ⊢
       cases' lift_type_lt.{_,_,v}.1 h with f
       cases' f with f a hf
@@ -1077,23 +1082,17 @@ def liftPrincipalSeg : @PrincipalSeg Ordinal.{u} Ordinal.{max (u + 1) v} (· < �
       -- Porting note: apply inductionOn does not work, refine does
       refine inductionOn a ?_
       intro α r _ hf
-      refine
-        lift_type_eq.{u, max (u + 1) v, max (u + 1) v}.2
-          ⟨(RelIso.ofSurjective (RelEmbedding.ofMonotone ?_ ?_) ?_).symm⟩
-      · exact fun b => enum r ⟨f b, (hf _).2 ⟨_, rfl⟩⟩
+      refine lift_type_eq.{u, max (u + 1) v, max (u + 1) v}.2
+        ⟨(RelIso.ofSurjective (RelEmbedding.ofMonotone ?_ ?_) ?_).symm⟩
+      · exact fun b => enum r ⟨f b, (hf _).1 ⟨_, rfl⟩⟩
       · refine fun a b h => (typein_lt_typein r).1 ?_
         rw [typein_enum, typein_enum]
         exact f.map_rel_iff.2 h
       · intro a'
-        cases' (hf _).1 (typein_lt_type _ a') with b e
+        cases' (hf _).2 (typein_lt_type _ a') with b e
         exists b
         simp only [RelEmbedding.ofMonotone_coe]
-        simp [e]
-    · cases' h with a e
-      rw [← e]
-      refine inductionOn a ?_
-      intro α r _
-      exact lift_type_lt.{u, u + 1, max (u + 1) v}.2 ⟨typein.principalSeg r⟩⟩
+        simp [e]⟩
 
 @[deprecated liftPrincipalSeg (since := "2024-09-21")]
 alias lift.principalSeg := liftPrincipalSeg
@@ -1342,7 +1341,7 @@ theorem lift_lt_univ' (c : Cardinal) : lift.{max (u + 1) v, u} c < univ.{u, v} :
 @[simp]
 theorem ord_univ : ord univ.{u, v} = Ordinal.univ.{u, v} := by
   refine le_antisymm (ord_card_le _) <| le_of_forall_lt fun o h => lt_ord.2 ?_
-  have := liftPrincipalSeg.{u, v}.down.1 (by simpa only [liftPrincipalSeg_coe] using h)
+  have := liftPrincipalSeg.mem_range_of_rel_top (by simpa only [liftPrincipalSeg_coe] using h)
   rcases this with ⟨o, h'⟩
   rw [← h', liftPrincipalSeg_coe, ← lift_card]
   apply lift_lt_univ'
@@ -1351,7 +1350,7 @@ theorem lt_univ {c} : c < univ.{u, u + 1} ↔ ∃ c', c = lift.{u + 1, u} c' :=
   ⟨fun h => by
     have := ord_lt_ord.2 h
     rw [ord_univ] at this
-    cases' liftPrincipalSeg.{u, u + 1}.down.1 (by simpa only [liftPrincipalSeg_top] ) with o e
+    cases' liftPrincipalSeg.mem_range_of_rel_top (by simpa only [liftPrincipalSeg_top]) with o e
     have := card_ord c
     rw [← e, liftPrincipalSeg_coe, ← lift_card] at this
     exact ⟨_, this.symm⟩, fun ⟨c', e⟩ => e.symm ▸ lift_lt_univ _⟩
