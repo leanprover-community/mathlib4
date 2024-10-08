@@ -306,11 +306,11 @@ theorem closure_induction {p : ∀ x, x ∈ closure s → Prop}
 /-- An induction principle for closure membership for predicates with two arguments. -/
 @[to_additive (attr := elab_as_elim) "An induction principle for additive closure membership for
   predicates with two arguments."]
-theorem closure_induction₂ {p : ∀ x ∈ closure s, ∀ y, y ∈ closure s → Prop}
-    (mem : ∀ (x) (hx : x ∈ s) (y) (hy : y ∈ s), p x (subset_closure hx) y (subset_closure hy))
-    (mul_left : ∀ x hx y hy z hz , p x hx z hz → p y hy z hz → p (x * y) (mul_mem hx hy) z hz)
-    (mul_right : ∀ x hx y hy z hz , p z hz x hx → p z hz y hy → p z hz (x * y) (mul_mem hx hy))
-    {x y : M} (hx : x ∈ closure s) (hy : y ∈ closure s) : p x hx y hy := by
+theorem closure_induction₂ {p : ∀ x y, x ∈ closure s → y ∈ closure s → Prop}
+    (mem : ∀ (x) (hx : x ∈ s) (y) (hy : y ∈ s), p x y (subset_closure hx) (subset_closure hy))
+    (mul_left : ∀ x hx y hy z hz , p x z hx hz → p y z hy hz → p (x * y) z (mul_mem hx hy) hz)
+    (mul_right : ∀ x hx y hy z hz , p z x hz hx → p z y hz hy → p z (x * y) hz (mul_mem hx hy))
+    {x y : M} (hx : x ∈ closure s) (hy : y ∈ closure s) : p x y hx hy := by
   refine closure_induction (closure_induction mem ?_ hx) (mul_right · · · · _ hx · ·) hy
   exact fun _ _ _ _ h₁ h₂ z hz ↦ mul_left _ _ _ _ _ (subset_closure hz) (h₁ _ hz) (h₂ _ hz)
 -- which version do we prefer?
