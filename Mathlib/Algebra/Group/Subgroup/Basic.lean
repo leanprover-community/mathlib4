@@ -167,7 +167,7 @@ namespace InvMemClass
 
 /-- A subgroup of a group inherits an inverse. -/
 @[to_additive "An additive subgroup of an `AddGroup` inherits an inverse."]
-instance inv {G : Type u_1} {S : Type u_2} [Inv G] [SetLike S G]
+instance inv {G : Type u_1} {S : Type u_2} {_ : Inv G} [SetLike S G]
   [InvMemClass S G] {H : S} : Inv H :=
   ⟨fun a => ⟨a⁻¹, inv_mem a.2⟩⟩
 

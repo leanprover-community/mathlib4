@@ -424,7 +424,8 @@ variable {A : Type*} [Mul M] [SetLike A M] [hA : MulMemClass A M] (S' : A)
 -- lower priority so other instances are found first
 /-- A submagma of a magma inherits a multiplication. -/
 @[to_additive "An additive submagma of an additive magma inherits an addition."]
-instance (priority := 900) mul : Mul S' :=
+instance (priority := 900) mul {M A : Type*} {_ : Mul M}
+    [SetLike A M] [MulMemClass A M] (S' : A) : Mul S' :=
   ⟨fun a b => ⟨a.1 * b.1, mul_mem a.2 b.2⟩⟩
 
 -- lower priority so later simp lemmas are used first; to appease simp_nf

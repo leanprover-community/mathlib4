@@ -83,7 +83,8 @@ variable [SMul R M] [SetLike S M] [hS : SMulMemClass S R M] (s : S)
 -- lower priority so other instances are found first
 /-- A subset closed under the scalar action inherits that action. -/
 @[to_additive "A subset closed under the additive action inherits that action."]
-instance (priority := 50) smul : SMul R s :=
+instance (priority := 50) smul {R M : Type*} [SMul R M] [SetLike S M] [SMulMemClass S R M] (s : S) :
+    SMul R s :=
   ⟨fun r x => ⟨r • x.1, smul_mem r x.2⟩⟩
 
 /-- This can't be an instance because Lean wouldn't know how to find `N`, but we can still use
@@ -130,9 +131,12 @@ variable {N α : Type*} [SetLike S α] [SMul M N] [SMul M α] [Monoid N]
     [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] (s : S)
 
 -- lower priority so other instances are found first
+set_option synthInstance.checkSynthOrder false in
 /-- A subset closed under the scalar action inherits that action. -/
 @[to_additive "A subset closed under the additive action inherits that action."]
-instance (priority := 50) smul' : SMul M s where
+instance (priority := 50) smul' {N α : Type*} [SetLike S α] {_ : SMul M N} {_ : SMul M α}
+    {_ : Monoid N} [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] (s : S) :
+    SMul M s where
   smul r x := ⟨r • x.1, smul_one_smul N r x.1 ▸ smul_mem _ x.2⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -244,7 +248,8 @@ variable [hA : SMulMemClass A R M] (S' : A)
 
 -- Prefer subclasses of `MulAction` over `SMulMemClass`.
 /-- A `SubMulAction` of a `MulAction` is a `MulAction`. -/
-instance (priority := 75) toMulAction : MulAction R S' :=
+instance (priority := 75) toMulAction {R M A : Type*} {_ : Monoid R} [MulAction R M]
+    [SetLike A M] [SMulMemClass A R M] (S' : A) : MulAction R S' :=
   Subtype.coe_injective.mulAction Subtype.val (SetLike.val_smul S')
 
 /-- The natural `MulActionHom` over `R` from a `SubMulAction` of `M` to `M`. -/

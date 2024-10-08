@@ -415,7 +415,7 @@ variable {A M₁ : Type*} [SetLike A M₁] [One M₁] [hA : OneMemClass A M₁] 
 
 /-- A submonoid of a monoid inherits a 1. -/
 @[to_additive "An `AddSubmonoid` of an `AddMonoid` inherits a zero."]
-instance one : One S' :=
+instance one {A M₁ : Type*} [SetLike A M₁] {_ : One M₁} [OneMemClass A M₁] (S' : A) : One S' :=
   ⟨⟨1, OneMemClass.one_mem S'⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -465,7 +465,7 @@ theorem mk_pow {M} [Monoid M] {A : Type*} [SetLike A M] [SubmonoidClass A M] {S 
 /-- A submonoid of a unital magma inherits a unital magma structure. -/
 @[to_additive
       "An `AddSubmonoid` of a unital additive magma inherits a unital additive magma structure."]
-instance (priority := 75) toMulOneClass {M : Type*} [MulOneClass M] {A : Type*} [SetLike A M]
+instance (priority := 75) toMulOneClass {M : Type*} {_ : MulOneClass M} {A : Type*} [SetLike A M]
     [SubmonoidClass A M] (S : A) : MulOneClass S :=
     Subtype.coe_injective.mulOneClass (↑) rfl (fun _ _ => rfl)
 
