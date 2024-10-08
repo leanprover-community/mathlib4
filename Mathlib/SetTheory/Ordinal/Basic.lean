@@ -757,11 +757,10 @@ the addition, together with properties of the other operations, are proved in
 
 
 /-- `o₁ + o₂` is the order on the disjoint union of `o₁` and `o₂` obtained by declaring that
-  every element of `o₁` is smaller than every element of `o₂`. -/
+every element of `o₁` is smaller than every element of `o₂`. -/
 instance add : Add Ordinal.{u} :=
-  ⟨fun o₁ o₂ =>
-    Quotient.liftOn₂ o₁ o₂ (fun ⟨_, r, _⟩ ⟨_, s, _⟩ => type (Sum.Lex r s))
-      fun _ _ _ _ ⟨f⟩ ⟨g⟩ => Quot.sound ⟨RelIso.sumLexCongr f g⟩⟩
+  ⟨fun o₁ o₂ => Quotient.liftOn₂ o₁ o₂ (fun ⟨_, r, _⟩ ⟨_, s, _⟩ => type (Sum.Lex r s))
+    fun _ _ _ _ ⟨f⟩ ⟨g⟩ => Quot.sound ⟨RelIso.sumLexCongr f g⟩⟩
 
 instance addMonoidWithOne : AddMonoidWithOne Ordinal.{u} where
   add := (· + ·)
@@ -802,32 +801,16 @@ theorem card_ofNat (n : ℕ) [n.AtLeastTwo] :
     card.{u} (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
   card_nat n
 
--- Porting note: Rewritten proof of elim, previous version was difficult to debug
 instance add_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· ≤ ·) where
-  elim := fun c a b h => by
-    revert h c
-    refine inductionOn a (fun α₁ r₁ _ ↦ ?_)
-    refine inductionOn b (fun α₂ r₂ _ ↦ ?_)
-    rintro c ⟨⟨⟨f, fo⟩, fi⟩⟩
-    refine inductionOn c (fun β s _ ↦ ?_)
-    refine ⟨⟨⟨(Embedding.refl.{u+1} _).sumMap f, ?_⟩, ?_⟩⟩
-    · intros a b
-      match a, b with
-      | Sum.inl a, Sum.inl b => exact Sum.lex_inl_inl.trans Sum.lex_inl_inl.symm
-      | Sum.inl a, Sum.inr b => apply iff_of_true <;> apply Sum.Lex.sep
-      | Sum.inr a, Sum.inl b => apply iff_of_false <;> exact Sum.lex_inr_inl
-      | Sum.inr a, Sum.inr b => exact Sum.lex_inr_inr.trans <| fo.trans Sum.lex_inr_inr.symm
-    · intros a b H
-      match a, b, H with
-      | _, Sum.inl b, _ => exact ⟨Sum.inl b, rfl⟩
-      | Sum.inl a, Sum.inr b, H => exact (Sum.lex_inr_inl H).elim
-      | Sum.inr a, Sum.inr b, H =>
-        let ⟨w, h⟩ := fi _ _ (Sum.lex_inr_inr.1 H)
-        exact ⟨Sum.inr w, congr_arg Sum.inr h⟩
-#exit
+  elim c a b := by
+    refine inductionOn₃ a b c fun α r _ β s _ γ t _ ↦ ?_
+    rintro ⟨f⟩
+    apply (RelEmbedding.ofMonotone (Sum.recOn · Sum.inl (Sum.inr ∘ f)) _).ordinal_type_le
+    simp [f.map_rel_iff]
+
 instance add_swap_covariantClass_le :
     CovariantClass Ordinal.{u} Ordinal.{u} (swap (· + ·)) (· ≤ ·) where
-  elim := fun c a b => by
+  elim c a b := by
     refine inductionOn₃ a b c fun α r _ β s _ γ t _ ↦ ?_
     rintro ⟨f⟩
     apply (RelEmbedding.ofMonotone (Sum.recOn · (Sum.inl ∘ f) Sum.inr) _).ordinal_type_le
