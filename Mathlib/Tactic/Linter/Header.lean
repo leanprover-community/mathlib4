@@ -162,7 +162,7 @@ def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.
       output := output.push (toSyntax copyright closeComment, s!"{stdText "-/"}")
     | _, _       =>
       output := output.push (toSyntax copyright openComment, s!"{stdText ("/".push '-')}")
-    -- validate copyright author
+    -- Validate the first copyright line.
     let copStart := "Copyright (c) 20"
     let copStop := ". All rights reserved."
     if !copyrightAuthor.startsWith copStart then
@@ -173,11 +173,10 @@ def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.
       output := output.push
         (toSyntax copyright (copyrightAuthor.takeRight copStop.length),
          s!"Copyright line should end with '. All rights reserved.'")
-    -- validate authors
+    -- Validate the authors line.
     let authorsLine := "\n".intercalate authorsLines.dropLast
     let authorsStart := (("\n".intercalate [openComment, copyrightAuthor, license, ""])).endPos
-    for corr in authorsLineChecks authorsLine authorsStart do
-      output := output.push corr
+    output := output.append (authorsLineChecks authorsLine authorsStart)
     let expectedLicense := "Released under Apache 2.0 license as described in the file LICENSE."
     if license != expectedLicense then
       output := output.push (toSyntax copyright license,
@@ -189,18 +188,18 @@ def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.
 /-- checks the `Syntax` `imports` for broad imports: either `Mathlib.Tactic` or any import
 starting with `Lake`. -/
 def broadImportsCheck (imports : Array Syntax)  : Array (Syntax × String) := Id.run do
-  let mut msgs := #[]
+  let mut output := #[]
   for i in imports do
     match i.getId with
     | `Mathlib.Tactic =>
-      msgs := msgs.push (i, s!"Files in mathlib cannot import the whole tactic folder.")
+      output := output.push (i, s!"Files in mathlib cannot import the whole tactic folder.")
     | modName =>
       if modName.getRoot == `Lake then
-      msgs := msgs.push (i,
+      output := output.push (i,
         s!"In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter \
           (see e.g. mathlib4#13779). Please consider carefully if this import is useful and \
           make sure to benchmark it. If this is fine, feel free to allow this linter.")
-  return msgs
+  return output
 
 /--
 The "header" style linter checks that a file starts with
