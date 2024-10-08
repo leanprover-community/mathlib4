@@ -134,7 +134,9 @@ def mathlibLabels : Array Label := #[
   { label := "CI",
     dirs := #[".github"] },
   { label := "IMO",
-    dirs := #["Archive" / "Imo"] } ]
+    dirs := #["Archive" / "Imo"] },
+  { label := "dependency-bump",
+    dirs := #["lake-manifest.json"] } ]
 
 /-- Exceptions inside `Mathlib/` which are not covered by any label. -/
 def mathlibUnlabelled : Array FilePath := #[
