@@ -98,12 +98,15 @@ protected theorem uniformContinuous (hf : Isometry f) : UniformContinuous f :=
   hf.lipschitz.uniformContinuous
 
 /-- An isometry from a metric space is a uniform inducing map -/
-protected theorem uniformInducing (hf : Isometry f) : UniformInducing f :=
-  hf.antilipschitz.uniformInducing hf.uniformContinuous
+theorem isUniformInducing (hf : Isometry f) : IsUniformInducing f :=
+  hf.antilipschitz.isUniformInducing hf.uniformContinuous
+
+@[deprecated (since := "2024-10-05")]
+alias uniformInducing := isUniformInducing
 
 theorem tendsto_nhds_iff {ι : Type*} {f : α → β} {g : ι → α} {a : Filter ι} {b : α}
     (hf : Isometry f) : Filter.Tendsto g a (𝓝 b) ↔ Filter.Tendsto (f ∘ g) a (𝓝 (f b)) :=
-  hf.uniformInducing.inducing.tendsto_nhds_iff
+  hf.isUniformInducing.inducing.tendsto_nhds_iff
 
 /-- An isometry is continuous. -/
 protected theorem continuous (hf : Isometry f) : Continuous f :=
@@ -144,11 +147,11 @@ theorem _root_.isometry_subtype_coe {s : Set α} : Isometry ((↑) : s → α) :
 
 theorem comp_continuousOn_iff {γ} [TopologicalSpace γ] (hf : Isometry f) {g : γ → α} {s : Set γ} :
     ContinuousOn (f ∘ g) s ↔ ContinuousOn g s :=
-  hf.uniformInducing.inducing.continuousOn_iff.symm
+  hf.isUniformInducing.inducing.continuousOn_iff.symm
 
 theorem comp_continuous_iff {γ} [TopologicalSpace γ] (hf : Isometry f) {g : γ → α} :
     Continuous (f ∘ g) ↔ Continuous g :=
-  hf.uniformInducing.inducing.continuous_iff.symm
+  hf.isUniformInducing.inducing.continuous_iff.symm
 
 end PseudoEmetricIsometry
 
@@ -470,7 +473,7 @@ theorem mul_apply (e₁ e₂ : α ≃ᵢ α) (x : α) : (e₁ * e₂) x = e₁ (
 
 theorem completeSpace_iff (e : α ≃ᵢ β) : CompleteSpace α ↔ CompleteSpace β := by
   simp only [completeSpace_iff_isComplete_univ, ← e.range_eq_univ, ← image_univ,
-    isComplete_image_iff e.isometry.uniformInducing]
+    isComplete_image_iff e.isometry.isUniformInducing]
 
 protected theorem completeSpace [CompleteSpace β] (e : α ≃ᵢ β) : CompleteSpace α :=
   e.completeSpace_iff.2 ‹_›
