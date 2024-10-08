@@ -5,7 +5,6 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.DualNumber
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.Nilpotent.Basic
 
 /-!
 # Algebraic properties of dual numbers
