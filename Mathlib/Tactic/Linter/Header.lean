@@ -104,7 +104,13 @@ def toSyntax (s pattern : String) (offset : String.Pos := 0) : Syntax :=
   let fin := (((s.splitOn pattern).getD 0 "") ++ pattern).endPos + offset
   mkAtomFrom (.ofRange ⟨beg, fin⟩) pattern
 
-/-- Return if `line` looks like a correct authors line in a copyright header. -/
+/-- Return if `line` looks like a correct authors line in a copyright header.
+
+The `offset` input is used to shift the position information of the `Syntax` that the command
+produces.
+`authorsLineChecks` computes a position for its warning *relative to `line`*.
+The `offset` input passes on the starting position of `line` in the whole file.
+-/
 def authorsLineChecks (line : String) (offset : String.Pos) : Array (Syntax × String) :=
   Id.run do
   -- We cannot reasonably validate the author names, so we look only for a few common mistakes:
