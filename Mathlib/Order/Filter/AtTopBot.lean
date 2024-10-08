@@ -22,7 +22,7 @@ Then we prove many lemmas like “if `f → +∞`, then `f ± c → +∞`”.
 variable {ι ι' α β γ : Type*}
 
 open Set
-open scoped AlgebraOrderInstances
+-- open scoped AlgebraOrderInstances
 
 namespace Filter
 
