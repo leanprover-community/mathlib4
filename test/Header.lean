@@ -43,13 +43,11 @@ It logs details of what the linter would report if the `cop` is "malformed".
 elab "#check_copyright " cop:str : command => do
   let cop := cop.getString
   for (s, m) in Mathlib.Linter.copyrightHeaderChecks cop do
-    match s.getRange? with
-      | none => logWarning "Should have range"
-      | some rg =>
-        logInfo
-          m!"Text: `{replaceMultilineComments s.getAtomVal}`\n\
-             Range: {(rg.start, rg.stop)}\n\
-             Message: '{replaceMultilineComments m}'"
+    if let some rg := s.getRange? then
+      logInfo
+        m!"Text: `{replaceMultilineComments s.getAtomVal}`\n\
+           Range: {(rg.start, rg.stop)}\n\
+           Message: '{replaceMultilineComments m}'"
 
 -- well-formed
 #check_copyright
@@ -115,6 +113,14 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 "
+
+/--
+info: Text: `-|`
+Range: (1, 3)
+Message: 'Copyright too short!'
+-/
+#guard_msgs in
+#check_copyright ""
 
 /--
 info: Text: `Cpyright (c) 202`
