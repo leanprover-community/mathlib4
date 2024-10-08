@@ -84,7 +84,7 @@ theorem le_lfpApprox (f : α →o α) (x : α) (a : Ordinal) : x ≤ lfpApprox f
   apply le_sSup
   simp only [exists_prop, Set.union_singleton, Set.mem_insert_iff, Set.mem_setOf_eq, true_or]
 
-theorem lfpApprox_succ {f : α →o α} {x : α} (h : x ≤ f x) (a : Ordinal) :
+theorem lfpApprox_add_one {f : α →o α} {x : α} (h : x ≤ f x) (a : Ordinal) :
     lfpApprox f x (a + 1) = f (lfpApprox f x a) := by
   rw [Ordinal.add_one_eq_succ]
   apply le_antisymm
@@ -148,7 +148,7 @@ theorem lfpApprox_eq_of_mem_fixedPoints {a b : Ordinal} {f : α →o α} {x : α
     use le_lfpApprox f x a
     intro a' ha'b
     by_cases haa : a' < a
-    · rw [← lfpApprox_succ h_init]
+    · rw [← lfpApprox_add_one h_init]
       apply lfpApprox_monotone
       rwa [Ordinal.add_one_eq_succ, succ_le_iff]
     · rw [IH a' ha'b (le_of_not_lt haa), h]
@@ -169,7 +169,7 @@ lemma lfpApprox_mem_fixedPoints_of_eq {a b c : Ordinal} {f : α →o α} {x : α
     (h_init : x ≤ f x) (h_ab : a < b) (h_ac : a ≤ c) (h_fab : lfpApprox f x a = lfpApprox f x b) :
     lfpApprox f x c ∈ fixedPoints f := by
   have lfpApprox_mem_fixedPoint : lfpApprox f x a ∈ fixedPoints f := by
-    rw [mem_fixedPoints_iff, ← lfpApprox_succ h_init]
+    rw [mem_fixedPoints_iff, ← lfpApprox_add_one h_init]
     exact Monotone.eq_of_le_of_le (lfpApprox_monotone f x) h_fab (le_succ a) h_ab.succ_le
   rw [lfpApprox_eq_of_mem_fixedPoints h_init]
   exacts [lfpApprox_mem_fixedPoint, h_ac, lfpApprox_mem_fixedPoint]
@@ -228,9 +228,9 @@ theorem gfpApprox_antitone (f : α →o α) (x : α) : Antitone (gfpApprox f x) 
 theorem gfpApprox_le (f : α →o α) (x : α) (a : Ordinal) : gfpApprox f x a ≤ x :=
   le_lfpApprox (OrderHom.dual f) x a
 
-theorem gfpApprox_succ {f : α →o α} {x : α} (h : f x ≤ x) (a : Ordinal) :
+theorem gfpApprox_add_one {f : α →o α} {x : α} (h : f x ≤ x) (a : Ordinal) :
     gfpApprox f x (a + 1) = f (gfpApprox f x a) :=
-  lfpApprox_succ (f := OrderHom.dual f) h a
+  lfpApprox_add_one (f := OrderHom.dual f) h a
 
 theorem gfpApprox_mono_left : Monotone (gfpApprox : (α →o α) → _) := by
   intro f g h
