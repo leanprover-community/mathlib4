@@ -218,6 +218,7 @@ theorem grundyValue_eq_sInf_moveLeft (G : PGame) :
     grundyValue G = sInf (Set.range (grundyValue ∘ G.moveLeft))ᶜ := by
   rw [grundyValue]; rfl
 
+set_option linter.deprecated false in
 @[deprecated grundyValue_eq_sInf_moveLeft (since := "2024-09-16")]
 theorem grundyValue_eq_mex_left (G : PGame) :
     grundyValue G = Ordinal.mex fun i => grundyValue (G.moveLeft i) :=
@@ -302,6 +303,7 @@ theorem grundyValue_eq_sInf_moveRight (G : PGame) [G.Impartial] :
   ext i
   exact @grundyValue_neg _ (@Impartial.moveRight_impartial ⟨l, r, L, R⟩ _ _)
 
+set_option linter.deprecated false in
 @[deprecated grundyValue_eq_sInf_moveRight (since := "2024-09-16")]
 theorem grundyValue_eq_mex_right (G : PGame) [G.Impartial] :
     grundyValue G = Ordinal.mex.{u, u} fun i => grundyValue (G.moveRight i) :=
@@ -343,7 +345,7 @@ theorem grundyValue_nim_add_nim (n m : ℕ) : grundyValue (nim.{u} n + nim.{u} m
     all_goals
       intro j
       have hj := toLeftMovesNim_symm_lt j
-      obtain ⟨k, hk⟩ := lt_omega.1 (hj.trans (nat_lt_omega _))
+      obtain ⟨k, hk⟩ := lt_omega0.1 (hj.trans (nat_lt_omega0 _))
       rw [hk, Nat.cast_lt] at hj
       have := hj.ne
       have := hj -- The termination checker doesn't work without this.
@@ -354,7 +356,7 @@ theorem grundyValue_nim_add_nim (n m : ℕ) : grundyValue (nim.{u} n + nim.{u} m
   -- For any `k < n ^^^ m`, either `nim (k ^^^ m) + nim m` or `nim n + nim (k ^^^ n)` is a left
   -- option with Grundy value `k`.
   · intro k hk
-    obtain ⟨k, rfl⟩ := Ordinal.lt_omega.1 (hk.trans (Ordinal.nat_lt_omega _))
+    obtain ⟨k, rfl⟩ := Ordinal.lt_omega0.1 (hk.trans (Ordinal.nat_lt_omega0 _))
     rw [Set.mem_Iio, Nat.cast_lt] at hk
     obtain hk | hk := Nat.lt_xor_cases hk <;> rw [← natCast_lt] at hk
     · use toLeftMovesAdd (Sum.inl (toLeftMovesNim ⟨_, hk⟩))

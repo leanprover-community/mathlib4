@@ -501,9 +501,9 @@ lemma min_comm (a b : α) : min a b = min b a :=
 
 lemma min_assoc (a b c : α) : min (min a b) c = min a (min b c) := by
   apply eq_min
-  · apply le_trans; apply min_le_left; apply min_le_left
+  · apply le_trans (min_le_left ..); apply min_le_left
   · apply le_min
-    · apply le_trans; apply min_le_left; apply min_le_right
+    · apply le_trans (min_le_left ..); apply min_le_right
     · apply min_le_right
   · intro d h₁ h₂; apply le_min
     · apply le_min h₁; apply le_trans h₂; apply min_le_left
@@ -528,9 +528,9 @@ lemma max_comm (a b : α) : max a b = max b a :=
 
 lemma max_assoc (a b c : α) : max (max a b) c = max a (max b c) := by
   apply eq_max
-  · apply le_trans; apply le_max_left a b; apply le_max_left
+  · apply le_trans (le_max_left a b); apply le_max_left
   · apply max_le
-    · apply le_trans; apply le_max_right a b; apply le_max_left
+    · apply le_trans (le_max_right a b); apply le_max_left
     · apply le_max_right
   · intro d h₁ h₂; apply max_le
     · apply max_le h₁; apply le_trans (le_max_left _ _) h₂
@@ -595,7 +595,17 @@ lemma compare_iff (a b : α) {o : Ordering} : compare a b = o ↔ o.Compares a b
   · exact compare_eq_iff_eq
   · exact compare_gt_iff_gt
 
-instance : Batteries.TransCmp (compare (α := α)) where
+theorem cmp_eq_compare (a b : α) : cmp a b = compare a b := by
+  refine ((compare_iff ..).2 ?_).symm
+  unfold cmp cmpUsing; split_ifs with h1 h2
+  · exact h1
+  · exact h2
+  · exact le_antisymm (not_lt.1 h2) (not_lt.1 h1)
+
+theorem cmp_eq_compareOfLessAndEq (a b : α) : cmp a b = compareOfLessAndEq a b :=
+  (cmp_eq_compare ..).trans (LinearOrder.compare_eq_compareOfLessAndEq ..)
+
+instance : Batteries.LawfulCmp (compare (α := α)) where
   symm a b := by
     cases h : compare a b <;>
     simp only [Ordering.swap] <;> symm
@@ -604,6 +614,9 @@ instance : Batteries.TransCmp (compare (α := α)) where
     · exact compare_lt_iff_lt.2 <| compare_gt_iff_gt.1 h
   le_trans := fun h₁ h₂ ↦
     compare_le_iff_le.2 <| le_trans (compare_le_iff_le.1 h₁) (compare_le_iff_le.1 h₂)
+  cmp_iff_beq := by simp [compare_eq_iff_eq]
+  cmp_iff_lt := by simp [compare_lt_iff_lt]
+  cmp_iff_le := by simp [compare_le_iff_le]
 
 end Ord
 

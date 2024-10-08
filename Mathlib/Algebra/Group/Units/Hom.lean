@@ -17,6 +17,18 @@ also contains unrelated results about `Units` that depend on `MonoidHom`.
 * `Units.map`: Turn a homomorphism from `α` to `β` monoids into a homomorphism from `αˣ` to `βˣ`.
 * `MonoidHom.toHomUnits`: Turn a homomorphism from a group `α` to `β` into a homomorphism from
   `α` to `βˣ`.
+* `IsLocalRingHom`: A predicate on monoid maps, requiring that it maps nonunits
+  to nonunits. For local rings, this means that the image of the unique maximal ideal is again
+  contained in the unique maximal ideal. This is developed earlier, and in the generality of
+  monoids, as it allows its use in non-local-ring related contexts, but it does have the
+  strange consequence that it does not require local rings, or even rings.
+
+## TODO
+
+The results that don't mention homomorphisms should be proved (earlier?) in a different file and be
+used to golf the basic `Group` lemmas.
+
+Add a `@[to_additive]` version of `IsLocalRingHom`.
 -/
 
 assert_not_exists MonoidWithZero
@@ -167,6 +179,7 @@ theorem of_leftInverse [MonoidHomClass G N M] {f : F} {x : M} (g : G)
     (hfg : Function.LeftInverse g f) (h : IsUnit (f x)) : IsUnit x := by
   simpa only [hfg x] using h.map g
 
+/-- Prefer `IsLocalRingHom.of_leftInverse`, but we can't get rid of this because of `ToAdditive`. -/
 @[to_additive]
 theorem _root_.isUnit_map_of_leftInverse [MonoidHomClass F M N] [MonoidHomClass G N M]
     {f : F} {x : M} (g : G) (hfg : Function.LeftInverse g f) :
@@ -194,3 +207,49 @@ theorem liftRight_inv_mul (f : M →* N) (h : ∀ x, IsUnit (f x)) (x) :
 
 end Monoid
 end IsUnit
+
+section IsLocalRingHom
+
+variable {G R S T F : Type*}
+
+variable [Monoid R] [Monoid S] [Monoid T] [FunLike F R S]
+
+/-- A local ring homomorphism is a map `f` between monoids such that `a` in the domain
+  is a unit if `f a` is a unit for any `a`. See `LocalRing.local_hom_TFAE` for other equivalent
+  definitions in the local ring case - from where this concept originates, but it is useful in
+  other contexts, so we allow this generalisation in mathlib. -/
+class IsLocalRingHom (f : F) : Prop where
+  /-- A local ring homomorphism `f : R ⟶ S` will send nonunits of `R` to nonunits of `S`. -/
+  map_nonunit : ∀ a, IsUnit (f a) → IsUnit a
+
+@[simp]
+theorem IsUnit.of_map (f : F) [IsLocalRingHom f] (a : R) (h : IsUnit (f a)) : IsUnit a :=
+  IsLocalRingHom.map_nonunit a h
+
+-- TODO : remove alias, change the parenthesis of `f` and `a`
+alias isUnit_of_map_unit := IsUnit.of_map
+
+variable [MonoidHomClass F R S]
+
+@[simp]
+theorem isUnit_map_iff (f : F) [IsLocalRingHom f] (a : R) : IsUnit (f a) ↔ IsUnit a :=
+  ⟨IsLocalRingHom.map_nonunit a, IsUnit.map f⟩
+
+theorem isLocalRingHom_of_leftInverse [FunLike G S R] [MonoidHomClass G S R]
+    {f : F} (g : G) (hfg : Function.LeftInverse g f) : IsLocalRingHom f where
+  map_nonunit a ha := by rwa [isUnit_map_of_leftInverse g hfg] at ha
+
+instance MonoidHom.isLocalRingHom_comp (g : S →* T) (f : R →* S) [IsLocalRingHom g]
+    [IsLocalRingHom f] : IsLocalRingHom (g.comp f) where
+  map_nonunit a := IsLocalRingHom.map_nonunit a ∘ IsLocalRingHom.map_nonunit (f := g) (f a)
+
+-- see note [lower instance priority]
+instance (priority := 100) isLocalRingHom_toMonoidHom (f : F) [IsLocalRingHom f] :
+    IsLocalRingHom (f : R →* S) :=
+  ⟨IsLocalRingHom.map_nonunit (f := f)⟩
+
+theorem MonoidHom.isLocalRingHom_of_comp (f : R →* S) (g : S →* T) [IsLocalRingHom (g.comp f)] :
+    IsLocalRingHom f :=
+  ⟨fun _ ha => (isUnit_map_iff (g.comp f) _).mp (ha.map g)⟩
+
+end IsLocalRingHom
