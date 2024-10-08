@@ -221,6 +221,16 @@ def broadImportsCheck (imports : Array Syntax)  : Array (Syntax × String) := Id
           make sure to benchmark it. If this is fine, feel free to allow this linter.")
   return output
 
+/-- Check the `Syntax` imports for syntactically duplicate imports. -/
+def duplicateImportsCheck (imports : Array Syntax)  : Array (Syntax × String) := Id.run do
+  let mut output := #[]
+  let mut importsSoFar := #[]
+  for i in imports do
+    if importsSoFar.contains i then
+      output := output.push (i, s!"Duplicate imports: {i} already imported")
+    else importsSoFar := importsSoFar.push i
+  return output
+
 /--
 The "header" style linter checks that a file starts with
 ```
@@ -276,8 +286,10 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let (stx, _) ← Parser.parseHeader { input := fm.source, fileName := fil, fileMap := fm }
     parseUpToHere (stx.getTailPos?.getD default) "\nsection")
   let importIds := getImportIds upToStx
-  -- Report on broad imports.
+  -- Report on broad or duplicate imports.
   for (imp, msg) in broadImportsCheck importIds do
+    Linter.logLint linter.style.header imp msg
+  for (imp, msg) in duplicateImportsCheck importIds do
     Linter.logLint linter.style.header imp msg
   let afterImports := firstNonImport? upToStx
   if afterImports.isNone then return
