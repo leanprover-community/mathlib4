@@ -68,9 +68,8 @@ set_option linter.style.longFile 100 in
 /--
 warning: using 'exit' to interrupt Lean
 ---
-warning: This file is 79 lines long. The current limit is 101, but it is expected to be 200:
+warning: This file is 78 lines long. The current limit is 101, but it is expected to be 200:
 `set_option linter.style.longFile 200`.
-You can completely disable this linter by setting the length limit to `0`.
 -/
 #guard_msgs in
 -- Check that a value different from `candidate` or `candidate - 100` value is not allowed
@@ -88,9 +87,8 @@ set_option linter.style.longFileDefValue 1000
 /--
 warning: using 'exit' to interrupt Lean
 ---
-warning: This file is 96 lines long. The current limit is 500, but it is expected to be 1000:
+warning: This file is 94 lines long. The current limit is 500, but it is expected to be 1000:
 `set_option linter.style.longFile 1000`.
-You can completely disable this linter by setting the length limit to `0`.
 -/
 #guard_msgs in
 #exit
@@ -120,7 +118,7 @@ set_option linter.style.longFileDefValue 400
 warning: using 'exit' to interrupt Lean
 ---
 warning: The default value of the `longFile` linter is 400.
-This file is 128 lines long which does not exceed the allowed bound.
+This file is 126 lines long which does not exceed the allowed bound.
 Please, remove the `set_option linter.style.longFile 5000`.
 -/
 #guard_msgs in
