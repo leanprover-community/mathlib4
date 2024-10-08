@@ -1387,7 +1387,7 @@ theorem iSup_ord {ι} {f : ι → Cardinal} (hf : BddAbove (range f)) :
   conv_lhs => change range (ord ∘ f)
   rw [range_comp]
 
-theorem sInf_compl_lt_ord_succ_lift {ι : Type u} (f : ι → Ordinal.{max u v}) :
+theorem sInf_compl_lt_lift_ord_succ {ι : Type u} (f : ι → Ordinal.{max u v}) :
     sInf (range f)ᶜ < lift.{v} (succ #ι).ord := by
   by_contra! h
   have : Iio (lift.{v} (succ #ι).ord) ⊆ range f := by
@@ -1401,7 +1401,7 @@ theorem sInf_compl_lt_ord_succ_lift {ι : Type u} (f : ι → Ordinal.{max u v})
 
 theorem sInf_compl_lt_ord_succ {ι : Type u} (f : ι → Ordinal.{u}) :
     sInf (range f)ᶜ < (succ #ι).ord :=
-  lift_id (succ #ι).ord ▸ sInf_compl_lt_ord_succ_lift f
+  lift_id (succ #ι).ord ▸ sInf_compl_lt_lift_ord_succ f
 
 -- TODO: remove `bsup` in favor of `iSup` in a future refactor.
 
