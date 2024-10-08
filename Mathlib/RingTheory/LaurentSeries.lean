@@ -781,4 +781,3 @@ instance instLaurentSeriesComplete : CompleteSpace (LaurentSeries K) :=
 end Complete
 
 end LaurentSeries
-#min_imports
