@@ -151,7 +151,6 @@ def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.
   let mut output := #[]
   if (pieces.getD 1 "\n").take 1 != "\n" then
     output := output.push (toSyntax copyright "-/", s!"{stdText "-/"}")
-
   let lines := copyright.splitOn "\n"
   let closeComment := lines.getLastD ""
   match lines with
