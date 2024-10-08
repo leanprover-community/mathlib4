@@ -11,7 +11,7 @@ import Mathlib.Algebra.Ring.Commute
 
 -/
 
-variable {α β : Type*}
+variable {α : Type*}
 
 namespace Nat
 

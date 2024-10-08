@@ -16,7 +16,7 @@ import Mathlib.Algebra.Group.Hom.Defs
 -- `Algebra.Group` folder.
 assert_not_imported Mathlib.Algebra.NeZero
 
-variable {α β M N P : Type*}
+variable {α M N P : Type*}
 
 -- monoids
 variable {G : Type*} {H : Type*}
@@ -98,7 +98,7 @@ end MulHom
 
 namespace MonoidHom
 section Group
-variable [Group G] [CommGroup H]
+variable [Group G]
 
 /-- A homomorphism from a group to a monoid is injective iff its kernel is trivial.
 For the iff statement on the triviality of the kernel, see `injective_iff_map_eq_one'`. -/
@@ -124,8 +124,6 @@ theorem _root_.injective_iff_map_eq_one' {G H} [Group G] [MulOneClass H]
     (f : F) : Function.Injective f ↔ ∀ a, f a = 1 ↔ a = 1 :=
   (injective_iff_map_eq_one f).trans <|
     forall_congr' fun _ => ⟨fun h => ⟨h, fun H => H.symm ▸ map_one f⟩, Iff.mp⟩
-
-variable [MulOneClass M]
 
 /-- Makes a group homomorphism from a proof that the map preserves right division
 `fun x y => x * y⁻¹`. See also `MonoidHom.of_map_div` for a version using `fun x y => x / y`.
