@@ -375,7 +375,6 @@ end
 
 section adjunctions
 
-
 /-- The adjunction between the n-skeleton and n-truncation.-/
 noncomputable def skAdj (n : ℕ) : Truncated.sk n ⊣ truncation.{u} n :=
   SimplicialObject.skAdj n
