@@ -78,6 +78,14 @@ theorem concat_get_prefix {x y : List α} (h : x <+: y) (hl : x.length < y.lengt
   convert List.take_append_drop (x.length + 1) y using 2
   rw [← List.take_concat_get, List.concat_eq_append]; rfl
 
+instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <:+: l₂)
+  | [], l₂ => isTrue ⟨[], l₂, rfl⟩
+  | a :: l₁, [] => isFalse fun ⟨s, t, te⟩ => by simp at te
+  | l₁, b :: l₂ =>
+    letI := l₁.decidableInfix l₂
+    @decidable_of_decidable_of_iff (l₁ <+: b :: l₂ ∨ l₁ <:+: l₂) _ _
+      infix_cons_iff.symm
+
 @[deprecated cons_prefix_cons (since := "2024-08-14")]
 theorem cons_prefix_iff : a :: l₁ <+: b :: l₂ ↔ a = b ∧ l₁ <+: l₂ := by
   simp

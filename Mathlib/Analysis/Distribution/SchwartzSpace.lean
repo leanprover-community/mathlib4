@@ -870,8 +870,8 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
         rw [mul_pow]
         have hN₁' := (lt_of_lt_of_le zero_lt_one hN₁).ne'
         gcongr
-        · exact le_trans (by simp [hC]) (le_self_pow (by simp [hC]) hN₁')
-        · refine le_self_pow (one_le_pow₀ ?_) hN₁'
+        · exact le_trans (by simp [hC]) (le_self_pow₀ (by simp [hC]) hN₁')
+        · refine le_self_pow₀ (one_le_pow₀ ?_) hN₁'
           simp only [le_add_iff_nonneg_right, norm_nonneg]
       have := norm_iteratedFDeriv_comp_le f.smooth' hg.1 le_top x hbound hgrowth'
       have hxk : ‖x‖ ^ k ≤ (1 + ‖x‖) ^ k :=
