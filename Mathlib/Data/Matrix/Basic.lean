@@ -1376,7 +1376,7 @@ theorem mapMatrix_trans (f : α ≃+ β) (g : β ≃+ γ) :
     f.mapMatrix.trans g.mapMatrix = ((f.trans g).mapMatrix : Matrix m n α ≃+ _) :=
   rfl
 
-@[simp] lemma apply₂_comp_mapMatrix (f : α ≃+ β) (i : m) (j : n) :
+@[simp] lemma elemAddHom_comp_mapMatrix (f : α ≃+ β) (i : m) (j : n) :
     (elemAddHom β i j).comp (AddHomClass.toAddHom f.mapMatrix) =
       (f : AddHom α β).comp (elemAddHom _ i j) := rfl
 
@@ -1441,7 +1441,7 @@ theorem mapMatrix_trans (f : α ≃ₗ[R] β) (g : β ≃ₗ[R] γ) :
     (f.mapMatrix : _ ≃ₗ[R] Matrix m n β).toLinearMap = f.toLinearMap.mapMatrix := by
   rfl
 
-@[simp] lemma apply₂_comp_mapMatrix (f : α ≃ₗ[R] β) (i : m) (j : n) :
+@[simp] lemma elemLinearMap_comp_mapMatrix (f : α ≃ₗ[R] β) (i : m) (j : n) :
     elemLinearMap R _ i j ∘ₗ f.mapMatrix.toLinearMap =
       f.toLinearMap ∘ₗ elemLinearMap R _ i j := rfl
 
