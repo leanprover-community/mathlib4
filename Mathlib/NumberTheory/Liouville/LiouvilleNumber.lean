@@ -145,7 +145,7 @@ theorem aux_calc (n : ℕ) {m : ℝ} (hm : 2 ≤ m) :
       any_goals exact pow_pos (zero_lt_two.trans_le hm) _
       -- `2 ≤ m ^ n!` is a consequence of monotonicity of exponentiation at `2 ≤ m`.
       exact _root_.trans (_root_.trans hm (pow_one _).symm.le)
-        (pow_right_mono (one_le_two.trans hm) n.factorial_pos)
+        (pow_right_mono₀ (one_le_two.trans hm) n.factorial_pos)
     _ = 1 / (m ^ n !) ^ n := congr_arg (1 / ·) (pow_mul m n ! n)
 
 /-- An upper estimate on the remainder. This estimate works with `m ∈ ℝ` satisfying `2 ≤ m` and is

@@ -130,11 +130,6 @@ instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosStrictMono :
     MulPosStrictMono α where
   elim a b c hbc := by by_contra! h; exact hbc.not_le <| (mul_le_mul_right a.2).1 h
 
-/-- Alias of `mul_le_one'` for unification. -/
-@[deprecated mul_le_one' (since := "2024-08-21")]
-theorem mul_le_one₀ (ha : a ≤ 1) (hb : b ≤ 1) : a * b ≤ 1 :=
-  mul_le_one' ha hb
-
 /-- Alias of `one_le_mul'` for unification. -/
 @[deprecated one_le_mul (since := "2024-08-21")]
 theorem one_le_mul₀ (ha : 1 ≤ a) (hb : 1 ≤ b) : 1 ≤ a * b :=
