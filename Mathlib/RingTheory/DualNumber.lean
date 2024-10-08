@@ -59,7 +59,7 @@ lemma isUnit_or_isNilpotent_of_isMaximal_isNilpotent [CommSemiring R] [AddCommGr
   refine (h _ hI).imp fun n hn ↦ ?_
   exact hn.le (Ideal.pow_mem_pow haI _)
 
-lemma isUnit_or_isNilpotent [DivisionRing R] [AddCommGroup M]
+lemma isUnit_or_isNilpotent [DivisionSemiring R] [AddCommGroup M]
     [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
     (a : TrivSqZeroExt R M) :
     IsUnit a ∨ IsNilpotent a := by
@@ -81,9 +81,13 @@ lemma isNilpotent_eps {R : Type*} [Semiring R] :
     IsNilpotent (ε : R[ε]) :=
   TrivSqZeroExt.isNilpotent_inr 1
 
-section Field
-
 open TrivSqZeroExt
+
+lemma isNilpotent_iff_eps_dvd {R : Type*} [DivisionSemiring R] {x : R[ε]} :
+    IsNilpotent x ↔ ε ∣ x := by
+  simp only [isNilpotent_iff_isNilpotent_fst, isNilpotent_iff_eq_zero, fst_eq_zero_iff_eps_dvd]
+
+section Field
 
 variable {K : Type*}
 
@@ -92,10 +96,6 @@ instance [DivisionRing K] : LocalRing K[ε] where
     rw [add_comm, eq_comm, ← sub_eq_iff_eq_add] at h
     rcases eq_or_ne (fst a) 0 with ha|ha <;>
     simp [isUnit_iff_isUnit_fst, ← h, ha]
-
-lemma isNilpotent_iff_eps_dvd [DivisionRing K] {x : K[ε]} :
-    IsNilpotent x ↔ ε ∣ x := by
-  simp only [isNilpotent_iff_isNilpotent_fst, isNilpotent_iff_eq_zero, fst_eq_zero_iff_eps_dvd]
 
 lemma ideal_trichotomy [DivisionRing K] (I : Ideal K[ε]) :
     I = ⊥ ∨ I = .span {ε} ∨ I = ⊤ := by
