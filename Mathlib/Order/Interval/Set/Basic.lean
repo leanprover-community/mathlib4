@@ -46,7 +46,7 @@ def Ioo (a b : α) :=
 def Ico (a b : α) :=
   { x | a ≤ x ∧ x < b }
 
-/-- `Iio b` is the left-infinite right-open interval $(-\infty, b)$. -/
+/-- `Iio b` is the left-infinite right-open interval $(-∞, b)$. -/
 def Iio (b : α) :=
   { x | x < b }
 
@@ -54,7 +54,7 @@ def Iio (b : α) :=
 def Icc (a b : α) :=
   { x | a ≤ x ∧ x ≤ b }
 
-/-- `Iic b` is the left-infinite right-closed interval $(-\infty, b]$. -/
+/-- `Iic b` is the left-infinite right-closed interval $(-∞, b]$. -/
 def Iic (b : α) :=
   { x | x ≤ b }
 
@@ -62,11 +62,11 @@ def Iic (b : α) :=
 def Ioc (a b : α) :=
   { x | a < x ∧ x ≤ b }
 
-/-- `Ici a` is the left-closed right-infinite interval $[a, \infty)$. -/
+/-- `Ici a` is the left-closed right-infinite interval $[a, ∞)$. -/
 def Ici (a : α) :=
   { x | a ≤ x }
 
-/-- `Ioi a` is the left-open right-infinite interval $(a, \infty)$. -/
+/-- `Ioi a` is the left-open right-infinite interval $(a, ∞)$. -/
 def Ioi (a : α) :=
   { x | a < x }
 
