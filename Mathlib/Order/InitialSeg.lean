@@ -87,6 +87,9 @@ alias init := mem_range_of_rel
 theorem map_rel_iff {a b : α} (f : r ≼i s) : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
 
+theorem inj (f : r ≼i s) {a b : α} : f a = f b ↔ a = b :=
+  f.toRelEmbedding.inj
+
 theorem exists_eq_iff_rel (f : r ≼i s) {a : α} {b : β} : s b (f a) ↔ ∃ a', f a' = b ∧ r a' a :=
   ⟨fun h => by
     rcases f.mem_range_of_rel h with ⟨a', rfl⟩

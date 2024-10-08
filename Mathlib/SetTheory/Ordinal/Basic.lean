@@ -803,17 +803,15 @@ theorem card_ofNat (n : ℕ) [n.AtLeastTwo] :
 
 instance add_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· ≤ ·) where
   elim c a b := by
-    refine inductionOn₃ a b c fun α r _ β s _ γ t _ ↦ ?_
-    rintro ⟨f⟩
-    apply (RelEmbedding.ofMonotone (Sum.recOn · Sum.inl (Sum.inr ∘ f)) _).ordinal_type_le
+    refine inductionOn₃ a b c fun α r _ β s _ γ t _ ⟨f⟩ ↦
+      (RelEmbedding.ofMonotone (Sum.recOn · Sum.inl (Sum.inr ∘ f)) ?_).ordinal_type_le
     simp [f.map_rel_iff]
 
 instance add_swap_covariantClass_le :
     CovariantClass Ordinal.{u} Ordinal.{u} (swap (· + ·)) (· ≤ ·) where
   elim c a b := by
-    refine inductionOn₃ a b c fun α r _ β s _ γ t _ ↦ ?_
-    rintro ⟨f⟩
-    apply (RelEmbedding.ofMonotone (Sum.recOn · (Sum.inl ∘ f) Sum.inr) _).ordinal_type_le
+    refine inductionOn₃ a b c fun α r _ β s _ γ t _  ⟨f⟩ ↦
+      (RelEmbedding.ofMonotone (Sum.recOn · (Sum.inl ∘ f) Sum.inr) ?_).ordinal_type_le
     simp [f.map_rel_iff]
 
 theorem le_add_right (a b : Ordinal) : a ≤ a + b := by
