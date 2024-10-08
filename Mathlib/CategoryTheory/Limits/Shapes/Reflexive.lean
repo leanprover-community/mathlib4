@@ -391,9 +391,9 @@ open WalkingReflexivePair WalkingReflexivePair.Hom
 section
 section NatTrans
 
+variable {F G: WalkingReflexivePair ⥤ C}
 /-- A constructor for natural transforms to a diagram of the form `reflexivePair f g s`. -/
-def mkNatTrans {F G : WalkingReflexivePair ⥤ C}
-    (e₀ : F.obj zero ⟶ G.obj zero) (e₁ : F.obj one ⟶ G.obj one)
+def mkNatTrans (e₀ : F.obj zero ⟶ G.obj zero) (e₁ : F.obj one ⟶ G.obj one)
     (h₁ : F.map left ≫ e₀ = e₁ ≫ G.map left := by aesop_cat)
     (h₂ : F.map right ≫ e₀ = e₁ ≫ G.map right := by aesop_cat)
     (h₃ : F.map reflexion ≫ e₁ = e₀ ≫ G.map reflexion := by aesop_cat) :
@@ -410,49 +410,37 @@ def mkNatTrans {F G : WalkingReflexivePair ⥤ C}
         reflexivePair_map_reflexion, reflexivePair_map_left, reflexivePair_map_right,
         Category.assoc]
 
-@[simp]
-lemma mkNatTrans_app_zero {F G : WalkingReflexivePair ⥤ C}
-    (e₀ : F.obj zero ⟶ G.obj zero) (e₁ : F.obj one ⟶ G.obj one)
+@[reassoc (attr := simp)]
+lemma mkNatTrans_app_zero (e₀ : F.obj zero ⟶ G.obj zero) (e₁ : F.obj one ⟶ G.obj one)
     (h₁ : F.map left ≫ e₀ = e₁ ≫ G.map left)
     (h₂ : F.map right ≫ e₀ = e₁ ≫ G.map right)
     (h₃ : F.map reflexion ≫ e₁ = e₀ ≫ G.map reflexion) :
     (mkNatTrans e₀ e₁ h₁ h₂ h₃).app zero = e₀ := rfl
 
-@[simp]
-lemma mkNatTrans_app_one {F G : WalkingReflexivePair ⥤ C}
-    (e₀ : F.obj zero ⟶ G.obj zero) (e₁ : F.obj one ⟶ G.obj one)
+@[reassoc (attr := simp)]
+lemma mkNatTrans_app_one (e₀ : F.obj zero ⟶ G.obj zero) (e₁ : F.obj one ⟶ G.obj one)
     (h₁ : F.map left ≫ e₀ = e₁ ≫ G.map left)
     (h₂ : F.map right ≫ e₀ = e₁ ≫ G.map right)
     (h₃ : F.map reflexion ≫ e₁ = e₀ ≫ G.map reflexion) :
     (mkNatTrans e₀ e₁ h₁ h₂ h₃).app one = e₁ := rfl
 
-
-variable {F G: WalkingReflexivePair ⥤ C}
-
 /-- Constructor for natural isomorphisms with a `reflexivePair`. -/
 @[simps!]
-def mkNatIso (u : F.obj one ≅ G.obj one) (v : F.obj zero ≅ G.obj zero)
-    (h₁ : F.map left ≫ v.hom = u.hom ≫ G.map left := by aesop_cat)
-    (h₂ : F.map right ≫ v.hom = u.hom ≫ G.map right := by aesop_cat)
-    (h₃ : F.map reflexion ≫ u.hom = v.hom ≫ G.map reflexion := by aesop_cat) :
-    F ≅ G :=
-  NatIso.ofComponents (fun x ↦ match x with
-    | zero => v
-    | one => u)
-  (by intro _ _ f
-      cases f with
-        | id => simp
-        | left => simp [h₁]
-        | right => simp [h₂]
-        | reflexion => simp [h₃]
-        | leftCompReflexion => dsimp
-                               simp only [Functor.map_comp, reflexivePair_obj_one,
-                                reflexivePair_obj_zero, reflexivePair_map_right,
-                                reflexivePair_map_reflexion, Category.assoc, h₃, reassoc_of% h₁]
-        | rightCompReflexion => dsimp
-                                simp only [Functor.map_comp, reflexivePair_obj_one,
-                                 reflexivePair_obj_zero, reflexivePair_map_left,
-                                 reflexivePair_map_reflexion, Category.assoc, h₃, reassoc_of% h₂])
+def mkNatIso (e₀ : F.obj zero ≅ G.obj zero) (e₁ : F.obj one ≅ G.obj one)
+    (h₁ : F.map left ≫ e₀.hom = e₁.hom ≫ G.map left := by aesop_cat)
+    (h₂ : F.map right ≫ e₀.hom = e₁.hom ≫ G.map right := by aesop_cat)
+    (h₃ : F.map reflexion ≫ e₁.hom = e₀.hom ≫ G.map reflexion := by aesop_cat) :
+    F ≅ G where
+      hom := mkNatTrans e₀.hom e₁.hom
+      inv := mkNatTrans e₀.inv e₁.inv
+        (by rw [← cancel_epi e₁.hom, e₁.hom_inv_id_assoc, ← reassoc_of% h₁, e₀.hom_inv_id,
+            Category.comp_id])
+        (by rw [← cancel_epi e₁.hom, e₁.hom_inv_id_assoc, ← reassoc_of% h₂, e₀.hom_inv_id,
+            Category.comp_id])
+        (by rw [← cancel_epi e₀.hom, e₀.hom_inv_id_assoc, ← reassoc_of% h₃, e₁.hom_inv_id,
+            Category.comp_id])
+      hom_inv_id := by ext x; cases x <;> simp
+      inv_hom_id := by ext x; cases x <;> simp
 
 variable (F)
 
@@ -475,15 +463,14 @@ def compRightIso {D : Type u₂} [Category.{v₂} D] {A B : C}
       (by simp only [← Functor.map_comp, sr, Functor.map_id]) :=
   mkNatIso (Iso.refl _) (Iso.refl _)
 
-lemma whiskerRightMkNatTrans {D : Type u₂} [Category.{v₂} D]
-    {F G: WalkingReflexivePair ⥤ C}
-    (u : F.obj zero ⟶ G.obj zero) (v : F.obj one ⟶ G.obj one)
-    {h₁ : F.map left ≫ u = v ≫ G.map left}
-    {h₂ : F.map right ≫ u = v ≫ G.map right}
-    {h₃ : F.map reflexion ≫ v = u ≫ G.map reflexion}
-    (H : C ⥤ D) :
-      (whiskerRight (mkNatTrans u v : F ⟶ G) H) = mkNatTrans
-            (H.map u) (H.map v)
+lemma whiskerRightMkNatTrans {F G: WalkingReflexivePair ⥤ C}
+    (e₀ : F.obj zero ⟶ G.obj zero) (e₁ : F.obj one ⟶ G.obj one)
+    {h₁ : F.map left ≫ e₀ = e₁ ≫ G.map left}
+    {h₂ : F.map right ≫ e₀ = e₁ ≫ G.map right}
+    {h₃ : F.map reflexion ≫ e₁ = e₀ ≫ G.map reflexion}
+    {D : Type u₂} [Category.{v₂} D] (H : C ⥤ D) :
+      (whiskerRight (mkNatTrans e₀ e₁ : F ⟶ G) H) =
+        mkNatTrans (H.map e₀) (H.map e₁)
             (by simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, h₁])
             (by simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, h₂])
             (by simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, h₃]) := by
@@ -508,7 +495,17 @@ open WalkingReflexivePair WalkingReflexivePair.Hom
 variable {F : WalkingReflexivePair ⥤ C}
 
 /-- The tail morphism of a reflexive cofork. -/
-abbrev π (G : ReflexiveCofork F) := G.ι.app zero
+abbrev π (G : ReflexiveCofork F) : F.obj zero ⟶ G.pt := G.ι.app zero
+
+@[simps pt]
+def mk {X : C} (π : F.obj zero ⟶ X) (h : F.map left ≫ π = F.map right ≫ π) :
+    ReflexiveCofork F where
+  pt := X
+  ι := reflexivePair.mkNatTrans π (F.map left ≫ π)
+
+@[simp]
+lemma mk_π {X : C} (π : F.obj zero ⟶ X) (h : F.map left ≫ π = F.map right ≫ π) :
+    (mk π h).π = π := rfl
 
 lemma condition (G : ReflexiveCofork F) : F.map left ≫ G.π = F.map right ≫ G.π := by
   erw [Cocone.w G left, Cocone.w G right]
