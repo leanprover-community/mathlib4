@@ -98,7 +98,7 @@ variable [OrderedAddCommMonoid β]
 
 lemma sum_le_sum_index [DecidableEq ι] {f₁ f₂ : ι →₀ α} {h : ι → α → β} (hf : f₁ ≤ f₂)
     (hh : ∀ i ∈ f₁.support ∪ f₂.support, Monotone (h i))
-    (hh₀ : ∀ i ∈ f₁.support ∪ f₂.support, h i 0 = 0): f₁.sum h ≤ f₂.sum h := by
+    (hh₀ : ∀ i ∈ f₁.support ∪ f₂.support, h i 0 = 0) : f₁.sum h ≤ f₂.sum h := by
   classical
   rw [sum_of_support_subset _ Finset.subset_union_left _ hh₀,
     sum_of_support_subset _ Finset.subset_union_right _ hh₀]
