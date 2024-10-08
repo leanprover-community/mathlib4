@@ -31,14 +31,20 @@ namespace HomologicalComplex₂
 variable {C : Type*} [Category C] [Preadditive C]
   {I₁ I₂ I₁₂ : Type*} {c₁ : ComplexShape I₁} {c₂ : ComplexShape I₂}
   (K L M : HomologicalComplex₂ C c₁ c₂) (φ : K ⟶ L) (e : K ≅ L) (ψ : L ⟶ M)
-  (c₁₂ : ComplexShape I₁₂) [DecidableEq I₁₂]
-  [TotalComplexShape c₁ c₂ c₁₂]
+  (c₁₂ : ComplexShape I₁₂) [TotalComplexShape c₁ c₂ c₁₂]
 
 /-- A bicomplex has a total bicomplex if for any `i₁₂ : I₁₂`, the coproduct
 of the objects `(K.X i₁).X i₂` such that `ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩ = i₁₂` exists. -/
 abbrev HasTotal := K.toGradedObject.HasMap (ComplexShape.π c₁ c₂ c₁₂)
 
-variable [K.HasTotal c₁₂]
+include e in
+variable {K L} in
+lemma hasTotal_of_iso [K.HasTotal c₁₂] : L.HasTotal c₁₂ :=
+  GradedObject.hasMap_of_iso (GradedObject.isoMk K.toGradedObject L.toGradedObject
+    (fun ⟨i₁, i₂⟩ =>
+      (HomologicalComplex.eval _ _ i₁ ⋙ HomologicalComplex.eval _ _ i₂).mapIso e)) _
+
+variable [DecidableEq I₁₂] [K.HasTotal c₁₂]
 
 section
 
@@ -223,12 +229,12 @@ lemma D₂_D₁ (i₁₂ i₁₂' i₁₂'' : I₁₂) :
             ComplexShape.ε₂_ε₁ c₁₂ h₃ h₄, neg_mul, Units.neg_smul]
         · simp only [K.d₂_eq_zero c₁₂ _ _ _ h₄, zero_comp, comp_zero, smul_zero, neg_zero]
       · rw [K.d₁_eq_zero c₁₂ _ _ _ h₃, zero_comp, neg_zero]
-        · by_cases h₄ : c₂.Rel i₂ (c₂.next i₂)
-          · rw [totalAux.d₂_eq K c₁₂ i₁ h₄ i₁₂']; swap
-            · rw [← ComplexShape.next_π₂ c₁ c₁₂ i₁ h₄, ← c₁₂.next_eq' h₁, h]
-            simp only [Linear.units_smul_comp, assoc, totalAux.ιMapObj_D₁]
-            rw [K.d₁_eq_zero c₁₂ _ _ _ h₃, comp_zero, smul_zero]
-          · rw [K.d₂_eq_zero c₁₂ _ _ _ h₄, zero_comp]
+        by_cases h₄ : c₂.Rel i₂ (c₂.next i₂)
+        · rw [totalAux.d₂_eq K c₁₂ i₁ h₄ i₁₂']; swap
+          · rw [← ComplexShape.next_π₂ c₁ c₁₂ i₁ h₄, ← c₁₂.next_eq' h₁, h]
+          simp only [Linear.units_smul_comp, assoc, totalAux.ιMapObj_D₁]
+          rw [K.d₁_eq_zero c₁₂ _ _ _ h₃, comp_zero, smul_zero]
+        · rw [K.d₂_eq_zero c₁₂ _ _ _ h₄, zero_comp]
     · rw [K.D₁_shape c₁₂ _ _ h₂, K.D₂_shape c₁₂ _ _ h₂, comp_zero, comp_zero, neg_zero]
   · rw [K.D₁_shape c₁₂ _ _ h₁, K.D₂_shape c₁₂ _ _ h₁, zero_comp, zero_comp, neg_zero]
 
@@ -237,7 +243,7 @@ lemma D₁_D₂ (i₁₂ i₁₂' i₁₂'' : I₁₂) :
     K.D₁ c₁₂ i₁₂ i₁₂' ≫ K.D₂ c₁₂ i₁₂' i₁₂'' = - K.D₂ c₁₂ i₁₂ i₁₂' ≫ K.D₁ c₁₂ i₁₂' i₁₂'' := by simp
 
 /-- The total complex of a bicomplex. -/
-@[simps d]
+@[simps (config := .lemmasOnly) d]
 noncomputable def total : HomologicalComplex C c₁₂ where
   X := K.toGradedObject.mapObj (ComplexShape.π c₁ c₂ c₁₂)
   d i₁₂ i₁₂' := K.D₁ c₁₂ i₁₂ i₁₂' + K.D₂ c₁₂ i₁₂ i₁₂'
@@ -254,7 +260,7 @@ noncomputable def ιTotal (i₁ : I₁) (i₂ : I₂) (i₁₂ : I₁₂)
 @[reassoc (attr := simp)]
 lemma XXIsoOfEq_hom_ιTotal {x₁ y₁ : I₁} (h₁ : x₁ = y₁) {x₂ y₂ : I₂} (h₂ : x₂ = y₂)
     (i₁₂ : I₁₂) (h : ComplexShape.π c₁ c₂ c₁₂ (y₁, y₂) = i₁₂) :
-    (K.XXIsoOfEq h₁ h₂).hom ≫ K.ιTotal c₁₂ y₁ y₂ i₁₂ h =
+    (K.XXIsoOfEq _ _ _ h₁ h₂).hom ≫ K.ιTotal c₁₂ y₁ y₂ i₁₂ h =
       K.ιTotal c₁₂ x₁ x₂ i₁₂ (by rw [h₁, h₂, h]) := by
   subst h₁ h₂
   simp
@@ -262,7 +268,7 @@ lemma XXIsoOfEq_hom_ιTotal {x₁ y₁ : I₁} (h₁ : x₁ = y₁) {x₂ y₂ :
 @[reassoc (attr := simp)]
 lemma XXIsoOfEq_inv_ιTotal {x₁ y₁ : I₁} (h₁ : x₁ = y₁) {x₂ y₂ : I₂} (h₂ : x₂ = y₂)
     (i₁₂ : I₁₂) (h : ComplexShape.π c₁ c₂ c₁₂ (x₁, x₂) = i₁₂) :
-    (K.XXIsoOfEq h₁ h₂).inv ≫ K.ιTotal c₁₂ x₁ x₂ i₁₂ h =
+    (K.XXIsoOfEq _ _ _ h₁ h₂).inv ≫ K.ιTotal c₁₂ x₁ x₂ i₁₂ h =
       K.ιTotal c₁₂ y₁ y₂ i₁₂ (by rw [← h, h₁, h₂]) := by
   subst h₁ h₂
   simp

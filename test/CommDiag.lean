@@ -53,3 +53,5 @@ example {X Y Z : Type} {f i : X ⟶ Y}
   with_panel_widgets [SelectionPanel]
     intro h₁ h₂
     rw [← h₁, h₂]
+
+end CategoryTheory

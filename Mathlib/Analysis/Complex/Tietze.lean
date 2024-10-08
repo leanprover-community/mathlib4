@@ -57,7 +57,7 @@ instance Set.instTietzeExtensionUnitClosedBall {𝕜 : Type v} [RCLike 𝕜] {E 
   let g : E → E := fun x ↦ ‖x‖⁻¹ • x
   classical
   suffices this : Continuous (piecewise (Metric.closedBall 0 1) id g) by
-    refine .of_retract ⟨Subtype.val, by continuity⟩ ⟨_, this.codRestrict fun x ↦ ?_⟩ ?_
+    refine .of_retract ⟨Subtype.val, by fun_prop⟩ ⟨_, this.codRestrict fun x ↦ ?_⟩ ?_
     · by_cases hx : x ∈ Metric.closedBall 0 1
       · simpa [piecewise_eq_of_mem (hi := hx)] using hx
       · simp only [g, piecewise_eq_of_not_mem (hi := hx), RCLike.real_smul_eq_coe_smul (K := 𝕜)]
@@ -93,11 +93,12 @@ theorem Metric.instTietzeExtensionClosedBall (𝕜 : Type v) [RCLike 𝕜] {E : 
     exact (mul_le_iff_le_one_right hr).symm
 
 variable {X : Type u} [TopologicalSpace X] [NormalSpace X] {s : Set X} (hs : IsClosed s)
-variable (𝕜 : Type v) [RCLike 𝕜] [TietzeExtension.{u, v} 𝕜]
+variable (𝕜 : Type v) [RCLike 𝕜]
 variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E]
 
 namespace BoundedContinuousFunction
 
+include 𝕜 hs in
 /-- **Tietze extension theorem** for real-valued bounded continuous maps, a version with a closed
 embedding and bundled composition. If `e : C(X, Y)` is a closed embedding of a topological space
 into a normal topological space and `f : X →ᵇ ℝ` is a bounded continuous function, then there exists

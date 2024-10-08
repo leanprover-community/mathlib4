@@ -33,12 +33,13 @@ section Manifold
 
 variable {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
-  [MeasurableSpace M] [BorelSpace M] [SigmaCompactSpace M] [T2Space M]
+  [MeasurableSpace M] [BorelSpace M] [T2Space M]
   {f f' : M → F} {μ : Measure M}
 
 /-- If a locally integrable function `f` on a finite-dimensional real manifold has zero integral
 when multiplied by any smooth compactly supported function, then `f` vanishes almost everywhere. -/
-theorem ae_eq_zero_of_integral_smooth_smul_eq_zero (hf : LocallyIntegrable f μ)
+theorem ae_eq_zero_of_integral_smooth_smul_eq_zero [SigmaCompactSpace M]
+    (hf : LocallyIntegrable f μ)
     (h : ∀ g : M → ℝ, Smooth I 𝓘(ℝ) g → HasCompactSupport g → ∫ x, g x • f x ∂μ = 0) :
     ∀ᵐ x ∂μ, f x = 0 := by
   -- record topological properties of `M`
@@ -106,11 +107,13 @@ theorem ae_eq_zero_of_integral_smooth_smul_eq_zero (hf : LocallyIntegrable f μ)
     exact tendsto_integral_of_dominated_convergence bound A B C D
   -- deduce that `∫ x in s, f = 0` as each integral `∫ gₙ f` vanishes by assumption
   have : ∀ n, ∫ x, g n x • f x ∂μ = 0 := by
-    refine' fun n ↦ h _ (g_diff n) _
+    refine fun n ↦ h _ (g_diff n) ?_
     apply HasCompactSupport.of_support_subset_isCompact K_compact
     simpa [g_supp] using vK n
   simpa [this] using L
 
+-- An instance with keys containing `Opens`
+instance (U : Opens M) : BorelSpace U := inferInstanceAs (BorelSpace (U : Set M))
 
 /-- If a function `f` locally integrable on an open subset `U` of a finite-dimensional real
   manifold has zero integral when multiplied by any smooth function compactly supported
@@ -137,6 +140,8 @@ nonrec theorem IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero' {U : Set M} (h
   rw [Function.extend_apply' _ _ _ (mt _ hx)]
   · apply zero_smul
   · rintro ⟨x, rfl⟩; exact x.2
+
+variable [SigmaCompactSpace M]
 
 theorem IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero {U : Set M} (hU : IsOpen U)
     (hf : LocallyIntegrableOn f U μ)

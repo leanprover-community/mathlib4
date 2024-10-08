@@ -1,8 +1,9 @@
 /-
-Copyright (c) 2023 Kim Liesinger. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Liesinger
+Authors: Kim Morrison
 -/
+import Mathlib.Init
 import Batteries.Data.String.Basic
 import Lean.Meta.Tactic.TryThis
 import Batteries.Linter.UnreachableTactic
@@ -66,8 +67,8 @@ def evalTacticCapturingMessages (tac : TSyntax `tactic) (only : Message → Bool
   let mut msgs ← modifyGetThe Core.State fun st => (st.messages, { st with messages := {} })
   try
     evalTactic tac
-    let (capture, leave) := (← getThe Core.State).messages.msgs.toList.partition only
-    msgs := ⟨leave.foldl (fun m => m.push) msgs.msgs⟩
+    let (capture, leave) := (← getThe Core.State).messages.toList.partition only
+    msgs := leave.foldl (·.add) msgs
     return capture
   catch e =>
     msgs := msgs ++ (← getThe Core.State).messages
@@ -132,4 +133,8 @@ elab_rules : tactic
   | some result, false =>
     evalTactic result
 
-initialize Std.Linter.UnreachableTactic.addIgnoreTacticKind `Mathlib.Tactic.Says.says
+initialize Batteries.Linter.UnreachableTactic.addIgnoreTacticKind `Mathlib.Tactic.Says.says
+
+end Says
+
+end Mathlib.Tactic

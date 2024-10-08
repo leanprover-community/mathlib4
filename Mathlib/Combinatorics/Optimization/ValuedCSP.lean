@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak
 -/
 import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.Order.BigOperators.Group.Multiset
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Matrix.Notation
 
@@ -135,7 +136,7 @@ lemma Function.HasMaxCutPropertyAt.rows_lt_aux
     {r : Fin 2 → D} (rin : r ∈ (ω.tt ![![a, b], ![b, a]])) :
     f ![a, b] < f r := by
   rw [FractionalOperation.tt, Multiset.mem_map] at rin
-  rw [show r = ![r 0, r 1] from List.ofFn_inj.mp rfl]
+  rw [show r = ![r 0, r 1] by simp [← List.ofFn_inj]]
   apply lt_of_le_of_ne (mcf.right (r 0) (r 1)).left
   intro equ
   have asymm : r 0 ≠ r 1 := by
@@ -147,7 +148,7 @@ lemma Function.HasMaxCutPropertyAt.rows_lt_aux
   apply asymm
   obtain ⟨o, in_omega, rfl⟩ := rin
   show o (fun j => ![![a, b], ![b, a]] j 0) = o (fun j => ![![a, b], ![b, a]] j 1)
-  convert symmega ![a, b] ![b, a] (List.Perm.swap b a []) o in_omega using 2 <;>
+  convert symmega ![a, b] ![b, a] (by simp [List.Perm.swap]) o in_omega using 2 <;>
     simp [Matrix.const_fin1_eq]
 
 lemma Function.HasMaxCutProperty.forbids_commutativeFractionalPolymorphism

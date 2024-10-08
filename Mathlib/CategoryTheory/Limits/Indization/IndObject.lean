@@ -100,7 +100,7 @@ def toCostructuredArrow : P.I ⥤ CostructuredArrow yoneda A :=
   P.cocone.toCostructuredArrow ⋙ CostructuredArrow.pre _ _ _
 
 instance : P.toCostructuredArrow.Final :=
-  final_toCostructuredArrow_comp_pre _ P.coconeIsColimit
+  Presheaf.final_toCostructuredArrow_comp_pre _ P.coconeIsColimit
 
 /-- Representable presheaves are (trivially) ind-objects. -/
 @[simps]
@@ -158,9 +158,10 @@ theorem isIndObject_of_isFiltered_of_finallySmall (A : Cᵒᵖ ⥤ Type v)
     (factoringCompInclusion (fromFinalModel <| CostructuredArrow yoneda A)).symm
   have h₂ : Functor.Final (inclusion (fromFinalModel (CostructuredArrow yoneda A))) :=
     Functor.final_of_comp_full_faithful' (factoring _) (inclusion _)
-  let c := (tautologicalCocone A).whisker (inclusion (fromFinalModel (CostructuredArrow yoneda A)))
+  let c := (Presheaf.tautologicalCocone A).whisker
+    (inclusion (fromFinalModel (CostructuredArrow yoneda A)))
   let hc : IsColimit c := (Functor.Final.isColimitWhiskerEquiv _ _).symm
-    (isColimitTautologicalCocone A)
+    (Presheaf.isColimitTautologicalCocone A)
   have hq : Nonempty (FinalModel (CostructuredArrow yoneda A)) := Nonempty.map
     (Functor.Final.lift (fromFinalModel (CostructuredArrow yoneda A))) IsFiltered.nonempty
   exact ⟨_, inclusion (fromFinalModel _) ⋙ CostructuredArrow.proj yoneda A, c.ι, hc⟩
