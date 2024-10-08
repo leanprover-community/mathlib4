@@ -5,6 +5,7 @@ Authors: Anne Baanen, Filippo A. E. Nuccio
 -/
 import Mathlib.RingTheory.FractionalIdeal.Basic
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # More operations on fractional ideals
