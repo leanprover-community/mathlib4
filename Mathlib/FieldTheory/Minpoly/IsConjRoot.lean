@@ -44,13 +44,13 @@ theorem symm {x x' : A} (h : IsConjRoot R x x') : IsConjRoot R x' x := Eq.symm h
 theorem trans {x x' x'': A} (h₁ : IsConjRoot R x x') (h₂ : IsConjRoot R x' x'') :
     IsConjRoot R x x'' := Eq.trans h₁ h₂
 
-theorem of_minpoly_eq {x x' : A} (h : minpoly R x = minpoly R x') : IsConjRoot R x x' := h
+theorem _root_.isConjRoot_def {x x' : A} : IsConjRoot R x x' ↔ minpoly R x = minpoly R x' := Iff.rfl
 
 theorem of_algEquiv (x : A) (s : A ≃ₐ[R] A) : IsConjRoot R x (s x) :=
   Eq.symm (minpoly.algEquiv_eq s x)
 
 theorem of_algEquiv₂ (x : A) (s₁ s₂ : A ≃ₐ[R] A) : IsConjRoot R (s₁ x) (s₂ x) :=
-  of_minpoly_eq <| (minpoly.algEquiv_eq s₂ x) ▸ (minpoly.algEquiv_eq s₁ x)
+  isConjRoot_def.mpr <| (minpoly.algEquiv_eq s₂ x) ▸ (minpoly.algEquiv_eq s₁ x)
 
 theorem exist_algEquiv [Normal K L] {x x': L} (h : IsConjRoot K x x') :
     ∃ σ : L ≃ₐ[K] L, x' = σ x := by
@@ -98,8 +98,6 @@ theorem not_mem_iff_exist_ne {x : L} (h : IsSeparable K x)
     x ∉ (⊥ : Subalgebra K L) ↔ ∃ x' : L, x ≠ x' ∧ IsConjRoot K x x' := by
   constructor
   · intro hbot
-
--- `should decide what is the definition when both x, x' are trancendental over R`
 
 variable (R) in
 theorem of_isScalarTower {S : Type*} [CommRing S] [Algebra R S] [Algebra S A]
