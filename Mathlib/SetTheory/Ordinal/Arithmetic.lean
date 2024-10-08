@@ -2497,7 +2497,7 @@ theorem ord_isLimit {c} (co : ℵ₀ ≤ c) : (ord c).IsLimit := by
     rw [← ord_le, ← le_succ_of_isLimit, ord_le]
     · exact co.trans h
     · rw [ord_aleph0]
-      exact Ordinal.omega_isLimit
+      exact Ordinal.omega0_isLimit
 
 theorem noMaxOrder {c} (h : ℵ₀ ≤ c) : NoMaxOrder c.ord.toType :=
   toType_noMax_of_succ_lt (ord_isLimit h).2
