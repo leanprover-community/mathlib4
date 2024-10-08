@@ -371,18 +371,20 @@ namespace SeparationQuotient
 
 @[to_additive instNorm]
 instance instMulNorm : Norm (SeparationQuotient E) where
-  norm := lift Norm.norm fun _ _ h => norm_eq_norm_of_dist_eq_zero' <| h.dist_eq_zero
+  norm := lift Norm.norm fun _ _ h => h.norm_eq_norm'
 
-@[simp]
-theorem norm_mk (p : E) : ‖mk p‖ = ‖p‖ := rfl
+set_option linter.docPrime false in
+@[to_additive (attr := simp) norm_mk]
+theorem norm_mk' (p : E) : ‖mk p‖ = ‖p‖ := rfl
 
 @[to_additive]
 instance : NormedCommGroup (SeparationQuotient E) where
   __ : CommGroup (SeparationQuotient E) := instCommGroup
   dist_eq := Quotient.ind₂ dist_eq_norm_div
 
-@[simp]
-theorem nnnorm_mk (p : E) : ‖mk p‖₊ = ‖p‖₊ := rfl
+set_option linter.docPrime false in
+@[to_additive (attr := simp) nnnorm_mk]
+theorem nnnorm_mk' (p : E) : ‖mk p‖₊ = ‖p‖₊ := rfl
 
 end SeparationQuotient
 

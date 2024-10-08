@@ -501,14 +501,6 @@ theorem norm_le_mul_norm_add (u v : E) : ‖u‖ ≤ ‖u * v‖ + ‖v‖ :=
     ‖u‖ = ‖u * v / v‖ := by rw [mul_div_cancel_right]
     _ ≤ ‖u * v‖ + ‖v‖ := norm_div_le _ _
 
-set_option linter.docPrime false in
-@[to_additive norm_eq_norm_of_dist_eq_zero]
-theorem norm_eq_norm_of_dist_eq_zero' {u v : E} (h : dist u v = 0) : ‖u‖ = ‖v‖ := by
-  have hu := dist_triangle_right 1 u v
-  have hv := dist_triangle_left 1 v u
-  simp_rw [dist_one_left, dist_one_right, h, add_zero] at hu hv
-  exact le_antisymm hu hv
-
 @[to_additive ball_eq]
 theorem ball_eq' (y : E) (ε : ℝ) : ball y ε = { x | ‖x / y‖ < ε } :=
   Set.ext fun a => by simp [dist_eq_norm_div]
@@ -691,11 +683,6 @@ alias nnnorm_le_insert := nnnorm_le_nnnorm_add_nnnorm_sub
 theorem nnnorm_le_mul_nnnorm_add (a b : E) : ‖a‖₊ ≤ ‖a * b‖₊ + ‖b‖₊ :=
   norm_le_mul_norm_add _ _
 
-set_option linter.docPrime false in
-@[to_additive nnnorm_eq_nnnorm_of_nndist_eq_zero]
-theorem nnnorm_eq_nnnorm_of_nndist_eq_zero' {u v : E} (h : nndist u v = 0) : ‖u‖₊ = ‖v‖₊ :=
-  NNReal.eq <| norm_eq_norm_of_dist_eq_zero' <| congrArg NNReal.toReal h
-
 @[to_additive ofReal_norm_eq_coe_nnnorm]
 theorem ofReal_norm_eq_coe_nnnorm' (a : E) : ENNReal.ofReal ‖a‖ = ‖a‖₊ :=
   ENNReal.ofReal_eq_coe_nnreal _
@@ -782,6 +769,16 @@ theorem continuous_norm' : Continuous fun a : E => ‖a‖ := by
 @[to_additive (attr := continuity) continuous_nnnorm]
 theorem continuous_nnnorm' : Continuous fun a : E => ‖a‖₊ :=
   continuous_norm'.subtype_mk _
+
+set_option linter.docPrime false in
+@[to_additive Inseparable.norm_eq_norm]
+theorem Inseparable.norm_eq_norm' {u v : E} (h : Inseparable u v) : ‖u‖ = ‖v‖ :=
+  h.map continuous_norm' |>.eq
+
+set_option linter.docPrime false in
+@[to_additive Inseparable.nnnorm_eq_nnnorm]
+theorem Inseparable.nnnorm_eq_nnnorm' {u v : E} (h : Inseparable u v) : ‖u‖₊ = ‖v‖₊ :=
+  h.map continuous_nnnorm' |>.eq
 
 @[to_additive]
 theorem mem_closure_one_iff_norm {x : E} : x ∈ closure ({1} : Set E) ↔ ‖x‖ = 0 := by
