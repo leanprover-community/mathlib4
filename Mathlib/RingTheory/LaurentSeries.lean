@@ -53,7 +53,7 @@ from `X : LaurentSeries _` to `single 1 1 : HahnSeries ℤ _`.
 -/
 universe u
 
-open scoped Classical
+open scoped Classical PowerSeries
 open HahnSeries Polynomial
 
 noncomputable section
@@ -103,23 +103,23 @@ section Semiring
 
 variable [Semiring R]
 
-instance : Coe (PowerSeries R) R⸨X⸩ :=
+instance : Coe R⟦X⟧ R⸨X⸩ :=
   ⟨HahnSeries.ofPowerSeries ℤ R⟩
 
 /- Porting note: now a syntactic tautology and not needed elsewhere
-theorem coe_powerSeries (x : PowerSeries R) :
+theorem coe_powerSeries (x : R⟦X⟧) :
     (x : R⸨X⸩) = HahnSeries.ofPowerSeries ℤ R x :=
   rfl -/
 
 @[simp]
-theorem coeff_coe_powerSeries (x : PowerSeries R) (n : ℕ) :
+theorem coeff_coe_powerSeries (x : R⟦X⟧) (n : ℕ) :
     HahnSeries.coeff (x : R⸨X⸩) n = PowerSeries.coeff R n x := by
   rw [ofPowerSeries_apply_coeff]
 
 /-- This is a power series that can be multiplied by an integer power of `X` to give our
   Laurent series. If the Laurent series is nonzero, `powerSeriesPart` has a nonzero
   constant term. -/
-def powerSeriesPart (x : R⸨X⸩) : PowerSeries R :=
+def powerSeriesPart (x : R⸨X⸩) : R⟦X⟧ :=
   PowerSeries.mk fun n => x.coeff (x.order + n)
 
 @[simp]
@@ -169,18 +169,17 @@ theorem ofPowerSeries_powerSeriesPart (x : R⸨X⸩) :
 
 end Semiring
 
-instance [CommSemiring R] : Algebra (PowerSeries R) (R⸨X⸩) :=
-  (HahnSeries.ofPowerSeries ℤ R).toAlgebra
+instance [CommSemiring R] : Algebra R⟦X⟧ R⸨X⸩ := (HahnSeries.ofPowerSeries ℤ R).toAlgebra
 
 @[simp]
 theorem coe_algebraMap [CommSemiring R] :
-    ⇑(algebraMap (PowerSeries R) R⸨X⸩) = HahnSeries.ofPowerSeries ℤ R :=
+    ⇑(algebraMap R⟦X⟧ R⸨X⸩) = HahnSeries.ofPowerSeries ℤ R :=
   rfl
 
 /-- The localization map from power series to Laurent series. -/
 @[simps (config := { rhsMd := .all, simpRhs := true })]
 instance of_powerSeries_localization [CommRing R] :
-    IsLocalization (Submonoid.powers (PowerSeries.X : PowerSeries R)) R⸨X⸩ where
+    IsLocalization (Submonoid.powers (PowerSeries.X : R⟦X⟧)) R⸨X⸩ where
   map_units' := by
     rintro ⟨_, n, rfl⟩
     refine ⟨⟨single (n : ℤ) 1, single (-n : ℤ) 1, ?_, ?_⟩, ?_⟩
@@ -204,8 +203,8 @@ instance of_powerSeries_localization [CommRing R] :
     rintro rfl
     exact ⟨1, rfl⟩
 
-instance {K : Type*} [Field K] : IsFractionRing (PowerSeries K) K⸨X⸩ :=
-  IsLocalization.of_le (Submonoid.powers (PowerSeries.X : PowerSeries K)) _
+instance {K : Type*} [Field K] : IsFractionRing K⟦X⟧ K⸨X⸩ :=
+  IsLocalization.of_le (Submonoid.powers (PowerSeries.X : K⟦X⟧)) _
     (powers_le_nonZeroDivisors_of_noZeroDivisors PowerSeries.X_ne_zero) fun _ hf =>
     isUnit_of_mem_nonZeroDivisors <| map_mem_nonZeroDivisors _ HahnSeries.ofPowerSeries_injective hf
 
@@ -215,34 +214,34 @@ namespace PowerSeries
 
 open LaurentSeries
 
-variable {R' : Type*} [Semiring R] [Ring R'] (f g : PowerSeries R) (f' g' : PowerSeries R')
+variable {R' : Type*} [Semiring R] [Ring R'] (f g : R⟦X⟧) (f' g' : R'⟦X⟧)
 
 @[norm_cast] -- Porting note (#10618): simp can prove this
-theorem coe_zero : ((0 : PowerSeries R) : R⸨X⸩) = 0 :=
+theorem coe_zero : ((0 : R⟦X⟧) : R⸨X⸩) = 0 :=
   (ofPowerSeries ℤ R).map_zero
 
 @[norm_cast] -- Porting note (#10618): simp can prove this
-theorem coe_one : ((1 : PowerSeries R) : R⸨X⸩) = 1 :=
+theorem coe_one : ((1 : R⟦X⟧) : R⸨X⸩) = 1 :=
   (ofPowerSeries ℤ R).map_one
 
 @[norm_cast] -- Porting note (#10618): simp can prove this
-theorem coe_add : ((f + g : PowerSeries R) : R⸨X⸩) = f + g :=
+theorem coe_add : ((f + g : R⟦X⟧) : R⸨X⸩) = f + g :=
   (ofPowerSeries ℤ R).map_add _ _
 
 @[norm_cast]
-theorem coe_sub : ((f' - g' : PowerSeries R') : R'⸨X⸩) = f' - g' :=
+theorem coe_sub : ((f' - g' : R'⟦X⟧) : R'⸨X⸩) = f' - g' :=
   (ofPowerSeries ℤ R').map_sub _ _
 
 @[norm_cast]
-theorem coe_neg : ((-f' : PowerSeries R') : R'⸨X⸩) = -f' :=
+theorem coe_neg : ((-f' : R'⟦X⟧) : R'⸨X⸩) = -f' :=
   (ofPowerSeries ℤ R').map_neg _
 
 @[norm_cast] -- Porting note (#10618): simp can prove this
-theorem coe_mul : ((f * g : PowerSeries R) : R⸨X⸩) = f * g :=
+theorem coe_mul : ((f * g : R⟦X⟧) : R⸨X⸩) = f * g :=
   (ofPowerSeries ℤ R).map_mul _ _
 
 theorem coeff_coe (i : ℤ) :
-    ((f : PowerSeries R) : R⸨X⸩).coeff i =
+    ((f : R⟦X⟧) : R⸨X⸩).coeff i =
       if i < 0 then 0 else PowerSeries.coeff R i.natAbs f := by
   cases i
   · rw [Int.ofNat_eq_coe, coeff_coe_powerSeries, if_neg (Int.natCast_nonneg _).not_lt,
@@ -254,23 +253,23 @@ theorem coeff_coe (i : ℤ) :
 
 -- Porting note (#10618): simp can prove this
 -- Porting note: removed norm_cast attribute
-theorem coe_C (r : R) : ((C R r : PowerSeries R) : R⸨X⸩) = HahnSeries.C r :=
+theorem coe_C (r : R) : ((C R r : R⟦X⟧) : R⸨X⸩) = HahnSeries.C r :=
   ofPowerSeries_C _
 
 -- @[simp] -- Porting note (#10618): simp can prove this
-theorem coe_X : ((X : PowerSeries R) : R⸨X⸩) = single 1 1 :=
+theorem coe_X : ((X : R⟦X⟧) : R⸨X⸩) = single 1 1 :=
   ofPowerSeries_X
 
 @[simp, norm_cast]
-theorem coe_smul {S : Type*} [Semiring S] [Module R S] (r : R) (x : PowerSeries S) :
-    ((r • x : PowerSeries S) : S⸨X⸩) = r • (ofPowerSeries ℤ S x) := by
+theorem coe_smul {S : Type*} [Semiring S] [Module R S] (r : R) (x : S⟦X⟧) :
+    ((r • x : S⟦X⟧) : S⸨X⸩) = r • (ofPowerSeries ℤ S x) := by
   ext
   simp [coeff_coe, coeff_smul, smul_ite]
 
 -- Porting note: RingHom.map_bit0 and RingHom.map_bit1 no longer exist
 
 @[norm_cast]
-theorem coe_pow (n : ℕ) : ((f ^ n : PowerSeries R) : R⸨X⸩) = (ofPowerSeries ℤ R f) ^ n :=
+theorem coe_pow (n : ℕ) : ((f ^ n : R⟦X⟧) : R⸨X⸩) = (ofPowerSeries ℤ R f) ^ n :=
   (ofPowerSeries ℤ R).map_pow _ _
 
 end PowerSeries
@@ -316,14 +315,14 @@ theorem coe_apply : coeAlgHom F f = f :=
   rfl
 
 -- avoids a diamond, see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/compiling.20behaviour.20within.20one.20file
-theorem coe_coe (P : Polynomial F) : ((P : PowerSeries F) : F⸨X⸩) = (P : RatFunc F) := by
+theorem coe_coe (P : Polynomial F) : ((P : F⟦X⟧) : F⸨X⸩) = (P : RatFunc F) := by
   simp only [coePolynomial, coe_def, AlgHom.commutes, algebraMap_hahnSeries_apply]
 
 @[simp, norm_cast]
 theorem coe_zero : ((0 : RatFunc F) : F⸨X⸩) = 0 :=
   map_zero (coeAlgHom F)
 
-theorem coe_ne_zero {f : Polynomial F} (hf : f ≠ 0) : (↑f : PowerSeries F) ≠ 0 := by
+theorem coe_ne_zero {f : Polynomial F} (hf : f ≠ 0) : (↑f : F⟦X⟧) ≠ 0 := by
   simp only [ne_eq, Polynomial.coe_eq_zero_iff, hf, not_false_eq_true]
 
 @[simp, norm_cast]
@@ -419,8 +418,7 @@ open scoped Multiplicative
 variable (K : Type*) [Field K]
 namespace PowerSeries
 
-/-- The prime ideal `(X)` of `PowerSeries K`, when `K` is a field, as a term of the
-`HeightOneSpectrum`. -/
+/-- The prime ideal `(X)` of `K⟦X⟧`, when `K` is a field, as a term of the `HeightOneSpectrum`. -/
 def idealX : IsDedekindDomain.HeightOneSpectrum K⟦X⟧ where
   asIdeal := Ideal.span {X}
   isPrime := PowerSeries.span_X_isPrime
@@ -473,7 +471,7 @@ theorem valuation_eq_LaurentSeries_valuation (P : RatFunc K) :
   refine RatFunc.induction_on' P ?_
   intro f g h
   rw [Polynomial.valuation_of_mk K f h, RatFunc.mk_eq_mk' f h, Eq.comm]
-  convert @valuation_of_mk' (PowerSeries K) _ _ K⸨X⸩ _ _ _ (PowerSeries.idealX K) f
+  convert @valuation_of_mk' K⟦X⟧ _ _ K⸨X⸩ _ _ _ (PowerSeries.idealX K) f
         ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 <| coe_ne_zero h⟩
   · simp only [IsFractionRing.mk'_eq_div, coe_div, LaurentSeries.coe_algebraMap, coe_coe]
     rfl
@@ -611,7 +609,7 @@ theorem eq_coeff_of_valuation_sub_lt {d n : ℤ} {f g : K⸨X⸩}
 
 /- Every Laurent series of valuation less than `(1 : ℤₘ₀)` comes from a power series. -/
 theorem val_le_one_iff_eq_coe (f : K⸨X⸩) : Valued.v f ≤ (1 : ℤₘ₀) ↔
-    ∃ F : PowerSeries K, F = f := by
+    ∃ F : K⟦X⟧, F = f := by
   rw [← WithZero.coe_one, ← ofAdd_zero, ← neg_zero, valuation_le_iff_coeff_lt_eq_zero]
   refine ⟨fun h => ⟨PowerSeries.mk fun n => f.coeff n, ?_⟩, ?_⟩
   on_goal 1 => ext (_ | n)
