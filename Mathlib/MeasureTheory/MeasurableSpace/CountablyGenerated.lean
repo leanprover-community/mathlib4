@@ -535,10 +535,10 @@ lemma countableOrCountablyGenerated_right_of_prod_left_of_nonempty [Nonempty α]
     infer_instance
   · infer_instance
 
-instance [h : CountableOrCountablyGenerated (α × β) γ] :
+lemma countableOrCountablyGenerated_prod_left_swap [h : CountableOrCountablyGenerated (α × β) γ] :
     CountableOrCountablyGenerated (β × α) γ := by
   rcases h with (h | h)
-  · exact ⟨Or.inl inferInstance⟩
+  · refine ⟨Or.inl countable_prod_swap⟩
   · exact ⟨Or.inr h⟩
 
 end CountableOrCountablyGenerated

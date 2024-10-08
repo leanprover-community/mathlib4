@@ -94,7 +94,8 @@ lemma countable_right_of_prod_of_nonempty [Nonempty α] (h : Countable (α × β
   rw [not_countable_iff] at *
   infer_instance
 
-instance [Countable (α × β)] : Countable (β × α) := Countable.of_equiv _ (Equiv.prodComm α β)
+lemma countable_prod_swap [Countable (α × β)] : Countable (β × α) :=
+  Countable.of_equiv _ (Equiv.prodComm α β)
 
 instance [Countable α] [∀ a, Countable (π a)] : Countable (Sigma π) := by
   rcases exists_injective_nat α with ⟨f, hf⟩
