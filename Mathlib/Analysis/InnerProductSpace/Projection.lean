@@ -863,12 +863,13 @@ theorem orthogonalProjection_orthogonalProjection_of_le {U V : Submodule 𝕜 E}
 /-- Given a monotone family `U` of complete submodules of `E` and a fixed `x : E`,
 the orthogonal projection of `x` on `U i` tends to the orthogonal projection of `x` on
 `(⨆ i, U i).topologicalClosure` along `atTop`. -/
-theorem orthogonalProjection_tendsto_closure_iSup [CompleteSpace E] {ι : Type*} [SemilatticeSup ι]
-    (U : ι → Submodule 𝕜 E) [∀ i, CompleteSpace (U i)] (hU : Monotone U) (x : E) :
+theorem orthogonalProjection_tendsto_closure_iSup {ι : Type*} [Preorder ι]
+    (U : ι → Submodule 𝕜 E) [∀ i, HasOrthogonalProjection (U i)]
+    [HasOrthogonalProjection (⨆ i, U i).topologicalClosure] (hU : Monotone U) (x : E) :
     Filter.Tendsto (fun i => (orthogonalProjection (U i) x : E)) atTop
       (𝓝 (orthogonalProjection (⨆ i, U i).topologicalClosure x : E)) := by
-  cases isEmpty_or_nonempty ι
-  · exact tendsto_of_isEmpty
+  refine .of_neBot_imp fun h ↦ ?_
+  cases atTop_neBot_iff.mp h
   let y := (orthogonalProjection (⨆ i, U i).topologicalClosure x : E)
   have proj_x : ∀ i, orthogonalProjection (U i) x = orthogonalProjection (U i) y := fun i =>
     (orthogonalProjection_orthogonalProjection_of_le
@@ -890,14 +891,15 @@ theorem orthogonalProjection_tendsto_closure_iSup [CompleteSpace E] {ι : Type*}
 
 /-- Given a monotone family `U` of complete submodules of `E` with dense span supremum,
 and a fixed `x : E`, the orthogonal projection of `x` on `U i` tends to `x` along `at_top`. -/
-theorem orthogonalProjection_tendsto_self [CompleteSpace E] {ι : Type*} [SemilatticeSup ι]
-    (U : ι → Submodule 𝕜 E) [∀ t, CompleteSpace (U t)] (hU : Monotone U) (x : E)
+theorem orthogonalProjection_tendsto_self {ι : Type*} [Preorder ι]
+    (U : ι → Submodule 𝕜 E) [∀ t, HasOrthogonalProjection (U t)] (hU : Monotone U) (x : E)
     (hU' : ⊤ ≤ (⨆ t, U t).topologicalClosure) :
     Filter.Tendsto (fun t => (orthogonalProjection (U t) x : E)) atTop (𝓝 x) := by
-  rw [← eq_top_iff] at hU'
+  have : HasOrthogonalProjection (⨆ i, U i).topologicalClosure := by
+    rw [top_unique hU']
+    infer_instance
   convert orthogonalProjection_tendsto_closure_iSup U hU x
-  rw [orthogonalProjection_eq_self_iff.mpr _]
-  rw [hU']
+  rw [eq_comm, orthogonalProjection_eq_self_iff, top_unique hU']
   trivial
 
 /-- The orthogonal complement satisfies `Kᗮᗮᗮ = Kᗮ`. -/

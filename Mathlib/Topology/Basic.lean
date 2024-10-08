@@ -853,13 +853,13 @@ theorem tendsto_atTop_nhds [Nonempty α] [SemilatticeSup α] {f : α → X} :
 theorem tendsto_const_nhds {f : Filter α} : Tendsto (fun _ : α => x) f (𝓝 x) :=
   tendsto_nhds.mpr fun _ _ ha => univ_mem' fun _ => ha
 
-theorem tendsto_atTop_of_eventually_const {ι : Type*} [SemilatticeSup ι] [Nonempty ι]
+theorem tendsto_atTop_of_eventually_const {ι : Type*} [Preorder ι]
     {u : ι → X} {i₀ : ι} (h : ∀ i ≥ i₀, u i = x) : Tendsto u atTop (𝓝 x) :=
-  Tendsto.congr' (EventuallyEq.symm (eventually_atTop.mpr ⟨i₀, h⟩)) tendsto_const_nhds
+  Tendsto.congr' (EventuallyEq.symm ((eventually_ge_atTop i₀).mono h)) tendsto_const_nhds
 
-theorem tendsto_atBot_of_eventually_const {ι : Type*} [SemilatticeInf ι] [Nonempty ι]
+theorem tendsto_atBot_of_eventually_const {ι : Type*} [Preorder ι]
     {u : ι → X} {i₀ : ι} (h : ∀ i ≤ i₀, u i = x) : Tendsto u atBot (𝓝 x) :=
-  Tendsto.congr' (EventuallyEq.symm (eventually_atBot.mpr ⟨i₀, h⟩)) tendsto_const_nhds
+  tendsto_atTop_of_eventually_const (ι := ιᵒᵈ) h
 
 theorem pure_le_nhds : pure ≤ (𝓝 : X → Filter X) := fun _ _ hs => mem_pure.2 <| mem_of_mem_nhds hs
 
