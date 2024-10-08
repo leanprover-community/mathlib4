@@ -76,6 +76,12 @@ add_decl_doc ContinuousMonoidHom.toMonoidHom
 /-- Reinterpret a `ContinuousAddMonoidHom` as an `AddMonoidHom`. -/
 add_decl_doc ContinuousAddMonoidHom.toAddMonoidHom
 
+/-- Reinterpret a `ContinuousMonoidHom` as a `ContinuousMap`. -/
+add_decl_doc ContinuousMonoidHom.toContinuousMap
+
+/-- Reinterpret a `ContinuousAddMonoidHom` as a `ContinuousMap`. -/
+add_decl_doc ContinuousAddMonoidHom.toContinuousMap
+
 namespace ContinuousMonoidHom
 
 variable {A B C D E}
