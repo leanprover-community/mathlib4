@@ -37,10 +37,6 @@ section OrderedSemiring
 
 variable [OrderedSemiring R] {a b x y : R} {n m : ℕ}
 
-theorem zero_pow_le_one : ∀ n : ℕ, (0 : R) ^ n ≤ 1
-  | 0 => (pow_zero _).le
-  | n + 1 => by rw [zero_pow n.succ_ne_zero]; exact zero_le_one
-
 theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y ^ n ≤ (x + y) ^ n := by
   rcases Nat.exists_eq_add_one_of_ne_zero hn with ⟨k, rfl⟩
   induction k with
@@ -60,48 +56,21 @@ theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y 
         rw [pow_succ' _ n]
         exact mul_le_mul_of_nonneg_left (ih (Nat.succ_ne_zero k)) h2
 
-@[bound]
-theorem pow_le_one₀ : ∀ {n : ℕ}, 0 ≤ a → a ≤ 1 → a ^ n ≤ 1
-  | 0, _, _ => (pow_zero a).le
-  | n + 1, h₀, h₁ => (pow_succ a n).le.trans (mul_le_one (pow_le_one₀ h₀ h₁) h₀ h₁)
+attribute [bound] pow_le_one₀ one_le_pow₀
 
-theorem pow_lt_one₀ (h₀ : 0 ≤ a) (h₁ : a < 1) : ∀ {n : ℕ}, n ≠ 0 → a ^ n < 1
-  | 0, h => (h rfl).elim
-  | n + 1, _ => by
-    rw [pow_succ']
-    exact mul_lt_one_of_nonneg_of_lt_one_left h₀ h₁ (pow_le_one₀ h₀ h₁.le)
-
-@[bound]
-theorem one_le_pow₀ (H : 1 ≤ a) : ∀ {n : ℕ}, 1 ≤ a ^ n
-  | 0 => by rw [pow_zero]
-  | n + 1 => by
-    simpa only [pow_succ', mul_one]
-      using mul_le_mul H (one_le_pow₀ H) zero_le_one (zero_le_one.trans H)
-
-lemma one_lt_pow₀ (ha : 1 < a) : ∀ {n : ℕ}, n ≠ 0 → 1 < a ^ n
-  | 0, h => (h rfl).elim
-  | n + 1, _ => by rw [pow_succ']; exact one_lt_mul_of_lt_of_le ha (one_le_pow₀ ha.le)
-
+@[deprecated (since := "2024-09-28")] alias mul_le_one := mul_le_one₀
 @[deprecated (since := "2024-09-28")] alias pow_le_one := pow_le_one₀
 @[deprecated (since := "2024-09-28")] alias pow_lt_one := pow_lt_one₀
 @[deprecated (since := "2024-09-28")] alias one_le_pow_of_one_le := one_le_pow₀
 @[deprecated (since := "2024-09-28")] alias one_lt_pow := one_lt_pow₀
-
-theorem pow_right_mono (h : 1 ≤ a) : Monotone (a ^ ·) :=
-  monotone_nat_of_le_succ fun n => by
-    rw [pow_succ']
-    exact le_mul_of_one_le_left (pow_nonneg (zero_le_one.trans h) _) h
-
-@[gcongr]
-theorem pow_le_pow_right (ha : 1 ≤ a) (h : n ≤ m) : a ^ n ≤ a ^ m := pow_right_mono ha h
-
-theorem le_self_pow (ha : 1 ≤ a) (h : m ≠ 0) : a ≤ a ^ m := by
-  simpa only [pow_one] using pow_le_pow_right ha <| Nat.pos_iff_ne_zero.2 h
+@[deprecated (since := "2024-10-04")] alias pow_right_mono := pow_right_mono₀
+@[deprecated (since := "2024-10-04")] alias pow_le_pow_right := pow_le_pow_right₀
+@[deprecated (since := "2024-10-04")] alias le_self_pow := le_self_pow₀
 
 /-- The `bound` tactic can't handle `m ≠ 0` goals yet, so we express as `0 < m` -/
 @[bound]
 lemma Bound.le_self_pow_of_pos {m : ℕ} (ha : 1 ≤ a) (h : 0 < m) : a ≤ a ^ m :=
-  le_self_pow ha h.ne'
+  le_self_pow₀ ha h.ne'
 
 @[mono, gcongr, bound]
 theorem pow_le_pow_left {a b : R} (ha : 0 ≤ a) (hab : a ≤ b) : ∀ n, a ^ n ≤ b ^ n
@@ -119,7 +88,7 @@ lemma pow_add_pow_le' (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ n + b ^ n ≤ 2 * (a +
 lemma Bound.pow_le_pow_right_of_le_one_or_one_le (h : 1 ≤ a ∧ n ≤ m ∨ 0 ≤ a ∧ a ≤ 1 ∧ m ≤ n) :
     a ^ n ≤ a ^ m := by
   rcases h with ⟨a1, nm⟩ | ⟨a0, a1, mn⟩
-  · exact pow_le_pow_right a1 nm
+  · exact pow_right_mono₀ a1 nm
   · exact pow_le_pow_of_le_one a0 a1 mn
 
 end OrderedSemiring
