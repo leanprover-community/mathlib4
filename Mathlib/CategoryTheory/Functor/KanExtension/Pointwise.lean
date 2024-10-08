@@ -167,6 +167,7 @@ lemma IsPointwiseLeftKanExtension.isIso_hom [L.Full] [L.Faithful] :
   NatIso.isIso_of_isIso_app ..
 
 /-- Two left extensions are isomorphic if they are both left Kan extensions. -/
+@[simps]
 def isoOfIsPointwiseLeftKanExtension
     (h : E.IsPointwiseLeftKanExtension) (h' : E'.IsPointwiseLeftKanExtension) : E ≅ E' where
   hom := IsPointwiseLeftKanExtension.homFrom h _
@@ -287,6 +288,7 @@ lemma IsPointwiseRightKanExtension.isIso_hom [L.Full] [L.Faithful] :
   NatIso.isIso_of_isIso_app ..
 
 /-- Two right extensions are isomorphic if they are both right Kan extensions. -/
+@[simps]
 def isoOfIsPointwiseRightKanExtension
     (h : E.IsPointwiseRightKanExtension) (h' : E'.IsPointwiseRightKanExtension) : E ≅ E' where
   hom := IsPointwiseRightKanExtension.homTo h' _
