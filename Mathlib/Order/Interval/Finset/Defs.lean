@@ -271,23 +271,23 @@ section LocallyFiniteOrder
 
 variable [LocallyFiniteOrder α] {a b x : α}
 
-/-- The finset of elements `x` such that `a ≤ x` and `x ≤ b`. Basically `Set.Icc a b` as a finset.
--/
+/-- The finset $[a, b]$ of elements `x` such that `a ≤ x` and `x ≤ b`. Basically `Set.Icc a b` as a
+finset. -/
 def Icc (a b : α) : Finset α :=
   LocallyFiniteOrder.finsetIcc a b
 
-/-- The finset of elements `x` such that `a ≤ x` and `x < b`. Basically `Set.Ico a b` as a finset.
--/
+/-- The finset $[a, b)$ of elements `x` such that `a ≤ x` and `x < b`. Basically `Set.Ico a b` as a
+finset. -/
 def Ico (a b : α) : Finset α :=
   LocallyFiniteOrder.finsetIco a b
 
-/-- The finset of elements `x` such that `a < x` and `x ≤ b`. Basically `Set.Ioc a b` as a finset.
--/
+/-- The finset $(a, b]$ of elements `x` such that `a < x` and `x ≤ b`. Basically `Set.Ioc a b` as a
+finset. -/
 def Ioc (a b : α) : Finset α :=
   LocallyFiniteOrder.finsetIoc a b
 
-/-- The finset of elements `x` such that `a < x` and `x < b`. Basically `Set.Ioo a b` as a finset.
--/
+/-- The finset $(a, b)$ of elements `x` such that `a < x` and `x < b`. Basically `Set.Ioo a b` as a
+finset. -/
 def Ioo (a b : α) : Finset α :=
   LocallyFiniteOrder.finsetIoo a b
 
