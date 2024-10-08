@@ -76,7 +76,7 @@ theorem hasDerivAt_iff_tendsto_slope_zero :
     HasDerivAt f f' x ↔ Tendsto (fun t ↦ t⁻¹ • (f (x + t) - f x)) (𝓝[≠] 0) (𝓝 f') := by
   have : 𝓝[≠] x = Filter.map (fun t ↦ x + t) (𝓝[≠] 0) := by
     simp [nhdsWithin, map_add_left_nhds_zero x, Filter.map_inf, add_right_injective x]
-  simp [hasDerivAt_iff_tendsto_slope, this, slope, Function.comp]
+  simp [hasDerivAt_iff_tendsto_slope, this, slope, Function.comp_def]
 
 alias ⟨HasDerivAt.tendsto_slope_zero, _⟩ := hasDerivAt_iff_tendsto_slope_zero
 

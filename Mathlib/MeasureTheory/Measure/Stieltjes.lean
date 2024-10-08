@@ -211,7 +211,7 @@ theorem length_subadditive_Icc_Ioo {a b : ℝ} {c d : ℕ → ℝ} (ss : Icc a b
       ⟨s, _, hf, hs⟩
     have e : ⋃ i ∈ (hf.toFinset : Set ℕ), Ioo (c i) (d i) = ⋃ i ∈ s, Ioo (c i) (d i) := by
       simp only [Set.ext_iff, exists_prop, Finset.set_biUnion_coe, mem_iUnion, forall_const,
-        iff_self_iff, Finite.mem_toFinset]
+        Finite.mem_toFinset]
     rw [ENNReal.tsum_eq_iSup_sum]
     refine le_trans ?_ (le_iSup _ hf.toFinset)
     exact this hf.toFinset _ (by simpa only [e] )
@@ -312,7 +312,7 @@ theorem measurableSet_Ioi {c : ℝ} : MeasurableSet[f.outer.caratheodory] (Ioi c
       sub_add_sub_cancel, le_refl,
       max_eq_right]
   · simp only [hbc, le_refl, Ioc_eq_empty, Ioc_inter_Ioi, min_eq_left, Ioc_diff_Ioi, f.length_empty,
-      zero_add, or_true_iff, le_sup_iff, f.length_Ioc, not_lt]
+      zero_add, or_true, le_sup_iff, f.length_Ioc, not_lt]
   · simp only [hac, hbc, Ioc_inter_Ioi, Ioc_diff_Ioi, f.length_Ioc, min_eq_right, _root_.sup_eq_max,
       le_refl, Ioc_eq_empty, add_zero, max_eq_left, f.length_empty, not_lt]
 
@@ -373,7 +373,7 @@ theorem measure_singleton (a : ℝ) : f.measure {a} = ofReal (f a - leftLim f a)
     simp [le_antisymm this (hx 0).2]
   have L1 : Tendsto (fun n => f.measure (Ioc (u n) a)) atTop (𝓝 (f.measure {a})) := by
     rw [A]
-    refine tendsto_measure_iInter (fun n => measurableSet_Ioc.nullMeasurableSet)
+    refine tendsto_measure_iInter (fun n => nullMeasurableSet_Ioc)
       (fun m n hmn => ?_) ?_
     · exact Ioc_subset_Ioc_left (u_mono.monotone hmn)
     · exact ⟨0, by simpa only [measure_Ioc] using ENNReal.ofReal_ne_top⟩

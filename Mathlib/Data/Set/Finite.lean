@@ -3,8 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
-import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finite.Basic
+import Mathlib.Data.Finset.Max
 import Mathlib.Data.Set.Functor
 import Mathlib.Data.Set.Lattice
 
@@ -279,6 +279,9 @@ section FintypeInstances
 
 instance fintypeUniv [Fintype α] : Fintype (@univ α) :=
   Fintype.ofEquiv α (Equiv.Set.univ α).symm
+
+-- Redeclared with appropriate keys
+instance fintypeTop [Fintype α] : Fintype (⊤ : Set α) := inferInstanceAs (Fintype (univ : Set α))
 
 /-- If `(Set.univ : Set α)` is finite then `α` is a finite type. -/
 noncomputable def fintypeOfFiniteUniv (H : (univ (α := α)).Finite) : Fintype α :=
@@ -894,7 +897,7 @@ theorem exists_subset_image_finite_and {f : α → β} {s : Set α} {p : Set β 
     (∃ t ⊆ f '' s, t.Finite ∧ p t) ↔ ∃ t ⊆ s, t.Finite ∧ p (f '' t) := by
   classical
   simp_rw [@and_comm (_ ⊆ _), and_assoc, exists_finite_iff_finset, @and_comm (p _),
-    Finset.subset_image_iff]
+    Finset.subset_set_image_iff]
   aesop
 
 section Pi
@@ -1348,9 +1351,10 @@ theorem exists_upper_bound_image [Nonempty α] [LinearOrder β] (s : Set α) (f 
 theorem Finite.iSup_biInf_of_monotone {ι ι' α : Type*} [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (· ≤ ·)] [Order.Frame α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
     (hf : ∀ i ∈ s, Monotone (f i)) : ⨆ j, ⨅ i ∈ s, f i j = ⨅ i ∈ s, ⨆ j, f i j := by
-  induction' s, hs using Set.Finite.dinduction_on with a s _ _ ihs hf
-  · simp [iSup_const]
-  · rw [forall_mem_insert] at hf
+  induction s, hs using Set.Finite.dinduction_on with
+  | H0 => simp [iSup_const]
+  | H1 _ _ ihs =>
+    rw [forall_mem_insert] at hf
     simp only [iInf_insert, ← ihs hf.2]
     exact iSup_inf_of_monotone hf.1 fun j₁ j₂ hj => iInf₂_mono fun i hi => hf.2 i hi hj
 
@@ -1524,6 +1528,7 @@ protected theorem bddBelow [SemilatticeInf α] [Nonempty α] (s : Finset α) : B
 
 end Finset
 
+section LinearOrder
 variable [LinearOrder α] {s : Set α}
 
 /-- If a linear order does not contain any triple of elements `x < y < z`, then this type
@@ -1563,5 +1568,20 @@ theorem DirectedOn.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} {f
   rw [Set.biUnion_eq_iUnion] at hs
   haveI := hn.coe_sort
   simpa using (directed_comp.2 hc.directed_val).exists_mem_subset_of_finset_subset_biUnion hs
+
+end LinearOrder
+
+namespace List
+variable (α) [Finite α] (n : ℕ)
+
+lemma finite_length_eq : {l : List α | l.length = n}.Finite := Vector.finite
+
+lemma finite_length_lt : {l : List α | l.length < n}.Finite := by
+  convert (Finset.range n).finite_toSet.biUnion fun i _ ↦ finite_length_eq α i; ext; simp
+
+lemma finite_length_le : {l : List α | l.length ≤ n}.Finite := by
+  simpa [Nat.lt_succ_iff] using finite_length_lt α (n + 1)
+
+end List
 
 set_option linter.style.longFile 1700

@@ -141,6 +141,13 @@ theorem Inseparable.const_smul {x y : α} (h : Inseparable x y) (c : M) :
     Inseparable (c • x) (c • y) :=
   h.map (continuous_const_smul c)
 
+@[to_additive]
+theorem Inducing.continuousConstSMul {N β : Type*} [SMul N β] [TopologicalSpace β]
+    {g : β → α} (hg : Inducing g) (f : N → M) (hf : ∀ {c : N} {x : β}, g (c • x) = f c • g x) :
+    ContinuousConstSMul N β where
+  continuous_const_smul c := by
+    simpa only [Function.comp_def, hf, hg.continuous_iff] using hg.continuous.const_smul (f c)
+
 end SMul
 
 section Monoid
@@ -443,6 +450,11 @@ theorem isOpenMap_quotient_mk'_mul [ContinuousConstSMul Γ T] :
     IsOpenMap (Quotient.mk' : T → Quotient (MulAction.orbitRel Γ T)) := fun U hU => by
   rw [isOpen_coinduced, MulAction.quotient_preimage_image_eq_union_mul U]
   exact isOpen_iUnion fun γ => isOpenMap_smul γ U hU
+
+@[to_additive]
+theorem MulAction.isOpenQuotientMap_quotientMk [ContinuousConstSMul Γ T] :
+    IsOpenQuotientMap (Quotient.mk (MulAction.orbitRel Γ T)) :=
+  ⟨surjective_quot_mk _, continuous_quot_mk, isOpenMap_quotient_mk'_mul⟩
 
 /-- The quotient by a discontinuous group action of a locally compact t2 space is t2. -/
 @[to_additive "The quotient by a discontinuous group action of a locally compact t2

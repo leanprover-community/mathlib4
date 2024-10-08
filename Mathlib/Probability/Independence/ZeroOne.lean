@@ -46,11 +46,16 @@ theorem measure_eq_zero_or_one_or_top_of_indepSet_self {t : Set Ω}
   simpa only [ae_dirac_eq, Filter.eventually_pure]
     using Kernel.measure_eq_zero_or_one_or_top_of_indepSet_self h_indep
 
-theorem Kernel.measure_eq_zero_or_one_of_indepSet_self [∀ a, IsFiniteMeasure (κ a)] {t : Set Ω}
-    (h_indep : IndepSet t t κ μα) :
+theorem Kernel.measure_eq_zero_or_one_of_indepSet_self' (h : ∀ᵐ a ∂μα, IsFiniteMeasure (κ a))
+    {t : Set Ω} (h_indep : IndepSet t t κ μα) :
     ∀ᵐ a ∂μα, κ a t = 0 ∨ κ a t = 1 := by
-  filter_upwards [measure_eq_zero_or_one_or_top_of_indepSet_self h_indep] with a h_0_1_top
+  filter_upwards [measure_eq_zero_or_one_or_top_of_indepSet_self h_indep, h] with a h_0_1_top h'
   simpa only [measure_ne_top (κ a), or_false] using h_0_1_top
+
+theorem Kernel.measure_eq_zero_or_one_of_indepSet_self [h : ∀ a, IsFiniteMeasure (κ a)] {t : Set Ω}
+    (h_indep : IndepSet t t κ μα) :
+    ∀ᵐ a ∂μα, κ a t = 0 ∨ κ a t = 1 :=
+  Kernel.measure_eq_zero_or_one_of_indepSet_self' (ae_of_all μα h) h_indep
 
 theorem measure_eq_zero_or_one_of_indepSet_self [IsFiniteMeasure μ] {t : Set Ω}
     (h_indep : IndepSet t t μ) : μ t = 0 ∨ μ t = 1 := by
@@ -71,16 +76,13 @@ theorem condexp_eq_zero_or_one_of_condIndepSet_self
   | inl h => exact Or.inl (Or.inl h)
   | inr h => exact Or.inr h
 
-variable [IsMarkovKernel κ]
-
 open Filter
 
 theorem Kernel.indep_biSup_compl (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα) (t : Set ι) :
     Indep (⨆ n ∈ t, s n) (⨆ n ∈ tᶜ, s n) κ μα :=
   indep_iSup_of_disjoint h_le h_indep disjoint_compl_right
 
-theorem indep_biSup_compl [IsProbabilityMeasure μ]
-    (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) (t : Set ι) :
+theorem indep_biSup_compl (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) (t : Set ι) :
     Indep (⨆ n ∈ t, s n) (⨆ n ∈ tᶜ, s n) μ :=
   Kernel.indep_biSup_compl h_le h_indep t
 
@@ -92,7 +94,7 @@ theorem condIndep_biSup_compl [StandardBorelSpace Ω]
 
 section Abstract
 
-variable {α : Type*} {p : Set ι → Prop} {f : Filter ι} {ns : α → Set ι}
+variable {β : Type*} {p : Set ι → Prop} {f : Filter ι} {ns : β → Set ι}
 
 /-! We prove a version of Kolmogorov's 0-1 law for the σ-algebra `limsup s f` where `f` is a filter
 for which we can define the following two functions:
@@ -112,7 +114,7 @@ theorem Kernel.indep_biSup_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s
   simp only [Set.mem_compl_iff, eventually_map]
   exact eventually_of_mem (hf t ht) le_iSup₂
 
-theorem indep_biSup_limsup [IsProbabilityMeasure μ]
+theorem indep_biSup_limsup
     (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) (hf : ∀ t, p t → tᶜ ∈ f)
     {t : Set ι} (ht : p t) :
     Indep (⨆ n ∈ t, s n) (limsup s f) μ :=
@@ -128,6 +130,12 @@ theorem condIndep_biSup_limsup [StandardBorelSpace Ω]
 theorem Kernel.indep_iSup_directed_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα)
     (hf : ∀ t, p t → tᶜ ∈ f) (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) :
     Indep (⨆ a, ⨆ n ∈ ns a, s n) (limsup s f) κ μα := by
+  rcases eq_or_ne μα 0 with rfl | hμ
+  · simp
+  obtain ⟨η, η_eq, hη⟩ : ∃ (η : Kernel α Ω), κ =ᵐ[μα] η ∧ IsMarkovKernel η :=
+    exists_ae_eq_isMarkovKernel h_indep.ae_isProbabilityMeasure hμ
+  replace h_indep := h_indep.congr η_eq
+  apply Indep.congr (Filter.EventuallyEq.symm η_eq)
   apply indep_iSup_of_directed_le
   · exact fun a => indep_biSup_limsup h_le h_indep hf (hnsp a)
   · exact fun a => iSup₂_le fun n _ => h_le n
@@ -138,7 +146,7 @@ theorem Kernel.indep_iSup_directed_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : 
     · exact hc.1 hn
     · exact hc.2 hn
 
-theorem indep_iSup_directed_limsup [IsProbabilityMeasure μ]
+theorem indep_iSup_directed_limsup
     (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ)
     (hf : ∀ t, p t → tᶜ ∈ f) (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) :
     Indep (⨆ a, ⨆ n ∈ ns a, s n) (limsup s f) μ :=
@@ -160,11 +168,11 @@ theorem Kernel.indep_iSup_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s 
     exact indep_iSup_directed_limsup h_le h_indep hf hns hnsp
   rw [iSup_comm]
   refine iSup_congr fun n => ?_
-  have h : ⨆ (i : α) (_ : n ∈ ns i), s n = ⨆ _ : ∃ i, n ∈ ns i, s n := by rw [iSup_exists]
-  haveI : Nonempty (∃ i : α, n ∈ ns i) := ⟨hns_univ n⟩
+  have h : ⨆ (i : β) (_ : n ∈ ns i), s n = ⨆ _ : ∃ i, n ∈ ns i, s n := by rw [iSup_exists]
+  haveI : Nonempty (∃ i : β, n ∈ ns i) := ⟨hns_univ n⟩
   rw [h, iSup_const]
 
-theorem indep_iSup_limsup [IsProbabilityMeasure μ]
+theorem indep_iSup_limsup
     (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) (hf : ∀ t, p t → tᶜ ∈ f)
     (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) (hns_univ : ∀ n, ∃ a, n ∈ ns a) :
     Indep (⨆ n, s n) (limsup s f) μ :=
@@ -183,7 +191,7 @@ theorem Kernel.indep_limsup_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s 
     Indep (limsup s f) (limsup s f) κ μα :=
   indep_of_indep_of_le_left (indep_iSup_limsup h_le h_indep hf hns hnsp hns_univ) limsup_le_iSup
 
-theorem indep_limsup_self [IsProbabilityMeasure μ]
+theorem indep_limsup_self
     (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) (hf : ∀ t, p t → tᶜ ∈ f)
     (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) (hns_univ : ∀ n, ∃ a, n ∈ ns a) :
     Indep (limsup s f) (limsup s f) μ :=
@@ -200,12 +208,13 @@ theorem Kernel.measure_zero_or_one_of_measurableSet_limsup (h_le : ∀ n, s n �
     (h_indep : iIndep s κ μα)
     (hf : ∀ t, p t → tᶜ ∈ f) (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a))
     (hns_univ : ∀ n, ∃ a, n ∈ ns a) {t : Set Ω} (ht_tail : MeasurableSet[limsup s f] t) :
-    ∀ᵐ a ∂μα, κ a t = 0 ∨ κ a t = 1 :=
-  measure_eq_zero_or_one_of_indepSet_self
+    ∀ᵐ a ∂μα, κ a t = 0 ∨ κ a t = 1 := by
+  apply measure_eq_zero_or_one_of_indepSet_self' ?_
     ((indep_limsup_self h_le h_indep hf hns hnsp hns_univ).indepSet_of_measurableSet ht_tail
       ht_tail)
+  filter_upwards [h_indep.ae_isProbabilityMeasure] with a ha using by infer_instance
 
-theorem measure_zero_or_one_of_measurableSet_limsup [IsProbabilityMeasure μ]
+theorem measure_zero_or_one_of_measurableSet_limsup
     (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ)
     (hf : ∀ t, p t → tᶜ ∈ f) (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a))
     (hns_univ : ∀ n, ∃ a, n ∈ ns a) {t : Set Ω} (ht_tail : MeasurableSet[limsup s f] t) :
@@ -249,8 +258,7 @@ theorem Kernel.indep_limsup_atTop_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIn
   · exact Monotone.directed_le fun i j hij k hki => le_trans hki hij
   · exact fun n => ⟨n, le_rfl⟩
 
-theorem indep_limsup_atTop_self [IsProbabilityMeasure μ]
-    (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) :
+theorem indep_limsup_atTop_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) :
     Indep (limsup s atTop) (limsup s atTop) μ :=
   Kernel.indep_limsup_atTop_self h_le h_indep
 
@@ -262,14 +270,15 @@ theorem condIndep_limsup_atTop_self [StandardBorelSpace Ω]
 
 theorem Kernel.measure_zero_or_one_of_measurableSet_limsup_atTop (h_le : ∀ n, s n ≤ m0)
     (h_indep : iIndep s κ μα) {t : Set Ω} (ht_tail : MeasurableSet[limsup s atTop] t) :
-    ∀ᵐ a ∂μα, κ a t = 0 ∨ κ a t = 1 :=
-  measure_eq_zero_or_one_of_indepSet_self
+    ∀ᵐ a ∂μα, κ a t = 0 ∨ κ a t = 1 := by
+  apply measure_eq_zero_or_one_of_indepSet_self' ?_
     ((indep_limsup_atTop_self h_le h_indep).indepSet_of_measurableSet ht_tail ht_tail)
+  filter_upwards [h_indep.ae_isProbabilityMeasure] with a ha using by infer_instance
 
 /-- **Kolmogorov's 0-1 law** : any event in the tail σ-algebra of an independent sequence of
 sub-σ-algebras has probability 0 or 1.
 The tail σ-algebra `limsup s atTop` is the same as `⋂ n, ⋃ i ≥ n, s i`. -/
-theorem measure_zero_or_one_of_measurableSet_limsup_atTop [IsProbabilityMeasure μ]
+theorem measure_zero_or_one_of_measurableSet_limsup_atTop
     (h_le : ∀ n, s n ≤ m0)
     (h_indep : iIndep s μ) {t : Set Ω} (ht_tail : MeasurableSet[limsup s atTop] t) :
     μ t = 0 ∨ μ t = 1 := by
@@ -303,7 +312,7 @@ theorem Kernel.indep_limsup_atBot_self (h_le : ∀ n, s n ≤ m0) (h_indep : iIn
   · exact Antitone.directed_le fun _ _ ↦ Set.Ici_subset_Ici.2
   · exact fun n => ⟨n, le_rfl⟩
 
-theorem indep_limsup_atBot_self [IsProbabilityMeasure μ]
+theorem indep_limsup_atBot_self
     (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) :
     Indep (limsup s atBot) (limsup s atBot) μ :=
   Kernel.indep_limsup_atBot_self h_le h_indep
@@ -318,13 +327,14 @@ theorem condIndep_limsup_atBot_self [StandardBorelSpace Ω]
 sequence of sub-σ-algebras has probability 0 or 1 almost surely. -/
 theorem Kernel.measure_zero_or_one_of_measurableSet_limsup_atBot (h_le : ∀ n, s n ≤ m0)
     (h_indep : iIndep s κ μα) {t : Set Ω} (ht_tail : MeasurableSet[limsup s atBot] t) :
-    ∀ᵐ a ∂μα, κ a t = 0 ∨ κ a t = 1 :=
-  measure_eq_zero_or_one_of_indepSet_self
+    ∀ᵐ a ∂μα, κ a t = 0 ∨ κ a t = 1 := by
+  apply measure_eq_zero_or_one_of_indepSet_self' ?_
     ((indep_limsup_atBot_self h_le h_indep).indepSet_of_measurableSet ht_tail ht_tail)
+  filter_upwards [h_indep.ae_isProbabilityMeasure] with a ha using by infer_instance
 
 /-- **Kolmogorov's 0-1 law** : any event in the tail σ-algebra of an independent sequence of
 sub-σ-algebras has probability 0 or 1. -/
-theorem measure_zero_or_one_of_measurableSet_limsup_atBot [IsProbabilityMeasure μ]
+theorem measure_zero_or_one_of_measurableSet_limsup_atBot
     (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) {t : Set Ω}
     (ht_tail : MeasurableSet[limsup s atBot] t) :
     μ t = 0 ∨ μ t = 1 := by

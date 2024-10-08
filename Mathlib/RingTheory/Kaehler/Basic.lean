@@ -805,11 +805,11 @@ noncomputable
 def KaehlerDifferential.kerToTensor :
     RingHom.ker (algebraMap A B) →ₗ[A] B ⊗[A] Ω[A⁄R] where
   toFun x := 1 ⊗ₜ D R A x
-  map_add' x y := by simp only [AddSubmonoid.coe_add, Submodule.coe_toAddSubmonoid, map_add,
-    TensorProduct.tmul_add]
-  map_smul' r x := by simp only [SetLike.val_smul, Derivation.leibniz, RingHom.id_apply,
-    TensorProduct.tmul_smul, TensorProduct.smul_tmul', add_zero, ← Algebra.algebraMap_eq_smul_one,
-    TensorProduct.zero_tmul, smul_eq_mul, TensorProduct.tmul_add, (RingHom.mem_ker _).mp x.prop]
+  map_add' x y := by simp only [Submodule.coe_add, map_add, TensorProduct.tmul_add]
+  map_smul' r x := by simp only [SetLike.val_smul, smul_eq_mul, Derivation.leibniz,
+    TensorProduct.tmul_add, TensorProduct.tmul_smul, TensorProduct.smul_tmul', ←
+    algebraMap_eq_smul_one, RingHom.mem_ker.mp x.prop, TensorProduct.zero_tmul, add_zero,
+    RingHom.id_apply]
 
 /-- The map `I/I² → B ⊗[A] B ⊗[A] Ω[A⁄R]` where `I = ker(A → B)`. -/
 noncomputable
@@ -820,7 +820,7 @@ def KaehlerDifferential.kerCotangentToTensor :
     rintro x hx y -
     simp only [Submodule.mem_comap, LinearMap.lsmul_apply, LinearMap.mem_ker, map_smul,
       kerToTensor_apply, TensorProduct.smul_tmul', ← algebraMap_eq_smul_one,
-      (RingHom.mem_ker _).mp hx, TensorProduct.zero_tmul]))
+      RingHom.mem_ker.mp hx, TensorProduct.zero_tmul]))
 
 @[simp]
 lemma KaehlerDifferential.kerCotangentToTensor_toCotangent (x) :
@@ -837,7 +837,7 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
   constructor
   · rintro ⟨x, rfl⟩
     obtain ⟨x, rfl⟩ := Ideal.toCotangent_surjective _ x
-    simp [kerCotangentToTensor_toCotangent, (RingHom.mem_ker _).mp x.2]
+    simp [kerCotangentToTensor_toCotangent, RingHom.mem_ker.mp x.2]
   · intro hx
     obtain ⟨x, rfl⟩ := LinearMap.rTensor_surjective (Ω[A⁄R]) (g := Algebra.linearMap A B) h x
     obtain ⟨x, rfl⟩ := (TensorProduct.lid _ _).symm.surjective x
@@ -861,14 +861,16 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
     obtain ⟨a, ha⟩ := h c
     use (x.support.filter (algebraMap A B · = c)).attach.sum
         fun i ↦ x i • Ideal.toCotangent _ ⟨i - a, ?_⟩; swap
-    · have : x i ≠ 0 ∧ algebraMap A B i = c := by simpa using i.prop
+    · have : x i ≠ 0 ∧ algebraMap A B i = c := by
+        convert i.prop
+        simp_rw [Finset.mem_filter, Finsupp.mem_support_iff]
       simp [RingHom.mem_ker, ha, this.2]
     · simp only [map_sum, LinearMapClass.map_smul, kerCotangentToTensor_toCotangent, map_sub]
       simp_rw [← TensorProduct.tmul_smul]
       simp only [smul_sub, TensorProduct.tmul_sub, Finset.sum_sub_distrib, ← TensorProduct.tmul_sum,
         ← Finset.sum_smul, Finset.sum_attach, sub_eq_self,
         Finset.sum_attach (f := fun i ↦ x i • KaehlerDifferential.D R A i)]
-      rw [← TensorProduct.smul_tmul, ← Algebra.algebraMap_eq_smul_one, (RingHom.mem_ker _).mp this,
+      rw [← TensorProduct.smul_tmul, ← Algebra.algebraMap_eq_smul_one, RingHom.mem_ker.mp this,
         TensorProduct.zero_tmul]
 
 theorem KaehlerDifferential.exact_kerCotangentToTensor_mapBaseChange

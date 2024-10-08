@@ -1,5 +1,4 @@
 import Mathlib.Tactic.ExtractGoal
-import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Order.Basic
 import Mathlib.Data.Nat.Defs
 

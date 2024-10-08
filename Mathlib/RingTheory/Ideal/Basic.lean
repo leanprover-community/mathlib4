@@ -76,9 +76,9 @@ theorem sum_mem (I : Ideal α) {ι : Type*} {t : Finset ι} {f : ι → α} :
 theorem eq_top_of_unit_mem (x y : α) (hx : x ∈ I) (h : y * x = 1) : I = ⊤ :=
   eq_top_iff.2 fun z _ =>
     calc
-      z = z * (y * x) := by simp [h]
-      _ = z * y * x := Eq.symm <| mul_assoc z y x
-      _ ∈ I := I.mul_mem_left _ hx
+      z * y * x ∈ I := I.mul_mem_left _ hx
+      _ = z * (y * x) := mul_assoc z y x
+      _ = z := by rw [h, mul_one]
 
 theorem eq_top_of_isUnit_mem {x} (hx : x ∈ I) (h : IsUnit x) : I = ⊤ :=
   let ⟨y, hy⟩ := h.exists_left_inv
@@ -149,6 +149,9 @@ theorem mem_span_insert {s : Set α} {x y} :
 theorem mem_span_singleton' {x y : α} : x ∈ span ({y} : Set α) ↔ ∃ a, a * y = x :=
   Submodule.mem_span_singleton
 
+theorem mem_span_singleton_self (x : α) : x ∈ span ({x} : Set α) :=
+  Submodule.mem_span_singleton_self x
+
 theorem span_singleton_le_iff_mem {x : α} : span {x} ≤ I ↔ x ∈ I :=
   Submodule.span_singleton_le_iff_mem _ _
 
@@ -184,8 +187,8 @@ theorem span_eq_top_iff_finite (s : Set α) :
   simp_rw [eq_top_iff_one]
   exact ⟨Submodule.mem_span_finite_of_mem_span, fun ⟨s', h₁, h₂⟩ => span_mono h₁ h₂⟩
 
-theorem mem_span_singleton_sup {S : Type*} [CommSemiring S] {x y : S} {I : Ideal S} :
-    x ∈ Ideal.span {y} ⊔ I ↔ ∃ a : S, ∃ b ∈ I, a * y + b = x := by
+theorem mem_span_singleton_sup {x y : α} {I : Ideal α} :
+    x ∈ Ideal.span {y} ⊔ I ↔ ∃ a : α, ∃ b ∈ I, a * y + b = x := by
   rw [Submodule.mem_sup]
   constructor
   · rintro ⟨ya, hya, b, hb, rfl⟩
@@ -431,9 +434,6 @@ theorem mul_unit_mem_iff_mem {x y : α} (hy : IsUnit y) : x * y ∈ I ↔ x ∈ 
 theorem mem_span_singleton {x y : α} : x ∈ span ({y} : Set α) ↔ y ∣ x :=
   mem_span_singleton'.trans <| exists_congr fun _ => by rw [eq_comm, mul_comm]
 
-theorem mem_span_singleton_self (x : α) : x ∈ span ({x} : Set α) :=
-  mem_span_singleton.mpr dvd_rfl
-
 theorem span_singleton_le_span_singleton {x y : α} :
     span ({x} : Set α) ≤ span ({y} : Set α) ↔ y ∣ x :=
   span_le.trans <| singleton_subset_iff.trans mem_span_singleton
@@ -489,6 +489,9 @@ theorem mul_mem_right (h : a ∈ I) : a * b ∈ I :=
   mul_comm b a ▸ I.mul_mem_left b h
 
 variable {b}
+
+lemma mem_of_dvd (hab : a ∣ b) (ha : a ∈ I) : b ∈ I := by
+  obtain ⟨c, rfl⟩ := hab; exact I.mul_mem_right _ ha
 
 theorem pow_mem_of_mem (ha : a ∈ I) (n : ℕ) (hn : 0 < n) : a ^ n ∈ I :=
   Nat.casesOn n (Not.elim (by decide))

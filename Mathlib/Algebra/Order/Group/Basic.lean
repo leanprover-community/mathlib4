@@ -20,26 +20,32 @@ variable {α M R : Type*}
 section OrderedCommGroup
 variable [OrderedCommGroup α] {m n : ℤ} {a b : α}
 
-@[to_additive zsmul_pos] lemma one_lt_zpow' (ha : 1 < a) (hn : 0 < n) : 1 < a ^ n := by
-  obtain ⟨n, rfl⟩ := Int.eq_ofNat_of_zero_le hn.le
-  rw [zpow_natCast]
-  refine one_lt_pow' ha ?_
-  rintro rfl
-  simp at hn
+@[to_additive zsmul_left_strictMono]
+lemma zpow_right_strictMono (ha : 1 < a) : StrictMono fun n : ℤ ↦ a ^ n := by
+  refine strictMono_int_of_lt_succ fun n ↦ ?_
+  rw [zpow_add_one]
+  exact lt_mul_of_one_lt_right' (a ^ n) ha
 
-@[to_additive zsmul_strictMono_left]
-lemma zpow_right_strictMono (ha : 1 < a) : StrictMono fun n : ℤ ↦ a ^ n := fun m n h ↦
-  calc
-    a ^ m = a ^ m * 1 := (mul_one _).symm
-    _ < a ^ m * a ^ (n - m) := mul_lt_mul_left' (one_lt_zpow' ha <| Int.sub_pos_of_lt h) _
-    _ = a ^ n := by simp [← zpow_add, m.add_comm]
+@[deprecated (since := "2024-09-19")] alias zsmul_strictMono_left := zsmul_left_strictMono
+
+@[to_additive zsmul_pos] lemma one_lt_zpow' (ha : 1 < a) (hn : 0 < n) : 1 < a ^ n := by
+  simpa using zpow_right_strictMono ha hn
+
+@[to_additive zsmul_left_strictAnti]
+lemma zpow_right_strictAnti (ha : a < 1) : StrictAnti fun n : ℤ ↦ a ^ n := by
+  refine strictAnti_int_of_succ_lt fun n ↦ ?_
+  rw [zpow_add_one]
+  exact mul_lt_of_lt_one_right' (a ^ n) ha
+
+@[to_additive zsmul_left_inj]
+lemma zpow_right_inj (ha : 1 < a) {m n : ℤ} : a ^ m = a ^ n ↔ m = n :=
+  (zpow_right_strictMono ha).injective.eq_iff
 
 @[to_additive zsmul_mono_left]
-lemma zpow_mono_right (ha : 1 ≤ a) : Monotone fun n : ℤ ↦ a ^ n := fun m n h ↦
-  calc
-    a ^ m = a ^ m * 1 := (mul_one _).symm
-    _ ≤ a ^ m * a ^ (n - m) := mul_le_mul_left' (one_le_zpow ha <| Int.sub_nonneg_of_le h) _
-    _ = a ^ n := by simp [← zpow_add, m.add_comm]
+lemma zpow_mono_right (ha : 1 ≤ a) : Monotone fun n : ℤ ↦ a ^ n := by
+  refine monotone_int_of_le_succ fun n ↦ ?_
+  rw [zpow_add_one]
+  exact le_mul_of_one_le_right' ha
 
 @[to_additive (attr := gcongr)]
 lemma zpow_le_zpow (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n := zpow_mono_right ha h
@@ -125,4 +131,3 @@ theorem not_isCyclic_of_denselyOrdered [DenselyOrdered α] [Nontrivial α] : ¬I
     simp_all
 
 end LinearOrderedCommGroup
-

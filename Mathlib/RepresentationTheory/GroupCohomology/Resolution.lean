@@ -136,7 +136,7 @@ theorem actionDiagonalSucc_inv_apply {G : Type u} [Group G] {n : ℕ} (g : G) (f
     dsimp only [actionDiagonalSucc]
     simp only [Iso.trans_inv, comp_hom, hn, diagonalSucc_inv_hom, types_comp_apply, tensorIso_inv,
       Iso.refl_inv, Action.tensorHom, id_hom, tensor_apply, types_id_apply,
-      leftRegularTensorIso_inv_hom, tensor_rho, leftRegular_ρ_apply, Pi.smul_apply, smul_eq_mul]
+      leftRegularTensorIso_inv_hom, tensor_ρ, leftRegular_ρ_apply, Pi.smul_apply, smul_eq_mul]
     refine' Fin.cases _ _ x
     · simp only [Fin.cons_zero, Fin.partialProd_zero, mul_one]
     · intro i

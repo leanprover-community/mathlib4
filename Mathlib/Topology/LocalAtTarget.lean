@@ -108,7 +108,10 @@ theorem isLocallyClosed_iff_coe_preimage_of_iSup_eq_top (s : Set β) :
     IsLocallyClosed s ↔ ∀ i, IsLocallyClosed ((↑) ⁻¹' s : Set (U i)) := by
   simp_rw [isLocallyClosed_iff_isOpen_coborder]
   rw [isOpen_iff_coe_preimage_of_iSup_eq_top hU]
-  exact forall_congr' fun i ↦ by rw [(U i).isOpen.openEmbedding_subtype_val.coborder_preimage]
+  exact forall_congr' fun i ↦ by
+    have : coborder ((↑) ⁻¹' s : Set (U i)) = Subtype.val ⁻¹' coborder s := by
+      exact (U i).isOpen.openEmbedding_subtype_val.coborder_preimage _
+    rw [this]
 
 theorem isOpenMap_iff_isOpenMap_of_iSup_eq_top :
     IsOpenMap f ↔ ∀ i, IsOpenMap ((U i).1.restrictPreimage f) := by

@@ -129,7 +129,7 @@ theorem map_toReal_nhds (a : ℝₗ) : map toReal (𝓝 a) = 𝓝[≥] toReal a 
   simpa only [toReal.image_eq_preimage] using nhdsWithin_Ici_basis_Ico (toReal a)
 
 theorem nhds_eq_map (a : ℝₗ) : 𝓝 a = map toReal.symm (𝓝[≥] (toReal a)) := by
-  simp_rw [← map_toReal_nhds, map_map, (· ∘ ·), toReal.symm_apply_apply, map_id']
+  simp_rw [← map_toReal_nhds, map_map, Function.comp_def, toReal.symm_apply_apply, map_id']
 
 theorem nhds_eq_comap (a : ℝₗ) : 𝓝 a = comap toReal (𝓝[≥] (toReal a)) := by
   rw [← map_toReal_nhds, comap_map toReal.injective]
@@ -141,7 +141,7 @@ theorem continuous_toReal : Continuous toReal :=
     exact inf_le_left
 
 instance : OrderClosedTopology ℝₗ :=
-  ⟨isClosed_le_prod.preimage (continuous_toReal.prod_map continuous_toReal)⟩
+  ⟨isClosed_le_prod.preimage (continuous_toReal.prodMap continuous_toReal)⟩
 
 instance : ContinuousAdd ℝₗ := by
   refine ⟨continuous_iff_continuousAt.2 ?_⟩
