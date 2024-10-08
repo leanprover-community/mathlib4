@@ -680,10 +680,13 @@ theorem aleph_cof {o : Ordinal} (ho : o.IsLimit) : (aleph o).ord.cof = o.cof :=
   aleph_isNormal.cof_eq ho
 
 @[simp]
-theorem cof_omega : cof ω = ℵ₀ :=
-  (aleph0_le_cof.2 omega_isLimit).antisymm' <| by
-    rw [← card_omega]
+theorem cof_omega0 : cof ω = ℵ₀ :=
+  (aleph0_le_cof.2 omega0_isLimit).antisymm' <| by
+    rw [← card_omega0]
     apply cof_le_card
+
+@[deprecated (since := "2024-09-30")]
+alias cof_omega := cof_omega0
 
 theorem cof_eq' (r : α → α → Prop) [IsWellOrder α r] (h : IsLimit (type r)) :
     ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ #S = cof (type r) :=

@@ -78,7 +78,7 @@ def subring : Subring ℚ_[p] where
   zero_mem' := by norm_num
   one_mem' := by norm_num
   add_mem' hx hy := (padicNormE.nonarchimedean _ _).trans <| max_le_iff.2 ⟨hx, hy⟩
-  mul_mem' hx hy := (padicNormE.mul _ _).trans_le <| mul_le_one hx (norm_nonneg _) hy
+  mul_mem' hx hy := (padicNormE.mul _ _).trans_le <| mul_le_one₀ hx (norm_nonneg _) hy
   neg_mem' hx := (norm_neg _).trans_le hx
 
 @[simp]

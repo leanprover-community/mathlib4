@@ -130,11 +130,6 @@ instance (priority := 100) LinearOrderedCommGroupWithZero.toMulPosStrictMono :
     MulPosStrictMono α where
   elim a b c hbc := by by_contra! h; exact hbc.not_le <| (mul_le_mul_right a.2).1 h
 
-/-- Alias of `mul_le_one'` for unification. -/
-@[deprecated mul_le_one' (since := "2024-08-21")]
-theorem mul_le_one₀ (ha : a ≤ 1) (hb : b ≤ 1) : a * b ≤ 1 :=
-  mul_le_one' ha hb
-
 /-- Alias of `one_le_mul'` for unification. -/
 @[deprecated one_le_mul (since := "2024-08-21")]
 theorem one_le_mul₀ (ha : 1 ≤ a) (hb : 1 ≤ b) : 1 ≤ a * b :=
@@ -184,12 +179,6 @@ theorem inv_mul_lt_of_lt_mul₀ (h : a < b * c) : b⁻¹ * a < c := by
 @[deprecated mul_lt_mul_of_pos_right (since := "2024-08-21")]
 theorem mul_lt_right₀ (c : α) (h : a < b) (hc : c ≠ 0) : a * c < b * c :=
   mul_lt_mul_of_pos_right h (zero_lt_iff.2 hc)
-
-theorem inv_lt_one₀ (ha : a ≠ 0) : a⁻¹ < 1 ↔ 1 < a :=
-  inv_lt_one' (a := Units.mk0 a ha)
-
-theorem one_lt_inv₀ (ha : a ≠ 0) : 1 < a⁻¹ ↔ a < 1 :=
-  one_lt_inv' (a := Units.mk0 a ha)
 
 theorem inv_lt_inv₀ (ha : a ≠ 0) (hb : b ≠ 0) : a⁻¹ < b⁻¹ ↔ b < a :=
   show (Units.mk0 a ha)⁻¹ < (Units.mk0 b hb)⁻¹ ↔ Units.mk0 b hb < Units.mk0 a ha from
@@ -262,8 +251,6 @@ lemma pow_lt_pow_succ (ha : 1 < a) : a ^ n < a ^ n.succ := by
 
 lemma pow_lt_pow_right₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n := by
   induction' hmn with n _ ih; exacts [pow_lt_pow_succ ha, lt_trans ih (pow_lt_pow_succ ha)]
-
-@[deprecated (since := "2023-12-23")] alias pow_lt_pow₀ := pow_lt_pow_right₀
 
 end LinearOrderedCommGroupWithZero
 
