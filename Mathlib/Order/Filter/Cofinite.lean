@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
 -/
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.Order.Filter.Pi
+import Mathlib.Order.Filter.Prod
 
 /-!
 # The cofinite filter
