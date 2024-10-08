@@ -59,14 +59,11 @@ lemma isUnit_or_isNilpotent_of_isMaximal_isNilpotent [CommSemiring R] [AddCommGr
   refine (h _ hI).imp fun n hn ↦ ?_
   exact hn.le (Ideal.pow_mem_pow haI _)
 
-lemma isUnit_or_isNilpotent [Field R] [AddCommGroup M]
-    [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
+lemma isUnit_or_isNilpotent [DivisionRing R] [AddCommGroup M]
+    [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
     (a : TrivSqZeroExt R M) :
     IsUnit a ∨ IsNilpotent a := by
-  refine isUnit_or_isNilpotent_of_isMaximal_isNilpotent ?_ _
-  simp only [isNilpotent_iff_eq_zero, Submodule.zero_eq_bot]
-  intros
-  exact Ideal.eq_bot_of_prime _
+  simp [isUnit_iff_isUnit_fst, isNilpotent_iff_isNilpotent_fst, Or.comm, em]
 
 end TrivSqZeroExt
 
@@ -88,60 +85,69 @@ section Field
 
 open TrivSqZeroExt
 
-variable {K : Type*} [Field K]
+variable {K : Type*}
 
-instance : LocalRing K[ε] :=
-  .of_isUnit_or_isUnit_one_sub_self fun _ ↦
-    (isUnit_or_isNilpotent _).imp_right IsNilpotent.isUnit_one_sub
+instance [DivisionRing K] : LocalRing K[ε] where
+  isUnit_or_isUnit_of_add_one {a b} h := by
+    rw [add_comm, eq_comm, ← sub_eq_iff_eq_add] at h
+    rcases eq_or_ne (fst a) 0 with ha|ha <;>
+    simp [isUnit_iff_isUnit_fst, ← h, ha]
 
-lemma isNilpotent_iff_eps_dvd {x : K[ε]} :
+lemma isNilpotent_iff_eps_dvd [DivisionRing K] {x : K[ε]} :
     IsNilpotent x ↔ ε ∣ x := by
   simp only [isNilpotent_iff_isNilpotent_fst, isNilpotent_iff_eq_zero, fst_eq_zero_iff_eps_dvd]
 
-lemma isMaximal_span_singleton_eps :
-    (Ideal.span {ε} : Ideal K[ε]).IsMaximal := by
-  rw [Ideal.isMaximal_iff]
-  simp only [Ideal.mem_span_singleton, ← isNilpotent_iff_eps_dvd, isNilpotent_iff_isNilpotent_fst,
-    fst_one, isNilpotent_iff_eq_zero, one_ne_zero, not_false_eq_true, true_and]
-  intro I x _ IH hx
-  rw [← Ideal.eq_top_iff_one]
-  rcases isUnit_or_isNilpotent x with hx'|hx'
-  · exact Ideal.eq_top_of_isUnit_mem _ hx hx'
-  · simp only [isNilpotent_iff_isNilpotent_fst, isNilpotent_iff_eq_zero] at hx'
-    exact absurd hx' IH
+lemma ideal_trichotomy [DivisionRing K] (I : Ideal K[ε]) :
+    I = ⊥ ∨ I = .span {ε} ∨ I = ⊤ := by
+  refine (eq_or_ne I ⊥).imp_right fun hb ↦ ?_
+  refine (eq_or_ne I ⊤).symm.imp_left fun ht ↦ ?_
+  have hd : ∀ x ∈ I, ε ∣ x := by
+    intro x hxI
+    rcases isUnit_or_isNilpotent x with hx|hx
+    · exact absurd (Ideal.eq_top_of_isUnit_mem _ hxI hx) ht
+    · rwa [← isNilpotent_iff_eps_dvd]
+  have hd' : ∀ x ∈ I, x ≠ 0 → ∃ r, ε = r * x := by
+    intro x hxI hx0
+    obtain ⟨r, rfl⟩ := hd _ hxI
+    have : ε * r = (fst r) • ε := by
+      rw [← inl_fst_add_inr_snd_eq r]
+      simp [TrivSqZeroExt.ext_iff]
+    rw [this] at hxI hx0 ⊢
+    have hr : fst r ≠ 0 := by
+      contrapose! hx0
+      simp [hx0]
+    refine ⟨r⁻¹, ?_⟩
+    simp [TrivSqZeroExt.ext_iff, inv_mul_cancel₀ hr]
+  refine le_antisymm ?_ ?_ <;> intro x <;>
+    simp_rw [Ideal.mem_span_singleton', (commute_eps_right _).eq, eq_comm, ← dvd_def]
+  · intro hx
+    simp_rw [hd _ hx]
+  · intro hx
+    obtain ⟨p, rfl⟩ := hx
+    obtain ⟨y, hyI, hy0⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hb
+    obtain ⟨r, hr⟩ := hd' _ hyI hy0
+    rw [(commute_eps_left _).eq, hr, ← mul_assoc]
+    exact Ideal.mul_mem_left _ _ hyI
 
-lemma maximalIdeal_eq_span_singleton_eps :
+lemma isMaximal_span_singleton_eps [DivisionRing K] :
+    (Ideal.span {ε} : Ideal K[ε]).IsMaximal := by
+  refine ⟨?_, fun I hI ↦ ?_⟩
+  · simp [ne_eq, Ideal.eq_top_iff_one, Ideal.mem_span_singleton', TrivSqZeroExt.ext_iff]
+  · rcases ideal_trichotomy I with rfl|rfl|rfl <;>
+    first | simp at hI | simp
+
+lemma maximalIdeal_eq_span_singleton_eps [Field K] :
     LocalRing.maximalIdeal K[ε] = Ideal.span {ε} :=
   (LocalRing.eq_maximalIdeal isMaximal_span_singleton_eps).symm
 
-lemma isMaximal_iff_span_singleton_eps {I : Ideal K[ε]} :
-    I.IsMaximal ↔ I = .span {ε} := by
-  rw [← maximalIdeal_eq_span_singleton_eps]
-  constructor
-  · exact LocalRing.eq_maximalIdeal
-  · rintro rfl
-    infer_instance
-
-instance : IsPrincipalIdealRing K[ε] where
+instance [DivisionRing K] : IsPrincipalIdealRing K[ε] where
   principal I := by
-    rcases eq_or_ne I ⊥ with rfl|hb
+    rcases ideal_trichotomy I with rfl|rfl|rfl
     · exact bot_isPrincipal
-    rcases eq_or_ne I ⊤ with rfl|ht
+    · exact ⟨_, rfl⟩
     · exact top_isPrincipal
-    obtain ⟨x, hxI, hx0⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hb
-    refine ⟨x, le_antisymm ?_ ((Ideal.span_singleton_le_iff_mem I).mpr hxI)⟩
-    rcases isUnit_or_isNilpotent x with hx|hx
-    · simp [Ideal.eq_top_of_isUnit_mem _ hxI hx] at ht
-    simp only [isNilpotent_iff_isNilpotent_fst, isNilpotent_iff_eq_zero] at hx
-    rw [← inl_fst_add_inr_snd_eq x, hx, inl_zero, zero_add, inr_eq_smul_eps,
-      Ideal.submodule_span_eq, ← inl_mul_eq_smul, Ideal.span_singleton_mul_left_unit,
-      ← maximalIdeal_eq_span_singleton_eps]
-    · exact LocalRing.le_maximalIdeal ht
-    · contrapose! hx0
-      simp only [isUnit_inl_iff, isUnit_iff_ne_zero, ne_eq, not_not] at hx0
-      ext <;> simp [hx, hx0]
 
-lemma exists_mul_left_or_mul_right (a b : K[ε]) :
+lemma exists_mul_left_or_mul_right [DivisionRing K] (a b : K[ε]) :
     ∃ c, a * c = b ∨ b * c = a := by
   rcases isUnit_or_isNilpotent a with ha|ha
   · lift a to K[ε]ˣ using ha
@@ -152,13 +158,12 @@ lemma exists_mul_left_or_mul_right (a b : K[ε]) :
   rw [isNilpotent_iff_eps_dvd] at ha hb
   obtain ⟨x, rfl⟩ := ha
   obtain ⟨y, rfl⟩ := hb
-  rw [← inl_fst_add_inr_snd_eq x, ← inl_fst_add_inr_snd_eq y]
-  simp only [inr_eq_smul_eps, mul_add, Algebra.mul_smul_comm, eps_mul_eps, smul_zero, add_zero,
-    mul_assoc]
+  suffices ∃ c, fst x * fst c = fst y ∨ fst y * fst c = fst x by
+    simpa [TrivSqZeroExt.ext_iff] using this
   rcases eq_or_ne (fst x) 0 with hx|hx
   · refine ⟨ε, Or.inr ?_⟩
-    simp [hx, mul_comm, ← mul_assoc]
-  refine ⟨inl ((fst x)⁻¹ * fst y), Or.inl (congr_arg (ε * ·) ?_)⟩
+    simp [hx]
+  refine ⟨inl ((fst x)⁻¹ * fst y), ?_⟩
   simp [← inl_mul, ← mul_assoc, mul_inv_cancel₀ hx]
 
 end Field
