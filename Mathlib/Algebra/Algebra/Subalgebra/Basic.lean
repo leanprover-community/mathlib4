@@ -935,16 +935,18 @@ instance [SMul A α] (S : Subalgebra R A) : SMul S α :=
 
 theorem smul_def [SMul A α] {S : Subalgebra R A} (g : S) (m : α) : g • m = (g : A) • m := rfl
 
-instance smulCommClass_left [SMul A β] [SMul α β] [SMulCommClass A α β] (S : Subalgebra R A) :
+instance smulCommClass_left {_ : SMul A β} {_ : SMul α β}
+    [SMulCommClass A α β] (S : Subalgebra R A) :
     SMulCommClass S α β :=
   S.toSubsemiring.smulCommClass_left
 
-instance smulCommClass_right [SMul α β] [SMul A β] [SMulCommClass α A β] (S : Subalgebra R A) :
+instance smulCommClass_right {_ : SMul α β} {_ : SMul A β}
+    [SMulCommClass α A β] (S : Subalgebra R A) :
     SMulCommClass α S β :=
   S.toSubsemiring.smulCommClass_right
 
 /-- Note that this provides `IsScalarTower S R R` which is needed by `smul_mul_assoc`. -/
-instance isScalarTower_left [SMul α β] [SMul A α] [SMul A β] [IsScalarTower A α β]
+instance isScalarTower_left {_ : SMul α β} {_ : SMul A α} {_ : SMul A β} [IsScalarTower A α β]
     (S : Subalgebra R A) : IsScalarTower S α β :=
   inferInstanceAs (IsScalarTower S.toSubsemiring α β)
 
@@ -953,7 +955,7 @@ instance isScalarTower_mid {R S T : Type*} [CommSemiring R] [Semiring S] [AddCom
     IsScalarTower R S' T :=
   ⟨fun _x y _z => (smul_assoc _ (y : S) _ : _)⟩
 
-instance [SMul A α] [FaithfulSMul A α] (S : Subalgebra R A) : FaithfulSMul S α :=
+instance {_ : SMul A α} [FaithfulSMul A α] (S : Subalgebra R A) : FaithfulSMul S α :=
   inferInstanceAs (FaithfulSMul S.toSubsemiring α)
 
 /-- The action by a subalgebra is the action by the underlying algebra. -/

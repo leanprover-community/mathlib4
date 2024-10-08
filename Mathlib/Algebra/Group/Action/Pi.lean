@@ -120,7 +120,7 @@ this is not present. -/
 @[to_additive
   "Non-dependent version of `Pi.vaddCommClass`. Lean gets confused by the dependent
   instance if this is not present."]
-instance smulCommClass {α : Type*} [SMul M α] [SMul N α] [SMulCommClass M N α] :
+instance smulCommClass {α : Type*} {_ : SMul M α} {_ : SMul N α} [SMulCommClass M N α] :
     SMulCommClass M N (ι → α) := Pi.smulCommClass
 
 @[to_additive]

@@ -248,25 +248,30 @@ export IsCentralScalar (op_smul_eq_smul unop_smul_eq_smul)
 attribute [simp] IsCentralScalar.op_smul_eq_smul
 
 -- these instances are very low priority, as there is usually a faster way to find these instances
+set_option synthInstance.checkSynthOrder false in
 @[to_additive]
-instance (priority := 50) SMulCommClass.op_left [SMul M α] [SMul Mᵐᵒᵖ α] [IsCentralScalar M α]
-    [SMul N α] [SMulCommClass M N α] : SMulCommClass Mᵐᵒᵖ N α :=
+instance (priority := 50) SMulCommClass.op_left {_ : SMul M α} {_ : SMul Mᵐᵒᵖ α}
+    [IsCentralScalar M α] {_ : SMul N α} [SMulCommClass M N α] : SMulCommClass Mᵐᵒᵖ N α :=
   ⟨fun m n a ↦ by rw [← unop_smul_eq_smul m (n • a), ← unop_smul_eq_smul m a, smul_comm]⟩
 
+set_option synthInstance.checkSynthOrder false in
 @[to_additive]
-instance (priority := 50) SMulCommClass.op_right [SMul M α] [SMul N α] [SMul Nᵐᵒᵖ α]
+instance (priority := 50) SMulCommClass.op_right {_ : SMul M α} {_ : SMul N α} {_ : SMul Nᵐᵒᵖ α}
     [IsCentralScalar N α] [SMulCommClass M N α] : SMulCommClass M Nᵐᵒᵖ α :=
   ⟨fun m n a ↦ by rw [← unop_smul_eq_smul n (m • a), ← unop_smul_eq_smul n a, smul_comm]⟩
 
+set_option synthInstance.checkSynthOrder false in
 @[to_additive]
-instance (priority := 50) IsScalarTower.op_left [SMul M α] [SMul Mᵐᵒᵖ α] [IsCentralScalar M α]
-    [SMul M N] [SMul Mᵐᵒᵖ N] [IsCentralScalar M N] [SMul N α] [IsScalarTower M N α] :
+instance (priority := 50) IsScalarTower.op_left {_ : SMul M α} {_ : SMul Mᵐᵒᵖ α}
+    [IsCentralScalar M α] {_ : SMul M N} {_ : SMul Mᵐᵒᵖ N} [IsCentralScalar M N]
+    {_ : SMul N α} [IsScalarTower M N α] :
     IsScalarTower Mᵐᵒᵖ N α where
   smul_assoc m n a := by rw [← unop_smul_eq_smul m (n • a), ← unop_smul_eq_smul m n, smul_assoc]
 
+set_option synthInstance.checkSynthOrder false in
 @[to_additive]
-instance (priority := 50) IsScalarTower.op_right [SMul M α] [SMul M N] [SMul N α]
-    [SMul Nᵐᵒᵖ α] [IsCentralScalar N α] [IsScalarTower M N α] : IsScalarTower M Nᵐᵒᵖ α where
+instance (priority := 50) IsScalarTower.op_right {_ : SMul M α} {_ : SMul M N} {_ : SMul N α}
+    {_ : SMul Nᵐᵒᵖ α} [IsCentralScalar N α] [IsScalarTower M N α] : IsScalarTower M Nᵐᵒᵖ α where
   smul_assoc m n a := by
     rw [← unop_smul_eq_smul n a, ← unop_smul_eq_smul (m • n) a, MulOpposite.unop_smul, smul_assoc]
 
