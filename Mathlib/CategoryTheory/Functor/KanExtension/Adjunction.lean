@@ -56,6 +56,15 @@ noncomputable def isPointwiseLeftKanExtensionLanUnit
     (LeftExtension.mk _ (L.lanUnit.app F)).IsPointwiseLeftKanExtension :=
   isPointwiseLeftKanExtensionOfIsLeftKanExtension (F := F) _ (L.lanUnit.app F)
 
+/-- If a left Kan extension is pointwise, then evaluating it at an object is isomorphic to
+taking a colimit. -/
+noncomputable def lanObjObjIsoColimit
+    (F : C ⥤ H) [HasPointwiseLeftKanExtension L F] (X : D) :
+    (L.lan.obj F).obj X ≅ Limits.colimit (CostructuredArrow.proj L X ⋙ F) :=
+  let e₁ := isPointwiseLeftKanExtensionLanUnit L F
+  let e₂ := pointwiseLeftKanExtensionIsPointwiseLeftKanExtension L F
+  (Comma.rightIso (LeftExtension.isoOfIsPointwiseLeftKanExtension e₁ e₂)).app X
+
 variable (H) in
 /-- The left Kan extension functor `L.Lan` is left adjoint to the
 precomposition by `L`. -/
@@ -161,6 +170,15 @@ noncomputable def isPointwiseRightKanExtensionRanCounit
     (F : C ⥤ H) [HasPointwiseRightKanExtension L F] :
     (RightExtension.mk _ (L.ranCounit.app F)).IsPointwiseRightKanExtension :=
   isPointwiseRightKanExtensionOfIsRightKanExtension (F := F) _ (L.ranCounit.app F)
+
+/-- If a right Kan extension is pointwise, then evaluating it at an object is isomorphic to
+taking a limit. -/
+noncomputable def ranObjObjIsoLimit
+    (F : C ⥤ H) [HasPointwiseRightKanExtension L F] (X : D) :
+    (L.ran.obj F).obj X ≅ Limits.limit (StructuredArrow.proj X L ⋙ F) :=
+  let e₁ := isPointwiseRightKanExtensionRanCounit L F
+  let e₂ := pointwiseRightKanExtensionIsPointwiseRightKanExtension L F
+  (Comma.leftIso (RightExtension.isoOfIsPointwiseRightKanExtension e₁ e₂)).app X
 
 variable (H) in
 /-- The right Kan extension functor `L.ran` is right adjoint to the

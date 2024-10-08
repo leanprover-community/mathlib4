@@ -166,6 +166,14 @@ lemma IsPointwiseLeftKanExtension.isIso_hom [L.Full] [L.Faithful] :
   have := fun X => (h (L.obj X)).isIso_hom_app
   NatIso.isIso_of_isIso_app ..
 
+/-- Two left extensions are isomorphic if they are both left Kan extensions. -/
+def isoOfIsPointwiseLeftKanExtension
+    (h : E.IsPointwiseLeftKanExtension) (h' : E'.IsPointwiseLeftKanExtension) : E ≅ E' where
+  hom := IsPointwiseLeftKanExtension.homFrom h _
+  inv := IsPointwiseLeftKanExtension.homFrom h' _
+  hom_inv_id := IsPointwiseLeftKanExtension.hom_ext h
+  inv_hom_id := IsPointwiseLeftKanExtension.hom_ext h'
+
 end LeftExtension
 
 namespace RightExtension
@@ -277,6 +285,14 @@ lemma IsPointwiseRightKanExtension.isIso_hom [L.Full] [L.Faithful] :
     IsIso (E.hom) :=
   have := fun X => (h (L.obj X)).isIso_hom_app
   NatIso.isIso_of_isIso_app ..
+
+/-- Two right extensions are isomorphic if they are both right Kan extensions. -/
+def isoOfIsPointwiseRightKanExtension
+    (h : E.IsPointwiseRightKanExtension) (h' : E'.IsPointwiseRightKanExtension) : E ≅ E' where
+  hom := IsPointwiseRightKanExtension.homTo h' _
+  inv := IsPointwiseRightKanExtension.homTo h _
+  hom_inv_id := IsPointwiseRightKanExtension.hom_ext h
+  inv_hom_id := IsPointwiseRightKanExtension.hom_ext h'
 
 end RightExtension
 
