@@ -357,6 +357,21 @@ theorem leadingCoeff_smul_of_nonzero {Γ Γ'} [LinearOrder Γ] [LinearOrder Γ']
   simp only [HahnSeries.leadingCoeff, orderTop_smul_of_nonzero h,
     smul_coeffTop_orderTop_vAdd_orderTop]
 
+theorem orderTop_vAdd_le_orderTop_smul {Γ Γ'} [LinearOrder Γ] [LinearOrder Γ']
+    [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [MulZeroClass R] [SMulWithZero R V] {x : HahnSeries Γ R}
+    {y : HahnModule Γ' R V} :
+    x.orderTop +ᵥ ((of R).symm y).orderTop ≤ ((of R).symm (x • y)).orderTop := by
+  by_cases hx : x = 0; · simp_all
+  by_cases hy : y = 0; · simp_all
+  have hhy : ((of R).symm y) ≠ 0 := hy
+  rw [HahnSeries.orderTop_of_ne hx, HahnSeries.orderTop_of_ne hhy, ← WithTop.coe_vAdd,
+      ← Set.IsWF.min_vadd]
+  by_cases hxy : (of R).symm (x • y) = 0
+  · rw [hxy, HahnSeries.orderTop_zero]
+    exact OrderTop.le_top (α := WithTop Γ') _
+  · rw [HahnSeries.orderTop_of_ne hxy, WithTop.coe_le_coe]
+    exact Set.IsWF.min_le_min_of_subset support_smul_subset_vadd_support
+
 theorem smul_coeff_order_add_order {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Zero R]
     [SMulWithZero R V] (x : HahnSeries Γ R) (y : HahnModule Γ R V) :
     ((of R).symm (x • y)).coeff (x.order + ((of R).symm y).order) =
@@ -505,6 +520,12 @@ theorem order_mul_single_of_nonzero_divisor {Γ} [LinearOrderedCancelAddCommMono
     exact fun hrx' => (leadingCoeff_ne_iff.mpr hx) (hr x.leadingCoeff hrx')
   rw [order_mul_of_nonzero hrx, order_single hrne]
 
+theorem orderTop_add_le_mul {Γ} [LinearOrderedCancelAddCommMonoid Γ]
+    [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} :
+    x.orderTop + y.orderTop ≤ (x * y).orderTop := by
+  rw [← smul_eq_mul]
+  exact HahnModule.orderTop_vAdd_le_orderTop_smul
+
 private theorem mul_assoc' [NonUnitalSemiring R] (x y z : HahnSeries Γ R) :
     x * y * z = x * (y * z) := by
   ext b
@@ -542,6 +563,49 @@ instance [NonAssocSemiring R] : NonAssocSemiring (HahnSeries Γ R) :=
 instance [Semiring R] : Semiring (HahnSeries Γ R) :=
   { inferInstanceAs (NonAssocSemiring (HahnSeries Γ R)),
     inferInstanceAs (NonUnitalSemiring (HahnSeries Γ R)) with }
+
+theorem leadingCoeff_pow_of_nonzero {Γ} [LinearOrderedCancelAddCommMonoid Γ]
+    [Semiring R] {x : HahnSeries Γ R} {n : ℕ} (h : x.leadingCoeff ^ n ≠ 0) :
+    (x ^ n).leadingCoeff = x.leadingCoeff ^ n := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [pow_succ] at h
+    specialize ih (left_ne_zero_of_mul h)
+    rw [pow_succ, pow_succ, leadingCoeff_mul_of_nonzero (ih ▸ h), ih]
+
+theorem orderTop_pow_of_nonzero {Γ} [LinearOrderedCancelAddCommMonoid Γ]
+    [Semiring R] {x : HahnSeries Γ R} {n : ℕ} (h : x.leadingCoeff ^ n ≠ 0) :
+    (x ^ n).orderTop = n • x.orderTop := by
+  haveI : Nontrivial R := nontrivial_of_ne (x.leadingCoeff ^ n) 0 h
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [pow_succ] at h
+    specialize ih (left_ne_zero_of_mul h)
+    rw [pow_succ, orderTop_mul_of_nonzero (leadingCoeff_pow_of_nonzero (left_ne_zero_of_mul h) ▸ h),
+      ih, succ_nsmul]
+
+theorem orderTop_nsmul_le_orderTop_pow {Γ} [LinearOrderedCancelAddCommMonoid Γ]
+    [Semiring R] {x : HahnSeries Γ R} {n : ℕ} : n • x.orderTop ≤ (x ^ n).orderTop := by
+  induction n with
+  | zero =>
+    simp only [zero_smul, pow_zero]
+    by_cases h : (0 : R) = 1
+    · rw [orderTop, dif_pos ?_]
+      · exact OrderTop.le_top 0
+      refine leadingCoeff_eq_iff.mp ?_
+      rw [leadingCoeff_one, h]
+    · haveI : Nontrivial R := nontrivial_of_ne 0 1 h
+      rw [orderTop_one]
+  | succ n ih =>
+    rw [add_nsmul, pow_add]
+    calc
+      n • x.orderTop + 1 • x.orderTop ≤ (x ^ n).orderTop + 1 • x.orderTop := by
+        exact add_le_add_right ih (1 • x.orderTop)
+      (x ^ n).orderTop + 1 • x.orderTop = (x ^ n).orderTop + x.orderTop := by rw [one_nsmul]
+      (x ^ n).orderTop + x.orderTop ≤ (x ^ n * x).orderTop := by exact orderTop_add_le_mul
+      (x ^ n * x).orderTop ≤ (x ^ n * x ^ 1).orderTop := by rw [pow_one]
 
 instance [NonUnitalCommSemiring R] : NonUnitalCommSemiring (HahnSeries Γ R) where
   __ : NonUnitalSemiring (HahnSeries Γ R) := inferInstance

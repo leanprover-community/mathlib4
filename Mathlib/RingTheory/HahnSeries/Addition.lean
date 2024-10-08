@@ -3,9 +3,10 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.RingTheory.HahnSeries.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.LinearMap.Defs
+import Mathlib.RingTheory.HahnSeries.Basic
 
 /-!
 # Additive properties of Hahn series
@@ -28,7 +29,7 @@ open scoped Classical
 
 noncomputable section
 
-variable {Γ R : Type*}
+variable {Γ Γ' R S U V : Type*}
 
 namespace HahnSeries
 
@@ -79,10 +80,15 @@ theorem add_coeffTop {x y : HahnSeries Γ R} {a : WithTop Γ} :
   | (a : Γ) => simp
 
 @[simp]
-theorem add_coeffTop' {x y : HahnSeries Γ R} :
+theorem add_coeffTop_map {x y : HahnSeries Γ R} :
     (x + y).coeffTop = x.coeffTop + y.coeffTop := by
   ext
   exact add_coeffTop
+
+@[simp]
+protected lemma map_add [AddMonoid S] (f : R →+ S) {x y : HahnSeries Γ R} :
+    ((x + y).map f : HahnSeries Γ S) = x.map f + y.map f := by
+  ext; simp
 
 /--
 `addOppositeEquiv` is an additive monoid isomorphism between
@@ -211,13 +217,15 @@ theorem leadingCoeff_add_eq_right {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
     (x := addOppositeEquiv.symm (.op y))
     (y := addOppositeEquiv.symm (.op x))
 
+theorem single_add {g : Γ} {a b : R} : single g (a + b) = single g a + single g b := by
+  ext g'
+  by_cases h : g' = g <;> simp [h]
+
 /-- `single` as an additive monoid/group homomorphism -/
 @[simps!]
 def single.addMonoidHom (a : Γ) : R →+ HahnSeries Γ R :=
   { single a with
-    map_add' := fun x y => by
-      ext b
-      by_cases h : b = a <;> simp [h] }
+    map_add' := fun _ _ => single_add }
 
 /-- `coeff g` as an additive monoid/group homomorphism -/
 @[simps]
@@ -228,7 +236,7 @@ def coeff.addMonoidHom (g : Γ) : HahnSeries Γ R →+ R where
 
 section Domain
 
-variable {Γ' : Type*} [PartialOrder Γ']
+variable [PartialOrder Γ']
 
 theorem embDomain_add (f : Γ ↪o Γ') (x y : HahnSeries Γ R) :
     embDomain f (x + y) = embDomain f x + embDomain f y := by
@@ -242,11 +250,28 @@ end Domain
 
 end AddMonoid
 
-instance [AddCommMonoid R] : AddCommMonoid (HahnSeries Γ R) :=
+section AddCommMonoid
+
+variable [AddCommMonoid R] {α : Type*} {s : Finset α}
+
+instance : AddCommMonoid (HahnSeries Γ R) :=
   { inferInstanceAs (AddMonoid (HahnSeries Γ R)) with
     add_comm := fun x y => by
       ext
       apply add_comm }
+
+@[simp]
+theorem sum_coeff {x : α → HahnSeries Γ R} (g : Γ) :
+    (∑ i ∈ s, x i).coeff g = ∑ i ∈ s, (x i).coeff g :=
+  cons_induction rfl (fun i s his hsum => by rw [sum_cons, sum_cons, add_coeff, hsum]) s
+
+theorem inf_orderTop_le_orderTop_sum {Γ} [LinearOrder Γ] {α : Type*} {x : α → HahnSeries Γ R}
+    {s : Finset α} : (s.inf fun i => orderTop (x i)) ≤ (∑ i ∈ s, x i).orderTop := by
+  refine le_orderTop_iff.mpr fun g hg => ?_
+  simp_all only [gt_iff_lt, WithTop.coe_lt_top, Finset.lt_inf_iff, sum_coeff]
+  exact Finset.sum_eq_zero fun i hi ↦ coeff_eq_zero_of_lt_orderTop (hg i hi)
+
+end AddCommMonoid
 
 section AddGroup
 
@@ -279,6 +304,11 @@ theorem support_neg {x : HahnSeries Γ R} : (-x).support = x.support := by
   simp
 
 @[simp]
+protected lemma map_neg [AddGroup S] (f : R →+ S) {x : HahnSeries Γ R} :
+    ((-x).map f : HahnSeries Γ S) = -(x.map f) := by
+  ext; simp
+
+@[simp]
 theorem sub_coeff' {x y : HahnSeries Γ R} : (x - y).coeff = x.coeff - y.coeff := by
   ext
   simp [sub_eq_add_neg]
@@ -291,6 +321,11 @@ theorem zsmul_coeff {x : HahnSeries Γ R} {n : ℤ} : (n • x).coeff = n • x.
   cases n with
   | ofNat n => simp_all only [Int.ofNat_eq_coe, natCast_zsmul, nsmul_coeff]
   | negSucc _ => simp_all only [negSucc_zsmul, neg_coeff', nsmul_coeff]
+
+@[simp]
+protected lemma map_sub [AddGroup S] (f : R →+ S) {x y : HahnSeries Γ R} :
+    ((x - y).map f : HahnSeries Γ S) = x.map f - y.map f := by
+  ext; simp
 
 theorem orderTop_neg {x : HahnSeries Γ R} : (-x).orderTop = x.orderTop := by
   by_cases hx : x = 0
@@ -330,7 +365,7 @@ end Addition
 
 section SMulZeroClass
 
-variable [PartialOrder Γ] {V : Type*} [Zero V] [SMulZeroClass R V]
+variable [PartialOrder Γ] [Zero V] [SMulZeroClass R V]
 
 instance : SMul R (HahnSeries Γ V) :=
   ⟨fun r x =>
@@ -370,7 +405,7 @@ end SMulZeroClass
 
 section DistribMulAction
 
-variable [PartialOrder Γ] {V : Type*} [Monoid R] [AddMonoid V] [DistribMulAction R V]
+variable [PartialOrder Γ] [Monoid R] [AddMonoid V] [DistribMulAction R V]
 
 instance : DistribMulAction R (HahnSeries Γ V) where
   smul := (· • ·)
@@ -387,7 +422,7 @@ instance : DistribMulAction R (HahnSeries Γ V) where
     ext
     simp [mul_smul]
 
-variable {S : Type*} [Monoid S] [DistribMulAction S V]
+variable [Monoid S] [DistribMulAction S V]
 
 instance [SMul R S] [IsScalarTower R S V] : IsScalarTower R S (HahnSeries Γ V) :=
   ⟨fun r s a => by
@@ -403,7 +438,7 @@ end DistribMulAction
 
 section Module
 
-variable [PartialOrder Γ] [Semiring R] {V : Type*} [AddCommMonoid V] [Module R V]
+variable [PartialOrder Γ] [Semiring R] [AddCommMonoid V] [Module R V]
 
 instance : Module R (HahnSeries Γ V) :=
   { inferInstanceAs (DistribMulAction R (HahnSeries Γ V)) with
@@ -429,7 +464,7 @@ def coeff.linearMap (g : Γ) : HahnSeries Γ V →ₗ[R] V :=
 
 /-- `ofIterate` as a linear map. -/
 @[simps]
-def ofIterate.linearMap {Γ' : Type*} [PartialOrder Γ'] :
+def ofIterate.linearMap [PartialOrder Γ'] :
     HahnSeries Γ (HahnSeries Γ' V) →ₗ[R] HahnSeries (Γ ×ₗ Γ') V where
   toFun := ofIterate
   map_add' := by
@@ -443,7 +478,7 @@ def ofIterate.linearMap {Γ' : Type*} [PartialOrder Γ'] :
 
 /-- `toIterate` as a linear map. -/
 @[simps]
-def toIterate.linearMap {Γ' : Type*} [PartialOrder Γ'] :
+def toIterate.linearMap [PartialOrder Γ'] :
     HahnSeries (Γ ×ₗ Γ') V →ₗ[R] HahnSeries Γ (HahnSeries Γ' V) where
   toFun := toIterate
   map_add' := by
@@ -455,9 +490,14 @@ def toIterate.linearMap {Γ' : Type*} [PartialOrder Γ'] :
     ext _
     simp only [toIterate, RingHom.id_apply, smul_coeff]
 
+@[simp]
+protected lemma map_smul [AddCommMonoid U] [Module R U] (f : U →ₗ[R] V) {r : R}
+    {x : HahnSeries Γ U} : (r • x).map f = r • ((x.map f) : HahnSeries Γ V) := by
+  ext; simp
+
 section Domain
 
-variable {Γ' : Type*} [PartialOrder Γ']
+variable [PartialOrder Γ']
 
 theorem embDomain_smul (f : Γ ↪o Γ') (r : R) (x : HahnSeries Γ R) :
     embDomain f (r • x) = r • embDomain f x := by

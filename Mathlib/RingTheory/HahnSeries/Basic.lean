@@ -107,6 +107,16 @@ nonrec theorem support_nonempty_iff {x : HahnSeries Γ R} : x.support.Nonempty �
 theorem support_eq_empty_iff {x : HahnSeries Γ R} : x.support = ∅ ↔ x = 0 :=
   Function.support_eq_empty_iff.trans coeff_fun_eq_zero_iff
 
+/-- The map of Hahn series induced by applying a zero-preserving map to each coefficient. -/
+@[simps]
+def map {R' : Type*} [Zero R'] (x : HahnSeries Γ R) (f : ZeroHom R R') : HahnSeries Γ R' where
+  coeff g := f (x.coeff g)
+  isPWO_support' := x.isPWO_support.mono <| Function.support_comp_subset (ZeroHom.map_zero f) _
+
+protected lemma map_zero {R' : Type*} [Zero R'] (f : ZeroHom R R') :
+    (0 : HahnSeries Γ R).map f = 0 := by
+  ext; simp
+
 /-- Change a HahnSeries with coefficients in HahnSeries to a HahnSeries on the Lex product. -/
 def ofIterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries Γ (HahnSeries Γ' R)) :
     HahnSeries (Γ ×ₗ Γ') R where

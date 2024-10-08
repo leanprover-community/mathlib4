@@ -9,9 +9,6 @@ import Mathlib.RingTheory.Binomial
 import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.Units
 import Mathlib.RingTheory.PowerSeries.Inverse
-import Mathlib.FieldTheory.RatFunc.AsPolynomial
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
 # Laurent Series
@@ -784,3 +781,4 @@ instance instLaurentSeriesComplete : CompleteSpace (LaurentSeries K) :=
 end Complete
 
 end LaurentSeries
+#min_imports
