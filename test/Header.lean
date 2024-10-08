@@ -17,8 +17,7 @@ note: this linter can be disabled with `set_option linter.style.header false`
 ---
 warning: The module doc-string for a file should be the first command after the imports.
 Please, add a module doc-string before `/-!# Tests for the `docModule` linter
--/
-`.
+-/`.
 note: this linter can be disabled with `set_option linter.style.header false`
 -/
 #guard_msgs in
@@ -78,6 +77,7 @@ Authors: Name LastName
 -/
 "
 
+-- The last line does not end with a newline.
 /--
 info: Text: `-|`
 Range: (149, 151)
@@ -191,7 +191,7 @@ Authors: Name LastName,
 -/
 "
 
--- the `Copyright` line can overflow
+-- The `Copyright` and `Authors` lines are allowed to overflow.
 #check_copyright
 "/-
 Copyright (c) 2019 Reid Barton, Johan Commelin, Jesse Michael Han, Chris Hughes, Robert Y. Lewis,

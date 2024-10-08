@@ -16,9 +16,9 @@ Apache ...
 Authors ...
 -/
 
-import*
+import statements*
 module doc-string*
-rest
+remaining file
 ```
 It emits a warning if
 * the copyright statement is malformed;
@@ -28,6 +28,7 @@ It emits a warning if
 
 The linter allows `import`-only files and does not require a copyright statement in `Mathlib.Init`.
 
+## Implementation
 The strategy used by the linter is as follows.
 The linter computes the end position of the first module doc-string of the file,
 resorting to the end of the file, if there is no module doc-string.
@@ -35,14 +36,13 @@ Next, the linter tries to parse the file up to the position determined above.
 
 If the parsing is successful, the linter checks the resulting `Syntax` and behaves accordingly.
 
-If the parsing is not successful, this already means that there is some "problematic" command
-after the imports.
-In particular, there is a command that is not a doc-module string immediately following the last.
-import: the file should be flagged by the linter.
-Hence, the linter then falls back to parsing the header of the file adding a spurious `section`
-after.
-This makes it possible for the linter to check all the header of the file, emit warnings that
-could arise from this part and also flag that the file should contain a doc-module string after
+If the parsing is not successful, this already means there is some "problematic" command
+after the imports. In particular, there is a command that is not a module doc-string
+immediately following the last import: the file should be flagged by the linter.
+Hence, the linter then falls back to parsing the header of the file, adding a spurious `section`
+after it.
+This makes it possible for the linter to check the entire header of the file, emit warnings that
+could arise from this part and also flag that the file should contain a module doc-string after
 the `import` statements.
 -/
 
@@ -90,10 +90,11 @@ In conclusion, either the parsing is successful, and the linter can continue wit
 or the parsing is not successful and the linter will flag a missing module doc-string!
 -/
 def parseUpToHere (pos : String.Pos) (post : String := "") : CommandElabM Syntax := do
-  let upToHere : Substring:= { str := (← getFileMap).source, startPos := ⟨0⟩, stopPos := pos }
-  -- append a further string after the `upToHere` content
+  let upToHere : Substring := { str := (← getFileMap).source, startPos := ⟨0⟩, stopPos := pos }
+  -- Append a further string after the content of `upToHere`.
   Parser.testParseModule (← getEnv) "linter.style.header" (upToHere.toString ++ post)
 
+-- xxx review
 /-- `toSyntax s pattern` converts the two input strings into a `Syntax`, assuming that `pattern`
 is a substring of `s`:
 the syntax is an atom with value `pattern` whose the range is the range of `pattern` in `s`. -/
@@ -103,12 +104,11 @@ def toSyntax (s pattern : String) (offset : String.Pos := 0) : Syntax :=
   let fin := (((s.splitOn pattern).getD 0 "") ++ pattern).endPos + offset
   mkAtomFrom (.ofRange ⟨beg, fin⟩) pattern
 
--- adapted from the textbased
 /-- Return if `line` looks like a correct authors line in a copyright header. -/
 def authorsLineChecks (line : String) (offset : String.Pos) : Array (Syntax × String) :=
   Id.run do
   -- We cannot reasonably validate the author names, so we look only for a few common mistakes:
-  -- the file starting wrong, double spaces, using ' and ' between names,
+  -- the line starting wrongly, double spaces, using ' and ' between names,
   -- and ending the line with a period.
   let mut stxs := #[]
   if !line.startsWith "Authors: " then
@@ -118,7 +118,7 @@ def authorsLineChecks (line : String) (offset : String.Pos) : Array (Syntax × S
   if (line.splitOn "  ").length != 1 then
     stxs := stxs.push (toSyntax line "  " offset, s!"Double spaces are not allowed.")
   if (line.splitOn " and ").length != 1 then
-    stxs := stxs.push (toSyntax line " and " offset, s!"Please, do not use 'and', use ',' instead.")
+    stxs := stxs.push (toSyntax line " and " offset, s!"Please, do not use 'and'; use ',' instead.")
   if line.back == '.' then
     stxs := stxs.push
       (toSyntax line "." offset,
@@ -128,28 +128,30 @@ def authorsLineChecks (line : String) (offset : String.Pos) : Array (Syntax × S
 /-- The main function to validate the copyright string.
 The input is the copyright string, the output is an array of `Syntax × String` encoding:
 * the `Syntax` factors are atoms whose ranges are "best guesses" for where the changes should
-  take place and the embedded string is the current text that the linter flagged;
+  take place; the embedded string is the current text that the linter flagged;
 * the `String` factor is the linter message.
 
 The linter checks that
 * the first and last line of the copyright are a `("/-", "-/")` pair, each on its own line;
-* the first line is `begins with `Copyright (c) 20` and ends with `. All rights reserved.`;
+* the first line is begins with `Copyright (c) 20` and ends with `. All rights reserved.`;
 * the second line is `Released under Apache 2.0 license as described in the file LICENSE.`;
 * the remainder of the string begins with `Authors: `, does not end with `.` and
   contains no ` and ` nor a double space, except possibly after a line break.
 -/
 def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.run do
-  -- first, we merge lines ending in `,`: two spaces after the line-break are ok,
+  -- First, we merge lines ending in `,`: two spaces after the line-break are ok,
   -- but so is only one or none.  We take care of *not* adding more consecutive spaces, though.
+  -- This is to allow the copyright or authors' lines to span several lines.
   let preprocessCopyright := (copyright.replace ",\n  " ", ").replace ",\n" ","
-  -- filter out everything after the first isolated `-/`
+  -- Filter out everything after the first isolated `-/`.
   let pieces := preprocessCopyright.splitOn "\n-/"
   let copyright := (pieces.getD 0 "") ++ "\n-/"
-  let stdTxt (s : String) :=
+  let stdText (s : String) :=
     s!"Malformed or missing copyright header: `{s}` should be alone on its own line."
   let mut msgs := #[]
   if (pieces.getD 1 "\n").take 1 != "\n" then
-    msgs := msgs.push (toSyntax copyright "-/", s!"{stdTxt "-/"}")
+    msgs := msgs.push (toSyntax copyright "-/", s!"{stdText "-/"}")
+
   let lines := copyright.splitOn "\n"
   let closeComment := lines.getLastD ""
   match lines with
@@ -158,9 +160,9 @@ def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.
     match openComment, closeComment with
     | "/-", "-/" => msgs := msgs
     | "/-", _    =>
-      msgs := msgs.push (toSyntax copyright closeComment, s!"{stdTxt "-/"}")
+      msgs := msgs.push (toSyntax copyright closeComment, s!"{stdText "-/"}")
     | _, _       =>
-      msgs := msgs.push (toSyntax copyright openComment, s!"{stdTxt ("/".push '-')}")
+      msgs := msgs.push (toSyntax copyright openComment, s!"{stdText ("/".push '-')}")
     -- validate copyright author
     let copStart := "Copyright (c) 20"
     let copStop := ". All rights reserved."
@@ -245,9 +247,9 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
                           | some doc => fm.ofPosition doc.declarationRange.endPos
   unless stx.getTailPos? == some firstDocModPos do
     return
-  -- we try to parse the file up to `firstDocModPos`.
+  -- We try to parse the file up to `firstDocModPos`.
   let upToStx ← parseUpToHere firstDocModPos <|> (do
-    -- if parsing failed, then there are some non-module docs, so we parse until the end of the
+    -- If parsing failed, there are some non-module docs, so we parse until the end of the
     -- imports, adding an extra `section` after, so that we trigger a "no module doc" warning.
     let fil ← getFileName
     let (stx, _) ← Parser.parseHeader { input := fm.source, fileName := fil, fileMap := fm }
