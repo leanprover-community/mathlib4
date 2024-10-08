@@ -334,7 +334,7 @@ theorem iff_lTensor_exact [Small.{v'} R] [Small.{v'} M] : Flat R M ↔
     exact (L.map_eq_zero_iff hL).trans eq_comm) x |>.mp  hx
 
 /-- `M` is flat if and only if `M ⊗ -` is a left exact functor.
-  This is a concrete version of `Module.Flat.iff_lTensor_exact`.-/
+  This is a concrete version of `Module.Flat.iff_lTensor_exact`. -/
 theorem iff_lTensor_exact' : Flat R M ↔
     ∀ ⦃N N' N'' : Type (max u v)⦄ [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N'']
       [Module R N] [Module R N'] [Module R N''] ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄,
@@ -354,7 +354,7 @@ theorem iff_rTensor_exact [Small.{v'} R] [Small.{v'} M] : Flat R M ↔
     exact (L.map_eq_zero_iff hL).trans eq_comm) x |>.mp hx
 
 /-- `M` is flat if and only if `- ⊗ M` is a left exact functor.
-  This is a concrete version of `Module.Flat.iff_rTensor_exact`.-/
+  This is a concrete version of `Module.Flat.iff_rTensor_exact`. -/
 theorem iff_rTensor_exact' : Flat R M ↔
     ∀ ⦃N N' N'' : Type (max u v)⦄ [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N'']
       [Module R N] [Module R N'] [Module R N''] ⦃f : N →ₗ[R] N'⦄ ⦃g : N' →ₗ[R] N''⦄,
