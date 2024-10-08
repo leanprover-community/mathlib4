@@ -497,6 +497,7 @@ variable {F : WalkingReflexivePair ⥤ C}
 /-- The tail morphism of a reflexive cofork. -/
 abbrev π (G : ReflexiveCofork F) : F.obj zero ⟶ G.pt := G.ι.app zero
 
+/-- Constructor for `ReflexiveCofork` -/
 @[simps pt]
 def mk {X : C} (π : F.obj zero ⟶ X) (h : F.map left ≫ π = F.map right ≫ π) :
     ReflexiveCofork F where
