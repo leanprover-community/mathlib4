@@ -21,7 +21,7 @@ open Function
 
 universe u u' v w x y z
 
-variable {R R₂ R₃ S S₃ T M M₂ M₃ : Type*}
+variable {R R₂ S M M₂ : Type*}
 
 namespace LinearMap
 
@@ -63,16 +63,12 @@ end SMul
 
 section Actions
 
-variable [Semiring R] [Semiring R₂] [Semiring R₃]
-variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
-variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
-variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
+variable [Semiring R] [Semiring R₂]
+variable [AddCommMonoid M] [AddCommMonoid M₂]
+variable [Module R M] [Module R₂ M₂]
+variable {σ₁₂ : R →+* R₂}
 
 section SMul
-
-variable [Monoid S] [DistribMulAction S M₂] [SMulCommClass R₂ S M₂]
-variable [Monoid S₃] [DistribMulAction S₃ M₃] [SMulCommClass R₃ S₃ M₃]
-variable [Monoid T] [DistribMulAction T M₂] [SMulCommClass R₂ T M₂]
 
 instance {S'} [Monoid S'] [DistribMulAction S' M] [SMulCommClass R S' M] :
     DistribMulAction S'ᵈᵐᵃ (M →ₛₗ[σ₁₂] M₂) where
