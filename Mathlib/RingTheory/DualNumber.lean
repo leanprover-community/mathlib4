@@ -11,10 +11,9 @@ import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 ## Main results
 
-* `DualNumber.instLocalRing`
-The dual numbers over a field `K` form a local ring.
-* `DualNumber.instPrincipalIdealRing`
-The dual numbers over a field `K` form a principal ideal ring.
+* `DualNumber.instLocalRing`: The dual numbers over a field `K` form a local ring.
+* `DualNumber.instPrincipalIdealRing`: The dual numbers over a field `K` form a principal ideal
+  ring.
 
 -/
 
