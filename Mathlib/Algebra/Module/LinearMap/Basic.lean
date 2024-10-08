@@ -21,7 +21,7 @@ open Function
 
 universe u u' v w x y z
 
-variable {R R₁ R₂ R₃ k S S₃ T M M₁ M₂ M₃ N₁ N₂ N₃ ι : Type*}
+variable {R R₂ R₃ S S₃ T M M₂ M₃ : Type*}
 
 namespace LinearMap
 

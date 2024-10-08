@@ -7,6 +7,7 @@ import Mathlib.Init
 import Lean.Parser.Term
 import Lean.Parser.Do
 import Lean.Elab.Command
+import Mathlib.adomaniLeanUtils.inspect_syntax
 
 /-!
 # The `unset_option` command
