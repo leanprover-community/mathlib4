@@ -248,6 +248,11 @@ theorem inductionOn {C : Ordinal → Prop} (o : Ordinal)
     (H : ∀ (α r) [IsWellOrder α r], C (type r)) : C o :=
   Quot.inductionOn o fun ⟨α, r, wo⟩ => @H α r wo
 
+@[elab_as_elim]
+theorem inductionOn₂ {C : Ordinal → Ordinal → Prop} (o₁ o₂ : Ordinal)
+    (H : ∀ (α r) [IsWellOrder α r] (β s) [IsWellOrder β s], C (type r) (type s)) : C o₁ o₂ :=
+  Quotient.inductionOn₂ o₁ o₂ fun ⟨α, r, wo₁⟩ ⟨β, s, wo₂⟩ => @H α r wo₁ β s wo₂
+
 /-! ### The order on ordinals -/
 
 /--
@@ -852,32 +857,12 @@ theorem sInf_empty : sInf (∅ : Set Ordinal) = 0 :=
 
 /-! ### Successor order properties -/
 
-private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b :=
-  ⟨lt_of_lt_of_le
-      (inductionOn a fun α r _ =>
-        ⟨⟨⟨⟨fun x => Sum.inl x, fun _ _ => Sum.inl.inj⟩, Sum.lex_inl_inl⟩,
-            Sum.inr PUnit.unit, fun b =>
-            Sum.recOn b (fun x => ⟨fun _ => ⟨x, rfl⟩, fun _ => Sum.Lex.sep _ _⟩) fun x =>
-              Sum.lex_inr_inr.trans ⟨False.elim, fun ⟨x, H⟩ => Sum.inl_ne_inr H⟩⟩⟩),
-    inductionOn a fun α r hr =>
-      inductionOn b fun β s hs ⟨⟨f, t, hf⟩⟩ => by
-        haveI := hs
-        refine ⟨⟨RelEmbedding.ofMonotone (Sum.rec f fun _ => t) (fun a b ↦ ?_), fun a b ↦ ?_⟩⟩
-        · rcases a with (a | _) <;> rcases b with (b | _)
-          · simpa only [Sum.lex_inl_inl] using f.map_rel_iff.2
-          · intro
-            rw [hf]
-            exact ⟨_, rfl⟩
-          · exact False.elim ∘ Sum.lex_inr_inl
-          · exact False.elim ∘ Sum.lex_inr_inr.1
-        · rcases a with (a | _)
-          · intro h
-            have := @PrincipalSeg.mem_range_of_rel _ _ _ _ _ ⟨f, t, hf⟩ _ _ h
-            cases' this with w h
-            exact ⟨Sum.inl w, h⟩
-          · intro h
-            cases' (hf b).1 h with w h
-            exact ⟨Sum.inl w, h⟩⟩
+private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b := by
+  refine inductionOn₂ a b fun α r _ β s _ ↦ ⟨?_, ?_⟩ <;> rintro ⟨f⟩
+  · refine ⟨((InitialSeg.leAdd _ _).trans f).toPrincipalSeg fun h ↦ ?_⟩
+    simpa using h (f (Sum.inr PUnit.unit))
+  · apply (RelEmbedding.ofMonotone (Sum.recOn · f fun _ ↦ f.top) ?_).ordinal_type_le
+    simpa [f.map_rel_iff] using f.lt_top
 
 instance noMaxOrder : NoMaxOrder Ordinal :=
   ⟨fun _ => ⟨_, succ_le_iff'.1 le_rfl⟩⟩
