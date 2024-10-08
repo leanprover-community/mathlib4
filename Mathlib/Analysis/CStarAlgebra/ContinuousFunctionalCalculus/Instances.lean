@@ -649,14 +649,14 @@ variable {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [StarRing A]
 
 lemma cfcHom_nnreal_eq_restrict {a : A} (ha : 0 ≤ a) :
     cfcHom ha = (SpectrumRestricts.nnreal_of_nonneg ha).starAlgHom
-      (cfcHom (IsSelfAdjoint.of_nonneg ha)) :=
-  (SpectrumRestricts.nnreal_of_nonneg ha).cfcHom_eq_restrict _ isUniformEmbedding_subtype_val _ _
+      (cfcHom (IsSelfAdjoint.of_nonneg ha)) := by
+  apply (SpectrumRestricts.nnreal_of_nonneg ha).cfcHom_eq_restrict _ isUniformEmbedding_subtype_val
 
 lemma cfc_nnreal_eq_real {a : A} (f : ℝ≥0 → ℝ≥0) (ha : 0 ≤ a := by cfc_tac)  :
     cfc f a = cfc (fun x ↦ f x.toNNReal : ℝ → ℝ) a := by
   replace ha : 0 ≤ a := ha -- hack to avoid issues caused by autoParam
-  exact (SpectrumRestricts.nnreal_of_nonneg ha).cfc_eq_restrict _
-    isUniformEmbedding_subtype_val ha (.of_nonneg ha) _
+  apply (SpectrumRestricts.nnreal_of_nonneg ha).cfc_eq_restrict _
+    isUniformEmbedding_subtype_val ha (.of_nonneg ha)
 
 end NNRealEqReal
 
@@ -673,15 +673,15 @@ variable {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [PartialOrder A] [St
 
 lemma cfcₙHom_nnreal_eq_restrict {a : A} (ha : 0 ≤ a) :
     cfcₙHom ha = (QuasispectrumRestricts.nnreal_of_nonneg ha).nonUnitalStarAlgHom
-      (cfcₙHom (IsSelfAdjoint.of_nonneg ha)) :=
-  (QuasispectrumRestricts.nnreal_of_nonneg ha).cfcₙHom_eq_restrict _
-    isUniformEmbedding_subtype_val _ _
+      (cfcₙHom (IsSelfAdjoint.of_nonneg ha)) := by
+  apply (QuasispectrumRestricts.nnreal_of_nonneg ha).cfcₙHom_eq_restrict _
+    isUniformEmbedding_subtype_val
 
 lemma cfcₙ_nnreal_eq_real {a : A} (f : ℝ≥0 → ℝ≥0) (ha : 0 ≤ a := by cfc_tac)  :
     cfcₙ f a = cfcₙ (fun x ↦ f x.toNNReal : ℝ → ℝ) a := by
   replace ha : 0 ≤ a := ha -- hack to avoid issues caused by autoParam
-  exact (QuasispectrumRestricts.nnreal_of_nonneg ha).cfcₙ_eq_restrict _
-    isUniformEmbedding_subtype_val ha (.of_nonneg ha) _
+  apply (QuasispectrumRestricts.nnreal_of_nonneg ha).cfcₙ_eq_restrict _
+    isUniformEmbedding_subtype_val ha (.of_nonneg ha)
 
 end NNRealEqRealNonUnital
 
