@@ -151,7 +151,7 @@ lemma ContMDiffWithinAt.clm_apply_of_inCoordinates
     apply (trivializationAt F₂ E₂ (b₂ m₀)).open_baseSet.mem_nhds
     exact FiberBundle.mem_baseSet_trivializationAt' (b₂ m₀)
   filter_upwards [A, A'] with m hm h'm
-  rw [inCoordinates_eq _ _ _ _ _ _ _ hm h'm]
+  rw [inCoordinates_eq hm h'm]
   simp only [coe_comp', ContinuousLinearEquiv.coe_coe, Trivialization.continuousLinearEquivAt_apply,
     Trivialization.continuousLinearEquivAt_symm_apply, Function.comp_apply]
   congr

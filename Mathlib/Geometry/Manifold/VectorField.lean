@@ -69,6 +69,47 @@ theorem IsInvertible.contDiffAt_map_inverse {E F : Type*} [NormedAddCommGroup E]
   rcases he with ⟨M, rfl⟩
   exact _root_.contDiffAt_map_inverse M
 
+lemma inverse_of_not_isInvertible {f : E →L[𝕜] F} (hf : ¬ f.IsInvertible) : f.inverse = 0 :=
+  inverse_non_equiv _ hf
+
+@[simp] lemma isInvertible_equiv_comp {e : F ≃L[𝕜] G} {f : E →L[𝕜] F} :
+    ((e : F →L[𝕜] G) ∘L f).IsInvertible ↔ f.IsInvertible := by
+  constructor
+  · rintro ⟨M, hM⟩
+    have : f = e.symm ∘L ((e : F →L[𝕜] G) ∘L f) := by ext; simp
+    rw [this, ← hM]
+    simp
+  · rintro ⟨M, rfl⟩
+    simp
+
+@[simp] lemma isInvertible_comp_equiv {e : G ≃L[𝕜] E} {f : E →L[𝕜] F} :
+    (f ∘L (e : G →L[𝕜] E)).IsInvertible ↔ f.IsInvertible := by
+  constructor
+  · rintro ⟨M, hM⟩
+    have : f = (f ∘L (e : G →L[𝕜] E)) ∘L e.symm := by ext; simp
+    rw [this, ← hM]
+    simp
+  · rintro ⟨M, rfl⟩
+    simp
+
+@[simp] lemma inverse_equiv_comp {e : F ≃L[𝕜] G} {f : E →L[𝕜] F} :
+    (e ∘L f).inverse = f.inverse ∘L (e.symm : G →L[𝕜] F) := by
+  by_cases hf : f.IsInvertible
+  · rcases hf with ⟨M, rfl⟩
+    simp only [ContinuousLinearEquiv.comp_coe, inverse_equiv, ContinuousLinearEquiv.coe_inj]
+    rfl
+  · rw [inverse_of_not_isInvertible (by simp [hf]), inverse_of_not_isInvertible hf]
+    rfl
+
+@[simp] lemma inverse_comp_equiv {e : G ≃L[𝕜] E} {f : E →L[𝕜] F} :
+    (f ∘L e).inverse = (e.symm : E →L[𝕜] G) ∘L f.inverse := by
+  by_cases hf : f.IsInvertible
+  · rcases hf with ⟨M, rfl⟩
+    simp only [ContinuousLinearEquiv.comp_coe, inverse_equiv, ContinuousLinearEquiv.coe_inj]
+    rfl
+  · rw [inverse_of_not_isInvertible (by simp [hf]), inverse_of_not_isInvertible hf]
+    simp
+
 end ContinuousLinearMap
 
 
@@ -551,60 +592,60 @@ lemma ContMDiffWithinAt.mpullbackWithin [CompleteSpace E] {t : Set M'}
     (hst : MapsTo f s t) (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) :
     ContMDiffWithinAt I I.tangent 1
       (fun (y : M) ↦ (mpullbackWithin I I' f V s y : TangentBundle I M)) s x₀ := by
-  -- b₁ = f, b₂ = id
+  /- We want to apply the general theorem `ContMDiffWithinAt.clm_apply_of_inCoordinates`, stating
+  that applying linear maps to vector fields gives a smooth result when the linear map and the
+  vector field are smooth. This theorem is general, we will apply it to
+  `b₁ = f`, `b₂ = id`, `v = V ∘ f`, `ϕ = (mfderivWithin I I' f s x).inverse`-/
   let b₁ := f
   let b₂ : M → M := id
   let v : Π (x : M), TangentSpace I' (f x) := V ∘ f
   let ϕ : Π (x : M), TangentSpace I' (f x) →L[𝕜] TangentSpace I x :=
     fun x ↦ (mfderivWithin I I' f s x).inverse
-  have hϕ : ContMDiffWithinAt I 𝓘(𝕜, E' →L[𝕜] E) 1
-      (fun (x : M) ↦ ContinuousLinearMap.inCoordinates
-        E' (TangentSpace I' (M := M')) E (TangentSpace I (M := M))
-        (b₁ x₀) (b₁ x) (b₂ x₀) (b₂ x) (ϕ x)) s x₀ := by
-    have : ContMDiffWithinAt I 𝓘(𝕜, E →L[𝕜] E') 1
-        (fun (x : M) ↦ ContinuousLinearMap.inCoordinates
-          E (TangentSpace I (M := M)) E' (TangentSpace I' (M := M'))
-          x₀ x (f x₀) (f x) (mfderivWithin I I' f s x)) s x₀ :=
-      hf.mfderivWithin_const le_rfl hx₀ hs
-    have : ContMDiffWithinAt I 𝓘(𝕜, E' →L[𝕜] E) 1
-        (ContinuousLinearMap.inverse ∘ (fun (x : M) ↦ ContinuousLinearMap.inCoordinates
-          E (TangentSpace I (M := M)) E' (TangentSpace I' (M := M'))
-          x₀ x (f x₀) (f x) (mfderivWithin I I' f s x))) s x₀ := by
-      apply ContMDiffAt.comp_contMDiffWithinAt _ _ this
-      apply ContDiffAt.contMDiffAt
-      apply IsInvertible.contDiffAt_map_inverse
-      rw [inCoordinates_eq _ _ _ _ _ _ _ (FiberBundle.mem_baseSet_trivializationAt' x₀)
-        (FiberBundle.mem_baseSet_trivializationAt' (f x₀))]
-      exact isInvertible_equiv.comp (hf'.comp isInvertible_equiv)
-    apply this.congr_of_eventuallyEq
-    filter_upwards [] with x
-    simp
-    rw [inCoordinates_eq, inCoordinates_eq]
-
-
-
-
-
-
-
-
-
   have hv : ContMDiffWithinAt I I'.tangent 1 (fun m ↦ (v m : TangentBundle I' M')) s x₀ :=
     hV.comp x₀ (hf.of_le one_le_two) hst
-  exact ContMDiffWithinAt.clm_apply_of_inCoordinates hϕ hv contMDiffWithinAt_id
-
-
-
-
-
-
-
-
-
-
-
-#exit
-
+  /- The only nontrivial fact, from which the conclusion follows, is
+  that `ϕ` depends smoothly on `x`. -/
+  suffices hϕ : ContMDiffWithinAt I 𝓘(𝕜, E' →L[𝕜] E) 1
+      (fun (x : M) ↦ ContinuousLinearMap.inCoordinates
+        E' (TangentSpace I' (M := M')) E (TangentSpace I (M := M))
+        (b₁ x₀) (b₁ x) (b₂ x₀) (b₂ x) (ϕ x)) s x₀ from
+    ContMDiffWithinAt.clm_apply_of_inCoordinates hϕ hv contMDiffWithinAt_id
+  /- To prove that `ϕ` depends smoothly on `x`, we use that the derivative depends smoothly on `x`
+  (this is `ContMDiffWithinAt.mfderivWithin_const`), and that taking the inverse is a smooth
+  operation at an invertible map. -/
+  -- the derivative in coordinates depends smoothly on the point
+  have : ContMDiffWithinAt I 𝓘(𝕜, E →L[𝕜] E') 1
+      (fun (x : M) ↦ ContinuousLinearMap.inCoordinates
+        E (TangentSpace I (M := M)) E' (TangentSpace I' (M := M'))
+        x₀ x (f x₀) (f x) (mfderivWithin I I' f s x)) s x₀ :=
+    hf.mfderivWithin_const le_rfl hx₀ hs
+  -- therefore, its inverse in coordinates also depends smoothly on the point
+  have : ContMDiffWithinAt I 𝓘(𝕜, E' →L[𝕜] E) 1
+      (ContinuousLinearMap.inverse ∘ (fun (x : M) ↦ ContinuousLinearMap.inCoordinates
+        E (TangentSpace I (M := M)) E' (TangentSpace I' (M := M'))
+        x₀ x (f x₀) (f x) (mfderivWithin I I' f s x))) s x₀ := by
+    apply ContMDiffAt.comp_contMDiffWithinAt _ _ this
+    apply ContDiffAt.contMDiffAt
+    apply IsInvertible.contDiffAt_map_inverse
+    rw [inCoordinates_eq (FiberBundle.mem_baseSet_trivializationAt' x₀)
+      (FiberBundle.mem_baseSet_trivializationAt' (f x₀))]
+    exact isInvertible_equiv.comp (hf'.comp isInvertible_equiv)
+  -- the inverse in coordinates coincides with the in-coordinate version of the inverse,
+  -- therefore the previous point gives the conclusion
+  apply this.congr_of_eventuallyEq_of_mem _ hx₀
+  have A : (trivializationAt E (TangentSpace I) x₀).baseSet ∈ 𝓝[s] x₀ := by
+    apply nhdsWithin_le_nhds
+    apply (trivializationAt _ _ _).open_baseSet.mem_nhds
+    exact FiberBundle.mem_baseSet_trivializationAt' _
+  have B : f ⁻¹' (trivializationAt E' (TangentSpace I') (f x₀)).baseSet ∈ 𝓝[s] x₀ := by
+    apply hf.continuousWithinAt.preimage_mem_nhdsWithin
+    apply (trivializationAt _ _ _).open_baseSet.mem_nhds
+    exact FiberBundle.mem_baseSet_trivializationAt' _
+  filter_upwards [A, B] with x hx h'x
+  simp only [Function.comp_apply]
+  rw [inCoordinates_eq hx h'x, inCoordinates_eq h'x (by exact hx)]
+  simp only [inverse_equiv_comp, inverse_comp_equiv, ContinuousLinearEquiv.symm_symm, ϕ]
+  rfl
 
 lemma ContMDiffWithinAt.clm_apply_of_inCoordinates
     (hϕ : ContMDiffWithinAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂) n
