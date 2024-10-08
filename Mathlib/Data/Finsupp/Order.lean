@@ -43,7 +43,6 @@ lemma sum_le_sum (h : ∀ i ∈ f.support, h₁ i (f i) ≤ h₂ i (f i)) : f.su
 
 end OrderedAddCommMonoid
 
-
 section LE
 variable [LE α] {f g : ι →₀ α}
 
@@ -150,7 +149,7 @@ end Zero
 /-! ### Algebraic order structures -/
 
 section OrderedAddCommMonoid
-variable [OrderedAddCommMonoid α] {i : ι} {a b : α} {f : ι → κ} {g g₁ g₂ : ι →₀ α}
+variable [OrderedAddCommMonoid α] {i : ι} {f : ι → κ} {g g₁ g₂ : ι →₀ α}
 
 instance orderedAddCommMonoid : OrderedAddCommMonoid (ι →₀ α) :=
   { Finsupp.instAddCommMonoid, Finsupp.partialorder with
