@@ -28,7 +28,6 @@ API to produce `IsSifted` instances.
 - `IsSiftedOfIsFiltered`: A filtered category is sifted.
 - `IsSiftedOfHasBinaryCoproductsAndNonempty`: A nonempty category with binary copreducts is sifted.
 -/
-
 noncomputable section
 
 universe w v v₁ u u₁
@@ -103,7 +102,9 @@ instance [HasBinaryCoproducts C] : IsSiftedOrEmpty C where
     use [StructuredArrow.mk
         ((coprod.inl : c₁ ⟶ c₁ ⨿ c₂), (coprod.inr : c₂ ⟶ c₁ ⨿ c₂)),
       StructuredArrow.mk (g.fst, g.snd)]
-    simp
+    simp only [colimit.cocone_x, diag_obj, Prod.mk.eta, List.chain_cons, List.Chain.nil, and_true,
+      ne_eq, reduceCtorEq, not_false_eq_true, List.getLast_cons, List.cons_ne_self,
+      List.getLast_singleton]
     constructor
     · constructor
       · exact Zag.of_inv <|StructuredArrow.homMk <|coprod.desc f.fst f.snd
@@ -158,7 +159,7 @@ private def preservesColimTensLeftType {E : Type u} : PreservesColimits (tensorL
     NatIso.ofComponents (fun c ↦ by
       refine limit.isoLimitCone (chosenprods.product E c))
       (by intro a b f
-          simp
+          simp only [prod.functor_obj_obj, tensorLeft_obj, prod.functor_obj_map, tensorLeft_map]
           apply ChosenFiniteProducts.hom_ext <;>
           rw [Category.assoc] <;> erw [Limits.limit.isoLimitCone_hom_π]
           · simp only [prod.map_fst, Category.comp_id, Category.assoc,
@@ -192,9 +193,9 @@ private def colimBoxIsoColimTensColim : colimit (X ⊠ Y) ≅ (colimit X) ⊗ (c
       HasColimit.isoOfNatIso (preservesColimitIso (tensorRight Y) (X ⋙ const C)).symm
     _ ≅ colimit <|(const C ⋙ tensorRight Y).obj (colimit X) :=
       HasColimit.isoOfNatIso <| (tensorRight Y).mapIso (preservesColimitIso (const C) X).symm
-    _ ≅ colimit <|Y ⋙ (tensorLeft (colimit X)) :=
-      by apply HasColimit.isoOfNatIso
-         exact NatIso.ofComponents (fun _ ↦ Iso.refl _)
+    _ ≅ colimit <|Y ⋙ (tensorLeft (colimit X)) := by
+      apply HasColimit.isoOfNatIso
+      exact NatIso.ofComponents (fun _ ↦ Iso.refl _)
     _ ≅ (tensorLeft (colimit X)).obj (colimit Y) :=
       preservesColimitIso (tensorLeft (colimit X)) Y|>.symm
 
@@ -208,20 +209,19 @@ private lemma factorisationProdComparisonColim :
       (HasColimit.isoOfNatIso diagCompExternalProduct).hom ≫ colimit.pre _ _ ≫
         (colimBoxIsoColimTensColim X Y).hom ≫ (tensorProdToProdIso _ _).hom =
           prodComparison colim X Y := by
-  apply colimit.hom_ext ; intro c;
+  apply colimit.hom_ext; intro c;
   -- First, we "bubble down" the maps to the colimits as much as we can
   dsimp [colimBoxIsoColimTensColim]
-  simp? says simp only [Category.assoc, HasColimit.isoOfNatIso_ι_inv_assoc, Monoidal.tensorObj_obj,
+  simp only [Category.assoc, HasColimit.isoOfNatIso_ι_inv_assoc, Monoidal.tensorObj_obj,
     tensorProdToProdIso_inv, HasColimit.isoOfNatIso_ι_hom_assoc, comp_obj, diag_obj,
-    externalProductFunctor_obj_obj, colimit.ι_pre_assoc, limit.isoLimitCone_inv_π,
-    colimitIsoColimitCurryCompColim_ι_hom_assoc]
+    externalProductFunctor_obj_obj, NatIso.ofComponents_hom_app, Iso.refl_hom, colimit.ι_pre_assoc,
+    Category.id_comp]
   erw [colimitIsoColimitCurryCompColim_ι_hom_assoc]
-  simp? says simp only [externalProductFunctor_obj_obj, HasColimit.isoOfNatIso_ι_hom_assoc,
-    comp_obj, colim_obj, tensorRight_obj, isoWhiskerRight_hom, whiskerRight_app,
-    NatIso.ofComponents_hom_app, colim_map, ι_preservesColimitsIso_inv_assoc, ι_colimMap_assoc,
-    curry_obj_obj_obj, Monoidal.tensorObj_obj, const_obj_obj, Iso.refl_hom, Iso.symm_hom,
-    mapIso_inv, tensorRight_map, Monoidal.whiskerRight_app, tensorLeft_obj,
-    tensorLeft_map, Category.id_comp]
+  simp only [externalProductFunctor_obj_obj, HasColimit.isoOfNatIso_ι_hom_assoc, comp_obj,
+    colim_obj, tensorRight_obj, isoWhiskerRight_hom, whiskerRight_app, NatIso.ofComponents_hom_app,
+    colim_map, ι_preservesColimitsIso_inv_assoc, ι_colimMap_assoc, curry_obj_obj_obj,
+    Monoidal.tensorObj_obj, const_obj_obj, Iso.refl_hom, Iso.symm_hom, mapIso_inv, tensorRight_map,
+    Monoidal.whiskerRight_app, tensorLeft_obj, tensorLeft_map, Category.id_comp]
   slice_lhs 2 3 => rw [← NatTrans.vcomp_app, NatTrans.vcomp_eq_comp, ι_preservesColimitsIso_inv]
   simp only [comp_obj, tensorRight_map, Monoidal.whiskerRight_app, ← comp_whiskerRight,
     const_obj_obj, Category.assoc]
@@ -293,7 +293,7 @@ open Opposite in
 /-- If the `colim` functor `(C ⥤ Type) ⥤ Type` preserves binary products, then `C` is sifted or
 empty. -/
 theorem IsSiftedOrEmptyOfColimitPreservesBinaryProducts
-  [PreservesLimitsOfShape (Discrete WalkingPair) (colim : (C ⥤ _) ⥤ Type u)] :
+    [PreservesLimitsOfShape (Discrete WalkingPair) (colim : (C ⥤ _) ⥤ Type u)] :
     IsSiftedOrEmpty C := by
   constructor
   apply cofinal_of_colimit_comp_coyoneda_iso_pUnit
@@ -323,8 +323,8 @@ lemma NonemptyOfColimitPreservesLimitsOfShapeFinZero
   suffices connected : IsConnected C by infer_instance
   rw [Types.isConnected_iff_colimit_constPUnitFunctor_iso_pUnit]
   constructor
-  haveI : PreservesLimitsOfShape (Discrete PEmpty) (colim : (C ⥤ _) ⥤ Type u)
-    := preservesLimitsOfShapeOfEquiv (Discrete.equivalence finZeroEquiv') _
+  haveI : PreservesLimitsOfShape (Discrete PEmpty) (colim : (C ⥤ _) ⥤ Type u) :=
+    preservesLimitsOfShapeOfEquiv (Discrete.equivalence finZeroEquiv') _
   apply HasColimit.isoOfNatIso (_: Types.constPUnitFunctor C ≅ (⊤_ (C ⥤ Type u)))|>.trans
   · apply PreservesTerminal.iso colim|>.trans
     exact Types.terminalIso
