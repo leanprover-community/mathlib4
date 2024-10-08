@@ -20,7 +20,7 @@ This file concerns the canonical homomorphism `ℕ → F`, where `F` is a field.
 -/
 
 
-open scoped AlgebraOrderInstances
+-- open scoped AlgebraOrderInstances
 
 namespace Nat
 

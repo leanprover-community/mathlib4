@@ -28,7 +28,7 @@ Related files are:
 
 assert_not_exists Monoid
 
-open scoped AlgebraOrderInstances
+-- open scoped AlgebraOrderInstances
 
 variable {ι : Type*} {β : ι → Type*} (r : ι → ι → Prop) (s : ∀ {i}, β i → β i → Prop)
 

@@ -16,7 +16,7 @@ import Mathlib.Order.Hom.Basic
 
 assert_not_exists OrderedCommMonoid
 
-open scoped AlgebraOrderInstances
+-- open scoped AlgebraOrderInstances
 
 variable {α β : Type*}
 
