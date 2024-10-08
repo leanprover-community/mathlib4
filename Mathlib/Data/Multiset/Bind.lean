@@ -22,7 +22,7 @@ This file defines a few basic operations on `Multiset`, notably the monadic bind
 assert_not_exists MonoidWithZero
 assert_not_exists MulAction
 
-open scoped AlgebraOrderInstances
+-- open scoped AlgebraOrderInstances
 
 universe v
 
