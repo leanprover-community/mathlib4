@@ -108,9 +108,7 @@ lemma ideal_trichotomy [DivisionRing K] (I : Ideal K[ε]) :
   have hd' : ∀ x ∈ I, x ≠ 0 → ∃ r, ε = r * x := by
     intro x hxI hx0
     obtain ⟨r, rfl⟩ := hd _ hxI
-    have : ε * r = (fst r) • ε := by
-      rw [← inl_fst_add_inr_snd_eq r]
-      simp [TrivSqZeroExt.ext_iff]
+    have : ε * r = (fst r) • ε := by ext <;> simp
     rw [this] at hxI hx0 ⊢
     have hr : fst r ≠ 0 := by
       contrapose! hx0
