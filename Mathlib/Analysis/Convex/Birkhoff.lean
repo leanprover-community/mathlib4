@@ -19,6 +19,8 @@ import Mathlib.Tactic.Linarith
   combination of permutation matrices.
 * `doublyStochastic_eq_convexHull_perm`: The set of doubly stochastic matrices is the convex hull
   of the permutation matrices.
+* `extremePoints_doublyStochastic`: The set of extreme points of the doubly stochastic matrices is
+  the set of permutation matrices.
 
 ## TODO
 
@@ -178,21 +180,13 @@ theorem extremePoints_doublyStochastic :
   · rw [doublyStochastic_eq_convexHull_permMatrix]
     exact extremePoints_convexHull_subset
   rintro _ ⟨σ, rfl⟩
-  rw [mem_extremePoints]
-  refine ⟨permMatrix_mem_doublyStochastic, ?_⟩
-  intro x₁ hx₁ x₂ hx₂ hσ
+  refine ⟨permMatrix_mem_doublyStochastic, fun x₁ hx₁ x₂ hx₂ hσ ↦ ?_⟩
   suffices ∀ i j : n, x₁ i j = x₂ i j by
     obtain rfl : x₁ = x₂ := by simpa [← Matrix.ext_iff]
     simp_all
   intro i j
-  have h₁ : Equiv.Perm.permMatrix R σ i j ∈ openSegment R (x₁ i j) (x₂ i j) := by
-    let eval : Matrix n n R →ₗ[R] R :=
-      { toFun := fun M => M i j,
-        map_add' := fun M N => rfl,
-        map_smul' := fun x M => rfl }
-    have : _ = openSegment R (x₁ i j) (x₂ i j) := image_openSegment _ eval.toAffineMap x₁ x₂
-    rw [← this, Set.mem_image]
-    exact ⟨_, hσ, rfl⟩
+  have h₁ : σ.permMatrix R i j ∈ openSegment R (x₁ i j) (x₂ i j) :=
+    image_openSegment _ (entryLinearMap R R i j).toAffineMap x₁ x₂ ▸ ⟨_, hσ, rfl⟩
   by_contra! h
   have h₂ : openSegment R (x₁ i j) (x₂ i j) ⊆ Set.Ioo 0 1 := by
     rw [openSegment_eq_Ioo' h]
