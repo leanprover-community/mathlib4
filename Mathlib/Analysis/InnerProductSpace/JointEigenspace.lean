@@ -71,7 +71,7 @@ theorem orthogonalFamily_iInf_eigenspaces
   intro f g hfg Ef Eg
   obtain ⟨a , ha⟩ := Function.ne_iff.mp hfg
   have H := (orthogonalFamily_eigenspaces (hT a) ha)
-  simp only [Submodule.coe_subtypeₗᵢ, Submodule.coeSubtype, Subtype.forall] at H
+  simp only [Submodule.coe_subtypeₗᵢ, Submodule.coe_subtype, Subtype.forall] at H
   apply H
   · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T _) (f _)).mp Ef.2 _
   · exact (Submodule.mem_iInf <| fun _ ↦ eigenspace (T _) (g _)).mp Eg.2 _
@@ -119,40 +119,20 @@ theorem iSup_eigenspace_restrict {F : Submodule 𝕜 E}
   have H : IsSymmetric (S.restrict hInv) := fun x y ↦ hS (F.subtype x) y
   apply orthogonal_eq_bot_iff.mp (H.orthogonalComplement_iSup_eigenspaces_eq_bot)
 
-/-- The orthocomplement of the indexed supremum of joint eigenspaces of a finite commuting tuple of
-symmetric operators is trivial. -/
-theorem orthogonalComplement_iSup_iInf_eigenspaces_eq_bot [Finite n]
-    (hT : ∀ i, (T i).IsSymmetric) (hC : ∀ i j, Commute (T i) (T j)) :
-    (⨆ γ : n → 𝕜, ⨅ j, eigenspace (T j) (γ j))ᗮ = ⊥ := by
-  have _ := Fintype.ofFinite n
-  revert T
-  change ∀ T, _
-  refine Fintype.induction_subsingleton_or_nontrivial n (fun m _ hhm T hT _ ↦ ?_)
-    (fun m hm hmm H T hT hC ↦ ?_)
-  · obtain (hm | hm) := isEmpty_or_nonempty m
-    · simp
-    · have := uniqueOfSubsingleton (Classical.choice hm)
-      simpa only [ciInf_unique, ← (Equiv.funUnique m 𝕜).symm.iSup_comp]
-        using hT default |>.orthogonalComplement_iSup_eigenspaces_eq_bot
-  · have i := Classical.arbitrary m
-    classical
-    specialize H {x // x ≠ i} (Fintype.card_subtype_lt (x := i) (by simp))
-      (Subtype.restrict (· ≠ i) T) (hT ·) (hC · ·)
-    simp only [Submodule.orthogonal_eq_bot_iff] at *
-    rw [← (Equiv.funSplitAt i 𝕜).symm.iSup_comp, iSup_prod, iSup_comm]
-    convert H with γ
-    rw [← iSup_eigenspace_restrict (T i) (hT i) (F := ⨅ j, eigenspace _ _)]
-    swap
-    · exact mapsTo_iInf_genEigenspace_of_forall_comm (fun j : {j // j ≠ i} ↦ hC j i) γ 1
-    congr! with μ
-    rw [← Module.End.genEigenspace_one, ← Submodule.inf_genEigenspace _ _ _ (k := 1), inf_comm,
-      iInf_split_single _ i, iInf_subtype]
-    congr! with x hx
-    · simp
-    · simp [dif_neg hx]
+/-- In finite dimensions, the indexed supremum of joint `maxGenEigenspaces` of a finite tuple of
+commuting operators equals `⊤` provided the indexed supremum of `maxGenEigenspaces` of each
+operator in the tuple equals `⊤`. -/
+theorem iSup_iInf_maxGenEigenspace_eq_top_of_iSup_maxGenEigenspace_eq_top_of_commute {ι K V : Type*}
+    [Field K] [AddCommGroup V] [Module K V] [FiniteDimensional K V]
+    (f : ι → Module.End K V) (h : Pairwise fun i j ↦ Commute (f i) (f j))
+    (h' : ∀ i, ⨆ μ, (f i).maxGenEigenspace μ = ⊤) :
+    ⨆ χ : ι → K, ⨅ i, (f i).maxGenEigenspace (χ i) = ⊤ := by
+  refine Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo _
+    (fun i j ↦ Module.End.mapsTo_maxGenEigenspace_of_comm ?_) h'
+  rcases eq_or_ne j i with rfl | hij <;> tauto
 
-/-- Given a finite commuting family of symmetric linear operators, the Hilbert space on which they
-act decomposes as an internal direct sum of simultaneous eigenspaces. -/
+/-- In finite dimensions, given a finite commuting family of symmetric linear operators, the inner
+product space on which they act decomposes as an internal direct sum of joint eigenspaces. -/
 theorem LinearMap.IsSymmetric.directSum_isInternal_of_commute_of_fintype [Finite n]
     [DecidableEq (n → 𝕜)] (hT :∀ i, (T i).IsSymmetric)
     (hC : ∀ i j, Commute (T i) (T j)) :
@@ -162,8 +142,6 @@ theorem LinearMap.IsSymmetric.directSum_isInternal_of_commute_of_fintype [Finite
   · exact orthogonalFamily_iInf_eigenspaces hT
 
 end RCLike
-
-open Module End
 
 end IsSymmetric
 
