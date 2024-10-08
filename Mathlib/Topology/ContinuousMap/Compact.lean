@@ -29,8 +29,8 @@ open NNReal BoundedContinuousFunction Set Metric
 
 namespace ContinuousMap
 
-variable {α β E : Type*} [TopologicalSpace α] [CompactSpace α] [MetricSpace β]
-  [NormedAddCommGroup E]
+variable {α β E : Type*}
+variable [TopologicalSpace α] [CompactSpace α] [PseudoMetricSpace β] [SeminormedAddCommGroup E]
 
 section
 
@@ -85,8 +85,13 @@ theorem addEquivBoundedOfCompact_apply [AddMonoid β] [LipschitzAdd β] :
     ⇑(addEquivBoundedOfCompact α β) = mkOfCompact :=
   rfl
 
-instance metricSpace : MetricSpace C(α, β) :=
+instance instPseudoMetricSpace : PseudoMetricSpace C(α, β) :=
+  (isUniformEmbedding_equivBoundedOfCompact α β).comapPseudoMetricSpace _
+
+instance instMetricSpace {β : Type*} [MetricSpace β] :
+    MetricSpace C(α, β) :=
   (isUniformEmbedding_equivBoundedOfCompact α β).comapMetricSpace _
+
 
 /-- When `α` is compact, and `β` is a metric space, the bounded continuous maps `α →ᵇ β` are
 isometric to `C(α, β)`.
@@ -136,6 +141,13 @@ theorem dist_lt_iff (C0 : (0 : ℝ) < C) : dist f g < C ↔ ∀ x : α, dist (f 
   rw [← dist_mkOfCompact, dist_lt_iff_of_compact C0]
   simp only [mkOfCompact_apply]
 
+instance {R} [Zero R] [Zero β] [PseudoMetricSpace R] [SMul R β] [BoundedSMul R β] :
+    BoundedSMul R C(α, β) where
+  dist_smul_pair' r f g := by
+    simpa only [← dist_mkOfCompact] using dist_smul_pair r (mkOfCompact f) (mkOfCompact g)
+  dist_pair_smul' r₁ r₂ f := by
+    simpa only [← dist_mkOfCompact] using dist_pair_smul r₁ r₂ (mkOfCompact f)
+
 end
 
 -- TODO at some point we will need lemmas characterising this norm!
@@ -153,13 +165,17 @@ theorem _root_.BoundedContinuousFunction.norm_toContinuousMap_eq (f : α →ᵇ 
 
 open BoundedContinuousFunction
 
-instance : NormedAddCommGroup C(α, E) :=
-  { ContinuousMap.metricSpace _ _,
-    ContinuousMap.instAddCommGroupContinuousMap with
-    dist_eq := fun x y => by
-      rw [← norm_mkOfCompact, ← dist_mkOfCompact, dist_eq_norm, mkOfCompact_sub]
-    dist := dist
-    norm := norm }
+instance : SeminormedAddCommGroup C(α, E) where
+  __ := ContinuousMap.instPseudoMetricSpace _ _
+  __ := ContinuousMap.instAddCommGroupContinuousMap
+  dist_eq x y := by
+    rw [← norm_mkOfCompact, ← dist_mkOfCompact, dist_eq_norm, mkOfCompact_sub]
+  dist := dist
+  norm := norm
+
+instance {E : Type*} [NormedAddCommGroup E] : NormedAddCommGroup C(α, E) where
+  __ : SeminormedAddCommGroup C(α, E) := inferInstance
+  __ : MetricSpace C(α, E) := inferInstance
 
 instance [Nonempty α] [One E] [NormOneClass E] : NormOneClass C(α, E) where
   norm_one := by simp only [← norm_mkOfCompact, mkOfCompact_one, norm_one]
@@ -218,11 +234,40 @@ end
 
 section
 
-variable {R : Type*} [NormedRing R]
+variable {R : Type*}
 
-instance : NormedRing C(α, R) :=
-  { (inferInstance : NormedAddCommGroup C(α, R)), ContinuousMap.instRing with
-    norm_mul := fun f g => norm_mul_le (mkOfCompact f) (mkOfCompact g) }
+instance [NonUnitalSeminormedRing R] : NonUnitalSeminormedRing C(α, R) where
+  __ : SeminormedAddCommGroup C(α, R) := inferInstance
+  __ : NonUnitalRing C(α, R) := inferInstance
+  norm_mul f g := norm_mul_le (mkOfCompact f) (mkOfCompact g)
+
+instance [NonUnitalSeminormedCommRing R] : NonUnitalSeminormedCommRing C(α, R) where
+  __ : NonUnitalSeminormedRing C(α, R) := inferInstance
+  __ : NonUnitalCommRing C(α, R) := inferInstance
+
+instance [SeminormedRing R] : SeminormedRing C(α, R) where
+  __ : NonUnitalSeminormedRing C(α, R) := inferInstance
+  __ : Ring C(α, R) := inferInstance
+
+instance [SeminormedCommRing R] : SeminormedCommRing C(α, R) where
+  __ : SeminormedRing C(α, R) := inferInstance
+  __ : CommRing C(α, R) := inferInstance
+
+instance [NonUnitalNormedRing R] : NonUnitalNormedRing C(α, R) where
+  __ : NormedAddCommGroup C(α, R) := inferInstance
+  __ : NonUnitalSeminormedRing C(α, R) := inferInstance
+
+instance [NonUnitalNormedCommRing R] : NonUnitalNormedCommRing C(α, R) where
+  __ : NonUnitalNormedRing C(α, R) := inferInstance
+  __ : NonUnitalCommRing C(α, R) := inferInstance
+
+instance [NormedRing R] : NormedRing C(α, R) where
+  __ : NormedAddCommGroup C(α, R) := inferInstance
+  __ : SeminormedRing C(α, R) := inferInstance
+
+instance [NormedCommRing R] : NormedCommRing C(α, R) where
+  __ : NormedRing C(α, R) := inferInstance
+  __ : CommRing C(α, R) := inferInstance
 
 end
 
@@ -231,7 +276,7 @@ section
 variable {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 E]
 
 instance normedSpace : NormedSpace 𝕜 C(α, E) where
-  norm_smul_le c f := (norm_smul_le c (mkOfCompact f) : _)
+  norm_smul_le := norm_smul_le
 
 section
 
@@ -290,7 +335,7 @@ end
 
 section
 
-variable {𝕜 : Type*} {γ : Type*} [NormedField 𝕜] [NormedRing γ] [NormedAlgebra 𝕜 γ]
+variable {𝕜 : Type*} {γ : Type*} [NormedField 𝕜] [SeminormedRing γ] [NormedAlgebra 𝕜 γ]
 
 instance : NormedAlgebra 𝕜 C(α, γ) :=
   { ContinuousMap.normedSpace, ContinuousMap.algebra with }
@@ -304,7 +349,7 @@ namespace ContinuousMap
 section UniformContinuity
 
 variable {α β : Type*}
-variable [MetricSpace α] [CompactSpace α] [MetricSpace β]
+variable [PseudoMetricSpace α] [CompactSpace α] [PseudoMetricSpace β]
 
 /-!
 We now set up some declarations making it convenient to use uniform continuity.
@@ -338,7 +383,7 @@ section CompLeft
 variable (X : Type*) {𝕜 β γ : Type*} [TopologicalSpace X] [CompactSpace X]
   [NontriviallyNormedField 𝕜]
 
-variable [NormedAddCommGroup β] [NormedSpace 𝕜 β] [NormedAddCommGroup γ] [NormedSpace 𝕜 γ]
+variable [SeminormedAddCommGroup β] [NormedSpace 𝕜 β] [SeminormedAddCommGroup γ] [NormedSpace 𝕜 γ]
 
 open ContinuousMap
 
@@ -385,7 +430,8 @@ section CompRight
 /-- Precomposition by a continuous map is itself a continuous map between spaces of continuous maps.
 -/
 def compRightContinuousMap {X Y : Type*} (T : Type*) [TopologicalSpace X] [CompactSpace X]
-    [TopologicalSpace Y] [CompactSpace Y] [MetricSpace T] (f : C(X, Y)) : C(C(Y, T), C(X, T)) where
+    [TopologicalSpace Y] [CompactSpace Y] [PseudoMetricSpace T] (f : C(X, Y)) :
+    C(C(Y, T), C(X, T)) where
   toFun g := g.comp f
   continuous_toFun := by
     refine Metric.continuous_iff.mpr ?_
@@ -396,14 +442,15 @@ def compRightContinuousMap {X Y : Type*} (T : Type*) [TopologicalSpace X] [Compa
 
 @[simp]
 theorem compRightContinuousMap_apply {X Y : Type*} (T : Type*) [TopologicalSpace X]
-    [CompactSpace X] [TopologicalSpace Y] [CompactSpace Y] [MetricSpace T] (f : C(X, Y))
+    [CompactSpace X] [TopologicalSpace Y] [CompactSpace Y] [PseudoMetricSpace T] (f : C(X, Y))
     (g : C(Y, T)) : (compRightContinuousMap T f) g = g.comp f :=
   rfl
 
 /-- Precomposition by a homeomorphism is itself a homeomorphism between spaces of continuous maps.
 -/
 def compRightHomeomorph {X Y : Type*} (T : Type*) [TopologicalSpace X] [CompactSpace X]
-    [TopologicalSpace Y] [CompactSpace Y] [MetricSpace T] (f : X ≃ₜ Y) : C(Y, T) ≃ₜ C(X, T) where
+    [TopologicalSpace Y] [CompactSpace Y] [PseudoMetricSpace T] (f : X ≃ₜ Y) :
+    C(Y, T) ≃ₜ C(X, T) where
   toFun := compRightContinuousMap T f.toContinuousMap
   invFun := compRightContinuousMap T f.symm.toContinuousMap
   left_inv g := ext fun _ => congr_arg g (f.apply_symm_apply _)
@@ -411,7 +458,7 @@ def compRightHomeomorph {X Y : Type*} (T : Type*) [TopologicalSpace X] [CompactS
 
 theorem compRightAlgHom_continuous {X Y : Type*} (R A : Type*) [TopologicalSpace X]
     [CompactSpace X] [TopologicalSpace Y] [CompactSpace Y] [CommSemiring R] [Semiring A]
-    [MetricSpace A] [TopologicalSemiring A] [Algebra R A] (f : C(X, Y)) :
+    [PseudoMetricSpace A] [TopologicalSemiring A] [Algebra R A] (f : C(X, Y)) :
     Continuous (compRightAlgHom R A f) :=
   map_continuous (compRightContinuousMap A f)
 
@@ -460,7 +507,7 @@ Furthermore, if `α` is compact and `β` is a C⋆-ring, then `C(α, β)` is a C
 section NormedSpace
 
 variable {α : Type*} {β : Type*}
-variable [TopologicalSpace α] [NormedAddCommGroup β] [StarAddMonoid β] [NormedStarGroup β]
+variable [TopologicalSpace α] [SeminormedAddCommGroup β] [StarAddMonoid β] [NormedStarGroup β]
 
 theorem _root_.BoundedContinuousFunction.mkOfCompact_star [CompactSpace α] (f : C(α, β)) :
     mkOfCompact (star f) = star (mkOfCompact f) :=
@@ -476,7 +523,7 @@ end NormedSpace
 section CStarRing
 
 variable {α : Type*} {β : Type*}
-variable [TopologicalSpace α] [NormedRing β] [StarRing β]
+variable [TopologicalSpace α] [NonUnitalNormedRing β] [StarRing β]
 
 instance [CompactSpace α] [CStarRing β] : CStarRing C(α, β) where
   norm_mul_self_le f := by
