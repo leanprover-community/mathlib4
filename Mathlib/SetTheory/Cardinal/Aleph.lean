@@ -185,7 +185,7 @@ theorem aleph'_limit {o : Ordinal} (ho : o.IsLimit) : aleph' o = ⨆ a : Iio o, 
 @[simp]
 theorem aleph'_omega : aleph' ω = ℵ₀ :=
   eq_of_forall_ge_iff fun c => by
-    simp only [aleph'_le_of_limit omega_isLimit, lt_omega, exists_imp, aleph0_le]
+    simp only [aleph'_le_of_limit omega0_isLimit, lt_omega0, exists_imp, aleph0_le]
     exact forall_swap.trans (forall_congr' fun n => by simp only [forall_eq, aleph'_nat])
 
 set_option linter.deprecated false in
@@ -230,7 +230,7 @@ theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : aleph o = ⨆ a : Iio o, al
     refine ciSup_mono' (bddAbove_of_small _) ?_
     rintro ⟨i, hi⟩
     cases' lt_or_le i ω with h h
-    · rcases lt_omega.1 h with ⟨n, rfl⟩
+    · rcases lt_omega0.1 h with ⟨n, rfl⟩
       use ⟨0, ho.pos⟩
       simpa using (nat_lt_aleph0 n).le
     · exact ⟨⟨_, (sub_lt_of_le h).2 hi⟩, aleph'_le.2 (le_add_sub _ _)⟩
