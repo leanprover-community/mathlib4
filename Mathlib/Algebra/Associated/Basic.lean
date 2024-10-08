@@ -308,7 +308,7 @@ theorem Irreducible.map {x : M} (h : Irreducible x) : Irreducible (f x) :=
 
 theorem MulEquiv.irreducible_iff (f : F) {a : M} :
     Irreducible (f a) ↔ Irreducible a :=
-  ⟨Irreducible.of_map f, Irreducible.map f⟩
+  ⟨Irreducible.of_map, Irreducible.map f⟩
 
 end
 
