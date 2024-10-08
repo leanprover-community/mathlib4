@@ -131,6 +131,26 @@ theorem iSup_iInf_maxGenEigenspace_eq_top_of_iSup_maxGenEigenspace_eq_top_of_com
     (fun i j ↦ Module.End.mapsTo_maxGenEigenspace_of_comm ?_) h'
   rcases eq_or_ne j i with rfl | hij <;> tauto
 
+/-- Every generalized eigenspace of a symmetric operator is an eigenspace. -/
+theorem LinearMap.IsSymmetric.genEigenspace_eq_eigenspace
+    {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) {n : ℕ} {μ : 𝕜} (hn : 1 ≤ n) :
+    genEigenspace T μ n = genEigenspace T μ 1 := by
+  refine Nat.le_induction rfl (fun k hk ih ↦ ?_) n hn
+  refine ih ▸ le_antisymm (fun x hx ↦ ?_) ((genEigenspace T μ).mono k.le_succ)
+  obtain (rfl | hx_ne) := eq_or_ne x 0
+  · exact zero_mem _
+  · have hμ : HasEigenvalue T μ := hasEigenvalue_of_hasGenEigenvalue (k := k + 1) <|
+      (genEigenspace T μ (k + 1)).ne_bot_iff.mpr ⟨x, hx, hx_ne⟩
+    have hT' := LinearMap.isSymmetric_iff_isSelfAdjoint T |>.mp hT
+    have hTμ : ((T - μ • 1) ^ k).IsSymmetric  := by
+      rw [LinearMap.isSymmetric_iff_isSelfAdjoint]
+      refine .pow (hT'.sub (.smul ?_ ?_)) k
+      · exact hT.conj_eigenvalue_eq_self hμ
+      · exact (LinearMap.isSymmetric_iff_isSelfAdjoint 1).mp LinearMap.IsSymmetric.id
+    rw [mem_genEigenspace, ← norm_eq_zero, ← sq_eq_zero_iff, norm_sq_eq_inner (𝕜 := 𝕜)]
+    rw [hTμ, ← LinearMap.comp_apply, ← LinearMap.mul_eq_comp, ← pow_add]
+    simp [mem_genEigenspace .. |>.mp <| (genEigenspace T μ).mono (show k + 1 ≤ k + k by gcongr) hx]
+
 /-- In finite dimensions, given a finite commuting family of symmetric linear operators, the inner
 product space on which they act decomposes as an internal direct sum of joint eigenspaces. -/
 theorem LinearMap.IsSymmetric.directSum_isInternal_of_commute_of_fintype [Finite n]
