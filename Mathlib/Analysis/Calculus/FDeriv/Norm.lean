@@ -20,8 +20,6 @@ at `t • x` when `t ≠ 0`.
   at `x`, then so it is at `t • x` when `t ≠ 0`.
 * `differentiableAt_norm_smul`: If `t ≠ 0`, the norm is differentiable at `x` if and only if
   it is at `t • x`.
-* `HasStrictFDerivAt.hasStrictFDerivAt_norm_smul`: If the norm has a strict Fréchet derivative
-  `f` at `x` and `t ≠ 0`, then it has `(SignType t) • f` as a strict Fréchet derivative at `t · x`.
 * `HasFDerivAt.hasFDerivAt_norm_smul`: If the norm has a Fréchet derivative `f` at `x` and `t ≠ 0`,
   then it has `(SignType t) • f` as a Fréchet derivative at `t · x`.
 * `fderiv_norm_smul` : `fderiv ℝ (‖·‖) (t • x) = (SignType.sign t : ℝ) • (fderiv ℝ (‖·‖) x)`,
