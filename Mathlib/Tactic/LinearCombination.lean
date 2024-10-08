@@ -120,10 +120,10 @@ def elabLinearCombination (tk : Syntax)
     match exp? with
     | some n =>
       if n.getNat = 1 then
-        `(``eq_of_add $p ?a)
+        `(eq_of_add $p ?a)
       else
         `(eq_of_add_pow $n $p ?a)
-    | _ => `(``eq_of_add $p ?a)
+    | _ => `(eq_of_add $p ?a)
   -- run the central `refine` in `linear_combination`
   Term.withoutErrToSorry <| Tactic.refineCore p' `refine false
   -- if we are in a "true" ring, with well-behaved negation, we rearrange from the form
