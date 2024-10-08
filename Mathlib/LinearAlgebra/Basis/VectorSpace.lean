@@ -3,7 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
-import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.LinearPMap
 import Mathlib.LinearAlgebra.Projection
@@ -42,13 +41,6 @@ open Submodule
 namespace Basis
 
 section ExistsBasis
-
-noncomputable instance [Module.Finite K (span K t)]
-    (hs : LinearIndependent K ((↑) : s → V)) (hst : s ⊆ t) :
-    Fintype (hs.extend hst) := by
-  refine Classical.choice (Cardinal.lt_aleph0_iff_fintype.1 ?_)
-  rw [← rank_span_set (hs.linearIndependent_extend hst), hs.span_extend_eq_span]
-  exact Module.rank_lt_aleph0 ..
 
 /-- If `s` is a linear independent set of vectors, we can extend it to a basis. -/
 noncomputable def extend (hs : LinearIndependent K ((↑) : s → V)) :
