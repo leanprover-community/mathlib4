@@ -148,9 +148,9 @@ def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.
   let copyright := (pieces.getD 0 "") ++ "\n-/"
   let stdText (s : String) :=
     s!"Malformed or missing copyright header: `{s}` should be alone on its own line."
-  let mut msgs := #[]
+  let mut output := #[]
   if (pieces.getD 1 "\n").take 1 != "\n" then
-    msgs := msgs.push (toSyntax copyright "-/", s!"{stdText "-/"}")
+    output := output.push (toSyntax copyright "-/", s!"{stdText "-/"}")
 
   let lines := copyright.splitOn "\n"
   let closeComment := lines.getLastD ""
@@ -158,34 +158,34 @@ def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.
   | openComment :: copyrightAuthor :: license :: authorsLines =>
     -- The header should start and end with blank comments.
     match openComment, closeComment with
-    | "/-", "-/" => msgs := msgs
+    | "/-", "-/" => output := output
     | "/-", _    =>
-      msgs := msgs.push (toSyntax copyright closeComment, s!"{stdText "-/"}")
+      output := output.push (toSyntax copyright closeComment, s!"{stdText "-/"}")
     | _, _       =>
-      msgs := msgs.push (toSyntax copyright openComment, s!"{stdText ("/".push '-')}")
+      output := output.push (toSyntax copyright openComment, s!"{stdText ("/".push '-')}")
     -- validate copyright author
     let copStart := "Copyright (c) 20"
     let copStop := ". All rights reserved."
     if !copyrightAuthor.startsWith copStart then
-      msgs := msgs.push
+      output := output.push
         (toSyntax copyright (copyrightAuthor.take copStart.length),
          s!"Copyright line should start with 'Copyright (c) YYYY'")
     if !copyrightAuthor.endsWith copStop then
-      msgs := msgs.push
+      output := output.push
         (toSyntax copyright (copyrightAuthor.takeRight copStop.length),
          s!"Copyright line should end with '. All rights reserved.'")
     -- validate authors
     let authorsLine := "\n".intercalate authorsLines.dropLast
     let authorsStart := (("\n".intercalate [openComment, copyrightAuthor, license, ""])).endPos
     for corr in authorsLineChecks authorsLine authorsStart do
-      msgs := msgs.push corr
+      output := output.push corr
     let expectedLicense := "Released under Apache 2.0 license as described in the file LICENSE."
     if license != expectedLicense then
-      msgs := msgs.push (toSyntax copyright license,
+      output := output.push (toSyntax copyright license,
         s!"Second copyright line should be \"{expectedLicense}\"")
   | _ =>
-    msgs := msgs.push (toSyntax copyright "-/", s!"Copyright too short!")
-  return msgs
+    output := output.push (toSyntax copyright "-/", s!"Copyright too short!")
+  return output
 
 /-- checks the `Syntax` `imports` for broad imports: either `Mathlib.Tactic` or any import
 starting with `Lake`. -/
