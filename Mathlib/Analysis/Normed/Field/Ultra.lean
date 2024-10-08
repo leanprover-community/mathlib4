@@ -6,7 +6,7 @@ Authors: Yakov Pechersky
 import Mathlib.Analysis.Normed.Ring.Ultra
 
 /-!
-## Sufficient contidition to have an ultrametric norm
+## Sufficient contidition to have an ultrametric norm on a field
 
 This file provides ways of constructing an instance of `IsUltrametricDist` based on
 facts about the existing norm.
