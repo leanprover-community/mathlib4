@@ -36,7 +36,8 @@ theorem LinearEquiv.isFiniteLength (e : M ≃ₗ[R] N)
     (h : IsFiniteLength R M) : IsFiniteLength R N := by
   induction' h with M _ _ _ M _ _ S _ _ ih generalizing N
   · have := e.symm.toEquiv.subsingleton; exact .of_subsingleton
-  · have := IsSimpleModule.congr (Submodule.Quotient.equiv S _ e rfl).symm
+  · have : IsSimpleModule R (N ⧸ Submodule.map (e : M →ₗ[R] N) S) :=
+      IsSimpleModule.congr (Submodule.Quotient.equiv S _ e rfl).symm
     exact .of_simple_quotient (ih <| e.submoduleMap S)
 
 variable (R M) in

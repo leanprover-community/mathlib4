@@ -443,3 +443,19 @@ instance instJordanHolderLattice : JordanHolderLattice (Submodule R M) where
   second_iso := second_iso
 
 end JordanHolderModule
+
+
+
+-- exists_setIndependent_of_sSup_atoms_eq_top
+-- IsSemisimpleModule.sSup_simples_eq_top
+
+-- CompleteLattice.IsCompactElement
+
+-- LinearMap.lsum
+-- DirectSum.isInternal_submodule_iff_independent_and_iSup_eq_top
+
+-- DirectSum.linearEquivFunOnFintype
+
+/-variable {M : ι → Type*} [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)] [∀ i, IsNoetherian R (M i)]
+
+instance isNoetherian_directSum : IsNoetherian R (DirectSum ι M) := by -/

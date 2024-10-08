@@ -125,8 +125,10 @@ instance (priority := 100) isArtinian_of_finite [Finite M] : IsArtinian R M :=
 -- Porting note: elab_as_elim can only be global and cannot be changed on an imported decl
 -- attribute [local elab_as_elim] Finite.induction_empty_option
 
-instance isArtinian_pi {R ι : Type*} [Finite ι] :
-    ∀ {M : ι → Type*} [Ring R] [∀ i, AddCommGroup (M i)]
+variable {ι : Type*} [Finite ι]
+
+instance isArtinian_pi :
+    ∀ {M : ι → Type*} [∀ i, AddCommGroup (M i)]
       [∀ i, Module R (M i)] [∀ i, IsArtinian R (M i)], IsArtinian R (∀ i, M i) := by
   apply Finite.induction_empty_option _ _ _ ι
   · exact fun e h ↦ isArtinian_of_linearEquiv (LinearEquiv.piCongrLeft R _ e)
@@ -136,13 +138,11 @@ instance isArtinian_pi {R ι : Type*} [Finite ι] :
 /-- A version of `isArtinian_pi` for non-dependent functions. We need this instance because
 sometimes Lean fails to apply the dependent version in non-dependent settings (e.g., it fails to
 prove that `ι → ℝ` is finite dimensional over `ℝ`). -/
-instance isArtinian_pi' {R ι M : Type*} [Ring R] [AddCommGroup M] [Module R M] [Finite ι]
-    [IsArtinian R M] : IsArtinian R (ι → M) :=
+instance isArtinian_pi' [IsArtinian R M] : IsArtinian R (ι → M) :=
   isArtinian_pi
 
 --porting note (#10754): new instance
-instance isArtinian_finsupp {R ι M : Type*} [Ring R] [AddCommGroup M] [Module R M] [Finite ι]
-    [IsArtinian R M] : IsArtinian R (ι →₀ M) :=
+instance isArtinian_finsupp [IsArtinian R M] : IsArtinian R (ι →₀ M) :=
   isArtinian_of_linearEquiv (Finsupp.linearEquivFunOnFinite _ _ _).symm
 
 end

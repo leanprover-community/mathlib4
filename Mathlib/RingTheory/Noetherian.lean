@@ -188,8 +188,10 @@ instance isNoetherian_prod [IsNoetherian R M] [IsNoetherian R P] : IsNoetherian 
         fun x ⟨_, hx2⟩ => ⟨x.1, Prod.ext rfl <| Eq.symm <| LinearMap.mem_ker.1 hx2⟩
       Submodule.map_comap_eq_self this ▸ (noetherian _).map _⟩
 
-instance isNoetherian_pi {R ι : Type*} [Finite ι] :
-    ∀ {M : ι → Type*} [Ring R] [∀ i, AddCommGroup (M i)]
+variable {ι : Type*} [Finite ι]
+
+instance isNoetherian_pi :
+    ∀ {M : ι → Type*} [∀ i, AddCommGroup (M i)]
       [∀ i, Module R (M i)] [∀ i, IsNoetherian R (M i)], IsNoetherian R (∀ i, M i) := by
   apply Finite.induction_empty_option _ _ _ ι
   · exact fun e h ↦ isNoetherian_of_linearEquiv (LinearEquiv.piCongrLeft R _ e)
@@ -199,8 +201,7 @@ instance isNoetherian_pi {R ι : Type*} [Finite ι] :
 /-- A version of `isNoetherian_pi` for non-dependent functions. We need this instance because
 sometimes Lean fails to apply the dependent version in non-dependent settings (e.g., it fails to
 prove that `ι → ℝ` is finite dimensional over `ℝ`). -/
-instance isNoetherian_pi' {R ι M : Type*} [Ring R] [AddCommGroup M] [Module R M] [Finite ι]
-    [IsNoetherian R M] : IsNoetherian R (ι → M) :=
+instance isNoetherian_pi' [IsNoetherian R M] : IsNoetherian R (ι → M) :=
   isNoetherian_pi
 
 end
