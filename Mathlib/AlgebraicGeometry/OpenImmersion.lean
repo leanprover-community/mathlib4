@@ -351,11 +351,11 @@ instance stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (x : X) 
 theorem iff_stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) :
     IsOpenImmersion f ↔ OpenEmbedding f.1.base ∧ ∀ x, IsIso (f.stalkMap x) :=
   ⟨fun H => ⟨H.1, fun x ↦ inferInstanceAs <| IsIso (f.val.stalkMap x)⟩,
-    fun ⟨h₁, h₂⟩ => @IsOpenImmersion.of_stalk_iso _ _ f h₁ h₂⟩
+    fun ⟨h, _⟩ => IsOpenImmersion.of_stalk_iso f h⟩
 
 theorem _root_.AlgebraicGeometry.isIso_iff_isOpenImmersion {X Y : Scheme.{u}} (f : X ⟶ Y) :
     IsIso f ↔ IsOpenImmersion f ∧ Epi f.1.base :=
-  ⟨fun _ => ⟨inferInstance, inferInstance⟩, fun ⟨h₁, h₂⟩ => @IsOpenImmersion.to_iso _ _ f h₁ h₂⟩
+  ⟨fun _ => ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ => IsOpenImmersion.to_iso f⟩
 
 theorem _root_.AlgebraicGeometry.isIso_iff_stalk_iso {X Y : Scheme.{u}} (f : X ⟶ Y) :
     IsIso f ↔ IsIso f.1.base ∧ ∀ x, IsIso (f.stalkMap x) := by
