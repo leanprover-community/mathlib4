@@ -185,7 +185,7 @@ def copyrightHeaderChecks (copyright : String) : Array (Syntax × String) := Id.
     output := output.push (toSyntax copyright "-/", s!"Copyright too short!")
   return output
 
-/-- checks the `Syntax` `imports` for broad imports: either `Mathlib.Tactic` or any import
+/-- Check the `Syntax` `imports` for broad imports: either `Mathlib.Tactic` or any import
 starting with `Lake`. -/
 def broadImportsCheck (imports : Array Syntax)  : Array (Syntax × String) := Id.run do
   let mut output := #[]
@@ -253,7 +253,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let (stx, _) ← Parser.parseHeader { input := fm.source, fileName := fil, fileMap := fm }
     parseUpToHere (stx.getTailPos?.getD default) "\nsection")
   let importIds := getImportIds upToStx
-  -- imports report
+  -- Report on broad or duplicate imports.
   for (imp, msg) in broadImportsCheck importIds do
     Linter.logLint linter.style.header imp msg
   let afterImports := firstNonImport? upToStx
@@ -261,11 +261,11 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let copyright := match upToStx.getHeadInfo with
     | .original lead .. => lead.toString
     | _ => ""
-  -- copyright report
+  -- Report any errors about the copyright line.
   if mainModule != `Mathlib.Init then
     for (stx, m) in copyrightHeaderChecks copyright do
       Linter.logLint linter.style.header stx m!"* '{stx.getAtomVal}':\n{m}\n"
-  -- doc-module report
+  -- Report a missing moduli doc-string.
   match afterImports with
     | none => return
     | some (.node _ ``Lean.Parser.Command.moduleDoc _) => return
