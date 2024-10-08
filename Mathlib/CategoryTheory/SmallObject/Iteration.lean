@@ -61,11 +61,11 @@ def restrictionLT : { k // k < i } ⥤ C :=
 
 @[simp]
 lemma restrictionLT_obj (k : J) (hk : k < i) :
-  (restrictionLT F hi).obj ⟨k, hk⟩ = F.obj ⟨k, hk.le.trans hi⟩ := rfl
+    (restrictionLT F hi).obj ⟨k, hk⟩ = F.obj ⟨k, hk.le.trans hi⟩ := rfl
 
 @[simp]
 lemma restrictionLT_map {k₁ k₂ : { k // k < i }} (φ : k₁ ⟶ k₂) :
-  (restrictionLT F hi).map φ = F.map (homOfLE (by simpa using leOfHom φ)) := rfl
+    (restrictionLT F hi).map φ = F.map (homOfLE (by simpa using leOfHom φ)) := rfl
 
 /-- Given `F : { i // i ≤ j } ⥤ C`, `i : J` such that `hi : i ≤ j`, this is the
 cocone consisting of all maps `F.obj ⟨k, hk⟩ ⟶ F.obj ⟨i, hi⟩` for `k : J` such that `k < i`. -/
