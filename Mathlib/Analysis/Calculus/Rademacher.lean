@@ -390,7 +390,7 @@ theorem LipschitzWith.ae_differentiableAt {f : E → F} (h : LipschitzWith C f) 
 /-- In a real finite-dimensional normed vector space,
   the norm is almost everywhere differentiable. -/
 theorem ae_differentiableAt_norm :
-  ∀ᵐ x ∂μ, DifferentiableAt ℝ (‖·‖) x := lipschitzWith_one_norm.ae_differentiableAt
+    ∀ᵐ x ∂μ, DifferentiableAt ℝ (‖·‖) x := lipschitzWith_one_norm.ae_differentiableAt
 
 omit [MeasurableSpace E] in
 /-- In a real finite-dimensional normed vector space,
