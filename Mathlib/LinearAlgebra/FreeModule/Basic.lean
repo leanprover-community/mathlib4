@@ -183,9 +183,10 @@ end CommSemiring
 end Module.Free
 
 namespace LinearMap
-
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
 variable [Module.Free R N]
+
+variable {R M N}
 
 theorem exists_rightInverse_of_surjective (f : M →ₗ[R] N) (hf_surj : range f = ⊤) :
     ∃ g : N →ₗ[R] M, f.comp g = LinearMap.id := by
