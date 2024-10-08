@@ -12,7 +12,6 @@ import Mathlib.CategoryTheory.Shift.ShiftedHom
 If `C` is a category equipped with a shift by `ℤ`, `X` and `Y` are objects
 of `C`, and `n : ℤ`, we define a bijection
 `ShiftedHom.opEquiv : ShiftedHom X Y n ≃ ShiftedHom (Opposite.op Y) (Opposite.op X) n`.
-
 We also introduce `ShiftedHom.opEquiv'` which produces a bijection
 `ShiftedHom X Y a' ≃ (Opposite.op (Y⟦a⟧) ⟶ (Opposite.op X)⟦n⟧)` when `n + a = a'`.
 The compatibilities that are obtained shall be used in order to study
@@ -41,8 +40,7 @@ lemma opEquiv_symm_apply {n : ℤ} (f : ShiftedHom (Opposite.op Y) (Opposite.op 
       ((opShiftFunctorEquivalence C n).unitIso.inv.app (Opposite.op X)).unop ≫ f.unop⟦n⟧' := by
   rfl
 
-lemma opEquiv_symm_apply_comp
-    {X Y : C} {a : ℤ}
+lemma opEquiv_symm_apply_comp {X Y : C} {a : ℤ}
     (f : ShiftedHom (Opposite.op X) (Opposite.op Y) a) {b : ℤ} {Z : C}
     (z : ShiftedHom X Z b) {c : ℤ} (h : b + a = c) :
     ((ShiftedHom.opEquiv a).symm f).comp z h =
