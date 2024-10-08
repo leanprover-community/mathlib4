@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.LinearAlgebra.Projection
+import Mathlib.Order.Atoms.Finite
 import Mathlib.Order.JordanHolder
 import Mathlib.Order.CompactlyGenerated.Intervals
 import Mathlib.LinearAlgebra.FiniteDimensional
@@ -123,6 +124,8 @@ theorem ker_toSpanSingleton_isMaximal {m : M} (hm : m ≠ 0) :
   rw [Ideal.isMaximal_def, ← isSimpleModule_iff_isCoatom]
   exact congr (quotKerEquivOfSurjective _ <| toSpanSingleton_surjective R hm)
 
+instance : IsNoetherian R M := isNoetherian_iff'.mpr inferInstance
+
 end IsSimpleModule
 
 open IsSimpleModule in
@@ -193,6 +196,13 @@ theorem exists_simple_submodule [Nontrivial M] : ∃ m : Submodule R M, IsSimple
 
 theorem sSup_simples_eq_top : sSup { m : Submodule R M | IsSimpleModule R m } = ⊤ := by
   simpa only [isSimpleModule_iff_isAtom] using sSup_atoms_eq_top
+
+theorem exists_setIndependent_sSup_simples_eq_top :
+    ∃ s : Set (Submodule R M), CompleteLattice.SetIndependent s ∧
+      sSup s = ⊤ ∧ ∀ m ∈ s, IsSimpleModule R m := by
+  have := sSup_simples_eq_top R M
+  simp_rw [isSimpleModule_iff_isAtom] at this ⊢
+  exact exists_setIndependent_of_sSup_atoms_eq_top this
 
 /-- The annihilator of a semisimple module over a commutative ring is a radical ideal. -/
 theorem annihilator_isRadical (R) [CommRing R] [Module R M] [IsSemisimpleModule R M] :
@@ -443,19 +453,3 @@ instance instJordanHolderLattice : JordanHolderLattice (Submodule R M) where
   second_iso := second_iso
 
 end JordanHolderModule
-
-
-
--- exists_setIndependent_of_sSup_atoms_eq_top
--- IsSemisimpleModule.sSup_simples_eq_top
-
--- CompleteLattice.IsCompactElement
-
--- LinearMap.lsum
--- DirectSum.isInternal_submodule_iff_independent_and_iSup_eq_top
-
--- DirectSum.linearEquivFunOnFintype
-
-/-variable {M : ι → Type*} [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)] [∀ i, IsNoetherian R (M i)]
-
-instance isNoetherian_directSum : IsNoetherian R (DirectSum ι M) := by -/
