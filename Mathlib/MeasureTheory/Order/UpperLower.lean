@@ -116,7 +116,7 @@ private lemma aux₁
       mul_div_mul_left _ _ (two_ne_zero' ℝ), div_right_comm, div_self, one_div]
   all_goals try positivity
   · simp_all
-  · measurability
+  · exact measurableSet_closedBall.nullMeasurableSet
 
 theorem IsUpperSet.null_frontier (hs : IsUpperSet s) : volume (frontier s) = 0 := by
   refine measure_mono_null (fun x hx ↦ ?_)

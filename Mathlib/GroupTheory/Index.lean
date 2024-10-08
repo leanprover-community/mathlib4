@@ -158,9 +158,9 @@ theorem index_eq_two_iff : H.index = 2 ↔ ∃ a, ∀ b, Xor' (b * a ∈ H) (b �
 
 @[to_additive]
 theorem mul_mem_iff_of_index_two (h : H.index = 2) {a b : G} : a * b ∈ H ↔ (a ∈ H ↔ b ∈ H) := by
-  by_cases ha : a ∈ H; · simp only [ha, true_iff_iff, mul_mem_cancel_left ha]
-  by_cases hb : b ∈ H; · simp only [hb, iff_true_iff, mul_mem_cancel_right hb]
-  simp only [ha, hb, iff_self_iff, iff_true_iff]
+  by_cases ha : a ∈ H; · simp only [ha, true_iff, mul_mem_cancel_left ha]
+  by_cases hb : b ∈ H; · simp only [hb, iff_true, mul_mem_cancel_right hb]
+  simp only [ha, hb, iff_true]
   rcases index_eq_two_iff.1 h with ⟨c, hc⟩
   refine (hc _).or.resolve_left ?_
   rwa [mul_assoc, mul_mem_cancel_right ((hc _).or.resolve_right hb)]
@@ -448,6 +448,25 @@ lemma pow_mem_of_relindex_ne_zero_of_dvd (h : H.relindex K ≠ 0) {a : G} (ha : 
     (hn : ∀ m, 0 < m → m ≤ H.relindex K → m ∣ n) : a ^ n ∈ H ⊓ K := by
   convert pow_mem_of_index_ne_zero_of_dvd h ⟨a, ha⟩ hn
   simp [pow_mem ha, mem_subgroupOf]
+
+@[simp]
+lemma index_toAddSubgroup : (Subgroup.toAddSubgroup H).index = H.index :=
+  rfl
+
+@[simp]
+lemma _root_.AddSubgroup.index_toSubgroup {G : Type*} [AddGroup G] (H : AddSubgroup G) :
+    (AddSubgroup.toSubgroup H).index = H.index :=
+  rfl
+
+@[simp]
+lemma relindex_toAddSubgroup :
+    (Subgroup.toAddSubgroup H).relindex (Subgroup.toAddSubgroup K) = H.relindex K :=
+  rfl
+
+@[simp]
+lemma _root_.AddSubgroup.relindex_toSubgroup {G : Type*} [AddGroup G] (H K : AddSubgroup G) :
+    (AddSubgroup.toSubgroup H).relindex (AddSubgroup.toSubgroup K) = H.relindex K :=
+  rfl
 
 section FiniteIndex
 

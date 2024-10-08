@@ -296,7 +296,7 @@ variable [Ring R]
 * `i * j = k`, `j * i = -k`;
 * `k * k = -c₁ * c₂`;
 * `i * k = c₁ * j`, `k * i = -c₁ * j`;
-* `j * k = -c₂ * i`, `k * j = c₂ * i`.  -/
+* `j * k = -c₂ * i`, `k * j = c₂ * i`. -/
 instance : Mul ℍ[R,c₁,c₂] :=
   ⟨fun a b =>
     ⟨a.1 * b.1 + c₁ * a.2 * b.2 + c₂ * a.3 * b.3 - c₁ * c₂ * a.4 * b.4,
@@ -569,8 +569,8 @@ theorem rank_eq_four [StrongRankCondition R] : Module.rank R ℍ[R,c₁,c₂] = 
   rw [rank_eq_card_basis (basisOneIJK c₁ c₂), Fintype.card_fin]
   norm_num
 
-theorem finrank_eq_four [StrongRankCondition R] : FiniteDimensional.finrank R ℍ[R,c₁,c₂] = 4 := by
-  rw [FiniteDimensional.finrank, rank_eq_four, Cardinal.toNat_ofNat]
+theorem finrank_eq_four [StrongRankCondition R] : Module.finrank R ℍ[R,c₁,c₂] = 4 := by
+  rw [Module.finrank, rank_eq_four, Cardinal.toNat_ofNat]
 
 /-- There is a natural equivalence when swapping the coefficients of a quaternion algebra. -/
 @[simps]
@@ -1024,7 +1024,7 @@ instance : Module.Free R ℍ[R] := inferInstanceAs <| Module.Free R ℍ[R,-1,-1]
 theorem rank_eq_four [StrongRankCondition R] : Module.rank R ℍ[R] = 4 :=
   QuaternionAlgebra.rank_eq_four _ _
 
-theorem finrank_eq_four [StrongRankCondition R] : FiniteDimensional.finrank R ℍ[R] = 4 :=
+theorem finrank_eq_four [StrongRankCondition R] : Module.finrank R ℍ[R] = 4 :=
   QuaternionAlgebra.finrank_eq_four _ _
 
 @[simp] theorem star_re : (star a).re = a.re := rfl

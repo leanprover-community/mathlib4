@@ -19,9 +19,7 @@ is correct.
 
 namespace DFinsupp
 
-open Lean
-open Lean.Parser
-open Lean.Parser.Term
+open Lean Parser Term
 
 attribute [term_parser] Finsupp.stxSingle₀ Finsupp.stxUpdate₀
 

@@ -109,7 +109,7 @@ theorem _root_.AddMonoidHom.map_trace [AddCommMonoid S] (f : R →+ S) (A : Matr
 
 lemma trace_blockDiagonal [DecidableEq p] (M : p → Matrix n n R) :
     trace (blockDiagonal M) = ∑ i, trace (M i) := by
-  simp [blockDiagonal, trace, Finset.sum_comm (γ := n)]
+  simp [blockDiagonal, trace, Finset.sum_comm (γ := n), Fintype.sum_prod_type]
 
 lemma trace_blockDiagonal' [DecidableEq p] {m : p → Type*} [∀ i, Fintype (m i)]
     (M : ∀ i, Matrix (m i) (m i) R) :
@@ -174,6 +174,23 @@ lemma trace_submatrix_succ {n : ℕ} [NonUnitalNonAssocSemiring R]
   delta trace
   rw [← (finSuccEquiv n).symm.sum_comp]
   simp
+
+section CommSemiring
+
+variable [DecidableEq m] [CommSemiring R]
+
+-- TODO(mathlib4#6607): fix elaboration so that the ascription isn't needed
+theorem trace_units_conj (M : (Matrix m m R)ˣ) (N : Matrix m m R) :
+    trace ((M : Matrix _ _ _) * N * (↑M⁻¹ : Matrix _ _ _)) = trace N := by
+  rw [trace_mul_cycle, Units.inv_mul, one_mul]
+
+set_option linter.docPrime false in
+-- TODO(mathlib4#6607): fix elaboration so that the ascription isn't needed
+theorem trace_units_conj' (M : (Matrix m m R)ˣ) (N : Matrix m m R) :
+    trace ((↑M⁻¹ : Matrix _ _ _) * N * (↑M : Matrix _ _ _)) = trace N :=
+  trace_units_conj M⁻¹ N
+
+end CommSemiring
 
 section Fin
 

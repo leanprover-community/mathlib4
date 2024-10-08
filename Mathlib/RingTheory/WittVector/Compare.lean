@@ -71,7 +71,8 @@ def zmodEquivTrunc : ZMod (p ^ n) ≃+* TruncatedWittVector p n (ZMod p) :=
   ZMod.ringEquiv (TruncatedWittVector p n (ZMod p)) (card_zmod _ _)
 
 theorem zmodEquivTrunc_apply {x : ZMod (p ^ n)} :
-    zmodEquivTrunc p n x = ZMod.castHom (by rfl) (TruncatedWittVector p n (ZMod p)) x :=
+    zmodEquivTrunc p n x =
+      ZMod.castHom (m := p ^ n) (by rfl) (TruncatedWittVector p n (ZMod p)) x :=
   rfl
 
 /-- The following diagram commutes:
