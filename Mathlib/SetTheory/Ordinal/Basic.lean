@@ -253,6 +253,13 @@ theorem inductionOn₂ {C : Ordinal → Ordinal → Prop} (o₁ o₂ : Ordinal)
     (H : ∀ (α r) [IsWellOrder α r] (β s) [IsWellOrder β s], C (type r) (type s)) : C o₁ o₂ :=
   Quotient.inductionOn₂ o₁ o₂ fun ⟨α, r, wo₁⟩ ⟨β, s, wo₂⟩ => @H α r wo₁ β s wo₂
 
+@[elab_as_elim]
+theorem inductionOn₃ {C : Ordinal → Ordinal → Ordinal → Prop} (o₁ o₂ o₃ : Ordinal)
+    (H : ∀ (α r) [IsWellOrder α r] (β s) [IsWellOrder β s] (γ t) [IsWellOrder γ t],
+      C (type r) (type s) (type t)) : C o₁ o₂ o₃ :=
+  Quotient.inductionOn₃ o₁ o₂ o₃ fun ⟨α, r, wo₁⟩ ⟨β, s, wo₂⟩ ⟨γ, t, wo₃⟩ =>
+    @H α r wo₁ β s wo₂ γ t wo₃
+
 /-! ### The order on ordinals -/
 
 /--
@@ -817,23 +824,14 @@ instance add_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·
       | Sum.inr a, Sum.inr b, H =>
         let ⟨w, h⟩ := fi _ _ (Sum.lex_inr_inr.1 H)
         exact ⟨Sum.inr w, congr_arg Sum.inr h⟩
-
--- Porting note: Rewritten proof of elim, previous version was difficult to debug
+#exit
 instance add_swap_covariantClass_le :
     CovariantClass Ordinal.{u} Ordinal.{u} (swap (· + ·)) (· ≤ ·) where
-  elim := fun c a b h => by
-    revert h c
-    refine inductionOn a (fun α₁ r₁ _ ↦ ?_)
-    refine inductionOn b (fun α₂ r₂ _ ↦ ?_)
-    rintro c ⟨⟨⟨f, fo⟩, fi⟩⟩
-    refine inductionOn c (fun β s _ ↦ ?_)
-    exact @RelEmbedding.ordinal_type_le _ _ (Sum.Lex r₁ s) (Sum.Lex r₂ s) _ _
-              ⟨f.sumMap (Embedding.refl _), by
-                intro a b
-                constructor <;> intro H
-                · cases' a with a a <;> cases' b with b b <;> cases H <;> constructor <;>
-                    [rwa [← fo]; assumption]
-                · cases H <;> constructor <;> [rwa [fo]; assumption]⟩
+  elim := fun c a b => by
+    refine inductionOn₃ a b c fun α r _ β s _ γ t _ ↦ ?_
+    rintro ⟨f⟩
+    apply (RelEmbedding.ofMonotone (Sum.recOn · (Sum.inl ∘ f) Sum.inr) _).ordinal_type_le
+    simp [f.map_rel_iff]
 
 theorem le_add_right (a b : Ordinal) : a ≤ a + b := by
   simpa only [add_zero] using add_le_add_left (Ordinal.zero_le b) a
