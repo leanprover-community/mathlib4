@@ -981,7 +981,7 @@ lemma valuation_natCast (n : ℕ) : valuation (n : ℚ_[p]) = padicValNat p n :=
 lemma valuation_one : valuation (1 : ℚ_[p]) = 0 := by
   rw [← Nat.cast_one, valuation_natCast, padicValNat.one, cast_zero]
 
-@[simp]
+-- not @[simp], since simp can prove it
 lemma valuation_p : valuation (p : ℚ_[p]) = 1 := by
   rw [valuation_natCast, padicValNat_self, cast_one]
 
