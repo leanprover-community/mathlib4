@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Topology.MetricSpace.Cauchy
 
 /-!
 # Completeness in terms of `Cauchy` filters vs `isCauSeq` sequences

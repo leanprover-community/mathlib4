@@ -438,9 +438,13 @@ theorem integrable_const [IsFiniteMeasure μ] (c : β) : Integrable (fun _ : α 
   integrable_const_iff.2 <| Or.inr <| measure_lt_top _ _
 
 @[simp]
-theorem Integrable.of_finite [Finite α] [MeasurableSpace α] [MeasurableSingletonClass α]
-    (μ : Measure α) [IsFiniteMeasure μ] (f : α → β) : Integrable (fun a ↦ f a) μ :=
-  ⟨(StronglyMeasurable.of_finite f).aestronglyMeasurable, .of_finite⟩
+lemma Integrable.of_finite [Finite α] [MeasurableSingletonClass α] [IsFiniteMeasure μ] {f : α → β} :
+    Integrable f μ := ⟨.of_finite, .of_finite⟩
+
+/-- This lemma is a special case of `Integrable.of_finite`. -/
+-- Eternal deprecation for discoverability, don't remove
+@[deprecated Integrable.of_finite, nolint deprecatedNoSince]
+lemma Integrable.of_isEmpty [IsEmpty α] {f : α → β} : Integrable f μ := .of_finite
 
 @[deprecated (since := "2024-02-05")] alias integrable_of_fintype := Integrable.of_finite
 
@@ -878,8 +882,7 @@ theorem integrable_withDensity_iff_integrable_coe_smul {f : α → ℝ≥0} (hf 
     {g : α → E} :
     Integrable g (μ.withDensity fun x => f x) ↔ Integrable (fun x => (f x : ℝ) • g x) μ := by
   by_cases H : AEStronglyMeasurable (fun x : α => (f x : ℝ) • g x) μ
-  · simp only [Integrable, aestronglyMeasurable_withDensity_iff hf, HasFiniteIntegral, H,
-      true_and_iff]
+  · simp only [Integrable, aestronglyMeasurable_withDensity_iff hf, HasFiniteIntegral, H]
     rw [lintegral_withDensity_eq_lintegral_mul₀' hf.coe_nnreal_ennreal.aemeasurable]
     · rw [iff_iff_eq]
       congr
@@ -889,7 +892,7 @@ theorem integrable_withDensity_iff_integrable_coe_smul {f : α → ℝ≥0} (hf 
       convert H.ennnorm using 1
       ext1 x
       simp only [nnnorm_smul, NNReal.nnnorm_eq, coe_mul]
-  · simp only [Integrable, aestronglyMeasurable_withDensity_iff hf, H, false_and_iff]
+  · simp only [Integrable, aestronglyMeasurable_withDensity_iff hf, H, false_and]
 
 theorem integrable_withDensity_iff_integrable_smul {f : α → ℝ≥0} (hf : Measurable f) {g : α → E} :
     Integrable g (μ.withDensity fun x => f x) ↔ Integrable (fun x => f x • g x) μ :=

@@ -13,7 +13,7 @@ In this file we define additional linters for mathlib.
 Perhaps these should be moved to Batteries in the future.
 -/
 
-namespace Std.Tactic.Lint
+namespace Batteries.Tactic.Lint
 open Lean Meta
 
 /--
@@ -45,7 +45,7 @@ Linter that checks whether a structure should be in Prop.
     | some _ => return none -- TODO: enforce `YYYY-MM-DD` format
     | none => return m!"`deprecated` attribute without `since` date"
 
-end Std.Tactic.Lint
+end Batteries.Tactic.Lint
 
 namespace Mathlib.Linter
 
@@ -311,12 +311,19 @@ The "longFile" linter emits a warning on files which are longer than a certain n
 
 /--
 The "longFile" linter emits a warning on files which are longer than a certain number of lines
-(1500 by default). If this option is set to `N` lines, the linter warns once a file has more than
-`N` lines. A value of `0` silences the linter entirely.
+(1500 by default on mathlib, no limit for downstream projects).
+If this option is set to `N` lines, the linter warns once a file has more than `N` lines.
+A value of `0` silences the linter entirely.
 -/
 register_option linter.style.longFile : Nat := {
-  defValue := 1500
+  defValue := 0
   descr := "enable the longFile linter"
+}
+
+/-- The number of lines that the `longFile` linter considers the default. -/
+register_option linter.style.longFileDefValue : Nat := {
+  defValue := 1500
+  descr := "a soft upper bound on the number of lines of each file"
 }
 
 namespace Style.longFile
@@ -326,7 +333,7 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let linterBound := linter.style.longFile.get (← getOptions)
   if linterBound == 0 then
     return
-  let defValue := linter.style.longFile.defValue
+  let defValue := linter.style.longFileDefValue.get (← getOptions)
   let smallOption := match stx with
       | `(set_option linter.style.longFile $x) => TSyntax.getNat ⟨x.raw⟩ ≤ defValue
       | _ => false
@@ -405,9 +412,13 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
       (100 < (fm.toPosition line.stopPos).column)
     for line in longLines do
       if (line.splitOn "http").length ≤ 1 then
+        let stringMsg := if line.contains '"' then
+          "\nYou can use \"string gaps\" to format long strings: within a string quotation, \
+          using a '\' at the end of a line allows you to continue the string on the following \
+          line, removing all intervening whitespace."
+        else ""
         Linter.logLint linter.style.longLine (.ofRange ⟨line.startPos, line.stopPos⟩)
-          m!"This line exceeds the 100 character limit, please shorten it!"
-
+          m!"This line exceeds the 100 character limit, please shorten it!{stringMsg}"
 initialize addLinter longLineLinter
 
 end Style.longLine

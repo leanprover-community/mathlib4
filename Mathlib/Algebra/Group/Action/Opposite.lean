@@ -27,7 +27,7 @@ With `open scoped RightActions`, this provides:
 
 assert_not_exists MonoidWithZero
 
-variable {R M N α : Type*}
+variable {M N α : Type*}
 
 /-!
 ### Actions _on_ the opposite type
