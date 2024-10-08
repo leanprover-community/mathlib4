@@ -282,7 +282,7 @@ theorem degreeOf_mul_X_eq (j : σ) (f : MvPolynomial σ R) :
   rw [Multiset.count_singleton_self]
 
 theorem degreeOf_mul_X_eq_degreeOf_add_one_iff (j : σ) (f : MvPolynomial σ R) :
-    degreeOf j (f * X j) = degreeOf j f + 1  ↔ f ≠ 0:= by
+    degreeOf j (f * X j) = degreeOf j f + 1 ↔ f ≠ 0:= by
   refine ⟨fun h => by by_contra ha; simp [ha] at h, fun h => ?_⟩
   apply Nat.le_antisymm (degreeOf_mul_X_eq j f)
   have : (f.support.sup fun m ↦ m j) + 1 = (f.support.sup fun m ↦ (m j + 1)) := by
@@ -292,11 +292,9 @@ theorem degreeOf_mul_X_eq_degreeOf_add_one_iff (j : σ) (f : MvPolynomial σ R) 
   simp only [degreeOf_eq_sup, support_mul_X, this]
   apply Finset.sup_le
   intro x hx
-  simp only [Finset.sup_map, bot_eq_zero', add_pos_iff, zero_lt_one, or_true, Finset.le_sup_iff,
-    mem_support_iff, ne_eq, comp_apply, addRightEmbedding_apply, coe_add, Pi.add_apply,
-    single_eq_same, add_le_add_iff_right]
+  simp only [Finset.sup_map, bot_eq_zero', add_pos_iff, zero_lt_one, or_true, Finset.le_sup_iff]
   use x
-  simpa only [le_refl, and_true] using mem_support_iff.mp hx
+  simpa using mem_support_iff.mp hx
 
 theorem degreeOf_C_mul_le (p : MvPolynomial σ R) (i : σ) (c : R) :
     (C c * p).degreeOf i ≤ p.degreeOf i := by
