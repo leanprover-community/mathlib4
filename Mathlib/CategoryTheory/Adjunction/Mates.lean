@@ -13,11 +13,13 @@ import Mathlib.Tactic.ApplyFun
 
 This file establishes the bijection between the 2-cells
 
+```
          L₁                  R₁
       C --→ D             C ←-- D
     G ↓  ↗  ↓ H         G ↓  ↘  ↓ H
       E --→ F             E ←-- F
          L₂                  R₂
+```
 
 where `L₁ ⊣ R₁` and `L₂ ⊣ R₂`. The corresponding natural transformations are called mates.
 
