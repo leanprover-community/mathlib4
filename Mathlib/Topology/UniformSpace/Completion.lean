@@ -394,12 +394,12 @@ alias denseEmbedding_coe := isDenseEmbedding_coe
 
 theorem denseRange_coe₂ :
     DenseRange fun x : α × β => ((x.1 : Completion α), (x.2 : Completion β)) :=
-  denseRange_coe.prod_map denseRange_coe
+  denseRange_coe.prodMap denseRange_coe
 
 theorem denseRange_coe₃ :
     DenseRange fun x : α × β × γ =>
       ((x.1 : Completion α), ((x.2.1 : Completion β), (x.2.2 : Completion γ))) :=
-  denseRange_coe.prod_map denseRange_coe₂
+  denseRange_coe.prodMap denseRange_coe₂
 
 @[elab_as_elim]
 theorem induction_on {p : Completion α → Prop} (a : Completion α) (hp : IsClosed { a | p a })

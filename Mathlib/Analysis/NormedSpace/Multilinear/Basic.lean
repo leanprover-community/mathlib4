@@ -87,7 +87,7 @@ theorem ContinuousMultilinearMap.continuous_eval :
   let _ := TopologicalAddGroup.toUniformSpace F
   have := comm_topologicalAddGroup_is_uniform (G := F)
   refine (UniformOnFun.continuousOn_eval₂ fun m ↦ ?_).comp_continuous
-    (embedding_toUniformOnFun.continuous.prod_map continuous_id) fun (f, x) ↦ f.cont.continuousAt
+    (embedding_toUniformOnFun.continuous.prodMap continuous_id) fun (f, x) ↦ f.cont.continuousAt
   exact ⟨ball m 1, NormedSpace.isVonNBounded_of_isBounded _ isBounded_ball,
     ball_mem_nhds _ one_pos⟩
 
@@ -98,7 +98,7 @@ variable {G : Type*} [AddCommGroup G] [TopologicalSpace G] [Module 𝕜 G] [Cont
 
 lemma continuous_uncurry_of_multilinear :
     Continuous (fun (p : G × (Π i, E i)) ↦ f p.1 p.2) :=
-  ContinuousMultilinearMap.continuous_eval.comp <| .prod_map (map_continuous f) continuous_id
+  ContinuousMultilinearMap.continuous_eval.comp <| .prodMap (map_continuous f) continuous_id
 
 lemma continuousOn_uncurry_of_multilinear {s} :
     ContinuousOn (fun (p : G × (Π i, E i)) ↦ f p.1 p.2) s :=

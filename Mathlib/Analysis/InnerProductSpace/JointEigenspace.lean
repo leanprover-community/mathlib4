@@ -49,7 +49,7 @@ variable {α : 𝕜} {A B : E →ₗ[𝕜] E}
 theorem eigenspace_invariant_of_commute
     (hAB : A ∘ₗ B = B ∘ₗ A) (α : 𝕜) : ∀ v ∈ (eigenspace A α), (B v ∈ eigenspace A α) := by
   intro v hv
-  rw [eigenspace, mem_ker, sub_apply, Module.algebraMap_end_apply, ← comp_apply A B v, hAB,
+  rw [eigenspace_def, mem_ker, sub_apply, smul_apply, one_apply, ← comp_apply A B v, hAB,
     comp_apply B A v, ← map_smul, ← map_sub, hv, map_zero] at *
 
 /--The simultaneous eigenspaces of a pair of commuting symmetric operators form an

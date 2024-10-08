@@ -5,6 +5,7 @@ Authors: Damiano Testa
 -/
 
 import Lean.Elab.Command
+--import Mathlib.adomaniLeanUtils.inspect_syntax
 
 /-!
 --import Mathlib.adomaniLeanUtils.inspect
@@ -114,6 +115,73 @@ def getExtendBinders {m} [Monad m] [MonadRef m] [MonadQuotation m] (stx : Syntax
     let exts ← exts.mapM (`(Lean.Parser.Term.instBinder| [$(⟨·⟩)]))
     return exts
   else return #[]
+/-
+elab "get_structs" cmd:command : command => do
+  match cmd with
+    | `($_:declModifiers structure $d:declId $as* extends $es,* := $t:structFields) =>
+      logInfo m!"'{d}' has {t.raw[0].getArgs.size} fields"
+    --| `($_:declModifiers structure $_:declId $as* extends $es,* where $t:structFields) =>
+    --  logInfo m!"there are {← Meta.inspect t} "
+    | _ => logInfo "nothing here"
+
+get_structs
+structure D extends Add Nat :=
+  a : Nat
+  b : Int
+  c : Rat
+
+get_structs
+structure D extends Add Nat where
+  a : Nat
+  b : Int
+  c : Rat
+-/
+
+def getDeclBinders {m} [Monad m] [MonadQuotation m] [MonadRef m] (stx : Syntax) :
+    m (Syntax) := do
+  let fls := mkIdent `False
+  let (id, hyps, typ) := ← match stx with
+    | `($_:declModifiers abbrev    $did:declId $as* : $t $_:declVal) => return (did, as, (← `($(mkIdent `toFalse) $t)))
+    | `($_:declModifiers def       $did:declId $as* : $t $_:declVal) => return (did, as, (← `($(mkIdent `toFalse) $t)))
+    | `($_:declModifiers def       $did:declId $as*      $_:declVal) => return (did, as, fls)
+    | `($_:declModifiers instance           $[$as]* : $t $_:declVal) => return (default, default, (← `($(mkIdent `toFalse) $t)))
+    | `($_:declModifiers instance  $did:declId $as* : $t $_:declVal) => return (did, as, (← `($(mkIdent `toFalse) $t)))
+    | `($_:declModifiers theorem   $did:declId $as* : $t $_:declVal) => return (did, as, (← `($(mkIdent `toFalse) $t)))
+    | `($_:declModifiers structure $did:declId $as* extends $es,* := $(_optCtor)? $t:structFields) => do
+      let exts ← es.getElems.mapM fun d => `(Term.instBinder| [$d])
+      return (did, as.map (⟨·⟩) ++ exts.map (⟨·⟩), fls)
+    --| `($_:declModifiers def $did:declId $as* : $t := $_pf) =>        return (did, as, (← `($(mkIdent `toFalse) $t)))
+    | _ => return (default, #[], fls)
+  let newNm := id.raw[0].getId ++ `sfx
+  `(command| theorem $(mkIdent newNm) $hyps* : $typ := by included_variables plumb; sorry)
+
+open Lean Elab Command in
+elab "mkt " cmd:command : command => do
+  elabCommand cmd
+  let thm ← getDeclBinders cmd
+  logInfo m!"{thm}"
+  elabCommand thm
+def toFalse (_S : Sort _) := False
+
+/--
+info: theorem XX.sfx {a b : Nat} (c d : Int) [Add Int] : toFalse True := by included_variables plumb; sorry
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
+mkt
+theorem XX {a b : Nat} (c d : Int) [Add Int] : True := .intro
+
+/--
+info: theorem D.sfx [Add Nat] [Mul Int] : False := by included_variables plumb; sorry
+---
+warning: declaration uses 'sorry'
+-/
+#guard_msgs in
+mkt
+structure D extends Add Nat, Mul Int where mk'::
+  a : Nat
+  b : Int
 
 variable
   (nm : Ident)
@@ -243,7 +311,8 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
     --let renStx ← renStx.replaceM fun s => match s with
     --    | `(def $d $vs* : $t := $pf) => return some (← `(theorem $d $vs* : $toFalse $t := $pf))
     --    | _               => return none
-    let renStx ← mkNewThm decl
+    let renStx ← if decl.isOfKind `lemma then mkNewThm decl else getDeclBinders decl
+    --logInfo renStx
     let s ← get
     elabCommand (← `(def $toFalse (S : Sort _) := False))
     try
