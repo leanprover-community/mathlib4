@@ -272,7 +272,6 @@ theorem degreeOf_mul_X_ne {i j : σ} (f : MvPolynomial σ R) (h : i ≠ j) :
   simp only [Finsupp.single, Nat.one_ne_zero, add_right_eq_self, addRightEmbedding_apply, coe_mk,
     Pi.add_apply, comp_apply, ite_eq_right_iff, Finsupp.coe_add, Pi.single_eq_of_ne h]
 
--- TODO in the following we have equality iff f ≠ 0
 theorem degreeOf_mul_X_eq (j : σ) (f : MvPolynomial σ R) :
     degreeOf j (f * X j) ≤ degreeOf j f + 1 := by
   classical
@@ -281,6 +280,23 @@ theorem degreeOf_mul_X_eq (j : σ) (f : MvPolynomial σ R) :
   simp only [Multiset.count_add, add_le_add_iff_left]
   convert Multiset.count_le_of_le j (degrees_X' (R := R) j)
   rw [Multiset.count_singleton_self]
+
+theorem degreeOf_mul_X_eq_degreeOf_add_one_iff (j : σ) (f : MvPolynomial σ R) :
+    degreeOf j (f * X j) = degreeOf j f + 1  ↔ f ≠ 0:= by
+  refine ⟨fun h => by by_contra ha; simp [ha] at h, fun h => ?_⟩
+  apply Nat.le_antisymm (degreeOf_mul_X_eq j f)
+  have : (f.support.sup fun m ↦ m j) + 1 = (f.support.sup fun m ↦ (m j + 1)) := by
+    rw [← Finset.sup'_eq_sup <| support_nonempty.mpr h, ← Finset.sup'_eq_sup]
+    exact Finset.comp_sup'_eq_sup'_comp (support_nonempty.mpr h) (fun n ↦ n + 1) <|
+        fun x y ↦ Monotone.map_sup (Monotone.add_const (fun a _ a ↦ a) _) x y
+  simp only [degreeOf_eq_sup, support_mul_X, this]
+  apply Finset.sup_le
+  intro x hx
+  simp only [Finset.sup_map, bot_eq_zero', add_pos_iff, zero_lt_one, or_true, Finset.le_sup_iff,
+    mem_support_iff, ne_eq, comp_apply, addRightEmbedding_apply, coe_add, Pi.add_apply,
+    single_eq_same, add_le_add_iff_right]
+  use x
+  simpa only [le_refl, and_true] using mem_support_iff.mp hx
 
 theorem degreeOf_C_mul_le (p : MvPolynomial σ R) (i : σ) (c : R) :
     (C c * p).degreeOf i ≤ p.degreeOf i := by
