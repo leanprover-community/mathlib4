@@ -15,59 +15,6 @@ theorem dense_of_ae {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
   rw [dense_iff_closure_eq, closure_eq_compl_interior_compl, compl_univ_iff]
   exact μ.interior_eq_empty_of_null hp
 
-section tkt
-
-variable {ι 𝕜 E : Type*} [Field 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
-open LinearMap Set FiniteDimensional
-
-theorem pi_liftQ_eq_liftQ_pi {ι R M : Type*} [Ring R] [AddCommGroup M] [Module R M] {N : ι → Type*}
-    [∀ i, AddCommGroup (N i)] [∀ i, Module R (N i)]
-    (f : (i : ι) → M →ₗ[R] (N i)) {p : Submodule R M} (h : ∀ i, p ≤ ker (f i)) :
-    LinearMap.pi (fun i ↦ p.liftQ (f i) (h i)) =
-      p.liftQ (LinearMap.pi f) (LinearMap.ker_pi f ▸ le_iInf h) := by
-  ext x i
-  simp
-
-theorem _root_.FiniteDimensional.mem_span_of_iInf_ker_le_ker [FiniteDimensional 𝕜 E]
-    {L : ι → E →ₗ[𝕜] 𝕜} {K : E →ₗ[𝕜] 𝕜}
-    (h : ⨅ i, LinearMap.ker (L i) ≤ ker K) : K ∈ span 𝕜 (range L) := by
-  by_contra hK
-  rcases exists_dual_map_eq_bot_of_nmem hK inferInstance with ⟨φ, φne, hφ⟩
-  let φs := (Module.evalEquiv 𝕜 E).symm φ
-  have : K φs = 0 := by
-    refine h <| (Submodule.mem_iInf _).2 fun i ↦ (mem_bot 𝕜).1 ?_
-    rw [← hφ, Submodule.mem_map]
-    exact ⟨L i, Submodule.subset_span ⟨i, rfl⟩, (apply_evalEquiv_symm_apply 𝕜 E _ φ).symm⟩
-  simp only [apply_evalEquiv_symm_apply, φs, φne] at this
-
-/-- Given some linear forms $L_1, ..., L_n, K$ over a vector space $E$, if
-$\bigcap_{i=1}^n \mathrm{ker}(L_i) \subseteq \mathrm{ker}(K)$, then $K$ is in the space generated
-by $L_1, ..., L_n$. -/
-theorem _root_.mem_span_of_iInf_ker_le_ker [Finite ι] {L : ι → E →ₗ[𝕜] 𝕜} {K : E →ₗ[𝕜] 𝕜}
-    (h : ⨅ i, ker (L i) ≤ ker K) : K ∈ span 𝕜 (range L) := by
-  have _ := Fintype.ofFinite ι
-  let φ : E →ₗ[𝕜] ι → 𝕜 := LinearMap.pi L
-  let p := ⨅ i, ker (L i)
-  have p_eq : p = ker φ := (ker_pi L).symm
-  let ψ : (E ⧸ p) →ₗ[𝕜] ι → 𝕜 := p.liftQ φ p_eq.le
-  have _ : FiniteDimensional 𝕜 (E ⧸ p) := of_injective ψ (ker_eq_bot.1 (ker_liftQ_eq_bot' p φ p_eq))
-  let L' i : (E ⧸ p) →ₗ[𝕜] 𝕜 := p.liftQ (L i) (iInf_le _ i)
-  let K' : (E ⧸ p) →ₗ[𝕜] 𝕜 := p.liftQ K h
-  have : ⨅ i, ker (L' i) ≤ ker K' := by
-    simp_rw [← ker_pi, L', pi_liftQ_eq_liftQ_pi, ker_liftQ_eq_bot' p φ p_eq]
-    exact bot_le
-  obtain ⟨c, hK'⟩ :=
-    (mem_span_range_iff_exists_fun 𝕜).1 (FiniteDimensional.mem_span_of_iInf_ker_le_ker this)
-  refine (mem_span_range_iff_exists_fun 𝕜).2 ⟨c, ?_⟩
-  conv_lhs => enter [2]; intro i; rw [← p.liftQ_mkQ (L i) (iInf_le _ i)]
-  rw [← p.liftQ_mkQ K h]
-  ext x
-  convert LinearMap.congr_fun hK' (p.mkQ x)
-  simp only [coeFn_sum, Finset.sum_apply, smul_apply, coe_comp, Function.comp_apply, smul_eq_mul]
-
-end tkt
-
 section OfTopLeSpan
 
 variable {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V]
@@ -80,61 +27,6 @@ noncomputable instance [Module.Finite K V] (hs : LinearIndependent K ((↑) : s 
   refine Classical.choice (Cardinal.lt_aleph0_iff_fintype.1 ?_)
   refine lt_of_le_of_lt (LinearIndependent.cardinal_le_rank' (hs.linearIndependent_extend hst)) ?_
   exact rank_lt_aleph0 K V
-
-/-- If `s` is a family of linearly independent vectors contained in a set `t` spanning `V`,
-then one can get a basis of `V` containing `s` and contained in `t`. -/
-noncomputable def extendLe (hs : LinearIndependent K ((↑) : s → V))
-    (hst : s ⊆ t) (ht : ⊤ ≤ span K t) :
-    Basis (hs.extend hst) K V :=
-  Basis.mk
-    (@LinearIndependent.restrict_of_comp_subtype _ _ _ id _ _ _ _ (hs.linearIndependent_extend _))
-    (le_trans ht <| Submodule.span_le.2 <| by simpa using hs.subset_span_extend hst)
-
-theorem extendLe_apply_self (hs : LinearIndependent K ((↑) : s → V))
-    (hst : s ⊆ t) (ht : ⊤ ≤ span K t) (x : hs.extend hst) :
-    extendLe hs hst ht x = x :=
-  Basis.mk_apply _ _ _
-
-@[simp]
-theorem coe_extendLe (hs : LinearIndependent K ((↑) : s → V))
-    (hst : s ⊆ t) (ht : ⊤ ≤ span K t) : ⇑(extendLe hs hst ht) = ((↑) : _ → _) :=
-  funext (extendLe_apply_self hs hst ht)
-
-theorem range_extendLe (hs : LinearIndependent K ((↑) : s → V))
-    (hst : s ⊆ t) (ht : ⊤ ≤ span K t) :
-    range (extendLe hs hst ht) = hs.extend hst := by
-  rw [coe_extendLe, Subtype.range_coe_subtype, setOf_mem_eq]
-
-theorem subset_extendLe (hs : LinearIndependent K ((↑) : s → V))
-    (hst : s ⊆ t) (ht : ⊤ ≤ span K t) :
-    s ⊆ range (extendLe hs hst ht) :=
-  (range_extendLe hs hst ht).symm ▸ hs.subset_extend hst
-
-theorem extendLe_subset (hs : LinearIndependent K ((↑) : s → V))
-    (hst : s ⊆ t) (ht : ⊤ ≤ span K t) :
-    range (extendLe hs hst ht) ⊆ t :=
-  (range_extendLe hs hst ht).symm ▸ hs.extend_subset hst
-
-/-- If a set `s` spans the space, this is a basis contained in `s`. -/
-noncomputable def ofSpan (hs : ⊤ ≤ span K s) :
-    Basis ((linearIndependent_empty K V).extend (empty_subset s)) K V :=
-  extendLe (linearIndependent_empty K V) (empty_subset s) hs
-
-theorem ofSpan_apply_self (hs : ⊤ ≤ span K s)
-    (x : (linearIndependent_empty K V).extend (empty_subset s)) :
-    Basis.ofSpan hs x = x :=
-  extendLe_apply_self (linearIndependent_empty K V) (empty_subset s) hs x
-
-@[simp]
-theorem coe_ofSpan (hs : ⊤ ≤ span K s) : ⇑(ofSpan hs) = ((↑) : _ → _) :=
-  funext (ofSpan_apply_self hs)
-
-theorem range_ofSpan (hs : ⊤ ≤ span K s) :
-    range (ofSpan hs) = (linearIndependent_empty K V).extend (empty_subset s) := by
-  rw [coe_ofSpan, Subtype.range_coe_subtype, setOf_mem_eq]
-
-theorem ofSpan_subset (hs : ⊤ ≤ span K s) : range (ofSpan hs) ⊆ s :=
-  extendLe_subset (linearIndependent_empty K V) (empty_subset s) hs
 
 end Basis
 

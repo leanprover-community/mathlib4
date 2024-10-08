@@ -66,6 +66,32 @@ theorem Isometry.map_norm_sub {φ : E → F} (hφ : Isometry φ) (x y : E) :
   rw [← dist_eq_norm, hφ.dist_eq, dist_eq_norm]
 
 open ContinuousLinearMap in
+private lemma jsp {f : F →L[ℝ] ℝ} {a b : ℝ} {φ : ℝ → F} (hφ : Isometry φ) (φz : φ 0 = 0)
+    (nf : ‖f‖ = 1) (hfa : f (φ a) = a) (hb : b ∈ Icc 0 a) : f (φ b) = b := by
+  apply le_antisymm
+  · refine le_trans (le_norm_self _) ?_
+    convert f.le_opNorm _ using 1
+    rw [nf, hφ.norm_map_of_map_zero φz, one_mul, norm_of_nonneg hb.1]
+  · nth_rw 1 [← neg_le_neg_iff, ← add_le_add_iff_left a, ← hfa]
+    simp_rw [← sub_eq_add_neg, ← map_sub]
+    refine le_trans (le_norm_self _) ?_
+    convert f.le_opNorm _ using 1
+    rw [hφ.map_norm_sub, nf, one_mul, norm_of_nonneg (by linarith [hb.2])]
+
+open ContinuousLinearMap in
+private lemma jsp2 {f : F →L[ℝ] ℝ} {a b : ℝ} {φ : ℝ → F} (hφ : Isometry φ) (φz : φ 0 = 0)
+    (nf : ‖f‖ = 1) (hfa : f (φ a) = a) (hb : b ∈ Icc a 0) : f (φ b) = b := by
+  apply le_antisymm
+  · rw [← sub_add_cancel (f (φ b)) (f (φ a)), ← map_sub, ← le_sub_iff_add_le, hfa]
+    refine le_trans (le_norm_self _) ?_
+    convert f.le_opNorm _ using 1
+    rw [hφ.map_norm_sub, nf, one_mul, norm_of_nonneg (by linarith [hb.1])]
+  · rw [← neg_le_neg_iff]
+    refine le_trans (le_norm_self _) (norm_neg (f _) ▸ ?_)
+    convert f.le_opNorm _ using 1
+    rw [nf, hφ.norm_map_of_map_zero φz, one_mul, norm_of_nonpos hb.2]
+
+open ContinuousLinearMap in
 theorem exists_inverse {φ : ℝ → F} (hφ : Isometry φ) (φz : φ 0 = 0) :
     ∃ (f : F →L[ℝ] ℝ), ‖f‖ = 1 ∧ ∀ t : ℝ, f (φ t) = t := by
   have _ : Nontrivial F := by
@@ -79,7 +105,7 @@ theorem exists_inverse {φ : ℝ → F} (hφ : Isometry φ) (φz : φ 0 = 0) :
         rw [hφ.map_norm_sub, norm_eq_abs, sub_neg_eq_add, two_mul, abs_eq_self.2 (by positivity)]
       obtain ⟨f, nf, hfk⟩ := exists_eq_norm ((φ k) - (φ (-k)))
       exact ⟨f, nf, by rw [hfk, nk]⟩
-    refine ⟨f, nf, fun s ⟨_, _⟩ ↦ ?_⟩
+    refine ⟨f, nf, fun s ⟨hs1, hs2⟩ ↦ ?_⟩
     have ⟨h1, h2⟩ : f (φ k) = k ∧ f (φ (-k)) = -k := by
       refine eq_of_abs_le_sub_eq ?_ ?_ (by rw [← map_sub, hf])
       · rw [← norm_eq_abs]
@@ -89,30 +115,8 @@ theorem exists_inverse {φ : ℝ → F} (hφ : Isometry φ) (φz : φ 0 = 0) :
         convert f.le_opNorm (φ (-k))
         rw [nf, one_mul, hφ.norm_map_of_map_zero φz, norm_of_nonpos (by simp), neg_neg]
     obtain hs | hs := le_total s 0
-    · have : f ((φ s) - (φ (-k))) = s - (-k) := by
-        apply le_antisymm
-        · calc
-            f (φ s - φ (-k)) ≤ ‖f‖ * ‖φ s - φ (-k)‖ := (le_norm_self _).trans (le_opNorm _ _)
-            _ = s - (-k) := by rw [nf, one_mul, hφ.map_norm_sub, norm_of_nonneg]; linarith
-        · have : -f (φ s) ≤ -s := by
-            refine le_trans (le_norm_self _) (norm_neg (f (φ s)) ▸ ?_)
-            convert f.le_opNorm (φ s) using 1
-            rw [nf, hφ.norm_map_of_map_zero φz, one_mul, norm_of_nonpos hs]
-          rw [map_sub, h2]
-          linarith
-      simpa [map_sub, h2] using this
-    · have : f ((φ k) - (φ s)) = k - s := by
-        apply le_antisymm
-        · calc
-            f (φ k - φ s) ≤ ‖f‖ * ‖φ k - φ s‖ := (le_norm_self _).trans (le_opNorm _ _)
-            _ = k - s := by rw [nf, one_mul, hφ.map_norm_sub, norm_of_nonneg]; linarith
-        · have : f (φ s) ≤ s := by
-            refine le_trans (le_norm_self _) ?_
-            convert f.le_opNorm (φ s) using 1
-            rw [nf, hφ.norm_map_of_map_zero φz, one_mul, norm_of_nonneg hs]
-          rw [map_sub, h1]
-          linarith
-      simpa [map_sub, h1] using this
+    · exact jsp2 hφ φz nf h2 ⟨hs1, hs⟩
+    · exact jsp hφ φz nf h1 ⟨hs, hs2⟩
   choose! f nf hf using this
   obtain ⟨g, hg⟩ : ∃ g : WeakDual ℝ F, MapClusterPt g atTop f := by
     have aux : atTop.map f ≤ 𝓟 (toNormedDual ⁻¹' closedBall 0 1) := by
@@ -164,9 +168,16 @@ theorem ne_zero_of_differentiableAt_norm [Nontrivial E]
     {x : E} (h : DifferentiableAt ℝ (‖·‖) x) : x ≠ 0 :=
   fun hx ↦ (not_differentiableAt_norm_zero E (hx ▸ h)).elim
 
+theorem dense_differentiableAt_norm [FiniteDimensional ℝ E] :
+    Dense {x : E | DifferentiableAt ℝ (‖·‖) x} :=
+  let _ : MeasurableSpace E := borel E
+  have _ : BorelSpace E := ⟨rfl⟩
+  let w := Basis.ofVectorSpace ℝ E
+  MeasureTheory.Measure.dense_of_ae (lipschitzWith_one_norm.ae_differentiableAt (μ := w.addHaar))
+
 theorem exists_inverse' [FiniteDimensional ℝ E] [Nontrivial E]
-    (φ : E → F) (hφ : Isometry φ) (φz : φ 0 = 0)
-    (hdφ : Dense (Submodule.span ℝ (range φ) : Set F)) :
+    {φ : E → F} (hφ : Isometry φ) (φz : φ 0 = 0)
+    (hdφ : Dense (span ℝ (range φ) : Set F)) :
     ∃ (f : F →L[ℝ] E), ‖f‖ = 1 ∧ f ∘ φ = id := by
   have main (x : E) (nx : ‖x‖ = 1) : ∃ f : F →L[ℝ] ℝ, ‖f‖ = 1 ∧ ∀ t : ℝ, f (φ (t • x)) = t := by
     refine exists_inverse (Isometry.of_dist_eq fun x₁ x₂ ↦ ?_) (by simpa)
@@ -177,16 +188,15 @@ theorem exists_inverse' [FiniteDimensional ℝ E] [Nontrivial E]
     have _ : BorelSpace E := ⟨rfl⟩
     let w := Module.finBasis ℝ E
     exact dense_of_ae (lipschitzWith_one_norm.ae_differentiableAt (μ := w.addHaar))
-  let s := {f : E →ₗ[ℝ] ℝ | ∃ x' : E, DifferentiableAt ℝ (‖·‖) x' ∧ f = fderiv ℝ (‖·‖) x'}
+  let s : Set (E →ₗ[ℝ] ℝ) := {fderiv ℝ (‖·‖) x' | (x' : E) (_ : DifferentiableAt ℝ (‖·‖) x')}
   have aux3 (z : E) (hz : z ≠ 0) : ∃ f ∈ s, f z ≠ 0 := by
     obtain ⟨u, hu, htu⟩ := dense_seq dense_diff z
     have := (htu.fderiv_norm_tendsto_norm hu).eventually_ne (norm_ne_zero_iff.2 hz)
     rcases eventually_atTop.1 this with ⟨N, hN⟩
-    exact ⟨fderiv ℝ (‖·‖) (u N), ⟨u N, hu N, rfl⟩, hN N (le_refl N)⟩
-  let b := (Basis.ofSpan (span_eq_top_of_ne_zero aux3))
+    exact ⟨fderiv ℝ (‖·‖) (u N), ⟨u N, hu N, rfl⟩, hN N le_rfl⟩
+  let b := (Basis.ofSpan (span_eq_top_of_ne_zero (s := s) aux3))
   have hb i : ∃ y : E, ‖y‖ = 1 ∧ DifferentiableAt ℝ (‖·‖) y ∧ b i = fderiv ℝ (‖·‖) y := by
-    obtain ⟨y, dy, hy⟩ : ∃ y : E, DifferentiableAt ℝ (‖·‖) y ∧ b i = fderiv ℝ (‖·‖) y :=
-      Basis.ofSpan_subset (span_eq_top_of_ne_zero aux3) ⟨i, rfl⟩
+    obtain ⟨y, dy, hy⟩ := Basis.ofSpan_subset (span_eq_top_of_ne_zero aux3) ⟨i, rfl⟩
     have yn : y ≠ 0 := ne_zero_of_differentiableAt_norm dy
     refine ⟨(1 / ‖y‖) • y, norm_normalize yn,
       (differentiableAt_norm_smul (one_div_ne_zero (norm_ne_zero_iff.2 yn))).1 dy, ?_⟩
@@ -195,10 +205,7 @@ theorem exists_inverse' [FiniteDimensional ℝ E] [Nontrivial E]
   classical
   let c := (b.dualBasis).map (evalEquiv ℝ E).symm
   have b_map_c i j : b i (c j) = if i = j then 1 else 0 := by
-    calc
-      (b i) (c j) = evalEquiv ℝ E ((evalEquiv ℝ E).symm (b.dualBasis j)) (b i) := rfl
-      _ = b.dualBasis j (b i) := by rw [(evalEquiv ℝ E).apply_symm_apply]
-      _ = if i = j then 1 else 0 := b.dualBasis_apply_self j i
+    simp only [Basis.map_apply, apply_evalEquiv_symm_apply, Basis.dualBasis_apply_self, b, c]
   let T : F →L[ℝ] E :=
     { toFun := fun z ↦ ∑ i, (f (y i) z) • (c i)
       map_add' := fun _ ↦ by simp [Finset.sum_add_distrib, add_smul]
@@ -290,7 +297,7 @@ theorem exists_inverse'' [CompleteSpace E] [Nontrivial E]
         use n, f, fun i ↦ ⟨⟨g i, subset_span (g i).2⟩, this i⟩
         rw [← Subtype.val_inj, ← hx]
         simp [Submodule.coe_sum]
-      rcases exists_inverse' (ψ p) (hψ p) (ψz p) this with ⟨T, nT, hT⟩
+      rcases exists_inverse' (hψ p) (ψz p) this with ⟨T, nT, hT⟩
       exact ⟨T, fun y ↦ nT ▸ T.le_opNorm y, fun y ↦ congrFun hT y⟩
     · refine ⟨0, by simp, ?_⟩
       rw [not_nontrivial_iff_subsingleton] at np
