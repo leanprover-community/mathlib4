@@ -329,11 +329,11 @@ section LocallyFiniteOrderTop
 
 variable [LocallyFiniteOrderTop α] {a x : α}
 
-/-- The finset of elements `x` such that `a ≤ x`. Basically `Set.Ici a` as a finset. -/
+/-- The finset $[a, ∞)$ of elements `x` such that `a ≤ x`. Basically `Set.Ici a` as a finset. -/
 def Ici (a : α) : Finset α :=
   LocallyFiniteOrderTop.finsetIci a
 
-/-- The finset of elements `x` such that `a < x`. Basically `Set.Ioi a` as a finset. -/
+/-- The finset $(a, ∞)$ of elements `x` such that `a < x`. Basically `Set.Ioi a` as a finset. -/
 def Ioi (a : α) : Finset α :=
   LocallyFiniteOrderTop.finsetIoi a
 
@@ -359,13 +359,13 @@ section LocallyFiniteOrderBot
 
 variable [LocallyFiniteOrderBot α] {a x : α}
 
-/-- The finset of elements `x` such that `a ≤ x`. Basically `Set.Iic a` as a finset. -/
-def Iic (a : α) : Finset α :=
-  LocallyFiniteOrderBot.finsetIic a
+/-- The finset $(-∞, b]$ of elements `x` such that `x ≤ b`. Basically `Set.Iic b` as a finset. -/
+def Iic (b : α) : Finset α :=
+  LocallyFiniteOrderBot.finsetIic b
 
-/-- The finset of elements `x` such that `a < x`. Basically `Set.Iio a` as a finset. -/
-def Iio (a : α) : Finset α :=
-  LocallyFiniteOrderBot.finsetIio a
+/-- The finset $(-∞, b)$ of elements `x` such that `x < b`. Basically `Set.Iio b` as a finset. -/
+def Iio (b : α) : Finset α :=
+  LocallyFiniteOrderBot.finsetIio b
 
 @[simp]
 theorem mem_Iic : x ∈ Iic a ↔ x ≤ a :=
