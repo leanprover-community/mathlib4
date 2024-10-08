@@ -192,11 +192,10 @@ def MulEquiv.inv (G : Type*) [DivisionCommMonoid G] : G ≃* G :=
 theorem MulEquiv.inv_symm (G : Type*) [DivisionCommMonoid G] :
     (MulEquiv.inv G).symm = MulEquiv.inv G :=
   rfl
--- Porting note: no `add_equiv.neg_symm` in `mathlib3`
 
-@[to_additive]
-protected
-theorem MulEquiv.map_isUnit_iff {M N} [Monoid M] [Monoid N] [EquivLike F M N] [MonoidHomClass F M N]
-    (f : F) {m : M} : IsUnit (f m) ↔ IsUnit m :=
-  isUnit_map_of_leftInverse (MonoidHom.inverse (f : M →* N) (EquivLike.inv f)
-    (EquivLike.left_inv f) <| EquivLike.right_inv f) (EquivLike.left_inv f)
+instance isLocalRingHom_equiv [Monoid M] [Monoid N] [EquivLike F M N]
+    [MulEquivClass F M N] (f : F) : IsLocalRingHom f where
+  map_nonunit a ha := by
+    convert ha.map (f : M ≃* N).symm
+    rw [MulEquiv.eq_symm_apply]
+    rfl -- note to reviewers: ugly `rfl`

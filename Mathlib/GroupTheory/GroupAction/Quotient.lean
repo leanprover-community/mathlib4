@@ -404,12 +404,6 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive α β]
     convert one_mem H
     · rw [inv_mul_eq_one, eq_comm, ← inv_mul_eq_one, ← Subgroup.mem_bot, ← free (g⁻¹ • x),
         mem_stabilizer_iff, mul_smul, (exists_smul_eq α (g⁻¹ • x) x).choose_spec]
-    #adaptation_note
-    /--
-    After https://github.com/leanprover/lean4/pull/5376 we need to search for this instance explicitly.
-    TODO: change `convert` to more agressively solve such goals with `infer_instance` itself.
-    -/
-    infer_instance
 
 end MulAction
 
