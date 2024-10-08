@@ -7,10 +7,12 @@ import Mathlib.Condensed.Discrete.Colimit
 import Mathlib.Condensed.Discrete.Module
 /-!
 
-# Characterizing discrete condensed sets.
+# Characterizing discrete condensed sets and `R`-modules.
 
-This file proves a characterization of discrete condensed sets and discrete light condensed sets,
-see `CondensedSet.isDiscrete_tfae` and `LightCondSet.isDiscrete_tfae`.
+This file proves a characterization of discrete condensed sets, discrete condensed `R`-modules over
+a ring `R`, discrete light condensed sets, and discrete light condensed `R`-modules over a ring `R`.
+see `CondensedSet.isDiscrete_tfae`, `CondensedMod.isDiscrete_tfae`, `LightCondSet.isDiscrete_tfae`,
+and `LightCondMod.isDiscrete_tfae`.
 -/
 
 universe u
@@ -114,7 +116,50 @@ variable (R : Type (u+1)) [Ring R]
 lemma isDiscrete_iff_isDiscrete_forget (M : CondensedMod R) :
     M.IsDiscrete ↔ ((Condensed.forget R).obj M).IsDiscrete  :=
   Sheaf.isConstant_iff_forget (coherentTopology CompHaus)
-    (CategoryTheory.forget (ModuleCat R)) M CompHaus.isTerminalPUnit
+    (forget (ModuleCat R)) M CompHaus.isTerminalPUnit
+
+instance : HasLimitsOfSize.{u, u+1} (ModuleCat.{u+1} R) :=
+  hasLimitsOfSizeShrink.{u, u+1, u+1, u+1} _
+
+open CondensedMod.LocallyConstant List in
+theorem isDiscrete_tfae  (M : CondensedMod.{u} R) :
+    TFAE
+    [ M.IsDiscrete
+    , IsIso ((Condensed.discreteUnderlyingAdj _).counit.app M)
+    , M ∈ (Condensed.discrete _).essImage
+    , M ∈ (functor R).essImage
+    , IsIso ((adjunction R).counit.app M)
+    , Sheaf.IsConstant (coherentTopology Profinite)
+        ((Condensed.ProfiniteCompHaus.equivalence _).inverse.obj M)
+    , ∀ S : Profinite.{u}, Nonempty
+        (IsColimit <| (profiniteToCompHaus.op ⋙ M.val).mapCocone S.asLimitCone.op)
+    ] := by
+  tfae_have 1 ↔ 2 := Sheaf.isConstant_iff_isIso_counit_app _ _ _
+  tfae_have 1 ↔ 3 := ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
+  tfae_have 1 ↔ 4 := Sheaf.isConstant_iff_mem_essImage _ CompHaus.isTerminalPUnit (adjunction R) _
+  tfae_have 1 ↔ 5 :=
+    have : (functor R).Faithful := inferInstance
+    have : (functor R).Full := inferInstance
+    -- These `have` statements above shouldn't be needed, but they are.
+    Sheaf.isConstant_iff_isIso_counit_app' _ CompHaus.isTerminalPUnit (adjunction R) _
+  tfae_have 1 ↔ 6 :=
+    (Sheaf.isConstant_iff_of_equivalence (coherentTopology Profinite)
+      (coherentTopology CompHaus) profiniteToCompHaus Profinite.isTerminalPUnit
+      CompHaus.isTerminalPUnit _).symm
+  tfae_have 7 → 1 := by
+    intro h
+    rw [isDiscrete_iff_isDiscrete_forget, ((CondensedSet.isDiscrete_tfae _).out 0 6:)]
+    intro S
+    letI : PreservesFilteredColimitsOfSize.{u, u} (forget (ModuleCat R)) :=
+      preservesFilteredColimitsOfSizeShrink.{u, u+1, u, u+1} _
+    exact ⟨isColimitOfPreserves (forget (ModuleCat R)) (h S).some⟩
+  tfae_have 1 → 7 := by
+    intro h S
+    rw [isDiscrete_iff_isDiscrete_forget, ((CondensedSet.isDiscrete_tfae _).out 0 6:)] at h
+    letI : ReflectsFilteredColimitsOfSize.{u, u} (forget (ModuleCat R)) :=
+      reflectsFilteredColimitsOfSizeShrink.{u, u+1, u, u+1} _
+    exact ⟨isColimitOfReflects (forget (ModuleCat R)) (h S).some⟩
+  tfae_finish
 
 end CondensedMod
 
@@ -189,6 +234,41 @@ variable (R : Type u) [Ring R]
 lemma isDiscrete_iff_isDiscrete_forget (M : LightCondMod R) :
     M.IsDiscrete ↔ ((LightCondensed.forget R).obj M).IsDiscrete  :=
   Sheaf.isConstant_iff_forget (coherentTopology LightProfinite)
-    (CategoryTheory.forget (ModuleCat R)) M LightProfinite.isTerminalPUnit
+    (forget (ModuleCat R)) M LightProfinite.isTerminalPUnit
+
+open LightCondMod.LocallyConstant List in
+theorem isDiscrete_tfae  (M : LightCondMod.{u} R) :
+    TFAE
+    [ M.IsDiscrete
+    , IsIso ((LightCondensed.discreteUnderlyingAdj _).counit.app M)
+    , M ∈ (LightCondensed.discrete _).essImage
+    , M ∈ (functor R).essImage
+    , IsIso ((adjunction R).counit.app M)
+    , ∀ S : LightProfinite.{u}, Nonempty
+        (IsColimit <| M.val.mapCocone (coconeRightOpOfCone S.asLimitCone))
+    ] := by
+  tfae_have 1 ↔ 2 := Sheaf.isConstant_iff_isIso_counit_app _ _ _
+  tfae_have 1 ↔ 3 := ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
+  tfae_have 1 ↔ 4 := Sheaf.isConstant_iff_mem_essImage _
+    LightProfinite.isTerminalPUnit (adjunction R) _
+  tfae_have 1 ↔ 5 :=
+    have : (functor R).Faithful := inferInstance
+    have : (functor R).Full := inferInstance
+    -- These `have` statements above shouldn't be needed, but they are.
+    Sheaf.isConstant_iff_isIso_counit_app' _ LightProfinite.isTerminalPUnit (adjunction R) _
+  tfae_have 6 → 1 := by
+    intro h
+    rw [isDiscrete_iff_isDiscrete_forget, ((LightCondSet.isDiscrete_tfae _).out 0 5:)]
+    intro S
+    letI : PreservesFilteredColimitsOfSize.{0, 0} (forget (ModuleCat R)) :=
+      preservesFilteredColimitsOfSizeShrink.{0, u, 0, u} _
+    exact ⟨isColimitOfPreserves (forget (ModuleCat R)) (h S).some⟩
+  tfae_have 1 → 6 := by
+    intro h S
+    rw [isDiscrete_iff_isDiscrete_forget, ((LightCondSet.isDiscrete_tfae _).out 0 5:)] at h
+    letI : ReflectsFilteredColimitsOfSize.{0, 0} (forget (ModuleCat R)) :=
+      reflectsFilteredColimitsOfSizeShrink.{0, u, 0, u} _
+    exact ⟨isColimitOfReflects (forget (ModuleCat R)) (h S).some⟩
+  tfae_finish
 
 end LightCondMod
