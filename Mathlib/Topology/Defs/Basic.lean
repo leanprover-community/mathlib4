@@ -100,7 +100,7 @@ def IsClopen (s : Set X) : Prop :=
 
 /--
 A set is locally closed if it is the intersection of some open set and some closed set.
-Also see `isLocallyClosed_tfae` and other lemmas in `Mathlib/Topology/LocallyClosed`.
+Also see `isLocallyClosed_tfae` and other lemmas in `Mathlib/Topology/LocallyClosed.lean`.
 -/
 def IsLocallyClosed (s : Set X) : Prop := ∃ (U Z : Set X), IsOpen U ∧ IsClosed Z ∧ s = U ∩ Z
 
