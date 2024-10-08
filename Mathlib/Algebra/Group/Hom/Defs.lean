@@ -143,8 +143,9 @@ homomorphisms.
 
 You should also extend this typeclass when you extend `AddMonoidHom`.
 -/
-class AddMonoidHomClass (F M N : Type*) [AddZeroClass M] [AddZeroClass N] [FunLike F M N]
-  extends AddHomClass F M N, ZeroHomClass F M N : Prop
+class AddMonoidHomClass (F : Type*) (M N : outParam Type*)
+    [AddZeroClass M] [AddZeroClass N] [FunLike F M N]
+    extends AddHomClass F M N, ZeroHomClass F M N : Prop
 
 -- Instances and lemmas are defined below through `@[to_additive]`.
 end add_zero
@@ -957,8 +958,6 @@ instance [Mul M] [MulOneClass N] : Inhabited (M →ₙ* N) := ⟨1⟩
 instance [MulOneClass M] [MulOneClass N] : Inhabited (M →* N) := ⟨1⟩
 
 namespace MonoidHom
-
-variable [Group G] [CommGroup H]
 
 @[to_additive (attr := simp)]
 theorem one_comp [MulOneClass M] [MulOneClass N] [MulOneClass P] (f : M →* N) :

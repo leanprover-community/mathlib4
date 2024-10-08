@@ -806,7 +806,7 @@ If `f ∈ A` is a homogeneous element of positive degree, then the projective sp
 -/
 def projIsoSpec (f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     (Proj| pbo f) ≅ (Spec (A⁰_ f)) :=
-  @asIso (f := toSpec 𝒜 f) (isIso_toSpec 𝒜 f f_deg hm)
+  @asIso _ _ _ _ (f := toSpec 𝒜 f) (isIso_toSpec 𝒜 f f_deg hm)
 
 /--
 This is the scheme `Proj(A)` for any `ℕ`-graded ring `A`.

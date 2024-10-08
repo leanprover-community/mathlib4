@@ -159,17 +159,17 @@ class MulDivCancelClass (M₀ : Type*) [MonoidWithZero M₀] [Div M₀] : Prop w
   protected mul_div_cancel (a b : M₀) : b ≠ 0 → a * b / b = a
 
 section MulDivCancelClass
-variable [MonoidWithZero M₀] [Div M₀] [MulDivCancelClass M₀] {a b : M₀}
+variable [MonoidWithZero M₀] [Div M₀] [MulDivCancelClass M₀]
 
-@[simp] lemma mul_div_cancel_right₀ (a : M₀) (hb : b ≠ 0) : a * b / b = a :=
+@[simp] lemma mul_div_cancel_right₀ (a : M₀) {b : M₀} (hb : b ≠ 0) : a * b / b = a :=
   MulDivCancelClass.mul_div_cancel _ _ hb
 
 end MulDivCancelClass
 
 section MulDivCancelClass
-variable [CommMonoidWithZero M₀] [Div M₀] [MulDivCancelClass M₀] {a b : M₀}
+variable [CommMonoidWithZero M₀] [Div M₀] [MulDivCancelClass M₀]
 
-@[simp] lemma mul_div_cancel_left₀ (b : M₀) (ha : a ≠ 0) : a * b / a = b := by
+@[simp] lemma mul_div_cancel_left₀ (b : M₀) {a : M₀} (ha : a ≠ 0) : a * b / a = b := by
   rw [mul_comm, mul_div_cancel_right₀ _ ha]
 
 end MulDivCancelClass
@@ -216,7 +216,7 @@ end
 
 section GroupWithZero
 
-variable [GroupWithZero G₀] {a b c g h x : G₀}
+variable [GroupWithZero G₀] {a b : G₀}
 
 @[simp]
 theorem mul_inv_cancel_right₀ (h : b ≠ 0) (a : G₀) : a * b * b⁻¹ = a :=

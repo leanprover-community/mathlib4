@@ -304,6 +304,34 @@ theorem limitRecOn_limit {C} (o H₁ H₂ H₃ h) :
     @limitRecOn C o H₁ H₂ H₃ = H₃ o h fun x _h => @limitRecOn C x H₁ H₂ H₃ := by
   simp_rw [limitRecOn, SuccOrder.prelimitRecOn_of_isSuccPrelimit _ _ h.isSuccPrelimit, dif_neg h.1]
 
+/-- Bounded recursion on ordinals. Similar to `limitRecOn`, with the assumption `o < l`
+  added to all cases. The final term's domain is the ordinals below `l`. -/
+@[elab_as_elim]
+def boundedLimitRecOn {l : Ordinal} (lLim : l.IsLimit) {C : Iio l → Sort*} (o : Iio l)
+    (H₁ : C ⟨0, lLim.pos⟩) (H₂ : (o : Iio l) → C o → C ⟨succ o, lLim.succ_lt o.2⟩)
+    (H₃ : (o : Iio l) → IsLimit o → (Π o' < o, C o') → C o) : C o :=
+  limitRecOn (C := fun p ↦ (h : p < l) → C ⟨p, h⟩) o.1 (fun _ ↦ H₁)
+    (fun o ih h ↦ H₂ ⟨o, _⟩ <| ih <| (lt_succ o).trans h)
+    (fun _o ho ih _ ↦ H₃ _ ho fun _o' h ↦ ih _ h _) o.2
+
+@[simp]
+theorem boundedLimitRec_zero {l} (lLim : l.IsLimit) {C} (H₁ H₂ H₃) :
+    @boundedLimitRecOn l lLim C ⟨0, lLim.pos⟩ H₁ H₂ H₃ = H₁ := by
+  rw [boundedLimitRecOn, limitRecOn_zero]
+
+@[simp]
+theorem boundedLimitRec_succ {l} (lLim : l.IsLimit) {C} (o H₁ H₂ H₃) :
+    @boundedLimitRecOn l lLim C ⟨succ o.1, lLim.succ_lt o.2⟩ H₁ H₂ H₃ = H₂ o
+    (@boundedLimitRecOn l lLim C o H₁ H₂ H₃) := by
+  rw [boundedLimitRecOn, limitRecOn_succ]
+  rfl
+
+theorem boundedLimitRec_limit {l} (lLim : l.IsLimit) {C} (o H₁ H₂ H₃ oLim) :
+    @boundedLimitRecOn l lLim C o H₁ H₂ H₃ = H₃ o oLim (fun x _ ↦
+    @boundedLimitRecOn l lLim C x H₁ H₂ H₃) := by
+  rw [boundedLimitRecOn, limitRecOn_limit]
+  rfl
+
 instance orderTopToTypeSucc (o : Ordinal) : OrderTop (succ o).toType :=
   @OrderTop.mk _ _ (Top.mk _) le_enum_succ
 
@@ -333,16 +361,28 @@ theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : (typ
   rw [@enum_lt_enum _ r, Subtype.mk_lt_mk]
   apply lt_succ
 
--- Porting note: `· < ·` requires a type ascription for an `IsWellOrder` instance.
-theorem type_subrel_lt (o : Ordinal.{u}) :
-    type (@Subrel Ordinal (· < ·) { o' : Ordinal | o' < o }) = Ordinal.lift.{u + 1} o := by
+@[simp]
+theorem typein_ordinal (o : Ordinal.{u}) :
+    @typein Ordinal (· < ·) _ o = Ordinal.lift.{u + 1} o := by
   refine Quotient.inductionOn o ?_
   rintro ⟨α, r, wo⟩; apply Quotient.sound
   constructor; refine ((RelIso.preimage Equiv.ulift r).trans (enum r).symm).symm
 
+-- Porting note: `· < ·` requires a type ascription for an `IsWellOrder` instance.
+@[deprecated typein_ordinal (since := "2024-09-19")]
+theorem type_subrel_lt (o : Ordinal.{u}) :
+    type (@Subrel Ordinal (· < ·) { o' : Ordinal | o' < o }) = Ordinal.lift.{u + 1} o :=
+  typein_ordinal o
+
+theorem mk_Iio_ordinal (o : Ordinal.{u}) :
+    #(Iio o) = Cardinal.lift.{u + 1} o.card := by
+  rw [lift_card, ← typein_ordinal]
+  rfl
+
+@[deprecated mk_Iio_ordinal (since := "2024-09-19")]
 theorem mk_initialSeg (o : Ordinal.{u}) :
-    #{ o' : Ordinal | o' < o } = Cardinal.lift.{u + 1} o.card := by
-  rw [lift_card, ← type_subrel_lt, card_type]
+    #{ o' : Ordinal | o' < o } = Cardinal.lift.{u + 1} o.card := mk_Iio_ordinal o
+
 
 /-! ### Normal ordinal functions -/
 
@@ -2494,4 +2534,4 @@ theorem rank_strictAnti [Preorder α] [WellFoundedGT α] :
 
 end WellFounded
 
-set_option linter.style.longFile 2500
+set_option linter.style.longFile 2700

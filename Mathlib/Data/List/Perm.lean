@@ -51,25 +51,6 @@ theorem Perm.subset_congr_left {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l�
 theorem Perm.subset_congr_right {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l₃ ⊆ l₁ ↔ l₃ ⊆ l₂ :=
   ⟨fun h' => h'.trans h.subset, fun h' => h'.trans h.symm.subset⟩
 
-/-- Variant of `Perm.foldr_eq` with explicit commutativity argument. -/
-theorem Perm.foldr_eq' {f : α → β → β} {l₁ l₂ : List α} (p : l₁ ~ l₂)
-    (comm : ∀ x ∈ l₁, ∀ y ∈ l₁, ∀ z, f y (f x z) = f x (f y z))
-    (init : β) : foldr f init l₁ = foldr f init l₂ := by
-  induction p using recOnSwap' generalizing init with
-  | nil => simp
-  | cons x _p IH =>
-    simp only [foldr]
-    congr 1
-    apply IH; intros; apply comm <;> exact .tail _ ‹_›
-  | swap' x y _p IH =>
-    simp only [foldr]
-    rw [comm x (.tail _ <| .head _) y (.head _)]
-    congr 2
-    apply IH; intros; apply comm <;> exact .tail _ (.tail _ ‹_›)
-  | trans p₁ _p₂ IH₁ IH₂ =>
-    refine (IH₁ comm init).trans (IH₂ ?_ _)
-    intros; apply comm <;> apply p₁.symm.subset <;> assumption
-
 section Rel
 
 open Relator

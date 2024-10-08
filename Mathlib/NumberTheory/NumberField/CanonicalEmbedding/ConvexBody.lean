@@ -40,7 +40,7 @@ variable (K : Type*) [Field K]
 
 namespace NumberField.mixedEmbedding
 
-open NumberField NumberField.InfinitePlace FiniteDimensional
+open NumberField NumberField.InfinitePlace Module
 
 section convexBodyLT
 
@@ -450,7 +450,7 @@ end convexBodySum
 section minkowski
 
 open scoped Classical
-open MeasureTheory MeasureTheory.Measure FiniteDimensional ZSpan Real Submodule
+open MeasureTheory MeasureTheory.Measure Module ZSpan Real Submodule
 
 open scoped ENNReal NNReal nonZeroDivisors IntermediateField
 

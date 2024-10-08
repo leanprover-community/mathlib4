@@ -337,8 +337,7 @@ theorem separable_or {f : F[X]} (hf : Irreducible f) :
     exact
       Or.inr
         ⟨by rw [separable_iff_derivative_ne_zero hf, Classical.not_not, H], contract p f,
-          Irreducible.of_map (expand F p)
-            (by rwa [← expand_contract p H hp.ne'] at hf),
+          Irreducible.of_map (by rwa [← expand_contract p H hp.ne'] at hf),
           expand_contract p H hp.ne'⟩
   else Or.inl <| (separable_iff_derivative_ne_zero hf).2 H
 
@@ -652,7 +651,7 @@ theorem IsSeparable.tower_bot {x : K} (h : IsSeparable F (algebraMap K E x)) : I
 variable (K E) in
 theorem Algebra.isSeparable_tower_bot_of_isSeparable [h : Algebra.IsSeparable F E] :
     Algebra.IsSeparable F K :=
-  ⟨fun _ ↦ IsSeparable.tower_bot (h.isSeparable _)⟩
+  ⟨fun _ ↦ IsSeparable.tower_bot (h.isSeparable _ _)⟩
 
 end IsScalarTower
 
