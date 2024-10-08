@@ -530,7 +530,7 @@ theorem lintegral_add_aux {f g : α → ℝ≥0∞} (hf : Measurable f) (hg : Me
         funext n
         rw [← SimpleFunc.add_lintegral, ← SimpleFunc.lintegral_eq_lintegral]
         simp only [Pi.add_apply, SimpleFunc.coe_add]
-      · measurability
+      · fun_prop
       · intro i j h a
         dsimp
         gcongr <;> exact monotone_eapprox _ h _
