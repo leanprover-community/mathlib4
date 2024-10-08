@@ -17,7 +17,8 @@ note: this linter can be disabled with `set_option linter.style.header false`
 ---
 warning: The module doc-string for a file should be the first command after the imports.
 Please, add a module doc-string before `/-!# Tests for the `docModule` linter
--/`.
+-/
+`.
 note: this linter can be disabled with `set_option linter.style.header false`
 -/
 #guard_msgs in
