@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
 import Mathlib.Analysis.Calculus.Deriv.Abs
-import Mathlib.Analysis.Calculus.Rademacher
+import Mathlib.Analysis.Calculus.LineDeriv.Basic
 
 /-!
 # Differentiabilty of the norm in a real normed vector space
@@ -183,18 +183,3 @@ theorem norm_fderiv_norm [Nontrivial E] (h : DifferentiableAt ℝ (‖·‖) x) 
     1 * ‖x‖ = fderiv ℝ (‖·‖) x x := by rw [one_mul, h.fderiv_norm_self]
     _ ≤ ‖fderiv ℝ (‖·‖) x x‖ := le_norm_self _
     _ ≤ ‖fderiv ℝ (‖·‖) x‖ * ‖x‖ := le_opNorm _ _
-
-/-- In a real finite-dimensional normed vector space,
-  the norm is almost everywhere differentiable. -/
-theorem ae_differentiableAt_norm [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
-    {μ : MeasureTheory.Measure E} [μ.IsAddHaarMeasure] :
-  ∀ᵐ x ∂μ, DifferentiableAt ℝ (‖·‖) x := lipschitzWith_one_norm.ae_differentiableAt
-
-/-- In a real finite-dimensional normed vector space,
-  the set of points where the norm is differentiable at is dense. -/
-theorem dense_differentiableAt_norm [FiniteDimensional ℝ E] :
-    Dense {x : E | DifferentiableAt ℝ (‖·‖) x} :=
-  let _ : MeasurableSpace E := borel E
-  have _ : BorelSpace E := ⟨rfl⟩
-  let w := Basis.ofVectorSpace ℝ E
-  MeasureTheory.Measure.dense_of_ae (ae_differentiableAt_norm (μ := w.addHaar))
