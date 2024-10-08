@@ -279,11 +279,15 @@ abbrev cosk (n : ℕ) [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
 end
 
 section adjunctions
+/- When the left and right Kan extensions exist, `Truncated.sk n` and `Truncated.cosk n`
+respectively define left and right adjoints to `truncation n`.-/
+
+
 variable (n : ℕ)
 variable [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
-    SimplexCategory.Truncated.inclusion.op.HasPointwiseRightKanExtension F]
+    SimplexCategory.Truncated.inclusion.op.HasRightKanExtension F]
 variable [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
-    SimplexCategory.Truncated.inclusion.op.HasPointwiseLeftKanExtension F]
+    SimplexCategory.Truncated.inclusion.op.HasLeftKanExtension F]
 
 /-- The adjunction between the n-skeleton and n-truncation.-/
 noncomputable def skAdj : Truncated.sk (C := C) n ⊣ truncation n :=
@@ -294,11 +298,18 @@ noncomputable def coskAdj : truncation (C := C) n ⊣ Truncated.cosk n :=
   ranAdjunction _ _
 
 namespace Truncated
+/- When the left and right Kan extensions exist and are pointwise Kan extensions,
+`skAdj n` and `coskAdj n` are respectively coreflective and reflective.-/
+
+variable [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
+    SimplexCategory.Truncated.inclusion.op.HasPointwiseRightKanExtension F]
+variable [∀ (F : (SimplexCategory.Truncated n)ᵒᵖ ⥤ C),
+    SimplexCategory.Truncated.inclusion.op.HasPointwiseLeftKanExtension F]
 
 instance cosk_reflective : IsIso (coskAdj (C := C) n).counit :=
   reflective' SimplexCategory.Truncated.inclusion.op
 
-instance sk_reflective : IsIso ((skAdj (C := C) n).unit) :=
+instance sk_coreflective : IsIso (skAdj (C := C) n).unit :=
   coreflective' SimplexCategory.Truncated.inclusion.op
 
 /-- Since `Truncated.inclusion` is fully faithful, so is right Kan extension along it.-/

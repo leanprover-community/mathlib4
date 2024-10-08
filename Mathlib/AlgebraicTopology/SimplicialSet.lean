@@ -385,11 +385,11 @@ noncomputable def coskAdj (n : ℕ) : truncation.{u} n ⊣ Truncated.cosk n :=
 
 namespace Truncated
 
-instance cosk_reflective (n) : IsIso ((coskAdj n).counit) :=
+instance cosk_reflective (n) : IsIso (coskAdj n).counit :=
   SimplicialObject.Truncated.cosk_reflective n
 
-instance sk_reflective (n) : IsIso ((skAdj n).unit) :=
-  SimplicialObject.Truncated.sk_reflective n
+instance sk_coreflective (n) : IsIso (skAdj n).unit :=
+  SimplicialObject.Truncated.sk_coreflective n
 
 /-- Since `Truncated.inclusion` is fully faithful, so is right Kan extension along it.-/
 noncomputable def cosk.fullyFaithful (n) :
@@ -407,11 +407,9 @@ noncomputable instance coskAdj.reflective (n) : Reflective (Truncated.cosk n) :=
 
 /-- Since `Truncated.inclusion` is fully faithful, so is left Kan extension along it.-/
 noncomputable def sk.fullyFaithful (n) :
-    (Truncated.sk n).FullyFaithful :=
-  SimplicialObject.Truncated.sk.fullyFaithful n
+    (Truncated.sk n).FullyFaithful := SimplicialObject.Truncated.sk.fullyFaithful n
 
-instance sk.full (n) : (Truncated.sk n).Full :=
-  SimplicialObject.Truncated.sk.full n
+instance sk.full (n) : (Truncated.sk n).Full := SimplicialObject.Truncated.sk.full n
 
 instance sk.faithful (n) : (Truncated.sk n).Faithful :=
   SimplicialObject.Truncated.sk.faithful n
