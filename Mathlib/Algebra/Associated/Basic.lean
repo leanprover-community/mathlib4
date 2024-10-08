@@ -249,7 +249,7 @@ theorem Irreducible.dvd_comm [Monoid M] {p q : M} (hp : Irreducible p) (hq : Irr
   ⟨hp.dvd_symm hq, hq.dvd_symm hp⟩
 
 theorem Irreducible.of_map {F : Type*} [Monoid M] [Monoid N] [FunLike F M N] [MonoidHomClass F M N]
-    (f : F) [IsLocalHom f] {x} (hfx : Irreducible (f x)) : Irreducible x :=
+    {f : F} [IsLocalHom f] {x} (hfx : Irreducible (f x)) : Irreducible x :=
   ⟨fun hu ↦ hfx.not_unit <| hu.map f,
    by rintro p q rfl
       exact (hfx.isUnit_or_isUnit <| map_mul f p q).imp (.of_map f _) (.of_map f _)⟩
@@ -308,7 +308,7 @@ theorem Irreducible.map {x : M} (h : Irreducible x) : Irreducible (f x) :=
 
 theorem MulEquiv.irreducible_iff (f : F) {a : M} :
     Irreducible (f a) ↔ Irreducible a :=
-  ⟨Irreducible.of_map f, Irreducible.map f⟩
+  ⟨Irreducible.of_map, Irreducible.map f⟩
 
 end
 
