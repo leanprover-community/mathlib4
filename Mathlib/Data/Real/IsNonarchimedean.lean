@@ -15,11 +15,6 @@ A function `f : R → ℝ≥0` is nonarchimedean if it satisfies the strong tria
 nonarchimedean functions.
 -/
 
-/-- A function `f : R → ℝ≥0` is nonarchimedean if it satisfies the strong triangle inequality
-  `f (r + s) ≤ max (f r) (f s)` for all `r s : R`. -/
-def IsNonarchimedean {A : Type*} [Add A] (f : A → ℝ) : Prop :=
-  ∀ r s, f (r + s) ≤ max (f r) (f s)
-
 namespace IsNonarchimedean
 
 /-- A nonarchimedean function satisfies the triangle inequality. -/
