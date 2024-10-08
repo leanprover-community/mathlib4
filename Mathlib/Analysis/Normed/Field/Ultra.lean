@@ -58,7 +58,7 @@ lemma isUltrametricDist_of_forall_norm_sub_one_of_norm_le_one
     rw [← div_le_div_right (c := ‖x‖) (h.trans' zero_lt_one), div_self (h.trans' zero_lt_one).ne',
         ← norm_div, add_div, div_self (by simpa using (h.trans' zero_lt_one)), add_comm]
     apply this
-    simp [inv_le_one_iff, h.le]
+    simp [inv_le_one_iff₀, h.le]
 
 lemma isUltrametricDist_of_forall_norm_natCast_le_one
     (h : ∀ n : ℕ, ‖(n : F)‖ ≤ 1) : IsUltrametricDist F := by
