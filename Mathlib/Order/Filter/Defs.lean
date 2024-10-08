@@ -17,7 +17,7 @@ structure Filter (α : Type*) where
 
 namespace Filter
 
-variable {α β : Type*} {s t : Set α} {f g : Filter α}
+variable {α β : Type*} {f g : Filter α} {s t : Set α}
 
 theorem filter_eq : ∀ {f g : Filter α}, f.sets = g.sets → f = g
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
