@@ -179,7 +179,8 @@ example (a b : ℝ) (ha : 2 * a = 4) (hab : 2 * b = a - b) : b = 2 / 3 := by
   linear_combination (norm := ring_nf) 1 / 6 * ha + 1 / 3 * hab
 
 example (x y : ℤ) (h1 : 3 * x + 2 * y = 10) : 3 * x + 2 * y = 10 := by
-  linear_combination (norm := simp) h1
+  linear_combination (norm := skip) h1
+  ring1
 
 /-! ### Cases that have linear_combination skip normalization -/
 
@@ -189,7 +190,7 @@ example (a b : ℝ) (ha : 2 * a = 4) (hab : 2 * b = a - b) : b = 2 / 3 := by
 
 example (x y : ℤ) (h1 : x = -3) (_h2 : y = 10) : 2 * x = -6 := by
   linear_combination (norm := skip) 2 * h1
-  simp (config := {decide := true})
+  ring1
 
 /-! ### Cases without any arguments provided -/
 
@@ -202,7 +203,7 @@ example (x : ℤ) : x ^ 2 = x ^ 2 := by linear_combination
 -- this interacts as expected with options
 example {x y z w : ℤ} (_h₁ : 3 * x = 4 + y) (_h₂ : x + 2 * y = 1) : z + w = w + z := by
   linear_combination (norm := skip)
-  guard_target = z + w - (w + z) - (0 - 0) = 0
+  guard_target = z + w + 0 - (w + z + 0) = 0
   simp [add_comm]
 
 example {x y z w : ℤ} (_h₁ : 3 * x = 4 + y) (_h₂ : x + 2 * y = 1) : z + w = w + z := by
