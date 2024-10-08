@@ -29,7 +29,7 @@ variable {R : Type*}
 
 namespace Polynomial
 
-noncomputable abbrev Legendre (n : ℕ) : ℝ[X] :=
+noncomputable def Legendre (n : ℕ) : ℝ[X] :=
   C (n ! : ℝ)⁻¹ * derivative^[n] (X ^ n * (1 - X) ^ n)
 
 lemma Finsum_iterate_deriv [CommRing R] {k : ℕ} {h : ℕ → ℕ} :
@@ -113,7 +113,7 @@ lemma deriv_one_sub_X {n i : ℕ} : (⇑derivative)^[i] ((1 - X) ^ n : ℝ[X]) =
 lemma legendre_eval_symm (n : ℕ) (x : ℝ) :
     eval x (Legendre n) = (-1) ^ n * eval (1 - x) (Legendre n) := by
   rw [mul_comm]
-  simp only [eval_mul, one_div, eval_C]
+  simp only [Legendre, eval_mul, one_div, eval_C]
   rw [mul_assoc]
   simp only [mul_eq_mul_left_iff, inv_eq_zero, Nat.cast_eq_zero]; left
   rw [Polynomial.iterate_derivative_mul]
