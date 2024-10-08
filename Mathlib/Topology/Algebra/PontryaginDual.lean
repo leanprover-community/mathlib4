@@ -64,7 +64,7 @@ instance [LocallyCompactSpace G] : LocallyCompactSpace (PontryaginDual G) := by
     apply Set.Ioo_subset_Ioc_self
     rw [← two_mul, Set.mem_Ioo, ← abs_lt, abs_mul, abs_two, ← lt_div_iff₀' two_pos]
     exact h1.trans_le
-      (div_le_div_of_nonneg_left Real.pi_nonneg two_pos (le_self_pow one_le_two n.succ_ne_zero))
+      (div_le_div_of_nonneg_left Real.pi_nonneg two_pos (le_self_pow₀ one_le_two n.succ_ne_zero))
   · rw [← Circle.exp_zero, ← isLocalHomeomorph_circleExp.map_nhds_eq 0]
     refine ((nhds_basis_zero_abs_sub_lt ℝ).to_hasBasis
         (fun x hx ↦ ⟨Nat.ceil (Real.pi / x), trivial, fun t ht ↦ ?_⟩)

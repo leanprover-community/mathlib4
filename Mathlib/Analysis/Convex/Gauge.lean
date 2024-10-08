@@ -214,7 +214,7 @@ theorem le_gauge_of_not_mem (hs₀ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s 
   have ha := hb.trans hba
   refine ⟨(a⁻¹ * b) • x, hs₀ hx' (by positivity) ?_, ?_⟩
   · rw [← div_eq_inv_mul]
-    exact div_le_one_of_le hba.le ha.le
+    exact div_le_one_of_le₀ hba.le ha.le
   · dsimp only
     rw [← mul_smul, mul_inv_cancel_left₀ ha.ne']
 
