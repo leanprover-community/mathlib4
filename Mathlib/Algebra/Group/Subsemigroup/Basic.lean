@@ -308,13 +308,13 @@ theorem closure_induction {p : ∀ x, x ∈ closure s → Prop}
   predicates with two arguments."]
 theorem closure_induction₂ {p : ∀ x y, x ∈ closure s → y ∈ closure s → Prop}
     (mem : ∀ (x) (hx : x ∈ s) (y) (hy : y ∈ s), p x y (subset_closure hx) (subset_closure hy))
-    (mul_left : ∀ x hx y hy z hz , p x z hx hz → p y z hy hz → p (x * y) z (mul_mem hx hy) hz)
-    (mul_right : ∀ x hx y hy z hz , p z x hz hx → p z y hz hy → p z (x * y) hz (mul_mem hx hy))
+    (mul_left : ∀ x hx y hy z hz, p x z hx hz → p y z hy hz → p (x * y) z (mul_mem hx hy) hz)
+    (mul_right : ∀ x hx y hy z hz, p z x hz hx → p z y hz hy → p z (x * y) hz (mul_mem hx hy))
     {x y : M} (hx : x ∈ closure s) (hy : y ∈ closure s) : p x y hx hy := by
   induction hx using closure_induction with
     | mem z hz => induction hy using closure_induction with
       | mem _ h => exact mem _ hz _ h
-      | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ (subset_closure hz) h₁ h₂
+      | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ _ h₁ h₂
     | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ hy h₁ h₂
 
 /-- If `s` is a dense set in a magma `M`, `Subsemigroup.closure s = ⊤`, then in order to prove that

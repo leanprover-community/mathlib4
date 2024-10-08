@@ -395,7 +395,7 @@ theorem closure_induction₂ {p : ∀ x y, x ∈ closure s → y ∈ closure s �
     | mem z hz => induction hx using closure_induction with
       | mem _ h => exact mem _ h _ hz
       | one => exact one_left _ (subset_closure hz)
-      | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ (subset_closure hz) h₁ h₂
+      | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
     | one => exact one_right x hx
     | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ hx h₁ h₂
 
