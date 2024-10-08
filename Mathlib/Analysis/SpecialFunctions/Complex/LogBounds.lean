@@ -110,7 +110,7 @@ lemma norm_one_add_mul_inv_le {t : ℝ} (ht : t ∈ Set.Icc 0 1) {z : ℂ} (hz :
     ‖(1 + t * z)⁻¹‖ ≤ (1 - ‖z‖)⁻¹ := by
   rw [Set.mem_Icc] at ht
   rw [norm_inv, norm_eq_abs]
-  refine inv_le_inv_of_le (by linarith) ?_
+  refine inv_anti₀ (by linarith) ?_
   calc 1 - ‖z‖
     _ ≤ 1 - t * ‖z‖ := by
       nlinarith [norm_nonneg z]

@@ -959,8 +959,6 @@ instance [MulOneClass M] [MulOneClass N] : Inhabited (M →* N) := ⟨1⟩
 
 namespace MonoidHom
 
-variable [Group G] [CommGroup H]
-
 @[to_additive (attr := simp)]
 theorem one_comp [MulOneClass M] [MulOneClass N] [MulOneClass P] (f : M →* N) :
     (1 : N →* P).comp f = 1 := rfl
