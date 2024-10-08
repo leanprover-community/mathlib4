@@ -760,7 +760,7 @@ the addition, together with properties of the other operations, are proved in
 every element of `o₁` is smaller than every element of `o₂`. -/
 instance add : Add Ordinal.{u} :=
   ⟨fun o₁ o₂ => Quotient.liftOn₂ o₁ o₂ (fun ⟨_, r, _⟩ ⟨_, s, _⟩ => type (Sum.Lex r s))
-    fun _ _ _ _ ⟨f⟩ ⟨g⟩ => Quot.sound ⟨RelIso.sumLexCongr f g⟩⟩
+    fun _ _ _ _ ⟨f⟩ ⟨g⟩ => (RelIso.sumLexCongr f g).ordinal_type_eq⟩
 
 instance addMonoidWithOne : AddMonoidWithOne Ordinal.{u} where
   add := (· + ·)
