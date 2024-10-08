@@ -1387,6 +1387,22 @@ theorem iSup_ord {ι} {f : ι → Cardinal} (hf : BddAbove (range f)) :
   conv_lhs => change range (ord ∘ f)
   rw [range_comp]
 
+theorem sInf_compl_lt_lift_ord_succ {ι : Type u} (f : ι → Ordinal.{max u v}) :
+    sInf (range f)ᶜ < lift.{v} (succ #ι).ord := by
+  by_contra! h
+  have : Iio (lift.{v} (succ #ι).ord) ⊆ range f := by
+    intro o ho
+    have := not_mem_of_lt_csInf' (ho.trans_le h)
+    rwa [not_mem_compl_iff] at this
+  have := mk_le_mk_of_subset this
+  rw [mk_Iio_ordinal, ← lift_card, Cardinal.lift_lift, card_ord, Cardinal.lift_succ,
+    succ_le_iff, ← Cardinal.lift_id'.{u, max (u + 1) (v + 1)} #_] at this
+  exact this.not_le mk_range_le_lift
+
+theorem sInf_compl_lt_ord_succ {ι : Type u} (f : ι → Ordinal.{u}) :
+    sInf (range f)ᶜ < (succ #ι).ord :=
+  lift_id (succ #ι).ord ▸ sInf_compl_lt_lift_ord_succ f
+
 -- TODO: remove `bsup` in favor of `iSup` in a future refactor.
 
 section bsup
@@ -1932,30 +1948,38 @@ set_option linter.deprecated false
 
 
 /-- The minimum excluded ordinal in a family of ordinals. -/
+@[deprecated "use sInf sᶜ instead" (since := "2024-09-20")]
 def mex {ι : Type u} (f : ι → Ordinal.{max u v}) : Ordinal :=
   sInf (Set.range f)ᶜ
 
+@[deprecated (since := "2024-09-20")]
 theorem mex_not_mem_range {ι : Type u} (f : ι → Ordinal.{max u v}) : mex.{_, v} f ∉ Set.range f :=
   csInf_mem (nonempty_compl_range.{_, v} f)
 
+@[deprecated (since := "2024-09-20")]
 theorem le_mex_of_forall {ι : Type u} {f : ι → Ordinal.{max u v}} {a : Ordinal}
     (H : ∀ b < a, ∃ i, f i = b) : a ≤ mex.{_, v} f := by
   by_contra! h
   exact mex_not_mem_range f (H _ h)
 
+@[deprecated (since := "2024-09-20")]
 theorem ne_mex {ι : Type u} (f : ι → Ordinal.{max u v}) : ∀ i, f i ≠ mex.{_, v} f := by
   simpa using mex_not_mem_range.{_, v} f
 
+@[deprecated (since := "2024-09-20")]
 theorem mex_le_of_ne {ι} {f : ι → Ordinal} {a} (ha : ∀ i, f i ≠ a) : mex f ≤ a :=
   csInf_le' (by simp [ha])
 
+@[deprecated (since := "2024-09-20")]
 theorem exists_of_lt_mex {ι} {f : ι → Ordinal} {a} (ha : a < mex f) : ∃ i, f i = a := by
   by_contra! ha'
   exact ha.not_le (mex_le_of_ne ha')
 
+@[deprecated (since := "2024-09-20")]
 theorem mex_le_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) : mex.{_, v} f ≤ lsub.{_, v} f :=
   csInf_le' (lsub_not_mem_range f)
 
+@[deprecated (since := "2024-09-20")]
 theorem mex_monotone {α β : Type u} {f : α → Ordinal.{max u v}} {g : β → Ordinal.{max u v}}
     (h : Set.range f ⊆ Set.range g) : mex.{_, v} f ≤ mex.{_, v} g := by
   refine mex_le_of_ne fun i hi => ?_
@@ -1963,6 +1987,7 @@ theorem mex_monotone {α β : Type u} {f : α → Ordinal.{max u v}} {g : β →
   rw [← hj] at hi
   exact ne_mex g j hi
 
+@[deprecated sInf_compl_lt_ord_succ (since := "2024-09-20")]
 theorem mex_lt_ord_succ_mk {ι : Type u} (f : ι → Ordinal.{u}) :
     mex.{_, u} f < (succ #ι).ord := by
   by_contra! h
@@ -1983,18 +2008,22 @@ theorem mex_lt_ord_succ_mk {ι : Type u} (f : ι → Ordinal.{u}) :
     `familyOfBFamily`.
 
     This is to `mex` as `bsup` is to `sup`. -/
+@[deprecated "use sInf sᶜ instead" (since := "2024-09-20")]
 def bmex (o : Ordinal) (f : ∀ a < o, Ordinal) : Ordinal :=
   mex (familyOfBFamily o f)
 
+@[deprecated (since := "2024-09-20")]
 theorem bmex_not_mem_brange {o : Ordinal} (f : ∀ a < o, Ordinal) : bmex o f ∉ brange o f := by
   rw [← range_familyOfBFamily]
   apply mex_not_mem_range
 
+@[deprecated (since := "2024-09-20")]
 theorem le_bmex_of_forall {o : Ordinal} (f : ∀ a < o, Ordinal) {a : Ordinal}
     (H : ∀ b < a, ∃ i hi, f i hi = b) : a ≤ bmex o f := by
   by_contra! h
   exact bmex_not_mem_brange f (H _ h)
 
+@[deprecated (since := "2024-09-20")]
 theorem ne_bmex {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) {i} (hi) :
     f i hi ≠ bmex.{_, v} o f := by
   convert (config := {transparency := .default})
@@ -2002,24 +2031,29 @@ theorem ne_bmex {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) {i} (hi) :
   -- Porting note: `familyOfBFamily_enum` → `typein_enum`
   rw [typein_enum]
 
+@[deprecated (since := "2024-09-20")]
 theorem bmex_le_of_ne {o : Ordinal} {f : ∀ a < o, Ordinal} {a} (ha : ∀ i hi, f i hi ≠ a) :
     bmex o f ≤ a :=
   mex_le_of_ne fun _i => ha _ _
 
+@[deprecated (since := "2024-09-20")]
 theorem exists_of_lt_bmex {o : Ordinal} {f : ∀ a < o, Ordinal} {a} (ha : a < bmex o f) :
     ∃ i hi, f i hi = a := by
   cases' exists_of_lt_mex ha with i hi
   exact ⟨_, typein_lt_self i, hi⟩
 
+@[deprecated (since := "2024-09-20")]
 theorem bmex_le_blsub {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{max u v}) :
     bmex.{_, v} o f ≤ blsub.{_, v} o f :=
   mex_le_lsub _
 
+@[deprecated (since := "2024-09-20")]
 theorem bmex_monotone {o o' : Ordinal.{u}}
     {f : ∀ a < o, Ordinal.{max u v}} {g : ∀ a < o', Ordinal.{max u v}}
     (h : brange o f ⊆ brange o' g) : bmex.{_, v} o f ≤ bmex.{_, v} o' g :=
   mex_monotone (by rwa [range_familyOfBFamily, range_familyOfBFamily])
 
+@[deprecated sInf_compl_lt_ord_succ (since := "2024-09-20")]
 theorem bmex_lt_ord_succ_card {o : Ordinal.{u}} (f : ∀ a < o, Ordinal.{u}) :
     bmex.{_, u} o f < (succ o.card).ord := by
   rw [← mk_toType]

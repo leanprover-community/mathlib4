@@ -171,7 +171,7 @@ lemma IsIntegralCurveOn.hasDerivAt (hγ : IsIntegralCurveOn γ v s) {t : ℝ} (h
 lemma IsIntegralCurveAt.eventually_hasDerivAt (hγ : IsIntegralCurveAt γ v t₀) :
     ∀ᶠ t in 𝓝 t₀, HasDerivAt ((extChartAt I (γ t₀)) ∘ γ)
       (tangentCoordChange I (γ t) (γ t₀) (γ t) (v (γ t))) t := by
-  apply eventually_mem_nhds.mpr
+  apply eventually_mem_nhds_iff.mpr
     (hγ.continuousAt.preimage_mem_nhds (extChartAt_source_mem_nhds I _)) |>.and hγ |>.mono
   rintro t ⟨ht1, ht2⟩
   have hsrc := mem_of_mem_nhds ht1
@@ -325,7 +325,7 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt [CompleteSpace E]
   rw [continuousAt_def, hf1] at hcont
   have hnhds : f ⁻¹' (interior (extChartAt I x₀).target) ∈ 𝓝 t₀ :=
     hcont _ (isOpen_interior.mem_nhds ((I.isInteriorPoint_iff).mp hx))
-  rw [← eventually_mem_nhds] at hnhds
+  rw [← eventually_mem_nhds_iff] at hnhds
   -- obtain a neighbourhood `s` so that the above conditions both hold in `s`
   obtain ⟨s, hs, haux⟩ := (hf2.and hnhds).exists_mem
   -- prove that `γ := (extChartAt I x₀).symm ∘ f` is a desired integral curve
@@ -391,7 +391,7 @@ theorem isIntegralCurveAt_eventuallyEq_of_contMDiffAt (hγt₀ : I.IsInteriorPoi
   have hlip (t : ℝ) : LipschitzOnWith K ((fun _ ↦ v') t) ((fun _ ↦ s) t) := hlip
   -- internal lemmas to reduce code duplication
   have hsrc {g} (hg : IsIntegralCurveAt g v t₀) :
-    ∀ᶠ t in 𝓝 t₀, g ⁻¹' (extChartAt I (g t₀)).source ∈ 𝓝 t := eventually_mem_nhds.mpr <|
+    ∀ᶠ t in 𝓝 t₀, g ⁻¹' (extChartAt I (g t₀)).source ∈ 𝓝 t := eventually_mem_nhds_iff.mpr <|
       continuousAt_def.mp hg.continuousAt _ <| extChartAt_source_mem_nhds I (g t₀)
   have hmem {g : ℝ → M} {t} (ht : g ⁻¹' (extChartAt I (g t₀)).source ∈ 𝓝 t) :
     g t ∈ (extChartAt I (g t₀)).source := mem_preimage.mp <| mem_of_mem_nhds ht
