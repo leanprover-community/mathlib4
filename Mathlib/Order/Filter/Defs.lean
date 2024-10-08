@@ -1,4 +1,57 @@
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Jeremy Avigad
+-/
 import Mathlib.Data.Set.Basic
+import Mathlib.Order.SetNotation
+
+/-!
+# Definitions about filters
+
+A *filter* on a type `α` is a collection of sets of `α` which contains the whole `α`,
+is upwards-closed, and is stable under intersection. Filters are mostly used to
+abstract two related kinds of ideas:
+* *limits*, including finite or infinite limits of sequences, finite or infinite limits of functions
+  at a point or at infinity, etc...
+* *things happening eventually*, including things happening for large enough `n : ℕ`, or near enough
+  a point `x`, or for close enough pairs of points, or things happening almost everywhere in the
+  sense of measure theory. Dually, filters can also express the idea of *things happening often*:
+  for arbitrarily large `n`, or at a point in any neighborhood of given a point etc...
+
+## Main definitions
+
+* `Filter` : filters on a set;
+* `Filter.principal`, `𝓟 s` : filter of all sets containing a given set;
+* `Filter.map`, `Filter.comap` : operations on filters;
+* `Filter.Tendsto` : limit with respect to filters;
+* `Filter.Eventually` : `f.Eventually p` means `{x | p x} ∈ f`;
+* `Filter.Frequently` : `f.Frequently p` means `{x | ¬p x} ∉ f`;
+* `filter_upwards [h₁, ..., hₙ]` :
+  a tactic that takes a list of proofs `hᵢ : sᵢ ∈ f`,
+  and replaces a goal `s ∈ f` with `∀ x, x ∈ s₁ → ... → x ∈ sₙ → x ∈ s`;
+* `Filter.NeBot f` : a utility class stating that `f` is a non-trivial filter.
+
+## Notations
+
+* `∀ᶠ x in f, p x` : `f.Eventually p`;
+* `∃ᶠ x in f, p x` : `f.Frequently p`;
+* `f =ᶠ[l] g` : `∀ᶠ x in l, f x = g x`;
+* `f ≤ᶠ[l] g` : `∀ᶠ x in l, f x ≤ g x`;
+* `𝓟 s` : `Filter.Principal s`, localized in `Filter`.
+
+## Implementation Notes
+
+Important note: Bourbaki requires that a filter on `X` cannot contain all sets of `X`,
+which we do *not* require.
+This gives `Filter X` better formal properties,
+in particular a bottom element `⊥` for its lattice structure,
+at the cost of including the assumption `[NeBot f]` in a number of lemmas and definitions.
+
+## References
+
+*  [N. Bourbaki, *General Topology*][bourbaki1966]
+-/
 
 open Set
 
@@ -88,6 +141,9 @@ scoped notation "𝓟" => Filter.principal
 
 @[simp] theorem mem_principal : s ∈ 𝓟 t ↔ t ⊆ s := Iff.rfl
 
+/-- The *kernel* of a filter is the intersection of all its sets. -/
+def ker (f : Filter α) : Set α := ⋂₀ f.sets
+
 /-- The join of a filter of filters is defined by the relation `s ∈ join f ↔ {t | s ∈ t} ∈ f`. -/
 def join (f : Filter (Filter α)) : Filter α where
   sets := { s | { t : Filter α | s ∈ t } ∈ f }
@@ -147,6 +203,14 @@ instance : Inf (Filter α) :=
         rintro x y ⟨a, ha, b, hb, rfl⟩ ⟨c, hc, d, hd, rfl⟩
         refine ⟨a ∩ c, inter_mem ha hc, b ∩ d, inter_mem hb hd, ?_⟩
         ac_rfl }⟩
+
+/-- The supremum of two filters is the filter that contains sets that belong to both filters. -/
+instance : Sup (Filter α) where
+  sup f g :=
+    { sets := {s | s ∈ f ∧ s ∈ g}
+      univ_sets := ⟨univ_mem, univ_mem⟩
+      sets_of_superset := fun h₁ h₂ ↦ ⟨mem_of_superset h₁.1 h₂, mem_of_superset h₁.2 h₂⟩
+      inter_sets := fun h₁ h₂ ↦ ⟨inter_mem h₁.1 h₂.1, inter_mem h₁.2 h₂.2⟩ }
 
 /-- A filter is `NeBot` if it is not equal to `⊥`, or equivalently the empty set does not belong to
 the filter. Bourbaki include this assumption in the definition of a filter but we prefer to have a
@@ -220,6 +284,10 @@ def comap (m : α → β) (f : Filter β) : Filter α where
 of elements of the component filters. -/
 protected def prod (f : Filter α) (g : Filter β) : Filter (α × β) :=
   f.comap Prod.fst ⊓ g.comap Prod.snd
+
+/-- Coproduct of filters. -/
+protected def coprod (f : Filter α) (g : Filter β) : Filter (α × β) :=
+  f.comap Prod.fst ⊔ g.comap Prod.snd
 
 instance instSProd : SProd (Filter α) (Filter β) (Filter (α × β)) where
   sprod := Filter.prod

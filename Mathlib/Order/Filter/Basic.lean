@@ -9,20 +9,8 @@ import Mathlib.Order.Filter.Defs
 /-!
 # Theory of filters on sets
 
-## Main definitions
-
-* `Filter` : filters on a set;
-* `Filter.principal` : filter of all sets containing a given set;
-* `Filter.map`, `Filter.comap` : operations on filters;
-* `Filter.Tendsto` : limit with respect to filters;
-* `Filter.Eventually` : `f.eventually p` means `{x | p x} ∈ f`;
-* `Filter.Frequently` : `f.frequently p` means `{x | ¬p x} ∉ f`;
-* `filter_upwards [h₁, ..., hₙ]` :
-  a tactic that takes a list of proofs `hᵢ : sᵢ ∈ f`,
-  and replaces a goal `s ∈ f` with `∀ x, x ∈ s₁ → ... → x ∈ sₙ → x ∈ s`;
-* `Filter.NeBot f` : a utility class stating that `f` is a non-trivial filter.
-
-Filters on a type `X` are sets of sets of `X` satisfying three conditions. They are mostly used to
+A *filter* on a type `α` is a collection of sets of `α` which contains the whole `α`,
+is upwards-closed, and is stable under intersection. They are mostly used to
 abstract two related kinds of ideas:
 * *limits*, including finite or infinite limits of sequences, finite or infinite limits of functions
   at a point or at infinity, etc...
@@ -31,8 +19,10 @@ abstract two related kinds of ideas:
   sense of measure theory. Dually, filters can also express the idea of *things happening often*:
   for arbitrarily large `n`, or at a point in any neighborhood of given a point etc...
 
-In this file, we define the type `Filter X` of filters on `X`, and endow it with a complete lattice
-structure. This structure is lifted from the lattice structure on `Set (Set X)` using the Galois
+## Main definitions
+
+In this file, we endow `Filter α` it with a complete lattice structure.
+This structure is lifted from the lattice structure on `Set (Set X)` using the Galois
 insertion which maps a filter to its elements in one direction, and an arbitrary set of sets to
 the smallest filter containing it in the other direction.
 We also prove `Filter` is a monadic functor, with a push-forward operation
