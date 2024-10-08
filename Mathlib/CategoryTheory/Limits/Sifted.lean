@@ -93,22 +93,20 @@ instance [HasBinaryCoproducts C] : IsSiftedOrEmpty C where
   out := by
     constructor
     rintro ⟨c₁, c₂⟩
-    haveI : _root_.Nonempty <|StructuredArrow (c₁,c₂) (diag C) := by
-      constructor
-      exact StructuredArrow.mk ((coprod.inl : c₁ ⟶ c₁ ⨿ c₂), (coprod.inr : c₂ ⟶ c₁ ⨿ c₂))
+    haveI : _root_.Nonempty <|StructuredArrow (c₁,c₂) (diag C) :=
+      ⟨StructuredArrow.mk ((coprod.inl : c₁ ⟶ c₁ ⨿ c₂), (coprod.inr : c₂ ⟶ c₁ ⨿ c₂))⟩
     apply isConnected_of_zigzag
     rintro ⟨_, c, f⟩ ⟨_, c', g⟩
     dsimp only [const_obj_obj, diag_obj, prod_Hom] at f g
     use [StructuredArrow.mk
-        ((coprod.inl : c₁ ⟶ c₁ ⨿ c₂), (coprod.inr : c₂ ⟶ c₁ ⨿ c₂)),
+      ((coprod.inl : c₁ ⟶ c₁ ⨿ c₂), (coprod.inr : c₂ ⟶ c₁ ⨿ c₂)),
       StructuredArrow.mk (g.fst, g.snd)]
     simp only [colimit.cocone_x, diag_obj, Prod.mk.eta, List.chain_cons, List.Chain.nil, and_true,
       ne_eq, reduceCtorEq, not_false_eq_true, List.getLast_cons, List.cons_ne_self,
       List.getLast_singleton]
     constructor
-    · constructor
-      · exact Zag.of_inv <|StructuredArrow.homMk <|coprod.desc f.fst f.snd
-      · exact Zag.of_hom <|StructuredArrow.homMk <|coprod.desc g.fst g.snd
+    exact ⟨Zag.of_inv <|StructuredArrow.homMk <|coprod.desc f.fst f.snd,
+      Zag.of_hom <|StructuredArrow.homMk <|coprod.desc g.fst g.snd⟩
     · rfl
 
 /-- A nonempty category with binary coproducts is sifted. -/
@@ -153,7 +151,7 @@ section
 
 /-- An auxiliary isomorphism that shows that the tensor product in type preserves colimits -/
 -- Implementation note: sadly this can not be derived from the `CartesianClosed` instance on Types.
-private def preservesColimTensLeftType {E : Type u} : PreservesColimits (tensorLeft E) := by
+private def preservesColimTensLeftType {E : Type u} : PreservesColimits (tensorLeft E) :=
   letI aux_iso : prod.functor.obj E ≅ tensorLeft E :=
     letI chosenprods : ChosenFiniteProducts (Type u) := by infer_instance
     NatIso.ofComponents (fun c ↦ by
@@ -167,7 +165,7 @@ private def preservesColimTensLeftType {E : Type u} : PreservesColimits (tensorL
             erw [Limits.limit.isoLimitCone_hom_π]
           · simp only [prod.map_snd, Category.assoc, ChosenFiniteProducts.whiskerLeft_snd]
             erw [limit.isoLimitCone_hom_π_assoc])
-  exact Limits.preservesColimitsOfNatIso aux_iso
+  Limits.preservesColimitsOfNatIso aux_iso
 
 variable (X Y : C ⥤ Type u)
 
@@ -193,9 +191,8 @@ private def colimBoxIsoColimTensColim : colimit (X ⊠ Y) ≅ (colimit X) ⊗ (c
       HasColimit.isoOfNatIso (preservesColimitIso (tensorRight Y) (X ⋙ const C)).symm
     _ ≅ colimit <|(const C ⋙ tensorRight Y).obj (colimit X) :=
       HasColimit.isoOfNatIso <| (tensorRight Y).mapIso (preservesColimitIso (const C) X).symm
-    _ ≅ colimit <|Y ⋙ (tensorLeft (colimit X)) := by
-      apply HasColimit.isoOfNatIso
-      exact NatIso.ofComponents (fun _ ↦ Iso.refl _)
+    _ ≅ colimit <|Y ⋙ (tensorLeft (colimit X)) :=
+      HasColimit.isoOfNatIso <|NatIso.ofComponents (fun _ ↦ Iso.refl _)
     _ ≅ (tensorLeft (colimit X)).obj (colimit Y) :=
       preservesColimitIso (tensorLeft (colimit X)) Y|>.symm
 
@@ -209,7 +206,7 @@ private lemma factorisationProdComparisonColim :
       (HasColimit.isoOfNatIso diagCompExternalProduct).hom ≫ colimit.pre _ _ ≫
         (colimBoxIsoColimTensColim X Y).hom ≫ (tensorProdToProdIso _ _).hom =
           prodComparison colim X Y := by
-  apply colimit.hom_ext; intro c;
+  apply colimit.hom_ext; intro c
   -- First, we "bubble down" the maps to the colimits as much as we can
   dsimp [colimBoxIsoColimTensColim]
   simp only [Category.assoc, HasColimit.isoOfNatIso_ι_inv_assoc, Monoidal.tensorObj_obj,
