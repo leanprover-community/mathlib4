@@ -224,7 +224,21 @@ section Union
 
 open Function Set
 
-noncomputable def coverEntropyEntourage_supBotHom [UniformSpace X] (T : X → X) (U : Set (X × X)) :
+lemma some_other_test {α β F ι : Type*} [CompleteLattice α] [CompleteLattice β] [FunLike F α β]
+    [SupBotHomClass F α β] [Finite ι] (f : F) (g : ι → α) :
+    f (⨆ i : ι, g i) =  ⨆ i : ι, f (g i) := by
+  apply Finite.induction_empty_option (P := fun ι ↦ ∀ (f : F) (g : ι → α),
+    f (⨆ i : ι, g i) =  ⨆ i : ι, f (g i))
+  · intro γ δ γ_δ h f g
+    specialize h f (g ∘ γ_δ)
+    simp only [comp_apply] at h
+    rwa [γ_δ.iSup_comp, γ_δ.iSup_comp (g := fun i ↦ f (g i))] at h
+  · intro f _
+    rw [iSup_of_empty, iSup_of_empty, map_bot f]
+  · intro _ _ h f g
+    rw [iSup_option g, map_sup f, iSup_option fun i ↦ f (g i), h f fun i ↦ g i]
+
+noncomputable def coverEntropyEntourage_supBotHom (T : X → X) (U : Set (X × X)) :
     SupBotHom (Set X) EReal where
   toFun := fun F ↦ coverEntropyEntourage T F U
   map_sup' := by
@@ -234,11 +248,24 @@ noncomputable def coverEntropyEntourage_supBotHom [UniformSpace X] (T : X → X)
   map_bot' := by
     simp only [bot_eq_empty, coverEntropyEntourage_empty]
 
-lemma cheeky_test [UniformSpace X] (T : X → X) (U : Set (X × X)) :
+lemma cheeky_test (T : X → X) (U : Set (X × X)) :
     (coverEntropyEntourage_supBotHom T U).toFun = fun F ↦ coverEntropyEntourage T F U := rfl
 
-lemma cheeky_test_apply [UniformSpace X] (T : X → X) (F : Set X) (U : Set (X × X)) :
-    (coverEntropyEntourage_supBotHom T U).toFun F = coverEntropyEntourage T F U := rfl
+lemma coverEntropyEntourage_finite_iUnion {ι : Type*} [Finite ι] (T : X → X) (U : Set (X × X))
+    (F : ι → Set X) :
+    coverEntropyEntourage T (⋃ i : ι, F i) U = ⨆ i : ι, coverEntropyEntourage T (F i) U := by
+  have := some_other_test (coverEntropyEntourage_supBotHom T U) F
+  rw [← SupBotHom.toFun_eq_coe, cheeky_test T U] at this
+  exact this
+
+lemma coverEntropyEntourage_finite_biUnion {ι : Type*} (T : X → X) (U : Set (X × X)) (F : ι → Set X)
+    (s : Finset ι) :
+    coverEntropyEntourage T (⋃ i ∈ s, F i) U = ⨆ i ∈ s, coverEntropyEntourage T (F i) U := by
+  have := map_finset_sup (coverEntropyEntourage_supBotHom T U) s F
+  rw [← SupBotHom.toFun_eq_coe, cheeky_test, s.sup_set_eq_biUnion, s.sup_eq_iSup] at this
+  simp only at this
+  rw [this]
+  congr
 
 noncomputable def coverEntropy_supBotHom [UniformSpace X] (T : X → X) :
     SupBotHom (Set X) EReal where
@@ -271,6 +298,8 @@ lemma coverEntropy_biUnion_le (s : Set ι) (T : X → X) (F : ι → Set X) :
     ⨆ i ∈ s, coverEntropy T (F i) ≤ coverEntropy T (⋃ i ∈ s, F i) :=
   iSup₂_le fun _ i_s ↦ coverEntropy_monotone T (subset_biUnion_of_mem i_s)
 
+
+/--
 lemma coverEntropy_finite_iUnion [Fintype ι] (T : X → X) (F : ι → Set X) :
     coverEntropy T (⋃ i, F i) = ⨆ i, coverEntropy T (F i) := by
   apply Fintype.induction_empty_option (P := fun ι _ ↦ ∀ F : ι → Set X,
@@ -286,21 +315,22 @@ lemma coverEntropy_finite_iUnion [Fintype ι] (T : X → X) (F : ι → Set X) :
     rw [iSup_option, iUnion_option, coverEntropy_union T (F none) (⋃ i, F (some i)), sup_eq_max]
     congr
     exact h (fun i : α ↦ F (some i))
+-/
 
-lemma coverEntropyEntourage_finite_biUnion (T : X → X) (U : Set (X × X)) (F : ι → Set X)
-    (s : Finset ι) :
-    coverEntropyEntourage T (⋃ i ∈ s, F i) U = ⨆ i ∈ s, coverEntropyEntourage T (F i) U := by
-  rw [← Finset.sup_set_eq_biUnion s, ← cheeky_test_apply T (s.sup F) U, SupBotHom.toFun_eq_coe,
-    map_finset_sup (coverEntropyEntourage_supBotHom T U) s F, ← SupBotHom.toFun_eq_coe,
-    cheeky_test T U, Finset.sup_eq_iSup]
-  simp only [Function.comp_apply]
+
+
+lemma coverEntropy_finite_iUnion [Finite ι] (T : X → X) (F : ι → Set X) :
+    coverEntropy T (⋃ i : ι, F i) = ⨆ i : ι, coverEntropy T (F i) := by
+  have := some_other_test (coverEntropy_supBotHom T) F
+  rw [← SupBotHom.toFun_eq_coe, other_test T] at this
+  exact this
 
 lemma coverEntropy_finite_biUnion (T : X → X) (F : ι → Set X) (s : Finset ι) :
     coverEntropy T (⋃ i ∈ s, F i) = ⨆ i ∈ s, coverEntropy T (F i) := by
-  rw [← Finset.sup_set_eq_biUnion s _, ← other_test T, SupBotHom.toFun_eq_coe,
-    map_finset_sup (coverEntropy_supBotHom T) s F, ← SupBotHom.toFun_eq_coe, other_test T,
-    Finset.sup_eq_iSup]
-  simp only [Function.comp_apply]
+  have := map_finset_sup (coverEntropy_supBotHom T) s F
+  rw [← SupBotHom.toFun_eq_coe, other_test T, s.sup_set_eq_biUnion, s.sup_eq_iSup] at this
+  rw [this]
+  congr
 
 end Union
 
