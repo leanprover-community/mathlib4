@@ -690,6 +690,19 @@ theorem exists_dual_map_eq_bot_of_lt_top (hp : p < ⊤) (hp' : Free R (M ⧸ p))
   obtain ⟨f, hf, hf'⟩ := p.exists_dual_map_eq_bot_of_nmem hx hp'
   exact ⟨f, by aesop, hf'⟩
 
+theorem span_eq_top_of_ne_zero [IsReflexive R M]
+    {s : Set (M →ₗ[R] R)} [Free R ((M →ₗ[R] R) ⧸ (span R s))]
+    (h : ∀ z ≠ 0, ∃ f ∈ s, f z ≠ 0) : ⊤ ≤ span R s := by
+  by_contra hn
+  replace hn := (ne_of_not_le hn).symm.lt_top
+  obtain ⟨φ, φne, hφ⟩ := exists_dual_map_eq_bot_of_lt_top hn inferInstance
+  let φs := (evalEquiv R M).symm φ
+  have this f (hf : f ∈ s) : f φs = 0 := by
+    rw [← mem_bot R, ← hφ, mem_map]
+    exact ⟨f, subset_span hf, (apply_evalEquiv_symm_apply R M f φ).symm⟩
+  obtain ⟨x, xs, hx⟩ := h φs (by simp [φne, φs])
+  exact hx <| this x xs
+
 variable {ι 𝕜 E : Type*} [Field 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
 open LinearMap Set FiniteDimensional
