@@ -745,11 +745,13 @@ lemma graphOn_comp (s : Set α) (f : α → β) (g : β → γ) :
 
 lemma graphOn_univ_eq_range : univ.graphOn f = range fun x ↦ (x, f x) := image_univ
 
-lemma graphOn_univ_injective : Injective (univ.graphOn : (α → β) → Set (α × β)) := by
-  aesop (add simp [Injective, Set.ext_iff])
+@[simp] lemma graphOn_inj {g : α → β} : s.graphOn f = s.graphOn g ↔ s.EqOn f g := by
+  simp [Set.ext_iff, funext_iff, forall_swap, EqOn]
 
-@[simp] lemma graphOn_univ_inj {g : α → β} :
-  univ.graphOn f = univ.graphOn g ↔ f = g := graphOn_univ_injective.eq_iff
+lemma graphOn_univ_inj {g : α → β} : univ.graphOn f = univ.graphOn g ↔ f = g := by simp
+
+lemma graphOn_univ_injective : Injective (univ.graphOn : (α → β) → Set (α × β)) :=
+  fun _f _g ↦ graphOn_univ_inj.1
 
 lemma exists_eq_graphOn_image_fst [Nonempty β] {s : Set (α × β)} :
     (∃ f : α → β, s = graphOn f (Prod.fst '' s)) ↔ InjOn Prod.fst s := by
