@@ -34,24 +34,6 @@ end Condensed
 
 namespace CondensedSet
 
-/--
-This is an auxiliary definition to prove that the constant sheaf functor from `Type (u+1)`
-to sheaves for the coherent topology on `Profinite.{u}` is fully faithful.
--/
-noncomputable
-def constantSheafProfiniteCompHausIso : constantSheaf (coherentTopology Profinite) (Type (u+1)) ≅
-    constantSheaf (coherentTopology CompHaus) (Type (u+1)) ⋙
-    (Condensed.ProfiniteCompHaus.equivalence _).inverse :=
-  (equivCommuteConstant' (coherentTopology Profinite) (Type (u+1))
-    (coherentTopology CompHaus) profiniteToCompHaus Profinite.isTerminalPUnit
-     CompHaus.isTerminalPUnit)
-
-instance : (constantSheaf (coherentTopology Profinite) (Type (u+1))).Faithful :=
-  Functor.Faithful.of_iso constantSheafProfiniteCompHausIso.symm
-
-instance : (constantSheaf (coherentTopology Profinite) (Type (u+1))).Full :=
-  Functor.Full.of_iso constantSheafProfiniteCompHausIso.symm
-
 open CompHausLike.LocallyConstant
 
 lemma mem_locallyContant_essImage_of_isColimit_mapCocone (X : CondensedSet.{u})
@@ -176,12 +158,6 @@ abbrev IsDiscrete (X : LightCondensed.{u} C) := X.IsConstant (coherentTopology L
 end LightCondensed
 
 namespace LightCondSet
-
-instance : (constantSheaf (coherentTopology LightProfinite) (Type u)).Faithful :=
-  inferInstanceAs (LightCondensed.discrete _).Faithful
-
-instance : (constantSheaf (coherentTopology LightProfinite) (Type u)).Full :=
-  inferInstanceAs (LightCondensed.discrete _).Full
 
 lemma mem_locallyContant_essImage_of_isColimit_mapCocone (X : LightCondSet.{u})
     (h : ∀ S : LightProfinite.{u}, IsColimit <|
