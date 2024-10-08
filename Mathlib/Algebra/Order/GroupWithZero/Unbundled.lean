@@ -935,11 +935,15 @@ section MonoidWithZero
 variable [MonoidWithZero M₀]
 
 section Preorder
-variable [Preorder M₀] {a b c d : M₀} {n : ℕ}
+variable [Preorder M₀] {a b c d : M₀} {m n : ℕ}
 
 @[simp] lemma pow_nonneg [ZeroLEOneClass M₀] [PosMulMono M₀] (ha : 0 ≤ a) : ∀ n, 0 ≤ a ^ n
   | 0 => pow_zero a ▸ zero_le_one
   | n + 1 => pow_succ a n ▸ mul_nonneg (pow_nonneg ha _) ha
+
+lemma zero_pow_le_one [ZeroLEOneClass M₀] : ∀ n : ℕ, (0 : M₀) ^ n ≤ 1
+  | 0 => (pow_zero _).le
+  | n + 1 => by rw [zero_pow n.succ_ne_zero]; exact zero_le_one
 
 lemma pow_le_pow_of_le_one [ZeroLEOneClass M₀] [PosMulMono M₀] [MulPosMono M₀] (ha₀ : 0 ≤ a)
     (ha₁ : a ≤ 1) : ∀ {m n : ℕ}, m ≤ n → a ^ n ≤ a ^ m
@@ -958,9 +962,6 @@ lemma sq_le [ZeroLEOneClass M₀] [PosMulMono M₀] [MulPosMono M₀] (h₀ : 0 
 lemma one_le_mul_of_one_le_of_one_le [ZeroLEOneClass M₀] [PosMulMono M₀] (ha : 1 ≤ a) (hb : 1 ≤ b) :
     (1 : M₀) ≤ a * b := Left.one_le_mul_of_le_of_le ha hb <| zero_le_one.trans ha
 
-lemma mul_le_one [ZeroLEOneClass M₀] [PosMulMono M₀] [MulPosMono M₀] (ha : a ≤ 1) (hb₀ : 0 ≤ b)
-    (hb : b ≤ 1) : a * b ≤ 1 := one_mul (1 : M₀) ▸ mul_le_mul ha hb hb₀ zero_le_one
-
 lemma one_lt_mul_of_le_of_lt [ZeroLEOneClass M₀] [MulPosMono M₀] (ha : 1 ≤ a) (hb : 1 < b) :
     1 < a * b := hb.trans_le <| le_mul_of_one_le_left (zero_le_one.trans hb.le) ha
 
@@ -974,6 +975,43 @@ lemma mul_lt_one_of_nonneg_of_lt_one_left [PosMulMono M₀] (ha₀ : 0 ≤ a) (h
 
 lemma mul_lt_one_of_nonneg_of_lt_one_right [MulPosMono M₀] (ha : a ≤ 1) (hb₀ : 0 ≤ b) (hb : b < 1) :
     a * b < 1 := (mul_le_of_le_one_left hb₀ ha).trans_lt hb
+
+section
+variable [ZeroLEOneClass M₀] [PosMulMono M₀] [MulPosMono M₀]
+
+lemma mul_le_one₀ (ha : a ≤ 1) (hb₀ : 0 ≤ b) (hb : b ≤ 1) : a * b ≤ 1 :=
+  one_mul (1 : M₀) ▸ mul_le_mul ha hb hb₀ zero_le_one
+
+lemma pow_le_one₀ : ∀ {n : ℕ}, 0 ≤ a → a ≤ 1 → a ^ n ≤ 1
+  | 0, _, _ => (pow_zero a).le
+  | n + 1, h₀, h₁ => (pow_succ a n).le.trans (mul_le_one₀ (pow_le_one₀ h₀ h₁) h₀ h₁)
+
+lemma pow_lt_one₀ (h₀ : 0 ≤ a) (h₁ : a < 1) : ∀ {n : ℕ}, n ≠ 0 → a ^ n < 1
+  | 0, h => (h rfl).elim
+  | n + 1, _ => by
+    rw [pow_succ']; exact mul_lt_one_of_nonneg_of_lt_one_left h₀ h₁ (pow_le_one₀ h₀ h₁.le)
+
+lemma one_le_pow₀ (ha : 1 ≤ a) : ∀ {n : ℕ}, 1 ≤ a ^ n
+  | 0 => by rw [pow_zero]
+  | n + 1 => by
+    simpa only [pow_succ', mul_one]
+      using mul_le_mul ha (one_le_pow₀ ha) zero_le_one (zero_le_one.trans ha)
+
+lemma one_lt_pow₀ (ha : 1 < a) : ∀ {n : ℕ}, n ≠ 0 → 1 < a ^ n
+  | 0, h => (h rfl).elim
+  | n + 1, _ => by rw [pow_succ']; exact one_lt_mul_of_lt_of_le ha (one_le_pow₀ ha.le)
+
+lemma pow_right_mono₀ (h : 1 ≤ a) : Monotone (a ^ ·) :=
+  monotone_nat_of_le_succ fun n => by
+    rw [pow_succ']; exact le_mul_of_one_le_left (pow_nonneg (zero_le_one.trans h) _) h
+
+@[gcongr]
+lemma pow_le_pow_right₀ (ha : 1 ≤ a) (hmn : m ≤ n) : a ^ m ≤ a ^ n := pow_right_mono₀ ha hmn
+
+lemma le_self_pow₀ (ha : 1 ≤ a) (hn : n ≠ 0) : a ≤ a ^ n := by
+  simpa only [pow_one] using pow_le_pow_right₀ ha <| Nat.pos_iff_ne_zero.2 hn
+
+end
 
 variable [Preorder α] {f g : α → M₀}
 

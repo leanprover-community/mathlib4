@@ -263,7 +263,7 @@ theorem wellFoundedGT_iff_isSupFiniteCompact :
 theorem isSupFiniteCompact_iff_isSupClosedCompact : IsSupFiniteCompact α ↔ IsSupClosedCompact α :=
   (wellFoundedGT_characterisations α).out 1 2
 
-theorem isSupClosedCompact_iff_wellFounded :
+theorem isSupClosedCompact_iff_wellFoundedGT :
     IsSupClosedCompact α ↔ WellFoundedGT α :=
   (wellFoundedGT_characterisations α).out 2 0
 
@@ -271,7 +271,7 @@ alias ⟨_, IsSupFiniteCompact.wellFoundedGT⟩ := wellFoundedGT_iff_isSupFinite
 
 alias ⟨_, IsSupClosedCompact.isSupFiniteCompact⟩ := isSupFiniteCompact_iff_isSupClosedCompact
 
-alias ⟨_, WellFoundedGT.isSupClosedCompact⟩ := isSupClosedCompact_iff_wellFounded
+alias ⟨_, WellFoundedGT.isSupClosedCompact⟩ := isSupClosedCompact_iff_wellFoundedGT
 
 variable {α}
 
@@ -488,6 +488,8 @@ alias IsSupClosedCompact.wellFounded := IsSupClosedCompact.wellFoundedGT
 alias wellFounded_characterisations := wellFoundedGT_characterisations
 @[deprecated (since := "2024-10-07")]
 alias wellFounded_iff_isSupFiniteCompact := wellFoundedGT_iff_isSupFiniteCompact
+@[deprecated (since := "2024-10-07")]
+alias isSupClosedCompact_iff_wellFounded := isSupClosedCompact_iff_wellFoundedGT
 @[deprecated (since := "2024-10-07")]
 alias IsSupFiniteCompact.wellFounded := IsSupFiniteCompact.wellFoundedGT
 @[deprecated (since := "2024-10-07")]
