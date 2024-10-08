@@ -7,12 +7,29 @@ import Mathlib.Analysis.Calculus.Deriv.Abs
 import Mathlib.Analysis.Calculus.LineDeriv.Basic
 
 /-!
-# Differentiabilty of the norm in a real normed vector space
+# Differentiability of the norm in a real normed vector space
 
 This file provides basic results about the differentiability of the norm in a real vector space.
-Wee give some links between differentiability as `x` and `t • x`, and also prove
-that if the norm is differentiable at `x` then `fderiv ℝ (‖·‖) x x = ‖x‖` (`fderiv_norm_self`)
-and `‖fderiv ℝ (‖·‖) x‖ = 1` (`norm_fderiv_norm`).
+Most are of the following kind: if the norm has some differentiability property
+(`DifferentiableAt`, `ContDiffAt`, `HasStrictFDerivAt`, `HasFDerivAt`) at `x`, then so it has
+at `t • x` when `t ≠ 0`.
+
+## Main statements
+
+* `ContDiffAt.contDiffAt_norm_smul`: If the norm is continuously differentiable up to order `n`
+  at `x`, then so it is at `t • x` when `t ≠ 0`.
+* `differentiableAt_norm_smul`: If `t ≠ 0`, the norm is differentiable at `x` if and only if
+  it is at `t • x`.
+* `HasStrictFDerivAt.hasStrictFDerivAt_norm_smul`: If the norm has a strict Fréchet derivative
+  `f` at `x` and `t ≠ 0`, then it has `(SignType t) • f` as a strict Fréchet derivative at `t · x`.
+* `HasFDerivAt.hasFDerivAt_norm_smul`: If the norm has a Fréchet derivative `f` at `x` and `t ≠ 0`,
+  then it has `(SignType t) • f` as a Fréchet derivative at `t · x`.
+* `fderiv_norm_smul` : `fderiv ℝ (‖·‖) (t • x) = (SignType.sign t : ℝ) • (fderiv ℝ (‖·‖) x)`,
+  this holds without any differentiability assumptions.
+* `DifferentiableAt.fderiv_norm_self`: if the norm is differentiable at `x`,
+  then `fderiv ℝ (‖·‖) x x = ‖x‖`.
+* `norm_fderiv_norm`: if the norm is differentiable at `x` then the operator norm of its derivative
+  is `1` (on a non trivial space).
 
 ## Tags
 
