@@ -248,7 +248,7 @@ lemma BddAbove.exists_isGreatest_of_nonempty {X : Type*} [LinearOrder X] [SuccOr
 lemma BddBelow.exists_isLeast_of_nonempty {X : Type*} [LinearOrder X] [PredOrder X]
     [IsPredArchimedean X] {S : Set X} (hS : BddBelow S) (hS' : S.Nonempty) :
     ∃ x, IsLeast S x :=
-  BddAbove.exists_isGreatest_of_nonempty (X := Xᵒᵈ) hS hS'
+  hS.dual.exists_isGreatest_of_nonempty hS'
 
 end IsLeast
 
