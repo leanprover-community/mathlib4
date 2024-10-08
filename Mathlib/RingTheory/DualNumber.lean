@@ -80,52 +80,6 @@ lemma isNilpotent_eps {R : Type*} [Semiring R] :
     IsNilpotent (ε : R[ε]) :=
   TrivSqZeroExt.isNilpotent_inr 1
 
-open Polynomial in
-noncomputable def quotientPolynomialIdealAlgEquiv {R : Type*} [CommRing R] :
-    R[ε] ≃ₐ[R] (R[X] ⧸ (.span {(X ^ 2)} : Ideal R[X])) := by
-  refine AlgEquiv.ofAlgHom (TrivSqZeroExt.lift (Algebra.ofId _ _) ?_ ?_ ?_ ?_) ?_ ?_ ?_
-  · refine ?_ ∘ₗ (LinearMap.mulRight _ X) ∘ₗ (Algebra.linearMap R R[X])
-    exact (Algebra.linearMap R[X] (R[X] ⧸ (.span {(X ^ 2)} : Ideal R[X]))).restrictScalars _
-  · intro x y
-    simp [← map_mul, Ideal.Quotient.eq_zero_iff_dvd, mul_comm X, mul_assoc _ X, mul_right_comm X,
-      ← pow_two, ← mul_assoc _ _ (X ^ 2)]
-  · intro r x
-    simp [← map_mul, Algebra.ofId_apply, Algebra.algebraMap_eq_smul_one r,
-     ← Ideal.Quotient.mk_eq_mk, ← Submodule.Quotient.mk_smul, smul_eq_C_mul, ← mul_assoc]
-  · intro r x
-    simp [← map_mul, Algebra.ofId_apply, Algebra.algebraMap_eq_smul_one r, mul_comm r,
-     ← Ideal.Quotient.mk_eq_mk, ← Submodule.Quotient.mk_smul, smul_eq_C_mul, ← mul_assoc]
-  · refine Ideal.Quotient.liftₐ _ (aeval ε) ?_
-    simp only [Ideal.mem_span_singleton]
-    rintro f ⟨g, rfl⟩
-    simp [pow_two]
-  · ext ⟨f⟩
-    have hf : aeval (ε : R[ε]) f =
-        TrivSqZeroExt.inl (f.coeff 0) + TrivSqZeroExt.inr (f.coeff 1) := by
-      rw [add_comm, aeval_eq_sum_range, Finset.sum_range_succ']
-      rcases hn : f.natDegree with _|_|n
-      · simp [coeff_eq_zero_of_natDegree_lt (hn ▸ zero_lt_one), TrivSqZeroExt.ext_iff]
-      · simp [TrivSqZeroExt.ext_iff]
-      · simp [Finset.sum_range_succ', pow_two, pow_add, mul_assoc, TrivSqZeroExt.ext_iff]
-    simp only [Submodule.Quotient.quot_mk_eq_mk, Ideal.Quotient.mk_eq_mk, AlgHom.coe_comp,
-      Function.comp_apply, Ideal.Quotient.liftₐ_apply, Ideal.Quotient.lift_mk, RingHom.coe_coe, hf,
-      inr_eq_smul_eps, TrivSqZeroExt.lift_def, TrivSqZeroExt.fst_add, TrivSqZeroExt.fst_inl,
-      TrivSqZeroExt.fst_smul, fst_eps, smul_eq_mul, mul_zero, add_zero, Algebra.ofId_apply,
-      Algebra.algebraMap_eq_smul_one, TrivSqZeroExt.snd_add, TrivSqZeroExt.snd_inl,
-      TrivSqZeroExt.snd_smul, snd_eps, mul_one, zero_add, LinearMap.coe_comp,
-      LinearMap.coe_restrictScalars, Algebra.linearMap_apply, algebraMap_eq,
-      LinearMap.mulRight_apply, ← smul_eq_C_mul, LinearMap.map_smul_of_tower,
-      Ideal.Quotient.algebraMap_eq, AlgHom.coe_id, id_eq]
-    simp_rw [← map_one (Ideal.Quotient.mk (Ideal.span {X ^ 2})), ← Ideal.Quotient.mk_eq_mk,
-      ← Submodule.Quotient.mk_smul, ← Submodule.Quotient.mk_add, Submodule.Quotient.eq]
-    simp only [Ideal.mem_span_singleton, X_pow_dvd_iff, coeff_sub, coeff_add, coeff_smul,
-      smul_eq_mul, coeff_one]
-    intro d hd
-    interval_cases d <;>
-    simp [coeff_one]
-  · ext : 1
-    simp [TrivSqZeroExt.lift_def]
-
 open TrivSqZeroExt
 
 lemma isNilpotent_iff_eps_dvd {R : Type*} [DivisionSemiring R] {x : R[ε]} :
