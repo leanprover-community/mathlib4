@@ -589,7 +589,7 @@ end GeneralizedCoheytingAlgebra
 
 section HeytingAlgebra
 
-variable [HeytingAlgebra α] {a b c : α}
+variable [HeytingAlgebra α] {a b : α}
 
 @[simp]
 theorem himp_bot (a : α) : a ⇨ ⊥ = aᶜ :=
@@ -760,7 +760,7 @@ end HeytingAlgebra
 
 section CoheytingAlgebra
 
-variable [CoheytingAlgebra α] {a b c : α}
+variable [CoheytingAlgebra α] {a b : α}
 
 @[simp]
 theorem top_sdiff' (a : α) : ⊤ \ a = ￢a :=

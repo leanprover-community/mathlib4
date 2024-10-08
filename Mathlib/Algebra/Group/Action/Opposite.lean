@@ -97,7 +97,7 @@ In lemma names this is still called `op_vadd`. -/
 scoped notation3:73 m:73 " <+ᵥ " r:74 => AddOpposite.op r +ᵥ m
 
 section examples
-variable {α β : Type*} [SMul α β] [SMul αᵐᵒᵖ β] [VAdd α β] [VAdd αᵃᵒᵖ β] {a a₁ a₂ a₃ a₄ : α} {b : β}
+variable {β : Type*} [SMul α β] [SMul αᵐᵒᵖ β] [VAdd α β] [VAdd αᵃᵒᵖ β] {a a₁ a₂ a₃ a₄ : α} {b : β}
 
 -- Left and right actions are just notation around the general `•` and `+ᵥ` notations
 example : a •> b = a • b := rfl
@@ -124,7 +124,7 @@ end examples
 end RightActions
 
 section
-variable {α β : Type*} [Monoid α] [MulAction αᵐᵒᵖ β]
+variable {β : Type*} [Monoid α] [MulAction αᵐᵒᵖ β]
 
 open scoped RightActions
 

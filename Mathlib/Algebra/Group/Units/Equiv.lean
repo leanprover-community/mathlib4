@@ -13,7 +13,7 @@ import Mathlib.Algebra.Group.Units.Hom
 assert_not_exists MonoidWithZero
 assert_not_exists DenselyOrdered
 
-variable {F α β A B M N P Q G H : Type*}
+variable {F α M N G : Type*}
 
 /-- A group is isomorphic to its group of units. -/
 @[to_additive (attr := simps apply_val symm_apply)
@@ -31,7 +31,7 @@ lemma toUnits_val_apply {G : Type*} [Group G] (x : Gˣ) : toUnits (x : G) = x :=
 
 namespace Units
 
-variable [Monoid M] [Monoid N] [Monoid P]
+variable [Monoid M] [Monoid N]
 
 /-- A multiplicative equivalence of monoids defines a multiplicative equivalence
 of their groups of units. -/

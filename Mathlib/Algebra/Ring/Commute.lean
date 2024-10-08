@@ -23,7 +23,7 @@ For the definitions of semirings and rings see `Mathlib.Algebra.Ring.Defs`.
 
 universe u v w x
 
-variable {α : Type u} {β : Type v} {γ : Type w} {R : Type x}
+variable {R : Type x}
 
 open Function
 
