@@ -9,7 +9,6 @@ import Mathlib.RingTheory.Binomial
 import Mathlib.RingTheory.HahnSeries.PowerSeries
 import Mathlib.RingTheory.HahnSeries.Summable
 import Mathlib.RingTheory.PowerSeries.Inverse
-import Mathlib.FieldTheory.RatFunc.AsPolynomial
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.Topology.UniformSpace.Cauchy
 
