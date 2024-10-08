@@ -129,9 +129,7 @@ def elabLinearCombination (tk : Syntax)
   -- if we are in a "true" ring, with well-behaved negation, we rearrange from the form
   -- `[stuff] = [stuff]` to the form `[stuff] = 0`,
   -- because this gives more useful error messages on failure
-  try
-    Tactic.liftMetaTactic fun g ↦ g.applyConst ``eq_rearrange
-  catch _ => pure ()
+  let _ ← Tactic.tryTactic <| Tactic.liftMetaTactic fun g ↦ g.applyConst ``eq_rearrange
   -- now run the normalization tactic provided, or the default normalization if none is provided
   match norm? with
   | some norm => Tactic.evalTactic norm
