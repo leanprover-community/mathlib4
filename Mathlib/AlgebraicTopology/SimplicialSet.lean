@@ -391,7 +391,6 @@ instance cosk_reflective (n) : IsIso ((coskAdj n).counit) :=
 instance sk_reflective (n) : IsIso ((skAdj n).unit) :=
   SimplicialObject.Truncated.sk_reflective n
 
-
 /-- Since `Truncated.inclusion` is fully faithful, so is right Kan extension along it.-/
 noncomputable def cosk.fullyFaithful (n) :
     (Truncated.cosk n).FullyFaithful :=
