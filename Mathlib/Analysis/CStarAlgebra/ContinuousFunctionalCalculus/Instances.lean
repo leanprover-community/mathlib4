@@ -605,7 +605,7 @@ variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [Algebra ℂ A]
 
 lemma cfcHom_real_eq_restrict {a : A} (ha : IsSelfAdjoint a) :
     cfcHom ha = ha.spectrumRestricts.starAlgHom (cfcHom ha.isStarNormal) (f := Complex.reCLM) :=
-  ha.spectrumRestricts.cfcHom_eq_restrict _ Complex.isometry_ofReal.uniformEmbedding
+  ha.spectrumRestricts.cfcHom_eq_restrict _ Complex.isometry_ofReal.isUniformEmbedding
     ha ha.isStarNormal
 
 lemma cfc_real_eq_complex {a : A} (f : ℝ → ℝ) (ha : IsSelfAdjoint a := by cfc_tac)  :
@@ -626,7 +626,7 @@ variable {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [Module
 lemma cfcₙHom_real_eq_restrict {a : A} (ha : IsSelfAdjoint a) :
     cfcₙHom ha = (ha.quasispectrumRestricts.2).nonUnitalStarAlgHom (cfcₙHom ha.isStarNormal)
       (f := Complex.reCLM) :=
-  ha.quasispectrumRestricts.2.cfcₙHom_eq_restrict _ Complex.isometry_ofReal.uniformEmbedding
+  ha.quasispectrumRestricts.2.cfcₙHom_eq_restrict _ Complex.isometry_ofReal.isUniformEmbedding
     ha ha.isStarNormal
 
 lemma cfcₙ_real_eq_complex {a : A} (f : ℝ → ℝ) (ha : IsSelfAdjoint a := by cfc_tac)  :
@@ -650,13 +650,13 @@ variable {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [StarRing A]
 lemma cfcHom_nnreal_eq_restrict {a : A} (ha : 0 ≤ a) :
     cfcHom ha = (SpectrumRestricts.nnreal_of_nonneg ha).starAlgHom
       (cfcHom (IsSelfAdjoint.of_nonneg ha)) :=
-  (SpectrumRestricts.nnreal_of_nonneg ha).cfcHom_eq_restrict _ uniformEmbedding_subtype_val _ _
+  (SpectrumRestricts.nnreal_of_nonneg ha).cfcHom_eq_restrict _ isUniformEmbedding_subtype_val _ _
 
 lemma cfc_nnreal_eq_real {a : A} (f : ℝ≥0 → ℝ≥0) (ha : 0 ≤ a := by cfc_tac)  :
     cfc f a = cfc (fun x ↦ f x.toNNReal : ℝ → ℝ) a := by
   replace ha : 0 ≤ a := ha -- hack to avoid issues caused by autoParam
   exact (SpectrumRestricts.nnreal_of_nonneg ha).cfc_eq_restrict _
-    uniformEmbedding_subtype_val ha (.of_nonneg ha) _
+    isUniformEmbedding_subtype_val ha (.of_nonneg ha) _
 
 end NNRealEqReal
 
@@ -675,13 +675,13 @@ lemma cfcₙHom_nnreal_eq_restrict {a : A} (ha : 0 ≤ a) :
     cfcₙHom ha = (QuasispectrumRestricts.nnreal_of_nonneg ha).nonUnitalStarAlgHom
       (cfcₙHom (IsSelfAdjoint.of_nonneg ha)) :=
   (QuasispectrumRestricts.nnreal_of_nonneg ha).cfcₙHom_eq_restrict _
-    uniformEmbedding_subtype_val _ _
+    isUniformEmbedding_subtype_val _ _
 
 lemma cfcₙ_nnreal_eq_real {a : A} (f : ℝ≥0 → ℝ≥0) (ha : 0 ≤ a := by cfc_tac)  :
     cfcₙ f a = cfcₙ (fun x ↦ f x.toNNReal : ℝ → ℝ) a := by
   replace ha : 0 ≤ a := ha -- hack to avoid issues caused by autoParam
   exact (QuasispectrumRestricts.nnreal_of_nonneg ha).cfcₙ_eq_restrict _
-    uniformEmbedding_subtype_val ha (.of_nonneg ha) _
+    isUniformEmbedding_subtype_val ha (.of_nonneg ha) _
 
 end NNRealEqRealNonUnital
 
