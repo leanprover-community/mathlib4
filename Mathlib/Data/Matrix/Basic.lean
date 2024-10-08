@@ -1210,16 +1210,47 @@ def diagonalAlgHom : (n → α) →ₐ[R] Matrix n n α :=
 
 end Algebra
 
+end Matrix
+
 section apply₂
 
-open LinearMap
+namespace AddMonoidHom
+
+variable [AddZeroClass α]
+
+variable (R α) in
+/--
+Extracting entries from a matrix as a monoid homomorphism. Note this cannot be upgraded to a ring
+homomorphism, as it does not respect multiplication.
+-/
+@[simps]
+def apply₂ (i : m) (j : n) : Matrix m n α →+ α where
+  toFun M := M i j
+  map_add' _ _ := rfl
+  map_zero' := rfl
+
+lemma apply₂_eq_proj {i : m} {j : n} :
+    apply₂ α i j = (Pi.evalAddMonoidHom _ j).comp (Pi.evalAddMonoidHom _ i : _ →+ (n → α)) :=
+  rfl
+
+lemma proj_comp_diagLinearMap (i : m) :
+    (Pi.evalAddMonoidHom _ i).comp (diagAddMonoidHom m α) = apply₂ α i i := by
+  simp [AddMonoidHom.ext_iff]
+
+end AddMonoidHom
+
+namespace LinearMap
 
 variable [Semiring R] [AddCommMonoid α] [Module R α]
 
 variable (R α) in
-/-- Extracting entries from a matrix as a linear map. -/
+/--
+Extracting entries from a matrix as a linear map. Note this cannot be upgraded to an algebra
+homomorphism, as it does not respect multiplication.
+-/
 @[simps]
-def apply₂ [Semiring R] [AddCommMonoid α] [Module R α] (i : m) (j : n) : Matrix m n α →ₗ[R] α where
+def apply₂ (i : m) (j : n) :
+    Matrix m n α →ₗ[R] α where
   toFun M := M i j
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -1229,13 +1260,14 @@ lemma apply₂_eq_proj {i : m} {j : n} :
     apply₂ R α i j = proj j ∘ₗ (proj i : _ →ₗ[_] (n → α)) :=
   rfl
 
-lemma diag_comp_apply (i : m) :
-    proj i ∘ₗ Matrix.diagLinearMap m R α = apply₂ R α i i := by
+lemma proj_comp_diagLinearMap (i : m) :
+    proj i ∘ₗ diagLinearMap m R α = apply₂ R α i i := by
   simp [LinearMap.ext_iff]
+
+end LinearMap
 
 end apply₂
 
-end Matrix
 
 /-!
 ### Bundled versions of `Matrix.map`
@@ -1289,6 +1321,9 @@ theorem mapMatrix_comp (f : β →+ γ) (g : α →+ β) :
     f.mapMatrix.comp g.mapMatrix = ((f.comp g).mapMatrix : Matrix m n α →+ _) :=
   rfl
 
+@[simp] lemma apply₂_comp_mapMatrix (f : α →+ β) (i : m) (j : n) :
+    (apply₂ β i j).comp f.mapMatrix = f.comp (apply₂ α i j) := rfl
+
 end AddMonoidHom
 
 namespace AddEquiv
@@ -1340,6 +1375,9 @@ theorem mapMatrix_id : LinearMap.id.mapMatrix = (LinearMap.id : Matrix m n α �
 theorem mapMatrix_comp (f : β →ₗ[R] γ) (g : α →ₗ[R] β) :
     f.mapMatrix.comp g.mapMatrix = ((f.comp g).mapMatrix : Matrix m n α →ₗ[R] _) :=
   rfl
+
+@[simp] lemma apply₂_comp_mapMatrix (f : α →ₗ[R] β) (i : m) (j : n) :
+    apply₂ R _ i j ∘ₗ f.mapMatrix = f ∘ₗ apply₂ R _ i j := rfl
 
 end LinearMap
 
