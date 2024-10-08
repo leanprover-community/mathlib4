@@ -22,48 +22,7 @@ This file states some further properties of j-invariants of elliptic curves.
 
 open WeierstrassCurve Polynomial
 
--- TODO: move to suitable location ???
-private lemma Polynomial.separable_X_pow_add_C_mul_X_add_C
-    {R : Type*} [CommRing R] [Nontrivial R] (p n : ℕ) [CharP R p]
-    (hdvd : p ∣ n) (a b : R) (ha : IsUnit a) :
-    (X ^ n + C a * X + C b).Separable := by
-  set f := X ^ n + C a * X + C b
-  have hderiv : derivative f = C a := by
-    simp_rw [f, map_add derivative, derivative_C]
-    simp [show (n : R) = 0 from (CharP.cast_eq_zero_iff R p n).2 hdvd]
-  obtain ⟨e, ha⟩ := ha.exists_left_inv
-  refine ⟨-derivative f, f + C e, ?_⟩
-  rw [hderiv, right_distrib, ← add_assoc, neg_mul, mul_comm, neg_add_cancel, zero_add,
-    ← map_mul, ha, map_one]
-
 variable {F : Type*} [Field F] [IsSepClosed F]
-
--- TODO: move to suitable location ???
-private lemma Polynomial.exists_root_X_pow_add_C_mul_X_add_C_of_isSepClosed
-    (p n : ℕ) [CharP F p]
-    (hn : 2 ≤ n) (hdvd : p ∣ n) (a b : F) (ha : a ≠ 0) :
-    ∃ x : F, x ^ n + a * x + b = 0 := by
-  let f : F[X] := X ^ n + C a * X + C b
-  have hdeg : f.degree ≠ 0 := degree_ne_of_natDegree_ne <| by
-    suffices f.natDegree = n from this ▸ (lt_of_lt_of_le zero_lt_two hn).ne'
-    simp_rw [f]
-    have h0 : n ≠ 0 := by linarith only [hn]
-    have h1 : n ≠ 1 := by linarith only [hn]
-    have : 1 ≤ n := le_trans one_le_two hn
-    compute_degree!
-    simp [h0, h1]
-  have hsep : f.Separable := separable_X_pow_add_C_mul_X_add_C p n hdvd a b ha.isUnit
-  obtain ⟨x, hx⟩ := IsSepClosed.exists_root f hdeg hsep
-  exact ⟨x, by simpa [f] using hx⟩
-
--- TODO: move to suitable location ???
-private lemma CharP.cast_ne_zero_of_ne_of_prime {R : Type*} [NonAssocSemiring R]
-    [Nontrivial R] {p q : ℕ} [CharP R p] (hq : q.Prime) (hneq : p ≠ q) : (q : R) ≠ 0 := fun h ↦ by
-  rw [CharP.cast_eq_zero_iff R p q] at h
-  rcases hq.eq_one_or_self_of_dvd _ h with h | h
-  · subst h
-    exact CharP.false_of_nontrivial_of_char_one (R := R)
-  · exact hneq h
 
 namespace EllipticCurve
 
@@ -76,8 +35,8 @@ variable [CharP F 2]
 private lemma exists_variableChange_of_char_two_of_j_ne_zero
     [E.IsCharTwoJNeZeroNF] [E'.IsCharTwoJNeZeroNF] (heq : E.a₆ = E'.a₆) :
     ∃ C : WeierstrassCurve.VariableChange F, E.variableChange C = E' := by
-  obtain ⟨s, hs⟩ := exists_root_X_pow_add_C_mul_X_add_C_of_isSepClosed 2 2
-    (by norm_num) (by norm_num) _ (E.a₂ + E'.a₂) one_ne_zero
+  obtain ⟨s, hs⟩ := IsSepClosed.exists_root_C_mul_X_pow_add_C_mul_X_add_C' 2 2
+    1 1 (E.a₂ + E'.a₂) (by norm_num) (by norm_num) one_ne_zero
   use ⟨1, 0, s, 0⟩
   ext
   · simp_rw [variableChange_a₁, inv_one, Units.val_one, a₁_of_isCharTwoJNeZeroNF]
@@ -103,10 +62,10 @@ private lemma exists_variableChange_of_char_two_of_j_eq_zero
     rw [show (3 : F) = 1 by linear_combination CharP.cast_eq_zero F 2]
     exact one_ne_zero
   obtain ⟨u, hu⟩ := IsSepClosed.exists_pow_nat_eq (E.a₃ / E'.a₃) 3
-  obtain ⟨s, hs⟩ := exists_root_X_pow_add_C_mul_X_add_C_of_isSepClosed 2 4
-    (by norm_num) (by norm_num) _ (E.a₄ - u ^ 4 * E'.a₄) ha₃
-  obtain ⟨t, ht⟩ := exists_root_X_pow_add_C_mul_X_add_C_of_isSepClosed 2 2
-    (by norm_num) (by norm_num) _ (s ^ 6 + E.a₄ * s ^ 2 + E.a₆ - u ^ 6 * E'.a₆) ha₃
+  obtain ⟨s, hs⟩ := IsSepClosed.exists_root_C_mul_X_pow_add_C_mul_X_add_C' 2 4
+    1 _ (E.a₄ - u ^ 4 * E'.a₄) (by norm_num) (by norm_num) ha₃
+  obtain ⟨t, ht⟩ := IsSepClosed.exists_root_C_mul_X_pow_add_C_mul_X_add_C' 2 2
+    1 _ (s ^ 6 + E.a₄ * s ^ 2 + E.a₆ - u ^ 6 * E'.a₆) (by norm_num) (by norm_num) ha₃
   have hu0 : u ≠ 0 := by
     rw [← pow_ne_zero_iff three_ne_zero, hu, div_ne_zero_iff]
     exact ⟨ha₃, ha₃'⟩
@@ -205,8 +164,8 @@ private lemma exists_variableChange_of_char_three_of_j_eq_zero
     rw [show (4 : F) = 1 by linear_combination CharP.cast_eq_zero F 3]
     exact one_ne_zero
   obtain ⟨u, hu⟩ := IsSepClosed.exists_pow_nat_eq (E.a₄ / E'.a₄) 4
-  obtain ⟨r, hr⟩ := exists_root_X_pow_add_C_mul_X_add_C_of_isSepClosed 3 3
-    (by norm_num) (by norm_num) _ (E.a₆ - u ^ 6 * E'.a₆) ha₄
+  obtain ⟨r, hr⟩ := IsSepClosed.exists_root_C_mul_X_pow_add_C_mul_X_add_C' 3 3
+    1 _ (E.a₆ - u ^ 6 * E'.a₆) (by norm_num) (by norm_num) ha₄
   have hu0 : u ≠ 0 := by
     rw [← pow_ne_zero_iff four_ne_zero, hu, div_ne_zero_iff]
     exact ⟨ha₄, ha₄'⟩
@@ -257,8 +216,8 @@ section CharNeTwoOrThree
 private lemma exists_variableChange_of_char_ne_two_or_three
     {p : ℕ} [CharP F p] (hchar2 : p ≠ 2) (hchar3 : p ≠ 3) (heq : E.j = E'.j) :
     ∃ C : WeierstrassCurve.VariableChange F, E.variableChange C = E' := by
-  replace hchar2 : (2 : F) ≠ 0 := CharP.cast_ne_zero_of_ne_of_prime Nat.prime_two hchar2
-  replace hchar3 : (3 : F) ≠ 0 := CharP.cast_ne_zero_of_ne_of_prime Nat.prime_three hchar3
+  replace hchar2 : (2 : F) ≠ 0 := CharP.cast_ne_zero_of_ne_of_prime F Nat.prime_two hchar2
+  replace hchar3 : (3 : F) ≠ 0 := CharP.cast_ne_zero_of_ne_of_prime F Nat.prime_three hchar3
   haveI := NeZero.mk hchar2
   haveI : NeZero (4 : F) := NeZero.mk <| by
     have := pow_ne_zero 2 hchar2
