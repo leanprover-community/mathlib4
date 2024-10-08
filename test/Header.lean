@@ -91,6 +91,31 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Name LastName
 -/"
 
+-- TODO: should this raise an error?
+#guard_msgs in
+#check_copyright
+"/-
+Copyright (c) 2024 Damiano Testa. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Name LastName
+stuff
+-/
+"
+
+-- TODO: should this raise an error "Copyright too short" instead?
+/--
+info: Text: ``
+Range: (126, 126)
+Message: 'The authors line should begin with 'Authors: ''
+-/
+#guard_msgs in
+#check_copyright
+"/-
+Copyright (c) 2024 Damiano Testa. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+-/
+"
+
 /--
 info: Text: `Cpyright (c) 202`
 Range: (3, 19)
