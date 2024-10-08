@@ -1210,8 +1210,6 @@ def diagonalAlgHom : (n → α) →ₐ[R] Matrix n n α :=
 
 end Algebra
 
-section apply₂
-
 section AddHom
 
 variable [Add α]
@@ -1292,8 +1290,6 @@ lemma elemLinearMap_eq {i : m} {j : n} :
     (elemLinearMap R α i j).toAddHom = elemAddHom α i j := rfl
 
 end LinearMap
-
-end apply₂
 
 end Matrix
 
