@@ -1222,7 +1222,7 @@ def elemAddHom (i : m) (j : n) : AddHom (Matrix m n α) α where
   map_add' _ _ := rfl
 
 -- The type ascription on the RHS is necessary for unification to succeed on the composition.
-lemma elemAddHom_eq_proj {i : m} {j : n} :
+lemma elemAddHom_eq_comp {i : m} {j : n} :
     elemAddHom α i j = (Pi.evalAddHom _ j).comp (Pi.evalAddHom _ i : AddHom _ (n → α)) :=
   rfl
 
@@ -1244,7 +1244,7 @@ def elemAddMonoidHom (i : m) (j : n) : Matrix m n α →+ α where
   map_zero' := rfl
 
 -- The type ascription on the RHS is necessary for unification to succeed on the composition.
-lemma elemAddMonoidHom_eq {i : m} {j : n} :
+lemma elemAddMonoidHom_eq_comp {i : m} {j : n} :
     elemAddMonoidHom α i j =
       (Pi.evalAddMonoidHom _ j).comp (Pi.evalAddMonoidHom _ i : _ →+ (n → α)) :=
   rfl
@@ -1254,7 +1254,7 @@ lemma elemAddMonoidHom_eq {i : m} {j : n} :
   simp [AddMonoidHom.ext_iff]
 
 @[simp] lemma elemAddMonoidHom_toAddHom {i : m} {j : n} :
-  (elemAddMonoidHom α i j).toAddHom = Matrix.elemAddHom α i j := rfl
+  (elemAddMonoidHom α i j : AddHom _ _) = Matrix.elemAddHom α i j := rfl
 
 end AddMonoidHom
 
@@ -1284,10 +1284,10 @@ lemma elemLinearMap_eq {i : m} {j : n} :
   simp [LinearMap.ext_iff]
 
 @[simp] lemma elemLinearMap_toAddMonoidHom {i : m} {j : n} :
-    (elemLinearMap R α i j).toAddMonoidHom = elemAddMonoidHom α i j := rfl
+    (elemLinearMap R α i j : _ →+ _) = elemAddMonoidHom α i j := rfl
 
 @[simp] lemma elemLinearMap_toAddHom {i : m} {j : n} :
-    (elemLinearMap R α i j).toAddHom = elemAddHom α i j := rfl
+    (elemLinearMap R α i j : AddHom _ _) = elemAddHom α i j := rfl
 
 end LinearMap
 
