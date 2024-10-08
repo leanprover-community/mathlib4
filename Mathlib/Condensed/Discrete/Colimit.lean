@@ -60,10 +60,25 @@ noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi 
     have h := LocallyConstant.congr_fun h x
     rwa [c.w, c.w]
 
+lemma isColimitLocallyConstantPresheaf_desc_apply (hc : IsLimit c) [∀ i, Epi (c.π.app i)]
+    (s : Cocone ((F ⋙ toProfinite).op ⋙ locallyConstantPresheaf X))
+    (i : I) (f : LocallyConstant (toProfinite.obj (F.obj i)) X) :
+    (isColimitLocallyConstantPresheaf c X hc).desc s (f.comap (c.π.app i)) = s.ι.app ⟨i⟩ f := by
+  change ((((locallyConstantPresheaf X).mapCocone c.op).ι.app ⟨i⟩) ≫
+    (isColimitLocallyConstantPresheaf c X hc).desc s) _ = _
+  rw [(isColimitLocallyConstantPresheaf c X hc).fac]
+
 /-- `isColimitLocallyConstantPresheaf` in the case of `S.asLimit`. -/
 noncomputable def isColimitLocallyConstantPresheafDiagram (S : Profinite) :
     IsColimit <| (locallyConstantPresheaf X).mapCocone S.asLimitCone.op :=
   isColimitLocallyConstantPresheaf _ _ S.asLimit
+
+lemma isColimitLocallyConstantPresheafDiagram_desc_apply (S : Profinite)
+    (s : Cocone (S.diagram.op ⋙ locallyConstantPresheaf X))
+    (i : DiscreteQuotient S) (f : LocallyConstant (S.diagram.obj i) X) :
+    (isColimitLocallyConstantPresheafDiagram X S).desc s (f.comap (S.asLimitCone.π.app i)) =
+      s.ι.app ⟨i⟩ f :=
+  isColimitLocallyConstantPresheaf_desc_apply S.asLimitCone X S.asLimit s i f
 
 end LocallyConstantAsColimit
 
@@ -311,11 +326,28 @@ noncomputable def isColimitLocallyConstantPresheaf (hc : IsLimit c) [∀ i, Epi 
     have h := LocallyConstant.congr_fun h x
     rwa [c.w, c.w]
 
+lemma isColimitLocallyConstantPresheaf_desc_apply (hc : IsLimit c) [∀ i, Epi (c.π.app i)]
+    (s : Cocone ((F ⋙ toLightProfinite).op ⋙ locallyConstantPresheaf X))
+    (n : ℕᵒᵖ) (f : LocallyConstant (toLightProfinite.obj (F.obj n)) X) :
+    (isColimitLocallyConstantPresheaf c X hc).desc s (f.comap (c.π.app n)) = s.ι.app ⟨n⟩ f := by
+  change ((((locallyConstantPresheaf X).mapCocone c.op).ι.app ⟨n⟩) ≫
+    (isColimitLocallyConstantPresheaf c X hc).desc s) _ = _
+  rw [(isColimitLocallyConstantPresheaf c X hc).fac]
+
 /-- `isColimitLocallyConstantPresheaf` in the case of `S.asLimit`. -/
 noncomputable def isColimitLocallyConstantPresheafDiagram (S : LightProfinite) :
     IsColimit <| (locallyConstantPresheaf X).mapCocone (coconeRightOpOfCone S.asLimitCone) :=
   (Functor.Final.isColimitWhiskerEquiv (opOpEquivalence ℕ).inverse _).symm
     (isColimitLocallyConstantPresheaf _ _ S.asLimit)
+
+lemma isColimitLocallyConstantPresheafDiagram_desc_apply (S : LightProfinite)
+    (s : Cocone (S.diagram.rightOp ⋙ locallyConstantPresheaf X))
+    (n : ℕ) (f : LocallyConstant (S.diagram.obj ⟨n⟩) X) :
+    (isColimitLocallyConstantPresheafDiagram X S).desc s (f.comap (S.asLimitCone.π.app ⟨n⟩)) =
+      s.ι.app n f := by
+  change ((((locallyConstantPresheaf X).mapCocone (coconeRightOpOfCone S.asLimitCone)).ι.app n) ≫
+    (isColimitLocallyConstantPresheafDiagram X S).desc s) _ = _
+  rw [(isColimitLocallyConstantPresheafDiagram X S).fac]
 
 end LocallyConstantAsColimit
 
