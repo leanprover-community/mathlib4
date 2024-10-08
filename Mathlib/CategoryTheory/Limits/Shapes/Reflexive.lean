@@ -410,14 +410,14 @@ def mkNatTrans (e₀ : F.obj zero ⟶ G.obj zero) (e₁ : F.obj one ⟶ G.obj on
         reflexivePair_map_reflexion, reflexivePair_map_left, reflexivePair_map_right,
         Category.assoc]
 
-@[reassoc (attr := simp)]
+@[simp]
 lemma mkNatTrans_app_zero (e₀ : F.obj zero ⟶ G.obj zero) (e₁ : F.obj one ⟶ G.obj one)
     (h₁ : F.map left ≫ e₀ = e₁ ≫ G.map left)
     (h₂ : F.map right ≫ e₀ = e₁ ≫ G.map right)
     (h₃ : F.map reflexion ≫ e₁ = e₀ ≫ G.map reflexion) :
     (mkNatTrans e₀ e₁ h₁ h₂ h₃).app zero = e₀ := rfl
 
-@[reassoc (attr := simp)]
+@[simp]
 lemma mkNatTrans_app_one (e₀ : F.obj zero ⟶ G.obj zero) (e₁ : F.obj one ⟶ G.obj one)
     (h₁ : F.map left ≫ e₀ = e₁ ≫ G.map left)
     (h₂ : F.map right ≫ e₀ = e₁ ≫ G.map right)
