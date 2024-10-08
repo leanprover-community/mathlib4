@@ -14,6 +14,7 @@ import Mathlib.Algebra.Star.BigOperators
 import Mathlib.Algebra.Star.Module
 import Mathlib.Algebra.Star.Pi
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.LinearAlgebra.Pi
 
 /-!
 # Matrices
@@ -1208,6 +1209,31 @@ def diagonalAlgHom : (n → α) →ₐ[R] Matrix n n α :=
     commutes' := fun r => (algebraMap_eq_diagonal r).symm }
 
 end Algebra
+
+section apply₂
+
+open LinearMap
+
+variable [Semiring R] [AddCommMonoid α] [Module R α]
+
+variable (R α) in
+/-- Extracting entries from a matrix as a linear map. -/
+@[simps]
+def apply₂ [Semiring R] [AddCommMonoid α] [Module R α] (i : m) (j : n) : Matrix m n α →ₗ[R] α where
+  toFun M := M i j
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+-- The type ascription on the RHS is necessary for unification to succeed on the linear map.
+lemma apply₂_eq_proj {i : m} {j : n} :
+    apply₂ R α i j = proj j ∘ₗ (proj i : _ →ₗ[_] (n → α)) :=
+  rfl
+
+lemma diag_comp_apply (i : m) :
+    proj i ∘ₗ Matrix.diagLinearMap m R α = apply₂ R α i i := by
+  simp [LinearMap.ext_iff]
+
+end apply₂
 
 end Matrix
 
