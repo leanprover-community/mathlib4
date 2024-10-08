@@ -437,11 +437,3 @@ instance (priority := 100) LinearOrderedCommRing.toStrictOrderedCommRing
 instance (priority := 100) LinearOrderedCommRing.toLinearOrderedCommSemiring
     [d : LinearOrderedCommRing α] : LinearOrderedCommSemiring α :=
   { d, LinearOrderedRing.toLinearOrderedSemiring with }
-
--- 2023-12-23
-@[deprecated] alias zero_le_mul_left := mul_nonneg_iff_of_pos_left
-@[deprecated] alias zero_le_mul_right := mul_nonneg_iff_of_pos_right
-@[deprecated] alias zero_lt_mul_left := mul_pos_iff_of_pos_left
-@[deprecated] alias zero_lt_mul_right := mul_pos_iff_of_pos_right
-
-assert_not_exists MonoidHom
