@@ -151,7 +151,6 @@ theorem LinearMap.IsSymmetric.genEigenspace_eq_eigenspace
     rw [hTμ, ← LinearMap.comp_apply, ← LinearMap.mul_eq_comp, ← pow_add]
     simp [mem_genEigenspace .. |>.mp <| (genEigenspace T μ).mono (show k + 1 ≤ k + k by gcongr) hx]
 
-
 lemma LinearMap.IsSymmetric.maxGenEigenspace_eq_eigenspace
     {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) {μ : 𝕜} :
     maxGenEigenspace T μ = eigenspace T μ := calc
@@ -161,6 +160,8 @@ lemma LinearMap.IsSymmetric.maxGenEigenspace_eq_eigenspace
     congr! 2 with n; exact genEigenspace_eq_eigenspace hT n.succ_pos
   _ = eigenspace T μ := by simp [genEigenspace_def, eigenspace_def]
 
+/-Just needs the analogue of Oliver's result, set up for tuples of symmetric
+operators.-/
 
 /-- In finite dimensions, given a finite commuting family of symmetric linear operators, the inner
 product space on which they act decomposes as an internal direct sum of joint eigenspaces. -/
