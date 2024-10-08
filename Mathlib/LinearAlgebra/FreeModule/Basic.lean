@@ -181,3 +181,18 @@ instance tensor : Module.Free S (M ⊗[R] N) :=
 end CommSemiring
 
 end Module.Free
+
+namespace LinearMap
+
+variable [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
+variable [Module.Free R N]
+
+theorem exists_rightInverse_of_surjective (f : M →ₗ[R] N) (hf_surj : range f = ⊤) :
+    ∃ g : N →ₗ[R] M, f.comp g = LinearMap.id := by
+  obtain ⟨I, B⟩ := Module.Free.exists_basis (R := R) (M := N)
+  let hC := B.reindexRange
+  refine ⟨hC.constr ℕ ((Set.range B).restrict (Function.invFun f)), hC.ext fun c => ?_⟩
+  rw [LinearMap.comp_apply, hC.constr_basis]
+  simp [hC, Function.rightInverse_invFun (LinearMap.range_eq_top.1 hf_surj) c]
+
+end LinearMap
