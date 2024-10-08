@@ -311,7 +311,7 @@ The "longFile" linter emits a warning on files which are longer than a certain n
 
 /--
 The "longFile" linter emits a warning on files which are longer than a certain number of lines
-(1500 by default on mathlib, no limit for downstream projects).
+(`linter.style.longFileDefValue` by default on mathlib, no limit for downstream projects).
 If this option is set to `N` lines, the linter warns once a file has more than `N` lines.
 A value of `0` silences the linter entirely.
 -/
@@ -374,15 +374,15 @@ def longFileLinter : Linter where run := withSetOptionIn fun stx ↦ do
           `set_option linter.style.longFile {candidate}`.\n\
           You can completely disable this linter by setting the length limit to `0`."
     else
-    -- finally, the file exceeds the default value, but not the option: we only allow the value
-    -- of the option to be `candidate` or `candidate + 100`
+    -- Finally, the file exceeds the default value, but not the option: we only allow the value
+    -- of the option to be `candidate` or `candidate + 100`.
+    -- In particular, this flags any option that is set to an unnecessarily high value.
     if linterBound == candidate || linterBound + 100 == candidate then return
     else
       logWarningAt stx <| .tagged linter.style.longFile.name
         m!"This file is {lastLine} lines long. \
           The current limit is {linterBound}, but it is expected to be {candidate}:\n\
-          `set_option linter.style.longFile {candidate}`.\n\
-          You can completely disable this linter by setting the length limit to `0`."
+          `set_option linter.style.longFile {candidate}`."
 
 initialize addLinter longFileLinter
 

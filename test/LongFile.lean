@@ -5,7 +5,8 @@ import Mathlib.Tactic.Linter.Lint
 
 Things to note:
 * `set_option linter.style.longFile 0` disables the linter, allowing us to set a value smaller than
-  `1500` without triggering the warning for setting a small value for the option;
+  `linter.style.longFileDefValue` without triggering the warning for setting a small value
+  for the option;
 * `guard_msgs ... in #exit` and `set_option ... in #exit` allow processing of the file *beyond*
   `#exit`, since they wrap `#exit` inside an anonymous section,
   making Lean active again *after* that anonymous section.
@@ -27,7 +28,7 @@ set_option linter.style.longFile 1500
 warning: using 'exit' to interrupt Lean
 ---
 warning: The default value of the `longFile` linter is 50.
-This file is 37 lines long which does not exceed the allowed bound.
+This file is 38 lines long which does not exceed the allowed bound.
 Please, remove the `set_option linter.style.longFile 60`.
 -/
 #guard_msgs in
@@ -39,7 +40,7 @@ set_option linter.style.longFile 60 in
 /--
 warning: using 'exit' to interrupt Lean
 ---
-warning: This file is 51 lines long, but the limit is 20.
+warning: This file is 52 lines long, but the limit is 20.
 
 You can extend the allowed length of the file using `set_option linter.style.longFile 200`.
 You can completely disable this linter by setting the length limit to `0`.
@@ -67,7 +68,7 @@ set_option linter.style.longFile 100 in
 /--
 warning: using 'exit' to interrupt Lean
 ---
-warning: This file is 78 lines long. The current limit is 101, but it is expected to be 200:
+warning: This file is 79 lines long. The current limit is 101, but it is expected to be 200:
 `set_option linter.style.longFile 200`.
 You can completely disable this linter by setting the length limit to `0`.
 -/
@@ -78,7 +79,7 @@ set_option linter.style.longFile 101 in
 #exit
 
 -- The following test is a little artificial: it follows a path in the code that should only
--- be accessible after modifying appropriately the linter options.
+-- be accessible after modifying the linter options appropriately.
 -- Specifically, in the line `if lastLine ≤ defValue && defValue < linterBound then`, the failure
 -- of *only* the second condition would produce the error message below
 set_option linter.style.longFileDefValue 400
@@ -87,7 +88,7 @@ set_option linter.style.longFileDefValue 1000
 /--
 warning: using 'exit' to interrupt Lean
 ---
-warning: This file is 95 lines long. The current limit is 500, but it is expected to be 1000:
+warning: This file is 96 lines long. The current limit is 500, but it is expected to be 1000:
 `set_option linter.style.longFile 1000`.
 You can completely disable this linter by setting the length limit to `0`.
 -/
@@ -119,7 +120,7 @@ set_option linter.style.longFileDefValue 400
 warning: using 'exit' to interrupt Lean
 ---
 warning: The default value of the `longFile` linter is 400.
-This file is 127 lines long which does not exceed the allowed bound.
+This file is 128 lines long which does not exceed the allowed bound.
 Please, remove the `set_option linter.style.longFile 5000`.
 -/
 #guard_msgs in
