@@ -137,7 +137,7 @@ theorem tendsto_pow_atTop_nhds_zero_of_lt_one {𝕜 : Type*} [LinearOrderedField
     (fun hr ↦ (tendsto_add_atTop_iff_nat 1).mp <| by
       simp [_root_.pow_succ, ← hr, tendsto_const_nhds])
     (fun hr ↦
-      have := one_lt_inv hr h₂ |> tendsto_pow_atTop_atTop_of_one_lt
+      have := (one_lt_inv₀ hr).2 h₂ |> tendsto_pow_atTop_atTop_of_one_lt
       (tendsto_inv_atTop_zero.comp this).congr fun n ↦ by simp)
 @[deprecated (since := "2024-01-31")]
 alias tendsto_pow_atTop_nhds_0_of_lt_1 := tendsto_pow_atTop_nhds_zero_of_lt_one

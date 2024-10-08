@@ -184,8 +184,8 @@ open scoped Uniformity Topology
 
 theorem uniformity_eq_aux :
     𝓤[instUniformSpaceProd.comap <| addEquiv 𝕜 A] = 𝓤 (Unitization 𝕜 A) := by
-  have key : UniformInducing (addEquiv 𝕜 A) :=
-    antilipschitzWith_addEquiv.uniformInducing lipschitzWith_addEquiv.uniformContinuous
+  have key : IsUniformInducing (addEquiv 𝕜 A) :=
+    antilipschitzWith_addEquiv.isUniformInducing lipschitzWith_addEquiv.uniformContinuous
   rw [← key.comap_uniformity]
   rfl
 
@@ -202,7 +202,7 @@ instance instUniformSpace : UniformSpace (Unitization 𝕜 A) :=
 
 /-- The natural equivalence between `Unitization 𝕜 A` and `𝕜 × A` as a uniform equivalence. -/
 def uniformEquivProd : (Unitization 𝕜 A) ≃ᵤ (𝕜 × A) :=
-  Equiv.toUniformEquivOfUniformInducing (addEquiv 𝕜 A) ⟨rfl⟩
+  Equiv.toUniformEquivOfIsUniformInducing (addEquiv 𝕜 A) ⟨rfl⟩
 
 /-- The bornology on `Unitization 𝕜 A` is inherited from `𝕜 × A`. -/
 instance instBornology : Bornology (Unitization 𝕜 A) :=

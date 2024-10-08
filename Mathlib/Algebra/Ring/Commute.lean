@@ -21,9 +21,9 @@ For the definitions of semirings and rings see `Mathlib.Algebra.Ring.Defs`.
 -/
 
 
-universe u v w x
+universe u
 
-variable {R : Type x}
+variable {R : Type u}
 
 open Function
 

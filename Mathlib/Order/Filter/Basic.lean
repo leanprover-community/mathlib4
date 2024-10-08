@@ -2638,6 +2638,12 @@ theorem Tendsto.frequently_map {l₁ : Filter α} {l₂ : Filter β} {p : α →
 @[simp]
 theorem tendsto_bot {f : α → β} {l : Filter β} : Tendsto f ⊥ l := by simp [Tendsto]
 
+theorem Tendsto.of_neBot_imp {f : α → β} {la : Filter α} {lb : Filter β}
+    (h : NeBot la → Tendsto f la lb) : Tendsto f la lb := by
+  rcases eq_or_neBot la with rfl | hla
+  · exact tendsto_bot
+  · exact h hla
+
 @[simp] theorem tendsto_top {f : α → β} {l : Filter α} : Tendsto f l ⊤ := le_top
 
 theorem le_map_of_right_inverse {mab : α → β} {mba : β → α} {f : Filter α} {g : Filter β}
