@@ -507,9 +507,6 @@ variable {f : M → M'} {s : Set M} {x x₀ : M}
 
 section
 
-#check contDiffAt_map_inverse
-
-
 omit [SmoothManifoldWithCorners I M] in
 lemma foobr {n : ℕ∞} [CompleteSpace E']
     {f : M → (E' →L[𝕜] E'')} (hf : ContMDiffWithinAt I 𝓘(𝕜, E' →L[𝕜] E'') n f s x₀)
@@ -523,11 +520,6 @@ lemma foo {n : ℕ∞} [CompleteSpace E']
     (V : M → E'') (hV : ContMDiffWithinAt I 𝓘(𝕜, E'') n V s x₀) (h'f : (f x₀).IsInvertible) :
     ContMDiffWithinAt I 𝓘(𝕜, E') n (fun x ↦ (f x).inverse (V x)) s x₀ :=
   ContMDiffWithinAt.clm_apply (foobr hf h'f) hV
-
-#check ContMDiffAt.mfderiv
-
-
-#exit
 
 variable {V W V₁ W₁ : Π (x : M'), TangentSpace I' x}
 
@@ -550,22 +542,76 @@ lemma mpullbackWithin_add :
   ext x
   simp [mpullbackWithin_apply]
 
+open ContinuousLinearMap
+
 lemma ContMDiffWithinAt.mpullbackWithin [CompleteSpace E] {t : Set M'}
     (hV : ContMDiffWithinAt I' I'.tangent 1
-      (fun (y : M') ↦ (V y : TangentBundle I' M')) t (f x))
-    (hf : ContMDiffWithinAt I I' 2 f s x) (hf' : (mfderivWithin I I' f s x).IsInvertible)
-    (hst : MapsTo f s t ):
+      (fun (y : M') ↦ (V y : TangentBundle I' M')) t (f x₀))
+    (hf : ContMDiffWithinAt I I' 2 f s x₀) (hf' : (mfderivWithin I I' f s x₀).IsInvertible)
+    (hst : MapsTo f s t) (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) :
     ContMDiffWithinAt I I.tangent 1
-      (fun (y : M) ↦ (mpullbackWithin I I' f V s y : TangentBundle I M)) s x := by
-  simp only [ModelWithCorners.tangent, Bundle.contMDiffWithinAt_section,
-    VectorField.mpullbackWithin] at hV ⊢
-  have Z := hV.comp _ (hf.of_le one_le_two) hst
+      (fun (y : M) ↦ (mpullbackWithin I I' f V s y : TangentBundle I M)) s x₀ := by
+  -- b₁ = f, b₂ = id
+  let b₁ := f
+  let b₂ : M → M := id
+  let v : Π (x : M), TangentSpace I' (f x) := V ∘ f
+  let ϕ : Π (x : M), TangentSpace I' (f x) →L[𝕜] TangentSpace I x :=
+    fun x ↦ (mfderivWithin I I' f s x).inverse
+  have hϕ : ContMDiffWithinAt I 𝓘(𝕜, E' →L[𝕜] E) 1
+      (fun (x : M) ↦ ContinuousLinearMap.inCoordinates
+        E' (TangentSpace I' (M := M')) E (TangentSpace I (M := M))
+        (b₁ x₀) (b₁ x) (b₂ x₀) (b₂ x) (ϕ x)) s x₀ := by
+    have : ContMDiffWithinAt I 𝓘(𝕜, E →L[𝕜] E') 1
+        (fun (x : M) ↦ ContinuousLinearMap.inCoordinates
+          E (TangentSpace I (M := M)) E' (TangentSpace I' (M := M'))
+          x₀ x (f x₀) (f x) (mfderivWithin I I' f s x)) s x₀ :=
+      hf.mfderivWithin_const le_rfl hx₀ hs
+    have : ContMDiffWithinAt I 𝓘(𝕜, E' →L[𝕜] E) 1
+        (ContinuousLinearMap.inverse ∘ (fun (x : M) ↦ ContinuousLinearMap.inCoordinates
+          E (TangentSpace I (M := M)) E' (TangentSpace I' (M := M'))
+          x₀ x (f x₀) (f x) (mfderivWithin I I' f s x))) s x₀ := by
+      apply ContMDiffAt.comp_contMDiffWithinAt _ _ this
+      apply ContDiffAt.contMDiffAt
+      apply IsInvertible.contDiffAt_map_inverse
+      rw [inCoordinates_eq _ _ _ _ _ _ _ (FiberBundle.mem_baseSet_trivializationAt' x₀)
+        (FiberBundle.mem_baseSet_trivializationAt' (f x₀))]
+      exact isInvertible_equiv.comp (hf'.comp isInvertible_equiv)
+    apply this.congr_of_eventuallyEq
+    filter_upwards [] with x
+    simp
+    rw [inCoordinates_eq, inCoordinates_eq]
+
+
+
+
+
+
+
+
+
+  have hv : ContMDiffWithinAt I I'.tangent 1 (fun m ↦ (v m : TangentBundle I' M')) s x₀ :=
+    hV.comp x₀ (hf.of_le one_le_two) hst
+  exact ContMDiffWithinAt.clm_apply_of_inCoordinates hϕ hv contMDiffWithinAt_id
+
+
+
+
+
+
 
 
 
 
 
 #exit
+
+
+lemma ContMDiffWithinAt.clm_apply_of_inCoordinates
+    (hϕ : ContMDiffWithinAt IM 𝓘(𝕜, F₁ →L[𝕜] F₂) n
+      (fun m ↦ inCoordinates F₁ E₁ F₂ E₂ (b₁ m₀) (b₁ m) (b₂ m₀) (b₂ m) (ϕ m)) s m₀)
+    (hv : ContMDiffWithinAt IM (IB₁.prod 𝓘(𝕜, F₁)) n (fun m ↦ (v m : TotalSpace F₁ E₁)) s m₀)
+    (hb₂ : ContMDiffWithinAt IM IB₂ n b₂ s m₀) :
+    ContMDiffWithinAt IM (IB₂.prod 𝓘(𝕜, F₂)) n (fun m ↦ (ϕ m (v m) : TotalSpace F₂ E₂)) s m₀ := by
 
 lemma mpullbackWithin_comp (g : M' → M'') (f : M → M') (V : Π (x : M''), TangentSpace I'' x)
     (s : Set M) (t : Set M') (x₀ : M) (hg : MDifferentiableWithinAt I' I'' g t (f x₀))
