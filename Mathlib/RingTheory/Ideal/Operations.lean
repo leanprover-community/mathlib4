@@ -6,6 +6,8 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.RingTheory.Coprime.Lemmas
+import Mathlib.RingTheory.NonUnitalSubring.Basic
+import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 
 /-!
 # More operations on modules and ideals
@@ -606,6 +608,11 @@ theorem sup_prod_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s
     (fun J K hJ hK => (sup_mul_eq_of_coprime_left hJ).trans hK)
     (by simp_rw [one_eq_top, sup_top_eq]) h
 
+theorem sup_multiset_prod_eq_top {s : Multiset (Ideal R)} (h : ∀  p ∈ s, I ⊔ p = ⊤) :
+    I ⊔ Multiset.prod s = ⊤ :=
+  Multiset.prod_induction (I ⊔ · = ⊤) s (fun _ _ hp hq ↦ (sup_mul_eq_of_coprime_left hp).trans hq)
+    (by simp only [one_eq_top, ge_iff_le, top_le_iff, le_top, sup_of_le_right]) h
+
 theorem sup_iInf_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s → I ⊔ J i = ⊤) :
     (I ⊔ ⨅ i ∈ s, J i) = ⊤ :=
   eq_top_iff.mpr <|
@@ -973,9 +980,36 @@ theorem IsPrime.multiset_prod_mem_iff_exists_mem {I : Ideal R} (hI : I.IsPrime) 
     s.prod ∈ I ↔ ∃ p ∈ s, p ∈ I := by
   simpa [span_singleton_le_iff_mem] using (hI.multiset_prod_map_le (span {·}))
 
+theorem IsPrime.pow_le_iff {I P : Ideal R} [hP : P.IsPrime] {n : ℕ} (hn : n ≠ 0) :
+    I ^ n ≤ P ↔ I ≤ P := by
+  have h : (Multiset.replicate n I).prod ≤ P ↔ _ := hP.multiset_prod_le
+  simp_rw [Multiset.prod_replicate, Multiset.mem_replicate, ne_eq, hn, not_false_eq_true,
+    true_and, exists_eq_left] at h
+  exact h
+
+@[deprecated (since := "2024-10-06")] alias pow_le_prime_iff := IsPrime.pow_le_iff
+
+theorem IsPrime.le_of_pow_le {I P : Ideal R} [hP : P.IsPrime] {n : ℕ} (h : I ^ n ≤ P) :
+    I ≤ P := by
+  by_cases hn : n = 0
+  · rw [hn, pow_zero, one_eq_top] at h
+    exact fun ⦃_⦄ _ ↦ h Submodule.mem_top
+  · exact (pow_le_iff hn).mp h
+
+@[deprecated (since := "2024-10-06")] alias le_of_pow_le_prime := IsPrime.le_of_pow_le
+
 theorem IsPrime.prod_le {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp : IsPrime P) :
     s.prod f ≤ P ↔ ∃ i ∈ s, f i ≤ P :=
   hp.multiset_prod_map_le f
+
+@[deprecated (since := "2024-10-06")] alias prod_le_prime := IsPrime.prod_le
+
+/-- The product of a finite number of elements in the commutative semiring `R` lies in the
+  prime ideal `p` if and only if at least one of those elements is in `p`. -/
+theorem IsPrime.prod_mem_iff {s : Finset ι} {x : ι → R} {p : Ideal R} [hp : p.IsPrime] :
+    ∏ i in s, x i ∈ p ↔ ∃ i ∈ s, x i ∈ p := by
+  simp_rw [← span_singleton_le_iff_mem, ← prod_span_singleton]
+  exact hp.prod_le
 
 theorem IsPrime.prod_mem_iff_exists_mem {I : Ideal R} (hI : I.IsPrime) (s : Finset R) :
     s.prod (fun x ↦ x) ∈ I ↔ ∃ p ∈ s, p ∈ I := by
@@ -1015,7 +1049,7 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
     rw [Finset.card_eq_zero] at hn
     subst hn
     rw [Finset.coe_empty, Set.biUnion_empty, Set.union_empty, subset_union] at h
-    simpa only [exists_prop, Finset.not_mem_empty, false_and_iff, exists_false, or_false_iff]
+    simpa only [exists_prop, Finset.not_mem_empty, false_and, exists_false, or_false]
   classical
     replace hn : ∃ (i : ι) (t : Finset ι), i ∉ t ∧ insert i t = s ∧ t.card = n :=
       Finset.card_eq_succ.1 hn
@@ -1209,7 +1243,8 @@ theorem range_finsuppTotal :
   refine ⟨fun ⟨f, h⟩ => ⟨Finsupp.mapRange.linearMap I.subtype f, fun i => (f i).2, h⟩, ?_⟩
   rintro ⟨a, ha, rfl⟩
   classical
-    refine ⟨a.mapRange (fun r => if h : r ∈ I then ⟨r, h⟩ else 0) (by simp), ?_⟩
+    refine ⟨a.mapRange (fun r => if h : r ∈ I then ⟨r, h⟩ else 0)
+      (by simp only [Submodule.zero_mem, ↓reduceDIte]; rfl), ?_⟩
     rw [finsuppTotal_apply, Finsupp.sum_mapRange_index]
     · apply Finsupp.sum_congr
       intro i _
@@ -1273,3 +1308,7 @@ theorem set_smul_top_eq_span (s : Set R) :
     Eq.trans (smul_eq_mul (Ideal R)) (Ideal.mul_top (.span s))
 
 end Submodule
+
+instance {R} [Semiring R] : NonUnitalSubsemiringClass (Ideal R) R where
+  mul_mem _ hb := Ideal.mul_mem_left _ _ hb
+instance {R} [Ring R] : NonUnitalSubringClass (Ideal R) R where

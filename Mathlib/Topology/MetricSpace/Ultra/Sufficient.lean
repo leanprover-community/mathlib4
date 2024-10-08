@@ -3,7 +3,7 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Topology.MetricSpace.Ultra.Normed
+import Mathlib.Analysis.Normed.Ring.Ultra
 
 /-!
 ## Sufficient contidition to have an ultrametric norm
@@ -83,7 +83,7 @@ lemma isUltrametricDist_of_forall_norm_natCast_le_one
       refine Finset.sum_le_sum ?_
       rintro (_|i) hi
       · simp
-      refine pow_le_one _ (norm_nonneg _) ?_
+      refine pow_le_one₀ (norm_nonneg _) ?_
       rw [← one_pow m] at hx
       refine le_of_pow_le_pow_left ?_ zero_le_one hx
       rintro rfl
@@ -91,9 +91,9 @@ lemma isUltrametricDist_of_forall_norm_natCast_le_one
     · rw [hm]
       refine Finset.sum_le_sum ?_
       intro i hi
-      refine pow_le_pow_right ?_ (by simpa [Nat.lt_succ] using hi)
+      refine pow_le_pow_right₀ ?_ (by simpa [Nat.lt_succ] using hi)
       contrapose! hx
-      exact pow_le_one _ (norm_nonneg _) hx.le
+      exact pow_le_one₀ (norm_nonneg _) hx.le
   refine le_of_forall_le_of_dense ?_
   intro a ha
   have ha' : 1 < a := (max_lt_iff.mp ha).left
@@ -106,7 +106,7 @@ lemma isUltrametricDist_of_forall_norm_natCast_le_one
       exact (pow_le_pow_left (norm_nonneg _) hx _).trans_eq (one_pow _)
     · rw [hm, eq_comm, max_eq_right_iff]
       exact (pow_le_pow_left zero_le_one hx.le _).trans_eq' (one_pow _).symm
-  rw [div_pow, gt_iff_lt, _root_.lt_div_iff (by positivity), ← nsmul_eq_mul, hp] at hm
+  rw [div_pow, gt_iff_lt, lt_div_iff₀ (by positivity), ← nsmul_eq_mul, hp] at hm
   refine le_of_pow_le_pow_left ?_ (zero_lt_one.trans ha').le ((key _).trans hm.le)
   rintro rfl
   simp at hm

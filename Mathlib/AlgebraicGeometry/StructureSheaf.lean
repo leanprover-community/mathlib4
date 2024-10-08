@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Scott Morrison
+Authors: Johan Commelin, Kim Morrison
 -/
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.Algebra.Category.Ring.Colimits
@@ -543,8 +543,14 @@ def stalkIso (x : PrimeSpectrum.Top R) :
 instance (x : PrimeSpectrum R) : IsIso (stalkToFiberRingHom R x) :=
   (stalkIso R x).isIso_hom
 
+instance (x : PrimeSpectrum R) : IsLocalRingHom (stalkToFiberRingHom R x) :=
+  isLocalRingHom_of_isIso _
+
 instance (x : PrimeSpectrum R) : IsIso (localizationToStalk R x) :=
   (stalkIso R x).isIso_inv
+
+instance (x : PrimeSpectrum R) : IsLocalRingHom (localizationToStalk R x) :=
+  isLocalRingHom_of_isIso _
 
 @[simp, reassoc]
 theorem stalkToFiberRingHom_localizationToStalk (x : PrimeSpectrum.Top R) :

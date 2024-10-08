@@ -92,6 +92,8 @@ instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*} [Semin
     [NormedAlgebra ℂ A] : NormedAlgebra ℝ A :=
   NormedAlgebra.restrictScalars ℝ ℂ A
 
+@[simp] lemma nnnorm_I : ‖I‖₊ = 1 := by simp [nnnorm]
+
 theorem dist_eq (z w : ℂ) : dist z w = abs (z - w) :=
   rfl
 
@@ -206,11 +208,14 @@ theorem antilipschitz_equivRealProd : AntilipschitzWith (NNReal.sqrt 2) equivRea
   AddMonoidHomClass.antilipschitz_of_bound equivRealProdLm fun z ↦ by
     simpa only [Real.coe_sqrt, NNReal.coe_ofNat] using abs_le_sqrt_two_mul_max z
 
-theorem uniformEmbedding_equivRealProd : UniformEmbedding equivRealProd :=
-  antilipschitz_equivRealProd.uniformEmbedding lipschitz_equivRealProd.uniformContinuous
+theorem isUniformEmbedding_equivRealProd : IsUniformEmbedding equivRealProd :=
+  antilipschitz_equivRealProd.isUniformEmbedding lipschitz_equivRealProd.uniformContinuous
+
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_equivRealProd := isUniformEmbedding_equivRealProd
 
 instance : CompleteSpace ℂ :=
-  (completeSpace_congr uniformEmbedding_equivRealProd).mpr inferInstance
+  (completeSpace_congr isUniformEmbedding_equivRealProd).mpr inferInstance
 
 instance instT2Space : T2Space ℂ := TopologicalSpace.t2Space_of_metrizableSpace
 
@@ -279,7 +284,7 @@ theorem restrictScalars_one_smulRight' (x : E) :
     ContinuousLinearMap.restrictScalars ℝ ((1 : ℂ →L[ℂ] ℂ).smulRight x : ℂ →L[ℂ] E) =
       reCLM.smulRight x + I • imCLM.smulRight x := by
   ext ⟨a, b⟩
-  simp [mk_eq_add_mul_I, mul_smul, smul_comm I b x]
+  simp [map_add, mk_eq_add_mul_I, mul_smul, smul_comm I b x]
 
 theorem restrictScalars_one_smulRight (x : ℂ) :
     ContinuousLinearMap.restrictScalars ℝ ((1 : ℂ →L[ℂ] ℂ).smulRight x : ℂ →L[ℂ] ℂ) =

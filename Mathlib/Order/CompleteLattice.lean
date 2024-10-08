@@ -757,6 +757,12 @@ theorem sSup_eq_iSup {s : Set α} : sSup s = ⨆ a ∈ s, a :=
 theorem sInf_eq_iInf {s : Set α} : sInf s = ⨅ a ∈ s, a :=
   @sSup_eq_iSup αᵒᵈ _ _
 
+lemma sSup_lowerBounds_eq_sInf (s : Set α) : sSup (lowerBounds s) = sInf s :=
+  (isLUB_sSup _).unique (isGLB_sInf _).isLUB
+
+lemma sInf_upperBounds_eq_csSup (s : Set α) : sInf (upperBounds s) = sSup s :=
+  (isGLB_sInf _).unique (isLUB_sSup _).isGLB
+
 theorem Monotone.le_map_iSup [CompleteLattice β] {f : α → β} (hf : Monotone f) :
     ⨆ i, f (s i) ≤ f (iSup s) :=
   iSup_le fun _ => hf <| le_iSup _ _
@@ -869,6 +875,9 @@ theorem iSup_eq_bot : iSup s = ⊥ ↔ ∀ i, s i = ⊥ :=
 @[simp]
 theorem iInf_eq_top : iInf s = ⊤ ↔ ∀ i, s i = ⊤ :=
   sInf_eq_top.trans forall_mem_range
+
+@[simp] lemma bot_lt_iSup : ⊥ < ⨆ i, s i ↔ ∃ i, ⊥ < s i := by simp [bot_lt_iff_ne_bot]
+@[simp] lemma iInf_lt_top : ⨅ i, s i < ⊤ ↔ ∃ i, s i < ⊤ := by simp [lt_top_iff_ne_top]
 
 theorem iSup₂_eq_bot {f : ∀ i, κ i → α} : ⨆ (i) (j), f i j = ⊥ ↔ ∀ i j, f i j = ⊥ := by
   simp
@@ -1277,12 +1286,24 @@ theorem iInf_sigma {p : β → Type*} {f : Sigma p → α} : ⨅ x, f x = ⨅ (i
   @iSup_sigma αᵒᵈ _ _ _ _
 
 lemma iSup_sigma' {κ : β → Type*} (f : ∀ i, κ i → α) :
-    (⨆ i, ⨆ j, f i j) = ⨆ x : Σ i, κ i, f x.1 x.2 :=
-(iSup_sigma (f := fun x ↦ f x.1 x.2)).symm
+    (⨆ i, ⨆ j, f i j) = ⨆ x : Σ i, κ i, f x.1 x.2 := (iSup_sigma (f := fun x ↦ f x.1 x.2)).symm
 
 lemma iInf_sigma' {κ : β → Type*} (f : ∀ i, κ i → α) :
-    (⨅ i, ⨅ j, f i j) = ⨅ x : Σ i, κ i, f x.1 x.2 :=
-(iInf_sigma (f := fun x ↦ f x.1 x.2)).symm
+    (⨅ i, ⨅ j, f i j) = ⨅ x : Σ i, κ i, f x.1 x.2 := (iInf_sigma (f := fun x ↦ f x.1 x.2)).symm
+
+lemma iSup_psigma {ι : Sort*} {κ : ι → Sort*} (f : (Σ' i, κ i) → α) :
+    ⨆ ij, f ij = ⨆ i, ⨆ j, f ⟨i, j⟩ :=
+  eq_of_forall_ge_iff fun c ↦ by simp only [iSup_le_iff, PSigma.forall]
+
+lemma iInf_psigma {ι : Sort*} {κ : ι → Sort*} (f : (Σ' i, κ i) → α) :
+    ⨅ ij, f ij = ⨅ i, ⨅ j, f ⟨i, j⟩ :=
+  eq_of_forall_le_iff fun c ↦ by simp only [le_iInf_iff, PSigma.forall]
+
+lemma iSup_psigma' {ι : Sort*} {κ : ι → Sort*} (f : ∀ i, κ i → α) :
+    (⨆ i, ⨆ j, f i j) = ⨆ ij : Σ' i, κ i, f ij.1 ij.2 := (iSup_psigma fun x ↦ f x.1 x.2).symm
+
+lemma iInf_psigma' {ι : Sort*} {κ : ι → Sort*} (f : ∀ i, κ i → α) :
+    (⨅ i, ⨅ j, f i j) = ⨅ ij : Σ' i, κ i, f ij.1 ij.2 := (iInf_psigma fun x ↦ f x.1 x.2).symm
 
 theorem iSup_prod {f : β × γ → α} : ⨆ x, f x = ⨆ (i) (j), f (i, j) :=
   eq_of_forall_ge_iff fun c => by simp only [iSup_le_iff, Prod.forall]
@@ -1415,6 +1436,12 @@ theorem iSup_eq_top (f : ι → α) : iSup f = ⊤ ↔ ∀ b < ⊤, ∃ i, b < f
 
 theorem iInf_eq_bot (f : ι → α) : iInf f = ⊥ ↔ ∀ b > ⊥, ∃ i, f i < b := by
   simp only [← sInf_range, sInf_eq_bot, Set.exists_range_iff]
+
+lemma iSup₂_eq_top (f : ∀ i, κ i → α) : ⨆ i, ⨆ j, f i j = ⊤ ↔ ∀ b < ⊤, ∃ i j, b < f i j := by
+  simp_rw [iSup_psigma', iSup_eq_top, PSigma.exists]
+
+lemma iInf₂_eq_bot (f : ∀ i, κ i → α) : ⨅ i, ⨅ j, f i j = ⊥ ↔ ∀ b > ⊥, ∃ i j, f i j < b := by
+  simp_rw [iInf_psigma', iInf_eq_bot, PSigma.exists]
 
 end CompleteLinearOrder
 
@@ -1579,7 +1606,7 @@ theorem snd_iInf [InfSet α] [InfSet β] (f : ι → α × β) : (iInf f).snd = 
   congr_arg sInf (range_comp _ _).symm
 
 theorem swap_iInf [InfSet α] [InfSet β] (f : ι → α × β) : (iInf f).swap = ⨅ i, (f i).swap := by
-  simp_rw [iInf, swap_sInf, ← range_comp, Function.comp]  -- Porting note: need to unfold `∘`
+  simp_rw [iInf, swap_sInf, ← range_comp, comp_def]  -- Porting note: need to unfold `∘`
 
 theorem iInf_mk [InfSet α] [InfSet β] (f : ι → α) (g : ι → β) :
     ⨅ i, (f i, g i) = (⨅ i, f i, ⨅ i, g i) :=
@@ -1592,7 +1619,7 @@ theorem snd_iSup [SupSet α] [SupSet β] (f : ι → α × β) : (iSup f).snd = 
   congr_arg sSup (range_comp _ _).symm
 
 theorem swap_iSup [SupSet α] [SupSet β] (f : ι → α × β) : (iSup f).swap = ⨆ i, (f i).swap := by
-  simp_rw [iSup, swap_sSup, ← range_comp, Function.comp]  -- Porting note: need to unfold `∘`
+  simp_rw [iSup, swap_sSup, ← range_comp, comp_def]  -- Porting note: need to unfold `∘`
 
 theorem iSup_mk [SupSet α] [SupSet β] (f : ι → α) (g : ι → β) :
     ⨆ i, (f i, g i) = (⨆ i, f i, ⨆ i, g i) :=

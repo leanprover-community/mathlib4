@@ -7,6 +7,7 @@ import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
 import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Polynomial.ScaleRoots
+import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 
 /-!
 # # Integral closure as a characteristic predicate
@@ -394,14 +395,14 @@ variable [Algebra R A] [Algebra R A'] [IsScalarTower R A B] [IsScalarTower R A' 
 /-- Integral closures are all isomorphic to each other. -/
 noncomputable def equiv : A ≃ₐ[R] A' :=
   AlgEquiv.ofAlgHom
-    (lift _ B (isIntegral := isIntegral_algebra R B))
-    (lift _ B (isIntegral := isIntegral_algebra R B))
+    (lift R A' B (isIntegral := isIntegral_algebra R B))
+    (lift R A B (isIntegral := isIntegral_algebra R B))
     (by ext x; apply algebraMap_injective A' R B; simp)
     (by ext x; apply algebraMap_injective A R B; simp)
 
 @[simp]
 theorem algebraMap_equiv (x : A) : algebraMap A' B (equiv R A B A' x) = algebraMap A B x :=
-  algebraMap_lift A' B (isIntegral := isIntegral_algebra R B) x
+  algebraMap_lift R A' B (isIntegral := isIntegral_algebra R B) x
 
 end Equiv
 
@@ -560,7 +561,7 @@ theorem Algebra.IsIntegral.isField_iff_isField {R S : Type*} [CommRing R]
 end Algebra
 
 theorem integralClosure_idem {R A : Type*} [CommRing R] [CommRing A] [Algebra R A] :
-    integralClosure (integralClosure R A : Set A) A = ⊥ :=
+    integralClosure (integralClosure R A) A = ⊥ :=
   letI := (integralClosure R A).algebra
   eq_bot_iff.2 fun x hx ↦ Algebra.mem_bot.2
     ⟨⟨x, isIntegral_trans (A := integralClosure R A) x hx⟩, rfl⟩

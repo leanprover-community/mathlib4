@@ -5,6 +5,7 @@ Authors: Alexander Bentkamp
 -/
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.FieldTheory.IsAlgClosed.Spectrum
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
 # Triangularizable linear endomorphisms
@@ -37,7 +38,7 @@ generalized eigenspaces span the whole space.
 eigenspace, eigenvector, eigenvalue, eigen
 -/
 
-open Set Function Module FiniteDimensional
+open Set Function Module Module
 
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
    {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
@@ -52,7 +53,7 @@ theorem exists_hasEigenvalue_of_iSup_genEigenspace_eq_top [Nontrivial M] {f : En
   intro μ
   replace contra : ∀ k, f.genEigenspace μ k = ⊥ := fun k ↦ by
     have hk : ¬ f.HasGenEigenvalue μ k := fun hk ↦ contra μ (f.hasEigenvalue_of_hasGenEigenvalue hk)
-    rwa [HasGenEigenvalue, not_not] at hk
+    rwa [hasGenEigenvalue_iff, not_not] at hk
   simp [contra]
 
 -- This is Lemma 5.21 of [axler2015], although we are no longer following that proof.
@@ -98,6 +99,8 @@ theorem iSup_genEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f : E
       apply pos_finrank_genEigenspace_of_hasEigenvalue hμ₀ (Nat.zero_lt_succ n)
     -- and the dimensions of `ES` and `ER` add up to `finrank K V`.
     have h_dim_add : finrank K ER + finrank K ES = finrank K V := by
+      dsimp only [ER, ES]
+      rw [Module.End.genEigenspace_def, Module.End.genEigenrange_def]
       apply LinearMap.finrank_range_add_finrank_ker
     -- Therefore the dimension `ER` mus be smaller than `finrank K V`.
     have h_dim_ER : finrank K ER < n.succ := by linarith
@@ -167,7 +170,8 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
     · rw [hμμ']
     replace hm₂ : ((f - algebraMap K (End K V) μ') ^ finrank K V) (m μ') = 0 := by
       obtain ⟨k, hk⟩ := (mem_iSup_of_chain _ _).mp (hm₂ μ')
-      exact Module.End.genEigenspace_le_genEigenspace_finrank _ _ k hk
+      simpa only [End.mem_genEigenspace] using
+        Module.End.genEigenspace_le_genEigenspace_finrank _ _ k hk
     have : _ = g := (m.support.erase μ).noncommProd_erase_mul (Finset.mem_erase.mpr ⟨hμμ', hμ'⟩)
       (fun μ ↦ (f - algebraMap K (End K V) μ) ^ finrank K V) (fun μ₁ _ μ₂ _ _ ↦ h_comm μ₁ μ₂)
     rw [← this, LinearMap.mul_apply, hm₂, _root_.map_zero]
@@ -184,9 +188,10 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
     apply LinearMap.injOn_of_disjoint_ker (subset_refl _)
     have this := f.independent_genEigenspace
     simp_rw [f.iSup_genEigenspace_eq_genEigenspace_finrank] at this ⊢
-    rw [LinearMap.ker_noncommProd_eq_of_supIndep_ker _ _ <| this.supIndep' (m.support.erase μ),
-      ← Finset.sup_eq_iSup]
-    exact Finset.supIndep_iff_disjoint_erase.mp (this.supIndep' m.support) μ hμ
+    rw [LinearMap.ker_noncommProd_eq_of_supIndep_ker, ← Finset.sup_eq_iSup]
+    · simpa only [End.genEigenspace_def] using
+        Finset.supIndep_iff_disjoint_erase.mp (this.supIndep' m.support) μ hμ
+    · simpa only [End.genEigenspace_def] using this.supIndep' (m.support.erase μ)
   have hg₄ : SurjOn g
       ↑(p ⊓ ⨆ k, f.genEigenspace μ k) ↑(p ⊓ ⨆ k, f.genEigenspace μ k) := by
     have : MapsTo g
@@ -217,3 +222,54 @@ theorem Module.End.iSup_genEigenspace_restrict_eq_top
   simp_rw [Submodule.inf_genEigenspace f p h, Submodule.comap_subtype_self,
     ← Submodule.map_iSup, Submodule.comap_map_eq_of_injective h_inj] at this
   exact this.symm
+
+/-- Given a family of endomorphisms `i ↦ f i` which are compatible in the sense that every maximal
+generalised eigenspace of `f i` is invariant wrt `f j`, if each `f i` is triangularizable, the
+family is simultaneously triangularizable. -/
+lemma Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo
+    {ι : Type*} [FiniteDimensional K V]
+    (f : ι → End K V)
+    (h : ∀ i j φ, MapsTo (f i) ((f j).maxGenEigenspace φ) ((f j).maxGenEigenspace φ))
+    (h' : ∀ i, ⨆ μ, (f i).maxGenEigenspace μ = ⊤) :
+    ⨆ χ : ι → K, ⨅ i, (f i).maxGenEigenspace (χ i) = ⊤ := by
+  generalize h_dim : finrank K V = n
+  induction n using Nat.strongRecOn generalizing V with | ind n ih => ?_
+  obtain this | ⟨i : ι, hy : ¬ ∃ φ, (f i).maxGenEigenspace φ = ⊤⟩ :=
+    forall_or_exists_not (fun j : ι ↦ ∃ φ : K, (f j).maxGenEigenspace φ = ⊤)
+  · choose χ hχ using this
+    replace hχ : ⨅ i, (f i).maxGenEigenspace (χ i) = ⊤ := by simpa
+    simp_rw [eq_top_iff] at hχ ⊢
+    exact le_trans hχ <| le_iSup (fun χ : ι → K ↦ ⨅ i, (f i).maxGenEigenspace (χ i)) χ
+  · replace hy : ∀ φ, finrank K ((f i).maxGenEigenspace φ) < n := fun φ ↦ by
+      simp_rw [not_exists, ← lt_top_iff_ne_top] at hy; exact h_dim ▸ Submodule.finrank_lt (hy φ)
+    have hi (j : ι) (φ : K) :
+        MapsTo (f j) ((f i).maxGenEigenspace φ) ((f i).maxGenEigenspace φ) := by
+      exact h j i φ
+    replace ih (φ : K) :
+        ⨆ χ : ι → K, ⨅ j, maxGenEigenspace ((f j).restrict (hi j φ)) (χ j) = ⊤ := by
+      apply ih _ (hy φ)
+      · intro j k μ
+        exact mapsTo_restrict_maxGenEigenspace_restrict_of_mapsTo (f j) (f k) _ _ (h j k μ)
+      · simp_rw [maxGenEigenspace_def] at h' ⊢
+        exact fun j ↦ Module.End.iSup_genEigenspace_restrict_eq_top _ (h' j)
+      · rfl
+    replace ih (φ : K) :
+        ⨆ (χ : ι → K) (_ : χ i = φ), ⨅ j, maxGenEigenspace ((f j).restrict (hi j φ)) (χ j) = ⊤ := by
+      suffices ∀ χ : ι → K, χ i ≠ φ → ⨅ j, maxGenEigenspace ((f j).restrict (hi j φ)) (χ j) = ⊥ by
+        specialize ih φ; rw [iSup_split, biSup_congr this] at ih; simpa using ih
+      intro χ hχ
+      rw [eq_bot_iff, ← ((f i).maxGenEigenspace φ).ker_subtype, LinearMap.ker,
+        ← Submodule.map_le_iff_le_comap, ← Submodule.inf_iInf_maxGenEigenspace_of_forall_mapsTo,
+        ← disjoint_iff_inf_le]
+      simp_rw [maxGenEigenspace_def]
+      exact ((f i).disjoint_iSup_genEigenspace hχ.symm).mono_right (iInf_le _ i)
+    replace ih (φ : K) :
+        ⨆ (χ : ι → K) (_ : χ i = φ), ⨅ j, maxGenEigenspace (f j) (χ j) =
+        maxGenEigenspace (f i) φ := by
+      have (χ : ι → K) (hχ : χ i = φ) : ⨅ j, maxGenEigenspace (f j) (χ j) =
+          (⨅ j, maxGenEigenspace ((f j).restrict (hi j φ)) (χ j)).map
+            ((f i).maxGenEigenspace φ).subtype := by
+        rw [← hχ, iInf_maxGenEigenspace_restrict_map_subtype_eq]
+      simp_rw [biSup_congr this, ← Submodule.map_iSup, ih, Submodule.map_top,
+        Submodule.range_subtype]
+    simpa only [← ih, iSup_comm (ι := K), iSup_iSup_eq_right] using h' i

@@ -307,28 +307,30 @@ theorem coe_prod {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∏ i, f i) : L
 
 /-! `IntermediateField`s inherit structure from their `Subalgebra` coercions. -/
 
+instance toAlgebra : Algebra S L :=
+  inferInstanceAs (Algebra S.toSubalgebra L)
 
 instance module' {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] : Module R S :=
-  S.toSubalgebra.module'
+  inferInstanceAs (Module R S.toSubalgebra)
 
-instance module : Module K S :=
-  inferInstanceAs (Module K S.toSubsemiring)
+instance algebra' {R' K L : Type*} [Field K] [Field L] [Algebra K L] (S : IntermediateField K L)
+    [CommSemiring R'] [SMul R' K] [Algebra R' L] [IsScalarTower R' K L] : Algebra R' S :=
+  inferInstanceAs (Algebra R' S.toSubalgebra)
 
 instance isScalarTower {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] :
     IsScalarTower R K S :=
-  inferInstanceAs (IsScalarTower R K S.toSubsemiring)
+  inferInstanceAs (IsScalarTower R K S.toSubalgebra)
 
 @[simp]
 theorem coe_smul {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] (r : R) (x : S) :
     ↑(r • x : S) = (r • (x : L)) :=
   rfl
 
-instance algebra : Algebra K S :=
-  inferInstanceAs (Algebra K S.toSubsemiring)
-
 @[simp] lemma algebraMap_apply (x : S) : algebraMap S L x = x := rfl
 
 @[simp] lemma coe_algebraMap_apply (x : K) : ↑(algebraMap K S x) = algebraMap K L x := rfl
+
+instance {R : Type*} [Semiring R] [Algebra L R] : SMul S R := S.instSMulSubtypeMem
 
 instance isScalarTower_bot {R : Type*} [Semiring R] [Algebra L R] : IsScalarTower S L R :=
   IsScalarTower.subalgebra _ _ _ S.toSubalgebra
@@ -340,6 +342,8 @@ instance isScalarTower_mid {R : Type*} [Semiring R] [Algebra L R] [Algebra K R]
 /-- Specialize `is_scalar_tower_mid` to the common case where the top field is `L` -/
 instance isScalarTower_mid' : IsScalarTower K S L :=
   S.isScalarTower_mid
+
+instance {E} [Semiring E] [Algebra L E] : Algebra S E := inferInstanceAs (Algebra S.toSubalgebra E)
 
 section shortcut_instances
 variable {E} [Field E] [Algebra L E] (T : IntermediateField S E) {S}
