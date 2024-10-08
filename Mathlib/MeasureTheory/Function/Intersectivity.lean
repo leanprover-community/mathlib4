@@ -61,9 +61,7 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
   have hfapp : ∀ n a, f n a = (↑(n + 1))⁻¹ * ∑ k in Finset.range (n + 1), (s k).indicator 1 a := by
     simp only [f, Pi.natCast_def, Pi.smul_apply, Pi.inv_apply, Finset.sum_apply, eq_self_iff_true,
     forall_const, imp_true_iff, smul_eq_mul]
-  have should_be_found_by_fun_prop k :
-    Measurable ((s k).indicator 1 : α → ℝ≥0∞) := measurable_one.indicator (hs k)
-  have hf n : Measurable (f n) := by fun_prop
+  have hf n : Measurable (f n) := by fun_prop (disch := exact hs _)
   have hf₁ n : f n ≤ 1 := by
     rintro a
     rw [hfapp, ← ENNReal.div_eq_inv_mul]
