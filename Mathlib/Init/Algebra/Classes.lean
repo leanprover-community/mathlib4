@@ -13,8 +13,6 @@ The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
 We intend to move all the content of these files out into the main `Mathlib` directory structure.
 Contributions assisting with this are appreciated.
 
-(Jeremy Tan: The only non-deprecated thing in this file now is `IsSymmOp`)
-
 # Unbundled algebra classes
 
 These classes were part of an incomplete refactor described
@@ -27,16 +25,7 @@ set_option linter.deprecated false
 
 universe u v
 
-/-- `IsSymmOp α β op` where `op : α → α → β` is the natural generalisation of
-`Std.IsCommutative` (`β = α`) and `IsSymm` (`β = Prop`). -/
-class IsSymmOp (α : Sort u) (β : Sort v) (op : α → α → β) : Prop where
-  symm_op : ∀ a b, op a b = op b a
-
-instance (priority := 100) isSymmOp_of_isCommutative (α : Sort u) (op : α → α → α)
-    [Std.Commutative op] : IsSymmOp α α op where symm_op := Std.Commutative.comm
-
-instance (priority := 100) isSymmOp_of_isSymm (α : Sort u) (op : α → α → Prop) [IsSymm α op] :
-    IsSymmOp α Prop op where symm_op a b := propext <| Iff.intro (IsSymm.symm a b) (IsSymm.symm b a)
+variable {α : Sort u} {β : Sort v}
 
 @[deprecated (since := "2024-09-11")]
 class IsLeftCancel (α : Sort u) (op : α → α → α) : Prop where
@@ -68,7 +57,7 @@ instance (priority := 100) (α : Sort u) (lt : α → α → Prop) [IsStrictWeak
 
 section
 
-variable {α : Sort u} {r : α → α → Prop}
+variable {r : α → α → Prop}
 
 local infixl:50 " ≺ " => r
 
@@ -94,7 +83,7 @@ namespace StrictWeakOrder
 
 section
 
-variable {α : Sort u} {r : α → α → Prop}
+variable {r : α → α → Prop}
 
 local infixl:50 " ≺ " => r
 
@@ -180,7 +169,7 @@ theorem lt_of_lt_of_incomp {α : Sort u} {lt : α → α → Prop} [IsStrictWeak
     [DecidableRel lt] : ∀ {a b c}, lt a b → ¬lt b c ∧ ¬lt c b → lt a c :=
   @fun a b c hab ⟨nbc, ncb⟩ =>
   have nca : ¬lt c a := fun hca => absurd (trans_of lt hca hab) ncb
-  Decidable.by_contradiction fun nac : ¬lt a c =>
+  Decidable.byContradiction fun nac : ¬lt a c =>
     have : ¬lt a b ∧ ¬lt b a := incomp_trans_of lt ⟨nac, nca⟩ ⟨ncb, nbc⟩
     absurd hab this.1
 
@@ -189,7 +178,7 @@ theorem lt_of_incomp_of_lt {α : Sort u} {lt : α → α → Prop} [IsStrictWeak
     [DecidableRel lt] : ∀ {a b c}, ¬lt a b ∧ ¬lt b a → lt b c → lt a c :=
   @fun a b c ⟨nab, nba⟩ hbc =>
   have nca : ¬lt c a := fun hca => absurd (trans_of lt hbc hca) nba
-  Decidable.by_contradiction fun nac : ¬lt a c =>
+  Decidable.byContradiction fun nac : ¬lt a c =>
     have : ¬lt b c ∧ ¬lt c b := incomp_trans_of lt ⟨nba, nab⟩ ⟨nac, nca⟩
     absurd hbc this.1
 

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Mitchell Rowett. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mitchell Rowett, Scott Morrison
+Authors: Mitchell Rowett, Kim Morrison
 -/
 import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Group.Subgroup.MulOpposite
@@ -401,6 +401,21 @@ theorem out_eq' (a : α ⧸ s) : mk a.out' = a :=
   Quotient.out_eq' a
 
 variable (s)
+
+/-- Given a subgroup `s`, the function that sends a subgroup `t` to the pair consisting of
+its intersection with `s` and its image in the quotient `α ⧸ s` is strictly monotone, even though
+it is not injective in general. -/
+@[to_additive QuotientAddGroup.strictMono_comap_prod_image "Given an additive subgroup `s`,
+the function that sends an additive subgroup `t` to the pair consisting of
+its intersection with `s` and its image in the quotient `α ⧸ s`
+is strictly monotone, even though it is not injective in general."]
+theorem strictMono_comap_prod_image :
+    StrictMono fun t : Subgroup α ↦ (t.comap s.subtype, mk (s := s) '' t) := by
+  refine fun t₁ t₂ h ↦ ⟨⟨Subgroup.comap_mono h.1, Set.image_mono h.1⟩,
+    mt (fun ⟨le1, le2⟩ a ha ↦ ?_) h.2⟩
+  obtain ⟨a', h', eq⟩ := le2 ⟨_, ha, rfl⟩
+  convert ← t₁.mul_mem h' (@le1 ⟨_, QuotientGroup.eq.1 eq⟩ <| t₂.mul_mem (t₂.inv_mem <| h.1 h') ha)
+  apply mul_inv_cancel_left
 
 /- It can be useful to write `obtain ⟨h, H⟩ := mk_out'_eq_mul ...`, and then `rw [H]` or
   `simp_rw [H]` or `simp only [H]`. In order for `simp_rw` and `simp only` to work, this lemma is
