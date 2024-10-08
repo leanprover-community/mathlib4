@@ -11,8 +11,6 @@ import Mathlib.CategoryTheory.Filtered.Basic
 Typically forgetful functors from algebraic categories preserve filtered colimits
 (although not general colimits). See e.g. `Algebra/Category/MonCat/FilteredColimits`.
 
-## Future work
-This could be generalised to allow diagrams in lower universes.
 -/
 
 
