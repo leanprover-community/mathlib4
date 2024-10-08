@@ -84,7 +84,7 @@ theorem uniformContinuous_add : UniformContinuous fun p : ℚ × ℚ => p.1 + p.
   Rat.isUniformEmbedding_coe_real.toUniformInducing.uniformContinuous_iff.2 <| by
     simp only [Function.comp_def, Rat.cast_add]
     exact Real.uniformContinuous_add.comp
-      (Rat.uniformContinuous_coe_real.prod_map Rat.uniformContinuous_coe_real)
+      (Rat.uniformContinuous_coe_real.prodMap Rat.uniformContinuous_coe_real)
 
 theorem uniformContinuous_neg : UniformContinuous (@Neg.neg ℚ _) :=
   Metric.uniformContinuous_iff.2 fun ε ε0 =>
