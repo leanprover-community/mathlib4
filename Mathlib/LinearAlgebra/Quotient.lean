@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
 import Mathlib.LinearAlgebra.Span
+import Mathlib.LinearAlgebra.Pi
 import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.GroupTheory.QuotientGroup.Basic
 import Mathlib.SetTheory.Cardinal.Finite
@@ -314,6 +315,14 @@ theorem liftQ_apply (f : M →ₛₗ[τ₁₂] M₂) {h} (x : M) : p.liftQ f h (
 
 @[simp]
 theorem liftQ_mkQ (f : M →ₛₗ[τ₁₂] M₂) (h) : (p.liftQ f h).comp p.mkQ = f := by ext; rfl
+
+theorem pi_liftQ_eq_liftQ_pi {ι : Type*} {N : ι → Type*}
+    [∀ i, AddCommGroup (N i)] [∀ i, Module R (N i)]
+    (f : (i : ι) → M →ₗ[R] (N i)) {p : Submodule R M} (h : ∀ i, p ≤ ker (f i)) :
+    LinearMap.pi (fun i ↦ p.liftQ (f i) (h i)) =
+      p.liftQ (LinearMap.pi f) (LinearMap.ker_pi f ▸ le_iInf h) := by
+  ext x i
+  simp
 
 /-- Special case of `submodule.liftQ` when `p` is the span of `x`. In this case, the condition on
 `f` simply becomes vanishing at `x`. -/
