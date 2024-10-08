@@ -168,7 +168,7 @@ private theorem nonarchimedean_aux {q r : ℚ} (h : padicValRat p q ≤ padicVal
         unfold padicNorm; split_ifs
         apply le_max_iff.2
         left
-        apply zpow_le_of_le
+        apply zpow_le_zpow_right₀
         · exact mod_cast le_of_lt hp.1.one_lt
         · apply neg_le_neg
           have : padicValRat p q = min (padicValRat p q) (padicValRat p r) := (min_eq_left h).symm
@@ -232,7 +232,7 @@ theorem dvd_iff_norm_le {n : ℕ} {z : ℤ} : ↑(p ^ n) ∣ z ↔ padicNorm p z
   unfold padicNorm; split_ifs with hz
   · norm_cast at hz
     simp [hz]
-  · rw [zpow_le_iff_le, neg_le_neg_iff, padicValRat.of_int,
+  · rw [zpow_le_zpow_iff_right₀, neg_le_neg_iff, padicValRat.of_int,
       padicValInt.of_ne_one_ne_zero hp.1.ne_one _]
     · norm_cast
       rw [← PartENat.coe_le_coe, PartENat.natCast_get, ← multiplicity.pow_dvd_iff_le_multiplicity,
@@ -255,10 +255,10 @@ theorem int_eq_one_iff (m : ℤ) : padicNorm p m = 1 ↔ ¬(p : ℤ) ∣ m := by
       intro h
       exact (Nat.not_lt_zero p h).elim
     · have : 1 < (p : ℚ) := by norm_cast; exact Nat.Prime.one_lt (Fact.out : Nat.Prime p)
-      rw [← zpow_neg_one, zpow_lt_iff_lt this]
+      rw [← zpow_neg_one, zpow_lt_zpow_iff_right₀ this]
       have : 0 ≤ padicValRat p m := by simp only [of_int, Nat.cast_nonneg]
       intro h
-      rw [← zpow_zero (p : ℚ), zpow_inj] <;> linarith
+      rw [← zpow_zero (p : ℚ), zpow_right_inj₀] <;> linarith
 
 theorem int_lt_one_iff (m : ℤ) : padicNorm p m < 1 ↔ (p : ℤ) ∣ m := by
   rw [← not_iff_not, ← int_eq_one_iff, eq_iff_le_not_lt]
