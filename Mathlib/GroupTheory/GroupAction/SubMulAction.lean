@@ -78,21 +78,15 @@ open SMulMemClass
 
 section SMul
 
-variable [SMul R M] [SetLike S M] [hS : SMulMemClass S R M] (s : S)
+section Instances
+
+variable {_ : SMul R M} [SetLike S M] [hS : SMulMemClass S R M] (s : S)
 
 -- lower priority so other instances are found first
 /-- A subset closed under the scalar action inherits that action. -/
 @[to_additive "A subset closed under the additive action inherits that action."]
-instance (priority := 50) smul {R M : Type*} [SMul R M] [SetLike S M] [SMulMemClass S R M] (s : S) :
-    SMul R s :=
+instance (priority := 50) smul : SMul R s :=
   ⟨fun r x => ⟨r • x.1, smul_mem r x.2⟩⟩
-
-/-- This can't be an instance because Lean wouldn't know how to find `N`, but we can still use
-this to manually derive `SMulMemClass` on specific types. -/
-theorem _root_.SMulMemClass.ofIsScalarTower (S M N α : Type*) [SetLike S α] [SMul M N]
-    [SMul M α] [Monoid N] [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] :
-    SMulMemClass S M α :=
-  { smul_mem := fun m a ha => smul_one_smul N m a ▸ SMulMemClass.smul_mem _ ha }
 
 instance instIsScalarTower [Mul M] [MulMemClass S M] [IsScalarTower R M M]
     (s : S) : IsScalarTower R s s where
@@ -101,6 +95,17 @@ instance instIsScalarTower [Mul M] [MulMemClass S M] [IsScalarTower R M M]
 instance instSMulCommClass [Mul M] [MulMemClass S M] [SMulCommClass R M M]
     (s : S) : SMulCommClass R s s where
   smul_comm r x y := Subtype.ext <| smul_comm r (x : M) (y : M)
+
+end Instances
+
+variable [SMul R M] [SetLike S M] [hS : SMulMemClass S R M] (s : S)
+
+/-- This can't be an instance because Lean wouldn't know how to find `N`, but we can still use
+this to manually derive `SMulMemClass` on specific types. -/
+theorem _root_.SMulMemClass.ofIsScalarTower (S M N α : Type*) [SetLike S α] [SMul M N]
+    [SMul M α] [Monoid N] [MulAction N α] [SMulMemClass S N α] [IsScalarTower M N α] :
+    SMulMemClass S M α :=
+  { smul_mem := fun m a ha => smul_one_smul N m a ▸ SMulMemClass.smul_mem _ ha }
 
 -- Porting note (#11215): TODO lower priority not actually there
 -- lower priority so later simp lemmas are used first; to appease simp_nf
