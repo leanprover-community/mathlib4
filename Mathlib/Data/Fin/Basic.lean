@@ -1514,8 +1514,14 @@ lemma sub_succ_le_sub_of_le {n : ℕ} {u v : Fin (n + 2)} (h : u < v) : v - (u +
 end AddGroup
 
 @[simp]
-theorem coe_ofNat_eq_mod (m n : ℕ) [NeZero m] :
+theorem coe_natCast_eq_mod (m n : ℕ) [NeZero m] :
     ((n : Fin m) : ℕ) = n % m :=
+  rfl
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem coe_ofNat_eq_mod (m n : ℕ) [NeZero m] :
+    ((no_index OfNat.ofNat n : Fin m) : ℕ) = OfNat.ofNat n % m :=
   rfl
 
 section Mul
