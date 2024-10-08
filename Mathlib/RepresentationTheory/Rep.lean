@@ -332,7 +332,7 @@ variable [Group G] (A B C : Rep k G)
 protected def ihom (A : Rep k G) : Rep k G ⥤ Rep k G where
   obj B := Rep.of (Representation.linHom A.ρ B.ρ)
   map := fun {X} {Y} f =>
-    { hom := ModuleCat.ofHom (LinearMap.llcomp k _ _ _ f.hom)
+    { hom := ModuleCat.asHom (LinearMap.llcomp k _ _ _ f.hom)
       comm := fun g => LinearMap.ext fun x => LinearMap.ext fun y => by
         show f.hom (X.ρ g _) = _
         simp only [hom_comm_apply]; rfl }
