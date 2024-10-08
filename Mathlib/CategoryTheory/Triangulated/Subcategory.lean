@@ -152,16 +152,16 @@ lemma isoClosure_W : S.isoClosure.W = S.W := by
     exact ⟨Z, g, h, mem, le_isoClosure _ _ hZ⟩
 
 instance respectsIso_W : S.W.RespectsIso where
-  precomp := by
-    rintro X' X Y e f ⟨Z, g, h, mem, mem'⟩
-    refine ⟨Z, g, h ≫ e.inv⟦(1 : ℤ)⟧', isomorphic_distinguished _ mem _ ?_, mem'⟩
-    refine Triangle.isoMk _ _ e (Iso.refl _) (Iso.refl _) (by aesop_cat) (by aesop_cat) ?_
+  precomp {X' X Y} e (he : IsIso e) := by
+    rintro f ⟨Z, g, h, mem, mem'⟩
+    refine ⟨Z, g, h ≫ inv e⟦(1 : ℤ)⟧', isomorphic_distinguished _ mem _ ?_, mem'⟩
+    refine Triangle.isoMk _ _ (asIso e) (Iso.refl _) (Iso.refl _) (by aesop_cat) (by aesop_cat) ?_
     dsimp
-    simp only [assoc, ← Functor.map_comp, e.inv_hom_id, Functor.map_id, comp_id, id_comp]
-  postcomp := by
-    rintro X Y Y' e f ⟨Z, g, h, mem, mem'⟩
-    refine ⟨Z, e.inv ≫ g, h, isomorphic_distinguished _ mem _ ?_, mem'⟩
-    exact Triangle.isoMk _ _ (Iso.refl _) e.symm (Iso.refl _)
+    simp only [Functor.map_inv, assoc, IsIso.inv_hom_id, comp_id, id_comp]
+  postcomp {X Y Y'} e (he : IsIso e) := by
+    rintro f ⟨Z, g, h, mem, mem'⟩
+    refine ⟨Z, inv e ≫ g, h, isomorphic_distinguished _ mem _ ?_, mem'⟩
+    exact Triangle.isoMk _ _ (Iso.refl _) (asIso e).symm (Iso.refl _)
 
 instance : S.W.ContainsIdentities := by
   rw [← isoClosure_W]

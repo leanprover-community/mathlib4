@@ -1090,6 +1090,9 @@ theorem Injective.image_injective (hf : Injective f) : Injective (image f) := by
   intro s t h
   rw [← preimage_image_eq s hf, ← preimage_image_eq t hf, h]
 
+lemma Injective.image_strictMono (inj : Function.Injective f) : StrictMono (image f) :=
+  monotone_image.strictMono_of_injective inj.image_injective
+
 theorem Surjective.preimage_subset_preimage_iff {s t : Set β} (hf : Surjective f) :
     f ⁻¹' s ⊆ f ⁻¹' t ↔ s ⊆ t := by
   apply Set.preimage_subset_preimage_iff

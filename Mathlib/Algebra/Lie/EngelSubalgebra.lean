@@ -137,7 +137,7 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     rintro _ ⟨y, rfl⟩
     simp only [pow_succ', LinearMap.mul_apply, Submodule.mem_comap, mem_coe_submodule]
     apply aux₁
-    simp only [Submodule.coeSubtype, SetLike.coe_mem]
+    simp only [Submodule.coe_subtype, SetLike.coe_mem]
 
 /-- A Lie subalgebra of a Noetherian Lie algebra is nilpotent
 if it is contained in the Engel subalgebra of all its elements. -/

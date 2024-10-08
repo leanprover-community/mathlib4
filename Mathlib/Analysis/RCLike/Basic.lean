@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 import Mathlib.Algebra.Algebra.Field
+import Mathlib.Algebra.BigOperators.Balance
+import Mathlib.Algebra.Order.BigOperators.Expect
 import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Analysis.CStarAlgebra.Basic
 import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
@@ -39,7 +41,8 @@ their counterparts in `Mathlib/Analysis/Complex/Basic.lean` (which causes linter
 A few lemmas requiring heavier imports are in `Mathlib/Data/RCLike/Lemmas.lean`.
 -/
 
-open scoped ComplexConjugate
+open Fintype
+open scoped BigOperators ComplexConjugate
 
 section
 
@@ -233,6 +236,17 @@ theorem norm_ofReal (r : ℝ) : ‖(r : K)‖ = |r| :=
 /-- ℝ and ℂ are both of characteristic zero. -/
 instance (priority := 100) charZero_rclike : CharZero K :=
   (RingHom.charZero_iff (algebraMap ℝ K).injective).1 inferInstance
+
+@[rclike_simps, norm_cast]
+lemma ofReal_expect {α : Type*} (s : Finset α) (f : α → ℝ) : 𝔼 i ∈ s, f i = 𝔼 i ∈ s, (f i : K) :=
+  map_expect (algebraMap ..) ..
+
+@[norm_cast]
+lemma ofReal_balance {ι : Type*} [Fintype ι] (f : ι → ℝ) (i : ι) :
+    ((balance f i : ℝ) : K) = balance ((↑) ∘ f) i := map_balance (algebraMap ..) ..
+
+@[simp] lemma ofReal_comp_balance {ι : Type*} [Fintype ι] (f : ι → ℝ) :
+    ofReal ∘ balance f = balance (ofReal ∘ f : ι → K) := funext <| ofReal_balance _
 
 /-! ### The imaginary unit, `I` -/
 
@@ -605,13 +619,23 @@ variable (K) in
 lemma nnnorm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) :
     ‖n • x‖₊ = n • ‖x‖₊ := by simpa [Nat.cast_smul_eq_nsmul] using nnnorm_smul (n : K) x
 
-variable (K) in
-lemma norm_nnqsmul [NormedField E] [CharZero E] [NormedSpace K E] (q : ℚ≥0) (x : E) :
-    ‖q • x‖ = q • ‖x‖ := by simpa [NNRat.cast_smul_eq_nnqsmul] using norm_smul (q : K) x
+section NormedField
+variable [NormedField E] [CharZero E] [NormedSpace K E]
+include K
 
 variable (K) in
-lemma nnnorm_nnqsmul [NormedField E] [CharZero E] [NormedSpace K E] (q : ℚ≥0) (x : E) :
-    ‖q • x‖₊ = q • ‖x‖₊ := by simpa [NNRat.cast_smul_eq_nnqsmul] using nnnorm_smul (q : K) x
+lemma norm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖ = q • ‖x‖ := by
+  simpa [NNRat.cast_smul_eq_nnqsmul] using norm_smul (q : K) x
+
+variable (K) in
+lemma nnnorm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖₊ = q • ‖x‖₊ := by
+  simpa [NNRat.cast_smul_eq_nnqsmul] using nnnorm_smul (q : K) x
+
+@[bound]
+lemma norm_expect_le {ι : Type*} {s : Finset ι} {f : ι → E} : ‖𝔼 i ∈ s, f i‖ ≤ 𝔼 i ∈ s, ‖f i‖ :=
+  Finset.le_expect_of_subadditive norm_zero norm_add_le fun _ _ ↦ by rw [norm_nnqsmul K]
+
+end NormedField
 
 theorem mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq_def', sq]
 
@@ -648,11 +672,11 @@ open IsAbsoluteValue
 
 theorem abs_re_div_norm_le_one (z : K) : |re z / ‖z‖| ≤ 1 := by
   rw [abs_div, abs_norm]
-  exact div_le_one_of_le (abs_re_le_norm _) (norm_nonneg _)
+  exact div_le_one_of_le₀ (abs_re_le_norm _) (norm_nonneg _)
 
 theorem abs_im_div_norm_le_one (z : K) : |im z / ‖z‖| ≤ 1 := by
   rw [abs_div, abs_norm]
-  exact div_le_one_of_le (abs_im_le_norm _) (norm_nonneg _)
+  exact div_le_one_of_le₀ (abs_im_le_norm _) (norm_nonneg _)
 
 theorem norm_I_of_ne_zero (hI : (I : K) ≠ 0) : ‖(I : K)‖ = 1 := by
   rw [← mul_self_inj_of_nonneg (norm_nonneg I) zero_le_one, one_mul, ← norm_mul,

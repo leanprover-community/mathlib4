@@ -141,7 +141,7 @@ theorem continuous_toReal : Continuous toReal :=
     exact inf_le_left
 
 instance : OrderClosedTopology ℝₗ :=
-  ⟨isClosed_le_prod.preimage (continuous_toReal.prod_map continuous_toReal)⟩
+  ⟨isClosed_le_prod.preimage (continuous_toReal.prodMap continuous_toReal)⟩
 
 instance : ContinuousAdd ℝₗ := by
   refine ⟨continuous_iff_continuousAt.2 ?_⟩
