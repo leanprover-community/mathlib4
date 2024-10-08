@@ -18,7 +18,7 @@ nonarchimedean functions.
 namespace IsNonarchimedean
 
 /-- A nonarchimedean function satisfies the triangle inequality. -/
-theorem add_le {α : Type*} [AddCommGroup α] {f : α → ℝ} (hf : ∀ x : α, 0 ≤ f x)
+theorem add_le {α : Type*} [Add α] {f : α → ℝ} (hf : ∀ x : α, 0 ≤ f x)
     (hna : IsNonarchimedean f) {a b : α} : f (a + b) ≤ f a + f b := by
   apply le_trans (hna _ _)
   rw [max_le_iff, le_add_iff_nonneg_right, le_add_iff_nonneg_left]
