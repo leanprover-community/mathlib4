@@ -3626,6 +3626,7 @@ import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Order.Filter.CountableSeparatingOn
 import Mathlib.Order.Filter.Curry
+import Mathlib.Order.Filter.Defs
 import Mathlib.Order.Filter.ENNReal
 import Mathlib.Order.Filter.EventuallyConst
 import Mathlib.Order.Filter.Extr
