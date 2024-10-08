@@ -153,7 +153,7 @@ instance (priority := 100) Finite.to_noetherianSpace [Finite α] : NoetherianSpa
 /-- In a Noetherian space, every closed set is a finite union of irreducible closed sets. -/
 theorem NoetherianSpace.exists_finite_set_closeds_irreducible [NoetherianSpace α] (s : Closeds α) :
     ∃ S : Set (Closeds α), S.Finite ∧ (∀ t ∈ S, IsIrreducible (t : Set α)) ∧ s = sSup S := by
-  apply wellFounded_closeds.induction s; clear s
+  apply wellFounded_lt.induction s; clear s
   intro s H
   rcases eq_or_ne s ⊥ with rfl | h₀
   · use ∅; simp
