@@ -101,4 +101,5 @@ theorem IsSemisimpleModule.finite_tfae [IsSemisimpleModule R M] :
 instance [IsSemisimpleModule R M] [Module.Finite R M] : IsArtinian R M :=
   (IsSemisimpleModule.finite_tfae.out 0 2).mp ‹_›
 
+example [IsSemisimpleRing R] : IsNoetherianRing R := inferInstance
 example [IsSemisimpleRing R] : IsArtinianRing R := inferInstance
