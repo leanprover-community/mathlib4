@@ -1217,13 +1217,13 @@ variable [Add α]
 variable (R α) in
 /-- Extracting entries from a matrix as an additive homomorphism.  -/
 @[simps]
-def elemAddHom (i : m) (j : n) : AddHom (Matrix m n α) α where
+def entryAddHom (i : m) (j : n) : AddHom (Matrix m n α) α where
   toFun M := M i j
   map_add' _ _ := rfl
 
 -- The type ascription on the RHS is necessary for unification to succeed on the composition.
-lemma elemAddHom_eq_comp {i : m} {j : n} :
-    elemAddHom α i j = (Pi.evalAddHom _ j).comp (Pi.evalAddHom _ i : AddHom _ (n → α)) :=
+lemma entryAddHom_eq_comp {i : m} {j : n} :
+    entryAddHom α i j = (Pi.evalAddHom _ j).comp (Pi.evalAddHom _ i : AddHom _ (n → α)) :=
   rfl
 
 end AddHom
@@ -1238,23 +1238,23 @@ Extracting entries from a matrix as an additive monoid homomorphism. Note this c
 a ring homomorphism, as it does not respect multiplication.
 -/
 @[simps]
-def elemAddMonoidHom (i : m) (j : n) : Matrix m n α →+ α where
+def entryAddMonoidHom (i : m) (j : n) : Matrix m n α →+ α where
   toFun M := M i j
   map_add' _ _ := rfl
   map_zero' := rfl
 
 -- The type ascription on the RHS is necessary for unification to succeed on the composition.
-lemma elemAddMonoidHom_eq_comp {i : m} {j : n} :
-    elemAddMonoidHom α i j =
+lemma entryAddMonoidHom_eq_comp {i : m} {j : n} :
+    entryAddMonoidHom α i j =
       (Pi.evalAddMonoidHom _ j).comp (Pi.evalAddMonoidHom _ i : _ →+ (n → α)) :=
   rfl
 
 @[simp] lemma evalAddMonoidHom_comp_diagAddMonoidHom (i : m) :
-    (Pi.evalAddMonoidHom _ i).comp (diagAddMonoidHom m α) = elemAddMonoidHom α i i := by
+    (Pi.evalAddMonoidHom _ i).comp (diagAddMonoidHom m α) = entryAddMonoidHom α i i := by
   simp [AddMonoidHom.ext_iff]
 
-@[simp] lemma elemAddMonoidHom_toAddHom {i : m} {j : n} :
-  (elemAddMonoidHom α i j : AddHom _ _) = Matrix.elemAddHom α i j := rfl
+@[simp] lemma entryAddMonoidHom_toAddHom {i : m} {j : n} :
+  (entryAddMonoidHom α i j : AddHom _ _) = Matrix.entryAddHom α i j := rfl
 
 end AddMonoidHom
 
@@ -1268,26 +1268,26 @@ Extracting entries from a matrix as a linear map. Note this cannot be upgraded t
 homomorphism, as it does not respect multiplication.
 -/
 @[simps]
-def elemLinearMap (i : m) (j : n) :
+def entryLinearMap (i : m) (j : n) :
     Matrix m n α →ₗ[R] α where
   toFun M := M i j
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
 -- The type ascription on the RHS is necessary for unification to succeed on the linear composition.
-lemma elemLinearMap_eq {i : m} {j : n} :
-    elemLinearMap R α i j = LinearMap.proj j ∘ₗ (LinearMap.proj i : _ →ₗ[_] (n → α)) :=
+lemma entryLinearMap_eq {i : m} {j : n} :
+    entryLinearMap R α i j = LinearMap.proj j ∘ₗ (LinearMap.proj i : _ →ₗ[_] (n → α)) :=
   rfl
 
 @[simp] lemma proj_comp_diagLinearMap (i : m) :
-    LinearMap.proj i ∘ₗ diagLinearMap m R α = elemLinearMap R α i i := by
+    LinearMap.proj i ∘ₗ diagLinearMap m R α = entryLinearMap R α i i := by
   simp [LinearMap.ext_iff]
 
-@[simp] lemma elemLinearMap_toAddMonoidHom {i : m} {j : n} :
-    (elemLinearMap R α i j : _ →+ _) = elemAddMonoidHom α i j := rfl
+@[simp] lemma entryLinearMap_toAddMonoidHom {i : m} {j : n} :
+    (entryLinearMap R α i j : _ →+ _) = entryAddMonoidHom α i j := rfl
 
-@[simp] lemma elemLinearMap_toAddHom {i : m} {j : n} :
-    (elemLinearMap R α i j : AddHom _ _) = elemAddHom α i j := rfl
+@[simp] lemma entryLinearMap_toAddHom {i : m} {j : n} :
+    (entryLinearMap R α i j : AddHom _ _) = entryAddHom α i j := rfl
 
 end LinearMap
 
@@ -1345,8 +1345,8 @@ theorem mapMatrix_comp (f : β →+ γ) (g : α →+ β) :
     f.mapMatrix.comp g.mapMatrix = ((f.comp g).mapMatrix : Matrix m n α →+ _) :=
   rfl
 
-@[simp] lemma elemAddMonoidHom_comp_mapMatrix (f : α →+ β) (i : m) (j : n) :
-    (elemAddMonoidHom β i j).comp f.mapMatrix = f.comp (elemAddMonoidHom α i j) := rfl
+@[simp] lemma entryAddMonoidHom_comp_mapMatrix (f : α →+ β) (i : m) (j : n) :
+    (entryAddMonoidHom β i j).comp f.mapMatrix = f.comp (entryAddMonoidHom α i j) := rfl
 
 end AddMonoidHom
 
@@ -1376,9 +1376,9 @@ theorem mapMatrix_trans (f : α ≃+ β) (g : β ≃+ γ) :
     f.mapMatrix.trans g.mapMatrix = ((f.trans g).mapMatrix : Matrix m n α ≃+ _) :=
   rfl
 
-@[simp] lemma elemAddHom_comp_mapMatrix (f : α ≃+ β) (i : m) (j : n) :
-    (elemAddHom β i j).comp (AddHomClass.toAddHom f.mapMatrix) =
-      (f : AddHom α β).comp (elemAddHom _ i j) := rfl
+@[simp] lemma entryAddHom_comp_mapMatrix (f : α ≃+ β) (i : m) (j : n) :
+    (entryAddHom β i j).comp (AddHomClass.toAddHom f.mapMatrix) =
+      (f : AddHom α β).comp (entryAddHom _ i j) := rfl
 
 end AddEquiv
 
@@ -1404,8 +1404,8 @@ theorem mapMatrix_comp (f : β →ₗ[R] γ) (g : α →ₗ[R] β) :
     f.mapMatrix.comp g.mapMatrix = ((f.comp g).mapMatrix : Matrix m n α →ₗ[R] _) :=
   rfl
 
-@[simp] lemma elemLinearMap_comp_mapMatrix (f : α →ₗ[R] β) (i : m) (j : n) :
-    elemLinearMap R _ i j ∘ₗ f.mapMatrix = f ∘ₗ elemLinearMap R _ i j := rfl
+@[simp] lemma entryLinearMap_comp_mapMatrix (f : α →ₗ[R] β) (i : m) (j : n) :
+    entryLinearMap R _ i j ∘ₗ f.mapMatrix = f ∘ₗ entryLinearMap R _ i j := rfl
 
 end LinearMap
 
@@ -1441,9 +1441,10 @@ theorem mapMatrix_trans (f : α ≃ₗ[R] β) (g : β ≃ₗ[R] γ) :
     (f.mapMatrix : _ ≃ₗ[R] Matrix m n β).toLinearMap = f.toLinearMap.mapMatrix := by
   rfl
 
-@[simp] lemma elemLinearMap_comp_mapMatrix (f : α ≃ₗ[R] β) (i : m) (j : n) :
-    elemLinearMap R _ i j ∘ₗ f.mapMatrix.toLinearMap =
-      f.toLinearMap ∘ₗ elemLinearMap R _ i j := rfl
+@[simp] lemma entryLinearMap_comp_mapMatrix (f : α ≃ₗ[R] β) (i : m) (j : n) :
+    entryLinearMap R _ i j ∘ₗ f.mapMatrix.toLinearMap =
+      f.toLinearMap ∘ₗ entryLinearMap R _ i j := by
+  simp only [mapMatrix_toLinearMap, LinearMap.entryLinearMap_comp_mapMatrix]
 
 end LinearEquiv
 
