@@ -2383,7 +2383,7 @@ instance : Inner 𝕜 (SeparationQuotient E) where
 
 @[simp]
 theorem inner_mk_mk (x y : E) :
-  inner (mk x) (mk y) = (inner x y : 𝕜) := rfl
+    inner (mk x) (mk y) = (inner x y : 𝕜) := rfl
 
 instance : InnerProductSpace 𝕜 (SeparationQuotient E) where
   norm_sq_eq_inner := Quotient.ind norm_sq_eq_inner
