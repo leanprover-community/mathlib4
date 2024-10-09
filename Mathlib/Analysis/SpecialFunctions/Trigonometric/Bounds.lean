@@ -192,7 +192,7 @@ theorem lt_tan {x : ℝ} (h1 : 0 < x) (h2 : x < π / 2) : x < tan x := by
       apply lt_of_le_of_ne y.cos_sq_le_one
       rw [cos_sq']
       simpa only [Ne, sub_eq_self, sq_eq_zero_iff] using (sin_pos hy).ne'
-    rwa [lt_inv, inv_one]
+    rwa [lt_inv_comm₀, inv_one]
     · exact zero_lt_one
     simpa only [sq, mul_self_pos] using this.ne'
   have mono := strictMonoOn_of_deriv_pos (convex_Ico 0 (π / 2)) tan_minus_id_cts deriv_pos

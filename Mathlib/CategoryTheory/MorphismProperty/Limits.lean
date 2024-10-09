@@ -190,7 +190,7 @@ abbrev IsStableUnderProductsOfShape (J : Type*) := W.IsStableUnderLimitsOfShape 
 lemma IsStableUnderProductsOfShape.mk (J : Type*)
     [W.RespectsIso] [HasProductsOfShape J C]
     (hW : ∀ (X₁ X₂ : J → C) (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
-      W (Pi.map f)) : W.IsStableUnderProductsOfShape J := by
+      W (Limits.Pi.map f)) : W.IsStableUnderProductsOfShape J := by
   intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf
   let φ := fun j => f.app (Discrete.mk j)
   have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
@@ -203,7 +203,7 @@ lemma IsStableUnderProductsOfShape.mk (J : Type*)
   simp
 
 /-- The condition that a property of morphisms is stable by finite products. -/
-class IsStableUnderFiniteProducts : Prop :=
+class IsStableUnderFiniteProducts : Prop where
   isStableUnderProductsOfShape (J : Type) [Finite J] : W.IsStableUnderProductsOfShape J
 
 lemma isStableUnderProductsOfShape_of_isStableUnderFiniteProducts
