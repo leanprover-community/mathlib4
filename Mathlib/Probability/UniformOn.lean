@@ -44,8 +44,9 @@ namespace ProbabilityTheory
 
 variable {Ω : Type*} [MeasurableSpace Ω]
 
-/-- Given a set `s`, `uniformOn s` is the counting measure conditioned on `s`. In particular,
-`uniformOn s t` is the proportion of `s` that is contained in `t`.
+/-- Given a set `s`, `uniformOn s` is the uniform measure on `s`, defined as the counting measure
+conditioned by `s`. One should think of `uniformOn s t` as the proportion of `s` that is contained
+in `t`.
 
 This is a probability measure when `s` is finite and nonempty and is given by
 `ProbabilityTheory.uniformOn_isProbabilityMeasure`. -/
