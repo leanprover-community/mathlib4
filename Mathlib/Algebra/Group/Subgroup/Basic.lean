@@ -912,14 +912,14 @@ theorem closure_induction₂ {p : ∀ x y, x ∈ closure k → y ∈ closure k �
     (inv_right : ∀ x hx y hy, p x y hx hy → p x y⁻¹ hx (inv_mem hy))
     {x y : G} (hx : x ∈ closure k) (hy : y ∈ closure k) : p x y hx hy := by
   induction hy using closure_induction with
-    | mem z hz => induction hx using closure_induction with
-      | mem _ h => exact mem _ h _ hz
-      | one => exact one_left _ (subset_closure hz)
-      | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
-      | inv _ _ h => exact inv_left _ _ _ (subset_closure hz) h
-    | one => exact one_right x hx
-    | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ hx h₁ h₂
-    | inv _ _ h => exact inv_right _ _ _ _ h
+  | mem z hz => induction hx using closure_induction with
+    | mem _ h => exact mem _ h _ hz
+    | one => exact one_left _ (subset_closure hz)
+    | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
+    | inv _ _ h => exact inv_left _ _ _ (subset_closure hz) h
+  | one => exact one_right x hx
+  | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ hx h₁ h₂
+  | inv _ _ h => exact inv_right _ _ _ _ h
 
 @[to_additive (attr := simp)]
 theorem closure_closure_coe_preimage {k : Set G} : closure (((↑) : closure k → G) ⁻¹' k) = ⊤ :=

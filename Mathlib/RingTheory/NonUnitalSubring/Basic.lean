@@ -695,11 +695,11 @@ theorem closure_induction' {s : Set R} {p : closure s → Prop} (a : closure s)
     (mul : ∀ x y, p x → p y → p (x * y)) : p a :=
   Subtype.recOn a fun b hb => by
     induction hb using closure_induction with
-      | mem x hx => exact mem x hx
-      | zero => exact zero
-      | add x y hx hy h₁ h₂ => exact add _ _ h₁ h₂
-      | neg x hx h => exact neg _ h
-      | mul x y hx hy h₁ h₂ => exact mul _ _ h₁ h₂
+    | mem x hx => exact mem x hx
+    | zero => exact zero
+    | add x y hx hy h₁ h₂ => exact add _ _ h₁ h₂
+    | neg x hx h => exact neg _ h
+    | mul x y hx hy h₁ h₂ => exact mul _ _ h₁ h₂
 
 /-- An induction principle for closure membership, for predicates with two arguments. -/
 @[elab_as_elim]
@@ -715,16 +715,16 @@ theorem closure_induction₂ {s : Set R} {p : ∀ x y, x ∈ closure s → y ∈
     {x y : R} (hx : x ∈ closure s) (hy : y ∈ closure s) :
     p x y hx hy := by
   induction hy using closure_induction with
-    | mem z hz => induction hx using closure_induction with
-      | mem _ h => exact mem_mem _ h _ hz
-      | zero => exact zero_left _ _
-      | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
-      | add _ _ _ _ h₁ h₂ => exact add_left _ _ _ _ _ _ h₁ h₂
-      | neg _ _ h => exact neg_left _ _ _ _ h
-    | zero => exact zero_right x hx
-    | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ _ h₁ h₂
-    | add _ _ _ _ h₁ h₂ => exact add_right _ _ _ _ _ _ h₁ h₂
-    | neg _ _ h => exact neg_right _ _ _ _ h
+  | mem z hz => induction hx using closure_induction with
+    | mem _ h => exact mem_mem _ h _ hz
+    | zero => exact zero_left _ _
+    | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
+    | add _ _ _ _ h₁ h₂ => exact add_left _ _ _ _ _ _ h₁ h₂
+    | neg _ _ h => exact neg_left _ _ _ _ h
+  | zero => exact zero_right x hx
+  | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ _ h₁ h₂
+  | add _ _ _ _ h₁ h₂ => exact add_right _ _ _ _ _ _ h₁ h₂
+  | neg _ _ h => exact neg_right _ _ _ _ h
 
 theorem mem_closure_iff {s : Set R} {x} :
     x ∈ closure s ↔ x ∈ AddSubgroup.closure (Subsemigroup.closure s : Set R) :=

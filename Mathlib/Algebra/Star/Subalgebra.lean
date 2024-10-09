@@ -472,22 +472,22 @@ theorem adjoin_induction₂ {s : Set A} {p : ∀ x y, x ∈ adjoin R s → y ∈
     {a b : A} (ha : a ∈ adjoin R s) (hb : b ∈ adjoin R s) :
     p a b ha hb := by
   induction hb using adjoin_induction with
-    | mem z hz => induction ha using adjoin_induction with
-      | mem _ h => exact mem_mem _ h _ hz
-      | algebraMap _ => exact algebraMap_left _ _ hz
-      | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
-      | add _ _ _ _ h₁ h₂ => exact add_left _ _ _ _ _ _ h₁ h₂
-      | star _ _ h => exact star_left _ _ _ _ h
-    | algebraMap r =>
-      induction ha using adjoin_induction with
-      | mem _ h => exact algebraMap_right _ _ h
-      | algebraMap _ => exact algebraMap_both _ _
-      | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
-      | add _ _ _ _ h₁ h₂ => exact add_left _ _ _ _ _ _ h₁ h₂
-      | star _ _ h => exact star_left _ _ _ _ h
-    | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ _ h₁ h₂
-    | add _ _ _ _ h₁ h₂ => exact add_right _ _ _ _ _ _ h₁ h₂
-    | star _ _ h => exact star_right _ _ _ _ h
+  | mem z hz => induction ha using adjoin_induction with
+    | mem _ h => exact mem_mem _ h _ hz
+    | algebraMap _ => exact algebraMap_left _ _ hz
+    | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
+    | add _ _ _ _ h₁ h₂ => exact add_left _ _ _ _ _ _ h₁ h₂
+    | star _ _ h => exact star_left _ _ _ _ h
+  | algebraMap r =>
+    induction ha using adjoin_induction with
+    | mem _ h => exact algebraMap_right _ _ h
+    | algebraMap _ => exact algebraMap_both _ _
+    | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
+    | add _ _ _ _ h₁ h₂ => exact add_left _ _ _ _ _ _ h₁ h₂
+    | star _ _ h => exact star_left _ _ _ _ h
+  | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ _ h₁ h₂
+  | add _ _ _ _ h₁ h₂ => exact add_right _ _ _ _ _ _ h₁ h₂
+  | star _ _ h => exact star_right _ _ _ _ h
 
 /-- The difference with `StarSubalgebra.adjoin_induction` is that this acts on the subtype. -/
 @[elab_as_elim]

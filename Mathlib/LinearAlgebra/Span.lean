@@ -182,14 +182,14 @@ theorem span_induction₂ {p : ∀ x y, x ∈ span R s → y ∈ span R s → Pr
     {a b : M} (ha : a ∈ Submodule.span R s)
     (hb : b ∈ Submodule.span R s) : p a b ha hb := by
   induction hb using span_induction with
-    | mem z hz => induction ha using span_induction with
-      | mem _ h => exact mem_mem _ h _ hz
-      | zero => exact zero_left _ _
-      | add _ _ _ _ h₁ h₂ => exact add_left _ _ _ _ _ _ h₁ h₂
-      | smul _ _ _ h => exact smul_left _ _ _ _ _ h
-    | zero => exact zero_right a ha
-    | add _ _ _ _ h₁ h₂ => exact add_right _ _ _ _ _ _ h₁ h₂
-    | smul _ _ _ h => exact smul_right _ _ _ _ _ h
+  | mem z hz => induction ha using span_induction with
+    | mem _ h => exact mem_mem _ h _ hz
+    | zero => exact zero_left _ _
+    | add _ _ _ _ h₁ h₂ => exact add_left _ _ _ _ _ _ h₁ h₂
+    | smul _ _ _ h => exact smul_left _ _ _ _ _ h
+  | zero => exact zero_right a ha
+  | add _ _ _ _ h₁ h₂ => exact add_right _ _ _ _ _ _ h₁ h₂
+  | smul _ _ _ h => exact smul_right _ _ _ _ _ h
 
 open AddSubmonoid in
 theorem span_eq_closure {s : Set M} : (span R s).toAddSubmonoid = closure (@univ R • s) := by

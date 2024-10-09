@@ -785,18 +785,18 @@ theorem closure_induction₂ {s : Set R} {p : ∀ x y, x ∈ closure s → y ∈
     {x y : R} (hx : x ∈ closure s) (hy : y ∈ closure s) :
     p x y hx hy := by
   induction hy using closure_induction with
-    | mem z hz => induction hx using closure_induction with
-      | mem _ h => exact mem_mem _ h _ hz
-      | zero => exact zero_left _ _
-      | one => exact one_left _ _
-      | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
-      | add _ _ _ _ h₁ h₂ => exact add_left _ _ _ _ _ _ h₁ h₂
-      | neg _ _ h => exact neg_left _ _ _ _ h
-    | zero => exact zero_right x hx
-    | one => exact one_right x hx
-    | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ _ h₁ h₂
-    | add _ _ _ _ h₁ h₂ => exact add_right _ _ _ _ _ _ h₁ h₂
-    | neg _ _ h => exact neg_right _ _ _ _ h
+  | mem z hz => induction hx using closure_induction with
+    | mem _ h => exact mem_mem _ h _ hz
+    | zero => exact zero_left _ _
+    | one => exact one_left _ _
+    | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
+    | add _ _ _ _ h₁ h₂ => exact add_left _ _ _ _ _ _ h₁ h₂
+    | neg _ _ h => exact neg_left _ _ _ _ h
+  | zero => exact zero_right x hx
+  | one => exact one_right x hx
+  | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ _ h₁ h₂
+  | add _ _ _ _ h₁ h₂ => exact add_right _ _ _ _ _ _ h₁ h₂
+  | neg _ _ h => exact neg_right _ _ _ _ h
 
 theorem mem_closure_iff {s : Set R} {x} :
     x ∈ closure s ↔ x ∈ AddSubgroup.closure (Submonoid.closure s : Set R) :=
@@ -819,7 +819,8 @@ theorem mem_closure_iff {s : Set R} {x} :
       | inv_right _ _ _ _ h => simpa [mul_neg] using neg_mem h,
     fun h => by
       induction h using AddSubgroup.closure_induction with
-      | mem x hx => induction hx using Submonoid.closure_induction with
+      | mem x hx =>
+        induction hx using Submonoid.closure_induction with
         | mem _ h => exact subset_closure h
         | one => exact one_mem _
         | mul _ _ _ _ h₁ h₂ => exact mul_mem h₁ h₂

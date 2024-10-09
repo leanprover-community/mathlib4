@@ -392,12 +392,12 @@ theorem closure_induction₂ {p : ∀ x y, x ∈ closure s → y ∈ closure s �
     (mul_right : ∀ x hx y hy z hz, p z x hz hx → p z y hz hy → p z (x * y) hz (mul_mem hx hy))
     {x y : M} (hx : x ∈ closure s) (hy : y ∈ closure s) : p x y hx hy := by
   induction hy using closure_induction with
-    | mem z hz => induction hx using closure_induction with
-      | mem _ h => exact mem _ h _ hz
-      | one => exact one_left _ (subset_closure hz)
-      | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
-    | one => exact one_right x hx
-    | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ hx h₁ h₂
+  | mem z hz => induction hx using closure_induction with
+    | mem _ h => exact mem _ h _ hz
+    | one => exact one_left _ (subset_closure hz)
+    | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
+  | one => exact one_right x hx
+  | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ hx h₁ h₂
 
 /-- If `s` is a dense set in a monoid `M`, `Submonoid.closure s = ⊤`, then in order to prove that
 some predicate `p` holds for all `x : M` it suffices to verify `p x` for `x ∈ s`, verify `p 1`,

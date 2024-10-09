@@ -101,19 +101,19 @@ theorem adjoin_induction₂ {s : Set A} {p : ∀ x y, x ∈ adjoin R s → y ∈
     {x y : A} (hx : x ∈ adjoin R s) (hy : y ∈ adjoin R s) :
     p x y hx hy := by
   induction hy using adjoin_induction with
-    | mem z hz => induction hx using adjoin_induction with
-      | mem _ h => exact mem_mem _ h _ hz
-      | algebraMap _ => exact algebraMap_left _ _ hz
-      | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
-      | add _ _ _ _ h₁ h₂ => exact add_left _ _ _ _ _ _ h₁ h₂
-    | algebraMap r =>
-      induction hx using adjoin_induction with
-      | mem _ h => exact algebraMap_right _ _ h
-      | algebraMap _ => exact algebraMap_both _ _
-      | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
-      | add _ _ _ _ h₁ h₂ => exact add_left _ _ _ _ _ _ h₁ h₂
-    | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ _ h₁ h₂
-    | add _ _ _ _ h₁ h₂ => exact add_right _ _ _ _ _ _ h₁ h₂
+  | mem z hz => induction hx using adjoin_induction with
+    | mem _ h => exact mem_mem _ h _ hz
+    | algebraMap _ => exact algebraMap_left _ _ hz
+    | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
+    | add _ _ _ _ h₁ h₂ => exact add_left _ _ _ _ _ _ h₁ h₂
+  | algebraMap r =>
+    induction hx using adjoin_induction with
+    | mem _ h => exact algebraMap_right _ _ h
+    | algebraMap _ => exact algebraMap_both _ _
+    | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
+    | add _ _ _ _ h₁ h₂ => exact add_left _ _ _ _ _ _ h₁ h₂
+  | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ _ h₁ h₂
+  | add _ _ _ _ h₁ h₂ => exact add_right _ _ _ _ _ _ h₁ h₂
 
 /-- The difference with `Algebra.adjoin_induction` is that this acts on the subtype. -/
 @[elab_as_elim]

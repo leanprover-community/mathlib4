@@ -768,16 +768,16 @@ theorem closure_induction₂ {s : Set R} {p : ∀ x y, x ∈ closure s → y ∈
     {x y : R} (hx : x ∈ closure s) (hy : y ∈ closure s) :
     p x y hx hy := by
   induction hy using closure_induction with
-    | mem z hz => induction hx using closure_induction with
-      | mem _ h => exact mem_mem _ h _ hz
-      | zero => exact zero_left _ _
-      | one => exact one_left _ _
-      | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
-      | add _ _ _ _ h₁ h₂ => exact add_left _ _ _ _ _ _ h₁ h₂
-    | zero => exact zero_right x hx
-    | one => exact one_right x hx
-    | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ _ h₁ h₂
-    | add _ _ _ _ h₁ h₂ => exact add_right _ _ _ _ _ _ h₁ h₂
+  | mem z hz => induction hx using closure_induction with
+    | mem _ h => exact mem_mem _ h _ hz
+    | zero => exact zero_left _ _
+    | one => exact one_left _ _
+    | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
+    | add _ _ _ _ h₁ h₂ => exact add_left _ _ _ _ _ _ h₁ h₂
+  | zero => exact zero_right x hx
+  | one => exact one_right x hx
+  | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ _ h₁ h₂
+  | add _ _ _ _ h₁ h₂ => exact add_right _ _ _ _ _ _ h₁ h₂
 
 theorem mem_closure_iff_exists_list {R} [Semiring R] {s : Set R} {x} :
     x ∈ closure s ↔ ∃ L : List (List R), (∀ t ∈ L, ∀ y ∈ t, y ∈ s) ∧ (L.map List.prod).sum = x := by
