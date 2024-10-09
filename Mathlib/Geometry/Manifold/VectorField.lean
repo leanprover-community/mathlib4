@@ -208,8 +208,8 @@ lemma lieBracket_add_right (hW : DifferentiableAt 𝕜 W x) (hW₁ : Differentia
   rw [fderiv_add' hW hW₁, ContinuousLinearMap.add_apply]
   abel
 
-lemma lieBracketWithin_swap : lieBracketWithin 𝕜 V W s x = - lieBracketWithin 𝕜 W V s x := by
-  simp [lieBracketWithin]
+lemma lieBracketWithin_swap : lieBracketWithin 𝕜 V W s = - lieBracketWithin 𝕜 W V s := by
+  ext x; simp [lieBracketWithin]
 
 lemma lieBracket_swap : lieBracket 𝕜 V W x = - lieBracket 𝕜 W V x := by
   simp [lieBracket]
@@ -240,10 +240,10 @@ lemma _root_.ContDiff.lieBracket {m n : ℕ∞} (hV : ContDiff 𝕜 n V)
     ContDiff 𝕜 m (lieBracket 𝕜 V W) :=
   contDiff_iff_contDiffAt.2 (fun _ ↦ hV.contDiffAt.lieBracket hW.contDiffAt hmn)
 
-theorem lieBracketWithin_of_mem (st : t ∈ 𝓝[s] x) (ht : UniqueDiffWithinAt 𝕜 s x)
+theorem lieBracketWithin_of_mem (st : t ∈ 𝓝[s] x) (hs : UniqueDiffWithinAt 𝕜 s x)
     (hV : DifferentiableWithinAt 𝕜 V t x) (hW : DifferentiableWithinAt 𝕜 W t x) :
     lieBracketWithin 𝕜 V W s x = lieBracketWithin 𝕜 V W t x := by
-  simp [lieBracketWithin, fderivWithin_of_mem st ht hV, fderivWithin_of_mem st ht hW]
+  simp [lieBracketWithin, fderivWithin_of_mem st hs hV, fderivWithin_of_mem st hs hW]
 
 theorem lieBracketWithin_subset (st : s ⊆ t) (ht : UniqueDiffWithinAt 𝕜 s x)
     (hV : DifferentiableWithinAt 𝕜 V t x) (hW : DifferentiableWithinAt 𝕜 W t x) :
@@ -559,7 +559,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {I'' : ModelWithCorners 𝕜 E'' H''}
   {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M''] [SmoothManifoldWithCorners I'' M'']
 
-variable {f : M → M'} {s : Set M} {x x₀ : M}
+variable {f : M → M'} {s t : Set M} {x x₀ : M}
 
 section
 
@@ -592,6 +592,15 @@ lemma mpullbackWithin_add :
   ext x
   simp [mpullbackWithin_apply]
 
+lemma mpullbackWithin_neg_apply :
+    mpullbackWithin I I' f (-V) s x = - mpullbackWithin I I' f V s x := by
+  simp [mpullbackWithin_apply]
+
+lemma mpullbackWithin_neg :
+    mpullbackWithin I I' f (-V) s = - mpullbackWithin I I' f V s := by
+  ext x
+  simp [mpullbackWithin_apply]
+
 lemma mpullback_apply :
     mpullback I I' f V x = (mfderiv I I' f x).inverse (V (f x)) := rfl
 
@@ -603,6 +612,16 @@ lemma mpullback_add :
     mpullback I I' f (V + V₁) = mpullback I I' f V + mpullback I I' f V₁ := by
   ext x
   simp [mpullback_apply]
+
+lemma mpullback_neg_apply :
+    mpullback I I' f (-V) x = - mpullback I I' f V x := by
+  simp [mpullback_apply]
+
+lemma mpullback_neg :
+    mpullback I I' f (-V) = - mpullback I I' f V := by
+  ext x
+  simp [mpullback_apply]
+
 
 @[simp] lemma mpullbackWithin_univ : mpullbackWithin I I' f V univ = mpullback I I' f V := by
   ext x
@@ -892,67 +911,79 @@ lemma isInvertible_mfderiv_extChartAt {y : M} (hy : y ∈ (extChartAt I x).sourc
   have : (extChartAt I x).symm ((extChartAt I x) y) = y := (extChartAt I x).left_inv hy
   rwa [this] at Z
 
+lemma mlieBracketWithin_swap_apply :
+    mlieBracketWithin I V W s x = - mlieBracketWithin I W V s x := by
+  rw [mlieBracketWithin, lieBracketWithin_swap, mpullback_neg]
+  rfl
+
+lemma mlieBracketWithin_swap :
+    mlieBracketWithin I V W s = - mlieBracketWithin I W V s := by
+  ext x
+  exact mlieBracketWithin_swap_apply
+
+lemma mlieBracket_swap_apply : mlieBracket I V W x = - mlieBracket I W V x :=
+  mlieBracketWithin_swap_apply
+
+lemma mlieBracket_swap : mlieBracket I V W = - mlieBracket I W V :=
+  mlieBracketWithin_swap
+
+#check UniqueMDiffWithinAt
+
 lemma mlieBracketWithin_add_left [CompleteSpace E]
     (hV : ContMDiffWithinAt I I.tangent 1 (fun x ↦ (V x : TangentBundle I M)) s x)
     (hV₁ : ContMDiffWithinAt I I.tangent 1 (fun x ↦ (V₁ x : TangentBundle I M)) s x)
-    (hs : UniqueMDiffOn I s) :
+    (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I (V + V₁) W s x =
       mlieBracketWithin I V W s x + mlieBracketWithin I V₁ W s x := by
   simp only [mlieBracketWithin, Pi.add_apply, map_add, mpullback_apply]
   rw [← ContinuousLinearMap.map_add, mpullbackWithin_add]
   congr 1
-  have hmn : (1 : ℕ∞) + 1 ≤ 2 := sorry
   rw [lieBracketWithin_add_left]
   · apply MDifferentiableWithinAt.differentiableWithinAt
     apply ContMDiffWithinAt.mdifferentiableWithinAt _ le_rfl
     have Z := ContMDiffWithinAt.mpullbackWithin_of_eq hV
-      (f := (extChartAt I x).symm) (I := 𝓘(𝕜, E)) (n := 2) (x₀ := (extChartAt I x) x)
-      (s := range I) (t := s) (contMDiffWithinAt_extChartAt_symm_range x (mem_extChartAt_target I x))
+      (contMDiffWithinAt_extChartAt_symm_range x (mem_extChartAt_target I x))
       (isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target I x)) (mem_range_self _)
       I.uniqueMDiffOn le_rfl (extChartAt_to_inv I x).symm
     rw [inter_comm]
     exact (contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.comp_contMDiffWithinAt _ Z
+  · apply MDifferentiableWithinAt.differentiableWithinAt
+    apply ContMDiffWithinAt.mdifferentiableWithinAt _ le_rfl
+    have Z := ContMDiffWithinAt.mpullbackWithin_of_eq hV₁
+      (contMDiffWithinAt_extChartAt_symm_range x (mem_extChartAt_target I x))
+      (isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target I x)) (mem_range_self _)
+      I.uniqueMDiffOn le_rfl (extChartAt_to_inv I x).symm
+    rw [inter_comm]
+    exact (contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.comp_contMDiffWithinAt _ Z
+  · exact uniqueMDiffWithinAt_iff_inter_range.1 hs
 
-
-
-
-
-
-
-
-
-
-#exit
-
-
-lemma mlieBracket_add_left (hV : DifferentiableAt 𝕜 V x) (hV₁ : DifferentiableAt 𝕜 V₁ x) :
+lemma mlieBracket_add_left [CompleteSpace E]
+    (hV : ContMDiffAt I I.tangent 1 (fun x ↦ (V x : TangentBundle I M)) x)
+    (hV₁ : ContMDiffAt I I.tangent 1 (fun x ↦ (V₁ x : TangentBundle I M)) x) :
     mlieBracket I (V + V₁) W  x =
       mlieBracket I V W x + mlieBracket I V₁ W x := by
-  simp only [mlieBracket, Pi.add_apply, map_add]
-  rw [fderiv_add' hV hV₁, ContinuousLinearMap.add_apply]
-  abel
+  simp only [← mlieBracketWithin_univ, ← contMDiffWithinAt_univ] at hV hV₁ ⊢
+  exact mlieBracketWithin_add_left hV hV₁ (uniqueMDiffWithinAt_univ _)
 
-lemma mlieBracketWithin_add_right (hW : DifferentiableWithinAt 𝕜 W s x)
-    (hW₁ : DifferentiableWithinAt 𝕜 W₁ s x) (hs :  UniqueDiffWithinAt 𝕜 s x) :
+lemma mlieBracketWithin_add_right [CompleteSpace E]
+    (hW : ContMDiffWithinAt I I.tangent 1 (fun x ↦ (W x : TangentBundle I M)) s x)
+    (hW₁ : ContMDiffWithinAt I I.tangent 1 (fun x ↦ (W₁ x : TangentBundle I M)) s x)
+    (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I V (W + W₁) s x =
       mlieBracketWithin I V W s x + mlieBracketWithin I V W₁ s x := by
-  simp only [mlieBracketWithin, Pi.add_apply, map_add]
-  rw [fderivWithin_add' hs hW hW₁, ContinuousLinearMap.add_apply]
+  rw [mlieBracketWithin_swap, Pi.neg_apply, mlieBracketWithin_add_left hW hW₁ hs,
+    mlieBracketWithin_swap (V := V), mlieBracketWithin_swap (V := V), Pi.neg_apply, Pi.neg_apply]
   abel
 
-lemma mlieBracket_add_right (hW : DifferentiableAt 𝕜 W x) (hW₁ : DifferentiableAt 𝕜 W₁ x) :
+lemma mlieBracket_add_right [CompleteSpace E]
+    (hW : ContMDiffAt I I.tangent 1 (fun x ↦ (W x : TangentBundle I M)) x)
+    (hW₁ : ContMDiffAt I I.tangent 1 (fun x ↦ (W₁ x : TangentBundle I M)) x) :
     mlieBracket I V (W + W₁) x =
       mlieBracket I V W x + mlieBracket I V W₁ x := by
-  simp only [mlieBracket, Pi.add_apply, map_add]
-  rw [fderiv_add' hW hW₁, ContinuousLinearMap.add_apply]
-  abel
+  simp only [← mlieBracketWithin_univ, ← contMDiffWithinAt_univ] at hW hW₁ ⊢
+  exact mlieBracketWithin_add_right hW hW₁ (uniqueMDiffWithinAt_univ _)
 
-lemma mlieBracketWithin_swap : mlieBracketWithin I V W s x = - mlieBracketWithin I W V s x := by
-  simp [mlieBracketWithin]
-
-lemma mlieBracket_swap : mlieBracket I V W x = - mlieBracket I W V x := by
-  simp [mlieBracket]
-
+/-
 lemma _root_.ContDiffWithinAt.mlieBracketWithin {m n : ℕ∞} (hV : ContDiffWithinAt 𝕜 n V s x)
     (hW : ContDiffWithinAt 𝕜 n W s x) (hs : UniqueDiffOn 𝕜 s) (hmn : m + 1 ≤ n) (hx : x ∈ s) :
     ContDiffWithinAt 𝕜 m (mlieBracketWithin I V W s) s x := by
@@ -978,11 +1009,39 @@ lemma _root_.ContDiff.mlieBracket {m n : ℕ∞} (hV : ContDiff 𝕜 n V)
     (hW : ContDiff 𝕜 n W) (hmn : m + 1 ≤ n) :
     ContDiff 𝕜 m (mlieBracket I V W) :=
   contDiff_iff_contDiffAt.2 (fun _ ↦ hV.contDiffAt.mlieBracket hW.contDiffAt hmn)
+-/
 
-theorem mlieBracketWithin_of_mem (st : t ∈ 𝓝[s] x) (ht : UniqueDiffWithinAt 𝕜 s x)
-    (hV : DifferentiableWithinAt 𝕜 V t x) (hW : DifferentiableWithinAt 𝕜 W t x) :
+theorem mlieBracketWithin_of_mem [CompleteSpace E]
+    (st : t ∈ 𝓝[s] x) (hs : UniqueMDiffWithinAt I s x)
+    (hV : ContMDiffWithinAt I I.tangent 1 (fun x ↦ (V x : TangentBundle I M)) t x)
+    (hW : ContMDiffWithinAt I I.tangent 1 (fun x ↦ (W x : TangentBundle I M)) t x) :
     mlieBracketWithin I V W s x = mlieBracketWithin I V W t x := by
-  simp [mlieBracketWithin, fderivWithin_of_mem st ht hV, fderivWithin_of_mem st ht hW]
+  simp only [mlieBracketWithin, fderivWithin_of_mem, mpullback_apply]
+  congr 1
+  rw [lieBracketWithin_of_mem]
+  ·
+  · exact uniqueMDiffWithinAt_iff_inter_range.1 hs
+  · apply MDifferentiableWithinAt.differentiableWithinAt
+    apply ContMDiffWithinAt.mdifferentiableWithinAt _ le_rfl
+    have Z := ContMDiffWithinAt.mpullbackWithin_of_eq hV
+      (contMDiffWithinAt_extChartAt_symm_range x (mem_extChartAt_target I x))
+      (isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target I x)) (mem_range_self _)
+      I.uniqueMDiffOn le_rfl (extChartAt_to_inv I x).symm
+    rw [inter_comm]
+    exact (contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.comp_contMDiffWithinAt _ Z
+  · apply MDifferentiableWithinAt.differentiableWithinAt
+    apply ContMDiffWithinAt.mdifferentiableWithinAt _ le_rfl
+    have Z := ContMDiffWithinAt.mpullbackWithin_of_eq hW
+      (contMDiffWithinAt_extChartAt_symm_range x (mem_extChartAt_target I x))
+      (isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target I x)) (mem_range_self _)
+      I.uniqueMDiffOn le_rfl (extChartAt_to_inv I x).symm
+    rw [inter_comm]
+    exact (contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.comp_contMDiffWithinAt _ Z
+
+
+
+
+#exit
 
 theorem mlieBracketWithin_subset (st : s ⊆ t) (ht : UniqueDiffWithinAt 𝕜 s x)
     (hV : DifferentiableWithinAt 𝕜 V t x) (hW : DifferentiableWithinAt 𝕜 W t x) :
