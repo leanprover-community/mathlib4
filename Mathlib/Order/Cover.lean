@@ -591,3 +591,19 @@ variable [Preorder α] {a b : α}
   simp only [wcovBy_iff_Ioo_eq, ← image_coe_Iio, bot_le, image_eq_empty, true_and, Iio_eq_empty_iff]
 
 end WithBot
+
+section WellFounded
+
+variable [Preorder α]
+
+lemma exists_covBy_of_wellFoundedLT [wf : WellFoundedLT α] ⦃a : α⦄ (h : ¬ IsMax a) :
+    ∃ a', a ⋖ a' := by
+  rw [not_isMax_iff] at h
+  exact ⟨_, wellFounded_lt.min_mem _ h, fun a' ↦ wf.wf.not_lt_min _ h⟩
+
+lemma exists_covBy_of_wellFoundedGT [wf : WellFoundedGT α] ⦃a : α⦄ (h : ¬ IsMin a) :
+    ∃ a', a' ⋖ a := by
+  rw [not_isMin_iff] at h
+  exact ⟨_, wf.wf.min_mem _ h, fun a' h₁ h₂ ↦ wf.wf.not_lt_min _ h h₂ h₁⟩
+
+end WellFounded
