@@ -824,11 +824,11 @@ theorem chain_ne_nil (r : α → α → Prop) {l : List α} :
 
 theorem chain_map {β : Type*} {r : α → α → Prop} (f : β → α) {s : Cycle β} :
     Chain r (s.map f) ↔ Chain (fun a b => r (f a) (f b)) s :=
-  Quotient.inductionOn' s fun l => by
+  Quotient.inductionOn s fun l => by
     cases' l with a l
     · rfl
-    dsimp only [Chain, ← mk''_eq_coe, Quotient.liftOn'_mk'', Cycle.map, Quotient.map', Quot.map,
-      Quotient.mk'', Quotient.liftOn', Quotient.liftOn, Quot.liftOn_mk, List.map]
+    dsimp only [Chain, Quotient.liftOn_mk, Cycle.map, Quotient.map', Quot.map,
+      Quotient.liftOn', Quotient.liftOn, Quot.liftOn_mk, List.map]
     rw [← concat_eq_append, ← List.map_concat, List.chain_map f]
     simp
 
