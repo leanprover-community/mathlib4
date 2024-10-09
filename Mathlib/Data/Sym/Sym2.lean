@@ -315,6 +315,8 @@ instance : SetLike (Sym2 α) α where
 theorem mem_iff_mem {x : α} {z : Sym2 α} : Sym2.Mem x z ↔ x ∈ z :=
   Iff.rfl
 
+@[simp] theorem setOf_mem_eq (e : Sym2 α) : {v | v ∈ e} = e := rfl
+
 theorem mem_iff_exists {x : α} {z : Sym2 α} : x ∈ z ↔ ∃ y : α, z = s(x, y) :=
   Iff.rfl
 
@@ -492,6 +494,9 @@ def IsDiag : Sym2 α → Prop :=
 
 theorem mk_isDiag_iff {x y : α} : IsDiag s(x, y) ↔ x = y :=
   Iff.rfl
+
+theorem isDiag_iff_exists {z : Sym2 α} : z.IsDiag ↔ ∃ x, z = s(x, x) := by
+  induction z; rw [mk_isDiag_iff]; simp [eq_comm]
 
 @[simp]
 theorem isDiag_iff_proj_eq (z : α × α) : IsDiag (Sym2.mk z) ↔ z.1 = z.2 :=
@@ -687,6 +692,31 @@ end
 
 instance [DecidableEq α] : DecidableEq (Sym2 α) :=
   inferInstanceAs <| DecidableEq (Quotient (Sym2.Rel.setoid α))
+
+/-! ### Edge as a finset -/
+
+section
+variable [DecidableEq α]
+
+protected def toFinset (e : Sym2 α) : Finset α :=
+  Quot.lift (fun p => {p.1, p.2}) (by aesop) e
+
+@[simp] theorem mem_toFinset {e : Sym2 α} {x : α} :
+    x ∈ e.toFinset ↔ x ∈ e := by
+  induction e; simp [Sym2.toFinset]
+
+@[simp] theorem coe_toFinset {e : Sym2 α} :
+    (e.toFinset : Set α) = e := by ext; simp
+
+theorem card_toFinset_of_isDiag {e : Sym2 α} (h : e.IsDiag) : e.toFinset.card = 1 := by
+  rw [isDiag_iff_exists] at h
+  obtain ⟨x, rfl⟩ := h
+  rw [Finset.card_eq_one]
+  use x
+  ext
+  simp
+
+end
 
 /-! ### The other element of an element of the symmetric square -/
 
