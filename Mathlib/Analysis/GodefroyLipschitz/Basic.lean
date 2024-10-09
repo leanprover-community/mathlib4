@@ -1,6 +1,7 @@
 import Mathlib.Analysis.GodefroyLipschitz.Annexe
+import Mathlib.MeasureTheory.Measure.OpenPos
 
-open Real NNReal Set Filter Topology FiniteDimensional MeasureTheory Metric Module Submodule
+open Real NNReal Set Filter Topology FiniteDimensional Metric Module Submodule
 open WeakDual
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -103,7 +104,8 @@ theorem exists_inverse {φ : ℝ → F} (hφ : Isometry φ) (φz : φ 0 = 0) :
     obtain ⟨f, nf, hf⟩ : ∃ f : F →L[ℝ] ℝ, ‖f‖ = 1 ∧ f ((φ k) - (φ (-k))) = 2 * k := by
       have nk : ‖(φ k) - (φ (-k))‖ = 2 * k := by
         rw [hφ.map_norm_sub, norm_eq_abs, sub_neg_eq_add, two_mul, abs_eq_self.2 (by positivity)]
-      obtain ⟨f, nf, hfk⟩ := exists_eq_norm ((φ k) - (φ (-k)))
+      obtain ⟨f, nf, hfk⟩ := exists_dual_vector'  ℝ ((φ k) - (φ (-k)))
+      simp only [RCLike.ofReal_real_eq_id, id_eq] at hfk
       exact ⟨f, nf, by rw [hfk, nk]⟩
     refine ⟨f, nf, fun s ⟨hs1, hs2⟩ ↦ ?_⟩
     have ⟨h1, h2⟩ : f (φ k) = k ∧ f (φ (-k)) = -k := by
@@ -168,13 +170,6 @@ theorem ne_zero_of_differentiableAt_norm [Nontrivial E]
     {x : E} (h : DifferentiableAt ℝ (‖·‖) x) : x ≠ 0 :=
   fun hx ↦ (not_differentiableAt_norm_zero E (hx ▸ h)).elim
 
-theorem dense_differentiableAt_norm [FiniteDimensional ℝ E] :
-    Dense {x : E | DifferentiableAt ℝ (‖·‖) x} :=
-  let _ : MeasurableSpace E := borel E
-  have _ : BorelSpace E := ⟨rfl⟩
-  let w := Basis.ofVectorSpace ℝ E
-  MeasureTheory.Measure.dense_of_ae (lipschitzWith_one_norm.ae_differentiableAt (μ := w.addHaar))
-
 theorem exists_inverse' [FiniteDimensional ℝ E] [Nontrivial E]
     {φ : E → F} (hφ : Isometry φ) (φz : φ 0 = 0)
     (hdφ : Dense (span ℝ (range φ) : Set F)) :
@@ -183,11 +178,8 @@ theorem exists_inverse' [FiniteDimensional ℝ E] [Nontrivial E]
     refine exists_inverse (Isometry.of_dist_eq fun x₁ x₂ ↦ ?_) (by simpa)
     rw [hφ.dist_eq, dist_eq_norm, ← sub_smul, norm_smul, nx, mul_one, dist_eq_norm]
   choose! f nf hf using main
-  have dense_diff : Dense {x : E | DifferentiableAt ℝ (‖·‖) x} := by
-    let _ : MeasurableSpace E := borel E
-    have _ : BorelSpace E := ⟨rfl⟩
-    let w := Module.finBasis ℝ E
-    exact dense_of_ae (lipschitzWith_one_norm.ae_differentiableAt (μ := w.addHaar))
+  have dense_diff : Dense {x : E | DifferentiableAt ℝ (‖·‖) x} :=
+    dense_differentiableAt_norm
   let s : Set (E →ₗ[ℝ] ℝ) := {fderiv ℝ (‖·‖) x' | (x' : E) (_ : DifferentiableAt ℝ (‖·‖) x')}
   have aux3 (z : E) (hz : z ≠ 0) : ∃ f ∈ s, f z ≠ 0 := by
     obtain ⟨u, hu, htu⟩ := dense_seq dense_diff z
@@ -269,7 +261,7 @@ theorem Dense.isDenseInducing_val {X : Type*} [TopologicalSpace X] {s : Set X} (
     IsDenseInducing (@Subtype.val X s) := ⟨inducing_subtype_val, hs.denseRange_val⟩
 
 theorem uniformInducing_val {X : Type*} [UniformSpace X] (s : Set X) :
-    UniformInducing (@Subtype.val X s) := ⟨uniformity_setCoe⟩
+    IsUniformInducing (@Subtype.val X s) := ⟨uniformity_setCoe⟩
 
 theorem exists_inverse'' [CompleteSpace E] [Nontrivial E]
     (φ : E → F) (hφ : Isometry φ) (φz : φ 0 = 0)
