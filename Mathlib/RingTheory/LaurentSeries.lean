@@ -63,7 +63,7 @@ open HahnSeries Polynomial
 
 noncomputable section
 
-/-- `LaurentSeries R` is the type of formal Laurent series with coefficients in R, denoted `R⸨X⸩`.
+/-- `LaurentSeries R` is the type of formal Laurent series with coefficients in `R`, denoted `R⸨X⸩`.
 
   It is implemented as a `HahnSeries` with value group `ℤ`.
 -/
