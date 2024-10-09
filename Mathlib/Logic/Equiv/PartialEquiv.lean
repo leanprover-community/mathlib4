@@ -316,7 +316,7 @@ def IsImage (s : Set α) (t : Set β) : Prop :=
 
 namespace IsImage
 
-variable {e} {s : Set α} {t : Set β} {x : α} {y : β}
+variable {e} {s : Set α} {t : Set β} {x : α}
 
 theorem apply_mem_iff (h : e.IsImage s t) (hx : x ∈ e.source) : e x ∈ t ↔ x ∈ s :=
   h hx
