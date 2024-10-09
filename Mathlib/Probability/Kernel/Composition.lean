@@ -1029,7 +1029,7 @@ section Comp
 /-! ### Composition of two kernels -/
 
 
-variable {γ : Type*} {mγ : MeasurableSpace γ} {f : β → γ} {g : γ → α}
+variable {γ δ : Type*} {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ} {f : β → γ} {g : γ → α}
 
 /-- Composition of two kernels. -/
 noncomputable def comp (η : Kernel β γ) (κ : Kernel α β) : Kernel α γ where
@@ -1085,6 +1085,10 @@ theorem comp_deterministic_eq_comap (κ : Kernel α β) (hg : Measurable g) :
   simp_rw [comap_apply' _ _ _ s, comp_apply' _ _ _ hs, deterministic_apply hg a,
     lintegral_dirac' _ (Kernel.measurable_coe κ hs)]
 
+lemma deterministic_comp_deterministic (hf : Measurable f) (hg : Measurable g) :
+    (deterministic g hg) ∘ₖ (deterministic f hf) = deterministic (g ∘ f) (hg.comp hf) := by
+  ext; simp [comp_deterministic_eq_comap, comap_apply, deterministic_apply]
+
 lemma const_comp (μ : Measure γ) (κ : Kernel α β) :
     const β μ ∘ₖ κ = fun a ↦ (κ a) Set.univ • μ := by
   ext _ _ hs
@@ -1095,6 +1099,27 @@ lemma const_comp (μ : Measure γ) (κ : Kernel α β) :
 lemma const_comp' (μ : Measure γ) (κ : Kernel α β) [IsMarkovKernel κ] :
     const β μ ∘ₖ κ = const α μ := by
   ext; simp_rw [const_comp, measure_univ, one_smul, const_apply]
+
+lemma map_comp (κ : Kernel α β) (η : Kernel β γ) {f : γ → δ} (hf : Measurable f) :
+    (η ∘ₖ κ).map f = (η.map f) ∘ₖ κ := by
+  ext a s hs
+  rw [map_apply' _ hf _ hs, comp_apply', comp_apply' _ _ _ hs]
+  · simp_rw [map_apply' _ hf _ hs]
+  · exact hf hs
+
+lemma fst_comp (κ : Kernel α β) (η : Kernel β (γ × δ)) : (η ∘ₖ κ).fst = η.fst ∘ₖ κ := by
+  simp [fst_eq, map_comp κ η measurable_fst]
+
+lemma snd_comp (κ : Kernel α β) (η : Kernel β (γ × δ)) : (η ∘ₖ κ).snd = η.snd ∘ₖ κ := by
+  simp_rw [snd_eq, map_comp κ η measurable_snd]
+
+@[simp] lemma snd_compProd_prodMkLeft
+    (κ : Kernel α β) (η : Kernel β γ) [IsSFiniteKernel κ] [IsSFiniteKernel η] :
+    snd (κ ⊗ₖ prodMkLeft α η) = η ∘ₖ κ := by
+  ext a s hs
+  rw [snd_apply' _ _ hs, compProd_apply, comp_apply' _ _ _ hs]
+  · rfl
+  · exact measurable_snd hs
 
 end Comp
 
@@ -1157,6 +1182,12 @@ instance IsSFiniteKernel.prod (κ : Kernel α β) (η : Kernel α γ) :
 @[simp] lemma snd_prod (κ : Kernel α β) [IsMarkovKernel κ] (η : Kernel α γ) [IsSFiniteKernel η] :
     snd (κ ×ₖ η) = η := by
   ext x; simp [snd_apply, prod_apply]
+
+lemma deterministic_prod_deterministic {f : α → β} {g : α → γ}
+    (hf : Measurable f) (hg : Measurable g) :
+    deterministic f hf ×ₖ deterministic g hg
+      = deterministic (fun a ↦ (f a, g a)) (hf.prod_mk hg) := by
+  ext; simp_rw [prod_apply, deterministic_apply, Measure.dirac_prod_dirac]
 
 end Prod
 end Kernel
