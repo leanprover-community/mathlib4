@@ -111,12 +111,13 @@ theorem ext {f g : ContinuousMonoidHom A B} (h : ∀ x, f x = g x) : f = g :=
 theorem toContinuousMap_injective : Injective (toContinuousMap : _ → C(A, B)) := fun f g h =>
   ext <| by convert DFunLike.ext_iff.1 h
 
--- Porting note: Removed simps because given definition is not a constructor application
-/-- Construct a `ContinuousMonoidHom` from a `Continuous` `MonoidHom`. -/
-@[to_additive (attr := deprecated (since := "2024-10-08"))
-  "Construct a `ContinuousAddMonoidHom` from a `Continuous` `AddMonoidHom`."]
-def mk' (f : A →* B) (hf : Continuous f) : ContinuousMonoidHom A B :=
-  { f with continuous_toFun := (hf : Continuous f.toFun)}
+@[deprecated (since := "2024-10-08")] protected alias mk' := mk
+
+@[deprecated (since := "2024-10-08")]
+protected alias _root_.ContinuousAddMonoidHom.mk' := ContinuousAddMonoidHom.mk
+
+set_option linter.existingAttributeWarning false in
+attribute [to_additive existing] ContinuousMonoidHom.mk'
 
 /-- Composition of two continuous homomorphisms. -/
 @[to_additive (attr := simps!) "Composition of two continuous homomorphisms."]
