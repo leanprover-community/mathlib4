@@ -61,8 +61,8 @@ universe u v w
 
 section ApplicativeTransformation
 
-variable (F : Type u → Type v) [Applicative F] [LawfulApplicative F]
-variable (G : Type u → Type w) [Applicative G] [LawfulApplicative G]
+variable (F : Type u → Type v) [Applicative F]
+variable (G : Type u → Type w) [Applicative G]
 
 /-- A transformation between applicative functors.  It is a natural
 transformation such that `app` preserves the `Pure.pure` and

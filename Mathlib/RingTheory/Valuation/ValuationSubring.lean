@@ -300,9 +300,8 @@ theorem ofPrime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) :
   · rintro ⟨a, r, hr, rfl⟩; apply mul_mem; · exact h a.2
     · rw [← valuation_le_one_iff, map_inv₀, ← inv_one, inv_le_inv₀]
       · exact not_lt.1 ((not_iff_not.2 <| valuation_lt_one_iff S _).1 hr)
-      · intro hh; erw [Valuation.zero_iff, Subring.coe_eq_zero_iff] at hh
-        apply hr; rw [hh]; apply Ideal.zero_mem (R.idealOfLE S h)
-      · exact one_ne_zero
+      · simpa [Valuation.pos_iff] using fun hr₀ ↦ hr₀ ▸ hr <| Ideal.zero_mem (R.idealOfLE S h)
+      · exact zero_lt_one
   · intro hx; by_cases hr : x ∈ R; · exact R.le_ofPrime _ hr
     have : x ≠ 0 := fun h => hr (by rw [h]; exact R.zero_mem)
     replace hr := (R.mem_or_inv_mem x).resolve_left hr

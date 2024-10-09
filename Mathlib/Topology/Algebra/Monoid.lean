@@ -7,8 +7,8 @@ import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Order.Filter.Pointwise
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Algebra.Group.ULift
+import Mathlib.Topology.ContinuousMap.Defs
 
 /-!
 # Theory of topological monoids

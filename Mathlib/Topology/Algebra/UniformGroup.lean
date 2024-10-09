@@ -225,18 +225,21 @@ theorem uniformGroup_inf {u₁ u₂ : UniformSpace β} (h₁ : @UniformGroup β 
   cases b <;> assumption
 
 @[to_additive]
-lemma UniformInducing.uniformGroup {γ : Type*} [Group γ] [UniformSpace γ] [UniformGroup γ]
+lemma IsUniformInducing.uniformGroup {γ : Type*} [Group γ] [UniformSpace γ] [UniformGroup γ]
     [UniformSpace β] {F : Type*} [FunLike F β γ] [MonoidHomClass F β γ]
-    (f : F) (hf : UniformInducing f) :
+    (f : F) (hf : IsUniformInducing f) :
     UniformGroup β where
   uniformContinuous_div := by
     simp_rw [hf.uniformContinuous_iff, Function.comp_def, map_div]
     exact uniformContinuous_div.comp (hf.uniformContinuous.prodMap hf.uniformContinuous)
 
+@[deprecated (since := "2024-10-05")]
+alias UniformInducing.uniformGroup := IsUniformInducing.uniformGroup
+
 @[to_additive]
 protected theorem UniformGroup.comap {γ : Type*} [Group γ] {u : UniformSpace γ} [UniformGroup γ]
     {F : Type*} [FunLike F β γ] [MonoidHomClass F β γ] (f : F) : @UniformGroup β (u.comap f) _ :=
-  letI : UniformSpace β := u.comap f; UniformInducing.uniformGroup f ⟨rfl⟩
+  letI : UniformSpace β := u.comap f; IsUniformInducing.uniformGroup f ⟨rfl⟩
 
 end LatticeOps
 

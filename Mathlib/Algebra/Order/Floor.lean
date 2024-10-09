@@ -1261,7 +1261,7 @@ lemma ceil_div_ceil_inv_sub_one (ha : 1 ≤ a) : ⌈⌈(a - 1)⁻¹⌉ / a⌉ = 
   have : 0 < ⌈(a - 1)⁻¹⌉ := ceil_pos.2 <| by positivity
   refine le_antisymm (ceil_le.2 <| div_le_self (by positivity) ha.le) <| ?_
   rw [le_ceil_iff, sub_lt_comm, div_eq_mul_inv, ← mul_one_sub,
-      ← lt_div_iff₀ (sub_pos.2 <| inv_lt_one ha)]
+    ← lt_div_iff₀ (sub_pos.2 <| inv_lt_one_of_one_lt₀ ha)]
   convert ceil_lt_add_one _ using 1
   field_simp
 

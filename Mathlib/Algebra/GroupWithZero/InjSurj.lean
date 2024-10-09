@@ -149,7 +149,7 @@ end MonoidWithZero
 
 section CancelMonoidWithZero
 
-variable [CancelMonoidWithZero M₀] {a b c : M₀}
+variable [CancelMonoidWithZero M₀]
 
 /-- Pull back a `CancelMonoidWithZero` along an injective function.
 See note [reducible non-instances]. -/
@@ -167,7 +167,7 @@ end CancelMonoidWithZero
 
 section CancelCommMonoidWithZero
 
-variable [CancelCommMonoidWithZero M₀] {a b c : M₀}
+variable [CancelCommMonoidWithZero M₀]
 
 /-- Pull back a `CancelCommMonoidWithZero` along an injective function.
 See note [reducible non-instances]. -/
@@ -181,7 +181,7 @@ end CancelCommMonoidWithZero
 
 section GroupWithZero
 
-variable [GroupWithZero G₀] {a b c g h x : G₀}
+variable [GroupWithZero G₀]
 
 /-- Pull back a `GroupWithZero` along an injective function.
 See note [reducible non-instances]. -/
@@ -215,7 +215,7 @@ end GroupWithZero
 
 section CommGroupWithZero
 
-variable [CommGroupWithZero G₀] {a b c d : G₀}
+variable [CommGroupWithZero G₀]
 
 /-- Pull back a `CommGroupWithZero` along an injective function.
 See note [reducible non-instances]. -/

@@ -1412,7 +1412,7 @@ theorem add_one_lt_exp {x : ℝ} (hx : x ≠ 0) : x + 1 < Real.exp x := by
   obtain h' | h' := le_or_lt 1 (-x)
   · linarith [x.exp_pos]
   have hx' : 0 < x + 1 := by linarith
-  simpa [add_comm, exp_neg, inv_lt_inv (exp_pos _) hx']
+  simpa [add_comm, exp_neg, inv_lt_inv₀ (exp_pos _) hx']
     using exp_bound_div_one_sub_of_interval' (neg_pos.2 hx) h'
 
 theorem add_one_le_exp (x : ℝ) : x + 1 ≤ Real.exp x := by

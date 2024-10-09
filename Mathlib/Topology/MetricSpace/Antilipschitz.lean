@@ -143,19 +143,22 @@ theorem comap_uniformity_le (hf : AntilipschitzWith K f) : (𝓤 β).comap (Prod
   rw [mul_comm]
   exact ENNReal.mul_lt_of_lt_div hx
 
-protected theorem uniformInducing (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) :
-    UniformInducing f :=
+theorem isUniformInducing (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) :
+    IsUniformInducing f :=
   ⟨le_antisymm hf.comap_uniformity_le hfc.le_comap⟩
+
+@[deprecated (since := "2024-10-05")]
+alias uniformInducing := isUniformInducing
 
 lemma isUniformEmbedding {α β : Type*} [EMetricSpace α] [PseudoEMetricSpace β] {K : ℝ≥0} {f : α → β}
     (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) : IsUniformEmbedding f :=
-  ⟨hf.uniformInducing hfc, hf.injective⟩
+  ⟨hf.isUniformInducing hfc, hf.injective⟩
 
 @[deprecated (since := "2024-10-01")] alias uniformEmbedding := isUniformEmbedding
 
 theorem isComplete_range [CompleteSpace α] (hf : AntilipschitzWith K f)
     (hfc : UniformContinuous f) : IsComplete (range f) :=
-  (hf.uniformInducing hfc).isComplete_range
+  (hf.isUniformInducing hfc).isComplete_range
 
 theorem isClosed_range {α β : Type*} [PseudoEMetricSpace α] [EMetricSpace β] [CompleteSpace α]
     {f : α → β} {K : ℝ≥0} (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) :
