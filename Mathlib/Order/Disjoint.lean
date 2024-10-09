@@ -155,6 +155,10 @@ theorem Disjoint.of_disjoint_inf_of_le' (h : Disjoint (a ⊓ b) c) (hle : b ≤ 
 
 end SemilatticeInfBot
 
+theorem Disjoint.right_lt_sup_of_left_ne_bot [SemilatticeSup α] [OrderBot α] {a b : α}
+    (h : Disjoint a b) (ha : a ≠ ⊥) : b < a ⊔ b :=
+  le_sup_right.lt_of_ne fun eq ↦ ha (le_bot_iff.mp <| h le_rfl <| sup_eq_right.mp eq.symm)
+
 section DistribLatticeBot
 
 variable [DistribLattice α] [OrderBot α] {a b c : α}

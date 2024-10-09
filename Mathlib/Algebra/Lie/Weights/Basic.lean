@@ -707,13 +707,11 @@ lemma independent_genWeightSpaceOf [NoZeroSMulDivisors R M] (x : L) :
 
 lemma finite_genWeightSpaceOf_ne_bot [NoZeroSMulDivisors R M] [IsNoetherian R M] (x : L) :
     {χ : R | genWeightSpaceOf M χ x ≠ ⊥}.Finite :=
-  CompleteLattice.WellFounded.finite_ne_bot_of_independent
-    IsWellFounded.wf (independent_genWeightSpaceOf R L M x)
+  CompleteLattice.WellFoundedGT.finite_ne_bot_of_independent (independent_genWeightSpaceOf R L M x)
 
 lemma finite_genWeightSpace_ne_bot [NoZeroSMulDivisors R M] [IsNoetherian R M] :
     {χ : L → R | genWeightSpace M χ ≠ ⊥}.Finite :=
-  CompleteLattice.WellFounded.finite_ne_bot_of_independent
-    IsWellFounded.wf (independent_genWeightSpace R L M)
+  CompleteLattice.WellFoundedGT.finite_ne_bot_of_independent (independent_genWeightSpace R L M)
 
 instance Weight.instFinite [NoZeroSMulDivisors R M] [IsNoetherian R M] :
     Finite (Weight R L M) := by
@@ -782,8 +780,10 @@ lemma iSup_genWeightSpace_eq_top [IsTriangularizable K L M] :
     ⨆ χ : L → K, genWeightSpace M χ = ⊤ := by
   simp only [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.iSup_coe_toSubmodule,
     LieSubmodule.iInf_coe_toSubmodule, LieSubmodule.top_coeSubmodule, genWeightSpace]
-  exact Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo (toEnd K L M)
-    (fun x y φ z ↦ (genWeightSpaceOf M φ y).lie_mem) (IsTriangularizable.iSup_eq_top)
+  refine Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo (toEnd K L M)
+    (fun x y φ z ↦ (genWeightSpaceOf M φ y).lie_mem) ?_
+  simp_rw [Module.End.maxGenEigenspace_def]
+  apply IsTriangularizable.iSup_eq_top
 
 lemma iSup_genWeightSpace_eq_top' [IsTriangularizable K L M] :
     ⨆ χ : Weight K L M, genWeightSpace M χ = ⊤ := by

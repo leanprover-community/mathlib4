@@ -181,7 +181,7 @@ variable [CompleteSpace F] (e : E →L[𝕜] Fₗ) (h_dense : DenseRange e)
 
 section
 
-variable (h_e : UniformInducing e)
+variable (h_e : IsUniformInducing e)
 
 /-- Extension of a continuous linear map `f : E →SL[σ₁₂] F`, with `E` a normed space and `F` a
 complete normed space, along a uniform and dense embedding `e : E →L[𝕜] Fₗ`. -/
@@ -230,7 +230,7 @@ variable {N : ℝ≥0} (h_e : ∀ x, ‖x‖ ≤ N * ‖e x‖) [RingHomIsometri
 /-- If a dense embedding `e : E →L[𝕜] G` expands the norm by a constant factor `N⁻¹`, then the
 norm of the extension of `f` along `e` is bounded by `N * ‖f‖`. -/
 theorem opNorm_extend_le :
-    ‖f.extend e h_dense (isUniformEmbedding_of_bound _ h_e).toUniformInducing‖ ≤ N * ‖f‖ := by
+    ‖f.extend e h_dense (isUniformEmbedding_of_bound _ h_e).isUniformInducing‖ ≤ N * ‖f‖ := by
   -- Add `opNorm_le_of_dense`?
   refine opNorm_le_bound _ ?_ (isClosed_property h_dense (isClosed_le ?_ ?_) fun x ↦ ?_)
   · cases le_total 0 N with

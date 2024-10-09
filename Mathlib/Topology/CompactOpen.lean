@@ -371,7 +371,7 @@ theorem continuous_curry [LocallyCompactSpace (X × Y)] :
 /-- The uncurried form of a continuous map `X → C(Y, Z)` is a continuous map `X × Y → Z`. -/
 theorem continuous_uncurry_of_continuous [LocallyCompactSpace Y] (f : C(X, C(Y, Z))) :
     Continuous (Function.uncurry fun x y => f x y) :=
-  continuous_eval.comp <| f.continuous.prod_map continuous_id
+  continuous_eval.comp <| f.continuous.prodMap continuous_id
 
 /-- The uncurried form of a continuous map `X → C(Y, Z)` as a continuous map `X × Y → Z` (if `Y` is
     locally compact). If `X` is also locally compact, then this is a homeomorphism between the two
