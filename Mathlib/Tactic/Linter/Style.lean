@@ -91,7 +91,7 @@ def getNames : Syntax → Array Syntax
     if kind == ``Lean.Parser.Command.declId then rargs.push stx else rargs
   | _ => default
 
-/-- The `checkDeclID` linter: it this linter emits a warning, then a declID is considered
+/-- The `checkDeclID` linter: if this linter emits a warning, then a declID is considered
 non-standard style. Currently we only check if it contains a double underscore ("__") as a
 substring.
 
