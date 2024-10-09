@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
 import Mathlib.Data.Fintype.CardEmbedding
-import Mathlib.Probability.uniformOn
+import Mathlib.Probability.UniformOn
 import Mathlib.Probability.Notation
 
 /-!

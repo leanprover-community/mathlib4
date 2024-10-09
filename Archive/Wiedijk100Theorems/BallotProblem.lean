@@ -3,7 +3,7 @@ Copyright (c) 2022 Bhavik Mehta, Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Kexing Ying
 -/
-import Mathlib.Probability.CondCount
+import Mathlib.Probability.UniformOn
 
 /-!
 # Ballot problem

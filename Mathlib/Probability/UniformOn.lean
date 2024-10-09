@@ -53,7 +53,7 @@ def uniformOn (s : Set Ω) : Measure Ω :=
   Measure.count[|s]
 
 @[deprecated (since := "2024-10-09")]
-alias condCount := uniformOn
+noncomputable alias condCount := uniformOn
 
 instance {s : Set Ω} : IsZeroOrProbabilityMeasure (uniformOn s) := by
   unfold uniformOn; infer_instance
