@@ -701,7 +701,7 @@ lemma norm_eq_one_iff_ne_zero_of_discrete {x : 𝕜} : ‖x‖ = 1 ↔ x ≠ 0 :
     · push_neg at h
       rcases h.eq_or_lt with h|h
       · rw [h]
-      replace h := norm_inv x ▸ inv_lt_one h
+      replace h := norm_inv x ▸ inv_lt_one_of_one_lt₀ h
       rw [← inv_inj, inv_one, ← norm_inv]
       exact H (by simpa) h' h
     obtain ⟨k, hk⟩ : ∃ k : ℕ, ‖x‖ ^ k < ε := exists_pow_lt_of_lt_one εpos h
@@ -850,7 +850,7 @@ def NontriviallyNormedField.ofNormNeOne {𝕜 : Type*} [h' : NormedField 𝕜]
     rcases hx1.lt_or_lt with hlt | hlt
     · use x⁻¹
       rw [norm_inv]
-      exact one_lt_inv (norm_pos_iff.2 hx) hlt
+      exact (one_lt_inv₀ (norm_pos_iff.2 hx)).2 hlt
     · exact ⟨x, hlt⟩
 
 instance Real.normedCommRing : NormedCommRing ℝ :=
