@@ -518,8 +518,14 @@ theorem adj_iff_exists_edge {v w : V} : G.Adj v w ↔ v ≠ w ∧ ∃ e ∈ G.ed
 theorem adj_iff_exists_edge_coe : G.Adj a b ↔ ∃ e : G.edgeSet, e.val = s(a, b) := by
   simp only [mem_edgeSet, exists_prop, SetCoe.exists, exists_eq_right, Subtype.coe_mk]
 
-theorem edge_toFinset_card {e : Sym2 V} [DecidableEq V] (he : e ∈ G.edgeSet) :
-    e.toFinset.card = 2 := Sym2.card_toFinset_of_not_isDiag (not_isDiag_of_mem_edgeSet _ he)
+lemma card_toFinset_of_mem_edgeSet [DecidableEq V] (e : Sym2 V) (he : e ∈ G.edgeSet) :
+    (e : Finset V).card = 2 :=
+  Sym2.card_toFinset_of_not_isDiag (not_isDiag_of_mem_edgeSet _ he)
+
+lemma card_filter_mem_of_mem_edgeSet [DecidableEq V] [Fintype V] (e : Sym2 V) (he : e ∈ G.edgeSet) :
+    Finset.card {v | v ∈ e} = 2 := by
+  rw [← SimpleGraph.card_toFinset_of_mem_edgeSet _ he]
+  congr; ext; simp
 
 variable (G G₁ G₂)
 
