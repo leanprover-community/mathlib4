@@ -58,7 +58,7 @@ theorem fermat_eq_prod_add_two (n : ℕ) : fermat n = (∏ k in range n, fermat 
 /--
 **Goldbach's theorem** : no two distinct Fermat numbers share a common factor greater than one.
 
-From a letter to Euler, see page 37 in [juvskevivc2022].
+From a letter to Euler, see page 37 in [juskevic2022].
 -/
 theorem coprime_fermat_fermat  {k n : ℕ} (h : k ≠ n): Coprime (fermat n) (fermat k) := by
   wlog hkn : k < n
