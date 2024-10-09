@@ -295,7 +295,7 @@ open Opposite in
 empty. -/
 theorem IsSiftedOrEmptyOfColimitPreservesBinaryProducts
     [PreservesLimitsOfShape (Discrete WalkingPair) (colim : (C ⥤ _) ⥤ Type u)] :
-    IsSiftedOrEmpty C := by 
+    IsSiftedOrEmpty C := by
   apply cofinal_of_colimit_comp_coyoneda_iso_pUnit
   rintro ⟨c₁, c₂⟩
   calc colimit <|diag C ⋙ coyoneda.obj (op (c₁, c₂))
