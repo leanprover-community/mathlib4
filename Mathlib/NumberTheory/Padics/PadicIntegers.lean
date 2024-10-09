@@ -304,7 +304,7 @@ variable (p : ℕ) [hp : Fact p.Prime]
 theorem exists_pow_neg_lt {ε : ℝ} (hε : 0 < ε) : ∃ k : ℕ, (p : ℝ) ^ (-(k : ℤ)) < ε := by
   obtain ⟨k, hk⟩ := exists_nat_gt ε⁻¹
   use k
-  rw [← inv_lt_inv hε (_root_.zpow_pos_of_pos _ _)]
+  rw [← inv_lt_inv₀ hε (_root_.zpow_pos_of_pos _ _)]
   · rw [zpow_neg, inv_inv, zpow_natCast]
     apply lt_of_lt_of_le hk
     norm_cast
@@ -468,7 +468,7 @@ theorem norm_le_pow_iff_le_valuation (x : ℤ_[p]) (hx : x ≠ 0) (n : ℕ) :
     intro m
     refine pow_pos ?_ m
     exact mod_cast hp.1.pos
-  rw [inv_le_inv (aux _) (aux _)]
+  rw [inv_le_inv₀ (aux _) (aux _)]
   have : p ^ n ≤ p ^ k ↔ n ≤ k := (pow_right_strictMono hp.1.one_lt).le_iff_le
   rw [← this]
   norm_cast
@@ -528,7 +528,7 @@ instance : LocalRing ℤ_[p] :=
   LocalRing.of_nonunits_add <| by simp only [mem_nonunits]; exact fun x y => norm_lt_one_add
 
 theorem p_nonnunit : (p : ℤ_[p]) ∈ nonunits ℤ_[p] := by
-  have : (p : ℝ)⁻¹ < 1 := inv_lt_one <| mod_cast hp.1.one_lt
+  have : (p : ℝ)⁻¹ < 1 := inv_lt_one_of_one_lt₀ <| mod_cast hp.1.one_lt
   rwa [← norm_p, ← mem_nonunits] at this
 
 theorem maximalIdeal_eq_span_p : maximalIdeal ℤ_[p] = Ideal.span {(p : ℤ_[p])} := by
