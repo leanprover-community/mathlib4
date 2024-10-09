@@ -109,7 +109,7 @@ def checkDeclIDLinter: Linter where
     for stx in (getNames _stx) do
       if (contains_double_underscore stx) then
         Linter.logLint linter.style.check_declID stx
-          m!"The declID {stx} contains '__', which does not follow naming conventions. \
+          m!"The declID '{stx}' contains '__', which does not follow naming conventions. \
               Consider using single underscores instead."
       else
         continue
