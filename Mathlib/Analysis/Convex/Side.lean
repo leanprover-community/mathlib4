@@ -220,7 +220,7 @@ theorem wOppSide_of_left_mem {s : AffineSubspace R P} {x : P} (y : P) (hx : x �
     s.WOppSide x y := by
   refine ⟨x, hx, x, hx, ?_⟩
   convert SameRay.zero_left (x -ᵥ y)
-  basepoint V, P, x
+  basepoint V, x
   module
 
 theorem wOppSide_of_right_mem {s : AffineSubspace R P} (x : P) {y : P} (hy : y ∈ s) :
@@ -234,12 +234,12 @@ theorem wSameSide_vadd_left_iff {s : AffineSubspace R P} {x y : P} {v : V} (hv :
     refine
       ⟨-v +ᵥ p₁, AffineSubspace.vadd_mem_of_mem_direction (Submodule.neg_mem _ hv) hp₁, p₂, hp₂, ?_⟩
     convert h using 1
-    basepoint V, P, x
+    basepoint V, x
     module
   · rintro ⟨p₁, hp₁, p₂, hp₂, h⟩
     refine ⟨v +ᵥ p₁, AffineSubspace.vadd_mem_of_mem_direction hv hp₁, p₂, hp₂, ?_⟩
     convert h using 1
-    basepoint V, P, x
+    basepoint V, x
     module
 
 theorem wSameSide_vadd_right_iff {s : AffineSubspace R P} {x y : P} {v : V} (hv : v ∈ s.direction) :
@@ -261,12 +261,12 @@ theorem wOppSide_vadd_left_iff {s : AffineSubspace R P} {x y : P} {v : V} (hv : 
     refine
       ⟨-v +ᵥ p₁, AffineSubspace.vadd_mem_of_mem_direction (Submodule.neg_mem _ hv) hp₁, p₂, hp₂, ?_⟩
     convert h using 1
-    basepoint V, P, x
+    basepoint V, x
     module
   · rintro ⟨p₁, hp₁, p₂, hp₂, h⟩
     refine ⟨v +ᵥ p₁, AffineSubspace.vadd_mem_of_mem_direction hv hp₁, p₂, hp₂, ?_⟩
     convert h using 1
-    basepoint V, P, x
+    basepoint V, x
     module
 
 theorem wOppSide_vadd_right_iff {s : AffineSubspace R P} {x y : P} {v : V} (hv : v ∈ s.direction) :
@@ -303,7 +303,7 @@ theorem wOppSide_smul_vsub_vadd_left {s : AffineSubspace R P} {p₁ p₂ : P} (x
     (hp₂ : p₂ ∈ s) {t : R} (ht : t ≤ 0) : s.WOppSide (t • (x -ᵥ p₁) +ᵥ p₂) x := by
   refine ⟨p₂, hp₂, p₁, hp₁, ?_⟩
   convert SameRay.sameRay_nonneg_smul_left (R := R) (p₁ -ᵥ x) (neg_nonneg.2 ht) using 1
-  basepoint V, P, x
+  basepoint V, x
   module
 
 theorem wOppSide_smul_vsub_vadd_right {s : AffineSubspace R P} {p₁ p₂ : P} (x : P) (hp₁ : p₁ ∈ s)
@@ -345,7 +345,7 @@ theorem _root_.Wbtw.wOppSide₁₃ {s : AffineSubspace R P} {x y z : P} (h : Wbt
   · rw [lineMap_apply_zero]; simp
   refine Or.inr (Or.inr ⟨1 - t, t, sub_pos.2 ht1', ht0', ?_⟩)
   rw [lineMap_apply]
-  basepoint V, P, x
+  basepoint V, x
   module
 
 theorem _root_.Wbtw.wOppSide₃₁ {s : AffineSubspace R P} {x y z : P} (h : Wbtw R x y z)
@@ -365,7 +365,7 @@ theorem wOppSide_self_iff {s : AffineSubspace R P} {x : P} : s.WOppSide x x ↔ 
   · rintro ⟨p₁, hp₁, p₂, hp₂, h⟩
     obtain ⟨a, -, -, -, -, h₁, -⟩ := h.exists_eq_smul_add
     convert s.smul_vsub_vadd_mem a hp₂ hp₁ hp₁ using 1
-    basepoint V, P, x at *
+    basepoint V, x at *
     linear_combination (norm := module) h₁
   · exact fun h => ⟨x, h, x, h, SameRay.rfl⟩
 
@@ -385,7 +385,7 @@ theorem wSameSide_iff_exists_left {s : AffineSubspace R P} {x y p₁ : P} (h : p
       exact SameRay.zero_right _
     · refine Or.inr ⟨(r₁ / r₂) • (p₁ -ᵥ p₁') +ᵥ p₂', s.smul_vsub_vadd_mem _ h hp₁' hp₂',
         Or.inr (Or.inr ⟨r₁, r₂, hr₁, hr₂, ?_⟩)⟩
-      basepoint V, P, x at *
+      basepoint V, x at *
       linear_combination (norm := match_scalars <;> { field_simp <;> ring }) hr
   · rintro (h' | ⟨h₁, h₂, h₃⟩)
     · exact wSameSide_of_left_mem y h'
@@ -419,7 +419,7 @@ theorem wOppSide_iff_exists_left {s : AffineSubspace R P} {x y p₁ : P} (h : p�
       exact SameRay.zero_right _
     · refine Or.inr ⟨(-r₁ / r₂) • (p₁ -ᵥ p₁') +ᵥ p₂', s.smul_vsub_vadd_mem _ h hp₁' hp₂',
         Or.inr (Or.inr ⟨r₁, r₂, hr₁, hr₂, ?_⟩)⟩
-      basepoint V, P, x at *
+      basepoint V, x at *
       linear_combination (norm := match_scalars <;> { field_simp <;> ring }) hr
   · rintro (h' | ⟨h₁, h₂, h₃⟩)
     · exact wOppSide_of_left_mem y h'
@@ -591,7 +591,7 @@ theorem wOppSide_iff_exists_wbtw {s : AffineSubspace R P} {x y : P} :
   · refine ⟨lineMap x y (r₂ / (r₁ + r₂)), ?_, ?_⟩
     · convert s.smul_vsub_vadd_mem (r₂ / (r₁ + r₂)) hp₂ hp₁ hp₁
       rw [lineMap_apply]
-      basepoint V, P, y at *
+      basepoint V, y at *
       linear_combination (norm := match_scalars <;> { field_simp <;> ring }) congr((r₁ + r₂)⁻¹ • $h)
     · exact Set.mem_image_of_mem _
         ⟨by positivity,
@@ -616,7 +616,7 @@ theorem _root_.Sbtw.sOppSide_of_not_mem_of_mem {s : AffineSubspace R P} {x y z :
     simp [lineMap_apply] at hyz
   rwa [vadd_mem_iff_mem_of_mem_direction] at hy
   convert Submodule.smul_mem _ (t / (t - 1)) (vsub_mem_direction hy hz) using 1
-  basepoint V, P, x
+  basepoint V, x
   match_scalars
   field_simp [sub_ne_zero_of_ne ht]
 
@@ -669,7 +669,7 @@ theorem setOf_wSameSide_eq_image2 {s : AffineSubspace R P} {x p : P} (hx : x ∉
       refine ⟨0, le_rfl, p₂, hp₂, ?_⟩
       simp [h]
     · refine ⟨r₁ / r₂, (div_pos hr₁ hr₂).le, p₂, hp₂, ?_⟩
-      basepoint V, P, x at *
+      basepoint V, x at *
       linear_combination (norm := match_scalars <;> { field_simp <;> ring }) congr(r₂⁻¹ • $h)
   · rintro ⟨t, ht, p', hp', rfl⟩
     exact wSameSide_smul_vsub_vadd_right x hp hp' ht
@@ -686,7 +686,7 @@ theorem setOf_sSameSide_eq_image2 {s : AffineSubspace R P} {x p : P} (hx : x ∉
     · rw [vsub_eq_zero_iff_eq] at h
       exact False.elim (hy (h.symm ▸ hp₂))
     · refine ⟨r₁ / r₂, div_pos hr₁ hr₂, p₂, hp₂, ?_⟩
-      basepoint V, P, x at *
+      basepoint V, x at *
       linear_combination (norm := match_scalars <;> { field_simp <;> ring }) congr( r₂⁻¹ • $h)
   · rintro ⟨t, ht, p', hp', rfl⟩
     exact sSameSide_smul_vsub_vadd_right hx hp hp' ht
@@ -704,7 +704,7 @@ theorem setOf_wOppSide_eq_image2 {s : AffineSubspace R P} {x p : P} (hx : x ∉ 
       refine ⟨0, le_rfl, p₂, hp₂, ?_⟩
       simp [h]
     · refine ⟨-r₁ / r₂, (div_neg_of_neg_of_pos (Left.neg_neg_iff.2 hr₁) hr₂).le, p₂, hp₂, ?_⟩
-      basepoint V, P, x at *
+      basepoint V, x at *
       linear_combination (norm := match_scalars <;> field_simp) congr(- r₂⁻¹ • $h)
   · rintro ⟨t, ht, p', hp', rfl⟩
     exact wOppSide_smul_vsub_vadd_right x hp hp' ht
@@ -721,7 +721,7 @@ theorem setOf_sOppSide_eq_image2 {s : AffineSubspace R P} {x p : P} (hx : x ∉ 
     · rw [vsub_eq_zero_iff_eq] at h
       exact False.elim (hy (h ▸ hp₂))
     · refine ⟨-r₁ / r₂, div_neg_of_neg_of_pos (Left.neg_neg_iff.2 hr₁) hr₂, p₂, hp₂, ?_⟩
-      basepoint V, P, x at *
+      basepoint V, x at *
       linear_combination (norm := match_scalars <;> field_simp) congr(- r₂⁻¹ • $h)
   · rintro ⟨t, ht, p', hp', rfl⟩
     exact sOppSide_smul_vsub_vadd_right hx hp hp' ht

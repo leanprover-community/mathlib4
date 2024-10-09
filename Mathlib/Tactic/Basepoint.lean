@@ -70,23 +70,19 @@ partial def parseAddCommGroup (iV : Q(AddCommGroup $V)) (iVP : Q(AddTorsor $V $P
   | ~q(@HSMul.hSMul _ _ _ (@instHSMul _ _ $i) $r $a) =>
     let ⟨b, hb⟩ ← parseAddCommGroup iV iVP x₀ a
     pure ⟨q($r • $b), q(sorry)⟩
-  | _ =>
-    pure ⟨a, q(sorry)⟩
+  | _ => pure ⟨a, q(sorry)⟩
 
 end
 
-/-
-a • v = a • (v - x₀)
--/
-
-def mkBasepointIff (V P x₀ : Expr) (e : Q(Prop)) :
-    MetaM (Σ e' : Q(Prop), Q($e ↔ $e')) := do
+def mkBasepointIff (V x₀ : Expr) (e : Q(Prop)) : MetaM (Σ e' : Q(Prop), Q($e ↔ $e')) := do
   /- Parse the first provided expression `V` as a type carrying an `AddCommGroup V` instance. -/
   let .sort u₀ ← whnf (← inferType V) | unreachable!
   let some u := u₀.dec | unreachable!
   have V : Q(Type u) := V
   let iV ← synthInstanceQ q(AddCommGroup.{u} $V)
-  /- Parse the second provided expression `P` as a type carrying an `AddTorsor V P` instance. -/
+  /- Parse the type of the second provided expression as a type `P` carrying an `AddTorsor V P`
+  instance. -/
+  let P ← inferType x₀
   let .sort v₀ ← whnf (← inferType P) | unreachable!
   let some v := v₀.dec | unreachable!
   have P : Q(Type v) := P
@@ -119,36 +115,35 @@ def mkBasepointIff (V P x₀ : Expr) (e : Q(Prop)) :
 
 open Tactic in
 /-- Use `ring_nf` to rewrite hypothesis `h`. -/
-def basepointLocalDecl (V P x₀ : Expr) (fvarId : FVarId) :
+def basepointLocalDecl (V x₀ : Expr) (fvarId : FVarId) :
     TacticM Unit := withMainContext do
   let lctx ← getLCtx
   let ldecl := LocalContext.get! lctx fvarId
   let mainGoal ← getMainGoal
   let mainGoal ← mainGoal.tryClear fvarId
   let e : Q(Prop) ← fvarId.getType
-  let ⟨e', pf⟩ ← mkBasepointIff V P x₀ e
+  let ⟨e', pf⟩ ← mkBasepointIff V x₀ e
   -- can't qq this step for some reason
   let new_pf : Expr := (← mkAppM ``Iff.mp #[pf, .fvar fvarId])
   let (_, mainGoal) ← mainGoal.note ldecl.userName new_pf
   replaceMainGoal <| [mainGoal]
 
-def evalBasepoint (V P x₀ : Expr) (g : MVarId) : MetaM (List MVarId) := do
+def evalBasepoint (V x₀ : Expr) (g : MVarId) : MetaM (List MVarId) := do
   let e : Q(Prop) := ← g.getType'
-  let ⟨(e' : Q(Prop)), (pf : Q($e ↔ $e'))⟩ ← mkBasepointIff V P x₀ e
+  let ⟨(e' : Q(Prop)), (pf : Q($e ↔ $e'))⟩ ← mkBasepointIff V x₀ e
   let mvar ← mkFreshExprMVar e'
   -- can't qq this step for some reason
   g.assign (← mkAppM ``Iff.mpr #[pf, mvar])
   return [mvar.mvarId!]
 
 open Parser.Tactic in
-elab "basepoint" tV:(ppSpace colGt term) "," tP:(ppSpace colGt term) "," tx₀:(ppSpace colGt term)
-    loc:(location)? : tactic => Tactic.withMainContext <| do
+elab "basepoint" tV:(ppSpace colGt term) "," tx₀:(ppSpace colGt term) loc:(location)? :
+    tactic => Tactic.withMainContext <| do
   let loc := (loc.map Tactic.expandLocation).getD (.targets #[] true)
   let V ← Term.elabTerm tV none
-  let P ← Term.elabTerm tP none
   let x₀ ← Term.elabTerm tx₀ none
-  Tactic.withLocation loc (basepointLocalDecl V P x₀)
-    (Tactic.liftMetaTactic <| evalBasepoint V P x₀)
+  Tactic.withLocation loc (basepointLocalDecl V x₀)
+    (Tactic.liftMetaTactic <| evalBasepoint V x₀)
     fun _ ↦ throwError "basepoint tactic failed"
 
 
@@ -156,23 +151,23 @@ section Test
 variable {V P : Type*} [AddCommGroup V] [AddTorsor V P]
 
 example {x y z : P} (h : x = y) : True := by
-  basepoint V, P, x at h
+  basepoint V, x at h
   sorry
 
 example {x y z : P} : (x -ᵥ ((z -ᵥ x) +ᵥ x)) +ᵥ y = ((z -ᵥ x) +ᵥ x -ᵥ z) +ᵥ z := by
-  basepoint V, P, x
+  basepoint V, x
   sorry
 
 example {x y z : P} : x -ᵥ ((z -ᵥ x) +ᵥ x) = (z -ᵥ x) +ᵥ x -ᵥ z := by
   let w : P := sorry
-  basepoint V, P, w
+  basepoint V, w
   sorry
 
 variable {R : Type*} [SMul R V] [AddCommGroup R] [One R]
 
 example {t : R} {x y z : P} :
     (1 - t) • (x -ᵥ (t • (z -ᵥ x) +ᵥ x)) = t • (t • (z -ᵥ x) +ᵥ x -ᵥ z) := by
-  basepoint V, P, x
+  basepoint V, x
   sorry
 
 end Test

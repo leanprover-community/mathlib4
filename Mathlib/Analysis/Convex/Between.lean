@@ -474,7 +474,7 @@ theorem Wbtw.sameRay_vsub {x y z : P} (h : Wbtw R x y z) : SameRay R (y -ᵥ x) 
   rcases ht0.lt_or_eq with (ht0' | rfl); swap; · simp
   rcases ht1.lt_or_eq with (ht1' | rfl); swap; · simp
   refine Or.inr (Or.inr ⟨1 - t, t, sub_pos.2 ht1', ht0', ?_⟩)
-  basepoint V, P, x
+  basepoint V, x
   module
 
 theorem Wbtw.sameRay_vsub_left {x y z : P} (h : Wbtw R x y z) : SameRay R (y -ᵥ x) (z -ᵥ x) := by
@@ -593,7 +593,7 @@ theorem wbtw_iff_left_eq_or_right_mem_image_Ici {x y z : P} :
     · rw [Set.mem_Ici] at hr
       refine ⟨r⁻¹, ⟨inv_nonneg.2 (zero_le_one.trans hr), inv_le_one hr⟩, ?_⟩
       simp only [lineMap_apply]
-      basepoint V, P, x
+      basepoint V, x
       match_scalars
       field_simp
 
@@ -626,7 +626,7 @@ theorem sbtw_iff_left_ne_and_right_mem_image_Ioi {x y z : P} :
       rw [smul_ne_zero_iff, vsub_ne_zero, sub_ne_zero]
       exact ⟨hr.ne, hne.symm⟩
     contrapose! this with H
-    basepoint V, P, x at *
+    basepoint V, x at *
     linear_combination (norm := module) H
 
 theorem Sbtw.right_mem_image_Ioi {x y z : P} (h : Sbtw R x y z) :
@@ -705,7 +705,7 @@ theorem Wbtw.trans_left_right {w x y z : P} (h₁ : Wbtw R w y z) (h₂ : Wbtw R
             (sub_le_sub_right ht₁.2 _) (sub_nonneg.2 (mul_le_one₀ ht₂.2 ht₁.1 ht₁.2))⟩,
       ?_⟩
   simp only [lineMap_apply]
-  basepoint V, P, z
+  basepoint V, z
   match_scalars
   suffices H : ((t₁ - t₂ * t₁) * ((1 - t₂ * t₁) / (1 - t₂ * t₁)) + t₂ * t₁) = t₁ by
     linear_combination (norm := { field_simp; ring }) -H
@@ -781,7 +781,7 @@ theorem wbtw_iff_sameRay_vsub {x y z : P} : Wbtw R x y z ↔ SameRay R (y -ᵥ x
           div_le_one_of_le₀ (le_add_of_nonneg_left hr₁.le) (add_nonneg hr₁.le hr₂.le)⟩,
         ?_⟩
     rw [lineMap_apply]
-    basepoint V, P, x at *
+    basepoint V, x at *
     linear_combination (norm := match_scalars <;> { field_simp <;> ring }) congr(-(r₁ + r₂)⁻¹ • $h)
 
 variable (R)

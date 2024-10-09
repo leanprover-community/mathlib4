@@ -481,7 +481,7 @@ def reflection (s : AffineSubspace ℝ P) [Nonempty s] [HasOrthogonalProjection 
       let a : V := _root_.orthogonalProjection s.direction v
       let b : P := ↑(Classical.arbitrary s)
       have key : a +ᵥ b -ᵥ (v +ᵥ b) +ᵥ (a +ᵥ b) = 2 • a - v +ᵥ (b -ᵥ b +ᵥ b) := by
-        basepoint V, P, p
+        basepoint V, p
         module
       dsimp only
       rwa [reflection_apply, (vsub_vadd p b).symm, AffineMap.map_vadd, orthogonalProjection_linear,
