@@ -59,6 +59,21 @@ lemma IsInvertible.inverse_comp_apply {g : F →L[𝕜] G} {f : E →L[𝕜] F} 
     (hg : g.IsInvertible) (hf : f.IsInvertible) : (g ∘L f).inverse v = f.inverse (g.inverse v) := by
   simp only [hg.inverse_comp hf, coe_comp', Function.comp_apply]
 
+lemma IsInvertible.of_inverse {f : E →L[𝕜] F} {g : F →L[𝕜] E}
+    (hf : f ∘L g = id 𝕜 F) (hg : g ∘L f = id 𝕜 E) :
+    f.IsInvertible := by
+  let M : E ≃L[𝕜] F :=
+  { f with
+    invFun := g
+    left_inv := by
+      intro x
+      have : (g ∘L f) x = x := by simp [hg]
+      simpa using this
+    right_inv := by
+      intro x
+      have : (f ∘L g) x = x := by simp [hf]
+      simpa using this }
+  exact ⟨M, rfl⟩
 
 /-- At an invertible map `e : E →L[𝕜] F` between Banach spaces, the operation of
 inversion is `C^n`, for all `n`. -/
@@ -813,10 +828,74 @@ lemma contMDiff_snd_tangentBundle_modelSpace {n : ℕ∞} :
     rfl
   · exact contMDiff_tangentBundleModelSpaceHomeomorph H I
 
+lemma mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm
+    {y : E} (hy : y ∈ (extChartAt I x).target) :
+    (mfderiv I 𝓘(𝕜, E) (extChartAt I x) ((extChartAt I x).symm y)) ∘L
+      (mfderivWithin 𝓘(𝕜, E) I (extChartAt I x).symm (range I) y) = ContinuousLinearMap.id _ _ := by
+  have U : UniqueMDiffWithinAt 𝓘(𝕜, E) (range ↑I) y := by
+    apply I.uniqueMDiffOn
+    exact extChartAt_target_subset_range I x hy
+  have h'y : (extChartAt I x).symm y ∈ (extChartAt I x).source := (extChartAt I x).map_target hy
+  have h''y : (extChartAt I x).symm y ∈ (chartAt H x).source := by
+    rwa [← extChartAt_source (I := I)]
+  rw [← mfderiv_comp_mfderivWithin]; rotate_left
+  · apply mdifferentiableAt_extChartAt _ h''y
+  · exact mdifferentiableWithinAt_extChartAt_symm _ hy
+  · exact U
+  rw [← mfderivWithin_id _ U]
+  apply Filter.EventuallyEq.mfderivWithin_eq U
+  · filter_upwards [extChartAt_target_mem_nhdsWithin_of_mem _ hy] with z hz
+    simp only [comp_def, PartialEquiv.right_inv (extChartAt I x) hz, id_eq]
+  · simp only [comp_def, PartialEquiv.right_inv (extChartAt I x) hy, id_eq]
+
+lemma mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt
+    {y : E} (hy : y ∈ (extChartAt I x).target) :
+    (mfderivWithin 𝓘(𝕜, E) I (extChartAt I x).symm (range I) y) ∘L
+      (mfderiv I 𝓘(𝕜, E) (extChartAt I x) ((extChartAt I x).symm y))
+      = ContinuousLinearMap.id _ _ := by
+  have h'y : (extChartAt I x).symm y ∈ (extChartAt I x).source := (extChartAt I x).map_target hy
+  have h''y : (extChartAt I x).symm y ∈ (chartAt H x).source := by
+    rwa [← extChartAt_source (I := I)]
+  have U' : UniqueMDiffWithinAt I (extChartAt I x).source ((extChartAt I x).symm y) :=
+    (isOpen_extChartAt_source I x).uniqueMDiffWithinAt h'y
+  have : mfderiv I 𝓘(𝕜, E) (extChartAt I x) ((extChartAt I x).symm y)
+      = mfderivWithin I 𝓘(𝕜, E) (extChartAt I x) (extChartAt I x).source
+      ((extChartAt I x).symm y) := by
+    rw [mfderivWithin_eq_mfderiv U']
+    exact mdifferentiableAt_extChartAt _ h''y
+  rw [this, ← mfderivWithin_comp_of_eq]; rotate_left
+  · exact mdifferentiableWithinAt_extChartAt_symm _ hy
+  · exact (mdifferentiableAt_extChartAt _ h''y).mdifferentiableWithinAt
+  · intro z hz
+    apply extChartAt_target_subset_range I x
+    exact PartialEquiv.map_source (extChartAt I x) hz
+  · exact U'
+  · exact PartialEquiv.right_inv (extChartAt I x) hy
+  rw [← mfderivWithin_id _ U']
+  apply Filter.EventuallyEq.mfderivWithin_eq U'
+  · filter_upwards [extChartAt_source_mem_nhdsWithin' _ h'y] with z hz
+    simp only [comp_def, PartialEquiv.left_inv (extChartAt I x) hz, id_eq]
+  · simp only [comp_def, PartialEquiv.right_inv (extChartAt I x) hy, id_eq]
+
+lemma isInvertible_mfderivWithin_extChartAt_symm {y : E} (hy : y ∈ (extChartAt I x).target) :
+    (mfderivWithin 𝓘(𝕜, E) I (extChartAt I x).symm (range I) y).IsInvertible :=
+  ContinuousLinearMap.IsInvertible.of_inverse
+    (mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt hy)
+    (mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm hy)
+
+lemma isInvertible_mfderiv_extChartAt {y : M} (hy : y ∈ (extChartAt I x).source) :
+    (mfderiv I 𝓘(𝕜, E) (extChartAt I x) y).IsInvertible := by
+  have h'y : extChartAt I x y ∈ (extChartAt I x).target := (extChartAt I x).map_source hy
+  have Z := ContinuousLinearMap.IsInvertible.of_inverse
+    (mfderiv_extChartAt_comp_mfderivWithin_extChartAt_symm h'y)
+    (mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt h'y)
+  have : (extChartAt I x).symm ((extChartAt I x) y) = y := (extChartAt I x).left_inv hy
+  rwa [this] at Z
+
 lemma mlieBracketWithin_add_left [CompleteSpace E]
     (hV : ContMDiffWithinAt I I.tangent 1 (fun x ↦ (V x : TangentBundle I M)) s x)
     (hV₁ : ContMDiffWithinAt I I.tangent 1 (fun x ↦ (V₁ x : TangentBundle I M)) s x)
-    (hs :  UniqueMDiffOn I s) :
+    (hs : UniqueMDiffOn I s) :
     mlieBracketWithin I (V + V₁) W s x =
       mlieBracketWithin I V W s x + mlieBracketWithin I V₁ W s x := by
   simp only [mlieBracketWithin, Pi.add_apply, map_add, mpullback_apply]
@@ -828,39 +907,12 @@ lemma mlieBracketWithin_add_left [CompleteSpace E]
     apply ContMDiffWithinAt.mdifferentiableWithinAt _ le_rfl
     have Z := ContMDiffWithinAt.mpullbackWithin_of_eq hV
       (f := (extChartAt I x).symm) (I := 𝓘(𝕜, E)) (n := 2) (x₀ := (extChartAt I x) x)
-      (s := range I) (t := s) ?_ sorry (mem_range_self _) sorry le_rfl
-      (extChartAt_to_inv I x).symm
+      (s := range I) (t := s) (contMDiffWithinAt_extChartAt_symm_range x (mem_extChartAt_target I x))
+      (isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target I x)) (mem_range_self _)
+      I.uniqueMDiffOn le_rfl (extChartAt_to_inv I x).symm
     rw [inter_comm]
     exact (contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.comp_contMDiffWithinAt _ Z
 
-
-
-
-#exit
-
-    /-
-    rw [Bundle.contMDiffWithinAt_totalSpace] at Z
-    simp [-extChartAt] at Z
-    rw [inter_comm]
-    convert Z.2 with y
-    rw [TangentBundle.trivializationAt_eq_localTriv]
-    simp [tangentBundleCore] -/
-
-@ContMDiffWithinAt 𝕜 inst✝⁷ E inst✝⁵ inst✝⁴ E UniformSpace.toTopologicalSpace 𝓘(𝕜, E) E
-  UniformSpace.toTopologicalSpace
-  (chartedSpaceSelf E)
-  (E × E) Prod.normedAddCommGroup Prod.normedSpace (ModelProd E E)
-  (instTopologicalSpaceModelProd E E) 𝓘(𝕜, E).tangent
-  (Bundle.TotalSpace E (TangentSpace 𝓘(𝕜, E)))
-  (instTopologicalSpaceTangentBundle 𝓘(𝕜, E) E) chartedSpace 1
-  (fun y ↦ { proj := y, snd := mpullbackWithin 𝓘(𝕜, E) I (↑(chart
-
-
-@ContMDiff 𝕜 inst✝⁷ (E × E) Prod.normedAddCommGroup Prod.normedSpace (ModelProd E E)
-  (instTopologicalSpaceModelProd E E)
-  𝓘(𝕜, E).tangent (TangentBundle 𝓘(𝕜, E) E)
-  (instTopologicalSpaceTangentBundle 𝓘(𝕜, E) E) chartedSpace E inst✝⁵ inst✝⁴ E
-  UniformSpace.toTopologicalSpace 𝓘(𝕜, E) E UniformSpace.toTopologicalSpace (chartedSpaceSelf E) 2 fun p ↦ p.snd : Pr
 
 
 

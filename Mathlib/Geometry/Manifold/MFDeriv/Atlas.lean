@@ -278,7 +278,7 @@ theorem mdifferentiableOn_extChartAt :
   (hasMFDerivWithinAt_extChartAt I hy).mdifferentiableWithinAt
 
 theorem mdifferentiableWithinAt_extChartAt_symm (h : z ∈ (extChartAt I x).target) :
-    MDifferentiableWithinAt 𝓘(𝕜, E) I (extChartAt I x).symm (range I)  z := by
+    MDifferentiableWithinAt 𝓘(𝕜, E) I (extChartAt I x).symm (range I) z := by
   have Z := I.mdifferentiableWithinAt_symm (extChartAt_target_subset_range I x h)
   apply MDifferentiableAt.comp_mdifferentiableWithinAt (I' := I) _ _ Z
   apply mdifferentiableAt_atlas_symm _ (ChartedSpace.chart_mem_atlas x)
