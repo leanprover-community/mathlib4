@@ -33,7 +33,8 @@ When possible, instead of parametrizing results over `(f : ContinuousAddMonoidHo
 you should parametrize
 over `(F : Type*) [FunLike F A B] [ContinuousMapClass F A B] [AddMonoidHomClass F A B] (f : F)`.
 
-When you extend this structure, make sure to extend `ContinuousAddMonoidHomClass`. -/
+When you extend this structure,
+make sure to extend `ContinuousMapClass` and/or `AddMonoidHomClass`, if needed. -/
 structure ContinuousAddMonoidHom (A B : Type*) [AddMonoid A] [AddMonoid B] [TopologicalSpace A]
   [TopologicalSpace B] extends A →+ B, C(A, B)
 
@@ -43,7 +44,8 @@ When possible, instead of parametrizing results over `(f : ContinuousMonoidHom A
 you should parametrize
 over `(F : Type*) [FunLike F A B] [ContinuousMapClass F A B] [MonoidHomClass F A B] (f : F)`.
 
-When you extend this structure, make sure to extend `ContinuousAddMonoidHomClass`. -/
+When you extend this structure,
+make sure to extend `ContinuousMapClass` and/or `MonoidHomClass`, if needed. -/
 @[to_additive "The type of continuous additive monoid homomorphisms from `A` to `B`."]
 structure ContinuousMonoidHom extends A →* B, C(A, B)
 
