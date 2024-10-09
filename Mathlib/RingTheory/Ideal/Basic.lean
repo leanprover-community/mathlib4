@@ -28,7 +28,7 @@ Support right ideals, and two-sided ideals over non-commutative rings.
 
 universe u v w
 
-variable {α : Type u} {β : Type v}
+variable {α : Type u} {β : Type v} {F : Type w}
 
 open Set Function
 
@@ -149,6 +149,9 @@ theorem mem_span_insert {s : Set α} {x y} :
 theorem mem_span_singleton' {x y : α} : x ∈ span ({y} : Set α) ↔ ∃ a, a * y = x :=
   Submodule.mem_span_singleton
 
+theorem mem_span_singleton_self (x : α) : x ∈ span ({x} : Set α) :=
+  Submodule.mem_span_singleton_self x
+
 theorem span_singleton_le_iff_mem {x : α} : span {x} ≤ I ↔ x ∈ I :=
   Submodule.span_singleton_le_iff_mem _ _
 
@@ -187,8 +190,8 @@ theorem span_eq_top_iff_finite (s : Set α) :
   simp_rw [eq_top_iff_one]
   exact ⟨Submodule.mem_span_finite_of_mem_span, fun ⟨s', h₁, h₂⟩ => span_mono h₁ h₂⟩
 
-theorem mem_span_singleton_sup {S : Type*} [CommSemiring S] {x y : S} {I : Ideal S} :
-    x ∈ Ideal.span {y} ⊔ I ↔ ∃ a : S, ∃ b ∈ I, a * y + b = x := by
+theorem mem_span_singleton_sup {x y : α} {I : Ideal α} :
+    x ∈ Ideal.span {y} ⊔ I ↔ ∃ a : α, ∃ b ∈ I, a * y + b = x := by
   rw [Submodule.mem_sup]
   constructor
   · rintro ⟨ya, hya, b, hb, rfl⟩
@@ -433,9 +436,6 @@ theorem mul_unit_mem_iff_mem {x y : α} (hy : IsUnit y) : x * y ∈ I ↔ x ∈ 
 
 theorem mem_span_singleton {x y : α} : x ∈ span ({y} : Set α) ↔ y ∣ x :=
   mem_span_singleton'.trans <| exists_congr fun _ => by rw [eq_comm, mul_comm]
-
-theorem mem_span_singleton_self (x : α) : x ∈ span ({x} : Set α) :=
-  mem_span_singleton.mpr dvd_rfl
 
 theorem span_singleton_le_span_singleton {x y : α} :
     span ({x} : Set α) ≤ span ({y} : Set α) ↔ y ∣ x :=
@@ -807,6 +807,12 @@ theorem zero_mem_nonunits [Semiring α] : 0 ∈ nonunits α ↔ (0 : α) ≠ 1 :
 @[simp 1001] -- increased priority to appease `simpNF`
 theorem one_not_mem_nonunits [Monoid α] : (1 : α) ∉ nonunits α :=
   not_not_intro isUnit_one
+
+-- Porting note : as this can be proved by other `simp` lemmas, this is marked as high priority.
+@[simp (high)]
+theorem map_mem_nonunits_iff [Monoid α] [Monoid β] [FunLike F α β] [MonoidHomClass F α β] (f : F)
+    [IsLocalRingHom f] (a) : f a ∈ nonunits β ↔ a ∈ nonunits α :=
+  ⟨fun h ha => h <| ha.map f, fun h ha => h <| ha.of_map⟩
 
 theorem coe_subset_nonunits [Semiring α] {I : Ideal α} (h : I ≠ ⊤) : (I : Set α) ⊆ nonunits α :=
   fun _x hx hu => h <| I.eq_top_of_isUnit_mem hx hu

@@ -172,7 +172,7 @@ end CommSemigroup
 attribute [local simp] mul_assoc sub_eq_add_neg
 
 section Monoid
-variable [Monoid M] {a b c : M} {m n : ℕ}
+variable [Monoid M] {a b : M} {m n : ℕ}
 
 @[to_additive boole_nsmul]
 lemma pow_boole (P : Prop) [Decidable P] (a : M) :
@@ -316,7 +316,7 @@ end InvolutiveInv
 
 section DivInvMonoid
 
-variable [DivInvMonoid G] {a b c : G}
+variable [DivInvMonoid G]
 
 @[to_additive, field_simps] -- The attributes are out of order on purpose
 theorem inv_eq_one_div (x : G) : x⁻¹ = 1 / x := by rw [div_eq_mul_inv, one_mul]
@@ -586,13 +586,15 @@ theorem mul_div_mul_comm : a * b / (c * d) = a / c * (b / d) := by simp
   | (n : ℕ) => by simp_rw [zpow_natCast, mul_pow]
   | .negSucc n => by simp_rw [zpow_negSucc, ← inv_pow, mul_inv, mul_pow]
 
-@[to_additive (attr := simp) nsmul_sub]
+@[to_additive nsmul_sub]
 lemma div_pow (a b : α) (n : ℕ) : (a / b) ^ n = a ^ n / b ^ n := by
   simp only [div_eq_mul_inv, mul_pow, inv_pow]
 
-@[to_additive (attr := simp) zsmul_sub]
+@[to_additive zsmul_sub]
 lemma div_zpow (a b : α) (n : ℤ) : (a / b) ^ n = a ^ n / b ^ n := by
   simp only [div_eq_mul_inv, mul_zpow, inv_zpow]
+
+attribute [field_simps] div_pow div_zpow
 
 end DivisionCommMonoid
 

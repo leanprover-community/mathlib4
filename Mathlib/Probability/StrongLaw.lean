@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Probability.IdentDistrib
+import Mathlib.Probability.Independence.Integrable
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.Analysis.SpecificLimits.FloorPow
 import Mathlib.Analysis.PSeries
@@ -395,7 +396,7 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
   set Y := fun n : ℕ => truncation (X n) n
   set S := fun n => ∑ i ∈ range n, Y i with hS
   let u : ℕ → ℕ := fun n => ⌊c ^ n⌋₊
-  have u_mono : Monotone u := fun i j hij => Nat.floor_mono (pow_le_pow_right c_one.le hij)
+  have u_mono : Monotone u := fun i j hij => Nat.floor_mono (pow_right_mono₀ c_one.le hij)
   have I1 : ∀ K, ∑ j ∈ range K, ((j : ℝ) ^ 2)⁻¹ * Var[Y j] ≤ 2 * 𝔼[X 0] := by
     intro K
     calc
@@ -456,7 +457,7 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
           refine zero_lt_one.trans_le ?_
           apply Nat.le_floor
           rw [Nat.cast_one]
-          apply one_le_pow_of_one_le c_one.le
+          apply one_le_pow₀ c_one.le
       _ = ENNReal.ofReal (∑ i ∈ range N, Var[S (u i)] / (u i * ε) ^ 2) := by
         rw [ENNReal.ofReal_sum_of_nonneg fun i _ => ?_]
         exact div_nonneg (variance_nonneg _ _) (sq_nonneg _)
@@ -562,7 +563,7 @@ theorem strong_law_aux6 {c : ℝ} (c_one : 1 < c) :
   have H : ∀ n : ℕ, (0 : ℝ) < ⌊c ^ n⌋₊ := by
     intro n
     refine zero_lt_one.trans_le ?_
-    simp only [Nat.one_le_cast, Nat.one_le_floor_iff, one_le_pow_of_one_le c_one.le n]
+    simp only [Nat.one_le_cast, Nat.one_le_floor_iff, one_le_pow₀ c_one.le]
   filter_upwards [strong_law_aux4 X hint hindep hident hnonneg c_one,
     strong_law_aux5 X hint hident hnonneg] with ω hω h'ω
   rw [← tendsto_sub_nhds_zero_iff, ← Asymptotics.isLittleO_one_iff ℝ]
