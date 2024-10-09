@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Paul Lezeau
 -/
 import Mathlib.Order.Bounds.Basic
+import Mathlib.Data.Set.NAry
 
 /-!
 
