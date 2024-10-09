@@ -376,7 +376,7 @@ lemma isNilpotent_restrict_unifEigenspace_top [IsNoetherian R M] (f : End R M) (
       mapsTo_unifEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f μ) μ _) :
     IsNilpotent ((f - μ • 1).restrict h) := by
   apply isNilpotent_restrict_of_le
-  swap; apply isNilpotent_restrict_unifEigenspace_nat f μ (maxUnifEigenspaceIndex f μ)
+  on_goal 2 => apply isNilpotent_restrict_unifEigenspace_nat f μ (maxUnifEigenspaceIndex f μ)
   rw [unifEigenspace_top_eq_maxUnifEigenspaceIndex]
 
 /-- The submodule `eigenspace f μ` for a linear map `f` and a scalar `μ` consists of all vectors `x`
