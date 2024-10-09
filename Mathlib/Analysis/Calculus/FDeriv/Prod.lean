@@ -355,7 +355,7 @@ theorem hasStrictFDerivAt_apply (i : ι) (f : ∀ i, F' i) :
   let id' := ContinuousLinearMap.id 𝕜 (∀ i, F' i)
   have h := ((hasStrictFDerivAt_pi'
              (Φ := fun (f : ∀ i, F' i) (i' : ι) => f i') (Φ' := id') (x := f))).1
-  have h' : comp (proj i) id' = proj i := by rfl
+  have h' : comp (proj i) id' = proj i := by ext; simp [id']
   rw [← h']; apply h; apply hasStrictFDerivAt_id
 
 @[simp 1100] -- Porting note: increased priority to make lint happy
