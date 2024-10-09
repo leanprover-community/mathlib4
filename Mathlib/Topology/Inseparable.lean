@@ -5,6 +5,7 @@ Authors: Andrew Yang, Yury Kudryashov
 -/
 import Mathlib.Tactic.TFAE
 import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
 # Inseparable points in a topological space
@@ -602,14 +603,8 @@ theorem map_mk_nhdsWithin_preimage (s : Set (SeparationQuotient X)) (x : X) :
   rw [nhdsWithin, ← comap_principal, Filter.push_pull, nhdsWithin, map_mk_nhds]
 
 /-- The map `(x, y) ↦ (mk x, mk y)` is a quotient map. -/
-theorem quotientMap_prodMap_mk : QuotientMap (Prod.map mk mk : X × Y → _) := by
-  have hsurj : Surjective (Prod.map mk mk : X × Y → _) := surjective_mk.prodMap surjective_mk
-  refine quotientMap_iff.2 ⟨hsurj, fun s ↦ ?_⟩
-  refine ⟨fun hs ↦ hs.preimage (continuous_mk.prod_map continuous_mk), fun hs ↦ ?_⟩
-  refine isOpen_iff_mem_nhds.2 <| hsurj.forall.2 fun (x, y) h ↦ ?_
-  rw [Prod.map_mk, nhds_prod_eq, ← map_mk_nhds, ← map_mk_nhds, Filter.prod_map_map_eq',
-    ← nhds_prod_eq, Filter.mem_map]
-  exact hs.mem_nhds h
+theorem quotientMap_prodMap_mk : QuotientMap (Prod.map mk mk : X × Y → _) :=
+  (isOpenQuotientMap_mk.prodMap isOpenQuotientMap_mk).quotientMap
 
 /-- Lift a map `f : X → α` such that `Inseparable x y → f x = f y` to a map
 `SeparationQuotient X → α`. -/

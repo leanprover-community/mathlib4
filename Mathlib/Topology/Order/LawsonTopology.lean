@@ -49,7 +49,7 @@ Lawson topology, preorder
 
 open Set TopologicalSpace
 
-variable {α β : Type*}
+variable {α : Type*}
 
 namespace Topology
 

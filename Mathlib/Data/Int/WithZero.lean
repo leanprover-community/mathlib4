@@ -63,7 +63,9 @@ theorem toNNReal_pos_apply {e : NNReal} (he : e ≠ 0) {x : ℤₘ₀} (hx : x =
 theorem toNNReal_neg_apply {e : NNReal} (he : e ≠ 0) {x : ℤₘ₀} (hx : x ≠ 0) :
     toNNReal he x = e ^ Multiplicative.toAdd (WithZero.unzero hx) := by
   simp only [toNNReal, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
-  split_ifs; tauto; rfl
+  split_ifs
+  · tauto
+  · rfl
 
 /-- `toNNReal` sends nonzero elements to nonzero elements. -/
 theorem toNNReal_ne_zero {e : NNReal} {m : ℤₘ₀} (he : e ≠ 0) (hm : m ≠ 0) : toNNReal he m ≠ 0 := by
