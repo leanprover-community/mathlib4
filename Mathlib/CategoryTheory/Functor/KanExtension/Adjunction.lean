@@ -58,12 +58,22 @@ noncomputable def isPointwiseLeftKanExtensionLanUnit
 
 /-- If a left Kan extension is pointwise, then evaluating it at an object is isomorphic to
 taking a colimit. -/
-noncomputable def lanObjObjIsoColimit
-    (F : C ⥤ H) [HasPointwiseLeftKanExtension L F] (X : D) :
+noncomputable def lanObjObjIsoColimit (F : C ⥤ H) [HasPointwiseLeftKanExtension L F] (X : D) :
     (L.lan.obj F).obj X ≅ Limits.colimit (CostructuredArrow.proj L X ⋙ F) :=
   let e₁ := isPointwiseLeftKanExtensionLanUnit L F
   let e₂ := pointwiseLeftKanExtensionIsPointwiseLeftKanExtension L F
   (Comma.rightIso (LeftExtension.isoOfIsPointwiseLeftKanExtension e₁ e₂)).app X
+
+@[simp]
+lemma lanObjObjIsoColimit_ι_inv
+    (F : C ⥤ H) [HasPointwiseLeftKanExtension L F] (X : D) (f : CostructuredArrow L X) :
+    Limits.colimit.ι _ f ≫ (L.lanObjObjIsoColimit F X).inv =
+    (L.lanUnit.app F).app f.left ≫ (L.lan.obj F).map f.hom := by
+  simp [lanObjObjIsoColimit, LeftExtension.IsPointwiseLeftKanExtension.homFrom,
+    pointwiseLeftKanExtensionIsPointwiseLeftKanExtension]
+
+example (X Y Z : C) (f f' : X ⟶ Y) (g : Z ⟶ X) (h : f = f') : g ≫ f = g ≫ f' := by
+  exact congrArg (CategoryStruct.comp g) h
 
 variable (H) in
 /-- The left Kan extension functor `L.Lan` is left adjoint to the
@@ -173,12 +183,19 @@ noncomputable def isPointwiseRightKanExtensionRanCounit
 
 /-- If a right Kan extension is pointwise, then evaluating it at an object is isomorphic to
 taking a limit. -/
-noncomputable def ranObjObjIsoLimit
-    (F : C ⥤ H) [HasPointwiseRightKanExtension L F] (X : D) :
+noncomputable def ranObjObjIsoLimit (F : C ⥤ H) [HasPointwiseRightKanExtension L F] (X : D) :
     (L.ran.obj F).obj X ≅ Limits.limit (StructuredArrow.proj X L ⋙ F) :=
   let e₁ := isPointwiseRightKanExtensionRanCounit L F
   let e₂ := pointwiseRightKanExtensionIsPointwiseRightKanExtension L F
   (Comma.leftIso (RightExtension.isoOfIsPointwiseRightKanExtension e₁ e₂)).app X
+
+@[simp]
+lemma ranObjObjIsoLimit_hom_π
+    (F : C ⥤ H) [HasPointwiseRightKanExtension L F] (X : D) (f : StructuredArrow X L) :
+    (L.ranObjObjIsoLimit F X).hom ≫ Limits.limit.π _ f=
+    (L.ran.obj F).map f.hom ≫ (L.ranCounit.app F).app f.right := by
+  simp [ranObjObjIsoLimit, RightExtension.IsPointwiseRightKanExtension.homTo,
+    pointwiseRightKanExtensionIsPointwiseRightKanExtension]
 
 variable (H) in
 /-- The right Kan extension functor `L.ran` is right adjoint to the
