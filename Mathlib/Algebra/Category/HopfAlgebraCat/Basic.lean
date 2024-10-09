@@ -58,7 +58,7 @@ lemma of_counit {X : Type v} [Ring X] [HopfAlgebra R X] :
 /-- A type alias for `BialgHom` to avoid confusion between the categorical and
 algebraic spellings of composition. -/
 @[ext]
-structure Hom (V W : HopfAlgebraCat.{v} R) :=
+structure Hom (V W : HopfAlgebraCat.{v} R) where
   /-- The underlying `BialgHom`. -/
   toBialgHom : V →ₐc[R] W
 

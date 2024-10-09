@@ -252,7 +252,7 @@ alias tendsto_pow_atTop_nhds_0_of_abs_lt_1 := tendsto_pow_atTop_nhds_zero_of_abs
 /-- A normed ring has summable geometric series if, for all `ξ` of norm `< 1`, the geometric series
 `∑ ξ ^ n` converges. This holds both in complete normed rings and in normed fields, providing a
 convenient abstraction of these two classes to avoid repeating the same proofs. -/
-class HasSummableGeomSeries (K : Type*) [NormedRing K] : Prop :=
+class HasSummableGeomSeries (K : Type*) [NormedRing K] : Prop where
   summable_geometric_of_norm_lt_one : ∀ (ξ : K), ‖ξ‖ < 1 → Summable (fun n ↦ ξ ^ n)
 
 lemma summable_geometric_of_norm_lt_one {K : Type*} [NormedRing K] [HasSummableGeomSeries K]
