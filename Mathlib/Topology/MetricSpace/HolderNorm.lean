@@ -57,20 +57,20 @@ def MemHolder (r : ℝ≥0) (f : X → Y) : Prop := ∃ C, HolderWith C r f
 
 lemma HolderWith.memHolder {C : ℝ≥0} (hf : HolderWith C r f) : MemHolder r f := ⟨C, hf⟩
 
-@[simp] lemma eHolderNorm_lt_top_iff : eHolderNorm r f < ∞ ↔ MemHolder r f := by
+@[simp] lemma eHolderNorm_lt_top : eHolderNorm r f < ∞ ↔ MemHolder r f := by
   refine ⟨fun h => ?_,
     fun hf => let ⟨C, hC⟩ := hf; iInf_lt_top.2 ⟨C, iInf_lt_top.2 ⟨hC, coe_lt_top⟩⟩⟩
   simp_rw [eHolderNorm, iInf_lt_top] at h
   exact let ⟨C, hC, _⟩ := h; ⟨C, hC⟩
 
-lemma eHolderNorm_ne_top_iff : eHolderNorm r f ≠ ∞ ↔ MemHolder r f := by
-  rw [← eHolderNorm_lt_top_iff, lt_top_iff_ne_top]
+lemma eHolderNorm_ne_top : eHolderNorm r f ≠ ∞ ↔ MemHolder r f := by
+  rw [← eHolderNorm_lt_top, lt_top_iff_ne_top]
 
 @[simp] lemma eHolderNorm_eq_top : eHolderNorm r f = ∞ ↔ ¬ MemHolder r f := by
-  rw [← eHolderNorm_ne_top_iff, not_not]
+  rw [← eHolderNorm_ne_top, not_not]
 
-protected alias ⟨_, MemHolder.eHolderNorm_lt_top⟩ := eHolderNorm_lt_top_iff
-protected alias ⟨_, MemHolder.eHolderNorm_ne_top⟩ := eHolderNorm_ne_top_iff
+protected alias ⟨_, MemHolder.eHolderNorm_lt_top⟩ := eHolderNorm_lt_top
+protected alias ⟨_, MemHolder.eHolderNorm_ne_top⟩ := eHolderNorm_ne_top
 
 variable (X) in
 lemma eHolderNorm_const (r : ℝ≥0) (c : Y) : eHolderNorm r (Function.const X c) = 0 := by
