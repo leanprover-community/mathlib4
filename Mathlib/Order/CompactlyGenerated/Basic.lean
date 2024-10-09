@@ -335,7 +335,7 @@ class IsCompactlyGenerated (α : Type*) [CompleteLattice α] : Prop where
 
 section
 
-variable [IsCompactlyGenerated α] {a b : α} {s : Set α}
+variable [IsCompactlyGenerated α] {a : α} {s : Set α}
 
 @[simp]
 theorem sSup_compact_le_eq (b) :
