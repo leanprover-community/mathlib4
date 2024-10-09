@@ -9,8 +9,11 @@ import Mathlib.Util.Notation3
 
 /-!
 # Quotient types
+
 This module extends the core library's treatment of quotient types (`Init.Core`).
+
 ## Tags
+
 quotient
 -/
 
@@ -18,8 +21,15 @@ variable {α : Sort*} {β : Sort*}
 
 namespace Setoid
 
-theorem ext {α : Sort*} : ∀ {s t : Setoid α},
-    (∀ a b, @Setoid.r α s a b ↔ @Setoid.r α t a b) → s = t
+-- Pretty print `@Setoid.r _ s a b` as `s a b`.
+run_cmd Lean.Elab.Command.liftTermElabM do
+  Lean.Meta.registerCoercion ``Setoid.r
+    (some { numArgs := 2, coercee := 1, type := .coeFun })
+
+instance : CoeFun (Setoid α) (fun _ ↦ α → α → Prop) where
+  coe := @Setoid.r _
+
+theorem ext {α : Sort*} : ∀ {s t : Setoid α}, (∀ a b, s a b ↔ t a b) → s = t
   | ⟨r, _⟩, ⟨p, _⟩, Eq =>
   by have : r = p := funext fun a ↦ funext fun b ↦ propext <| Eq a b
      subst this
