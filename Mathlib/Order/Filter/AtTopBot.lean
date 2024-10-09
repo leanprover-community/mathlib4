@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.Filter.Bases
+import Mathlib.Order.Filter.Prod
 import Mathlib.Order.Interval.Set.Disjoint
 
 /-!
