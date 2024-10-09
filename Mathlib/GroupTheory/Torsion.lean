@@ -350,36 +350,10 @@ variable (G) [CommGroup G]
 /-- Quotienting a group by its torsion subgroup yields a torsion free group. -/
 @[to_additive
 "Quotienting a group by its additive torsion subgroup yields an additive torsion free group."]
-theorem IsTorsionFree.quotient_torsion : IsTorsionFree <| G ⧸ torsion G := fun g hne hfin =>
-  hne <| by
-    induction' g using QuotientGroup.induction_on with g
-    obtain ⟨m, mpos, hm⟩ := hfin.exists_pow_eq_one
-    obtain ⟨n, npos, hn⟩ := ((QuotientGroup.eq_one_iff _).mp hm).exists_pow_eq_one
-    exact
-      (QuotientGroup.eq_one_iff g).mpr
-        (isOfFinOrder_iff_pow_eq_one.mpr ⟨m * n, mul_pos mpos npos, (pow_mul g m n).symm ▸ hn⟩)
+instance IsMulTorsionFree.quotient_torsion : IsMulTorsionFree <| G ⧸ torsion G where
+  eq_one_of_pow_eq_one := by
+    simp_rw [QuotientGroup.mk_surjective.forall, ← QuotientGroup.mk_pow, QuotientGroup.eq_one_iff,
+      CommGroup.mem_torsion]
+    exact fun _ _ ↦ .of_pow
 
 end CommGroup
-end Monoid
-
-namespace AddMonoid
-
-lemma isTorsionFree_iff_noZeroSMulDivisors_nat {M : Type*} [AddMonoid M] :
-    IsTorsionFree M ↔ NoZeroSMulDivisors ℕ M := by
-  simp_rw [AddMonoid.IsTorsionFree, isOfFinAddOrder_iff_nsmul_eq_zero, not_exists, not_and,
-    pos_iff_ne_zero, noZeroSMulDivisors_iff, forall_swap (β := ℕ)]
-  exact forall₂_congr fun _ _ ↦ by tauto
-
-lemma isTorsionFree_iff_noZeroSMulDivisors_int [AddGroup G] :
-    IsTorsionFree G ↔ NoZeroSMulDivisors ℤ G := by
-  simp_rw [AddMonoid.IsTorsionFree, isOfFinAddOrder_iff_zsmul_eq_zero, not_exists, not_and,
-    noZeroSMulDivisors_iff, forall_swap (β := ℤ)]
-  exact forall₂_congr fun _ _ ↦ by tauto
-
-lemma IsTorsionFree.of_noZeroSMulDivisors {M : Type*} [AddMonoid M] [NoZeroSMulDivisors ℕ M] :
-    IsTorsionFree M := isTorsionFree_iff_noZeroSMulDivisors_nat.2 ‹_›
-
-alias ⟨IsTorsionFree.noZeroSMulDivisors_nat, _⟩ := isTorsionFree_iff_noZeroSMulDivisors_nat
-alias ⟨IsTorsionFree.noZeroSMulDivisors_int, _⟩ := isTorsionFree_iff_noZeroSMulDivisors_int
-
-end AddMonoid

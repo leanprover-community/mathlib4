@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Hom.End
+import Mathlib.Algebra.Group.IsTorsionFree.Basic
 import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Ring.Invertible
 import Mathlib.Algebra.Ring.Opposite
@@ -441,11 +442,27 @@ theorem Function.Injective.noZeroSMulDivisors {R M N : Type*} [Zero R] [Zero M] 
 -- See note [lower instance priority]
 instance (priority := 100) NoZeroDivisors.toNoZeroSMulDivisors [Zero R] [Mul R]
     [NoZeroDivisors R] : NoZeroSMulDivisors R R :=
-  ⟨fun {_ _} => eq_zero_or_eq_zero_of_mul_eq_zero⟩
+  ⟨eq_zero_or_eq_zero_of_mul_eq_zero⟩
 
 theorem smul_ne_zero [Zero R] [Zero M] [SMul R M] [NoZeroSMulDivisors R M] {c : R} {x : M}
     (hc : c ≠ 0) (hx : x ≠ 0) : c • x ≠ 0 := fun h =>
   (eq_zero_or_eq_zero_of_smul_eq_zero h).elim hc hx
+
+instance (priority := 200) [AddMonoid M] [IsAddTorsionFree M] : NoZeroSMulDivisors ℕ M where
+  eq_zero_or_eq_zero_of_smul_eq_zero h := (nsmul_eq_zero_iff.mp h).symm
+
+instance (priority := 100) [AddMonoid M] [NoZeroSMulDivisors ℕ M] : IsAddTorsionFree M where
+  eq_zero_of_nsmul_eq_zero _ _ h := (eq_zero_or_eq_zero_of_smul_eq_zero h).resolve_left
+
+instance (priority := 200) {G : Type*} [AddGroup G] [IsAddTorsionFree G] :
+    NoZeroSMulDivisors ℤ G where
+  eq_zero_or_eq_zero_of_smul_eq_zero h := (zsmul_eq_zero_iff.mp h).symm
+
+instance (priority := 100) {G : Type*} [AddGroup G] [NoZeroSMulDivisors ℤ G] :
+    IsAddTorsionFree G where
+  eq_zero_of_nsmul_eq_zero a n h hn :=
+    have : (n : ℤ) = 0 ∨ a = 0 := eq_zero_or_eq_zero_of_smul_eq_zero (mod_cast h)
+    this.resolve_left (mod_cast hn)
 
 section SMulWithZero
 
