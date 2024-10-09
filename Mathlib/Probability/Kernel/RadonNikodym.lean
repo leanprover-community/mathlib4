@@ -402,6 +402,8 @@ lemma rnDeriv_add_singularPart (κ η : Kernel α γ) [IsFiniteKernel κ] [IsFin
     zero_add, withDensity_rnDeriv_of_subset_compl_mutuallySingularSetSlice (hs.diff hm)
       (diff_subset_iff.mpr (by simp)), add_comm]
 
+section EqZeroIff
+
 lemma singularPart_eq_zero_iff_apply_eq_zero (κ η : Kernel α γ) [IsFiniteKernel κ]
     [IsFiniteKernel η] (a : α) :
     singularPart κ η a = 0 ↔ singularPart κ η a (mutuallySingularSetSlice κ η a) = 0 := by
@@ -466,6 +468,8 @@ lemma withDensity_rnDeriv_eq_zero_iff_measure_eq_zero (κ η : Kernel α γ)
   rw [← h_eq_add]
   exact withDensity_rnDeriv_eq_zero_iff_apply_eq_zero κ η a
 
+end EqZeroIff
+
 /-- The set of points `a : α` such that `κ a ≪ η a` is measurable. -/
 @[measurability]
 lemma measurableSet_absolutelyContinuous (κ η : Kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel η] :
@@ -483,5 +487,52 @@ lemma measurableSet_mutuallySingular (κ η : Kernel α γ) [IsFiniteKernel κ] 
     withDensity_rnDeriv_eq_zero_iff_measure_eq_zero]
   exact measurable_kernel_prod_mk_left (measurableSet_mutuallySingularSet κ η).compl
     (measurableSet_singleton 0)
+
+@[simp]
+lemma singularPart_self (κ : Kernel α γ) [IsFiniteKernel κ] : κ.singularPart κ = 0 := by
+  ext : 1; rw [zero_apply, singularPart_eq_zero_iff_absolutelyContinuous]
+
+section Unique
+
+variable {ξ : Kernel α γ} {f : α → γ → ℝ≥0∞}
+
+omit hαγ in
+lemma eq_rnDeriv_measure [IsFiniteKernel η] (h : κ = η.withDensity f + ξ)
+    (hf : Measurable (Function.uncurry f)) (hξ : ∀ a, ξ a ⟂ₘ η a) (a : α) :
+    f a =ᵐ[η a] ∂(κ a)/∂(η a) := by
+  have : κ a = ξ a + (η a).withDensity (f a) := by
+    rw [h, coe_add, Pi.add_apply, η.withDensity_apply hf, add_comm]
+  exact (κ a).eq_rnDeriv₀ (hf.comp measurable_prod_mk_left).aemeasurable (hξ a) this
+
+omit hαγ in
+lemma eq_singularPart_measure [IsFiniteKernel η]
+    (h : κ = η.withDensity f + ξ)
+    (hf : Measurable (Function.uncurry f)) (hξ : ∀ a, ξ a ⟂ₘ η a) (a : α) :
+    ξ a = (κ a).singularPart (η a) := by
+  have : κ a = ξ a + (η a).withDensity (f a) := by
+    rw [h, coe_add, Pi.add_apply, η.withDensity_apply hf, add_comm]
+  exact (κ a).eq_singularPart (hf.comp measurable_prod_mk_left) (hξ a) this
+
+lemma rnDeriv_eq_rnDeriv_measure (κ ν : Kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel ν] (a : α) :
+    rnDeriv κ ν a =ᵐ[ν a] ∂(κ a)/∂(ν a) :=
+  eq_rnDeriv_measure (rnDeriv_add_singularPart κ ν).symm (measurable_rnDeriv κ ν)
+    (mutuallySingular_singularPart κ ν) a
+
+lemma singularPart_eq_singularPart_measure [IsFiniteKernel κ] [IsFiniteKernel η] (a : α) :
+    singularPart κ η a = (κ a).singularPart (η a) :=
+  eq_singularPart_measure (rnDeriv_add_singularPart κ η).symm (measurable_rnDeriv κ η)
+    (mutuallySingular_singularPart κ η) a
+
+lemma eq_rnDeriv [IsFiniteKernel κ] [IsFiniteKernel η] (h : κ = η.withDensity f + ξ)
+    (hf : Measurable (Function.uncurry f)) (hξ : ∀ a, ξ a ⟂ₘ η a) (a : α) :
+    f a =ᵐ[η a] rnDeriv κ η a :=
+  (eq_rnDeriv_measure h hf hξ a).trans (rnDeriv_eq_rnDeriv_measure _ _ a).symm
+
+lemma eq_singularPart [IsFiniteKernel κ] [IsFiniteKernel η] (h : κ = η.withDensity f + ξ)
+    (hf : Measurable (Function.uncurry f)) (hξ : ∀ a, ξ a ⟂ₘ η a) (a : α) :
+    ξ a = singularPart κ η a :=
+  (eq_singularPart_measure h hf hξ a).trans (singularPart_eq_singularPart_measure a).symm
+
+end Unique
 
 end ProbabilityTheory.Kernel
