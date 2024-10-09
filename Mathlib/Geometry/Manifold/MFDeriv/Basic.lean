@@ -44,7 +44,7 @@ variable
 theorem uniqueMDiffWithinAt_univ : UniqueMDiffWithinAt I univ x := by
   unfold UniqueMDiffWithinAt
   simp only [preimage_univ, univ_inter]
-  exact I.unique_diff _ (mem_range_self _)
+  exact I.uniqueDiffOn _ (mem_range_self _)
 
 variable {I}
 
@@ -277,7 +277,7 @@ theorem UniqueMDiffOn.eq (U : UniqueMDiffOn I s) (hx : x ∈ s) (h : HasMFDerivW
 /-!
 ### General lemmas on derivatives of functions between manifolds
 
-We mimick the API for functions between vector spaces
+We mimic the API for functions between vector spaces
 -/
 
 /-- One can reformulate differentiability within a set at a point as continuity within this set at

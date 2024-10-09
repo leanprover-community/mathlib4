@@ -44,7 +44,7 @@ private lemma edgeDensity_badVertices_le (hε : 0 ≤ ε) (dst : 2 * ε ≤ G.ed
     G.edgeDensity (badVertices G ε s t) t ≤ G.edgeDensity s t - ε := by
   rw [edgeDensity_def]
   push_cast
-  refine div_le_of_nonneg_of_le_mul (by positivity) (sub_nonneg_of_le <| by linarith) ?_
+  refine div_le_of_le_mul₀ (by positivity) (sub_nonneg_of_le <| by linarith) ?_
   rw [mul_comm]
   exact G.card_interedges_badVertices_le
 
@@ -89,7 +89,7 @@ private lemma good_vertices_triangle_card [DecidableEq α] (dst : 2 * ε ≤ G.e
   rw [edgeDensity_def] at this
   push_cast at this
   have hε := utu.pos.le
-  refine le_trans ?_ (mul_le_of_nonneg_of_le_div (Nat.cast_nonneg _) (by positivity) this)
+  refine le_trans ?_ (mul_le_of_le_div₀ (Nat.cast_nonneg _) (by positivity) this)
   refine Eq.trans_le ?_
     (mul_le_mul_of_nonneg_left (mul_le_mul hY hZ (by positivity) (by positivity)) hε)
   ring

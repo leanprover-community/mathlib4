@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tim Baumann, Stephen Morgan, Scott Morrison, Floris van Doorn
+Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
 import Mathlib.Tactic.CategoryTheory.Reassoc
 
@@ -332,7 +332,7 @@ instance id (X : C) : IsIso (𝟙 X) := ⟨⟨𝟙 X, by simp⟩⟩
 @[deprecated (since := "2024-05-15")] alias of_iso := CategoryTheory.Iso.isIso_hom
 @[deprecated (since := "2024-05-15")] alias of_iso_inv := CategoryTheory.Iso.isIso_inv
 
-variable {f g : X ⟶ Y} {h : Y ⟶ Z}
+variable {f : X ⟶ Y} {h : Y ⟶ Z}
 
 instance inv_isIso [IsIso f] : IsIso (inv f) :=
   (asIso f).isIso_inv
@@ -355,7 +355,7 @@ theorem inv_id : inv (𝟙 X) = 𝟙 X := by
   apply inv_eq_of_hom_inv_id
   simp
 
-@[simp]
+@[simp, reassoc]
 theorem inv_comp [IsIso f] [IsIso h] : inv (f ≫ h) = inv h ≫ inv f := by
   apply inv_eq_of_hom_inv_id
   simp
@@ -509,7 +509,7 @@ theorem cancel_iso_inv_right_assoc {W X X' Y Z : C} (f : W ⟶ X) (g : X ⟶ Y) 
 
 section
 
-variable {D E : Type*} [Category D] [Category E] {X Y : C} (e : X ≅ Y)
+variable {D : Type*} [Category D] {X Y : C} (e : X ≅ Y)
 
 @[reassoc (attr := simp)]
 lemma map_hom_inv_id (F : C ⥤ D) :

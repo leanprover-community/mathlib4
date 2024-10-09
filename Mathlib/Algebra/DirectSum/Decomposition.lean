@@ -57,8 +57,8 @@ class Decomposition where
 /-- `DirectSum.Decomposition` instances, while carrying data, are always equal. -/
 instance : Subsingleton (Decomposition ℳ) :=
   ⟨fun x y ↦ by
-    cases' x with x xl xr
-    cases' y with y yl yr
+    obtain ⟨_, _, xr⟩ := x
+    obtain ⟨_, yl, _⟩ := y
     congr
     exact Function.LeftInverse.eq_rightInverse xr yl⟩
 

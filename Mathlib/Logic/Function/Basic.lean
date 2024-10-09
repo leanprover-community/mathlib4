@@ -3,9 +3,9 @@ Copyright (c) 2016 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Init.Algebra.Classes
 import Mathlib.Data.Set.Defs
 import Mathlib.Logic.Basic
+import Mathlib.Logic.ExistsUnique
 import Mathlib.Logic.Nonempty
 import Batteries.Tactic.Init
 
@@ -118,10 +118,15 @@ theorem Injective.of_comp_iff' (f : α → β) {g : γ → α} (hg : Bijective g
     Injective (f ∘ g) ↔ Injective f :=
   ⟨fun I ↦ I.of_comp_right hg.2, fun h ↦ h.comp hg.injective⟩
 
+theorem Injective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i → β i}
+    (hf : ∀ i, Injective (f i)) : Injective (Pi.map f) := fun _ _ h ↦
+  funext fun i ↦ hf i <| congrFun h _
+
+@[deprecated (since := "2024-10-06")] alias injective_pi_map := Injective.piMap
+
 /-- Composition by an injective function on the left is itself injective. -/
-theorem Injective.comp_left {g : β → γ} (hg : Function.Injective g) :
-    Function.Injective (g ∘ · : (α → β) → α → γ) :=
-  fun _ _ hgf ↦ funext fun i ↦ hg <| (congr_fun hgf i : _)
+theorem Injective.comp_left {g : β → γ} (hg : Injective g) : Injective (g ∘ · : (α → β) → α → γ) :=
+  .piMap fun _ ↦ hg
 
 theorem injective_of_subsingleton [Subsingleton α] (f : α → β) : Injective f :=
   fun _ _ _ ↦ Subsingleton.elim _ _
@@ -329,7 +334,7 @@ theorem LeftInverse.eq_rightInverse {f : α → β} {g₁ g₂ : β → α} (h�
     (h₂ : RightInverse g₂ f) : g₁ = g₂ :=
   calc
     g₁ = g₁ ∘ f ∘ g₂ := by rw [h₂.comp_eq_id, comp_id]
-     _ = g₂ := by rw [← comp.assoc, h₁.comp_eq_id, id_comp]
+     _ = g₂ := by rw [← comp_assoc, h₁.comp_eq_id, id_comp]
 
 attribute [local instance] Classical.propDecidable
 
@@ -359,7 +364,7 @@ end
 
 section InvFun
 
-variable {α β : Sort*} [Nonempty α] {f : α → β} {a : α} {b : β}
+variable {α β : Sort*} [Nonempty α] {f : α → β} {b : β}
 
 attribute [local instance] Classical.propDecidable
 
@@ -442,10 +447,22 @@ theorem surjective_to_subsingleton [na : Nonempty α] [Subsingleton β] (f : α 
     Surjective f :=
   fun _ ↦ let ⟨a⟩ := na; ⟨a, Subsingleton.elim _ _⟩
 
+theorem Surjective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i → β i}
+    (hf : ∀ i, Surjective (f i)) : Surjective (Pi.map f) := fun g ↦
+  ⟨fun i ↦ surjInv (hf i) (g i), funext fun _ ↦ rightInverse_surjInv _ _⟩
+
+@[deprecated (since := "2024-10-06")] alias surjective_pi_map := Surjective.piMap
+
 /-- Composition by a surjective function on the left is itself surjective. -/
 theorem Surjective.comp_left {g : β → γ} (hg : Surjective g) :
-    Surjective (g ∘ · : (α → β) → α → γ) := fun f ↦
-  ⟨surjInv hg ∘ f, funext fun _ ↦ rightInverse_surjInv _ _⟩
+    Surjective (g ∘ · : (α → β) → α → γ) :=
+  .piMap fun _ ↦ hg
+
+theorem Bijective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i → β i}
+    (hf : ∀ i, Bijective (f i)) : Bijective (Pi.map f) :=
+  ⟨.piMap fun i ↦ (hf i).1, .piMap fun i ↦ (hf i).2⟩
+
+@[deprecated (since := "2024-10-06")] alias bijective_pi_map := Bijective.piMap
 
 /-- Composition by a bijective function on the left is itself bijective. -/
 theorem Bijective.comp_left {g : β → γ} (hg : Bijective g) :
@@ -457,7 +474,7 @@ end SurjInv
 section Update
 
 variable {α : Sort u} {β : α → Sort v} {α' : Sort w} [DecidableEq α]
-  {f g : (a : α) → β a} {a : α} {b : β a}
+  {f : (a : α) → β a} {a : α} {b : β a}
 
 
 /-- Replacing the value of a function at a given point by a given value. -/
@@ -654,6 +671,10 @@ lemma FactorsThrough.extend_comp {g : α → γ} (e' : β → γ) (hf : FactorsT
   funext fun a => hf.extend_apply e' a
 
 @[simp]
+lemma extend_const (f : α → β) (c : γ) : extend f (fun _ ↦ c) (fun _ ↦ c) = fun _ ↦ c :=
+  funext fun _ ↦ ite_id _
+
+@[simp]
 theorem extend_comp (hf : Injective f) (g : α → γ) (e' : β → γ) : extend f g e' ∘ f = g :=
   funext fun a ↦ hf.extend_apply g e' a
 
@@ -668,7 +689,7 @@ theorem Injective.surjective_comp_right [Nonempty γ] (hf : Injective f) :
 theorem Bijective.comp_right (hf : Bijective f) : Bijective fun g : β → γ ↦ g ∘ f :=
   ⟨hf.surjective.injective_comp_right, fun g ↦
     ⟨g ∘ surjInv hf.surjective,
-     by simp only [comp.assoc g _ f, (leftInverse_surjInv hf).comp_eq_id, comp_id]⟩⟩
+     by simp only [comp_assoc g _ f, (leftInverse_surjInv hf).comp_eq_id, comp_id]⟩⟩
 
 end Extend
 
@@ -932,7 +953,7 @@ theorem Function.LeftInverse.eq_rec_eq {γ : β → Sort v} {f : α → β} {g :
     (h : Function.LeftInverse g f) (C : ∀ a : α, γ (f a)) (a : α) :
     -- TODO: mathlib3 uses `(congr_arg f (h a)).rec (C (g (f a)))` for LHS
     @Eq.rec β (f (g (f a))) (fun x _ ↦ γ x) (C (g (f a))) (f a) (congr_arg f (h a)) = C a :=
-  eq_of_heq <| (eq_rec_heq _ _).trans <| by rw [h]
+  eq_of_heq <| (eqRec_heq _ _).trans <| by rw [h]
 
 theorem Function.LeftInverse.eq_rec_on_eq {γ : β → Sort v} {f : α → β} {g : β → α}
     (h : Function.LeftInverse g f) (C : ∀ a : α, γ (f a)) (a : α) :
@@ -950,12 +971,9 @@ if for each pair of distinct points there is a function taking different values 
 def Set.SeparatesPoints {α β : Type*} (A : Set (α → β)) : Prop :=
   ∀ ⦃x y : α⦄, x ≠ y → ∃ f ∈ A, (f x : β) ≠ f y
 
-theorem IsSymmOp.flip_eq (op) [IsSymmOp α β op] : flip op = op :=
-  funext fun a ↦ funext fun b ↦ (IsSymmOp.symm_op a b).symm
-
 theorem InvImage.equivalence {α : Sort u} {β : Sort v} (r : β → β → Prop) (f : α → β)
     (h : Equivalence r) : Equivalence (InvImage r f) :=
-  ⟨fun _ ↦ h.1 _, fun w ↦ h.symm w, fun h₁ h₂ ↦ InvImage.trans r f (fun _ _ _ ↦ h.trans) h₁ h₂⟩
+  ⟨fun _ ↦ h.1 _, h.symm, h.trans⟩
 
 instance {α β : Type*} {r : α → β → Prop} {x : α × β} [Decidable (r x.1 x.2)] :
   Decidable (uncurry r x) :=

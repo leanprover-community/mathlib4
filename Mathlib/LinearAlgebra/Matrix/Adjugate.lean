@@ -158,7 +158,7 @@ theorem cramer_submatrix_equiv (A : Matrix m m α) (e : n ≃ m) (b : n → α) 
     cramer (A.submatrix e e) b = cramer A (b ∘ e.symm) ∘ e := by
   ext i
   simp_rw [Function.comp_apply, cramer_apply, updateColumn_submatrix_equiv,
-    det_submatrix_equiv_self e, Function.comp]
+    det_submatrix_equiv_self e, Function.comp_def]
 
 theorem cramer_reindex (e : m ≃ n) (A : Matrix m m α) (b : n → α) :
     cramer (reindex e e A) b = cramer A (b ∘ e) ∘ e.symm :=
@@ -495,8 +495,8 @@ theorem adjugate_adjugate (A : Matrix n n α) (h : Fintype.card n ≠ 1) :
   let A' := mvPolynomialX n n ℤ
   suffices adjugate (adjugate A') = det A' ^ (Fintype.card n - 2) • A' by
     rw [← mvPolynomialX_mapMatrix_aeval ℤ A, ← AlgHom.map_adjugate, ← AlgHom.map_adjugate, this,
-      ← AlgHom.map_det, ← map_pow (MvPolynomial.aeval _), AlgHom.mapMatrix_apply,
-      AlgHom.mapMatrix_apply, Matrix.map_smul' _ _ _ (_root_.map_mul _)]
+      ← AlgHom.map_det, ← map_pow (MvPolynomial.aeval fun p : n × n ↦ A p.1 p.2),
+      AlgHom.mapMatrix_apply, AlgHom.mapMatrix_apply, Matrix.map_smul' _ _ _ (_root_.map_mul _)]
   have h_card' : Fintype.card n - 2 + 1 = Fintype.card n - 1 := by simp [h_card]
   have is_reg : IsSMulRegular (MvPolynomial (n × n) ℤ) (det A') := fun x y =>
     mul_left_cancel₀ (det_mvPolynomialX_ne_zero n ℤ)

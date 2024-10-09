@@ -3,6 +3,7 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Algebra.Group.Indicator
 import Mathlib.Topology.Constructions
 
 /-!
@@ -53,11 +54,19 @@ theorem mem_closure_ne_iff_frequently_within {z : α} {s : Set α} :
   simp [mem_closure_iff_frequently, frequently_nhdsWithin_iff]
 
 @[simp]
-theorem eventually_nhdsWithin_nhdsWithin {a : α} {s : Set α} {p : α → Prop} :
+theorem eventually_eventually_nhdsWithin {a : α} {s : Set α} {p : α → Prop} :
     (∀ᶠ y in 𝓝[s] a, ∀ᶠ x in 𝓝[s] y, p x) ↔ ∀ᶠ x in 𝓝[s] a, p x := by
   refine ⟨fun h => ?_, fun h => (eventually_nhds_nhdsWithin.2 h).filter_mono inf_le_left⟩
   simp only [eventually_nhdsWithin_iff] at h ⊢
   exact h.mono fun x hx hxs => (hx hxs).self_of_nhds hxs
+
+@[deprecated (since := "2024-10-04")]
+alias eventually_nhdsWithin_nhdsWithin := eventually_eventually_nhdsWithin
+
+@[simp]
+theorem eventually_mem_nhdsWithin_iff {x : α} {s t : Set α} :
+    (∀ᶠ x' in 𝓝[s] x, t ∈ 𝓝[s] x') ↔ t ∈ 𝓝[s] x :=
+  eventually_eventually_nhdsWithin
 
 theorem nhdsWithin_eq (a : α) (s : Set α) :
     𝓝[s] a = ⨅ t ∈ { t : Set α | a ∈ t ∧ IsOpen t }, 𝓟 (t ∩ s) :=
@@ -608,7 +617,7 @@ theorem continuous_of_cover_nhds {ι : Sort*} {f : α → β} {s : ι → Set α
     rw [ContinuousAt, ← nhdsWithin_eq_nhds.2 hi]
     exact hf _ _ (mem_of_mem_nhds hi)
 
-theorem continuousOn_empty (f : α → β) : ContinuousOn f ∅ := fun _ => False.elim
+@[simp] theorem continuousOn_empty (f : α → β) : ContinuousOn f ∅ := fun _ => False.elim
 
 @[simp]
 theorem continuousOn_singleton (f : α → β) (a : α) : ContinuousOn f {a} :=
@@ -684,8 +693,7 @@ theorem continuousWithinAt_singleton {f : α → β} {x : α} : ContinuousWithin
 @[simp]
 theorem continuousWithinAt_insert_self {f : α → β} {x : α} {s : Set α} :
     ContinuousWithinAt f (insert x s) x ↔ ContinuousWithinAt f s x := by
-  simp only [← singleton_union, continuousWithinAt_union, continuousWithinAt_singleton,
-    true_and_iff]
+  simp only [← singleton_union, continuousWithinAt_union, continuousWithinAt_singleton, true_and]
 
 alias ⟨_, ContinuousWithinAt.insert_self⟩ := continuousWithinAt_insert_self
 
@@ -1138,7 +1146,8 @@ theorem IsOpen.ite' {s s' t : Set α} (hs : IsOpen s) (hs' : IsOpen s')
     (ht : ∀ x ∈ frontier t, x ∈ s ↔ x ∈ s') : IsOpen (t.ite s s') := by
   classical
     simp only [isOpen_iff_continuous_mem, Set.ite] at *
-    convert continuous_piecewise (fun x hx => propext (ht x hx)) hs.continuousOn hs'.continuousOn
+    convert
+      continuous_piecewise (fun x hx => propext (ht x hx)) hs.continuousOn hs'.continuousOn using 2
     rename_i x
     by_cases hx : x ∈ t <;> simp [hx]
 

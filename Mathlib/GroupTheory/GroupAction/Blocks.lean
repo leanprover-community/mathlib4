@@ -8,6 +8,7 @@ import Mathlib.Data.Setoid.Partition
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.Pointwise
 import Mathlib.GroupTheory.GroupAction.SubMulAction
+import Mathlib.Algebra.Group.Subgroup.Actions
 
 /-! # Blocks
 
@@ -135,7 +136,8 @@ theorem IsBlock.def_one {B : Set X} :
     rw [Set.disjoint_iff] at h ⊢
     rintro x hx
     suffices g'⁻¹ • x ∈ (g'⁻¹ * g) • B ∩ B by apply h this
-    simp only [Set.mem_inter_iff, ← Set.mem_smul_set_iff_inv_smul_mem, ← smul_smul, smul_inv_smul]
+    rw [Set.mem_inter_iff]
+    simp only [← smul_smul, ← Set.mem_smul_set_iff_inv_smul_mem, smul_inv_smul]
     exact hx
 
 theorem IsBlock.mk_notempty_one {B : Set X} :
@@ -356,11 +358,11 @@ lemma smul_orbit_eq_orbit_smul (N : Subgroup G) [nN : N.Normal] (a : X) (g : G) 
   constructor
   · rintro ⟨⟨k, hk⟩, rfl⟩
     use ⟨g * k * g⁻¹, nN.conj_mem k hk g⟩
-    simp only [Submonoid.mk_smul]
+    simp only [Subgroup.mk_smul]
     rw [smul_smul, inv_mul_cancel_right, ← smul_smul]
   · rintro ⟨⟨k, hk⟩, rfl⟩
     use ⟨g⁻¹ * k * g, nN.conj_mem' k hk g⟩
-    simp only [Submonoid.mk_smul]
+    simp only [Subgroup.mk_smul]
     simp only [← mul_assoc, ← smul_smul, smul_inv_smul, inv_inv]
 
 /-- An orbit of a normal subgroup is a block -/
@@ -396,7 +398,7 @@ theorem IsBlock.of_orbit {H : Subgroup G} {a : X} (hH : stabilizer G a ≤ H) :
   simp_rw [IsBlock.def_one, or_iff_not_imp_right, Set.not_disjoint_iff]
   rintro g ⟨-, ⟨-, ⟨h₁, rfl⟩, h⟩, ⟨h₂, rfl⟩⟩
   suffices g ∈ H by
-    rw [← Subgroup.coe_mk H g this, ← H.smul_def, smul_orbit (⟨g, this⟩ : H) a]
+    rw [← Subgroup.coe_mk H g this, ← H.toSubmonoid.smul_def, smul_orbit (⟨g, this⟩ : H) a]
   rw [← mul_mem_cancel_left h₂⁻¹.2, ← mul_mem_cancel_right h₁.2]
   apply hH
   simp only [mem_stabilizer_iff, InvMemClass.coe_inv, mul_smul, inv_smul_eq_iff]
@@ -419,7 +421,7 @@ theorem IsBlock.orbit_stabilizer_eq
   ext x
   constructor
   · rintro ⟨⟨k, k_mem⟩, rfl⟩
-    simp only [Submonoid.mk_smul]
+    simp only [Subgroup.mk_smul]
     rw [← k_mem, Set.smul_mem_smul_set_iff]
     exact ha
   · intro hx
@@ -434,11 +436,11 @@ theorem stabilizer_orbit_eq {a : X} {H : Subgroup G} (hH : stabilizer G a ≤ H)
   constructor
   · intro hg
     obtain ⟨-, ⟨b, rfl⟩, h⟩ := hg.symm ▸ mem_orbit_self a
-    simp_rw [H.smul_def, ← mul_smul, ← mem_stabilizer_iff] at h
+    simp_rw [H.toSubmonoid.smul_def, ← mul_smul, ← mem_stabilizer_iff] at h
     exact (mul_mem_cancel_right b.2).mp (hH h)
   · intro hg
-    rw [mem_stabilizer_iff, ← Subgroup.coe_mk H g hg, ← Submonoid.smul_def]
-    apply smul_orbit
+    rw [mem_stabilizer_iff, ← Subgroup.coe_mk H g hg, ← Submonoid.smul_def (S := H.toSubmonoid)]
+    apply smul_orbit (G := H)
 
 variable (G)
 

@@ -247,6 +247,8 @@ noncomputable def coequalizer : LocallyRingedSpace where
   localRing x := by
     obtain ⟨y, rfl⟩ :=
       (TopCat.epi_iff_surjective (coequalizer.π f.val g.val).base).mp inferInstance x
+    -- TODO: this instance was found automatically before #6045
+    have _ : IsLocalRingHom ((coequalizer.π f.val g.val).stalkMap y) := inferInstance
     exact ((coequalizer.π f.val g.val : _).stalkMap y).domain_localRing
 
 /-- The explicit coequalizer cofork of locally ringed spaces. -/
@@ -275,9 +277,12 @@ noncomputable def coequalizerCoforkIsColimit : IsColimit (coequalizerCofork f g)
     -- but this is no longer possible
     set h := _
     change IsLocalRingHom h
-    suffices IsLocalRingHom (((coequalizerCofork f g).π.val.stalkMap _).comp h) from
-      isLocalRingHom_of_comp _ ((coequalizerCofork f g).π.val.stalkMap _)
-    change IsLocalRingHom (_ ≫ (coequalizerCofork f g).π.val.stalkMap y)
+    suffices _ : IsLocalRingHom (((coequalizerCofork f g).π.1.stalkMap _).comp h) by
+      apply isLocalRingHom_of_comp _ ((coequalizerCofork f g).π.1.stalkMap _)
+    -- note to reviewers: this `change` is now more brittle because it now has to fully resolve
+    -- the type to be able to search for `MonoidHomClass`, even though of course all homs in
+    -- `CommRingCat` are clearly such
+    change IsLocalRingHom (h ≫ (coequalizerCofork f g).π.val.stalkMap y)
     erw [← PresheafedSpace.stalkMap.comp]
     apply isLocalRingHom_stalkMap_congr _ _ (coequalizer.π_desc s.π.1 e).symm y
     infer_instance

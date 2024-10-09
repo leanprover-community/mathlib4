@@ -20,10 +20,11 @@ final can be restated. We show:
   if `StructuredArrow d F` is connected for all `d : D`.
 * Under categories of objects of filtered categories are filtered and their forgetful functors
   are final.
-
-Additionally, we show that if `D` is a filtered category and `F : C ⥤ D` is fully faithful and
-satisfies the additional condition that for every `d : D` there is an object `c : D` and a morphism
-`d ⟶ F.obj c`, then `C` is filtered and `F` is final.
+* If `D` is a filtered category and `F : C ⥤ D` is fully faithful and satisfies the additional
+  condition that for every `d : D` there is an object `c : D` and a morphism `d ⟶ F.obj c`, then
+  `C` is filtered and `F` is final.
+* Finality and initiality of diagonal functors `diag : C ⥤ C × C` and of projection functors
+  of (co)structured arrow categories.
 
 ## References
 
@@ -264,11 +265,36 @@ theorem Functor.initial_iff_isCofiltered_costructuredArrow [IsCofilteredOrEmpty 
   rw [initial_iff_of_isCofiltered]
   exact fun h => isCofiltered_costructuredArrow_of_isCofiltered_of_exists F h.1 h.2
 
+/-- If `C` is filtered, then the structured arrow category on the diagonal functor `C ⥤ C × C`
+is filtered as well. -/
+instance [IsFiltered C] (X : C × C) : IsFiltered (StructuredArrow X (diag C)) := by
+  haveI : ∀ Y, IsFiltered (StructuredArrow Y (Under.forget X.1)) := by
+    rw [← final_iff_isFiltered_structuredArrow (Under.forget X.1)]
+    infer_instance
+  apply IsFiltered.of_equivalence (StructuredArrow.ofDiagEquivalence X).symm
+
+/-- The diagonal functor on any filtered category is final. -/
+instance Functor.final_diag_of_isFiltered [IsFiltered C] : Final (Functor.diag C) :=
+  final_of_isFiltered_structuredArrow _
+
+/-- If `C` is cofiltered, then the costructured arrow category on the diagonal functor `C ⥤ C × C`
+is cofiltered as well. -/
+instance [IsCofiltered C] (X : C × C) : IsCofiltered (CostructuredArrow (diag C) X) := by
+  haveI : ∀ Y, IsCofiltered (CostructuredArrow (Over.forget X.1) Y) := by
+    rw [← initial_iff_isCofiltered_costructuredArrow (Over.forget X.1)]
+    infer_instance
+  apply IsCofiltered.of_equivalence (CostructuredArrow.ofDiagEquivalence X).symm
+
+/-- The diagonal functor on any cofiltered category is initial. -/
+instance Functor.initial_diag_of_isFiltered [IsCofiltered C] : Initial (Functor.diag C) :=
+  initial_of_isCofiltered_costructuredArrow _
+
 end LocallySmall
 
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+
 /-- If `C` is filtered, then every functor `F : C ⥤ Discrete PUnit` is final. -/
-theorem Functor.final_of_isFiltered_of_pUnit {C : Type u₁} [Category.{v₁} C]
-    [IsFiltered C] (F : C ⥤ Discrete PUnit) :
+theorem Functor.final_of_isFiltered_of_pUnit [IsFiltered C] (F : C ⥤ Discrete PUnit) :
     Final F := by
   refine final_of_exists_of_isFiltered F (fun _ => ?_) (fun {_} {c} _ _ => ?_)
   · use Classical.choice IsFiltered.nonempty
@@ -277,13 +303,28 @@ theorem Functor.final_of_isFiltered_of_pUnit {C : Type u₁} [Category.{v₁} C]
     apply Subsingleton.elim
 
 /-- If `C` is cofiltered, then every functor `F : C ⥤ Discrete PUnit` is initial. -/
-theorem Functor.initial_of_isCofiltered_pUnit {C : Type u₁} [Category.{v₁} C]
-    [IsCofiltered C] (F : C ⥤ Discrete PUnit) :
+theorem Functor.initial_of_isCofiltered_pUnit [IsCofiltered C] (F : C ⥤ Discrete PUnit) :
     Initial F := by
   refine initial_of_exists_of_isCofiltered F (fun _ => ?_) (fun {_} {c} _ _ => ?_)
   · use Classical.choice IsCofiltered.nonempty
     exact ⟨Discrete.eqToHom (by simp)⟩
   · use c; use 𝟙 c
     apply Subsingleton.elim
+
+/-- The functor `StructuredArrow.proj : StructuredArrow Y T ⥤ C` is final if `T : C ⥤ D` is final
+and `C` is filtered. -/
+instance StructuredArrow.final_proj_of_isFiltered [IsFilteredOrEmpty C]
+    (T : C ⥤ D) [Final T] (Y : D) : Final (StructuredArrow.proj Y T) := by
+  refine ⟨fun X => ?_⟩
+  rw [isConnected_iff_of_equivalence (ofStructuredArrowProjEquivalence T Y X)]
+  exact (final_comp (Under.forget X) T).out _
+
+/-- The functor `CostructuredArrow.proj : CostructuredArrow Y T ⥤ C` is initial if `T : C ⥤ D` is
+initial and `C` is cofiltered. -/
+instance CostructuredArrow.initial_proj_of_isCofiltered [IsCofilteredOrEmpty C]
+    (T : C ⥤ D) [Initial T] (Y : D) : Initial (CostructuredArrow.proj T Y) := by
+  refine ⟨fun X => ?_⟩
+  rw [isConnected_iff_of_equivalence (ofCostructuredArrowProjEquivalence T Y X)]
+  exact (initial_comp (Over.forget X) T).out _
 
 end CategoryTheory
