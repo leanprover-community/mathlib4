@@ -21,6 +21,7 @@ variable {α : Sort*} {β : Sort*}
 
 namespace Setoid
 
+-- Pretty print `@Setoid.r _ s a b` as `s a b`.
 run_cmd Lean.Elab.Command.liftTermElabM do
   Lean.Meta.registerCoercion ``Setoid.r
     (some { numArgs := 2, coercee := 1, type := .coeFun })
