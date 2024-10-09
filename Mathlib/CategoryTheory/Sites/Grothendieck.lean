@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Bhavik Mehta, E. W. Ayers. All rights reserved.
+Copyright (c) 2020 Bhavik Mehta, Edward Ayers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta, E. W. Ayers
+Authors: Bhavik Mehta, Edward Ayers
 -/
 import Mathlib.CategoryTheory.Sites.Sieves
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
@@ -86,8 +86,9 @@ structure GrothendieckTopology where
 
 namespace GrothendieckTopology
 
-instance : CoeFun (GrothendieckTopology C) fun _ => ∀ X : C, Set (Sieve X) :=
-  ⟨sieves⟩
+instance : DFunLike (GrothendieckTopology C) C (fun X ↦ Set (Sieve X)) where
+  coe J X := sieves J X
+  coe_injective' J₁ J₂ h := by cases J₁; cases J₂; congr
 
 variable {C}
 variable {X Y : C} {S R : Sieve X}
@@ -98,18 +99,12 @@ We prove this explicitly rather than deriving it so that it is in terms of the c
 the projection `.sieves`.
 -/
 @[ext]
-theorem ext {J₁ J₂ : GrothendieckTopology C} (h : (J₁ : ∀ X : C, Set (Sieve X)) = J₂) :
-    J₁ = J₂ := by
-  cases J₁
-  cases J₂
-  congr
+theorem ext {J₁ J₂ : GrothendieckTopology C} (h : (J₁ : ∀ X : C, Set (Sieve X)) = J₂) : J₁ = J₂ :=
+  DFunLike.coe_injective h
 
-/-
-Porting note: This is now a syntactic tautology.
 @[simp]
 theorem mem_sieves_iff_coe : S ∈ J.sieves X ↔ S ∈ J X :=
   Iff.rfl
--/
 
 /-- Also known as the maximality axiom. -/
 @[simp]
@@ -268,7 +263,13 @@ instance : InfSet (GrothendieckTopology C) where
 /-- See <https://stacks.math.columbia.edu/tag/00Z7> -/
 theorem isGLB_sInf (s : Set (GrothendieckTopology C)) : IsGLB s (sInf s) := by
   refine @IsGLB.of_image _ _ _ _ sieves ?_ _ _ ?_
-  · rfl
+  · #adaptation_note
+    /--
+    This proof used to be `rfl`,
+    but has been temporarily broken by https://github.com/leanprover/lean4/pull/5329.
+    It can hopefully be restored after https://github.com/leanprover/lean4/pull/5359
+    -/
+    exact Iff.rfl
   · exact _root_.isGLB_sInf _
 
 /-- Construct a complete lattice from the `Inf`, but make the trivial and discrete topologies
@@ -380,44 +381,11 @@ namespace Cover
 
 variable {J}
 
-/-
-Porting note: Lean complains that this is a dangerous instance.
-I'm commenting this out since the `CoeFun` instance below is what we
-use 99% of the time anyway.
+instance : CoeOut (J.Cover X) (Sieve X) := ⟨fun S => S.1⟩
 
-instance : Coe (J.Cover X) (Sieve X) :=
-  ⟨fun S => S.1⟩
--/
+instance : CoeFun (J.Cover X) fun _ => ∀ ⦃Y⦄ (_ : Y ⟶ X), Prop := ⟨fun S => (S : Sieve X)⟩
 
-/-
-Porting note (#11445): Added this def as a replacement for the "dangerous" `Coe` above.
--/
-/-- The sieve associated to a term of `J.Cover X`. -/
-def sieve (S : J.Cover X) : Sieve X := S.1
-
-/-
-Porting note: This somehow yields different behavior than the better instance below. Why?!
-
-With this instance, we have to write `S _ f` but with the uncommented one, we can write `S f`
-as expected.
-
-instance : CoeFun (J.Cover X) fun _ => ∀ ⦃Y⦄ (_ : Y ⟶ X), Prop :=
-  ⟨fun S _ f => (S : Sieve X) f⟩
--/
-
-instance : CoeFun (J.Cover X) fun _ => ∀ ⦃Y⦄ (_ : Y ⟶ X), Prop :=
-  ⟨fun S => S.sieve⟩
-
-/-
-Porting note: This is now a syntactic tautology.
-
-@[simp]
-theorem coe_fun_coe (S : J.Cover X) (f : Y ⟶ X) : S.sieve f = S f :=
-  rfl
--/
-
-theorem condition (S : J.Cover X) : S.sieve ∈ J X :=
-  S.2
+theorem condition (S : J.Cover X) : (S : Sieve X) ∈ J X := S.2
 
 @[ext]
 theorem ext (S T : J.Cover X) (h : ∀ ⦃Y⦄ (f : Y ⟶ X), S f ↔ T f) : S = T :=
@@ -430,8 +398,7 @@ instance : OrderTop (J.Cover X) :=
 
 instance : SemilatticeInf (J.Cover X) :=
   { (inferInstance : Preorder _) with
-    inf := fun S T => ⟨S.sieve ⊓ T.sieve,
-      J.intersection_covering S.condition T.condition⟩
+    inf := fun S T => ⟨S ⊓ T, J.intersection_covering S.condition T.condition⟩
     le_antisymm := fun S T h1 h2 => ext _ _ fun {Y} f => ⟨by apply h1, by apply h2⟩
     inf_le_left := fun S T Y f hf => hf.1
     inf_le_right := fun S T Y f hf => hf.2
@@ -494,7 +461,7 @@ def Arrow.Relation.map {S T : J.Cover X} {I₁ I₂ : S.Arrow}
 
 /-- Pull back a cover along a morphism. -/
 def pullback (S : J.Cover X) (f : Y ⟶ X) : J.Cover Y :=
-  ⟨Sieve.pullback f S.sieve, J.pullback_stable _ S.condition⟩
+  ⟨Sieve.pullback f S, J.pullback_stable _ S.condition⟩
 
 /-- An arrow of `S.pullback f` gives rise to an arrow of `S`. -/
 @[simps]
@@ -525,8 +492,8 @@ def pullbackComp {X Y Z : C} (S : J.Cover X) (f : Z ⟶ Y) (g : Y ⟶ X) :
 
 /-- Combine a family of covers over a cover. -/
 def bind {X : C} (S : J.Cover X) (T : ∀ I : S.Arrow, J.Cover I.Y) : J.Cover X :=
-  ⟨Sieve.bind S.sieve fun Y f hf => (T ⟨Y, f, hf⟩).sieve,
-    J.bind_covering S.condition fun _ _ _ => (T _).condition⟩
+  ⟨Sieve.bind S fun Y f hf => T ⟨Y, f, hf⟩,
+    J.bind_covering S.condition fun _ _ _ => (T { Y := _, f := _, hf := _ }).condition⟩
 
 /-- The canonical morphism from `S.bind T` to `T`. -/
 def bindToBase {X : C} (S : J.Cover X) (T : ∀ I : S.Arrow, J.Cover I.Y) : S.bind T ⟶ S :=

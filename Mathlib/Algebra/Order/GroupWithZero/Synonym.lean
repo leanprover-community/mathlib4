@@ -13,8 +13,6 @@ Transfer algebraic instances from `α` to `αᵒᵈ` and `Lex α`.
 -/
 
 
-open scoped Classical
-
 open Function
 
 variable {α : Type*}

@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Scott Morrison
+Authors: Johan Commelin, Kim Morrison
 -/
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 import Mathlib.Algebra.Category.Ring.Colimits
@@ -543,8 +543,14 @@ def stalkIso (x : PrimeSpectrum.Top R) :
 instance (x : PrimeSpectrum R) : IsIso (stalkToFiberRingHom R x) :=
   (stalkIso R x).isIso_hom
 
+instance (x : PrimeSpectrum R) : IsLocalRingHom (stalkToFiberRingHom R x) :=
+  isLocalRingHom_of_isIso _
+
 instance (x : PrimeSpectrum R) : IsIso (localizationToStalk R x) :=
   (stalkIso R x).isIso_inv
+
+instance (x : PrimeSpectrum R) : IsLocalRingHom (localizationToStalk R x) :=
+  isLocalRingHom_of_isIso _
 
 @[simp, reassoc]
 theorem stalkToFiberRingHom_localizationToStalk (x : PrimeSpectrum.Top R) :
@@ -750,8 +756,6 @@ theorem normalize_finite_fraction_representation (U : Opens (PrimeSpectrum.Top R
   rw [pow_succ]
   ring
 
-open scoped Classical
-
 -- Porting note: in the following proof there are two places where `⋃ i, ⋃ (hx : i ∈ _), ... `
 -- though `hx` is not used in `...` part, it is still required to maintain the structure of
 -- the original proof in mathlib3.
@@ -801,9 +805,9 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
     apply PrimeSpectrum.vanishingIdeal_anti_mono ht_cover
     exact PrimeSpectrum.subset_vanishingIdeal_zeroLocus {f} (Set.mem_singleton f)
   replace hn := Ideal.mul_mem_right f _ hn
-  erw [← pow_succ, Finsupp.mem_span_image_iff_total] at hn
+  erw [← pow_succ, Finsupp.mem_span_image_iff_linearCombination] at hn
   rcases hn with ⟨b, b_supp, hb⟩
-  rw [Finsupp.total_apply_of_mem_supported R b_supp] at hb
+  rw [Finsupp.linearCombination_apply_of_mem_supported R b_supp] at hb
   dsimp at hb
   -- Finally, we have all the ingredients.
   -- We claim that our preimage is given by `(∑ (i : ι) ∈ t, b i * a i) / f ^ (n+1)`

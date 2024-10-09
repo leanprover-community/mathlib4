@@ -93,7 +93,7 @@ private theorem distinctPairs_increment :
     P.parts.offDiag.attach.biUnion (distinctPairs hP G ε) ⊆ (increment hP G ε).parts.offDiag := by
   rintro ⟨Ui, Vj⟩
   simp only [distinctPairs, increment, mem_offDiag, bind_parts, mem_biUnion, Prod.exists,
-    exists_and_left, exists_prop, mem_product, mem_attach, true_and_iff, Subtype.exists, and_imp,
+    exists_and_left, exists_prop, mem_product, mem_attach, true_and, Subtype.exists, and_imp,
     mem_offDiag, forall_exists_index, exists₂_imp, Ne]
   refine fun U V hUV hUi hVj => ⟨⟨_, hUV.1, hUi⟩, ⟨_, hUV.2.1, hVj⟩, ?_⟩
   rintro rfl
@@ -166,7 +166,7 @@ theorem energy_increment (hP : P.IsEquipartition) (hP₇ : 7 ≤ P.parts.card)
     _ = (6/7 * P.parts.card ^ 2) * ε ^ 5 * (7 / 24) := by ring
     _ ≤ P.parts.offDiag.card * ε ^ 5 * (22 / 75) := by
         gcongr ?_ * _ * ?_
-        · rw [← mul_div_right_comm, div_le_iff (by norm_num), offDiag_card]
+        · rw [← mul_div_right_comm, div_le_iff₀ (by norm_num), offDiag_card]
           norm_cast
           rw [tsub_mul]
           refine le_tsub_of_add_le_left ?_

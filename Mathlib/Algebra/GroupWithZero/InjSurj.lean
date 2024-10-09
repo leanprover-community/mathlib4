@@ -19,7 +19,7 @@ variable {M₀ G₀ M₀' G₀' : Type*}
 
 section MulZeroClass
 
-variable [MulZeroClass M₀] {a b : M₀}
+variable [MulZeroClass M₀]
 
 /-- Pull back a `MulZeroClass` instance along an injective function.
 See note [reducible non-instances]. -/
@@ -47,6 +47,8 @@ section NoZeroDivisors
 
 variable [Mul M₀] [Zero M₀] [Mul M₀'] [Zero M₀']
   (f : M₀ → M₀') (hf : Injective f) (zero : f 0 = 0) (mul : ∀ x y, f (x * y) = f x * f y)
+
+include hf zero mul
 
 /-- Pull back a `NoZeroDivisors` instance along an injective function. -/
 protected theorem Function.Injective.noZeroDivisors [NoZeroDivisors M₀'] : NoZeroDivisors M₀ :=
@@ -147,7 +149,7 @@ end MonoidWithZero
 
 section CancelMonoidWithZero
 
-variable [CancelMonoidWithZero M₀] {a b c : M₀}
+variable [CancelMonoidWithZero M₀]
 
 /-- Pull back a `CancelMonoidWithZero` along an injective function.
 See note [reducible non-instances]. -/
@@ -165,7 +167,7 @@ end CancelMonoidWithZero
 
 section CancelCommMonoidWithZero
 
-variable [CancelCommMonoidWithZero M₀] {a b c : M₀}
+variable [CancelCommMonoidWithZero M₀]
 
 /-- Pull back a `CancelCommMonoidWithZero` along an injective function.
 See note [reducible non-instances]. -/
@@ -179,7 +181,7 @@ end CancelCommMonoidWithZero
 
 section GroupWithZero
 
-variable [GroupWithZero G₀] {a b c g h x : G₀}
+variable [GroupWithZero G₀]
 
 /-- Pull back a `GroupWithZero` along an injective function.
 See note [reducible non-instances]. -/
@@ -193,7 +195,7 @@ protected abbrev Function.Injective.groupWithZero [Zero G₀'] [Mul G₀'] [One 
     pullback_nonzero f zero one with
     inv_zero := hf <| by erw [inv, zero, inv_zero],
     mul_inv_cancel := fun x hx => hf <| by
-      erw [one, mul, inv, mul_inv_cancel ((hf.ne_iff' zero).2 hx)] }
+      erw [one, mul, inv, mul_inv_cancel₀ ((hf.ne_iff' zero).2 hx)] }
 
 /-- Push forward a `GroupWithZero` along a surjective function.
 See note [reducible non-instances]. -/
@@ -206,14 +208,14 @@ protected abbrev Function.Surjective.groupWithZero [Zero G₀'] [Mul G₀'] [One
   { hf.monoidWithZero f zero one mul npow, hf.divInvMonoid f one mul inv div npow zpow with
     inv_zero := by erw [← zero, ← inv, inv_zero],
     mul_inv_cancel := hf.forall.2 fun x hx => by
-        erw [← inv, ← mul, mul_inv_cancel (mt (congr_arg f) fun h ↦ hx (h.trans zero)), one]
+        erw [← inv, ← mul, mul_inv_cancel₀ (mt (congr_arg f) fun h ↦ hx (h.trans zero)), one]
     exists_pair_ne := ⟨0, 1, h01⟩ }
 
 end GroupWithZero
 
 section CommGroupWithZero
 
-variable [CommGroupWithZero G₀] {a b c d : G₀}
+variable [CommGroupWithZero G₀]
 
 /-- Pull back a `CommGroupWithZero` along an injective function.
 See note [reducible non-instances]. -/

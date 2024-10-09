@@ -55,7 +55,7 @@ theorem contDiffOn_fderiv_coord_change (i j : atlas H M) :
   have h : ((i.1.extend I).symm ≫ j.1.extend I).source ⊆ range I := by
     rw [i.1.extend_coord_change_source]; apply image_subset_range
   intro x hx
-  refine (ContDiffWithinAt.fderivWithin_right ?_ I.unique_diff le_top <| h hx).mono h
+  refine (ContDiffWithinAt.fderivWithin_right ?_ I.uniqueDiffOn le_top <| h hx).mono h
   refine (PartialHomeomorph.contDiffOn_extend_coord_change I (subset_maximalAtlas I j.2)
     (subset_maximalAtlas I i.2) x hx).mono_of_mem ?_
   exact i.1.extend_coord_change_source_mem_nhdsWithin j.1 I hx
@@ -84,7 +84,7 @@ def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
   coordChange_self i x hx v := by
     simp only
     rw [Filter.EventuallyEq.fderivWithin_eq, fderivWithin_id', ContinuousLinearMap.id_apply]
-    · exact I.unique_diff_at_image
+    · exact I.uniqueDiffWithinAt_image
     · filter_upwards [i.1.extend_target_mem_nhdsWithin I hx] with y hy
       exact (i.1.extend I).right_inv hy
     · simp_rw [Function.comp_apply, i.1.extend_left_inv I hx]
@@ -105,7 +105,7 @@ def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
     · exact (contDiffWithinAt_extend_coord_change' I (subset_maximalAtlas I j.2)
         (subset_maximalAtlas I i.2) hxj hxi).differentiableWithinAt le_top
     · intro x _; exact mem_range_self _
-    · exact I.unique_diff_at_image
+    · exact I.uniqueDiffWithinAt_image
     · rw [Function.comp_apply, i.1.extend_left_inv I hxi]
 
 -- Porting note: moved to a separate `simp high` lemma b/c `simp` can simplify the LHS
@@ -196,7 +196,8 @@ does not pick wrong instances. In this section, we record the right instances fo
 them, noting in particular that the tangent bundle is a smooth manifold. -/
 section
 
-variable {M} (x : M)
+variable {M}
+variable (x : M)
 
 instance : Module 𝕜 (TangentSpace I x) := inferInstanceAs (Module 𝕜 E)
 
@@ -408,7 +409,8 @@ theorem tangentBundleModelSpaceHomeomorph_coe_symm :
 
 section inTangentCoordinates
 
-variable (I') {M H} {N : Type*}
+variable (I') {M H}
+variable {N : Type*}
 
 /-- The map `in_coordinates` for the tangent bundle is trivial on the model spaces -/
 theorem inCoordinates_tangent_bundle_core_model_space (x₀ x : H) (y₀ y : H') (ϕ : E →L[𝕜] E') :

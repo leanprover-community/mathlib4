@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Group.Hom.Defs
 
@@ -20,7 +20,7 @@ In most applications `m` and `n` are finite types. -/
 def DMatrix (m : Type u) (n : Type u') (α : m → n → Type v) : Type max u u' v :=
   ∀ i j, α i j
 
-variable {l m n o : Type*}
+variable {m n : Type*}
 variable {α : m → n → Type v}
 
 namespace DMatrix

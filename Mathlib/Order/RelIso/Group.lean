@@ -22,7 +22,7 @@ instance : Group (r ≃r r) where
   mul_assoc f₁ f₂ f₃ := rfl
   one_mul f := ext fun _ => rfl
   mul_one f := ext fun _ => rfl
-  mul_left_inv f := ext f.symm_apply_apply
+  inv_mul_cancel f := ext f.symm_apply_apply
 
 @[simp]
 theorem coe_one : ((1 : r ≃r r) : α → α) = id :=

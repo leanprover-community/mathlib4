@@ -20,6 +20,10 @@ may differ between the multiplicative and the additive version of a lemma.
 The reason is that we did not want to change existing names in the library.
 -/
 
+/-
+`NeZero` theory should not be needed at this point in the ordered algebraic hierarchy.
+-/
+assert_not_imported Mathlib.Algebra.NeZero
 
 open Function
 
@@ -166,18 +170,16 @@ end LinearOrderedCommGroup
 section NormNumLemmas
 
 /- The following lemmas are stated so that the `norm_num` tactic can use them with the
-expected signatures.  -/
+expected signatures. -/
 variable [OrderedCommGroup α] {a b : α}
 
 @[to_additive (attr := gcongr) neg_le_neg]
 theorem inv_le_inv' : a ≤ b → b⁻¹ ≤ a⁻¹ :=
-  -- Porting note: explicit type annotation was not needed before.
-  (@inv_le_inv_iff α ..).mpr
+  inv_le_inv_iff.mpr
 
 @[to_additive (attr := gcongr) neg_lt_neg]
 theorem inv_lt_inv' : a < b → b⁻¹ < a⁻¹ :=
-  -- Porting note: explicit type annotation was not needed before.
-  (@inv_lt_inv_iff α ..).mpr
+  inv_lt_inv_iff.mpr
 
 --  The additive version is also a `linarith` lemma.
 @[to_additive]
@@ -194,8 +196,3 @@ theorem one_le_inv_of_le_one : a ≤ 1 → 1 ≤ a⁻¹ :=
   one_le_inv'.mpr
 
 end NormNumLemmas
-
-/-
-`NeZero` should not be needed at this point in the ordered algebraic hierarchy.
--/
-assert_not_exists NeZero

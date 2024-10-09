@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Lie.Basic
-import Mathlib.RingTheory.Noetherian
+import Mathlib.RingTheory.Artinian
 
 /-!
 # Lie subalgebras
@@ -107,6 +107,9 @@ instance [SMul R₁ R] [Module R₁ L] [IsScalarTower R₁ R L] (L' : LieSubalge
 instance (L' : LieSubalgebra R L) [IsNoetherian R L] : IsNoetherian R L' :=
   isNoetherian_submodule' _
 
+instance (L' : LieSubalgebra R L) [IsArtinian R L] : IsArtinian R L' :=
+  isArtinian_submodule' _
+
 end
 
 /-- A Lie subalgebra forms a new Lie algebra. -/
@@ -201,7 +204,7 @@ theorem coe_to_submodule : ((L' : Submodule R L) : Set L) = L' :=
 section LieModule
 
 variable {M : Type w} [AddCommGroup M] [LieRingModule L M]
-variable {N : Type w₁} [AddCommGroup N] [LieRingModule L N] [Module R N] [LieModule R L N]
+variable {N : Type w₁} [AddCommGroup N] [LieRingModule L N] [Module R N]
 
 /-- Given a Lie algebra `L` containing a Lie subalgebra `L' ⊆ L`, together with a Lie ring module
 `M` of `L`, we may regard `M` as a Lie ring module of `L'` by restriction. -/
@@ -215,12 +218,13 @@ instance lieRingModule : LieRingModule L' M where
 theorem coe_bracket_of_module (x : L') (m : M) : ⁅x, m⁆ = ⁅(x : L), m⁆ :=
   rfl
 
-variable [Module R M] [LieModule R L M]
+variable [Module R M]
 
 /-- Given a Lie algebra `L` containing a Lie subalgebra `L' ⊆ L`, together with a Lie module `M` of
 `L`, we may regard `M` as a Lie module of `L'` by restriction. -/
-instance lieModule : LieModule R L' M where
-  smul_lie t x m := by simp only [coe_bracket_of_module, smul_lie, Submodule.coe_smul_of_tower]
+instance lieModule [LieModule R L M] : LieModule R L' M where
+  smul_lie t x m := by
+    rw [coe_bracket_of_module, Submodule.coe_smul_of_tower, smul_lie, coe_bracket_of_module]
   lie_smul t x m := by simp only [coe_bracket_of_module, lie_smul]
 
 /-- An `L`-equivariant map of Lie modules `M → N` is `L'`-equivariant for any Lie subalgebra
@@ -500,21 +504,16 @@ theorem eq_bot_iff : K = ⊥ ↔ ∀ x : L, x ∈ K → x = 0 := by
 instance subsingleton_of_bot : Subsingleton (LieSubalgebra R (⊥ : LieSubalgebra R L)) := by
   apply subsingleton_of_bot_eq_top
   ext ⟨x, hx⟩; change x ∈ ⊥ at hx; rw [LieSubalgebra.mem_bot] at hx; subst hx
-  simp only [true_iff_iff, eq_self_iff_true, Submodule.mk_eq_zero, mem_bot, mem_top]
+  simp only [mem_bot, mem_top, iff_true]
+  rfl
 
 theorem subsingleton_bot : Subsingleton (⊥ : LieSubalgebra R L) :=
   show Subsingleton ((⊥ : LieSubalgebra R L) : Set L) by simp
 
 variable (R L)
 
-theorem wellFounded_of_noetherian [IsNoetherian R L] :
-    WellFounded ((· > ·) : LieSubalgebra R L → LieSubalgebra R L → Prop) :=
-  let f :
-    ((· > ·) : LieSubalgebra R L → LieSubalgebra R L → Prop) →r
-      ((· > ·) : Submodule R L → Submodule R L → Prop) :=
-    { toFun := (↑)
-      map_rel' := @fun _ _ h ↦ h }
-  RelHomClass.wellFounded f (isNoetherian_iff_wellFounded.mp inferInstance)
+instance wellFoundedGT_of_noetherian [IsNoetherian R L] : WellFoundedGT (LieSubalgebra R L) :=
+  RelHomClass.isWellFounded (⟨toSubmodule, @fun _ _ h ↦ h⟩ : _ →r (· > ·))
 
 variable {R L K K' f}
 
@@ -561,7 +560,7 @@ theorem coe_ofLe : (ofLe h : Submodule R K') = LinearMap.range (Submodule.inclus
   rfl
 
 /-- Given nested Lie subalgebras `K ⊆ K'`, there is a natural equivalence from `K` to its image in
-`K'`.  -/
+`K'`. -/
 noncomputable def equivOfLe : K ≃ₗ⁅R⁆ ofLe h :=
   (inclusion h).equivRangeOfInjective (inclusion_injective h)
 

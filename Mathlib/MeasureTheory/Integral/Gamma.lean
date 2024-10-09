@@ -43,7 +43,7 @@ theorem integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 0 < p) (hq : - 1 
     _ = ∫ x in Ioi (0 : ℝ), b ^ (-p⁻¹ * q) * ((b ^ p⁻¹ * x) ^ q * rexp (-(b ^ p⁻¹ * x) ^ p)) := by
       refine setIntegral_congr measurableSet_Ioi (fun _ hx => ?_)
       rw [mul_rpow _ (le_of_lt hx), mul_rpow _ (le_of_lt hx), ← rpow_mul, ← rpow_mul,
-        inv_mul_cancel, rpow_one, mul_assoc, ← mul_assoc, ← rpow_add, neg_mul p⁻¹, add_left_neg,
+        inv_mul_cancel₀, rpow_one, mul_assoc, ← mul_assoc, ← rpow_add, neg_mul p⁻¹, neg_add_cancel,
         rpow_zero, one_mul, neg_mul]
       all_goals positivity
     _ = (b ^ p⁻¹)⁻¹ * ∫ x in Ioi (0 : ℝ), b ^ (-p⁻¹ * q) * (x ^ q * rexp (-x ^ p)) := by

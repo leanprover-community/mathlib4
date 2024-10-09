@@ -5,6 +5,7 @@ Authors: Eric Rodriguez
 -/
 import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Algebra.NeZero
+import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Fintype.Card
 
@@ -103,7 +104,7 @@ namespace ZMod
 instance instUnique : Unique (ZMod 1) := Fin.uniqueFinOne
 
 instance fintype : ∀ (n : ℕ) [NeZero n], Fintype (ZMod n)
-  | 0, h => (h.ne rfl).elim
+  | 0, h => (h.ne _ rfl).elim
   | n + 1, _ => Fin.fintype (n + 1)
 
 instance infinite : Infinite (ZMod 0) :=
@@ -147,7 +148,7 @@ instance commRing (n : ℕ) : CommRing (ZMod n) where
     (inferInstanceAs (CommRing ℤ)).nsmul_succ
     fun n => (inferInstanceAs (CommRing (Fin n.succ))).nsmul_succ
   -- Porting note: `match` didn't work here
-  add_left_neg := Nat.casesOn n (@add_left_neg Int _) fun n => @add_left_neg (Fin n.succ) _
+  neg_add_cancel := Nat.casesOn n (@neg_add_cancel Int _) fun n => @neg_add_cancel (Fin n.succ) _
   add_comm := Nat.casesOn n (@add_comm Int _) fun n => @add_comm (Fin n.succ) _
   mul := Nat.casesOn n (@Mul.mul Int _) fun n => @Mul.mul (Fin n.succ) _
   mul_assoc := Nat.casesOn n (@mul_assoc Int _) fun n => @mul_assoc (Fin n.succ) _

@@ -1,10 +1,10 @@
 /-
-Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. KudryashovJ
+Authors: Yury KudryashovJ
 -/
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Data.Set.Pointwise.Basic
 
 /-!
 

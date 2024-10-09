@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov, Johannes Hölzl
+Authors: Yury Kudryashov, Johannes Hölzl
 -/
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.RelIso.Basic
@@ -231,7 +231,7 @@ namespace OrderIso
 
 section Preorder
 
-variable [Preorder α] [Preorder β] (e : α ≃o β) {s : Set α} {x : α}
+variable [Preorder α] [Preorder β] (e : α ≃o β)
 
 protected theorem leftOrdContinuous : LeftOrdContinuous e := fun _ _ hx =>
   ⟨Monotone.mem_upperBounds_image (fun _ _ => e.map_rel_iff.2) hx.1, fun _ hy =>

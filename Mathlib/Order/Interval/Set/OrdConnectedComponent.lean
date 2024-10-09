@@ -175,7 +175,7 @@ theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) := by
   clear hx₂
   rw [mem_ordConnectedComponent, subset_inter_iff] at ha hb
   wlog hab : a ≤ b with H
-  · exact H (x := x) (y := y) (z := z) b hbt hb a has ha (le_of_not_le hab)
+  · exact H b hbt hb a has ha (le_of_not_le hab)
   cases' ha with ha ha'
   cases' hb with hb hb'
   have hsub : [[a, b]] ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ := by

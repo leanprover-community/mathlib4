@@ -3,12 +3,12 @@ Copyright (c) 2022 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.RingTheory.Valuation.Integers
+import Mathlib.Algebra.EuclideanDomain.Basic
+import Mathlib.RingTheory.Bezout
+import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Integer
-import Mathlib.RingTheory.DiscreteValuationRing.Basic
-import Mathlib.RingTheory.Bezout
-import Mathlib.Tactic.FieldSimp
+import Mathlib.RingTheory.Valuation.Integers
 
 /-!
 # Valuation Rings
@@ -33,6 +33,7 @@ We also show that, given a valuation `v` on a field `K`, the ring of valuation i
 valuation ring and `K` is the fraction field of this ring.
 -/
 
+assert_not_exists DiscreteValuationRing
 
 universe u v w
 
@@ -162,7 +163,7 @@ noncomputable instance linearOrderedCommGroupWithZero :
       apply Quotient.sound'
       use 1
       simp only [one_smul, ne_eq]
-      apply (mul_inv_cancel _).symm
+      apply (mul_inv_cancel₀ _).symm
       contrapose ha
       simp only [Classical.not_not] at ha ⊢
       rw [ha]
@@ -362,10 +363,10 @@ protected theorem TFAE (R : Type u) [CommRing R] [IsDomain R] :
       [ValuationRing R,
         ∀ x : FractionRing R, IsLocalization.IsInteger R x ∨ IsLocalization.IsInteger R x⁻¹,
         IsTotal R (· ∣ ·), IsTotal (Ideal R) (· ≤ ·), LocalRing R ∧ IsBezout R] := by
-  tfae_have 1 ↔ 2; · exact iff_isInteger_or_isInteger R _
-  tfae_have 1 ↔ 3; · exact iff_dvd_total
-  tfae_have 1 ↔ 4; · exact iff_ideal_total
-  tfae_have 1 ↔ 5; · exact iff_local_bezout_domain
+  tfae_have 1 ↔ 2 := iff_isInteger_or_isInteger R _
+  tfae_have 1 ↔ 3 := iff_dvd_total
+  tfae_have 1 ↔ 4 := iff_ideal_total
+  tfae_have 1 ↔ 5 := iff_local_bezout_domain
   tfae_finish
 
 end
@@ -381,11 +382,11 @@ theorem _root_.Function.Surjective.valuationRing {R S : Type*} [CommRing R] [IsD
 section
 
 variable {𝒪 : Type u} {K : Type v} {Γ : Type w} [CommRing 𝒪] [IsDomain 𝒪] [Field K] [Algebra 𝒪 K]
-  [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) (hh : v.Integers 𝒪)
+  [LinearOrderedCommGroupWithZero Γ]
 
 /-- If `𝒪` satisfies `v.integers 𝒪` where `v` is a valuation on a field, then `𝒪`
 is a valuation ring. -/
-theorem of_integers : ValuationRing 𝒪 := by
+theorem of_integers (v : Valuation K Γ) (hh : v.Integers 𝒪) : ValuationRing 𝒪 := by
   constructor
   intro a b
   rcases le_total (v (algebraMap 𝒪 K a)) (v (algebraMap 𝒪 K b)) with h | h
@@ -394,7 +395,7 @@ theorem of_integers : ValuationRing 𝒪 := by
   · obtain ⟨c, hc⟩ := Valuation.Integers.dvd_of_le hh h
     use c; exact Or.inl hc.symm
 
-instance instValuationRingInteger : ValuationRing v.integer :=
+instance instValuationRingInteger (v : Valuation K Γ) : ValuationRing v.integer :=
   of_integers (v := v) (Valuation.integer.integers v)
 
 theorem isFractionRing_iff [ValuationRing 𝒪] :
@@ -419,7 +420,7 @@ theorem isFractionRing_iff [ValuationRing 𝒪] :
     · intro _ _ hab
       exact ⟨1, by simp only [OneMemClass.coe_one, h.2 hab, one_mul]⟩
 
-instance instIsFractionRingInteger : IsFractionRing v.integer K :=
+instance instIsFractionRingInteger (v : Valuation K Γ) : IsFractionRing v.integer K :=
   ValuationRing.isFractionRing_iff.mpr
     ⟨Valuation.Integers.eq_algebraMap_or_inv_eq_algebraMap (Valuation.integer.integers v),
     Subtype.coe_injective⟩
@@ -437,33 +438,6 @@ instance (priority := 100) of_field : ValuationRing K := by
   by_cases h : b = 0
   · use 0; left; simp [h]
   · use a * b⁻¹; right; field_simp
-
-end
-
-section
-
-variable (A : Type u) [CommRing A] [IsDomain A] [DiscreteValuationRing A]
-
-/-- A DVR is a valuation ring. -/
-instance (priority := 100) of_discreteValuationRing : ValuationRing A := by
-  constructor
-  intro a b
-  by_cases ha : a = 0; · use 0; right; simp [ha]
-  by_cases hb : b = 0; · use 0; left; simp [hb]
-  obtain ⟨ϖ, hϖ⟩ := DiscreteValuationRing.exists_irreducible A
-  obtain ⟨m, u, rfl⟩ := DiscreteValuationRing.eq_unit_mul_pow_irreducible ha hϖ
-  obtain ⟨n, v, rfl⟩ := DiscreteValuationRing.eq_unit_mul_pow_irreducible hb hϖ
-  rcases le_total m n with h | h
-  · use (u⁻¹ * v : Aˣ) * ϖ ^ (n - m); left
-    simp_rw [mul_comm (u : A), Units.val_mul, ← mul_assoc, mul_assoc _ (u : A)]
-    simp only [Units.mul_inv, mul_one, mul_comm _ (v : A), mul_assoc, ← pow_add]
-    congr 2
-    exact Nat.add_sub_of_le h
-  · use (v⁻¹ * u : Aˣ) * ϖ ^ (m - n); right
-    simp_rw [mul_comm (v : A), Units.val_mul, ← mul_assoc, mul_assoc _ (v : A)]
-    simp only [Units.mul_inv, mul_one, mul_comm _ (u : A), mul_assoc, ← pow_add]
-    congr 2
-    exact Nat.add_sub_of_le h
 
 end
 

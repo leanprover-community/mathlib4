@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Justus Springer
+Authors: Kim Morrison, Justus Springer
 -/
 import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 import Mathlib.AlgebraicGeometry.StructureSheaf
@@ -33,7 +33,7 @@ The adjunction `Γ ⊣ Spec` is constructed in `Mathlib/AlgebraicGeometry/GammaS
 -/
 
 
--- Explicit universe annotations were used in this file to improve perfomance #12737
+-- Explicit universe annotations were used in this file to improve performance #12737
 
 noncomputable section
 
@@ -220,7 +220,6 @@ theorem localRingHom_comp_stalkIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : Pr
         rw [stalkIso_hom, stalkIso_inv]
         erw [comp_apply, comp_apply, localizationToStalk_of, stalkMap_toStalk_apply f p x,
             stalkToFiberRingHom_toStalk]
-        rfl
 
 /--
 The induced map of a ring homomorphism on the prime spectra, as a morphism of locally ringed spaces.
@@ -237,9 +236,9 @@ def Spec.locallyRingedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
       #adaptation_note /-- nightly-2024-04-01
       It's this `erw` that is blowing up. The implicit arguments differ significantly. -/
       erw [← localRingHom_comp_stalkIso_apply] at ha
-      replace ha := (stalkIso S p).hom.isUnit_map ha
-      rw [← comp_apply, show localizationToStalk S p = (stalkIso S p).inv from rfl,
-        Iso.inv_hom_id, id_apply] at ha
+      -- TODO: this instance was found automatically before #6045
+      haveI : IsLocalRingHom (stalkIso (↑S) p).inv := isLocalRingHom_of_isIso _
+      replace ha := (isUnit_map_iff (stalkIso S p).inv _).mp ha
       -- Porting note: `f` had to be made explicit
       replace ha := IsLocalRingHom.map_nonunit
         (f := (Localization.localRingHom (PrimeSpectrum.comap f p).asIdeal p.asIdeal f _)) _ ha
@@ -250,13 +249,13 @@ def Spec.locallyRingedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
 @[simp]
 theorem Spec.locallyRingedSpaceMap_id (R : CommRingCat.{u}) :
     Spec.locallyRingedSpaceMap (𝟙 R) = 𝟙 (Spec.locallyRingedSpaceObj R) :=
-  LocallyRingedSpace.Hom.ext _ _ <| by
+  LocallyRingedSpace.Hom.ext <| by
     rw [Spec.locallyRingedSpaceMap_val, Spec.sheafedSpaceMap_id]; rfl
 
 theorem Spec.locallyRingedSpaceMap_comp {R S T : CommRingCat.{u}} (f : R ⟶ S) (g : S ⟶ T) :
     Spec.locallyRingedSpaceMap (f ≫ g) =
       Spec.locallyRingedSpaceMap g ≫ Spec.locallyRingedSpaceMap f :=
-  LocallyRingedSpace.Hom.ext _ _ <| by
+  LocallyRingedSpace.Hom.ext <| by
     rw [Spec.locallyRingedSpaceMap_val, Spec.sheafedSpaceMap_comp]; rfl
 
 /-- Spec, as a contravariant functor from commutative rings to locally ringed spaces.
@@ -272,7 +271,7 @@ section SpecΓ
 
 open AlgebraicGeometry.LocallyRingedSpace
 
-/-- The counit morphism `R ⟶ Γ(Spec R)` given by `AlgebraicGeometry.StructureSheaf.toOpen`.  -/
+/-- The counit morphism `R ⟶ Γ(Spec R)` given by `AlgebraicGeometry.StructureSheaf.toOpen`. -/
 @[simps!]
 def toSpecΓ (R : CommRingCat.{u}) : R ⟶ Γ.obj (op (Spec.toLocallyRingedSpace.obj (op R))) :=
   StructureSheaf.toOpen R ⊤
@@ -309,8 +308,7 @@ theorem Spec_map_localization_isIso (R : CommRingCat.{u}) (M : Submonoid R)
   erw [← localRingHom_comp_stalkIso]
   -- Porting note: replaced `apply (config := { instances := false })`.
   -- See https://github.com/leanprover/lean4/issues/2273
-  refine @IsIso.comp_isIso _ _ _ _ _ _ _ _ (?_)
-  refine @IsIso.comp_isIso _ _ _ _ _ _ _ (?_) _
+  refine IsIso.comp_isIso' inferInstance (IsIso.comp_isIso' ?_ inferInstance)
   /- I do not know why this is defeq to the goal, but I'm happy to accept that it is. -/
   show
     IsIso (IsLocalization.localizationLocalizationAtPrimeIsoLocalization M

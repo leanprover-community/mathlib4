@@ -37,12 +37,12 @@ theorem IsAffineOpen.fromSpecStalk_eq {X : Scheme} (x : X) {U V : X.Opens}
     Opens.isBasis_iff_nbhd.mp (isBasis_affine_open X) (show x ∈ U ⊓ V from ⟨hxU, hxV⟩)
   transitivity fromSpecStalk h₁ h₂
   · delta fromSpecStalk
-    rw [← hU.map_fromSpec h₁ (homOfLE $ h₃.trans inf_le_left).op]
+    rw [← hU.map_fromSpec h₁ (homOfLE <| h₃.trans inf_le_left).op]
     erw [← Scheme.Spec_map (X.presheaf.map _).op, ← Scheme.Spec_map (X.presheaf.germ ⟨x, h₂⟩).op]
     rw [← Functor.map_comp_assoc, ← op_comp, TopCat.Presheaf.germ_res, Scheme.Spec_map,
       Quiver.Hom.unop_op]
   · delta fromSpecStalk
-    rw [← hV.map_fromSpec h₁ (homOfLE $ h₃.trans inf_le_right).op]
+    rw [← hV.map_fromSpec h₁ (homOfLE <| h₃.trans inf_le_right).op]
     erw [← Scheme.Spec_map (X.presheaf.map _).op, ← Scheme.Spec_map (X.presheaf.germ ⟨x, h₂⟩).op]
     rw [← Functor.map_comp_assoc, ← op_comp, TopCat.Presheaf.germ_res, Scheme.Spec_map,
       Quiver.Hom.unop_op]

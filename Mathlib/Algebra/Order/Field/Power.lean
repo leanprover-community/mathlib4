@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2014 Robert Lewis. All rights reserved.
+Copyright (c) 2014 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
+Authors: Robert Y. Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.GroupWithZero.Commute
@@ -31,7 +31,7 @@ theorem zpow_le_of_le (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n := by
   calc
     a ^ m = a ^ m * 1 := (mul_one _).symm
     _ ≤ a ^ m * a ^ k :=
-      mul_le_mul_of_nonneg_left (one_le_pow_of_one_le ha _) (zpow_nonneg ha₀.le _)
+      mul_le_mul_of_nonneg_left (one_le_pow₀ ha) (zpow_nonneg ha₀.le _)
     _ = a ^ n := by rw [← zpow_natCast, ← zpow_add₀ ha₀.ne', hk, add_sub_cancel]
 
 theorem zpow_le_one_of_nonpos (ha : 1 ≤ a) (hn : n ≤ 0) : a ^ n ≤ 1 :=
@@ -48,7 +48,7 @@ theorem Nat.zpow_ne_zero_of_pos {a : ℕ} (h : 0 < a) (n : ℤ) : (a : α) ^ n �
   (Nat.zpow_pos_of_pos h n).ne'
 
 theorem one_lt_zpow (ha : 1 < a) : ∀ n : ℤ, 0 < n → 1 < a ^ n
-  | (n : ℕ), h => (zpow_natCast _ _).symm.subst (one_lt_pow ha <| Int.natCast_ne_zero.mp h.ne')
+  | (n : ℕ), h => (zpow_natCast _ _).symm.subst (one_lt_pow₀ ha <| Int.natCast_ne_zero.mp h.ne')
   | -[_+1], h => ((Int.negSucc_not_pos _).mp h).elim
 
 theorem zpow_strictMono (hx : 1 < a) : StrictMono (a ^ · : ℤ → α) :=
@@ -79,7 +79,7 @@ theorem zpow_le_iff_le (hx : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n :=
 
 @[simp]
 theorem div_pow_le (ha : 0 ≤ a) (hb : 1 ≤ b) (k : ℕ) : a / b ^ k ≤ a :=
-  div_le_self ha <| one_le_pow_of_one_le hb _
+  div_le_self ha <| one_le_pow₀ hb
 
 theorem zpow_injective (h₀ : 0 < a) (h₁ : a ≠ 1) : Injective (a ^ · : ℤ → α) := by
   rcases h₁.lt_or_lt with (H | H)
@@ -133,7 +133,7 @@ protected lemma Odd.zpow_nonneg_iff (hn : Odd n) : 0 ≤ a ^ n ↔ 0 ≤ a :=
 theorem Odd.zpow_nonpos_iff (hn : Odd n) : a ^ n ≤ 0 ↔ a ≤ 0 := by
   rw [le_iff_lt_or_eq, le_iff_lt_or_eq, hn.zpow_neg_iff, zpow_eq_zero_iff]
   rintro rfl
-  exact Int.odd_iff_not_even.1 hn even_zero
+  exact Int.not_even_iff_odd.2 hn even_zero
 
 lemma Odd.zpow_pos_iff (hn : Odd n) : 0 < a ^ n ↔ 0 < a := lt_iff_lt_of_le_iff_le hn.zpow_nonpos_iff
 
@@ -148,7 +148,7 @@ theorem Even.zpow_abs {p : ℤ} (hp : Even p) (a : α) : |a| ^ p = a ^ p := by
 
 /-- Bernoulli's inequality reformulated to estimate `(n : α)`. -/
 theorem Nat.cast_le_pow_sub_div_sub (H : 1 < a) (n : ℕ) : (n : α) ≤ (a ^ n - 1) / (a - 1) :=
-  (le_div_iff (sub_pos.2 H)).2 <|
+  (le_div_iff₀ (sub_pos.2 H)).2 <|
     le_sub_left_of_add_le <| one_add_mul_sub_le_pow ((neg_le_self zero_le_one).trans H.le) _
 
 /-- For any `a > 1` and a natural `n` we have `n ≤ a ^ n / (a - 1)`. See also

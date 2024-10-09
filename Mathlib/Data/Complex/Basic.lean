@@ -18,6 +18,9 @@ of characteristic zero. The result that the complex numbers are algebraically cl
 `FieldTheory.AlgebraicClosure`.
 -/
 
+assert_not_exists Multiset
+assert_not_exists Algebra
+
 open Set Function
 
 /-! ### Definition and basic arithmetic -/
@@ -56,9 +59,6 @@ theorem ext : ∀ {z w : ℂ}, z.re = w.re → z.im = w.im → z = w
   | ⟨_, _⟩, ⟨_, _⟩, rfl, rfl => rfl
 
 attribute [local ext] Complex.ext
-
-theorem ext_iff {z w : ℂ} : z = w ↔ z.re = w.re ∧ z.im = w.im :=
-  ⟨fun H => by simp [H], fun h => ext h.1 h.2⟩
 
 theorem re_surjective : Surjective re := fun x => ⟨⟨x, 0⟩, rfl⟩
 
@@ -329,15 +329,14 @@ instance addCommGroup : AddCommGroup ℂ :=
       intros; ext <;> simp [AddMonoid.nsmul_succ, add_mul, add_comm,
         smul_re, smul_im]
     zsmul_succ' := by
-      intros; ext <;> simp [SubNegMonoid.zsmul_succ', add_mul, add_comm,
-        smul_re, smul_im]
+      intros; ext <;> simp [add_mul, smul_re, smul_im]
     zsmul_neg' := by
       intros; ext <;> simp [zsmul_neg', add_mul, smul_re, smul_im]
     add_assoc := by intros; ext <;> simp [add_assoc]
     zero_add := by intros; ext <;> simp
     add_zero := by intros; ext <;> simp
     add_comm := by intros; ext <;> simp [add_comm]
-    add_left_neg := by intros; ext <;> simp }
+    neg_add_cancel := by intros; ext <;> simp }
 
 
 instance addGroupWithOne : AddGroupWithOne ℂ :=
@@ -441,6 +440,15 @@ lemma re_ofNat (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℂ).re = 
 @[simp, norm_cast] lemma im_nnratCast (q : ℚ≥0) : (q : ℂ).im = 0 := rfl
 @[simp, norm_cast] lemma ratCast_re (q : ℚ) : (q : ℂ).re = q := rfl
 @[simp, norm_cast] lemma ratCast_im (q : ℚ) : (q : ℂ).im = 0 := rfl
+
+lemma re_nsmul (n : ℕ) (z : ℂ) : (n • z).re = n • z.re := smul_re ..
+lemma im_nsmul (n : ℕ) (z : ℂ) : (n • z).im = n • z.im := smul_im ..
+lemma re_zsmul (n : ℤ) (z : ℂ) : (n • z).re = n • z.re := smul_re ..
+lemma im_zsmul (n : ℤ) (z : ℂ) : (n • z).im = n • z.im := smul_im ..
+@[simp] lemma re_nnqsmul (q : ℚ≥0) (z : ℂ) : (q • z).re = q • z.re := smul_re ..
+@[simp] lemma im_nnqsmul (q : ℚ≥0) (z : ℂ) : (q • z).im = q • z.im := smul_im ..
+@[simp] lemma re_qsmul (q : ℚ) (z : ℂ) : (q • z).re = q • z.re := smul_re ..
+@[simp] lemma im_qsmul (q : ℚ) (z : ℂ) : (q • z).im = q • z.im := smul_im ..
 
 @[deprecated (since := "2024-04-17")]
 alias rat_cast_im := ratCast_im
@@ -628,6 +636,28 @@ def ofReal : ℝ →+* ℂ where
 theorem ofReal_eq_coe (r : ℝ) : ofReal r = r :=
   rfl
 
+variable {α : Type*}
+
+@[simp] lemma ofReal_comp_add (f g : α → ℝ) : ofReal' ∘ (f + g) = ofReal' ∘ f + ofReal' ∘ g :=
+  map_comp_add ofReal ..
+
+@[simp] lemma ofReal_comp_sub (f g : α → ℝ) : ofReal' ∘ (f - g) = ofReal' ∘ f - ofReal' ∘ g :=
+  map_comp_sub ofReal ..
+
+@[simp] lemma ofReal_comp_neg (f : α → ℝ) : ofReal' ∘ (-f) = -(ofReal' ∘ f) := map_comp_neg ofReal _
+
+lemma ofReal_comp_nsmul (n : ℕ) (f : α → ℝ) : ofReal' ∘ (n • f) = n • (ofReal' ∘ f) :=
+  map_comp_nsmul ofReal ..
+
+lemma ofReal_comp_zsmul (n : ℤ) (f : α → ℝ) : ofReal' ∘ (n • f) = n • (ofReal' ∘ f) :=
+  map_comp_zsmul ofReal ..
+
+@[simp] lemma ofReal_comp_mul (f g : α → ℝ) : ofReal' ∘ (f * g) = ofReal' ∘ f * ofReal' ∘ g :=
+  map_comp_mul ofReal ..
+
+@[simp] lemma ofReal_comp_pow (f : α → ℝ) (n : ℕ) : ofReal' ∘ (f ^ n) = (ofReal' ∘ f) ^ n :=
+  map_comp_pow ofReal ..
+
 @[simp]
 theorem I_sq : I ^ 2 = -1 := by rw [sq, I_mul_I]
 
@@ -681,7 +711,7 @@ protected theorem inv_zero : (0⁻¹ : ℂ) = 0 := by
   rw [← ofReal_zero, ← ofReal_inv, inv_zero]
 
 protected theorem mul_inv_cancel {z : ℂ} (h : z ≠ 0) : z * z⁻¹ = 1 := by
-  rw [inv_def, ← mul_assoc, mul_conj, ← ofReal_mul, mul_inv_cancel (mt normSq_eq_zero.1 h),
+  rw [inv_def, ← mul_assoc, mul_conj, ← ofReal_mul, mul_inv_cancel₀ (mt normSq_eq_zero.1 h),
     ofReal_one]
 
 noncomputable instance instDivInvMonoid : DivInvMonoid ℂ where
@@ -812,6 +842,3 @@ unsafe instance instRepr : Repr ℂ where
       reprPrec f.re 65 ++ " + " ++ reprPrec f.im 70 ++ "*I"
 
 end Complex
-
-assert_not_exists Multiset
-assert_not_exists Algebra

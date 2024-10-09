@@ -27,6 +27,7 @@ your own code.
 
 -/
 
+section
 variable (M₀ : Type*) [MonoidWithZero M₀]
 
 /-- The collection of elements of a `MonoidWithZero` that are not left zero divisors form a
@@ -79,6 +80,8 @@ lemma nonZeroDivisorsLeft_eq_right (M₀ : Type*) [CommMonoidWithZero M₀] :
   refine ⟨fun h ↦ ?_, fun hx y hx' ↦ by aesop⟩
   contrapose! h
   exact ⟨1, Or.inl h, one_ne_zero⟩
+
+end
 
 /-- The submonoid of non-zero-divisors of a `MonoidWithZero` `R`. -/
 def nonZeroDivisors (R : Type*) [MonoidWithZero R] : Submonoid R where
@@ -179,8 +182,8 @@ theorem mul_mem_nonZeroDivisors {a b : M₁} : a * b ∈ M₁⁰ ↔ a ∈ M₁�
 
 theorem isUnit_of_mem_nonZeroDivisors {G₀ : Type*} [GroupWithZero G₀] {x : G₀}
     (hx : x ∈ nonZeroDivisors G₀) : IsUnit x :=
-  ⟨⟨x, x⁻¹, mul_inv_cancel (nonZeroDivisors.ne_zero hx),
-    inv_mul_cancel (nonZeroDivisors.ne_zero hx)⟩, rfl⟩
+  ⟨⟨x, x⁻¹, mul_inv_cancel₀ (nonZeroDivisors.ne_zero hx),
+    inv_mul_cancel₀ (nonZeroDivisors.ne_zero hx)⟩, rfl⟩
 
 lemma IsUnit.mem_nonZeroDivisors {a : M} (ha : IsUnit a) : a ∈ M⁰ :=
   fun _ h ↦ ha.mul_left_eq_zero.mp h
@@ -280,7 +283,7 @@ def unitsNonZeroDivisorsEquiv : M₀⁰ˣ ≃* M₀ˣ where
   right_inv _ := rfl
 
 @[simp, norm_cast] lemma nonZeroDivisors.associated_coe : Associated (a : M₀) b ↔ Associated a b :=
-  unitsNonZeroDivisorsEquiv.symm.exists_congr_left.trans $ by simp [Associated]; norm_cast
+  unitsNonZeroDivisorsEquiv.symm.exists_congr_left.trans <| by simp [Associated]; norm_cast
 
 end MonoidWithZero
 
@@ -301,7 +304,7 @@ theorem mk_mem_nonZeroDivisors_associates : Associates.mk a ∈ (Associates M₀
 /-- The non-zero divisors of associates of a monoid with zero `M₀` are isomorphic to the associates
 of the non-zero divisors of `M₀` under the map `⟨⟦a⟧, _⟩ ↦ ⟦⟨a, _⟩⟧`. -/
 def associatesNonZeroDivisorsEquiv : (Associates M₀)⁰ ≃* Associates M₀⁰ where
-  toEquiv := .subtypeQuotientEquivQuotientSubtype (s₂ := Associated.setoid _)
+  toEquiv := .subtypeQuotientEquivQuotientSubtype _ (s₂ := Associated.setoid _)
     (· ∈ nonZeroDivisors _)
     (by simp [mem_nonZeroDivisors_iff, Quotient.forall, Associates.mk_mul_mk])
     (by simp [Associated.setoid])

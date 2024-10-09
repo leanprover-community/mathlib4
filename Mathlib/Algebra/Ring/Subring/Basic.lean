@@ -72,7 +72,7 @@ section SubringClass
 
 /-- `SubringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both a multiplicative submonoid and an additive subgroup. -/
-class SubringClass (S : Type*) (R : Type u) [Ring R] [SetLike S R] extends
+class SubringClass (S : Type*) (R : outParam (Type u)) [Ring R] [SetLike S R] extends
   SubsemiringClass S R, NegMemClass S R : Prop
 
 -- See note [lower instance priority]
@@ -433,6 +433,9 @@ theorem coe_top : ((⊤ : Subring R) : Set R) = Set.univ :=
 def topEquiv : (⊤ : Subring R) ≃+* R :=
   Subsemiring.topEquiv
 
+instance {R : Type*} [Ring R] [Fintype R] : Fintype (⊤ : Subring R) :=
+  inferInstanceAs (Fintype (⊤ : Set R))
+
 theorem card_top (R) [Ring R] [Fintype R] : Fintype.card (⊤ : Subring R) = Fintype.card R :=
   Fintype.card_congr topEquiv.toEquiv
 
@@ -659,7 +662,7 @@ variable {K : Type u} [DivisionRing K]
 
 instance instField : Field (center K) where
   inv a := ⟨a⁻¹, Set.inv_mem_center a.prop⟩
-  mul_inv_cancel a ha := Subtype.ext <| mul_inv_cancel <| Subtype.coe_injective.ne ha
+  mul_inv_cancel a ha := Subtype.ext <| mul_inv_cancel₀ <| Subtype.coe_injective.ne ha
   div a b := ⟨a / b, Set.div_mem_center a.prop b.prop⟩
   div_eq_mul_inv a b := Subtype.ext <| div_eq_mul_inv _ _
   inv_zero := Subtype.ext inv_zero
@@ -819,7 +822,7 @@ theorem mem_closure_iff {s : Set R} {x} :
           mul_mem hx hy)
       (zero_mem _) (fun x y hx hy => add_mem hx hy) fun x hx => neg_mem hx⟩
 
-/-- If all elements of `s : Set A` commute pairwise, then `closure s` is a commutative ring.  -/
+/-- If all elements of `s : Set A` commute pairwise, then `closure s` is a commutative ring. -/
 def closureCommRingOfComm {s : Set R} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
     CommRing (closure s) :=
   { (closure s).toRing with
@@ -850,7 +853,7 @@ theorem exists_list_of_mem_closure {s : Set R} {x : R} (h : x ∈ closure s) :
       ⟨l ++ m, fun t ht => (List.mem_append.1 ht).elim (hl1 t) (hm1 t), by simp [hl2, hm2]⟩)
     fun x ⟨L, hL⟩ =>
     ⟨L.map (List.cons (-1)),
-      List.forall_mem_map_iff.2 fun j hj => List.forall_mem_cons.2 ⟨Or.inr rfl, hL.1 j hj⟩,
+      List.forall_mem_map.2 fun j hj => List.forall_mem_cons.2 ⟨Or.inr rfl, hL.1 j hj⟩,
       hL.2 ▸
         List.recOn L (by simp)
           (by simp (config := { contextual := true }) [List.map_cons, add_comm])⟩
@@ -893,6 +896,14 @@ theorem map_sup (s t : Subring R) (f : R →+* S) : (s ⊔ t).map f = s.map f �
 theorem map_iSup {ι : Sort*} (f : R →+* S) (s : ι → Subring R) :
     (iSup s).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
+
+theorem map_inf (s t : Subring R) (f : R →+* S) (hf : Function.Injective f) :
+    (s ⊓ t).map f = s.map f ⊓ t.map f := SetLike.coe_injective (Set.image_inter hf)
+
+theorem map_iInf {ι : Sort*} [Nonempty ι] (f : R →+* S) (hf : Function.Injective f)
+    (s : ι → Subring R) : (iInf s).map f = ⨅ i, (s i).map f := by
+  apply SetLike.coe_injective
+  simpa using (Set.injOn_of_injective hf).image_iInter_eq (s := SetLike.coe ∘ s)
 
 theorem comap_inf (s t : Subring S) (f : R →+* S) : (s ⊓ t).comap f = s.comap f ⊓ t.comap f :=
   (gc_map_comap f).u_inf
@@ -1145,7 +1156,7 @@ variable {s : Set R}
 protected theorem InClosure.recOn {C : R → Prop} {x : R} (hx : x ∈ closure s) (h1 : C 1)
     (hneg1 : C (-1)) (hs : ∀ z ∈ s, ∀ n, C n → C (z * n)) (ha : ∀ {x y}, C x → C y → C (x + y)) :
     C x := by
-  have h0 : C 0 := add_neg_self (1 : R) ▸ ha h1 hneg1
+  have h0 : C 0 := add_neg_cancel (1 : R) ▸ ha h1 hneg1
   rcases exists_list_of_mem_closure hx with ⟨L, HL, rfl⟩
   clear hx
   induction' L with hd tl ih
@@ -1286,3 +1297,41 @@ instance center.smulCommClass_right : SMulCommClass R (center R) R :=
 end Subring
 
 end Actions
+
+namespace Subring
+
+theorem map_comap_eq (f : R →+* S) (t : Subring S) : (t.comap f).map f = t ⊓ f.range :=
+  SetLike.coe_injective Set.image_preimage_eq_inter_range
+
+theorem map_comap_eq_self
+    {f : R →+* S} {t : Subring S} (h : t ≤ f.range) : (t.comap f).map f = t := by
+  simpa only [inf_of_le_left h] using Subring.map_comap_eq f t
+
+theorem map_comap_eq_self_of_surjective
+    {f : R →+* S} (hf : Function.Surjective f) (t : Subring S) : (t.comap f).map f = t :=
+  map_comap_eq_self <| by simp [hf]
+
+theorem comap_map_eq (f : R →+* S) (s : Subring R) :
+    (s.map f).comap f = s ⊔ closure (f ⁻¹' {0}) := by
+  apply le_antisymm
+  · intro x hx
+    rw [mem_comap, mem_map] at hx
+    obtain ⟨y, hy, hxy⟩ := hx
+    replace hxy : x - y ∈ f ⁻¹' {0} := by simp [hxy]
+    rw [← closure_eq s, ← closure_union, ← add_sub_cancel y x]
+    exact Subring.add_mem _ (subset_closure <| Or.inl hy) (subset_closure <| Or.inr hxy)
+  · rw [← map_le_iff_le_comap, map_sup, f.map_closure]
+    apply le_of_eq
+    rw [sup_eq_left, closure_le]
+    exact (Set.image_preimage_subset f {0}).trans (Set.singleton_subset_iff.2 (s.map f).zero_mem)
+
+theorem comap_map_eq_self {f : R →+* S} {s : Subring R}
+    (h : f ⁻¹' {0} ⊆ s) : (s.map f).comap f = s := by
+  convert comap_map_eq f s
+  rwa [left_eq_sup, closure_le]
+
+theorem comap_map_eq_self_of_injective
+    {f : R →+* S} (hf : Function.Injective f) (s : Subring R) : (s.map f).comap f = s :=
+  SetLike.coe_injective (Set.preimage_image_eq _ hf)
+
+end Subring

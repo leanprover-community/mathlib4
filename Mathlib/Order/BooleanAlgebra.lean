@@ -767,7 +767,7 @@ protected abbrev Function.Injective.booleanAlgebra [Sup α] [Inf α] [Top α] [B
   sdiff_eq a b := by
     refine hf ((map_sdiff _ _).trans (sdiff_eq.trans ?_))
     rw [map_inf, map_compl]
-  himp_eq a b := hf $ (map_himp _ _).trans $ himp_eq.trans $ by rw [map_sup, map_compl]
+  himp_eq a b := hf <| (map_himp _ _).trans <| himp_eq.trans <| by rw [map_sup, map_compl]
 
 end lift
 
