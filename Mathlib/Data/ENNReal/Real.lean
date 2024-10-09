@@ -558,28 +558,6 @@ theorem iInf_sum {α : Type*} {f : ι → α → ℝ≥0∞} {s : Finset α} [No
     rw [Finset.forall_mem_cons] at hk
     exact add_le_add hk.1.1 (Finset.sum_le_sum fun a ha => (hk.2 a ha).2)
 
--- (Yaël) Now that we have `iInf_mul_iInf`, this theorem is too specialised
-/-- If `u v : ι → ℝ≥0∞` take real values and are antitone, then `iInf (u * v) ≤ iInf u * iInf v`. -/
-theorem iInf_mul_le_mul_iInf {u v : ℕ → ℝ≥0∞} (hu_top : ∀ x, u x ≠ ⊤) (hu : Antitone u)
-    (hv_top : ∀ x, v x ≠ ⊤) (hv : Antitone v) : iInf (u * v) ≤ iInf u * iInf v :=
-  (iInf_mul_iInf ⟨0, hu_top _⟩ ⟨0, hv_top _⟩ fun i j ↦
-    ⟨max i j, mul_le_mul' (hu le_sup_left) (hv le_sup_right)⟩).ge
-
--- (Yaël) This theorem is too specialised
-theorem le_iSup_prop (u : ℕ → ℝ≥0∞) {n k : ℕ} (hnk : n ≤ k) : u k ≤ ⨆ (k : ℕ) (_ : n ≤ k), u k :=
-  le_iSup₂_of_le k hnk le_rfl
-
--- (Yaël) This theorem is too specialised
-/-- The function sending `n : ℕ` to `⨆ (k : ℕ) (x : n ≤ k), u k` is antitone. -/
-theorem Antitone.iSup {u : ℕ → ℝ≥0∞} : Antitone fun n : ℕ ↦ ⨆ (k : ℕ) (_ : n ≤ k), u k :=
-  fun _m _n hmn ↦ biSup_mono fun _ ↦ hmn.trans
-
--- (Yaël) This theorem is too specialised
-/-- If `u : ℕ → ℝ≥0∞` is bounded above by a real number, then its `iSup` is finite. -/
-theorem iSup_ne_top_of_bddAbove {u : ℕ → ℝ≥0∞} {B : ℝ≥0} (hu : ∀ x, u x ≤ B) (n : ℕ) :
-    (⨆ (k : ℕ) (_ : n ≤ k), u k) ≠ ⊤ :=
-  ne_top_of_le_ne_top coe_ne_top <| iSup₂_le fun m _ ↦ hu m
-
 end iInf
 
 section iSup
