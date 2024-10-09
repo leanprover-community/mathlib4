@@ -77,7 +77,7 @@ register_option linter.style.check_declID : Bool := {
 }
 
 
-namespace Style.doubleUnderscore
+namespace Style.checkDeclID
 
 /-- Checks whether a given identifier name contains "__". -/
 def contains_double_underscore (stx : Syntax) : Bool :=
@@ -92,7 +92,9 @@ def getNames : Syntax → Array Syntax
   | _ => default
 
 /-- The `checkDeclID` linter: it this linter emits a warning, then a declID is considered
-non-standard style. Currently we only check if it contains a double underscore ("__") as a substring.
+non-standard style. Currently we only check if it contains a double underscore ("__") as a
+substring.
+
 **Why is this bad?** Double underscores in theorem names can be considered non-standard style and
 probably have been introduced by accident
 **How to fix this?** Use single underscores to separate parts of a name, following standard naming
@@ -114,6 +116,6 @@ def checkDeclIDLinter: Linter where
 
 initialize addLinter checkDeclIDLinter
 
-end Style.doubleUnderscore
+end Style.checkDeclID
 
 end Mathlib.Linter

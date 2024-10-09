@@ -241,7 +241,6 @@ theorem toEmbeddingOfEqTop__apply {f : M ≃ₚ[L] N} (h : f.dom = ⊤) (m : M) 
   rcases f with ⟨dom, cod, g⟩
   cases h
   rfl
-
 /-- Given a partial equivalence which has the whole structure as domain and
   as codomain, returns the corresponding equivalence. -/
 def toEquivOfEqTop {f : M ≃ₚ[L] N} (h_dom : f.dom = ⊤)
