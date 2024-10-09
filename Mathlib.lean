@@ -886,6 +886,7 @@ import Mathlib.AlgebraicGeometry.Spec
 import Mathlib.AlgebraicGeometry.Stalk
 import Mathlib.AlgebraicGeometry.StructureSheaf
 import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
+import Mathlib.AlgebraicTopology.AugmentedSimplexCategory
 import Mathlib.AlgebraicTopology.CechNerve
 import Mathlib.AlgebraicTopology.DoldKan.Compatibility
 import Mathlib.AlgebraicTopology.DoldKan.Decomposition
@@ -3576,6 +3577,7 @@ import Mathlib.Order.Category.CompleteLat
 import Mathlib.Order.Category.DistLat
 import Mathlib.Order.Category.FinBddDistLat
 import Mathlib.Order.Category.FinBoolAlg
+import Mathlib.Order.Category.FinLinOrd
 import Mathlib.Order.Category.FinPartOrd
 import Mathlib.Order.Category.Frm
 import Mathlib.Order.Category.HeytAlg
