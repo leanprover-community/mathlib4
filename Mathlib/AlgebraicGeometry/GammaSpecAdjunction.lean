@@ -282,6 +282,8 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
         = toΓSpecFun X x := by rw [ContinuousMap.coe_mk]
       erw [this]
       dsimp [toΓSpecFun]
+      -- TODO: this instance was found automatically before #6045
+      have := @AlgebraicGeometry.LocallyRingedSpace.isLocalRingHomStalkMap X Y
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
       erw [← LocalRing.comap_closedPoint (f.stalkMap x), ←
         PrimeSpectrum.comap_comp_apply, ← PrimeSpectrum.comap_comp_apply]
@@ -314,22 +316,21 @@ theorem right_triangle (R : CommRingCat) :
 
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `LocallyRingedSpace`. -/
 -- Porting note: `simps` cause a time out, so `Unit` and `counit` will be added manually
-def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} :=
-  Adjunction.mkOfUnitCounit
-    { unit := identityToΓSpec
-      counit := (NatIso.op SpecΓIdentity).inv
-      left_triangle := by
-        ext X; erw [Category.id_comp]
-        exact congr_arg Quiver.Hom.op (left_triangle X)
-      right_triangle := by
-        ext R : 2
-        -- Porting note: a little bit hand holding
-        change identityToΓSpec.app _ ≫ 𝟙 _ ≫ Spec.toLocallyRingedSpace.map _ =
-          𝟙 _
-        simp_rw [Category.id_comp, show (NatIso.op SpecΓIdentity).inv.app R =
-          (SpecΓIdentity.inv.app R.unop).op from rfl]
-        exact right_triangle R.unop
-        }
+def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} where
+  unit := identityToΓSpec
+  counit := (NatIso.op SpecΓIdentity).inv
+  left_triangle_components X := by
+    simp only [Functor.id_obj, Functor.rightOp_obj, Γ_obj, Functor.comp_obj,
+      Spec.toLocallyRingedSpace_obj, Spec.locallyRingedSpaceObj_toSheafedSpace,
+      Spec.sheafedSpaceObj_carrier, Spec.sheafedSpaceObj_presheaf, Functor.rightOp_map, Γ_map,
+      Quiver.Hom.unop_op, NatIso.op_inv, NatTrans.op_app, SpecΓIdentity_inv_app]
+    exact congr_arg Quiver.Hom.op (left_triangle X)
+  right_triangle_components R := by
+    simp only [Spec.toLocallyRingedSpace_obj, Functor.id_obj, Functor.comp_obj, Functor.rightOp_obj,
+      Γ_obj, Spec.locallyRingedSpaceObj_toSheafedSpace, Spec.sheafedSpaceObj_carrier,
+      Spec.sheafedSpaceObj_presheaf, NatIso.op_inv, NatTrans.op_app, op_unop, SpecΓIdentity_inv_app,
+      Spec.toLocallyRingedSpace_map, Quiver.Hom.unop_op]
+    exact right_triangle R.unop
 
 lemma locallyRingedSpaceAdjunction_unit :
     locallyRingedSpaceAdjunction.unit = identityToΓSpec := rfl
@@ -375,14 +376,15 @@ lemma toOpen_comp_locallyRingedSpaceAdjunction_homEquiv_app
   rfl
 
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `Scheme`. -/
-def adjunction : Scheme.Γ.rightOp ⊣ Scheme.Spec.{u} where
-  homEquiv X Y := locallyRingedSpaceAdjunction.{u}.homEquiv X.toLocallyRingedSpace Y
-  unit :=
-  { app := fun X ↦ locallyRingedSpaceAdjunction.{u}.unit.app X.toLocallyRingedSpace
-    naturality := fun _ _ f ↦ locallyRingedSpaceAdjunction.{u}.unit.naturality f }
-  counit := (NatIso.op Scheme.SpecΓIdentity.{u}).inv
-  homEquiv_unit := rfl
-  homEquiv_counit := rfl
+def adjunction : Scheme.Γ.rightOp ⊣ Scheme.Spec.{u} :=
+  Adjunction.mk' {
+    homEquiv := fun X Y ↦ locallyRingedSpaceAdjunction.{u}.homEquiv X.toLocallyRingedSpace Y
+    unit :=
+    { app := fun X ↦ locallyRingedSpaceAdjunction.{u}.unit.app X.toLocallyRingedSpace
+      naturality := fun _ _ f ↦ locallyRingedSpaceAdjunction.{u}.unit.naturality f }
+    counit := (NatIso.op Scheme.SpecΓIdentity.{u}).inv
+    homEquiv_unit := rfl
+    homEquiv_counit := rfl }
 
 theorem adjunction_homEquiv_apply {X : Scheme} {R : CommRingCatᵒᵖ}
     (f : (op <| Scheme.Γ.obj <| op X) ⟶ R) :
@@ -403,14 +405,13 @@ theorem adjunction_counit_app' {R : CommRingCatᵒᵖ} :
 theorem adjunction_counit_app {R : CommRingCatᵒᵖ} :
     ΓSpec.adjunction.counit.app R = (Scheme.ΓSpecIso (unop R)).inv.op := rfl
 
--- This is not a simp lemma to respect the abstraction
-theorem adjunction_unit_app {X : Scheme} :
-    ΓSpec.adjunction.unit.app X = locallyRingedSpaceAdjunction.unit.app X.1 := rfl
+/-- The canonical map `X ⟶ Spec Γ(X, ⊤)`. This is the unit of the `Γ-Spec` adjunction. -/
+def _root_.AlgebraicGeometry.Scheme.toSpecΓ (X : Scheme.{u}) : X ⟶ Spec Γ(X, ⊤) :=
+  ΓSpec.adjunction.unit.app X
 
-@[reassoc (attr := simp)]
-theorem adjunction_unit_naturality {X Y : Scheme.{u}} (f : X ⟶ Y) :
-    f ≫ ΓSpec.adjunction.unit.app Y = ΓSpec.adjunction.unit.app X ≫ Spec.map (f.app ⊤) :=
-  ΓSpec.adjunction.unit.naturality f
+@[simp]
+theorem adjunction_unit_app {X : Scheme} :
+    ΓSpec.adjunction.unit.app X = X.toSpecΓ := rfl
 
 instance isIso_locallyRingedSpaceAdjunction_counit :
     IsIso.{u + 1, u + 1} locallyRingedSpaceAdjunction.counit :=
@@ -422,56 +423,62 @@ instance isIso_adjunction_counit : IsIso ΓSpec.adjunction.counit := by
   rw [adjunction_counit_app]
   infer_instance
 
+end ΓSpec
+
+@[reassoc (attr := simp)]
+theorem Scheme.toSpecΓ_naturality {X Y : Scheme.{u}} (f : X ⟶ Y) :
+    f ≫ Y.toSpecΓ = X.toSpecΓ ≫ Spec.map (f.app ⊤) :=
+  ΓSpec.adjunction.unit.naturality f
+
 @[simp]
-theorem adjunction_unit_app_app_top (X : Scheme.{u}) :
-    (ΓSpec.adjunction.unit.app X).app ⊤ = (Scheme.ΓSpecIso Γ(X, ⊤)).hom := by
+theorem Scheme.toSpecΓ_app_top (X : Scheme.{u}) :
+    X.toSpecΓ.app ⊤ = (Scheme.ΓSpecIso Γ(X, ⊤)).hom := by
   have := ΓSpec.adjunction.left_triangle_components X
   dsimp at this
   rw [← IsIso.eq_comp_inv] at this
-  simp only [adjunction_counit_app, Functor.id_obj, Functor.comp_obj, Functor.rightOp_obj,
+  simp only [ΓSpec.adjunction_counit_app, Functor.id_obj, Functor.comp_obj, Functor.rightOp_obj,
     Scheme.Γ_obj, Category.id_comp] at this
   rw [← Quiver.Hom.op_inj.eq_iff, this, ← op_inv, IsIso.Iso.inv_inv]
 
 @[simp]
 theorem SpecMap_ΓSpecIso_hom (R : CommRingCat.{u}) :
-    Spec.map ((Scheme.ΓSpecIso R).hom) = adjunction.unit.app (Spec R) := by
+    Spec.map ((Scheme.ΓSpecIso R).hom) = (Spec R).toSpecΓ := by
   have := ΓSpec.adjunction.right_triangle_components (op R)
   dsimp at this
   rwa [← IsIso.eq_comp_inv, Category.id_comp, ← Spec.map_inv, IsIso.Iso.inv_inv, eq_comm] at this
 
-lemma adjunction_unit_map_basicOpen (X : Scheme.{u}) (r : Γ(X, ⊤)) :
-    (ΓSpec.adjunction.unit.app X ⁻¹ᵁ (PrimeSpectrum.basicOpen r)) = X.basicOpen r := by
-  rw [← basicOpen_eq_of_affine]
-  erw [Scheme.preimage_basicOpen]
+lemma Scheme.toSpecΓ_preimage_basicOpen (X : Scheme.{u}) (r : Γ(X, ⊤)) :
+    X.toSpecΓ ⁻¹ᵁ (PrimeSpectrum.basicOpen r) = X.basicOpen r := by
+  rw [← basicOpen_eq_of_affine, Scheme.preimage_basicOpen]
   congr
-  rw [ΓSpec.adjunction_unit_app_app_top]
+  rw [Scheme.toSpecΓ_app_top]
   exact Iso.inv_hom_id_apply _ _
 
-theorem toOpen_unit_app_val_c_app {X : Scheme.{u}} (U) :
-    StructureSheaf.toOpen _ _ ≫ (ΓSpec.adjunction.unit.app X).val.c.app U =
+-- Warning: this LHS of this lemma breaks the structure-sheaf abstraction.
+@[reassoc (attr := simp)]
+theorem toOpen_toSpecΓ_app {X : Scheme.{u}} (U) :
+    StructureSheaf.toOpen _ _ ≫ X.toSpecΓ.app U =
       X.presheaf.map (homOfLE (by exact le_top)).op := by
   rw [← StructureSheaf.toOpen_res _ _ _ (homOfLE le_top), Category.assoc,
-    NatTrans.naturality _ (homOfLE (le_top (a := U.unop))).op]
+    NatTrans.naturality _ (homOfLE (le_top (a := U))).op]
   show (ΓSpec.adjunction.counit.app (Scheme.Γ.rightOp.obj X)).unop ≫
     (Scheme.Γ.rightOp.map (ΓSpec.adjunction.unit.app X)).unop ≫ _ = _
   rw [← Category.assoc, ← unop_comp, ΓSpec.adjunction.left_triangle_components]
   dsimp
   exact Category.id_comp _
 
--- Warning: this LHS of this lemma breaks the structure-sheaf abstraction.
-@[reassoc (attr := simp)]
-theorem toOpen_unit_app_val_c_app' {X : Scheme.{u}} (U : Opens (PrimeSpectrum Γ(X, ⊤))) :
-    toOpen Γ(X, ⊤) U ≫ (adjunction.unit.app X).app U =
-      X.presheaf.map (homOfLE (by exact le_top)).op :=
-  ΓSpec.toOpen_unit_app_val_c_app (op U)
-
-end ΓSpec
-
 theorem ΓSpecIso_obj_hom {X : Scheme.{u}} (U : X.Opens) :
     (Scheme.ΓSpecIso Γ(X, U)).hom = (Spec.map U.topIso.inv).app ⊤ ≫
-      (ΓSpec.adjunction.unit.app U).app ⊤ ≫ U.topIso.hom := by
-  rw [ΓSpec.adjunction_unit_app_app_top] -- why can't simp find this
-  simp
+      U.toScheme.toSpecΓ.app ⊤ ≫ U.topIso.hom := by simp
+
+@[deprecated (since := "2024-07-24")]
+alias ΓSpec.adjunction_unit_naturality := Scheme.toSpecΓ_naturality
+@[deprecated (since := "2024-07-24")]
+alias ΓSpec.adjunction_unit_naturality_assoc := Scheme.toSpecΓ_naturality_assoc
+@[deprecated (since := "2024-07-24")]
+alias ΓSpec.adjunction_unit_app_app_top := Scheme.toSpecΓ_app_top
+@[deprecated (since := "2024-07-24")]
+alias ΓSpec.adjunction_unit_map_basicOpen := Scheme.toSpecΓ_preimage_basicOpen
 
 /-! Immediate consequences of the adjunction. -/
 

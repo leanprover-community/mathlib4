@@ -348,7 +348,7 @@ open Classical in
 If `X` is a compact space, then we associate to any discrete quotient on `X` a finite set of
 clopen subsets of `X`, given by the fibers of `proj`.
 
-TODO: prove that these form a partition of `X` 
+TODO: prove that these form a partition of `X`
 -/
 noncomputable def finsetClopens [CompactSpace X]
     (d : DiscreteQuotient X) : Finset (Clopens X) := have : Fintype d := Fintype.ofFinite _
@@ -368,7 +368,7 @@ lemma comp_finsetClopens [CompactSpace X] :
     simpa [← h] using Quotient.mk_eq_iff_out (s := d.toSetoid)
   · exact fun ⟨y, h⟩ ↦ ⟨d.proj y, by ext; simp [h, proj]⟩
 
-/-- `finsetClopens X` is injective. -/
+/-- `finsetClopens X` is injective. -/
 theorem finsetClopens_inj [CompactSpace X] :
     (finsetClopens X).Injective := by
   apply Function.Injective.of_comp (f := Set.image (fun (t : Clopens X) ↦ t.carrier) ∘ Finset.toSet)

@@ -59,7 +59,7 @@ variable (Z : Type*) [SMul P Z]
 
 /-- Equivariant functions :
 When `φ : M → N` is a function, and types `X` and `Y` are endowed with actions of `M` and `N`,
-a function `f : X → Y` is `φ`-equivariant if `f (m • x) = (φ m) • (f x)`.  -/
+a function `f : X → Y` is `φ`-equivariant if `f (m • x) = (φ m) • (f x)`. -/
 -- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure MulActionHom where

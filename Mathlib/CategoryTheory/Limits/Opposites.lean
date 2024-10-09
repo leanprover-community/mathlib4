@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Floris van Doorn
+Authors: Kim Morrison, Floris van Doorn
 -/
 import Mathlib.CategoryTheory.Limits.Filtered
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
@@ -322,11 +322,11 @@ instance : HasProduct (op <| Z ·) := hasLimitOfIso
     (Discrete.opposite α).inverse ⋙ (Discrete.functor Z).op ≅
     Discrete.functor (op <| Z ·))
 
-/-- A `Cofan` gives a `Fan` in the opposite category.  -/
+/-- A `Cofan` gives a `Fan` in the opposite category. -/
 @[simp]
 def Cofan.op (c : Cofan Z) : Fan (op <| Z ·) := Fan.mk _ (fun a ↦ (c.inj a).op)
 
-/-- If a `Cofan` is colimit, then its opposite is limit. -/
+/-- If a `Cofan` is colimit, then its opposite is limit. -/
 def Cofan.IsColimit.op {c : Cofan Z} (hc : IsColimit c) : IsLimit c.op := by
   let e : Discrete.functor (Opposite.op <| Z ·) ≅ (Discrete.opposite α).inverse ⋙
     (Discrete.functor Z).op := Discrete.natIso (fun _ ↦ Iso.refl _)
@@ -422,7 +422,7 @@ instance : HasCoproduct (op <| Z ·) := hasColimitOfIso
 @[simp]
 def Fan.op (f : Fan Z) : Cofan (op <| Z ·) := Cofan.mk _ (fun a ↦ (f.proj a).op)
 
-/-- If a `Fan` is limit, then its opposite is colimit. -/
+/-- If a `Fan` is limit, then its opposite is colimit. -/
 def Fan.IsLimit.op {f : Fan Z} (hf : IsLimit f) : IsColimit f.op := by
   let e : Discrete.functor (Opposite.op <| Z ·) ≅ (Discrete.opposite α).inverse ⋙
     (Discrete.functor Z).op := Discrete.natIso (fun _ ↦ Iso.refl _)

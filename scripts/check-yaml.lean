@@ -22,11 +22,11 @@ def readJsonFile (α) [FromJson α] (path : System.FilePath) : IO α := do
   let _ : MonadExceptOf String IO := ⟨throw ∘ IO.userError, fun x _ => x⟩
   liftExcept <| fromJson? <|← liftExcept <| Json.parse <|← IO.FS.readFile path
 
-def databases : List (String × String) := [
-  ("undergrad.json", "Entries in `docs/undergrad.yaml` refer to declarations that don't exist. Please correct the following:"),
-  ("overview.json", "Entries in `docs/overview.yaml` refer to declarations that don't exist. Please correct the following:"),
-  ("100.json", "Entries in `docs/100.yaml` refer to declarations that don't exist. Please correct the following:")
-]
+def databases : List (String × String) :=
+  ["undergrad", "overview", "100"].map fun dir =>
+    (dir ++ ".json",
+      s!"Entries in `docs/{dir}.yaml` refer to declarations that don't exist. \
+        Please correct the following:")
 
 def processDb (decls : ConstMap) : String × String → IO Bool
 | (file, msg) => do

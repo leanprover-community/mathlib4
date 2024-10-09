@@ -3,10 +3,10 @@ Copyright (c) 2022 Yaël Dillies, Ella Yu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Ella Yu
 -/
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Fintype.Prod
-import Mathlib.Data.Finset.Pointwise.Basic
 
 /-!
 # Additive energy
@@ -164,7 +164,7 @@ variable [CommMonoid α]
 
 @[to_additive] lemma mulEnergy_comm (s t : Finset α) : Eₘ[s, t] = Eₘ[t, s] := by
   rw [mulEnergy, ← Finset.card_map (Equiv.prodComm _ _).toEmbedding, map_filter]
-  simp [-Finset.card_map, eq_comm, mulEnergy, mul_comm, map_eq_image, Function.comp]
+  simp [-Finset.card_map, eq_comm, mulEnergy, mul_comm, map_eq_image, Function.comp_def]
 
 end CommMonoid
 
@@ -183,7 +183,7 @@ lemma mulEnergy_univ_left : Eₘ[univ, t] = Fintype.card α * t.card ^ 2 := by
     rw [mul_right_cancel h.1]
   rw [← card_image_of_injOn this]
   congr with a
-  simp only [mem_filter, mem_product, mem_univ, true_and_iff, mem_image, exists_prop,
+  simp only [mem_filter, mem_product, mem_univ, true_and, mem_image, exists_prop,
     Prod.exists]
   refine ⟨fun h => ⟨a.1.1 * a.2.2⁻¹, _, _, h.1, by simp [f, mul_right_comm, h.2]⟩, ?_⟩
   rintro ⟨b, c, d, hcd, rfl⟩

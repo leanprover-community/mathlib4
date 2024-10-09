@@ -296,7 +296,7 @@ theorem card_eq_of_bijective (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i,
   have : s = (range n).attach.image fun i => f i.1 (mem_range.1 i.2) := by
     ext a
     suffices _ : a ∈ s ↔ ∃ (i : _) (hi : i ∈ range n), f i (mem_range.1 hi) = a by
-      simpa only [mem_image, mem_attach, true_and_iff, Subtype.exists]
+      simpa only [mem_image, mem_attach, true_and, Subtype.exists]
     constructor
     · intro ha; obtain ⟨i, hi, rfl⟩ := hf a ha; use i, mem_range.2 hi
     · rintro ⟨i, hi, rfl⟩; apply hf'
@@ -683,6 +683,11 @@ lemma exists_of_one_lt_card_pi {ι : Type*} {α : ι → Type*} [∀ i, Decidabl
   obtain rfl | hne := eq_or_ne (a2 i) ai
   exacts [⟨a1, h1, hne⟩, ⟨a2, h2, hne⟩]
 
+theorem card_eq_succ_iff_cons :
+    s.card = n + 1 ↔ ∃ a t, ∃ (h : a ∉ t), cons a t h = s ∧ t.card = n :=
+  ⟨cons_induction_on s (by simp) fun a s _ _ _ => ⟨a, s, by simp_all⟩,
+   fun ⟨a, t, _, hs, _⟩ => by simpa [← hs]⟩
+
 section DecidableEq
 variable [DecidableEq α]
 
@@ -825,7 +830,5 @@ theorem lt_wf {α} : WellFounded (@LT.lt (Finset α) _) :=
   have H : Subrelation (@LT.lt (Finset α) _) (InvImage (· < ·) card) := fun {_ _} hxy =>
     card_lt_card hxy
   Subrelation.wf H <| InvImage.wf _ <| (Nat.lt_wfRel).2
-
-@[deprecated (since := "2023-12-27")] alias card_le_of_subset := card_le_card
 
 end Finset
