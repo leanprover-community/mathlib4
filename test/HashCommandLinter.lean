@@ -28,7 +28,8 @@ section ignored_commands
 #check 0
 
 /--
-info:
+warning: `#`-commands, such as '#eval', are not allowed in 'Mathlib'
+note: this linter can be disabled with `set_option linter.hashCommand false`
 -/
 #guard_msgs in
 -- emits an empty message -- the linter allows it
