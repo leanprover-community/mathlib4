@@ -62,7 +62,7 @@ theorem zpow_lt_iff_lt (hx : 1 < a) : a ^ m < a ^ n ↔ m < n :=
 
 @[deprecated zpow_le_zpow_iff_right₀ (since := "2024-10-08")]
 theorem zpow_le_iff_le (hx : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n :=
- zpow_right_inj zpow_le_zpow_iff_right₀ hx
+  zpow_le_zpow_iff_right₀ hx
 
 @[deprecated div_le_self (since := "2024-10-08")]
 theorem div_pow_le (ha : 0 ≤ a) (hb : 1 ≤ b) (k : ℕ) : a / b ^ k ≤ a :=
