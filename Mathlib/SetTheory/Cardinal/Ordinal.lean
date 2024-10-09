@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 import Mathlib.Order.Bounded
 import Mathlib.SetTheory.Cardinal.PartENat
 import Mathlib.SetTheory.Ordinal.Principal
+import Mathlib.SetTheory.Ordinal.Enum
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -347,16 +348,6 @@ theorem ord_card_unbounded : Unbounded (· < ·) { b : Ordinal | b.card.ord = b 
 theorem eq_aleph'_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) : ∃ a, (aleph' a).ord = o :=
   ⟨aleph'.symm o.card, by simpa using ho⟩
 
-/-- `ord ∘ aleph'` enumerates the ordinals that are cardinals. -/
-@[deprecated (since := "2024-09-24")]
-theorem ord_aleph'_eq_enum_card : ord ∘ aleph' = enumOrd { b : Ordinal | b.card.ord = b } := by
-  rw [← eq_enumOrd _ ord_card_unbounded, range_eq_iff]
-  exact
-    ⟨aleph'_isNormal.strictMono,
-      ⟨fun a => by
-        dsimp
-        rw [card_ord], fun b hb => eq_aleph'_of_eq_card_ord hb⟩⟩
-
 /-- Infinite ordinals that are cardinals are unbounded. -/
 @[deprecated (since := "2024-09-24")]
 theorem ord_card_unbounded' : Unbounded (· < ·) { b : Ordinal | b.card.ord = b ∧ ω ≤ b } :=
@@ -369,18 +360,6 @@ theorem eq_aleph_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) (ho' : ω �
   use a - ω
   rwa [aleph_eq_aleph', Ordinal.add_sub_cancel_of_le]
   rwa [← aleph0_le_aleph', ← ord_le_ord, ha, ord_aleph0]
-
-/-- `ord ∘ aleph` enumerates the infinite ordinals that are cardinals. -/
-@[deprecated (since := "2024-09-24")]
-theorem ord_aleph_eq_enum_card :
-    ord ∘ aleph = enumOrd { b : Ordinal | b.card.ord = b ∧ ω ≤ b } := by
-  rw [← eq_enumOrd _ ord_card_unbounded']
-  use aleph_isNormal.strictMono
-  rw [range_eq_iff]
-  refine ⟨fun a => ⟨?_, ?_⟩, fun b hb => eq_aleph_of_eq_card_ord hb.1 hb.2⟩
-  · rw [Function.comp_apply, card_ord]
-  · rw [← ord_aleph0, Function.comp_apply, ord_le_ord]
-    exact aleph0_le_aleph _
 
 end deprecated
 

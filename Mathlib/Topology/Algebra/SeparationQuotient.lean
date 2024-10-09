@@ -333,6 +333,12 @@ instance instCommRing [CommRing R] [TopologicalRing R] :
   surjective_mk.commRing mk mk_zero mk_one mk_add mk_mul mk_neg mk_sub mk_smul mk_smul mk_pow
     mk_natCast mk_intCast
 
+/-- `SeparationQuotient.mk` as a `RingHom`. -/
+@[simps]
+def mkRingHom [NonAssocSemiring R] [TopologicalSemiring R] : R →+* SeparationQuotient R where
+  toFun := mk
+  map_one' := mk_one; map_zero' := mk_zero; map_add' := mk_add; map_mul' := mk_mul
+
 end Ring
 
 section DistribSMul
@@ -374,6 +380,21 @@ def mkCLM : M →L[R] SeparationQuotient M where
   map_smul' := mk_smul
 
 end Module
+
+section Algebra
+variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+    [TopologicalSpace A] [TopologicalSemiring A] [ContinuousConstSMul R A]
+
+instance instAlgebra : Algebra R (SeparationQuotient A) where
+  toRingHom := mkRingHom.comp (algebraMap R A)
+  commutes' r := Quotient.ind fun a => congrArg _ <| Algebra.commutes r a
+  smul_def' r := Quotient.ind fun a => congrArg _ <| Algebra.smul_def r a
+
+@[simp]
+theorem mk_algebraMap (r : R) : mk (algebraMap R A r) = algebraMap R (SeparationQuotient A) r :=
+  rfl
+
+end Algebra
 
 section VectorSpace
 

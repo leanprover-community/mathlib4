@@ -1402,7 +1402,7 @@ theorem ContinuousAt.eventually_mem {f : X → Y} {x : X} (hf : ContinuousAt f x
     (hs : s ∈ 𝓝 (f x)) : ∀ᶠ y in 𝓝 x, f y ∈ s :=
   hf hs
 
-/-- If a function ``f` tends to somewhere other than `𝓝 (f x)` at `x`,
+/-- If a function `f` tends to somewhere other than `𝓝 (f x)` at `x`,
 then `f` is not continuous at `x`
 -/
 lemma not_continuousAt_of_tendsto {f : X → Y} {l₁ : Filter X} {l₂ : Filter Y} {x : X}

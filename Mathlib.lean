@@ -3629,6 +3629,7 @@ import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Order.Filter.CountableSeparatingOn
 import Mathlib.Order.Filter.Curry
+import Mathlib.Order.Filter.Defs
 import Mathlib.Order.Filter.ENNReal
 import Mathlib.Order.Filter.EventuallyConst
 import Mathlib.Order.Filter.Extr
@@ -3884,6 +3885,7 @@ import Mathlib.RingTheory.Derivation.ToSquareZero
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.DiscreteValuationRing.TFAE
 import Mathlib.RingTheory.Discriminant
+import Mathlib.RingTheory.DualNumber
 import Mathlib.RingTheory.EisensteinCriterion
 import Mathlib.RingTheory.EssentialFiniteness
 import Mathlib.RingTheory.Etale.Basic
@@ -4163,6 +4165,7 @@ import Mathlib.SetTheory.Lists
 import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.SetTheory.Ordinal.Basic
 import Mathlib.SetTheory.Ordinal.CantorNormalForm
+import Mathlib.SetTheory.Ordinal.Enum
 import Mathlib.SetTheory.Ordinal.Exponential
 import Mathlib.SetTheory.Ordinal.FixedPoint
 import Mathlib.SetTheory.Ordinal.FixedPointApproximants
@@ -4618,6 +4621,7 @@ import Mathlib.Topology.ContinuousMap.CocompactMap
 import Mathlib.Topology.ContinuousMap.Compact
 import Mathlib.Topology.ContinuousMap.CompactlySupported
 import Mathlib.Topology.ContinuousMap.ContinuousMapZero
+import Mathlib.Topology.ContinuousMap.Defs
 import Mathlib.Topology.ContinuousMap.Ideals
 import Mathlib.Topology.ContinuousMap.LocallyConstant
 import Mathlib.Topology.ContinuousMap.Ordered
