@@ -332,6 +332,11 @@ def fact.map.arr {n}
     | 0 => rfl
     | 1 => rfl
 
+/-- For each natural number `n`, `nerveRightExtension.coneAt C n` defines a cone with summit
+`nerve C _[n]` over the diagram
+`(StructuredArrow.proj (op [n]) (Truncated.inclusion (n := 2)).op ⋙ nerveFunctor₂.obj C)`
+indexed by the category `StructuredArrow (op [n]) (Truncated.inclusion (n := 2)).op.` This proves
+that this cone is a limit cone.-/
 noncomputable def isPointwiseRightKanExtensionAt (C : Cat) (n : ℕ) :
     RightExtension.IsPointwiseRightKanExtensionAt
       (nerveRightExtension C) (op ([n] : SimplexCategory)) := by
@@ -378,24 +383,30 @@ noncomputable def isPointwiseRightKanExtensionAt (C : Cat) (n : ℕ) :
   }
 end
 
-noncomputable def isPointwiseRightKanExtension (C : Cat) :
+/-- Since `isPointwiseRightKanExtensionAt C n` proves that the appropriate cones are limit cones,
+`nerveRightExtension C` is a pointwise right Kan extension.-/
+noncomputable def isPointwiseRightKanExtension (C : Cat.{v, u}) :
     RightExtension.IsPointwiseRightKanExtension (nerveRightExtension C) :=
   fun Δ => isPointwiseRightKanExtensionAt C Δ.unop.len
 
-noncomputable def isPointwiseRightKanExtension.isUniversal (C : Cat) :
+/-- Since `nerveRightExtension C` is a pointwise right Kan extension, `nerveRightExtension C` is
+universal as a costructured arrow.-/
+noncomputable def isPointwiseRightKanExtension.isUniversal (C : Cat.{v, u}) :
     CostructuredArrow.IsUniversal (nerveRightExtension C) :=
   RightExtension.IsPointwiseRightKanExtension.isUniversal (isPointwiseRightKanExtension C)
 
-theorem isRightKanExtension (C : Cat) :
+theorem isRightKanExtension (C : Cat.{v, u}) :
     (nerveRightExtension C).left.IsRightKanExtension (nerveRightExtension C).hom :=
   RightExtension.IsPointwiseRightKanExtension.isRightKanExtension
     (isPointwiseRightKanExtension C)
 
-/-- The natural map from a nerve. -/
-noncomputable def cosk2NatTrans : nerveFunctor.{u, v} ⟶
-    nerveFunctor₂ ⋙ ran (Truncated.inclusion (n := 2)).op :=
+/-- The counit of `coskAdj 2` defines a natural transformation from the nerve to the right
+Kan extension of the 2-truncated nerve.-/
+noncomputable def cosk2NatTrans : nerveFunctor.{u, v} ⟶ nerveFunctor₂ ⋙ Truncated.cosk 2 :=
   whiskerLeft nerveFunctor (coskAdj 2).unit
 
+/-- The natural transformation `cosk2NatTrans` defines a map of costructured arrows from
+`nerveRightExtension C` to the right extension defined by the counit of `coskAdj 2`.-/
 noncomputable def cosk2RightExtension.hom (C : Cat.{v, u}) :
     nerveRightExtension C ⟶
       RightExtension.mk _
@@ -404,15 +415,21 @@ noncomputable def cosk2RightExtension.hom (C : Cat.{v, u}) :
   CostructuredArrow.homMk (cosk2NatTrans.app C)
     ((coskAdj 2).left_triangle_components (nerveFunctor.obj C))
 
-instance cosk2RightExtension.hom_isIso (C : Cat) :
+/-- The map `cosk2RightExtension.hom C` is a natural transformation between two right Kan extensions
+of the diagram `((Truncated.inclusion (n := 2)).op ⋙ nerveFunctor.obj C)` and thus is an
+isomorphism. -/
+instance cosk2RightExtension.hom_isIso (C : Cat.{v, u}) :
     IsIso (cosk2RightExtension.hom C) :=
   isIso_of_isTerminal (isPointwiseRightKanExtension.isUniversal C)
-    (((Truncated.inclusion (n := 2)).op.ran.obj
+    (((Truncated.cosk 2).obj
       ((Truncated.inclusion (n := 2)).op ⋙ nerveFunctor.obj C)).isUniversalOfIsRightKanExtension
         ((Truncated.inclusion (n := 2)).op.ranCounit.app
           ((Truncated.inclusion (n := 2)).op ⋙ nerveFunctor.obj C)))
       (cosk2RightExtension.hom C)
 
+/-- The map `cosk2RightExtension.hom C` is a natural transformation between two right Kan extensions
+of the diagram `((Truncated.inclusion (n := 2)).op ⋙ nerveFunctor.obj C)` and thus is an
+isomorphism. -/
 noncomputable def cosk2RightExtension.component.hom.iso (C : Cat.{v, u}) :
     nerveRightExtension C ≅
       RightExtension.mk _
@@ -420,6 +437,8 @@ noncomputable def cosk2RightExtension.component.hom.iso (C : Cat.{v, u}) :
           ((Truncated.inclusion (n := 2)).op ⋙ nerveFunctor.obj C)) :=
   asIso (cosk2RightExtension.hom C)
 
+/-- The isomorphism `nerve C ≅  (Truncated.cosk 2).obj (nerve₂ C)` which shows that the nerve is
+2-coskeletal.-/
 noncomputable def cosk2NatIso.component (C : Cat.{v, u}) :
     nerveFunctor.obj C ≅ (Truncated.cosk 2).obj (nerveFunctor₂.obj C) :=
   (CostructuredArrow.proj
@@ -427,8 +446,9 @@ noncomputable def cosk2NatIso.component (C : Cat.{v, u}) :
       ((Truncated.inclusion (n := 2)).op ⋙ nerveFunctor.obj C)).mapIso
       (cosk2RightExtension.component.hom.iso C)
 
-/-- It follows that we have a natural isomorphism between `nerveFunctor` and
-`nerveFunctor ⋙ Truncated.cosk 2` whose components are the isomorphisms just established. -/
+/-- The natural isomorphism between `nerveFunctor` and `nerveFunctor ⋙ Truncated.cosk 2` whose
+components `nerve C ≅  (Truncated.cosk 2).obj (nerve₂ C)` show that nerves of categories are
+2-coskeletal.-/
 noncomputable def cosk2Iso : nerveFunctor.{u, u} ≅
     nerveFunctor₂.{u, u} ⋙ Truncated.cosk 2 := by
   apply NatIso.ofComponents cosk2NatIso.component _
