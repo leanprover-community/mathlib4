@@ -40,7 +40,9 @@ variable {α : Type*} {β : Type*}
 def Setoid.Rel (r : Setoid α) : α → α → Prop :=
   @Setoid.r _ r
 
-instance Setoid.decidableRel (r : Setoid α) [h : DecidableRel r.r] : DecidableRel r :=
+set_option linter.deprecated false in
+@[deprecated (since := "2024-10-09")]
+instance Setoid.decidableRel (r : Setoid α) [h : DecidableRel r.r] : DecidableRel r.Rel :=
   h
 
 set_option linter.deprecated false in
