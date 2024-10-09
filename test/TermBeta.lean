@@ -1,5 +1,6 @@
 import Mathlib.Util.TermBeta
 -- On command line, tests format functions with => rather than ↦ without this.
+set_option linter.style.setOption false
 set_option pp.unicode.fun true
 
 /-- info: (fun x ↦ x) true : Bool -/
@@ -23,7 +24,7 @@ set_option pp.unicode.fun true
 /-- info: ∀ (i : Nat), 0 ≤ i : Prop -/
 #guard_msgs in #check ∀ i : Nat, beta% (fun j => 0 ≤ j) i
 
-/-- info: (fun x x_1 ↦ x && x_1) true false : Bool -/
+/-- info: (fun x1 x2 ↦ x1 && x2) true false : Bool -/
 #guard_msgs in #check (· && ·) true false
 
 /-- info: true && false : Bool -/

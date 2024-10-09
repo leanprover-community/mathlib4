@@ -3,8 +3,6 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-
-import Batteries.Data.RBMap.Basic
 import Mathlib.Tactic.Linarith.Datatypes
 
 /-!
@@ -29,8 +27,6 @@ This is ultimately converted into a `Linexp` in the obvious way.
 `linearFormsAndMaxVar` is the main entry point into this file. Everything else is contained.
 -/
 
-set_option autoImplicit true
-
 open Linarith.Ineq Batteries
 
 section
@@ -41,7 +37,8 @@ open Lean Elab Tactic Meta
 and returns the value associated with this key if it exists.
 Otherwise, it fails.
 -/
-def List.findDefeq (red : TransparencyMode) (m : List (Expr × v)) (e : Expr) : MetaM v := do
+def List.findDefeq {v : Type} (red : TransparencyMode) (m : List (Expr × v)) (e : Expr) :
+    MetaM v := do
   if let some (_, n) ← m.findM? fun ⟨e', _⟩ => withTransparency red (isDefEq e e') then
     return n
   else
@@ -53,7 +50,8 @@ We introduce a local instance allowing addition of `RBMap`s,
 removing any keys with value zero.
 We don't need to prove anything about this addition, as it is only used in meta code.
 -/
-local instance [Add β] [Zero β] [DecidableEq β] : Add (RBMap α β c) where
+local instance {α β : Type*} {c : α → α → Ordering} [Add β] [Zero β] [DecidableEq β] :
+    Add (RBMap α β c) where
   add := fun f g => (f.mergeWith (fun _ b b' => b + b') g).filter (fun _ b => b ≠ 0)
 
 namespace Linarith

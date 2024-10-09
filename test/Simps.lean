@@ -91,7 +91,7 @@ initialize_simps_projections Something
 
 universe v u w
 
-structure Equiv' (α : Sort _) (β : Sort _) :=
+structure Equiv' (α : Sort _) (β : Sort _) where
   (toFun     : α → β)
   (invFun    : β → α)
   (left_inv  : invFun.LeftInverse toFun)
@@ -202,7 +202,8 @@ run_cmd liftTermElabM <| do
     #[`CountNested.nested2_fst, `CountNested.nested2_snd]
   -- todo: test that another attribute can be added (not working yet)
   guard <| hasSimpAttribute env `CountNested.nested1_fst -- simp attribute is global
-  guard <| not <| hasSimpAttribute env `CountNested.nested2_fst -- lemmas_only doesn't add simp lemma
+  guard <| not <| hasSimpAttribute env `CountNested.nested2_fst
+    -- `lemmasOnly` doesn't add simp lemma
   -- todo: maybe test that there are no other lemmas generated
   -- guard <| 7 = env.fold 0
   --   (fun d n ↦ n + if d.to_name.components.init.ilast = `CountNested then 1 else 0)
@@ -261,7 +262,7 @@ run_cmd liftTermElabM <| do
   guard <| env.find? `rflWithData'_toEquiv_toFun |>.isNone
   guard <| env.find? `test_sneaky_extra |>.isNone
 
-structure PartiallyAppliedStr :=
+structure PartiallyAppliedStr where
   (data : ℕ → MyProd ℕ ℕ)
 
 /- if we have a partially applied constructor, we treat it as if it were eta-expanded -/
@@ -278,7 +279,7 @@ run_cmd liftTermElabM <| do
   guard <| simpsAttr.getParam? env `partially_applied_term ==
     #[`partially_applied_term_data_fst, `partially_applied_term_data_snd]
 
-structure VeryPartiallyAppliedStr :=
+structure VeryPartiallyAppliedStr where
   (data : ∀β, ℕ → β → MyProd ℕ β)
 
 /- if we have a partially applied constructor, we treat it as if it were eta-expanded.
@@ -423,12 +424,12 @@ run_cmd liftTermElabM <| do
   guard <| env.find? `pprodEquivProd22_invFun_snd |>.isSome
 
 /- Tests with universe levels -/
-class has_hom (obj : Type u) : Type (max u (v+1)) :=
+class has_hom (obj : Type u) : Type (max u (v+1)) where
   (hom : obj → obj → Type v)
 
 infixr:10 " ⟶ " => has_hom.hom -- type as \h
 
-class CategoryStruct (obj : Type u) extends has_hom.{v} obj : Type (max u (v+1)) :=
+class CategoryStruct (obj : Type u) extends has_hom.{v} obj : Type (max u (v+1)) where
   (id   : ∀ X : obj, hom X X)
   (comp : ∀ {X Y Z : obj}, (X ⟶ Y) → (Y ⟶ Z) → (X ⟶ Z))
 
@@ -449,7 +450,7 @@ example (X Y Z : Type u) (f : X ⟶ Y) (g : Y ⟶ Z) {k : X → Z} (h : ∀ x, g
 
 namespace coercing
 
-structure FooStr :=
+structure FooStr where
  (c : Type)
  (x : c)
 
@@ -461,7 +462,7 @@ instance : CoeSort FooStr Type := ⟨FooStr.c⟩
 example {x : Type} (h : ℕ = x) : foo = x := by simp only [foo_c]; rw [h]
 example {x : ℕ} (h : (3 : ℕ) = x) : foo.x = x := by simp only [foo_x]; rw [h]
 
-structure VooStr (n : ℕ) :=
+structure VooStr (n : ℕ) where
  (c : Type)
  (x : c)
 
@@ -473,7 +474,7 @@ instance (n : ℕ) : CoeSort (VooStr n) Type := ⟨VooStr.c⟩
 example {x : Type} (h : ℕ = x) : voo = x := by simp only [voo_c]; rw [h]
 example {x : ℕ} (h : (3 : ℕ) = x) : voo.x = x := by simp only [voo_x]; rw [h]
 
-structure Equiv2 (α : Sort _) (β : Sort _) :=
+structure Equiv2 (α : Sort _) (β : Sort _) where
   (toFun     : α → β)
   (invFun    : β → α)
   (left_inv  : invFun.LeftInverse toFun)
@@ -514,7 +515,7 @@ class Semigroup (G : Type u) extends Mul G where
 example {α β} [Semigroup α] [Semigroup β] (x y : α × β) : x * y = (x.1 * y.1, x.2 * y.2) := by simp
 example {α β} [Semigroup α] [Semigroup β] (x y : α × β) : (x * y).1 = x.1 * y.1 := by simp
 
-structure BSemigroup :=
+structure BSemigroup where
   (G : Type _)
   (op : G → G → G)
   -- (infix:60 " * " => op) -- this seems to be removed
@@ -534,8 +535,8 @@ protected def prod (G H : BSemigroup) : BSemigroup :=
 
 end BSemigroup
 
-class ExtendingStuff (G : Type u) extends Mul G, Zero G, Neg G, HasSubset G :=
-  (new_axiom : ∀ x : G, x * - 0 ⊆ - x)
+class ExtendingStuff (G : Type u) extends Mul G, Zero G, Neg G, HasSubset G where
+  new_axiom : ∀ x : G, x * - 0 ⊆ - x
 
 @[simps] def bar : ExtendingStuff ℕ :=
   { mul := (·*·)
@@ -549,8 +550,8 @@ attribute [local instance] bar
 example (x : ℕ) : x * - 0 ⊆ - x := by simp
 end
 
-class new_ExtendingStuff (G : Type u) extends Mul G, Zero G, Neg G, HasSubset G :=
-  (new_axiom : ∀ x : G, x * - 0 ⊆ - x)
+class new_ExtendingStuff (G : Type u) extends Mul G, Zero G, Neg G, HasSubset G where
+  new_axiom : ∀ x : G, x * - 0 ⊆ - x
 
 @[simps] def new_bar : new_ExtendingStuff ℕ :=
   { mul := (·*·)
@@ -569,7 +570,7 @@ end coercing
 
 namespace ManualCoercion
 
-structure Equiv (α : Sort _) (β : Sort _) :=
+structure Equiv (α : Sort _) (β : Sort _) where
   (toFun  : α → β)
   (invFun : β → α)
 
@@ -597,7 +598,7 @@ end ManualCoercion
 
 namespace FaultyManualCoercion
 
-structure Equiv (α : Sort _) (β : Sort _) :=
+structure Equiv (α : Sort _) (β : Sort _) where
   (toFun  : α → β)
   (invFun : β → α)
 
@@ -621,7 +622,7 @@ namespace ManualInitialize
 /- defining a manual coercion. -/
 variable {α β γ : Sort _}
 
-structure Equiv (α : Sort _) (β : Sort _) :=
+structure Equiv (α : Sort _) (β : Sort _) where
   (toFun  : α → β)
   (invFun : β → α)
 
@@ -653,7 +654,7 @@ namespace FaultyUniverses
 
 variable {α β γ : Sort _}
 
-structure Equiv (α : Sort u) (β : Sort v) :=
+structure Equiv (α : Sort u) (β : Sort v) where
   (toFun  : α → β)
   (invFun : β → α)
 
@@ -682,7 +683,7 @@ namespace ManualUniverses
 
 variable {α β γ : Sort _}
 
-structure Equiv (α : Sort u) (β : Sort v) :=
+structure Equiv (α : Sort u) (β : Sort v) where
   (toFun  : α → β)
   (invFun : β → α)
 
@@ -703,7 +704,7 @@ end ManualUniverses
 
 namespace ManualProjectionNames
 
-structure Equiv (α : Sort _) (β : Sort _) :=
+structure Equiv (α : Sort _) (β : Sort _) where
   (toFun  : α → β)
   (invFun : β → α)
 
@@ -728,12 +729,12 @@ run_cmd liftTermElabM <| do
 protected def Equiv.trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
   ⟨e₂ ∘ (e₁ : α → β), e₁.symm ∘ (e₂.symm : γ → β)⟩
 
-example (e₁ : α ≃ β) (e₂ : β ≃ γ) (x : α) {z} (h : e₂ (e₁ x) = z) : (e₁.trans e₂) x = z :=
-by simp only [Equiv.trans_apply]; rw [h]
+example (e₁ : α ≃ β) (e₂ : β ≃ γ) (x : α) {z} (h : e₂ (e₁ x) = z) : (e₁.trans e₂) x = z := by
+  simp only [Equiv.trans_apply]; rw [h]
 
 example (e₁ : α ≃ β) (e₂ : β ≃ γ) (x : γ) {z} (h : e₁.symm (e₂.symm x) = z) :
-  (e₁.trans e₂).symm x = z :=
-by simp only [Equiv.trans_symm_apply]; rw [h]
+    (e₁.trans e₂).symm x = z := by
+  simp only [Equiv.trans_symm_apply]; rw [h]
 
 -- the new projection names are parsed correctly (the old projection names won't work anymore)
 @[simps apply symm_apply] protected def Equiv.trans2 (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
@@ -743,7 +744,7 @@ end ManualProjectionNames
 
 namespace PrefixProjectionNames
 
-structure Equiv (α : Sort _) (β : Sort _) :=
+structure Equiv (α : Sort _) (β : Sort _) where
   (toFun  : α → β)
   (invFun : β → α)
 
@@ -764,7 +765,8 @@ run_cmd liftTermElabM <| do
   guard <| data.2.map (·.name) = #[`coe, `symm_apply]
   guard <| data.2.map (·.isPrefix) = #[true, false]
 
-@[simps (config := {simpRhs := true})] protected def Equiv.trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
+@[simps (config := {simpRhs := true})]
+protected def Equiv.trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
   ⟨e₂ ∘ (e₁ : α → β), e₁.symm ∘ (e₂.symm : γ → β)⟩
 
 example (e₁ : α ≃ β) (e₂ : β ≃ γ) (x : α) {z} (h : e₂ (e₁ x) = z) : (e₁.trans e₂) x = z := by
@@ -789,7 +791,7 @@ end PrefixProjectionNames
 
 
 -- test transparency setting
-structure SetPlus (α : Type) :=
+structure SetPlus (α : Type) where
   (s : Set α)
   (x : α)
   (h : x ∈ s)
@@ -816,7 +818,7 @@ example {x : Set ℕ} (h : Set.univ = x) : Nat.SetPlus3.s = x := by
 
 namespace NestedNonFullyApplied
 
-structure Equiv (α : Sort _) (β : Sort _) :=
+structure Equiv (α : Sort _) (β : Sort _) where
   (toFun  : α → β)
   (invFun : β → α)
 
@@ -852,19 +854,19 @@ example (e : α ≃ β) {x : β → α} (h : e.invFun = x) : (Equiv.symm2.invFun
 end NestedNonFullyApplied
 
 -- test that type classes which are props work
-class PropClass (n : ℕ) : Prop :=
-  (has_true : True)
+class PropClass (n : ℕ) : Prop where
+  has_true : True
 
 instance has_PropClass (n : ℕ) : PropClass n := ⟨trivial⟩
 
-structure NeedsPropClass (n : ℕ) [PropClass n] :=
+structure NeedsPropClass (n : ℕ) [PropClass n] where
   (t : True)
 
 @[simps] def test_PropClass : NeedsPropClass 1 :=
   { t := trivial }
 
 /- check that when the coercion is given in eta-expanded form, we can also find the coercion. -/
-structure AlgHom (R A B : Type _) :=
+structure AlgHom (R A B : Type _) where
   (toFun : A → B)
 
 instance (R A B : Type _) : CoeFun (AlgHom R A B) (fun _ ↦ A → B) := ⟨fun f ↦ f.toFun⟩
@@ -929,7 +931,7 @@ section
 
 attribute [local simp] Nat.add
 
-structure MyType :=
+structure MyType where
   (A : Type)
 
 @[simps (config := {simpRhs := true})] def myTypeDef : MyType :=
@@ -970,7 +972,7 @@ instance {α β} : CoeFun (α ≃ β) (fun _ ↦ α → β) := ⟨Equiv'.toFun�
 @[simps] protected def Equiv'.symm {α β} (f : α ≃ β) : β ≃ α :=
   ⟨f.invFun, f, f.right_inv, f.left_inv⟩
 
-structure DecoratedEquiv (α : Sort _) (β : Sort _) extends Equiv' α β :=
+structure DecoratedEquiv (α : Sort _) (β : Sort _) extends Equiv' α β where
   (P_toFun  : Function.Injective toFun )
   (P_invFun : Function.Injective invFun)
 
@@ -1020,7 +1022,7 @@ example {α : Type} (x z : α) (h : x = z) : foo2 α x = z := by
   guard_target = x = z
   rw [h]
 
-structure FurtherDecoratedEquiv (α : Sort _) (β : Sort _) extends DecoratedEquiv α β :=
+structure FurtherDecoratedEquiv (α : Sort _) (β : Sort _) extends DecoratedEquiv α β where
   (Q_toFun  : Function.Surjective toFun )
   (Q_invFun : Function.Surjective invFun )
 
@@ -1095,11 +1097,11 @@ def fffoo2 (α : Type) : OneMore α α := fffoo α
 /- test the case where a projection takes additional arguments. -/
 variable {ι : Type _} [DecidableEq ι] (A : ι → Type _)
 
-structure ZeroHom (M N : Type _) [Zero M] [Zero N] :=
+structure ZeroHom (M N : Type _) [Zero M] [Zero N] where
   (toFun : M → N)
   (map_zero' : toFun 0 = 0)
 
-structure AddHom (M N : Type _) [Add M] [Add N] :=
+structure AddHom (M N : Type _) [Add M] [Add N] where
   (toFun : M → N)
   (map_add' : ∀ x y, toFun (x + y) = toFun x + toFun y)
 
@@ -1110,7 +1112,7 @@ infixr:25 " →+ " => AddMonoidHom
 
 instance (M N : Type _) [AddMonoid M] [AddMonoid N] : CoeFun (M →+ N) (fun _ ↦ M → N) := ⟨(·.toFun)⟩
 
-class AddHomPlus [Add ι] [∀ i, AddCommMonoid (A i)] :=
+class AddHomPlus [Add ι] [∀ i, AddCommMonoid (A i)] where
   (myMul {i} : A i →+ A i)
 
 def AddHomPlus.Simps.apply [Add ι] [∀ i, AddCommMonoid (A i)] [AddHomPlus A] {i : ι} (x : A i) :
@@ -1119,7 +1121,7 @@ def AddHomPlus.Simps.apply [Add ι] [∀ i, AddCommMonoid (A i)] [AddHomPlus A] 
 
 initialize_simps_projections AddHomPlus (myMul_toFun → apply, -myMul)
 
-class AddHomPlus2 [Add ι] :=
+class AddHomPlus2 [Add ι] where
   (myMul {i j} : A i ≃ (A j ≃ A (i + j)))
 
 def AddHomPlus2.Simps.mul [Add ι] [AddHomPlus2 A] {i j : ι} (x : A i) (y : A j) : A (i + j) :=
@@ -1151,7 +1153,7 @@ end comp_projs
 section
 /-! Check that the tactic also works if the elaborated type of `type` reduces to `Sort _`, but is
   not `Sort _` itself. -/
-structure MyFunctor (C D : Type _) :=
+structure MyFunctor (C D : Type _) where
   (obj : C → D)
 local infixr:26 " ⥤ " => MyFunctor
 
@@ -1183,3 +1185,32 @@ class Artificial (n : Nat) where
   one : Nat
 
 initialize_simps_projections Artificial
+
+
+namespace UnderScoreDigit
+
+/-!
+We do not consider `field` to be a prefix of `field_1`, as the latter is often
+a different field with an auto-generated name.
+-/
+
+structure Foo where
+  field : Nat
+  field_9 : Nat × Nat
+  field_2 : Nat
+
+@[simps field field_2 field_9_fst]
+def myFoo : Foo := ⟨1, ⟨1, 1⟩, 1⟩
+
+structure Prod (X Y : Type _) extends Prod X Y
+
+structure Prod2 (X Y : Type _) extends Prod X Y
+
+initialize_simps_projections Prod2 (toProd → myName, toProd_1 → myOtherName)
+
+structure Prod3 (X Y : Type _) extends Prod X Y
+
+@[simps] def foo : Prod3 Nat Nat := { fst := 1, snd := 3 }
+@[simps toProd_1] def foo' : Prod3 Nat Nat := { fst := 1, snd := 3 }
+
+end UnderScoreDigit

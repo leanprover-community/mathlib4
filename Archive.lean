@@ -9,6 +9,7 @@ import Archive.Imo.Imo1959Q1
 import Archive.Imo.Imo1959Q2
 import Archive.Imo.Imo1960Q1
 import Archive.Imo.Imo1960Q2
+import Archive.Imo.Imo1961Q3
 import Archive.Imo.Imo1962Q1
 import Archive.Imo.Imo1962Q4
 import Archive.Imo.Imo1964Q1
@@ -40,6 +41,9 @@ import Archive.Imo.Imo2019Q2
 import Archive.Imo.Imo2019Q4
 import Archive.Imo.Imo2020Q2
 import Archive.Imo.Imo2021Q1
+import Archive.Imo.Imo2024Q1
+import Archive.Imo.Imo2024Q2
+import Archive.Imo.Imo2024Q6
 import Archive.MiuLanguage.Basic
 import Archive.MiuLanguage.DecisionNec
 import Archive.MiuLanguage.DecisionSuf

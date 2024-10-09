@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Ring.Defs
-import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.Algebra.SMulWithZero
 
 /-!
 # Commutativity and associativity of action of integers on rings
@@ -21,23 +21,24 @@ open scoped Int
 
 variable {α : Type*}
 
+instance NonUnitalNonAssocSemiring.toDistribSMul [NonUnitalNonAssocSemiring α] :
+    DistribSMul α α where smul_add := mul_add
+
 /-- Note that `AddMonoid.nat_smulCommClass` requires stronger assumptions on `α`. -/
 instance NonUnitalNonAssocSemiring.nat_smulCommClass [NonUnitalNonAssocSemiring α] :
     SMulCommClass ℕ α α where
   smul_comm n x y := by
-    induction' n with n ih
-    · simp [zero_nsmul]
-    · simp_rw [succ_nsmul, smul_eq_mul, mul_add, ← smul_eq_mul, ih]
-#align non_unital_non_assoc_semiring.nat_smul_comm_class NonUnitalNonAssocSemiring.nat_smulCommClass
+    induction n with
+    | zero => simp [zero_nsmul]
+    | succ n ih => simp_rw [succ_nsmul, smul_eq_mul, mul_add, ← smul_eq_mul, ih]
 
 /-- Note that `AddCommMonoid.nat_isScalarTower` requires stronger assumptions on `α`. -/
 instance NonUnitalNonAssocSemiring.nat_isScalarTower [NonUnitalNonAssocSemiring α] :
     IsScalarTower ℕ α α where
   smul_assoc n x y := by
-    induction' n with n ih
-    · simp [zero_nsmul]
-    · simp_rw [succ_nsmul, ← ih, smul_eq_mul, add_mul]
-#align non_unital_non_assoc_semiring.nat_is_scalar_tower NonUnitalNonAssocSemiring.nat_isScalarTower
+    induction n with
+    | zero => simp [zero_nsmul]
+    | succ n ih => simp_rw [succ_nsmul, ← ih, smul_eq_mul, add_mul]
 
 /-- Note that `AddMonoid.int_smulCommClass` requires stronger assumptions on `α`. -/
 instance NonUnitalNonAssocRing.int_smulCommClass [NonUnitalNonAssocRing α] :
@@ -46,7 +47,6 @@ instance NonUnitalNonAssocRing.int_smulCommClass [NonUnitalNonAssocRing α] :
     match n with
     | (n : ℕ) => by simp_rw [natCast_zsmul, smul_comm]
     | -[n+1] => by simp_rw [negSucc_zsmul, smul_eq_mul, mul_neg, mul_smul_comm]
-#align non_unital_non_assoc_ring.int_smul_comm_class NonUnitalNonAssocRing.int_smulCommClass
 
 /-- Note that `AddCommGroup.int_isScalarTower` requires stronger assumptions on `α`. -/
 instance NonUnitalNonAssocRing.int_isScalarTower [NonUnitalNonAssocRing α] :
@@ -55,4 +55,3 @@ instance NonUnitalNonAssocRing.int_isScalarTower [NonUnitalNonAssocRing α] :
     match n with
     | (n : ℕ) => by simp_rw [natCast_zsmul, smul_assoc]
     | -[n+1] => by simp_rw [negSucc_zsmul, smul_eq_mul, neg_mul, smul_mul_assoc]
-#align non_unital_non_assoc_ring.int_is_scalar_tower NonUnitalNonAssocRing.int_isScalarTower

@@ -42,7 +42,7 @@ def HNNExtension.con (G : Type*) [Group G] (A B : Subgroup G) (φ : A ≃* B) :
 /-- The HNN Extension of a group `G`, `HNNExtension G A B φ`. Given a group `G`, subgroups `A` and
 `B` and an isomorphism `φ` of `A` and `B`, we adjoin a letter `t` to `G`, such that for
 any `a ∈ A`, the conjugate of `of a` by `t` is `of (φ a)`, where `of` is the canonical
-map from `G` into the `HNNExtension`.  -/
+map from `G` into the `HNNExtension`. -/
 def HNNExtension (G : Type*) [Group G] (A B : Subgroup G) (φ : A ≃* B) : Type _ :=
   (HNNExtension.con G A B φ).Quotient
 
@@ -174,7 +174,7 @@ namespace NormalWord
 variable (G A B)
 /-- To put word in the HNN Extension into a normal form, we must choose an element of each right
 coset of both `A` and `B`, such that the chosen element of the subgroup itself is `1`. -/
-structure TransversalPair : Type _ :=
+structure TransversalPair : Type _ where
   /-- The transversal of each subgroup -/
   set : ℤˣ → Set G
   /-- We have exactly one element of each coset of the subgroup -/
@@ -187,7 +187,7 @@ instance TransversalPair.nonempty : Nonempty (TransversalPair G A B) := by
 /-- A reduced word is a `head`, which is an element of `G`, followed by the product list of pairs.
 There should also be no sequences of the form `t^u * g * t^-u`, where `g` is in
 `toSubgroup A B u` This is a less strict condition than required for `NormalWord`. -/
-structure ReducedWord : Type _ :=
+structure ReducedWord : Type _ where
   /-- Every `ReducedWord` is the product of an element of the group and a word made up
   of letters each of which is in the transversal. `head` is that element of the base group. -/
   head : G
@@ -215,7 +215,7 @@ The normal form is a `head`, which is an element of `G`, followed by the product
 `toSubgroup A B u`. There should also be no sequences of the form `t^u * g * t^-u`
 where `g ∈ toSubgroup A B u` -/
 structure _root_.HNNExtension.NormalWord (d : TransversalPair G A B)
-    extends ReducedWord G A B : Type _ :=
+    extends ReducedWord G A B : Type _ where
   /-- Every element `g : G` in the list is the chosen element of its coset -/
   mem_set : ∀ (u : ℤˣ) (g : G), (u, g) ∈ toList → g ∈ d.set u
 
@@ -223,7 +223,7 @@ variable {d : TransversalPair G A B}
 
 @[ext]
 theorem ext {w w' : NormalWord d}
-    (h1 : w.head = w'.head) (h2 : w.toList = w'.toList): w = w' := by
+    (h1 : w.head = w'.head) (h2 : w.toList = w'.toList) : w = w' := by
   rcases w with ⟨⟨⟩, _⟩; cases w'; simp_all
 
 /-- The empty word -/
@@ -281,7 +281,7 @@ def cons (g : G) (u : ℤˣ) (w : NormalWord d) (h1 : w.head ∈ d.set u)
       rintro ⟨u', g'⟩ hu' hw1
       exact h2 _ (by simp_all) hw1 }
 
-/-- A recursor to induct on a `NormalWord`, by proving the propert is preserved under `cons` -/
+/-- A recursor to induct on a `NormalWord`, by proving the property is preserved under `cons` -/
 @[elab_as_elim]
 def consRecOn {motive : NormalWord d → Sort*} (w : NormalWord d)
     (ofGroup : ∀g, motive (ofGroup g))
@@ -345,10 +345,10 @@ theorem unitsSMulGroup_snd (u : ℤˣ) (g : G) :
     (unitsSMulGroup φ d u g).2 = ((d.compl u).equiv g).2 := by
   rcases Int.units_eq_one_or u with rfl | rfl <;> rfl
 
-variable {d} [DecidableEq G]
+variable {d}
 
-/-- `Cancels u w` is a predicate expressing whether `t^u` cancels with some occurence
-of `t^-u` when when we multiply `t^u` by `w`. -/
+/-- `Cancels u w` is a predicate expressing whether `t^u` cancels with some occurrence
+of `t^-u` when we multiply `t^u` by `w`. -/
 def Cancels (u : ℤˣ) (w : NormalWord d) : Prop :=
   (w.head ∈ (toSubgroup A B u : Subgroup G)) ∧ w.toList.head?.map Prod.fst = some (-u)
 
@@ -473,9 +473,8 @@ theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
     dsimp
     congr 1
     · conv_lhs => erw [IsComplement.equiv_mul_left]
-      simp? says
-        simp only [toSubgroup_one, SetLike.coe_sort_coe, map_mul, Submonoid.coe_mul,
-          coe_toSubmonoid]
+      simp_rw [toSubgroup_one]
+      simp only [SetLike.coe_sort_coe, map_mul, Subgroup.coe_mul]
     conv_lhs => erw [IsComplement.equiv_mul_left]
     rfl
 
@@ -529,11 +528,11 @@ theorem prod_unitsSMul (u : ℤˣ) (w : NormalWord d) :
     rcases Int.units_eq_one_or u with (rfl | rfl)
     · simp [equiv_eq_conj, mul_assoc, (d.compl _).equiv_snd_eq_inv_mul]
       -- This used to be the end of the proof before leanprover/lean4#2644
-      erw [(d.compl _).equiv_snd_eq_inv_mul]
+      erw [(d.compl 1).equiv_snd_eq_inv_mul]
       simp [equiv_eq_conj, mul_assoc, (d.compl _).equiv_snd_eq_inv_mul]
     · simp [equiv_symm_eq_conj, mul_assoc, (d.compl _).equiv_snd_eq_inv_mul]
       -- This used to be the end of the proof before leanprover/lean4#2644
-      erw [equiv_symm_eq_conj, (d.compl _).equiv_snd_eq_inv_mul]
+      erw [equiv_symm_eq_conj, (d.compl (-1)).equiv_snd_eq_inv_mul]
       simp [equiv_symm_eq_conj, mul_assoc, (d.compl _).equiv_snd_eq_inv_mul]
 
 @[simp]
@@ -645,17 +644,17 @@ theorem exists_normalWord_prod_eq
         have : a.fst = -a.fst := by
           have hl : l ≠ [] := by rintro rfl; simp_all
           have : a.fst = (l.head hl).fst := (List.chain'_cons'.1 chain).1 (l.head hl)
-            (List.head?_eq_head _ _) hS
-          rwa [List.head?_eq_head _ hl, Option.map_some', ← this, Option.some_inj] at hx'
+            (List.head?_eq_head _) hS
+          rwa [List.head?_eq_head hl, Option.map_some', ← this, Option.some_inj] at hx'
         simp at this
       erw [List.map_cons, mul_smul, of_smul_eq_smul, NormalWord.group_smul_def,
         t_pow_smul_eq_unitsSMul, unitsSMul, dif_neg this, ← hw'2]
       simp [mul_assoc, unitsSMulGroup, (d.compl _).coe_equiv_snd_eq_one_iff_mem]
 
 /-- Two reduced words representing the same element of the `HNNExtension G A B φ` have the same
-length corresponding list, with the same pattern of occurences of `t^1` and `t^(-1)`,
+length corresponding list, with the same pattern of occurrences of `t^1` and `t^(-1)`,
 and also the `head` is in the same left coset of `toSubgroup A B (-u)`, where `u : ℤˣ`
-is the exponent of the first occurence of `t` in the word. -/
+is the exponent of the first occurrence of `t` in the word. -/
 theorem map_fst_eq_and_of_prod_eq {w₁ w₂ : ReducedWord G A B}
     (hprod : w₁.prod φ = w₂.prod φ) :
     w₁.toList.map Prod.fst = w₂.toList.map Prod.fst ∧
@@ -674,7 +673,7 @@ theorem map_fst_eq_and_of_prod_eq {w₁ w₂ : ReducedWord G A B}
   rwa [← List.head?_map, ← hw₂'2, hw₁'2, List.head?_map]
 
 /-- **Britton's Lemma**. Any reduced word whose product is an element of `G`, has no
-occurences of `t`.  -/
+occurrences of `t`. -/
 theorem toList_eq_nil_of_mem_of_range (w : ReducedWord G A B)
     (hw : w.prod φ ∈ (of.range : Subgroup (HNNExtension G A B φ))) :
     w.toList = [] := by

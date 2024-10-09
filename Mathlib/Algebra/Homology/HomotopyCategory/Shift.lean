@@ -16,6 +16,10 @@ In this file, we show that for any preadditive category `C`, the categories
 `CochainComplex C ℤ` and `HomotopyCategory C (ComplexShape.up ℤ)` are
 equipped with a shift by `ℤ`.
 
+We also show that if `F : C ⥤ D` is an additive functor, then the functors
+`F.mapHomologicalComplex (ComplexShape.up ℤ)` and
+`F.mapHomotopyCategory (ComplexShape.up ℤ)` commute with the shift by `ℤ`.
+
 -/
 
 universe v v' u u'
@@ -306,5 +310,18 @@ instance (n : ℤ) : (shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n)
   have : ((quotient C (ComplexShape.up ℤ) ⋙ shiftFunctor _ n)).Additive :=
     Functor.additive_of_iso ((quotient C (ComplexShape.up ℤ)).commShiftIso n)
   apply Functor.additive_of_full_essSurj_comp (quotient _ _ )
+
+section
+
+variable {C}
+variable (F : C ⥤ D) [F.Additive]
+
+noncomputable instance : (F.mapHomotopyCategory (ComplexShape.up ℤ)).CommShift ℤ :=
+  Quotient.liftCommShift _ _ _ _
+
+instance : NatTrans.CommShift (F.mapHomotopyCategoryFactors (ComplexShape.up ℤ)).hom ℤ :=
+  Quotient.liftCommShift_compatibility _ _ _ _
+
+end
 
 end HomotopyCategory

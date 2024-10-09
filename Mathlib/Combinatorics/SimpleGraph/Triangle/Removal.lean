@@ -61,7 +61,7 @@ private lemma card_bound (hP₁ : P.IsEquipartition) (hP₃ : P.parts.card ≤ b
   calc
     _ ≤ card α / (2 * P.parts.card : ℝ) := by gcongr
     _ ≤ ↑(card α / P.parts.card) :=
-      (div_le_iff' (by positivity)).2 $ mod_cast (aux ‹_› P.card_parts_le_card).le
+      (div_le_iff₀' (by positivity)).2 <| mod_cast (aux ‹_› P.card_parts_le_card).le
     _ ≤ (s.card : ℝ) := mod_cast hP₁.average_le_card_part hX
 
 private lemma triangle_removal_aux (hε : 0 < ε) (hP₁ : P.IsEquipartition)

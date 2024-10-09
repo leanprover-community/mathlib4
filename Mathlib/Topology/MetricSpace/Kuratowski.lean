@@ -3,10 +3,8 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.NormedSpace.lpSpace
+import Mathlib.Analysis.Normed.Lp.lpSpace
 import Mathlib.Topology.Sets.Compacts
-
-#align_import topology.metric_space.kuratowski from "leanprover-community/mathlib"@"95d4f6586d313c8c28e00f36621d2a6a66893aa6"
 
 /-!
 # The Kuratowski embedding
@@ -18,20 +16,19 @@ Any partially defined Lipschitz map into `ℓ^∞` can be extended to the whole 
 
 noncomputable section
 
-set_option linter.uppercaseLean3 false
 
 open Set Metric TopologicalSpace NNReal ENNReal lp Function
 
-universe u v w
+universe u
 
-variable {α : Type u} {β : Type v} {γ : Type w}
+variable {α : Type u}
 
 namespace KuratowskiEmbedding
 
 /-! ### Any separable metric space can be embedded isometrically in ℓ^∞(ℕ, ℝ) -/
 
 
-variable {f g : ℓ^∞(ℕ)} {n : ℕ} {C : ℝ} [MetricSpace α] (x : ℕ → α) (a b : α)
+variable {n : ℕ} [MetricSpace α] (x : ℕ → α) (a : α)
 
 /-- A metric space can be embedded in `l^∞(ℝ)` via the distances to points in
 a fixed countable set, if this set is dense. This map is given in `kuratowskiEmbedding`,
@@ -42,25 +39,22 @@ def embeddingOfSubset : ℓ^∞(ℕ) :=
     use dist a (x 0)
     rintro - ⟨n, rfl⟩
     exact abs_dist_sub_le _ _ _⟩
-#align Kuratowski_embedding.embedding_of_subset KuratowskiEmbedding.embeddingOfSubset
 
 theorem embeddingOfSubset_coe : embeddingOfSubset x a n = dist a (x n) - dist (x 0) (x n) :=
   rfl
-#align Kuratowski_embedding.embedding_of_subset_coe KuratowskiEmbedding.embeddingOfSubset_coe
 
 /-- The embedding map is always a semi-contraction. -/
 theorem embeddingOfSubset_dist_le (a b : α) :
     dist (embeddingOfSubset x a) (embeddingOfSubset x b) ≤ dist a b := by
-  refine' lp.norm_le_of_forall_le dist_nonneg fun n => _
+  refine lp.norm_le_of_forall_le dist_nonneg fun n => ?_
   simp only [lp.coeFn_sub, Pi.sub_apply, embeddingOfSubset_coe, Real.dist_eq]
   convert abs_dist_sub_le a b (x n) using 2
   ring
-#align Kuratowski_embedding.embedding_of_subset_dist_le KuratowskiEmbedding.embeddingOfSubset_dist_le
 
 /-- When the reference set is dense, the embedding map is an isometry on its image. -/
 theorem embeddingOfSubset_isometry (H : DenseRange x) : Isometry (embeddingOfSubset x) := by
-  refine' Isometry.of_dist_eq fun a b => _
-  refine' (embeddingOfSubset_dist_le x a b).antisymm (le_of_forall_pos_le_add fun e epos => _)
+  refine Isometry.of_dist_eq fun a b => ?_
+  refine (embeddingOfSubset_dist_le x a b).antisymm (le_of_forall_pos_le_add fun e epos => ?_)
   -- First step: find n with dist a (x n) < e
   rcases Metric.mem_closure_range_iff.1 (H a) (e / 2) (half_pos epos) with ⟨n, hn⟩
   -- Second step: use the norm control at index n to conclude
@@ -85,7 +79,6 @@ theorem embeddingOfSubset_isometry (H : DenseRange x) : Isometry (embeddingOfSub
         nlinarith
       _ = dist (embeddingOfSubset x b) (embeddingOfSubset x a) + e := by ring
   simpa [dist_comm] using this
-#align Kuratowski_embedding.embedding_of_subset_isometry KuratowskiEmbedding.embeddingOfSubset_isometry
 
 /-- Every separable metric space embeds isometrically in `ℓ^∞(ℕ)`. -/
 theorem exists_isometric_embedding (α : Type u) [MetricSpace α] [SeparableSpace α] :
@@ -100,7 +93,6 @@ theorem exists_isometric_embedding (α : Type u) [MetricSpace α] [SeparableSpac
     rcases Set.countable_iff_exists_subset_range.1 S_countable with ⟨x, x_range⟩
     -- Use embeddingOfSubset to construct the desired isometry
     exact ⟨embeddingOfSubset x, embeddingOfSubset_isometry x (S_dense.mono x_range)⟩
-#align Kuratowski_embedding.exists_isometric_embedding KuratowskiEmbedding.exists_isometric_embedding
 
 end KuratowskiEmbedding
 
@@ -110,7 +102,6 @@ open TopologicalSpace KuratowskiEmbedding
 -/
 def kuratowskiEmbedding (α : Type u) [MetricSpace α] [SeparableSpace α] : α → ℓ^∞(ℕ) :=
   Classical.choose (KuratowskiEmbedding.exists_isometric_embedding α)
-#align Kuratowski_embedding kuratowskiEmbedding
 
 /--
 The Kuratowski embedding is an isometry.
@@ -118,7 +109,6 @@ Theorem 2.1 of [Assaf Naor, *Metric Embeddings and Lipschitz Extensions*][Naor-2
 protected theorem kuratowskiEmbedding.isometry (α : Type u) [MetricSpace α] [SeparableSpace α] :
     Isometry (kuratowskiEmbedding α) :=
   Classical.choose_spec (exists_isometric_embedding α)
-#align Kuratowski_embedding.isometry kuratowskiEmbedding.isometry
 
 /-- Version of the Kuratowski embedding for nonempty compacts -/
 nonrec def NonemptyCompacts.kuratowskiEmbedding (α : Type u) [MetricSpace α] [CompactSpace α]
@@ -126,7 +116,6 @@ nonrec def NonemptyCompacts.kuratowskiEmbedding (α : Type u) [MetricSpace α] [
   carrier := range (kuratowskiEmbedding α)
   isCompact' := isCompact_range (kuratowskiEmbedding.isometry α).continuous
   nonempty' := range_nonempty _
-#align nonempty_compacts.Kuratowski_embedding NonemptyCompacts.kuratowskiEmbedding
 
 /--
 A function `f : α → ℓ^∞(ι, ℝ)` which is `K`-Lipschitz on a subset `s` admits a `K`-Lipschitz

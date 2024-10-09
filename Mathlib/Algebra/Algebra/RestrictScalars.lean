@@ -5,8 +5,6 @@ Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Tower
 
-#align_import algebra.algebra.restrict_scalars from "leanprover-community/mathlib"@"c310cfdc40da4d99a10a58c33a95360ef9e6e0bf"
-
 /-!
 
 # The `RestrictScalars` type alias
@@ -76,7 +74,6 @@ An example of when one might want to use `RestrictScalars` would be if one has a
 over a field of characteristic zero and wishes to make use of the `ℚ`-algebra structure. -/
 @[nolint unusedArguments]
 def RestrictScalars (_R _S M : Type*) : Type _ := M
-#align restrict_scalars RestrictScalars
 
 instance [I : Inhabited M] : Inhabited (RestrictScalars R S M) := I
 
@@ -92,7 +89,6 @@ variable [Semiring S] [AddCommMonoid M]
 
 /-- We temporarily install an action of the original ring on `RestrictScalars R S M`. -/
 def RestrictScalars.moduleOrig [I : Module S M] : Module S (RestrictScalars R S M) := I
-#align restrict_scalars.module_orig RestrictScalars.moduleOrig
 
 variable [CommSemiring R] [Algebra R S]
 
@@ -114,7 +110,6 @@ instance RestrictScalars.isScalarTower [Module S M] : IsScalarTower R S (Restric
   ⟨fun r S M ↦ by
     rw [Algebra.smul_def, mul_smul]
     rfl⟩
-#align restrict_scalars.is_scalar_tower RestrictScalars.isScalarTower
 
 end
 
@@ -126,12 +121,10 @@ The preferred way of setting this up is
 instance RestrictScalars.opModule [Module Sᵐᵒᵖ M] : Module Rᵐᵒᵖ (RestrictScalars R S M) :=
   letI : Module Sᵐᵒᵖ (RestrictScalars R S M) := ‹Module Sᵐᵒᵖ M›
   Module.compHom M (RingHom.op <| algebraMap R S)
-#align restrict_scalars.op_module RestrictScalars.opModule
 
 instance RestrictScalars.isCentralScalar [Module S M] [Module Sᵐᵒᵖ M] [IsCentralScalar S M] :
     IsCentralScalar R (RestrictScalars R S M) where
   op_smul_eq_smul r _x := (op_smul_eq_smul (algebraMap R S r) (_ : M) : _)
-#align restrict_scalars.is_central_scalar RestrictScalars.isCentralScalar
 
 /-- The `R`-algebra homomorphism from the original coefficient algebra `S` to endomorphisms
 of `RestrictScalars R S M`.
@@ -141,7 +134,6 @@ def RestrictScalars.lsmul [Module S M] : S →ₐ[R] Module.End R (RestrictScala
   -- but not in the type.
   letI : Module S (RestrictScalars R S M) := RestrictScalars.moduleOrig R S M
   Algebra.lsmul R R (RestrictScalars R S M)
-#align restrict_scalars.lsmul RestrictScalars.lsmul
 
 end
 
@@ -150,7 +142,6 @@ variable [AddCommMonoid M]
 /-- `RestrictScalars.addEquiv` is the additive equivalence with the original module. -/
 def RestrictScalars.addEquiv : RestrictScalars R S M ≃+ M :=
   AddEquiv.refl M
-#align restrict_scalars.add_equiv RestrictScalars.addEquiv
 
 variable [CommSemiring R] [Semiring S] [Algebra R S] [Module S M]
 
@@ -158,32 +149,27 @@ theorem RestrictScalars.smul_def (c : R) (x : RestrictScalars R S M) :
     c • x = (RestrictScalars.addEquiv R S M).symm
       (algebraMap R S c • RestrictScalars.addEquiv R S M x) :=
   rfl
-#align restrict_scalars.smul_def RestrictScalars.smul_def
 
 @[simp]
 theorem RestrictScalars.addEquiv_map_smul (c : R) (x : RestrictScalars R S M) :
     RestrictScalars.addEquiv R S M (c • x) = algebraMap R S c • RestrictScalars.addEquiv R S M x :=
   rfl
-#align restrict_scalars.add_equiv_map_smul RestrictScalars.addEquiv_map_smul
 
 theorem RestrictScalars.addEquiv_symm_map_algebraMap_smul (r : R) (x : M) :
     (RestrictScalars.addEquiv R S M).symm (algebraMap R S r • x) =
       r • (RestrictScalars.addEquiv R S M).symm x :=
   rfl
-#align restrict_scalars.add_equiv_symm_map_algebra_map_smul RestrictScalars.addEquiv_symm_map_algebraMap_smul
 
 theorem RestrictScalars.addEquiv_symm_map_smul_smul (r : R) (s : S) (x : M) :
     (RestrictScalars.addEquiv R S M).symm ((r • s) • x) =
       r • (RestrictScalars.addEquiv R S M).symm (s • x) := by
   rw [Algebra.smul_def, mul_smul]
   rfl
-#align restrict_scalars.add_equiv_symm_map_smul_smul RestrictScalars.addEquiv_symm_map_smul_smul
 
 theorem RestrictScalars.lsmul_apply_apply (s : S) (x : RestrictScalars R S M) :
     RestrictScalars.lsmul R S M s x =
       (RestrictScalars.addEquiv R S M).symm (s • RestrictScalars.addEquiv R S M x) :=
   rfl
-#align restrict_scalars.lsmul_apply_apply RestrictScalars.lsmul_apply_apply
 
 end Module
 
@@ -202,7 +188,6 @@ variable [Semiring A]
 /-- Tautological ring isomorphism `RestrictScalars R S A ≃+* A`. -/
 def RestrictScalars.ringEquiv : RestrictScalars R S A ≃+* A :=
   RingEquiv.refl _
-#align restrict_scalars.ring_equiv RestrictScalars.ringEquiv
 
 variable [CommSemiring S] [Algebra S A] [CommSemiring R] [Algebra R S]
 
@@ -211,7 +196,6 @@ theorem RestrictScalars.ringEquiv_map_smul (r : R) (x : RestrictScalars R S A) :
     RestrictScalars.ringEquiv R S A (r • x) =
       algebraMap R S r • RestrictScalars.ringEquiv R S A x :=
   rfl
-#align restrict_scalars.ring_equiv_map_smul RestrictScalars.ringEquiv_map_smul
 
 /-- `R ⟶ S` induces `S-Alg ⥤ R-Alg` -/
 instance RestrictScalars.algebra : Algebra R (RestrictScalars R S A) :=
@@ -225,6 +209,5 @@ theorem RestrictScalars.ringEquiv_algebraMap (r : R) :
     RestrictScalars.ringEquiv R S A (algebraMap R (RestrictScalars R S A) r) =
       algebraMap S A (algebraMap R S r) :=
   rfl
-#align restrict_scalars.ring_equiv_algebra_map RestrictScalars.ringEquiv_algebraMap
 
 end Algebra

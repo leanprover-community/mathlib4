@@ -16,7 +16,7 @@ This file has a few measure theoretic or integration-related results on indicato
 This file exists to avoid importing `Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable`
 in `Mathlib.MeasureTheory.Integral.Lebesgue`.
 
-## Todo
+## TODO
 
 The result `MeasureTheory.tendsto_measure_of_tendsto_indicator` here could be proved without
 integration, if we had convergence of measures results for countably generated filters. Ideally,
@@ -39,21 +39,25 @@ variable {ι : Type*} (L : Filter ι) [IsCountablyGenerated L] {As : ι → Set 
 /-- If the indicators of measurable sets `Aᵢ` tend pointwise to the indicator of a set `A`
 and we eventually have `Aᵢ ⊆ B` for some set `B` of finite measure, then the measures of `Aᵢ`
 tend to the measure of `A`. -/
-lemma tendsto_measure_of_tendsto_indicator [NeBot L] {μ : Measure α}
+lemma tendsto_measure_of_tendsto_indicator {μ : Measure α}
     (As_mble : ∀ i, MeasurableSet (As i)) {B : Set α} (B_mble : MeasurableSet B)
     (B_finmeas : μ B ≠ ∞) (As_le_B : ∀ᶠ i in L, As i ⊆ B)
     (h_lim : ∀ x, ∀ᶠ i in L, x ∈ As i ↔ x ∈ A) :
     Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) := by
+  rcases L.eq_or_neBot with rfl | _
+  · exact tendsto_bot
   apply tendsto_measure_of_ae_tendsto_indicator L ?_ As_mble B_mble B_finmeas As_le_B
         (ae_of_all μ h_lim)
   exact measurableSet_of_tendsto_indicator L As_mble h_lim
 
 /-- If `μ` is a finite measure and the indicators of measurable sets `Aᵢ` tend pointwise to
 the indicator of a set `A`, then the measures `μ Aᵢ` tend to the measure `μ A`. -/
-lemma tendsto_measure_of_tendsto_indicator_of_isFiniteMeasure [NeBot L]
+lemma tendsto_measure_of_tendsto_indicator_of_isFiniteMeasure
     (μ : Measure α) [IsFiniteMeasure μ] (As_mble : ∀ i, MeasurableSet (As i))
     (h_lim : ∀ x, ∀ᶠ i in L, x ∈ As i ↔ x ∈ A) :
     Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) := by
+  rcases L.eq_or_neBot with rfl | _
+  · exact tendsto_bot
   apply tendsto_measure_of_ae_tendsto_indicator_of_isFiniteMeasure L ?_ As_mble (ae_of_all μ h_lim)
   exact measurableSet_of_tendsto_indicator L As_mble h_lim
 

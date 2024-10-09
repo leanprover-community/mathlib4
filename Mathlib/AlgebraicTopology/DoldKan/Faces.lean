@@ -6,8 +6,6 @@ Authors: Joël Riou
 import Mathlib.AlgebraicTopology.DoldKan.Homotopies
 import Mathlib.Tactic.Ring
 
-#align_import algebraic_topology.dold_kan.faces from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
-
 /-!
 
 # Study of face maps for the Dold-Kan correspondence
@@ -45,7 +43,6 @@ possible values of a nonzero `j`. Otherwise, when `q ≥ n+2`, all the compositi
 the identity `φ ≫ (P q).f (n+1) = φ`. -/
 def HigherFacesVanish {Y : C} {n : ℕ} (q : ℕ) (φ : Y ⟶ X _[n + 1]) : Prop :=
   ∀ j : Fin (n + 1), n + 1 ≤ (j : ℕ) + q → φ ≫ X.δ j.succ = 0
-#align algebraic_topology.dold_kan.higher_faces_vanish AlgebraicTopology.DoldKan.HigherFacesVanish
 
 namespace HigherFacesVanish
 
@@ -56,15 +53,12 @@ theorem comp_δ_eq_zero {Y : C} {n : ℕ} {q : ℕ} {φ : Y ⟶ X _[n + 1]} (v :
   apply v i
   simp only [Fin.val_succ] at hj₂
   omega
-#align algebraic_topology.dold_kan.higher_faces_vanish.comp_δ_eq_zero AlgebraicTopology.DoldKan.HigherFacesVanish.comp_δ_eq_zero
 
 theorem of_succ {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVanish (q + 1) φ) :
     HigherFacesVanish q φ := fun j hj => v j (by simpa only [← add_assoc] using le_add_right hj)
-#align algebraic_topology.dold_kan.higher_faces_vanish.of_succ AlgebraicTopology.DoldKan.HigherFacesVanish.of_succ
 
 theorem of_comp {Y Z : C} {q n : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVanish q φ) (f : Z ⟶ Y) :
     HigherFacesVanish q (f ≫ φ) := fun j hj => by rw [assoc, v j hj, comp_zero]
-#align algebraic_topology.dold_kan.higher_faces_vanish.of_comp AlgebraicTopology.DoldKan.HigherFacesVanish.of_comp
 
 theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVanish q φ)
     (hnaq : n = a + q) :
@@ -123,7 +117,7 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFac
     rw [X.δ_comp_σ_self' (Fin.castSucc_mk _ _ _).symm,
       X.δ_comp_σ_succ' (Fin.succ_mk _ _ _).symm]
     simp only [comp_id, pow_add _ (a + 1) 1, pow_one, mul_neg, mul_one, neg_mul, neg_smul,
-      add_right_neg]
+      add_neg_cancel]
   · -- c + a = 0
     rw [← Finset.sum_add_distrib]
     apply Finset.sum_eq_zero
@@ -137,8 +131,6 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFac
     erw [δ_comp_σ_of_le X hia, add_eq_zero_iff_eq_neg, ← neg_zsmul]
     congr 2
     ring
-set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.higher_faces_vanish.comp_Hσ_eq AlgebraicTopology.DoldKan.HigherFacesVanish.comp_Hσ_eq
 
 theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVanish q φ)
     (hqn : n < q) : φ ≫ (Hσ q).f (n + 1) = 0 := by
@@ -154,7 +146,7 @@ theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : Higher
         Fin.cast_mk, Fin.castSucc_mk]
       simp only [Fin.mk_zero, Fin.val_zero, pow_zero, one_zsmul, Fin.mk_one, Fin.val_one, pow_one,
         neg_smul, comp_neg]
-      erw [δ_comp_σ_self, δ_comp_σ_succ, add_right_neg]
+      erw [δ_comp_σ_self, δ_comp_σ_succ, add_neg_cancel]
     · intro j
       dsimp [Fin.cast, Fin.castLE, Fin.castLT]
       rw [comp_zsmul, comp_zsmul, δ_comp_σ_of_gt', v.comp_δ_eq_zero_assoc, zero_comp, zsmul_zero]
@@ -163,11 +155,9 @@ theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : Higher
         omega
       · intro h
         simp only [Fin.pred, Fin.subNat, Fin.ext_iff, Nat.succ_add_sub_one,
-          Fin.val_zero, add_eq_zero, false_and] at h
+          Fin.val_zero, add_eq_zero, false_and, reduceCtorEq] at h
       · simp only [Fin.pred, Fin.subNat, Nat.pred_eq_sub_one, Nat.succ_add_sub_one]
         omega
-set_option linter.uppercaseLean3 false in
-#align algebraic_topology.dold_kan.higher_faces_vanish.comp_Hσ_eq_zero AlgebraicTopology.DoldKan.HigherFacesVanish.comp_Hσ_eq_zero
 
 theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVanish q φ) :
     HigherFacesVanish (q + 1) (φ ≫ (𝟙 _ + Hσ q).f (n + 1)) := by
@@ -217,7 +207,6 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVa
       dsimp only [Nat.succ_eq_add_one] at *
       omega
     simp only [← assoc, v j (by omega), zero_comp]
-#align algebraic_topology.dold_kan.higher_faces_vanish.induction AlgebraicTopology.DoldKan.HigherFacesVanish.induction
 
 end HigherFacesVanish
 

@@ -8,7 +8,7 @@ import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Analysis.PSeries
 import Mathlib.Order.Interval.Finset.Box
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
 
 /-!
 # Uniform convergence of Eisenstein series
@@ -29,9 +29,10 @@ We then show in `summable_one_div_rpow_max` that the sum of `max (|c|, |d|) ^ (-
 
 noncomputable section
 
-open Complex UpperHalfPlane Set Finset
+open Complex UpperHalfPlane Set Finset CongruenceSubgroup
 
-open scoped BigOperators
+open scoped UpperHalfPlane
+
 
 variable (z : ℍ)
 
@@ -55,14 +56,14 @@ lemma r1_pos : 0 < r1 z := by
   dsimp only [r1]
   positivity
 
-/-- For `c, d ∈ ℝ` with `1 ≤ d ^ 2`, we have `r1 z ≤ |c * z + d| ^ 2`.  -/
+/-- For `c, d ∈ ℝ` with `1 ≤ d ^ 2`, we have `r1 z ≤ |c * z + d| ^ 2`. -/
 lemma r1_aux_bound (c : ℝ) {d : ℝ} (hd : 1 ≤ d ^ 2) :
     r1 z ≤ (c * z.re + d) ^ 2 + (c * z.im) ^ 2 := by
   have H1 : (c * z.re + d) ^ 2 + (c * z.im) ^ 2 =
     c ^ 2 * (z.re ^ 2 + z.im ^ 2) + d * 2 * c * z.re + d ^ 2 := by ring
   have H2 : (c ^ 2 * (z.re ^ 2 + z.im ^ 2) + d * 2 * c * z.re + d ^ 2) * (z.re ^ 2 + z.im ^ 2)
     - z.im ^ 2 = (c * (z.re ^ 2 + z.im ^ 2) + d * z.re) ^ 2 + (d ^ 2 - 1) * z.im ^ 2 := by ring
-  rw [r1, H1, div_le_iff (by positivity), ← sub_nonneg, H2]
+  rw [r1, H1, div_le_iff₀ (by positivity), ← sub_nonneg, H2]
   exact add_nonneg (sq_nonneg _) (mul_nonneg (sub_nonneg.mpr hd) (sq_nonneg _))
 
 /-- This function is used to give an upper bound on the summands in Eisenstein series; it is
@@ -77,7 +78,7 @@ lemma r_lower_bound_on_verticalStrip {A B : ℝ} (h : 0 < B) (hz : z ∈ vertica
   apply min_le_min hz.2
   rw [Real.sqrt_le_sqrt_iff (by apply (r1_pos z).le)]
   simp only [r1_eq, div_pow, one_div]
-  rw [inv_le_inv (by positivity) (by positivity), add_le_add_iff_right]
+  rw [inv_le_inv₀ (by positivity) (by positivity), add_le_add_iff_right]
   apply div_le_div (sq_nonneg _) _ (by positivity) (pow_le_pow_left h.le hz.2 2)
   simpa only [even_two.pow_abs] using pow_le_pow_left (abs_nonneg _) hz.1 2
 
@@ -166,7 +167,7 @@ lemma summable_one_div_norm_rpow {k : ℝ} (hk : 2 < k) :
 /-- The sum defining the Eisenstein series (of weight `k` and level `Γ(N)` with congruence
 condition `a : Fin 2 → ZMod N`) converges locally uniformly on `ℍ`. -/
 theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) {N : ℕ} (a : Fin 2 → ZMod N) :
-    TendstoLocallyUniformly (fun (s : Finset (gammaSet N a)) ↦ (∑ x in s, eisSummand k x ·))
+    TendstoLocallyUniformly (fun (s : Finset (gammaSet N a)) ↦ (∑ x ∈ s, eisSummand k x ·))
       (eisensteinSeries a k ·) Filter.atTop := by
   have hk' : (2 : ℝ) < k := by norm_cast
   have p_sum : Summable fun x : gammaSet N a ↦ ‖x.val‖ ^ (-k) :=
@@ -179,15 +180,13 @@ theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) {N : �
   simpa only [eisSummand, one_div, ← zpow_neg, norm_eq_abs, abs_zpow, ← Real.rpow_intCast,
     Int.cast_neg] using summand_bound_of_mem_verticalStrip (by positivity) p hB hz
 
-/-- Extend a function on `ℍ` arbitrarily to a function on all of `ℂ`. -/
-local notation "↑ₕ" f => f ∘ (PartialHomeomorph.symm (openEmbedding_coe.toPartialHomeomorph _))
-
 /-- Variant of `eisensteinSeries_tendstoLocallyUniformly` formulated with maps `ℂ → ℂ`, which is
 nice to have for holomorphicity later. -/
 lemma eisensteinSeries_tendstoLocallyUniformlyOn {k : ℤ} {N : ℕ} (hk : 3 ≤ k)
     (a : Fin 2 → ZMod N) : TendstoLocallyUniformlyOn (fun (s : Finset (gammaSet N a )) ↦
       ↑ₕ(fun (z : ℍ) ↦ ∑ x in s, eisSummand k x z )) (↑ₕ(eisensteinSeries_SIF a k).toFun)
-          Filter.atTop (UpperHalfPlane.coe '' ⊤) := by
+          Filter.atTop {z : ℂ | 0 < z.im} := by
+  rw [← Subtype.coe_image_univ {z : ℂ | 0 < z.im}]
   apply TendstoLocallyUniformlyOn.comp (s := ⊤) _ _ _ (PartialHomeomorph.continuousOn_symm _)
   · simp only [SlashInvariantForm.toFun_eq_coe, Set.top_eq_univ, tendstoLocallyUniformlyOn_univ]
     apply eisensteinSeries_tendstoLocallyUniformly hk
@@ -195,3 +194,5 @@ lemma eisensteinSeries_tendstoLocallyUniformlyOn {k : ℤ} {N : ℕ} (hk : 3 ≤
     Set.mem_univ, forall_const]
 
 end summability
+
+end EisensteinSeries

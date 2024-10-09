@@ -1,5 +1,7 @@
 import Mathlib.Tactic.GuardGoalNums
 
+set_option linter.unusedTactic false
+
 example : true ∧ true := by
   constructor
   guard_goal_nums 2

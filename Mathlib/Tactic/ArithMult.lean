@@ -41,3 +41,5 @@ proof term. -/
 macro (name := arith_mult?) "arith_mult?" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
   { show_term { arith_mult $c* } })
+
+end ArithmeticFunction

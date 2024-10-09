@@ -7,8 +7,6 @@ import Mathlib.Data.DList.Defs
 import Mathlib.Control.Traversable.Equiv
 import Mathlib.Control.Traversable.Instances
 
-#align_import data.dlist.instances from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
-
 /-!
 # Traversable instance for DLists
 
@@ -25,12 +23,11 @@ variable (α : Type*)
 
 /-- The natural equivalence between lists and difference lists, using
 `DList.ofList` and `DList.toList`. -/
-def DList.listEquivDList : List α ≃ DList α := by
-  refine'
-      { toFun := DList.ofList
-        invFun := DList.toList.. } <;>
-    simp [Function.RightInverse, Function.LeftInverse, DList.toList_ofList, DList.ofList_toList]
-#align dlist.list_equiv_dlist Batteries.DList.listEquivDList
+def DList.listEquivDList : List α ≃ DList α where
+  toFun := DList.ofList
+  invFun := DList.toList
+  left_inv _ := DList.toList_ofList _
+  right_inv _ := DList.ofList_toList _
 
 instance : Traversable DList :=
   Equiv.traversable DList.listEquivDList

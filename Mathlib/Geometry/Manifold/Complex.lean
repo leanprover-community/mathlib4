@@ -8,8 +8,6 @@ import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Geometry.Manifold.MFDeriv.Basic
 import Mathlib.Topology.LocallyConstant.Basic
 
-#align_import geometry.manifold.complex from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
-
 /-! # Holomorphic functions on complex manifolds
 
 Thanks to the rigidity of complex-differentiability compared to real-differentiability, there are
@@ -44,7 +42,7 @@ open Function Set Filter Complex
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
 variable {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℂ E H} [I.Boundaryless]
-variable {M : Type*} [TopologicalSpace M] [CompactSpace M] [ChartedSpace H M]
+variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [SmoothManifoldWithCorners I M]
 
 /-- **Maximum modulus principle**: if `f : M → F` is complex differentiable in a neighborhood of `c`
@@ -92,7 +90,7 @@ theorem norm_eqOn_of_isPreconnected_of_isMaxOn {f : M → F} {U : Set M} {c : M}
     replace hm : IsLocalMax (‖f ·‖) x :=
       mem_of_superset (ho.mem_nhds hx.1) fun z hz ↦ (hm hz).out.trans_eq hx.2.symm
     replace hd : ∀ᶠ y in 𝓝 x, MDifferentiableAt I 𝓘(ℂ, F) f y :=
-      (eventually_mem_nhds.2 (ho.mem_nhds hx.1)).mono fun z ↦ hd.mdifferentiableAt
+      (eventually_mem_nhds_iff.2 (ho.mem_nhds hx.1)).mono fun z ↦ hd.mdifferentiableAt
     exact (Complex.norm_eventually_eq_of_mdifferentiableAt_of_isLocalMax hd hm).mono fun _ ↦
       (Eq.trans · hx.2)
   have hVne : (U ∩ V).Nonempty := ⟨c, hcU, hcU, rfl⟩
@@ -148,6 +146,8 @@ model so that it works, e.g., on a product of two manifolds without a boundary. 
 
 namespace MDifferentiable
 
+variable [CompactSpace M]
+
 /-- A holomorphic function on a compact complex manifold is locally constant. -/
 protected theorem isLocallyConstant {f : M → F} (hf : MDifferentiable I 𝓘(ℂ, F) f) :
     IsLocallyConstant f :=
@@ -156,19 +156,16 @@ protected theorem isLocallyConstant {f : M → F} (hf : MDifferentiable I 𝓘(�
   IsLocallyConstant.of_constant_on_preconnected_clopens fun _ hpc hclo _a ha _b hb ↦
     hf.mdifferentiableOn.apply_eq_of_isPreconnected_isCompact_isOpen hpc
       hclo.isClosed.isCompact hclo.isOpen hb ha
-#align mdifferentiable.is_locally_constant MDifferentiable.isLocallyConstant
 
 /-- A holomorphic function on a compact connected complex manifold is constant. -/
 theorem apply_eq_of_compactSpace [PreconnectedSpace M] {f : M → F}
     (hf : MDifferentiable I 𝓘(ℂ, F) f) (a b : M) : f a = f b :=
   hf.isLocallyConstant.apply_eq_of_preconnectedSpace _ _
-#align mdifferentiable.apply_eq_of_compact_space MDifferentiable.apply_eq_of_compactSpace
 
 /-- A holomorphic function on a compact connected complex manifold is the constant function `f ≡ v`,
 for some value `v`. -/
 theorem exists_eq_const_of_compactSpace [PreconnectedSpace M] {f : M → F}
     (hf : MDifferentiable I 𝓘(ℂ, F) f) : ∃ v : F, f = Function.const M v :=
   hf.isLocallyConstant.exists_eq_const
-#align mdifferentiable.exists_eq_const_of_compact_space MDifferentiable.exists_eq_const_of_compactSpace
 
 end MDifferentiable

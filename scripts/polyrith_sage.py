@@ -15,7 +15,7 @@ with open(join(dirname(__file__), "polyrith_sage_helper.py"), encoding='utf8') a
 def type_str(type):
     return "QQ"
 
-def create_query(type: str, n_vars: int, eq_list, goal_type):
+def create_query(type: str, n_vars: int, eq_list, target):
     """ Create a query to invoke Sage's `MPolynomial_libsingular.lift`. See
     https://github.com/sagemath/sage/blob/f8df80820dc7321dc9b18c9644c3b8315999670b/src/sage/rings/polynomial/multi_polynomial_libsingular.pyx#L4472-L4518
     for a description of this method. """
@@ -24,21 +24,28 @@ def create_query(type: str, n_vars: int, eq_list, goal_type):
 if {n_vars!r} != 0:
     P = PolynomialRing({type_str(type)}, {var_list})
     [{", ".join(var_list)}] = P.gens()
-    p = P({goal_type})
-    gens = {eq_list} + [1 - p*aux]
-    I = P.ideal(gens)
-    coeffs = P(1).lift(I)
-    power = max(cf.degree(aux) for cf in coeffs)
-    coeffs = [P(cf.subs(aux = 1/p)*p^power) for cf in coeffs[:int(-1)]]
-    print(str(power)+';'+serialize_polynomials(coeffs))
+    p = P({target})
+    if p==0:
+        # The "radicalization trick" implemented below does not work if the target polynomial p is 0
+        # since it requires substituting 1/p.
+        print('1;'+serialize_polynomials(len({eq_list})*[P(0)]))
+    else:
+        # Implements the trick described in 2.2 of arxiv.org/pdf/1007.3615.pdf
+        # for testing membership in the radical.
+        gens = {eq_list} + [1 - p*aux]
+        I = P.ideal(gens)
+        coeffs = P(1).lift(I)
+        power = max(cf.degree(aux) for cf in coeffs)
+        coeffs = [P(cf.subs(aux = 1/p)*p^power) for cf in coeffs[:int(-1)]]
+        print(str(power)+';'+serialize_polynomials(coeffs))
 else:
     # workaround for a Sage shortcoming with `n_vars = 0`,
     # `TypeError: no conversion of this ring to a Singular ring defined`
     # In this case, there is no need to look for membership in the *radical*;
-    # we just check for membership in the ideal, and return exponent 1 
+    # we just check for membership in the ideal, and return exponent 1
     # if coefficients are found.
     P = PolynomialRing({type_str(type)}, 'var', 1)
-    p = P({goal_type})
+    p = P({target})
     I = P.ideal({eq_list})
     coeffs = p.lift(I)
     print('1;'+serialize_polynomials(coeffs))

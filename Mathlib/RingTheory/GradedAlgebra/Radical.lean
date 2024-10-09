@@ -5,8 +5,6 @@ Authors: Jujian Zhang, Eric Wieser
 -/
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
 
-#align_import ring_theory.graded_algebra.radical from "leanprover-community/mathlib"@"f1944b30c97c5eb626e498307dec8b022a05bd0a"
-
 /-!
 
 This file contains a proof that the radical of any homogeneous ideal is a homogeneous ideal
@@ -37,8 +35,6 @@ homogeneous, radical
 
 
 open GradedRing DirectSum SetLike Finset
-
-open BigOperators
 
 variable {ι σ A : Type*}
 variable [CommRing A]
@@ -94,21 +90,21 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
           exact ⟨⟨mem_of_mem_filter _ mem_max₁, mem_of_mem_filter _ mem_max₂⟩, trivial⟩
         have eq_add_sum :=
           calc
-            proj 𝒜 (max₁ + max₂) (x * y) = ∑ ij in antidiag, proj 𝒜 ij.1 x * proj 𝒜 ij.2 y := by
+            proj 𝒜 (max₁ + max₂) (x * y) = ∑ ij ∈ antidiag, proj 𝒜 ij.1 x * proj 𝒜 ij.2 y := by
               simp_rw [ha, proj_apply, DirectSum.decompose_mul, DirectSum.coe_mul_apply 𝒜]
             _ =
                 proj 𝒜 max₁ x * proj 𝒜 max₂ y +
-                  ∑ ij in antidiag.erase (max₁, max₂), proj 𝒜 ij.1 x * proj 𝒜 ij.2 y :=
+                  ∑ ij ∈ antidiag.erase (max₁, max₂), proj 𝒜 ij.1 x * proj 𝒜 ij.2 y :=
               (add_sum_erase _ _ mem_antidiag).symm
         rw [eq_sub_of_add_eq eq_add_sum.symm]
-        refine' Ideal.sub_mem _ hxy (Ideal.sum_mem _ fun z H => _)
+        refine Ideal.sub_mem _ hxy (Ideal.sum_mem _ fun z H => ?_)
         rcases z with ⟨i, j⟩
         simp only [antidiag, mem_erase, Prod.mk.inj_iff, Ne, mem_filter, mem_product] at H
         rcases H with ⟨H₁, ⟨H₂, H₃⟩, H₄⟩
         have max_lt : max₁ < i ∨ max₂ < j := by
           rcases lt_trichotomy max₁ i with (h | rfl | h)
           · exact Or.inl h
-          · refine' False.elim (H₁ ⟨rfl, add_left_cancel H₄⟩)
+          · refine False.elim (H₁ ⟨rfl, add_left_cancel H₄⟩)
           · apply Or.inr
             have := add_lt_add_right h j
             rw [H₄] at this
@@ -136,7 +132,6 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
         · apply neither_mem.1 h
         · apply neither_mem.2 h
       exact not_mem_I mem_I⟩
-#align ideal.is_homogeneous.is_prime_of_homogeneous_mem_or_mem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem
 
 theorem Ideal.IsHomogeneous.isPrime_iff {I : Ideal A} (h : I.IsHomogeneous 𝒜) :
     I.IsPrime ↔
@@ -146,7 +141,6 @@ theorem Ideal.IsHomogeneous.isPrime_iff {I : Ideal A} (h : I.IsHomogeneous 𝒜)
   ⟨fun HI => ⟨HI.ne_top, fun _ _ hxy => Ideal.IsPrime.mem_or_mem HI hxy⟩,
     fun ⟨I_ne_top, homogeneous_mem_or_mem⟩ =>
     h.isPrime_of_homogeneous_mem_or_mem I_ne_top @homogeneous_mem_or_mem⟩
-#align ideal.is_homogeneous.is_prime_iff Ideal.IsHomogeneous.isPrime_iff
 
 theorem Ideal.IsPrime.homogeneousCore {I : Ideal A} (h : I.IsPrime) :
     (I.homogeneousCore 𝒜).toIdeal.IsPrime := by
@@ -154,10 +148,9 @@ theorem Ideal.IsPrime.homogeneousCore {I : Ideal A} (h : I.IsPrime) :
   · exact ne_top_of_le_ne_top h.ne_top (Ideal.toIdeal_homogeneousCore_le 𝒜 I)
   rintro x y hx hy hxy
   have H := h.mem_or_mem (Ideal.toIdeal_homogeneousCore_le 𝒜 I hxy)
-  refine' H.imp _ _
+  refine H.imp ?_ ?_
   · exact Ideal.mem_homogeneousCore_of_homogeneous_of_mem hx
   · exact Ideal.mem_homogeneousCore_of_homogeneous_of_mem hy
-#align ideal.is_prime.homogeneous_core Ideal.IsPrime.homogeneousCore
 
 theorem Ideal.IsHomogeneous.radical_eq {I : Ideal A} (hI : I.IsHomogeneous 𝒜) :
     I.radical = InfSet.sInf { J | Ideal.IsHomogeneous 𝒜 J ∧ I ≤ J ∧ J.IsPrime } := by
@@ -169,20 +162,16 @@ theorem Ideal.IsHomogeneous.radical_eq {I : Ideal A} (hI : I.IsHomogeneous 𝒜)
     refine ⟨(J.homogeneousCore 𝒜).toIdeal, ?_, J.toIdeal_homogeneousCore_le _⟩
     refine ⟨HomogeneousIdeal.isHomogeneous _, ?_, HJ₂.homogeneousCore⟩
     exact hI.toIdeal_homogeneousCore_eq_self.symm.trans_le (Ideal.homogeneousCore_mono _ HJ₁)
-#align ideal.is_homogeneous.radical_eq Ideal.IsHomogeneous.radical_eq
 
 theorem Ideal.IsHomogeneous.radical {I : Ideal A} (h : I.IsHomogeneous 𝒜) :
     I.radical.IsHomogeneous 𝒜 := by
   rw [h.radical_eq]
   exact Ideal.IsHomogeneous.sInf fun _ => And.left
-#align ideal.is_homogeneous.radical Ideal.IsHomogeneous.radical
 
-/-- The radical of a homogenous ideal, as another homogenous ideal. -/
+/-- The radical of a homogeneous ideal, as another homogeneous ideal. -/
 def HomogeneousIdeal.radical (I : HomogeneousIdeal 𝒜) : HomogeneousIdeal 𝒜 :=
   ⟨I.toIdeal.radical, I.isHomogeneous.radical⟩
-#align homogeneous_ideal.radical HomogeneousIdeal.radical
 
 @[simp]
 theorem HomogeneousIdeal.coe_radical (I : HomogeneousIdeal 𝒜) :
     I.radical.toIdeal = I.toIdeal.radical := rfl
-#align homogeneous_ideal.coe_radical HomogeneousIdeal.coe_radical

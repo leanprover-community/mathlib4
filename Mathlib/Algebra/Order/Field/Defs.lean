@@ -1,13 +1,10 @@
 /-
-Copyright (c) 2014 Robert Lewis. All rights reserved.
+Copyright (c) 2014 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Robert Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
+Authors: Robert Y. Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Order.Ring.Defs
-
-#align_import algebra.order.field.defs from "leanprover-community/mathlib"@"655994e298904d7e5bbd1e18c95defd7b543eb94"
+import Mathlib.Algebra.Field.Defs
 
 /-!
 # Linear ordered (semi)fields
@@ -30,74 +27,75 @@ variable {α : Type*}
 
 /-- A linear ordered semifield is a field with a linear order respecting the operations. -/
 class LinearOrderedSemifield (α : Type*) extends LinearOrderedCommSemiring α, Semifield α
-#align linear_ordered_semifield LinearOrderedSemifield
 
 /-- A linear ordered field is a field with a linear order respecting the operations. -/
 class LinearOrderedField (α : Type*) extends LinearOrderedCommRing α, Field α
-#align linear_ordered_field LinearOrderedField
 
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedField.toLinearOrderedSemifield [LinearOrderedField α] :
     LinearOrderedSemifield α :=
   { LinearOrderedRing.toLinearOrderedSemiring, ‹LinearOrderedField α› with }
-#align linear_ordered_field.to_linear_ordered_semifield LinearOrderedField.toLinearOrderedSemifield
 
-variable [LinearOrderedSemifield α] {a b : α}
+variable [LinearOrderedSemifield α] {a b c : α}
 
-@[simp] lemma inv_pos : 0 < a⁻¹ ↔ 0 < a :=
-  suffices ∀ a : α, 0 < a → 0 < a⁻¹ from ⟨fun h ↦ inv_inv a ▸ this _ h, this a⟩
-  fun a ha ↦ flip lt_of_mul_lt_mul_left ha.le <| by simp [ne_of_gt ha, zero_lt_one]
-#align inv_pos inv_pos
+/-- Equality holds when `a ≠ 0`. See `mul_inv_cancel`. -/
+lemma mul_inv_le_one : a * a⁻¹ ≤ 1 := by obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
 
-alias ⟨_, inv_pos_of_pos⟩ := inv_pos
-#align inv_pos_of_pos inv_pos_of_pos
+/-- Equality holds when `a ≠ 0`. See `inv_mul_cancel`. -/
+lemma inv_mul_le_one : a⁻¹ * a ≤ 1 := by obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
 
-@[simp] lemma inv_nonneg : 0 ≤ a⁻¹ ↔ 0 ≤ a := by simp only [le_iff_eq_or_lt, inv_pos, zero_eq_inv]
-#align inv_nonneg inv_nonneg
+/-- Equality holds when `a ≠ 0`. See `mul_inv_cancel_left`. -/
+lemma mul_inv_left_le (hb : 0 ≤ b) : a * (a⁻¹ * b) ≤ b := by
+  obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
 
-alias ⟨_, inv_nonneg_of_nonneg⟩ := inv_nonneg
-#align inv_nonneg_of_nonneg inv_nonneg_of_nonneg
+/-- Equality holds when `a ≠ 0`. See `mul_inv_cancel_left`. -/
+lemma le_mul_inv_left (hb : b ≤ 0) : b ≤ a * (a⁻¹ * b) := by
+  obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
 
-@[simp] lemma inv_lt_zero : a⁻¹ < 0 ↔ a < 0 := by simp only [← not_le, inv_nonneg]
-#align inv_lt_zero inv_lt_zero
+/-- Equality holds when `a ≠ 0`. See `inv_mul_cancel_left`. -/
+lemma inv_mul_left_le (hb : 0 ≤ b) : a⁻¹ * (a * b) ≤ b := by
+  obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
 
-@[simp] lemma inv_nonpos : a⁻¹ ≤ 0 ↔ a ≤ 0 := by simp only [← not_lt, inv_pos]
-#align inv_nonpos inv_nonpos
+/-- Equality holds when `a ≠ 0`. See `inv_mul_cancel_left`. -/
+lemma le_inv_mul_left (hb : b ≤ 0) : b ≤ a⁻¹ * (a * b) := by
+  obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
 
-lemma one_div_pos : 0 < 1 / a ↔ 0 < a := inv_eq_one_div a ▸ inv_pos
-#align one_div_pos one_div_pos
+/-- Equality holds when `b ≠ 0`. See `mul_inv_cancel_right`. -/
+lemma mul_inv_right_le (ha : 0 ≤ a) : a * b * b⁻¹ ≤ a := by
+  obtain rfl | hb := eq_or_ne b 0 <;> simp [*]
 
-lemma one_div_neg : 1 / a < 0 ↔ a < 0 := inv_eq_one_div a ▸ inv_lt_zero
-#align one_div_neg one_div_neg
+/-- Equality holds when `b ≠ 0`. See `mul_inv_cancel_right`. -/
+lemma le_mul_inv_right (ha : a ≤ 0) : a ≤ a * b * b⁻¹ := by
+  obtain rfl | hb := eq_or_ne b 0 <;> simp [*]
 
-lemma one_div_nonneg : 0 ≤ 1 / a ↔ 0 ≤ a := inv_eq_one_div a ▸ inv_nonneg
-#align one_div_nonneg one_div_nonneg
+/-- Equality holds when `b ≠ 0`. See `inv_mul_cancel_right`. -/
+lemma inv_mul_right_le (ha : 0 ≤ a) : a * b⁻¹ * b ≤ a := by
+  obtain rfl | hb := eq_or_ne b 0 <;> simp [*]
 
-lemma one_div_nonpos : 1 / a ≤ 0 ↔ a ≤ 0 := inv_eq_one_div a ▸ inv_nonpos
-#align one_div_nonpos one_div_nonpos
+/-- Equality holds when `b ≠ 0`. See `inv_mul_cancel_right`. -/
+lemma le_inv_mul_right (ha : a ≤ 0) : a ≤ a * b⁻¹ * b := by
+  obtain rfl | hb := eq_or_ne b 0 <;> simp [*]
 
-lemma div_pos (ha : 0 < a) (hb : 0 < b) : 0 < a / b := by
-  rw [div_eq_mul_inv]; exact mul_pos ha (inv_pos.2 hb)
-#align div_pos div_pos
+/-- Equality holds when `c ≠ 0`. See `mul_div_mul_left`. -/
+lemma mul_div_mul_left_le (h : 0 ≤ a / b) : c * a / (c * b) ≤ a / b := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simpa
+  · rw [mul_div_mul_left _ _ hc]
 
-lemma div_nonneg (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a / b := by
-  rw [div_eq_mul_inv]; exact mul_nonneg ha (inv_nonneg.2 hb)
-#align div_nonneg div_nonneg
+/-- Equality holds when `c ≠ 0`. See `mul_div_mul_left`. -/
+lemma le_mul_div_mul_left (h : a / b ≤ 0) : a / b ≤ c * a / (c * b) := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simpa
+  · rw [mul_div_mul_left _ _ hc]
 
-lemma div_nonpos_of_nonpos_of_nonneg (ha : a ≤ 0) (hb : 0 ≤ b) : a / b ≤ 0 := by
-  rw [div_eq_mul_inv]; exact mul_nonpos_of_nonpos_of_nonneg ha (inv_nonneg.2 hb)
-#align div_nonpos_of_nonpos_of_nonneg div_nonpos_of_nonpos_of_nonneg
+/-- Equality holds when `c ≠ 0`. See `mul_div_mul_right`. -/
+lemma mul_div_mul_right_le (h : 0 ≤ a / b) : a * c / (b * c) ≤ a / b := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simpa
+  · rw [mul_div_mul_right _ _ hc]
 
-lemma div_nonpos_of_nonneg_of_nonpos (ha : 0 ≤ a) (hb : b ≤ 0) : a / b ≤ 0 := by
-  rw [div_eq_mul_inv]; exact mul_nonpos_of_nonneg_of_nonpos ha (inv_nonpos.2 hb)
-#align div_nonpos_of_nonneg_of_nonpos div_nonpos_of_nonneg_of_nonpos
-
-lemma zpow_nonneg (ha : 0 ≤ a) : ∀ n : ℤ, 0 ≤ a ^ n
-  | (n : ℕ) => by rw [zpow_natCast]; exact pow_nonneg ha _
-  | -(n + 1 : ℕ) => by rw [zpow_neg, inv_nonneg, zpow_natCast]; exact pow_nonneg ha _
-#align zpow_nonneg zpow_nonneg
-
-lemma zpow_pos_of_pos (ha : 0 < a) : ∀ n : ℤ, 0 < a ^ n
-  | (n : ℕ) => by rw [zpow_natCast]; exact pow_pos ha _
-  | -(n + 1 : ℕ) => by rw [zpow_neg, inv_pos, zpow_natCast]; exact pow_pos ha _
-#align zpow_pos_of_pos zpow_pos_of_pos
+/-- Equality holds when `c ≠ 0`. See `mul_div_mul_right`. -/
+lemma le_mul_div_mul_right (h : a / b ≤ 0) : a / b ≤ a * c / (b * c) := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simpa
+  · rw [mul_div_mul_right _ _ hc]

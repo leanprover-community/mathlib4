@@ -21,8 +21,6 @@ This file defines bundled isomorphisms of `R`-bialgebras. We simply mimic the ea
 * `A ≃ₐc[R] B` : `R`-bialgebra equivalence from `A` to `B`.
 -/
 
-open BigOperators
-
 universe u v w u₁ v₁
 
 variable {R : Type u} {A : Type v} {B : Type w} {C : Type u₁}
@@ -41,7 +39,7 @@ attribute [nolint docBlame] BialgEquiv.toCoalgEquiv
 notation:50 A " ≃ₐc[" R "] " B => BialgEquiv R A B
 
 /-- `BialgEquivClass F R A B` asserts `F` is a type of bundled bialgebra equivalences
-from `A` to `B`.  -/
+from `A` to `B`. -/
 class BialgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R]
     [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
     [CoalgebraStruct R A] [CoalgebraStruct R B] [EquivLike F A B]
@@ -195,9 +193,6 @@ variable {e e'}
 @[ext]
 theorem ext (h : ∀ x, e x = e' x) : e = e' :=
   DFunLike.ext _ _ h
-
-theorem ext_iff : e = e' ↔ ∀ x, e x = e' x :=
-  DFunLike.ext_iff
 
 protected theorem congr_arg {x x'} : x = x' → e x = e x' :=
   DFunLike.congr_arg e
