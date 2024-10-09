@@ -449,7 +449,7 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
         exact Nat.add_sub_of_le (Finset.mem_range_succ_iff.1 hi)
     _ ≤ ∑ i ∈ Finset.range (n + 1), (n ! : ℝ) * 1 * C * D ^ (n + 1) * 1 := by
       gcongr with i
-      apply inv_le_one
+      apply inv_le_one_of_one_le₀
       simpa only [Nat.one_le_cast] using (n - i).factorial_pos
     _ = (n + 1)! * C * D ^ (n + 1) := by
       simp only [mul_assoc, mul_one, Finset.sum_const, Finset.card_range, nsmul_eq_mul,

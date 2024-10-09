@@ -68,7 +68,7 @@ structure LocalInvariantProp (P : (H → H') → Set H → H → Prop) : Prop wh
   left_invariance' : ∀ {s x f} {e' : PartialHomeomorph H' H'},
     e' ∈ G' → s ⊆ f ⁻¹' e'.source → f x ∈ e'.source → P f s x → P (e' ∘ f) s x
 
-variable {G G'} {P : (H → H') → Set H → H → Prop} {s t u : Set H} {x : H}
+variable {G G'} {P : (H → H') → Set H → H → Prop}
 variable (hG : G.LocalInvariantProp G' P)
 include hG
 

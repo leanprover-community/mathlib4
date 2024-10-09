@@ -107,7 +107,7 @@ lemma dirSupClosed_Iic (a : α) : DirSupClosed (Iic a) := fun _d _ _ _a ha ↦ (
 end Preorder
 
 section CompleteLattice
-variable [CompleteLattice α] {s t : Set α}
+variable [CompleteLattice α] {s : Set α}
 
 lemma dirSupInacc_iff_forall_sSup :
     DirSupInacc s ↔ ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ s → (d ∩ s).Nonempty := by
@@ -124,7 +124,7 @@ namespace Topology
 /-! ### Scott-Hausdorff topology -/
 
 section ScottHausdorff
-variable [Preorder α] {s : Set α}
+variable [Preorder α]
 
 /-- The Scott-Hausdorff topology.
 
