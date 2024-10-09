@@ -185,6 +185,10 @@ lemma MemHolder.smul {𝕜} [NormedDivisionRing 𝕜] [Module 𝕜 Y] [BoundedSM
     {c : 𝕜} (hf : MemHolder r f) : MemHolder r (c • f) :=
   (hf.holderWith.smul c).memHolder
 
+lemma MemHolder.nsmul [Module ℝ Y] [BoundedSMul ℝ Y] (n : ℕ) (hf : MemHolder r f) :
+    MemHolder r (n • f) := by
+  simp [← Nat.cast_smul_eq_nsmul (R := ℝ), hf.smul]
+
 lemma eHolderNorm_add_le :
     eHolderNorm r (f + g) ≤ eHolderNorm r f + eHolderNorm r g := by
   by_cases hfg : MemHolder r f  ∧ MemHolder r g
