@@ -142,7 +142,7 @@ def evalBasepoint (V P x₀ : Expr) (g : MVarId) : MetaM (List MVarId) := do
 
 open Parser.Tactic in
 elab "basepoint" tV:(ppSpace colGt term) "," tP:(ppSpace colGt term) "," tx₀:(ppSpace colGt term)
-    loc:(location)? : tactic => do
+    loc:(location)? : tactic => Tactic.withMainContext <| do
   let loc := (loc.map Tactic.expandLocation).getD (.targets #[] true)
   let V ← Term.elabTerm tV none
   let P ← Term.elabTerm tP none
@@ -164,7 +164,8 @@ example {x y z : P} : (x -ᵥ ((z -ᵥ x) +ᵥ x)) +ᵥ y = ((z -ᵥ x) +ᵥ x -
   sorry
 
 example {x y z : P} : x -ᵥ ((z -ᵥ x) +ᵥ x) = (z -ᵥ x) +ᵥ x -ᵥ z := by
-  basepoint V, P, x
+  let w : P := sorry
+  basepoint V, P, w
   sorry
 
 variable {R : Type*} [SMul R V] [AddCommGroup R] [One R]
