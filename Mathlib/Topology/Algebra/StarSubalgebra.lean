@@ -229,7 +229,7 @@ theorem induction_on {x y : A}
     P y hy := by
   apply closure (adjoin R {x} : Set A) subset_closure (fun y hy ↦ ?_) y hy
   rw [SetLike.mem_coe, ← mem_toSubalgebra, adjoin_toSubalgebra] at hy
-  induction hy using Algebra.adjoin_induction'' with
+  induction hy using Algebra.adjoin_induction with
   | mem u hu =>
     obtain ((rfl : u = x) | (hu : star u = x)) := by simpa using hu
     · exact self

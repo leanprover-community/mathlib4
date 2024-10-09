@@ -92,7 +92,7 @@ instance instStarOrderedRing {R : Type*}
         refine ⟨star s' * s' + p', ?_, by rw [add_assoc]⟩
         exact add_mem (AddSubmonoid.subset_closure ⟨s', rfl⟩) hp'_mem
     · rintro ⟨p, hp, rfl⟩
-      induction hp using AddSubmonoid.closure_induction' generalizing f with
+      induction hp using AddSubmonoid.closure_induction generalizing f with
       | mem s s_mem =>
         obtain ⟨s, rfl⟩ := s_mem
         exact fun x ↦ le_add_of_nonneg_right (star_mul_self_nonneg (s x))
