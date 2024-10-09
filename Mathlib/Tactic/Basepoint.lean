@@ -1,4 +1,13 @@
+/-
+Copyright (c) 2024 Heather Macbeth. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Heather Macbeth
+-/
 import Mathlib.Algebra.AddTorsor
+
+/-!
+# A tactic for moving calculations from affine space to vector space
+-/
 
 open Lean Elab Meta Qq
 
