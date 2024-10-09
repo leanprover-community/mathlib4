@@ -18,11 +18,12 @@ a functor `pushforward : PresheafOfModules.{v} R ⥤ PresheafOfModules.{v} S`.
 
 -/
 
-universe v v₁ v₂ u₁ u₂ u
+universe v v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄ u
 
 open CategoryTheory
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+  {E : Type u₃} [Category.{v₃} E] {E' : Type u₄} [Category.{v₄} E']
 
 namespace PresheafOfModules
 
@@ -83,5 +84,42 @@ lemma pushforward_map_app_apply {M N : PresheafOfModules.{v} R} (α : M ⟶ N) (
       (β := fun _ ↦ (ModuleCat.restrictScalars (φ.app X)).obj
         (N.obj (Opposite.op (F.obj X.unop))))
       (((pushforward φ).map α).app X) m = α.app (Opposite.op (F.obj X.unop)) m := rfl
+
+section
+
+variable (R) in
+noncomputable def pushforwardId :
+    pushforward.{v} (S := R) (F := 𝟭 _) (𝟙 R) ≅ 𝟭 _ :=
+  Iso.refl _
+
+section
+
+variable {T : Eᵒᵖ ⥤ RingCat.{u}} {G : D ⥤ E} (ψ : R ⟶ G.op ⋙ T)
+
+noncomputable def pushforwardComp :
+  pushforward.{v} (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ) ≅
+    pushforward.{v} ψ ⋙ pushforward.{v} φ :=
+  Iso.refl _
+
+variable {T' : E'ᵒᵖ ⥤ RingCat.{u}} {G' : E ⥤ E'} (ψ' : T ⟶ G'.op ⋙ T')
+
+lemma pushforward_assoc :
+    pushforwardComp.{v} (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ) ψ' ≪≫
+      isoWhiskerLeft _ (pushforwardComp.{v} φ ψ) =
+    pushforwardComp.{v} (G := G ⋙ G') φ (ψ ≫ whiskerLeft G.op ψ') ≪≫
+      isoWhiskerRight (pushforwardComp.{v} ψ ψ') _ ≪≫
+        Functor.associator _ _ _ := by ext; rfl
+
+end
+
+lemma pushforward_id_comp :
+    pushforwardComp.{v} (F := 𝟭 C) (𝟙 S) φ = (Functor.rightUnitor _).symm ≪≫
+      isoWhiskerLeft (pushforward.{v} φ) (pushforwardId S).symm := by ext; rfl
+
+lemma pushforward_comp_id :
+    pushforwardComp.{v} (G := 𝟭 _) φ (𝟙 R) = (Functor.leftUnitor _).symm ≪≫
+      isoWhiskerRight (pushforwardId R).symm (pushforward.{v} φ) := by ext; rfl
+
+end
 
 end PresheafOfModules

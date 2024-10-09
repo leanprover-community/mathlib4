@@ -18,7 +18,7 @@ The existence of this left adjoint functor is obtained under suitable universe a
 
 -/
 
-universe v v₁ v₂ u₁ u₂ u
+universe v v₁ v₂ v₃ u₁ u₂ u₃ u
 
 open CategoryTheory Limits Opposite
 
@@ -90,6 +90,43 @@ lemma pullbackObjIsDefined_eq_top :
 instance : (pushforward.{u} φ).IsRightAdjoint :=
   Functor.isRightAdjoint_of_leftAdjointObjIsDefined_eq_top
     (pullbackObjIsDefined_eq_top φ)
+
+end
+
+section
+
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+  {E : Type u₃} [Category.{v₃} E]
+
+variable {F : C ⥤ D} {R : Dᵒᵖ ⥤ RingCat.{u}} {S : Cᵒᵖ ⥤ RingCat.{u}} (φ : S ⟶ F.op ⋙ R)
+  {G : D ⥤ E} {T : Eᵒᵖ ⥤ RingCat.{u}} (ψ : R ⟶ G.op ⋙ T)
+
+instance : (pushforward.{v} (F := 𝟭 C) (𝟙 S)).IsRightAdjoint :=
+  Functor.isRightAdjoint_of_iso (pushforwardId.{v} S).symm
+
+noncomputable def pullbackId : pullback.{v} (F := 𝟭 C) (𝟙 S) ≅ 𝟭 _ :=
+  ((conjugateIsoEquiv (pullbackPushforwardAdjunction.{v} (F := 𝟭 C) (𝟙 S))
+    Adjunction.id).symm (pushforwardId S)).symm
+
+section
+
+variable [(pushforward.{v} φ).IsRightAdjoint] [(pushforward.{v} ψ).IsRightAdjoint]
+
+instance : (pushforward.{v} (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ)).IsRightAdjoint :=
+  Functor.isRightAdjoint_of_iso (pushforwardComp.{v} φ ψ).symm
+
+noncomputable def pullbackComp :
+    pullback.{v} (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ) ≅
+      pullback.{v} φ ⋙ pullback.{v} ψ :=
+  (conjugateIsoEquiv
+    ((pullbackPushforwardAdjunction φ).comp (pullbackPushforwardAdjunction ψ))
+    (pullbackPushforwardAdjunction (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ))).symm
+      (pushforwardComp φ ψ).symm
+
+end
+
+-- TODO: show lemmas `pullback_assoc`, `pullback_id_comp`, `pullback_comp_id` similar
+-- to those obtained for the pushforward
 
 end
 
