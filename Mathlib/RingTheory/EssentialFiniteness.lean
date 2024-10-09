@@ -109,7 +109,7 @@ lemma EssFiniteType.aux (σ : Subalgebra R S)
     (hσ : ∀ s : S, ∃ t ∈ σ, IsUnit t ∧ s * t ∈ σ)
     (τ : Set T) (t : T) (ht : t ∈ Algebra.adjoin S τ) :
     ∃ s ∈ σ, IsUnit s ∧ s • t ∈ σ.map (IsScalarTower.toAlgHom R S T) ⊔ Algebra.adjoin R τ := by
-  refine Algebra.adjoin_induction ht ?_ ?_ ?_ ?_
+  refine Algebra.adjoin_induction ?_ ?_ ?_ ?_ ht
   · intro t ht
     exact ⟨1, Subalgebra.one_mem _, isUnit_one,
       (one_smul S t).symm ▸ Algebra.mem_sup_right (Algebra.subset_adjoin ht)⟩
@@ -118,13 +118,13 @@ lemma EssFiniteType.aux (σ : Subalgebra R S)
     refine ⟨_, hs₁, hs₂, Algebra.mem_sup_left ?_⟩
     rw [Algebra.smul_def, ← map_mul, mul_comm]
     exact ⟨_, hs₃, rfl⟩
-  · rintro x y ⟨sx, hsx, hsx', hsx''⟩ ⟨sy, hsy, hsy', hsy''⟩
+  · rintro x - y - ⟨sx, hsx, hsx', hsx''⟩ ⟨sy, hsy, hsy', hsy''⟩
     refine ⟨_, σ.mul_mem hsx hsy, hsx'.mul hsy', ?_⟩
     rw [smul_add, mul_smul, mul_smul, Algebra.smul_def sx (sy • y), smul_comm,
       Algebra.smul_def sy (sx • x)]
     apply add_mem (mul_mem _ hsx'') (mul_mem _ hsy'') <;>
       exact Algebra.mem_sup_left ⟨_, ‹_›, rfl⟩
-  · rintro x y ⟨sx, hsx, hsx', hsx''⟩ ⟨sy, hsy, hsy', hsy''⟩
+  · rintro x - y - ⟨sx, hsx, hsx', hsx''⟩ ⟨sy, hsy, hsy', hsy''⟩
     refine ⟨_, σ.mul_mem hsx hsy, hsx'.mul hsy', ?_⟩
     rw [mul_smul, ← smul_eq_mul, smul_comm sy x, ← smul_assoc, smul_eq_mul]
     exact mul_mem hsx'' hsy''

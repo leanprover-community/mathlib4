@@ -294,10 +294,10 @@ theorem map_iInf_comap_of_surjective (K : ι → Ideal S) : (⨅ i, (K i).comap 
   (giMapComap f hf).l_iInf_u _
 
 theorem mem_image_of_mem_map_of_surjective {I : Ideal R} {y} (H : y ∈ map f I) : y ∈ f '' I :=
-  Submodule.span_induction H (fun _ => id) ⟨0, I.zero_mem, map_zero f⟩
-    (fun _ _ ⟨x1, hx1i, hxy1⟩ ⟨x2, hx2i, hxy2⟩ =>
+  Submodule.span_induction (hx := H) (fun _ => id) ⟨0, I.zero_mem, map_zero f⟩
+    (fun _ _ _ _ ⟨x1, hx1i, hxy1⟩ ⟨x2, hx2i, hxy2⟩ =>
       ⟨x1 + x2, I.add_mem hx1i hx2i, hxy1 ▸ hxy2 ▸ map_add f _ _⟩)
-    fun c _ ⟨x, hxi, hxy⟩ =>
+    fun c _ _ ⟨x, hxi, hxy⟩ =>
     let ⟨d, hdc⟩ := hf c
     ⟨d * x, I.mul_mem_left _ hxi, hdc ▸ hxy ▸ map_mul f _ _⟩
 
