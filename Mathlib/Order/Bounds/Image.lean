@@ -195,53 +195,6 @@ theorem map_isLeast : IsLeast s a → IsGreatest (f '' s) (f a) :=
 
 end Antitone
 
-section StrictMono
-
-variable [LinearOrder α] [Preorder β] {f : α → β} {a : α} {s : Set α}
-
-theorem mem_upperBounds_image_iff_mem_upperBounds (hf : StrictMono f) :
-    f a ∈ upperBounds (f '' s) ↔ a ∈ upperBounds s :=
-  ⟨fun Ha _ hx => hf.le_iff_le.mp (Ha (mem_image_of_mem f hx)), hf.monotone.mem_upperBounds_image⟩
-
-theorem mem_lowerBounds_image_iff_mem_lowerBounds (hf : StrictMono f) :
-    f a ∈ lowerBounds (f '' s) ↔ a ∈ lowerBounds s :=
-  ⟨fun Ha _ hx => hf.le_iff_le.mp (Ha (mem_image_of_mem f hx)), hf.monotone.mem_lowerBounds_image⟩
-
-theorem map_isLeast_iff_isLeast (hf : StrictMono f) : IsLeast (f '' s) (f a) ↔ IsLeast s a :=
-  ⟨fun Ha =>  ⟨(mem_image_iff_mem_of_injective _ _ hf.injective).mp Ha.left,
-    (mem_lowerBounds_image_iff_mem_lowerBounds hf).mp Ha.right⟩, hf.monotone.map_isLeast⟩
-
-theorem map_isGreatest_iff_isGreatest (hf : StrictMono f) :
-    IsGreatest (f '' s) (f a) ↔ IsGreatest s a :=
-  ⟨fun Ha => ⟨hf.injective.mem_set_image.mp Ha.left,
-    (mem_upperBounds_image_iff_mem_upperBounds hf).mp Ha.right⟩, hf.monotone.map_isGreatest⟩
-
-end StrictMono
-
-section StrictAnti
-
-variable [LinearOrder α] [Preorder β] {f : α → β} {a : α} {s : Set α}
-
-theorem mem_upperBounds_image_iff_mem_lowerBounds (hf : StrictAnti f) :
-    f a ∈ upperBounds (f '' s) ↔ a ∈ lowerBounds s :=
-  ⟨fun Ha _ hx => hf.le_iff_le.mp (Ha (mem_image_of_mem f hx)), hf.antitone.mem_upperBounds_image⟩
-
-theorem mem_lowerBounds_image_iff_mem_upperBounds (hf : StrictAnti f) :
-    f a ∈ lowerBounds (f '' s) ↔ a ∈ upperBounds s :=
-  ⟨fun Ha _ hx => hf.le_iff_le.mp (Ha (mem_image_of_mem f hx)), hf.antitone.mem_lowerBounds_image⟩
-
-theorem map_isLeast_iff_isGreatest (hf : StrictAnti f) :
-    IsLeast (f '' s) (f a) ↔ IsGreatest s a :=
-  ⟨fun Ha => ⟨hf.injective.mem_set_image.mp Ha.left,
-    (mem_lowerBounds_image_iff_mem_upperBounds hf).mp Ha.right⟩, hf.antitone.map_isGreatest⟩
-
-theorem map_isGreatest_iff_isLeast (hf : StrictAnti f) :
-    IsGreatest (f '' s) (f a) ↔ IsLeast s a :=
-  ⟨fun Ha => ⟨hf.injective.mem_set_image.mp Ha.left,
-    (mem_upperBounds_image_iff_mem_lowerBounds hf).mp Ha.right⟩, hf.antitone.map_isLeast⟩
-
-end StrictAnti
-
 section Image2
 
 variable [Preorder α] [Preorder β] [Preorder γ] {f : α → β → γ} {s : Set α} {t : Set β} {a : α}
