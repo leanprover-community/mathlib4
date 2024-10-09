@@ -28,18 +28,18 @@ defining objects that can be created randomly.
 
 -/
 
-set_option autoImplicit true
+set_option autoImplicit true -- Note: this file uses `autoImplicit` pervasively
 
 /-- A monad transformer to generate random objects using the generic generator type `g` -/
 abbrev RandGT (g : Type) := StateT (ULift g)
-/-- A monad to generate random objects using the generator type `g`.  -/
+/-- A monad to generate random objects using the generator type `g`. -/
 abbrev RandG (g : Type) := RandGT g Id
 
 /-- A monad transformer to generate random objects using the generator type `StdGen`.
 `RandT m α` should be thought of a random value in `m α`. -/
 abbrev RandT := RandGT StdGen
 
-/-- A monad to generate random objects using the generator type `StdGen`.  -/
+/-- A monad to generate random objects using the generator type `StdGen`. -/
 abbrev Rand := RandG StdGen
 
 instance [MonadLift m n] : MonadLiftT (RandGT g m) (RandGT g n) where

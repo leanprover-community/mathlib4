@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Scott Morrison
+Authors: Johannes Hölzl, Kim Morrison
 -/
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Group.Submonoid.Basic
@@ -23,7 +23,7 @@ Functions with finite support are used (at least) in the following parts of the 
 
 * the linear combination of a family of vectors `v i` with coefficients `f i` (as used, e.g., to
   define linearly independent family `LinearIndependent`) is defined as a map
-  `Finsupp.total : (ι → M) → (ι →₀ R) →ₗ[R] M`.
+  `Finsupp.linearCombination : (ι → M) → (ι →₀ R) →ₗ[R] M`.
 
 Some other constructions are naturally equivalent to `α →₀ M` with some `α` and `M` but are defined
 in a different way in the library:
@@ -756,7 +756,7 @@ def embDomain (f : α ↪ β) (v : α →₀ M) : β →₀ M where
   mem_support_toFun a₂ := by
     dsimp
     split_ifs with h
-    · simp only [h, true_iff_iff, Ne]
+    · simp only [h, true_iff, Ne]
       rw [← not_mem_support_iff, not_not]
       classical apply Finset.choose_mem
     · simp only [h, Ne, ne_self_iff_false, not_true_eq_false]
@@ -910,6 +910,20 @@ theorem support_add_eq [DecidableEq α] {g₁ g₂ : α →₀ M} (h : Disjoint 
 theorem single_add (a : α) (b₁ b₂ : M) : single a (b₁ + b₂) = single a b₁ + single a b₂ :=
   (zipWith_single_single _ _ _ _ _).symm
 
+theorem support_single_add {a : α} {b : M} {f : α →₀ M} (ha : a ∉ f.support) (hb : b ≠ 0) :
+    support (single a b + f) = cons a f.support ha := by
+  classical
+  have H := support_single_ne_zero a hb
+  rw [support_add_eq, H, cons_eq_insert, insert_eq]
+  rwa [H, disjoint_singleton_left]
+
+theorem support_add_single {a : α} {b : M} {f : α →₀ M} (ha : a ∉ f.support) (hb : b ≠ 0) :
+    support (f + single a b) = cons a f.support ha := by
+  classical
+  have H := support_single_ne_zero a hb
+  rw [support_add_eq, H, union_comm, cons_eq_insert, insert_eq]
+  rwa [H, disjoint_singleton_right]
+
 instance instAddZeroClass : AddZeroClass (α →₀ M) :=
   DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
 
@@ -1033,6 +1047,60 @@ theorem induction₂ {p : (α →₀ M) → Prop} (f : α →₀ M) (h0 : p 0)
 theorem induction_linear {p : (α →₀ M) → Prop} (f : α →₀ M) (h0 : p 0)
     (hadd : ∀ f g : α →₀ M, p f → p g → p (f + g)) (hsingle : ∀ a b, p (single a b)) : p f :=
   induction₂ f h0 fun _a _b _f _ _ w => hadd _ _ w (hsingle _ _)
+
+section LinearOrder
+
+variable [LinearOrder α] {p : (α →₀ M) → Prop}
+
+/-- A finitely supported function can be built by adding up `single a b` for increasing `a`.
+
+The theorem `induction_on_max₂` swaps the argument order in the sum. -/
+theorem induction_on_max (f : α →₀ M) (h0 : p 0)
+    (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 → p f → p (single a b + f)) :
+    p f := by
+  suffices ∀ (s) (f : α →₀ M), f.support = s → p f from this _ _ rfl
+  refine fun s => s.induction_on_max (fun f h => ?_) (fun a s hm hf f hs => ?_)
+  · rwa [support_eq_empty.1 h]
+  · have hs' : (erase a f).support = s := by
+      rw [support_erase, hs, erase_insert (fun ha => (hm a ha).false)]
+    rw [← single_add_erase a f]
+    refine ha _ _ _ (fun c hc => hm _ <| hs'.symm ▸ hc) ?_ (hf _ hs')
+    rw [← mem_support_iff, hs]
+    exact mem_insert_self a s
+
+/-- A finitely supported function can be built by adding up `single a b` for decreasing `a`.
+
+The theorem `induction_on_min₂` swaps the argument order in the sum. -/
+theorem induction_on_min (f : α →₀ M) (h0 : p 0)
+    (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, a < c) → b ≠ 0 → p f → p (single a b + f)) :
+    p f :=
+  induction_on_max (α := αᵒᵈ) f h0 ha
+
+/-- A finitely supported function can be built by adding up `single a b` for increasing `a`.
+
+The theorem `induction_on_max` swaps the argument order in the sum. -/
+theorem induction_on_max₂ (f : α →₀ M) (h0 : p 0)
+    (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 → p f → p (f + single a b)) :
+    p f := by
+  suffices ∀ (s) (f : α →₀ M), f.support = s → p f from this _ _ rfl
+  refine fun s => s.induction_on_max (fun f h => ?_) (fun a s hm hf f hs => ?_)
+  · rwa [support_eq_empty.1 h]
+  · have hs' : (erase a f).support = s := by
+      rw [support_erase, hs, erase_insert (fun ha => (hm a ha).false)]
+    rw [← erase_add_single a f]
+    refine ha _ _ _ (fun c hc => hm _ <| hs'.symm ▸ hc) ?_ (hf _ hs')
+    rw [← mem_support_iff, hs]
+    exact mem_insert_self a s
+
+/-- A finitely supported function can be built by adding up `single a b` for decreasing `a`.
+
+The theorem `induction_on_min` swaps the argument order in the sum. -/
+theorem induction_on_min₂ (f : α →₀ M) (h0 : p 0)
+    (ha : ∀ (a b) (f : α →₀ M), (∀ c ∈ f.support, a < c) → b ≠ 0 → p f → p (f + single a b)) :
+    p f :=
+  induction_on_max₂ (α := αᵒᵈ) f h0 ha
+
+end LinearOrder
 
 @[simp]
 theorem add_closure_setOf_eq_single :

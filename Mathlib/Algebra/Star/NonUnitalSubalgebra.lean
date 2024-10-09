@@ -97,7 +97,7 @@ variable [CommSemiring R]
 variable [NonUnitalNonAssocSemiring A] [Module R A] [Star A]
 variable [NonUnitalNonAssocSemiring B] [Module R B] [Star B]
 variable [NonUnitalNonAssocSemiring C] [Module R C] [Star C]
-variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [NonUnitalStarAlgHomClass F R A B]
+variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
 
 instance instSetLike : SetLike (NonUnitalStarSubalgebra R A) A where
   coe {s} := s.carrier
@@ -398,7 +398,7 @@ variable [CommSemiring R]
 variable [NonUnitalNonAssocSemiring A] [Module R A] [Star A]
 variable [NonUnitalNonAssocSemiring B] [Module R B] [Star B]
 variable [NonUnitalNonAssocSemiring C] [Module R C] [Star C]
-variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [NonUnitalStarAlgHomClass F R A B]
+variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
 
 /-- Range of an `NonUnitalAlgHom` as a `NonUnitalStarSubalgebra`. -/
 protected def range (φ : F) : NonUnitalStarSubalgebra R B where
@@ -471,7 +471,7 @@ variable [CommSemiring R]
 variable [NonUnitalSemiring A] [Module R A] [Star A]
 variable [NonUnitalSemiring B] [Module R B] [Star B]
 variable [NonUnitalSemiring C] [Module R C] [Star C]
-variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [NonUnitalStarAlgHomClass F R A B]
+variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
 
 /-- Restrict a non-unital star algebra homomorphism with a left inverse to an algebra isomorphism
 to its range.
@@ -600,7 +600,7 @@ namespace NonUnitalStarAlgebra
 variable [CommSemiring R] [StarRing R]
 variable [NonUnitalSemiring A] [StarRing A] [Module R A]
 variable [NonUnitalSemiring B] [StarRing B] [Module R B]
-variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [NonUnitalStarAlgHomClass F R A B]
+variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
 
 section StarSubAlgebraA
 
@@ -733,6 +733,11 @@ theorem map_sup [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B] (f 
     ((S ⊔ T).map f : NonUnitalStarSubalgebra R B) = S.map f ⊔ T.map f :=
   (NonUnitalStarSubalgebra.gc_map_comap f).l_sup
 
+theorem map_inf [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B] (f : F)
+    (hf : Function.Injective f) (S T : NonUnitalStarSubalgebra R A) :
+    ((S ⊓ T).map f : NonUnitalStarSubalgebra R B) = S.map f ⊓ T.map f :=
+  SetLike.coe_injective (Set.image_inter hf)
+
 @[simp, norm_cast]
 theorem coe_inf (S T : NonUnitalStarSubalgebra R A) : (↑(S ⊓ T) : Set A) = (S : Set A) ∩ T :=
   rfl
@@ -766,6 +771,13 @@ theorem coe_iInf {ι : Sort*} {S : ι → NonUnitalStarSubalgebra R A} :
 theorem mem_iInf {ι : Sort*} {S : ι → NonUnitalStarSubalgebra R A} {x : A} :
     (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
 
+theorem map_iInf {ι : Sort*} [Nonempty ι]
+    [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B] (f : F)
+    (hf : Function.Injective f) (S : ι → NonUnitalStarSubalgebra R A) :
+    ((⨅ i, S i).map f : NonUnitalStarSubalgebra R B) = ⨅ i, (S i).map f := by
+  apply SetLike.coe_injective
+  simpa using (Set.injOn_of_injective hf).image_iInter_eq (s := SetLike.coe ∘ S)
+
 @[simp]
 theorem iInf_toNonUnitalSubalgebra {ι : Sort*} (S : ι → NonUnitalStarSubalgebra R A) :
     (⨅ i, S i).toNonUnitalSubalgebra = ⨅ i, (S i).toNonUnitalSubalgebra :=
@@ -786,7 +798,7 @@ theorem toNonUnitalSubalgebra_bot :
 @[simp]
 theorem coe_bot : ((⊥ : NonUnitalStarSubalgebra R A) : Set A) = {0} := by
   simp only [Set.ext_iff, NonUnitalStarAlgebra.mem_bot, SetLike.mem_coe, Set.mem_singleton_iff,
-    iff_self_iff, forall_const]
+    forall_const]
 
 theorem eq_top_iff {S : NonUnitalStarSubalgebra R A} : S = ⊤ ↔ ∀ x : A, x ∈ S :=
   ⟨fun h x => by rw [h]; exact mem_top,
@@ -831,7 +843,7 @@ open NonUnitalStarAlgebra
 variable [CommSemiring R]
 variable [NonUnitalSemiring A] [StarRing A] [Module R A]
 variable [NonUnitalSemiring B] [StarRing B] [Module R B]
-variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [NonUnitalStarAlgHomClass F R A B]
+variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
 variable (S : NonUnitalStarSubalgebra R A)
 
 section StarSubalgebra

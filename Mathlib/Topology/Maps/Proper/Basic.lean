@@ -174,12 +174,12 @@ lemma isProperMap_of_comp_of_t2 [T2Space Y] (hf : Continuous f) (hg : Continuous
   exact ⟨x, hx⟩
 
 /-- A binary product of proper maps is proper. -/
-lemma IsProperMap.prod_map {g : Z → W} (hf : IsProperMap f) (hg : IsProperMap g) :
+lemma IsProperMap.prodMap {g : Z → W} (hf : IsProperMap f) (hg : IsProperMap g) :
     IsProperMap (Prod.map f g) := by
   simp_rw [isProperMap_iff_ultrafilter] at hf hg ⊢
   constructor
   -- Continuity is clear.
-  · exact hf.1.prod_map hg.1
+  · exact hf.1.prodMap hg.1
   -- Let `𝒰 : Ultrafilter (X × Z)`, and assume that `f × g` tends to some `(y, w) : Y × W`
   -- along `𝒰`.
   · intro 𝒰 ⟨y, w⟩ hyw
@@ -196,6 +196,8 @@ lemma IsProperMap.prod_map {g : Z → W} (hf : IsProperMap f) (hg : IsProperMap 
     refine ⟨⟨x, z⟩, Prod.ext hxy hzw, ?_⟩
     rw [nhds_prod_eq, le_prod]
     exact ⟨hx, hz⟩
+
+@[deprecated (since := "2024-10-06")] alias IsProperMap.prod_map := IsProperMap.prodMap
 
 /-- Any product of proper maps is proper. -/
 lemma IsProperMap.pi_map {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]
@@ -416,7 +418,7 @@ easier to use because it allows `Z` to live in any universe. -/
 theorem IsProperMap.universally_closed (Z) [TopologicalSpace Z] (h : IsProperMap f) :
     IsClosedMap (Prod.map f id : X × Z → Y × Z) :=
   -- `f × id` is proper as a product of proper maps, hence closed.
-  (h.prod_map isProperMap_id).isClosedMap
+  (h.prodMap isProperMap_id).isClosedMap
 
 /-- A map `f : X → Y` is proper if and only if it is continuous and the map
 `(Prod.map f id : X × Filter X → Y × Filter X)` is closed. This is stronger than

@@ -97,6 +97,8 @@ lemma odd_iff : Odd n ↔ n % 2 = 1 where
 
 lemma not_odd_iff : ¬Odd n ↔ n % 2 = 0 := by rw [odd_iff, emod_two_ne_one]
 
+@[simp] lemma not_odd_zero : ¬Odd (0 : ℤ) := not_odd_iff.mpr rfl
+
 @[simp] lemma not_odd_iff_even : ¬Odd n ↔ Even n := by rw [not_odd_iff, even_iff]
 @[simp] lemma not_even_iff_odd : ¬Even n ↔ Odd n := by rw [not_even_iff, odd_iff]
 
@@ -118,9 +120,9 @@ lemma even_xor'_odd (n : ℤ) : Xor' (Even n) (Odd n) := by
 
 lemma even_xor'_odd' (n : ℤ) : ∃ k, Xor' (n = 2 * k) (n = 2 * k + 1) := by
   rcases even_or_odd n with (⟨k, rfl⟩ | ⟨k, rfl⟩) <;> use k
-  · simpa only [← two_mul, Xor', true_and_iff, eq_self_iff_true, not_true, or_false_iff,
-      and_false_iff] using (succ_ne_self (2 * k)).symm
-  · simp only [Xor', add_right_eq_self, false_or_iff, eq_self_iff_true, not_true, not_false_iff,
+  · simpa only [← two_mul, Xor', true_and, eq_self_iff_true, not_true, or_false,
+      and_false] using (succ_ne_self (2 * k)).symm
+  · simp only [Xor', add_right_eq_self, false_or, eq_self_iff_true, not_true, not_false_iff,
       one_ne_zero, and_self_iff]
 
 instance : DecidablePred (Odd : ℤ → Prop) := fun _ => decidable_of_iff _ not_even_iff_odd

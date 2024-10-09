@@ -46,7 +46,7 @@ instance, on `Prod` and finite `Pi` types). -/
 @[nolint unusedArguments]
 def WithLp (_p : ℝ≥0∞) (V : Type uV) : Type uV := V
 
-variable (p : ℝ≥0∞) (K : Type uK) (K' : Type uK')  (V : Type uV)
+variable (p : ℝ≥0∞) (K : Type uK) (K' : Type uK') (V : Type uV)
 
 namespace WithLp
 

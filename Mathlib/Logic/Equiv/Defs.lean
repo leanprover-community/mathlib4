@@ -494,6 +494,23 @@ theorem eq_symm_comp {α β γ} (e : α ≃ β) (f : γ → α) (g : γ → β) 
 theorem symm_comp_eq {α β γ} (e : α ≃ β) (f : γ → α) (g : γ → β) : e.symm ∘ g = f ↔ g = e ∘ f :=
   ((Equiv.refl γ).arrowCongr e).symm_apply_eq
 
+theorem trans_eq_refl_iff_eq_symm {f : α ≃ β} {g : β ≃ α} :
+    f.trans g = Equiv.refl α ↔ f = g.symm := by
+  rw [← Equiv.coe_inj, coe_trans, coe_refl, ← eq_symm_comp, comp_id, Equiv.coe_inj]
+
+theorem trans_eq_refl_iff_symm_eq {f : α ≃ β} {g : β ≃ α} :
+    f.trans g = Equiv.refl α ↔ f.symm = g := by
+  rw [trans_eq_refl_iff_eq_symm]
+  exact ⟨fun h ↦ h ▸ rfl, fun h ↦ h ▸ rfl⟩
+
+theorem eq_symm_iff_trans_eq_refl {f : α ≃ β} {g : β ≃ α} :
+    f = g.symm ↔ f.trans g = Equiv.refl α :=
+  trans_eq_refl_iff_eq_symm.symm
+
+theorem symm_eq_iff_trans_eq_refl {f : α ≃ β} {g : β ≃ α} :
+    f.symm = g ↔ f.trans g = Equiv.refl α :=
+  trans_eq_refl_iff_symm_eq.symm
+
 /-- `PUnit` sorts in any two universes are equivalent. -/
 def punitEquivPUnit : PUnit.{v} ≃ PUnit.{w} :=
   ⟨fun _ => .unit, fun _ => .unit, fun ⟨⟩ => rfl, fun ⟨⟩ => rfl⟩
@@ -611,7 +628,7 @@ theorem sigmaCongrRight_symm {α} {β₁ β₂ : α → Type*} (F : ∀ a, β₁
 theorem sigmaCongrRight_refl {α} {β : α → Type*} :
     (sigmaCongrRight fun a => Equiv.refl (β a)) = Equiv.refl (Σ a, β a) := rfl
 
-/-- A `PSigma` with `Prop` fibers is equivalent to the subtype.  -/
+/-- A `PSigma` with `Prop` fibers is equivalent to the subtype. -/
 def psigmaEquivSubtype {α : Type v} (P : α → Prop) : (Σ' i, P i) ≃ Subtype P where
   toFun x := ⟨x.1, x.2⟩
   invFun x := ⟨x.1, x.2⟩

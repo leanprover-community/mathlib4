@@ -180,7 +180,7 @@ the defining structures independently.  For non-associative power-associative al
 octonions), we replace the `[Semiring S]` with `[NonAssocSemiring S] [Pow S ℕ] [NatPowAssoc S]`.
 -/
 
-variable (R : Type*) [Semiring R] {p : R[X]} (r : R) (p q : R[X]) {S : Type*}
+variable (R : Type*) [Semiring R] (r : R) (p q : R[X]) {S : Type*}
   [NonAssocSemiring S] [Module R S] [Pow S ℕ] (x : S)
 
 theorem smeval_C_mul : (C r * p).smeval x = r • p.smeval x := by
