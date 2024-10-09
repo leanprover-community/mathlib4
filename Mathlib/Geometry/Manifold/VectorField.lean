@@ -755,6 +755,7 @@ end
 variable {V W V₁ W₁ : Π (x : M), TangentSpace I x}
 
 variable (I I') in
+/-- The Lie bracket of two vector fields in a manifold, within a set. -/
 def mlieBracketWithin (V W : Π (x : M), TangentSpace I x) (s : Set M) (x₀ : M) :
     TangentSpace I x₀ :=
   mpullback I 𝓘(𝕜, E) (extChartAt I x₀)
@@ -764,6 +765,7 @@ def mlieBracketWithin (V W : Π (x : M), TangentSpace I x) (s : Set M) (x₀ : M
       ((extChartAt I x₀).symm ⁻¹' s ∩ range I)) x₀
 
 variable (I I') in
+/-- The Lie bracket of two vector fields in a manifold. -/
 def mlieBracket (V W : Π (x : M), TangentSpace I x) (x₀ : M) : TangentSpace I x₀ :=
   mlieBracketWithin I V W univ x₀
 
@@ -799,22 +801,17 @@ lemma mlieBracketWithin_eq_zero_of_eq_zero (hV : V x = 0) (hW : W x = 0) :
 
 open FiberBundle
 
-lemma glou : Smooth 𝓘(𝕜, E).tangent 𝓘(𝕜, E) (fun (p : TangentBundle 𝓘(𝕜, E) E) ↦ p.2) := by
-  simp [Smooth, ContMDiff]
-  intro x
-  simp only [contMDiffAt_iff, extChartAt, PartialHomeomorph.extend,
-    PartialHomeomorph.refl_partialEquiv, PartialEquiv.refl_source,
-    PartialHomeomorph.singletonChartedSpace_chartAt_eq, modelWithCornersSelf_partialEquiv,
-    PartialEquiv.trans_refl, PartialEquiv.refl_coe, tangentBundle_model_space_chartAt,
-    modelWithCorners_prod_toPartialEquiv, PartialEquiv.refl_prod_refl, PartialEquiv.coe_trans_symm,
-    Equiv.toPartialEquiv_symm_apply, CompTriple.comp_eq, modelWithCorners_prod_coe,
-    modelWithCornersSelf_coe, Prod.map_id, range_id, PartialEquiv.coe_trans,
-    Equiv.toPartialEquiv_apply, comp_apply, id_eq]
-  constructor
-  ·
-
-
-#exit
+variable (H I) in
+/-- In the tangent bundle to the model space, the second projection is smooth. -/
+lemma contMDiff_snd_tangentBundle_modelSpace {n : ℕ∞} :
+    ContMDiff I.tangent 𝓘(𝕜, E) n (fun (p : TangentBundle I H) ↦ p.2) := by
+  change ContMDiff I.tangent 𝓘(𝕜, E) n
+    ((id Prod.snd : ModelProd H E → E) ∘ (tangentBundleModelSpaceHomeomorph H I))
+  apply ContMDiff.comp (I' := I.prod 𝓘(𝕜, E))
+  · convert contMDiff_snd
+    rw [chartedSpaceSelf_prod]
+    rfl
+  · exact contMDiff_tangentBundleModelSpaceHomeomorph H I
 
 lemma mlieBracketWithin_add_left [CompleteSpace E]
     (hV : ContMDiffWithinAt I I.tangent 1 (fun x ↦ (V x : TangentBundle I M)) s x)
@@ -831,8 +828,15 @@ lemma mlieBracketWithin_add_left [CompleteSpace E]
     apply ContMDiffWithinAt.mdifferentiableWithinAt _ le_rfl
     have Z := ContMDiffWithinAt.mpullbackWithin_of_eq hV
       (f := (extChartAt I x).symm) (I := 𝓘(𝕜, E)) (n := 2) (x₀ := (extChartAt I x) x)
-      (s := range I) (t := s) sorry sorry (mem_range_self _) sorry le_rfl
+      (s := range I) (t := s) ?_ sorry (mem_range_self _) sorry le_rfl
       (extChartAt_to_inv I x).symm
+    rw [inter_comm]
+    exact (contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.comp_contMDiffWithinAt _ Z
+
+
+
+
+#exit
 
     /-
     rw [Bundle.contMDiffWithinAt_totalSpace] at Z
@@ -842,8 +846,21 @@ lemma mlieBracketWithin_add_left [CompleteSpace E]
     rw [TangentBundle.trivializationAt_eq_localTriv]
     simp [tangentBundleCore] -/
 
+@ContMDiffWithinAt 𝕜 inst✝⁷ E inst✝⁵ inst✝⁴ E UniformSpace.toTopologicalSpace 𝓘(𝕜, E) E
+  UniformSpace.toTopologicalSpace
+  (chartedSpaceSelf E)
+  (E × E) Prod.normedAddCommGroup Prod.normedSpace (ModelProd E E)
+  (instTopologicalSpaceModelProd E E) 𝓘(𝕜, E).tangent
+  (Bundle.TotalSpace E (TangentSpace 𝓘(𝕜, E)))
+  (instTopologicalSpaceTangentBundle 𝓘(𝕜, E) E) chartedSpace 1
+  (fun y ↦ { proj := y, snd := mpullbackWithin 𝓘(𝕜, E) I (↑(chart
 
 
+@ContMDiff 𝕜 inst✝⁷ (E × E) Prod.normedAddCommGroup Prod.normedSpace (ModelProd E E)
+  (instTopologicalSpaceModelProd E E)
+  𝓘(𝕜, E).tangent (TangentBundle 𝓘(𝕜, E) E)
+  (instTopologicalSpaceTangentBundle 𝓘(𝕜, E) E) chartedSpace E inst✝⁵ inst✝⁴ E
+  UniformSpace.toTopologicalSpace 𝓘(𝕜, E) E UniformSpace.toTopologicalSpace (chartedSpaceSelf E) 2 fun p ↦ p.snd : Pr
 
 
 

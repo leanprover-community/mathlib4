@@ -1135,6 +1135,12 @@ theorem extChartAt_target_mem_nhdsWithin (x : M) :
     (extChartAt I x).target ∈ 𝓝[range I] extChartAt I x x :=
   extChartAt_target_mem_nhdsWithin' I (mem_extChartAt_source I x)
 
+theorem extChartAt_target_mem_nhdsWithin_of_mem {x : M} {y : E} (hy : y ∈ (extChartAt I x).target) :
+    (extChartAt I x).target ∈ 𝓝[range I] y := by
+  rw [← (extChartAt I x).right_inv hy]
+  apply extChartAt_target_mem_nhdsWithin'
+  exact (extChartAt I x).map_target hy
+
 /-- If we're boundaryless, `extChartAt` has open target -/
 theorem isOpen_extChartAt_target [I.Boundaryless] (x : M) : IsOpen (extChartAt I x).target := by
   simp_rw [extChartAt_target, I.range_eq_univ, inter_univ]
