@@ -177,7 +177,7 @@ private theorem fFold_fFold (m : M) (x : A × S f) : fFold f m (fFold f m x) = Q
     rw [Algebra.smul_def, f.contract]
   · ext m₁
     change f.bilin _ _ * g m = Q m • g m₁
-    refine Submodule.span_induction' ?_ ?_ ?_ ?_ hg
+    refine Submodule.span_induction ?_ ?_ ?_ ?_ hg
     · rintro _ ⟨b, m₃, rfl⟩
       change f.bilin _ _ * (f.bilin _ _ * b) = Q m • (f.bilin _ _ * b)
       rw [← smul_mul_assoc, ← mul_assoc, f.contract_mid]
