@@ -324,22 +324,26 @@ end HasDeriv
 variable {ι : Type*} {𝔸' : Type*} [NormedCommRing 𝔸'] [NormedAlgebra 𝕜 𝔸']
   {u : Finset ι} {f : ι → 𝕜 → 𝔸'} {f' : ι → 𝔸'}
 
+@[fun_prop]
 theorem DifferentiableAt.finset_prod (hd : ∀ i ∈ u, DifferentiableAt 𝕜 (f i) x) :
     DifferentiableAt 𝕜 (∏ i ∈ u, f i ·) x := by
   classical
   exact
     (HasDerivAt.finset_prod (fun i hi ↦ DifferentiableAt.hasDerivAt (hd i hi))).differentiableAt
 
+@[fun_prop]
 theorem DifferentiableWithinAt.finset_prod (hd : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (f i) s x) :
     DifferentiableWithinAt 𝕜 (∏ i ∈ u, f i ·) s x := by
   classical
   exact (HasDerivWithinAt.finset_prod (fun i hi ↦
     DifferentiableWithinAt.hasDerivWithinAt (hd i hi))).differentiableWithinAt
 
+@[fun_prop]
 theorem DifferentiableOn.finset_prod (hd : ∀ i ∈ u, DifferentiableOn 𝕜 (f i) s) :
     DifferentiableOn 𝕜 (∏ i ∈ u, f i ·) s :=
   fun x hx ↦ .finset_prod (fun i hi ↦ hd i hi x hx)
 
+@[fun_prop]
 theorem Differentiable.finset_prod (hd : ∀ i ∈ u, Differentiable 𝕜 (f i)) :
     Differentiable 𝕜 (∏ i ∈ u, f i ·) :=
   fun x ↦ .finset_prod (fun i hi ↦ hd i hi x)
@@ -362,19 +366,21 @@ theorem HasStrictDerivAt.div_const (hc : HasStrictDerivAt c c' x) (d : 𝕜') :
     HasStrictDerivAt (fun x => c x / d) (c' / d) x := by
   simpa only [div_eq_mul_inv] using hc.mul_const d⁻¹
 
+@[fun_prop]
 theorem DifferentiableWithinAt.div_const (hc : DifferentiableWithinAt 𝕜 c s x) (d : 𝕜') :
     DifferentiableWithinAt 𝕜 (fun x => c x / d) s x :=
   (hc.hasDerivWithinAt.div_const _).differentiableWithinAt
 
-@[simp]
+@[simp, fun_prop]
 theorem DifferentiableAt.div_const (hc : DifferentiableAt 𝕜 c x) (d : 𝕜') :
     DifferentiableAt 𝕜 (fun x => c x / d) x :=
   (hc.hasDerivAt.div_const _).differentiableAt
 
+@[fun_prop]
 theorem DifferentiableOn.div_const (hc : DifferentiableOn 𝕜 c s) (d : 𝕜') :
     DifferentiableOn 𝕜 (fun x => c x / d) s := fun x hx => (hc x hx).div_const d
 
-@[simp]
+@[simp, fun_prop]
 theorem Differentiable.div_const (hc : Differentiable 𝕜 c) (d : 𝕜') :
     Differentiable 𝕜 fun x => c x / d := fun x => (hc x).div_const d
 

@@ -48,7 +48,6 @@ attribute [simp] CompTriple.comp_eq
 
 namespace CompTriple
 
-variable {M' : Type*} [Monoid M']
 variable {M N P : Type*} [Monoid M] [Monoid N] [Monoid P]
 
 /-- Class of Id maps -/
