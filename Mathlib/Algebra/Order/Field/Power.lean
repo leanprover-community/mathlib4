@@ -28,10 +28,12 @@ variable [LinearOrderedSemifield α] {a b c d e : α} {m n : ℤ}
 theorem zpow_le_of_le (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n := zpow_le_zpow_right₀ ha h
 
 @[deprecated zpow_le_one_of_nonpos₀ (since := "2024-10-08")]
-theorem zpow_le_one_of_nonpos (ha : 1 ≤ a) (hn : n ≤ 0) : a ^ n ≤ 1 := zpow_le_one_of_nonpos₀ ha hn
+theorem zpow_le_one_of_nonpos (ha : 1 ≤ a) (hn : n ≤ 0) : a ^ n ≤ 1 :=
+  zpow_le_one_of_nonpos₀ ha hn
 
 @[deprecated one_le_zpow₀ (since := "2024-10-08")]
-theorem one_le_zpow_of_nonneg (ha : 1 ≤ a) (hn : 0 ≤ n) : 1 ≤ a ^ n := one_le_zpow₀ ha hn
+theorem one_le_zpow_of_nonneg (ha : 1 ≤ a) (hn : 0 ≤ n) : 1 ≤ a ^ n :=
+  one_le_zpow₀ ha hn
 
 @[deprecated zpow_pos (since := "2024-10-08")]
 protected theorem Nat.zpow_pos_of_pos {a : ℕ} (h : 0 < a) (n : ℤ) : 0 < (a : α) ^ n :=
@@ -45,19 +47,22 @@ theorem Nat.zpow_ne_zero_of_pos {a : ℕ} (h : 0 < a) (n : ℤ) : (a : α) ^ n �
 theorem one_lt_zpow (ha : 1 < a) (n : ℤ) (hn : 0 < n) : 1 < a ^ n := one_lt_zpow₀ ha hn
 
 @[deprecated zpow_right_strictMono₀ (since := "2024-10-08")]
-theorem zpow_strictMono (hx : 1 < a) : StrictMono (a ^ · : ℤ → α) := zpow_right_strictMono₀ hx
+theorem zpow_strictMono (hx : 1 < a) : StrictMono (a ^ · : ℤ → α) :=
+  zpow_right_strictMono₀ hx
 
 @[deprecated zpow_right_strictAnti₀ (since := "2024-10-08")]
 theorem zpow_strictAnti (h₀ : 0 < a) (h₁ : a < 1) : StrictAnti (a ^ · : ℤ → α) :=
   zpow_right_strictAnti₀ h₀ h₁
 
 @[deprecated zpow_lt_zpow_iff_right₀ (since := "2024-10-08")]
-theorem zpow_lt_iff_lt (hx : 1 < a) : a ^ m < a ^ n ↔ m < n := zpow_lt_zpow_iff_right₀ hx
+theorem zpow_lt_iff_lt (hx : 1 < a) : a ^ m < a ^ n ↔ m < n :=
+  zpow_lt_zpow_iff_right₀ hx
 
 @[deprecated (since := "2024-02-10")] alias ⟨_, zpow_lt_of_lt⟩ := zpow_lt_iff_lt
 
 @[deprecated zpow_le_zpow_iff_right₀ (since := "2024-10-08")]
-theorem zpow_le_iff_le (hx : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n := zpow_le_zpow_iff_right₀ hx
+theorem zpow_le_iff_le (hx : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n :=
+ zpow_right_inj zpow_le_zpow_iff_right₀ hx
 
 @[deprecated div_le_self (since := "2024-10-08")]
 theorem div_pow_le (ha : 0 ≤ a) (hb : 1 ≤ b) (k : ℕ) : a / b ^ k ≤ a :=
@@ -68,7 +73,8 @@ theorem zpow_injective (h₀ : 0 < a) (h₁ : a ≠ 1) : Injective (a ^ · : ℤ
   zpow_right_injective₀ h₀ h₁
 
 @[deprecated zpow_right_inj₀ (since := "2024-10-08")]
-theorem zpow_inj (h₀ : 0 < a) (h₁ : a ≠ 1) : a ^ m = a ^ n ↔ m = n := zpow_right_inj₀ h₀ h₁
+theorem zpow_inj (h₀ : 0 < a) (h₁ : a ≠ 1) : a ^ m = a ^ n ↔ m = n :=
+  zpow_right_inj₀ h₀ h₁
 
 @[deprecated (since := "2024-10-08")]
 theorem zpow_le_max_of_min_le {x : α} (hx : 1 ≤ x) {a b c : ℤ} (h : min a b ≤ c) :
