@@ -119,16 +119,15 @@ end UniformAddGroup
 
 variable [TopologicalSpace F] [TopologicalAddGroup F]
 
-instance instTopologicalAddGroup : TopologicalAddGroup (E [⋀^ι]→L[𝕜] F) :=
-  letI := TopologicalAddGroup.toUniformSpace F
-  haveI := comm_topologicalAddGroup_is_uniform (G := F)
-  inferInstance
-
 lemma embedding_toContinuousMultilinearMap :
     Embedding (toContinuousMultilinearMap : (E [⋀^ι]→L[𝕜] F → _)) :=
   letI := TopologicalAddGroup.toUniformSpace F
   haveI := comm_topologicalAddGroup_is_uniform (G := F)
   isUniformEmbedding_toContinuousMultilinearMap.embedding
+
+instance instTopologicalAddGroup : TopologicalAddGroup (E [⋀^ι]→L[𝕜] F) :=
+  embedding_toContinuousMultilinearMap.topologicalAddGroup
+    (toContinuousMultilinearMapLinear (R := ℕ))
 
 @[continuity, fun_prop]
 lemma continuous_toContinuousMultilinearMap :

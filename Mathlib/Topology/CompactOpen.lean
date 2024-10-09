@@ -3,7 +3,7 @@ Copyright (c) 2018 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton
 -/
-import Mathlib.Topology.ContinuousMap.ContinuousEval
+import Mathlib.Topology.Hom.ContinuousEval
 
 /-!
 # The compact-open topology
