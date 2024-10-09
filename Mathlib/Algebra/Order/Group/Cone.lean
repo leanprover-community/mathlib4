@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Scott Morrison, Artie Khovanov
+Authors: Mario Carneiro, Kim Morrison, Artie Khovanov
 -/
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Monoid.Submonoid
@@ -18,8 +18,8 @@ cones in groups and the corresponding ordered groups.
 -/
 
 /-- `AddGroupConeClass S G` says that `S` is a type of cones in `G`. -/
-class AddGroupConeClass (S G : Type*) [AddCommGroup G] [SetLike S G] extends
-    AddSubmonoidClass S G : Prop where
+class AddGroupConeClass (S : Type*) (G : outParam Type*) [AddCommGroup G] [SetLike S G]
+    extends AddSubmonoidClass S G : Prop where
   eq_zero_of_mem_of_neg_mem {C : S} {a : G} : a ∈ C → -a ∈ C → a = 0
 
 /-- `GroupConeClass S G` says that `S` is a type of cones in `G`. -/

@@ -2,14 +2,12 @@
 Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
-
 -/
 
 import Mathlib.GroupTheory.NoncommCoprod
 import Mathlib.GroupTheory.NoncommPiCoprod
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
--- import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.Perm.ConjAct
 import Mathlib.GroupTheory.Perm.Cycle.PossibleTypes
 import Mathlib.GroupTheory.Perm.DomMulAct
@@ -97,262 +95,13 @@ as a product of factorials.
 
 -/
 
-section noncommProd
-
-open MonoidHom Subgroup Finset
-
-@[to_additive]
-lemma MonoidHom.commute_noncommPiCoprod
-    {ι : Type*} [Fintype ι] {H : ι → Type*} [∀ i, Monoid (H i)] {P : Type*} [Monoid P]
-    (f : (i : ι) → H i →* P) (comm) (p : P) (hcomm : ∀ i (x : H i), Commute p (f i x))
-    (h : (i : ι) → H i) :
-    Commute p (MonoidHom.noncommPiCoprod f comm h) := by
-  dsimp only [MonoidHom.noncommPiCoprod, MonoidHom.coe_mk, OneHom.coe_mk]
-  apply Finset.noncommProd_induction
-  exact fun x y ↦ Commute.mul_right
-  exact Commute.one_right _
-  exact fun x _ ↦ hcomm x (h x)
-
-@[to_additive]
-lemma MonoidHom.noncommPiCoprod_apply {ι : Type*} [Fintype ι]
-    {H : ι → Type*} [∀ i, Monoid (H i)]
-    {P : Type*} [Monoid P] (f : (i : ι) → (H i) →* P) (comm)
-    (u : (i : ι) → H i) :
-    MonoidHom.noncommPiCoprod f comm u = Finset.noncommProd Finset.univ (fun i ↦ f i (u i))
-      (Pairwise.set_pairwise (fun ⦃i j⦄ a ↦ comm a (u i) (u j)) _) := by
-  dsimp only [MonoidHom.noncommPiCoprod, MonoidHom.coe_mk, OneHom.coe_mk]
-
-@[to_additive]
-lemma Subgroup.noncommPiCoprod_apply {G : Type*} [Group G] {ι : Type*} [Fintype ι]
-    {H : ι → Subgroup G} (comm) (u : (i : ι) → H i) :
-    Subgroup.noncommPiCoprod comm u = Finset.noncommProd Finset.univ (fun i ↦ u i)
-      (fun i _ j _ h ↦ comm h _ _ (u i).prop (u j).prop) := by
-  simp only [Subgroup.noncommPiCoprod, MonoidHom.noncommPiCoprod,
-    coeSubtype, MonoidHom.coe_mk, OneHom.coe_mk]
-
-theorem MulHom.noncommCoprod_apply' {M : Type*} {N : Type*}
-    {P : Type*} [Mul M] [Mul N] [Semigroup P]
-    (f : M →ₙ* P) (g : N →ₙ* P) (comm : ∀ (m : M) (n : N), Commute (f m) (g n)) (mn : M × N) :
-    (f.noncommCoprod g comm) mn = g mn.2 * f mn.1 := by
-  rw [← comm, MulHom.noncommCoprod_apply]
-
-theorem MonoidHom.noncommCoprod_apply' {M : Type*} {N : Type*}
-    {P : Type*} [Monoid M] [Monoid N] [Monoid P]
-    (f : M →* P) (g : N →* P) (comm : ∀ (m : M) (n : N), Commute (f m) (g n)) (mn : M × N) :
-    (f.noncommCoprod g comm) mn = g mn.2 * f mn.1 := by
-  rw [← comm, MonoidHom.noncommCoprod_apply]
-
-end noncommProd
-
-section
-
-variable {G : Type*} [Group G] (g : G)
-
-theorem Subgroup.centralizer_eq_comap_stabilizer :
-    Subgroup.centralizer {g} = Subgroup.comap ConjAct.toConjAct.toMonoidHom
-      (MulAction.stabilizer (ConjAct G) g) := by
-  ext k
-  simp only [MulEquiv.toMonoidHom_eq_coe, mem_comap, MonoidHom.coe_coe,
-    MulAction.mem_stabilizer_iff]
-  simp only [mem_centralizer_iff, Set.mem_singleton_iff, forall_eq, ConjAct.toConjAct_smul]
-  rw [eq_comm]
-  exact Iff.symm mul_inv_eq_iff_eq_mul
-
-theorem Subgroup.nat_card_centralizer_nat_card_stabilizer :
-    Nat.card (Subgroup.centralizer {g}) =
-      Nat.card (MulAction.stabilizer (ConjAct G) g) := by
-  simp only [← SetLike.coe_sort_coe, Set.Nat.card_coe_set_eq]
-  rw [Subgroup.centralizer_eq_comap_stabilizer, Subgroup.coe_comap,
-    MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_coe]
-  erw [Set.preimage_equiv_eq_image_symm]
-  exact Set.ncard_image_of_injective _ ConjAct.ofConjAct.injective
-
-variable {g} in
-lemma Subgroup.mem_centralizer_singleton_iff {k : G} :
-    k ∈ Subgroup.centralizer {g} ↔ k * g = g * k := by
-  simp only [mem_centralizer_iff, Set.mem_singleton_iff, forall_eq]
-  rw [eq_comm]
-
-
-end
-
-section Disjoint
-
-lemma Set.disjoint_of_le_iff_left_eq_empty {α : Type*} {u v : Set α} (h : u ⊆ v) :
-    Disjoint u v ↔ u = ∅ := by
-  simp only [disjoint_iff, inf_eq_left.mpr h, Set.bot_eq_empty]
-
-lemma Finset.disjoint_of_le_iff_left_eq_empty {α : Type*} {u v : Set α} (h : u ⊆ v) :
-    Disjoint u v ↔ u = ∅ := by
-  simp only [disjoint_iff, inf_eq_left.mpr h, Set.bot_eq_empty]
-
-lemma disjoint_of_le_iff_left_eq_bot
-    {α : Type*} [SemilatticeInf α] [OrderBot α] {a b : α} (h : a ≤ b) :
-    Disjoint a b ↔ a = ⊥ := by
-  simp only [disjoint_iff, inf_eq_left.mpr h]
-
-end Disjoint
-
 open scoped Pointwise
-
-@[to_additive instDecidablePredMemSetFixedByAddOfDecidableEq]
-instance {α β : Type*} [Monoid α] [DecidableEq β] [MulAction α β] (a : α) :
-    DecidablePred fun b : β => b ∈ MulAction.fixedBy β a := by
-  intro b
-  simp only [MulAction.mem_fixedBy, Equiv.Perm.smul_def]
-  infer_instance
 
 namespace Equiv.Perm
 
 open MulAction Equiv Subgroup
 
-variable {α : Type*} {g : Equiv.Perm α}
-
-theorem mem_fixedPoints_iff_apply_mem_of_mem_centralizer
-    {p : Perm α} (hp : p ∈ Subgroup.centralizer {g}) {x} :
-    x ∈ Function.fixedPoints g ↔ p x ∈ Function.fixedPoints g :=  by
-  simp only [mem_centralizer_singleton_iff] at hp
-  simp only [Function.mem_fixedPoints_iff]
-  rw [← mul_apply, ← hp, mul_apply]
-  simp only [EmbeddingLike.apply_eq_iff_eq]
-
-lemma disjoint_ofSubtype_of_memFixedPoints_self [DecidableEq α]
-    (u : Perm (Function.fixedPoints g)) :
-    Disjoint (ofSubtype u) g := by
-  rw [disjoint_iff_eq_or_eq]
-  intro x
-  by_cases hx : x ∈ Function.fixedPoints g
-  · right; exact hx
-  · left; rw [ofSubtype_apply_of_not_mem u hx]
-
-theorem Disjoint.disjoint_noncommProd {ι : Type*} {k : ι → Perm α} {s : Finset ι}
-    (hs : Set.Pairwise s fun i j ↦ Commute (k i) (k j))
-    (f : Perm α) (hf : ∀ i ∈ s, f.Disjoint (k i)) :
-    f.Disjoint (s.noncommProd k (hs)) := by
-  apply Finset.noncommProd_induction
-  · exact fun g h ↦ Disjoint.mul_right
-  · exact disjoint_one_right f
-  · exact hf
-
-variable [DecidableEq α] [Fintype α]
-
-theorem mem_support_iff_mem_support_of_mem_cycleFactorsFinset {x : α} :
-    x ∈ g.support ↔
-    ∃ c ∈ g.cycleFactorsFinset, x ∈ c.support := by
-  constructor
-  · intro h
-    use g.cycleOf x, cycleOf_mem_cycleFactorsFinset_iff.mpr h
-    rw [mem_support_cycleOf_iff]
-    refine ⟨SameCycle.refl g x, h⟩
-  · rintro ⟨c, hc, hx⟩
-    exact mem_cycleFactorsFinset_support_le hc hx
-
-theorem isCycleOn_support_of_mem_cycleFactorsFinset (c : g.cycleFactorsFinset) :
-    IsCycleOn g (c : Perm α).support := by
-  suffices Finset.Nonempty (c : Perm α).support by
-    obtain ⟨x, hx⟩ := this
-    convert isCycleOn_support_cycleOf g x
-    exact cycle_is_cycleOf hx c.prop
-  rw [← Finset.card_pos]
-  apply lt_of_lt_of_le Nat.zero_lt_two
-  exact IsCycle.two_le_card_support (mem_cycleFactorsFinset_iff.mp c.prop).1
-
-theorem CycleType.count_def (n : ℕ) :
-    g.cycleType.count n =
-      Fintype.card {c : g.cycleFactorsFinset // (c : Perm α).support.card = n } := by
-  -- work on the LHS
-  rw [cycleType, Multiset.count_eq_card_filter_eq]
-  -- rewrite the `Fintype.card` as a `Finset.card`
-  rw [Fintype.subtype_card, Finset.univ_eq_attach, Finset.filter_attach',
-    Finset.card_map, Finset.card_attach]
-  simp only [Function.comp_apply, Finset.card, Finset.filter_val,
-    Multiset.filter_map, Multiset.card_map]
-  apply congr_arg
-  ext c
-  apply congr_arg₂ _ rfl
-  apply Multiset.filter_congr
-  intro d h
-  simp only [Function.comp_apply, eq_comm, Finset.mem_val.mp h, exists_const]
-
-lemma support_zpowers_of_mem_cycleFactorsFinset_le
-    {c : g.cycleFactorsFinset} (v : zpowers (c : Perm α)) :
-    (v : Perm α).support ⊆ g.support := by
-  obtain ⟨m, hm⟩ := v.prop
-  simp only [← hm]
-  apply subset_trans (support_zpow_le _ _) (mem_cycleFactorsFinset_support_le c.prop)
-
-
-theorem support_ofSubtype {p : α → Prop} [DecidablePred p]
-    (u : Perm (Subtype p)) :
-    (ofSubtype u).support = u.support.map (Function.Embedding.subtype p) := by
-  ext x
-  simp only [mem_support, ne_eq, Finset.mem_map, Function.Embedding.coe_subtype, Subtype.exists,
-    exists_and_right, exists_eq_right, not_iff_comm, not_exists, not_not]
-  by_cases hx : p x
-  · simp only [forall_prop_of_true hx, ofSubtype_apply_of_mem u hx, ← Subtype.coe_inj]
-  · simp only [forall_prop_of_false hx, true_iff, ofSubtype_apply_of_not_mem u hx]
-
-/- theorem Disjoint.disjoint_noncommProd' {ι : Type*} {k : ι → Perm α} {s : Finset ι}
-    (hs : Set.Pairwise s fun i j ↦ Disjoint (k i) (k j))
-    (f : Perm α) (hf : ∀ i ∈ s, f.Disjoint (k i)) :
-    f.Disjoint (s.noncommProd k (hs.imp (fun _ _ ↦ Perm.Disjoint.commute))) := by
-  classical
-  induction s using Finset.induction_on with
-  | empty => simp
-  | @insert i s hi hrec =>
-    have hs' : (s : Set ι).Pairwise fun i j ↦ Disjoint (k i) (k j) :=
-      hs.mono (by simp only [Finset.coe_insert, Set.subset_insert])
-    rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi]
-    apply Equiv.Perm.Disjoint.mul_right (hf i _) (hrec hs' _)
-    · simp
-    · intro j hj
-      exact hf j (Finset.mem_insert_of_mem hj) -/
-
-theorem Disjoint.support_noncommProd
-    {ι : Type*} {k : ι → Perm α} {s : Finset ι}
-    (hs : Set.Pairwise s fun i j ↦ Disjoint (k i) (k j)) :
-    (s.noncommProd k (hs.imp (fun _ _ ↦ Perm.Disjoint.commute))).support =
-      s.biUnion fun i ↦ (k i).support := by
-  classical
-  induction s using Finset.induction_on with
-  | empty => simp
-  | @insert i s hi hrec =>
-    have hs' : (s : Set ι).Pairwise fun i j ↦ Disjoint (k i) (k j) :=
-      hs.mono (by simp only [Finset.coe_insert, Set.subset_insert])
-    rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, Finset.biUnion_insert]
-    rw [Equiv.Perm.Disjoint.support_mul, hrec hs']
-    apply Disjoint.disjoint_noncommProd
-    intro j hj
-    apply hs _ _ (ne_of_mem_of_not_mem hj hi).symm <;>
-      simp only [Finset.coe_insert, Set.mem_insert_iff, Finset.mem_coe, hj, or_true, true_or]
-
-theorem Disjoint.cycleType_mul
-    {f g : Perm α} (h : f.Disjoint g) :
-    (f * g).cycleType = f.cycleType + g.cycleType := by
-  simp only [Perm.cycleType]
-  rw [h.cycleFactorsFinset_mul_eq_union]
-  simp only [Finset.union_val, Function.comp_apply]
-  rw [← Multiset.add_eq_union_iff_disjoint.mpr _, Multiset.map_add]
-  simp only [Finset.disjoint_val, Disjoint.disjoint_cycleFactorsFinset h]
-
-theorem Disjoint.cycleType_noncommProd
-    {ι : Type*} {k : ι → Perm α} {s : Finset ι}
-    (hs : Set.Pairwise s fun i j ↦ Disjoint (k i) (k j))
-    (hs' : Set.Pairwise s fun i j ↦ Commute (k i) (k j) :=
-      hs.imp (fun _ _ ↦ Perm.Disjoint.commute)):
-    (s.noncommProd k hs').cycleType = s.sum fun i ↦ (k i).cycleType := by
-  classical
-  induction s using Finset.induction_on with
-  | empty => simp
-  | @insert i s hi hrec =>
-    have hs' : (s : Set ι).Pairwise fun i j ↦ Disjoint (k i) (k j) :=
-      hs.mono (by simp only [Finset.coe_insert, Set.subset_insert])
-    rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, Finset.sum_insert hi]
-    rw [Equiv.Perm.Disjoint.cycleType_mul, hrec hs']
-    apply Disjoint.disjoint_noncommProd
-    intro j hj
-    apply hs _ _ (ne_of_mem_of_not_mem hj hi).symm <;>
-      simp only [Finset.coe_insert, Set.mem_insert_iff, Finset.mem_coe, hj, or_true, true_or]
+variable {α : Type*} [DecidableEq α] [Fintype α] {g : Equiv.Perm α}
 
 namespace OnCycleFactors
 
@@ -523,11 +272,11 @@ theorem newK_apply_of_cycleOf_mem {x : α} {c : g.cycleFactorsFinset}
     rw [← Subtype.coe_inj, hx']
   suffices newK a τ x = (g ^ n) (a ((τ : Perm g.cycleFactorsFinset) c)) by
     rw [this, IsCycleOn.zpow_apply_eq_zpow_apply
-      (isCycleOn_support_of_mem_cycleFactorsFinset ((τ : Perm g.cycleFactorsFinset) c))
+      (isCycleOn_support_of_mem_cycleFactorsFinset ((τ : Perm g.cycleFactorsFinset) c).prop)
       (mem_support_self a ((τ : Perm g.cycleFactorsFinset) c))]
     simp only [τ.prop c]
     rw [← IsCycleOn.zpow_apply_eq_zpow_apply
-      (isCycleOn_support_of_mem_cycleFactorsFinset c) (mem_support_self a c)]
+      (isCycleOn_support_of_mem_cycleFactorsFinset c.prop) (mem_support_self a c)]
     rw [hn, hm]
   simp only [newK, dif_pos hx'']
   congr
@@ -719,13 +468,16 @@ theorem mem_range_toPermHom_iff {τ} : τ ∈ (toPermHom g).range ↔
   · obtain ⟨a⟩ := Basis.nonempty g
     exact fun hτ ↦ ⟨toCentralizer a ⟨τ, hτ⟩, toCentralizer_rightInverse a ⟨τ, hτ⟩⟩
 
+/-- Unapplied variant of `Equiv.Perm.mem_range_toPermHom_iff` -/
 theorem mem_range_toPermHom_iff' {τ} : τ ∈ (toPermHom g).range ↔
     (fun (c : g.cycleFactorsFinset) ↦ (c : Perm α).support.card) ∘ τ =
       fun (c : g.cycleFactorsFinset) ↦ (c : Perm α).support.card := by
   rw [mem_range_toPermHom_iff, Function.funext_iff]
   simp only [Finset.coe_sort_coe, Subtype.forall, Function.comp_apply]
 
-theorem range_toPermHom_eq_range_toPermHom' : (toPermHom g).range = range_toPermHom' g := by
+/-- Computes the range of `Equiv.Perm.toPermHom g` -/
+theorem range_toPermHom_eq_range_toPermHom' :
+    (toPermHom g).range = range_toPermHom' g := by
   ext τ
   rw [mem_range_toPermHom_iff, mem_range_toPermHom'_iff]
 
@@ -808,7 +560,7 @@ theorem support_θHom :
   simp only [θHom, MonoidHom.noncommCoprod_apply]
   rw [Disjoint.support_mul (disjoint₁₂ u v), u.support_ofSubtype]
   apply congr_arg₂ _ rfl
-  rw [noncommPiCoprod_apply, Disjoint.support_noncommProd]
+  rw [noncommPiCoprod_apply, support_noncommProd]
   exact fun i _ j _ h ↦ pairdisjoint₂ h _ _ (v i).prop (v j).prop
 
 theorem support_θHom_of_fst_eq_one :

@@ -356,7 +356,7 @@ end PartialOrder
 
 section Prod
 
-variable [Preorder α] [Preorder β] {a a₁ a₂ : α} {b b₁ b₂ : β} {x y : α × β}
+variable [Preorder α] [Preorder β] {a : α} {b : β} {x : α × β}
 
 theorem IsBot.prod_mk (ha : IsBot a) (hb : IsBot b) : IsBot (a, b) := fun _ => ⟨ha _, hb _⟩
 

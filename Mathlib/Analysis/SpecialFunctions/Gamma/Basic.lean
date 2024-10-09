@@ -553,8 +553,7 @@ lemma integral_rpow_mul_exp_neg_mul_Ioi {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
   convert integral_cpow_mul_exp_neg_mul_Ioi (by rwa [ofReal_re] : 0 < (a : ℂ).re) hr
   refine _root_.integral_ofReal.symm.trans <| setIntegral_congr measurableSet_Ioi (fun t ht ↦ ?_)
   norm_cast
-  rw [← ofReal_cpow (le_of_lt ht), RCLike.ofReal_mul]
-  rfl
+  simp_rw [← ofReal_cpow ht.le, RCLike.ofReal_mul, coe_algebraMap]
 
 open Lean.Meta Qq Mathlib.Meta.Positivity in
 /-- The `positivity` extension which identifies expressions of the form `Gamma a`. -/

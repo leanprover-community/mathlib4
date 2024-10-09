@@ -1292,6 +1292,10 @@ theorem inter_diff_distrib_left (s t u : Set α) : s ∩ (t \ u) = (s ∩ t) \ (
 theorem inter_diff_distrib_right (s t u : Set α) : s \ t ∩ u = (s ∩ u) \ (t ∩ u) :=
   inf_sdiff_distrib_right _ _ _
 
+theorem disjoint_of_subset_iff_left_eq_empty (h : s ⊆ t) :
+    Disjoint s t ↔ s = ∅ := by
+  simp only [disjoint_iff, inf_eq_left.mpr h, bot_eq_empty]
+
 /-! ### Lemmas about complement -/
 
 theorem compl_def (s : Set α) : sᶜ = { x | x ∉ s } :=
@@ -1958,7 +1962,7 @@ open Set
 
 namespace Function
 
-variable {ι : Sort*} {α : Type*} {β : Type*} {f : α → β}
+variable {α : Type*} {β : Type*}
 
 theorem Injective.nonempty_apply_iff {f : Set α → Set β} (hf : Injective f) (h2 : f ∅ = ∅)
     {s : Set α} : (f s).Nonempty ↔ s.Nonempty := by
@@ -2141,7 +2145,7 @@ end Monotone
 
 /-! ### Disjoint sets -/
 
-variable {α β : Type*} {s t u : Set α} {f : α → β}
+variable {α : Type*} {s t u : Set α}
 
 namespace Disjoint
 
