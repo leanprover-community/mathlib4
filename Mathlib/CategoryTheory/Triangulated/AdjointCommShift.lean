@@ -232,7 +232,6 @@ noncomputable def left_to_right (adj : F ⊣ G) (commF : CommShift F A) :
     sorry
 
 
-
 noncomputable def right_to_left (adj : F ⊣ G) (commG : CommShift G A) :
     CommShift F A where
   iso a := (Adjunction.natIsoEquiv (Adjunction.comp adj (shiftEquiv' D (-a) a
