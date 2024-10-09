@@ -29,6 +29,7 @@ variable {R : Type*}
 
 namespace Polynomial
 
+/--  `Legendre n` is the polynomial defined in terms of derivatives of order n.  -/
 noncomputable def Legendre (n : ℕ) : ℝ[X] :=
   C (n ! : ℝ)⁻¹ * derivative^[n] (X ^ n * (1 - X) ^ n)
 
@@ -48,10 +49,11 @@ lemma Finsum_iterate_deriv [CommRing R] {k : ℕ} {h : ℕ → ℕ} :
       simp only [neg_mul, one_mul, iterate_map_neg, mul_neg]
       exact_mod_cast hn2
 
+/-- The expand of `Legendre n`. -/
 theorem Legendre_eq_sum (n : ℕ) : Legendre n = ∑ k in Finset.range (n + 1),
     C ((- 1) ^ k : ℝ) • (Nat.choose n k) * (Nat.choose (n + k) n) * X ^ k := by
-  have h : ((X : ℝ[X]) - X ^ 2) ^ n =
-    ∑ m ∈ range (n + 1), n.choose m • (- 1) ^ m * X ^ (n + m) := by
+  have h : ((X : ℝ[X]) - X ^ 2) ^ n = ∑ m ∈ range (n + 1), n.choose m • (- 1) ^ m * X ^ (n + m) :=
+    by
     rw[sub_eq_add_neg, add_comm, add_pow]
     congr! 1 with m hm
     rw[neg_pow, pow_two, mul_pow,← mul_assoc, mul_comm, mul_assoc, pow_mul_pow_sub, mul_assoc,
@@ -60,15 +62,13 @@ theorem Legendre_eq_sum (n : ℕ) : Legendre n = ∑ k in Finset.range (n + 1),
     linarith
   rw [Legendre, ← mul_pow, mul_one_sub, ← pow_two, h, Finsum_iterate_deriv,
     Finset.mul_sum]
-  apply Finset.sum_congr rfl
-  intro x _
+  congr! 1 with x _
   rw [← mul_assoc, Polynomial.iterate_derivative_X_pow_eq_smul, Nat.descFactorial_eq_div
     (by omega), show n + x - n = x by omega, smul_eq_mul, nsmul_eq_mul, ← mul_assoc, mul_assoc,
     mul_comm]
   simp only [Int.reduceNeg, map_pow, map_neg, map_one]
   rw [Algebra.smul_def, algebraMap_eq, map_natCast, ← mul_assoc, ← mul_assoc, add_comm,
-    Nat.add_choose]
-  rw [mul_assoc, mul_assoc, mul_assoc, mul_assoc, mul_assoc, mul_comm]
+    Nat.add_choose, mul_assoc, mul_assoc, mul_assoc, mul_assoc, mul_assoc, mul_comm]
   nth_rewrite 5 [mul_comm]
   congr 1
   nth_rewrite 2 [mul_comm]
@@ -92,25 +92,25 @@ theorem Legendre_eq_sum (n : ℕ) : Legendre n = ∑ k in Finset.range (n + 1),
     · exact Nat.factorial_dvd_factorial (by omega)
     · norm_cast; exact Nat.factorial_ne_zero x
   else
-    simp [h]
+    simp only [h, ↓reduceIte]
 
+/-- `Legendre n` is an integer polynomial. -/
 lemma Legendre_eq_int_poly (n : ℕ) : ∃ a : ℕ → ℤ, Legendre n = ∑ k in Finset.range (n + 1),
     (a k) • X ^ k := by
   simp_rw [Legendre_eq_sum]
   use fun k => (- 1) ^ k * (Nat.choose n k) * (Nat.choose (n + k) n)
-  apply Finset.sum_congr rfl
-  intro x _
+  congr! 1 with x
   simp
 
 lemma deriv_one_sub_X {n i : ℕ} : (⇑derivative)^[i] ((1 - X) ^ n : ℝ[X]) =
     (-1) ^ i * (n.descFactorial i) • ((1 - X) ^ (n - i)) := by
   rw [show (1 - X : ℝ[X]) ^ n = (X ^ n : ℝ[X]).comp (1 - X) by simp,
     Polynomial.iterate_derivative_comp_one_sub_X (p := X ^ n),
-    Polynomial.iterate_derivative_X_pow_eq_smul]
-  rw [Algebra.smul_def, algebraMap_eq, map_natCast]
+    Polynomial.iterate_derivative_X_pow_eq_smul, Algebra.smul_def, algebraMap_eq, map_natCast]
   simp
 
-lemma legendre_eval_symm (n : ℕ) (x : ℝ) :
+/-- The values ​​of the Legendre polynomial at x and 1-x differ by a factor (-1)ⁿ. -/
+lemma Legendre_eval_symm (n : ℕ) (x : ℝ) :
     eval x (Legendre n) = (-1) ^ n * eval (1 - x) (Legendre n) := by
   rw [mul_comm]
   simp only [Legendre, eval_mul, one_div, eval_C]
@@ -119,8 +119,7 @@ lemma legendre_eval_symm (n : ℕ) (x : ℝ) :
   rw [Polynomial.iterate_derivative_mul]
   simp only [Nat.succ_eq_add_one, nsmul_eq_mul]
   rw [Polynomial.eval_finset_sum, Polynomial.eval_finset_sum, ← Finset.sum_flip, Finset.sum_mul]
-  apply Finset.sum_congr rfl
-  intro i hi
+  congr! 1 with i hi
   simp only [Polynomial.iterate_derivative_X_pow_eq_smul, eval_mul, eval_natCast,
     Algebra.smul_mul_assoc, eval_smul, eval_mul, eval_pow, eval_X, smul_eq_mul]
   simp only [Finset.mem_range, Nat.lt_add_one_iff] at hi
