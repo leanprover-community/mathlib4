@@ -15,9 +15,9 @@ we lift enough injectives of abelian groups to arbitrary $R$-modules by adjoint 
 `restrictScalars ⊣ coextendScalars`
 
 ## Implementation notes
-This file is not part of `Algebra/Module/Injective.lean` to prevent import loop: enough-injectives
-of abelian groups needs `Algebra/Module/Injective.lean` and this file needs enough-injectives of
-abelian groups.
+This file is not part of `Mathlib/Algebra/Module/Injective.lean` to prevent import loop:
+enough-injectives of abelian groups needs `Mathlib/Algebra/Module/Injective.lean`
+and this file needs enough-injectives of abelian groups.
 -/
 
 open CategoryTheory
