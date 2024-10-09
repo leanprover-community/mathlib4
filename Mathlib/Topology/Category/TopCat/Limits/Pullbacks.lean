@@ -214,17 +214,14 @@ theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶
   erw [← comp_apply, ← comp_apply] -- now `erw` after #13170
   · simp only [Category.assoc, limit.lift_π, PullbackCone.mk_π_app_one]
     simp only [cospan_one, pullbackIsoProdSubtype_inv_fst_assoc, comp_apply]
-    erw [pullbackFst_apply, hx₁]
-    rw [← limit.w _ WalkingCospan.Hom.inl, cospan_map_inl, comp_apply (g := g₁)]
-    rfl -- `rfl` was not needed before #13170
+    rw [pullbackFst_apply, hx₁, ← limit.w _ WalkingCospan.Hom.inl, cospan_map_inl,
+        comp_apply (g := g₁)]
   · simp only [cospan_left, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
       pullbackIsoProdSubtype_inv_fst_assoc, comp_apply]
     erw [hx₁] -- now `erw` after #13170
-    rfl -- `rfl` was not needed before #13170
   · simp only [cospan_right, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
       pullbackIsoProdSubtype_inv_snd_assoc, comp_apply]
     erw [hx₂] -- now `erw` after #13170
-    rfl -- `rfl` was not needed before #13170
 
 theorem pullback_fst_range {X Y S : TopCat} (f : X ⟶ S) (g : Y ⟶ S) :
     Set.range (pullback.fst f g) = { x : X | ∃ y : Y, f x = g y } := by
