@@ -53,6 +53,13 @@ theorem le_maximalIdeal {J : Ideal R} (hJ : J ≠ ⊤) : J ≤ maximalIdeal R :=
 theorem mem_maximalIdeal (x) : x ∈ maximalIdeal R ↔ x ∈ nonunits R :=
   Iff.rfl
 
+/--
+An element `x` of a commutative local semiring is not contained in the maximal ideal
+iff it is a unit.
+-/
+theorem not_mem_maximalIdeal (x : R) : x ∉ maximalIdeal R ↔ IsUnit x := by
+  simp only [mem_maximalIdeal, mem_nonunits_iff, not_not]
+
 theorem isField_iff_maximalIdeal_eq : IsField R ↔ maximalIdeal R = ⊥ :=
   not_iff_not.mp
     ⟨Ring.ne_bot_of_isMaximal_of_not_isField inferInstance, fun h =>
@@ -107,18 +114,10 @@ open Ideal
 variable {R : Type*} [CommSemiring R] {S : Type*} [CommSemiring S] [Algebra R S] {M : Submonoid R}
 
 /--
-An element `x` of a commutative local semiring is not contained in the maximal ideal
-iff it is a unit.
--/
-theorem LocalRing.not_mem_maximalIdeal [LocalRing R] (x : R) :
-    x ∉ LocalRing.maximalIdeal R ↔ IsUnit x := by
-  simp only [mem_maximalIdeal, mem_nonunits_iff, not_not]
-
-/--
 Let `S` be the localization of a commutative semiring `R` at a submonoid `M` that does not
 contain 0. If the nilradical of `R` is maximal then there is a `R`-algebra isomorphism between
 `R` and `S`. -/
-noncomputable def nilradmax_localization_IsSelf (h : (nilradical R).IsMaximal) (h' : (0 : R) ∉ M)
+noncomputable def nilradmaxlocalizationIsSelf (h : (nilradical R).IsMaximal) (h' : (0 : R) ∉ M)
     [IsLocalization M S] : R ≃ₐ[R] S := by
   have : LocalRing R := by
     refine LocalRing.of_unique_max_ideal ⟨nilradical R, h, fun I hI ↦ ?_⟩
