@@ -7,6 +7,7 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Parity
 import Mathlib.Tactic.Bound.Attribute
+import Mathlib.Algebra.Group.IsTorsionFree.Basic
 
 /-!
 # Basic lemmas about ordered rings
@@ -172,14 +173,14 @@ lemma pow_lt_pow_iff_left (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) : a ^ n <
 lemma pow_left_inj (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
   (pow_left_strictMonoOn hn).eq_iff_eq ha hb
 
-lemma pow_right_injective (ha₀ : 0 < a) (ha₁ : a ≠ 1) : Injective (a ^ ·) := by
+lemma pow_right_injective₀ (ha₀ : 0 < a) (ha₁ : a ≠ 1) : Injective (a ^ ·) := by
   obtain ha₁ | ha₁ := ha₁.lt_or_lt
   · exact (pow_right_strictAnti ha₀ ha₁).injective
   · exact (pow_right_strictMono ha₁).injective
 
 @[simp]
-lemma pow_right_inj (ha₀ : 0 < a) (ha₁ : a ≠ 1) : a ^ m = a ^ n ↔ m = n :=
-  (pow_right_injective ha₀ ha₁).eq_iff
+lemma pow_right_inj₀ (ha₀ : 0 < a) (ha₁ : a ≠ 1) : a ^ m = a ^ n ↔ m = n :=
+  (pow_right_injective₀ ha₀ ha₁).eq_iff
 
 theorem pow_le_one_iff_of_nonneg (ha : 0 ≤ a) (hn : n ≠ 0) : a ^ n ≤ 1 ↔ a ≤ 1 := by
   simpa only [one_pow] using pow_le_pow_iff_left ha zero_le_one hn

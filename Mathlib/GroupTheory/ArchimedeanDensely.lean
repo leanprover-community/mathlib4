@@ -88,17 +88,17 @@ noncomputable def LinearOrderedCommGroup.closure_equiv_closure {G G' : Type*}
       exact ⟨_, rfl⟩
     · intro a
       generalize_proofs A B C D
-      rw [Subtype.ext_iff, ← (C a).choose_spec, zpow_right_inj xpos,
-          ← zpow_right_inj ypos, (A ⟨_, D a⟩).choose_spec]
+      rw [Subtype.ext_iff, ← (C a).choose_spec, zpow_right_inj xpos.ne',
+          ← zpow_right_inj ypos.ne', (A ⟨_, D a⟩).choose_spec]
     · intro a
       generalize_proofs A B C D
-      rw [Subtype.ext_iff, ← (C a).choose_spec, zpow_right_inj ypos,
-          ← zpow_right_inj xpos, (A ⟨_, D a⟩).choose_spec]
+      rw [Subtype.ext_iff, ← (C a).choose_spec, zpow_right_inj ypos.ne',
+          ← zpow_right_inj xpos.ne', (A ⟨_, D a⟩).choose_spec]
     · intro a b
       generalize_proofs A B C D E F
       simp only [Submonoid.coe_mul, coe_toSubmonoid, Submonoid.mk_mul_mk, Subtype.mk.injEq,
                  coe_mul, MulMemClass.mk_mul_mk, Subtype.ext_iff]
-      rw [← zpow_add, zpow_right_inj ypos, ← zpow_right_inj xpos, zpow_add,
+      rw [← zpow_add, zpow_right_inj ypos.ne', ← zpow_right_inj xpos.ne', zpow_add,
           (A a).choose_spec, (A b).choose_spec, (A (a * b)).choose_spec]
       simp
     · intro a b
@@ -121,7 +121,7 @@ lemma Subgroup.isLeast_of_closure_iff_eq_mabs {a b : G} :
     simp only [mem_closure_singleton, mem_setOf_eq, ← mul_zsmul] at this
     obtain ⟨m, hm⟩ := this.left
     have key : m * n = 1 := by
-      rw [← zpow_right_inj this.right, zpow_mul', hm, zpow_one]
+      rw [← zpow_right_inj this.right.ne', zpow_mul', hm, zpow_one]
     rw [Int.mul_eq_one_iff_eq_one_or_neg_one] at key
     rw [eq_comm]
     rcases key with ⟨rfl, rfl⟩|⟨rfl, rfl⟩ <;>
