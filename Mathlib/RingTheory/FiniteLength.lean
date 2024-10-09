@@ -82,12 +82,9 @@ theorem IsSemisimpleModule.finite_tfae [IsSemisimpleModule R M] :
         sSup s = ⊤ ∧ ∀ m ∈ s, IsSimpleModule R m] := by
   rw [isFiniteLength_iff_isNoetherian_isArtinian]
   obtain ⟨s, hs⟩ := IsSemisimpleModule.exists_setIndependent_sSup_simples_eq_top R M
-  tfae_have 1 → 2 := fun _ ↦ inferInstance
-  tfae_have 2 → 1 := fun _ ↦ inferInstance
-  tfae_have 2 → 5 := fun h ↦ by
-    rw [isNoetherian_iff'] at h
-    exact ⟨s, CompleteLattice.WellFoundedGT.finite_of_setIndependent hs.1, hs⟩
-  tfae_have 3 → 5 := fun h ↦ ⟨s, CompleteLattice.WellFoundedLT.finite_of_setIndependent hs.1, hs⟩
+  tfae_have 1 ↔ 2 := ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
+  tfae_have 2 → 5 := fun _ ↦ ⟨s, CompleteLattice.WellFoundedGT.finite_of_setIndependent hs.1, hs⟩
+  tfae_have 3 → 5 := fun _ ↦ ⟨s, CompleteLattice.WellFoundedLT.finite_of_setIndependent hs.1, hs⟩
   tfae_have 5 → 4 := fun ⟨s, fin, _, sSup_eq_top, simple⟩ ↦ by
     rw [← isNoetherian_top_iff, ← Submodule.topEquiv.isArtinian_iff,
       ← sSup_eq_top, sSup_eq_iSup, ← iSup_subtype'']
