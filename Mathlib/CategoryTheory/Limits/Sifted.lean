@@ -46,8 +46,7 @@ section ArbitraryUniverses
 variable (C : Type u) [Category.{v} C]
 
 /-- A category `C` `IsSiftedOrEmpty` if the diagonal functor `C ⥤ C × C` is final. -/
-class IsSiftedOrEmpty : Prop where
-  out : Final (diag C)
+abbrev IsSiftedOrEmpty : Prop := Final (diag C)
 
 /-- A category `C` `IsSfited` if
 1. the diagonal functor `C ⥤ C × C` is final.
@@ -56,15 +55,14 @@ class IsSifted extends IsSiftedOrEmpty C : Prop where
   [Nonempty : Nonempty C]
 
 attribute [instance] IsSifted.Nonempty
-attribute [instance] IsSiftedOrEmpty.out
 
 namespace IsSifted
 
 variable {C}
 
 /-- Being sifted is preserved by equivalences of categories -/
-lemma IsSiftedOfEquiv [IsSifted C] {D : Type u₁} [Category.{v₁} D] (e : D ≌ C) : IsSifted D where
-  out := by
+lemma IsSiftedOfEquiv [IsSifted C] {D : Type u₁} [Category.{v₁} D] (e : D ≌ C) : IsSifted D :=
+  letI : Final (diag D) := by
     letI : D × D ≌ C × C:= Equivalence.prod e e
     have f : (e.inverse ⋙ diag D ⋙ this.functor ≅ diag C) :=
         NatIso.ofComponents (fun c ↦ by dsimp [this]
@@ -72,7 +70,8 @@ lemma IsSiftedOfEquiv [IsSifted C] {D : Type u₁} [Category.{v₁} D] (e : D �
     apply final_iff_comp_equivalence _ this.functor|>.mpr
     apply final_iff_final_comp e.inverse _|>.mpr
     apply final_of_natIso f.symm
-  Nonempty := ⟨e.inverse.obj (_root_.Nonempty.some IsSifted.Nonempty)⟩
+  letI : _root_.Nonempty D := ⟨e.inverse.obj (_root_.Nonempty.some IsSifted.Nonempty)⟩
+  ⟨⟩
 
 /-- In particular a category is sifted iff and only if it is so when viewed as a small category -/
 lemma IsSifted_iff_asSmallIsSifted : IsSifted C ↔ IsSifted (AsSmall.{w} C) where
@@ -95,8 +94,7 @@ instance [IsSifted C]: IsConnected C :=
         · rfl)
 
 /-- A category with binary coproducts is sifted or empty. -/
-instance [HasBinaryCoproducts C] : IsSiftedOrEmpty C where
-  out := by
+instance [HasBinaryCoproducts C] : IsSiftedOrEmpty C := by
     constructor
     rintro ⟨c₁, c₂⟩
     haveI : _root_.Nonempty <|StructuredArrow (c₁,c₂) (diag C) :=
@@ -297,8 +295,7 @@ open Opposite in
 empty. -/
 theorem IsSiftedOrEmptyOfColimitPreservesBinaryProducts
     [PreservesLimitsOfShape (Discrete WalkingPair) (colim : (C ⥤ _) ⥤ Type u)] :
-    IsSiftedOrEmpty C := by
-  constructor
+    IsSiftedOrEmpty C := by 
   apply cofinal_of_colimit_comp_coyoneda_iso_pUnit
   rintro ⟨c₁, c₂⟩
   calc colimit <|diag C ⋙ coyoneda.obj (op (c₁, c₂))
