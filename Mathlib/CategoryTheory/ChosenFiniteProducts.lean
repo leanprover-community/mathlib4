@@ -103,6 +103,14 @@ lemma lift_fst {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) : lift f g ≫ fst _ _ = 
 lemma lift_snd {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) : lift f g ≫ snd _ _ = g := by
   simp [lift, snd]
 
+instance mono_lift_of_mono_left {W X Y : C} (f : W ⟶ X) (g : W ⟶ Y)
+    [Mono f] : Mono (lift f g) :=
+  mono_of_mono_fac <| lift_fst _ _
+
+instance mono_lift_of_mono_right {W X Y : C} (f : W ⟶ X) (g : W ⟶ Y)
+    [Mono g] : Mono (lift f g) :=
+  mono_of_mono_fac <| lift_snd _ _
+
 @[ext 1050]
 lemma hom_ext {T X Y : C} (f g : T ⟶ X ⊗ Y)
     (h_fst : f ≫ fst _ _ = g ≫ fst _ _)

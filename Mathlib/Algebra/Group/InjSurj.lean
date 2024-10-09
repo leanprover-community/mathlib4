@@ -233,8 +233,7 @@ protected abbrev divInvMonoid [DivInvMonoid M₂] (f : M₁ → M₂) (hf : Inje
   { hf.monoid f one mul npow, ‹Inv M₁›, ‹Div M₁› with
     zpow := fun n x => x ^ n,
     zpow_zero' := fun x => hf <| by rw [zpow, zpow_zero, one],
-    zpow_succ' := fun n x => hf <| by rw [zpow, mul, Int.ofNat_eq_coe, zpow_natCast, pow_succ, zpow,
-      Int.ofNat_eq_coe, zpow_natCast],
+    zpow_succ' := fun n x => hf <| by rw [zpow, mul, zpow_natCast, pow_succ, zpow, zpow_natCast],
     zpow_neg' := fun n x => hf <| by rw [zpow, zpow_negSucc, inv, zpow, zpow_natCast],
     div_eq_mul_inv := fun x y => hf <| by rw [div, mul, inv, div_eq_mul_inv] }
 
@@ -461,8 +460,7 @@ protected abbrev divInvMonoid [DivInvMonoid M₁] (f : M₁ → M₂) (hf : Surj
     zpow_zero' := hf.forall.2 fun x => by dsimp only; rw [← zpow, zpow_zero, ← one],
     zpow_succ' := fun n => hf.forall.2 fun x => by
       dsimp only
-      rw [← zpow, ← zpow, Int.ofNat_eq_coe, zpow_natCast, Int.ofNat_eq_coe, zpow_natCast, pow_succ,
-        ← mul],
+      rw [← zpow, ← zpow, zpow_natCast, zpow_natCast, pow_succ, ← mul],
     zpow_neg' := fun n => hf.forall.2 fun x => by
       dsimp only
       rw [← zpow, ← zpow, zpow_negSucc, zpow_natCast, inv],
