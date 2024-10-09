@@ -100,7 +100,7 @@ theorem preimage_subset {f : α ↪ β} {s : Finset β} {t : Finset α} (hs : s 
 theorem subset_map_iff {f : α ↪ β} {s : Finset β} {t : Finset α} :
     s ⊆ t.map f ↔ ∃ u ⊆ t, s = u.map f := by
   classical
-  simp_rw [← coe_subset, coe_map, subset_image_iff, map_eq_image, eq_comm]
+  simp_rw [map_eq_image, subset_image_iff, eq_comm]
 
 theorem sigma_preimage_mk {β : α → Type*} [DecidableEq α] (s : Finset (Σa, β a)) (t : Finset α) :
     (t.sigma fun a => s.preimage (Sigma.mk a) sigma_mk_injective.injOn) =

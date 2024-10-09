@@ -321,9 +321,6 @@ lemma isMulTorsionFree_iff_torsion_eq_bot {G} [CommGroup G] :
 end Monoid
 
 section Group
-
-open Monoid
-
 variable [Group G]
 
 /-- A nontrivial torsion group is not torsion-free. -/
@@ -351,8 +348,8 @@ open CommGroup (torsion)
 variable (G) [CommGroup G]
 
 /-- Quotienting a group by its torsion subgroup yields a torsion free group. -/
-@[to_additive AddIsTorsionFree.quotient_torsion
-      "Quotienting a group by its additive torsion subgroup yields an additive torsion free group."]
+@[to_additive
+"Quotienting a group by its additive torsion subgroup yields an additive torsion free group."]
 theorem IsTorsionFree.quotient_torsion : IsTorsionFree <| G ⧸ torsion G := fun g hne hfin =>
   hne <| by
     induction' g using QuotientGroup.induction_on with g
@@ -363,21 +360,26 @@ theorem IsTorsionFree.quotient_torsion : IsTorsionFree <| G ⧸ torsion G := fun
         (isOfFinOrder_iff_pow_eq_one.mpr ⟨m * n, mul_pos mpos npos, (pow_mul g m n).symm ▸ hn⟩)
 
 end CommGroup
+end Monoid
+
+namespace AddMonoid
 
 lemma isTorsionFree_iff_noZeroSMulDivisors_nat {M : Type*} [AddMonoid M] :
-    AddMonoid.IsTorsionFree M ↔ NoZeroSMulDivisors ℕ M := by
+    IsTorsionFree M ↔ NoZeroSMulDivisors ℕ M := by
   simp_rw [AddMonoid.IsTorsionFree, isOfFinAddOrder_iff_nsmul_eq_zero, not_exists, not_and,
     pos_iff_ne_zero, noZeroSMulDivisors_iff, forall_swap (β := ℕ)]
   exact forall₂_congr fun _ _ ↦ by tauto
 
 lemma isTorsionFree_iff_noZeroSMulDivisors_int [AddGroup G] :
-    AddMonoid.IsTorsionFree G ↔ NoZeroSMulDivisors ℤ G := by
+    IsTorsionFree G ↔ NoZeroSMulDivisors ℤ G := by
   simp_rw [AddMonoid.IsTorsionFree, isOfFinAddOrder_iff_zsmul_eq_zero, not_exists, not_and,
     noZeroSMulDivisors_iff, forall_swap (β := ℤ)]
   exact forall₂_congr fun _ _ ↦ by tauto
 
-@[deprecated (since := "2024-02-29")]
-alias AddMonoid.IsTorsionFree_iff_noZeroSMulDivisors := isTorsionFree_iff_noZeroSMulDivisors_int
-
 lemma IsTorsionFree.of_noZeroSMulDivisors {M : Type*} [AddMonoid M] [NoZeroSMulDivisors ℕ M] :
-    AddMonoid.IsTorsionFree M := isTorsionFree_iff_noZeroSMulDivisors_nat.2 ‹_›
+    IsTorsionFree M := isTorsionFree_iff_noZeroSMulDivisors_nat.2 ‹_›
+
+alias ⟨IsTorsionFree.noZeroSMulDivisors_nat, _⟩ := isTorsionFree_iff_noZeroSMulDivisors_nat
+alias ⟨IsTorsionFree.noZeroSMulDivisors_int, _⟩ := isTorsionFree_iff_noZeroSMulDivisors_int
+
+end AddMonoid

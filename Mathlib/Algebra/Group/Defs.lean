@@ -35,7 +35,7 @@ actions and register the following instances:
 - `SMul ℕ M` for additive monoids `M`, and `SMul ℤ G` for additive groups `G`.
 
 `SMul` is typically, but not exclusively, used for scalar multiplication-like operators.
-See the module `Algebra.AddTorsor` for a motivating example for the name `VAdd` (vector addition)`.
+See the module `Algebra.AddTorsor` for a motivating example for the name `VAdd` (vector addition).
 
 ## Notation
 

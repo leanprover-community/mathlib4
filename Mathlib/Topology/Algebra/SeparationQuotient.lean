@@ -431,19 +431,22 @@ section VectorSpaceUniform
 variable (K E : Type*) [DivisionRing K] [AddCommGroup E] [Module K E]
     [UniformSpace E] [UniformAddGroup E] [ContinuousConstSMul K E]
 
-theorem outCLM_uniformInducing : UniformInducing (outCLM K E) := by
-  rw [← uniformInducing_mk.uniformInducing_comp_iff, mk_comp_outCLM]
-  exact uniformInducing_id
+theorem outCLM_isUniformInducing : IsUniformInducing (outCLM K E) := by
+  rw [← isUniformInducing_mk.isUniformInducing_comp_iff, mk_comp_outCLM]
+  exact .id
+
+@[deprecated (since := "2024-10-05")]
+alias outCLM_uniformInducing := outCLM_isUniformInducing
 
 theorem outCLM_isUniformEmbedding : IsUniformEmbedding (outCLM K E) where
   inj := outCLM_injective K E
-  toUniformInducing := outCLM_uniformInducing K E
+  toIsUniformInducing := outCLM_isUniformInducing K E
 
 @[deprecated (since := "2024-10-01")]
 alias outCLM_uniformEmbedding := outCLM_isUniformEmbedding
 
 theorem outCLM_uniformContinuous : UniformContinuous (outCLM K E) :=
-  (outCLM_uniformInducing K E).uniformContinuous
+  (outCLM_isUniformInducing K E).uniformContinuous
 
 end VectorSpaceUniform
 
