@@ -52,8 +52,8 @@ lemma Finsum_iterate_deriv [CommRing R] {k : ℕ} {h : ℕ → ℕ} :
 /-- The expand of `Legendre n`. -/
 theorem Legendre_eq_sum (n : ℕ) : Legendre n = ∑ k in Finset.range (n + 1),
     C ((- 1) ^ k : ℝ) • (Nat.choose n k) * (Nat.choose (n + k) n) * X ^ k := by
-  have h : ((X : ℝ[X]) - X ^ 2) ^ n = ∑ m ∈ range (n + 1), n.choose m • (- 1) ^ m * X ^ (n + m) :=
-    by
+  have h : ((X : ℝ[X]) - X ^ 2) ^ n =
+    ∑ m ∈ range (n + 1), n.choose m • (- 1) ^ m * X ^ (n + m) := by
     rw[sub_eq_add_neg, add_comm, add_pow]
     congr! 1 with m hm
     rw[neg_pow, pow_two, mul_pow,← mul_assoc, mul_comm, mul_assoc, pow_mul_pow_sub, mul_assoc,
