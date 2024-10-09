@@ -92,42 +92,30 @@ theorem finset_image_add_of_nonempty {F α β : Type*} [AddCommGroup α] [FunLik
 theorem multiset_image_add {F α β : Type*} [AddCommGroup α] [FunLike F α ℝ]
     [AddGroupSeminormClass F α ℝ] [Nonempty β] {f : F} (hna : IsNonarchimedean f)
     (g : β → α) (s : Multiset β) :
-    ∃ b : β, (0 < Multiset.card s → b ∈ s) ∧ f (Multiset.map g s).sum ≤ f (g b) := by
+    ∃ b : β, (s ≠ 0 → b ∈ s) ∧ f (Multiset.map g s).sum ≤ f (g b) := by
   inhabit β
   induction s using Multiset.induction_on with
-  | empty =>
-      rw [Multiset.map_zero, Multiset.sum_zero, Multiset.card_zero, map_zero f]
-      exact ⟨default, by simp only [not_lt_zero', IsEmpty.forall_iff], apply_nonneg _ _⟩
+  | empty => simp
   | @cons a t hM =>
       obtain ⟨M, hMs, hM⟩ := hM
       by_cases hMa : f (g M) ≤ f (g a)
-      · refine ⟨a, ?_, ?_⟩
-        · simp only [Multiset.card_cons, Nat.succ_pos', Multiset.mem_cons_self, forall_true_left]
+      · refine ⟨a, by simp, ?_⟩
         · rw [Multiset.map_cons, Multiset.sum_cons]
           exact le_trans (hna _ _) (max_le (le_refl _) (le_trans hM hMa))
       · rw [not_le] at hMa
-        by_cases ht : 0 < Multiset.card t
+        rcases eq_or_ne t 0 with rfl|ht
+        · exact ⟨a, by simp, by simp⟩
         · refine ⟨M, ?_, ?_⟩
-          · simp only [Multiset.card_cons, Nat.succ_pos', Multiset.mem_cons, forall_true_left]
-            exact Or.intro_right _ (hMs ht)
+          · simp [hMs ht]
           rw [Multiset.map_cons, Multiset.sum_cons]
           exact le_trans (hna _ _) (max_le hMa.le hM)
-        · refine ⟨a, ?_, ?_⟩
-          · simp only [Multiset.card_cons, Nat.succ_pos', Multiset.mem_cons_self, forall_true_left]
-          · have h0 : f (Multiset.map g t).sum = 0 := by
-              simp only [not_lt, le_zero_iff, Multiset.card_eq_zero] at ht
-              rw [ht, Multiset.map_zero, Multiset.sum_zero, map_zero f]
-            rw [Multiset.map_cons, Multiset.sum_cons]
-            apply le_trans (hna _ _)
-            rw [h0]
-            exact max_le (le_refl _) (apply_nonneg _ _)
 
 /-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a
   nonempty multiset `s : Multiset β`, we can always find `b : β` belonging to `s` such that
   `f (t.sum g) ≤ f (g b)` . -/
 theorem multiset_image_add_of_nonempty {F α β : Type*} [AddCommGroup α] [FunLike F α ℝ]
     [AddGroupSeminormClass F α ℝ] [Nonempty β] {f : F} (hna : IsNonarchimedean f)
-    (g : β → α) {s : Multiset β} (hs : 0 < Multiset.card s) :
+    (g : β → α) {s : Multiset β} (hs : s ≠ 0) :
     ∃ b : β, (b ∈ s) ∧ f (Multiset.map g s).sum ≤ f (g b) := by
   obtain ⟨b, hbs, hbf⟩ := multiset_image_add hna g s
   exact ⟨b, hbs hs, hbf⟩
