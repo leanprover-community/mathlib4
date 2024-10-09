@@ -57,7 +57,7 @@ measure. We follow McQuillan's answer at https://mathoverflow.net/questions/4566
 On second-countable groups, one can arrive to slightly different uniqueness results by using that
 the operations are measurable. In particular, one can get uniqueness assuming σ-finiteness of
 the measures but discarding the assumption that they are finite on compact sets. See
-`haarMeasure_unique` in the file `MeasureTheory.Measure.Haar.Basic`.
+`haarMeasure_unique` in the file ``Mathlib/MeasureTheory/Measure/Haar/Basic.lean``.
 
 ## References
 
@@ -271,8 +271,7 @@ lemma exists_integral_isMulLeftInvariant_eq_smul_of_hasCompactSupport (μ' μ : 
     integral_isMulLeftInvariant_isMulRightInvariant_combo f_cont f_comp g_cont g_comp g_nonneg g_one
   /- Since the `ν`-factor is the same for `μ` and `μ'`, this gives the result. -/
   rw [← A, mul_assoc, mul_comm] at B
-  simp only [B, integral_smul_nnreal_measure]
-  rfl
+  simp [B, integral_smul_nnreal_measure, c, NNReal.smul_def]
 
 open scoped Classical in
 /-- Given two left-invariant measures which are finite on compacts, `haarScalarFactor μ' μ` is a
