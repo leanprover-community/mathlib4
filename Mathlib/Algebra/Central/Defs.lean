@@ -22,6 +22,28 @@ We require the `K`-center of `D` to be smaller than or equal to the smallest sub
 we prove something is central simple, there we don't need to prove `⊥ ≤ center K D` though this
 direction is trivial.
 
+### Central Simple Algebras
+
+To define central simple algebras, we could do the following:
+```lean
+class Algebra.IsCentralSimple (K : Type u) [Field K] (D : Type v) [Ring D] [Algebra K D] where
+  [is_central : IsCentral K D]
+  [is_simple : IsSimpleRing D]
+```
+but an instance of `[Algebra.IsCentralSimple K D]` would not imply `[IsSimpleRing D]` because of
+synthesization orders (`K` cannot be inferred). Thus, to obtain a central simple `K`-algebra `D`,
+one should use `Algebra.IsCentral K D` and `IsSimpleRing D` separately.
+
+Note that the predicate `Albgera.IsCentral K D` and `IsSimpleRing D` makes sense just for `K` a
+`CommRing` but it doesn't give the right definition for central simple algebra; for a commutative
+ring base, one should use the theory of Azumaya algebras. In fact ideals of `K` immediately give
+rise to nontrivial quotients of `D` so there are no central simple algebras in this case according
+to our definition, if K is not a field.
+The theory of central simple algebras really is a theory over fields.
+
+## Tags
+central algebra, center, simple ring, central simple algebra
+
 -/
 
 universe u v
