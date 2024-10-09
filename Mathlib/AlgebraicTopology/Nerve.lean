@@ -126,8 +126,7 @@ theorem ran.lift.eq {C : Cat} {n}
       (Truncated.inclusion (n := 2)).op ⋙ nerveFunctor₂.obj C))
     (x : s.pt) {i j} (k : i ⟶ j) :
     (s.π.app (CategoryTheory.Nerve.pt' i) x).obj 0 =
-    (s.π.app (CategoryTheory.Nerve.ar' k) x).obj 0
- := by
+    (s.π.app (CategoryTheory.Nerve.ar' k) x).obj 0 := by
   have hi := congr_fun (s.π.naturality <|
       StructuredArrow.homMk (f := ar' k) (f' := pt' i)
         (.op (SimplexCategory.const _ _ 0)) <| by
@@ -142,8 +141,7 @@ theorem ran.lift.eq₂ {C : Cat} {n}
       (Truncated.inclusion (n := 2)).op ⋙ nerveFunctor₂.obj C))
     (x : s.pt) {i j} (k : i ⟶ j) :
     (s.π.app (CategoryTheory.Nerve.pt' j) x).obj 0 =
-    (s.π.app (CategoryTheory.Nerve.ar' k) x).obj 1
- := by
+    (s.π.app (CategoryTheory.Nerve.ar' k) x).obj 1 := by
   have hj := congr_fun (s.π.naturality <|
       StructuredArrow.homMk (f := ar' k) (f' := pt' j)
         (.op (SimplexCategory.const _ _ 1)) <| by
@@ -273,8 +271,8 @@ private
 def fact.obj.arr {n}
     (j : StructuredArrow (op [n]) (Truncated.inclusion (n := 2)).op)
     (i : Fin ((unop ((Truncated.inclusion (n := 2)).op.obj
-      ((StructuredArrow.proj (op [n]) (Truncated.inclusion (n := 2)).op).obj j))).len + 1))
-    : j ⟶ (pt' (strArr.homEv j i)) :=
+      ((StructuredArrow.proj (op [n]) (Truncated.inclusion (n := 2)).op).obj j))).len + 1)) :
+      j ⟶ (pt' (strArr.homEv j i)) :=
   StructuredArrow.homMk (.op (SimplexCategory.const _ _ i)) <| by
     apply Quiver.Hom.unop_inj
     ext z; revert z; intro | 0 => rfl
@@ -302,8 +300,7 @@ constructed. This is used to prove that ran.lift defines a factorization on maps
 private
 def fact.map.arr {n}
     (j : StructuredArrow (op [n]) (Truncated.inclusion (n := 2)).op)
-    (i : Fin (unop j.right).1.len)
-    : j ⟶ ar' (strArr.homEv.map j i) := by
+    (i : Fin (unop j.right).1.len) : j ⟶ ar' (strArr.homEv.map j i) := by
   fapply StructuredArrow.homMk
   · exact .op (mkOfSucc i : [1] ⟶ [(unop j.right).1.len])
   · apply Quiver.Hom.unop_inj
