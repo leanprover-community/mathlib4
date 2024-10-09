@@ -870,10 +870,11 @@ lemma lintegral_le_meas {s : Set α} {f : α → ℝ≥0∞} (hf : ∀ a, f a �
   · simpa [hx] using h'f x hx
 
 lemma setLIntegral_le_meas {s t : Set α} (hs : MeasurableSet s)
-    {f : α → ℝ≥0∞} (hf : ∀ a ∈ s, f a ≤ 1)
-    (hf' : ∀ a ∈ s \ t, f a = 0) : ∫⁻ a in s, f a ∂μ ≤ μ t := by
+    {f : α → ℝ≥0∞} (hf : ∀ a ∈ s, a ∈ t → f a ≤ 1)
+    (hf' : ∀ a ∈ s, a ∉ t → f a = 0) : ∫⁻ a in s, f a ∂μ ≤ μ t := by
   rw [← lintegral_indicator _ hs]
-  exact lintegral_le_meas (fun a ↦ by by_cases a ∈ s <;> simp [*]) (by aesop)
+  refine lintegral_le_meas (fun a ↦ ?_) (by aesop)
+  by_cases has : a ∈ s <;> [by_cases hat : a ∈ t; skip] <;> simp [*]
 
 theorem lintegral_eq_top_of_measure_eq_top_ne_zero {f : α → ℝ≥0∞} (hf : AEMeasurable f μ)
     (hμf : μ {x | f x = ∞} ≠ 0) : ∫⁻ x, f x ∂μ = ∞ :=
