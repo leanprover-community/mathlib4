@@ -6,6 +6,7 @@ Authors: Joseph Myers
 import Mathlib.Analysis.Convex.Between
 import Mathlib.Analysis.Convex.Normed
 import Mathlib.Analysis.Normed.Group.AddTorsor
+import Mathlib.Tactic.Basepoint
 
 /-!
 # Sides of affine subspaces
@@ -218,8 +219,9 @@ theorem wSameSide_of_right_mem {s : AffineSubspace R P} (x : P) {y : P} (hy : y 
 theorem wOppSide_of_left_mem {s : AffineSubspace R P} {x : P} (y : P) (hx : x ∈ s) :
     s.WOppSide x y := by
   refine ⟨x, hx, x, hx, ?_⟩
-  rw [vsub_self]
-  apply SameRay.zero_left
+  convert SameRay.zero_left (x -ᵥ y)
+  basepoint V, P, x
+  module
 
 theorem wOppSide_of_right_mem {s : AffineSubspace R P} (x : P) {y : P} (hy : y ∈ s) :
     s.WOppSide x y :=
@@ -231,10 +233,14 @@ theorem wSameSide_vadd_left_iff {s : AffineSubspace R P} {x y : P} {v : V} (hv :
   · rintro ⟨p₁, hp₁, p₂, hp₂, h⟩
     refine
       ⟨-v +ᵥ p₁, AffineSubspace.vadd_mem_of_mem_direction (Submodule.neg_mem _ hv) hp₁, p₂, hp₂, ?_⟩
-    rwa [vsub_vadd_eq_vsub_sub, sub_neg_eq_add, add_comm, ← vadd_vsub_assoc]
+    convert h using 1
+    basepoint V, P, x
+    module
   · rintro ⟨p₁, hp₁, p₂, hp₂, h⟩
     refine ⟨v +ᵥ p₁, AffineSubspace.vadd_mem_of_mem_direction hv hp₁, p₂, hp₂, ?_⟩
-    rwa [vadd_vsub_vadd_cancel_left]
+    convert h using 1
+    basepoint V, P, x
+    module
 
 theorem wSameSide_vadd_right_iff {s : AffineSubspace R P} {x y : P} {v : V} (hv : v ∈ s.direction) :
     s.WSameSide x (v +ᵥ y) ↔ s.WSameSide x y := by
@@ -254,10 +260,14 @@ theorem wOppSide_vadd_left_iff {s : AffineSubspace R P} {x y : P} {v : V} (hv : 
   · rintro ⟨p₁, hp₁, p₂, hp₂, h⟩
     refine
       ⟨-v +ᵥ p₁, AffineSubspace.vadd_mem_of_mem_direction (Submodule.neg_mem _ hv) hp₁, p₂, hp₂, ?_⟩
-    rwa [vsub_vadd_eq_vsub_sub, sub_neg_eq_add, add_comm, ← vadd_vsub_assoc]
+    convert h using 1
+    basepoint V, P, x
+    module
   · rintro ⟨p₁, hp₁, p₂, hp₂, h⟩
     refine ⟨v +ᵥ p₁, AffineSubspace.vadd_mem_of_mem_direction hv hp₁, p₂, hp₂, ?_⟩
-    rwa [vadd_vsub_vadd_cancel_left]
+    convert h using 1
+    basepoint V, P, x
+    module
 
 theorem wOppSide_vadd_right_iff {s : AffineSubspace R P} {x y : P} {v : V} (hv : v ∈ s.direction) :
     s.WOppSide x (v +ᵥ y) ↔ s.WOppSide x y := by
@@ -292,8 +302,9 @@ theorem wSameSide_lineMap_right {s : AffineSubspace R P} {x : P} (y : P) (h : x 
 theorem wOppSide_smul_vsub_vadd_left {s : AffineSubspace R P} {p₁ p₂ : P} (x : P) (hp₁ : p₁ ∈ s)
     (hp₂ : p₂ ∈ s) {t : R} (ht : t ≤ 0) : s.WOppSide (t • (x -ᵥ p₁) +ᵥ p₂) x := by
   refine ⟨p₂, hp₂, p₁, hp₁, ?_⟩
-  rw [vadd_vsub, ← neg_neg t, neg_smul, ← smul_neg, neg_vsub_eq_vsub_rev]
-  exact SameRay.sameRay_nonneg_smul_left _ (neg_nonneg.2 ht)
+  convert SameRay.sameRay_nonneg_smul_left (R := R) (p₁ -ᵥ x) (neg_nonneg.2 ht) using 1
+  basepoint V, P, x
+  module
 
 theorem wOppSide_smul_vsub_vadd_right {s : AffineSubspace R P} {p₁ p₂ : P} (x : P) (hp₁ : p₁ ∈ s)
     (hp₂ : p₂ ∈ s) {t : R} (ht : t ≤ 0) : s.WOppSide x (t • (x -ᵥ p₁) +ᵥ p₂) :=
@@ -333,7 +344,8 @@ theorem _root_.Wbtw.wOppSide₁₃ {s : AffineSubspace R P} {x y z : P} (h : Wbt
   rcases ht0.lt_or_eq with (ht0' | rfl); swap
   · rw [lineMap_apply_zero]; simp
   refine Or.inr (Or.inr ⟨1 - t, t, sub_pos.2 ht1', ht0', ?_⟩)
-  rw [lineMap_apply, vadd_vsub_assoc, vsub_vadd_eq_vsub_sub, ← neg_vsub_eq_vsub_rev z, vsub_self]
+  rw [lineMap_apply]
+  basepoint V, P, x
   module
 
 theorem _root_.Wbtw.wOppSide₃₁ {s : AffineSubspace R P} {x y z : P} (h : Wbtw R x y z)
@@ -352,9 +364,11 @@ theorem wOppSide_self_iff {s : AffineSubspace R P} {x : P} : s.WOppSide x x ↔ 
   constructor
   · rintro ⟨p₁, hp₁, p₂, hp₂, h⟩
     obtain ⟨a, -, -, -, -, h₁, -⟩ := h.exists_eq_smul_add
-    rw [add_comm, vsub_add_vsub_cancel, ← eq_vadd_iff_vsub_eq] at h₁
-    rw [h₁]
-    exact s.smul_vsub_vadd_mem a hp₂ hp₁ hp₁
+    convert s.smul_vsub_vadd_mem a hp₂ hp₁ hp₁ using 1
+    basepoint V, P, x
+    linear_combination (norm := skip) h₁
+    basepoint V, P, x -- can omit this after implementing `basepoint at *`
+    module
   · exact fun h => ⟨x, h, x, h, SameRay.rfl⟩
 
 theorem not_sOppSide_self (s : AffineSubspace R P) (x : P) : ¬s.SOppSide x x := by
@@ -373,8 +387,10 @@ theorem wSameSide_iff_exists_left {s : AffineSubspace R P} {x y p₁ : P} (h : p
       exact SameRay.zero_right _
     · refine Or.inr ⟨(r₁ / r₂) • (p₁ -ᵥ p₁') +ᵥ p₂', s.smul_vsub_vadd_mem _ h hp₁' hp₂',
         Or.inr (Or.inr ⟨r₁, r₂, hr₁, hr₂, ?_⟩)⟩
-      rw [vsub_vadd_eq_vsub_sub, smul_sub, ← hr, smul_smul, mul_div_cancel₀ _ hr₂.ne.symm,
-        ← smul_sub, vsub_sub_vsub_cancel_right]
+      basepoint V, P, x
+      linear_combination (norm := skip) hr
+      basepoint V, P, x -- can omit this after implementing `basepoint at *`
+      match_scalars <;> { field_simp <;> ring }
   · rintro (h' | ⟨h₁, h₂, h₃⟩)
     · exact wSameSide_of_left_mem y h'
     · exact ⟨p₁, h, h₁, h₂, h₃⟩
@@ -407,9 +423,9 @@ theorem wOppSide_iff_exists_left {s : AffineSubspace R P} {x y p₁ : P} (h : p�
       exact SameRay.zero_right _
     · refine Or.inr ⟨(-r₁ / r₂) • (p₁ -ᵥ p₁') +ᵥ p₂', s.smul_vsub_vadd_mem _ h hp₁' hp₂',
         Or.inr (Or.inr ⟨r₁, r₂, hr₁, hr₂, ?_⟩)⟩
-      rw [vadd_vsub_assoc, ← vsub_sub_vsub_cancel_right x p₁ p₁']
-      linear_combination (norm := match_scalars <;> field_simp) hr
-      ring
+      linear_combination (norm := skip) hr
+      basepoint V, P, x
+      match_scalars <;> { field_simp <;> ring }
   · rintro (h' | ⟨h₁, h₂, h₃⟩)
     · exact wOppSide_of_left_mem y h'
     · exact ⟨p₁, h, h₁, h₂, h₃⟩
