@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton
 -/
 import Mathlib.Topology.Hom.ContinuousEval
+import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # The compact-open topology
