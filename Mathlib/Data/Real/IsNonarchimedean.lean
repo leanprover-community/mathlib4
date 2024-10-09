@@ -5,7 +5,6 @@ Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.Hom.Ultra
-import Mathlib.Analysis.Normed.Ring.Ultra
 import Mathlib.Data.Nat.Choose.Sum
 
 /-!
