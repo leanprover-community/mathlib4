@@ -1496,7 +1496,7 @@ lemma one_div_nonpos : 1 / a ≤ 0 ↔ a ≤ 0 := one_div a ▸ inv_nonpos
 lemma div_nonpos_of_nonneg_of_nonpos [PosMulMono G₀] (ha : 0 ≤ a) (hb : b ≤ 0) : a / b ≤ 0 := by
   rw [div_eq_mul_inv]; exact mul_nonpos_of_nonneg_of_nonpos ha (inv_nonpos.2 hb)
 
-variable[PosMulStrictMono G₀] {m n : ℤ}
+variable [PosMulStrictMono G₀] {m n : ℤ}
 
 lemma inv_lt_one_iff₀ : a⁻¹ < 1 ↔ a ≤ 0 ∨ 1 < a := by
   simp_rw [← not_le, one_le_inv_iff₀, not_and_or, not_lt]

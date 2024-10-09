@@ -27,6 +27,7 @@ variable [LinearOrderedSemifield α] {a b c d e : α} {m n : ℤ}
 @[deprecated zpow_le_zpow_right₀ (since := "2024-10-08")]
 theorem zpow_le_of_le (ha : 1 ≤ a) (h : m ≤ n) : a ^ m ≤ a ^ n := zpow_le_zpow_right₀ ha h
 
+@[deprecated zpow_le_one_of_nonpos₀ (since := "2024-10-08")]
 theorem zpow_le_one_of_nonpos (ha : 1 ≤ a) (hn : n ≤ 0) : a ^ n ≤ 1 := zpow_le_one_of_nonpos₀ ha hn
 
 @[deprecated one_le_zpow₀ (since := "2024-10-08")]
@@ -40,7 +41,7 @@ protected theorem Nat.zpow_pos_of_pos {a : ℕ} (h : 0 < a) (n : ℤ) : 0 < (a :
 theorem Nat.zpow_ne_zero_of_pos {a : ℕ} (h : 0 < a) (n : ℤ) : (a : α) ^ n ≠ 0 :=
   zpow_ne_zero _ (mod_cast h.ne')
 
-@[deprecated zpow_ne_zero (since := "2024-10-08")]
+@[deprecated one_lt_zpow₀ (since := "2024-10-08")]
 theorem one_lt_zpow (ha : 1 < a) (n : ℤ) (hn : 0 < n) : 1 < a ^ n := one_lt_zpow₀ ha hn
 
 @[deprecated zpow_right_strictMono₀ (since := "2024-10-08")]
