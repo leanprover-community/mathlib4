@@ -104,7 +104,7 @@ theorem map_mono {f : F} {p p' : Submodule R M} : p ≤ p' → map f p ≤ map f
   image_subset _
 
 @[simp]
-theorem map_zero : map (0 : M →ₛₗ[σ₁₂] M₂) p = ⊥ :=
+protected theorem map_zero : map (0 : M →ₛₗ[σ₁₂] M₂) p = ⊥ :=
   have : ∃ x : M, x ∈ p := ⟨0, p.zero_mem⟩
   ext <| by simp [this, eq_comm]
 

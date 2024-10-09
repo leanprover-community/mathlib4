@@ -191,11 +191,11 @@ protected theorem transcendental {x : ℝ} (lx : Liouville x) : Transcendental �
   -- recall, this is a proof by contradiction!
   refine lt_irrefl ((b : ℝ) ^ f.natDegree * |x - ↑a / ↑b|) ?_
   -- clear denominators at `a1`
-  rw [lt_div_iff' (pow_pos b0 _), pow_add, mul_assoc] at a1
+  rw [lt_div_iff₀' (pow_pos b0 _), pow_add, mul_assoc] at a1
   -- split the inequality via `1 / A`.
   refine (?_ : (b : ℝ) ^ f.natDegree * |x - a / b| < 1 / A).trans_le ?_
   -- This branch of the proof uses the Liouville condition and the Archimedean property
-  · refine (lt_div_iff' hA).mpr ?_
+  · refine (lt_div_iff₀' hA).mpr ?_
     refine lt_of_le_of_lt ?_ a1
     gcongr
     refine hn.le.trans ?_
