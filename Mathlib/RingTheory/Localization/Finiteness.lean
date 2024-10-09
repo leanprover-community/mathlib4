@@ -5,7 +5,7 @@ Authors: Christian Merten
 -/
 import Mathlib.Algebra.Module.LocalizedModuleIntegers
 import Mathlib.RingTheory.Localization.Algebra
-import Mathlib.RingTheory.LocalProperties
+import Mathlib.RingTheory.RingHom.Finite
 
 /-!
 
@@ -53,10 +53,9 @@ lemma of_isLocalizedModule [Module.Finite R M] : Module.Finite Rₚ Mₚ := by
       (Submodule.span Rₚ (f '' T)).restrictScalars R := by
     rw [Submodule.span_le]; exact Submodule.subset_span
   convert (Submodule.span Rₚ (f '' T)).smul_mem
-    (IsLocalization.mk' Rₚ (1 : R) m) (H this) using 1
+    (IsLocalization.mk' Rₚ (1 : R) m) (H this) using 0
   · rw [← hyx, ← IsLocalizedModule.mk'_one S, IsLocalizedModule.mk'_smul_mk']
     simp
-  · simp
 
 end
 

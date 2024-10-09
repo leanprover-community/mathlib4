@@ -37,16 +37,15 @@ variable {R : Type*} [Semiring R] {S : Type*} [Semiring S]
 variable {R₂ : Type*} [Semiring R₂] {S₂ : Type*} [Semiring S₂]
 variable {M : Type*} {N : Type*} {P : Type*}
 variable {M₂ : Type*} {N₂ : Type*} {P₂ : Type*}
-variable {Nₗ : Type*} {Pₗ : Type*}
-variable {M' : Type*} {N' : Type*} {P' : Type*}
+variable {Pₗ : Type*}
+variable {M' : Type*} {P' : Type*}
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
-variable [AddCommMonoid M₂] [AddCommMonoid N₂] [AddCommMonoid P₂]
-variable [AddCommMonoid Nₗ] [AddCommMonoid Pₗ]
-variable [AddCommGroup M'] [AddCommGroup N'] [AddCommGroup P']
+variable [AddCommMonoid M₂] [AddCommMonoid N₂] [AddCommMonoid P₂] [AddCommMonoid Pₗ]
+variable [AddCommGroup M'] [AddCommGroup P']
 variable [Module R M] [Module S N] [Module R₂ P] [Module S₂ P]
 variable [Module R M₂] [Module S N₂] [Module R P₂] [Module S₂ P₂]
 variable [Module R Pₗ] [Module S Pₗ]
-variable [Module R M'] [Module S N'] [Module R₂ P'] [Module S₂ P']
+variable [Module R M'] [Module R₂ P'] [Module S₂ P']
 variable [SMulCommClass S₂ R₂ P] [SMulCommClass S R Pₗ] [SMulCommClass S₂ R₂ P']
 variable [SMulCommClass S₂ R P₂]
 variable {ρ₁₂ : R →+* R₂} {σ₁₂ : S →+* S₂}
@@ -376,14 +375,11 @@ end CommSemiring
 
 section CommRing
 
-variable {R R₂ S S₂ M N P : Type*}
-variable {Mₗ Nₗ Pₗ : Type*}
-variable [CommRing R] [CommRing S] [CommRing R₂] [CommRing S₂]
+variable {R M : Type*} [CommRing R]
 
 section AddCommGroup
 
-variable [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
-variable [Module R M] [Module S N] [Module R₂ P] [Module S₂ P]
+variable [AddCommGroup M] [Module R M]
 
 theorem lsmul_injective [NoZeroSMulDivisors R M] {x : R} (hx : x ≠ 0) :
     Function.Injective (lsmul R M x) :=

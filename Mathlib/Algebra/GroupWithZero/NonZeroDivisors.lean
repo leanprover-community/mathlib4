@@ -304,7 +304,7 @@ theorem mk_mem_nonZeroDivisors_associates : Associates.mk a ∈ (Associates M₀
 /-- The non-zero divisors of associates of a monoid with zero `M₀` are isomorphic to the associates
 of the non-zero divisors of `M₀` under the map `⟨⟦a⟧, _⟩ ↦ ⟦⟨a, _⟩⟧`. -/
 def associatesNonZeroDivisorsEquiv : (Associates M₀)⁰ ≃* Associates M₀⁰ where
-  toEquiv := .subtypeQuotientEquivQuotientSubtype (s₂ := Associated.setoid _)
+  toEquiv := .subtypeQuotientEquivQuotientSubtype _ (s₂ := Associated.setoid _)
     (· ∈ nonZeroDivisors _)
     (by simp [mem_nonZeroDivisors_iff, Quotient.forall, Associates.mk_mul_mk])
     (by simp [Associated.setoid])

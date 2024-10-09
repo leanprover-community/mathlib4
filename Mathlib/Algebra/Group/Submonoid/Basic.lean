@@ -65,14 +65,14 @@ variable [MulOneClass M] {s : Set M}
 variable [AddZeroClass A] {t : Set A}
 
 /-- `OneMemClass S M` says `S` is a type of subsets `s ≤ M`, such that `1 ∈ s` for all `s`. -/
-class OneMemClass (S : Type*) (M : Type*) [One M] [SetLike S M] : Prop where
+class OneMemClass (S : Type*) (M : outParam Type*) [One M] [SetLike S M] : Prop where
   /-- By definition, if we have `OneMemClass S M`, we have `1 ∈ s` for all `s : S`. -/
   one_mem : ∀ s : S, (1 : M) ∈ s
 
 export OneMemClass (one_mem)
 
 /-- `ZeroMemClass S M` says `S` is a type of subsets `s ≤ M`, such that `0 ∈ s` for all `s`. -/
-class ZeroMemClass (S : Type*) (M : Type*) [Zero M] [SetLike S M] : Prop where
+class ZeroMemClass (S : Type*) (M : outParam Type*) [Zero M] [SetLike S M] : Prop where
   /-- By definition, if we have `ZeroMemClass S M`, we have `0 ∈ s` for all `s : S`. -/
   zero_mem : ∀ s : S, (0 : M) ∈ s
 
@@ -96,7 +96,7 @@ add_decl_doc Submonoid.toSubsemigroup
 
 /-- `SubmonoidClass S M` says `S` is a type of subsets `s ≤ M` that contain `1`
 and are closed under `(*)` -/
-class SubmonoidClass (S : Type*) (M : Type*) [MulOneClass M] [SetLike S M] extends
+class SubmonoidClass (S : Type*) (M : outParam Type*) [MulOneClass M] [SetLike S M] extends
   MulMemClass S M, OneMemClass S M : Prop
 
 section
@@ -115,7 +115,7 @@ add_decl_doc AddSubmonoid.toAddSubsemigroup
 
 /-- `AddSubmonoidClass S M` says `S` is a type of subsets `s ≤ M` that contain `0`
 and are closed under `(+)` -/
-class AddSubmonoidClass (S : Type*) (M : Type*) [AddZeroClass M] [SetLike S M] extends
+class AddSubmonoidClass (S : Type*) (M : outParam Type*) [AddZeroClass M] [SetLike S M] extends
   AddMemClass S M, ZeroMemClass S M : Prop
 
 attribute [to_additive] Submonoid SubmonoidClass
@@ -376,7 +376,7 @@ theorem closure_induction {p : M → Prop} {x} (h : x ∈ closure s) (mem : ∀ 
     (mul : ∀ x y, p x → p y → p (x * y)) : p x :=
   (@closure_le _ _ _ ⟨⟨p, mul _ _⟩, one⟩).2 mem h
 
-/-- A dependent version of `Submonoid.closure_induction`.  -/
+/-- A dependent version of `Submonoid.closure_induction`. -/
 @[to_additive (attr := elab_as_elim) "A dependent version of `AddSubmonoid.closure_induction`. "]
 theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure s → Prop}
     (mem : ∀ (x) (h : x ∈ s), p x (subset_closure h)) (one : p 1 (one_mem _))
@@ -387,7 +387,7 @@ theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure s → Prop}
     closure_induction hx (fun x hx => ⟨_, mem x hx⟩) ⟨_, one⟩ fun x y ⟨hx', hx⟩ ⟨hy', hy⟩ =>
       ⟨_, mul _ _ _ _ hx hy⟩
 
-/-- An induction principle for closure membership for predicates with two arguments.  -/
+/-- An induction principle for closure membership for predicates with two arguments. -/
 @[to_additive (attr := elab_as_elim)
       "An induction principle for additive closure membership for predicates with two arguments."]
 theorem closure_induction₂ {p : M → M → Prop} {x} {y : M} (hx : x ∈ closure s) (hy : y ∈ closure s)

@@ -3,8 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Init.Data.Quot
-import Mathlib.Logic.Relator
+import Mathlib.Logic.Relation
 import Mathlib.Logic.Unique
 import Mathlib.Util.Notation3
 
@@ -22,6 +21,7 @@ variable {α : Sort*} {β : Sort*}
 
 namespace Setoid
 
+-- Pretty print `@Setoid.r _ s a b` as `s a b`.
 run_cmd Lean.Elab.Command.liftTermElabM do
   Lean.Meta.registerCoercion ``Setoid.r
     (some { numArgs := 2, coercee := 1, type := .coeFun })
@@ -275,8 +275,8 @@ instance (q₁ : Quotient sa) (q₂ : Quotient sb) (f : α → β → Prop)
 end Quotient
 
 theorem Quot.eq {α : Type*} {r : α → α → Prop} {x y : α} :
-    Quot.mk r x = Quot.mk r y ↔ EqvGen r x y :=
-  ⟨Quot.exact r, Quot.EqvGen_sound⟩
+    Quot.mk r x = Quot.mk r y ↔ Relation.EqvGen r x y :=
+  ⟨Quot.eqvGen_exact, Quot.eqvGen_sound⟩
 
 @[simp]
 theorem Quotient.eq {r : Setoid α} {x y : α} : Quotient.mk r x = ⟦y⟧ ↔ r x y :=

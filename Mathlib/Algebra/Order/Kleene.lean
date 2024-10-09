@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Siddhartha Prasad, Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Tactic.Monotonicity.Attr
+import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Ring.Prod
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # Kleene Algebras

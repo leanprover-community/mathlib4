@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Topology.ContinuousFunction.Bounded
+import Mathlib.Topology.ContinuousMap.Bounded
 import Mathlib.Topology.Metrizable.Basic
 /-!
 # Urysohn's Metrization Theorem

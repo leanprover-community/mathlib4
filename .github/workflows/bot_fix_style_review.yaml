@@ -10,7 +10,6 @@ jobs:
     name: Fix style issues from lint
     if: (startsWith(github.event.review.body, 'bot fix style') || contains(toJSON(github.event.review.body), '\nbot fix style'))
     runs-on: ubuntu-latest
-    continue-on-error: true  # do not annoy the user when linting fails, as expected
     steps:
       - id: user_permission
         uses: actions-cool/check-user-permission@v2
@@ -64,7 +63,6 @@ jobs:
 
       - name: lint
         if: steps.user_permission.outputs.require-result == 'true'
-        continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
         run: |
           lake exe lint-style --fix
 
@@ -76,14 +74,15 @@ jobs:
 
       - name: lint references.bib
         if: steps.user_permission.outputs.require-result == 'true'
-        continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
         run: |
-          ./scripts/lint-bib.sh
+          # ignoring the return code allows the following `reviewdog` step to add GitHub suggestions
+          ./scripts/lint-bib.sh || true
 
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
         if: steps.user_permission.outputs.require-result == 'true'
-        continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
-        run: lake exe mk_all
+        run: |
+          # ignoring the return code allows the following `reviewdog` step to add GitHub suggestions
+          lake exe mk_all || true
 
       - name: Commit and push changes
         if: steps.user_permission.outputs.require-result == 'true'

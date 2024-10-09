@@ -111,6 +111,49 @@ protected def prod (r : Setoid α) (s : Setoid β) :
     ⟨fun x => ⟨r.refl' x.1, s.refl' x.2⟩, fun h => ⟨r.symm' h.1, s.symm' h.2⟩,
       fun h₁ h₂ => ⟨r.trans' h₁.1 h₂.1, s.trans' h₁.2 h₂.2⟩⟩
 
+lemma prod_apply {r : Setoid α} {s : Setoid β} {x₁ x₂ : α} {y₁ y₂ : β} :
+    @Setoid.r _ (r.prod s) (x₁, y₁) (x₂, y₂) ↔ (@Setoid.r _ r x₁ x₂ ∧ @Setoid.r _ s y₁ y₂) :=
+  Iff.rfl
+
+lemma piSetoid_apply {ι : Sort*} {α : ι → Sort*} {r : ∀ i, Setoid (α i)} {x y : ∀ i, α i} :
+    @Setoid.r _ (@piSetoid _ _ r) x y ↔ ∀ i, @Setoid.r _ (r i) (x i) (y i) :=
+  Iff.rfl
+
+/-- A bijection between the product of two quotients and the quotient by the product of the
+equivalence relations. -/
+@[simps]
+def prodQuotientEquiv (r : Setoid α) (s : Setoid β) :
+    Quotient r × Quotient s ≃ Quotient (r.prod s) where
+  toFun := fun (x, y) ↦ Quotient.map₂' Prod.mk (fun _ _ hx _ _ hy ↦ ⟨hx, hy⟩) x y
+  invFun := fun q ↦ Quotient.liftOn' q (fun xy ↦ (Quotient.mk'' xy.1, Quotient.mk'' xy.2))
+    fun x y hxy ↦ Prod.ext (by simpa using hxy.1) (by simpa using hxy.2)
+  left_inv := fun q ↦ by
+    rcases q with ⟨qa, qb⟩
+    exact Quotient.inductionOn₂' qa qb fun _ _ ↦ rfl
+  right_inv := fun q ↦ by
+    simp only
+    refine Quotient.inductionOn' q fun _ ↦ rfl
+
+/-- A bijection between an indexed product of quotients and the quotient by the product of the
+equivalence relations. -/
+@[simps]
+noncomputable def piQuotientEquiv {ι : Sort*} {α : ι → Sort*} (r : ∀ i, Setoid (α i)) :
+    (∀ i, Quotient (r i)) ≃ Quotient (@piSetoid _ _ r) where
+  toFun := fun x ↦ Quotient.mk'' fun i ↦ (x i).out'
+  invFun := fun q ↦ Quotient.liftOn' q (fun x i ↦ Quotient.mk'' (x i)) fun x y hxy ↦ by
+    ext i
+    simpa using hxy i
+  left_inv := fun q ↦ by
+    ext i
+    simp
+  right_inv := fun q ↦ by
+    refine Quotient.inductionOn' q fun _ ↦ ?_
+    simp only [Quotient.liftOn'_mk'', Quotient.eq'']
+    intro i
+    change Setoid.r _ _
+    rw [← Quotient.eq'']
+    simp
+
 /-- The infimum of two equivalence relations. -/
 instance : Inf (Setoid α) :=
   ⟨fun r s =>
@@ -191,10 +234,14 @@ def map_sInf {S : Set (Setoid α)} {s : Setoid α} (h : s ∈ S) :
     Quotient (sInf S) → Quotient s :=
   Setoid.map_of_le fun _ _ a ↦ a s h
 
+section EqvGen
+
+open Relation
+
 /-- The inductively defined equivalence closure of a binary relation r is the infimum
     of the set of all equivalence relations containing r. -/
 theorem eqvGen_eq (r : α → α → Prop) :
-    EqvGen.Setoid r = sInf { s : Setoid α | ∀ ⦃x y⦄, r x y → s.Rel x y } :=
+    EqvGen.setoid r = sInf { s : Setoid α | ∀ ⦃x y⦄, r x y → s.Rel x y } :=
   le_antisymm
     (fun _ _ H =>
       EqvGen.rec (fun _ _ h _ hs => hs h) (refl' _) (fun _ _ _ => symm' _)
@@ -204,20 +251,20 @@ theorem eqvGen_eq (r : α → α → Prop) :
 /-- The supremum of two equivalence relations r and s is the equivalence closure of the binary
     relation `x is related to y by r or s`. -/
 theorem sup_eq_eqvGen (r s : Setoid α) :
-    r ⊔ s = EqvGen.Setoid fun x y => r.Rel x y ∨ s.Rel x y := by
+    r ⊔ s = EqvGen.setoid fun x y => r.Rel x y ∨ s.Rel x y := by
   rw [eqvGen_eq]
   apply congr_arg sInf
   simp only [le_def, or_imp, ← forall_and]
 
 /-- The supremum of 2 equivalence relations r and s is the equivalence closure of the
     supremum of the underlying binary operations. -/
-theorem sup_def {r s : Setoid α} : r ⊔ s = EqvGen.Setoid (r.Rel ⊔ s.Rel) := by
+theorem sup_def {r s : Setoid α} : r ⊔ s = EqvGen.setoid (r.Rel ⊔ s.Rel) := by
   rw [sup_eq_eqvGen]; rfl
 
 /-- The supremum of a set S of equivalence relations is the equivalence closure of the binary
     relation `there exists r ∈ S relating x and y`. -/
 theorem sSup_eq_eqvGen (S : Set (Setoid α)) :
-    sSup S = EqvGen.Setoid fun x y => ∃ r : Setoid α, r ∈ S ∧ r.Rel x y := by
+    sSup S = EqvGen.setoid fun x y => ∃ r : Setoid α, r ∈ S ∧ r.Rel x y := by
   rw [eqvGen_eq]
   apply congr_arg sInf
   simp only [upperBounds, le_def, and_imp, exists_imp]
@@ -226,38 +273,40 @@ theorem sSup_eq_eqvGen (S : Set (Setoid α)) :
 
 /-- The supremum of a set of equivalence relations is the equivalence closure of the
     supremum of the set's image under the map to the underlying binary operation. -/
-theorem sSup_def {s : Set (Setoid α)} : sSup s = EqvGen.Setoid (sSup (Rel '' s)) := by
+theorem sSup_def {s : Set (Setoid α)} : sSup s = EqvGen.setoid (sSup (Rel '' s)) := by
   rw [sSup_eq_eqvGen, sSup_image]
   congr with (x y)
   simp only [iSup_apply, iSup_Prop_eq, exists_prop]
 
 /-- The equivalence closure of an equivalence relation r is r. -/
 @[simp]
-theorem eqvGen_of_setoid (r : Setoid α) : EqvGen.Setoid r.r = r :=
+theorem eqvGen_of_setoid (r : Setoid α) : EqvGen.setoid r.r = r :=
   le_antisymm (by rw [eqvGen_eq]; exact sInf_le fun _ _ => id) EqvGen.rel
 
 /-- Equivalence closure is idempotent. -/
 @[simp]
-theorem eqvGen_idem (r : α → α → Prop) : EqvGen.Setoid (EqvGen.Setoid r).Rel = EqvGen.Setoid r :=
+theorem eqvGen_idem (r : α → α → Prop) : EqvGen.setoid (EqvGen.setoid r).Rel = EqvGen.setoid r :=
   eqvGen_of_setoid _
 
 /-- The equivalence closure of a binary relation r is contained in any equivalence
     relation containing r. -/
 theorem eqvGen_le {r : α → α → Prop} {s : Setoid α} (h : ∀ x y, r x y → s.Rel x y) :
-    EqvGen.Setoid r ≤ s := by rw [eqvGen_eq]; exact sInf_le h
+    EqvGen.setoid r ≤ s := by rw [eqvGen_eq]; exact sInf_le h
 
 /-- Equivalence closure of binary relations is monotone. -/
 theorem eqvGen_mono {r s : α → α → Prop} (h : ∀ x y, r x y → s x y) :
-    EqvGen.Setoid r ≤ EqvGen.Setoid s :=
+    EqvGen.setoid r ≤ EqvGen.setoid s :=
   eqvGen_le fun _ _ hr => EqvGen.rel _ _ <| h _ _ hr
 
 /-- There is a Galois insertion of equivalence relations on α into binary relations
     on α, with equivalence closure the lower adjoint. -/
-def gi : @GaloisInsertion (α → α → Prop) (Setoid α) _ _ EqvGen.Setoid Rel where
-  choice r _ := EqvGen.Setoid r
+def gi : @GaloisInsertion (α → α → Prop) (Setoid α) _ _ EqvGen.setoid Rel where
+  choice r _ := EqvGen.setoid r
   gc _ s := ⟨fun H _ _ h => H <| EqvGen.rel _ _ h, fun H => eqvGen_of_setoid s ▸ eqvGen_mono H⟩
   le_l_u x := (eqvGen_of_setoid x).symm ▸ le_refl x
   choice_eq _ _ := rfl
+
+end EqvGen
 
 open Function
 
@@ -334,7 +383,7 @@ variable {r f}
     closure of the relation on `f`'s image defined by '`x ≈ y` iff the elements of `f⁻¹(x)` are
     related to the elements of `f⁻¹(y)` by `r`.' -/
 def map (r : Setoid α) (f : α → β) : Setoid β :=
-  EqvGen.Setoid fun x y => ∃ a b, f a = x ∧ f b = y ∧ r.Rel a b
+  Relation.EqvGen.setoid fun x y => ∃ a b, f a = x ∧ f b = y ∧ r.Rel a b
 
 /-- Given a surjective function f whose kernel is contained in an equivalence relation r, the
     equivalence relation on f's codomain defined by x ≈ y ↔ the elements of f⁻¹(x) are related to
@@ -413,7 +462,7 @@ def sigmaQuotientEquivOfLe {r s : Setoid α} (hle : r ≤ s) :
     (Σ q : Quotient s, Quotient (r.comap (Subtype.val : Quotient.mk s ⁻¹' {q} → α))) ≃
       Quotient r :=
   .trans (.symm <| .sigmaCongrRight fun _ ↦ .subtypeQuotientEquivQuotientSubtype
-      (s₁ := r) (s₂ := r.comap Subtype.val) _ (fun _ ↦ Iff.rfl) fun _ _ ↦ Iff.rfl)
+      (s₁ := r) (s₂ := r.comap Subtype.val) _ _ (fun _ ↦ Iff.rfl) fun _ _ ↦ Iff.rfl)
     (.sigmaFiberEquiv fun a ↦ a.lift (Quotient.mk s) fun _ _ h ↦ Quotient.sound <| hle h)
 
 end Setoid
@@ -427,7 +476,8 @@ theorem Quotient.subsingleton_iff {s : Setoid α} : Subsingleton (Quotient s) �
   simp_rw [Prop.top_eq_true, true_implies, Quotient.eq']
   rfl
 
-theorem Quot.subsingleton_iff (r : α → α → Prop) : Subsingleton (Quot r) ↔ EqvGen r = ⊤ := by
+theorem Quot.subsingleton_iff (r : α → α → Prop) :
+    Subsingleton (Quot r) ↔ Relation.EqvGen r = ⊤ := by
   simp only [_root_.subsingleton_iff, _root_.eq_top_iff, Pi.le_def, Pi.top_apply, forall_const]
   refine (surjective_quot_mk _).forall.trans (forall_congr' fun a => ?_)
   refine (surjective_quot_mk _).forall.trans (forall_congr' fun b => ?_)

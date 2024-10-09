@@ -85,7 +85,7 @@ variable (𝕜) (E) (F)
 
 unseal ContinuousLinearMapWOT in
 /-- The linear equivalence that sends a continuous linear map to the type copy endowed with the
-weak operator topology.  -/
+weak operator topology. -/
 def _root_.ContinuousLinearMap.toWOT : (E →L[𝕜] F) ≃ₗ[𝕜] (E →WOT[𝕜] F) := LinearEquiv.refl 𝕜 _
 
 variable {𝕜} {E} {F}
@@ -211,7 +211,7 @@ end Topology
 section Seminorms
 
 /-- The family of seminorms that induce the weak operator topology, namely `‖y (A x)‖` for
-all `x` and `y`.  -/
+all `x` and `y`. -/
 def seminorm (x : E) (y : F⋆) : Seminorm 𝕜 (E →WOT[𝕜] F) where
   toFun A := ‖y (A x)‖
   map_zero' := by simp
@@ -221,7 +221,7 @@ def seminorm (x : E) (y : F⋆) : Seminorm 𝕜 (E →WOT[𝕜] F) where
 
 variable (𝕜) (E) (F) in
 /-- The family of seminorms that induce the weak operator topology, namely `‖y (A x)‖` for
-all `x` and `y`.  -/
+all `x` and `y`. -/
 def seminormFamily : SeminormFamily 𝕜 (E →WOT[𝕜] F) (E × F⋆) :=
   fun ⟨x, y⟩ => seminorm x y
 

@@ -111,7 +111,7 @@ def prodOf {α : Type u} {β : Type v} (x : Gen α) (y : Gen β) : Gen (α × β
 
 end Gen
 
-/-- Execute a `Gen` inside the `IO` monad using `size` as the example size-/
+/-- Execute a `Gen` inside the `IO` monad using `size` as the example size -/
 def Gen.run {α : Type} (x : Gen α) (size : Nat) : BaseIO α :=
   letI : MonadLift Id BaseIO := ⟨fun f => pure <| Id.run f⟩
   IO.runRand (ReaderT.run x ⟨size⟩:)
