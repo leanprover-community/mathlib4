@@ -72,8 +72,8 @@ instance quotient [QuotientAction β H] : MulAction β (α ⧸ H) where
   smul b :=
     Quotient.map' (b • ·) fun _ _ h =>
       leftRel_apply.mpr <| QuotientAction.inv_mul_mem b <| leftRel_apply.mp h
-  one_smul q := Quotient.inductionOn' q fun a => congr_arg Quotient.mk'' (one_smul β a)
-  mul_smul b b' q := Quotient.inductionOn' q fun a => congr_arg Quotient.mk'' (mul_smul b b' a)
+  one_smul q := Quotient.inductionOn q fun a => congr_arg Quotient.mk'' (one_smul β a)
+  mul_smul b b' q := Quotient.inductionOn q fun a => congr_arg Quotient.mk'' (mul_smul b b' a)
 
 variable {β}
 
@@ -135,17 +135,17 @@ theorem ofQuotientStabilizer_mk (g : α) : ofQuotientStabilizer α x (QuotientGr
 
 @[to_additive]
 theorem ofQuotientStabilizer_mem_orbit (g) : ofQuotientStabilizer α x g ∈ orbit α x :=
-  Quotient.inductionOn' g fun g => ⟨g, rfl⟩
+  Quotient.inductionOn g fun g => ⟨g, rfl⟩
 
 @[to_additive]
 theorem ofQuotientStabilizer_smul (g : α) (g' : α ⧸ MulAction.stabilizer α x) :
     ofQuotientStabilizer α x (g • g') = g • ofQuotientStabilizer α x g' :=
-  Quotient.inductionOn' g' fun _ => mul_smul _ _ _
+  Quotient.inductionOn g' fun _ => mul_smul _ _ _
 
 @[to_additive]
 theorem injective_ofQuotientStabilizer : Function.Injective (ofQuotientStabilizer α x) :=
   fun y₁ y₂ =>
-  Quotient.inductionOn₂' y₁ y₂ fun g₁ g₂ (H : g₁ • x = g₂ • x) =>
+  Quotient.inductionOn₂ y₁ y₂ fun g₁ g₂ (H : g₁ • x = g₂ • x) =>
     Quotient.sound' <| by
       rw [leftRel_apply]
       show (g₁⁻¹ * g₂) • x = x
@@ -316,13 +316,13 @@ orbit, and a corresponding quotient expressed in terms of `Setoid.comap Subtype.
 noncomputable def equivSubgroupOrbitsSetoidComap (H : Subgroup α) (ω : Ω) :
     orbitRel.Quotient H (orbitRel.Quotient.orbit ω) ≃
       Quotient ((orbitRel H β).comap (Subtype.val : Quotient.mk (orbitRel α β) ⁻¹' {ω} → β)) where
-  toFun := fun q ↦ q.liftOn' (fun x ↦ ⟦⟨↑x, by
+  toFun := fun q ↦ q.liftOn (fun x ↦ ⟦⟨↑x, by
     simp only [Set.mem_preimage, Set.mem_singleton_iff]
     have hx := x.property
-    rwa [orbitRel.Quotient.mem_orbit, @Quotient.mk''_eq_mk] at hx⟩⟧) fun a b h ↦ by
-      simp only [← Quotient.eq'', Quotient.mk''_eq_mk,
+    rwa [orbitRel.Quotient.mem_orbit] at hx⟩⟧) fun a b h ↦ by
+      simp only [· ≈ ·, ← Quotient.eq,
                  orbitRel.Quotient.subgroup_quotient_eq_iff] at h
-      simp only [← Quotient.mk''_eq_mk, Quotient.eq''] at h ⊢
+      simp only [Quotient.eq] at h ⊢
       exact h
   invFun := fun q ↦ q.liftOn' (fun x ↦ ⟦⟨↑x, by
     have hx := x.property
@@ -335,12 +335,12 @@ noncomputable def equivSubgroupOrbitsSetoidComap (H : Subgroup α) (ω : Ω) :
   left_inv := by
     simp only [LeftInverse]
     intro q
-    induction q using Quotient.inductionOn'
+    induction q using Quotient.inductionOn
     rfl
   right_inv := by
     simp only [Function.RightInverse, LeftInverse]
     intro q
-    induction q using Quotient.inductionOn'
+    induction q using Quotient.inductionOn
     rfl
 
 variable (β)

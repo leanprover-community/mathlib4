@@ -81,7 +81,7 @@ attribute [local instance] QuotientGroup.leftRel
 instance commGroup : CommGroup (Abelianization G) :=
   { QuotientGroup.Quotient.group _ with
     mul_comm := fun x y =>
-      Quotient.inductionOn₂' x y fun a b =>
+      Quotient.inductionOn₂ x y fun a b =>
         Quotient.sound' <|
           QuotientGroup.leftRel_apply.mpr <|
             Subgroup.subset_closure

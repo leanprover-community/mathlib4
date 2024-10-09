@@ -92,7 +92,7 @@ def mk : R[X] →+* AdjoinRoot f :=
 @[elab_as_elim]
 theorem induction_on {C : AdjoinRoot f → Prop} (x : AdjoinRoot f) (ih : ∀ p : R[X], C (mk f p)) :
     C x :=
-  Quotient.inductionOn' x ih
+  Quotient.inductionOn x ih
 
 /-- Embedding of the original ring `R` into `AdjoinRoot f`. -/
 def of : R →+* AdjoinRoot f :=

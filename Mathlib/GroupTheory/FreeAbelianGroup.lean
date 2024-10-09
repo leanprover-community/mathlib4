@@ -146,7 +146,7 @@ attribute [local instance] QuotientGroup.leftRel
 protected theorem induction_on {C : FreeAbelianGroup α → Prop} (z : FreeAbelianGroup α) (C0 : C 0)
     (C1 : ∀ x, C <| of x) (Cn : ∀ x, C (of x) → C (-of x)) (Cp : ∀ x y, C x → C y → C (x + y)) :
     C z :=
-  Quotient.inductionOn' z fun x ↦
+  Quotient.inductionOn z fun x ↦
     Quot.inductionOn x fun L ↦
       List.recOn L C0 fun ⟨x, b⟩ _ ih ↦ Bool.recOn b (Cp _ _ (Cn _ (C1 x)) ih) (Cp _ _ (C1 x) ih)
 
