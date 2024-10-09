@@ -87,7 +87,7 @@ def mkBasepointIff (V x₀ : Expr) (e : Q(Prop)) : MetaM (Σ e' : Q(Prop), Q($e 
   let some v := v₀.dec | unreachable!
   have P : Q(Type v) := P
   let iVP ← synthInstanceQ q(AddTorsor.{u, v} $V $P)
-  /- Parse the third provided expression as a term of type `P`. -/
+  /- Parse the second provided expression as a term of type `P`. -/
   have x₀ : Q($P) := x₀
   /- Parse the goal as an equality in `P` of two expressions `lhs` and `rhs`. -/
   let some (ty, lhs, rhs) := e.eq? |
