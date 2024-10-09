@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.Topology.Algebra.Module.Basic
-import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
 # Algebraic operations on `SeparationQuotient`

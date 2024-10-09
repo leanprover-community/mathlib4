@@ -5,8 +5,6 @@ Authors: Yoh Tanimoto
 -/
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.Normed.Group.Hom
-import Mathlib.Topology.Algebra.SeparationQuotient
-import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 -- TODO modify doc, check if instances are really needed, golf
 -- IsQuotient should be here?
