@@ -704,7 +704,7 @@ theorem exists_subset_range_iff {f : α → β} {p : Set β → Prop} :
 @[simp]
 theorem forall_subset_range_iff {f : α → β} {p : Set β → Prop} :
     (∀ s, s ⊆ range f → p s) ↔ ∀ s, p (f '' s) := by
-  rw [← forall_mem_range, range_image]; rfl
+  rw [← forall_mem_range, range_image]; simp only [mem_powerset_iff]
 
 @[simp]
 theorem preimage_subset_preimage_iff {s t : Set α} {f : β → α} (hs : s ⊆ range f) :
