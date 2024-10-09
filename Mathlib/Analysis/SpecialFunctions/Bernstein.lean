@@ -1,12 +1,12 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.RingTheory.Polynomial.Bernstein
-import Mathlib.Topology.ContinuousFunction.Polynomial
-import Mathlib.Topology.ContinuousFunction.Compact
+import Mathlib.Topology.ContinuousMap.Polynomial
+import Mathlib.Topology.ContinuousMap.Compact
 
 /-!
 # Bernstein approximations and Weierstrass' theorem
@@ -101,8 +101,8 @@ local postfix:90 "/ₙ" => z
 theorem probability (n : ℕ) (x : I) : (∑ k : Fin (n + 1), bernstein n k x) = 1 := by
   have := bernsteinPolynomial.sum ℝ n
   apply_fun fun p => Polynomial.aeval (x : ℝ) p at this
-  simp? [AlgHom.map_sum, Finset.sum_range] at this says
-    simp only [Finset.sum_range, map_sum, Polynomial.coe_aeval_eq_eval, map_one] at this
+  simp? [map_sum, Finset.sum_range] at this says
+    simp only [Finset.sum_range, map_sum, Polynomial.coe_aeval_eq_eval, Polynomial.eval_one] at this
   exact this
 
 theorem variance {n : ℕ} (h : 0 < (n : ℝ)) (x : I) :
@@ -115,9 +115,10 @@ theorem variance {n : ℕ} (h : 0 < (n : ℝ)) (x : I) :
   conv_rhs => rw [div_mul_cancel₀ _ h']
   have := bernsteinPolynomial.variance ℝ n
   apply_fun fun p => Polynomial.aeval (x : ℝ) p at this
-  simp? [AlgHom.map_sum, Finset.sum_range, ← Polynomial.natCast_mul] at this says
-    simp only [nsmul_eq_mul, Finset.sum_range, map_sum, map_mul, map_pow, map_sub, map_natCast,
-      Polynomial.aeval_X, Polynomial.coe_aeval_eq_eval, map_one] at this
+  simp? [map_sum, Finset.sum_range, ← Polynomial.natCast_mul] at this says
+    simp only [nsmul_eq_mul, Finset.sum_range, map_sum, Polynomial.coe_aeval_eq_eval,
+      Polynomial.eval_mul, Polynomial.eval_pow, Polynomial.eval_sub, Polynomial.eval_natCast,
+      Polynomial.eval_X, Polynomial.eval_one] at this
   convert this using 1
   · congr 1; funext k
     rw [mul_comm _ (n : ℝ), mul_comm _ (n : ℝ), ← mul_assoc, ← mul_assoc]
@@ -251,9 +252,7 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
       _ = ε / 2 * ∑ k ∈ S, bernstein n k x := by rw [Finset.mul_sum]
       -- In this step we increase the sum over `S` back to a sum over all of `Fin (n+1)`,
       -- so that we can use `bernstein.probability`.
-      _ ≤ ε / 2 * ∑ k : Fin (n + 1), bernstein n k x := by
-        gcongr
-        exact Finset.sum_le_univ_sum_of_nonneg fun k => bernstein_nonneg
+      _ ≤ ε / 2 * ∑ k : Fin (n + 1), bernstein n k x := by gcongr; exact S.subset_univ
       _ = ε / 2 := by rw [bernstein.probability, mul_one]
   · -- We now turn to working on `Sᶜ`: we control the difference term just using `‖f‖`,
     -- and then insert a `δ^(-2) * (x - k/n)^2` factor
@@ -270,9 +269,7 @@ theorem bernsteinApproximation_uniform (f : C(I, ℝ)) :
         exact le_of_mem_S_compl m
       -- Again enlarging the sum from `Sᶜ` to all of `Fin (n+1)`
       _ ≤ 2 * ‖f‖ * ∑ k : Fin (n + 1), δ ^ (-2 : ℤ) * ((x : ℝ) - k/ₙ) ^ 2 * bernstein n k x := by
-        gcongr
-        refine Finset.sum_le_univ_sum_of_nonneg fun k => ?_
-        positivity
+        gcongr; exact Sᶜ.subset_univ
       _ = 2 * ‖f‖ * δ ^ (-2 : ℤ) * ∑ k : Fin (n + 1), ((x : ℝ) - k/ₙ) ^ 2 * bernstein n k x := by
         conv_rhs =>
           rw [mul_assoc, Finset.mul_sum]

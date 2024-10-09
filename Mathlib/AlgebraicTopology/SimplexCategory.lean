@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Scott Morrison, Adam Topaz
+Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
 import Mathlib.Tactic.Linarith
 import Mathlib.CategoryTheory.Skeletal
@@ -173,9 +173,11 @@ without identifying `n` with `[n].len`.
 def mkHom {n m : ℕ} (f : Fin (n + 1) →o Fin (m + 1)) : ([n] : SimplexCategory) ⟶ [m] :=
   SimplexCategory.Hom.mk f
 
+instance (Δ : SimplexCategory) : Subsingleton (Δ ⟶ [0]) where
+  allEq f g := by ext : 3; apply Subsingleton.elim (α := Fin 1)
+
 theorem hom_zero_zero (f : ([0] : SimplexCategory) ⟶ [0]) : f = 𝟙 _ := by
-  ext : 3
-  apply @Subsingleton.elim (Fin 1)
+  apply Subsingleton.elim
 
 end
 
@@ -520,7 +522,7 @@ theorem epi_iff_surjective {n m : SimplexCategory} {f : n ⟶ m} :
   simp only [skeletalFunctor_obj, skeletalFunctor_map,
     NonemptyFinLinOrd.epi_iff_surjective, NonemptyFinLinOrd.coe_of]
 
-/-- A monomorphism in `SimplexCategory` must increase lengths-/
+/-- A monomorphism in `SimplexCategory` must increase lengths -/
 theorem len_le_of_mono {x y : SimplexCategory} {f : x ⟶ y} : Mono f → x.len ≤ y.len := by
   intro hyp_f_mono
   have f_inj : Function.Injective f.toOrderHom.toFun := mono_iff_injective.1 hyp_f_mono
@@ -529,7 +531,7 @@ theorem len_le_of_mono {x y : SimplexCategory} {f : x ⟶ y} : Mono f → x.len 
 theorem le_of_mono {n m : ℕ} {f : ([n] : SimplexCategory) ⟶ [m]} : CategoryTheory.Mono f → n ≤ m :=
   len_le_of_mono
 
-/-- An epimorphism in `SimplexCategory` must decrease lengths-/
+/-- An epimorphism in `SimplexCategory` must decrease lengths -/
 theorem len_le_of_epi {x y : SimplexCategory} {f : x ⟶ y} : Epi f → y.len ≤ x.len := by
   intro hyp_f_epi
   have f_surj : Function.Surjective f.toOrderHom.toFun := epi_iff_surjective.1 hyp_f_epi
@@ -725,7 +727,7 @@ theorem eq_id_of_mono {x : SimplexCategory} (i : x ⟶ x) [Mono i] : i = 𝟙 _ 
   apply isIso_of_bijective
   dsimp
   rw [Fintype.bijective_iff_injective_and_card i.toOrderHom, ← mono_iff_injective,
-    eq_self_iff_true, and_true_iff]
+    eq_self_iff_true, and_true]
   infer_instance
 
 theorem eq_id_of_epi {x : SimplexCategory} (i : x ⟶ x) [Epi i] : i = 𝟙 _ := by
@@ -735,7 +737,7 @@ theorem eq_id_of_epi {x : SimplexCategory} (i : x ⟶ x) [Epi i] : i = 𝟙 _ :=
   apply isIso_of_bijective
   dsimp
   rw [Fintype.bijective_iff_surjective_and_card i.toOrderHom, ← epi_iff_surjective,
-    eq_self_iff_true, and_true_iff]
+    eq_self_iff_true, and_true]
   infer_instance
 
 theorem eq_σ_of_epi {n : ℕ} (θ : mk (n + 1) ⟶ mk n) [Epi θ] : ∃ i : Fin (n + 1), θ = σ i := by

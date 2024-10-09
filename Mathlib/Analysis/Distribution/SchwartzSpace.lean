@@ -380,7 +380,7 @@ end Module
 
 section Seminorms
 
-/-! ### Seminorms on Schwartz space-/
+/-! ### Seminorms on Schwartz space -/
 
 
 variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
@@ -480,7 +480,7 @@ end Seminorms
 
 section Topology
 
-/-! ### The topology on the Schwartz space-/
+/-! ### The topology on the Schwartz space -/
 
 
 variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
@@ -533,7 +533,7 @@ theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f
   choose k C f using hf_temperate.2
   use (Finset.range (n + 1)).sup k
   let C' := max (0 : ℝ) ((Finset.range (n + 1)).sup' (by simp) C)
-  have hC' : 0 ≤ C' := by simp only [C', le_refl, Finset.le_sup'_iff, true_or_iff, le_max_iff]
+  have hC' : 0 ≤ C' := by simp only [C', le_refl, Finset.le_sup'_iff, true_or, le_max_iff]
   use C', hC'
   intro N hN x
   rw [← Finset.mem_range_succ_iff] at hN
@@ -575,11 +575,11 @@ lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
 
 variable [NormedAddCommGroup D] [MeasurableSpace D]
 
-open MeasureTheory FiniteDimensional
+open MeasureTheory Module
 
 /-- A measure `μ` has temperate growth if there is an `n : ℕ` such that `(1 + ‖x‖) ^ (- n)` is
 `μ`-integrable. -/
-class _root_.MeasureTheory.Measure.HasTemperateGrowth (μ : Measure D) : Prop :=
+class _root_.MeasureTheory.Measure.HasTemperateGrowth (μ : Measure D) : Prop where
   exists_integrable : ∃ (n : ℕ), Integrable (fun x ↦ (1 + ‖x‖) ^ (- (n : ℝ))) μ
 
 open Classical in
@@ -616,7 +616,7 @@ lemma pow_mul_le_of_le_of_pow_mul_le {C₁ C₂ : ℝ} {k l : ℕ} {x f : ℝ} (
   rw [this]
   rcases le_total x 1 with h'x|h'x
   · gcongr
-    · apply (pow_le_one k hx h'x).trans
+    · apply (pow_le_one₀ hx h'x).trans
       apply Real.one_le_rpow_of_pos_of_le_one_of_nonpos
       · linarith
       · linarith
@@ -854,7 +854,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
         refine add_le_add ?_ (hg_upper' x)
         nth_rw 1 [← one_mul (1 : ℝ)]
         gcongr
-        apply one_le_pow_of_one_le
+        apply one_le_pow₀
         simp only [le_add_iff_nonneg_right, norm_nonneg]
       have hbound :
         ∀ i, i ≤ n → ‖iteratedFDeriv ℝ i f (g x)‖ ≤ 2 ^ k' * seminorm_f / (1 + ‖g x‖) ^ k' := by
@@ -870,8 +870,8 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
         rw [mul_pow]
         have hN₁' := (lt_of_lt_of_le zero_lt_one hN₁).ne'
         gcongr
-        · exact le_trans (by simp [hC]) (le_self_pow (by simp [hC]) hN₁')
-        · refine le_self_pow (one_le_pow_of_one_le ?_ l) hN₁'
+        · exact le_trans (by simp [hC]) (le_self_pow₀ (by simp [hC]) hN₁')
+        · refine le_self_pow₀ (one_le_pow₀ ?_) hN₁'
           simp only [le_add_iff_nonneg_right, norm_nonneg]
       have := norm_iteratedFDeriv_comp_le f.smooth' hg.1 le_top x hbound hgrowth'
       have hxk : ‖x‖ ^ k ≤ (1 + ‖x‖) ^ k :=
@@ -1036,7 +1036,7 @@ section Integration
 /-! ### Integration -/
 
 
-open Real Complex Filter MeasureTheory MeasureTheory.Measure FiniteDimensional
+open Real Complex Filter MeasureTheory MeasureTheory.Measure Module
 
 variable [RCLike 𝕜]
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
@@ -1182,7 +1182,7 @@ instance instZeroAtInftyContinuousMapClass : ZeroAtInftyContinuousMapClass 𝓢(
     intro ε hε
     use (SchwartzMap.seminorm ℝ 1 0) f / ε
     intro x hx
-    rw [div_lt_iff hε] at hx
+    rw [div_lt_iff₀ hε] at hx
     have hxpos : 0 < ‖x‖ := by
       rw [norm_pos_iff']
       intro hxzero
@@ -1191,7 +1191,7 @@ instance instZeroAtInftyContinuousMapClass : ZeroAtInftyContinuousMapClass 𝓢(
     have := norm_pow_mul_le_seminorm ℝ f 1 x
     rw [pow_one, ← le_div_iff₀' hxpos] at this
     apply lt_of_le_of_lt this
-    rwa [div_lt_iff' hxpos]
+    rwa [div_lt_iff₀' hxpos]
 
 /-- Schwartz functions as continuous functions vanishing at infinity. -/
 def toZeroAtInfty (f : 𝓢(E, F)) : C₀(E, F) where

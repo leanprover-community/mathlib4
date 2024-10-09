@@ -378,6 +378,9 @@ theorem Measurable.aemeasurable (h : Measurable f) : AEMeasurable f μ :=
 
 namespace AEMeasurable
 
+lemma of_discrete [DiscreteMeasurableSpace α] : AEMeasurable f μ :=
+  Measurable.of_discrete.aemeasurable
+
 /-- Given an almost everywhere measurable function `f`, associate to it a measurable function
 that coincides with it almost everywhere. `f` is explicit in the definition to make sure that
 it shows in pretty-printing. -/

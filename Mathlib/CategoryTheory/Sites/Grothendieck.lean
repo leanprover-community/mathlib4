@@ -263,7 +263,13 @@ instance : InfSet (GrothendieckTopology C) where
 /-- See <https://stacks.math.columbia.edu/tag/00Z7> -/
 theorem isGLB_sInf (s : Set (GrothendieckTopology C)) : IsGLB s (sInf s) := by
   refine @IsGLB.of_image _ _ _ _ sieves ?_ _ _ ?_
-  · rfl
+  · #adaptation_note
+    /--
+    This proof used to be `rfl`,
+    but has been temporarily broken by https://github.com/leanprover/lean4/pull/5329.
+    It can hopefully be restored after https://github.com/leanprover/lean4/pull/5359
+    -/
+    exact Iff.rfl
   · exact _root_.isGLB_sInf _
 
 /-- Construct a complete lattice from the `Inf`, but make the trivial and discrete topologies
@@ -487,7 +493,7 @@ def pullbackComp {X Y Z : C} (S : J.Cover X) (f : Z ⟶ Y) (g : Y ⟶ X) :
 /-- Combine a family of covers over a cover. -/
 def bind {X : C} (S : J.Cover X) (T : ∀ I : S.Arrow, J.Cover I.Y) : J.Cover X :=
   ⟨Sieve.bind S fun Y f hf => T ⟨Y, f, hf⟩,
-    J.bind_covering S.condition fun _ _ _ => (T _).condition⟩
+    J.bind_covering S.condition fun _ _ _ => (T { Y := _, f := _, hf := _ }).condition⟩
 
 /-- The canonical morphism from `S.bind T` to `T`. -/
 def bindToBase {X : C} (S : J.Cover X) (T : ∀ I : S.Arrow, J.Cover I.Y) : S.bind T ⟶ S :=

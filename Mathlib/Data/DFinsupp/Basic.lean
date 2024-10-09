@@ -1300,7 +1300,7 @@ instance distribMulAction₂ [Monoid γ] [∀ i j, AddMonoid (δ i j)]
 
 variable [DecidableEq ι]
 
-/-- The natural map between `Π₀ (i : Σ i, α i), δ i.1 i.2` and `Π₀ i (j : α i), δ i j`.  -/
+/-- The natural map between `Π₀ (i : Σ i, α i), δ i.1 i.2` and `Π₀ i (j : α i), δ i j`. -/
 def sigmaCurry [∀ i j, Zero (δ i j)] (f : Π₀ (i : Σ _, _), δ i.1 i.2) :
     Π₀ (i) (j), δ i j where
   toFun := fun i ↦
@@ -2093,3 +2093,5 @@ instance DFinsupp.infinite_of_right {ι : Sort _} {π : ι → Sort _} [∀ i, I
   DFinsupp.infinite_of_exists_right (Classical.arbitrary ι)
 
 end FiniteInfinite
+
+set_option linter.style.longFile 2200
