@@ -116,15 +116,14 @@ theorem LocalRing.not_mem_maximalIdeal [LocalRing R] (x : R) :
 
 /--
 Let `S` be the localization of a commutative semiring `R` at a submonoid `M` that does not
-contain 0. If the nilradical of `R` is maximal then there is a ring isomorphism between `R` and `S`.
--/
+contain 0. If the nilradical of `R` is maximal then there is a `R`-algebra isomorphism between
+`R` and `S`. -/
 noncomputable def nilradmax_localization_IsSelf (h : (nilradical R).IsMaximal) (h' : (0 : R) ∉ M)
     [IsLocalization M S] : R ≃ₐ[R] S := by
   have : LocalRing R := by
     refine LocalRing.of_unique_max_ideal ⟨nilradical R, h, fun I hI ↦ ?_⟩
     rw [nilradical_eq_sInf] at h ⊢
-    apply (IsMaximal.eq_of_le h (IsMaximal.ne_top hI)
-      (sInf_le (Set.mem_setOf.mpr (IsMaximal.isPrime hI) ))).symm
+    exact (IsMaximal.eq_of_le h hI.ne_top (sInf_le hI.isPrime)).symm
   have : ∀ m ∈ M, IsUnit m := by
     intro m hm
     apply (LocalRing.not_mem_maximalIdeal m).mp
