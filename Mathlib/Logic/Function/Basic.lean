@@ -118,10 +118,15 @@ theorem Injective.of_comp_iff' (f : α → β) {g : γ → α} (hg : Bijective g
     Injective (f ∘ g) ↔ Injective f :=
   ⟨fun I ↦ I.of_comp_right hg.2, fun h ↦ h.comp hg.injective⟩
 
+theorem Injective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i → β i}
+    (hf : ∀ i, Injective (f i)) : Injective (Pi.map f) := fun _ _ h ↦
+  funext fun i ↦ hf i <| congrFun h _
+
+@[deprecated (since := "2024-10-06")] alias injective_pi_map := Injective.piMap
+
 /-- Composition by an injective function on the left is itself injective. -/
-theorem Injective.comp_left {g : β → γ} (hg : Function.Injective g) :
-    Function.Injective (g ∘ · : (α → β) → α → γ) :=
-  fun _ _ hgf ↦ funext fun i ↦ hg <| (congr_fun hgf i : _)
+theorem Injective.comp_left {g : β → γ} (hg : Injective g) : Injective (g ∘ · : (α → β) → α → γ) :=
+  .piMap fun _ ↦ hg
 
 theorem injective_of_subsingleton [Subsingleton α] (f : α → β) : Injective f :=
   fun _ _ _ ↦ Subsingleton.elim _ _
@@ -442,10 +447,22 @@ theorem surjective_to_subsingleton [na : Nonempty α] [Subsingleton β] (f : α 
     Surjective f :=
   fun _ ↦ let ⟨a⟩ := na; ⟨a, Subsingleton.elim _ _⟩
 
+theorem Surjective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i → β i}
+    (hf : ∀ i, Surjective (f i)) : Surjective (Pi.map f) := fun g ↦
+  ⟨fun i ↦ surjInv (hf i) (g i), funext fun _ ↦ rightInverse_surjInv _ _⟩
+
+@[deprecated (since := "2024-10-06")] alias surjective_pi_map := Surjective.piMap
+
 /-- Composition by a surjective function on the left is itself surjective. -/
 theorem Surjective.comp_left {g : β → γ} (hg : Surjective g) :
-    Surjective (g ∘ · : (α → β) → α → γ) := fun f ↦
-  ⟨surjInv hg ∘ f, funext fun _ ↦ rightInverse_surjInv _ _⟩
+    Surjective (g ∘ · : (α → β) → α → γ) :=
+  .piMap fun _ ↦ hg
+
+theorem Bijective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i → β i}
+    (hf : ∀ i, Bijective (f i)) : Bijective (Pi.map f) :=
+  ⟨.piMap fun i ↦ (hf i).1, .piMap fun i ↦ (hf i).2⟩
+
+@[deprecated (since := "2024-10-06")] alias bijective_pi_map := Bijective.piMap
 
 /-- Composition by a bijective function on the left is itself bijective. -/
 theorem Bijective.comp_left {g : β → γ} (hg : Bijective g) :

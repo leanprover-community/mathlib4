@@ -349,10 +349,7 @@ def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
     refine ⟨⟨⟨(h.t i j x.1.1).1, ?_⟩, h.t i j x.1.1⟩, rfl⟩
     rcases x with ⟨⟨⟨x, hx⟩, ⟨x', hx'⟩⟩, rfl : x = x'⟩
     exact h.t_inter _ ⟨x, hx⟩ hx'
-  -- Porting note: was `continuity`, see https://github.com/leanprover-community/mathlib4/issues/5030
-  have : Continuous (h.t i j) := map_continuous (self := ContinuousMap.toContinuousMapClass) _
-  set_option tactic.skipAssignedInstances false in
-  exact ((Continuous.subtype_mk (by fun_prop) _).prod_mk (by fun_prop)).subtype_mk _
+  fun_prop
 
 /-- This is a constructor of `TopCat.GlueData` whose arguments are in terms of elements and
 intersections rather than subobjects and pullbacks. Please refer to `TopCat.GlueData.MkCore` for
