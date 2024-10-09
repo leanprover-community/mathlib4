@@ -26,7 +26,7 @@ variable {F α : Type*} [FunLike F α ℝ]
 `AddGroupSeminormClass` that satifies `IsNonarchimedean`, the group has an `IsUltrametricDist`. -/
 lemma AddGroupSeminormClass.isUltrametricDist [AddGroup α] [AddGroupSeminormClass F α ℝ]
     [inst : Dist α] {f : F} (hna : IsNonarchimedean f)
-    (hd : inst = (AddGroupSeminormClass.toSeminormedAddGroup f).toDist := by rfl):
+    (hd : inst = (AddGroupSeminormClass.toSeminormedAddGroup f).toDist := by rfl) :
     IsUltrametricDist α :=
   ⟨fun x y z ↦ by
     subst hd
@@ -38,7 +38,7 @@ lemma AddGroupSeminormClass.isUltrametricDist [AddGroup α] [AddGroupSeminormCla
 `AddGroupSeminormClass` that satifies `IsNonarchimedean`, the group has an `IsUltrametricDist`. -/
 lemma AddGroupSeminormClass.isUltrametricDist' [AddCommGroup α] [AddGroupSeminormClass F α ℝ]
     [inst : Dist α] {f : F} (hna : IsNonarchimedean f)
-    (hd : inst = (AddGroupSeminormClass.toSeminormedAddCommGroup f).toDist := by rfl):
+    (hd : inst = (AddGroupSeminormClass.toSeminormedAddCommGroup f).toDist := by rfl) :
     IsUltrametricDist α :=
   AddGroupSeminormClass.isUltrametricDist hna hd
 
@@ -46,7 +46,7 @@ lemma AddGroupSeminormClass.isUltrametricDist' [AddCommGroup α] [AddGroupSemino
 `AddGroupNormClass` that satifies `IsNonarchimedean`, the group has an `IsUltrametricDist`. -/
 lemma AddGroupNormClass.isUltrametricDist [AddGroup α] [AddGroupNormClass F α ℝ]
     [inst : Dist α] {f : F} (hna : IsNonarchimedean f)
-    (hd : inst = (AddGroupNormClass.toNormedAddGroup f).toDist := by rfl):
+    (hd : inst = (AddGroupNormClass.toNormedAddGroup f).toDist := by rfl) :
     IsUltrametricDist α :=
   ⟨fun x y z ↦ by
     subst hd
@@ -58,6 +58,6 @@ lemma AddGroupNormClass.isUltrametricDist [AddGroup α] [AddGroupNormClass F α 
 `AddGroupNormClass` that satifies `IsNonarchimedean`, the group has an `IsUltrametricDist`. -/
 lemma AddGroupNormClass.isUltrametricDist' [AddCommGroup α] [AddGroupNormClass F α ℝ]
     [inst : Dist α] {f : F} (hna : IsNonarchimedean f)
-    (hd : inst = (AddGroupNormClass.toNormedAddCommGroup f).toDist := by rfl):
+    (hd : inst = (AddGroupNormClass.toNormedAddCommGroup f).toDist := by rfl) :
     IsUltrametricDist α :=
   AddGroupNormClass.isUltrametricDist hna hd
