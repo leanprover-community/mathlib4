@@ -321,18 +321,19 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
       f n ≤ (n₀ * (logb n₀ n + 1)) ^ (k : ℝ)⁻¹ * k ^ (k : ℝ)⁻¹ := by
     have : 0 ≤ logb n₀ n := logb_nonneg (one_lt_cast.2 hn₀) (mod_cast Nat.one_le_of_lt h₀.bot_lt)
     calc
-    f n = (f n ^ (k : ℝ)) ^ (k : ℝ)⁻¹ := by rw [rpow_rpow_inv (by positivity) (by positivity)]
-    _   ≤ (n₀ * (logb n₀ (n ^ k) + 1)) ^ (k : ℝ)⁻¹ := by
+    f n = (f ↑(n ^ k)) ^ (k : ℝ)⁻¹ := by
+      rw [Nat.cast_pow, map_pow, ← rpow_natCast, rpow_rpow_inv (by positivity) (by positivity)]
+    _   ≤ (n₀ * (logb n₀ ↑(n ^ k) + 1)) ^ (k : ℝ)⁻¹ := by
       gcongr
-      rw [rpow_natCast, ← map_pow, ← Nat.cast_pow, ← Nat.cast_pow]
       exact (h_ineq1 (one_le_pow k n h₀.bot_lt))
-    _   ≤ (n₀ * (logb n₀ n + 1) * k) ^ (k : ℝ)⁻¹ := by
-      rw [logb_pow (mod_cast h₀.bot_lt), mul_assoc, mul_comm _ (k : ℝ),
-      mul_add (k : ℝ), mul_one]
+    _   = (n₀ * (k * logb n₀ n + 1)) ^ (k : ℝ)⁻¹ := by
+      rw [Nat.cast_pow, logb_pow (mod_cast h₀.bot_lt)]
+    _   ≤ (n₀ * ( k * logb n₀ n + k)) ^ (k : ℝ)⁻¹ := by
       gcongr
       exact one_le_cast.mpr hk
-    _ = (n₀ * (logb n₀ n + 1)) ^ (k : ℝ)⁻¹ * k ^ (k : ℝ)⁻¹ :=
-      mul_rpow (by positivity) (by positivity)
+    _ = (n₀ * (logb n₀ n + 1)) ^ (k : ℝ)⁻¹ * k ^ (k : ℝ)⁻¹ := by
+      rw [← mul_rpow (by positivity) (by positivity), mul_assoc, add_mul, one_mul,
+      mul_comm _ (k : ℝ)]
 -- For 0 < logb n₀ n below we also need to exclude n = 1.
   rcases eq_or_ne n 1 with rfl | h₁; simp only [Nat.cast_one, map_one, le_refl]
   refine le_of_tendsto_of_tendsto tendsto_const_nhds ?_ (eventually_atTop.2 ⟨1, h_ineq2⟩)
