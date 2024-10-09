@@ -79,7 +79,7 @@ theorem spanEval_ne_top : spanEval k ≠ ⊤ := by
   rw [map_one, Finsupp.linearCombination_apply, Finsupp.sum, map_sum, Finset.sum_eq_zero] at hv
   · exact zero_ne_one hv
   intro j hj
-  rw [smul_eq_mul, map_mul, toSplittingField_evalXSelf (s := v.support) hj,
+  rw [smul_eq_mul, map_mul, toSplittingField_evalXSelf _ (s := v.support) hj,
     mul_zero]
 
 /-- A random maximal ideal that contains `spanEval k` -/

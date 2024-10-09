@@ -196,7 +196,7 @@ theorem strictAntiOn_Iic_of_succ_lt [SuccOrder α] [IsSuccArchimedean α] {n : �
     (hψ : ∀ m, m < n → ψ (succ m) < ψ m) : StrictAntiOn ψ (Set.Iic n) := fun i hi j hj hij =>
   @strictMonoOn_Iic_of_lt_succ α βᵒᵈ _ _ ψ _ _ n hψ i hi j hj hij
 
-theorem strictAnti_of_pred_lt [SuccOrder α] [IsSuccArchimedean α]
+theorem strictAnti_of_succ_lt [SuccOrder α] [IsSuccArchimedean α]
     (hψ : ∀ m, ψ (succ m) < ψ m) : StrictAnti ψ := fun _ _ h ↦
   (strictAntiOn_Iic_of_succ_lt fun m _ ↦ hψ m) h.le le_rfl h
 
@@ -204,9 +204,17 @@ theorem strictMonoOn_Ici_of_pred_lt [PredOrder α] [IsPredArchimedean α] {n : �
     (hψ : ∀ m, n < m → ψ (pred m) < ψ m) : StrictMonoOn ψ (Set.Ici n) := fun i hi j hj hij =>
   @strictMonoOn_Iic_of_lt_succ αᵒᵈ βᵒᵈ _ _ ψ _ _ n hψ j hj i hi hij
 
+theorem strictMono_of_pred_lt [PredOrder α] [IsPredArchimedean α]
+    (hψ : ∀ m, ψ (pred m) < ψ m) : StrictMono ψ := fun _ _ h ↦
+  (strictMonoOn_Ici_of_pred_lt fun m _ ↦ hψ m) le_rfl h.le h
+
 theorem strictAntiOn_Ici_of_lt_pred [PredOrder α] [IsPredArchimedean α] {n : α}
     (hψ : ∀ m, n < m → ψ m < ψ (pred m)) : StrictAntiOn ψ (Set.Ici n) := fun i hi j hj hij =>
   @strictAntiOn_Iic_of_succ_lt αᵒᵈ βᵒᵈ _ _ ψ _ _ n hψ j hj i hi hij
+
+theorem strictAnti_of_lt_pred [PredOrder α] [IsPredArchimedean α]
+    (hψ : ∀ m, ψ m < ψ (pred m)) : StrictAnti ψ := fun _ _ h ↦
+  (strictAntiOn_Ici_of_lt_pred fun m _ ↦ hψ m) le_rfl h.le h
 
 end SuccOrder
 

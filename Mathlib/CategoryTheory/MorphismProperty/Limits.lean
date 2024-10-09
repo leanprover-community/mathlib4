@@ -190,7 +190,7 @@ abbrev IsStableUnderProductsOfShape (J : Type*) := W.IsStableUnderLimitsOfShape 
 lemma IsStableUnderProductsOfShape.mk (J : Type*)
     [W.RespectsIso] [HasProductsOfShape J C]
     (hW : ∀ (X₁ X₂ : J → C) (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
-      W (Pi.map f)) : W.IsStableUnderProductsOfShape J := by
+      W (Limits.Pi.map f)) : W.IsStableUnderProductsOfShape J := by
   intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf
   let φ := fun j => f.app (Discrete.mk j)
   have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
@@ -225,7 +225,7 @@ theorem diagonal_iff {X Y : C} {f : X ⟶ Y} : P.diagonal f ↔ P (pullback.diag
   Iff.rfl
 
 instance RespectsIso.diagonal [P.RespectsIso] : P.diagonal.RespectsIso := by
-  constructor
+  apply RespectsIso.mk
   · introv H
     rwa [diagonal_iff, pullback.diagonal_comp, P.cancel_left_of_respectsIso,
       P.cancel_left_of_respectsIso, ← P.cancel_right_of_respectsIso _
@@ -260,7 +260,7 @@ def universally (P : MorphismProperty C) : MorphismProperty C := fun X Y f =>
   ∀ ⦃X' Y' : C⦄ (i₁ : X' ⟶ X) (i₂ : Y' ⟶ Y) (f' : X' ⟶ Y') (_ : IsPullback f' i₁ i₂ f), P f'
 
 instance universally_respectsIso (P : MorphismProperty C) : P.universally.RespectsIso := by
-  constructor
+  apply RespectsIso.mk
   · intro X Y Z e f hf X' Z' i₁ i₂ f' H
     have : IsPullback (𝟙 _) (i₁ ≫ e.hom) i₁ e.inv :=
       IsPullback.of_horiz_isIso

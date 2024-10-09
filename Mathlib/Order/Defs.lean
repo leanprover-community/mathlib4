@@ -108,6 +108,7 @@ section
 
 variable {α : Sort*} {r : α → α → Prop} {a b c : α}
 
+/-- Local notation for an arbitrary binary relation `r`. -/
 local infixl:50 " ≺ " => r
 
 lemma irrefl [IsIrrefl α r] (a : α) : ¬a ≺ a := IsIrrefl.irrefl a
@@ -137,6 +138,49 @@ lemma total_of [IsTotal α r] (a b : α) : a ≺ b ∨ b ≺ a := IsTotal.total 
 
 @[elab_without_expected_type]
 lemma trichotomous_of [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a := trichotomous
+
+section
+
+/-- `IsRefl` as a definition, suitable for use in proofs. -/
+def Reflexive := ∀ x, x ≺ x
+
+/-- `IsSymm` as a definition, suitable for use in proofs. -/
+def Symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x
+
+/-- `IsTrans` as a definition, suitable for use in proofs. -/
+def Transitive := ∀ ⦃x y z⦄, x ≺ y → y ≺ z → x ≺ z
+
+/-- `IsIrrefl` as a definition, suitable for use in proofs. -/
+def Irreflexive := ∀ x, ¬x ≺ x
+
+/-- `IsAntisymm` as a definition, suitable for use in proofs. -/
+def AntiSymmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x → x = y
+
+/-- `IsTotal` as a definition, suitable for use in proofs. -/
+def Total := ∀ x y, x ≺ y ∨ y ≺ x
+
+@[deprecated Equivalence.refl (since := "2024-09-13")]
+theorem Equivalence.reflexive (h : Equivalence r) : Reflexive r := h.refl
+
+@[deprecated Equivalence.symm (since := "2024-09-13")]
+theorem Equivalence.symmetric (h : Equivalence r) : Symmetric r :=
+  fun _ _ ↦ h.symm
+
+@[deprecated Equivalence.trans (since := "2024-09-13")]
+theorem Equivalence.transitive (h : Equivalence r) : Transitive r :=
+  fun _ _ _ ↦ h.trans
+
+variable {β : Sort*} (r : β → β → Prop) (f : α → β)
+
+@[deprecated (since := "2024-09-13")]
+theorem InvImage.trans (h : Transitive r) : Transitive (InvImage r f) :=
+  fun (a₁ a₂ a₃ : α) (h₁ : InvImage r f a₁ a₂) (h₂ : InvImage r f a₂ a₃) ↦ h h₁ h₂
+
+@[deprecated (since := "2024-09-13")]
+theorem InvImage.irreflexive (h : Irreflexive r) : Irreflexive (InvImage r f) :=
+  fun (a : α) (h₁ : InvImage r f a a) ↦ h (f a) h₁
+
+end
 
 end
 
@@ -457,10 +501,13 @@ lemma min_comm (a b : α) : min a b = min b a :=
 
 lemma min_assoc (a b c : α) : min (min a b) c = min a (min b c) := by
   apply eq_min
-  · apply le_trans; apply min_le_left; apply min_le_left
-  · apply le_min; apply le_trans; apply min_le_left; apply min_le_right; apply min_le_right
-  · intro d h₁ h₂; apply le_min; apply le_min h₁; apply le_trans h₂; apply min_le_left
-    apply le_trans h₂; apply min_le_right
+  · apply le_trans (min_le_left ..); apply min_le_left
+  · apply le_min
+    · apply le_trans (min_le_left ..); apply min_le_right
+    · apply min_le_right
+  · intro d h₁ h₂; apply le_min
+    · apply le_min h₁; apply le_trans h₂; apply min_le_left
+    · apply le_trans h₂; apply min_le_right
 
 lemma min_left_comm (a b c : α) : min a (min b c) = min b (min a c) := by
   rw [← min_assoc, min_comm a, min_assoc]
@@ -481,10 +528,13 @@ lemma max_comm (a b : α) : max a b = max b a :=
 
 lemma max_assoc (a b c : α) : max (max a b) c = max a (max b c) := by
   apply eq_max
-  · apply le_trans; apply le_max_left a b; apply le_max_left
-  · apply max_le; apply le_trans; apply le_max_right a b; apply le_max_left; apply le_max_right
-  · intro d h₁ h₂; apply max_le; apply max_le h₁; apply le_trans (le_max_left _ _) h₂
-    apply le_trans (le_max_right _ _) h₂
+  · apply le_trans (le_max_left a b); apply le_max_left
+  · apply max_le
+    · apply le_trans (le_max_right a b); apply le_max_left
+    · apply le_max_right
+  · intro d h₁ h₂; apply max_le
+    · apply max_le h₁; apply le_trans (le_max_left _ _) h₂
+    · apply le_trans (le_max_right _ _) h₂
 
 lemma max_left_comm (a b c : α) : max a (max b c) = max b (max a c) := by
   rw [← max_assoc, max_comm a, max_assoc]
@@ -508,7 +558,6 @@ lemma max_lt (h₁ : a < c) (h₂ : b < c) : max a b < c := by
   cases le_total a b <;> simp [max_eq_left, max_eq_right, *]
 
 section Ord
-variable {o : Ordering}
 
 lemma compare_lt_iff_lt : compare a b = .lt ↔ a < b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
@@ -546,7 +595,17 @@ lemma compare_iff (a b : α) {o : Ordering} : compare a b = o ↔ o.Compares a b
   · exact compare_eq_iff_eq
   · exact compare_gt_iff_gt
 
-instance : Batteries.TransCmp (compare (α := α)) where
+theorem cmp_eq_compare (a b : α) : cmp a b = compare a b := by
+  refine ((compare_iff ..).2 ?_).symm
+  unfold cmp cmpUsing; split_ifs with h1 h2
+  · exact h1
+  · exact h2
+  · exact le_antisymm (not_lt.1 h2) (not_lt.1 h1)
+
+theorem cmp_eq_compareOfLessAndEq (a b : α) : cmp a b = compareOfLessAndEq a b :=
+  (cmp_eq_compare ..).trans (LinearOrder.compare_eq_compareOfLessAndEq ..)
+
+instance : Batteries.LawfulCmp (compare (α := α)) where
   symm a b := by
     cases h : compare a b <;>
     simp only [Ordering.swap] <;> symm
@@ -555,6 +614,9 @@ instance : Batteries.TransCmp (compare (α := α)) where
     · exact compare_lt_iff_lt.2 <| compare_gt_iff_gt.1 h
   le_trans := fun h₁ h₂ ↦
     compare_le_iff_le.2 <| le_trans (compare_le_iff_le.1 h₁) (compare_le_iff_le.1 h₂)
+  cmp_iff_beq := by simp [compare_eq_iff_eq]
+  cmp_iff_lt := by simp [compare_lt_iff_lt]
+  cmp_iff_le := by simp [compare_le_iff_le]
 
 end Ord
 
