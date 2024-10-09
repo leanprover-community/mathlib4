@@ -16,6 +16,9 @@ import Mathlib.Topology.UniformSpace.Cauchy
 /-!
 # Laurent Series
 
+In this file we define `LaurentSeries R`, the formal Laurent series over `R` here an *arbitrary*
+type with a zero. It is denoted `R⸨X⸩`.
+
 ## Main Definitions
 
 * Defines `LaurentSeries` as an abbreviation for `HahnSeries ℤ`.
@@ -60,7 +63,10 @@ open HahnSeries Polynomial
 
 noncomputable section
 
-/-- A `LaurentSeries` is implemented as a `HahnSeries` with value group `ℤ`. -/
+/-- `LaurentSeries R` is the type of formal Laurent series with coefficients in R, denoted `R⸨X⸩`.
+
+  It is implemented as a `HahnSeries` with value group `ℤ`.
+-/
 abbrev LaurentSeries (R : Type u) [Zero R] :=
   HahnSeries ℤ R
 
