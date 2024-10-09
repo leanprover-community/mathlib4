@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 
+import Batteries.Data.String.Matcher
 import Lean.Elab.Command
 
 /-!
@@ -12,7 +13,7 @@ import Lean.Elab.Command
 This file contains (currently one, eventually more) linters about stylistic aspects:
 these are only about coding style, but do not affect correctness nor global coherence of mathlib.
 
-Historically, these were ported from the `lint-style.py` Python script.
+Historically, some of these were ported from the `lint-style.py` Python script.
 -/
 
 open Lean Elab Command
@@ -67,5 +68,52 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
 initialize addLinter setOptionLinter
 
 end Style.setOption
+
+/-- The `check_declID` linter: if it emits a warning, then a declID is considered
+non-standard style.  -/
+register_option linter.style.check_declID : Bool := {
+  defValue := false
+  descr := "enable the `setOption` linter"
+}
+
+
+namespace Style.doubleUnderscore
+
+/-- Checks whether a given identifier name contains "__". -/
+def contains_double_underscore (stx : Syntax) : Bool :=
+  (stx.getSubstring?.get!).containsSubstr "__"
+
+/-- `getNames stx` returns all `declId`s in the input syntax `stx`. -/
+partial
+def getNames : Syntax → Array Syntax
+  | stx@(.node _ kind args) =>
+    let rargs := (args.map getNames).flatten
+    if kind == ``Lean.Parser.Command.declId then rargs.push stx else rargs
+  | _ => default
+
+/-- The `checkDeclID` linter: it this linter emits a warning, then a declID is considered
+non-standard style. Currently we only check if it contains a double underscore ("__") as a substring.
+**Why is this bad?** Double underscores in theorem names can be considered non-standard style and
+probably have been introduced by accident
+**How to fix this?** Use single underscores to separate parts of a name, following standard naming
+conventions.
+-/
+def checkDeclIDLinter: Linter where
+  run := withSetOptionIn fun _stx => do
+    unless Linter.getLinterValue linter.style.check_declID (← getOptions) do
+      return
+    if (← MonadState.get).messages.hasErrors then
+      return
+    for stx in (getNames _stx) do
+      if (contains_double_underscore stx) then
+        Linter.logLint linter.style.check_declID stx
+          m!"The declID {stx} contains '__', which does not follow naming conventions. \
+              Consider using single underscores instead."
+      else
+        continue
+
+initialize addLinter checkDeclIDLinter
+
+end Style.doubleUnderscore
 
 end Mathlib.Linter
