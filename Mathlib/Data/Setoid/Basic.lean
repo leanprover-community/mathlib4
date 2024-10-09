@@ -292,7 +292,6 @@ theorem eqvGen_of_setoid (r : Setoid α) : EqvGen.setoid r.r = r :=
   le_antisymm (by rw [eqvGen_eq]; exact sInf_le fun _ _ => id) EqvGen.rel
 
 /-- Equivalence closure is idempotent. -/
-@[simp]
 theorem eqvGen_idem (r : α → α → Prop) : EqvGen.setoid (EqvGen.setoid r) = EqvGen.setoid r :=
   eqvGen_of_setoid _
 
