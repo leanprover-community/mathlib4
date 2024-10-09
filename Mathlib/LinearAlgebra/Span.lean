@@ -456,10 +456,10 @@ noncomputable def equivSpan : R ≃ₗ[R] (R ∙ x) where
     (mem_span_singleton.1 (mem_span_singleton.2 ⟨t, rfl⟩)).choose_spec
   right_inv y := Subtype.val_inj.1 (mem_span_singleton.1 y.2).choose_spec
 
-theorem equivSpan_smul {y : M} (hy : y ∈ R ∙ x) : ((equivSpan R hx).symm ⟨y, hy⟩) • x = y :=
+theorem equivSpan_symm_smul {y : M} (hy : y ∈ R ∙ x) : ((equivSpan R hx).symm ⟨y, hy⟩) • x = y :=
   congrArg Subtype.val <| (equivSpan R hx).right_inv _
 
-theorem equivSpan_self :
+theorem equivSpan_symm_self :
     (equivSpan R hx).symm ⟨x, mem_span_singleton_self x⟩ = 1 :=
   one_smul R (⟨x, _⟩ : R ∙ x) ▸ (equivSpan R hx).left_inv 1
 
