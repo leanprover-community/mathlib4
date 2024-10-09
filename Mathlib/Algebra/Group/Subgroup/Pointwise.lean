@@ -30,7 +30,7 @@ open Set
 
 open Pointwise
 
-variable {α G A S : Type*}
+variable {α G H A S : Type*}
 
 @[to_additive (attr := simp, norm_cast)]
 theorem inv_coe_set [InvolutiveInv G] [SetLike S G] [InvMemClass S G] {H : S} : (H : Set G)⁻¹ = H :=
@@ -58,7 +58,8 @@ lemma coe_mul_coe [SetLike S G] [DivInvMonoid G] [SubgroupClass S G] (H : S) :
 lemma coe_div_coe [SetLike S G] [DivisionMonoid G] [SubgroupClass S G] (H : S) :
     H / H = (H : Set G) := by simp [div_eq_mul_inv]
 
-variable [Group G] [AddGroup A] {s : Set G}
+variable [Group G] [AddGroup A] {s : Set G} {a : G}
+
 
 namespace Subgroup
 
@@ -343,6 +344,20 @@ theorem conj_smul_subgroupOf {P H : Subgroup G} (hP : P ≤ H) (h : H) :
     exact ⟨⟨g, hP hg⟩, hg, Subtype.ext hp⟩
 
 end Monoid
+
+section Group
+variable [Group H] [MulAction G H] [IsScalarTower G H H]
+
+@[to_additive]
+lemma pairwiseDisjoint_smul [SetLike S H] [SubgroupClass S H] (s : S) :
+    (Set.range fun a : G ↦ a • (s : Set H)).PairwiseDisjoint id := by
+  rintro _ ⟨a, rfl⟩ _ ⟨b, rfl⟩ hab
+  simp only [Function.onFun, id_eq, disjoint_left] at hab ⊢
+  rintro _ ⟨c, hc, rfl⟩ ⟨d, hd, (hcd : b • d = a • c)⟩
+  refine hab ?_
+  rw [← smul_coe_set hc, ← smul_assoc, ← hcd, smul_assoc, smul_coe_set hc, smul_coe_set hd]
+
+end Group
 
 section Group
 
