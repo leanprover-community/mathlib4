@@ -440,6 +440,31 @@ theorem mem_span_singleton {y : M} : (x ∈ R ∙ y) ↔ ∃ a : R, a • y = x 
       exact ⟨a * b, by simp [smul_smul]⟩, by
     rintro ⟨a, y, rfl⟩; exact smul_mem _ _ (subset_span <| by simp)⟩
 
+section equivSpan
+
+variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
+variable {x : M} (hx : x ≠ 0)
+
+variable (R) in
+/-- If a module has no zero divisors and `x ≠ 0`, this is the map `t ↦ t • x` as a linear equiv. -/
+noncomputable def equivSpan : R ≃ₗ[R] (R ∙ x) where
+  toFun t := ⟨t • x, mem_span_singleton.2 ⟨t, rfl⟩⟩
+  invFun y := (mem_span_singleton.1 y.2).choose
+  map_add' y z := by simp [add_smul]
+  map_smul' t y := by simp [mul_smul]
+  left_inv t := smul_left_injective R hx <|
+    (mem_span_singleton.1 (mem_span_singleton.2 ⟨t, rfl⟩)).choose_spec
+  right_inv y := Subtype.val_inj.1 (mem_span_singleton.1 y.2).choose_spec
+
+theorem equivSpan_smul {y : M} (hy : y ∈ R ∙ x) : ((equivSpan R hx).symm ⟨y, hy⟩) • x = y :=
+  congrArg Subtype.val <| (equivSpan R hx).right_inv _
+
+theorem equivSpan_self :
+    (equivSpan R hx).symm ⟨x, mem_span_singleton_self x⟩ = 1 :=
+  one_smul R (⟨x, _⟩ : R ∙ x) ▸ (equivSpan R hx).left_inv 1
+
+end equivSpan
+
 theorem le_span_singleton_iff {s : Submodule R M} {v₀ : M} :
     (s ≤ R ∙ v₀) ↔ ∀ v ∈ s, ∃ r : R, r • v₀ = v := by simp_rw [SetLike.le_def, mem_span_singleton]
 
