@@ -233,7 +233,7 @@ variable [MulLeftMono α]
 @[to_additive (attr := simp) negPart_pos_iff] lemma one_lt_ltOnePart_iff : 1 < a⁻ᵐ ↔ a < 1 :=
   lt_iff_lt_of_le_iff_le <| (one_le_leOnePart _).le_iff_eq.trans leOnePart_eq_one
 
-variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+variable [MulRightMono α]
 
 @[to_additive (attr := simp)] lemma leOnePart_lt : a⁻ᵐ < b ↔ b⁻¹ < a ∧ 1 < b :=
   sup_lt_iff.trans <| by rw [inv_lt']

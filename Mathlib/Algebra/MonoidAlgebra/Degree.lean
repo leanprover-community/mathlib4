@@ -456,7 +456,7 @@ lemma sum_ne_zero_of_injOn_supDegree (hs : s ≠ ∅)
   sum_ne_zero_of_injOn_supDegree' ⟨i, hi, hf i hi⟩ hd
 
 variable [Add B]
-variable [CovariantClass B B (· + ·) (· < ·)] [CovariantClass B B (Function.swap (· + ·)) (· < ·)]
+variable [AddLeftStrictMono B] [AddRightStrictMono B]
 
 lemma apply_supDegree_add_supDegree (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) :
     (p * q) (D.invFun (p.supDegree D + q.supDegree D)) = p.leadingCoeff D * q.leadingCoeff D := by
@@ -542,7 +542,7 @@ lemma Monic.mul
 section AddMonoid
 
 variable {A B : Type*} [AddMonoid A] [AddMonoid B] [LinearOrder B] [OrderBot B]
-  [CovariantClass B B (· + ·) (· < ·)] [CovariantClass B B (Function.swap (· + ·)) (· < ·)]
+  [AddLeftStrictMono B] [AddRightStrictMono B]
   {D : A → B} {p : R[A]} {n : ℕ}
 
 lemma Monic.pow

@@ -232,7 +232,7 @@ theorem abs_sum_of_nonneg' {G : Type*} [LinearOrderedAddCommGroup G] {f : ι →
   rw [abs_of_nonneg (Finset.sum_nonneg' hf)]
 
 section CommMonoid
-variable [CommMonoid α] [LE α] [CovariantClass α α (· * ·) (· ≤ ·)] {s : Finset ι} {f : ι → α}
+variable [CommMonoid α] [LE α] [MulLeftMono α] {s : Finset ι} {f : ι → α}
 
 @[to_additive (attr := simp)]
 lemma mulLECancellable_prod :

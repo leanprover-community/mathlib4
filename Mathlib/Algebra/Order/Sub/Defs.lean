@@ -252,7 +252,7 @@ protected theorem tsub_eq_of_eq_add (hb : AddLECancellable b) (h : a = c + b) : 
 
 /-- Weaker version of `AddLECancellable.tsub_eq_of_eq_add` assuming that `a = c + b` itself is
 cancellable rather than `b`. -/
-protected lemma tsub_eq_of_eq_add' [CovariantClass α α (· + ·) (· ≤ ·)] (ha : AddLECancellable a)
+protected lemma tsub_eq_of_eq_add' [AddLeftMono α] (ha : AddLECancellable a)
     (h : a = c + b) : a - b = c := (h ▸ ha).of_add_right.tsub_eq_of_eq_add h
 
 /-- See `AddLECancellable.eq_tsub_of_add_eq'` for a version assuming that `b = a + c` itself is
@@ -262,7 +262,7 @@ protected theorem eq_tsub_of_add_eq (hc : AddLECancellable c) (h : a + c = b) : 
 
 /-- Weaker version of `AddLECancellable.eq_tsub_of_add_eq` assuming that `b = a + c` itself is
 cancellable rather than `c`. -/
-protected lemma eq_tsub_of_add_eq' [CovariantClass α α (· + ·) (· ≤ ·)] (hb : AddLECancellable b)
+protected lemma eq_tsub_of_add_eq' [AddLeftMono α] (hb : AddLECancellable b)
     (h : a + c = b) : a = b - c := (hb.tsub_eq_of_eq_add' h.symm).symm
 
 /-- See `AddLECancellable.tsub_eq_of_eq_add_rev'` for a version assuming that `a = b + c` itself is
@@ -272,7 +272,7 @@ protected theorem tsub_eq_of_eq_add_rev (hb : AddLECancellable b) (h : a = b + c
 
 /-- Weaker version of `AddLECancellable.tsub_eq_of_eq_add_rev` assuming that `a = b + c` itself is
 cancellable rather than `b`. -/
-protected lemma tsub_eq_of_eq_add_rev' [CovariantClass α α (· + ·) (· ≤ ·)]
+protected lemma tsub_eq_of_eq_add_rev' [AddLeftMono α]
     (ha : AddLECancellable a) (h : a = b + c) : a - b = c :=
   ha.tsub_eq_of_eq_add' <| by rw [add_comm, h]
 

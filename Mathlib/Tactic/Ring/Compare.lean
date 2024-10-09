@@ -66,7 +66,7 @@ abbrev lt_of_socs (α : Type*) [StrictOrderedCommSemiring α] : LT α := inferIn
 end Typeclass
 
 /-! The lemmas like `add_le_add_right` in the root namespace are stated under minimal type classes,
-typically just `[CovariantClass α α (swap (· + ·)) (· ≤ ·)]` or similar.  Here we restate these
+typically just `[AddRightMono α]` or similar.  Here we restate these
 lemmas under stronger type class assumptions (`[OrderedCommSemiring α]` or similar), which helps in
 speeding up the metaprograms in this file (`Mathlib.Tactic.Ring.proveLT` and
 `Mathlib.Tactic.Ring.proveLE`) substantially -- about a 50% reduction in heartbeat count in
