@@ -5,7 +5,9 @@ Authors: Jihoon Hyun
 -/
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Card
+import Mathlib.Data.Fintype.Lattice
 import Mathlib.Data.Greedoid.Accessible
+import Mathlib.Data.Set.Finite
 import Init.Data.Nat.Basic
 
 /-!
@@ -140,6 +142,9 @@ theorem weakExchangeProperty_of_weakerExchangeProperty
     [Accessible Sys] (h : WeakerExchangeProperty Sys) :
     WeakExchangeProperty Sys := by
   intro s₁ hs₁ s₂ hs₂ hs
+  have h₁ : ∃ c : Finset α, c ⊆ s₁ ∧ c ⊆ s₂ ∧ Sys c ∧ ∀ s, s ⊆ s₁ → s ⊆ s₂ → Sys s →
+      s.card ≤ c.card := by
+    sorry
   sorry
 
 end ExchangePropertyEquivalence

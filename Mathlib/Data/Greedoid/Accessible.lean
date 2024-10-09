@@ -105,11 +105,6 @@ theorem construction_on_accessible
     intro l' hl'; rw [List.suffix_cons_iff] at hl'; apply hl'.elim _ (fun h => hl₀₃ _ h)
     intro hl'; use s₁; simp [hs, hl', h₆]
 
-theorem exists_maximal_element
-    (hS : Sys ∅) {s : Finset α} :
-    ∃ t ⊆ s, Sys t ∧ ∀ x ∈ s, (h : x ∉ t) → ¬Sys (t.cons x h) := by
-  sorry
-
 end Accessible
 
 end Greedoid
