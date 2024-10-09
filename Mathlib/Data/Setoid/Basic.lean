@@ -121,6 +121,7 @@ lemma piSetoid_apply {ι : Sort*} {α : ι → Sort*} {r : ∀ i, Setoid (α i)}
 
 /-- A bijection between the product of two quotients and the quotient by the product of the
 equivalence relations. -/
+@[simps]
 def prodQuotientEquiv (r : Setoid α) (s : Setoid β) :
     Quotient r × Quotient s ≃ Quotient (r.prod s) where
   toFun := fun (x, y) ↦ Quotient.map₂' Prod.mk (fun _ _ hx _ _ hy ↦ ⟨hx, hy⟩) x y
