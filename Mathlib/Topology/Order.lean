@@ -89,9 +89,6 @@ lemma tendsto_nhds_generateFrom_iff {β : Type*} {m : α → β} {f : Filter α}
   simp only [nhds_generateFrom, @forall_swap (b ∈ _), tendsto_iInf, mem_setOf_eq, and_imp,
     tendsto_principal]; rfl
 
-@[deprecated (since := "2023-12-24")]
-alias ⟨_, tendsto_nhds_generateFrom⟩ := tendsto_nhds_generateFrom_iff
-
 /-- Construct a topology on α given the filter of neighborhoods of each point of α. -/
 protected def mkOfNhds (n : α → Filter α) : TopologicalSpace α where
   IsOpen s := ∀ a ∈ s, s ∈ n a
@@ -620,9 +617,6 @@ lemma continuous_generateFrom_iff {t : TopologicalSpace α} {b : Set (Set β)} :
     Continuous[t, generateFrom b] f ↔ ∀ s ∈ b, IsOpen (f ⁻¹' s) := by
   rw [continuous_iff_coinduced_le, le_generateFrom_iff_subset_isOpen]
   simp only [isOpen_coinduced, preimage_id', subset_def, mem_setOf]
-
-@[deprecated (since := "2023-12-24")]
-alias ⟨_, continuous_generateFrom⟩ := continuous_generateFrom_iff
 
 @[continuity, fun_prop]
 theorem continuous_induced_dom {t : TopologicalSpace β} : Continuous[induced f t, t] f :=
