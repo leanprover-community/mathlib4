@@ -287,9 +287,11 @@ local macro:max (priority := high) "[" n:term "]₂" : term =>
 type.-/
 def SSet.OneTruncation₂ (S : SSet.Truncated 2) := S _[0]₂
 
+/-- Abbreviations for face maps in the 2-truncated simplex category.-/
 abbrev SSet.δ₂ {n} (i : Fin (n + 2)) (hn := by decide) (hn' := by decide) :
     (⟨[n], hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨[n + 1], hn'⟩ := SimplexCategory.δ i
 
+/-- Abbreviations for degeneracy maps in the 2-truncated simplex category.-/
 abbrev SSet.σ₂ {n} (i : Fin (n + 1)) (hn := by decide) (hn' := by decide) :
     (⟨[n+1], hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨[n], hn'⟩ := SimplexCategory.σ i
 
