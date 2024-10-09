@@ -34,7 +34,7 @@ where `ᵒ` denotes the interior.
 
 We also give a form of uniqueness of Haar measure, for σ-finite measures on second-countable
 locally compact groups. For more involved statements not assuming second-countability, see
-the file `MeasureTheory.Measure.Haar.Unique`.
+the file `Mathlib/MeasureTheory/Measure/Haar/Unique.lean`.
 
 ## Main Declarations
 
@@ -626,7 +626,7 @@ bypass all topological arguments, and conclude using uniqueness of σ-finite lef
 in measurable groups.
 
 For more general uniqueness statements without second-countability assumptions,
-see the file `MeasureTheory.Measure.Haar.Unique`.
+see the file `Mathlib/MeasureTheory/Measure/Haar/Unique.lean`.
 -/
 
 variable [SecondCountableTopology G]
