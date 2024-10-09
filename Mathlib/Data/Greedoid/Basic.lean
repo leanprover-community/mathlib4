@@ -15,12 +15,6 @@ Greedoid is a set system, i.e., a family of sets, over a finite ground set, whic
 exchange and accessible properties.
 -/
 
-namespace Greedoid
-
-open Nat Finset
-
-end Greedoid
-
 /-- Greedoid is a nonempty (finite) set system satisfying both accessible and exchange property. -/
 structure Greedoid (α : Type*) where
   /-- The ground set which every element lies on. -/
