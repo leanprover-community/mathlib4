@@ -843,8 +843,8 @@ variable {ι : Type*} {αi βi γi : ι → Type*}
 /-- The product of a family of partial equivalences, as a partial equivalence on the pi type. -/
 @[simps (config := mfld_cfg) apply source target]
 protected def pi (ei : ∀ i, PartialEquiv (αi i) (βi i)) : PartialEquiv (∀ i, αi i) (∀ i, βi i) where
-  toFun f i := ei i (f i)
-  invFun f i := (ei i).symm (f i)
+  toFun := Pi.map fun i ↦ ei i
+  invFun := Pi.map fun i ↦ (ei i).symm
   source := pi univ fun i => (ei i).source
   target := pi univ fun i => (ei i).target
   map_source' _ hf i hi := (ei i).map_source (hf i hi)

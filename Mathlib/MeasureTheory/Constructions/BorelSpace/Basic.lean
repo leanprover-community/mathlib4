@@ -502,9 +502,8 @@ instance (priority := 100) ContinuousSub.measurableSub [Sub γ] [ContinuousSub �
   measurable_sub_const _ := (continuous_id.sub continuous_const).measurable
 
 @[to_additive]
-instance (priority := 100) TopologicalGroup.measurableInv [Group γ] [TopologicalGroup γ] :
-    MeasurableInv γ :=
-  ⟨continuous_inv.measurable⟩
+instance (priority := 100) ContinuousInv.measurableInv [Inv γ] [ContinuousInv γ] :
+    MeasurableInv γ := ⟨continuous_inv.measurable⟩
 
 @[to_additive]
 instance (priority := 100) ContinuousSMul.measurableSMul {M α} [TopologicalSpace M]
