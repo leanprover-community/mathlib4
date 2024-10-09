@@ -12,7 +12,7 @@ import Mathlib.Analysis.Normed.Group.Basic
 This file defines constructions that upgrade `(Comm)Group` to `(Semi)Normed(Comm)Group`
 using a `Group(Semi)normClass` when the codomain is the reals.
 
-See `Mathlib.Algebra.Order.Hom.Ultra` for further upgrades in to nonarchimedean normed groups.
+See `Mathlib.Algebra.Order.Hom.Ultra` for further upgrades to nonarchimedean normed groups.
 
 -/
 

@@ -9,8 +9,8 @@ import Mathlib.Topology.MetricSpace.Ultra.Basic
 /-!
 # Constructing nonarchimedean (ultrametric) normed groups from nonarchimedean normed homs
 
-This file defines constructions that upgrade `(Comm)Group` to `(Semi)Normed(Comm)Group`
-using a `Group(Semi)normClass` when the codomain is the reals and the hom is nonarchimedean.
+This file defines constructions that upgrade `Add(Comm)Group` to `(Semi)NormedAdd(Comm)Group`
+using an `AddGroup(Semi)normClass` when the codomain is the reals and the hom is nonarchimedean.
 
 ## Implementation details
 
@@ -22,8 +22,8 @@ the argument is an autoparam that resolves by definitional equality when using t
 
 variable {F α : Type*} [FunLike F α ℝ]
 
-/-- Proves that an `AddSeminormedGroup` structure constructed from an `AddGroupSeminormClass`
-that is `IsNonarchimedean` satisfies `IsUltrametricDist`. -/
+/-- Proves that when a `SeminormedAddGroup` structure is constructed from an
+`AddGroupSeminormClass` that satifies `IsNonarchimedean`, the group has an `IsUltrametricDist`. -/
 lemma AddGroupSeminormClass.isUltrametricDist [AddGroup α] [AddGroupSeminormClass F α ℝ]
     [inst : Dist α] {f : F} (hna : IsNonarchimedean f)
     (hd : inst = (AddGroupSeminormClass.toSeminormedAddGroup f).toDist := by rfl):
@@ -34,16 +34,16 @@ lemma AddGroupSeminormClass.isUltrametricDist [AddGroup α] [AddGroupSeminormCla
     rw [← sub_add_sub_cancel x y z]
     exact hna _ _⟩
 
-/-- Proves that an `AddSeminormedCommGroup` structure constructed from an `AddGroupSeminormClass`
-that is `IsNonarchimedean` satisfies `IsUltrametricDist`. -/
+/-- Proves that when a `SeminormedAddCommGroup` structure is constructed from an
+`AddGroupSeminormClass` that satifies `IsNonarchimedean`, the group has an `IsUltrametricDist`. -/
 lemma AddGroupSeminormClass.isUltrametricDist' [AddCommGroup α] [AddGroupSeminormClass F α ℝ]
     [inst : Dist α] {f : F} (hna : IsNonarchimedean f)
     (hd : inst = (AddGroupSeminormClass.toSeminormedAddCommGroup f).toDist := by rfl):
     IsUltrametricDist α :=
   AddGroupSeminormClass.isUltrametricDist hna hd
 
-/-- Proves that an `AddNormedGroup` structure constructed from an `AddGroupNormClass`
-that is `IsNonarchimedean` satisfies `IsUltrametricDist`. -/
+/-- Proves that when a `NormedAddGroup` structure is constructed from an
+`AddGroupNormClass` that satifies `IsNonarchimedean`, the group has an `IsUltrametricDist`. -/
 lemma AddGroupNormClass.isUltrametricDist [AddGroup α] [AddGroupNormClass F α ℝ]
     [inst : Dist α] {f : F} (hna : IsNonarchimedean f)
     (hd : inst = (AddGroupNormClass.toNormedAddGroup f).toDist := by rfl):
@@ -54,8 +54,8 @@ lemma AddGroupNormClass.isUltrametricDist [AddGroup α] [AddGroupNormClass F α 
     rw [← sub_add_sub_cancel x y z]
     exact hna _ _⟩
 
-/-- Proves that an `AddNormedCommGroup` structure constructed from an `AddGroupNormClass`
-that is `IsNonarchimedean` satisfies `IsUltrametricDist`. -/
+/-- Proves that when a `NormedAddCommGroup` structure is constructed from an
+`AddGroupNormClass` that satifies `IsNonarchimedean`, the group has an `IsUltrametricDist`. -/
 lemma AddGroupNormClass.isUltrametricDist' [AddCommGroup α] [AddGroupNormClass F α ℝ]
     [inst : Dist α] {f : F} (hna : IsNonarchimedean f)
     (hd : inst = (AddGroupNormClass.toNormedAddCommGroup f).toDist := by rfl):
