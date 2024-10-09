@@ -498,7 +498,7 @@ variable [NormedAlgebra ℂ A] [StarModule ℂ A]
 instance CStarAlgebra.instNonnegSpectrumClass : NonnegSpectrumClass ℝ A :=
   .of_spectrum_nonneg fun a ha ↦ by
     rw [StarOrderedRing.nonneg_iff] at ha
-    induction ha using AddSubmonoid.closure_induction' with
+    induction ha using AddSubmonoid.closure_induction with
     | mem x hx =>
       obtain ⟨b, rfl⟩ := hx
       exact spectrum_star_mul_self_nonneg
@@ -557,7 +557,7 @@ lemma CStarAlgebra.spectralOrderedRing : @StarOrderedRing A _ (CStarAlgebra.spec
       · rintro ⟨p, hp, rfl⟩
         suffices IsSelfAdjoint p ∧ SpectrumRestricts p ContinuousMap.realToNNReal from
           ⟨by simpa using this.1, by simpa using this.2⟩
-        induction hp using AddSubmonoid.closure_induction' with
+        induction hp using AddSubmonoid.closure_induction with
         | mem x hx =>
           obtain ⟨s, rfl⟩ := hx
           refine ⟨IsSelfAdjoint.star_mul_self s, ?_⟩

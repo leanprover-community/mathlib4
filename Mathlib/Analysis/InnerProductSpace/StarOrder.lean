@@ -63,7 +63,7 @@ lemma instStarOrderedRingRCLike
       exact AddSubmonoid.subset_closure ⟨p, by simp only [hp₁.star_eq, sq]⟩
     · rintro ⟨p, hp, rfl⟩
       rw [le_def, add_sub_cancel_left]
-      induction hp using AddSubmonoid.closure_induction' with
+      induction hp using AddSubmonoid.closure_induction with
       | mem _ hf =>
         obtain ⟨f, rfl⟩ := hf
         simpa using ContinuousLinearMap.IsPositive.adjoint_conj isPositive_one f
