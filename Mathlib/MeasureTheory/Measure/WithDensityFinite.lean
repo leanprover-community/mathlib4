@@ -9,16 +9,16 @@ import Mathlib.Probability.ConditionalProbability
 /-!
 # s-finite measures can be written as `withDensity` of a finite measure
 
-If `μ` is an s-finite measure, then there exists a finite measure `μ.toFinite` and a measurable
-function `densityToFinite μ` such that `μ = μ.toFinite.withDensity μ.densityToFinite`. If `μ` is
-zero this is the zero measure, and otherwise we can choose a probability measure for `μ.toFinite`.
+If `μ` is an s-finite measure, then there exists a finite measure `μ.toFinite`
+such that a set is `μ`-null iff it is `μ.toFinite`-null.
+In particular, `MeasureTheory.ae μ.toFinite = MeasureTheory.ae μ` and `μ.toFinite = 0` iff `μ = 0`.
+As a corollary, `μ` can be represented as `μ.toFinite.withDensity (μ.rnDeriv μ.toFinite)`.
 
-That measure is not unique, and in particular our implementation leads to `μ.toFinite ≠ μ` even if
-`μ` is a probability measure.
+Our definition of `MeasureTheory.Measure.toFinite` ensures some extra properties:
 
-We use this construction to define a set `μ.sigmaFiniteSet`, such that `μ.restrict μ.sigmaFiniteSet`
-is sigma-finite, and for all measurable sets `s ⊆ μ.sigmaFiniteSetᶜ`, either `μ s = 0`
-or `μ s = ∞`.
+- if `μ` is a finite measure, then `μ.toFinite = μ[|univ] = (μ univ)⁻¹ • μ`;
+- in particular, `μ.toFinite = μ` for a probability measure;
+- if `μ ≠ 0`, then `μ.toFinite` is a probability measure.
 
 ## Main definitions
 
@@ -26,14 +26,14 @@ In these definitions and the results below, `μ` is an s-finite measure (`SFinit
 
 * `MeasureTheory.Measure.toFinite`: a finite measure with `μ ≪ μ.toFinite` and `μ.toFinite ≪ μ`.
   If `μ ≠ 0`, this is a probability measure.
-* `MeasureTheory.Measure.densityToFinite`: a measurable function such that
-  `μ = μ.toFinite.withDensity μ.densityToFinite`.
+* `MeasureTheory.Measure.densityToFinite` (deprecated, use `MeasureTheory.Measure.rnDeriv`):
+  the Radon-Nikodym derivative of `μ.toFinite` with respect to `μ`.
 
 ## Main statements
 
 * `absolutelyContinuous_toFinite`: `μ ≪ μ.toFinite`.
 * `toFinite_absolutelyContinuous`: `μ.toFinite ≪ μ`.
-* `withDensity_densitytoFinite`: `μ.toFinite.withDensity μ.densityToFinite = μ`.
+* `ae_toFinite`: `ae μ.toFinite = ae μ`.
 
 -/
 
@@ -84,6 +84,10 @@ lemma toFinite_eq_zero_iff [SFinite μ] : μ.toFinite = 0 ↔ μ = 0 := by
 
 @[simp]
 lemma toFinite_zero : Measure.toFinite (0 : Measure α) = 0 := by simp
+
+lemma toFinite_eq_self [IsProbabilityMeasure μ] : μ.toFinite = μ := by
+  rw [Measure.toFinite, Measure.toFiniteAux, if_pos, ProbabilityTheory.cond_univ]
+  infer_instance
 
 instance [SFinite μ] : IsFiniteMeasure μ.toFinite := by
   rw [Measure.toFinite]

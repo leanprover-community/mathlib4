@@ -420,7 +420,7 @@ theorem union_mul_inter_subset_union : (s₁ ∪ s₂) * (t₁ ∩ t₂) ⊆ s�
       `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' + t'`."]
 theorem subset_mul {s t : Set α} :
     ↑u ⊆ s * t → ∃ s' t' : Finset α, ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' * t' :=
-  subset_image₂
+  subset_set_image₂
 
 @[to_additive]
 theorem image_mul [DecidableEq β] : (s * t).image (f : α → β) = s.image f * t.image f :=
@@ -606,7 +606,7 @@ theorem union_div_inter_subset_union : (s₁ ∪ s₂) / (t₁ ∩ t₂) ⊆ s�
       `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' - t'`."]
 theorem subset_div {s t : Set α} :
     ↑u ⊆ s / t → ∃ s' t' : Finset α, ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' / t' :=
-  subset_image₂
+  subset_set_image₂
 
 @[to_additive (attr := simp (default + 1))]
 lemma sup_div_le [SemilatticeSup β] [OrderBot β] {s t : Finset α} {f : α → β} {a : β} :
@@ -1200,7 +1200,7 @@ theorem union_smul_inter_subset_union [DecidableEq α] : (s₁ ∪ s₂) • (t�
       finsets `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' +ᵥ t'`."]
 theorem subset_smul {s : Set α} {t : Set β} :
     ↑u ⊆ s • t → ∃ (s' : Finset α) (t' : Finset β), ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' • t' :=
-  subset_image₂
+  subset_set_image₂
 
 end SMul
 
@@ -1310,7 +1310,7 @@ end
 finsets `s'`, `t'` such that `s' ⊆ s`, `t' ⊆ t` and `u ⊆ s' -ᵥ t'`. -/
 theorem subset_vsub {s t : Set β} :
     ↑u ⊆ s -ᵥ t → ∃ s' t' : Finset β, ↑s' ⊆ s ∧ ↑t' ⊆ t ∧ u ⊆ s' -ᵥ t' :=
-  subset_image₂
+  subset_set_image₂
 
 end VSub
 

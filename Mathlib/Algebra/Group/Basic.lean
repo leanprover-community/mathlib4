@@ -172,7 +172,7 @@ end CommSemigroup
 attribute [local simp] mul_assoc sub_eq_add_neg
 
 section Monoid
-variable [Monoid M] {a b c : M} {m n : ℕ}
+variable [Monoid M] {a b : M} {m n : ℕ}
 
 @[to_additive boole_nsmul]
 lemma pow_boole (P : Prop) [Decidable P] (a : M) :
@@ -316,7 +316,7 @@ end InvolutiveInv
 
 section DivInvMonoid
 
-variable [DivInvMonoid G] {a b c : G}
+variable [DivInvMonoid G]
 
 @[to_additive, field_simps] -- The attributes are out of order on purpose
 theorem inv_eq_one_div (x : G) : x⁻¹ = 1 / x := by rw [div_eq_mul_inv, one_mul]

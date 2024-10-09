@@ -251,7 +251,7 @@ theorem isLittleO_iff_nat_mul_le_aux (h₀ : (∀ x, 0 ≤ ‖f x‖) ∨ ∀ x,
     rcases exists_nat_gt ε⁻¹ with ⟨n, hn⟩
     have hn₀ : (0 : ℝ) < n := (inv_pos.2 ε0).trans hn
     refine ((isBigOWith_inv hn₀).2 (H n)).bound.mono fun x hfg => ?_
-    refine hfg.trans (mul_le_mul_of_nonneg_right (inv_le_of_inv_le ε0 hn.le) ?_)
+    refine hfg.trans (mul_le_mul_of_nonneg_right (inv_le_of_inv_le₀ ε0 hn.le) ?_)
     refine h₀.elim (fun hf => nonneg_of_mul_nonneg_right ((hf x).trans hfg) ?_) fun h => h x
     exact inv_pos.2 hn₀
 
@@ -1251,6 +1251,9 @@ theorem IsLittleO.trans_tendsto (hfg : f'' =o[l] g'') (hg : Tendsto g'' l (𝓝 
     Tendsto f'' l (𝓝 0) :=
   hfg.isBigO.trans_tendsto hg
 
+lemma isLittleO_id_one [One F''] [NeZero (1 : F'')] : (fun x : E'' => x) =o[𝓝 0] (1 : E'' → F'') :=
+  isLittleO_id_const one_ne_zero
+
 /-! ### Multiplication by a constant -/
 
 
@@ -1447,7 +1450,7 @@ theorem IsBigOWith.inv_rev {f : α → 𝕜} {g : α → 𝕜'} (h : IsBigOWith 
   rcases eq_or_ne (f x) 0 with hx | hx
   · simp only [hx, h₀ hx, inv_zero, norm_zero, mul_zero, le_rfl]
   · have hc : 0 < c := pos_of_mul_pos_left ((norm_pos_iff.2 hx).trans_le hle) (norm_nonneg _)
-    replace hle := inv_le_inv_of_le (norm_pos_iff.2 hx) hle
+    replace hle := inv_anti₀ (norm_pos_iff.2 hx) hle
     simpa only [norm_inv, mul_inv, ← div_eq_inv_mul, div_le_iff₀ hc] using hle
 
 theorem IsBigO.inv_rev {f : α → 𝕜} {g : α → 𝕜'} (h : f =O[l] g)
@@ -1914,6 +1917,13 @@ theorem isBigO_atTop_iff_eventually_exists_pos {α : Type*}
     [SemilatticeSup α] [Nonempty α] {f : α → G} {g : α → G'} :
     f =O[atTop] g ↔ ∀ᶠ n₀ in atTop, ∃ c > 0, ∀ n ≥ n₀, c * ‖f n‖ ≤ ‖g n‖ := by
   simp_rw [isBigO_iff'', ← exists_prop, Subtype.exists', exists_eventually_atTop]
+
+lemma isBigO_mul_iff_isBigO_div {f g h : α → 𝕜} (hf : ∀ᶠ x in l, f x ≠ 0) :
+    (fun x ↦ f x * g x) =O[l] h ↔ g =O[l] (fun x ↦ h x / f x) := by
+  rw [isBigO_iff', isBigO_iff']
+  refine ⟨fun ⟨c, hc, H⟩ ↦ ⟨c, hc, ?_⟩, fun ⟨c, hc, H⟩ ↦ ⟨c, hc, ?_⟩⟩ <;>
+  · refine H.congr <| Eventually.mp hf <| Eventually.of_forall fun x hx ↦ ?_
+    rw [norm_mul, norm_div, ← mul_div_assoc, le_div_iff₀' (norm_pos_iff.mpr hx)]
 
 end Asymptotics
 
