@@ -43,15 +43,15 @@ theorem two_lt_fermat (n : ℕ) : 2 < fermat n := by
 theorem odd_fermat (n : ℕ) : Odd (fermat n) :=
   (even_pow.mpr ⟨even_two, (pow_pos two_pos n).ne'⟩).add_one
 
-theorem fermat_product (n : ℕ) : ∏ k in Finset.range n, fermat k = fermat n - 2 := by
+theorem fermat_product (n : ℕ) : ∏ k in range n, fermat k = fermat n - 2 := by
   induction' n with n hn
   · rfl
-  rw [Finset.prod_range_succ, hn, fermat, fermat, mul_comm,
-    (show 2 ^ 2 ^ n + 1 - 2 = 2 ^ 2 ^ n - 1 by omega),  ← Nat.sq_sub_sq]
+  rw [prod_range_succ, hn, fermat, fermat, mul_comm,
+    (show 2 ^ 2 ^ n + 1 - 2 = 2 ^ 2 ^ n - 1 by omega),  ← sq_sub_sq]
   ring_nf
   omega
 
-theorem fermat_eq_prod_add_two (n : ℕ) : fermat n = (∏ k in Finset.range n, fermat k) + 2 := by
+theorem fermat_eq_prod_add_two (n : ℕ) : fermat n = (∏ k in range n, fermat k) + 2 := by
   rw [fermat_product, Nat.sub_add_cancel]
   exact le_of_lt <| two_lt_fermat _
 
