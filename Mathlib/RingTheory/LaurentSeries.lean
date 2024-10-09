@@ -17,10 +17,10 @@ import Mathlib.Topology.UniformSpace.Cauchy
 # Laurent Series
 
 ## Main Definitions
+
 * Defines `LaurentSeries` as an abbreviation for `HahnSeries ℤ`.
 * Defines `hasseDeriv` of a Laurent series with coefficients in a module over a ring.
-* Provides a coercion `PowerSeries R` into `LaurentSeries R` given by
-  `HahnSeries.ofPowerSeries`.
+* Provides a coercion `from power series `R⟦X⟧` into `R⸨X⸩` given by `HahnSeries.ofPowerSeries`.
 * Defines `LaurentSeries.powerSeriesPart`
 * Defines the localization map `LaurentSeries.of_powerSeries_localization` which evaluates to
   `HahnSeries.ofPowerSeries`.
@@ -28,12 +28,13 @@ import Mathlib.Topology.UniformSpace.Cauchy
 the underlying `RatFunc.coeAlgHom`.
 * Study of the `X`-Adic valuation on the ring of Laurent series over a field
 * In `LaurentSeries.uniformContinuous_coeff` we show that sending a Laurent series to its `d`th
-coefficient is uniformly continuous, ensuring that it sends a Cauchy filter `ℱ` in `LaurentSeries K`
+coefficient is uniformly continuous, ensuring that it sends a Cauchy filter `ℱ` in `K⸨X⸩`
 to a Cauchy filter in `K`: since this latter is given the discrete topology, this provides an
 element `LaurentSeries.Cauchy.coeff ℱ d` in `K` that serves as `d`th coefficient of the Laurent
 series to which the filter `ℱ` converges.
 
 ## Main Results
+
 * Basic properties of Hasse derivatives
 ### About the `X`-Adic valuation:
 * The (integral) valuation of a power series is the order of the first non-zero coefficient, see
@@ -46,9 +47,10 @@ series to which the filter `ℱ` converges.
 `instLaurentSeriesComplete`.
 
 ## Implementation details
+
 * Since `LaurentSeries` is just an abbreviation of `HahnSeries ℤ _`, the definition of the
 coefficients is given in terms of `HahnSeries.coeff` and this forces sometimes to go back-and-forth
-from `X : LaurentSeries _` to `single 1 1 : HahnSeries ℤ _`.
+from `X : _⸨X⸩` to `single 1 1 : HahnSeries ℤ _`.
 
 -/
 universe u
@@ -648,7 +650,7 @@ theorem uniformContinuous_coeff {uK : UniformSpace K} (d : ℤ) :
   exact mem_uniformity_of_eq hS rfl
 
 /-- Since extracting coefficients is uniformly continuous, every Cauchy filter in
-`laurentSeries K` gives rise to a Cauchy filter in `K` for every `d : ℤ`, and such Cauchy filter
+`K⸨X⸩` gives rise to a Cauchy filter in `K` for every `d : ℤ`, and such Cauchy filter
 in `K` converges to a principal filter -/
 def Cauchy.coeff {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) : ℤ → K :=
   let _ : UniformSpace K := ⊥
