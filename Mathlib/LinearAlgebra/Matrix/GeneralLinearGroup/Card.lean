@@ -27,7 +27,7 @@ variable {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V]
 variable [Fintype K] [Finite V]
 
 local notation "q" => Fintype.card K
-local notation "n" => FiniteDimensional.finrank K V
+local notation "n" => Module.finrank K V
 
 attribute [local instance] Fintype.ofFinite in
 open Fintype in
@@ -38,8 +38,8 @@ theorem card_linearIndependent {k : ℕ} (hk : k ≤ n) :
       ∏ i : Fin k, (q ^ n - q ^ i.val) := by
   rw [Nat.card_eq_fintype_card]
   induction k with
-  | zero => simp only [LinearIndependent, Finsupp.total_fin_zero, ker_zero, card_ofSubsingleton,
-      Finset.univ_eq_empty, Finset.prod_empty]
+  | zero => simp only [LinearIndependent, Finsupp.linearCombination_fin_zero, ker_zero,
+      card_ofSubsingleton, Finset.univ_eq_empty, Finset.prod_empty]
   | succ k ih =>
       have (s : { s : Fin k → V // LinearIndependent K s }) :
           card ((Submodule.span K (Set.range (s : Fin k → V)))ᶜ : Set (V)) =
@@ -86,8 +86,8 @@ theorem card_GL_field :
   rcases Nat.eq_zero_or_pos n with rfl | hn
   · simp [Nat.card_eq_fintype_card]
   · rw [Nat.card_congr (equiv_GL_linearindependent n hn), card_linearIndependent,
-    FiniteDimensional.finrank_fintype_fun_eq_card, Fintype.card_fin]
-    simp only [FiniteDimensional.finrank_fintype_fun_eq_card, Fintype.card_fin, le_refl]
+    Module.finrank_fintype_fun_eq_card, Fintype.card_fin]
+    simp only [Module.finrank_fintype_fun_eq_card, Fintype.card_fin, le_refl]
 
 end field
 

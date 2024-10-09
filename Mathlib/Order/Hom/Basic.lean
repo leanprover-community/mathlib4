@@ -111,7 +111,8 @@ abbrev OrderHomClass (F : Type*) (α β : outParam Type*) [LE α] [LE β] [FunLi
 /-- `OrderIsoClass F α β` states that `F` is a type of order isomorphisms.
 
 You should extend this class when you extend `OrderIso`. -/
-class OrderIsoClass (F α β : Type*) [LE α] [LE β] [EquivLike F α β] : Prop where
+class OrderIsoClass (F : Type*) (α β : outParam Type*) [LE α] [LE β] [EquivLike F α β] :
+    Prop where
   /-- An order isomorphism respects `≤`. -/
   map_le_map_iff (f : F) {a b : α} : f a ≤ f b ↔ a ≤ b
 
@@ -173,6 +174,10 @@ theorem map_inv_le_iff (f : F) {a : α} {b : β} : EquivLike.inv f b ≤ a ↔ b
   convert (map_le_map_iff f (a := EquivLike.inv f b) (b := a)).symm
   exact (EquivLike.right_inv f _).symm
 
+theorem map_inv_le_map_inv_iff (f : F) {a b : β} :
+    EquivLike.inv f b ≤ EquivLike.inv f a ↔ b ≤ a := by
+  simp
+
 -- Porting note: needed to add explicit arguments to map_le_map_iff
 @[simp]
 theorem le_map_inv_iff (f : F) {a : α} {b : β} : a ≤ EquivLike.inv f b ↔ f a ≤ b := by
@@ -190,6 +195,10 @@ theorem map_lt_map_iff (f : F) {a b : α} : f a < f b ↔ a < b :=
 theorem map_inv_lt_iff (f : F) {a : α} {b : β} : EquivLike.inv f b < a ↔ b < f a := by
   rw [← map_lt_map_iff f]
   simp only [EquivLike.apply_inv_apply]
+
+theorem map_inv_lt_map_inv_iff (f : F) {a b : β} :
+    EquivLike.inv f b < EquivLike.inv f a ↔ b < a := by
+  simp
 
 @[simp]
 theorem lt_map_inv_iff (f : F) {a : α} {b : β} : a < EquivLike.inv f b ↔ f a < b := by
@@ -426,7 +435,7 @@ def coeFnHom : (α →o β) →o α → β where
   monotone' _ _ h := h
 
 /-- Function application `fun f => f a` (for fixed `a`) is a monotone function from the
-monotone function space `α →o β` to `β`. See also `Pi.evalOrderHom`.  -/
+monotone function space `α →o β` to `β`. See also `Pi.evalOrderHom`. -/
 @[simps! (config := .asFn)]
 def apply (x : α) : (α →o β) →o β :=
   (Pi.evalOrderHom x).comp coeFnHom
@@ -447,7 +456,7 @@ def piIso : (α →o ∀ i, π i) ≃o ∀ i, α →o π i where
   right_inv _ := rfl
   map_rel_iff' := forall_swap
 
-/-- `Subtype.val` as a bundled monotone function.  -/
+/-- `Subtype.val` as a bundled monotone function. -/
 @[simps (config := .asFn)]
 def Subtype.val (p : α → Prop) : Subtype p →o α :=
   ⟨_root_.Subtype.val, fun _ _ h => h⟩
@@ -906,7 +915,7 @@ open Set
 
 section LE
 
-variable [LE α] [LE β] [LE γ]
+variable [LE α] [LE β]
 
 --@[simp] Porting note (#10618): simp can prove it
 theorem le_iff_le (e : α ≃o β) {x y : α} : e x ≤ e y ↔ x ≤ y :=
@@ -920,7 +929,7 @@ theorem symm_apply_le (e : α ≃o β) {x : α} {y : β} : e.symm y ≤ x ↔ y 
 
 end LE
 
-variable [Preorder α] [Preorder β] [Preorder γ]
+variable [Preorder α] [Preorder β]
 
 protected theorem monotone (e : α ≃o β) : Monotone e :=
   e.toOrderEmbedding.monotone
@@ -1044,7 +1053,7 @@ end Equiv
 namespace StrictMono
 
 variable [LinearOrder α] [Preorder β]
-variable (f : α → β) (h_mono : StrictMono f) (h_surj : Function.Surjective f)
+variable (f : α → β) (h_mono : StrictMono f)
 
 /-- A strictly monotone function with a right inverse is an order isomorphism. -/
 @[simps (config := .asFn)]
@@ -1163,6 +1172,13 @@ theorem coe_toDualTopEquiv_eq [LE α] :
     (WithBot.toDualTopEquiv : WithBot αᵒᵈ → (WithTop α)ᵒᵈ) = toDual ∘ WithBot.ofDual :=
   funext fun _ => rfl
 
+/-- The coercion `α → WithBot α` bundled as monotone map. -/
+@[simps]
+def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithBot α where
+  toFun := (↑)
+  inj' := WithBot.coe_injective
+  map_rel_iff' := WithBot.coe_le_coe
+
 end WithBot
 
 namespace WithTop
@@ -1193,6 +1209,13 @@ theorem toDualBotEquiv_symm_top [LE α] : WithTop.toDualBotEquiv.symm (⊤ : (Wi
 theorem coe_toDualBotEquiv [LE α] :
     (WithTop.toDualBotEquiv : WithTop αᵒᵈ → (WithBot α)ᵒᵈ) = toDual ∘ WithTop.ofDual :=
   funext fun _ => rfl
+
+/-- The coercion `α → WithTop α` bundled as monotone map. -/
+@[simps]
+def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithTop α where
+  toFun := (↑)
+  inj' := WithTop.coe_injective
+  map_rel_iff' := WithTop.coe_le_coe
 
 end WithTop
 
@@ -1263,3 +1286,20 @@ theorem OrderIso.complementedLattice_iff (f : α ≃o β) :
 end BoundedOrder
 
 end LatticeIsos
+
+section DenselyOrdered
+
+lemma denselyOrdered_iff_of_orderIsoClass {X Y F : Type*} [Preorder X] [Preorder Y]
+    [EquivLike F X Y] [OrderIsoClass F X Y] (f : F) :
+    DenselyOrdered X ↔ DenselyOrdered Y := by
+  constructor
+  · intro H
+    refine ⟨fun a b h ↦ ?_⟩
+    obtain ⟨c, hc⟩ := exists_between ((map_inv_lt_map_inv_iff f).mpr h)
+    exact ⟨f c, by simpa using hc⟩
+  · intro H
+    refine ⟨fun a b h ↦ ?_⟩
+    obtain ⟨c, hc⟩ := exists_between ((map_lt_map_iff f).mpr h)
+    exact ⟨EquivLike.inv f c, by simpa using hc⟩
+
+end DenselyOrdered

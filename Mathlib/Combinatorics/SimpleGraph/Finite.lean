@@ -92,6 +92,15 @@ theorem edgeFinset_inf [DecidableEq V] : (G₁ ⊓ G₂).edgeFinset = G₁.edgeF
 theorem edgeFinset_sdiff [DecidableEq V] :
     (G₁ \ G₂).edgeFinset = G₁.edgeFinset \ G₂.edgeFinset := by simp [edgeFinset]
 
+lemma disjoint_edgeFinset : Disjoint G₁.edgeFinset G₂.edgeFinset ↔ Disjoint G₁ G₂ := by
+  simp_rw [← Finset.disjoint_coe, coe_edgeFinset, disjoint_edgeSet]
+
+lemma edgeFinset_eq_empty : G.edgeFinset = ∅ ↔ G = ⊥ := by
+  rw [← edgeFinset_bot, edgeFinset_inj]
+
+lemma edgeFinset_nonempty : G.edgeFinset.Nonempty ↔ G ≠ ⊥ := by
+  rw [Finset.nonempty_iff_ne_empty, edgeFinset_eq_empty.ne]
+
 theorem edgeFinset_card : G.edgeFinset.card = Fintype.card G.edgeSet :=
   Set.toFinset_card _
 
@@ -242,7 +251,7 @@ theorem mem_incidenceFinset [DecidableEq V] (e : Sym2 V) :
   Set.mem_toFinset
 
 theorem incidenceFinset_eq_filter [DecidableEq V] [Fintype G.edgeSet] :
-    G.incidenceFinset v = G.edgeFinset.filter (Membership.mem v) := by
+    G.incidenceFinset v = G.edgeFinset.filter (v ∈ ·) := by
   ext e
   induction e
   simp [mk'_mem_incidenceSet_iff]
@@ -278,7 +287,7 @@ section Finite
 variable [Fintype V]
 
 instance neighborSetFintype [DecidableRel G.Adj] (v : V) : Fintype (G.neighborSet v) :=
-  @Subtype.fintype _ _
+  @Subtype.fintype _ (· ∈ G.neighborSet v)
     (by
       simp_rw [mem_neighborSet]
       infer_instance)

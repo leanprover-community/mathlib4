@@ -156,15 +156,37 @@ end Fintype
 
 /-! ### Properties for PartialOrders -/
 
-lemma Finite.exists_ge_minimal {α} [Finite α] [PartialOrder α] {a : α} {p : α → Prop} (h : p a) :
-    ∃ b, b ≤ a ∧ Minimal p b := by
+section PartialOrder
+
+variable {α : Type*} [PartialOrder α] {a : α} {p : α → Prop}
+
+lemma Finite.exists_minimal_le [Finite α] (h : p a) : ∃ b, b ≤ a ∧ Minimal p b := by
   obtain ⟨b, ⟨hba, hb⟩, hbmin⟩ :=
     Set.Finite.exists_minimal_wrt id {x | x ≤ a ∧ p x} (Set.toFinite _) ⟨a, rfl.le, h⟩
   exact ⟨b, hba, hb, fun x hx hxb ↦ (hbmin x ⟨hxb.trans hba, hx⟩ hxb).le⟩
 
-lemma Finite.exists_le_maximal {α} [Finite α] [PartialOrder α] {a : α} {p : α → Prop} (h : p a) :
-    ∃ b, a ≤ b ∧ Maximal p b :=
-  Finite.exists_ge_minimal (α := αᵒᵈ) h
+@[deprecated (since := "2024-09-23")] alias Finite.exists_ge_minimal := Finite.exists_minimal_le
+
+lemma Finite.exists_le_maximal [Finite α] (h : p a) : ∃ b, a ≤ b ∧ Maximal p b :=
+  Finite.exists_minimal_le (α := αᵒᵈ) h
+
+lemma Finset.exists_minimal_le (s : Finset α) (h : a ∈ s) : ∃ b, b ≤ a ∧ Minimal (· ∈ s) b := by
+  obtain ⟨⟨b, _⟩, lb, minb⟩ := @Finite.exists_minimal_le s _ ⟨a, h⟩ (·.1 ∈ s) _ h
+  use b, lb; rwa [minimal_subtype, inf_idem] at minb
+
+lemma Finset.exists_le_maximal (s : Finset α) (h : a ∈ s) : ∃ b, a ≤ b ∧ Maximal (· ∈ s) b :=
+  s.exists_minimal_le (α := αᵒᵈ) h
+
+lemma Set.Finite.exists_minimal_le {s : Set α} (hs : s.Finite) (h : a ∈ s) :
+    ∃ b, b ≤ a ∧ Minimal (· ∈ s) b := by
+  obtain ⟨b, lb, minb⟩ := hs.toFinset.exists_minimal_le (hs.mem_toFinset.mpr h)
+  use b, lb; simpa using minb
+
+lemma Set.Finite.exists_le_maximal {s : Set α} (hs : s.Finite) (h : a ∈ s) :
+    ∃ b, a ≤ b ∧ Maximal (· ∈ s) b :=
+  hs.exists_minimal_le (α := αᵒᵈ) h
+
+end PartialOrder
 
 /-! ### Concrete instances -/
 
@@ -188,7 +210,7 @@ variable {α : Type*} {r : α → α → Prop} [IsTrans α r] {β γ : Type*} [N
 
 theorem Directed.finite_set_le (D : Directed r f) {s : Set γ} (hs : s.Finite) :
     ∃ z, ∀ i ∈ s, r (f i) (f z) := by
-  convert D.finset_le hs.toFinset; rw [Set.Finite.mem_toFinset]
+  convert D.finset_le hs.toFinset using 3; rw [Set.Finite.mem_toFinset]
 
 theorem Directed.finite_le (D : Directed r f) (g : β → γ) : ∃ z, ∀ i, r (f (g i)) (f z) := by
   classical

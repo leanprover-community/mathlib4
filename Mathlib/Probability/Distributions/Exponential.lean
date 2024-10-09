@@ -73,7 +73,7 @@ lemma measurable_exponentialPDFReal (r : ℝ) : Measurable (exponentialPDFReal r
 lemma exponentialPDFReal_pos {x r : ℝ} (hr : 0 < r) (hx : 0 < x) :
     0 < exponentialPDFReal r x := gammaPDFReal_pos zero_lt_one hr hx
 
-/-- The exponential pdf is nonnegative-/
+/-- The exponential pdf is nonnegative -/
 lemma exponentialPDFReal_nonneg {r : ℝ} (hr : 0 < r) (x : ℝ) :
     0 ≤ exponentialPDFReal r x := gammaPDFReal_nonneg zero_lt_one hr x
 

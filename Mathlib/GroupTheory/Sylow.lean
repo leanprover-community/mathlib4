@@ -332,7 +332,8 @@ theorem Sylow.conj_eq_normalizer_conj_of_mem_centralizer [Fact p.Prime] [Finite 
 theorem Sylow.conj_eq_normalizer_conj_of_mem [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     [_hP : (P : Subgroup G).IsCommutative] (x g : G) (hx : x ∈ P) (hy : g⁻¹ * x * g ∈ P) :
     ∃ n ∈ (P : Subgroup G).normalizer, g⁻¹ * x * g = n⁻¹ * x * n :=
-  P.conj_eq_normalizer_conj_of_mem_centralizer x g (le_centralizer P hx) (le_centralizer P hy)
+  P.conj_eq_normalizer_conj_of_mem_centralizer x g
+    (le_centralizer (P : Subgroup G) hx) (le_centralizer (P : Subgroup G) hy)
 
 /-- Sylow `p`-subgroups are in bijection with cosets of the normalizer of a Sylow `p`-subgroup -/
 noncomputable def Sylow.equivQuotientNormalizer [Fact p.Prime] [Finite (Sylow p G)]
@@ -458,7 +459,7 @@ def fixedPointsMulLeftCosetsEquivQuotient (H : Subgroup G) [Finite (H : Set G)] 
       rfl)
 
 /-- If `H` is a `p`-subgroup of `G`, then the index of `H` inside its normalizer is congruent
-  mod `p` to the index of `H`.  -/
+  mod `p` to the index of `H`. -/
 theorem card_quotient_normalizer_modEq_card_quotient [Finite G] {p : ℕ} {n : ℕ} [hp : Fact p.Prime]
     {H : Subgroup G} (hH : Nat.card H = p ^ n) :
     Nat.card (normalizer H ⧸ Subgroup.comap ((normalizer H).subtype : normalizer H →* G) H) ≡
@@ -467,7 +468,7 @@ theorem card_quotient_normalizer_modEq_card_quotient [Finite G] {p : ℕ} {n : �
   exact ((IsPGroup.of_card hH).card_modEq_card_fixedPoints _).symm
 
 /-- If `H` is a subgroup of `G` of cardinality `p ^ n`, then the cardinality of the
-  normalizer of `H` is congruent mod `p ^ (n + 1)` to the cardinality of `G`.  -/
+  normalizer of `H` is congruent mod `p ^ (n + 1)` to the cardinality of `G`. -/
 theorem card_normalizer_modEq_card [Finite G] {p : ℕ} {n : ℕ} [hp : Fact p.Prime] {H : Subgroup G}
     (hH : Nat.card H = p ^ n) : Nat.card (normalizer H) ≡ Nat.card G [MOD p ^ (n + 1)] := by
   have : H.subgroupOf (normalizer H) ≃ H := (subgroupOfEquivOfLe le_normalizer).toEquiv
