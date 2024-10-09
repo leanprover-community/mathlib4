@@ -72,8 +72,13 @@ lemma lanObjObjIsoColimit_ι_inv
   simp [lanObjObjIsoColimit, LeftExtension.IsPointwiseLeftKanExtension.homFrom,
     pointwiseLeftKanExtensionIsPointwiseLeftKanExtension]
 
-example (X Y Z : C) (f f' : X ⟶ Y) (g : Z ⟶ X) (h : f = f') : g ≫ f = g ≫ f' := by
-  exact congrArg (CategoryStruct.comp g) h
+lemma lanObjObjIsoColimit_lanUnit_map_hom
+    (F : C ⥤ H) [HasPointwiseLeftKanExtension L F] (X : D) (f : CostructuredArrow L X) :
+    (L.lanUnit.app F).app f.left ≫ (L.lan.obj F).map f.hom ≫ (L.lanObjObjIsoColimit F X).hom =
+    Limits.colimit.ι (CostructuredArrow.proj L X ⋙ F) f := by
+  rw [← Category.assoc, ← Iso.eq_comp_inv]
+  symm
+  apply lanObjObjIsoColimit_ι_inv
 
 variable (H) in
 /-- The left Kan extension functor `L.Lan` is left adjoint to the
