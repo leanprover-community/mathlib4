@@ -83,10 +83,9 @@ theorem sign_θHom
   simp only [Prod.mk_mul_mk, mul_one, one_mul, map_mul, sign_ofSubtype, Finset.univ_eq_attach,
     mul_right_inj]
   rw [← MonoidHom.comp_apply]
-  simp only [Subgroup.noncommPiCoprod]
-  rw [MonoidHom.comp_noncommPiCoprod]
-  rw [MonoidHom.noncommPiCoprod_apply, Finset.noncommProd_eq_prod]
-  simp only [univ_eq_attach, MonoidHom.coe_comp, Subgroup.coeSubtype, Function.comp_apply]
+  simp only [Subgroup.noncommPiCoprod, MonoidHom.comp_noncommPiCoprod _,
+    MonoidHom.noncommPiCoprod_apply, univ_eq_attach, MonoidHom.coe_comp, Subgroup.coeSubtype,
+    Function.comp_apply, noncommProd_eq_prod]
 
 theorem cycleType_θHom
     (k : Perm (Function.fixedPoints g))
