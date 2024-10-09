@@ -311,7 +311,7 @@ instance {R₀} [CommRing R₀] [Algebra R₀ S] [Module R₀ P.Cotangent]
 
 noncomputable
 instance {R₁ R₂} [CommRing R₁] [CommRing R₂] [Algebra R₁ R₂]
-    [Algebra R₁ S] [Algebra R₂ S] [IsScalarTower R₁ R₂ S]
+    [Algebra R₁ S] [Algebra R₂ S]
     [Module R₁ P.Cotangent] [IsScalarTower R₁ S P.Cotangent]
     [Module R₂ P.Cotangent] [IsScalarTower R₂ S P.Cotangent]
     [IsScalarTower R₁ R₂ P.Cotangent] :
@@ -324,6 +324,7 @@ lemma subsingleton_h1Cotangent (P : Generators R S) :
   rw [← LinearMap.ker_eq_bot, Submodule.eq_bot_iff, subsingleton_iff_forall_eq 0, Subtype.forall']
   simp only [Subtype.ext_iff, Submodule.coe_zero]
 
+/-- The inclusion of `H¹(L_{S/R})` into the conormal space of a presentation. -/
 @[simps!] def h1Cotangentι : P.H1Cotangent →ₗ[S] P.Cotangent := Submodule.subtype _
 
 lemma h1Cotangentι_injective : Function.Injective P.h1Cotangentι := Subtype.val_injective
