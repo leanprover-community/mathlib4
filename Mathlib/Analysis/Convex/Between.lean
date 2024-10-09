@@ -7,6 +7,7 @@ import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.Analysis.Convex.Segment
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+import Mathlib.Tactic.Basepoint
 import Mathlib.Tactic.FieldSimp
 
 /-!
@@ -473,8 +474,8 @@ theorem Wbtw.sameRay_vsub {x y z : P} (h : Wbtw R x y z) : SameRay R (y -ᵥ x) 
   rcases ht0.lt_or_eq with (ht0' | rfl); swap; · simp
   rcases ht1.lt_or_eq with (ht1' | rfl); swap; · simp
   refine Or.inr (Or.inr ⟨1 - t, t, sub_pos.2 ht1', ht0', ?_⟩)
-  simp only [vadd_vsub, smul_smul, vsub_vadd_eq_vsub_sub, smul_sub, ← sub_smul]
-  ring_nf
+  basepoint V, P, x
+  module
 
 theorem Wbtw.sameRay_vsub_left {x y z : P} (h : Wbtw R x y z) : SameRay R (y -ᵥ x) (z -ᵥ x) := by
   rcases h with ⟨t, ⟨ht0, _⟩, rfl⟩
@@ -591,8 +592,10 @@ theorem wbtw_iff_left_eq_or_right_mem_image_Ici {x y z : P} :
     · exact wbtw_self_left _ _ _
     · rw [Set.mem_Ici] at hr
       refine ⟨r⁻¹, ⟨inv_nonneg.2 (zero_le_one.trans hr), inv_le_one hr⟩, ?_⟩
-      simp only [lineMap_apply, smul_smul, vadd_vsub]
-      rw [inv_mul_cancel₀ (one_pos.trans_le hr).ne', one_smul, vsub_vadd]
+      simp only [lineMap_apply]
+      basepoint V, P, x
+      match_scalars
+      field_simp
 
 theorem Wbtw.right_mem_image_Ici_of_left_ne {x y z : P} (h : Wbtw R x y z) (hne : x ≠ y) :
     z ∈ lineMap x y '' Set.Ici (1 : R) :=
@@ -618,10 +621,13 @@ theorem sbtw_iff_left_ne_and_right_mem_image_Ioi {x y z : P} :
       ⟨wbtw_iff_left_eq_or_right_mem_image_Ici.2
           (Or.inr (Set.mem_image_of_mem _ (Set.mem_of_mem_of_subset hr Set.Ioi_subset_Ici_self))),
         hne.symm, ?_⟩
-    rw [lineMap_apply, ← @vsub_ne_zero V, vsub_vadd_eq_vsub_sub]
-    nth_rw 1 [← one_smul R (y -ᵥ x)]
-    rw [← sub_smul, smul_ne_zero_iff, vsub_ne_zero, sub_ne_zero]
-    exact ⟨hr.ne, hne.symm⟩
+    rw [lineMap_apply]
+    have : (1 - r) • (y -ᵥ x) ≠ 0 := by
+      rw [smul_ne_zero_iff, vsub_ne_zero, sub_ne_zero]
+      exact ⟨hr.ne, hne.symm⟩
+    contrapose! this with H
+    basepoint V, P, x at *
+    linear_combination (norm := module) H
 
 theorem Sbtw.right_mem_image_Ioi {x y z : P} (h : Sbtw R x y z) :
     z ∈ lineMap x y '' Set.Ioi (1 : R) :=
@@ -698,10 +704,11 @@ theorem Wbtw.trans_left_right {w x y z : P} (h₁ : Wbtw R w y z) (h₂ : Wbtw R
           (sub_nonneg.2 (mul_le_one₀ ht₂.2 ht₁.1 ht₁.2)), div_le_one_of_le₀
             (sub_le_sub_right ht₁.2 _) (sub_nonneg.2 (mul_le_one₀ ht₂.2 ht₁.1 ht₁.2))⟩,
       ?_⟩
-  simp only [lineMap_apply, smul_smul, ← add_vadd, vsub_vadd_eq_vsub_sub, smul_sub, ← sub_smul,
-    ← add_smul, vadd_vsub, vadd_right_cancel_iff, div_mul_eq_mul_div, div_sub_div_same]
-  nth_rw 1 [← mul_one (t₁ - t₂ * t₁)]
-  rw [← mul_sub, mul_div_assoc]
+  simp only [lineMap_apply]
+  basepoint V, P, z
+  match_scalars
+  suffices H : ((t₁ - t₂ * t₁) * ((1 - t₂ * t₁) / (1 - t₂ * t₁)) + t₂ * t₁) = t₁ by
+    linear_combination (norm := { field_simp; ring }) -H
   by_cases h : 1 - t₂ * t₁ = 0
   · rw [sub_eq_zero, eq_comm] at h
     rw [h]
@@ -709,8 +716,7 @@ theorem Wbtw.trans_left_right {w x y z : P} (h₁ : Wbtw R w y z) (h₂ : Wbtw R
     exact
       eq_of_le_of_not_lt ht₁.2 fun ht₁lt =>
         (mul_lt_one_of_nonneg_of_lt_one_right ht₂.2 ht₁.1 ht₁lt).ne h
-  · rw [div_self h]
-    ring_nf
+  · field_simp
 
 theorem Wbtw.trans_right_left {w x y z : P} (h₁ : Wbtw R w x z) (h₂ : Wbtw R x y z) :
     Wbtw R w x y := by
@@ -774,13 +780,9 @@ theorem wbtw_iff_sameRay_vsub {x y z : P} : Wbtw R x y z ↔ SameRay R (y -ᵥ x
         ⟨div_nonneg hr₂.le (add_nonneg hr₁.le hr₂.le),
           div_le_one_of_le₀ (le_add_of_nonneg_left hr₁.le) (add_nonneg hr₁.le hr₂.le)⟩,
         ?_⟩
-    have h' : z = r₂⁻¹ • r₁ • (y -ᵥ x) +ᵥ y := by simp [h, hr₂.ne']
-    rw [eq_comm]
-    simp only [lineMap_apply, h', vadd_vsub_assoc, smul_smul, ← add_smul, eq_vadd_iff_vsub_eq,
-      smul_add]
-    convert (one_smul R (y -ᵥ x)).symm
-    field_simp [(add_pos hr₁ hr₂).ne', hr₂.ne']
-    ring
+    rw [lineMap_apply]
+    basepoint V, P, x at *
+    linear_combination (norm := match_scalars <;> { field_simp <;> ring }) congr(-(r₁ + r₂)⁻¹ • $h)
 
 variable (R)
 
