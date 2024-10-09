@@ -684,8 +684,11 @@ lemma isUniformEmbedding : IsUniformEmbedding ((↑) : Lp.simpleFunc E p μ → 
 
 @[deprecated (since := "2024-10-01")] alias uniformEmbedding := isUniformEmbedding
 
-protected theorem uniformInducing : UniformInducing ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
-  simpleFunc.isUniformEmbedding.toUniformInducing
+theorem isUniformInducing : IsUniformInducing ((↑) : Lp.simpleFunc E p μ → Lp E p μ) :=
+  simpleFunc.isUniformEmbedding.isUniformInducing
+
+@[deprecated (since := "2024-10-05")]
+alias uniformInducing := isUniformInducing
 
 lemma isDenseEmbedding (hp_ne_top : p ≠ ∞) :
     IsDenseEmbedding ((↑) : Lp.simpleFunc E p μ → Lp E p μ) := by

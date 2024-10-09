@@ -152,8 +152,6 @@ theorem not_small_nimber : ¬ Small.{u} Nimber.{max u v} :=
 
 namespace Ordinal
 
-variable {a b c : Ordinal.{u}}
-
 @[simp]
 theorem toNimber_symm_eq : toNimber.symm = Nimber.toOrdinal :=
   rfl

@@ -16,7 +16,7 @@ variable {α β : Type*}
 
 section Add
 
-variable [Preorder α] [Add α] [Sub α] [OrderedSub α] {a b c d : α}
+variable [Preorder α] [Add α] [Sub α] [OrderedSub α]
 
 theorem AddHom.le_map_tsub [Preorder β] [Add β] [Sub β] [OrderedSub β] (f : AddHom α β)
     (hf : Monotone f) (a b : α) : f a - f b ≤ f (a - b) := by
@@ -49,7 +49,7 @@ theorem OrderIso.map_tsub {M N : Type*} [Preorder M] [Add M] [Sub M] [OrderedSub
 section Preorder
 
 variable [Preorder α]
-variable [AddCommMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
+variable [AddCommMonoid α] [Sub α] [OrderedSub α]
 
 theorem AddMonoidHom.le_map_tsub [Preorder β] [AddCommMonoid β] [Sub β] [OrderedSub β] (f : α →+ β)
     (hf : Monotone f) (a b : α) : f a - f b ≤ f (a - b) :=

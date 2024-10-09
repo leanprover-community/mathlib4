@@ -119,6 +119,24 @@ lemma one_le_prod_of_one_le [Preorder M] [MulLeftMono M] {l : List M}
   rw [prod_cons]
   exact one_le_mul (hl₁ hd (mem_cons_self hd tl)) (ih fun x h => hl₁ x (mem_cons_of_mem hd h))
 
+@[to_additive]
+lemma max_prod_le (l : List α) (f g : α → M) [LinearOrder M]
+    [CovariantClass M M (· * ·) (· ≤ ·)] [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)] :
+    max (l.map f).prod (l.map g).prod ≤ (l.map fun i ↦ max (f i) (g i)).prod := by
+  rw [max_le_iff]
+  constructor <;> apply List.prod_le_prod' <;> intros
+  · apply le_max_left
+  · apply le_max_right
+
+@[to_additive]
+lemma prod_min_le [LinearOrder M] [CovariantClass M M (· * ·) (· ≤ ·)]
+    [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)] (l : List α) (f g : α → M) :
+    (l.map fun i ↦ min (f i) (g i)).prod ≤ min (l.map f).prod (l.map g).prod := by
+  rw [le_min_iff]
+  constructor <;> apply List.prod_le_prod' <;> intros
+  · apply min_le_left
+  · apply min_le_right
+
 end Monoid
 
 -- TODO: develop theory of tropical rings

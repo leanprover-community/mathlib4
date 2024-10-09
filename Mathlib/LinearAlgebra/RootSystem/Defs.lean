@@ -86,7 +86,7 @@ evaluates to `2`, and the permutation attached to each element of `ι` is compat
 reflections on the corresponding roots and coroots.
 
 It exists to allow for a convenient unification of the theories of root systems and root data. -/
-structure RootPairing extends PerfectPairing R M N :=
+structure RootPairing extends PerfectPairing R M N where
   /-- A parametrized family of vectors, called roots. -/
   root : ι ↪ M
   /-- A parametrized family of dual vectors, called coroots. -/
@@ -110,7 +110,7 @@ abbrev RootDatum (X₁ X₂ : Type*) [AddCommGroup X₁] [AddCommGroup X₂] := 
 
 Note that this is slightly more general than the usual definition in the sense that `N` is not
 required to be the dual of `M`. -/
-structure RootSystem extends RootPairing ι R M N :=
+structure RootSystem extends RootPairing ι R M N where
   span_eq_top : span R (range root) = ⊤
 
 attribute [simp] RootSystem.span_eq_top

@@ -58,7 +58,7 @@ instance (priority := 100) CanonicallyOrderedCommMonoid.existsMulOfLE (α : Type
 
 section CanonicallyOrderedCommMonoid
 
-variable [CanonicallyOrderedCommMonoid α] {a b c d : α}
+variable [CanonicallyOrderedCommMonoid α] {a b c : α}
 
 @[to_additive]
 theorem le_self_mul : a ≤ a * c :=

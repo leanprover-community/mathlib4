@@ -267,11 +267,14 @@ theorem uniformContinuous_comp (g : C(β, δ)) (hg : UniformContinuous g) :
     UniformOnFun.postcomp_uniformContinuous hg |>.comp
       isUniformEmbedding_toUniformOnFunIsCompact.uniformContinuous
 
-theorem uniformInducing_comp (g : C(β, δ)) (hg : UniformInducing g) :
-    UniformInducing (ContinuousMap.comp g : C(α, β) → C(α, δ)) :=
-  isUniformEmbedding_toUniformOnFunIsCompact.toUniformInducing.of_comp_iff.mp <|
-    UniformOnFun.postcomp_uniformInducing hg |>.comp
-      isUniformEmbedding_toUniformOnFunIsCompact.toUniformInducing
+theorem isUniformInducing_comp (g : C(β, δ)) (hg : IsUniformInducing g) :
+    IsUniformInducing (ContinuousMap.comp g : C(α, β) → C(α, δ)) :=
+  isUniformEmbedding_toUniformOnFunIsCompact.isUniformInducing.of_comp_iff.mp <|
+    UniformOnFun.postcomp_isUniformInducing hg |>.comp
+      isUniformEmbedding_toUniformOnFunIsCompact.isUniformInducing
+
+@[deprecated (since := "2024-10-05")]
+alias uniformInducing_comp := isUniformInducing_comp
 
 theorem isUniformEmbedding_comp (g : C(β, δ)) (hg : IsUniformEmbedding g) :
     IsUniformEmbedding (ContinuousMap.comp g : C(α, β) → C(α, δ)) :=
@@ -379,7 +382,7 @@ Sufficient conditions on `α` to satisfy this condition are (weak) local compact
 lemma completeSpace_of_restrictGenTopology (h : RestrictGenTopology {K : Set α | IsCompact K}) :
     CompleteSpace C(α, β) := by
   rw [completeSpace_iff_isComplete_range
-    isUniformEmbedding_toUniformOnFunIsCompact.toUniformInducing,
+    isUniformEmbedding_toUniformOnFunIsCompact.isUniformInducing,
     range_toUniformOnFunIsCompact, ← completeSpace_coe_iff_isComplete]
   exact (UniformOnFun.isClosed_setOf_continuous h).completeSpace_coe
 

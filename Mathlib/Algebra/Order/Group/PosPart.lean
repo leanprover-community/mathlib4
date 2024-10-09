@@ -242,12 +242,12 @@ end covariantmul
 end LinearOrder
 
 namespace Pi
-variable {ι : Type*} {α : ι → Type*} [∀ i, Lattice (α i)] [∀ i, AddCommGroup (α i)]
+variable {ι : Type*} {α : ι → Type*} [∀ i, Lattice (α i)] [∀ i, Group (α i)]
 
-@[to_additive (attr := simp)] lemma oneLePart_apply (f : ∀ i, α i) (i : ι) : f⁺ i = (f i)⁺ := rfl
-@[to_additive (attr := simp)] lemma leOnePart_apply (f : ∀ i, α i) (i : ι) : f⁻ i = (f i)⁻ := rfl
+@[to_additive (attr := simp)] lemma oneLePart_apply (f : ∀ i, α i) (i : ι) : f⁺ᵐ i = (f i)⁺ᵐ := rfl
+@[to_additive (attr := simp)] lemma leOnePart_apply (f : ∀ i, α i) (i : ι) : f⁻ᵐ i = (f i)⁻ᵐ := rfl
 
-@[to_additive] lemma oneLePart_def (f : ∀ i, α i) : f⁺ = fun i ↦ (f i)⁺ := rfl
-@[to_additive] lemma leOnePart_def (f : ∀ i, α i) : f⁻ = fun i ↦ (f i)⁻ := rfl
+@[to_additive] lemma oneLePart_def (f : ∀ i, α i) : f⁺ᵐ = fun i ↦ (f i)⁺ᵐ := rfl
+@[to_additive] lemma leOnePart_def (f : ∀ i, α i) : f⁻ᵐ = fun i ↦ (f i)⁻ᵐ := rfl
 
 end Pi

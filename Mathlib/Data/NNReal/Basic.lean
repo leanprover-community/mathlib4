@@ -907,7 +907,7 @@ theorem zpow_pos {x : ℝ≥0} (hx : x ≠ 0) (n : ℤ) : 0 < x ^ n :=
   zpow_pos_of_pos hx.bot_lt _
 
 theorem inv_lt_inv {x y : ℝ≥0} (hx : x ≠ 0) (h : x < y) : y⁻¹ < x⁻¹ :=
-  inv_lt_inv_of_lt hx.bot_lt h
+  inv_strictAnti₀ hx.bot_lt h
 
 end Inv
 

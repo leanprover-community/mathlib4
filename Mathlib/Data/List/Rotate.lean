@@ -104,15 +104,11 @@ theorem rotate_cons_succ (l : List α) (a : α) (n : ℕ) :
     (a :: l : List α).rotate (n + 1) = (l ++ [a]).rotate n := by
   rw [rotate_eq_rotate', rotate_eq_rotate', rotate'_cons_succ]
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 @[simp]
 theorem mem_rotate : ∀ {l : List α} {a : α} {n : ℕ}, a ∈ l.rotate n ↔ a ∈ l
   | [], _, n => by simp
   | a :: l, _, 0 => by simp
-  | a :: l, _, n + 1 => by simp [rotate_cons_succ, mem_rotate, _root_.or_comm]
+  | a :: l, _, n + 1 => by simp [rotate_cons_succ, mem_rotate, or_comm]
 
 @[simp]
 theorem length_rotate (l : List α) (n : ℕ) : (l.rotate n).length = l.length := by

@@ -241,7 +241,7 @@ theorem exists_mem_Ico_zpow (hx : 0 < x) (hy : 1 < y) : ∃ n : ℤ, x ∈ Ico (
           le_of_lt
             (by
               rw [zpow_neg y ↑N, zpow_natCast]
-              exact (inv_lt hx (lt_trans (inv_pos.2 hx) hN)).1 hN)⟩
+              exact (inv_lt_comm₀ hx (lt_trans (inv_pos.2 hx) hN)).1 hN)⟩
       let ⟨M, hM⟩ := pow_unbounded_of_one_lt x hy
       have hb : ∃ b : ℤ, ∀ m, y ^ m ≤ x → m ≤ b :=
         ⟨M, fun m hm =>
@@ -257,8 +257,8 @@ but with ≤ and < the other way around. -/
 theorem exists_mem_Ioc_zpow (hx : 0 < x) (hy : 1 < y) : ∃ n : ℤ, x ∈ Ioc (y ^ n) (y ^ (n + 1)) :=
   let ⟨m, hle, hlt⟩ := exists_mem_Ico_zpow (inv_pos.2 hx) hy
   have hyp : 0 < y := lt_trans zero_lt_one hy
-  ⟨-(m + 1), by rwa [zpow_neg, inv_lt (zpow_pos_of_pos hyp _) hx], by
-    rwa [neg_add, neg_add_cancel_right, zpow_neg, le_inv hx (zpow_pos_of_pos hyp _)]⟩
+  ⟨-(m + 1), by rwa [zpow_neg, inv_lt_comm₀ (zpow_pos_of_pos hyp _) hx], by
+    rwa [neg_add, neg_add_cancel_right, zpow_neg, le_inv_comm₀ hx (zpow_pos_of_pos hyp _)]⟩
 
 /-- For any `y < 1` and any positive `x`, there exists `n : ℕ` with `y ^ n < x`. -/
 theorem exists_pow_lt_of_lt_one (hx : 0 < x) (hy : y < 1) : ∃ n : ℕ, y ^ n < x := by
@@ -267,18 +267,18 @@ theorem exists_pow_lt_of_lt_one (hx : 0 < x) (hy : y < 1) : ∃ n : ℕ, y ^ n <
     simp only [pow_one]
     exact y_pos.trans_lt hx
   rw [not_le] at y_pos
-  rcases pow_unbounded_of_one_lt x⁻¹ (one_lt_inv y_pos hy) with ⟨q, hq⟩
-  exact ⟨q, by rwa [inv_pow, inv_lt_inv hx (pow_pos y_pos _)] at hq⟩
+  rcases pow_unbounded_of_one_lt x⁻¹ ((one_lt_inv₀ y_pos).2 hy) with ⟨q, hq⟩
+  exact ⟨q, by rwa [inv_pow, inv_lt_inv₀ hx (pow_pos y_pos _)] at hq⟩
 
 /-- Given `x` and `y` between `0` and `1`, `x` is between two successive powers of `y`.
 This is the same as `exists_nat_pow_near`, but for elements between `0` and `1` -/
 theorem exists_nat_pow_near_of_lt_one (xpos : 0 < x) (hx : x ≤ 1) (ypos : 0 < y) (hy : y < 1) :
     ∃ n : ℕ, y ^ (n + 1) < x ∧ x ≤ y ^ n := by
-  rcases exists_nat_pow_near (one_le_inv_iff.2 ⟨xpos, hx⟩) (one_lt_inv_iff.2 ⟨ypos, hy⟩) with
+  rcases exists_nat_pow_near (one_le_inv_iff₀.2 ⟨xpos, hx⟩) (one_lt_inv_iff₀.2 ⟨ypos, hy⟩) with
     ⟨n, hn, h'n⟩
   refine ⟨n, ?_, ?_⟩
-  · rwa [inv_pow, inv_lt_inv xpos (pow_pos ypos _)] at h'n
-  · rwa [inv_pow, inv_le_inv (pow_pos ypos _) xpos] at hn
+  · rwa [inv_pow, inv_lt_inv₀ xpos (pow_pos ypos _)] at h'n
+  · rwa [inv_pow, inv_le_inv₀ (pow_pos ypos _) xpos] at hn
 
 end LinearOrderedSemifield
 
