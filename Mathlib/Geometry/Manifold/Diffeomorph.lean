@@ -562,3 +562,27 @@ theorem smooth_transDiffeomorph_left {f : M → M'} :
   e.contMDiff_transDiffeomorph_left
 
 end Diffeomorph
+
+
+/-- The canonical identification between the tangent bundle to the model space and the product,
+as a homeomorphism -/
+def tangentBundleModelSpaceDiffeomorph :
+    TangentBundle I H ≃ₘ^n⟮I.tangent, I.prod 𝓘(𝕜, E)⟯ ModelProd H E :=
+  { TotalSpace.toProd H E with
+    continuous_toFun := by
+      let p : TangentBundle I H := ⟨I.symm (0 : E), (0 : E)⟩
+      have : Continuous (chartAt (ModelProd H E) p) := by
+        rw [continuous_iff_continuousOn_univ]
+        convert (chartAt (ModelProd H E) p).continuousOn
+        simp only [TangentSpace.fiberBundle, mfld_simps]
+      simpa only [mfld_simps] using this
+    continuous_invFun := by
+      let p : TangentBundle I H := ⟨I.symm (0 : E), (0 : E)⟩
+      have : Continuous (chartAt (ModelProd H E) p).symm := by
+        rw [continuous_iff_continuousOn_univ]
+        convert (chartAt (ModelProd H E) p).symm.continuousOn
+        simp only [mfld_simps]
+      simpa only [mfld_simps] using this }
+
+
+#exit

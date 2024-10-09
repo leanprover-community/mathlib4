@@ -607,7 +607,7 @@ protected lemma ContMDiffWithinAt.mpullbackWithin [CompleteSpace E]
   /- We want to apply the general theorem `ContMDiffWithinAt.clm_apply_of_inCoordinates`, stating
   that applying linear maps to vector fields gives a smooth result when the linear map and the
   vector field are smooth. This theorem is general, we will apply it to
-  `b₁ = f`, `b₂ = id`, `v = V ∘ f`, `ϕ = (mfderivWithin I I' f s x).inverse`-/
+  `b₁ = f`, `b₂ = id`, `v = V ∘ f`, `ϕ = fun x ↦ (mfderivWithin I I' f s x).inverse`-/
   let b₁ := f
   let b₂ : M → M := id
   let v : Π (x : M), TangentSpace I' (f x) := V ∘ f
@@ -675,12 +675,12 @@ lemma ContMDiffWithinAt.mpullbackWithin_of_eq [CompleteSpace E]
 Version on a set. -/
 protected lemma ContMDiffOn.mpullbackWithin [CompleteSpace E]
     (hV : ContMDiffOn I' I'.tangent m (fun (y : M') ↦ (V y : TangentBundle I' M')) t)
-    (hf : ContMDiffOn I I' n f s) (hf' : ∀ x ∈ s, (mfderivWithin I I' f s x).IsInvertible)
+    (hf : ContMDiffOn I I' n f s) (hf' : ∀ x ∈ s ∩ f ⁻¹' t, (mfderivWithin I I' f s x).IsInvertible)
     (hs : UniqueMDiffOn I s) (hmn : m + 1 ≤ n) :
     ContMDiffOn I I.tangent m
       (fun (y : M) ↦ (mpullbackWithin I I' f V s y : TangentBundle I M)) (s ∩ f ⁻¹' t) :=
   fun _ hx₀ ↦ ContMDiffWithinAt.mpullbackWithin
-    (hV _ hx₀.2) (hf _ hx₀.1) (hf' _ hx₀.1) hx₀.1 hs hmn
+    (hV _ hx₀.2) (hf _ hx₀.1) (hf' _ hx₀) hx₀.1 hs hmn
 
 /-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
 Version within a set at a point, but with full pullback. -/
@@ -703,6 +703,15 @@ protected lemma ContMDiffWithinAt.mpullback_of_eq [CompleteSpace E]
   subst hy₀
   exact ContMDiffWithinAt.mpullback hV hf hf' hmn
 
+/-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
+Version on a set, but with full pullback -/
+protected lemma ContMDiffOn.mpullback [CompleteSpace E]
+    (hV : ContMDiffOn I' I'.tangent m (fun (y : M') ↦ (V y : TangentBundle I' M')) t)
+    (hf : ContMDiff I I' n f) (hf' : ∀ x ∈ f ⁻¹' t, (mfderiv I I' f x).IsInvertible)
+    (hmn : m + 1 ≤ n) :
+    ContMDiffOn I I.tangent m
+      (fun (y : M) ↦ (mpullback I I' f V y : TangentBundle I M)) (f ⁻¹' t) :=
+  fun x₀ hx₀ ↦ ContMDiffWithinAt.mpullback (hV _ hx₀) (hf x₀) (hf' _ hx₀) hmn
 
 /-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
 Version at a point. -/
@@ -791,7 +800,19 @@ lemma mlieBracketWithin_eq_zero_of_eq_zero (hV : V x = 0) (hW : W x = 0) :
 open FiberBundle
 
 lemma glou : Smooth 𝓘(𝕜, E).tangent 𝓘(𝕜, E) (fun (p : TangentBundle 𝓘(𝕜, E) E) ↦ p.2) := by
-  simp
+  simp [Smooth, ContMDiff]
+  intro x
+  simp only [contMDiffAt_iff, extChartAt, PartialHomeomorph.extend,
+    PartialHomeomorph.refl_partialEquiv, PartialEquiv.refl_source,
+    PartialHomeomorph.singletonChartedSpace_chartAt_eq, modelWithCornersSelf_partialEquiv,
+    PartialEquiv.trans_refl, PartialEquiv.refl_coe, tangentBundle_model_space_chartAt,
+    modelWithCorners_prod_toPartialEquiv, PartialEquiv.refl_prod_refl, PartialEquiv.coe_trans_symm,
+    Equiv.toPartialEquiv_symm_apply, CompTriple.comp_eq, modelWithCorners_prod_coe,
+    modelWithCornersSelf_coe, Prod.map_id, range_id, PartialEquiv.coe_trans,
+    Equiv.toPartialEquiv_apply, comp_apply, id_eq]
+  constructor
+  ·
+
 
 #exit
 
