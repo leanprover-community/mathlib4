@@ -54,6 +54,9 @@ theorem dirac_apply [MeasurableSingletonClass α] (a : α) (s : Set α) :
     dirac a s ≤ dirac a {a}ᶜ := measure_mono (subset_compl_comm.1 <| singleton_subset_iff.2 h)
     _ = 0 := by simp [dirac_apply' _ (measurableSet_singleton _).compl]
 
+@[simp] lemma dirac_ne_zero : dirac a ≠ 0 :=
+  fun h ↦ by simpa [h] using dirac_apply_of_mem (mem_univ a)
+
 theorem map_dirac {f : α → β} (hf : Measurable f) (a : α) : (dirac a).map f = dirac (f a) := by
   classical
   exact ext fun s hs => by simp [hs, map_apply hf hs, hf hs, indicator_apply]

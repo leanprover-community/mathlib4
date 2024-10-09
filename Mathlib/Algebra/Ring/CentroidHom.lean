@@ -61,8 +61,8 @@ attribute [nolint docBlame] CentroidHom.toAddMonoidHom
 /-- `CentroidHomClass F α` states that `F` is a type of centroid homomorphisms.
 
 You should extend this class when you extend `CentroidHom`. -/
-class CentroidHomClass (F α : Type*) [NonUnitalNonAssocSemiring α] [FunLike F α α] extends
-  AddMonoidHomClass F α α : Prop where
+class CentroidHomClass (F : Type*) (α : outParam Type*)
+    [NonUnitalNonAssocSemiring α] [FunLike F α α] extends AddMonoidHomClass F α α : Prop where
   /-- Commutativity of centroid homomorphims with left multiplication. -/
   map_mul_left (f : F) (a b : α) : f (a * b) = a * f b
   /-- Commutativity of centroid homomorphims with right multiplication. -/
@@ -475,8 +475,9 @@ def centerToCentroidCenter :
     simp only [ZeroMemClass.coe_zero, map_zero]
     exact rfl
   map_add' := fun _ _ => by
-    simp only [AddSubmonoid.coe_add, NonUnitalSubsemiring.coe_toAddSubmonoid, map_add]
-    exact rfl
+    dsimp
+    simp only [map_add]
+    rfl
   map_mul' z₁ z₂ := by ext a; exact (z₁.prop.left_assoc z₂ a).symm
 
 instance : FunLike (Subsemiring.center (CentroidHom α)) α α where

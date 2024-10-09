@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 import Mathlib.RingTheory.Polynomial.IntegralNormalization
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Algebraic elements and algebraic extensions
@@ -79,7 +80,7 @@ theorem Subalgebra.isAlgebraic_iff (S : Subalgebra R A) :
 /-- An algebra is algebraic if and only if it is algebraic as a subalgebra. -/
 theorem Algebra.isAlgebraic_iff : Algebra.IsAlgebraic R A ↔ (⊤ : Subalgebra R A).IsAlgebraic := by
   delta Subalgebra.IsAlgebraic
-  simp only [Algebra.isAlgebraic_def, Algebra.mem_top, forall_prop_of_true, iff_self_iff]
+  simp only [Algebra.isAlgebraic_def, Algebra.mem_top, forall_prop_of_true]
 
 theorem isAlgebraic_iff_not_injective {x : A} :
     IsAlgebraic R x ↔ ¬Function.Injective (Polynomial.aeval x : R[X] →ₐ[R] A) := by

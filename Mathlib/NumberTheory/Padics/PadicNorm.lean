@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
 import Mathlib.Algebra.Order.Field.Power
-import Mathlib.NumberTheory.Padics.PadicVal
+import Mathlib.NumberTheory.Padics.PadicVal.Basic
 
 /-!
 # p-adic norm
@@ -92,7 +92,7 @@ theorem padicNorm_of_prime_of_ne {q : ℕ} [p_prime : Fact p.Prime] [q_prime : F
 
 See also `padicNorm.padicNorm_p_lt_one_of_prime` for a version assuming `p` is prime. -/
 theorem padicNorm_p_lt_one (hp : 1 < p) : padicNorm p p < 1 := by
-  rw [padicNorm_p hp, inv_lt_one_iff]
+  rw [padicNorm_p hp, inv_lt_one_iff₀]
   exact mod_cast Or.inr hp
 
 /-- The `p`-adic norm of `p` is less than `1` if `p` is prime.
@@ -246,7 +246,7 @@ theorem int_eq_one_iff (m : ℤ) : padicNorm p m = 1 ↔ ¬(p : ℤ) ∣ m := by
   simp only [dvd_iff_norm_le, Int.cast_natCast, Nat.cast_one, zpow_neg, zpow_one, not_le]
   constructor
   · intro h
-    rw [h, inv_lt_one_iff_of_pos] <;> norm_cast
+    rw [h, inv_lt_one₀] <;> norm_cast
     · exact Nat.Prime.one_lt Fact.out
     · exact Nat.Prime.pos Fact.out
   · simp only [padicNorm]
@@ -262,7 +262,7 @@ theorem int_eq_one_iff (m : ℤ) : padicNorm p m = 1 ↔ ¬(p : ℤ) ∣ m := by
 
 theorem int_lt_one_iff (m : ℤ) : padicNorm p m < 1 ↔ (p : ℤ) ∣ m := by
   rw [← not_iff_not, ← int_eq_one_iff, eq_iff_le_not_lt]
-  simp only [padicNorm.of_int, true_and_iff]
+  simp only [padicNorm.of_int, true_and]
 
 theorem of_nat (m : ℕ) : padicNorm p m ≤ 1 :=
   padicNorm.of_int (m : ℤ)

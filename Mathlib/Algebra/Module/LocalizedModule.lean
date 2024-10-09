@@ -402,6 +402,29 @@ noncomputable instance isModule' : Module R (LocalizedModule S M) :=
 theorem smul'_mk (r : R) (s : S) (m : M) : r • mk m s = mk (r • m) s := by
   erw [mk_smul_mk r m 1 s, one_mul]
 
+lemma smul_eq_iff_of_mem
+    (r : R) (hr : r ∈ S) (x y : LocalizedModule S M) :
+    r • x = y ↔ x = Localization.mk 1 ⟨r, hr⟩ • y := by
+  induction x using induction_on with
+  | h m s =>
+    induction y using induction_on with
+    | h n t =>
+      rw [smul'_mk, mk_smul_mk, one_smul, mk_eq, mk_eq]
+      simp only [Subtype.exists, Submonoid.mk_smul, exists_prop]
+      fconstructor
+      · rintro ⟨a, ha, eq1⟩
+        refine ⟨a, ha, ?_⟩
+        rw [mul_smul, ← eq1, Submonoid.mk_smul, smul_comm r t]
+      · rintro ⟨a, ha, eq1⟩
+        refine ⟨a, ha, ?_⟩
+        rw [← eq1, mul_comm, mul_smul, Submonoid.mk_smul]
+        rfl
+
+lemma eq_zero_of_smul_eq_zero
+    (r : R) (hr : r ∈ S) (x : LocalizedModule S M) (hx : r • x = 0) : x = 0 := by
+  rw [smul_eq_iff_of_mem (hr := hr)] at hx
+  rw [hx, smul_zero]
+
 theorem smul'_mul {A : Type*} [Semiring A] [Algebra R A] (x : T) (p₁ p₂ : LocalizedModule S A) :
     x • p₁ * p₂ = x • (p₁ * p₂) := by
   induction p₁, p₂ using induction_on₂ with | _ a₁ s₁ a₂ s₂ => _
