@@ -579,7 +579,7 @@ open MeasureTheory Module
 
 /-- A measure `μ` has temperate growth if there is an `n : ℕ` such that `(1 + ‖x‖) ^ (- n)` is
 `μ`-integrable. -/
-class _root_.MeasureTheory.Measure.HasTemperateGrowth (μ : Measure D) : Prop :=
+class _root_.MeasureTheory.Measure.HasTemperateGrowth (μ : Measure D) : Prop where
   exists_integrable : ∃ (n : ℕ), Integrable (fun x ↦ (1 + ‖x‖) ^ (- (n : ℝ))) μ
 
 open Classical in

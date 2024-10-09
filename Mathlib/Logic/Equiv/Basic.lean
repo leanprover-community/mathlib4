@@ -52,7 +52,7 @@ universe u v w z
 open Function
 
 -- Unless required to be `Type*`, all variables in this file are `Sort*`
-variable {α α₁ α₂ β β₁ β₂ γ γ₁ γ₂ δ : Sort*}
+variable {α α₁ α₂ β β₁ β₂ γ δ : Sort*}
 
 namespace Equiv
 

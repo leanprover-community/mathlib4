@@ -1050,7 +1050,7 @@ attribute [to_additive] Group
 
 section Group
 
-variable [Group G] {a b c : G}
+variable [Group G] {a b : G}
 
 @[to_additive (attr := simp)]
 theorem inv_mul_cancel (a : G) : a⁻¹ * a = 1 :=

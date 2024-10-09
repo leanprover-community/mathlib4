@@ -1252,7 +1252,7 @@ theorem linearIndependent_option' :
     LinearIndependent K (fun o => Option.casesOn' o x v : Option ι → V) ↔
       LinearIndependent K v ∧ x ∉ Submodule.span K (range v) := by
   -- Porting note: Explicit universe level is required in `Equiv.optionEquivSumPUnit`.
-  rw [← linearIndependent_equiv (Equiv.optionEquivSumPUnit.{_, u'} ι).symm, linearIndependent_sum,
+  rw [← linearIndependent_equiv (Equiv.optionEquivSumPUnit.{u', _} ι).symm, linearIndependent_sum,
     @range_unique _ PUnit, @linearIndependent_unique_iff PUnit, disjoint_span_singleton]
   dsimp [(· ∘ ·)]
   refine ⟨fun h => ⟨h.1, fun hx => h.2.1 <| h.2.2 hx⟩, fun h => ⟨h.1, ?_, fun hx => (h.2 hx).elim⟩⟩
