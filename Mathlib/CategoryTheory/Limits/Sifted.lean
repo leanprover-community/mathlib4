@@ -35,9 +35,11 @@ API to produce `IsSifted` instances.
 noncomputable section
 
 universe w v v₁ u u₁
-open CategoryTheory.MonoidalCategory CategoryTheory.Functor CategoryTheory.Limits CategoryTheory
 
 namespace CategoryTheory
+
+open MonoidalCategory Functor Limits
+
 
 section ArbitraryUniverses
 
