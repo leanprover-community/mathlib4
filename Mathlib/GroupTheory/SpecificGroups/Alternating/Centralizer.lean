@@ -49,24 +49,7 @@ theorem sameCycle_iff_cycleOf_eq_of_mem_support
     rw [← mem_support_cycleOf_iff' (mem_support.mp hx), h]
     rw [mem_support_cycleOf_iff' (mem_support.mp hy)]
 
-/- theorem cycleType_prime_order' (σ : Equiv.Perm α) (p : ℕ) [hp : Fact (Nat.Prime p)] :
-    σ ^ p = 1 ↔ ∃ (n : ℕ), σ.cycleType = Multiset.replicate n p := by
-  constructor
-  · intro hσ
-    by_cases hσ' : σ = 1
-    · use 0; simp [hσ']
-    · suffices orderOf σ = p by
-        rw [← this]
-        obtain ⟨n, h⟩ := σ.cycleType_prime_order (by rw [this]; exact hp.elim)
-        use n + 1, h
-      exact orderOf_eq_prime hσ hσ'
-  · rintro ⟨n, h⟩
-    rw [Multiset.eq_replicate] at h
-    rw [← orderOf_dvd_iff_pow_eq_one, ← lcm_cycleType, Multiset.lcm_dvd]
-    intro b hb; simp only [h.2 b hb, dvd_refl]
--/
-
- theorem cycleType_prime_order' (σ : Equiv.Perm α) (p : ℕ) [hp : Fact (Nat.Prime p)] :
+theorem pow_prime_eq_one_iff {σ : Equiv.Perm α} {p : ℕ} [hp : Fact (Nat.Prime p)] :
     σ ^ p = 1 ↔ ∀ c ∈ σ.cycleType, c = p := by
   constructor
   · intro hσ
@@ -83,24 +66,9 @@ theorem sameCycle_iff_cycleOf_eq_of_mem_support
     rw [← orderOf_dvd_iff_pow_eq_one, ← lcm_cycleType, Multiset.lcm_dvd]
     intro b hb; simp only [h b hb, dvd_refl]
 
-
 end
 
 section NoncommCoProd
-
-theorem MonoidHom.comp_noncommPiCoprod {M : Type*} [Monoid M] {ι : Type*} [Fintype ι]
-    {N : ι → Type u_3} [(i : ι) → Monoid (N i)]
-    (ϕ : (i : ι) → N i →* M)
-    (hcomm : Pairwise fun i j => ∀ x y, Commute ((ϕ i) x) ((ϕ j) y))
-    {P : Type*} [Monoid P] (f : M →* P)
-    (hcomm' : Pairwise fun i j => ∀ x y, Commute (f.comp (ϕ i) x) (f.comp (ϕ j) y) :=
-      Pairwise.mono hcomm (fun i j ↦ forall_imp (fun x h y ↦ by
-        simp only [MonoidHom.coe_comp, Function.comp_apply, Commute.map  (h y) f]))) :
-    f.comp (MonoidHom.noncommPiCoprod ϕ hcomm) =
-      MonoidHom.noncommPiCoprod (fun i ↦ f.comp (ϕ i)) hcomm' :=
-  MonoidHom.ext fun _ ↦ by
-    simp only [MonoidHom.noncommPiCoprod, MonoidHom.coe_comp, MonoidHom.coe_mk, OneHom.coe_mk,
-      Function.comp_apply, map_noncommProd]
 
 end NoncommCoProd
 
@@ -301,7 +269,7 @@ theorem count_le_one_of_centralizer_le_alternating
       specialize hτ ⟨c, hc⟩
       simp only [τ, Equiv.swap_apply_left] at hτ
       rw [hτ, mul_two]
-    rw [← cycleType_prime_order', ← Subgroup.coe_pow, ← Subgroup.coe_one, Subtype.coe_inj]
+    rw [← pow_prime_eq_one_iff, ← Subgroup.coe_pow, ← Subgroup.coe_one, Subtype.coe_inj]
     simp only [k, ← map_pow]
     suffices  (⟨τ, hτ⟩ : range_toPermHom' g) ^ 2 = 1  by
       simp only [this, map_one, OneMemClass.coe_one]
