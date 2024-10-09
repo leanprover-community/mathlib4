@@ -854,7 +854,7 @@ example (e : α ≃ β) {x : β → α} (h : e.invFun = x) : (Equiv.symm2.invFun
 end NestedNonFullyApplied
 
 -- test that type classes which are props work
-class PropClass (n : ℕ) : Prop
+class PropClass (n : ℕ) : Prop where
   has_true : True
 
 instance has_PropClass (n : ℕ) : PropClass n := ⟨trivial⟩
