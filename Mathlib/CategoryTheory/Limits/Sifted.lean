@@ -27,6 +27,10 @@ API to produce `IsSifted` instances.
   itself sifted.
 - `IsSiftedOfIsFiltered`: A filtered category is sifted.
 - `IsSiftedOfHasBinaryCoproductsAndNonempty`: A nonempty category with binary copreducts is sifted.
+
+## References
+- [nLab, *Sifted category*](https://ncatlab.org/nlab/show/sifted+category)
+- [*Algebraic Theories*, Chapter 2.][Adámek_Rosický_Vitale_2010]
 -/
 noncomputable section
 
