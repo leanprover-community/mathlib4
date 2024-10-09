@@ -282,6 +282,9 @@ theorem zero_or_succ_or_limit (o : Ordinal) : o = 0 ∨ (∃ a, o = succ a) ∨ 
     if h : ∃ a, o = succ a then Or.inr (Or.inl h)
     else Or.inr <| Or.inr ⟨o0, fun _a => (succ_lt_of_not_succ h).2⟩
 
+theorem isLimit_of_not_succ_of_ne_zero {o : Ordinal} (h : ¬∃ a, o = succ a) (h' : o ≠ 0) :
+    IsLimit o := ((zero_or_succ_or_limit o).resolve_left h').resolve_left h
+
 /-- Main induction principle of ordinals: if one can prove a property by
   induction at successor ordinals and at limit ordinals, then it holds for all ordinals. -/
 @[elab_as_elim]
@@ -331,6 +334,61 @@ theorem boundedLimitRec_limit {l} (lLim : l.IsLimit) {C} (o H₁ H₂ H₃ oLim)
     @boundedLimitRecOn l lLim C x H₁ H₂ H₃) := by
   rw [boundedLimitRecOn, limitRecOn_limit]
   rfl
+
+/-- Bounded recursion on ordinals. Similar to `limitRecOn`, with the assumption `o < l`
+  added to all cases. The final term's domain is the ordinals below `Iio l`. -/
+@[elab_as_elim]
+def boundedLimitRec {l : Ordinal} (hLim : l.IsLimit) {C : Iio l → Sort*} (H₁ : C ⟨0, hLim.pos⟩)
+    (H₂ : (o : Iio l) → C o → C ⟨o + 1, hLim.succ_lt o.2⟩)
+    (H₃ : (o : Iio l) → IsLimit o → (Π o' < o, C o') → C o) :
+    (o : Iio l) → C o :=
+  fun o ↦ limitRecOn (C := fun p ↦ (h : p < l) → C ⟨p, h⟩) o.1 (fun _ ↦ H₁)
+    (fun o ih h ↦ H₂ ⟨o, _⟩ <| ih <| (lt_succ o).trans h)
+    (fun _o ho ih _ ↦ H₃ _ ho fun _o' h ↦ ih _ h _) o.2
+
+@[simp]
+theorem boundedLimitRec_zero {l} (lLim : l.IsLimit) {C} (H₁ H₂ H₃) :
+    @boundedLimitRec l lLim C H₁ H₂ H₃ ⟨0, lLim.pos⟩ = H₁ := by
+  simp_all only [boundedLimitRec, limitRecOn_zero, id_eq,
+    eq_mpr_eq_cast, eq_mp_eq_cast, cast_cast, cast_eq]
+
+@[simp]
+theorem boundedLimitRec_succ {l} (lLim : l.IsLimit) {C} (o : Iio l) (H₁ H₂ H₃) :
+    @boundedLimitRec l lLim C H₁ H₂ H₃ ⟨succ o.1, lLim.succ_lt o.2⟩ = H₂ o
+    (@boundedLimitRec l lLim C H₁ H₂ H₃ o) := by
+  simp_all only [add_one_eq_succ, boundedLimitRec, eq_mpr_eq_cast, eq_mp_eq_cast,
+    limitRecOn_succ, dite_true, cast_cast, cast_eq]
+
+@[simp]
+theorem boundedLimitRec_limit {l : Ordinal} (lLim : l.IsLimit) {C} (o H₁ H₂ H₃ oLim) :
+    @boundedLimitRec l lLim C H₁ H₂ H₃ o = H₃ o oLim (fun x _ ↦
+    @boundedLimitRec l lLim C H₁ H₂ H₃ x) := by
+  simp_all only [boundedLimitRec, eq_mpr_eq_cast, eq_mp_eq_cast, limitRecOn_limit,
+    dite_true, cast_cast, cast_eq]
+
+/-- Bounded recursion on the ordinals with a constant return type. Similar to `boundedLimitRec`,
+  but with a constant motive function. Useful for defining functions to ordinals. -/
+def boundedLimitRec' {α : Sort*} {l : Ordinal} (lLim : l.IsLimit) (H₁ : α)
+    (H₂ : (o : Iio l) → α → α) (H₃ : (o : Iio l) → IsLimit o → (Π o' < o, α) → α) :
+    Iio l → α := fun o ↦
+  boundedLimitRec lLim (C := fun _ ↦ α) H₁ H₂ H₃ o
+
+@[simp]
+theorem boundedLimitRec'_zero {α} {l} (lLim : l.IsLimit) (H₁ H₂ H₃) :
+    @boundedLimitRec' α l lLim H₁ H₂ H₃ ⟨0, lLim.pos⟩ = H₁ := by
+  simp_all only [boundedLimitRec', boundedLimitRec_zero]
+
+@[simp]
+theorem boundedLimitRec'_succ {α} {l} (lLim : l.IsLimit) (o H₁ H₂ H₃) :
+    @boundedLimitRec' α l lLim H₁ H₂ H₃ ⟨succ o.1, lLim.succ_lt o.2⟩ =
+    H₂ o (@boundedLimitRec' α l lLim H₁ H₂ H₃ o) := by
+  simp only [boundedLimitRec', lLim.succ_lt o.2, boundedLimitRec_succ]
+
+@[simp]
+theorem boundedLimitRec'_limit {α} {l : Ordinal} (lLim : l.IsLimit) (o H₁ H₂ H₃ oLim) :
+    @boundedLimitRec' α l lLim H₁ H₂ H₃ o = H₃ o oLim fun x _ ↦
+    @boundedLimitRec' α l lLim H₁ H₂ H₃ x := by
+  simp_all only [boundedLimitRec', boundedLimitRec_limit]
 
 instance orderTopToTypeSucc (o : Ordinal) : OrderTop (succ o).toType :=
   @OrderTop.mk _ _ (Top.mk _) le_enum_succ
@@ -1923,6 +1981,20 @@ theorem IsNormal.eq_iff_zero_and_succ {f g : Ordinal.{u} → Ordinal.{u}} (hf : 
         ext b hb
         exact H b hb⟩
 
+theorem iSup_eq_bsup {δ : Ordinal.{u}} (h : 0 ≠ δ) (s : Iio δ → Ordinal.{u}) :
+    iSup s = bsup δ (fun o h ↦ s ⟨o, h⟩) := by
+  haveI : Nonempty (Iio δ) := ⟨0, lt_of_le_not_le (Ordinal.zero_le δ) fun h' ↦
+      h (Ordinal.le_zero.mp h').symm⟩
+  set g : Π o < δ, Ordinal := fun o h ↦ s ⟨o, h⟩
+  refine le_antisymm ?_ ?_
+  · apply (ciSup_le_iff (by apply bddAbove_of_small)).mpr
+    intro o
+    exact le_bsup g o.1 o.2
+  · apply bsup_le
+    intro o ho
+    dsimp [g]
+    apply le_ciSup; apply bddAbove_of_small
+
 /-- A two-argument version of `Ordinal.blsub`.
 We don't develop a full API for this, since it's only used in a handful of existence results. -/
 def blsub₂ (o₁ o₂ : Ordinal) (op : {a : Ordinal} → (a < o₁) → {b : Ordinal} → (b < o₂) → Ordinal) :
@@ -2515,6 +2587,30 @@ theorem sup_mul_nat (o : Ordinal) : (sup fun n : ℕ => o * n) = o * ω := by
   · rw [zero_mul]
     exact sup_eq_zero_iff.2 fun n => zero_mul (n : Ordinal)
   · exact (mul_isNormal ho).apply_omega0
+
+/-- The natural isomorphism between ℕ and the first ω ordinals. -/
+def relIso_nat_omega : ℕ ≃o Iio ω where
+  toFun n := ⟨n, nat_lt_omega n⟩
+  invFun n := Classical.choose (lt_omega.1 n.2)
+  left_inv n := by
+    have h : ∃ m : ℕ, n = (m : Ordinal) := ⟨n, rfl⟩
+    exact (Ordinal.natCast_inj.1 (Classical.choose_spec h)).symm
+  right_inv n := Subtype.eq (Classical.choose_spec (lt_omega.1 n.2)).symm
+  map_rel_iff' := @natCast_le
+
+theorem relIso_nat_omega.symm_eq {o : Ordinal} (h : o < ω) :
+    relIso_nat_omega.symm ⟨o, h⟩ = o := by
+  rcases lt_omega.mp h with ⟨n, rfl⟩
+  exact congrArg Nat.cast <| relIso_nat_omega.symm_apply_apply n
+
+theorem strictMono_of_succ_lt_omega {o : Ordinal} (f : Iio ω → Iio o)
+    (hf : ∀ i, f i < f ⟨succ i, omega_isLimit.succ_lt i.2⟩) (i j) (h : i < j) : f i < f j := by
+  have mono := strictMono_nat_of_lt_succ fun n ↦ hf ⟨n, nat_lt_omega n⟩
+  have := mono <| (OrderIso.lt_iff_lt relIso_nat_omega.symm).mpr h
+  change f ⟨relIso_nat_omega.symm ⟨i.1, i.2⟩, _⟩ <
+    f ⟨relIso_nat_omega.symm ⟨j.1, j.2⟩, _⟩ at this
+  simp_rw [relIso_nat_omega.symm_eq] at this
+  exact this
 
 end Ordinal
 

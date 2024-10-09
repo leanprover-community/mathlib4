@@ -1015,6 +1015,13 @@ noncomputable def enumIsoToType (o : Ordinal) : Set.Iio o ≃o o.toType where
     rintro ⟨a, _⟩ ⟨b, _⟩
     apply enum_le_enum'
 
+instance {o : Ordinal} : IsWellOrder (Iio o) (· < ·) := IsWellOrder.mk
+
+@[simp]
+theorem type_Iio (o : Ordinal.{u}) : type (α := Iio o) (· < ·) = lift.{u + 1, u} o := by
+  rw [← type_lt o, ← lift_id.{u + 1} (type _), lift_type_eq.{u + 1, u, u + 1}]
+  exact ⟨(typein.principalSeg o.out.r).subrelIso⟩
+
 @[deprecated (since := "2024-08-26")]
 alias enumIsoOut := enumIsoToType
 
