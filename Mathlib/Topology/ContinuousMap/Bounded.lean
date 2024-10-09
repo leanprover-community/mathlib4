@@ -524,7 +524,7 @@ theorem arzela_ascoli₂ (s : Set β) (hs : IsCompact s) (A : Set (α →ᵇ β)
       fun f hf => ?_
   · haveI : CompactSpace s := isCompact_iff_compactSpace.1 hs
     refine arzela_ascoli₁ _ (continuous_iff_isClosed.1 (continuous_comp M) _ closed) ?_
-    rw [isUniformEmbedding_subtype_val.toUniformInducing.equicontinuous_iff]
+    rw [isUniformEmbedding_subtype_val.isUniformInducing.equicontinuous_iff]
     exact H.comp (A.restrictPreimage F)
   · let g := codRestrict s f fun x => in_s f x hf
     rw [show f = F g by ext; rfl] at hf ⊢

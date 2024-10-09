@@ -281,7 +281,7 @@ theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
 from the same statement for closed subsets -/
 instance NonemptyCompacts.completeSpace [CompleteSpace α] : CompleteSpace (NonemptyCompacts α) :=
   (completeSpace_iff_isComplete_range
-        NonemptyCompacts.ToCloseds.isUniformEmbedding.toUniformInducing).2 <|
+        NonemptyCompacts.ToCloseds.isUniformEmbedding.isUniformInducing).2 <|
     NonemptyCompacts.isClosed_in_closeds.isComplete
 
 /-- In a compact space, the type of nonempty compact subsets is compact. This follows from

@@ -36,7 +36,7 @@ theorem isUniformEmbedding_iff' [MetricSpace β] {f : γ → β} :
     IsUniformEmbedding f ↔
       (∀ ε > 0, ∃ δ > 0, ∀ {a b : γ}, dist a b < δ → dist (f a) (f b) < ε) ∧
         ∀ δ > 0, ∃ ε > 0, ∀ {a b : γ}, dist (f a) (f b) < ε → dist a b < δ := by
-  rw [isUniformEmbedding_iff_uniformInducing, uniformInducing_iff, uniformContinuous_iff]
+  rw [isUniformEmbedding_iff_isUniformInducing, isUniformInducing_iff, uniformContinuous_iff]
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_iff' := isUniformEmbedding_iff'
