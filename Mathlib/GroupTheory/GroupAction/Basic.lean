@@ -464,7 +464,7 @@ theorem pretransitive_iff_subsingleton_quotient :
   · refine Quot.inductionOn a (fun x ↦ ?_)
     exact Quot.inductionOn b (fun y ↦ Quot.sound <| exists_smul_eq G y x)
   · have h : Quotient.mk (orbitRel G α) b = ⟦a⟧ := Subsingleton.elim _ _
-    exact Quotient.eq_rel.mp h
+    exact Quotient.eq''.mp h
 
 /-- If `α` is non-empty, an action is pretransitive if and only if the quotient has exactly one
 element. -/

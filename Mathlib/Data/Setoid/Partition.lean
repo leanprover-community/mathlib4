@@ -75,7 +75,7 @@ theorem card_classes_ker_le {α β : Type*} [Fintype β] (f : α → β)
 /-- Two equivalence relations are equal iff all their equivalence classes are equal. -/
 theorem eq_iff_classes_eq {r₁ r₂ : Setoid α} :
     r₁ = r₂ ↔ ∀ x, { y | r₁ x y } = { y | r₂ x y } :=
-  ⟨fun h _x => h ▸ rfl, fun h => ext' fun x => Set.ext_iff.1 <| h x⟩
+  ⟨fun h _x => h ▸ rfl, fun h => ext fun x => Set.ext_iff.1 <| h x⟩
 
 theorem rel_iff_exists_classes (r : Setoid α) {x y} : r x y ↔ ∃ c ∈ r.classes, x ∈ c ∧ y ∈ c :=
   ⟨fun h => ⟨_, r.mem_classes y, h, r.refl' y⟩, fun ⟨c, ⟨z, hz⟩, hx, hy⟩ => by
@@ -84,7 +84,7 @@ theorem rel_iff_exists_classes (r : Setoid α) {x y} : r x y ↔ ∃ c ∈ r.cla
 
 /-- Two equivalence relations are equal iff their equivalence classes are equal. -/
 theorem classes_inj {r₁ r₂ : Setoid α} : r₁ = r₂ ↔ r₁.classes = r₂.classes :=
-  ⟨fun h => h ▸ rfl, fun h => ext' fun a b => by simp only [rel_iff_exists_classes, exists_prop, h]⟩
+  ⟨fun h => h ▸ rfl, fun h => ext fun a b => by simp only [rel_iff_exists_classes, exists_prop, h]⟩
 
 /-- The empty set is not an equivalence class. -/
 theorem empty_not_mem_classes {r : Setoid α} : ∅ ∉ r.classes := fun ⟨y, hy⟩ =>
@@ -145,7 +145,7 @@ def setoidOfDisjointUnion {c : Set (Set α)} (hu : Set.sUnion c = @Set.univ α)
 /-- The equivalence relation made from the equivalence classes of an equivalence
     relation r equals r. -/
 theorem mkClasses_classes (r : Setoid α) : mkClasses r.classes classes_eqv_classes = r :=
-  ext' fun x _y =>
+  ext fun x _y =>
     ⟨fun h => r.symm' (h { z | r z x } (r.mem_classes x) <| r.refl' x), fun h _b hb hx =>
       eq_of_mem_classes (r.mem_classes x) (r.refl' x) hb hx ▸ r.symm' h⟩
 
@@ -382,7 +382,7 @@ instance [Inhabited α] : Inhabited hs.Quotient :=
   ⟨hs.proj default⟩
 
 theorem proj_eq_iff {x y : α} : hs.proj x = hs.proj y ↔ hs.index x = hs.index y :=
-  Quotient.eq_rel
+  Quotient.eq''
 
 @[simp]
 theorem proj_some_index (x : α) : hs.proj (hs.some (hs.index x)) = hs.proj x :=
