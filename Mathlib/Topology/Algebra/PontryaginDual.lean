@@ -22,9 +22,9 @@ isomorphic to its double dual.
 
 open Pointwise Function
 
-variable (A B C D E G : Type*) [Monoid A] [Monoid B] [Monoid C] [Monoid D] [CommGroup E] [Group G]
-  [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C] [TopologicalSpace D]
-  [TopologicalSpace E] [TopologicalSpace G] [TopologicalGroup E] [TopologicalGroup G]
+variable (A B C G H : Type*) [Monoid A] [Monoid B] [Monoid C] [CommGroup G] [Group H]
+  [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
+  [TopologicalSpace G] [TopologicalSpace H] [TopologicalGroup G] [TopologicalGroup H]
 
 /-- The Pontryagin dual of `A` is the group of continuous homomorphism `A → Circle`. -/
 def PontryaginDual :=
@@ -48,7 +48,7 @@ instance : TopologicalGroup (PontryaginDual A) :=
 noncomputable instance : Inhabited (PontryaginDual A) :=
   (inferInstance : Inhabited (ContinuousMonoidHom A Circle))
 
-instance [LocallyCompactSpace G] : LocallyCompactSpace (PontryaginDual G) := by
+instance [LocallyCompactSpace H] : LocallyCompactSpace (PontryaginDual H) := by
   let Vn : ℕ → Set Circle :=
     fun n ↦ Circle.exp '' { x | |x| < Real.pi / 2 ^ (n + 1)}
   have hVn : ∀ n x, x ∈ Vn n ↔ |Complex.arg x| < Real.pi / 2 ^ (n + 1) := by
@@ -75,7 +75,7 @@ instance [LocallyCompactSpace G] : LocallyCompactSpace (PontryaginDual G) := by
     refine (Nat.le_ceil (Real.pi / x)).trans ?_
     exact_mod_cast (Nat.le_succ _).trans (Nat.lt_two_pow _).le
 
-variable {A B C D E}
+variable {A B C G}
 
 namespace PontryaginDual
 
@@ -107,15 +107,15 @@ theorem map_comp (g : ContinuousMonoidHom B C) (f : ContinuousMonoidHom A B) :
   ext fun _x => ext fun _y => rfl
 
 @[simp]
-nonrec theorem map_mul (f g : ContinuousMonoidHom A E) : map (f * g) = map f * map g :=
+nonrec theorem map_mul (f g : ContinuousMonoidHom A G) : map (f * g) = map f * map g :=
   ext fun x => ext fun y => map_mul x (f y) (g y)
 
-variable (A B C D E)
+variable (A B C G)
 
 /-- `ContinuousMonoidHom.dual` as a `ContinuousMonoidHom`. -/
-noncomputable def mapHom [LocallyCompactSpace E] :
-    ContinuousMonoidHom (ContinuousMonoidHom A E)
-      (ContinuousMonoidHom (PontryaginDual E) (PontryaginDual A)) where
+noncomputable def mapHom [LocallyCompactSpace G] :
+    ContinuousMonoidHom (ContinuousMonoidHom A G)
+      (ContinuousMonoidHom (PontryaginDual G) (PontryaginDual A)) where
   toFun := map
   map_one' := map_one
   map_mul' := map_mul
