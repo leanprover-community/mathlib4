@@ -70,8 +70,7 @@ equicontinuity, uniform convergence, ascoli
 
 open Set Filter Uniformity Topology Function UniformConvergence
 
-variable {ι X Y α β : Type*} [TopologicalSpace X] [UniformSpace α] [UniformSpace β]
-variable {F : ι → X → α} {G : ι → β → α}
+variable {ι X α : Type*} [TopologicalSpace X] [UniformSpace α] {F : ι → X → α}
 
 /-- Let `X` be a compact topological space, `α` a uniform space, and `F : ι → (X → α)` an
 equicontinuous family. Then, the uniform structures of uniform convergence and pointwise
