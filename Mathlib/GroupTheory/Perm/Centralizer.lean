@@ -272,11 +272,11 @@ theorem newK_apply_of_cycleOf_mem {x : α} {c : g.cycleFactorsFinset}
     rw [← Subtype.coe_inj, hx']
   suffices newK a τ x = (g ^ n) (a ((τ : Perm g.cycleFactorsFinset) c)) by
     rw [this, IsCycleOn.zpow_apply_eq_zpow_apply
-      (isCycleOn_support_of_mem_cycleFactorsFinset ((τ : Perm g.cycleFactorsFinset) c))
+      (isCycleOn_support_of_mem_cycleFactorsFinset ((τ : Perm g.cycleFactorsFinset) c).prop)
       (mem_support_self a ((τ : Perm g.cycleFactorsFinset) c))]
     simp only [τ.prop c]
     rw [← IsCycleOn.zpow_apply_eq_zpow_apply
-      (isCycleOn_support_of_mem_cycleFactorsFinset c) (mem_support_self a c)]
+      (isCycleOn_support_of_mem_cycleFactorsFinset c.prop) (mem_support_self a c)]
     rw [hn, hm]
   simp only [newK, dif_pos hx'']
   congr
@@ -560,7 +560,7 @@ theorem support_θHom :
   simp only [θHom, MonoidHom.noncommCoprod_apply]
   rw [Disjoint.support_mul (disjoint₁₂ u v), u.support_ofSubtype]
   apply congr_arg₂ _ rfl
-  rw [noncommPiCoprod_apply, Disjoint.support_noncommProd]
+  rw [noncommPiCoprod_apply, support_noncommProd]
   exact fun i _ j _ h ↦ pairdisjoint₂ h _ _ (v i).prop (v j).prop
 
 theorem support_θHom_of_fst_eq_one :
