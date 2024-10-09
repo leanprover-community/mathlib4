@@ -618,6 +618,7 @@ import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Algebra.Order.Hom.Normed
 import Mathlib.Algebra.Order.Hom.Ring
+import Mathlib.Algebra.Order.Hom.Ultra
 import Mathlib.Algebra.Order.Interval.Basic
 import Mathlib.Algebra.Order.Interval.Finset
 import Mathlib.Algebra.Order.Interval.Multiset
