@@ -49,7 +49,7 @@ noncomputable section
 
 namespace ZLattice
 
-open Submodule MeasureTheory FiniteDimensional MeasureTheory Module ZSpan
+open Submodule MeasureTheory Module MeasureTheory Module ZSpan
 
 section General
 

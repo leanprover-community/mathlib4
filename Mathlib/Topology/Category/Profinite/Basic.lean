@@ -157,6 +157,10 @@ instance : FintypeCat.toProfinite.Faithful := FintypeCat.toProfiniteFullyFaithfu
 
 instance : FintypeCat.toProfinite.Full := FintypeCat.toProfiniteFullyFaithful.full
 
+instance (X : FintypeCat) : Fintype (FintypeCat.toProfinite.obj X) := inferInstanceAs (Fintype X)
+
+instance (X : FintypeCat) : Fintype (Profinite.of X) := inferInstanceAs (Fintype X)
+
 end DiscreteTopology
 
 end Profinite
@@ -249,5 +253,8 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
       exact top_ne_bot H
   · rw [← CategoryTheory.epi_iff_surjective]
     apply (forget Profinite).epi_of_epi_map
+
+/-- The pi-type of profinite spaces is profinite. -/
+def pi {α : Type u} (β : α → Profinite) : Profinite := .of (Π (a : α), β a)
 
 end Profinite

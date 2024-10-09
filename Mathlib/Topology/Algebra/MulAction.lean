@@ -132,13 +132,13 @@ action is."]
 instance ContinuousSMul.op [SMul Mᵐᵒᵖ X] [IsCentralScalar M X] : ContinuousSMul Mᵐᵒᵖ X :=
   ⟨by
     suffices Continuous fun p : M × X => MulOpposite.op p.fst • p.snd from
-      this.comp (MulOpposite.continuous_unop.prod_map continuous_id)
+      this.comp (MulOpposite.continuous_unop.prodMap continuous_id)
     simpa only [op_smul_eq_smul] using (continuous_smul : Continuous fun p : M × X => _)⟩
 
 @[to_additive]
 instance MulOpposite.continuousSMul : ContinuousSMul M Xᵐᵒᵖ :=
   ⟨MulOpposite.continuous_op.comp <|
-      continuous_smul.comp <| continuous_id.prod_map MulOpposite.continuous_unop⟩
+      continuous_smul.comp <| continuous_id.prodMap MulOpposite.continuous_unop⟩
 
 @[to_additive]
 protected theorem Specializes.smul {a b : M} {x y : X} (h₁ : a ⤳ b) (h₂ : x ⤳ y) :
@@ -222,6 +222,12 @@ variable [Group M] [MulAction M X] [ContinuousSMul M X]
 @[to_additive]
 instance Subgroup.continuousSMul {S : Subgroup M} : ContinuousSMul S X :=
   S.toSubmonoid.continuousSMul
+
+variable (M)
+
+/-- The stabilizer of a continuous group action on a discrete space is an open subgroup. -/
+lemma stabilizer_isOpen [DiscreteTopology X] (x : X) : IsOpen (MulAction.stabilizer M x : Set M) :=
+  IsOpen.preimage (f := fun g ↦ g • x) (by fun_prop) (isOpen_discrete {x})
 
 end Group
 
