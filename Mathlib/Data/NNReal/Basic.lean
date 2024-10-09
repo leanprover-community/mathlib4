@@ -496,11 +496,11 @@ theorem le_iInf_add_iInf {ι ι' : Sort*} [Nonempty ι] [Nonempty ι'] {f : ι �
 example : Archimedean ℝ≥0 := by infer_instance
 
 -- Porting note (#11215): TODO: remove?
-instance covariant_add : CovariantClass ℝ≥0 ℝ≥0 (· + ·) (· ≤ ·) := inferInstance
+instance addLeftMono : AddLeftMono ℝ≥0 := inferInstance
 
-instance contravariant_add : ContravariantClass ℝ≥0 ℝ≥0 (· + ·) (· < ·) := inferInstance
+instance addLeftReflectLT : AddLeftReflectLT ℝ≥0 := inferInstance
 
-instance covariant_mul : CovariantClass ℝ≥0 ℝ≥0 (· * ·) (· ≤ ·) := inferInstance
+instance mulLeftMono : MulLeftMono ℝ≥0 := inferInstance
 
 -- Porting note (#11215): TODO: delete?
 nonrec theorem le_of_forall_pos_le_add {a b : ℝ≥0} (h : ∀ ε, 0 < ε → a ≤ b + ε) : a ≤ b :=

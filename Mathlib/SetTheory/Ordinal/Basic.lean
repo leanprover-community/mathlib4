@@ -791,7 +791,7 @@ theorem card_ofNat (n : ℕ) [n.AtLeastTwo] :
   card_nat n
 
 -- Porting note: Rewritten proof of elim, previous version was difficult to debug
-instance add_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· ≤ ·) where
+instance addLeftMono : AddLeftMono Ordinal.{u} where
   elim := fun c a b h => by
     revert h c
     refine inductionOn a (fun α₁ r₁ _ ↦ ?_)
@@ -814,8 +814,7 @@ instance add_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·
         exact ⟨Sum.inr w, congr_arg Sum.inr h⟩
 
 -- Porting note: Rewritten proof of elim, previous version was difficult to debug
-instance add_swap_covariantClass_le :
-    CovariantClass Ordinal.{u} Ordinal.{u} (swap (· + ·)) (· ≤ ·) where
+instance addRightMono : AddRightMono Ordinal.{u} where
   elim := fun c a b h => by
     revert h c
     refine inductionOn a (fun α₁ r₁ _ ↦ ?_)

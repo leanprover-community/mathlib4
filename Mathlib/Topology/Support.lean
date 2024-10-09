@@ -360,7 +360,7 @@ end MulZeroClass
 section OrderedAddGroup
 
 variable [TopologicalSpace α] [AddGroup β] [Lattice β]
-  [CovariantClass β β (· + ·) (· ≤ ·)]
+  [AddLeftMono β]
 
 protected theorem HasCompactSupport.abs {f : α → β} (hf : HasCompactSupport f) :
     HasCompactSupport |f| :=

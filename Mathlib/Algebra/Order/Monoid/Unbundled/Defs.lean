@@ -485,9 +485,19 @@ theorem mulRightStrictMono_of_mulRightReflectLE [Mul N] [LinearOrder N] [MulRigh
   inferInstance
 
 @[to_additive]
-instance covariant_swap_mul_of_covariant_mul [CommSemigroup N]
-    [CovariantClass N N (· * ·) r] : CovariantClass N N (swap (· * ·)) r where
-  elim := (covariant_flip_iff N r (· * ·)).mpr CovariantClass.elim
+instance mulLeftStrictMono_of_mulLeftReflectLE [Mul N] [LinearOrder N] [MulLeftReflectLE N] :
+    MulLeftStrictMono N where
+  elim := covariant_lt_iff_contravariant_le.mpr MulLeftReflectLE.elim
+
+@[to_additive]
+instance mulRightStrictMono_of_mulRightReflectLE [Mul N] [LinearOrder N] [MulRightReflectLE N] :
+    MulRightStrictMono N where
+  elim := covariant_lt_iff_contravariant_le.mpr MulRightReflectLE.elim
+
+@[to_additive]
+instance mulRightMono_of_mulLeftMono [CommSemigroup N] [LE N] [MulLeftMono N] :
+    MulRightMono N where
+  elim := covariant_flip_iff.mpr MulLeftMono.elim
 
 @[to_additive]
 theorem mulRightMono_of_mulLeftMono [CommSemigroup N] [LE N] [MulLeftMono N] :
@@ -531,29 +541,29 @@ theorem contravariant_le_of_contravariant_eq_and_lt [PartialOrder N]
   then the following four instances (actually eight) can be removed in favor of the above two. -/
 
 @[to_additive]
-instance IsLeftCancelMul.covariant_mul_lt_of_covariant_mul_le [Mul N] [IsLeftCancelMul N]
-    [PartialOrder N] [CovariantClass N N (· * ·) (· ≤ ·)] :
-    CovariantClass N N (· * ·) (· < ·) where
+instance IsLeftCancelMul.mulLeftStrictMono_of_mulLeftMono [Mul N] [IsLeftCancelMul N]
+    [PartialOrder N] [MulLeftMono N] :
+    MulLeftStrictMono N where
   elim a _ _ bc := (CovariantClass.elim a bc.le).lt_of_ne ((mul_ne_mul_right a).mpr bc.ne)
 
 @[to_additive]
-instance IsRightCancelMul.covariant_swap_mul_lt_of_covariant_swap_mul_le
-    [Mul N] [IsRightCancelMul N] [PartialOrder N] [CovariantClass N N (swap (· * ·)) (· ≤ ·)] :
-    CovariantClass N N (swap (· * ·)) (· < ·) where
+instance IsRightCancelMul.mulRightStrictMono_of_mulRightMono
+    [Mul N] [IsRightCancelMul N] [PartialOrder N] [MulRightMono N] :
+    MulRightStrictMono N where
   elim a _ _ bc := (CovariantClass.elim a bc.le).lt_of_ne ((mul_ne_mul_left a).mpr bc.ne)
 
 @[to_additive]
-instance IsLeftCancelMul.contravariant_mul_le_of_contravariant_mul_lt [Mul N] [IsLeftCancelMul N]
-    [PartialOrder N] [ContravariantClass N N (· * ·) (· < ·)] :
-    ContravariantClass N N (· * ·) (· ≤ ·) where
-  elim := (contravariant_le_iff_contravariant_lt_and_eq N N _).mpr
+instance IsLeftCancelMul.mulLeftReflectLE_of_mulLeftReflectLT [Mul N] [IsLeftCancelMul N]
+    [PartialOrder N] [MulLeftReflectLT N] :
+    MulLeftReflectLE N where
+  elim := (contravariant_le_iff_contravariant_lt_and_eq _ _ _).mpr
     ⟨ContravariantClass.elim, fun _ ↦ mul_left_cancel⟩
 
 @[to_additive]
-instance IsRightCancelMul.contravariant_swap_mul_le_of_contravariant_swap_mul_lt
-    [Mul N] [IsRightCancelMul N] [PartialOrder N] [ContravariantClass N N (swap (· * ·)) (· < ·)] :
-    ContravariantClass N N (swap (· * ·)) (· ≤ ·) where
-  elim := (contravariant_le_iff_contravariant_lt_and_eq N N _).mpr
+instance IsRightCancelMul.mulRightReflectLE_of_mulRightReflectLT
+    [Mul N] [IsRightCancelMul N] [PartialOrder N] [MulRightReflectLT N] :
+    MulRightReflectLE N where
+  elim := (contravariant_le_iff_contravariant_lt_and_eq _ _ _).mpr
     ⟨ContravariantClass.elim, fun _ ↦ mul_right_cancel⟩
 
 end Variants
