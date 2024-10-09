@@ -413,8 +413,8 @@ theorem antilipschitzWith_equiv_aux :
         rw [this, ENNReal.coe_rpow_of_nonneg _ nonneg]
 
 theorem aux_uniformity_eq : 𝓤 (PiLp p β) = 𝓤[Pi.uniformSpace _] := by
-  have A : UniformInducing (WithLp.equiv p (∀ i, β i)) :=
-    (antilipschitzWith_equiv_aux p β).uniformInducing
+  have A : IsUniformInducing (WithLp.equiv p (∀ i, β i)) :=
+    (antilipschitzWith_equiv_aux p β).isUniformInducing
       (lipschitzWith_equiv_aux p β).uniformContinuous
   have : (fun x : PiLp p β × PiLp p β => (WithLp.equiv p _ x.fst, WithLp.equiv p _ x.snd)) = id :=
     by ext i <;> rfl

@@ -167,7 +167,7 @@ lemma hf_zero' (P : WeakFEPair E) :
     filter_upwards [eventually_le_nhds zero_lt_one] with x hx' (hx : 0 < x)
     apply le_mul_of_one_le_right (norm_nonneg _)
     rw [norm_of_nonneg (rpow_pos_of_pos hx _).le, rpow_neg hx.le]
-    exact one_le_inv (rpow_pos_of_pos hx _) (rpow_le_one hx.le hx' P.hk.le)
+    exact (one_le_inv₀ (rpow_pos_of_pos hx _)).2 (rpow_le_one hx.le hx' P.hk.le)
 
 end WeakFEPair
 

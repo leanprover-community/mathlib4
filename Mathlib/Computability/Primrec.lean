@@ -275,7 +275,7 @@ end Primcodable
 
 namespace Primrec
 
-variable {α : Type*} {σ : Type*} [Primcodable α] [Primcodable σ]
+variable {α : Type*} [Primcodable α]
 
 open Nat.Primrec
 
@@ -457,8 +457,8 @@ end Primrec₂
 
 namespace Primrec
 
-variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {σ : Type*}
-variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable δ] [Primcodable σ]
+variable {α : Type*} {β : Type*} {σ : Type*}
+variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
 theorem to₂ {f : α × β → σ} (hf : Primrec f) : Primrec₂ fun a b => f (a, b) :=
   hf.of_eq fun _ => rfl
@@ -1088,8 +1088,7 @@ end Primrec
 
 namespace Primcodable
 
-variable {α : Type*} {β : Type*}
-variable [Primcodable α] [Primcodable β]
+variable {α : Type*} [Primcodable α]
 
 open Primrec
 
@@ -1139,8 +1138,8 @@ end Primcodable
 
 namespace Primrec
 
-variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
-variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
+variable {α : Type*} {β : Type*} {σ : Type*}
+variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
 theorem subtype_val {p : α → Prop} [DecidablePred p] {hp : PrimrecPred p} :
     haveI := Primcodable.subtype hp
