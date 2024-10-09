@@ -321,7 +321,7 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
       f n ≤ (n₀ * (logb n₀ n + 1)) ^ (k : ℝ)⁻¹ * k ^ (k : ℝ)⁻¹ := by
     have : 0 ≤ logb n₀ n := logb_nonneg (one_lt_cast.2 hn₀) (mod_cast Nat.one_le_of_lt h₀.bot_lt)
     calc
-    f n = (f n ^ (k : ℝ)) ^ (k : ℝ)⁻¹ := Eq.symm (rpow_rpow_inv (by positivity) (by positivity))
+    f n = (f n ^ (k : ℝ)) ^ (k : ℝ)⁻¹ := by rw [rpow_rpow_inv (by positivity) (by positivity)]
     _   ≤ (n₀ * (logb n₀ (n ^ k) + 1)) ^ (k : ℝ)⁻¹ := by
       gcongr
       rw [rpow_natCast, ← map_pow, ← Nat.cast_pow, ← Nat.cast_pow]
