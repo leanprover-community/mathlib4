@@ -240,8 +240,7 @@ lemma norm_prod_le_of_forall_le_of_nonneg {s : Finset ι} {f : ι → M} {C : �
   exact nnnorm_prod_le_of_forall_le hC
 
 @[to_additive]
-lemma norm_tprod_le {ι : Type*}
-    (f : ι → M) : ‖∏' i, f i‖ ≤ ⨆ i, ‖f i‖ := by
+lemma norm_tprod_le (f : ι → M) : ‖∏' i, f i‖ ≤ ⨆ i, ‖f i‖ := by
   rcases isEmpty_or_nonempty ι with hι | hι
   · -- Silly case #1 : the index type is empty
     simp only [tprod_empty, norm_one', Real.iSup_of_isEmpty, le_refl]
@@ -259,9 +258,24 @@ lemma norm_tprod_le {ι : Type*}
   · exact fun i _ ↦ le_ciSup h_bd i
 
 @[to_additive]
-lemma nnnorm_tprod_le {ι G : Type*} [SeminormedCommGroup G] [IsUltrametricDist G]
-    (f : ι → G) : ‖∏' i, f i‖₊ ≤ ⨆ i, ‖f i‖₊ := by
+lemma nnnorm_tprod_le (f : ι → M) : ‖∏' i, f i‖₊ ≤ ⨆ i, ‖f i‖₊ := by
   simpa only [← NNReal.coe_le_coe, coe_nnnorm', coe_iSup] using norm_tprod_le f
+
+@[to_additive]
+lemma norm_tprod_le_of_forall_le [Nonempty ι] {f : ι → M} {C : ℝ} (h : ∀ i, ‖f i‖ ≤ C) :
+    ‖∏' i, f i‖ ≤ C :=
+  (norm_tprod_le f).trans (ciSup_le h)
+
+@[to_additive]
+lemma norm_tprod_le_of_forall_le_of_nonneg {f : ι → M} {C : ℝ} (hC : 0 ≤ C) (h : ∀ i, ‖f i‖ ≤ C) :
+    ‖∏' i, f i‖ ≤ C := by
+  rcases isEmpty_or_nonempty ι
+  · simpa only [tprod_empty, norm_one'] using hC
+  · exact norm_tprod_le_of_forall_le h
+
+@[to_additive]
+lemma nnnorm_tprod_le_of_forall_le {f : ι → M} {C : ℝ≥0} (h : ∀ i, ‖f i‖₊ ≤ C) : ‖∏' i, f i‖₊ ≤ C :=
+  (nnnorm_tprod_le f).trans (ciSup_le' h)
 
 end CommGroup
 
