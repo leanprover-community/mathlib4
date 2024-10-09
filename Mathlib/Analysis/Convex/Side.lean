@@ -366,8 +366,7 @@ theorem wOppSide_self_iff {s : AffineSubspace R P} {x : P} : s.WOppSide x x ↔ 
     obtain ⟨a, -, -, -, -, h₁, -⟩ := h.exists_eq_smul_add
     convert s.smul_vsub_vadd_mem a hp₂ hp₁ hp₁ using 1
     basepoint V, P, x at *
-    linear_combination (norm := skip) h₁
-    module
+    linear_combination (norm := module) h₁
   · exact fun h => ⟨x, h, x, h, SameRay.rfl⟩
 
 theorem not_sOppSide_self (s : AffineSubspace R P) (x : P) : ¬s.SOppSide x x := by
