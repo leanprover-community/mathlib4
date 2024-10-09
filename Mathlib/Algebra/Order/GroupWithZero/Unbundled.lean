@@ -936,6 +936,7 @@ theorem Right.mul_lt_one_of_le_of_lt_of_nonneg [MulPosMono α] (ha : a ≤ 1) (h
     (b0 : 0 ≤ b) : a * b < 1 :=
   mul_lt_of_le_one_of_lt_of_nonneg ha hb b0
 
+@[deprecated (since := "2024-10-10")]
 theorem mul_lt_of_lt_one_of_lt_of_pos [PosMulStrictMono α] [MulPosStrictMono α] (ha : a < 1)
     (bc : b < c) (a0 : 0 < a) (c0 : 0 < c) : a * b < c :=
   (mul_lt_mul_of_pos_left bc a0).trans <| mul_lt_of_lt_one_left c0 ha
@@ -946,14 +947,17 @@ theorem Right.mul_le_one_of_le_of_le [MulPosMono α] (ha : a ≤ 1) (hb : b ≤ 
     a * b ≤ 1 :=
   mul_le_of_le_one_of_le_of_nonneg ha hb b0
 
+@[deprecated (since := "2024-10-10")]
 theorem mul_le_of_le_one_of_le' [PosMulMono α] [MulPosMono α] (ha : a ≤ 1) (bc : b ≤ c) (a0 : 0 ≤ a)
     (c0 : 0 ≤ c) : a * b ≤ c :=
   (mul_le_mul_of_nonneg_left bc a0).trans <| mul_le_of_le_one_left c0 ha
 
+@[deprecated (since := "2024-10-10")]
 theorem mul_lt_of_lt_one_of_le' [PosMulMono α] [MulPosStrictMono α] (ha : a < 1) (bc : b ≤ c)
     (a0 : 0 ≤ a) (c0 : 0 < c) : a * b < c :=
   (mul_le_mul_of_nonneg_left bc a0).trans_lt <| mul_lt_of_lt_one_left c0 ha
 
+@[deprecated (since := "2024-10-10")]
 theorem mul_lt_of_le_one_of_lt' [PosMulStrictMono α] [MulPosMono α] (ha : a ≤ 1) (bc : b < c)
     (a0 : 0 < a) (c0 : 0 ≤ c) : a * b < c :=
   (mul_lt_mul_of_pos_left bc a0).trans_le <| mul_le_of_le_one_left c0 ha
