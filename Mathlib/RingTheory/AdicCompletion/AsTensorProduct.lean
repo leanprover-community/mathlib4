@@ -241,17 +241,17 @@ private instance : AddCommGroup (AdicCompletion I R ⊗[R] (LinearMap.ker f)) :=
 
 private def firstRow : ComposableArrows (ModuleCat (AdicCompletion I R)) 4 :=
   ComposableArrows.mk₄
-    (ModuleCat.ofHom <| lTensorKerIncl I M f)
-    (ModuleCat.ofHom <| lTensorf I M f)
-    (ModuleCat.ofHom (0 : AdicCompletion I R ⊗[R] M →ₗ[AdicCompletion I R] PUnit))
-    (ModuleCat.ofHom (0 : _ →ₗ[AdicCompletion I R] PUnit))
+    (ModuleCat.asHom <| lTensorKerIncl I M f)
+    (ModuleCat.asHom <| lTensorf I M f)
+    (ModuleCat.asHom (0 : AdicCompletion I R ⊗[R] M →ₗ[AdicCompletion I R] PUnit))
+    (ModuleCat.asHom (0 : _ →ₗ[AdicCompletion I R] PUnit))
 
 private def secondRow : ComposableArrows (ModuleCat (AdicCompletion I R)) 4 :=
   ComposableArrows.mk₄
-    (ModuleCat.ofHom (map I <| (LinearMap.ker f).subtype))
-    (ModuleCat.ofHom (map I f))
-    (ModuleCat.ofHom (0 : _ →ₗ[AdicCompletion I R] PUnit))
-    (ModuleCat.ofHom (0 : _ →ₗ[AdicCompletion I R] PUnit))
+    (ModuleCat.asHom (map I <| (LinearMap.ker f).subtype))
+    (ModuleCat.asHom (map I f))
+    (ModuleCat.asHom (0 : _ →ₗ[AdicCompletion I R] PUnit))
+    (ModuleCat.asHom (0 : _ →ₗ[AdicCompletion I R] PUnit))
 
 include hf
 
@@ -282,25 +282,25 @@ private lemma secondRow_exact [Fintype ι] [IsNoetherianRing R] : (secondRow I M
 /- The compatible vertical maps between the first and the second row. -/
 private def firstRowToSecondRow : firstRow I M f ⟶ secondRow I M f :=
   ComposableArrows.homMk₄
-    (ModuleCat.ofHom (ofTensorProduct I (LinearMap.ker f)))
-    (ModuleCat.ofHom (ofTensorProduct I (ι → R)))
-    (ModuleCat.ofHom (ofTensorProduct I M))
-    (ModuleCat.ofHom 0)
-    (ModuleCat.ofHom 0)
+    (ModuleCat.asHom (ofTensorProduct I (LinearMap.ker f)))
+    (ModuleCat.asHom (ofTensorProduct I (ι → R)))
+    (ModuleCat.asHom (ofTensorProduct I M))
+    (ModuleCat.asHom 0)
+    (ModuleCat.asHom 0)
     (ofTensorProduct_naturality I <| (LinearMap.ker f).subtype).symm
     (ofTensorProduct_naturality I f).symm
     rfl
     rfl
 
 private lemma ofTensorProduct_iso [Fintype ι] [IsNoetherianRing R] :
-    IsIso (ModuleCat.ofHom (ofTensorProduct I M)) := by
+    IsIso (ModuleCat.asHom (ofTensorProduct I M)) := by
   refine Abelian.isIso_of_epi_of_isIso_of_isIso_of_mono
     (firstRow_exact I M f hf) (secondRow_exact I M f hf) (firstRowToSecondRow I M f) ?_ ?_ ?_ ?_
   · apply ConcreteCategory.epi_of_surjective
     exact ofTensorProduct_surjective_of_finite I (LinearMap.ker f)
   · apply (ConcreteCategory.isIso_iff_bijective _).mpr
     exact ofTensorProduct_bijective_of_pi_of_fintype I ι
-  · show IsIso (ModuleCat.ofHom 0)
+  · show IsIso (ModuleCat.asHom 0)
     apply Limits.isIso_of_isTerminal
       <;> exact Limits.IsZero.isTerminal (ModuleCat.isZero_of_subsingleton _)
   · apply ConcreteCategory.mono_of_injective
@@ -310,9 +310,9 @@ private lemma ofTensorProduct_iso [Fintype ι] [IsNoetherianRing R] :
 private
 lemma ofTensorProduct_bijective_of_map_from_fin [Fintype ι] [IsNoetherianRing R] :
     Function.Bijective (ofTensorProduct I M) := by
-  have : IsIso (ModuleCat.ofHom (ofTensorProduct I M)) :=
+  have : IsIso (ModuleCat.asHom (ofTensorProduct I M)) :=
     ofTensorProduct_iso I M f hf
-  exact ConcreteCategory.bijective_of_isIso (ModuleCat.ofHom (ofTensorProduct I M))
+  exact ConcreteCategory.bijective_of_isIso (ModuleCat.asHom (ofTensorProduct I M))
 
 end
 

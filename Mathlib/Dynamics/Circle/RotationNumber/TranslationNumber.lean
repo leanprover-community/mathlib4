@@ -565,7 +565,7 @@ theorem translationNumber_eq_of_tendsto_aux {τ' : ℝ} (h : Tendsto f.transnumA
 theorem translationNumber_eq_of_tendsto₀ {τ' : ℝ}
     (h : Tendsto (fun n : ℕ => f^[n] 0 / n) atTop (𝓝 τ')) : τ f = τ' :=
   f.translationNumber_eq_of_tendsto_aux <| by
-    simpa [(· ∘ ·), transnumAuxSeq_def, coe_pow] using
+    simpa [Function.comp_def, transnumAuxSeq_def, coe_pow] using
       h.comp (Nat.tendsto_pow_atTop_atTop_of_one_lt one_lt_two)
 
 theorem translationNumber_eq_of_tendsto₀' {τ' : ℝ}
@@ -852,8 +852,8 @@ theorem semiconj_of_group_action_of_forall_translationNumber_eq {G : Type*} [Gro
   have hF₁ : ∀ g, ⇑(F₁ g) = f₁ g := fun _ => rfl
   have hF₂ : ∀ g, ⇑(F₂ g) = f₂ g := fun _ => rfl
   -- Now we apply `csSup_div_semiconj` and go back to `f₁` and `f₂`.
-  refine ⟨⟨⟨_, fun x y hxy => ?_⟩, fun x => ?_⟩, csSup_div_semiconj F₂ F₁ fun x => ?_⟩ <;>
-    simp only [hF₁, hF₂, ← map_inv, coe_mk]
+  refine ⟨⟨⟨fun x ↦ ⨆ g', (F₂ g')⁻¹ (F₁ g' x), fun x y hxy => ?_⟩, fun x => ?_⟩,
+    csSup_div_semiconj F₂ F₁ fun x => ?_⟩ <;> simp only [hF₁, hF₂, ← map_inv, coe_mk]
   · exact ciSup_mono (this y) fun g => mono _ (mono _ hxy)
   · simp only [map_add_one]
     exact (Monotone.map_ciSup_of_continuousAt (continuousAt_id.add continuousAt_const)

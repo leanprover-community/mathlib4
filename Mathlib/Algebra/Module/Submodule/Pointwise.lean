@@ -416,12 +416,10 @@ lemma set_smul_eq_map [SMulCommClass R R N] :
   apply set_smul_eq_of_le
   · intro r n hr hn
     exact ⟨Finsupp.single r ⟨n, hn⟩, Finsupp.single_mem_supported _ _ hr, by simp⟩
-
   · intro x hx
     obtain ⟨c, hc, rfl⟩ := hx
-    simp only [LinearMap.coe_comp, coeSubtype, Finsupp.coe_lsum, Finsupp.sum, LinearMap.coe_mk,
-      AddHom.coe_mk, Function.comp_apply, AddSubmonoid.coe_finset_sum, coe_toAddSubmonoid,
-      SetLike.val_smul]
+    simp only [LinearMap.coe_comp, coe_subtype, Finsupp.coe_lsum, Finsupp.sum, Function.comp_apply]
+    rw [AddSubmonoid.coe_finset_sum]
     refine Submodule.sum_mem (p := sR • N) (t := c.support) ?_ _ ⟨sR • N, ?_⟩
     · rintro r hr
       rw [mem_set_smul_def, Submodule.mem_sInf]
@@ -442,10 +440,9 @@ lemma mem_set_smul (x : M) [SMulCommClass R R N] :
     rw [set_smul_eq_map] at h
     obtain ⟨c, hc, rfl⟩ := h
     exact ⟨c, hc, rfl⟩
-
   · rw [mem_set_smul_def, Submodule.mem_sInf]
     rintro ⟨c, hc1, rfl⟩ p hp
-    simp only [Finsupp.sum, AddSubmonoid.coe_finset_sum, coe_toAddSubmonoid, SetLike.val_smul]
+    rw [Finsupp.sum, AddSubmonoid.coe_finset_sum]
     exact Submodule.sum_mem _ fun r hr ↦ hp (hc1 hr) (c _).2
 
 @[simp] lemma empty_set_smul : (∅ : Set S) • N = ⊥ := by
@@ -496,8 +493,8 @@ protected def pointwiseSetMulAction [SMulCommClass R R M] :
     (set_smul_le _ _ _ fun r m hr hm ↦ by
       have : SMulCommClass R R x := ⟨fun r s m => Subtype.ext <| smul_comm _ _ _⟩
       obtain ⟨c, hc1, rfl⟩ := mem_set_smul _ _ _ |>.mp hm
-      simp only [Finsupp.sum, AddSubmonoid.coe_finset_sum, coe_toAddSubmonoid, SetLike.val_smul,
-        Finset.smul_sum, smul_smul]
+      rw [Finsupp.sum, AddSubmonoid.coe_finset_sum]
+      simp only [SetLike.val_smul, Finset.smul_sum, smul_smul]
       exact Submodule.sum_mem _ fun r' hr' ↦
         mem_set_smul_of_mem_mem (Set.mul_mem_mul hr (hc1 hr')) (c _).2)
 
@@ -533,11 +530,12 @@ lemma coe_span_smul {R' M' : Type*} [CommSemiring R'] [AddCommMonoid M'] [Module
     (Ideal.span s : Set R') • N = s • N :=
   set_smul_eq_of_le _ _ _
     (by rintro r n hr hn
-        induction' hr using Submodule.span_induction' with r h _ _ _ _ ihr ihs r r' hr hr'
-        · exact mem_set_smul_of_mem_mem h hn
-        · rw [zero_smul]; exact Submodule.zero_mem _
-        · rw [add_smul]; exact Submodule.add_mem _ ihr ihs
-        · rw [mem_span_set] at hr
+        induction hr using Submodule.span_induction' with
+        | mem _ h => exact mem_set_smul_of_mem_mem h hn
+        | zero => rw [zero_smul]; exact Submodule.zero_mem _
+        | add _ _ _ _ ihr ihs => rw [add_smul]; exact Submodule.add_mem _ ihr ihs
+        | smul _ _ hr =>
+          rw [mem_span_set] at hr
           obtain ⟨c, hc, rfl⟩ := hr
           rw [Finsupp.sum, Finset.smul_sum, Finset.sum_smul]
           refine Submodule.sum_mem _ fun i hi => ?_

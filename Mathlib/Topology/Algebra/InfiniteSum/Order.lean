@@ -40,7 +40,7 @@ variable [OrderedCommMonoid α] [TopologicalSpace α] [OrderClosedTopology α] {
 theorem hasProd_le (h : ∀ i, f i ≤ g i) (hf : HasProd f a₁) (hg : HasProd g a₂) : a₁ ≤ a₂ :=
   le_of_tendsto_of_tendsto' hf hg fun _ ↦ prod_le_prod' fun i _ ↦ h i
 
-@[to_additive (attr := mono)]
+@[to_additive]
 theorem hasProd_mono (hf : HasProd f a₁) (hg : HasProd g a₂) (h : f ≤ g) : a₁ ≤ a₂ :=
   hasProd_le h hf hg
 

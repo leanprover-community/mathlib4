@@ -153,7 +153,6 @@ end coe
 section
 
 variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β]
-variable (f : α →ₙ+* β) {x y : α}
 
 @[ext]
 theorem ext ⦃f g : α →ₙ+* β⦄ : (∀ x, f x = g x) → f = g :=
@@ -225,7 +224,6 @@ theorem coe_comp (g : β →ₙ+* γ) (f : α →ₙ+* β) : ⇑(g.comp f) = g �
 @[simp]
 theorem comp_apply (g : β →ₙ+* γ) (f : α →ₙ+* β) (x : α) : g.comp f x = g (f x) :=
   rfl
-variable (g : β →ₙ+* γ) (f : α →ₙ+* β)
 
 @[simp]
 theorem coe_comp_addMonoidHom (g : β →ₙ+* γ) (f : α →ₙ+* β) :
@@ -441,7 +439,7 @@ end coe
 
 section
 
-variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} (f : α →+* β) {x y : α}
+variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} (f : α →+* β)
 
 protected theorem congr_fun {f g : α →+* β} (h : f = g) (x : α) : f x = g x :=
   DFunLike.congr_fun h x

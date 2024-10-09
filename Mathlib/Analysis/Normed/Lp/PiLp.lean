@@ -354,7 +354,7 @@ abbrev pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
             PseudoMetricSpace.edist_dist]
           -- Porting note: `le_iSup` needed some help
           exact le_iSup (fun k => edist (f k) (g k)) i
-        · refine ENNReal.toReal_le_of_le_ofReal (Real.sSup_nonneg _ ?_) (iSup_le fun i => ?_)
+        · refine ENNReal.toReal_le_of_le_ofReal (Real.sSup_nonneg ?_) (iSup_le fun i => ?_)
           · rintro - ⟨i, rfl⟩
             exact dist_nonneg
           · change PseudoMetricSpace.edist _ _ ≤ _
@@ -413,8 +413,8 @@ theorem antilipschitzWith_equiv_aux :
         rw [this, ENNReal.coe_rpow_of_nonneg _ nonneg]
 
 theorem aux_uniformity_eq : 𝓤 (PiLp p β) = 𝓤[Pi.uniformSpace _] := by
-  have A : UniformInducing (WithLp.equiv p (∀ i, β i)) :=
-    (antilipschitzWith_equiv_aux p β).uniformInducing
+  have A : IsUniformInducing (WithLp.equiv p (∀ i, β i)) :=
+    (antilipschitzWith_equiv_aux p β).isUniformInducing
       (lipschitzWith_equiv_aux p β).uniformContinuous
   have : (fun x : PiLp p β × PiLp p β => (WithLp.equiv p _ x.fst, WithLp.equiv p _ x.snd)) = id :=
     by ext i <;> rfl
@@ -640,7 +640,7 @@ variable (p 𝕜)
 variable (E : Type*) [SeminormedAddCommGroup E] [Module 𝕜 E]
 
 /-- An equivalence of finite domains induces a linearly isometric equivalence of finitely supported
-functions-/
+functions -/
 def _root_.LinearIsometryEquiv.piLpCongrLeft (e : ι ≃ ι') :
     (PiLp p fun _ : ι => E) ≃ₗᵢ[𝕜] PiLp p fun _ : ι' => E where
   toLinearEquiv := LinearEquiv.piCongrLeft' 𝕜 (fun _ : ι => E) e
@@ -936,7 +936,7 @@ nonrec theorem basis_toMatrix_basisFun_mul [Fintype ι]
       Matrix.of fun i j => b.repr ((WithLp.equiv _ _).symm (Aᵀ j)) i := by
   have := basis_toMatrix_basisFun_mul (b.map (WithLp.linearEquiv _ 𝕜 _)) A
   simp_rw [← PiLp.basisFun_map p, Basis.map_repr, LinearEquiv.trans_apply,
-    WithLp.linearEquiv_symm_apply, Basis.toMatrix_map, Function.comp, Basis.map_apply,
+    WithLp.linearEquiv_symm_apply, Basis.toMatrix_map, Function.comp_def, Basis.map_apply,
     LinearEquiv.symm_apply_apply] at this
   exact this
 

@@ -74,6 +74,17 @@ theorem add_pow [CommSemiring R] (x y : R) (n : ℕ) :
     (x + y) ^ n = ∑ m ∈ range (n + 1), x ^ m * y ^ (n - m) * n.choose m :=
   (Commute.all x y).add_pow n
 
+/-- A special case of the **binomial theorem** -/
+theorem sub_pow [CommRing R] (x y : R) (n : ℕ) :
+    (x - y) ^ n = ∑ m ∈ range (n + 1), (-1) ^ (m + n) * x ^ m * y ^ (n - m) * n.choose m := by
+  rw [sub_eq_add_neg, add_pow]
+  congr! 1 with m hm
+  have : (-1 : R) ^ (n - m) = (-1) ^ (n + m) := by
+    rw [mem_range] at hm
+    simp [show n + m = n - m + 2 * m by omega, pow_add]
+  rw [neg_pow, this]
+  ring
+
 namespace Nat
 
 /-- The sum of entries in a row of Pascal's triangle -/
@@ -116,7 +127,7 @@ theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
     _ ≤ ∑ m ∈ range (2 * n + 1), (2 * n).choose (2 * n / 2) := by gcongr; apply choose_le_middle
     _ = (2 * n + 1) * choose (2 * n) n := by simp
 
-/-- **Zhu Shijie's identity** aka hockey-stick identity. -/
+/-- **Zhu Shijie's identity** aka hockey-stick identity, version with `Icc`. -/
 theorem sum_Icc_choose (n k : ℕ) : ∑ m ∈ Icc k n, m.choose k = (n + 1).choose (k + 1) := by
   rcases lt_or_le n k with h | h
   · rw [choose_eq_zero_of_lt (by omega), Icc_eq_empty_of_lt h, sum_empty]
@@ -125,6 +136,20 @@ theorem sum_Icc_choose (n k : ℕ) : ∑ m ∈ Icc k n, m.choose k = (n + 1).cho
     | succ n _ ih =>
       rw [← Ico_insert_right (by omega), sum_insert (by simp),
         show Ico k (n + 1) = Icc k n by rfl, ih, choose_succ_succ' (n + 1)]
+
+/-- **Zhu Shijie's identity** aka hockey-stick identity, version with `range`.
+Summing `(i + k).choose k` for `i ∈ [0, n]` gives `(n + k + 1).choose (k + 1)`.
+
+Combinatorial interpretation: `(i + k).choose k` is the number of decompositions of `[0, i)` in
+`k + 1` (possibly empty) intervals (this follows from a stars and bars description). In particular,
+`(n + k + 1).choose (k + 1)` corresponds to decomposing `[0, n)` into `k + 2` intervals.
+By putting away the last interval (of some length `n - i`),
+we have to decompose the remaining interval `[0, i)` into `k + 1` intervals, hence the sum. -/
+lemma sum_range_add_choose (n k : ℕ) :
+    ∑ i ∈ Finset.range (n + 1), (i + k).choose k = (n + k + 1).choose (k + 1) := by
+  rw [← sum_Icc_choose, range_eq_Ico]
+  convert (sum_map _ (addRightEmbedding k) (·.choose k)).symm using 2
+  rw [map_add_right_Ico, zero_add, add_right_comm, Nat.Ico_succ_right]
 
 end Nat
 
