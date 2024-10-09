@@ -236,11 +236,12 @@ def toEmbeddingOfEqTop {f : M ≃ₚ[L] N} (h : f.dom = ⊤) : M ↪[L] N :=
   (h ▸ f.toEmbedding).comp topEquiv.symm.toEmbedding
 
 @[simp]
-theorem toEmbeddingOfEqTop__apply {f : M ≃ₚ[L] N} (h : f.dom = ⊤) (m : M) :
+theorem toEmbeddingOfEqTop_apply {f : M ≃ₚ[L] N} (h : f.dom = ⊤) (m : M) :
     toEmbeddingOfEqTop h m = f.toEquiv ⟨m, h.symm ▸ mem_top m⟩ := by
   rcases f with ⟨dom, cod, g⟩
   cases h
   rfl
+@[deprecated (since := "2024-10-09")] alias toEmbeddingOfEqTop__apply := toEmbeddingOfEqTop_apply
 
 /-- Given a partial equivalence which has the whole structure as domain and
   as codomain, returns the corresponding equivalence. -/
