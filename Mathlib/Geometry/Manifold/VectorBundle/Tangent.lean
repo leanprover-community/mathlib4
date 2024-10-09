@@ -378,7 +378,7 @@ theorem tangentBundleCore_coordChange_model_space (x x' z : H) :
 variable (H)
 
 /-- The canonical identification between the tangent bundle to the model space and the product,
-as a homeomorphism -/
+as a homeomorphism. For the diffeomorphism version, see `tangentBundleModelSpaceDiffeomorph`. -/
 def tangentBundleModelSpaceHomeomorph : TangentBundle I H ≃ₜ ModelProd H E :=
   { TotalSpace.toProd H E with
     continuous_toFun := by
@@ -408,18 +408,20 @@ theorem tangentBundleModelSpaceHomeomorph_coe_symm :
       (TotalSpace.toProd H E).symm :=
   rfl
 
-theorem tangentBundleModelSpaceHomeomorph_smooth : Smooth I.tangent (I.prod 𝓘(𝕜, E))
+theorem contMDiff_tangentBundleModelSpaceHomeomorph {n : ℕ∞} :
+    ContMDiff I.tangent (I.prod 𝓘(𝕜, E)) n
     (tangentBundleModelSpaceHomeomorph H I : TangentBundle I H → ModelProd H E) := by
-  apply smooth_iff.2 ⟨Homeomorph.continuous _, fun x y ↦ ?_⟩
+  apply contMDiff_iff.2 ⟨Homeomorph.continuous _, fun x y ↦ ?_⟩
   apply contDiffOn_id.congr
   simp only [mfld_simps, mem_range, TotalSpace.toProd, Equiv.coe_fn_symm_mk, forall_exists_index,
     Prod.forall, Prod.mk.injEq]
   rintro a b x rfl
   simp [PartialEquiv.prod]
 
-theorem tangentBundleModelSpaceHomeomorph_symm_smooth : Smooth (I.prod 𝓘(𝕜, E)) I.tangent
+theorem contMDiff_tangentBundleModelSpaceHomeomorph_symm {n : ℕ∞} :
+    ContMDiff (I.prod 𝓘(𝕜, E)) I.tangent n
     ((tangentBundleModelSpaceHomeomorph H I).symm : ModelProd H E → TangentBundle I H) := by
-  apply smooth_iff.2 ⟨Homeomorph.continuous _, fun x y ↦ ?_⟩
+  apply contMDiff_iff.2 ⟨Homeomorph.continuous _, fun x y ↦ ?_⟩
   apply contDiffOn_id.congr
   simp only [mfld_simps, mem_range, TotalSpace.toProd, Equiv.coe_fn_symm_mk, forall_exists_index,
     Prod.forall, Prod.mk.injEq]
