@@ -143,17 +143,11 @@ protected theorem div (q r : ℚ) : padicNorm p (q / r) = padicNorm p q / padicN
   else eq_div_of_mul_eq (padicNorm.nonzero hr) (by rw [← padicNorm.mul, div_mul_cancel₀ _ hr])
 
 /-- The `p`-adic norm of an integer is at most `1`. -/
-protected theorem of_int (z : ℤ) : padicNorm p z ≤ 1 :=
-  if hz : z = 0 then by simp [hz, zero_le_one]
-  else by
-    unfold padicNorm
-    rw [if_neg _]
-    · refine zpow_le_one_of_nonpos ?_ ?_
-      · exact mod_cast le_of_lt hp.1.one_lt
-      · rw [padicValRat.of_int, neg_nonpos]
-        norm_cast
-        simp
-    exact mod_cast hz
+protected theorem of_int (z : ℤ) : padicNorm p z ≤ 1 := by
+  obtain rfl | hz := eq_or_ne z 0
+  · simp
+  · rw [padicNorm, if_neg (mod_cast hz)]
+    exact zpow_le_one_of_nonpos₀ (mod_cast hp.1.one_le) (by simp)
 
 private theorem nonarchimedean_aux {q r : ℚ} (h : padicValRat p q ≤ padicValRat p r) :
     padicNorm p (q + r) ≤ max (padicNorm p q) (padicNorm p r) :=
