@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
+Authors: Joël Riou, Mario Carneiro, Emily Riehl
 -/
 import Mathlib.AlgebraicTopology.SimplicialSet
 import Mathlib.CategoryTheory.ComposableArrows
@@ -20,6 +20,24 @@ which is the category `Fin (n + 1) ⥤ C`.
 
 It also proves that `nerve C` is 2-coskeletal, meaning that the canonical map to the right
 Kan extension of its restriction to the category of 2-truncated simplicial sets is an isomorphism.
+
+In more detail:
+
+* For a category `C`, `nerveRightExtension C` uses the identity natural transformation to exhibit
+`nerve C`  as a right extension of its restriction to the 2-truncated simplex category along
+`(Truncated.inclusion (n := 2)).op`.
+
+* For each natural number `n`, `nerveRightExtension.coneAt C n` defines a cone with summit
+`nerve C _[n]` over the diagram
+`(StructuredArrow.proj (op [n]) (Truncated.inclusion (n := 2)).op ⋙ nerveFunctor₂.obj C)`
+indexed by the category `StructuredArrow (op [n]) (Truncated.inclusion (n := 2)).op.`
+
+* `isPointwiseRightKanExtensionAt C n` proves that this cone is a limit cone, and thus
+`nerveRightExtension C` is a pointwise right Kan extension.
+
+* It follows that the map induced by the identity defines a natural isomorphism
+`cosk2Iso : nerveFunctor.{u, u} ≅ nerveFunctor₂.{u, u} ⋙ Truncated.cosk 2`.
+
 
 ## References
 * [Paul G. Goerss, John F. Jardine, *Simplicial Homotopy Theory*][goerss-jardine-2009]
@@ -56,21 +74,26 @@ lemma δ₀_eq {x : nerve C _[n + 1]} : (nerve C).δ (0 : Fin (n + 2)) x = x.δ�
 
 end Nerve
 
-/-- We now introduce a version of the nerve functor valued in 2-truncated simplicial sets.-/
+/-- The essential data of the nerve functor is contained in the 2-truncation, which is
+recorded by the composite functor `nerveFunctor₂`.-/
 def nerveFunctor₂ : Cat.{v, u} ⥤ SSet.Truncated 2 := nerveFunctor ⋙ truncation 2
 
-def nerve₂ (C : Type*) [Category C] : SSet.Truncated 2 := nerveFunctor₂.obj (Cat.of C)
+/-- The essential data of the nerve of a category `C` is contained in the 2-truncation, which is
+recorded by the 2-truncated simplicial set `nerve₂ C`.-/
+abbrev nerve₂ (C : Type*) [Category C] : SSet.Truncated 2 := nerveFunctor₂.obj (Cat.of C)
 
 theorem nerve₂_restrictedNerve (C : Type*) [Category C] :
     (Truncated.inclusion (n := 2)).op ⋙ nerve C = nerve₂ C := rfl
 
+/-- By construction, `nerve₂ C` is the restriction of `nerve C` along the inclusion of the
+2-truncated simplex category. -/
 def nerve₂RestrictedIso (C : Type*) [Category C] :
     (Truncated.inclusion (n := 2)).op ⋙ nerve C ≅ nerve₂ C := Iso.refl _
 
 namespace Nerve
 
-/-- The identity natural transformation exhibits nerve C as a right extension of its restriction
-to (Δ 2).op along (Truncated.inclusion (n := 2)).op.-/
+/-- The identity natural transformation exhibits `nerve C`  as a right extension of its restriction
+to the 2-truncated simplex category along `(Truncated.inclusion (n := 2)).op`.-/
 def nerveRightExtension (C : Cat) :
     RightExtension (Truncated.inclusion (n := 2)).op (nerveFunctor₂.obj C) :=
   RightExtension.mk
@@ -398,16 +421,16 @@ noncomputable def cosk2RightExtension.component.hom.iso (C : Cat.{v, u}) :
   asIso (cosk2RightExtension.hom C)
 
 noncomputable def cosk2NatIso.component (C : Cat.{v, u}) :
-    nerveFunctor.obj C ≅ (ran (Truncated.inclusion (n := 2)).op).obj (nerveFunctor₂.obj C) :=
+    nerveFunctor.obj C ≅ (Truncated.cosk 2).obj (nerveFunctor₂.obj C) :=
   (CostructuredArrow.proj
     ((whiskeringLeft _ _ _).obj (Truncated.inclusion (n := 2)).op)
       ((Truncated.inclusion (n := 2)).op ⋙ nerveFunctor.obj C)).mapIso
       (cosk2RightExtension.component.hom.iso C)
 
-/-- It follows that we have a natural isomorphism between `nerveFunctor` and `nerveFunctor ⋙ cosk₂`
-whose components are the isomorphisms just established. -/
+/-- It follows that we have a natural isomorphism between `nerveFunctor` and
+`nerveFunctor ⋙ Truncated.cosk 2` whose components are the isomorphisms just established. -/
 noncomputable def cosk2Iso : nerveFunctor.{u, u} ≅
-    nerveFunctor₂.{u, u} ⋙ ran (Truncated.inclusion (n := 2)).op := by
+    nerveFunctor₂.{u, u} ⋙ Truncated.cosk 2 := by
   apply NatIso.ofComponents cosk2NatIso.component _
   have := cosk2NatTrans.{u, u}.naturality
   exact cosk2NatTrans.naturality
