@@ -92,7 +92,7 @@ theorem padicNorm_of_prime_of_ne {q : ℕ} [p_prime : Fact p.Prime] [q_prime : F
 
 See also `padicNorm.padicNorm_p_lt_one_of_prime` for a version assuming `p` is prime. -/
 theorem padicNorm_p_lt_one (hp : 1 < p) : padicNorm p p < 1 := by
-  rw [padicNorm_p hp, inv_lt_one_iff]
+  rw [padicNorm_p hp, inv_lt_one_iff₀]
   exact mod_cast Or.inr hp
 
 /-- The `p`-adic norm of `p` is less than `1` if `p` is prime.
@@ -246,7 +246,7 @@ theorem int_eq_one_iff (m : ℤ) : padicNorm p m = 1 ↔ ¬(p : ℤ) ∣ m := by
   simp only [dvd_iff_norm_le, Int.cast_natCast, Nat.cast_one, zpow_neg, zpow_one, not_le]
   constructor
   · intro h
-    rw [h, inv_lt_one_iff_of_pos] <;> norm_cast
+    rw [h, inv_lt_one₀] <;> norm_cast
     · exact Nat.Prime.one_lt Fact.out
     · exact Nat.Prime.pos Fact.out
   · simp only [padicNorm]
