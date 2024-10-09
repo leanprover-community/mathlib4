@@ -44,8 +44,7 @@ class QuotLikeStruct (Q : Sort*) (α : outParam Sort*) (r : outParam (α → α 
   /-- The canonical map from quotient to `Quot r`. -/
   toQuot : Q → Quot r := by exact (·)
   toQuot_mkQ : ∀ a, toQuot (mkQ a) = Quot.mk r a := by exact fun _ ↦ rfl
-  /-- The analogue of `Quot.ind`: every element of `Q` is of the form `mkQ a`. -/
-  ind {motive : Q → Prop} : (∀ a : α, motive (mkQ a)) → ∀ q : Q, motive q := by exact Quot.ind
+  surjective_mkQ : Function.Surjective mkQ := by exact Quot.exists_rep
   /--
   The analogue of `Quot.sound`: If `a` and `b` are related by the relation,
   then they have equal equivalence classes.
@@ -67,10 +66,8 @@ namespace QuotLike
 export QuotLikeStruct (mkQ toQuot)
 
 alias toQuot_mkQ := QuotLikeStruct.toQuot_mkQ
-alias ind := QuotLikeStruct.ind
 alias sound := QuotLikeStruct.sound
 
-attribute [elab_as_elim] ind
 attribute [simp] toQuot_mkQ
 
 open Lean Elab Term Meta Qq
@@ -287,13 +284,18 @@ theorem liftOn_mkQ {β : Sort*} (a : α) (f : α → β) (h : ∀ a₁ a₂, r a
     QuotLike.liftOn (⟦a⟧ : Q) f h = f a :=
   lift_mkQ f h a
 
+theorem exists_rep (q : Q) : ∃ a, ⟦a⟧ = q :=
+  QuotLikeStruct.surjective_mkQ q
+
+@[elab_as_elim]
+theorem ind {motive : Q → Prop}
+    (h : (a : α) → motive ⟦a⟧) (q : Q) : motive q :=
+  (exists_rep q).rec fun a ha ↦ ha ▸ h a
+
 @[elab_as_elim]
 protected theorem inductionOn {motive : Q → Prop}
     (q : Q) (h : (a : α) → motive ⟦a⟧) : motive q :=
   ind h q
-
-theorem exists_rep (q : Q) : ∃ a, ⟦a⟧ = q :=
-  QuotLike.inductionOn q (fun a ↦ ⟨a, rfl⟩)
 
 section
 variable {motive : Q → Sort*} (f : (a : α) → motive ⟦a⟧)
@@ -576,7 +578,7 @@ instance (priority := 800) [IsEquiv α r] [dec : DecidableRel r] : DecidableEq Q
 
 theorem surjective_mkQ :
     Function.Surjective (mkQ (Q := Q)) :=
-  exists_rep
+  QuotLikeStruct.surjective_mkQ
 
 @[simp]
 theorem surjective_lift {β : Sort*} {f : α → β} {h : ∀ a b, r a b → f a = f b} :
