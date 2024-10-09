@@ -716,7 +716,17 @@ theorem card_toFinset_of_isDiag {e : Sym2 α} (h : e.IsDiag) : e.toFinset.card =
   ext
   simp
 
+lemma card_toFinset_mk_of_ne {x y : α} (h : x ≠ y) : s(x, y).toFinset.card = 2 := by
+  rw [card_eq_two]
+  use x, y, h
+  ext
+  simp
+
+lemma card_toFinset_of_not_isDiag {e : Sym2 α} (h : ¬e.IsDiag) : e.toFinset.card = 2 := by
+  induction e with | _ x y => exact card_toFinset_mk_of_ne h
+
 end
+
 
 /-! ### The other element of an element of the symmetric square -/
 
