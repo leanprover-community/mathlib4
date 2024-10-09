@@ -139,174 +139,21 @@ lemma isClosed_nullSubgroup : IsClosed (@nullSubgroup M _ : Set M) := by
 
 instance : Nonempty (@nullSubgroup M _) := ⟨0⟩
 
-/-- The definition of the norm on the quotient by the null subgroup. -/
-noncomputable instance normOnSeparationQuotient : Norm (SeparationQuotient M) where
-  norm x := sInf (norm '' { m | mk m = x })
+variable (x : SeparationQuotient M)
 
-theorem norm_eq (x : SeparationQuotient M) :
-    ‖x‖ = sInf (norm '' { m : M | mk m = x }) := rfl
-
-theorem norm_eq_infDist (x : SeparationQuotient M) :
-    ‖x‖ = infDist 0 { m : M | mk m = x } := by
-  simp only [norm_eq, infDist_eq_iInf, sInf_image', dist_zero_left]
-
-/-- An alternative definition of the norm on the quotient group: the norm of `mk x` is
-equal to the distance from `x` to `nullSubgroup`. -/
-theorem norm_mk (x : M) : ‖mk x‖ = infDist x (@nullSubgroup M _) := by
-  rw [norm_eq_infDist, ← infDist_image (IsometryEquiv.subLeft x).isometry,
-    IsometryEquiv.subLeft_apply, sub_zero, ← IsometryEquiv.preimage_symm]
-  congr 1 with y
-  simp only [mk_eq_mk, preimage_setOf_eq, IsometryEquiv.subLeft_symm_apply, mem_setOf_eq,
-    AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup, AddSubgroup.mem_toAddSubmonoid]
-  rw [inseparable_iff_norm_zero]
-  simp only [add_sub_cancel_right, norm_neg]
-  exact Eq.to_iff rfl
-
-theorem image_norm_nonempty (x : SeparationQuotient M) :
-    (norm '' { m | mk m = x }).Nonempty := .image _ <| Quot.exists_rep x
-
-theorem bddBelow_image_norm (s : Set M) : BddBelow (norm '' s) :=
-  ⟨0, forall_mem_image.2 fun _ _ ↦ norm_nonneg _⟩
-
-theorem isGLB_quotient_norm (x : SeparationQuotient M) :
-    IsGLB (norm '' { m | mk m = x }) (‖x‖) :=
-  isGLB_csInf (image_norm_nonempty x) (bddBelow_image_norm _)
-
-/-- The norm on the quotient satisfies `‖-x‖ = ‖x‖`. -/
-theorem quotient_norm_neg (x : SeparationQuotient M) : ‖-x‖ = ‖x‖ := by
-  simp only [norm_eq]
-  congr 1 with r
-  constructor <;> { rintro ⟨m, hm, rfl⟩; use -m; simpa [neg_eq_iff_eq_neg] using hm }
-
-theorem quotient_norm_sub_rev (x y : SeparationQuotient M) : ‖x - y‖ = ‖y - x‖ := by
-  rw [← neg_sub, quotient_norm_neg]
-
-lemma norm_mk_eq_sInf (m : M) : ‖mk m‖ = sInf ((‖m + ·‖) '' @nullSubgroup M _) := by
-  rw [norm_mk, sInf_image', ← infDist_image isometry_neg, image_neg]
-  have : -(@nullSubgroup M _: Set M) = (@nullSubgroup M _: Set M) := by
-    ext x
-    rw [Set.mem_neg]
-    constructor
-    · intro hx
-      rw [← neg_neg x]
-      exact nullSubgroup.neg_mem' hx
-    · intro hx
-      exact nullSubgroup.neg_mem' hx
-  rw [this, infDist_eq_iInf]
-  simp only [dist_eq_norm', sub_neg_eq_add, add_comm]
-
-/-- The norm of the projection is equal to the norm of the original element. -/
-@[simp]
-theorem quotient_norm_mk_eq (m : M) : ‖mk m‖ = ‖m‖ := by
-  apply le_antisymm
-  · exact csInf_le (bddBelow_image_norm _) <| Set.mem_image_of_mem _ rfl
-  · rw [norm_mk_eq_sInf]
-    apply le_csInf
-    · use ‖m‖
-      use 0
-      simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
-        AddSubgroup.mem_toAddSubmonoid, add_zero]
-      exact ⟨AddSubgroup.zero_mem nullSubgroup, trivial⟩
-    · intro b hb
-      obtain ⟨x, hx⟩ := hb
-      simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
-        AddSubgroup.mem_toAddSubmonoid] at hx
-      rw [← hx.2]
-      calc ‖m‖ = ‖m + x - x‖ := by simp only [add_sub_cancel_right]
-      _ ≤ ‖m + x‖ + ‖x‖ := by exact norm_sub_le (m + x) x
-      _ = ‖m + x‖ + 0 := by rw [hx.1]
-      _ = ‖m + x‖ := by exact AddMonoid.add_zero ‖m + x‖
-
-/-- The quotient norm is nonnegative. -/
-theorem quotient_norm_nonneg (x : SeparationQuotient M) : 0 ≤ ‖x‖ :=
-  Real.sInf_nonneg <| forall_mem_image.2 fun _ _ ↦ norm_nonneg _
-
-/-- The quotient norm is nonnegative. -/
-theorem norm_mk_nonneg (m : M) : 0 ≤ ‖mk m‖ := quotient_norm_nonneg _
+variable (z : M)
 
 /-- The norm of the image of `m : M` in the quotient by the null space is zero if and only if `m`
 belongs to the null space. -/
 theorem quotient_norm_eq_zero_iff (m : M) :
     ‖mk m‖ = 0 ↔ m ∈ nullSubgroup := by
   rw [norm_mk]
-  rw [← SetLike.mem_coe]
-  nth_rw 2 [← IsClosed.closure_eq isClosed_nullSubgroup]
-  rw [← mem_closure_iff_infDist_zero]
-  exact ⟨0, nullSubgroup.zero_mem'⟩
-
-theorem norm_lt_iff {x : SeparationQuotient M} {r : ℝ} :
-    ‖x‖ < r ↔ ∃ m : M, mk m = x ∧ ‖m‖ < r := by
-  rw [isGLB_lt_iff (isGLB_quotient_norm _), exists_mem_image]
-  rfl
-
-/-- The quotient norm satisfies the triangle inequality. -/
-theorem quotient_norm_add_le (x y : SeparationQuotient M) : ‖x + y‖ ≤ ‖x‖ + ‖y‖ := by
-  rcases And.intro (SeparationQuotient.surjective_mk x) (SeparationQuotient.surjective_mk y) with
-    ⟨⟨x, rfl⟩, ⟨y, rfl⟩⟩
-  simp only [← SeparationQuotient.mk_add, quotient_norm_mk_eq]
-  exact norm_add_le x y
-
-/-- The quotient norm of `0` is `0`. -/
-theorem norm_mk_zero : ‖(0 : SeparationQuotient M)‖ = 0 := by
-  erw [quotient_norm_eq_zero_iff]
-  exact nullSubgroup.zero_mem
-
-/-- If `(m : M)` has norm equal to `0` in `SeparationQuotient M`, then `m ∈ nullSubgroup`. -/
-theorem norm_mk_eq_zero (m : M) (h : ‖mk m‖ = 0) : m ∈ nullSubgroup := by
-  rwa [quotient_norm_eq_zero_iff] at h
+  exact Eq.to_iff rfl
 
 /-- If for `(m : M)` it holds that `mk m = 0`, then `m  ∈ nullSubgroup`. -/
 theorem mk_eq_zero_iff (m : M) : mk m = 0 ↔ m ∈ nullSubgroup := by
-  constructor
-  · intro h
-    have : ‖mk m‖ = 0 := by
-      rw [h]
-      exact norm_mk_zero
-    rw [quotient_norm_mk_eq] at this
-    exact this
-  · intro h
-    have : mk (0 : M) = 0 := rfl
-    rw [← this, SeparationQuotient.mk_eq_mk, inseparable_iff_norm_zero]
-    simp only [sub_zero]
-    exact h
-
-theorem quotient_nhd_basis :
-    (𝓝 (0 : SeparationQuotient M)).HasBasis (fun ε ↦ 0 < ε) fun ε ↦ { x | ‖x‖ < ε } := by
-  have : ∀ ε : ℝ, mk '' ball (0 : M) ε = { x : SeparationQuotient M | ‖x‖ < ε } := by
-    intro ε
-    ext x
-    rw [ball_zero_eq, mem_setOf_eq, norm_lt_iff, mem_image]
-    exact exists_congr fun _ ↦ and_comm
-  rw [← SeparationQuotient.mk_zero, nhds_eq, ← funext this]
-  exact .map _ Metric.nhds_basis_ball
-
-/-- The seminormed group structure on the quotient by the null subgroup. -/
-noncomputable instance normedAddCommGroupQuotient :
-    NormedAddCommGroup (SeparationQuotient M) where
-  dist x y := ‖x - y‖
-  dist_self x := by simp only [norm_mk_zero, sub_self]
-  dist_comm := quotient_norm_sub_rev
-  dist_triangle x y z := by
-    refine le_trans ?_ (quotient_norm_add_le _ _)
-    exact (congr_arg norm (sub_add_sub_cancel _ _ _).symm).le
-  edist_dist x y := by exact ENNReal.coe_nnreal_eq _
-  toUniformSpace := TopologicalAddGroup.toUniformSpace (SeparationQuotient M)
-  uniformity_dist := by
-    rw [uniformity_eq_comap_nhds_zero', ((quotient_nhd_basis).comap _).eq_biInf]
-    simp only [dist, quotient_norm_sub_rev (Prod.fst _), preimage_setOf_eq]
-  eq_of_dist_eq_zero {x} {y} hxy := by
-    simp only at hxy
-    obtain ⟨x', hx'⟩ := SeparationQuotient.surjective_mk x
-    obtain ⟨y', hy'⟩ := SeparationQuotient.surjective_mk y
-    rw [← hx', ← hy', SeparationQuotient.mk_eq_mk, inseparable_iff_norm_zero]
-    rw [← hx', ← hy', ← mk_sub, quotient_norm_eq_zero_iff] at hxy
-    exact hxy
-
--- This is a sanity check left here on purpose to ensure that potential refactors won't destroy
--- this important property.
-example : (instTopologicalSpaceQuotient : TopologicalSpace <| SeparationQuotient M) =
-      normedAddCommGroupQuotient.toUniformSpace.toTopologicalSpace :=
-  rfl
+  rw [← quotient_norm_eq_zero_iff]
+  exact Iff.symm norm_eq_zero
 
 open NormedAddGroupHom
 
@@ -314,7 +161,7 @@ open NormedAddGroupHom
 noncomputable def normedMk : NormedAddGroupHom M (SeparationQuotient M) :=
   { mkAddGroupHom with
     bound' := ⟨1, fun m => by simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
-      mkAddGroupHom_apply, quotient_norm_mk_eq, one_mul, le_refl]⟩}
+      mkAddGroupHom_apply, norm_mk, one_mul, le_refl]⟩}
 
 /-- `mkAddGroupHom` agrees with `QuotientAddGroup.mk`. -/
 @[simp]
@@ -334,7 +181,8 @@ theorem ker_normedMk : (@normedMk M _).ker = nullSubgroup := by
 
 /-- The operator norm of the projection is at most `1`. -/
 theorem norm_normedMk_le : ‖(@normedMk M _)‖ ≤ 1 :=
-  NormedAddGroupHom.opNorm_le_bound _ zero_le_one fun m => by simp [quotient_norm_mk_eq]
+  NormedAddGroupHom.opNorm_le_bound _ zero_le_one fun m => by simp only [normedMk.apply, norm_mk,
+    one_mul, le_refl]
 
 lemma eq_of_inseparable (f : NormedAddGroupHom M N) (hf : ∀ x ∈ nullSubgroup, f x = 0) :
     ∀ x y, Inseparable x y → f x = f y := by
@@ -359,7 +207,6 @@ noncomputable def liftNormedAddGroupHom (f : NormedAddGroupHom M N)
     intro v
     obtain ⟨v', hv'⟩ := surjective_mk v
     rw [← hv', SeparationQuotient.lift_mk (eq_of_inseparable f hf) v']
-    simp only [quotient_norm_mk_eq]
     exact le_opNorm f v'
 
 theorem liftNormedAddGroupHom_apply (f : NormedAddGroupHom M N) (hf : ∀ x ∈ nullSubgroup, f x = 0)
@@ -373,19 +220,19 @@ theorem norm_lift_apply_le (f : NormedAddGroupHom M N)
     rcases SeparationQuotient.surjective_mk x with ⟨x, rfl⟩
     simpa [h] using le_opNorm f x
   | inr h =>
-    rw [← not_lt, ← _root_.lt_div_iff₀' h, norm_lt_iff]
-    rintro ⟨x, rfl, hx⟩
-    exact ((lt_div_iff₀' h).1 hx).not_le (le_opNorm f x)
+    obtain ⟨x', hx'⟩ := surjective_mk x
+    rw [← hx']
+    simp only [coe_toAddMonoidHom, lift_mk, norm_mk]
+    exact le_opNorm f x'
 
 /-- The operator norm of the projection is `1` if the null space is not dense. -/
 theorem norm_normedMk (h : (@nullSubgroup M _ : Set M) ≠ univ) :
     ‖(@normedMk M _)‖ = 1 := by
   apply NormedAddGroupHom.opNorm_eq_of_bounds _ zero_le_one
   · simp only [normedMk.apply, one_mul]
-    exact fun x => (le_of_eq <| quotient_norm_mk_eq x)
+    exact fun x ↦ Preorder.le_refl ‖SeparationQuotient.mk x‖
   · simp only [ge_iff_le, normedMk.apply]
     intro N hN hx
-    simp_rw [quotient_norm_mk_eq] at hx
     rw [← nonempty_compl] at h
     obtain ⟨x, hxnn⟩ := h
     have : 0 < ‖x‖ := Ne.lt_of_le (Ne.symm hxnn) (norm_nonneg x)
@@ -409,12 +256,6 @@ namespace SeparationQuotientNormedAddGroupHom
 
 open SeparationQuotientAddGroup
 
-/-- `IsQuotient f`, for `f : M ⟶ N` means that `N` is isomorphic to the quotient of `M`
-by the kernel of `f`. -/
-structure IsQuotient (f : NormedAddGroupHom M N) : Prop where
-  protected surjective : Function.Surjective f
-  protected norm : ∀ x, ‖f x‖ = sInf ((fun m => ‖x + m‖) '' f.ker)
-
 /-- Given `f : NormedAddGroupHom M N` such that `f s = 0` for all `s ∈ nullSubgroup`,
 we define the induced morphism `NormedAddGroupHom (SeparationQuotient M) N`. -/
 noncomputable def lift {N : Type*} [SeminormedAddCommGroup N] (f : NormedAddGroupHom M N)
@@ -427,7 +268,6 @@ noncomputable def lift {N : Type*} [SeminormedAddCommGroup N] (f : NormedAddGrou
       rw [← hv']
       simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, AddCommMonoidHom_lift_apply,
         AddMonoidHom.coe_coe]
-      rw [quotient_norm_mk_eq]
       exact NormedAddGroupHom.le_opNorm f v'}
 
 theorem lift_mk {N : Type*} [SeminormedAddCommGroup N] (f : NormedAddGroupHom M N)
@@ -441,33 +281,6 @@ theorem lift_unique {N : Type*} [SeminormedAddCommGroup N] (f : NormedAddGroupHo
   change g.comp normedMk x = _
   simp only [h]
   rfl
-
-/-- `normedMk` satisfies `IsQuotient`. -/
-theorem isQuotientSeparationQuotient : IsQuotient (@normedMk M _) := by
-  constructor
-  · exact surjective_normedMk
-  · rw [ker_normedMk]
-    exact fun x => norm_mk_eq_sInf x
-
-theorem IsQuotient.norm_lift {f : NormedAddGroupHom M N} (hquot : IsQuotient f) {ε : ℝ} (hε : 0 < ε)
-    (n : N) : ∃ m : M, f m = n ∧ ‖m‖ < ‖n‖ + ε := by
-  obtain ⟨m, rfl⟩ := hquot.surjective n
-  have nonemp : ((fun m' => ‖m + m'‖) '' f.ker).Nonempty := by
-    rw [Set.image_nonempty]
-    exact ⟨0, f.ker.zero_mem⟩
-  rcases Real.lt_sInf_add_pos nonemp hε
-    with ⟨_, ⟨⟨x, hx, rfl⟩, H : ‖m + x‖ < sInf ((fun m' : M => ‖m + m'‖) '' f.ker) + ε⟩⟩
-  exact ⟨m + x, by rw [map_add, (NormedAddGroupHom.mem_ker f x).mp hx, add_zero], by
-    rwa [hquot.norm]⟩
-
-theorem IsQuotient.norm_le {f : NormedAddGroupHom M N} (hquot : IsQuotient f) (m : M) :
-    ‖f m‖ ≤ ‖m‖ := by
-  rw [hquot.norm]
-  apply csInf_le
-  · use 0
-    rintro _ ⟨m', -, rfl⟩
-    apply norm_nonneg
-  · exact ⟨0, f.ker.zero_mem, by simp⟩
 
 theorem norm_lift_le {N : Type*} [SeminormedAddCommGroup N] (f : NormedAddGroupHom M N)
     (hf : ∀ s ∈ nullSubgroup, f s = 0) : ‖lift f hf‖ ≤ ‖f‖ :=
@@ -509,32 +322,6 @@ open SeparationQuotientAddGroup
 variable {R S : Type*} [Semiring R] [Module R M] [Semiring S] [Module S N]
   [ContinuousConstSMul R M]
 
--- do we need these?
--- instance Submodule.SeparationQuotient.normedAddCommGroup :
---     NormedAddCommGroup (SeparationQuotient M) :=
---   SeparationQuotient.normedAddCommGroupQuotient
-
--- instance Submodule.SeparationQuotient.completeSpace [CompleteSpace M] :
---     CompleteSpace (SeparationQuotient M) := SeparationQuotient.instCompleteSpace
-
-theorem norm_mk_eq (m : M) :
-    ‖(SeparationQuotient.mk m : SeparationQuotient M)‖ = ‖m‖ := quotient_norm_mk_eq m
-
-instance instBoundedSMul (𝕜 : Type*) [SeminormedCommRing 𝕜] [Module 𝕜 M] [BoundedSMul 𝕜 M] :
-    BoundedSMul 𝕜 (SeparationQuotient M) := by
-  apply BoundedSMul.of_norm_smul_le
-  intro r x
-  obtain ⟨x', hx'⟩ := SeparationQuotient.surjective_mk x
-  rw [← hx', ← mk_smul, quotient_norm_mk_eq, quotient_norm_mk_eq]
-  exact norm_smul_le r x'
-
-instance Submodule.SeparationQuotient.normedSpace (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 𝕜 M] :
-    NormedSpace 𝕜 (SeparationQuotient M) where
-  norm_smul_le := norm_smul_le
-
-instance instModule : Module R (SeparationQuotient M) :=
-  surjective_mk.module R mkAddMonoidHom mk_smul
-
 variable (R M)
 
 /-- `SeparationQuotient.mk` as a continuous linear map. -/
@@ -568,49 +355,3 @@ theorem liftCLM_apply {σ : R →+* S} (f : M →SL[σ] N) (hf : ∀ x y, Insepa
 end SeparationQuotientModule
 
 end Module
-
-section Ideal
-
-namespace SeparationQuotientIdeal
-
-open SeparationQuotientAddGroup
-
-variable {R : Type*} [SeminormedCommRing R]
-
-theorem norm_mk_le (r : R) : ‖mk r‖ = ‖r‖ :=
-  quotient_norm_mk_eq r
-
-instance normedCommRing : NormedCommRing (SeparationQuotient R) where
-  dist x y := ‖x - y‖
-  dist_self x := by simp only [norm_mk_zero, sub_self]
-  dist_comm := quotient_norm_sub_rev
-  dist_triangle x y z := by
-    refine le_trans ?_ (quotient_norm_add_le _ _)
-    exact (congr_arg norm (sub_add_sub_cancel _ _ _).symm).le
-  edist_dist x y := by exact ENNReal.coe_nnreal_eq _
-  eq_of_dist_eq_zero {x} {y} hxy := by
-    simp only at hxy
-    obtain ⟨x', hx'⟩ := SeparationQuotient.surjective_mk x
-    obtain ⟨y', hy'⟩ := SeparationQuotient.surjective_mk y
-    rw [← hx', ← hy', SeparationQuotient.mk_eq_mk, inseparable_iff_norm_zero]
-    rw [← hx', ← hy', ← mk_sub, quotient_norm_eq_zero_iff] at hxy
-    exact hxy
-  dist_eq x y := rfl
-  mul_comm := _root_.mul_comm
-  norm_mul x y := by
-    obtain ⟨x', hx'⟩ := SeparationQuotient.surjective_mk x
-    obtain ⟨y', hy'⟩ := SeparationQuotient.surjective_mk y
-    rw [← hx', ← hy', ← mk_mul, quotient_norm_mk_eq, quotient_norm_mk_eq, quotient_norm_mk_eq]
-    exact norm_mul_le x' y'
-
-variable (𝕜 : Type*) [NormedField 𝕜]
-
--- TODO Ideal.SeparationQuotient.algebra does not exist
-
--- instance Ideal.SeparationQuotient.normedAlgebra [NormedAlgebra 𝕜 R]
---     : NormedAlgebra 𝕜 (SeparationQuotient R) :=
---   { Submodule.SeparationQuotient.normedSpace 𝕜, Ideal.SeparationQuotient.algebra 𝕜 with }
-
-end SeparationQuotientIdeal
-
-end Ideal
