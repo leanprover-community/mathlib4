@@ -277,7 +277,7 @@ lemma isUniformEmbedding_toContinuousMap :
 alias uniformEmbedding_toContinuousMap := isUniformEmbedding_toContinuousMap
 
 instance [T1Space R] [CompleteSpace C(X, R)] : CompleteSpace C(X, R)₀ :=
-  completeSpace_iff_isComplete_range isUniformEmbedding_toContinuousMap.toUniformInducing
+  completeSpace_iff_isComplete_range isUniformEmbedding_toContinuousMap.isUniformInducing
     |>.mpr closedEmbedding_toContinuousMap.isClosed_range.isComplete
 
 lemma isUniformEmbedding_comp {Y : Type*} [UniformSpace Y] [Zero Y] (g : C(Y, R)₀)

@@ -1194,6 +1194,9 @@ theorem card_ord (c) : (ord c).card = c :=
     -- Porting note: cardinal.mk_def is now Cardinal.mk'_def, not sure why
     simp only [mk'_def, e, card_type]
 
+theorem card_surjective : Function.Surjective card :=
+  fun c ↦ ⟨_, card_ord c⟩
+
 /-- Galois coinsertion between `Cardinal.ord` and `Ordinal.card`. -/
 def gciOrdCard : GaloisCoinsertion ord card :=
   gc_ord_card.toGaloisCoinsertion fun c => c.card_ord.le

@@ -357,7 +357,7 @@ macro "compareOfLessAndEq_rfl" : tactic =>
 
 /-- A linear order is reflexive, transitive, antisymmetric and total relation `≤`.
 We assume that every linear ordered type has decidable `(≤)`, `(<)`, and `(=)`. -/
-class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α :=
+class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α where
   /-- A linear order is total. -/
   le_total (a b : α) : a ≤ b ∨ b ≤ a
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
