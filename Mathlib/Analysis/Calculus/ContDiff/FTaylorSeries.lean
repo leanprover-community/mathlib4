@@ -227,7 +227,7 @@ in a neighborhood of `x`, the term of order `1` of this series is a derivative o
 theorem HasFTaylorSeriesUpToOn.eventually_hasFDerivAt (h : HasFTaylorSeriesUpToOn n f p s)
     (hn : 1 ≤ n) (hx : s ∈ 𝓝 x) :
     ∀ᶠ y in 𝓝 x, HasFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p y 1)) y :=
-  (eventually_nhds_nhds.2 hx).mono fun _y hy => h.hasFDerivAt hn hy
+  (eventually_eventually_nhds.2 hx).mono fun _y hy => h.hasFDerivAt hn hy
 
 /-- If a function has a Taylor series at order at least `1` on a neighborhood of `x`, then
 it is differentiable at `x`. -/
