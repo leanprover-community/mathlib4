@@ -136,6 +136,7 @@ def prodQuotientEquiv (r : Setoid α) (s : Setoid β) :
 
 /-- A bijection between an indexed product of quotients and the quotient by the product of the
 equivalence relations. -/
+@[simps]
 noncomputable def piQuotientEquiv {ι : Sort*} {α : ι → Sort*} (r : ∀ i, Setoid (α i)) :
     (∀ i, Quotient (r i)) ≃ Quotient (@piSetoid _ _ r) where
   toFun := fun x ↦ Quotient.mk'' fun i ↦ (x i).out'
