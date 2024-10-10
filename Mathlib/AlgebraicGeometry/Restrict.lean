@@ -528,7 +528,7 @@ lemma resLE_eq_morphismRestrict : f.resLE U (f ⁻¹ᵁ U) le_rfl = f ∣_ U := 
   simp [Scheme.Hom.resLE]
 
 lemma resLE_id (i : V ⟶ V') : resLE (𝟙 X) V' V i.le = (X.restrictFunctor.map i).left := by
-  simp only [resLE, id_val_base, morphismRestrict_id, Category.comp_id]
+  simp only [resLE, morphismRestrict_id]
   rfl
 
 @[reassoc (attr := simp)]
