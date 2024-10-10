@@ -33,7 +33,7 @@ a morphism `Δ[n] ⟶ ∂Δ[n]`.
 
 universe v u
 
-open CategoryTheory CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Limits CategoryTheory.Functor
 
 open Simplicial
 
@@ -335,18 +335,91 @@ instance Truncated.hasColimits {n : ℕ} : HasColimits (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
 
+/-- The ulift functor `SSet.Truncated.{u} ⥤ SSet.Truncated.{max u v}` on truncated
+simplicial sets. -/
+def Truncated.uliftFunctor (k : ℕ) : SSet.Truncated.{u} k ⥤ SSet.Truncated.{max u v} k :=
+  (whiskeringRight _ _ _).obj CategoryTheory.uliftFunctor.{v, u}
+
 -- Porting note (#5229): added an `ext` lemma.
 @[ext]
 lemma Truncated.hom_ext {n : ℕ} {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) :
     f = g :=
   NatTrans.ext (funext w)
 
-/-- The skeleton functor on simplicial sets. -/
-def sk (n : ℕ) : SSet ⥤ SSet.Truncated n :=
-  SimplicialObject.sk n
+/-- The truncation functor on simplicial sets. -/
+abbrev truncation (n : ℕ) : SSet ⥤ SSet.Truncated n := SimplicialObject.truncation n
 
 instance {n} : Inhabited (SSet.Truncated n) :=
-  ⟨(sk n).obj <| Δ[0]⟩
+  ⟨(truncation n).obj <| Δ[0]⟩
+
+
+open SimplexCategory
+
+noncomputable section
+
+/-- The n-skeleton as a functor `SSet.Truncated n ⥤ SSet`. -/
+protected abbrev Truncated.sk (n : ℕ) : SSet.Truncated n ⥤ SSet.{u} :=
+  SimplicialObject.Truncated.sk n
+
+/-- The n-coskeleton as a functor `SSet.Truncated n ⥤ SSet`. -/
+protected abbrev Truncated.cosk (n : ℕ) : SSet.Truncated n ⥤ SSet.{u} :=
+  SimplicialObject.Truncated.cosk n
+
+/-- The n-skeleton as an endofunctor on `SSet`. -/
+abbrev sk (n : ℕ) : SSet ⥤ SSet := SimplicialObject.sk n
+
+/-- The n-coskeleton as an endofunctor on `SSet`. -/
+abbrev cosk (n : ℕ) : SSet ⥤ SSet := SimplicialObject.cosk n
+
+end
+
+section adjunctions
+
+/-- The adjunction between the n-skeleton and n-truncation.-/
+noncomputable def skAdj (n : ℕ) : Truncated.sk n ⊣ truncation.{u} n :=
+  SimplicialObject.skAdj n
+
+/-- The adjunction between n-truncation and the n-coskeleton.-/
+noncomputable def coskAdj (n : ℕ) : truncation.{u} n ⊣ Truncated.cosk n :=
+  SimplicialObject.coskAdj n
+
+namespace Truncated
+
+instance cosk_reflective (n) : IsIso (coskAdj n).counit :=
+  SimplicialObject.Truncated.cosk_reflective n
+
+instance sk_coreflective (n) : IsIso (skAdj n).unit :=
+  SimplicialObject.Truncated.sk_coreflective n
+
+/-- Since `Truncated.inclusion` is fully faithful, so is right Kan extension along it.-/
+noncomputable def cosk.fullyFaithful (n) :
+    (Truncated.cosk n).FullyFaithful :=
+  SimplicialObject.Truncated.cosk.fullyFaithful n
+
+instance cosk.full (n) : (Truncated.cosk n).Full :=
+  SimplicialObject.Truncated.cosk.full n
+
+instance cosk.faithful (n) : (Truncated.cosk n).Faithful :=
+  SimplicialObject.Truncated.cosk.faithful n
+
+noncomputable instance coskAdj.reflective (n) : Reflective (Truncated.cosk n) :=
+  SimplicialObject.Truncated.coskAdj.reflective n
+
+/-- Since `Truncated.inclusion` is fully faithful, so is left Kan extension along it.-/
+noncomputable def sk.fullyFaithful (n) :
+    (Truncated.sk n).FullyFaithful := SimplicialObject.Truncated.sk.fullyFaithful n
+
+instance sk.full (n) : (Truncated.sk n).Full := SimplicialObject.Truncated.sk.full n
+
+instance sk.faithful (n) : (Truncated.sk n).Faithful :=
+  SimplicialObject.Truncated.sk.faithful n
+
+noncomputable instance skAdj.coreflective (n) : Coreflective (Truncated.sk n) :=
+  SimplicialObject.Truncated.skAdj.coreflective n
+
+end Truncated
+
+end adjunctions
 
 /-- The category of augmented simplicial sets, as a particular case of
 augmented simplicial objects. -/
