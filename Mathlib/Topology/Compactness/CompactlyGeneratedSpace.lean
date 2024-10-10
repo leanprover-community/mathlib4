@@ -336,7 +336,7 @@ theorem compactlyGeneratedSpace_of_isOpen_of_t2
   have : CompactSpace ↑K := isCompact_iff_compactSpace.1 hK
   exact hs _ Subtype.val continuous_subtype_val
 
-/-- A Hausdorff and weakly locally compact space and compactly generated. -/
+/-- A Hausdorff and weakly locally compact space is compactly generated. -/
 instance (priority := 100) [WeaklyLocallyCompactSpace X] :
     CompactlyGeneratedSpace X := by
   refine compactlyGeneratedSpace_of_isClosed_of_t2 fun s h ↦ ?_

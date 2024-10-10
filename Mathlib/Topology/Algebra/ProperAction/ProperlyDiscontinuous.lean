@@ -101,15 +101,3 @@ theorem properlyDiscontinuousSMul_iff_properSMul [T2Space X] [DiscreteTopology G
       · rintro ⟨gx, hgx, rfl⟩
         exact ⟨gx.2, ⟨gx.1⁻¹ • gx.2, hgx.1, by simp⟩, hgx.2⟩
     exact eq ▸ IsCompact.image (this.isCompact_preimage <| hK.prod hL) continuous_fst
-
-@[deprecated properlyDiscontinuousSMul_iff_properSMul (since := "2024-10-10")]
-theorem WeaklyLocallyCompactSpace.properlyDiscontinuousSMul_iff_properSMul [T2Space X]
-    [WeaklyLocallyCompactSpace X] [DiscreteTopology G] [ContinuousConstSMul G X] :
-    ProperlyDiscontinuousSMul G X ↔ ProperSMul G X :=
-  _root_.properlyDiscontinuousSMul_iff_properSMul
-
-@[deprecated properlyDiscontinuousSMul_iff_properSMul (since := "2024-10-10")]
-theorem FirstCountableTopology.properlyDiscontinuousSMul_iff_properSMul [T2Space X]
-    [FirstCountableTopology X] [DiscreteTopology G] [ContinuousConstSMul G X] :
-    ProperlyDiscontinuousSMul G X ↔ ProperSMul G X :=
-  _root_.properlyDiscontinuousSMul_iff_properSMul

@@ -30,37 +30,6 @@ theorem isProperMap_iff_isCompact_preimage :
       fun _ hK ↦ image_inter_preimage .. ▸ (((h hK).inter_left hs).image hf).isClosed,
       fun _ ↦ h isCompact_singleton⟩
 
-@[deprecated CompactlyGeneratedSpace.isClosed_iff_of_t2 (since := "2024-10-10")]
-theorem compactlyGenerated_of_weaklyLocallyCompactSpace [T2Space X] [WeaklyLocallyCompactSpace X]
-    {s : Set X} : IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K) := by
-  refine ⟨fun hs K hK ↦ hs.inter hK.isClosed, fun h ↦ ?_⟩
-  rw [isClosed_iff_forall_filter]
-  intro x ℱ hℱ₁ hℱ₂ hℱ₃
-  rcases exists_compact_mem_nhds x with ⟨K, hK, K_mem⟩
-  exact mem_of_mem_inter_left <| isClosed_iff_forall_filter.1 (h hK) x ℱ hℱ₁
-    (inf_principal ▸ le_inf hℱ₂ (le_trans hℱ₃ <| le_principal_iff.2 K_mem)) hℱ₃
-
-@[deprecated isProperMap_iff_isCompact_preimage (since := "2024-10-10")]
-theorem WeaklyLocallyCompactSpace.isProperMap_iff_isCompact_preimage [T2Space Y]
-    [WeaklyLocallyCompactSpace Y] :
-    IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) :=
-  _root_.isProperMap_iff_isCompact_preimage
-
-@[deprecated CompactlyGeneratedSpace.isClosed_iff_of_t2 (since := "2024-10-10")]
-theorem compactlyGenerated_of_sequentialSpace [T2Space X] [SequentialSpace X] {s : Set X} :
-    IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K) := by
-  refine ⟨fun hs K hK ↦ hs.inter hK.isClosed,
-    fun h ↦ SequentialSpace.isClosed_of_seq _ fun u p hu hup ↦
-    mem_of_mem_inter_left ((h hup.isCompact_insert_range).mem_of_tendsto hup ?_)⟩
-  simp only [mem_inter_iff, mem_insert_iff, mem_range, exists_apply_eq_apply, or_true, and_true,
-    eventually_atTop, ge_iff_le]
-  exact ⟨0, fun n _ ↦ hu n⟩
-
-@[deprecated isProperMap_iff_isCompact_preimage (since := "2024-10-10")]
-theorem SequentialSpace.isProperMap_iff_isCompact_preimage [T2Space Y] [SequentialSpace Y] :
-    IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) :=
-  _root_.isProperMap_iff_isCompact_preimage
-
 /-- Version of `isProperMap_iff_isCompact_preimage` in terms of `cocompact`. -/
 lemma isProperMap_iff_tendsto_cocompact :
     IsProperMap f ↔ Continuous f ∧ Tendsto f (cocompact X) (cocompact Y) := by
@@ -71,14 +40,3 @@ lemma isProperMap_iff_tendsto_cocompact :
   rcases mem_cocompact.mp (H K hK) with ⟨K', hK', hK'y⟩
   exact hK'.of_isClosed_subset (hK.isClosed.preimage f_cont)
     (compl_le_compl_iff_le.mp hK'y)
-
-@[deprecated isProperMap_iff_tendsto_cocompact (since := "2024-10-10")]
-lemma WeaklyLocallyCompactSpace.isProperMap_iff_tendsto_cocompact [T2Space Y]
-    [WeaklyLocallyCompactSpace Y] :
-    IsProperMap f ↔ Continuous f ∧ Tendsto f (cocompact X) (cocompact Y) :=
-  _root_.isProperMap_iff_tendsto_cocompact
-
-@[deprecated isProperMap_iff_tendsto_cocompact (since := "2024-10-10")]
-lemma SequentialSpace.isProperMap_iff_tendsto_cocompact [T2Space Y] [SequentialSpace Y] :
-    IsProperMap f ↔ Continuous f ∧ Tendsto f (cocompact X) (cocompact Y) :=
-  _root_.isProperMap_iff_tendsto_cocompact
