@@ -125,22 +125,15 @@ def stalkIso {X : Scheme.{u}} (U : X.Opens) (x : U) :
 
 @[reassoc (attr := simp)]
 lemma germ_stalkIso_hom {X : Scheme.{u}} (U : X.Opens)
-    {V : U.toScheme.Opens} (x : V) :
-      U.toScheme.presheaf.germ x ≫ (U.stalkIso x.1).hom =
-        X.presheaf.germ ⟨x.1.1, show x.1.1 ∈ U.ι ''ᵁ V from ⟨x.1, x.2, rfl⟩⟩ :=
+    {V : U.toScheme.Opens} (x : U) (hx : x ∈ V) :
+      U.toScheme.presheaf.germ V x hx ≫ (U.stalkIso x).hom =
+        X.presheaf.germ (U.ι ''ᵁ V) x.1 ⟨x, hx, rfl⟩ :=
     PresheafedSpace.restrictStalkIso_hom_eq_germ _ U.openEmbedding _ _ _
 
-@[reassoc (attr := simp)]
-lemma germ_stalkIso_hom' {X : Scheme.{u}} (U : X.Opens)
-    {V : TopologicalSpace.Opens U} (x : U) (hx : x ∈ V) :
-      U.toScheme.presheaf.germ ⟨x, hx⟩ ≫ (U.stalkIso x).hom =
-        X.presheaf.germ ⟨x.1, show x.1 ∈ U.ι ''ᵁ V from ⟨x, hx, rfl⟩⟩ :=
-    PresheafedSpace.restrictStalkIso_hom_eq_germ _ U.openEmbedding _ _ _
-
-@[simp, reassoc]
+@[reassoc]
 lemma germ_stalkIso_inv {X : Scheme.{u}} (U : X.Opens) (V : U.toScheme.Opens) (x : U)
-    (hx : x ∈ V) : X.presheaf.germ ⟨x.val, show x.val ∈ U.ι ''ᵁ V from ⟨x, hx, rfl⟩⟩ ≫
-      (U.stalkIso x).inv = U.toScheme.presheaf.germ ⟨x, hx⟩ :=
+    (hx : x ∈ V) : X.presheaf.germ (U.ι ''ᵁ V) x ⟨x, hx, rfl⟩ ≫
+      (U.stalkIso x).inv = U.toScheme.presheaf.germ V x hx :=
   PresheafedSpace.restrictStalkIso_inv_eq_germ X.toPresheafedSpace U.openEmbedding V x hx
 
 end Scheme.Opens
@@ -514,7 +507,7 @@ def morphismRestrictStalkMap {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (x) 
     apply TopCat.Presheaf.stalk_hom_ext
     intro V hxV
     change ↑(f ⁻¹ᵁ U) at x
-    simp [Scheme.stalkMap_germ'_assoc, Scheme.Hom.appLE]
+    simp [Scheme.stalkMap_germ_assoc, Scheme.Hom.appLE]
 
 instance {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) [IsOpenImmersion f] :
     IsOpenImmersion (f ∣_ U) := by
