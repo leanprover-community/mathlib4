@@ -49,3 +49,6 @@ theorem isLocalHom_of_iso {R S : CommRingCat} (f : R ≅ S) : IsLocalHom f.hom :
 instance (priority := 100) isLocalHom_of_isIso {R S : CommRingCat} (f : R ⟶ S) [IsIso f] :
     IsLocalHom f :=
   isLocalHom_of_iso (asIso f)
+
+@[deprecated "2024-10-10"]
+alias isLocalRingHom_of_isIso := isLocalHom_of_isIso
