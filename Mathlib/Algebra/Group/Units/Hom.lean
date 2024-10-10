@@ -250,7 +250,8 @@ instance MonoidHom.isLocalHom_comp (g : S →* T) (f : R →* S) [IsLocalHom g]
   map_nonunit a := IsLocalHom.map_nonunit a ∘ IsLocalHom.map_nonunit (f := g) (f a)
 
 -- see note [lower instance priority]
-instance (priority := 100) isLocalHom_toMonoidHom (f : F) [IsLocalHom f] :
+@[instance 100]
+theorem isLocalHom_toMonoidHom (f : F) [IsLocalHom f] :
     IsLocalHom (f : R →* S) :=
   ⟨IsLocalHom.map_nonunit (f := f)⟩
 
