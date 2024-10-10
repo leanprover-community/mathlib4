@@ -289,15 +289,13 @@ The first homology of the (naive) cotangent complex of `S` over `R`,
 induced by a given presentation `0 → I → P → R → 0`,
 defined as the kernel of `I/I² → S ⊗[P] Ω[P⁄R]`.
 -/
-protected
-noncomputable
+protected noncomputable
 def H1Cotangent : Type _ := LinearMap.ker P.cotangentComplex
 
 variable {P : Generators R S}
 
 noncomputable
 instance : AddCommGroup P.H1Cotangent := by delta Generators.H1Cotangent; infer_instance
-
 
 noncomputable
 instance {R₀} [CommRing R₀] [Algebra R₀ S] [Module R₀ P.Cotangent]
