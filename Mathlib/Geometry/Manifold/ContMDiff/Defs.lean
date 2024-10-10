@@ -769,7 +769,7 @@ theorem contMDiffAt_iff_contMDiffAt_nhds
   refine ⟨?_, fun h => h.self_of_nhds⟩
   rw [contMDiffAt_iff_contMDiffOn_nhds]
   rintro ⟨u, hu, h⟩
-  refine (eventually_mem_nhds.mpr hu).mono fun x' hx' => ?_
+  refine (eventually_mem_nhds_iff.mpr hu).mono fun x' hx' => ?_
   exact (h x' <| mem_of_mem_nhds hx').contMDiffAt hx'
 
 /-! ### Congruence lemmas -/

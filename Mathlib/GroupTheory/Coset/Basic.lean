@@ -235,7 +235,7 @@ def leftRel : Setoid α :=
 variable {s}
 
 @[to_additive]
-theorem leftRel_apply {x y : α} : @Setoid.r _ (leftRel s) x y ↔ x⁻¹ * y ∈ s :=
+theorem leftRel_apply {x y : α} : leftRel s x y ↔ x⁻¹ * y ∈ s :=
   calc
     (∃ a : s.op, y * MulOpposite.unop a = x) ↔ ∃ a : s, y * a = x :=
       s.equivOp.symm.exists_congr_left
@@ -246,13 +246,13 @@ theorem leftRel_apply {x y : α} : @Setoid.r _ (leftRel s) x y ↔ x⁻¹ * y �
 variable (s)
 
 @[to_additive]
-theorem leftRel_eq : @Setoid.r _ (leftRel s) = fun x y => x⁻¹ * y ∈ s :=
+theorem leftRel_eq : ⇑(leftRel s) = fun x y => x⁻¹ * y ∈ s :=
   funext₂ <| by
     simp only [eq_iff_iff]
     apply leftRel_apply
 
 theorem leftRel_r_eq_leftCosetEquivalence :
-    @Setoid.r _ (QuotientGroup.leftRel s) = LeftCosetEquivalence s := by
+    ⇑(QuotientGroup.leftRel s) = LeftCosetEquivalence s := by
   ext
   rw [leftRel_eq]
   exact (leftCoset_eq_iff s).symm
@@ -279,7 +279,7 @@ def rightRel : Setoid α :=
 variable {s}
 
 @[to_additive]
-theorem rightRel_apply {x y : α} : @Setoid.r _ (rightRel s) x y ↔ y * x⁻¹ ∈ s :=
+theorem rightRel_apply {x y : α} : rightRel s x y ↔ y * x⁻¹ ∈ s :=
   calc
     (∃ a : s, (a : α) * y = x) ↔ ∃ a : s, y * x⁻¹ = a⁻¹ := by
       simp only [mul_inv_eq_iff_eq_mul, Subgroup.coe_inv, eq_inv_mul_iff_mul_eq]
@@ -288,13 +288,13 @@ theorem rightRel_apply {x y : α} : @Setoid.r _ (rightRel s) x y ↔ y * x⁻¹ 
 variable (s)
 
 @[to_additive]
-theorem rightRel_eq : @Setoid.r _ (rightRel s) = fun x y => y * x⁻¹ ∈ s :=
+theorem rightRel_eq : ⇑(rightRel s) = fun x y => y * x⁻¹ ∈ s :=
   funext₂ <| by
     simp only [eq_iff_iff]
     apply rightRel_apply
 
 theorem rightRel_r_eq_rightCosetEquivalence :
-    @Setoid.r _ (QuotientGroup.rightRel s) = RightCosetEquivalence s := by
+    ⇑(QuotientGroup.rightRel s) = RightCosetEquivalence s := by
   ext
   rw [rightRel_eq]
   exact (rightCoset_eq_iff s).symm
@@ -391,7 +391,7 @@ instance (s : Subgroup α) : Inhabited (α ⧸ s) :=
 @[to_additive]
 protected theorem eq {a b : α} : (a : α ⧸ s) = b ↔ a⁻¹ * b ∈ s :=
   calc
-    _ ↔ @Setoid.r _ (leftRel s) a b := Quotient.eq''
+    _ ↔ leftRel s a b := Quotient.eq''
     _ ↔ _ := by rw [leftRel_apply]
 
 @[to_additive (attr := deprecated (since := "2024-08-04"))] alias eq' := QuotientGroup.eq

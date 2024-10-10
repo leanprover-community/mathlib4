@@ -236,6 +236,8 @@ def Spec.locallyRingedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
       #adaptation_note /-- nightly-2024-04-01
       It's this `erw` that is blowing up. The implicit arguments differ significantly. -/
       erw [← localRingHom_comp_stalkIso_apply] at ha
+      -- TODO: this instance was found automatically before #6045
+      haveI : IsLocalRingHom (stalkIso (↑S) p).inv := isLocalRingHom_of_isIso _
       replace ha := (isUnit_map_iff (stalkIso S p).inv _).mp ha
       -- Porting note: `f` had to be made explicit
       replace ha := IsLocalRingHom.map_nonunit
