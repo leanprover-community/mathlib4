@@ -124,8 +124,8 @@ lemma mapBifunctorLeftUnitor_inv_naturality :
   rw [mapBifunctorLeftUnitor_inv_apply, mapBifunctorLeftUnitor_inv_apply, assoc, assoc,
     ι_mapBifunctorMapMap]
   dsimp
-  rw [Functor.map_id, NatTrans.id_app, id_comp]
-  rw [← NatTrans.naturality_assoc, ← NatTrans.naturality_assoc]
+  rw [Functor.map_id, NatTrans.id_app, id_comp, ← NatTrans.naturality_assoc,
+    ← NatTrans.naturality_assoc]
   rfl
 
 @[reassoc]
