@@ -276,7 +276,7 @@ lemma FarFromTriangleFree.lt_half (hG : G.FarFromTriangleFree ε) : ε < 2⁻¹ 
   apply tsub_lt_self <;> positivity
 
 lemma FarFromTriangleFree.lt_one (hG : G.FarFromTriangleFree ε) : ε < 1 :=
-  hG.lt_half.trans <| inv_lt_one one_lt_two
+  hG.lt_half.trans two_inv_lt_one
 
 theorem FarFromTriangleFree.nonpos (h₀ : G.FarFromTriangleFree ε) (h₁ : G.CliqueFree 3) :
     ε ≤ 0 := by

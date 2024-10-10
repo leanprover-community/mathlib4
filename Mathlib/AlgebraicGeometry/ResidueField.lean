@@ -59,10 +59,10 @@ If we interpret sections over `U` as functions of `X` defined on `U`, then this 
 corresponds to evaluation at `x`.
 -/
 def evaluation (U : X.Opens) (x : X) (hx : x ∈ U) : Γ(X, U) ⟶ X.residueField x :=
-  X.presheaf.germ ⟨x, hx⟩ ≫ X.residue _
+  X.presheaf.germ U x hx ≫ X.residue _
 
 @[reassoc]
-lemma germ_residue (x : U) : X.presheaf.germ x ≫ X.residue x.1 = X.evaluation U x x.2 := rfl
+lemma germ_residue (x hx) : X.presheaf.germ U x hx ≫ X.residue x = X.evaluation U x hx := rfl
 
 /-- The global evaluation map from `Γ(X, ⊤)` to the residue field at `x`. -/
 abbrev Γevaluation (x : X) : Γ(X, ⊤) ⟶ X.residueField x :=

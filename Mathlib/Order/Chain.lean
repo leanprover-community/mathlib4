@@ -52,7 +52,7 @@ def SuperChain (s t : Set α) : Prop :=
 def IsMaxChain (s : Set α) : Prop :=
   IsChain r s ∧ ∀ ⦃t⦄, IsChain r t → s ⊆ t → s = t
 
-variable {r} {c c₁ c₂ c₃ s t : Set α} {a b x y : α}
+variable {r} {c c₁ c₂ s t : Set α} {a x y : α}
 
 theorem isChain_empty : IsChain r ∅ :=
   Set.pairwise_empty _

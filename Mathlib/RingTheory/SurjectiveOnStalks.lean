@@ -185,4 +185,7 @@ lemma surjectiveOnStalks_iff_of_isLocalHom [LocalRing S] [IsLocalHom f] :
   apply hc.mul_right_injective
   simp only [← _root_.map_mul, ← mul_assoc, IsUnit.mul_val_inv, one_mul, e]
 
+@[deprecated "2024-10-10"]
+alias surjectiveOnStalks_iff_of_isLocalRingHom := surjectiveOnStalks_iff_of_isLocalHom
+
 end RingHom

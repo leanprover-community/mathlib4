@@ -52,7 +52,7 @@ variable {R A ΓR ΓA : Type*} [CommRing R] [Ring A]
 
 /--
 The class `IsValExtension R A` states that the valuation of `A` is an extension of the valuation
-on `R`. More precisely, the valuation on `R` is equivlent to the comap of the valuation on `A`.
+on `R`. More precisely, the valuation on `R` is equivalent to the comap of the valuation on `A`.
 -/
 class IsValExtension : Prop where
   /-- The valuation on `R` is equivalent to the comap of the valuation on `A` -/
@@ -152,6 +152,9 @@ instance instIsLocalHomValuationInteger {S ΓS: Type*} [CommRing S]
     · exact (isUnit_map_iff (algebraMap R S) _).mp (hr.map (algebraMap _ S))
     · apply (Valuation.integer.integers (v := vS)).one_of_isUnit at hr
       exact (val_map_eq_one_iff vR vS _).mp hr
+
+@[deprecated "2024-10-10"]
+alias instIsLocalRingHomValuationInteger := instIsLocalHomValuationInteger
 
 end integer
 
