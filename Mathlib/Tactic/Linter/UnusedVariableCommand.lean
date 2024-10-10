@@ -60,6 +60,24 @@ There is an exception, though: for variables introduced with `variable ... in`, 
 node is the whole `variable` command.
 -/
 initialize usedVarsRef : IO.Ref (NameSet × NameMap Syntax) ← IO.mkRef ({}, {})
+/-
+    usedVarsRef.modify fun (used, varsDict) => Id.run do
+      let mut newVarsDict := varsDict
+      for (uniq, user) in pairs do
+        newVarsDict := newVarsDict.insert uniq user
+      (used, newVarsDict)
+-/
+/-- Add the (unique) name `a` to the `NameSet` of variable names that some declaration used. -/
+def usedVarsRef.addVarName (a : Name) : IO Unit := do
+  usedVarsRef.modify fun (used, varsDict) => (used.insert a, varsDict)
+
+/-- Add the assignment `a → ref` to the `NameMap Syntax` of unique variable names. -/
+def usedVarsRef.addDict (a : Name) (ref : Syntax) : IO Unit := do
+  usedVarsRef.modify fun (used, varsDict) =>
+    (used, if varsDict.contains a then
+             varsDict
+           else                -- why not `ref` more simply?
+             varsDict.insert a (.ofRange (ref.getRange?.getD default)))
 
 /-- returns the unique `Name`, the user `Name` and the `Expr` of each `variable` that is
 present in the current context. -/
@@ -71,18 +89,14 @@ def includedVariables (plumb : Bool) : TermElabM (Array (Name × Name × Expr)) 
   for (a, b) in fvs do
     let ref ← getRef
     if (lctx.findFVar? b).isNone then
-      usedVarsRef.modify fun (used, varsDict) =>
-        (used, if varsDict.contains a then
-          varsDict
-        else
-          varsDict.insert a (.ofRange (ref.getRange?.getD default)))
+      usedVarsRef.addDict a ref
     if (lctx.findFVar? b).isSome then
       let mut fd := .anonymous
       for (x, y) in c.sectionVars do
         if y == a then fd := x
       varIds := varIds.push (a, fd, b)
       if plumb then
-        usedVarsRef.modify fun (used, varsDict) => (used.insert a, varsDict)
+        usedVarsRef.addVarName a
   return varIds
 
 /--
