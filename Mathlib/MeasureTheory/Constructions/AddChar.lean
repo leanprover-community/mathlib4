@@ -18,6 +18,7 @@ Give the definition in the correct generality.
 
 namespace AddChar
 variable {A M : Type*} [AddMonoid A] [Monoid M]
+  [MeasurableSpace A] [DiscreteMeasurableSpace A] [MeasurableSpace M] [DiscreteMeasurableSpace M]
 
 instance instMeasurableSpace : MeasurableSpace (AddChar A M) := ⊤
 instance instDiscreteMeasurableSpace : DiscreteMeasurableSpace (AddChar A M) := ⟨fun _ ↦ trivial⟩
