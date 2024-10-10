@@ -16,7 +16,7 @@ these are only about coding style, but do not affect correctness nor global cohe
 Historically, some of these were ported from the `lint-style.py` Python script.
 -/
 
-open Lean Elab Command
+open Lean Parser Elab Command Meta
 
 namespace Mathlib.Linter
 
@@ -81,7 +81,9 @@ namespace Style.checkDeclID
 
 /-- Checks whether a given identifier name contains "__". -/
 def contains_double_underscore (stx : Syntax) : Bool :=
-  1 < ((stx.getSubstring?.get!).toString.splitOn "__").length
+  match stx.getSubstring? with
+  | some str => 1 < (str.toString.splitOn "__").length
+  | none => false
 
 /-- The `checkDeclID` linter: if this linter emits a warning, then a declID is considered
 non-standard style. Currently we only check if it contains a double underscore ("__") as a
@@ -98,7 +100,7 @@ def checkDeclIDLinter: Linter where
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    for stx in (← Mathlib.Linter.getNames _stx) do
+    for stx in (← getNames _stx) do
       if (contains_double_underscore stx) then
         Linter.logLint linter.style.check_declID stx
           m!"The declID '{stx}' contains '__', which does not follow naming conventions. \
