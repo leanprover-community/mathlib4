@@ -183,6 +183,12 @@ lemma lemme5 (adj : F ⊣ G) (X : C) (Y : D) (u : F.obj X ⟶ Y) (a : A) (ha : a
     (adj.homEquiv (X⟦a⟧) Y) (F.map ((shiftFunctorZero' C a ha).app X).hom ≫ u) =
     ((shiftFunctorZero' C a ha).app X).hom ≫ adj.homEquiv X Y u := by simp
 
+lemma left_to_right_iso_apply'''' (adj : F ⊣ G) (commF : CommShift F A) (a b : A) (X : C) (Y : D) :
+    (yoneda.map ((shiftFunctor C b).map ((left_to_right_iso adj commF a).hom.app Y))).app (op X) =
+    sorry := by
+  simp
+  sorry
+
 noncomputable def left_to_right (adj : F ⊣ G) (commF : CommShift F A) :
     CommShift G A where
   iso := left_to_right_iso adj commF
@@ -207,7 +213,8 @@ noncomputable def left_to_right (adj : F ⊣ G) (commF : CommShift F A) :
     ext X u
     rw [CommShift.isoAdd_hom_app, Functor.map_comp, Functor.map_comp, Functor.map_comp,
     NatTrans.comp_app, NatTrans.comp_app, NatTrans.comp_app]
-    conv_rhs => rw [left_to_right_iso_apply''']--, left_to_right_iso_apply''']
+    conv_lhs => rw [left_to_right_iso_apply''']
+    conv_rhs => rw [left_to_right_iso_apply''']
     sorry
 
 
