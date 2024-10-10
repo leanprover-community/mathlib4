@@ -56,7 +56,7 @@ structure InitialSeg {α β : Type*} (r : α → α → Prop) (s : β → β →
   /-- The order embedding is an initial segment -/
   mem_range_of_rel' : ∀ a b, s b (toRelEmbedding a) → b ∈ Set.range toRelEmbedding
 
--- Porting note: deleted `scoped[InitialSeg]`
+-- Porting note: Deleted `scoped[InitialSeg]`
 @[inherit_doc]
 infixl:25 " ≼i " => InitialSeg
 
