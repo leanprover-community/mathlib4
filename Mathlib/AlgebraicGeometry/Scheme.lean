@@ -692,16 +692,16 @@ lemma stalkMap_inv_hom_apply (e : X ≅ Y) (x : X) (y) :
   DFunLike.congr_fun (stalkMap_inv_hom e x) y
 
 @[reassoc (attr := simp)]
-lemma stalkMap_germ (U : Y.Opens) (x : X) (hx : f.val.base x ∈ U) :
-    Y.presheaf.germ U (f.val.base x) hx ≫ f.stalkMap x =
+lemma stalkMap_germ (U : Y.Opens) (x : X) (hx : f.base x ∈ U) :
+    Y.presheaf.germ U (f.base x) hx ≫ f.stalkMap x =
       f.app U ≫ X.presheaf.germ (f ⁻¹ᵁ U) x hx :=
-  PresheafedSpace.stalkMap_germ f.val U x hx
+  PresheafedSpace.stalkMap_germ f.toHom U x hx
 
 @[simp]
 lemma stalkMap_germ_apply (U : Y.Opens) (x : X) (hx : f.val.base x ∈ U) (y) :
     f.stalkMap x (Y.presheaf.germ _ (f.val.base x) hx y) =
       X.presheaf.germ (f ⁻¹ᵁ U) x hx (f.app U y) :=
-  PresheafedSpace.stalkMap_germ_apply f.val U x hx y
+  PresheafedSpace.stalkMap_germ_apply f.toHom U x hx y
 
 end Scheme
 
