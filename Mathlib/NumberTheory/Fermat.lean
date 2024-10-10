@@ -46,7 +46,7 @@ theorem fermat_product (n : ℕ) : ∏ k in range n, fermat k = fermat n - 2 := 
   induction' n with n hn
   · rfl
   rw [prod_range_succ, hn, fermat, fermat, mul_comm,
-    (show 2 ^ 2 ^ n + 1 - 2 = 2 ^ 2 ^ n - 1 by omega),  ← sq_sub_sq]
+    (show 2 ^ 2 ^ n + 1 - 2 = 2 ^ 2 ^ n - 1 by omega), ← sq_sub_sq]
   ring_nf
   omega
 
