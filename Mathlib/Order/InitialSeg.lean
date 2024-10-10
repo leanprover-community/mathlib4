@@ -354,6 +354,9 @@ instance [IsWellOrder β s] : Subsingleton (r ≺i s) :=
     cases g
     have := RelEmbedding.coe_fn_injective ef; congr ⟩
 
+protected theorem eq [IsWellOrder β s] (f g : r ≺i s) (a) : f a = g a := by
+  rw [Subsingleton.elim f g]
+
 theorem top_eq [IsWellOrder γ t] (e : r ≃r s) (f : r ≺i t) (g : s ≺i t) : f.top = g.top := by
   rw [Subsingleton.elim f (PrincipalSeg.equivLT e g)]; rfl
 

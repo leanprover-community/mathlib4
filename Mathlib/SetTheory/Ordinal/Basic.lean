@@ -487,10 +487,10 @@ theorem induction {p : Ordinal.{u} → Prop} (i : Ordinal.{u}) (h : ∀ j, (∀ 
     p i :=
   lt_wf.induction i h
 
-@[deprecated (since := "2024-10-09")]
+@[deprecated PrincipalSeg.eq (since := "2024-10-09")]
 theorem typein_apply {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r] [IsWellOrder β s]
     (f : r ≼i s) (a : α) : typein s (f a) = typein r a := by
-  rw [← f.leLT_apply _ a, Subsingleton.elim (f.leLT _)]
+  rw [← f.leLT_apply _ a, (f.leLT _).eq]
 
 /-! ### Cardinality of ordinals -/
 
