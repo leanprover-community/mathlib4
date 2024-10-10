@@ -234,7 +234,8 @@ instance : IsLocalHom (equalizerFork f g).ι := by
   rw [isUnit_iff_exists_inv]
   exact ⟨⟨y, this⟩, Subtype.eq h₃⟩
 
-instance equalizer_ι_isLocalHom (F : WalkingParallelPair ⥤ CommRingCat.{u}) :
+@[instance]
+theorem equalizer_ι_isLocalHom (F : WalkingParallelPair ⥤ CommRingCat.{u}) :
     IsLocalHom (limit.π F WalkingParallelPair.zero) := by
   have := limMap_π (diagramIsoParallelPair F).hom WalkingParallelPair.zero
   rw [← IsIso.comp_inv_eq] at this

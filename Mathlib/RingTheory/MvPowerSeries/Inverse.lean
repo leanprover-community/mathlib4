@@ -173,7 +173,8 @@ variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalHom f]
 -- not actually need R and S to be local rings!
 /-- The map between multivariate formal power series over the same indexing set
  induced by a local ring hom `A → B` is local -/
-instance map.isLocalHom : IsLocalHom (map σ f) :=
+@[instance]
+theorem map.isLocalHom : IsLocalHom (map σ f) :=
   ⟨by
     rintro φ ⟨ψ, h⟩
     replace h := congr_arg (constantCoeff σ S) h

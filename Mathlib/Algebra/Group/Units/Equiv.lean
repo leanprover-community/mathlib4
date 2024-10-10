@@ -193,7 +193,8 @@ theorem MulEquiv.inv_symm (G : Type*) [DivisionCommMonoid G] :
     (MulEquiv.inv G).symm = MulEquiv.inv G :=
   rfl
 
-instance isLocalHom_equiv [Monoid M] [Monoid N] [EquivLike F M N]
+@[instance]
+theorem isLocalHom_equiv [Monoid M] [Monoid N] [EquivLike F M N]
     [MulEquivClass F M N] (f : F) : IsLocalHom f where
   map_nonunit a ha := by
     convert ha.map (f : M ≃* N).symm

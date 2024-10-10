@@ -245,7 +245,8 @@ theorem isLocalHom_of_leftInverse [FunLike G S R] [MonoidHomClass G S R]
 @[deprecated (since := "2024-10-10")]
 alias isLocalRingHom_of_leftInverse := isLocalHom_of_leftInverse
 
-instance MonoidHom.isLocalHom_comp (g : S →* T) (f : R →* S) [IsLocalHom g]
+@[instance]
+theorem MonoidHom.isLocalHom_comp (g : S →* T) (f : R →* S) [IsLocalHom g]
     [IsLocalHom f] : IsLocalHom (g.comp f) where
   map_nonunit a := IsLocalHom.map_nonunit a ∘ IsLocalHom.map_nonunit (f := g) (f a)
 
