@@ -100,6 +100,9 @@ instance isLocalHomValStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x :
     IsLocalHom (f.val.stalkMap x) :=
   f.2 x
 
+@[deprecated "2024-10-10"]
+alias isLocalRingHomValStalkMap := isLocalHomValStalkMap
+
 /-- The identity morphism on a locally ringed space. -/
 @[simps]
 def id (X : LocallyRingedSpace.{u}) : Hom X X :=
