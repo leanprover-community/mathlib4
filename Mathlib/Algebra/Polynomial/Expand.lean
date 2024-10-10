@@ -274,7 +274,7 @@ theorem isLocalHom_expand {p : ℕ} (hp : 0 < p) : IsLocalHom (expand R p) := by
   rw [coeff_expand hp, if_pos (dvd_zero _), p.zero_div] at hf2
   rw [hf2, isUnit_C] at hf1; rw [expand_eq_C hp] at hf2; rwa [hf2, isUnit_C]
 
-@[deprecated "2024-10-10"]
+@[deprecated (since := "2024-10-10")]
 alias isLocalRingHom_expand := isLocalHom_expand
 
 variable {R}

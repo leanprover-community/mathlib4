@@ -89,18 +89,20 @@ noncomputable def Hom.stalkMap {X Y : LocallyRingedSpace.{u}} (f : Hom X Y) (x :
     Y.presheaf.stalk (f.1.1 x) ⟶ X.presheaf.stalk x :=
   f.val.stalkMap x
 
-instance isLocalHomStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
+@[instance]
+theorem isLocalHomStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
     IsLocalHom (f.stalkMap x) :=
   f.2 x
 
-@[deprecated "2024-10-10"]
+@[deprecated (since := "2024-10-10")]
 alias isLocalRingHomStalkMap := isLocalHomStalkMap
 
-instance isLocalHomValStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
+@[instance]
+theorem isLocalHomValStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
     IsLocalHom (f.val.stalkMap x) :=
   f.2 x
 
-@[deprecated "2024-10-10"]
+@[deprecated (since := "2024-10-10")]
 alias isLocalRingHomValStalkMap := isLocalHomValStalkMap
 
 /-- The identity morphism on a locally ringed space. -/
