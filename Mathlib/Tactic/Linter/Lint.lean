@@ -93,7 +93,7 @@ def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
   if Linter.getLinterValue linter.dupNamespace (← getOptions) then
     let ids ← getNames stx
     for id in ids do
-      let declName := if id.getKind == ``declId then id[0].getId else id.getId
+      let declName := id.getId
       let nm := declName.components
       let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) ↦ x == y
         | return
