@@ -469,11 +469,11 @@ lemma whiskerRightMkNatTrans {F G: WalkingReflexivePair ⥤ C}
     {h₂ : F.map right ≫ e₀ = e₁ ≫ G.map right}
     {h₃ : F.map reflexion ≫ e₁ = e₀ ≫ G.map reflexion}
     {D : Type u₂} [Category.{v₂} D] (H : C ⥤ D) :
-      (whiskerRight (mkNatTrans e₀ e₁ : F ⟶ G) H) =
-        mkNatTrans (H.map e₀) (H.map e₁)
-            (by simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, h₁])
-            (by simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, h₂])
-            (by simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, h₃]) := by
+    whiskerRight (mkNatTrans e₀ e₁ : F ⟶ G) H =
+      mkNatTrans (H.map e₀) (H.map e₁)
+          (by simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, h₁])
+          (by simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, h₂])
+          (by simp only [Functor.comp_obj, Functor.comp_map, ← Functor.map_comp, h₃]) := by
   ext x; cases x <;> simp
 
 end
@@ -515,9 +515,9 @@ lemma condition (G : ReflexiveCofork F) : F.map left ≫ G.π = F.map right ≫ 
 lemma app_one_eq_π (G : ReflexiveCofork F) : G.ι.app zero = G.π := rfl
 
 /-- The underlying `Cofork` of a `ReflexiveCofork`. -/
-def toCofork (G : ReflexiveCofork F) : (Cofork (F.map left) (F.map right)) :=
-  Cocones.precompose (diagramIsoParallelPair (_ ⋙ F)).symm.hom |>.obj
-    <| G.whisker WalkingParallelPair.inclusionWalkingReflexivePair
+def toCofork (G : ReflexiveCofork F) : Cofork (F.map left) (F.map right) :=
+  Cocones.precompose (diagramIsoParallelPair (_ ⋙ F)).symm.hom |>.obj <|
+    G.whisker WalkingParallelPair.inclusionWalkingReflexivePair
 
 @[simp]
 lemma toCofork.π (G : ReflexiveCofork F) : Cofork.π (G.toCofork) = G.π := by
