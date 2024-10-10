@@ -39,14 +39,12 @@ theorem ciSup_mul_le [MulRightMono α] {a : α} {g : ι → α}
   le_ciInf_mul (α := αᵒᵈ) H
 
 @[to_additive]
-theorem le_ciInf_mul_ciInf [MulLeftMono α]
-    [MulRightMono α] {a : α} {g : ι → α} {h : ι' → α}
+theorem le_ciInf_mul_ciInf [MulLeftMono α] [MulRightMono α] {a : α} {g : ι → α} {h : ι' → α}
     (H : ∀ i j, a ≤ g i * h j) : a ≤ iInf g * iInf h :=
   le_ciInf_mul fun _ => le_mul_ciInf <| H _
 
 @[to_additive]
-theorem ciSup_mul_ciSup_le [MulLeftMono α]
-    [MulRightMono α] {a : α} {g : ι → α} {h : ι' → α}
+theorem ciSup_mul_ciSup_le [MulLeftMono α] [MulRightMono α] {a : α} {g : ι → α} {h : ι' → α}
     (H : ∀ i j, g i * h j ≤ a) : iSup g * iSup h ≤ a :=
   ciSup_mul_le fun _ => mul_ciSup_le <| H _
 

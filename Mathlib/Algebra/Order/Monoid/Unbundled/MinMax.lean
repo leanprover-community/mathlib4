@@ -118,7 +118,7 @@ theorem min_le_mul_of_one_le_right [MulLeftMono α] {a b : α} (hb : 1 ≤ b) :
   min_le_iff.2 <| Or.inl <| le_mul_of_one_le_right' hb
 
 @[to_additive]
-theorem min_le_mul_of_one_le_left [MulRightMono α] {a b : α} (ha : 1 ≤ a) : 
+theorem min_le_mul_of_one_le_left [MulRightMono α] {a b : α} (ha : 1 ≤ a) :
     min a b ≤ a * b :=
   min_le_iff.2 <| Or.inr <| le_mul_of_one_le_left' ha
 

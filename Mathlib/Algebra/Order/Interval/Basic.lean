@@ -185,8 +185,7 @@ section Pow
 variable [Monoid α] [Preorder α]
 
 @[to_additive existing]
-instance NonemptyInterval.hasPow
-    [MulLeftMono α] [MulRightMono α] :
+instance NonemptyInterval.hasPow [MulLeftMono α] [MulRightMono α] :
     Pow (NonemptyInterval α) ℕ :=
   ⟨fun s n => ⟨s.toProd ^ n, pow_le_pow_left' s.fst_le_snd _⟩⟩
 
@@ -273,8 +272,7 @@ is not a thing and probably should not become one).
 
 section Sub
 
-variable [Preorder α] [AddCommSemigroup α] [Sub α] [OrderedSub α]
-  [AddLeftMono α]
+variable [Preorder α] [AddCommSemigroup α] [Sub α] [OrderedSub α] [AddLeftMono α]
 
 instance : Sub (NonemptyInterval α) :=
   ⟨fun s t => ⟨(s.fst - t.snd, s.snd - t.fst), tsub_le_tsub s.fst_le_snd t.fst_le_snd⟩⟩

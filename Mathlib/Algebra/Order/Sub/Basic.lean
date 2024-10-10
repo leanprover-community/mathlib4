@@ -188,8 +188,7 @@ theorem tsub_add_min : a - b + min a b = a := by
   apply min_le_left
 
 -- `Odd.tsub` requires `CanonicallyLinearOrderedSemiring`, which we don't have
-lemma Even.tsub
-    [AddLeftReflectLE α] {m n : α} (hm : Even m) (hn : Even n) :
+lemma Even.tsub [AddLeftReflectLE α] {m n : α} (hm : Even m) (hn : Even n) :
     Even (m - n) := by
   obtain ⟨a, rfl⟩ := hm
   obtain ⟨b, rfl⟩ := hn

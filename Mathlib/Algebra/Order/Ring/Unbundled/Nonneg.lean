@@ -193,8 +193,7 @@ end AddCommMonoid
 
 section AddMonoidWithOne
 
-variable [AddMonoidWithOne α] [PartialOrder α]
-variable [AddLeftMono α] [ZeroLEOneClass α]
+variable [AddMonoidWithOne α] [PartialOrder α] [AddLeftMono α] [ZeroLEOneClass α]
 
 instance natCast : NatCast { x : α // 0 ≤ x } :=
   ⟨fun n => ⟨n, Nat.cast_nonneg' n⟩⟩

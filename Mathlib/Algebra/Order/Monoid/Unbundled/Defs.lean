@@ -546,14 +546,14 @@ instance IsRightCancelMul.mulRightStrictMono_of_mulRightMono
 instance IsLeftCancelMul.mulLeftReflectLE_of_mulLeftReflectLT [Mul N] [IsLeftCancelMul N]
     [PartialOrder N] [MulLeftReflectLT N] :
     MulLeftReflectLE N where
-  elim := (contravariant_le_iff_contravariant_lt_and_eq _ _ _).mpr
+  elim := (contravariant_le_iff_contravariant_lt_and_eq N N _).mpr
     ⟨ContravariantClass.elim, fun _ ↦ mul_left_cancel⟩
 
 @[to_additive]
 instance IsRightCancelMul.mulRightReflectLE_of_mulRightReflectLT
     [Mul N] [IsRightCancelMul N] [PartialOrder N] [MulRightReflectLT N] :
     MulRightReflectLE N where
-  elim := (contravariant_le_iff_contravariant_lt_and_eq _ _ _).mpr
+  elim := (contravariant_le_iff_contravariant_lt_and_eq N N _).mpr
     ⟨ContravariantClass.elim, fun _ ↦ mul_right_cancel⟩
 
 end Variants

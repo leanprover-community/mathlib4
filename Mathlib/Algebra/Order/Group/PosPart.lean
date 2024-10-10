@@ -111,7 +111,7 @@ lemma leOnePart_le_one' : a⁻ᵐ ≤ 1 ↔ a⁻¹ ≤ 1 := by simp [leOnePart]
 @[to_additive (attr := simp)] lemma leOnePart_inv (a : α) : a⁻¹⁻ᵐ = a⁺ᵐ := by
   simp [oneLePart, leOnePart]
 
-section covariantmul
+section MulLeftMono
 variable [MulLeftMono α]
 
 @[to_additive (attr := simp)] lemma leOnePart_eq_inv : a⁻ᵐ = a⁻¹ ↔ a ≤ 1 := by simp [leOnePart]
@@ -140,7 +140,7 @@ lemma oneLePart_leOnePart_injective : Injective fun a : α ↦ (a⁺ᵐ, a⁻ᵐ
 lemma oneLePart_leOnePart_inj : a⁺ᵐ = b⁺ᵐ ∧ a⁻ᵐ = b⁻ᵐ ↔ a = b :=
   Prod.mk.inj_iff.symm.trans oneLePart_leOnePart_injective.eq_iff
 
-section covariantmulop
+section MulRightMono
 variable [MulRightMono α]
 
 @[to_additive] lemma leOnePart_anti : Antitone (leOnePart : α → α) :=
@@ -167,9 +167,9 @@ lemma leOnePart_eq_inv_inf_one (a : α) : a⁻ᵐ = (a ⊓ 1)⁻¹ := by
   rw [← mul_left_inj a⁻ᵐ⁻¹, inf_mul, one_mul, mul_inv_cancel, ← div_eq_mul_inv,
     oneLePart_div_leOnePart, leOnePart_eq_inv_inf_one, inv_inv]
 
-end covariantmulop
+end MulRightMono
 
-end covariantmul
+end MulLeftMono
 
 end Group
 

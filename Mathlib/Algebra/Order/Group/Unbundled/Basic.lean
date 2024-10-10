@@ -31,7 +31,7 @@ section Group
 
 variable [Group α]
 
-section TypeclassesLeftLE
+section MulLeftMono
 
 variable [LE α] [MulLeftMono α] {a b c : α}
 
@@ -73,9 +73,9 @@ theorem inv_mul_le_one_iff : a⁻¹ * b ≤ 1 ↔ b ≤ a :=
   -- Porting note: why is the `_root_` needed?
   _root_.trans inv_mul_le_iff_le_mul <| by rw [mul_one]
 
-end TypeclassesLeftLE
+end MulLeftMono
 
-section TypeclassesLeftLT
+section MulLeftStrictMono
 
 variable [LT α] [MulLeftStrictMono α] {a b c : α}
 
@@ -114,9 +114,9 @@ theorem lt_inv_mul_iff_lt : 1 < b⁻¹ * a ↔ b < a := by
 theorem inv_mul_lt_one_iff : a⁻¹ * b < 1 ↔ b < a :=
   _root_.trans inv_mul_lt_iff_lt_mul <| by rw [mul_one]
 
-end TypeclassesLeftLT
+end MulLeftStrictMono
 
-section TypeclassesRightLE
+section MulRightMono
 
 variable [LE α] [MulRightMono α] {a b c : α}
 
@@ -161,9 +161,9 @@ theorem le_mul_inv_iff_le : 1 ≤ a * b⁻¹ ↔ b ≤ a := by
 theorem mul_inv_le_one_iff : b * a⁻¹ ≤ 1 ↔ b ≤ a :=
   _root_.trans mul_inv_le_iff_le_mul <| by rw [one_mul]
 
-end TypeclassesRightLE
+end MulRightMono
 
-section TypeclassesRightLT
+section MulRightStrictMono
 
 variable [LT α] [MulRightStrictMono α] {a b c : α}
 
@@ -206,9 +206,9 @@ theorem lt_mul_inv_iff_lt : 1 < a * b⁻¹ ↔ b < a := by
 theorem mul_inv_lt_one_iff : b * a⁻¹ < 1 ↔ b < a :=
   _root_.trans mul_inv_lt_iff_lt_mul <| by rw [one_mul]
 
-end TypeclassesRightLT
+end MulRightStrictMono
 
-section TypeclassesLeftRightLE
+section MulLeftMono_MulRightMono
 
 variable [LE α] [MulLeftMono α] {a b c d : α}
 
@@ -236,9 +236,9 @@ theorem mul_inv_le_inv_mul_iff : a * b⁻¹ ≤ d⁻¹ * c ↔ d * a ≤ c * b :
   rw [← mul_le_mul_iff_left d, ← mul_le_mul_iff_right b, mul_inv_cancel_left, mul_assoc,
     inv_mul_cancel_right]
 
-end TypeclassesLeftRightLE
+end MulLeftMono_MulRightMono
 
-section TypeclassesLeftRightLT
+section MulLeftStrictMono_MulRightStrictMono
 
 variable [LT α] [MulLeftStrictMono α] {a b c d : α}
 
@@ -274,7 +274,7 @@ theorem mul_inv_lt_inv_mul_iff : a * b⁻¹ < d⁻¹ * c ↔ d * a < c * b := by
   rw [← mul_lt_mul_iff_left d, ← mul_lt_mul_iff_right b, mul_inv_cancel_left, mul_assoc,
     inv_mul_cancel_right]
 
-end TypeclassesLeftRightLT
+end MulLeftStrictMono_MulRightStrictMono
 
 section Preorder
 

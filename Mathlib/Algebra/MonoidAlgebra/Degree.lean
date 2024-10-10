@@ -589,9 +589,7 @@ theorem infDegree_withTop_some_comp {s : AddMonoidAlgebra R A} (hs : s.support.N
   unfold AddMonoidAlgebra.infDegree
   rw [← Finset.coe_inf' hs, Finset.inf'_eq_inf]
 
-theorem le_infDegree_mul
-    [AddZeroClass A] [Add T]
-    [AddLeftMono T] [AddRightMono T]
+theorem le_infDegree_mul [AddZeroClass A] [Add T] [AddLeftMono T] [AddRightMono T]
     (D : AddHom A T) (f g : R[A]) :
     f.infDegree D + g.infDegree D ≤ (f * g).infDegree D :=
   le_inf_support_mul (fun {a b : A} => (map_add D a b).ge) _ _

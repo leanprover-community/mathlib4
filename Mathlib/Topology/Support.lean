@@ -359,8 +359,7 @@ end MulZeroClass
 
 section OrderedAddGroup
 
-variable [TopologicalSpace α] [AddGroup β] [Lattice β]
-  [AddLeftMono β]
+variable [TopologicalSpace α] [AddGroup β] [Lattice β] [AddLeftMono β]
 
 protected theorem HasCompactSupport.abs {f : α → β} (hf : HasCompactSupport f) :
     HasCompactSupport |f| :=

@@ -882,8 +882,7 @@ section
 variable {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [PartialOrder M]
   [AddLeftMono M] [ContinuousAdd M]
 
-instance covariant_add_le :
-    AddLeftMono (VectorMeasure α M) :=
+instance instAddLeftMono : AddLeftMono (VectorMeasure α M) :=
   ⟨fun _ _ _ h i hi => add_le_add_left (h i hi) _⟩
 
 end
