@@ -416,7 +416,6 @@ theorem typein_surj (r : α → α → Prop) [IsWellOrder α r] {o} (h : o < typ
 theorem typein_injective (r : α → α → Prop) [IsWellOrder α r] : Injective (typein r) :=
   (typein r).injective
 
-@[simp]
 theorem typein_inj (r : α → α → Prop) [IsWellOrder α r] {a b} : typein r a = typein r b ↔ a = b :=
   (typein r).inj
 
