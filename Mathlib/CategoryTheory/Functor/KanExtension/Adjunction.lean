@@ -53,31 +53,29 @@ instance (F : C ⥤ H) : (L.lan.obj F).IsLeftKanExtension (L.lanUnit.app F) := b
 then `L.lan.obj G` is a pointwise left Kan extension of `F`. -/
 noncomputable def isPointwiseLeftKanExtensionLanUnit
     (F : C ⥤ H) [HasPointwiseLeftKanExtension L F] :
-    (LeftExtension.mk _ (L.lanUnit.app F)).IsPointwiseLeftKanExtension :=
+    (LeftExtension.mk _ (leftKanExtensionUnit L F)).IsPointwiseLeftKanExtension :=
   isPointwiseLeftKanExtensionOfIsLeftKanExtension (F := F) _ (L.lanUnit.app F)
 
 /-- If a left Kan extension is pointwise, then evaluating it at an object is isomorphic to
 taking a colimit. -/
 noncomputable def lanObjObjIsoColimit (F : C ⥤ H) [HasPointwiseLeftKanExtension L F] (X : D) :
     (L.lan.obj F).obj X ≅ Limits.colimit (CostructuredArrow.proj L X ⋙ F) :=
-  Limits.IsColimit.coconePointUniqueUpToIso
-    (isPointwiseLeftKanExtensionLanUnit L F X)
-    (Limits.colimit.isColimit (CostructuredArrow.proj L X ⋙ F))
+  LeftExtension.IsPointwiseLeftKanExtensionAt.isoColimit (isPointwiseLeftKanExtensionLanUnit L F X)
 
-@[simp]
+@[reassoc (attr := simp)]
 lemma lanObjObjIsoColimit_ι_inv
     (F : C ⥤ H) [HasPointwiseLeftKanExtension L F] (X : D) (f : CostructuredArrow L X) :
     Limits.colimit.ι _ f ≫ (L.lanObjObjIsoColimit F X).inv =
-    (L.lanUnit.app F).app f.left ≫ (L.lan.obj F).map f.hom := by
-  simp [lanObjObjIsoColimit]
+    (L.lanUnit.app F).app f.left ≫ (L.leftKanExtension F).map f.hom := by
+  simp [lanObjObjIsoColimit, lanUnit]
 
+@[reassoc (attr := simp)]
 lemma lanObjObjIsoColimit_lanUnit_map_hom
     (F : C ⥤ H) [HasPointwiseLeftKanExtension L F] (X : D) (f : CostructuredArrow L X) :
     (L.lanUnit.app F).app f.left ≫ (L.lan.obj F).map f.hom ≫ (L.lanObjObjIsoColimit F X).hom =
     Limits.colimit.ι (CostructuredArrow.proj L X ⋙ F) f := by
-  rw [← Category.assoc, ← Iso.eq_comp_inv]
-  symm
-  apply lanObjObjIsoColimit_ι_inv
+  exact LeftExtension.IsPointwiseLeftKanExtensionAt.ι_isoColimit_hom
+    (isPointwiseLeftKanExtensionLanUnit L F X) f
 
 variable (H) in
 /-- The left Kan extension functor `L.Lan` is left adjoint to the
@@ -182,23 +180,30 @@ instance (F : C ⥤ H) : (L.ran.obj F).IsRightKanExtension (L.ranCounit.app F) :
 then `L.ran.obj G` is a pointwise right Kan extension of `F`. -/
 noncomputable def isPointwiseRightKanExtensionRanCounit
     (F : C ⥤ H) [HasPointwiseRightKanExtension L F] :
-    (RightExtension.mk _ (L.ranCounit.app F)).IsPointwiseRightKanExtension :=
+    (RightExtension.mk _ (L.rightKanExtensionCounit F)).IsPointwiseRightKanExtension :=
   isPointwiseRightKanExtensionOfIsRightKanExtension (F := F) _ (L.ranCounit.app F)
 
 /-- If a right Kan extension is pointwise, then evaluating it at an object is isomorphic to
 taking a limit. -/
 noncomputable def ranObjObjIsoLimit (F : C ⥤ H) [HasPointwiseRightKanExtension L F] (X : D) :
     (L.ran.obj F).obj X ≅ Limits.limit (StructuredArrow.proj X L ⋙ F) :=
-  Limits.IsLimit.conePointUniqueUpToIso
+  RightExtension.IsPointwiseRightKanExtensionAt.isoLimit
     (isPointwiseRightKanExtensionRanCounit L F X)
-    (Limits.limit.isLimit (StructuredArrow.proj X L ⋙ F))
 
-@[simp]
+@[reassoc (attr := simp)]
 lemma ranObjObjIsoLimit_hom_π
     (F : C ⥤ H) [HasPointwiseRightKanExtension L F] (X : D) (f : StructuredArrow X L) :
-    (L.ranObjObjIsoLimit F X).hom ≫ Limits.limit.π _ f=
+    (L.ranObjObjIsoLimit F X).hom ≫ Limits.limit.π _ f =
     (L.ran.obj F).map f.hom ≫ (L.ranCounit.app F).app f.right := by
-  simp [ranObjObjIsoLimit]
+  simp [ranObjObjIsoLimit, ran, ranCounit]
+
+@[reassoc (attr := simp)]
+lemma ranObjObjIsoLimit_inv_π
+    (F : C ⥤ H) [HasPointwiseRightKanExtension L F] (X : D) (f : StructuredArrow X L) :
+    (L.ranObjObjIsoLimit F X).inv ≫ (L.ran.obj F).map f.hom ≫ (L.ranCounit.app F).app f.right =
+    Limits.limit.π _ f := by
+  exact RightExtension.IsPointwiseRightKanExtensionAt.isoLimit_inv_π
+    (isPointwiseRightKanExtensionRanCounit L F X) f
 
 variable (H) in
 /-- The right Kan extension functor `L.ran` is right adjoint to the
