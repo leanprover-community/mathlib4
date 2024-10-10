@@ -114,20 +114,12 @@ theorem tendsto_natCast_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [Topolo
     intros
     simp_all only [comp_apply, map_inv₀, map_natCast]
 
-/-- If there exist real constants `b` and `B` such that for `n` big enough, `b ≤ f n ≤ B`, then
-  `f n / (n : ℝ)` tends to `0` as `n` tends to infinity. -/
-theorem tendsto_bdd_div_atTop_nhds_zero_nat {f : ℕ → ℝ} {b : ℝ}
-    (hb : ∀ᶠ n : ℕ in atTop, b ≤ f n) {B : ℝ} (hB : ∀ᶠ n : ℕ in atTop, f n ≤ B) :
-    Tendsto (fun n : ℕ => f n / (n : ℝ)) atTop (𝓝 0) := by
-  refine tendsto_of_tendsto_of_tendsto_of_le_of_le' (tendsto_const_div_atTop_nhds_zero_nat b)
-      (tendsto_const_div_atTop_nhds_zero_nat B) ?_ ?_
-  all_goals filter_upwards [hb, hB, Ioi_mem_atTop 0] with n _ _ _; gcongr
-
 /-- For any positive `m : ℕ`, `((n % m : ℕ) : ℝ) / (n : ℝ)` tends to `0` as `n` tends to `∞`. -/
 theorem tendsto_mod_div_atTop_nhds_zero_nat {m : ℕ} (hm : 0 < m) :
-    Tendsto (fun n : ℕ => ((n % m : ℕ) : ℝ) / (n : ℝ)) atTop (𝓝 0) :=
-  tendsto_bdd_div_atTop_nhds_zero_nat (b := 0) (B := m) (by aesop) <|
-    .of_forall fun n ↦ by exact_mod_cast (mod_lt n hm).le
+    Tendsto (fun n : ℕ => ((n % m : ℕ) : ℝ) / (n : ℝ)) atTop (𝓝 0) := by
+  have h0 : ∀ᶠ n : ℕ in atTop, 0 ≤ (fun n : ℕ => ((n % m : ℕ) : ℝ)) n := by aesop
+  exact tendsto_bdd_div_atTop_nhds_zero h0
+    (.of_forall (fun n ↦  cast_le.mpr (mod_lt n hm).le)) tendsto_natCast_atTop_atTop
 
 theorem Filter.EventuallyEq.div_mul_cancel {α G : Type*} [GroupWithZero G] {f g : α → G}
     {l : Filter α} (hg : Tendsto g l (𝓟 {0}ᶜ)) : (fun x ↦ f x / g x * g x) =ᶠ[l] fun x ↦ f x := by

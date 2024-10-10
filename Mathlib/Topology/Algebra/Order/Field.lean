@@ -141,6 +141,67 @@ theorem Filter.Tendsto.inv_tendsto_atTop (h : Tendsto f l atTop) : Tendsto f⁻�
 theorem Filter.Tendsto.inv_tendsto_zero (h : Tendsto f l (𝓝[>] 0)) : Tendsto f⁻¹ l atTop :=
   tendsto_inv_zero_atTop.comp h
 
+/-- If there exist real constants `b` and `B` such that for `n` big enough, `b ≤ f n ≤ B`, then
+  `f n / (n : ℝ)` tends to `0` as `n` tends to infinity. -/
+theorem bdd_le_mul_tendsto_zero [Nonempty α] [SemilatticeSup α] {f g : α → 𝕜} {b B : 𝕜}
+    (hb : ∀ᶠ x in atTop, b ≤ f x) (hB : ∀ᶠ x in atTop, f x ≤ B) (hg : Tendsto g atTop (𝓝 0)) :
+    Tendsto (fun x ↦ f x * (g x)) atTop (𝓝 0) := by
+  obtain ⟨nb, hnb⟩ := eventually_atTop.mp hb
+  obtain ⟨nB, hnB⟩ := eventually_atTop.mp hB
+  have h := OrderTopology.topology_eq_generate_intervals (α := 𝕜)
+  subst h
+  rw [TopologicalSpace.tendsto_nhds_generateFrom_iff] at hg ⊢
+  intro U hU_open hU0
+  set b' := if b = 0 then -1 else b with hb'
+  have hb0 : b' ≠ 0 := by
+    simp only [hb']; split_ifs with h; exacts [neg_ne_zero.mpr one_ne_zero, h]
+  have hbb' : b' ≤ b := by simp only [hb']; split_ifs <;> linarith
+  set V := HMul.hMul b' ⁻¹' U with hV
+  have hV_open : V ∈ {s | ∃ a, s = Ioi a ∨ s = Iio a} :=
+    Set.preimage_const_mul_Ioi_or_Iio hb0 hU_open hV
+  have hV0 : 0 ∈ V := by simpa only [hV, mem_preimage, mul_zero]
+  have hVg := hg V hV_open hV0
+  set B' := if B = 0 then 1 else B with hB'
+  have hBB' : B ≤ B' := by simp only [hB']; split_ifs <;> linarith
+  have hB0 : B' ≠ 0 := by simp only [hB']; split_ifs with h; exacts [one_ne_zero, h]
+  set W := HMul.hMul B' ⁻¹' U with hW
+  have hW_open : W ∈ {s | ∃ a, s = Ioi a ∨ s = Iio a} :=
+    Set.preimage_const_mul_Ioi_or_Iio hB0 hU_open hW
+  have hW0 : 0 ∈ W := by simpa only [hW, mem_preimage, mul_zero]
+  have hWg := hg W hW_open hW0
+  obtain ⟨aU, (haU | haU)⟩ := hU_open <;>
+  simp only [hV, hW, haU, mem_atTop_sets, ge_iff_le, mem_preimage, mem_Ioi, mem_Iio]
+    at hVg hWg ⊢ <;>
+  obtain ⟨aV, haV⟩ := hVg <;>
+  obtain ⟨aW, haW⟩ := hWg <;>
+  use Sup.sup (Sup.sup aV aW) (Sup.sup nb nB) <;>
+  intro x hx
+  · by_cases hgx : 0 ≤ g x
+    · have h : aU < b' * g x :=
+        haV x (le_trans (le_sup_of_le_left (le_sup_of_le_left (le_refl _))) hx)
+      exact lt_of_lt_of_le h (mul_le_mul_of_nonneg_right (le_trans hbb'
+        (hnb x (le_trans (le_sup_of_le_right (le_sup_of_le_left (le_refl _))) hx))) hgx)
+    · have h : aU < B' * g x :=
+        haW x (le_trans (le_sup_of_le_left (le_sup_of_le_right (le_refl _))) hx)
+      exact lt_of_lt_of_le h (mul_le_mul_of_nonpos_right
+        (le_trans (hnB x (le_trans (le_sup_of_le_right (le_sup_of_le_right (le_refl _))) hx)) hBB')
+        (le_of_lt (not_le.mp hgx)))
+  · by_cases hgx : 0 ≤ g x
+    · have h : B' * g x < aU :=
+        haW x (le_trans (le_sup_of_le_left (le_sup_of_le_right (le_refl _))) hx)
+      exact lt_of_le_of_lt (mul_le_mul_of_nonneg_right (le_trans (hnB x
+        (le_trans (le_sup_of_le_right (le_sup_of_le_right (le_refl _))) hx)) hBB') hgx) h
+    · have h : b' * g x < aU :=
+        haV x (le_trans (le_sup_of_le_left (le_sup_of_le_left (le_refl _))) hx)
+      exact lt_of_le_of_lt (mul_le_mul_of_nonpos_right (le_trans hbb' (hnb x (le_trans
+        (le_sup_of_le_right (le_sup_of_le_left (le_refl _))) hx))) (le_of_lt (not_le.mp hgx))) h
+
+theorem tendsto_bdd_div_atTop_nhds_zero [Nonempty α] [SemilatticeSup α] {f g : α → 𝕜} {b B : 𝕜}
+    (hb : ∀ᶠ x in atTop, b ≤ f x) (hB : ∀ᶠ x in atTop, f x ≤ B) (hg : Tendsto g atTop atTop) :
+    Tendsto (fun x => f x / g x) atTop (𝓝 0) := by
+  simp only [div_eq_mul_inv]
+  exact bdd_le_mul_tendsto_zero hb hB (Filter.Tendsto.inv_tendsto_atTop hg)
+
 /-- The function `x^(-n)` tends to `0` at `+∞` for any positive natural `n`.
 A version for positive real powers exists as `tendsto_rpow_neg_atTop`. -/
 theorem tendsto_pow_neg_atTop {n : ℕ} (hn : n ≠ 0) :
