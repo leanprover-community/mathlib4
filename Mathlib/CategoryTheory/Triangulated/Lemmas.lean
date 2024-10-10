@@ -390,6 +390,49 @@ lemma shiftFunctorAdd'_zero_add' (a b : A) (ha : a = 0) (h : a + b = b) :
 
 end Shift
 
+section Shift
+
+variable {C : Type u} {A : Type*} [CategoryTheory.Category.{v, u} C] [AddGroup A]
+  [CategoryTheory.HasShift C A]
+
+attribute [local instance] endofunctorMonoidalCategory
+
+open Category Opposite
+
+variable (C)
+
+lemma shiftEquiv_homEquiv_zero'_app (a : A) (ha : a = 0) (X Y : C) (u : X⟦-a⟧ ⟶ Y) :
+    (shiftEquiv C a).symm.toAdjunction.homEquiv X Y u =
+    (shiftFunctorZero' C (-a) (by simp [ha])).inv.app X ≫ u ≫
+    (shiftFunctorZero' C a ha).inv.app Y := by
+  simp only [Equivalence.symm_inverse, shiftEquiv'_functor, Equivalence.symm_functor,
+    shiftEquiv'_inverse, Adjunction.homEquiv_apply, Functor.comp_obj, Equivalence.toAdjunction_unit,
+    Functor.id_obj]
+  have : (shiftEquiv C a).symm.unit.app X = (shiftFunctorZero' C (-a) (by simp [ha])).inv.app X ≫
+      (shiftFunctorZero' C a ha).inv.app (X⟦-a⟧) := by
+    change (shiftEquiv C a).symm.unitIso.hom.app X = _
+    rw [Equivalence.symm_unitIso]
+    simp only [Functor.id_obj, Equivalence.symm_functor, shiftEquiv'_inverse,
+      Equivalence.symm_inverse, shiftEquiv'_functor, Functor.comp_obj, shiftEquiv'_counitIso,
+      Iso.symm_hom]
+    rw [shiftFunctorCompIsoId]
+    rw [shiftFunctorAdd'_eqToIso (-a) a 0 (-a) 0 (-a) (by simp) (by simp) rfl ha]
+    rw [shiftFunctorAdd'_add_zero, shiftFunctorZero', shiftFunctorZero']
+    simp
+  rw [this, assoc, ← (shiftFunctorZero' C a ha).inv.naturality u]
+  simp
+
+lemma shiftEquiv_homEquiv_zero' (a : A) (ha : a = 0) (X Y : C) :
+    (shiftEquiv C a).symm.toAdjunction.homEquiv X Y =
+    ((yoneda.obj Y).mapIso ((shiftFunctorZero' C (-a) (by simp [ha])).symm.app X).op ≪≫
+    (coyoneda.obj (op X)).mapIso ((shiftFunctorZero' C a ha).symm.app Y)).toEquiv := by
+  ext u
+  rw [shiftEquiv_homEquiv_zero'_app C a ha]
+  simp
+
+
+end Shift
+
 namespace Functor
 namespace CommShift
 
