@@ -170,6 +170,26 @@ theorem coverEntropyInf_image_of_comap (u : UniformSpace Y) {S : X → X} {T : Y
     apply (le_coverEntropyInfEntourage_image h F W_symm).trans
     exact coverEntropyInfEntourage_le_coverEntropyInf T (φ '' F) W_uni
 
+open MapsTo Subtype
+
+lemma coverEntropy_restrict_subset [UniformSpace X] {T : X → X} {F G : Set X} (hF : F ⊆ G)
+    (hG : MapsTo T G G) :
+    coverEntropy (restrict T G G hG) (val ⁻¹' F) = coverEntropy T F := by
+  rw [← coverEntropy_image_of_comap _ (val_restrict_apply hG) (val ⁻¹' F),
+    image_preimage_coe G F, inter_eq_right.2 hF]
+
+lemma coverEntropyInf_restrict_subset [UniformSpace X] {T : X → X} {F G : Set X} (hF : F ⊆ G)
+    (hG : MapsTo T G G) :
+    coverEntropyInf (restrict T G G hG) (val ⁻¹' F) = coverEntropyInf T F := by
+  rw [← coverEntropyInf_image_of_comap _ (val_restrict_apply hG) (val ⁻¹' F),
+    image_preimage_coe G F, inter_eq_right.2 hF]
+
+/-- The entropy of the restriction of `T` to an invariant set `F` is `coverEntropy S F`. This
+theorem justifies our definition of `coverEntropy T F`.-/
+theorem coverEntropy_restrict [UniformSpace X] {T : X → X} {F : Set X} (h : MapsTo T F F) :
+    coverEntropy (restrict T F F h) univ = coverEntropy T F := by
+  rw [← coverEntropy_restrict_subset (subset_refl F) h, coe_preimage_self F]
+
 /-- The entropy of `φ '' F` is lower than entropy of `F` if  `φ` is uniformly continuous.-/
 theorem coverEntropy_image_le_of_uniformContinuous [UniformSpace X] [UniformSpace Y] {S : X → X}
     {T : Y → Y} {φ : X → Y} (h : Semiconj φ S T) (h' : UniformContinuous φ) (F : Set X) :
@@ -185,11 +205,28 @@ theorem coverEntropyInf_image_le_of_uniformContinuous [UniformSpace X] [UniformS
   rw [coverEntropyInf_image_of_comap _ h F]
   exact coverEntropyInf_antitone S F (uniformContinuous_iff.1 h')
 
-/-- The entropy of the restriction of `T` to an invariant set `F` is `coverEntropy S F`. This
-theorem justifies our definition of `coverEntropy T F`.-/
-theorem coverEntropy_restrict [UniformSpace X] {T : X → X} {F : Set X} (h : MapsTo T F F) :
-    coverEntropy (MapsTo.restrict T F F h) univ = coverEntropy T F := by
-  rw [← coverEntropy_image_of_comap _ (MapsTo.val_restrict_apply h) univ, image_univ,
-    Subtype.range_val]
+lemma coverEntropy_image_le_of_uniformContinuousOn_invariant [UniformSpace X] [UniformSpace Y]
+    {S : X → X} {T : Y → Y} {φ : X → Y} (h : Semiconj φ S T) {F G : Set X}
+    (h' : UniformContinuousOn φ G) (hF : F ⊆ G) (hG : MapsTo S G G) :
+    coverEntropy T (φ '' F) ≤ coverEntropy S F := by
+  rw [← coverEntropy_restrict_subset hF hG]
+  have hφ : Semiconj (G.restrict φ) (MapsTo.restrict S G G hG) T := by
+    intro x
+    rw [Set.restrict_apply, Set.restrict_apply, val_restrict_apply, h.eq x]
+  apply (coverEntropy_image_le_of_uniformContinuous hφ
+    (uniformContinuousOn_iff_restrict.1 h') (val ⁻¹' F)).trans_eq'
+  rw [← image_image_val_eq_restrict_image, image_preimage_coe G F, inter_eq_right.2 hF]
+
+lemma coverEntropyInf_image_le_of_uniformContinuousOn_invariant [UniformSpace X] [UniformSpace Y]
+    {S : X → X} {T : Y → Y} {φ : X → Y} (h : Semiconj φ S T) {F G : Set X}
+    (h' : UniformContinuousOn φ G) (hF : F ⊆ G) (hG : MapsTo S G G) :
+    coverEntropyInf T (φ '' F) ≤ coverEntropyInf S F := by
+  rw [← coverEntropyInf_restrict_subset hF hG]
+  have hφ : Semiconj (G.restrict φ) (MapsTo.restrict S G G hG) T := by
+    intro a
+    rw [Set.restrict_apply, Set.restrict_apply, val_restrict_apply, h.eq a]
+  apply (coverEntropyInf_image_le_of_uniformContinuous hφ
+    (uniformContinuousOn_iff_restrict.1 h') (val ⁻¹' F)).trans_eq'
+  rw [← image_image_val_eq_restrict_image, image_preimage_coe G F, inter_eq_right.2 hF]
 
 end Dynamics
