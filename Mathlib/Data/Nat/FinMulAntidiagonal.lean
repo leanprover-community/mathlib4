@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
 
-import Batteries.Tactic.Lemma
 import Mathlib.Algebra.Order.Antidiag.Pi
-import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.NumberTheory.ArithmeticFunction
 
 /-!
