@@ -3,9 +3,11 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Geometry.Manifold.ChartedSpace
+import Mathlib.Analysis.Convex.Normed
 import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.Analysis.Calculus.ContDiff.Basic
+import Mathlib.Data.Bundle
+import Mathlib.Geometry.Manifold.ChartedSpace
 
 /-!
 # Smooth manifolds (possibly with boundary or corners)
@@ -1372,3 +1374,56 @@ lemma Manifold.locallyCompact_of_finiteDimensional
   exact ChartedSpace.locallyCompactSpace H M
 
 end Topology
+
+section TangentSpace
+
+/- We define the tangent space to `M` modelled on `I : ModelWithCorners 𝕜 E H` as a type synonym
+for `E`. This is enough to define linear maps between tangent spaces, for instance derivatives,
+but the interesting part is to define a manifold structure on the whole tangent bundle, which
+requires that `M` is a smooth manifold with corners. The definition is put here to avoid importing
+all the smooth bundle structure when defining manifold derivatives. -/
+
+set_option linter.unusedVariables false in
+/-- The tangent space at a point of the manifold `M`. It is just `E`. We could use instead
+`(tangentBundleCore I M).to_topological_vector_bundle_core.fiber x`, but we use `E` to help the
+kernel.
+-/
+@[nolint unusedArguments]
+def TangentSpace {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M] (_x : M) : Type u := E
+-- Porting note: was deriving TopologicalSpace, AddCommGroup, TopologicalAddGroup
+
+/- In general, the definition of `TangentSpace` is not reducible, so that type class inference
+does not pick wrong instances. We record the right instances for them. -/
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M}
+
+instance : TopologicalSpace (TangentSpace I x) := inferInstanceAs (TopologicalSpace E)
+instance : AddCommGroup (TangentSpace I x) := inferInstanceAs (AddCommGroup E)
+instance : TopologicalAddGroup (TangentSpace I x) := inferInstanceAs (TopologicalAddGroup E)
+instance : Module 𝕜 (TangentSpace I x) := inferInstanceAs (Module 𝕜 E)
+instance : Inhabited (TangentSpace I x) := ⟨0⟩
+
+variable (M) in
+-- is empty if the base manifold is empty
+/-- The tangent bundle to a smooth manifold, as a Sigma type. Defined in terms of
+`Bundle.TotalSpace` to be able to put a suitable topology on it. -/
+-- Porting note(#5171): was nolint has_nonempty_instance
+abbrev TangentBundle :=
+  Bundle.TotalSpace E (TangentSpace I : M → Type _)
+
+end TangentSpace
+
+section Real
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
+  {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M}
+
+instance : PathConnectedSpace (TangentSpace I x) := inferInstanceAs (PathConnectedSpace E)
+
+end Real

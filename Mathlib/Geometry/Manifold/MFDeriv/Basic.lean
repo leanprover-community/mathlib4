@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
 import Mathlib.Geometry.Manifold.MFDeriv.Defs
+import Mathlib.Geometry.Manifold.ContMDiff.Defs
 
 /-!
 # Basic properties of the manifold Fréchet derivative
@@ -20,6 +21,8 @@ mimicking the API for Fréchet derivatives.
 -/
 
 noncomputable section
+
+assert_not_exists tangentBundleCore
 
 open scoped Topology Manifold
 open Set Bundle ChartedSpace
@@ -546,22 +549,17 @@ theorem writtenInExtChartAt_comp (h : ContinuousWithinAt f s x) :
         (h.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds _ _)))
   mfld_set_tac
 
-/- We name the typeclass variables related to `SmoothManifoldWithCorners` structure as they are
-necessary in lemmas mentioning the derivative, but not in lemmas about differentiability, so we
-want to include them or omit them when necessary. -/
-variable [Is : SmoothManifoldWithCorners I M] [I's : SmoothManifoldWithCorners I' M']
-  [I''s : SmoothManifoldWithCorners I'' M'']
-  {f' f₀' f₁' : TangentSpace I x →L[𝕜] TangentSpace I' (f x)}
+variable {f' f₀' f₁' : TangentSpace I x →L[𝕜] TangentSpace I' (f x)}
   {g' : TangentSpace I' (f x) →L[𝕜] TangentSpace I'' (g (f x))}
 
 /-- `UniqueMDiffWithinAt` achieves its goal: it implies the uniqueness of the derivative. -/
-nonrec theorem UniqueMDiffWithinAt.eq (U : UniqueMDiffWithinAt I s x)
+protected nonrec theorem UniqueMDiffWithinAt.eq (U : UniqueMDiffWithinAt I s x)
     (h : HasMFDerivWithinAt I I' f s x f') (h₁ : HasMFDerivWithinAt I I' f s x f₁') : f' = f₁' := by
   -- Porting note: didn't need `convert` because of finding instances by unification
   convert U.eq h.2 h₁.2
 
-theorem UniqueMDiffOn.eq (U : UniqueMDiffOn I s) (hx : x ∈ s) (h : HasMFDerivWithinAt I I' f s x f')
-    (h₁ : HasMFDerivWithinAt I I' f s x f₁') : f' = f₁' :=
+protected theorem UniqueMDiffOn.eq (U : UniqueMDiffOn I s) (hx : x ∈ s)
+    (h : HasMFDerivWithinAt I I' f s x f') (h₁ : HasMFDerivWithinAt I I' f s x f₁') : f' = f₁' :=
   UniqueMDiffWithinAt.eq (U _ hx) h h₁
 
 /-!
@@ -695,6 +693,17 @@ theorem mfderivWithin_eq_mfderiv (hs : UniqueMDiffWithinAt I s x) (h : MDifferen
     mfderivWithin I I' f s x = mfderiv I I' f x := by
   rw [← mfderivWithin_univ]
   exact mfderivWithin_subset (subset_univ _) hs h.mdifferentiableWithinAt
+
+variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M'] in
+theorem mdifferentiableAt_iff_of_mem_source {x' : M} {y : M'}
+    (hx : x' ∈ (chartAt H x).source) (hy : f x' ∈ (chartAt H' y).source) :
+    MDifferentiableAt I I' f x' ↔
+      ContinuousAt f x' ∧
+        DifferentiableWithinAt 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm) (Set.range I)
+          ((extChartAt I x) x') :=
+  mdifferentiableWithinAt_univ.symm.trans <|
+    (mdifferentiableWithinAt_iff_of_mem_source hx hy).trans <| by
+      rw [continuousWithinAt_univ, Set.preimage_univ, Set.univ_inter]
 
 /-! ### Deriving continuity from differentiability on manifolds -/
 
