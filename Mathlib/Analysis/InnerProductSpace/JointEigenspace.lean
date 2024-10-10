@@ -174,11 +174,11 @@ theorem iSup_iInf_eq_top_of_commute {ι : Type*}
 
 /-- In finite dimensions, given a finite commuting family of symmetric linear operators, the inner
 product space on which they act decomposes as an internal direct sum of joint eigenspaces. -/
-theorem LinearMap.IsSymmetric.directSum_isInternal_of_commute (hT :∀ i, (T i).IsSymmetric)
-    (hC : ∀ i j, Commute (T i) (T j)) :
+theorem LinearMap.IsSymmetric.directSum_isInternal_of_commute_of_fintype [Fintype n]
+    (hT :∀ i, (T i).IsSymmetric) (hC : ∀ i j, Commute (T i) (T j)) :
     DirectSum.IsInternal (fun α : n → 𝕜 ↦ ⨅ j, eigenspace (T j) (α j)) := by
   rw [OrthogonalFamily.isInternal_iff]
-  · exact orthogonalComplement_iSup_iInf_eigenspaces_eq_bot hT hC
+  · rw [iSup_iInf_eq_top_of_commute _ hT fun ⦃_ _⦄ _ ↦ hC _ _, top_orthogonal_eq_bot]
   · exact orthogonalFamily_iInf_eigenspaces hT
 
 end RCLike
