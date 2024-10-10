@@ -248,6 +248,18 @@ theorem inductionOn {C : Ordinal → Prop} (o : Ordinal)
     (H : ∀ (α r) [IsWellOrder α r], C (type r)) : C o :=
   Quot.inductionOn o fun ⟨α, r, wo⟩ => @H α r wo
 
+@[elab_as_elim]
+theorem inductionOn₂ {C : Ordinal → Ordinal → Prop} (o₁ o₂ : Ordinal)
+    (H : ∀ (α r) [IsWellOrder α r] (β s) [IsWellOrder β s], C (type r) (type s)) : C o₁ o₂ :=
+  Quotient.inductionOn₂ o₁ o₂ fun ⟨α, r, wo₁⟩ ⟨β, s, wo₂⟩ => @H α r wo₁ β s wo₂
+
+@[elab_as_elim]
+theorem inductionOn₃ {C : Ordinal → Ordinal → Ordinal → Prop} (o₁ o₂ o₃ : Ordinal)
+    (H : ∀ (α r) [IsWellOrder α r] (β s) [IsWellOrder β s] (γ t) [IsWellOrder γ t],
+      C (type r) (type s) (type t)) : C o₁ o₂ o₃ :=
+  Quotient.inductionOn₃ o₁ o₂ o₃ fun ⟨α, r, wo₁⟩ ⟨β, s, wo₂⟩ ⟨γ, t, wo₃⟩ =>
+    @H α r wo₁ β s wo₂ γ t wo₃
+
 /-! ### The order on ordinals -/
 
 /--
@@ -745,11 +757,10 @@ the addition, together with properties of the other operations, are proved in
 
 
 /-- `o₁ + o₂` is the order on the disjoint union of `o₁` and `o₂` obtained by declaring that
-  every element of `o₁` is smaller than every element of `o₂`. -/
+every element of `o₁` is smaller than every element of `o₂`. -/
 instance add : Add Ordinal.{u} :=
-  ⟨fun o₁ o₂ =>
-    Quotient.liftOn₂ o₁ o₂ (fun ⟨_, r, _⟩ ⟨_, s, _⟩ => type (Sum.Lex r s))
-      fun _ _ _ _ ⟨f⟩ ⟨g⟩ => Quot.sound ⟨RelIso.sumLexCongr f g⟩⟩
+  ⟨fun o₁ o₂ => Quotient.liftOn₂ o₁ o₂ (fun ⟨_, r, _⟩ ⟨_, s, _⟩ => type (Sum.Lex r s))
+    fun _ _ _ _ ⟨f⟩ ⟨g⟩ => (RelIso.sumLexCongr f g).ordinal_type_eq⟩
 
 instance addMonoidWithOne : AddMonoidWithOne Ordinal.{u} where
   add := (· + ·)
@@ -790,45 +801,18 @@ theorem card_ofNat (n : ℕ) [n.AtLeastTwo] :
     card.{u} (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
   card_nat n
 
--- Porting note: Rewritten proof of elim, previous version was difficult to debug
 instance add_covariantClass_le : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· ≤ ·) where
-  elim := fun c a b h => by
-    revert h c
-    refine inductionOn a (fun α₁ r₁ _ ↦ ?_)
-    refine inductionOn b (fun α₂ r₂ _ ↦ ?_)
-    rintro c ⟨⟨⟨f, fo⟩, fi⟩⟩
-    refine inductionOn c (fun β s _ ↦ ?_)
-    refine ⟨⟨⟨(Embedding.refl.{u+1} _).sumMap f, ?_⟩, ?_⟩⟩
-    · intros a b
-      match a, b with
-      | Sum.inl a, Sum.inl b => exact Sum.lex_inl_inl.trans Sum.lex_inl_inl.symm
-      | Sum.inl a, Sum.inr b => apply iff_of_true <;> apply Sum.Lex.sep
-      | Sum.inr a, Sum.inl b => apply iff_of_false <;> exact Sum.lex_inr_inl
-      | Sum.inr a, Sum.inr b => exact Sum.lex_inr_inr.trans <| fo.trans Sum.lex_inr_inr.symm
-    · intros a b H
-      match a, b, H with
-      | _, Sum.inl b, _ => exact ⟨Sum.inl b, rfl⟩
-      | Sum.inl a, Sum.inr b, H => exact (Sum.lex_inr_inl H).elim
-      | Sum.inr a, Sum.inr b, H =>
-        let ⟨w, h⟩ := fi _ _ (Sum.lex_inr_inr.1 H)
-        exact ⟨Sum.inr w, congr_arg Sum.inr h⟩
+  elim c a b := by
+    refine inductionOn₃ a b c fun α r _ β s _ γ t _ ⟨f⟩ ↦
+      (RelEmbedding.ofMonotone (Sum.recOn · Sum.inl (Sum.inr ∘ f)) ?_).ordinal_type_le
+    simp [f.map_rel_iff]
 
--- Porting note: Rewritten proof of elim, previous version was difficult to debug
 instance add_swap_covariantClass_le :
     CovariantClass Ordinal.{u} Ordinal.{u} (swap (· + ·)) (· ≤ ·) where
-  elim := fun c a b h => by
-    revert h c
-    refine inductionOn a (fun α₁ r₁ _ ↦ ?_)
-    refine inductionOn b (fun α₂ r₂ _ ↦ ?_)
-    rintro c ⟨⟨⟨f, fo⟩, fi⟩⟩
-    refine inductionOn c (fun β s _ ↦ ?_)
-    exact @RelEmbedding.ordinal_type_le _ _ (Sum.Lex r₁ s) (Sum.Lex r₂ s) _ _
-              ⟨f.sumMap (Embedding.refl _), by
-                intro a b
-                constructor <;> intro H
-                · cases' a with a a <;> cases' b with b b <;> cases H <;> constructor <;>
-                    [rwa [← fo]; assumption]
-                · cases H <;> constructor <;> [rwa [fo]; assumption]⟩
+  elim c a b := by
+    refine inductionOn₃ a b c fun α r _ β s _ γ t _  ⟨f⟩ ↦
+      (RelEmbedding.ofMonotone (Sum.recOn · (Sum.inl ∘ f) Sum.inr) ?_).ordinal_type_le
+    simp [f.map_rel_iff]
 
 theorem le_add_right (a b : Ordinal) : a ≤ a + b := by
   simpa only [add_zero] using add_le_add_left (Ordinal.zero_le b) a
@@ -852,32 +836,12 @@ theorem sInf_empty : sInf (∅ : Set Ordinal) = 0 :=
 
 /-! ### Successor order properties -/
 
-private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b :=
-  ⟨lt_of_lt_of_le
-      (inductionOn a fun α r _ =>
-        ⟨⟨⟨⟨fun x => Sum.inl x, fun _ _ => Sum.inl.inj⟩, Sum.lex_inl_inl⟩,
-            Sum.inr PUnit.unit, fun b =>
-            Sum.recOn b (fun x => ⟨fun _ => Sum.Lex.sep _ _, fun _ => ⟨x, rfl⟩⟩) fun x =>
-              (Sum.lex_inr_inr.trans ⟨False.elim, fun ⟨x, H⟩ => Sum.inl_ne_inr H⟩).symm⟩⟩),
-    inductionOn a fun α r hr =>
-      inductionOn b fun β s hs ⟨⟨f, t, hf⟩⟩ => by
-        haveI := hs
-        refine ⟨⟨RelEmbedding.ofMonotone (Sum.rec f fun _ => t) (fun a b ↦ ?_), fun a b ↦ ?_⟩⟩
-        · rcases a with (a | _) <;> rcases b with (b | _)
-          · simpa only [Sum.lex_inl_inl] using f.map_rel_iff.2
-          · intro
-            rw [← hf]
-            exact ⟨_, rfl⟩
-          · exact False.elim ∘ Sum.lex_inr_inl
-          · exact False.elim ∘ Sum.lex_inr_inr.1
-        · rcases a with (a | _)
-          · intro h
-            have := @PrincipalSeg.mem_range_of_rel _ _ _ _ _ ⟨f, t, hf⟩ _ _ h
-            cases' this with w h
-            exact ⟨Sum.inl w, h⟩
-          · intro h
-            cases' (hf b).2 h with w h
-            exact ⟨Sum.inl w, h⟩⟩
+private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b := by
+  refine inductionOn₂ a b fun α r _ β s _ ↦ ⟨?_, ?_⟩ <;> rintro ⟨f⟩
+  · refine ⟨((InitialSeg.leAdd _ _).trans f).toPrincipalSeg fun h ↦ ?_⟩
+    simpa using h (f (Sum.inr PUnit.unit))
+  · apply (RelEmbedding.ofMonotone (Sum.recOn · f fun _ ↦ f.top) ?_).ordinal_type_le
+    simpa [f.map_rel_iff] using f.lt_top
 
 instance noMaxOrder : NoMaxOrder Ordinal :=
   ⟨fun _ => ⟨_, succ_le_iff'.1 le_rfl⟩⟩
