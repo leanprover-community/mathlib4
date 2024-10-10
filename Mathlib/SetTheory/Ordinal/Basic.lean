@@ -414,9 +414,17 @@ theorem typein_lt_typein (r : α → α → Prop) [IsWellOrder α r] {a b : α} 
     typein r a < typein r b ↔ r a b :=
   (typein r).map_rel_iff
 
+theorem mem_range_typein_iff (r : α → α → Prop) [IsWellOrder α r] {o} :
+    o ∈ Set.range (typein r) ↔ o < type r :=
+  (typein r).mem_range_iff_rel
+
 theorem typein_surj (r : α → α → Prop) [IsWellOrder α r] {o} (h : o < type r) :
     o ∈ Set.range (typein r) :=
   (typein r).mem_range_of_rel_top h
+
+theorem typein_surjOn (r : α → α → Prop) [IsWellOrder α r] :
+    Set.SurjOn (typein r) (Set.univ) (Set.Iio (type r)) :=
+  (typein r).surjOn
 
 theorem typein_injective (r : α → α → Prop) [IsWellOrder α r] : Injective (typein r) :=
   (typein r).injective
