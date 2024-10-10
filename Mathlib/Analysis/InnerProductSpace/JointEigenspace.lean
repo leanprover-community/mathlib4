@@ -114,15 +114,6 @@ theorem directSum_isInternal_of_commute (hA : A.IsSymmetric) (hB : B.IsSymmetric
 
 /-- If `F` is an invariant subspace of a symmetric operator `S`, then `F` is the supremum of the
 eigenspaces of the restriction of `S` to `F`. -/
-theorem iSup_eigenspace_restrict {F : Submodule 𝕜 E}
-    (S : E →ₗ[𝕜] E) (hS : IsSymmetric S) (hInv : Set.MapsTo S F F) :
-    ⨆ μ, map F.subtype (eigenspace (S.restrict hInv) μ) = F := by
-  conv_lhs => rw [← Submodule.map_iSup]
-  conv_rhs => rw [← map_subtype_top F]
-  congr!
-  have H : IsSymmetric (S.restrict hInv) := fun x y ↦ hS (F.subtype x) y
-  apply orthogonal_eq_bot_iff.mp (H.orthogonalComplement_iSup_eigenspaces_eq_bot)
-
 /-- In finite dimensions, the indexed supremum of joint `maxGenEigenspaces` of a finite tuple of
 commuting operators equals `⊤` provided the indexed supremum of `maxGenEigenspaces` of each
 operator in the tuple equals `⊤`. -/
