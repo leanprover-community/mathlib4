@@ -74,7 +74,10 @@ open in `X` defined by the same element (they are equal as sets). -/
 theorem toΓSpec_preimage_basicOpen_eq (r : Γ.obj (op X)) :
     X.toΓSpecFun ⁻¹' (basicOpen r).1 = (X.toRingedSpace.basicOpen r).1 := by
       ext
-      erw [X.toRingedSpace.mem_top_basicOpen]; apply not_mem_prime_iff_unit_in_stalk
+      dsimp
+      simp only [Set.mem_preimage, SetLike.mem_coe]
+      rw [X.toRingedSpace.mem_top_basicOpen]
+      exact not_mem_prime_iff_unit_in_stalk ..
 
 /-- `toΓSpecFun` is continuous. -/
 theorem toΓSpec_continuous : Continuous X.toΓSpecFun := by
@@ -181,16 +184,13 @@ theorem toΓSpecSheafedSpace_app_eq :
     stalks (in `Spec Γ(X)` and in `X`). -/
 theorem toStalk_stalkMap_toΓSpec (x : X) :
     toStalk _ _ ≫ X.toΓSpecSheafedSpace.stalkMap x = X.presheaf.Γgerm x := by
-  rw [PresheafedSpace.Hom.stalkMap]
-  erw [← toOpen_germ _ (basicOpen (1 : Γ.obj (op X)))
-      ⟨X.toΓSpecFun x, by rw [basicOpen_one]; trivial⟩]
-  rw [← Category.assoc, Category.assoc (toOpen _ _)]
-  erw [stalkFunctor_map_germ]
-  rw [← Category.assoc, toΓSpecSheafedSpace_app_spec, Γgerm]
-  rw [← stalkPushforward_germ _ X.toΓSpecBase X.presheaf ⊤]
+  rw [PresheafedSpace.Hom.stalkMap,
+    ← toOpen_germ _ (basicOpen (1 : Γ.obj (op X))) _ (by rw [basicOpen_one]; trivial),
+    ← Category.assoc, Category.assoc (toOpen _ _), stalkFunctor_map_germ, ← Category.assoc,
+    toΓSpecSheafedSpace_app_spec, Γgerm]
+  erw [← stalkPushforward_germ _ _ X.presheaf ⊤]
   congr 1
-  change (X.toΓSpecBase _* X.presheaf).map le_top.hom.op ≫ _ = _
-  apply germ_res
+  exact (X.toΓSpecBase _* X.presheaf).germ_res le_top.hom _ _
 
 /-- The canonical morphism from `X` to the spectrum of its global sections. -/
 @[simps! val_base]
@@ -254,9 +254,8 @@ theorem comp_ring_hom_ext {X : LocallyRingedSpace.{u}} {R : CommRingCat.{u}} {f 
 /-- `toSpecΓ _` is an isomorphism so these are mutually two-sided inverses. -/
 theorem Γ_Spec_left_triangle : toSpecΓ (Γ.obj (op X)) ≫ X.toΓSpec.1.c.app (op ⊤) = 𝟙 _ := by
   unfold toSpecΓ
-  rw [← toOpen_res _ (basicOpen (1 : Γ.obj (op X))) ⊤ (eqToHom basicOpen_one.symm)]
-  erw [Category.assoc]
-  rw [NatTrans.naturality, ← Category.assoc]
+  rw [← toOpen_res _ (basicOpen (1 : Γ.obj (op X))) ⊤ (eqToHom basicOpen_one.symm),
+    Category.assoc, NatTrans.naturality, ← Category.assoc]
   erw [X.toΓSpecSheafedSpace_app_spec 1, ← Functor.map_comp]
   convert eqToHom_map X.presheaf _; rfl
 
@@ -269,26 +268,15 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
     symm
     apply LocallyRingedSpace.comp_ring_hom_ext
     · ext1 x
-      dsimp only [Spec.topMap, LocallyRingedSpace.toΓSpecFun]
-      -- Porting note: Had to add the next four lines
-      rw [comp_apply]
-      dsimp [toΓSpecBase]
-      -- The next six lines were `rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk]` before
-      -- leanprover/lean4#2644
-      have : (ContinuousMap.mk (toΓSpecFun Y) (toΓSpec_continuous _)) (f.val.base x)
-        = toΓSpecFun Y (f.val.base x) := by rw [ContinuousMap.coe_mk]
-      erw [this]
-      have : (ContinuousMap.mk (toΓSpecFun X) (toΓSpec_continuous _)) x
-        = toΓSpecFun X x := by rw [ContinuousMap.coe_mk]
-      erw [this]
+      dsimp
+      show PrimeSpectrum.comap (f.val.c.app (op ⊤)) (X.toΓSpecFun x) = Y.toΓSpecFun (f.val.base x)
       dsimp [toΓSpecFun]
       -- TODO: this instance was found automatically before #6045
       have := @AlgebraicGeometry.LocallyRingedSpace.isLocalRingHomStalkMap X Y
-      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-      erw [← LocalRing.comap_closedPoint (f.stalkMap x), ←
+      rw [← LocalRing.comap_closedPoint (f.stalkMap x), ←
         PrimeSpectrum.comap_comp_apply, ← PrimeSpectrum.comap_comp_apply]
       congr 2
-      exact (PresheafedSpace.stalkMap_germ f.1 ⊤ ⟨x, trivial⟩).symm
+      exact (PresheafedSpace.stalkMap_germ f.1 ⊤ x trivial).symm
     · intro r
       rw [LocallyRingedSpace.comp_val_c_app, ← Category.assoc]
       erw [Y.toΓSpecSheafedSpace_app_spec, f.1.c.naturality]

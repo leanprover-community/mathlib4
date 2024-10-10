@@ -90,7 +90,7 @@ def Spec.sheafedSpaceObj (R : CommRingCat.{u}) : SheafedSpace CommRingCat where
 
 /-- The induced map of a ring homomorphism on the ring spectra, as a morphism of sheafed spaces.
 -/
-@[simps]
+@[simps base c_app]
 def Spec.sheafedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
     Spec.sheafedSpaceObj S ⟶ Spec.sheafedSpaceObj R where
   base := Spec.topMap f
@@ -196,9 +196,11 @@ lemma Spec.locallyRingedSpaceObj_presheaf_map' (R : Type u) [CommRing R] {U V} (
 theorem stalkMap_toStalk {R S : CommRingCat.{u}} (f : R ⟶ S) (p : PrimeSpectrum S) :
     toStalk R (PrimeSpectrum.comap f p) ≫ (Spec.sheafedSpaceMap f).stalkMap p =
       f ≫ toStalk S p := by
-  erw [← toOpen_germ S ⊤ ⟨p, trivial⟩, ← toOpen_germ R ⊤ ⟨PrimeSpectrum.comap f p, trivial⟩,
-    Category.assoc, PresheafedSpace.stalkMap_germ (Spec.sheafedSpaceMap f) ⊤ ⟨p, trivial⟩,
-    Spec.sheafedSpaceMap_c_app, toOpen_comp_comap_assoc]
+  rw [← toOpen_germ S ⊤ p trivial, ← toOpen_germ R ⊤ (PrimeSpectrum.comap f p) trivial,
+    Category.assoc]
+  erw [PresheafedSpace.stalkMap_germ (Spec.sheafedSpaceMap f) ⊤ p trivial]
+  rw [Spec.sheafedSpaceMap_c_app]
+  erw [toOpen_comp_comap_assoc]
   rfl
 
 /-- Under the isomorphisms `stalkIso`, the map `stalkMap (Spec.sheafedSpaceMap f) p` corresponds
@@ -324,16 +326,14 @@ This is shown to be the localization at `p` in `isLocalizedModule_toPushforwardS
 -/
 def toPushforwardStalk : S ⟶ (Spec.topMap f _* (structureSheaf S).1).stalk p :=
   StructureSheaf.toOpen S ⊤ ≫
-    @TopCat.Presheaf.germ _ _ _ _ (Spec.topMap f _* (structureSheaf S).1) ⊤ ⟨p, trivial⟩
+    @TopCat.Presheaf.germ _ _ _ _ (Spec.topMap f _* (structureSheaf S).1) ⊤ p trivial
 
 @[reassoc]
 theorem toPushforwardStalk_comp :
     f ≫ StructureSheaf.toPushforwardStalk f p =
       StructureSheaf.toStalk R p ≫
         (TopCat.Presheaf.stalkFunctor _ _).map (Spec.sheafedSpaceMap f).c := by
-  rw [StructureSheaf.toStalk]
-  erw [Category.assoc]
-  rw [TopCat.Presheaf.stalkFunctor_map_germ]
+  rw [StructureSheaf.toStalk, Category.assoc, TopCat.Presheaf.stalkFunctor_map_germ]
   exact Spec_Γ_naturality_assoc f _
 
 instance : Algebra R ((Spec.topMap f _* (structureSheaf S).1).stalk p) :=
@@ -366,9 +366,9 @@ theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :
   change PrimeSpectrum.basicOpen r ≤ U at hrU
   replace e :=
     ((Spec.topMap (algebraMap R S) _* (structureSheaf S).1).germ_res_apply (homOfLE hrU)
-          ⟨p, hpr⟩ _).trans e
+          p hpr _).trans e
   set s' := (Spec.topMap (algebraMap R S) _* (structureSheaf S).1).map (homOfLE hrU).op s with h
-  replace e : ((Spec.topMap (algebraMap R S) _* (structureSheaf S).val).germ ⟨p, hpr⟩) s' = y := by
+  replace e : ((Spec.topMap (algebraMap R S) _* (structureSheaf S).val).germ _ p hpr) s' = y := by
     rw [h]; exact e
   clear_value s'; clear! U
   obtain ⟨⟨s, ⟨_, n, rfl⟩⟩, hsn⟩ :=
@@ -379,10 +379,10 @@ theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :
     comp_apply, comp_apply]
   iterate 2
     erw [← (Spec.topMap (algebraMap R S) _* (structureSheaf S).1).germ_res_apply (homOfLE le_top)
-      ⟨p, hpr⟩]
+      p hpr]
   rw [← e]
   -- Porting note: without this `change`, Lean doesn't know how to rewrite `map_mul`
-  let f := TopCat.Presheaf.germ (Spec.topMap (algebraMap R S) _* (structureSheaf S).val) ⟨p, hpr⟩
+  let f := TopCat.Presheaf.germ (Spec.topMap (algebraMap R S) _* (structureSheaf S).val) _ p hpr
   change f _ * f _ = f _
   rw [← map_mul, mul_comm]
   dsimp only [Subtype.coe_mk] at hsn
@@ -402,7 +402,7 @@ instance isLocalizedModule_toPushforwardStalkAlgHom :
       toPushforwardStalk] at hx
     -- Porting note: this `change` is manually rewriting `comp_apply`
     change _ = (TopCat.Presheaf.germ (Spec.topMap (algebraMap ↑R ↑S) _* (structureSheaf ↑S).val)
-      (⟨p, trivial⟩ : (⊤ : TopologicalSpace.Opens (PrimeSpectrum R))) (toOpen S ⊤ 0)) at hx
+      ⊤ p trivial (toOpen S ⊤ 0)) at hx
     rw [map_zero] at hx
     change (forget CommRingCat).map _ _ = (forget _).map _ _ at hx
     obtain ⟨U, hpU, i₁, i₂, e⟩ := TopCat.Presheaf.germ_eq _ _ _ _ _ _ hx
