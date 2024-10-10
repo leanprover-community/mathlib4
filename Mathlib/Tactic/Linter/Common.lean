@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Moritz Firsching
 -/
 
-import Lean.Elab.Command
+import Lean.DeclarationRange
 
 /-!
 This file contains functions that are used by multiple linters.
