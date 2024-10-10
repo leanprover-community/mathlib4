@@ -154,6 +154,11 @@ theorem bind_apply {m : Measure α} {f : α → Measure β} {s : Set β} (hs : M
     (hf : Measurable f) : bind m f s = ∫⁻ a, f a s ∂m := by
   rw [bind, join_apply hs, lintegral_map (measurable_coe hs) hf]
 
+@[simp]
+lemma bind_const {m : Measure α} {ν : Measure β} : m.bind (fun _ ↦ ν) = m Set.univ • ν := by
+  ext s hs
+  rw [bind_apply hs measurable_const, lintegral_const, smul_apply, smul_eq_mul, mul_comm]
+
 theorem measurable_bind' {g : α → Measure β} (hg : Measurable g) : Measurable fun m => bind m g :=
   measurable_join.comp (measurable_map _ hg)
 
@@ -173,6 +178,16 @@ theorem bind_dirac {f : α → Measure β} (hf : Measurable f) (a : α) : bind (
   ext1 s hs
   erw [bind_apply hs hf, lintegral_dirac' a ((measurable_coe hs).comp hf)]
   rfl
+
+@[simp]
+lemma bind_dirac_eq_map (μ : Measure α) {f : α → β} (hf : Measurable f) :
+    μ.bind (fun x ↦ Measure.dirac (f x)) = μ.map f := by
+  ext s hs
+  rw [bind_apply hs]
+  swap; · exact measurable_dirac.comp hf
+  simp_rw [dirac_apply' _ hs]
+  rw [← lintegral_map _ hf, lintegral_indicator_one hs]
+  exact measurable_const.indicator hs
 
 theorem dirac_bind {m : Measure α} : bind m dirac = m := by
   ext1 s hs
