@@ -78,8 +78,10 @@ lemma isUltrametricDist_of_forall_norm_natCast_le_one
   rw [max_comm]
   -- which we will do by "complicating" the goal:
   -- proving it for all powers `m`, `‖x + 1‖ ^ m ≤ (m + 1) • max 1 ‖x‖ ^ m`,
-  -- and using this more powerful statement by taking the `m`-th root to get our desired inequality
   suffices ∀ (m : ℕ), ‖x + 1‖ ^ m ≤ (m + 1) • max 1 ‖x‖ ^ m by
+    -- and using this more powerful statement by morally taking the `m`-th root
+    -- to get an inequality of the form `‖x + 1‖ ≤ C • max 1 ‖x‖` where the `C : ℝ` is arbitrary.
+    -- specifically, we will use `C = m + 1` and approach `m = 0` from above.
     -- we rely on the denseness of the reals to approach `max 1 ‖x‖` from above by values `a : ℝ`
     -- and show that any such value must be greater than or equal to our LHS: `‖x + 1‖ ≤ a`.
     refine le_of_forall_le_of_dense ?_
