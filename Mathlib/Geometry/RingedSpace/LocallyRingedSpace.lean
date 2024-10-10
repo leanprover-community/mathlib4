@@ -93,6 +93,9 @@ instance isLocalHomStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X)
     IsLocalHom (f.stalkMap x) :=
   f.2 x
 
+@[deprecated "2024-10-10"]
+alias isLocalRingHomStalkMap := isLocalHomStalkMap
+
 instance isLocalHomValStalkMap {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
     IsLocalHom (f.val.stalkMap x) :=
   f.2 x
