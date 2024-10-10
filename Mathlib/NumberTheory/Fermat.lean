@@ -23,8 +23,7 @@ numbers n.
 open Nat Finset
 open scoped BigOperators
 
-/-- The Fermat numbers:
-the $n$-th Fermat number $F_n$ is defined as $2^{2^n} + 1$. -/
+/-- Fermat numbers: the `n`-th Fermat number is defined as `2^(2^n) + 1`. -/
 def fermat (n : ℕ) : ℕ := 2 ^ (2 ^ n) + 1
 
 @[simp] theorem fermat_zero : fermat 0 = 3 := rfl
