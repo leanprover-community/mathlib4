@@ -45,6 +45,9 @@ theorem isLocalHom_of_iso {R S : CommRingCat} (f : R ≅ S) : IsLocalHom f.hom :
       convert f.inv.isUnit_map ha
       exact (RingHom.congr_fun f.hom_inv_id _).symm }
 
+@[deprecated "2024-10-10"]
+alias isLocalRingHom_of_iso := isLocalHom_of_iso
+
 -- see Note [lower instance priority]
 instance (priority := 100) isLocalHom_of_isIso {R S : CommRingCat} (f : R ⟶ S) [IsIso f] :
     IsLocalHom f :=
