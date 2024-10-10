@@ -901,7 +901,7 @@ theorem Convex.mul_sub_lt_image_sub_of_lt_deriv {D : Set ℝ} (hD : Convex ℝ D
   obtain ⟨a, a_mem, ha⟩ : ∃ a ∈ Ioo x y, deriv f a = (f y - f x) / (y - x) :=
     exists_deriv_eq_slope f hxy (hf.mono hxyD) (hf'.mono hxyD')
   have : C < (f y - f x) / (y - x) := ha ▸ hf'_gt _ (hxyD' a_mem)
-  exact (lt_div_iff (sub_pos.2 hxy)).1 this
+  exact (lt_div_iff₀ (sub_pos.2 hxy)).1 this
 
 /-- Let `f : ℝ → ℝ` be a differentiable function. If `C < f'`, then `f` grows faster than
 `C * x`, i.e., `C * (y - x) < f y - f x` whenever `x < y`. -/
