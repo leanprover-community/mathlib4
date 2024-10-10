@@ -63,7 +63,7 @@ theorem fermatNumber_eq_prod_add_two (n : ℕ) :
 
 From a letter to Euler, see page 37 in [juskevic2022].
 -/
-theorem coprime_fermatNumberNumber_fermatNumber {k n : ℕ} (h : k ≠ n) :
+theorem coprime_fermatNumber_fermatNumber {k n : ℕ} (h : k ≠ n) :
     Coprime (fermatNumber n) (fermatNumber k) := by
   wlog hkn : k < n
   · simpa only [coprime_comm] using this h.symm (by omega)
