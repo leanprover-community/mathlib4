@@ -325,7 +325,7 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
       rw [Nat.cast_pow, map_pow, ← rpow_natCast, rpow_rpow_inv (by positivity) (by positivity)]
     _   ≤ (n₀ * (logb n₀ ↑(n ^ k) + 1)) ^ (k : ℝ)⁻¹ := by
       gcongr
-      exact h_ineq1 (one_le_pow₀ k n h₀.bot_lt)
+      exact h_ineq1 <| one_le_pow₀ (one_le_iff_ne_zero.mpr h₀)
     _   = (n₀ * (k * logb n₀ n + 1)) ^ (k : ℝ)⁻¹ := by
       rw [Nat.cast_pow, logb_pow (mod_cast h₀.bot_lt)]
     _   ≤ (n₀ * ( k * logb n₀ n + k)) ^ (k : ℝ)⁻¹ := by
