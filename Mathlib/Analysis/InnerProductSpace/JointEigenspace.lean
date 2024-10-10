@@ -132,7 +132,7 @@ theorem iSup_iInf_maxGenEigenspace_eq_top_of_iSup_maxGenEigenspace_eq_top_of_com
   rcases eq_or_ne j i with rfl | hij <;> tauto
 
 /-- Every generalized eigenspace of a symmetric operator is an eigenspace. -/
-theorem LinearMap.IsSymmetric.genEigenspace_eq_eigenspace
+theorem genEigenspace_eq_eigenspace
     {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) {n : ℕ} {μ : 𝕜} (hn : 1 ≤ n) :
     genEigenspace T μ n = genEigenspace T μ 1 := by
   refine Nat.le_induction rfl (fun k hk ih ↦ ?_) n hn
@@ -151,7 +151,7 @@ theorem LinearMap.IsSymmetric.genEigenspace_eq_eigenspace
     rw [hTμ, ← LinearMap.comp_apply, ← LinearMap.mul_eq_comp, ← pow_add]
     simp [mem_genEigenspace .. |>.mp <| (genEigenspace T μ).mono (show k + 1 ≤ k + k by gcongr) hx]
 
-lemma LinearMap.IsSymmetric.maxGenEigenspace_eq_eigenspace
+lemma maxGenEigenspace_eq_eigenspace
     {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) {μ : 𝕜} :
     maxGenEigenspace T μ = eigenspace T μ := calc
   _ = ⨆ n, genEigenspace T μ (n + 1) := by
@@ -162,7 +162,7 @@ lemma LinearMap.IsSymmetric.maxGenEigenspace_eq_eigenspace
 
 /-- In finite dimensions, the indexed supremum of the joint eigenspaces of a commuting tuple of
 symmetric linear operators equals `⊤`. -/
-theorem LinearMap.IsSymmetric.iSup_iInf_eq_top_of_commute [FiniteDimensional 𝕜 E] {ι : Type*}
+theorem iSup_iInf_eq_top_of_commute {ι : Type*}
     (T : ι → E →ₗ[𝕜] E) (hT : ∀ i, (T i).IsSymmetric) (h : Pairwise fun i j ↦ Commute (T i) (T j)):
     ⨆ χ : ι → 𝕜, ⨅ i, eigenspace (T i) (χ i) = ⊤ := calc
   _ = ⨆ χ : ι → 𝕜, ⨅ i, maxGenEigenspace (T i) (χ i) :=
