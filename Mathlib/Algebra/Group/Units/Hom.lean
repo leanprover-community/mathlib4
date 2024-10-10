@@ -264,4 +264,7 @@ theorem MonoidHom.isLocalHom_of_comp (f : R →* S) (g : S →* T) [IsLocalHom (
     IsLocalHom f :=
   ⟨fun _ ha => (isUnit_map_iff (g.comp f) _).mp (ha.map g)⟩
 
+@[deprecated "2024-10-10"]
+alias MonoidHom.isLocalRingHom_of_comp := MonoidHom.isLocalHom_of_comp
+
 end IsLocalHom
