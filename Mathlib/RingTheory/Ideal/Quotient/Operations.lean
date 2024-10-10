@@ -188,11 +188,11 @@ def quotientInfToPiQuotient (I : ι → Ideal R) : (R ⧸ ⨅ i, I i) →+* ∀ 
 
 lemma quotientInfToPiQuotient_mk (I : ι → Ideal R) (x : R) :
     quotientInfToPiQuotient I (Quotient.mk _ x) = fun i : ι ↦ Quotient.mk (I i) x :=
-rfl
+  rfl
 
 lemma quotientInfToPiQuotient_mk' (I : ι → Ideal R) (x : R) (i : ι) :
     quotientInfToPiQuotient I (Quotient.mk _ x) i = Quotient.mk (I i) x :=
-rfl
+  rfl
 
 lemma quotientInfToPiQuotient_inj (I : ι → Ideal R) : Injective (quotientInfToPiQuotient I) := by
   rw [quotientInfToPiQuotient, injective_lift_iff, ker_Pi_Quotient_mk]
