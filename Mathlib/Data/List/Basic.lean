@@ -207,6 +207,8 @@ theorem append_left_injective (t : List α) : Injective fun s ↦ s ++ t :=
 
 /-! ### replicate -/
 
+attribute [simp] map_const'
+
 theorem eq_replicate_length {a : α} : ∀ {l : List α}, l = replicate l.length a ↔ ∀ b ∈ l, b = a
   | [] => by simp
   | (b :: l) => by simp [eq_replicate_length, replicate_succ]
