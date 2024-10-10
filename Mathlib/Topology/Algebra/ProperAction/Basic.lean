@@ -5,8 +5,8 @@ Authors: Anatole Dedeker, Etienne Marion, Florestan Martin-Baillon, Vincent Guir
 -/
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Topology.Sequences
 import Mathlib.Topology.Maps.Proper.Basic
+import Mathlib.Topology.Sequences
 
 /-!
 # Proper group action
