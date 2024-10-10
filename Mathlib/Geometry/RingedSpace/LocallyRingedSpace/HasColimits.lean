@@ -40,7 +40,7 @@ theorem colimit_exists_rep (x : colimit (C := SheafedSpace C) F) :
     (isColimitOfPreserves (SheafedSpace.forget _) (colimit.isColimit F)) x
 
 instance {X Y : SheafedSpace C} (f g : X ⟶ Y) : Epi (coequalizer.π f g).base := by
-  erw [←
+  rw [←
     show _ = (coequalizer.π f g).base from
       ι_comp_coequalizerComparison f g (SheafedSpace.forget C)]
   rw [← PreservesCoequalizer.iso_hom]
@@ -227,7 +227,7 @@ instance coequalizer_π_stalk_isLocalRingHom (x : Y) :
   have VleU : (⟨(coequalizer.π f.val g.val).base '' V.1, V_open⟩ : TopologicalSpace.Opens _) ≤ U :=
     Set.image_subset_iff.mpr (Y.toRingedSpace.basicOpen_le _)
   have hxV : x ∈ V := ⟨hU, ha⟩
-  erw [←
+  rw [←
     (coequalizer f.val g.val).presheaf.germ_res_apply (homOfLE VleU) _
       (@Set.mem_image_of_mem _ _ (coequalizer.π f.val g.val).base x V.1 hxV) s]
   apply RingHom.isUnit_map

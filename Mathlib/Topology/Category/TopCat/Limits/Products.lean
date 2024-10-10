@@ -236,12 +236,12 @@ theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
     · change limit.π (pair Y Z) _ ((prod.map f g) _) = _
       erw [← comp_apply, Limits.prod.map_fst]
       change (_ ≫ _ ≫ f) _ = _
-      erw [TopCat.prodIsoProd_inv_fst_assoc,TopCat.comp_app]
+      rw [TopCat.prodIsoProd_inv_fst_assoc,TopCat.comp_app]
       exact hx₁
     · change limit.π (pair Y Z) _ ((prod.map f g) _) = _
       erw [← comp_apply, Limits.prod.map_snd]
       change (_ ≫ _ ≫ g) _ = _
-      erw [TopCat.prodIsoProd_inv_snd_assoc,TopCat.comp_app]
+      rw [TopCat.prodIsoProd_inv_snd_assoc,TopCat.comp_app]
       exact hx₂
 
 theorem inducing_prod_map {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf : Inducing f)
