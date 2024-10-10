@@ -694,17 +694,6 @@ theorem mfderivWithin_eq_mfderiv (hs : UniqueMDiffWithinAt I s x) (h : MDifferen
   rw [← mfderivWithin_univ]
   exact mfderivWithin_subset (subset_univ _) hs h.mdifferentiableWithinAt
 
-variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M'] in
-theorem mdifferentiableAt_iff_of_mem_source {x' : M} {y : M'}
-    (hx : x' ∈ (chartAt H x).source) (hy : f x' ∈ (chartAt H' y).source) :
-    MDifferentiableAt I I' f x' ↔
-      ContinuousAt f x' ∧
-        DifferentiableWithinAt 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm) (Set.range I)
-          ((extChartAt I x) x') :=
-  mdifferentiableWithinAt_univ.symm.trans <|
-    (mdifferentiableWithinAt_iff_of_mem_source hx hy).trans <| by
-      rw [continuousWithinAt_univ, Set.preimage_univ, Set.univ_inter]
-
 /-! ### Deriving continuity from differentiability on manifolds -/
 
 theorem HasMFDerivWithinAt.continuousWithinAt (h : HasMFDerivWithinAt I I' f s x f') :
