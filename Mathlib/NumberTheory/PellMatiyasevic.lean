@@ -273,14 +273,14 @@ theorem eq_pell_lem : ∀ (n) (b : ℤ√(d a1)), 1 ≤ b → IsPell b →
         have y0l : (0 : ℤ√d a1) < ⟨x - x, y - -y⟩ :=
           sub_lt_sub h1l fun hn : (1 : ℤ√d a1) ≤ ⟨x, -y⟩ => by
             have t := mul_le_mul_of_nonneg_left hn (le_trans zero_le_one h1)
-            erw [bm, mul_one] at t
+            rw [bm, mul_one] at t
             exact h1l t
         have yl2 : (⟨_, _⟩ : ℤ√_) < ⟨_, _⟩ :=
           show (⟨x, y⟩ - ⟨x, -y⟩ : ℤ√d a1) < ⟨a, 1⟩ - ⟨a, -1⟩ from
             sub_lt_sub ha fun hn : (⟨x, -y⟩ : ℤ√d a1) ≤ ⟨a, -1⟩ => by
               have t := mul_le_mul_of_nonneg_right
                       (mul_le_mul_of_nonneg_left hn (le_trans zero_le_one h1)) a1p
-              erw [bm, one_mul, mul_assoc, Eq.trans (mul_comm _ _) a1m, mul_one] at t
+              rw [bm, one_mul, mul_assoc, Eq.trans (mul_comm _ _) a1m, mul_one] at t
               exact ha t
         simp only [sub_self, sub_neg_eq_add] at y0l; simp only [Zsqrtd.neg_re, add_neg_cancel,
           Zsqrtd.neg_im, neg_neg] at yl2

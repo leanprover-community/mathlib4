@@ -628,7 +628,7 @@ noncomputable def lift' (g : M →ₗ[R] M'')
       simp only [Submonoid.smul_def, ← g.map_smul, eq1]
     have : Function.Injective (h c).unit.inv := ((Module.End_isUnit_iff _).1 (by simp)).1
     apply_fun (h c).unit.inv
-    erw [Units.inv_eq_val_inv, Module.End_algebraMap_isUnit_inv_apply_eq_iff, ←
+    rw [Units.inv_eq_val_inv, Module.End_algebraMap_isUnit_inv_apply_eq_iff, ←
       (h c).unit⁻¹.val.map_smul]
     symm
     rw [Module.End_algebraMap_isUnit_inv_apply_eq_iff, ← g.map_smul, ← g.map_smul, ← g.map_smul, ←
@@ -648,13 +648,13 @@ theorem lift'_add (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R (M
       intro a a' b b'
       erw [LocalizedModule.lift'_mk, LocalizedModule.lift'_mk, LocalizedModule.lift'_mk]
       -- Porting note: We remove `generalize_proofs h1 h2 h3`. This only generalize `h1`.
-      erw [map_add, Module.End_algebraMap_isUnit_inv_apply_eq_iff, smul_add, ← map_smul,
+      rw [map_add, Module.End_algebraMap_isUnit_inv_apply_eq_iff, smul_add, ← map_smul,
         ← map_smul, ← map_smul]
       congr 1 <;> symm
       · erw [Module.End_algebraMap_isUnit_inv_apply_eq_iff, mul_smul, ← map_smul]
         rfl
       · dsimp
-        erw [Module.End_algebraMap_isUnit_inv_apply_eq_iff, mul_comm, mul_smul, ← map_smul]
+        rw [Module.End_algebraMap_isUnit_inv_apply_eq_iff, mul_comm, mul_smul, ← map_smul]
         rfl)
     x y
 

@@ -983,7 +983,7 @@ protected abbrev Function.Injective.generalizedHeytingAlgebra [Sup α] [Inf α] 
       exact le_top,
     le_himp_iff := fun a b c => by
       change f _ ≤ _ ↔ f _ ≤ _
-      erw [map_himp, map_inf, le_himp_iff] }
+      rw [map_himp, map_inf, le_himp_iff] }
 
 -- See note [reducible non-instances]
 /-- Pullback a `GeneralizedCoheytingAlgebra` along an injection. -/
@@ -1001,7 +1001,7 @@ protected abbrev Function.Injective.generalizedCoheytingAlgebra [Sup α] [Inf α
       exact bot_le,
     sdiff_le_iff := fun a b c => by
       change f _ ≤ _ ↔ f _ ≤ _
-      erw [map_sdiff, map_sup, sdiff_le_iff] }
+      rw [map_sdiff, map_sup, sdiff_le_iff] }
 
 -- See note [reducible non-instances]
 /-- Pullback a `HeytingAlgebra` along an injection. -/
@@ -1017,7 +1017,7 @@ protected abbrev Function.Injective.heytingAlgebra [Sup α] [Inf α] [Top α] [B
       change f _ ≤ _
       rw [map_bot]
       exact bot_le,
-    himp_bot := fun a => hf <| by erw [map_himp, map_compl, map_bot, himp_bot] }
+    himp_bot := fun a => hf <| by rw [map_himp, map_compl, map_bot, himp_bot] }
 
 -- See note [reducible non-instances]
 /-- Pullback a `CoheytingAlgebra` along an injection. -/
@@ -1033,7 +1033,7 @@ protected abbrev Function.Injective.coheytingAlgebra [Sup α] [Inf α] [Top α] 
       change f _ ≤ _
       rw [map_top]
       exact le_top,
-    top_sdiff := fun a => hf <| by erw [map_sdiff, map_hnot, map_top, top_sdiff'] }
+    top_sdiff := fun a => hf <| by rw [map_sdiff, map_hnot, map_top, top_sdiff'] }
 
 -- See note [reducible non-instances]
 /-- Pullback a `BiheytingAlgebra` along an injection. -/
