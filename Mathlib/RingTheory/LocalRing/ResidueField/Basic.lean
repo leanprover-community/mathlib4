@@ -182,6 +182,9 @@ theorem isLocalHom_residue : IsLocalHom (LocalRing.residue R) := by
   erw [Ideal.Quotient.eq_zero_iff_mem.mpr ((LocalRing.mem_maximalIdeal _).mpr h)] at ha
   exact ha.ne_zero rfl
 
+@[deprecated "2024-10-10"]
+alias isLocalRingHom_residue := isLocalHom_residue
+
 end
 
 end LocalRing
