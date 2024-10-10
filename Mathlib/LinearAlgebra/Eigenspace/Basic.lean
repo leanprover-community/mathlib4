@@ -906,76 +906,80 @@ lemma iSup_genEigenspace_le_smul (f : Module.End R M) (μ t : R) :
   apply unifEigenspace_le_smul
 
 lemma unifEigenspace_inf_le_add
-    (f₁ f₂ : End R M) (μ₁ μ₂ : R) (k : ℕ∞) (h : Commute f₁ f₂) :
-    (f₁.unifEigenspace μ₁ k) ⊓ (f₂.unifEigenspace μ₂ k) ≤
-    (f₁ + f₂).unifEigenspace (μ₁ + μ₂) k := by
+    (f₁ f₂ : End R M) (μ₁ μ₂ : R) (k₁ k₂ : ℕ∞) (h : Commute f₁ f₂) :
+    (f₁.unifEigenspace μ₁ k₁) ⊓ (f₂.unifEigenspace μ₂ k₂) ≤
+    (f₁ + f₂).unifEigenspace (μ₁ + μ₂) (k₁ + k₂) := by
   intro m hm
   simp only [Submodule.mem_inf, mem_unifEigenspace, LinearMap.mem_ker] at hm ⊢
-  obtain ⟨⟨l₁, hlk₁⟩, ⟨l₂, hlk₂⟩⟩ := hm
-  use l₁ + l₂ - 1
+  obtain ⟨⟨l₁, hlk₁, hl₁⟩, ⟨l₂, hlk₂, hl₂⟩⟩ := hm
+  use l₁ + l₂
   have : f₁ + f₂ - (μ₁ + μ₂) • 1 = (f₁ - μ₁ • 1) + (f₂ - μ₂ • 1) := by
     rw [add_smul]; exact add_sub_add_comm f₁ f₂ (μ₁ • 1) (μ₂ • 1)
   replace h : Commute (f₁ - μ₁ • 1) (f₂ - μ₂ • 1) :=
     (h.sub_right <| Algebra.commute_algebraMap_right μ₂ f₁).sub_left
       (Algebra.commute_algebraMap_left μ₁ _)
   rw [this, h.add_pow', LinearMap.coeFn_sum, Finset.sum_apply]
+  constructor
+  · simpa only [Nat.cast_add] using add_le_add hlk₁ hlk₂
   refine Finset.sum_eq_zero fun ⟨i, j⟩ hij ↦ ?_
   suffices (((f₁ - μ₁ • 1) ^ i) * ((f₂ - μ₂ • 1) ^ j)) m = 0 by
     rw [LinearMap.smul_apply, this, smul_zero]
-  cases' Nat.le_or_le_of_add_eq_add_pred (Finset.mem_antidiagonal.mp hij) with hi hj
-  · rw [(h.pow_pow i j).eq, LinearMap.mul_apply, LinearMap.pow_map_zero_of_le hi hk₁,
+  rw [Finset.mem_antidiagonal] at hij
+  obtain hi|hj : l₁ ≤ i ∨ l₂ ≤ j := by omega
+  · rw [(h.pow_pow i j).eq, LinearMap.mul_apply, LinearMap.pow_map_zero_of_le hi hl₁,
       LinearMap.map_zero]
-  · rw [LinearMap.mul_apply, LinearMap.pow_map_zero_of_le hj hk₂, LinearMap.map_zero]
+  · rw [LinearMap.mul_apply, LinearMap.pow_map_zero_of_le hj hl₂, LinearMap.map_zero]
 
 lemma iSup_genEigenspace_inf_le_add
     (f₁ f₂ : End R M) (μ₁ μ₂ : R) (h : Commute f₁ f₂) :
     (⨆ k, f₁.genEigenspace μ₁ k) ⊓ (⨆ k, f₂.genEigenspace μ₂ k) ≤
     ⨆ k, (f₁ + f₂).genEigenspace (μ₁ + μ₂) k := by
-  intro m hm
-  simp only [iSup_le_iff, Submodule.mem_inf, Submodule.mem_iSup_of_chain,
-    mem_genEigenspace] at hm ⊢
-  obtain ⟨⟨k₁, hk₁⟩, ⟨k₂, hk₂⟩⟩ := hm
-  use k₁ + k₂ - 1
-  have : f₁ + f₂ - (μ₁ + μ₂) • 1 = (f₁ - μ₁ • 1) + (f₂ - μ₂ • 1) := by
-    rw [add_smul]; exact add_sub_add_comm f₁ f₂ (μ₁ • 1) (μ₂ • 1)
-  replace h : Commute (f₁ - μ₁ • 1) (f₂ - μ₂ • 1) :=
-    (h.sub_right <| Algebra.commute_algebraMap_right μ₂ f₁).sub_left
-      (Algebra.commute_algebraMap_left μ₁ _)
-  rw [this, h.add_pow', LinearMap.coeFn_sum, Finset.sum_apply]
-  refine Finset.sum_eq_zero fun ⟨i, j⟩ hij ↦ ?_
-  suffices (((f₁ - μ₁ • 1) ^ i) * ((f₂ - μ₂ • 1) ^ j)) m = 0 by
-    rw [LinearMap.smul_apply, this, smul_zero]
-  cases' Nat.le_or_le_of_add_eq_add_pred (Finset.mem_antidiagonal.mp hij) with hi hj
-  · rw [(h.pow_pow i j).eq, LinearMap.mul_apply, LinearMap.pow_map_zero_of_le hi hk₁,
-      LinearMap.map_zero]
-  · rw [LinearMap.mul_apply, LinearMap.pow_map_zero_of_le hj hk₂, LinearMap.map_zero]
+  simp_rw [← maxGenEigenspace_def]
+  apply unifEigenspace_inf_le_add
+  assumption
+
+lemma map_smul_of_iInf_unifEigenspace_ne_bot [NoZeroSMulDivisors R M]
+    {L F : Type*} [SMul R L] [FunLike F L (End R M)] [MulActionHomClass F R L (End R M)] (f : F)
+    (μ : L → R) (k : ℕ∞) (h_ne : ⨅ x, (f x).unifEigenspace (μ x) k ≠ ⊥)
+    (t : R) (x : L) :
+    μ (t • x) = t • μ x := by
+  by_contra contra
+  let g : L → Submodule R M := fun x ↦ (f x).unifEigenspace (μ x) k
+  have : ⨅ x, g x ≤ g x ⊓ g (t • x) := le_inf_iff.mpr ⟨iInf_le g x, iInf_le g (t • x)⟩
+  refine h_ne <| eq_bot_iff.mpr (le_trans this (disjoint_iff_inf_le.mp ?_))
+  apply Disjoint.mono_left (unifEigenspace_le_smul (f x) (μ x) t k)
+  simp only [g, map_smul]
+  exact disjoint_unifEigenspace (t • f x) (Ne.symm contra) k k
 
 lemma map_smul_of_iInf_genEigenspace_ne_bot [NoZeroSMulDivisors R M]
     {L F : Type*} [SMul R L] [FunLike F L (End R M)] [MulActionHomClass F R L (End R M)] (f : F)
     (μ : L → R) (h_ne : ⨅ x, ⨆ k, (f x).genEigenspace (μ x) k ≠ ⊥)
     (t : R) (x : L) :
     μ (t • x) = t • μ x := by
+  simp_rw [← maxGenEigenspace_def] at h_ne
+  apply map_smul_of_iInf_unifEigenspace_ne_bot f μ ⊤ h_ne t x
+
+lemma map_add_of_iInf_unifEigenspace_ne_bot_of_commute [NoZeroSMulDivisors R M]
+    {L F : Type*} [Add L] [FunLike F L (End R M)] [AddHomClass F L (End R M)] (f : F)
+    (μ : L → R) (k : ℕ∞) (h_ne : ⨅ x, (f x).unifEigenspace (μ x) k ≠ ⊥)
+    (h : ∀ x y, Commute (f x) (f y)) (x y : L) :
+    μ (x + y) = μ x + μ y := by
   by_contra contra
-  let g : L → Submodule R M := fun x ↦ ⨆ k, (f x).genEigenspace (μ x) k
-  have : ⨅ x, g x ≤ g x ⊓ g (t • x) := le_inf_iff.mpr ⟨iInf_le g x, iInf_le g (t • x)⟩
+  let g : L → Submodule R M := fun x ↦ (f x).unifEigenspace (μ x) k
+  have : ⨅ x, g x ≤ (g x ⊓ g y) ⊓ g (x + y) :=
+    le_inf_iff.mpr ⟨le_inf_iff.mpr ⟨iInf_le g x, iInf_le g y⟩, iInf_le g (x + y)⟩
   refine h_ne <| eq_bot_iff.mpr (le_trans this (disjoint_iff_inf_le.mp ?_))
-  apply Disjoint.mono_left (iSup_genEigenspace_le_smul (f x) (μ x) t)
-  simp only [g, map_smul]
-  exact disjoint_iSup_genEigenspace (t • f x) (Ne.symm contra)
+  apply Disjoint.mono_left (unifEigenspace_inf_le_add (f x) (f y) (μ x) (μ y) k k (h x y))
+  simp only [g, map_add]
+  exact disjoint_unifEigenspace (f x + f y) (Ne.symm contra) _ k
 
 lemma map_add_of_iInf_genEigenspace_ne_bot_of_commute [NoZeroSMulDivisors R M]
     {L F : Type*} [Add L] [FunLike F L (End R M)] [AddHomClass F L (End R M)] (f : F)
     (μ : L → R) (h_ne : ⨅ x, ⨆ k, (f x).genEigenspace (μ x) k ≠ ⊥)
     (h : ∀ x y, Commute (f x) (f y)) (x y : L) :
     μ (x + y) = μ x + μ y := by
-  by_contra contra
-  let g : L → Submodule R M := fun x ↦ ⨆ k, (f x).genEigenspace (μ x) k
-  have : ⨅ x, g x ≤ (g x ⊓ g y) ⊓ g (x + y) :=
-    le_inf_iff.mpr ⟨le_inf_iff.mpr ⟨iInf_le g x, iInf_le g y⟩, iInf_le g (x + y)⟩
-  refine h_ne <| eq_bot_iff.mpr (le_trans this (disjoint_iff_inf_le.mp ?_))
-  apply Disjoint.mono_left (iSup_genEigenspace_inf_le_add (f x) (f y) (μ x) (μ y) (h x y))
-  simp only [g, map_add]
-  exact disjoint_iSup_genEigenspace (f x + f y) (Ne.symm contra)
+  simp_rw [← maxGenEigenspace_def] at h_ne
+  apply map_add_of_iInf_unifEigenspace_ne_bot_of_commute f μ ⊤ h_ne h x y
 
 end End
 
