@@ -609,6 +609,16 @@ theorem monotone [PartialOrder α] (f : α ≤i β) : Monotone f :=
 theorem strictMono [PartialOrder α] (f : α ≤i β) : StrictMono f :=
   f.toOrderEmbedding.strictMono
 
+theorem map_isMin [PartialOrder α] (f : α ≤i β) (h : IsMin a) : IsMin (f a) := by
+  intro b hb
+  obtain ⟨x, rfl⟩ := f.mem_range_of_le hb
+  rw [f.le_iff_le] at hb ⊢
+  exact h hb
+
+@[simp]
+theorem map_bot [PartialOrder α] [OrderBot α] [OrderBot β] (f : α ≤i β) : f ⊥ = ⊥ :=
+  (map_isMin f isMin_bot).eq_bot
+
 theorem le_apply_iff [LinearOrder α] (f : α ≤i β) : b ≤ f a ↔ ∃ c ≤ a, f c = b := by
   constructor
   · intro h
@@ -651,6 +661,13 @@ theorem monotone [PartialOrder α] (f : α <i β) : Monotone f :=
 
 theorem strictMono [PartialOrder α] (f : α <i β) : StrictMono f :=
   (f : α ≤i β).strictMono
+
+theorem map_isMin [PartialOrder α] (f : α <i β) (h : IsMin a) : IsMin (f a) :=
+  (f : α ≤i β).map_isMin h
+
+@[simp]
+theorem map_bot [PartialOrder α] [OrderBot α] [OrderBot β] (f : α <i β) : f ⊥ = ⊥ :=
+  (f : α ≤i β).map_bot
 
 theorem le_apply_iff [LinearOrder α] (f : α <i β) : b ≤ f a ↔ ∃ c ≤ a, f c = b :=
   (f : α ≤i β).le_apply_iff
