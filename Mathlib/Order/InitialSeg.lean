@@ -508,7 +508,7 @@ private theorem collapseF.not_lt [IsWellOrder β s] (f : r ↪r s) (a : α) {b}
 /-- Construct an initial segment embedding `r ≼i s` by "filling in the gaps". That is, each
 subsequent element in `α` is mapped to the least element in `β` that hasn't been used yet.
 
-This construction is guaranteed to work as long as there exists some order embedding `r ↪r s`. -/
+This construction is guaranteed to work as long as there exists some relation embedding `r ↪r s`. -/
 noncomputable def RelEmbedding.collapse [IsWellOrder β s] (f : r ↪r s) : r ≼i s :=
   have H := RelEmbedding.isWellOrder f
   ⟨RelEmbedding.ofMonotone _ fun a b => collapseF.lt f, fun a b h ↦ by
