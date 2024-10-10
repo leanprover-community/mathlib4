@@ -68,7 +68,7 @@ initialize usedVarsRef : IO.Ref (NameSet × NameMap Syntax) ← IO.mkRef ({}, {}
       (used, newVarsDict)
 -/
 /-- Add the (unique) name `a` to the `NameSet` of variable names that some declaration used. -/
-def usedVarsRef.addVarName (a : Name) : IO Unit := do
+def usedVarsRef.addUsedVarName (a : Name) : IO Unit := do
   usedVarsRef.modify fun (used, varsDict) => (used.insert a, varsDict)
 
 /-- Add the assignment `a → ref` to the `NameMap Syntax` of unique variable names. -/
@@ -103,7 +103,7 @@ def includedVariables (plumb : Bool) : TermElabM (Array (Name × Name × Expr)) 
         if y == a then fd := x
       varIds := varIds.push (a, fd, b)
       if plumb then
-        usedVarsRef.addVarName a
+        usedVarsRef.addUsedVarName a
   return varIds
 
 /--
