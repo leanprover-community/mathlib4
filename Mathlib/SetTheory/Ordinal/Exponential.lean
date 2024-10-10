@@ -438,8 +438,7 @@ theorem log_opow_mul_add {b u v w : Ordinal} (hb : 1 < b) (hv : v ≠ 0) (hw : w
       apply mul_le_mul_left'
       rw [succ_le_iff]
       exact lt_opow_succ_log_self hb _
-  · intro h
-    exact mul_ne_zero (opow_ne_zero u (bot_lt_of_lt hb).ne') hv <|
+  · exact fun h ↦ mul_ne_zero (opow_ne_zero u (bot_lt_of_lt hb).ne') hv <|
       left_eq_zero_of_add_eq_zero h
 
 theorem log_opow_mul {b v : Ordinal} (hb : 1 < b) (u : Ordinal) (hv : v ≠ 0) :
