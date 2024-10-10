@@ -241,6 +241,9 @@ instance coequalizer_π_stalk_isLocalHom (x : Y) :
   convert @RingedSpace.isUnit_res_basicOpen Y.toRingedSpace (unop _)
       (((coequalizer.π f.val g.val).c.app (op U)) s)
 
+@[deprecated "2024-10-10"]
+alias coequalizer_π_stalk_isLocalRingHom := coequalizer_π_stalk_isLocalHom
+
 end HasCoequalizer
 
 /-- The coequalizer of two locally ringed space in the category of sheafed spaces is a locally
