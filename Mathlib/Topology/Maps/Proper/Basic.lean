@@ -308,6 +308,8 @@ lemma isProperMap_iff_isClosedMap_and_tendsto_cofinite [T1Space Y] :
 theorem Continuous.isProperMap [CompactSpace X] [T2Space Y] (hf : Continuous f) : IsProperMap f :=
   isProperMap_iff_isClosedMap_and_tendsto_cofinite.2 ⟨hf, hf.isClosedMap, by simp⟩
 
+/-- This lemma has a prime because it has been deprecated for the unprimed version found
+in `Topology.Maps.Proper.CompactlyGenerated`. -/
 @[deprecated "Do not use this lemma; use `isProperMap_iff_isCompact_preimage` from
 `Topology.Maps.Proper.CompactlyGenerated`" (since := "2024-10-10")]
 theorem isProperMap_iff_isCompact_preimage' [T2Space Y]
@@ -356,6 +358,8 @@ theorem SequentialSpace.isProperMap_iff_isCompact_preimage [T2Space Y] [Sequenti
   _root_.isProperMap_iff_isCompact_preimage'
     (fun _ ↦ compactlyGenerated_of_sequentialSpace)
 
+/-- This lemma has a prime because it has been deprecated for the unprimed version found
+in `Topology.Maps.Proper.CompactlyGenerated`. -/
 @[deprecated "Do not use this lemma; use `isProperMap_iff_tendsto_cocompact` from
 `Topology.Maps.Proper.CompactlyGenerated`" (since := "2024-10-10")]
 lemma isProperMap_iff_tendsto_cocompact' [T2Space Y]

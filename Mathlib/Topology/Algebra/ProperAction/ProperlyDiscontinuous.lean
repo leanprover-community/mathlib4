@@ -89,7 +89,7 @@ theorem properlyDiscontinuousSMul_iff_properSMul [T2Space X] [DiscreteTopology G
     apply IsCompact.finite_of_discrete
     -- Now set `h : (g, x) ↦ (g⁻¹ • x, x)`, because `f` is proper by hypothesis, so is `h`.
     have : IsProperMap (fun gx : G × X ↦ (gx.1⁻¹ • gx.2, gx.2)) :=
-      (IsProperMap.prod_map (Homeomorph.isProperMap (Homeomorph.inv G)) isProperMap_id).comp <|
+      (IsProperMap.prodMap (Homeomorph.isProperMap (Homeomorph.inv G)) isProperMap_id).comp <|
         ProperSMul.isProperMap_smul_pair
     --But we also have that `{g | Set.Nonempty ((g • ·) '' K ∩ L)} = h ⁻¹ (K × L)`, which
     -- concludes the proof.

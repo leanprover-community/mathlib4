@@ -3,7 +3,9 @@ Copyright (c) 2024 Anatole Dedeker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedeker, Etienne Marion, Florestan Martin-Baillon, Vincent Guirardel
 -/
+import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Algebra.MulAction
+import Mathlib.Topology.Sequences
 import Mathlib.Topology.Maps.Proper.Basic
 
 /-!
@@ -165,9 +167,11 @@ theorem properSMul_of_closedEmbedding {H : Type*} [Group H] [MulAction H X] [Top
 instance {H : Subgroup G} [ProperSMul G X] [H_closed : IsClosed (H : Set G)] : ProperSMul H X :=
   properSMul_of_closedEmbedding H.subtype H_closed.closedEmbedding_subtype_val fun _ _ ↦ rfl
 
+/-- This lemma has a prime because it has been deprecated for the unprimed version found
+in `Topology.Algebra.ProperAction.ProperlyDiscontinuous`. -/
 @[deprecated "Do not use this lemma; use `properlyDiscontinuousSMul_iff_properSMul` from
 `Topology.Algebra.ProperAction.ProperlyDiscontinuous`" (since := "2024-10-10")]
-theorem properlyDiscontinuousSMul_iff_properSMul [T2Space X] [DiscreteTopology G]
+theorem properlyDiscontinuousSMul_iff_properSMul' [T2Space X] [DiscreteTopology G]
     [ContinuousConstSMul G X]
     (compactlyGenerated : ∀ s : Set (X × X), IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K)) :
     ProperlyDiscontinuousSMul G X ↔ ProperSMul G X := by
@@ -238,19 +242,17 @@ theorem properlyDiscontinuousSMul_iff_properSMul [T2Space X] [DiscreteTopology G
         exact ⟨gx.2, ⟨gx.1⁻¹ • gx.2, hgx.1, by simp⟩, hgx.2⟩
     exact eq ▸ IsCompact.image (this.isCompact_preimage <| hK.prod hL) continuous_fst
 
-/-- If a discrete group acts on a T2 and locally compact space `X`,
-then the action is properly discontinuous if and only if it is continuous in the second variable
-and proper. -/
+@[deprecated "Do not use this lemma; use `properlyDiscontinuousSMul_iff_properSMul` from
+`Topology.Algebra.ProperAction.ProperlyDiscontinuous`" (since := "2024-10-10")]
 theorem WeaklyLocallyCompactSpace.properlyDiscontinuousSMul_iff_properSMul [T2Space X]
     [WeaklyLocallyCompactSpace X] [DiscreteTopology G] [ContinuousConstSMul G X] :
     ProperlyDiscontinuousSMul G X ↔ ProperSMul G X :=
-  _root_.properlyDiscontinuousSMul_iff_properSMul
+  _root_.properlyDiscontinuousSMul_iff_properSMul'
     (fun _ ↦ compactlyGenerated_of_weaklyLocallyCompactSpace)
 
-/-- If a discrete group acts on a T2 and first-countable space `X`,
-then the action is properly discontinuous if and only if it is continuous in the second variable
-and proper. -/
+@[deprecated "Do not use this lemma; use `properlyDiscontinuousSMul_iff_properSMul` from
+`Topology.Algebra.ProperAction.ProperlyDiscontinuous`" (since := "2024-10-10")]
 theorem FirstCountableTopology.properlyDiscontinuousSMul_iff_properSMul [T2Space X]
     [FirstCountableTopology X] [DiscreteTopology G] [ContinuousConstSMul G X] :
     ProperlyDiscontinuousSMul G X ↔ ProperSMul G X :=
-  _root_.properlyDiscontinuousSMul_iff_properSMul (fun _ ↦ compactlyGenerated_of_sequentialSpace)
+  _root_.properlyDiscontinuousSMul_iff_properSMul' (fun _ ↦ compactlyGenerated_of_sequentialSpace)
