@@ -214,16 +214,20 @@ theorem hasMFDerivWithinAt_fst (s : Set (M × M')) (x : M × M') :
       (ContinuousLinearMap.fst 𝕜 (TangentSpace I x.1) (TangentSpace I' x.2)) :=
   (hasMFDerivAt_fst I I' x).hasMFDerivWithinAt
 
+omit [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M'] in
 theorem mdifferentiableAt_fst {x : M × M'} : MDifferentiableAt (I.prod I') I Prod.fst x :=
-  (hasMFDerivAt_fst I I' x).mdifferentiableAt
+  (contMDiffAt_fst).mdifferentiableAt le_rfl
 
+omit [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M'] in
 theorem mdifferentiableWithinAt_fst {s : Set (M × M')} {x : M × M'} :
     MDifferentiableWithinAt (I.prod I') I Prod.fst s x :=
   (mdifferentiableAt_fst I I').mdifferentiableWithinAt
 
+omit [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M'] in
 theorem mdifferentiable_fst : MDifferentiable (I.prod I') I (Prod.fst : M × M' → M) := fun _ =>
   mdifferentiableAt_fst I I'
 
+omit [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M'] in
 theorem mdifferentiableOn_fst {s : Set (M × M')} : MDifferentiableOn (I.prod I') I Prod.fst s :=
   (mdifferentiable_fst I I').mdifferentiableOn
 
@@ -276,16 +280,20 @@ theorem hasMFDerivWithinAt_snd (s : Set (M × M')) (x : M × M') :
       (ContinuousLinearMap.snd 𝕜 (TangentSpace I x.1) (TangentSpace I' x.2)) :=
   (hasMFDerivAt_snd I I' x).hasMFDerivWithinAt
 
+omit [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M'] in
 theorem mdifferentiableAt_snd {x : M × M'} : MDifferentiableAt (I.prod I') I' Prod.snd x :=
-  (hasMFDerivAt_snd I I' x).mdifferentiableAt
+  contMDiffAt_snd.mdifferentiableAt le_rfl
 
+omit [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M'] in
 theorem mdifferentiableWithinAt_snd {s : Set (M × M')} {x : M × M'} :
     MDifferentiableWithinAt (I.prod I') I' Prod.snd s x :=
   (mdifferentiableAt_snd I I').mdifferentiableWithinAt
 
+omit [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M'] in
 theorem mdifferentiable_snd : MDifferentiable (I.prod I') I' (Prod.snd : M × M' → M') := fun _ =>
   mdifferentiableAt_snd I I'
 
+omit [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M'] in
 theorem mdifferentiableOn_snd {s : Set (M × M')} : MDifferentiableOn (I.prod I') I' Prod.snd s :=
   (mdifferentiable_snd I I').mdifferentiableOn
 

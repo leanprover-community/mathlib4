@@ -33,7 +33,7 @@ theorem mdifferentiableWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M
     MDifferentiableWithinAt IM (IB.prod 𝓘(𝕜, F)) f s x₀ ↔
       MDifferentiableWithinAt IM IB (fun x => (f x).proj) s x₀ ∧
       MDifferentiableWithinAt IM 𝓘(𝕜, F) (fun x ↦ (trivializationAt F E (f x₀).proj (f x)).2) s x₀ := by
-  simp (config := { singlePass := true }) only [contMDiffWithinAt_iff_target]
+  simp (config := { singlePass := true }) only [mdifferentiableWithinAt_iff_target]
   rw [and_and_and_comm, ← FiberBundle.continuousWithinAt_totalSpace, and_congr_right_iff]
   intro hf
   simp_rw [modelWithCornersSelf_prod, FiberBundle.extChartAt, Function.comp_def,
