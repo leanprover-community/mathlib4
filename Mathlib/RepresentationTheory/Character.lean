@@ -89,7 +89,7 @@ variable [Fintype G] [Invertible (Fintype.card G : k)]
 
 theorem average_char_eq_finrank_invariants (V : FDRep k G) :
     ⅟ (Fintype.card G : k) • ∑ g : G, V.character g = finrank k (invariants V.ρ) := by
-  erw [← (isProj_averageMap V.ρ).trace] -- Porting note: Changed `rw` to `erw`
+  rw [← (isProj_averageMap V.ρ).trace] -- Porting note: Changed `rw` to `erw`
   simp [character, GroupAlgebra.average, _root_.map_sum]
 
 end Group

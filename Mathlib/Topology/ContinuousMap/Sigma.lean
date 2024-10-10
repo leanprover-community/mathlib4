@@ -63,7 +63,7 @@ some `i` and a continuous map `g : C(X, Y i)`. See also `Continuous.exists_lift_
 with unbundled functions and `ContinuousMap.sigmaCodHomeomorph` for a homeomorphism defined using
 this fact. -/
 theorem exists_lift_sigma (f : C(X, Σ i, Y i)) : ∃ i g, f = (sigmaMk i).comp g :=
-  let ⟨i, g, hg, hfg⟩ := f.continuous.exists_lift_sigma
+  let ⟨i, g, hg, hfg⟩ := (map_continuous f).exists_lift_sigma
   ⟨i, ⟨g, hg⟩, DFunLike.ext' hfg⟩
 
 variable (X Y)

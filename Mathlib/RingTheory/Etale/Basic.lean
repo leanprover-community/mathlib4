@@ -56,7 +56,6 @@ section
 
 variable {R : Type u} [CommRing R]
 variable {A : Type u} [CommRing A] [Algebra R A]
-variable {B : Type u} [CommRing B] [Algebra R B] (I : Ideal B)
 
 theorem iff_unramified_and_smooth :
     FormallyEtale R A ↔ FormallyUnramified R A ∧ FormallySmooth R A := by

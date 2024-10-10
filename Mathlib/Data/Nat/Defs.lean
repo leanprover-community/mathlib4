@@ -57,7 +57,7 @@ assert_not_exists Monoid
 open Function
 
 namespace Nat
-variable {a b c d m n k : ℕ} {p q : ℕ → Prop}
+variable {a b c d m n k : ℕ} {p : ℕ → Prop}
 
 -- TODO: Move the `LinearOrder ℕ` instance to `Order.Nat` (#13092).
 instance instLinearOrder : LinearOrder ℕ where
@@ -223,8 +223,7 @@ attribute [simp] le_add_left le_add_right Nat.lt_add_left_iff_pos Nat.lt_add_rig
 
 -- Sometimes a bare `Nat.add` or similar appears as a consequence of unfolding during pattern
 -- matching. These lemmas package them back up as typeclass mediated operations.
--- TODO: This is a duplicate of `Nat.add_eq`
-@[simp] lemma add_def : Nat.add m n = m + n := rfl
+@[deprecated (since := "2024-04-05")] alias add_def := add_eq
 
 -- We want to use these two lemmas earlier than the lemmas simp can prove them with
 @[simp, nolint simpNF] protected lemma add_eq_left : a + b = a ↔ b = 0 := by omega
