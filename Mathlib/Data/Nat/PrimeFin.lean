@@ -119,11 +119,4 @@ lemma primeFactors_pow (n : ℕ) (hk : k ≠ 0) : (n ^ k).primeFactors = n.prime
 lemma primeFactors_prime_pow (hk : k ≠ 0) (hp : Prime p) :
     (p ^ k).primeFactors = {p} := by simp [primeFactors_pow p hk, hp]
 
-lemma primeFactors_filter_dvd_of_dvd {m n : ℕ} (hmn : m ∣ n) (hn : n ≠ 0) :
-    n.primeFactors.filter fun p => p ∣ m = m.primeFactors := by
-  ext p
-  simp only [mem_filter, mem_primeFactors, ne_eq, hn, not_false_eq_true, and_true,
-    ne_zero_of_dvd_ne_zero hn hmn, and_congr_left_iff, and_iff_left_iff_imp]
-  exact fun h _ ↦ h.trans hmn
-
 end Nat
