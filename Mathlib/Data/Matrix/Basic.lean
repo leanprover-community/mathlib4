@@ -1254,7 +1254,7 @@ lemma entryAddMonoidHom_eq_comp {i : m} {j : n} :
   simp [AddMonoidHom.ext_iff]
 
 @[simp] lemma entryAddMonoidHom_toAddHom {i : m} {j : n} :
-  (entryAddMonoidHom α i j : AddHom _ _) = Matrix.entryAddHom α i j := rfl
+  (entryAddMonoidHom α i j : AddHom _ _) = entryAddHom α i j := rfl
 
 end AddMonoidHom
 
