@@ -33,6 +33,9 @@ instance RingHom.isLocalHom_comp (g : S →+* T) (f : R →+* S) [IsLocalHom g]
     [IsLocalHom f] : IsLocalHom (g.comp f) where
   map_nonunit a := IsLocalHom.map_nonunit a ∘ IsLocalHom.map_nonunit (f := g) (f a)
 
+@[deprecated "2024-10-10"]
+alias RingHom.isLocalRingHom_comp := RingHom.isLocalHom_comp
+
 theorem isLocalHom_of_comp (f : R →+* S) (g : S →+* T) [IsLocalHom (g.comp f)] :
     IsLocalHom f :=
   ⟨fun _ ha => (isUnit_map_iff (g.comp f) _).mp (g.isUnit_map ha)⟩
