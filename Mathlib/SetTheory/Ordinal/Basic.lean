@@ -378,8 +378,14 @@ def typein (r : α → α → Prop) [IsWellOrder α r] : @PrincipalSeg α Ordina
     rintro β s wo ⟨g⟩
     exact ⟨_, g.subrelIso.ordinal_type_eq⟩
 
-@[deprecated (since := "2024-10-09")]
+@[deprecated typein (since := "2024-10-09")]
 alias typein.principalSeg := typein
+
+set_option linter.deprecated false in
+@[deprecated (since := "2024-10-09")]
+theorem typein.principalSeg_coe (r : α → α → Prop) [IsWellOrder α r] :
+    (typein.principalSeg r : α → Ordinal) = typein r :=
+  rfl
 
 @[simp]
 theorem type_subrel (r : α → α → Prop) [IsWellOrder α r] (a : α) :
@@ -413,12 +419,6 @@ theorem typein_injective (r : α → α → Prop) [IsWellOrder α r] : Injective
 @[simp]
 theorem typein_inj (r : α → α → Prop) [IsWellOrder α r] {a b} : typein r a = typein r b ↔ a = b :=
   (typein r).inj
-
-set_option linter.deprecated false in
-@[deprecated (since := "2024-10-09")]
-theorem typein.principalSeg_coe (r : α → α → Prop) [IsWellOrder α r] :
-    (typein.principalSeg r : α → Ordinal) = typein r :=
-  rfl
 
 /-! ### Enumerating elements in a well-order with ordinals. -/
 
