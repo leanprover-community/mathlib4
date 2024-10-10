@@ -560,13 +560,3 @@ theorem smooth_transDiffeomorph_left {f : M → M'} :
   e.contMDiff_transDiffeomorph_left
 
 end Diffeomorph
-
-open Bundle
-variable (I H n) in
-/-- The canonical identification between the tangent bundle to the model space and the product,
-as a diffeomorphism -/
-def tangentBundleModelSpaceDiffeomorph :
-    TangentBundle I H ≃ₘ^n⟮I.tangent, I.prod 𝓘(𝕜, E)⟯ ModelProd H E where
-  __ := TotalSpace.toProd H E
-  contMDiff_toFun := contMDiff_tangentBundleModelSpaceHomeomorph _ _
-  contMDiff_invFun := contMDiff_tangentBundleModelSpaceHomeomorph_symm _ _

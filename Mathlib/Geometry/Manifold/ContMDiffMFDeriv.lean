@@ -416,8 +416,6 @@ end ContMDiffMap
 
 section EquivTangentBundleProd
 
-variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M']
-
 variable (I I' M M') in
 /-- The tangent bundle of a product is canonically isomorphic to the product of the tangent
 bundles. -/
@@ -432,6 +430,8 @@ lemma equivTangentBundleProd_eq_tangentMap_prod_tangentMap :
     equivTangentBundleProd I M I' M' = fun (p : TangentBundle (I.prod I') (M × M')) ↦
       (tangentMap (I.prod I') I Prod.fst p, tangentMap (I.prod I') I' Prod.snd p) := by
   simp only [tangentMap_prod_fst, tangentMap_prod_snd]; rfl
+
+variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M']
 
 /-- The canonical equivalence between the tangent bundle of a product and the product of
 tangent bundles is smooth. -/
