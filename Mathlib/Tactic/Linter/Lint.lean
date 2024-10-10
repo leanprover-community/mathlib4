@@ -82,7 +82,7 @@ open Lean Parser Elab Command Meta
 @[inherit_doc linter.dupNamespace]
 def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
   if Linter.getLinterValue linter.dupNamespace (← getOptions) then
-    match getIds stx with
+    match ← getNames stx with
       | #[id] =>
         let ns := (← getScope).currNamespace
         let declName := ns ++ (if id.getKind == ``declId then id[0].getId else id.getId)
