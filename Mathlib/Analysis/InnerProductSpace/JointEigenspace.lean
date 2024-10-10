@@ -151,8 +151,8 @@ theorem genEigenspace_eq_eigenspace
       refine .pow (hT'.sub (.smul ?_ ?_)) k
       · exact hT.conj_eigenvalue_eq_self hμ
       · exact (LinearMap.isSymmetric_iff_isSelfAdjoint 1).mp LinearMap.IsSymmetric.id
-    rw [mem_genEigenspace, ← norm_eq_zero, ← sq_eq_zero_iff, norm_sq_eq_inner (𝕜 := 𝕜)]
-    rw [hTμ, ← LinearMap.comp_apply, ← LinearMap.mul_eq_comp, ← pow_add]
+    rw [mem_genEigenspace, ← norm_eq_zero, ← sq_eq_zero_iff, norm_sq_eq_inner (𝕜 := 𝕜),
+      hTμ, ← LinearMap.comp_apply, ← LinearMap.mul_eq_comp, ← pow_add]
     simp [mem_genEigenspace .. |>.mp <| (genEigenspace T μ).mono (show k + 1 ≤ k + k by gcongr) hx]
 
 lemma maxGenEigenspace_eq_eigenspace
