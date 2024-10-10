@@ -17,7 +17,7 @@ subgroup of `E` such that `L` spans `E` over `K`.
 
 A `ℤ`-lattice `L` can be defined in two ways:
 * For `b` a basis of `E`, then `L = Submodule.span ℤ (Set.range b)` is a ℤ-lattice of `E`
-* As an`ℤ-submodule` of `E` with the additional properties:
+* As a `ℤ-submodule` of `E` with the additional properties:
   * `DiscreteTopology L`, that is `L` is discrete
   * `Submodule.span ℝ (L : Set E) = ⊤`, that is `L` spans `E` over `K`.
 
@@ -332,7 +332,7 @@ theorem measure_fundamentalDomain_ne_zero [Finite ι] [MeasurableSpace E] [Borel
     {μ : Measure E} [Measure.IsAddHaarMeasure μ] :
     μ (fundamentalDomain b) ≠ 0 := by
   convert (ZSpan.isAddFundamentalDomain b μ).measure_ne_zero (NeZero.ne μ)
-  exact (inferInstance : VAddInvariantMeasure (span ℤ (Set.range b)).toAddSubgroup E μ)
+  exact inferInstanceAs <| VAddInvariantMeasure (span ℤ (Set.range b)).toAddSubgroup E μ
 
 theorem measure_fundamentalDomain [Fintype ι] [DecidableEq ι] [MeasurableSpace E] (μ : Measure E)
     [BorelSpace E] [Measure.IsAddHaarMeasure μ] (b₀ : Basis ι ℝ E) :

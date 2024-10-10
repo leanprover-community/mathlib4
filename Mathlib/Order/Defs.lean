@@ -466,32 +466,32 @@ lemma max_def (a b : α) : max a b = if a ≤ b then b else a := by rw [LinearOr
 lemma min_le_left (a b : α) : min a b ≤ a := by
   if h : a ≤ b
   then simp [min_def, if_pos h, le_refl]
-  else simp [min_def, if_neg h]; exact le_of_not_le h
+  else simp [min_def, if_neg h, le_of_not_le h]
 
 lemma min_le_right (a b : α) : min a b ≤ b := by
   if h : a ≤ b
-  then simp [min_def, if_pos h]; exact h
+  then simp [min_def, if_pos h, h]
   else simp [min_def, if_neg h, le_refl]
 
 lemma le_min (h₁ : c ≤ a) (h₂ : c ≤ b) : c ≤ min a b := by
   if h : a ≤ b
-  then simp [min_def, if_pos h]; exact h₁
-  else simp [min_def, if_neg h]; exact h₂
+  then simp [min_def, if_pos h, h₁]
+  else simp [min_def, if_neg h, h₂]
 
 lemma le_max_left (a b : α) : a ≤ max a b := by
   if h : a ≤ b
-  then simp [max_def, if_pos h]; exact h
+  then simp [max_def, if_pos h, h]
   else simp [max_def, if_neg h, le_refl]
 
 lemma le_max_right (a b : α) : b ≤ max a b := by
   if h : a ≤ b
   then simp [max_def, if_pos h, le_refl]
-  else simp [max_def, if_neg h]; exact le_of_not_le h
+  else simp [max_def, if_neg h, le_of_not_le h]
 
 lemma max_le (h₁ : a ≤ c) (h₂ : b ≤ c) : max a b ≤ c := by
   if h : a ≤ b
-  then simp [max_def, if_pos h]; exact h₂
-  else simp [max_def, if_neg h]; exact h₁
+  then simp [max_def, if_pos h, h₂]
+  else simp [max_def, if_neg h, h₁]
 
 lemma eq_min (h₁ : c ≤ a) (h₂ : c ≤ b) (h₃ : ∀ {d}, d ≤ a → d ≤ b → d ≤ c) : c = min a b :=
   le_antisymm (le_min h₁ h₂) (h₃ (min_le_left a b) (min_le_right a b))

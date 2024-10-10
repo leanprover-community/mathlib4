@@ -414,8 +414,7 @@ variable {ι : Type*} [Fintype ι] {e : E} {Fm : ι → Type*}
 lemma FormalMultilinearSeries.radius_pi_le (p : Π i, FormalMultilinearSeries 𝕜 E (Fm i)) (i : ι) :
     (FormalMultilinearSeries.pi p).radius ≤ (p i).radius := by
   apply le_of_forall_nnreal_lt (fun r' hr' ↦ ?_)
-  obtain ⟨C, -, hC⟩ :  ∃ C > 0, ∀ (n : ℕ),
-    ‖pi p n‖ * ↑r' ^ n ≤ C := norm_mul_pow_le_of_lt_radius _ hr'
+  obtain ⟨C, -, hC⟩ : ∃ C > 0, ∀ n, ‖pi p n‖ * ↑r' ^ n ≤ C := norm_mul_pow_le_of_lt_radius _ hr'
   apply le_radius_of_bound _ C (fun n ↦ ?_)
   apply le_trans _ (hC n)
   gcongr
@@ -459,10 +458,12 @@ lemma HasFPowerSeriesWithinOnBall.pi
   hasSum {y} m hy := Pi.hasSum.2 (fun i ↦ (hf i).hasSum m hy)
 
 lemma hasFPowerSeriesWithinOnBall_pi_iff (hr : 0 < r) :
-    HasFPowerSeriesWithinOnBall (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) s e r
-      ↔ ∀ i, HasFPowerSeriesWithinOnBall (f i) (p i) s e r :=
-  ⟨fun h i ↦ ⟨h.r_le.trans (FormalMultilinearSeries.radius_pi_le _ _), hr,
-    fun m hy ↦ Pi.hasSum.1 (h.hasSum m hy) i⟩, fun h ↦ .pi h hr⟩
+    HasFPowerSeriesWithinOnBall (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) s e r ↔
+      ∀ i, HasFPowerSeriesWithinOnBall (f i) (p i) s e r where
+  mp h i :=
+    ⟨h.r_le.trans (FormalMultilinearSeries.radius_pi_le _ _), hr,
+      fun m hy ↦ Pi.hasSum.1 (h.hasSum m hy) i⟩
+  mpr h := .pi h hr
 
 lemma HasFPowerSeriesOnBall.pi
     (hf : ∀ i, HasFPowerSeriesOnBall (f i) (p i) e r) (hr : 0 < r) :
@@ -471,8 +472,8 @@ lemma HasFPowerSeriesOnBall.pi
   exact HasFPowerSeriesWithinOnBall.pi hf hr
 
 lemma hasFPowerSeriesOnBall_pi_iff (hr : 0 < r) :
-    HasFPowerSeriesOnBall (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) e r
-      ↔ ∀ i, HasFPowerSeriesOnBall (f i) (p i) e r := by
+    HasFPowerSeriesOnBall (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) e r ↔
+      ∀ i, HasFPowerSeriesOnBall (f i) (p i) e r := by
   simp_rw [← hasFPowerSeriesWithinOnBall_univ]
   exact hasFPowerSeriesWithinOnBall_pi_iff hr
 
@@ -485,8 +486,8 @@ lemma HasFPowerSeriesWithinAt.pi
   exact ⟨r, HasFPowerSeriesWithinOnBall.pi hr r_pos⟩
 
 lemma hasFPowerSeriesWithinAt_pi_iff :
-    HasFPowerSeriesWithinAt (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) s e
-      ↔ ∀ i, HasFPowerSeriesWithinAt (f i) (p i) s e := by
+    HasFPowerSeriesWithinAt (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) s e ↔
+      ∀ i, HasFPowerSeriesWithinAt (f i) (p i) s e := by
   refine ⟨fun h i ↦ ?_, fun h ↦ .pi h⟩
   obtain ⟨r, hr⟩ := h
   exact ⟨r, (hasFPowerSeriesWithinOnBall_pi_iff hr.r_pos).1 hr i⟩
@@ -498,8 +499,8 @@ lemma HasFPowerSeriesAt.pi
   exact HasFPowerSeriesWithinAt.pi hf
 
 lemma hasFPowerSeriesAt_pi_iff :
-    HasFPowerSeriesAt (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) e
-      ↔ ∀ i, HasFPowerSeriesAt (f i) (p i) e := by
+    HasFPowerSeriesAt (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) e ↔
+      ∀ i, HasFPowerSeriesAt (f i) (p i) e := by
   simp_rw [← hasFPowerSeriesWithinAt_univ]
   exact hasFPowerSeriesWithinAt_pi_iff
 

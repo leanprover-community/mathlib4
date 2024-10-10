@@ -164,7 +164,8 @@ variable {α}
 
 lemma isOpen_iff :
     IsOpen s ↔ ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
-      a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by erw [topology_eq_scottHausdorff (α := α)]; rfl
+      a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by
+  simp [topology_eq_scottHausdorff (α := α), IsOpen, scottHausdorff]
 
 lemma dirSupInacc_of_isOpen (h : IsOpen s) : DirSupInacc s :=
   fun d hd₁ hd₂ a hda hd₃ ↦ by
@@ -286,7 +287,8 @@ lemma monotone_of_continuous (hf : Continuous f) : Monotone f := fun _ b hab ↦
     have hu : IsOpen (f ⁻¹' u) := (isOpen_compl_iff.2 isClosed_Iic).preimage hf
     rw [isOpen_iff_isUpperSet_and_dirSupInacc] at hu
     obtain ⟨c, hcd, hfcb⟩ := hu.2 d₁ d₂ d₃ h
-    simp [upperBounds] at hb
+    simp only [upperBounds, mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
+      mem_setOf] at hb
     exact hfcb <| hb _ hcd
 
 end Preorder

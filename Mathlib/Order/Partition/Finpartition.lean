@@ -264,7 +264,7 @@ instance [DecidableEq α] {s : Finset α} : Fintype (Finpartition s) where
   complete P := by
     refine mem_image.mpr ⟨P.parts, ?_, ?_⟩
     · rw [mem_powerset]; intro p hp; rw [mem_powerset]; exact P.le hp
-    · simp only [P.supIndep, P.sup_parts, P.not_bot_mem]; rfl
+    · simp only [P.supIndep, P.sup_parts, P.not_bot_mem, not_false_eq_true, and_self, ↓reduceDIte]
 
 end Order
 

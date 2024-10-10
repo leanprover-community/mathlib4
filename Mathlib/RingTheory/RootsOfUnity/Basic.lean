@@ -390,7 +390,6 @@ theorem pow_iff_coprime (h : IsPrimitiveRoot ζ k) (h0 : 0 < k) (i : ℕ) :
   obtain ⟨a, ha⟩ := i.gcd_dvd_left k
   obtain ⟨b, hb⟩ := i.gcd_dvd_right k
   suffices b = k by
-    -- Porting note: was `rwa [this, ← one_mul k, mul_left_inj' h0.ne', eq_comm] at hb`
     rw [this, eq_comm, Nat.mul_left_eq_self_iff h0] at hb
     rwa [Nat.Coprime]
   rw [ha] at hi
@@ -444,9 +443,7 @@ theorem pow {n : ℕ} {a b : ℕ} (hn : 0 < n) (h : IsPrimitiveRoot ζ n) (hprod
   subst n
   simp only [iff_def, ← pow_mul, h.pow_eq_one, eq_self_iff_true, true_and]
   intro l hl
-  -- Porting note: was `by rintro rfl; simpa only [Nat.not_lt_zero, zero_mul] using hn`
-  have ha0 : a ≠ 0 := left_ne_zero_of_mul hn.ne'
-  rw [← mul_dvd_mul_iff_left ha0]
+  rw [← mul_dvd_mul_iff_left (left_ne_zero_of_mul hn.ne')]
   exact h.dvd_of_pow_eq_one _ hl
 
 lemma injOn_pow {n : ℕ} {ζ : M} (hζ : IsPrimitiveRoot ζ n) :
@@ -664,7 +661,7 @@ def zmodEquivZPowers (h : IsPrimitiveRoot ζ k) : ZMod k ≃+ Additive (Subgroup
 @[simp]
 theorem zmodEquivZPowers_apply_coe_int (i : ℤ) :
     h.zmodEquivZPowers i = Additive.ofMul (⟨ζ ^ i, i, rfl⟩ : Subgroup.zpowers ζ) := by
-  rw [zmodEquivZPowers, AddEquiv.ofBijective_apply] -- Porting note: Original proof didn't have `rw`
+  rw [zmodEquivZPowers, AddEquiv.ofBijective_apply]
   exact AddMonoidHom.liftOfRightInverse_comp_apply _ _ ZMod.intCast_rightInverse _ _
 
 @[simp]
@@ -734,9 +731,8 @@ lemma _root_.rootsOfUnityEquivOfPrimitiveRoots_symm_apply
   obtain ⟨ε, rfl⟩ := (rootsOfUnityEquivOfPrimitiveRoots hf hζ).surjective η
   rw [MulEquiv.symm_apply_apply, val_rootsOfUnityEquivOfPrimitiveRoots_apply_coe]
 
--- Porting note: rephrased the next few lemmas to avoid `∃ (Prop)`
 theorem eq_pow_of_mem_rootsOfUnity {k : ℕ+} {ζ ξ : Rˣ} (h : IsPrimitiveRoot ζ k)
-    (hξ : ξ ∈ rootsOfUnity k R) : ∃ (i : ℕ), i < k ∧ ζ ^ i = ξ := by
+    (hξ : ξ ∈ rootsOfUnity k R) : ∃ i < (k : ℕ), ζ ^ i = ξ := by
   obtain ⟨n, rfl⟩ : ∃ n : ℤ, ζ ^ n = ξ := by rwa [← h.zpowers_eq] at hξ
   have hk0 : (0 : ℤ) < k := mod_cast k.pos
   let i := n % k
@@ -840,8 +836,9 @@ theorem nthRoots_nodup {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) {a : R} (ha
   obtain (rfl|hn) := n.eq_zero_or_pos; · simp
   by_cases h : ∃ α, α ^ n = a
   · obtain ⟨α, hα⟩ := h
-    by_cases hα' : α = 0
-    · exact (ha (by rwa [hα', zero_pow hn.ne', eq_comm] at hα)).elim
+    have hα' : α ≠ 0 := by
+      contrapose! ha
+      rw [← hα, ha, zero_pow hn.ne']
     rw [nthRoots_eq h hα, Multiset.nodup_map_iff_inj_on (Multiset.nodup_range n)]
     exact h.injOn_pow_mul hα'
   · suffices nthRoots n a = 0 by simp [this]
