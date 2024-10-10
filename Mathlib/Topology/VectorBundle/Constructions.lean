@@ -233,4 +233,35 @@ instance VectorBundle.pullback [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
     rw [e.coordChangeL_apply e' hb, (e.pullback f).coordChangeL_apply' _]
     exacts [rfl, hb]
 
+variable [∀ x, TopologicalSpace (E x)] [FiberBundle F E] [VectorBundle 𝕜 F E] (f : K)
+
+/-- For a vector bundle `E` over a manifold `B` and a map `f : B' → B`, the natural "lift" map from
+the total space of `f *ᵖ E` to the total space of `E` is continuous. -/
+theorem Bundle.Pullback.continuous_lift :
+    Continuous (Pullback.lift f : TotalSpace F (f *ᵖ E) → _) := by
+  have h_proj := continuous_proj F (f *ᵖ E)
+  rw [continuous_iff_continuousAt] at h_proj ⊢
+  intro x
+  rw [continuousAt_totalSpace]
+  refine ⟨(map_continuousAt f _).comp (h_proj x), ?_⟩
+  refine (continuousAt_snd (X := B')).comp <| (trivializationAt F (f *ᵖ E) x.proj).continuousAt  ?_
+  simp
+
+variable {M : Type*} [TopologicalSpace M]
+
+/-- Given a vector bundle `E` over a manifold `B` and a continuous map `f : B' → B`, if `φ` is
+a map into the total space of the pullback `f *ᵖ E`, then its continuity can be checked by checking
+the continuity of (1) the map `TotalSpace.proj ∘ φ` into `B'`, and (ii) the map
+`Pullback.lift f ∘ φ` into the total space of `E`. -/
+theorem Bundle.Pullback.continuous_of_continuous_proj_comp_of_smooth_lift_comp
+    {φ : M → TotalSpace F (f *ᵖ E)} (h1 : Continuous (TotalSpace.proj ∘ φ))
+    (h2 : Continuous (Pullback.lift f ∘ φ)) : Continuous φ := by
+  have h_proj := continuous_proj F E
+  rw [continuous_iff_continuousAt] at h1 h2 h_proj ⊢
+  intro x
+  specialize h1 x
+  specialize h2 x
+  rw [continuousAt_totalSpace] at h2 ⊢
+  exact ⟨h1, h2.2⟩
+
 end

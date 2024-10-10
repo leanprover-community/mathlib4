@@ -656,7 +656,7 @@ theorem Bundle.Prod.smooth_snd :
     exact contDiffAt_snd
   refine (this _).comp _ <| contMDiffAt_snd.comp _ <|
     (smoothOn_trivializationAt IB x).contMDiffAt ?_
-  apply (trivializationAt (F₁ × F₂) (fun x ↦ E₁ x × E₂ x) x.proj).open_source.mem_nhds
+  apply (trivializationAt (F₁ × F₂) (E₁ ×ᵇ E₂) x.proj).open_source.mem_nhds
   simp
 
 variable {M EM HM : Type*} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] [TopologicalSpace HM]
