@@ -17,21 +17,6 @@ import Batteries.Tactic.OpenPrivate
 
 open Lean.Elab.Tactic
 
-<<<<<<< Updated upstream
-=======
-namespace Lean.Parser.Tactic
-
-/-- If we call `erw`, first try running regular `rw` and warn if that succeds. -/
-macro_rules
-  | `(tactic| erw $s $(loc)?) =>
-    `(tactic| try_this rw $(.none)? $s $(loc)?)
-
-example {a b : Nat} : a + b = b + a := by rw [Nat.add_comm]
-example {a b : Nat} : (a + 0) + b = b + a := by erw [Nat.add_comm a b]
-
-end Lean.Parser.Tactic
-
->>>>>>> Stashed changes
 namespace Lean
 
 open Elab
