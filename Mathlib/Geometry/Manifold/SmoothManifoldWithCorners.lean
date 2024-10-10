@@ -1384,6 +1384,9 @@ def TangentSpace {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {M : Type*} [TopologicalSpace M] [ChartedSpace H M] (_x : M) : Type u := E
 -- Porting note: was deriving TopologicalSpace, AddCommGroup, TopologicalAddGroup
 
+/- In general, the definition of `TangentSpace` is not reducible, so that type class inference
+does not pick wrong instances. We record the right instances for them. -/
+
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
@@ -1392,5 +1395,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 instance {x : M} : TopologicalSpace (TangentSpace I x) := inferInstanceAs (TopologicalSpace E)
 instance {x : M} : AddCommGroup (TangentSpace I x) := inferInstanceAs (AddCommGroup E)
 instance {x : M} : TopologicalAddGroup (TangentSpace I x) := inferInstanceAs (TopologicalAddGroup E)
+instance {x : M} : Module 𝕜 (TangentSpace I x) := inferInstanceAs (Module 𝕜 E)
+instance {x : M} : Inhabited (TangentSpace I x) := ⟨0⟩
 
 end TangentSpace

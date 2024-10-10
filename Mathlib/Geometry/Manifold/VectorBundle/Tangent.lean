@@ -177,22 +177,6 @@ local notation "TM" => TangentBundle I M
 
 section TangentBundleInstances
 
-/- In general, the definition of `TangentSpace` is not reducible, so that type class inference
-does not pick wrong instances. In this section, we record the right instances for
-them, noting in particular that the tangent bundle is a smooth manifold. -/
-section
-
-variable {M}
-variable (x : M)
-
-instance : Module 𝕜 (TangentSpace I x) := inferInstanceAs (Module 𝕜 E)
-
-instance : Inhabited (TangentSpace I x) := ⟨0⟩
-
--- Porting note: removed unneeded ContinuousAdd (TangentSpace I x)
-
-end
-
 instance : TopologicalSpace TM :=
   (tangentBundleCore I M).toTopologicalSpace
 
