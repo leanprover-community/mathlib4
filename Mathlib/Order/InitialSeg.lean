@@ -71,6 +71,9 @@ instance : FunLike (r ≼i s) α β where
 instance : EmbeddingLike (r ≼i s) α β where
   injective' f := f.inj'
 
+instance : RelHomClass (r ≼i s) r s where
+  map_rel f := f.map_rel_iff.2
+
 @[ext] lemma ext {f g : r ≼i s} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 
