@@ -363,9 +363,8 @@ instance NeZero.one : NeZero (1 : Ordinal) :=
 `α.toType` into `β.toType`. -/
 def initialSegToType {α β : Ordinal} (h : α ≤ β) :
     @InitialSeg α.toType β.toType (· < ·) (· < ·) := by
-  change α.out.r ≼i β.out.r
-  rw [← Quotient.out_eq α, ← Quotient.out_eq β] at h; revert h
-  cases Quotient.out α; cases Quotient.out β; exact Classical.choice
+  apply Classical.choice (type_le_iff.mp _)
+  rwa [type_lt, type_lt]
 
 @[deprecated initialSegToType (since := "2024-08-26")]
 noncomputable alias initialSegOut := initialSegToType
@@ -374,9 +373,8 @@ noncomputable alias initialSegOut := initialSegToType
 of `α.toType` into `β.toType`. -/
 def principalSegToType {α β : Ordinal} (h : α < β) :
     @PrincipalSeg α.toType β.toType (· < ·) (· < ·) := by
-  change α.out.r ≺i β.out.r
-  rw [← Quotient.out_eq α, ← Quotient.out_eq β] at h; revert h
-  cases Quotient.out α; cases Quotient.out β; exact Classical.choice
+  apply Classical.choice (type_lt_iff.mp _)
+  rwa [type_lt, type_lt]
 
 @[deprecated principalSegToType (since := "2024-08-26")]
 noncomputable alias principalSegOut := principalSegToType
