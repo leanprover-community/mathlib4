@@ -135,17 +135,17 @@ theorem Filter.EventuallyEq.div_mul_cancel_atTop {α K : Type*} [LinearOrderedSe
 
 /-- If when `x` tends to `∞`, `g` tends to `∞` and `f x / g x` tends to a positive
   constant, then `f` tends to `∞`. -/
-theorem Tendsto.num {α K : Type*} [Preorder α] [LinearOrderedField K] [TopologicalSpace K]
-    [OrderTopology K] {f g : α → K} {l : Filter α} (hg : Tendsto g l atTop) {a : K} (ha : 0 < a)
+theorem Tendsto.num {α K : Type*} [LinearOrderedField K] [TopologicalSpace K] [OrderTopology K]
+    {f g : α → K} {l : Filter α} (hg : Tendsto g l atTop) {a : K} (ha : 0 < a)
     (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
     Tendsto f l atTop :=
   Tendsto.congr' (EventuallyEq.div_mul_cancel_atTop hg) (Tendsto.mul_atTop ha hlim hg)
 
 /-- If when `x` tends to `∞`, `g` tends to `∞` and `f x / g x` tends to a positive
   constant, then `f` tends to `∞`. -/
-theorem Tendsto.den {α K : Type*} [Preorder α] [LinearOrderedField K] [TopologicalSpace K]
-    [OrderTopology K] [ContinuousInv K] {f g : α → K} {l : Filter α} (hf : Tendsto f l atTop)
-    {a : K} (ha : 0 < a) (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
+theorem Tendsto.den {α K : Type*} [LinearOrderedField K] [TopologicalSpace K] [OrderTopology K]
+    [ContinuousInv K] {f g : α → K} {l : Filter α} (hf : Tendsto f l atTop) {a : K} (ha : 0 < a)
+    (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
     Tendsto g l atTop := by
   have hlim' : Tendsto (fun x => g x / f x) l (𝓝 a⁻¹) := by
     simp_rw [← inv_div (f _)]
@@ -155,9 +155,9 @@ theorem Tendsto.den {α K : Type*} [Preorder α] [LinearOrderedField K] [Topolog
 
 /-- If when `x` tends to `∞`, `f x / g x` tends to a positive constant, then `f` tends to `∞` if
   and only if `g` tends to `∞`. -/
-theorem Tendsto.num_atTop_iff_den_atTop {α K : Type*} [Preorder α] [LinearOrderedField K]
-    [TopologicalSpace K] [OrderTopology K] [ContinuousInv K] {f g : α → K} {l : Filter α} {a : K}
-    (ha : 0 < a) (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
+theorem Tendsto.num_atTop_iff_den_atTop {α K : Type*} [LinearOrderedField K] [TopologicalSpace K]
+    [OrderTopology K] [ContinuousInv K] {f g : α → K} {l : Filter α} {a : K} (ha : 0 < a)
+    (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
     Tendsto f l atTop ↔ Tendsto g l atTop :=
   ⟨fun hf ↦ Tendsto.den hf ha hlim, fun hg ↦ Tendsto.num hg ha hlim⟩
 
