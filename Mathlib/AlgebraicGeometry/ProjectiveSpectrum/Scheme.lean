@@ -402,7 +402,7 @@ theorem carrier.smul_mem (c x : A) (hx : x ∈ carrier f_deg q) : c • x ∈ ca
             HomogeneousLocalization.val_mul, HomogeneousLocalization.val_mk,
             HomogeneousLocalization.val_mk]
           · simp_rw [mul_pow]; rw [Localization.mk_mul]
-            · congr; erw [← pow_add, Nat.add_sub_of_le h]
+            · congr; rw [← pow_add, Nat.add_sub_of_le h]
         · apply Ideal.mul_mem_left (α := A⁰_ f) _ _ (hx _)
           rw [(_ : m • n = _)]
           · mem_tac
@@ -594,9 +594,9 @@ def awayToSection (f) : CommRingCat.of (A⁰_ f) ⟶ (structureSheaf 𝒜).1.obj
   map_zero' := by ext; simp only [map_zero, HomogeneousLocalization.val_zero, Proj.zero_apply]
   map_one' := by ext; simp only [map_one, HomogeneousLocalization.val_one, Proj.one_apply]
 
-lemma awayToSection_germ (f x) :
-    awayToSection 𝒜 f ≫ (structureSheaf 𝒜).presheaf.germ x =
-      (HomogeneousLocalization.mapId 𝒜 (Submonoid.powers_le.mpr x.2)) ≫
+lemma awayToSection_germ (f x hx) :
+    awayToSection 𝒜 f ≫ (structureSheaf 𝒜).presheaf.germ _ x hx =
+      (HomogeneousLocalization.mapId 𝒜 (Submonoid.powers_le.mpr hx)) ≫
         (Proj.stalkIso' 𝒜 x).toCommRingCatIso.inv := by
   ext z
   apply (Proj.stalkIso' 𝒜 x).eq_symm_apply.mpr
@@ -685,9 +685,9 @@ lemma toStalk_stalkMap_toSpec (f) (x) :
     StructureSheaf.toStalk _ _ ≫ (toSpec 𝒜 f).stalkMap x =
       awayToΓ 𝒜 f ≫ (Proj| pbo f).presheaf.Γgerm x := by
   rw [StructureSheaf.toStalk, Category.assoc]
-  simp_rw [CommRingCat.coe_of]
-  erw [PresheafedSpace.stalkMap_germ']
-  rw [toOpen_toSpec_val_c_app_assoc, Presheaf.germ_res]
+  simp_rw [CommRingCat.coe_of, ← Spec.locallyRingedSpaceObj_presheaf']
+  rw [LocallyRingedSpace.stalkMap_germ (toSpec 𝒜 f),
+    toOpen_toSpec_val_c_app_assoc, Presheaf.germ_res]
   rfl
 
 /--

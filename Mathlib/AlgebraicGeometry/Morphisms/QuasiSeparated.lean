@@ -247,7 +247,7 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     use 0, f
     refine @Subsingleton.elim _
       (CommRingCat.subsingleton_of_isTerminal (X.sheaf.isTerminalOfEqEmpty ?_)) _ _
-    erw [eq_bot_iff]
+    rw [eq_bot_iff]
     exact X.basicOpen_le f
   · -- Given `f : 𝒪(S ∪ U), x : 𝒪(X_f)`, we need to show that `f ^ n * x` is the restriction of
     -- some `y : 𝒪(S ∪ U)` for some `n : ℕ`.
@@ -275,13 +275,13 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     have hs₁ : ∀ i : s, i.1.1 ≤ S := by
       intro i; change (i : X.Opens) ≤ S
       refine le_trans ?_ (inf_le_left (b := U.1))
-      erw [hs]
+      rw [hs]
       -- Porting note: have to add argument explicitly
       exact @le_iSup X.Opens s _ (fun (i : s) => (i : X.Opens)) i
     have hs₂ : ∀ i : s, i.1.1 ≤ U.1 := by
       intro i; change (i : X.Opens) ≤ U
       refine le_trans ?_ (inf_le_right (a := S))
-      erw [hs]
+      rw [hs]
       -- Porting note: have to add argument explicitly
       exact @le_iSup X.Opens s _ (fun (i : s) => (i : X.Opens)) i
     -- On each affine open in the intersection, we have `f ^ (n + n₂) * y₁ = f ^ (n + n₁) * y₂`
@@ -297,7 +297,7 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
         X.presheaf.map (homOfLE <| inf_le_right).op
           (X.presheaf.map (homOfLE le_sup_right).op f ^ (Finset.univ.sup n + n₁) * y₂) := by
       fapply X.sheaf.eq_of_locally_eq' fun i : s => i.1.1
-      · refine fun i => homOfLE ?_; erw [hs]
+      · refine fun i => homOfLE ?_; rw [hs]
         -- Porting note: have to add argument explicitly
         exact @le_iSup X.Opens s _ (fun (i : s) => (i : X.Opens)) i
       · exact le_of_eq hs
