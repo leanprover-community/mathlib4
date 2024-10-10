@@ -7,7 +7,9 @@ import Lean.Elab.PreDefinition.Basic
 import Lean.Elab.Tactic.ElabTerm
 import Lean.Util.Paths
 import Lean.Meta.Tactic.Intro
+import Lean.Meta.Tactic.TryThis
 import Mathlib.Lean.Expr.Basic
+import Mathlib.Tactic.TryThis
 import Batteries.Tactic.OpenPrivate
 
 /-!
@@ -16,6 +18,18 @@ import Batteries.Tactic.OpenPrivate
 -/
 
 open Lean.Elab.Tactic
+
+namespace Lean.Parser.Tactic
+
+/-- If we call `erw`, first try running regular `rw` and warn if that succeds. -/
+macro_rules 
+  | `(tactic| erw $s $(loc)?) =>
+    `(tactic| try_this rw $(.none)? $s $(loc)?)
+
+example {a b : Nat} : a + b = b + a := by erw [Nat.add_comm]
+example {a b : Nat} : (a + 0) + b = b + a := by erw [Nat.add_comm a b]
+
+end Lean.Parser.Tactic
 
 namespace Lean
 
