@@ -365,7 +365,8 @@ theorem top_rel_top {r : α → α → Prop} {s : β → β → Prop} {t : γ �
   rw [Subsingleton.elim h (f.trans g)]
   apply PrincipalSeg.lt_top
 
-@[deprecated (since := "2024-10-10")] alias topLTTop := top_rel_top
+@[deprecated top_rel_top (since := "2024-10-10")]
+alias topLTTop := top_rel_top
 
 /-- Any element of a well order yields a principal segment -/
 def ofElement {α : Type*} (r : α → α → Prop) (a : α) : Subrel r { b | r b a } ≺i r :=
