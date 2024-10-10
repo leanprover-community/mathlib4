@@ -59,7 +59,7 @@ theorem fermat_eq_prod_add_two (n : ℕ) : fermat n = (∏ k in range n, fermat 
 
 From a letter to Euler, see page 37 in [juskevic2022].
 -/
-theorem coprime_fermat_fermat {k n : ℕ} (h : k ≠ n): Coprime (fermat n) (fermat k) := by
+theorem coprime_fermat_fermat {k n : ℕ} (h : k ≠ n) : Coprime (fermat n) (fermat k) := by
   wlog hkn : k < n
   · simpa only [coprime_comm] using this h.symm (by omega)
   let m := (fermat n).gcd (fermat k)
