@@ -23,7 +23,7 @@ open TopologicalSpace Set Filter
 open Topology Filter
 
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
-variable {s : Set β} {ι : Type*} {U : ι → Opens β}
+variable {ι : Type*} {U : ι → Opens β}
 
 theorem Set.restrictPreimage_inducing (s : Set β) (h : Inducing f) :
     Inducing (s.restrictPreimage f) := by

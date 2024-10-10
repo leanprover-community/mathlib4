@@ -39,7 +39,6 @@ variable [Applicative F] [LawfulApplicative F]
 variable [Applicative G] [LawfulApplicative G]
 variable {α β γ : Type u}
 variable (g : α → F β)
-variable (h : β → G γ)
 variable (f : β → γ)
 
 /-- The natural applicative transformation from the identity functor
