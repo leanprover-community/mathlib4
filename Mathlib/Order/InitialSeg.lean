@@ -78,9 +78,6 @@ instance : FunLike (r ≼i s) α β where
 instance : EmbeddingLike (r ≼i s) α β where
   injective' f := f.inj'
 
-instance : RelHomClass (r ≼i s) r s where
-  map_rel f := f.map_rel_iff.2
-
 /-- An initial segment embedding between the `<` relations of two partial orders is an order
 embedding. -/
 def toOrderEmbedding [PartialOrder α] [PartialOrder β] (f : α ≤i β) : α ↪o β :=
@@ -592,10 +589,12 @@ theorem mem_range_of_le [Preorder α] (f : α ≤i β) (h : b ≤ f a) : b ∈ S
   obtain rfl | hb := h.eq_or_lt
   exacts [⟨a, rfl⟩, f.mem_range_of_rel hb]
 
+-- TODO: this would follow immediately if we had a `RelEmbeddingClass`
 @[simp]
 theorem le_iff_le [PartialOrder α] (f : α ≤i β) : f a ≤ f a' ↔ a ≤ a' :=
   f.toOrderEmbedding.le_iff_le
 
+-- TODO: this would follow immediately if we had a `RelEmbeddingClass`
 @[simp]
 theorem lt_iff_lt [PartialOrder α] (f : α ≤i β) : f a < f a' ↔ a < a' :=
   f.toOrderEmbedding.lt_iff_lt
@@ -633,10 +632,12 @@ variable [PartialOrder β] {a a' : α} {b : β}
 theorem mem_range_of_le [Preorder α] (f : α <i β) (h : b ≤ f a) : b ∈ Set.range f :=
   (f : α ≤i β).mem_range_of_le h
 
+-- TODO: this would follow immediately if we had a `RelEmbeddingClass`
 @[simp]
 theorem le_iff_le [PartialOrder α] (f : α <i β) : f a ≤ f a' ↔ a ≤ a' :=
   (f : α ≤i β).le_iff_le
 
+-- TODO: this would follow immediately if we had a `RelEmbeddingClass`
 @[simp]
 theorem lt_iff_lt [PartialOrder α] (f : α <i β) : f a < f a' ↔ a < a' :=
   (f : α ≤i β).lt_iff_lt
