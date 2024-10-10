@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.SetTheory.Cardinal.Aleph
 import Mathlib.SetTheory.Ordinal.Principal
-import Mathlib.SetTheory.Ordinal.Enum
 import Mathlib.Tactic.Linarith
 
 /-!

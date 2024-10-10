@@ -25,6 +25,7 @@ import Mathlib.SetTheory.Ordinal.Arithmetic
 
 assert_not_exists Module
 assert_not_exists Finsupp
+assert_not_exists Cardinal.mul_eq_self
 
 noncomputable section
 
