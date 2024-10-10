@@ -29,7 +29,7 @@ variable {R : Type u} {S : Type v} {T : Type w} [NonUnitalNonAssocSemiring R] (M
 
 /-- `NonUnitalSubsemiringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both an additive submonoid and also a multiplicative subsemigroup. -/
-class NonUnitalSubsemiringClass (S : Type*) (R : Type u) [NonUnitalNonAssocSemiring R]
+class NonUnitalSubsemiringClass (S : Type*) (R : outParam (Type u)) [NonUnitalNonAssocSemiring R]
   [SetLike S R] extends AddSubmonoidClass S R : Prop where
   mul_mem : ∀ {s : S} {a b : R}, a ∈ s → b ∈ s → a * b ∈ s
 
@@ -78,8 +78,6 @@ instance toNonUnitalCommSemiring {R} [NonUnitalCommSemiring R] [SetLike S R]
 
 
 end NonUnitalSubsemiringClass
-
-variable [NonUnitalNonAssocSemiring S] [NonUnitalNonAssocSemiring T]
 
 /-- A non-unital subsemiring of a non-unital semiring `R` is a subset `s` that is both an additive
 submonoid and a semigroup. -/
@@ -182,6 +180,7 @@ end NonUnitalSubsemiring
 
 namespace NonUnitalSubsemiring
 
+variable [NonUnitalNonAssocSemiring S] [NonUnitalNonAssocSemiring T]
 variable {F G : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
   [FunLike G S T] [NonUnitalRingHomClass G S T]
   (s : NonUnitalSubsemiring R)
@@ -301,6 +300,7 @@ namespace NonUnitalRingHom
 
 open NonUnitalSubsemiring
 
+variable [NonUnitalNonAssocSemiring S] [NonUnitalNonAssocSemiring T]
 variable {F G : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
 variable [FunLike G S T] [NonUnitalRingHomClass G S T] (f : F) (g : G)
 
@@ -379,6 +379,15 @@ theorem coe_sInf (S : Set (NonUnitalSubsemiring R)) :
 theorem mem_sInf {S : Set (NonUnitalSubsemiring R)} {x : R} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
   Set.mem_iInter₂
 
+@[simp, norm_cast]
+theorem coe_iInf {ι : Sort*} {S : ι → NonUnitalSubsemiring R} :
+    (↑(⨅ i, S i) : Set R) = ⋂ i, S i := by
+  simp only [iInf, coe_sInf, Set.biInter_range]
+
+theorem mem_iInf {ι : Sort*} {S : ι → NonUnitalSubsemiring R} {x : R} :
+    (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+  simp only [iInf, mem_sInf, Set.forall_mem_range]
+
 @[simp]
 theorem sInf_toSubsemigroup (s : Set (NonUnitalSubsemiring R)) :
     (sInf s).toSubsemigroup = ⨅ t ∈ s, NonUnitalSubsemiring.toSubsemigroup t :=
@@ -407,7 +416,7 @@ theorem eq_top_iff' (A : NonUnitalSubsemiring R) : A = ⊤ ↔ ∀ x : R, x ∈ 
 
 section NonUnitalNonAssocSemiring
 
-variable (R) [NonUnitalNonAssocSemiring R]
+variable (R)
 
 /-- The center of a semiring `R` is the set of elements that commute and associate with everything
 in `R` -/
@@ -533,6 +542,8 @@ theorem closure_eq_of_le {s : Set R} {t : NonUnitalSubsemiring R} (h₁ : s ⊆ 
     (h₂ : t ≤ closure s) : closure s = t :=
   le_antisymm (closure_le.2 h₁) h₂
 
+variable [NonUnitalNonAssocSemiring S]
+
 theorem mem_map_equiv {f : R ≃+* S} {K : NonUnitalSubsemiring R} {x : S} :
     x ∈ K.map (f : R →ₙ+* S) ↔ f.symm x ∈ K := by
   convert @Set.mem_image_equiv _ _ (↑K) f.toEquiv x
@@ -636,6 +647,7 @@ protected def gi : GaloisInsertion (@closure R _) (↑) where
   choice_eq _ _ := rfl
 
 variable {R}
+variable [NonUnitalNonAssocSemiring S]
 variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
 
 /-- Closure of a non-unital subsemiring `S` equals `S`. -/
@@ -666,6 +678,16 @@ theorem map_sup (s t : NonUnitalSubsemiring R) (f : F) :
 theorem map_iSup {ι : Sort*} (f : F) (s : ι → NonUnitalSubsemiring R) :
     (map f (iSup s) : NonUnitalSubsemiring S) = ⨆ i, map f (s i) :=
   @GaloisConnection.l_iSup _ _ _ _ _ _ _ (gc_map_comap f) s
+
+theorem map_inf (s t : NonUnitalSubsemiring R) (f : F) (hf : Function.Injective f) :
+    (map f (s ⊓ t) : NonUnitalSubsemiring S) = map f s ⊓ map f t :=
+  SetLike.coe_injective (Set.image_inter hf)
+
+theorem map_iInf {ι : Sort*} [Nonempty ι] (f : F) (hf : Function.Injective f)
+    (s : ι → NonUnitalSubsemiring R) :
+    (map f (iInf s) : NonUnitalSubsemiring S) = ⨅ i, map f (s i) := by
+  apply SetLike.coe_injective
+  simpa using (Set.injOn_of_injective hf).image_iInter_eq (s := SetLike.coe ∘ s)
 
 theorem comap_inf (s t : NonUnitalSubsemiring S) (f : F) :
     (comap f (s ⊓ t) : NonUnitalSubsemiring R) = comap f s ⊓ comap f t :=
@@ -756,7 +778,14 @@ end NonUnitalSubsemiring
 
 namespace NonUnitalRingHom
 
-variable {F : Type*} [NonUnitalNonAssocSemiring T] [FunLike F R S] [NonUnitalRingHomClass F R S]
+variable {F : Type*} [FunLike F R S]
+
+theorem eq_of_eqOn_stop {f g : F}
+    (h : Set.EqOn (f : R → S) (g : R → S) (⊤ : NonUnitalSubsemiring R)) : f = g :=
+  DFunLike.ext _ _ fun _ => h trivial
+
+variable [NonUnitalNonAssocSemiring S] [NonUnitalNonAssocSemiring T]
+  [NonUnitalRingHomClass F R S]
   {S' : Type*} [SetLike S' S] [NonUnitalSubsemiringClass S' S]
   {s : NonUnitalSubsemiring R}
 
@@ -807,10 +836,6 @@ theorem eqOn_sclosure {f g : F} {s : Set R} (h : Set.EqOn (f : R → S) (g : R �
     Set.EqOn f g (closure s) :=
   show closure s ≤ eqSlocus f g from closure_le.2 h
 
-theorem eq_of_eqOn_stop {f g : F}
-    (h : Set.EqOn (f : R → S) (g : R → S) (⊤ : NonUnitalSubsemiring R)) : f = g :=
-  DFunLike.ext _ _ fun _ => h trivial
-
 theorem eq_of_eqOn_sdense {s : Set R} (hs : closure s = ⊤) {f g : F}
     (h : s.EqOn (f : R → S) (g : R → S)) : f = g :=
   eq_of_eqOn_stop <| hs ▸ eqOn_sclosure h
@@ -842,6 +867,8 @@ def inclusion {S T : NonUnitalSubsemiring R} (h : S ≤ T) : S →ₙ+* T :=
 theorem srange_subtype (s : NonUnitalSubsemiring R) : NonUnitalRingHom.srange (subtype s) = s :=
   SetLike.coe_injective <| (coe_srange _).trans Subtype.range_coe
 
+variable [NonUnitalNonAssocSemiring S]
+
 @[simp]
 theorem range_fst : NonUnitalRingHom.srange (fst R S) = ⊤ :=
   NonUnitalRingHom.srange_top_of_surjective (fst R S) Prod.fst_surjective
@@ -857,7 +884,7 @@ namespace RingEquiv
 open NonUnitalRingHom NonUnitalSubsemiringClass
 
 variable {s t : NonUnitalSubsemiring R}
-variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
+variable [NonUnitalNonAssocSemiring S]  {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
 
 /-- Makes the identity isomorphism from a proof two non-unital subsemirings of a multiplicative
 monoid are equal. -/

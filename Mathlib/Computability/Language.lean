@@ -159,10 +159,10 @@ lemma mem_kstar_iff_exists_nonempty {x : List α} :
     x ∈ l∗ ↔ ∃ S : List (List α), x = S.join ∧ ∀ y ∈ S, y ∈ l ∧ y ≠ [] := by
   constructor
   · rintro ⟨S, rfl, h⟩
-    refine ⟨S.filter fun l ↦ !List.isEmpty l, by simp, fun y hy ↦ ?_⟩
+    refine ⟨S.filter fun l ↦ !List.isEmpty l, by simp [List.join_filter_not_isEmpty], fun y hy ↦ ?_⟩
     -- Porting note: The previous code was:
     -- rw [mem_filter, empty_iff_eq_nil] at hy
-    rw [mem_filter, Bool.not_eq_true', ← Bool.bool_iff_false, isEmpty_iff_eq_nil] at hy
+    rw [mem_filter, Bool.not_eq_true', ← Bool.bool_iff_false, List.isEmpty_iff] at hy
     exact ⟨h y hy.1, hy.2⟩
   · rintro ⟨S, hx, h⟩
     exact ⟨S, hx, fun y hy ↦ (h y hy).1⟩
@@ -261,10 +261,11 @@ instance : KleeneAlgebra (Language α) :=
     mul_kstar_le_self := fun l m h ↦ by
       rw [kstar_eq_iSup_pow, mul_iSup]
       refine iSup_le (fun n ↦ ?_)
-      induction' n with n ih
-      · simp
-      rw [pow_succ, ← mul_assoc m (l^n) l]
-      exact le_trans (le_mul_congr ih le_rfl) h }
+      induction n with
+      | zero => simp
+      | succ n ih =>
+        rw [pow_succ, ← mul_assoc m (l^n) l]
+        exact le_trans (le_mul_congr ih le_rfl) h }
 
 /-- Language `l.reverse` is defined as the set of words from `l` backwards. -/
 def reverse (l : Language α) : Language α := { w : List α | w.reverse ∈ l }

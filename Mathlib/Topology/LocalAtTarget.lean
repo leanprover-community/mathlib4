@@ -23,7 +23,7 @@ open TopologicalSpace Set Filter
 open Topology Filter
 
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
-variable {s : Set β} {ι : Type*} {U : ι → Opens β} (hU : iSup U = ⊤)
+variable {ι : Type*} {U : ι → Opens β}
 
 theorem Set.restrictPreimage_inducing (s : Set β) (h : Inducing f) :
     Inducing (s.restrictPreimage f) := by
@@ -78,6 +78,9 @@ theorem IsOpenMap.restrictPreimage (H : IsOpenMap f) (s : Set β) :
 theorem Set.restrictPreimage_isOpenMap (s : Set β) (H : IsOpenMap f) :
     IsOpenMap (s.restrictPreimage f) := H.restrictPreimage s
 
+variable (hU : iSup U = ⊤)
+include hU
+
 theorem isOpen_iff_inter_of_iSup_eq_top (s : Set β) : IsOpen s ↔ ∀ i, IsOpen (s ∩ U i) := by
   constructor
   · exact fun H i => H.inter (U i).2
@@ -105,7 +108,10 @@ theorem isLocallyClosed_iff_coe_preimage_of_iSup_eq_top (s : Set β) :
     IsLocallyClosed s ↔ ∀ i, IsLocallyClosed ((↑) ⁻¹' s : Set (U i)) := by
   simp_rw [isLocallyClosed_iff_isOpen_coborder]
   rw [isOpen_iff_coe_preimage_of_iSup_eq_top hU]
-  exact forall_congr' fun i ↦ by rw [(U i).isOpen.openEmbedding_subtype_val.coborder_preimage]
+  exact forall_congr' fun i ↦ by
+    have : coborder ((↑) ⁻¹' s : Set (U i)) = Subtype.val ⁻¹' coborder s := by
+      exact (U i).isOpen.openEmbedding_subtype_val.coborder_preimage _
+    rw [this]
 
 theorem isOpenMap_iff_isOpenMap_of_iSup_eq_top :
     IsOpenMap f ↔ ∀ i, IsOpenMap ((U i).1.restrictPreimage f) := by
@@ -144,7 +150,7 @@ theorem inducing_iff_inducing_of_iSup_eq_top (h : Continuous f) :
         (show f x ∈ iSup U by
           rw [hU]
           trivial)
-    erw [← OpenEmbedding.map_nhds_eq (h.1 _ (U i).2).openEmbedding_subtype_val ⟨x, hi⟩]
+    rw [← OpenEmbedding.map_nhds_eq (h.1 _ (U i).2).openEmbedding_subtype_val ⟨x, hi⟩]
     rw [(H i) ⟨x, hi⟩, Filter.subtype_coe_map_comap, Function.comp_apply, Subtype.coe_mk,
       inf_eq_left, Filter.le_principal_iff]
     exact Filter.preimage_mem_comap ((U i).2.mem_nhds hi)

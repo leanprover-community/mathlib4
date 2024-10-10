@@ -50,6 +50,21 @@ lemma dist_triangle_max : dist x z ≤ max (dist x y) (dist y z) :=
 
 namespace IsUltrametricDist
 
+/-- All triangles are isosceles in an ultrametric space. -/
+lemma dist_eq_max_of_dist_ne_dist (h : dist x y ≠ dist y z) :
+    dist x z = max (dist x y) (dist y z) := by
+  apply le_antisymm (dist_triangle_max x y z)
+  rcases h.lt_or_lt with h | h
+  · rw [max_eq_right h.le]
+    apply (le_max_iff.mp <| dist_triangle_max y x z).resolve_left
+    simpa only [not_le, dist_comm x y] using h
+  · rw [max_eq_left h.le, dist_comm x y, dist_comm x z]
+    apply (le_max_iff.mp <| dist_triangle_max y z x).resolve_left
+    simpa only [not_le, dist_comm x y] using h
+
+instance subtype (p : X → Prop) : IsUltrametricDist (Subtype p) :=
+  ⟨fun _ _ _ ↦ by simpa [Subtype.dist_eq] using dist_triangle_max _ _ _⟩
+
 lemma ball_eq_of_mem {x y : X} {r : ℝ} (h : y ∈ ball x r) : ball x r = ball y r := by
   ext a
   simp_rw [mem_ball] at h ⊢

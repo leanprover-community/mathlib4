@@ -46,7 +46,7 @@ This section provides a predicate for a kernel to disintegrate a measure.
 -/
 
 namespace MeasureTheory.Measure
-variable (ρ : Measure (α × Ω)) [IsFiniteMeasure ρ] (ρCond : Kernel α Ω)
+variable (ρ : Measure (α × Ω)) (ρCond : Kernel α Ω)
 
 /-- A kernel `ρCond` is a conditional kernel for a measure `ρ` if it disintegrates it in the sense
 that `ρ.fst ⊗ₘ ρCond = ρ`. -/
@@ -59,6 +59,8 @@ lemma disintegrate : ρ.fst ⊗ₘ ρCond = ρ := IsCondKernel.disintegrate
 
 lemma IsCondKernel.isSFiniteKernel (hρ : ρ ≠ 0) : IsSFiniteKernel ρCond := by
   contrapose! hρ; rwa [← ρ.disintegrate ρCond, Measure.compProd_of_not_isSFiniteKernel]
+
+variable [IsFiniteMeasure ρ]
 
 /-- Auxiliary lemma for `IsCondKernel.apply_of_ne_zero`. -/
 private lemma IsCondKernel.apply_of_ne_zero_of_measurableSet [MeasurableSingletonClass α] {x : α}

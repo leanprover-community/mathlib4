@@ -10,6 +10,7 @@ import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Order.SymmDiff
 import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.Algebra.MonoidAlgebra.Basic
 
 /-!
 # Multivariate polynomials
@@ -54,7 +55,7 @@ In the definitions below, we use the following notation:
 * `map (f : R → S₁) p` : returns the multivariate polynomial obtained from `p` by the change of
   coefficient semiring corresponding to `f`
 * `aeval (g : σ → S₁) p` : evaluates the multivariate polynomial obtained from `p` by the change
-  of coefficient semiring corresponding to `g` (`a` stands for `algebra`)
+  of coefficient semiring corresponding to `g` (`a` stands for `Algebra`)
 
 ## Implementation notes
 
@@ -461,7 +462,7 @@ theorem linearMap_ext {M : Type*} [AddCommMonoid M] [Module R M] {f g : MvPolyno
 
 section Support
 
-/-- The finite set of all `m : σ →₀ ℕ` such that `X^m` has a non-zero coefficient.  -/
+/-- The finite set of all `m : σ →₀ ℕ` such that `X^m` has a non-zero coefficient. -/
 def support (p : MvPolynomial σ R) : Finset (σ →₀ ℕ) :=
   Finsupp.support p
 
@@ -528,9 +529,6 @@ theorem support_mul [DecidableEq σ] (p q : MvPolynomial σ R) :
 @[ext]
 theorem ext (p q : MvPolynomial σ R) : (∀ m, coeff m p = coeff m q) → p = q :=
   Finsupp.ext
-
-protected theorem ext_iff (p q : MvPolynomial σ R) : p = q ↔ ∀ m, coeff m p = coeff m q :=
-  ⟨fun h m => by rw [h], ext p q⟩
 
 @[simp]
 theorem coeff_add (m : σ →₀ ℕ) (p q : MvPolynomial σ R) : coeff m (p + q) = coeff m p + coeff m q :=
@@ -1101,7 +1099,7 @@ theorem eval_assoc {τ} (f : σ → MvPolynomial τ R) (g : τ → R) (p : MvPol
 theorem eval₂_id {g : σ → R} (p : MvPolynomial σ R) : eval₂ (RingHom.id _) g p = eval g p :=
   rfl
 
-theorem eval_eval₂ {S τ : Type*} {x : τ → S} [CommSemiring R] [CommSemiring S]
+theorem eval_eval₂ {S τ : Type*} {x : τ → S} [CommSemiring S]
     (f : R →+* MvPolynomial τ S) (g : σ → MvPolynomial τ S) (p : MvPolynomial σ R) :
     eval x (eval₂ f g p) = eval₂ ((eval x).comp f) (fun s => eval x (g s)) p := by
   apply induction_on p
@@ -1359,6 +1357,11 @@ theorem comp_aeval {B : Type*} [CommSemiring B] [Algebra R B] (φ : S₁ →ₐ[
   ext i
   simp
 
+lemma comp_aeval_apply {B : Type*} [CommSemiring B] [Algebra R B] (φ : S₁ →ₐ[R] B)
+    (p : MvPolynomial σ R) :
+    φ (aeval f p) = aeval (fun i ↦ φ (f i)) p := by
+  rw [← comp_aeval, AlgHom.coe_comp, comp_apply]
+
 @[simp]
 theorem map_aeval {B : Type*} [CommSemiring B] (g : σ → S₁) (φ : S₁ →+* B) (p : MvPolynomial σ R) :
     φ (aeval g p) = eval₂Hom (φ.comp (algebraMap R S₁)) (fun i => φ (g i)) p := by
@@ -1440,7 +1443,7 @@ variable (R)
 theorem _root_.Algebra.adjoin_range_eq_range_aeval :
     Algebra.adjoin R (Set.range f) = (MvPolynomial.aeval f).range := by
   simp only [← Algebra.map_top, ← MvPolynomial.adjoin_range_X, AlgHom.map_adjoin, ← Set.range_comp,
-    (· ∘ ·), MvPolynomial.aeval_X]
+    Function.comp_def, MvPolynomial.aeval_X]
 
 theorem _root_.Algebra.adjoin_eq_range (s : Set S₁) :
     Algebra.adjoin R s = (MvPolynomial.aeval ((↑) : s → S₁)).range := by
@@ -1539,6 +1542,19 @@ theorem eval_mem {p : MvPolynomial σ S} {s : subS} (hs : ∀ i ∈ p.support, p
 
 end EvalMem
 
+variable {S T : Type*} [CommSemiring S] [Algebra R S] [CommSemiring T] [Algebra R T] [Algebra S T]
+  [IsScalarTower R S T]
+
+lemma aeval_sum_elim {σ τ : Type*} (p : MvPolynomial (σ ⊕ τ) R) (f : τ → S) (g : σ → T) :
+    (aeval (Sum.elim g (algebraMap S T ∘ f))) p =
+      (aeval g) ((aeval (Sum.elim X (C ∘ f))) p) := by
+  induction' p using MvPolynomial.induction_on with r p q hp hq p i h
+  · simp [← IsScalarTower.algebraMap_apply]
+  · simp [hp, hq]
+  · cases i <;> simp [h]
+
 end CommSemiring
 
 end MvPolynomial
+
+set_option linter.style.longFile 1700

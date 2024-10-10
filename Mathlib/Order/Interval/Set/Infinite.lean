@@ -32,6 +32,7 @@ namespace Set
 section DenselyOrdered
 
 variable [DenselyOrdered α] {a b : α} (h : a < b)
+include h
 
 theorem Ioo.infinite : Infinite (Ioo a b) :=
   @NoMaxOrder.infinite _ _ (nonempty_Ioo_subtype h) _

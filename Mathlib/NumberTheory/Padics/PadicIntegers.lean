@@ -78,7 +78,7 @@ def subring : Subring ℚ_[p] where
   zero_mem' := by norm_num
   one_mem' := by norm_num
   add_mem' hx hy := (padicNormE.nonarchimedean _ _).trans <| max_le_iff.2 ⟨hx, hy⟩
-  mul_mem' hx hy := (padicNormE.mul _ _).trans_le <| mul_le_one hx (norm_nonneg _) hy
+  mul_mem' hx hy := (padicNormE.mul _ _).trans_le <| mul_le_one₀ hx (norm_nonneg _) hy
   neg_mem' hx := (norm_neg _).trans_le hx
 
 @[simp]
@@ -162,7 +162,8 @@ def inv : ℤ_[p] → ℤ_[p]
   | ⟨k, _⟩ => if h : ‖k‖ = 1 then ⟨k⁻¹, by simp [h]⟩ else 0
 
 instance : CharZero ℤ_[p] where
-  cast_injective m n h := Nat.cast_injective (by rw [Subtype.ext_iff] at h; norm_cast at h)
+  cast_injective m n h :=
+    Nat.cast_injective (R := ℚ_[p]) (by rw [Subtype.ext_iff] at h; norm_cast at h)
 
 @[norm_cast] -- @[simp] -- Porting note: not in simpNF
 theorem intCast_eq (z1 z2 : ℤ) : (z1 : ℤ_[p]) = z2 ↔ z1 = z2 := by
@@ -196,6 +197,8 @@ We now show that `ℤ_[p]` is a
 variable (p : ℕ) [Fact p.Prime]
 
 instance : MetricSpace ℤ_[p] := Subtype.metricSpace
+
+instance : IsUltrametricDist ℤ_[p] := IsUltrametricDist.subtype _
 
 instance completeSpace : CompleteSpace ℤ_[p] :=
   have : IsClosed { x : ℚ_[p] | ‖x‖ ≤ 1 } := isClosed_le continuous_norm continuous_const
@@ -301,7 +304,7 @@ variable (p : ℕ) [hp : Fact p.Prime]
 theorem exists_pow_neg_lt {ε : ℝ} (hε : 0 < ε) : ∃ k : ℕ, (p : ℝ) ^ (-(k : ℤ)) < ε := by
   obtain ⟨k, hk⟩ := exists_nat_gt ε⁻¹
   use k
-  rw [← inv_lt_inv hε (_root_.zpow_pos_of_pos _ _)]
+  rw [← inv_lt_inv₀ hε (_root_.zpow_pos_of_pos _ _)]
   · rw [zpow_neg, inv_inv, zpow_natCast]
     apply lt_of_lt_of_le hk
     norm_cast
@@ -331,7 +334,7 @@ theorem norm_int_le_pow_iff_dvd {k : ℤ} {n : ℕ} :
 /-! ### Valuation on `ℤ_[p]` -/
 
 
-/-- `PadicInt.valuation` lifts the `p`-adic valuation on `ℚ` to `ℤ_[p]`.  -/
+/-- `PadicInt.valuation` lifts the `p`-adic valuation on `ℚ` to `ℤ_[p]`. -/
 def valuation (x : ℤ_[p]) :=
   Padic.valuation (x : ℚ_[p])
 
@@ -390,7 +393,7 @@ theorem mul_inv : ∀ {z : ℤ_[p]}, ‖z‖ = 1 → z * z.inv = 1
     dsimp only
     rw [dif_pos h]
     apply Subtype.ext_iff_val.2
-    simp [mul_inv_cancel hk]
+    simp [mul_inv_cancel₀ hk]
 
 theorem inv_mul {z : ℤ_[p]} (hz : ‖z‖ = 1) : z.inv * z = 1 := by rw [mul_comm, mul_inv hz]
 
@@ -465,7 +468,7 @@ theorem norm_le_pow_iff_le_valuation (x : ℤ_[p]) (hx : x ≠ 0) (n : ℕ) :
     intro m
     refine pow_pos ?_ m
     exact mod_cast hp.1.pos
-  rw [inv_le_inv (aux _) (aux _)]
+  rw [inv_le_inv₀ (aux _) (aux _)]
   have : p ^ n ≤ p ^ k ↔ n ≤ k := (pow_right_strictMono hp.1.one_lt).le_iff_le
   rw [← this]
   norm_cast
@@ -491,7 +494,7 @@ theorem norm_le_pow_iff_mem_span_pow (x : ℤ_[p]) (n : ℕ) :
     ‖x‖ ≤ (p : ℝ) ^ (-n : ℤ) ↔ x ∈ (Ideal.span {(p : ℤ_[p]) ^ n} : Ideal ℤ_[p]) := by
   by_cases hx : x = 0
   · subst hx
-    simp only [norm_zero, zpow_neg, zpow_natCast, inv_nonneg, iff_true_iff, Submodule.zero_mem]
+    simp only [norm_zero, zpow_neg, zpow_natCast, inv_nonneg, iff_true, Submodule.zero_mem]
     exact mod_cast Nat.zero_le _
   rw [norm_le_pow_iff_le_valuation x hx, mem_span_pow_iff_le_valuation x hx]
 
@@ -507,7 +510,7 @@ theorem norm_lt_one_iff_dvd (x : ℤ_[p]) : ‖x‖ < 1 ↔ ↑p ∣ x := by
   have := norm_le_pow_iff_mem_span_pow x 1
   rw [Ideal.mem_span_singleton, pow_one] at this
   rw [← this, norm_le_pow_iff_norm_lt_pow_add_one]
-  simp only [zpow_zero, Int.ofNat_zero, Int.ofNat_succ, add_left_neg, zero_add]
+  simp only [zpow_zero, Int.ofNat_zero, Int.ofNat_succ, neg_add_cancel, zero_add]
 
 @[simp]
 theorem pow_p_dvd_int_iff (n : ℕ) (a : ℤ) : (p : ℤ_[p]) ^ n ∣ a ↔ (p ^ n : ℤ) ∣ a := by
@@ -525,7 +528,7 @@ instance : LocalRing ℤ_[p] :=
   LocalRing.of_nonunits_add <| by simp only [mem_nonunits]; exact fun x y => norm_lt_one_add
 
 theorem p_nonnunit : (p : ℤ_[p]) ∈ nonunits ℤ_[p] := by
-  have : (p : ℝ)⁻¹ < 1 := inv_lt_one <| mod_cast hp.1.one_lt
+  have : (p : ℝ)⁻¹ < 1 := inv_lt_one_of_one_lt₀ <| mod_cast hp.1.one_lt
   rwa [← norm_p, ← mem_nonunits] at this
 
 theorem maximalIdeal_eq_span_p : maximalIdeal ℤ_[p] = Ideal.span {(p : ℤ_[p])} := by
@@ -610,7 +613,7 @@ instance isFractionRing : IsFractionRing ℤ_[p] ℚ_[p] where
           rw [h0, norm_zero] at hx
           exact hx zero_le_one
         rw [ha, padicNormE.mul, padicNormE.norm_p_pow, Padic.norm_eq_pow_val hx, ← zpow_add',
-          hn_coe, neg_neg, add_left_neg, zpow_zero]
+          hn_coe, neg_neg, neg_add_cancel, zpow_zero]
         exact Or.inl (Nat.cast_ne_zero.mpr (NeZero.ne p))
       use
         (⟨a, le_of_eq ha_norm⟩,

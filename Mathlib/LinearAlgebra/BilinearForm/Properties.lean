@@ -56,9 +56,7 @@ def IsRefl (B : BilinForm R M) : Prop := LinearMap.IsRefl B
 
 namespace IsRefl
 
-variable (H : B.IsRefl)
-
-theorem eq_zero : ∀ {x y : M}, B x y = 0 → B y x = 0 := fun {x y} => H x y
+theorem eq_zero (H : B.IsRefl) : ∀ {x y : M}, B x y = 0 → B y x = 0 := fun {x y} => H x y
 
 protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsRefl) : (-B).IsRefl := fun x y =>
   neg_eq_zero.mpr ∘ hB x y ∘ neg_eq_zero.mp
@@ -87,12 +85,10 @@ def IsSymm (B : BilinForm R M) : Prop := LinearMap.IsSymm B
 
 namespace IsSymm
 
-variable (H : B.IsSymm)
-
-protected theorem eq (x y : M) : B x y = B y x :=
+protected theorem eq (H : B.IsSymm) (x y : M) : B x y = B y x :=
   H x y
 
-theorem isRefl : B.IsRefl := fun x y H1 => H x y ▸ H1
+theorem isRefl (H : B.IsSymm) : B.IsRefl := fun x y H1 => H x y ▸ H1
 
 protected theorem add {B₁ B₂ : BilinForm R M} (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) :
     (B₁ + B₂).IsSymm := fun x y => (congr_arg₂ (· + ·) (hB₁ x y) (hB₂ x y) : _)
@@ -397,6 +393,8 @@ lemma Nondegenerate.flip {B : BilinForm K V} (hB : B.Nondegenerate) :
 lemma nonDegenerateFlip_iff {B : BilinForm K V} :
     B.flip.Nondegenerate ↔ B.Nondegenerate := ⟨Nondegenerate.flip, Nondegenerate.flip⟩
 
+end FiniteDimensional
+
 section DualBasis
 
 variable {ι : Type*} [DecidableEq ι] [Finite ι]
@@ -410,10 +408,14 @@ noncomputable def dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basi
   b.dualBasis.map (B.toDual hB).symm
 
 @[simp]
-theorem dualBasis_repr_apply (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) (x i) :
+theorem dualBasis_repr_apply
+    (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) (x i) :
     (B.dualBasis hB b).repr x i = B x (b i) := by
+  #adaptation_note
+  /-- Before leanprover/lean4#4814, we did not need the `@` in front of `toDual_def` in the `rw`.
+  I'm confused! -/
   rw [dualBasis, Basis.map_repr, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
-    Basis.dualBasis_repr, toDual_def]
+    Basis.dualBasis_repr, @toDual_def]
 
 theorem apply_dualBasis_left (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) (i j) :
     B (B.dualBasis hB b i) (b j) = if j = i then 1 else 0 := by
@@ -426,7 +428,8 @@ theorem apply_dualBasis_right (B : BilinForm K V) (hB : B.Nondegenerate) (sym : 
   rw [sym.eq, apply_dualBasis_left]
 
 @[simp]
-lemma dualBasis_dualBasis_flip (B : BilinForm K V) (hB : B.Nondegenerate) {ι}
+lemma dualBasis_dualBasis_flip [FiniteDimensional K V]
+    (B : BilinForm K V) (hB : B.Nondegenerate) {ι : Type*}
     [Finite ι] [DecidableEq ι] (b : Basis ι K V) :
     B.dualBasis hB (B.flip.dualBasis hB.flip b) = b := by
   ext i
@@ -450,6 +453,8 @@ end DualBasis
 
 section LinearAdjoints
 
+variable [FiniteDimensional K V]
+
 /-- Given bilinear forms `B₁, B₂` where `B₂` is nondegenerate, `symmCompOfNondegenerate`
 is the linear map `B₂ ∘ B₁`. -/
 noncomputable def symmCompOfNondegenerate (B₁ B₂ : BilinForm K V) (b₂ : B₂.Nondegenerate) :
@@ -459,7 +464,7 @@ noncomputable def symmCompOfNondegenerate (B₁ B₂ : BilinForm K V) (b₂ : B�
 theorem comp_symmCompOfNondegenerate_apply (B₁ : BilinForm K V) {B₂ : BilinForm K V}
     (b₂ : B₂.Nondegenerate) (v : V) :
     B₂ (B₁.symmCompOfNondegenerate B₂ b₂ v) = B₁ v := by
-  erw [symmCompOfNondegenerate]
+  rw [symmCompOfNondegenerate]
   simp only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply, DFunLike.coe_fn_eq]
   erw [LinearEquiv.apply_symm_apply (B₂.toDual b₂)]
 
@@ -489,8 +494,6 @@ theorem isAdjointPair_iff_eq_of_nondegenerate (B : BilinForm K V) (b : B.Nondege
     fun h => h.symm ▸ isAdjointPairLeftAdjointOfNondegenerate _ _ _⟩
 
 end LinearAdjoints
-
-end FiniteDimensional
 
 end BilinForm
 

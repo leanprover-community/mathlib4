@@ -20,8 +20,6 @@ universe u
 
 namespace CategoryTheory
 
---open scoped CategoryTheory.Type -- Porting note: unknown namespace
-
 /-- A Grothendieck topology associated to the category of all types.
 A sieve is a covering iff it is jointly surjective. -/
 def typesGrothendieckTopology : GrothendieckTopology (Type u) where
@@ -140,20 +138,25 @@ theorem eval_app (S₁ S₂ : SheafOfTypes.{u} typesGrothendieckTopology) (f : S
 /-- `yoneda'` induces an equivalence of category between `Type u` and
 `SheafOfTypes typesGrothendieckTopology`. -/
 @[simps!]
-noncomputable def typeEquiv : Type u ≌ SheafOfTypes typesGrothendieckTopology :=
-  Equivalence.mk yoneda' (sheafOfTypesToPresheaf _ ⋙ (evaluation _ _).obj (op PUnit))
-    (NatIso.ofComponents
+noncomputable def typeEquiv : Type u ≌ SheafOfTypes typesGrothendieckTopology where
+  functor := yoneda'
+  inverse := sheafOfTypesToPresheaf _ ⋙ (evaluation _ _).obj (op PUnit)
+  unitIso := NatIso.ofComponents
       (fun _α => -- α ≅ PUnit ⟶ α
         { hom := fun x _ => x
           inv := fun f => f PUnit.unit
           hom_inv_id := funext fun _ => rfl
           inv_hom_id := funext fun _ => funext fun y => PUnit.casesOn y rfl })
-      fun _ => rfl)
-    (Iso.symm <|
+      fun _ => rfl
+  counitIso := Iso.symm <|
       NatIso.ofComponents (fun S => equivYoneda' S) fun {S₁ S₂} f =>
-        SheafOfTypes.Hom.ext _ _ <|
-          NatTrans.ext _ _ <|
-            funext fun α => funext fun s => funext fun x => eval_app S₁ S₂ f (unop α) s x)
+        SheafOfTypes.Hom.ext <| NatTrans.ext <|
+          funext fun α => funext fun s => funext fun x => eval_app S₁ S₂ f (unop α) s x
+  functor_unitIso_comp X := by
+    ext1
+    apply yonedaEquiv.injective
+    dsimp [yoneda', yonedaEquiv, evalEquiv]
+    erw [typesGlue_eval]
 
 theorem subcanonical_typesGrothendieckTopology : Sheaf.Subcanonical typesGrothendieckTopology.{u} :=
   Sheaf.Subcanonical.of_yoneda_isSheaf _ fun _ => isSheaf_yoneda'

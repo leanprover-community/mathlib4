@@ -3,7 +3,6 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Module.LinearMap.Defs
 
 /-!
@@ -82,6 +81,8 @@ the second approach only when you need to weaken a condition on either `R` or `A
 -/
 
 assert_not_exists Field
+assert_not_exists Finset
+assert_not_exists Module.End
 
 universe u v w u₁ v₁
 
@@ -163,26 +164,6 @@ theorem coe_sub (a b : R) :
   map_sub (algebraMap R A) a b
 
 end CommRingRing
-
-section CommSemiringCommSemiring
-
-variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
-
--- direct to_additive fails because of some mix-up with polynomials
-@[norm_cast]
-theorem coe_prod {ι : Type*} {s : Finset ι} (a : ι → R) :
-    (↑(∏ i ∈ s, a i : R) : A) = ∏ i ∈ s, (↑(a i) : A) :=
-  map_prod (algebraMap R A) a s
-
--- to_additive fails for some reason
-@[norm_cast]
-theorem coe_sum {ι : Type*} {s : Finset ι} (a : ι → R) :
-    ↑(∑ i ∈ s, a i) = ∑ i ∈ s, (↑(a i) : A) :=
-  map_sum (algebraMap R A) a s
-
--- Porting note: removed attribute [to_additive] coe_prod; why should this be a `to_additive`?
-
-end CommSemiringCommSemiring
 
 end algebraMap
 
@@ -380,5 +361,3 @@ theorem algebraMap.coe_smul (A B C : Type*) [SMul A B] [CommSemiring B] [Semirin
   ((a • b : B) : C) = (a • b) • 1 := Algebra.algebraMap_eq_smul_one _
   _ = a • (b • 1) := smul_assoc ..
   _ = a • (b : C) := congrArg _ (Algebra.algebraMap_eq_smul_one b).symm
-
-assert_not_exists Module.End

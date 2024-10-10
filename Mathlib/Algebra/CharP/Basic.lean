@@ -132,14 +132,14 @@ theorem CharP.neg_one_pow_char [Ring R] (p : ℕ) [CharP R p] [Fact p.Prime] :
     (-1 : R) ^ p = -1 := by
   rw [eq_neg_iff_add_eq_zero]
   nth_rw 2 [← one_pow p]
-  rw [← add_pow_char_of_commute R _ _ (Commute.one_right _), add_left_neg,
+  rw [← add_pow_char_of_commute R _ _ (Commute.one_right _), neg_add_cancel,
     zero_pow (Fact.out (p := Nat.Prime p)).ne_zero]
 
 theorem CharP.neg_one_pow_char_pow [Ring R] (p n : ℕ) [CharP R p] [Fact p.Prime] :
     (-1 : R) ^ p ^ n = -1 := by
   rw [eq_neg_iff_add_eq_zero]
   nth_rw 2 [← one_pow (p ^ n)]
-  rw [← add_pow_char_pow_of_commute R _ _ (Commute.one_right _), add_left_neg,
+  rw [← add_pow_char_pow_of_commute R _ _ (Commute.one_right _), neg_add_cancel,
     zero_pow (pow_ne_zero _ (Fact.out (p := Nat.Prime p)).ne_zero)]
 
 namespace CharP

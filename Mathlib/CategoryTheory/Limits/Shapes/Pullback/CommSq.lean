@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2022 Scott Morrison. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Joël Riou, Calle Sönne
+Authors: Kim Morrison, Joël Riou, Calle Sönne
 -/
 import Mathlib.CategoryTheory.CommSq
 import Mathlib.CategoryTheory.Limits.Opposites
@@ -280,22 +280,22 @@ noncomputable def isoIsPullback (h : IsPullback fst snd f g) (h' : IsPullback fs
 
 @[reassoc (attr := simp)]
 theorem isoIsPullback_hom_fst (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
-    (h.isoIsPullback h').hom ≫ fst' = fst :=
+    (h.isoIsPullback _ _ h').hom ≫ fst' = fst :=
   IsLimit.conePointUniqueUpToIso_hom_comp h.isLimit h'.isLimit WalkingCospan.left
 
 @[reassoc (attr := simp)]
 theorem isoIsPullback_hom_snd (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
-    (h.isoIsPullback h').hom ≫ snd' = snd :=
+    (h.isoIsPullback _ _ h').hom ≫ snd' = snd :=
   IsLimit.conePointUniqueUpToIso_hom_comp h.isLimit h'.isLimit WalkingCospan.right
 
 @[reassoc (attr := simp)]
 theorem isoIsPullback_inv_fst (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
-    (h.isoIsPullback h').inv ≫ fst = fst' := by
+    (h.isoIsPullback _ _ h').inv ≫ fst = fst' := by
   simp only [Iso.inv_comp_eq, isoIsPullback_hom_fst]
 
 @[reassoc (attr := simp)]
 theorem isoIsPullback_inv_snd (h : IsPullback fst snd f g) (h' : IsPullback fst' snd' f g) :
-    (h.isoIsPullback h').inv ≫ snd = snd' := by
+    (h.isoIsPullback _ _ h').inv ≫ snd = snd' := by
   simp only [Iso.inv_comp_eq, isoIsPullback_hom_snd]
 
 end
@@ -468,22 +468,22 @@ noncomputable def isoIsPushout (h : IsPushout f g inl inr) (h' : IsPushout f g i
 
 @[reassoc (attr := simp)]
 theorem inl_isoIsPushout_hom (h : IsPushout f g inl inr) (h' : IsPushout f g inl' inr') :
-    inl ≫ (h.isoIsPushout h').hom = inl' :=
+    inl ≫ (h.isoIsPushout _ _ h').hom = inl' :=
   IsColimit.comp_coconePointUniqueUpToIso_hom h.isColimit h'.isColimit WalkingSpan.left
 
 @[reassoc (attr := simp)]
 theorem inr_isoIsPushout_hom (h : IsPushout f g inl inr) (h' : IsPushout f g inl' inr') :
-    inr ≫ (h.isoIsPushout h').hom = inr' :=
+    inr ≫ (h.isoIsPushout _ _ h').hom = inr' :=
   IsColimit.comp_coconePointUniqueUpToIso_hom h.isColimit h'.isColimit WalkingSpan.right
 
 @[reassoc (attr := simp)]
 theorem inl_isoIsPushout_inv (h : IsPushout f g inl inr) (h' : IsPushout f g inl' inr') :
-    inl' ≫ (h.isoIsPushout h').inv = inl := by
+    inl' ≫ (h.isoIsPushout _ _ h').inv = inl := by
   simp only [Iso.comp_inv_eq, inl_isoIsPushout_hom]
 
 @[reassoc (attr := simp)]
 theorem inr_isoIsPushout_inv (h : IsPushout f g inl inr) (h' : IsPushout f g inl' inr') :
-    inr' ≫ (h.isoIsPushout h').inv = inr := by
+    inr' ≫ (h.isoIsPushout _ _ h').inv = inr := by
   simp only [Iso.comp_inv_eq, inr_isoIsPushout_hom]
 
 end
@@ -609,7 +609,7 @@ theorem paste_vert {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁�
     {h₃₁ : X₃₁ ⟶ X₃₂} {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₂₁ : X₂₁ ⟶ X₃₁} {v₂₂ : X₂₂ ⟶ X₃₂}
     (s : IsPullback h₁₁ v₁₁ v₁₂ h₂₁) (t : IsPullback h₂₁ v₂₁ v₂₂ h₃₁) :
     IsPullback h₁₁ (v₁₁ ≫ v₂₁) (v₁₂ ≫ v₂₂) h₃₁ :=
-  of_isLimit (bigSquareIsPullback _ _ _ _ _ _ _ s.w t.w t.isLimit s.isLimit)
+  of_isLimit (pasteHorizIsPullback rfl t.isLimit s.isLimit)
 
 /-- Paste two pullback squares "horizontally" to obtain another pullback square.
 
@@ -648,7 +648,7 @@ theorem of_bot {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁₁ : 
     {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₂₁ : X₂₁ ⟶ X₃₁} {v₂₂ : X₂₂ ⟶ X₃₂}
     (s : IsPullback h₁₁ (v₁₁ ≫ v₂₁) (v₁₂ ≫ v₂₂) h₃₁) (p : h₁₁ ≫ v₁₂ = v₁₁ ≫ h₂₁)
     (t : IsPullback h₂₁ v₂₁ v₂₂ h₃₁) : IsPullback h₁₁ v₁₁ v₁₂ h₂₁ :=
-  of_isLimit (leftSquareIsPullback _ _ _ _ _ _ _ p t.w t.isLimit s.isLimit)
+  of_isLimit (leftSquareIsPullback (PullbackCone.mk h₁₁ _ p) rfl t.isLimit s.isLimit)
 
 /-- Given a pullback square assembled from a commuting square on the left and
 a pullback square on the right, the left square is a pullback square.
@@ -913,7 +913,7 @@ theorem paste_vert {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁�
     {h₃₁ : X₃₁ ⟶ X₃₂} {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₂₁ : X₂₁ ⟶ X₃₁} {v₂₂ : X₂₂ ⟶ X₃₂}
     (s : IsPushout h₁₁ v₁₁ v₁₂ h₂₁) (t : IsPushout h₂₁ v₂₁ v₂₂ h₃₁) :
     IsPushout h₁₁ (v₁₁ ≫ v₂₁) (v₁₂ ≫ v₂₂) h₃₁ :=
-  of_isColimit (bigSquareIsPushout _ _ _ _ _ _ _ s.w t.w t.isColimit s.isColimit)
+  of_isColimit (pasteHorizIsPushout rfl s.isColimit t.isColimit)
 
 /-- Paste two pushout squares "horizontally" to obtain another pushout square.
 
@@ -952,7 +952,8 @@ theorem of_top {X₁₁ X₁₂ X₂₁ X₂₂ X₃₁ X₃₂ : C} {h₁₁ : 
     {v₁₁ : X₁₁ ⟶ X₂₁} {v₁₂ : X₁₂ ⟶ X₂₂} {v₂₁ : X₂₁ ⟶ X₃₁} {v₂₂ : X₂₂ ⟶ X₃₂}
     (s : IsPushout h₁₁ (v₁₁ ≫ v₂₁) (v₁₂ ≫ v₂₂) h₃₁) (p : h₂₁ ≫ v₂₂ = v₂₁ ≫ h₃₁)
     (t : IsPushout h₁₁ v₁₁ v₁₂ h₂₁) : IsPushout h₂₁ v₂₁ v₂₂ h₃₁ :=
-  of_isColimit (rightSquareIsPushout _ _ _ _ _ _ _ t.w p t.isColimit s.isColimit)
+  of_isColimit <| rightSquareIsPushout
+    (PushoutCocone.mk _ _ p) (cocone_inr _) t.isColimit s.isColimit
 
 /-- Given a pushout square assembled from a pushout square on the left and
 a commuting square on the right, the right square is a pushout square.

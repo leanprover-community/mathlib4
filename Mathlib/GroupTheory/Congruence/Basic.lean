@@ -110,12 +110,11 @@ variable [Mul M] [Mul N] [Mul P] (c : Con M)
 instance : Inhabited (Con M) :=
   ⟨conGen EmptyRelation⟩
 
--- Porting note: upgraded to FunLike
 /-- A coercion from a congruence relation to its underlying binary relation. -/
 @[to_additive "A coercion from an additive congruence relation to its underlying binary relation."]
 instance : FunLike (Con M) M (M → Prop) where
   coe c := c.r
-  coe_injective' := fun x y h => by
+  coe_injective' x y h := by
     rcases x with ⟨⟨x, _⟩, _⟩
     rcases y with ⟨⟨y, _⟩, _⟩
     have : x = y := h
@@ -151,7 +150,7 @@ theorem rel_mk {s : Setoid M} {h a b} : Con.mk s h a b ↔ r a b :=
 @[to_additive "Given a type `M` with an addition, `x, y ∈ M`, and an additive congruence relation
 `c` on `M`, `(x, y) ∈ M × M` iff `x` is related to `y` by `c`."]
 instance : Membership (M × M) (Con M) :=
-  ⟨fun x c => c x.1 x.2⟩
+  ⟨fun c x => c x.1 x.2⟩
 
 variable {c}
 
@@ -170,11 +169,6 @@ theorem ext {c d : Con M} (H : ∀ x y, c x y ↔ d x y) : c = d :=
 relation is injective."]
 theorem toSetoid_inj {c d : Con M} (H : c.toSetoid = d.toSetoid) : c = d :=
   ext <| ext_iff.1 H
-
-/-- Iff version of extensionality rule for congruence relations. -/
-@[to_additive "Iff version of extensionality rule for additive congruence relations."]
-protected theorem ext_iff {c d : Con M} : c = d ↔ (∀ x y, c x y ↔ d x y) :=
-  ⟨fun h _ _ => h ▸ Iff.rfl, ext⟩
 
 /-- Two congruence relations are equal iff their underlying binary relations are equal. -/
 @[to_additive "Two additive congruence relations are equal iff their underlying binary relations
@@ -382,7 +376,7 @@ theorem coe_sInf (S : Set (Con M)) :
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_iInf {ι : Sort*} (f : ι → Con M) : ⇑(iInf f) = ⨅ i, ⇑(f i) := by
-  rw [iInf, coe_sInf, ← Set.range_comp, sInf_range, Function.comp]
+  rw [iInf, coe_sInf, ← Set.range_comp, sInf_range, Function.comp_def]
 
 @[to_additive]
 instance : PartialOrder (Con M) where
@@ -1045,7 +1039,7 @@ variable [Group M] [Group N] [Group P] (c : Con M)
 /-- Multiplicative congruence relations preserve inversion. -/
 @[to_additive "Additive congruence relations preserve negation."]
 protected theorem inv {x y} (h : c x y) : c x⁻¹ y⁻¹ :=
-  c.map_of_mul_left_rel_one Inv.inv (fun x => by simp only [mul_left_inv, c.refl 1]) h
+  c.map_of_mul_left_rel_one Inv.inv (fun x => by simp only [inv_mul_cancel, c.refl 1]) h
 
 /-- Multiplicative congruence relations preserve division. -/
 @[to_additive "Additive congruence relations preserve subtraction."]

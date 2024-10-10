@@ -57,14 +57,14 @@ variable [Mul M] {s : Set M}
 variable [Add A] {t : Set A}
 
 /-- `MulMemClass S M` says `S` is a type of sets `s : Set M` that are closed under `(*)` -/
-class MulMemClass (S : Type*) (M : Type*) [Mul M] [SetLike S M] : Prop where
+class MulMemClass (S : Type*) (M : outParam Type*) [Mul M] [SetLike S M] : Prop where
   /-- A substructure satisfying `MulMemClass` is closed under multiplication. -/
   mul_mem : ∀ {s : S} {a b : M}, a ∈ s → b ∈ s → a * b ∈ s
 
 export MulMemClass (mul_mem)
 
 /-- `AddMemClass S M` says `S` is a type of sets `s : Set M` that are closed under `(+)` -/
-class AddMemClass (S : Type*) (M : Type*) [Add M] [SetLike S M] : Prop where
+class AddMemClass (S : Type*) (M : outParam Type*) [Add M] [SetLike S M] : Prop where
   /-- A substructure satisfying `AddMemClass` is closed under addition. -/
   add_mem : ∀ {s : S} {a b : M}, a ∈ s → b ∈ s → a + b ∈ s
 
@@ -111,7 +111,7 @@ theorem mem_mk {s : Set M} {x : M} (h_mul) : x ∈ mk s h_mul ↔ x ∈ s :=
   Iff.rfl
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_set_mk {s : Set M} (h_mul) : (mk s h_mul : Set M) = s :=
+theorem coe_set_mk (s : Set M) (h_mul) : (mk s h_mul : Set M) = s :=
   rfl
 
 @[to_additive (attr := simp)]
@@ -298,7 +298,7 @@ theorem closure_induction {p : M → Prop} {x} (h : x ∈ closure s) (mem : ∀ 
     (mul : ∀ x y, p x → p y → p (x * y)) : p x :=
   (@closure_le _ _ _ ⟨p, mul _ _⟩).2 mem h
 
-/-- A dependent version of `Subsemigroup.closure_induction`.  -/
+/-- A dependent version of `Subsemigroup.closure_induction`. -/
 @[to_additive (attr := elab_as_elim) "A dependent version of `AddSubsemigroup.closure_induction`. "]
 theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure s → Prop}
     (mem : ∀ (x) (h : x ∈ s), p x (subset_closure h))
@@ -309,7 +309,7 @@ theorem closure_induction' (s : Set M) {p : ∀ x, x ∈ closure s → Prop}
     closure_induction hx (fun x hx => ⟨_, mem x hx⟩) fun x y ⟨hx', hx⟩ ⟨hy', hy⟩ =>
       ⟨_, mul _ _ _ _ hx hy⟩
 
-/-- An induction principle for closure membership for predicates with two arguments.  -/
+/-- An induction principle for closure membership for predicates with two arguments. -/
 @[to_additive (attr := elab_as_elim) "An induction principle for additive closure membership for
   predicates with two arguments."]
 theorem closure_induction₂ {p : M → M → Prop} {x} {y : M} (hx : x ∈ closure s) (hy : y ∈ closure s)

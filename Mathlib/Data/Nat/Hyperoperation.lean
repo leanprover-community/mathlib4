@@ -104,7 +104,7 @@ theorem hyperoperation_ge_four_zero (n k : ℕ) :
     hyperoperation (n + 4) 0 k = if Even k then 1 else 0 := by
   induction' k with kk kih
   · rw [hyperoperation_ge_three_eq_one]
-    simp only [Nat.zero_eq, even_zero, if_true]
+    simp only [even_zero, if_true]
   · rw [hyperoperation_recursion]
     rw [kih]
     simp_rw [Nat.even_add_one]

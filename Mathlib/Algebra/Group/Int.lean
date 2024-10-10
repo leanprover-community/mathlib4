@@ -38,7 +38,7 @@ instance instAddCommGroup : AddCommGroup ℤ where
   add_assoc := Int.add_assoc
   add_zero := Int.add_zero
   zero_add := Int.zero_add
-  add_left_neg := Int.add_left_neg
+  neg_add_cancel := Int.add_left_neg
   nsmul := (·*·)
   nsmul_zero := Int.zero_mul
   nsmul_succ n x :=
@@ -47,7 +47,7 @@ instance instAddCommGroup : AddCommGroup ℤ where
   zsmul := (·*·)
   zsmul_zero' := Int.zero_mul
   zsmul_succ' m n := by
-    simp only [ofNat_eq_coe, ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
+    simp only [ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
   zsmul_neg' m n := by simp only [negSucc_coe, ofNat_succ, Int.neg_mul]
   sub_eq_add_neg _ _ := Int.sub_eq_add_neg
 
@@ -207,7 +207,7 @@ lemma even_sub : Even (m - n) ↔ (Even m ↔ Even n) := by simp [sub_eq_add_neg
   simp [even_iff, h₁, h₂, Int.mul_emod]
 
 @[parity_simps] lemma even_pow {n : ℕ} : Even (m ^ n) ↔ Even m ∧ n ≠ 0 := by
-  induction' n with n ih <;> simp [*, even_mul, pow_succ]; tauto
+  induction n <;> simp [*, even_mul, pow_succ]; tauto
 
 lemma even_pow' {n : ℕ} (h : n ≠ 0) : Even (m ^ n) ↔ Even m := even_pow.trans <| and_iff_left h
 

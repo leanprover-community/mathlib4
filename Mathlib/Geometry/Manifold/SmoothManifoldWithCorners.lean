@@ -20,13 +20,13 @@ With this groupoid at hand and the general machinery of charted spaces, we thus 
 of `C^n` manifold with respect to any model with corners `I` on `(E, H)`. We also introduce a
 specific type class for `C^∞` manifolds as these are the most commonly used.
 
-Some texts assume manifolds to be Hausdorff and secound countable. We (in mathlib) assume neither,
+Some texts assume manifolds to be Hausdorff and second countable. We (in mathlib) assume neither,
 but add these assumptions later as needed. (Quite a few results still do not require them.)
 
 ## Main definitions
 
 * `ModelWithCorners 𝕜 E H` :
-  a structure containing informations on the way a space `H` embeds in a
+  a structure containing information on the way a space `H` embeds in a
   model vector space E over the field `𝕜`. This is all that is needed to
   define a smooth manifold with model space `H`, and model vector space `E`.
 * `modelWithCornersSelf 𝕜 E` :
@@ -129,7 +129,7 @@ scoped[Manifold] notation "∞" => (⊤ : ℕ∞)
 /-! ### Models with corners. -/
 
 
-/-- A structure containing informations on the way a space `H` embeds in a
+/-- A structure containing information on the way a space `H` embeds in a
 model vector space `E` over the field `𝕜`. This is all what is needed to
 define a smooth manifold with model space `H`, and model vector space `E`.
 -/
@@ -138,7 +138,7 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] extends
     PartialEquiv H E where
   source_eq : source = univ
-  unique_diff' : UniqueDiffOn 𝕜 toPartialEquiv.target
+  uniqueDiffOn' : UniqueDiffOn 𝕜 toPartialEquiv.target
   continuous_toFun : Continuous toFun := by continuity
   continuous_invFun : Continuous invFun := by continuity
 
@@ -149,7 +149,7 @@ def modelWithCornersSelf (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] : ModelWithCorners 𝕜 E E where
   toPartialEquiv := PartialEquiv.refl E
   source_eq := rfl
-  unique_diff' := uniqueDiffOn_univ
+  uniqueDiffOn' := uniqueDiffOn_univ
   continuous_toFun := continuous_id
   continuous_invFun := continuous_id
 
@@ -236,8 +236,11 @@ theorem target_eq : I.target = range (I : H → E) := by
   rw [← image_univ, ← I.source_eq]
   exact I.image_source_eq_target.symm
 
-protected theorem unique_diff : UniqueDiffOn 𝕜 (range I) :=
-  I.target_eq ▸ I.unique_diff'
+protected theorem uniqueDiffOn : UniqueDiffOn 𝕜 (range I) :=
+  I.target_eq ▸ I.uniqueDiffOn'
+
+@[deprecated (since := "2024-09-30")]
+protected alias unique_diff := ModelWithCorners.uniqueDiffOn
 
 @[simp, mfld_simps]
 protected theorem left_inv (x : H) : I.symm (I x) = x := by refine I.left_inv' ?_; simp
@@ -290,17 +293,26 @@ theorem symm_map_nhdsWithin_image {x : H} {s : Set H} : map I.symm (𝓝[I '' s]
 theorem symm_map_nhdsWithin_range (x : H) : map I.symm (𝓝[range I] I x) = 𝓝 x := by
   rw [← I.map_nhds_eq, map_map, I.symm_comp_self, map_id]
 
-theorem unique_diff_preimage {s : Set H} (hs : IsOpen s) :
+theorem uniqueDiffOn_preimage {s : Set H} (hs : IsOpen s) :
     UniqueDiffOn 𝕜 (I.symm ⁻¹' s ∩ range I) := by
   rw [inter_comm]
-  exact I.unique_diff.inter (hs.preimage I.continuous_invFun)
+  exact I.uniqueDiffOn.inter (hs.preimage I.continuous_invFun)
 
-theorem unique_diff_preimage_source {β : Type*} [TopologicalSpace β] {e : PartialHomeomorph H β} :
+@[deprecated (since := "2024-09-30")]
+alias unique_diff_preimage := uniqueDiffOn_preimage
+
+theorem uniqueDiffOn_preimage_source {β : Type*} [TopologicalSpace β] {e : PartialHomeomorph H β} :
     UniqueDiffOn 𝕜 (I.symm ⁻¹' e.source ∩ range I) :=
-  I.unique_diff_preimage e.open_source
+  I.uniqueDiffOn_preimage e.open_source
 
-theorem unique_diff_at_image {x : H} : UniqueDiffWithinAt 𝕜 (range I) (I x) :=
-  I.unique_diff _ (mem_range_self _)
+@[deprecated (since := "2024-09-30")]
+alias unique_diff_preimage_source := uniqueDiffOn_preimage_source
+
+theorem uniqueDiffWithinAt_image {x : H} : UniqueDiffWithinAt 𝕜 (range I) (I x) :=
+  I.uniqueDiffOn _ (mem_range_self _)
+
+@[deprecated (since := "2024-09-30")]
+alias unique_diff_at_image := uniqueDiffWithinAt_image
 
 theorem symm_continuousWithinAt_comp_right_iff {X} [TopologicalSpace X] {f : H → X} {s : Set H}
     {x : H} :
@@ -309,7 +321,7 @@ theorem symm_continuousWithinAt_comp_right_iff {X} [TopologicalSpace X] {f : H �
   · have := h.comp I.continuousWithinAt (mapsTo_preimage _ _)
     simp_rw [preimage_inter, preimage_preimage, I.left_inv, preimage_id', preimage_range,
       inter_univ] at this
-    rwa [Function.comp.assoc, I.symm_comp_self] at this
+    rwa [Function.comp_assoc, I.symm_comp_self] at this
   · rw [← I.left_inv x] at h; exact h.comp I.continuousWithinAt_symm inter_subset_left
 
 protected theorem locallyCompactSpace [LocallyCompactSpace E] (I : ModelWithCorners 𝕜 E H) :
@@ -369,9 +381,9 @@ def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Ty
     invFun := fun x => (I.symm x.1, I'.symm x.2)
     source := { x | x.1 ∈ I.source ∧ x.2 ∈ I'.source }
     source_eq := by simp only [setOf_true, mfld_simps]
-    unique_diff' := I.unique_diff'.prod I'.unique_diff'
-    continuous_toFun := I.continuous_toFun.prod_map I'.continuous_toFun
-    continuous_invFun := I.continuous_invFun.prod_map I'.continuous_invFun }
+    uniqueDiffOn' := I.uniqueDiffOn'.prod I'.uniqueDiffOn'
+    continuous_toFun := I.continuous_toFun.prodMap I'.continuous_toFun
+    continuous_invFun := I.continuous_invFun.prodMap I'.continuous_invFun }
 
 /-- Given a finite family of `ModelWithCorners` `I i` on `(E i, H i)`, we define the model with
 corners `pi I` on `(Π i, E i, ModelPi H)`. See note [Manifold type tags] for explanation about
@@ -382,7 +394,7 @@ def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Typ
     ModelWithCorners 𝕜 (∀ i, E i) (ModelPi H) where
   toPartialEquiv := PartialEquiv.pi fun i => (I i).toPartialEquiv
   source_eq := by simp only [pi_univ, mfld_simps]
-  unique_diff' := UniqueDiffOn.pi ι E _ _ fun i _ => (I i).unique_diff'
+  uniqueDiffOn' := UniqueDiffOn.pi ι E _ _ fun i _ => (I i).uniqueDiffOn'
   continuous_toFun := continuous_pi fun i => (I i).continuous.comp (continuous_apply i)
   continuous_invFun := continuous_pi fun i => (I i).continuous_symm.comp (continuous_apply i)
 
@@ -427,7 +439,7 @@ section Boundaryless
 
 /-- Property ensuring that the model with corners `I` defines manifolds without boundary. This
   differs from the more general `BoundarylessManifold`, which requires every point on the manifold
-  to be an interior point.  -/
+  to be an interior point. -/
 class ModelWithCorners.Boundaryless {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) : Prop where
@@ -1057,7 +1069,7 @@ theorem extChartAt_target (x : M) :
 
 theorem uniqueDiffOn_extChartAt_target (x : M) : UniqueDiffOn 𝕜 (extChartAt I x).target := by
   rw [extChartAt_target]
-  exact I.unique_diff_preimage (chartAt H x).open_target
+  exact I.uniqueDiffOn_preimage (chartAt H x).open_target
 
 theorem uniqueDiffWithinAt_extChartAt_target (x : M) :
     UniqueDiffWithinAt 𝕜 (extChartAt I x).target (extChartAt I x x) :=
@@ -1339,13 +1351,13 @@ section Topology
 variable
   {E : Type*} {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-  (I : ModelWithCorners 𝕜 E H) {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  [HasGroupoid M (contDiffGroupoid 0 I)]
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
 /-- A finite-dimensional manifold modelled on a locally compact field
   (such as ℝ, ℂ or the `p`-adic numbers) is locally compact. -/
-lemma Manifold.locallyCompact_of_finiteDimensional [LocallyCompactSpace 𝕜]
-    [FiniteDimensional 𝕜 E] : LocallyCompactSpace M := by
+lemma Manifold.locallyCompact_of_finiteDimensional
+    (I : ModelWithCorners 𝕜 E H) [LocallyCompactSpace 𝕜] [FiniteDimensional 𝕜 E] :
+    LocallyCompactSpace M := by
   have : ProperSpace E := FiniteDimensional.proper 𝕜 E
   have : LocallyCompactSpace H := I.locallyCompactSpace
   exact ChartedSpace.locallyCompactSpace H M
