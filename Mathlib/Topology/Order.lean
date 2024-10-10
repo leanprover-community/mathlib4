@@ -398,7 +398,7 @@ theorem induced_iInf {ι : Sort w} {t : ι → TopologicalSpace α} :
 
 @[simp]
 theorem induced_sInf {s : Set (TopologicalSpace α)} :
-    TopologicalSpace.induced g (sInf s) = sInf ((TopologicalSpace.induced g) '' s) := by
+    TopologicalSpace.induced g (sInf s) = sInf (TopologicalSpace.induced g '' s) := by
   rw [sInf_eq_iInf', sInf_image', induced_iInf]
 
 @[simp]
