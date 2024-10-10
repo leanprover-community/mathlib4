@@ -15,8 +15,6 @@ namespace Mathlib.Linter
 /--
 If `stx` is a declaration, then `getNames stx` returns the array of identifiers
 for the name of the declarations whose syntax range is contained in `stx`.
-
-If `stx` is not a declaration, then `getNames stx` returns `#[]`.
 -/
 def getNames {m} [Monad m] [MonadEnv m] [MonadFileMap m] (stx : Syntax) : m (Array Syntax) := do
   let drs := declRangeExt.getState (← getEnv)

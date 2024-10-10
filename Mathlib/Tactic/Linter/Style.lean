@@ -69,7 +69,7 @@ initialize addLinter setOptionLinter
 
 end Style.setOption
 
-/-- The `check_declID` linter emits a warning on declarations whose name is non-standard style.
+/-- The `nameCheck` linter emits a warning on declarations whose name is non-standard style.
 (Currently, this only includes declarations whose names include a double underscore.)
 
 **Why is this bad?** Double underscores in theorem names can be considered non-standard style and
@@ -77,12 +77,12 @@ probably have been introduced by accident
 **How to fix this?** Use single underscores to separate parts of a name, following standard naming
 conventions.
 -/
-register_option linter.style.check_declID : Bool := {
+register_option linter.style.nameCheck : Bool := {
   defValue := false
-  descr := "enable the `check_declID` linter"
+  descr := "enable the `nameCheck` linter"
 }
 
-namespace Style.checkDeclID
+namespace Style.nameCheck
 
 /-- Checks whether the original input of a given syntax contains "__". -/
 def contains_double_underscore (stx : Syntax) : Bool :=
@@ -90,20 +90,20 @@ def contains_double_underscore (stx : Syntax) : Bool :=
   | some str => 1 < (str.toString.splitOn "__").length
   | none => false
 
-@[inherit_doc linter.style.check_declID]
-def checkDeclIDLinter: Linter where run := withSetOptionIn fun stx => do
-    unless Linter.getLinterValue linter.style.check_declID (← getOptions) do
+@[inherit_doc linter.style.nameCheck]
+def doubleUnderscore: Linter where run := withSetOptionIn fun stx => do
+    unless Linter.getLinterValue linter.style.nameCheck (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
     for sytax in (← getNames stx) do
       if contains_double_underscore sytax then
-        Linter.logLint linter.style.check_declID sytax
+        Linter.logLint linter.style.nameCheck sytax
           m!"The declID '{sytax}' contains '__', which does not follow the mathlib naming \
              conventions. Consider using single underscores instead."
 
-initialize addLinter checkDeclIDLinter
+initialize addLinter doubleUnderscore
 
-end Style.checkDeclID
+end Style.nameCheck
 
 end Mathlib.Linter
