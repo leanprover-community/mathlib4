@@ -98,3 +98,13 @@ theorem RelIso.preimage_eq_image_symm (e : r ≃r s) (t : Set β) : e ⁻¹' t =
   rw [e.symm.image_eq_preimage_symm]; rfl
 
 end image
+
+theorem acc_of_acc_subrel {r : α → α → Prop} [IsTrans α r] {c : α} (a : { b // r b c })
+    (h : Acc (Subrel r { b | r b c }) a) : Acc r a.1 :=
+  h.recOn fun a _ IH ↦ ⟨_, fun _ hb ↦ IH ⟨_, _root_.trans hb a.2⟩ hb⟩
+
+/-- A relation `r` is well-founded iff every interval `{ a | r a b }` of it is well-founded. -/
+theorem wellFounded_iff_wellFounded_subrel {r : α → α → Prop} [IsTrans α r] :
+    WellFounded r ↔ ∀ b, WellFounded (Subrel r { a | r a b }) where
+  mp h _ := InvImage.wf Subtype.val h
+  mpr h := ⟨fun a ↦ ⟨_, fun b hr ↦ acc_of_acc_subrel ⟨b, hr⟩ ((h a).apply _)⟩⟩
