@@ -168,7 +168,7 @@ We first prove that the action topology on `R` considered as a module over itsel
 is `R`'s topology.
 
 -/
-instance instSelf (R : Type*) [Semiring R] [τR : TopologicalSpace R] [TopologicalSemiring R] :
+instance _root_.TopologicalSemiring.toIsActionTopology (R : Type*) [Semiring R] [τR : TopologicalSpace R] [TopologicalSemiring R] :
     IsActionTopology R R := by
   constructor
   /- Let `R` be a topological ring with topology τR. To prove that `τR` is the action
