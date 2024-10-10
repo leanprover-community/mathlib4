@@ -103,6 +103,8 @@ namespace IsPointwiseLeftKanExtensionAt
 variable {E} {Y : D} (h : E.IsPointwiseLeftKanExtensionAt Y)
   [HasColimit (CostructuredArrow.proj L Y ⋙ F)]
 
+/-- A pointwise left Kan extension of `F` along `L` applied to an object `Y` is isomorphic to
+`colimit (CostructuredArrow.proj L Y ⋙ F)`. -/
 noncomputable def isoColimit :
     E.right.obj Y ≅ colimit (CostructuredArrow.proj L Y ⋙ F) :=
   h.coconePointUniqueUpToIso (colimit.isColimit _)
@@ -238,6 +240,8 @@ namespace IsPointwiseRightKanExtensionAt
 variable {E} {Y : D} (h : E.IsPointwiseRightKanExtensionAt Y)
   [HasLimit (StructuredArrow.proj Y L ⋙ F)]
 
+/-- A pointwise right Kan extension of `F` along `L` applied to an object `Y` is isomorphic to
+`limit (StructuredArrow.proj Y L ⋙ F)`. -/
 noncomputable def isoLimit :
     E.left.obj Y ≅ limit (StructuredArrow.proj Y L ⋙ F) :=
   h.conePointUniqueUpToIso (limit.isLimit _)
