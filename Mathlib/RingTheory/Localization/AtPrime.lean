@@ -226,7 +226,7 @@ instance isLocalHom_localRingHom (J : Ideal P) [hJ : J.IsPrime] (f : R →+* P)
     rw [AtPrime.isUnit_mk'_iff] at hx ⊢
     exact fun hr => hx ((SetLike.ext_iff.mp hIJ r).mp hr)
 
-@[deprecated "2024-10-10"]
+@[deprecated (since := "2024-10-10")]
 alias isLocalRingHom_localRingHom := isLocalHom_localRingHom
 
 theorem localRingHom_unique (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.comap f)

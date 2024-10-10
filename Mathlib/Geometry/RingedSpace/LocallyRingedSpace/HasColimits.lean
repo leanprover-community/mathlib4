@@ -144,7 +144,7 @@ instance coequalizer_π_app_isLocalHom
     PresheafedSpace.c_isIso_of_iso _
   infer_instance
 
-@[deprecated "2024-10-10"]
+@[deprecated (since := "2024-10-10")]
 alias coequalizer_π_app_isLocalRingHom := coequalizer_π_app_isLocalHom
 
 /-!
@@ -241,7 +241,7 @@ instance coequalizer_π_stalk_isLocalHom (x : Y) :
   convert @RingedSpace.isUnit_res_basicOpen Y.toRingedSpace (unop _)
       (((coequalizer.π f.val g.val).c.app (op U)) s)
 
-@[deprecated "2024-10-10"]
+@[deprecated (since := "2024-10-10")]
 alias coequalizer_π_stalk_isLocalRingHom := coequalizer_π_stalk_isLocalHom
 
 end HasCoequalizer
