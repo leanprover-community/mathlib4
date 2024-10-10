@@ -651,7 +651,7 @@ variable [PartialOrder β] {a a' : α} {b : β}
 theorem mem_range_of_le [Preorder α] (f : α <i β) (h : b ≤ f a) : b ∈ Set.range f :=
   (f : α ≤i β).mem_range_of_le h
 
-theorem isLowerSet_range [Preorder α] (f : α ≤i β) : IsLowerSet (Set.range f) := 
+theorem isLowerSet_range [Preorder α] (f : α <i β) : IsLowerSet (Set.range f) :=
   (f : α ≤i β).isLowerSet_range
 
 -- TODO: this would follow immediately if we had a `RelEmbeddingClass`
