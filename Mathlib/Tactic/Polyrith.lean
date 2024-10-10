@@ -295,6 +295,7 @@ def serialize_polynomials(power, coeffs) -> str:
 The Sage type to use, given a base type of the target. Currently always rational numbers (`QQ`).
 Future extensions may change behavior depending on the base type.
 -/
+@[nolint unusedArguments]
 def sageTypeStr (_ : Expr) : String := "QQ"
 
 /--
@@ -361,10 +362,11 @@ instance : FromJson SageResult where fromJson? j := do
     let errorValue ← executeReply.getObjValAs? String "evalue"
     return .error { name := errorName, value := errorValue }
 
+/-- The User-Agent header value for HTTP calls to SageMath API -/
 register_option polyrith.sageUserAgent : String :=
   { defValue := "LeanProver (https://leanprover-community.github.io/)"
     group := "polyrith"
-    descr := "User-Agent value for SageMath API" }
+    descr := "The User-Agent header value for HTTP calls to SageMath API" }
 
 /--
 This tactic calls the Sage API using `curl`. The output is parsed as `SageResult`.
