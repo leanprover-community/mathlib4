@@ -366,6 +366,7 @@ theorem add_trichotomy {a b c : Nimber} (h : a + b + c ≠ 0) :
   · rw [← hx'] at hx
     exact Or.inr <| Or.inr hx
 
+/-- Nimber addition of naturals corresponds to the bitwise XOR operation. -/
 theorem add_nat (a b : ℕ) : ∗a + ∗b = ∗(a ^^^ b) := by
   apply le_antisymm
   · apply add_le_of_forall_ne
