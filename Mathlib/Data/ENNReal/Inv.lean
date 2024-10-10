@@ -846,18 +846,46 @@ lemma exists_lt_add_of_lt_add {x y z : ℝ≥0∞} (h : x < y + z) (hy : y ≠ 0
   contrapose! h;
   simpa using biSup_add_biSup_le' (by exact ⟨0, hy.bot_lt⟩) (by exact ⟨0, hz.bot_lt⟩) h
 
+/-! ### Multiplication and order -/
+
+lemma ge_of_forall_gt_iff_ge {x y : ENNReal} : (∀ z : NNReal, z < y → z ≤ x) ↔ y ≤ x := by
+  sorry
+
 private lemma top_mul_le_of_forall_mul_le {a b : ℝ≥0∞} (h : ∀ c < ∞, ∀ d < a, c * d ≤ b) :
     ∞ * a ≤ b := by
   induction a with
-  | top => sorry
-  | coe a => sorry
+  | top =>
+    refine top_mul_top ▸ WithTop.le_of_forall_lt_iff_le.1 fun c b_c ↦ ?_
+    specialize h (b + 1) (add_lt_top.2 ⟨b_c.trans coe_lt_top, one_lt_top⟩) 1 one_lt_top
+    rw [mul_one] at h
+    exact (not_le_of_lt (lt_add_right (b_c.trans coe_lt_top).ne one_ne_zero) h).rec
+  | coe a =>
+    rcases eq_zero_or_pos a with rfl | h'
+    · simp only [coe_zero, mul_zero, zero_le]
+    · rw [top_mul (coe_ne_zero.2 h'.ne.symm)]
+      refine (top_mul (coe_ne_zero.2 h'.ne.symm)) ▸ WithTop.le_of_forall_lt_iff_le.1 fun c b_c ↦ ?_
+      have : (3 * (c / a) : ENNReal) < ⊤ := mul_lt_top (by decide)
+        (div_lt_top coe_ne_top (coe_ne_zero.2 h'.ne.symm))
+      specialize h (3 * (c / a)) this (a / 2)
+        (ENNReal.half_lt_self (coe_ne_zero.2 h'.ne.symm) coe_ne_top)
+      rw [mul_assoc] at h
+      sorry
 
 lemma mul_le_of_forall_mul_le {a b c : ℝ≥0∞} (h : ∀ d < a, ∀ e < b, d * e ≤ c) : a * b ≤ c := by
   induction a with
   | top => exact top_mul_le_of_forall_mul_le h
   | coe a => induction b with
-    | top => sorry
-    | coe b => sorry
+    | top =>
+      rw [mul_comm]
+      exact top_mul_le_of_forall_mul_le fun d hd e he ↦ mul_comm d e ▸ h e he d hd
+    | coe b =>
+      refine (@ge_of_forall_gt_iff_ge c (a * b)).1 fun d d_ab ↦ ?_
+      rw [← coe_mul, coe_lt_coe] at d_ab
+      rcases exists_between d_ab with ⟨e, e_d, e_ab⟩
+      have key₁ : (a : ENNReal) * d / e < a := by sorry
+      have key₂ : (e : ENNReal) / a < b := by sorry
+      specialize h (a * d / e) key₁ (e / a) key₂
+      sorry
 
 lemma le_mul_of_forall_le_mul {a b c : ℝ≥0∞} (h₁ : a ≠ 0 ∨ b ≠ ∞) (h₂ : a ≠ ∞ ∨ b ≠ 0)
     (h : ∀ d > a, ∀ e > b, c ≤ d * e) : c ≤ a * b := by
