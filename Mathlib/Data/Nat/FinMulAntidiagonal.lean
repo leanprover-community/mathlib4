@@ -123,7 +123,7 @@ theorem prod_eq_of_mem_finMulAntidiagonal {d n : ℕ} {f : Fin d → ℕ}
     (hf : f ∈ finMulAntidiagonal d n) : ∏ i, f i = n :=
   (mem_finMulAntidiagonal.mp hf).1
 
-theorem finMulAntidiagonal_univ_eq {d m n : ℕ} (hmn : m ∣ n) (hn : n ≠ 0) :
+theorem finMulAntidiagonal_eq_piFinset_divisors_filter {d m n : ℕ} (hmn : m ∣ n) (hn : n ≠ 0) :
     finMulAntidiagonal d m =
       (Fintype.piFinset fun _ : Fin d => n.divisors).filter fun f => ∏ i, f i = m := by
   ext f
@@ -252,70 +252,5 @@ theorem card_finMulAntidiagonal_of_squarefree {d n : ℕ} (hn : Squarefree n) :
   rw [← card_finMulAntidiagonal_pi d n hn, Finset.card_pi, Finset.prod_const,
     ArithmeticFunction.cardDistinctFactors_apply, ← List.card_toFinset, toFinset_factors,
     Finset.card_fin]
-
-@[reducible]
-private def f {n : ℕ} : ∀ a ∈ finMulAntidiagonal 3 n, ℕ × ℕ := fun a _ => (a 0 * a 1, a 0 * a 2)
-
-private theorem finMulAntidiagonal_three {n : ℕ} :
-    ∀ a ∈ finMulAntidiagonal 3 n, a 0 * a 1 * a 2 = n := by
-  intro a ha
-  rw [← (mem_finMulAntidiagonal.mp ha).1, Fin.prod_univ_three a]
-
-private theorem f_img {n : ℕ} (hn : Squarefree n) (a : Fin 3 → ℕ)
-    (ha : a ∈ finMulAntidiagonal 3 n) :
-    f a ha ∈ Finset.filter (fun ⟨x, y⟩ => x.lcm y = n) (n.divisors ×ˢ n.divisors) := by
-  rw [mem_filter, Finset.mem_product, mem_divisors, mem_divisors]
-  refine ⟨⟨⟨?_, hn.ne_zero⟩, ⟨?_, hn.ne_zero⟩⟩, ?_⟩ <;> rw [f, ← finMulAntidiagonal_three a ha]
-  · apply dvd_mul_right
-  · use a 1; ring
-  dsimp only
-  rw [lcm_mul_left, Nat.Coprime.lcm_eq_mul]
-  · ring
-  refine coprime_of_squarefree_mul (hn.squarefree_of_dvd ?_)
-  use a 0; rw [← finMulAntidiagonal_three a ha]; ring
-
-private theorem f_inj {n : ℕ} (a : Fin 3 → ℕ) (ha : a ∈ finMulAntidiagonal 3 n)
-    (b : Fin 3 → ℕ) (hb : b ∈ finMulAntidiagonal 3 n) (hfab : f a ha = f b hb) :
-    a = b := by
-  obtain ⟨hfab1, hfab2⟩ := Prod.mk.inj hfab
-  have hprods : a 0 * a 1 * a 2 = a 0 * a 1 * b 2 := by
-    rw [finMulAntidiagonal_three a ha, hfab1, finMulAntidiagonal_three b hb]
-  have hab2 : a 2 = b 2 := by
-    rw [← mul_right_inj' <| mul_ne_zero (ne_zero_of_mem_finMulAntidiagonal ha 0)
-      (ne_zero_of_mem_finMulAntidiagonal ha 1)]
-    exact hprods
-  have hab0 : a 0 = b 0 := by
-    rw [hab2] at hfab2
-    exact (mul_left_inj' <| ne_zero_of_mem_finMulAntidiagonal hb 2).mp hfab2;
-  have hab1 : a 1 = b 1 := by
-    rw [hab0] at hfab1
-    exact (mul_right_inj' <| ne_zero_of_mem_finMulAntidiagonal hb 0).mp hfab1;
-  funext i; fin_cases i <;> assumption
-
-private theorem f_surj {n : ℕ} (hn : n ≠ 0) (b : ℕ × ℕ)
-    (hb : b ∈ Finset.filter (fun ⟨x, y⟩ => x.lcm y = n) (n.divisors ×ˢ n.divisors)) :
-    ∃ (a : Fin 3 → ℕ) (ha : a ∈ finMulAntidiagonal 3 n), f a ha = b := by
-  dsimp only at hb
-  let g := b.fst.gcd b.snd
-  let a := ![g, b.fst/g, b.snd/g]
-  have ha : a ∈ finMulAntidiagonal 3 n := by
-    rw [mem_finMulAntidiagonal]
-    rw [mem_filter, Finset.mem_product] at hb
-    refine ⟨?_, hn⟩
-    · rw [Fin.prod_univ_three a]
-      simp only [a, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons,
-      Matrix.cons_val_two, Matrix.tail_cons]
-      rw [Nat.mul_div_cancel_left' (Nat.gcd_dvd_left _ _), ← hb.2, lcm,
-        Nat.mul_div_assoc b.fst (Nat.gcd_dvd_right b.fst b.snd)]
-  use a; use ha
-  apply Prod.ext <;> simp only [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons]
-    <;> apply Nat.mul_div_cancel'
-  · apply Nat.gcd_dvd_left
-  · apply Nat.gcd_dvd_right
-
-theorem card_pair_lcm_eq {n : ℕ} (hn : Squarefree n) :
-    Finset.card ((n.divisors ×ˢ n.divisors).filter fun p => p.1.lcm p.2 = n) = 3 ^ ω n := by
-  rw [← card_finMulAntidiagonal_of_squarefree hn, eq_comm]
-  apply Finset.card_bij f (f_img hn) (f_inj) (f_surj hn.ne_zero)
 
 end Nat
