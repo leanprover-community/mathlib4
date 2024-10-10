@@ -196,8 +196,16 @@ noncomputable def left_to_right (adj : F ⊣ G) (commF : CommShift F A) :
     ext Y
     apply Functor.map_injective (yoneda (C := C))
     ext X u
-    simp at u
-    rw [left_to_right_iso_apply''']
+    rw [left_to_right_iso_apply''', Adjunction.comp_homEquiv, Adjunction.comp_homEquiv]
+    simp only [Equivalence.symm_inverse, comp_obj, Equivalence.symm_functor,
+      comp_homEquiv, Iso.trans_hom, Equiv.toIso_hom,
+      mapIso_hom, Iso.op_hom, Iso.app_hom, Equiv.coe_trans, types_comp_apply,
+      Equiv.symm_trans_apply, id_obj, map_comp,
+      assoc, Quiver.Hom.unop_op, Function.comp_apply,
+      CommShift.isoZero_hom_app, FunctorToTypes.comp]
+    rw [shiftEquiv_homEquiv_zero' D 0 rfl]
+
+#exit
     simp only [Equivalence.symm_inverse, comp_obj, Equivalence.symm_functor,
       comp_homEquiv, Iso.trans_hom, Equiv.toIso_hom,
       mapIso_hom, Iso.op_hom, Iso.app_hom, Equiv.coe_trans, types_comp_apply,

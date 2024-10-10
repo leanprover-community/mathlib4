@@ -430,6 +430,10 @@ lemma shiftEquiv_homEquiv_zero' (a : A) (ha : a = 0) (X Y : C) :
   rw [shiftEquiv_homEquiv_zero'_app C a ha]
   simp
 
+lemma shiftEquiv_homEquiv_zero'_symm_app (a : A) (ha : a = 0) (X Y : C) (u : X⟦-a⟧ ⟶ Y) :
+    ((shiftEquiv C a).symm.toAdjunction.homEquiv X Y).symm u =
+    (shiftFunctorZero' C (-a) (by simp [ha])).inv.app X ≫ u ≫
+    (shiftFunctorZero' C a ha).inv.app Y := by sorry 
 
 end Shift
 
