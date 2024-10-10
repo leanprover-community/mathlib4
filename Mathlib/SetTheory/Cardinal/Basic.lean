@@ -81,7 +81,6 @@ assert_not_exists Field
 
 open Mathlib (Vector)
 open Function Order Set
-open scoped InitialSeg
 
 noncomputable section
 
