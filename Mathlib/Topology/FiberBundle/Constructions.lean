@@ -108,6 +108,29 @@ theorem FiberBundle.Prod.inducing_diag :
       TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → TotalSpace F₁ E₁ × TotalSpace F₂ E₂) :=
   ⟨rfl⟩
 
+/-- For vector bundles `E₁` and `E₂` over a manifold `B`, the natural projection from the
+total space of `E₁ ×ᵇ E₂` to the total space of `E₁` is continuous. -/
+theorem Bundle.Prod.continuous_fst : Continuous (TotalSpace.prod_fst F₁ F₂ E₁ E₂) :=
+  _root_.continuous_fst.comp (FiberBundle.Prod.inducing_diag F₁ E₁ F₂ E₂).continuous
+
+/-- For fiber bundles `E₁` and `E₂` over a manifold `B`, the natural projection from the
+total space of `E₁ ×ᵇ E₂` to the total space of `E₁` is continuous. -/
+theorem FiberBundle.Prod.continuous_snd : Continuous (TotalSpace.prod_snd F₁ F₂ E₁ E₂) :=
+  _root_.continuous_snd.comp (FiberBundle.Prod.inducing_diag F₁ E₁ F₂ E₂).continuous
+
+variable {F₁ F₂ E₁ E₂} in
+/-- Given fiber bundles `E₁`, `E₂` over a space `B`, if `φ` is a map into the total space of
+`E₁ ×ᵇ E₂`, then its continuity can be checked by checking the continuity of (1) the map
+`TotalSpace.prod_fst ∘ φ` into the total space of `E₁`, and (ii) the map `TotalSpace.prod_snd ∘ φ`
+into the total space of `E₂`. -/
+theorem FiberBundle.Prod.continuous_of_continuous_fst_comp_of_continuous_snd_comp
+    {M : Type*} [TopologicalSpace M] {φ : M → TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)}
+    (h1 : Continuous (TotalSpace.prod_fst F₁ F₂ E₁ E₂ ∘ φ))
+    (h2 : Continuous (TotalSpace.prod_snd F₁ F₂ E₁ E₂ ∘ φ)) :
+    Continuous φ := by
+  rw [(FiberBundle.Prod.inducing_diag F₁ E₁ F₂ E₂).continuous_iff]
+  exact h1.prod_mk h2
+
 end Defs
 
 open FiberBundle
@@ -284,6 +307,18 @@ theorem inducing_pullbackTotalSpaceEmbedding (f : B' → B) :
   simp_rw [instTopologicalSpaceProd, induced_inf, induced_compose,
     Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]
   rfl
+
+variable {F E} in
+/-- Given a fiber bundle `E` over a manifold `B` and a continuous map `f : B' → B`, if `φ` is
+a map into the total space of the pullback `f *ᵖ E`, then its continuity can be checked by checking
+the continuity of (1) the map `TotalSpace.proj ∘ φ` into `B'`, and (ii) the map
+`Pullback.lift f ∘ φ` into the total space of `E`. -/
+theorem Pullback.continuous_of_continuous_proj_comp_of_smooth_lift_comp
+    (f : B' → B) {M : Type*} [TopologicalSpace M] {φ : M → TotalSpace F (f *ᵖ E)}
+    (h1 : Continuous (TotalSpace.proj ∘ φ)) (h2 : Continuous (Pullback.lift f ∘ φ)) :
+    Continuous φ := by
+  rw [(inducing_pullbackTotalSpaceEmbedding F E f).continuous_iff]
+  apply h1.prod_mk h2
 
 section FiberBundle
 

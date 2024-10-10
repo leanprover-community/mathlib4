@@ -601,7 +601,6 @@ instance Bundle.Trivial.smoothVectorBundle : SmoothVectorBundle F (Bundle.Trivia
 
 /-! ### Direct sums of smooth vector bundles -/
 
-
 section Prod
 
 variable (F₁ : Type*) [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] (E₁ : B → Type*)
@@ -632,7 +631,7 @@ instance Bundle.Prod.smoothVectorBundle : SmoothVectorBundle (F₁ × F₂) (E�
 /-- For smooth vector bundles `E₁` and `E₂` over a manifold `B`, the natural projection from the
 total space of `E₁ ×ᵇ E₂` to the total space of `E₁` is smooth. -/
 theorem Bundle.Prod.smooth_fst :
-    Smooth (IB.prod 𝓘(𝕜, F₁ × F₂)) (IB.prod 𝓘(𝕜, F₁)) (TotalSpace.prod_fst F₁ E₁ F₂ E₂) := by
+    Smooth (IB.prod 𝓘(𝕜, F₁ × F₂)) (IB.prod 𝓘(𝕜, F₁)) (TotalSpace.prod_fst F₁ F₂ E₁ E₂) := by
   intro x
   rw [contMDiffAt_totalSpace]
   refine ⟨smooth_proj (E₁ ×ᵇ E₂) _, ?_⟩
@@ -647,7 +646,7 @@ theorem Bundle.Prod.smooth_fst :
 /-- For smooth vector bundles `E₁` and `E₂` over a manifold `B`, the natural projection from the
 total space of `E₁ ×ᵇ E₂` to the total space of `E₂` is smooth. -/
 theorem Bundle.Prod.smooth_snd :
-    Smooth (IB.prod 𝓘(𝕜, F₁ × F₂)) (IB.prod 𝓘(𝕜, F₂)) (TotalSpace.prod_snd F₁ E₁ F₂ E₂) := by
+    Smooth (IB.prod 𝓘(𝕜, F₁ × F₂)) (IB.prod 𝓘(𝕜, F₂)) (TotalSpace.prod_snd F₁ F₂ E₁ E₂) := by
   intro x
   rw [contMDiffAt_totalSpace]
   refine ⟨smooth_proj (E₁ ×ᵇ E₂) _, ?_⟩
@@ -670,21 +669,20 @@ space of `E₁ ×ᵇ E₂`, then its smoothness can be checked by checking the s
 into the total space of `E₂`. -/
 theorem Bundle.Prod.smooth_of_smooth_fst_comp_of_smooth_snd_comp
     {φ : M → TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)}
-    (h1 : Smooth IM (IB.prod 𝓘(𝕜, F₁)) (TotalSpace.prod_fst F₁ E₁ F₂ E₂ ∘ φ))
-    (h2 : Smooth IM (IB.prod 𝓘(𝕜, F₂)) (TotalSpace.prod_snd F₁ E₁ F₂ E₂ ∘ φ)) :
+    (h1 : Smooth IM (IB.prod 𝓘(𝕜, F₁)) (TotalSpace.prod_fst F₁ F₂ E₁ E₂ ∘ φ))
+    (h2 : Smooth IM (IB.prod 𝓘(𝕜, F₂)) (TotalSpace.prod_snd F₁ F₂ E₁ E₂ ∘ φ)) :
     Smooth IM (IB.prod 𝓘(𝕜, F₁ × F₂)) φ := by
   intro x
-  have h1_cont : Continuous (TotalSpace.prod_fst F₁ E₁ F₂ E₂ ∘ φ) := h1.continuous
-  have h2_cont : Continuous (TotalSpace.prod_snd F₁ E₁ F₂ E₂ ∘ φ) := h2.continuous
+  have h1_cont : Continuous (TotalSpace.prod_fst F₁ F₂ E₁ E₂ ∘ φ) := h1.continuous
+  have h2_cont : Continuous (TotalSpace.prod_snd F₁ F₂ E₁ E₂ ∘ φ) := h2.continuous
   specialize h1 x
   specialize h2 x
-  have h1_base : ContMDiffAt IM IB ⊤ (TotalSpace.proj ∘ TotalSpace.prod_fst F₁ E₁ F₂ E₂ ∘ φ) x :=
-    SmoothAt.comp x (smooth_proj E₁ (TotalSpace.prod_fst F₁ E₁ F₂ E₂ (φ x))) h1
+  have h1_base : ContMDiffAt IM IB ⊤ (TotalSpace.proj ∘ TotalSpace.prod_fst F₁ F₂ E₁ E₂ ∘ φ) x :=
+    SmoothAt.comp x (smooth_proj E₁ (TotalSpace.prod_fst F₁ F₂ E₁ E₂ (φ x))) h1
   rw [contMDiffAt_iff_target] at h1 h2 h1_base ⊢
   constructor
-  · have :=
-      Bundle.Prod.continuous_of_continuous_fst_comp_of_continuous_snd_comp _ _ _ _ h1_cont h2_cont
-    exact this.continuousAt
+  · exact FiberBundle.Prod.continuous_of_continuous_fst_comp_of_continuous_snd_comp h1_cont h2_cont
+      |>.continuousAt
   apply ContMDiffAt.prod_mk_space h1_base.2
   apply ContMDiffAt.prod_mk_space
   · have (x : EB × F₁) : ContMDiffAt 𝓘(𝕜, EB × F₁) 𝓘(𝕜, F₁) ⊤ Prod.snd x := by

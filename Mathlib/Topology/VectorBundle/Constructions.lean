@@ -134,58 +134,7 @@ instance VectorBundle.prod [VectorBundle 𝕜 F₁ E₁] [VectorBundle 𝕜 F₂
       rw [e₁.coordChangeL_apply e₁', e₂.coordChangeL_apply e₂', (e₁.prod e₂).coordChangeL_apply']
       exacts [rfl, hb, ⟨hb.1.2, hb.2.2⟩, ⟨hb.1.1, hb.2.1⟩]
 
--- move these
-def Bundle.TotalSpace.prod_fst : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → TotalSpace F₁ E₁ :=
-  fun ⟨x, v⟩ ↦ ⟨x, v.1⟩
-def Bundle.TotalSpace.prod_snd : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → TotalSpace F₂ E₂ :=
-  fun ⟨x, v⟩ ↦ ⟨x, v.2⟩
-
-/-- For vector bundles `E₁` and `E₂` over a manifold `B`, the natural projection from the
-total space of `E₁ ×ᵇ E₂` to the total space of `E₁` is continuous. -/
-theorem Bundle.Prod.continuous_fst : Continuous (TotalSpace.prod_fst F₁ E₁ F₂ E₂) := by
-  have h_proj := continuous_proj (F₁ × F₂) (E₁ ×ᵇ E₂)
-  rw [continuous_iff_continuousAt]
-  intro x
-  rw [continuousAt_totalSpace]
-  refine ⟨h_proj.continuousAt, ?_⟩
-  refine continuousAt_fst.comp <| continuousAt_snd.comp <|
-    (trivializationAt _ _ x.proj).continuousAt ?_
-  simp
-
-/-- For vector bundles `E₁` and `E₂` over a manifold `B`, the natural projection from the
-total space of `E₁ ×ᵇ E₂` to the total space of `E₁` is continuous. -/
-theorem Bundle.Prod.continuous_snd : Continuous (TotalSpace.prod_snd F₁ E₁ F₂ E₂) := by
-  have h_proj := continuous_proj (F₁ × F₂) (E₁ ×ᵇ E₂)
-  rw [continuous_iff_continuousAt]
-  intro x
-  rw [continuousAt_totalSpace]
-  refine ⟨h_proj.continuousAt, ?_⟩
-  refine (continuousAt_snd.comp <| continuousAt_snd.comp <|
-    (trivializationAt (F₁ × F₂) (E₁ ×ᵇ E₂) x.proj).continuousAt (x := x) ?_:)
-  simp
-
-variable {M : Type*} [TopologicalSpace M]
-
-/-- Given a vector bundles `E₁`, `E₂` over a space `B`, if `φ` is a map into the total space of
-`E₁ ×ᵇ E₂`, then its continuity can be checked by checking the continuity of (1) the map
-`TotalSpace.prod_fst ∘ φ` into the total space of `E₁`, and (ii) the map `TotalSpace.prod_snd ∘ φ`
-into the total space of `E₂`. -/
-theorem Bundle.Prod.continuous_of_continuous_fst_comp_of_continuous_snd_comp
-    {φ : M → TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)}
-    (h1 : Continuous (TotalSpace.prod_fst F₁ E₁ F₂ E₂ ∘ φ))
-    (h2 : Continuous (TotalSpace.prod_snd F₁ E₁ F₂ E₂ ∘ φ)) :
-    Continuous φ := by
-  have h_proj := continuous_proj F₁ E₁
-  rw [continuous_iff_continuousAt] at h1 h2 h_proj ⊢
-  intro x
-  specialize h1 x
-  specialize h2 x
-  have h1_base : ContinuousAt (TotalSpace.proj ∘ TotalSpace.prod_fst F₁ E₁ F₂ E₂ ∘ φ) x :=
-      ContinuousAt.comp (h_proj (TotalSpace.prod_fst F₁ E₁ F₂ E₂ (φ x))) h1
-  rw [continuousAt_totalSpace] at h1 h2 ⊢
-  exact ⟨h1_base, h1.2.prod h2.2⟩
-
-variable {𝕜 F₁ E₁ F₂ E₂}
+variable {𝕜 F₁ F₂ E₁ E₂}
 
 @[simp] -- Porting note: changed arguments to make `simpNF` happy: merged `hx₁` and `hx₂` into `hx`
 theorem Trivialization.continuousLinearEquivAt_prod {e₁ : Trivialization F₁ (π F₁ E₁)}
@@ -232,36 +181,5 @@ instance VectorBundle.pullback [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
     show ((e.pullback f).coordChangeL 𝕜 (e'.pullback f) b) v = (e.coordChangeL 𝕜 e' (f b)) v
     rw [e.coordChangeL_apply e' hb, (e.pullback f).coordChangeL_apply' _]
     exacts [rfl, hb]
-
-variable [∀ x, TopologicalSpace (E x)] [FiberBundle F E] [VectorBundle 𝕜 F E] (f : K)
-
-/-- For a vector bundle `E` over a manifold `B` and a map `f : B' → B`, the natural "lift" map from
-the total space of `f *ᵖ E` to the total space of `E` is continuous. -/
-theorem Bundle.Pullback.continuous_lift :
-    Continuous (Pullback.lift f : TotalSpace F (f *ᵖ E) → _) := by
-  have h_proj := continuous_proj F (f *ᵖ E)
-  rw [continuous_iff_continuousAt] at h_proj ⊢
-  intro x
-  rw [continuousAt_totalSpace]
-  refine ⟨(map_continuousAt f _).comp (h_proj x), ?_⟩
-  refine (continuousAt_snd (X := B')).comp <| (trivializationAt F (f *ᵖ E) x.proj).continuousAt  ?_
-  simp
-
-variable {M : Type*} [TopologicalSpace M]
-
-/-- Given a vector bundle `E` over a manifold `B` and a continuous map `f : B' → B`, if `φ` is
-a map into the total space of the pullback `f *ᵖ E`, then its continuity can be checked by checking
-the continuity of (1) the map `TotalSpace.proj ∘ φ` into `B'`, and (ii) the map
-`Pullback.lift f ∘ φ` into the total space of `E`. -/
-theorem Bundle.Pullback.continuous_of_continuous_proj_comp_of_smooth_lift_comp
-    {φ : M → TotalSpace F (f *ᵖ E)} (h1 : Continuous (TotalSpace.proj ∘ φ))
-    (h2 : Continuous (Pullback.lift f ∘ φ)) : Continuous φ := by
-  have h_proj := continuous_proj F E
-  rw [continuous_iff_continuousAt] at h1 h2 h_proj ⊢
-  intro x
-  specialize h1 x
-  specialize h2 x
-  rw [continuousAt_totalSpace] at h2 ⊢
-  exact ⟨h1, h2.2⟩
 
 end

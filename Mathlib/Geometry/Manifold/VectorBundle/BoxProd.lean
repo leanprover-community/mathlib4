@@ -14,8 +14,8 @@ variable [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup EM'] [NormedSpace 𝕜 EM'] [TopologicalSpace H']
     (I' : ModelWithCorners 𝕜 EM' H')
 
-variable [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M]
-variable [TopologicalSpace M'] [ChartedSpace H' M'] [SmoothManifoldWithCorners I' M']
+variable [TopologicalSpace M] [ChartedSpace H M] --[SmoothManifoldWithCorners I M]
+variable [TopologicalSpace M'] [ChartedSpace H' M'] --[SmoothManifoldWithCorners I' M']
 
 variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   (E : M → Type u) [(x : M) → AddCommMonoid (E x)] [(x : M) → Module 𝕜 (E x)]
@@ -25,7 +25,8 @@ variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
   (E' : M' → Type u') [(x : M') → AddCommMonoid (E' x)] [(x : M') → Module 𝕜 (E' x)]
   [TopologicalSpace (Bundle.TotalSpace F' E')] [(x : M') → TopologicalSpace (E' x)]
-  [FiberBundle F' E'] [VectorBundle 𝕜 F' E'] [SmoothVectorBundle F' E' I']
+  [FiberBundle F' E'] [VectorBundle 𝕜 F' E']
+  [SmoothVectorBundle F' E' I']
 
 noncomputable section
 
@@ -77,6 +78,8 @@ theorem equivProd_smooth :
     have h₂ := Bundle.Pullback.smooth_lift F' E' I' (I.prod I') (SmoothMap.snd M M' I I')
     exact h₂.comp h₁
 
+omit [(x : M) → Module 𝕜 (E x)] [VectorBundle 𝕜 F E] [SmoothVectorBundle F E I]
+  [(x : M') → Module 𝕜 (E' x)] [VectorBundle 𝕜 F' E'] [SmoothVectorBundle F' E' I'] in
 /-- For vector bundles `E` and `E'`, the canonical isomorphism from the product of the total spaces
 of `E` and `E'` to the total space of `E ⊞ E'` is smooth. -/
 theorem equivProd_symm_smooth :
