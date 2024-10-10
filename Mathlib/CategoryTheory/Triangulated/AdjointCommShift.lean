@@ -3,27 +3,6 @@ import Mathlib.CategoryTheory.Adjunction.Unique
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Triangulated.Lemmas
 
-section MiseAJour
-
-universe u₁ v₁ u₂ v₂ u₃ v₃
-
-theorem CategoryTheory.Adjunction.comp_homEquiv {C : Type u₁} [CategoryTheory.Category.{v₁, u₁} C]
-    {D : Type u₂} [CategoryTheory.Category.{v₂, u₂} D] {F : CategoryTheory.Functor C D}
-    {G : CategoryTheory.Functor D C} {E : Type u₃} [ℰ : CategoryTheory.Category.{v₃, u₃} E]
-    {H : CategoryTheory.Functor D E} {I : CategoryTheory.Functor E D} (adj₁ : F ⊣ G)
-    (adj₂ : H ⊣ I) : (adj₁.comp adj₂).homEquiv = fun (x : C) (x_1 : E) =>
-    (adj₂.homEquiv (F.obj x) x_1).trans (adj₁.homEquiv x (I.obj x_1)) := sorry
-
-@[simp]
-theorem CategoryTheory.Adjunction.homEquiv_apply{C : Type u₁} [CategoryTheory.Category.{v₁, u₁}     C] {D : Type u₂} [CategoryTheory.Category.{v₂, u₂}     D] {F : CategoryTheory.Functor C D} {G : CategoryTheory.Functor D C} (adj : F ⊣ G) (X : C) (Y : D) (f : F.obj X ⟶ Y) :
-(adj.homEquiv X Y) f = CategoryTheory.CategoryStruct.comp (adj.unit.app X) (G.map f) := sorry
-
-@[simp]
-theorem CategoryTheory.Adjunction.homEquiv_symm_apply{C : Type u₁} [CategoryTheory.Category.{v₁, u₁}     C] {D : Type u₂} [CategoryTheory.Category.{v₂, u₂}     D] {F : CategoryTheory.Functor C D} {G : CategoryTheory.Functor D C} (adj : F ⊣ G) (X : C) (Y : D) (g : X ⟶ G.obj Y) :
-(adj.homEquiv X Y).symm g = CategoryTheory.CategoryStruct.comp (F.map g) (adj.counit.app Y) := sorry
-
-end MiseAJour
-
 namespace CategoryTheory
 
 open Category Functor CategoryTheory Opposite
@@ -204,6 +183,12 @@ lemma lemme5 (adj : F ⊣ G) (X : C) (Y : D) (u : F.obj X ⟶ Y) (a : A) (ha : a
     (adj.homEquiv (X⟦a⟧) Y) (F.map ((shiftFunctorZero' C a ha).app X).hom ≫ u) =
     ((shiftFunctorZero' C a ha).app X).hom ≫ adj.homEquiv X Y u := by simp
 
+lemma left_to_right_iso_apply'''' (adj : F ⊣ G) (commF : CommShift F A) (a b : A) (X : C) (Y : D) :
+    (yoneda.map ((shiftFunctor C b).map ((left_to_right_iso adj commF a).hom.app Y))).app (op X) =
+    sorry := by
+  simp
+  sorry
+
 noncomputable def left_to_right (adj : F ⊣ G) (commF : CommShift F A) :
     CommShift G A where
   iso := left_to_right_iso adj commF
@@ -211,8 +196,16 @@ noncomputable def left_to_right (adj : F ⊣ G) (commF : CommShift F A) :
     ext Y
     apply Functor.map_injective (yoneda (C := C))
     ext X u
-    simp at u
-    rw [left_to_right_iso_apply''']
+    rw [left_to_right_iso_apply''', Adjunction.comp_homEquiv, Adjunction.comp_homEquiv]
+    simp only [Equivalence.symm_inverse, comp_obj, Equivalence.symm_functor,
+      comp_homEquiv, Iso.trans_hom, Equiv.toIso_hom,
+      mapIso_hom, Iso.op_hom, Iso.app_hom, Equiv.coe_trans, types_comp_apply,
+      Equiv.symm_trans_apply, id_obj, map_comp,
+      assoc, Quiver.Hom.unop_op, Function.comp_apply,
+      CommShift.isoZero_hom_app, FunctorToTypes.comp]
+    rw [shiftEquiv_homEquiv_zero' D 0 rfl]
+
+#exit
     simp only [Equivalence.symm_inverse, comp_obj, Equivalence.symm_functor,
       comp_homEquiv, Iso.trans_hom, Equiv.toIso_hom,
       mapIso_hom, Iso.op_hom, Iso.app_hom, Equiv.coe_trans, types_comp_apply,
@@ -228,7 +221,8 @@ noncomputable def left_to_right (adj : F ⊣ G) (commF : CommShift F A) :
     ext X u
     rw [CommShift.isoAdd_hom_app, Functor.map_comp, Functor.map_comp, Functor.map_comp,
     NatTrans.comp_app, NatTrans.comp_app, NatTrans.comp_app]
-    conv_rhs => rw [left_to_right_iso_apply''']--, left_to_right_iso_apply''']
+    conv_lhs => rw [left_to_right_iso_apply''']
+    conv_rhs => rw [left_to_right_iso_apply''']
     sorry
 
 

@@ -133,8 +133,7 @@ def mkInitialOfLeftAdjoint (h : F ⊣ G) (A : C) :
   uniq s m _ := by
     apply StructuredArrow.ext
     dsimp
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [Equiv.eq_symm_apply, Adjunction.homEquiv_unit]
+    rw [← Adjunction.homEquiv_counit, Equiv.eq_symm_apply]
     apply StructuredArrow.w m
 
 /-- Given a right adjoint to `F`, we can construct a terminal object in each costructured arrow
@@ -145,7 +144,7 @@ def mkTerminalOfRightAdjoint (h : F ⊣ G) (A : D) :
   uniq s m _ := by
     apply CostructuredArrow.ext
     dsimp
-    rw [h.eq_homEquiv_apply, Adjunction.homEquiv_counit]
+    rw [← Adjunction.homEquiv_unit, h.eq_homEquiv_apply, Adjunction.homEquiv_counit]
     exact CostructuredArrow.w m
 
 end

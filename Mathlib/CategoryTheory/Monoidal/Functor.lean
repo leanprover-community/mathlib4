@@ -698,14 +698,10 @@ noncomputable def monoidalAdjoint :
     simp
 
 instance [F.IsEquivalence] : IsIso (monoidalAdjoint F h).ε := by
-  dsimp
-  rw [Adjunction.homEquiv_unit]
-  infer_instance
+  dsimp; infer_instance
 
 instance (X Y : D) [F.IsEquivalence] : IsIso ((monoidalAdjoint F h).μ X Y) := by
-  dsimp
-  rw [Adjunction.homEquiv_unit]
-  infer_instance
+  dsimp; infer_instance
 
 /-- If a monoidal functor `F` is an equivalence of categories then its inverse is also monoidal. -/
 @[simps]
