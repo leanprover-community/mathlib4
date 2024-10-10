@@ -422,15 +422,31 @@ def toWellFoundedRelation : WellFoundedRelation α :=
 
 end WellFoundedGT
 
+namespace IsWellOrder
+
+theorem trans_lt_le [IsWellOrder α r] {a b c : α} (hab : r a b) (hcb : ¬ r c b) : r a c := by
+  rcases @trichotomous α r _ b c with (lt | rfl | gt)
+  · exact _root_.trans hab lt
+  · exact hab
+  · exact (hcb gt).elim
+
+theorem trans_le_lt [IsWellOrder α r] {a b c : α} (hab : ¬ r b a) (hcb : r b c) : r a c := by
+  rcases @trichotomous α r _ a b with (lt | rfl | gt)
+  · exact _root_.trans lt hcb
+  · exact hcb
+  · exact (hab gt).elim
+
 /-- Construct a decidable linear order from a well-founded linear order. -/
-noncomputable def IsWellOrder.linearOrder (r : α → α → Prop) [IsWellOrder α r] : LinearOrder α :=
+noncomputable def linearOrder (r : α → α → Prop) [IsWellOrder α r] : LinearOrder α :=
   letI := fun x y => Classical.dec ¬r x y
   linearOrderOfSTO r
 
 /-- Derive a `WellFoundedRelation` instance from an `IsWellOrder` instance. -/
-def IsWellOrder.toHasWellFounded [LT α] [hwo : IsWellOrder α (· < ·)] : WellFoundedRelation α where
+def toHasWellFounded [LT α] [hwo : IsWellOrder α (· < ·)] : WellFoundedRelation α where
   rel := (· < ·)
   wf := hwo.wf
+
+end IsWellOrder
 
 -- This isn't made into an instance as it loops with `IsIrrefl α r`.
 theorem Subsingleton.isWellOrder [Subsingleton α] (r : α → α → Prop) [hr : IsIrrefl α r] :
