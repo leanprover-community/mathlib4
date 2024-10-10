@@ -226,7 +226,7 @@ def Functor.toMonoidalFunctorOfChosenFiniteProducts : MonoidalFunctor C D where
     rintro ⟨⟨_⟩⟩
     · simp only [pairComp, diagramIsoPair_inv_app, comp_obj, pair_obj_left, pair_obj_right,
         Iso.refl_inv, BinaryFan.π_app_left, Category.comp_id, Category.id_comp]
-      rw [←Functor.map_comp, ← fst, whiskerRight_fst, Functor.map_comp, fst,
+      rw [← Functor.map_comp, ← fst, whiskerRight_fst, Functor.map_comp, fst,
         ← F.mapCone_π_app, IsLimit.map_π]
       simp only [const_obj_obj, pair_obj_left, comp_obj, BinaryFan.π_app_left,
         diagramIsoPair_inv_app, pair_obj_right, Iso.refl_inv, Category.comp_id]
@@ -235,7 +235,7 @@ def Functor.toMonoidalFunctorOfChosenFiniteProducts : MonoidalFunctor C D where
       simp only [diagramIsoPair_inv_app, comp_obj, pair_obj_left, pair_obj_right, Iso.refl_inv,
         Category.comp_id, BinaryFan.π_app_left, Category.id_comp]
       rfl
-    · rw [←Functor.map_comp]
+    · rw [← Functor.map_comp]
       conv_rhs => arg 2; congr; (conv => arg 2; change snd _ _); rw [whiskerRight_snd f X', snd]
       rw [← F.mapCone_π_app, IsLimit.map_π, ← F.mapCone_π_app, IsLimit.map_π]
       simp only [pair_obj_right, const_obj_obj, comp_obj, BinaryFan.π_app_right]
@@ -248,7 +248,7 @@ def Functor.toMonoidalFunctorOfChosenFiniteProducts : MonoidalFunctor C D where
       mapCone_π_app, BinaryFan.π_app_left]
     simp only [Category.assoc]
     rintro ⟨⟨_⟩⟩
-    · rw [←Functor.map_comp]
+    · rw [← Functor.map_comp]
       conv_rhs => arg 2; congr; (conv => arg 2; change fst _ _); rw [whiskerLeft_fst X' g, fst]
       rw [← F.mapCone_π_app, IsLimit.map_π, ← F.mapCone_π_app, IsLimit.map_π]
       simp only [pair_obj_left, const_obj_obj, comp_obj, BinaryFan.π_app_left]
@@ -256,7 +256,7 @@ def Functor.toMonoidalFunctorOfChosenFiniteProducts : MonoidalFunctor C D where
       rfl
     · simp only [pairComp, diagramIsoPair_inv_app, comp_obj, pair_obj_right, pair_obj_left,
         Iso.refl_inv, BinaryFan.π_app_right, Category.comp_id, Category.id_comp]
-      rw [←Functor.map_comp, ← snd, whiskerLeft_snd, Functor.map_comp, snd,
+      rw [← Functor.map_comp, ← snd, whiskerLeft_snd, Functor.map_comp, snd,
         ← F.mapCone_π_app, IsLimit.map_π]
       simp only [const_obj_obj, pair_obj_right, comp_obj, BinaryFan.π_app_right,
         diagramIsoPair_inv_app, pair_obj_left, Iso.refl_inv, Category.comp_id]
@@ -270,7 +270,7 @@ def Functor.toMonoidalFunctorOfChosenFiniteProducts : MonoidalFunctor C D where
     apply h₁.preservesLimit.preserves (ChosenFiniteProducts.product _ _).isLimit|>.hom_ext
     simp only [comp_obj, mapCone_pt, mapCone_π_app, Category.assoc]
     rintro ⟨⟨_⟩⟩
-    · rw [←Functor.map_comp]
+    · rw [← Functor.map_comp]
       slice_lhs 3 4 => congr; (conv => arg 2; change fst _ _); rw [associator_hom_fst X]
       rw [← F.mapCone_π_app, IsLimit.map_π]
       slice_rhs 3 4 => arg 1; change fst _ _
@@ -291,7 +291,7 @@ def Functor.toMonoidalFunctorOfChosenFiniteProducts : MonoidalFunctor C D where
       · slice_rhs 3 4 => rw [← F.mapCone_π_app, IsLimit.map_π]
         simp only [comp_obj, pair_obj_left, mapCone_pt, pair_obj_right, BinaryFan.π_app_right,
           mapCone_π_app, BinaryFan.π_app_left, Category.assoc]
-        rw [←Functor.map_comp, ←Functor.map_comp]
+        rw [← Functor.map_comp, ← Functor.map_comp]
         rw [← snd, ← fst, associator_hom_snd_fst]
         simp only [map_comp, pairComp, diagramIsoPair_inv_app, comp_obj, pair_obj_left,
           pair_obj_right, Iso.refl_inv, Category.id_comp, Category.comp_id]
@@ -315,7 +315,7 @@ def Functor.toMonoidalFunctorOfChosenFiniteProducts : MonoidalFunctor C D where
       · slice_rhs 3 4 => rw [← F.mapCone_π_app, IsLimit.map_π]
         simp only [comp_obj, pair_obj_left, mapCone_pt, pair_obj_right, BinaryFan.π_app_right,
           mapCone_π_app, BinaryFan.π_app_left, Category.assoc]
-        rw [←Functor.map_comp, ←Functor.map_comp]
+        rw [← Functor.map_comp, ← Functor.map_comp]
         rw [← snd, ← snd, associator_hom_snd_snd]
         simp only [map_comp, pairComp, diagramIsoPair_inv_app, comp_obj, pair_obj_left,
           pair_obj_right, Iso.refl_inv, Category.id_comp, Category.comp_id]
