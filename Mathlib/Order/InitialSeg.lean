@@ -236,6 +236,21 @@ instance : CoeOut (r ≺i s) (r ↪r s) :=
 instance : CoeFun (r ≺i s) fun _ => α → β :=
   ⟨fun f => f⟩
 
+instance [IsIrrefl β s] [IsTrichotomous β s] : FunLike (r ≺i s) α β where
+  coe f := f.toFun
+  coe_injective' := by
+    rintro ⟨f, a, hf⟩ ⟨g, b, hg⟩ h
+    cases (DFunLike.coe_injective h : f = g)
+    congr
+    refine extensional_of_trichotomous_of_irrefl s fun x ↦ ?_
+    rw [hf, hg]
+
+instance [IsIrrefl β s] [IsTrichotomous β s] : EmbeddingLike (r ≺i s) α β where
+  injective' f := f.inj'
+
+instance [IsIrrefl β s] [IsTrichotomous β s] : RelHomClass (r ≺i s) r s where
+  map_rel f := f.map_rel_iff.2
+
 @[simp]
 theorem coe_fn_mk (f : r ↪r s) (t o) : (@PrincipalSeg.mk _ _ r s f t o : α → β) = f :=
   rfl
