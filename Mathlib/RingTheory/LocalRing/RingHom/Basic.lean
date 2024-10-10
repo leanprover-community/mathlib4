@@ -24,6 +24,9 @@ variable [Semiring R] [Semiring S] [Semiring T]
 instance isLocalHom_id (R : Type*) [Semiring R] : IsLocalHom (RingHom.id R) where
   map_nonunit _ := id
 
+@[deprecated "2024-10-10"]
+alias isLocalRingHom_id := isLocalHom_id
+
 -- see note [lower instance priority]
 instance (priority := 100)  isLocalHom_toRingHom {F : Type*} [FunLike F R S]
    [RingHomClass F R S] (f : F) [IsLocalHom f] : IsLocalHom (f : R →+* S) :=
