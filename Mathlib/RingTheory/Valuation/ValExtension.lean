@@ -143,7 +143,8 @@ theorem algebraMap_injective [IsValExtension vK vA] [Nontrivial A] :
   ext
   apply RingHom.injective (algebraMap K A) h
 
-instance instIsLocalHomValuationInteger {S ΓS: Type*} [CommRing S]
+@[instance]
+theorem instIsLocalHomValuationInteger {S ΓS: Type*} [CommRing S]
     [LinearOrderedCommGroupWithZero ΓS]
     [Algebra R S] [IsLocalHom (algebraMap R S)] {vS : Valuation S ΓS}
     [IsValExtension vR vS] : IsLocalHom (algebraMap vR.integer vS.integer) where
@@ -153,7 +154,7 @@ instance instIsLocalHomValuationInteger {S ΓS: Type*} [CommRing S]
     · apply (Valuation.integer.integers (v := vS)).one_of_isUnit at hr
       exact (val_map_eq_one_iff vR vS _).mp hr
 
-@[deprecated "2024-10-10"]
+@[deprecated (since := "2024-10-10")]
 alias instIsLocalRingHomValuationInteger := instIsLocalHomValuationInteger
 
 end integer
