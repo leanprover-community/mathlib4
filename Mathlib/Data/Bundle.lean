@@ -95,13 +95,13 @@ notation:100 E₁ " ×ᵇ " E₂ => fun x => E₁ x × E₂ x
 
 /-- The natural map from the total space of a direct sum of two bundles to the total space of the
 first bundle. -/
-def TotalSpace.prod_fst (F₁ F₂ : Type*) (E₁ E₂ : B → Type*) :
+def TotalSpace.Prod.fst (F₁ F₂ : Type*) (E₁ E₂ : B → Type*) :
     TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → TotalSpace F₁ E₁ :=
   fun ⟨x, v⟩ ↦ ⟨x, v.1⟩
 
 /-- The natural map from the total space of a direct sum of two bundles to the total space of the
 second bundle. -/
-def TotalSpace.prod_snd (F₁ F₂ : Type*) (E₁ E₂ : B → Type*) :
+def TotalSpace.Prod.snd (F₁ F₂ : Type*) (E₁ E₂ : B → Type*) :
     TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → TotalSpace F₂ E₂ :=
   fun ⟨x, v⟩ ↦ ⟨x, v.2⟩
 
