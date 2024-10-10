@@ -229,48 +229,6 @@ protected theorem acc (f : r ≼i s) (a : α) : Acc r a ↔ Acc s (f a) :=
     obtain ⟨a', rfl⟩ := f.mem_range_of_rel hb
     exact ha _ (f.map_rel_iff.mp hb), f.toRelEmbedding.acc a⟩
 
-section PartialOrder
-
-variable [PartialOrder β] {a a' : α} {b : β}
-
-theorem mem_range_of_le [Preorder α] (f : α ≤i β) (h : b ≤ f a) : b ∈ Set.range f := by
-  obtain rfl | hb := h.eq_or_lt
-  exacts [⟨a, rfl⟩, f.mem_range_of_rel hb]
-
-@[simp]
-theorem le_iff_le [PartialOrder α] (f : α ≤i β) : f a ≤ f a' ↔ a ≤ a' :=
-  f.toOrderEmbedding.le_iff_le
-
-@[simp]
-theorem lt_iff_lt [PartialOrder α] (f : α ≤i β) : f a < f a' ↔ a < a' :=
-  f.toOrderEmbedding.lt_iff_lt
-
-theorem monotone [PartialOrder α] (f : α ≤i β) : Monotone f :=
-  f.toOrderEmbedding.monotone
-
-theorem strictMono [PartialOrder α] (f : α ≤i β) : StrictMono f :=
-  f.toOrderEmbedding.strictMono
-
-theorem le_apply_iff [LinearOrder α] (f : α ≤i β) : b ≤ f a ↔ ∃ c ≤ a, f c = b := by
-  constructor
-  · intro h
-    obtain ⟨c, hc⟩ := f.mem_range_of_le h
-    refine ⟨c, ?_, hc⟩
-    rwa [← hc, f.le_iff_le] at h
-  · rintro ⟨c, hc, rfl⟩
-    exact f.monotone hc
-
-theorem lt_apply_iff [LinearOrder α] (f : α ≤i β) : b < f a ↔ ∃ a' < a, f a' = b := by
-  constructor
-  · intro h
-    obtain ⟨c, hc⟩ := f.mem_range_of_rel h
-    refine ⟨c, ?_, hc⟩
-    rwa [← hc, f.lt_iff_lt] at h
-  · rintro ⟨c, hc, rfl⟩
-    exact f.strictMono hc
-
-end PartialOrder
-
 end InitialSeg
 
 /-!
@@ -623,3 +581,76 @@ noncomputable def InitialSeg.total (r s) [IsWellOrder α r] [IsWellOrder β s] :
 
 attribute [nolint simpNF] PrincipalSeg.ofElement_apply PrincipalSeg.subrelIso_symm_apply
   PrincipalSeg.apply_subrelIso PrincipalSeg.subrelIso_apply
+
+/-! ### Initial or principal segments with `<` -/
+
+namespace InitialSeg
+
+variable [PartialOrder β] {a a' : α} {b : β}
+
+theorem mem_range_of_le [Preorder α] (f : α ≤i β) (h : b ≤ f a) : b ∈ Set.range f := by
+  obtain rfl | hb := h.eq_or_lt
+  exacts [⟨a, rfl⟩, f.mem_range_of_rel hb]
+
+@[simp]
+theorem le_iff_le [PartialOrder α] (f : α ≤i β) : f a ≤ f a' ↔ a ≤ a' :=
+  f.toOrderEmbedding.le_iff_le
+
+@[simp]
+theorem lt_iff_lt [PartialOrder α] (f : α ≤i β) : f a < f a' ↔ a < a' :=
+  f.toOrderEmbedding.lt_iff_lt
+
+theorem monotone [PartialOrder α] (f : α ≤i β) : Monotone f :=
+  f.toOrderEmbedding.monotone
+
+theorem strictMono [PartialOrder α] (f : α ≤i β) : StrictMono f :=
+  f.toOrderEmbedding.strictMono
+
+theorem le_apply_iff [LinearOrder α] (f : α ≤i β) : b ≤ f a ↔ ∃ c ≤ a, f c = b := by
+  constructor
+  · intro h
+    obtain ⟨c, hc⟩ := f.mem_range_of_le h
+    refine ⟨c, ?_, hc⟩
+    rwa [← hc, f.le_iff_le] at h
+  · rintro ⟨c, hc, rfl⟩
+    exact f.monotone hc
+
+theorem lt_apply_iff [LinearOrder α] (f : α ≤i β) : b < f a ↔ ∃ a' < a, f a' = b := by
+  constructor
+  · intro h
+    obtain ⟨c, hc⟩ := f.mem_range_of_rel h
+    refine ⟨c, ?_, hc⟩
+    rwa [← hc, f.lt_iff_lt] at h
+  · rintro ⟨c, hc, rfl⟩
+    exact f.strictMono hc
+
+end InitialSeg
+
+namespace PrincipalSeg
+
+variable [PartialOrder β] {a a' : α} {b : β}
+
+theorem mem_range_of_le [Preorder α] (f : α <i β) (h : b ≤ f a) : b ∈ Set.range f :=
+  (f : α ≤i β).mem_range_of_le h
+
+@[simp]
+theorem le_iff_le [PartialOrder α] (f : α <i β) : f a ≤ f a' ↔ a ≤ a' :=
+  (f : α ≤i β).le_iff_le
+
+@[simp]
+theorem lt_iff_lt [PartialOrder α] (f : α <i β) : f a < f a' ↔ a < a' :=
+  (f : α ≤i β).lt_iff_lt
+
+theorem monotone [PartialOrder α] (f : α <i β) : Monotone f :=
+  (f : α ≤i β).monotone
+
+theorem strictMono [PartialOrder α] (f : α <i β) : StrictMono f :=
+  (f : α ≤i β).strictMono
+
+theorem le_apply_iff [LinearOrder α] (f : α <i β) : b ≤ f a ↔ ∃ c ≤ a, f c = b :=
+  (f : α ≤i β).le_apply_iff
+
+theorem lt_apply_iff [LinearOrder α] (f : α <i β) : b < f a ↔ ∃ a' < a, f a' = b :=
+  (f : α ≤i β).lt_apply_iff
+
+end PrincipalSeg
