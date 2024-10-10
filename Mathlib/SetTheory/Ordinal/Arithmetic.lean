@@ -61,8 +61,7 @@ universe u v w
 
 namespace Ordinal
 
-variable {α : Type*} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
-  {t : γ → γ → Prop}
+variable {α β γ : Type*} {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop}
 
 /-! ### Further properties of addition on ordinals -/
 
