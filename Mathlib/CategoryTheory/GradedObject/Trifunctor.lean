@@ -259,7 +259,7 @@ variable (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C₃ ⥤ C₄)
 /-- Given a map `r : I₁ × I₂ × I₃ → J`, a `BifunctorComp₁₂IndexData r` consists of the data
 of a type `I₁₂`, maps `p : I₁ × I₂ → I₁₂` and `q : I₁₂ × I₃ → J`, such that `r` is obtained
 by composition of `p` and `q`. -/
-structure BifunctorComp₁₂IndexData :=
+structure BifunctorComp₁₂IndexData where
   /-- an auxiliary type -/
   I₁₂ : Type*
   /-- a map `I₁ × I₂ → I₁₂` -/
@@ -439,7 +439,7 @@ variable (F : C₁ ⥤ C₂₃ ⥤ C₄) (G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃)
 /-- Given a map `r : I₁ × I₂ × I₃ → J`, a `BifunctorComp₂₃IndexData r` consists of the data
 of a type `I₂₃`, maps `p : I₂ × I₃ → I₂₃` and `q : I₁ × I₂₃ → J`, such that `r` is obtained
 by composition of `p` and `q`. -/
-structure BifunctorComp₂₃IndexData :=
+structure BifunctorComp₂₃IndexData where
   /-- an auxiliary type -/
   I₂₃ : Type*
   /-- a map `I₂ × I₃ → I₂₃` -/

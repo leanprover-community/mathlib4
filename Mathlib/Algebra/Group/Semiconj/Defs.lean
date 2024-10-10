@@ -115,7 +115,7 @@ end Monoid
 
 section Group
 
-variable [Group G] {a x y : G}
+variable [Group G]
 
 /-- `a` semiconjugates `x` to `a * x * a⁻¹`. -/
 @[to_additive "`a` semiconjugates `x` to `a + x + -a`."]

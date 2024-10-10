@@ -933,7 +933,7 @@ lemma ge_of_forall_gt_iff_ge [LinearOrder α] [DenselyOrdered α] [NoMinOrder α
 
 section LE
 
-variable [LE α] {a b : α}
+variable [LE α]
 
 theorem toDual_le_iff {a : WithBot α} {b : WithTop αᵒᵈ} :
     WithBot.toDual a ≤ b ↔ WithTop.ofDual b ≤ a :=
@@ -963,7 +963,7 @@ end LE
 
 section LT
 
-variable [LT α] {a b : α}
+variable [LT α]
 
 theorem toDual_lt_iff {a : WithBot α} {b : WithTop αᵒᵈ} :
     WithBot.toDual a < b ↔ WithTop.ofDual b < a :=
