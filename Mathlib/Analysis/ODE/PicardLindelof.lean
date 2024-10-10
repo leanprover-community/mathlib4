@@ -170,8 +170,11 @@ def toContinuousMap : v.FunSpace ↪ C(Icc v.tMin v.tMax, E) :=
 instance : MetricSpace v.FunSpace :=
   MetricSpace.induced toContinuousMap toContinuousMap.injective inferInstance
 
-theorem uniformInducing_toContinuousMap : UniformInducing (@toContinuousMap _ _ _ v) :=
+theorem isUniformInducing_toContinuousMap : IsUniformInducing (@toContinuousMap _ _ _ v) :=
   ⟨rfl⟩
+
+@[deprecated (since := "2024-10-05")]
+alias uniformInducing_toContinuousMap := isUniformInducing_toContinuousMap
 
 theorem range_toContinuousMap :
     range toContinuousMap =
@@ -217,7 +220,7 @@ theorem dist_le_of_forall {f₁ f₂ : FunSpace v} {d : ℝ} (h : ∀ t, dist (f
     v.nonempty_Icc.to_subtype).2 h
 
 instance [CompleteSpace E] : CompleteSpace v.FunSpace := by
-  refine (completeSpace_iff_isComplete_range uniformInducing_toContinuousMap).2
+  refine (completeSpace_iff_isComplete_range isUniformInducing_toContinuousMap).2
       (IsClosed.isComplete ?_)
   rw [range_toContinuousMap, setOf_and]
   refine (isClosed_eq (ContinuousMap.continuous_eval_const _) continuous_const).inter ?_

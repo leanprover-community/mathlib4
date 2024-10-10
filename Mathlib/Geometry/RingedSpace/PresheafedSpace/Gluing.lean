@@ -334,9 +334,9 @@ def ιInvAppπApp {i : D.J} (U : Opens (D.U i).carrier) (j) :
     rw [Set.preimage_preimage]
     change (D.f j k ≫ 𝖣.ι j).base ⁻¹' _ = _
     -- Porting note: used to be `congr 3`
-    refine congr_arg (· ⁻¹' _) ?_
-    convert congr_arg (ContinuousMap.toFun (α := D.V ⟨j, k⟩) (β := D.glued) ·) ?_
-    refine congr_arg (PresheafedSpace.Hom.base (C := C) ·) ?_
+    suffices D.f j k ≫ D.ι j = colimit.ι D.diagram.multispan (WalkingMultispan.left (j, k)) by
+      rw [this]
+      rfl
     exact colimit.w 𝖣.diagram.multispan (WalkingMultispan.Hom.fst (j, k))
   · exact D.opensImagePreimageMap i j U
 
@@ -439,23 +439,23 @@ theorem π_ιInvApp_π (i j : D.J) (U : Opens (D.U i).carrier) :
   rw [← @cancel_mono
           (f := (componentwiseDiagram 𝖣.diagram.multispan _).map
             (Quiver.Hom.op (WalkingMultispan.Hom.snd (i, j))) ≫ 𝟙 _) ..]
-  simp_rw [Category.assoc]
-  rw [limit.w_assoc]
-  erw [limit.lift_π_assoc]
-  rw [Category.comp_id, Category.comp_id]
-  change _ ≫ _ ≫ (_ ≫ _) ≫ _ = _
-  rw [congr_app (D.t_id _), id_c_app]
-  simp_rw [Category.assoc]
-  rw [← Functor.map_comp_assoc]
-  -- Porting note (#11224): change `rw` to `erw`
-  erw [IsOpenImmersion.inv_naturality_assoc]
-  erw [IsOpenImmersion.app_invApp_assoc]
-  iterate 3 rw [← Functor.map_comp_assoc]
-  rw [NatTrans.naturality_assoc]
-  erw [← (D.V (i, j)).presheaf.map_comp]
-  convert
-    limit.w (componentwiseDiagram 𝖣.diagram.multispan _)
-      (Quiver.Hom.op (WalkingMultispan.Hom.fst (i, j)))
+  · simp_rw [Category.assoc]
+    rw [limit.w_assoc]
+    erw [limit.lift_π_assoc]
+    rw [Category.comp_id, Category.comp_id]
+    change _ ≫ _ ≫ (_ ≫ _) ≫ _ = _
+    rw [congr_app (D.t_id _), id_c_app]
+    simp_rw [Category.assoc]
+    rw [← Functor.map_comp_assoc]
+    -- Porting note (#11224): change `rw` to `erw`
+    erw [IsOpenImmersion.inv_naturality_assoc]
+    erw [IsOpenImmersion.app_invApp_assoc]
+    iterate 3 rw [← Functor.map_comp_assoc]
+    rw [NatTrans.naturality_assoc]
+    erw [← (D.V (i, j)).presheaf.map_comp]
+    convert
+      limit.w (componentwiseDiagram 𝖣.diagram.multispan _)
+        (Quiver.Hom.op (WalkingMultispan.Hom.fst (i, j)))
   · rw [Category.comp_id]
     apply (config := { allowSynthFailures := true }) mono_comp
     change Mono ((_ ≫ D.f j i).c.app _)

@@ -104,17 +104,12 @@ theorem cyclotomic_pos {n : ℕ} (hn : 2 < n) {R} [LinearOrderedCommRing R] (x :
       exact hn'.ne' hi.2.2.1
     · simpa only [eval_X, eval_one, cyclotomic_two, eval_add] using h.right.le
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 theorem cyclotomic_pos_and_nonneg (n : ℕ) {R} [LinearOrderedCommRing R] (x : R) :
     (1 < x → 0 < eval x (cyclotomic n R)) ∧ (1 ≤ x → 0 ≤ eval x (cyclotomic n R)) := by
   rcases n with (_ | _ | _ | n)
-  · simp only [cyclotomic_zero, eval_one, zero_lt_one, implies_true, zero_le_one,
-      _root_.and_self]
+  · simp only [cyclotomic_zero, eval_one, zero_lt_one, implies_true, zero_le_one, and_self]
   · simp only [zero_add, cyclotomic_one, eval_sub, eval_X, eval_one, sub_pos, imp_self, sub_nonneg,
-      _root_.and_self]
+      and_self]
   · simp only [zero_add, reduceAdd, cyclotomic_two, eval_add, eval_X, eval_one]
     constructor <;> intro <;> linarith
   · constructor <;> intro <;> [skip; apply le_of_lt] <;> apply cyclotomic_pos (by omega)

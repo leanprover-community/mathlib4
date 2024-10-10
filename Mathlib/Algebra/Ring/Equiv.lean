@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Logic.Equiv.Set
@@ -409,7 +408,7 @@ end Opposite
 
 section NonUnitalSemiring
 
-variable [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] (f : R ≃+* S) (x y : R)
+variable [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] (f : R ≃+* S) (x : R)
 
 /-- A ring isomorphism sends zero to zero. -/
 protected theorem map_zero : f 0 = 0 :=
@@ -533,7 +532,7 @@ end NonUnitalSemiring
 
 section Semiring
 
-variable [NonAssocSemiring R] [NonAssocSemiring S] (f : R ≃+* S) (x y : R)
+variable [NonAssocSemiring R] [NonAssocSemiring S] (f : R ≃+* S) (x : R)
 
 /-- A ring isomorphism sends one to one. -/
 protected theorem map_one : f 1 = 1 :=
@@ -604,7 +603,7 @@ end NonUnitalRing
 
 section Ring
 
-variable [NonAssocRing R] [NonAssocRing S] (f : R ≃+* S) (x y : R)
+variable [NonAssocRing R] [NonAssocRing S] (f : R ≃+* S)
 
 -- Porting note (#10618): `simp` can now prove that, so we remove the `@[simp]` tag
 theorem map_neg_one : f (-1) = -1 :=
@@ -804,9 +803,6 @@ protected theorem map_pow (f : R ≃+* S) (a) : ∀ n : ℕ, f (a ^ n) = f a ^ n
   map_pow f a
 
 end GroupPower
-
-protected theorem isUnit_iff (f : R ≃+* S) {a} : IsUnit (f a) ↔ IsUnit a :=
-  MulEquiv.map_isUnit_iff f
 
 end RingEquiv
 
