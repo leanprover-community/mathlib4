@@ -180,19 +180,20 @@ theorem bind_dirac {f : α → Measure β} (hf : Measurable f) (a : α) : bind (
   rfl
 
 @[simp]
-lemma bind_dirac_eq_map (μ : Measure α) {f : α → β} (hf : Measurable f) :
-    μ.bind (fun x ↦ Measure.dirac (f x)) = μ.map f := by
+theorem dirac_bind {m : Measure α} : bind m dirac = m := by
+  ext1 s hs
+  simp only [bind_apply hs measurable_dirac, dirac_apply' _ hs, lintegral_indicator 1 hs,
+    Pi.one_apply, lintegral_one, restrict_apply, MeasurableSet.univ, univ_inter]
+
+@[simp]
+lemma dirac_bind_eq_map (m : Measure α) {f : α → β} (hf : Measurable f) :
+    m.bind (fun x ↦ Measure.dirac (f x)) = m.map f := by
   ext s hs
   rw [bind_apply hs]
   swap; · exact measurable_dirac.comp hf
   simp_rw [dirac_apply' _ hs]
   rw [← lintegral_map _ hf, lintegral_indicator_one hs]
   exact measurable_const.indicator hs
-
-theorem dirac_bind {m : Measure α} : bind m dirac = m := by
-  ext1 s hs
-  simp only [bind_apply hs measurable_dirac, dirac_apply' _ hs, lintegral_indicator 1 hs,
-    Pi.one_apply, lintegral_one, restrict_apply, MeasurableSet.univ, univ_inter]
 
 theorem join_eq_bind (μ : Measure (Measure α)) : join μ = bind μ id := by rw [bind, map_id]
 
