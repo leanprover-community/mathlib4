@@ -1051,7 +1051,8 @@ theorem length_sigmaCompositionAux (a : Composition n) (b : Composition a.length
     Composition.length (Composition.sigmaCompositionAux a b ⟨i, (length_gather a b).symm ▸ i.2⟩) =
       Composition.blocksFun b i :=
   show List.length ((splitWrtComposition a.blocks b)[i.1]) = blocksFun b i by
-    rw [getElem_map_rev List.length, getElem_of_eq (map_length_splitWrtComposition _ _)]; rfl
+    rw [getElem_map_rev List.length, getElem_of_eq (map_length_splitWrtComposition _ _), blocksFun,
+      get_eq_getElem]
 
 set_option linter.deprecated false in
 theorem blocksFun_sigmaCompositionAux (a : Composition n) (b : Composition a.length)
@@ -1060,7 +1061,9 @@ theorem blocksFun_sigmaCompositionAux (a : Composition n) (b : Composition a.len
         ⟨j, (length_sigmaCompositionAux a b i).symm ▸ j.2⟩ =
       blocksFun a (embedding b i j) :=
   show get (get _ ⟨_, _⟩) ⟨_, _⟩  = a.blocks.get ⟨_, _⟩ by
-    rw [get_of_eq (get_splitWrtComposition _ _ _), get_drop', get_take']; rfl
+    rw [get_of_eq (get_splitWrtComposition _ _ _), get_drop', get_take']
+    simp only [get_eq_getElem, Fin.natAddOrderEmb_toEmbedding, Function.Embedding.coeFn_mk,
+      Fin.coe_natAdd]
 
 set_option linter.deprecated false in
 /-- Auxiliary lemma to prove that the composition of formal multilinear series is associative.
