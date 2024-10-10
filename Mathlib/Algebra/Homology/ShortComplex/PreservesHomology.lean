@@ -36,11 +36,11 @@ variable (F : C ⥤ D)
 /-- A functor preserves homology when it preserves both kernels and cokernels. -/
 class PreservesHomology (F : C ⥤ D) [PreservesZeroMorphisms F] where
   /-- the functor preserves kernels -/
-  preservesKernels ⦃X Y : C⦄ (f : X ⟶ Y) : PreservesLimit (parallelPair f 0) F :=
-    by infer_instance
+  preservesKernels ⦃X Y : C⦄ (f : X ⟶ Y) : PreservesLimit (parallelPair f 0) F := by
+    infer_instance
   /-- the functor preserves cokernels -/
-  preservesCokernels ⦃X Y : C⦄ (f : X ⟶ Y) : PreservesColimit (parallelPair f 0) F :=
-    by infer_instance
+  preservesCokernels ⦃X Y : C⦄ (f : X ⟶ Y) : PreservesColimit (parallelPair f 0) F := by
+    infer_instance
 
 variable [PreservesZeroMorphisms F]
 
@@ -110,9 +110,9 @@ noncomputable def map : (S.map F).LeftHomologyData := by
   have hπ : IsColimit (CokernelCofork.ofπ (F.map h.π) wπ) := by
     let e : parallelPair f' 0 ≅ parallelPair (F.map h.f') 0 :=
       parallelPair.ext (Iso.refl _) (Iso.refl _) (by simpa using hf') (by simp)
-    refine' IsColimit.precomposeInvEquiv e _
-      (IsColimit.ofIsoColimit (CokernelCofork.mapIsColimit _ h.hπ' F) _)
-    exact Cofork.ext (Iso.refl _) (by simp)
+    refine IsColimit.precomposeInvEquiv e _
+      (IsColimit.ofIsoColimit (CokernelCofork.mapIsColimit _ h.hπ' F) ?_)
+    exact Cofork.ext (Iso.refl _) (by simp [e])
   exact
     { K := F.obj h.K
       H := F.obj h.H
@@ -191,9 +191,9 @@ noncomputable def map : (S.map F).RightHomologyData := by
   have hι : IsLimit (KernelFork.ofι (F.map h.ι) wι) := by
     let e : parallelPair g' 0 ≅ parallelPair (F.map h.g') 0 :=
       parallelPair.ext (Iso.refl _) (Iso.refl _) (by simpa using hg') (by simp)
-    refine' IsLimit.postcomposeHomEquiv e _
-      (IsLimit.ofIsoLimit (KernelFork.mapIsLimit _ h.hι' F) _)
-    exact Fork.ext (Iso.refl _) (by simp)
+    refine IsLimit.postcomposeHomEquiv e _
+      (IsLimit.ofIsoLimit (KernelFork.mapIsLimit _ h.hι' F) ?_)
+    exact Fork.ext (Iso.refl _) (by simp [e])
   exact
     { Q := F.obj h.Q
       H := F.obj h.H
@@ -322,16 +322,16 @@ instance hasLeftHomology_of_preserves [S.HasLeftHomology] [F.PreservesLeftHomolo
   HasLeftHomology.mk' (S.leftHomologyData.map F)
 
 instance hasLeftHomology_of_preserves' [S.HasLeftHomology] [F.PreservesLeftHomologyOf S] :
-    (F.mapShortComplex.obj S).HasLeftHomology :=
-  by dsimp; infer_instance
+    (F.mapShortComplex.obj S).HasLeftHomology := by
+  dsimp; infer_instance
 
 instance hasRightHomology_of_preserves [S.HasRightHomology] [F.PreservesRightHomologyOf S] :
     (S.map F).HasRightHomology :=
   HasRightHomology.mk' (S.rightHomologyData.map F)
 
 instance hasRightHomology_of_preserves' [S.HasRightHomology] [F.PreservesRightHomologyOf S] :
-    (F.mapShortComplex.obj S).HasRightHomology :=
-  by dsimp; infer_instance
+    (F.mapShortComplex.obj S).HasRightHomology := by
+  dsimp; infer_instance
 
 instance hasHomology_of_preserves [S.HasHomology] [F.PreservesLeftHomologyOf S]
     [F.PreservesRightHomologyOf S] :
@@ -340,8 +340,8 @@ instance hasHomology_of_preserves [S.HasHomology] [F.PreservesLeftHomologyOf S]
 
 instance hasHomology_of_preserves' [S.HasHomology] [F.PreservesLeftHomologyOf S]
     [F.PreservesRightHomologyOf S] :
-    (F.mapShortComplex.obj S).HasHomology :=
-  by dsimp; infer_instance
+    (F.mapShortComplex.obj S).HasHomology := by
+  dsimp; infer_instance
 
 section
 
@@ -763,7 +763,7 @@ instance quasiIso_map_of_preservesLeftHomology
 
 lemma quasiIso_map_iff_of_preservesLeftHomology
     [F.PreservesLeftHomologyOf S₁] [F.PreservesLeftHomologyOf S₂]
-    [ReflectsIsomorphisms F] :
+    [F.ReflectsIsomorphisms] :
     QuasiIso (F.mapShortComplex.map φ) ↔ QuasiIso φ := by
   have γ : LeftHomologyMapData φ S₁.leftHomologyData S₂.leftHomologyData := default
   rw [γ.quasiIso_iff, (γ.map F).quasiIso_iff, LeftHomologyMapData.map_φH]
@@ -785,7 +785,7 @@ instance quasiIso_map_of_preservesRightHomology
 
 lemma quasiIso_map_iff_of_preservesRightHomology
     [F.PreservesRightHomologyOf S₁] [F.PreservesRightHomologyOf S₂]
-    [ReflectsIsomorphisms F] :
+    [F.ReflectsIsomorphisms] :
     QuasiIso (F.mapShortComplex.map φ) ↔ QuasiIso φ := by
   have γ : RightHomologyMapData φ S₁.rightHomologyData S₂.rightHomologyData := default
   rw [γ.quasiIso_iff, (γ.map F).quasiIso_iff, RightHomologyMapData.map_φH]

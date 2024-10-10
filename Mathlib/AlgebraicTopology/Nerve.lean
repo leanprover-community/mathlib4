@@ -6,8 +6,6 @@ Authors: Joël Riou
 import Mathlib.AlgebraicTopology.SimplicialSet
 import Mathlib.CategoryTheory.ComposableArrows
 
-#align_import algebraic_topology.nerve from "leanprover-community/mathlib"@"841aef25c9d7a5a5d63a3dcf7bc43386b2c206d6"
-
 /-!
 
 # The nerve of a category
@@ -33,7 +31,6 @@ namespace CategoryTheory
 def nerve (C : Type u) [Category.{v} C] : SSet.{max u v} where
   obj Δ := ComposableArrows C (Δ.unop.len)
   map f x := x.whiskerLeft (SimplexCategory.toCat.map f.unop)
-#align category_theory.nerve CategoryTheory.nerve
 
 instance {C : Type*} [Category C] {Δ : SimplexCategoryᵒᵖ} : Category ((nerve C).obj Δ) :=
   (inferInstance : Category (ComposableArrows C (Δ.unop.len)))
@@ -43,7 +40,6 @@ instance {C : Type*} [Category C] {Δ : SimplexCategoryᵒᵖ} : Category ((nerv
 def nerveFunctor : Cat ⥤ SSet where
   obj C := nerve C
   map F := { app := fun Δ => (F.mapComposableArrows _).obj }
-#align category_theory.nerve_functor CategoryTheory.nerveFunctor
 
 namespace Nerve
 

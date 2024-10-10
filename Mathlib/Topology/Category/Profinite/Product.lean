@@ -13,7 +13,7 @@ Hausdorff spaces as a cofiltered limit in `Profinite` indexed by `Finset ι`.
 
 ## Main definitions
 
-- `Profinite.indexFunctor` is the functor `(Finset ι)ᵒᵖ ⥤ Profinite` indexing the limit. It maps
+- `Profinite.indexFunctor` is the functor `(Finset ι)ᵒᵖ ⥤ Profinite` indexing the limit. It maps
   `J` to the restriction of `C` to `J`
 - `Profinite.indexCone` is a cone on `Profinite.indexFunctor` with cone point `C`
 
@@ -76,27 +76,30 @@ theorem eq_of_forall_π_app_eq (a b : C)
 
 end IndexFunctor
 
-variable [∀ i, T2Space (X i)] [∀ i, TotallyDisconnectedSpace (X i)] {C} (hC : IsCompact C)
+variable [∀ i, T2Space (X i)] [∀ i, TotallyDisconnectedSpace (X i)]
+variable {C}
 
 open CategoryTheory Limits Opposite IndexFunctor
 
 /-- The functor from the poset of finsets of `ι` to  `Profinite`, indexing the limit. -/
 noncomputable
-def indexFunctor : (Finset ι)ᵒᵖ ⥤ Profinite.{u} where
+def indexFunctor (hC : IsCompact C) : (Finset ι)ᵒᵖ ⥤ Profinite.{u} where
   obj J := @Profinite.of (obj C (· ∈ (unop J))) _
     (by rw [← isCompact_iff_compactSpace]; exact hC.image (Pi.continuous_precomp' _)) _ _
   map h := map C (leOfHom h.unop)
 
 /-- The limit cone on `indexFunctor` -/
 noncomputable
-def indexCone : Cone (indexFunctor hC) where
+def indexCone (hC : IsCompact C) : Cone (indexFunctor hC) where
   pt := @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _
   π := { app := fun J ↦ π_app C (· ∈ unop J) }
+
+variable (hC : IsCompact C)
 
 instance isIso_indexCone_lift :
     IsIso ((limitConeIsLimit.{u, u} (indexFunctor hC)).lift (indexCone hC)) :=
   haveI : CompactSpace C := by rwa [← isCompact_iff_compactSpace]
-  isIso_of_bijective _
+  CompHausLike.isIso_of_bijective _
     (by
       refine ⟨fun a b h ↦ ?_, fun a ↦ ?_⟩
       · refine eq_of_forall_π_app_eq a b (fun J ↦ ?_)
@@ -122,7 +125,7 @@ instance isIso_indexCone_lift :
           rfl
         obtain ⟨x, hx⟩ :
             Set.Nonempty (⋂ (J : Finset ι), π_app C (· ∈ J) ⁻¹' {a.val (op J)}) :=
-          IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed
+          IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
             (fun J : Finset ι => π_app C (· ∈ J) ⁻¹' {a.val (op J)}) (directed_of_isDirected_le H₁)
             (fun J => (Set.singleton_nonempty _).preimage (surjective_π_app _))
             (fun J => (hc J (a.val (op J))).isCompact) fun J => hc J (a.val (op J))

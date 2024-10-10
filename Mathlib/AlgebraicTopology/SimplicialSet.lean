@@ -1,15 +1,13 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Scott Morrison, Adam Topaz
+Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
 import Mathlib.AlgebraicTopology.SimplicialObject
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Tactic.FinCases
-
-#align_import algebraic_topology.simplicial_set from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
 /-!
 # Simplicial sets
@@ -33,12 +31,9 @@ from a non-surjective order preserving function `Fin n → Fin n`
 a morphism `Δ[n] ⟶ ∂Δ[n]`.
 -/
 
-set_option autoImplicit true
-
-
 universe v u
 
-open CategoryTheory CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Limits CategoryTheory.Functor
 
 open Simplicial
 
@@ -47,8 +42,6 @@ This is the category of contravariant functors from
 `SimplexCategory` to `Type u`. -/
 def SSet : Type (u + 1) :=
   SimplicialObject (Type u)
-set_option linter.uppercaseLean3 false in
-#align sSet SSet
 
 namespace SSet
 
@@ -64,8 +57,7 @@ instance hasColimits : HasColimits SSet := by
   dsimp only [SSet]
   infer_instance
 
--- Porting note: added an `ext` lemma.
--- See https://github.com/leanprover-community/mathlib4/issues/5229
+-- Porting note (#5229): added an `ext` lemma.
 @[ext]
 lemma hom_ext {X Y : SSet} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = g :=
   SimplicialObject.hom_ext _ _ w
@@ -78,10 +70,7 @@ def uliftFunctor : SSet.{u} ⥤ SSet.{max u v} :=
 is the Yoneda embedding of `n`. -/
 def standardSimplex : SimplexCategory ⥤ SSet.{u} :=
   yoneda ⋙ uliftFunctor
-set_option linter.uppercaseLean3 false in
-#align sSet.standard_simplex SSet.standardSimplex
 
--- mathport name: standard_simplex
 @[inherit_doc SSet.standardSimplex]
 scoped[Simplicial] notation3 "Δ[" n "]" => SSet.standardSimplex.obj (SimplexCategory.mk n)
 
@@ -158,8 +147,6 @@ section
 the monotone maps from `Fin (m+1)` to `Fin (n+1)`. -/
 def asOrderHom {n} {m} (α : Δ[n].obj m) : OrderHom (Fin (m.unop.len + 1)) (Fin (n + 1)) :=
   α.down.toOrderHom
-set_option linter.uppercaseLean3 false in
-#align sSet.as_order_hom SSet.asOrderHom
 
 end
 
@@ -173,16 +160,12 @@ def boundary (n : ℕ) : SSet.{u} where
       intro h
       apply α.property
       exact Function.Surjective.of_comp h⟩
-set_option linter.uppercaseLean3 false in
-#align sSet.boundary SSet.boundary
 
--- mathport name: sSet.boundary
+/-- The boundary `∂Δ[n]` of the `n`-th standard simplex -/
 scoped[Simplicial] notation3 "∂Δ[" n "]" => SSet.boundary n
 
 /-- The inclusion of the boundary of the `n`-th standard simplex into that standard simplex. -/
 def boundaryInclusion (n : ℕ) : ∂Δ[n] ⟶ Δ[n] where app m (α : { α : Δ[n].obj m // _ }) := α
-set_option linter.uppercaseLean3 false in
-#align sSet.boundary_inclusion SSet.boundaryInclusion
 
 /-- `horn n i` (or `Λ[n, i]`) is the `i`-th horn of the `n`-th standard simplex, where `i : n`.
 It consists of all `m`-simplices `α` of `Δ[n]`
@@ -197,17 +180,13 @@ def horn (n : ℕ) (i : Fin (n + 1)) : SSet where
       apply Or.imp _ id (h j)
       intro hj
       exact Set.range_comp_subset_range _ _ hj⟩
-set_option linter.uppercaseLean3 false in
-#align sSet.horn SSet.horn
 
--- mathport name: sSet.horn
+/-- The `i`-th horn `Λ[n, i]` of the standard `n`-simplex -/
 scoped[Simplicial] notation3 "Λ[" n ", " i "]" => SSet.horn (n : ℕ) i
 
 /-- The inclusion of the `i`-th horn of the `n`-th standard simplex into that standard simplex. -/
 def hornInclusion (n : ℕ) (i : Fin (n + 1)) : Λ[n, i] ⟶ Δ[n] where
   app m (α : { α : Δ[n].obj m // _ }) := α
-set_option linter.uppercaseLean3 false in
-#align sSet.horn_inclusion SSet.hornInclusion
 
 namespace horn
 
@@ -291,7 +270,7 @@ def primitiveTriangle {n : ℕ} (i : Fin (n+4))
     use Fin.last (n+3)
     simp only [hₙ.ne, not_false_eq_true, Fin.zero_eta, zero_add, true_and]
     intro j
-    fin_cases j <;> simp [Fin.ext_iff] <;> omega
+    fin_cases j <;> simp [Fin.ext_iff]
   · use 0
     simp only [h₀.ne', not_false_eq_true, true_and]
     intro j
@@ -337,54 +316,119 @@ noncomputable def S1 : SSet :=
   Limits.colimit <|
     Limits.parallelPair (standardSimplex.map <| SimplexCategory.δ 0 : Δ[0] ⟶ Δ[1])
       (standardSimplex.map <| SimplexCategory.δ 1)
-set_option linter.uppercaseLean3 false in
-#align sSet.S1 SSet.S1
 
 end Examples
 
 /-- Truncated simplicial sets. -/
 def Truncated (n : ℕ) :=
   SimplicialObject.Truncated (Type u) n
-set_option linter.uppercaseLean3 false in
-#align sSet.truncated SSet.Truncated
 
 instance Truncated.largeCategory (n : ℕ) : LargeCategory (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
 
-instance Truncated.hasLimits : HasLimits (Truncated n) := by
+instance Truncated.hasLimits {n : ℕ} : HasLimits (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
 
-instance Truncated.hasColimits : HasColimits (Truncated n) := by
+instance Truncated.hasColimits {n : ℕ} : HasColimits (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
 
--- Porting note: added an `ext` lemma.
--- See https://github.com/leanprover-community/mathlib4/issues/5229
+/-- The ulift functor `SSet.Truncated.{u} ⥤ SSet.Truncated.{max u v}` on truncated
+simplicial sets. -/
+def Truncated.uliftFunctor (k : ℕ) : SSet.Truncated.{u} k ⥤ SSet.Truncated.{max u v} k :=
+  (whiskeringRight _ _ _).obj CategoryTheory.uliftFunctor.{v, u}
+
+-- Porting note (#5229): added an `ext` lemma.
 @[ext]
-lemma Truncated.hom_ext {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = g :=
-  NatTrans.ext _ _ (funext w)
+lemma Truncated.hom_ext {n : ℕ} {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) :
+    f = g :=
+  NatTrans.ext (funext w)
 
-/-- The skeleton functor on simplicial sets. -/
-def sk (n : ℕ) : SSet ⥤ SSet.Truncated n :=
-  SimplicialObject.sk n
-set_option linter.uppercaseLean3 false in
-#align sSet.sk SSet.sk
+/-- The truncation functor on simplicial sets. -/
+abbrev truncation (n : ℕ) : SSet ⥤ SSet.Truncated n := SimplicialObject.truncation n
 
 instance {n} : Inhabited (SSet.Truncated n) :=
-  ⟨(sk n).obj <| Δ[0]⟩
+  ⟨(truncation n).obj <| Δ[0]⟩
+
+
+open SimplexCategory
+
+noncomputable section
+
+/-- The n-skeleton as a functor `SSet.Truncated n ⥤ SSet`. -/
+protected abbrev Truncated.sk (n : ℕ) : SSet.Truncated n ⥤ SSet.{u} :=
+  SimplicialObject.Truncated.sk n
+
+/-- The n-coskeleton as a functor `SSet.Truncated n ⥤ SSet`. -/
+protected abbrev Truncated.cosk (n : ℕ) : SSet.Truncated n ⥤ SSet.{u} :=
+  SimplicialObject.Truncated.cosk n
+
+/-- The n-skeleton as an endofunctor on `SSet`. -/
+abbrev sk (n : ℕ) : SSet ⥤ SSet := SimplicialObject.sk n
+
+/-- The n-coskeleton as an endofunctor on `SSet`. -/
+abbrev cosk (n : ℕ) : SSet ⥤ SSet := SimplicialObject.cosk n
+
+end
+
+section adjunctions
+
+/-- The adjunction between the n-skeleton and n-truncation.-/
+noncomputable def skAdj (n : ℕ) : Truncated.sk n ⊣ truncation.{u} n :=
+  SimplicialObject.skAdj n
+
+/-- The adjunction between n-truncation and the n-coskeleton.-/
+noncomputable def coskAdj (n : ℕ) : truncation.{u} n ⊣ Truncated.cosk n :=
+  SimplicialObject.coskAdj n
+
+namespace Truncated
+
+instance cosk_reflective (n) : IsIso (coskAdj n).counit :=
+  SimplicialObject.Truncated.cosk_reflective n
+
+instance sk_coreflective (n) : IsIso (skAdj n).unit :=
+  SimplicialObject.Truncated.sk_coreflective n
+
+/-- Since `Truncated.inclusion` is fully faithful, so is right Kan extension along it.-/
+noncomputable def cosk.fullyFaithful (n) :
+    (Truncated.cosk n).FullyFaithful :=
+  SimplicialObject.Truncated.cosk.fullyFaithful n
+
+instance cosk.full (n) : (Truncated.cosk n).Full :=
+  SimplicialObject.Truncated.cosk.full n
+
+instance cosk.faithful (n) : (Truncated.cosk n).Faithful :=
+  SimplicialObject.Truncated.cosk.faithful n
+
+noncomputable instance coskAdj.reflective (n) : Reflective (Truncated.cosk n) :=
+  SimplicialObject.Truncated.coskAdj.reflective n
+
+/-- Since `Truncated.inclusion` is fully faithful, so is left Kan extension along it.-/
+noncomputable def sk.fullyFaithful (n) :
+    (Truncated.sk n).FullyFaithful := SimplicialObject.Truncated.sk.fullyFaithful n
+
+instance sk.full (n) : (Truncated.sk n).Full := SimplicialObject.Truncated.sk.full n
+
+instance sk.faithful (n) : (Truncated.sk n).Faithful :=
+  SimplicialObject.Truncated.sk.faithful n
+
+noncomputable instance skAdj.coreflective (n) : Coreflective (Truncated.sk n) :=
+  SimplicialObject.Truncated.skAdj.coreflective n
+
+end Truncated
+
+end adjunctions
 
 /-- The category of augmented simplicial sets, as a particular case of
 augmented simplicial objects. -/
 abbrev Augmented :=
   SimplicialObject.Augmented (Type u)
-set_option linter.uppercaseLean3 false in
-#align sSet.augmented SSet.Augmented
 
 namespace Augmented
 
--- porting note: an instance of `Subsingleton (⊤_ (Type u))` was added in
+-- Porting note: an instance of `Subsingleton (⊤_ (Type u))` was added in
 -- `CategoryTheory.Limits.Types` to ease the automation in this definition
 /-- The functor which sends `[n]` to the simplicial set `Δ[n]` equipped by
 the obvious augmentation towards the terminal object of the category of sets. -/
@@ -397,8 +441,6 @@ noncomputable def standardSimplex : SimplexCategory ⥤ SSet.Augmented.{u} where
   map θ :=
     { left := SSet.standardSimplex.map θ
       right := terminal.from _ }
-set_option linter.uppercaseLean3 false in
-#align sSet.augmented.standard_simplex SSet.Augmented.standardSimplex
 
 end Augmented
 

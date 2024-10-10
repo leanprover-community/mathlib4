@@ -1,8 +1,5 @@
 import Mathlib.Tactic.Says
-import Mathlib.Tactic.RunCmd
 import Aesop
-import Std.Tactic.ShowTerm
-import Std.Tactic.SimpTrace
 
 set_option autoImplicit true
 /--
@@ -60,6 +57,7 @@ example (x y : List α) : (x ++ y).length = x.length + y.length := by
   simp? says simp only []
 
 set_option linter.unreachableTactic false
+set_option linter.unusedTactic false in
 -- Now we check that `says` does not consume following tactics unless they are indented.
 /--
 error: Tactic `simp` did not produce any messages.
@@ -103,7 +101,8 @@ def very_long_lemma_name_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa : Q → P := fun _ 
 @[simp]
 def very_long_lemma_name_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb : Q := trivial
 /--
-info: Try this: aesop? says simp_all only [very_long_lemma_name_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,
+info: Try this: aesop? says
+  simp_all only [very_long_lemma_name_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb,
     very_long_lemma_name_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]
 -/
 #guard_msgs in
