@@ -353,7 +353,9 @@ theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) �
   simp only [ModuleCat.coe_comp, Function.comp_apply]
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [diagonalSucc_hom_single]
-  conv_lhs => -- Wrapped in `conv_lhs` because testing for `rw`-ability is too slow.
+  -- The prototype linter that checks if `erw` could be replaced with `rw` would time out
+  -- if it replaces the next `erw`s with `rw`s. So we focus down on the relevant part.
+  conv_lhs =>
     erw [TensorProduct.uncurry_apply, Finsupp.lift_apply, Finsupp.sum_single_index]
     · simp only [one_smul]
       erw [Representation.linHom_apply]

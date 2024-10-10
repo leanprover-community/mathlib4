@@ -136,9 +136,9 @@ theorem toDirectSum_mul [DecidableEq ι] [AddMonoid ι] [Semiring M] (f g : AddM
     AddMonoidHom.mul_apply, Finsupp.singleAddHom_apply]
   -- This was not needed before leanprover/lean4#2644
   erw [AddMonoidHom.compl₂_apply]
-  -- If we remove the next `rw`, the `erw` after it will complain that it could be a `rw`.
-  -- But the `erw` and `rw` will rewrite different occurrences. So first get rid of the `rw`-able
-  -- occurrences to force `erw` to do the expensive rewrite only.
+  -- If we remove the next `rw`, the `erw` after it will complain (when we get an `erw` linter)
+  -- that it could be a `rw`. But the `erw` and `rw` will rewrite different occurrences.
+  -- So first get rid of the `rw`-able occurrences to force `erw` to do the expensive rewrite only.
   rw [AddMonoidHom.coe_mk, AddMonoidHom.coe_mk]
   -- This was not needed before leanprover/lean4#2644
   erw [AddMonoidHom.coe_mk]
