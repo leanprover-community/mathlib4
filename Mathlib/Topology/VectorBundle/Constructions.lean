@@ -134,7 +134,7 @@ instance VectorBundle.prod [VectorBundle 𝕜 F₁ E₁] [VectorBundle 𝕜 F₂
       rw [e₁.coordChangeL_apply e₁', e₂.coordChangeL_apply e₂', (e₁.prod e₂).coordChangeL_apply']
       exacts [rfl, hb, ⟨hb.1.2, hb.2.2⟩, ⟨hb.1.1, hb.2.1⟩]
 
-variable {𝕜 F₁ F₂ E₁ E₂}
+variable {𝕜 F₁ E₁ F₂ E₂}
 
 @[simp] -- Porting note: changed arguments to make `simpNF` happy: merged `hx₁` and `hx₂` into `hx`
 theorem Trivialization.continuousLinearEquivAt_prod {e₁ : Trivialization F₁ (π F₁ E₁)}
