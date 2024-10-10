@@ -120,12 +120,19 @@ elab "included_variables" plumb:(ppSpace &"plumb")? : tactic => do
     if ! msgs.isEmpty then
       logInfo m!"{msgs.foldl (m!"{·}\n" ++ m!"* {·}") "Included variables:"}"
 
+/-- The `NameSet` of all the `SyntaxNodeKinds` of all the binders. -/
 abbrev binders : NameSet := NameSet.empty
   |>.insert ``Lean.Parser.Term.explicitBinder
   |>.insert ``Lean.Parser.Term.strictImplicitBinder
   |>.insert ``Lean.Parser.Term.implicitBinder
   |>.insert ``Lean.Parser.Term.instBinder
 
+/--
+`findBinders stx` extracts all syntax nodes in `stx` representing binders.
+
+*Note*. This is a crude function and more structured solutions, such as `getDeclBinders`
+should be preferred, if possible.
+-/
 partial
 def findBinders (stx : Syntax) : Array Syntax :=
   stx.filter (binders.contains ·.getKind)
