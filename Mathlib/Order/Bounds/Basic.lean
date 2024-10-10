@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Data.Set.NAry
 import Mathlib.Order.Directed
 
 /-!
