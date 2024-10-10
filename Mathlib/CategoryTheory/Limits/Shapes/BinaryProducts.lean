@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Bhavik Mehta
+Authors: Kim Morrison, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.DiscreteCategory
@@ -31,7 +31,7 @@ braiding and associating isomorphisms, and the product comparison morphism.
 
 noncomputable section
 
-universe v u u₂
+universe v v₁ u u₁ u₂
 
 open CategoryTheory
 
@@ -160,7 +160,7 @@ def diagramIsoPair (F : Discrete WalkingPair ⥤ C) :
 
 section
 
-variable {D : Type u} [Category.{v} D]
+variable {D : Type u₁} [Category.{v₁} D]
 
 /-- The natural isomorphism between `pair X Y ⋙ F` and `pair (F.obj X) (F.obj Y)`. -/
 def pairComp (X Y : C) (F : C ⥤ D) : pair X Y ⋙ F ≅ pair (F.obj X) (F.obj Y) :=

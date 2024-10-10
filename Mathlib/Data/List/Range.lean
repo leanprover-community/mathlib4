@@ -1,12 +1,10 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Kenny Lau, Scott Morrison
+Authors: Mario Carneiro, Kenny Lau, Kim Morrison
 -/
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.Pairwise
-import Batteries.Data.Nat.Lemmas
 
 /-!
 # Ranges of naturals as lists
@@ -27,14 +25,8 @@ namespace List
 
 variable {α : Type u}
 
-set_option linter.deprecated false in
-@[simp]
-theorem nthLe_range' {n m step} (i) (H : i < (range' n m step).length) :
-    nthLe (range' n m step) i H = n + step * i := get_range' i H
-
-set_option linter.deprecated false in
-theorem nthLe_range'_1 {n m} (i) (H : i < (range' n m).length) :
-    nthLe (range' n m) i H = n + i := by simp
+theorem getElem_range'_1 {n m} (i) (H : i < (range' n m).length) :
+    (range' n m)[i] = n + i := by simp
 
 theorem chain'_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
     Chain' r (range n.succ) ↔ ∀ m < n, r m m.succ := by
@@ -42,8 +34,7 @@ theorem chain'_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
   induction' n with n hn
   · simp
   · rw [range_succ]
-    simp only [append_assoc, singleton_append, chain'_append_cons_cons, chain'_singleton,
-      and_true_iff]
+    simp only [append_assoc, singleton_append, chain'_append_cons_cons, chain'_singleton, and_true]
     rw [hn, forall_lt_succ]
 
 theorem chain_range_succ (r : ℕ → ℕ → Prop) (n a : ℕ) :
@@ -83,30 +74,24 @@ theorem pairwise_lt_finRange (n : ℕ) : Pairwise (· < ·) (finRange n) :=
 theorem pairwise_le_finRange (n : ℕ) : Pairwise (· ≤ ·) (finRange n) :=
   (List.pairwise_le_range n).pmap (by simp) (by simp)
 
-set_option linter.deprecated false in
-@[simp]
-theorem nthLe_range {n} (i) (H : i < (range n).length) : nthLe (range n) i H = i :=
-  get_range i H
-
 @[simp]
 theorem getElem_finRange {n : ℕ} {i : ℕ} (h) :
     (finRange n)[i] = ⟨i, length_finRange n ▸ h⟩ := by
-  simp only [finRange, getElem_range, getElem_pmap]
+  simp [finRange, getElem_range, getElem_pmap]
 
 -- Porting note (#10756): new theorem
 theorem get_finRange {n : ℕ} {i : ℕ} (h) :
     (finRange n).get ⟨i, h⟩ = ⟨i, length_finRange n ▸ h⟩ := by
   simp
 
+@[deprecated (since := "2024-08-19")] alias nthLe_range' := get_range'
+@[deprecated (since := "2024-08-19")] alias nthLe_range'_1 := getElem_range'_1
+@[deprecated (since := "2024-08-19")] alias nthLe_range := get_range
+@[deprecated (since := "2024-08-19")] alias nthLe_finRange := get_finRange
+
 @[simp]
 theorem finRange_map_get (l : List α) : (finRange l.length).map l.get = l :=
   List.ext_get (by simp) (by simp)
-
-set_option linter.deprecated false in
-@[simp]
-theorem nthLe_finRange {n : ℕ} {i : ℕ} (h) :
-    (finRange n).nthLe i h = ⟨i, length_finRange n ▸ h⟩ :=
-  get_finRange h
 
 @[simp] theorem indexOf_finRange {k : ℕ} (i : Fin k) : (finRange k).indexOf i = i := by
   have : (finRange k).indexOf i < (finRange k).length := indexOf_lt_length.mpr (by simp)

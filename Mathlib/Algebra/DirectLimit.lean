@@ -137,20 +137,20 @@ protected theorem induction_on [Nonempty ι] [IsDirected ι (· ≤ ·)] {C : Di
   let ⟨i, x, h⟩ := exists_of z
   h ▸ ih i x
 
-variable {P : Type u₁} [AddCommGroup P] [Module R P] (g : ∀ i, G i →ₗ[R] P)
-variable (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
-variable (R ι G f)
+variable {P : Type u₁} [AddCommGroup P] [Module R P]
 
+variable (R ι G f) in
 /-- The universal property of the direct limit: maps from the components to another module
 that respect the directed system structure (i.e. make some diagram commute) give rise
 to a unique map out of the direct limit. -/
-def lift : DirectLimit G f →ₗ[R] P :=
+def lift (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
+    DirectLimit G f →ₗ[R] P :=
   liftQ _ (DirectSum.toModule R ι P g)
     (span_le.2 fun a ⟨i, j, hij, x, hx⟩ => by
       rw [← hx, SetLike.mem_coe, LinearMap.sub_mem_ker_iff, DirectSum.toModule_lof,
         DirectSum.toModule_lof, Hg])
 
-variable {R ι G f}
+variable (g : ∀ i, G i →ₗ[R] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
 theorem lift_of {i} (x) : lift R ι G f g Hg (of R ι G f i x) = g i x :=
   DirectSum.toModule_lof R _ _
@@ -170,9 +170,10 @@ lemma lift_injective [IsDirected ι (· ≤ ·)]
   · apply Function.injective_of_subsingleton
   simp_rw [injective_iff_map_eq_zero] at injective ⊢
   intros z hz
-  induction' z using DirectLimit.induction_on with _ g
-  rw [lift_of] at hz
-  rw [injective _ g hz, _root_.map_zero]
+  induction z using DirectLimit.induction_on with
+  | ih _ g =>
+    rw [lift_of] at hz
+    rw [injective _ g hz, _root_.map_zero]
 
 section functorial
 
@@ -315,12 +316,8 @@ theorem of.zero_exact_aux [∀ i (k : G i), Decidable (k ≠ 0)] [Nonempty ι] [
         ⟨k, fun l hl =>
           (Finset.mem_union.1 (DFinsupp.support_add hl)).elim (fun hl => le_trans (hi _ hl) hik)
             fun hl => le_trans (hj _ hl) hjk, by
-          -- Porting note: this had been
-          -- simp [LinearMap.map_add, hxi, hyj, toModule_totalize_of_le hik hi,
-          --   toModule_totalize_of_le hjk hj]
-          simp only [map_add]
-          rw [toModule_totalize_of_le hik hi, toModule_totalize_of_le hjk hj]
-          simp [hxi, hyj]⟩)
+          simp [LinearMap.map_add, hxi, hyj, toModule_totalize_of_le hik hi,
+             toModule_totalize_of_le hjk hj]⟩)
       fun a x ⟨i, hi, hxi⟩ =>
       ⟨i, fun k hk => hi k (DirectSum.support_smul _ _ hk), by simp [LinearMap.map_smul, hxi]⟩
 
@@ -429,9 +426,8 @@ lemma lift_injective [IsDirected ι (· ≤ ·)]
   · apply Function.injective_of_subsingleton
   simp_rw [injective_iff_map_eq_zero] at injective ⊢
   intros z hz
-  induction' z using DirectLimit.induction_on with _ g
-  rw [lift_of] at hz
-  rw [injective _ g hz, _root_.map_zero]
+  induction z using DirectLimit.induction_on with
+  | ih _ g => rw [lift_of] at hz; rw [injective _ g hz, _root_.map_zero]
 
 section functorial
 
@@ -721,9 +717,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
           dsimp only
           rw [(f' i i _).map_mul]
           · exact sub_self _
-        all_goals tauto
-        -- Porting note: was
-        --exacts [sub_self _, Or.inl rfl, Or.inr (Or.inr rfl), Or.inr (Or.inl rfl)]
+        exacts [Or.inl rfl, Or.inr (Or.inr rfl), Or.inr (Or.inl rfl)]
   · refine Nonempty.elim (by infer_instance) fun ind : ι => ?_
     refine ⟨ind, ∅, fun _ => False.elim, isSupported_zero, fun [_] => ?_⟩
     -- Porting note: `RingHom.map_zero` was `(restriction _).map_zero`
@@ -790,18 +784,16 @@ theorem of_injective [IsDirected ι (· ≤ ·)] [DirectedSystem G fun i j h => 
   rw [hfx, (f' i j hij).map_zero]
 
 variable (P : Type u₁) [CommRing P]
-variable (g : ∀ i, G i →+* P)
-variable (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
 open FreeCommRing
 
-variable (G f)
-
+variable (G f) in
 /-- The universal property of the direct limit: maps from the components to another ring
 that respect the directed system structure (i.e. make some diagram commute) give rise
 to a unique map out of the direct limit.
 -/
-def lift : DirectLimit G f →+* P :=
+def lift (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x) :
+    DirectLimit G f →+* P :=
   Ideal.Quotient.lift _ (FreeCommRing.lift fun x : Σi, G i => g x.1 x.2)
     (by
       suffices Ideal.span _ ≤
@@ -815,7 +807,7 @@ def lift : DirectLimit G f →+* P :=
         simp only [RingHom.map_sub, lift_of, Hg, RingHom.map_one, RingHom.map_add, RingHom.map_mul,
           (g i).map_one, (g i).map_add, (g i).map_mul, sub_self])
 
-variable {G f}
+variable (g : ∀ i, G i →+* P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
 -- Porting note: the @[simp] attribute would trigger a `simpNF` linter error:
 -- failed to synthesize CommMonoidWithZero (Ring.DirectLimit G f)
@@ -836,9 +828,8 @@ lemma lift_injective [Nonempty ι] [IsDirected ι (· ≤ ·)]
     Function.Injective (lift G f P g Hg) := by
   simp_rw [injective_iff_map_eq_zero] at injective ⊢
   intros z hz
-  induction' z using DirectLimit.induction_on with _ g
-  rw [lift_of] at hz
-  rw [injective _ g hz, _root_.map_zero]
+  induction z using DirectLimit.induction_on with
+  | ih _ g => rw [lift_of] at hz; rw [injective _ g hz, _root_.map_zero]
 
 section functorial
 
@@ -975,7 +966,9 @@ protected noncomputable abbrev field [DirectedSystem G fun i j h => f' i j h] :
   mul_inv_cancel := fun p => DirectLimit.mul_inv_cancel G fun i j h => f' i j h
   inv_zero := dif_pos rfl
   nnqsmul := _
+  nnqsmul_def := fun q a => rfl
   qsmul := _
+  qsmul_def := fun q a => rfl
 
 end
 

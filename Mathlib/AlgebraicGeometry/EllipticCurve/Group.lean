@@ -179,8 +179,9 @@ lemma smul_basis_mul_Y (p q : R[X]) : (p • (1 : W.CoordinateRing) + q • mk W
 
 /-- The ring homomorphism `R[W] →+* S[W.map f]` induced by a ring homomorphism `f : R →+* S`. -/
 noncomputable def map : W.CoordinateRing →+* (W.map f).toAffine.CoordinateRing :=
-  AdjoinRoot.lift ((AdjoinRoot.of _).comp <| mapRingHom f) _ <| by
-    rw [← eval₂_map, ← map_polynomial, AdjoinRoot.eval₂_root]
+  AdjoinRoot.lift ((AdjoinRoot.of _).comp <| mapRingHom f)
+    ((AdjoinRoot.root (WeierstrassCurve.map W f).toAffine.polynomial)) <| by
+      rw [← eval₂_map, ← map_polynomial, AdjoinRoot.eval₂_root]
 
 lemma map_mk (x : R[X][Y]) : map W f (mk W x) = mk (W.map f) (x.map <| mapRingHom f) := by
   rw [map, AdjoinRoot.lift_mk, ← eval₂_map]
@@ -544,7 +545,7 @@ lemma toClass_eq_zero (P : W.Point) : toClass P = 0 ↔ P = 0 := by
       rw [← finrank_quotient_span_eq_natDegree_norm (CoordinateRing.basis W) h0,
         ← (quotientEquivAlgOfEq F hp).toLinearEquiv.finrank_eq,
         (CoordinateRing.quotientXYIdealEquiv W h).toLinearEquiv.finrank_eq,
-        FiniteDimensional.finrank_self]
+        Module.finrank_self]
   · exact congr_arg toClass
 
 lemma toClass_injective : Function.Injective <| @toClass _ _ W := by

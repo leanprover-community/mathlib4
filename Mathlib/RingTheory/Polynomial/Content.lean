@@ -207,7 +207,7 @@ theorem IsPrimitive.content_eq_one {p : R[X]} (hp : p.IsPrimitive) : p.content =
 section PrimPart
 
 /-- The primitive part of a polynomial `p` is the primitive polynomial gained by dividing `p` by
-  `p.content`. If `p = 0`, then `p.primPart = 1`.  -/
+  `p.content`. If `p = 0`, then `p.primPart = 1`. -/
 noncomputable def primPart (p : R[X]) : R[X] :=
   letI := Classical.decEq R
   if p = 0 then 1 else Classical.choose (C_content_dvd p)

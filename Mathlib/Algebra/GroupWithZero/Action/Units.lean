@@ -61,3 +61,10 @@ instance mulDistribMulAction' [Group G] [Monoid M] [MulDistribMulAction G M] [SM
     smul_mul := fun _ _ _ => Units.ext <| smul_mul' _ _ _ }
 
 end Units
+
+section Monoid
+variable [Monoid G] [AddMonoid M] [DistribMulAction G M] {u : G} {x : M}
+
+@[simp] lemma IsUnit.smul_eq_zero (hu : IsUnit u) : u • x = 0 ↔ x = 0 := smul_eq_zero_iff_eq hu.unit
+
+end Monoid

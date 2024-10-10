@@ -81,7 +81,7 @@ theorem eta : ∀ o : Part α, (⟨o.Dom, fun h => o.get h⟩ : Part α) = o
   | ⟨_, _⟩ => rfl
 
 /-- `a ∈ o` means that `o` is defined and equal to `a` -/
-protected def Mem (a : α) (o : Part α) : Prop :=
+protected def Mem (o : Part α) (a : α) : Prop :=
   ∃ h, o.get h = a
 
 instance : Membership α (Part α) :=

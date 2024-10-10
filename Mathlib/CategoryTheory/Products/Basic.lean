@@ -1,9 +1,8 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Stephen Morgan, Scott Morrison
+Authors: Stephen Morgan, Kim Morrison
 -/
-import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Functor.Const
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.Data.Prod.Basic
@@ -147,11 +146,12 @@ def symmetry : swap C D ⋙ swap D C ≅ 𝟭 (C × D) where
 
 /-- The equivalence, given by swapping factors, between `C × D` and `D × C`.
 -/
-@[simps!]
-def braiding : C × D ≌ D × C :=
-  Equivalence.mk (swap C D) (swap D C)
-    (NatIso.ofComponents fun X => eqToIso (by simp))
-    (NatIso.ofComponents fun X => eqToIso (by simp))
+@[simps]
+def braiding : C × D ≌ D × C where
+  functor := swap C D
+  inverse := swap D C
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
 instance swapIsEquivalence : (swap C D).IsEquivalence :=
   (by infer_instance : (braiding C D).functor.IsEquivalence)
@@ -295,7 +295,18 @@ end Equivalence
 /-- `F.flip` composed with evaluation is the same as evaluating `F`. -/
 @[simps!]
 def flipCompEvaluation (F : A ⥤ B ⥤ C) (a) : F.flip ⋙ (evaluation _ _).obj a ≅ F.obj a :=
-  NatIso.ofComponents fun b => eqToIso rfl
+  NatIso.ofComponents fun b => Iso.refl _
+
+theorem flip_comp_evaluation (F : A ⥤ B ⥤ C) (a) : F.flip ⋙ (evaluation _ _).obj a = F.obj a :=
+  rfl
+
+/-- `F` composed with evaluation is the same as evaluating `F.flip`. -/
+@[simps!]
+def compEvaluation (F : A ⥤ B ⥤ C) (b) : F ⋙ (evaluation _ _).obj b ≅ F.flip.obj b :=
+  NatIso.ofComponents fun a => Iso.refl _
+
+theorem comp_evaluation (F : A ⥤ B ⥤ C) (b) : F ⋙ (evaluation _ _).obj b = F.flip.obj b :=
+  rfl
 
 variable (A B C)
 
