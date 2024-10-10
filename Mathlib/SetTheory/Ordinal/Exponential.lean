@@ -442,10 +442,6 @@ theorem log_opow_mul_add {b u v w : Ordinal} (hb : 1 < b) (hv : v ≠ 0) (hw : w
     exact mul_ne_zero (opow_ne_zero u (zero_lt_one.trans hb).ne') hv <|
       left_eq_zero_of_add_eq_zero h
 
-theorem log_opow_mul_add' {b u v w : Ordinal} (hb : 1 < b) (hv : v ≠ 0) (hvb : v < b)
-    (hw : w < b ^ u) : log b (b ^ u * v + w) = u := by
-  rw [log_opow_mul_add hb hv hw, log_eq_zero hvb, add_zero]
-
 theorem log_opow_mul {b v : Ordinal} (hb : 1 < b) (u : Ordinal) (hv : v ≠ 0) :
     log b (b ^ u * v) = u + log b v := by
   convert log_opow_mul_add hb hv (opow_pos u (zero_lt_one.trans hb)) using 1
