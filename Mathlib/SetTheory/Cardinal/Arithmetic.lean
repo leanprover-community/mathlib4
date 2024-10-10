@@ -37,6 +37,7 @@ universe u v w
 namespace Cardinal
 
 /-! ### Properties of `mul` -/
+section mul
 
 /-- If `α` is an infinite type, then `α × α` and `α` have the same cardinality. -/
 theorem mul_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c * c = c := by
@@ -229,7 +230,10 @@ theorem mul_eq_left_iff {a b : Cardinal} : a * b = a ↔ max ℵ₀ b ≤ a ∧ 
     · rw [mul_eq_max_of_aleph0_le_left ha hb, max_eq_left hab]
     all_goals simp
 
+end mul
+
 /-! ### Properties of `add` -/
+section add
 
 /-- If `α` is an infinite type, then `α ⊕ α` and `α` have the same cardinality. -/
 theorem add_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c + c = c :=
@@ -350,7 +354,10 @@ protected theorem eq_of_add_eq_add_right {a b c : Cardinal} (h : a + b = c + b) 
   rw [add_comm a b, add_comm c b] at h
   exact Cardinal.eq_of_add_eq_add_left h hb
 
+end add
+
 /-! ### Properties of `ciSup` -/
+section ciSup
 
 variable {ι : Type u} {ι' : Type w} (f : ι → Cardinal.{v})
 
@@ -408,7 +415,10 @@ protected theorem ciSup_mul_ciSup (g : ι' → Cardinal.{v}) :
     (⨆ i, f i) * (⨆ j, g j) = ⨆ (i) (j), f i * g j := by
   simp_rw [Cardinal.ciSup_mul f, Cardinal.mul_ciSup g]
 
+end ciSup
+
 /-! ### Properties of `aleph` -/
+section aleph
 
 @[simp]
 theorem aleph_add_aleph (o₁ o₂ : Ordinal) : aleph o₁ + aleph o₂ = aleph (max o₁ o₂) := by
@@ -454,7 +464,10 @@ theorem add_one_le_add_one_iff {α β : Cardinal} : α + 1 ≤ β + 1 ↔ α ≤
 @[deprecated (since := "2024-02-12")]
 alias add_one_le_add_one_iff_of_lt_aleph_0 := add_one_le_add_one_iff
 
+end aleph
+
 /-! ### Properties about `power` -/
+section power
 
 theorem pow_le {κ μ : Cardinal.{u}} (H1 : ℵ₀ ≤ κ) (H2 : μ < ℵ₀) : κ ^ μ ≤ κ :=
   let ⟨n, H3⟩ := lt_aleph0.1 H2
@@ -529,7 +542,10 @@ theorem powerlt_aleph0_le (c : Cardinal) : c ^< ℵ₀ ≤ max c ℵ₀ := by
   rw [powerlt_le]
   exact fun c' hc' => (power_lt_aleph0 h hc').le.trans (le_max_right _ _)
 
+end power
+
 /-! ### Computing cardinality of various types -/
+section computing
 
 section Function
 
@@ -724,7 +740,10 @@ theorem mk_bounded_subset_le {α : Type u} (s : Set α) (c : Cardinal.{u}) :
     refine (preimage_eq_preimage' ?_ ?_).1 h <;> rw [Subtype.range_coe] <;> assumption
   rintro ⟨t, _, h2t⟩; exact (mk_preimage_of_injective _ _ Subtype.val_injective).trans h2t
 
+end computing
+
 /-! ### Properties of `compl` -/
+section compl
 
 theorem mk_compl_of_infinite {α : Type*} [Infinite α] (s : Set α) (h2 : #s < #α) :
     #(sᶜ : Set α) = #α := by
@@ -764,7 +783,10 @@ theorem mk_compl_eq_mk_compl_finite_same {α : Type u} [Finite α] {s t : Set α
     #(sᶜ : Set α) = #(tᶜ : Set α) :=
   mk_compl_eq_mk_compl_finite.{u} rfl h
 
+end compl
+
 /-! ### Extending an injection to an equiv -/
+section extend
 
 theorem extend_function {α β : Type*} {s : Set α} (f : s ↪ β)
     (h : Nonempty ((sᶜ : Set α) ≃ ((range f)ᶜ : Set β))) : ∃ g : α ≃ β, ∀ x : s, g x = f x := by
@@ -793,6 +815,8 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
     rw [← lift_mk_eq'] at h ⊢
     rwa [mk_compl_of_infinite s hs, mk_compl_of_infinite]
     rwa [← lift_lt, mk_range_eq_of_injective f.injective, ← h, lift_lt]
+
+end extend
 
 end Cardinal
 
