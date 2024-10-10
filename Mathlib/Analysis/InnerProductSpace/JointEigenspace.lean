@@ -113,18 +113,6 @@ theorem directSum_isInternal_of_commute (hA : A.IsSymmetric) (hB : B.IsSymmetric
   rw [Submodule.orthogonal_eq_bot_iff, iSup_prod, iSup_comm]
   exact iSup_iSup_eigenspace_inf_eigenspace_eq_top hA hB hAB
 
-/-- In finite dimensions, the indexed supremum of joint `maxGenEigenspaces` of a finite tuple of
-commuting operators equals `⊤` provided the indexed supremum of `maxGenEigenspaces` of each
-operator in the tuple equals `⊤`. -/
-theorem iSup_iInf_maxGenEigenspace_eq_top_of_iSup_maxGenEigenspace_eq_top_of_commute {ι K V : Type*}
-    [Field K] [AddCommGroup V] [Module K V] [FiniteDimensional K V]
-    (f : ι → Module.End K V) (h : Pairwise fun i j ↦ Commute (f i) (f j))
-    (h' : ∀ i, ⨆ μ, (f i).maxGenEigenspace μ = ⊤) :
-    ⨆ χ : ι → K, ⨅ i, (f i).maxGenEigenspace (χ i) = ⊤ := by
-  refine Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo _
-    (fun i j ↦ Module.End.mapsTo_maxGenEigenspace_of_comm ?_) h'
-  rcases eq_or_ne j i with rfl | hij <;> tauto
-
 /-- In finite dimensions, the indexed supremum of the joint eigenspaces of a commuting tuple of
 symmetric linear operators equals `⊤`. -/
 theorem iSup_iInf_eq_top_of_commute {ι : Type*} {T : ι → E →ₗ[𝕜] E}
