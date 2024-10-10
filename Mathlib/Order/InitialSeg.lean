@@ -464,17 +464,14 @@ noncomputable def ltOrEq [IsWellOrder β s] (f : r ≼i s) : (r ≺i s) ⊕ (r �
   · exact Sum.inr (RelIso.ofSurjective f h)
   · exact Sum.inl (f.toPrincipalSeg h)
 
-theorem ltOrEq_apply_left [IsWellOrder β s] (f : r ≼i s) (g : r ≺i s) (a : α) :
-    g a = f a :=
+theorem ltOrEq_apply_left [IsWellOrder β s] (f : r ≼i s) (g : r ≺i s) (a : α) : g a = f a :=
   @InitialSeg.eq α β r s _ g f a
 
-theorem ltOrEq_apply_right [IsWellOrder β s] (f : r ≼i s) (g : r ≃r s) (a : α) :
-    g a = f a :=
+theorem ltOrEq_apply_right [IsWellOrder β s] (f : r ≼i s) (g : r ≃r s) (a : α) : g a = f a :=
   InitialSeg.eq (InitialSeg.ofIso g) f a
 
 /-- Composition of an initial segment taking values in a well order and a principal segment. -/
-noncomputable def leLT [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) :
-    r ≺i t :=
+noncomputable def leLT [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) : r ≺i t :=
   match f.ltOrEq with
   | Sum.inl f' => f'.trans g
   | Sum.inr f' => PrincipalSeg.equivLT f' g
@@ -482,9 +479,10 @@ noncomputable def leLT [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s �
 @[simp]
 theorem leLT_apply [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) (a : α) :
     (f.leLT g) a = g (f a) := by
-  delta InitialSeg.leLT; cases' f.ltOrEq with f' f'
-  · simp only [PrincipalSeg.trans_apply, f.ltOrEq_apply_left]
-  · simp only [PrincipalSeg.equivLT_apply, f.ltOrEq_apply_right]
+  rw [InitialSeg.leLT]
+  obtain f' | f' := f.ltOrEq
+  · rw [PrincipalSeg.trans_apply, f.ltOrEq_apply_left]
+  · rw [PrincipalSeg.equivLT_apply, f.ltOrEq_apply_right]
 
 end InitialSeg
 
