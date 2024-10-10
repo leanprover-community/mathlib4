@@ -1389,15 +1389,15 @@ def TangentSpace {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 does not pick wrong instances. We record the right instances for them. -/
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
-    {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M}
 
-instance {x : M} : TopologicalSpace (TangentSpace I x) := inferInstanceAs (TopologicalSpace E)
-instance {x : M} : AddCommGroup (TangentSpace I x) := inferInstanceAs (AddCommGroup E)
-instance {x : M} : TopologicalAddGroup (TangentSpace I x) := inferInstanceAs (TopologicalAddGroup E)
-instance {x : M} : Module 𝕜 (TangentSpace I x) := inferInstanceAs (Module 𝕜 E)
-instance {x : M} : Inhabited (TangentSpace I x) := ⟨0⟩
+instance : TopologicalSpace (TangentSpace I x) := inferInstanceAs (TopologicalSpace E)
+instance : AddCommGroup (TangentSpace I x) := inferInstanceAs (AddCommGroup E)
+instance : TopologicalAddGroup (TangentSpace I x) := inferInstanceAs (TopologicalAddGroup E)
+instance : Module 𝕜 (TangentSpace I x) := inferInstanceAs (Module 𝕜 E)
+instance : Inhabited (TangentSpace I x) := ⟨0⟩
 
 variable (M) in
 -- is empty if the base manifold is empty
