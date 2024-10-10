@@ -846,5 +846,23 @@ lemma exists_lt_add_of_lt_add {x y z : ℝ≥0∞} (h : x < y + z) (hy : y ≠ 0
   contrapose! h;
   simpa using biSup_add_biSup_le' (by exact ⟨0, hy.bot_lt⟩) (by exact ⟨0, hz.bot_lt⟩) h
 
+private lemma top_mul_le_of_forall_mul_le {a b : ℝ≥0∞} (h : ∀ c < ∞, ∀ d < a, c * d ≤ b) :
+    ∞ * a ≤ b := by
+  induction a with
+  | top => sorry
+  | coe a => sorry
+
+lemma mul_le_of_forall_mul_le {a b c : ℝ≥0∞} (h : ∀ d < a, ∀ e < b, d * e ≤ c) : a * b ≤ c := by
+  induction a with
+  | top => exact top_mul_le_of_forall_mul_le h
+  | coe a => induction b with
+    | top => sorry
+    | coe b => sorry
+
+lemma le_mul_of_forall_le_mul {a b c : ℝ≥0∞} (h₁ : a ≠ 0 ∨ b ≠ ∞) (h₂ : a ≠ ∞ ∨ b ≠ 0)
+    (h : ∀ d > a, ∀ e > b, c ≤ d * e) : c ≤ a * b := by
+  sorry
+
+
 end Inv
 end ENNReal

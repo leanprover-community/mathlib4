@@ -215,23 +215,6 @@ theorem mul_pos_iff : 0 < a * b ↔ 0 < a ∧ 0 < b :=
 theorem mul_pos (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a * b :=
   mul_pos_iff.2 ⟨pos_iff_ne_zero.2 ha, pos_iff_ne_zero.2 hb⟩
 
-private lemma top_mul_le_of_forall_mul_le {a b : ℝ≥0∞} (h : ∀ c < ∞, ∀ d < a, c * d ≤ b) :
-    ∞ * a ≤ b := by
-  induction a with
-  | top => sorry
-  | coe a => sorry
-
-lemma mul_le_of_forall_mul_le {a b c : ℝ≥0∞} (h : ∀ d < a, ∀ e < b, d * e ≤ c) : a * b ≤ c := by
-  induction a with
-  | top => exact top_mul_le_of_forall_mul_le h
-  | coe a => induction b with
-    | top => sorry
-    | coe b => sorry
-
-lemma le_mul_of_forall_le_mul {a b c : ℝ≥0∞} (h₁ : a ≠ 0 ∨ b ≠ ∞) (h₂ : a ≠ ∞ ∨ b ≠ 0)
-    (h : ∀ d > a, ∀ e > b, c ≤ d * e) : c ≤ a * b := by
-  sorry
-
 -- Porting note (#11215): TODO: generalize to `WithTop`
 @[simp] theorem pow_eq_top_iff {n : ℕ} : a ^ n = ∞ ↔ a = ∞ ∧ n ≠ 0 := by
   rcases n.eq_zero_or_pos with rfl | (hn : 0 < n)
