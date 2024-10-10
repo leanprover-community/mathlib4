@@ -5,7 +5,6 @@ Authors: Michael Rothgang
 -/
 
 import Lean.Elab.Command
-import Mathlib.Tactic.Linter.Common
 
 /-!
 ## Style linters
@@ -13,10 +12,10 @@ import Mathlib.Tactic.Linter.Common
 This file contains (currently one, eventually more) linters about stylistic aspects:
 these are only about coding style, but do not affect correctness nor global coherence of mathlib.
 
-Historically, some of these were ported from the `lint-style.py` Python script.
+Historically, these were ported from the `lint-style.py` Python script.
 -/
 
-open Lean Parser Elab Command Meta
+open Lean Elab Command
 
 namespace Mathlib.Linter
 
@@ -68,42 +67,5 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
 initialize addLinter setOptionLinter
 
 end Style.setOption
-
-/-- The `nameCheck` linter emits a warning on declarations whose name is non-standard style.
-(Currently, this only includes declarations whose name includes a double underscore.)
-
-**Why is this bad?** Double underscores in theorem names can be considered non-standard style and
-probably have been introduced by accident.
-**How to fix this?** Use single underscores to separate parts of a name, following standard naming
-conventions.
--/
-register_option linter.style.nameCheck : Bool := {
-  defValue := false
-  descr := "enable the `nameCheck` linter"
-}
-
-namespace Style.nameCheck
-
-/-- Checks whether the original input of a given syntax contains "__". -/
-def contains_double_underscore (stx : Syntax) : Bool :=
-  match stx.getSubstring? with
-  | some str => 1 < (str.toString.splitOn "__").length
-  | none => false
-
-@[inherit_doc linter.style.nameCheck]
-def doubleUnderscore: Linter where run := withSetOptionIn fun stx => do
-    unless Linter.getLinterValue linter.style.nameCheck (← getOptions) do
-      return
-    if (← MonadState.get).messages.hasErrors then
-      return
-    for name in (← getNames stx) do
-      if contains_double_underscore name then
-        Linter.logLint linter.style.nameCheck name
-          m!"The declaration '{name}' contains '__', which does not follow the mathlib naming \
-             conventions. Consider using single underscores instead."
-
-initialize addLinter doubleUnderscore
-
-end Style.nameCheck
 
 end Mathlib.Linter

@@ -134,13 +134,4 @@ lemma foo' : True := trivial
 
 -- TODO: add terms for the term form
 
-/-
-warning: The declID 'double__underscore' contains '__', which does not follow mathlib naming
-conventions. Consider using single underscores instead.
-note: this linter can be disabled with `set_option linter.style.nameCheck false`
--/
-#guard_msgs in
-set_option linter.style.nameCheck true in
-theorem double__underscore : True := trivial
-
 end setOption
