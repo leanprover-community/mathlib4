@@ -145,9 +145,9 @@ theorem actionTopology_le [τA : TopologicalSpace A] [ContinuousSMul R A] [Conti
 
 end basics
 
-namespace ActionTopology
+namespace IsActionTopology
 
-section zero
+section subsingleton
 
 instance instSubsingleton (R : Type*) [TopologicalSpace R] (A : Type*) [Add A] [SMul R A]
     [Subsingleton A] [TopologicalSpace A] : IsActionTopology R A where
@@ -155,9 +155,9 @@ instance instSubsingleton (R : Type*) [TopologicalSpace R] (A : Type*) [Add A] [
     ext U
     simp only [isOpen_discrete]
 
-end zero
+end subsingleton
 
-section one
+section self
 
 /-
 
@@ -202,7 +202,7 @@ instance instSelf (R : Type*) [Semiring R] [τR : TopologicalSpace R] [Topologic
     exact @Continuous.prod_mk _ _ _ _ (actionTopology R R) _ _ _ continuous_id <|
       @continuous_const _ _ _ (actionTopology R R) _
 
-end one
+end self
 
 section iso
 
@@ -215,8 +215,8 @@ variable {B : Type*} [AddCommMonoid B] [Module R B] [τB : TopologicalSpace B]
 theorem iso (e : A ≃L[R] B) : IsActionTopology R B where
   eq_actionTopology' := by
     -- get these in before I start putting new topologies on A and B and have to use `@`
-    let g : A →ₗ[R] B := e.toLinearMap
-    let g' : B →ₗ[R] A := e.symm.toLinearMap
+    let g : A →ₗ[R] B := e
+    let g' : B →ₗ[R] A := e.symm
     let h : A →+ B := e
     let h' : B →+ A := e.symm
     simp_rw [e.toHomeomorph.symm.inducing.1, eq_ActionTopology R A, actionTopology, induced_sInf]
@@ -235,4 +235,12 @@ theorem iso (e : A ≃L[R] B) : IsActionTopology R B where
 
 end iso
 
-end ActionTopology
+section MulOpposite
+
+instance mulOpposite (R : Type*) [Semiring R] [τR : TopologicalSpace R] [TopologicalSemiring R] :
+    IsActionTopology Rᵐᵒᵖ R where
+  eq_actionTopology' := sorry
+
+end MulOpposite
+
+end IsActionTopology
