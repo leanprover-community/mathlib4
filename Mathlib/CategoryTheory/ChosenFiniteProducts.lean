@@ -6,7 +6,6 @@ Authors: Adam Topaz, Robin Carlier
 import Mathlib.CategoryTheory.Monoidal.OfChosenFiniteProducts.Symmetric
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 
 /-!
 # Categories with chosen finite products
