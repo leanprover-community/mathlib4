@@ -113,16 +113,18 @@ open Ideal
 
 variable {R : Type*} [CommSemiring R] {S : Type*} [CommSemiring S] [Algebra R S] {M : Submonoid R}
 
+instance nilradmaxLocalRing (h : (nilradical R).IsMaximal) : LocalRing R := by
+  refine LocalRing.of_unique_max_ideal ⟨nilradical R, h, fun I hI ↦ ?_⟩
+  rw [nilradical_eq_sInf] at h ⊢
+  exact (IsMaximal.eq_of_le h hI.ne_top (sInf_le hI.isPrime)).symm
+
 /--
 Let `S` be the localization of a commutative semiring `R` at a submonoid `M` that does not
 contain 0. If the nilradical of `R` is maximal then there is a `R`-algebra isomorphism between
 `R` and `S`. -/
 noncomputable def nilradmaxlocalizationIsSelf (h : (nilradical R).IsMaximal) (h' : (0 : R) ∉ M)
     [IsLocalization M S] : R ≃ₐ[R] S := by
-  have : LocalRing R := by
-    refine LocalRing.of_unique_max_ideal ⟨nilradical R, h, fun I hI ↦ ?_⟩
-    rw [nilradical_eq_sInf] at h ⊢
-    exact (IsMaximal.eq_of_le h hI.ne_top (sInf_le hI.isPrime)).symm
+  have : LocalRing R := nilradmaxLocalRing h
   have : ∀ m ∈ M, IsUnit m := by
     intro m hm
     apply (LocalRing.not_mem_maximalIdeal m).mp
