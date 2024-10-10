@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
 import Mathlib.Geometry.Manifold.MFDeriv.Defs
+import Mathlib.Geometry.Manifold.ContMDiff.Basic
 
 /-!
 # Basic properties of the manifold Fréchet derivative

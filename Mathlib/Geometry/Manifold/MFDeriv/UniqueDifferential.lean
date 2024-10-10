@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
 import Mathlib.Geometry.Manifold.MFDeriv.Atlas
+import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 /-!
 # Unique derivative sets in manifolds
@@ -145,12 +146,5 @@ unique differential in the basis also has unique differential. -/
 theorem UniqueMDiffOn.smooth_bundle_preimage (hs : UniqueMDiffOn I s) :
     UniqueMDiffOn (I.prod 𝓘(𝕜, F)) (π F Z ⁻¹' s) := fun _p hp ↦
   (hs _ hp).smooth_bundle_preimage
-
-variable [SmoothManifoldWithCorners I M]  in
-/-- The preimage under the projection from the tangent bundle of a set with unique differential in
-the basis also has unique differential. -/
-theorem UniqueMDiffOn.tangentBundle_proj_preimage (hs : UniqueMDiffOn I s) :
-    UniqueMDiffOn I.tangent (π E (TangentSpace I) ⁻¹' s) :=
-  hs.smooth_bundle_preimage _
 
 end UniqueMDiff

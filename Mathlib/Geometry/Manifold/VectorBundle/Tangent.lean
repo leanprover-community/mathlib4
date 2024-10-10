@@ -166,13 +166,6 @@ end tangentCoordChange
 
 variable (M)
 
--- is empty if the base manifold is empty
-/-- The tangent bundle to a smooth manifold, as a Sigma type. Defined in terms of
-`Bundle.TotalSpace` to be able to put a suitable topology on it. -/
--- Porting note(#5171): was nolint has_nonempty_instance
-abbrev TangentBundle :=
-  Bundle.TotalSpace E (TangentSpace I : M → Type _)
-
 local notation "TM" => TangentBundle I M
 
 section TangentBundleInstances

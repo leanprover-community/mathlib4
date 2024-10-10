@@ -2773,6 +2773,7 @@ import Mathlib.Geometry.Manifold.MFDeriv.Basic
 import Mathlib.Geometry.Manifold.MFDeriv.Defs
 import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
+import Mathlib.Geometry.Manifold.MFDeriv.Tangent
 import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
 import Mathlib.Geometry.Manifold.Metrizable
 import Mathlib.Geometry.Manifold.PartitionOfUnity

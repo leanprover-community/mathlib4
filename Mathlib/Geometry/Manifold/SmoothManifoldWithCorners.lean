@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Geometry.Manifold.ChartedSpace
 import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.Analysis.Calculus.ContDiff.Basic
+import Mathlib.Data.Bundle
 
 /-!
 # Smooth manifolds (possibly with boundary or corners)
@@ -1370,7 +1371,7 @@ section TangentSpace
 for `E`. This is enough to define linear maps between tangent spaces, for instance derivatives,
 but the interesting part is to define a manifold structure on the whole tangent bundle, which
 requires that `M` is a smooth manifold with corners. The definition is put here to avoid importing
-all the bundle structure when defining manifold derivatives. -/
+all the smooth bundle structure when defining manifold derivatives. -/
 
 set_option linter.unusedVariables false in
 /-- The tangent space at a point of the manifold `M`. It is just `E`. We could use instead
@@ -1397,5 +1398,13 @@ instance {x : M} : AddCommGroup (TangentSpace I x) := inferInstanceAs (AddCommGr
 instance {x : M} : TopologicalAddGroup (TangentSpace I x) := inferInstanceAs (TopologicalAddGroup E)
 instance {x : M} : Module 𝕜 (TangentSpace I x) := inferInstanceAs (Module 𝕜 E)
 instance {x : M} : Inhabited (TangentSpace I x) := ⟨0⟩
+
+variable (M) in
+-- is empty if the base manifold is empty
+/-- The tangent bundle to a smooth manifold, as a Sigma type. Defined in terms of
+`Bundle.TotalSpace` to be able to put a suitable topology on it. -/
+-- Porting note(#5171): was nolint has_nonempty_instance
+abbrev TangentBundle :=
+  Bundle.TotalSpace E (TangentSpace I : M → Type _)
 
 end TangentSpace

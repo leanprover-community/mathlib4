@@ -346,11 +346,15 @@
   "Mathlib.Lean.Expr.Basic": ["Batteries.Logic"],
   "Mathlib.Init.Data.Nat.Lemmas": ["Batteries.Data.Nat.Lemmas", "Batteries.WF"],
   "Mathlib.GroupTheory.MonoidLocalization.Basic": ["Mathlib.Init.Data.Prod"],
+  "Mathlib.Geometry.Manifold.VectorBundle.SmoothSection":
+  ["Mathlib.Geometry.Manifold.VectorBundle.Tangent"],
   "Mathlib.Geometry.Manifold.Sheaf.Smooth":
   ["Mathlib.CategoryTheory.Sites.Whiskering"],
   "Mathlib.Geometry.Manifold.PoincareConjecture":
   ["Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected",
    "Mathlib.Util.Superscript"],
+  "Mathlib.Geometry.Manifold.MFDeriv.Basic":
+  ["Mathlib.Geometry.Manifold.ContMDiff.Basic"],
   "Mathlib.Data.Vector.Basic": ["Mathlib.Control.Applicative"],
   "Mathlib.Data.Set.Image": ["Batteries.Tactic.Congr"],
   "Mathlib.Data.Seq.Parallel": ["Mathlib.Init.Data.Prod"],
