@@ -378,23 +378,16 @@ theorem add_nat (a b : ℕ) : ∗a + ∗b = ∗(a ^^^ b) := by
       obtain ⟨c, rfl⟩ := eq_nat_of_le_nat hc.le
       rw [OrderIso.lt_iff_lt] at hc
       replace hc := Nat.cast_lt.1 hc
-      rw [add_nat, ne_eq, EmbeddingLike.apply_eq_iff_eq, Nat.cast_inj]
-      have := hc.ne
-    · rwa [Nat.xor_left_inj]
-    · rwa [Nat.xor_right_inj]
+      rw [add_nat]
+      simpa using hc.ne
   · apply le_of_not_lt
     intro hc
     obtain ⟨c, hc'⟩ := eq_nat_of_le_nat hc.le
     rw [hc', OrderIso.lt_iff_lt, Nat.cast_lt] at hc
     obtain h | h := Nat.lt_xor_cases hc
-    · have := add_nat (c ^^^ b) b
-      rw [Nat.xor_cancel_right, ← hc', add_left_inj,
-        EquivLike.apply_eq_iff_eq, Nat.cast_inj] at this
-      exact h.ne this
-    · have := add_nat a (c ^^^ a)
-      rw [Nat.xor_comm, Nat.xor_cancel_left, ← hc', add_right_inj,
-        EquivLike.apply_eq_iff_eq, Nat.cast_inj, Nat.xor_comm] at this
-      exact h.ne this
-termination_by (a, b)
+    · apply h.ne
+      simpa [Nat.xor_comm, Nat.xor_cancel_left, ← hc'] using add_nat (c ^^^ b) b
+    · apply h.ne
+      simpa [Nat.xor_comm, Nat.xor_cancel_left, ← hc'] using add_nat a (c ^^^ a)
 
 end Nimber
