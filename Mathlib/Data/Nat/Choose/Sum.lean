@@ -192,7 +192,7 @@ theorem sum_powerset_neg_one_pow_card_of_nonempty {α : Type*} {x : Finset α} (
   rw [sum_powerset_neg_one_pow_card]
   exact if_neg (nonempty_iff_ne_empty.mp h0)
 
-variable {M R : Type*} [CommMonoid M] [NonAssocSemiring R]
+variable [NonAssocSemiring R]
 
 @[to_additive sum_choose_succ_nsmul]
 theorem prod_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) (n : ℕ) :

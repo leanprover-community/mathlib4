@@ -723,16 +723,14 @@ theorem _root_.EllipticCurve.toCharTwoJNeZeroNF_spec (ha₁ : E.a₁ ≠ 0) :
     (E.variableChange (E.toCharTwoJNeZeroNF ha₁)).IsCharTwoJNeZeroNF :=
   E.toWeierstrassCurve.toCharTwoJNeZeroNF_spec ha₁
 
-variable [DecidableEq F]
-
 /-- For a `WeierstrassCurve` defined over a field of characteristic = 2,
 there is an explicit change of variables of it to `WeierstrassCurve.IsCharTwoNF`, that is,
 $Y^2 + XY = X^3 + a_2X^2 + a_6$ (`WeierstrassCurve.IsCharTwoJNeZeroNF`) or
 $Y^2 + a_3Y = X^3 + a_4X + a_6$ (`WeierstrassCurve.IsCharTwoJEqZeroNF`). -/
-def toCharTwoNF : VariableChange F :=
+def toCharTwoNF [DecidableEq F] : VariableChange F :=
   if ha₁ : W.a₁ = 0 then W.toCharTwoJEqZeroNF else W.toCharTwoJNeZeroNF ha₁
 
-instance toCharTwoNF_spec : (W.variableChange W.toCharTwoNF).IsCharTwoNF := by
+instance toCharTwoNF_spec [DecidableEq F] : (W.variableChange W.toCharTwoNF).IsCharTwoNF := by
   by_cases ha₁ : W.a₁ = 0
   · rw [toCharTwoNF, dif_pos ha₁]
     haveI := W.toCharTwoJEqZeroNF_spec ha₁
@@ -742,15 +740,18 @@ instance toCharTwoNF_spec : (W.variableChange W.toCharTwoNF).IsCharTwoNF := by
     infer_instance
 
 theorem exists_variableChange_isCharTwoNF :
-    ∃ C : VariableChange F, (W.variableChange C).IsCharTwoNF :=
-  ⟨_, W.toCharTwoNF_spec⟩
+    ∃ C : VariableChange F, (W.variableChange C).IsCharTwoNF := by
+  classical
+  exact ⟨_, W.toCharTwoNF_spec⟩
 
-instance _root_.EllipticCurve.toCharTwoNF_spec : (E.variableChange E.toCharTwoNF).IsCharTwoNF :=
+instance _root_.EllipticCurve.toCharTwoNF_spec [DecidableEq F] :
+    (E.variableChange E.toCharTwoNF).IsCharTwoNF :=
   E.toWeierstrassCurve.toCharTwoNF_spec
 
 theorem _root_.EllipticCurve.exists_variableChange_isCharTwoNF :
-    ∃ C : VariableChange F, (E.variableChange C).IsCharTwoNF :=
-  ⟨_, E.toCharTwoNF_spec⟩
+    ∃ C : VariableChange F, (E.variableChange C).IsCharTwoNF := by
+  classical
+  exact ⟨_, E.toCharTwoNF_spec⟩
 
 end VariableChange
 

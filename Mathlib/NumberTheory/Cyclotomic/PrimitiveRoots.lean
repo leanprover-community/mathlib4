@@ -113,9 +113,10 @@ variable {C}
 /-- The `PowerBasis` given by a primitive root `η`. -/
 @[simps!]
 protected noncomputable def powerBasis : PowerBasis K L :=
-  PowerBasis.map (Algebra.adjoin.powerBasis <| (integral {n} K L).isIntegral ζ) <|
-    (Subalgebra.equivOfEq _ _ (IsCyclotomicExtension.adjoin_primitive_root_eq_top hζ)).trans
-      Subalgebra.topEquiv
+  -- this is purely an optimization
+  letI pb := Algebra.adjoin.powerBasis <| (integral {n} K L).isIntegral ζ
+  pb.map <| (Subalgebra.equivOfEq _ _ (IsCyclotomicExtension.adjoin_primitive_root_eq_top hζ)).trans
+    Subalgebra.topEquiv
 
 theorem powerBasis_gen_mem_adjoin_zeta_sub_one :
     (hζ.powerBasis K).gen ∈ adjoin K ({ζ - 1} : Set L) := by
@@ -392,9 +393,8 @@ theorem norm_pow_sub_one_of_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot 
     [hpri : Fact (p : ℕ).Prime] [IsCyclotomicExtension {p ^ (k + 1)} K L]
     (hirr : Irreducible (cyclotomic (↑(p ^ (k + 1)) : ℕ) K)) (hs : s ≤ k)
     (htwo : p ^ (k - s + 1) ≠ 2) : norm K (ζ ^ (p : ℕ) ^ s - 1) = (p : K) ^ (p : ℕ) ^ s := by
--- Porting note: `by simp` was `by linarith` that now fails.
   have hirr₁ : Irreducible (cyclotomic ((p : ℕ) ^ (k - s + 1)) K) :=
-    cyclotomic_irreducible_pow_of_irreducible_pow hpri.1 (by simp) hirr
+    cyclotomic_irreducible_pow_of_irreducible_pow hpri.1 (by omega) hirr
   rw [← PNat.pow_coe] at hirr₁
   set η := ζ ^ (p : ℕ) ^ s - 1
   let η₁ : K⟮η⟯ := IntermediateField.AdjoinSimple.gen K η
@@ -403,22 +403,17 @@ theorem norm_pow_sub_one_of_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot 
     refine IsPrimitiveRoot.pow (p ^ (k + 1)).pos hζ ?_
     rw [PNat.pow_coe, ← pow_add, add_comm s, Nat.sub_add_cancel (le_trans hs (Nat.le_succ k))]
   have : IsCyclotomicExtension {p ^ (k - s + 1)} K K⟮η⟯ := by
-    suffices IsCyclotomicExtension {p ^ (k - s + 1)} K K⟮η + 1⟯.toSubalgebra by
-      have H : K⟮η + 1⟯.toSubalgebra = K⟮η⟯.toSubalgebra := by
-        simp only [IntermediateField.adjoin_simple_toSubalgebra_of_integral
-            ((integral {p ^ (k + 1)} K L).isIntegral _)]
-        refine Subalgebra.ext fun x => ⟨fun hx => adjoin_le ?_ hx, fun hx => adjoin_le ?_ hx⟩
-        · simp only [Set.singleton_subset_iff, SetLike.mem_coe]
-          exact Subalgebra.add_mem _ (subset_adjoin (mem_singleton η)) (Subalgebra.one_mem _)
-        · simp only [Set.singleton_subset_iff, SetLike.mem_coe]
-          nth_rw 2 [← add_sub_cancel_right η 1]
-          exact Subalgebra.sub_mem _ (subset_adjoin (mem_singleton _)) (Subalgebra.one_mem _)
--- Porting note: the previous proof was `rw [H] at this; exact this` but it now fails.
-      exact IsCyclotomicExtension.equiv _ _ _ (Subalgebra.equivOfEq _ _ H)
--- Porting note: the next `refine` was `rw [H]`, abusing defeq, and it now fails.
+    have HKη : K⟮η⟯ = K⟮η + 1⟯ := by
+      refine le_antisymm ?_ ?_
+      all_goals rw [IntermediateField.adjoin_simple_le_iff]
+      · nth_rw 2 [← add_sub_cancel_right η 1]
+        exact sub_mem (IntermediateField.mem_adjoin_simple_self K (η + 1)) (one_mem _)
+      · exact add_mem (IntermediateField.mem_adjoin_simple_self K η) (one_mem _)
+    rw [HKη]
     have H := IntermediateField.adjoin_simple_toSubalgebra_of_integral
-        ((integral {p ^ (k + 1)} K L).isIntegral (η + 1))
-    refine @IsCyclotomicExtension.equiv _ _ _ _ _ _ _ _ _ ?_ (Subalgebra.equivOfEq _ _ H).symm
+      ((integral {p ^ (k + 1)} K L).isIntegral (η + 1))
+    refine IsCyclotomicExtension.equiv _ _ _ (h := ?_) (.refl : K⟮η + 1⟯.toSubalgebra ≃ₐ[K] _)
+    rw [H]
     have hη' : IsPrimitiveRoot (η + 1) ↑(p ^ (k + 1 - s)) := by simpa using hη
 -- Porting note: `using 1` was not needed.
     convert hη'.adjoin_isCyclotomicExtension K using 1
@@ -427,10 +422,10 @@ theorem norm_pow_sub_one_of_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot 
     apply coe_submonoidClass_iff.1
     convert hη using 1
     rw [Nat.sub_add_comm hs, pow_coe]
--- Porting note: the following `haveI` were not needed because the locale `cyclotomic` set them
+-- Porting note: the following `have` were not needed because the locale `cyclotomic` set them
 -- as instances.
-  haveI := IsCyclotomicExtension.finiteDimensional {p ^ (k + 1)} K L
-  haveI := IsCyclotomicExtension.isGalois (p ^ (k + 1)) K L
+  have := IsCyclotomicExtension.finiteDimensional {p ^ (k + 1)} K L
+  have := IsCyclotomicExtension.isGalois (p ^ (k + 1)) K L
   rw [norm_eq_norm_adjoin K]
   have H := hη.sub_one_norm_isPrimePow ?_ hirr₁ htwo
   swap; · rw [PNat.pow_coe]; exact hpri.1.isPrimePow.pow (Nat.succ_ne_zero _)

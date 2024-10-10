@@ -19,9 +19,9 @@ open Nat hiding one_pos
 
 namespace List
 
-universe u v w
+universe u
 
-variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : List α}
+variable {α : Type u}
 
 section InsertNth
 
