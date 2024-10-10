@@ -144,6 +144,9 @@ instance coequalizer_π_app_isLocalHom
     PresheafedSpace.c_isIso_of_iso _
   infer_instance
 
+@[deprecated "2024-10-10"]
+alias coequalizer_π_app_isLocalRingHom := coequalizer_π_app_isLocalHom
+
 /-!
 We roughly follow the construction given in [MR0302656]. Given a pair `f, g : X ⟶ Y` of morphisms
 of locally ringed spaces, we want to show that the stalk map of
