@@ -120,12 +120,12 @@ theorem mdifferentiableWithinAt_univ :
 theorem mdifferentiableWithinAt_inter (ht : t ∈ 𝓝 x) :
     MDifferentiableWithinAt I I' f (s ∩ t) x ↔ MDifferentiableWithinAt I I' f s x := by
   rw [MDifferentiableWithinAt, MDifferentiableWithinAt,
-    (differentiable_within_at_localInvariantProp I I').liftPropWithinAt_inter ht]
+    (differentiableWithinAt_localInvariantProp I I').liftPropWithinAt_inter ht]
 
 theorem mdifferentiableWithinAt_inter' (ht : t ∈ 𝓝[s] x) :
     MDifferentiableWithinAt I I' f (s ∩ t) x ↔ MDifferentiableWithinAt I I' f s x := by
   rw [MDifferentiableWithinAt, MDifferentiableWithinAt,
-    (differentiable_within_at_localInvariantProp I I').liftPropWithinAt_inter' ht]
+    (differentiableWithinAt_localInvariantProp I I').liftPropWithinAt_inter' ht]
 
 theorem MDifferentiableAt.mdifferentiableWithinAt (h : MDifferentiableAt I I' f x) :
     MDifferentiableWithinAt I I' f s x :=
@@ -288,7 +288,7 @@ theorem mdifferentiableWithinAt_iff_of_mem_source {x' : M} {y : M'}
       ContinuousWithinAt f s x' ∧
         DifferentiableWithinAt 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
           ((extChartAt I x).symm ⁻¹' s ∩ Set.range I) ((extChartAt I x) x') :=
-  (differentiable_within_at_localInvariantProp I I').liftPropWithinAt_indep_chart
+  (differentiableWithinAt_localInvariantProp I I').liftPropWithinAt_indep_chart
     (StructureGroupoid.chart_mem_maximalAtlas _ x) hx (StructureGroupoid.chart_mem_maximalAtlas _ y)
     hy
 

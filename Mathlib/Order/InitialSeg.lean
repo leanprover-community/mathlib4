@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Floris van Doorn
+Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
 import Mathlib.Data.Sum.Order
 import Mathlib.Logic.Equiv.Set
@@ -21,6 +21,10 @@ This file defines initial and principal segments.
   segment, i.e., an interval of the form `(-∞, top)` for some element `top`. It is denoted by
   `r ≺i s`.
 
+The lemmas `Ordinal.type_le_iff` and `Ordinal.type_lt_iff` tell us that `≼i` corresponds to the `≤`
+relation on ordinals, while `≺i` corresponds to the `<` relation. This prompts us to think of
+`PrincipalSeg` as a "strict" version of `InitialSeg`.
+
 ## Notations
 
 These notations belong to the `InitialSeg` locale.
@@ -29,9 +33,6 @@ These notations belong to the `InitialSeg` locale.
 * `r ≺i s`: the type of principal segment embeddings of `r` into `s`.
 * `α ≤i β` is an abbreviation for `(· < ·) ≼i (· < ·)`.
 * `α <i β` is an abbreviation for `(· < ·) ≺i (· < ·)`.
-
-Due to `InitialSeg.ltOrEq`, we can think of principal segment embeddings as a "strict" version of
-initial segment embeddings.
 -/
 
 
@@ -55,6 +56,7 @@ structure InitialSeg {α β : Type*} (r : α → α → Prop) (s : β → β →
   /-- The order embedding is an initial segment -/
   mem_range_of_rel' : ∀ a b, s b (toRelEmbedding a) → b ∈ Set.range toRelEmbedding
 
+-- Porting note: Deleted `scoped[InitialSeg]`
 @[inherit_doc]
 infixl:25 " ≼i " => InitialSeg
 
@@ -109,6 +111,9 @@ alias init := mem_range_of_rel
 
 theorem map_rel_iff {a b : α} (f : r ≼i s) : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
+
+theorem inj (f : r ≼i s) {a b : α} : f a = f b ↔ a = b :=
+  f.toRelEmbedding.inj
 
 theorem exists_eq_iff_rel (f : r ≼i s) {a : α} {b : β} : s b (f a) ↔ ∃ a', f a' = b ∧ r a' a :=
   ⟨fun h => by
@@ -181,16 +186,19 @@ theorem antisymm_symm [IsWellOrder α r] [IsWellOrder β s] (f : r ≼i s) (g : 
   RelIso.coe_fn_injective rfl
 
 theorem eq_or_principal [IsWellOrder β s] (f : r ≼i s) :
-    Surjective f ∨ ∃ b, ∀ x, s x b ↔ ∃ y, f y = x :=
-  or_iff_not_imp_right.2 fun h b =>
-    Acc.recOn (IsWellFounded.wf.apply b : Acc s b) fun x _ IH =>
-      not_forall_not.1 fun hn =>
-        h
-          ⟨x, fun y =>
-            ⟨IH _, fun ⟨a, e⟩ => by
-              rw [← e]
-              exact (trichotomous _ _).resolve_right
-                (not_or_intro (hn a) fun hl => not_exists.2 hn (f.mem_range_of_rel hl))⟩⟩
+    Surjective f ∨ ∃ b, ∀ x, x ∈ Set.range f ↔ s x b := by
+  apply or_iff_not_imp_right.2
+  intro h b
+  push_neg at h
+  apply IsWellFounded.induction s b
+  intro x IH
+  obtain ⟨y, ⟨hy, hs⟩ | ⟨hy, hs⟩⟩ := h x
+  · obtain (rfl | h) := (trichotomous y x).resolve_left hs
+    · exact hy
+    · obtain ⟨z, rfl⟩ := hy
+      exact f.mem_range_of_rel h
+  · obtain ⟨z, rfl⟩ := IH y hs
+    cases hy (Set.mem_range_self z)
 
 /-- Restrict the codomain of an initial segment -/
 def codRestrict (p : Set β) (f : r ≼i s) (H : ∀ a, f a ∈ p) : r ≼i Subrel s p :=
@@ -281,9 +289,10 @@ embeddings are called principal segments -/
 structure PrincipalSeg {α β : Type*} (r : α → α → Prop) (s : β → β → Prop) extends r ↪r s where
   /-- The supremum of the principal segment -/
   top : β
-  /-- The image of the order embedding is the set of elements `b` such that `s b top` -/
-  down' : ∀ b, s b top ↔ ∃ a, toRelEmbedding a = b
+  /-- The range of the order embedding is the set of elements `b` such that `s b top` -/
+  mem_range_iff_rel' : ∀ b, b ∈ Set.range toRelEmbedding ↔ s b top
 
+-- Porting note: deleted `scoped[InitialSeg]`
 @[inherit_doc]
 infixl:25 " ≺i " => PrincipalSeg
 
@@ -302,15 +311,22 @@ instance : CoeFun (r ≺i s) fun _ => α → β :=
 theorem coe_fn_mk (f : r ↪r s) (t o) : (@PrincipalSeg.mk _ _ r s f t o : α → β) = f :=
   rfl
 
+theorem mem_range_iff_rel (f : r ≺i s) : ∀ {b : β}, b ∈ Set.range f ↔ s b f.top :=
+  f.mem_range_iff_rel' _
+
+@[deprecated mem_range_iff_rel (since := "2024-10-07")]
 theorem down (f : r ≺i s) : ∀ {b : β}, s b f.top ↔ ∃ a, f a = b :=
-  f.down' _
+  f.mem_range_iff_rel.symm
 
 theorem lt_top (f : r ≺i s) (a : α) : s (f a) f.top :=
-  f.down.2 ⟨_, rfl⟩
+  f.mem_range_iff_rel.1 ⟨_, rfl⟩
+
+theorem mem_range_of_rel_top (f : r ≺i s) {b : β} (h : s b f.top) : b ∈ Set.range f :=
+  f.mem_range_iff_rel.2 h
 
 theorem mem_range_of_rel [IsTrans β s] (f : r ≺i s) {a : α} {b : β} (h : s b (f a)) :
     b ∈ Set.range f :=
-  f.down.1 <| _root_.trans h <| f.lt_top _
+  f.mem_range_of_rel_top <| _root_.trans h <| f.lt_top _
 
 @[deprecated mem_range_of_rel (since := "2024-09-21")]
 alias init := mem_range_of_rel
@@ -332,8 +348,7 @@ alias init_iff := exists_eq_iff_rel
 /-- A principal segment is the same as a non-surjective initial segment. -/
 noncomputable def _root_.InitialSeg.toPrincipalSeg [IsWellOrder β s] (f : r ≼i s)
     (hf : ¬ Surjective f) : r ≺i s :=
-  letI H := f.eq_or_principal.resolve_left hf
-  ⟨f, Classical.choose H, Classical.choose_spec H⟩
+  ⟨f, _, Classical.choose_spec (f.eq_or_principal.resolve_left hf)⟩
 
 @[simp]
 theorem _root_.InitialSeg.toPrincipalSeg_apply [IsWellOrder β s] (f : r ≼i s)
@@ -351,8 +366,7 @@ instance (r : α → α → Prop) [IsWellOrder α r] : IsEmpty (r ≺i r) :=
 /-- Composition of a principal segment with an initial segment, as a principal segment -/
 def ltLe (f : r ≺i s) (g : s ≼i t) : r ≺i t :=
   ⟨@RelEmbedding.trans _ _ _ r s t f g, g f.top, fun a => by
-    simp only [g.exists_eq_iff_rel, PrincipalSeg.down, exists_and_left.symm, exists_swap,
-        RelEmbedding.trans_apply, exists_eq_right', InitialSeg.coe_coe_fn]⟩
+    simp [g.exists_eq_iff_rel, ← PrincipalSeg.mem_range_iff_rel, exists_swap, ← exists_and_left]⟩
 
 @[simp]
 theorem lt_le_apply (f : r ≺i s) (g : s ≼i t) (a : α) : (f.ltLe g) a = g (f a) :=
@@ -378,17 +392,17 @@ theorem trans_top [IsTrans γ t] (f : r ≺i s) (g : s ≺i t) : (f.trans g).top
 /-- Composition of an order isomorphism with a principal segment, as a principal segment -/
 def equivLT (f : r ≃r s) (g : s ≺i t) : r ≺i t :=
   ⟨@RelEmbedding.trans _ _ _ r s t f g, g.top, fun c =>
-    suffices (∃ a : β, g a = c) ↔ ∃ a : α, g (f a) = c by simpa [PrincipalSeg.down]
+    suffices (∃ a, g a = c) ↔ ∃ a, g (f a) = c by simp [← PrincipalSeg.mem_range_iff_rel]
     ⟨fun ⟨b, h⟩ => ⟨f.symm b, by simp only [h, RelIso.apply_symm_apply]⟩,
       fun ⟨a, h⟩ => ⟨f a, h⟩⟩⟩
 
 /-- Composition of a principal segment with an order isomorphism, as a principal segment -/
-def ltEquiv {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop} (f : PrincipalSeg r s)
-    (g : s ≃r t) : PrincipalSeg r t :=
+def ltEquiv {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop} (f : r ≺i s) (g : s ≃r t) :
+    r ≺i t :=
   ⟨@RelEmbedding.trans _ _ _ r s t f g, g f.top, by
     intro x
-    rw [← g.apply_symm_apply x, g.map_rel_iff, f.down', exists_congr]
-    intro y; exact ⟨congr_arg g, fun h => g.toEquiv.bijective.1 h⟩⟩
+    rw [← g.apply_symm_apply x, g.map_rel_iff, ← f.mem_range_iff_rel]
+    exact exists_congr <| fun _ ↦ ⟨fun h => g.toEquiv.bijective.1 h, congr_arg g⟩⟩
 
 @[simp]
 theorem equivLT_apply (f : r ≃r s) (g : s ≺i t) (a : α) : (equivLT f g) a = g (f a) :=
@@ -406,7 +420,7 @@ instance [IsWellOrder β s] : Subsingleton (r ≺i s) :=
       rw [@Subsingleton.elim _ _ (f : r ≼i s) g]
     have et : f.top = g.top := by
       refine extensional_of_trichotomous_of_irrefl s fun x => ?_
-      simp only [PrincipalSeg.down, ef]
+      simp only [← PrincipalSeg.mem_range_iff_rel, ef]
     cases f
     cases g
     have := RelEmbedding.coe_fn_injective ef; congr ⟩
@@ -414,14 +428,17 @@ instance [IsWellOrder β s] : Subsingleton (r ≺i s) :=
 theorem top_eq [IsWellOrder γ t] (e : r ≃r s) (f : r ≺i t) (g : s ≺i t) : f.top = g.top := by
   rw [Subsingleton.elim f (PrincipalSeg.equivLT e g)]; rfl
 
-theorem topLTTop {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop} [IsWellOrder γ t]
-    (f : PrincipalSeg r s) (g : PrincipalSeg s t) (h : PrincipalSeg r t) : t h.top g.top := by
+theorem top_rel_top {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop} [IsWellOrder γ t]
+    (f : r ≺i s) (g : s ≺i t) (h : r ≺i t) : t h.top g.top := by
   rw [Subsingleton.elim h (f.trans g)]
   apply PrincipalSeg.lt_top
 
+@[deprecated top_rel_top (since := "2024-10-10")]
+alias topLTTop := top_rel_top
+
 /-- Any element of a well order yields a principal segment -/
 def ofElement {α : Type*} (r : α → α → Prop) (a : α) : Subrel r { b | r b a } ≺i r :=
-  ⟨Subrel.relEmbedding _ _, a, fun _ => ⟨fun h => ⟨⟨_, h⟩, rfl⟩, fun ⟨⟨_, h⟩, rfl⟩ => h⟩⟩
+  ⟨Subrel.relEmbedding _ _, a, fun _ => ⟨fun ⟨⟨_, h⟩, rfl⟩ => h, fun h => ⟨⟨_, h⟩, rfl⟩⟩⟩
 
 -- This lemma was always bad, but the linter only noticed after lean4#2644
 @[simp, nolint simpNF]
@@ -437,7 +454,7 @@ theorem ofElement_top {α : Type*} (r : α → α → Prop) (a : α) : (ofElemen
 noncomputable def subrelIso (f : r ≺i s) : Subrel s {b | s b f.top} ≃r r :=
   RelIso.symm
   { toEquiv := ((Equiv.ofInjective f f.injective).trans (Equiv.setCongr
-      (funext fun _ ↦ propext f.down.symm))),
+      (funext fun _ ↦ propext f.mem_range_iff_rel))),
     map_rel_iff' := f.map_rel_iff }
 
 -- This lemma was always bad, but the linter only noticed after lean4#2644
@@ -451,15 +468,12 @@ theorem apply_subrelIso (f : r ≺i s) (b : {b | s b f.top}) :
 
 -- This lemma was always bad, but the linter only noticed after lean4#2644
 @[simp, nolint simpNF]
-theorem subrelIso_apply (f : r ≺i s) (a : α) :
-    f.subrelIso ⟨f a, f.down.mpr ⟨a, rfl⟩⟩ = a :=
+theorem subrelIso_apply (f : r ≺i s) (a : α) : f.subrelIso ⟨f a, f.lt_top a⟩ = a :=
   Equiv.ofInjective_symm_apply f.injective _
 
 /-- Restrict the codomain of a principal segment -/
 def codRestrict (p : Set β) (f : r ≺i s) (H : ∀ a, f a ∈ p) (H₂ : f.top ∈ p) : r ≺i Subrel s p :=
-  ⟨RelEmbedding.codRestrict p f H, ⟨f.top, H₂⟩, fun ⟨_, _⟩ =>
-    f.down.trans <|
-      exists_congr fun a => show (⟨f a, H a⟩ : p).1 = _ ↔ _ from ⟨Subtype.eq, congr_arg _⟩⟩
+  ⟨RelEmbedding.codRestrict p f H, ⟨f.top, H₂⟩, fun ⟨_, _⟩ => by simp [← f.mem_range_iff_rel]⟩
 
 @[simp]
 theorem codRestrict_apply (p) (f : r ≺i s) (H H₂ a) : codRestrict p f H H₂ a = ⟨f a, H a⟩ :=
@@ -473,7 +487,7 @@ theorem codRestrict_top (p) (f : r ≺i s) (H H₂) : (codRestrict p f H H₂).t
 def ofIsEmpty (r : α → α → Prop) [IsEmpty α] {b : β} (H : ∀ b', ¬s b' b) : r ≺i s :=
   { RelEmbedding.ofIsEmpty r s with
     top := b
-    down' := by simp [H] }
+    mem_range_iff_rel' := by simp [H] }
 
 @[simp]
 theorem ofIsEmpty_top (r : α → α → Prop) [IsEmpty α] {b : β} (H : ∀ b', ¬s b' b) :
@@ -500,7 +514,7 @@ theorem wellFounded_iff_wellFounded_subrel {β : Type*} {s : β → β → Prop}
     ⟨fun wf b => ⟨fun b' => ((PrincipalSeg.ofElement _ b).acc b').mpr (wf.apply b')⟩, fun wf =>
       ⟨fun b => Acc.intro _ fun b' hb' => ?_⟩⟩
   let f := PrincipalSeg.ofElement s b
-  obtain ⟨b', rfl⟩ := f.down.mp ((PrincipalSeg.ofElement_top s b).symm ▸ hb' : s b' f.top)
+  obtain ⟨b', rfl⟩ := f.mem_range_of_rel_top ((PrincipalSeg.ofElement_top s b).symm ▸ hb')
   exact (f.acc b').mp ((wf b).apply b')
 
 theorem wellFounded_iff_principalSeg.{u} {β : Type u} {s : β → β → Prop} [IsTrans β s] :
@@ -521,17 +535,14 @@ noncomputable def ltOrEq [IsWellOrder β s] (f : r ≼i s) : (r ≺i s) ⊕ (r �
   · exact Sum.inr (RelIso.ofSurjective f h)
   · exact Sum.inl (f.toPrincipalSeg h)
 
-theorem ltOrEq_apply_left [IsWellOrder β s] (f : r ≼i s) (g : r ≺i s) (a : α) :
-    g a = f a :=
+theorem ltOrEq_apply_left [IsWellOrder β s] (f : r ≼i s) (g : r ≺i s) (a : α) : g a = f a :=
   @InitialSeg.eq α β r s _ g f a
 
-theorem ltOrEq_apply_right [IsWellOrder β s] (f : r ≼i s) (g : r ≃r s) (a : α) :
-    g a = f a :=
+theorem ltOrEq_apply_right [IsWellOrder β s] (f : r ≼i s) (g : r ≃r s) (a : α) : g a = f a :=
   InitialSeg.eq (InitialSeg.ofIso g) f a
 
 /-- Composition of an initial segment taking values in a well order and a principal segment. -/
-noncomputable def leLT [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) :
-    r ≺i t :=
+noncomputable def leLT [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) : r ≺i t :=
   match f.ltOrEq with
   | Sum.inl f' => f'.trans g
   | Sum.inr f' => PrincipalSeg.equivLT f' g
@@ -539,9 +550,10 @@ noncomputable def leLT [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s �
 @[simp]
 theorem leLT_apply [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) (a : α) :
     (f.leLT g) a = g (f a) := by
-  delta InitialSeg.leLT; cases' f.ltOrEq with f' f'
-  · simp only [PrincipalSeg.trans_apply, f.ltOrEq_apply_left]
-  · simp only [PrincipalSeg.equivLT_apply, f.ltOrEq_apply_right]
+  rw [InitialSeg.leLT]
+  obtain f' | f' := f.ltOrEq
+  · rw [PrincipalSeg.trans_apply, f.ltOrEq_apply_left]
+  · rw [PrincipalSeg.equivLT_apply, f.ltOrEq_apply_right]
 
 end InitialSeg
 
@@ -612,3 +624,80 @@ noncomputable def InitialSeg.total (r s) [IsWellOrder α r] [IsWellOrder β s] :
 
 attribute [nolint simpNF] PrincipalSeg.ofElement_apply PrincipalSeg.subrelIso_symm_apply
   PrincipalSeg.apply_subrelIso PrincipalSeg.subrelIso_apply
+
+/-! ### Initial or principal segments with `<` -/
+
+namespace InitialSeg
+
+variable [PartialOrder β] {a a' : α} {b : β}
+
+theorem mem_range_of_le [Preorder α] (f : α ≤i β) (h : b ≤ f a) : b ∈ Set.range f := by
+  obtain rfl | hb := h.eq_or_lt
+  exacts [⟨a, rfl⟩, f.mem_range_of_rel hb]
+
+-- TODO: this would follow immediately if we had a `RelEmbeddingClass`
+@[simp]
+theorem le_iff_le [PartialOrder α] (f : α ≤i β) : f a ≤ f a' ↔ a ≤ a' :=
+  f.toOrderEmbedding.le_iff_le
+
+-- TODO: this would follow immediately if we had a `RelEmbeddingClass`
+@[simp]
+theorem lt_iff_lt [PartialOrder α] (f : α ≤i β) : f a < f a' ↔ a < a' :=
+  f.toOrderEmbedding.lt_iff_lt
+
+theorem monotone [PartialOrder α] (f : α ≤i β) : Monotone f :=
+  f.toOrderEmbedding.monotone
+
+theorem strictMono [PartialOrder α] (f : α ≤i β) : StrictMono f :=
+  f.toOrderEmbedding.strictMono
+
+theorem le_apply_iff [LinearOrder α] (f : α ≤i β) : b ≤ f a ↔ ∃ c ≤ a, f c = b := by
+  constructor
+  · intro h
+    obtain ⟨c, hc⟩ := f.mem_range_of_le h
+    refine ⟨c, ?_, hc⟩
+    rwa [← hc, f.le_iff_le] at h
+  · rintro ⟨c, hc, rfl⟩
+    exact f.monotone hc
+
+theorem lt_apply_iff [LinearOrder α] (f : α ≤i β) : b < f a ↔ ∃ a' < a, f a' = b := by
+  constructor
+  · intro h
+    obtain ⟨c, hc⟩ := f.mem_range_of_rel h
+    refine ⟨c, ?_, hc⟩
+    rwa [← hc, f.lt_iff_lt] at h
+  · rintro ⟨c, hc, rfl⟩
+    exact f.strictMono hc
+
+end InitialSeg
+
+namespace PrincipalSeg
+
+variable [PartialOrder β] {a a' : α} {b : β}
+
+theorem mem_range_of_le [Preorder α] (f : α <i β) (h : b ≤ f a) : b ∈ Set.range f :=
+  (f : α ≤i β).mem_range_of_le h
+
+-- TODO: this would follow immediately if we had a `RelEmbeddingClass`
+@[simp]
+theorem le_iff_le [PartialOrder α] (f : α <i β) : f a ≤ f a' ↔ a ≤ a' :=
+  (f : α ≤i β).le_iff_le
+
+-- TODO: this would follow immediately if we had a `RelEmbeddingClass`
+@[simp]
+theorem lt_iff_lt [PartialOrder α] (f : α <i β) : f a < f a' ↔ a < a' :=
+  (f : α ≤i β).lt_iff_lt
+
+theorem monotone [PartialOrder α] (f : α <i β) : Monotone f :=
+  (f : α ≤i β).monotone
+
+theorem strictMono [PartialOrder α] (f : α <i β) : StrictMono f :=
+  (f : α ≤i β).strictMono
+
+theorem le_apply_iff [LinearOrder α] (f : α <i β) : b ≤ f a ↔ ∃ c ≤ a, f c = b :=
+  (f : α ≤i β).le_apply_iff
+
+theorem lt_apply_iff [LinearOrder α] (f : α <i β) : b < f a ↔ ∃ a' < a, f a' = b :=
+  (f : α ≤i β).lt_apply_iff
+
+end PrincipalSeg

@@ -670,7 +670,7 @@ namespace Classical
 /-- Any prop `p` is decidable classically. A shorthand for `Classical.propDecidable`. -/
 noncomputable def dec (p : Prop) : Decidable p := by infer_instance
 
-variable {α : Sort*} {p : α → Prop}
+variable {α : Sort*}
 
 /-- Any predicate `p` is decidable classically. -/
 noncomputable def decPred (p : α → Prop) : DecidablePred p := by infer_instance

@@ -112,7 +112,7 @@ theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p
     -- The map `ψ` is measure preserving by construction
     have : @MeasurePreserving E F mE _ ψ μ ν :=
       @Measurable.measurePreserving E F mE _ ψ (@MeasurableEquiv.measurable E F mE _ ψ) _
-    erw [← this.integral_comp']
+    rw [← this.integral_comp']
     rfl
 
 theorem MeasureTheory.measure_le_eq_lt [Nontrivial E] (r : ℝ) :

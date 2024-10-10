@@ -166,10 +166,6 @@ theorem foldr_permutationsAux2 (t : α) (ts : List α) (r L : List (List α)) :
   · rfl
   · simp_rw [foldr_cons, ih, bind_cons, append_assoc, permutationsAux2_append]
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 theorem mem_foldr_permutationsAux2 {t : α} {ts : List α} {r L : List (List α)} {l' : List α} :
     l' ∈ foldr (fun y r => (permutationsAux2 t ts r y id).2) r L ↔
       l' ∈ r ∨ ∃ l₁ l₂, l₁ ++ l₂ ∈ L ∧ l₂ ≠ [] ∧ l' = l₁ ++ t :: l₂ ++ ts := by
@@ -180,7 +176,7 @@ theorem mem_foldr_permutationsAux2 {t : α} {ts : List α} {r L : List (List α)
     ⟨fun ⟨_, aL, l₁, l₂, l0, e, h⟩ => ⟨l₁, l₂, l0, e ▸ aL, h⟩, fun ⟨l₁, l₂, l0, aL, h⟩ =>
       ⟨_, aL, l₁, l₂, l0, rfl, h⟩⟩
   rw [foldr_permutationsAux2]
-  simp only [mem_permutationsAux2', ← this, _root_.or_comm, and_left_comm, mem_append, mem_bind,
+  simp only [mem_permutationsAux2', ← this, or_comm, and_left_comm, mem_append, mem_bind,
     append_assoc, cons_append, exists_prop]
 
 theorem length_foldr_permutationsAux2 (t : α) (ts : List α) (r L : List (List α)) :

@@ -253,7 +253,7 @@ lemma equiv_smallHomMap (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ �
     rw [liftNatTrans_app]
     dsimp
     rw [id_comp, id_comp, comp_id]
-    erw [id_comp, comp_id]
+    rw [id_comp, comp_id]
   simp only [Functor.map_comp, assoc]
   erw [← NatIso.naturality_1 γ]
   simp only [Functor.comp_map, ← cancel_epi (e.inv.app X), ← cancel_epi (G.map (α₁.hom.app X)),
