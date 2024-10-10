@@ -110,6 +110,19 @@ lemma pushforward_assoc :
       isoWhiskerRight (pushforwardComp.{v} ψ ψ') _ ≪≫
         Functor.associator _ _ _ := by ext; rfl
 
+lemma pushforward_hom_app_assoc (M : PresheafOfModules.{v} T') :
+    (pushforwardComp (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ) ψ').hom.app M ≫
+      (pushforwardComp φ ψ).hom.app _ =
+      (pushforwardComp (G := G ⋙ G') φ (ψ ≫ whiskerLeft G.op ψ')).hom.app M ≫
+      (pushforward φ).map ((pushforwardComp ψ ψ').hom.app _) := by
+  rfl
+
+lemma pushforward_inv_app_assoc (M : PresheafOfModules.{v} T') :
+    (pushforwardComp φ ψ).inv.app _ ≫
+      (pushforwardComp (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ) ψ').inv.app M =
+    (pushforward φ).map ((pushforwardComp ψ ψ').inv.app _) ≫
+      (pushforwardComp (G := G ⋙ G') φ (ψ ≫ whiskerLeft G.op ψ')).inv.app M := rfl
+
 end
 
 lemma pushforward_id_comp :
