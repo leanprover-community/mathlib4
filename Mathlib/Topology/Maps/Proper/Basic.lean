@@ -322,7 +322,7 @@ theorem isProperMap_iff_isCompact_preimage' [T2Space Y]
     fun _ ↦ h isCompact_singleton⟩
 
 @[deprecated "Do not use this lemma; use `CompactlyGeneratedSpace.isClosed_iff_of_t2`
-in `Topology.Compactness.CompactlyGeneratedSpace" (since := "2024-10-10")]
+from `Topology.Compactness.CompactlyGeneratedSpace`" (since := "2024-10-10")]
 theorem compactlyGenerated_of_weaklyLocallyCompactSpace [T2Space X] [WeaklyLocallyCompactSpace X]
     {s : Set X} : IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K) := by
   refine ⟨fun hs K hK ↦ hs.inter hK.isClosed, fun h ↦ ?_⟩
@@ -341,7 +341,7 @@ theorem WeaklyLocallyCompactSpace.isProperMap_iff_isCompact_preimage [T2Space Y]
     (fun _ ↦ compactlyGenerated_of_weaklyLocallyCompactSpace)
 
 @[deprecated "Do not use this lemma; use `CompactlyGeneratedSpace.isClosed_iff_of_t2`
-in `Topology.Compactness.CompactlyGeneratedSpace" (since := "2024-10-10")]
+from `Topology.Compactness.CompactlyGeneratedSpace`" (since := "2024-10-10")]
 theorem compactlyGenerated_of_sequentialSpace [T2Space X] [SequentialSpace X] {s : Set X} :
     IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K) := by
   refine ⟨fun hs K hK ↦ hs.inter hK.isClosed,
