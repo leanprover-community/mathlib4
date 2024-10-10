@@ -242,7 +242,7 @@ theorem toEmbeddingOfEqTop_apply {f : M ≃ₚ[L] N} (h : f.dom = ⊤) (m : M) :
   cases h
   rfl
 
-set_option linter.style.nameCheck false
+set_option linter.style.nameCheck false in
 @[deprecated (since := "2024-10-09")] alias toEmbeddingOfEqTop__apply := toEmbeddingOfEqTop_apply
 
 /-- Given a partial equivalence which has the whole structure as domain and
