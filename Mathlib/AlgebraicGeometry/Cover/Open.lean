@@ -73,7 +73,7 @@ def affineCover (X : Scheme.{u}) : OpenCover X where
     rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
     · erw [Subtype.range_coe_subtype]
       exact (X.local_affine x).choose.2
-    erw [← TopCat.epi_iff_surjective] -- now `erw` after #13170
+    rw [← TopCat.epi_iff_surjective] -- now `erw` after #13170
     change Epi ((SheafedSpace.forget _).map (LocallyRingedSpace.forgetToSheafedSpace.map _))
     infer_instance
 
@@ -136,7 +136,7 @@ def OpenCover.copy {X : Scheme.{u}} (𝒰 : OpenCover X) (J : Type*) (obj : J �
       rw [e₂, Scheme.comp_val_base, TopCat.coe_comp, Set.range_comp, Set.range_iff_surjective.mpr,
         Set.image_univ, e₁.rightInverse_symm]
       · exact 𝒰.covers x
-      · erw [← TopCat.epi_iff_surjective]; infer_instance -- now `erw` after #13170
+      · rw [← TopCat.epi_iff_surjective]; infer_instance -- now `erw` after #13170
     -- Porting note: weirdly, even though no input is needed, `inferInstance` does not work
     -- `PresheafedSpace.IsOpenImmersion.comp` is marked as `instance`
     IsOpen := fun i => by rw [e₂]; exact PresheafedSpace.IsOpenImmersion.comp _ _ }
@@ -503,7 +503,7 @@ theorem affineBasisCover_is_basis (X : Scheme.{u}) :
         ((X.affineCover.map (X.affineCover.f a)).1.base.continuous_toFun.isOpen_preimage _
           hU) with
       ⟨_, ⟨_, ⟨s, rfl⟩, rfl⟩, hxV, hVU⟩
-    refine ⟨_, ⟨⟨_, s⟩, rfl⟩, ?_, ?_⟩ <;> erw [affineBasisCover_map_range]
+    refine ⟨_, ⟨⟨_, s⟩, rfl⟩, ?_, ?_⟩ <;> rw [affineBasisCover_map_range]
     · exact ⟨x, hxV, e⟩
     · rw [Set.image_subset_iff]; exact hVU
 

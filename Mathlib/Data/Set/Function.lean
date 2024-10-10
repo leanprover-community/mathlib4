@@ -272,7 +272,7 @@ theorem MapsTo.range_restrict (f : α → β) (s : Set α) (t : Set β) (h : Map
 
 theorem mapsTo_iff_exists_map_subtype : MapsTo f s t ↔ ∃ g : s → t, ∀ x : s, f x = g x :=
   ⟨fun h => ⟨h.restrict f s t, fun _ => rfl⟩, fun ⟨g, hg⟩ x hx => by
-    erw [hg ⟨x, hx⟩]
+    rw [hg ⟨x, hx⟩]
     apply Subtype.coe_prop⟩
 
 theorem mapsTo' : MapsTo f s t ↔ f '' s ⊆ t :=

@@ -367,11 +367,11 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
                   (D.f j k).c.app _ ≫ (D.V (j, k)).presheaf.map (eqToHom _) =
                 D.opensImagePreimageMap _ _ _ ≫
                   ((D.f k j).c.app _ ≫ (D.t j k).c.app _) ≫ (D.V (j, k)).presheaf.map (eqToHom _)
-            erw [opensImagePreimageMap_app_assoc]
+            rw [opensImagePreimageMap_app_assoc]
             simp_rw [Category.assoc]
-            erw [opensImagePreimageMap_app_assoc, (D.t j k).c.naturality_assoc]
+            rw [opensImagePreimageMap_app_assoc, (D.t j k).c.naturality_assoc]
             rw [snd_invApp_t_app_assoc]
-            erw [← PresheafedSpace.comp_c_app_assoc]
+            rw [← PresheafedSpace.comp_c_app_assoc]
             -- light-blue = green is relatively easy since the part that differs does not involve
             -- partial inverses.
             have :
@@ -380,11 +380,11 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
               rw [← 𝖣.t_fac_assoc, 𝖣.t'_comp_eq_pullbackSymmetry_assoc,
                 pullbackSymmetry_hom_comp_snd_assoc, pullback.condition, 𝖣.t_fac_assoc]
             rw [congr_app this]
-            erw [PresheafedSpace.comp_c_app_assoc (pullbackSymmetry _ _).hom]
+            rw [PresheafedSpace.comp_c_app_assoc (pullbackSymmetry _ _).hom]
             simp_rw [Category.assoc]
             congr 1
             rw [← IsIso.eq_inv_comp]
-            erw [IsOpenImmersion.inv_invApp]
+            rw [IsOpenImmersion.inv_invApp]
             simp_rw [Category.assoc]
             erw [NatTrans.naturality_assoc, ← PresheafedSpace.comp_c_app_assoc,
               congr_app (pullbackSymmetry_hom_comp_snd _ _)]

@@ -386,7 +386,7 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
     rw [ContinuousMap.coe_mk]
     erw [Subtype.mk_eq_mk]
     rw [Prod.mk.inj_iff]
-    erw [Subtype.mk_eq_mk]
+    rw [Subtype.mk_eq_mk]
     rw [Subtype.ext_iff]
     rw [and_self_iff]
     convert congr_arg Subtype.val (h.t_inv k i ⟨x, hx'⟩) using 3
@@ -453,7 +453,7 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
   use fromOpenSubsetsGlue U '' s ∩ Set.range (@Opens.inclusion' (TopCat.of α) (U i))
   use Set.inter_subset_left
   constructor
-  · erw [← Set.image_preimage_eq_inter_range]
+  · rw [← Set.image_preimage_eq_inter_range]
     apply (Opens.openEmbedding (X := TopCat.of α) (U i)).isOpenMap
     convert hs i using 1
     erw [← ι_fromOpenSubsetsGlue, coe_comp, Set.preimage_comp]
