@@ -143,7 +143,7 @@ theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : 
     @exists_one_le_pow_mul_dist ℤ ℕ ℝ _ _ _ (fun y => fR.eval y) α ζ |fR.derivative.eval xm| ?_ z0
       (fun y hy => ?_) fun z a hq => ?_
   -- 1: the denominators are positive -- essentially by definition;
-  · exact fun a => one_le_pow_of_one_le ((le_add_iff_nonneg_left 1).mpr a.cast_nonneg) _
+  · exact fun a => one_le_pow₀ ((le_add_iff_nonneg_left 1).mpr a.cast_nonneg)
   -- 2: the polynomial `fR` is Lipschitz at `α` -- as its derivative continuous;
   · rw [mul_comm]
     rw [Real.closedBall_eq_Icc] at hy
@@ -191,11 +191,11 @@ protected theorem transcendental {x : ℝ} (lx : Liouville x) : Transcendental �
   -- recall, this is a proof by contradiction!
   refine lt_irrefl ((b : ℝ) ^ f.natDegree * |x - ↑a / ↑b|) ?_
   -- clear denominators at `a1`
-  rw [lt_div_iff' (pow_pos b0 _), pow_add, mul_assoc] at a1
+  rw [lt_div_iff₀' (pow_pos b0 _), pow_add, mul_assoc] at a1
   -- split the inequality via `1 / A`.
   refine (?_ : (b : ℝ) ^ f.natDegree * |x - a / b| < 1 / A).trans_le ?_
   -- This branch of the proof uses the Liouville condition and the Archimedean property
-  · refine (lt_div_iff' hA).mpr ?_
+  · refine (lt_div_iff₀' hA).mpr ?_
     refine lt_of_le_of_lt ?_ a1
     gcongr
     refine hn.le.trans ?_

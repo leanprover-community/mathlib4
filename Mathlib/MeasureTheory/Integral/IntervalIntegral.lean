@@ -1021,6 +1021,12 @@ theorem abs_integral_le_integral_abs (hab : a ≤ b) :
     |∫ x in a..b, f x ∂μ| ≤ ∫ x in a..b, |f x| ∂μ := by
   simpa only [← Real.norm_eq_abs] using norm_integral_le_integral_norm hab
 
+lemma integral_pos (hab : a < b)
+    (hfc : ContinuousOn f (Icc a b)) (hle : ∀ x ∈ Ioc a b, 0 ≤ f x) (hlt : ∃ c ∈ Icc a b, 0 < f c) :
+    0 < ∫ x in a..b, f x :=
+  (integral_lt_integral_of_continuousOn_of_le_of_exists_lt hab
+    continuousOn_const hfc hle hlt).trans_eq' (by simp)
+
 section Mono
 
 theorem integral_mono_interval {c d} (hca : c ≤ a) (hab : a ≤ b) (hbd : b ≤ d)

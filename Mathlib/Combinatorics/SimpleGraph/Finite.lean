@@ -92,6 +92,15 @@ theorem edgeFinset_inf [DecidableEq V] : (G₁ ⊓ G₂).edgeFinset = G₁.edgeF
 theorem edgeFinset_sdiff [DecidableEq V] :
     (G₁ \ G₂).edgeFinset = G₁.edgeFinset \ G₂.edgeFinset := by simp [edgeFinset]
 
+lemma disjoint_edgeFinset : Disjoint G₁.edgeFinset G₂.edgeFinset ↔ Disjoint G₁ G₂ := by
+  simp_rw [← Finset.disjoint_coe, coe_edgeFinset, disjoint_edgeSet]
+
+lemma edgeFinset_eq_empty : G.edgeFinset = ∅ ↔ G = ⊥ := by
+  rw [← edgeFinset_bot, edgeFinset_inj]
+
+lemma edgeFinset_nonempty : G.edgeFinset.Nonempty ↔ G ≠ ⊥ := by
+  rw [Finset.nonempty_iff_ne_empty, edgeFinset_eq_empty.ne]
+
 theorem edgeFinset_card : G.edgeFinset.card = Fintype.card G.edgeSet :=
   Set.toFinset_card _
 
@@ -408,7 +417,7 @@ the best we can do in general. -/
 theorem Adj.card_commonNeighbors_lt_degree {G : SimpleGraph V} [DecidableRel G.Adj] {v w : V}
     (h : G.Adj v w) : Fintype.card (G.commonNeighbors v w) < G.degree v := by
   classical
-  erw [← Set.toFinset_card]
+  rw [← Set.toFinset_card]
   apply Finset.card_lt_card
   rw [Finset.ssubset_iff]
   use w

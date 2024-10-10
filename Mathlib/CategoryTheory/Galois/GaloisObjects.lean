@@ -95,6 +95,17 @@ instance isPretransitive_of_isGalois (X : C) [IsGalois X] :
   rw [← isGalois_iff_pretransitive]
   infer_instance
 
+lemma stabilizer_normal_of_isGalois (X : C) [IsGalois X] (x : F.obj X) :
+    Subgroup.Normal (MulAction.stabilizer (Aut F) x) where
+  conj_mem n ninstab g := by
+    rw [MulAction.mem_stabilizer_iff]
+    show g • n • (g⁻¹ • x) = x
+    have : ∃ (φ : Aut X), F.map φ.hom x = g⁻¹ • x :=
+      MulAction.IsPretransitive.exists_smul_eq x (g⁻¹ • x)
+    obtain ⟨φ, h⟩ := this
+    rw [← h, mulAction_naturality, ninstab, h]
+    simp
+
 theorem evaluation_aut_surjective_of_isGalois (A : C) [IsGalois A] (a : F.obj A) :
     Function.Surjective (fun f : Aut A ↦ F.map f.hom a) :=
   MulAction.IsPretransitive.exists_smul_eq a
