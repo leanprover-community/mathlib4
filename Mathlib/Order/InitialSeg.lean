@@ -329,8 +329,8 @@ def equivLT (f : r ≃r s) (g : s ≺i t) : r ≺i t :=
       fun ⟨a, h⟩ => ⟨f a, h⟩⟩⟩
 
 /-- Composition of a principal segment with an order isomorphism, as a principal segment -/
-def ltEquiv {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop} (f : PrincipalSeg r s)
-    (g : s ≃r t) : PrincipalSeg r t :=
+def ltEquiv {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop} (f : r ≺i s) (g : s ≃r t) :
+    r ≺i t :=
   ⟨@RelEmbedding.trans _ _ _ r s t f g, g f.top, by
     intro x
     rw [← g.apply_symm_apply x, g.map_rel_iff, ← f.mem_range_iff_rel]
