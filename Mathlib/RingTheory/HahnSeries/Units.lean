@@ -47,7 +47,46 @@ open Pointwise
 
 noncomputable section
 
-variable {Γ Γ' R V α β : Type*}
+variable {Γ Γ' R V α β σ : Type*}
+
+theorem sum_eq_top [AddCommMonoid Γ] (s : Finset σ) (f : σ → WithTop Γ)
+    (h : ∃i ∈ s, f i = ⊤) : ∑ i ∈ s, f i = ⊤ := by
+  induction s using cons_induction with
+  | empty => simp_all only [not_mem_empty, false_and, exists_false]
+  | cons i s his ih =>
+    obtain ⟨j, hj⟩ := h
+    by_cases hjs : j ∈ s
+    · simp only [sum_cons, WithTop.add_eq_top]
+      exact Or.inr <| ih <| Exists.intro j ⟨hjs, hj.2⟩
+    · classical
+      have hij : j = i := eq_of_not_mem_of_mem_insert (cons_eq_insert i s his ▸ hj.1) hjs
+      rw [sum_cons, ← hij, hj.2, WithTop.add_eq_top]
+      exact Or.inl rfl
+-- #find_home! sum_eq_top --[Mathlib.Algebra.BigOperators.Group.Finset]
+
+theorem add_ne_top [AddCommMonoid Γ] {x y : WithTop Γ} (hx : x ≠ ⊤)
+    (hy : y ≠ ⊤) : x + y ≠ ⊤ := by
+  by_contra h
+  rw [WithTop.add_eq_top] at h
+  simp_all only [ne_eq, or_self]
+--#find_home! add_ne_top --[Mathlib.Algebra.Order.Monoid.Unbundled.WithTop]
+
+theorem add_untop [AddCommMonoid Γ] {x y : WithTop Γ} (hx : x ≠ ⊤) (hy : y ≠ ⊤) :
+    (x + y).untop (add_ne_top hx hy) = x.untop hx + y.untop hy :=
+  (WithTop.untop_eq_iff (add_ne_top hx hy)).mpr (by simp)
+--#find_home! add_untop --[Mathlib.Algebra.Order.Monoid.Unbundled.WithTop]
+
+theorem sum_untop [AddCommMonoid Γ] (s : Finset σ) {f : σ → WithTop Γ}
+    (h : ∀ i, ¬ f i = ⊤) (hs : ¬∑ i ∈ s, f i = ⊤) :
+    (∑ i ∈ s, f i).untop hs = ∑ i ∈ s, ((f i).untop (h i)) := by
+  induction s using cons_induction with
+  | empty => simp
+  | cons i s his ih =>
+    simp only [sum_cons]
+    rw [sum_cons, WithTop.add_eq_top, Mathlib.Tactic.PushNeg.not_or_eq] at hs
+    rw [add_untop (h i) hs.2]
+    exact congrArg (HAdd.hAdd ((f i).untop (h i))) (ih hs.right)
+--#find_home! sum_untop --[Mathlib.Algebra.BigOperators.Group.Finset]
 
 namespace HahnSeries
 
@@ -609,23 +648,23 @@ def heval : PowerSeries R →ₐ[R] HahnSeries Γ R where
     rw [finsum_eq_single _ 0 fun n hn => by simp_all]
     by_cases hg : g = 0 <;> simp [hg, Algebra.algebraMap_eq_smul_one]
 
-theorem subst_mul {a b : PowerSeries R} :
+theorem heval_mul {a b : PowerSeries R} :
     heval hx (a * b) = (heval hx a) * heval hx b :=
   map_mul (heval hx) a b
 
-theorem subst_power_series_unit (u : (PowerSeries R)ˣ) : IsUnit (heval hx u) := by
+theorem heval_unit (u : (PowerSeries R)ˣ) : IsUnit (heval hx u) := by
   refine isUnit_iff_exists_inv.mpr ?_
   use heval hx u.inv
-  rw [← subst_mul, Units.val_inv, map_one]
+  rw [← heval_mul, Units.val_inv, map_one]
 
-theorem powerSeriesSubst_coeff (f : PowerSeries R) (g : Γ) :
+theorem heval_coeff (f : PowerSeries R) (g : Γ) :
     (heval hx f).coeff g = ∑ᶠ n, ((PowerSeriesFamily hx f).coeff g) n := by
   rw [heval_apply, hsum_coeff]
   exact rfl
 
-theorem powerSeriesSubst_coeff_zero (f : PowerSeries R) :
+theorem heval_coeff_zero (f : PowerSeries R) :
     (heval hx f).coeff 0 = PowerSeries.constantCoeff R f := by
-  rw [powerSeriesSubst_coeff, finsum_eq_single (fun n => ((PowerSeriesFamily hx f).coeff 0) n) 0,
+  rw [heval_coeff, finsum_eq_single (fun n => ((PowerSeriesFamily hx f).coeff 0) n) 0,
     ← PowerSeries.coeff_zero_eq_constantCoeff_apply]
   · simp_all
   · intro n hn
@@ -639,13 +678,13 @@ namespace MvPowerSeries
 
 open HahnSeries SummableFamily
 
-variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R] {x : HahnSeries Γ R}
-(hx : 0 < x.orderTop)
+variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R] {σ : Type*} [Fintype σ]
+(y : σ →₀ HahnSeries Γ R) (hy : ∀ i, 0 < (y i).orderTop)
 
 /-- The `R`-algebra homomorphism from `R[[X]]` to `HahnSeries Γ R` given by sending the power series
 variable `X` to a positive order element `x`. -/
 @[simps]
-def mvheval {σ : Type*} [Fintype σ] (y : σ →₀ HahnSeries Γ R)
+def heval {σ : Type*} [Fintype σ] (y : σ →₀ HahnSeries Γ R)
     (hy : ∀ i, 0 < (y i).orderTop) : MvPowerSeries σ R →ₐ[R] HahnSeries Γ R where
   toFun f := (mvPowerSeriesFamily y hy f).hsum
   map_one' := by
@@ -678,6 +717,61 @@ def mvheval {σ : Type*} [Fintype σ] (y : σ →₀ HahnSeries Γ R)
     simp only [hsum_coeff, mvPowerSeriesFamily_toFun, mvPowers_apply, smul_coeff, smul_eq_mul]
     rw [finsum_eq_single _ 0 (fun s hs => by simp [hs, MvPowerSeries.coeff_C])]
     by_cases hg : g = 0 <;> simp [hg, Algebra.algebraMap_eq_smul_one']
+
+theorem heval_mul {a b : MvPowerSeries σ R} :
+    heval y hy (a * b) = (heval y hy a) * heval y hy b :=
+  map_mul (heval y hy) a b
+
+theorem heval_unit (u : (MvPowerSeries σ R)ˣ) : IsUnit (heval y hy u) := by
+  refine isUnit_iff_exists_inv.mpr ?_
+  use heval y hy u.inv
+  rw [← heval_mul, Units.val_inv, map_one]
+
+theorem heval_coeff (f : MvPowerSeries σ R) (g : Γ) :
+    (heval y hy f).coeff g = ∑ᶠ n, ((mvPowerSeriesFamily y hy f).coeff g) n := by
+  rw [heval_apply, hsum_coeff]
+  exact rfl
+
+theorem heval_coeff_zero (f : MvPowerSeries σ R) :
+    (heval y hy f).coeff 0 = MvPowerSeries.constantCoeff σ R f := by
+  rw [heval_coeff, finsum_eq_single (fun n => ((mvPowerSeriesFamily y hy f).coeff 0) n) 0,
+    ← MvPowerSeries.coeff_zero_eq_constantCoeff_apply]
+  · simp_all
+  · intro n hn
+    simp_all only [ne_eq, coeff_toFun, mvPowerSeriesFamily_toFun, mvPowers_apply, smul_coeff,
+      smul_eq_mul]
+    refine mul_eq_zero_of_right ((MvPowerSeries.coeff R n) f) (coeff_eq_zero_of_lt_orderTop ?_)
+    refine lt_of_lt_of_le ?_ (sum_orderTop_le_orderTop_prod _)
+    by_cases h : ∑ i, (y i ^ n i).orderTop = ⊤
+    · simp [h]
+    · have hi : ∀ i, ¬(y i ^ n i).orderTop = ⊤ := by
+        intro i
+        contrapose h
+        simp_all only [Decidable.not_not]
+        exact sum_eq_top univ _ <| Exists.intro i ⟨mem_univ i, h⟩
+      refine (WithTop.lt_untop_iff h).mp ?_
+      rw [sum_untop univ hi h]
+      rw [Finsupp.ext_iff, Mathlib.Tactic.PushNeg.not_forall_eq] at hn
+      simp only [Finsupp.coe_zero, Pi.zero_apply] at hn
+      refine sum_pos' ?_ ?_
+      · intro i _
+        by_cases hni : n i = 0
+        · rw [WithTop.le_untop_iff, hni, pow_zero]
+          by_cases hz : (1 : HahnSeries Γ R) = 0
+          · simp [hz]
+          · rw [WithTop.coe_zero, zero_le_orderTop_iff, order_one]
+        · rw [WithTop.le_untop_iff]
+          refine LE.le.trans ?_ orderTop_nsmul_le_orderTop_pow
+          rw [WithTop.coe_zero]
+          exact nsmul_nonneg (le_of_lt (hy i)) (n i)
+      · obtain ⟨i, hni⟩ := hn
+        use i
+        constructor
+        · exact mem_univ i
+        · rw [WithTop.lt_untop_iff]
+          refine lt_of_lt_of_le ?_ orderTop_nsmul_le_orderTop_pow
+          rw [WithTop.coe_zero]
+          exact (nsmul_pos_iff hni).mpr (hy i)
 
 end MvPowerSeries
 

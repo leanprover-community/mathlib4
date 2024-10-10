@@ -642,6 +642,18 @@ instance [CommRing R] : CommRing (HahnSeries Γ R) :=
   { inferInstanceAs (CommSemiring (HahnSeries Γ R)),
     inferInstanceAs (Ring (HahnSeries Γ R)) with }
 
+theorem sum_orderTop_le_orderTop_prod {Γ} [LinearOrderedCancelAddCommMonoid Γ]
+    [CommSemiring R] {σ : Type*} [Fintype σ] (y : σ → HahnSeries Γ R) :
+    ∑ i, (y i).orderTop ≤ (∏ i, y i).orderTop := by
+  have hs : ∀ (s : Finset σ), ∑ i ∈ s, (y i).orderTop ≤ (∏ i ∈ s, y i).orderTop := by
+    intro s
+    induction s using cons_induction with
+    | empty => simp [zero_le_orderTop_iff]
+    | cons i s his ih =>
+      rw [sum_cons, prod_cons]
+      exact (add_le_add_left ih (y i).orderTop).trans orderTop_add_le_mul
+  exact hs univ
+
 end HahnSeries
 
 namespace HahnModule
