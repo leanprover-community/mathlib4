@@ -101,14 +101,14 @@ private theorem add_lt_add_iff_left' (a) {b c : Ordinal} : a + b < a + c ↔ b <
   rw [← not_le, ← not_le, add_le_add_iff_left]
 
 instance add_covariantClass_lt : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· < ·) :=
-  ⟨fun a _ _ ↦ (add_lt_add_iff_left' a).2⟩
+  ⟨fun a _b _c ↦ (add_lt_add_iff_left' a).2⟩
 
 instance add_contravariantClass_lt : ContravariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· < ·) :=
-  ⟨fun a _ _ ↦ (add_lt_add_iff_left' a).1⟩
+  ⟨fun a _b _c ↦ (add_lt_add_iff_left' a).1⟩
 
 instance add_swap_contravariantClass_lt :
     ContravariantClass Ordinal.{u} Ordinal.{u} (swap (· + ·)) (· < ·) :=
-  ⟨fun _ _ _ ↦ lt_imp_lt_of_le_imp_le fun h => add_le_add_right h _⟩
+  ⟨fun _a _b _c ↦ lt_imp_lt_of_le_imp_le fun h => add_le_add_right h _⟩
 
 theorem add_le_add_iff_right {a b : Ordinal} : ∀ n : ℕ, a + n ≤ b + n ↔ a ≤ b
   | 0 => by simp
