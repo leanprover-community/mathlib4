@@ -273,7 +273,7 @@ instance hasForgetToAddCommGrp : HasForget₂ RingCat AddCommGrp where
 end RingCat
 
 /-- The category of commutative semirings. -/
-def CommSemiRingCat : Type (u + 1) :=
+abbrev CommSemiRingCat : Type (u + 1) :=
   Bundled CommSemiring
 
 namespace CommSemiRingCat
@@ -412,7 +412,7 @@ instance forgetReflectIsos : (forget CommSemiRingCat).ReflectsIsomorphisms where
 end CommSemiRingCat
 
 /-- The category of commutative rings. -/
-def CommRingCat : Type (u + 1) :=
+abbrev CommRingCat : Type (u + 1) :=
   Bundled CommRing
 
 namespace CommRingCat
@@ -420,20 +420,13 @@ namespace CommRingCat
 instance : BundledHom.ParentProjection @CommRing.toRing :=
   ⟨⟩
 
--- Porting note: deriving fails for concrete category.
--- see https://github.com/leanprover-community/mathlib4/issues/5020
-deriving instance LargeCategory for CommRingCat
-
-instance : ConcreteCategory CommRingCat := by
-  dsimp [CommRingCat]
-  infer_instance
-
-instance : CoeSort CommRingCat Type* where
-  coe X := X.α
-
 -- Porting note: Hinting to Lean that `forget R` and `R` are the same
 unif_hint forget_obj_eq_coe (R : CommRingCat) where ⊢
   (forget CommRingCat).obj R ≟ R
+
+-- Porting note: deriving fails for concrete category.
+-- see https://github.com/leanprover-community/mathlib4/issues/5020
+deriving instance LargeCategory for CommRingCat
 
 instance instCommRing (X : CommRingCat) : CommRing X := X.str
 
