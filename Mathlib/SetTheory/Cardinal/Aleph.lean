@@ -45,7 +45,7 @@ def aleph' : Ordinal.{u} ≃o Cardinal.{u} := by
   refine (OrderIso.ofRelIsoLT <| RelIso.ofSurjective f ?_).symm
   apply f.eq_or_principal.resolve_right
   rintro ⟨o, e⟩
-  have : ∀ c, f c < o := fun c => (e _).2 ⟨_, rfl⟩
+  have : ∀ c, f c < o := fun c => (e _).1 ⟨_, rfl⟩
   refine Ordinal.inductionOn o ?_ this
   intro α r _ h
   let s := ⨆ a, invFun f (Ordinal.typein r a)
@@ -183,10 +183,13 @@ theorem aleph'_limit {o : Ordinal} (ho : o.IsLimit) : aleph' o = ⨆ a : Iio o, 
   exact fun a ha => le_ciSup (bddAbove_of_small _) (⟨a, ha⟩ : Iio o)
 
 @[simp]
-theorem aleph'_omega : aleph' ω = ℵ₀ :=
+theorem aleph'_omega0 : aleph' ω = ℵ₀ :=
   eq_of_forall_ge_iff fun c => by
     simp only [aleph'_le_of_limit omega0_isLimit, lt_omega0, exists_imp, aleph0_le]
     exact forall_swap.trans (forall_congr' fun n => by simp only [forall_eq, aleph'_nat])
+
+@[deprecated (since := "2024-09-30")]
+alias aleph'_omega := aleph'_omega0
 
 set_option linter.deprecated false in
 /-- `aleph'` and `aleph_idx` form an equivalence between `Ordinal` and `Cardinal` -/
@@ -222,7 +225,7 @@ theorem aleph_succ (o : Ordinal) : aleph (succ o) = succ (aleph o) := by
   rw [aleph_eq_aleph', add_succ, aleph'_succ, aleph_eq_aleph']
 
 @[simp]
-theorem aleph_zero : aleph 0 = ℵ₀ := by rw [aleph_eq_aleph', add_zero, aleph'_omega]
+theorem aleph_zero : aleph 0 = ℵ₀ := by rw [aleph_eq_aleph', add_zero, aleph'_omega0]
 
 theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : aleph o = ⨆ a : Iio o, aleph a := by
   apply le_antisymm _ (ciSup_le' _)
@@ -236,7 +239,7 @@ theorem aleph_limit {o : Ordinal} (ho : o.IsLimit) : aleph o = ⨆ a : Iio o, al
     · exact ⟨⟨_, (sub_lt_of_le h).2 hi⟩, aleph'_le.2 (le_add_sub _ _)⟩
   · exact fun i => aleph_le.2 (le_of_lt i.2)
 
-theorem aleph0_le_aleph' {o : Ordinal} : ℵ₀ ≤ aleph' o ↔ ω ≤ o := by rw [← aleph'_omega, aleph'_le]
+theorem aleph0_le_aleph' {o : Ordinal} : ℵ₀ ≤ aleph' o ↔ ω ≤ o := by rw [← aleph'_omega0, aleph'_le]
 
 theorem aleph0_le_aleph (o : Ordinal) : ℵ₀ ≤ aleph o := by
   rw [aleph_eq_aleph', aleph0_le_aleph']
@@ -288,7 +291,17 @@ theorem aleph0_lt_aleph_one : ℵ₀ < aleph 1 := by
 theorem countable_iff_lt_aleph_one {α : Type*} (s : Set α) : s.Countable ↔ #s < aleph 1 := by
   rw [← succ_aleph0, lt_succ_iff, le_aleph0_iff_set_countable]
 
+section deprecated
+
+set_option linter.deprecated false
+
+-- TODO: these lemmas should be stated in terms of the `ω` function and of an `IsInitial` predicate,
+-- neither of which currently exist.
+--
+-- They should also use `¬ BddAbove` instead of `Unbounded (· < ·)`.
+
 /-- Ordinals that are cardinals are unbounded. -/
+@[deprecated (since := "2024-09-24")]
 theorem ord_card_unbounded : Unbounded (· < ·) { b : Ordinal | b.card.ord = b } :=
   unbounded_lt_iff.2 fun a =>
     ⟨_,
@@ -296,22 +309,16 @@ theorem ord_card_unbounded : Unbounded (· < ·) { b : Ordinal | b.card.ord = b 
         dsimp
         rw [card_ord], (lt_ord_succ_card a).le⟩⟩
 
+@[deprecated (since := "2024-09-24")]
 theorem eq_aleph'_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) : ∃ a, (aleph' a).ord = o :=
   ⟨aleph'.symm o.card, by simpa using ho⟩
 
-/-- `ord ∘ aleph'` enumerates the ordinals that are cardinals. -/
-theorem ord_aleph'_eq_enum_card : ord ∘ aleph' = enumOrd { b : Ordinal | b.card.ord = b } := by
-  rw [← eq_enumOrd _ ord_card_unbounded, range_eq_iff]
-  exact
-    ⟨aleph'_isNormal.strictMono,
-      ⟨fun a => by
-        dsimp
-        rw [card_ord], fun b hb => eq_aleph'_of_eq_card_ord hb⟩⟩
-
 /-- Infinite ordinals that are cardinals are unbounded. -/
+@[deprecated (since := "2024-09-24")]
 theorem ord_card_unbounded' : Unbounded (· < ·) { b : Ordinal | b.card.ord = b ∧ ω ≤ b } :=
   (unbounded_lt_inter_le ω).2 ord_card_unbounded
 
+@[deprecated (since := "2024-09-24")]
 theorem eq_aleph_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) (ho' : ω ≤ o) :
     ∃ a, (aleph a).ord = o := by
   cases' eq_aleph'_of_eq_card_ord ho with a ha
@@ -319,16 +326,7 @@ theorem eq_aleph_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) (ho' : ω �
   rwa [aleph_eq_aleph', Ordinal.add_sub_cancel_of_le]
   rwa [← aleph0_le_aleph', ← ord_le_ord, ha, ord_aleph0]
 
-/-- `ord ∘ aleph` enumerates the infinite ordinals that are cardinals. -/
-theorem ord_aleph_eq_enum_card :
-    ord ∘ aleph = enumOrd { b : Ordinal | b.card.ord = b ∧ ω ≤ b } := by
-  rw [← eq_enumOrd _ ord_card_unbounded']
-  use aleph_isNormal.strictMono
-  rw [range_eq_iff]
-  refine ⟨fun a => ⟨?_, ?_⟩, fun b hb => eq_aleph_of_eq_card_ord hb.1 hb.2⟩
-  · rw [Function.comp_apply, card_ord]
-  · rw [← ord_aleph0, Function.comp_apply, ord_le_ord]
-    exact aleph0_le_aleph _
+end deprecated
 
 /-! ### Beth cardinals -/
 
