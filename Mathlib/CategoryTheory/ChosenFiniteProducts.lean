@@ -201,15 +201,16 @@ end ChosenFiniteProducts
 
 open Limits MonoidalCategory ChosenFiniteProducts
 
+variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C]
+  {D : Type u₁} [Category.{v₁} D] (F : C ⥤ D)
+  [ChosenFiniteProducts D]
+  [h₀ : PreservesLimit (Functor.empty.{0} C) F]
+  [h₁ : PreservesLimitsOfShape (Discrete WalkingPair) F]
+
 /-- Promote a finite products preserving functor to a monoidal functor between
 categories equipped with the monoidal category structure given by chosen finite products. -/
 @[simps]
-def Functor.toMonoidalFunctorOfChosenFiniteProducts {C : Type u} [Category.{v} C]
-    [ChosenFiniteProducts C] {D : Type u₁} [Category.{v₁} D]
-    [ChosenFiniteProducts D] (F : C ⥤ D)
-    [h₀ : PreservesLimit (Functor.empty.{0} C) F]
-    [h₁ : PreservesLimitsOfShape (Discrete WalkingPair) F] :
-    MonoidalFunctor C D where
+def Functor.toMonoidalFunctorOfChosenFiniteProducts : MonoidalFunctor C D where
   toFunctor := F
   ε := IsLimit.conePointsIsoOfNatIso
     (h₀.preserves terminal.isLimit) terminal.isLimit (Functor.isEmptyExt _ _)|>.inv
@@ -359,5 +360,8 @@ def Functor.toMonoidalFunctorOfChosenFiniteProducts {C : Type u} [Category.{v} C
         rfl
     rw [whiskerLeft_fst]
     rfl
+
+instance [F.IsEquivalence] : F.toMonoidalFunctorOfChosenFiniteProducts.IsEquivalence := by
+  assumption
 
 end CategoryTheory
