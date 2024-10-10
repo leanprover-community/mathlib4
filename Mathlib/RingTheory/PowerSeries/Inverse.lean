@@ -272,9 +272,6 @@ variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalHom f]
 instance map.isLocalHom : IsLocalHom (map f) :=
   MvPowerSeries.map.isLocalHom f
 
-@[deprecated (since := "2024-10-10")]
-alias map.isLocalRingHom := map.isLocalHom
-
 variable [LocalRing R] [LocalRing S]
 
 instance : LocalRing R⟦X⟧ :=
