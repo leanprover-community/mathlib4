@@ -259,8 +259,8 @@ theorem writtenInExtChartAt_comp (h : ContinuousWithinAt f s x) :
 /- We name the typeclass variables related to `SmoothManifoldWithCorners` structure as they are
 necessary in lemmas mentioning the derivative, but not in lemmas about differentiability, so we
 want to include them or omit them when necessary. -/
-variable [Is : SmoothManifoldWithCorners I M] [I's : SmoothManifoldWithCorners I' M']
-  [I''s : SmoothManifoldWithCorners I'' M'']
+variable --[Is : SmoothManifoldWithCorners I M] [I's : SmoothManifoldWithCorners I' M']
+  --[I''s : SmoothManifoldWithCorners I'' M'']
   {f' f₀' f₁' : TangentSpace I x →L[𝕜] TangentSpace I' (f x)}
   {g' : TangentSpace I' (f x) →L[𝕜] TangentSpace I'' (g (f x))}
 
@@ -280,6 +280,7 @@ theorem UniqueMDiffOn.eq (U : UniqueMDiffOn I s) (hx : x ∈ s) (h : HasMFDerivW
 We mimic the API for functions between vector spaces
 -/
 
+variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M'] in
 /-- One can reformulate differentiability within a set at a point as continuity within this set at
 this point, and differentiability in any chart containing that point. -/
 theorem mdifferentiableWithinAt_iff_of_mem_source {x' : M} {y : M'}
@@ -418,6 +419,7 @@ theorem mfderivWithin_eq_mfderiv (hs : UniqueMDiffWithinAt I s x) (h : MDifferen
   rw [← mfderivWithin_univ]
   exact mfderivWithin_subset (subset_univ _) hs h.mdifferentiableWithinAt
 
+variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M'] in
 theorem mdifferentiableAt_iff_of_mem_source {x' : M} {y : M'}
     (hx : x' ∈ (chartAt H x).source) (hy : f x' ∈ (chartAt H' y).source) :
     MDifferentiableAt I I' f x' ↔

@@ -164,20 +164,6 @@ lemma continuousOn_tangentCoordChange (x y : M) : ContinuousOn (tangentCoordChan
 
 end tangentCoordChange
 
-/-- The tangent space at a point of the manifold `M`. It is just `E`. We could use instead
-`(tangentBundleCore I M).to_topological_vector_bundle_core.fiber x`, but we use `E` to help the
-kernel.
--/
-@[nolint unusedArguments]
-def TangentSpace {𝕜} [NontriviallyNormedField 𝕜] {E} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    {H} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) {M} [TopologicalSpace M]
-    [ChartedSpace H M] [SmoothManifoldWithCorners I M] (_x : M) : Type* := E
--- Porting note: was deriving TopologicalSpace, AddCommGroup, TopologicalAddGroup
-
-instance {x : M} : TopologicalSpace (TangentSpace I x) := inferInstanceAs (TopologicalSpace E)
-instance {x : M} : AddCommGroup (TangentSpace I x) := inferInstanceAs (AddCommGroup E)
-instance {x : M} : TopologicalAddGroup (TangentSpace I x) := inferInstanceAs (TopologicalAddGroup E)
-
 variable (M)
 
 -- is empty if the base manifold is empty

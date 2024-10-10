@@ -1363,3 +1363,34 @@ lemma Manifold.locallyCompact_of_finiteDimensional
   exact ChartedSpace.locallyCompactSpace H M
 
 end Topology
+
+section TangentSpace
+
+/- We define the tangent space to `M` modelled on `I : ModelWithCorners 𝕜 E H` as a type synonym
+for `E`. This is enough to define linear maps between tangent spaces, for instance derivatives,
+but the interesting part is to define a manifold structure on the whole tangent bundle, which
+requires that `M` is a smooth manifold with corners. The definition is put here to avoid importing
+all the bundle structure when defining manifold derivatives. -/
+
+set_option linter.unusedVariables false in
+/-- The tangent space at a point of the manifold `M`. It is just `E`. We could use instead
+`(tangentBundleCore I M).to_topological_vector_bundle_core.fiber x`, but we use `E` to help the
+kernel.
+-/
+@[nolint unusedArguments]
+def TangentSpace {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M] (_x : M) : Type u := E
+-- Porting note: was deriving TopologicalSpace, AddCommGroup, TopologicalAddGroup
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
+    {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+
+instance {x : M} : TopologicalSpace (TangentSpace I x) := inferInstanceAs (TopologicalSpace E)
+instance {x : M} : AddCommGroup (TangentSpace I x) := inferInstanceAs (AddCommGroup E)
+instance {x : M} : TopologicalAddGroup (TangentSpace I x) := inferInstanceAs (TopologicalAddGroup E)
+
+end TangentSpace
