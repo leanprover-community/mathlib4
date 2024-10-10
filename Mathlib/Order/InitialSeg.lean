@@ -495,14 +495,14 @@ private noncomputable def collapseF [IsWellOrder β s] (f : r ↪r s) : Π a, { 
     ⟨_, IsWellFounded.wf.not_lt_min _ ⟨_, H⟩ H⟩
 
 private theorem collapseF.lt [IsWellOrder β s] (f : r ↪r s) {a : α} :
-    ∀ a', r a' a → s (collapseF f a').1 (collapseF f a).1 := by
-  show _ ∈ { b | ∀ a', r a' a → s (collapseF f a').1 b }
+    ∀ {a'}, r a' a → s (collapseF f a') (collapseF f a) := by
+  show _ ∈ { b | ∀ a', r a' a → s (collapseF f a') b }
   rw [collapseF, IsWellFounded.fix_eq]
   dsimp only
   exact WellFounded.min_mem _ _ _
 
 private theorem collapseF.not_lt [IsWellOrder β s] (f : r ↪r s) (a : α) {b}
-    (h : ∀ a', r a' a → s (collapseF f a').1 b) : ¬s b (collapseF f a).1 := by
+    (h : ∀ a', r a' a → s (collapseF f a') b) : ¬s b (collapseF f a) := by
   rw [collapseF, IsWellFounded.fix_eq]
   dsimp only
   exact WellFounded.not_lt_min _ _ _ h
@@ -512,11 +512,11 @@ subsequent element in `α` is mapped to the least element in `β` that hasn't be
 
 This construction is guaranteed to work as long as there exists some order embedding `r ↪r s`. -/
 noncomputable def collapse [IsWellOrder β s] (f : r ↪r s) : r ≼i s :=
-  have := RelEmbedding.isWellOrder f
-  ⟨RelEmbedding.ofMonotone _ fun a b => collapseF.lt f _, fun a b h ↦ by
-    obtain ⟨m, hm, hm'⟩ := (@IsWellFounded.wf _ r).has_min { a | ¬s _ b } ⟨_, asymm h⟩
+  have H := RelEmbedding.isWellOrder f
+  ⟨RelEmbedding.ofMonotone _ fun a b => collapseF.lt f, fun a b h ↦ by
+    obtain ⟨m, hm, hm'⟩ := H.wf.has_min { a | ¬s _ b } ⟨_, asymm h⟩
     use m
-    obtain lt | rfl | gt := @trichotomous β s _ b (collapseF f m).1
+    obtain lt | rfl | gt := trichotomous_of s b (collapseF f m)
     · refine (collapseF.not_lt f m (fun c h ↦ ?_) lt).elim
       by_contra hn
       exact hm' _ hn h
