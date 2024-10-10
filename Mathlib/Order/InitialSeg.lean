@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 import Mathlib.Data.Sum.Order
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.RelIso.Set
+import Mathlib.Order.UpperLower.Basic
 import Mathlib.Order.WellFounded
 /-!
 # Initial and principal segments
@@ -593,6 +594,10 @@ theorem mem_range_of_le [Preorder α] (f : α ≤i β) (h : b ≤ f a) : b ∈ S
   obtain rfl | hb := h.eq_or_lt
   exacts [⟨a, rfl⟩, f.mem_range_of_rel hb]
 
+theorem isLowerSet_range [Preorder α] (f : α ≤i β) : IsLowerSet (Set.range f) := by
+  rintro _ b h ⟨a, rfl⟩
+  exact mem_range_of_le f h
+
 -- TODO: this would follow immediately if we had a `RelEmbeddingClass`
 @[simp]
 theorem le_iff_le [PartialOrder α] (f : α ≤i β) : f a ≤ f a' ↔ a ≤ a' :=
@@ -645,6 +650,9 @@ variable [PartialOrder β] {a a' : α} {b : β}
 
 theorem mem_range_of_le [Preorder α] (f : α <i β) (h : b ≤ f a) : b ∈ Set.range f :=
   (f : α ≤i β).mem_range_of_le h
+
+theorem isLowerSet_range [Preorder α] (f : α ≤i β) : IsLowerSet (Set.range f) := 
+  (f : α ≤i β).isLowerSet_range
 
 -- TODO: this would follow immediately if we had a `RelEmbeddingClass`
 @[simp]
