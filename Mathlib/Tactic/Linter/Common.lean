@@ -7,6 +7,12 @@ Authors: Damiano Testa, Moritz Firsching
 import Lean.Elab.Command
 open Lean Parser Elab Command Meta
 
+
+/-!
+This file contains functions that are used by some linters.
+-/
+
+
 namespace Mathlib.Linter
 
 /--
@@ -28,5 +34,3 @@ def getNames {m} [Monad m] [MonadEnv m] [MonadFileMap m] (stx : Syntax) : m (Arr
       let ofPos2 := fm.ofPosition rgs.selectionRange.endPos
       nms := nms.push (mkIdentFrom (.ofRange ⟨ofPos1, ofPos2⟩) nm)
   return nms
-
-
