@@ -85,7 +85,7 @@ private lemma exists_variableChange_of_char_two_of_j_eq_zero
   · field_simp [variableChange_a₄, a₁_of_isCharTwoJEqZeroNF, a₂_of_isCharTwoJEqZeroNF]
     linear_combination ht - (t ^ 2 + E.a₃ * t) * CharP.cast_eq_zero F 2
 
-private lemma exists_variableChange_of_char_two [DecidableEq F] (heq : E.j = E'.j) :
+private lemma exists_variableChange_of_char_two (heq : E.j = E'.j) :
     ∃ C : WeierstrassCurve.VariableChange F, E.variableChange C = E' := by
   obtain ⟨C, _ | _⟩ := E.exists_variableChange_isCharTwoNF
   · obtain ⟨C', _ | _⟩ := E'.exists_variableChange_isCharTwoNF
@@ -336,7 +336,7 @@ end CharNeTwoOrThree
 /-- If there are two elliptic curves with the same `j`-invariants defined over a
 separably closed field, then there exists a change of variables over that field which change
 one curve into another. -/
-theorem exists_variableChange_of_j_eq [DecidableEq F] (heq : E.j = E'.j) :
+theorem exists_variableChange_of_j_eq (heq : E.j = E'.j) :
     ∃ C : WeierstrassCurve.VariableChange F, E.variableChange C = E' := by
   obtain ⟨p, _⟩ := CharP.exists F
   by_cases hchar2 : p = 2
