@@ -3,8 +3,8 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Data.Set.MulAntidiagonal
 
 /-! # Multiplication antidiagonal as a `Finset`.

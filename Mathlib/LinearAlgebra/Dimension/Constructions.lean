@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Scott Morrison, Chris Hughes, Anne Baanen
+Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison, Chris Hughes, Anne Baanen
 -/
 import Mathlib.LinearAlgebra.Dimension.Free
 import Mathlib.Algebra.Module.Torsion
@@ -35,7 +35,7 @@ universe u v v' u₁' w w'
 variable {R S : Type u} {M : Type v} {M' : Type v'} {M₁ : Type v}
 variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
 
-open Cardinal Basis Submodule Function Set FiniteDimensional DirectSum
+open Basis Cardinal DirectSum Function Module Set Submodule
 
 variable [Ring R] [CommRing S] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁]
 variable [Module R M]
@@ -70,7 +70,7 @@ theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
   refine ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦ ?_
   choose f hf using Quotient.mk_surjective M'
   simpa [add_comm] using (LinearIndependent.sum_elim_of_quotient ht (fun (i : s) ↦ f i)
-    (by simpa [Function.comp, hf] using hs)).cardinal_le_rank
+    (by simpa [Function.comp_def, hf] using hs)).cardinal_le_rank
 
 theorem rank_quotient_le (p : Submodule R M) : Module.rank R (M ⧸ p) ≤ Module.rank R M :=
   (mkQ p).rank_le_of_surjective (surjective_quot_mk _)
@@ -142,7 +142,7 @@ theorem rank_prod' : Module.rank R (M × M₁) = Module.rank R M + Module.rank R
 
 /-- The finrank of `M × M'` is `(finrank R M) + (finrank R M')`. -/
 @[simp]
-theorem FiniteDimensional.finrank_prod [Module.Finite R M] [Module.Finite R M'] :
+theorem Module.finrank_prod [Module.Finite R M] [Module.Finite R M'] :
     finrank R (M × M') = finrank R M + finrank R M' := by
   simp [finrank, rank_lt_aleph0 R M, rank_lt_aleph0 R M']
 
@@ -209,7 +209,7 @@ theorem rank_matrix'' (m n : Type u) [Finite m] [Finite n] :
 
 open Fintype
 
-namespace FiniteDimensional
+namespace Module
 
 @[simp]
 theorem finrank_finsupp {ι : Type v} [Fintype ι] : finrank R (ι →₀ M) = card ι * finrank R M := by
@@ -234,7 +234,7 @@ theorem finrank_directSum {ι : Type v} [Fintype ι] (M : ι → Type w) [∀ i 
 theorem finrank_matrix (m n : Type*) [Fintype m] [Fintype n] :
     finrank R (Matrix m n R) = card m * card n := by simp [finrank]
 
-end FiniteDimensional
+end Module
 
 end Finsupp
 
@@ -260,13 +260,13 @@ theorem rank_pi [Finite η] : Module.rank R (∀ i, φ i) =
 variable (R)
 
 /-- The finrank of `(ι → R)` is `Fintype.card ι`. -/
-theorem FiniteDimensional.finrank_pi {ι : Type v} [Fintype ι] :
+theorem Module.finrank_pi {ι : Type v} [Fintype ι] :
     finrank R (ι → R) = Fintype.card ι := by
   simp [finrank]
 
 --TODO: this should follow from `LinearEquiv.finrank_eq`, that is over a field.
 /-- The finrank of a finite product is the sum of the finranks. -/
-theorem FiniteDimensional.finrank_pi_fintype
+theorem Module.finrank_pi_fintype
     {ι : Type v} [Fintype ι] {M : ι → Type w} [∀ i : ι, AddCommGroup (M i)]
     [∀ i : ι, Module R (M i)] [∀ i : ι, Module.Free R (M i)] [∀ i : ι, Module.Finite R (M i)] :
     finrank R (∀ i, M i) = ∑ i, finrank R (M i) := by
@@ -294,12 +294,12 @@ variable (R)
 
 /-- The vector space of functions on a `Fintype ι` has finrank equal to the cardinality of `ι`. -/
 @[simp]
-theorem FiniteDimensional.finrank_fintype_fun_eq_card : finrank R (η → R) = Fintype.card η :=
+theorem Module.finrank_fintype_fun_eq_card : finrank R (η → R) = Fintype.card η :=
   finrank_eq_of_rank_eq rank_fun'
 
 /-- The vector space of functions on `Fin n` has finrank equal to `n`. -/
 -- @[simp] -- Porting note (#10618): simp already proves this
-theorem FiniteDimensional.finrank_fin_fun {n : ℕ} : finrank R (Fin n → R) = n := by simp
+theorem Module.finrank_fin_fun {n : ℕ} : finrank R (Fin n → R) = n := by simp
 
 variable {R}
 
@@ -343,7 +343,7 @@ theorem rank_tensorProduct' :
 
 /-- The `S`-finrank of `M ⊗[R] M'` is `(finrank S M) * (finrank R M')`. -/
 @[simp]
-theorem FiniteDimensional.finrank_tensorProduct :
+theorem Module.finrank_tensorProduct :
     finrank R (M ⊗[S] M') = finrank R M * finrank S M' := by simp [finrank]
 
 end TensorProduct
@@ -352,7 +352,7 @@ section SubmoduleRank
 
 section
 
-open FiniteDimensional
+open Module
 
 namespace Submodule
 
@@ -372,7 +372,7 @@ variable [StrongRankCondition R]
 /-- The dimension of a submodule is bounded by the dimension of the ambient space. -/
 theorem Submodule.finrank_le [Module.Finite R M] (s : Submodule R M) :
     finrank R s ≤ finrank R M :=
-  toNat_le_toNat (rank_submodule_le s) (rank_lt_aleph0 _ _)
+  toNat_le_toNat (Submodule.rank_le s) (rank_lt_aleph0 _ _)
 
 /-- The dimension of a quotient is bounded by the dimension of the ambient space. -/
 theorem Submodule.finrank_quotient_le [Module.Finite R M] (s : Submodule R M) :
@@ -386,12 +386,12 @@ theorem Submodule.finrank_map_le
     finrank R (p.map f) ≤ finrank R p :=
   finrank_le_finrank_of_rank_le_rank (lift_rank_map_le _ _) (rank_lt_aleph0 _ _)
 
-theorem Submodule.finrank_le_finrank_of_le {s t : Submodule R M} [Module.Finite R t] (hst : s ≤ t) :
+theorem Submodule.finrank_mono {s t : Submodule R M} [Module.Finite R t] (hst : s ≤ t) :
     finrank R s ≤ finrank R t :=
-  calc
-    finrank R s = finrank R (s.comap t.subtype) :=
-      (Submodule.comapSubtypeEquivOfLe hst).finrank_eq.symm
-    _ ≤ finrank R t := Submodule.finrank_le _
+  Cardinal.toNat_le_toNat (Submodule.rank_mono hst) (rank_lt_aleph0 R ↥t)
+
+@[deprecated (since := "2024-09-30")]
+alias Submodule.finrank_le_finrank_of_le := Submodule.finrank_mono
 
 end
 
@@ -402,7 +402,7 @@ section Span
 variable [StrongRankCondition R]
 
 theorem rank_span_le (s : Set M) : Module.rank R (span R s) ≤ #s := by
-  rw [Finsupp.span_eq_range_total, ← lift_strictMono.le_iff_le]
+  rw [Finsupp.span_eq_range_linearCombination, ← lift_strictMono.le_iff_le]
   refine (lift_rank_range_le _).trans ?_
   rw [rank_finsupp_self]
   simp only [lift_lift, le_refl]
@@ -413,7 +413,7 @@ theorem rank_span_finset_le (s : Finset M) : Module.rank R (span R (s : Set M)) 
 theorem rank_span_of_finset (s : Finset M) : Module.rank R (span R (s : Set M)) < ℵ₀ :=
   (rank_span_finset_le s).trans_lt (Cardinal.nat_lt_aleph0 _)
 
-open Submodule FiniteDimensional
+open Submodule Module
 
 variable (R)
 

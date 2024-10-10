@@ -86,7 +86,7 @@ In other words, the terms with exponent `[0, ..., N]` now have exponent `[N, ...
 
 In practice, `reflect` is only used when `N` is at least as large as the degree of `f`.
 
-Eventually, it will be used with `N` exactly equal to the degree of `f`.  -/
+Eventually, it will be used with `N` exactly equal to the degree of `f`. -/
 noncomputable def reflect (N : ℕ) : R[X] → R[X]
   | ⟨f⟩ => ⟨Finsupp.embDomain (revAt N) f⟩
 

@@ -26,7 +26,7 @@ We define the flip functor, and two equivalences with
 the category `Arrow (Arrow C)`, depending on whether
 we consider a commutative square as a horizontal
 morphism between two vertical maps (`arrowArrowEquivalence`)
-or a vertical morphism betwen two horizontal
+or a vertical morphism between two horizontal
 maps (`arrowArrowEquivalence'`).
 
 -/

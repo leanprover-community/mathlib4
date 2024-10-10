@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Scott Morrison
+Authors: Johan Commelin, Kim Morrison
 -/
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.LinearAlgebra.AffineSpace.Independent
@@ -79,13 +79,13 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
     · have hge : 0 < g e := by
         rw [mem_filter] at hes
         exact hes.2
-      rw [← le_div_iff hge]
+      rw [← le_div_iff₀ hge]
       exact w _ hes
     · calc
         _ ≤ 0 := by
           apply mul_nonpos_of_nonneg_of_nonpos
           · apply div_nonneg (fpos i₀ (mem_of_subset (filter_subset _ t) mem)) (le_of_lt hg)
-          · simpa only [s, mem_filter, het, true_and_iff, not_lt] using hes
+          · simpa only [s, mem_filter, het, true_and, not_lt] using hes
         _ ≤ f e := fpos e het
   · rw [Subtype.coe_mk, centerMass_eq_of_sum_1 _ id ksum]
     calc
@@ -133,7 +133,7 @@ theorem affineIndependent_minCardFinsetOfMemConvexHull :
     (minCardFinsetOfMemConvexHull_subseteq hx)) hp
   rw [← not_lt] at contra
   apply contra
-  erw [card_erase_of_mem p.2, hk]
+  rw [card_erase_of_mem p.2, hk]
   exact lt_add_one _
 
 end Caratheodory
@@ -172,7 +172,7 @@ theorem eq_pos_convex_span_of_mem_convexHull {x : E} (hx : x ∈ convexHull 𝕜
       (hw₁ _ (Finset.mem_filter.mp i.2).1).lt_of_ne (Finset.mem_filter.mp i.property).2.symm
   · erw [Finset.sum_attach, Finset.sum_filter_ne_zero, hw₂]
   · change (∑ i ∈ t'.attach, (fun e => w e • e) ↑i) = x
-    erw [Finset.sum_attach (f := fun e => w e • e), Finset.sum_filter_of_ne]
+    rw [Finset.sum_attach (f := fun e => w e • e), Finset.sum_filter_of_ne]
     · rw [t.centerMass_eq_of_sum_1 id hw₂] at hw₃
       exact hw₃
     · intro e _ hwe contra

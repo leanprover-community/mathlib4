@@ -3,6 +3,7 @@ Copyright (c) 2023 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
+import Mathlib.Order.ScottContinuity
 import Mathlib.Topology.Order.UpperLowerSetTopology
 
 /-!
@@ -106,7 +107,7 @@ lemma dirSupClosed_Iic (a : α) : DirSupClosed (Iic a) := fun _d _ _ _a ha ↦ (
 end Preorder
 
 section CompleteLattice
-variable [CompleteLattice α] {s t : Set α}
+variable [CompleteLattice α] {s : Set α}
 
 lemma dirSupInacc_iff_forall_sSup :
     DirSupInacc s ↔ ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → sSup d ∈ s → (d ∩ s).Nonempty := by
@@ -123,7 +124,7 @@ namespace Topology
 /-! ### Scott-Hausdorff topology -/
 
 section ScottHausdorff
-variable [Preorder α] {s : Set α}
+variable [Preorder α]
 
 /-- The Scott-Hausdorff topology.
 
@@ -163,7 +164,7 @@ variable {α}
 
 lemma isOpen_iff :
     IsOpen s ↔ ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
-      a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by erw [topology_eq_scottHausdorff (α := α)]; rfl
+      a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by rw [topology_eq_scottHausdorff (α := α)]; rfl
 
 lemma dirSupInacc_of_isOpen (h : IsOpen s) : DirSupInacc s :=
   fun d hd₁ hd₂ a hda hd₃ ↦ by
@@ -224,7 +225,7 @@ lemma topology_eq : ‹_› = scott α := topology_eq_scott
 variable {α} {s : Set α} {a : α}
 
 lemma isOpen_iff_isUpperSet_and_scottHausdorff_open :
-    IsOpen s ↔ IsUpperSet s ∧ IsOpen[scottHausdorff α] s := by erw [topology_eq α]; rfl
+    IsOpen s ↔ IsUpperSet s ∧ IsOpen[scottHausdorff α] s := by rw [topology_eq α]; rfl
 
 lemma isOpen_iff_isUpperSet_and_dirSupInacc : IsOpen s ↔ IsUpperSet s ∧ DirSupInacc s := by
   rw [isOpen_iff_isUpperSet_and_scottHausdorff_open]
@@ -333,7 +334,18 @@ lemma scott_eq_upper_of_completeLinearOrder : scott α = upper α := by
   letI := scott α
   rw [@isOpen_iff_Iic_compl_or_univ _ _ (scott α) ({ topology_eq_scott := rfl }) U]
 
+/- The upper topology on a complete linear order is the Scott topology -/
+instance [TopologicalSpace α] [IsUpper α] : IsScott α where
+  topology_eq_scott := by
+    rw [scott_eq_upper_of_completeLinearOrder]
+    exact IsUpper.topology_eq α
+
 end CompleteLinearOrder
+
+lemma isOpen_iff_scottContinuous_mem [Preorder α] {s : Set α} [TopologicalSpace α] [IsScott α] :
+    IsOpen s ↔ ScottContinuous fun x ↦ x ∈ s := by
+  rw [scottContinuous_iff_continuous]
+  exact isOpen_iff_continuous_mem
 
 end IsScott
 

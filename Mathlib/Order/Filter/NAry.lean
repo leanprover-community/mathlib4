@@ -29,8 +29,8 @@ open Filter
 namespace Filter
 
 variable {α α' β β' γ γ' δ δ' ε ε' : Type*} {m : α → β → γ} {f f₁ f₂ : Filter α}
-  {g g₁ g₂ : Filter β} {h h₁ h₂ : Filter γ} {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {u : Set γ}
-  {v : Set δ} {a : α} {b : β} {c : γ}
+  {g g₁ g₂ : Filter β} {h : Filter γ} {s : Set α} {t : Set β} {u : Set γ}
+  {a : α} {b : β}
 
 /-- The image of a binary function `m : α → β → γ` as a function `Filter α → Filter β → Filter γ`.
 Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
@@ -51,7 +51,7 @@ theorem map_prod_eq_map₂ (m : α → β → γ) (f : Filter α) (g : Filter β
 
 theorem map_prod_eq_map₂' (m : α × β → γ) (f : Filter α) (g : Filter β) :
     Filter.map m (f ×ˢ g) = map₂ (fun a b => m (a, b)) f g :=
-  map_prod_eq_map₂ (curry m) f g
+  map_prod_eq_map₂ m.curry f g
 
 @[simp]
 theorem map₂_mk_eq_prod (f : Filter α) (g : Filter β) : map₂ Prod.mk f g = f ×ˢ g := by
@@ -145,7 +145,7 @@ theorem map₂_map_right (m : α → γ → δ) (n : β → γ) :
 
 @[simp]
 theorem map₂_curry (m : α × β → γ) (f : Filter α) (g : Filter β) :
-    map₂ (curry m) f g = (f ×ˢ g).map m :=
+    map₂ m.curry f g = (f ×ˢ g).map m :=
   (map_prod_eq_map₂' _ _ _).symm
 
 @[simp]
@@ -168,7 +168,7 @@ theorem map₂_assoc {m : δ → γ → ε} {n : α → β → δ} {m' : α → 
     map₂ m (map₂ n f g) h = map₂ m' f (map₂ n' g h) := by
   rw [← map_prod_eq_map₂ n, ← map_prod_eq_map₂ n', map₂_map_left, map₂_map_right,
     ← map_prod_eq_map₂, ← map_prod_eq_map₂, ← prod_assoc, map_map]
-  simp only [h_assoc, Function.comp, Equiv.prodAssoc_apply]
+  simp only [h_assoc, Function.comp_def, Equiv.prodAssoc_apply]
 
 theorem map₂_comm {n : β → α → γ} (h_comm : ∀ a b, m a b = n b a) : map₂ m f g = map₂ n g f :=
   (map₂_swap _ _ _).trans <| by simp_rw [h_comm]

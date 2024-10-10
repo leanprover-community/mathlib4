@@ -116,7 +116,7 @@ theorem hermite_monic (n : ℕ) : (hermite n).Monic :=
   leadingCoeff_hermite n
 
 theorem coeff_hermite_of_odd_add {n k : ℕ} (hnk : Odd (n + k)) : coeff (hermite n) k = 0 := by
-  induction n  generalizing k with
+  induction n generalizing k with
   | zero =>
     rw [zero_add k] at hnk
     exact coeff_hermite_of_lt hnk.pos

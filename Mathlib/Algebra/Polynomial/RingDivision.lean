@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker, Johan Commelin
+Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker, Johan Commelin
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.BigOperators
@@ -26,6 +26,26 @@ namespace Polynomial
 universe u v w z
 
 variable {R : Type u} {S : Type v} {T : Type w} {a b : R} {n : ℕ}
+
+section Semiring
+
+variable [Semiring R] {p q : R[X]}
+
+theorem Monic.comp (hp : p.Monic) (hq : q.Monic) (h : q.natDegree ≠ 0) : (p.comp q).Monic := by
+  nontriviality R
+  have : (p.comp q).natDegree = p.natDegree * q.natDegree := by
+    apply natDegree_comp_eq_of_mul_ne_zero
+    simp [hp.leadingCoeff, hq.leadingCoeff]
+  rw [Monic.def, Polynomial.leadingCoeff, this, coeff_comp_degree_mul_degree h, hp.leadingCoeff,
+    hq.leadingCoeff, one_pow, mul_one]
+
+theorem Monic.comp_X_add_C (hp : p.Monic) (r : R) : (p.comp (X + C r)).Monic := by
+  nontriviality R
+  refine hp.comp (monic_X_add_C _) fun ha => ?_
+  rw [natDegree_X_add_C] at ha
+  exact one_ne_zero ha
+
+end Semiring
 
 section CommRing
 
@@ -209,8 +229,6 @@ theorem not_isUnit_of_degree_pos (p : R[X])
 theorem not_isUnit_of_natDegree_pos (p : R[X])
     (hpl : 0 < p.natDegree) : ¬ IsUnit p :=
   not_isUnit_of_degree_pos _ (natDegree_pos_iff_degree_pos.mp hpl)
-
-variable [CharZero R]
 
 end NoZeroDivisors
 
@@ -527,6 +545,29 @@ theorem rootMultiplicity_mul' {p q : R[X]} {x : R}
   simp_rw [eval_divByMonic_eq_trailingCoeff_comp] at hpq
   simp_rw [rootMultiplicity_eq_natTrailingDegree, mul_comp, natTrailingDegree_mul' hpq]
 
+theorem Monic.comp_X_sub_C {p : R[X]} (hp : p.Monic) (r : R) : (p.comp (X - C r)).Monic := by
+  simpa using hp.comp_X_add_C (-r)
+
+@[simp]
+theorem comp_neg_X_leadingCoeff_eq (p : R[X]) :
+    (p.comp (-X)).leadingCoeff = (-1) ^ p.natDegree * p.leadingCoeff := by
+  nontriviality R
+  by_cases h : p = 0
+  · simp [h]
+  rw [Polynomial.leadingCoeff, natDegree_comp_eq_of_mul_ne_zero, coeff_comp_degree_mul_degree] <;>
+  simp [mul_comm, h]
+
+theorem Monic.neg_one_pow_natDegree_mul_comp_neg_X {p : R[X]} (hp : p.Monic) :
+    ((-1) ^ p.natDegree * p.comp (-X)).Monic := by
+  simp only [Monic]
+  calc
+    ((-1) ^ p.natDegree * p.comp (-X)).leadingCoeff =
+        (p.comp (-X) * C ((-1) ^ p.natDegree)).leadingCoeff := by
+      simp [mul_comm]
+    _ = 1 := by
+      apply monic_mul_C_of_leadingCoeff_mul_eq_one
+      simp [← pow_add, hp]
+
 variable [IsDomain R] {p q : R[X]}
 
 @[simp]
@@ -653,17 +694,6 @@ theorem natDegree_multiset_prod_X_sub_C_eq_card (s : Multiset R) :
   · simp only [(· ∘ ·), natDegree_X_sub_C, Multiset.map_const', Multiset.sum_replicate, smul_eq_mul,
       mul_one]
   · exact Multiset.forall_mem_map_iff.2 fun a _ => monic_X_sub_C a
-
-theorem Monic.comp (hp : p.Monic) (hq : q.Monic) (h : q.natDegree ≠ 0) : (p.comp q).Monic := by
-  rw [Monic.def, leadingCoeff_comp h, Monic.def.1 hp, Monic.def.1 hq, one_pow, one_mul]
-
-theorem Monic.comp_X_add_C (hp : p.Monic) (r : R) : (p.comp (X + C r)).Monic := by
-  refine hp.comp (monic_X_add_C _) fun ha => ?_
-  rw [natDegree_X_add_C] at ha
-  exact one_ne_zero ha
-
-theorem Monic.comp_X_sub_C (hp : p.Monic) (r : R) : (p.comp (X - C r)).Monic := by
-  simpa using hp.comp_X_add_C (-r)
 
 theorem units_coeff_zero_smul (c : R[X]ˣ) (p : R[X]) : (c : R[X]).coeff 0 • p = c * p := by
   rw [← Polynomial.C_mul', ← Polynomial.eq_C_of_degree_eq_zero (degree_coe_units c)]

@@ -58,7 +58,7 @@ theorem bind_pure_comp : bind p (pure ∘ f) = map f p := rfl
 theorem map_id : map id p = p :=
   bind_pure _
 
-theorem map_comp (g : β → γ) : (p.map f).map g = p.map (g ∘ f) := by simp [map, Function.comp]
+theorem map_comp (g : β → γ) : (p.map f).map g = p.map (g ∘ f) := by simp [map, Function.comp_def]
 
 theorem pure_map (a : α) : (pure a).map f = pure (f a) :=
   pure_bind _ _
@@ -72,7 +72,7 @@ theorem bind_map (p : PMF α) (f : α → β) (q : β → PMF γ) : (p.map f).bi
 
 @[simp]
 theorem map_const : p.map (Function.const α b) = pure b := by
-  simp only [map, Function.comp, bind_const, Function.const]
+  simp only [map, Function.comp_def, bind_const, Function.const]
 
 section Measure
 
@@ -247,7 +247,7 @@ theorem support_filter : (p.filter s h).support = s ∩ p.support :=
   Set.ext fun _ => mem_support_filter_iff _
 
 theorem filter_apply_eq_zero_iff (a : α) : (p.filter s h) a = 0 ↔ a ∉ s ∨ a ∉ p.support := by
-  erw [apply_eq_zero_iff, support_filter, Set.mem_inter_iff, not_and_or]
+  rw [apply_eq_zero_iff, support_filter, Set.mem_inter_iff, not_and_or]
 
 theorem filter_apply_ne_zero_iff (a : α) : (p.filter s h) a ≠ 0 ↔ a ∈ s ∧ a ∈ p.support := by
   rw [Ne, filter_apply_eq_zero_iff, not_or, Classical.not_not, Classical.not_not]

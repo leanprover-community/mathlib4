@@ -5,7 +5,7 @@ Authors: Robert Y. Lewis
 -/
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.NumberTheory.Padics.PadicNorm
-import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Tactic.Peel
 import Mathlib.Topology.MetricSpace.Ultra.Basic
 
@@ -635,10 +635,10 @@ theorem exi_rat_seq_conv {ε : ℚ} (hε : 0 < ε) :
     ∃ N, ∀ i ≥ N, padicNormE (f i - (limSeq f i : ℚ_[p]) : ℚ_[p]) < ε := by
   refine (exists_nat_gt (1 / ε)).imp fun N hN i hi ↦ ?_
   have h := Classical.choose_spec (rat_dense' (f i) (div_nat_pos i))
-  refine lt_of_lt_of_le h ((div_le_iff' <| mod_cast succ_pos _).mpr ?_)
+  refine lt_of_lt_of_le h ((div_le_iff₀' <| mod_cast succ_pos _).mpr ?_)
   rw [right_distrib]
   apply le_add_of_le_of_nonneg
-  · exact (div_le_iff hε).mp (le_trans (le_of_lt hN) (mod_cast hi))
+  · exact (div_le_iff₀ hε).mp (le_trans (le_of_lt hN) (mod_cast hi))
   · apply le_of_lt
     simpa
 
@@ -779,8 +779,7 @@ theorem norm_p : ‖(p : ℚ_[p])‖ = (p : ℝ)⁻¹ := by
 
 theorem norm_p_lt_one : ‖(p : ℚ_[p])‖ < 1 := by
   rw [norm_p]
-  apply inv_lt_one
-  exact mod_cast hp.1.one_lt
+  exact inv_lt_one_of_one_lt₀ <| mod_cast hp.1.one_lt
 
 -- Porting note: Linter thinks this is a duplicate simp lemma, so `priority` is assigned
 @[simp (high)]
@@ -833,7 +832,7 @@ theorem norm_rat_le_one : ∀ {q : ℚ} (_ : ¬p ∣ q.den), ‖(q : ℚ_[p])‖
       -- Porting note: `Nat.cast_zero` instead of another `norm_cast` call
       rw [padicNorm.eq_zpow_of_nonzero hnz', padicValRat, neg_sub,
         padicValNat.eq_zero_of_not_dvd hq, Nat.cast_zero, zero_sub, zpow_neg, zpow_natCast]
-      apply inv_le_one
+      apply inv_le_one_of_one_le₀
       norm_cast
       apply one_le_pow
       exact hp.1.pos
@@ -860,8 +859,7 @@ theorem norm_int_lt_one_iff_dvd (k : ℤ) : ‖(k : ℚ_[p])‖ < 1 ↔ ↑p ∣
         mul_le_mul le_rfl (by simpa using norm_int_le_one _) (norm_nonneg _) (norm_nonneg _)
       _ < 1 := by
         rw [mul_one, padicNormE.norm_p]
-        apply inv_lt_one
-        exact mod_cast hp.1.one_lt
+        exact inv_lt_one_of_one_lt₀ <| mod_cast hp.1.one_lt
 
 theorem norm_int_le_pow_iff_dvd (k : ℤ) (n : ℕ) :
     ‖(k : ℚ_[p])‖ ≤ (p : ℝ) ^ (-n : ℤ) ↔ (p ^ n : ℤ) ∣ k := by
