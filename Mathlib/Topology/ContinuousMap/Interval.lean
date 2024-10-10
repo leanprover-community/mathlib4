@@ -20,21 +20,27 @@ namespace ContinuousMap
 variable {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderTopology α] {a b c : α}
 variable {E F : Type*} [TopologicalSpace E] [TopologicalSpace F]
 
+/-- The embedding into an interval from a sub-interval lying on the left, as a `ContinuousMap`. -/
 def subinterval_left (h : b ∈ Icc a c) : C(Icc a b, Icc a c) where
   toFun x := ⟨x, x.2.1, x.2.2.trans h.2⟩
 
+/-- The embedding into an interval from a sub-interval lying on the right, as a `ContinuousMap`. -/
 def subinterval_right (h : b ∈ Icc a c) : C(Icc b c, Icc a c) where
   toFun x := ⟨x, h.1.trans x.2.1, x.2.2⟩
 
+/-- The value of a `ContinuousMap` defined on an interval at the left extremity of the interval. -/
 def leftval (hab : a ≤ b) (f : C(Icc a b, E)) : E :=
   f ⟨a, le_rfl, hab⟩
 
+/-- The value of a `ContinuousMap` defined on an interval at the right extremity of the interval. -/
 def rightval (hbc : b ≤ c) (f : C(Icc b c, E)) : E :=
   f ⟨c, hbc, le_rfl⟩
 
+/-- The map `leftval` as a `ContinuousMap`. -/
 def leftvalCM (hab : a ≤ b) : C(C(Icc a b, E), E) :=
   ⟨leftval hab, continuous_eval_const _⟩
 
+/-- The map `rightval` as a `ContinuousMap`. -/
 def rightvalCM (hbc : b ≤ c) : C(C(Icc b c, E), E) :=
   ⟨rightval hbc, continuous_eval_const _⟩
 
@@ -50,9 +56,12 @@ theorem lastval_comp {hab : a ≤ b} {γ : C(Icc a b, E)} {f : C(E, F)} :
     rightval hab (f.comp γ) = f (rightval hab γ) :=
   rfl
 
+/-- The map `projIcc` from `α` onto an interval in `α`, as a `ContinuousMap`. -/
 def projIccCM (hab : a ≤ b) : C(α, Icc a b) :=
   ⟨projIcc a b hab, continuous_projIcc⟩
 
+/-- The extension operation from continuous maps on an interval to continuous maps on the whole
+  type, as a `ContinuousMap`. -/
 def IccExtendCM (hab : a ≤ b) : C(C(Icc a b, E), C(α, E)) where
   toFun f := f.comp (projIccCM hab)
   continuous_toFun := continuous_comp_left _
@@ -62,6 +71,9 @@ theorem IccExtendCM_of_mem {hab : a ≤ b} {f : C(Icc a b, E)} {x : α} (hx : x 
     IccExtendCM hab f x = f ⟨x, hx⟩ := by
   simp [IccExtendCM, projIccCM, projIcc, hx.1, hx.2]
 
+/-- The concatenation of two continuous maps defined on adjacent intervals. If the values of the
+  functions on the common bound do not agree, this is defined as an arbitrarily chosen constant
+  map. See `transCM` for the corresponding map on the subtype of compatible function pairs. -/
 noncomputable def trans (h : b ∈ Icc a c) (f : C(Icc a b, E)) (g : C(Icc b c, E)) :
     C(Icc a c, E) := by
   by_cases hb : rightval h.1 f = leftval h.2 g
@@ -124,8 +136,10 @@ theorem tendsto_trans (h : b ∈ Icc a c) (hfg : ∀ᶠ i in p, rightval h.1 (F 
   · simpa [trans_left h hfg hxb] using hf hx
   · simpa [trans_right h hfg (lt_of_not_le hxb |>.le)] using hg hx
 
+/-- The concatenation of compatible pairs of continuous maps on adjacent intrevals, defined as a
+  `ContinuousMap` on a subtype of the product. -/
 noncomputable def transCM (h : b ∈ Icc a c) :
-    C({f : C(Icc a b, E) × C(Icc b c, E) // rightval h.1 f.1 = leftval h.2 f.2}, C(Icc a c, E))
+    C({fg : C(Icc a b, E) × C(Icc b c, E) // rightval h.1 fg.1 = leftval h.2 fg.2}, C(Icc a c, E))
     where
   toFun fg := trans h fg.val.1 fg.val.2
   continuous_toFun := by
