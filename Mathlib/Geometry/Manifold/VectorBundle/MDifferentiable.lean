@@ -14,6 +14,40 @@ open scoped Manifold Bundle Topology
 section
 
 
+variable {𝕜 B B' F M : Type*} {E : B → Type*}
+
+variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)] {EB : Type*}
+  [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type*} [TopologicalSpace HB]
+  (IB : ModelWithCorners 𝕜 EB HB) (E' : B → Type*) [∀ x, Zero (E' x)] {EM : Type*}
+  [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM]
+  {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
+  {n : ℕ∞}
+
+
+variable [TopologicalSpace B] [ChartedSpace HB B] [FiberBundle F E]
+
+
+/-- Characterization of C^n functions into a smooth vector bundle. -/
+theorem mdifferentiableWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M} {x₀ : M} :
+    MDifferentiableWithinAt IM (IB.prod 𝓘(𝕜, F)) f s x₀ ↔
+      MDifferentiableWithinAt IM IB (fun x => (f x).proj) s x₀ ∧
+      MDifferentiableWithinAt IM 𝓘(𝕜, F) (fun x ↦ (trivializationAt F E (f x₀).proj (f x)).2) s x₀ := by
+  simp (config := { singlePass := true }) only [contMDiffWithinAt_iff_target]
+  rw [and_and_and_comm, ← FiberBundle.continuousWithinAt_totalSpace, and_congr_right_iff]
+  intro hf
+  simp_rw [modelWithCornersSelf_prod, FiberBundle.extChartAt, Function.comp_def,
+    PartialEquiv.trans_apply, PartialEquiv.prod_coe, PartialEquiv.refl_coe,
+    extChartAt_self_apply, modelWithCornersSelf_coe, Function.id_def, ← chartedSpaceSelf_prod]
+  refine (contMDiffWithinAt_prod_iff _).trans (and_congr ?_ Iff.rfl)
+  have h1 : (fun x => (f x).proj) ⁻¹' (trivializationAt F E (f x₀).proj).baseSet ∈ 𝓝[s] x₀ :=
+    ((FiberBundle.continuous_proj F E).continuousWithinAt.comp hf (mapsTo_image f s))
+      ((Trivialization.open_baseSet _).mem_nhds (mem_baseSet_trivializationAt F E _))
+  refine EventuallyEq.contMDiffWithinAt_iff (eventually_of_mem h1 fun x hx => ?_) ?_
+  · simp_rw [Function.comp, PartialHomeomorph.coe_coe, Trivialization.coe_coe]
+    rw [Trivialization.coe_fst']
+    exact hx
+  · simp only [mfld_simps]
 
 end
 

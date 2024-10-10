@@ -128,7 +128,7 @@ def DifferentiableWithinAtProp (f : H → H') (s : Set H) (x : H) : Prop :=
 
 /-- Being differentiable in the model space is a local property, invariant under smooth maps.
 Therefore, it will lift nicely to manifolds. -/
-theorem differentiable_within_at_localInvariantProp :
+theorem differentiableWithinAt_localInvariantProp :
     (contDiffGroupoid ⊤ I).LocalInvariantProp (contDiffGroupoid ⊤ I')
       (DifferentiableWithinAtProp I I') :=
   { is_local := by

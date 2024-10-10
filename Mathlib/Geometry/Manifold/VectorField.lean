@@ -632,6 +632,75 @@ open ContinuousLinearMap
 /-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
 Version within a set at a point. -/
 protected lemma ContMDiffWithinAt.mpullbackWithin [CompleteSpace E]
+    (hV : MDifferentiableWithinAt I' I'.tangent
+      (fun (y : M') ↦ (V y : TangentBundle I' M')) t (f x₀))
+    (hf : ContMDiffWithinAt I I' n f s x₀) (hf' : (mfderivWithin I I' f s x₀).IsInvertible)
+    (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) (hmn : 2 ≤ n) :
+    MDifferentiableWithinAt I I.tangent
+      (fun (y : M) ↦ (mpullbackWithin I I' f V s y : TangentBundle I M)) (s ∩ f ⁻¹' t) x₀ := by
+  /- We want to apply the general theorem `ContMDiffWithinAt.clm_apply_of_inCoordinates`, stating
+  that applying linear maps to vector fields gives a smooth result when the linear map and the
+  vector field are smooth. This theorem is general, we will apply it to
+  `b₁ = f`, `b₂ = id`, `v = V ∘ f`, `ϕ = fun x ↦ (mfderivWithin I I' f s x).inverse`-/
+  let b₁ := f
+  let b₂ : M → M := id
+  let v : Π (x : M), TangentSpace I' (f x) := V ∘ f
+  let ϕ : Π (x : M), TangentSpace I' (f x) →L[𝕜] TangentSpace I x :=
+    fun x ↦ (mfderivWithin I I' f s x).inverse
+  have hv : MDifferentiableWithinAt I I'.tangent
+      (fun x ↦ (v x : TangentBundle I' M')) (s ∩ f ⁻¹' t) x₀ := by
+    apply hV.comp x₀ ((hf.mdifferentiableWithinAt (one_le_two.trans hmn)).mono inter_subset_left)
+    exact MapsTo.mono_left (mapsTo_preimage _ _) inter_subset_right
+  /- The only nontrivial fact, from which the conclusion follows, is
+  that `ϕ` depends smoothly on `x`. -/
+  suffices hϕ : ContMDiffWithinAt I 𝓘(𝕜, E' →L[𝕜] E) 1
+      (fun (x : M) ↦ ContinuousLinearMap.inCoordinates
+        E' (TangentSpace I' (M := M')) E (TangentSpace I (M := M))
+        (b₁ x₀) (b₁ x) (b₂ x₀) (b₂ x) (ϕ x)) s x₀ from
+    ContMDiffWithinAt.clm_apply_of_inCoordinates (hϕ.mono inter_subset_left) hv contMDiffWithinAt_id
+  /- To prove that `ϕ` depends smoothly on `x`, we use that the derivative depends smoothly on `x`
+  (this is `ContMDiffWithinAt.mfderivWithin_const`), and that taking the inverse is a smooth
+  operation at an invertible map. -/
+  -- the derivative in coordinates depends smoothly on the point
+  have : ContMDiffWithinAt I 𝓘(𝕜, E →L[𝕜] E') m
+      (fun (x : M) ↦ ContinuousLinearMap.inCoordinates
+        E (TangentSpace I (M := M)) E' (TangentSpace I' (M := M'))
+        x₀ x (f x₀) (f x) (mfderivWithin I I' f s x)) s x₀ :=
+    hf.mfderivWithin_const hmn hx₀ hs
+  -- therefore, its inverse in coordinates also depends smoothly on the point
+  have : ContMDiffWithinAt I 𝓘(𝕜, E' →L[𝕜] E) m
+      (ContinuousLinearMap.inverse ∘ (fun (x : M) ↦ ContinuousLinearMap.inCoordinates
+        E (TangentSpace I (M := M)) E' (TangentSpace I' (M := M'))
+        x₀ x (f x₀) (f x) (mfderivWithin I I' f s x))) s x₀ := by
+    apply ContMDiffAt.comp_contMDiffWithinAt _ _ this
+    apply ContDiffAt.contMDiffAt
+    apply IsInvertible.contDiffAt_map_inverse
+    rw [inCoordinates_eq (FiberBundle.mem_baseSet_trivializationAt' x₀)
+      (FiberBundle.mem_baseSet_trivializationAt' (f x₀))]
+    exact isInvertible_equiv.comp (hf'.comp isInvertible_equiv)
+  -- the inverse in coordinates coincides with the in-coordinate version of the inverse,
+  -- therefore the previous point gives the conclusion
+  apply this.congr_of_eventuallyEq_of_mem _ hx₀
+  have A : (trivializationAt E (TangentSpace I) x₀).baseSet ∈ 𝓝[s] x₀ := by
+    apply nhdsWithin_le_nhds
+    apply (trivializationAt _ _ _).open_baseSet.mem_nhds
+    exact FiberBundle.mem_baseSet_trivializationAt' _
+  have B : f ⁻¹' (trivializationAt E' (TangentSpace I') (f x₀)).baseSet ∈ 𝓝[s] x₀ := by
+    apply hf.continuousWithinAt.preimage_mem_nhdsWithin
+    apply (trivializationAt _ _ _).open_baseSet.mem_nhds
+    exact FiberBundle.mem_baseSet_trivializationAt' _
+  filter_upwards [A, B] with x hx h'x
+  simp only [Function.comp_apply]
+  rw [inCoordinates_eq hx h'x, inCoordinates_eq h'x (by exact hx)]
+  simp only [inverse_equiv_comp, inverse_comp_equiv, ContinuousLinearEquiv.symm_symm, ϕ]
+  rfl
+
+
+#exit
+
+/-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
+Version within a set at a point. -/
+protected lemma ContMDiffWithinAt.mpullbackWithin [CompleteSpace E]
     (hV : ContMDiffWithinAt I' I'.tangent m
       (fun (y : M') ↦ (V y : TangentBundle I' M')) t (f x₀))
     (hf : ContMDiffWithinAt I I' n f s x₀) (hf' : (mfderivWithin I I' f s x₀).IsInvertible)
@@ -956,6 +1025,8 @@ lemma mlieBracketWithin_add_left [CompleteSpace E]
     rw [inter_comm]
     exact (contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.comp_contMDiffWithinAt _ Z
   · exact uniqueMDiffWithinAt_iff_inter_range.1 hs
+
+#exit
 
 lemma mlieBracket_add_left [CompleteSpace E]
     (hV : ContMDiffAt I I.tangent 1 (fun x ↦ (V x : TangentBundle I M)) x)

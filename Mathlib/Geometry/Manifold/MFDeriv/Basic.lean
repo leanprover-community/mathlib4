@@ -125,12 +125,12 @@ theorem mdifferentiableWithinAt_univ :
 theorem mdifferentiableWithinAt_inter (ht : t ∈ 𝓝 x) :
     MDifferentiableWithinAt I I' f (s ∩ t) x ↔ MDifferentiableWithinAt I I' f s x := by
   rw [MDifferentiableWithinAt, MDifferentiableWithinAt,
-    (differentiable_within_at_localInvariantProp I I').liftPropWithinAt_inter ht]
+    (differentiableWithinAt_localInvariantProp I I').liftPropWithinAt_inter ht]
 
 theorem mdifferentiableWithinAt_inter' (ht : t ∈ 𝓝[s] x) :
     MDifferentiableWithinAt I I' f (s ∩ t) x ↔ MDifferentiableWithinAt I I' f s x := by
   rw [MDifferentiableWithinAt, MDifferentiableWithinAt,
-    (differentiable_within_at_localInvariantProp I I').liftPropWithinAt_inter' ht]
+    (differentiableWithinAt_localInvariantProp I I').liftPropWithinAt_inter' ht]
 
 theorem MDifferentiableAt.mdifferentiableWithinAt (h : MDifferentiableAt I I' f x) :
     MDifferentiableWithinAt I I' f s x :=
@@ -164,8 +164,6 @@ theorem mdifferentiableOn_of_locally_mdifferentiableOn
 
 /-******************************************************************************************-/
 
-#check mdifferentiableWithinAt_iff
-
 open ChartedSpace
 
 /-- One can reformulate smoothness within a set at a point as continuity within this set at this
@@ -193,10 +191,8 @@ theorem mdifferentiableWithinAt_iff_bah' :
             (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' (f x)).source))
           (extChartAt I x x) := by
   simp only [MDifferentiableWithinAt, liftPropWithinAt_iff']
-  exact and_congr_right fun hc => differentiableWithinAt_congr_set <|
+  exact and_congr_right fun hc => differentiableWithinAt_congr_nhds <|
     hc.nhdsWithin_extChartAt_symm_preimage_inter_range I I'
-
-#check contDiffWithinAt_congr_nhds
 
 /-- One can reformulate smoothness within a set at a point as continuity within this set at this
 point, and smoothness in the corresponding extended chart in the target. -/
@@ -218,9 +214,14 @@ theorem mdifferentiableWithinAt_iff_target :
 theorem mdifferentiableAt_iff_target {x : M} :
     MDifferentiableAt I I' f x ↔
       ContinuousAt f x ∧ MDifferentiableAt I 𝓘(𝕜, E') (extChartAt I' (f x) ∘ f) x := by
-  rw [MDifferentiableAt, MDifferentiableAt, mdifferentiableWithinAt_iff_target, continuousWithinAt_univ]
+  rw [← mdifferentiableWithinAt_univ, ← mdifferentiableWithinAt_univ,
+    mdifferentiableWithinAt_iff_target, continuousWithinAt_univ]
 
 section SmoothManifoldWithCorners
+
+variable {e : PartialHomeomorph M H}
+
+open SmoothManifoldWithCorners
 
 theorem mdifferentiableWithinAt_iff_source_of_mem_maximalAtlas
     [SmoothManifoldWithCorners I M] (he : e ∈ maximalAtlas I M) (hx : x ∈ e.source) :
@@ -575,7 +576,7 @@ theorem mdifferentiableWithinAt_iff_of_mem_source {x' : M} {y : M'}
       ContinuousWithinAt f s x' ∧
         DifferentiableWithinAt 𝕜 (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
           ((extChartAt I x).symm ⁻¹' s ∩ Set.range I) ((extChartAt I x) x') :=
-  (differentiable_within_at_localInvariantProp I I').liftPropWithinAt_indep_chart
+  (differentiableWithinAt_localInvariantProp I I').liftPropWithinAt_indep_chart
     (StructureGroupoid.chart_mem_maximalAtlas _ x) hx (StructureGroupoid.chart_mem_maximalAtlas _ y)
     hy
 
