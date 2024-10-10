@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 
-import Batteries.Data.String.Matcher
 import Lean.Elab.Command
+import Mathlib.Tactic.Linter.Common
 
 /-!
 ## Style linters
@@ -81,15 +81,7 @@ namespace Style.checkDeclID
 
 /-- Checks whether a given identifier name contains "__". -/
 def contains_double_underscore (stx : Syntax) : Bool :=
-  (stx.getSubstring?.get!).containsSubstr "__"
-
-/-- `getNames stx` returns all `declId`s in the input syntax `stx`. -/
-partial
-def getNames : Syntax → Array Syntax
-  | stx@(.node _ kind args) =>
-    let rargs := (args.map getNames).flatten
-    if kind == ``Lean.Parser.Command.declId then rargs.push stx else rargs
-  | _ => default
+  1 < ((stx.getSubstring?.get!).toString.splitOn "__").length
 
 /-- The `checkDeclID` linter: if this linter emits a warning, then a declID is considered
 non-standard style. Currently we only check if it contains a double underscore ("__") as a
@@ -106,7 +98,7 @@ def checkDeclIDLinter: Linter where
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    for stx in (getNames _stx) do
+    for stx in (Mathlib.Linter.getIds _stx) do
       if (contains_double_underscore stx) then
         Linter.logLint linter.style.check_declID stx
           m!"The declID '{stx}' contains '__', which does not follow naming conventions. \
