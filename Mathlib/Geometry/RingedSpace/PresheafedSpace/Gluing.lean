@@ -392,7 +392,7 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
             simp_rw [Category.assoc]
             erw [IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.inv_naturality_assoc,
               IsOpenImmersion.inv_naturality_assoc, IsOpenImmersion.app_invApp_assoc]
-            repeat' rw [← (D.V (j, k)).presheaf.map_comp]
+            repeat' erw [← (D.V (j, k)).presheaf.map_comp]
             -- Porting note: was just `congr`
             exact congr_arg ((D.V (j, k)).presheaf.map ·) rfl } }
 
