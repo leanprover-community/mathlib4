@@ -394,8 +394,7 @@
   ["Mathlib.Tactic.CategoryTheory.ToApp"],
   "Mathlib.CategoryTheory.Bicategory.Functor.Lax":
   ["Mathlib.Tactic.CategoryTheory.ToApp"],
-  "Mathlib.CategoryTheory.Bicategory.Adjunction":
-  ["Mathlib.Tactic.CategoryTheory.Bicategory.Basic"],
+  "Mathlib.CategoryTheory.Category.Basic": ["Mathlib.Tactic.StacksAttribute"],
   "Mathlib.Analysis.Normed.Operator.LinearIsometry":
   ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Analysis.InnerProductSpace.Basic":
