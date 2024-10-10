@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Dhruv Bhatia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Dhruv Bhatia, Eric Wieser, Mario Carneiro
+Authors: Dhruv Bhatia, Eric Wieser, Mario Carneiro, Thomas Zhu
 -/
 import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Tactic.LinearCombination
@@ -16,8 +16,8 @@ field by using multivariable polynomial hypotheses/proof terms over the same fie
 Used as is, the tactic makes use of those hypotheses in the local context that are
 over the same field as the target. However, the user can also specify which hypotheses
 from the local context to use, along with proof terms that might not already be in the
-local context. Note: since this tactic uses SageMath via an API call done in Python,
-it can only be used with a working internet connection, and with a local installation of Python.
+local context. Note: since this tactic uses SageMath via an API call,
+it can only be used with a working internet connection.
 
 ## Implementation Notes
 
@@ -28,20 +28,15 @@ tactic succeeds. In other words, `linear_combination` is a certificate checker, 
 to the user to find a collection of good coefficients. The `polyrith` tactic automates this
 process using the theory of Groebner bases.
 
-Polyrith does this by first parsing the relevant hypotheses into a form that Python can understand.
-It then calls a Python file that uses the SageMath API to compute the coefficients. These
-coefficients are then sent back to Lean, which parses them into pexprs. The information is then
-given to the `linear_combination` tactic, which completes the process by checking the certificate.
+Polyrith does this by first parsing the relevant hypotheses into a form that SageMath can
+understand. It then calls the SageMath API to compute the coefficients. These coefficients are
+then sent back to Lean, which parses them into pexprs. The information is then given to the
+`linear_combination` tactic, which completes the process by checking the certificate.
 
 In fact, `polyrith` uses Sage to test for membership in the *radical* of the ideal.
 This means it searches for a linear combination of hypotheses that add up to a *power* of the goal.
 When this power is not 1, it uses the `(exp := n)` feature of `linear_combination` to report the
 certificate.
-
-`polyrith` calls an external python script `scripts/polyrith_sage.py`. Because this is not a Lean
-file, changes to this script may not be noticed during Lean compilation if you have already
-generated olean files. If you are modifying this python script, you likely know what you're doing;
-remember to force recompilation of any files that call `polyrith`.
 
 ## TODO
 
@@ -81,7 +76,7 @@ inductive Poly
   | div : Poly → Poly → Poly
   | pow : Poly → Poly → Poly
   | neg : Poly → Poly
-  deriving BEq, Repr
+  deriving BEq
 
 /--
 This converts a poly object into a string representing it. The string
@@ -191,13 +186,7 @@ def parseContext (only : Bool) (hyps : Array Expr) (tgt : Expr) :
     out ← processHyp (.input i) (← inferType hyp) out
   pure (α, out, tgt)
 
-/-- Constructs the list of arguments to pass to the external sage script `polyrith_sage.py`. -/
-def createSageArgs (trace : Bool) (α : Expr) (atoms : Nat)
-    (hyps : Array (Source × Poly)) (tgt : Poly) : Array String :=
-  let hyps := hyps.map (toString ·.2) |>.toList.toString
-  #[toString trace, toString α, toString atoms, hyps, toString tgt]
-
-/-- A JSON parser for `ℚ` specific to the return value of `polyrith_sage.py`. -/
+/-- A JSON parser for `ℚ` specific to the return value of Sage. -/
 local instance : FromJson ℚ where fromJson?
   | .arr #[a, b] => return (← fromJson? a : ℤ) / (← fromJson? b : ℕ)
   | _ => .error "expected array with two elements"
@@ -271,7 +260,7 @@ structure SageSuccess where
   /-- The main result of the function call is an array of polynomials
   parallel to the input list of hypotheses and an exponent for the goal. -/
   data : Option SageCoeffAndPower := none
-  deriving FromJson, Repr
+  deriving Repr
 
 /-- The result of a sage call in the failure case. -/
 structure SageError where
@@ -279,33 +268,136 @@ structure SageError where
   name : String
   /-- The error message -/
   value : String
-  deriving FromJson
 
 /-- The result of a sage call. -/
 def SageResult := Except SageError SageSuccess
 
-instance : FromJson SageResult where fromJson? j := do
-  if let .ok true := fromJson? <| j.getObjValD "success" then
-    return .ok (← fromJson? j)
-  else
-    return .error (← fromJson? j)
+
+section ApiCall
 
 /--
-This tactic calls python from the command line with the args in `arg_list`.
-The output printed to the console is parsed as a `Json`.
-It assumes that `python3` is available on the path.
+These functions are used to format the output of Sage for parsing in Lean.
+They are stored here as a string since they are passed to Sage via the web API.
 -/
-def sageOutput (args : Array String) : IO SageResult := do
-  let path := (← getMathlibDir) / "scripts" / "polyrith_sage.py"
-  unless ← path.pathExists do
-    throw <| IO.userError "could not find python script scripts/polyrith_sage.py"
-  let out ← IO.Process.output { cmd := "python3", args := #[path.toString] ++ args }
+def sageFormattingFunctions : String :=
+  "
+import json
+def q_arr(coeff: QQ) -> list[int]:
+    return [int(coeff.numerator()), int(coeff.denominator())]
+def serialize_polynomials(power, coeffs) -> str:
+    return json.dumps({'power': int(power), 'coeffs': [
+        [[[[int(t[0]), int(t[1])] for t in etuple.sparse_iter()], q_arr(coeff)]
+        for etuple, coeff in c.dict().items()] for c in coeffs
+    ]})
+"
+
+/--
+The Sage type to use, given a base type of the target. Currently always rational numbers (`QQ`).
+Future extensions may change behavior depending on the base type.
+-/
+def sageTypeStr (_ : Expr) : String := "QQ"
+
+/--
+Create a Sage script to send to SageMath API.
+The query invokes Sage's `MPolynomial_libsingular.lift`. See
+https://github.com/sagemath/sage/blob/f8df80820dc7321dc9b18c9644c3b8315999670b/src/sage/rings/polynomial/multi_polynomial_libsingular.pyx#L4472-L4518
+for a description of this method.
+-/
+def sageCreateQuery (α : Expr) (atoms : Nat) (hyps : Array (Source × Poly)) (tgt : Poly) :
+    IO String := do
+  let vars := (List.range atoms).map (s!"var{·}") ++ ["aux"]
+  -- format `vars`, `hyps` into Python lists
+  let varsListPython := "[" ++ ",".intercalate vars ++ "]"
+  let varsStringListPython := "[" ++ ",".intercalate (vars.map String.quote) ++ "]"
+  let hypsListPython := "[" ++ ",".intercalate (hyps.map (toString ·.2) |>.toList) ++ "]"
+  let command :=
+    if atoms != 0 then
+      s!"
+P = PolynomialRing({sageTypeStr α}, {varsStringListPython})
+{varsListPython} = P.gens()
+p = P({tgt})
+if p == 0:
+    # The 'radicalization trick' implemented below does not work if
+    # the target polynomial p is 0 since it requires substituting 1/p.
+    print(serialize_polynomials(1, {hyps.size}*[P(0)]))
+else:
+    # Implements the trick described in 2.2 of arxiv.org/pdf/1007.3615.pdf
+    # for testing membership in the radical.
+    gens = {hypsListPython} + [1 - p*aux]
+    I = P.ideal(gens)
+    coeffs = P(1).lift(I)
+    power = max(cf.degree(aux) for cf in coeffs)
+    coeffs = [P(cf.subs(aux = 1/p)*p^power) for cf in coeffs[:int(-1)]]
+    print(serialize_polynomials(power, coeffs))
+"
+    else
+      -- workaround for a Sage shortcoming with `atoms = 0`,
+      -- `TypeError: no conversion of this ring to a Singular ring defined`
+      -- In this case, there is no need to look for membership in the *radical*;
+      -- we just check for membership in the ideal, and return exponent 1
+      -- if coefficients are found.
+      s!"
+P = PolynomialRing({sageTypeStr α}, 'var', 1)
+p = P({tgt})
+I = P.ideal({hypsListPython})
+coeffs = p.lift(I)
+print(serialize_polynomials(1, coeffs))
+"
+  return sageFormattingFunctions ++ command
+
+/-- Parse a `SageResult` from the raw SageMath API output -/
+instance : FromJson SageResult where fromJson? j := do
+  if let .ok true := j.getObjValAs? Bool "success" then
+    -- parse SageSuccess from stdout, which is formatted as SageCoeffAndPower in JSON
+    -- (see sageCreateQuery for the format of stdout)
+    let stdout ← j.getObjValAs? String "stdout"
+    let coeffAndPower ← Json.parse stdout >>= fromJson?
+    let sageSuccess := { data := some coeffAndPower }
+    return .ok sageSuccess
+  else
+    -- parse SageError from execute_reply.ename, execute_reply.evalue
+    let executeReply ← j.getObjVal? "execute_reply"
+    let errorName ← executeReply.getObjValAs? String "ename"
+    let errorValue ← executeReply.getObjValAs? String "evalue"
+    return .error { name := errorName, value := errorValue }
+
+register_option polyrith.sageUserAgent : String :=
+  { defValue := "LeanProver (https://leanprover-community.github.io/)"
+    group := "polyrith"
+    descr := "User-Agent value for SageMath API" }
+
+/--
+This tactic calls the Sage API using `curl`. The output is parsed as `SageResult`.
+-/
+def sageOutput (trace : Bool) (α : Expr) (atoms : Nat)
+    (hyps : Array (Source × Poly)) (tgt : Poly) : CoreM SageResult := do
+  let apiUrl := "https://sagecell.sagemath.org/service"
+  let query ← sageCreateQuery α atoms hyps tgt
+  if trace then
+    -- dry run enabled
+    return .ok { trace := query }
+
+  -- send query to SageMath API
+  let query' := System.Uri.escapeUri query
+  let data := s!"code={query'}"
+  let out ← IO.Process.output { cmd := "curl", args := #[
+    "-X", "POST",
+    "--user-agent", polyrith.sageUserAgent.get (← getOptions),
+    "--data-raw", data,
+    apiUrl
+  ] }
   if out.exitCode != 0 then
-    throw <| IO.userError <|
-      s!"scripts/polyrith_sage.py exited with code {out.exitCode}:\n\n{out.stderr}"
+    IO.throwServerError <|
+      "Could not send API request to SageMath. " ++
+      s!"curl exited with code {out.exitCode}:\n{out.stderr}"
+
   match Json.parse out.stdout >>= fromJson? with
-  | .ok v => return v
-  | .error e => throw <| .userError e
+  | .ok result => return result
+  | .error e => IO.throwServerError <|
+      s!"Could not parse SageMath output (error: {e})\nSageMath output:\n{out.stdout}"
+
+end ApiCall
+
 
 /--
 This is the main body of the `polyrith` tactic. It takes in the following inputs:
@@ -319,11 +411,11 @@ collects all the relevant hypotheses/proof terms from the context, and from thos
 selected by the user, taking into account whether `only` is true. (The list of atoms is
 updated accordingly as well).
 
-This information is used to create a list of args that get used in a call to
-the appropriate python file that executes a grobner basis computation. The
-output of this computation is a `String` representing the certificate. This
-string is parsed into a list of `Poly` objects that are then converted into
-`Expr`s (using the updated list of atoms).
+This information is used to create an appropriate SageMath script that executes a
+Groebner basis computation, which is sent to SageMath's API server.
+The output of this computation is a JSON representing the certificate.
+This JSON is parsed into the power of the goal and a list of `Poly` objects
+that are then converted into `Expr`s (using the updated list of atoms).
 
 the names of the hypotheses, along with the corresponding coefficients are
 given to `linear_combination`. If that tactic succeeds, the user is prompted
@@ -348,7 +440,7 @@ def polyrith (g : MVarId) (only : Bool) (hyps : Array Expr)
     if hyps'.isEmpty then
       return ← byRing "polyrith did not find any relevant hypotheses"
     let vars := (← get).atoms.size
-    match ← sageOutput (createSageArgs traceOnly α vars hyps' tgt) with
+    match ← sageOutput traceOnly α vars hyps' tgt with
     | .ok { trace, data } =>
       if let some trace := trace then logInfo trace
       if let some {coeffs := polys, power := pow} := data then
@@ -390,8 +482,7 @@ Notes:
 * This tactic only works with a working internet connection, since it calls Sage
   using the SageCell web API at <https://sagecell.sagemath.org/>.
   Many thanks to the Sage team and organization for allowing this use.
-* This tactic assumes that the user has `python3` installed with version at least 3.6,
-  and available on the path. (Test by opening a terminal and executing `python3 --version`.)
+* This tactic assumes that the user has `curl` available on path.
 
 Examples:
 
@@ -405,7 +496,7 @@ example (x y z w : ℚ) (hzw : z = w) : x*z + 2*y*z = x*w + 2*y*w := by
   polyrith
 -- Try this: linear_combination (2 * y + x) * hzw
 
-constant scary : ∀ a b : ℚ, a + b = 0
+axiom scary : ∀ a b : ℚ, a + b = 0
 
 example (a b c d : ℚ) (h : a + b = 0) (h2: b + c = 0) : a + b + c + d = 0 := by
   polyrith only [scary c d, h]
