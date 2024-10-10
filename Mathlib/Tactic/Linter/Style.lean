@@ -76,7 +76,6 @@ register_option linter.style.check_declID : Bool := {
   descr := "enable the `setOption` linter"
 }
 
-
 namespace Style.checkDeclID
 
 /-- Checks whether a given identifier name contains "__". -/
