@@ -166,8 +166,13 @@ local notation a " * " b => op a b
 
 local notation l " <*> " a => foldl op a l
 
-theorem Perm.fold_op_eq {l₁ l₂ : List α} {a : α} (h : l₁ ~ l₂) : (l₁ <*> a) = l₂ <*> a :=
+theorem Perm.foldl_op_eq {l₁ l₂ : List α} {a : α} (h : l₁ ~ l₂) : (l₁ <*> a) = l₂ <*> a :=
   h.foldl_eq _
+
+theorem Perm.foldr_op_eq {l₁ l₂ : List α} {a : α} (h : l₁ ~ l₂) : l₁.foldr op a = l₂.foldr op a :=
+  h.foldr_eq _
+
+@[deprecated (since := "2024-09-28")] alias Perm.fold_op_eq := Perm.foldl_op_eq
 
 end
 

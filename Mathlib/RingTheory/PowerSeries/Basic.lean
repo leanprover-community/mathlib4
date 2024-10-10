@@ -603,14 +603,14 @@ lemma coeff_one_pow (n : ℕ) (φ : R⟦X⟧) :
             CharP.cast_eq_zero, zero_add, mul_one, not_true_eq_false] at h''
           norm_num at h''
         · rw [ih]
-          conv => lhs; arg 2; rw [mul_comm, ← mul_assoc]
-          move_mul [← (constantCoeff R) φ ^ (n' - 1)]
-          conv => enter [1, 2, 1, 1, 2]; rw [← pow_one (a := constantCoeff R φ)]
-          rw [← pow_add (a := constantCoeff R φ)]
-          conv => enter [1, 2, 1, 1]; rw [Nat.sub_add_cancel h']
-          conv => enter [1, 2, 1]; rw [mul_comm]
-          rw [mul_assoc, ← one_add_mul, add_comm, mul_assoc]
-          conv => enter [1, 2]; rw [mul_comm]
+          · conv => lhs; arg 2; rw [mul_comm, ← mul_assoc]
+            move_mul [← (constantCoeff R) φ ^ (n' - 1)]
+            conv => enter [1, 2, 1, 1, 2]; rw [← pow_one (a := constantCoeff R φ)]
+            rw [← pow_add (a := constantCoeff R φ)]
+            conv => enter [1, 2, 1, 1]; rw [Nat.sub_add_cancel h']
+            conv => enter [1, 2, 1]; rw [mul_comm]
+            rw [mul_assoc, ← one_add_mul, add_comm, mul_assoc]
+            conv => enter [1, 2]; rw [mul_comm]
           exact h'
       · decide
 

@@ -63,7 +63,8 @@ to `ν` if is measurable, if `fun b ↦ f (a, b) x` is `(ν a)`-integrable for a
 and for all measurable sets `s : Set β`, `∫ b in s, f (a, b) x ∂(ν a) = (κ a (s ×ˢ Iic x)).toReal`.
 Also the `ℚ → ℝ` function `f (a, b)` should satisfy the properties of a Sieltjes function for
 `(ν a)`-almost all `b : β`. -/
-structure IsRatCondKernelCDF (f : α × β → ℚ → ℝ) (κ : Kernel α (β × ℝ)) (ν : Kernel α β) : Prop :=
+structure IsRatCondKernelCDF (f : α × β → ℚ → ℝ) (κ : Kernel α (β × ℝ)) (ν : Kernel α β) :
+    Prop where
   measurable : Measurable f
   isRatStieltjesPoint_ae (a : α) : ∀ᵐ b ∂(ν a), IsRatStieltjesPoint f (a, b)
   integrable (a : α) (q : ℚ) : Integrable (fun b ↦ f (a, b) q) (ν a)
