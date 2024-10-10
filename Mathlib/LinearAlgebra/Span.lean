@@ -157,7 +157,7 @@ theorem span_closure {s : Set M} : span R (AddSubmonoid.closure s : Set M) = spa
 preserved under addition and scalar multiplication, then `p` holds for all elements of the span of
 `s`. -/
 @[elab_as_elim]
-theorem span_induction {p : ∀ x, x ∈ span R s → Prop}
+theorem span_induction {p : (x : M) → x ∈ span R s → Prop}
     (mem : ∀ (x) (h : x ∈ s), p x (subset_span h))
     (zero : p 0 (Submodule.zero_mem _))
     (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (Submodule.add_mem _ ‹_› ‹_›))
@@ -170,9 +170,12 @@ theorem span_induction {p : ∀ x, x ∈ span R s → Prop}
       smul_mem' := fun r ↦ (Exists.elim · fun _ hb ↦ ⟨_, smul r _ _ hb⟩) }
   exact span_le (p := p) |>.mpr (fun y hy ↦ ⟨subset_span hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
+@[deprecated span_induction (since := "2024-10-10")]
+alias span_induction' := span_induction
+
 /-- An induction principle for span membership. This is a version of `Submodule.span_induction`
 for binary predicates. -/
-theorem span_induction₂ {p : ∀ x y, x ∈ span R s → y ∈ span R s → Prop}
+theorem span_induction₂ {p : (x y : M) → x ∈ span R s → y ∈ span R s → Prop}
     (mem_mem : ∀ (x) (hx : x ∈ s) (y) (hy : y ∈ s), p x y (subset_span hx) (subset_span hy))
     (zero_left : ∀ y hy, p 0 y (zero_mem _) hy) (zero_right : ∀ x hx, p x 0 hx (zero_mem _))
     (add_left : ∀ x hx y hy z hz, p x z hx hz → p y z hy hz → p (x + y) z (add_mem hx hy) hz)
@@ -216,7 +219,7 @@ open AddSubmonoid in
 /-- A variant of `span_induction` that combines `∀ x ∈ s, p x` and `∀ r x, p x → p (r • x)`
 into a single condition `∀ r, ∀ x ∈ s, p (r • x)`, which can be easier to verify. -/
 @[elab_as_elim]
-theorem closure_induction {p : ∀ x, x ∈ span R s → Prop}
+theorem closure_induction {p : (x : M) → x ∈ span R s → Prop}
     (zero : p 0 (Submodule.zero_mem _))
     (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (Submodule.add_mem _ ‹_› ‹_›))
     (smul_mem : ∀ (r x) (h : x ∈ s), p (r • x) (Submodule.smul_mem _ _ <| subset_span h)) {x}
@@ -226,6 +229,9 @@ theorem closure_induction {p : ∀ x, x ∈ span R s → Prop}
     ?_ zero (by simpa only [key] using add) (key.mp hx)
   rintro - ⟨r, -, x, hx, rfl⟩
   exact smul_mem r x hx
+
+@[deprecated closure_induction (since := "2024-10-10")]
+alias closure_induction' := closure_induction
 
 @[simp]
 theorem span_span_coe_preimage : span R (((↑) : span R s → M) ⁻¹' s) = ⊤ :=

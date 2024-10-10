@@ -645,7 +645,7 @@ theorem star_self_mem_adjoin_singleton (x : A) : star x ∈ adjoin R ({x} : Set 
   star_mem <| self_mem_adjoin_singleton R x
 
 @[elab_as_elim]
-lemma adjoin_induction {s : Set A} {p : ∀ x, x ∈ adjoin R s → Prop}
+lemma adjoin_induction {s : Set A} {p : (x : A) → x ∈ adjoin R s → Prop}
     (mem : ∀ (x : A) (hx : x ∈ s), p x (subset_adjoin R s hx))
     (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
     (zero : p 0 (zero_mem _)) (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
@@ -657,6 +657,9 @@ lemma adjoin_induction {s : Set A} {p : ∀ x, x ∈ adjoin R s → Prop}
   obtain (hx | hx) := hx
   · exact mem x hx
   · simpa using star _ (NonUnitalAlgebra.subset_adjoin R (by simpa using Or.inl hx)) (mem _ hx)
+
+@[deprecated adjoin_induction (since := "2024-10-10")]
+alias adjoin_induction' := adjoin_induction
 
 variable {R}
 

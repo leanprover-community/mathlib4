@@ -899,11 +899,14 @@ theorem closure_induction {p : (g : G) → g ∈ closure k → Prop}
       inv_mem' := by refine (Exists.elim · fun _ hb ↦ ⟨_, inv _ _ hb⟩) }
   closure_le (K := K) |>.mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
+@[deprecated closure_induction (since := "2024-10-10")]
+alias closure_induction' := closure_induction
+
 /-- An induction principle for closure membership for predicates with two arguments. -/
 @[to_additive (attr := elab_as_elim)
       "An induction principle for additive closure membership, for
       predicates with two arguments."]
-theorem closure_induction₂ {p : ∀ x y, x ∈ closure k → y ∈ closure k → Prop}
+theorem closure_induction₂ {p : (x y : G) → x ∈ closure k → y ∈ closure k → Prop}
     (mem : ∀ (x) (hx : x ∈ k) (y) (hy : y ∈ k), p x y (subset_closure hx) (subset_closure hy))
     (one_left : ∀ x hx, p 1 x (one_mem _) hx) (one_right : ∀ x hx, p x 1 hx (one_mem _))
     (mul_left : ∀ x hx y hy z hz, p x z hx hz → p y z hy hz → p (x * y) z (mul_mem hx hy) hz)
