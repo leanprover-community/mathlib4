@@ -107,7 +107,7 @@ theorem completeSpace (h : RestrictGenTopology {s : Set (Π i, E i) | IsVonNBoun
   have H : ∀ {m : Π i, E i},
       Continuous fun f : (Π i, E i) →ᵤ[{s | IsVonNBounded 𝕜 s}] F ↦ toFun _ f m :=
     (uniformContinuous_eval (isVonNBounded_covers) _).continuous
-  rw [completeSpace_iff_isComplete_range isUniformEmbedding_toUniformOnFun.toUniformInducing,
+  rw [completeSpace_iff_isComplete_range isUniformEmbedding_toUniformOnFun.isUniformInducing,
     range_toUniformOnFun]
   simp only [setOf_and, setOf_forall]
   apply_rules [IsClosed.isComplete, IsClosed.inter]

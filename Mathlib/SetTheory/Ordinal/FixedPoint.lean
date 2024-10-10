@@ -3,7 +3,7 @@ Copyright (c) 2018 Violeta Hernández Palacios, Mario Carneiro. All rights reser
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios, Mario Carneiro
 -/
-import Mathlib.SetTheory.Ordinal.Arithmetic
+import Mathlib.SetTheory.Ordinal.Enum
 import Mathlib.SetTheory.Ordinal.Exponential
 
 /-!
@@ -129,6 +129,14 @@ theorem nfpFamily_eq_self {f : ι → Ordinal → Ordinal} {a} (h : ∀ i, f i a
 -- Todo: This is actually a special case of the fact the intersection of club sets is a club set.
 /-- A generalization of the fixed point lemma for normal functions: any family of normal functions
     has an unbounded set of common fixed points. -/
+theorem not_bddAbove_fp_family (H : ∀ i, IsNormal (f i)) :
+    ¬ BddAbove (⋂ i, Function.fixedPoints (f i)) := by
+  rw [not_bddAbove_iff]
+  refine fun a ↦ ⟨nfpFamily f (succ a), ?_, (lt_succ a).trans_le (le_nfpFamily f _)⟩
+  rintro _ ⟨i, rfl⟩
+  exact nfpFamily_fp (H i) _
+
+@[deprecated not_bddAbove_fp_family (since := "2024-09-20")]
 theorem fp_family_unbounded (H : ∀ i, IsNormal (f i)) :
     (⋂ i, Function.fixedPoints (f i)).Unbounded (· < ·) := fun a =>
   ⟨nfpFamily.{u, v} f a, fun s ⟨i, hi⟩ => by
@@ -206,7 +214,7 @@ theorem fp_iff_derivFamily (H : ∀ i, IsNormal (f i)) {a} :
 /-- For a family of normal functions, `Ordinal.derivFamily` enumerates the common fixed points. -/
 theorem derivFamily_eq_enumOrd (H : ∀ i, IsNormal (f i)) :
     derivFamily.{u, v} f = enumOrd (⋂ i, Function.fixedPoints (f i)) := by
-  rw [← eq_enumOrd _ (fp_family_unbounded.{u, v} H)]
+  rw [eq_comm, eq_enumOrd _ (not_bddAbove_fp_family H)]
   use (derivFamily_isNormal f).strictMono
   rw [Set.range_eq_iff]
   refine ⟨?_, fun a ha => ?_⟩
@@ -301,6 +309,16 @@ theorem nfpBFamily_eq_self {a} (h : ∀ i hi, f i hi a = a) : nfpBFamily.{u, v} 
 
 /-- A generalization of the fixed point lemma for normal functions: any family of normal functions
     has an unbounded set of common fixed points. -/
+theorem not_bddAbove_fp_bfamily (H : ∀ i hi, IsNormal (f i hi)) :
+    ¬ BddAbove (⋂ (i) (hi), Function.fixedPoints (f i hi)) := by
+  rw [not_bddAbove_iff]
+  refine fun a ↦ ⟨nfpBFamily _ f (succ a), ?_, (lt_succ a).trans_le (le_nfpBFamily f _)⟩
+  rw [Set.mem_iInter₂]
+  exact fun i hi ↦ nfpBFamily_fp (H i hi) _
+
+/-- A generalization of the fixed point lemma for normal functions: any family of normal functions
+    has an unbounded set of common fixed points. -/
+@[deprecated not_bddAbove_fp_bfamily (since := "2024-09-20")]
 theorem fp_bfamily_unbounded (H : ∀ i hi, IsNormal (f i hi)) :
     (⋂ (i) (hi), Function.fixedPoints (f i hi)).Unbounded (· < ·) := fun a =>
   ⟨nfpBFamily.{u, v} _ f a, by
@@ -347,7 +365,7 @@ theorem fp_iff_derivBFamily (H : ∀ i hi, IsNormal (f i hi)) {a} :
 /-- For a family of normal functions, `Ordinal.derivBFamily` enumerates the common fixed points. -/
 theorem derivBFamily_eq_enumOrd (H : ∀ i hi, IsNormal (f i hi)) :
     derivBFamily.{u, v} o f = enumOrd (⋂ (i) (hi), Function.fixedPoints (f i hi)) := by
-  rw [← eq_enumOrd _ (fp_bfamily_unbounded.{u, v} H)]
+  rw [eq_comm, eq_enumOrd _ (not_bddAbove_fp_bfamily H)]
   use (derivBFamily_isNormal f).strictMono
   rw [Set.range_eq_iff]
   refine ⟨fun a => Set.mem_iInter₂.2 fun i hi => derivBFamily_fp (H i hi) a, fun a ha => ?_⟩
@@ -445,6 +463,14 @@ theorem nfp_eq_self {f : Ordinal → Ordinal} {a} (h : f a = a) : nfp f a = a :=
 
 /-- The fixed point lemma for normal functions: any normal function has an unbounded set of
 fixed points. -/
+theorem not_bddAbove_fp (H : IsNormal f) : ¬ BddAbove (Function.fixedPoints f) := by
+  convert not_bddAbove_fp_family fun _ : Unit => H
+  exact (Set.iInter_const _).symm
+
+set_option linter.deprecated false in
+/-- The fixed point lemma for normal functions: any normal function has an unbounded set of
+fixed points. -/
+@[deprecated not_bddAbove_fp (since := "2024-09-20")]
 theorem fp_unbounded (H : IsNormal f) : (Function.fixedPoints f).Unbounded (· < ·) := by
   convert fp_family_unbounded fun _ : Unit => H
   exact (Set.iInter_const _).symm

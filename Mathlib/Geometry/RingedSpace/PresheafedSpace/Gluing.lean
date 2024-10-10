@@ -334,9 +334,9 @@ def ιInvAppπApp {i : D.J} (U : Opens (D.U i).carrier) (j) :
     rw [Set.preimage_preimage]
     change (D.f j k ≫ 𝖣.ι j).base ⁻¹' _ = _
     -- Porting note: used to be `congr 3`
-    refine congr_arg (· ⁻¹' _) ?_
-    convert congr_arg (ContinuousMap.toFun (α := D.V ⟨j, k⟩) (β := D.glued) ·) ?_
-    refine congr_arg (PresheafedSpace.Hom.base (C := C) ·) ?_
+    suffices D.f j k ≫ D.ι j = colimit.ι D.diagram.multispan (WalkingMultispan.left (j, k)) by
+      rw [this]
+      rfl
     exact colimit.w 𝖣.diagram.multispan (WalkingMultispan.Hom.fst (j, k))
   · exact D.opensImagePreimageMap i j U
 
