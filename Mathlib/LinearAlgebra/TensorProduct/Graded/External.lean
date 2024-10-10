@@ -226,7 +226,7 @@ theorem gradedMul_algebraMap (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) (r : R)
   dsimp
   erw [tmul_of_gradedMul_of_tmul]
   rw [mul_zero, uzpow_zero, one_smul, smul_tmul']
-  erw [mul_one, _root_.Algebra.smul_def, Algebra.commutes]
+  rw [mul_one, _root_.Algebra.smul_def, Algebra.commutes]
   rfl
 
 theorem gradedMul_one (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
