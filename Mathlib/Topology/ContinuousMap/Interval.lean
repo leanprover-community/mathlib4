@@ -114,27 +114,37 @@ theorem trans_right (h : b ∈ Icc a c) (hb : rightval h.1 f = leftval h.2 g)
   rfl
 
 variable {ι : Type*} {p : Filter ι} {F : ι → C(Icc a b, E)} {G : ι → C(Icc b c, E)}
-  [CompactIccSpace α]
 
 theorem tendsto_trans (h : b ∈ Icc a c) (hfg : ∀ᶠ i in p, rightval h.1 (F i) = leftval h.2 (G i))
     (hfg' : rightval h.1 f = leftval h.2 g) (hf : Tendsto F p (𝓝 f)) (hg : Tendsto G p (𝓝 g)) :
     Tendsto (fun i => trans h (F i) (G i)) p (𝓝 (trans h f g)) := by
   rw [tendsto_nhds_compactOpen] at hf hg ⊢
   rintro K hK U hU hfgU
-  let K₁ : Set (Icc a b) := subinterval_left h ⁻¹' K
-  let K₂ : Set (Icc b c) := subinterval_right h ⁻¹' K
-  have hK₁ : IsCompact K₁ := hK.preimage_continuous (subinterval_left h).2
-  have hK₂ : IsCompact K₂ := hK.preimage_continuous (subinterval_right h).2
+  let K₁ : Set (Icc a b) := projIccCM h.1 '' (Subtype.val '' (K ∩ Iic ⟨b, h⟩))
+  let K₂ : Set (Icc b c) := projIccCM h.2 '' (Subtype.val '' (K ∩ Ici ⟨b, h⟩))
+  have hK₁ : IsCompact K₁ :=
+    hK.inter_right isClosed_Iic |>.image continuous_subtype_val |>.image (projIccCM h.1).continuous
+  have hK₂ : IsCompact K₂ :=
+    hK.inter_right isClosed_Ici |>.image continuous_subtype_val |>.image (projIccCM h.2).continuous
   have hfU : MapsTo f K₁ U := by
     rw [trans_comp_left h hfg']
-    exact hfgU.comp (mapsTo_preimage _ _)
+    apply hfgU.comp
+    rintro x ⟨y, ⟨⟨z, hz⟩, ⟨h1, (h2 : z ≤ b)⟩, rfl⟩, rfl⟩
+    simpa [projIccCM, projIcc, h2, hz.1] using h1
   have hgU : MapsTo g K₂ U := by
     rw [trans_comp_right h hfg']
-    exact hfgU.comp (mapsTo_preimage _ _)
+    apply hfgU.comp
+    rintro x ⟨y, ⟨⟨z, hz⟩, ⟨h1, (h2 : b ≤ z)⟩, rfl⟩, rfl⟩
+    simpa [projIccCM, projIcc, h2, hz.2] using h1
   filter_upwards [hf K₁ hK₁ U hU hfU, hg K₂ hK₂ U hU hgU, hfg] with i hf hg hfg x hx
   by_cases hxb : x ≤ b
-  · simpa [trans_left h hfg hxb] using hf hx
-  · simpa [trans_right h hfg (lt_of_not_le hxb |>.le)] using hg hx
+  · rw [trans_left h hfg hxb]
+    refine hf ⟨x, ⟨x, ⟨hx, hxb⟩, rfl⟩, ?_⟩
+    simp [projIccCM, projIcc, hxb, x.2.1]
+  · replace hxb : b ≤ x := lt_of_not_le hxb |>.le
+    rw [trans_right h hfg hxb]
+    refine hg ⟨x, ⟨x, ⟨hx, hxb⟩, rfl⟩, ?_⟩
+    simp [projIccCM, projIcc, hxb, x.2.2]
 
 /-- The concatenation of compatible pairs of continuous maps on adjacent intrevals, defined as a
   `ContinuousMap` on a subtype of the product. -/
