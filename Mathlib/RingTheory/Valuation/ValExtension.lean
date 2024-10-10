@@ -153,6 +153,9 @@ instance instIsLocalHomValuationInteger {S ΓS: Type*} [CommRing S]
     · apply (Valuation.integer.integers (v := vS)).one_of_isUnit at hr
       exact (val_map_eq_one_iff vR vS _).mp hr
 
+@[deprecated "2024-10-10"]
+alias instIsLocalRingHomValuationInteger := instIsLocalHomValuationInteger
+
 end integer
 
 end IsValExtension
