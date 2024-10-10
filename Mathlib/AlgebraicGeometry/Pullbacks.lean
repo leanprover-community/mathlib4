@@ -507,7 +507,8 @@ def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
     (pullback.snd f (𝒰.map i))).paste_horiz (IsPullback.of_hasPullback _ _)).flip
   refine
     @openCoverOfIsIso _ _
-      (f := (pullbackSymmetry _ _).hom ≫ (limit.isoLimitCone ⟨_, this⟩).inv ≫
+      (f := (pullbackSymmetry (pullback.snd f (𝒰.map i)) (pullback.snd g (𝒰.map i))).hom ≫
+        (limit.isoLimitCone ⟨_, this.isLimit⟩).inv ≫
         pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) ?_ ?_) inferInstance
   · simp [← pullback.condition]
   · simp only [Category.comp_id, Category.id_comp]
@@ -527,11 +528,12 @@ def openCoverOfBase (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover
       ((Equiv.prodPUnit 𝒰.J).symm.trans (Equiv.sigmaEquivProd 𝒰.J PUnit).symm) fun _ => Iso.refl _
   intro i
   rw [Iso.refl_hom, Category.id_comp, openCoverOfBase'_map]
-  apply pullback.hom_ext <;>
-  · simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Category.assoc,
-      limit.lift_π_assoc, cospan_left, Category.comp_id, IsPullback.isoPullback_hom_fst_assoc,
-      pullbackSymmetry_hom_comp_snd_assoc,
-      IsPullback.isoPullback_hom_snd, pullbackSymmetry_hom_comp_fst_assoc]
+  ext : 1 <;>
+  · simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, Equiv.trans_apply,
+    Equiv.prodPUnit_symm_apply, Category.assoc, limit.lift_π_assoc, cospan_left, Category.comp_id,
+    limit.isoLimitCone_inv_π_assoc, PullbackCone.π_app_left, IsPullback.cone_fst,
+    pullbackSymmetry_hom_comp_snd_assoc, limit.isoLimitCone_inv_π,
+    PullbackCone.π_app_right, IsPullback.cone_snd, pullbackSymmetry_hom_comp_fst_assoc]
     rfl
 
 end Pullback
