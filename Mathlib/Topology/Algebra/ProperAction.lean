@@ -73,9 +73,8 @@ class ProperSMul (G X : Type*) [TopologicalSpace G] [TopologicalSpace X] [Group 
 
 attribute [to_additive existing] properSMul_iff
 
-variable {G X Y Z : Type*} [Group G] [MulAction G X] [MulAction G Y]
-variable [TopologicalSpace G] [TopologicalSpace X] [TopologicalSpace Y]
-variable [TopologicalSpace Z]
+variable {G X : Type*} [Group G] [MulAction G X]
+variable [TopologicalSpace G] [TopologicalSpace X]
 
 /-- If a group acts properly then in particular it acts continuously. -/
 @[to_additive "If a group acts properly then in particular it acts continuously."]

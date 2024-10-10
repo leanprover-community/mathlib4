@@ -144,6 +144,9 @@ instance coequalizer_π_app_isLocalHom
     PresheafedSpace.c_isIso_of_iso _
   infer_instance
 
+@[deprecated "2024-10-10"]
+alias coequalizer_π_app_isLocalRingHom := coequalizer_π_app_isLocalHom
+
 /-!
 We roughly follow the construction given in [MR0302656]. Given a pair `f, g : X ⟶ Y` of morphisms
 of locally ringed spaces, we want to show that the stalk map of
@@ -215,7 +218,7 @@ instance coequalizer_π_stalk_isLocalHom (x : Y) :
   constructor
   rintro a ha
   rcases TopCat.Presheaf.germ_exist _ _ a with ⟨U, hU, s, rfl⟩
-  erw [PresheafedSpace.stalkMap_germ_apply (coequalizer.π f.1 g.1 : _) U ⟨_, hU⟩] at ha
+  erw [PresheafedSpace.stalkMap_germ_apply (coequalizer.π f.1 g.1 : _) U _ hU] at ha
   let V := imageBasicOpen f g U s
   have hV : (coequalizer.π f.1 g.1).base ⁻¹' ((coequalizer.π f.1 g.1).base '' V.1) = V.1 :=
     imageBasicOpen_image_preimage f g U s
@@ -226,10 +229,10 @@ instance coequalizer_π_stalk_isLocalHom (x : Y) :
     imageBasicOpen_image_open f g U s
   have VleU : (⟨(coequalizer.π f.val g.val).base '' V.1, V_open⟩ : TopologicalSpace.Opens _) ≤ U :=
     Set.image_subset_iff.mpr (Y.toRingedSpace.basicOpen_le _)
-  have hxV : x ∈ V := ⟨⟨_, hU⟩, ha, rfl⟩
+  have hxV : x ∈ V := ⟨hU, ha⟩
   erw [←
-    (coequalizer f.val g.val).presheaf.germ_res_apply (homOfLE VleU)
-      ⟨_, @Set.mem_image_of_mem _ _ (coequalizer.π f.val g.val).base x V.1 hxV⟩ s]
+    (coequalizer f.val g.val).presheaf.germ_res_apply (homOfLE VleU) _
+      (@Set.mem_image_of_mem _ _ (coequalizer.π f.val g.val).base x V.1 hxV) s]
   apply RingHom.isUnit_map
   rw [← isUnit_map_iff ((coequalizer.π f.val g.val : _).c.app _), ← comp_apply,
     NatTrans.naturality, comp_apply, ← isUnit_map_iff (Y.presheaf.map (eqToHom hV').op)]
@@ -237,6 +240,9 @@ instance coequalizer_π_stalk_isLocalHom (x : Y) :
   erw [← comp_apply, ← comp_apply, ← Y.presheaf.map_comp]
   convert @RingedSpace.isUnit_res_basicOpen Y.toRingedSpace (unop _)
       (((coequalizer.π f.val g.val).c.app (op U)) s)
+
+@[deprecated "2024-10-10"]
+alias coequalizer_π_stalk_isLocalRingHom := coequalizer_π_stalk_isLocalHom
 
 end HasCoequalizer
 
