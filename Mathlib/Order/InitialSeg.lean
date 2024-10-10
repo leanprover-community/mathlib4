@@ -142,11 +142,14 @@ instance [IsWellOrder β s] : Subsingleton (r ≼i s) :=
 protected theorem eq [IsWellOrder β s] (f g : r ≼i s) (a) : f a = g a := by
   rw [Subsingleton.elim f g]
 
+private theorem antisymm_aux [IsWellOrder α r] (f : r ≼i s) (g : s ≼i r) : LeftInverse g f :=
+  (f.trans g).eq (InitialSeg.refl _)
+
 /-- If we have order embeddings between `α` and `β` whose images are initial segments, and `β`
 is a well-order then `α` and `β` are order-isomorphic. -/
 def antisymm [IsWellOrder β s] (f : r ≼i s) (g : s ≼i r) : r ≃r s :=
   have := f.toRelEmbedding.isWellOrder
-  ⟨⟨f, g, (f.trans g).eq (InitialSeg.refl _), (g.trans f).eq (InitialSeg.refl _)⟩, f.map_rel_iff'⟩
+  ⟨⟨f, g, antisymm_aux f g, antisymm_aux g f⟩, f.map_rel_iff'⟩
 
 @[simp]
 theorem antisymm_toFun [IsWellOrder β s] (f : r ≼i s) (g : s ≼i r) : (antisymm f g : α → β) = f :=
