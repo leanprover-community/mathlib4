@@ -382,8 +382,8 @@ def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Ty
     source := { x | x.1 ∈ I.source ∧ x.2 ∈ I'.source }
     source_eq := by simp only [setOf_true, mfld_simps]
     uniqueDiffOn' := I.uniqueDiffOn'.prod I'.uniqueDiffOn'
-    continuous_toFun := I.continuous_toFun.prod_map I'.continuous_toFun
-    continuous_invFun := I.continuous_invFun.prod_map I'.continuous_invFun }
+    continuous_toFun := I.continuous_toFun.prodMap I'.continuous_toFun
+    continuous_invFun := I.continuous_invFun.prodMap I'.continuous_invFun }
 
 /-- Given a finite family of `ModelWithCorners` `I i` on `(E i, H i)`, we define the model with
 corners `pi I` on `(Π i, E i, ModelPi H)`. See note [Manifold type tags] for explanation about
