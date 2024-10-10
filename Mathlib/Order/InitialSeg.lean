@@ -1,12 +1,12 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Floris van Doorn
+Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
+import Mathlib.Data.Sum.Order
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.RelIso.Set
 import Mathlib.Order.WellFounded
-import Mathlib.Data.Sum.Order
 /-!
 # Initial and principal segments
 
@@ -21,12 +21,18 @@ This file defines initial and principal segments.
   segment, i.e., an interval of the form `(-∞, top)` for some element `top`. It is denoted by
   `r ≺i s`.
 
+The lemmas `Ordinal.type_le_iff` and `Ordinal.type_lt_iff` tell us that `≼i` corresponds to the `≤`
+relation on ordinals, while `≺i` corresponds to the `<` relation. This prompts us to think of
+`PrincipalSeg` as a "strict" version of `InitialSeg`.
+
 ## Notations
 
 These notations belong to the `InitialSeg` locale.
 
 * `r ≼i s`: the type of initial segment embeddings of `r` into `s`.
 * `r ≺i s`: the type of principal segment embeddings of `r` into `s`.
+* `α ≤i β` is an abbreviation for `(· < ·) ≼i (· < ·)`.
+* `α <i β` is an abbreviation for `(· < ·) ≺i (· < ·)`.
 -/
 
 
@@ -51,10 +57,11 @@ structure InitialSeg {α β : Type*} (r : α → α → Prop) (s : β → β →
   mem_range_of_rel' : ∀ a b, s b (toRelEmbedding a) → b ∈ Set.range toRelEmbedding
 
 -- Porting note: Deleted `scoped[InitialSeg]`
-/-- If `r` is a relation on `α` and `s` in a relation on `β`, then `f : r ≼i s` is an order
-embedding whose range is an initial segment. That is, whenever `b < f a` in `β` then `b` is in the
-range of `f`. -/
+@[inherit_doc]
 infixl:25 " ≼i " => InitialSeg
+
+/-- An `InitialSeg` between the `<` relations of two types. -/
+notation:25 α:24 " ≤i " β:25 => @InitialSeg α β (· < ·) (· < ·)
 
 namespace InitialSeg
 
@@ -70,6 +77,24 @@ instance : FunLike (r ≼i s) α β where
 
 instance : EmbeddingLike (r ≼i s) α β where
   injective' f := f.inj'
+
+/-- An initial segment embedding between the `<` relations of two partial orders is an order
+embedding. -/
+def toOrderEmbedding [PartialOrder α] [PartialOrder β] (f : α ≤i β) : α ↪o β :=
+  f.orderEmbeddingOfLTEmbedding
+
+@[simp]
+theorem toOrderEmbedding_apply [PartialOrder α] [PartialOrder β] (f : α ≤i β) (x : α) :
+    f.toOrderEmbedding x = f x :=
+  rfl
+
+@[simp]
+theorem coe_toOrderEmbedding [PartialOrder α] [PartialOrder β] (f : α ≤i β) :
+    (f.toOrderEmbedding : α → β) = f :=
+  rfl
+
+instance [PartialOrder α] [PartialOrder β] : OrderHomClass (α ≤i β) α β where
+  map_rel f := f.toOrderEmbedding.map_rel_iff.2
 
 @[ext] lemma ext {f g : r ≼i s} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
@@ -226,10 +251,11 @@ structure PrincipalSeg {α β : Type*} (r : α → α → Prop) (s : β → β �
   mem_range_iff_rel' : ∀ b, b ∈ Set.range toRelEmbedding ↔ s b top
 
 -- Porting note: deleted `scoped[InitialSeg]`
-/-- If `r` is a relation on `α` and `s` in a relation on `β`, then `f : r ≺i s` is an order
-embedding whose range is an open interval `(-∞, top)` for some element `top` of `β`. Such order
-embeddings are called principal segments -/
+@[inherit_doc]
 infixl:25 " ≺i " => PrincipalSeg
+
+/-- A `PrincipalSeg` between the `<` relations of two types. -/
+notation:25 α:24 " <i " β:25 => @PrincipalSeg α β (· < ·) (· < ·)
 
 namespace PrincipalSeg
 
@@ -556,3 +582,80 @@ noncomputable def InitialSeg.total (r s) [IsWellOrder α r] [IsWellOrder β s] :
 
 attribute [nolint simpNF] PrincipalSeg.ofElement_apply PrincipalSeg.subrelIso_symm_apply
   PrincipalSeg.apply_subrelIso PrincipalSeg.subrelIso_apply
+
+/-! ### Initial or principal segments with `<` -/
+
+namespace InitialSeg
+
+variable [PartialOrder β] {a a' : α} {b : β}
+
+theorem mem_range_of_le [Preorder α] (f : α ≤i β) (h : b ≤ f a) : b ∈ Set.range f := by
+  obtain rfl | hb := h.eq_or_lt
+  exacts [⟨a, rfl⟩, f.mem_range_of_rel hb]
+
+-- TODO: this would follow immediately if we had a `RelEmbeddingClass`
+@[simp]
+theorem le_iff_le [PartialOrder α] (f : α ≤i β) : f a ≤ f a' ↔ a ≤ a' :=
+  f.toOrderEmbedding.le_iff_le
+
+-- TODO: this would follow immediately if we had a `RelEmbeddingClass`
+@[simp]
+theorem lt_iff_lt [PartialOrder α] (f : α ≤i β) : f a < f a' ↔ a < a' :=
+  f.toOrderEmbedding.lt_iff_lt
+
+theorem monotone [PartialOrder α] (f : α ≤i β) : Monotone f :=
+  f.toOrderEmbedding.monotone
+
+theorem strictMono [PartialOrder α] (f : α ≤i β) : StrictMono f :=
+  f.toOrderEmbedding.strictMono
+
+theorem le_apply_iff [LinearOrder α] (f : α ≤i β) : b ≤ f a ↔ ∃ c ≤ a, f c = b := by
+  constructor
+  · intro h
+    obtain ⟨c, hc⟩ := f.mem_range_of_le h
+    refine ⟨c, ?_, hc⟩
+    rwa [← hc, f.le_iff_le] at h
+  · rintro ⟨c, hc, rfl⟩
+    exact f.monotone hc
+
+theorem lt_apply_iff [LinearOrder α] (f : α ≤i β) : b < f a ↔ ∃ a' < a, f a' = b := by
+  constructor
+  · intro h
+    obtain ⟨c, hc⟩ := f.mem_range_of_rel h
+    refine ⟨c, ?_, hc⟩
+    rwa [← hc, f.lt_iff_lt] at h
+  · rintro ⟨c, hc, rfl⟩
+    exact f.strictMono hc
+
+end InitialSeg
+
+namespace PrincipalSeg
+
+variable [PartialOrder β] {a a' : α} {b : β}
+
+theorem mem_range_of_le [Preorder α] (f : α <i β) (h : b ≤ f a) : b ∈ Set.range f :=
+  (f : α ≤i β).mem_range_of_le h
+
+-- TODO: this would follow immediately if we had a `RelEmbeddingClass`
+@[simp]
+theorem le_iff_le [PartialOrder α] (f : α <i β) : f a ≤ f a' ↔ a ≤ a' :=
+  (f : α ≤i β).le_iff_le
+
+-- TODO: this would follow immediately if we had a `RelEmbeddingClass`
+@[simp]
+theorem lt_iff_lt [PartialOrder α] (f : α <i β) : f a < f a' ↔ a < a' :=
+  (f : α ≤i β).lt_iff_lt
+
+theorem monotone [PartialOrder α] (f : α <i β) : Monotone f :=
+  (f : α ≤i β).monotone
+
+theorem strictMono [PartialOrder α] (f : α <i β) : StrictMono f :=
+  (f : α ≤i β).strictMono
+
+theorem le_apply_iff [LinearOrder α] (f : α <i β) : b ≤ f a ↔ ∃ c ≤ a, f c = b :=
+  (f : α ≤i β).le_apply_iff
+
+theorem lt_apply_iff [LinearOrder α] (f : α <i β) : b < f a ↔ ∃ a' < a, f a' = b :=
+  (f : α ≤i β).lt_apply_iff
+
+end PrincipalSeg
