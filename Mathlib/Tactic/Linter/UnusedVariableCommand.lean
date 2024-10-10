@@ -76,11 +76,18 @@ def usedVarsRef.addDict (a : Name) (ref : Syntax) : IO Unit := do
   usedVarsRef.modify fun (used, varsDict) =>
     (used, if varsDict.contains a then
              varsDict
-           else                -- why not `ref` more simply?
-             varsDict.insert a (.ofRange (ref.getRange?.getD default)))
+           else                -- `ref` used to be `(.ofRange (ref.getRange?.getD default)))`
+             varsDict.insert a ref)
 
-/-- returns the unique `Name`, the user `Name` and the `Expr` of each `variable` that is
-present in the current context. -/
+/--
+`includedVariables plumb` returns the unique `Name`, the user `Name` and the `Expr` of
+each `variable` that is present in the current context.
+While doing this, it also updates the "unique-var-name-to-Syntax" dictionary with the variables
+from the local context.
+
+Finally, the `Bool`ean `plumb` decides whether or not `includedVariables` also extends the
+`NameSet` of variables that have been used in some declaration.
+-/
 def includedVariables (plumb : Bool) : TermElabM (Array (Name × Name × Expr)) := do
   let c ← read
   let fvs := c.sectionFVars
