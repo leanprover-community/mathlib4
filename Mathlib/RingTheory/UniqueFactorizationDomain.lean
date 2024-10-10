@@ -323,8 +323,7 @@ theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
       rw [dif_neg ane0]
       by_cases h : b = 0
       · simp [h, lt_top_iff_ne_top]
-      · rw [dif_neg h]
-        erw [WithTop.coe_lt_coe]
+      · rw [dif_neg h, Nat.cast_lt]
         have cne0 : c ≠ 0 := by
           refine mt (fun con => ?_) h
           rw [b_eq, con, mul_zero]
@@ -390,8 +389,8 @@ theorem MulEquiv.uniqueFactorizationMonoid (e : α ≃* β) (hα : UniqueFactori
         he ▸ e.prime_iff.1 (hp c hc),
         Units.map e.toMonoidHom u,
       by
-        erw [Multiset.prod_hom, ← map_mul e, h]
-        simp⟩
+        rw [Multiset.prod_hom, toMonoidHom_eq_coe, Units.coe_map, MonoidHom.coe_coe, ← map_mul e, h,
+          apply_symm_apply]⟩
 
 theorem MulEquiv.uniqueFactorizationMonoid_iff (e : α ≃* β) :
     UniqueFactorizationMonoid α ↔ UniqueFactorizationMonoid β :=
@@ -570,7 +569,7 @@ noncomputable def normalizedFactors (a : α) : Multiset α :=
 if `M` has a trivial group of units. -/
 @[simp]
 theorem factors_eq_normalizedFactors {M : Type*} [CancelCommMonoidWithZero M]
-    [UniqueFactorizationMonoid M] [Unique Mˣ] (x : M) : factors x = normalizedFactors x := by
+    [UniqueFactorizationMonoid M] [Subsingleton Mˣ] (x : M) : factors x = normalizedFactors x := by
   unfold normalizedFactors
   convert (Multiset.map_id (factors x)).symm
   ext p
@@ -743,7 +742,7 @@ theorem dvd_of_mem_normalizedFactors {a p : α} (H : p ∈ normalizedFactors a) 
     exact dvd_zero p
   · exact dvd_trans (Multiset.dvd_prod H) (Associated.dvd (normalizedFactors_prod hcases))
 
-theorem mem_normalizedFactors_iff [Unique αˣ] {p x : α} (hx : x ≠ 0) :
+theorem mem_normalizedFactors_iff [Subsingleton αˣ] {p x : α} (hx : x ≠ 0) :
     p ∈ normalizedFactors x ↔ Prime p ∧ p ∣ x := by
   constructor
   · intro h
@@ -759,11 +758,16 @@ theorem exists_associated_prime_pow_of_unique_normalized_factor {p r : α}
   have := UniqueFactorizationMonoid.normalizedFactors_prod hr
   rwa [Multiset.eq_replicate_of_mem fun b => h, Multiset.prod_replicate] at this
 
-theorem normalizedFactors_prod_of_prime [Nontrivial α] [Unique αˣ] {m : Multiset α}
+theorem normalizedFactors_prod_of_prime [Subsingleton αˣ] {m : Multiset α}
     (h : ∀ p ∈ m, Prime p) : normalizedFactors m.prod = m := by
-  simpa only [← Multiset.rel_eq, ← associated_eq_eq] using
-    prime_factors_unique prime_of_normalized_factor h
-      (normalizedFactors_prod (m.prod_ne_zero_of_prime h))
+  cases subsingleton_or_nontrivial α
+  · obtain rfl : m = 0 := by
+      refine Multiset.eq_zero_of_forall_not_mem fun x hx ↦ ?_
+      simpa [Subsingleton.elim x 0] using h x hx
+    simp
+  · simpa only [← Multiset.rel_eq, ← associated_eq_eq] using
+      prime_factors_unique prime_of_normalized_factor h
+        (normalizedFactors_prod (m.prod_ne_zero_of_prime h))
 
 theorem mem_normalizedFactors_eq_of_associated {a b c : α} (ha : a ∈ normalizedFactors c)
     (hb : b ∈ normalizedFactors c) (h : Associated a b) : a = b := by
@@ -912,20 +916,8 @@ theorem exists_reduced_factors' (a b : R) (hb : b ≠ 0) :
   let ⟨b', a', c', no_factor, hb, ha⟩ := exists_reduced_factors b hb a
   ⟨a', b', c', fun _ hpb hpa => no_factor hpa hpb, ha, hb⟩
 
-theorem pow_right_injective {a : R} (ha0 : a ≠ 0) (ha1 : ¬IsUnit a) :
-    Function.Injective (a ^ · : ℕ → R) := by
-  letI := Classical.decEq R
-  intro i j hij
-  letI : Nontrivial R := ⟨⟨a, 0, ha0⟩⟩
-  letI : NormalizationMonoid R := UniqueFactorizationMonoid.normalizationMonoid
-  obtain ⟨p', hp', dvd'⟩ := WfDvdMonoid.exists_irreducible_factor ha1 ha0
-  obtain ⟨p, mem, _⟩ := exists_mem_normalizedFactors_of_dvd ha0 hp' dvd'
-  have := congr_arg (fun x => Multiset.count p (normalizedFactors x)) hij
-  simp only [normalizedFactors_pow, Multiset.count_nsmul] at this
-  exact mul_right_cancel₀ (Multiset.count_ne_zero.mpr mem) this
-
-theorem pow_eq_pow_iff {a : R} (ha0 : a ≠ 0) (ha1 : ¬IsUnit a) {i j : ℕ} : a ^ i = a ^ j ↔ i = j :=
-  (pow_right_injective ha0 ha1).eq_iff
+@[deprecated (since := "2024-09-21")] alias pow_right_injective := pow_injective_of_not_isUnit
+@[deprecated (since := "2024-09-21")] alias pow_eq_pow_iff := pow_inj_of_not_isUnit
 
 section multiplicity
 

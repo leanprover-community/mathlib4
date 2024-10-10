@@ -61,7 +61,7 @@ and only at the "final step", when we need to provide an "explicit" primitive ro
 -/
 
 
-open Polynomial Algebra Finset FiniteDimensional IsCyclotomicExtension Nat PNat Set
+open Polynomial Algebra Finset Module IsCyclotomicExtension Nat PNat Set
 open scoped IntermediateField
 
 universe u v w z
@@ -113,7 +113,8 @@ variable {C}
 /-- The `PowerBasis` given by a primitive root `η`. -/
 @[simps!]
 protected noncomputable def powerBasis : PowerBasis K L :=
-  letI pb := Algebra.adjoin.powerBasis <| (integral {n} K L).isIntegral ζ;
+  -- this is purely an optimization
+  letI pb := Algebra.adjoin.powerBasis <| (integral {n} K L).isIntegral ζ
   pb.map <| (Subalgebra.equivOfEq _ _ (IsCyclotomicExtension.adjoin_primitive_root_eq_top hζ)).trans
     Subalgebra.topEquiv
 
@@ -182,7 +183,7 @@ least `(lcm p q).totient`. -/
 theorem _root_.IsPrimitiveRoot.lcm_totient_le_finrank [FiniteDimensional K L] {p q : ℕ} {x y : L}
     (hx : IsPrimitiveRoot x p) (hy : IsPrimitiveRoot y q)
     (hirr : Irreducible (cyclotomic (Nat.lcm p q) K)) :
-    (Nat.lcm p q).totient ≤ FiniteDimensional.finrank K L := by
+    (Nat.lcm p q).totient ≤ Module.finrank K L := by
   rcases Nat.eq_zero_or_pos p with (rfl | hppos)
   · simp
   rcases Nat.eq_zero_or_pos q with (rfl | hqpos)
@@ -379,7 +380,7 @@ theorem minpoly_sub_one_eq_cyclotomic_comp [Algebra K A] [IsDomain A] {ζ : A}
     minpoly K (ζ - 1) = (cyclotomic n K).comp (X + 1) := by
   haveI := IsCyclotomicExtension.neZero' n K A
   rw [show ζ - 1 = ζ + algebraMap K A (-1) by simp [sub_eq_add_neg],
-    minpoly.add_algebraMap ((integral {n} K A).isIntegral ζ),
+    minpoly.add_algebraMap ζ,
     hζ.minpoly_eq_cyclotomic_of_irreducible h]
   simp
 
@@ -392,7 +393,6 @@ theorem norm_pow_sub_one_of_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot 
     [hpri : Fact (p : ℕ).Prime] [IsCyclotomicExtension {p ^ (k + 1)} K L]
     (hirr : Irreducible (cyclotomic (↑(p ^ (k + 1)) : ℕ) K)) (hs : s ≤ k)
     (htwo : p ^ (k - s + 1) ≠ 2) : norm K (ζ ^ (p : ℕ) ^ s - 1) = (p : K) ^ (p : ℕ) ^ s := by
--- Porting note: `by omega` was `by linarith` that now fails.
   have hirr₁ : Irreducible (cyclotomic ((p : ℕ) ^ (k - s + 1)) K) :=
     cyclotomic_irreducible_pow_of_irreducible_pow hpri.1 (by omega) hirr
   rw [← PNat.pow_coe] at hirr₁
@@ -403,17 +403,16 @@ theorem norm_pow_sub_one_of_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot 
     refine IsPrimitiveRoot.pow (p ^ (k + 1)).pos hζ ?_
     rw [PNat.pow_coe, ← pow_add, add_comm s, Nat.sub_add_cancel (le_trans hs (Nat.le_succ k))]
   have : IsCyclotomicExtension {p ^ (k - s + 1)} K K⟮η⟯ := by
-    suffices IsCyclotomicExtension {p ^ (k - s + 1)} K K⟮η + 1⟯ by
-      have H : K⟮η + 1⟯ = K⟮η⟯ := by
-        refine le_antisymm ?_ ?_
-        all_goals rw [IntermediateField.adjoin_simple_le_iff]
-        · exact add_mem (IntermediateField.mem_adjoin_simple_self K η) (one_mem _)
-        · nth_rw 2 [← add_sub_cancel_right η 1]
-          exact sub_mem (IntermediateField.mem_adjoin_simple_self K (η + 1)) (one_mem _)
-      rwa [H] at this
+    have HKη : K⟮η⟯ = K⟮η + 1⟯ := by
+      refine le_antisymm ?_ ?_
+      all_goals rw [IntermediateField.adjoin_simple_le_iff]
+      · nth_rw 2 [← add_sub_cancel_right η 1]
+        exact sub_mem (IntermediateField.mem_adjoin_simple_self K (η + 1)) (one_mem _)
+      · exact add_mem (IntermediateField.mem_adjoin_simple_self K η) (one_mem _)
+    rw [HKη]
     have H := IntermediateField.adjoin_simple_toSubalgebra_of_integral
       ((integral {p ^ (k + 1)} K L).isIntegral (η + 1))
-    refine IsCyclotomicExtension.equiv (h := ?_) (.refl : K⟮η + 1⟯.toSubalgebra ≃ₐ[K] K⟮η + 1⟯)
+    refine IsCyclotomicExtension.equiv _ _ _ (h := ?_) (.refl : K⟮η + 1⟯.toSubalgebra ≃ₐ[K] _)
     rw [H]
     have hη' : IsPrimitiveRoot (η + 1) ↑(p ^ (k + 1 - s)) := by simpa using hη
 -- Porting note: `using 1` was not needed.
@@ -423,7 +422,7 @@ theorem norm_pow_sub_one_of_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot 
     apply coe_submonoidClass_iff.1
     convert hη using 1
     rw [Nat.sub_add_comm hs, pow_coe]
--- Porting note: the following `haveI` were not needed because the locale `cyclotomic` set them
+-- Porting note: the following `have` were not needed because the locale `cyclotomic` set them
 -- as instances.
   have := IsCyclotomicExtension.finiteDimensional {p ^ (k + 1)} K L
   have := IsCyclotomicExtension.isGalois (p ^ (k + 1)) K L
@@ -435,7 +434,7 @@ theorem norm_pow_sub_one_of_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot 
   congr
   · rw [PNat.pow_coe, Nat.pow_minFac, hpri.1.minFac_eq]
     exact Nat.succ_ne_zero _
-  have := FiniteDimensional.finrank_mul_finrank K K⟮η⟯ L
+  have := Module.finrank_mul_finrank K K⟮η⟯ L
   rw [IsCyclotomicExtension.finrank L hirr, IsCyclotomicExtension.finrank K⟮η⟯ hirr₁,
     PNat.pow_coe, PNat.pow_coe, Nat.totient_prime_pow hpri.out (k - s).succ_pos,
     Nat.totient_prime_pow hpri.out k.succ_pos, mul_comm _ ((p : ℕ) - 1), mul_assoc,

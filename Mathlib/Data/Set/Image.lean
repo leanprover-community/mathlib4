@@ -817,9 +817,8 @@ theorem range_quot_lift {r : ι → ι → Prop} (hf : ∀ x y, r x y → f x = 
     range (Quot.lift f hf) = range f :=
   ext fun _ => (surjective_quot_mk _).exists
 
--- Porting note: the `Setoid α` instance is not being filled in
 @[simp]
-theorem range_quotient_mk [sa : Setoid α] : (range (α := Quotient sa) fun x : α => ⟦x⟧) = univ :=
+theorem range_quotient_mk {s : Setoid α} : range (Quotient.mk s) = univ :=
   range_quot_mk _
 
 @[simp]
@@ -1090,6 +1089,9 @@ theorem Injective.image_injective (hf : Injective f) : Injective (image f) := by
   intro s t h
   rw [← preimage_image_eq s hf, ← preimage_image_eq t hf, h]
 
+lemma Injective.image_strictMono (inj : Function.Injective f) : StrictMono (image f) :=
+  monotone_image.strictMono_of_injective inj.image_injective
+
 theorem Surjective.preimage_subset_preimage_iff {s t : Set β} (hf : Surjective f) :
     f ⁻¹' s ⊆ f ⁻¹' t ↔ s ⊆ t := by
   apply Set.preimage_subset_preimage_iff
@@ -1100,13 +1102,17 @@ theorem Surjective.range_comp {ι' : Sort*} {f : ι → ι'} (hf : Surjective f)
     range (g ∘ f) = range g :=
   ext fun y => (@Surjective.exists _ _ _ hf fun x => g x = y).symm
 
-theorem Injective.mem_range_iff_exists_unique (hf : Injective f) {b : β} :
+theorem Injective.mem_range_iff_existsUnique (hf : Injective f) {b : β} :
     b ∈ range f ↔ ∃! a, f a = b :=
   ⟨fun ⟨a, h⟩ => ⟨a, h, fun _ ha => hf (ha.trans h.symm)⟩, ExistsUnique.exists⟩
 
-theorem Injective.exists_unique_of_mem_range (hf : Injective f) {b : β} (hb : b ∈ range f) :
-    ∃! a, f a = b :=
-  hf.mem_range_iff_exists_unique.mp hb
+alias ⟨Injective.existsUnique_of_mem_range, _⟩ := Injective.mem_range_iff_existsUnique
+
+@[deprecated (since := "2024-09-25")]
+alias Injective.mem_range_iff_exists_unique := Injective.mem_range_iff_existsUnique
+
+@[deprecated (since := "2024-09-25")]
+alias Injective.exists_unique_of_mem_range := Injective.existsUnique_of_mem_range
 
 theorem Injective.compl_image_eq (hf : Injective f) (s : Set α) :
     (f '' s)ᶜ = f '' sᶜ ∪ (range f)ᶜ := by

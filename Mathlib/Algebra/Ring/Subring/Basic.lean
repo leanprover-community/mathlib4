@@ -73,7 +73,7 @@ section SubringClass
 
 /-- `SubringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both a multiplicative submonoid and an additive subgroup. -/
-class SubringClass (S : Type*) (R : Type u) [Ring R] [SetLike S R] extends
+class SubringClass (S : Type*) (R : outParam (Type u)) [Ring R] [SetLike S R] extends
   SubsemiringClass S R, NegMemClass S R : Prop
 
 -- See note [lower instance priority]
@@ -900,6 +900,14 @@ theorem map_sup (s t : Subring R) (f : R →+* S) : (s ⊔ t).map f = s.map f �
 theorem map_iSup {ι : Sort*} (f : R →+* S) (s : ι → Subring R) :
     (iSup s).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
+
+theorem map_inf (s t : Subring R) (f : R →+* S) (hf : Function.Injective f) :
+    (s ⊓ t).map f = s.map f ⊓ t.map f := SetLike.coe_injective (Set.image_inter hf)
+
+theorem map_iInf {ι : Sort*} [Nonempty ι] (f : R →+* S) (hf : Function.Injective f)
+    (s : ι → Subring R) : (iInf s).map f = ⨅ i, (s i).map f := by
+  apply SetLike.coe_injective
+  simpa using (Set.injOn_of_injective hf).image_iInter_eq (s := SetLike.coe ∘ s)
 
 theorem comap_inf (s t : Subring S) (f : R →+* S) : (s ⊓ t).comap f = s.comap f ⊓ t.comap f :=
   (gc_map_comap f).u_inf
