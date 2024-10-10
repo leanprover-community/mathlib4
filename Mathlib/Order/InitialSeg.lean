@@ -87,6 +87,9 @@ alias init := mem_range_of_rel
 theorem map_rel_iff {a b : α} (f : r ≼i s) : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
 
+theorem inj (f : r ≼i s) {a b : α} : f a = f b ↔ a = b :=
+  f.toRelEmbedding.inj
+
 theorem exists_eq_iff_rel (f : r ≼i s) {a : α} {b : β} : s b (f a) ↔ ∃ a', f a' = b ∧ r a' a :=
   ⟨fun h => by
     rcases f.mem_range_of_rel h with ⟨a', rfl⟩
@@ -357,10 +360,13 @@ instance [IsWellOrder β s] : Subsingleton (r ≺i s) :=
 theorem top_eq [IsWellOrder γ t] (e : r ≃r s) (f : r ≺i t) (g : s ≺i t) : f.top = g.top := by
   rw [Subsingleton.elim f (PrincipalSeg.equivLT e g)]; rfl
 
-theorem topLTTop {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop} [IsWellOrder γ t]
-    (f : PrincipalSeg r s) (g : PrincipalSeg s t) (h : PrincipalSeg r t) : t h.top g.top := by
+theorem top_rel_top {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop} [IsWellOrder γ t]
+    (f : r ≺i s) (g : s ≺i t) (h : r ≺i t) : t h.top g.top := by
   rw [Subsingleton.elim h (f.trans g)]
   apply PrincipalSeg.lt_top
+
+@[deprecated top_rel_top (since := "2024-10-10")]
+alias topLTTop := top_rel_top
 
 /-- Any element of a well order yields a principal segment -/
 def ofElement {α : Type*} (r : α → α → Prop) (a : α) : Subrel r { b | r b a } ≺i r :=
