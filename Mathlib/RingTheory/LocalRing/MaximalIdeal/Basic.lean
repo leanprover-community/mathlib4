@@ -122,7 +122,7 @@ instance LocalRing.of_nilradical_isMaximal [h : (nilradical R).IsMaximal] : Loca
 Let `S` be the localization of a commutative semiring `R` at a submonoid `M` that does not
 contain 0. If the nilradical of `R` is maximal then there is a `R`-algebra isomorphism between
 `R` and `S`. -/
-noncomputable def nilradmaxlocalizationIsSelf (h : (nilradical R).IsMaximal) (h' : (0 : R) ∉ M)
+noncomputable def nilradmaxlocalizationIsSelf [h : (nilradical R).IsMaximal] (h' : (0 : R) ∉ M)
     [IsLocalization M S] : R ≃ₐ[R] S := by
   have : ∀ m ∈ M, IsUnit m := by
     intro m hm
