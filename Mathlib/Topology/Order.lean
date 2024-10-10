@@ -398,7 +398,7 @@ theorem induced_iInf {ι : Sort w} {t : ι → TopologicalSpace α} :
 
 @[simp]
 theorem induced_sInf {s : Set (TopologicalSpace α)} :
-    TopologicalSpace.induced g (sInf s) = sInf ((TopologicalSpace.induced g) '' s) := by
+    TopologicalSpace.induced g (sInf s) = sInf (TopologicalSpace.induced g '' s) := by
   rw [sInf_eq_iInf', sInf_image', induced_iInf]
 
 @[simp]
@@ -415,8 +415,8 @@ theorem coinduced_iSup {ι : Sort w} {t : ι → TopologicalSpace α} :
   (gc_coinduced_induced f).l_iSup
 
 @[simp]
-theorem coinduced_sSup {s : Set (TopologicalSpace β)} :
-    TopologicalSpace.coinduced g (sSup s) = sSup ((TopologicalSpace.coinduced g) '' s) := by
+theorem coinduced_sSup {s : Set (TopologicalSpace α)} :
+    TopologicalSpace.coinduced f (sSup s) = sSup ((TopologicalSpace.coinduced f) '' s) := by
   rw [sSup_eq_iSup', sSup_image', coinduced_iSup]
 
 theorem induced_id [t : TopologicalSpace α] : t.induced id = t :=

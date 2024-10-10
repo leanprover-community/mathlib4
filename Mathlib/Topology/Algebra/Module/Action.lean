@@ -80,13 +80,13 @@ equipped with the action topology and if furthermore `M` is finite as an `R`-mod
 then any bilinear map `M × N → P` is continuous.
 
 As a consequence of this, we deduce that if `R` is a commutative topological ring
-and `A` is an `R`-algebra of finite type as `R`-module, then `A` with its module
+and `A` is an `R`-algebra of finite type as `R`-module, then `A` with its action
 topology becomes a topological ring (i.e., multiplication is continuous).
 
 Other TODOs (not done in the FLT repo):
 
-*) The action topology is a functor from the category of `R`-modules
-to the category of topological `R`-modules, and it's an adjoint to the forgetful functor.
+* The action topology is a functor from the category of `R`-modules
+  to the category of topological `R`-modules, and it's an adjoint to the forgetful functor.
 
 -/
 
@@ -109,9 +109,10 @@ abbrev actionTopology : TopologicalSpace A :=
 /-- A class asserting that the topology on a module over a topological ring `R` is
 the action topology. See `actionTopology` for more discussion of the action topology. -/
 class IsActionTopology [τA : TopologicalSpace A] : Prop where
+  /-- Note that this should not be used directly, and `eq_actionTopology`, which takes `R` and `A` explicitly, should be used instead. -/
   eq_actionTopology' : τA = actionTopology R A
 
-theorem eq_ActionTopology [τA : TopologicalSpace A] [IsActionTopology R A] :
+theorem eq_actionTopology [τA : TopologicalSpace A] [IsActionTopology R A] :
     τA = actionTopology R A :=
   IsActionTopology.eq_actionTopology' (R := R) (A := A)
 
@@ -167,7 +168,7 @@ We first prove that the action topology on `R` considered as a module over itsel
 is `R`'s topology.
 
 -/
-instance instSelf (R : Type*) [Semiring R] [τR : TopologicalSpace R] [TopologicalSemiring R] :
+instance _root_.TopologicalSemiring.toIsActionTopology (R : Type*) [Semiring R] [τR : TopologicalSpace R] [TopologicalSemiring R] :
     IsActionTopology R R := by
   constructor
   /- Let `R` be a topological ring with topology τR. To prove that `τR` is the action
