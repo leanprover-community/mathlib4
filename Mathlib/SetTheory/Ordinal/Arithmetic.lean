@@ -78,38 +78,21 @@ theorem lift_succ (a : Ordinal.{v}) : lift.{u} (succ a) = succ (lift.{u} a) := b
   rw [← add_one_eq_succ, lift_add, lift_one]
   rfl
 
-instance add_contravariantClass_le : ContravariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· ≤ ·) :=
-  ⟨fun a b c =>
-    inductionOn a fun α r hr =>
-      inductionOn b fun β₁ s₁ hs₁ =>
-        inductionOn c fun β₂ s₂ hs₂ ⟨f⟩ =>
-          ⟨have fl : ∀ a, f (Sum.inl a) = Sum.inl a := fun a => by
-              simpa only [InitialSeg.trans_apply, InitialSeg.leAdd_apply] using
-                @InitialSeg.eq _ _ _ _ _
-                  ((InitialSeg.leAdd r s₁).trans f) (InitialSeg.leAdd r s₂) a
-            have : ∀ b, { b' // f (Sum.inr b) = Sum.inr b' } := by
-              intro b; cases e : f (Sum.inr b)
-              · rw [← fl] at e
-                have := f.inj' e
-                contradiction
-              · exact ⟨_, rfl⟩
-            let g (b) := (this b).1
-            have fr : ∀ b, f (Sum.inr b) = Sum.inr (g b) := fun b => (this b).2
-            ⟨⟨⟨g, fun x y h => by
-                  injection f.inj' (by rw [fr, fr, h] : f (Sum.inr x) = f (Sum.inr y))⟩,
-                @fun a b => by
-                  -- Porting note:
-                  --  `relEmbedding.coe_fn_to_embedding` & `initial_seg.coe_fn_to_rel_embedding`
-                  --  → `InitialSeg.coe_coe_fn`
-                  simpa only [Sum.lex_inr_inr, fr, InitialSeg.coe_coe_fn, Embedding.coeFn_mk] using
-                    @RelEmbedding.map_rel_iff _ _ _ _ f.toRelEmbedding (Sum.inr a) (Sum.inr b)⟩,
-              fun a b H => by
-                rcases f.mem_range_of_rel (by rw [fr] <;> exact Sum.lex_inr_inr.2 H) with
-                  ⟨a' | a', h⟩
-                · rw [fl] at h
-                  cases h
-                · rw [fr] at h
-                  exact ⟨a', Sum.inr.inj h⟩⟩⟩⟩
+instance add_contravariantClass_le :
+    ContravariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· ≤ ·) where
+  elim c a b := by
+    refine inductionOn₃ a b c fun α r _ β s _ γ t _ ⟨f⟩ ↦ ?_
+    have H₁ a : f (Sum.inl a) = Sum.inl a := by
+      simpa using ((InitialSeg.leAdd t r).trans f).eq (InitialSeg.leAdd t s) a
+    have H₂ a : ∃ b, f (Sum.inr a) = Sum.inr b := by
+      generalize hx : f (Sum.inr a) = x
+      obtain x | x := x
+      · rw [← H₁, f.inj] at hx
+        contradiction
+      · exact ⟨x, rfl⟩
+    choose g hg using H₂
+    refine (RelEmbedding.ofMonotone g fun _ _ h ↦ ?_).ordinal_type_le
+    rwa [← @Sum.lex_inr_inr _ t _ s, ← hg, ← hg, f.map_rel_iff, Sum.lex_inr_inr]
 
 theorem add_left_cancel (a) {b c : Ordinal} : a + b = a + c ↔ b = c := by
   simp only [le_antisymm_iff, add_le_add_iff_left]
@@ -118,14 +101,14 @@ private theorem add_lt_add_iff_left' (a) {b c : Ordinal} : a + b < a + c ↔ b <
   rw [← not_le, ← not_le, add_le_add_iff_left]
 
 instance add_covariantClass_lt : CovariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· < ·) :=
-  ⟨fun a _b _c => (add_lt_add_iff_left' a).2⟩
+  ⟨fun a _b _c ↦ (add_lt_add_iff_left' a).2⟩
 
 instance add_contravariantClass_lt : ContravariantClass Ordinal.{u} Ordinal.{u} (· + ·) (· < ·) :=
-  ⟨fun a _b _c => (add_lt_add_iff_left' a).1⟩
+  ⟨fun a _b _c ↦ (add_lt_add_iff_left' a).1⟩
 
 instance add_swap_contravariantClass_lt :
     ContravariantClass Ordinal.{u} Ordinal.{u} (swap (· + ·)) (· < ·) :=
-  ⟨fun _a _b _c => lt_imp_lt_of_le_imp_le fun h => add_le_add_right h _⟩
+  ⟨fun _a _b _c ↦ lt_imp_lt_of_le_imp_le fun h => add_le_add_right h _⟩
 
 theorem add_le_add_iff_right {a b : Ordinal} : ∀ n : ℕ, a + n ≤ b + n ↔ a ≤ b
   | 0 => by simp
@@ -136,10 +119,9 @@ theorem add_right_cancel {a b : Ordinal} (n : ℕ) : a + n = b + n ↔ a = b := 
   simp only [le_antisymm_iff, add_le_add_iff_right]
 
 theorem add_eq_zero_iff {a b : Ordinal} : a + b = 0 ↔ a = 0 ∧ b = 0 :=
-  inductionOn a fun α r _ =>
-    inductionOn b fun β s _ => by
-      simp_rw [← type_sum_lex, type_eq_zero_iff_isEmpty]
-      exact isEmpty_sum
+  inductionOn₂ a b fun α r _ β s _ => by
+    simp_rw [← type_sum_lex, type_eq_zero_iff_isEmpty]
+    exact isEmpty_sum
 
 theorem left_eq_zero_of_add_eq_zero {a b : Ordinal} (h : a + b = 0) : a = 0 :=
   (add_eq_zero_iff.1 h).1
