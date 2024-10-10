@@ -346,8 +346,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
         refine (dif_pos ?_).trans ?_
         · exact ⟨x, rfl⟩
         · dsimp
-          conv_lhs => erw [Equiv.ofInjective_symm_apply]
-          rfl -- `rfl` was not needed here before #13170
+          conv_lhs => rw [Equiv.ofInjective_symm_apply]
       · intro T f g
         ext x
         refine (dif_neg ?_).trans ?_

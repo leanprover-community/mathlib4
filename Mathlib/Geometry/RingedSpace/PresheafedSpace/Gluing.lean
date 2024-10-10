@@ -140,10 +140,9 @@ theorem pullback_base (i j k : D.J) (S : Set (D.V (i, j)).carrier) :
   rw [Set.image_comp]
   -- Porting note: `rw` to `erw` on `coe_comp`
   erw [coe_comp]
-  erw [Set.preimage_comp, Set.image_preimage_eq, TopCat.pullback_snd_image_fst_preimage]
-   -- now `erw` after #13170
+  rw [Set.preimage_comp, Set.image_preimage_eq, TopCat.pullback_snd_image_fst_preimage]
   · rfl
-  erw [← TopCat.epi_iff_surjective] -- now `erw` after #13170
+  rw [← TopCat.epi_iff_surjective]
   infer_instance
 
 /-- The red and the blue arrows in ![this diagram](https://i.imgur.com/0GiBUh6.png) commute. -/
