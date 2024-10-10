@@ -210,8 +210,7 @@ end TypeclassesRightLT
 
 section TypeclassesLeftRightLE
 
-variable [LE α] [MulLeftMono α]
-  {a b c d : α}
+variable [LE α] [MulLeftMono α] {a b c d : α}
 
 @[to_additive (attr := simp)]
 theorem div_le_self_iff (a : α) {b : α} : a / b ≤ a ↔ 1 ≤ b := by
@@ -241,8 +240,7 @@ end TypeclassesLeftRightLE
 
 section TypeclassesLeftRightLT
 
-variable [LT α] [MulLeftStrictMono α]
-  {a b c d : α}
+variable [LT α] [MulLeftStrictMono α] {a b c d : α}
 
 @[to_additive (attr := simp)]
 theorem div_lt_self_iff (a : α) {b : α} : a / b < a ↔ 1 < b := by
@@ -518,8 +516,7 @@ end Right
 
 section Left
 
-variable [MulLeftMono α]
-variable [MulRightMono α] {a b c : α}
+variable [MulLeftMono α] [MulRightMono α] {a b c : α}
 
 @[to_additive]
 theorem div_le_div_iff_left (a : α) : a / b ≤ a / c ↔ c ≤ b := by

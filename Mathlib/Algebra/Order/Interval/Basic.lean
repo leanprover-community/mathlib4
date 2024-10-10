@@ -117,8 +117,7 @@ Note that this multiplication does not apply to `ℚ` or `ℝ`.
 
 section Mul
 
-variable [Preorder α] [Mul α] [MulLeftMono α]
-  [MulRightMono α]
+variable [Preorder α] [Mul α] [MulLeftMono α] [MulRightMono α]
 
 @[to_additive]
 instance : Mul (NonemptyInterval α) :=

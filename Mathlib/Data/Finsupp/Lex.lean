@@ -91,7 +91,7 @@ section Covariants
 variable [LinearOrder α] [AddMonoid N] [LinearOrder N]
 
 /-!  We are about to sneak in a hypothesis that might appear to be too strong.
-We assume `AddLeftStrictMono` (`Covariant` with *strict* inequality `<`) also when proving the one
+We assume `AddLeftStrictMono` (covariant with *strict* inequality `<`) also when proving the one
 with the *weak* inequality `≤`.  This is actually necessary: addition on `Lex (α →₀ N)` may fail to
 be monotone, when it is "just" monotone on `N`.
 
@@ -102,12 +102,10 @@ section Left
 
 variable [AddLeftStrictMono N]
 
-instance Lex.addLeftStrictMono :
-    AddLeftStrictMono (Lex (α →₀ N)) :=
+instance Lex.addLeftStrictMono : AddLeftStrictMono (Lex (α →₀ N)) :=
   ⟨fun _ _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr_arg _ (lta j ja), add_lt_add_left ha _⟩⟩
 
-instance Lex.addLeftMono :
-    AddLeftMono (Lex (α →₀ N)) :=
+instance Lex.addLeftMono : AddLeftMono (Lex (α →₀ N)) :=
   addLeftMono_of_addLeftStrictMono _
 
 end Left
@@ -116,13 +114,11 @@ section Right
 
 variable [AddRightStrictMono N]
 
-instance Lex.addRightStrictMono :
-    AddRightStrictMono (Lex (α →₀ N)) :=
+instance Lex.addRightStrictMono : AddRightStrictMono (Lex (α →₀ N)) :=
   ⟨fun f _ _ ⟨a, lta, ha⟩ ↦
     ⟨a, fun j ja ↦ congr_arg (· + ofLex f j) (lta j ja), add_lt_add_right ha _⟩⟩
 
-instance Lex.addRightMono :
-    AddRightMono (Lex (α →₀ N)) :=
+instance Lex.addRightMono : AddRightMono (Lex (α →₀ N)) :=
   addRightMono_of_addRightStrictMono _
 
 end Right

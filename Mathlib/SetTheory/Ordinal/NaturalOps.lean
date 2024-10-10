@@ -325,8 +325,7 @@ instance addLeftStrictMono : AddLeftStrictMono NatOrdinal.{u} :=
 instance addLeftMono : AddLeftMono NatOrdinal.{u} :=
   ⟨fun a _ _ h => nadd_le_nadd_left h a⟩
 
-instance addLeftReflectLE :
-    AddLeftReflectLE NatOrdinal.{u} :=
+instance addLeftReflectLE : AddLeftReflectLE NatOrdinal.{u} :=
   ⟨fun a b c h => by
     by_contra! h'
     exact h.not_lt (add_lt_add_left h' a)⟩

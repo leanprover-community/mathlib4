@@ -75,29 +75,25 @@ theorem max_mul_mul_right (a b c : α) : max (a * c) (b * c) = max a b * c :=
 end Right
 
 @[to_additive]
-theorem lt_or_lt_of_mul_lt_mul [MulLeftMono α]
-    [MulRightMono α] {a₁ a₂ b₁ b₂ : α} :
+theorem lt_or_lt_of_mul_lt_mul [MulLeftMono α] [MulRightMono α] {a₁ a₂ b₁ b₂ : α} :
     a₁ * b₁ < a₂ * b₂ → a₁ < a₂ ∨ b₁ < b₂ := by
   contrapose!
   exact fun h => mul_le_mul' h.1 h.2
 
 @[to_additive]
-theorem le_or_lt_of_mul_le_mul [MulLeftMono α]
-    [MulRightStrictMono α] {a₁ a₂ b₁ b₂ : α} :
+theorem le_or_lt_of_mul_le_mul [MulLeftMono α] [MulRightStrictMono α] {a₁ a₂ b₁ b₂ : α} :
     a₁ * b₁ ≤ a₂ * b₂ → a₁ ≤ a₂ ∨ b₁ < b₂ := by
   contrapose!
   exact fun h => mul_lt_mul_of_lt_of_le h.1 h.2
 
 @[to_additive]
-theorem lt_or_le_of_mul_le_mul [MulLeftStrictMono α]
-    [MulRightMono α] {a₁ a₂ b₁ b₂ : α} :
+theorem lt_or_le_of_mul_le_mul [MulLeftStrictMono α] [MulRightMono α] {a₁ a₂ b₁ b₂ : α} :
     a₁ * b₁ ≤ a₂ * b₂ → a₁ < a₂ ∨ b₁ ≤ b₂ := by
   contrapose!
   exact fun h => mul_lt_mul_of_le_of_lt h.1 h.2
 
 @[to_additive]
-theorem le_or_le_of_mul_le_mul [MulLeftStrictMono α]
-    [MulRightStrictMono α] {a₁ a₂ b₁ b₂ : α} :
+theorem le_or_le_of_mul_le_mul [MulLeftStrictMono α] [MulRightStrictMono α] {a₁ a₂ b₁ b₂ : α} :
     a₁ * b₁ ≤ a₂ * b₂ → a₁ ≤ a₂ ∨ b₁ ≤ b₂ := by
   contrapose!
   exact fun h => mul_lt_mul_of_lt_of_lt h.1 h.2
@@ -122,13 +118,12 @@ theorem min_le_mul_of_one_le_right [MulLeftMono α] {a b : α} (hb : 1 ≤ b) :
   min_le_iff.2 <| Or.inl <| le_mul_of_one_le_right' hb
 
 @[to_additive]
-theorem min_le_mul_of_one_le_left [MulRightMono α] {a b : α}
-    (ha : 1 ≤ a) : min a b ≤ a * b :=
+theorem min_le_mul_of_one_le_left [MulRightMono α] {a b : α} (ha : 1 ≤ a) : 
+    min a b ≤ a * b :=
   min_le_iff.2 <| Or.inr <| le_mul_of_one_le_left' ha
 
 @[to_additive]
-theorem max_le_mul_of_one_le [MulLeftMono α]
-    [MulRightMono α] {a b : α} (ha : 1 ≤ a) (hb : 1 ≤ b) :
+theorem max_le_mul_of_one_le [MulLeftMono α] [MulRightMono α] {a b : α} (ha : 1 ≤ a) (hb : 1 ≤ b) :
     max a b ≤ a * b :=
   max_le_iff.2 ⟨le_mul_of_one_le_right' hb, le_mul_of_one_le_left' ha⟩
 

@@ -143,22 +143,19 @@ theorem add_left_cancel_iff [IsLeftCancelAdd α] (ha : a ≠ ⊤) : a + b = a + 
 theorem add_left_cancel [IsLeftCancelAdd α] (ha : a ≠ ⊤) (h : a + b = a + c) : b = c :=
   (WithTop.add_left_cancel_iff ha).1 h
 
-instance addLeftMono [LE α] [AddLeftMono α] :
-    AddLeftMono (WithTop α) :=
+instance addLeftMono [LE α] [AddLeftMono α] : AddLeftMono (WithTop α) :=
   ⟨fun a b c h => by
     cases a <;> cases c <;> try exact le_top
     rcases le_coe_iff.1 h with ⟨b, rfl, _⟩
     exact coe_le_coe.2 (add_le_add_left (coe_le_coe.1 h) _)⟩
 
-instance addRightMono [LE α] [AddRightMono α] :
-    AddRightMono (WithTop α) :=
+instance addRightMono [LE α] [AddRightMono α] : AddRightMono (WithTop α) :=
   ⟨fun a b c h => by
     cases a <;> cases c <;> try exact le_top
     rcases le_coe_iff.1 h with ⟨b, rfl, _⟩
     exact coe_le_coe.2 (add_le_add_right (coe_le_coe.1 h) _)⟩
 
-instance addLeftReflectLT [LT α] [AddLeftReflectLT α] :
-    AddLeftReflectLT (WithTop α) :=
+instance addLeftReflectLT [LT α] [AddLeftReflectLT α] : AddLeftReflectLT (WithTop α) :=
   ⟨fun a b c h => by
     induction a; · exact (WithTop.not_top_lt _ h).elim
     induction b; · exact (WithTop.not_top_lt _ h).elim
@@ -166,8 +163,7 @@ instance addLeftReflectLT [LT α] [AddLeftReflectLT α] :
     · exact coe_lt_top _
     · exact coe_lt_coe.2 (lt_of_add_lt_add_left <| coe_lt_coe.1 h)⟩
 
-instance addRightReflectLT [LT α] [AddRightReflectLT α] :
-    AddRightReflectLT (WithTop α) :=
+instance addRightReflectLT [LT α] [AddRightReflectLT α] : AddRightReflectLT (WithTop α) :=
   ⟨fun a b c h => by
     cases a <;> cases b <;> try exact (WithTop.not_top_lt _ h).elim
     cases c
@@ -598,20 +594,16 @@ protected def _root_.AddMonoidHom.withBotMap {M N : Type*} [AddZeroClass M] [Add
 
 variable [Preorder α]
 
-instance addLeftMono [AddLeftMono α] :
-    AddLeftMono (WithBot α) :=
+instance addLeftMono [AddLeftMono α] : AddLeftMono (WithBot α) :=
   OrderDual.addLeftMono (α := WithTop αᵒᵈ)
 
-instance addRightMono [AddRightMono α] :
-    AddRightMono (WithBot α) :=
+instance addRightMono [AddRightMono α] : AddRightMono (WithBot α) :=
   OrderDual.addRightMono (α := WithTop αᵒᵈ)
 
-instance addLeftReflectLT [AddLeftReflectLT α] :
-    AddLeftReflectLT (WithBot α) :=
+instance addLeftReflectLT [AddLeftReflectLT α] : AddLeftReflectLT (WithBot α) :=
   OrderDual.addLeftReflectLT (α := WithTop αᵒᵈ)
 
-instance addRightReflectLT [AddRightReflectLT α] :
-    AddRightReflectLT (WithBot α) :=
+instance addRightReflectLT [AddRightReflectLT α] : AddRightReflectLT (WithBot α) :=
   OrderDual.addRightReflectLT (α := WithTop αᵒᵈ)
 
 protected theorem le_of_add_le_add_left [AddLeftReflectLE α] (ha : a ≠ ⊥)

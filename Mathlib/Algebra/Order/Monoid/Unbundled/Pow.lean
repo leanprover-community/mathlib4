@@ -123,8 +123,7 @@ end Right
 
 section CovariantLTSwap
 
-variable [Preorder β] [MulLeftStrictMono M]
-  [MulRightStrictMono M] {f : β → M} {n : ℕ}
+variable [Preorder β] [MulLeftStrictMono M] [MulRightStrictMono M] {f : β → M} {n : ℕ}
 
 @[to_additive StrictMono.const_nsmul]
 theorem StrictMono.pow_const (hf : StrictMono f) : ∀ {n : ℕ}, n ≠ 0 → StrictMono (f · ^ n)

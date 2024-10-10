@@ -47,34 +47,27 @@ instance addRightCancelSemigroup {M : Type*} [AddRightCancelMonoid M] [Preorder 
     [AddLeftStrictMono M] : AddRightCancelSemigroup { x : M // 0 < x } :=
   Subtype.coe_injective.addRightCancelSemigroup _ coe_add
 
-instance addLeftStrictMono :
-    AddLeftStrictMono { x : M // 0 < x } :=
+instance addLeftStrictMono : AddLeftStrictMono { x : M // 0 < x } :=
   ⟨fun _ y z hyz => Subtype.coe_lt_coe.1 <| add_lt_add_left (show (y : M) < z from hyz) _⟩
 
-instance addRightStrictMono [AddRightStrictMono M] :
-    AddRightStrictMono { x : M // 0 < x } :=
+instance addRightStrictMono [AddRightStrictMono M] : AddRightStrictMono { x : M // 0 < x } :=
   ⟨fun _ y z hyz => Subtype.coe_lt_coe.1 <| add_lt_add_right (show (y : M) < z from hyz) _⟩
 
-instance addLeftReflectLT [AddLeftReflectLT M] :
-    AddLeftReflectLT { x : M // 0 < x } :=
+instance addLeftReflectLT [AddLeftReflectLT M] : AddLeftReflectLT { x : M // 0 < x } :=
   ⟨fun _ _ _ h => Subtype.coe_lt_coe.1 <| lt_of_add_lt_add_left h⟩
 
-instance addRightReflectLT [AddRightReflectLT M] :
-    AddRightReflectLT { x : M // 0 < x } :=
+instance addRightReflectLT [AddRightReflectLT M] : AddRightReflectLT { x : M // 0 < x } :=
   ⟨fun _ _ _ h => Subtype.coe_lt_coe.1 <| lt_of_add_lt_add_right h⟩
 
-instance addLeftReflectLE [AddLeftReflectLE M] :
-    AddLeftReflectLE { x : M // 0 < x } :=
+instance addLeftReflectLE [AddLeftReflectLE M] : AddLeftReflectLE { x : M // 0 < x } :=
   ⟨fun _ _ _ h => Subtype.coe_le_coe.1 <| le_of_add_le_add_left h⟩
 
-instance addRightReflectLE [AddRightReflectLE M] :
-    AddRightReflectLE { x : M // 0 < x } :=
+instance addRightReflectLE [AddRightReflectLE M] : AddRightReflectLE { x : M // 0 < x } :=
   ⟨fun _ _ _ h => Subtype.coe_le_coe.1 <| le_of_add_le_add_right h⟩
 
 end AddBasic
 
-instance addLeftMono [AddMonoid M] [PartialOrder M]
-    [AddLeftStrictMono M] :
+instance addLeftMono [AddMonoid M] [PartialOrder M] [AddLeftStrictMono M] :
     AddLeftMono { x : M // 0 < x } :=
   ⟨@fun _ _ _ h₁ => StrictMono.monotone (fun _ _ h => add_lt_add_left h _) h₁⟩
 

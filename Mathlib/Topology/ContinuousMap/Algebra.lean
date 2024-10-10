@@ -818,14 +818,12 @@ variable {β : Type*} [TopologicalSpace β]
 /-! `C(α, β)`is a lattice ordered group -/
 
 @[to_additive]
-instance instMulLeftMono [PartialOrder β] [Mul β] [ContinuousMul β]
-    [MulLeftMono β] :
+instance instMulLeftMono [PartialOrder β] [Mul β] [ContinuousMul β] [MulLeftMono β] :
     MulLeftMono C(α, β) :=
   ⟨fun _ _ _ hg₁₂ x => mul_le_mul_left' (hg₁₂ x) _⟩
 
 @[to_additive]
-instance instMulRightMono [PartialOrder β] [Mul β] [ContinuousMul β]
-    [MulRightMono β] :
+instance instMulRightMono [PartialOrder β] [Mul β] [ContinuousMul β] [MulRightMono β] :
     MulRightMono C(α, β) :=
   ⟨fun _ _ _ hg₁₂ x => mul_le_mul_right' (hg₁₂ x) _⟩
 
