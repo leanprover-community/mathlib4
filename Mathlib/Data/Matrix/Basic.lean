@@ -335,6 +335,19 @@ instance subsingleton_of_empty_right [IsEmpty n] : Subsingleton (Matrix m n α) 
     ext i j
     exact isEmptyElim j⟩
 
+def ofAddEquiv [Add α] : (m → n → α) ≃+ Matrix m n α where
+  __ := of
+  map_add' _ _ := rfl
+
+@[simp] lemma coe_ofAddEquiv [Add α] : (ofAddEquiv : (m → n → α) → Matrix m n α) = of := rfl
+
+def ofLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] : (m → n → α) ≃ₗ[R] Matrix m n α where
+  __ := ofAddEquiv
+  map_smul' _ _ := rfl
+
+@[simp] lemma coe_ofLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
+    (ofLinearEquiv (R := R) : (m → n → α) → Matrix m n α) = of := rfl
+
 end Matrix
 
 open Matrix
@@ -1221,9 +1234,9 @@ def entryAddHom (i : m) (j : n) : AddHom (Matrix m n α) α where
   toFun M := M i j
   map_add' _ _ := rfl
 
--- The type ascription on the RHS is necessary for unification to succeed on the composition.
 lemma entryAddHom_eq_comp {i : m} {j : n} :
-    entryAddHom α i j = (Pi.evalAddHom _ j).comp (Pi.evalAddHom _ i : AddHom _ (n → α)) :=
+    entryAddHom α i j =
+      ((Pi.evalAddHom _ j).comp (Pi.evalAddHom _ i)).comp (AddHomClass.toAddHom ofAddEquiv.symm) :=
   rfl
 
 end AddHom
@@ -1243,10 +1256,10 @@ def entryAddMonoidHom (i : m) (j : n) : Matrix m n α →+ α where
   map_add' _ _ := rfl
   map_zero' := rfl
 
--- The type ascription on the RHS is necessary for unification to succeed on the composition.
 lemma entryAddMonoidHom_eq_comp {i : m} {j : n} :
     entryAddMonoidHom α i j =
-      (Pi.evalAddMonoidHom _ j).comp (Pi.evalAddMonoidHom _ i : _ →+ (n → α)) :=
+      ((Pi.evalAddMonoidHom _ j).comp (Pi.evalAddMonoidHom _ i)).comp
+        (AddMonoidHomClass.toAddMonoidHom ofAddEquiv.symm) := by
   rfl
 
 @[simp] lemma evalAddMonoidHom_comp_diagAddMonoidHom (i : m) :
@@ -1274,9 +1287,9 @@ def entryLinearMap (i : m) (j : n) :
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
--- The type ascription on the RHS is necessary for unification to succeed on the linear composition.
-lemma entryLinearMap_eq {i : m} {j : n} :
-    entryLinearMap R α i j = LinearMap.proj j ∘ₗ (LinearMap.proj i : _ →ₗ[_] (n → α)) :=
+lemma entryLinearMap_eq_comp {i : m} {j : n} :
+    entryLinearMap R α i j =
+      LinearMap.proj j ∘ₗ LinearMap.proj i ∘ₗ ofLinearEquiv.symm.toLinearMap := by
   rfl
 
 @[simp] lemma proj_comp_diagLinearMap (i : m) :
