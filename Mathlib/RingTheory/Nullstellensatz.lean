@@ -22,8 +22,6 @@ The machinery around `vanishingIdeal` and `zeroLocus` is also minimal, I only ad
   directly needed in this proof, since I'm not sure if they are the right approach.
 -/
 
-set_option synthInstance.maxHeartbeats 50000  -- Increase the limit
-
 open Ideal
 
 noncomputable section
@@ -173,6 +171,8 @@ theorem isMaximal_iff_eq_vanishingIdeal_singleton (I : Ideal (MvPolynomial σ k)
   rw [← Quotient.eq_zero_iff_mem, map_mvPolynomial_eq_eval₂ (Ideal.Quotient.mk I) p, eval₂_eq']
   rw [mem_vanishingIdeal_singleton_iff, eval_eq'] at hp
   simpa only [map_sum ϕ, ϕ.map_mul, map_prod ϕ, ϕ.map_pow, ϕ.map_zero, hx] using congr_arg ϕ hp
+
+set_option synthInstance.maxHeartbeats 40000 in
 
 /-- Main statement of the Nullstellensatz -/
 @[simp]
