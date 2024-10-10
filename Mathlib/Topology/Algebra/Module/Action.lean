@@ -111,7 +111,7 @@ the action topology. See `actionTopology` for more discussion of the action topo
 class IsActionTopology [τA : TopologicalSpace A] : Prop where
   eq_actionTopology' : τA = actionTopology R A
 
-theorem eq_ActionTopology [τA : TopologicalSpace A] [IsActionTopology R A] :
+theorem eq_actionTopology [τA : TopologicalSpace A] [IsActionTopology R A] :
     τA = actionTopology R A :=
   IsActionTopology.eq_actionTopology' (R := R) (A := A)
 
