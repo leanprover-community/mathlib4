@@ -137,7 +137,12 @@ partial
 def findBinders (stx : Syntax) : Array Syntax :=
   stx.filter (binders.contains ·.getKind)
 
-def getExtendBinders {m} [Monad m] [MonadRef m] [MonadQuotation m] (stx : Syntax) : m (Array Syntax) := do
+/--
+`getExtendBinders stx` extracts the first `extends` node in `stx` and, from there,
+extracts all binders, returning them as an array of instance-implicit syntax nodes.
+-/
+def getExtendBinders {m} [Monad m] [MonadRef m] [MonadQuotation m] (stx : Syntax) :
+    m (Array Syntax) := do
   if let some exts := stx.find? (·.isOfKind ``Lean.Parser.Command.extends) then
     let exts := exts[1].getArgs.filter (·.getAtomVal != ",")
     let exts ← exts.mapM (`(Lean.Parser.Term.instBinder| [$(⟨·⟩)]))
@@ -340,11 +345,13 @@ def unusedVariableCommandLinter : Linter where run := withSetOptionIn fun stx �
     --    | `(def $d $vs* : $t := $pf) => return some (← `(theorem $d $vs* : $toFalse $t := $pf))
     --    | _               => return none
     let renStx ← if decl.isOfKind `lemma then mkNewThm decl else getDeclBinders decl
-    --logInfo renStx
+    -- replace the declaration in the initial `stx` with the "revised" one.  This takes care of
+    -- handling `include h in` and other "`in`"s.
+    let newRStx : Syntax := stx.replaceM (m := Id) (if · == decl then return some renStx else return none)
     let s ← get
     elabCommand (← `(def $toFalse (S : Sort _) := False))
     try
-      elabCommand renStx
+      elabCommand newRStx
     catch _ =>
       elabCommand (← mkNewThm decl true)
     set s
