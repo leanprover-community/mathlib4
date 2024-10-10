@@ -201,7 +201,7 @@ instance : Coe (r ↪r s) (r →r s) :=
 
 -- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
 instance : FunLike (r ↪r s) α β where
-  coe := fun x => x.toFun
+  coe x := x.toFun
   coe_injective' f g h := by
     rcases f with ⟨⟨⟩⟩
     rcases g with ⟨⟨⟩⟩
@@ -536,7 +536,7 @@ instance : CoeOut (r ≃r s) (r ↪r s) :=
 
 -- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
 instance : FunLike (r ≃r s) α β where
-  coe := fun x => x
+  coe x := x
   coe_injective' := Equiv.coe_fn_injective.comp toEquiv_injective
 
 -- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined

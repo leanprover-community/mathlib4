@@ -3,6 +3,7 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
+import Mathlib.Control.Basic
 import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.List.Defs
@@ -34,8 +35,6 @@ variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : Lis
 /-- `≤` implies not `>` for lists. -/
 @[deprecated (since := "2024-07-27")]
 theorem le_eq_not_gt [LT α] : ∀ l₁ l₂ : List α, (l₁ ≤ l₂) = ¬l₂ < l₁ := fun _ _ => rfl
-
-@[deprecated (since := "2024-06-07")] alias toArray_data := Array.toList_toArray
 
 -- Porting note: Delete this attribute
 -- attribute [inline] List.head!
@@ -814,14 +813,6 @@ theorem getElem?_indexOf [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
 theorem indexOf_get? [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
     get? l (indexOf a l) = some a := by simp [h]
 
-@[deprecated (since := "2023-01-05")]
-theorem get_reverse_aux₁ :
-    ∀ (l r : List α) (i h1 h2), get (reverseAux l r) ⟨i + length l, h1⟩ = get r ⟨i, h2⟩
-  | [], r, i => fun h1 _ => rfl
-  | a :: l, r, i => by
-    rw [show i + length (a :: l) = i + 1 + length l from Nat.add_right_comm i (length l) 1]
-    exact fun h1 h2 => get_reverse_aux₁ l (a :: r) (i + 1) h1 (succ_lt_succ h2)
-
 theorem indexOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy : y ∈ l) :
     indexOf x l = indexOf y l ↔ x = y :=
   ⟨fun h => by
@@ -831,30 +822,13 @@ theorem indexOf_inj [DecidableEq α] {l : List α} {x y : α} (hx : x ∈ l) (hy
       simp only [h]
     simp only [indexOf_get] at x_eq_y; exact x_eq_y, fun h => by subst h; rfl⟩
 
-@[deprecated (since := "2024-08-15")]
-theorem getElem_reverse_aux₂ :
-    ∀ (l r : List α) (i : Nat) (h1) (h2),
-      (reverseAux l r)[length l - 1 - i]'h1 = l[i]'h2
-  | [], r, i, h1, h2 => absurd h2 (Nat.not_lt_zero _)
-  | a :: l, r, 0, h1, _ => by
-    have aux := get_reverse_aux₁ l (a :: r) 0
-    rw [Nat.zero_add] at aux
-    exact aux _ (zero_lt_succ _)
-  | a :: l, r, i + 1, h1, h2 => by
-    have aux := getElem_reverse_aux₂ l (a :: r) i
-    have heq : length (a :: l) - 1 - (i + 1) = length l - 1 - i := by rw [length]; omega
-    rw [← heq] at aux
-    apply aux
-
-@[deprecated (since := "2024-06-12")]
-theorem get_reverse_aux₂ (l r : List α) (i : Nat) (h1) (h2) :
-    get (reverseAux l r) ⟨length l - 1 - i, h1⟩ = get l ⟨i, h2⟩ := by
-  simp only [get_eq_getElem, h2, getElem_reverse_aux₂]
-
 @[deprecated getElem_reverse (since := "2024-06-12")]
 theorem get_reverse (l : List α) (i : Nat) (h1 h2) :
-    get (reverse l) ⟨length l - 1 - i, h1⟩ = get l ⟨i, h2⟩ :=
-  get_reverse_aux₂ _ _ _ _ _
+    get (reverse l) ⟨length l - 1 - i, h1⟩ = get l ⟨i, h2⟩ := by
+  rw [get_eq_getElem, get_eq_getElem, getElem_reverse]
+  congr
+  dsimp
+  omega
 
 theorem get_reverse' (l : List α) (n) (hn') :
     l.reverse.get n = l.get ⟨l.length - 1 - n, hn'⟩ := by
@@ -1332,13 +1306,6 @@ local notation a " ⋆ " b => op a b
 /-- Notation for `foldl op a l`. -/
 local notation l " <*> " a => foldl op a l
 
-theorem foldl_assoc : ∀ {l : List α} {a₁ a₂}, (l <*> a₁ ⋆ a₂) = a₁ ⋆ l <*> a₂
-  | [], a₁, a₂ => rfl
-  | a :: l, a₁, a₂ =>
-    calc
-      ((a :: l) <*> a₁ ⋆ a₂) = l <*> a₁ ⋆ a₂ ⋆ a := by simp only [foldl_cons, ha.assoc]
-      _ = a₁ ⋆ (a :: l) <*> a₂ := by rw [foldl_assoc, foldl_cons]
-
 theorem foldl_op_eq_op_foldr_assoc :
     ∀ {l : List α} {a₁ a₂}, ((l <*> a₁) ⋆ a₂) = a₁ ⋆ l.foldr (· ⋆ ·) a₂
   | [], a₁, a₂ => rfl
@@ -1391,7 +1358,7 @@ theorem intersperse_cons_cons (a b c : α) (tl : List α) :
 
 section SplitAtOn
 
-variable (p : α → Bool) (xs ys : List α) (ls : List (List α)) (f : List α → List α)
+variable (p : α → Bool) (xs : List α) (ls : List (List α))
 
 attribute [simp] splitAt_eq
 
@@ -1567,8 +1534,6 @@ theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {l : List α} (hx : x ∈ l
 /-! ### find -/
 
 section find?
-
-variable {p : α → Bool} {l : List α} {a : α}
 
 @[deprecated (since := "2024-05-05")] alias find?_mem := mem_of_find?_eq_some
 
@@ -2212,18 +2177,13 @@ end Forall
 theorem get_attach (L : List α) (i) :
     (L.attach.get i).1 = L.get ⟨i, length_attach (L := L) ▸ i.2⟩ := by simp
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 @[simp 1100]
 theorem mem_map_swap (x : α) (y : β) (xs : List (α × β)) :
     (y, x) ∈ map Prod.swap xs ↔ (x, y) ∈ xs := by
   induction' xs with x xs xs_ih
   · simp only [not_mem_nil, map_nil]
   · cases' x with a b
-    simp only [mem_cons, Prod.mk.inj_iff, map, Prod.swap_prod_mk, Prod.exists, xs_ih,
-      _root_.and_comm]
+    simp only [mem_cons, Prod.mk.inj_iff, map, Prod.swap_prod_mk, Prod.exists, xs_ih, and_comm]
 
 theorem dropSlice_eq (xs : List α) (n m : ℕ) : dropSlice n m xs = xs.take n ++ xs.drop (n + m) := by
   induction n generalizing xs
@@ -2311,8 +2271,7 @@ theorem disjoint_reverse_right {l₁ l₂ : List α} : Disjoint l₁ l₂.revers
 end Disjoint
 
 section lookup
-
-variable {α β : Type*} [BEq α] [LawfulBEq α]
+variable [BEq α] [LawfulBEq α]
 
 lemma lookup_graph (f : α → β) {a : α} {as : List α} (h : a ∈ as) :
     lookup a (as.map fun x => (x, f x)) = some (f a) := by

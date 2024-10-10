@@ -770,6 +770,16 @@ theorem continuous_norm' : Continuous fun a : E => ‖a‖ := by
 theorem continuous_nnnorm' : Continuous fun a : E => ‖a‖₊ :=
   continuous_norm'.subtype_mk _
 
+set_option linter.docPrime false in
+@[to_additive Inseparable.norm_eq_norm]
+theorem Inseparable.norm_eq_norm' {u v : E} (h : Inseparable u v) : ‖u‖ = ‖v‖ :=
+  h.map continuous_norm' |>.eq
+
+set_option linter.docPrime false in
+@[to_additive Inseparable.nnnorm_eq_nnnorm]
+theorem Inseparable.nnnorm_eq_nnnorm' {u v : E} (h : Inseparable u v) : ‖u‖₊ = ‖v‖₊ :=
+  h.map continuous_nnnorm' |>.eq
+
 @[to_additive]
 theorem mem_closure_one_iff_norm {x : E} : x ∈ closure ({1} : Set E) ↔ ‖x‖ = 0 := by
   rw [← closedBall_zero', mem_closedBall_one_iff, (norm_nonneg' x).le_iff_eq]
@@ -1129,7 +1139,7 @@ theorem nnnorm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ a ∈ s, f a‖�
 @[to_additive]
 theorem nnnorm_prod_le_of_le (s : Finset ι) {f : ι → E} {n : ι → ℝ≥0} (h : ∀ b ∈ s, ‖f b‖₊ ≤ n b) :
     ‖∏ b ∈ s, f b‖₊ ≤ ∑ b ∈ s, n b :=
-  (norm_prod_le_of_le s h).trans_eq NNReal.coe_sum.symm
+  (norm_prod_le_of_le s h).trans_eq (NNReal.coe_sum ..).symm
 
 namespace Real
 

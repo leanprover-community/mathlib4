@@ -53,8 +53,7 @@ theorem sublists'_eq_sublists'Aux (l : List α) :
     sublists' l = l.foldr (fun a r => sublists'Aux a r r) [[]] := by
   simp only [sublists', sublists'Aux_eq_array_foldl]
   rw [← List.foldr_hom Array.toList]
-  · rfl
-  · intros _ _; congr <;> simp
+  · intros _ _; congr
 
 theorem sublists'Aux_eq_map (a : α) (r₁ : List (List α)) : ∀ (r₂ : List (List α)),
     sublists'Aux a r₁ r₂ = r₂ ++ map (cons a) r₁ :=
@@ -128,8 +127,7 @@ theorem sublistsAux_eq_bind :
   · rw [sublistsAux_eq_bind, sublists]
   · simp only [sublistsFast, sublistsAux_eq_array_foldl, Array.foldr_eq_foldr_toList]
     rw [← foldr_hom Array.toList]
-    · rfl
-    · intros _ _; congr <;> simp
+    · intros _ _; congr
 
 theorem sublists_append (l₁ l₂ : List α) :
     sublists (l₁ ++ l₂) = (sublists l₂) >>= (fun x => (sublists l₁).map (· ++ x)) := by

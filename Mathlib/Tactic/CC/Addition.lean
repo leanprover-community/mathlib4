@@ -842,7 +842,7 @@ def dbgTraceACState : CCM Unit := do
 def mkACProof (e₁ e₂ : Expr) : MetaM Expr := do
   let eq ← mkEq e₁ e₂
   let .mvar m ← mkFreshExprSyntheticOpaqueMVar eq | failure
-  AC.rewriteUnnormalized m
+  AC.rewriteUnnormalizedRefl m
   let pr ← instantiateMVars (.mvar m)
   mkExpectedTypeHint pr eq
 

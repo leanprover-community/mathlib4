@@ -12,9 +12,6 @@ example : (fun₀ | 1 | 2 | 3 => 3 | 3 => 4) 2 = 3 := by
 example : (fun₀ | 1 | 2 | 3 => 3 | 3 => 4) 3 = 4 := by
   simp
 
-/--
-info:
--/
 #guard_msgs in
 #eval show Lean.MetaM Unit from
   guard <|

@@ -55,9 +55,9 @@ theorem mapIdxGo_append : ∀ (f : ℕ → α → β) (l₁ l₂ : List α) (arr
       cases l₂
       · rfl
       · rw [List.length_append] at h; contradiction
-    rw [l₁_nil, l₂_nil]; simp only [mapIdx.go, Array.toArray_toList]
+    rw [l₁_nil, l₂_nil]; simp only [mapIdx.go, List.toArray_toList]
   · cases' l₁ with head tail <;> simp only [mapIdx.go]
-    · simp only [nil_append, Array.toArray_toList]
+    · simp only [nil_append, List.toArray_toList]
     · simp only [List.append_eq]
       rw [ih]
       · simp only [cons_append, length_cons, length_append, Nat.succ.injEq] at h
@@ -119,15 +119,16 @@ theorem getElem?_mapIdx_go (f : ℕ → α → β) : ∀ (l : List α) (arr : Ar
     (mapIdx.go f l arr)[i]? =
       if h : i < arr.size then some arr[i] else Option.map (f i) l[i - arr.size]?
   | [], arr, i => by
-    simp [mapIdx.go, getElem?_eq, Array.getElem_eq_toList_getElem]
+    simp only [mapIdx.go, Array.toListImpl_eq, getElem?_eq, Array.length_toList,
+      Array.getElem_eq_getElem_toList, length_nil, Nat.not_lt_zero, ↓reduceDIte, Option.map_none']
   | a :: l, arr, i => by
     rw [mapIdx.go, getElem?_mapIdx_go]
     simp only [Array.size_push]
     split <;> split
     · simp only [Option.some.injEq]
-      rw [Array.getElem_eq_toList_getElem]
+      rw [Array.getElem_eq_getElem_toList]
       simp only [Array.push_toList]
-      rw [getElem_append_left, Array.getElem_eq_toList_getElem]
+      rw [getElem_append_left, Array.getElem_eq_getElem_toList]
     · have : i = arr.size := by omega
       simp_all
     · omega

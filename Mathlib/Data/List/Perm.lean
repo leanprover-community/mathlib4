@@ -166,8 +166,13 @@ local notation a " * " b => op a b
 
 local notation l " <*> " a => foldl op a l
 
-theorem Perm.fold_op_eq {l₁ l₂ : List α} {a : α} (h : l₁ ~ l₂) : (l₁ <*> a) = l₂ <*> a :=
+theorem Perm.foldl_op_eq {l₁ l₂ : List α} {a : α} (h : l₁ ~ l₂) : (l₁ <*> a) = l₂ <*> a :=
   h.foldl_eq _
+
+theorem Perm.foldr_op_eq {l₁ l₂ : List α} {a : α} (h : l₁ ~ l₂) : l₁.foldr op a = l₂.foldr op a :=
+  h.foldr_eq _
+
+@[deprecated (since := "2024-09-28")] alias Perm.fold_op_eq := Perm.foldl_op_eq
 
 end
 
@@ -241,17 +246,13 @@ theorem Perm.bagInter {l₁ l₂ t₁ t₂ : List α} (hl : l₁ ~ l₂) (ht : t
     l₁.bagInter t₁ ~ l₂.bagInter t₂ :=
   ht.bagInter_left l₂ ▸ hl.bagInter_right _
 
-#adaptation_note
-/--
-After nightly-2024-09-06 we can remove the `_root_` prefix below.
--/
 theorem perm_replicate_append_replicate {l : List α} {a b : α} {m n : ℕ} (h : a ≠ b) :
     l ~ replicate m a ++ replicate n b ↔ count a l = m ∧ count b l = n ∧ l ⊆ [a, b] := by
   rw [perm_iff_count, ← Decidable.and_forall_ne a, ← Decidable.and_forall_ne b]
   suffices l ⊆ [a, b] ↔ ∀ c, c ≠ b → c ≠ a → c ∉ l by
     simp (config := { contextual := true }) [count_replicate, h, this, count_eq_zero, Ne.symm]
   trans ∀ c, c ∈ l → c = b ∨ c = a
-  · simp [subset_def, _root_.or_comm]
+  · simp [subset_def, or_comm]
   · exact forall_congr' fun _ => by rw [← and_imp, ← not_or, not_imp_not]
 
 theorem Perm.dedup {l₁ l₂ : List α} (p : l₁ ~ l₂) : dedup l₁ ~ dedup l₂ :=

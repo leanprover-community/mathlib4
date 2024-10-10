@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Scott Morrison
+Authors: Chris Hughes, Kim Morrison
 -/
 import Archive.Examples.IfNormalization.Statement
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs

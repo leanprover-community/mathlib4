@@ -328,7 +328,7 @@ theorem approx_Gamma_integral_tendsto_Gamma_integral {s : ℂ} (hs : 0 < re s) :
       exact rpow_nonneg (le_of_lt hx) _
     · rw [indicator_of_mem (mem_Ioc.mpr ⟨mem_Ioi.mp hx, hxn⟩), norm_mul, Complex.norm_eq_abs,
         Complex.abs_of_nonneg
-          (pow_nonneg (sub_nonneg.mpr <| div_le_one_of_le hxn <| by positivity) _),
+          (pow_nonneg (sub_nonneg.mpr <| div_le_one_of_le₀ hxn <| by positivity) _),
         Complex.norm_eq_abs, abs_cpow_eq_rpow_re_of_pos hx, sub_re, one_re,
         mul_le_mul_right (rpow_pos_of_pos hx _)]
       exact one_sub_div_pow_le_exp_neg hxn
@@ -547,13 +547,13 @@ theorem Gamma_mul_Gamma_add_half (s : ℂ) :
     convert congr_arg Inv.inv (congr_fun this s) using 1
     · rw [mul_inv, inv_inv, inv_inv]
     · rw [div_eq_mul_inv, mul_inv, mul_inv, inv_inv, inv_inv, ← cpow_neg, neg_sub]
-  have h1 : AnalyticOn ℂ (fun z : ℂ => (Gamma z)⁻¹ * (Gamma (z + 1 / 2))⁻¹) univ := by
-    refine DifferentiableOn.analyticOn ?_ isOpen_univ
+  have h1 : AnalyticOnNhd ℂ (fun z : ℂ => (Gamma z)⁻¹ * (Gamma (z + 1 / 2))⁻¹) univ := by
+    refine DifferentiableOn.analyticOnNhd ?_ isOpen_univ
     refine (differentiable_one_div_Gamma.mul ?_).differentiableOn
     exact differentiable_one_div_Gamma.comp (differentiable_id.add (differentiable_const _))
-  have h2 : AnalyticOn ℂ
+  have h2 : AnalyticOnNhd ℂ
       (fun z => (Gamma (2 * z))⁻¹ * (2 : ℂ) ^ (2 * z - 1) / ↑(√π)) univ := by
-    refine DifferentiableOn.analyticOn ?_ isOpen_univ
+    refine DifferentiableOn.analyticOnNhd ?_ isOpen_univ
     refine (Differentiable.mul ?_ (differentiable_const _)).differentiableOn
     apply Differentiable.mul
     · exact differentiable_one_div_Gamma.comp (differentiable_id'.const_mul _)
@@ -563,7 +563,7 @@ theorem Gamma_mul_Gamma_add_half (s : ℂ) :
     rw [tendsto_nhdsWithin_iff]; constructor
     · exact tendsto_nhdsWithin_of_tendsto_nhds continuous_ofReal.continuousAt
     · exact eventually_nhdsWithin_iff.mpr (Eventually.of_forall fun t ht => ofReal_ne_one.mpr ht)
-  refine AnalyticOn.eq_of_frequently_eq h1 h2 (h3.frequently ?_)
+  refine AnalyticOnNhd.eq_of_frequently_eq h1 h2 (h3.frequently ?_)
   refine ((Eventually.filter_mono nhdsWithin_le_nhds) ?_).frequently
   refine (eventually_gt_nhds zero_lt_one).mp (Eventually.of_forall fun t ht => ?_)
   rw [← mul_inv, Gamma_ofReal, (by norm_num : (t : ℂ) + 1 / 2 = ↑(t + 1 / 2)), Gamma_ofReal, ←
